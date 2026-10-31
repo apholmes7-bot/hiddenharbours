@@ -1,0 +1,258 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 01b51978faec4dbb8e54e23107a97ef5, type: 3}
+  m_Name: SetPiece_harbourLight
+  m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.SetPieceDef
+  Id: structure.nmc_harbour_light
+  DisplayName: Harbour light
+  RigKey: harbourLight
+  SceneId: keyscene.nmc_wharf
+  BakedOptionsJson: '{"colour":"green","height":4.6}'
+  Layer: raised
+  Walk: solid
+  Mount: breakwater
+  BoundsMin: {x: -0.9, y: -0.9, z: 0}
+  BoundsMax: {x: 0.9, y: 0.9, z: 5.88}
+  Frames:
+  - Sprite: {fileID: 4870907385399521542, guid: 4b26349623be4c14fb708c00290027bb, type: 3}
+    RigDir: 0
+    ShowFaces: N
+    BearingDeg: 0
+    CameraSees: its back
+    NativeSize: {x: 65, y: 178}
+    NativePivot: {x: 32, y: 156}
+    Crop: {x: 3, y: 4}
+    Pivot: {x: 29, y: 152}
+  - Sprite: {fileID: 2233662252014758153, guid: 4b26349623be4c14fb708c00290027bb, type: 3}
+    RigDir: 7
+    ShowFaces: NE
+    BearingDeg: 45
+    CameraSees: its back
+    NativeSize: {x: 89, y: 189}
+    NativePivot: {x: 44, y: 159}
+    Crop: {x: 3, y: 3}
+    Pivot: {x: 41, y: 156}
+  - Sprite: {fileID: -4652460014863905, guid: 4b26349623be4c14fb708c00290027bb, type: 3}
+    RigDir: 6
+    ShowFaces: E
+    BearingDeg: 90
+    CameraSees: the show face, edge-on or at a diagonal
+    NativeSize: {x: 65, y: 178}
+    NativePivot: {x: 32, y: 156}
+    Crop: {x: 3, y: 4}
+    Pivot: {x: 29, y: 152}
+  - Sprite: {fileID: 7885826852590235603, guid: 4b26349623be4c14fb708c00290027bb, type: 3}
+    RigDir: 5
+    ShowFaces: SE
+    BearingDeg: 135
+    CameraSees: the show face
+    NativeSize: {x: 89, y: 189}
+    NativePivot: {x: 44, y: 159}
+    Crop: {x: 3, y: 3}
+    Pivot: {x: 41, y: 156}
+  - Sprite: {fileID: 549536266633473871, guid: 4b26349623be4c14fb708c00290027bb, type: 3}
+    RigDir: 4
+    ShowFaces: S
+    BearingDeg: 180
+    CameraSees: the show face
+    NativeSize: {x: 65, y: 178}
+    NativePivot: {x: 32, y: 156}
+    Crop: {x: 3, y: 4}
+    Pivot: {x: 29, y: 152}
+  - Sprite: {fileID: -2224376981956113607, guid: 4b26349623be4c14fb708c00290027bb, type: 3}
+    RigDir: 3
+    ShowFaces: SW
+    BearingDeg: 225
+    CameraSees: the show face
+    NativeSize: {x: 89, y: 189}
+    NativePivot: {x: 44, y: 159}
+    Crop: {x: 3, y: 3}
+    Pivot: {x: 41, y: 156}
+  - Sprite: {fileID: 8349060427981489897, guid: 4b26349623be4c14fb708c00290027bb, type: 3}
+    RigDir: 2
+    ShowFaces: W
+    BearingDeg: 270
+    CameraSees: the show face, edge-on or at a diagonal
+    NativeSize: {x: 65, y: 178}
+    NativePivot: {x: 32, y: 156}
+    Crop: {x: 3, y: 4}
+    Pivot: {x: 29, y: 152}
+  - Sprite: {fileID: 5278483758626308525, guid: 4b26349623be4c14fb708c00290027bb, type: 3}
+    RigDir: 1
+    ShowFaces: NW
+    BearingDeg: 315
+    CameraSees: its back
+    NativeSize: {x: 89, y: 189}
+    NativePivot: {x: 44, y: 159}
+    Crop: {x: 3, y: 3}
+    Pivot: {x: 41, y: 156}
+  CellSize: {x: 82, y: 182}
+  PixelsPerMetre: 32
+  ElevationDeg: 40
+  BakedLit: 0
+  Colliders:
+  - Type: polygon
+    Blocks: walk
+    Points:
+    - {x: -0.9, y: -0.9}
+    - {x: 0.9, y: -0.9}
+    - {x: 0.9, y: 0.9}
+    - {x: -0.9, y: 0.9}
+  Anchors:
+  - Name: lamp
+    Position: {x: 0, y: 0, z: 5.64}
+  Path: []
+  TideMarks: []
+  Words: []
+  HasLight: 1
+  Light:
+    Emitters:
+    - lamp
+    - win
+    When: "o.lit, from the game\u2019s lamp rule (dusk to dawn; the office while
+      open)"
+  IsAnimated: 0
+  Animated:
+    Part: 
+    Input: 
+    Steps: 0
+    BakedAtDeg: 0
+    RigDir: 0
+    Headings: []
+  GameplayJson: "{\"schema\":\"hidden-harbours/nmc-set-piece@1\",\"generatedBy\":\"NmcSetPieces
+    1.4.0\",\"key\":\"harbourLight\",\"id\":\"structure.nmc_harbour_light\",\"name\":\"Harbour
+    light\",\"defType\":\"SetPieceDef\",\"scene\":\"keyscene.nmc_wharf\",\"units\":\"metres,
+    the piece\u2019s own frame: +x right, +y the show face, +z up from its ground
+    point (the pivot)\",\"bounds\":{\"x\":[-0.9,0.9],\"y\":[-0.9,0.9],\"z\":[0,5.88]},\"layer\":\"raised\",\"walk\":\"solid\",\"mount\":\"breakwater\",\"colliders\":[{\"type\":\"polygon\",\"blocks\":\"walk\",\"pts\":[[-0.9,-0.9],[0.9,-0.9],[0.9,0.9],[-0.9,0.9]]}],\"facings\":[{\"dir\":0,\"showFaces\":\"N\",\"bearingDeg\":0,\"cameraSees\":\"its
+    back\"},{\"dir\":1,\"showFaces\":\"NW\",\"bearingDeg\":315,\"cameraSees\":\"its
+    back\"},{\"dir\":2,\"showFaces\":\"W\",\"bearingDeg\":270,\"cameraSees\":\"the
+    show face, edge-on or at a diagonal\"},{\"dir\":3,\"showFaces\":\"SW\",\"bearingDeg\":225,\"cameraSees\":\"the
+    show face\"},{\"dir\":4,\"showFaces\":\"S\",\"bearingDeg\":180,\"cameraSees\":\"the
+    show face\"},{\"dir\":5,\"showFaces\":\"SE\",\"bearingDeg\":135,\"cameraSees\":\"the
+    show face\"},{\"dir\":6,\"showFaces\":\"E\",\"bearingDeg\":90,\"cameraSees\":\"the
+    show face, edge-on or at a diagonal\"},{\"dir\":7,\"showFaces\":\"NE\",\"bearingDeg\":45,\"cameraSees\":\"its
+    back\"}],\"cells\":[{\"dir\":0,\"w\":65,\"h\":178,\"pivot\":[32,156]},{\"dir\":1,\"w\":89,\"h\":189,\"pivot\":[44,159]},{\"dir\":2,\"w\":65,\"h\":178,\"pivot\":[32,156]},{\"dir\":3,\"w\":89,\"h\":189,\"pivot\":[44,159]},{\"dir\":4,\"w\":65,\"h\":178,\"pivot\":[32,156]},{\"dir\":5,\"w\":89,\"h\":189,\"pivot\":[44,159]},{\"dir\":6,\"w\":65,\"h\":178,\"pivot\":[32,156]},{\"dir\":7,\"w\":89,\"h\":189,\"pivot\":[44,159]}],\"anchors\":{\"lamp\":[0,0,5.64],\"colour\":\"green\",\"note\":\"flashes
+    are the game\u2019s: the lens emits with o.lit\",\"px\":{\"lamp\":[32,17.7]}},\"options\":{\"colour\":\"green\",\"height\":4.6},\"light\":{\"emitters\":[\"lamp\",\"win\"],\"when\":\"o.lit,
+    from the game\u2019s lamp rule (dusk to dawn; the office while open)\"},\"notes\":\"Stand
+    on the head block of a breakwater arm, the daymark to the approach. Red on the
+    east (starboard entering), green on the west.\"}"
+  State: 
+  Variants:
+  - Name: colour=red
+    BakedOptionsJson: '{"colour":"red","height":4.6}'
+    GameplayJson: "{\"schema\":\"hidden-harbours/nmc-set-piece@1\",\"generatedBy\":\"NmcSetPieces
+      1.4.0\",\"key\":\"harbourLight\",\"id\":\"structure.nmc_harbour_light\",\"name\":\"Harbour
+      light\",\"defType\":\"SetPieceDef\",\"scene\":\"keyscene.nmc_wharf\",\"units\":\"metres,
+      the piece\u2019s own frame: +x right, +y the show face, +z up from its ground
+      point (the pivot)\",\"bounds\":{\"x\":[-0.9,0.9],\"y\":[-0.9,0.9],\"z\":[0,5.88]},\"layer\":\"raised\",\"walk\":\"solid\",\"mount\":\"breakwater\",\"colliders\":[{\"type\":\"polygon\",\"blocks\":\"walk\",\"pts\":[[-0.9,-0.9],[0.9,-0.9],[0.9,0.9],[-0.9,0.9]]}],\"facings\":[{\"dir\":0,\"showFaces\":\"N\",\"bearingDeg\":0,\"cameraSees\":\"its
+      back\"},{\"dir\":1,\"showFaces\":\"NW\",\"bearingDeg\":315,\"cameraSees\":\"its
+      back\"},{\"dir\":2,\"showFaces\":\"W\",\"bearingDeg\":270,\"cameraSees\":\"the
+      show face, edge-on or at a diagonal\"},{\"dir\":3,\"showFaces\":\"SW\",\"bearingDeg\":225,\"cameraSees\":\"the
+      show face\"},{\"dir\":4,\"showFaces\":\"S\",\"bearingDeg\":180,\"cameraSees\":\"the
+      show face\"},{\"dir\":5,\"showFaces\":\"SE\",\"bearingDeg\":135,\"cameraSees\":\"the
+      show face\"},{\"dir\":6,\"showFaces\":\"E\",\"bearingDeg\":90,\"cameraSees\":\"the
+      show face, edge-on or at a diagonal\"},{\"dir\":7,\"showFaces\":\"NE\",\"bearingDeg\":45,\"cameraSees\":\"its
+      back\"}],\"cells\":[{\"dir\":0,\"w\":65,\"h\":178,\"pivot\":[32,156]},{\"dir\":1,\"w\":89,\"h\":189,\"pivot\":[44,159]},{\"dir\":2,\"w\":65,\"h\":178,\"pivot\":[32,156]},{\"dir\":3,\"w\":89,\"h\":189,\"pivot\":[44,159]},{\"dir\":4,\"w\":65,\"h\":178,\"pivot\":[32,156]},{\"dir\":5,\"w\":89,\"h\":189,\"pivot\":[44,159]},{\"dir\":6,\"w\":65,\"h\":178,\"pivot\":[32,156]},{\"dir\":7,\"w\":89,\"h\":189,\"pivot\":[44,159]}],\"anchors\":{\"lamp\":[0,0,5.64],\"colour\":\"red\",\"note\":\"flashes
+      are the game\u2019s: the lens emits with o.lit\",\"px\":{\"lamp\":[32,17.7]}},\"options\":{\"colour\":\"red\",\"height\":4.6},\"light\":{\"emitters\":[\"lamp\",\"win\"],\"when\":\"o.lit,
+      from the game\u2019s lamp rule (dusk to dawn; the office while open)\"},\"notes\":\"Stand
+      on the head block of a breakwater arm, the daymark to the approach. Red on
+      the east (starboard entering), green on the west.\"}"
+    BoundsMin: {x: -0.9, y: -0.9, z: 0}
+    BoundsMax: {x: 0.9, y: 0.9, z: 5.88}
+    Frames:
+    - Sprite: {fileID: -8477977289675992812, guid: 4b26349623be4c14fb708c00290027bb, type: 3}
+      RigDir: 0
+      ShowFaces: N
+      BearingDeg: 0
+      CameraSees: its back
+      NativeSize: {x: 65, y: 178}
+      NativePivot: {x: 32, y: 156}
+      Crop: {x: 3, y: 4}
+      Pivot: {x: 29, y: 152}
+    - Sprite: {fileID: -1602582645, guid: 4b26349623be4c14fb708c00290027bb, type: 3}
+      RigDir: 7
+      ShowFaces: NE
+      BearingDeg: 45
+      CameraSees: its back
+      NativeSize: {x: 89, y: 189}
+      NativePivot: {x: 44, y: 159}
+      Crop: {x: 3, y: 3}
+      Pivot: {x: 41, y: 156}
+    - Sprite: {fileID: -1891952045, guid: 4b26349623be4c14fb708c00290027bb, type: 3}
+      RigDir: 6
+      ShowFaces: E
+      BearingDeg: 90
+      CameraSees: the show face, edge-on or at a diagonal
+      NativeSize: {x: 65, y: 178}
+      NativePivot: {x: 32, y: 156}
+      Crop: {x: 3, y: 4}
+      Pivot: {x: 29, y: 152}
+    - Sprite: {fileID: 1799010516, guid: 4b26349623be4c14fb708c00290027bb, type: 3}
+      RigDir: 5
+      ShowFaces: SE
+      BearingDeg: 135
+      CameraSees: the show face
+      NativeSize: {x: 89, y: 189}
+      NativePivot: {x: 44, y: 159}
+      Crop: {x: 3, y: 3}
+      Pivot: {x: 41, y: 156}
+    - Sprite: {fileID: -369778491, guid: 4b26349623be4c14fb708c00290027bb, type: 3}
+      RigDir: 4
+      ShowFaces: S
+      BearingDeg: 180
+      CameraSees: the show face
+      NativeSize: {x: 65, y: 178}
+      NativePivot: {x: 32, y: 156}
+      Crop: {x: 3, y: 4}
+      Pivot: {x: 29, y: 152}
+    - Sprite: {fileID: -1465272032, guid: 4b26349623be4c14fb708c00290027bb, type: 3}
+      RigDir: 3
+      ShowFaces: SW
+      BearingDeg: 225
+      CameraSees: the show face
+      NativeSize: {x: 89, y: 189}
+      NativePivot: {x: 44, y: 159}
+      Crop: {x: 3, y: 3}
+      Pivot: {x: 41, y: 156}
+    - Sprite: {fileID: 203383817, guid: 4b26349623be4c14fb708c00290027bb, type: 3}
+      RigDir: 2
+      ShowFaces: W
+      BearingDeg: 270
+      CameraSees: the show face, edge-on or at a diagonal
+      NativeSize: {x: 65, y: 178}
+      NativePivot: {x: 32, y: 156}
+      Crop: {x: 3, y: 4}
+      Pivot: {x: 29, y: 152}
+    - Sprite: {fileID: 1411893433, guid: 4b26349623be4c14fb708c00290027bb, type: 3}
+      RigDir: 1
+      ShowFaces: NW
+      BearingDeg: 315
+      CameraSees: its back
+      NativeSize: {x: 89, y: 189}
+      NativePivot: {x: 44, y: 159}
+      Crop: {x: 3, y: 3}
+      Pivot: {x: 41, y: 156}
+    Anchors:
+    - Name: lamp
+      Position: {x: 0, y: 0, z: 5.64}
+    Colliders:
+    - Type: polygon
+      Blocks: walk
+      Points:
+      - {x: -0.9, y: -0.9}
+      - {x: 0.9, y: -0.9}
+      - {x: 0.9, y: 0.9}
+      - {x: -0.9, y: 0.9}
+  HasVendor: 0
+  Vendor:
+    Seller: 
+    At: {x: 0, y: 0, z: 0}

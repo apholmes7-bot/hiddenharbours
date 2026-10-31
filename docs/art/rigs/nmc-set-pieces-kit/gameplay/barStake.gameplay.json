@@ -1,0 +1,170 @@
+{
+ "schema": "hidden-harbours/nmc-set-piece@1",
+ "generatedBy": "NmcSetPieces 1.3.0",
+ "key": "barStake",
+ "id": "prop.nmc_bar_stake",
+ "name": "Bar stake",
+ "defType": "SetPieceDef",
+ "scene": "keyscene.nmc_landing",
+ "units": "metres, the piece’s own frame: +x right, +y the show face, +z up from its ground point (the pivot)",
+ "bounds": {
+  "x": [
+   -0.052,
+   0.052
+  ],
+  "y": [
+   -0.07,
+   0.06
+  ],
+  "z": [
+   0,
+   2.6
+  ]
+ },
+ "layer": "raised",
+ "walk": "solid",
+ "mount": "ground",
+ "colliders": [],
+ "facings": [
+  {
+   "dir": 0,
+   "showFaces": "N",
+   "bearingDeg": 0,
+   "cameraSees": "its back"
+  },
+  {
+   "dir": 1,
+   "showFaces": "NW",
+   "bearingDeg": 315,
+   "cameraSees": "its back"
+  },
+  {
+   "dir": 2,
+   "showFaces": "W",
+   "bearingDeg": 270,
+   "cameraSees": "the show face, edge-on or at a diagonal"
+  },
+  {
+   "dir": 3,
+   "showFaces": "SW",
+   "bearingDeg": 225,
+   "cameraSees": "the show face"
+  },
+  {
+   "dir": 4,
+   "showFaces": "S",
+   "bearingDeg": 180,
+   "cameraSees": "the show face"
+  },
+  {
+   "dir": 5,
+   "showFaces": "SE",
+   "bearingDeg": 135,
+   "cameraSees": "the show face"
+  },
+  {
+   "dir": 6,
+   "showFaces": "E",
+   "bearingDeg": 90,
+   "cameraSees": "the show face, edge-on or at a diagonal"
+  },
+  {
+   "dir": 7,
+   "showFaces": "NE",
+   "bearingDeg": 45,
+   "cameraSees": "its back"
+  }
+ ],
+ "cells": [
+  {
+   "dir": 0,
+   "w": 11,
+   "h": 83,
+   "pivot": [
+    5,
+    68
+   ]
+  },
+  {
+   "dir": 1,
+   "w": 12,
+   "h": 83,
+   "pivot": [
+    5,
+    68
+   ]
+  },
+  {
+   "dir": 2,
+   "w": 12,
+   "h": 83,
+   "pivot": [
+    5,
+    68
+   ]
+  },
+  {
+   "dir": 3,
+   "w": 12,
+   "h": 83,
+   "pivot": [
+    5,
+    68
+   ]
+  },
+  {
+   "dir": 4,
+   "w": 11,
+   "h": 83,
+   "pivot": [
+    5,
+    68
+   ]
+  },
+  {
+   "dir": 5,
+   "w": 12,
+   "h": 83,
+   "pivot": [
+    6,
+    68
+   ]
+  },
+  {
+   "dir": 6,
+   "w": 12,
+   "h": 83,
+   "pivot": [
+    6,
+    68
+   ]
+  },
+  {
+   "dir": 7,
+   "w": 12,
+   "h": 83,
+   "pivot": [
+    6,
+    68
+   ]
+  }
+ ],
+ "anchors": {
+  "top": [
+   0,
+   0,
+   2.6
+  ],
+  "px": {
+   "top": [
+    5,
+    4.3
+   ]
+  }
+ },
+ "options": {
+  "h": 2.6
+ },
+ "light": null,
+ "notes": "Stand them on the crossing’s line (path.nmc_bar_walk), one every 12 m."
+}

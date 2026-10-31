@@ -1,0 +1,350 @@
+fileFormatVersion: 2
+guid: e6032555d3734bf4aa54b5d4b441ca83
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -6796665665226769133
+    second: SetPiece_officeTrailer_0
+  - first:
+      213: -4757742368107779894
+    second: SetPiece_officeTrailer_1
+  - first:
+      213: -2371354831088340244
+    second: SetPiece_officeTrailer_2
+  - first:
+      213: 6610985566836315473
+    second: SetPiece_officeTrailer_3
+  - first:
+      213: -6817979763900817240
+    second: SetPiece_officeTrailer_4
+  - first:
+      213: 9071027653650605712
+    second: SetPiece_officeTrailer_5
+  - first:
+      213: 3354666432778931976
+    second: SetPiece_officeTrailer_6
+  - first:
+      213: -5294062766431596079
+    second: SetPiece_officeTrailer_7
+  - first:
+      213: 8445252907343416351
+    second: SetPiece_officeTrailer_8
+  - first:
+      213: 8606730732373957840
+    second: SetPiece_officeTrailer_9
+  - first:
+      213: -967112108451521298
+    second: SetPiece_officeTrailer_10
+  - first:
+      213: -5950434599858760865
+    second: SetPiece_officeTrailer_11
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 4096
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: SetPiece_officeTrailer_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 318
+        height: 271
+      alignment: 9
+      pivot: {x: 0.5754717, y: 0.53505534}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 31d701776946da1a0800000000000000
+      internalID: -6796665665226769133
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SetPiece_officeTrailer_1
+      rect:
+        serializedVersion: 2
+        x: 318
+        y: 0
+        width: 318
+        height: 271
+      alignment: 9
+      pivot: {x: 0.4119497, y: 0.3321033}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ac82c18168a19fdb0800000000000000
+      internalID: -4757742368107779894
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SetPiece_officeTrailer_2
+      rect:
+        serializedVersion: 2
+        x: 636
+        y: 0
+        width: 318
+        height: 271
+      alignment: 9
+      pivot: {x: 0.12264151, y: 0.34317344}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ce2b2985851471fd0800000000000000
+      internalID: -2371354831088340244
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SetPiece_officeTrailer_3
+      rect:
+        serializedVersion: 2
+        x: 954
+        y: 0
+        width: 318
+        height: 271
+      alignment: 9
+      pivot: {x: 0.38050315, y: 0.45756456}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1555386b850febb50800000000000000
+      internalID: 6610985566836315473
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SetPiece_officeTrailer_4
+      rect:
+        serializedVersion: 2
+        x: 1272
+        y: 0
+        width: 318
+        height: 271
+      alignment: 9
+      pivot: {x: 0.4245283, y: 0.63468635}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8a0e3e6278ba161a0800000000000000
+      internalID: -6817979763900817240
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SetPiece_officeTrailer_5
+      rect:
+        serializedVersion: 2
+        x: 1590
+        y: 0
+        width: 318
+        height: 271
+      alignment: 9
+      pivot: {x: 0.3899371, y: 0.4391144}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 096e6933793c2ed70800000000000000
+      internalID: 9071027653650605712
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SetPiece_officeTrailer_6
+      rect:
+        serializedVersion: 2
+        x: 1908
+        y: 0
+        width: 318
+        height: 271
+      alignment: 9
+      pivot: {x: 0.35220125, y: 0.4095941}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 80f07b9c85b2e8e20800000000000000
+      internalID: 3354666432778931976
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SetPiece_officeTrailer_7
+      rect:
+        serializedVersion: 2
+        x: 2226
+        y: 0
+        width: 318
+        height: 271
+      alignment: 9
+      pivot: {x: 0.49056605, y: 0.4391144}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1d1193c86f5b786b0800000000000000
+      internalID: -5294062766431596079
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 295a9ac1fe8dfcb46b8711355ce42d0f
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      SetPiece_officeTrailer_0: -6796665665226769133
+      SetPiece_officeTrailer_1: -4757742368107779894
+      SetPiece_officeTrailer_2: -2371354831088340244
+      SetPiece_officeTrailer_3: 6610985566836315473
+      SetPiece_officeTrailer_4: -6817979763900817240
+      SetPiece_officeTrailer_5: 9071027653650605712
+      SetPiece_officeTrailer_6: 3354666432778931976
+      SetPiece_officeTrailer_7: -5294062766431596079
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

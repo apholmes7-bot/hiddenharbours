@@ -1,0 +1,338 @@
+fileFormatVersion: 2
+guid: 0907857d2e480bf48864bf2481145ca0
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 6646014414446506648
+    second: SetPiece_restaurant_0
+  - first:
+      213: 5958747318043647652
+    second: SetPiece_restaurant_1
+  - first:
+      213: 2508791803644663903
+    second: SetPiece_restaurant_2
+  - first:
+      213: -4015991256204047607
+    second: SetPiece_restaurant_3
+  - first:
+      213: 7976332186442409923
+    second: SetPiece_restaurant_4
+  - first:
+      213: -1636665891158620980
+    second: SetPiece_restaurant_5
+  - first:
+      213: -4605766132231003593
+    second: SetPiece_restaurant_6
+  - first:
+      213: -1849982567470546776
+    second: SetPiece_restaurant_7
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 4096
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: SetPiece_restaurant_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 665
+        width: 883
+        height: 665
+      alignment: 9
+      pivot: {x: 0.3227633, y: 0.43458647}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 892b539d5e26b3c50800000000000000
+      internalID: 6646014414446506648
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SetPiece_restaurant_1
+      rect:
+        serializedVersion: 2
+        x: 883
+        y: 665
+        width: 883
+        height: 665
+      alignment: 9
+      pivot: {x: 0.34088334, y: 0.3879699}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4ae9d4e6d19b1b250800000000000000
+      internalID: 5958747318043647652
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SetPiece_restaurant_2
+      rect:
+        serializedVersion: 2
+        x: 1766
+        y: 665
+        width: 883
+        height: 665
+      alignment: 9
+      pivot: {x: 0.21177803, y: 0.49924812}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f58d6af6ad401d220800000000000000
+      internalID: 2508791803644663903
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SetPiece_restaurant_3
+      rect:
+        serializedVersion: 2
+        x: 2649
+        y: 665
+        width: 883
+        height: 665
+      alignment: 9
+      pivot: {x: 0.38278595, y: 0.57443607}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 90b02e8ea355448c0800000000000000
+      internalID: -4015991256204047607
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SetPiece_restaurant_4
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 883
+        height: 665
+      alignment: 9
+      pivot: {x: 0.42242354, y: 0.6766917}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3c72a67fcdf91be60800000000000000
+      internalID: 7976332186442409923
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SetPiece_restaurant_5
+      rect:
+        serializedVersion: 2
+        x: 883
+        y: 0
+        width: 883
+        height: 665
+      alignment: 9
+      pivot: {x: 0.6591166, y: 0.54586464}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cc40e7d1b056949e0800000000000000
+      internalID: -1636665891158620980
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SetPiece_restaurant_6
+      rect:
+        serializedVersion: 2
+        x: 1766
+        y: 0
+        width: 883
+        height: 665
+      alignment: 9
+      pivot: {x: 0.5186863, y: 0.49924812}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 732a8d9ea180510c0800000000000000
+      internalID: -4605766132231003593
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SetPiece_restaurant_7
+      rect:
+        serializedVersion: 2
+        x: 2649
+        y: 0
+        width: 883
+        height: 665
+      alignment: 9
+      pivot: {x: 0.56738394, y: 0.30827066}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8a0c04118aa8356e0800000000000000
+      internalID: -1849982567470546776
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 6aa823430d63b474fb5b6fd45f13d5fe
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      SetPiece_restaurant_0: 6646014414446506648
+      SetPiece_restaurant_1: 5958747318043647652
+      SetPiece_restaurant_2: 2508791803644663903
+      SetPiece_restaurant_3: -4015991256204047607
+      SetPiece_restaurant_4: 7976332186442409923
+      SetPiece_restaurant_5: -1636665891158620980
+      SetPiece_restaurant_6: -4605766132231003593
+      SetPiece_restaurant_7: -1849982567470546776
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

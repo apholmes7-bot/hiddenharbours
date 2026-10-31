@@ -1,0 +1,261 @@
+{
+ "schema": "hidden-harbours/nmc-set-piece@1",
+ "generatedBy": "NmcSetPieces 1.2.0",
+ "key": "chandlery",
+ "id": "structure.nmc_chandlery",
+ "name": "The chandlery (the rod vendor)",
+ "defType": "SetPieceDef",
+ "scene": "keyscene.nmc_town_bridge",
+ "units": "metres, the piece’s own frame: +x right, +y the show face, +z up from its ground point (the pivot)",
+ "bounds": {
+  "x": [
+   -4.745,
+   4.745
+  ],
+  "y": [
+   -3.85,
+   4.7
+  ],
+  "z": [
+   0,
+   7.2
+  ]
+ },
+ "layer": "raised",
+ "walk": "solid",
+ "mount": "ground",
+ "colliders": [
+  {
+   "type": "polygon",
+   "blocks": "walk",
+   "pts": [
+    [
+     -4.5,
+     -3.5
+    ],
+    [
+     4.5,
+     -3.5
+    ],
+    [
+     4.5,
+     3.5
+    ],
+    [
+     -4.5,
+     3.5
+    ]
+   ]
+  }
+ ],
+ "facings": [
+  {
+   "dir": 0,
+   "showFaces": "N",
+   "bearingDeg": 0,
+   "cameraSees": "its back"
+  },
+  {
+   "dir": 1,
+   "showFaces": "NW",
+   "bearingDeg": 315,
+   "cameraSees": "its back"
+  },
+  {
+   "dir": 2,
+   "showFaces": "W",
+   "bearingDeg": 270,
+   "cameraSees": "the show face, edge-on or at a diagonal"
+  },
+  {
+   "dir": 3,
+   "showFaces": "SW",
+   "bearingDeg": 225,
+   "cameraSees": "the show face"
+  },
+  {
+   "dir": 4,
+   "showFaces": "S",
+   "bearingDeg": 180,
+   "cameraSees": "the show face"
+  },
+  {
+   "dir": 5,
+   "showFaces": "SE",
+   "bearingDeg": 135,
+   "cameraSees": "the show face"
+  },
+  {
+   "dir": 6,
+   "showFaces": "E",
+   "bearingDeg": 90,
+   "cameraSees": "the show face, edge-on or at a diagonal"
+  },
+  {
+   "dir": 7,
+   "showFaces": "NE",
+   "bearingDeg": 45,
+   "cameraSees": "its back"
+  }
+ ],
+ "cells": [
+  {
+   "dir": 0,
+   "w": 311,
+   "h": 279,
+   "pivot": [
+    155,
+    195
+   ]
+  },
+  {
+   "dir": 1,
+   "w": 396,
+   "h": 378,
+   "pivot": [
+    198,
+    249
+   ]
+  },
+  {
+   "dir": 2,
+   "w": 281,
+   "h": 383,
+   "pivot": [
+    154,
+    278
+   ]
+  },
+  {
+   "dir": 3,
+   "w": 404,
+   "h": 378,
+   "pivot": [
+    205,
+    249
+   ]
+  },
+  {
+   "dir": 4,
+   "w": 311,
+   "h": 294,
+   "pivot": [
+    155,
+    195
+   ]
+  },
+  {
+   "dir": 5,
+   "w": 396,
+   "h": 378,
+   "pivot": [
+    198,
+    249
+   ]
+  },
+  {
+   "dir": 6,
+   "w": 281,
+   "h": 383,
+   "pivot": [
+    127,
+    278
+   ]
+  },
+  {
+   "dir": 7,
+   "w": 404,
+   "h": 378,
+   "pivot": [
+    198,
+    249
+   ]
+  }
+ ],
+ "anchors": {
+  "door": [
+   0,
+   4.7,
+   0
+  ],
+  "counter": [
+   0,
+   1.2,
+   0
+  ],
+  "words": [
+   {
+    "id": "words.nmc_chandlery",
+    "text": "CHANDLERY",
+    "corners": [
+     [
+      3.95,
+      3.584,
+      3.22
+     ],
+     [
+      -3.95,
+      3.584,
+      3.22
+     ],
+     [
+      -3.95,
+      3.584,
+      2.8
+     ],
+     [
+      3.95,
+      3.584,
+      2.8
+     ]
+    ],
+    "note": "the fascia over the windows; blank in pictures",
+    "cornersPx": [
+     [
+      28.6,
+      189.8
+     ],
+     [
+      281.4,
+      189.8
+     ],
+     [
+      281.4,
+      200.1
+     ],
+     [
+      28.6,
+      200.1
+     ]
+    ]
+   },
+   {
+    "id": "words.nmc_chandlery_sign",
+    "text": "",
+    "note": "the hanging sign; the owner’s to letter, blank in pictures"
+   }
+  ],
+  "px": {
+   "door": [
+    155,
+    291.7
+   ],
+   "counter": [
+    155,
+    219.7
+   ]
+  }
+ },
+ "options": {
+  "text": "CHANDLERY",
+  "lights": true
+ },
+ "light": {
+  "emitters": [
+   "lamp",
+   "win"
+  ],
+  "when": "o.lit, from the game’s lamp rule (dusk to dawn; the office while open)"
+ },
+ "notes": "Stand it with local +Y to Water Street (dir 4 on the street’s north side). The windows and the door lamp glow with o.lit while it is open or after dusk."
+}

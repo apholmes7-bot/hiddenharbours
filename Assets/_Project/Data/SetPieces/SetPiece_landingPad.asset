@@ -1,0 +1,141 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 01b51978faec4dbb8e54e23107a97ef5, type: 3}
+  m_Name: SetPiece_landingPad
+  m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.SetPieceDef
+  Id: prop.nmc_crane_pad
+  DisplayName: Crane landing pad
+  RigKey: landingPad
+  SceneId: keyscene.nmc_wharf
+  BakedOptionsJson: '{"size":2.4}'
+  Layer: floor
+  Walk: on
+  Mount: quay
+  BoundsMin: {x: -1.2, y: -1.2, z: 0}
+  BoundsMax: {x: 1.2, y: 1.2, z: 0.014}
+  Frames:
+  - Sprite: {fileID: 3760911225110122091, guid: 3304b46bc510aba4eb7c6904a157fd66, type: 3}
+    RigDir: 0
+    ShowFaces: N
+    BearingDeg: 0
+    CameraSees: its back
+    NativeSize: {x: 84, y: 57}
+    NativePivot: {x: 42, y: 29}
+    Crop: {x: 4, y: 4}
+    Pivot: {x: 38, y: 25}
+  - Sprite: {fileID: 1493794193767776602, guid: 3304b46bc510aba4eb7c6904a157fd66, type: 3}
+    RigDir: 7
+    ShowFaces: NE
+    BearingDeg: 45
+    CameraSees: its back
+    NativeSize: {x: 116, y: 78}
+    NativePivot: {x: 58, y: 39}
+    Crop: {x: 4, y: 4}
+    Pivot: {x: 54, y: 35}
+  - Sprite: {fileID: 6510138247376006034, guid: 3304b46bc510aba4eb7c6904a157fd66, type: 3}
+    RigDir: 6
+    ShowFaces: E
+    BearingDeg: 90
+    CameraSees: the show face, edge-on or at a diagonal
+    NativeSize: {x: 84, y: 57}
+    NativePivot: {x: 42, y: 29}
+    Crop: {x: 4, y: 4}
+    Pivot: {x: 38, y: 25}
+  - Sprite: {fileID: 3268342897273899946, guid: 3304b46bc510aba4eb7c6904a157fd66, type: 3}
+    RigDir: 5
+    ShowFaces: SE
+    BearingDeg: 135
+    CameraSees: the show face
+    NativeSize: {x: 116, y: 78}
+    NativePivot: {x: 58, y: 39}
+    Crop: {x: 4, y: 4}
+    Pivot: {x: 54, y: 35}
+  - Sprite: {fileID: -812701539003837419, guid: 3304b46bc510aba4eb7c6904a157fd66, type: 3}
+    RigDir: 4
+    ShowFaces: S
+    BearingDeg: 180
+    CameraSees: the show face
+    NativeSize: {x: 84, y: 57}
+    NativePivot: {x: 42, y: 29}
+    Crop: {x: 4, y: 4}
+    Pivot: {x: 38, y: 25}
+  - Sprite: {fileID: 749129858, guid: 3304b46bc510aba4eb7c6904a157fd66, type: 3}
+    RigDir: 3
+    ShowFaces: SW
+    BearingDeg: 225
+    CameraSees: the show face
+    NativeSize: {x: 116, y: 78}
+    NativePivot: {x: 58, y: 39}
+    Crop: {x: 4, y: 4}
+    Pivot: {x: 54, y: 35}
+  - Sprite: {fileID: -608796244, guid: 3304b46bc510aba4eb7c6904a157fd66, type: 3}
+    RigDir: 2
+    ShowFaces: W
+    BearingDeg: 270
+    CameraSees: the show face, edge-on or at a diagonal
+    NativeSize: {x: 84, y: 57}
+    NativePivot: {x: 42, y: 29}
+    Crop: {x: 4, y: 4}
+    Pivot: {x: 38, y: 25}
+  - Sprite: {fileID: -1387888087, guid: 3304b46bc510aba4eb7c6904a157fd66, type: 3}
+    RigDir: 1
+    ShowFaces: NW
+    BearingDeg: 315
+    CameraSees: its back
+    NativeSize: {x: 116, y: 78}
+    NativePivot: {x: 58, y: 39}
+    Crop: {x: 4, y: 4}
+    Pivot: {x: 54, y: 35}
+  CellSize: {x: 108, y: 69}
+  PixelsPerMetre: 32
+  ElevationDeg: 40
+  BakedLit: 0
+  Colliders: []
+  Anchors:
+  - Name: seat
+    Position: {x: 0, y: 0, z: 0.014}
+  Path: []
+  TideMarks: []
+  Words: []
+  HasLight: 0
+  Light:
+    Emitters: []
+    When: 
+  IsAnimated: 0
+  Animated:
+    Part: 
+    Input: 
+    Steps: 0
+    BakedAtDeg: 0
+    RigDir: 0
+    Headings: []
+  GameplayJson: "{\"schema\":\"hidden-harbours/nmc-set-piece@1\",\"generatedBy\":\"NmcSetPieces
+    1.4.0\",\"key\":\"landingPad\",\"id\":\"prop.nmc_crane_pad\",\"name\":\"Crane
+    landing pad\",\"defType\":\"SetPieceDef\",\"scene\":\"keyscene.nmc_wharf\",\"units\":\"metres,
+    the piece\u2019s own frame: +x right, +y the show face, +z up from its ground
+    point (the pivot)\",\"bounds\":{\"x\":[-1.2,1.2],\"y\":[-1.2,1.2],\"z\":[0,0.014]},\"layer\":\"floor\",\"walk\":\"on\",\"mount\":\"quay\",\"colliders\":[],\"facings\":[{\"dir\":0,\"showFaces\":\"N\",\"bearingDeg\":0,\"cameraSees\":\"its
+    back\"},{\"dir\":1,\"showFaces\":\"NW\",\"bearingDeg\":315,\"cameraSees\":\"its
+    back\"},{\"dir\":2,\"showFaces\":\"W\",\"bearingDeg\":270,\"cameraSees\":\"the
+    show face, edge-on or at a diagonal\"},{\"dir\":3,\"showFaces\":\"SW\",\"bearingDeg\":225,\"cameraSees\":\"the
+    show face\"},{\"dir\":4,\"showFaces\":\"S\",\"bearingDeg\":180,\"cameraSees\":\"the
+    show face\"},{\"dir\":5,\"showFaces\":\"SE\",\"bearingDeg\":135,\"cameraSees\":\"the
+    show face\"},{\"dir\":6,\"showFaces\":\"E\",\"bearingDeg\":90,\"cameraSees\":\"the
+    show face, edge-on or at a diagonal\"},{\"dir\":7,\"showFaces\":\"NE\",\"bearingDeg\":45,\"cameraSees\":\"its
+    back\"}],\"cells\":[{\"dir\":0,\"w\":84,\"h\":57,\"pivot\":[42,29]},{\"dir\":1,\"w\":116,\"h\":78,\"pivot\":[58,39]},{\"dir\":2,\"w\":84,\"h\":57,\"pivot\":[42,29]},{\"dir\":3,\"w\":116,\"h\":78,\"pivot\":[58,39]},{\"dir\":4,\"w\":84,\"h\":57,\"pivot\":[42,29]},{\"dir\":5,\"w\":116,\"h\":78,\"pivot\":[58,39]},{\"dir\":6,\"w\":84,\"h\":57,\"pivot\":[42,29]},{\"dir\":7,\"w\":116,\"h\":78,\"pivot\":[58,39]}],\"anchors\":{\"seat\":[0,0,0.014],\"size\":[2.4,2.4],\"px\":{\"seat\":[42,28.7]}},\"options\":{\"size\":2.4},\"light\":null,\"notes\":\"Paint
+    it on the apron deck inside the crane\u2019s reach, behind the berth. anchors().seat
+    is where a load sits.\"}"
+  State: 
+  Variants: []
+  HasVendor: 0
+  Vendor:
+    Seller: 
+    At: {x: 0, y: 0, z: 0}

@@ -1,0 +1,606 @@
+fileFormatVersion: 2
+guid: 6522d2a3656fcfe439751b546974f5a8
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 4866143937298212789
+    second: SetPiece_wharfCrane_0
+  - first:
+      213: 6120902613053137032
+    second: SetPiece_wharfCrane_1
+  - first:
+      213: 8025658101148481129
+    second: SetPiece_wharfCrane_2
+  - first:
+      213: 3238437148871812752
+    second: SetPiece_wharfCrane_3
+  - first:
+      213: -1975372223206681766
+    second: SetPiece_wharfCrane_4
+  - first:
+      213: -908511981303499531
+    second: SetPiece_wharfCrane_5
+  - first:
+      213: -429901836773939925
+    second: SetPiece_wharfCrane_6
+  - first:
+      213: 866746115909793
+    second: SetPiece_wharfCrane_7
+  - first:
+      213: -2770231183736753401
+    second: SetPiece_wharfCrane_8
+  - first:
+      213: 1568662157137264514
+    second: SetPiece_wharfCrane_9
+  - first:
+      213: 6113755184743610617
+    second: SetPiece_wharfCrane_10
+  - first:
+      213: -2579290319615113076
+    second: SetPiece_wharfCrane_11
+  - first:
+      213: -1810440473766360337
+    second: SetPiece_wharfCrane_12
+  - first:
+      213: 2193237558626355820
+    second: SetPiece_wharfCrane_13
+  - first:
+      213: 4892962539272451197
+    second: SetPiece_wharfCrane_14
+  - first:
+      213: -1609286690582250610
+    second: SetPiece_wharfCrane_15
+  - first:
+      213: 266129702236847441
+    second: SetPiece_wharfCrane_16
+  - first:
+      213: 3848024330303119754
+    second: SetPiece_wharfCrane_17
+  - first:
+      213: -9034338067092488890
+    second: SetPiece_wharfCrane_18
+  - first:
+      213: -5750396236459581088
+    second: SetPiece_wharfCrane_19
+  - first:
+      213: -8461638989678704412
+    second: SetPiece_wharfCrane_20
+  - first:
+      213: 1327337478901487848
+    second: SetPiece_wharfCrane_21
+  - first:
+      213: 8430596443208258562
+    second: SetPiece_wharfCrane_22
+  - first:
+      213: -6834614814233369099
+    second: SetPiece_wharfCrane_23
+  - first:
+      213: -3734479310367950714
+    second: SetPiece_wharfCrane_24
+  - first:
+      213: -2502368150185979352
+    second: SetPiece_wharfCrane_25
+  - first:
+      213: -713116150757674567
+    second: SetPiece_wharfCrane_26
+  - first:
+      213: 2435018479907728418
+    second: SetPiece_wharfCrane_27
+  - first:
+      213: -8648575928451073489
+    second: SetPiece_wharfCrane_28
+  - first:
+      213: 2968726024566506111
+    second: SetPiece_wharfCrane_29
+  - first:
+      213: -7394999214420503078
+    second: SetPiece_wharfCrane_30
+  - first:
+      213: 4806689737272156770
+    second: SetPiece_wharfCrane_31
+  - first:
+      213: 8097652255302660837
+    second: SetPiece_wharfCrane_32
+  - first:
+      213: -4243365401323571437
+    second: SetPiece_wharfCrane_33
+  - first:
+      213: 5521661623194670341
+    second: SetPiece_wharfCrane_34
+  - first:
+      213: 3602267500725977244
+    second: SetPiece_wharfCrane_35
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 4096
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: SetPiece_wharfCrane_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 228
+        height: 301
+      alignment: 9
+      pivot: {x: 0.14473684, y: 0.24584718}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5b7a4980124088340800000000000000
+      internalID: 4866143937298212789
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SetPiece_wharfCrane_1
+      rect:
+        serializedVersion: 2
+        x: 228
+        y: 0
+        width: 228
+        height: 301
+      alignment: 9
+      pivot: {x: 0.20175439, y: 0.4651163}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 880eac32f70d1f450800000000000000
+      internalID: 6120902613053137032
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SetPiece_wharfCrane_2
+      rect:
+        serializedVersion: 2
+        x: 456
+        y: 0
+        width: 228
+        height: 301
+      alignment: 9
+      pivot: {x: 0.18859649, y: 0.5481728}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 966f0bf658dd06f60800000000000000
+      internalID: 8025658101148481129
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SetPiece_wharfCrane_3
+      rect:
+        serializedVersion: 2
+        x: 684
+        y: 0
+        width: 228
+        height: 301
+      alignment: 9
+      pivot: {x: 0.20175439, y: 0.5913621}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 096eeedcd6d31fc20800000000000000
+      internalID: 3238437148871812752
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SetPiece_wharfCrane_4
+      rect:
+        serializedVersion: 2
+        x: 912
+        y: 0
+        width: 228
+        height: 301
+      alignment: 9
+      pivot: {x: 0.44298247, y: 0.58471763}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a539790dd611694e0800000000000000
+      internalID: -1975372223206681766
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SetPiece_wharfCrane_5
+      rect:
+        serializedVersion: 2
+        x: 1140
+        y: 0
+        width: 228
+        height: 301
+      alignment: 9
+      pivot: {x: 0.7982456, y: 0.53488374}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5f4f730aa215463f0800000000000000
+      internalID: -908511981303499531
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SetPiece_wharfCrane_6
+      rect:
+        serializedVersion: 2
+        x: 1368
+        y: 0
+        width: 228
+        height: 301
+      alignment: 9
+      pivot: {x: 0.75438595, y: 0.4053156}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b252dc2ae8ea80af0800000000000000
+      internalID: -429901836773939925
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SetPiece_wharfCrane_7
+      rect:
+        serializedVersion: 2
+        x: 1596
+        y: 0
+        width: 228
+        height: 301
+      alignment: 9
+      pivot: {x: 0.32017544, y: 0.2192691}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1a8695e0d44130000800000000000000
+      internalID: 866746115909793
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SetPiece_wharfCrane_8
+      rect:
+        serializedVersion: 2
+        x: 1824
+        y: 0
+        width: 228
+        height: 301
+      alignment: 9
+      pivot: {x: 0.14473684, y: 0.43521595}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 70339ab6a692e89d0800000000000000
+      internalID: -2770231183736753401
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SetPiece_wharfCrane_9
+      rect:
+        serializedVersion: 2
+        x: 2052
+        y: 0
+        width: 228
+        height: 301
+      alignment: 9
+      pivot: {x: 0.20175439, y: 0.44850498}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 28fb3c8bbe105c510800000000000000
+      internalID: 1568662157137264514
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SetPiece_wharfCrane_10
+      rect:
+        serializedVersion: 2
+        x: 2280
+        y: 0
+        width: 228
+        height: 301
+      alignment: 9
+      pivot: {x: 0.18859649, y: 0.5016611}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9f8785ec2fb68d450800000000000000
+      internalID: 6113755184743610617
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SetPiece_wharfCrane_11
+      rect:
+        serializedVersion: 2
+        x: 2508
+        y: 0
+        width: 228
+        height: 301
+      alignment: 9
+      pivot: {x: 0.20175439, y: 0.5415282}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c88ccb6be15843cd0800000000000000
+      internalID: -2579290319615113076
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SetPiece_wharfCrane_12
+      rect:
+        serializedVersion: 2
+        x: 2736
+        y: 0
+        width: 228
+        height: 301
+      alignment: 9
+      pivot: {x: 0.14473684, y: 0.56478405}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fea8a223bf500e6e0800000000000000
+      internalID: -1810440473766360337
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SetPiece_wharfCrane_13
+      rect:
+        serializedVersion: 2
+        x: 2964
+        y: 0
+        width: 228
+        height: 301
+      alignment: 9
+      pivot: {x: 0.20175439, y: 0.5415282}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c6a08f570f1ff6e10800000000000000
+      internalID: 2193237558626355820
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SetPiece_wharfCrane_14
+      rect:
+        serializedVersion: 2
+        x: 3192
+        y: 0
+        width: 228
+        height: 301
+      alignment: 9
+      pivot: {x: 0.17105263, y: 0.5016611}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d74b0a4618b47e340800000000000000
+      internalID: 4892962539272451197
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SetPiece_wharfCrane_15
+      rect:
+        serializedVersion: 2
+        x: 3420
+        y: 0
+        width: 228
+        height: 301
+      alignment: 9
+      pivot: {x: 0.20175439, y: 0.44850498}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e8bb412084aaaa9e0800000000000000
+      internalID: -1609286690582250610
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: c117880bfec4d6f4d9a28e80689f5a8d
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      SetPiece_wharfCrane_0: 4866143937298212789
+      SetPiece_wharfCrane_1: 6120902613053137032
+      SetPiece_wharfCrane_10: 6113755184743610617
+      SetPiece_wharfCrane_11: -2579290319615113076
+      SetPiece_wharfCrane_12: -1810440473766360337
+      SetPiece_wharfCrane_13: 2193237558626355820
+      SetPiece_wharfCrane_14: 4892962539272451197
+      SetPiece_wharfCrane_15: -1609286690582250610
+      SetPiece_wharfCrane_2: 8025658101148481129
+      SetPiece_wharfCrane_3: 3238437148871812752
+      SetPiece_wharfCrane_4: -1975372223206681766
+      SetPiece_wharfCrane_5: -908511981303499531
+      SetPiece_wharfCrane_6: -429901836773939925
+      SetPiece_wharfCrane_7: 866746115909793
+      SetPiece_wharfCrane_8: -2770231183736753401
+      SetPiece_wharfCrane_9: 1568662157137264514
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
