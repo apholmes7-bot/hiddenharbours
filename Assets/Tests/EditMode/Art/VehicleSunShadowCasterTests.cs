@@ -110,7 +110,9 @@ namespace HiddenHarbours.Tests.Art.EditMode
             var before = new MaterialPropertyBlock(); sun.ShadowRenderer.GetPropertyBlock(before);
             var proxy = sun.Proxy;
             Assert.That(lamp.TryGetLampShadowCaster(out var footBefore), Is.True);
-            Install(Truck, out _);
+            Install(Truck, out var vehicle);
+            Assert.That(vehicle.HullId, Is.Not.EqualTo(boat.GetComponent<IsoFacetHullRenderer>().HullId),
+                "An isolated boat and vehicle receive different facet ids.");
             sun.Tick();
             var after = new MaterialPropertyBlock(); sun.ShadowRenderer.GetPropertyBlock(after);
             Assert.That(boat.GetComponent<HullSunShadowCaster>(), Is.SameAs(sun));
