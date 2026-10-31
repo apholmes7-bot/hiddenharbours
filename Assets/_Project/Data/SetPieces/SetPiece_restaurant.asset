@@ -1,0 +1,201 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 01b51978faec4dbb8e54e23107a97ef5, type: 3}
+  m_Name: SetPiece_restaurant
+  m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.SetPieceDef
+  Id: structure.nmc_restaurant
+  DisplayName: The restaurant
+  RigKey: restaurant
+  SceneId: keyscene.nmc_wharf
+  BakedOptionsJson: '{"text":"RESTAURANT","paint":"butter","lights":true,"deck":true,"patio":5.4}'
+  Layer: raised
+  Walk: solid
+  Mount: ground
+  BoundsMin: {x: -8.9, y: -5.85, z: 0}
+  BoundsMax: {x: 11.67, y: 14.32, z: 6.947}
+  Frames:
+  - Sprite: {fileID: 6646014414446506648, guid: 0907857d2e480bf48864bf2481145ca0, type: 3}
+    RigDir: 0
+    ShowFaces: N
+    BearingDeg: 0
+    CameraSees: its back
+    NativeSize: {x: 666, y: 503}
+    NativePivot: {x: 288, y: 379}
+    Crop: {x: 3, y: 3}
+    Pivot: {x: 285, y: 376}
+  - Sprite: {fileID: 5958747318043647652, guid: 0907857d2e480bf48864bf2481145ca0, type: 3}
+    RigDir: 7
+    ShowFaces: NE
+    BearingDeg: 45
+    CameraSees: its back
+    NativeSize: {x: 890, y: 639}
+    NativePivot: {x: 304, y: 411}
+    Crop: {x: 3, y: 4}
+    Pivot: {x: 301, y: 407}
+  - Sprite: {fileID: 2508791803644663903, guid: 0907857d2e480bf48864bf2481145ca0, type: 3}
+    RigDir: 6
+    ShowFaces: E
+    BearingDeg: 90
+    CameraSees: the show face, edge-on or at a diagonal
+    NativeSize: {x: 653, y: 588}
+    NativePivot: {x: 191, y: 336}
+    Crop: {x: 4, y: 3}
+    Pivot: {x: 187, y: 333}
+  - Sprite: {fileID: -4015991256204047607, guid: 0907857d2e480bf48864bf2481145ca0, type: 3}
+    RigDir: 5
+    ShowFaces: SE
+    BearingDeg: 135
+    CameraSees: the show face
+    NativeSize: {x: 847, y: 672}
+    NativePivot: {x: 342, y: 286}
+    Crop: {x: 4, y: 3}
+    Pivot: {x: 338, y: 283}
+  - Sprite: {fileID: 7976332186442409923, guid: 0907857d2e480bf48864bf2481145ca0, type: 3}
+    RigDir: 4
+    ShowFaces: S
+    BearingDeg: 180
+    CameraSees: the show face
+    NativeSize: {x: 666, y: 519}
+    NativePivot: {x: 377, y: 218}
+    Crop: {x: 4, y: 3}
+    Pivot: {x: 373, y: 215}
+  - Sprite: {fileID: -1636665891158620980, guid: 0907857d2e480bf48864bf2481145ca0, type: 3}
+    RigDir: 3
+    ShowFaces: SW
+    BearingDeg: 225
+    CameraSees: the show face
+    NativeSize: {x: 890, y: 639}
+    NativePivot: {x: 586, y: 306}
+    Crop: {x: 4, y: 4}
+    Pivot: {x: 582, y: 302}
+  - Sprite: {fileID: -4605766132231003593, guid: 0907857d2e480bf48864bf2481145ca0, type: 3}
+    RigDir: 2
+    ShowFaces: W
+    BearingDeg: 270
+    CameraSees: the show face, edge-on or at a diagonal
+    NativeSize: {x: 653, y: 523}
+    NativePivot: {x: 462, y: 336}
+    Crop: {x: 4, y: 3}
+    Pivot: {x: 458, y: 333}
+  - Sprite: {fileID: -1849982567470546776, guid: 0907857d2e480bf48864bf2481145ca0, type: 3}
+    RigDir: 1
+    ShowFaces: NW
+    BearingDeg: 315
+    CameraSees: its back
+    NativeSize: {x: 847, y: 658}
+    NativePivot: {x: 504, y: 463}
+    Crop: {x: 3, y: 3}
+    Pivot: {x: 501, y: 460}
+  CellSize: {x: 883, y: 665}
+  PixelsPerMetre: 32
+  ElevationDeg: 40
+  BakedLit: 0
+  Colliders:
+  - Type: polygon
+    Blocks: walk
+    Points:
+    - {x: -8, y: -4.5}
+    - {x: 8, y: -4.5}
+    - {x: 8, y: 4.5}
+    - {x: -8, y: 4.5}
+  - Type: polygon
+    Blocks: walk
+    Points:
+    - {x: -8, y: 4.5}
+    - {x: 11.6, y: 4.5}
+    - {x: 11.6, y: 14}
+    - {x: -8, y: 14}
+  - Type: polygon
+    Blocks: walk
+    Points:
+    - {x: 8, y: -3.2}
+    - {x: 11.6, y: -3.2}
+    - {x: 11.6, y: 4.5}
+    - {x: 8, y: 4.5}
+  Anchors:
+  - Name: deckDoor
+    Position: {x: 7.2, y: 5.1, z: 0.55}
+  - Name: deckSteps
+    Position: {x: 9.3, y: -4.4, z: 0}
+  - Name: door
+    Position: {x: -0.45, y: -6.1, z: 0}
+  - Name: takeout
+    Position: {x: 3.45, y: -5.4, z: 0}
+  Path: []
+  TideMarks: []
+  Words:
+  - Id: words.nmc_restaurant
+    BodyId: 
+    Corners:
+    - {x: -3.6, y: -5.064, z: 3.1}
+    - {x: 3.6, y: -5.064, z: 3.1}
+    - {x: 3.6, y: -5.064, z: 3.8}
+    - {x: -3.6, y: -5.064, z: 3.8}
+    HasPoint: 0
+    Point: {x: 0, y: 0, z: 0}
+    Size: 0
+    Bind: 
+    Format: []
+  - Id: words.nmc_restaurant_menu
+    BodyId: 
+    Corners:
+    - {x: 5.15, y: -4.544, z: 1.15}
+    - {x: 6.35, y: -4.544, z: 1.15}
+    - {x: 6.35, y: -4.544, z: 2.15}
+    - {x: 5.15, y: -4.544, z: 2.15}
+    HasPoint: 0
+    Point: {x: 0, y: 0, z: 0}
+    Size: 0
+    Bind: 
+    Format: []
+  HasLight: 1
+  Light:
+    Emitters:
+    - lamp
+    - win
+    When: "o.lit, from the game\u2019s lamp rule (dusk to dawn; the office while
+      open)"
+  IsAnimated: 0
+  Animated:
+    Part: 
+    Input: 
+    Steps: 0
+    BakedAtDeg: 0
+    RigDir: 0
+    Headings: []
+  GameplayJson: "{\"schema\":\"hidden-harbours/nmc-set-piece@1\",\"generatedBy\":\"NmcSetPieces
+    1.4.0\",\"key\":\"restaurant\",\"id\":\"structure.nmc_restaurant\",\"name\":\"The
+    restaurant\",\"defType\":\"SetPieceDef\",\"scene\":\"keyscene.nmc_wharf\",\"units\":\"metres,
+    the piece\u2019s own frame: +x right, +y the show face, +z up from its ground
+    point (the pivot)\",\"bounds\":{\"x\":[-8.9,11.67],\"y\":[-5.85,14.32],\"z\":[0,6.947]},\"layer\":\"raised\",\"walk\":\"solid\",\"mount\":\"ground\",\"colliders\":[{\"type\":\"polygon\",\"blocks\":\"walk\",\"pts\":[[-8,-4.5],[8,-4.5],[8,4.5],[-8,4.5]]},{\"type\":\"polygon\",\"blocks\":\"walk\",\"pts\":[[-8,4.5],[11.6,4.5],[11.6,14],[-8,14]]},{\"type\":\"polygon\",\"blocks\":\"walk\",\"pts\":[[8,-3.2],[11.6,-3.2],[11.6,4.5],[8,4.5]]}],\"facings\":[{\"dir\":0,\"showFaces\":\"N\",\"bearingDeg\":0,\"cameraSees\":\"its
+    back\"},{\"dir\":1,\"showFaces\":\"NW\",\"bearingDeg\":315,\"cameraSees\":\"its
+    back\"},{\"dir\":2,\"showFaces\":\"W\",\"bearingDeg\":270,\"cameraSees\":\"the
+    show face, edge-on or at a diagonal\"},{\"dir\":3,\"showFaces\":\"SW\",\"bearingDeg\":225,\"cameraSees\":\"the
+    show face\"},{\"dir\":4,\"showFaces\":\"S\",\"bearingDeg\":180,\"cameraSees\":\"the
+    show face\"},{\"dir\":5,\"showFaces\":\"SE\",\"bearingDeg\":135,\"cameraSees\":\"the
+    show face\"},{\"dir\":6,\"showFaces\":\"E\",\"bearingDeg\":90,\"cameraSees\":\"the
+    show face, edge-on or at a diagonal\"},{\"dir\":7,\"showFaces\":\"NE\",\"bearingDeg\":45,\"cameraSees\":\"its
+    back\"}],\"cells\":[{\"dir\":0,\"w\":666,\"h\":503,\"pivot\":[288,379]},{\"dir\":1,\"w\":847,\"h\":658,\"pivot\":[504,463]},{\"dir\":2,\"w\":653,\"h\":523,\"pivot\":[462,336]},{\"dir\":3,\"w\":890,\"h\":639,\"pivot\":[586,306]},{\"dir\":4,\"w\":666,\"h\":519,\"pivot\":[377,218]},{\"dir\":5,\"w\":847,\"h\":672,\"pivot\":[342,286]},{\"dir\":6,\"w\":653,\"h\":588,\"pivot\":[191,336]},{\"dir\":7,\"w\":890,\"h\":639,\"pivot\":[304,411]}],\"anchors\":{\"door\":[-0.45,-6.1,0],\"takeout\":[3.45,-5.4,0],\"deckDoor\":[7.2,5.1,0.55],\"deckSteps\":[9.3,-4.4,0],\"deckZ\":0.55,\"patio\":{\"box\":[-8,11.6,8.6,14],\"z\":0.55,\"tables\":8,\"seats\":32,\"umbrellas\":8,\"note\":\"the
+    rear patio over the water: the deck extended north\"},\"words\":[{\"id\":\"words.nmc_restaurant\",\"text\":\"RESTAURANT\",\"corners\":[[-3.6,-5.064,3.1],[3.6,-5.064,3.1],[3.6,-5.064,3.8],[-3.6,-5.064,3.8]],\"note\":\"the
+    name board over the door; the owner names the place\",\"cornersPx\":[[492.2,37.8],[261.8,37.8],[261.8,20.7],[492.2,20.7]]},{\"id\":\"words.nmc_restaurant_menu\",\"text\":\"CHOWDER
+    \xB7 FISH & CHIPS \xB7 LOBSTER ROLLS\",\"corners\":[[5.15,-4.544,1.15],[6.35,-4.544,1.15],[6.35,-4.544,2.15],[5.15,-4.544,2.15]],\"note\":\"the
+    takeout\u2019s chalk menu; the game may bind it to the day\u2019s catch\",\"cornersPx\":[[212.2,96.3],[173.8,96.3],[173.8,71.8],[212.2,71.8]]}],\"px\":{\"door\":[391.4,92.5],\"takeout\":[266.6,106.9],\"deckDoor\":[146.6,309.4],\"deckSteps\":[79.4,127.5]}},\"options\":{\"text\":\"RESTAURANT\",\"paint\":\"butter\",\"lights\":true,\"deck\":true,\"patio\":5.4},\"light\":{\"emitters\":[\"lamp\",\"win\"],\"when\":\"o.lit,
+    from the game\u2019s lamp rule (dusk to dawn; the office while open)\"},\"notes\":\"Stand
+    it with local +Y to the creek (dir 0 on the north row), so the camera sees the
+    yard side: the door, the takeout, the name board, and the deck round the east
+    end. Windows, the porch lamp, the name lamps and the deck lights glow with o.lit.\"}"
+  State: 
+  Variants: []
+  HasVendor: 0
+  Vendor:
+    Seller: 
+    At: {x: 0, y: 0, z: 0}

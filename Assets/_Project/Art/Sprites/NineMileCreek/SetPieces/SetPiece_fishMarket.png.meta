@@ -1,0 +1,341 @@
+fileFormatVersion: 2
+guid: a8a40e8eec7201b4785a85920cfb38db
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -4591705877891032949
+    second: SetPiece_fishMarket_0
+  - first:
+      213: 3179572329863835231
+    second: SetPiece_fishMarket_1
+  - first:
+      213: 1973998425302582640
+    second: SetPiece_fishMarket_2
+  - first:
+      213: -6714638436102220408
+    second: SetPiece_fishMarket_3
+  - first:
+      213: 1739307512216780055
+    second: SetPiece_fishMarket_4
+  - first:
+      213: -1835839853461344674
+    second: SetPiece_fishMarket_5
+  - first:
+      213: -499465103205842906
+    second: SetPiece_fishMarket_6
+  - first:
+      213: -4899702527935131280
+    second: SetPiece_fishMarket_7
+  - first:
+      213: 1531060195614814669
+    second: SetPiece_fishMarket_8
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 4096
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: SetPiece_fishMarket_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 294
+        height: 266
+      alignment: 9
+      pivot: {x: 0.48979592, y: 0.5413534}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b885b3bf4dbf640c0800000000000000
+      internalID: -4591705877891032949
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SetPiece_fishMarket_1
+      rect:
+        serializedVersion: 2
+        x: 294
+        y: 0
+        width: 294
+        height: 266
+      alignment: 9
+      pivot: {x: 0.4931973, y: 0.42105263}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f5ee13b103c102c20800000000000000
+      internalID: 3179572329863835231
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SetPiece_fishMarket_2
+      rect:
+        serializedVersion: 2
+        x: 588
+        y: 0
+        width: 294
+        height: 266
+      alignment: 9
+      pivot: {x: 0.3197279, y: 0.34586465}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 075475feb1d056b10800000000000000
+      internalID: 1973998425302582640
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SetPiece_fishMarket_3
+      rect:
+        serializedVersion: 2
+        x: 882
+        y: 0
+        width: 294
+        height: 266
+      alignment: 9
+      pivot: {x: 0.4931973, y: 0.42105263}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 88551f40befc0d2a0800000000000000
+      internalID: -6714638436102220408
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SetPiece_fishMarket_4
+      rect:
+        serializedVersion: 2
+        x: 1176
+        y: 0
+        width: 294
+        height: 266
+      alignment: 9
+      pivot: {x: 0.37755102, y: 0.5413534}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 71d79d497f2432810800000000000000
+      internalID: 1739307512216780055
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SetPiece_fishMarket_5
+      rect:
+        serializedVersion: 2
+        x: 1470
+        y: 0
+        width: 294
+        height: 266
+      alignment: 9
+      pivot: {x: 0.50680274, y: 0.42105263}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e5e6ee54169c586e0800000000000000
+      internalID: -1835839853461344674
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SetPiece_fishMarket_6
+      rect:
+        serializedVersion: 2
+        x: 1764
+        y: 0
+        width: 294
+        height: 266
+      alignment: 9
+      pivot: {x: 0.39455783, y: 0.34586465}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 62046b9822b8119f0800000000000000
+      internalID: -499465103205842906
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SetPiece_fishMarket_7
+      rect:
+        serializedVersion: 2
+        x: 2058
+        y: 0
+        width: 294
+        height: 266
+      alignment: 9
+      pivot: {x: 0.50340134, y: 0.42105263}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 071d755b282c00cb0800000000000000
+      internalID: -4899702527935131280
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: fdb2ec113e41b364d9fb2842cc6c40a8
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      SetPiece_fishMarket_0: -4591705877891032949
+      SetPiece_fishMarket_1: 3179572329863835231
+      SetPiece_fishMarket_2: 1973998425302582640
+      SetPiece_fishMarket_3: -6714638436102220408
+      SetPiece_fishMarket_4: 1739307512216780055
+      SetPiece_fishMarket_5: -1835839853461344674
+      SetPiece_fishMarket_6: -499465103205842906
+      SetPiece_fishMarket_7: -4899702527935131280
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

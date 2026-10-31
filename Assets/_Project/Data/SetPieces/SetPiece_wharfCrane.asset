@@ -1,0 +1,331 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 01b51978faec4dbb8e54e23107a97ef5, type: 3}
+  m_Name: SetPiece_wharfCrane
+  m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.SetPieceDef
+  Id: structure.nmc_wharf_crane
+  DisplayName: Wharf crane (knuckle boom)
+  RigKey: wharfCrane
+  SceneId: keyscene.nmc_wharf
+  BakedOptionsJson: '{"state":"working","slew":27.5,"reach":5.41,"hookZ":-1.06,"load":"totes"}'
+  Layer: raised
+  Walk: solid
+  Mount: quay
+  BoundsMin: {x: -1.025, y: -1.35, z: 0}
+  BoundsMax: {x: 3.161, y: 5.377, z: 5.794}
+  Frames:
+  - Sprite: {fileID: 4866143937298212789, guid: 6522d2a3656fcfe439751b546974f5a8, type: 3}
+    RigDir: 0
+    ShowFaces: N
+    BearingDeg: 0
+    CameraSees: its back
+    NativeSize: {x: 141, y: 257}
+    NativePivot: {x: 36, y: 231}
+    Crop: {x: 3, y: 4}
+    Pivot: {x: 33, y: 227}
+  - Sprite: {fileID: 6120902613053137032, guid: 6522d2a3656fcfe439751b546974f5a8, type: 3}
+    RigDir: 7
+    ShowFaces: NE
+    BearingDeg: 45
+    CameraSees: its back
+    NativeSize: {x: 235, y: 210}
+    NativePivot: {x: 50, y: 165}
+    Crop: {x: 4, y: 4}
+    Pivot: {x: 46, y: 161}
+  - Sprite: {fileID: 8025658101148481129, guid: 6522d2a3656fcfe439751b546974f5a8, type: 3}
+    RigDir: 6
+    ShowFaces: E
+    BearingDeg: 90
+    CameraSees: the show face, edge-on or at a diagonal
+    NativeSize: {x: 223, y: 270}
+    NativePivot: {x: 47, y: 140}
+    Crop: {x: 4, y: 4}
+    Pivot: {x: 43, y: 136}
+  - Sprite: {fileID: 3238437148871812752, guid: 6522d2a3656fcfe439751b546974f5a8, type: 3}
+    RigDir: 5
+    ShowFaces: SE
+    BearingDeg: 135
+    CameraSees: the show face
+    NativeSize: {x: 126, y: 308}
+    NativePivot: {x: 50, y: 126}
+    Crop: {x: 4, y: 3}
+    Pivot: {x: 46, y: 123}
+  - Sprite: {fileID: -1975372223206681766, guid: 6522d2a3656fcfe439751b546974f5a8, type: 3}
+    RigDir: 4
+    ShowFaces: S
+    BearingDeg: 180
+    CameraSees: the show face
+    NativeSize: {x: 141, y: 304}
+    NativePivot: {x: 105, y: 128}
+    Crop: {x: 4, y: 3}
+    Pivot: {x: 101, y: 125}
+  - Sprite: {fileID: -908511981303499531, guid: 6522d2a3656fcfe439751b546974f5a8, type: 3}
+    RigDir: 3
+    ShowFaces: SW
+    BearingDeg: 225
+    CameraSees: the show face
+    NativeSize: {x: 235, y: 256}
+    NativePivot: {x: 185, y: 144}
+    Crop: {x: 3, y: 4}
+    Pivot: {x: 182, y: 140}
+  - Sprite: {fileID: -429901836773939925, guid: 6522d2a3656fcfe439751b546974f5a8, type: 3}
+    RigDir: 2
+    ShowFaces: W
+    BearingDeg: 270
+    CameraSees: the show face, edge-on or at a diagonal
+    NativeSize: {x: 223, y: 210}
+    NativePivot: {x: 176, y: 183}
+    Crop: {x: 4, y: 4}
+    Pivot: {x: 172, y: 179}
+  - Sprite: {fileID: 866746115909793, guid: 6522d2a3656fcfe439751b546974f5a8, type: 3}
+    RigDir: 1
+    ShowFaces: NW
+    BearingDeg: 315
+    CameraSees: its back
+    NativeSize: {x: 126, y: 271}
+    NativePivot: {x: 76, y: 238}
+    Crop: {x: 3, y: 3}
+    Pivot: {x: 73, y: 235}
+  CellSize: {x: 228, y: 301}
+  PixelsPerMetre: 32
+  ElevationDeg: 40
+  BakedLit: 0
+  Colliders:
+  - Type: polygon
+    Blocks: walk
+    Points:
+    - {x: -0.95, y: -0.95}
+    - {x: 0.95, y: -0.95}
+    - {x: 0.95, y: 0.95}
+    - {x: -0.95, y: 0.95}
+  - Type: polygon
+    Blocks: walk
+    Points:
+    - {x: -0.55, y: -1.38}
+    - {x: 0.55, y: -1.38}
+    - {x: 0.55, y: -0.95}
+    - {x: -0.55, y: -0.95}
+  Anchors:
+  - Name: column
+    Position: {x: 0, y: 0, z: 1.52}
+  - Name: hook
+    Position: {x: 2.498, y: 4.799, z: -1.06}
+  - Name: loadBase
+    Position: {x: 2.498, y: 4.799, z: -2.5}
+  - Name: operator
+    Position: {x: 0, y: -1.18, z: 0.26}
+  - Name: tip
+    Position: {x: 2.498, y: 4.799, z: 4.95}
+  Path: []
+  TideMarks: []
+  Words: []
+  HasLight: 0
+  Light:
+    Emitters: []
+    When: 
+  IsAnimated: 0
+  Animated:
+    Part: 
+    Input: 
+    Steps: 0
+    BakedAtDeg: 0
+    RigDir: 0
+    Headings: []
+  GameplayJson: "{\"schema\":\"hidden-harbours/nmc-set-piece@1\",\"generatedBy\":\"NmcSetPieces
+    1.4.0\",\"key\":\"wharfCrane\",\"id\":\"structure.nmc_wharf_crane\",\"name\":\"Wharf
+    crane (knuckle boom)\",\"defType\":\"SetPieceDef\",\"scene\":\"keyscene.nmc_wharf\",\"units\":\"metres,
+    the piece\u2019s own frame: +x right, +y the show face, +z up from its ground
+    point (the pivot)\",\"bounds\":{\"x\":[-1.025,3.161],\"y\":[-1.35,5.377],\"z\":[0,5.794]},\"layer\":\"raised\",\"walk\":\"solid\",\"mount\":\"quay\",\"colliders\":[{\"type\":\"polygon\",\"blocks\":\"walk\",\"pts\":[[-0.95,-0.95],[0.95,-0.95],[0.95,0.95],[-0.95,0.95]]},{\"type\":\"polygon\",\"blocks\":\"walk\",\"pts\":[[-0.55,-1.38],[0.55,-1.38],[0.55,-0.95],[-0.55,-0.95]]}],\"facings\":[{\"dir\":0,\"showFaces\":\"N\",\"bearingDeg\":0,\"cameraSees\":\"its
+    back\"},{\"dir\":1,\"showFaces\":\"NW\",\"bearingDeg\":315,\"cameraSees\":\"its
+    back\"},{\"dir\":2,\"showFaces\":\"W\",\"bearingDeg\":270,\"cameraSees\":\"the
+    show face, edge-on or at a diagonal\"},{\"dir\":3,\"showFaces\":\"SW\",\"bearingDeg\":225,\"cameraSees\":\"the
+    show face\"},{\"dir\":4,\"showFaces\":\"S\",\"bearingDeg\":180,\"cameraSees\":\"the
+    show face\"},{\"dir\":5,\"showFaces\":\"SE\",\"bearingDeg\":135,\"cameraSees\":\"the
+    show face\"},{\"dir\":6,\"showFaces\":\"E\",\"bearingDeg\":90,\"cameraSees\":\"the
+    show face, edge-on or at a diagonal\"},{\"dir\":7,\"showFaces\":\"NE\",\"bearingDeg\":45,\"cameraSees\":\"its
+    back\"}],\"cells\":[{\"dir\":0,\"w\":141,\"h\":257,\"pivot\":[36,231]},{\"dir\":1,\"w\":126,\"h\":271,\"pivot\":[76,238]},{\"dir\":2,\"w\":223,\"h\":210,\"pivot\":[176,183]},{\"dir\":3,\"w\":235,\"h\":256,\"pivot\":[185,144]},{\"dir\":4,\"w\":141,\"h\":304,\"pivot\":[105,128]},{\"dir\":5,\"w\":126,\"h\":308,\"pivot\":[50,126]},{\"dir\":6,\"w\":223,\"h\":270,\"pivot\":[47,140]},{\"dir\":7,\"w\":235,\"h\":210,\"pivot\":[50,165]}],\"anchors\":{\"hook\":[2.498,4.799,-1.06],\"tip\":[2.498,4.799,4.95],\"loadBase\":[2.498,4.799,-2.5],\"operator\":[0,-1.18,0.26],\"column\":[0,0,1.52],\"state\":\"working\",\"slewDeg\":27.5,\"reachM\":5.41,\"hookZ\":-1.06,\"luffDeg\":64.883,\"jibDeg\":-8.245,\"load\":\"totes\",\"note\":\"hook
+    = [reach sin(slew), reach cos(slew), hookZ] in the piece frame; the stand never
+    turns\",\"px\":{\"hook\":[25.1,252.7],\"tip\":[25.1,105.4],\"loadBase\":[25.1,288],\"operator\":[105,97.4],\"column\":[105,90.7]}},\"options\":{\"state\":\"working\",\"slew\":27.5,\"reach\":5.41,\"hookZ\":-1.06,\"load\":\"totes\"},\"light\":null,\"notes\":\"Mount
+    on the quay with local +Y out over the water, the plinth 2.2 m inside the face,
+    so the hook reaches a boat alongside and the landing pad behind. Playable: see
+    gameplay().crane and NOTES \xA74.\",\"crane\":{\"envelope\":{\"pin\":[0.05,2.85],\"Lm\":2.975,\"Lj\":4.14,\"column\":[0,0,1.52],\"operator\":[0,-1.18,0.26],\"reach\":{\"min\":2.2,\"max\":5.6,\"rateMS\":0.45},\"tipZ\":{\"near\":1.9,\"far\":4.95,\"farFrom\":5},\"slew\":{\"continuous\":true,\"rateDegS\":20,\"stowedDeg\":-90},\"hoist\":{\"max\":3.6,\"min\":-7,\"upMS\":0.4,\"downMS\":0.55,\"belowTip\":0.95,\"slowNearM\":0.3,\"slowMS\":0.15},\"stowed\":{\"luffDeg\":72,\"jibDeg\":-94,\"hookZ\":1.35},\"swlKg\":1000,\"latchM\":0.35,\"landM\":0.05,\"swing\":{\"damping\":0.6,\"maxDeg\":12,\"fromSlewDegS2\":0.35}},\"loads\":{\"none\":null,\"totes\":{\"label\":\"two
+    fish totes, stacked: the landing\",\"size\":[1.12,0.72,1.04],\"kg\":190,\"lift\":0.4,\"seat\":\"deck
+    or pad\"},\"traps\":{\"label\":\"a sling of four traps: setting day\",\"size\":[1.24,1.26,0.9],\"kg\":150,\"lift\":0.4,\"seat\":\"pad
+    or deck\"},\"bait\":{\"label\":\"a bait barrel\",\"size\":[0.6,0.6,0.9],\"kg\":120,\"lift\":0.3,\"seat\":\"pad
+    or deck\"}},\"states\":[{\"id\":\"stowed\",\"means\":\"jib folded down beside
+    the column, the hook in its cradle, slewed along the quay (-90). Nobody at the
+    stand.\"},{\"id\":\"idle\",\"means\":\"working pose, the hook up at the top of
+    its travel, nothing on it. The player is at the stand.\"},{\"id\":\"reaching\",\"means\":\"the
+    player is slewing, reaching or hoisting with nothing on the hook.\"},{\"id\":\"hooked\",\"means\":\"the
+    eye within latchM of a load\u2019s lift point and latched (E). The load still
+    sits.\"},{\"id\":\"lifting\",\"means\":\"a latched load clear of every surface;
+    it swings, damped, never more than swing.maxDeg.\"},{\"id\":\"landing\",\"means\":\"the
+    load\u2019s base within hoist.slowNearM of a surface (the pad, a deck, a truck
+    bed): lowering slows to hoist.slowMS.\"},{\"id\":\"set\",\"means\":\"the load\u2019s
+    base within landM of a surface: it sits, and E unlatches.\"}],\"pose\":{\"state\":\"working\",\"slew\":27.5,\"luffDeg\":64.883,\"jibDeg\":-8.245,\"reach\":5.41,\"hookZ\":-1.06,\"load\":\"totes\",\"hook\":[2.498,4.799,-1.06],\"tip\":[2.498,4.799,4.95],\"loadBase\":[2.498,4.799,-2.5]},\"controls\":{\"take\":\"E
+    at the operator point (anchors.operator), from the landward side\",\"slew\":\"A
+    / D, left stick X\",\"reach\":\"W / S, left stick Y\",\"hoist\":\"R up / F down;
+    RT up / LT down\",\"latch\":\"E, when the eye is within envelope.latchM of a
+    load\u2019s lift point\",\"release\":\"E, when the load is set\",\"leave\":\"Esc
+    / B, or walk off the grating\"},\"camera\":{\"size\":[20,11.25],\"centre\":\"midway
+    between the column and the hook, the same angle; eases in over 0.6 s\",\"marker\":\"a
+    ring on the surface under the hook (the drop line), because a hook\u2019s height
+    is hard to read from above\"},\"proposal\":\"NOTES.md \xA74: the crane\u2019s
+    gameplay, for the owner to rule\"}}"
+  State: working
+  Variants:
+  - Name: stowed
+    BakedOptionsJson: '{"state":"stowed","slew":0,"reach":5.35,"hookZ":0.6,"load":"totes"}'
+    GameplayJson: "{\"schema\":\"hidden-harbours/nmc-set-piece@1\",\"generatedBy\":\"NmcSetPieces
+      1.4.0\",\"key\":\"wharfCrane\",\"id\":\"structure.nmc_wharf_crane\",\"name\":\"Wharf
+      crane (knuckle boom)\",\"defType\":\"SetPieceDef\",\"scene\":\"keyscene.nmc_wharf\",\"units\":\"metres,
+      the piece\u2019s own frame: +x right, +y the show face, +z up from its ground
+      point (the pivot)\",\"bounds\":{\"x\":[-1.025,1.025],\"y\":[-1.35,1.219],\"z\":[0,5.929]},\"layer\":\"raised\",\"walk\":\"solid\",\"mount\":\"quay\",\"colliders\":[{\"type\":\"polygon\",\"blocks\":\"walk\",\"pts\":[[-0.95,-0.95],[0.95,-0.95],[0.95,0.95],[-0.95,0.95]]},{\"type\":\"polygon\",\"blocks\":\"walk\",\"pts\":[[-0.55,-1.38],[0.55,-1.38],[0.55,-0.95],[-0.55,-0.95]]}],\"facings\":[{\"dir\":0,\"showFaces\":\"N\",\"bearingDeg\":0,\"cameraSees\":\"its
+      back\"},{\"dir\":1,\"showFaces\":\"NW\",\"bearingDeg\":315,\"cameraSees\":\"its
+      back\"},{\"dir\":2,\"showFaces\":\"W\",\"bearingDeg\":270,\"cameraSees\":\"the
+      show face, edge-on or at a diagonal\"},{\"dir\":3,\"showFaces\":\"SW\",\"bearingDeg\":225,\"cameraSees\":\"the
+      show face\"},{\"dir\":4,\"showFaces\":\"S\",\"bearingDeg\":180,\"cameraSees\":\"the
+      show face\"},{\"dir\":5,\"showFaces\":\"SE\",\"bearingDeg\":135,\"cameraSees\":\"the
+      show face\"},{\"dir\":6,\"showFaces\":\"E\",\"bearingDeg\":90,\"cameraSees\":\"the
+      show face, edge-on or at a diagonal\"},{\"dir\":7,\"showFaces\":\"NE\",\"bearingDeg\":45,\"cameraSees\":\"its
+      back\"}],\"cells\":[{\"dir\":0,\"w\":73,\"h\":200,\"pivot\":[36,174]},{\"dir\":1,\"w\":100,\"h\":203,\"pivot\":[50,170]},{\"dir\":2,\"w\":90,\"h\":179,\"pivot\":[43,154]},{\"dir\":3,\"w\":100,\"h\":175,\"pivot\":[50,142]},{\"dir\":4,\"w\":73,\"h\":159,\"pivot\":[36,134]},{\"dir\":5,\"w\":100,\"h\":175,\"pivot\":[50,142]},{\"dir\":6,\"w\":90,\"h\":179,\"pivot\":[47,154]},{\"dir\":7,\"w\":100,\"h\":203,\"pivot\":[50,170]}],\"anchors\":{\"hook\":[0,0.681,1.35],\"tip\":[0,0.681,1.549],\"loadBase\":null,\"operator\":[0,-1.18,0.26],\"column\":[0,0,1.52],\"state\":\"stowed\",\"slewDeg\":0,\"reachM\":0.681,\"hookZ\":1.35,\"luffDeg\":72,\"jibDeg\":-94,\"load\":\"none\",\"note\":\"hook
+      = [reach sin(slew), reach cos(slew), hookZ] in the piece frame; the stand never
+      turns\",\"px\":{\"hook\":[36,114.9],\"tip\":[36,110],\"operator\":[36,103.4],\"column\":[36,96.7]}},\"options\":{\"state\":\"stowed\",\"slew\":0,\"reach\":5.35,\"hookZ\":0.6,\"load\":\"totes\"},\"light\":null,\"notes\":\"Mount
+      on the quay with local +Y out over the water, the plinth 2.2 m inside the face,
+      so the hook reaches a boat alongside and the landing pad behind. Playable:
+      see gameplay().crane and NOTES \xA74.\",\"crane\":{\"envelope\":{\"pin\":[0.05,2.85],\"Lm\":2.975,\"Lj\":4.14,\"column\":[0,0,1.52],\"operator\":[0,-1.18,0.26],\"reach\":{\"min\":2.2,\"max\":5.6,\"rateMS\":0.45},\"tipZ\":{\"near\":1.9,\"far\":4.95,\"farFrom\":5},\"slew\":{\"continuous\":true,\"rateDegS\":20,\"stowedDeg\":-90},\"hoist\":{\"max\":3.6,\"min\":-7,\"upMS\":0.4,\"downMS\":0.55,\"belowTip\":0.95,\"slowNearM\":0.3,\"slowMS\":0.15},\"stowed\":{\"luffDeg\":72,\"jibDeg\":-94,\"hookZ\":1.35},\"swlKg\":1000,\"latchM\":0.35,\"landM\":0.05,\"swing\":{\"damping\":0.6,\"maxDeg\":12,\"fromSlewDegS2\":0.35}},\"loads\":{\"none\":null,\"totes\":{\"label\":\"two
+      fish totes, stacked: the landing\",\"size\":[1.12,0.72,1.04],\"kg\":190,\"lift\":0.4,\"seat\":\"deck
+      or pad\"},\"traps\":{\"label\":\"a sling of four traps: setting day\",\"size\":[1.24,1.26,0.9],\"kg\":150,\"lift\":0.4,\"seat\":\"pad
+      or deck\"},\"bait\":{\"label\":\"a bait barrel\",\"size\":[0.6,0.6,0.9],\"kg\":120,\"lift\":0.3,\"seat\":\"pad
+      or deck\"}},\"states\":[{\"id\":\"stowed\",\"means\":\"jib folded down beside
+      the column, the hook in its cradle, slewed along the quay (-90). Nobody at
+      the stand.\"},{\"id\":\"idle\",\"means\":\"working pose, the hook up at the
+      top of its travel, nothing on it. The player is at the stand.\"},{\"id\":\"reaching\",\"means\":\"the
+      player is slewing, reaching or hoisting with nothing on the hook.\"},{\"id\":\"hooked\",\"means\":\"the
+      eye within latchM of a load\u2019s lift point and latched (E). The load still
+      sits.\"},{\"id\":\"lifting\",\"means\":\"a latched load clear of every surface;
+      it swings, damped, never more than swing.maxDeg.\"},{\"id\":\"landing\",\"means\":\"the
+      load\u2019s base within hoist.slowNearM of a surface (the pad, a deck, a truck
+      bed): lowering slows to hoist.slowMS.\"},{\"id\":\"set\",\"means\":\"the load\u2019s
+      base within landM of a surface: it sits, and E unlatches.\"}],\"pose\":{\"state\":\"stowed\",\"slew\":0,\"luffDeg\":72,\"jibDeg\":-94,\"reach\":0.681,\"hookZ\":1.35,\"load\":\"none\",\"hook\":[0,0.681,1.35],\"tip\":[0,0.681,1.549],\"loadBase\":null},\"controls\":{\"take\":\"E
+      at the operator point (anchors.operator), from the landward side\",\"slew\":\"A
+      / D, left stick X\",\"reach\":\"W / S, left stick Y\",\"hoist\":\"R up / F
+      down; RT up / LT down\",\"latch\":\"E, when the eye is within envelope.latchM
+      of a load\u2019s lift point\",\"release\":\"E, when the load is set\",\"leave\":\"Esc
+      / B, or walk off the grating\"},\"camera\":{\"size\":[20,11.25],\"centre\":\"midway
+      between the column and the hook, the same angle; eases in over 0.6 s\",\"marker\":\"a
+      ring on the surface under the hook (the drop line), because a hook\u2019s height
+      is hard to read from above\"},\"proposal\":\"NOTES.md \xA74: the crane\u2019s
+      gameplay, for the owner to rule\"}}"
+    BoundsMin: {x: -1.025, y: -1.35, z: 0}
+    BoundsMax: {x: 1.025, y: 1.219, z: 5.929}
+    Frames:
+    - Sprite: {fileID: -2770231183736753401, guid: 6522d2a3656fcfe439751b546974f5a8, type: 3}
+      RigDir: 0
+      ShowFaces: N
+      BearingDeg: 0
+      CameraSees: its back
+      NativeSize: {x: 73, y: 200}
+      NativePivot: {x: 36, y: 174}
+      Crop: {x: 3, y: 4}
+      Pivot: {x: 33, y: 170}
+    - Sprite: {fileID: 1568662157137264514, guid: 6522d2a3656fcfe439751b546974f5a8, type: 3}
+      RigDir: 7
+      ShowFaces: NE
+      BearingDeg: 45
+      CameraSees: its back
+      NativeSize: {x: 100, y: 203}
+      NativePivot: {x: 50, y: 170}
+      Crop: {x: 4, y: 4}
+      Pivot: {x: 46, y: 166}
+    - Sprite: {fileID: 6113755184743610617, guid: 6522d2a3656fcfe439751b546974f5a8, type: 3}
+      RigDir: 6
+      ShowFaces: E
+      BearingDeg: 90
+      CameraSees: the show face, edge-on or at a diagonal
+      NativeSize: {x: 90, y: 179}
+      NativePivot: {x: 47, y: 154}
+      Crop: {x: 4, y: 4}
+      Pivot: {x: 43, y: 150}
+    - Sprite: {fileID: -2579290319615113076, guid: 6522d2a3656fcfe439751b546974f5a8, type: 3}
+      RigDir: 5
+      ShowFaces: SE
+      BearingDeg: 135
+      CameraSees: the show face
+      NativeSize: {x: 100, y: 175}
+      NativePivot: {x: 50, y: 142}
+      Crop: {x: 4, y: 4}
+      Pivot: {x: 46, y: 138}
+    - Sprite: {fileID: -1810440473766360337, guid: 6522d2a3656fcfe439751b546974f5a8, type: 3}
+      RigDir: 4
+      ShowFaces: S
+      BearingDeg: 180
+      CameraSees: the show face
+      NativeSize: {x: 73, y: 159}
+      NativePivot: {x: 36, y: 134}
+      Crop: {x: 3, y: 3}
+      Pivot: {x: 33, y: 131}
+    - Sprite: {fileID: 2193237558626355820, guid: 6522d2a3656fcfe439751b546974f5a8, type: 3}
+      RigDir: 3
+      ShowFaces: SW
+      BearingDeg: 225
+      CameraSees: the show face
+      NativeSize: {x: 100, y: 175}
+      NativePivot: {x: 50, y: 142}
+      Crop: {x: 4, y: 4}
+      Pivot: {x: 46, y: 138}
+    - Sprite: {fileID: 4892962539272451197, guid: 6522d2a3656fcfe439751b546974f5a8, type: 3}
+      RigDir: 2
+      ShowFaces: W
+      BearingDeg: 270
+      CameraSees: the show face, edge-on or at a diagonal
+      NativeSize: {x: 90, y: 179}
+      NativePivot: {x: 43, y: 154}
+      Crop: {x: 4, y: 4}
+      Pivot: {x: 39, y: 150}
+    - Sprite: {fileID: -1609286690582250610, guid: 6522d2a3656fcfe439751b546974f5a8, type: 3}
+      RigDir: 1
+      ShowFaces: NW
+      BearingDeg: 315
+      CameraSees: its back
+      NativeSize: {x: 100, y: 203}
+      NativePivot: {x: 50, y: 170}
+      Crop: {x: 4, y: 4}
+      Pivot: {x: 46, y: 166}
+    Anchors:
+    - Name: column
+      Position: {x: 0, y: 0, z: 1.52}
+    - Name: hook
+      Position: {x: 0, y: 0.681, z: 1.35}
+    - Name: operator
+      Position: {x: 0, y: -1.18, z: 0.26}
+    - Name: tip
+      Position: {x: 0, y: 0.681, z: 1.549}
+    Colliders:
+    - Type: polygon
+      Blocks: walk
+      Points:
+      - {x: -0.95, y: -0.95}
+      - {x: 0.95, y: -0.95}
+      - {x: 0.95, y: 0.95}
+      - {x: -0.95, y: 0.95}
+    - Type: polygon
+      Blocks: walk
+      Points:
+      - {x: -0.55, y: -1.38}
+      - {x: 0.55, y: -1.38}
+      - {x: 0.55, y: -0.95}
+      - {x: -0.55, y: -0.95}
+  HasVendor: 0
+  Vendor:
+    Seller: 
+    At: {x: 0, y: 0, z: 0}
