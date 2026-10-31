@@ -1,0 +1,193 @@
+{
+ "schema": "hidden-harbours/nmc-set-piece@1",
+ "generatedBy": "NmcSetPieces 1.3.0",
+ "key": "campTent",
+ "id": "prop.nmc_camp_tent",
+ "name": "Dome tent",
+ "defType": "SetPieceDef",
+ "scene": "keyscene.nmc_campground",
+ "units": "metres, the piece’s own frame: +x right, +y the show face, +z up from its ground point (the pivot)",
+ "bounds": {
+  "x": [
+   -1.2,
+   1.2
+  ],
+  "y": [
+   -1.05,
+   1.07
+  ],
+  "z": [
+   0,
+   1.3
+  ]
+ },
+ "layer": "raised",
+ "walk": "solid",
+ "mount": "ground",
+ "colliders": [
+  {
+   "type": "polygon",
+   "blocks": "walk",
+   "pts": [
+    [
+     -1.2,
+     -1.05
+    ],
+    [
+     1.2,
+     -1.05
+    ],
+    [
+     1.2,
+     1.05
+    ],
+    [
+     -1.2,
+     1.05
+    ]
+   ]
+  }
+ ],
+ "facings": [
+  {
+   "dir": 0,
+   "showFaces": "N",
+   "bearingDeg": 0,
+   "cameraSees": "its back"
+  },
+  {
+   "dir": 1,
+   "showFaces": "NW",
+   "bearingDeg": 315,
+   "cameraSees": "its back"
+  },
+  {
+   "dir": 2,
+   "showFaces": "W",
+   "bearingDeg": 270,
+   "cameraSees": "the show face, edge-on or at a diagonal"
+  },
+  {
+   "dir": 3,
+   "showFaces": "SW",
+   "bearingDeg": 225,
+   "cameraSees": "the show face"
+  },
+  {
+   "dir": 4,
+   "showFaces": "S",
+   "bearingDeg": 180,
+   "cameraSees": "the show face"
+  },
+  {
+   "dir": 5,
+   "showFaces": "SE",
+   "bearingDeg": 135,
+   "cameraSees": "the show face"
+  },
+  {
+   "dir": 6,
+   "showFaces": "E",
+   "bearingDeg": 90,
+   "cameraSees": "the show face, edge-on or at a diagonal"
+  },
+  {
+   "dir": 7,
+   "showFaces": "NE",
+   "bearingDeg": 45,
+   "cameraSees": "its back"
+  }
+ ],
+ "cells": [
+  {
+   "dir": 0,
+   "w": 84,
+   "h": 68,
+   "pivot": [
+    42,
+    42
+   ]
+  },
+  {
+   "dir": 1,
+   "w": 79,
+   "h": 70,
+   "pivot": [
+    39,
+    42
+   ]
+  },
+  {
+   "dir": 2,
+   "w": 75,
+   "h": 72,
+   "pivot": [
+    38,
+    43
+   ]
+  },
+  {
+   "dir": 3,
+   "w": 79,
+   "h": 70,
+   "pivot": [
+    39,
+    42
+   ]
+  },
+  {
+   "dir": 4,
+   "w": 84,
+   "h": 67,
+   "pivot": [
+    42,
+    41
+   ]
+  },
+  {
+   "dir": 5,
+   "w": 79,
+   "h": 70,
+   "pivot": [
+    39,
+    42
+   ]
+  },
+  {
+   "dir": 6,
+   "w": 75,
+   "h": 72,
+   "pivot": [
+    37,
+    43
+   ]
+  },
+  {
+   "dir": 7,
+   "w": 79,
+   "h": 70,
+   "pivot": [
+    39,
+    42
+   ]
+  }
+ ],
+ "anchors": {
+  "door": [
+   0,
+   1.55,
+   0
+  ],
+  "px": {
+   "door": [
+    42,
+    72.9
+   ]
+  }
+ },
+ "options": {
+  "colour": "canvasG"
+ },
+ "light": null,
+ "notes": "Stand it on a tent pad, door (local +Y) to the fire."
+}

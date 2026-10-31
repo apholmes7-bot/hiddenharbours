@@ -1,0 +1,193 @@
+{
+ "schema": "hidden-harbours/nmc-set-piece@1",
+ "generatedBy": "NmcSetPieces 1.2.0",
+ "key": "riverDeck",
+ "id": "structure.nmc_river_deck",
+ "name": "The restaurant and bar’s river deck",
+ "defType": "SetPieceDef",
+ "scene": "keyscene.nmc_town_bridge",
+ "units": "metres, the piece’s own frame: +x right, +y the show face, +z up from its ground point (the pivot)",
+ "bounds": {
+  "x": [
+   -12.874,
+   8.05
+  ],
+  "y": [
+   -5.05,
+   0
+  ],
+  "z": [
+   0,
+   9
+  ]
+ },
+ "layer": "raised",
+ "walk": "deck",
+ "mount": "wall",
+ "colliders": [],
+ "facings": [
+  {
+   "dir": 0,
+   "showFaces": "N",
+   "bearingDeg": 0,
+   "cameraSees": "its back"
+  },
+  {
+   "dir": 1,
+   "showFaces": "NW",
+   "bearingDeg": 315,
+   "cameraSees": "its back"
+  },
+  {
+   "dir": 2,
+   "showFaces": "W",
+   "bearingDeg": 270,
+   "cameraSees": "the show face, edge-on or at a diagonal"
+  },
+  {
+   "dir": 3,
+   "showFaces": "SW",
+   "bearingDeg": 225,
+   "cameraSees": "the show face"
+  },
+  {
+   "dir": 4,
+   "showFaces": "S",
+   "bearingDeg": 180,
+   "cameraSees": "the show face"
+  },
+  {
+   "dir": 5,
+   "showFaces": "SE",
+   "bearingDeg": 135,
+   "cameraSees": "the show face"
+  },
+  {
+   "dir": 6,
+   "showFaces": "E",
+   "bearingDeg": 90,
+   "cameraSees": "the show face, edge-on or at a diagonal"
+  },
+  {
+   "dir": 7,
+   "showFaces": "NE",
+   "bearingDeg": 45,
+   "cameraSees": "its back"
+  }
+ ],
+ "cells": [
+  {
+   "dir": 0,
+   "w": 677,
+   "h": 221,
+   "pivot": [
+    415,
+    175
+   ]
+  },
+  {
+   "dir": 1,
+   "w": 593,
+   "h": 437,
+   "pivot": [
+    294,
+    292
+   ]
+  },
+  {
+   "dir": 2,
+   "w": 169,
+   "h": 592,
+   "pivot": [
+    4,
+    387
+   ]
+  },
+  {
+   "dir": 3,
+   "w": 507,
+   "h": 538,
+   "pivot": [
+    185,
+    411
+   ]
+  },
+  {
+   "dir": 4,
+   "w": 677,
+   "h": 265,
+   "pivot": [
+    261,
+    325
+   ]
+  },
+  {
+   "dir": 5,
+   "w": 593,
+   "h": 440,
+   "pivot": [
+    299,
+    411
+   ]
+  },
+  {
+   "dir": 6,
+   "w": 169,
+   "h": 495,
+   "pivot": [
+    165,
+    387
+   ]
+  },
+  {
+   "dir": 7,
+   "w": 507,
+   "h": 414,
+   "pivot": [
+    322,
+    283
+   ]
+  }
+ ],
+ "anchors": {
+  "deck": 6,
+  "box": [
+   -8,
+   8,
+   -5,
+   0
+  ],
+  "tables": 5,
+  "seats": 20,
+  "stairsFoot": [
+   -12.86,
+   -0.6,
+   2.7
+  ],
+  "note": "walkable deck; the railing blocks; the stairs reach the bench, the boardwalk’s landing beside them",
+  "px": {
+   "stairsFoot": [
+    672.5,
+    246.5
+   ]
+  }
+ },
+ "options": {
+  "len": 16,
+  "depth": 5,
+  "deck": 6,
+  "bench": 2.7,
+  "tables": 5,
+  "lights": true,
+  "stairs": true,
+  "yaw": 0
+ },
+ "light": {
+  "emitters": [
+   "lamp",
+   "win"
+  ],
+  "when": "o.lit, from the game’s lamp rule (dusk to dawn; the office while open)"
+ },
+ "notes": "Heights above mean sea level: stand it at z 0 with its back (y = 0) on the wall’s face. The bulbs glow with o.lit."
+}

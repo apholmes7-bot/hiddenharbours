@@ -1,0 +1,192 @@
+{
+ "schema": "hidden-harbours/nmc-set-piece@1",
+ "generatedBy": "NmcSetPieces 1.4.0",
+ "key": "gullySteps",
+ "id": "structure.nmc_gully_steps",
+ "name": "The gully steps (timber, down the bluff into the cove)",
+ "defType": "SetPieceDef",
+ "scene": "keyscene.nmc_weather_face",
+ "units": "metres, the piece’s own frame: +x right, +y the show face, +z up from its ground point (the pivot)",
+ "bounds": {
+  "x": [
+   -1.2,
+   7.04
+  ],
+  "y": [
+   -0.695,
+   0.695
+  ],
+  "z": [
+   0,
+   7.35
+  ]
+ },
+ "layer": "raised",
+ "walk": "stairs",
+ "mount": "slope",
+ "colliders": [],
+ "facings": [
+  {
+   "dir": 0,
+   "showFaces": "N",
+   "bearingDeg": 0,
+   "cameraSees": "its back"
+  },
+  {
+   "dir": 1,
+   "showFaces": "NW",
+   "bearingDeg": 315,
+   "cameraSees": "its back"
+  },
+  {
+   "dir": 2,
+   "showFaces": "W",
+   "bearingDeg": 270,
+   "cameraSees": "the show face, edge-on or at a diagonal"
+  },
+  {
+   "dir": 3,
+   "showFaces": "SW",
+   "bearingDeg": 225,
+   "cameraSees": "the show face"
+  },
+  {
+   "dir": 4,
+   "showFaces": "S",
+   "bearingDeg": 180,
+   "cameraSees": "the show face"
+  },
+  {
+   "dir": 5,
+   "showFaces": "SE",
+   "bearingDeg": 135,
+   "cameraSees": "the show face"
+  },
+  {
+   "dir": 6,
+   "showFaces": "E",
+   "bearingDeg": 90,
+   "cameraSees": "the show face, edge-on or at a diagonal"
+  },
+  {
+   "dir": 7,
+   "showFaces": "NE",
+   "bearingDeg": 45,
+   "cameraSees": "its back"
+  }
+ ],
+ "cells": [
+  {
+   "dir": 0,
+   "w": 271,
+   "h": 221,
+   "pivot": [
+    42,
+    198
+   ]
+  },
+  {
+   "dir": 1,
+   "w": 222,
+   "h": 106,
+   "pivot": [
+    44,
+    187
+   ]
+  },
+  {
+   "dir": 2,
+   "w": 52,
+   "h": 88,
+   "pivot": [
+    26,
+    183
+   ]
+  },
+  {
+   "dir": 3,
+   "w": 222,
+   "h": 106,
+   "pivot": [
+    177,
+    187
+   ]
+  },
+  {
+   "dir": 4,
+   "w": 271,
+   "h": 221,
+   "pivot": [
+    229,
+    198
+   ]
+  },
+  {
+   "dir": 5,
+   "w": 222,
+   "h": 330,
+   "pivot": [
+    177,
+    210
+   ]
+  },
+  {
+   "dir": 6,
+   "w": 52,
+   "h": 359,
+   "pivot": [
+    26,
+    207
+   ]
+  },
+  {
+   "dir": 7,
+   "w": 222,
+   "h": 330,
+   "pivot": [
+    44,
+    210
+   ]
+  }
+ ],
+ "anchors": {
+  "head": [
+   0,
+   0,
+   6.4
+  ],
+  "foot": [
+   7,
+   0,
+   0
+  ],
+  "steps": 29,
+  "riser": 0.221,
+  "going": 0.241,
+  "note": "stairs from the bluff’s top to the ledges; the rope rails hold",
+  "px": {
+   "head": [
+    229,
+    41.1
+   ],
+   "foot": [
+    5,
+    198
+   ]
+  }
+ },
+ "options": {
+  "run": 7,
+  "rise": 6.4,
+  "width": 1.1,
+  "yaw": 0,
+  "landing": 1.2
+ },
+ "light": null,
+ "notes": "Stand it at the foot’s ground; its head meets the bluff’s top.",
+ "steps": {
+  "rise": 6.4,
+  "run": 7,
+  "tide": "the ledges below are bared from about -1.4 on the ebb; the steps are the only way back up (the game warns on the flood)"
+ }
+}

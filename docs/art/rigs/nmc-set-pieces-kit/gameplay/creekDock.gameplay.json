@@ -1,0 +1,208 @@
+{
+ "schema": "hidden-harbours/nmc-set-piece@1",
+ "generatedBy": "NmcSetPieces 1.4.0",
+ "key": "creekDock",
+ "id": "structure.nmc_creek_dock",
+ "name": "A dock on the north creek",
+ "defType": "SetPieceDef",
+ "scene": "keyscene.nmc_north_creek",
+ "units": "metres, the piece’s own frame: +x right, +y the show face, +z up from its ground point (the pivot)",
+ "bounds": {
+  "x": [
+   -3.5,
+   3.56
+  ],
+  "y": [
+   -0.82,
+   0.867
+  ],
+  "z": [
+   0,
+   3.6
+  ]
+ },
+ "layer": "raised",
+ "walk": "deck",
+ "mount": "posts",
+ "colliders": [],
+ "facings": [
+  {
+   "dir": 0,
+   "showFaces": "N",
+   "bearingDeg": 0,
+   "cameraSees": "its back"
+  },
+  {
+   "dir": 1,
+   "showFaces": "NW",
+   "bearingDeg": 315,
+   "cameraSees": "its back"
+  },
+  {
+   "dir": 2,
+   "showFaces": "W",
+   "bearingDeg": 270,
+   "cameraSees": "the show face, edge-on or at a diagonal"
+  },
+  {
+   "dir": 3,
+   "showFaces": "SW",
+   "bearingDeg": 225,
+   "cameraSees": "the show face"
+  },
+  {
+   "dir": 4,
+   "showFaces": "S",
+   "bearingDeg": 180,
+   "cameraSees": "the show face"
+  },
+  {
+   "dir": 5,
+   "showFaces": "SE",
+   "bearingDeg": 135,
+   "cameraSees": "the show face"
+  },
+  {
+   "dir": 6,
+   "showFaces": "E",
+   "bearingDeg": 90,
+   "cameraSees": "the show face, edge-on or at a diagonal"
+  },
+  {
+   "dir": 7,
+   "showFaces": "NE",
+   "bearingDeg": 45,
+   "cameraSees": "its back"
+  }
+ ],
+ "cells": [
+  {
+   "dir": 0,
+   "w": 233,
+   "h": 135,
+   "pivot": [
+    115,
+    109
+   ]
+  },
+  {
+   "dir": 1,
+   "w": 203,
+   "h": 171,
+   "pivot": [
+    100,
+    151
+   ]
+  },
+  {
+   "dir": 2,
+   "w": 61,
+   "h": 189,
+   "pivot": [
+    31,
+    159
+   ]
+  },
+  {
+   "dir": 3,
+   "w": 204,
+   "h": 155,
+   "pivot": [
+    102,
+    136
+   ]
+  },
+  {
+   "dir": 4,
+   "w": 233,
+   "h": 115,
+   "pivot": [
+    117,
+    89
+   ]
+  },
+  {
+   "dir": 5,
+   "w": 203,
+   "h": 206,
+   "pivot": [
+    102,
+    135
+   ]
+  },
+  {
+   "dir": 6,
+   "w": 61,
+   "h": 226,
+   "pivot": [
+    30,
+    144
+   ]
+  },
+  {
+   "dir": 7,
+   "w": 204,
+   "h": 205,
+   "pivot": [
+    101,
+    134
+   ]
+  }
+ ],
+ "anchors": {
+  "deck": 2.8,
+  "len": 7,
+  "width": 1.5,
+  "end": [
+   3.5,
+   0,
+   2.8
+  ],
+  "shore": [
+   -3.5,
+   0,
+   2.8
+  ],
+  "ladder": [
+   3.05,
+   0.81
+  ],
+  "note": "walkable deck, dry at the spring high; the ladder reaches the mud; boats tie at the cleats",
+  "px": {
+   "end": [
+    5,
+    20.4
+   ],
+   "shore": [
+    229,
+    20.4
+   ]
+  }
+ },
+ "options": {
+  "len": 7,
+  "width": 1.5,
+  "deck": 2.8,
+  "ground": [
+   2.4,
+   1.6,
+   0.8,
+   0.2
+  ],
+  "yaw": 0,
+  "ladder": true,
+  "cleats": 2,
+  "chairs": 0,
+  "chairMat": "red",
+  "bay": 1.75
+ },
+ "light": null,
+ "notes": "Heights above mean sea level: stand it at z 0 at the dock’s middle. North bank docks point south (yaw -90), south bank docks north (yaw 90).",
+ "dock": {
+  "deckZ": 2.8,
+  "lenM": 7,
+  "dryAtSpringHighM": 0.6,
+  "fishing": "from the end on the flood: smelt, eel, rock crab (stream.nmc_north_creek)",
+  "boats": "a dory or a canoe ties at the cleats; at the ebb it lies on the mud"
+ }
+}
