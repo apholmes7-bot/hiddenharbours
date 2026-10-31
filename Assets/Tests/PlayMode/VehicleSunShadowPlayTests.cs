@@ -246,6 +246,13 @@ namespace HiddenHarbours.Tests.PlayMode
                 Assert.Ignore("Opt-in GPU proof; presence and lamp registration run on the Null device.");
             yield return Load();
             var truck = Placed().First(p => p.name == NineMileCreekTruckPark.TruckName);
+            if (System.Environment.GetEnvironmentVariable("HH_SHADOWS_B_NIGHT_ONLY") == "1")
+            {
+                var nightLamp = LampPost();
+                Park(truck, (Vector2)nightLamp.WorldOrigin + Vector2.right * 2f);
+                yield return Pair("truck-lamp-2100", truck, truck.transform.position, 21f, _lampCaption);
+                yield break;
+            }
             Vector2 park = truck.transform.position;
             var road = RoadStation(NineMileCreekMainland.WharfRoad[2]);
             var quadSite = RoadStation(road.world + Vector2.left * 50f,
