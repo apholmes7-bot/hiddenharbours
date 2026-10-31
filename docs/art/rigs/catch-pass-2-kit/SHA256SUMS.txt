@@ -1,13 +1,20 @@
-94df19e5851f67ff546532ec2f855a2f926bc0b2944af68cb73994d8db33a2d2  sidecars/fishIsoRig2.rig.json
-6d7712f3a4eb6e0084163e2bc4d3fe244a457f6113f9d6b401e28f83f0f33549  sidecars/crustaceanRig2.rig.json
-ab6393f78f529a1e3c30dad71d0df496518731b495826fd007e458508dd61dd0  sidecars/shellfishRig2.rig.json
-80b5b90936cf3023c9be43b821f6b4a1eca73170414387bf7761cbfd22d37388  sidecars/clamHodRig.rig.json
-3d122f112a5ef3e718cdc0806bcec027b1f33b161759b200cc7c5c0ed01176db  sidecars/catchKit2.rig.json
+f80f9dda0243ad41afbca954f742fe0796514e90afb901baf460db15ce8eac87  sidecars/fishIsoRig2.rig.json
+780c9839a86fa88c806a09f4bcd1c7540515f8951f32f6280a363bf29ccb97cb  sidecars/crustaceanRig2.rig.json
+1cd725ee05378785a4a758d5d4d28d973b361c575b84066dd90c07d3573ab716  sidecars/shellfishRig2.rig.json
+1a49be410f747a9acab3ff140c93cb76021c98a7ad558d779869377c4be79dcc  sidecars/clamHodRig.rig.json
+153e213c1457d0a1e6b203366ac105b83288d06e3a765a226f51f6c3d6040a6b  sidecars/catchKit2.rig.json
 
 # rigs these were derived from (derivedFromRigSha256 in each file) — identical bytes in Art/ of this kit and the project
 f7fc9db510b0346dea568c43dc7378f1a12fd71ee8f5a7653e78377812b792bd  Art/isoSolid.js  (217 lines)
-c97f5f76851bfed806c2b74dbc894a2aef2506c69a5dd5e9f20086f71317d13c  Art/fishIsoRig2.js  (333 lines)
-40975234acf2515b7175b5468212af893f28f4535b49ef85af8ecf2473fd2901  Art/crustaceanRig2.js  (301 lines)
-3bcd4cef3116a6c59e8106c92f7b0f290deae73087590aa0d10814b60b81d9e5  Art/shellfishRig2.js  (120 lines)
+3e162191294f07129c94e5e4ecc36db31a94564fa114b4327fd44447d267e479  Art/fishIsoRig2.js  (652 lines)
+e1eda988ec2cdc48cf716097a3abd9e612f91aab9761e2e5b794a5368c05c2de  Art/crustaceanRig2.js  (487 lines)
+9f219283d0d04b6ef1b286b2c77b5ce5bb99dbcad6cfed4225ad0255aad5d4d8  Art/shellfishRig2.js  (206 lines)
 142c63db93af6f45749106a68523f1cacee5cceb260b3dc216d48c81fc926d36  Art/clamHodRig.js  (53 lines)
-4afe6d0d87deb169623d1ec5379bfec60457229c0b189fd9341e71c75e93dfd9  Art/catchKit2.js  (119 lines)
+d01c40cb5a508401ea17db92df1ccd4c26e22c0f717fdf7a4eb8f7c52b2166c9  Art/catchKit2.js  (119 lines)
+
+# the kit’s other files, summed by the catch review’s tools/kit.js: the plate rig and its sidecar, the READMEs, the harness
+78890fea47f0d717805c800247a185666c8a48531dbad5b700a81304a5f945ff  Art/fieldGuidePlateRig.js  (328 lines)
+2a33cc95969ebc503f01a332abbfe9100198c31cac2ed97dcb30ecf46df6ef6f  Art/gameplay/fieldGuidePlateRig.gameplay.json
+0a415f4d15ff462c03465a09adf0c9b043b2e597b64846732c517ac5422d9f4a  README.md
+2db93221c8ad12ef60332ca12a5eb692eae2d2f1b5fbb69246a569d6feb3e543  _catchSidecars.js
+13011512dd261993b05872bfc460ed5bfe650f156243fc44cfade9060c2b32e5  sidecars/README.md

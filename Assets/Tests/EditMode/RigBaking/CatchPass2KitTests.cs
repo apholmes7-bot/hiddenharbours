@@ -171,15 +171,26 @@ namespace HiddenHarbours.Tests.RigBaking
         }
 
         [Test]
-        public void TheFishCellAndPivot_AreThePassOneCellAndPivot()
+        public void TheFishCellIsPassThree64By80_AndThePivotIsPassOnes32By38()
         {
-            // This is what lets the pass-2 sheets ride FishingSheetSlicer's existing "Fish_" spec
-            // with no slicer change at all.
+            // The taller pass-3 cell retains the original water-surface pivot.
             using var host = Chain();
             Assert.AreEqual(64, host.EvaluateNumber("FishIso2.W"));
-            Assert.AreEqual(64, host.EvaluateNumber("FishIso2.H"));
+            Assert.AreEqual(80, host.EvaluateNumber("FishIso2.H"));
             Assert.AreEqual(32, host.EvaluateNumber("FishIso2.pivot.x"));
             Assert.AreEqual(38, host.EvaluateNumber("FishIso2.pivot.y"));
+        }
+
+        [TestCase("lobster", 16)]
+        [TestCase("crab", 12)]
+        public void CrustaceanHeldGrip_IsPerKind_AndTheSlicerUsesThatGrip(string kind, int y)
+        {
+            using var host = Chain();
+            Assert.AreEqual(32, host.EvaluateNumber($"Crustacean2.hpivot.{kind}.x"));
+            Assert.AreEqual(y, host.EvaluateNumber($"Crustacean2.hpivot.{kind}.y"));
+            var kit = HiddenHarbours.Art.Editor.CatchStorageSheetSlicer.Kits[$"Crust2Held_{kind}"];
+            Assert.AreEqual(32, kit.PivotTopLeftPx.x);
+            Assert.AreEqual(y, kit.PivotTopLeftPx.y);
         }
 
         [Test]

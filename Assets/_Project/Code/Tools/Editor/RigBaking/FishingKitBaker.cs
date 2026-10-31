@@ -116,77 +116,16 @@ namespace HiddenHarbours.Tools.RigBaking
         // =====================================================================================
 
         /// <summary>
-        /// Bakes fish sheets at reference scale (the rig's <c>scale</c> stays a runtime dial;
-        /// sheets are per species only). Null lists mean "everything the rig declares": species
-        /// from <c>ORDER</c>, states from <c>AORDER</c> (water anims, baked with the default
-        /// waterZ so the depth tint is in the pixels) followed by <c>RESTS</c> (dry deck/held
-        /// poses). The anchors JSON carries <c>hold()</c> per species and the fight's
-        /// <c>mouth()</c> line-attach per water-anim × dir × frame.
+        /// Refuses the pass-1 fish bake before loading a rig or writing a sheet.
+        /// CatchPass2BakeMenu.BakeCatchPass2 is the only maker of the Fish_ sheets.
         /// </summary>
         public static FishingBakeResult BakeFish(IReadOnlyList<string> species = null,
                                                  IReadOnlyList<string> states = null,
                                                  string outputFolder = DefaultOutputFolder,
                                                  Action<string, float> progress = null)
-        {
-            var total = Stopwatch.StartNew();
-            var entry = RigCatalog.Get("fish");
-
-            using IRigScriptHost host = RigScriptHostFactory.Create();
-            var geo = RigCatalog.Install(host, entry);
-            string g = entry.GlobalName;
-
-            var result = new FishingBakeResult
-            {
-                RigKey = "fish", EngineName = host.EngineName, Geometry = geo,
-            };
-
-            // ---- MEASURE the convention from pixels, then cross-check the declaration --------
-            var probe = FishingRigAzimuthProbe.MeasureFish(host, g, geo, Dirs);
-            result.MeasuredConvention = probe.Convention;
-            result.ConventionReport = probe.Report;
-            RefuseOnMismatch("fish", entry.DeclaredConvention, probe.Convention, probe.Report);
-
-            species ??= ReadStringArray(host, $"{g}.ORDER");
-            states ??= ReadFishStateOrder(host, g);
-
-            // Validate the WHOLE recipe before writing anything — a mistyped species or state
-            // fails with zero files on disk rather than a half-baked set.
-            foreach (var sp in species)
-                if (!host.EvaluateBool($"typeof {g}.SPECIES[{Js(sp)}] === 'object'"))
-                    throw new ArgumentException(
-                        $"FishIso declares no species '{sp}'. Known: " +
-                        string.Join(", ", ReadStringArray(host, $"{g}.ORDER")) + ".");
-            foreach (var st in states) FishStateFrames(host, g, st);
-
-            var renderClock = new Stopwatch();
-            Directory.CreateDirectory(Path.Combine(RigCatalog.RepoRoot, outputFolder));
-
-            int done = 0, plan = species.Count * states.Count;
-            foreach (var sp in species)
-            foreach (var st in states)
-            {
-                progress?.Invoke($"Fish_{sp}_{st}", (float)done++ / plan);
-                int frames = FishStateFrames(host, g, st);
-                bool isRest = IsFishRest(host, g, st);
-
-                result.Sheets.Add(WriteSheet(outputFolder, $"Fish_{sp}_{st}", Dirs, frames, geo,
-                    (d, f) =>
-                    {
-                        double dir = RigBaker.DirForCell(d, Dirs, probe.Convention);
-                        string poseKey = isRest ? "rest" : "anim";
-                        string expr = $"{g}.render({Num(dir)},{{species:{Js(sp)},{poseKey}:{Js(st)},frame:{f}}})";
-                        return Render(host, expr, geo, renderClock, result);
-                    }, result));
-            }
-
-            result.AnchorJsonPath = WriteFishAnchors(host, entry, geo, species, states,
-                                                     probe.Convention, outputFolder);
-
-            result.RenderMilliseconds = renderClock.Elapsed.TotalMilliseconds;
-            total.Stop();
-            result.TotalMilliseconds = total.Elapsed.TotalMilliseconds;
-            return result;
-        }
+            => throw new InvalidOperationException(
+                "The pass-1 fish bake is retired. Use CatchPass2BakeMenu.BakeCatchPass2, " +
+                "the only maker of the Fish_ sheets.");
 
         /// <summary>Water anims (AORDER, in rig order) then dry rests (RESTS, in rig order).</summary>
         public static IReadOnlyList<string> ReadFishStateOrder(IRigScriptHost host, string g)

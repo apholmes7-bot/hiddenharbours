@@ -58,6 +58,8 @@ namespace HiddenHarbours.App.Editor
                 ("held-lobster", HeldLobster),
                 ("hand-of-clams", HandOfClams),
                 ("hod-empty", HodEmpty),
+                ("held-crab", HeldCrab),
+                ("tote-crust", ToteCrust),
             })
             {
                 // Each plate stands alone: one that cannot find its art says so and the rest still
@@ -167,6 +169,8 @@ namespace HiddenHarbours.App.Editor
         /// lane the fisher's hand drew a UI icon instead.</summary>
         static Plate HeldLobster() => HeldStrip("lobster", "HELD LOBSTER - CRUST2HELD, 8 HEADINGS, GRIP PIVOT");
 
+        static Plate HeldCrab() => HeldStrip("crab", "HELD CRAB - EVERY FACING");
+
         /// <summary>A hand of clams — one facing, because the shellfish rig takes no camera at all.</summary>
         static Plate HandOfClams() => HeldStrip("clam", "HAND OF CLAMS - SHELL2HAND, NON-DIRECTIONAL");
 
@@ -220,6 +224,30 @@ namespace HiddenHarbours.App.Editor
                 if (d < back.Length) plate.Blit(back[d], x, y);
                 if (d < front.Length) plate.Blit(front[d], x, y);
                 plate.Text(x + 10, plate.H - 22, "D" + d, Dim);
+            }
+            return plate;
+        }
+
+        static Plate ToteCrust()
+        {
+            string[] bands = { "few", "half", "full", "brim" };
+            const int cell = 64, gap = 4, left = 44, top = 26;
+            var plate = new Plate(left + Dirs * (cell + gap) + 8,
+                                  top + bands.Length * (cell + gap) + 10);
+            plate.Text(4, plate.H - 12, "TOTE CRUST - FEW / HALF / FULL / BRIM - EVERY FACING", Ink);
+            for (int row = 0; row < bands.Length; row++)
+            {
+                string sheet = $"{Storage}/Bucket_tote_{bands[row]}_crust.png";
+                Sprite[] cells = Cells(sheet);
+                if (cells.Length == 0)
+                {
+                    Debug.LogWarning($"[Plates] tote-crust row '{bands[row]}' found no cells in {sheet} — SKIPPED.");
+                    continue;
+                }
+                int y = plate.H - top - (row + 1) * (cell + gap);
+                plate.Text(4, y + cell / 2, bands[row].ToUpperInvariant(), Dim);
+                for (int d = 0; d < Dirs && d < cells.Length; d++)
+                    plate.Blit(cells[d], left + d * (cell + gap), y);
             }
             return plate;
         }

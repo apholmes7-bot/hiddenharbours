@@ -113,7 +113,7 @@ namespace HiddenHarbours.Player
         public int ThrashFramesPerDir;
         public Vector2[] ThrashMouthOffsets;
 
-        public Sprite[] HeldFrames;     // 8 dirs × n — gill (two-handed) or tail (one-handed) hold
+        public Sprite[] HeldFrames;     // 8 dirs × n — gill or tail grip; hand count comes from weight
         public int HeldFramesPerDir;
 
         // ---- catch pass 2's two new water anims -------------------------------------------------

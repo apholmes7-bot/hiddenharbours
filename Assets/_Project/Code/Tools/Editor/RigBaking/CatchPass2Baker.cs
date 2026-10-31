@@ -106,17 +106,13 @@ namespace HiddenHarbours.Tools.RigBaking
     /// the kg band's midpoint, not scale 1, and pass 2 re-lofts the four pass-1 species anyway —
     /// 33,547 pixels differ at scale 1, in every one of 280 cells. See <c>RigCatalog.CatchPass2Kit</c>.</para>
     ///
-    /// <para><b>The clip ledger.</b> Some cells draw past the 64×64 cell edge and the bake RECORDS
-    /// them rather than refusing, because refusing would make pass 2 unbakeable through no fault of
-    /// this code: cod at its own declared 1.5 and bass at its own declared 1.6 already clip, always
-    /// at the BOTTOM edge, overwhelmingly in the <c>gill</c> rows — the pivot (32,38) leaves only
-    /// 25 px below it and a big fish hangs DOWN from the gill grip. The ledger is asserted in both
-    /// directions by <c>CatchPass2BakeTests</c>, so when the rig's cell grows the test goes red and
-    /// the ledger gets deleted rather than quietly outliving the defect.</para>
+    /// <para><b>The clip ledger.</b> The bake records cells that draw past the 64×80 cell edge.
+    /// Phase B reports the recorded clips after the pass-3 bake; the ledger remains in place
+    /// pending that evidence.</para>
     ///
     /// Like its siblings this stops at "PNG (+ anchors JSON) on disk": slicing is
-    /// <c>FishingSheetSlicer</c>'s job (pass 2 shares the <c>Fish_</c> prefix spec exactly — same
-    /// 64×64 cell, same 8 rows, same (32,38) pivot — so it needs no slicer change) and import
+    /// <c>FishingSheetSlicer</c>'s job (the <c>Fish_</c> prefix spec is 64×80, with
+    /// 8 rows and the same (32,38) pivot) and import
     /// settings are <c>ArtImportPipeline</c>'s.
     /// </summary>
     public static class CatchPass2Baker

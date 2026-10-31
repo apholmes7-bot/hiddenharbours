@@ -84,8 +84,8 @@ namespace HiddenHarbours.Art.Editor
         public static readonly IReadOnlyDictionary<string, KitSpec> Kits =
             new Dictionary<string, KitSpec>(StringComparer.Ordinal)
             {
-                // FishIso: 64×64, pivot (32,38) = the water-surface point under the body centre.
-                ["Fish_"] = new KitSpec(64, 64, rows: 8, pivotX: 32, pivotY: 38),
+                // FishIso2: 64×80, pivot (32,38) = the water-surface point under the body centre.
+                ["Fish_"] = new KitSpec(64, 80, rows: 8, pivotX: 32, pivotY: 38),
 
                 // RodBobber: 16×22, pivot (8,12) = the waterline point; ONE row — not directional.
                 ["Bobber_"] = new KitSpec(16, 22, rows: 1, pivotX: 8, pivotY: 12),

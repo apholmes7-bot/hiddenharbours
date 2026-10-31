@@ -14,7 +14,7 @@ namespace HiddenHarbours.Tools.RigBaking
         ///
         /// <para><b>Pass 1 is NOT retired by this registration.</b> <c>fish</c>, <c>crustacean</c>,
         /// <c>shellfish</c> and <c>catchKit</c> stay registered and still load; pass 2 is a parallel
-        /// set on the same cells and pivots. What it is NOT is pixel-identical — see the
+        /// set; pass 3 grows the fish cell and makes crustacean grips per kind. See the
         /// <c>fish2</c> entry.</para>
         ///
         /// <para><b>The shared turntable is the deck-loop kit's one copy.</b> This kit shipped its own
@@ -28,8 +28,8 @@ namespace HiddenHarbours.Tools.RigBaking
             {
                 // ---- catch pass 2 (drop of 2026-09-05) ----------------------------------------
 
-                // Seven species (cod haddock pollock mackerel + bass flounder herring), cell 64x64,
-                // pivot (32,38) — the pass-1 cell and pivot exactly. sheetOrder() reports 35 columns
+                // Seven species (cod haddock pollock mackerel + bass flounder herring), cell 64x80,
+                // pivot (32,38) — the pass-1 pivot in the pass-3 cell. sheetOrder() reports 35 columns
                 // (25 water frames + 10 rest frames); AORDER is swim 6f / dart 3f / thrash 4f /
                 // shadow 2f / roll 4f / jump 6f, RESTS deck 4 / gill 2 / tail 2 / cradle 2. All read
                 // from the rig, none from its README.
@@ -52,8 +52,8 @@ namespace HiddenHarbours.Tools.RigBaking
                                          AzimuthConvention.Clockwise),
 
                 // Lobster + rock crab, lofted as real solids against the shared turntable. Cell
-                // 64x64, pivot (32,40) = ground centre; the HELD pose re-pivots to hpivot (32,12),
-                // the grip on the back.
+                // 64x64, pivot (32,40) = ground centre; HELD uses hpivot per kind:
+                // lobster (32,16), crab (32,12), the grip on the back.
                 //
                 // ⚠️ THE SIGNATURE IS render(KIND, opts) — the kind is the FIRST ARGUMENT and the
                 // camera is opts.dir. Passing a dir first costs nothing loudly: KINDS.indexOf(kind)

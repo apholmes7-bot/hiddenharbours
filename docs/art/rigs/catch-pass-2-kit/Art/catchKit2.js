@@ -74,7 +74,7 @@
       let kind=catchKey;
       if (catchKey==='mixed'){ const pool=['herring','mackerel','haddock','lobster','crab','pollock','cod','bass','flounder']; kind=pool[Math.floor(rng()*pool.length)]; }
       else rng();
-      const rg=(F&&F.SPECIES[kind]&&F.SPECIES[kind].range)||[0.85,1.15];
+      const rg=(F&&F.SPECIES[kind]&&F.SPECIES[kind].range)||(root.Crustacean2&&root.Crustacean2.SIZES[kind]&&root.Crustacean2.SIZES[kind].range)||[0.85,1.15];
       const scale=Math.min(rg[1], Math.max(rg[0], 0.85+rng()*0.3));
       const jit=dense>1 && i>=n/dense;
       out.push({ kind, variant:Math.floor(rng()*4), scale, jx:jit?Math.round((rng()-0.5)*7):0, jy:jit?Math.round((rng()-0.5)*4):0 });

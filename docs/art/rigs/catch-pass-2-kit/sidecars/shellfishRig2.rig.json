@@ -2,9 +2,9 @@
  "schema": "hidden-harbours/rig-sidecar@1",
  "rig": "Art/shellfishRig2.js",
  "exportSymbol": "Shellfish2",
- "derivedFromRigSha256": "3bcd4cef3116a6c59e8106c92f7b0f290deae73087590aa0d10814b60b81d9e5",
+ "derivedFromRigSha256": "9f219283d0d04b6ef1b286b2c77b5ce5bb99dbcad6cfed4225ad0255aad5d4d8",
  "generated": {
-  "date": "2026-09-06T00:14:50.676Z",
+  "date": "2026-10-28T00:00:00.000Z",
   "by": "Art/_catchSidecars.js",
   "harness": "CATCH_SIDECARS",
   "isoSolidSha256": "f7fc9db510b0346dea568c43dc7378f1a12fd71ee8f5a7653e78377812b792bd"
