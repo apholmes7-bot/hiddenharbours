@@ -194,7 +194,7 @@ MonoBehaviour:
   Family: fish
   Variant: herring
   SourceRigPath: docs/art/rigs/catch-pass-2-kit/Art/fishIsoRig2.js
-  SourceRigSha256: c97f5f76851bfed806c2b74dbc894a2aef2506c69a5dd5e9f20086f71317d13c
+  SourceRigSha256: 3e162191294f07129c94e5e4ecc36db31a94564fa114b4327fd44447d267e479
   SourceFaceBuilder: held.faces('herring')
   SourceMaterials: held.mats('herring')
   SourcePose: 'rest: tail, frame 0, pitch -1.48, curve 0.1, gripU 0.95'
@@ -285,7 +285,7 @@ MonoBehaviour:
   PivotPx: {x: 32, y: 38}
   PxPerMetre: 32
   CellW: 64
-  CellH: 64
+  CellH: 80
   ElevationDeg: 40
   GripLocalMeters: {x: -2.3310347e-18, y: 1.3552527e-18, z: -2.6888214e-17}
   LineRamps:
