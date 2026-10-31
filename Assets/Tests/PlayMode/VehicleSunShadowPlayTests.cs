@@ -26,6 +26,7 @@ namespace HiddenHarbours.Tests.PlayMode
         const string Output = "artifacts/shadows/b";
         readonly List<Object> _owned = new();
         readonly HashSet<GameObject> _resident = new();
+        readonly List<GameObject> _sleepingResidents = new();
         WharfNightStage _stage;
         bool _ignore;
         float _timeScale;
@@ -60,6 +61,8 @@ namespace HiddenHarbours.Tests.PlayMode
                 { root.SetActive(false); Object.DestroyImmediate(root); }
             if (_stage != null) yield return _stage.TearDown();
             _stage = null;
+            foreach (var root in _sleepingResidents) if (root != null) root.SetActive(true);
+            _sleepingResidents.Clear();
             GameServices.Save = _save;
             ShellFlow.Reset();
             LogAssert.ignoreFailingMessages = _ignore;
@@ -70,6 +73,11 @@ namespace HiddenHarbours.Tests.PlayMode
         IEnumerator Load()
         {
             Time.timeScale = 1f;
+            // GPU fixtures before this class can retain a real persistent fleet. Keep that fleet
+            // resident but asleep, so this region has its own camera and unshared facet ids.
+            foreach (var root in _resident)
+                if (root != null && root.activeSelf && root.GetComponentInChildren<PersistentObject>(true) != null)
+                { root.SetActive(false); _sleepingResidents.Add(root); }
             GameServices.Clock = null;
             GameServices.Environment = null;
             _stage = new WharfNightStage("NineMileCreek", "VehicleShadowProof");
@@ -79,11 +87,16 @@ namespace HiddenHarbours.Tests.PlayMode
 
         IEnumerator Hour(float hour)
         {
-            yield return _stage.SetNight(hour);
             Assert.That(GameServices.Clock, Is.Not.Null);
+            Assert.That(GameServices.Config, Is.Not.Null);
+            Time.timeScale = 1f;
+            GameServices.Clock.SeekTo((1.0 + hour / 24.0) * GameServices.Config.SecondsPerDay);
+            GameServices.Clock.TimeScale = 0f;
             float until = Time.realtimeSinceStartup + 1.1f;
             while (Time.realtimeSinceStartup < until) yield return null;
             Assert.That(GameServices.Clock.HourOfDay, Is.EqualTo(hour).Within(0.02f));
+            Assert.That(Shader.GetGlobalFloat("_SunElevation") > 0f, Is.EqualTo(hour < 20f),
+                "The published sun, not a guessed lamp gate, must wear the requested hour.");
         }
 
         static ParkedVehicle[] Placed()
@@ -136,6 +149,8 @@ namespace HiddenHarbours.Tests.PlayMode
             var quad = Quad(NineMileCreekMainland.WharfRoad[2]);
             yield return null;
             AssertDayCaster(quad);
+            var ids = placed.Concat(new[] { quad }).Select(p => Body(p).HullId).ToArray();
+            Assert.That(ids.Distinct().Count(), Is.EqualTo(ids.Length), "This fixture must not share overflow facet ids.");
             File.WriteAllLines(Path.Combine(Output, "vehicle-census.tsv"),
                 new[] { "name\thullId\theavePx\tridePx\tppu\tfoot" }.Concat(placed.Concat(new[] { quad }).Select(p =>
                 {
@@ -148,9 +163,9 @@ namespace HiddenHarbours.Tests.PlayMode
         static SceneLight LampPost()
         {
             var lamp = LampShadowSystem.LiveLights.FirstOrDefault(l => l != null && l.isActiveAndEnabled &&
-                l.gameObject.scene.name == "NineMileCreek" && l.Shape == SceneLight.LightShape.Radial && l.Intensity > 0f && l.ReachMetres > 0f &&
-                (l.transform.root.name.IndexOf("Lamp", StringComparison.OrdinalIgnoreCase) >= 0 ||
-                 l.transform.root.name.IndexOf("Post", StringComparison.OrdinalIgnoreCase) >= 0));
+                l.gameObject.scene.name == "NineMileCreek" && l.Shape == SceneLight.LightShape.Radial &&
+                l.Intensity > 0f && l.ReachMetres > 0f && l.GetComponent<PreconfiguredLight>() != null &&
+                l.GetComponent<PreconfiguredLight>().Preset == LightPresets.Kind.Lightpost);
             Assert.That(lamp, Is.Not.Null, "The scene must carry a live radial lamp post.");
             return lamp;
         }
