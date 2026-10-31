@@ -31,6 +31,8 @@ namespace HiddenHarbours.Core
         private static SaveService _instance;
 
         private string _path;
+        private int _writeDepth;
+        private bool _writePending;
 
         // A file was at _path when it was opened but could not be read as a save (corrupt, cut short, a
         // format this build cannot parse). The first write keeps it whole before replacing it.
@@ -138,6 +140,11 @@ namespace HiddenHarbours.Core
 
         public void Save()
         {
+            if (_writeDepth > 0)
+            {
+                _writePending = true;
+                return;
+            }
             if (!WritesAllowed) return;
 
             if (Current == null) Current = SaveMigration.NewGame();
@@ -153,6 +160,29 @@ namespace HiddenHarbours.Core
             // the quit had just written. It is also what the resume needs to be true: the shell only seeks
             // the clock to the saved instant for a game it believes is on disk.
             LoadedExistingSave = true;
+        }
+
+        public System.IDisposable DeferWrites()
+        {
+            _writeDepth++;
+            return new DeferredSaveScope(this);
+        }
+
+        private sealed class DeferredSaveScope : System.IDisposable
+        {
+            private SaveService _owner;
+            public DeferredSaveScope(SaveService owner) { _owner = owner; }
+
+            public void Dispose()
+            {
+                SaveService owner = _owner;
+                if (ReferenceEquals(owner, null)) return;
+                _owner = null;
+                owner._writeDepth--;
+                if (owner._writeDepth != 0 || !owner._writePending) return;
+                owner._writePending = false;
+                owner.Save();
+            }
         }
 
         /// <summary>

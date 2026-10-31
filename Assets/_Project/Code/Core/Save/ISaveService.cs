@@ -38,6 +38,11 @@ namespace HiddenHarbours.Core
         /// <summary>Snapshot the live services into <see cref="Current"/> and write it to disk now.</summary>
         void Save();
 
+        /// <summary>Group several Core writers into one atomic file write when the outermost scope
+        /// ends. This does not roll back live state: live state is the truth and the disk follows it
+        /// in one write. Implementations without deferral keep saving immediately.</summary>
+        System.IDisposable DeferWrites() => ImmediateSaveScope.Instance;
+
         /// <summary>
         /// Discard the loaded game and start over: <see cref="Current"/> becomes a fresh
         /// <see cref="SaveMigration.NewGame"/> blob, <see cref="LoadedExistingSave"/> goes false, and the
@@ -57,5 +62,11 @@ namespace HiddenHarbours.Core
         /// overwrite, which is exactly what the no-op means.</para>
         /// </summary>
         void BeginNewGame() { }
+    }
+
+    internal sealed class ImmediateSaveScope : System.IDisposable
+    {
+        internal static readonly ImmediateSaveScope Instance = new ImmediateSaveScope();
+        public void Dispose() { }
     }
 }
