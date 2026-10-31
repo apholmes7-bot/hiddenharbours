@@ -28,10 +28,13 @@ namespace HiddenHarbours.Tests.Art.EditMode
 
         [Test] public void DeckShadow_LandsOnTheOwnDeckOnly()
         {
-            using var stage=new HullDeckShadowTests.DeckStage();
-            Color32[] off=stage.Read(false,8),on=stage.Read(true,8);Color32 deck=off[stage.DeckSample];int changed=0;
-            for(int i=0;i<off.Length;i++)if(!off[i].Equals(on[i])){changed++;Assert.That(off[i],Is.EqualTo(deck),"A changed pixel must be visible deck, never a wall, water or neighbour.");}
-            Assert.That(changed,Is.GreaterThan(100));
+            foreach(float hour in new[]{8f,17f,22.5f})
+            {
+                using var stage=new HullDeckShadowTests.DeckStage();
+                Color32[] off=stage.Read(false,hour),on=stage.Read(true,hour);Color32 deck=off[stage.DeckSample];int changed=0;
+                for(int i=0;i<off.Length;i++)if(!off[i].Equals(on[i])){changed++;Assert.That(off[i],Is.EqualTo(deck),"A changed pixel must be visible deck, never a wall, water or neighbour.");}
+                HullDeckShadowTests.AssertDeckPixels(hour,changed);
+            }
         }
         [Test] public void DeckShadow_FollowsTheSun()
         {
@@ -40,9 +43,10 @@ namespace HiddenHarbours.Tests.Art.EditMode
                 using var stage=new HullDeckShadowTests.DeckStage();
                 Color32[] off=stage.Read(false,hour),on=stage.Read(true,hour);long x=0,count=0;
                 for(int i=0;i<off.Length;i++)if(!off[i].Equals(on[i])){x+=i%stage.Shot.Size;count++;}
-                Assert.That(count,Is.GreaterThan(100),"The declared fixture must show shade at hour "+hour);return (double)x/count-stage.Shot.Size/2.0;
+                HullDeckShadowTests.AssertDeckPixels(hour,(int)count);return count==0?0:(double)x/count-stage.Shot.Size/2.0;
             }
             Assert.That(Centre(8)*Centre(17),Is.LessThan(0),"The morning and evening shade must lie on opposite sides of the house.");
+            Centre(22.5f);
         }
 
         [Test]

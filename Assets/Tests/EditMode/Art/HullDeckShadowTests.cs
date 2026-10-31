@@ -29,7 +29,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
                     Assert.That(deck.Geometry.Receiver.vertexCount,Is.GreaterThan(0));
                     foreach(var p in deck.Geometry.Receiver.vertices)Assert.That(p.z,Is.EqualTo(def.WatertightDeckHeightMeters).Within(1e-5f));
                 }
-                finally{Object.DestroyImmediate(host);}
+                finally{ReleaseDeckCasterForFixture(host);Object.DestroyImmediate(host);}
             }
         }
         [Test] public void HouseFacesOnly_Cast()
@@ -50,7 +50,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
                 Assert.That(caster.Geometry.HouseTriangles,Is.Zero);Assert.That(caster.ShadowRenderer,Is.Null);
                 Assert.That(caster.Geometry.Receiver,Is.Null);Assert.That(caster.Geometry.TriangleBuffer,Is.Null);
             }
-            finally{Object.DestroyImmediate(host);}
+            finally{ReleaseDeckCasterForFixture(host);Object.DestroyImmediate(host);}
         }
         [Test] public void LiftedHouse_DoesNotCast()
         {
@@ -104,6 +104,83 @@ namespace HiddenHarbours.Tests.Art.EditMode
             stage.Caster.enabled=false;stage.Caster.Tick();
             Assert.That(stage.Caster.Geometry,Is.Null);Assert.That(stage.Caster.ShadowRenderer,Is.Null);Assert.That(source!=null,Is.True);
         }
+
+        // EditMode fixtures invoke Tick explicitly; they must release its detached draw explicitly too.
+        // Destroying the non-ExecuteAlways host alone does not exercise its runtime teardown.
+        internal static void ReleaseDeckCasterForFixture(GameObject host)
+        {
+            var caster=host.GetComponent<HullDeckShadowCaster>();if(caster==null)return;
+            var users=typeof(HullDeckShadowCaster).GetField("_users",System.Reflection.BindingFlags.Static|System.Reflection.BindingFlags.NonPublic);
+            int before=(int)users.GetValue(null);bool ownedDraw=caster.ShadowRenderer!=null;
+            caster.enabled=false;caster.Tick();
+            Assert.That(caster.ShadowRenderer,Is.Null,"The fixture must not leave a detached deck draw in the next test.");
+            Assert.That(caster.Geometry,Is.Null,"The fixture must return its mesh and native buffers.");
+            int after=(int)users.GetValue(null);
+            Assert.That(after,Is.EqualTo(before-(ownedDraw?1:0)),"The fixture must return exactly its own shared-material user.");
+            const string folder="artifacts/boats-look/pr2/d1";Directory.CreateDirectory(folder);
+            File.AppendAllText(folder+"/cleanup-guards.jsonl",JsonUtility.ToJson(new CleanupGuard{test=TestContext.CurrentContext.Test.FullName,usersBefore=before,usersAfter=after,hadDraw=ownedDraw})+"\n");
+        }
+        [Serializable] class CleanupGuard{public string test;public int usersBefore,usersAfter;public bool hadDraw;}
+
+        internal static void AssertDeckPixels(float hour,int changed)
+        {
+            const string folder="artifacts/boats-look/pr2/d1";Directory.CreateDirectory(folder);
+            File.AppendAllText(folder+"/C-deck-pixels.jsonl",JsonUtility.ToJson(new DeckPixels{test=TestContext.CurrentContext.Test.FullName,hour=hour,changed=changed})+"\n");
+            if(hour<20)Assert.That(changed,Is.GreaterThan(100),"The declared fixture must show shade at hour "+hour);
+            else Assert.That(changed,Is.Zero,"There is no deck sun shade at night.");
+        }
+        [Serializable] class DeckPixels{public string test;public float hour;public int changed;}
+
+        public static void CaptureOneDeckPair()
+        {
+            try
+            {
+                const string folder="artifacts/boats-look/pr2/d1/plates";
+                if(!File.Exists("artifacts/boats-look/pr2/d1/pair-floor.json"))throw new InvalidOperationException("The pair floor must precede this launch.");
+                if(SystemInfo.graphicsDeviceType==GraphicsDeviceType.Null)throw new InvalidOperationException("The pair needs a graphics device.");
+                Directory.CreateDirectory(folder);
+                var scene=EditorSceneManager.OpenScene("Assets/_Project/Scenes/NineMileCreek.unity",OpenSceneMode.Single);Transform station=null;
+                foreach(GameObject root in scene.GetRootGameObjects())if(root.name=="NineMileCreekWharf")
+                    foreach(Transform t in root.GetComponentsInChildren<Transform>(true))if(t.name.IndexOf("bollard",StringComparison.OrdinalIgnoreCase)>=0){station=t;break;}
+                if(station==null)throw new InvalidOperationException("The berth station is absent.");
+                Vector3 place=station.position+Vector3.down*4;
+                using var shot=new HullSunShadowRenderTests.SunStage(30,1024,false);
+                using var clock=new HullSunShadowRenderTests.ProofClock(shot.Camera);
+                shot.Camera.cullingMask=~0;shot.Camera.transform.position=new Vector3(place.x,place.y,-1000);shot.Camera.farClipPlane=2500;
+                HullSunShadowRenderTests.SetSun(17);
+                var host=shot.Own(new GameObject("DeckProofCapeIslander"));host.transform.position=place;
+                var def=AssetDatabase.LoadAssetAtPath<HullMeshDef>("Assets/_Project/Data/Boats/HullMeshes/CapeIslanderIsoHullMesh.asset");
+                var hull=(IsoFacetHullRenderer)new IsoFacetHullPresentationService().Install(host,def);
+                hull.HeadingDirUnits=2;hull.ApplyPose();
+                var deck=host.GetComponent<HullDeckShadowCaster>();var water=host.GetComponent<HullSunShadowCaster>();
+                try
+                {
+                    shot.AddLamp(new Vector2(place.x+2,place.y+2));
+                    var tint=shot.Sprite("Proof day and night",place,Vector2.one*shot.Camera.orthographicSize*3,Color.white,SortingBands.WorldTint);
+                    tint.sharedMaterial=shot.Own(new Material(Shader.Find("HiddenHarbours/DayNight")));
+                    var block=new MaterialPropertyBlock();block.SetColor("_DayNightTint",Shader.GetGlobalColor("_DayNightTint"));tint.SetPropertyBlock(block);water.Tick();
+                    deck.enabled=false;deck.Tick();File.WriteAllBytes(folder+"/before-capeislander-deck-1700.png",shot.Png());var off=shot.LastPixels;
+                    deck.enabled=true;deck.Tick();ShaderUtil.CompilePass(deck.ShadowRenderer.sharedMaterial,0,true);
+                    File.WriteAllBytes(folder+"/after-capeislander-deck-1700.png",shot.Png());var on=shot.LastPixels;
+                    int changed=HullSunShadowRenderTests.Changed(off,on);if(changed==0)throw new InvalidOperationException("The own deck pair changed no pixels.");
+                    Bounds bounds=deck.Geometry.Receiver.bounds;Vector3 low=bounds.min,high=bounds.max;
+                    int minX=shot.Size,minY=shot.Size,maxX=0,maxY=0;
+                    for(int i=0;i<8;i++)
+                    {
+                        Vector3 rig=new Vector3((i&1)==0?low.x:high.x,(i&2)==0?low.y:high.y,(i&4)==0?low.z:high.z);
+                        Vector3 p=shot.Camera.WorldToViewportPoint(hull.PosedMesh.TransformPoint(rig));
+                        minX=Mathf.Min(minX,Mathf.FloorToInt(p.x*shot.Size));minY=Mathf.Min(minY,Mathf.FloorToInt(p.y*shot.Size));
+                        maxX=Mathf.Max(maxX,Mathf.CeilToInt(p.x*shot.Size));maxY=Mathf.Max(maxY,Mathf.CeilToInt(p.y*shot.Size));
+                    }
+                    File.WriteAllText(folder+"/pair.json",JsonUtility.ToJson(new OnePair{scene=scene.path,station=station.name,x=place.x,y=place.y,hour=17,
+                        deckHeight=def.WatertightDeckHeightMeters,changed=changed,width=shot.Size,height=shot.Size,minX=minX,minY=minY,maxX=maxX,maxY=maxY},true));
+                }
+                finally{deck.enabled=false;deck.Tick();water.enabled=false;water.Tick();}
+                EditorApplication.Exit(0);
+            }
+            catch(Exception e){Debug.LogException(e);EditorApplication.Exit(1);}
+        }
+        [Serializable] class OnePair{public string scene,station;public float x,y,hour,deckHeight;public int changed,width,height,minX,minY,maxX,maxY;}
 
         /// <summary>Explicit second-lease proof; never runs as part of the test filter.</summary>
         public static void CaptureProofFrames()
@@ -221,6 +298,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
             public int DeckSample=>Shot.PixelOf(IsoFacetMath.RigToWorld(0,40).MultiplyPoint3x4(new Vector3(-2,0,0.8f)));
             public void Dispose()
             {
+                ReleaseDeckCasterForFixture(_host);
                 Object.DestroyImmediate(_host);Object.DestroyImmediate(_mesh);Shot.Dispose();
                 Shader.SetGlobalVector("_SunDir",_sun);Shader.SetGlobalFloat("_SunElevation",_e);Shader.SetGlobalFloat("_ShadowStrength",_s);Shader.SetGlobalColor("_DayNightTint",_tint);
             }
