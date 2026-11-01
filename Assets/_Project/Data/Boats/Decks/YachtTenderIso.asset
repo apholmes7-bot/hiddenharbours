@@ -1,0 +1,46 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f8e963cec94c290ca72be0cf932b826b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: HiddenHarbours.Boats::HiddenHarbours.Boats.BoatDeckDef
+  Id: deck.yacht_tender_iso
+  SourceSidecar: docs/art/rigs/gameplay/yachtTenderIsoRig.yacht_tender.walk.json
+  SourceRig: docs/art/rigs/yachtTenderIsoRig.js
+  DerivedFromRigSha256: 5bb3e86b14bf682d01006f666bb7f90069454984a4d39ec3932f25b67f4cc3c6
+  LoaMeters: 5.817
+  Areas:
+  - Id: cockpit
+    Kind: 0
+    Outline:
+    - {x: -0.33, y: -2.19}
+    - {x: 0.33, y: -2.19}
+    - {x: 0.33, y: -1.09}
+    - {x: -0.33, y: -1.09}
+    Holes: []
+    HeightPlane: {x: 0, y: 0, z: 0.42}
+    HeightResidualMax: 0
+    Bounds: {x: -0.33, y: -2.19, z: 0.33, w: -1.09}
+  Cleats:
+  - Id: bow_eye
+    Type: eye
+    PositionMeters: {x: 0, y: 2.5, z: 0.74}
+  - Id: stern_port
+    Type: eye
+    PositionMeters: {x: -0.62, y: -2.5, z: 0.7}
+  - Id: stern_star
+    Type: eye
+    PositionMeters: {x: 0.62, y: -2.5, z: 0.7}
+  HasHelmStation: 1
+  HelmStationLocalMeters: {x: 0, y: -0.54, z: 1.05}
+  HelmStationSource: anchors.helm
+  WalkCenter: {x: 0, y: -1.6400001}
+  WalkHalfExtents: {x: 0.33, y: 0.55}
