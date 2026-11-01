@@ -608,27 +608,51 @@ MonoBehaviour:
   WakeSternOffsetMeters: 8.1
   Lamps:
   - Kind: 0
-    RigLocalMetres: {x: -1.5884075, y: 6.972789, z: 4.097489}
+    RigLocalMetres: {x: -2.55, y: 1.9, z: 2.694}
     IntensityScale: 1
   - Kind: 1
-    RigLocalMetres: {x: 1.5884075, y: 6.972789, z: 4.097489}
+    RigLocalMetres: {x: 2.55, y: 1.9, z: 2.694}
     IntensityScale: 1
   - Kind: 2
-    RigLocalMetres: {x: 0, y: -7.93, z: 2.44}
+    RigLocalMetres: {x: -3.9281134e-16, y: -8, z: 2.07}
     IntensityScale: 1
   - Kind: 3
-    RigLocalMetres: {x: 0, y: -2.925, z: 9.5}
+    RigLocalMetres: {x: -7.365212e-17, y: -1.75, z: 6.4}
     IntensityScale: 1
   - Kind: 4
-    RigLocalMetres: {x: 0, y: -1.815, z: 3.94}
-    IntensityScale: 1
-  - Kind: 5
-    RigLocalMetres: {x: 0, y: 1.41, z: 4.5}
+    RigLocalMetres: {x: 0, y: -1.7800001, z: 3.27}
     IntensityScale: 1
   - Kind: 6
-    RigLocalMetres: {x: 0, y: -2.925, z: 9.5}
+    RigLocalMetres: {x: -7.365212e-17, y: -1.75, z: 6.4}
     IntensityScale: 1
-  Panes: []
+  - Kind: 5
+    RigLocalMetres: {x: 0, y: 0.56, z: 3.82}
+    IntensityScale: 1
+  Panes:
+  - Wall: 2
+    CentreMetres: {x: 1.87, y: -3.3, z: 3.27}
+    HalfAcrossMetres: {x: 0, y: -0.21920305, z: 0}
+    HalfUpMetres: {x: 0, y: 0, z: 0.21920305}
+  - Wall: 1
+    CentreMetres: {x: -1.87, y: -3.3, z: 3.27}
+    HalfAcrossMetres: {x: 0, y: 0.21920305, z: 0}
+    HalfUpMetres: {x: 0, y: 0, z: 0.21920305}
+  - Wall: 2
+    CentreMetres: {x: 1.87, y: -2.2, z: 3.27}
+    HalfAcrossMetres: {x: 0, y: -0.21920305, z: 0}
+    HalfUpMetres: {x: 0, y: 0, z: 0.21920305}
+  - Wall: 1
+    CentreMetres: {x: -1.87, y: -2.2, z: 3.27}
+    HalfAcrossMetres: {x: 0, y: 0.21920305, z: 0}
+    HalfUpMetres: {x: 0, y: 0, z: 0.21920305}
+  - Wall: 2
+    CentreMetres: {x: 1.87, y: -1.1, z: 3.27}
+    HalfAcrossMetres: {x: 0, y: -0.21920305, z: 0}
+    HalfUpMetres: {x: 0, y: 0, z: 0.21920305}
+  - Wall: 1
+    CentreMetres: {x: -1.87, y: -1.1, z: 3.27}
+    HalfAcrossMetres: {x: 0, y: 0.21920305, z: 0}
+    HalfUpMetres: {x: 0, y: 0, z: 0.21920305}
 --- !u!43 &4819695696955965068
 Mesh:
   m_ObjectHideFlags: 0

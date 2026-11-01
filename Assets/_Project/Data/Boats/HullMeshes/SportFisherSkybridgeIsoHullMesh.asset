@@ -811,22 +811,22 @@ MonoBehaviour:
   WakeSternOffsetMeters: 13.7
   Lamps:
   - Kind: 0
-    RigLocalMetres: {x: -2.4418426, y: 11.717606, z: 5.6981845}
+    RigLocalMetres: {x: -2.701, y: 8.2, z: 3.868}
     IntensityScale: 1
   - Kind: 1
-    RigLocalMetres: {x: 2.4418426, y: 11.717606, z: 5.6981845}
+    RigLocalMetres: {x: 2.701, y: 8.2, z: 3.868}
     IntensityScale: 1
   - Kind: 2
-    RigLocalMetres: {x: 0, y: -13.49, z: 3.29}
+    RigLocalMetres: {x: -1.2098589e-15, y: -13.6, z: 2.23}
     IntensityScale: 1
   - Kind: 3
-    RigLocalMetres: {x: 0, y: -5.1, z: 11.95}
+    RigLocalMetres: {x: -3.5942236e-16, y: -6.3, z: 10}
     IntensityScale: 1
   - Kind: 4
-    RigLocalMetres: {x: 0, y: -4.425, z: 6.29}
+    RigLocalMetres: {x: 0, y: -2.6499999, z: 4.4}
     IntensityScale: 1
   - Kind: 6
-    RigLocalMetres: {x: 0, y: -5.1, z: 11.95}
+    RigLocalMetres: {x: -3.5942236e-16, y: -6.3, z: 10}
     IntensityScale: 1
   Panes: []
 --- !u!43 &1658504911525903944
