@@ -2,6 +2,7 @@ using UnityEngine;
 using HiddenHarbours.Core;
 using HiddenHarbours.Boats;
 using HiddenHarbours.Player;
+using HiddenHarbours.World;
 
 namespace HiddenHarbours.App
 {
@@ -74,7 +75,7 @@ namespace HiddenHarbours.App
     /// that does not run: rule 10, leave a working build.</para>
     /// </summary>
     [DisallowMultipleComponent]
-    public sealed class ArrivalOpening : MonoBehaviour
+    public sealed partial class ArrivalOpening : MonoBehaviour
     {
         /// <summary>
         /// The save flag that says this player has already been brought in. Lives here rather than in
@@ -108,6 +109,8 @@ namespace HiddenHarbours.App
         [Tooltip("The skipper and his boat, as ONE asset — his hull, his paint and his own figure on the " +
                  "deck all come off it, exactly as the ambient fleets' do. Content, not code (rule 2).")]
         [SerializeField] private BoatOwnerDef _skipper;
+        [SerializeField] private ArrivalSeaDef _seaOpening;
+        [SerializeField] private RegionSceneLoader _loader;
 
         [Header("The route (authored by the region, on its own channel's line)")]
         [Tooltip("The run in, seaward FIRST. Pushed by the region builder off its dredged channel rather " +
@@ -340,7 +343,7 @@ namespace HiddenHarbours.App
         /// <see cref="GameServices.OpeningCinematicRunning"/>, which the mood grade reads so the intro
         /// can carry its own strength (rule 4 — through Core, never a scene name).
         /// </summary>
-        public bool IsRunning => RunningIn(_phase);
+        public bool IsRunning => _waitingForSea || RunningIn(_phase);
 
         /// <summary>The predicate itself, so the law can be asserted without standing a scene up:
         /// an opening is running in <see cref="Phase.Approaching"/>, <see cref="Phase.Docking"/> and
@@ -599,7 +602,11 @@ namespace HiddenHarbours.App
             WithdrawTheCabinDoor();
             StopTheStepClip();
             _stepping = false;
-            ReleaseThePlayer();
+            if (!_transferring && !_waitingForSea)
+            {
+                ReleaseThePlayer();
+                ReleaseTheHour();
+            }
 
             // ⚠ AND THE CABIN IS DELIBERATELY NOT CLOSED HERE. Root-toggling IS how a region hop works,
             // and BoatInterior's state survives OnDisable by design for exactly that reason — a cabin
@@ -644,8 +651,13 @@ namespace HiddenHarbours.App
                 return false;
             }
 
-            if (!Spawn()) return false;
+            if (_seaOpening != null && !_seaJourney) return BeginSeaHop();
+            return BeginLocalArrival();
+        }
 
+        private bool BeginLocalArrival()
+        {
+            if (!Spawn()) return false;
             SetPhase(Phase.Approaching);
             _dockingTimer = 0f;
             Debug.Log($"[ArrivalOpening] making the approach — {_route.Length} marks, " +
@@ -698,7 +710,8 @@ namespace HiddenHarbours.App
             // below turns the root from here on, which both presentation paths read off transform.up.
             var go = new GameObject($"ArrivalBoat_{_skipper.Id}");
             go.transform.SetParent(transform, worldPositionStays: false);
-            go.transform.position = new Vector3(_route[0].x, _route[0].y, 0f);
+            Vector2 spawn = _incoming != null ? _incoming.ArrivalPosition : _route[0];
+            go.transform.position = new Vector3(spawn.x, spawn.y, 0f);
             go.SetActive(false);                                  // configure BEFORE anything wakes
 
             var rb = go.AddComponent<Rigidbody2D>();
@@ -751,6 +764,7 @@ namespace HiddenHarbours.App
             float inbound = _route.Length > 1
                 ? ArrivalPilot.CompassOf(_route[1] - _route[0])
                 : _berthHeadingDegrees;
+            if (_incoming != null) inbound = _incoming.Heading;
 
             // ⚠ SET HERE, not left to MooredBoat. It sets the same rotation when it draws her, but
             // it returns EARLY when the hull art has not baked — and where she points is not a
@@ -789,23 +803,31 @@ namespace HiddenHarbours.App
             var berth = BerthPilot.Berth.FromShorePoint(_berth, _berthHeadingDegrees, _stepAshore,
                                                         _skipper.Boat.LengthMeters);
             _helm = new HelmedBoat(_boat, _boatRoot);
-            _pilotage = new BerthingPilot(_route, berth, _pilot, _alongside);
+            _pilotage = new BerthingPilot(_incoming != null ? ContinuationRoute(_route, spawn) : _route,
+                                          berth, _pilot, _alongside);
 
             // ⭐ SHE IS ALREADY RUNNING WHEN THE GAME OPENS, and that is both true and necessary.
             // True: a boat bringing you in has been at sea for an hour, not sitting stopped on the
             // horizon waiting for a new game. Necessary: this hull takes twenty seconds to reach
             // 63% of her speed, so a standing start would open the game on a minute of a boat
             // slowly gathering way. She enters at the cruise the pilot is about to hold her at.
-            rb.linearVelocity = new Vector2(go.transform.up.x, go.transform.up.y)
-                                * _pilot.CruiseSpeedMetresPerSecond;
+            rb.linearVelocity = _incoming != null ? _incoming.Velocity : _seaLeg ? Vector2.zero
+                : new Vector2(go.transform.up.x, go.transform.up.y) * _pilot.CruiseSpeedMetresPerSecond;
+            if (_incoming != null) rb.angularVelocity = _incoming.AngularVelocity;
 
             // ⭐ AND THE GAME OPENS BELOW. Before the player is held, because HoldThePlayer seats and poses
             // her on the very first frame and one frame of a passenger standing on deck when the opening
             // says she is in the cabin is one frame too many — the same reasoning that put the seat and
             // the pose inside the hold rather than after it.
             GoBelowDecks();
+            RestorePassengerAcrossSeam();
 
             HoldThePlayer();
+            if (_incoming != null)
+            {
+                _playerWasSimulated = _incoming.PlayerWasSimulated;
+                _incoming = null;
+            }
             return true;
         }
 
@@ -825,12 +847,13 @@ namespace HiddenHarbours.App
         /// </summary>
         private void GoBelowDecks()
         {
-            if (!_startBelowDecks) return;
+            if (!_startBelowDecks && !_seaJourney) return;
 
             _cabin = ArrivalCabinWalk.TryOpen(_boat, _cabinWalkSpeed);
             if (_cabin == null) return;
 
-            if (!_cabin.GoBelow())
+            bool below = _incoming != null ? _incoming.Below : _startBelowDecks;
+            if (below && !_cabin.GoBelow())
             {
                 Debug.LogWarning("[ArrivalOpening] her cabin refused the entry, so the opening stays " +
                                  "topside. Nothing else about the arrival changes.");
@@ -838,7 +861,7 @@ namespace HiddenHarbours.App
                 return;
             }
 
-            _wasBelow = true;
+            _wasBelow = below;
 
             // ⭐ AND HIS AFT DOOR IS STANDING OPEN. The owner's 2026-08-28 door ruling paints exactly this
             // picture in its own words — "they might leave the door open when they are aboard and the
@@ -1240,6 +1263,14 @@ namespace HiddenHarbours.App
             // hull before this component's OnDisable gets to it.
             if (_pilotage == null || _helm == null || !_helm.IsAlive) return;
             if (_phase != Phase.Approaching && _phase != Phase.Docking) return;
+
+            if (_seaLeg)
+            {
+                var command = ArrivalPilot.Command(_boatRoot.position, ArrivalPilot.HeadingOf(_boatRoot),
+                    _boat.Velocity, _seaOpening.ExitTarget, float.PositiveInfinity, _pilot);
+                _boat.SetControl(command.Throttle, command.Steer);
+                return;
+            }
 
             _pilotage.Step(_helm);
             FollowThePilotagePhase();
@@ -1711,6 +1742,7 @@ namespace HiddenHarbours.App
         private void HandOver()
         {
             ReleaseThePlayer();
+            ReleaseTheHour();
 
             var save = GameServices.Save;
             if (save != null)

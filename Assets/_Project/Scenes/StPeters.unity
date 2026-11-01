@@ -86438,6 +86438,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: HiddenHarbours.App::HiddenHarbours.App.ArrivalOpening
   _skipper: {fileID: 11400000, guid: 7c2b9db2ca511824984227bb72909015, type: 2}
+  _seaOpening: {fileID: 11400000, guid: 32f11f61663d55f4988a3780a1d56d45, type: 2}
+  _loader: {fileID: 174273176}
   _route:
   - {x: 340, y: 40}
   - {x: 262, y: 26}

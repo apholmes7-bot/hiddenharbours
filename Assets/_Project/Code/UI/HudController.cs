@@ -278,8 +278,8 @@ namespace HiddenHarbours.UI
                 return;
             }
 
-            UpdateClock();
             UpdateWatchWindow();      // the hidden gate + hover × (2026-08-07 windowing ruling)
+            UpdateClock();
             UpdateEnvironmentThrottled();
             UpdateMoney();            // event-driven, but reconcile once services exist (boot balance)
             TickPayoutFlash();
@@ -297,7 +297,7 @@ namespace HiddenHarbours.UI
         {
             if (_watchImage == null) return;
 
-            bool shown = BoatUiWindows.IsShown(BoatUiWindowId.Watch);
+            bool shown = BoatUiWindows.IsShown(BoatUiWindowId.Watch) && GameServices.Clock?.IsHeld != true;
             if (shown != _watchWindowShown)
             {
                 _watchWindowShown = shown;
@@ -384,7 +384,7 @@ namespace HiddenHarbours.UI
             if (_watchImage == null) return;
             // Hidden (its × or hide-all): no raster and no re-enable. The unhide transition forces
             // the next repaint by resetting the minute cache (UpdateWatchWindow).
-            if (!BoatUiWindows.IsShown(BoatUiWindowId.Watch)) return;
+            if (!BoatUiWindows.IsShown(BoatUiWindowId.Watch) || clock.IsHeld) return;
 
             var state = new WatchRigState(WatchFaceState.FromClock(clock),
                                           _watchUse24, light: false, showSeconds: _watchShowSeconds);

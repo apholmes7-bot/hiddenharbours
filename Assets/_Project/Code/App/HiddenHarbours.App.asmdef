@@ -3,6 +3,7 @@
     "rootNamespace": "HiddenHarbours.App",
     "references": [
         "HiddenHarbours.Core",
+        "HiddenHarbours.World",
         "HiddenHarbours.Environment",
         "HiddenHarbours.Boats",
         "HiddenHarbours.Fishing",
