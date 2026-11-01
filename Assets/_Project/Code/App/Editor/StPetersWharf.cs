@@ -6,6 +6,7 @@ using UnityEngine;
 using HiddenHarbours.Core;                // ITidalTerrain — the deck height is MEASURED off the terrain
 using HiddenHarbours.Art;                 // SpriteShadow — the standing fittings cast (sun and lamp)
 using HiddenHarbours.Art.Editor;          // WharfKitCatalog — the kit's published semantic map
+using HiddenHarbours.Tools.RigBaking;
 
 namespace HiddenHarbours.App.Editor
 {
@@ -400,11 +401,10 @@ namespace HiddenHarbours.App.Editor
         /// than measured is a wharf that floods without anything failing.</param>
         public static int Place(ITidalTerrain terrain)
         {
-            var deck = LoadSheet(WharfKitCatalog.AtlasPath, "WharfAtlas");
-            if (deck.Count == 0)
+            Sprite deck = AssetDatabase.LoadAssetAtPath<Sprite>(StPetersLandingDeckBaker.SheetPath);
+            if (deck == null)
             {
-                Debug.LogWarning($"[StPetersWharf] no slices at {WharfKitCatalog.AtlasPath} — the dock was " +
-                                 "not built. Import/slice the wharf tile kit first.");
+                Debug.LogWarning("[StPetersWharf] the landing's pass-two pier has not been baked/imported.");
                 return 0;
             }
 
@@ -419,22 +419,14 @@ namespace HiddenHarbours.App.Editor
             float deckElevation = DeckElevationFrom(terrain);
             floor.Configure(SurfaceId, DeckFootprint(), deckElevation);
 
-            int placed = 0;
-            foreach (var cell in DeckCellsBackToFront())
-            {
-                int index = WharfKitCatalog.AtlasIndex(DeckMaterial, DeckVariantAt(cell.x, cell.y));
-                if (!deck.TryGetValue(index, out Sprite sprite) || sprite == null) continue;
-
-                var go = new GameObject($"Deck_{cell.x}_{cell.y}");
-                go.transform.SetParent(deckRoot.transform, worldPositionStays: false);
-                // TOP-LEFT pivot: put the sprite's origin at the cell's top-left corner, so the deck fills
-                // the cell and the 24 px face hangs into the cell below (the kit's whole 32x56 contract).
-                go.transform.position = new Vector3(cell.x, cell.y + 1f, 0f);
-                var sr = go.AddComponent<SpriteRenderer>();
-                sr.sprite = sprite;
-                sr.sortingOrder = SortingOrderFor(cell.y);
-                placed++;
-            }
+            var contract = StPetersLandingDeckBaker.ReadContract();
+            var deckVisual = new GameObject(StPetersLayerRefresh.LandingDeckVisualName);
+            deckVisual.transform.SetParent(deckRoot.transform, worldPositionStays: false);
+            deckVisual.transform.position = new Vector3(contract.originX, contract.originY, 0);
+            var deckRenderer = deckVisual.AddComponent<SpriteRenderer>();
+            deckRenderer.sprite = deck;
+            deckRenderer.sortingOrder = SortingOrderMin;
+            int placed = 1;
 
             // Fittings, on their own root and one order above the southernmost deck row so a bollard is
             // never swallowed by the planks it stands on.
@@ -484,8 +476,8 @@ namespace HiddenHarbours.App.Editor
                                         StPetersBuilder.TideMean + StPetersBuilder.TideAmplitude,
                                         "[StPetersWharf]");
 
-            Debug.Log($"[StPetersWharf] Built the one dock: {placed} '{DeckMaterial}' deck tiles over " +
-                      $"{LengthCells} x {WidthCells} m at the ratified berth, drawn back to front, plus " +
+            Debug.Log($"[StPetersWharf] Built the one dock: {placed} pass-two pier sprite over " +
+                      $"{LengthCells} x {WidthCells} m at the ratified berth, plus " +
                       $"{Fittings().Count} fittings ({cleats} of them mooring cleats). The deck is FLOOR: " +
                       $"registered as standable surface '{SurfaceId}' with its deck measured at " +
                       $"{deckElevation:0.00} m above datum, so the on-foot sim stands on the planks and " +
