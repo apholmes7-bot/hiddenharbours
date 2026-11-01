@@ -710,6 +710,14 @@ namespace HiddenHarbours.Tests.PlayMode
                 $"refused probes recorded={planner.FirstPlanRefusals.Count} (first 24 only)"));
             foreach (string refusal in planner.FirstPlanRefusals) PrintDiagnostic(refusal);
             PrintBodyDiagnostic("ended " + walk.Leg);
+            PrintDiagnostic(DiagnosticSnapshot("pursuit at stall", () =>
+                $"aim={walk.LastAim} foot={_rb.position + _foot.offset} next-three={string.Join("; ", (walk.NextNodes ?? new Vector2[0]).Select(p => p.ToString()))}"));
+            PrintDiagnostic(DiagnosticSnapshot("contact normals at stall", () =>
+            {
+                var contacts = new ContactPoint2D[32];
+                int count = _foot.GetContacts(contacts);
+                return string.Join("; ", contacts.Take(count).Select(c => $"point={c.point} normal={c.normal} collider={c.collider.name}"));
+            }));
             PrintDiagnostic(DiagnosticSnapshot("loaded scenes", () =>
             {
                 var names = new List<string>();
@@ -909,6 +917,8 @@ namespace HiddenHarbours.Tests.PlayMode
             public Vector2 DeepestAt;
             public int Replans, Nodes, Probes;
             public string Why;
+            public Vector2 LastAim;
+            public Vector2[] NextNodes;
             public override string ToString() =>
                 $"{Leg}: reached {Reached}, {Metres:0.#} m in {Seconds:0.#} s, {Nodes} path nodes, {Probes} probes, " +
                 $"{Replans} replan(s), deepest {DeepestAtBody:0.###} m at ({DeepestAt.x:0.##}, {DeepestAt.y:0.##})" +
@@ -964,8 +974,10 @@ namespace HiddenHarbours.Tests.PlayMode
                     }
                     if (path == null) { walk.Why = $"no plan from {Body()}: {why}"; yield break; }
                     walk.Nodes += path.Count;
+                    // 20261101T171126Z-h6-pr2-ruling-13-the-run-leaves-this-pr-the-walker-moves-lease-pr2c.txt
+                    float lookahead = walk.Stalled ? PlanCell : LookaheadMetres;
                     walk.Stalled = false;
-                    for (var e = Follow(path, goal, arrive, walk); e.MoveNext();) yield return e.Current;
+                    for (var e = Follow(path, goal, arrive, walk, lookahead); e.MoveNext();) yield return e.Current;
                     if (walk.Reached || walk.TimedOut) yield break;
                     walk.Replans++;
                 }
@@ -978,7 +990,7 @@ namespace HiddenHarbours.Tests.PlayMode
             }
         }
 
-        IEnumerator Follow(List<Vector2> path, Vector2 goal, float arrive, Walk walk)
+        IEnumerator Follow(List<Vector2> path, Vector2 goal, float arrive, Walk walk, float lookahead)
         {
             float length = 0f;
             for (int i = 1; i < path.Count; i++) length += Vector2.Distance(path[i - 1], path[i]);
@@ -999,9 +1011,11 @@ namespace HiddenHarbours.Tests.PlayMode
                 }
                 k = best;
                 int t = k;
-                while (t < path.Count - 1 && Vector2.Distance(at, path[t]) < LookaheadMetres) t++;
+                while (t < path.Count - 1 && Vector2.Distance(at, path[t]) < lookahead) t++;
                 Vector2 aim = t == path.Count - 1 ? goal : path[t];
-                _held.Walk((aim - at).normalized, true);
+                walk.LastAim = (aim - at).normalized;
+                walk.NextNodes = path.Skip(k + 1).Take(3).ToArray();
+                _held.Walk(walk.LastAim, true);
                 yield return null;
 
                 float dt = Time.deltaTime;
