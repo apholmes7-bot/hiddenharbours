@@ -440,7 +440,7 @@ namespace HiddenHarbours.Boats
 
             // Game-time delta for this presentation tick (the clock advances smoothly per frame;
             // a paused clock yields dt 0 and the sea freezes with it, correctly).
-            double time = GameServices.Clock != null ? GameServices.Clock.TotalSeconds : Time.timeAsDouble;
+            double time = GameServices.Clock != null ? GameServices.Clock.FlowSeconds : Time.timeAsDouble;
             float dt = _hasLastTime ? Mathf.Max(0f, (float)(time - _lastTimeSeconds)) : Time.deltaTime;
             _lastTimeSeconds = time;
             _hasLastTime = true;
@@ -468,7 +468,7 @@ namespace HiddenHarbours.Boats
                 EnvironmentSample sample = env.Sample();
                 seaState01 = sample.SeaState01;
                 WaveFieldAnimatorSettings smoothing = GameServices.WaveFieldAnimator;
-                _animator.Tick(dt, WaveFieldAnimator.GameTimeSeconds,
+                _animator.Tick(dt, WaveFieldAnimator.HourTimeSeconds, WaveFieldAnimator.GameTimeSeconds,
                                sample.WindVector, sample.SeaState01, in field, in smoothing);
                 // The WIND-FETCH envelope (ADR 0027 #1), resolved once at the hull's centre and
                 // shared by the surface sample below AND the storm-attitude envelope — the march is

@@ -1080,7 +1080,7 @@ namespace HiddenHarbours.Art
             if (GameServices.Environment is IWaveWindSource history)
             {
                 var field = GameServices.WaveField;
-                var wind = WaveMemory.ShortWind(history, WaveFieldAnimator.GameTimeSeconds, in field);
+                var wind = WaveMemory.ShortWind(history, WaveFieldAnimator.HourTimeSeconds, in field);
                 _targetWind = wind.Wind;
                 _targetChop = Choppiness(wind.SeaState01);
             }

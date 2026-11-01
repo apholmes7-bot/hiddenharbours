@@ -41,7 +41,7 @@ namespace HiddenHarbours.Tests.EditMode
         public void TheRuntime_ComposesAfterWindMemory_AndResolvesRegionDataThroughCore()
         {
             string animator = File.ReadAllText("Assets/_Project/Code/Core/Environment/WaveFieldAnimator.cs");
-            StringAssert.Contains("GameServices.WithSwell(in targets, time, gravity)", animator);
+            StringAssert.Contains("GameServices.WithSwell(in targets, hourSeconds, gravity)", animator);
             string registrar = File.ReadAllText("Assets/_Project/Code/World/RegionSceneLoader.cs");
             StringAssert.Contains("GameServices.RegisterSwellClimate(r.Id, r.SwellClimate, r.SwellShelter)", registrar);
             string services = File.ReadAllText("Assets/_Project/Code/Core/Services/GameServices.cs");
