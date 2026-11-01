@@ -103,19 +103,29 @@ namespace HiddenHarbours.Tools.RigBaking
 
         static BedPoint[] MeasureBed(IRigScriptHost host, Recipe recipe, ITidalTerrain terrain)
         {
-            host.Execute("globalThis.__stpBedQueries=[];");
-            host.Execute(DefineScript(recipe, "(x,y)=>{__stpBedQueries.push({x:x,y:y});return 0;}"));
-            host.Execute(FrameScript(recipe));
-            var table = JsonUtility.FromJson<BedTable>("{\"points\":" + host.EvaluateString("JSON.stringify(__stpBedQueries)") + "}");
             var distinct = new List<BedPoint>();
             var seen = new HashSet<(float, float)>();
-            foreach (BedPoint point in table.points)
+            // Bed-dependent berth/structure checks may ask new points after the first model.
+            // Discovery frames are discarded; only a frame with a complete measured table is baked.
+            for (int pass = 0; pass < 8; pass++)
             {
-                if (!seen.Add((point.x, point.y))) continue;
-                point.z = terrain.ElevationAt(new Vector2(point.x + recipe.originX, point.y)) + recipe.datumShift;
-                distinct.Add(point);
+                host.Execute("globalThis.__stpBedQueries=[];globalThis.__stpBed=" +
+                    JsonUtility.ToJson(new BedTable { points = distinct.ToArray() }) + ";");
+                host.Execute(DefineScript(recipe,
+                    "(x,y)=>{__stpBedQueries.push({x:x,y:y});let best=null,d=Infinity;" +
+                    "for(const p of __stpBed.points){const q=(x-p.x)**2+(y-p.y)**2;if(q<d){best=p;d=q;}}return best?best.z:0;}"));
+                host.Execute(FrameScript(recipe));
+                var table = JsonUtility.FromJson<BedTable>("{\"points\":" + host.EvaluateString("JSON.stringify(__stpBedQueries)") + "}");
+                bool added = false;
+                foreach (BedPoint point in table.points)
+                {
+                    if (!seen.Add((point.x, point.y))) continue;
+                    point.z = terrain.ElevationAt(new Vector2(point.x + recipe.originX, point.y)) + recipe.datumShift;
+                    distinct.Add(point); added = true;
+                }
+                if (!added) return distinct.ToArray();
             }
-            return distinct.ToArray();
+            throw new InvalidOperationException("Landing terrain queries did not stabilize within eight discovery frames.");
         }
 
         public static Pixels Render(IRigScriptHost host, Recipe recipe, BedPoint[] bed)
