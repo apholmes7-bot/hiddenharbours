@@ -14,6 +14,9 @@
    renderCut, fitCheck and walk(), which hull-layout-1's writer writes to her walk file (never by hand). Her pictures
    are pass 1's, byte for byte.
    Pass 5 (2026-10-19): her names in the game, on the file, the global and the hull id. Nothing drawn changed.
+   Pass 6 (2026-10-26): her walk is the cockpit. The strips at the console and forward of it, a centimetre or two deep
+   at the walker's radius and joined to nothing, are no place to stand: each is an _excluded floor. Nothing drawn
+   changed.
 
    Exposes globalThis.YachtTenderIso = { W, H, PX, DIRS, pivot, order, defaultElev, PAINTS, paintRamps, matsFor, DIMS, LIFT,
      HELM, BOARD, FLOAT, faces(opts), render(dir, opts), rock(i), ROCK, project(p, dir, opts), and the hull's members:
@@ -392,18 +395,20 @@
       return { id, cut: 'deck', z: SOLE, poly: [[-h, y0], [h, y0], [h, y1], [-h, y1]], holes: [], note }; };
     const cockpit = rect('cockpit', FP.cap.y1 + R, FP.post.y0 - R,
       'aft of the leaning post to the transom cap; the post’s stern light (' + q3(FP.post.y0) + ') is its forward edge');
-    const helm = rect('helm', FP.post.y1 + R, FP.wheel.y0 - R,
-      'the standing room at the console: ' + q3(FP.wheel.y0 - FP.post.y1) + ' m between the leaning post and the wheel’s rim, a ' + q3(FP.wheel.y0 - FP.post.y1 - 2 * R) +
-      ' m strip at the walker’s radius. It does not join the cockpit (beside_post): the helm is taken from the cockpit (interact helm)');
-    const bow = rect('bow', FP.console.y1 + R, FP.seat.y0 - R,
-      'the sole between the console and the bow seat: ' + q3(FP.seat.y0 - FP.console.y1) + ' m, a ' + q3(FP.seat.y0 - FP.console.y1 - 2 * R) +
-      ' m strip at the walker’s radius. It does not join the helm or the cockpit (beside_console)');
-    const areas = [cockpit, helm, bow];
+    // the standing room at the console and the sole forward of it: strips a centimetre or two deep at the walker's radius,
+    // joined to nothing. No place to stand, so not walked (pass 6): each is an _excluded floor, its outline the strip's
+    const helm = rect('helm', FP.post.y1 + R, FP.wheel.y0 - R), bow = rect('bow', FP.console.y1 + R, FP.seat.y0 - R);
+    const strip = (a) => q3(a.poly[2][1] - a.poly[0][1]) + ' by ' + q3(a.poly[1][0] - a.poly[0][0]) + ' m';
+    const areas = [cockpit];
     const yC = (cockpit.poly[0][1] + cockpit.poly[2][1]) / 2;
     const spawn = { x: 0, y: q3(yC), area: 'cockpit' };
     const tubeTop = TUBE_Z + TUBE_R, wPost = q3(soleEdge((FP.post.y0 + FP.post.y1) / 2) - FP.post.x1);
     const wCon = q3(soleEdge(FP.console.y0) - CON.x), wRail = q3(soleEdge(FP.console.y0) - FP.console.x1);
     const _excluded = [
+      { id: 'helm', of: 'area', z: SOLE, poly: helm.poly, reason: 'the standing room at the console: ' + q3(FP.wheel.y0 - FP.post.y1) + ' m between the leaning post and the wheel’s rim, a ' +
+        strip(helm) + ' strip at the walker’s radius that does not join the cockpit (beside_post). No place to stand: the helm is taken from the cockpit (interact helm).' },
+      { id: 'bow', of: 'area', z: SOLE, poly: bow.poly, reason: 'the sole between the console and the bow seat: ' + q3(FP.seat.y0 - FP.console.y1) + ' m, a ' + strip(bow) +
+        ' strip at the walker’s radius that joins neither the helm nor the cockpit (beside_console). No place to stand: the bow seat is taken from it, off the walk (interact seat_bow).' },
       { id: 'beside_post', of: 'area', z: SOLE, reason: 'the sole beside the leaning post: ' + wPost + ' m between the post (' + q3(2 * FP.post.x1) + ' m wide) and the sole’s edge, narrower than the walker’s ' +
         q3(2 * R) + ' m. The cockpit and the helm do not join at the walker’s radius.' },
       { id: 'beside_console', of: 'area', z: SOLE, reason: 'the sole beside the console: ' + wCon + ' m between the console (' + q3(2 * CON.x) + ' m wide) and the sole’s edge, ' + wRail +
@@ -424,7 +429,8 @@
       { id: 'helm', action: 'enter_helm', label: 'Helm', prompt: 'Take the wheel', at: xyz(WHEEL.hub), reach: on(cockpit, 0, cockpit.poly[2][1]), area: 'cockpit',
         seat: xyz(PERCH), stand: xyz(HELM.stand),
         note: 'a standing console: the pilot stands between it and the leaning post, whose cushion is the perch (seat). Taken from the cockpit, behind the post.' },
-      { id: 'seat_bow', action: 'enter_ride', label: 'Bow seat', prompt: 'Ride', at: xyz(BOW_SEAT), reach: on(bow, 0, bow.poly[2][1]), area: 'bow', waitsOn: ['sit'] },
+      { id: 'seat_bow', action: 'enter_ride', label: 'Bow seat', prompt: 'Ride', at: xyz(BOW_SEAT), reach: on(bow, 0, bow.poly[2][1]), area: null, offWalk: 'bow', waitsOn: ['sit'],
+        note: 'taken at its stand, off the walk (see _excluded bow)' },
       { id: 'outboard', action: 'open_close', label: 'Outboard', prompt: 'Tilt up · down', state: 'tilt', at: xyz(PIV), reach: on(cockpit, 0, cockpit.poly[0][1]), area: 'cockpit',
         note: 'tilt 0 down … 1 up ' + TILT_MAX + '° about the transom bracket, worked over the transom cap' },
     ];

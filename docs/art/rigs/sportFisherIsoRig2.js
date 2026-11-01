@@ -987,16 +987,20 @@
 
     // ==================================== WALK DATA ====================================
     // areas: plan polygons (player centre, already shrunk/padded), z constant or a ramp; cut = which cutaway applies
+    // walkCut (a hull's mezz, salon and below) and vipCut (below's, for the vip): walk-only holes [x0,x1,y0,y1] over a
+    // pocket the walker can never stand in, so its sliver of floor is cut away (the floors ruling 10-26, F2.1; the vip's
+    // bow, the desk's ruling 10-27). Nothing drawn changes
     const WALK=(function(){
-      const A=[], side=(fn,y0,y1,n,shr)=>{ const P=[], Pm=[]; for(let i=0;i<=n;i++){ const y=lerp(y0,y1,i/n), w=Math.max(0.05,fn(y)-shr); P.push([w,y]); Pm.unshift([-w,y]); } return P.concat(Pm); };
+      const A=[], side=(fn,y0,y1,n,shr)=>{ const P=[], Pm=[]; for(let i=0;i<=n;i++){ const y=lerp(y0,y1,i/n), w=Math.max(0.05,fn(y)-shr); P.push([w,y]); Pm.unshift([-w,y]); } return P.concat(Pm); },
+        cutH=(L)=>(L||[]).map(c=>rectPoly(c[0],c[2],c[1],c[3]));
       A.push({ id:'cockpit', cut:'deck', z:CZ, poly:side((y)=>xin(y)-0.02,yT+0.35,CF-0.02,8,0.25),
         holes:[rectPoly(-0.62,spec.chair.y-0.95,0.62,spec.chair.y+0.62), rectPoly(ST.x0-0.25,ST.y0+0.22,ST.x1+0.4,CF+0.1), rectPoly(-ST.x1-0.4,ST.y0+0.22,-ST.x0+0.25,CF+0.1)].concat(spec.tubs.map(t=>rectPoly(t[0]-0.50,t[1]-0.45,t[0]+0.50,t[1]+0.45))) });
       for(const sd of [-1,1]) A.push({ id:'sidestair'+(sd>0?'S':'P'), cut:'deck', ramp:{ ax:1, a0:ST.y0, a1:CF, z0:CZ, z1:MZ.z }, poly:rectPoly(sd>0?ST.x0+0.04:-ST.x1+0.04, ST.y0-0.10, sd>0?ST.x1-0.04:-ST.x0-0.04, CF+0.12), holes:[] });
       const FL=spec.flyLadder, sHole=(s,p)=>rectPoly(s.x0-p,s.y0-p,s.x1+p,s.y1+p);
       A.push({ id:'mezzanine', cut:'deck', z:MZ.z, poly:side((y)=>mzw(y),MZ.y0+0.02,MZ.y1-0.22,3,0.25),
-        holes:[sHole(MZ.seat,0.25)].concat(FL?[rectPoly(FL.x-0.45,FL.y0,FL.x+0.45,MZ.y1+0.2)]:[]) });
+        holes:[sHole(MZ.seat,0.25)].concat(FL?[rectPoly(FL.x-0.45,FL.y0,FL.x+0.45,MZ.y1+0.2)]:[], cutH(MZ.walkCut)) });
       A.push({ id:'door', cut:'house', z:ZS, poly:rectPoly(SA.door.x0+0.26,MZ.y1-0.30,SA.door.x1-0.26,YAIN+0.30), holes:[] });
-      A.push({ id:'salon', cut:'house', z:ZS, poly:side(salIn,YAIN+0.24,YDASH-0.30,24,0.26), holes:OB.house.slice() });
+      A.push({ id:'salon', cut:'house', z:ZS, poly:side(salIn,YAIN+0.24,YDASH-0.30,24,0.26), holes:OB.house.concat(cutH(SA.walkCut)) });
       if(SA.up) A.push({ id:'upstair', kind:'stair', cut:'house', cutHi:'bridge', zMid:ZS+(BZ-ZS)*0.52, ramp:{ ax:1, a0:SA.up.y0, a1:SA.up.y1, z0:ZS, z1:BZ }, poly:rectPoly(SA.up.x0+0.12,SA.up.y0-0.25,SA.up.x1-0.10,SA.up.y1+0.25), holes:[] });
       A.push({ id:'companionway', kind:'stair', cut:'house', cutLo:'below', zMid:(ZS+ZB)/2, ramp:{ ax:1, a0:SA.comp.y0+0.05, a1:SA.comp.y1, z0:ZS, z1:ZB }, poly:rectPoly(SA.comp.x0+0.14,SA.comp.y0-0.20,SA.comp.x1-0.14,SA.comp.y1+0.35), holes:[] });
       if(SK){
@@ -1020,9 +1024,11 @@
         if(spec.tower) spec.tower.feet.forEach(f=>{ for(const sd of [-1,1]) holes.push(rectPoly(sd*f[0]-0.26,f[1]-0.26,sd*f[0]+0.26,f[1]+0.26)); });
         A.push({ id:'flybridge', cut:'fly', z:BZ, poly:side(flyIn,BR.yA+0.36,C.y1+0.30,22,0.26), holes });
       }
-      A.push({ id:'below', cut:'below', z:ZB, poly:side((y)=>bIn(y,ZB+0.10),BLW.walkY0!=null?BLW.walkY0:BLW.y0+0.24,BLW.stepY0+0.05,16,0.24), holes:OB.below.slice() });
-      A.push({ id:'belowstep', cut:'below', ramp:{ ax:1, a0:BLW.stepY0, a1:BLW.stepY1, z0:ZB, z1:ZBF }, poly:rectPoly(-0.42,BLW.stepY0-0.1,0.42,BLW.stepY1+0.1), holes:[] });
-      A.push({ id:'vip', cut:'below', z:ZBF, poly:side((y)=>bIn(y,ZBF+0.10),BLW.stepY1-0.05,BLW.y1-0.30,10,0.24), holes:OB.below.slice() });
+      A.push({ id:'below', cut:'below', z:ZB, poly:side((y)=>bIn(y,ZB+0.10),BLW.walkY0!=null?BLW.walkY0:BLW.y0+0.24,BLW.stepY0+0.05,16,0.24), holes:OB.below.concat(cutH(BLW.walkCut)) });
+      // the step between the cabins' two soles is a climb (the floors ruling 10-26, F2.2): main refuses an indoor ramp
+      // without a climb kind, and only a climb's route joins two floors on one key
+      A.push({ id:'belowstep', kind:'stair', cut:'below', cutHi:'below', cutLo:'below', zMid:(ZB+ZBF)/2, ramp:{ ax:1, a0:BLW.stepY0, a1:BLW.stepY1, z0:ZB, z1:ZBF }, poly:rectPoly(-0.42,BLW.stepY0-0.1,0.42,BLW.stepY1+0.1), holes:[] });
+      A.push({ id:'vip', cut:'below', z:ZBF, poly:side((y)=>bIn(y,ZBF+0.10),BLW.stepY1-0.05,BLW.y1-0.30,10,0.24), holes:OB.below.concat(cutH(BLW.vipCut)) });
       A.forEach(a=>{ a.zAt=a.ramp?((x,y)=>{ const c=a.ramp.ax?y:x; return lerp(a.ramp.z0,a.ramp.z1,clamp01((c-a.ramp.a0)/(a.ramp.a1-a.ramp.a0))); }):(()=>a.z);
         a.cutAt=(z)=> a.cutHi&&z>a.zMid ? a.cutHi : (a.cutLo&&z<a.zMid ? a.cutLo : a.cut);
         a.contains=(x,y)=>pinPoly([x,y],a.poly) && !a.holes.some(h=>pinPoly([x,y],h)); });
@@ -1468,7 +1474,7 @@
         flyhatch:(o)=>'the ship’s ladder from the salon sole ('+ft(ZS)+' m) up through the '+ft(FC?FC.x1-FC.x0:0)+' m hatch to the flybridge ('+ft(BZ)+' m): the walker’s centre has '+ft(FC?FC.x1-FC.x0-2*WALK.radius:0)+' m across between the hatch’s sides; it waits on ladderOn ('+span(o)+')'+duckS(o),
         flybridge:(o,h)=>'the open flybridge on the bridge deck ('+ft(BZ)+' m) under the hardtop ('+span(o)+(h.sky?'; open at its edges':'')+')'+duckS(o),
         below:(o)=>'the cabins’ sole at '+ft(ZB)+' m ('+span(o)+')'+duckS(o),
-        belowstep:(o)=>'the step up from the cabins’ sole ('+ft(ZB)+' m) to the forward cabin ('+ft(ZBF)+' m), '+span(o)+duckS(o),
+        belowstep:(o)=>'the step up from the cabins’ sole ('+ft(ZB)+' m) to the forward cabin ('+ft(ZBF)+' m), a stair between the two floors: going up waits on stairUp, coming down on stairDown ('+span(o)+')'+duckS(o),
         vip:(o)=>'the forward cabin at '+ft(ZBF)+' m ('+span(o)+')'+duckS(o),
       };
       const areas=WALK.areas.map(a=>{
@@ -1517,7 +1523,8 @@
       const put=(o)=>{ const r={}; KEYS.forEach(k=>{ if(o[k]!==undefined) r[k]=o[k]; }); I.push(r); return r; };
       const on=(ids,tx,ty,o)=>{ const b=reachOn(ids,tx,ty); return put(Object.assign(o, { reach:b.reach, area:b.area })); };
       const seat=(ids,id,label,at)=>{ SEATS.push({ id, label, at }); on(ids, at.x, at.y, { id, action:'enter_ride', label, prompt:'Sit', at, waitsOn:['sit'] }); };
-      const ROOM=['salon'], DOWN=['below','vip','belowstep'], UP=SK?'skybridge':'flybridge', SC=STN.console;
+      // a reach stands on a floor, and the step between the cabins' soles is a climb (pass E), so none stands on it
+      const ROOM=['salon'], DOWN=['below','vip'], UP=SK?'skybridge':'flybridge', SC=STN.console;
       const helm=on([UP], A.helm.x, A.helm.y, { id:'helm', action:'enter_helm', label:'Helm', prompt:'Take the helm',
         at:SK?P3(0, SK.items.console.y0, BZ+0.98):P3(0, SC.y0, TP.zTop+0.86), seat:A.helm, stand:null,
         note:'taken seated at the '+(SK?'skylounge':'flybridge')+' console, from behind the helm seat. No wheel is drawn (the global has no WHEEL_GEO), so the kit fits no hands to a rim and writes no helm fixture' });
@@ -1695,10 +1702,19 @@
     rig:{ x:2.42, y:-7.60, z:8.30, len:11.0, stowed:38 },
     below:{ soleZ:0.82, fwdZ:1.12, engZ:0.70, y0:-3.00, y1:9.00, stepY0:4.60, stepY1:5.00,
       eng:{ xc:1.05, hw:0.48, y0:-7.9, y1:-4.2, h:1.05, ht:0.27, gear:[-4.2,-3.7], gens:[[1.8,2.4,-3.9,-3.3,1.1],[-2.4,-1.8,-3.9,-3.3,1.1]], box:[-0.35,0.35,-9.4,-8.7,0.9] },
-      walls:[[-2.6,-1.10,-0.25,-0.15],[0.55,2.6,-0.25,-0.15],[-1.15,-1.05,-0.15,0.95],[-1.15,-1.05,1.70,3.0],[0.50,0.60,-0.15,0.95],[0.50,0.60,1.70,3.0],
-             [-2.6,-0.55,3.0,3.1],[0.55,2.6,3.0,3.1],[-0.60,-0.50,3.1,4.6],[0.50,0.60,3.1,4.6],[-2.2,-0.45,5.0,5.1],[0.45,2.2,5.0,5.1]],
+      // pass E (the owner, 10-27): the starboard room's doorway moved aft of the stair (y -0.15 to 0.50, 0.65 m, against
+      // the aft bulkhead), and a 0.75 m doorway in each forward cabin's inboard wall (y 3.475 to 4.225), onto the 0.82 floor
+      walls:[[-2.6,-1.10,-0.25,-0.15],[0.55,2.6,-0.25,-0.15],[-1.15,-1.05,-0.15,0.95],[-1.15,-1.05,1.70,3.0],[0.50,0.60,0.50,3.0],
+             [-2.6,-0.55,3.0,3.1],[0.55,2.6,3.0,3.1],[-0.60,-0.50,3.1,3.475],[-0.60,-0.50,4.225,4.6],[0.50,0.60,3.1,3.475],[0.50,0.60,4.225,4.6],
+             [-2.2,-0.45,5.0,5.1],[0.45,2.2,5.0,5.1]],
       beds:[[-0.90,0.90,-2.92,-0.95,-1],[-2.30,-1.35,0.15,2.35,-1],[1.05,1.75,0.10,2.20,-1],[-0.85,0.85,5.75,7.85,1]],
-      stands:[[-1.45,-1.02,-2.92,-2.50],[1.02,1.45,-2.92,-2.50]] },
+      stands:[[-1.45,-1.02,-2.92,-2.50],[1.02,1.45,-2.92,-2.50]],
+      // pass E: the port room's floor at its berth's foot (0.20 m between the berth and the corridor wall) and the
+      // starboard room's strip outboard of its berth (0.19 m of sole)
+      walkCut:[[-2.6,-1.15,2.35,3.0],[1.75,2.6,-0.15,2.20]],
+      // pass E (the desk, 10-27): the vip's bow past the berth's head, across the berth's width; the berth leaves 0.19 m
+      // to the lining and meets it by y 7.6, so no doorway reaches it
+      vipCut:[[-0.85,0.85,7.85,9.00]] },
     spawn:[-1.1,-7.30],   // v3's: where the walk puts her (area salon)
     cabin:{ portholes:{ ys:[-5.5,-4.1,-2.7,-1.3,0.1,1.5], z0:3.95, z1:4.85 },
       skyFront:{ yBot:-1.70, yTop:-3.40 }, skyFrontGlass:{ z0:6.25, z1:7.30, panes:[[-1.45,-0.10],[0.10,1.45]] },
@@ -1743,7 +1759,8 @@
     doors:{ tr:[0.70,1.40], trH:0.62, tu:[-1.35,-0.75], tuH:0.48 },
     capRods:[-7.65,-7.05,-6.45], tubs:[[-1.55,-7.60],[1.55,-7.60]],
     chair:{ y:-6.75 }, sideStair:{ x0:1.35, x1:1.80, y0:-5.85, n:3 },
-    mezz:{ y0:-5.05, y1:-4.36, z:1.72, seat:{ x0:-1.20, x1:0.38, y0:-4.92, y1:-4.38, back:'+y' }, drawers:[], dw:0.30 },
+    mezz:{ y0:-5.05, y1:-4.36, z:1.72, seat:{ x0:-1.20, x1:0.38, y0:-4.92, y1:-4.38, back:'+y' }, drawers:[], dw:0.30,
+      walkCut:[[-2.10,-1.20,-5.10,-4.90]] },   // pass E: her port corner aft of the fly ladder's foot, 0.12 m deep beside the seat's end
     wings:{ x0:1.85, x1:1.97, yA:-5.57, yF:-4.28, zA:2.02, zF:3.66, p:1.15 },
     railY:[1.9,3.0,4.1,5.2,6.3,7.4], railH:0.55, hatchY:4.9,
     salon:{ aftY:-4.36, soleZ:1.72, ceilZ:3.74, dashY:0.0, dashH:1.02, cam:0.03, rA:0.12,
@@ -1756,8 +1773,11 @@
       comp:{ x0:-0.05, x1:0.60, y0:-1.15, y1:-0.10, n:7 },
       fit:[ ['settee',-1.82,-1.25,-4.20,-2.30,'-x'], ['table',-0.85,0.10,-3.25,-2.60,0.46],
         ['counter',1.40,1.84,-4.20,-2.55,0.78], ['tv',1.58,1.62,-3.85,-2.90,0.82,1.45],
-        ['counter',-1.84,-0.15,-2.12,-1.45,0.92], ['tall',-1.84,-1.35,-1.45,-0.95,1.85],
-        ['settee',1.28,1.84,-2.35,-0.45,'+x'], ['table',0.78,1.22,-2.05,-0.85,0.72] ] },
+        // pass E (the owner, 10-27): the galley counter's inboard end at -0.59, 0.48 m from the companionway's port panel
+        // (-0.11), the galley's way in
+        ['counter',-1.84,-0.59,-2.12,-1.45,0.92], ['tall',-1.84,-1.35,-1.45,-0.95,1.85],
+        ['settee',1.28,1.84,-2.35,-0.45,'+x'], ['table',0.78,1.22,-2.05,-0.85,0.72] ],
+      walkCut:[[0.66,1.28,-0.85,-0.34]] },   // pass E: the nook at the dinette table's forward end, 0.12 m past the table by the rail, 0.06 m by the settee
     bridgeSlab:{ yF:0.71, yA:-5.36, W:2.05, N:2.6, e:2.2, rA:0.85, zTop:3.92, cam:0.02, zf:[[0.71,3.82],[0.47,3.78],[-0.5,3.72],[-1.11,3.68],[-2.7,3.66],[-4.29,3.64],[-5.0,3.70],[-5.36,3.79]] },
     station:{ lv:'bridge', slab:null,
       coaming:{ lens:true, zs:[3.92,4.05,4.22,4.45,4.62,4.77],
@@ -1779,7 +1799,8 @@
              [0.55,2.4,0.55,0.61],[0.55,0.61,1.25,2.35],[0.55,2.4,2.35,2.41],[0.55,0.61,2.95,3.60],[0.55,2.2,3.60,3.66],[-2.0,-0.35,4.10,4.16],[0.35,2.0,4.10,4.16]],
       beds:[[-1.95,-0.50,0.15,1.90,-1],[1.05,1.95,0.75,2.25,-1],[-0.75,0.75,4.70,5.85,-1]],
       stands:[],
-      fit:[['counter',-1.95,-1.50,3.00,3.45,0.42],['counter',-1.40,-0.45,2.15,2.55,0.85],['counter',0.75,1.15,3.05,3.50,0.42],['counter',1.30,2.00,2.50,2.95,0.85],['tall',-0.90,-0.40,4.20,4.55,1.60]] },
+      fit:[['counter',-1.95,-1.50,3.00,3.45,0.42],['counter',-1.40,-0.45,2.15,2.55,0.85],['counter',0.75,1.15,3.05,3.50,0.42],['counter',1.30,2.00,2.50,2.95,0.85],['tall',-0.90,-0.40,4.20,4.55,1.60]],
+      walkCut:[[-2.2,-0.36,2.55,3.55]] },   // pass E: the forward-port head past its vanity, under 0.30 m of sole, the vanity 0.05 m short of the door's jamb
     spawn:[0.9,-3.3],     // v3's: where the walk puts her (area salon)
     // R2's hatch (drop 15's) and the ship's ladder under it: the hatch is 0.65 m long and the salon 2.02 m high, so
     // the ladder stands near upright against the hatch's aft edge (pass B)

@@ -5,7 +5,7 @@
  "hull": "skybridge",
  "label": "90′ SKYBRIDGE",
  "kind": "cabin",
- "derivedFromRigSha256": "163f071f798206d38d26d2add558d52fe6652ddeaef1b1cd0bf7ba418892eb30",
+ "derivedFromRigSha256": "69914ed2374b998407954b9170a37b7cf178158f2ff5843353e5cda63c9e83b6",
  "authoring": "Written by the rig: SportFisherIso2.byId('skybridge').walk(), every number its own (mm), stamped with the rig's LF sha256 and fitted to character rig 10.3 (qa.character) by tools/rig-recipes/hull-walk.mjs. Regenerate with node tools/rig-recipes/hull-walk.mjs --write; never edit by hand.",
  "units": "metres",
  "frame": "metres; +x starboard, +y bow, +z up; origin amidships, keel bottom, centreline; polygons counter-clockwise seen from above",
@@ -1757,29 +1757,11 @@
      [
       [
        0.3,
-       -0.35
+       0.3
       ],
       [
        0.8,
-       -0.35
-      ],
-      [
-       0.8,
-       1.15
-      ],
-      [
-       0.3,
-       1.15
-      ]
-     ],
-     [
-      [
-       0.3,
-       1.5
-      ],
-      [
-       0.8,
-       1.5
+       0.3
       ],
       [
        0.8,
@@ -1837,6 +1819,24 @@
       ],
       [
        -0.3,
+       3.675
+      ],
+      [
+       -0.8,
+       3.675
+      ]
+     ],
+     [
+      [
+       -0.8,
+       4.025
+      ],
+      [
+       -0.3,
+       4.025
+      ],
+      [
+       -0.3,
        4.8
       ],
       [
@@ -1852,6 +1852,24 @@
       [
        0.8,
        2.9
+      ],
+      [
+       0.8,
+       3.675
+      ],
+      [
+       0.3,
+       3.675
+      ]
+     ],
+     [
+      [
+       0.3,
+       4.025
+      ],
+      [
+       0.8,
+       4.025
       ],
       [
        0.8,
@@ -2022,6 +2040,42 @@
       [
        -0.6,
        2.7
+      ]
+     ],
+     [
+      [
+       -2.6,
+       2.35
+      ],
+      [
+       -1.15,
+       2.35
+      ],
+      [
+       -1.15,
+       3
+      ],
+      [
+       -2.6,
+       3
+      ]
+     ],
+     [
+      [
+       1.75,
+       -0.15
+      ],
+      [
+       2.6,
+       -0.15
+      ],
+      [
+       2.6,
+       2.2
+      ],
+      [
+       1.75,
+       2.2
       ]
      ]
     ],
@@ -2031,7 +2085,11 @@
    },
    {
     "id": "belowstep",
+    "kind": "stair",
     "cut": "below",
+    "cutHi": "below",
+    "cutLo": "below",
+    "zMid": 0.97,
     "ramp": {
      "axis": "y",
      "a0": 4.6,
@@ -2060,7 +2118,11 @@
     "holes": [],
     "headroom": 2.644,
     "headroomMax": 2.933,
-    "note": "the step up from the cabins’ sole (0.82 m) to the forward cabin (1.12 m), 2.644–2.933 m clear"
+    "waitsOn": [
+     "stairDown",
+     "stairUp"
+    ],
+    "note": "the step up from the cabins’ sole (0.82 m) to the forward cabin (1.12 m), a stair between the two floors: going up waits on stairUp, coming down on stairDown (2.644–2.933 m clear)"
    },
    {
     "id": "vip",
@@ -2250,29 +2312,11 @@
      [
       [
        0.3,
-       -0.35
+       0.3
       ],
       [
        0.8,
-       -0.35
-      ],
-      [
-       0.8,
-       1.15
-      ],
-      [
-       0.3,
-       1.15
-      ]
-     ],
-     [
-      [
-       0.3,
-       1.5
-      ],
-      [
-       0.8,
-       1.5
+       0.3
       ],
       [
        0.8,
@@ -2330,6 +2374,24 @@
       ],
       [
        -0.3,
+       3.675
+      ],
+      [
+       -0.8,
+       3.675
+      ]
+     ],
+     [
+      [
+       -0.8,
+       4.025
+      ],
+      [
+       -0.3,
+       4.025
+      ],
+      [
+       -0.3,
        4.8
       ],
       [
@@ -2345,6 +2407,24 @@
       [
        0.8,
        2.9
+      ],
+      [
+       0.8,
+       3.675
+      ],
+      [
+       0.3,
+       3.675
+      ]
+     ],
+     [
+      [
+       0.3,
+       4.025
+      ],
+      [
+       0.8,
+       4.025
       ],
       [
        0.8,
@@ -2515,12 +2595,30 @@
       [
        -0.6,
        2.7
+      ]
+     ],
+     [
+      [
+       -0.85,
+       7.85
+      ],
+      [
+       0.85,
+       7.85
+      ],
+      [
+       0.85,
+       9
+      ],
+      [
+       -0.85,
+       9
       ]
      ]
     ],
     "headroom": 2.602,
-    "headroomMax": 2.734,
-    "note": "the forward cabin at 1.12 m (2.602–2.734 m clear)"
+    "headroomMax": 2.671,
+    "note": "the forward cabin at 1.12 m (2.602–2.671 m clear)"
    }
   ]
  },
@@ -3907,8 +4005,8 @@
  "qa": {
   "fitCheck": {
    "tol": 0.01,
-   "faces": 3316,
-   "vertices": 13848,
+   "faces": 3322,
+   "vertices": 13872,
    "outside": 0,
    "worst": 0,
    "worstAt": null,
@@ -4115,21 +4213,11 @@
      "of": 30
     },
     {
-     "id": "stand_belowstep",
-     "what": "stand up on belowstep",
-     "clip": "idle",
-     "headroom_m": 2.644,
-     "headroomMax_m": 2.933,
-     "stands_somewhere": 30,
-     "builds_ok": 30,
-     "of": 30
-    },
-    {
      "id": "stand_vip",
      "what": "stand up on vip",
      "clip": "idle",
      "headroom_m": 2.602,
-     "headroomMax_m": 2.734,
+     "headroomMax_m": 2.671,
      "stands_somewhere": 30,
      "builds_ok": 30,
      "of": 30
@@ -4221,6 +4309,27 @@
       "lobsterman",
       "painter"
      ]
+    },
+    {
+     "id": "climb_belowstep",
+     "what": "belowstep (a stair), walked as its ramp 0.82 → 1.12 m, upright",
+     "clip": "walk",
+     "clear_width_m": 1.34,
+     "headroom_m": 2.644,
+     "ramp": {
+      "axis": "y",
+      "a0": 4.6,
+      "a1": 5,
+      "z0": 0.82,
+      "z1": 1.12
+     },
+     "waitsOn": [
+      "stairDown",
+      "stairUp"
+     ],
+     "note": "the ramp carries the root; the feet on the treads wait on stairDown / stairUp; under the soffit (2.644 m over the top tread) every build taller than 2.624 m waits on duck",
+     "builds_ok": 30,
+     "of": 30
     },
     {
      "id": "step_below_vip",

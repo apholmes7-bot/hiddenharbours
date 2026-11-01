@@ -1,8 +1,8 @@
 /* expeditionYacht120IsoRig.js as the game loads it: two rigs in one file. YachtTenderIso (yachtTenderIsoRig.js)
    comes first, so that its global is defined when the ship's tenders draw; ExpeditionYacht120Iso
    (expeditionYacht120IsoRig.js, the ship's own source) follows. Edit the two sources, never this file.
-     yachtTenderIsoRig.js         LF sha256 3f0ab12f1ed8f077e7b2614d6acd16e99cbb56b21fae5088d15693327236e0f2
-     expeditionYacht120IsoRig.js  LF sha256 a39d9ffa51cbdcf3f196811a12fb7c0c3de40a4d8c6587d5c564032cfe18221f */
+     yachtTenderIsoRig.js         LF sha256 5bb3e86b14bf682d01006f666bb7f90069454984a4d39ec3932f25b67f4cc3c6
+     expeditionYacht120IsoRig.js  LF sha256 f0eed8415039ffc979a78eacd0cafa8acfb97634ac726d25d1f96519b84706ba */
 /* Hidden Harbours — ISO YACHT TENDER, PASS 3: her own boat (ADR-0006 bake recipe, same rasteriser as the fleet).
    A 5.2 m centre-console RIB, the expedition yacht's tender. Two ride the yacht's foredeck on chocks either side of
    the crane (ExpeditionYacht120Iso places them from faces()); this file is also the tender's own standalone rig.
@@ -19,6 +19,9 @@
    renderCut, fitCheck and walk(), which hull-layout-1's writer writes to her walk file (never by hand). Her pictures
    are pass 1's, byte for byte.
    Pass 5 (2026-10-19): her names in the game, on the file, the global and the hull id. Nothing drawn changed.
+   Pass 6 (2026-10-26): her walk is the cockpit. The strips at the console and forward of it, a centimetre or two deep
+   at the walker's radius and joined to nothing, are no place to stand: each is an _excluded floor. Nothing drawn
+   changed.
 
    Exposes globalThis.YachtTenderIso = { W, H, PX, DIRS, pivot, order, defaultElev, PAINTS, paintRamps, matsFor, DIMS, LIFT,
      HELM, BOARD, FLOAT, faces(opts), render(dir, opts), rock(i), ROCK, project(p, dir, opts), and the hull's members:
@@ -397,18 +400,20 @@
       return { id, cut: 'deck', z: SOLE, poly: [[-h, y0], [h, y0], [h, y1], [-h, y1]], holes: [], note }; };
     const cockpit = rect('cockpit', FP.cap.y1 + R, FP.post.y0 - R,
       'aft of the leaning post to the transom cap; the post’s stern light (' + q3(FP.post.y0) + ') is its forward edge');
-    const helm = rect('helm', FP.post.y1 + R, FP.wheel.y0 - R,
-      'the standing room at the console: ' + q3(FP.wheel.y0 - FP.post.y1) + ' m between the leaning post and the wheel’s rim, a ' + q3(FP.wheel.y0 - FP.post.y1 - 2 * R) +
-      ' m strip at the walker’s radius. It does not join the cockpit (beside_post): the helm is taken from the cockpit (interact helm)');
-    const bow = rect('bow', FP.console.y1 + R, FP.seat.y0 - R,
-      'the sole between the console and the bow seat: ' + q3(FP.seat.y0 - FP.console.y1) + ' m, a ' + q3(FP.seat.y0 - FP.console.y1 - 2 * R) +
-      ' m strip at the walker’s radius. It does not join the helm or the cockpit (beside_console)');
-    const areas = [cockpit, helm, bow];
+    // the standing room at the console and the sole forward of it: strips a centimetre or two deep at the walker's radius,
+    // joined to nothing. No place to stand, so not walked (pass 6): each is an _excluded floor, its outline the strip's
+    const helm = rect('helm', FP.post.y1 + R, FP.wheel.y0 - R), bow = rect('bow', FP.console.y1 + R, FP.seat.y0 - R);
+    const strip = (a) => q3(a.poly[2][1] - a.poly[0][1]) + ' by ' + q3(a.poly[1][0] - a.poly[0][0]) + ' m';
+    const areas = [cockpit];
     const yC = (cockpit.poly[0][1] + cockpit.poly[2][1]) / 2;
     const spawn = { x: 0, y: q3(yC), area: 'cockpit' };
     const tubeTop = TUBE_Z + TUBE_R, wPost = q3(soleEdge((FP.post.y0 + FP.post.y1) / 2) - FP.post.x1);
     const wCon = q3(soleEdge(FP.console.y0) - CON.x), wRail = q3(soleEdge(FP.console.y0) - FP.console.x1);
     const _excluded = [
+      { id: 'helm', of: 'area', z: SOLE, poly: helm.poly, reason: 'the standing room at the console: ' + q3(FP.wheel.y0 - FP.post.y1) + ' m between the leaning post and the wheel’s rim, a ' +
+        strip(helm) + ' strip at the walker’s radius that does not join the cockpit (beside_post). No place to stand: the helm is taken from the cockpit (interact helm).' },
+      { id: 'bow', of: 'area', z: SOLE, poly: bow.poly, reason: 'the sole between the console and the bow seat: ' + q3(FP.seat.y0 - FP.console.y1) + ' m, a ' + strip(bow) +
+        ' strip at the walker’s radius that joins neither the helm nor the cockpit (beside_console). No place to stand: the bow seat is taken from it, off the walk (interact seat_bow).' },
       { id: 'beside_post', of: 'area', z: SOLE, reason: 'the sole beside the leaning post: ' + wPost + ' m between the post (' + q3(2 * FP.post.x1) + ' m wide) and the sole’s edge, narrower than the walker’s ' +
         q3(2 * R) + ' m. The cockpit and the helm do not join at the walker’s radius.' },
       { id: 'beside_console', of: 'area', z: SOLE, reason: 'the sole beside the console: ' + wCon + ' m between the console (' + q3(2 * CON.x) + ' m wide) and the sole’s edge, ' + wRail +
@@ -429,7 +434,8 @@
       { id: 'helm', action: 'enter_helm', label: 'Helm', prompt: 'Take the wheel', at: xyz(WHEEL.hub), reach: on(cockpit, 0, cockpit.poly[2][1]), area: 'cockpit',
         seat: xyz(PERCH), stand: xyz(HELM.stand),
         note: 'a standing console: the pilot stands between it and the leaning post, whose cushion is the perch (seat). Taken from the cockpit, behind the post.' },
-      { id: 'seat_bow', action: 'enter_ride', label: 'Bow seat', prompt: 'Ride', at: xyz(BOW_SEAT), reach: on(bow, 0, bow.poly[2][1]), area: 'bow', waitsOn: ['sit'] },
+      { id: 'seat_bow', action: 'enter_ride', label: 'Bow seat', prompt: 'Ride', at: xyz(BOW_SEAT), reach: on(bow, 0, bow.poly[2][1]), area: null, offWalk: 'bow', waitsOn: ['sit'],
+        note: 'taken at its stand, off the walk (see _excluded bow)' },
       { id: 'outboard', action: 'open_close', label: 'Outboard', prompt: 'Tilt up · down', state: 'tilt', at: xyz(PIV), reach: on(cockpit, 0, cockpit.poly[0][1]), area: 'cockpit',
         note: 'tilt 0 down … 1 up ' + TILT_MAX + '° about the transom bracket, worked over the transom cap' },
     ];
@@ -527,6 +533,13 @@
 
    PASS 5 (2026-10-19): her names in the game, on the files, the globals, the hull ids and the paints. Nothing drawn
    changed.
+
+   PASS 6 (2026-10-26): her floors, one per height on a key, as the game joins them. Every indoor walk area stands at its
+   level's sole (below 1.90, house 4.30, bridge 7.00, fly 9.70), the carpet and teak over it drawn and never walked. Aft
+   of the engine room the lower deck is one floor on the lazarette's sole, 2.08: the aft lobby, the corridor, the guest
+   cabins and their ensuites, the laundry and the linen rise 0.18 m with their rooms, the step at the lazarette's door
+   goes, and lower_aft lands on it in twelve risers of 0.185. The captain's wardrobe is 0.35 m deep, not 0.60, by the
+   owner's ruling (10-27), so the strip inside the cabin's starboard door joins its floor. Nothing else drawn moved.
 
    Exposes globalThis.ExpeditionYacht120Iso = { id, label, kind, hullIds, defaultHull, byId(id), loa, loaText, L, DWL, cockpitZ,
      W, H, PX, DIRS, pivot, order, defaultElev, PAINTS, paintRamps, schemeIds, defaultScheme, matsFor(scheme), MATS, GAIN,
@@ -1247,12 +1260,14 @@
       pts.forEach(p => tubeQ([p[0], p[1], S0], [p[0], p[1], S0 + 0.90], 0.022, 0.022, 'steel', 0.1)); });
     // a closed flight on a solid base: n risers of rise from zFoot at yFoot, going 0.26, climbing in dir (±1 in y); teak treads,
     // white risers and sides (none on a walled side: sides holds 'l' for x0, 'r' for x1), a handrail each side. Its headroom
-    // is the least height from a tread to the ceiling (ceil) over it, the treads under the stairwell H aside.
+    // is the least height from a tread to the ceiling (ceil) over it, the treads under the stairwell H aside (where every
+    // tread is under it, from the floor at its foot).
     const flight = (id, x0, x1, yFoot, dir, n, rise, zFoot, sides, H, ceil) => { sides = sides || ''; const going = 0.26, yTop = yFoot + dir * (n - 1) * going, zTop = zFoot + n * rise; let head = Infinity;
       const skip = 'b' + (sides.indexOf('l') >= 0 ? 'l' : '') + (sides.indexOf('r') >= 0 ? 'r' : '');
       for (let k = 1; k < n; k++) { const ya = yFoot + dir * (k - 1) * going, yb = ya + dir * going, zt = zFoot + k * rise, lo = Math.min(ya, yb), hi = Math.max(ya, yb);
         tag(zt - zFoot > 1.3 ? 'tall' : 'fit', () => boxQ(x0, x1, lo, hi, zFoot, zt, 'whiteg', 0, 0, 'teakg', skip));
         if (H && !(lo >= H.y0 - 1e-6 && hi <= H.y1 + 1e-6)) head = Math.min(head, ceil - zt); }
+      if (H && head === Infinity) head = ceil - zFoot;
       for (const [x, s, e] of [[x0, 'l', 1], [x1, 'r', -1]]) { const walled = sides.indexOf(s) >= 0, xr = x + e * (walled ? 0.05 : 0.03);
         tag('fit', () => { tubeQ([xr, yFoot, zFoot + rise + 0.90], [xr, yTop, zTop + 0.90], 0.025, 0.025, 'steel', 0.3);
           if (!walled) { tubeQ([xr, yFoot, zFoot + rise], [xr, yFoot, zFoot + rise + 0.90], 0.022, 0.022, 'steel', 0.1); tubeQ([xr, yTop, zTop], [xr, yTop, zTop + 0.90], 0.022, 0.022, 'steel', 0.1); } }); }
@@ -1281,26 +1296,29 @@
       return [...s].filter(y => y >= y0 && y <= y1).sort((a, b) => a - b); };
     const MIR = (sd) => (a, b) => sd < 0 ? [-b, -a] : [a, b], SIDE = (sd) => sd < 0 ? 'port' : 'stbd';
 
-    // ---- the lower deck (lv below): the lazarette aft (a step up), the guest cabins, laundry and linen, the aft lobby, the
-    // engine room (off the walk), the VIP suites round the foyer stair, the crew's mess, cabins and head forward ----
+    // ---- the lower deck (lv below): aft of the engine room, a block on the lazarette's sole (the lazarette, the guest cabins,
+    // laundry and linen, the aft lobby: one floor, pass 6); the engine room (off the walk); the VIP suites
+    // round the foyer stair, the crew's mess, cabins and head forward ----
     level('below', ZBELOW);
-    const util = (y) => y < -14.30 || (y > -10.70 && y < -8.00) || (y > -6.20 && y < -1.80), soleAt = (y) => y < -14.30 ? Z_LAZ : ZBELOW;
+    const util = (y) => y < -14.30 || (y > -10.70 && y < -8.00) || (y > -6.20 && y < -1.80), soleAt = (y) => y < -6.20 ? Z_LAZ : ZBELOW;
     const LOW_PORTS = [[-13.95, -13.45], [-12.50, -12.00], [-8.80, -8.30], [-7.70, -7.20], [0.75, 1.25], [2.45, 2.95], [3.45, 3.95]].map(p => [p[0] + 0.04, p[1] - 0.04, 3.66, 3.94]);
     hullLining(ysOf(Y_LAZ, Y_COLL, 0.6, [-14.30, -10.70, -8.00, -6.20, -1.80, 4.10, 6.40, 9.00]), hullX, soleAt,
       [[(y) => soleAt(y) + DADO, (y) => util(y) ? 'whiteg' : 'teakg'], [ZLC, 'whiteg'], [ZM, 'teakg']], LOW_PORTS, true);
     sole([Y_LAZ, -15.50, -14.90, -14.27], Z_LAZ, (y) => halfAtZ(y, Z_LAZ) - LIN, () => 'teakg');
-    sole(ysOf(-14.27, Y_COLL, 0.6, [-6.20, -1.80, 9.00]), ZBELOW, (y) => halfAtZ(y, ZBELOW) - LIN, (y) => y > -6.20 && y < -1.80 ? 'steel' : 'teakg');
+    { const ys = ysOf(-14.27, Y_COLL, 0.6, [-6.20, -1.80, 9.00]);   // the aft block's to the engine room's bulkhead, then the deck's own
+      sole(ys.filter((y) => y <= -6.20), Z_LAZ, (y) => halfAtZ(y, Z_LAZ) - LIN, () => 'teakg');
+      sole(ys.filter((y) => y >= -6.20), ZBELOW, (y) => halfAtZ(y, ZBELOW) - LIN, (y) => y > -6.20 && y < -1.80 ? 'steel' : 'teakg'); }
     lid(yT + 0.02, Y_LAZ - 0.03, 6, (y) => Math.min(ZLC, fSz(y) - 0.10, y < Y_PLAT ? ZLC : ZP + (y - Y_PLAT) * PST.rise / PST.going - 0.02));   // over the stern void, under the platform stairs' soffit (the risers' feet)
     lid(Y_COLL + 0.03, yB - 0.05, 12, () => ZLC);                                     // over the forepeak
     room('forepeak', 'Forepeak and chain locker', [-2.6, 2.6], [Y_COLL, 15.0], { walk: false, note: 'a void under its lid; the chain locker forward' });
 
-    // lazarette: its aft bulkhead, its door up the step, lockers, the workbench, shelving
+    // the aft block, on the lazarette's sole to the engine room. The lazarette: its aft bulkhead, its door, lockers, the
+    // workbench, shelving
+    S0 = Z_LAZ;
     part(1, Y_LAZ, -9, 9, [], { z0: Z_LAZ });
-    part(1, -14.30, -9, 9, [[-0.45, 0.45, 'lazarette', Z_LAZ - ZBELOW + DH]]);
-    tag('floor', () => Q([[-0.45, -14.27, ZBELOW], [0.45, -14.27, ZBELOW], [0.45, -14.27, Z_LAZ], [-0.45, -14.27, Z_LAZ]], [0, 1, 0], 'teakg', -0.3));
-    S0 = Z_LAZ; room('lazarette', 'Lazarette', [-2.8, 2.8], [Y_LAZ, -14.30], { note: 'stores and the steering gear; its sole 2.08, a step up' });
+    part(1, -14.30, -9, 9, [[-0.45, 0.45, 'lazarette']]);
+    room('lazarette', 'Lazarette', [-2.8, 2.8], [Y_LAZ, -14.30], { note: 'stores and the steering gear, on the aft block\'s sole (2.08)' });
     tall(-9, -2.10, -16.02, -14.40, 0, 1.85, 'teakg'); fb(1.60, 9, -15.40, -14.40, 0, 0.85, 'teakg', 0, 'steel'); tall(1.70, 9, -16.02, -15.50, 0, 1.85, 'whiteg');
-    S0 = ZBELOW;
 
     // the aft corridor; the aft guest cabins either side, each with its en-suite inboard aft
     part(0, -0.53, -14.27, -8.00, [[-12.40, -11.55, 'guest_aft_port'], [-9.00, -8.15, 'laundry']]);
@@ -1322,12 +1340,13 @@
     stn('bench_laundry', 'Laundry counter', 'bench', -2.95, -9.00, [-1, 0], 'bench', 0.85);
     tall(0.62, 1.88, -10.65, -10.15, 0, 1.95, 'whiteg'); tall(1.96, 2.84, -10.65, -10.04, 0, 1.95, 'whiteg'); tall(2.90, 9, -10.65, -8.05, 0, 1.95, 'teakg');
     const HAG = { x0: 1.93, x1: 2.87, y0: -10.03, y1: -7.14 };
-    flight('lower_aft', 1.95, 2.85, -6.88, -1, 13, 2.40 / 13, ZBELOW, '', HAG, ZLC);
+    flight('lower_aft', 1.95, 2.85, -7.14, -1, 12, (ZM - Z_LAZ) / 12, Z_LAZ, '', HAG, ZLC);   // its top tread where it was, its foot one going aft
     room('lobby_aft', 'Aft lobby', [-3.9, 2.85], [-7.97, -6.23]); carpet(-9, 1.90, -7.97, -6.23); fb(-2.60, -1.40, -6.62, -6.23, 0, 0.80, 'teakg', 0, 'stone');
 
-    // the engine room: its bulkheads, a watertight door (shut), the mains under red covers, gensets, exhausts
-    part(1, -6.20, -9, 9, [], { mat: 'whiteg' }); part(1, -1.80, -9, 9, [], { mat: 'whiteg' });
+    // the engine room: its bulkheads, a watertight door (shut, on the aft lobby's sole), the mains under red covers, gensets, exhausts
+    part(1, -6.20, -9, 9, [], { mat: 'whiteg', z0: ZBELOW }); part(1, -1.80, -9, 9, [], { mat: 'whiteg', z0: ZBELOW });
     fb(-0.42, 0.42, -6.27, -6.23, 0, 1.85, 'steel', 0.1);
+    S0 = ZBELOW;
     room('engine_room', 'Engine room', [-3.98, 3.98], [-6.17, -1.83], { walk: false, note: 'drawn, off the walk' });
     for (const sd of [-1, 1]) { fb(sd * 1.30 - 0.55, sd * 1.30 + 0.55, -5.40, -2.70, 0, 0.30, 'steel', -0.2); fb(sd * 1.30 - 0.45, sd * 1.30 + 0.45, -5.30, -2.80, 0.30, 1.25, 'red', 0);
       fb(sd * 3.00 - 0.40, sd * 3.00 + 0.40, -5.90, -4.80, 0, 0.95, 'whiteg', 0, 'steel'); tag('tall', () => tubeQ([sd * 1.30, -2.95, ZBELOW + 1.25], [sd * 1.30, -2.95, ZLC - 0.05], 0.12, 0.12, 'steel', 0)); }
@@ -1469,7 +1488,7 @@
     fb(1.20, 2.60, -4.05, -2.12, 0, 0.22, 'teakg'); bed('captain', 'aft', 1.22, 2.58, -4.03, -2.14); fb(1.20, 2.60, -4.15, -4.05, 0.10, 1.10, 'leath', -0.1, null, '');
     for (const x of [1.35, 1.95]) fb(x, x + 0.50, -4.00, -3.60, 0.30, 0.42, 'whiteg', 0.4);
     stn('bed_captain', "Captain's bed", 'sleep', 0.95, -3.10, [1, 0], 'rest', 0.30);
-    tall(0.55, 1.15, -1.85, -1.25, 0, 2.00, 'teakg');
+    tall(0.55, 1.15, -1.60, -1.25, 0, 2.00, 'teakg');   // the wardrobe, 0.35 deep (the owner, 10-27): 0.52 clear to the bed's foot
 
     // the pilothouse: the console across the windscreen, the helm chair and two more, the chart table, a settee aft to starboard
     room('pilothouse', 'Pilothouse', [-2.95, 2.95], [-1.20, 3.25]); carpet(-9, 9, -1.17, 2.40);
@@ -1773,7 +1792,7 @@
       ids: Object.assign({}, LV), roles: Object.assign({}, RO), ghostRoles: GHOST_ROLES.slice(), dwlZ: DWL,
       riggingClass: 'rigging: mast, yard, domes, radar, whips (by class); the hardtop is the top level\'s roof (top:roof)',
       levels: [
-        lev('below', 'below_sole', ZBELOW, ZM - 0.15, 'the main deck: the salon\'s sole (house) and the aft deck (main_deck)', { lid: 'house', note: 'lower deck: lazarette aft (its sole 2.08), engine room, guest cabins, laundry, VIP suites, crew forward; the engine room and the forepeak are drawn, not walked (_excluded)' }),
+        lev('below', 'below_sole', ZBELOW, ZM - 0.15, 'the main deck: the salon\'s sole (house) and the aft deck (main_deck)', { lid: 'house', note: 'lower deck: aft of the engine room, a block on the lazarette\'s sole 2.08 (lazarette, guest cabins, laundry, linen, aft lobby), engine room, VIP suites, crew forward; the engine room and the forepeak are drawn, not walked (_excluded)' }),
         lev('main_deck', 'aft_deck', ZM, null, 'the aft and side decks, under the 01 overhang (ghosted, not cut); the swim platform is at ' + ZP.toFixed(2)),
         lev('house', 'house_sole', ZM, Z01U, 'the 01 slab\'s underside, role roof on lv house; the 01 deck above is lv bridge. Forward, the master suite is under the foredeck (lv foredeck)'),
         lev('bridge', 'bridge_sole', Z01, ZFU, 'the fly slab\'s underside, role roof on lv bridge; the fly above is lv top'),
@@ -1914,7 +1933,9 @@
   // each within its row's span, reaching into the rooms' rects only. Floor that no label reaches is a pocket, or, where it
   // lies beyond every row and rect (the house roof round the pilothouse), floor drawn beyond the decks: both _excluded. The
   // labels are cut into pieces, grown WK.grow cells over floor and steps so that neighbours overlap, traced and simplified
-  // (tau). The stairs are ramps of their own, run through their treads' centres; the foredeck is cut into chords of its
+  // (tau). An indoor piece (a room's, a door's, a pocket in a room) stands at its level's sole, the finish over it (carpet,
+  // teak) drawn and never walked (pass 6); a deck stands on its planks, the median of the faces under it.
+  // The stairs are ramps of their own, run through their treads' centres; the foredeck is cut into chords of its
   // sheer, each within WK.chord of the drawn deck. A piece no walk from the aft deck reaches is _excluded with its reason,
   // as is what is drawn and not walked. A station whose stand no area comes within reachTol of is taken at its stand,
   // offWalk on the floor under it: its pocket, or its own _excluded floor where the floor is too tight (gaps_m).
@@ -2113,8 +2134,8 @@
     for (const f of IFLIGHTS) { const dir = Math.sign(f.top[1] - f.foot[1]); CL.push({ id: ROOMS.some((r) => r.id === f.id) ? f.id + '_stair' : f.id, x: f.x, yF: f.foot[1] + dir * 0.30, dir, n: f.risers, going: f.going, zF: f.foot[2], zT: f.top[2], row: f.id, flight: f }); }
     const STEPS = CL.map((C) => { const y1 = C.yF + C.dir * (C.n - 1) * C.going; return [C.x[0] - 0.05, C.x[1] + 0.05, Math.min(C.yF, y1) - 0.05, Math.max(C.yF, y1) + 0.05]; });
     const inStair = (x, y) => STEPS.some((b) => x >= b[0] && x <= b[1] && y >= b[2] && y <= b[3]);
-    const lazSole = byId(ROOMS, 'lazarette').sole;
-    const SURFS = [['below', ZBELOW], ['lazarette', lazSole], ['platform', ZP], ['main', ZM]].concat(TREADS.length ? [['tread', TREADS[0].z]] : [], [['bridge', Z01], ['top', ZF], ['foredeck', null]])
+    const aftSole = byId(ROOMS, 'lazarette').sole;   // the aft below block's, the lazarette's
+    const SURFS = [['below', ZBELOW], ['below_aft', aftSole], ['platform', ZP], ['main', ZM]].concat(TREADS.length ? [['tread', TREADS[0].z]] : [], [['bridge', Z01], ['top', ZF], ['foredeck', null]])
       .map(([id, z]) => wkSurface(id, z)).filter(Boolean);
     const EX = [], POCKETS = [], deckRows = (R) => R.id === 'tread' ? des.STAIRS.filter((s) => /^bridge_step_port/.test(s.id)).map((s) => ({ id: s.id, y: [-Infinity, Infinity], note: s.note }))
       : des.DECKS.filter((d) => typeof d.z === 'number' && d.z === R.z && /^[a-z0-9_]+( \/ _stbd)?$/.test(d.id));
@@ -2148,16 +2169,17 @@
       flood('deck', rm);
       { const qu = new Int32Array(n); for (let k0 = 0; k0 < n; k0++) { if (!R.free[k0] || lab[k0]) continue;   // pockets: free cells no label reached, a label each
           const nm = { kind: 'pocket', id: 'pocket', ord: [3, names.length] }, L0 = names.push(nm) - 1; let qh = 0, qt = 0; qu[qt++] = k0; lab[k0] = L0;
-          while (qh < qt) { const k = qu[qh++]; if (rows.length && !rm[k] && !inRow(wkYc(W.j0 + (k - k % W.ni) / W.ni))) nm.off = true;
+          while (qh < qt) { const k = qu[qh++]; if (rm[k]) nm.room = true; else if (rows.length && !inRow(wkYc(W.j0 + (k - k % W.ni) / W.ni))) nm.off = true;
             for (const q of nb4(k)) if (q >= 0 && q < n && R.free[q] && !lab[q]) { lab[q] = L0; qu[qt++] = q; } } } }
       R.lab = lab; const mk = new Int32Array(n).fill(-1), comps = wkComps(W, lab);
       for (const [L0, parts] of [...comps].sort((a, b) => names[a[0]].ord[0] - names[b[0]].ord[0] || names[a[0]].ord[1] - names[b[0]].ord[1])) { const nm = names[L0];
         parts.forEach((own, q) => { if (own.length < WK.minCells) return;
-          if (nm.kind === 'pocket') { POCKETS.push({ R, own, z: zMed(R, own), off: !!nm.off }); return; }
+          if (nm.kind === 'pocket') { POCKETS.push({ R, own, z: !nm.off && (nm.room || !rows.length) ? r3(R.z) : zMed(R, own), off: !!nm.off }); return; }   // indoors (in a room, or below the decks), the sole
           const id = nm.id + (q ? '_' + (q + 1) : ''), base = { sid: R.id, kind: nm.kind, id, z: zMed(R, own) };
           if (nm.kind === 'room') Object.assign(base, { cut: CUT_OF[nm.room.lv], note: nm.room.label + (nm.room.note ? ': ' + nm.room.note : '') });
           else if (nm.kind === 'door') Object.assign(base, { cut: DOOR_CUT[R.id], door: nm.id, note: nm.label + ': a wall while shut; passable from doorOpen ' + nm.door.clearAt + ' (interact ' + nm.id + ')' });
           else Object.assign(base, { cut: 'deck', note: nm.row.note || '' });
+          if (base.cut !== 'deck') base.z = r3(R.z);   // indoors, the level's sole: a finish over it (carpet, teak) is drawn, never walked
           Object.assign(base, headOf(R.ceil, own, (k) => R.fz[k]));
           wkPiece(R, own, mk, base); }); } }
 
@@ -2256,8 +2278,9 @@
       const at = (z) => ({ x: r3(p[0]), y: r3(p[1]), z }), W = R.W, i = k % W.ni, j = (k - i) / W.ni;
       const P = POCKETS.find((Q) => Q.R === R && Q.own.includes(k)); if (P) { (P.stands = P.stands || []).push(sid); return { area: null, offWalk: PID.get(P), reach: at(P.z) }; }
       const S = stn(sid); if (!S || !S.face) return null;
-      const id = sid + '_floor', z = r3(R.fz[k]), b0 = R.fz[k] + WK.band[0], b1 = R.fz[k] + WK.band[1], inBand = (f) => f.z1 > b0 && f.z0 < b1;
+      const id = sid + '_floor', b0 = R.fz[k] + WK.band[0], b1 = R.fz[k] + WK.band[1], inBand = (f) => f.z1 > b0 && f.z0 < b1;
       const head = { id, of: 'area' }, a0 = named(S.deck).map((q) => aid.get(q)).find(Boolean); if (a0) head.cut = a0.cut;
+      const z = a0 && a0.cut !== 'deck' && R.z != null ? r3(R.z) : r3(R.fz[k]);   // indoors, the level's sole, as its areas
       const tail = 'no area is drawn there, and the station is taken at its stand', who = 'the stand of ' + S.label + ' (' + sid + ')';
       if (R.obs[k]) { let zo = Infinity;   // a fitting over the stand: the lowest face over it in the band
         for (const f of FS) if (inBand(f) && f.x0 <= p[0] && p[0] <= f.x1 && f.y0 <= p[1] && p[1] <= f.y1) zo = Math.min(zo, f.anz >= 0.05 ? wkPlaneZ(f, p[0], p[1]) : f.z0);
