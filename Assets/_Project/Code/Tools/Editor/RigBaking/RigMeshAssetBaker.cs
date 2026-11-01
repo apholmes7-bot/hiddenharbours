@@ -992,7 +992,7 @@ namespace HiddenHarbours.Tools.RigBaking
             /// rig's own faces; a converted hull's room is appended after it.</summary>
             public int Start;
 
-            /// <summary>Faces in the leaf, the same at both poses (checked).</summary>
+            /// <summary>Faces in the shut leaf; a walk hull's open pose may add what it uncovers.</summary>
             public int Count;
 
             /// <summary>The leaf's faces as they sit in the hull's list, by reference, so the lift can
@@ -1035,7 +1035,7 @@ namespace HiddenHarbours.Tools.RigBaking
             RigMeshData open = RigMeshExtractor.ExtractDoorLeaf(host, globalName, extraction, data,
                                                                 DoorLeafOpenPose);
             int count = closed.Faces.Count;
-            if (open == null || open.Faces.Count != count)
+            if (open == null || (data.Walk == null ? open.Faces.Count != count : open.Faces.Count < count))
                 throw new InvalidOperationException(
                     $"{globalName}: her door leaf has {count} faces shut and " +
                     $"{(open == null ? 0 : open.Faces.Count)} open. The renderer swaps one leaf mesh " +
@@ -1112,6 +1112,19 @@ namespace HiddenHarbours.Tools.RigBaking
             for (int k = 0; k < a.V.Length; k++)
                 if (a.V[k].X != b.V[k].X || a.V[k].Y != b.V[k].Y || a.V[k].Z != b.V[k].Z)
                     return false;
+            return true;
+        }
+
+        public static bool DoorLeafPosesAgree(RigMeshData closed, RigMeshData open)
+        {
+            if (closed == null || open == null || open.Faces.Count < closed.Faces.Count) return false;
+            for (int i = 0; i < closed.Faces.Count; i++)
+            {
+                var shut = closed.Faces[i];
+                var moved = open.Faces[i];
+                if (shut.Mat != moved.Mat || shut.Level != moved.Level || shut.B != moved.B ||
+                    shut.Db != moved.Db || shut.V.Length != moved.V.Length) return false;
+            }
             return true;
         }
 
@@ -1208,7 +1221,7 @@ namespace HiddenHarbours.Tools.RigBaking
                     var closed = HullWalkRigExtractor.Door(host, scope, data, doorId, DoorLeafShutPose);
                     var open = HullWalkRigExtractor.Door(host, scope, data, doorId, DoorLeafOpenPose);
                     int count = closed.Faces.Count;
-                    if (count == 0 || open.Faces.Count != count || start + count > leaf.Start + leaf.Count)
+                    if (count == 0 || !DoorLeafPosesAgree(closed, open) || start + count > leaf.Start + leaf.Count)
                         throw new FormatException(data.Walk.Hull + ": house.doors." + doorId + ": leaf poses disagree");
                     for (int i = 0; i < count; i++)
                         if (!SameFace(data.Faces[start + i], closed.Faces[i]))
@@ -1219,8 +1232,8 @@ namespace HiddenHarbours.Tools.RigBaking
                     poseFaces.RemoveRange(start, count);
                     poseFaces.InsertRange(start, open.Faces);
                     var poseSides = RigMeshInteriorClassifier.ClassifySides(data.WithFaces(poseFaces));
-                    var openSides = new byte[count];
-                    Array.Copy(poseSides, start, openSides, 0, count);
+                    var openSides = new byte[open.Faces.Count];
+                    Array.Copy(poseSides, start, openSides, 0, openSides.Length);
                     namedLeaves.Add((doorId, closed, open, closedSides, openSides));
                     start += count;
                 }

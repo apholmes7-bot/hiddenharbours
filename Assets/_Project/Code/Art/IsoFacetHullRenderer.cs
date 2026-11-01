@@ -273,8 +273,8 @@ namespace HiddenHarbours.Art
         /// <see cref="HiddenHarbours.Core.IHullDoorLeaf"/> seam, driven by <c>BoatCabinDoor</c> from its
         /// own <c>IsOpen</c> (owner playtest 2026-09-17: "i dont see the doors open").
         ///
-        /// <para>A mesh swap on the "DoorLeaf" child and nothing else. Both poses are the same faces in
-        /// the same vertex layout, and the child shares FacetMesh's material and property block, so the
+        /// <para>A mesh swap on the "DoorLeaf" child and nothing else. Both poses keep the shut faces'
+        /// vertex layout; a walk hull's open pose may add what it uncovers. The child shares FacetMesh's material and property block, so the
         /// leaf shades, dithers, composites and cuts away with the house exactly as it did while it was
         /// baked into the hull mesh.</para>
         ///
