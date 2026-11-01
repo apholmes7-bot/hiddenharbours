@@ -549,6 +549,13 @@ namespace HiddenHarbours.Tests.EditMode
             float speed = TerminalSpeed(Hull("ExpeditionYacht120"));
             Assert.That(speed, Is.GreaterThan(TerminalSpeed(Hull("PuntUpgraded"))));
             Assert.That(speed, Is.LessThan(TerminalSpeed(Hull("ConsoleSkiff"))));
+            Assert.That(roster.Count(n => n == "MotorYacht84"), Is.EqualTo(1));
+            int motor = System.Array.IndexOf(roster, "MotorYacht84");
+            Assert.That(roster[motor - 1], Is.EqualTo("SportSkiff"));
+            Assert.That(roster[motor + 1], Is.EqualTo("Bowrider"));
+            float motorSpeed = TerminalSpeed(Hull("MotorYacht84"));
+            Assert.That(motorSpeed, Is.GreaterThan(TerminalSpeed(Hull("SportSkiff"))));
+            Assert.That(motorSpeed, Is.LessThan(TerminalSpeed(Hull("Bowrider"))));
         }
 
         [Test]

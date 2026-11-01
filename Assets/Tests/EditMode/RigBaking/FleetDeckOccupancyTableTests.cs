@@ -107,6 +107,7 @@ namespace HiddenHarbours.Tests.RigBaking
             // Furniture is already in the full mesh and consumes no deck-occupant slot.
             t["hullmesh.expedition_yacht120_iso"] = new Occupancy("expedition_yacht_120", 1, 0, 0, 0, 0, "expeditionYacht120IsoRig.js");
             t["hullmesh.yacht_tender_iso"] = new Occupancy("yacht_tender", 1, 0, 0, 0, 1, "yachtTenderIsoRig.js");
+            t["hullmesh.motor_yacht84_iso"] = new Occupancy("motor_yacht_84", 1, 0, 0, 0, 0, "motorYacht84IsoRig.js");
             t["hullmesh.go_fast_iso"] = new Occupancy("go_fast", 1, 0, 0, 0, 4, "goFastIsoRig.js");
             t["hullmesh.bowrider_iso"] = new Occupancy("bowrider", 1, 0, 0, 0, 7, "bowriderIsoRig.js");
             t["hullmesh.express_cruiser_iso"] = new Occupancy("express_cruiser", 1, 0, 0, 0, 6, "cruiserIsoRig.js");
@@ -318,9 +319,8 @@ namespace HiddenHarbours.Tests.RigBaking
         [Test]
         public void EveryAuthoredId_FollowsTheProjectConvention()
         {
-            Assert.AreEqual(28, Authored.Count,
-                "The table is 28 hulls (18 lobster + 2 zodiac + sport skiff v2 + 2 sport fisher + 3 recreation + " +
-                "the expedition yacht 120 and her tender): the 26 docs/design/fleet-flotation.md floats, plus those two.");
+            Assert.AreEqual(29, Authored.Count,
+                "The 26 documented flotation hulls plus the expedition yacht 120, her tender and the motor yacht 84.");
 
             foreach (string id in Authored.Keys)
                 Assert.That(id, Does.Match(@"^hullmesh\.[a-z0-9]+(_[a-z0-9]+)*$"),

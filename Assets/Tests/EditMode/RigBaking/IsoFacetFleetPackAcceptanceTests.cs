@@ -126,7 +126,7 @@ namespace HiddenHarbours.Tests.RigBaking
 
         static IEnumerable<Subject> Photographed()
         {
-            foreach (string key in new[] { "goFast", "bowrider", "expressCruiser", "expeditionYacht120", "yachtTender" })
+            foreach (string key in new[] { "goFast", "bowrider", "expressCruiser", "expeditionYacht120", "yachtTender", "motorYacht84" })
             {
                 var h = HullMeshFleet.Get(key);
                 string asset = Path.GetFileName(h.MeshAssetPath).Replace("HullMesh.asset", "");
@@ -311,7 +311,7 @@ namespace HiddenHarbours.Tests.RigBaking
                 string source = System.IO.File.ReadAllText(
                     System.IO.Path.Combine(RigCatalog.RepoRoot, s.ScriptPath));
                 bool declaresDither = source.Contains("dith:");
-                if (s.Key == "expeditionYacht120" || s.Key == "yachtTender")
+                if (s.Key == "expeditionYacht120" || s.Key == "yachtTender" || s.Key == "motorYacht84")
                 {
                     using var host = RigScriptHostFactory.Create();
                     host.Execute(source);

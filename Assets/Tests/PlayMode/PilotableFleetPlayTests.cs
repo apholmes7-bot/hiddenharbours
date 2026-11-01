@@ -703,6 +703,7 @@ namespace HiddenHarbours.Tests.PlayMode
             {
                 LoadHull("Dory"), LoadHull("DoryOutboard"), LoadHull("PuntUpgraded"),
                 LoadHull("ExpeditionYacht120"),
+                LoadHull("MotorYacht84"),
                 LoadHull("ConsoleSkiff"), LoadHull("SportSkiff"), LoadHull("SportSkiffTwin"),
                 LoadHull("SportSkiffMk2"), LoadHull("ZodiacHurricane"), LoadHull("SportFisherConvertible"),
             };

@@ -264,6 +264,8 @@ namespace HiddenHarbours.Tools.RigBaking
                 "paint.expedition_yacht120_", "expedition_yacht_120"),
             PublishedWalkPaint("yachtTender", "hullmesh.yacht_tender_iso", "YachtTenderIso",
                 "paint.yacht_tender_", "yacht_tender"),
+            PublishedWalkPaint("motorYacht84", "hullmesh.motor_yacht84_iso", "MotorYacht84Iso",
+                "paint.motor_yacht84_", "motor_yacht_84"),
 
         };
 

@@ -80,7 +80,8 @@ namespace HiddenHarbours.Tests.RigBaking
         [TestCase("sportFisherConvertible", 13)]
         [TestCase("sportFisherSkybridge", 14)]
         [TestCase("expeditionYacht120", 66)]
-        [TestCase("yachtTender", 3)]
+        [TestCase("yachtTender", 1)]
+        [TestCase("motorYacht84", 51)]
         public void SwitchedHull_EqualsDeliveredWalk(string key, int walkAreas)
         {
             var hull = HullMeshFleet.Get(key);

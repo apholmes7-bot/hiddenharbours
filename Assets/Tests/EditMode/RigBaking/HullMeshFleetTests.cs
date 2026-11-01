@@ -403,6 +403,7 @@ namespace HiddenHarbours.Tests.RigBaking
         // Walk rooms enter the mask at code 0 after classification, so this scan never sees their soles.
         static readonly (string Key, float LowestInterior, string Whence)[] CabinSoleHulls =
         {
+            ("motorYacht84", 1.50f, "lower deck sole (motorYacht84IsoRig.js LOWER_SOLE = 1.50; DWL 1.80, main deck MAIN_DECK 3.75)"),
             ("sloop30", 0.35f, "cabin sole (sloopIsoRig.js CAB_SOLE = 0.35; DWL 0.55, cockpit SOLE 1.15)"),
             ("sloop88", 1.10f, "foot of the lower-accommodation bulkheads (sloop88IsoRig.js LOW - 0.1 " +
                                "= 1.10, they land on the hull below the sole; DWL 1.35, cockpit SOLE 2.55)"),

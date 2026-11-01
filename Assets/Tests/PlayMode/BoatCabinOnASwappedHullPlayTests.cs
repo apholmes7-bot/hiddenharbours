@@ -267,7 +267,7 @@ namespace HiddenHarbours.Tests.PlayMode
 
         [UnityTest]
         public IEnumerator SwappedOnUnderHer_EOpensHerDoor_AndHerHouseIsCutOpenOnlyWhileSheIsBelow(
-            [Values("CapeIslander", "LobsterBoat", "SportFisherConvertible", "SportFisherSkybridge", "ExpeditionYacht120")] string subjectName)
+            [Values("CapeIslander", "LobsterBoat", "SportFisherConvertible", "SportFisherSkybridge", "ExpeditionYacht120", "MotorYacht84")] string subjectName)
         {
             Rig rig = NewDoryRig();
             BoatHullDef subject = LoadHull(subjectName);
@@ -333,7 +333,7 @@ namespace HiddenHarbours.Tests.PlayMode
 
         [UnityTest]
         public IEnumerator SwappedOnUnderHer_HerDoorLeafIsDrawnInThePoseHerDoorIsIn(
-            [Values("CapeIslander", "LobsterBoat", "SportFisherConvertible", "SportFisherSkybridge", "ExpeditionYacht120")] string subjectName)
+            [Values("CapeIslander", "LobsterBoat", "SportFisherConvertible", "SportFisherSkybridge", "ExpeditionYacht120", "MotorYacht84")] string subjectName)
         {
             Rig rig = NewDoryRig();
             BoatHullDef subject = LoadHull(subjectName);
@@ -395,7 +395,7 @@ namespace HiddenHarbours.Tests.PlayMode
 
         [UnityTest]
         public IEnumerator ASwapWhileSheIsBelow_LetsHerOut_AndLeavesOnlyTheNewHullsCabinStanding(
-            [Values("CapeIslander", "SportFisherConvertible", "SportFisherSkybridge", "ExpeditionYacht120")] string firstHullName)
+            [Values("CapeIslander", "SportFisherConvertible", "SportFisherSkybridge", "ExpeditionYacht120", "MotorYacht84")] string firstHullName)
         {
             Rig rig = NewDoryRig();
             BoatHullDef cape = LoadHull(firstHullName);
@@ -469,7 +469,7 @@ namespace HiddenHarbours.Tests.PlayMode
             [Values("CapeIslander", "LobsterBoat", "LobsterInshoreOpenNorthumberland",
                     "LobsterStandardHardtopNorthumberland", "LobsterOffshoreOpenNorthumberland",
                     "SportFisherConvertible", "SideDragger", "SportFisherSkybridge", "SternTrawler",
-                    "SternTrawlerMk2", "CoastalPacket", "Tanker", "ExpeditionYacht120")] string subjectName)
+                    "SternTrawlerMk2", "CoastalPacket", "Tanker", "ExpeditionYacht120", "MotorYacht84")] string subjectName)
         {
             Rig rig = NewDoryRig();
             BoatHullDef subject = LoadHull(subjectName);
@@ -521,7 +521,7 @@ namespace HiddenHarbours.Tests.PlayMode
             [Values("CapeIslander", "LobsterBoat", "LobsterInshoreOpenNorthumberland",
                     "LobsterStandardHardtopNorthumberland", "LobsterOffshoreOpenNorthumberland",
                     "SportFisherConvertible", "SideDragger", "SportFisherSkybridge", "SternTrawler",
-                    "SternTrawlerMk2", "CoastalPacket", "Tanker", "ExpeditionYacht120")] string subjectName)
+                    "SternTrawlerMk2", "CoastalPacket", "Tanker", "ExpeditionYacht120", "MotorYacht84")] string subjectName)
         {
             Rig rig = NewDoryRig();
             BoatHullDef subject = LoadHull(subjectName);

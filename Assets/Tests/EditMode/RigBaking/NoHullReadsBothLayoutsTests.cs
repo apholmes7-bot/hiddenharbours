@@ -47,6 +47,7 @@ namespace HiddenHarbours.Tests.RigBaking
         [TestCase("sportFisherSkybridge")]
         [TestCase("expeditionYacht120")]
         [TestCase("yachtTender")]
+        [TestCase("motorYacht84")]
         public void IntakeHull_IsSwitchedAndUsesItsOwnWalk(string key)
         {
             var hull = HullMeshFleet.Get(key);

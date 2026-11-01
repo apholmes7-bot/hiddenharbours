@@ -150,6 +150,7 @@ namespace HiddenHarbours.Tests.EditMode
         [TestCase("SportFisherConvertibleIso")]
         [TestCase("SportFisherSkybridgeIso")]
         [TestCase("ExpeditionYacht120Iso")]
+        [TestCase("MotorYacht84Iso")]
         public void IntakeRoom_KeepsItsWalkAndAuthoredDoorLanding(string stem)
         {
             Assert.That(IsWalkBuiltRoom(stem), Is.True, stem);

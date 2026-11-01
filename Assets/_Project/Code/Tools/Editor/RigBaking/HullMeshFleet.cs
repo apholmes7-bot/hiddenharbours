@@ -436,6 +436,10 @@ namespace HiddenHarbours.Tools.RigBaking
                 "Assets/_Project/Data/Boats/HullMeshes/YachtTenderIsoHullMesh.asset", "hullmesh.yacht_tender_iso",
                 new[] { "Assets/_Project/Data/Boats/Visuals/YachtTenderIso.asset" }, new[] { "visual.yacht_tender_iso" },
                 false, "Yacht tender", extraction: new RigHullExtraction { HullScope = "byId('yacht_tender')" }),
+            new FleetHull("motorYacht84", "docs/art/rigs/motorYacht84IsoRig.js", "MotorYacht84Iso",
+                "Assets/_Project/Data/Boats/HullMeshes/MotorYacht84IsoHullMesh.asset", "hullmesh.motor_yacht84_iso",
+                new[] { "Assets/_Project/Data/Boats/Visuals/MotorYacht84Iso.asset" }, new[] { "visual.motor_yacht84_iso" },
+                false, "Motor yacht 84", extraction: new RigHullExtraction { HullScope = "byId('motor_yacht_84')" }),
 
         };
 

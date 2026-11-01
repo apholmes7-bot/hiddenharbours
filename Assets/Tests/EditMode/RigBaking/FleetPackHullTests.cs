@@ -35,6 +35,7 @@ namespace HiddenHarbours.Tests.RigBaking
 
         [TestCase("expeditionYacht120", "hullmesh.expedition_yacht120_iso", "expedition_yacht_120")]
         [TestCase("yachtTender", "hullmesh.yacht_tender_iso", "yacht_tender")]
+        [TestCase("motorYacht84", "hullmesh.motor_yacht84_iso", "motor_yacht_84")]
         [TestCase("goFast", "hullmesh.go_fast_iso", "go_fast")]
         [TestCase("bowrider", "hullmesh.bowrider_iso", "bowrider")]
         [TestCase("expressCruiser", "hullmesh.express_cruiser_iso", "express_cruiser")]

@@ -62,6 +62,7 @@ namespace HiddenHarbours.Tests.RigBaking
         /// fails loudly, and the flag can only be wrong if the file system is.</para>
         /// </summary>
         static string RigFileFor(string meshId) =>
+            meshId == "hullmesh.motor_yacht84_iso" ? "motorYacht84IsoRig.js" :
             meshId == "hullmesh.expedition_yacht120_iso" ? "expeditionYacht120IsoRig.js" :
             meshId == "hullmesh.yacht_tender_iso" ? "yachtTenderIsoRig.js" :
             meshId == "hullmesh.go_fast_iso" ? "goFastIsoRig.js" :
@@ -91,6 +92,7 @@ namespace HiddenHarbours.Tests.RigBaking
                 // Bowrider's waterline meets her sole by Art desk R1; the floor guard is unchanged.
                 ["hullmesh.expedition_yacht120_iso"] = new Flotation("expedition_yacht_120", 2.74f, 4.30f, 4.79113f, 4.255f),
                 ["hullmesh.yacht_tender_iso"] = new Flotation("yacht_tender", 0.30f, 0.42f, 1.2386f, 1.10f),
+                ["hullmesh.motor_yacht84_iso"] = new Flotation("motor_yacht_84", 1.80f, 3.75f, 3.45682f, 3.07f),
                 ["hullmesh.go_fast_iso"] = new Flotation("go_fast", 0.52f, 0.62f, 1.24f, 1.100f),
                 ["hullmesh.bowrider_iso"] = new Flotation("bowrider", 0.34f, 0.34f, 1.29f, 1.145f),
                 ["hullmesh.express_cruiser_iso"] = new Flotation("express_cruiser", 0.58f, 0.95f, 1.72f, 1.525f),

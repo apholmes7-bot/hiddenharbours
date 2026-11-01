@@ -4,6 +4,7 @@ using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
 using HiddenHarbours.Core;
+using HiddenHarbours.Tools.RigBaking;
 using NUnit.Framework;
 using UnityEditor;
 using UnityEngine;
@@ -43,6 +44,7 @@ namespace HiddenHarbours.Tests.EditMode
         /// boats' sterns.</summary>
         static readonly (string Def, string Rig, string Pattern)[] Fleet =
         {
+            ("MotorYacht84IsoHullMesh", "motorYacht84IsoRig.js", @"\bL\s*=\s*([0-9.]+)"),
             ("ExpeditionYacht120IsoHullMesh", "expeditionYacht120IsoRig.js", @"\bconst L\s*=\s*([0-9.]+),\s*yT\s*=\s*-L\s*/\s*2"),
             // This tender's station ends are +/-2.55; L and LOA also include different overhangs.
             ("YachtTenderIsoHullMesh", "yachtTenderIsoRig.js", @"\byT\s*=\s*(-[0-9.]+)"),
@@ -107,6 +109,16 @@ namespace HiddenHarbours.Tests.EditMode
                 string path = Path.Combine(RigRoot, hull.Rig);
                 Assert.IsTrue(File.Exists(path), $"{hull.Rig} is missing — {hull.Def} has no rig.");
                 string src = File.ReadAllText(path);
+                if (hull.Def == "MotorYacht84IsoHullMesh")
+                {
+                    // Her loft is offset and raked: the waterline transom is not L/2.
+                    float stern = MotorYachtSternAtDwl(src);
+                    var length = Regex.Match(src, hull.Pattern);
+                    Assert.IsTrue(length.Success);
+                    Assert.Greater(stern, 0f);
+                    Assert.Less(stern, float.Parse(length.Groups[1].Value, CultureInfo.InvariantCulture) / 2f);
+                    continue;
+                }
                 // y : -L/2 + u*L   ·   y : (-0.5 + u) * B.L   ·   yOf = (u) => -L/2 + u*L
                 bool amidships = Regex.IsMatch(
                     src, @"y\s*(?::|Of\s*=\s*\(u\)\s*=>)\s*\(?\s*-\s*(?:0\.5|[A-Za-z0-9_.]+\s*/\s*2)");
@@ -153,6 +165,7 @@ namespace HiddenHarbours.Tests.EditMode
                 float loft = float.Parse(m.Groups[1].Value, CultureInfo.InvariantCulture);
                 if (hull.Def == "YachtTenderIsoHullMesh") loft *= -2f; // measured station span, not overall fittings
                 float want = loft * 0.5f;
+                if (hull.Def == "MotorYacht84IsoHullMesh") want = MotorYachtSternAtDwl(src);
                 checkedHulls++;
                 report.AppendLine($"  {hull.Def,-46} rig {loft,7:0.00} m  transom {want,6:0.00} m  " +
                                   $"def {def.WakeSternOffsetMeters,6:0.00} m");
@@ -165,8 +178,15 @@ namespace HiddenHarbours.Tests.EditMode
             }
 
             TestContext.WriteLine(report.ToString());
-            Assert.AreEqual(41, checkedHulls, "39 fleet hulls plus the expedition yacht and her tender; this table must cover every mesh.");
+            Assert.AreEqual(42, checkedHulls, "39 fleet hulls plus the expedition yacht, her tender and the motor yacht 84; this table must cover every mesh.");
             Assert.IsEmpty(failures.ToString(), "\n" + failures);
+        }
+
+        static float MotorYachtSternAtDwl(string source)
+        {
+            using var host = RigScriptHostFactory.Create();
+            host.Execute(source);
+            return -(float)host.EvaluateNumber("MotorYacht84Iso.loft.transomY(MotorYacht84Iso.DWL)");
         }
 
         /// <summary>

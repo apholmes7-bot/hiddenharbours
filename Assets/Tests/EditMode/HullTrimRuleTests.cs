@@ -62,6 +62,7 @@ namespace HiddenHarbours.Tests.EditMode
             ["boat.lobster_offshore_open_northumberland"] = Form.SemiDisplacement,
             ["boat.sport_fisher_convertible"] = Form.SemiDisplacement,
             ["boat.sport_fisher_skybridge"] = Form.SemiDisplacement,
+            ["boat.motor_yacht_84"] = Form.SemiDisplacement,
             // Small open boats: a small rise she holds.
             ["boat.dory"] = Form.SmallOpen,
             ["boat.dory_outboard"] = Form.SmallOpen,
