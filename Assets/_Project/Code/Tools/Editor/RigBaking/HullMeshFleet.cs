@@ -428,10 +428,6 @@ namespace HiddenHarbours.Tools.RigBaking
                 "Assets/_Project/Data/Boats/HullMeshes/ExpressCruiserIsoHullMesh.asset", "hullmesh.express_cruiser_iso",
                 new[] { "Assets/_Project/Data/Boats/Visuals/ExpressCruiserIso.asset" }, new[] { "visual.express_cruiser_iso" },
                 false, "Express cruiser 31", extraction: new RigHullExtraction { HullScope = "byId('express_cruiser')" }),
-            new FleetHull("expeditionYacht120", "docs/art/rigs/expeditionYacht120IsoRig.js", "ExpeditionYacht120Iso",
-                "Assets/_Project/Data/Boats/HullMeshes/ExpeditionYacht120IsoHullMesh.asset", "hullmesh.expedition_yacht120_iso",
-                new[] { "Assets/_Project/Data/Boats/Visuals/ExpeditionYacht120Iso.asset" }, new[] { "visual.expedition_yacht120_iso" },
-                false, "Expedition yacht 120", extraction: new RigHullExtraction { HullScope = "byId('expedition_yacht_120')" }),
             new FleetHull("yachtTender", "docs/art/rigs/yachtTenderIsoRig.js", "YachtTenderIso",
                 "Assets/_Project/Data/Boats/HullMeshes/YachtTenderIsoHullMesh.asset", "hullmesh.yacht_tender_iso",
                 new[] { "Assets/_Project/Data/Boats/Visuals/YachtTenderIso.asset" }, new[] { "visual.yacht_tender_iso" },
@@ -490,6 +486,15 @@ namespace HiddenHarbours.Tools.RigBaking
         static IReadOnlyList<FleetHull> BuildFleet()
         {
             var fleet = new List<FleetHull>(OneHullPerRig);
+            fleet.Add(new FleetHull("expeditionYacht120", "docs/art/rigs/expeditionYacht120IsoRig.js", "ExpeditionYacht120Iso",
+                "Assets/_Project/Data/Boats/HullMeshes/ExpeditionYacht120IsoHullMesh.asset", "hullmesh.expedition_yacht120_iso",
+                new[] { "Assets/_Project/Data/Boats/Visuals/ExpeditionYacht120Iso.asset" }, new[] { "visual.expedition_yacht120_iso" },
+                false, "Expedition yacht 120", extraction: new RigHullExtraction
+                {
+                    HullScope = "byId('expedition_yacht_120')",
+                    FaceExpression = "byId('expedition_yacht_120').faceList({})",
+                    ExtraSymbols = new[] { "variantFaces" },
+                }));
             foreach (LobsterVariant v in LobsterVariantFleet.All) fleet.Add(Variant(v));
             foreach (ZodiacBuild b in ZodiacFleet.All) fleet.Add(Variant(b));
             foreach (SportFisherHull h in SportFisherFleet.All) fleet.Add(Variant(h));

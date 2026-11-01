@@ -55,6 +55,7 @@ namespace HiddenHarbours.Tools.RigBaking
         public RigHullExtraction Extraction => new RigHullExtraction
         {
             FaceExpression = $"byId('{Hull}').faceList({{}})",
+            ExtraSymbols = new[] { "variantFaces" },
             ViewOptions = "{}",
             HullScope = $"byId('{Hull}')",
         };
