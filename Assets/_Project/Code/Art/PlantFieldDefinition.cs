@@ -11,6 +11,7 @@ namespace HiddenHarbours.Art
         public int Width, Height, Seed;
         public float CellSize, GroundMetresPerY, ChunkWidth, SlowTickSeconds;
         public float HeightProjection, WindMargin;
+        [Min(0)] public float SunShadowStrength = 1;
         public int SubmergedOrder;
         public BiomeRecipeDef[] Recipes = Array.Empty<BiomeRecipeDef>();
         public PlantSpeciesDef[] Species = Array.Empty<PlantSpeciesDef>();

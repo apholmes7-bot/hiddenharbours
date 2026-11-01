@@ -1,0 +1,8 @@
+# StPetersLayerRefresh: one step's patch to one root. Whole Unity YAML documents.
+step: "StoreWiring.NineMileCreek.GeneralStore"
+root: "GeneralStore"
+rootGameObject: 291587379
+differences: []
+deletions: []
+edits: []
+additions: []

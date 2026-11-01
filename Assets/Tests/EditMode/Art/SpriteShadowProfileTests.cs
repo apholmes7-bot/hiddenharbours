@@ -574,6 +574,9 @@ namespace HiddenHarbours.Tests.Art.EditMode
                 // The mesh hull is part of this SAME sun-shade ownership, not another stencil consumer.
                 // HullSunShadowCasterTests.Profile_IsShared pins its material state to SpriteShadowShade.
                 if (path.Replace('\\', '/') == "Assets/_Project/Art/Shaders/HiddenHarboursHullSunShadow.shader") continue;
+                // The plant field is part of this SAME sun-shade ownership, not another stencil consumer.
+                // PlantFieldSunShadowTests.Material_UsesTheSameShadeStencilAndBlend pins its material state to SpriteShadowShade.
+                if (path.Replace('\\', '/') == "Assets/_Project/Art/Shaders/HiddenHarboursPlantShadow.shader") continue;
                 if (path.Replace('\\', '/') == FigureTargetShaderPath) continue;   // its own depth-stencil: the next test
                 if (Regex.IsMatch(File.ReadAllText(path), @"(?m)^\s*Stencil\s*$|(?m)^\s*Stencil\s*\{"))
                     offenders.Add(path);

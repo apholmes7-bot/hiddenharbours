@@ -3,6 +3,9 @@ using UnityEngine;
 using HiddenHarbours.Core;
 using HiddenHarbours.World;
 using HiddenHarbours.App.Editor;
+using HiddenHarbours.Art;
+using System.Linq;
+using UnityEditor;
 
 namespace HiddenHarbours.Tests.EditMode
 {
@@ -37,10 +40,8 @@ namespace HiddenHarbours.Tests.EditMode
         // the component's business, and NineMileCreekTripsPlayTests drives the real one.
         private static readonly Vector2 DoorLocal = new(-1.75f, 0.10f);
 
-        /// <summary>The court between the turning pad's exit and her gravel is 5.9 m today (x 76.14 to 82),
-        /// and her road crosses 6.24 m of unpaved cells there (the pad's paving stops at x 76 on y 120).
-        /// Stated with a little room, so the test goes red if the pad, the gravel or the yard road's line
-        /// moves apart.</summary>
+        /// <summary>The retained limit on unpaved court. H6 PR 2 lays the yard road to the west lot,
+        /// so the current run has no unpaved court; the original bound stays.</summary>
         private const float CourtGapMetres = 6.5f;
 
         private ITidalTerrain _terrain;
@@ -109,11 +110,8 @@ namespace HiddenHarbours.Tests.EditMode
         /// quarter metre, so a route whose nodes are all on the road but whose middle cuts the marsh fails
         /// here.
         ///
-        /// <para>⚠ ONE KNOWN GAP (NMC H2). Wharf Road now ends in the turning circle, and the yard's own road
-        /// that will carry her from the circle's east side onto her gravel is a later wave's. So the court
-        /// between <see cref="NineMileCreekGroundPlan.TurningPadExit"/> and the gravel's west edge is dry and
-        /// unpaved: off the paving she may be there and nowhere else, and that stretch stays under
-        /// <see cref="CourtGapMetres"/>.</para></summary>
+        /// <para>H6 PR 2 closes the former court gap with the key scene's yard road to the west lot.
+        /// The original court allowance and its bound remain; the current run needs neither.</para></summary>
         [Test]
         public void EveryMetreOfHerDayIsOnPavedGroundButTheCourtBeforeHerGravel()
         {
@@ -322,6 +320,52 @@ namespace HiddenHarbours.Tests.EditMode
         // =============================================================================================
         //  4. THE ROADS THEMSELVES
         // =============================================================================================
+
+        [Test]
+        public void ThePullInRunsOnTheYardRoadAndKeepsClearOfTheMarket()
+        {
+            Vector2[] route = { NineMileCreekTrips.PullOff(), NineMileCreekTrips.YardRoadTurn(),
+                NineMileCreekTrips.LotLineUp(), NineMileCreekTrips.WharfBay() };
+            for (int i = 1; i < route.Length - 1; i++)
+            {
+                float turn = Vector2.Angle(route[i] - route[i - 1], route[i + 1] - route[i]);
+                Assert.That(turn, Is.LessThanOrEqualTo(45f + 0.001f), "the line-up corner stays within 45 degrees, allowing float round-off");
+            }
+            const float halfWidth = 1.24f; // the Dually's published solid box, not the park's envelope
+            var def = AssetDatabase.LoadAssetAtPath<SetPieceDef>("Assets/_Project/Data/SetPieces/SetPiece_fishMarket.asset");
+            var scene = AssetDatabase.LoadAssetAtPath<KeySceneDef>("Assets/_Project/Data/KeyScenes/KeyScene_nmc_wharf.asset");
+            Assert.NotNull(def); Assert.NotNull(scene);
+            KeyScenePiece market = scene.Pieces.Single(p => p.Id == "structure.nmc_fish_market");
+            var paths = Enumerable.Range(0, def.Colliders.Length)
+                .Select(c => def.ColliderAt(c, SetPieceDef.FrameForRigDir(market.Dir)).Select(p => market.At + p).ToArray()).ToArray();
+            Assert.That(paths, Is.Not.Empty);
+            bool Inside(Vector2 p, Vector2[] path)
+            {
+                bool hit = false;
+                for (int i = 0, j = path.Length - 1; i < path.Length; j = i++)
+                    if ((path[i].y > p.y) != (path[j].y > p.y) &&
+                        p.x < (path[j].x - path[i].x) * (p.y - path[i].y) / (path[j].y - path[i].y) + path[i].x) hit = !hit;
+                return hit;
+            }
+            float minimum = float.PositiveInfinity;
+            for (int leg = 1; leg < route.Length; leg++)
+            {
+                int steps = Mathf.Max(1, Mathf.CeilToInt(Vector2.Distance(route[leg - 1], route[leg]) / 0.25f));
+                for (int s = 0; s <= steps; s++)
+                {
+                    Vector2 at = Vector2.Lerp(route[leg - 1], route[leg], s / (float)steps);
+                    AssertPaved(at, "her pull-in");
+                    foreach (Vector2[] path in paths)
+                    {
+                        Assert.That(Inside(at, path), Is.False, $"her centre at {at} enters the market");
+                        for (int i = 0; i < path.Length; i++)
+                            minimum = Mathf.Min(minimum, NineMileCreekDory.DistancePointToSegment(at, path[i], path[(i + 1) % path.Length]));
+                    }
+                }
+            }
+            TestContext.WriteLine($"pull-in: minimum market clearance {minimum:0.######} m; body half width {halfWidth} m");
+            Assert.That(minimum, Is.GreaterThanOrEqualTo(halfWidth), "her published body stays out of every market collider path");
+        }
 
         [Test]
         public void TheRoadHomeIsTheRoadOutInReverse()

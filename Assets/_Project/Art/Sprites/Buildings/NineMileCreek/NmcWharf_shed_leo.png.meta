@@ -1,0 +1,338 @@
+fileFormatVersion: 2
+guid: e95a964a38f56754baa77c455a4d7358
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 2102145700240161304
+    second: NmcWharf_shed_leo_0
+  - first:
+      213: 7530379373227037242
+    second: NmcWharf_shed_leo_1
+  - first:
+      213: 6759300610573084210
+    second: NmcWharf_shed_leo_2
+  - first:
+      213: 3672529554150262502
+    second: NmcWharf_shed_leo_3
+  - first:
+      213: -562405844621151232
+    second: NmcWharf_shed_leo_4
+  - first:
+      213: 140654885260622178
+    second: NmcWharf_shed_leo_5
+  - first:
+      213: 4146599652155185530
+    second: NmcWharf_shed_leo_6
+  - first:
+      213: 6518401258382450320
+    second: NmcWharf_shed_leo_7
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 9
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 4096
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Village_structure.nmc_shed_leo_d0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 456
+        height: 489
+      alignment: 9
+      pivot: {x: 0.5, y: 0.2965235}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4688fcbada75a524aa8e9c5d557bdb24
+      internalID: -982103082
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Village_structure.nmc_shed_leo_d1
+      rect:
+        serializedVersion: 2
+        x: 456
+        y: 0
+        width: 456
+        height: 489
+      alignment: 9
+      pivot: {x: 0.5, y: 0.2965235}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7fae7f70942f9da48b0039fbe19e1c2c
+      internalID: -957907356
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Village_structure.nmc_shed_leo_d2
+      rect:
+        serializedVersion: 2
+        x: 912
+        y: 0
+        width: 456
+        height: 489
+      alignment: 9
+      pivot: {x: 0.5, y: 0.2965235}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ec77f640e095d6244b3444f1352f48a4
+      internalID: 777889519
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Village_structure.nmc_shed_leo_d3
+      rect:
+        serializedVersion: 2
+        x: 1368
+        y: 0
+        width: 456
+        height: 489
+      alignment: 9
+      pivot: {x: 0.5, y: 0.2965235}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 13a6e173a9f0944478ecdab768f7a80e
+      internalID: -1467123830
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Village_structure.nmc_shed_leo_d4
+      rect:
+        serializedVersion: 2
+        x: 1824
+        y: 0
+        width: 456
+        height: 489
+      alignment: 9
+      pivot: {x: 0.5, y: 0.2965235}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0ee06bdf42e53c043b9b10ea73c3ce74
+      internalID: -1163511380
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Village_structure.nmc_shed_leo_d5
+      rect:
+        serializedVersion: 2
+        x: 2280
+        y: 0
+        width: 456
+        height: 489
+      alignment: 9
+      pivot: {x: 0.5, y: 0.2965235}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4004ca72daee20742b178517f9b9d533
+      internalID: 589834388
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Village_structure.nmc_shed_leo_d6
+      rect:
+        serializedVersion: 2
+        x: 2736
+        y: 0
+        width: 456
+        height: 489
+      alignment: 9
+      pivot: {x: 0.5, y: 0.2965235}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5974c37061056c84682bfca967c60b93
+      internalID: 856371791
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Village_structure.nmc_shed_leo_d7
+      rect:
+        serializedVersion: 2
+        x: 3192
+        y: 0
+        width: 456
+        height: 489
+      alignment: 9
+      pivot: {x: 0.5, y: 0.2965235}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d17eb5f31b1123a449f3909ac323b8df
+      internalID: -1887062736
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 38c170d14e9fb364bbd25d8281c7f842
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Village_structure.nmc_shed_leo_d0: -982103082
+      Village_structure.nmc_shed_leo_d1: -957907356
+      Village_structure.nmc_shed_leo_d2: 777889519
+      Village_structure.nmc_shed_leo_d3: -1467123830
+      Village_structure.nmc_shed_leo_d4: -1163511380
+      Village_structure.nmc_shed_leo_d5: 589834388
+      Village_structure.nmc_shed_leo_d6: 856371791
+      Village_structure.nmc_shed_leo_d7: -1887062736
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

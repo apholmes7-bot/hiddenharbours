@@ -45,7 +45,8 @@ namespace HiddenHarbours.App.Editor
         public const string MarksStep = "09-nav-marks-g3";
         public const string WallsStep = "11-cliff-walls-g3";
         public static readonly string[] Steps =
-            { GroundStep, WharfStep, RoadsStep, CliffStep, ContactsStep, MarksStep, WallsStep, RoadsV4Step };
+            { GroundStep, WharfStep, RoadsStep, CliffStep, ContactsStep, MarksStep, WallsStep, RoadsV4Step,
+              NineMileCreekWharfLandSide.PlacementStep, NineMileCreekWharfLandSide.RetireBuyerStep, NineMileCreekWharfLandSide.RetireOfficeStep };
 
         public const string PaintedTerrainScriptPath = "Assets/_Project/Code/World/PaintedTidalTerrain.cs";
         public const string TerrainRootName = "TidalTerrain";
@@ -302,7 +303,7 @@ namespace HiddenHarbours.App.Editor
             };
             var steps = new List<Step>();
             string text = sceneText;
-            foreach (var (name, plan) in planners.Concat(RoadsV4Planners(inputs)))
+            foreach (var (name, plan) in planners.Concat(RoadsV4Planners(inputs)).Concat(NineMileCreekWharfLandSide.Planners()))
             {
                 if (steps.Count == 0 || steps[steps.Count - 1].Name != name) steps.Add(new Step(name));
                 SceneYaml scene = SceneYaml.Parse(text);
@@ -1003,8 +1004,8 @@ namespace HiddenHarbours.App.Editor
         }
 
         /// <summary>Row 14, the owner's ruling (2026-10-15): the Otter, parked safe for now. G3 has no ramp to
-        /// launch her from, so she keeps her spot and turns inland; ids, name and components kept, and she stays
-        /// active and drivable.</summary>
+        /// launch her from. H6 PR 2 moves her clear of the delivered cold store under ruling 12; she faces
+        /// inland, keeps her ids, name and components, and stays active and drivable. Her launch is a later wave's.</summary>
         static LayerPatch Otter(SceneYaml scene)
         {
             Doc go = scene.RootNamed(NineMileCreekOtterLanding.OtterName);
