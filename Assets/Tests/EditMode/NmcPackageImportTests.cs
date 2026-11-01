@@ -197,7 +197,7 @@ namespace HiddenHarbours.Tests.EditMode
                 var data = KeySceneImport.ReadAsset(File.ReadAllText(file), file);
                 Assert.AreEqual("keyscene.nmc_" + suffixes[i], Field(data,"Id").Scalar);
                 Assert.AreEqual("region.nine_mile_creek",Field(data,"RegionId").Scalar);
-                Assert.AreEqual("0",Field(data,"Placed").Scalar);
+                Assert.AreEqual(suffixes[i] == "wharf" ? "1" : "0", Field(data,"Placed").Scalar);
                 StringAssert.Contains("HH-nmc-key-scenes-one-scene-reissue-3-2026-10-07", Field(data,"Source").Scalar);
                 var pieces = Field(data,"Pieces").Items;
                 Assert.AreEqual(source[i].ToString(),Option(pieces[0],"nmc.scene.sourceRows"));
