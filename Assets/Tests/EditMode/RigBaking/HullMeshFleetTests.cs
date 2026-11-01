@@ -403,7 +403,8 @@ namespace HiddenHarbours.Tests.RigBaking
         // Walk rooms enter the mask at code 0 after classification, so this scan never sees their soles.
         static readonly (string Key, float LowestInterior, string Whence)[] CabinSoleHulls =
         {
-            ("motorYacht84", 1.50f, "lower deck sole (motorYacht84IsoRig.js LOWER_SOLE = 1.50; DWL 1.80, main deck MAIN_DECK 3.75)"),
+            ("motorYacht84", 1.94f, "foot of the transom strip under the garage sole, faces 1910 and 1911, GARAGE_SOLE = 2.15"),
+            ("expeditionYacht120", 3.40f, "ZP = 3.40, the swim platform's stern-step walls; main deck ZM = 4.30"),
             ("sloop30", 0.35f, "cabin sole (sloopIsoRig.js CAB_SOLE = 0.35; DWL 0.55, cockpit SOLE 1.15)"),
             ("sloop88", 1.10f, "foot of the lower-accommodation bulkheads (sloop88IsoRig.js LOW - 0.1 " +
                                "= 1.10, they land on the hull below the sole; DWL 1.35, cockpit SOLE 2.55)"),
@@ -446,6 +447,71 @@ namespace HiddenHarbours.Tests.RigBaking
         /// made the comparison self-fulfilling — and would have put sloop30's boarding line 0.20 m
         /// UNDER her waterline, rebuilding the "riding high" defect the clamp exists to cure.</para>
         /// </summary>
+        static float RasterPixelArea => 1f /
+            (RigMeshInteriorClassifier.PixelsPerMetre * RigMeshInteriorClassifier.PixelsPerMetre);
+
+        // Faces share no vertices. Rejoin each fan through its triangle indices, then measure area.
+        static bool TryInteriorFaceLowest(Vector3[] vertices, List<Vector4> attrs, int[] triangles,
+            HashSet<int> driveVertices, out float lowest, out float smallerArea)
+        {
+            var parent = Enumerable.Range(0, vertices.Length).ToArray();
+            int Root(int i)
+            {
+                while (parent[i] != i) { parent[i] = parent[parent[i]]; i = parent[i]; }
+                return i;
+            }
+            for (int i = 0; i < triangles.Length; i += 3)
+            {
+                parent[Root(triangles[i + 1])] = Root(triangles[i]);
+                parent[Root(triangles[i + 2])] = Root(triangles[i]);
+            }
+            var faces = new Dictionary<int, HashSet<int>>();
+            var areas = new Dictionary<int, float>();
+            for (int i = 0; i < triangles.Length; i += 3)
+            {
+                int a = triangles[i], b = triangles[i + 1], c = triangles[i + 2], key = Root(a);
+                if (!faces.TryGetValue(key, out var points)) faces[key] = points = new HashSet<int>();
+                points.Add(a); points.Add(b); points.Add(c);
+                areas.TryGetValue(key, out float area);
+                areas[key] = area + Vector3.Cross(vertices[b] - vertices[a], vertices[c] - vertices[a]).magnitude * 0.5f;
+            }
+            var interior = faces.Where(f => f.Value.All(i => !driveVertices.Contains(i) &&
+                i < attrs.Count && attrs[i].w > 0.5f && attrs[i].w < 1.5f))
+                .Select(f => (Area: areas[f.Key], Z: f.Value.Min(i => vertices[i].z))).ToArray();
+            lowest = interior.Where(f => f.Area >= RasterPixelArea).Select(f => f.Z)
+                .DefaultIfEmpty(float.MaxValue).Min();
+            float line = lowest;
+            smallerArea = interior.Where(f => f.Area < RasterPixelArea && f.Z < line).Sum(f => f.Area);
+            return lowest < float.MaxValue && smallerArea < RasterPixelArea;
+        }
+
+        [Test]
+        public void InteriorFaceMeasurement_IgnoresOneSliverButRefusesAPixelOfSlivers()
+        {
+            float pixel = 1f / RigMeshInteriorClassifier.PixelsPerMetre;
+            var vertices = new List<Vector3>();
+            var attrs = new List<Vector4>();
+            var triangles = new List<int>();
+            void Face(float size, float z)
+            {
+                int n = vertices.Count;
+                vertices.AddRange(new[] { new Vector3(0, 0, z), new Vector3(size, 0, z), new Vector3(0, size, z) });
+                attrs.AddRange(Enumerable.Repeat(new Vector4(0, 0, 0, 1), 3));
+                triangles.AddRange(new[] { n, n + 1, n + 2 });
+            }
+            Face(1f, 2f); Face(pixel, 0f);
+            Assert.IsTrue(TryInteriorFaceLowest(vertices.ToArray(), attrs, triangles.ToArray(),
+                new HashSet<int>(), out float lowest, out float smaller));
+            Assert.AreEqual(2f, lowest);
+            Assert.AreEqual(RasterPixelArea * 0.5f, smaller);
+            Face(pixel, 0f); Face(pixel, 0f);
+            Assert.IsFalse(TryInteriorFaceLowest(vertices.ToArray(), attrs, triangles.ToArray(),
+                new HashSet<int>(), out lowest, out smaller));
+            Assert.AreEqual(2f, lowest);
+            Assert.Greater(smaller, RasterPixelArea);
+        }
+
+        // Moved by the measured face-area ruling; the classifier and its sampling constants stay.
         [Test]
         public void EveryCommittedHullMesh_CarriesTheInteriorMaskAndAgreesWithItsDeckLine()
         {
@@ -471,7 +537,7 @@ namespace HiddenHarbours.Tests.RigBaking
                 // below carries across the per-side change without re-measurement. One-sided faces
                 // (codes 2/3) are policed by their own test.
                 int interior = 0;
-                float lowest = float.MaxValue;
+                float previousLowest = float.MaxValue;
                 // The authored drive part is metadata beside the mesh, not a height cut.
                 var driveVertices = new HashSet<int>(def.DriveFaceVertexRanges
                     .SelectMany(range => Enumerable.Range(range.x, range.y)));
@@ -480,8 +546,18 @@ namespace HiddenHarbours.Tests.RigBaking
                     if (driveVertices.Contains(i)) continue;
                     if (attrs[i].w <= 0.5f || attrs[i].w >= 1.5f) continue;
                     interior++;
-                    if (verts[i].z < lowest) lowest = verts[i].z;
+                    if (verts[i].z < previousLowest) previousLowest = verts[i].z;
                 }
+
+                bool measured = TryInteriorFaceLowest(verts, attrs, def.Mesh.triangles, driveVertices,
+                    out float lowest, out float smallerArea);
+                if (!measured)
+                    drifted.Add($"{hull.Key}: fully interior faces below the measured line total " +
+                                $"{smallerArea:R} m2, against one raster pixel {RasterPixelArea:R} m2");
+                if (hull.Key != "motorYacht84" && hull.Key != "expeditionYacht120" &&
+                    interior > 0 && lowest != previousLowest)
+                    drifted.Add($"{hull.Key}: the face-area measurement moved the old line " +
+                                $"{previousLowest:R} to {lowest:R}");
 
                 if (interior == 0)
                 {
