@@ -201,7 +201,7 @@ namespace HiddenHarbours.Tests.EditMode
         {
             WireExposedLand();
             var r = Build(new Vector3(0f, -11.5f, 0f), new Vector3(0f, -13.8f, 0f));
-            r.Switcher.TryInteract();                       // aboard instantly — this test is about leaving
+            HiddenHarbours.Tests.Support.TimedBoarding.Interact(r.Switcher);                       // aboard instantly — this test is about leaving
             Assert.AreEqual(ControlMode.OnDeck, r.Switcher.Mode);
             _modeEvents.Clear();
 
@@ -257,8 +257,8 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.IsFalse(r.Switcher.BoardableNow(), "the gate has closed");
 
             r.Switcher.TickBoardingMove(Dt);
-
-            Assert.IsFalse(r.Switcher.IsBoardingMove, "the move is called off in mid-air");
+            HiddenHarbours.Tests.Support.TimedBoarding.Complete(r.Switcher);
+            Assert.IsFalse(r.Switcher.IsBoardingMove, "the cancelled move has returned ashore");
             Assert.AreEqual(ControlMode.OnFoot, r.Switcher.Mode, "she is not boarded");
             Assert.AreEqual(0, _modeEvents.Count, "and nothing downstream was ever told otherwise");
             Assert.Less(Vector3.Distance(stoodAt, r.PlayerGo.transform.position), 1e-4f,
@@ -272,7 +272,7 @@ namespace HiddenHarbours.Tests.EditMode
         {
             WireExposedLand();
             var r = Build(new Vector3(0f, -11.5f, 0f), new Vector3(0f, -13.8f, 0f));
-            r.Switcher.TryInteract();                       // aboard
+            HiddenHarbours.Tests.Support.TimedBoarding.Interact(r.Switcher);                       // aboard
             _modeEvents.Clear();
             Assert.IsTrue(r.Switcher.BeginInteract(), "the step ashore begins over land");
 
@@ -282,7 +282,7 @@ namespace HiddenHarbours.Tests.EditMode
             r.BoatGo.transform.position = new Vector3(0f, -40f, 0f);
             Assert.IsFalse(r.Switcher.CanStepAshore(), "there is nothing standable under her any more");
 
-            RunTheMoveOut(r.Switcher);
+            RunTheMoveOut(r.Switcher, limitSeconds: 30f); // the displaced hull now needs a real return journey
 
             Assert.AreEqual(ControlMode.OnDeck, r.Switcher.Mode, "so the fisher never left");
             Assert.AreEqual(0, _modeEvents.Count);
@@ -326,27 +326,30 @@ namespace HiddenHarbours.Tests.EditMode
         // ---- degrading, and the unchanged instant path ----------------------------------------
 
         [Test]
-        public void WithTheMoveSwitchedOff_EIsTheOldInstantBoard()
+        public void WithTheMoveSwitchedOff_ADockStillUsesATimedMove()
         {
             var r = Build(new Vector3(0f, -11.5f, 0f), new Vector3(0f, -13.8f, 0f));
             r.Switcher.ConfigureBoardingMove(enabled: false, approachSpeed: 3f, approachMaxSeconds: 0.8f,
                                              vaultSeconds: Vault, vaultHopMeters: 0.35f);
 
             Assert.IsTrue(r.Switcher.BeginInteract());
-
-            Assert.IsFalse(r.Switcher.IsBoardingMove, "no move — the owner's A/B is the old snap exactly");
+            Assert.IsTrue(r.Switcher.IsBoardingMove, "the legacy option cannot bypass a dock move");
+            HiddenHarbours.Tests.Support.TimedBoarding.Complete(r.Switcher);
+            Assert.IsFalse(r.Switcher.IsBoardingMove);
             Assert.AreEqual(ControlMode.OnDeck, r.Switcher.Mode);
             Assert.IsFalse(InteractionGate.IsBlocked, "and nothing was ever held");
         }
 
         [Test]
-        public void ARigWithNoDeckWalk_FallsStraightThroughToTheInstantBoard()
+        public void ARigWithNoDeckWalk_StillUsesATimedDockMove()
         {
             // No DeckWalkController means no authored rail to find. Absence is data: board as before
             // rather than arc to a rail that cannot be located.
             var r = Build(new Vector3(0f, -11.5f, 0f), new Vector3(0f, -13.8f, 0f), withDeckWalk: false);
 
             Assert.IsTrue(r.Switcher.BeginInteract());
+            Assert.IsTrue(r.Switcher.IsBoardingMove);
+            HiddenHarbours.Tests.Support.TimedBoarding.Complete(r.Switcher);
             Assert.IsFalse(r.Switcher.IsBoardingMove);
             Assert.AreEqual(ControlMode.OnDeck, r.Switcher.Mode);
         }
@@ -355,7 +358,7 @@ namespace HiddenHarbours.Tests.EditMode
         public void TheHelmIsAStep_NotABoardingMove()
         {
             var r = Build(new Vector3(0f, -11.5f, 0f), new Vector3(0f, -13.8f, 0f));
-            r.Switcher.TryInteract();                       // aboard
+            HiddenHarbours.Tests.Support.TimedBoarding.Interact(r.Switcher);                       // aboard
             r.PlayerGo.transform.position = r.Switcher.HelmWorldPosition;
             _modeEvents.Clear();
 

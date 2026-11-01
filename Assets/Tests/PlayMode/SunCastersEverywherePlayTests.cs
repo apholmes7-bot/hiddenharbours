@@ -324,7 +324,7 @@ namespace HiddenHarbours.Tests.PlayMode
             PlayerShadowInstaller.Attach(playerGo);
             _host.Consider(_fisher);
             yield return null;
-            Assert.That(_switcher.TryInteract(), Is.True, "Board the real Cape Islander deck.");
+            Assert.That(HiddenHarbours.Tests.Support.TimedBoarding.Interact(_switcher), Is.True, "Board the real Cape Islander deck.");
             Assert.That(_switcher.Mode, Is.EqualTo(ControlMode.OnDeck));
             _deckWalk.SnapTo(new Vector2(-0.5f, -3f));
             for (int i = 0; i < 3; i++) yield return null;
@@ -343,11 +343,11 @@ namespace HiddenHarbours.Tests.PlayMode
             Assert.That(shadow.TryGetLampShadowCaster(out _), Is.True, "The caster has a live sprite silhouette.");
             _fisher.transform.position = _switcher.HelmWorldPosition;
             Assert.That(_switcher.WithinHelmReach(), Is.True, "Arrange the fisher at the hull's measured helm.");
-            Assert.That(_switcher.TryInteract(), Is.True, "Take the helm from the configured deck station.");
+            Assert.That(HiddenHarbours.Tests.Support.TimedBoarding.Interact(_switcher), Is.True, "Take the helm from the configured deck station.");
             Assert.That(_switcher.Mode, Is.EqualTo(ControlMode.Aboard));
             Assert.That(_fisher.enabled, Is.False, "Taking the helm disables the body's sprite renderer.");
             Assert.That(shadow.TryGetLampShadowCaster(out _), Is.False);
-            Assert.That(_switcher.TryInteract(), Is.True, "Release the helm back onto the deck.");
+            Assert.That(HiddenHarbours.Tests.Support.TimedBoarding.Interact(_switcher), Is.True, "Release the helm back onto the deck.");
             Assert.That(_switcher.Mode, Is.EqualTo(ControlMode.OnDeck));
             Assert.That(_deckWalk.enabled, Is.True);
             _deckWalk.SnapTo(new Vector2(-0.5f, -3f));

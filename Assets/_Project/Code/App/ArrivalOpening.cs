@@ -328,6 +328,17 @@ namespace HiddenHarbours.App
         private bool _stepping;
         private float _stepElapsed;
         private Vector3 _stepFrom;
+        private IBoardingLadder _stepLadder;
+        private Vector3 _stepLadderSeat;
+        private Vector3 _stepRungsStart;
+        private float _stepGap;
+        private float _stepApproachSeconds;
+        private float _stepMountSeconds;
+        private float _stepClimbSeconds;
+        private float _stepOffSeconds;
+        private double _stepEndPhase;
+        private bool _stepMesh;
+        private CharacterClip _stepClipAsked;
         private CharacterClipPlayer _clipPlayer;
         private bool _clipResolved;
         private bool _clipPlaying;
@@ -1629,6 +1640,37 @@ namespace HiddenHarbours.App
             if (_passengerFigure != null) _passengerFigure.Release();
             _stepElapsed = 0f;
             _stepFrom = _player.position;
+            _stepLadder = null;
+            _stepClipAsked = CharacterClip.None;
+            var cfg = GameServices.LadderBoarding;
+            if (BoardingLadders.TryFindNearestNow(_stepAshore, cfg.LadderReachMetres, out IBoardingLadder ladder))
+            {
+                _stepLadder = ladder;
+                var config = GameServices.Config;
+                _stepMesh = config != null && config.MeshCharacter && config.MeshCharacterAshore
+                    && _player.GetComponent<DeckRiderMeshPresenter>() != null;
+                var env = GameServices.Environment;
+                float water = env != null ? env.WaterLevelAt(GameServices.Clock?.TotalSeconds ?? 0.0) : 0f;
+                var ride = _boatRoot != null ? _boatRoot.GetComponent<IHullTideRide>() : null;
+                float waterline = ride != null ? ride.WaterlineNow() : water;
+                float freeboard = _deckWalk != null && _deckWalk.IsSeated
+                    ? MooringLineMath.CleatHeightAboveWaterline(_deckWalk.HeightMetres,
+                        _skipper != null && _skipper.Boat != null ? _skipper.Boat.DraughtMeters : 0f)
+                    : DeckFreeboardMetres;
+                _stepGap = Mathf.Max(0f, ladder.TopElevationMeters - waterline - freeboard);
+                _stepEndPhase = LadderBoardingMath.PhaseForTravel(_stepGap, ladder.RungMetres, _stepMesh);
+                _stepClimbSeconds = (float)_stepEndPhase * ArrivalClimbLoopSeconds();
+                Vector2 seat = ladder.WorldPosition + Vector2.up * ladder.ClimbTopScreenOffset
+                    + LadderBoardingMath.ProjectedSeatOffset(
+                    ladder.FaceHeadingDegrees, ladder.StandoffMetres, IsoGround.CameraElevationDegrees);
+                _stepLadderSeat = new Vector3(seat.x, seat.y, _player.position.z);
+                _stepRungsStart = _stepLadderSeat - new Vector3(0f,
+                    LadderBoardingMath.ProjectHeight(_stepGap, IsoGround.CameraElevationDegrees), 0f);
+                _stepApproachSeconds = Vector3.Distance(_stepFrom, _stepRungsStart) / Mathf.Max(.1f, _deckWalkSpeed);
+                _stepMountSeconds = Mathf.Max(0f, cfg.TransitionSeconds);
+                _stepOffSeconds = Mathf.Max(_stepAshoreSeconds, LadderBoardingMath.StepSeconds(
+                    Vector2.Distance(_stepLadderSeat, _stepAshore), _deckWalkSpeed));
+            }
             return true;
         }
 
@@ -1648,18 +1690,60 @@ namespace HiddenHarbours.App
         {
             if (_player == null) { _stepping = false; StopTheStepClip(); HandOver(); return; }
 
-            float seconds = Mathf.Max(0.05f, _stepAshoreSeconds);
             _stepElapsed += Time.deltaTime;
-            float v = Mathf.Clamp01(_stepElapsed / seconds);
-
             var landing = new Vector3(_stepAshore.x, _stepAshore.y, _player.position.z);
-            Vector3 pos = Vector3.Lerp(_stepFrom, landing, Mathf.SmoothStep(0f, 1f, v));
-            pos.y += 4f * Mathf.Max(0f, _stepAshoreHopMetres) * v * (1f - v);
-            _player.position = pos;
-
-            PlayTheStepClip(ArrivalPilot.CompassOf(landing - _stepFrom), seconds);
-
-            if (v < 1f) return;
+            if (_stepLadder != null)
+            {
+                float heading = LadderBoardingMath.ClimberHeadingFor(_stepLadder.FaceHeadingDegrees);
+                if (_stepElapsed < _stepApproachSeconds)
+                {
+                    _player.position = Vector3.Lerp(_stepFrom, _stepRungsStart,
+                        _stepElapsed / _stepApproachSeconds);
+                    return;
+                }
+                float on = _stepElapsed - _stepApproachSeconds;
+                if (on < _stepMountSeconds)
+                {
+                    _player.position = _stepRungsStart;
+                    PlayArrivalMove(CharacterClip.Board, heading, _stepMountSeconds);
+                    return;
+                }
+                float climbing = on - _stepMountSeconds;
+                if (climbing < _stepClimbSeconds)
+                {
+                    double phase = LadderBoardingMath.PhaseAt(climbing, ArrivalClimbLoopSeconds());
+                    double posePhase = System.Math.Max(0.0, _stepEndPhase - phase);
+                    if (_stepMesh)
+                    {
+                        ResolveArrivalClip();
+                        int frames = _clipPlayer != null && _clipPlayer.ResolvedVisual() != null
+                            ? Mathf.Max(1, _clipPlayer.ResolvedVisual().ClipFrameCount(CharacterClip.LadderDown)) : 10;
+                        posePhase = System.Math.Floor(posePhase * frames + 1e-5) / frames;
+                        phase = _stepEndPhase - posePhase;
+                    }
+                    float travel = LadderBoardingMath.TravelForFigure(phase, _stepEndPhase,
+                        _stepGap, _stepLadder.RungMetres, true, _stepMesh);
+                    _player.position = _stepRungsStart + new Vector3(0f,
+                        LadderBoardingMath.ProjectHeight(travel, IsoGround.CameraElevationDegrees), 0f);
+                    PlayArrivalMove(CharacterClip.LadderDown, heading, 0f, posePhase);
+                    return;
+                }
+                float v = Mathf.Clamp01((climbing - _stepClimbSeconds) / Mathf.Max(.01f, _stepOffSeconds));
+                _player.position = Vector3.Lerp(_stepLadderSeat, landing, Mathf.SmoothStep(0f, 1f, v));
+                PlayTheStepClip(ArrivalPilot.CompassOf(landing - _stepLadderSeat), _stepOffSeconds);
+                if (v < 1f) return;
+            }
+            else
+            {
+                float seconds = Mathf.Max(.05f, _stepAshoreSeconds, LadderBoardingMath.StepSeconds(
+                    Vector3.Distance(_stepFrom, landing), _deckWalkSpeed, _stepAshoreHopMetres));
+                float v = Mathf.Clamp01(_stepElapsed / seconds);
+                Vector3 pos = Vector3.Lerp(_stepFrom, landing, Mathf.SmoothStep(0f, 1f, v));
+                pos.y += 4f * Mathf.Max(0f, _stepAshoreHopMetres) * v * (1f - v);
+                _player.position = pos;
+                PlayTheStepClip(ArrivalPilot.CompassOf(landing - _stepFrom), seconds);
+                if (v < 1f) return;
+            }
 
             _stepping = false;
             StopTheStepClip();
@@ -1671,20 +1755,34 @@ namespace HiddenHarbours.App
         /// <see cref="CharacterClipPlayer.Play"/> returns false and changes nothing, and the move is the
         /// arc either way.</summary>
         private void PlayTheStepClip(float headingDegrees, float seconds)
-        {
-            if (!_clipResolved)
-            {
-                _clipResolved = true;
-                _clipPlayer = _player != null
-                    ? _player.GetComponentInParent<CharacterClipPlayer>()
-                    : null;
-                if (_clipPlayer != null && _clipPlayer.Play(CharacterClip.BoardDown, headingDegrees,
-                                                            seconds, holdOnFinish: true))
-                    _clipPlaying = true;
-                return;
-            }
+            => PlayArrivalMove(CharacterClip.BoardDown, headingDegrees, seconds);
 
-            if (_clipPlaying && _clipPlayer != null) _clipPlayer.SetHeading(headingDegrees);
+        private static float ArrivalClimbLoopSeconds()
+            => GameServices.LadderBoarding.ClimbLoopSeconds > 1e-4f
+                ? GameServices.LadderBoarding.ClimbLoopSeconds : LadderBoardingMath.RigLoopSeconds;
+
+        private void ResolveArrivalClip()
+        {
+            if (_clipResolved) return;
+            _clipResolved = true;
+            _clipPlayer = _player != null ? _player.GetComponentInParent<CharacterClipPlayer>() : null;
+        }
+
+        private void PlayArrivalMove(CharacterClip clip, float heading, float seconds, double phase = 0.0)
+        {
+            ResolveArrivalClip();
+            if (_clipPlayer == null) return;
+            if (_stepClipAsked != clip)
+            {
+                _stepClipAsked = clip;
+                bool played = clip == CharacterClip.LadderDown
+                    ? _clipPlayer.PlayDriven(clip, heading)
+                    : _clipPlayer.Play(clip, heading, seconds, holdOnFinish: true);
+                _clipPlaying |= played;
+            }
+            _clipPlayer.SetHeading(heading);
+            if (clip == CharacterClip.LadderDown && _clipPlayer.IsDriven)
+                _clipPlayer.SeekFrame((float)phase * _clipPlayer.ResolvedVisual().ClipFrameCount(clip));
         }
 
         /// <summary>Hand the renderer back (idempotent) — the held last frame has to come off, or she
@@ -1692,6 +1790,7 @@ namespace HiddenHarbours.App
         private void StopTheStepClip()
         {
             _clipResolved = false;
+            _stepClipAsked = CharacterClip.None;
             if (!_clipPlaying) return;
             _clipPlaying = false;
             if (_clipPlayer != null) _clipPlayer.Stop();

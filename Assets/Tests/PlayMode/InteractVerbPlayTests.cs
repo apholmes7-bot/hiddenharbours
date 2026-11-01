@@ -234,23 +234,23 @@ namespace HiddenHarbours.Tests.PlayMode
 
             // On foot, in reach → board (onto the deck).
             StandAt(BoatPos + new Vector3(1f, 0f, 0f));
-            Assert.IsTrue(_switcher.BeginInteract(), "E boards");
+            Assert.IsTrue(HiddenHarbours.Tests.Support.TimedBoarding.BeginInteract(_switcher), "E boards");
             Assert.AreEqual(ControlMode.OnDeck, _switcher.Mode);
 
             // On deck, at the helm → take the helm.
             _switcher.ConfigureHelm(Vector2.zero, 0.9f);
             StandAt(BoatPos);
-            Assert.IsTrue(_switcher.BeginInteract(), "E takes the helm");
+            Assert.IsTrue(HiddenHarbours.Tests.Support.TimedBoarding.BeginInteract(_switcher), "E takes the helm");
             Assert.AreEqual(ControlMode.Aboard, _switcher.Mode);
 
             // At the helm → step back onto the deck, always.
-            Assert.IsTrue(_switcher.BeginInteract(), "E steps back onto the deck");
+            Assert.IsTrue(HiddenHarbours.Tests.Support.TimedBoarding.BeginInteract(_switcher), "E steps back onto the deck");
             Assert.AreEqual(ControlMode.OnDeck, _switcher.Mode);
 
             // On deck, away from the helm, over nothing standable → nothing happens, exactly as before.
             _switcher.ConfigureHelm(new Vector2(0f, -50f), 0.9f);
             StandAt(BoatPos);
-            Assert.IsFalse(_switcher.BeginInteract(),
+            Assert.IsFalse(HiddenHarbours.Tests.Support.TimedBoarding.BeginInteract(_switcher),
                            "and a press with nothing to do is still a press with nothing to do");
             Assert.AreEqual(ControlMode.OnDeck, _switcher.Mode);
         }
@@ -263,7 +263,7 @@ namespace HiddenHarbours.Tests.PlayMode
             yield return null;
 
             StandAt(AshorePos);
-            Assert.IsFalse(_switcher.BeginInteract(), "the A/B escape hatch: E is board / helm / step ashore only");
+            Assert.IsFalse(HiddenHarbours.Tests.Support.TimedBoarding.BeginInteract(_switcher), "the A/B escape hatch: E is board / helm / step ashore only");
             Assert.AreEqual(0, spot.Calls);
             Assert.IsEmpty(_performed);
         }
@@ -289,7 +289,7 @@ namespace HiddenHarbours.Tests.PlayMode
             Assert.IsFalse(spot.RequiresFacing, "omnidirectional, as the pre-verb proximity behaviour was");
 
             StandAt(AshorePos);
-            Assert.IsTrue(_switcher.BeginInteract(), "the press was spent");
+            Assert.IsTrue(HiddenHarbours.Tests.Support.TimedBoarding.BeginInteract(_switcher), "the press was spent");
             Assert.AreEqual(1, _performed.Count);
             Assert.AreEqual("fixture.st_peters.wet_bucket", _performed[0].Id, "…on the seawater spot");
             Assert.AreEqual(ControlMode.OnFoot, _switcher.Mode, "and nothing about the control mode moved");
@@ -305,12 +305,12 @@ namespace HiddenHarbours.Tests.PlayMode
 
             // Just outside it: the press is not spent (and the switcher has nothing to say out here either).
             StandAt(AshorePos + new Vector3(4.5f, 0f, 0f));
-            Assert.IsFalse(_switcher.BeginInteract());
+            Assert.IsFalse(HiddenHarbours.Tests.Support.TimedBoarding.BeginInteract(_switcher));
             Assert.IsEmpty(_performed);
 
             // Just inside it.
             StandAt(AshorePos + new Vector3(3.5f, 0f, 0f));
-            Assert.IsTrue(_switcher.BeginInteract());
+            Assert.IsTrue(HiddenHarbours.Tests.Support.TimedBoarding.BeginInteract(_switcher));
             Assert.AreEqual(1, _performed.Count);
 
             // Scene-scoped: disabled means gone, so a torn-down region cannot leave the verb acting on
@@ -321,7 +321,7 @@ namespace HiddenHarbours.Tests.PlayMode
             Assert.IsNotNull(tank, "BoatController.Awake mounts the hull's own filler cap");
             CollectionAssert.AreEquivalent(new IInteractable[] { tank }, Interactables.Active,
                 "relinquished on disable, like every other Core registry; the hull's own filler cap is registered too since #936");
-            Assert.IsFalse(_switcher.BeginInteract());
+            Assert.IsFalse(HiddenHarbours.Tests.Support.TimedBoarding.BeginInteract(_switcher));
             Assert.AreEqual(1, _performed.Count, "still just the one");
 
             spot.enabled = true;
@@ -338,7 +338,7 @@ namespace HiddenHarbours.Tests.PlayMode
             yield return null;
 
             StandAt(AshorePos);
-            Assert.IsTrue(_switcher.BeginInteract());
+            Assert.IsTrue(HiddenHarbours.Tests.Support.TimedBoarding.BeginInteract(_switcher));
             Assert.AreEqual(1, near.Calls, "the nearest one");
             Assert.AreEqual(0, far.Calls, "and only it — 'exactly one candidate' is the acceptance criterion");
         }
@@ -352,14 +352,14 @@ namespace HiddenHarbours.Tests.PlayMode
 
             // Ashore beside the boat: the deck pail is not ours, and boarding is what E means.
             StandAt(BoatPos + new Vector3(1f, 0f, 0f));
-            Assert.IsTrue(_switcher.BeginInteract());
+            Assert.IsTrue(HiddenHarbours.Tests.Support.TimedBoarding.BeginInteract(_switcher));
             Assert.AreEqual(ControlMode.OnDeck, _switcher.Mode, "E boarded");
             Assert.AreEqual(0, deckThing.Calls);
 
             // Now on deck, away from the helm and over nothing standable — the press had nothing to do
             // before the seam, and the deck candidate is what it now does.
             StandAt(BoatPos);
-            Assert.IsTrue(_switcher.BeginInteract());
+            Assert.IsTrue(HiddenHarbours.Tests.Support.TimedBoarding.BeginInteract(_switcher));
             Assert.AreEqual(1, deckThing.Calls, "on deck, the verb reaches a deck candidate");
         }
 
@@ -379,7 +379,7 @@ namespace HiddenHarbours.Tests.PlayMode
             yield return null;
 
             StandAt(beside);
-            Assert.IsTrue(_switcher.BeginInteract());
+            Assert.IsTrue(HiddenHarbours.Tests.Support.TimedBoarding.BeginInteract(_switcher));
             Assert.AreEqual(ControlMode.OnDeck, _switcher.Mode, "boarding took the press");
             Assert.AreEqual(0, spot.Calls, "…and the candidate did not also fire — one press, one action");
             Assert.IsEmpty(_performed, "nothing was performed through the verb");
@@ -393,11 +393,11 @@ namespace HiddenHarbours.Tests.PlayMode
             yield return null;
 
             StandAt(BoatPos + new Vector3(1f, 0f, 0f));
-            Assert.IsTrue(_switcher.BeginInteract(), "board");
+            Assert.IsTrue(HiddenHarbours.Tests.Support.TimedBoarding.BeginInteract(_switcher), "board");
             Assert.AreEqual(ControlMode.OnDeck, _switcher.Mode);
 
             StandAt(BoatPos);                          // standing on the helm spot
-            Assert.IsTrue(_switcher.BeginInteract());
+            Assert.IsTrue(HiddenHarbours.Tests.Support.TimedBoarding.BeginInteract(_switcher));
             Assert.AreEqual(ControlMode.Aboard, _switcher.Mode, "the helm is a station and it keeps the press");
             Assert.AreEqual(0, atHelm.Calls);
         }
@@ -416,14 +416,14 @@ namespace HiddenHarbours.Tests.PlayMode
             yield return null;
 
             StandAt(BoatPos + new Vector3(1f, 0f, 0f));
-            Assert.IsTrue(_switcher.BeginInteract(), "she boards");
+            Assert.IsTrue(HiddenHarbours.Tests.Support.TimedBoarding.BeginInteract(_switcher), "she boards");
             Assert.AreEqual(ControlMode.OnDeck, _switcher.Mode);
 
             TieHerUpAtAWharf();
             StandAt(BoatPos);
             yield return null;
 
-            Assert.IsTrue(_switcher.BeginInteract(), "the press is spent");
+            Assert.IsTrue(HiddenHarbours.Tests.Support.TimedBoarding.BeginInteract(_switcher), "the press is spent");
             Assert.AreEqual(1, pail.Calls, "…on the pail at her feet");
             Assert.AreEqual(ControlMode.OnDeck, _switcher.Mode, "and she never left the deck");
         }
@@ -437,7 +437,7 @@ namespace HiddenHarbours.Tests.PlayMode
             // does not state an offer it will not perform, and the fixture wins by being the only one left.
             _switcher.ConfigureHelm(new Vector2(0f, -50f), 0.9f);
             StandAt(BoatPos + new Vector3(1f, 0f, 0f));
-            Assert.IsTrue(_switcher.BeginInteract(), "she boards");
+            Assert.IsTrue(HiddenHarbours.Tests.Support.TimedBoarding.BeginInteract(_switcher), "she boards");
             Assert.AreEqual(ControlMode.OnDeck, _switcher.Mode);
 
             TieHerUpAtAWharf();
@@ -476,11 +476,11 @@ namespace HiddenHarbours.Tests.PlayMode
 
             InteractActionClaim.IsClaimed = true;
             StandAt(AshorePos);
-            Assert.IsFalse(_switcher.BeginInteract(), "the verb stood down");
+            Assert.IsFalse(HiddenHarbours.Tests.Support.TimedBoarding.BeginInteract(_switcher), "the verb stood down");
             Assert.AreEqual(0, spot.Calls);
 
             StandAt(BoatPos + new Vector3(1f, 0f, 0f));
-            Assert.IsTrue(_switcher.BeginInteract(), "…while boarding is untouched by the claim");
+            Assert.IsTrue(HiddenHarbours.Tests.Support.TimedBoarding.BeginInteract(_switcher), "…while boarding is untouched by the claim");
             Assert.AreEqual(ControlMode.OnDeck, _switcher.Mode);
         }
 
@@ -492,11 +492,11 @@ namespace HiddenHarbours.Tests.PlayMode
 
             InteractionGate.IsBlocked = true;
             StandAt(AshorePos);
-            Assert.IsFalse(_switcher.BeginInteract());
+            Assert.IsFalse(HiddenHarbours.Tests.Support.TimedBoarding.BeginInteract(_switcher));
             Assert.AreEqual(0, spot.Calls, "a dialogue that is up owns the key outright");
 
             InteractionGate.Reset();
-            Assert.IsTrue(_switcher.BeginInteract());
+            Assert.IsTrue(HiddenHarbours.Tests.Support.TimedBoarding.BeginInteract(_switcher));
             Assert.AreEqual(1, spot.Calls);
         }
 

@@ -86,7 +86,7 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.IsTrue(sw.WithinBoardReach(), "the player is standing within reach of the boat");
             Assert.IsFalse(sw.BoardableNow(), "a damaged, unrepaired dory can't be boarded");
             Assert.IsFalse(sw.CanInteract(), "so INTERACT won't board");
-            Assert.IsFalse(sw.TryInteract(), "the board is refused");
+            Assert.IsFalse(HiddenHarbours.Tests.Support.TimedBoarding.Interact(sw), "the board is refused");
             Assert.AreEqual(ControlMode.OnFoot, sw.Mode, "still on foot — she needs repairs first");
         }
 
@@ -103,7 +103,7 @@ namespace HiddenHarbours.Tests.EditMode
             RepairLedger.MarkRepaired(save, "boat.dory");
 
             Assert.IsTrue(sw.BoardableNow(), "after repair the dory is boardable");
-            Assert.IsTrue(sw.TryInteract(), "and INTERACT boards her");
+            Assert.IsTrue(HiddenHarbours.Tests.Support.TimedBoarding.Interact(sw), "and INTERACT boards her");
             Assert.AreEqual(ControlMode.OnDeck, sw.Mode, "boarding lands on the deck (Build 5)");
         }
 
@@ -113,7 +113,7 @@ namespace HiddenHarbours.Tests.EditMode
             // No GameServices.Save wired (the greybox start before any purchase flow / tests).
             var sw = BuildInBoardZone();
             Assert.IsTrue(sw.BoardableNow(), "no save → gate off, ordinary boarding");
-            Assert.IsTrue(sw.TryInteract());
+            Assert.IsTrue(HiddenHarbours.Tests.Support.TimedBoarding.Interact(sw));
             Assert.AreEqual(ControlMode.OnDeck, sw.Mode, "boarding lands on the deck (Build 5)");
         }
 
@@ -127,7 +127,7 @@ namespace HiddenHarbours.Tests.EditMode
             var sw = BuildInBoardZone();
 
             Assert.IsTrue(sw.BoardableNow(), "an un-owned hull isn't subject to the buy+repair gate");
-            Assert.IsTrue(sw.TryInteract());
+            Assert.IsTrue(HiddenHarbours.Tests.Support.TimedBoarding.Interact(sw));
             Assert.AreEqual(ControlMode.OnDeck, sw.Mode, "boarding lands on the deck (Build 5)");
         }
     }

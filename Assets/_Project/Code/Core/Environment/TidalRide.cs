@@ -2,6 +2,13 @@ using UnityEngine;
 
 namespace HiddenHarbours.Core
 {
+    /// <summary>The waterline carrying a hull's picture, including when the bed stops its fall.
+    /// Boarding reads the same publisher as the hull renderer through this Core seam.</summary>
+    public interface IHullTideRide
+    {
+        float WaterlineNow();
+    }
+
     /// <summary>
     /// ⭐ <b>WHAT THE TIDE DOES TO A THING THAT FLOATS — AND WHERE THAT PUTS ITS PICTURE.</b> The
     /// companion to <see cref="TidalExposure"/>, which answers the same question from the other side:

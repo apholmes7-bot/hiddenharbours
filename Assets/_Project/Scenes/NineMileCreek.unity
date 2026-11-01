@@ -340753,6 +340753,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.WharfLadder
   _id: wharf.nine_mile_creek.ladder_0
   _topElevationMeters: 3.4
+  _climbTopScreenOffset: 1
   _faceHeadingDegrees: 180
   _rungMetres: 0.3
   _standoffMetres: 0.275
@@ -398249,6 +398250,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.WharfLadder
   _id: wharf.nine_mile_creek.ladder_berth_0
   _topElevationMeters: 3.4
+  _climbTopScreenOffset: 1
   _faceHeadingDegrees: 180
   _rungMetres: 0.3
   _standoffMetres: 0.275

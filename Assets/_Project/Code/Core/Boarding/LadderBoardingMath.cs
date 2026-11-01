@@ -71,6 +71,61 @@ namespace HiddenHarbours.Core
         /// <summary>The rig's <c>ladderDown</c> loop: 10 frames × 110 ms.</summary>
         public const float RigLoopSeconds = 1.10f;
 
+        /// <summary>The body-anchored mesh publishes two rungs of root travel per loop.</summary>
+        public static float MeshDescendMetresAt(double phase, float rungMetres)
+            => double.IsNaN(phase) || double.IsInfinity(phase) || phase <= 0.0
+                ? 0f : (float)(phase * StepZFor(rungMetres));
+
+        /// <summary>Match root travel to the figure being drawn; the retained sheet uses the stair.</summary>
+        public static float DescendForFigure(double phase, float rungMetres, bool mesh)
+            => mesh ? MeshDescendMetresAt(phase, rungMetres)
+                    : DescendMetresAt(phase, rungMetres, RigSwingFraction, RigLeadFootPhase, RigTrailFootPhase);
+
+        /// <summary>The phase that actually reaches the last partial rung, including the sheet's holds.</summary>
+        public static double PhaseForTravel(float metres, float rungMetres, bool mesh)
+        {
+            float step = StepZFor(rungMetres);
+            float distance = Mathf.Max(0f, Safe(metres));
+            if (step <= 1e-5f || distance <= 0f) return 0.0;
+            if (mesh) return distance / (double)step;
+            double low = 0.0, high = Math.Ceiling(distance / step);
+            for (int i = 0; i < 32; i++)
+            {
+                double middle = (low + high) * .5;
+                if (DescendForFigure(middle, rungMetres, false) < distance) low = middle;
+                else high = middle;
+            }
+            return high;
+        }
+
+        /// <summary>Reverse both the contact pose and its root motion when going up.</summary>
+        public static float TravelForFigure(double phase, double endPhase, float gapMetres,
+                                            float rungMetres, bool ascending, bool mesh)
+        {
+            float gap = Mathf.Max(0f, Safe(gapMetres));
+            double at = Math.Max(0.0, Math.Min(endPhase, phase));
+            float travel = ascending
+                ? gap - DescendForFigure(Math.Max(0.0, endPhase - at), rungMetres, mesh)
+                : DescendForFigure(at, rungMetres, mesh);
+            return Mathf.Clamp(travel, 0f, gap) * (ascending ? 1f : -1f);
+        }
+
+        /// <summary>Minimum smooth-step duration at a measured speed, including the step's hop.</summary>
+        public static float StepSeconds(float distanceMetres, float speedMetresPerSecond, float hopMetres = 0f)
+            => (1.5f * Mathf.Max(0f, Safe(distanceMetres)) + 4f * Mathf.Max(0f, Safe(hopMetres)))
+                / Mathf.Max(.1f, Safe(speedMetresPerSecond));
+
+        /// <summary>Ground standoff in the same camera projection as the figure and the drawn fittings.</summary>
+        public static Vector2 ProjectedSeatOffset(float faceHeading, float standoff, float bakeElevation)
+        {
+            Vector2 plan = SeatOffset(faceHeading, standoff);
+            return new Vector2(plan.x, plan.y * Mathf.Sin(bakeElevation * Mathf.Deg2Rad));
+        }
+
+        /// <summary>Physical vertical metres projected onto the screen's up axis.</summary>
+        public static float ProjectHeight(float metres, float bakeElevation)
+            => metres * Mathf.Cos(bakeElevation * Mathf.Deg2Rad);
+
         // ---- the gap, and whether it needs a ladder ------------------------------------------------
 
         /// <summary>

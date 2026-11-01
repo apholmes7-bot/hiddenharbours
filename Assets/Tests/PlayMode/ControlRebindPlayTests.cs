@@ -122,10 +122,10 @@ namespace HiddenHarbours.Tests.PlayMode
             sw.Configure(walk, boat, input, dock.transform, 3.5f, disembark.transform);
 
             // Build 5: boarding lands ON DECK; walk to the helm station and interact again to pilot.
-            Assert.IsTrue(sw.TryInteract(), "boards in-reach (→ the deck)");
+            Assert.IsTrue(HiddenHarbours.Tests.Support.TimedBoarding.Interact(sw), "boards in-reach (→ the deck)");
             Assert.AreEqual(ControlMode.OnDeck, sw.Mode, "boarding lands on the deck");
             playerGo.transform.position = sw.HelmWorldPosition;    // walk to the tiller
-            Assert.IsTrue(sw.TryInteract(), "takes the helm at the helm spot");
+            Assert.IsTrue(HiddenHarbours.Tests.Support.TimedBoarding.Interact(sw), "takes the helm at the helm spot");
             Assert.AreEqual(ControlMode.Aboard, sw.Mode);
 
             // Simulate the scene-toggle bug: the active boat's control is blanked while the mode stays Aboard.
@@ -192,7 +192,7 @@ namespace HiddenHarbours.Tests.PlayMode
             _spawned.Add(sw.gameObject);
             sw.Configure(walk, boat, null, dock.transform, 3.5f, disembark.transform);
 
-            Assert.IsTrue(sw.TryInteract(), "boards in-reach (→ the deck, Build 5)");
+            Assert.IsTrue(HiddenHarbours.Tests.Support.TimedBoarding.Interact(sw), "boards in-reach (→ the deck, Build 5)");
             Assert.AreEqual(ControlMode.OnDeck, sw.Mode, "boarding lands on the deck");
 
             // Sail off far from the dock, up onto an exposed flat, still making way. (The parented
@@ -204,7 +204,7 @@ namespace HiddenHarbours.Tests.PlayMode
             rb.angularVelocity = 25f;
 
             Assert.IsTrue(sw.OnLand(), "the boat is over standable land (an exposed flat)");
-            Assert.IsTrue(sw.TryInteract(), "disembark succeeds onto land, away from the dock");
+            Assert.IsTrue(HiddenHarbours.Tests.Support.TimedBoarding.Interact(sw), "disembark succeeds onto land, away from the dock");
             Assert.AreEqual(ControlMode.OnFoot, sw.Mode);
 
             // The player HOLDS the rope on disembark: the boat is brought to rest and tethered to the player

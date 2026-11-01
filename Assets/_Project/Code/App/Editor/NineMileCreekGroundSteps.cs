@@ -467,7 +467,9 @@ namespace HiddenHarbours.App.Editor
             Doc ladderTr = scene.TransformOf(ladder);
             Doc climb = One(scene.ComponentsOf(ladder).Where(d => d.IsScript("HiddenHarbours.World.WharfLadder")), step, "Ladder_0");
             patch.Edit(ladderTr, MovedTo(ladderTr, G.WharfLadderPos), "Ladder_0/Transform");
-            patch.Edit(climb, Set(climb.Text, "_topElevationMeters", N(G.DeckElevation)), "Ladder_0/top");
+            string ladderTop = Set(climb.Text, "_topElevationMeters", N(G.DeckElevation));
+            ladderTop = WithClimbTop(ladderTop);
+            patch.Edit(climb, ladderTop, "Ladder_0/top and cap");
             Doc berthLadder = Child(scene, laddersTr, G.BerthLadderName, step);
             Doc berthTr = berthLadder != null ? scene.TransformOf(berthLadder) : null;
             Doc berthClimb = berthLadder != null
@@ -481,6 +483,7 @@ namespace HiddenHarbours.App.Editor
             string bc = Set(Header(climb.Text, bClimb), "m_GameObject", Ref(bGo));
             bc = Set(bc, "_id", G.BerthLadderId);
             bc = Set(bc, "_topElevationMeters", N(G.DeckElevation));
+            bc = WithClimbTop(bc);
             bc = Set(bc, "_faceHeadingDegrees", N(180f));
             Put(patch, berthClimb, bc, G.BerthLadderName + "/WharfLadder");
             patch.Edit(laddersTr, WithListed(laddersTr.Text, "m_Children", bTr), "Ladders/children");
@@ -1316,6 +1319,16 @@ namespace HiddenHarbours.App.Editor
             int count = rx.Matches(text).Count;
             if (count != 1) throw new Refusal($"{count} '{key}' fields where one is written.");
             return rx.Replace(text, _ => "  " + key + ": " + value);
+        }
+
+        // Old banked components do not yet have the additive cap field; insert one line only.
+        static string WithClimbTop(string text)
+        {
+            const string field = "_climbTopScreenOffset";
+            if (Regex.IsMatch(text, @"(?m)^  " + field + ":"))
+                return Set(text, field, N(G.LadderClimbTopScreenOffset));
+            return Regex.Replace(text, @"(?m)^(  _topElevationMeters:.*)$",
+                m => m.Value + "\n  " + field + ": " + N(G.LadderClimbTopScreenOffset));
         }
 
         /// <summary>Replace the body of a two-space block field: the lines under it indented four, or listed at

@@ -266,7 +266,7 @@ namespace HiddenHarbours.Tests.EditMode
 
             // Walk to the boat at her berth and board her.
             player.position = boat.position;
-            Assert.IsTrue(switcher.TryInteract(), "board the boat at her berth");
+            Assert.IsTrue(HiddenHarbours.Tests.Support.TimedBoarding.Interact(switcher), "board the boat at her berth");
             Assert.AreEqual(ControlMode.OnDeck, switcher.Mode);
 
             // Stand away from the tiller so E is a step ashore rather than taking the helm, and confirm
@@ -275,7 +275,7 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.IsFalse(switcher.WithinHelmReach(), "…standing on deck, not at the helm");
             Assert.IsTrue(switcher.InDockZone(), "…and she is lying at the wharf");
 
-            Assert.IsTrue(switcher.TryInteract(), "step ashore");
+            Assert.IsTrue(HiddenHarbours.Tests.Support.TimedBoarding.Interact(switcher), "step ashore");
             Assert.AreEqual(ControlMode.OnFoot, switcher.Mode);
             Assert.AreEqual(WharfDeck, player.position,
                 "stepping off the boat at the wharf must land on the WHARF. Landing back at the bar " +
