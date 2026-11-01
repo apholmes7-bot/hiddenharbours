@@ -16,6 +16,96 @@ namespace HiddenHarbours.Tests.EditMode
     {
         public static string ProjectRoot = Directory.GetCurrentDirectory();
 
+        [Serializable]
+        sealed class WeightGuardBaseProof
+        {
+            public string baseHead, movedCase, ceilingFailure, retiredNamesFailure, bakedMarkerFailure;
+            public long baseBytes, branchBytes;
+            public int baseAtlasNames;
+            public bool baseDeckZeroZeroPresent, branchRestored;
+        }
+
+        // Explicit local three-way probe; it adds no CI case and stores no copied base fixture.
+        public static void RunBaseNegativeProofFromCommandLine()
+        {
+            string[] args = System.Environment.GetCommandLineArgs();
+            int argument = Array.IndexOf(args, "-stpK0Proof");
+            if (argument < 0 || argument + 1 >= args.Length) throw new InvalidOperationException("The weight proof needs an evidence output path.");
+            string output = Path.GetFullPath(args[argument + 1]);
+            string evidence = Path.GetFullPath(Path.Combine(ProjectRoot, "Evidence~/stp-kits/k0")) + Path.DirectorySeparatorChar;
+            if (!output.StartsWith(evidence, StringComparison.OrdinalIgnoreCase)) throw new InvalidOperationException("The weight proof output must stay in evidence.");
+            string scenePath = Path.Combine(ProjectRoot, ScenePath);
+            for (int i = 0; i < UnityEngine.SceneManagement.SceneManager.sceneCount; i++)
+                if (UnityEngine.SceneManagement.SceneManager.GetSceneAt(i).path == ScenePath)
+                    throw new InvalidOperationException("Close the St Peters editor scene before the base-negative proof.");
+            byte[] branch = File.ReadAllBytes(scenePath);
+            const string baseHead = "43d0b305f8b3732236a5900151fce7a106d6dd75";
+            var start = new System.Diagnostics.ProcessStartInfo("git", "show " + baseHead + ":" + ScenePath)
+            {
+                WorkingDirectory = ProjectRoot, UseShellExecute = false,
+                RedirectStandardOutput = true, RedirectStandardError = true, CreateNoWindow = true,
+            };
+            start.EnvironmentVariables["GIT_OPTIONAL_LOCKS"] = "0";
+            start.EnvironmentVariables["GIT_NO_LAZY_FETCH"] = "1";
+            byte[] baseline;
+            using (var process = System.Diagnostics.Process.Start(start))
+            using (var buffer = new MemoryStream())
+            {
+                process.StandardOutput.BaseStream.CopyTo(buffer);
+                string error = process.StandardError.ReadToEnd();
+                process.WaitForExit();
+                if (process.ExitCode != 0) throw new InvalidOperationException("The pinned base read failed: " + error);
+                baseline = buffer.ToArray();
+            }
+            string text = Encoding.UTF8.GetString(baseline).Replace("\r\n", "\n");
+            var proof = new WeightGuardBaseProof
+            {
+                baseHead = baseHead, baseBytes = baseline.LongLength, branchBytes = branch.LongLength,
+                movedCase = "SceneWeightGuardTests.StPetersPlantField_RetiresTheMeasuredRootsWithoutSavingItsChunks",
+                baseAtlasNames = System.Text.RegularExpressions.Regex.Matches(text,
+                    @"^  m_Name: Deck_\d+_\d+$", System.Text.RegularExpressions.RegexOptions.Multiline).Count,
+                baseDeckZeroZeroPresent = text.Contains("  m_Name: Deck_0_0\n"),
+            };
+            string ExpectedFailure(Action action)
+            {
+                var previous = NUnit.Framework.Internal.TestExecutionContext.CurrentContext;
+                var isolated = new NUnit.Framework.Internal.TestExecutionContext(previous);
+                var test = new NUnit.Framework.Internal.TestSuite("Landing base-negative proof");
+                isolated.CurrentTest = test;
+                isolated.CurrentResult = test.MakeTestResult();
+                var setter = typeof(NUnit.Framework.Internal.TestExecutionContext).GetProperty("CurrentContext")
+                    .GetSetMethod(true);
+                setter.Invoke(null, new object[] { isolated });
+                try
+                {
+                    try { action(); }
+                    catch (AssertionException error) { return error.Message; }
+                }
+                finally { setter.Invoke(null, new object[] { previous }); }
+                throw new InvalidOperationException("The moved guard unexpectedly accepted the pinned base.");
+            }
+            UnityEditor.AssetDatabase.DisallowAutoRefresh();
+            try
+            {
+                File.WriteAllBytes(scenePath, baseline);
+                proof.ceilingFailure = ExpectedFailure(() => new SceneWeightGuardTests()
+                    .StPetersPlantField_RetiresTheMeasuredRootsWithoutSavingItsChunks());
+                proof.retiredNamesFailure = ExpectedFailure(() => Assert.AreEqual(0, proof.baseAtlasNames,
+                    "the atlas deck tiles are retired"));
+                proof.bakedMarkerFailure = ExpectedFailure(() => StringAssert.Contains("  m_Name: WharfPass2Deck\n", text,
+                    "the baked landing deck is placed"));
+            }
+            finally
+            {
+                File.WriteAllBytes(scenePath, branch);
+                UnityEditor.AssetDatabase.AllowAutoRefresh();
+            }
+            proof.branchRestored = File.ReadAllBytes(scenePath).SequenceEqual(branch);
+            if (!proof.branchRestored) throw new InvalidOperationException("The branch scene was not restored after the base-negative proof.");
+            File.WriteAllText(output, JsonUtility.ToJson(proof, true) + "\n", new UTF8Encoding(false));
+            UnityEngine.Debug.Log("[StPetersLandingDeck] BASE_NEGATIVE_PROOF_COMPLETE; branch scene restored.");
+        }
+
         sealed class RootTerrain : ITidalTerrain
         {
             public Vector2 ReadAt;

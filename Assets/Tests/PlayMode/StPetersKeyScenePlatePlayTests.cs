@@ -160,11 +160,16 @@ namespace HiddenHarbours.Tests.PlayMode
             Assert.AreEqual(186, legacy.GetComponentsInChildren<SpriteRenderer>().Length);
             IEnvironmentService held = GameServices.Environment;
             bool followEnabled = _follow.enabled;
+            float previousAspect = _cam.aspect;
             var pixelCameras = _cam.GetComponents<Behaviour>().Where(b => b.GetType().Name == "PixelPerfectCamera" && b.enabled).ToArray();
             var boards = new[]
             {
                 new { Id = "landing.wide_approach.1431", Day = 29, Minute = 871, Tide = 2.18f, X = 203f, Y = 2.649f },
                 new { Id = "cannery.wide_landing.0600", Day = 39, Minute = 360, Tide = -0.85f, X = 181f, Y = 12.596f },
+                new { Id = "landing.wide_approach.noon", Day = 29, Minute = 720, Tide = 2.18f, X = 203f, Y = 2.649f },
+                new { Id = "landing.wide_approach.1730", Day = 29, Minute = 1050, Tide = 2.18f, X = 203f, Y = 2.649f },
+                new { Id = "cannery.wide_landing.noon", Day = 39, Minute = 720, Tide = -0.85f, X = 181f, Y = 12.596f },
+                new { Id = "cannery.wide_landing.1730", Day = 39, Minute = 1050, Tide = -0.85f, X = 181f, Y = 12.596f },
             };
             try
             {
@@ -214,8 +219,12 @@ namespace HiddenHarbours.Tests.PlayMode
                         for (int i = 0; i < 5; i++) yield return null;
                         long calls = draws.Valid ? draws.LastValue : UnityEditor.UnityStats.drawCalls;
                         if (calls <= 0) calls = UnityEditor.UnityStats.drawCalls;
+                        Assert.Greater(calls, 0, "The comparison needs measured rendered draw calls.");
+                        Texture2D texture = on ? migrated.sprite.texture : atlas["WharfAtlas_17"].texture;
                         File.AppendAllText(numbers, $"{board.Id} {mode}: deckRenderers={(on ? 1 : 186)} drawCalls={calls} " +
-                            $"deckTextureBytes={UnityEngine.Profiling.Profiler.GetRuntimeMemorySizeLong(migrated.sprite.texture)}\n", Utf8);
+                            $"activeDeckRuntimeTextureBytes={UnityEngine.Profiling.Profiler.GetRuntimeMemorySizeLong(texture)} " +
+                            $"activeDeckTexturePixels={texture.width}x{texture.height} format={texture.graphicsFormat}; " +
+                            "both comparison textures remain resident during this controlled OFF/ON capture\n", Utf8);
                     }
                 }
             }
@@ -224,6 +233,7 @@ namespace HiddenHarbours.Tests.PlayMode
                 GameServices.Environment = held; migrated.enabled = true;
                 legacy.SetActive(false);
                 _follow.enabled = followEnabled;
+                _cam.aspect = previousAspect;
                 foreach (var pixelCamera in pixelCameras) pixelCamera.enabled = true;
                 Time.timeScale = 1;
                 Object.DestroyImmediate(legacy);
