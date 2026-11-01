@@ -164,7 +164,11 @@ namespace HiddenHarbours.Tools.RigBaking
                 }
             }
             interior.Levels = levels.ToArray();
-            interior.FootprintOutline = levels.Count == 0 ? Array.Empty<Vector2>() : HullWalkPolygonUnion.Union(levels.Select(l => l.Outline))[0];
+            interior.FootprintOutline = HouseEnvelope(walk.Hull, levels.Select(l => l.Outline),
+                walk.Areas.Where(a => a.IsClimb &&
+                    ((a.Cut != null && cuts.TryGetValue(a.Cut, out var hi) && hi.Level > 0) ||
+                     (a.CutLo != null && cuts.TryGetValue(a.CutLo, out var lo) && lo.Level > 0)))
+                    .Select(a => a.Polygon));
             interior.Door = walk.House == null ? new BoatInteriorDoor() : Door(HullLayoutJson.Child(walk.House, "door"), walk, result);
             interior.AdditionalDoors = walk.House != null && walk.House.TryGetValue("doors", out object doors)
                 ? HullLayoutJson.List(doors, "house.doors").Select(d => HullLayoutJson.Object(d, "house.doors"))
@@ -180,6 +184,16 @@ namespace HiddenHarbours.Tools.RigBaking
             interior.Routes = walk.Areas.Where(a => a.IsClimb).Select(a => Route(a, walk, cuts, levelForArea, deck, interior)).ToArray();
             EmitEntryLandings(walk, interior);
             return result;
+        }
+
+        public static Vector2[] HouseEnvelope(string hull, IEnumerable<Vector2[]> soles,
+                                              IEnumerable<Vector2[]> indoorClimbs)
+        {
+            var outlines = soles.ToArray();
+            if (outlines.Length == 0) return Array.Empty<Vector2>();
+            if (HullWalkPolygonUnion.TryUnion(outlines, out var rings, out int floors)) return rings[0];
+            if (HullWalkPolygonUnion.TryUnion(outlines.Concat(indoorClimbs), out rings, out floors)) return rings[0];
+            throw new FormatException(hull + ": the soles and the indoor climbs do not join into one house envelope (" + floors + " floors)");
         }
 
         static void EmitEntryLandings(HullWalkRead walk, BoatInteriorDef interior)
