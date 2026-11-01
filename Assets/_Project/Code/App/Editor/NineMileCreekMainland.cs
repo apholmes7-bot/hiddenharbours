@@ -1372,7 +1372,7 @@ namespace HiddenHarbours.App.Editor
             // OwnerShedProbeMetres, so the row's length in strides is not what bounds this loop.
             for (int guard = 0; guard < 512 && x <= east; guard++)
             {
-                if (IsWorkingSiteInTheWay(new Vector2(x, y)))
+                if (IsRetiredRowSiteInTheWay(new Vector2(x, y)))
                 {
                     // Feel past it rather than jumping a stride — and from here the row is an INFILL,
                     // because whatever ground is left east of a working site is the last there is.
@@ -1386,11 +1386,21 @@ namespace HiddenHarbours.App.Editor
             return row;
         }
 
+        // The retired shed row keeps the sites on which its lots were measured before H6 moved the buyer.
+        private static readonly Vector3 RetiredRowParkingPos = new Vector3(92f, 118f, 0f);
+        private static readonly Vector3 RetiredRowFishBuyerPos = new Vector3(88f, 110f, 0f);
+
         /// <summary>Is one of the plan's own working sites standing on <paramref name="p"/>? The sites a
         /// shed row has to give way to, at the radius each of them reserves.</summary>
         public static bool IsWorkingSiteInTheWay(Vector2 p)
+            => IsSiteInTheWay(p, ParkingPos, FishBuyerPos);
+
+        public static bool IsRetiredRowSiteInTheWay(Vector2 p)
+            => IsSiteInTheWay(p, RetiredRowParkingPos, RetiredRowFishBuyerPos);
+
+        private static bool IsSiteInTheWay(Vector2 p, Vector3 parking, Vector3 buyer)
         {
-            foreach (var site in new[] { BaitShedPos, TrapStorePos, FishStorePos, ParkingPos, FishBuyerPos })
+            foreach (var site in new[] { BaitShedPos, TrapStorePos, FishStorePos, parking, buyer })
                 if (Vector2.Distance(p, new Vector2(site.x, site.y)) < WharfShedRadius * 2f) return true;
             // …and the boatyard, which is a rectangle rather than a circle.
             Rect yard = ShipyardFootprint();
