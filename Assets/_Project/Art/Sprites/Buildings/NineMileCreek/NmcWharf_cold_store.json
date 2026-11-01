@@ -1,0 +1,32 @@
+{
+  "sheet": "NmcWharf_cold_store.png",
+  "rig": "wharfBuilding2",
+  "build": "structure.nmc_cold_store",
+  "facings": 8,
+  "cols": 5,
+  "rows": 2,
+  "cellW": 714,
+  "cellH": 629,
+  "pivotNote": "cell px from the cell's TOP-LEFT; Unity wants (x/cellW, (cellH-y)/cellH)",
+  "pivotX": 357,
+  "pivotY": 399,
+  "nativeCellW": 1200,
+  "nativeCellH": 1160,
+  "cropX": 243,
+  "cropY": 381,
+  "convention": "CounterClockwise",
+  "conventionNote": "MEASURED at bake time from the door anchor; the correction is already applied, so cell i genuinely depicts +45*i",
+  "footprintWd": 9.54,
+  "footprintLn": 15.4,
+  "stackKey": "stacks",
+  "anchors": [
+    { "cell": 0, "door": {"x": 357, "y": 186.7}, "ridge": {"x": 357, "y": 166.8}, "stacks": [{"x": 300.9, "y": 189.2}, {"x": 300.9, "y": 83.6}] },
+    { "cell": 1, "door": {"x": 531.2, "y": 233.1}, "ridge": {"x": 357, "y": 166.8}, "stacks": [{"x": 259.3, "y": 148.2}, {"x": 375.4, "y": 73.5}] },
+    { "cell": 2, "door": {"x": 603.4, "y": 345.1}, "ridge": {"x": 357, "y": 166.8}, "stacks": [{"x": 274.9, "y": 100.3}, {"x": 439.1, "y": 100.3}] },
+    { "cell": 3, "door": {"x": 531.2, "y": 457.1}, "ridge": {"x": 357, "y": 166.8}, "stacks": [{"x": 338.6, "y": 73.5}, {"x": 454.7, "y": 148.2}] },
+    { "cell": 4, "door": {"x": 357, "y": 503.5}, "ridge": {"x": 357, "y": 166.8}, "stacks": [{"x": 413.1, "y": 83.6}, {"x": 413.1, "y": 189.2}] },
+    { "cell": 5, "door": {"x": 182.8, "y": 457.1}, "ridge": {"x": 357, "y": 166.8}, "stacks": [{"x": 454.7, "y": 124.5}, {"x": 338.6, "y": 199.2}] },
+    { "cell": 6, "door": {"x": 110.6, "y": 345.1}, "ridge": {"x": 357, "y": 166.8}, "stacks": [{"x": 439.1, "y": 172.4}, {"x": 274.9, "y": 172.4}] },
+    { "cell": 7, "door": {"x": 182.8, "y": 233.1}, "ridge": {"x": 357, "y": 166.8}, "stacks": [{"x": 375.4, "y": 199.2}, {"x": 259.3, "y": 124.5}] }
+  ]
+}
