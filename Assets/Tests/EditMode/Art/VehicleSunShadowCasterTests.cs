@@ -8,6 +8,39 @@ using Object = UnityEngine.Object;
 
 namespace HiddenHarbours.Tests.Art.EditMode
 {
+    [SetUpFixture]
+    public sealed class SunCasterInstallerDiagnosticScope
+    {
+        readonly List<(SunCasterInstaller host, bool enabled, bool casting)> _changed = new();
+
+        [OneTimeSetUp] public void BeforeCases()
+        {
+            string mode = System.Environment.GetEnvironmentVariable("HH_SHADOWS_B_INSTALLER_DIAGNOSTIC");
+            if (mode != "as-stands" && mode != "off") return;
+            var hosts = Resources.FindObjectsOfTypeAll<SunCasterInstaller>();
+            int installed = 0;
+            foreach (var host in hosts)
+            {
+                installed += host.Installed.Count;
+                if (mode != "off") continue;
+                var field = typeof(SunCasterInstaller).GetField("_castingEnabled",
+                    System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
+                Assert.That(field, Is.Not.Null);
+                _changed.Add((host, host.enabled, (bool)field.GetValue(host)));
+                host.enabled = false;
+                host.SetCasting(false);
+            }
+            Debug.Log($"[shade-installer-probe] mode={mode}; hosts={hosts.Length}; installed={installed}; OFF=SunCasterInstaller.SetCasting(false)");
+        }
+
+        [OneTimeTearDown] public void AfterCases()
+        {
+            foreach (var prior in _changed)
+                if (prior.host != null) { prior.host.SetCasting(prior.casting); prior.host.enabled = prior.enabled; }
+            _changed.Clear();
+        }
+    }
+
     public class VehicleSunShadowCasterTests
     {
         const string Truck = "Assets/_Project/Data/Vehicles/Meshes/Dually3500VehicleMesh.asset";
