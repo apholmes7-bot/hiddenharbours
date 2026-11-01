@@ -48,7 +48,7 @@ namespace HiddenHarbours.Tests.RigBaking
             Assert.That(c.recipeSha256, Is.EqualTo(recipeHash)); Assert.That(node.recipeSha256, Is.EqualTo(recipeHash));
             Assert.That(c.scripts.Length, Is.EqualTo(6));
             foreach (var script in c.scripts)
-                Assert.That(StPetersLandingDeckBaker.Sha(File.ReadAllBytes(Abs(script.path))), Is.EqualTo(script.sha256), script.path);
+                Assert.That(RigRecipe.Sha256OfSource(script.path), Is.EqualTo(script.sha256), script.path);
             Assert.That(c.tideFinding, Does.Contain("occlusion is absent"));
         }
 

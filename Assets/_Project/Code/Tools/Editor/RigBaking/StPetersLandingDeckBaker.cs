@@ -14,7 +14,7 @@ namespace HiddenHarbours.Tools.RigBaking
     public static class StPetersLandingDeckBaker
     {
         public const string Folder = "Assets/_Project/Art/Sprites/StPeters/SetPieces";
-        public const string RecipePath = Folder + "/stpLandingDeck.recipe.json";
+        public const string RecipePath = Folder + "/stpLandingDeck.bake.json";
         public const string SheetPath = Folder + "/stpLandingDeck.png";
         public const string HeightPath = Folder + "/stpLandingDeck_height.png";
         public const string ContractPath = Folder + "/stpLandingDeck.contract.json";
@@ -166,9 +166,9 @@ namespace HiddenHarbours.Tools.RigBaking
             WritePng(HeightPath, pixels.HeightMap, pixels.Width, pixels.Height);
             var hashes = new List<ScriptHash>();
             foreach (string script in Scripts)
-                hashes.Add(new ScriptHash { path = RigFolder + script, sha256 = Sha(File.ReadAllBytes(Abs(RigFolder + script))) });
+                hashes.Add(new ScriptHash { path = RigFolder + script, sha256 = RigRecipe.Sha256OfSource(RigFolder + script) });
             string weather = StPetersSetPieceKit.KitFolder + "/lib/weatherSky.js";
-            hashes.Add(new ScriptHash { path = weather, sha256 = Sha(File.ReadAllBytes(Abs(weather))) });
+            hashes.Add(new ScriptHash { path = weather, sha256 = RigRecipe.Sha256OfSource(weather) });
             var contract = new Contract
             {
                 recipeSha256 = Sha(File.ReadAllBytes(Abs(RecipePath))), width = pixels.Width, height = pixels.Height,
