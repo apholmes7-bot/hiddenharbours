@@ -9,7 +9,6 @@ using Unity.Netcode.Components;
 using Unity.Netcode.TestHelpers.Runtime;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.InputSystem.LowLevel;
 using UnityEngine.TestTools;
 
 namespace HiddenHarbours.Tests.CoopSpike
@@ -93,20 +92,24 @@ namespace HiddenHarbours.Tests.CoopSpike
             var picker = _localBoat.AddComponent<DevBoatPicker>();
             picker.Configure(settings.Roster, boat, hold, renderer);
             Client.BindLocal(_localBoat.transform, null, () => boat.Hull.Id, () => string.Empty);
-            var keyboard = InputSystem.AddDevice<Keyboard>();
+            var input = new InputTestFixture();
+            input.Setup();
             try
             {
-                InputSystem.QueueStateEvent(keyboard, new KeyboardState(Key.F));
-                InputSystem.Update();
-                picker.SendMessage("Update");
+                var keyboard = InputSystem.AddDevice<Keyboard>();
+                Assert.That(picker.IsAtHelm, Is.True, "The input fixture must be driving its boat.");
+                Assert.That(Keyboard.current, Is.SameAs(keyboard));
+                // Use the SDK's isolated player input runtime, not native editor focus/state.
+                // Queue for the player loop so the real picker Update consumes exactly one edge.
+                input.Press(keyboard.fKey, queueEventOnly: true);
+                yield return null;
                 Assert.That(boat.Hull.Id, Is.EqualTo(settings.Roster[1].Id));
-                InputSystem.QueueStateEvent(keyboard, new KeyboardState());
-                InputSystem.Update();
+                input.Release(keyboard.fKey);
                 yield return WaitForConditionOrTimeOut(() => ClientAtHost.Boat.Value.HullId.ToString() == settings.Roster[1].Id);
                 Assert.That(s_GlobalTimeoutHelper.TimedOut, Is.False);
                 Assert.That(ClientAtHost.GetComponent<CoopReplicaView>().DrawnHullId, Is.EqualTo(settings.Roster[1].Id));
             }
-            finally { InputSystem.RemoveDevice(keyboard); }
+            finally { input.TearDown(); }
         }
     }
 }
