@@ -1,0 +1,9 @@
+{
+  "name": "HiddenHarbours.Tests.CoopSpike.PlayMode",
+  "references": ["HiddenHarbours.CoopSpike", "HiddenHarbours.Core", "HiddenHarbours.App", "HiddenHarbours.Boats", "HiddenHarbours.Fishing", "HiddenHarbours.Player", "Unity.Netcode.Runtime", "Unity.Netcode.Runtime.Tests", "Unity.Collections", "Unity.InputSystem", "UnityEngine.TestRunner", "UnityEditor.TestRunner"],
+  "includePlatforms": ["Editor"],
+  "overrideReferences": true,
+  "precompiledReferences": ["nunit.framework.dll"],
+  "defineConstraints": ["UNITY_INCLUDE_TESTS"],
+  "autoReferenced": false
+}

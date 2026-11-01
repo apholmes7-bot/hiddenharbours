@@ -1,0 +1,6 @@
+{
+  "name": "HiddenHarbours.CoopSpike",
+  "rootNamespace": "HiddenHarbours.CoopSpike",
+  "references": ["HiddenHarbours.Core", "HiddenHarbours.App", "HiddenHarbours.Environment", "HiddenHarbours.Boats", "HiddenHarbours.Player", "HiddenHarbours.Fishing", "HiddenHarbours.UI", "Unity.Netcode.Runtime", "Unity.Collections", "Unity.Networking.Transport"],
+  "autoReferenced": true
+}

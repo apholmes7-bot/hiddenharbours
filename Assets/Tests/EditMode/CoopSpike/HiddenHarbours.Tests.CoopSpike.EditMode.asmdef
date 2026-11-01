@@ -1,0 +1,9 @@
+{
+  "name": "HiddenHarbours.Tests.CoopSpike.EditMode",
+  "references": ["HiddenHarbours.CoopSpike", "HiddenHarbours.CoopSpike.Editor", "HiddenHarbours.Core", "HiddenHarbours.Boats", "HiddenHarbours.Player", "HiddenHarbours.Environment", "Unity.Netcode.Runtime", "UnityEngine.TestRunner", "UnityEditor.TestRunner"],
+  "includePlatforms": ["Editor"],
+  "overrideReferences": true,
+  "precompiledReferences": ["nunit.framework.dll"],
+  "defineConstraints": ["UNITY_INCLUDE_TESTS"],
+  "autoReferenced": false
+}

@@ -1,0 +1,50 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e4b0cb1d74643124098ccb15f1ec56c6, type: 3}
+  m_Name: Settings
+  m_EditorClassIdentifier: HiddenHarbours.CoopSpike::HiddenHarbours.CoopSpike.CoopSpikeSettings
+  PlayerPrefab: {fileID: 8246696351201980027, guid: 65257ede1622c4c4fa7d3bc86b26aa6f, type: 3}
+  Roster:
+  - {fileID: 11400000, guid: 0a2bd7c6d85101b489fd6647b1aab278, type: 2}
+  - {fileID: 11400000, guid: 3f1c86b0d5a24e14ab97e2f0c4d81b63, type: 2}
+  - {fileID: 11400000, guid: 56763855233000b49ba3a133ea0de86f, type: 2}
+  - {fileID: 11400000, guid: 66058f1703a59044ca34a2ef2624b023, type: 2}
+  - {fileID: 11400000, guid: 6dbe891864248f64592244825fe3fa02, type: 2}
+  - {fileID: 11400000, guid: 91c66ec0ca2c71a4d92ba91ebb6c4831, type: 2}
+  - {fileID: 11400000, guid: 6313279a85dbdd94db3ad356601f687d, type: 2}
+  - {fileID: 11400000, guid: f2880bf35640c4a418bcaf2178ff3c97, type: 2}
+  - {fileID: 11400000, guid: dcb382200a6abbb87339a6b660e8f5c0, type: 2}
+  - {fileID: 11400000, guid: da9a371fd6378784c8233bf640dd9816, type: 2}
+  - {fileID: 11400000, guid: fc73bf3521e2bf7438ee0ef40e662d02, type: 2}
+  - {fileID: 11400000, guid: 9949a0994055c40df8e5394653cf6c38, type: 2}
+  - {fileID: 11400000, guid: cf933ace5f3513f6ec98ba58cd9da62b, type: 2}
+  - {fileID: 11400000, guid: 4a791f53d61b464f89e8efa053e5a4f2, type: 2}
+  - {fileID: 11400000, guid: 7e864d8d672203e4abddc9e592d9aa95, type: 2}
+  - {fileID: 11400000, guid: f9a11a1cb8419244bb13983a2862c52f, type: 2}
+  - {fileID: 11400000, guid: d0e52dad4a5ae8ef4cd7bfcb08b427d0, type: 2}
+  - {fileID: 11400000, guid: aa3d12cf9bdcf40e2ab7cf5c52759a3b, type: 2}
+  - {fileID: 11400000, guid: 6dafbb66657f26f69743c917417365f5, type: 2}
+  - {fileID: 11400000, guid: 6304902157bbfe019e1abe2934c1a3b6, type: 2}
+  - {fileID: 11400000, guid: d33926cf04fe80a45b3ca12027a5cc02, type: 2}
+  - {fileID: 11400000, guid: 3697c077c0da4836b8af96fc82144a31, type: 2}
+  - {fileID: 11400000, guid: 513a8fbee72fe7bee2c55737201f0d53, type: 2}
+  - {fileID: 11400000, guid: ed28b14a8679ad344be81d19cf0cfbd0, type: 2}
+  - {fileID: 11400000, guid: 6b9fc01c07e0aae499de3a5cd7a78d34, type: 2}
+  - {fileID: 11400000, guid: 603a22988a4b6f44a80cc9a4209fb547, type: 2}
+  - {fileID: 11400000, guid: 1852c64f886ae8742bbb6bd2ecb6eb5d, type: 2}
+  Character: {fileID: 11400000, guid: d18a2f3452843654099637d9cf859b95, type: 2}
+  Rod: {fileID: 11400000, guid: bf7e9e4e6ea24c84abbbb836a145c061, type: 2}
+  RodSprite: {fileID: 3043605626722657392, guid: a237e0b5e9c386cad0782dd33e12953a, type: 3}
+  HostStart: {x: 0, y: -16}
+  ClientOffset: {x: 7, y: 0}
+  Scene: Greybox
+  Port: 7777
