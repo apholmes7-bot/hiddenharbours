@@ -168,7 +168,11 @@ namespace HiddenHarbours.Tools.RigBaking
                 walk.Areas.Where(a => a.IsClimb &&
                     ((a.Cut != null && cuts.TryGetValue(a.Cut, out var hi) && hi.Level > 0) ||
                      (a.CutLo != null && cuts.TryGetValue(a.CutLo, out var lo) && lo.Level > 0)))
-                    .Select(a => a.Polygon));
+                    .Select(a => a.Polygon),
+                walk.Areas.Where(a => a.IsClimb).Select(a => (a.Id,
+                    cuts.TryGetValue(a.CutHi ?? a.Cut ?? "", out var hi) ? hi.Level : -1,
+                    cuts.TryGetValue(a.CutLo ?? "", out var lo) ? lo.Level : -1, a.Polygon)),
+                indoor.Select(a => (a.Id, a.Polygon)));
             interior.Door = walk.House == null ? new BoatInteriorDoor() : Door(HullLayoutJson.Child(walk.House, "door"), walk, result);
             interior.AdditionalDoors = walk.House != null && walk.House.TryGetValue("doors", out object doors)
                 ? HullLayoutJson.List(doors, "house.doors").Select(d => HullLayoutJson.Object(d, "house.doors"))
@@ -187,13 +191,68 @@ namespace HiddenHarbours.Tools.RigBaking
         }
 
         public static Vector2[] HouseEnvelope(string hull, IEnumerable<Vector2[]> soles,
-                                              IEnumerable<Vector2[]> indoorClimbs)
+                                              IEnumerable<Vector2[]> indoorClimbs,
+                                              IEnumerable<(string Id, int HighLevel, int LowLevel, Vector2[] Polygon)> climbs = null,
+                                              IEnumerable<(string Id, Vector2[] Polygon)> areas = null,
+                                              Action<string> log = null)
         {
             var outlines = soles.ToArray();
             if (outlines.Length == 0) return Array.Empty<Vector2>();
             if (HullWalkPolygonUnion.TryUnion(outlines, out var rings, out int floors)) return rings[0];
             if (HullWalkPolygonUnion.TryUnion(outlines.Concat(indoorClimbs), out rings, out floors)) return rings[0];
+            var islands = rings.Skip(1).Where(r => HouseRingArea(r) > 0).ToArray();
+            var entries = (climbs ?? Array.Empty<(string Id, int HighLevel, int LowLevel, Vector2[] Polygon)>())
+                .Where(c => c.HighLevel == 0 && c.LowLevel > 0).ToArray();
+            if (islands.Length == floors - 1 && islands.All(r => entries.Any(c => HousePolygonsMeet(r, c.Polygon))))
+            {
+                var sources = (areas ?? Array.Empty<(string Id, Vector2[] Polygon)>()).ToArray();
+                foreach (var island in islands)
+                {
+                    var ids = sources.Where(a => HousePolygonsMeet(island, a.Polygon)).Select(a => a.Id)
+                        .Concat(entries.Where(c => HousePolygonsMeet(island, c.Polygon)).Select(c => c.Id))
+                        .Distinct().OrderBy(id => id, StringComparer.Ordinal);
+                    string message = hull + ": separate deck-entered compartment [" + string.Join(", ", ids) + "] " +
+                        HouseRingArea(island).ToString("0.###", System.Globalization.CultureInfo.InvariantCulture) + " m^2";
+                    if (log != null) log(message); else Debug.Log(message);
+                }
+                return rings[0];
+            }
             throw new FormatException(hull + ": the soles and the indoor climbs do not join into one house envelope (" + floors + " floors)");
+        }
+
+        static double HouseRingArea(Vector2[] ring)
+        {
+            double area = 0;
+            for (int i = 0; i < ring.Length; i++)
+            {
+                Vector2 a = ring[i], b = ring[(i + 1) % ring.Length];
+                area += (double)a.x * b.y - (double)a.y * b.x;
+            }
+            return area * .5;
+        }
+
+        static bool HousePolygonsMeet(Vector2[] a, Vector2[] b)
+        {
+            foreach (var point in a)
+            {
+                if (DeckAreaMath.Contains(b, point)) return true;
+                DeckAreaMath.ClosestPointOnOutline(b, point, out float distance);
+                if (distance <= 1e-10f) return true;
+            }
+            foreach (var point in b)
+                if (DeckAreaMath.Contains(a, point)) return true;
+            for (int i = 0; i < a.Length; i++)
+                for (int j = 0; j < b.Length; j++)
+                {
+                    Vector2 ab = a[(i + 1) % a.Length] - a[i], cd = b[(j + 1) % b.Length] - b[j];
+                    Vector2 offset = b[j] - a[i];
+                    float cross = ab.x * cd.y - ab.y * cd.x;
+                    if (Mathf.Abs(cross) < 1e-10f) continue;
+                    float t = (offset.x * cd.y - offset.y * cd.x) / cross;
+                    float u = (offset.x * ab.y - offset.y * ab.x) / cross;
+                    if (t >= 0 && t <= 1 && u >= 0 && u <= 1) return true;
+                }
+            return false;
         }
 
         static void EmitEntryLandings(HullWalkRead walk, BoatInteriorDef interior)

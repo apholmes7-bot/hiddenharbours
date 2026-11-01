@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using HiddenHarbours.Boats;
 using HiddenHarbours.Tools.RigBaking;
 using NUnit.Framework;
@@ -48,6 +49,37 @@ namespace HiddenHarbours.Tests.RigBaking
         {
             var error = Assert.Throws<FormatException>(() => HullWalkPolygonUnion.Union(new[] { Square(0, 1), Square(2, 3) }));
             Assert.That(error.Message, Is.EqualTo("walk polygons: disconnected floor requires separate levels"));
+        }
+
+        [Test]
+        public void SeparateCompartmentWithDeckLadder_KeepsTheLargestRingAndNamesTheIsland()
+        {
+            var house = Square(0, 3);
+            var island = Square(5, 6);
+            var messages = new List<string>();
+            var ring = HullWalkSidecarImporter.HouseEnvelope("two_compartments", new[] { house, island },
+                Array.Empty<Vector2[]>(), new[] { ("crew_ladder", 0, 1, island) },
+                new[] { ("salon", house), ("crew_mess", island) }, messages.Add);
+            CollectionAssert.AreEqual(house, ring);
+            Assert.That(messages.Count, Is.EqualTo(1));
+            Assert.That(messages[0], Does.Contain("crew_mess").And.Contain("crew_ladder").And.Contain("1 m^2"));
+        }
+
+        [Test]
+        public void SeparateCompartmentWithoutDeckEntry_KeepsTheExactRefusal()
+        {
+            var house = Square(0, 3);
+            var island = Square(5, 6);
+            foreach (var entries in new[] {
+                Array.Empty<(string, int, int, Vector2[])>(),
+                new[] { ("indoor_stair", 1, 2, island) },
+                new[] { ("deck_to_deck", 0, 0, island) },
+                new[] { ("missed_ladder", 0, 1, Square(8, 9)) } })
+            {
+                var error = Assert.Throws<FormatException>(() => HullWalkSidecarImporter.HouseEnvelope(
+                    "two_compartments", new[] { house, island }, Array.Empty<Vector2[]>(), entries));
+                Assert.That(error.Message, Is.EqualTo("two_compartments: the soles and the indoor climbs do not join into one house envelope (2 floors)"));
+            }
         }
     }
 }
