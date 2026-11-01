@@ -16,18 +16,11 @@ namespace HiddenHarbours.App.Editor
     /// modest, but can take powerboats there."</i>). Geometry and the auto-tile decisions are pure and
     /// public so a test can assert the pier without a scene; <see cref="Place"/> does the Unity work.
     ///
-    /// <para><b>Sprites, not a tilemap — and the kit's cell is why.</b> A wharf cell is <b>32 × 56 px</b>,
-    /// not 32 × 32: the top 32 rows are the deck (the tile) and the bottom 24 are the vertical face and its
-    /// waterline, which <b>overhang downward over the cell below</b>. So the kit only reads right if it is
-    /// drawn strictly BACK TO FRONT — north rows first — or a face overdraws the deck of its own southern
-    /// neighbour. A single chunked <see cref="UnityEngine.Tilemaps.Tilemap"/> does not give per-row draw
-    /// order for free, and this deck is ~230 cells rather than the coast's six figures, so plain sprites
-    /// with an explicit per-row sorting order are both cheaper to reason about and exactly correct. (The
-    /// coast uses a tilemap for the opposite reason — see <see cref="StPetersShorePainter"/>.)</para>
-    ///
-    /// <para><b>Pivot is TOP-LEFT (0, 1).</b> Centre is right for every other tile sheet in this repo and
-    /// would sink every wharf tile 12 px into the water — consistently enough to read as an art bug rather
-    /// than a placement one. The kit's own importer sets it; this class places against it.</para>
+    /// <para><b>The picture is the pass-two pier.</b> The scoped recipe bakes one sprite with the rig's
+    /// own pivot and a retained height channel. The visual origin is the board's context at the rig's
+    /// chart-datum offset. Under-pier tide occlusion is not yet consumed; it is a declared look finding.
+    /// The legacy cell geometry and variant/sort helpers remain the physical footprint contract and
+    /// the reference for the plate fixture's OFF reconstruction.</para>
     ///
     /// <para><b>The deck is FLOOR, not dressing.</b> It used to be dressing only: <c>TidalWalkability</c>
     /// answered purely from (terrain elevation vs water level), so the simulation saw 4.5 m of open water
