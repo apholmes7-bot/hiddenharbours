@@ -199,11 +199,12 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.IsTrue(NineMileCreekShoreMap.IsMadeGround(NineMileCreekMainland.NorthWallFill.Center));
             Assert.IsTrue(NineMileCreekShoreMap.IsMadeGround(NineMileCreekMainland.WestWallFill.Center));
             Assert.IsTrue(NineMileCreekShoreMap.IsMadeGround(NineMileCreekMainland.BreakwaterFill.Center));
+            // since H6 the harbourmaster's office is the wharf's trailer: its vendor anchor stands on the SpitFill
+            Assert.IsTrue(NineMileCreekShoreMap.IsMadeGround(new Vector2(NineMileCreekMainland.HarbourmasterPos.x, NineMileCreekMainland.HarbourmasterPos.y)));
 
             // The town, the fields and the open bay are not.
-            Assert.IsFalse(NineMileCreekShoreMap.IsMadeGround(
-                new Vector2(NineMileCreekMainland.HarbourmasterPos.x,
-                            NineMileCreekMainland.HarbourmasterPos.y)));
+            // the harbourmaster's retired town lot on the west land: town ground still, after H6 moved the office onto the wharf (PR 2)
+            Assert.IsFalse(NineMileCreekShoreMap.IsMadeGround(new Vector2(-150f, 118f)));
             Assert.IsFalse(NineMileCreekShoreMap.IsMadeGround(new Vector2(-300f, -200f)));
         }
 
