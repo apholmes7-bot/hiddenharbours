@@ -500,7 +500,7 @@ namespace HiddenHarbours.Art
                 Vector2 foot = p.PixelSnap ? LampShadowMath.SnapToPixels(s.Foot, p.PixelsPerUnit) : s.Foot;
                 bool radial = light.Shape == SceneLight.LightShape.Radial;
                 float shape = LampShadowMath.LampShapeAtFoot(
-                    lamp, light.BeamDirection, light.Range, radial ? 180f : light.ConeHalfAngle,
+                    lamp, light.BeamDirection, ShadowReachOf(light), radial ? 180f : light.ConeHalfAngle,
                     light.AngularSoftness, light.EdgeSoftness, foot);
                 float alpha = LampShadowMath.ShadowAlpha(
                     p.Strength, shape, gate, LampShadowMath.IntensityShare(light.Intensity));
