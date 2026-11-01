@@ -1,0 +1,32 @@
+{
+  "sheet": "NmcWharf_trap_store.png",
+  "rig": "wharfBuilding2",
+  "build": "structure.nmc_trap_store",
+  "facings": 8,
+  "cols": 8,
+  "rows": 1,
+  "cellW": 442,
+  "cellH": 474,
+  "pivotNote": "cell px from the cell's TOP-LEFT; Unity wants (x/cellW, (cellH-y)/cellH)",
+  "pivotX": 221,
+  "pivotY": 334,
+  "nativeCellW": 1200,
+  "nativeCellH": 1160,
+  "cropX": 379,
+  "cropY": 446,
+  "convention": "CounterClockwise",
+  "conventionNote": "MEASURED at bake time from the door anchor; the correction is already applied, so cell i genuinely depicts +45*i",
+  "footprintWd": 7.18,
+  "footprintLn": 10.55,
+  "stackKey": "stacks",
+  "anchors": [
+    { "cell": 0, "door": {"x": 221, "y": 190}, "ridge": {"x": 221, "y": 116.2}, "stacks": [] },
+    { "cell": 1, "door": {"x": 340.4, "y": 221.7}, "ridge": {"x": 221, "y": 116.2}, "stacks": [] },
+    { "cell": 2, "door": {"x": 389.8, "y": 298.5}, "ridge": {"x": 221, "y": 116.2}, "stacks": [] },
+    { "cell": 3, "door": {"x": 340.4, "y": 375.2}, "ridge": {"x": 221, "y": 116.2}, "stacks": [] },
+    { "cell": 4, "door": {"x": 221, "y": 407}, "ridge": {"x": 221, "y": 116.2}, "stacks": [] },
+    { "cell": 5, "door": {"x": 101.6, "y": 375.2}, "ridge": {"x": 221, "y": 116.2}, "stacks": [] },
+    { "cell": 6, "door": {"x": 52.2, "y": 298.5}, "ridge": {"x": 221, "y": 116.2}, "stacks": [] },
+    { "cell": 7, "door": {"x": 101.6, "y": 221.7}, "ridge": {"x": 221, "y": 116.2}, "stacks": [] }
+  ]
+}

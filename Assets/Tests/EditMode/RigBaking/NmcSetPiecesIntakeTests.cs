@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Text.RegularExpressions;
 using HiddenHarbours.Art;
 using HiddenHarbours.Art.Editor;
 using HiddenHarbours.Tools.RigBaking;
@@ -339,21 +340,58 @@ namespace HiddenHarbours.Tests.RigBaking
         }
 
         [Test]
-        public void NoWharfPieceIsPlacedInAnySceneOrKeyScene()
+        // NoWharfPieceIsPlacedInAnySceneOrKeyScene moved under H6 PR 2, Ruling 4.
+        public void TheThreeLandSidePiecesStandOnlyWhereH6PlacedThem()
         {
+            // Literal placement plan: 97 static rows and the buyer truck owned by the trip system.
+            string[] placements = (
+                "structure.nmc_harbourmaster,structure.nmc_fish_market,structure.nmc_restaurant,structure.nmc_shed_leo,structure.nmc_shed_marie," +
+                "structure.nmc_shed_yvette,structure.nmc_shed_ross,structure.nmc_shed_hughie,structure.nmc_shed_celeste,structure.nmc_shed_alma," +
+                "structure.nmc_shed_dan,structure.nmc_bait_shed,structure.nmc_trap_store,structure.nmc_cold_store,vehicle.nmc_buyer_truck," +
+                "vehicle.nmc_lot_e,vehicle.nmc_lot_a,vehicle.nmc_lot_b,vehicle.nmc_lot_c,vehicle.nmc_delivery," +
+                "vehicle.nmc_pickup_leo,vehicle.nmc_pickup_ross,vehicle.nmc_pickup_marie,vehicle.nmc_reefer_trailer,vehicle.nmc_reefer_tractor," +
+                "prop.nmc_traps_court_0_0,prop.nmc_traps_court_0_1,prop.nmc_traps_court_0_2,prop.nmc_traps_court_0_3,prop.nmc_traps_court_0_4," +
+                "prop.nmc_traps_court_0_5,prop.nmc_traps_court_0_6,prop.nmc_traps_court_0_7,prop.nmc_traps_court_0_8,prop.nmc_traps_court_1_0," +
+                "prop.nmc_traps_court_1_1,prop.nmc_traps_court_1_2,prop.nmc_traps_court_1_3,prop.nmc_traps_court_1_4,prop.nmc_traps_court_1_5," +
+                "prop.nmc_traps_court_1_6,prop.nmc_traps_court_1_7,prop.nmc_traps_court_1_8,prop.nmc_traps_yard_w_0_0,prop.nmc_traps_yard_w_0_1," +
+                "prop.nmc_traps_yard_w_0_2,prop.nmc_traps_yard_w_0_3,prop.nmc_traps_yard_w_1_0,prop.nmc_traps_yard_w_1_1,prop.nmc_traps_yard_w_1_2," +
+                "prop.nmc_traps_yard_w_1_3,prop.nmc_traps_yard_w_2_0,prop.nmc_traps_yard_w_2_1,prop.nmc_traps_yard_w_2_2,prop.nmc_traps_yard_w_2_3," +
+                "prop.nmc_traps_yard_w_3_0,prop.nmc_traps_yard_w_3_1,prop.nmc_traps_yard_w_3_2,prop.nmc_traps_yard_w_3_3,prop.nmc_traps_yard_w_4_0," +
+                "prop.nmc_traps_yard_w_4_1,prop.nmc_traps_yard_w_4_2,prop.nmc_traps_yard_w_4_3,prop.nmc_traps_lot_0_0,prop.nmc_traps_lot_0_1," +
+                "prop.nmc_traps_lot_1_0,prop.nmc_traps_lot_1_1,prop.nmc_traps_ramp_0_0,prop.nmc_traps_ramp_0_1,prop.nmc_traps_ramp_1_0," +
+                "prop.nmc_traps_ramp_1_1,prop.nmc_traps_0,prop.nmc_traps_1,prop.nmc_traps_2,prop.nmc_traps_3," +
+                "prop.nmc_traps_4,prop.nmc_traps_5,prop.nmc_traps_6,prop.nmc_traps_7,prop.nmc_traps_8," +
+                "prop.nmc_traps_9,prop.nmc_traps_10,prop.nmc_traps_11,prop.nmc_quay_traps_0,prop.nmc_quay_traps_1," +
+                "prop.nmc_quay_traps_2,prop.nmc_buoys_leo,prop.nmc_buoys_marie,prop.nmc_nets_a,prop.nmc_baskets," +
+                "prop.nmc_barrow,prop.nmc_ring_w,prop.nmc_ring_e,prop.nmc_notice,gull.nmc_shed," +
+                "gull.nmc_flats,gull.nmc_restaurant,gull.nmc_market").Split(',');
+            Assert.That(placements.Length, Is.EqualTo(98));
+            Assert.That(placements.Distinct().Count(), Is.EqualTo(98));
+            string patched = Path.GetFullPath(Abs("Assets/_Project/Scenes/NineMileCreek.unity"));
             foreach (string scene in Directory.GetFiles(Abs("Assets/_Project/Scenes"), "*.unity", SearchOption.AllDirectories))
             {
                 string text = File.ReadAllText(scene);
                 foreach (var piece in Pieces)
                 {
-                    Assert.That(text, Does.Not.Contain(piece.Id), scene);
-                    Assert.That(text, Does.Not.Contain(AssetDatabase.AssetPathToGUID($"Assets/_Project/Data/SetPieces/SetPiece_{piece.Key}.asset")), scene);
+                    int copies = piece.Key == "officeTrailer" ? 1 : piece.Key == "fishMarket" || piece.Key == "restaurant" ? 3 : 0;
+                    bool here = Path.GetFullPath(scene) == patched;
+                    Assert.That(Regex.Matches(text, Regex.Escape(piece.Id)).Count, Is.EqualTo(here ? copies : 0), scene + ": " + piece.Id);
+                    string guid = AssetDatabase.AssetPathToGUID($"Assets/_Project/Data/SetPieces/SetPiece_{piece.Key}.asset");
+                    Assert.That(guid, Is.Not.Empty);
+                    Assert.That(Regex.Matches(text, guid).Count, Is.EqualTo(here && copies > 0 ? 1 : 0), scene + ": " + piece.Key);
                 }
             }
             foreach (string record in Directory.GetFiles(Abs("Assets/_Project/Data/KeyScenes"), "*.asset"))
             {
                 string text = File.ReadAllText(record);
-                if (Pieces.Any(p => text.Contains(p.Id))) Assert.That(text, Does.Contain("  Placed: 0"), record);
+                if (!Pieces.Any(p => text.Contains(p.Id))) continue;
+                bool wharf = Path.GetFileName(record) == "KeyScene_nmc_wharf.asset";
+                Assert.That(Regex.IsMatch(text, @"(?m)^  Placed: " + (wharf ? "1" : "0") + @"\r?$"), Is.True, record);
+                Match list = Regex.Match(text, @"(?m)^  PlacementIds:(?: \[\])?(?:\r?\n  - [^\r\n]*)*");
+                Assert.That(list.Success, Is.True, record);
+                string[] actual = Regex.Matches(list.Value, @"(?m)^  - ([^\r\n]+)").Cast<Match>().Select(m => m.Groups[1].Value).ToArray();
+                Assert.That(actual.Length, Is.EqualTo(wharf ? placements.Length : 0), record);
+                CollectionAssert.AreEquivalent(wharf ? placements : Array.Empty<string>(), actual, record);
             }
         }
 

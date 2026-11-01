@@ -1,0 +1,8 @@
+# StPetersLayerRefresh: one step's patch to one root. Whole Unity YAML documents.
+step: "StoreWiring.NineMileCreek.DialogueUI"
+root: "DialogueUI"
+rootGameObject: 1341719452
+differences: []
+deletions: []
+edits: []
+additions: []

@@ -195,6 +195,7 @@ namespace HiddenHarbours.App.Editor
                     File.WriteAllText(Path.Combine(PatchFolder, NineMileCreekGroundSteps.PatchFileName(patch)), patch.ToYaml(), utf8);
             File.WriteAllText(Path.Combine(PatchFolder, InteriorStep + ".txt"), InteriorDebt + "\n", utf8);
             if (apply && before != after) File.WriteAllText(ScenePath, after, utf8);
+            if (apply) NineMileCreekWharfLandSide.RecordPlacement();
             Debug.Log($"[NineMileCreekLayerRefresh] {(apply ? "Applied" : "Dry run")}:\n" +
                       string.Join("\n", steps.Select(s => s.Summary())) + $"\n{InteriorStep}: {InteriorDebt}");
             return steps;
