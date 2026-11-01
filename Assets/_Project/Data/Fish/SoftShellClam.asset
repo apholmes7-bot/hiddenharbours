@@ -24,6 +24,7 @@ MonoBehaviour:
   Sprite: {fileID: -8350118145691459604, guid: bae98caad6f379308446110bc6a39b4f, type: 3}
   RegionIds:
   - region.st_peters
+  - region.east_water
   AllowedGear: 64
   Seasons: 15
   MinTide: -10

@@ -21,6 +21,7 @@ MonoBehaviour:
   RegionIds:
   - region.coddle_cove
   - region.st_peters
+  - region.east_water
   AllowedGear: 8
   Seasons: 15
   MinTide: -10

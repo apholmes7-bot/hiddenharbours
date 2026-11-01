@@ -72,7 +72,7 @@ Assets/
 |   +-- Plugins/                   vendored native/managed dependencies (the ClearScript/V8 host lives here)
 |   +-- Prefabs/                   Boats, Decor, FuelStorage, GasStation, NPCs, Props, Systems, UI
 |   +-- Resources/                 player-global, self-installing assets (boat interior cells, wake sprite library...): section 8
-|   +-- Scenes/                    StPeters (build index 0), NineMileCreek, WestWater, Greybox (the M0 cove), Greywick (legacy: section 3)
+|   +-- Scenes/                    StPeters (build index 0), NineMileCreek, RicePoint, Cumberland, EastWater, Greybox (the M0 cove), Greywick (legacy: section 3)
 |   +-- Settings/                  URP assets, render features
 +-- Scenes/SampleScene.unity       Unity template debris, still in the build list: remove (section 9)
 +-- Settings/, DefaultVolumeProfile, URP global settings   (InputSystem_Actions.inputactions, Unity's
@@ -99,9 +99,11 @@ There is no `Assets/ThirdParty/`; external code is vendored under `Assets/_Proje
   between scenes. `GameRoot` is the composition root (`tech-architecture.md` §2).
   **`StPeters.unity` is build index 0** — the game opens there.
 - **One scene per region**, loaded **additively**: `StPeters.unity`, `NineMileCreek.unity`,
-  `WestWater.unity` (the bay's first open-water scene). A region reached by travel receives the
-  core from the start scene; each carries an inactive `DevRegionBootstrap` dev core so the owner
-  can press Play in it directly. Two agents on two regions touch two different scene files →
+  `RicePoint.unity`, `Cumberland.unity`, and `EastWater.unity`. The East Water was added by
+  intro-at-sea PR 1: 760 × 520 m, a flat 4 m bed and a return door to St Peters, enabled at build
+  index 7. West Water has a builder and plan; its scene is not committed. A region reached by travel receives the
+  core from the start scene; water scenes carry a review camera and arrive by boat. Land scenes
+  can carry an inactive `DevRegionBootstrap` dev core for standalone Play. Two agents on two regions touch two different scene files →
   **no merge conflict**. `CoddleCove` has a region def and, as of this review, no scene (it is
   M2's home harbour). `Greybox.unity` is the M0 cove greybox. `Greywick.unity` is the pre-rename
   town scene (D1: Greywick *is* Nine Mile Creek) — no region def references it; it is legacy and

@@ -14,9 +14,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.RegionDef
   Id: region.east_water
   DisplayName: The East Water (working name)
-  Description: 'The open water off St Peters'' east wall, and where the game begins - out with the captain at six in the morning, a rod stowed on her deck and the island a mile to the west. Sail west and you are home; the sea the other way is the mid-bay''s, and that is later. NAME OWED: the owner names the water scenes in PEI-variant style (world-map-plan 7 Q4); the id is stable whatever he picks.'
+  Description: 'The open water off St Peters'' east wall, and where the game begins
+    - out with the captain at six in the morning, a rod stowed on her deck and the
+    island a mile to the west. Sail west and you are home; the sea the other way
+    is the mid-bay''s, and that is later. NAME OWED: the owner names the water scenes
+    in PEI-variant style (world-map-plan 7 Q4); the id is stable whatever he picks.'
   SceneName: EastWater
-  UnlockFlag:
+  UnlockFlag: 
   WorldCenter: {x: 0, y: 0}
   WorldSizeMeters: {x: 760, y: 520}
   SeabedPixelsPerMetre: 1
@@ -25,5 +29,10 @@ MonoBehaviour:
   TideMeanLevel: 0
   TideAmplitude: 2.2
   TidePhaseHours: 1
-  SpawnFishIds: []
+  WindProfile: {fileID: 0}
   SwellClimate: {fileID: 11400000, guid: 623b44edae2d4b39b64165776e2ab76d, type: 2}
+  SwellShelter:
+    Harbour: {x: 0, y: 0, z: 0, w: 0}
+    Cove: {x: 0, y: 0, z: 0, w: 0}
+    FeatherMeters: 0
+  SpawnFishIds: []
