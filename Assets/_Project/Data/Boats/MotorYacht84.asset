@@ -17,7 +17,7 @@ MonoBehaviour:
   Visual: {fileID: 11400000, guid: 1cc7f24e708bb4f4ab0d40b92c98695f, type: 2}
   Sprite: {fileID: 0}
   LengthMeters: 25.5
-  DraughtMeters: 4.75
+  DraughtMeters: 1.8
   MassKg: 72000
   HoldUnits: 300
   CrewSlots: 6
