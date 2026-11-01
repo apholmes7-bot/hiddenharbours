@@ -66,7 +66,8 @@ namespace HiddenHarbours.World
         /// </summary>
         public bool Travel(RegionDef to)
         {
-            if (!RegionTravel.ShouldLoad(_currentSceneName, to))
+            // The active scene, never the cached name: another region's loader may have brought us home.
+            if (!RegionTravel.ShouldLoad(SceneManager.GetActiveScene().name, to))
                 return false;
 
             // Already loaded (re-visit) → re-activate it, don't load a duplicate.
