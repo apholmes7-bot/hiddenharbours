@@ -55,7 +55,8 @@ namespace HiddenHarbours.Tests.RigBaking
             var data = HullWalkFixture.Extract(host);
             data.Walk = null;
             host.Execute("BoxWalk.doorFaces = (function(original) { return function(o) { " +
-                "var faces = original(o.doorOpen); return o.doorOpen === 1 ? faces.concat(faces) : faces; " +
+                "var faces = original(o.doorOpen); faces.forEach(function(f) { f.lv = 'room'; }); " +
+                "return o.doorOpen === 1 ? faces.concat(faces) : faces; " +
                 "}; })(BoxWalk.doorFaces);");
             var error = Assert.Throws<InvalidOperationException>(() => RigMeshAssetBaker.FindDoorLeaf(host, "BoxWalk", data));
             Assert.That(error.Message, Is.EqualTo("BoxWalk: her door leaf has 1 faces shut and 2 open. " +
