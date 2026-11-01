@@ -70,9 +70,9 @@ namespace HiddenHarbours.Art
                  "such scenes render in plain daylight rather than a stale/blank tint.")]
         [Range(0f, 24f)] [SerializeField] private float _fallbackHour = 12f;
 
-        [Tooltip("Oversize the screen-fill overlay by this factor so a zoom / window-resize between ticks " +
-                 "can never reveal an un-tinted gap at the screen edge. 1.1 = 10% margin (off-screen).")]
-        [Min(1f)] [SerializeField] private float _overlayOversize = 1.1f;
+        [Tooltip("Oversize the screen-fill overlay by this factor so the camera's largest one-frame jump " +
+                 "can never reveal an un-tinted gap: the fit runs a frame behind the lens. Off-screen, so no cost.")]
+        [Min(1f)] [SerializeField] private float _overlayOversize = 4f;
 
         // ---- moonlight (the moon softly lifts the night tint; strength + colour live in the profile) ----
         // The lunar PERIOD is no longer mirrored here: it comes from GameServices.LunarMonthDays /
