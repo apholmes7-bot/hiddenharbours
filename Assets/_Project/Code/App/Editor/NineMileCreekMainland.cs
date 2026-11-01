@@ -951,8 +951,9 @@ namespace HiddenHarbours.App.Editor
         // Where the working things stand. Phase A places greybox markers; Phase B swaps in the kit.
         public static readonly Vector3 WinchPos          = new Vector3( 87f,  84f, 0f);  // west wall, by the apron
         public static readonly Vector3 UnloadApronPos    = new Vector3( 87f,  74f, 0f);
-        public static readonly Vector3 ParkingPos        = new Vector3( 92f, 118f, 0f);  // the buyers' trucks
-        public static readonly Vector3 FishBuyerPos      = new Vector3( 88f, 110f, 0f);  // at his tailgate
+        public static Vector3 ParkingPos => NineMileCreekWharfLandSide.BuyerTruck;  // the buyers' trucks: the buyer's own, where the wharf key scene parks it (vehicle.nmc_buyer_truck, in yard.parking_w)
+        public static Vector3 FishBuyerPos => NineMileCreekWharfLandSide.MarketCounter;
+        public static Vector3 FishBuyerTruckPos => NineMileCreekWharfLandSide.BuyerTruck;
         public static readonly Vector3 FishStorePos      = new Vector3(120f, 112f, 0f);  // holds; NO processing
         public static readonly Vector3 BaitShedPos       = new Vector3(136f, 132f, 0f);
         public static readonly Vector3 TrapStorePos      = new Vector3(148f, 130f, 0f);
@@ -1569,7 +1570,7 @@ namespace HiddenHarbours.App.Editor
         // places each building on its point, and each moves in its own wave: the harbourmaster's office to
         // the wharf (H6), the chandlery and its rod onto Water Street (H7), the general store to the gas
         // bar (H9), the farmhouse south of the hedge at y 0 (H10). The lots are TownLots below, by G3's ids.
-        public static readonly Vector3 HarbourmasterPos = new Vector3(-150f, 118f, 0f);  // the cod licence
+        public static Vector3 HarbourmasterPos => NineMileCreekWharfLandSide.OfficeVendor;
         public static readonly Vector3 ChandleryPos     = new Vector3(-206f, 116f, 0f);  // the rod
         public static readonly Vector3 GeneralStorePos  = new Vector3(-150f, 152f, 0f);
         public static readonly Vector3 TavernPos        = new Vector3(-206f, 152f, 0f);

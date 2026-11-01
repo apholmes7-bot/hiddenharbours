@@ -110,7 +110,7 @@ namespace HiddenHarbours.App.Editor
             new Seller("ShipwrightShed", typeof(Shipwright), "boat.punt", NineMileCreekBuilder.SellerYard),
             new Seller("ShipwrightShed", typeof(PotShop), "offer.lobster_pot", NineMileCreekBuilder.SellerYard),
             new Seller("ShipwrightShed", typeof(PotShop), "offer.crab_pot", NineMileCreekBuilder.SellerYard),
-            new Seller("HarbourmasterOffice", typeof(LicenseVendor), "license.cod", NineMileCreekBuilder.SellerHarbourmaster),
+            new Seller(NineMileCreekWharfLandSide.OfficeVendorName, typeof(LicenseVendor), "license.cod", NineMileCreekBuilder.SellerHarbourmaster),
             new Seller("GeneralStore", typeof(GearShop), "gear.rod", NineMileCreekBuilder.SellerChandlery),
             new Seller("ShipwrightDoryYard", typeof(Shipwright), "boat.dory", NineMileCreekBuilder.SellerYard),
             new Seller("UsedOutboardSeller", typeof(Shipwright), "boat.dory_outboard", NineMileCreekBuilder.SellerHectorsBarrel),

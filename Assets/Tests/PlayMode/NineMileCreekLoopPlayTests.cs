@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using NUnit.Framework;
 using UnityEngine;
@@ -56,9 +57,9 @@ namespace HiddenHarbours.Tests.PlayMode
         const string SceneName = "NineMileCreek";
 
         // ---- the loop's stops (the Phase A2 walk's speaker spots: where the fisher stands to talk) ----------------
-        static readonly Vector2 LicenceSpeaker = new Vector2(-150f, 114.5f);   // the harbourmaster's office
+        static readonly Vector2 LicenceSpeaker = new Vector2(83.6f, 110.566f); // the office trailer's counter
         static readonly Vector2 RodSpeaker = new Vector2(-206f, 112.5f);       // the general store's chandlery
-        static readonly Vector2 ClamSpeaker = new Vector2(90.5f, 109.5f);      // the fish buyer's counter
+        static readonly Vector2 ClamSpeaker = new Vector2(93f, 123.45f);      // the market's counter
         static readonly Vector2 DorySpeaker = new Vector2(68.182f, 111.25f);   // the dory yard and Hector's barrel
         const float SpeakerArriveMetres = 1.5f;
         const float StepOffArriveMetres = 0.4f;
@@ -68,7 +69,7 @@ namespace HiddenHarbours.Tests.PlayMode
         const string DoryYardSellerId = "seller.nmc_yard";
         const string DoryYardName = "ShipwrightDoryYard";        // the yard's id is shared with the shed; the yard is this one
         const string OutboardSellerId = "seller.hectors_barrel";
-        const string FishBuyerStallName = "FishBuyerStall";
+        const string FishBuyerStallName = "NmcWharfMarketCounter";
         const string WharfGasPumpId = "fixture.nmc.wharf_pump_gas";
         const string WharfDieselPumpId = "fixture.nmc.wharf_pump_diesel";
         const string RoadGasPumpId = "fixture.route_91.pump1a_gas";   // the creek's road station on Route 91
@@ -238,6 +239,73 @@ namespace HiddenHarbours.Tests.PlayMode
         // =============================================================================================
         //  1. THE CROSSING — the bar to St Peters at low and at high water
         // =============================================================================================
+
+        [UnityTest, Timeout(300000)]
+        public IEnumerator TheWharfCounters_AndTheBuyerAtSix_HaveTheirNativePlates()
+        {
+            if (SystemInfo.graphicsDeviceType == UnityEngine.Rendering.GraphicsDeviceType.Null)
+                Assert.Ignore("The native plates need the lease's graphics device.");
+            const int width = 720, height = 480;
+            Camera camera = Camera.main;
+            var follow = Object.FindAnyObjectByType<CameraFollow>();
+            Assert.That(camera, Is.Not.Null); Assert.That(follow, Is.Not.Null);
+            Transform previousTarget = follow.Target;
+            float previousSmooth = follow.Smooth, previousScale = Time.timeScale, previousAspect = camera.aspect;
+            RenderTexture previousTexture = camera.targetTexture;
+            var target = new GameObject("H6 plate anchor"); _spawned.Add(target);
+            var texture = new RenderTexture(width, height, 24, RenderTextureFormat.ARGBFloat, RenderTextureReadWrite.Linear);
+            texture.Create(); camera.targetTexture = texture; camera.aspect = width / (float)height;
+            IGameClock clock = GameServices.Clock; float previousClockScale = clock.TimeScale;
+            try
+            {
+                foreach (var shot in new[]
+                {
+                    (name: "office-day", hour: 14f, player: LicenceSpeaker, centre: new Vector2(86.4f, 112.6f)),
+                    (name: "office-dusk", hour: 19f, player: LicenceSpeaker, centre: new Vector2(86.4f, 112.6f)),
+                    (name: "market-day", hour: 14f, player: ClamSpeaker, centre: new Vector2(94f, 127f)),
+                    (name: "market-dusk", hour: 19f, player: ClamSpeaker, centre: new Vector2(94f, 127f)),
+                    (name: "buyer-six", hour: 6f, player: ClamSpeaker, centre: new Vector2(96.5f, 127f)),
+                })
+                {
+                    Time.timeScale = 1f; clock.TimeScale = 1f;
+                    clock.SeekTo(shot.hour / 24.0 * GameServices.SecondsPerDay);
+                    _rb.position = shot.player; _walk.transform.position = shot.player;
+                    Physics2D.SyncTransforms();
+                    for (int frame = 0; frame < 30; frame++) yield return null;
+                    clock.TimeScale = 0f; Time.timeScale = 0f;
+                    target.transform.position = new Vector3(shot.centre.x, shot.centre.y, 0);
+                    follow.Target = target.transform; follow.Smooth = 1000f; follow.SetFraming(16f, 0f);
+                    camera.transform.position = new Vector3(shot.centre.x, shot.centre.y, camera.transform.position.z);
+                    for (int frame = 0; frame < 8; frame++) yield return null;
+                    camera.Render(); RenderTexture active = RenderTexture.active; RenderTexture.active = texture;
+                    var linear = new Texture2D(width, height, TextureFormat.RGBAFloat, false, true);
+                    linear.ReadPixels(new Rect(0, 0, width, height), 0, 0); linear.Apply(); RenderTexture.active = active;
+                    Color[] pixels = linear.GetPixels(); var rgba = new byte[pixels.Length * 4];
+                    for (int i = 0; i < pixels.Length; i++)
+                    {
+                        Color c = pixels[i]; c.r = Mathf.Clamp01(c.r); c.g = Mathf.Clamp01(c.g); c.b = Mathf.Clamp01(c.b); c = c.gamma;
+                        rgba[i * 4] = (byte)Mathf.RoundToInt(c.r * 255); rgba[i * 4 + 1] = (byte)Mathf.RoundToInt(c.g * 255);
+                        rgba[i * 4 + 2] = (byte)Mathf.RoundToInt(c.b * 255); rgba[i * 4 + 3] = 255;
+                    }
+                    Object.DestroyImmediate(linear);
+                    var png = new Texture2D(width, height, TextureFormat.RGBA32, false); png.LoadRawTextureData(rgba); png.Apply();
+                    byte[] bytes = png.EncodeToPNG(); Object.DestroyImmediate(png);
+                    string evidence = "Evidence~/nmc-h6/plates", tracked = "artifacts/nmc-h6/pr2/plates";
+                    Directory.CreateDirectory(evidence); Directory.CreateDirectory(tracked);
+                    File.WriteAllBytes(Path.Combine(evidence, shot.name + ".png"), bytes);
+                    File.WriteAllBytes(Path.Combine(tracked, shot.name + ".png"), bytes);
+                    Assert.That(bytes.Length, Is.GreaterThan(1000), shot.name);
+                    TestContext.WriteLine($"H6 plate {shot.name}: {width}x{height}, {bytes.Length} bytes, {shot.hour:00}:00");
+                }
+            }
+            finally
+            {
+                camera.targetTexture = previousTexture; camera.aspect = previousAspect;
+                follow.Target = previousTarget; follow.Smooth = previousSmooth;
+                texture.Release(); Object.DestroyImmediate(texture);
+                Time.timeScale = previousScale; clock.TimeScale = previousClockScale;
+            }
+        }
 
         /// <summary>At the month's lowest water the crossing is bare: set on the crest at 30 % of the bar and
         /// pushed east along its centreline, she walks over the gut and on to 60 % without once being out of
