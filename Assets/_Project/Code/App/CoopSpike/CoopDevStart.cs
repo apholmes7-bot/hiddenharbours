@@ -22,6 +22,8 @@ namespace HiddenHarbours.CoopSpike
         private PlayerWalkController _player;
         private bool _client;
         private CoopSpikeSettings _settings;
+        public bool Ready { get; private set; }
+        public NetworkManager Manager => _manager;
 
         public static bool ShouldStart(string[] args, string product)
         {
@@ -79,6 +81,7 @@ namespace HiddenHarbours.CoopSpike
             _manager.OnClientConnectedCallback += OnConnected;
             bool started = _client ? _manager.StartClient() : _manager.StartHost();
             if (!started) throw new InvalidOperationException("The local transport did not start.");
+            Ready = true;
         }
 
         // Also used by the in-process fixture: no save, opening or second service context is created.

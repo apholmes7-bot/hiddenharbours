@@ -7,6 +7,7 @@ using HiddenHarbours.Player;
 using Unity.Netcode;
 using Unity.Netcode.Components;
 using UnityEditor;
+using UnityEditor.Build.Reporting;
 using UnityEngine;
 
 namespace HiddenHarbours.CoopSpike.Editor
@@ -15,6 +16,28 @@ namespace HiddenHarbours.CoopSpike.Editor
     {
         public const string Root = "Assets/_Project/Resources/CoopSpike";
         public const string SettingsPath = Root + "/Settings.asset";
+        public static void BuildWindowsCost()
+        {
+            if (Application.productName != CoopDevStart.SpikeProduct)
+                throw new System.InvalidOperationException("The cost build requires the isolated spike product.");
+            var watch = System.Diagnostics.Stopwatch.StartNew();
+            string destination = Path.GetFullPath("Builds~/TwoBoatsCost/HiddenHarboursCoopSpike.exe");
+            Directory.CreateDirectory(Path.GetDirectoryName(destination));
+            var report = BuildPipeline.BuildPlayer(new BuildPlayerOptions
+            {
+                scenes = EditorBuildSettings.scenes.Where(scene => scene.enabled).Select(scene => scene.path).ToArray(),
+                locationPathName = destination,
+                target = BuildTarget.StandaloneWindows64,
+                options = BuildOptions.Development
+            });
+            watch.Stop();
+            string evidence = Path.GetFullPath("Evidence~/coop-spike");
+            Directory.CreateDirectory(evidence);
+            File.WriteAllText(Path.Combine(evidence, "day2-windows-build.txt"),
+                $"result={report.summary.result}\nseconds={watch.Elapsed.TotalSeconds:F3}\nbytes={report.summary.totalSize}\nerrors={report.summary.totalErrors}\nwarnings={report.summary.totalWarnings}\n");
+            if (report.summary.result != BuildResult.Succeeded)
+                throw new System.InvalidOperationException("The local Windows cost build failed; read its report.");
+        }
         [MenuItem("Hidden Harbours/Spike/Build Two Boats Assets")]
         public static void Build()
         {

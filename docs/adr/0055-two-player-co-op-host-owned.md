@@ -32,12 +32,24 @@ boards each local player with an authored rod, and publishes the character's dra
 The skipper remains the baked look. Creator integration, join recipes and appearance persistence
 remain held under the Day 2 order, irrespective of similarly named types already in the codebase.
 
-Six additional PlayMode cases are written: both dev starts in the authored region; both full F
+Six additional PlayMode cases now pass: both dev starts in the authored region; both full F
 cycles including wrap; both baked skippers' positions and facing; tide/weather and nonempty school
 records over twelve transported clock samples; both unchanged local rod loops and separate catch
-destinations; and disconnect cleanup of the remote skipper. The host-view capture is prepared in
-the skipper case. These cases compile but have not run. No new frame, Windows build, relay session,
-friend play or observed internet latency exists. The editor remains closed for the requested restart.
+destinations; and disconnect cleanup of the remote skipper. Together with the two Day 1 cases, the
+editor ran eight cases with eight passes and no skips. Both players completed all 27 F transitions
+including wrap, each local rod landed a mackerel in its own hold, and 300 nonempty school records
+agreed over twelve transported clock samples. A ninth, separate PlayMode case loads the authored
+starting scene and runs the real spike boot: the same core survives into East Water with the host
+listening, its owned proxy spawned, and the local player at the helm with a rod. All five EditMode
+cases also pass.
+
+The inspected host-view fixture frame shows two hulls and both skippers against a plain evidence
+camera background. It is presentation evidence, not a frame from two standalone games. The first
+local Windows development build succeeded in 121.253 seconds, producing 2,354,665,466 reported bytes
+with zero errors and 545 warnings. It is an ignored local cost artifact, not a friend delivery.
+No relay session, friend play or observed internet latency exists. Creator integration and friend
+delivery remain held. The unlinked-services build warning does not block local transport; an actual
+relay/project-link step still belongs to the owner.
 
 All recommendations below remain proposals to validate. No test result or observed latency is
 implied by describing the intended design.
@@ -122,7 +134,8 @@ selling, session persistence and the ghost skipper as observed or not reached. R
 player actually did, hull changes seen remotely, both local fishing loops, environmental agreement,
 appearance at rejoin, friend-observed delay, build/account/NAT costs and the cost of each added ask.
 Day 1 reached the network hull and clock checks listed above. Day 2's full-roster, school, skipper,
-hands/catch and disconnect cases remain **written, not run**. Instruments reading a different
+hands/catch and disconnect cases **pass**, as does the separate authored-core dev boot. Instruments
+reading a different
 player's hull, doors and interior body resolution, selling, and persistence/rejoin remain **not
 reached**. East Water is now inherited from main. Friend delivery still waits for the creator gate.
 
