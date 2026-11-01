@@ -45,7 +45,7 @@ namespace HiddenHarbours.Art
 
         /// <summary>
         /// This moment's life for <paramref name="figure"/>, playing <paramref name="def"/> at
-        /// <paramref name="now"/> (<see cref="IGameClock.TotalSeconds"/>). <paramref name="figureKey"/> is
+        /// <paramref name="now"/> (<see cref="IGameClock.FlowSeconds"/>). <paramref name="figureKey"/> is
         /// the figure's <see cref="ICharacterFigureIdentity.FigureKey"/> (null reads as empty), which names it
         /// to the look; <paramref name="keyHash"/> is the one hash its presenter took of that key, once, which
         /// seeds its blink with the def id (0 for no key). <paramref name="looks"/> false never asks for a look

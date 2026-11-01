@@ -293,6 +293,15 @@ same wind memory at the clock. `WaterSurface` uses the short band's wind for dec
 wind and chop. Settings live solely in `GameConfig.WaveField`; nothing is saved. See
 ADR 0018's dated amendment for windows, causality, fallback and future-stage boundaries.
 
+Intro-at-sea PR 2 adds two readings of the one clock tick. `IGameClock.TotalSeconds`
+is the hour: calendar, tide, wind history, sun, moon, schools and routines. `FlowSeconds`
+advances under `IsHeld` while the hour stands; pause stops both and the rate scales both.
+Wave memory and swell shape use the hour, phase travel and living presentation use flow.
+The readings are equal in ordinary play until a hold, and `SeekTo` equalises them again;
+flow and the hold are never saved. Thus a held session's wave travel derives from
+`(worldSeed, hour time, flow time)`. A future co-op clock sync must carry both readings
+or equalise flow on joining; otherwise peers can see different wave phases.
+
 Stage C composes a bay's `SwellClimateDef` after wind memory through
 `GameServices.WithSwell`. World registers each region's climate and glass basins with
 `GameServices.RegisterSwellClimate`; Core resolves them by `CurrentRegionId`.

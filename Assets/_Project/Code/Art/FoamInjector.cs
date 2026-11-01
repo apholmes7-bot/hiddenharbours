@@ -300,7 +300,7 @@ namespace HiddenHarbours.Art
                 return;
             }
 
-            double now = clock.TotalSeconds;
+            double now = clock.FlowSeconds;
             // A clock seek changes the sampled wave phase instantly; it is not a physical slap.
             double expectedStep = Time.unscaledDeltaTime * Mathf.Max(0f, clock.TimeScale);
             bool clockSeek = _primed && (now < _previousGameSeconds ||
@@ -308,7 +308,7 @@ namespace HiddenHarbours.Art
             _previousGameSeconds = now;
             // The game's one depth rule, computed from Core directly (Art cannot reach Boats'
             // BoatCrossing, and must not — rule 4).
-            float depth = TidalExposure.WaterDepth(env.WaterLevelAt(now), terrain.ElevationAt(trueStern));
+            float depth = TidalExposure.WaterDepth(env.WaterLevelAt(clock.TotalSeconds), terrain.ElevationAt(trueStern));
             if (depth <= 0f)
             {
                 // Off the water: hauled out, or over ground that has bared on the ebb. Give the slot
@@ -324,7 +324,7 @@ namespace HiddenHarbours.Art
             WaveFieldSettings field = GameServices.WaveField;
             WaveFieldAnimatorSettings smoothing = GameServices.WaveFieldAnimator;
             if (clockSeek) _animator.Reset();
-            _animator.Tick(dt, WaveFieldAnimator.GameTimeSeconds,
+            _animator.Tick(dt, WaveFieldAnimator.HourTimeSeconds, WaveFieldAnimator.GameTimeSeconds,
                            sample.WindVector, sample.SeaState01, in field, in smoothing);
 
             float exaggeration = 1f;

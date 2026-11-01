@@ -183,6 +183,11 @@ namespace HiddenHarbours.App.Editor
         /// 136 m to the west door and room to fish clear of its trigger. PR 2 reaches for this point;
         /// the ordinary seed/time/weather school model determines which water holds fish.</summary>
         public static readonly Vector3 OpeningLiePos = new Vector3(-220f, 0f, 0f);
+        /// <summary>The fresh-game way in, distinct from an ordinary boat arriving from St Peters.</summary>
+        public const string OpeningArrivalKey = "opening";
+        /// <summary>A steering target beyond the west band, so the sea leg never brakes at the door.</summary>
+        public static Vector2 OpeningExitTarget =>
+            (Vector2)ToStPetersPassagePos - Vector2.right * ArrivalClearanceMetres;
 
         // =================================================================================================
         //  6. THE PLAN, ASSEMBLED

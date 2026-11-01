@@ -127,6 +127,28 @@ namespace HiddenHarbours.Tests.PlayMode
         }
 
         [UnityTest]
+        public IEnumerator TheSameLoaderGoesOutAgain_AfterAnotherLoaderBroughtItHome()
+        {
+            var sourceLoader = _outward.GetComponent<RegionSceneLoader>();
+            var destinationLoader = _homeward.GetComponent<RegionSceneLoader>();
+
+            Assert.IsTrue(sourceLoader.Travel(_fixtureDefs[0]));
+            Assert.AreEqual(_water, SceneManager.GetActiveScene());
+            yield return null;
+
+            Assert.IsTrue(destinationLoader.Travel(_fixtureDefs[1]));
+            Assert.AreEqual(_island, SceneManager.GetActiveScene());
+            yield return null;
+
+            Assert.AreSame(sourceLoader, _outward.GetComponent<RegionSceneLoader>());
+            Assert.AreSame(destinationLoader, _homeward.GetComponent<RegionSceneLoader>());
+            Assert.IsTrue(sourceLoader.Travel(_fixtureDefs[0]));
+            Assert.AreEqual(_water, SceneManager.GetActiveScene());
+            Assert.IsFalse(sourceLoader.Travel(_fixtureDefs[0]), "the active destination is already here");
+            yield return null;
+        }
+
+        [UnityTest]
         public IEnumerator ThePlayersBoatSailsOutAndHomeWithTheHelmLiveAcrossBothCrossings()
         {
             var sameBoat = _boat;

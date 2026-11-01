@@ -613,6 +613,7 @@ Transform:
   m_Children:
   - {fileID: 10023}
   - {fileID: 10025}
+  - {fileID: 10027}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &10021
@@ -634,6 +635,9 @@ MonoBehaviour:
   _arrivals:
   - Key: st_peters
     ArrivalPoint: {fileID: 10025}
+    DisembarkPoint: {fileID: 0}
+  - Key: opening
+    ArrivalPoint: {fileID: 10027}
     DisembarkPoint: {fileID: 0}
   _worldCenter: {x: 0, y: 0}
   _worldSizeMeters: {x: 760, y: 520}
@@ -710,9 +714,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 10027}
-  - component: {fileID: 10028}
   m_Layer: 0
-  m_Name: RegionDisplayNames
+  m_Name: Arrival_opening
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -727,19 +730,51 @@ Transform:
   m_GameObject: {fileID: 10026}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -220, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 10020}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &10028
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 10029}
+  - component: {fileID: 10030}
+  m_Layer: 0
+  m_Name: RegionDisplayNames
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &10029
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 10028}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &10028
+--- !u!114 &10030
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 10026}
+  m_GameObject: {fileID: 10028}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 47cea82b4526414dbca45d83f4126f3b, type: 3}
@@ -758,4 +793,4 @@ SceneRoots:
   - {fileID: 10013}
   - {fileID: 10016}
   - {fileID: 10020}
-  - {fileID: 10027}
+  - {fileID: 10029}

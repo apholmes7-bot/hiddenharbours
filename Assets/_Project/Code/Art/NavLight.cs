@@ -9,7 +9,7 @@ namespace HiddenHarbours.Art
     /// the master clock — <c>Fl G 4s</c> on a port hand, <c>Q(6) + LFl 15s</c> on a south cardinal.
     ///
     /// <para><b>It owns the LAMP; it does not own the RHYTHM.</b> When the light burns is
-    /// <see cref="NavLightCharacter.IsOn"/>, a pure function of <see cref="IGameClock.TotalSeconds"/>
+    /// <see cref="NavLightCharacter.IsOn"/>, a pure function of <see cref="IGameClock.FlowSeconds"/>
     /// and this mark's own phase, living in Core where the data and the drawing can both reach it
     /// (rule 4). This component is the wiring: mint one pooled <see cref="SceneLight"/> at the
     /// lantern, colour it, and switch it. There is no accumulator here and nothing is saved (rule 5),
@@ -165,7 +165,7 @@ namespace HiddenHarbours.Art
         private double ClockSeconds()
         {
             if (_clock == null) _clock = GameServices.Clock;   // may register after this wakes
-            return _clock?.TotalSeconds ?? Time.timeAsDouble;
+            return _clock?.FlowSeconds ?? Time.timeAsDouble;
         }
     }
 }

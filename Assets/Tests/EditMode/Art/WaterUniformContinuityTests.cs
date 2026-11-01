@@ -241,7 +241,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
             // A single 60 fps frame must not be able to move either value by a visible fraction.
             Assert.Less(Dt60 / field.MemoryShortSeconds, 0.05f, "Short wind enters over its window");
             string source = System.IO.File.ReadAllText("Assets/_Project/Code/Art/WaterSurface.cs");
-            StringAssert.Contains("WaveMemory.ShortWind(history, WaveFieldAnimator.GameTimeSeconds, in field)", source);
+            StringAssert.Contains("WaveMemory.ShortWind(history, WaveFieldAnimator.HourTimeSeconds, in field)", source);
             StringAssert.Contains("_targetChop = Choppiness(wind.SeaState01)", source);
             Assert.Less(1f - Mathf.Exp(-Dt60 / levelTau), 0.05f, "_WaterLevel steps must stay small per frame");
         }
