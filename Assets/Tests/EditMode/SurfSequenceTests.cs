@@ -26,8 +26,8 @@ namespace HiddenHarbours.Tests.EditMode
         const string WaterPath = "Assets/_Project/Art/Shaders/HiddenHarboursWater.shader";
         const string AdvectPath = "Assets/_Project/Art/Shaders/HiddenHarboursFoamBufferAdvect.shader";
         const string Dial = "_SurfFringeSequenceStrength";
-        const string BaseWaterHash = "9d99ad2dc13e8be41b31bb312020b1382109b652acbb0ad45cde5d89f10f57ee";
-        // Approved b5825e1f; re-approved at W1 Phase D (#932, owner d20) and C2a Phase D (owner, clarity 1) and at water gains B7 (#992, the seat's lean under the standing word of 10-29). UTF-8 without BOM, LF. These are scope guards, not copies of physics.
+        const string BaseWaterHash = "136e2aa815dfa81f393f26d7e13b434bb9a34d6224f5a2b8273bc84854fffd83";
+        // Approved b5825e1f; re-approved at W1 Phase D (#932, owner d20) and C2a Phase D (owner, clarity 1) and at water gains B7 (#992, the seat's lean under the standing word of 10-29) and at crest glow L1 (#1004, the owner's ruling of 11-01). UTF-8 without BOM, LF. These are scope guards, not copies of physics.
         const string LegacyDepth =
             "                float foamDepth  = depthC - lerp(BeachSwash(worldXY, depthC, t) * swashSlope * swashGate,  // local, foam-only\n" +
             "                                                 surfRunUpM, boreFoamBlend);   // …and the foam rides the bore's wash too\n";
@@ -196,12 +196,13 @@ namespace HiddenHarbours.Tests.EditMode
             // Stage C changes shelter inputs and the birth read; the pinned source includes that change.
             // ADR 0040 B2 adds the curl handoff under the lip and barrel and the nearest-crest birth read; the pinned source includes them.
             // Water gains 2 and 3 (#992, ADR 0027 number 7) add the water type, its plumes and the crest glow outside the surf paths; the pinned source includes them.
+            // Crest glow L1 (#1004, ADR 0027) lights the thin top on either facing and ships through the water type, outside the surf paths; the pinned source includes it.
             MainSource(Read(WaterPath)); // Pins the edge, clip, sheet and both twins to approved main.
             Assert.That(Hash(Read(AdvectPath)), Is.EqualTo("5c33ae63e18cb7848ae313d9ffcabfc050128c2739d56cf1126ee7520701790a"));
             Assert.That(Hash(Read("Assets/_Project/Code/Core/Environment/BreakerMath.cs")),
                 Is.EqualTo("69e32d51219de35a79b8f20fc6f5c2da92cec815594a4bfd886efacf66baf61c"));
             Assert.That(Hash(Read("Assets/_Project/Code/Art/WaterSurface.cs")),
-                Is.EqualTo("11afa0c06e6297641d1440f2731a2d4e307f430eb575c28aa97f630cb5e509b1"));
+                Is.EqualTo("cfdb7474d00a3ac1be4cc47c7747758c1072734d166ea280a40155240ec72e1b"));
         }
 
         static void RequireGpu()

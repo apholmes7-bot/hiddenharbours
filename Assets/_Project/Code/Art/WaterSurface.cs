@@ -325,6 +325,12 @@ namespace HiddenHarbours.Art
         // up to four plumes. Shader globals, never Properties: a surface with no type never writes them, so
         // the shader reads 0 and draws today's sea.
         private static readonly int IdWaterTypeSigma = Shader.PropertyToID("_WaterTypeSigma");
+        private static readonly int IdCrestGlowStrength = Shader.PropertyToID("_CrestGlowStrength");
+        private static readonly int IdCrestGlowTop = Shader.PropertyToID("_CrestGlowTop");
+        private static readonly int IdCrestGlowThickness = Shader.PropertyToID("_CrestGlowThickness");
+        private static readonly int IdCrestGlowBands = Shader.PropertyToID("_CrestGlowBands");
+        private bool _crestGlowOverride;
+        private Vector4 _crestGlowBeforeOverride;
         private static readonly int IdWaterTypeBody = Shader.PropertyToID("_WaterTypeBody");
         private static readonly int IdWaterTypeRect = Shader.PropertyToID("_WaterTypeRect");
         private static readonly int IdWaterTypeSeam = Shader.PropertyToID("_WaterTypeSeam");
@@ -779,6 +785,7 @@ namespace HiddenHarbours.Art
                     // The region's water type shows in the Scene view too, dry: no clock, no rain to remember.
                     SampleWaterType(0.0, null);
                     PushWaterType(_mpb);
+                    PushCrestGlow(_mpb, 1f);
                     // (W4-4) Re-bind the floor only when a ground enabled, disabled or re-pushed.
                     if (_groundFloorVersion != TerrainSplatSurface.LiveVersion) FeedGroundFloor(_mpb);
                     _renderer.SetPropertyBlock(_mpb);
@@ -893,6 +900,9 @@ namespace HiddenHarbours.Art
             // float math over cached arrays. Visual only: the Water.mat asset is never written (all overrides
             // ride the MPB), saves nothing (rule 5).
             ApplyWeatherPalette(_mpb);
+            float glowNonFog = _weatherPaletteEnabled && _weatherBlendWeights != null
+                ? 1f - _weatherBlendWeights[(int)WeatherWaterPalette.Anchor.Fog] : 1f;
+            PushCrestGlow(_mpb, glowNonFog);
 
             _renderer.SetPropertyBlock(_mpb);
 
@@ -1383,16 +1393,42 @@ namespace HiddenHarbours.Art
         }
 
         /// <summary>
-        /// Snapshot every anchor material's value for every mood key into the flat caches the per-frame blend
-        /// reads (<c>[anchor * keyCount + key]</c>, with a parallel "has this key" mask so a preset that
-        /// simply does not carry a key still contributes nothing and has its weight redistributed — the
-        /// original <c>HasProperty</c> semantics, preserved exactly).
-        ///
-        /// <para>Called on the SAMPLE tick only. That is what makes a per-frame mood blend affordable: the
-        /// ~240 float + ~44 colour native material reads happen a few times a second, and the 60 fps path is
-        /// pure arithmetic over these arrays (rule 7). An in-Play preset edit still reaches the sea within
-        /// one refresh, exactly as when the blend read the materials directly.</para>
+        /// An optional type-selected review arm, after the mood blend. The same eased fog weight takes
+        /// its strength to zero. An unselected type writes nothing; removing a selection restores the
+        /// previous four values once. The displaced chunks copy this renderer block each frame.
         /// </summary>
+        private void PushCrestGlow(MaterialPropertyBlock mpb, float nonFog)
+        {
+            CrestGlowDef glow = _waterType != null ? _waterType.CrestGlow : null;
+            if (glow != null)
+            {
+                if (!_crestGlowOverride)
+                {
+                    Material material = _renderer.sharedMaterial;
+                    _crestGlowBeforeOverride = new Vector4(
+                        mpb.HasFloat(IdCrestGlowStrength) ? mpb.GetFloat(IdCrestGlowStrength) : material.GetFloat(IdCrestGlowStrength),
+                        mpb.HasFloat(IdCrestGlowTop) ? mpb.GetFloat(IdCrestGlowTop) : material.GetFloat(IdCrestGlowTop),
+                        mpb.HasFloat(IdCrestGlowThickness) ? mpb.GetFloat(IdCrestGlowThickness) : material.GetFloat(IdCrestGlowThickness),
+                        mpb.HasFloat(IdCrestGlowBands) ? mpb.GetFloat(IdCrestGlowBands) : material.GetFloat(IdCrestGlowBands));
+                    _crestGlowOverride = true;
+                }
+                mpb.SetFloat(IdCrestGlowStrength, glow.Strength * Mathf.Clamp01(nonFog));
+                mpb.SetFloat(IdCrestGlowTop, glow.Onset);
+                mpb.SetFloat(IdCrestGlowThickness, glow.ThicknessMeters);
+                mpb.SetFloat(IdCrestGlowBands, glow.Bands);
+            }
+            else if (_crestGlowOverride)
+            {
+                mpb.SetFloat(IdCrestGlowStrength, _crestGlowBeforeOverride.x);
+                mpb.SetFloat(IdCrestGlowTop, _crestGlowBeforeOverride.y);
+                mpb.SetFloat(IdCrestGlowThickness, _crestGlowBeforeOverride.z);
+                mpb.SetFloat(IdCrestGlowBands, _crestGlowBeforeOverride.w);
+                _crestGlowOverride = false;
+            }
+        }
+
+        /// <summary>Snapshot every anchor material's mood values on the sample tick, so the per-frame
+        /// blend reads cached values without native material reads or allocations.</summary>
         private void RefreshAnchorValueCache()
         {
             int anchors = _anchorMaterials.Length;

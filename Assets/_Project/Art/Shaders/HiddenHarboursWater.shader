@@ -5580,24 +5580,19 @@ Shader "HiddenHarbours/Water"
                 }
 
                 // ---- CREST GLOW (gains 3; twin: CrestGlow) ------------------------------------------------
-                // When the sun is low and BEHIND a swell, its light crosses the thin top of the crest to the
-                // eye. On the same signed facing (the back is faceSigned < 0) and under the sun side's own
-                // elevation gate, this lights only the TOP of that back: the envelope-relative height above
-                // _CrestGlowTop, where the water is thin. The three compose on one facing: the face shade
-                // darkens the back (value), the sun side cools it (hue), and the glow lights its thin top in
-                // the sun's colour seen through the water's own sigma over _CrestGlowThickness metres (jade
-                // through the open sea, warmer through a stain). Light, not foam: a hue, on the back.
-                // Posterized by _CrestGlowBands; 0.15 is the add ceiling (the swell-read idiom). Dark at
-                // night and at noon (the gate), gone in fog (_CrestGlowStrength is a mood float the fog
-                // anchor carries at 0), trains only (no envelope without the field), the shared calm gate.
-                // col.rgb ONLY — never depth/clip()/_WaterLevel/the sim field (P1 integrity, rule 5).
-                // _CrestGlowStrength = 0 is an EXACT passthrough, and it ships at 0.
+                // Low sun lights the thin TOP of a crest above the envelope-relative _CrestGlowTop.
+                // Its slope is not a gate: a crest's top has almost no slope. The sun side's shared
+                // elevation gate supplies the low-light window. The colour is the sun seen through the
+                // water's own sigma over _CrestGlowThickness metres: jade offshore, warmer in a stain.
+                // Light, not foam. Rounded bands, then strength and the shared calm gate; fog takes
+                // strength to zero. Trains only (no envelope without the field), under the palette grade.
+                // 0.15 is the swell-read add ceiling. col.rgb ONLY: never depth, clip, or the sim field.
+                // The material's _CrestGlowStrength = 0 remains an EXACT passthrough.
                 if (_CrestGlowStrength > 0.001 && swellReadGate > 0.001 && trainsLive)
                 {
-                    float glowBack = saturate(-faceSigned);
                     float glowTop  = smoothstep(min(saturate(_CrestGlowTop), 0.99), 1.0,
                                                 saturate(waveHeight / max(_WaveFieldParams.z, 1e-5)));
-                    float glowAmt  = glowBack * glowTop * elevGate;
+                    float glowAmt  = glowTop * elevGate;
                     if (_CrestGlowBands >= 1.0)
                         glowAmt = floor(saturate(glowAmt) * _CrestGlowBands + 0.5) / _CrestGlowBands;
                     glowAmt *= max(_CrestGlowStrength, 0.0) * swellReadGate;
