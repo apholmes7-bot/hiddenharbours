@@ -18,20 +18,10 @@ namespace HiddenHarbours.App.Editor
     /// band and an arrival point, never a shared line), so this frame owes its neighbour nothing except
     /// its SEAM ELEVATION, and that one is reached for rather than re-typed.</para>
     ///
-    /// <para><b>⚠ WHAT THIS FILE DOES NOT YET SAY, AND WHO OWES IT.</b> This is the plan as the ST
-    /// PETERS EAST DOOR needs it: an identity for her passage to target, a rectangle, the tide, and the
-    /// one seam. Three things are deliberately absent and belong to the next PR
-    /// (<c>feat/east-water-region</c>):</para>
-    /// <list type="number">
-    /// <item><description><b>The deep bed.</b> The floor here is St Peters' own −4 m, flat, because
-    /// that is what the water off her east wall IS today and a seam may not step. Whether the east
-    /// water is the region that finally goes DEEP — the visible-fish depth rule wants 12.5 m for
-    /// midwater schools and 37.5 m for deep ones, and no shipped region has either — is an OWNER
-    /// RULING owed (charter Q8). Until he rules it the bed stays honest rather than aspirational.</description></item>
-    /// <item><description><b>The fish.</b> Authored in the school model, which is the live source;
-    /// <see cref="RegionDef.SpawnFishIds"/> is dead (coordinator v7 §8).</description></item>
-    /// <item><description><b>The scene.</b> <c>EastWater.unity</c>, committed with its meta (ADR 0011).</description></item>
-    /// </list>
+    /// <para>The intro-at-sea charter's Decision 8 keeps the bed flat at St Peters' own −4 m.
+    /// Fish eligibility is data on FishSpeciesDef.RegionIds; <see cref="RegionDef.SpawnFishIds"/>
+    /// stays empty. The scene is built by <see cref="EastWaterBuilder"/> and committed with its
+    /// Unity-written meta (ADR 0011). The opening itself arrives in a later PR.</para>
     /// </summary>
     public static class EastWaterPlan
     {
@@ -46,8 +36,7 @@ namespace HiddenHarbours.App.Editor
         /// <summary>File name of the committed <see cref="RegionDef"/> under <c>Data/Regions</c>.</summary>
         public const string RegionAssetName = "EastWater";
 
-        /// <summary>Scene asset name (no path/extension). ⚠ The scene itself is the NEXT PR's; this
-        /// name is what the def promises and what the loader will ask for.</summary>
+        /// <summary>Committed scene asset name (no path/extension), as requested by the loader.</summary>
         public const string SceneName = "EastWater";
 
         /// <summary>⚠ PLACEHOLDER, and it says so on the card — the same standing the west water's name
@@ -112,12 +101,8 @@ namespace HiddenHarbours.App.Editor
         // that at two seams. This region has ONE, and it answers it by being flat at the neighbour's own
         // number rather than by shoaling to meet it.
         //
-        // ⚠ Q8 IS OWED HERE. The visible-fish depth rule wants 12.5 m of water for a midwater school and
-        // 37.5 m for a deep one, and the deepest water anywhere in the shipped world is 6 m — so those
-        // rungs are theoretical everywhere. Whether the east water is where the bay finally goes deep is
-        // the owner's call, not this file's, and a bed invented to satisfy a rule he has not ruled on
-        // would be a later phase smuggled into this one (rule 8). When he rules it, the deep goes in
-        // EAST of the seam and the seam stays exactly where it is.
+        // Decision 8 was ruled 2026-10-29: this whole region keeps the flat 4 m bed. A shelf or
+        // deep step needs its own later ruling; the seam continues to follow the neighbour.
 
         /// <summary>The floor, everywhere: <b>St Peters' own deep-harbour floor</b>, borrowed rather than
         /// copied. At the tide the two regions share this is 1.8 m of water at spring low — the honest
@@ -127,8 +112,7 @@ namespace HiddenHarbours.App.Editor
         /// <summary>
         /// The bed, as zones over <see cref="BayFloorElevation"/>. <b>Empty on purpose</b> — a flat
         /// floor at the neighbour's elevation is the only bed that makes the seam exact at every point
-        /// of it rather than at the one point somebody measured. The shoals, banks and the deep water
-        /// Q8 may bring all arrive as zones here, and every one of them will sit EAST of the door.
+        /// of it rather than at the one point somebody measured. Decision 8 authors no shelf or step.
         /// </summary>
         public static RectTidalTerrain.LandZone[] Zones => System.Array.Empty<RectTidalTerrain.LandZone>();
 
@@ -186,8 +170,7 @@ namespace HiddenHarbours.App.Editor
         public const string FromStPetersArrivalKey = "st_peters";
 
         /// <summary>Where the boat is parked arriving FROM St Peters — inside the west door, heading
-        /// east, with the open water ahead of her. This is the water the intro's hull lies in while the
-        /// captain talks and the player fishes off her deck.</summary>
+        /// east, with the open water ahead of her.</summary>
         public static Vector3 FromStPetersArrivalPos =>
             ToStPetersPassagePos + new Vector3(ArrivalClearanceMetres, 0f, 0f);
 
@@ -195,6 +178,11 @@ namespace HiddenHarbours.App.Editor
         /// — stated rather than left implied, because the mid-bay will one day add a second and the
         /// fallback should already have been chosen by then.</summary>
         public static Vector3 DefaultArrivalPos => FromStPetersArrivalPos;
+
+        /// <summary>Candidate lying point for the opening's cape, in region-local metres. It leaves
+        /// 136 m to the west door and room to fish clear of its trigger. PR 2 reaches for this point;
+        /// the ordinary seed/time/weather school model determines which water holds fish.</summary>
+        public static readonly Vector3 OpeningLiePos = new Vector3(-220f, 0f, 0f);
 
         // =================================================================================================
         //  6. THE PLAN, ASSEMBLED
@@ -230,9 +218,7 @@ namespace HiddenHarbours.App.Editor
             CameraWorldHeightMetres = CameraFollow.DefaultWorldHeightMeters,
             BackdropColor = new Color(0.13f, 0.24f, 0.31f),
 
-            // ⚠ EMPTY, and it would be empty even when the intro's fish are authored: RegionDef's spawn
-            // list is DEAD CODE (coordinator v7 §8) and the school model is the live source. The intro's
-            // cod, haddock, mackerel and pollock go THERE, in the next PR.
+            // The live pool is the species assets' RegionIds, shared by schools and catches.
             SpawnFishIds = new string[0],
         };
     }

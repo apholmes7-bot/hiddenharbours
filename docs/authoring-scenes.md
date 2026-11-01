@@ -29,6 +29,11 @@ Wait a few seconds after each. The Console (Window ▸ General ▸ Console) repo
 
 ## 1. Where to paint
 
+**Intro-at-sea PR 1 adds a committed open-water scene, `EastWater.unity`.** Its 760 × 520 m
+rectangle has a flat −4 m analytic bed, no painted seabed, and a west door to St Peters. It is
+enabled in the build list. `Hidden Harbours ▸ Build East Water Scene` rebuilds this generated
+water scene; review it through its camera. Its final name remains the owner's.
+
 > **Decided (ADR 0011): Coddle Cove is now a real, committed, hand-paintable scene.** The cove
 > (`Greybox.unity`) splits into two layers with one author each: a **LOGIC layer** the builder bakes
 > (an object named **`--LOGIC-- (generated, do not edit)`** holding all the invisible gameplay — the

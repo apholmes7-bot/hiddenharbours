@@ -334,6 +334,7 @@ scene.
 | Nine Mile Creek | 160 × 120 | **760 × 560** | ❌ |
 | Coddle Cove | 320 × 240 | **160 × 120** | ❌ |
 | The West Water | *absent* | 760 × 520 | ❌ |
+| The East Water | not audited here | 760 × 520 | Intro-at-sea PR 1 adds the committed `EastWater.unity` and build entry; the external editor's region table still needs its own audit. |
 
 Two details make this more instructive than a stale number:
 

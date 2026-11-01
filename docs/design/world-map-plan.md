@@ -248,7 +248,8 @@ Ordered by what blocks what.
    must stay away from.)
 5. ~~**A water-scene builder template.**~~ **DONE** — shipped with the west water (2026-08-09):
    `WaterSceneTemplate` + `WaterScenePlan` in the builders' editor assembly, and `WestWaterBuilder`
-   is a plan and a call. The mid-bay and the east water are each a `WaterScenePlan` away.
+   is a plan and a call. Intro-at-sea PR 1 adds `EastWaterBuilder` and its committed scene through
+   the shared template, including the build sequence and display-name registrar. The mid-bay remains later.
 6. **Set-a-course, eventually.** An M3 concern; the map graph (item 2) is its prerequisite.
 
 ---
@@ -268,6 +269,7 @@ directly. Canon names locked in `vision-and-pillars.md` §5.3, as amended:
 | The cross-strait cargo port | **New Scotland** | **RULED 2026-08-07** |
 | ~~Port Greywick~~ | — | **RETIRED 2026-08-07.** Historical mentions in ADRs and older docs stand as history; player-facing strings (`WorldStrings.OnboardBuyDory` / `OnboardRepairDory`, `OnboardingDirector`) are part of the already-flagged M2 onboarding rework; region ids stay stable (ADR 0009). |
 | The three water scenes | working names only (§2.2) | names owed when the scenes are built. **The west water is built and its name is now owed** — it ships as *"The West Water (working name)"* under the stable id `region.west_water`; renaming it is one string on one asset (ADR 0009) |
+| The East Water | **The East Water (working name)** | Intro-at-sea PR 1 commits `EastWater.unity`, enabled in the build list. Stable id `region.east_water`; the owner still owes the water's name. |
 | **Route 91** | **Route 91** | ⭐ **RULED 2026-08-20** — the trunk north (the real Rte 19, digits reversed). It **is** the shipped `ThroughRoad`; naming it costs one display string |
 | The **three rivers** (west · north · east) | — | **owed.** Candidates in [`harbour-geography.md`](harbour-geography.md) §9 — christen nothing yet |
 | The **peninsula / point** and the **small bay** behind it | — | **owed** — same slate |
@@ -290,6 +292,10 @@ recorded as the owner wrote them; nothing here is renamed.
 | **2** | **Owner plays the home arc** — St Peters → the bar → Nine Mile Creek → the west water | The go/no-go gate: is it *fun* (roadmap §6) |
 | **3** | **`MapGraph`** (§4.2) | Before the door count gets away from us |
 | **4** | **The mid-bay + the east water** — Governors Island, the home grounds, the run to East Point | The rest of the bay; the mussel fishery's water arrives with it |
+
+**Intro-at-sea PR 1 brings forward the East Water alone under the intro charter:** its 760 × 520 m
+scene, west door to St Peters, flat −4 m bed (Decision 8), and species eligibility data are built.
+The mid-bay, deeper beds and East Point route remain at step 4. The opening stays unchanged in PR 1.
 | **5** | **East Point** | The first port beyond home; the working fleet's world |
 | **6** | The channel + **Finnigan's Landing** (glimpse-grade first) | The late-game window the owner asked for — show it before it is playable |
 | **7** | The strait + **New Scotland** | The freight run |
