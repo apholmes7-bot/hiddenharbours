@@ -123,6 +123,36 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         [Test]
+        public void TheWharfsParkedPickups_AreTheNewModels_RowByRow()
+        {
+            var yaml = StPetersLayerRefresh.SceneYaml.Parse(File.ReadAllText(NineMileCreekLayerRefresh.ScenePath));
+            var expected = new Dictionary<string, string>
+            {
+                ["vehicle.nmc_lot_e"] = "Modern2500",
+                ["vehicle.nmc_lot_a"] = "Modern350",
+                ["vehicle.nmc_lot_c"] = "Modern3500",
+                ["vehicle.nmc_pickup_leo"] = "Modern350",
+                ["vehicle.nmc_pickup_ross"] = "Modern2500",
+                ["vehicle.nmc_pickup_marie"] = "Modern350",
+            };
+            foreach (var pair in expected)
+            {
+                var matches = yaml.Docs.Where(d => d.ClassId == 1 && d.Field("m_Name") == pair.Key).ToArray();
+                Assert.That(matches.Length, Is.EqualTo(1), pair.Key);
+                var machine = yaml.ComponentsOf(matches[0]).Single(d => d.IsScript("HiddenHarbours.Vehicles.ParkedVehicle"));
+                string guid = AssetDatabase.AssetPathToGUID("Assets/_Project/Data/Vehicles/" + pair.Value + ".asset");
+                Assert.That(guid, Is.Not.Empty, pair.Key);
+                StringAssert.Contains("guid: " + guid, machine.Field("_vehicle"), pair.Key);
+                Assert.That(machine.Field("_drivable"), Is.EqualTo("0"), pair.Key);
+            }
+            Assert.That(NineMileCreekWharfLandSide.ParkedPickupDefinition("vehicle.nmc_ramp_pickup"),
+                Is.EqualTo("Assets/_Project/Data/Vehicles/Modern3500.asset"));
+            Assert.That(yaml.Docs.Any(d => d.ClassId == 1 && d.Field("m_Name") == "vehicle.nmc_ramp_pickup"), Is.False,
+                "The ramp pickup waits for H5; this phase places no H5 row.");
+            Assert.Throws<StPetersLayerRefresh.Refusal>(() => NineMileCreekWharfLandSide.ParkedPickupDefinition("vehicle.fixture_unassigned"));
+        }
+
+        [Test]
         public void AnUnknownPlaceIsUnowned_AndTwoOwnersAreVisibleToTheGate()
         {
             Record record = Read();

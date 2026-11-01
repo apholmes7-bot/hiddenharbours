@@ -400480,7 +400480,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 10994d861da992846929b5edf8c40f44, type: 3}
   m_Name: 
   m_EditorClassIdentifier: HiddenHarbours.Vehicles::HiddenHarbours.Vehicles.ParkedVehicle
-  _vehicle: {fileID: 11400000, guid: f4c436d86442a524693608ba796489be, type: 2}
+  _vehicle: {fileID: 11400000, guid: 44b1877c02967b34fa43964bbb98a772, type: 2}
   _drivable: 0
 --- !u!1 &825696571
 GameObject:
@@ -400526,7 +400526,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 10994d861da992846929b5edf8c40f44, type: 3}
   m_Name: 
   m_EditorClassIdentifier: HiddenHarbours.Vehicles::HiddenHarbours.Vehicles.ParkedVehicle
-  _vehicle: {fileID: 11400000, guid: f4c436d86442a524693608ba796489be, type: 2}
+  _vehicle: {fileID: 11400000, guid: 1825f967802c5cd41a0c6ce1d4f1c693, type: 2}
   _drivable: 0
 --- !u!1 &1058170827
 GameObject:
@@ -400618,7 +400618,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 10994d861da992846929b5edf8c40f44, type: 3}
   m_Name: 
   m_EditorClassIdentifier: HiddenHarbours.Vehicles::HiddenHarbours.Vehicles.ParkedVehicle
-  _vehicle: {fileID: 11400000, guid: f4c436d86442a524693608ba796489be, type: 2}
+  _vehicle: {fileID: 11400000, guid: c16d5c8b7a91f5043924c580c9e0e487, type: 2}
   _drivable: 0
 --- !u!1 &983099953
 GameObject:
@@ -400710,7 +400710,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 10994d861da992846929b5edf8c40f44, type: 3}
   m_Name: 
   m_EditorClassIdentifier: HiddenHarbours.Vehicles::HiddenHarbours.Vehicles.ParkedVehicle
-  _vehicle: {fileID: 11400000, guid: f4c436d86442a524693608ba796489be, type: 2}
+  _vehicle: {fileID: 11400000, guid: 1825f967802c5cd41a0c6ce1d4f1c693, type: 2}
   _drivable: 0
 --- !u!1 &511595638
 GameObject:
@@ -400756,7 +400756,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 10994d861da992846929b5edf8c40f44, type: 3}
   m_Name: 
   m_EditorClassIdentifier: HiddenHarbours.Vehicles::HiddenHarbours.Vehicles.ParkedVehicle
-  _vehicle: {fileID: 11400000, guid: f4c436d86442a524693608ba796489be, type: 2}
+  _vehicle: {fileID: 11400000, guid: 44b1877c02967b34fa43964bbb98a772, type: 2}
   _drivable: 0
 --- !u!1 &633351791
 GameObject:
@@ -400802,7 +400802,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 10994d861da992846929b5edf8c40f44, type: 3}
   m_Name: 
   m_EditorClassIdentifier: HiddenHarbours.Vehicles::HiddenHarbours.Vehicles.ParkedVehicle
-  _vehicle: {fileID: 11400000, guid: f4c436d86442a524693608ba796489be, type: 2}
+  _vehicle: {fileID: 11400000, guid: 1825f967802c5cd41a0c6ce1d4f1c693, type: 2}
   _drivable: 0
 --- !u!1 &110266995
 GameObject:

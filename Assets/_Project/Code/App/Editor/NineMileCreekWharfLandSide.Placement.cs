@@ -22,6 +22,20 @@ namespace HiddenHarbours.App.Editor
         public const string OfficeVendorName = "NmcWharfOfficeVendor";
         public const string MarketCounterName = "NmcWharfMarketCounter";
         public const string BuyerTruckRowId = "vehicle.nmc_buyer_truck";
+        static readonly Dictionary<string, string> ParkedPickupModels = new Dictionary<string, string>(StringComparer.Ordinal)
+        {
+            ["vehicle.nmc_lot_e"] = "Modern2500",
+            ["vehicle.nmc_lot_a"] = "Modern350",
+            ["vehicle.nmc_lot_c"] = "Modern3500",
+            ["vehicle.nmc_pickup_leo"] = "Modern350",
+            ["vehicle.nmc_pickup_ross"] = "Modern2500",
+            ["vehicle.nmc_pickup_marie"] = "Modern350",
+            ["vehicle.nmc_ramp_pickup"] = "Modern3500", // waits for H5
+        };
+
+        public static string ParkedPickupDefinition(string rowId) => ParkedPickupModels.TryGetValue(rowId, out string model)
+            ? "Assets/_Project/Data/Vehicles/" + model + ".asset"
+            : throw new Refusal(rowId + ": no parked pickup model is assigned to this VehicleIso row.");
         public const string RecordPath = "Assets/_Project/Data/KeyScenes/KeyScene_nmc_wharf.owners.json";
         public const string KeyScenePath = "Assets/_Project/Data/KeyScenes/KeyScene_nmc_wharf.asset";
         [Serializable] sealed class OwnedRow { public string id, owner, waits; }
@@ -135,7 +149,7 @@ namespace HiddenHarbours.App.Editor
                     bool trailer = row.Kit == "TrailerIso";
                     string def = row.Kit switch
                     {
-                        "VehicleIso" => "Assets/_Project/Data/Vehicles/Dually3500.asset",
+                        "VehicleIso" => ParkedPickupDefinition(row.Id),
                         "VanIso" => "Assets/_Project/Data/Vehicles/HightopVan.asset",
                         "AeroSemiIso" => "Assets/_Project/Data/Vehicles/AeroSemi.asset",
                         "TrailerIso" => "Assets/_Project/Data/Vehicles/Meshes/TrailerReefer53VehicleMesh.asset",
