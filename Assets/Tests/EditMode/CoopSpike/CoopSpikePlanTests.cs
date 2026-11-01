@@ -65,6 +65,9 @@ namespace HiddenHarbours.Tests.CoopSpike
             Assert.That(settings.Roster.Length, Is.GreaterThan(1));
             Assert.That(settings.Character, Is.Not.Null);
             Assert.That(settings.Rod, Is.Not.Null);
+            Assert.That(settings.Scene, Is.EqualTo("EastWater"));
+            Assert.That(EditorBuildSettings.scenes, Has.Some.Matches<EditorBuildSettingsScene>(
+                scene => scene.enabled && scene.path == "Assets/_Project/Scenes/EastWater.unity"));
             Assert.That(settings.PlayerPrefab.GetComponent<NetworkTransform>().AuthorityMode,
                 Is.EqualTo(NetworkTransform.AuthorityModes.Owner));
             Assert.That(settings.PlayerPrefab.GetComponent<CoopBoatReplica>(), Is.Not.Null);

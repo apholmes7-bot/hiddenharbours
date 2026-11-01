@@ -4,7 +4,6 @@ using HiddenHarbours.App;
 using HiddenHarbours.Boats;
 using HiddenHarbours.Core;
 using HiddenHarbours.Player;
-using HiddenHarbours.UI;
 using Unity.Netcode;
 using Unity.Netcode.Transports.UTP;
 using UnityEngine;
@@ -23,8 +22,6 @@ namespace HiddenHarbours.CoopSpike
         private PlayerWalkController _player;
         private bool _client;
         private CoopSpikeSettings _settings;
-        private CharacterCreatorPanel _creator;
-        private string _lookJson;
 
         public static bool ShouldStart(string[] args, string product)
         {
@@ -49,35 +46,24 @@ namespace HiddenHarbours.CoopSpike
             _settings = Resources.Load<CoopSpikeSettings>(CoopSpikeSettings.ResourcePath);
             if (_settings == null || _settings.PlayerPrefab == null)
                 throw new InvalidOperationException("Build the spike settings before a dev start.");
+            yield return null; // the authored starting core finishes its Start methods
+            if (!GameServices.Ready)
+                throw new InvalidOperationException("Start the spike from the authored boot scene so its persistent core exists.");
+            foreach (var opening in FindObjectsByType<ArrivalOpening>(FindObjectsSortMode.None))
+                opening.enabled = false;
+            ShellFlow.ContinueGame();
             if (SceneManager.GetActiveScene().name != _settings.Scene)
             {
-                // The dev start replaces the authored opening core, not the isolated save service.
-                foreach (var part in FindObjectsByType<PersistentObject>(FindObjectsSortMode.None))
-                    Destroy(part.gameObject);
-                yield return null;
+                // Water regions contain no replacement core. Carry the authored core across the hop.
                 yield return SceneManager.LoadSceneAsync(_settings.Scene, LoadSceneMode.Single);
             }
-            yield return null; // scene Start methods, including the shell, finish first
-            ShellFlow.ContinueGame();
+            yield return null;
             _boat = FindFirstObjectByType<BoatController>();
             _player = FindFirstObjectByType<PlayerWalkController>();
             var switcher = FindFirstObjectByType<ControlSwitcher>();
             if (_boat == null || _player == null || switcher == null || GameServices.Clock == null)
                 throw new InvalidOperationException("The spike needs the authored persistent boat/player core.");
-            var position = _settings.HostStart + (_client ? _settings.ClientOffset : Vector2.zero);
-            _boat.transform.position = position;
-            _boat.GetComponent<Rigidbody2D>().position = position;
-            _player.transform.position = _boat.transform.position;
-            if (switcher.Mode == ControlMode.OnFoot && !switcher.TryInteract())
-                throw new InvalidOperationException("The dev start could not board its own boat.");
-            _player.transform.position = switcher.HelmWorldPosition;
-            if (switcher.Mode == ControlMode.OnDeck && !switcher.TryInteract())
-                throw new InvalidOperationException("The dev start could not take its own helm.");
-            var picker = _boat.GetComponent<DevBoatPicker>() ?? _boat.gameObject.AddComponent<DevBoatPicker>();
-            picker.Configure(_settings.Roster, _boat, _boat.GetComponent<ShipHold>(), _boat.GetComponent<SpriteRenderer>());
-            EquipRod();
-            _lookJson = JsonUtility.ToJson(GameServices.Appearance.Committed);
-            EventBus.Subscribe<PlayerAppearanceChanged>(OnLookChanged);
+            PrepareLocal(_settings, _boat, _player, switcher, _client);
 
             // The manager rides this process's persistent service root, never a remote gameplay clone.
             var core = ((Component)GameServices.Clock).gameObject;
@@ -93,25 +79,43 @@ namespace HiddenHarbours.CoopSpike
             _manager.OnClientConnectedCallback += OnConnected;
             bool started = _client ? _manager.StartClient() : _manager.StartHost();
             if (!started) throw new InvalidOperationException("The local transport did not start.");
-            if (string.IsNullOrEmpty(PlayerName.Of(GameServices.Save?.Current)))
-            {
-                _creator = gameObject.AddComponent<CharacterCreatorPanel>();
-                _creator.Open(new CharacterCreatorModel(CharacterBuilderDef.LoadShipped(),
-                    Resources.Load<CharacterWardrobeDef>(CharacterWardrobeDef.ResourcesPath)));
-            }
         }
 
-        private void EquipRod()
+        // Also used by the in-process fixture: no save, opening or second service context is created.
+        public static CarriableTool PrepareLocal(CoopSpikeSettings settings, BoatController boat,
+            PlayerWalkController player, ControlSwitcher switcher, bool client)
         {
-            if (_settings.Rod == null) throw new InvalidOperationException("No authored rod in spike settings.");
-            var hands = _player.GetComponent<CarryHands>() ?? _player.gameObject.AddComponent<CarryHands>();
+            var position = settings.HostStart + (client ? settings.ClientOffset : Vector2.zero);
+            boat.transform.position = position;
+            var body = boat.GetComponent<Rigidbody2D>();
+            body.position = position;
+            body.linearVelocity = Vector2.zero;
+            body.angularVelocity = 0;
+            player.transform.position = boat.transform.position;
+            if (switcher.Mode == ControlMode.OnFoot && !switcher.TryInteract())
+                throw new InvalidOperationException("The dev start could not board its own boat.");
+            player.transform.position = switcher.HelmWorldPosition;
+            if (switcher.Mode == ControlMode.OnDeck && !switcher.TryInteract())
+                throw new InvalidOperationException("The dev start could not take its own helm.");
+            if (switcher.Mode != ControlMode.Aboard)
+                throw new InvalidOperationException("The dev start must finish aboard at the local helm.");
+            var picker = boat.GetComponent<DevBoatPicker>() ?? boat.gameObject.AddComponent<DevBoatPicker>();
+            picker.Configure(settings.Roster, boat, boat.GetComponent<ShipHold>(), boat.GetComponent<SpriteRenderer>());
+            return EquipRod(settings, player);
+        }
+
+        private static CarriableTool EquipRod(CoopSpikeSettings settings, PlayerWalkController player)
+        {
+            if (settings.Rod == null) throw new InvalidOperationException("No authored rod in spike settings.");
+            var hands = player.GetComponent<CarryHands>() ?? player.gameObject.AddComponent<CarryHands>();
             var rod = new GameObject("SpikeRod");
             var picture = rod.AddComponent<SpriteRenderer>();
-            picture.sprite = _settings.RodSprite;
+            picture.sprite = settings.RodSprite;
             var tool = rod.AddComponent<CarriableTool>();
-            tool.Configure(_settings.Rod, picture, "tool.coop_spike.rod");
+            tool.Configure(settings.Rod, picture, "tool.coop_spike.rod");
             if (hands.TryPickUp(tool) != CarryRefusal.None)
                 throw new InvalidOperationException("The dev start could not equip the authored rod.");
+            return tool;
         }
 
         private void OnConnected(ulong clientId) => StartCoroutine(BindReplicas());
@@ -125,14 +129,12 @@ namespace HiddenHarbours.CoopSpike
                 if (replica.IsOwner)
                     replica.BindLocal(_boat.transform, _player.transform,
                         () => _boat.Hull != null ? _boat.Hull.Id : string.Empty,
-                        () => _lookJson);
+                        () => string.Empty); // creator join/persistence integration stays held
             }
         }
         private void OnDestroy()
         {
-            EventBus.Unsubscribe<PlayerAppearanceChanged>(OnLookChanged);
             if (_manager != null) _manager.OnClientConnectedCallback -= OnConnected;
         }
-        private void OnLookChanged(PlayerAppearanceChanged change) => _lookJson = JsonUtility.ToJson(change.Recipe);
     }
 }

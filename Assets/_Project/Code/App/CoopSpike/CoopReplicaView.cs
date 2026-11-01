@@ -13,6 +13,8 @@ namespace HiddenHarbours.CoopSpike
         private Transform _skipper;
         private IsoCharacterSprite _character;
         public string DrawnHullId => _hullId;
+        public Transform Skipper => _skipper;
+        public IsoCharacterSprite Character => _character;
         public void Configure(CoopSpikeSettings settings)
         {
             _settings = settings;

@@ -16,7 +16,7 @@ namespace HiddenHarbours.CoopSpike
         public Sprite RodSprite;
         public Vector2 HostStart = new(0, -16);
         public Vector2 ClientOffset = new(7, 0);
-        public string Scene = "Greybox";
+        public string Scene = "EastWater";
         public ushort Port = 7777;
         public BoatHullDef Hull(string id)
         {

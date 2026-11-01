@@ -46,5 +46,5 @@ MonoBehaviour:
   RodSprite: {fileID: 3043605626722657392, guid: a237e0b5e9c386cad0782dd33e12953a, type: 3}
   HostStart: {x: 0, y: -16}
   ClientOffset: {x: 7, y: 0}
-  Scene: Greybox
+  Scene: EastWater
   Port: 7777

@@ -32,6 +32,7 @@ namespace HiddenHarbours.CoopSpike.Editor
             settings.Character = AssetDatabase.LoadAssetAtPath<CharacterVisualDef>("Assets/_Project/Data/Characters/FisherIso.asset");
             settings.Rod = AssetDatabase.LoadAssetAtPath<ToolDef>("Assets/_Project/Data/Tools/Rod.asset");
             settings.RodSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/_Project/Art/Sprites/Gear/Rod.png");
+            settings.Scene = EastWaterPlan.SceneName;
             var boat = new GameObject("CoopBoat");
             try
             {

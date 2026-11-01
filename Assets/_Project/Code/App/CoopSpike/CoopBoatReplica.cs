@@ -19,6 +19,7 @@ namespace HiddenHarbours.CoopSpike
         private int _seed;
         private float _nextSea;
         private Transform _localBoat, _localSkipper;
+        private IsoCharacterSprite _localCharacter;
         private Func<string> _hull, _recipe;
         private CoopReplicaView _view;
         public bool ClockAccepted { get; private set; }
@@ -51,6 +52,7 @@ namespace HiddenHarbours.CoopSpike
         public void BindLocal(Transform boat, Transform skipper, Func<string> hull, Func<string> recipe)
         {
             _localBoat = boat; _localSkipper = skipper; _hull = hull; _recipe = recipe;
+            _localCharacter = skipper != null ? skipper.GetComponent<IsoCharacterSprite>() : null;
         }
 
         public void PublishBoat(CoopBoatState value)
@@ -86,7 +88,8 @@ namespace HiddenHarbours.CoopSpike
                 HullId = _hull?.Invoke() ?? string.Empty,
                 Recipe = _recipe?.Invoke() ?? string.Empty,
                 SkipperLocal = _localSkipper != null ? _localBoat.InverseTransformPoint(_localSkipper.position) : Vector3.zero,
-                SkipperHeading = _localSkipper != null ? _localSkipper.eulerAngles.z : 0
+                SkipperHeading = _localCharacter != null ? _localCharacter.HeadingDegrees
+                    : _localSkipper != null ? _localSkipper.eulerAngles.z : 0
             };
             if (!Boat.Value.Equals(value)) Boat.Value = value;
         }

@@ -19,11 +19,25 @@ Relay 1.2.0 resolve; the editor selects its built-in Transport 6.5.0. The shippe
 `Unity.Netcode.Runtime.Tests.dll`. The editor result clears the earlier tarball-only inference;
 there is no custom harness. Five spike EditMode checks pass.
 
-The first PlayMode filter executed zero tests with the correct class name. Its new test assembly
-is currently editor-only; correction awaits the required coordinator ruling. Two boats, network
-movement, F, clock agreement and all visual/fishing acceptance remain unproved. The remote view
-currently draws the baked skipper; recipe transfer is coded but applying a remote custom look is
-unfinished. There is no two-screen frame, Windows build, relay session or friend play.
+Day 1 now has two passing PlayMode cases after correcting the test assembly's platform list and
+isolating the synthetic keyboard through the installed Input System test fixture. They prove two
+owned boats, owner movement, the host clock reaching the client, and one client F change reaching
+the hull drawn on the host. They do not prove the full roster, the local fishing loop or two games
+sharing the current static services. Original replication and drawing assertions were retained.
+
+Day 2 is authorized within the 52-hour price. The authored East Water was taken from main through
+a conflict-free merge; this branch does not construct or modify that region. Headless preparation
+selects it for dev start, preserves the existing persistent core when loading it, skips the opening,
+boards each local player with an authored rod, and publishes the character's drawn compass heading.
+The skipper remains the baked look. Creator integration, join recipes and appearance persistence
+remain held under the Day 2 order, irrespective of similarly named types already in the codebase.
+
+Six additional PlayMode cases are written: both dev starts in the authored region; both full F
+cycles including wrap; both baked skippers' positions and facing; tide/weather and nonempty school
+records over twelve transported clock samples; both unchanged local rod loops and separate catch
+destinations; and disconnect cleanup of the remote skipper. The host-view capture is prepared in
+the skipper case. These cases compile but have not run. No new frame, Windows build, relay session,
+friend play or observed internet latency exists. The editor remains closed for the requested restart.
 
 All recommendations below remain proposals to validate. No test result or observed latency is
 implied by describing the intended design.
@@ -76,12 +90,13 @@ Landing a fish locally does not prove shared catches, market correctness, attrib
 ## Saves and appearance
 
 The spike uses its own product name, leaving the normal game's save destination untouched.
-Each participant's local spike save keeps that participant's committed appearance through the
-existing appearance/save path. Send the committed look on join; remote preview is presentation,
+The intended local spike-save path keeps that participant's committed appearance through the
+existing appearance/save path; that integration still needs permission and play proof. Send the
+committed look on join once that gate opens; remote preview is presentation,
 not a write into the host's save. Do not save network ids, connections or co-op session state.
-The creator panel/model are already present in the assigned base despite the deployment's stale
-premise; the dev-start code reuses them. Their spike integration and remote appearance still need
-play proof. The baked look is the only implemented remote presentation at this point.
+The Day 2 order explicitly holds the creator's panel integration and friend delivery. The spike
+boot does not open a creator or transmit a custom recipe while held. The baked look is the only
+implemented remote presentation at this point. Existing type names do not clear a delivery gate.
 
 For production, propose host ownership of the world save plus a thin per-player record for body
 position, occupied helm and hands. Keep a participant's reusable appearance recipe locally and
@@ -106,5 +121,13 @@ Record instruments reading the wrong boat, doors/body resolution, hands/catch de
 selling, session persistence and the ghost skipper as observed or not reached. Record what each
 player actually did, hull changes seen remotely, both local fishing loops, environmental agreement,
 appearance at rejoin, friend-observed delay, build/account/NAT costs and the cost of each added ask.
-Every item is currently **not reached**. Friend delivery waits for East Water and the creator on
-main; neither is implemented on this branch.
+Day 1 reached the network hull and clock checks listed above. Day 2's full-roster, school, skipper,
+hands/catch and disconnect cases remain **written, not run**. Instruments reading a different
+player's hull, doors and interior body resolution, selling, and persistence/rejoin remain **not
+reached**. East Water is now inherited from main. Friend delivery still waits for the creator gate.
+
+The in-process fishing fixture explicitly selects one local context at a time and uses a separate
+memory-only save for each angler. It exercises the existing dev-input rod gate, cast, authored bite,
+authored fight and hold path; it does not establish that two complete static-service games can run
+concurrently. Remote actors carry no gameplay boat controller, walking controller or hands. A real
+per-player context remains production work even if these bounded presentation checks pass.
