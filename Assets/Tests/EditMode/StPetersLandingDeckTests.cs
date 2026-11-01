@@ -79,7 +79,10 @@ namespace HiddenHarbours.Tests.EditMode
                 try
                 {
                     try { action(); }
-                    catch (AssertionException error) { return error.Message; }
+                    catch (AssertionException error)
+                    {
+                        return error.Message.Length <= 2048 ? error.Message : error.Message.Substring(0, 2048) + " [diagnostic truncated]";
+                    }
                 }
                 finally { setter.Invoke(null, new object[] { previous }); }
                 throw new InvalidOperationException("The moved guard unexpectedly accepted the pinned base.");

@@ -182,8 +182,19 @@ namespace HiddenHarbours.Tests.PlayMode
                     GameServices.Clock.SeekTo(target); GameServices.Clock.TimeScale = 0;
                     _follow.enabled = followEnabled;
                     foreach (var pixelCamera in pixelCameras) pixelCamera.enabled = true;
-                    yield return FrameOn(new Vector2(board.X, board.Y), 14);
-                    yield return RunTheWorld(2f, new Vector2(board.X, board.Y));
+                    _cam.targetTexture = null;
+                    _cam.ResetAspect();
+                    if (_rt != null) { _rt.Release(); Object.DestroyImmediate(_rt); _rt = null; }
+                    int step = CameraZoomPolicy.StepForWorldHeight(14, CameraFollow.AssetsPPU, CameraFollow.DesignScreenHeightPx);
+                    float setupHeight = CameraZoomPolicy.WorldHeightForStep(step, CameraFollow.AssetsPPU, CameraFollow.DesignScreenHeightPx);
+                    float setupPixel = CameraZoomPolicy.WorldUnitsPerRenderedPixel(step, CameraFollow.AssetsPPU, CameraFollow.DesignScreenHeightPx);
+                    Vector2 setupCentre = new Vector2(Mathf.Round(board.X / setupPixel) * setupPixel,
+                        Mathf.Round(board.Y / setupPixel) * setupPixel);
+                    legacy.SetActive(true); migrated.enabled = false;
+                    yield return FrameOn(setupCentre, setupHeight);
+                    File.AppendAllText(numbers, $"{board.Id} base camera fixture: requested={setupCentre.x:R},{setupCentre.y:R} " +
+                        $"actual={_cam.transform.position.x:R},{_cam.transform.position.y:R} height={setupHeight:R}; shared alignment assertion kept\n", Utf8);
+                    yield return RunTheWorld(2f, setupCentre);
                     float until = Time.realtimeSinceStartup + 20;
                     while (Time.realtimeSinceStartup < until)
                     {
