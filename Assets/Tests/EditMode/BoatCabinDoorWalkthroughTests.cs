@@ -750,7 +750,7 @@ namespace HiddenHarbours.Tests.EditMode
         public void EveryMeasuredDoorwaysWallLineStandsInItsBand_SoHerRoomCanLetHerOutAgain()
         {
             var NewSinceTheCensus = new HashSet<string>(System.StringComparer.Ordinal)
-                { "ExpeditionYacht120Iso" };
+                { "ExpeditionYacht120Iso", "MotorYacht84Iso" };
             int newRoomEdges = 0;
             // ⭐⭐ THE OTHER HALF, and the one that would TRAP the player rather than merely shut her out.
             // The doorway crosses her on its wall line, and only while she stands in its band (owner ruling

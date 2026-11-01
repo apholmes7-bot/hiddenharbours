@@ -220,10 +220,9 @@ namespace HiddenHarbours.Tests.RigBaking
                 if (w.Panes.Count > 0) hulls++;
             }
 
-            Assert.AreEqual(25, hulls,
-                "hulls with a lit room — 27 have a glazed room and TWO of them (the sport fishers) " +
-                "are refused because their record does not describe the side their glass is on");
-            Assert.AreEqual(218, panes,
+            Assert.AreEqual(26, hulls,
+                "lit hulls measured from the delivered rigs; the sport fishers' records now place their glass");
+            Assert.AreEqual(224, panes,
                 "lit panes across the fleet. If an art drop legitimately moved some glazing, re-run " +
                 "the probe's writer and update this number in the same commit.");
             Assert.AreEqual(72, bridge,
