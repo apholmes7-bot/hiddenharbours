@@ -406,11 +406,18 @@ namespace HiddenHarbours.App.Editor
             readonly List<Op> _ops = new List<Op>();
             readonly List<Change> _changes = new List<Change>();
             bool _sealed;
+            readonly bool _retirement;
 
             public LayerPatch(string step, string root, long rootGameObject)
             {
                 Step = step; Root = root; RootGameObject = rootGameObject;
             }
+
+            LayerPatch(string step, string root, long rootGameObject, bool retirement)
+                : this(step, root, rootGameObject) { _retirement = retirement; }
+
+            public static LayerPatch Retirement(string step, string root, long rootGameObject) =>
+                new LayerPatch(step, root, rootGameObject, true);
 
             /// <summary>
             /// The document this patch's new documents follow, or 0 to put them just before SceneRoots, as the
@@ -515,6 +522,7 @@ namespace HiddenHarbours.App.Editor
             /// </summary>
             public LayerPatch Seal(SceneYaml before)
             {
+                if (_retirement) return SealRetirement(before);
                 var seen = new HashSet<long>();
                 foreach (Op op in _ops)
                 {
@@ -559,6 +567,66 @@ namespace HiddenHarbours.App.Editor
                 }
                 _sealed = true;
                 return this;
+            }
+
+            LayerPatch SealRetirement(SceneYaml before)
+            {
+                foreach (Op op in _ops)
+                    if (op.Kind == OpKind.Add)
+                        throw new Refusal($"{Step}: a retirement cannot add {op.Name} (&{op.FileId}).");
+                if (_ops.Count == 0) { _sealed = true; return this; }
+                if (!before.Contains(RootGameObject))
+                    throw new Refusal($"{Step}: the scene holds no '{Root}' (&{RootGameObject}) to retire");
+                Doc root = before.Require(RootGameObject, Root);
+                var edits = _ops.Where(o => o.Kind == OpKind.Edit).ToList();
+                Doc roots = SceneRootsOf(before);
+                if (_ops.Any(o => o.Kind != OpKind.Delete && o.Kind != OpKind.Edit) || edits.Count != 1 || edits[0].FileId != roots.FileId)
+                    throw new Refusal($"{Step}: the retirement of '{Root}' needs Deletes and exactly one SceneRoots Edit.");
+                long transform = before.TransformOf(root).FileId;
+                if (edits[0].Before != roots.Text || edits[0].After != WithRootUnlisted(roots.Text, transform))
+                    throw new Refusal($"{Step}: {edits[0].Name} does more than unlist '{Root}' from the scene's roots.");
+                var seen = new HashSet<long>();
+                foreach (Op op in _ops)
+                {
+                    if (!seen.Add(op.FileId)) throw new Refusal($"{Step}: two operations on &{op.FileId}.");
+                    if (string.IsNullOrWhiteSpace(op.Name)) throw new Refusal($"{Step}: an unnamed {op.Kind} of &{op.FileId}.");
+                    if (op.After != null && (op.After.Contains("\n\n") || op.After.EndsWith("\n", StringComparison.Ordinal)))
+                        throw new Refusal($"{Step}: {op.Name} would write a blank line.");
+                }
+                HashSet<long> mine = before.SubtreeOf(RootGameObject);
+                var deleted = new HashSet<long>(Deletions.Select(o => o.FileId));
+                foreach (long id in mine.OrderBy(id => id))
+                    if (!deleted.Contains(id))
+                        throw new Refusal($"{Step}: the retirement of '{Root}' leaves &{id} standing");
+                foreach (Op op in Deletions)
+                    if (!mine.Contains(op.FileId))
+                        throw new Refusal($"{Step}: {op.Name} (&{op.FileId}) is outside the '{Root}' root.");
+                SceneYaml after = Apply(before);
+                if (after.Contains(RootGameObject))
+                    throw new Refusal($"{Step}: the retirement of '{Root}' leaves &{RootGameObject} standing");
+                if (deleted.Count > 0)
+                    foreach (Doc d in after.Docs)
+                        foreach (Match m in LocalRefRx.Matches(d.Text))
+                            if (deleted.Contains(long.Parse(m.Groups[1].Value, CultureInfo.InvariantCulture)))
+                                throw new Refusal($"{Step}: &{d.FileId} still points at the deleted &{m.Groups[1].Value}.");
+                _sealed = true;
+                return this;
+            }
+
+            string WithRootUnlisted(string rootsDoc, long rootTransform)
+            {
+                var lines = new List<string>(rootsDoc.Split('\n'));
+                int at = lines.FindIndex(l => l == "  m_Roots:" || l == "  m_Roots: []");
+                if (at < 0) throw new Refusal($"{Step}: the SceneRoots document has no m_Roots.");
+                string entry = $"  - {{fileID: {rootTransform.ToString(CultureInfo.InvariantCulture)}}}";
+                int end = at + 1;
+                for (; end < lines.Count && lines[end].StartsWith("  - ", StringComparison.Ordinal); end++) { }
+                var matches = Enumerable.Range(at + 1, end - at - 1).Where(i => lines[i] == entry).ToArray();
+                if (matches.Length != 1)
+                    throw new Refusal($"{Step}: &{rootTransform} is listed {matches.Length} times among the scene's roots; a retirement unlists it once.");
+                lines.RemoveAt(matches[0]);
+                if (end == at + 2) lines[at] = "  m_Roots: []";
+                return string.Join("\n", lines);
             }
 
             /// <summary>
