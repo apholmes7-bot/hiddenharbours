@@ -155,6 +155,7 @@ namespace HiddenHarbours.Tests.PlayMode
                 var go = new GameObject("Deck_" + cell.x + "_" + cell.y); go.transform.SetParent(legacy.transform, false);
                 go.transform.position = new Vector3(cell.x, cell.y + 1, 0);
                 var renderer = go.AddComponent<SpriteRenderer>(); renderer.sprite = atlas["WharfAtlas_" + index];
+                renderer.sharedMaterial = migrated.sharedMaterial;
                 renderer.sortingOrder = HiddenHarbours.App.Editor.StPetersWharf.SortingOrderFor(cell.y);
             }
             Assert.AreEqual(186, legacy.GetComponentsInChildren<SpriteRenderer>().Length);
