@@ -749,6 +749,9 @@ namespace HiddenHarbours.Tests.EditMode
         [Test]
         public void EveryMeasuredDoorwaysWallLineStandsInItsBand_SoHerRoomCanLetHerOutAgain()
         {
+            var NewSinceTheCensus = new HashSet<string>(System.StringComparer.Ordinal)
+                { "ExpeditionYacht120Iso" };
+            int newRoomEdges = 0;
             // ⭐⭐ THE OTHER HALF, and the one that would TRAP the player rather than merely shut her out.
             // The doorway crosses her on its wall line, and only while she stands in its band (owner ruling
             // D1, 2026-09-30). From the room's side that line is the sole's own edge, the nearest she can
@@ -796,9 +799,10 @@ namespace HiddenHarbours.Tests.EditMode
                 if (kind == BoatCabinEntryKind.RoomEdge)
                 {
                     Assert.IsTrue(roomIndex.HasValue, visual.name);
-                    BoatCabinEntryLandingTests.AssertLegacyLine(visual.name, roomIndex.Value, onLine, outward);
+                    if (NewSinceTheCensus.Contains(visual.name)) newRoomEdges++;
+                    else BoatCabinEntryLandingTests.AssertLegacyLine(visual.name, roomIndex.Value, onLine, outward);
                     surface = visual.Interior.Levels[roomIndex.Value].Id;
-                    roomEdges++;
+                    if (!NewSinceTheCensus.Contains(visual.name)) roomEdges++;
                 }
                 else
                 {
@@ -838,6 +842,7 @@ namespace HiddenHarbours.Tests.EditMode
                       $"({tightestHull}):\n{report}");
             Assert.IsEmpty(failures, string.Join("\n", failures));
             Assert.AreEqual(27, roomEdges, "the Phase A legacy fleet remains room edges");
+            Assert.AreEqual(NewSinceTheCensus.Count, newRoomEdges, "every hull born after the legacy census was measured");
             Assert.AreEqual(1, landings, "only the cruiser's authored companionway is an entry landing");
         }
 

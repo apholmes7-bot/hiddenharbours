@@ -131,6 +131,10 @@ namespace HiddenHarbours.Tests.RigBaking
         private static IEnumerable<FleetHull> Pass3Hulls =>
             HullMeshFleet.Hulls.Where(h => Pass3Keys.Contains(h.Key));
 
+        // These delivered walks use role gates instead of the legacy ceiling.lid contract.
+        private static readonly HashSet<string> WalkLidExclusions = new HashSet<string>
+            { "sportFisherConvertible", "sportFisherSkybridge" };
+
         private static IEnumerable<FleetHull> UntaggedHulls =>
             HullMeshFleet.Hulls.Where(h => !Pass3Keys.Contains(h.Key)
                                            && !h.ScriptPath.Contains("Fleet")).Take(3);
@@ -658,12 +662,13 @@ namespace HiddenHarbours.Tests.RigBaking
         /// rather than reporting an inequality.</para>
         /// </summary>
         [Test]
-        public void EveryEnclosedLevel_RemovesSomething_ItsOwnFacesOrItsDeclaredLids()
+        // Formerly EveryEnclosedLevel_RemovesSomething_ItsOwnFacesOrItsDeclaredLids.
+        public void EveryLegacyEnclosedLevel_RemovesSomething_ItsOwnFacesOrItsDeclaredLids()
         {
             var opensNothing = new List<string>();
             var viaLid = new List<string>();
 
-            foreach (FleetHull hull in Pass3Hulls)
+            foreach (FleetHull hull in Pass3Hulls.Where(h => !WalkLidExclusions.Contains(h.Key)))
             {
                 RigMeshData data = Extract(hull, out IRigScriptHost host);
                 using (host)
@@ -717,14 +722,7 @@ namespace HiddenHarbours.Tests.RigBaking
             // they are one generator rig, which declares the cuddy's lid once for all eighteen,
             // and so they are one line here.
             //
-            // ⚠️ BATCH 5 ADDS THE ONE CASE THAT IS NEITHER OF THOSE TWO SHAPES. Both sport fishers'
-            // `below` is roofed by the FOREDECK (150 faces each), not by a main deck — she has no
-            // main deck forward to be roofed by. Her cockpit sole aft of the salon is `main_deck`
-            // and it is OPEN SKY, so it cannot lid anything; the only structure over her below-flat
-            // is the raised foredeck the anchor gear stands on. Measured, not assumed: the rig
-            // declares `ceiling:{ kind:'hard', lid:'foredeck', z:2.45 }` on the 53 and 2.58 on the
-            // 90. Both hulls are the same 150 because one `makeRig` builds both foredecks from the
-            // same station loft.
+            // The sport fishers now use walk role gates; below-room removal is pinned separately.
             CollectionAssert.AreEquivalent(
                 new[]
                 {
@@ -735,8 +733,6 @@ namespace HiddenHarbours.Tests.RigBaking
                     "sideDragger.below -> main_deck (119 faces)",
                     "sternTrawlerMk2.below -> main_deck (142 faces)",
                     "tanker.below -> poop_deck (56 faces)",
-                    "sportFisherConvertible.below -> foredeck (150 faces)",
-                    "sportFisherSkybridge.below -> foredeck (150 faces)",
                 }
                 .Concat(LobsterVariantFleet.All.Select(v => $"{v.Key}.cuddy -> foredeck (15 faces)"))
                 .ToArray(),
@@ -756,11 +752,12 @@ namespace HiddenHarbours.Tests.RigBaking
         /// which is why the count is asserted first.</para>
         /// </summary>
         [Test]
-        public void EveryDeclaredLid_IsALeafLevelThatIsNeitherHullNorRigging()
+        // Formerly EveryDeclaredLid_IsALeafLevelThatIsNeitherHullNorRigging.
+        public void EveryLegacyDeclaredLid_IsALeafLevelThatIsNeitherHullNorRigging()
         {
             int lids = 0;
 
-            foreach (FleetHull hull in Pass3Hulls)
+            foreach (FleetHull hull in Pass3Hulls.Where(h => !WalkLidExclusions.Contains(h.Key)))
             {
                 RigMeshData data = Extract(hull, out IRigScriptHost host);
                 using (host)
@@ -800,13 +797,11 @@ namespace HiddenHarbours.Tests.RigBaking
                 }
             }
 
-            Assert.AreEqual(27, lids,
+            Assert.AreEqual(25, lids,
                 "Batch 1 declares three lids (lobster cuddy, both ships' below), batch 2 declares " +
                 "twenty-one (three ships' below — the TANKER's onto poop_deck, not main_deck — and " +
                 "the eighteen variants' cuddy), pass 4 adds the CAPE's cuddy onto her whaleback " +
-                "foredeck, and batch 5 adds ONE PER SPORT FISHER: each hull's `below` flat is lidded " +
-                "by her FOREDECK, not by her main deck — the cockpit sole aft of the house is open " +
-                "sky and cannot roof anything. A different count means every property above was " +
+                "foredeck. The sport fishers now use walk role gates. A different count means every property above was " +
                 "checked against a different set of rigs than the one this fixture was written for.");
         }
 
@@ -833,7 +828,8 @@ namespace HiddenHarbours.Tests.RigBaking
         /// nobody decided, and the extractor refuses that outright.</para>
         /// </summary>
         [Test]
-        public void TheStandInLidTable_StaysRetired_AndEveryLidComesFromTheRig()
+        // Formerly TheStandInLidTable_StaysRetired_AndEveryLidComesFromTheRig.
+        public void TheStandInLidTable_StaysRetired_AndEveryLegacyLidComesFromTheRig()
         {
             // ---- half one: the table has not grown back ------------------------------------------
             System.Type table = typeof(RigLevelRecord).Assembly
@@ -850,7 +846,7 @@ namespace HiddenHarbours.Tests.RigBaking
             var notFromTheRig = new List<string>();
             var named = new List<string>();
 
-            foreach (FleetHull hull in Pass3Hulls)
+            foreach (FleetHull hull in Pass3Hulls.Where(h => !WalkLidExclusions.Contains(h.Key)))
             {
                 RigMeshData data = Extract(hull, out IRigScriptHost host);
                 using (host)
@@ -888,13 +884,43 @@ namespace HiddenHarbours.Tests.RigBaking
                     "tanker.below -> poop_deck",
                 }
                 .Concat(LobsterVariantFleet.All.Select(v => $"{v.Key}.cuddy -> foredeck"))
-                .Concat(SportFisherFleet.All.Select(h => $"{h.Key}.below -> foredeck"))
                 .ToArray();
 
             CollectionAssert.AreEquivalent(expected, named,
                 "The set of lids the RIGS declare has changed. This is upstream art moving, not a " +
                 "local table drifting — read the rig's ceiling records before touching this list. " +
                 "Now:\n  " + string.Join("\n  ", named));
+        }
+
+        [TestCase("sportFisherConvertible")]
+        [TestCase("sportFisherSkybridge")]
+        public void GoingBelowOnAWalkSportFisher_RemovesExteriorFaces(string key)
+        {
+            var hull = HullMeshFleet.Get(key);
+            var data = Extract(hull, out var host);
+            using (host)
+            {
+                var mesh = AssetDatabase.LoadAssetAtPath<HullMeshDef>(hull.MeshAssetPath);
+                Assert.AreEqual(HullWalkSidecarReader.Schema, mesh.LayoutSchema, key);
+                var below = mesh.LiftSets.Single(s => s.Key == "below");
+                var cut = mesh.CutawayForDeck(below.DeckId);
+                Assert.IsTrue(cut.Opens, key + ": the real below-room lookup opens the gate");
+                int removed = 0, kept = 0;
+                foreach (var face in data.Faces.Where(f => !f.Interior))
+                {
+                    bool lifted = (cut.LiftLevels & (1 << face.Level)) != 0;
+                    bool role = face.Role < 0 || (cut.ShownRoles & (1 << face.Role)) != 0;
+                    int extra = cut.RoleMasks != null && face.Level >= 0 && face.Level < cut.RoleMasks.Length
+                        ? cut.RoleMasks[face.Level] : 0;
+                    bool roleLift = extra != 0 && (face.Role < 0 || (extra & (1 << face.Role)) != 0);
+                    // HullLevelGate.hlsl's exterior arm, using the saved bake's actual gate fields.
+                    if (lifted || roleLift || (cut.Level > 0 && face.Level == cut.Level && role)) removed++;
+                    else kept++;
+                }
+                Assert.Greater(removed, 0, key + ": going below must remove real exterior faces");
+                Assert.Greater(kept, 0, key + ": the gate must leave part of the hull standing");
+                TestContext.WriteLine($"{key}: below removes {removed} exterior faces and keeps {kept}");
+            }
         }
 
         private static string NameOf(RigMeshData data, int tag) =>

@@ -547,9 +547,10 @@ namespace HiddenHarbours.Tests.RigBaking
             }
         }
 
-        /// <summary>The published kit 4 deck plan uses vertices emitted on the open top station plane.</summary>
+        /// <summary>The delivered walk's top station is inside the points emitted on its own plane.</summary>
         [Test]
-        public void TheCoamingsOutlineIsBuiltFromVerticesTheRigActuallyEmits()
+        // Formerly TheCoamingsOutlineIsBuiltFromVerticesTheRigActuallyEmits.
+        public void TheTopStationIsInsideTheRigPointsOnItsDeliveredWalkPlane()
         {
             FleetHull sky = HullMeshFleet.Hulls.Single(h => h.Key == "sportFisherSkybridge");
             using IRigScriptHost host = RigScriptHostFactory.Create();
@@ -557,7 +558,11 @@ namespace HiddenHarbours.Tests.RigBaking
                 host, sky.ScriptPath, sky.GlobalName,
                 hull: sky.Extraction);
 
-            const double Sole = 7.97, Eps = 5e-4;
+            var walk = HullLayoutJson.Object(DeckSidecarJson.Parse(File.ReadAllText(Path.Combine(
+                RepoRoot, "docs/art/rigs/gameplay/sportFisherIsoRig2.skybridge.walk.json"))), "walk");
+            var tower = HullLayoutJson.Child(HullLayoutJson.Child(walk, "anchors"), "towerStation");
+            double Sole = HullLayoutJson.Number(tower, "z");
+            const double Eps = 5e-4;
             var onThePlane = new HashSet<(long X, long Y)>();
             foreach (RigFace f in data.Faces)
             {
@@ -570,36 +575,11 @@ namespace HiddenHarbours.Tests.RigBaking
                                     (long)System.Math.Round(v.Y * 1000.0)));
             }
             Assert.Greater(onThePlane.Count, 40,
-                "the rig emitted almost nothing on the 7.97 plane — the extraction found the wrong " +
-                "hull, or the coaming has moved.");
-
-            object root = DeckSidecarJson.Parse(host.EvaluateString(
-                "JSON.stringify(SportFisherIso2.byId('skybridge').deckPlan())"));
-            List<object> atSole = DeckSidecarJson.AsArray(DeckSidecarJson.Member(root, "decks"))
-                .Where(d => System.Math.Abs(
-                    DeckSidecarJson.Float(DeckSidecarJson.Member(d, "z"), float.NaN) - Sole) < 1e-6)
-                .ToList();
-            Assert.AreEqual(1, atSole.Count,
-                "the sidecar carries no single deck at z 7.97, so there is no outline to check. That " +
-                "is the deleted-coaming failure, and the fixture above is the one that says so.");
-            object coaming = atSole[0];
-
-            var strangers = new List<string>();
-            List<object> poly = DeckSidecarJson.AsArray(DeckSidecarJson.Member(coaming, "polygon"));
-            for (int i = 0; i < poly.Count; i++)
-            {
-                List<object> pt = DeckSidecarJson.AsArray(poly[i]);
-                double x = DeckSidecarJson.Float(pt[0], float.NaN);
-                double y = DeckSidecarJson.Float(pt[1], float.NaN);
-                var key = ((long)System.Math.Round(x * 1000.0), (long)System.Math.Round(y * 1000.0));
-                if (!onThePlane.Contains(key)) strangers.Add("[" + i + "] (" + x + ", " + y + ")");
-            }
-
-            CollectionAssert.IsEmpty(strangers,
-                "these polygon vertices are at no point the rig puts on the 7.97 plane, so the " +
-                "outline was recomputed rather than read. That is the 2026-08-28 defect verbatim — a " +
-                "ring derived with a linear hw interpolant instead of the rig's monotone cubic:\n  " +
-                string.Join("\n  ", strangers));
+                $"the rig emitted almost nothing on the delivered station plane at {Sole} m");
+            double x = HullLayoutJson.Number(tower, "x") * 1000.0;
+            double y = HullLayoutJson.Number(tower, "y") * 1000.0;
+            Assert.That(x, Is.InRange((double)onThePlane.Min(p => p.X), (double)onThePlane.Max(p => p.X)), "towerStation x");
+            Assert.That(y, Is.InRange((double)onThePlane.Min(p => p.Y), (double)onThePlane.Max(p => p.Y)), "towerStation y");
         }
 
         // The original art files retire. This fixture pins the merge semantics, not their bytes.

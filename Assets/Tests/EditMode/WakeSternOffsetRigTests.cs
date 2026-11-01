@@ -122,6 +122,12 @@ namespace HiddenHarbours.Tests.EditMode
                 // y : -L/2 + u*L   ·   y : (-0.5 + u) * B.L   ·   yOf = (u) => -L/2 + u*L
                 bool amidships = Regex.IsMatch(
                     src, @"y\s*(?::|Of\s*=\s*\(u\)\s*=>)\s*\(?\s*-\s*(?:0\.5|[A-Za-z0-9_.]+\s*/\s*2)");
+                if (hull.Rig == "expeditionYacht120IsoRig.js" || hull.Rig == "sportFisherIsoRig2.js")
+                {
+                    // Both loft from yT = -L/2 to yB = L/2 through their published station law.
+                    amidships = Regex.IsMatch(src, @"yT\s*=\s*-L\s*/\s*2,\s*yB\s*=\s*L\s*/\s*2") &&
+                        Regex.IsMatch(src, @"yS\s*=\s*(?:\(s\)\s*=>\s*)?yT\s*\+\s*s\s*\*\s*\(yB\s*-\s*yT\)");
+                }
                 if (hull.Def == "YachtTenderIsoHullMesh")
                 {
                     var ends = Regex.Match(src, @"yT\s*=\s*(-[0-9.]+),\s*yBow\s*=\s*([0-9.]+)");
