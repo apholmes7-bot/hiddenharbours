@@ -232,18 +232,20 @@ namespace HiddenHarbours.Tests.RigBaking
 
         [Test]
         // Formerly TheTwoHullsWhoseRecordOutrunsTheirGeometryAreRefusedOutLoud.
-        public void TheSportFishersGlassMatchesTheirRigs_AndAnOffHullRecordIsStillRefused()
+        public void TheConvertiblesGlassMatchesHerRig_AndTheSkybridgesOffHullRecordIsRefusedOutLoud()
         {
-            foreach (string key in new[] { "sportFisherConvertible", "sportFisherSkybridge" })
-            {
-                BoatWindowProbe.HullWindows w = Measured.Find(h => h.Key == key);
-                Assert.IsNotNull(w, $"{key} is not in the fleet catalog any more");
-                Assert.IsNotEmpty(w.Panes, key + ": her delivered glass is measured");
-                Assert.IsNull(w.Refusal, key);
-                var def = AssetDatabase.LoadAssetAtPath<HullMeshDef>(w.MeshAssetPath);
-                CollectionAssert.AreEqual(w.Panes, def.Panes, key + ": the writer preserved every pane");
-            }
-            // Keep the refusal's teeth on a synthetic record rather than the retired art defect.
+            BoatWindowProbe.HullWindows convertible = Measured.Find(h => h.Key == "sportFisherConvertible");
+            Assert.IsNotNull(convertible);
+            Assert.IsNotEmpty(convertible.Panes, "the convertible's delivered glass is measured");
+            Assert.IsNull(convertible.Refusal);
+            var def = AssetDatabase.LoadAssetAtPath<HullMeshDef>(convertible.MeshAssetPath);
+            CollectionAssert.AreEqual(convertible.Panes, def.Panes, "the writer preserved every pane");
+            BoatWindowProbe.HullWindows skybridge = Measured.Find(h => h.Key == "sportFisherSkybridge");
+            Assert.IsNotNull(skybridge);
+            Assert.IsEmpty(skybridge.Panes);
+            StringAssert.Contains("UPSTREAM ASK", skybridge.Refusal);
+            Assert.Greater(skybridge.WorstCornerMetres, BoatWindowProbe.OnHullToleranceMetres);
+            // Keep the refusal's teeth on a synthetic record beside the delivered skybridge record.
             var outside = new BoatWindowProbe.HullWindows
                 { Key = "synthetic-off-hull", MeshAssetPath = HullMeshFleet.Get("dory").MeshAssetPath };
             outside.Panes.Add(new HullPane { CentreMetres = new Vector3(100, 100, 100),

@@ -902,24 +902,28 @@ namespace HiddenHarbours.Tests.RigBaking
             {
                 var mesh = AssetDatabase.LoadAssetAtPath<HullMeshDef>(hull.MeshAssetPath);
                 Assert.AreEqual(HullWalkSidecarReader.Schema, mesh.LayoutSchema, key);
-                var below = mesh.LiftSets.Single(s => s.Key == "below");
-                var cut = mesh.CutawayForDeck(below.DeckId);
-                Assert.IsTrue(cut.Opens, key + ": the real below-room lookup opens the gate");
-                int removed = 0, kept = 0;
-                foreach (var face in data.Faces.Where(f => !f.Interior))
+                var belowRows = mesh.LiftSets.Where(s => s.Key == "below").ToArray();
+                Assert.IsNotEmpty(belowRows, key + ": the delivered below rows must exist");
+                foreach (var below in belowRows)
                 {
-                    bool lifted = (cut.LiftLevels & (1 << face.Level)) != 0;
-                    bool role = face.Role < 0 || (cut.ShownRoles & (1 << face.Role)) != 0;
-                    int extra = cut.RoleMasks != null && face.Level >= 0 && face.Level < cut.RoleMasks.Length
-                        ? cut.RoleMasks[face.Level] : 0;
-                    bool roleLift = extra != 0 && (face.Role < 0 || (extra & (1 << face.Role)) != 0);
-                    // HullLevelGate.hlsl's exterior arm, using the saved bake's actual gate fields.
-                    if (lifted || roleLift || (cut.Level > 0 && face.Level == cut.Level && role)) removed++;
-                    else kept++;
+                    var cut = mesh.CutawayForDeck(below.DeckId);
+                    Assert.IsTrue(cut.Opens, key + ": the real below-room lookup opens the gate");
+                    int removed = 0, kept = 0;
+                    foreach (var face in data.Faces.Where(f => !f.Interior))
+                    {
+                        bool lifted = (cut.LiftLevels & (1 << face.Level)) != 0;
+                        bool role = face.Role < 0 || (cut.ShownRoles & (1 << face.Role)) != 0;
+                        int extra = cut.RoleMasks != null && face.Level >= 0 && face.Level < cut.RoleMasks.Length
+                            ? cut.RoleMasks[face.Level] : 0;
+                        bool roleLift = extra != 0 && (face.Role < 0 || (extra & (1 << face.Role)) != 0);
+                        // HullLevelGate.hlsl's exterior arm, using the saved bake's actual gate fields.
+                        if (lifted || roleLift || (cut.Level > 0 && face.Level == cut.Level && role)) removed++;
+                        else kept++;
+                    }
+                    Assert.Greater(removed, 0, key + ": going below must remove real exterior faces");
+                    Assert.Greater(kept, 0, key + ": the gate must leave part of the hull standing");
+                    TestContext.WriteLine($"{key}.{below.DeckId}: below removes {removed} exterior faces and keeps {kept}");
                 }
-                Assert.Greater(removed, 0, key + ": going below must remove real exterior faces");
-                Assert.Greater(kept, 0, key + ": the gate must leave part of the hull standing");
-                TestContext.WriteLine($"{key}: below removes {removed} exterior faces and keeps {kept}");
             }
         }
 
