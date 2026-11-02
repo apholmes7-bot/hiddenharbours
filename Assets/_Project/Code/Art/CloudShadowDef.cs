@@ -11,7 +11,7 @@ namespace HiddenHarbours.Art
         public Shader Shader;
         public AnimationCurve Strength = new AnimationCurve(new Keyframe(0, .12f), new Keyframe(.25f, .18f),
             new Keyframe(.5f, .28f), new Keyframe(.85f, .08f), new Keyframe(1, 0));
-        public AnimationCurve Coverage = new AnimationCurve(new Keyframe(0, .24f), new Keyframe(.25f, .4f),
+        public AnimationCurve Coverage = new AnimationCurve(new Keyframe(0, .4f), new Keyframe(.25f, .5f),
             new Keyframe(.5f, .65f), new Keyframe(.85f, .9f), new Keyframe(1, 1));
         [Range(0, 1)] public float FullSunElevation = .25f;
         [Min(2)] public int NoiseSize = 64;

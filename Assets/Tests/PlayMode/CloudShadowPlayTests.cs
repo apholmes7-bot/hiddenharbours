@@ -269,6 +269,9 @@ namespace HiddenHarbours.Tests.PlayMode
             _system.HeldFrame = new CloudShadowFrame(environment.WorldSeed, seconds, sample.WindVector, overcast, elevation);
             _system.SetCasting(false); byte[] off = Capture();
             _system.SetCasting(true); byte[] on = Capture(); int changed = Changed(off, on);
+            string input = $"{name}: elevation={elevation}, hour={GameServices.Clock.HourOfDay}, worldCamera={CloudShadowSystem.IsWorldCamera(_camera)}, " +
+                $"draws={_system.DrawCount}, coverage={_system.Definition.Coverage.Evaluate(overcast)}, alpha={CloudShadowMath.Strength(_system.Definition, overcast, elevation)}, offsets={_system.Offsets}, wind={sample.WindVector}, changedPixels={changed}";
+            Directory.CreateDirectory(Output); File.WriteAllText(Output + "/inputs-" + name + ".txt", input); TestContext.WriteLine(input);
             if (minute == 23 * 60 || overcast == 1) Assert.That(changed, Is.Zero, "night/full overcast is exact passthrough");
             else Assert.That(changed, Is.GreaterThan(0), name + " must visibly shade the wharf and water");
             Write(name, off, on, $"day 44, minute {minute}, normalized overcast {overcast}, game seconds {seconds:F3}, elapsed {elapsed}; wind DOWNWIND {sample.WindVector}; " +
