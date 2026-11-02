@@ -392,7 +392,7 @@ namespace HiddenHarbours.Art
                 return;
             }
 
-            double now = GameServices.Clock != null ? GameServices.Clock.TotalSeconds : 0d;
+            double now = GameServices.Clock != null ? GameServices.Clock.FlowSeconds : 0d;
             if (!string.Equals(stateKey, _stateKey, StringComparison.Ordinal))
             {
                 _stateKey = stateKey;
@@ -516,7 +516,7 @@ namespace HiddenHarbours.Art
                 }
             }
 
-            double now = GameServices.Clock != null ? GameServices.Clock.TotalSeconds : 0d;
+            double now = GameServices.Clock != null ? GameServices.Clock.FlowSeconds : 0d;
             if (!string.Equals(stateKey, _ashoreStateKey, StringComparison.Ordinal))
             {
                 _ashoreStateKey = stateKey;

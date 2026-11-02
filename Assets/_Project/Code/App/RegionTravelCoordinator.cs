@@ -222,12 +222,15 @@ namespace HiddenHarbours.App
             // arrivals, so a key can never survive its own crossing and steer the next one.
             string arrivalKey = GameServices.ConsumePendingArrivalKey();
 
+            ArrivalOpening.CaptureSeaCrossing(previous, next, arrivalKey);
+
             SetSceneRootsActive(previous, false);   // the region we left (persistents already DDOL'd out)
             SetSceneRootsActive(next, true);
             SilenceRegionCamera(next);              // the persistent core's camera/listener are the live ones
             BindHoldProxies(next);
 
             var anchor = RegionAnchor.ForScene(next);
+            bool passengerArrived = ArrivalOpening.ReceiveSeaJourney(next, arrivalKey, anchor);
 
             // ⭐ DID SHE SAIL IN, or is this the region opening under her? A hop comes FROM a region; the
             // first activation comes from the shell, which authors no anchor. Only on that first
@@ -243,7 +246,8 @@ namespace HiddenHarbours.App
                 Debug.LogWarning($"[RegionTravelCoordinator] Passage asked for arrival '{arrivalKey}' in " +
                                  $"'{anchor.RegionId}', which authors no such way in — landing at the " +
                                  "region's default instead.", anchor);
-            _alongside = ApplyArrival(_player, _boat, _switcher, anchor, arrivalKey) ? anchor : null;
+            _alongside = ApplyArrival(passengerArrived ? null : _player, _boat,
+                passengerArrived ? null : _switcher, anchor, arrivalKey) ? anchor : null;
             if (_alongside != null)
             {
                 _alongsideAt = _boat.position;
