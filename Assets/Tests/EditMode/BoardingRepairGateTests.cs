@@ -57,10 +57,11 @@ namespace HiddenHarbours.Tests.EditMode
 
         // A switcher with the player standing within board reach of the boat, started on foot. Hull id
         // "boat.dory". (Board-from-anywhere: boarding is gated by proximity to the boat, not a dock zone.)
-        private ControlSwitcher BuildInBoardZone()
+        private ControlSwitcher BuildInBoardZone(bool withDeckWalk = false)
         {
             var playerGo = NewGo("Player", new Vector3(0f, -11.5f, 0f));
             var walk = playerGo.AddComponent<PlayerWalkController>();
+            if (withDeckWalk) playerGo.AddComponent<DeckWalkController>().enabled = false;
             var boatGo = NewGo("Boat", new Vector3(0f, -13.8f, 0f));
             var boat = boatGo.AddComponent<BoatController>();
             var input = boatGo.AddComponent<DevBoatInput>();
@@ -109,8 +110,7 @@ namespace HiddenHarbours.Tests.EditMode
             var save = SaveMigration.NewGame();
             save.OwnedBoats.Add("boat.dory");
             GameServices.Save = new FakeSaveService(save);
-            var sw = BuildInBoardZone();
-            sw.Player.gameObject.AddComponent<DeckWalkController>().enabled = false;
+            var sw = BuildInBoardZone(withDeckWalk: true);
             sw.ConfigureBoardingMove(enabled: true, approachSpeed: 3f, approachMaxSeconds: 0.8f,
                                      vaultSeconds: 0.5f, vaultHopMeters: 0.35f);
 
