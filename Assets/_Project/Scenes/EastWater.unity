@@ -403,7 +403,7 @@ MonoBehaviour:
   _heightMax: -4
   _paintedHeightTex: {fileID: 0}
   _seabedTexture: {fileID: 0}
-  _waterType: {fileID: 0}
+  _waterType: {fileID: 11400000, guid: 306851e8c98c4a8c96ff4435dc8e6604, type: 2}
   _waterPlumes: []
   _waterTypeSeamMeters: 32
   _previewInEditMode: 1
