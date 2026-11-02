@@ -5,46 +5,11 @@ using HiddenHarbours.Core;
 namespace HiddenHarbours.Art
 {
     /// <summary>
-    /// <b>A LIGHT IN HER HAND</b> — the walker's own two lamps (world-lighting PR 3).
-    ///
-    /// <para>The owner, 2026-09-03: <i>"the player has no spotlight which reaches the trees"</i> ·
-    /// <i>"a latern and a spotlight, and yes i want lights on land"</i>. The land lamps (PR 2) lit the
-    /// places somebody built a lamp post; everywhere else — the woods, the shore, the road between the
-    /// two — she still walked in the dark carrying nothing.</para>
-    ///
-    /// <para><b>Two lamps, and the difference between them is the point.</b>
-    /// <list type="bullet">
-    ///   <item><b>The LANTERN</b> is ambient, automatic and costs her nothing: slung on her back, alight
-    ///   after dusk without a keypress, a warm pool at her feet. It is the light you walk home by.</item>
-    ///   <item><b>The HEADLAMP</b> is directed and switched: a narrow cone that goes where she looks,
-    ///   thrown far enough to pick a trunk out of a wood. It is the light you look for something
-    ///   with.</item>
-    /// </list></para>
-    ///
-    /// <para><b>Neither takes a new key</b> — the dev key ledger is exhausted. The headlamp answers the
-    /// SAME key the boat's searchlight does, and the two can never both hear it: see
-    /// <see cref="WalksHerOwnBeam"/>, where the partition is proved rather than arranged.</para>
-    ///
-    /// <para><b>Why a self-installing host rather than a component on the player prefab.</b> The same
-    /// reason <see cref="PlayerShadowInstaller"/> is one: the player is spawned by the shell, not placed
-    /// in a scene, so there is no prefab in a builder to hang this off — and a light that needed one
-    /// would be a light the owner's next Build could lose. It installs itself, finds her through Core,
-    /// and parents its two lamps under her.</para>
-    ///
-    /// <para><b>⭐ And the parenting is load-bearing, not tidiness.</b> Her own <c>SpriteShadow</c> lives
-    /// on the player root (<see cref="PlayerShadowInstaller"/> puts it there), so hanging the lamps
-    /// beneath her is what lets <see cref="LampShadowSystem"/>'s carrier rule recognise her as the thing
-    /// they are MOUNTED ON and decline to throw her own silhouette down her own beam. Free-standing
-    /// objects tracking her position would light identically and shadow her absurdly.</para>
-    ///
-    /// <para><b>Rule 4.</b> Art may not name a Player type. Everything this needs about her — where she
-    /// is, which way she faces, and whether she is on her own two feet — arrives through Core's
-    /// <see cref="InteractActorProbe"/>, which <c>ControlSwitcher</c> publishes every frame for exactly
-    /// this kind of reader, and through <see cref="GameServices.PlayerTransform"/>.</para>
-    ///
-    /// <para><b>Determinism (rule 5).</b> Nothing is saved and nothing is random: the lantern's flicker is
-    /// <see cref="SceneLight"/>'s own deterministic hash of (seed, time), the night gate is in the shader
-    /// off the published tint, and the beam's on/off is a transient the player sets.</para>
+    /// The walker's switched headlamp and optional legacy lantern. She starts dark; L switches the
+    /// headlamp only while on foot. Headlamp follows the visible mesh head after the figure poses,
+    /// holds its last root-relative point through sprite poses, and retains the legacy lift until
+    /// a first head point exists. Both lamps remain children of the player for the shadow carrier rule.
+    /// The default-off config switch restores automatic lantern behaviour without changing the key.
     /// </summary>
     [DisallowMultipleComponent]
     public sealed class WalkerLights : MonoBehaviour
@@ -58,7 +23,7 @@ namespace HiddenHarbours.Art
         /// (<c>CarryMountKind.Back</c>) sits about here on a 1.7 m character.</summary>
         public const float LanternLiftMetres = 1.05f;
 
-        /// <summary>Height of the headlamp on her brow, metres.</summary>
+        /// <summary>Legacy lift before a visible mesh publishes its first head point, metres.</summary>
         public const float HeadlampLiftMetres = 1.55f;
 
         /// <summary>The key the beam answers — the SAME one the boat's searchlight uses, deliberately.
@@ -183,7 +148,9 @@ namespace HiddenHarbours.Art
             // the boat's own lights are the picture (boat-lights PR 2a-2c), and a carried pool on a lit
             // deck is noise; it is also the one rule that keeps the key partition and the lamps agreeing
             // about what "on foot" means.
-            if (_lantern != null) _lantern.enabled = onFoot;
+            bool automaticLantern = GameServices.Config != null
+                ? GameServices.Config.WalkerAutoLantern : GameConfig.DefaultWalkerAutoLantern;
+            if (_lantern != null) _lantern.enabled = onFoot && automaticLantern;
             if (_headlamp != null) _headlamp.SetLive(onFoot);
 
             OwnsDecorLight = onFoot && _headlamp != null && _headlamp.IsOn;
