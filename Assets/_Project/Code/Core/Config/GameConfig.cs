@@ -185,6 +185,10 @@ namespace HiddenHarbours.Core
         [Range(0f, 1f)] public float SwimSlowFactor = 0.25f;
 
         [Header("Getting aboard and ashore")]
+        [Tooltip("Require owned boats to be repaired before boarding. Off while damage and repairs are " +
+                 "deferred; enable to enforce the repair ledger.")]
+        public bool RequireBoatRepairsBeforeBoarding = false;
+
         [Tooltip("How close you must be to a hull to climb aboard, in metres — measured to her OUTLINE, " +
                  "not to her root, so a long hull is boardable from her own stern. Ships at the 3.5 m " +
                  "the switcher carried as a serialized field until 2026-09-03.")]
