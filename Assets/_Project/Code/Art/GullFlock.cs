@@ -386,7 +386,7 @@ namespace HiddenHarbours.Art
 
             _simMilliseconds += deltaMilliseconds;
 
-            double now = _pinned || clock == null ? 0.0 : clock.TotalSeconds;
+            double now = _pinned || clock == null ? 0.0 : clock.FlowSeconds;
 
             // The schedule a few times a second: where every bird is, and which of them are drawn.
             _refreshInMilliseconds -= deltaMilliseconds;
@@ -553,7 +553,7 @@ namespace HiddenHarbours.Art
             return new GullCalendar
             {
                 Seed = env != null ? env.WorldSeed : 0,
-                Seconds = clock.TotalSeconds,
+                Seconds = clock.FlowSeconds,
                 SecondsPerHour = GameServices.SecondsPerDay / DaySchedule.HoursPerDay,
                 Hour = clock.HourOfDay,
                 Day = clock.DayIndex,
@@ -1337,7 +1337,7 @@ namespace HiddenHarbours.Art
             if (!(reach > 0f)) return spot;
 
             var clock = GameServices.Clock;
-            double now = clock != null ? clock.TotalSeconds : 0.0;
+            double now = clock != null ? clock.FlowSeconds : 0.0;
             int n = view.SchoolsInView(
                 new Rect(spot.x - reach, spot.y - reach, reach * 2f, reach * 2f), now, _shoals);
             if (n <= 0) return spot;

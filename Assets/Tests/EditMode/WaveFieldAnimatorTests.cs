@@ -9,6 +9,54 @@ namespace HiddenHarbours.Tests.EditMode
         private static readonly Vector2 SamplePos = new Vector2(12.3f, -7.7f);
 
         [Test]
+        public void HeldHourKeepsWindMemoryShapeWhileTravelFollowsFlow()
+        {
+            var saved = GameServices.Clock;
+            IGameClock clock = new HeldClock { TotalSeconds = 599d, FlowSeconds = 1200d };
+            GameServices.Clock = clock;
+            try
+            {
+                var field = ShippedWaveField.Settings();
+                var source = new WaveMemoryTests.StepWind(600d, Vector2.right * 6f, Vector2.up * 12f);
+                var targets = WaveMemory.TrainsAt(source, clock.TotalSeconds, in field);
+                var shape = GameServices.WithSwell(in targets, clock.TotalSeconds, field.Gravity);
+                var trains = new WaveFieldAnimator().Tick(WaveFieldAnimator.HourTimeSeconds,
+                    WaveFieldAnimator.GameTimeSeconds, source, in field);
+                Assert.AreEqual(shape.Count, trains.Count);
+                for (int i = 0; i < trains.Count; i++)
+                {
+                    Assert.AreEqual(shape[i].Wavelength, trains[i].Wavelength);
+                    Assert.AreEqual(shape[i].Amplitude, trains[i].Amplitude);
+                    Assert.AreEqual(shape[i].Direction.x, trains[i].Direction.x, 1e-5f);
+                    Assert.AreEqual(shape[i].Direction.y, trains[i].Direction.y, 1e-5f);
+                    double phase = shape[i].PhaseOffset - 2d * System.Math.PI / shape[i].Wavelength
+                        * shape[i].PhaseSpeed * clock.FlowSeconds;
+                    phase -= System.Math.Floor(phase / (2d * System.Math.PI)) * (2d * System.Math.PI);
+                    Assert.AreEqual((float)phase, trains[i].PhaseOffset, 1e-5f);
+                }
+            }
+            finally { GameServices.Clock = saved; }
+        }
+
+        sealed class HeldClock : IGameClock
+        {
+            public double TotalSeconds { get; set; }
+            public double FlowSeconds { get; set; }
+            public bool IsHeld { get; set; } = true;
+            public GameTime Now => new GameTime(TotalSeconds);
+            public Season Season => Season.EarlySpring;
+            public int Year => 1;
+            public int DayIndex => 0;
+            public int DayOfSeason => 1;
+            public Weekday Weekday => Weekday.Monday;
+            public bool IsMarketDay => false;
+            public float HourOfDay => 6f;
+            public float DayFraction => 0.25f;
+            public bool IsPaused { get; set; }
+            public float TimeScale { get; set; } = 1f;
+        }
+
+        [Test]
         public void SharpWindStep_WithTinyDt_HeightIsContinuous()
         {
             var field = ShippedWaveField.Settings();

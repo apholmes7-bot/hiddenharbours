@@ -26,3 +26,4 @@ MonoBehaviour:
     StainColour: {r: 0.42, g: 0.27, b: 0.12, a: 1}
     SiltColour: {r: 0.45, g: 0.42, b: 0.33, a: 1}
     BodyStrength: 0.25
+  CrestGlow: {fileID: 11400000, guid: 9e6a28e89bf849c8bc5c4992fadbdc42, type: 2}

@@ -378,7 +378,8 @@ namespace HiddenHarbours.Tests.EditMode
             Dry(NineMileCreekMainland.TrapStorePos, "the trap store");
             Dry(NineMileCreekMainland.FishStorePos, "the fish store");
             Dry(NineMileCreekMainland.ParkingPos, "the parking");
-            Dry(NineMileCreekMainland.FishBuyerPos, "the fish buyer's truck");
+            Dry(NineMileCreekMainland.FishBuyerPos, "the fish market counter");
+            Dry(NineMileCreekMainland.FishBuyerTruckPos, "the fish buyer's truck");
             Dry(NineMileCreekMainland.DerelictDoryPos, "the derelict dory");
 
             // Two of the plan's markers are later waves', so they are held on the plan's own made ground (its
@@ -462,7 +463,7 @@ namespace HiddenHarbours.Tests.EditMode
             // "A road named Wharf Road runs all the way to Nine Mile Creek's wharf front." On the lines the scene
             // paves (NineMileCreekGroundPlan, NMC H2) Wharf Road climbs the final ramp and ends ON the turning
             // circle at the head of the yard, and the circle opens onto the yard's made ground; the yard's own
-            // road beyond it is a later wave's.
+            // road beyond it now reaches the market's west parking in H6 PR 2.
             Vector2 roadEnd = NineMileCreekGroundPlan.WharfRoad[NineMileCreekGroundPlan.WharfRoad.Length - 1];
             Assert.That(Vector2.Distance(roadEnd, NineMileCreekGroundPlan.TurningPadCentre),
                 Is.LessThan(NineMileCreekGroundPlan.TurningPadRadius),

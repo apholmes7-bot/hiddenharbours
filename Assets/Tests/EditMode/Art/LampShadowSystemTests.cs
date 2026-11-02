@@ -138,6 +138,58 @@ namespace HiddenHarbours.Tests.Art.EditMode
         }
 
         [Test]
+        public void ThePose_ReadsTheReachThePairingReads_NotTheBloom()
+        {
+            SceneLight lamp = Lamp(Vector2.zero, range: LightPresets.For(LightPresets.Kind.Lightpost).Range);
+            lamp.ReachMetres = LightPresets.ReachMetres(LightPresets.Kind.Lightpost);
+            FakeCaster caster = Caster(new Vector2(2f, 0f));
+
+            _system.PublishFrame(_cam);
+
+            Assert.AreEqual(1, _system.ActiveShadowCount);
+            Assert.AreSame(caster, _system.SlotCaster(0));
+            Assert.IsTrue(_system.SlotRenderer(0).enabled);
+            var block = new MaterialPropertyBlock();
+            _system.SlotRenderer(0).GetPropertyBlock(block);
+            Assert.Greater(block.GetColor(IdShadowColor).a, 0f,
+                "A caster beyond the source bloom still stands in the ground the lamp lights.");
+
+            Vector2 beyond = new Vector2(lamp.ReachMetres + 0.1f, 0f);
+            Vector2 move = beyond - caster.State.Foot;
+            caster.State.Foot = beyond;
+            caster.State.RectMin += move;
+            caster.State.RectMax += move;
+            _system.PublishFrame(_cam);
+
+            Assert.AreEqual(0, _system.ActiveShadowCount);
+            Assert.AreEqual(0, EnabledSlots(), "Beyond the lit reach there is no shadow.");
+        }
+
+        [Test]
+        public void ThePose_FallsBackToRange_WhenTheLampHasNoReach()
+        {
+            SceneLight lamp = Lamp(Vector2.zero, range: 9f);
+            Assert.AreEqual(0f, lamp.ReachMetres, "The existing bare-lamp fixture has no separate reach.");
+            FakeCaster caster = Caster(new Vector2(2f, 0f));
+
+            _system.PublishFrame(_cam);
+
+            Assert.AreEqual(1, _system.ActiveShadowCount);
+            Assert.AreSame(caster, _system.SlotCaster(0));
+            Assert.IsTrue(_system.SlotRenderer(0).enabled);
+            var block = new MaterialPropertyBlock();
+            _system.SlotRenderer(0).GetPropertyBlock(block);
+            float fallbackAlpha = block.GetColor(IdShadowColor).a;
+            Assert.Greater(fallbackAlpha, 0f);
+
+            lamp.ReachMetres = lamp.Range;
+            _system.PublishFrame(_cam);
+            _system.SlotRenderer(0).GetPropertyBlock(block);
+            Assert.AreEqual(fallbackAlpha, block.GetColor(IdShadowColor).a,
+                "An absent reach poses exactly like an explicit reach equal to the old range.");
+        }
+
+        [Test]
         public void AtNoon_TheLampsThrowNothing_TheNoonControl()
         {
             Lamp(Vector2.zero);

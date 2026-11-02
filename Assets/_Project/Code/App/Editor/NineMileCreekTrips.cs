@@ -95,11 +95,13 @@ namespace HiddenHarbours.App.Editor
         /// (<see cref="NineMileCreekGroundPlan.TurningPadExit"/>): she crosses the pad to that point and runs
         /// the yard road's line onto the buyers' gravel, a straight pull-in rather than a turn off a road.
         ///
-        /// <para>⚠ The yard road is a later wave's, so the court between the circle and the gravel (about
-        /// 5.9 m) is unpaved dry ground until it lands. <c>NineMileCreekTripsTests</c> holds the gap to that
-        /// one stretch.</para>
+        /// <para>H6 PR 2 lays the yard road's line to the west lot; she follows it before lining up
+        /// north into the buyers' gravel.</para>
         /// </summary>
         public static Vector2 PullOff() => NineMileCreekGroundPlan.TurningPadExit;
+        public const float PullInLineUpMetres = 1.4f;
+        public static Vector2 YardRoadTurn() => new Vector2(WharfBay().x - PullInLineUpMetres, NineMileCreekGroundPlan.YardRoadY);
+        public static Vector2 LotLineUp() => new Vector2(WharfBay().x, NineMileCreekGroundPlan.YardRoadY + PullInLineUpMetres);
 
         // =============================================================================================
         //  THE TWO ROADS
@@ -114,6 +116,8 @@ namespace HiddenHarbours.App.Editor
             var route = new List<Vector2> { HomeBay(), SpurJoin() };
             route.AddRange(AlongWharfRoad(SpurJoin(), WharfRoadEnd));   // ends AT the road's end
             route.Add(PullOff());
+            route.Add(YardRoadTurn());
+            route.Add(LotLineUp());
             route.Add(WharfBay());
             return Dedup(route);
         }
@@ -122,7 +126,7 @@ namespace HiddenHarbours.App.Editor
         /// one-way pair of streets would be expressible here and a reversed view would not.</summary>
         public static Vector2[] ReturnRoute()
         {
-            var route = new List<Vector2> { WharfBay(), PullOff(), WharfRoadEnd };
+            var route = new List<Vector2> { WharfBay(), LotLineUp(), YardRoadTurn(), PullOff(), WharfRoadEnd };
             route.AddRange(AlongWharfRoad(WharfRoadEnd, SpurJoin()));   // ends AT the spur join
             route.Add(HomeBay());
             return Dedup(route);

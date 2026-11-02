@@ -184,7 +184,7 @@ namespace HiddenHarbours.Tests.PlayMode
             Assert.IsNotNull(poolQuad); Assert.IsNotNull(shadowQuad);
             Assert.AreEqual(poolQuad.sortingOrder, shadowQuad.sortingOrder,
                 "both are compositing elements at the ceiling; the ladder is the depth pin, not the order");
-            Assert.Greater(shadowQuad.transform.position.z, poolQuad.transform.position.z,
+            Assert.Less(shadowQuad.transform.position.z, poolQuad.transform.position.z,
                 $"the shadow quad sits at z={shadowQuad.transform.position.z:0.000} and the pool at " +
                 $"{poolQuad.transform.position.z:0.000}. The camera looks along +Z, so the shadow must be " +
                 "NEARER to draw last — a shadow under the light it is supposed to cut is two pictures of a " +
