@@ -54366,7 +54366,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d57dae905d3c49ecb66df6ae223a96a4, type: 3}
   m_Name:
   m_EditorClassIdentifier: HiddenHarbours.Boats::HiddenHarbours.Boats.HullTideRide
-  _bakedWaterlineElevation: 6.985763
+  _bakedWaterlineElevation: 5.354004
   _draughtOverrideMetres: -1
 --- !u!210 &2176916220612798629
 SortingGroup:
@@ -76071,7 +76071,7 @@ MonoBehaviour:
   _dockingSettleSeconds: 12
   _skipperLine: "Ginny's up the path \u2014 she's expecting you."
   _alwaysRunInEditor: 0
-  _hullPictureDatum: 1.6988634
+  _hullPictureDatum: 5.354004
 --- !u!4 &1401477191
 Transform:
   m_ObjectHideFlags: 0
