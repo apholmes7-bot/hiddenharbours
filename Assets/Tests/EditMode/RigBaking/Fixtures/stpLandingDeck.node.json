@@ -1,0 +1,11 @@
+{
+  "schema": "hidden-harbours/stp-landing-deck-node@1",
+  "nodeVersion": "v24.19.0",
+  "recipeSha256": "352eb92cccba7a7c41d792113693a9c26c19ebc3fb59cef0574a45ab76eb9bb3",
+  "width": 1000,
+  "height": 365,
+  "pivotX": 491,
+  "pivotY": 260,
+  "albedoSha256": "0853b84d692002232454863e5c194c023fd2e31d370d3941126d9506b47b8703",
+  "heightSha256": "ff77cc0dd33e1831ae304605cac0a8a2438d0f01a429cc15786c7cb10626a242"
+}

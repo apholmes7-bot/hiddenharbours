@@ -819,6 +819,8 @@ namespace HiddenHarbours.App.Editor
                 Debug.Log($"[StPetersLayerRefresh] applied to {ScenePath} (patch in {PatchFolder}):\n{patch.Summary()}");
             }
             else Debug.Log($"[StPetersLayerRefresh] dry run, nothing written to the scene (patch in {PatchFolder}):\n{patch.Summary()}");
+            if (File.Exists(HiddenHarbours.Tools.RigBaking.StPetersLandingDeckBaker.ContractPath))
+                RunLandingDeck(apply);
             return patch;
         }
     }

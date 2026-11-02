@@ -111,5 +111,147 @@ namespace HiddenHarbours.Tests.PlayMode
             }
             return default;
         }
+
+#if UNITY_EDITOR
+        sealed class LandingBoardTide : IEnvironmentService
+        {
+            readonly IEnvironmentService _inner;
+            readonly float _level;
+            public LandingBoardTide(IEnvironmentService inner, float level) { _inner = inner; _level = level; }
+            public int WorldSeed => _inner.WorldSeed;
+            public TideProfile ActiveTideProfile { get => _inner.ActiveTideProfile; set => _inner.ActiveTideProfile = value; }
+            public EnvironmentSample Sample()
+            {
+                var sample = _inner.Sample();
+                return new EnvironmentSample(sample.WindVector, sample.CurrentVector, _level,
+                    sample.SeaState, sample.Visibility, sample.SeaState01);
+            }
+            public float TideHeightAt(double seconds) => _level;
+            public float WaterLevelAt(double seconds) => _level;
+        }
+
+        [UnityTest]
+        public IEnumerator StPeters_LandingPassTwo_AtBothBoardHoursAndPinnedTides_OffBesideOn()
+        {
+            RequireAGraphicsDevice();
+            yield return LoadRegion(StPeters);
+            EnsureTheFollow(); HoldTheMood();
+            _look = "k0-landing";
+            _lookEvidence = "pass-two pier; under-pier tide occlusion absent; gameplay floor, fittings and lamps unchanged";
+            string captions = StartFile("captions.txt"), numbers = StartFile("numbers.txt");
+            var wharf = GameObject.Find("StPetersWharf");
+            Assert.IsNotNull(wharf);
+            Transform deck = wharf.transform.Find("Deck");
+            var migrated = deck.Find("WharfPass2Deck").GetComponent<SpriteRenderer>();
+            Assert.IsNotNull(migrated.sprite);
+            var legacy = new GameObject("LegacyDeckComparison");
+            legacy.transform.SetParent(deck, false); _spawned.Add(legacy);
+            var atlas = UnityEditor.AssetDatabase.LoadAllAssetsAtPath("Assets/_Project/Art/Tilesets/Wharf/WharfAtlas.png")
+                .OfType<Sprite>().ToDictionary(s => s.name);
+            string[] variants = { "ctr", "edN", "edE", "edS", "edW", "coNE", "coSE", "coSW", "coNW" };
+            foreach (Vector2Int cell in HiddenHarbours.App.Editor.StPetersWharf.DeckCellsBackToFront())
+            {
+                int index = 17 + System.Array.IndexOf(variants, HiddenHarbours.App.Editor.StPetersWharf.DeckVariantAt(cell.x, cell.y));
+                var go = new GameObject("Deck_" + cell.x + "_" + cell.y); go.transform.SetParent(legacy.transform, false);
+                go.transform.position = new Vector3(cell.x, cell.y + 1, 0);
+                var renderer = go.AddComponent<SpriteRenderer>(); renderer.sprite = atlas["WharfAtlas_" + index];
+                renderer.sharedMaterial = migrated.sharedMaterial;
+                renderer.sortingOrder = HiddenHarbours.App.Editor.StPetersWharf.SortingOrderFor(cell.y);
+            }
+            Assert.AreEqual(186, legacy.GetComponentsInChildren<SpriteRenderer>().Length);
+            IEnvironmentService held = GameServices.Environment;
+            bool followEnabled = _follow.enabled;
+            float previousAspect = _cam.aspect;
+            var pixelCameras = _cam.GetComponents<Behaviour>().Where(b => b.GetType().Name == "PixelPerfectCamera" && b.enabled).ToArray();
+            var boards = new[]
+            {
+                new { Id = "landing.wide_approach.1431", Day = 29, Minute = 871, Tide = 2.18f, X = 203f, Y = 2.649f },
+                new { Id = "cannery.wide_landing.0600", Day = 39, Minute = 360, Tide = -0.85f, X = 181f, Y = 12.596f },
+                new { Id = "landing.wide_approach.noon", Day = 29, Minute = 720, Tide = 2.18f, X = 203f, Y = 2.649f },
+                new { Id = "landing.wide_approach.1730", Day = 29, Minute = 1050, Tide = 2.18f, X = 203f, Y = 2.649f },
+                new { Id = "cannery.wide_landing.noon", Day = 39, Minute = 720, Tide = -0.85f, X = 181f, Y = 12.596f },
+                new { Id = "cannery.wide_landing.1730", Day = 39, Minute = 1050, Tide = -0.85f, X = 181f, Y = 12.596f },
+            };
+            try
+            {
+                foreach (var board in boards)
+                {
+                    GameServices.Environment = new LandingBoardTide(held, board.Tide);
+                    yield return PinTheHour(board.Minute / 60f, ClearRunSeconds);
+                    double target = (board.Day + board.Minute / 1440.0) * GameServices.Config.SecondsPerDay;
+                    GameServices.Clock.SeekTo(target); GameServices.Clock.TimeScale = 0;
+                    _follow.enabled = followEnabled;
+                    foreach (var pixelCamera in pixelCameras) pixelCamera.enabled = true;
+                    _cam.targetTexture = null;
+                    _cam.ResetAspect();
+                    if (_rt != null) { _rt.Release(); Object.DestroyImmediate(_rt); _rt = null; }
+                    int step = CameraZoomPolicy.StepForWorldHeight(14, CameraFollow.AssetsPPU, CameraFollow.DesignScreenHeightPx);
+                    float setupHeight = CameraZoomPolicy.WorldHeightForStep(step, CameraFollow.AssetsPPU, CameraFollow.DesignScreenHeightPx);
+                    float setupPixel = CameraZoomPolicy.WorldUnitsPerRenderedPixel(step, CameraFollow.AssetsPPU, CameraFollow.DesignScreenHeightPx);
+                    Vector2 setupCentre = new Vector2(Mathf.Round(board.X / setupPixel) * setupPixel,
+                        Mathf.Round(board.Y / setupPixel) * setupPixel);
+                    legacy.SetActive(true); migrated.enabled = false;
+                    yield return FrameOn(setupCentre, setupHeight);
+                    File.AppendAllText(numbers, $"{board.Id} base camera fixture: requested={setupCentre.x:R},{setupCentre.y:R} " +
+                        $"actual={_cam.transform.position.x:R},{_cam.transform.position.y:R} height={setupHeight:R}; shared alignment assertion kept\n", Utf8);
+                    yield return RunTheWorld(2f, setupCentre);
+                    float until = Time.realtimeSinceStartup + 20;
+                    while (Time.realtimeSinceStartup < until)
+                    {
+                        Vector4 sea = Shader.GetGlobalVector("_HHSeaLevelWorld");
+                        if (sea.w > 0.5f && Mathf.Abs(sea.x - board.Tide) < 0.01f) break;
+                        yield return null;
+                    }
+                    Assert.That(Shader.GetGlobalVector("_HHSeaLevelWorld").x, Is.EqualTo(board.Tide).Within(0.01f));
+                    Assert.That(GameServices.Clock.DayIndex, Is.EqualTo(board.Day));
+                    Assert.That(GameServices.Clock.HourOfDay, Is.EqualTo(board.Minute / 60f).Within(0.001f));
+                    yield return ShadersReady();
+                    _follow.enabled = false;
+                    foreach (var pixelCamera in pixelCameras) pixelCamera.enabled = false;
+                    Time.timeScale = 0;
+                    _cam.targetTexture = null;
+                    if (_rt != null) { _rt.Release(); Object.DestroyImmediate(_rt); }
+                    _w = 796; _h = 448;
+                    _rt = new RenderTexture(_w, _h, 24, RenderTextureFormat.ARGBHalf); _rt.Create();
+                    _cam.targetTexture = _rt;
+                    _cam.transform.position = new Vector3(board.X, board.Y, _cam.transform.position.z);
+                    _cam.orthographicSize = 7; _cam.aspect = 24.89f / 14;
+                    foreach (bool on in new[] { false, true })
+                    {
+                        legacy.SetActive(!on); migrated.enabled = on;
+                        yield return null;
+                        _cam.transform.position = new Vector3(board.X, board.Y, _cam.transform.position.z);
+                        _cam.orthographicSize = 7;
+                        string mode = on ? "on" : "off";
+                        SavePlate(board.Id + "-" + mode + ".png", Capture());
+                        File.AppendAllText(captions, $"{board.Id} {mode}: day {board.Day}, minute {board.Minute}, tide {board.Tide:R}; " +
+                            $"centre {board.X:R},{board.Y:R}, height 14, width 24.89, 796x448; " +
+                            "under-pier tide occlusion absent; floor, Def placements and lamp owners unchanged\n", Utf8);
+                        using var draws = OfferedCounter("Draw Calls Count");
+                        for (int i = 0; i < 5; i++) yield return null;
+                        long calls = draws.Valid ? draws.LastValue : UnityEditor.UnityStats.drawCalls;
+                        if (calls <= 0) calls = UnityEditor.UnityStats.drawCalls;
+                        Assert.Greater(calls, 0, "The comparison needs measured rendered draw calls.");
+                        Texture2D texture = on ? migrated.sprite.texture : atlas["WharfAtlas_17"].texture;
+                        File.AppendAllText(numbers, $"{board.Id} {mode}: deckRenderers={(on ? 1 : 186)} drawCalls={calls} " +
+                            $"activeDeckRuntimeTextureBytes={UnityEngine.Profiling.Profiler.GetRuntimeMemorySizeLong(texture)} " +
+                            $"activeDeckTexturePixels={texture.width}x{texture.height} format={texture.graphicsFormat}; " +
+                            "both comparison textures remain resident during this controlled OFF/ON capture\n", Utf8);
+                    }
+                }
+            }
+            finally
+            {
+                GameServices.Environment = held; migrated.enabled = true;
+                legacy.SetActive(false);
+                _follow.enabled = followEnabled;
+                _cam.aspect = previousAspect;
+                foreach (var pixelCamera in pixelCameras) pixelCamera.enabled = true;
+                Time.timeScale = 1;
+                Object.DestroyImmediate(legacy);
+            }
+            Debug.Log("[StPetersLandingDeck] PLATES_COMPLETE " + PlatePath());
+        }
+#endif
     }
 }

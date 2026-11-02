@@ -162,16 +162,22 @@ namespace HiddenHarbours.Tests.EditMode
         public void StPetersPlantField_RetiresTheMeasuredRootsWithoutSavingItsChunks()
         {
             var weight = MeasureFile("Assets/_Project/Scenes/StPeters.unity");
-            const long MeasuredPlantFieldSceneBytes = 5_259_646;
+            const long MeasuredLandingDeckSceneBytes = 4_792_419;
             const long SharedSceneHeadroomBytes = 64L * 1024;
-            const long MinimumPopulatedSceneBytes = 5_000_000;
+            const long MinimumPopulatedSceneBytes = 4_500_000;
+            // 5,259,646 after PR 5p's plant retirement; 4,792,419 after K0 retired the 186 atlas deck tiles, 467,309 bytes.
             // Main's data/water edits move this shared file by tens of bytes per merge. Allow 64 KiB
-            // above the measured retirement: 5,325,182 is below 5.4 MB, and cannot hide the roughly
-            // 556 KB retirement. The 5 MB floor rejects a truncated scene; names prove retirement.
-            Assert.LessOrEqual(weight.Bytes, MeasuredPlantFieldSceneBytes + SharedSceneHeadroomBytes,
+            // above the measured retirement. The 4.5 MB floor rejects a truncated scene; names prove
+            // retirement. It sits about 290 KB below the measured weight, as the old floor did.
+            Assert.LessOrEqual(weight.Bytes, MeasuredLandingDeckSceneBytes + SharedSceneHeadroomBytes,
                 "the named plant retirement must retain its saving with shared-scene headroom");
             Assert.Greater(weight.Bytes, MinimumPopulatedSceneBytes, "the remaining scene must stay populated");
             string text = File.ReadAllText("Assets/_Project/Scenes/StPeters.unity");
+            StringAssert.DoesNotContain("  m_Name: Deck_0_0\n", text, "the atlas deck tiles are retired");
+            Assert.AreEqual(0, System.Text.RegularExpressions.Regex.Matches(text,
+                @"^  m_Name: Deck_\d+_\d+$", System.Text.RegularExpressions.RegexOptions.Multiline).Count,
+                "the atlas deck tiles are retired");
+            StringAssert.Contains("  m_Name: WharfPass2Deck\n", text, "the baked landing deck is placed");
             foreach (string retired in new[] { "IslandGrass", "IslandShrubs", "IslandFlowers" })
                 StringAssert.DoesNotContain("  m_Name: " + retired + "\n", text, "the retired root " + retired);
             StringAssert.Contains("  m_Name: ShorePlants\n", text, "the wet shore root stays placed");
