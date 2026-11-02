@@ -38,6 +38,7 @@ MonoBehaviour:
   SwimLimit: 2
   WadeSlowFactor: 0.6
   SwimSlowFactor: 0.25
+  RequireBoatRepairsBeforeBoarding: 0
   BoardReachMetres: 3.5
   StepAshoreReachMetres: 1.5
   StepAshoreFacingArcDegrees: 120
