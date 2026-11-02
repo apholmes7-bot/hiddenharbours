@@ -60,7 +60,7 @@ namespace HiddenHarbours.Tests.PlayMode
             var fields = Object.FindObjectsByType<PlantField>(FindObjectsSortMode.None);
             Assert.AreEqual(after ? 1 : 0, fields.Length, "the selected scene version does not match this capture");
             var field = after ? fields[0] : null;
-            if (after) Assert.AreEqual(9139, field.AuthoredPlantCount);
+            if (after) Assert.AreEqual(9115, field.AuthoredPlantCount);
             Behaviour pixel = _cam.GetComponents<Behaviour>().FirstOrDefault(b => b.GetType().Name == "PixelPerfectCamera");
             bool pixelEnabled = pixel != null && pixel.enabled, followEnabled = _follow.enabled;
             try
