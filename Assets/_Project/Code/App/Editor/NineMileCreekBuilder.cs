@@ -720,13 +720,6 @@ namespace HiddenHarbours.App.Editor
             // clear.
             NineMileCreekMooredFleet.Place(premise);
 
-            // ⭐ THE REVIEW ANCHORAGE — the owner's "every boat model must be VISIBLE in game" ruling
-            // (2026-08-14). Twenty-three fleet-pack hulls lying at anchor in the −6 m water east of the
-            // basin, so he can go and look at them. NOT the working fleet above and not content: no
-            // owner, no skipper, no paint, no BoatHullDef, so nothing here is pilotable or purchasable.
-            // It places and does NOT draw, for the same reason the fleet above does not.
-            FleetReviewMoorage.Place();
-
             // ⭐ THE DUALLY, PARKED AT THE PARK — closing the reachability gap #560 left ("the
             // dev-picker path only", and there is no picker). Places and does NOT draw, per the
             // moorage law above; the site is still the owner's PROPOSAL and she derives from its one

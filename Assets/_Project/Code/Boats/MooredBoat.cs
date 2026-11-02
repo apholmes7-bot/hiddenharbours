@@ -91,26 +91,6 @@ namespace HiddenHarbours.Boats
                  "and (through the region's own plan) the berth she lies in.")]
         [SerializeField] private BoatOwnerDef _owner;
 
-        /// <summary>
-        /// <b>A hull moored for REVIEW rather than owned</b> — set instead of <see cref="_owner"/> by
-        /// <c>FleetReviewMoorage</c>, and null for every boat that belongs to somebody.
-        ///
-        /// <para><b>Why this exists rather than twenty-three invented owners.</b> The review anchorage
-        /// shows hulls that have art and nothing else: they have a <c>BoatVisualDef</c> and no
-        /// <c>BoatHullDef</c>, because the hull defs are a later phase deliberately (they are what makes
-        /// a boat purchasable and pilotable). An owner Def cannot name one of them — its <c>Boat</c>
-        /// field IS a <c>BoatHullDef</c> — so fabricating owners would have meant fabricating hull defs,
-        /// i.e. building the next phase early to satisfy a display.</para>
-        ///
-        /// <para><b>And this is the cheap half of that trade, because the presentation was already
-        /// visual-shaped.</b> <see cref="BoatHullSkinner.Apply"/> takes a VISUAL and is already called
-        /// here with <c>boat: null</c>; the owner was only ever the route to <c>Owner.Boat.Visual</c>.
-        /// So a review hull walks the identical path a working one does — same skinner, same runtime
-        /// mesh decision, same wave motion, same waterline — and inherits the property that matters:
-        /// the builder still PLACES and does not DRAW.</para>
-        /// </summary>
-        [SerializeField] private BoatVisualDef _reviewVisual;
-
         [Tooltip("The compass heading (0 = North, clockwise) her BOW points while she lies alongside. " +
                  "The region's plan derives this from the mooring face rather than typing it — a boat " +
                  "lies parallel to the wall she is tied to, not across it.")]
@@ -137,18 +117,13 @@ namespace HiddenHarbours.Boats
         private Vector3 _standRigMeters;
         private float _idWritten = -1f, _idTopWritten = -1f;
 
-        /// <summary>Whose boat this is, or null on a review hull. For the region's tests and tooling.
+        /// <summary>Whose boat this is. For the region's tests and tooling.
         /// </summary>
         public BoatOwnerDef Owner => _owner;
 
-        /// <summary>True when this hull is moored for REVIEW — art on the water with no owner, no
-        /// skipper and no hull Def behind her.</summary>
-        public bool IsReviewHull => _owner == null && _reviewVisual != null;
-
-        /// <summary>The art this boat is drawn from, whichever way she was configured. One place, so the
-        /// two paths cannot drift into drawing different things.</summary>
+        /// <summary>The art this boat is drawn from, as authored on her owner's hull Def.</summary>
         public BoatVisualDef Visual =>
-            _owner != null ? (_owner.Boat != null ? _owner.Boat.Visual : null) : _reviewVisual;
+            _owner != null && _owner.Boat != null ? _owner.Boat.Visual : null;
 
         /// <summary>True once the hull has actually been skinned — the claim a PlayMode test reads, and
         /// false on a hull whose art has not imported (warned, never thrown).</summary>
@@ -161,16 +136,6 @@ namespace HiddenHarbours.Boats
         public void Configure(BoatOwnerDef owner, float headingDegrees)
         {
             _owner = owner;
-            _headingDegrees = headingDegrees;
-        }
-
-        /// <summary>
-        /// Wire a hull moored for REVIEW — art, a heading, and nobody aboard. See
-        /// <see cref="_reviewVisual"/> for why a visual rather than an owner.
-        /// </summary>
-        public void ConfigureForReview(BoatVisualDef visual, float headingDegrees)
-        {
-            _reviewVisual = visual;
             _headingDegrees = headingDegrees;
         }
 
@@ -193,9 +158,9 @@ namespace HiddenHarbours.Boats
         /// </summary>
         private void Present()
         {
-            if (_owner == null && _reviewVisual == null)
+            if (_owner == null)
             {
-                Debug.LogWarning($"[MooredBoat] '{name}' has neither an owner Def nor a review visual, " +
+                Debug.LogWarning($"[MooredBoat] '{name}' has no owner Def, " +
                                  "so there is no boat to draw and no skipper to stand on her. The berth " +
                                  "is still hers on the plan; point this at the asset and she appears.");
                 return;
@@ -226,8 +191,6 @@ namespace HiddenHarbours.Boats
             // mesh, so a scheme on the visual would paint the whole fleet the same and there would be
             // nothing to tell them apart by. Null is the shipped look, so an owner with no scheme is
             // not a special case anywhere below.
-            // A review hull has no owner and therefore no scheme — null is the shipped look, so she
-            // is drawn exactly as she was baked, which is the point of looking at her.
             _rig = BoatHullSkinner.Apply(gameObject, Visual, boat: null,
                                          new BoatHullSkinner.Options
                                          {
@@ -255,9 +218,6 @@ namespace HiddenHarbours.Boats
             // berth she is otherwise walled out of. Unlike the tie-offs above this is NOT stripped: a
             // stranger's boat is not something you may make fast to, but she is unquestionably something
             // you can swim up against, and the registry says nothing about whose she is.
-            //
-            // A REVIEW hull has no owner and therefore no def to be measured by, so she is not registered
-            // — the moorage exists to look at hulls, and there is nobody in that scene to swim.
             if (_owner != null) HullPresence.Install(gameObject, _owner.Boat, Visual);
         }
 
@@ -297,9 +257,6 @@ namespace HiddenHarbours.Boats
         /// </summary>
         private void StandTheSkipper()
         {
-            // A review hull carries nobody, by construction: she has no owner to have a skipper, and the
-            // anchorage exists to look at HULLS. Guarded here rather than at the call site so the two
-            // configure paths keep one Present().
             if (_owner == null) return;
             if (_owner.Skipper == null || _owner.AboardCount() <= 0) return;
             if (_rig.Visual == null) return;
@@ -383,7 +340,7 @@ namespace HiddenHarbours.Boats
         /// mover asks the drawer rather than reaching into the slot table itself.</para>
         ///
         /// <para>Inert on a hull with no slot (a sprite hull has no facet depth to discard against)
-        /// and on a review hull that carries nobody — absence is data, as it is in
+        /// when no skipper is present — absence is data, as it is in
         /// <see cref="ClaimTheDeckSlot"/>.</para>
         /// </summary>
         public void StandTheSkipperAt(Vector3 rigLocalMeters)
@@ -407,7 +364,7 @@ namespace HiddenHarbours.Boats
         IsoCharacterSprite ICharacterFigureStand.FigureCharacter => _skipper;
 
         /// <summary>The skipper's one stable key (character PR 2a): the owner's id, so the same skipper
-        /// blinks the same way on every run and the look seam can name them. Empty for a review hull,
+        /// blinks the same way on every run and the look seam can name them. Empty when no owner is configured,
         /// which has no owner.</summary>
         string ICharacterFigureIdentity.FigureKey => _owner != null ? _owner.Id : string.Empty;
 
