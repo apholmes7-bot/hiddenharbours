@@ -293,7 +293,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
         }
 
         [Test]
-        public void ReviewArms_AreValidUniqueData_AndBothWaterTypesShipStrong()
+        public void ReviewArms_AreValidUniqueData_AndThreeWaterTypesShipStrong()
         {
             var ids = new HashSet<string>();
             foreach (string name in new[] { "Faint", "Readable", "Strong" })
@@ -302,13 +302,13 @@ namespace HiddenHarbours.Tests.Art.EditMode
                 Assert.IsTrue(arm.IsValid(), name);
                 Assert.IsTrue(ids.Add(arm.Id), "each review arm needs its own stable id");
             }
-            string[] types = { "NineMileCreek", "StPetersOpenAtlantic" };
+            string[] types = { "NineMileCreek", "StPetersOpenAtlantic", "EastWater" };
             foreach (string name in types)
             {
                 var type = AssetDatabase.LoadAssetAtPath<WaterTypeDef>(
                     $"Assets/_Project/Data/Water/Types/WaterType_{name}.asset");
                 Assert.IsNotNull(type, name);
-                Assert.AreSame(ReviewArm("Strong"), type.CrestGlow, "both typed regions ship Strong");
+                Assert.AreSame(ReviewArm("Strong"), type.CrestGlow, "all three typed regions ship Strong");
             }
         }
 
@@ -421,6 +421,40 @@ namespace HiddenHarbours.Tests.Art.EditMode
                     $"{hours[hour]}: rounded printed-train reference");
                 TestContext.WriteLine($"Real sea {hours[hour]}: {lit}/{WidthCells * HeightCells} lit cells");
             }
+        }
+
+        [TestCase("NineMileCreek", "NineMileCreek")]
+        [TestCase("StPeters", "StPetersOpenAtlantic")]
+        [TestCase("EastWater", "EastWater")]
+        public void TypedWaterScenes_NameTheirOwnDefinitions(string scene, string typeName)
+        {
+            string typePath = $"Assets/_Project/Data/Water/Types/WaterType_{typeName}.asset";
+            var type = AssetDatabase.LoadAssetAtPath<WaterTypeDef>(typePath);
+            Assert.IsNotNull(type, typePath);
+            string guid = AssetDatabase.AssetPathToGUID(typePath);
+            Assert.IsNotEmpty(guid);
+            string reference = $"_waterType: {{fileID: 11400000, guid: {guid}, type: 2}}";
+            string yaml = File.ReadAllText($"Assets/_Project/Scenes/{scene}.unity");
+            Assert.AreEqual(1, Regex.Matches(yaml, Regex.Escape(reference)).Count,
+                "the committed scene must name its region's independent water definition");
+        }
+
+        [Test]
+        public void EastWater_StartsWithAtlanticValues_InItsOwnDefinition()
+        {
+            var east = AssetDatabase.LoadAssetAtPath<WaterTypeDef>(
+                "Assets/_Project/Data/Water/Types/WaterType_EastWater.asset");
+            var atlantic = AssetDatabase.LoadAssetAtPath<WaterTypeDef>(
+                "Assets/_Project/Data/Water/Types/WaterType_StPetersOpenAtlantic.asset");
+            Assert.IsNotNull(east);
+            Assert.IsNotNull(atlantic);
+            Assert.AreNotSame(atlantic, east, "the opening sea must remain independently tunable");
+            Assert.AreEqual("water.east_water", east.Id);
+            Assert.IsTrue(east.IsValid());
+            foreach (FieldInfo field in typeof(WaterTypeValues).GetFields(BindingFlags.Public | BindingFlags.Instance))
+                Assert.AreEqual(field.GetValue(atlantic.Water), field.GetValue(east.Water), field.Name);
+            Assert.AreSame(atlantic.CrestGlow, east.CrestGlow, "no crest-light step at the region hop");
+            Assert.AreSame(ReviewArm("Strong"), east.CrestGlow);
         }
 
         private static CrestGlowDef ReviewArm(string name)
