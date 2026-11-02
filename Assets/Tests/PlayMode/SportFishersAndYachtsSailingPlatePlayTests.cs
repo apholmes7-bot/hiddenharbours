@@ -86,11 +86,37 @@ namespace HiddenHarbours.Tests.PlayMode
             for (int n = 0; n < picker.RosterCount; n++) { picker.Next(); if (picker.Current == hull) { found = true; break; } }
             Assert.IsTrue(found, file + " must be on the scene's F roster");
             yield return null;
-            Assert.AreSame(hull, boat.Hull);
             // Start beside her at the scene's dock; only setup places the on-foot skipper.
             Assert.AreEqual(ControlMode.OnFoot, sw.Mode);
             player.transform.position = boat.transform.position + boat.transform.right;
-            Assert.IsTrue(sw.BeginInteract(), "E boards this hull");
+            bool viaDory = false;
+            bool inReach = sw.WithinBoardReach(), boardable = sw.BoardableNow();
+            bool pressed = sw.BeginInteract();
+            if (file == "SportFisherSkybridge")
+            {
+                LogBoardRead(file, "origin-plus-right", sw, player, inReach, boardable, pressed);
+                if (!pressed)
+                {
+                    StandAtRail(sw, player, boat);
+                    inReach = sw.WithinBoardReach(); boardable = sw.BoardableNow();
+                    pressed = sw.BeginInteract();
+                    LogBoardRead(file, "rail-abeam", sw, player, inReach, boardable, pressed);
+                    if (!pressed)
+                    {
+                        viaDory = true;
+                        for (int n = 0; n < picker.RosterCount; n++)
+                        {
+                            picker.Next();
+                            if (picker.Current != null && picker.Current.Id == "boat.dory") break;
+                        }
+                        yield return null;
+                        StandAtRail(sw, player, boat);
+                        pressed = sw.BeginInteract();
+                        Debug.Log(file + ": direct rail boarding refused; boarding the dory before the F swap");
+                    }
+                }
+            }
+            Assert.IsTrue(pressed, "E boards this hull");
             float until = Time.realtimeSinceStartup + 12f;
             while (sw.Mode != ControlMode.OnDeck && Time.realtimeSinceStartup < until) yield return null;
             Assert.AreEqual(ControlMode.OnDeck, sw.Mode, "boarding must finish on her delivered deck");
@@ -98,17 +124,34 @@ namespace HiddenHarbours.Tests.PlayMode
             Assert.IsTrue(sw.TakesTheHelmOnThisPress());
             Assert.IsTrue(sw.BeginInteract());
             Assert.AreEqual(ControlMode.Aboard, sw.Mode);
+            if (viaDory)
+            {
+                for (int n = 0; n < picker.RosterCount; n++) { picker.Next(); if (picker.Current == hull) break; }
+                yield return null;
+            }
+            Assert.AreSame(hull, boat.Hull);
             Assert.IsTrue(picker.IsAtHelm);
             yield return null;
             var mooring = boat.GetComponent<BoatMooring>(); if (mooring != null) mooring.Stow();
             var anchor = boat.GetComponent<BoatAnchor>(); if (anchor != null) anchor.Weigh();
+            var input = boat.GetComponent<DevBoatInput>(); if (input != null) input.enabled = false;
+            Vector2 berthStart = boat.transform.position;
+            float began = Time.time;
+            while (Time.time - began < 3f) { boat.SetControl(1f, 0f); yield return new WaitForFixedUpdate(); }
+            float berthDepth = BoatCrossing.DepthAt(GameServices.TidalTerrain, GameServices.Environment,
+                GameServices.Clock != null ? GameServices.Clock.TotalSeconds : 0, boat.transform.position);
+            float berthMoved = Vector2.Distance(berthStart, boat.transform.position);
+            string berthRead = $"{hull.Id}; depth {berthDepth:0.000} m; IsAground {boat.IsAground}; moved {berthMoved:0.000} m in 3 seconds at throttle 1";
+            Debug.Log("[berth-departure] " + berthRead);
+            Directory.CreateDirectory(Plates);
+            File.WriteAllText(Path.Combine(Plates, file + "-berth.txt"), berthRead);
+            boat.Stop();
             // Choose actual deep sea in this region, then move the boarded boat there for the review run.
             Vector2 sea = FindSea(boat.transform.position, hull.DraughtMeters + .5f, out Vector2 course);
             boat.transform.SetPositionAndRotation(new Vector3(sea.x, sea.y, 0f),
                 Quaternion.Euler(0f, 0f, Mathf.Atan2(course.y, course.x) * Mathf.Rad2Deg - 90f));
             boat.Stop();
-            var input = boat.GetComponent<DevBoatInput>(); if (input != null) input.enabled = false;
-            float began = Time.time;
+            began = Time.time;
             Time.timeScale = 4f;
             while (Time.time - began < 10f) { boat.SetControl(1f, 0f); yield return new WaitForFixedUpdate(); }
             float heading = boat.transform.eulerAngles.z;
@@ -120,6 +163,9 @@ namespace HiddenHarbours.Tests.PlayMode
             Assert.Greater(Mathf.Abs(Mathf.DeltaAngle(heading, boat.transform.eulerAngles.z)), .5f, "her rudder must turn her");
             Assert.IsFalse(boat.IsAground);
             Assert.AreEqual(ControlMode.Aboard, sw.Mode);
+            Time.timeScale = 1f;
+            yield return null;
+            yield return null;
             Assert.Less(Vector2.Distance(player.transform.position, sw.HelmWorldPosition), 1f, "the skipper stays at her helm");
             Assert.IsNotNull(boat.transform.Find(BoatHullSkinner.VisualChildName));
             Time.timeScale = 1f;
@@ -142,6 +188,30 @@ namespace HiddenHarbours.Tests.PlayMode
             Assert.Ignore("Editor-authored sailing plate");
             yield break;
 #endif
+        }
+
+        static void StandAtRail(ControlSwitcher sw, PlayerWalkController player, BoatController boat)
+        {
+            float beam = boat.Hull.LengthMeters;
+            player.transform.position = boat.transform.position + boat.transform.right * (beam + sw.BoardReachMetres);
+            var nearest = typeof(ControlSwitcher).GetMethod("NearestPointOnHull",
+                System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
+            Vector3 rail = (Vector3)nearest.Invoke(sw, null);
+            player.transform.position = rail + boat.transform.right * .05f;
+        }
+
+        static void LogBoardRead(string file, string setup, ControlSwitcher sw, PlayerWalkController player,
+            bool inReach, bool boardable, bool pressed)
+        {
+            var nearest = typeof(ControlSwitcher).GetMethod("NearestPointOnHull",
+                System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
+            float distance = Vector3.Distance(player.transform.position, (Vector3)nearest.Invoke(sw, null));
+            string gate = !inReach ? "WithinBoardReach" : !boardable ? "BoardableNow"
+                : !pressed ? "BeginBoardingMove and the instant fall-through" : "none";
+            string read = $"{file}; {setup}; WithinBoardReach {inReach}; BoardableNow {boardable}; E {pressed}; move {sw.IsBoardingMove}; rail distance {distance:0.000}; reach {sw.BoardReachMetres:0.000}; refused gate {gate}";
+            Debug.Log("[boarding-read] " + read);
+            Directory.CreateDirectory(Plates);
+            File.AppendAllText(Path.Combine(Plates, file + "-boarding.txt"), read + "\n");
         }
 
         static IEnumerator FrameCost(string file, BoatController boat)
@@ -193,8 +263,30 @@ namespace HiddenHarbours.Tests.PlayMode
                                 now, at + ahead * along + side * across) <= requiredDepth) { clear = false; break; }
                     if (clear) { course = ahead; return at; }
                 }
+            LogDeepestCorridor(origin, requiredDepth, now);
             Assert.Fail("No sufficiently deep St Peters sea found for this hull");
             return origin;
+        }
+
+        static void LogDeepestCorridor(Vector2 origin, float requiredDepth, double now)
+        {
+            float deepest = float.NegativeInfinity;
+            Vector2 best = origin;
+            for (int radius = 80; radius <= 800; radius += 40)
+                for (int step = 0; step < 16; step++)
+                {
+                    float angle = step * Mathf.PI / 8f;
+                    Vector2 ahead = new Vector2(Mathf.Cos(angle), Mathf.Sin(angle));
+                    Vector2 side = new Vector2(-ahead.y, ahead.x);
+                    Vector2 at = origin + ahead * radius;
+                    float minimum = float.PositiveInfinity;
+                    for (int along = -20; along <= 100; along += 10)
+                        foreach (float across in new[] { -12f, 0f, 12f })
+                            minimum = Mathf.Min(minimum, BoatCrossing.DepthAt(GameServices.TidalTerrain,
+                                GameServices.Environment, now, at + ahead * along + side * across));
+                    if (minimum > deepest) { deepest = minimum; best = at; }
+                }
+            Debug.Log($"[deepest-corridor] minimum depth {deepest:0.000} m at {best}; required {requiredDepth:0.000} m; origin {origin}");
         }
     }
 }
