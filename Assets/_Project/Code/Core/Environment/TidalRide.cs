@@ -7,6 +7,7 @@ namespace HiddenHarbours.Core
     public interface IHullTideRide
     {
         float WaterlineNow();
+        float ScreenRiseNow();
     }
 
     /// <summary>

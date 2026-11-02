@@ -1176,14 +1176,23 @@ namespace HiddenHarbours.Player
         /// <summary>OnFoot → OnDeck: step aboard onto the DECK (owner's Build-5 model — boarding never
         /// takes the helm). The player stays visible and walks the deck; the boat stays un-driven (its
         /// controller/input off) and rocks/drifts under them; the rope is stowed while anyone's aboard.</summary>
-        private void BoardDeck()
+        private void BoardDeck() => BoardDeckAt(null);
+
+        private void BoardDeckAt(Vector2? ladderLanding)
         {
             if (Mooring != null) Mooring.Stow();                     // the rope's stowed while you're aboard
             if (_boatController != null) _boatController.enabled = false;   // nobody at the helm yet
             if (_boatInput != null) _boatInput.enabled = false;
 
             ApplyPlayerFor(ControlMode.OnDeck);
-            SnapPlayerToTheBoardSpot(); // also seeds the named floor; the move already sampled this same endpoint
+            if (ladderLanding.HasValue)
+            {
+                var deck = DeckWalk;
+                if (Player != null && Boat != null && deck != null)
+                    deck.SnapToFloorAtHeight(ladderLanding.Value, BoardSpotHeightMeters);
+                else SnapPlayerToDeck(ladderLanding.Value);
+            }
+            else SnapPlayerToTheBoardSpot();
             Mode = ControlMode.OnDeck;
 
             // Camera: retarget stays on the (visible, deck-walking) player at the on-foot framing —
@@ -1834,6 +1843,7 @@ namespace HiddenHarbours.Player
         // the boat and are stored as boat-relative offsets, because the boat does not hold still.
         private Vector3 _moveShoreWorld;
         private Vector2 _moveDeckRelative;     // where they stood ON the deck (stepping ashore: leg 1's start)
+        private Vector2 _moveLadderLandingRelative; // foot held on the deck, excluding the picture's tide ride
         private Vector2 _moveRailRelative;     // the rail, as a boat-relative offset re-clamped every tick
         private bool _moveWashboards;          // does this hull carry side decks to step over?
         private bool _moveHeldGate;            // did WE raise InteractionGate? (only we may lower it)
@@ -1935,6 +1945,9 @@ namespace HiddenHarbours.Player
                 return false;
             }
 
+            if (_moveRoute == BoardingRoute.Ladder && kind == BoardingMoveKind.Boarding)
+                _moveLadderLandingRelative = LadderRungsEndWorld() - Boat.position - HullRideOffsetNow();
+
             // The approach is a WALK, so its length is a distance at a walking pace — not a fixed
             // duration that would slide a distant fisher and dawdle a close one.
             float approachDistance = Vector3.Distance(ApproachStartWorld(), LegTwoStartWorld());
@@ -1944,14 +1957,18 @@ namespace HiddenHarbours.Player
 
             // Leg 2's budget. A step is the owner's tuned vault; a climb is two covers for the kit's
             // unauthored ends plus however many rungs the tide has put between the deck and the planks.
-            _moveOffSeconds = Mathf.Max(_moveTransitionSeconds, LadderBoardingMath.StepSeconds(
-                Vector3.Distance(LadderRungsEndWorld(), VaultEndWorld()), _boardApproachSpeed));
+            float offDistance = Vector3.Distance(LadderRungsEndWorld(), VaultEndWorld());
+            _moveOffSeconds = _moveRoute == BoardingRoute.Ladder && kind == BoardingMoveKind.Disembarking
+                ? offDistance / Mathf.Max(0.1f, _boardApproachSpeed)
+                : Mathf.Max(_moveTransitionSeconds, LadderBoardingMath.StepSeconds(offDistance, _boardApproachSpeed));
             _moveLegTwoSeconds = _moveRoute == BoardingRoute.Ladder
                 ? _moveTransitionSeconds + _moveClimbSeconds + _moveOffSeconds
                 : Mathf.Max(.01f, _boardVaultSeconds, LadderBoardingMath.StepSeconds(
                     Vector3.Distance(LegTwoStartWorld(), VaultEndWorld()), _boardApproachSpeed, _boardVaultHopMeters));
 
             // The fisher is now a free body in the air: nothing drives them but this move.
+            if (_moveRoute == BoardingRoute.Ladder && kind == BoardingMoveKind.Disembarking)
+                Player.position = ApproachStartWorld(); // the free root takes over from the ridden picture here
             ApplyPlayerFor(Mode, inTransit: true);
             HoldInteractionGate();
             return true;
@@ -2214,9 +2231,15 @@ namespace HiddenHarbours.Player
             // is the heave over the lip onto the planks.
             float offElapsed = climbElapsed - _moveClimbSeconds;
             float u = _moveOffSeconds > 1e-4f ? Mathf.Clamp01(offElapsed / _moveOffSeconds) : 1f;
+            if (!descending)
+            {
+                // The same plain walk as the approach, over the unchanged quay lip. Her own gait resumes.
+                StopVaultClip();
+                Player.position = Vector3.Lerp(climbEnd, end, u);
+                return;
+            }
             Player.position = Vector3.Lerp(climbEnd, end, Mathf.SmoothStep(0f, 1f, u));
-            PlayMoveClip(descending ? CharacterClip.BoardDown : CharacterClip.Board,
-                         HeadingBetween(climbEnd, end), _moveOffSeconds, holdOnFinish: true);
+            PlayMoveClip(CharacterClip.BoardDown, climberHeading, _moveOffSeconds, holdOnFinish: true);
         }
 
         private void PlayLadderClip(float heading, double phase)
@@ -2379,12 +2402,19 @@ namespace HiddenHarbours.Player
                 return;
             }
 
-            if (Player != null) Player.position = VaultEndWorld();
+            bool ladderLanding = _moveRoute == BoardingRoute.Ladder && kind == BoardingMoveKind.Boarding;
+            Vector2 landingRelative = _moveLadderLandingRelative;
+            if (Player != null)
+                Player.position = VaultEndWorld() - (ladderLanding ? HullRideOffsetNow() : Vector3.zero);
             _finishAtCurrentPosition = true;
             try
             {
                 EndBoardingMove();
-                if (kind == BoardingMoveKind.Boarding) BoardDeck();
+                if (kind == BoardingMoveKind.Boarding)
+                {
+                    if (ladderLanding) BoardDeckAt(landingRelative);
+                    else BoardDeck();
+                }
                 else Disembark();
             }
             finally { _finishAtCurrentPosition = false; }
@@ -2431,12 +2461,14 @@ namespace HiddenHarbours.Player
             if (Player == null) { EndBoardingMove(); return; }
             _moveElapsed += Mathf.Max(0f, deltaTime);
             Vector3 end = _moveKind == BoardingMoveKind.Disembarking && Boat != null
-                ? DeckPointWorld(_moveDeckRelative) : _returnEnd;
+                ? ApproachStartWorld() : _returnEnd;
             float u = Mathf.Clamp01(_moveElapsed / _returnSeconds);
             Player.position = Vector3.Lerp(_returnFrom, end, Mathf.SmoothStep(0f, 1f, u));
             PlayMoveClip(_moveKind == BoardingMoveKind.Boarding ? CharacterClip.BoardDown : CharacterClip.Board,
                 HeadingBetween(_returnFrom, end), _returnSeconds, true);
             if (u < 1f) return;
+            if (_moveRoute == BoardingRoute.Ladder && _moveKind == BoardingMoveKind.Disembarking)
+                Player.position -= HullRideOffsetNow(); // the deck root resumes its unridden frame
             EndBoardingMove();
             ApplyPlayerFor(Mode);
         }
@@ -2451,6 +2483,7 @@ namespace HiddenHarbours.Player
             _moveElapsed = 0f;
             _moveRoute = BoardingRoute.Step;
             _moveLadder = null;
+            _moveLadderLandingRelative = Vector2.zero;
             _moveGapMetres = 0f;
             _moveClimbSeconds = 0f;
             _moveLegTwoSeconds = 0f;
@@ -2466,7 +2499,23 @@ namespace HiddenHarbours.Player
         /// on the deck they were standing on (stepping ashore) — the latter re-clamped every tick so
         /// crossing the deck of a moving hull crosses the deck rather than the water beside it.</summary>
         private Vector3 ApproachStartWorld()
-            => _moveKind == BoardingMoveKind.Boarding ? _moveShoreWorld : DeckPointWorld(_moveDeckRelative);
+            => _moveKind == BoardingMoveKind.Boarding ? _moveShoreWorld : DeckPointWorld(_moveDeckRelative)
+                + (_moveRoute == BoardingRoute.Ladder ? HullRideOffsetNow() : Vector3.zero);
+
+        private Vector3 HullRideOffsetNow()
+        {
+            var ride = Boat != null ? Boat.GetComponent<IHullTideRide>() : null;
+            return Vector3.up * (ride != null ? ride.ScreenRiseNow() : 0f);
+        }
+
+        private Vector3 LadderLandingWorld()
+        {
+            var deck = DeckWalk;
+            Vector3 world;
+            if (deck == null || !deck.TryDeckPointWorldAtHeight(_moveLadderLandingRelative, BoardSpotHeightMeters, out world))
+                world = DeckPointWorld(_moveLadderLandingRelative);
+            return world + HullRideOffsetNow();
+        }
 
         /// <summary>Where the vault ENDS. Both answers are re-read every tick, and for the same reason: the
         /// arc must finish at the spot the transition is about to place the fisher at, or the landing pops.
@@ -2475,7 +2524,8 @@ namespace HiddenHarbours.Player
         /// while she is still in the zone, the boat's own spot the moment she drifts out of it.</summary>
         private Vector3 VaultEndWorld()
         {
-            if (_moveKind == BoardingMoveKind.Boarding) return BoardSeatWorld();
+            if (_moveKind == BoardingMoveKind.Boarding)
+                return _moveRoute == BoardingRoute.Ladder ? LadderLandingWorld() : BoardSeatWorld();
             return TryDisembarkLanding(out Vector3 landing) ? landing : _moveShoreWorld;
         }
 

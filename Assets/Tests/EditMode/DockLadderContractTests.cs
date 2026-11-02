@@ -37,6 +37,102 @@ namespace HiddenHarbours.Tests.EditMode
             public float WaterLevelAt(double seconds) => Water;
         }
 
+        // A flat, walkable deck reaching the foot isolates the handoff from PR 2's berth snugging.
+        private static HopRig LandingRig(float water, bool withLadder = true)
+        {
+            var rig = new HopRig();
+            rig.Player.position = new Vector3(86.2f, 87.35f, 0f);
+            rig.Boat.position = new Vector3(86.2f, 84.65f, 0f);
+            rig.Boat.rotation = Quaternion.Euler(0f, 0f, -90f);
+            var boat = rig.Boat.GetComponent<BoatController>();
+            boat.Hull.DraughtMeters = .3f;
+            GameServices.Environment = new DockSea { Water = water };
+            GameServices.TidalTerrain = new DockBed { Height = -6f };
+            rig.Boat.gameObject.AddComponent<HullTideRide>().Configure(0f, .3f);
+            var deck = ScriptableObject.CreateInstance<BoatDeckDef>();
+            rig.Own(deck);
+            deck.Id = "deck.ladder_landing_fixture";
+            deck.WalkHalfExtents = new Vector2(2f, 3f);
+            deck.Areas = new[] { DeckArea.From("floor", DeckAreaKind.Deck, new[] {
+                new Vector3(-2f, -3f, 0f), new Vector3(2f, -3f, 0f),
+                new Vector3(2f, 3f, 0f), new Vector3(-2f, 3f, 0f) }) };
+            BoatDeckAreas.Write(rig.Boat.gameObject, deck);
+            var landing = rig.Go("Landing", new Vector3(86.2f, 87.35f, 0f));
+            var dock = rig.Go("Dock", new Vector3(86.2f, 85.5f, 0f));
+            rig.Controls.Configure(rig.Walk, boat, null, dock.transform, 12f, landing.transform);
+            typeof(ControlSwitcher).GetField("_boardLocalOffset", BindingFlags.Instance | BindingFlags.NonPublic)
+                .SetValue(rig.Controls, Vector2.zero);
+            rig.Go("Quay", Vector3.zero).AddComponent<StandablePlatform>()
+                .Configure("wharf.landing_fixture", new Rect(78.6f, 86f, 15.2f, 2f), 3.4f);
+            if (withLadder)
+            {
+                var ladder = rig.Go("Ladder", new Vector3(86.2f, 86f, 0f)).AddComponent<WharfLadder>();
+                ladder.Configure("ladder.landing_fixture", 3.4f, 180f);
+                ladder.ConfigureClimbTop(1f);
+            }
+            return rig;
+        }
+
+        private static Vector3 LandingRide(HopRig rig)
+            => Vector3.up * rig.Boat.GetComponent<HullTideRide>().ScreenRiseNow();
+
+        [TestCase(2.2f)]
+        [TestCase(-2.2f)]
+        public void ALadderEndsUnderTheFootWhenTheDeckReachesIt(float water)
+        {
+            using var rig = LandingRig(water);
+            // Independent authored geometry: cap y87, standoff .275, top +3.4, camera elevation 40.
+            float footY = 87f - .275f * Mathf.Sin(40f * Mathf.Deg2Rad)
+                - (3.4f - water) * Mathf.Cos(40f * Mathf.Deg2Rad);
+            Assert.IsTrue(TimedBoarding.Interact(rig.Controls));
+            Assert.AreEqual(ControlMode.OnDeck, rig.Controls.Mode);
+            Vector3 drawn = rig.Player.position + LandingRide(rig);
+            Assert.LessOrEqual(Vector3.Distance(new Vector3(86.2f, footY, 0f), drawn), .25f,
+                "boarding keeps the foot's landing instead of sending her to the old seat");
+        }
+
+        [TestCase(2.2f)]
+        [TestCase(-2.2f)]
+        public void ALadderStepAshoreStartsAtTheRiddenDeckFigure(float water)
+        {
+            using var rig = LandingRig(water);
+            Assert.IsTrue(TimedBoarding.Interact(rig.Controls));
+            Vector3 drawn = rig.Player.position + LandingRide(rig);
+            Assert.IsTrue(rig.Controls.BeginInteract());
+            Assert.LessOrEqual(Vector3.Distance(drawn, rig.Player.position), .25f, "the mode handoff cannot unride her");
+            rig.Controls.TickBoardingMove(0f);
+            Assert.LessOrEqual(Vector3.Distance(drawn, rig.Player.position), .25f, "the approach starts at her picture");
+        }
+
+        [TestCase(2.2f)]
+        [TestCase(-2.2f)]
+        public void ALadderReturnKeepsTheRiddenDeckPointThroughItsHandoff(float water)
+        {
+            using var rig = LandingRig(water);
+            Assert.IsTrue(TimedBoarding.Interact(rig.Controls));
+            Vector3 drawn = rig.Player.position + LandingRide(rig);
+            Assert.IsTrue(rig.Controls.BeginInteract());
+            rig.Controls.TickBoardingMove(.1f);
+            typeof(ControlSwitcher).GetMethod("CancelBoardingMove", BindingFlags.Instance | BindingFlags.NonPublic)
+                .Invoke(rig.Controls, new object[] { true });
+            TimedBoarding.Complete(rig.Controls);
+            Assert.AreEqual(ControlMode.OnDeck, rig.Controls.Mode);
+            Assert.LessOrEqual(Vector3.Distance(drawn, rig.Player.position + LandingRide(rig)), .25f);
+        }
+
+        [TestCase(2.2f)]
+        [TestCase(-2.2f)]
+        public void TheStepRouteKeepsItsAuthoredUnriddenSeat(float water)
+        {
+            using var rig = LandingRig(water, withLadder: false);
+            Assert.IsTrue(rig.Controls.BeginInteract());
+            Assert.IsFalse(rig.Controls.IsLadderBoarding);
+            TimedBoarding.Complete(rig.Controls);
+            Assert.AreEqual(ControlMode.OnDeck, rig.Controls.Mode);
+            Assert.Less(Vector3.Distance(rig.Boat.position, rig.Player.position), .0001f,
+                "the authored centre seat on this flat deck stays unchanged on the step route");
+        }
+
         [TestCase(false)]
         [TestCase(true)]
         public void TheCapMovesEveryClimbLegWithoutMovingReachOrBerth(bool ascending)
@@ -143,7 +239,9 @@ namespace HiddenHarbours.Tests.EditMode
             public readonly Transform Boat;
             public readonly HopSave Save = new();
 
-            private GameObject Go(string name, Vector3 at)
+            public void Own(UnityEngine.Object item) => _owned.Add(item);
+
+            public GameObject Go(string name, Vector3 at)
             {
                 var go = new GameObject(name);
                 go.transform.position = at;

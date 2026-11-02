@@ -544,8 +544,8 @@ namespace HiddenHarbours.Tests.PlayMode
         // =============================================================================================
 
         /// <summary>
-        /// The climb lands the fisher exactly where boarding has always landed her, through the very same
-        /// <c>BoardDeck()</c> behind the very same gates. A new route must not become a new transition.
+        /// The climb lands at its foot through <c>BoardDeck()</c> behind the same gates and mode signal.
+        /// A different landing point must not become a different ownership transition.
         /// </summary>
         [UnityTest]
         public IEnumerator TheClimbLands_ThroughTheOrdinaryBoardingTransition()
