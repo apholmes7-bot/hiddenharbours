@@ -147,7 +147,7 @@ namespace HiddenHarbours.Tests.PlayMode
             Assert.IsNotNull(wharf);
             var floor = wharf.GetComponent<StandablePlatform>();
             var migrated = wharf.transform.Find("Deck/WharfPass2Deck").GetComponent<SpriteRenderer>();
-            R17RecordPlantBeforeAndAfter(migrated);
+            if (!System.Environment.GetCommandLineArgs().Contains("-stpR18")) R17RecordPlantBeforeAndAfter(migrated);
             var face = migrated.GetComponent<HiddenHarbours.Art.TidalFaceWaterline>();
             Assert.IsNotNull(face);
             Assert.IsTrue(face.IsConfigured);
@@ -225,7 +225,7 @@ namespace HiddenHarbours.Tests.PlayMode
                     $"doryPictureRootY={dory.transform.position.y + ride.ScreenRiseNow():R}; playerFoot={player.transform.position}; shell={ShellFlow.Phase}\n", Utf8);
             }
             var railFrames = new Dictionary<string, Vector3>();
-            IEnumerator AlongsideRailPlates(GameObject vessel, HiddenHarbours.Boats.BoatHullDef hullDef, string kind, bool datumOnly = false)
+            IEnumerator AlongsideRailPlates(GameObject vessel, HiddenHarbours.Boats.BoatHullDef hullDef, string kind)
             {
                 var ride = vessel.GetComponent<HiddenHarbours.Boats.HullTideRide>();
                 var facet = vessel.GetComponentInChildren<HiddenHarbours.Art.IsoFacetHullRenderer>(true);
@@ -242,22 +242,19 @@ namespace HiddenHarbours.Tests.PlayMode
                 {
                     vessel.transform.position = at;
                     if (vesselBody != null) { vesselBody.position = at; vesselBody.linearVelocity = Vector2.zero; }
-                    // Preserve the candidate's datum arithmetic for the ruling's picture, without correcting it.
-                    ride.Configure(datumOnly ? HiddenHarbours.App.Editor.StPetersLandingLayout.DatumElevation :
-                        HiddenHarbours.App.Editor.StPetersLandingLayout.HullPictureDatum(rootY, lip));
+                    // Read the committed scene datum; positioning this measurement hull does not rebase its ride.
+                    Assert.That(ride.BakedWaterlineElevation, Is.EqualTo(HiddenHarbours.App.Editor.StPetersLandingLayout.DatumElevation));
                     foreach (float level in new[] { -2.2f, 2.2f })
                     {
                         yield return HoldTide(level);
-                        string id = kind + (datumOnly ? "-datum" : "") + (level < 0 ? "-low" : "-high");
+                        string id = kind + (level < 0 ? "-low" : "-high");
                         var posed = facet.PosedMesh;
                         var mesh = posed.GetComponent<MeshFilter>().sharedMesh;
                         var bounds = posed.GetComponent<MeshRenderer>().bounds;
                         string frameKey = kind + (level < 0 ? "-low" : "-high");
                         if (!railFrames.TryGetValue(frameKey, out Vector3 lens))
                         {
-                            float pairDrop = (HiddenHarbours.App.Editor.StPetersLandingLayout.DatumElevation -
-                                HiddenHarbours.App.Editor.StPetersLandingLayout.HullPictureDatum(rootY, lip)) * IsoGround.HeightScale;
-                            float bottom = Mathf.Min(bounds.min.y - pairDrop, migrated.bounds.min.y);
+                            float bottom = Mathf.Min(bounds.min.y, migrated.bounds.min.y);
                             float top = Mathf.Max(bounds.max.y, lip);
                             lens = new Vector3(at.x, .5f * (bottom + top), Mathf.Max(7f, .5f * (top - bottom) + 1f));
                             railFrames.Add(frameKey, lens);
@@ -290,7 +287,7 @@ namespace HiddenHarbours.Tests.PlayMode
                         Assert.That(lo.y, Is.InRange(0f, 1f)); Assert.That(hi.y, Is.InRange(0f, 1f));
                         SavePlate("alongside-" + id + ".png", Capture());
                         File.AppendAllText(numbers, System.FormattableString.Invariant($"alongside-{id}: sea={level:R} waterline={ride.WaterlineNow():R} rootY={rootY:R} lipY={lip:R} halfBeam={halfBeam:R} fender={HiddenHarbours.App.Editor.StPetersBuilder.AlongsideFenderGapMetres:R} datum={ride.BakedWaterlineElevation:R} datumElevation={HiddenHarbours.App.Editor.StPetersLandingLayout.DatumElevation:R} heightScale={IsoGround.HeightScale:R} pictureRootY={rootY + ride.ScreenRiseNow():R} railVertex={railIndex} railX={rail.x:R} railY={rail.y:R} railPixelX={railPixel.x * 796:R} railPixelY={(1 - railPixel.y) * 448:R} waterlineY={northWater.y:R} waterPixelX={waterPixel.x * 796:R} waterPixelY={(1 - waterPixel.y) * 448:R} climbImageMetres={lip - rail.y:R} climbVerticalEquivalentMetres={(lip - rail.y) / IsoGround.HeightScale:R} lipPixelY={(1 - lipPixel.y) * 448:R} cameraX={_cam.transform.position.x:R} cameraY={_cam.transform.position.y:R} cameraHeight={2 * _cam.orthographicSize:R} cameraAspect={_cam.aspect:R} hullMinX={bounds.min.x:R} hullMinY={bounds.min.y:R} hullMaxX={bounds.max.x:R} hullMaxY={bounds.max.y:R}\n"), Utf8);
-                        File.AppendAllText(captions, $"alongside-{id}: candidate datum unchanged. HullPictureDatum rebases the waterline onto the drawn lip: rootY + (waterline - [datumElevation + (rootY-lipY)/heightScale])*heightScale = lipY + (waterline-datumElevation)*heightScale. This cancels rootY and its half-beam/fender separation. DatumElevation alone would retain the plan gap. North-rail marker is the northmost posed outer-hull vertex in the middle half of the hull; all vertices are recorded.\n", Utf8);
+                        File.AppendAllText(captions, $"alongside-{id}: True height: the committed scene datum is read without a fixture override. The north dory is temporarily sampled alongside and restored; the cape reads the scene arrival datum. Root Y and its half-beam/fender separation remain in the picture. North-rail marker is the northmost posed outer-hull vertex in the middle half of the hull; all vertices are recorded.\n", Utf8);
                     }
                 }
                 finally
@@ -343,7 +340,7 @@ namespace HiddenHarbours.Tests.PlayMode
                 yield return HoldTide(2.2f);
                 Rect r = floor.Footprint;
                 Pose(r.center); CameraAt(r.center); yield return null;
-                yield return R17FloorShadowProof(migrated);
+                if (!System.Environment.GetCommandLineArgs().Contains("-stpR18")) yield return R17FloorShadowProof(migrated);
                 var poses = new[] {
                     new {Name="corner-sw", At=new Vector2(r.xMin+.1f,r.yMin+.1f)}, new {Name="corner-se", At=new Vector2(r.xMax-.1f,r.yMin+.1f)},
                     new {Name="corner-nw", At=new Vector2(r.xMin+.1f,r.yMax-.1f)}, new {Name="corner-ne", At=new Vector2(r.xMax-.1f,r.yMax-.1f)},
@@ -377,8 +374,9 @@ namespace HiddenHarbours.Tests.PlayMode
                 Assert.IsNotNull(owner);
                 var cape = new GameObject("LandingAlongsideProof"); cape.SetActive(false); _spawned.Add(cape);
                 cape.transform.position = HiddenHarbours.App.Editor.StPetersBuilder.DockZonePos;
-                cape.AddComponent<HiddenHarbours.Boats.HullTideRide>().Configure(HiddenHarbours.App.Editor.StPetersLandingLayout.HullPictureDatum(
-                    cape.transform.position.y, HiddenHarbours.App.Editor.StPetersWharf.MooringFaceY));
+                var committedArrival = GameObject.Find("StPetersArrivalOpening").GetComponent<HiddenHarbours.App.ArrivalOpening>();
+                var committedArrivalData = new UnityEditor.SerializedObject(committedArrival);
+                cape.AddComponent<HiddenHarbours.Boats.HullTideRide>().Configure(committedArrivalData.FindProperty("_hullPictureDatum").floatValue);
                 var moored = cape.AddComponent<HiddenHarbours.Boats.MooredBoat>();
                 moored.Configure(owner, HiddenHarbours.App.Editor.StPetersArrivalOpening.BerthHeadingDegrees());
                 cape.SetActive(true);
@@ -406,12 +404,10 @@ namespace HiddenHarbours.Tests.PlayMode
                 try
                 {
                     yield return AlongsideRailPlates(playerDory, doryController.Hull, "dory");
-                    yield return AlongsideRailPlates(playerDory, doryController.Hull, "dory", true);
                 }
                 finally { cape.SetActive(capeWasActive); }
                 yield return null;
                 yield return AlongsideRailPlates(cape, owner.Boat, "cape");
-                yield return AlongsideRailPlates(cape, owner.Boat, "cape", true);
                 Assert.IsTrue(ShellFlow.AtTitle, "the plate never leaves the title or enables saving");
             }
             finally

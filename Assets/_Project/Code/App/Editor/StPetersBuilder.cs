@@ -1481,7 +1481,7 @@ namespace HiddenHarbours.App.Editor
                 CameraBackground = new Color(0.07f, 0.14f, 0.18f),   // St Peters' cool dawn water
                 PlayerStartPos   = StartSpawnPos,
                 BoatMooredPos    = DoryMooredPos,
-                BoatPictureDatum = StPetersLandingLayout.HullPictureDatum(DoryMooredY, StPetersWharf.NorthFaceY),
+                BoatPictureDatum = StPetersLandingLayout.DatumElevation,
                 BoatPier = StPetersWharf.DeckFootprint(),
                 BoatMooredHeadingDegrees = DoryMooredHeadingDegrees,   // she lies ALONGSIDE, not athwart
                 TideGatedWalk    = true,

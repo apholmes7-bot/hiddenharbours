@@ -21,8 +21,6 @@ namespace HiddenHarbours.App.Editor
         public static Rect Floor => new Rect(Number("x"), Number("y"), Number("width"), Number("depth"));
         public static Vector2 Datum => new Vector2(Number("datumX"), Number("datumY"));
         public static float DatumElevation => Number("datumElevation");
-        public static float HullPictureDatum(float rootY, float lipY) =>
-            DatumElevation + (rootY - lipY) / HiddenHarbours.Core.IsoGround.HeightScale;
         public static Vector2 Entry => new Vector2(Floor.xMin + Number("entryInset"), Floor.center.y);
         public static float StandingInset => Number("standingInset");
         public static float LadderInset => Number("ladderInset");

@@ -182,7 +182,7 @@ namespace HiddenHarbours.App.Editor
             patch.Edit(go, DockComponents(go, new[] { ride, group, sort }), "Dory: authored picture components");
             DockPut(scene, patch, MonoBehaviourYaml(ride, go.FileId, DockScript("HullTideRide"), new[]
             {
-                "  _bakedWaterlineElevation: " + F(StPetersLandingLayout.HullPictureDatum(StPetersBuilder.DoryMooredY, StPetersWharf.NorthFaceY)),
+                "  _bakedWaterlineElevation: " + F(StPetersLandingLayout.DatumElevation),
                 "  _draughtOverrideMetres: -1",
             }), "Dory: HullTideRide");
             DockPut(scene, patch, string.Join("\n", Header(210, group, "SortingGroup"), Unlinked,
@@ -235,7 +235,7 @@ namespace HiddenHarbours.App.Editor
             string a = DockVectorArray(arrival.Text, "_route", StPetersArrivalOpening.Route());
             a = SetField(a, "_berth", Vec2Yaml(StPetersArrivalOpening.Berth()));
             a = SetField(a, "_stepAshore", Vec2Yaml(StPetersArrivalOpening.StepAshore()));
-            string datum = F(StPetersLandingLayout.HullPictureDatum(StPetersBuilder.AlongsideBerthY, StPetersWharf.MooringFaceY));
+            string datum = F(StPetersLandingLayout.DatumElevation);
             a = Regex.IsMatch(a, @"(?m)^  _hullPictureDatum:") ? SetField(a, "_hullPictureDatum", datum) : a + "\n  _hullPictureDatum: " + datum;
             arrivalPatch.Edit(arrival, a, "ArrivalOpening: berth, step and hull picture datum");
             yield return arrivalPatch.Seal(scene);
