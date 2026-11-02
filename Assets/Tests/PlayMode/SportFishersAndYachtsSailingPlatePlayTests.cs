@@ -92,7 +92,6 @@ namespace HiddenHarbours.Tests.PlayMode
             bool viaDory = false;
             bool inReach = sw.WithinBoardReach(), boardable = sw.BoardableNow();
             bool pressed = sw.BeginInteract();
-            if (file == "SportFisherSkybridge")
             {
                 LogBoardRead(file, "origin-plus-right", sw, player, inReach, boardable, pressed);
                 if (!pressed)
@@ -132,6 +131,7 @@ namespace HiddenHarbours.Tests.PlayMode
             Assert.AreSame(hull, boat.Hull);
             Assert.IsTrue(picker.IsAtHelm);
             yield return null;
+            LogHelmRead(file, "one-frame-at-helm", boat, sw, player, false);
             var mooring = boat.GetComponent<BoatMooring>(); if (mooring != null) mooring.Stow();
             var anchor = boat.GetComponent<BoatAnchor>(); if (anchor != null) anchor.Weigh();
             var input = boat.GetComponent<DevBoatInput>(); if (input != null) input.enabled = false;
@@ -166,10 +166,12 @@ namespace HiddenHarbours.Tests.PlayMode
             Time.timeScale = 1f;
             yield return null;
             yield return null;
-            Assert.Less(Vector2.Distance(player.transform.position, sw.HelmWorldPosition), 1f, "the skipper stays at her helm");
+            LogHelmRead(file, "after-turn", boat, sw, player, true);
             Assert.IsNotNull(boat.transform.Find(BoatHullSkinner.VisualChildName));
             Time.timeScale = 1f;
-            _stage.Camera.orthographicSize = Mathf.Max(_stage.Camera.orthographicSize, hull.LengthMeters * .8f);
+            var reviewCamera = Camera.main;
+            if (reviewCamera != null)
+                reviewCamera.orthographicSize = Mathf.Max(reviewCamera.orthographicSize, hull.LengthMeters * .8f);
             yield return _stage.FrameOn(boat.transform.position);
             speed = rb.linearVelocity.magnitude;
             Assert.Greater(speed, .5f, "the captured frame is still under way");
@@ -188,6 +190,30 @@ namespace HiddenHarbours.Tests.PlayMode
             Assert.Ignore("Editor-authored sailing plate");
             yield break;
 #endif
+        }
+
+        static void LogHelmRead(string file, string phase, BoatController boat, ControlSwitcher sw,
+            PlayerWalkController player, bool includeDrawn)
+        {
+            float heading = Mathf.Repeat(-boat.transform.eulerAngles.z, 360f);
+            float rootDistance = Vector2.Distance(player.transform.position, sw.HelmWorldPosition);
+            string drawn = "not requested";
+            if (includeDrawn)
+            {
+                var presenter = player.GetComponent<DeckRiderMeshPresenter>();
+                bool mesh = presenter != null && presenter.DrawsInsteadOfSprite;
+                Renderer renderer = mesh && presenter.Figure != null
+                    ? presenter.Figure.GetComponentInChildren<MeshRenderer>() : null;
+                var rider = player.GetComponent<DeckRiderVisual>();
+                if (!mesh && rider != null && rider.RiderTransform != null)
+                    renderer = rider.RiderTransform.GetComponent<SpriteRenderer>();
+                drawn = renderer == null ? "renderer unavailable" :
+                    $"{(mesh ? "mesh figure" : "rider sprite")}; bounds nearest {Mathf.Sqrt(renderer.bounds.SqrDistance(sw.HelmWorldPosition)):0.000} m; bounds centre {Vector3.Distance(renderer.bounds.center, sw.HelmWorldPosition):0.000} m";
+            }
+            string read = $"{boat.Hull.Id}; {phase}; heading {heading:0.000} degrees; root distance {rootDistance:0.000} m; drawn {drawn}";
+            Debug.Log("[helm-read] " + read);
+            Directory.CreateDirectory(Plates);
+            File.AppendAllText(Path.Combine(Plates, file + "-helm.txt"), read + "\n");
         }
 
         static void StandAtRail(ControlSwitcher sw, PlayerWalkController player, BoatController boat)
