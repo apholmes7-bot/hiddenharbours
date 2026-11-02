@@ -670,12 +670,12 @@ namespace HiddenHarbours.App.Editor
                 new Prop(UtilityFamily, "pedestal", new Vector2(AtStation(9), GearRowY), sea,
                     "shore power, east end — two serve fourteen berths, which is what a creek affords"),
 
-                // ⚠️ NORTH of the parking, not south: Wharf Road passes within 1.2 m on the south side,
-                // and NineMileCreekMainland.RoadHalfWidth reserves 3 m of corridor that nothing may sit
-                // in. The first draft put it there and the corridor check caught it.
+                // One metre beyond the west parking's NORTH edge, clear of its parked trucks.
+                // The footprint sweep also keeps it outside the key scene's neighbouring pieces
+                // and the 3 m road corridor.
                 new Prop(UtilityFamily, "yardHydrant",
-                         new Vector2(NineMileCreekMainland.ParkingPos.x,
-                                     NineMileCreekMainland.ParkingPos.y + 3f), sea,
+                         new Vector2(NineMileCreekRoads.ParkingArea().center.x,
+                                     NineMileCreekRoads.ParkingArea().yMax + 1f), sea,
                     "a hydrant by the parking — the sheds are timber and the nearest engine is in town"),
             };
         }

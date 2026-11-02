@@ -26,6 +26,7 @@ Shader "HiddenHarbours/Plant"
             #pragma fragment Frag
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
             #include "Assets/_Project/Art/Shaders/Include/SpriteLightResponse.hlsl"
+            #include "Assets/_Project/Art/Shaders/Include/PlantWind.hlsl"
             TEXTURE2D(_MainTex); SAMPLER(sampler_MainTex);
             TEXTURE2D(_NormalTex); TEXTURE2D(_LightTex); TEXTURE2D(_DetailTex);
             CBUFFER_START(UnityPerMaterial)
@@ -45,8 +46,7 @@ Shader "HiddenHarbours/Plant"
                 float3 wp = TransformObjectToWorld(v.vertex);
                 // root.z is height above this cell's pivot, supplied by the mesh, independent of atlas UV.
                 float bend = v.root.z * v.root.z;
-                float gust = sin(dot(v.root.xy, float2(0.37, 0.21)) - _Time.y * 1.7);
-                float2 offset = _WindWorld.xy * _Sway * (0.65 + 0.35 * gust);
+                float2 offset = PlantWindOffset(v.root.xy, _Time.y, _WindWorld.xy, _Sway);
                 float best = 0; float2 direction = 0;
                 [loop] for (int w = 0; w < WALKERS_N; w++)
                 {
