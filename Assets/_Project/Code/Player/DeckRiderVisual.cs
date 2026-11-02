@@ -696,11 +696,38 @@ namespace HiddenHarbours.Player
             => _carried || _mode == ControlMode.OnDeck || (_mode == ControlMode.Aboard && _drawPilot);
 
         /// <summary>Where she is standing, in the hull's rig metres: the carrier's stated point while
-        /// carried, else the deck walk's point at its deck height. The ONE read the occupant slot, the
-        /// mesh figure's placement and the ride's lever arm all take.</summary>
+        /// carried, an interior helm anchor when the published helm has no reachable deck, otherwise
+        /// the deck walk's point at its deck height. The ONE read the occupant slot, the mesh figure's
+        /// placement and the ride's lever arm all take.</summary>
         private Vector3 StandPointRigLocal()
         {
             if (_carried) return _carriedStand;
+            if (_mode == ControlMode.Aboard && _boat != null && _boat.Hull != null)
+            {
+                var visual = _boat.Hull.Visual;
+                var deck = visual != null ? visual.Deck : null;
+                if (deck != null && deck.HasHelmStation)
+                {
+                    var station = new Vector2(deck.HelmStationLocalMeters.x, deck.HelmStationLocalMeters.y);
+                    bool stationOnDeck = false;
+                    if (deck.Areas != null)
+                    {
+                        foreach (DeckArea area in deck.Areas)
+                        {
+                            if (area != null && area.Kind == DeckAreaKind.Deck && DeckAreaMath.Contains(area, station))
+                            {
+                                stationOnDeck = true;
+                                break;
+                            }
+                        }
+                    }
+                    if (!stationOnDeck && visual.Interior != null && visual.Interior.Anchors != null)
+                    {
+                        foreach (var anchor in visual.Interior.Anchors)
+                            if (anchor != null && anchor.Id == "helm") return anchor.ReachPoint;
+                    }
+                }
+            }
             if (_deckWalk == null) return Vector3.zero;
             Vector2 stand = _deckWalk.DeckLocalPosition;
             return new Vector3(stand.x, stand.y, _deckWalk.DeckHeightMeters);
