@@ -12,6 +12,7 @@ using Unity.Profiling;
 using HiddenHarbours.App;
 using HiddenHarbours.Boats;
 using HiddenHarbours.Core;
+using HiddenHarbours.Economy;
 using HiddenHarbours.Player;
 #if UNITY_EDITOR
 using UnityEditor;
@@ -86,10 +87,25 @@ namespace HiddenHarbours.Tests.PlayMode
             for (int n = 0; n < picker.RosterCount; n++) { picker.Next(); if (picker.Current == hull) { found = true; break; } }
             Assert.IsTrue(found, file + " must be on the scene's F roster");
             yield return null;
+            var saved = GameServices.Save?.Current;
+            bool saveLive = GameServices.Save != null;
+            bool owned = saved?.OwnedBoats != null && saved.OwnedBoats.Contains(hull.Id);
+            bool repaired = saved?.RepairedBoats != null && saved.RepairedBoats.Contains(hull.Id);
+            bool boardableBeforeRepair = sw.BoardableNow();
+            string beforeRepair = $"{hull.Id}; before-repair; save live {(saveLive ? "yes" : "no")}; owned {(owned ? "yes" : "no")}; repaired {(repaired ? "yes" : "no")}; BoardableNow {boardableBeforeRepair}";
+            Debug.Log("[boarding-save] " + beforeRepair);
+            Directory.CreateDirectory(Plates);
+            File.AppendAllText(Path.Combine(Plates, file + "-boarding.txt"), beforeRepair + "\n");
+            if (file == "ExpeditionYacht120")
+                Assert.IsTrue(saveLive && owned && !repaired && !boardableBeforeRepair,
+                    "the first hull must meet the live save as owned, unrepaired and unboardable");
+            else
+                Assert.IsFalse(saveLive, "the later hulls must meet the reset null save");
+            // A sailing plate is about a working hull; a hull bought undamaged is marked repaired on purchase.
+            RepairLedger.MarkRepaired(GameServices.Save?.Current, hull.Id);
             // Start beside her at the scene's dock; only setup places the on-foot skipper.
             Assert.AreEqual(ControlMode.OnFoot, sw.Mode);
             player.transform.position = boat.transform.position + boat.transform.right;
-            bool viaDory = false;
             bool inReach = sw.WithinBoardReach(), boardable = sw.BoardableNow();
             bool pressed = sw.BeginInteract();
             {
@@ -100,19 +116,6 @@ namespace HiddenHarbours.Tests.PlayMode
                     inReach = sw.WithinBoardReach(); boardable = sw.BoardableNow();
                     pressed = sw.BeginInteract();
                     LogBoardRead(file, "rail-abeam", sw, player, inReach, boardable, pressed);
-                    if (!pressed)
-                    {
-                        viaDory = true;
-                        for (int n = 0; n < picker.RosterCount; n++)
-                        {
-                            picker.Next();
-                            if (picker.Current != null && picker.Current.Id == "boat.dory") break;
-                        }
-                        yield return null;
-                        StandAtRail(sw, player, boat);
-                        pressed = sw.BeginInteract();
-                        Debug.Log(file + ": direct rail boarding refused; boarding the dory before the F swap");
-                    }
                 }
             }
             Assert.IsTrue(pressed, "E boards this hull");
@@ -123,11 +126,6 @@ namespace HiddenHarbours.Tests.PlayMode
             Assert.IsTrue(sw.TakesTheHelmOnThisPress());
             Assert.IsTrue(sw.BeginInteract());
             Assert.AreEqual(ControlMode.Aboard, sw.Mode);
-            if (viaDory)
-            {
-                for (int n = 0; n < picker.RosterCount; n++) { picker.Next(); if (picker.Current == hull) break; }
-                yield return null;
-            }
             Assert.AreSame(hull, boat.Hull);
             Assert.IsTrue(picker.IsAtHelm);
             yield return null;
