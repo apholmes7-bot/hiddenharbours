@@ -125,7 +125,7 @@ namespace HiddenHarbours.Tests.EditMode
         {
             // At full ahead the feel pulls the Cape's 24 m back by 0.1469 and hands the view to the
             // ortho (the Pixel Perfect Camera stands down while it does), so a pixel is 2·ortho/H.
-            float pullBack = CameraFeel.PullBackTarget(CapeFullAheadMps, 0f, Shipped().Juice);
+            float pullBack = CameraFeel.PullBackTarget(CapeFullAheadMps, 0f, WithHistoricalPullBack().Juice);
             Assert.AreEqual(0.1469f, pullBack, 1e-4f, "premise: the shipped pull-back at 4.2 m/s, calm sea");
             float ortho = CameraFollow.OrthoSizeForWorldHeight(CapeAuthoredHeight) * (1f + pullBack);
             float[] want = { 2.7525f, 2.4773f, 1.8350f, 1.3763f, 1.3763f, 1.8350f };
@@ -189,6 +189,7 @@ namespace HiddenHarbours.Tests.EditMode
         public void ThroughTheRealFollow_ABand_LiftsTheCapeByHalfIt_AtEveryScreen()
         {
             GameServices.Config = Shipped();
+            float[] nativeShift = { 2.25f, 2.25f, 1.125f, 1.125f, 1.125f, 1.5f };
             for (int i = 0; i < Screens.Length; i++)
             {
                 Vector2Int s = Screens[i];
@@ -199,11 +200,11 @@ namespace HiddenHarbours.Tests.EditMode
                 HelmFootprint.Publish(Band(s));
                 Run(follow, frames: 240, dt: ShippedEaseSeconds / 8f);
 
-                Assert.AreEqual(CapeShiftAtRestMeters[i], follow.BandShiftMeters, 1e-5f,
+                Assert.AreEqual(nativeShift[i], follow.BandShiftMeters, 1e-5f,
                     $"{Name(s)}: 72·k px on the framing the screen shows");
                 Vector3 d = follow.transform.position - boat.position;
                 Assert.AreEqual(0f, d.x, 1e-4f, $"{Name(s)}: straight up the screen");
-                Assert.AreEqual(-CapeShiftAtRestMeters[i], d.y, 1e-4f,
+                Assert.AreEqual(-nativeShift[i], d.y, 1e-4f,
                     $"{Name(s)}: the view stands below her, so she sits higher on screen");
             }
         }
@@ -299,9 +300,9 @@ namespace HiddenHarbours.Tests.EditMode
         public void ThroughTheRealFollow_TheClampStillWins_AtARegionsEdge()
         {
             GameServices.Config = Shipped();
-            // A region whose bottom edge is 12.5 m below her: the 24 m view (half 12) may come down to
+            // A region with bottom -8.9375 m: the 16.875 m stop has half-view 8.4375 m and may come down to
             // -0.5 and no further — less than the 1.125 m the band asks.
-            GameServices.CurrentRegionBounds = new Rect(-500f, -12.5f, 1000f, 1000f);
+            GameServices.CurrentRegionBounds = new Rect(-500f, -8.9375f, 1000f, 1000f);
             Transform boat = Spawn("Boat").transform;
             CameraFollow follow = CapeAtTheHelm(Spawn("Cam"), boat, Screen1080, pixelPerfect: true);
             HelmFootprint.Publish(Band(Screen1080));
@@ -319,7 +320,7 @@ namespace HiddenHarbours.Tests.EditMode
         [Test]
         public void ThroughTheRealFollow_UnderWay_TheMetresAreTheFeelsFramingThatFrame()
         {
-            GameServices.Config = Shipped();
+            GameServices.Config = WithHistoricalPullBack();
             Transform boat = Spawn("Boat").transform;
             GameObject go = Spawn("Cam");
             CameraFollow follow = CapeAtTheHelm(go, boat, Screen1080, pixelPerfect: true);
@@ -332,7 +333,7 @@ namespace HiddenHarbours.Tests.EditMode
 
             Assert.AreEqual(72f * 2f * cam.orthographicSize / 1080f, follow.BandShiftMeters, 1e-6f,
                 "72 px at the ortho on screen this frame");
-            Assert.AreEqual(1.835f, follow.BandShiftMeters, 2e-3f, "1.835 m: 72 px of a 27.5 m view");
+            Assert.AreEqual(1.2903f, follow.BandShiftMeters, 2e-3f, "72 px of the snapped stop with the fixture pull-back");
         }
 
         [Test]
@@ -343,8 +344,8 @@ namespace HiddenHarbours.Tests.EditMode
             CameraFollow follow = CapeAtTheHelm(Spawn("Cam"), boat, Screen1080, pixelPerfect: false);
             HelmFootprint.Publish(Band(Screen1080));
             Run(follow, 8, ShippedEaseSeconds / 8f);
-            Assert.AreEqual(72f * CapeAuthoredHeight / 1080f, follow.BandShiftMeters, 1e-5f,
-                "her raw 24 m on the ortho: 72 px is 1.6 m");
+            Assert.AreEqual(72f * 16.875f / 1080f, follow.BandShiftMeters, 1e-5f,
+                "the snapped 16.875 m stop: 72 px is 1.125 m");
         }
 
         // ===== the arithmetic ========================================================================
@@ -367,7 +368,7 @@ namespace HiddenHarbours.Tests.EditMode
             // above the centre); the warning is the sea between her bow and the top of what covers the
             // bottom, in seconds of her way. The ruled strip stood on the 16 px margin and was 72 tall
             // (top 88); the band is 144 from the edge with the camera's 72 px back.
-            GameConfig cfg = Shipped();
+            GameConfig cfg = WithHistoricalPullBack();
             var cape = UnityEditor.AssetDatabase.LoadAssetAtPath<BoatHullDef>("Assets/_Project/Data/Boats/CapeIslander.asset");
             Assert.IsNotNull(cape);
             Assert.AreEqual(CapeAuthoredHeight, cape.CameraWorldHeightMeters, "premise");
@@ -394,6 +395,17 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         // ===== the rig ===============================================================================
+
+        private GameConfig WithHistoricalPullBack()
+        {
+            var fixture = Object.Instantiate(Shipped());
+            _spawned.Add(fixture);
+            var juice = fixture.Juice;
+            juice.SpeedPullBackFraction = 0.15f;
+            juice.SpeedPullBackSeaStateFraction = 0.05f;
+            fixture.Juice = juice;
+            return fixture;
+        }
 
         private static GameConfig Shipped()
         {
@@ -454,7 +466,7 @@ namespace HiddenHarbours.Tests.EditMode
             follow.Target = boat;
 
             Assert.IsTrue(follow.BoatLeadIsLive, "premise: the helm follows the boat");
-            Assert.AreEqual(16.875f, follow.WorldUnitsPerRenderedPixel * 1080f, 1e-3f,
+            Assert.AreEqual(screen.y / (32f * (screen.y >= 2160 ? 3 : screen.y >= 1080 ? 2 : 1)), follow.WorldUnitsPerRenderedPixel * screen.y, 1e-3f,
                 "premise: the Cape's 24 m frames on rung 2");
             if (pixelPerfect)
                 Assert.IsTrue(PixelPerfect(go).enabled, "premise: at rest the pixel-perfect framing has the view");
