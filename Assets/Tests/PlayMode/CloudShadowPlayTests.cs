@@ -249,10 +249,11 @@ namespace HiddenHarbours.Tests.PlayMode
             if (ReferenceEquals(GameServices.Environment, _mood)) GameServices.Environment = _mood.Inner;
             yield return _stage.TearDown(); _stage = null;
             yield return Load("NineMileCreek");
-            var wall = Object.FindObjectsByType<Renderer>(FindObjectsSortMode.None)
+            // NorthWall is the authored standable-platform transform, not a renderer.
+            var wall = Object.FindObjectsByType<Transform>(FindObjectsSortMode.None)
                 .FirstOrDefault(x => x.gameObject.scene.name == "NineMileCreek" && x.name == "NorthWall");
             Assert.That(wall, Is.Not.Null, "read the quay station from the loaded scene");
-            Target(new Vector2(wall.bounds.center.x, wall.bounds.center.y), 1280, 720);
+            Target((Vector2)wall.position, 1280, 720);
             yield return Plate("nmc-wharf-noon", 720, 0, 0);
         }
 
