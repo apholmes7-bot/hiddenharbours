@@ -82,6 +82,8 @@ namespace HiddenHarbours.Vehicles
         {
             get
             {
+                // A trip owns this machine even while its driver is at a post and the wheel is free.
+                if (GetComponent<ScheduledTrip>() != null) return false;
                 VehicleDef v = Vehicle;
                 if (v == null || !v.IsUsable()) return false;
                 if (_controller == null) _controller = GetComponent<VehicleController>();
@@ -261,10 +263,10 @@ namespace HiddenHarbours.Vehicles
         /// village should be — is not available, so it is neither resolved nor highlighted and the press
         /// falls through to whatever else is nearby.
         ///
-        /// <para><b>And not while somebody else has her wheel</b> (<see cref="DriveSeats"/>). A truck on
-        /// a scheduled trip is claimed from the moment her driver sets off for the door until he is back
-        /// on his feet at the far end, so she is neither offered nor highlighted while she is his. It is
-        /// a REFUSAL BY SILENCE rather than a notice, which is the cozy answer (P5) and the same one
+        /// <para>A ScheduledTrip reserves the machine at every hour, including Resting: its presenter
+        /// still poses the root while the driver is at his post. The seat registry also refuses a
+        /// machine while somebody else holds its wheel (<see cref="DriveSeats"/>).
+        /// It is a REFUSAL BY SILENCE rather than a notice, which is the cozy answer (P5) and the same one
         /// scenery gets: there is nothing to explain about a truck that is already somebody's.</para></summary>
         public bool IsAvailable => IsDrivable && !DriveSeats.IsOccupied(this);
 
