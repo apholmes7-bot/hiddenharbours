@@ -123,9 +123,9 @@ namespace HiddenHarbours.Tests.EditMode
         public void TheWholeDeckIsWalkableAtEveryTide_IncludingSpringHighWater()
         {
             // Every deck cell, at the highest and the lowest water the region ever reaches.
-            foreach (var cell in StPetersWharf.DeckCellsBackToFront())
+            foreach (var cell in LandingDockEvidence.PlankSamples())
             {
-                var p = new Vector2(cell.x + 0.5f, cell.y + 0.5f);
+                var p = cell;
                 foreach (float level in new[] { SpringHighWater, 0f, SpringLowWater })
                 {
                     var tide = new FixedTide { Level = level };
@@ -177,7 +177,7 @@ namespace HiddenHarbours.Tests.EditMode
             var offEdges = new[]
             {
                 new Vector2(deck.xMax + 1f, 0f),                       // east, off the pier head
-                new Vector2(deck.center.x, deck.yMax + 1f),            // north
+                new Vector2(deck.xMax - .5f, deck.yMax + 1f),            // north
                 new Vector2(deck.center.x, deck.yMin - 1f),            // south, the mooring side
             };
 
@@ -299,33 +299,14 @@ namespace HiddenHarbours.Tests.EditMode
         [Test]
         public void TheDeckFootprintCoversExactlyThePlacedDeckCells()
         {
-            Rect deck = StPetersWharf.DeckFootprint();
-            var cells = StPetersWharf.DeckCellsBackToFront().ToList();
-
-            foreach (var cell in cells)
-            {
-                // A cell occupies [x, x+1) × [y, y+1); every corner and the centre must be on the deck.
-                foreach (var probe in new[]
-                {
-                    new Vector2(cell.x,        cell.y),
-                    new Vector2(cell.x + 1f,   cell.y),
-                    new Vector2(cell.x,        cell.y + 1f),
-                    new Vector2(cell.x + 1f,   cell.y + 1f),
-                    new Vector2(cell.x + 0.5f, cell.y + 0.5f),
-                })
-                    Assert.IsTrue(StandablePlatform.Contains(deck, probe),
-                        $"{probe} belongs to placed deck cell {cell} but is outside the registered footprint " +
-                        $"{deck} — the sprites and the floor have drifted apart");
-            }
-
-            // …and nothing beyond them. The footprint must be the deck, not a generous box around it.
-            Assert.AreEqual(StPetersWharf.RootCellX, deck.xMin, 1e-4f, "the footprint starts at the pier root");
-            Assert.AreEqual(StPetersWharf.HeadCellX + 1, deck.xMax, 1e-4f, "…and ends at the far edge of the head cell");
-            Assert.AreEqual(StPetersWharf.MinCellY, deck.yMin, 1e-4f, "the footprint's south lip is the deck's");
-            Assert.AreEqual(StPetersWharf.MaxCellY + 1, deck.yMax, 1e-4f, "…and its north lip too");
-            Assert.AreEqual(cells.Count, Mathf.RoundToInt(deck.width * deck.height),
-                "one square metre of footprint per placed deck tile — the rect is DERIVED from the cell " +
-                "geometry, so it cannot drift from the sprites the way a second copy of the numbers would");
+            // Ruling 5 retires the atlas-cell premise. The measured top is the placed deck now.
+            Rect deck = StPetersWharf.DeckFootprint(), picture = LandingDockEvidence.WalkingTop;
+            Assert.AreEqual(picture.xMin, deck.xMin, 1e-4f, "the west end");
+            Assert.AreEqual(picture.xMax, deck.xMax, 1e-4f, "the east end");
+            Assert.AreEqual(picture.yMin, deck.yMin, 1e-4f, "the south lip");
+            Assert.AreEqual(picture.yMax, deck.yMax, 1e-4f, "the north lip");
+            foreach (Vector2 p in LandingDockEvidence.PlankSamples())
+                Assert.IsTrue(StandablePlatform.Contains(deck, p), "a measured plank point must be floor: " + p);
         }
     }
 }

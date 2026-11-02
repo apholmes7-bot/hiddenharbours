@@ -49,7 +49,7 @@ namespace HiddenHarbours.Tests.RigBaking
             Assert.That(c.scripts.Length, Is.EqualTo(6));
             foreach (var script in c.scripts)
                 Assert.That(RigRecipe.Sha256OfSource(script.path), Is.EqualTo(script.sha256), script.path);
-            Assert.That(c.tideFinding, Does.Contain("occlusion is absent"));
+            // The absence finding retired when the retained-height consumer was placed; the banked-deck agreement guards it.
         }
 
         [Test]

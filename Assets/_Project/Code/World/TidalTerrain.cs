@@ -218,6 +218,21 @@ namespace HiddenHarbours.World
         }
 
         /// <inheritdoc/>
+        [SerializeField] private Vector2 _northPocketFrom;
+        [SerializeField] private Vector2 _northPocketTo;
+        [SerializeField] private float _northPocketHalfWidth;
+        [SerializeField] private float _northPocketThalwegHalfWidth;
+        [SerializeField] private float _northPocketBedElevation;
+
+        public void ConfigureNorthPocket(Vector2 from, Vector2 to, float halfWidth, float flatHalfWidth, float bed)
+        {
+            _northPocketFrom = from;
+            _northPocketTo = to;
+            _northPocketHalfWidth = halfWidth;
+            _northPocketThalwegHalfWidth = flatHalfWidth;
+            _northPocketBedElevation = bed;
+        }
+
         public float ElevationAt(Vector2 worldPos) => ElevationAtZones(worldPos);
 
         /// <summary>
@@ -227,7 +242,11 @@ namespace HiddenHarbours.World
         /// the position wins), then carving the channel back down through the bar and the
         /// berth and its dredged approach back down through the reef.
         /// </summary>
-        public float ElevationAtZones(Vector2 worldPos)
+        public float ElevationAtZones(Vector2 worldPos) => NorthPocketElevation(
+            worldPos, ElevationAtWithoutNorthPocket(worldPos));
+
+        /// <summary>Base profile retained for repeatable painted-pocket generation.</summary>
+        public float ElevationAtWithoutNorthPocket(Vector2 worldPos)
         {
             // Deep harbour is the floor; the island and sandbar raise the ground above it where present.
             float e = _deepHarbourElevation;
@@ -283,6 +302,10 @@ namespace HiddenHarbours.World
 
             return e;
         }
+
+        public float NorthPocketElevation(Vector2 worldPos, float baseElevation) =>
+            Carve(baseElevation, worldPos, _northPocketFrom, _northPocketTo,
+                  _northPocketHalfWidth, _northPocketThalwegHalfWidth, _northPocketBedElevation);
 
         /// <summary>
         /// Cut a channel along <paramref name="from"/>→<paramref name="to"/> into the ground at

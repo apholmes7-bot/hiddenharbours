@@ -432,18 +432,21 @@ namespace HiddenHarbours.Tests.EditMode
 
             // The ratified disembark point lands ON the planks: that is the reason the pier is this long.
             Vector2 disembark = StPetersBuilder.DisembarkPos;
-            Assert.GreaterOrEqual(disembark.x, StPetersWharf.RootCellX,
+            Assert.GreaterOrEqual(disembark.x, LandingDockEvidence.WalkingTop.xMin,
                 "the ratified disembark must fall inside the deck's footprint");
-            Assert.LessOrEqual(disembark.x, StPetersWharf.HeadCellX + 1,
+            Assert.LessOrEqual(disembark.x, LandingDockEvidence.WalkingTop.xMax,
                 "the ratified disembark must fall inside the deck's footprint");
-            Assert.GreaterOrEqual(disembark.y, StPetersWharf.MinCellY,
+            Assert.GreaterOrEqual(disembark.y, LandingDockEvidence.WalkingTop.yMin,
                 "the ratified disembark must fall inside the deck's width");
-            Assert.LessOrEqual(disembark.y, StPetersWharf.MaxCellY + 1,
+            Assert.LessOrEqual(disembark.y, LandingDockEvidence.WalkingTop.yMax,
                 "the ratified disembark must fall inside the deck's width");
 
-            // And the mooring is just off the head, not under it.
-            Assert.Greater(StPetersBuilder.DoryMooredPos.x, StPetersWharf.HeadCellX,
-                "the boat lies off the pier head — a mooring under the planks is a mooring you cannot see");
+            // The dory is alongside the north face. Measure her whole outline, not the old x-only proxy.
+            var dory = HullFootprint.FromHeading(StPetersBuilder.DoryMooredPos,
+                StPetersBuilder.DoryMooredHeadingDegrees, StPetersBuilder.DoryLengthMetres, StPetersBuilder.DoryHalfBeamMetres);
+            Rect top = LandingDockEvidence.WalkingTop;
+            var planks = HullFootprint.FromHeading(top.center, 90f, top.width, top.height * .5f);
+            Assert.That(dory.SignedGapTo(planks), Is.InRange(.3f, .5f), "her whole hull is fendered clear of the planks");
         }
 
         [Test]
@@ -579,10 +582,10 @@ namespace HiddenHarbours.Tests.EditMode
 
                 // On or immediately at the deck's footprint — a bollard floating beside the pier is worse
                 // than no bollard.
-                Assert.GreaterOrEqual(f.Position.x, StPetersWharf.RootCellX - 0.5f, $"{f.Name} is west of the pier");
-                Assert.LessOrEqual(f.Position.x, StPetersWharf.HeadCellX + 1.5f, $"{f.Name} is east of the pier");
-                Assert.GreaterOrEqual(f.Position.y, StPetersWharf.MinCellY - 0.5f, $"{f.Name} is south of the pier");
-                Assert.LessOrEqual(f.Position.y, StPetersWharf.MaxCellY + 1f, $"{f.Name} is north of the pier");
+                Assert.GreaterOrEqual(f.Position.x, LandingDockEvidence.WalkingTop.xMin, $"{f.Name} is west of the pier");
+                Assert.LessOrEqual(f.Position.x, LandingDockEvidence.WalkingTop.xMax, $"{f.Name} is east of the pier");
+                Assert.GreaterOrEqual(f.Position.y, LandingDockEvidence.WalkingTop.yMin, $"{f.Name} is south of the pier");
+                Assert.LessOrEqual(f.Position.y, LandingDockEvidence.WalkingTop.yMax, $"{f.Name} is north of the pier");
             }
 
             // Nothing commercial: this is a modest island wharf, not a freight berth.

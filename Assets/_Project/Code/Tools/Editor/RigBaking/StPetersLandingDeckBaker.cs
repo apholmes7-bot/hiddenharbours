@@ -40,14 +40,25 @@ namespace HiddenHarbours.Tools.RigBaking
         [Serializable] public sealed class ScriptHash { public string path, sha256; }
 
         [Serializable]
+        public sealed class MeasuredSurface
+        {
+            public float x, y, width, depth, datumX, datumY, datumElevation;
+            public int northLipRow, southLipRow, westEndColumn, eastEndColumn;
+            public float entryInset, standingInset, ladderInset, cleatInset, lampRootInset;
+            public float basilEndInset, basilNorthInset, southPocketFromX, southPocketToX, southPocketY;
+            public Vector2[] westConnector;
+        }
+
+        [Serializable]
         public sealed class Contract
         {
             public string schema = "hidden-harbours/stp-landing-deck@1";
             public string recipeSha256, albedoSha256, heightSha256;
-            public string tideFinding = "Under-pier tide occlusion is absent; the rig height channel is retained for the later consumer.";
+            public string tideFinding = "The retained height channel clips the pier at the existing published sea level.";
             public int width, height, importSizeCap;
             public float pivotX, pivotY, pixelsPerUnit, originX, originY;
             public float heightMinRigZ, heightRange, datumShift;
+            public MeasuredSurface surface;
             public ScriptHash[] scripts;
             public BedPoint[] bed;
         }
@@ -177,6 +188,7 @@ namespace HiddenHarbours.Tools.RigBaking
                 originY = recipe.originY - recipe.datumShift * (float)host.EvaluateNumber("WharfRig2.CE"),
                 heightMinRigZ = pixels.HeightMinRigZ, heightRange = pixels.HeightRange, datumShift = recipe.datumShift,
                 importSizeCap = recipe.importSizeCap, bed = bed, scripts = hashes.ToArray(),
+                surface = File.Exists(Abs(ContractPath)) ? ReadContract().surface : null,
                 albedoSha256 = Sha(pixels.Albedo), heightSha256 = Sha(pixels.HeightMap),
             };
             File.WriteAllText(Abs(ContractPath), JsonUtility.ToJson(contract, true) + "\n", new UTF8Encoding(false));

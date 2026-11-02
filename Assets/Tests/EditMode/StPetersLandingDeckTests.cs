@@ -3,6 +3,8 @@ using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
+using System.Globalization;
+using System.Text.RegularExpressions;
 using HiddenHarbours.App.Editor;
 using HiddenHarbours.Core;
 using NUnit.Framework;
@@ -116,12 +118,70 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         [Test]
+        public void DeckPictureLandsOnTheFloorTheGameWalks()
+        {
+            Rect picture = FrozenPictureFloor();
+            Rect floor = StPetersWharf.DeckFootprint();
+            const float OneNativePixel = 1f / 32f;
+            Assert.That(floor.yMax, Is.EqualTo(picture.yMax).Within(OneNativePixel), "north lip");
+            Assert.That(floor.yMin, Is.EqualTo(picture.yMin).Within(OneNativePixel), "south lip");
+            Assert.That(floor.xMin, Is.EqualTo(picture.xMin).Within(OneNativePixel), "west end");
+            Assert.That(floor.xMax, Is.EqualTo(picture.xMax).Within(OneNativePixel), "east end");
+        }
+
+        [Test]
+        public void EveryDeckEdgeFittingAndLandingDeckRowStandsOnThePictureFloor()
+        {
+            Rect picture = FrozenPictureFloor();
+            Rect floor = StPetersWharf.DeckFootprint();
+            foreach (var fitting in StPetersWharf.Fittings())
+            {
+                Assert.That(HiddenHarbours.World.StandablePlatform.Contains(floor, fitting.Position),
+                    Is.True, fitting.Name + " belongs to the registered floor");
+                Assert.That(HiddenHarbours.World.StandablePlatform.Contains(picture, fitting.Position),
+                    Is.True, fitting.Name + " stands on the picture");
+            }
+            string asset = File.ReadAllText(Path.Combine(ProjectRoot,
+                "Assets/_Project/Data/KeyScenes/KeyScene_stp_landing.asset")).Replace("\r\n", "\n");
+            foreach (string row in Regex.Split(asset, @"(?m)^  - Id: ").Skip(1))
+            {
+                if (!Regex.IsMatch(row, @"(?m)^    StandsOn: deck$")) continue;
+                string id = row.Substring(0, row.IndexOf('\n'));
+                bool hasFoot = Regex.IsMatch(row, @"(?m)^    HasFoot: 1$");
+                Match point = Regex.Match(row, @"(?m)^    " + (hasFoot ? "Foot" : "At") +
+                    @": \{x: ([-+0-9.Ee]+), y: ([-+0-9.Ee]+)\}");
+                Assert.That(point.Success, Is.True, id + " has its recorded foot");
+                var at = new Vector2(float.Parse(point.Groups[1].Value, CultureInfo.InvariantCulture),
+                    float.Parse(point.Groups[2].Value, CultureInfo.InvariantCulture));
+                Assert.That(HiddenHarbours.World.StandablePlatform.Contains(floor, at), Is.True, id + " registered floor");
+                Assert.That(HiddenHarbours.World.StandablePlatform.Contains(picture, at), Is.True, id + " picture floor");
+            }
+        }
+
+        // Independent measurements of the frozen image: its lip rows and end planes, not values
+        // read from the layout implementation. The existing pixel oracle pins the image itself.
+        static Rect FrozenPictureFloor()
+        {
+            string text = File.ReadAllText(Path.Combine(ProjectRoot, StPetersLandingDeckBaker.ContractPath));
+            float Number(string key)
+            {
+                Match match = Regex.Match(text, "\"" + key + "\"\\s*:\\s*([-+0-9.Ee]+)");
+                Assert.That(match.Success, Is.True, "frame metadata: " + key);
+                return float.Parse(match.Groups[1].Value, CultureInfo.InvariantCulture);
+            }
+            float ppu = Number("pixelsPerUnit");
+            float west = Number("originX") + (11 - Number("pivotX")) / ppu;
+            float south = Number("originY") + (Number("pivotY") - 125) / ppu;
+            return new Rect(west, south, (987 - 11) / ppu, (125 - 6) / ppu);
+        }
+
+        [Test]
         public void SurfaceFootprintAndBothBerthEdgesKeepTheirBaseValues()
         {
             Assert.That(StPetersWharf.SurfaceId, Is.EqualTo("wharf.st_peters"));
-            Assert.That(StPetersWharf.DeckFootprint(), Is.EqualTo(new Rect(183, -3, 31, 6)));
-            Assert.That(StPetersWharf.MooringFaceY, Is.EqualTo(-3f));
-            Assert.That(StPetersWharf.NorthFaceY, Is.EqualTo(3f));
+            Assert.That(StPetersWharf.DeckFootprint(), Is.EqualTo(FrozenPictureFloor()));
+            Assert.That(StPetersWharf.MooringFaceY, Is.EqualTo(2.53345215f).Within(1e-6f));
+            Assert.That(StPetersWharf.NorthFaceY, Is.EqualTo(6.25220215f).Within(1e-6f));
             Assert.That(StPetersWharf.DeckCellsBackToFront().Count(), Is.EqualTo(186));
         }
 
@@ -137,17 +197,17 @@ namespace HiddenHarbours.Tests.EditMode
         [Test]
         public void BothLampOwnersAndTheirDerivedRowRemainUnchanged()
         {
-            Assert.That(StPetersWharf.LampRowY, Is.EqualTo(0.5f));
+            Assert.That(StPetersWharf.LampRowY, Is.EqualTo(5.75220215f).Within(1e-6f));
             var lamps = StPetersWharf.LampPostSites();
             Assert.That(lamps.Count, Is.EqualTo(2));
-            CollectionAssert.AreEqual(new[] { new Vector2(211.5f, 0.5f), new Vector2(184.5f, 0.5f) },
+            CollectionAssert.AreEqual(new[] { new Vector2(211f, 5.75220215f), new Vector2(184.5f, 5.75220215f) },
                 lamps.Select(l => l.Position).ToArray());
             foreach (var lamp in lamps)
             {
                 Assert.That(lamp.Family, Is.EqualTo("wharfDecor"));
                 Assert.That(lamp.Key, Is.EqualTo("lanternPost"));
                 Assert.That(lamp.Heading, Is.EqualTo(180f));
-                Assert.That(lamp.Deck, Is.EqualTo(new Rect(183, -3, 31, 6)));
+                Assert.That(lamp.Deck, Is.EqualTo(FrozenPictureFloor()));
             }
         }
 
@@ -176,16 +236,15 @@ namespace HiddenHarbours.Tests.EditMode
         {
             string source = File.ReadAllText(Path.Combine(ProjectRoot, "Assets/_Project/Code/App/Editor/StPetersWharf.cs")).Replace("\r\n", "\n");
             StringAssert.Contains("floor.Configure(SurfaceId, DeckFootprint(), deckElevation);", source);
-            Assert.That(Sha(Body(source, "public static float LampRowY")), Is.EqualTo("0092fd160dcbf483b8baafac06b2ff1877811ff6e26d2fa5ffd604e68c22c005"));
-            Assert.That(Sha(Body(source, "public static IReadOnlyList<LampPosts.Site> LampPostSites()")), Is.EqualTo("22edea8efbe9768656e27a8db136907cf75606c4a195e197c7a5079a4c81bfcb"));
-            int floor = source.IndexOf("public static Rect DeckFootprint()", StringComparison.Ordinal);
-            Assert.That(Sha(source.Substring(floor, source.IndexOf("// --- FITTINGS", floor, StringComparison.Ordinal) - floor).TrimEnd()),
-                Is.EqualTo("ee442c5703797afec15e6b4651cbae23c216ae539e85b09ad5eb77f93ec28ae9"));
+            // Ruling 5 retires the old positional hashes. Keep all non-placement content pinned.
+            var evidence = LandingDockEvidence.Load();
             int fittings = source.IndexOf("// Fittings, on their own root", StringComparison.Ordinal);
             Assert.That(Sha(source.Substring(fittings, source.IndexOf("            Debug.Log($\"[StPetersWharf] Built", fittings, StringComparison.Ordinal) - fittings).TrimEnd()),
                 Is.EqualTo("ed356dc1434f6d2ab24615975bacccd1f530e038c7d093bddeb2888d46a75aa3"));
-            Assert.That(Sha(File.ReadAllText(Path.Combine(ProjectRoot, "Assets/_Project/Data/KeyScenes/KeyScene_stp_landing.asset")).Replace("\r\n", "\n")),
-                Is.EqualTo("1496c74bbf96967cc07a6169666ae9533aec03fc126deefbd101c1cd39c691d6"));
+            string rows = File.ReadAllText(Path.Combine(ProjectRoot, "Assets/_Project/Data/KeyScenes/KeyScene_stp_landing.asset")).Replace("\r\n", "\n");
+            string nonPlacement = Regex.Replace(rows, @"(?ms)^  - Id: (\S+)\n(.*?)(?=^  - Id:|\z)", m =>
+                evidence.placementIds.Contains(m.Groups[1].Value) ? Regex.Replace(m.Value, @"(?m)^    (At|SortY): .*\n", "") : m.Value);
+            Assert.That(Sha(nonPlacement), Is.EqualTo(evidence.landingNonPlacementSha256));
         }
 
         [Test]
@@ -205,8 +264,8 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.That(r.importSizeCap, Is.EqualTo(2048));
             Assert.That(r.sourceSha256, Is.EqualTo("2d8bde76678511edfa188d3d5df58410dae14da69c862e1f7121a19c6778bb09"));
             StPetersLandingDeckBaker.CheckRecipe(r);
-            Assert.That(StPetersWharf.DeckFootprint(), Is.EqualTo(new Rect(183, -3, 31, 6)),
-                "The board's art span does not replace the existing standable surface.");
+            Assert.That(StPetersWharf.DeckFootprint(), Is.EqualTo(FrozenPictureFloor()),
+                "Ruling 5 makes the standable surface follow the measured picture; the recipe is unchanged.");
         }
 
         [Test]
@@ -214,11 +273,11 @@ namespace HiddenHarbours.Tests.EditMode
         {
             var scene = SceneYaml.Parse(File.ReadAllText(Path.Combine(ProjectRoot, ScenePath)));
             var wharf = scene.RootNamed("StPetersWharf");
-            var deck = scene.ChildNamed(scene.TransformOf(wharf), "Deck");
-            var ids = scene.SubtreeOf(wharf.FileId); ids.ExceptWith(scene.SubtreeOf(deck.FileId));
-            Assert.That(ids.Count, Is.EqualTo(57));
-            string text = string.Join("\n", ids.OrderBy(id => id).Select(id => scene.Get(id).Text));
-            Assert.That(Sha(text), Is.EqualTo("f5602131888ac8e2a7603323cccfc6bc052e6d9631883eefca6e453d77987811"));
+            var proof = LandingDockEvidence.Load();
+            Assert.That(scene.SubtreeOf(wharf.FileId).Count, Is.EqualTo(proof.expectedWharfDocuments));
+            string text = string.Join("\n", proof.protectedWharfIds.OrderBy(id => id).Select(id => scene.Require(id, "protected wharf document").Text));
+            Assert.That(proof.protectedWharfIds.Length, Is.EqualTo(39));
+            Assert.That(Sha(text), Is.EqualTo(proof.protectedWharfSha256));
         }
 
         static string Fixture()
@@ -251,6 +310,22 @@ namespace HiddenHarbours.Tests.EditMode
                     "  m_Materials:\n  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}\n");
             }
             return sb.ToString();
+        }
+
+        [Test]
+        public void BankedDockMatchesItsBuilders_AndTheNamedPatchHasNothingLeftToChange()
+        {
+            var go = new GameObject("LandingDockBuilderAgreement");
+            try
+            {
+                var terrain = go.AddComponent<HiddenHarbours.World.TidalTerrain>();
+                StPetersBuilder.ConfigureTidalTerrain(terrain);
+                var scene = SceneYaml.Parse(File.ReadAllText(Path.Combine(ProjectRoot, ScenePath)));
+                var operations = new System.Collections.Generic.List<DockOperation>();
+                PlanLandingDock(scene, terrain, new EditorNavMarkAssets(), operations);
+                Assert.That(operations, Is.Empty, string.Join("\n", operations.Select(o => o.kind + " " + o.name)));
+            }
+            finally { UnityEngine.Object.DestroyImmediate(go); }
         }
 
         static readonly SpriteRef FixtureSprite = new SpriteRef(

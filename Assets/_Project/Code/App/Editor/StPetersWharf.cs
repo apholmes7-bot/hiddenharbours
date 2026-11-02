@@ -99,6 +99,7 @@ namespace HiddenHarbours.App.Editor
         // row draws last.
         public const int SortingOrderMin = -4;
         public const int SortingOrderMax = 1;
+        public const int BakedDeckSortingOrder = 0;
 
         /// <summary>
         /// Sorting order for a deck row. North (high Y) draws FIRST/behind, south draws LAST/in front —
@@ -158,9 +159,8 @@ namespace HiddenHarbours.App.Editor
         /// geometry): cells <c>[RootCellX, HeadCellX]</c> × <c>[MinCellY, MaxCellY]</c>, each one metre, so
         /// the rect spans <c>HeadCellX + 1</c> and <c>MaxCellY + 1</c> at its far edges.
         /// </summary>
-        public static Rect DeckFootprint() => new Rect(
-            RootCellX, MinCellY,
-            LengthCells, WidthCells);
+        // The atlas grid is retained for the OFF fixture. The active walking top is measured data.
+        public static Rect DeckFootprint() => StPetersLandingLayout.Floor;
 
         /// <summary>
         /// The deck's standing height (m above chart datum), <b>MEASURED off the terrain</b> at the pier
@@ -175,7 +175,7 @@ namespace HiddenHarbours.App.Editor
         /// point because it is the one place where the planks meet walkable ground.</para>
         /// </summary>
         public static float DeckElevationFrom(ITidalTerrain terrain)
-            => terrain.ElevationAt(new Vector2(RootCellX + 0.5f, 0f));
+            => terrain.ElevationAt(StPetersLandingLayout.Datum);
 
         // --- FITTINGS ---------------------------------------------------------------------------------
         // Modest, and each one earns its place: you moor to the bollards, you climb the ladder from a
@@ -199,7 +199,8 @@ namespace HiddenHarbours.App.Editor
         /// is a different line the moment either of them moves. Re-site the pier and the arrival turns
         /// with it.</para>
         /// </summary>
-        public static Vector2 AxisInward() => new Vector2(RootCellX - HeadCellX, 0f).normalized;
+        public static Vector2 AxisInward() =>
+            new Vector2(DeckFootprint().xMin - DeckFootprint().xMax, 0f).normalized;
 
         /// <summary>
         /// The deck edge a hull ties up against: the <b>SOUTH</b> lip.
@@ -264,26 +265,28 @@ namespace HiddenHarbours.App.Editor
         public static List<Fitting> Fittings()
         {
             var list = new List<Fitting>();
-            float southEdge = MinCellY;          // the deck's south lip, in world metres
+            Rect deck = DeckFootprint();
+            float southEdge = deck.yMin;
+            float inset = StPetersLandingLayout.StandingInset;
 
             // Bollards down the mooring edge, from the head back toward the shore.
-            for (int x = HeadCellX - 1; x > RootCellX + 1; x -= BollardSpacing)
-                list.Add(new Fitting { Name = "bollard", Position = new Vector2(x + 0.5f, southEdge + 0.5f) });
+            for (float x = deck.xMax - 1.5f; x > deck.xMin + 1f; x -= BollardSpacing)
+                list.Add(new Fitting { Name = "bollard", Position = new Vector2(x, southEdge + inset) });
 
             // Tyre fenders, offset from the bollards so they read as a separate run of gear.
-            for (int x = HeadCellX - 5; x > RootCellX + 2; x -= BollardSpacing * 2)
-                list.Add(new Fitting { Name = "tyre", Position = new Vector2(x + 0.5f, southEdge) });
+            for (float x = deck.xMax - 5.5f; x > deck.xMin + 2f; x -= BollardSpacing * 2)
+                list.Add(new Fitting { Name = "tyre", Position = new Vector2(x, southEdge) });
 
             // A ladder at the head — how you get aboard a shallow boat at low water, and the one fitting
             // the "modest but takes powerboats" brief genuinely requires.
-            list.Add(new Fitting { Name = "ladder", Position = new Vector2(HeadCellX - 1.5f, southEdge) });
+            list.Add(new Fitting { Name = "ladder", Position = new Vector2(deck.xMax - StPetersLandingLayout.LadderInset, southEdge) });
 
             // The pier's own structure showing at the exposed corners.
-            list.Add(new Fitting { Name = "pilehead", Position = new Vector2(HeadCellX + 0.5f, southEdge + 0.5f) });
-            list.Add(new Fitting { Name = "pilehead", Position = new Vector2(HeadCellX + 0.5f, MaxCellY + 0.5f) });
+            list.Add(new Fitting { Name = "pilehead", Position = new Vector2(deck.xMax - inset, southEdge + inset) });
+            list.Add(new Fitting { Name = "pilehead", Position = new Vector2(deck.xMax - inset, deck.yMax - inset) });
 
             // One cleat by the ladder, for a painter line.
-            list.Add(new Fitting { Name = "cleat", Position = new Vector2(HeadCellX - 3.5f, southEdge + 0.5f) });
+            list.Add(new Fitting { Name = "cleat", Position = new Vector2(deck.xMax - StPetersLandingLayout.CleatInset, southEdge + inset) });
 
             return list;
         }
@@ -310,12 +313,12 @@ namespace HiddenHarbours.App.Editor
         {
             get
             {
-                float fittingRow = MinCellY + 0.5f;                       // where the bollards stand
+                float fittingRow = DeckFootprint().yMin + StPetersLandingLayout.StandingInset;
                 float reach = LightPresets.ReachMetres(LightPresets.Kind.Lightpost);
                 float furthestNorth = fittingRow + reach;
                 // Deck rows are cell centres; take the northernmost that is still within reach.
-                float row = MaxCellY + 0.5f;
-                while (row > furthestNorth && row > MinCellY + 0.5f) row -= 1f;
+                float row = DeckFootprint().yMax - StPetersLandingLayout.StandingInset;
+                while (row > furthestNorth && row > fittingRow) row -= 1f;
                 return row;
             }
         }
@@ -362,7 +365,7 @@ namespace HiddenHarbours.App.Editor
                     "and across the planks the pilehead the dory lies against"),
 
                 LampPosts.OnDeck(LampPosts.DecorFamily, LampPosts.LanternPost,
-                    new Vector2(RootCellX + 1.5f, row), LooksAtTheDeck, deck,
+                    new Vector2(deck.xMin + StPetersLandingLayout.LampRootInset, row), LooksAtTheDeck, deck,
                     "the root: where the planks meet the shore, so the pier can be found from the beach " +
                     "in the dark"),
             };
@@ -418,7 +421,10 @@ namespace HiddenHarbours.App.Editor
             deckVisual.transform.position = new Vector3(contract.originX, contract.originY, 0);
             var deckRenderer = deckVisual.AddComponent<SpriteRenderer>();
             deckRenderer.sprite = deck;
-            deckRenderer.sortingOrder = SortingOrderMin;
+            deckRenderer.sortingOrder = BakedDeckSortingOrder;
+            deckVisual.AddComponent<TidalFaceWaterline>().ConfigureHeight(
+                AssetDatabase.LoadAssetAtPath<Texture2D>(StPetersLandingDeckBaker.HeightPath),
+                contract.heightMinRigZ, contract.heightRange, contract.datumShift);
             int placed = 1;
 
             // Fittings, on their own root and one order above the southernmost deck row so a bollard is

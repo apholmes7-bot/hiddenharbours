@@ -38,6 +38,17 @@ namespace HiddenHarbours.App.Editor
             var children = transform.FieldRefs("m_Children").Select(id => scene.Require(id, "deck child"))
                 .Select(tr => scene.Require(tr.FieldRef("m_GameObject"), "deck child object")).ToArray();
             bool migrated = children.Length == 1 && children[0].Field("m_Name") == LandingDeckVisualName;
+            if (migrated && scene.ComponentsOf(children[0]).Any(d =>
+                (d.Field("m_EditorClassIdentifier") ?? "").EndsWith(".TidalFaceWaterline", StringComparison.Ordinal)))
+            {
+                // The dock patch owns the retained-height consumer after the visual migration.
+                // A repeat migration must not delete that component or restore the old material.
+                Doc tr = scene.TransformOf(children[0]);
+                Doc sr = scene.ComponentsOf(children[0]).Single(d => d.ClassId == SpriteRendererClass);
+                if (ParseVec3(tr.Field("m_LocalPosition")) != (Vector3)origin || !ObjRef.Parse(sr.Field("m_Sprite")).SameTarget(sprite.Sprite))
+                    throw new Refusal("landing-deck: the dock's migrated visual differs from the requested sheet or origin.");
+                return new LayerPatch("landing-deck", "StPetersWharf/Deck", deck.FileId).Seal(scene);
+            }
             if (!migrated && (children.Length != StPetersWharf.LengthCells * StPetersWharf.WidthCells ||
                 children.Any(go => !Regex.IsMatch(go.Field("m_Name") ?? "", @"^Deck_\d+_-?\d+$"))))
                 throw new Refusal("landing-deck: the visual deck is neither the recorded 186 atlas cells nor the pass-two pier.");
@@ -54,7 +65,7 @@ namespace HiddenHarbours.App.Editor
             {
                 [goId] = GameObjectYaml(goId, LandingDeckVisualName, new[] { trId, srId }),
                 [trId] = TransformYaml(trId, goId, origin, Array.Empty<long>(), transform.FileId),
-                [srId] = SpriteRendererYaml(srId, goId, ObjRef.Parse(material.Groups[1].Value), sprite, StPetersWharf.SortingOrderMin),
+                [srId] = SpriteRendererYaml(srId, goId, ObjRef.Parse(material.Groups[1].Value), sprite, StPetersWharf.BakedDeckSortingOrder),
             };
             var patch = new LayerPatch("landing-deck", "StPetersWharf/Deck", deck.FileId) { AddAfter = transform.FileId };
             foreach (long id in childDocs)
