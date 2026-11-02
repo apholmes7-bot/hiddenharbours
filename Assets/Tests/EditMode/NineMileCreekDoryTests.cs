@@ -240,18 +240,15 @@ namespace HiddenHarbours.Tests.EditMode
             // region deliberately makes you take for a licence and a rod.
             Rect spit = NineMileCreekWharf.FootprintOf(NineMileCreekMainland.SpitFill);
             Vector2 truck = NineMileCreekBuilder.FishBuyerPos;
-            Vector2 landed = NineMileCreekBuilder.DisembarkPos;
+            Vector2 licence = NineMileCreekBuilder.HarbourmasterPos;
 
             Assert.IsTrue(spit.Contains(truck),
                 $"the buyer at {truck} must stand on the working spit {spit} — a till anywhere else is an " +
                 "errand, whatever the distance says");
 
-            float toTill = Vector2.Distance(landed, truck);
-            float toTown = Vector2.Distance(landed, NineMileCreekBuilder.HarbourmasterPos);
-            Assert.Less(toTill, toTown * 0.25f,
-                $"stepping off the boat, the till is {toTill:0} m away and the town is {toTown:0} m. " +
-                "Selling has to be a fraction of the walk the region charges you for a licence, or the " +
-                "wharf has stopped being where the money is");
+            // since H6 the licence is sold on the spit: the walk the region charged you for it is the wharf's own
+            Assert.IsTrue(spit.Contains(licence),
+                $"the licence at {licence} belongs on the working spit {spit}, beside the loop's own work");
         }
 
         [Test]

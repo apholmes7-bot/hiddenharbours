@@ -139,13 +139,12 @@ namespace HiddenHarbours.Tests.EditMode
             {
                 (291587380, 291587379, 291587384, "GeneralStore", "HiddenHarbours.Economy.GearShop", "seller.nmc_chandlery",
                  "_offer", Catalog + "Gear/Rod.asset", new Vector2(-206f, 116f)),
-                (2136210945, 2136210944, 2136210949, "HarbourmasterOffice", "HiddenHarbours.Economy.LicenseVendor", "seller.nmc_harbourmaster",
-                 "_license", Catalog + "Licenses/CodLicense.asset", new Vector2(-150f, 118f)),
+                (1240423985, 1023890145, 305855482, "NmcWharfOfficeVendor", "HiddenHarbours.Economy.LicenseVendor", "seller.nmc_harbourmaster",
+                 "_license", Catalog + "Licenses/CodLicense.asset", new Vector2(83.6f, 112.3f)),
             };
 
-        /// <summary>The harbourmaster's office and the chandlery: PR 2 moves neither (their move is a later wave's).
-        /// Each keeps its seller, its offer and the player's wallet where it stood, on the plateau's flat top: the
-        /// scope's row 10, +6 with no ground delta. Their approach steps are the walk's.</summary>
+        /// <summary>The chandlery keeps its plateau counter. H6 PR 2 moves the harbourmaster to the
+        /// trailer's vendor anchor on the dry yard, keeping the licence, seller and wallet.</summary>
         [Test]
         public void TheChandleryAndTheHarbourmasterKeepTheirCounters_OnThePlateau()
         {
@@ -158,8 +157,11 @@ namespace HiddenHarbours.Tests.EditMode
             {
                 Doc seller = KeptComponent(c.id, c.go, c.transform, c.name, c.script);
                 Counter(seller, c.sellerId, c.offerField, c.offer, c.at);
-                Assert.That(Ground(c.at), Is.EqualTo(NineMileCreekGround.Maximum).Within(NineMileCreekGround.CodeMetres),
-                    $"{c.name} stands on the plateau's top, as before");
+                if (c.name == "NmcWharfOfficeVendor")
+                    Assert.That(Ground(c.at), Is.GreaterThan(High), "the trailer's vendor stands on dry yard ground");
+                else
+                    Assert.That(Ground(c.at), Is.EqualTo(NineMileCreekGround.Maximum).Within(NineMileCreekGround.CodeMetres),
+                        $"{c.name} stands on the plateau's top, as before");
             }
         }
 
@@ -175,12 +177,12 @@ namespace HiddenHarbours.Tests.EditMode
 
         /// <summary>Where the walk stands to use each counter: Phase A's approach steps, 3.5 m in front of the office
         /// and the store, and at the clam buyer's and the dory yard's speakers.</summary>
-        static readonly Vector2 LicenceStep = new Vector2(-150f, 114.5f), RodStep = new Vector2(-206f, 112.5f),
-                                ClamStep = new Vector2(90.5f, 109.5f), DoryStep = new Vector2(68.182f, 111.25f);
+        static readonly Vector2 LicenceStep = new Vector2(83.6f, 110.566f), RodStep = new Vector2(-206f, 112.5f),
+                                ClamStep = new Vector2(93f, 123.45f), DoryStep = new Vector2(68.182f, 111.25f);
 
         static readonly (long sprite, long go, long transform, long interactable, string name, Vector2 at, Vector2 step)[] Speakers =
         {
-            (413417729, 413417726, 413417727, 413417731, "WendellArsenault", new Vector2(89.36788f, 109.38445f), ClamStep),
+            (413417729, 413417726, 413417727, 413417731, "WendellArsenault", new Vector2(93.41463f, 123.14621f), ClamStep),
             (1871746044, 1871746041, 1871746046, 1871746042, "HectorBernard", new Vector2(66.3862f, 111.25431f), DoryStep),
         };
 
@@ -191,15 +193,15 @@ namespace HiddenHarbours.Tests.EditMode
         [Test]
         public void TheClamCounterAndTheYardsSellersKeepTheirPlaces_EachSpeakerWithinReach()
         {
-            Doc sell = KeptComponent(1176619498, 1176619496, 1176619504, "FishBuyerStall", "HiddenHarbours.Economy.WharfSellPoint");
-            Doc buyer = KeptComponent(1176619499, 1176619496, 1176619504, "FishBuyerStall", "HiddenHarbours.Economy.FishBuyer");
+            Doc sell = KeptComponent(1064512360, 1737976318, 1329776183, "NmcWharfMarketCounter", "HiddenHarbours.Economy.WharfSellPoint");
+            Doc buyer = KeptComponent(1544789642, 1737976318, 1329776183, "NmcWharfMarketCounter", "HiddenHarbours.Economy.FishBuyer");
             Doc market = Scene.Require(buyer.FieldRef("_market"), "the clam buyer's market");
-            Assert.That(market.FileId == 1176619500 && market.IsScript("HiddenHarbours.Economy.Market") &&
-                        market.FieldRef("m_GameObject") == 1176619496 && Enabled(market), Is.True, "the counter's market stands on the counter");
+            Assert.That(market.FileId == 185683814 && market.IsScript("HiddenHarbours.Economy.Market") &&
+                        market.FieldRef("m_GameObject") == 1737976318 && Enabled(market), Is.True, "the counter's market stands on the counter");
             Assert.That(sell.FieldRef("_buyer"), Is.EqualTo(buyer.FileId), "the sell point sells to the counter's buyer");
             Assert.That(sell.FieldRef("_holdProvider"), Is.EqualTo(Providers), "the sell point empties the player's hold");
             Assert.That(sell.FieldRef("_walletProvider"), Is.EqualTo(Providers), "the sell point pays the player's wallet");
-            Stands(GameObjectOf(sell), new Vector2(88f, 110f));
+            Stands(GameObjectOf(sell), new Vector2(92.3f, 124.15f));
 
             foreach (var y in YardSellers)
                 Counter(KeptComponent(y.id, y.go, y.transform, y.name, "HiddenHarbours.Economy.Shipwright"), y.sellerId, "_offer", y.offer, y.at);
@@ -359,10 +361,10 @@ namespace HiddenHarbours.Tests.EditMode
             var legs = new (string name, Vector2 from, Vector2 to, float phaseA)[]
             {
                 ("the player's spot to the berth", WorldPosition(player), G.DisembarkPos, 12.457f),
-                ("berth to the licence counter", G.DisembarkPos, LicenceStep, 247.434f),
-                ("licence to the rod counter", LicenceStep, RodStep, 56.828f),
-                ("rod to the clam buyer", RodStep, ClamStep, 304.127f),
-                ("clam buyer to the dory yard", ClamStep, DoryStep, 24.854f),
+                ("berth to the licence counter", G.DisembarkPos, LicenceStep, 24.406f),
+                ("licence to the rod counter", LicenceStep, RodStep, 297.076f),
+                ("rod to the clam buyer", RodStep, ClamStep, 311.890f),
+                ("clam buyer to the dory yard", ClamStep, DoryStep, 30.133f),
                 ("dory yard home to the berth", DoryStep, G.DisembarkPos, 31.403f),
             };
             foreach (var (name, from, to, phaseA) in legs)

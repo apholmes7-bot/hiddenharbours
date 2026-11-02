@@ -679,7 +679,8 @@ namespace HiddenHarbours.App.Editor
             // The buyer's truck stands on the SPIT among the parked trucks, which is where a buyer stands
             // on a working wharf. See FishBuyerPos for why this is no longer "four metres off the planks"
             // and what the test measures instead.
-            var fishStall      = MakeBuilding("FishBuyerStall",   LoadSpriteAny(ArtFishStall),  FishBuyerPos, waterSprite, new Color(0.42f, 0.50f, 0.52f));
+            var fishStall = new GameObject(NineMileCreekWharfLandSide.MarketCounterName);
+            fishStall.transform.position = FishBuyerPos;
 
             // The two FLAVOUR houses are no longer loose sprites — they come from the baked village
             // building kit (NineMileCreekFlavour), which is what §7.2 means by replacing the region's
@@ -834,7 +835,8 @@ namespace HiddenHarbours.App.Editor
 
             // Harbourmaster's office: sells the cod licence (LicenseVendor → license.cod). Reuse a flavour
             // house sprite (no new art — art-pipeline's lane); it sits north on the WEST land.
-            var harbourOffice = MakeBuilding("HarbourmasterOffice", LoadSpriteAny(ArtHouseRed), HarbourmasterPos, waterSprite, new Color(0.46f, 0.40f, 0.52f));
+            var harbourOffice = new GameObject(NineMileCreekWharfLandSide.OfficeVendorName);
+            harbourOffice.transform.position = HarbourmasterPos;
             var licenseVendor = harbourOffice.AddComponent<LicenseVendor>();
             SetRef(licenseVendor, "_license", codLicense);
             SetString(licenseVendor, "_sellerId", SellerHarbourmaster);
@@ -1126,7 +1128,7 @@ namespace HiddenHarbours.App.Editor
             // NineMileCreek.unity directly and the shops open for the dev player (the serialized
             // reference wins while it is alive); sail in from St Peters and they open for the fisher who
             // actually arrived. Driven end to end by InteriorTravelPlayTests.
-            NineMileCreekShops.Place(premise, devPlayer);
+            // The wharf's office, market and restaurant are placed by the named H6 layer-refresh step.
 
             // --- WHERE THE ISLAND BUYS FUEL (the owner's 2026-08-20 ask) --------------------------------
             // ⭐ TWO SITES, ONE KIT, TWO PRICES: a couple of dock pedestals on the wharf's service wall

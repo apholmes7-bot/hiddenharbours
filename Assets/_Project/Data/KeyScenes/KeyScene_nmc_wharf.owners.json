@@ -1,0 +1,771 @@
+{
+  "schema": "hidden-harbours/key-scene-owners@1",
+  "scene": "keyscene.nmc_wharf",
+  "ownershipRule": "H6 yard is the union of [42,212,86,138] and [42,104,86,146], less the apron [47,78,76,96] (H5) and less, by kind, H5 arms, wall, floats and harbour lights, N8 moored boats and N9 crane controls. H6 terrace is [156,184,136,152]. Rectangles are [xmin,xmax,ymin,ymax], inclusive. Decor and gull perches follow their place. harbour.yard and BuyersParking belong to H6; WinchApron belongs to H5. The rules below encode these selections; an unowned or multiply owned row is refused.",
+  "rules": [
+    {
+      "owner": "H5",
+      "description": "The apron, crane and pad, two arms and their harbour lights, wall, floats and fingers; WinchApron belongs here.",
+      "ids": [
+        "harbour.west",
+        "harbour.fleet",
+        "harbour.east",
+        "harbour.arm_w",
+        "harbour.arm_e",
+        "gull.nmc_light",
+        "gull.nmc_arm"
+      ],
+      "rectangles": [
+        {
+          "minX": 47,
+          "maxX": 78,
+          "minY": 76,
+          "maxY": 96
+        }
+      ],
+      "kitPieces": [
+        {
+          "kit": "nmcSetPieces",
+          "pieces": [
+            "wharfCrane",
+            "landingPad",
+            "harbourLight"
+          ]
+        }
+      ]
+    },
+    {
+      "owner": "H6",
+      "description": "The yard including the north court, terrace, harbour.yard and BuyersParking; harbour.yard and the damaged dory remain for PR 3.",
+      "ids": [
+        "harbour.yard"
+      ],
+      "rectangles": [
+        {
+          "minX": 42,
+          "maxX": 212,
+          "minY": 86,
+          "maxY": 138
+        },
+        {
+          "minX": 42,
+          "maxX": 104,
+          "minY": 86,
+          "maxY": 146
+        },
+        {
+          "minX": 156,
+          "maxX": 184,
+          "minY": 136,
+          "maxY": 152
+        }
+      ],
+      "excludedRectangles": [
+        {
+          "minX": 47,
+          "maxX": 78,
+          "minY": 76,
+          "maxY": 96
+        }
+      ],
+      "excludeOwners": [
+        "H5",
+        "N8",
+        "N9"
+      ]
+    },
+    {
+      "owner": "N8",
+      "description": "The three moored boats.",
+      "kinds": [
+        {
+          "kind": "boat",
+          "standsOn": "water"
+        }
+      ]
+    },
+    {
+      "owner": "N9",
+      "description": "The crane controls, held. No crane-control row is present in this asset.",
+      "ids": []
+    }
+  ],
+  "rows": [
+    {
+      "id": "harbour.west",
+      "owner": "H5",
+      "place": "apron and harbour"
+    },
+    {
+      "id": "harbour.fleet",
+      "owner": "H5",
+      "place": "apron and harbour"
+    },
+    {
+      "id": "harbour.east",
+      "owner": "H5",
+      "place": "apron and harbour"
+    },
+    {
+      "id": "harbour.yard",
+      "owner": "H6",
+      "place": "boat yard, PR 3"
+    },
+    {
+      "id": "harbour.arm_w",
+      "owner": "H5",
+      "place": "apron and harbour"
+    },
+    {
+      "id": "harbour.arm_e",
+      "owner": "H5",
+      "place": "apron and harbour"
+    },
+    {
+      "id": "structure.nmc_wharf_crane",
+      "owner": "H5",
+      "place": "apron and harbour"
+    },
+    {
+      "id": "prop.nmc_crane_pad",
+      "owner": "H5",
+      "place": "apron and harbour"
+    },
+    {
+      "id": "structure.nmc_harbourmaster",
+      "owner": "H6",
+      "place": "yard"
+    },
+    {
+      "id": "structure.nmc_fish_market",
+      "owner": "H6",
+      "place": "yard"
+    },
+    {
+      "id": "structure.nmc_restaurant",
+      "owner": "H6",
+      "place": "terrace"
+    },
+    {
+      "id": "structure.nmc_light_west",
+      "owner": "H5",
+      "place": "apron and harbour"
+    },
+    {
+      "id": "structure.nmc_light_east",
+      "owner": "H5",
+      "place": "apron and harbour"
+    },
+    {
+      "id": "structure.nmc_shed_leo",
+      "owner": "H6",
+      "place": "yard"
+    },
+    {
+      "id": "structure.nmc_shed_marie",
+      "owner": "H6",
+      "place": "yard"
+    },
+    {
+      "id": "structure.nmc_shed_yvette",
+      "owner": "H6",
+      "place": "yard"
+    },
+    {
+      "id": "structure.nmc_shed_ross",
+      "owner": "H6",
+      "place": "yard"
+    },
+    {
+      "id": "structure.nmc_shed_hughie",
+      "owner": "H6",
+      "place": "yard"
+    },
+    {
+      "id": "structure.nmc_shed_celeste",
+      "owner": "H6",
+      "place": "yard"
+    },
+    {
+      "id": "structure.nmc_shed_alma",
+      "owner": "H6",
+      "place": "yard"
+    },
+    {
+      "id": "structure.nmc_shed_dan",
+      "owner": "H6",
+      "place": "yard"
+    },
+    {
+      "id": "structure.nmc_bait_shed",
+      "owner": "H6",
+      "place": "yard"
+    },
+    {
+      "id": "structure.nmc_trap_store",
+      "owner": "H6",
+      "place": "yard"
+    },
+    {
+      "id": "structure.nmc_cold_store",
+      "owner": "H6",
+      "place": "yard"
+    },
+    {
+      "id": "boat.nmc_celeste",
+      "owner": "N8",
+      "place": "moored boat"
+    },
+    {
+      "id": "boat.nmc_alma",
+      "owner": "N8",
+      "place": "moored boat"
+    },
+    {
+      "id": "boat.nmc_dan",
+      "owner": "N8",
+      "place": "moored boat"
+    },
+    {
+      "id": "vehicle.nmc_buyer_truck",
+      "owner": "H6",
+      "place": "yard"
+    },
+    {
+      "id": "vehicle.nmc_lot_e",
+      "owner": "H6",
+      "place": "yard"
+    },
+    {
+      "id": "vehicle.nmc_lot_a",
+      "owner": "H6",
+      "place": "yard"
+    },
+    {
+      "id": "vehicle.nmc_lot_b",
+      "owner": "H6",
+      "place": "yard"
+    },
+    {
+      "id": "vehicle.nmc_lot_c",
+      "owner": "H6",
+      "place": "yard"
+    },
+    {
+      "id": "vehicle.nmc_delivery",
+      "owner": "H6",
+      "place": "yard"
+    },
+    {
+      "id": "vehicle.nmc_pickup_leo",
+      "owner": "H6",
+      "place": "yard"
+    },
+    {
+      "id": "vehicle.nmc_pickup_ross",
+      "owner": "H6",
+      "place": "yard"
+    },
+    {
+      "id": "vehicle.nmc_pickup_marie",
+      "owner": "H6",
+      "place": "yard"
+    },
+    {
+      "id": "vehicle.nmc_ramp_pickup",
+      "owner": "H5",
+      "place": "apron and harbour"
+    },
+    {
+      "id": "vehicle.nmc_reefer_trailer",
+      "owner": "H6",
+      "place": "yard"
+    },
+    {
+      "id": "vehicle.nmc_reefer_tractor",
+      "owner": "H6",
+      "place": "yard"
+    },
+    {
+      "id": "prop.nmc_dumpster",
+      "owner": "H6",
+      "place": "yard",
+      "waits": "fuelStopRig intake (H9)"
+    },
+    {
+      "id": "prop.nmc_picnic",
+      "owner": "H6",
+      "place": "yard",
+      "waits": "fuelStopRig intake (H9)"
+    },
+    {
+      "id": "prop.nmc_ice",
+      "owner": "H6",
+      "place": "yard",
+      "waits": "fuelStopRig intake (H9)"
+    },
+    {
+      "id": "prop.nmc_bin",
+      "owner": "H6",
+      "place": "yard",
+      "waits": "fuelStopRig intake (H9)"
+    },
+    {
+      "id": "prop.nmc_picnic_r",
+      "owner": "H6",
+      "place": "terrace",
+      "waits": "fuelStopRig intake (H9)"
+    },
+    {
+      "id": "prop.nmc_light_court",
+      "owner": "H6",
+      "place": "yard",
+      "waits": "fuelStopRig intake (H9)"
+    },
+    {
+      "id": "prop.nmc_light_lot",
+      "owner": "H6",
+      "place": "yard",
+      "waits": "fuelStopRig intake (H9)"
+    },
+    {
+      "id": "prop.nmc_light_quay_w",
+      "owner": "H6",
+      "place": "yard",
+      "waits": "fuelStopRig intake (H9)"
+    },
+    {
+      "id": "prop.nmc_light_quay_e",
+      "owner": "H6",
+      "place": "yard",
+      "waits": "fuelStopRig intake (H9)"
+    },
+    {
+      "id": "prop.nmc_light_ramp",
+      "owner": "H5",
+      "place": "apron and harbour",
+      "waits": "fuelStopRig intake (H9)"
+    },
+    {
+      "id": "prop.nmc_light_lot_e",
+      "owner": "H6",
+      "place": "yard",
+      "waits": "fuelStopRig intake (H9)"
+    },
+    {
+      "id": "prop.nmc_traps_court_0_0",
+      "owner": "H6",
+      "place": "yard, the north court"
+    },
+    {
+      "id": "prop.nmc_traps_court_0_1",
+      "owner": "H6",
+      "place": "yard, the north court"
+    },
+    {
+      "id": "prop.nmc_traps_court_0_2",
+      "owner": "H6",
+      "place": "yard, the north court"
+    },
+    {
+      "id": "prop.nmc_traps_court_0_3",
+      "owner": "H6",
+      "place": "yard, the north court"
+    },
+    {
+      "id": "prop.nmc_traps_court_0_4",
+      "owner": "H6",
+      "place": "yard, the north court"
+    },
+    {
+      "id": "prop.nmc_traps_court_0_5",
+      "owner": "H6",
+      "place": "yard, the north court"
+    },
+    {
+      "id": "prop.nmc_traps_court_0_6",
+      "owner": "H6",
+      "place": "yard, the north court"
+    },
+    {
+      "id": "prop.nmc_traps_court_0_7",
+      "owner": "H6",
+      "place": "yard, the north court"
+    },
+    {
+      "id": "prop.nmc_traps_court_0_8",
+      "owner": "H6",
+      "place": "yard, the north court"
+    },
+    {
+      "id": "prop.nmc_traps_court_1_0",
+      "owner": "H6",
+      "place": "yard, the north court"
+    },
+    {
+      "id": "prop.nmc_traps_court_1_1",
+      "owner": "H6",
+      "place": "yard, the north court"
+    },
+    {
+      "id": "prop.nmc_traps_court_1_2",
+      "owner": "H6",
+      "place": "yard, the north court"
+    },
+    {
+      "id": "prop.nmc_traps_court_1_3",
+      "owner": "H6",
+      "place": "yard, the north court"
+    },
+    {
+      "id": "prop.nmc_traps_court_1_4",
+      "owner": "H6",
+      "place": "yard, the north court"
+    },
+    {
+      "id": "prop.nmc_traps_court_1_5",
+      "owner": "H6",
+      "place": "yard, the north court"
+    },
+    {
+      "id": "prop.nmc_traps_court_1_6",
+      "owner": "H6",
+      "place": "yard, the north court"
+    },
+    {
+      "id": "prop.nmc_traps_court_1_7",
+      "owner": "H6",
+      "place": "yard, the north court"
+    },
+    {
+      "id": "prop.nmc_traps_court_1_8",
+      "owner": "H6",
+      "place": "yard, the north court"
+    },
+    {
+      "id": "prop.nmc_traps_yard_w_0_0",
+      "owner": "H6",
+      "place": "yard"
+    },
+    {
+      "id": "prop.nmc_traps_yard_w_0_1",
+      "owner": "H6",
+      "place": "yard"
+    },
+    {
+      "id": "prop.nmc_traps_yard_w_0_2",
+      "owner": "H6",
+      "place": "yard"
+    },
+    {
+      "id": "prop.nmc_traps_yard_w_0_3",
+      "owner": "H6",
+      "place": "yard"
+    },
+    {
+      "id": "prop.nmc_traps_yard_w_1_0",
+      "owner": "H6",
+      "place": "yard"
+    },
+    {
+      "id": "prop.nmc_traps_yard_w_1_1",
+      "owner": "H6",
+      "place": "yard"
+    },
+    {
+      "id": "prop.nmc_traps_yard_w_1_2",
+      "owner": "H6",
+      "place": "yard"
+    },
+    {
+      "id": "prop.nmc_traps_yard_w_1_3",
+      "owner": "H6",
+      "place": "yard"
+    },
+    {
+      "id": "prop.nmc_traps_yard_w_2_0",
+      "owner": "H6",
+      "place": "yard"
+    },
+    {
+      "id": "prop.nmc_traps_yard_w_2_1",
+      "owner": "H6",
+      "place": "yard"
+    },
+    {
+      "id": "prop.nmc_traps_yard_w_2_2",
+      "owner": "H6",
+      "place": "yard"
+    },
+    {
+      "id": "prop.nmc_traps_yard_w_2_3",
+      "owner": "H6",
+      "place": "yard"
+    },
+    {
+      "id": "prop.nmc_traps_yard_w_3_0",
+      "owner": "H6",
+      "place": "yard"
+    },
+    {
+      "id": "prop.nmc_traps_yard_w_3_1",
+      "owner": "H6",
+      "place": "yard"
+    },
+    {
+      "id": "prop.nmc_traps_yard_w_3_2",
+      "owner": "H6",
+      "place": "yard"
+    },
+    {
+      "id": "prop.nmc_traps_yard_w_3_3",
+      "owner": "H6",
+      "place": "yard"
+    },
+    {
+      "id": "prop.nmc_traps_yard_w_4_0",
+      "owner": "H6",
+      "place": "yard"
+    },
+    {
+      "id": "prop.nmc_traps_yard_w_4_1",
+      "owner": "H6",
+      "place": "yard"
+    },
+    {
+      "id": "prop.nmc_traps_yard_w_4_2",
+      "owner": "H6",
+      "place": "yard"
+    },
+    {
+      "id": "prop.nmc_traps_yard_w_4_3",
+      "owner": "H6",
+      "place": "yard"
+    },
+    {
+      "id": "prop.nmc_traps_lot_0_0",
+      "owner": "H6",
+      "place": "yard"
+    },
+    {
+      "id": "prop.nmc_traps_lot_0_1",
+      "owner": "H6",
+      "place": "yard"
+    },
+    {
+      "id": "prop.nmc_traps_lot_1_0",
+      "owner": "H6",
+      "place": "yard"
+    },
+    {
+      "id": "prop.nmc_traps_lot_1_1",
+      "owner": "H6",
+      "place": "yard"
+    },
+    {
+      "id": "prop.nmc_traps_ramp_0_0",
+      "owner": "H6",
+      "place": "yard"
+    },
+    {
+      "id": "prop.nmc_traps_ramp_0_1",
+      "owner": "H6",
+      "place": "yard"
+    },
+    {
+      "id": "prop.nmc_traps_ramp_1_0",
+      "owner": "H6",
+      "place": "yard"
+    },
+    {
+      "id": "prop.nmc_traps_ramp_1_1",
+      "owner": "H6",
+      "place": "yard"
+    },
+    {
+      "id": "prop.nmc_traps_0",
+      "owner": "H6",
+      "place": "yard"
+    },
+    {
+      "id": "prop.nmc_traps_1",
+      "owner": "H6",
+      "place": "yard"
+    },
+    {
+      "id": "prop.nmc_traps_2",
+      "owner": "H6",
+      "place": "yard"
+    },
+    {
+      "id": "prop.nmc_traps_3",
+      "owner": "H6",
+      "place": "yard"
+    },
+    {
+      "id": "prop.nmc_traps_4",
+      "owner": "H6",
+      "place": "yard"
+    },
+    {
+      "id": "prop.nmc_traps_5",
+      "owner": "H6",
+      "place": "yard"
+    },
+    {
+      "id": "prop.nmc_traps_6",
+      "owner": "H6",
+      "place": "yard"
+    },
+    {
+      "id": "prop.nmc_traps_7",
+      "owner": "H6",
+      "place": "yard"
+    },
+    {
+      "id": "prop.nmc_traps_8",
+      "owner": "H6",
+      "place": "yard"
+    },
+    {
+      "id": "prop.nmc_traps_9",
+      "owner": "H6",
+      "place": "yard"
+    },
+    {
+      "id": "prop.nmc_traps_10",
+      "owner": "H6",
+      "place": "yard"
+    },
+    {
+      "id": "prop.nmc_traps_11",
+      "owner": "H6",
+      "place": "yard"
+    },
+    {
+      "id": "prop.nmc_quay_traps_0",
+      "owner": "H6",
+      "place": "yard"
+    },
+    {
+      "id": "prop.nmc_quay_traps_1",
+      "owner": "H6",
+      "place": "yard"
+    },
+    {
+      "id": "prop.nmc_quay_traps_2",
+      "owner": "H6",
+      "place": "yard"
+    },
+    {
+      "id": "prop.nmc_totes_0",
+      "owner": "H5",
+      "place": "apron and harbour"
+    },
+    {
+      "id": "prop.nmc_totes_1",
+      "owner": "H5",
+      "place": "apron and harbour"
+    },
+    {
+      "id": "prop.nmc_totes_2",
+      "owner": "H5",
+      "place": "apron and harbour"
+    },
+    {
+      "id": "prop.nmc_totes_3",
+      "owner": "H5",
+      "place": "apron and harbour"
+    },
+    {
+      "id": "prop.nmc_buoys_leo",
+      "owner": "H6",
+      "place": "yard"
+    },
+    {
+      "id": "prop.nmc_buoys_marie",
+      "owner": "H6",
+      "place": "yard"
+    },
+    {
+      "id": "prop.nmc_nets_a",
+      "owner": "H6",
+      "place": "yard"
+    },
+    {
+      "id": "prop.nmc_ice_crane",
+      "owner": "H5",
+      "place": "apron and harbour"
+    },
+    {
+      "id": "prop.nmc_baskets",
+      "owner": "H6",
+      "place": "yard"
+    },
+    {
+      "id": "prop.nmc_barrow",
+      "owner": "H6",
+      "place": "yard"
+    },
+    {
+      "id": "prop.nmc_ring_w",
+      "owner": "H6",
+      "place": "yard"
+    },
+    {
+      "id": "prop.nmc_ring_e",
+      "owner": "H6",
+      "place": "yard"
+    },
+    {
+      "id": "prop.nmc_ring_ramp",
+      "owner": "H5",
+      "place": "apron and harbour"
+    },
+    {
+      "id": "prop.nmc_notice",
+      "owner": "H6",
+      "place": "yard"
+    },
+    {
+      "id": "boat.nmc_damaged_dory",
+      "owner": "H6",
+      "place": "boat yard, PR 3"
+    },
+    {
+      "id": "gull.nmc_crane",
+      "owner": "H5",
+      "place": "apron and harbour"
+    },
+    {
+      "id": "gull.nmc_shed",
+      "owner": "H6",
+      "place": "yard"
+    },
+    {
+      "id": "gull.nmc_light",
+      "owner": "H5",
+      "place": "apron and harbour"
+    },
+    {
+      "id": "gull.nmc_arm",
+      "owner": "H5",
+      "place": "apron and harbour"
+    },
+    {
+      "id": "gull.nmc_flats",
+      "owner": "H6",
+      "place": "yard, the north court"
+    },
+    {
+      "id": "gull.nmc_restaurant",
+      "owner": "H6",
+      "place": "terrace"
+    },
+    {
+      "id": "gull.nmc_market",
+      "owner": "H6",
+      "place": "yard"
+    }
+  ]
+}

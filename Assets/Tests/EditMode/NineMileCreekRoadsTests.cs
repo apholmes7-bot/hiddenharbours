@@ -142,7 +142,8 @@ namespace HiddenHarbours.Tests.EditMode
             // single point, so its half-width is its radius, the ground a truck turns on (NMC H2).
             foreach (var way in NineMileCreekGroundPlan.Ways())
             {
-                if (way.Name == NineMileCreekGroundPlan.TurningPadName) continue;
+                // The key scene's yard road is 7.5 m wide where the old plan's cleared corridor is 6 m.
+                if (way.Name == NineMileCreekGroundPlan.TurningPadName || way.Name == NineMileCreekGroundPlan.YardRoadName) continue;
                 Assert.That(way.HalfWidth,
                     Is.LessThanOrEqualTo(NineMileCreekMainland.RoadHalfWidth + 1e-4f),
                     $"{way.Name} is laid {way.HalfWidth} m either side of its centre-line, wider than " +
@@ -410,10 +411,9 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.IsTrue(parking.Contains(new Vector2(NineMileCreekMainland.ParkingPos.x,
                                                        NineMileCreekMainland.ParkingPos.y)),
                 "the pad covers the authored parking site, not the ground beside it");
-            Assert.IsTrue(parking.Contains(new Vector2(NineMileCreekMainland.FishBuyerPos.x,
-                                                       NineMileCreekMainland.FishBuyerPos.y)),
-                "…and the buyer's tailgate, which is the whole reason the gravel is there: the man you " +
-                "sell your first clams to has to be standing on something");
+            Assert.IsTrue(parking.Contains(new Vector2(NineMileCreekMainland.FishBuyerTruckPos.x,
+                                                       NineMileCreekMainland.FishBuyerTruckPos.y)),
+                "…and the buyer's own truck: the sale is at the market counter now, and her bay stays on gravel");
             Assert.IsFalse(parking.Contains(new Vector2(NineMileCreekMainland.DerelictDoryPos.x,
                                                         NineMileCreekMainland.DerelictDoryPos.y)),
                 "the derelict dory is on the hard, not in the car park");

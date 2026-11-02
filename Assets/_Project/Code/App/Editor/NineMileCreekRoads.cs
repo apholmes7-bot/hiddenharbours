@@ -403,20 +403,8 @@ namespace HiddenHarbours.App.Editor
         /// </summary>
         public static Rect ParkingArea()
         {
-            var parking = new Vector2(NineMileCreekMainland.ParkingPos.x,
-                                      NineMileCreekMainland.ParkingPos.y);
-            var buyer = new Vector2(NineMileCreekMainland.FishBuyerPos.x,
-                                    NineMileCreekMainland.FishBuyerPos.y);
-
-            var pad = Rect.MinMaxRect(
-                Mathf.Min(parking.x, buyer.x) - ParkingMarginMetres,
-                Mathf.Min(parking.y, buyer.y) - ParkingMarginMetres,
-                Mathf.Max(parking.x, buyer.x) + ParkingMarginMetres,
-                Mathf.Max(parking.y, buyer.y) + ParkingMarginMetres);
-
-            Rect spit = NineMileCreekWharf.FootprintOf(NineMileCreekMainland.SpitFill);
-            return Rect.MinMaxRect(Mathf.Max(pad.xMin, spit.xMin), Mathf.Max(pad.yMin, spit.yMin),
-                                   Mathf.Min(pad.xMax, spit.xMax), Mathf.Min(pad.yMax, spit.yMax));
+            // The west parking rectangle in the wharf key scene's nmc.scene.harbour.roads record.
+            return Rect.MinMaxRect(96.5f, 124.1f, 106f, 133.1f);
         }
 
         /// <summary>Ground left round the parking sites, in metres — a truck is six metres long and has to

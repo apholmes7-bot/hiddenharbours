@@ -1,0 +1,341 @@
+fileFormatVersion: 2
+guid: 3f43b93ed6934f6479a1b66c7b223c64
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -8571242121089390851
+    second: NmcWharf_shed_marie_0
+  - first:
+      213: 901259138202751970
+    second: NmcWharf_shed_marie_1
+  - first:
+      213: -4968136743997503180
+    second: NmcWharf_shed_marie_2
+  - first:
+      213: 3912922680004233016
+    second: NmcWharf_shed_marie_3
+  - first:
+      213: 2583455519941166710
+    second: NmcWharf_shed_marie_4
+  - first:
+      213: -1482987436604529067
+    second: NmcWharf_shed_marie_5
+  - first:
+      213: -4061332677847543350
+    second: NmcWharf_shed_marie_6
+  - first:
+      213: -415632358657214250
+    second: NmcWharf_shed_marie_7
+  - first:
+      213: 5870838817009922812
+    second: NmcWharf_shed_marie_8
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 9
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 4096
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Village_structure.nmc_shed_marie_d0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 314
+        height: 362
+      alignment: 9
+      pivot: {x: 0.5, y: 0.27900553}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ef65e3f73247bc64880851be87d6db48
+      internalID: -1358366579
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Village_structure.nmc_shed_marie_d1
+      rect:
+        serializedVersion: 2
+        x: 314
+        y: 0
+        width: 314
+        height: 362
+      alignment: 9
+      pivot: {x: 0.5, y: 0.27900553}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2cacac8eaf43f2e448d98d1044f6c894
+      internalID: -756051312
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Village_structure.nmc_shed_marie_d2
+      rect:
+        serializedVersion: 2
+        x: 628
+        y: 0
+        width: 314
+        height: 362
+      alignment: 9
+      pivot: {x: 0.5, y: 0.27900553}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 425a706f6bca3c544b0946921607f003
+      internalID: 1107122071
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Village_structure.nmc_shed_marie_d3
+      rect:
+        serializedVersion: 2
+        x: 942
+        y: 0
+        width: 314
+        height: 362
+      alignment: 9
+      pivot: {x: 0.5, y: 0.27900553}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 414e751f3635b5d4e95fa9cf45db89de
+      internalID: -1016920523
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Village_structure.nmc_shed_marie_d4
+      rect:
+        serializedVersion: 2
+        x: 1256
+        y: 0
+        width: 314
+        height: 362
+      alignment: 9
+      pivot: {x: 0.5, y: 0.27900553}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 36310cc9f7ebca045897e9a8e308ab36
+      internalID: -1243705401
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Village_structure.nmc_shed_marie_d5
+      rect:
+        serializedVersion: 2
+        x: 1570
+        y: 0
+        width: 314
+        height: 362
+      alignment: 9
+      pivot: {x: 0.5, y: 0.27900553}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 69e36b695866d0a4eb30d8068627939a
+      internalID: -1874456059
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Village_structure.nmc_shed_marie_d6
+      rect:
+        serializedVersion: 2
+        x: 1884
+        y: 0
+        width: 314
+        height: 362
+      alignment: 9
+      pivot: {x: 0.5, y: 0.27900553}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 65069302dd11be341bffe9a7ad3ac1bb
+      internalID: 86203204
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Village_structure.nmc_shed_marie_d7
+      rect:
+        serializedVersion: 2
+        x: 2198
+        y: 0
+        width: 314
+        height: 362
+      alignment: 9
+      pivot: {x: 0.5, y: 0.27900553}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 69cdac54bbe567f4087121df352e658d
+      internalID: -1609057602
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: f4db104f8aab17c4bb81c30417fce084
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Village_structure.nmc_shed_marie_d0: -1358366579
+      Village_structure.nmc_shed_marie_d1: -756051312
+      Village_structure.nmc_shed_marie_d2: 1107122071
+      Village_structure.nmc_shed_marie_d3: -1016920523
+      Village_structure.nmc_shed_marie_d4: -1243705401
+      Village_structure.nmc_shed_marie_d5: -1874456059
+      Village_structure.nmc_shed_marie_d6: 86203204
+      Village_structure.nmc_shed_marie_d7: -1609057602
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
