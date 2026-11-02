@@ -46,6 +46,46 @@ namespace HiddenHarbours.App.Editor
     /// </summary>
     public static class WaterSceneTemplate
     {
+        /// <summary>Build a complete water region, including the display-name registrar that the first
+        /// water builder assembled itself. Neighbour facts are loaded, never created here.</summary>
+        public static Camera BuildRegion(WaterScenePlan plan, Vector3 reviewPosition, Vector3 defaultArrival,
+            (string Key, Vector3 Position)[] arrivals,
+            params (string Name, Vector3 Position, string RegionAssetPath, string ArrivalKey)[] passages)
+        {
+            EnsureFolders();
+            LoadOrCreateRegion(plan);
+            var config = LoadOrCreate<GameConfig>(GameConfigAsset);
+            foreach (var passage in passages)
+                if (AssetDatabase.LoadAssetAtPath<RegionDef>(passage.RegionAssetPath) == null)
+                    throw new System.InvalidOperationException("Missing water neighbour: " + passage.RegionAssetPath);
+
+            var scene = NewWaterScene();
+            var camera = AddReviewCamera(plan, reviewPosition);
+            AddTerrain(plan);
+            AddSea(plan, config, MakeSquareSprite(ArtSprites + "/Square.png"));
+
+            // Art imports can invalidate loaded objects. Resolve every reference again before wiring.
+            var region = AssetDatabase.LoadAssetAtPath<RegionDef>(RegionAssetPathFor(plan.RegionAssetName));
+            ApplyRegionFacts(region, plan);
+            var neighbours = passages.Select(p => AssetDatabase.LoadAssetAtPath<RegionDef>(p.RegionAssetPath)).ToArray();
+            var known = new[] { region }.Concat(neighbours).Distinct().ToArray();
+            var loader = AddSceneLoader(plan.SceneName, known);
+            for (int i = 0; i < passages.Length; i++)
+                AddPassage(passages[i].Name, passages[i].Position, plan.EdgeBandSize,
+                           neighbours[i], loader, passages[i].ArrivalKey);
+            AddAnchor(plan, defaultArrival, arrivals);
+            AddDisplayNames(known);
+            SaveAndRegister(scene, ScenePathFor(plan.SceneName), deterministic: true);
+            return camera;
+        }
+
+        /// <summary>The crossing card reads these names through Core, just as in a land region.</summary>
+        public static void AddDisplayNames(params RegionDef[] regions)
+        {
+            var registrar = new GameObject("RegionDisplayNames").AddComponent<RegionDisplayNameRegistrar>();
+            SetRefArray(registrar, "_regions", regions.Where(r => r != null).Cast<Object>().ToArray());
+        }
+
         public const string DataConfig  = "Assets/_Project/Data/Config";
         public const string DataRegions = "Assets/_Project/Data/Regions";
         public const string ArtSprites  = "Assets/_Project/Art/Sprites";
@@ -566,12 +606,75 @@ namespace HiddenHarbours.App.Editor
 
         /// <summary>Write the scene and put it in Build Settings — a region whose scene is not registered
         /// cannot be travelled to, and <c>RegionSceneLoader.Travel</c> declines silently.</summary>
-        public static void SaveAndRegister(Scene scene, string scenePath)
+        public static void SaveAndRegister(Scene scene, string scenePath, bool deterministic = false)
         {
             EditorSceneManager.SaveScene(scene, scenePath);
+            if (deterministic) CanonicalizeGeneratedScene(scene, scenePath);
             RegisterScene(scenePath);
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
+        }
+
+        // Unity gives fresh objects fresh local file ids. Generated scenes use hierarchy/component
+        // order instead, so rebuilding an unchanged plan produces the same bytes. Asset guids and
+        // external file ids are left to Unity; this only normalises the scene Unity just wrote.
+        static void CanonicalizeGeneratedScene(Scene scene, string path)
+        {
+            var ids = new System.Collections.Generic.Dictionary<string, string>();
+            long next = 10000;
+            foreach (var root in scene.GetRootGameObjects())
+            foreach (var transform in root.GetComponentsInChildren<Transform>(true))
+            {
+                var objects = new Object[] { transform.gameObject }.Concat(transform.GetComponents<Component>());
+                foreach (var obj in objects)
+                {
+                    string old = GlobalObjectId.GetGlobalObjectIdSlow(obj).targetObjectId.ToString(
+                        System.Globalization.CultureInfo.InvariantCulture);
+                    if (old == "0" || ids.ContainsKey(old))
+                        throw new System.InvalidOperationException("Scene object has no unique saved id: " + obj.name);
+                    ids.Add(old, (next++).ToString(System.Globalization.CultureInfo.InvariantCulture));
+                }
+            }
+            string yaml = System.IO.File.ReadAllText(path).Replace("\r\n", "\n");
+            yaml = System.Text.RegularExpressions.Regex.Replace(yaml, @"(?m)(^--- !u!\d+ &)(-?\d+)",
+                m => m.Groups[1].Value + (ids.TryGetValue(m.Groups[2].Value, out var id) ? id : m.Groups[2].Value));
+            yaml = System.Text.RegularExpressions.Regex.Replace(yaml, @"\{fileID: (-?\d+)\}",
+                m => ids.TryGetValue(m.Groups[1].Value, out var id) ? "{fileID: " + id + "}" : m.Value);
+            var documents = System.Text.RegularExpressions.Regex.Split(yaml, @"(?m)(?=^--- !u!)");
+            string header = documents[0];
+            var ordered = documents.Skip(1).OrderBy(d => long.Parse(
+                System.Text.RegularExpressions.Regex.Match(d, @"^--- !u!\d+ &(-?\d+)").Groups[1].Value,
+                System.Globalization.CultureInfo.InvariantCulture));
+            System.IO.File.WriteAllText(path, header + string.Concat(ordered), new System.Text.UTF8Encoding(false));
+        }
+
+        /// <summary>A noon frame from the scene's review camera, written outside Assets.</summary>
+        public static void CaptureNoonReview(Camera camera, string outputPath)
+        {
+            var previous = RenderTexture.active;
+            var target = RenderTexture.GetTemporary(1280, 720, 24);
+            var texture = new Texture2D(1280, 720, TextureFormat.RGB24, false);
+            Color previousTint = Shader.GetGlobalColor("_DayNightTint");
+            try
+            {
+                var profile = AssetDatabase.LoadAssetAtPath<HiddenHarbours.Art.DayNightProfile>(
+                    "Assets/_Project/Resources/DayNightProfile.asset");
+                Shader.SetGlobalColor("_DayNightTint", HiddenHarbours.Art.DayNightMath.DayNightTint(12f, profile, 1f, 0f));
+                camera.targetTexture = target;
+                camera.Render();
+                RenderTexture.active = target;
+                texture.ReadPixels(new Rect(0, 0, 1280, 720), 0, 0);
+                texture.Apply();
+                System.IO.File.WriteAllBytes(outputPath, texture.EncodeToPNG());
+            }
+            finally
+            {
+                camera.targetTexture = null;
+                RenderTexture.active = previous;
+                Shader.SetGlobalColor("_DayNightTint", previousTint);
+                Object.DestroyImmediate(texture);
+                RenderTexture.ReleaseTemporary(target);
+            }
         }
 
         static void RegisterScene(string path)

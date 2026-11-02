@@ -537,18 +537,23 @@ type** adds its own per-channel character beside it.
   allocates nothing (`Silt_SlowTick_AllocatesNothing`, `SiltSlowTick_OnTheRealEnvironment_AllocatesNothing`). The
   shader adds one type read a pixel (up to four plume weights) and one body weight. These are estimates until the
   plates measure them.
-- **The crest glow (gain 3) reads the same σ.** Light through a thin crest when the sun is low and behind it. On
-  the one signed facing `_SwellFaceShade` and `_SunSideStrength` read, and under the sun side's own elevation gate,
-  the face shade darkens the back (value), the sun side cools it (hue), and the glow lights only its thin top, in
-  the sun's colour through the water's σ over `_CrestGlowThickness` metres, posterized by `_CrestGlowBands` and
-  added under the palette grade. `_CrestGlowStrength` ships at 0 on every water material: an exact passthrough,
-  visual only. It is a mood float whose fog anchor reads 0, so fog takes it away. Its strength is picked by eye.
-  Measured since (gains B5, St Peters' open coast at 19:30 and 17:30, sea states 0.342 and 0.444): at the shipped
-  onset `_CrestGlowTop` 0.55 and 3 bands the glow lights no pixel at any strength. `glowTop` never opens in the
-  frame; where it opens on the open sea (about 0.1% of a 2 km square) the amount before the posterize peaks at
-  0.104 (19:30) and 0.043 (17:30), under the first band's floor of 1/6, and the strength multiplies after the
-  posterize. The numbers pass is a later phase; the glow ships at strength 0. Twin: `CrestGlow`
-  (`TheShader_CarriesTheCrestGlowTwin`).
+- **The crest glow (gain 3) reads the same σ; L1 amendment, 2026-11-01.** Low sun lights the thin
+  crest top independently of slope: `top × elevGate`, rounded into bands, then strength and the shared
+  calm gate. The elevation gate, absorption colour, thickness, add ceiling 0.15 and palette-grade order
+  are unchanged. Visual only, `col.rgb`; fog fades the type-selected strength to zero.
+  The former L0 law multiplied the back-facing slope by the thin top. On real long trains these factors
+  oppose one another: the slope approaches zero at the crest top. At the selected 16 × 9 m open-water
+  frame, day 1 17:30 / 19:30, seed 12345, L0 with Strong emits 0 / 0 of 82,944 cells; pre-band peaks
+  0.001247874 / 0.005289370 stay below the rounded first-band threshold 1/64. L1 emits 3,095 / 1,003 cells
+  (3.731433% / 1.209250%) from the same rounded printed trains, with scalar peak adds 2.390625 / 7.171875
+  in 8-bit levels before calm, absorption colour and grading. These are arithmetic estimates, not GPU pixels.
+  The new real-sea regression case pins those counts within four cells for float rounding.
+  The owner directed shipment on 2026-11-01: both typed regions select `crest_glow.strong` (onset 0.25,
+  thickness 1.5 m, 32 bands, strength 2). Faint and Readable remain unselected data. Only the creek and
+  open-Atlantic region scenes currently assign types; untyped regions stay off. Material defaults remain
+  strength 0, an exact passthrough. Noon is the unchanged passthrough control. Shader and twin change
+  together in this amendment, requiring lead-architect review. Twin: `CrestGlow`
+  (`TheShader_CarriesTheCrestGlowTwin`, `CrestGlow_LightsTheRealSea_AtBothLowHours`).
 - **What did not change.** The ratio, the bands, every mood's turbidity, the bake and W4-4's floor; `depth`,
   `clip()`, `_WaterLevel` and the height read the sim uses (visual only, rule 5). Live spec:
   [water rendering §17.7](../design/water-rendering.md#177-seabed-absorption--the-bottom-seen-through-the-column-adr-0027-7).

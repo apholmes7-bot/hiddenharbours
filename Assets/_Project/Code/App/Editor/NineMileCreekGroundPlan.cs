@@ -114,10 +114,10 @@ namespace HiddenHarbours.App.Editor
 
         /// <summary>Where the Otter stands on G3. The owner's ruling (2026-10-15): "Just place the otter somewhere
         /// safe for now. Finishing the scene is more important". G3 has no boat ramp, so the landing the plan derives
-        /// beside the old ramp's head (<see cref="NineMileCreekMainland.OtterLandingPos"/>) launches nothing. She
-        /// keeps that spot, which on G3 is dry yard well above spring high, clear of the roads, the working sites
-        /// and the loop's walks. Her launch is a later wave's.</summary>
-        public static readonly Vector2 OtterParkPos = new Vector2(62.158894f, 95.39067f);
+        /// beside the old ramp's head (<see cref="NineMileCreekMainland.OtterLandingPos"/>) launches nothing. H6 PR 2
+        /// moves her clear of the delivered cold store under ruling 12, onto dry yard off the roads with room
+        /// for her body and a clear run ahead. Her launch is a later wave's.</summary>
+        public static readonly Vector2 OtterParkPos = new Vector2(58f, 95f);
 
         /// <summary>She faces due north, inland: the dry yard ahead of her, the quay faces behind. Unity's
         /// counter-clockwise z, so 0 is north.</summary>
@@ -160,9 +160,13 @@ namespace HiddenHarbours.App.Editor
         public const string TurningPadName = "WharfTurningPad";
 
         /// <summary>The yard's own road (the wharf key scene's yard.main_road) runs straight along this y from the
-        /// turning pad's east side to the boat yard's gate. It is not Wharf Road, and nothing paves it yet: a later
-        /// wave's.</summary>
+        /// turning pad's east side to the boat yard's gate. H6 PR 2 paves its first 30 m to the west lot.</summary>
         public const float YardRoadY = 120f;
+        public const string YardRoadName = "WharfYardRoad";
+        public const float YardRoadHalfWidth = 3.75f;
+        public static Vector2 YardRoadStart => new Vector2(76f, YardRoadY);
+        // PR 3 carries this same way on to the record's (190, 120).
+        public static Vector2 YardRoadEnd => new Vector2(106f, YardRoadY);
 
         /// <summary>Where the yard road's line leaves the turning circle on its east side, (76.14, 120): where a
         /// truck leaves the pad for the buyers' gravel.</summary>
@@ -200,6 +204,9 @@ namespace HiddenHarbours.App.Editor
                     list.Add(new NineMileCreekRoads.Way(TurningPadName, NineMileCreekRoads.GravelSurface,
                         new[] { TurningPadCentre, TurningPadCentre }, TurningPadRadius, NineMileCreekRoads.RankWharfRoad,
                         false, "the turning circle at the head of Wharf Road's ramp: a truck that came up it turns here"));
+                    list.Add(new NineMileCreekRoads.Way(YardRoadName, NineMileCreekRoads.GravelSurface,
+                        new[] { YardRoadStart, YardRoadEnd }, YardRoadHalfWidth, NineMileCreekRoads.RankWharfRoad, true,
+                        "the wharf key scene's yard.main_road: the pad's east side to the west lot (H6 PR 2); PR 3 runs it on to the gate"));
                 }
                 else if (way.Name.StartsWith(NineMileCreekRoads.TownWalkNamePrefix, System.StringComparison.Ordinal))
                     continue;   // re-derived below, joining the final lines
@@ -240,12 +247,14 @@ namespace HiddenHarbours.App.Editor
         {
             NineMileCreekRoads.Way wharf = Ways().Single(w => w.Name == NineMileCreekRoads.WharfRoadName);
             NineMileCreekRoads.Way pad = Ways().Single(w => w.Name == TurningPadName);
+            NineMileCreekRoads.Way yard = Ways().Single(w => w.Name == YardRoadName);
             return new[]
             {
                 new NineMileCreekRoads.Way(WharfStubName, wharf.Surface, new[] { WharfStubStart, WharfRoad[WharfRoad.Length - 1] },
                     wharf.HalfWidth, wharf.Rank, wharf.CentreLineCritical,
                     "the wharf's stub of Wharf Road, from where kit v4's network clips it to the turning pad (H5/H6's)"),
                 pad,
+                yard,
             };
         }
 

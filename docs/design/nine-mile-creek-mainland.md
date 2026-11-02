@@ -659,3 +659,7 @@ rather than from the baked Acadian kit. They are retired here. Two tree pipeline
 one coast is the same class of defect the road kit warns about for its own v1/v3 split ("two road families
 at different vertical scales in one village is a bug only the eye would ever catch"), and the shelter
 belt's ground is inside the new hedgerow lattice anyway.
+
+## Buying the cod licence at the wharf
+
+The harbourmaster sells the cod licence at the office trailer's counter on the wharf yard. Walk up to the trailer beside the working road; the town office and its approach lot have been retired. The seller remains seller.nmc_harbourmaster and the licence remains license.cod.

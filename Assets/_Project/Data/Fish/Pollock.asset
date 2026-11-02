@@ -20,6 +20,7 @@ MonoBehaviour:
   RegionIds:
   - region.coddle_cove
   - region.st_peters
+  - region.east_water
   - region.nine_mile_creek
   AllowedGear: 1
   Seasons: 15

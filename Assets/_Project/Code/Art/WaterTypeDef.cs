@@ -21,9 +21,14 @@ namespace HiddenHarbours.Art
                  "Each field names its default, unit and range.")]
         public WaterTypeValues Water = WaterTypeValues.Default;
 
+        [Tooltip("Optional crest-glow review arm. Unassigned ships the glow off. Select by eye from the plates; " +
+                 "each water type can choose its own arm and absorption still supplies its colour.")]
+        public CrestGlowDef CrestGlow;
+
         /// <summary>A stable id with the type's prefix and every value inside its range.</summary>
         public bool IsValid() => !string.IsNullOrWhiteSpace(Id)
-            && Id.StartsWith(IdPrefix, StringComparison.Ordinal) && Water.IsValid();
+            && Id.StartsWith(IdPrefix, StringComparison.Ordinal) && Water.IsValid()
+            && (CrestGlow == null || CrestGlow.IsValid());
     }
 
     /// <summary>

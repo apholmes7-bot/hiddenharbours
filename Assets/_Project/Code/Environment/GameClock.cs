@@ -15,6 +15,7 @@ namespace HiddenHarbours.Environment
         [Range(0f, 24f)] [SerializeField] private float _startHour = 6f;
 
         private double _t;
+        private double _flow;
         private int _lastTotalDays = -1;
         private Season _lastSeason;
 
@@ -23,6 +24,10 @@ namespace HiddenHarbours.Environment
         public GameConfig Config => _config;
 
         public double TotalSeconds => _t;
+        public double FlowSeconds => _flow;
+        public bool IsHeld { get; set; }
+        /// <summary>The authored new-game instant, also used by the opening's hour hold.</summary>
+        public double StartSeconds => _config != null ? _config.SecondsPerDay * (_startHour / 24f) : 0d;
         public GameTime Now => new GameTime(_t);
         public bool IsPaused { get; set; }
         public float TimeScale { get; set; } = 1f;
@@ -50,7 +55,8 @@ namespace HiddenHarbours.Environment
                 enabled = false;
                 return;
             }
-            _t = _config.SecondsPerDay * (_startHour / 24f);
+            _t = StartSeconds;
+            _flow = _t;
             _lastTotalDays = TotalDays;
             _lastSeason = Season;
         }
@@ -65,6 +71,7 @@ namespace HiddenHarbours.Environment
         public void SeekTo(double totalSeconds)
         {
             _t = totalSeconds < 0d ? 0d : totalSeconds;
+            _flow = _t;
             // Keep the rollover guards in step with where we landed (only meaningful once configured).
             if (_config != null)
             {
@@ -89,7 +96,9 @@ namespace HiddenHarbours.Environment
         public void Advance(float wallSeconds)
         {
             if (_config == null || IsPaused) return;
-            _t += wallSeconds * Mathf.Max(0f, TimeScale);
+            double step = wallSeconds * Mathf.Max(0f, TimeScale);
+            _flow += step;
+            if (!IsHeld) _t += step;
 
             int today = TotalDays;
             if (today != _lastTotalDays)

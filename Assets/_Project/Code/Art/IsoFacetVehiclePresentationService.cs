@@ -23,6 +23,8 @@ namespace HiddenHarbours.Art
     /// would lay a foam ribbon down the gravel and cast a reflection in a harbour she is nowhere
     /// near. Neither is attached here. The waterline clamp fields are likewise left at 0 — the
     /// documented "clamp off" — because a road vehicle has no watertight deck.</para>
+    /// <para>Sun and lamp casters share the hull's projection and resolved silhouette: vehicles stand
+    /// on the same ground under the same lights. No deck caster is fitted to a vehicle's cab or bed.</para>
     ///
     /// <para><b>Self-registering at runtime</b> (<see cref="RuntimeInitializeOnLoadMethod"/>, before
     /// the first scene), so a player build and PlayMode tests get the mesh path with no wiring.
@@ -57,6 +59,8 @@ namespace HiddenHarbours.Art
             var renderer = host.GetComponent<IsoFacetHullRenderer>();
             if (renderer == null) renderer = host.AddComponent<IsoFacetHullRenderer>();
             renderer.Configure(ToSetup(def));
+            HullSunShadowCaster.Fit(host);
+            HullLampShadowCaster.Fit(host);
             return renderer;
         }
 

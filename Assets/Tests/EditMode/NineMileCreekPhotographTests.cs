@@ -270,7 +270,7 @@ namespace HiddenHarbours.Tests.EditMode
                 Vector2 lot = NineMileCreekMainland.OwnerShedLot(owner.LotIndex);
                 Assert.IsTrue(spit.Contains(lot),
                     $"{owner.Id}'s shed lot {owner.LotIndex} at {lot} is off the made ground");
-                Assert.IsFalse(NineMileCreekMainland.IsWorkingSiteInTheWay(lot),
+                Assert.IsFalse(NineMileCreekMainland.IsRetiredRowSiteInTheWay(lot),
                     $"{owner.Id}'s shed lot {owner.LotIndex} at {lot} stands on one of the plan's own " +
                     "working sites — the row is supposed to STEP AROUND them, not be nudged off them");
             }
@@ -336,7 +336,7 @@ namespace HiddenHarbours.Tests.EditMode
                 {
                     var candidate = new Vector2(west + step * NineMileCreekMainland.OwnerShedSpacingMetres, y);
                     if (candidate.x > east) break;
-                    if (NineMileCreekMainland.IsWorkingSiteInTheWay(candidate)) continue;
+                    if (NineMileCreekMainland.IsRetiredRowSiteInTheWay(candidate)) continue;
                     oldWalk.Add(candidate);
                 }
             }
