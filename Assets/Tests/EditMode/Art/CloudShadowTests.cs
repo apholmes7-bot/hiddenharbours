@@ -91,6 +91,17 @@ namespace HiddenHarbours.Tests.Art.EditMode
             Assert.That(_system.ShadowRenderer, Is.Null); Assert.That(_system.DrawCount, Is.Zero);
         }
 
+        [Test] public void SteadyCameraPreparation_AllocatesNoManagedBytes()
+        {
+            var frame = new CloudShadowFrame(1, 0, new Vector2(3, 4), .5f, 1);
+            for (int i = 0; i < 100; i++) _system.Prepare(_camera, frame);
+            System.GC.GetAllocatedBytesForCurrentThread();
+            long before = System.GC.GetAllocatedBytesForCurrentThread();
+            for (int i = 0; i < 1000; i++) _system.Prepare(_camera, frame);
+            long bytes = System.GC.GetAllocatedBytesForCurrentThread() - before;
+            Assert.That(bytes, Is.Zero, "the warmed camera path reuses its noise, material, quad and property block");
+        }
+
         [Test] public void FullOvercastAndNight_DisableTheCachedDraw()
         {
             _system.Prepare(_camera, new CloudShadowFrame(1, 0, Vector2.right, 0, 1)); Assert.That(_system.DrawCount, Is.EqualTo(1));
