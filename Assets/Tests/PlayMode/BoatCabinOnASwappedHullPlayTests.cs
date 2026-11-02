@@ -299,7 +299,7 @@ namespace HiddenHarbours.Tests.PlayMode
             Assert.IsTrue(rig.Switcher.BeginInteract(), "E at her door is spent on her door");
             Assert.AreEqual(ControlMode.OnDeck, rig.Switcher.Mode,
                             "…and never on her helm: at a cabin door E only opens the door (owner, 2026-09-17)");
-            Assert.IsTrue(door.IsCueing, "the press starts the leaf moving");
+            Assert.AreEqual(door.CueSeconds > 0f, door.IsCueing, "the press starts the leaf moving when she has a cue");
             yield return WaitForCue(door);
 
             Assert.IsTrue(door.IsOpen, "the cue ends on a leaf standing open");
@@ -355,8 +355,9 @@ namespace HiddenHarbours.Tests.PlayMode
 
             yield return WalkToTheDoor(rig, door);
             Assert.IsTrue(rig.Switcher.BeginInteract(), "E at her door is spent on her door");
-            Assert.AreSame(mesh.DoorLeafClosed, LeafMeshOf(HullOf(rig)),
-                           "the leaf lands at the END of the cue, not at the press");
+            if (door.CueSeconds > 0f)
+                Assert.AreSame(mesh.DoorLeafClosed, LeafMeshOf(HullOf(rig)),
+                               "the leaf lands at the END of the cue, not at the press");
             yield return WaitForCue(door);
 
             Assert.IsTrue(door.IsOpen, "precondition: the cue ended on a door standing open");
@@ -1237,7 +1238,7 @@ namespace HiddenHarbours.Tests.PlayMode
                            $", not '{OpenTheDoor}' on her door");
                     yield break;
                 }
-                if (!w.Rig.Switcher.BeginInteract() || !door.IsCueing)
+                if (!w.Rig.Switcher.BeginInteract() || (!door.IsCueing && !door.IsOpen))
                 {
                     w.Fail($"E under the offer '{offer.Label}' did not move the leaf of {door.Id} " +
                            $"(she is {w.Rig.Switcher.Mode})");

@@ -191,6 +191,12 @@ namespace HiddenHarbours.Tests.EditMode
         /// <see cref="TheKeelboats_GroundOnTheirFinKeel"/> and
         /// <see cref="TheKeelboats_DrawTheSeaAtTheirCanoeBody"/>. A hull joins that table with her sidecar or
         /// not at all.</para>
+        ///
+        /// <para>THE PREMISE MOVED AGAIN WITH THE RIG-DRAFT YACHTS. These two motor yachts publish real
+        /// drafts, rather than the fleet's scaled visual draft. Applying the ratio would ground the
+        /// 120 deeper than the tanker. They are excused by name in <see cref="RigDraftYachts"/> and held
+        /// to their rig drafts, with gameplay rounded to the fleet's 0.05 m step, in
+        /// <see cref="TheRigDraftYachts_GroundAtTheDraftTheirRigsState"/>.</para>
         /// </summary>
         [Test]
         public void TheGameplayDraught_IsTheMeshDraftOnTheFleetsOwnRatio()
@@ -208,6 +214,7 @@ namespace HiddenHarbours.Tests.EditMode
             {
                 if (h.Visual == null || !h.Visual.HasHullMesh()) continue;      // sprite-only hulls opt out
                 if (Keelboats.Any(k => k.Id == h.Id)) continue;                 // the NAMED clause, below
+                if (RigDraftYachts.Any(y => y.Id == h.Id)) continue;             // the rig-draft clause, below
                 float mesh = h.Visual.HullMesh.RestingDraftMeters;
                 if (mesh <= 0f) continue;
 
@@ -257,6 +264,30 @@ namespace HiddenHarbours.Tests.EditMode
             ("boat.sloop_30", "Sloop30", "docs/art/rigs/gameplay/sail/sloopIsoRig.gameplay.json"),
             ("boat.sloop_88", "Sloop88", "docs/art/rigs/gameplay/sail/sloop88IsoRig.gameplay.json"),
         };
+
+        static readonly (string Id, string File, float RigDraft)[] RigDraftYachts =
+        {
+            // expeditionYacht120IsoRig.js:476 states 2.74 m draft; DWL at :692.
+            ("boat.expedition_yacht_120", "ExpeditionYacht120", 2.74f),
+            // motorYacht84IsoRig.js:239 states DWL 1.80 as the draft.
+            ("boat.motor_yacht_84", "MotorYacht84", 1.80f),
+        };
+
+        [Test]
+        public void TheRigDraftYachts_GroundAtTheDraftTheirRigsState()
+        {
+            foreach (var yacht in RigDraftYachts)
+            {
+                var h = Hull(yacht.File);
+                Assert.AreEqual(yacht.Id, h.Id, "the rig-draft clause names this hull by id");
+                Assert.IsTrue(h.Visual != null && h.Visual.HasHullMesh(),
+                    $"{yacht.Id}: her rig draft needs a resolved hull mesh");
+                Assert.AreEqual(yacht.RigDraft, h.Visual.HullMesh.RestingDraftMeters, 0.005f,
+                    $"{yacht.Id}: the drawn waterline must keep her rig's stated draft");
+                Assert.AreEqual(RoundToStep(yacht.RigDraft, 0.05f), h.DraughtMeters, 0.001f,
+                    $"{yacht.Id}: gameplay grounds at her rig draft rounded to the fleet's step");
+            }
+        }
 
         /// <summary>How much deeper than her lofted fin a keelboat's gameplay draught may sit. Deeper is the
         /// safe side — she grounds a little early rather than sailing over a bar her keel cannot clear — and
