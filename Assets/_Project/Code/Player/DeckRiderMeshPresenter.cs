@@ -313,7 +313,9 @@ namespace HiddenHarbours.Player
             // frame, in StateContext.
             string stateKey = moveKey;
             bool fellBack = false;
-            if (!clipPose && !CharacterSkinStateMap.Resolve(skin, character.Stance, character.Gait, CarryNow(),
+            string seatedKey = _rider != null ? _rider.SeatedHelmStateKey : null;
+            if (!clipPose && !string.IsNullOrEmpty(seatedKey)) stateKey = seatedKey;
+            else if (!clipPose && !CharacterSkinStateMap.Resolve(skin, character.Stance, character.Gait, CarryNow(),
                                                           out stateKey, out fellBack))
             {
                 Stop($"no clip for stance {character.Stance} / gait {character.Gait}");
@@ -768,6 +770,9 @@ namespace HiddenHarbours.Player
 
         /// <summary>The body her recipe resolved to, or null while she is drawn as baked.</summary>
         public CharacterSkinDef LookSkin => _lookSkin;
+
+        /// <summary>The same skin precedence used by this presenter's pose path.</summary>
+        public CharacterSkinDef EffectiveSkin => _skin ?? _lookSkin ?? _rider?.Character?.Visual?.Skin;
 
         /// <summary>Why her last recipe was not drawn, in the builder's words, or null.</summary>
         public string LookRefusal { get; private set; }

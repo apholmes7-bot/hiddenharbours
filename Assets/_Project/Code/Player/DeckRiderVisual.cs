@@ -702,6 +702,7 @@ namespace HiddenHarbours.Player
         private Vector3 StandPointRigLocal()
         {
             if (_carried) return _carriedStand;
+            if (SeatedHelmVisual() is BoatVisualDef seated) return seated.SeatedHelmFloorOrigin;
             if (_mode == ControlMode.Aboard && _boat != null && _boat.Hull != null)
             {
                 var visual = _boat.Hull.Visual;
@@ -732,6 +733,25 @@ namespace HiddenHarbours.Player
             Vector2 stand = _deckWalk.DeckLocalPosition;
             return new Vector3(stand.x, stand.y, _deckWalk.DeckHeightMeters);
         }
+
+        /// <summary>The same choice drives the floor origin and mesh clip; missing art keeps both
+        /// on the standing route rather than putting a standing body on the seated origin.</summary>
+        private BoatVisualDef SeatedHelmVisual()
+        {
+            if (_carried || _mode != ControlMode.Aboard || _boat == null || _boat.Hull == null) return null;
+            var visual = _boat.Hull.Visual;
+            var config = GameServices.Config;
+            var presenter = _figure as DeckRiderMeshPresenter;
+            var skin = presenter != null ? presenter.EffectiveSkin : _character?.Visual?.Skin;
+            if (visual == null || string.IsNullOrEmpty(visual.SeatedHelmState) ||
+                config == null || !config.MeshCharacter || skin == null ||
+                _character == null || _character.IsSuspended ||
+                !skin.DrawsAsMesh(visual.SeatedHelmState) || !skin.TryGetClip(visual.SeatedHelmState, out _))
+                return null;
+            return visual;
+        }
+
+        public string SeatedHelmStateKey => SeatedHelmVisual()?.SeatedHelmState;
 
         /// <summary>Present the character for the current mode. Idempotent and cheap — safe to call from
         /// the mode switch and from every LateUpdate.</summary>
