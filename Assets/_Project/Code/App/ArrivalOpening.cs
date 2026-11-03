@@ -1743,8 +1743,8 @@ namespace HiddenHarbours.App
         /// </summary>
         private void HandOver()
         {
-            // Leaving the opening also ends an unresolved preview, before the captain speaks.
-            CloseCharacterCreator();
+            // The close acknowledgement precedes releasing the hour or the captain's line.
+            if (HoldHandoverForCharacterCreator()) return;
             ReleaseThePlayer();
             ReleaseTheHour();
 

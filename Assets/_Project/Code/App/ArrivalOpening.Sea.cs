@@ -188,8 +188,7 @@ namespace HiddenHarbours.App
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         static void ResetSeaJourney()
         {
-            CloseCharacterCreator();
-            _characterCreator = null;
+            ResetCharacterCreator();
             _seaOrigin = _seaLive = null;
             _seaBooting = false;
             _crossing = null;

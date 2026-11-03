@@ -1,56 +1,50 @@
 using HiddenHarbours.Core;
-using HiddenHarbours.UI;
-using UnityEngine;
 
 namespace HiddenHarbours.App
 {
     public sealed partial class ArrivalOpening
     {
-        static CharacterCreatorModel _characterCreator;
-        static CharacterCreatorPanel _characterCreatorPanel;
-
-        /// <summary>The opening's choices, carried across region hops with the persistent player.</summary>
-        public static CharacterCreatorModel CharacterCreator => _characterCreator;
+        static bool _characterCreatorOpen;
+        static ArrivalOpening _creatorHandover;
 
         void OpenCharacterCreator()
         {
-            if (_characterCreator != null && _characterCreator.IsOpen) return;
-            if (GameServices.Save?.Current == null) return;
-            _characterCreator = new CharacterCreatorModel(CharacterBuilderDef.LoadShipped(),
-                Resources.Load<CharacterWardrobeDef>(CharacterWardrobeDef.ResourcesPath));
-            var host = new GameObject("[ArrivalCharacterCreator]");
-            DontDestroyOnLoad(host);
-            _characterCreatorPanel = host.AddComponent<CharacterCreatorPanel>();
-            if (!_characterCreatorPanel.Open(_characterCreator))
-            {
-                _characterCreator.Cancel();
-                Destroy(host);
-                _characterCreatorPanel = null;
-                Debug.LogError("The opening could not acquire the character creator's modal input gate.");
-                return;
-            }
-            _characterCreator.Changed += OnCreatorChanged;
-            EventBus.Subscribe<ShellPhaseChanged>(OnCreatorShellPhase);
+            if (_characterCreatorOpen || GameServices.Save?.Current == null) return;
+            if (!EventBus.HasSubscribers<CharacterCreatorRequested>()) return;
+            _characterCreatorOpen = true;
+            EventBus.Subscribe<CharacterCreatorClosed>(OnCreatorClosed);
+            EventBus.Publish(new CharacterCreatorRequested(true));
         }
 
-        static void OnCreatorChanged()
+        static void OnCreatorClosed(CharacterCreatorClosed closed)
         {
-            if (_characterCreator == null || _characterCreator.IsOpen) return;
-            _characterCreator.Changed -= OnCreatorChanged;
-            EventBus.Unsubscribe<ShellPhaseChanged>(OnCreatorShellPhase);
-            var panel = _characterCreatorPanel;
-            _characterCreatorPanel = null;
-            if (panel != null) Destroy(panel.gameObject);
+            _characterCreatorOpen = false;
+            EventBus.Unsubscribe<CharacterCreatorClosed>(OnCreatorClosed);
+            var pending = _creatorHandover;
+            _creatorHandover = null;
+            if (pending != null) pending.HandOver();
         }
 
-        static void OnCreatorShellPhase(ShellPhaseChanged change)
+        bool HoldHandoverForCharacterCreator()
         {
-            if (change.Phase == ShellPhase.Title) CloseCharacterCreator();
+            if (!_characterCreatorOpen) return false;
+            _creatorHandover = this;
+            CloseCharacterCreator();
+            // A synchronous acknowledgement may already have completed the pending handover.
+            return true;
         }
 
         static void CloseCharacterCreator()
         {
-            if (_characterCreator != null && _characterCreator.IsOpen) _characterCreator.Cancel();
+            if (_characterCreatorOpen) EventBus.Publish(new CharacterCreatorRequested(false));
+        }
+
+        static void ResetCharacterCreator()
+        {
+            _creatorHandover = null;
+            CloseCharacterCreator();
+            EventBus.Unsubscribe<CharacterCreatorClosed>(OnCreatorClosed);
+            _characterCreatorOpen = false;
         }
     }
 }

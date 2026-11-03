@@ -76,7 +76,7 @@ namespace HiddenHarbours.Tests.PlayMode
             if (newGame) ShellFlow.StartNewGame();
             else ShellFlow.ContinueGame();
             double end = Time.realtimeSinceStartupAsDouble + 60d;
-            while (ArrivalOpening.CharacterCreator == null || !ArrivalOpening.CharacterCreator.IsOpen)
+            while (CharacterCreatorOpener.Model == null || !CharacterCreatorOpener.Model.IsOpen)
             {
                 Assert.Less(Time.realtimeSinceStartupAsDouble, end, "the opening did not show its creator");
                 yield return null;
@@ -87,7 +87,7 @@ namespace HiddenHarbours.Tests.PlayMode
         void OnLine(ArrivalCompleted line)
         {
             _lines++;
-            _lineWhileOpen |= ArrivalOpening.CharacterCreator != null && ArrivalOpening.CharacterCreator.IsOpen;
+            _lineWhileOpen |= CharacterCreatorOpener.Model != null && CharacterCreatorOpener.Model.IsOpen;
         }
 
         [UnityTest, Timeout(300000)]
@@ -95,7 +95,7 @@ namespace HiddenHarbours.Tests.PlayMode
         {
             yield return Boot(true);
             var opening = ArrivalOpening.SeaJourney;
-            var creator = ArrivalOpening.CharacterCreator;
+            var creator = CharacterCreatorOpener.Model;
             var clock = (GameClock)GameServices.Clock;
             Assert.IsTrue(opening.IsAtSea);
             Assert.IsTrue(clock.IsHeld);
@@ -174,7 +174,7 @@ namespace HiddenHarbours.Tests.PlayMode
             // Continue an unfinished introduction through the real shell and the same owned fixture file.
             EventBus.Unsubscribe<ArrivalCompleted>(OnLine);
             yield return Boot(false);
-            creator = ArrivalOpening.CharacterCreator;
+            creator = CharacterCreatorOpener.Model;
             Assert.AreEqual("char_build.ginny", creator.Recipe.BuildId);
             Assert.AreEqual("outfit.harbour_teal", creator.OutfitId);
             Assert.AreEqual("Skipper", creator.Name);
@@ -187,7 +187,7 @@ namespace HiddenHarbours.Tests.PlayMode
         public IEnumerator NewGameCancel_RestoresBakedLookWornOutfitAndNoName_ThenTheCaptain()
         {
             yield return Boot(true);
-            var creator = ArrivalOpening.CharacterCreator;
+            var creator = CharacterCreatorOpener.Model;
             string worn = OutfitLocker.WornOutfitId();
             Assert.IsTrue(creator.SelectBody("char_build.ginny"));
             Assert.IsTrue(creator.SelectColour("hair", "black"));
@@ -236,7 +236,7 @@ namespace HiddenHarbours.Tests.PlayMode
             string before = SaveSerialization.ToJson(loaded);
             ShellFlow.ContinueGame();
             for (int i = 0; i < 12; i++) yield return null;
-            Assert.IsTrue(ArrivalOpening.CharacterCreator == null || !ArrivalOpening.CharacterCreator.IsOpen);
+            Assert.IsTrue(CharacterCreatorOpener.Model == null || !CharacterCreatorOpener.Model.IsOpen);
             Assert.AreEqual(before, SaveSerialization.ToJson(save.Current));
             Assert.AreEqual(0, save.Writes);
             Assert.IsTrue(save.Current.PlayerRecipe.IsEmpty);
@@ -295,7 +295,7 @@ namespace HiddenHarbours.Tests.PlayMode
                     var read = new PlateRead { Hour = GameServices.Clock.HourOfDay, Held = GameServices.Clock.IsHeld,
                         Player = GameServices.PlayerTransform.position, Boat = opening.Boat.transform.position,
                         Lens = camera.transform.position, Size = camera.orthographicSize,
-                        Recipe = GameServices.Appearance.Showing, Outfit = ArrivalOpening.CharacterCreator.OutfitId };
+                        Recipe = GameServices.Appearance.Showing, Outfit = CharacterCreatorOpener.Model.OutfitId };
                     File.WriteAllText(path + ".json", JsonUtility.ToJson(read, true));
                 }
                 catch (Exception exception) { error = exception; }
