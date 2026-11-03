@@ -230,6 +230,7 @@ namespace HiddenHarbours.Tests.PlayMode
                         Vector3 previous = _player.transform.position;
                         Vector3 previousDrawn = entryDrawn;
                         Vector3? lastOffDrawn = null;
+                        Vector3? lastOffHullOrigin = null;
                         int lastOffSequence = -1, afterComplete = -1, armsOutAfterComplete = 0;
                         float elapsed = 0f;
                         while ((controls.IsBoardingMove || afterComplete < 12) && elapsed < 60f)
@@ -324,7 +325,12 @@ namespace HiddenHarbours.Tests.PlayMode
                             int drawnFrame = drawnFigure.DrawnFrame;
                             bool armsOut = drawnState == "balance"; // all eight published balance poses hold both arms out
                             if (afterComplete >= 0 && armsOut) armsOutAfterComplete++;
-                            if (leg == "Off") { lastOffDrawn = drawn; lastOffSequence = sequenceFrame; }
+                            if (leg == "Off")
+                            {
+                                lastOffDrawn = drawn;
+                                lastOffHullOrigin = hullPose.PosedMesh.position;
+                                lastOffSequence = sequenceFrame;
+                            }
                             float soleL = float.NaN, soleR = float.NaN, hands = float.NaN;
                             var drawnPins = paper.clips.For(drawnState)?.pins;
                             if (drawnPins != null && drawnFrame >= 0 && drawnFrame < drawnPins.Length)
@@ -356,7 +362,10 @@ namespace HiddenHarbours.Tests.PlayMode
                             if (afterComplete >= 0)
                             {
                                 Assert.IsTrue(lastOffDrawn.HasValue, "retain the last Off frame");
-                                Assert.LessOrEqual(ScreenDistance(lastOffDrawn.Value, drawn), .25f,
+                                Vector3 heldOff = lastOffDrawn.Value;
+                                if (direction == "Boarding")
+                                    heldOff += hullPose.PosedMesh.position - lastOffHullOrigin.Value;
+                                Assert.LessOrEqual(ScreenDistance(heldOff, drawn), .25f,
                                     $"drawn handoff moved from Off seq {lastOffSequence} to seq {sequenceFrame}, post {afterComplete}");
                                 if (direction == "Boarding")
                                 {
