@@ -1,4 +1,5 @@
 using UnityEngine;
+using HiddenHarbours.Core;
 
 namespace HiddenHarbours.Art
 {
@@ -28,26 +29,21 @@ namespace HiddenHarbours.Art
     /// nothing here is saved or randomised.</para>
     /// </summary>
     [CreateAssetMenu(menuName = "Hidden Harbours/Lighting/Day-Night Profile", fileName = "DayNightProfile")]
-    public sealed class DayNightProfile : ScriptableObject
+    public sealed class DayNightProfile : DaylightHours
     {
         [Header("Day tint (the whole-screen multiply colour over 24h)")]
-        [Tooltip("The global MULTIPLY colour across the day fraction (0 = midnight, 0.5 = noon, 1 = " +
+        [Tooltip("The global MULTIPLY colour across the solar phase (0 = midnight, 0.5 = solar noon, 1 = " +
                  "midnight). Warm + low at dawn, bright neutral/cool at noon, orange-red at dusk, dark " +
                  "BLUE + low at night. The whole scene (sprites, water, grass) is multiplied by this, so " +
                  "a dark night swatch genuinely darkens everything — boat lights will matter (P1).")]
         [SerializeField] private Gradient _skyTint = new Gradient();
 
-        [Tooltip("Overall brightness across the day fraction (0..1), multiplied into the tint above. Lets " +
+        [Tooltip("Overall brightness across the solar phase (0..1), multiplied into the tint above. Lets " +
                  "you dim the night HARD (toward 0) without changing the tint hue. Leave flat at 1 to let " +
                  "the gradient carry all the brightness, or pull the night down here for a darker night.")]
         [SerializeField] private AnimationCurve _intensity = AnimationCurve.Linear(0f, 1f, 1f, 1f);
 
         [Header("Sun arc (drives specular now, shadows in PR 2)")]
-        [Tooltip("Hour the sun crosses the horizon at dawn (0..24). Before this it is night.")]
-        [Range(0f, 24f)] [SerializeField] private float _sunriseHour = 6f;
-        [Tooltip("Hour the sun crosses the horizon at dusk (0..24). After this it is night. Keep " +
-                 "sunrise < sunset; solar noon sits halfway between.")]
-        [Range(0f, 24f)] [SerializeField] private float _sunsetHour = 20f;
         [Tooltip("How far north (up the screen) every shadow leans even at a low sun — the sun sits in " +
                  "the SOUTH, so shadows always have a slight northward tilt. 0 = shadows run dead E↔W at " +
                  "dawn/dusk.")]
@@ -93,8 +89,6 @@ namespace HiddenHarbours.Art
         // ---- read-only accessors (the controller + DayNightMath read these) ----
         public Gradient SkyTint => _skyTint;
         public AnimationCurve Intensity => _intensity;
-        public float SunriseHour => _sunriseHour;
-        public float SunsetHour => _sunsetHour;
         public float ShadowSouthBias => _shadowSouthBias;
         public float ShadowNoonLift => _shadowNoonLift;
         public float FogVisibilityForFullDim => _fogVisibilityForFullDim;
@@ -113,7 +107,7 @@ namespace HiddenHarbours.Art
         /// </summary>
         public void ApplyDefaults()
         {
-            // Day fraction keys: 0 = midnight, 0.25 = dawn, 0.5 = noon, 0.75 = dusk, 1 = midnight.
+            // Solar keys: .20 first light, .32 full morning, .50 solar noon, .75 sunset, .80 night.
             _skyTint = new Gradient
             {
                 // NOTE: Unity Gradient allows a MAXIMUM of 8 colour keys. Keep this at <= 8.
@@ -121,11 +115,11 @@ namespace HiddenHarbours.Art
                 {
                     new GradientColorKey(new Color(0.12f, 0.16f, 0.34f), 0.00f), // deep night blue
                     new GradientColorKey(new Color(0.18f, 0.22f, 0.40f), 0.20f), // pre-dawn
-                    new GradientColorKey(new Color(0.95f, 0.66f, 0.45f), 0.27f), // warm low sunrise
-                    new GradientColorKey(new Color(1.00f, 0.98f, 0.95f), 0.45f), // bright neutral morning
-                    new GradientColorKey(new Color(0.98f, 1.00f, 1.00f), 0.50f), // cool bright noon
-                    new GradientColorKey(new Color(1.00f, 0.55f, 0.32f), 0.74f), // orange-red sunset
-                    new GradientColorKey(new Color(0.30f, 0.24f, 0.40f), 0.80f), // dusk purple
+                    new GradientColorKey(new Color(0.95f, 0.66f, 0.45f), 0.25f), // warm low sunrise
+                    new GradientColorKey(new Color(1.00f, 0.98f, 0.95f), 0.32f), // bright neutral morning
+                    new GradientColorKey(new Color(0.98f, 1.00f, 1.00f), 0.70f), // cool bright noon
+                    new GradientColorKey(new Color(1.00f, 0.55f, 0.32f), 0.75f), // orange-red sunset
+                    new GradientColorKey(new Color(0.12f, 0.16f, 0.34f), 0.80f), // dusk purple
                     new GradientColorKey(new Color(0.12f, 0.16f, 0.34f), 1.00f), // back to night blue
                 },
                 alphaKeys = new[]
@@ -138,18 +132,15 @@ namespace HiddenHarbours.Art
             // around dawn to 1 across the day and back down by dusk.
             _intensity = new AnimationCurve(
                 new Keyframe(0.00f, 0.18f),
-                new Keyframe(0.22f, 0.20f),
-                new Keyframe(0.30f, 0.85f),
-                new Keyframe(0.50f, 1.00f),
-                new Keyframe(0.70f, 0.90f),
-                new Keyframe(0.80f, 0.30f),
-                new Keyframe(0.88f, 0.18f),
+                new Keyframe(0.20f, 0.20f),
+                new Keyframe(0.25f, 0.65f),
+                new Keyframe(0.32f, 1.00f),
+                new Keyframe(0.70f, 1.00f),
+                new Keyframe(0.75f, 0.55f),
+                new Keyframe(0.80f, 0.18f),
                 new Keyframe(1.00f, 0.18f));
-            for (int i = 0; i < _intensity.length; i++)
-                _intensity.SmoothTangents(i, 0f);
 
-            _sunriseHour = 6f;
-            _sunsetHour = 20f;
+            ApplyHourDefaults();
             _shadowSouthBias = 0.2f;
             _shadowNoonLift = 0.9f;
             _fogVisibilityForFullDim = 0.15f;

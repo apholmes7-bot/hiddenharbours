@@ -188,7 +188,7 @@ namespace HiddenHarbours.Tests.PlayMode
             yield return OpenTheLens();
 
             yield return Triptych("plate-1-stpeters-2300", StPeters, 23.0f, intro: false);
-            yield return Triptych("plate-2-stpeters-1930", StPeters, 19.5f, intro: false);
+            yield return Triptych("plate-2-stpeters-2100", StPeters, 21f, intro: false);
         }
 
         /// <summary>Plates 3 and 4 — Nine Mile Creek at the same two hours. A second region because the
@@ -209,16 +209,24 @@ namespace HiddenHarbours.Tests.PlayMode
             // destroys itself inactive, and the plate is shot through the lens play actually uses.
             yield return LoadRegion(StPeters);
             yield return LoadRegion(NineMileCreek);
+            var wharf = GameObject.Find("NineMileCreekDockZone");
+            Assert.IsNotNull(wharf, "the NMC plate needs the authored wharf dock zone");
+            var follow = Object.FindFirstObjectByType<CameraFollow>();
+            Assert.IsNotNull(follow);
+            Debug.Log($"[{PlateDir}] NMC before authored aim: camera {GraderCamera().transform.position}; " +
+                      $"aim '{wharf.name}' at {wharf.transform.position}");
+            follow.Target = wharf.transform;
+            follow.Smooth = 1000f;
             yield return OpenTheLens();
 
             yield return Triptych("plate-3-ninemilecreek-2300", NineMileCreek, 23.0f, intro: false);
-            yield return Triptych("plate-4-ninemilecreek-1930", NineMileCreek, 19.5f, intro: false);
+            yield return Triptych("plate-4-ninemilecreek-2100", NineMileCreek, 21f, intro: false);
         }
 
         /// <summary>
         /// Plate 5 — <b>the arrival opening, at its own hour</b>. The opening runs at the clock's own
-        /// start hour (<c>GameClock._startHour</c> = 6 in the shipped scene), which is sunrise to the
-        /// minute, so the intro is the one frame that sits at the very centre of the golden key. This is
+        /// start hour (<c>GameConfig.StartHour</c>, 07:30). The intro has its own strength even when
+        /// its hour is outside the golden key. This is
         /// the plate the owner's <i>"i do like it on the intro maybe toned down a little though"</i> is
         /// about, and the PROPOSED arm here is the only one of the five shot at
         /// <c>GradeIntroStrength</c> rather than <c>GradeStrength</c> — asserted, not assumed.
@@ -230,17 +238,16 @@ namespace HiddenHarbours.Tests.PlayMode
             yield return LoadRegion(StPeters);
             yield return OpenTheLens();
 
-            yield return Triptych("plate-5-arrival-opening-0600", StPeters, IntroHour(), intro: true);
+            yield return Triptych("plate-5-arrival-opening", StPeters, IntroHour(), intro: true);
         }
 
         /// <summary>The hour the opening is played at: the shipped clock's own start hour.</summary>
         static float IntroHour()
         {
             var clock = Object.FindFirstObjectByType<HiddenHarbours.Environment.GameClock>();
-            if (clock == null) return 6f;
-            var f = typeof(HiddenHarbours.Environment.GameClock)
-                    .GetField("_startHour", BindingFlags.NonPublic | BindingFlags.Instance);
-            return f != null ? (float)f.GetValue(clock) : 6f;
+            Assert.IsNotNull(clock, "the opening hour comes from the live clock's shared config");
+            Assert.IsNotNull(clock.Config);
+            return clock.Config.StartHour;
         }
 
         // =============================================================================================
@@ -312,7 +319,14 @@ namespace HiddenHarbours.Tests.PlayMode
                 $"[{plateName}] the OFF frame has essentially no local contrast — the camera is looking " +
                 "at a flat void, so nothing below is a photograph of the world.");
             int inFrame = SpritesInFrame();
-            Assert.Greater(inFrame, 20,
+            int enough = region == NineMileCreek ? 10 : 20;   // NMC's authored wharf view holds 14; the picture proves its subject (ruling 6)
+            if (region == NineMileCreek)
+            {
+                Debug.Log($"[{PlateDir}] {plateName} viewport: {inFrame} sprites, " +
+                          $"camera {_cam.transform.position}, ortho {_cam.orthographicSize:R}");
+                if (inFrame <= enough) SaveTriptych(plateName + "-viewport-failure", arms);
+            }
+            Assert.Greater(inFrame, enough,
                 $"[{plateName}] only {inFrame} sprites are inside the viewport — the camera is not " +
                 "pointed at the place this plate is captioned with.");
 

@@ -1,4 +1,5 @@
 using System;
+using HiddenHarbours.Core;
 
 namespace HiddenHarbours.Art
 {
@@ -466,9 +467,9 @@ namespace HiddenHarbours.Art
             if (hour >= 24.0) hour = 0.0;
 
             int daysPerSeason = c.DaysPerSeason > 0 ? c.DaysPerSeason : 1;
-            int intoSeason = c.DayOfSeason - 1 + dayOffset;
-            int seasonsOn = FloorDiv(intoSeason, daysPerSeason);
-            int dayOfSeason = intoSeason - seasonsOn * daysPerSeason + 1;
+            // The snapshot already has its calendar offset. Advance relative to that anchor once.
+            CalendarDate calendar = GameCalendar.AtDay(dayOffset, daysPerSeason,
+                                                       c.Season * daysPerSeason + c.DayOfSeason - 1);
             int daysPerWeek = c.DaysPerWeek > 0 ? c.DaysPerWeek : 1;
 
             var x = new GullScheduleInputs
@@ -477,8 +478,8 @@ namespace HiddenHarbours.Art
                 Seconds = seconds,
                 Day = c.Day + dayOffset,
                 Hour = hour,
-                Season = Mod(c.Season + seasonsOn, 4),
-                Progress = (dayOfSeason - 1) / (double)daysPerSeason,
+                Season = (int)calendar.Season,
+                Progress = (calendar.DayOfSeason - 1) / (double)daysPerSeason,
                 MarketDay = Mod(c.Weekday + dayOffset, daysPerWeek) == c.MarketDayIndex,
                 Visibility = c.Visibility,
             };
