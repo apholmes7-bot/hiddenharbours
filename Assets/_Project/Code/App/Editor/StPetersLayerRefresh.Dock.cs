@@ -9,6 +9,7 @@ using HiddenHarbours.Art.Editor;
 using HiddenHarbours.Core;
 using HiddenHarbours.Tools.RigBaking;
 using HiddenHarbours.World;
+using UnityEditor;
 using UnityEngine;
 
 namespace HiddenHarbours.App.Editor
@@ -308,6 +309,86 @@ namespace HiddenHarbours.App.Editor
                     throw new Refusal("dock: key-scene change is outside a moved landing row: " + op.Name);
             Apply(rows);
             return scene;
+        }
+
+        [Serializable] public sealed class PocketGroundWriteResult
+        {
+            public bool success, repeatWriteIdentical;
+            public string error, heightCodesSha256, sourcesSha256, derivationSha256, navGuard;
+            public int firstSampleChanges, repeatSampleChanges, importedPocketCells, writeCount;
+            public double s3X, s3Y, s3Depth;
+        }
+
+        /// <summary>Publish the north-pocket ask through the terrain plan, without opening or saving a scene.</summary>
+        public static void WriteLandingPocketGroundBatch()
+        {
+            string[] args = System.Environment.GetCommandLineArgs();
+            int at = Array.IndexOf(args, "-stpPocketResult");
+            if (at < 0 || at + 1 >= args.Length) throw new Refusal("pocket: a results path is required.");
+            Directory.SetCurrentDirectory(RigCatalog.RepoRoot);
+            string output = Path.GetFullPath(args[at + 1]);
+            string evidence = Path.GetFullPath("Evidence~/stp-kits/k0/ruling-19") + Path.DirectorySeparatorChar;
+            if (!output.StartsWith(evidence, StringComparison.OrdinalIgnoreCase))
+                throw new Refusal("pocket: results must stay in this lane's evidence.");
+            var result = new PocketGroundWriteResult();
+            int code = 1;
+            try
+            {
+                string sources = StPetersTerrainPlan.FileSha256(StPetersTerrainPlan.SourcesPath);
+                var before = TerrainPlanPng.ReadFile(StPetersNorthPocket.PngPath);
+                ushort[] codes = before.Channel(0);
+                var paths = new List<string> { StPetersNorthPocket.AskPath,
+                    AssetDatabase.GetAssetPath(AssetDatabase.LoadAssetAtPath<GroundAskDef>(StPetersNorthPocket.AskPath).Patch),
+                    StPetersNorthPocket.PngPath, StPetersTerrainPlan.StillPath, StPetersTerrainPlan.ManifestPath };
+                for (int i = 0; i < TerrainPlanMaps.SplatMaps; i++) paths.Add(TerrainSplatAssets.PathOf(i));
+
+                TerrainPlanResult Write(out int sampleChanges)
+                {
+                    sampleChanges = StPetersNorthPocket.Apply();
+                    var plan = StPetersTerrainPlan.LoadPlan();
+                    var src = StPetersTerrainPlan.LoadFrozen();
+                    var derived = TerrainPlanDerivation.Derive(plan, src);
+                    TerrainPlanMapWriter.Write(plan, src, derived);
+                    if (!TerrainPlanPng.ReadFile(StPetersNorthPocket.PngPath).Channel(0).SequenceEqual(codes))
+                        throw new Refusal("pocket: the ground-file write changed a committed height code.");
+                    if (StPetersTerrainPlan.FileSha256(StPetersTerrainPlan.SourcesPath) != sources)
+                        throw new Refusal("pocket: the frozen sources changed.");
+                    return derived;
+                }
+
+                var r = Write(out result.firstSampleChanges);
+                result.writeCount = 1;
+                if (!args.Contains("-stpPocketSingleWrite"))
+                {
+                    var first = paths.ToDictionary(p => p, StPetersTerrainPlan.FileSha256);
+                    r = Write(out result.repeatSampleChanges);
+                    result.writeCount++;
+                    result.repeatWriteIdentical = paths.All(p => first[p] == StPetersTerrainPlan.FileSha256(p));
+                    if (result.repeatSampleChanges != 0 || !result.repeatWriteIdentical)
+                        throw new Refusal("pocket: the second ask/map write was not empty.");
+                }
+                var import = StPetersTerrainPlan.Import(StPetersTerrainPlan.LoadPlan());
+                var uncut = StPetersNorthPocket.ImportWithoutPocket();
+                result.importedPocketCells = import.Codes.Where((v, i) => v != uncut.Codes[i]).Count();
+                result.heightCodesSha256 = import.CodesSha256;
+                result.sourcesSha256 = sources;
+                result.derivationSha256 = r.Sha256();
+                var input = StPetersTerrainPlan.GuardInput(StPetersTerrainPlan.LoadPlan(), StPetersTerrainPlan.LoadFrozen(), r);
+                var mark = input.Items.Single(i => i.Root == TerrainPlanGuards.NavMarksRoot && i.Name == "NavMark_channel.stpeters_entrance.s3");
+                result.s3X = mark.X; result.s3Y = mark.Y;
+                result.s3Depth = input.SpringLow - r.Grid.Sample(r.E, mark.X, mark.Y);
+                var nav = TerrainPlanGuards.All(input).Single(c => c.Name == "NavMarksDeepAtSpringLow");
+                result.navGuard = nav.ToString();
+                if (!nav.Pass) throw new Refusal(result.navGuard);
+                result.success = true;
+                code = 0;
+            }
+            catch (Exception error) { result.error = error.ToString(); Debug.LogError(error); }
+            finally
+            {
+                File.WriteAllText(output, JsonUtility.ToJson(result, true) + "\n", new System.Text.UTF8Encoding(false));
+                UnityEditor.EditorApplication.Exit(code);
+            }
         }
 
         /// <summary>Patch the banked file without rebuilding or saving the painted region.</summary>

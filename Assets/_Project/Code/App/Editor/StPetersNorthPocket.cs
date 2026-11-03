@@ -1,6 +1,7 @@
 #if UNITY_EDITOR
 using System;
 using System.IO;
+using System.Linq;
 using HiddenHarbours.World;
 using UnityEditor;
 using UnityEngine;
@@ -12,6 +13,8 @@ namespace HiddenHarbours.App.Editor
     {
         public const string MapPath = "Assets/_Project/Data/Terrain/StPetersSeabed.asset";
         public const string PngPath = "Assets/_Project/Data/Terrain/StPetersSeabed_HeightTex.png";
+        public const string AskId = "ground.stp_north_pocket";
+        public const string AskPath = StPetersTerrainPlan.GroundFolder + "/GroundAsk_Fix5_StpNorthPocket.asset";
 
         // File row zero is north. The height field samples texel centres, never pixel corners.
         public static Vector2 TexelCentre(int x, int row, int width, int height, Vector2 centre, Vector2 size) =>
@@ -43,32 +46,70 @@ namespace HiddenHarbours.App.Editor
             return result;
         }
 
+        /// <summary>The source ground with this game's ask omitted; committed maps are outputs.</summary>
+        public static GroundFileImport.Result ImportWithoutPocket()
+        {
+            var plan = UnityEngine.Object.Instantiate(StPetersTerrainPlan.LoadPlan());
+            var ground = UnityEngine.Object.Instantiate(plan.Ground);
+            try
+            {
+                ground.Asks = ground.Asks.Where(a => a != null && a.Id != AskId).ToArray();
+                plan.Ground = ground;
+                return StPetersTerrainPlan.Import(plan);
+            }
+            finally
+            {
+                UnityEngine.Object.DestroyImmediate(ground);
+                UnityEngine.Object.DestroyImmediate(plan);
+            }
+        }
+
         public static int Apply()
         {
-            var map = AssetDatabase.LoadAssetAtPath<PaintedHeightMap>(MapPath);
-            if (map == null) throw new InvalidOperationException("The existing painted seabed map is absent.");
-            var image = TerrainPlanPng.Read(File.ReadAllBytes(PngPath));
-            if (image.BitDepth != 16 || image.ColourType != 0)
-                throw new InvalidOperationException("The north pocket requires the existing R16 greyscale map.");
+            var ask = AssetDatabase.LoadAssetAtPath<GroundAskDef>(AskPath);
+            if (ask == null || ask.Id != AskId || ask.Source != GroundAskSource.Game || ask.Kind != GroundAskKind.Patch)
+                throw new InvalidOperationException("The north pocket requires its own game patch ask.");
+            if (ask.Retired) return 0;
+            var map = StPetersTerrainPlan.LoadSeabed();
+            var source = ImportWithoutPocket();
+            int width = source.Grid.W, height = source.Grid.H;
             var go = new GameObject("NorthPocketProfile");
             try
             {
                 var terrain = go.AddComponent<TidalTerrain>();
                 StPetersBuilder.ConfigureTidalTerrain(terrain);
-                ushort[] original = image.Channel(0);
-                ushort[] updated = PatchCodes(original, image.Width, image.Height, map.WorldCenter,
+                ushort[] original = TerrainPlanPng.FlipRows(source.Codes, width, height);
+                ushort[] updated = PatchCodes(original, width, height, map.WorldCenter,
                     map.WorldSize, map.MinElevation, map.MaxElevation, terrain);
-                int changed = 0;
-                for (int i = 0; i < original.Length; i++) if (updated[i] != original[i]) changed++;
-                if (changed == 0) return 0;
-                var pixels = new Color[updated.Length];
-                for (int row = 0; row < image.Height; row++)
-                for (int x = 0; x < image.Width; x++)
+                var samples = new ushort[ask.Width * ask.Height];
+                for (int y = 0; y < ask.Height; y++)
+                for (int x = 0; x < ask.Width; x++)
                 {
-                    float value = updated[row * image.Width + x] / (float)ushort.MaxValue;
-                    pixels[(image.Height - row - 1) * image.Width + x] = new Color(value, value, value, 1f);
+                    var at = ask.BoxMin + new Vector2(x * ask.Step, y * ask.Step);
+                    int col = Mathf.RoundToInt((at.x - (float)source.Grid.X0) / (float)source.Grid.Mpp - .5f);
+                    int row = Mathf.RoundToInt(((float)source.Grid.Y1 - at.y) / (float)source.Grid.Mpp - .5f);
+                    if ((uint)col >= width || (uint)row >= height ||
+                        Vector2.Distance(TexelCentre(col, row, width, height, map.WorldCenter, map.WorldSize), at) > 1e-5f)
+                        throw new InvalidOperationException("A north-pocket patch sample is not a source cell centre.");
+                    samples[y * ask.Width + x] = updated[row * width + col];
                 }
-                PaintedHeightPng.WriteAndImport(PngPath, pixels, image.Width, image.Height);
+                ushort[] previous = GroundFileIntake.PatchOf(ask);
+                int changed = 0;
+                for (int i = 0; i < samples.Length; i++) if (samples[i] != previous[i]) changed++;
+                string hash = GroundFileImport.Sha256BigEndian(samples);
+                if (changed == 0 && hash == ask.PatchSha256) return 0;
+                var pixels = new Color[samples.Length];
+                for (int i = 0; i < samples.Length; i++)
+                {
+                    float value = samples[i] / (float)ushort.MaxValue;
+                    pixels[i] = new Color(value, value, value, 1f);
+                }
+                ask.Patch = PaintedHeightPng.WriteAndImport(AssetDatabase.GetAssetPath(ask.Patch), pixels, ask.Width, ask.Height);
+                ask.PatchSha256 = hash;
+                EditorUtility.SetDirty(ask);
+                AssetDatabase.SaveAssets();
+                if (!GroundFileIntake.PatchOf(ask).SequenceEqual(samples))
+                    throw new InvalidOperationException("The north-pocket ask samples did not read back exactly.");
                 return changed;
             }
             finally { UnityEngine.Object.DestroyImmediate(go); }
