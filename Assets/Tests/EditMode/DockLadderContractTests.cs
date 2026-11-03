@@ -76,6 +76,48 @@ namespace HiddenHarbours.Tests.EditMode
         private static Vector3 LandingRide(HopRig rig)
             => Vector3.up * rig.Boat.GetComponent<HullTideRide>().ScreenRiseNow();
 
+        private sealed class HandoffHullPose : MonoBehaviour, IHullMeshRenderer
+        {
+            public float HeadingDirUnits { get; set; }
+            public float RollDegrees { get; set; }
+            public float PitchDegrees { get; set; }
+            public float HeavePixels { get; set; }
+            public float RidePixels { get; set; }
+            public bool IsConfigured => true;
+            public float DeckOccluderId => 0f;
+            public IDeckOccupantSlots DeckOccupants => NoDeckOccupantSlots.Instance;
+            public void SetSorting(int layer, int order) { }
+            public void SetDeckOccupant(Vector3 at, bool active) { }
+        }
+
+        [TestCase(2.2f)]
+        [TestCase(-2.2f)]
+        public void ALadderHandoffIncludesTheHullsPublishedMeshHeave(float water)
+        {
+            using var rig = LandingRig(water);
+            const float heaveMetres = -.38f;
+            var mesh = ScriptableObject.CreateInstance<HullMeshDef>();
+            rig.Own(mesh);
+            mesh.PxPerMetre = 32;
+            var visual = ScriptableObject.CreateInstance<BoatVisualDef>();
+            rig.Own(visual);
+            visual.Variant = BoatHullVariant.Mesh;
+            visual.HullMesh = mesh;
+            rig.Boat.GetComponent<BoatController>().Hull.Visual = visual;
+            var pose = rig.Boat.gameObject.AddComponent<HandoffHullPose>();
+            pose.HeavePixels = heaveMetres * mesh.PxPerMetre;
+
+            Assert.IsTrue(rig.Controls.BeginInteract());
+            Assert.IsTrue(rig.Controls.IsLadderBoarding);
+            Vector3 end = (Vector3)typeof(ControlSwitcher).GetMethod("VaultEndWorld",
+                BindingFlags.Instance | BindingFlags.NonPublic).Invoke(rig.Controls, null);
+            TimedBoarding.Complete(rig.Controls);
+            Assert.AreEqual(ControlMode.OnDeck, rig.Controls.Mode);
+            Vector3 drawn = rig.Player.position + LandingRide(rig) + Vector3.up * heaveMetres;
+            Assert.LessOrEqual(Vector3.Distance(end, drawn), .25f,
+                "the hull's published mesh heave must already be in the last off-leg destination");
+        }
+
         [TestCase(2.2f)]
         [TestCase(-2.2f)]
         public void ALadderEndsUnderTheFootWhenTheDeckReachesIt(float water)

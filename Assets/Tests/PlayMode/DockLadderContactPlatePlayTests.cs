@@ -70,7 +70,7 @@ namespace HiddenHarbours.Tests.PlayMode
 
         internal IEnumerator RunDockLadderContactPlate()
         {
-            string output = Path.GetFullPath(Path.Combine(Application.dataPath, "../Evidence~/dock-lines/pr1/plates-ruling-8"));
+            string output = Path.GetFullPath(Path.Combine(Application.dataPath, "../Evidence~/dock-lines/pr1/plates-ruling-10"));
             Directory.CreateDirectory(output);
             File.WriteAllText(Path.Combine(output, "_floor.txt"), DateTime.UtcNow.ToString("O", CultureInfo.InvariantCulture));
             yield return Arrive(NineMileCreekScene, Noon);
@@ -149,7 +149,9 @@ namespace HiddenHarbours.Tests.PlayMode
             var begin = typeof(ControlSwitcher).GetMethod("BeginBoardingMove", BindingFlags.Instance | BindingFlags.NonPublic);
             var flags = BindingFlags.Instance | BindingFlags.NonPublic;
             Type kind = begin.GetParameters()[0].ParameterType;
-            var rows = new StringBuilder("tide,direction,elapsed,sequence_frame,leg,clip,frame,root_x,root_y,root_step_m,gap,rungs,loops,water,waterline,is_aground,rise,hull_picture_root_y,foot_y,foot_minus_hull_root_y,sole_l_y,sole_r_y,hand_rail_error_m,post_complete_frame,drawn_x,drawn_y,drawn_state,drawn_frame,balance_arms_out,drawn_step_m,entry_drawn_x,entry_drawn_y,picture\n");
+            var rows = new StringBuilder("tide,direction,elapsed,sequence_frame,leg,clip,frame,root_x,root_y,root_step_m,gap,rungs,loops,water,waterline,is_aground,rise,hull_picture_root_y,foot_y,foot_minus_hull_root_y,sole_l_y,sole_r_y,hand_rail_error_m,post_complete_frame,drawn_x,drawn_y,drawn_state,drawn_frame,balance_arms_out,drawn_step_m,entry_drawn_x,entry_drawn_y,picture,drawn_z,mesh_heave_m,mesh_ride_m,deck_x,deck_y,deck_height\n");
+            var hullPose = rig.Visual.GetComponent<IsoFacetHullRenderer>();
+            Assert.IsNotNull(hullPose);
             string pinPath = Path.Combine(Application.dataPath,
                 "../docs/art/rigs/character/rig10/gameplay/characterIsoRig10.fisher.gameplay.json");
             var paper = JsonUtility.FromJson<DockContactPaper>(File.ReadAllText(pinPath));
@@ -293,7 +295,8 @@ namespace HiddenHarbours.Tests.PlayMode
                             }
                             float hullY = rig.Visual.position.y;
                             float step = Vector3.Distance(root, previous);
-                            rows.AppendLine(FormattableString.Invariant($"{water},{direction},{elapsed},{sequenceFrame},{leg},{clip.Clip},{clip.Frame},{root.x},{root.y},{step},{gap},{gap / ladder.RungMetres},{loops},{HullTideRide.WaterLevelNow()},{tideRide.WaterlineNow()},{tideRide.IsAgroundNow()},{tideRide.ScreenRiseNow()},{hullY},{foot},{foot - hullY},{soleL},{soleR},{hands},{afterComplete},{drawn.x},{drawn.y},{drawnState},{drawnFrame},{armsOut},{Vector3.Distance(drawn, previousDrawn)},{entryDrawn.x},{entryDrawn.y},{name}"));
+                            var deckWalk = _player.GetComponent<DeckWalkController>();
+                            rows.AppendLine(FormattableString.Invariant($"{water},{direction},{elapsed},{sequenceFrame},{leg},{clip.Clip},{clip.Frame},{root.x},{root.y},{step},{gap},{gap / ladder.RungMetres},{loops},{HullTideRide.WaterLevelNow()},{tideRide.WaterlineNow()},{tideRide.IsAgroundNow()},{tideRide.ScreenRiseNow()},{hullY},{foot},{foot - hullY},{soleL},{soleR},{hands},{afterComplete},{drawn.x},{drawn.y},{drawnState},{drawnFrame},{armsOut},{Vector3.Distance(drawn, previousDrawn)},{entryDrawn.x},{entryDrawn.y},{name},{drawn.z},{hullPose.HeavePixels / hull.Visual.HullMesh.PxPerMetre},{hullPose.RidePixels / hull.Visual.HullMesh.PxPerMetre},{deckWalk.DeckLocalPosition.x},{deckWalk.DeckLocalPosition.y},{deckWalk.DeckHeightMeters}"));
                             previous = root;
                             previousDrawn = drawn;
                             File.WriteAllText(Path.Combine(output, "nmc-contact.csv"), rows.ToString());
@@ -307,9 +310,14 @@ namespace HiddenHarbours.Tests.PlayMode
                                     $"drawn handoff moved from Off seq {lastOffSequence} to seq {sequenceFrame}, post {afterComplete}");
                                 if (direction == "Boarding")
                                 {
-                                    Vector3 unridden = drawn - Vector3.up * tideRide.ScreenRiseNow();
-                                    var walk = _player.GetComponent<DeckWalkController>();
-                                    Assert.IsTrue(walk.TryDeckPointWorldAtHeight(unridden - boatGo.transform.position,
+                                    // Undo the actual posed hull transform, including its heave and rock.
+                                    // A tide-only subtraction mistakes a correctly ridden figure for off-deck.
+                                    Vector3 stand = hullPose.PosedMesh.InverseTransformPoint(drawn);
+                                    Vector3 unridden = boatGo.transform.position + (Vector3)DeckAreaMath.DeckToWorld(
+                                        new Vector2(stand.x, stand.y), stand.z,
+                                        DeckWalkController.DrawnHeadingDegreesOf(boatGo.transform),
+                                        DeckWalkController.BakeElevationDegreesOf(boatGo.transform));
+                                    Assert.IsTrue(deckWalk.TryDeckPointWorldAtHeight(unridden - boatGo.transform.position,
                                         ControlSwitcher.BoardSpotHeightMeters, out Vector3 held));
                                     Assert.LessOrEqual(Vector3.Distance(held, unridden), 1f / 32f, "the drawn figure must stay on her deck");
                                 }

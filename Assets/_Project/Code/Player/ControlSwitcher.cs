@@ -2509,7 +2509,15 @@ namespace HiddenHarbours.Player
         private Vector3 HullRideOffsetNow()
         {
             var ride = Boat != null ? Boat.GetComponent<IHullTideRide>() : null;
-            return Vector3.up * (ride != null ? ride.ScreenRiseNow() : 0f);
+            float rise = ride != null ? ride.ScreenRiseNow() : 0f;
+            // The mesh figure inherits this additional lift from the hull's posed mesh.
+            // Read its published Core channel; the level deck query contains neither heave nor tide.
+            var mesh = Boat != null ? Boat.GetComponentInChildren<IHullMeshRenderer>() : null;
+            var hull = _boatController != null ? _boatController.Hull : null;
+            var def = hull != null && hull.Visual != null ? hull.Visual.HullMesh : null;
+            if (mesh != null && mesh.IsConfigured && def != null && def.PxPerMetre > 0)
+                rise += mesh.HeavePixels / def.PxPerMetre;
+            return Vector3.up * rise;
         }
 
         private Vector3 LadderLandingWorld()
