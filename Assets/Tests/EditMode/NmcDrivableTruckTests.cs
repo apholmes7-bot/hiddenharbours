@@ -33,7 +33,8 @@ namespace HiddenHarbours.Tests.EditMode
                 Assert.That(parts.Count(d => d.IsScript("HiddenHarbours.Vehicles.VehicleDoor")), Is.EqualTo(1), row);
                 Assert.That(controller.Field("_vehicle"), Is.EqualTo(parked.Field("_vehicle")), row);
                 Assert.That(parked.Field("_drivable"), Is.EqualTo("1"), row);
-                Assert.That(parts.Length, Is.EqualTo(row == "vehicle.nmc_lot_e" ? 7 : 6), row);
+                Assert.That(parts.Count(d => d.ClassId == 4), Is.EqualTo(1), row);
+                Assert.That(parts.Length, Is.EqualTo(row == "vehicle.nmc_lot_e" ? 6 : 5), row + ": five template components, plus the buyer's trip");
             }
         }
 
