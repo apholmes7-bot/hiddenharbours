@@ -120,7 +120,7 @@ MonoBehaviour:
   FullSunElevation: 0.25
   NoiseSize: 64
   ScaleMetres: 1024
-  DriftMetresPerGameSecondPerMps: 0.001
+  DriftMetresPerGameSecondPerMps: 0.03
   SecondaryScale: 1.73
   SecondaryRate: 0.71
   SecondaryWeight: 0.35

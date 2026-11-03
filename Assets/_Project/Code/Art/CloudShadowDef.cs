@@ -16,7 +16,7 @@ namespace HiddenHarbours.Art
         [Range(0, 1)] public float FullSunElevation = .25f;
         [Min(2)] public int NoiseSize = 64;
         [Min(0)] public float ScaleMetres = 1024;
-        [Min(0)] public float DriftMetresPerGameSecondPerMps = .001f;
+        [Min(0)] public float DriftMetresPerGameSecondPerMps = .03f;
         [Min(0)] public float SecondaryScale = 1.73f;
         [Min(0)] public float SecondaryRate = .71f;
         [Range(0, 1)] public float SecondaryWeight = .35f;

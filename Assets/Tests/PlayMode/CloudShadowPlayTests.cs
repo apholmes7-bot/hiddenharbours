@@ -19,6 +19,10 @@ namespace HiddenHarbours.Tests.PlayMode
     public sealed class CloudShadowPlayTests
     {
         const string Output = "artifacts/shadows/c3";
+        // A one-level RGB difference is too faint to prove visible motion.
+        const int VisibleRgbLevels = 3;
+        // At least one percent of the native frame must show that change.
+        const float VisibleFrameFraction = .01f;
         readonly HashSet<GameObject> _residents = new HashSet<GameObject>();
         readonly List<GameObject> _sleeping = new List<GameObject>();
         readonly Dictionary<string, Vector4> _globals = new Dictionary<string, Vector4>();
@@ -187,6 +191,14 @@ namespace HiddenHarbours.Tests.PlayMode
         static int Changed(byte[] a, byte[] b)
         { int n = 0; for (int i = 0; i < a.Length; i += 4) if (a[i] != b[i] || a[i + 1] != b[i + 1] || a[i + 2] != b[i + 2]) n++; return n; }
 
+        static int VisibleChanged(byte[] a, byte[] b)
+        {
+            int n = 0;
+            for (int i = 0; i < a.Length; i += 4)
+                if (Math.Max(Math.Abs(a[i] - b[i]), Math.Max(Math.Abs(a[i + 1] - b[i + 1]), Math.Abs(a[i + 2] - b[i + 2]))) >= VisibleRgbLevels) n++;
+            return n;
+        }
+
         void Write(string name, byte[] off, byte[] on, string caption)
         {
             int width = _target.width, height = _target.height;
@@ -236,14 +248,19 @@ namespace HiddenHarbours.Tests.PlayMode
             WharfNightStage.RequireAGraphicsDevice();
             if (System.Environment.GetEnvironmentVariable("HH_CLOUD_SHADOW_PLATES") != "1") Assert.Ignore("local cloud plates are opt-in; run this class alone in a fresh editor");
             yield return Load("StPeters"); Target(new Vector2(203, 2.649f), 796, 448);
-            yield return Plate("stp-noon-clear", 720, 0, 0);
+            _mood.Overcast = .5f; yield return Pin(720);
+            // All three captures run synchronously: only the cloud time advances, never the background.
+            byte[] first = CapturePlate("stp-noon-broken", 720, .5f, 0);
+            CapturePlate("stp-noon-motion-20", 720, .5f, 20);
+            byte[] last = CapturePlate("stp-noon-motion-40", 720, .5f, 40);
+            int visibleMotion = VisibleChanged(first, last), floor = Mathf.CeilToInt(first.Length / 4 * VisibleFrameFraction);
+            string motion = $"First/last ON, 40 game seconds: {visibleMotion} pixels change by >= {VisibleRgbLevels} RGB levels; floor {floor} ({VisibleFrameFraction:P0}). Background and camera frozen.\n";
+            File.WriteAllText(Output + "/motion-floor.txt", motion); TestContext.WriteLine(motion);
+            Assert.That(visibleMotion, Is.GreaterThanOrEqualTo(floor), "a person must see the same broken-weather shape move");
             yield return FrameCost();
-            yield return Plate("stp-noon-motion-20", 720, 0, 20);
-            yield return Plate("stp-noon-motion-40", 720, 0, 40);
-            yield return Plate("stp-1700", 1020, 0, 0);
-            yield return Plate("stp-noon-broken", 720, .5f, 0);
+            yield return ClearPlate("stp-1700", 1020);
             yield return Plate("stp-noon-overcast", 720, 1, 0);
-            yield return Plate("stp-noon-clear-sky", 720, 0, 0);
+            yield return ClearPlate("stp-noon-clear-sky", 720);
             yield return Plate("stp-night", 23 * 60, 0, 0);
             RestoreCamera(); if (_system != null) Object.DestroyImmediate(_system.gameObject); _system = null;
             if (ReferenceEquals(GameServices.Environment, _mood)) GameServices.Environment = _mood.Inner;
@@ -261,6 +278,11 @@ namespace HiddenHarbours.Tests.PlayMode
         {
             _mood.Overcast = overcast;
             yield return Pin(minute);
+            CapturePlate(name, minute, overcast, elapsed);
+        }
+
+        byte[] CapturePlate(string name, int minute, float overcast, double elapsed)
+        {
             var environment = GameServices.Environment; var sample = environment.Sample();
             Assert.That(CloudShadowMath.Overcast(sample.Visibility, sample.SeaState01, Resources.Load<DayNightProfile>("DayNightProfile")),
                 Is.EqualTo(overcast).Within(.0001), "the world's lighting and cloud curve see the same held weather signal");
@@ -278,6 +300,48 @@ namespace HiddenHarbours.Tests.PlayMode
             Write(name, off, on, $"day 44, minute {minute}, normalized overcast {overcast}, game seconds {seconds:F3}, elapsed {elapsed}; wind DOWNWIND {sample.WindVector}; " +
                 $"offset metres {_system.Offsets}; expected primary displacement over 20 game seconds {sample.WindVector * (_system.Definition.DriftMetresPerGameSecondPerMps * 20)}; " +
                 $"owned draws OFF/ON=0/{_system.DrawCount}; strength {_system.Definition.Strength.Evaluate(overcast)}. Open cutaways receive the same world multiply; review any visible indoor issue.\n");
+            return on;
+        }
+
+        IEnumerator ClearPlate(string name, int minute)
+        {
+            _mood.Overcast = 0; yield return Pin(minute);
+            var environment = GameServices.Environment; var sample = environment.Sample(); var def = _system.Definition;
+            _system.HeldFrame = new CloudShadowFrame(environment.WorldSeed, GameServices.Clock.TotalSeconds, sample.WindVector, 0, Shader.GetGlobalFloat("_SunElevation"));
+            _system.SetCasting(true); _system.Prepare(_camera, _system.HeldFrame.Value);
+            var offsets = _system.Offsets;
+            var random = new System.Random(environment.WorldSeed); var noise = new byte[def.NoiseSize * def.NoiseSize];
+            for (int i = 0; i < noise.Length; i++) noise[i] = (byte)random.Next(256);
+            Vector2 station = new Vector2(203, 2.649f); float best = -1;
+            // Search only the harbour neighbourhood; the noise math chooses a patch, never new coverage data.
+            for (int dy = -16; dy <= 16; dy += 4) for (int dx = -32; dx <= 32; dx += 4)
+            {
+                var centre = new Vector2(203 + dx, 2.649f + dy); float score = 0;
+                for (int y = -6; y <= 6; y++) for (int x = -12; x <= 12; x++)
+                {
+                    var world = centre + new Vector2(x, y);
+                    float a = Noise(noise, def.NoiseSize, (world - new Vector2(offsets.x, offsets.y)) / def.ScaleMetres);
+                    float b = Noise(noise, def.NoiseSize, (world * def.SecondaryScale - new Vector2(offsets.z, offsets.w)) / def.ScaleMetres);
+                    float mask = Mathf.InverseLerp(1 - def.Coverage.Evaluate(0) - def.Softness, 1 - def.Coverage.Evaluate(0) + def.Softness, Mathf.Lerp(a, b, def.SecondaryWeight));
+                    score += mask * mask * (3 - 2 * mask);
+                }
+                if (score > best) { best = score; station = centre; }
+            }
+            Target(station, 796, 448);
+            File.WriteAllText(Output + "/station-" + name + ".txt", $"Seed {environment.WorldSeed}; noise/coverage search in the St Peters harbour neighbourhood; station {station}; mean mask {best / 325f}; offsets {offsets}.\n");
+            _system.SetCasting(false); byte[] off = Capture(); _system.SetCasting(true);
+            byte[] on = CapturePlate(name, minute, 0, 0);
+            Assert.That(VisibleChanged(off, on), Is.GreaterThanOrEqualTo(Mathf.CeilToInt(off.Length / 4 * VisibleFrameFraction)), "the clear-day station must show a visible sparse patch");
+        }
+
+        static float Noise(byte[] pixels, int size, Vector2 uv)
+        {
+            float x = uv.x * size - .5f, y = uv.y * size - .5f;
+            int ix = Mathf.FloorToInt(x), iy = Mathf.FloorToInt(y); float fx = x - ix, fy = y - iy;
+            int x0 = (ix % size + size) % size, y0 = (iy % size + size) % size;
+            int x1 = (x0 + 1) % size, y1 = (y0 + 1) % size;
+            return Mathf.Lerp(Mathf.Lerp(pixels[y0 * size + x0], pixels[y0 * size + x1], fx),
+                Mathf.Lerp(pixels[y1 * size + x0], pixels[y1 * size + x1], fx), fy) / 255f;
         }
 
         IEnumerator FrameCost()
