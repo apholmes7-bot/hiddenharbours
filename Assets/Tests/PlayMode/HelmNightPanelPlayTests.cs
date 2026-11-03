@@ -166,7 +166,7 @@ namespace HiddenHarbours.Tests.PlayMode
                 Paint(ctl, helm, 235f);
                 Assert.That(ctl.NightShown, Is.False, $"{rig} at noon");
 
-                clock.HourOfDay = 21f;
+                clock.HourOfDay = DaylightHours.Shared.SunsetHour;
                 Assert.That(Paint(ctl, helm, 235f), Is.True, $"{rig} must repaint at dusk");
                 Assert.That(ctl.NightShown, Is.True, $"{rig} must light its panel");
             }

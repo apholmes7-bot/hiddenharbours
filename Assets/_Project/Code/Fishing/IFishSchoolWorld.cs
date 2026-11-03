@@ -163,16 +163,8 @@ namespace HiddenHarbours.Fishing
         /// <inheritdoc/>
         public Season SeasonAt(double gameSeconds)
         {
-            // Derived from the clock's own arithmetic (GameClock.Season) rather than read off the live
-            // clock, because the sim asks about the moment a school FORMED, not about now — and IGameClock
-            // exposes only "now". Both roads are the same expression over (SecondsPerDay, DaysPerSeason).
-            float secondsPerDay = _config != null ? _config.SecondsPerDay : GameConfig.DefaultSecondsPerDay;
-            int daysPerSeason = _config != null ? Mathf.Max(1, _config.DaysPerSeason) : 28;
-            if (secondsPerDay <= 0f) return Season.EarlySpring;
-
-            long totalDays = (long)System.Math.Floor(gameSeconds / secondsPerDay);
-            if (totalDays < 0) totalDays = 0;
-            return (Season)(int)(totalDays / daysPerSeason % 4);
+            // A school reads the calendar at formation time, through the same Core conversion as the clock.
+            return GameCalendar.AtSeconds(gameSeconds, _config).Season;
         }
 
         /// <summary>The owner's school tuning, resolved on every read so dragging a slider in the

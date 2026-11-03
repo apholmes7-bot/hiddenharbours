@@ -15,6 +15,9 @@ MonoBehaviour:
   VehicleDoorSweepSeconds: 0.85
   VehicleGearCrankSeconds: 2.4
   SecondsPerDay: 1800
+  StartHour: 7.5
+  StartSeason: 1
+  StartDayOfSeason: 1
   DaysPerWeek: 7
   DaysPerSeason: 28
   MarketDayIndex: 4

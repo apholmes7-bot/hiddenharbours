@@ -97,7 +97,7 @@ namespace HiddenHarbours.Tests.PlayMode
             float until = Time.realtimeSinceStartup + 1.1f;
             while (Time.realtimeSinceStartup < until) yield return null;
             Assert.That(GameServices.Clock.HourOfDay, Is.EqualTo(hour).Within(0.02f));
-            Assert.That(Shader.GetGlobalFloat("_SunElevation") > 0f, Is.EqualTo(hour < 20f),
+            Assert.That(Shader.GetGlobalFloat("_SunElevation") > 0f, Is.EqualTo(hour > DaylightHours.Shared.SunriseHour && hour < DaylightHours.Shared.SunsetHour),
                 "The published sun, not a guessed lamp gate, must wear the requested hour.");
         }
 
@@ -195,7 +195,7 @@ namespace HiddenHarbours.Tests.PlayMode
         [UnityTest] public IEnumerator TruckAtTwentyOne_IsRegisteredUnderALampPost()
         {
             yield return Load();
-            yield return Hour(21f);
+            yield return Hour(DaylightHours.Shared.NightHour);
             var truck = Placed().First(p => p.name == NineMileCreekTruckPark.TruckName);
             var lamp = LampPost();
             Park(truck, (Vector2)lamp.WorldOrigin + Vector2.right * 2f);
@@ -250,7 +250,7 @@ namespace HiddenHarbours.Tests.PlayMode
             {
                 var nightLamp = LampPost();
                 Park(truck, (Vector2)nightLamp.WorldOrigin + Vector2.right * 2f);
-                yield return Pair("truck-lamp-2100", truck, truck.transform.position, 21f, _lampCaption);
+                yield return Pair("truck-lamp-2100", truck, truck.transform.position, DaylightHours.Shared.NightHour, _lampCaption);
                 yield break;
             }
             Vector2 park = truck.transform.position;
@@ -272,7 +272,7 @@ namespace HiddenHarbours.Tests.PlayMode
                 "NineMileCreek wharf; truck=(120,87.7); owned moored Dory=(122,77)");
             var lamp = LampPost();
             Park(truck, (Vector2)lamp.WorldOrigin + Vector2.right * 2f);
-            yield return Pair("truck-lamp-2100", truck, truck.transform.position, 21f, _lampCaption);
+            yield return Pair("truck-lamp-2100", truck, truck.transform.position, DaylightHours.Shared.NightHour, _lampCaption);
         }
 
         void SpawnMooredHull()
