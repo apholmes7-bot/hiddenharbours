@@ -141,8 +141,8 @@ namespace HiddenHarbours.Tests.RigBaking
         [Test]
         public void TheCommittedLedgerCoversEveryHullFamilyInTheKit()
         {
-            Assert.AreEqual(10, Committed().Count,
-                            "nine rig families plus the second sport-fisher hull — the kit's whole coverage");
+            Assert.AreEqual(8, Committed().Count,
+                            "eight remaining kit families after both sport fishers moved to walks");
         }
 
         [Test]
@@ -187,10 +187,9 @@ namespace HiddenHarbours.Tests.RigBaking
             CollectionAssert.AreEqual(
                 new[] { "capeIslanderIsoRig", "coastalPacketIsoRig", "lobsterBoatIsoRig",
                         "lobsterBoatVariantsIsoRig", "sideDraggerIsoRig",
-                        "sportFisherIsoRig2.convertible", "sportFisherIsoRig2.skybridge",
                         "sternTrawlerIsoRig", "sternTrawlerMk2IsoRig", "tankerIsoRig" },
                 byVerdict[BoatInteriorS0Verdict.Clean],
-                "ten families clear — every hull in the drop — which is 27 sidecars once the eighteen " +
+                "eight remaining families clear — 25 sidecars once the eighteen " +
                 "lobster variants are counted");
         }
 
@@ -203,7 +202,9 @@ namespace HiddenHarbours.Tests.RigBaking
             // to take "cleared" on trust. A verdict flips against bytes or it does not flip.
             foreach (string stem in new[] { "sportFisherIsoRig2.convertible", "sportFisherIsoRig2.skybridge" })
             {
-                BoatInteriorS0Entry e = BoatInteriorS0Ledger.For(Committed(), stem);
+                var fixture = BoatInteriorS0Ledger.Parse("{\"schema\":\"hidden-harbours/boat-interior-s0@1\",\"hulls\":[{\"hull_stem\":\"" + stem +
+                    "\",\"verdict\":\"CLEAN\",\"evidence\":\"sportFisherIsoRig2.js ebc77bace833361b578f5315e175e10de61d1acf77b5037390217ceb09221bcb\",\"upstream_ask\":\"\"}]}");
+                BoatInteriorS0Entry e = BoatInteriorS0Ledger.For(fixture, stem);
                 Assert.AreEqual(BoatInteriorS0Verdict.Clean, e.Verdict);
                 StringAssert.Contains(
                     "ebc77bace833361b578f5315e175e10de61d1acf77b5037390217ceb09221bcb", e.Evidence,

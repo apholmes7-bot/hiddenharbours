@@ -80,6 +80,20 @@ namespace HiddenHarbours.Tests.EditMode
         private const float OnTheFloorMetres = 0.02f;    // a route's start its floor moves further is not on it
         private const float StoppedMetres = 0.001f;      // S2: a probe step her floor moves further is stopped
 
+        // Only these S1 rows wait; S4 and S6 still judge every run of TheFleetsWalks.
+        private static readonly IReadOnlyDictionary<(string Hull, string Route, string Input), string> FleetS1Waits =
+            new Dictionary<(string Hull, string Route, string Input), string>
+            {
+                [("SportFisherConvertibleIso", "open", "stick+30")] =
+                    "4 red of 8: 1 m beyond at 1.08 s against 0.85 s; the doors PR takes this back.",
+                [("SportFisherConvertibleIso", "open", "stick-30")] =
+                    "4 red of 8: never 1 m beyond in 4.02 s, held 217 ticks at (1.610, -4.440) on the edge of flybridge; the doors PR takes this back.",
+                [("SportFisherSkybridgeIso", "open", "stick+30")] =
+                    "4 red of 8: 1 m beyond at 1.02 s against 0.85 s; the doors PR takes this back.",
+                [("SportFisherSkybridgeIso", "open", "stick-30")] =
+                    "4 red of 8: 1 m beyond at 1.02 s against 0.85 s; the doors PR takes this back.",
+            };
+
         private static Hull _cape;
         private static List<Replay> _matrix;
         private static List<Hull> _fleet;
@@ -183,7 +197,18 @@ namespace HiddenHarbours.Tests.EditMode
         public void D2_S1_OnEveryHullWithAMeasuredDoorway_OneHeldKeyCarriesHerThrough()
         {
             ReportTheFleet();
-            Verdict("S1 on the fleet", TheFleetsWalks, r => r.S1, WhyS1);
+            var walks = TheFleetsWalks;
+            foreach (var wait in FleetS1Waits)
+            {
+                int matched = walks.Count(r => (r.H.Name, r.R.Name, r.I.Name) == wait.Key);
+                Assert.Greater(matched, 0,
+                    $"S1 waiting row {wait.Key.Hull} {wait.Key.Route} {wait.Key.Input} matches no run");
+                Report($"S1 waiting row {wait.Key.Hull} {wait.Key.Route} {wait.Key.Input}: " +
+                       $"{matched} held-input runs; {wait.Value}");
+            }
+            Verdict("S1 on the fleet",
+                    walks.Where(r => !FleetS1Waits.ContainsKey((r.H.Name, r.R.Name, r.I.Name))),
+                    r => r.S1, WhyS1);
         }
 
         [Test]

@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using HiddenHarbours.Core;
 
 namespace HiddenHarbours.UI
 {
@@ -42,6 +43,7 @@ namespace HiddenHarbours.UI
         private float _elapsed;
         private bool _fading;
         private bool _subscribed;
+        private bool _loading;
 
         private void Awake()
         {
@@ -64,6 +66,7 @@ namespace HiddenHarbours.UI
         {
             if (_subscribed) return;
             SceneManager.activeSceneChanged += OnActiveSceneChanged;
+            EventBus.Subscribe<RegionTravelCover>(OnTravelCover);
             _subscribed = true;
         }
 
@@ -71,6 +74,7 @@ namespace HiddenHarbours.UI
         {
             if (!_subscribed) return;
             SceneManager.activeSceneChanged -= OnActiveSceneChanged;
+            EventBus.Unsubscribe<RegionTravelCover>(OnTravelCover);
             _subscribed = false;
         }
 
@@ -94,6 +98,7 @@ namespace HiddenHarbours.UI
 
         private void Update()
         {
+            if (_loading) { Apply(1f); return; }
             if (!_fading) return;
 
             // Unscaled so the cover still clears if the world is paused (a menu/dialogue) during a hop.
@@ -106,6 +111,14 @@ namespace HiddenHarbours.UI
                 _fading = false; // fade always completes → no stuck-black
                 if (_arrivalLabel != null) _arrivalLabel.enabled = false;
             }
+        }
+
+        private void OnTravelCover(RegionTravelCover cover)
+        {
+            _loading = cover.IsLoading;
+            _elapsed = 0f;
+            _fading = true;
+            Apply(1f);
         }
 
         private void Apply(float alpha)

@@ -1,0 +1,7963 @@
+{
+ "schema": "hidden-harbours/hull-walk@1",
+ "rig": "motorYacht84IsoRig.js",
+ "exportSymbol": "MotorYacht84Iso",
+ "hull": "motor_yacht_84",
+ "label": "MOTOR YACHT 84",
+ "kind": "ship",
+ "derivedFromRigSha256": "74273f8c75b73c2e168ceb4ff246373d372d438f528f25d5dd7ad20cb1b1b408",
+ "authoring": "Written by the rig: MotorYacht84Iso.byId('motor_yacht_84').walk(), every number its own (mm), stamped with the rig's LF sha256 and fitted to character rig 10.4 (qa.character) by tools/rig-recipes/hull-walk.mjs. Regenerate with node tools/rig-recipes/hull-walk.mjs --write; never edit by hand.",
+ "units": "metres",
+ "frame": "metres; +x starboard, +y bow, +z up; origin amidships, keel bottom, centreline; polygons counter-clockwise seen from above",
+ "loa_m": 25.5,
+ "loh_m": 24.42,
+ "beam_m": 6.139,
+ "DWL": 1.8,
+ "cockpitZ": 3.75,
+ "cell": {
+  "W": 880,
+  "H": 680,
+  "pivot": {
+   "x": 440,
+   "y": 412
+  },
+  "pxPerM": 32,
+  "defaultElev": 40,
+  "order": [
+   "N",
+   "NE",
+   "E",
+   "SE",
+   "S",
+   "SW",
+   "W",
+   "NW"
+  ]
+ },
+ "tags": {
+  "lv": {
+   "hull": 0,
+   "main_deck": 1,
+   "house": 2,
+   "bridge": 3,
+   "below": 4,
+   "rigging": 5,
+   "foredeck": 6,
+   "top": 7
+  },
+  "ro": {
+   "shell": 0,
+   "wall": 1,
+   "roof": 2,
+   "lining": 3,
+   "part": 4,
+   "floor": 5,
+   "fit": 6,
+   "tall": 7,
+   "trim": 8,
+   "rig": 9
+  },
+  "ghostRoles": [
+   "shell",
+   "wall",
+   "roof",
+   "lining",
+   "part",
+   "tall",
+   "trim"
+  ]
+ },
+ "walk": {
+  "radius": 0.23,
+  "stepTol": 0.34,
+  "rule": "A step is legal when the target point is inside an area polygon and outside its holes, and |area z - player z| < stepTol. Ramps interpolate z along their axis (x or y) between a0 and a1, and hold z0 / z1 beyond them. cut = the cutaway key while standing there; cutHi / cutLo replace it above / below zMid (stairs and ladders). Polygons are player-centre: already inset by radius, so the reader never insets them again.",
+  "spawn": {
+   "x": -1.2,
+   "y": -7.3,
+   "area": "aft_deck_fwd",
+   "note": "on the aft deck, under the hardtop"
+  },
+  "areas": [
+   {
+    "id": "saloon",
+    "cut": "house",
+    "z": 3.75,
+    "poly": [
+     [
+      -2.04,
+      -6.25
+     ],
+     [
+      2.04,
+      -6.25
+     ],
+     [
+      2.04,
+      -5.33
+     ],
+     [
+      1.22,
+      -5.33
+     ],
+     [
+      1.22,
+      -2.63
+     ],
+     [
+      0.87,
+      -2.63
+     ],
+     [
+      0.87,
+      -1.72
+     ],
+     [
+      2.04,
+      -1.72
+     ],
+     [
+      2.04,
+      0.186
+     ],
+     [
+      2.036,
+      0.282
+     ],
+     [
+      2.03,
+      0.379
+     ],
+     [
+      2.01,
+      0.475
+     ],
+     [
+      1.977,
+      0.571
+     ],
+     [
+      1.93,
+      0.668
+     ],
+     [
+      1.866,
+      0.764
+     ],
+     [
+      1.782,
+      0.861
+     ],
+     [
+      1.674,
+      0.957
+     ],
+     [
+      1.536,
+      1.054
+     ],
+     [
+      1.354,
+      1.15
+     ],
+     [
+      0.625,
+      1.15
+     ],
+     [
+      0.625,
+      -0.245
+     ],
+     [
+      -0.955,
+      -0.245
+     ],
+     [
+      -0.955,
+      1.15
+     ],
+     [
+      -1.354,
+      1.15
+     ],
+     [
+      -1.39,
+      1.054
+     ],
+     [
+      -1.39,
+      -1.61
+     ],
+     [
+      -2.04,
+      -1.61
+     ],
+     [
+      -2.04,
+      -2.37
+     ],
+     [
+      -1.22,
+      -2.37
+     ],
+     [
+      -1.22,
+      -5.33
+     ],
+     [
+      -2.04,
+      -5.33
+     ]
+    ],
+    "holes": [
+     [
+      [
+       0.693,
+       -3.85
+      ],
+      [
+       0.641,
+       -3.585
+      ],
+      [
+       0.49,
+       -3.36
+      ],
+      [
+       0.265,
+       -3.209
+      ],
+      [
+       0,
+       -3.157
+      ],
+      [
+       -0.265,
+       -3.209
+      ],
+      [
+       -0.49,
+       -3.36
+      ],
+      [
+       -0.641,
+       -3.585
+      ],
+      [
+       -0.693,
+       -3.85
+      ],
+      [
+       -0.641,
+       -4.115
+      ],
+      [
+       -0.49,
+       -4.34
+      ],
+      [
+       -0.265,
+       -4.491
+      ],
+      [
+       0,
+       -4.543
+      ],
+      [
+       0.265,
+       -4.491
+      ],
+      [
+       0.49,
+       -4.34
+      ],
+      [
+       0.641,
+       -4.115
+      ]
+     ]
+    ],
+    "headroom": 2.01,
+    "headroomMax": 2.13,
+    "note": "the saloon and the galley, from the doorway (house.door) forward to the house's steps: round the sofas, the cabinet, the galley's counters and the stair's well and its rail; the coffee table a hole. 2.01 m under the beams, 2.13 m between them"
+   },
+   {
+    "id": "saloon_door",
+    "cut": "house",
+    "z": 3.75,
+    "poly": [
+     [
+      -0.76,
+      -6.85
+     ],
+     [
+      0.76,
+      -6.85
+     ],
+     [
+      0.76,
+      -6.15
+     ],
+     [
+      -0.76,
+      -6.15
+     ]
+    ],
+    "holes": [],
+    "headroom": 2.13,
+    "door": "saloon_aft",
+    "note": "the saloon's doorway (house.door: two leaves sliding apart), from the aft deck under the hardtop into the saloon: a wall while shut, passable from doorOpen 0.242"
+   },
+   {
+    "id": "dining_helm",
+    "cut": "house",
+    "z": 3.15,
+    "poly": [
+     [
+      0.34,
+      1.655
+     ],
+     [
+      1.47,
+      1.655
+     ],
+     [
+      1.47,
+      3.83
+     ],
+     [
+      2.04,
+      3.83
+     ],
+     [
+      2.04,
+      4.14
+     ],
+     [
+      2.035,
+      4.295
+     ],
+     [
+      2.022,
+      4.45
+     ],
+     [
+      1.99,
+      4.605
+     ],
+     [
+      1.935,
+      4.76
+     ],
+     [
+      1.853,
+      4.915
+     ],
+     [
+      1.737,
+      5.07
+     ],
+     [
+      0.49,
+      5.07
+     ],
+     [
+      0.49,
+      4.77
+     ],
+     [
+      -0.49,
+      4.77
+     ],
+     [
+      -0.49,
+      5.07
+     ],
+     [
+      -1.737,
+      5.07
+     ],
+     [
+      -1.831,
+      4.947
+     ],
+     [
+      -1.904,
+      4.823
+     ],
+     [
+      -1.958,
+      4.7
+     ],
+     [
+      -1.998,
+      4.577
+     ],
+     [
+      -2.022,
+      4.453
+     ],
+     [
+      -2.033,
+      4.33
+     ],
+     [
+      -1.47,
+      4.33
+     ],
+     [
+      -1.47,
+      4.18
+     ],
+     [
+      -0.02,
+      4.18
+     ],
+     [
+      -0.02,
+      4.1
+     ],
+     [
+      0.53,
+      4.1
+     ],
+     [
+      0.53,
+      2.325
+     ],
+     [
+      0.625,
+      2.325
+     ],
+     [
+      0.625,
+      1.815
+     ],
+     [
+      0.34,
+      1.815
+     ]
+    ],
+    "holes": [],
+    "headroom": 2.03,
+    "note": "the dining and the helm, under the coachroof (2.03 m): from the starboard steps' foot and the spiral stair's head, between the chairs and the settee, across forward of the table and the bench to the console, round the wheel's pedestal; the helmsman stands here (anchors.helm)"
+   },
+   {
+    "id": "house_steps_stbd",
+    "kind": "stair",
+    "cut": "house",
+    "cutHi": "house",
+    "cutLo": "house",
+    "zMid": 3.45,
+    "ramp": {
+     "axis": "y",
+     "a0": 0.85,
+     "a1": 1.95,
+     "z0": 3.75,
+     "z1": 3.15
+    },
+    "poly": [
+     [
+      0.625,
+      0.85
+     ],
+     [
+      1.794,
+      0.85
+     ],
+     [
+      1.785,
+      0.87
+     ],
+     [
+      1.775,
+      0.89
+     ],
+     [
+      1.721,
+      1.01
+     ],
+     [
+      1.711,
+      1.03
+     ],
+     [
+      1.693,
+      1.07
+     ],
+     [
+      1.683,
+      1.09
+     ],
+     [
+      1.671,
+      1.11
+     ],
+     [
+      1.66,
+      1.13
+     ],
+     [
+      1.612,
+      1.21
+     ],
+     [
+      1.601,
+      1.23
+     ],
+     [
+      1.565,
+      1.29
+     ],
+     [
+      1.554,
+      1.31
+     ],
+     [
+      1.419,
+      1.49
+     ],
+     [
+      1.381,
+      1.51
+     ],
+     [
+      2.04,
+      1.53
+     ],
+     [
+      2.04,
+      1.67
+     ],
+     [
+      1.47,
+      1.67
+     ],
+     [
+      1.47,
+      1.95
+     ],
+     [
+      0.625,
+      1.95
+     ]
+    ],
+    "holes": [],
+    "headroom": 1.8,
+    "headroomMax": 2.34,
+    "treads": [
+     {
+      "z": 3.55,
+      "depth": 0.25
+     },
+     {
+      "z": 3.35,
+      "depth": 0.25
+     }
+    ],
+    "note": "the house's steps to starboard of the stair's well (decision 13): 3 risers of 0.2, treads 0.25, from the saloon down to the dining; outboard, the radius in from the upper house's raked front, 1.80 m over them at the least"
+   },
+   {
+    "id": "spiral",
+    "kind": "stair",
+    "cut": "below",
+    "cutHi": "house",
+    "cutLo": "below",
+    "zMid": 2.325,
+    "ramp": {
+     "axis": "y",
+     "a0": 0.33,
+     "a1": 1.75,
+     "z0": 1.5,
+     "z1": 3.15
+    },
+    "poly": [
+     [
+      0.443,
+      1.739
+     ],
+     [
+      0.32,
+      1.75
+     ],
+     [
+      0.197,
+      1.739
+     ],
+     [
+      0.077,
+      1.707
+     ],
+     [
+      -0.035,
+      1.655
+     ],
+     [
+      -0.136,
+      1.584
+     ],
+     [
+      -0.224,
+      1.496
+     ],
+     [
+      -0.295,
+      1.395
+     ],
+     [
+      -0.347,
+      1.283
+     ],
+     [
+      -0.379,
+      1.163
+     ],
+     [
+      -0.39,
+      1.04
+     ],
+     [
+      -0.379,
+      0.917
+     ],
+     [
+      -0.347,
+      0.797
+     ],
+     [
+      -0.295,
+      0.685
+     ],
+     [
+      -0.224,
+      0.584
+     ],
+     [
+      -0.136,
+      0.496
+     ],
+     [
+      -0.035,
+      0.425
+     ],
+     [
+      0.077,
+      0.373
+     ],
+     [
+      0.197,
+      0.341
+     ],
+     [
+      0.32,
+      0.33
+     ],
+     [
+      0.443,
+      0.341
+     ],
+     [
+      0.43,
+      0.417
+     ],
+     [
+      0.32,
+      0.408
+     ],
+     [
+      0.21,
+      0.417
+     ],
+     [
+      0.104,
+      0.446
+     ],
+     [
+      0.004,
+      0.492
+     ],
+     [
+      -0.087,
+      0.556
+     ],
+     [
+      -0.164,
+      0.633
+     ],
+     [
+      -0.228,
+      0.724
+     ],
+     [
+      -0.274,
+      0.824
+     ],
+     [
+      -0.303,
+      0.93
+     ],
+     [
+      -0.312,
+      1.04
+     ],
+     [
+      -0.303,
+      1.15
+     ],
+     [
+      -0.274,
+      1.256
+     ],
+     [
+      -0.228,
+      1.356
+     ],
+     [
+      -0.164,
+      1.447
+     ],
+     [
+      -0.087,
+      1.524
+     ],
+     [
+      0.004,
+      1.588
+     ],
+     [
+      0.104,
+      1.634
+     ],
+     [
+      0.21,
+      1.663
+     ],
+     [
+      0.32,
+      1.672
+     ],
+     [
+      0.43,
+      1.663
+     ]
+    ],
+    "holes": [],
+    "treads": [
+     {
+      "z": 2.967,
+      "depth": 0.237
+     },
+     {
+      "z": 2.783,
+      "depth": 0.237
+     },
+     {
+      "z": 2.6,
+      "depth": 0.237
+     },
+     {
+      "z": 2.417,
+      "depth": 0.237
+     },
+     {
+      "z": 2.233,
+      "depth": 0.237
+     },
+     {
+      "z": 2.05,
+      "depth": 0.237
+     },
+     {
+      "z": 1.867,
+      "depth": 0.237
+     },
+     {
+      "z": 1.683,
+      "depth": 0.237
+     }
+    ],
+    "spiral": {
+     "centre": [
+      0.32,
+      1.04
+     ],
+     "up": "right",
+     "turnDeg": 20,
+     "going": 0.237
+    },
+    "note": "the spiral stair (decision 6, option 2): 9 risers of 0.183 turning 20° each, clockwise going up, from the corridor (aft, 270°) round to port and up to the dining (forward, 90°); the walker keeps between the newel and the rail (0.63 to 0.71 m from its centre). Its ramp runs along y, so that it strays from the helix by up to 0.174 m mid-turn"
+   },
+   {
+    "id": "corridor",
+    "cut": "below",
+    "z": 1.5,
+    "poly": [
+     [
+      -0.44,
+      -2.98
+     ],
+     [
+      0.44,
+      -2.98
+     ],
+     [
+      0.44,
+      0.41
+     ],
+     [
+      0.39,
+      0.41
+     ],
+     [
+      0.39,
+      -0.17
+     ],
+     [
+      -0.44,
+      -0.17
+     ]
+    ],
+    "holes": [],
+    "headroom": 2.1,
+    "note": "the corridor from the master's door forward to the spiral stair's foot (its alcove to starboard), between the guest and the VIP cabins"
+   },
+   {
+    "id": "master_door",
+    "cut": "below",
+    "z": 1.5,
+    "poly": [
+     [
+      -0.22,
+      -3.55
+     ],
+     [
+      0.22,
+      -3.55
+     ],
+     [
+      0.22,
+      -2.93
+     ],
+     [
+      -0.22,
+      -2.93
+     ]
+    ],
+    "holes": [],
+    "headroom": 2.1,
+    "door": "master",
+    "note": "the master cabin's doorway"
+   },
+   {
+    "id": "master_lobby",
+    "cut": "below",
+    "z": 1.5,
+    "poly": [
+     [
+      -0.32,
+      -4.1
+     ],
+     [
+      0.32,
+      -4.1
+     ],
+     [
+      0.32,
+      -3.5
+     ],
+     [
+      -0.32,
+      -3.5
+     ]
+    ],
+    "holes": [],
+    "headroom": 2.1,
+    "note": "inside the master's door, to the foot of the berth"
+   },
+   {
+    "id": "master_fwd",
+    "cut": "below",
+    "z": 1.5,
+    "poly": [
+     [
+      -0.74,
+      -4.42
+     ],
+     [
+      1.602,
+      -4.42
+     ],
+     [
+      1.602,
+      -4.08
+     ],
+     [
+      -0.74,
+      -4.08
+     ]
+    ],
+    "holes": [],
+    "headroom": 2.1,
+    "note": "across the cabin at the berth's foot"
+   },
+   {
+    "id": "master_stbd",
+    "cut": "below",
+    "z": 1.5,
+    "poly": [
+     [
+      1.28,
+      -6.03
+     ],
+     [
+      1.603,
+      -6.03
+     ],
+     [
+      1.603,
+      -4.4
+     ],
+     [
+      1.28,
+      -4.4
+     ]
+    ],
+    "holes": [],
+    "headroom": 2.1,
+    "note": "down the berth's starboard side, by the settee"
+   },
+   {
+    "id": "master_port",
+    "cut": "below",
+    "z": 1.5,
+    "poly": [
+     [
+      -1.607,
+      -6.03
+     ],
+     [
+      -0.78,
+      -6.03
+     ],
+     [
+      -0.78,
+      -5.46
+     ],
+     [
+      -1.607,
+      -5.46
+     ]
+    ],
+    "holes": [],
+    "headroom": 2.1,
+    "note": "aft to port of the berth: the bath's door and the garage's steps"
+   },
+   {
+    "id": "master_squeeze",
+    "cut": "below",
+    "z": 1.5,
+    "poly": [
+     [
+      -0.82,
+      -5.55
+     ],
+     [
+      -0.7,
+      -5.55
+     ],
+     [
+      -0.7,
+      -4.3
+     ],
+     [
+      -0.82,
+      -4.3
+     ]
+    ],
+    "holes": [],
+    "headroom": 2.1,
+    "squeeze": {
+     "gapW": 0.42,
+     "ceilZ": null
+    },
+    "note": "between the berth's port side and the bath's wall: 0.42 m, a squeeze (the berth 0.10 to 0.15 m to starboard would open it)"
+   },
+   {
+    "id": "master_bath_door",
+    "cut": "below",
+    "z": 1.5,
+    "poly": [
+     [
+      -1.52,
+      -5.5
+     ],
+     [
+      -1.38,
+      -5.5
+     ],
+     [
+      -1.38,
+      -4.9
+     ],
+     [
+      -1.52,
+      -4.9
+     ]
+    ],
+    "holes": [],
+    "headroom": 2.1,
+    "door": "master_bath",
+    "note": "the bath's doorway"
+   },
+   {
+    "id": "master_bath",
+    "cut": "below",
+    "z": 1.5,
+    "poly": [
+     [
+      -1.602,
+      -4.94
+     ],
+     [
+      -1.26,
+      -4.94
+     ],
+     [
+      -1.26,
+      -4.03
+     ],
+     [
+      -1.602,
+      -4.03
+     ]
+    ],
+    "holes": [],
+    "headroom": 2.1,
+    "note": "the master's bath, between its basin and its shower"
+   },
+   {
+    "id": "guest_door",
+    "cut": "below",
+    "z": 1.5,
+    "poly": [
+     [
+      -1,
+      -0.97
+     ],
+     [
+      -0.4,
+      -0.97
+     ],
+     [
+      -0.4,
+      -0.83
+     ],
+     [
+      -1,
+      -0.83
+     ]
+    ],
+    "holes": [],
+    "headroom": 2.1,
+    "door": "guest",
+    "note": "the guest cabin's doorway, off the corridor"
+   },
+   {
+    "id": "guest",
+    "cut": "below",
+    "z": 1.5,
+    "poly": [
+     [
+      -1.57,
+      -0.97
+     ],
+     [
+      -0.96,
+      -0.97
+     ],
+     [
+      -0.96,
+      -0.29
+     ],
+     [
+      -1.57,
+      -0.29
+     ]
+    ],
+    "holes": [],
+    "headroom": 2.1,
+    "note": "the guest cabin's floor forward of its two berths"
+   },
+   {
+    "id": "guest_head_door",
+    "cut": "below",
+    "z": 1.5,
+    "poly": [
+     [
+      -1.52,
+      -0.33
+     ],
+     [
+      -1.38,
+      -0.33
+     ],
+     [
+      -1.38,
+      0.27
+     ],
+     [
+      -1.52,
+      0.27
+     ]
+    ],
+    "holes": [],
+    "headroom": 2.1,
+    "door": "guest_head",
+    "note": "the guest head's doorway"
+   },
+   {
+    "id": "guest_head",
+    "cut": "below",
+    "z": 1.5,
+    "poly": [
+     [
+      -1.555,
+      0.23
+     ],
+     [
+      -0.96,
+      0.23
+     ],
+     [
+      -0.96,
+      0.39
+     ],
+     [
+      -1.555,
+      0.39
+     ]
+    ],
+    "holes": [],
+    "headroom": 2.1,
+    "note": "the guest head's floor"
+   },
+   {
+    "id": "vip_door",
+    "cut": "below",
+    "z": 1.5,
+    "poly": [
+     [
+      1,
+      -0.83
+     ],
+     [
+      0.4,
+      -0.83
+     ],
+     [
+      0.4,
+      -0.97
+     ],
+     [
+      1,
+      -0.97
+     ]
+    ],
+    "holes": [],
+    "headroom": 2.1,
+    "door": "vip",
+    "note": "as guest_door, to starboard"
+   },
+   {
+    "id": "vip",
+    "cut": "below",
+    "z": 1.5,
+    "poly": [
+     [
+      1.57,
+      -0.29
+     ],
+     [
+      0.96,
+      -0.29
+     ],
+     [
+      0.96,
+      -0.97
+     ],
+     [
+      1.57,
+      -0.97
+     ]
+    ],
+    "holes": [],
+    "headroom": 2.1,
+    "note": "as guest, to starboard"
+   },
+   {
+    "id": "vip_head_door",
+    "cut": "below",
+    "z": 1.5,
+    "poly": [
+     [
+      1.52,
+      0.27
+     ],
+     [
+      1.38,
+      0.27
+     ],
+     [
+      1.38,
+      -0.33
+     ],
+     [
+      1.52,
+      -0.33
+     ]
+    ],
+    "holes": [],
+    "headroom": 2.1,
+    "door": "vip_head",
+    "note": "as guest_head_door, to starboard"
+   },
+   {
+    "id": "vip_head",
+    "cut": "below",
+    "z": 1.5,
+    "poly": [
+     [
+      1.555,
+      0.39
+     ],
+     [
+      0.96,
+      0.39
+     ],
+     [
+      0.96,
+      0.23
+     ],
+     [
+      1.555,
+      0.23
+     ]
+    ],
+    "holes": [],
+    "headroom": 2.1,
+    "note": "as guest_head, to starboard"
+   },
+   {
+    "id": "garage_steps",
+    "kind": "stair",
+    "cut": "below",
+    "cutHi": "below",
+    "cutLo": "below",
+    "zMid": 1.825,
+    "ramp": {
+     "axis": "y",
+     "a0": -6.055,
+     "a1": -6.835,
+     "z0": 1.5,
+     "z1": 2.15
+    },
+    "poly": [
+     [
+      -1.52,
+      -6.835
+     ],
+     [
+      -1.28,
+      -6.835
+     ],
+     [
+      -1.28,
+      -6
+     ],
+     [
+      -1.52,
+      -6
+     ]
+    ],
+    "holes": [],
+    "headroom": 1.25,
+    "door": "garage_inner",
+    "treads": [
+     {
+      "z": 1.934,
+      "depth": 0.26
+     },
+     {
+      "z": 1.717,
+      "depth": 0.26
+     }
+    ],
+    "note": "from the master cabin aft up 3 steps through the garage's inner door (garage_inner) to its sole, under the aft deck"
+   },
+   {
+    "id": "garage",
+    "cut": "below",
+    "z": 2.15,
+    "poly": [
+     [
+      -1.62,
+      -11.045
+     ],
+     [
+      0.82,
+      -11.045
+     ],
+     [
+      0.82,
+      -6.94
+     ],
+     [
+      -1.28,
+      -6.94
+     ],
+     [
+      -1.28,
+      -6.71
+     ],
+     [
+      -1.52,
+      -6.71
+     ],
+     [
+      -1.52,
+      -6.94
+     ],
+     [
+      -1.62,
+      -6.94
+     ]
+    ],
+    "holes": [],
+    "headroom": 1.3,
+    "note": "the garage under the aft deck: its two watercraft's places are anchors (anchors.watercraft, decision 4), not drawn; 1.3 m under its deckhead, so a duck"
+   },
+   {
+    "id": "garage_mouth",
+    "cut": "below",
+    "z": 2.15,
+    "poly": [
+     [
+      -1.62,
+      -11.95
+     ],
+     [
+      0.82,
+      -11.95
+     ],
+     [
+      0.82,
+      -10.95
+     ],
+     [
+      -1.62,
+      -10.95
+     ]
+    ],
+    "holes": [],
+    "onlyWhen": {
+     "garage": 1
+    },
+    "headroom": 1.3,
+    "note": "the garage's mouth, out onto the platform while its door is down (garage 1)"
+   },
+   {
+    "id": "crew_mess",
+    "cut": "below",
+    "z": 2,
+    "poly": [
+     [
+      -0.39,
+      7.14
+     ],
+     [
+      0.44,
+      7.14
+     ],
+     [
+      0.44,
+      7.37
+     ],
+     [
+      -0.39,
+      7.37
+     ]
+    ],
+    "holes": [],
+    "headroom": 1.838,
+    "headroomMax": 1.846,
+    "note": "the crew's mess at the foot of their ladder, aft of it: its table and settee to port (see _excluded crew_mess_table)"
+   },
+   {
+    "id": "crew_squeeze",
+    "cut": "below",
+    "z": 2,
+    "poly": [
+     [
+      0.35,
+      7.3
+     ],
+     [
+      0.44,
+      7.3
+     ],
+     [
+      0.44,
+      7.95
+     ],
+     [
+      0.35,
+      7.95
+     ]
+    ],
+    "holes": [],
+    "headroom": 1.843,
+    "headroomMax": 1.867,
+    "squeeze": {
+     "gapW": 0.42,
+     "ceilZ": 1.843
+    },
+    "note": "past the ladder's starboard rail to the cabin's door: 0.42 m, a squeeze"
+   },
+   {
+    "id": "crew_cabin_door",
+    "cut": "below",
+    "z": 2,
+    "poly": [
+     [
+      0.3,
+      7.86
+     ],
+     [
+      0.42,
+      7.86
+     ],
+     [
+      0.42,
+      8.3
+     ],
+     [
+      0.3,
+      8.3
+     ]
+    ],
+    "holes": [],
+    "headroom": 1.864,
+    "headroomMax": 1.882,
+    "door": "crew_cabin",
+    "note": "the crew cabin's doorway"
+   },
+   {
+    "id": "crew_cabin",
+    "cut": "below",
+    "z": 2,
+    "poly": [
+     [
+      0.21,
+      8.21
+     ],
+     [
+      1.823,
+      8.21
+     ],
+     [
+      1.792,
+      8.295
+     ],
+     [
+      1.722,
+      8.465
+     ],
+     [
+      1.698,
+      8.55
+     ],
+     [
+      1.659,
+      8.635
+     ],
+     [
+      1.624,
+      8.72
+     ],
+     [
+      0.21,
+      8.72
+     ]
+    ],
+    "holes": [],
+    "headroom": 1.878,
+    "headroomMax": 1.9,
+    "note": "the crew cabin's floor beside their bunks"
+   },
+   {
+    "id": "crew_ladder",
+    "kind": "ladder",
+    "cut": "below",
+    "cutHi": "deck",
+    "cutLo": "below",
+    "zMid": 3.008,
+    "ramp": {
+     "axis": "y",
+     "a0": 7.37,
+     "a1": 7.906,
+     "z0": 2,
+     "z1": 4.015
+    },
+    "poly": [
+     [
+      -0.165,
+      7.37
+     ],
+     [
+      0.165,
+      7.37
+     ],
+     [
+      0.165,
+      7.906
+     ],
+     [
+      -0.165,
+      7.906
+     ]
+    ],
+    "holes": [],
+    "ladder": {
+     "via": "hatch",
+     "hatchW": 0.79,
+     "hatchL": 0.75,
+     "rise": 2.004,
+     "pitch": 0.28,
+     "rake": 0
+    },
+    "note": "the crew's ladder (decision 8): from their mess up through the foredeck's hatch onto the foredeck, upright, its rungs 0.28 apart"
+   },
+   {
+    "id": "platform",
+    "cut": "deck",
+    "z": 2.15,
+    "poly": [
+     [
+      -2.07,
+      -11.9
+     ],
+     [
+      -2.07,
+      -11.923
+     ],
+     [
+      -1.81,
+      -12.466
+     ],
+     [
+      -1.79,
+      -12.495
+     ],
+     [
+      -1.776,
+      -12.507
+     ],
+     [
+      -1.758,
+      -12.515
+     ],
+     [
+      -1.722,
+      -12.52
+     ],
+     [
+      1.722,
+      -12.52
+     ],
+     [
+      1.758,
+      -12.515
+     ],
+     [
+      1.776,
+      -12.507
+     ],
+     [
+      1.79,
+      -12.495
+     ],
+     [
+      1.81,
+      -12.466
+     ],
+     [
+      2.07,
+      -11.923
+     ],
+     [
+      2.07,
+      -11.9
+     ],
+     [
+      1.62,
+      -11.9
+     ],
+     [
+      1.62,
+      -11.4
+     ],
+     [
+      1.43,
+      -11.4
+     ],
+     [
+      1.43,
+      -11.9
+     ]
+    ],
+    "holes": [],
+    "onlyWhen": {
+     "garage": 1
+    },
+    "note": "the swim platform (the garage's door, down), 0.35 m over the waterline; R aft of the transom's top, into the steps' slot; up from the water by its swim ladder (see _excluded platform_ladder)"
+   },
+   {
+    "id": "platform_steps",
+    "kind": "stair",
+    "cut": "deck",
+    "cutHi": "deck",
+    "cutLo": "deck",
+    "zMid": 2.95,
+    "ramp": {
+     "axis": "y",
+     "a0": -11.4,
+     "a1": -9.4,
+     "z0": 2.15,
+     "z1": 3.75
+    },
+    "poly": [
+     [
+      1.43,
+      -11.4
+     ],
+     [
+      1.62,
+      -11.4
+     ],
+     [
+      1.62,
+      -9.4
+     ],
+     [
+      1.43,
+      -9.4
+     ]
+    ],
+    "holes": [],
+    "onlyWhen": {
+     "garage": 1
+    },
+    "treads": [
+     {
+      "z": 3.55,
+      "depth": 0.25
+     },
+     {
+      "z": 3.35,
+      "depth": 0.25
+     },
+     {
+      "z": 3.15,
+      "depth": 0.25
+     },
+     {
+      "z": 2.95,
+      "depth": 0.25
+     },
+     {
+      "z": 2.75,
+      "depth": 0.25
+     },
+     {
+      "z": 2.55,
+      "depth": 0.25
+     },
+     {
+      "z": 2.35,
+      "depth": 0.25
+     }
+    ],
+    "note": "the steps in the transom's slot at the starboard quarter: 8 risers of 0.2, treads 0.25, from the platform up to the aft deck"
+   },
+   {
+    "id": "aft_deck_aft",
+    "cut": "deck",
+    "z": 3.75,
+    "poly": [
+     [
+      0.892,
+      -11.342
+     ],
+     [
+      0.892,
+      -10.89
+     ],
+     [
+      -2.587,
+      -10.89
+     ],
+     [
+      -2.586,
+      -10.928
+     ],
+     [
+      -2.586,
+      -10.965
+     ],
+     [
+      -2.585,
+      -11.003
+     ],
+     [
+      -2.575,
+      -11.041
+     ],
+     [
+      -2.563,
+      -11.078
+     ],
+     [
+      -2.559,
+      -11.116
+     ],
+     [
+      -2.544,
+      -11.154
+     ],
+     [
+      -2.515,
+      -11.191
+     ],
+     [
+      -2.428,
+      -11.229
+     ],
+     [
+      -2.325,
+      -11.267
+     ],
+     [
+      -2.221,
+      -11.304
+     ],
+     [
+      -2.104,
+      -11.342
+     ]
+    ],
+    "holes": [],
+    "note": "the aft deck (pieces aft_deck_*), on MAIN_DECK: across the stern inside the transom's rail, to the steps' inboard rail"
+   },
+   {
+    "id": "aft_deck_port",
+    "cut": "deck",
+    "z": 3.75,
+    "poly": [
+     [
+      -1.56,
+      -10.94
+     ],
+     [
+      -1.56,
+      -7.8
+     ],
+     [
+      -2.02,
+      -7.8
+     ],
+     [
+      -2.02,
+      -8.185
+     ],
+     [
+      -2.658,
+      -8.185
+     ],
+     [
+      -2.651,
+      -8.529
+     ],
+     [
+      -2.642,
+      -8.874
+     ],
+     [
+      -2.634,
+      -9.218
+     ],
+     [
+      -2.624,
+      -9.563
+     ],
+     [
+      -2.606,
+      -10.251
+     ],
+     [
+      -2.596,
+      -10.596
+     ],
+     [
+      -2.586,
+      -10.94
+     ]
+    ],
+    "holes": [],
+    "note": "down the port side, outboard of the port table and its chairs, to the blade"
+   },
+   {
+    "id": "aft_deck_mid",
+    "cut": "deck",
+    "z": 3.75,
+    "poly": [
+     [
+      -0.41,
+      -10.9
+     ],
+     [
+      -0.11,
+      -10.9
+     ],
+     [
+      -0.11,
+      -9.808
+     ],
+     [
+      -0.119,
+      -9.814
+     ],
+     [
+      -0.239,
+      -9.606
+     ],
+     [
+      -0.28,
+      -9.37
+     ],
+     [
+      -0.239,
+      -9.134
+     ],
+     [
+      -0.119,
+      -8.926
+     ],
+     [
+      -0.11,
+      -8.932
+     ],
+     [
+      -0.11,
+      -7.84
+     ],
+     [
+      -0.41,
+      -7.84
+     ],
+     [
+      -0.41,
+      -8.74
+     ],
+     [
+      -0.3,
+      -8.74
+     ],
+     [
+      -0.3,
+      -10
+     ],
+     [
+      -0.41,
+      -10
+     ]
+    ],
+    "holes": [],
+    "note": "between the two tables and their chairs: 0.49 m between the tables"
+   },
+   {
+    "id": "aft_deck_stbd",
+    "cut": "deck",
+    "z": 3.75,
+    "poly": [
+     [
+      2.08,
+      -11.342
+     ],
+     [
+      2.104,
+      -11.342
+     ],
+     [
+      2.221,
+      -11.304
+     ],
+     [
+      2.325,
+      -11.267
+     ],
+     [
+      2.428,
+      -11.229
+     ],
+     [
+      2.515,
+      -11.191
+     ],
+     [
+      2.544,
+      -11.154
+     ],
+     [
+      2.559,
+      -11.116
+     ],
+     [
+      2.563,
+      -11.078
+     ],
+     [
+      2.575,
+      -11.041
+     ],
+     [
+      2.585,
+      -11.003
+     ],
+     [
+      2.586,
+      -10.965
+     ],
+     [
+      2.586,
+      -10.928
+     ],
+     [
+      2.587,
+      -10.89
+     ],
+     [
+      2.607,
+      -10.214
+     ],
+     [
+      2.615,
+      -9.876
+     ],
+     [
+      2.624,
+      -9.538
+     ],
+     [
+      2.634,
+      -9.199
+     ],
+     [
+      2.643,
+      -8.861
+     ],
+     [
+      2.651,
+      -8.523
+     ],
+     [
+      2.658,
+      -8.185
+     ],
+     [
+      2.02,
+      -8.185
+     ],
+     [
+      2.02,
+      -8.1
+     ],
+     [
+      1.045,
+      -8.1
+     ],
+     [
+      1.045,
+      -7.8
+     ],
+     [
+      0.93,
+      -7.8
+     ],
+     [
+      0.93,
+      -8.89
+     ],
+     [
+      1.09,
+      -8.89
+     ],
+     [
+      1.09,
+      -9.42
+     ],
+     [
+      2.08,
+      -9.42
+     ]
+    ],
+    "holes": [],
+    "note": "outboard of the steps' slot, and forward of it beside the starboard table to the sun deck's ladder's foot, and on past the table's forward chair to port of the ladder, into aft_deck_fwd: 0.575 m between them; the blade stands 0.365 m outboard of the ladder, under the walker's width, so no way forward between them"
+   },
+   {
+    "id": "aft_deck_fwd",
+    "cut": "deck",
+    "z": 3.75,
+    "poly": [
+     [
+      -2.02,
+      -7.85
+     ],
+     [
+      1.045,
+      -7.85
+     ],
+     [
+      1.045,
+      -6.977
+     ],
+     [
+      2.02,
+      -6.977
+     ],
+     [
+      2.02,
+      -6.84
+     ],
+     [
+      -2.02,
+      -6.84
+     ]
+    ],
+    "holes": [],
+    "note": "under the hardtop, from the tables to the saloon's doorway, between the blades; to port of the sun deck's ladder and forward of it"
+   },
+   {
+    "id": "side_deck_stbd",
+    "cut": "deck",
+    "z": 3.75,
+    "poly": [
+     [
+      2.659,
+      -6.021
+     ],
+     [
+      2.672,
+      -5.484
+     ],
+     [
+      2.681,
+      -4.948
+     ],
+     [
+      2.681,
+      -2.264
+     ],
+     [
+      2.68,
+      -1.727
+     ],
+     [
+      2.68,
+      -0.654
+     ],
+     [
+      2.679,
+      -0.117
+     ],
+     [
+      2.679,
+      0.42
+     ],
+     [
+      2.687,
+      0.956
+     ],
+     [
+      2.699,
+      1.493
+     ],
+     [
+      2.708,
+      2.03
+     ],
+     [
+      2.709,
+      2.566
+     ],
+     [
+      2.702,
+      3.103
+     ],
+     [
+      2.693,
+      3.64
+     ],
+     [
+      2.681,
+      4.176
+     ],
+     [
+      2.661,
+      4.713
+     ],
+     [
+      2.636,
+      5.25
+     ],
+     [
+      2.61,
+      5.787
+     ],
+     [
+      2.58,
+      6.323
+     ],
+     [
+      2.519,
+      6.86
+     ],
+     [
+      0.843,
+      6.86
+     ],
+     [
+      0.936,
+      6.837
+     ],
+     [
+      1.206,
+      6.74
+     ],
+     [
+      1.457,
+      6.615
+     ],
+     [
+      1.688,
+      6.464
+     ],
+     [
+      1.898,
+      6.288
+     ],
+     [
+      2.084,
+      6.089
+     ],
+     [
+      2.244,
+      5.868
+     ],
+     [
+      2.377,
+      5.628
+     ],
+     [
+      2.481,
+      5.369
+     ],
+     [
+      2.556,
+      5.094
+     ],
+     [
+      2.6,
+      4.801
+     ],
+     [
+      2.615,
+      4.474
+     ],
+     [
+      2.615,
+      -6.021
+     ]
+    ],
+    "holes": [],
+    "note": "the starboard side deck, from forward of the blade (the washboard aft of it, washboards[]) to the foredeck's step, between the house and the rail"
+   },
+   {
+    "id": "side_deck_port",
+    "cut": "deck",
+    "z": 3.75,
+    "poly": [
+     [
+      -2.615,
+      -6.021
+     ],
+     [
+      -2.615,
+      4.474
+     ],
+     [
+      -2.6,
+      4.801
+     ],
+     [
+      -2.556,
+      5.094
+     ],
+     [
+      -2.481,
+      5.369
+     ],
+     [
+      -2.377,
+      5.628
+     ],
+     [
+      -2.244,
+      5.868
+     ],
+     [
+      -2.084,
+      6.089
+     ],
+     [
+      -1.898,
+      6.288
+     ],
+     [
+      -1.688,
+      6.464
+     ],
+     [
+      -1.457,
+      6.615
+     ],
+     [
+      -1.206,
+      6.74
+     ],
+     [
+      -0.936,
+      6.837
+     ],
+     [
+      -0.843,
+      6.86
+     ],
+     [
+      -2.519,
+      6.86
+     ],
+     [
+      -2.58,
+      6.323
+     ],
+     [
+      -2.61,
+      5.787
+     ],
+     [
+      -2.636,
+      5.25
+     ],
+     [
+      -2.661,
+      4.713
+     ],
+     [
+      -2.681,
+      4.176
+     ],
+     [
+      -2.693,
+      3.64
+     ],
+     [
+      -2.702,
+      3.103
+     ],
+     [
+      -2.709,
+      2.566
+     ],
+     [
+      -2.708,
+      2.03
+     ],
+     [
+      -2.699,
+      1.493
+     ],
+     [
+      -2.687,
+      0.956
+     ],
+     [
+      -2.679,
+      0.42
+     ],
+     [
+      -2.679,
+      -0.117
+     ],
+     [
+      -2.68,
+      -0.654
+     ],
+     [
+      -2.68,
+      -1.727
+     ],
+     [
+      -2.681,
+      -2.264
+     ],
+     [
+      -2.681,
+      -4.948
+     ],
+     [
+      -2.672,
+      -5.484
+     ],
+     [
+      -2.659,
+      -6.021
+     ]
+    ],
+    "holes": [],
+    "note": "as side_deck_stbd"
+   },
+   {
+    "id": "foredeck_1",
+    "cut": "deck",
+    "ramp": {
+     "axis": "y",
+     "a0": 6.85,
+     "a1": 9,
+     "z0": 3.98,
+     "z1": 4.063
+    },
+    "poly": [
+     [
+      2.579,
+      6.85
+     ],
+     [
+      2.56,
+      7.029
+     ],
+     [
+      2.53,
+      7.208
+     ],
+     [
+      2.497,
+      7.387
+     ],
+     [
+      2.472,
+      7.567
+     ],
+     [
+      2.438,
+      7.746
+     ],
+     [
+      2.408,
+      7.925
+     ],
+     [
+      2.363,
+      8.104
+     ],
+     [
+      2.316,
+      8.283
+     ],
+     [
+      2.282,
+      8.463
+     ],
+     [
+      2.231,
+      8.642
+     ],
+     [
+      2.193,
+      8.821
+     ],
+     [
+      2.141,
+      9
+     ],
+     [
+      -2.141,
+      9
+     ],
+     [
+      -2.193,
+      8.821
+     ],
+     [
+      -2.231,
+      8.642
+     ],
+     [
+      -2.282,
+      8.463
+     ],
+     [
+      -2.316,
+      8.283
+     ],
+     [
+      -2.363,
+      8.104
+     ],
+     [
+      -2.408,
+      7.925
+     ],
+     [
+      -2.438,
+      7.746
+     ],
+     [
+      -2.472,
+      7.567
+     ],
+     [
+      -2.497,
+      7.388
+     ],
+     [
+      -2.53,
+      7.208
+     ],
+     [
+      -2.56,
+      7.029
+     ],
+     [
+      -2.579,
+      6.85
+     ],
+     [
+      -0.884,
+      6.85
+     ],
+     [
+      -0.65,
+      6.907
+     ],
+     [
+      -0.345,
+      6.949
+     ],
+     [
+      0,
+      6.963
+     ],
+     [
+      0.345,
+      6.949
+     ],
+     [
+      0.65,
+      6.907
+     ],
+     [
+      0.884,
+      6.85
+     ]
+    ],
+    "holes": [],
+    "note": "the foredeck (pieces foredeck_*), from the step at y 6.85 round the house's front, over the crew's hatch (its lid flush, 0.05 m), each piece a ramp along y on the sheer's chord"
+   },
+   {
+    "id": "foredeck_2",
+    "cut": "deck",
+    "ramp": {
+     "axis": "y",
+     "a0": 8.98,
+     "a1": 10.57,
+     "z0": 4.062,
+     "z1": 4.175
+    },
+    "poly": [
+     [
+      2.14,
+      8.98
+     ],
+     [
+      2.102,
+      9.139
+     ],
+     [
+      1.97,
+      9.616
+     ],
+     [
+      1.919,
+      9.775
+     ],
+     [
+      1.839,
+      9.934
+     ],
+     [
+      1.781,
+      10.093
+     ],
+     [
+      1.715,
+      10.252
+     ],
+     [
+      1.565,
+      10.57
+     ],
+     [
+      -1.565,
+      10.57
+     ],
+     [
+      -1.715,
+      10.252
+     ],
+     [
+      -1.781,
+      10.093
+     ],
+     [
+      -1.839,
+      9.934
+     ],
+     [
+      -1.919,
+      9.775
+     ],
+     [
+      -1.97,
+      9.616
+     ],
+     [
+      -2.102,
+      9.139
+     ],
+     [
+      -2.14,
+      8.98
+     ]
+    ],
+    "holes": []
+   },
+   {
+    "id": "foredeck_3",
+    "cut": "deck",
+    "ramp": {
+     "axis": "y",
+     "a0": 10.55,
+     "a1": 11.42,
+     "z0": 4.174,
+     "z1": 4.215
+    },
+    "poly": [
+     [
+      1.565,
+      10.55
+     ],
+     [
+      1.514,
+      10.659
+     ],
+     [
+      1.453,
+      10.768
+     ],
+     [
+      1.386,
+      10.876
+     ],
+     [
+      1.296,
+      10.985
+     ],
+     [
+      1.233,
+      11.094
+     ],
+     [
+      1.167,
+      11.203
+     ],
+     [
+      1.099,
+      11.311
+     ],
+     [
+      1.025,
+      11.42
+     ],
+     [
+      -1.025,
+      11.42
+     ],
+     [
+      -1.099,
+      11.311
+     ],
+     [
+      -1.167,
+      11.203
+     ],
+     [
+      -1.233,
+      11.094
+     ],
+     [
+      -1.296,
+      10.985
+     ],
+     [
+      -1.386,
+      10.876
+     ],
+     [
+      -1.453,
+      10.768
+     ],
+     [
+      -1.514,
+      10.659
+     ],
+     [
+      -1.565,
+      10.55
+     ]
+    ],
+    "holes": [
+     [
+      [
+       -0.18,
+       10.8
+      ],
+      [
+       0.18,
+       10.8
+      ],
+      [
+       0.18,
+       11.2
+      ],
+      [
+       -0.18,
+       11.2
+      ]
+     ]
+    ],
+    "note": "round the windlass, a hole"
+   },
+   {
+    "id": "foredeck_4",
+    "cut": "deck",
+    "ramp": {
+     "axis": "y",
+     "a0": 11.4,
+     "a1": 12.3,
+     "z0": 4.215,
+     "z1": 4.216
+    },
+    "poly": [
+     [
+      1.035,
+      11.4
+     ],
+     [
+      0.966,
+      11.49
+     ],
+     [
+      0.895,
+      11.58
+     ],
+     [
+      0.843,
+      11.67
+     ],
+     [
+      0.776,
+      11.76
+     ],
+     [
+      0.63,
+      11.94
+     ],
+     [
+      0.553,
+      12.03
+     ],
+     [
+      0.47,
+      12.12
+     ],
+     [
+      0.373,
+      12.21
+     ],
+     [
+      0.265,
+      12.3
+     ],
+     [
+      -0.265,
+      12.3
+     ],
+     [
+      -0.373,
+      12.21
+     ],
+     [
+      -0.47,
+      12.12
+     ],
+     [
+      -0.553,
+      12.03
+     ],
+     [
+      -0.63,
+      11.94
+     ],
+     [
+      -0.776,
+      11.76
+     ],
+     [
+      -0.843,
+      11.67
+     ],
+     [
+      -0.895,
+      11.58
+     ],
+     [
+      -0.966,
+      11.49
+     ],
+     [
+      -1.035,
+      11.4
+     ]
+    ],
+    "holes": [],
+    "note": "to the bow"
+   },
+   {
+    "id": "sun_deck_aft",
+    "cut": "deck",
+    "ramp": {
+     "axis": "y",
+     "a0": -8.921,
+     "a1": -7.89,
+     "z0": 6.309,
+     "z1": 6.338
+    },
+    "poly": [
+     [
+      -2.3,
+      -7.89
+     ],
+     [
+      -2.3,
+      -8.041
+     ],
+     [
+      -2.301,
+      -8.428
+     ],
+     [
+      -2.277,
+      -8.597
+     ],
+     [
+      -2.21,
+      -8.726
+     ],
+     [
+      -2.106,
+      -8.83
+     ],
+     [
+      -1.976,
+      -8.897
+     ],
+     [
+      -1.81,
+      -8.921
+     ],
+     [
+      -1.373,
+      -8.92
+     ],
+     [
+      1.373,
+      -8.92
+     ],
+     [
+      1.81,
+      -8.921
+     ],
+     [
+      1.976,
+      -8.897
+     ],
+     [
+      2.106,
+      -8.83
+     ],
+     [
+      2.21,
+      -8.726
+     ],
+     [
+      2.277,
+      -8.597
+     ],
+     [
+      2.301,
+      -8.428
+     ],
+     [
+      2.3,
+      -8.041
+     ],
+     [
+      2.3,
+      -7.89
+     ]
+    ],
+    "holes": [],
+    "note": "the sun deck (pieces sun_deck_*) on the hardtop, inside its rail by the radius: aft of its hatch"
+   },
+   {
+    "id": "sun_deck_hatch",
+    "cut": "deck",
+    "ramp": {
+     "axis": "y",
+     "a0": -7.91,
+     "a1": -6.88,
+     "z0": 6.338,
+     "z1": 6.356
+    },
+    "poly": [
+     [
+      -2.3,
+      -7.91
+     ],
+     [
+      0.9,
+      -7.91
+     ],
+     [
+      0.9,
+      -6.88
+     ],
+     [
+      -2.3,
+      -6.88
+     ]
+    ],
+    "holes": [],
+    "note": "beside the hatch, R from its opening"
+   },
+   {
+    "id": "sun_deck_mid",
+    "cut": "deck",
+    "ramp": {
+     "axis": "y",
+     "a0": -6.9,
+     "a1": -5.13,
+     "z0": 6.356,
+     "z1": 6.377
+    },
+    "poly": [
+     [
+      -2.3,
+      -6.9
+     ],
+     [
+      1.043,
+      -6.9
+     ],
+     [
+      1.057,
+      -6.796
+     ],
+     [
+      1.111,
+      -6.705
+     ],
+     [
+      1.197,
+      -6.644
+     ],
+     [
+      1.3,
+      -6.623
+     ],
+     [
+      1.403,
+      -6.644
+     ],
+     [
+      1.489,
+      -6.705
+     ],
+     [
+      1.543,
+      -6.796
+     ],
+     [
+      1.557,
+      -6.9
+     ],
+     [
+      1.603,
+      -6.9
+     ],
+     [
+      1.617,
+      -6.796
+     ],
+     [
+      1.671,
+      -6.705
+     ],
+     [
+      1.757,
+      -6.644
+     ],
+     [
+      1.86,
+      -6.623
+     ],
+     [
+      1.963,
+      -6.644
+     ],
+     [
+      2.049,
+      -6.705
+     ],
+     [
+      2.103,
+      -6.796
+     ],
+     [
+      2.117,
+      -6.9
+     ],
+     [
+      2.3,
+      -6.9
+     ],
+     [
+      2.3,
+      -5.13
+     ],
+     [
+      -2.3,
+      -5.13
+     ]
+    ],
+    "holes": [
+     [
+      [
+       -0.58,
+       -6.68
+      ],
+      [
+       0.58,
+       -6.68
+      ],
+      [
+       0.58,
+       -5.62
+      ],
+      [
+       -0.58,
+       -5.62
+      ]
+     ]
+    ],
+    "note": "forward of the hatch, its forward edge the ladder's landing (not inset), round the grab posts, the table a hole"
+   },
+   {
+    "id": "sun_deck_port",
+    "cut": "deck",
+    "ramp": {
+     "axis": "y",
+     "a0": -5.15,
+     "a1": -2.65,
+     "z0": 6.377,
+     "z1": 6.396
+    },
+    "poly": [
+     [
+      -2.3,
+      -5.15
+     ],
+     [
+      -1.33,
+      -5.15
+     ],
+     [
+      -1.33,
+      -2.65
+     ],
+     [
+      -2.3,
+      -2.65
+     ]
+    ],
+    "holes": [],
+    "note": "beside and between the loungers (their pads are cushions, kept off by the radius)"
+   },
+   {
+    "id": "sun_deck_centre",
+    "cut": "deck",
+    "ramp": {
+     "axis": "y",
+     "a0": -5.15,
+     "a1": -2.65,
+     "z0": 6.377,
+     "z1": 6.396
+    },
+    "poly": [
+     [
+      -0.07,
+      -5.15
+     ],
+     [
+      0.07,
+      -5.15
+     ],
+     [
+      0.07,
+      -2.65
+     ],
+     [
+      -0.07,
+      -2.65
+     ]
+    ],
+    "holes": [],
+    "note": "beside and between the loungers (their pads are cushions, kept off by the radius)"
+   },
+   {
+    "id": "sun_deck_stbd",
+    "cut": "deck",
+    "ramp": {
+     "axis": "y",
+     "a0": -5.15,
+     "a1": -2.65,
+     "z0": 6.377,
+     "z1": 6.396
+    },
+    "poly": [
+     [
+      1.33,
+      -5.15
+     ],
+     [
+      2.3,
+      -5.15
+     ],
+     [
+      2.3,
+      -2.65
+     ],
+     [
+      1.33,
+      -2.65
+     ]
+    ],
+    "holes": [],
+    "note": "beside and between the loungers (their pads are cushions, kept off by the radius)"
+   },
+   {
+    "id": "sun_deck_fwd",
+    "cut": "deck",
+    "ramp": {
+     "axis": "y",
+     "a0": -2.67,
+     "a1": 0.163,
+     "z0": 6.395,
+     "z1": 6.417
+    },
+    "poly": [
+     [
+      2.3,
+      -2.67
+     ],
+     [
+      2.3,
+      -1.254
+     ],
+     [
+      2.295,
+      -1.018
+     ],
+     [
+      2.259,
+      -0.782
+     ],
+     [
+      2.147,
+      -0.546
+     ],
+     [
+      1.937,
+      -0.31
+     ],
+     [
+      1.579,
+      -0.073
+     ],
+     [
+      0.83,
+      0.163
+     ],
+     [
+      0.83,
+      -0.27
+     ],
+     [
+      0.53,
+      -0.27
+     ],
+     [
+      0.53,
+      -0.498
+     ],
+     [
+      0.83,
+      -0.498
+     ],
+     [
+      0.83,
+      -1.058
+     ],
+     [
+      0.53,
+      -1.058
+     ],
+     [
+      0.53,
+      -2.23
+     ],
+     [
+      -0.53,
+      -2.23
+     ],
+     [
+      -0.53,
+      -1.058
+     ],
+     [
+      -0.83,
+      -1.058
+     ],
+     [
+      -0.83,
+      -0.498
+     ],
+     [
+      -0.53,
+      -0.498
+     ],
+     [
+      -0.53,
+      -0.27
+     ],
+     [
+      -0.83,
+      -0.27
+     ],
+     [
+      -0.83,
+      0.163
+     ],
+     [
+      -1.579,
+      -0.073
+     ],
+     [
+      -1.937,
+      -0.31
+     ],
+     [
+      -2.147,
+      -0.546
+     ],
+     [
+      -2.259,
+      -0.782
+     ],
+     [
+      -2.295,
+      -1.018
+     ],
+     [
+      -2.3,
+      -1.254
+     ],
+     [
+      -2.3,
+      -2.67
+     ]
+    ],
+    "holes": [],
+    "note": "forward of the loungers, either side of the mast, its crossbar's lights and the radar's bar, to where the deck narrows under 1.66 m"
+   },
+   {
+    "id": "sun_deck_ladder",
+    "kind": "ladder",
+    "cut": "deck",
+    "cutHi": "deck",
+    "cutLo": "deck",
+    "zMid": 5.054,
+    "ramp": {
+     "axis": "y",
+     "a0": -8.1,
+     "a1": -6.8,
+     "z0": 3.75,
+     "z1": 6.357
+    },
+    "poly": [
+     [
+      1.555,
+      -8.1
+     ],
+     [
+      1.605,
+      -8.1
+     ],
+     [
+      1.605,
+      -6.8
+     ],
+     [
+      1.555,
+      -6.8
+     ]
+    ],
+    "holes": [],
+    "ladder": {
+     "via": "hatch",
+     "hatchW": 0.9,
+     "hatchL": 0.76,
+     "rise": 2.606,
+     "pitch": 0.28,
+     "rake": 18.963
+    },
+    "note": "the sun deck's ladder (decision 11): from the aft deck's starboard quarter up through the hardtop's hatch, raked top forward, out between the grab posts"
+   }
+  ]
+ },
+ "house": {
+  "door": {
+   "id": "saloon_aft",
+   "kind": "slide",
+   "face": "aft",
+   "y": -6.58,
+   "x0": -0.99,
+   "x1": 0.99,
+   "z0": 3.8,
+   "z1": 5.88,
+   "sillZ": 3.8,
+   "travel": 0.95,
+   "opensTo": "aft",
+   "clearAt": 0.242,
+   "leaves": [
+    "saloon_aft_port",
+    "saloon_aft_stbd"
+   ],
+   "leaf": "doorFaces({ saloon_aft_port: t, saloon_aft_stbd: t })",
+   "lv": "house",
+   "ro": "wall",
+   "label": "Saloon doors",
+   "clear": {
+    "width": 1.9,
+    "height": 2.08
+   },
+   "note": "the saloon's aft doors onto the aft deck: a glass slider pair, each leaf sliding outboard"
+  },
+  "doors": [
+   {
+    "id": "saloon_aft",
+    "kind": "slide",
+    "face": "aft",
+    "y": -6.58,
+    "x0": -0.99,
+    "x1": 0.99,
+    "z0": 3.8,
+    "z1": 5.88,
+    "sillZ": 3.8,
+    "travel": 0.95,
+    "opensTo": "aft",
+    "clearAt": 0.242,
+    "leaves": [
+     "saloon_aft_port",
+     "saloon_aft_stbd"
+    ],
+    "leaf": "doorFaces({ saloon_aft_port: t, saloon_aft_stbd: t })",
+    "lv": "house",
+    "ro": "wall",
+    "label": "Saloon doors",
+    "clear": {
+     "width": 1.9,
+     "height": 2.08
+    },
+    "note": "the saloon's aft doors onto the aft deck: a glass slider pair, each leaf sliding outboard"
+   },
+   {
+    "id": "garage_inner",
+    "kind": "hinge",
+    "face": "aft",
+    "y": -6.71,
+    "x0": -1.75,
+    "x1": -1.05,
+    "z0": 2.15,
+    "z1": 3.4,
+    "sillZ": 2.15,
+    "hinge": {
+     "x": -1.75,
+     "y": -6.71,
+     "z0": 2.15,
+     "z1": 3.4
+    },
+    "maxDeg": 90,
+    "swings": "aft, into the garage",
+    "opensTo": "aft",
+    "clearAt": 0.777,
+    "keepClear": [
+     [
+      -1.75,
+      -6.71
+     ],
+     [
+      -1.75,
+      -7.41
+     ],
+     [
+      -1.613,
+      -7.397
+     ],
+     [
+      -1.482,
+      -7.357
+     ],
+     [
+      -1.361,
+      -7.292
+     ],
+     [
+      -1.255,
+      -7.205
+     ],
+     [
+      -1.168,
+      -7.099
+     ],
+     [
+      -1.103,
+      -6.978
+     ],
+     [
+      -1.063,
+      -6.847
+     ],
+     [
+      -1.05,
+      -6.71
+     ]
+    ],
+    "leaves": [
+     "garage_inner"
+    ],
+    "leaf": "doorFaces({ garage_inner: t })",
+    "lv": "below",
+    "ro": "wall",
+    "label": "Garage door",
+    "clear": {
+     "width": 0.7,
+     "height": 1.25
+    },
+    "note": "the garage's inner door, in the master cabin's aft bulkhead at the head of its three steps"
+   },
+   {
+    "id": "master",
+    "kind": "hinge",
+    "face": "aft",
+    "y": -3.24,
+    "x0": -0.45,
+    "x1": 0.45,
+    "z0": 1.5,
+    "z1": 3.5,
+    "sillZ": 1.5,
+    "hinge": {
+     "x": -0.45,
+     "y": -3.24,
+     "z0": 1.5,
+     "z1": 3.5
+    },
+    "maxDeg": 90,
+    "swings": "aft, into the master cabin",
+    "opensTo": "aft",
+    "clearAt": 0.675,
+    "keepClear": [
+     [
+      -0.45,
+      -3.24
+     ],
+     [
+      -0.45,
+      -4.14
+     ],
+     [
+      -0.274,
+      -4.123
+     ],
+     [
+      -0.106,
+      -4.071
+     ],
+     [
+      0.05,
+      -3.988
+     ],
+     [
+      0.186,
+      -3.876
+     ],
+     [
+      0.298,
+      -3.74
+     ],
+     [
+      0.381,
+      -3.584
+     ],
+     [
+      0.433,
+      -3.416
+     ],
+     [
+      0.45,
+      -3.24
+     ]
+    ],
+    "leaves": [
+     "master"
+    ],
+    "leaf": "doorFaces({ master: t })",
+    "lv": "below",
+    "ro": "wall",
+    "label": "Master cabin door",
+    "clear": {
+     "width": 0.9,
+     "height": 2
+    },
+    "note": "the master cabin's door, at the corridor's aft end"
+   },
+   {
+    "id": "master_bath",
+    "kind": "hinge",
+    "face": "forward",
+    "y": -5.2,
+    "x0": -1.75,
+    "x1": -1.15,
+    "z0": 1.5,
+    "z1": 3.5,
+    "sillZ": 1.5,
+    "hinge": {
+     "x": -1.15,
+     "y": -5.2,
+     "z0": 1.5,
+     "z1": 3.5
+    },
+    "maxDeg": 90,
+    "swings": "forward, into the bath",
+    "opensTo": "forward",
+    "clearAt": 0.85,
+    "keepClear": [
+     [
+      -1.15,
+      -5.2
+     ],
+     [
+      -1.15,
+      -4.6
+     ],
+     [
+      -1.267,
+      -4.612
+     ],
+     [
+      -1.38,
+      -4.646
+     ],
+     [
+      -1.483,
+      -4.701
+     ],
+     [
+      -1.574,
+      -4.776
+     ],
+     [
+      -1.649,
+      -4.867
+     ],
+     [
+      -1.704,
+      -4.97
+     ],
+     [
+      -1.738,
+      -5.083
+     ],
+     [
+      -1.75,
+      -5.2
+     ]
+    ],
+    "leaves": [
+     "master_bath"
+    ],
+    "leaf": "doorFaces({ master_bath: t })",
+    "lv": "below",
+    "ro": "wall",
+    "label": "Bath door",
+    "clear": {
+     "width": 0.6,
+     "height": 2
+    },
+    "note": "the master cabin's bath, to port forward of her bed"
+   },
+   {
+    "id": "guest",
+    "kind": "hinge",
+    "face": "port",
+    "y": -0.95,
+    "x0": -0.72,
+    "x1": -0.68,
+    "x": -0.7,
+    "y0": -1.3,
+    "y1": -0.6,
+    "z0": 1.5,
+    "z1": 3.5,
+    "sillZ": 1.5,
+    "hinge": {
+     "x": -0.7,
+     "y": -1.3,
+     "z0": 1.5,
+     "z1": 3.5
+    },
+    "maxDeg": 90,
+    "swings": "to port, into the guest cabin",
+    "opensTo": "port",
+    "clearAt": 0.777,
+    "keepClear": [
+     [
+      -0.7,
+      -1.3
+     ],
+     [
+      -0.7,
+      -0.6
+     ],
+     [
+      -0.837,
+      -0.613
+     ],
+     [
+      -0.968,
+      -0.653
+     ],
+     [
+      -1.089,
+      -0.718
+     ],
+     [
+      -1.195,
+      -0.805
+     ],
+     [
+      -1.282,
+      -0.911
+     ],
+     [
+      -1.347,
+      -1.032
+     ],
+     [
+      -1.387,
+      -1.163
+     ],
+     [
+      -1.4,
+      -1.3
+     ]
+    ],
+    "leaves": [
+     "guest"
+    ],
+    "leaf": "doorFaces({ guest: t })",
+    "lv": "below",
+    "ro": "wall",
+    "label": "Guest cabin door",
+    "clear": {
+     "width": 0.7,
+     "height": 2
+    },
+    "note": "the guest cabin's door, off the corridor to port"
+   },
+   {
+    "id": "guest_head",
+    "kind": "hinge",
+    "face": "forward",
+    "y": -0.03,
+    "x0": -1.75,
+    "x1": -1.15,
+    "z0": 1.5,
+    "z1": 3.5,
+    "sillZ": 1.5,
+    "hinge": {
+     "x": -1.15,
+     "y": -0.03,
+     "z0": 1.5,
+     "z1": 3.5
+    },
+    "maxDeg": 90,
+    "swings": "forward, into the head",
+    "opensTo": "forward",
+    "clearAt": 0.85,
+    "keepClear": [
+     [
+      -1.15,
+      -0.03
+     ],
+     [
+      -1.15,
+      0.57
+     ],
+     [
+      -1.267,
+      0.558
+     ],
+     [
+      -1.38,
+      0.524
+     ],
+     [
+      -1.483,
+      0.469
+     ],
+     [
+      -1.574,
+      0.394
+     ],
+     [
+      -1.649,
+      0.303
+     ],
+     [
+      -1.704,
+      0.2
+     ],
+     [
+      -1.738,
+      0.087
+     ],
+     [
+      -1.75,
+      -0.03
+     ]
+    ],
+    "leaves": [
+     "guest_head"
+    ],
+    "leaf": "doorFaces({ guest_head: t })",
+    "lv": "below",
+    "ro": "wall",
+    "label": "Head door",
+    "clear": {
+     "width": 0.6,
+     "height": 2
+    },
+    "note": "the guest cabin's head, forward of it"
+   },
+   {
+    "id": "vip",
+    "kind": "hinge",
+    "face": "starboard",
+    "y": -0.95,
+    "x0": 0.68,
+    "x1": 0.72,
+    "x": 0.7,
+    "y0": -1.3,
+    "y1": -0.6,
+    "z0": 1.5,
+    "z1": 3.5,
+    "sillZ": 1.5,
+    "hinge": {
+     "x": 0.7,
+     "y": -1.3,
+     "z0": 1.5,
+     "z1": 3.5
+    },
+    "maxDeg": 90,
+    "swings": "to starboard, into the VIP cabin",
+    "opensTo": "starboard",
+    "clearAt": 0.777,
+    "keepClear": [
+     [
+      0.7,
+      -1.3
+     ],
+     [
+      1.4,
+      -1.3
+     ],
+     [
+      1.387,
+      -1.163
+     ],
+     [
+      1.347,
+      -1.032
+     ],
+     [
+      1.282,
+      -0.911
+     ],
+     [
+      1.195,
+      -0.805
+     ],
+     [
+      1.089,
+      -0.718
+     ],
+     [
+      0.968,
+      -0.653
+     ],
+     [
+      0.837,
+      -0.613
+     ],
+     [
+      0.7,
+      -0.6
+     ]
+    ],
+    "leaves": [
+     "vip"
+    ],
+    "leaf": "doorFaces({ vip: t })",
+    "lv": "below",
+    "ro": "wall",
+    "label": "VIP cabin door",
+    "clear": {
+     "width": 0.7,
+     "height": 2
+    },
+    "note": "the VIP cabin's door, off the corridor to starboard"
+   },
+   {
+    "id": "vip_head",
+    "kind": "hinge",
+    "face": "forward",
+    "y": -0.03,
+    "x0": 1.15,
+    "x1": 1.75,
+    "z0": 1.5,
+    "z1": 3.5,
+    "sillZ": 1.5,
+    "hinge": {
+     "x": 1.15,
+     "y": -0.03,
+     "z0": 1.5,
+     "z1": 3.5
+    },
+    "maxDeg": 90,
+    "swings": "forward, into the head",
+    "opensTo": "forward",
+    "clearAt": 0.85,
+    "keepClear": [
+     [
+      1.15,
+      -0.03
+     ],
+     [
+      1.75,
+      -0.03
+     ],
+     [
+      1.738,
+      0.087
+     ],
+     [
+      1.704,
+      0.2
+     ],
+     [
+      1.649,
+      0.303
+     ],
+     [
+      1.574,
+      0.394
+     ],
+     [
+      1.483,
+      0.469
+     ],
+     [
+      1.38,
+      0.524
+     ],
+     [
+      1.267,
+      0.558
+     ],
+     [
+      1.15,
+      0.57
+     ]
+    ],
+    "leaves": [
+     "vip_head"
+    ],
+    "leaf": "doorFaces({ vip_head: t })",
+    "lv": "below",
+    "ro": "wall",
+    "label": "Head door",
+    "clear": {
+     "width": 0.6,
+     "height": 2
+    },
+    "note": "the VIP cabin's head, forward of it"
+   },
+   {
+    "id": "crew_head",
+    "kind": "hinge",
+    "face": "starboard",
+    "y": 7.28,
+    "x0": 0.68,
+    "x1": 0.72,
+    "x": 0.7,
+    "y0": 6.98,
+    "y1": 7.58,
+    "z0": 2,
+    "z1": 3.782,
+    "sillZ": 2,
+    "hinge": {
+     "x": 0.7,
+     "y": 6.98,
+     "z0": 2,
+     "z1": 3.782
+    },
+    "maxDeg": 90,
+    "swings": "to starboard, into the crew head",
+    "opensTo": "starboard",
+    "clearAt": 0.85,
+    "keepClear": [
+     [
+      0.7,
+      6.98
+     ],
+     [
+      1.3,
+      6.98
+     ],
+     [
+      1.288,
+      7.097
+     ],
+     [
+      1.254,
+      7.21
+     ],
+     [
+      1.199,
+      7.313
+     ],
+     [
+      1.124,
+      7.404
+     ],
+     [
+      1.033,
+      7.479
+     ],
+     [
+      0.93,
+      7.534
+     ],
+     [
+      0.817,
+      7.568
+     ],
+     [
+      0.7,
+      7.58
+     ]
+    ],
+    "leaves": [
+     "crew_head"
+    ],
+    "leaf": "doorFaces({ crew_head: t })",
+    "lv": "below",
+    "ro": "wall",
+    "label": "Crew head door",
+    "clear": {
+     "width": 0.6,
+     "height": 1.782
+    },
+    "note": "the crew's head, off the crew mess to starboard"
+   },
+   {
+    "id": "crew_cabin",
+    "kind": "hinge",
+    "face": "forward",
+    "y": 7.95,
+    "x0": 0.05,
+    "x1": 0.65,
+    "z0": 2,
+    "z1": 3.817,
+    "sillZ": 2,
+    "hinge": {
+     "x": 0.65,
+     "y": 7.95,
+     "z0": 2,
+     "z1": 3.817
+    },
+    "maxDeg": 90,
+    "swings": "forward, into the crew cabin",
+    "opensTo": "forward",
+    "clearAt": 0.85,
+    "keepClear": [
+     [
+      0.65,
+      7.95
+     ],
+     [
+      0.65,
+      8.55
+     ],
+     [
+      0.533,
+      8.538
+     ],
+     [
+      0.42,
+      8.504
+     ],
+     [
+      0.317,
+      8.449
+     ],
+     [
+      0.226,
+      8.374
+     ],
+     [
+      0.151,
+      8.283
+     ],
+     [
+      0.096,
+      8.18
+     ],
+     [
+      0.062,
+      8.067
+     ],
+     [
+      0.05,
+      7.95
+     ]
+    ],
+    "leaves": [
+     "crew_cabin"
+    ],
+    "leaf": "doorFaces({ crew_cabin: t })",
+    "lv": "below",
+    "ro": "wall",
+    "label": "Crew cabin door",
+    "clear": {
+     "width": 0.6,
+     "height": 1.817
+    },
+    "note": "the crew cabin, forward of the crew mess"
+   }
+  ],
+  "levels": [
+   "below",
+   "house"
+  ],
+  "decks": {
+   "below": {
+    "deck": "lower_sole",
+    "kind": "hard",
+    "soleZ": 1.5,
+    "ceilZ": 3.6
+   },
+   "main_deck": {
+    "deck": "aft_deck",
+    "kind": "open",
+    "soleZ": 3.75,
+    "ceilZ": null,
+    "open": true
+   },
+   "house": {
+    "deck": "saloon_sole",
+    "kind": "hard",
+    "soleZ": 3.75,
+    "ceilZ": 5.88
+   },
+   "foredeck": {
+    "deck": "foredeck",
+    "kind": "open",
+    "soleZ": 3.98,
+    "ceilZ": null,
+    "open": true
+   },
+   "top": {
+    "deck": "sun_deck",
+    "kind": "open",
+    "soleZ": 6.356,
+    "ceilZ": null,
+    "open": true
+   }
+  }
+ },
+ "anchors": {
+  "helm": {
+   "x": 0,
+   "y": 4.62,
+   "z": 3.15
+  },
+  "wheel": {
+   "x": 0,
+   "y": 5.12,
+   "z": 4.17
+  },
+  "pilot": {
+   "x": 0,
+   "y": 4.62,
+   "z": 3.15
+  },
+  "ladder": {
+   "x": 0,
+   "y": -12.79,
+   "z": 2.15
+  },
+  "platform": {
+   "x": 0,
+   "y": -12.012,
+   "z": 2.15
+  },
+  "watercraft": [
+   {
+    "id": "watercraft_port",
+    "x": -1.15,
+    "y": -9.3,
+    "z": 2.15
+   },
+   {
+    "id": "watercraft_stbd",
+    "x": 0.25,
+    "y": -9.3,
+    "z": 2.15
+   }
+  ],
+  "berths": [
+   {
+    "id": "berth_master",
+    "interact": "sleep_master",
+    "kind": "double",
+    "topZ": 2.12,
+    "head": "aft",
+    "deckheadZ": 3.6,
+    "poly": [
+     [
+      -0.53,
+      -6.65
+     ],
+     [
+      1.03,
+      -6.65
+     ],
+     [
+      1.03,
+      -4.65
+     ],
+     [
+      -0.53,
+      -4.65
+     ]
+    ]
+   },
+   {
+    "id": "berth_guest_out",
+    "interact": "sleep_guest_out",
+    "kind": "single",
+    "topZ": 2.12,
+    "head": "aft",
+    "deckheadZ": 3.6,
+    "poly": [
+     [
+      -2.6,
+      -3.18
+     ],
+     [
+      -1.88,
+      -3.18
+     ],
+     [
+      -1.88,
+      -1.2
+     ],
+     [
+      -2.6,
+      -1.2
+     ]
+    ]
+   },
+   {
+    "id": "berth_guest_in",
+    "interact": "sleep_guest_in",
+    "kind": "single",
+    "topZ": 2.12,
+    "head": "aft",
+    "deckheadZ": 3.6,
+    "poly": [
+     [
+      -1.6,
+      -3.18
+     ],
+     [
+      -0.84,
+      -3.18
+     ],
+     [
+      -0.84,
+      -1.2
+     ],
+     [
+      -1.6,
+      -1.2
+     ]
+    ]
+   },
+   {
+    "id": "berth_vip",
+    "interact": "sleep_vip",
+    "kind": "double",
+    "topZ": 2.12,
+    "head": "aft",
+    "deckheadZ": 3.6,
+    "poly": [
+     [
+      0.82,
+      -3.18
+     ],
+     [
+      2.43,
+      -3.18
+     ],
+     [
+      2.43,
+      -1.2
+     ],
+     [
+      0.82,
+      -1.2
+     ]
+    ]
+   },
+   {
+    "id": "berth_crew_lower",
+    "interact": "sleep_crew_lower",
+    "kind": "bunk",
+    "topZ": 2.62,
+    "head": "port",
+    "deckheadZ": 3.18,
+    "poly": [
+     [
+      -1.923,
+      7.99
+     ],
+     [
+      -0.04,
+      7.99
+     ],
+     [
+      -0.04,
+      8.72
+     ],
+     [
+      -1.923,
+      8.72
+     ]
+    ]
+   },
+   {
+    "id": "berth_crew_upper",
+    "interact": "sleep_crew_upper",
+    "kind": "bunk",
+    "topZ": 3.36,
+    "head": "port",
+    "deckheadZ": 3.869,
+    "poly": [
+     [
+      -1.93,
+      7.99
+     ],
+     [
+      -0.04,
+      7.99
+     ],
+     [
+      -0.04,
+      8.72
+     ],
+     [
+      -1.93,
+      8.72
+     ]
+    ]
+   }
+  ]
+ },
+ "interact": [
+  {
+   "id": "helm",
+   "action": "enter_helm",
+   "label": "Helm",
+   "prompt": "Take the wheel",
+   "at": {
+    "x": 0,
+    "y": 5.12,
+    "z": 4.17
+   },
+   "seat": null,
+   "stand": {
+    "x": 0,
+    "y": 4.62,
+    "z": 3.15
+   },
+   "reach": {
+    "x": 0,
+    "y": 4.62,
+    "z": 3.15
+   },
+   "area": "dining_helm",
+   "note": "a standing helm (no seat): the helmsman stands 0.5 m aft of the wheel's hub, its centre 1.02 m over the sole"
+  },
+  {
+   "id": "saloon_aft",
+   "action": "open_close",
+   "label": "Saloon doors",
+   "prompt": "Open · shut",
+   "state": "doorOpen",
+   "clearAt": 0.242,
+   "at": {
+    "x": 0,
+    "y": -6.58,
+    "z": 4.84
+   },
+   "reach": {
+    "x": 0,
+    "y": -6.75,
+    "z": 3.75
+   },
+   "area": "saloon_door"
+  },
+  {
+   "id": "garage_inner",
+   "action": "open_close",
+   "label": "Garage door",
+   "prompt": "Open · shut",
+   "state": "garage_inner",
+   "clearAt": 0.777,
+   "at": {
+    "x": -1.4,
+    "y": -6.71,
+    "z": 2.775
+   },
+   "reach": {
+    "x": -1.4,
+    "y": -6.8,
+    "z": 2.15
+   },
+   "area": "garage"
+  },
+  {
+   "id": "master",
+   "action": "open_close",
+   "label": "Master cabin door",
+   "prompt": "Open · shut",
+   "state": "master",
+   "clearAt": 0.675,
+   "at": {
+    "x": 0,
+    "y": -3.24,
+    "z": 2.5
+   },
+   "reach": {
+    "x": 0,
+    "y": -3,
+    "z": 1.5
+   },
+   "area": "master_door"
+  },
+  {
+   "id": "master_bath",
+   "action": "open_close",
+   "label": "Bath door",
+   "prompt": "Open · shut",
+   "state": "master_bath",
+   "clearAt": 0.85,
+   "at": {
+    "x": -1.45,
+    "y": -5.2,
+    "z": 2.5
+   },
+   "reach": {
+    "x": -1.45,
+    "y": -5.3,
+    "z": 1.5
+   },
+   "area": "master_bath_door"
+  },
+  {
+   "id": "guest",
+   "action": "open_close",
+   "label": "Guest cabin door",
+   "prompt": "Open · shut",
+   "state": "guest",
+   "clearAt": 0.777,
+   "at": {
+    "x": -0.7,
+    "y": -0.95,
+    "z": 2.5
+   },
+   "reach": {
+    "x": -0.7,
+    "y": -0.9,
+    "z": 1.5
+   },
+   "area": "guest_door"
+  },
+  {
+   "id": "guest_head",
+   "action": "open_close",
+   "label": "Head door",
+   "prompt": "Open · shut",
+   "state": "guest_head",
+   "clearAt": 0.85,
+   "at": {
+    "x": -1.45,
+    "y": -0.03,
+    "z": 2.5
+   },
+   "reach": {
+    "x": -1.45,
+    "y": 0,
+    "z": 1.5
+   },
+   "area": "guest_head_door"
+  },
+  {
+   "id": "vip",
+   "action": "open_close",
+   "label": "VIP cabin door",
+   "prompt": "Open · shut",
+   "state": "vip",
+   "clearAt": 0.777,
+   "at": {
+    "x": 0.7,
+    "y": -0.95,
+    "z": 2.5
+   },
+   "reach": {
+    "x": 0.7,
+    "y": -0.9,
+    "z": 1.5
+   },
+   "area": "vip_door"
+  },
+  {
+   "id": "vip_head",
+   "action": "open_close",
+   "label": "Head door",
+   "prompt": "Open · shut",
+   "state": "vip_head",
+   "clearAt": 0.85,
+   "at": {
+    "x": 1.45,
+    "y": -0.03,
+    "z": 2.5
+   },
+   "reach": {
+    "x": 1.45,
+    "y": 0,
+    "z": 1.5
+   },
+   "area": "vip_head_door"
+  },
+  {
+   "id": "crew_head",
+   "action": "open_close",
+   "label": "Crew head door",
+   "prompt": "Open · shut",
+   "state": "crew_head",
+   "clearAt": 0.85,
+   "at": {
+    "x": 0.7,
+    "y": 7.28,
+    "z": 2.891
+   },
+   "reach": {
+    "x": 0.435,
+    "y": 7.28,
+    "z": 2
+   },
+   "area": "crew_mess"
+  },
+  {
+   "id": "crew_cabin",
+   "action": "open_close",
+   "label": "Crew cabin door",
+   "prompt": "Open · shut",
+   "state": "crew_cabin",
+   "clearAt": 0.85,
+   "at": {
+    "x": 0.35,
+    "y": 7.95,
+    "z": 2.909
+   },
+   "reach": {
+    "x": 0.354,
+    "y": 7.864,
+    "z": 2
+   },
+   "area": "crew_cabin_door"
+  },
+  {
+   "id": "garage",
+   "action": "open_close",
+   "label": "Transom door",
+   "prompt": "Open · shut",
+   "state": "garage",
+   "at": {
+    "x": -0.4,
+    "y": -11.432,
+    "z": 2.8
+   },
+   "reach": {
+    "x": -0.4,
+    "y": -10.9,
+    "z": 2.15
+   },
+   "area": "garage",
+   "note": "the garage's door in the transom: down (garage 1) it is the swim platform"
+  },
+  {
+   "id": "stove",
+   "action": "cook",
+   "label": "Stove",
+   "prompt": "Cook · brew up",
+   "at": {
+    "x": -1.95,
+    "y": -0.325,
+    "z": 4.655
+   },
+   "reach": {
+    "x": -1.385,
+    "y": -0.325,
+    "z": 3.75
+   },
+   "area": "saloon"
+  },
+  {
+   "id": "sink",
+   "action": "wash_dishes",
+   "label": "Galley sink",
+   "prompt": "Wash up",
+   "at": {
+    "x": -1.95,
+    "y": 0.55,
+    "z": 4.655
+   },
+   "reach": {
+    "x": -1.385,
+    "y": 0.55,
+    "z": 3.75
+   },
+   "area": "saloon"
+  },
+  {
+   "id": "toilet_master_bath",
+   "action": "toilet",
+   "label": "Head",
+   "prompt": "Use the head",
+   "at": {
+    "x": -1.395,
+    "y": -3.56,
+    "z": 1.92
+   },
+   "reach": {
+    "x": -1.399,
+    "y": -4.034,
+    "z": 1.5
+   },
+   "area": "master_bath"
+  },
+  {
+   "id": "toilet_guest_head",
+   "action": "toilet",
+   "label": "Head",
+   "prompt": "Use the head",
+   "at": {
+    "x": -1.375,
+    "y": 0.86,
+    "z": 1.92
+   },
+   "reach": {
+    "x": -1.379,
+    "y": 0.386,
+    "z": 1.5
+   },
+   "area": "guest_head"
+  },
+  {
+   "id": "toilet_vip_head",
+   "action": "toilet",
+   "label": "Head",
+   "prompt": "Use the head",
+   "at": {
+    "x": 1.375,
+    "y": 0.86,
+    "z": 1.92
+   },
+   "reach": {
+    "x": 1.371,
+    "y": 0.386,
+    "z": 1.5
+   },
+   "area": "vip_head"
+  },
+  {
+   "id": "toilet_crew_head",
+   "action": "toilet",
+   "label": "Head",
+   "prompt": "Use the head",
+   "at": {
+    "x": 1.41,
+    "y": 7.665,
+    "z": 2.42
+   },
+   "reach": {
+    "x": 0.96,
+    "y": 7.66,
+    "z": 2
+   },
+   "area": null,
+   "offWalk": "crew_head"
+  },
+  {
+   "id": "dine_port",
+   "action": "dine",
+   "label": "Table",
+   "prompt": "Dine",
+   "at": {
+    "x": -0.93,
+    "y": -9.37,
+    "z": 4.49
+   },
+   "reach": {
+    "x": -1.564,
+    "y": -9.366,
+    "z": 3.75
+   },
+   "area": "aft_deck_port"
+  },
+  {
+   "id": "dine_stbd",
+   "action": "dine",
+   "label": "Table",
+   "prompt": "Dine",
+   "at": {
+    "x": 0.41,
+    "y": -9.37,
+    "z": 4.49
+   },
+   "reach": {
+    "x": 1.094,
+    "y": -9.366,
+    "z": 3.75
+   },
+   "area": "aft_deck_stbd"
+  },
+  {
+   "id": "windlass",
+   "action": "anchor",
+   "label": "Windlass",
+   "prompt": "Let go / weigh anchor",
+   "at": {
+    "x": 0,
+    "y": 11,
+    "z": 4.402
+   },
+   "reach": {
+    "x": 0,
+    "y": 10.55,
+    "z": 4.174
+   },
+   "area": "foredeck_2"
+  },
+  {
+   "id": "swim",
+   "action": "enter_water",
+   "label": "Swim platform",
+   "prompt": "Swim",
+   "at": {
+    "x": 0,
+    "y": -12.012,
+    "z": 2.15
+   },
+   "reach": {
+    "x": 0,
+    "y": -12.515,
+    "z": 2.15
+   },
+   "area": "platform"
+  },
+  {
+   "id": "sleep_master",
+   "action": "sleep",
+   "label": "Master berth",
+   "prompt": "Sleep · save",
+   "at": {
+    "x": 0.25,
+    "y": -5.65,
+    "z": 2.12
+   },
+   "reach": {
+    "x": 0.254,
+    "y": -4.416,
+    "z": 1.5
+   },
+   "area": "master_fwd"
+  },
+  {
+   "id": "sleep_guest_out",
+   "action": "sleep",
+   "label": "Guest berth",
+   "prompt": "Sleep · save",
+   "at": {
+    "x": -2.24,
+    "y": -2.19,
+    "z": 2.12
+   },
+   "reach": {
+    "x": -1.566,
+    "y": -0.966,
+    "z": 1.5
+   },
+   "area": "guest"
+  },
+  {
+   "id": "sleep_guest_in",
+   "action": "sleep",
+   "label": "Guest berth",
+   "prompt": "Sleep · save",
+   "at": {
+    "x": -1.22,
+    "y": -2.19,
+    "z": 2.12
+   },
+   "reach": {
+    "x": -1.216,
+    "y": -0.966,
+    "z": 1.5
+   },
+   "area": "guest"
+  },
+  {
+   "id": "sleep_vip",
+   "action": "sleep",
+   "label": "VIP berth",
+   "prompt": "Sleep · save",
+   "at": {
+    "x": 1.625,
+    "y": -2.19,
+    "z": 2.12
+   },
+   "reach": {
+    "x": 1.566,
+    "y": -0.966,
+    "z": 1.5
+   },
+   "area": "vip"
+  },
+  {
+   "id": "sleep_crew_lower",
+   "action": "sleep",
+   "label": "Crew bunk",
+   "prompt": "Sleep · save",
+   "at": {
+    "x": -0.982,
+    "y": 8.355,
+    "z": 2.62
+   },
+   "reach": {
+    "x": 0.214,
+    "y": 8.359,
+    "z": 2
+   },
+   "area": "crew_cabin"
+  },
+  {
+   "id": "sleep_crew_upper",
+   "action": "sleep",
+   "label": "Crew bunk",
+   "prompt": "Sleep · save",
+   "at": {
+    "x": -0.985,
+    "y": 8.355,
+    "z": 3.36
+   },
+   "reach": {
+    "x": 0.214,
+    "y": 8.359,
+    "z": 2
+   },
+   "area": "crew_cabin"
+  },
+  {
+   "id": "sit_sofa_port",
+   "action": "sit",
+   "label": "Sofa",
+   "prompt": "Sit",
+   "at": {
+    "x": -1.725,
+    "y": -3.85,
+    "z": 4.17
+   },
+   "reach": {
+    "x": -1.216,
+    "y": -3.846,
+    "z": 3.75
+   },
+   "area": "saloon"
+  },
+  {
+   "id": "sit_sofa_stbd",
+   "action": "sit",
+   "label": "Sofa",
+   "prompt": "Sit",
+   "at": {
+    "x": 1.725,
+    "y": -3.85,
+    "z": 4.17
+   },
+   "reach": {
+    "x": 1.216,
+    "y": -3.846,
+    "z": 3.75
+   },
+   "area": "saloon"
+  },
+  {
+   "id": "sit_chair_aft",
+   "action": "sit",
+   "label": "Dining chair",
+   "prompt": "Sit",
+   "at": {
+    "x": 0.075,
+    "y": 2.45,
+    "z": 3.6
+   },
+   "reach": {
+    "x": 0.534,
+    "y": 2.454,
+    "z": 3.15
+   },
+   "area": "dining_helm"
+  },
+  {
+   "id": "sit_chair_mid",
+   "action": "sit",
+   "label": "Dining chair",
+   "prompt": "Sit",
+   "at": {
+    "x": 0.075,
+    "y": 3.05,
+    "z": 3.6
+   },
+   "reach": {
+    "x": 0.534,
+    "y": 3.054,
+    "z": 3.15
+   },
+   "area": "dining_helm"
+  },
+  {
+   "id": "sit_chair_fwd",
+   "action": "sit",
+   "label": "Dining chair",
+   "prompt": "Sit",
+   "at": {
+    "x": 0.075,
+    "y": 3.65,
+    "z": 3.6
+   },
+   "reach": {
+    "x": 0.079,
+    "y": 4.104,
+    "z": 3.15
+   },
+   "area": "dining_helm"
+  },
+  {
+   "id": "sit_settee",
+   "action": "sit",
+   "label": "Settee",
+   "prompt": "Sit",
+   "at": {
+    "x": 1.875,
+    "y": 2.75,
+    "z": 3.6
+   },
+   "reach": {
+    "x": 1.466,
+    "y": 2.754,
+    "z": 3.15
+   },
+   "area": "dining_helm"
+  },
+  {
+   "id": "sit_bench",
+   "action": "sit",
+   "label": "Bench",
+   "prompt": "Sit",
+   "at": {
+    "x": -1.875,
+    "y": 3.05,
+    "z": 3.6
+   },
+   "reach": {
+    "x": -1.696,
+    "y": 3.054,
+    "z": 3.15
+   },
+   "area": null,
+   "offWalk": "dining_port"
+  },
+  {
+   "id": "sit_armchair_port_aft",
+   "action": "sit",
+   "label": "Armchair",
+   "prompt": "Sit",
+   "at": {
+    "x": -0.93,
+    "y": -10.37,
+    "z": 4.17
+   },
+   "reach": {
+    "x": -0.934,
+    "y": -10.894,
+    "z": 3.75
+   },
+   "area": "aft_deck_aft"
+  },
+  {
+   "id": "sit_armchair_port_fwd",
+   "action": "sit",
+   "label": "Armchair",
+   "prompt": "Sit",
+   "at": {
+    "x": -0.93,
+    "y": -8.37,
+    "z": 4.17
+   },
+   "reach": {
+    "x": -0.406,
+    "y": -8.366,
+    "z": 3.75
+   },
+   "area": "aft_deck_mid"
+  },
+  {
+   "id": "sit_armchair_stbd_aft",
+   "action": "sit",
+   "label": "Armchair",
+   "prompt": "Sit",
+   "at": {
+    "x": 0.41,
+    "y": -10.37,
+    "z": 4.17
+   },
+   "reach": {
+    "x": 0.406,
+    "y": -10.894,
+    "z": 3.75
+   },
+   "area": "aft_deck_aft"
+  },
+  {
+   "id": "sit_armchair_stbd_fwd",
+   "action": "sit",
+   "label": "Armchair",
+   "prompt": "Sit",
+   "at": {
+    "x": 0.41,
+    "y": -8.37,
+    "z": 4.17
+   },
+   "reach": {
+    "x": -0.114,
+    "y": -8.366,
+    "z": 3.75
+   },
+   "area": "aft_deck_mid"
+  },
+  {
+   "id": "sit_lounger_port",
+   "action": "sit",
+   "label": "Lounger",
+   "prompt": "Sit",
+   "at": {
+    "x": -0.9,
+    "y": -4,
+    "z": 6.526
+   },
+   "reach": {
+    "x": -1.334,
+    "y": -3.996,
+    "z": 6.386
+   },
+   "area": "sun_deck_port"
+  },
+  {
+   "id": "sit_lounger_stbd",
+   "action": "sit",
+   "label": "Lounger",
+   "prompt": "Sit",
+   "at": {
+    "x": 0.9,
+    "y": -4,
+    "z": 6.526
+   },
+   "reach": {
+    "x": 1.334,
+    "y": -3.996,
+    "z": 6.386
+   },
+   "area": "sun_deck_stbd"
+  },
+  {
+   "id": "sit_master_settee",
+   "action": "sit",
+   "label": "Settee",
+   "prompt": "Sit",
+   "at": {
+    "x": 2.1,
+    "y": -4.9,
+    "z": 1.97
+   },
+   "reach": {
+    "x": 1.599,
+    "y": -4.896,
+    "z": 1.5
+   },
+   "area": "master_stbd"
+  },
+  {
+   "id": "sit_crew_settee",
+   "action": "sit",
+   "label": "Settee",
+   "prompt": "Sit",
+   "at": {
+    "x": -1.5,
+    "y": 7.4,
+    "z": 2.45
+   },
+   "reach": {
+    "x": -1.196,
+    "y": 7.404,
+    "z": 2
+   },
+   "area": null,
+   "offWalk": "crew_mess_table"
+  }
+ ],
+ "cleats": [
+  {
+   "id": "stern_port",
+   "type": "cleat",
+   "pos": [
+    -2.697,
+    -10.9,
+    3.75
+   ]
+  },
+  {
+   "id": "stern_star",
+   "type": "cleat",
+   "pos": [
+    2.697,
+    -10.9,
+    3.75
+   ]
+  },
+  {
+   "id": "mid_port",
+   "type": "cleat",
+   "pos": [
+    -2.804,
+    0.9,
+    3.75
+   ]
+  },
+  {
+   "id": "mid_star",
+   "type": "cleat",
+   "pos": [
+    2.804,
+    0.9,
+    3.75
+   ]
+  },
+  {
+   "id": "bow_port",
+   "type": "cleat",
+   "pos": [
+    -1.649,
+    10.6,
+    4.177
+   ]
+  },
+  {
+   "id": "bow_star",
+   "type": "cleat",
+   "pos": [
+    1.649,
+    10.6,
+    4.177
+   ]
+  }
+ ],
+ "washboards": [
+  {
+   "side": "port",
+   "width_m": 0.539,
+   "pinch_m": 0.49,
+   "outer_edge": [
+    [
+     -2.886,
+     -8.3,
+     3.75
+    ],
+    [
+     -2.89,
+     -7.92,
+     3.75
+    ],
+    [
+     -2.891,
+     -7.54,
+     3.75
+    ],
+    [
+     -2.891,
+     -7.161,
+     3.75
+    ],
+    [
+     -2.891,
+     -6.781,
+     3.75
+    ],
+    [
+     -2.892,
+     -6.401,
+     3.75
+    ],
+    [
+     -2.897,
+     -6.021,
+     3.75
+    ]
+   ],
+   "note": "the side deck past the hardtop's blade, from the aft deck to side_deck_port: 0.49 m between the blade and the rail at its narrowest, the walker's 0.46 and more; climbed onto with Space from the aft deck and walked by the washboard's rule"
+  },
+  {
+   "side": "starboard",
+   "width_m": 0.539,
+   "pinch_m": 0.49,
+   "outer_edge": [
+    [
+     2.886,
+     -8.3,
+     3.75
+    ],
+    [
+     2.89,
+     -7.92,
+     3.75
+    ],
+    [
+     2.891,
+     -7.54,
+     3.75
+    ],
+    [
+     2.891,
+     -7.161,
+     3.75
+    ],
+    [
+     2.891,
+     -6.781,
+     3.75
+    ],
+    [
+     2.892,
+     -6.401,
+     3.75
+    ],
+    [
+     2.897,
+     -6.021,
+     3.75
+    ]
+   ],
+   "note": "as port"
+  }
+ ],
+ "_excluded": [
+  {
+   "id": "dining_port",
+   "of": "area",
+   "z": 3.15,
+   "headroom": 2.03,
+   "poly": [
+    [
+     -1.7,
+     1.66
+    ],
+    [
+     -0.955,
+     1.66
+    ],
+    [
+     -0.955,
+     1.815
+    ],
+    [
+     -1.45,
+     1.815
+    ],
+    [
+     -1.45,
+     4.1
+    ],
+    [
+     -1.7,
+     4.1
+    ]
+   ],
+   "reason": "the dining's floor to port: the port steps' foot and the strip between the bench and the table, 0.25 m: narrower than the walker; the bench is sat from it (sit_bench)"
+  },
+  {
+   "id": "crew_head",
+   "of": "area",
+   "z": 2,
+   "headroom": 1.843,
+   "poly": [
+    [
+     0.73,
+     7.3
+    ],
+    [
+     1.2,
+     7.3
+    ],
+    [
+     1.2,
+     7.88
+    ],
+    [
+     0.73,
+     7.88
+    ]
+   ],
+   "reason": "the crew's head, beside its WC: under the walker's width; used by its interact (toilet_crew_head)"
+  },
+  {
+   "id": "crew_mess_table",
+   "of": "area",
+   "z": 2,
+   "headroom": 1.833,
+   "poly": [
+    [
+     -1.2,
+     6.95
+    ],
+    [
+     -0.62,
+     6.95
+    ],
+    [
+     -0.62,
+     7.85
+    ],
+    [
+     -1.2,
+     7.85
+    ]
+   ],
+   "reason": "the crew mess's table and the floor at the settee's front: the settee is sat from it (sit_crew_settee)"
+  },
+  {
+   "id": "engine_room",
+   "of": "area",
+   "z": 1.5,
+   "reason": "the engine room, drawn shut (decision 5): not walked"
+  },
+  {
+   "id": "tanks",
+   "of": "area",
+   "z": 1.5,
+   "reason": "the tank room under the dining and the helm: a void under its lid, not walked"
+  },
+  {
+   "id": "forepeak",
+   "of": "area",
+   "z": 2,
+   "reason": "the forepeak forward of the crew: a void under its lid, not walked"
+  },
+  {
+   "id": "coachroof",
+   "of": "area",
+   "z": 5.2,
+   "reason": "the coachroof forward of the hardtop: no rail, no way up"
+  },
+  {
+   "id": "windlass",
+   "of": "area",
+   "z": 4.482,
+   "reason": "the windlass's top, a hole in foredeck_3: worked from beside it (interact windlass)"
+  },
+  {
+   "id": "plinths",
+   "of": "area",
+   "reason": "the berths' plinths, the counters, the cabinets and the tables: furniture, not standing surfaces"
+  },
+  {
+   "id": "sun_pads",
+   "of": "area",
+   "z": 6.536,
+   "reason": "the loungers' pads: cushions, lain on, not stood on; the walk keeps the radius off them"
+  },
+  {
+   "id": "side_deck_blades",
+   "of": "area",
+   "z": 3.75,
+   "reason": "the side decks beside the hardtop's blades (y -8.185 to -6.021): 0.49 m between a blade and the rail at its narrowest, the walker's 0.46 and more, but its centre has 0.019 m there, too little for an area; crossed on the washboards (washboards[]) by the washboard's rule, the way to the side decks and the foredeck"
+  },
+  {
+   "id": "house_steps_port",
+   "of": "climb",
+   "kind": "stair",
+   "at": {
+    "x": -1.47,
+    "y": 1.4,
+    "z": 3.45
+   },
+   "reason": "the house's port steps (decision 13) end in dining_port, 0.25 m between the bench and the table: a dead end, so they are left off the walk"
+  },
+  {
+   "id": "platform_ladder",
+   "of": "climb",
+   "kind": "ladder",
+   "at": {
+    "x": 0,
+    "y": -12.79,
+    "z": 2.15
+   },
+   "ladder": {
+    "via": "swim",
+    "platZ": 0.35,
+    "platD": 0.89
+   },
+   "reason": "the swim ladder off the platform's aft edge (state ladder): from the water, not a walk area (swim)"
+  },
+  {
+   "id": "berth_master",
+   "of": "berth",
+   "z": 2.12,
+   "reason": "the master berth: lain on, not stood on; sleeping is its interact (sleep_master)"
+  },
+  {
+   "id": "berth_guest_out",
+   "of": "berth",
+   "z": 2.12,
+   "reason": "the guest out berth: lain on, not stood on; sleeping is its interact (sleep_guest_out)"
+  },
+  {
+   "id": "berth_guest_in",
+   "of": "berth",
+   "z": 2.12,
+   "reason": "the guest in berth: lain on, not stood on; sleeping is its interact (sleep_guest_in)"
+  },
+  {
+   "id": "berth_vip",
+   "of": "berth",
+   "z": 2.12,
+   "reason": "the vip berth: lain on, not stood on; sleeping is its interact (sleep_vip)"
+  },
+  {
+   "id": "berth_crew_lower",
+   "of": "berth",
+   "z": 2.62,
+   "reason": "the crew lower berth: lain on, not stood on; sleeping is its interact (sleep_crew_lower)"
+  },
+  {
+   "id": "berth_crew_upper",
+   "of": "berth",
+   "z": 3.36,
+   "reason": "the crew upper berth: lain on, not stood on; sleeping is its interact (sleep_crew_upper)"
+  },
+  {
+   "id": "sofa_port",
+   "of": "seat",
+   "at": {
+    "x": -1.725,
+    "y": -3.85,
+    "z": 4.17
+   },
+   "reason": "sat on (sit_sofa_port), from its own deck's floor"
+  },
+  {
+   "id": "sofa_stbd",
+   "of": "seat",
+   "at": {
+    "x": 1.725,
+    "y": -3.85,
+    "z": 4.17
+   },
+   "reason": "sat on (sit_sofa_stbd), from its own deck's floor"
+  },
+  {
+   "id": "chair_aft",
+   "of": "seat",
+   "at": {
+    "x": 0.075,
+    "y": 2.45,
+    "z": 3.6
+   },
+   "reason": "sat on (sit_chair_aft), from its own deck's floor"
+  },
+  {
+   "id": "chair_mid",
+   "of": "seat",
+   "at": {
+    "x": 0.075,
+    "y": 3.05,
+    "z": 3.6
+   },
+   "reason": "sat on (sit_chair_mid), from its own deck's floor"
+  },
+  {
+   "id": "chair_fwd",
+   "of": "seat",
+   "at": {
+    "x": 0.075,
+    "y": 3.65,
+    "z": 3.6
+   },
+   "reason": "sat on (sit_chair_fwd), from its own deck's floor"
+  },
+  {
+   "id": "settee",
+   "of": "seat",
+   "at": {
+    "x": 1.875,
+    "y": 2.75,
+    "z": 3.6
+   },
+   "reason": "sat on (sit_settee), from its own deck's floor"
+  },
+  {
+   "id": "bench",
+   "of": "seat",
+   "at": {
+    "x": -1.875,
+    "y": 3.05,
+    "z": 3.6
+   },
+   "reason": "sat on (sit_bench), from its own deck's floor"
+  },
+  {
+   "id": "armchair_port_aft",
+   "of": "seat",
+   "at": {
+    "x": -0.93,
+    "y": -10.37,
+    "z": 4.17
+   },
+   "reason": "sat on (sit_armchair_port_aft), from its own deck's floor"
+  },
+  {
+   "id": "armchair_port_fwd",
+   "of": "seat",
+   "at": {
+    "x": -0.93,
+    "y": -8.37,
+    "z": 4.17
+   },
+   "reason": "sat on (sit_armchair_port_fwd), from its own deck's floor"
+  },
+  {
+   "id": "armchair_stbd_aft",
+   "of": "seat",
+   "at": {
+    "x": 0.41,
+    "y": -10.37,
+    "z": 4.17
+   },
+   "reason": "sat on (sit_armchair_stbd_aft), from its own deck's floor"
+  },
+  {
+   "id": "armchair_stbd_fwd",
+   "of": "seat",
+   "at": {
+    "x": 0.41,
+    "y": -8.37,
+    "z": 4.17
+   },
+   "reason": "sat on (sit_armchair_stbd_fwd), from its own deck's floor"
+  },
+  {
+   "id": "lounger_port",
+   "of": "seat",
+   "at": {
+    "x": -0.9,
+    "y": -4,
+    "z": 6.526
+   },
+   "reason": "sat on (sit_lounger_port), from its own deck's floor"
+  },
+  {
+   "id": "lounger_stbd",
+   "of": "seat",
+   "at": {
+    "x": 0.9,
+    "y": -4,
+    "z": 6.526
+   },
+   "reason": "sat on (sit_lounger_stbd), from its own deck's floor"
+  },
+  {
+   "id": "master_settee",
+   "of": "seat",
+   "at": {
+    "x": 2.1,
+    "y": -4.9,
+    "z": 1.97
+   },
+   "reason": "sat on (sit_master_settee), from its own deck's floor"
+  },
+  {
+   "id": "crew_settee",
+   "of": "seat",
+   "at": {
+    "x": -1.5,
+    "y": 7.4,
+    "z": 2.45
+   },
+   "reason": "sat on (sit_crew_settee), from its own deck's floor"
+  }
+ ],
+ "rock": {
+  "frames": 8,
+  "rollA": 0.9,
+  "pitchA": 0.45,
+  "heaveA": 0.6,
+  "period": 6
+ },
+ "qa": {
+  "fitCheck": {
+   "tol": 0.01,
+   "faces": 2696,
+   "vertices": 10807,
+   "outside": 0,
+   "worst": 0,
+   "worstAt": null
+  },
+  "surfaceFit": {
+   "foredeck": 0.007,
+   "sunDeck": 0.005,
+   "tol": 0.02
+  },
+  "character": {
+   "rig": "characterIsoRig10.js",
+   "exportSymbol": "CharacterIso10",
+   "revision": "10.4",
+   "derivedFromRigSha256": "bb3440ef7cf3bba41d4451dbb9e6398f3a27e4d3ed823725488d7e6f259bd5de",
+   "posesDerivedFromRigSha256": "c14bed2664ee9c42f5e366dd2f7ddec828144db4761fc4d354d3cd106b24c306",
+   "builds": 30,
+   "crown_m": [
+    1.257,
+    1.8641
+   ],
+   "collision_radius_m": [
+    0.142,
+    0.23
+   ],
+   "board_range_m": [
+    0.06,
+    1
+   ],
+   "boardDown_range_m": [
+    0.06,
+    1.3
+   ],
+   "method": "every frame of each clip as the kit samples it (uOf), for all thirty builds (evalClip + pinsOf), world opts from the walk, an option outside its CONTRACT range written as outside; a build fits where the clip’s own pins say so (kit README §8): the wheel unclamped and the hands on the rim, seat.bow.fits, duck.bow.fits, crawl.fits, stair.fits and clear and bow.fits, ladder.fits, slide.fits, squeeze.fits, climb.fits; the lying body vs the berth outline and deckhead, crowns vs headroom, shoulders (2 x collision radius) vs clear widths",
+   "fixtures": [
+    {
+     "id": "helm_seated",
+     "what": "seated at the wheel",
+     "clip": "drive",
+     "world_opts": {
+      "seatZ": 0,
+      "wheelZ": 1.02,
+      "wheelY": 0.48
+     },
+     "range": {
+      "seatZ": [
+       0.25,
+       0.7
+      ],
+      "wheelZ": [
+       0.45,
+       0.95
+      ],
+      "wheelY": [
+       0.2,
+       0.45
+      ]
+     },
+     "outside_contract": {
+      "seatZ": [
+       0,
+       0.25,
+       0.7
+      ],
+      "wheelZ": [
+       1.02,
+       0.45,
+       0.95
+      ],
+      "wheelY": [
+       0.48,
+       0.2,
+       0.45
+      ]
+     },
+     "clamped": true,
+     "wheel": {
+      "hub": [
+       0,
+       5.12,
+       4.17
+      ],
+      "rim_m": 0.24,
+      "rake_deg": 25,
+      "clip_tilt_deg": 28
+     },
+     "worst_grip_miss_m": 0.155,
+     "worst_hub_offset_m": 0.076,
+     "worst_ikShort_m": 0.118,
+     "note": "outside CONTRACT.drive: the clip clamps, its wheel up to 0.076 m from the hub; no build drives this helm as drawn",
+     "builds_ok": 0,
+     "of": 30
+    },
+    {
+     "id": "helm_standing",
+     "what": "standing at the wheel",
+     "clip": "helm_idle",
+     "pivot": [
+      0,
+      4.62,
+      3.15
+     ],
+     "world_opts": {
+      "wheelZ": 1.02,
+      "wheelY": 0.5
+     },
+     "range": {
+      "wheelZ": [
+       0.6,
+       0.82
+      ],
+      "wheelY": [
+       0.28,
+       0.45
+      ]
+     },
+     "outside_contract": {
+      "wheelZ": [
+       1.02,
+       0.6,
+       0.82
+      ],
+      "wheelY": [
+       0.5,
+       0.28,
+       0.45
+      ]
+     },
+     "clamped": true,
+     "worst_grip_miss_m": 0.071,
+     "worst_hands_to_hub_m": 0.206,
+     "note": "the hub is 0.5 m ahead of the pilot’s feet and 1.02 m over the floor, outside CONTRACT.helm: the clip clamps, so no build stands at this wheel as drawn. Moving the helm or its pilot spot is a look (the owner’s), so it is written as it is",
+     "builds_ok": 0,
+     "of": 30
+    },
+    {
+     "id": "berth_master",
+     "what": "the double berth, asleep",
+     "clip": "sleep",
+     "pivot": [
+      0.25,
+      -5.623,
+      1.5
+     ],
+     "world_opts": {
+      "bedZ": 0.62
+     },
+     "head": "aft",
+     "length_m": 2,
+     "deckhead_z": 3.6,
+     "own_pivot": {
+      "what": "each build at its own pivot: its own head 0.12 m inside the head end, on the same centre line",
+      "pivot_by_build": {
+       "fisher": [
+        0.25,
+        -5.672,
+        1.5
+       ],
+       "ginny": [
+        0.25,
+        -5.731,
+        1.5
+       ],
+       "skipper": [
+        0.25,
+        -5.733,
+        1.5
+       ],
+       "nan": [
+        0.25,
+        -5.796,
+        1.5
+       ],
+       "deckboss": [
+        0.25,
+        -5.623,
+        1.5
+       ],
+       "packer": [
+        0.25,
+        -5.743,
+        1.5
+       ],
+       "cutter": [
+        0.25,
+        -5.809,
+        1.5
+       ],
+       "hand": [
+        0.25,
+        -5.718,
+        1.5
+       ],
+       "boy": [
+        0.25,
+        -5.924,
+        1.5
+       ],
+       "girl": [
+        0.25,
+        -5.922,
+        1.5
+       ],
+       "harbourmaster": [
+        0.25,
+        -5.699,
+        1.5
+       ],
+       "lightkeeper": [
+        0.25,
+        -5.741,
+        1.5
+       ],
+       "ferry": [
+        0.25,
+        -5.729,
+        1.5
+       ],
+       "monger": [
+        0.25,
+        -5.672,
+        1.5
+       ],
+       "mender": [
+        0.25,
+        -5.796,
+        1.5
+       ],
+       "boatwright": [
+        0.25,
+        -5.719,
+        1.5
+       ],
+       "postie": [
+        0.25,
+        -5.731,
+        1.5
+       ],
+       "grocer": [
+        0.25,
+        -5.74,
+        1.5
+       ],
+       "diver": [
+        0.25,
+        -5.774,
+        1.5
+       ],
+       "lobsterman": [
+        0.25,
+        -5.636,
+        1.5
+       ],
+       "cafe": [
+        0.25,
+        -5.752,
+        1.5
+       ],
+       "swimmer": [
+        0.25,
+        -5.725,
+        1.5
+       ],
+       "oldsalt": [
+        0.25,
+        -5.71,
+        1.5
+       ],
+       "lifeguard": [
+        0.25,
+        -5.701,
+        1.5
+       ],
+       "painter": [
+        0.25,
+        -5.663,
+        1.5
+       ],
+       "coastguard": [
+        0.25,
+        -5.729,
+        1.5
+       ],
+       "mechanic": [
+        0.25,
+        -5.74,
+        1.5
+       ],
+       "baker": [
+        0.25,
+        -5.732,
+        1.5
+       ],
+       "tourist": [
+        0.25,
+        -5.731,
+        1.5
+       ],
+       "paperboy": [
+        0.25,
+        -5.921,
+        1.5
+       ]
+      },
+      "builds_ok": 28,
+      "of": 30,
+      "failing": [
+       "deckboss",
+       "lobsterman"
+      ]
+     },
+     "note": "on the berth’s own centre line, the head at its aft end; every pin of every frame inside the mattress outline, the body 0.10 m under the deckhead",
+     "builds_ok": 25,
+     "of": 30,
+     "failing": [
+      "fisher",
+      "deckboss",
+      "monger",
+      "lobsterman",
+      "painter"
+     ]
+    },
+    {
+     "id": "berth_guest_out",
+     "what": "the single berth, asleep",
+     "clip": "sleep",
+     "pivot": [
+      -2.24,
+      -2.153,
+      1.5
+     ],
+     "world_opts": {
+      "bedZ": 0.62
+     },
+     "head": "aft",
+     "length_m": 1.98,
+     "deckhead_z": 3.6,
+     "own_pivot": {
+      "what": "each build at its own pivot: its own head 0.12 m inside the head end, on the same centre line",
+      "pivot_by_build": {
+       "fisher": [
+        -2.24,
+        -2.202,
+        1.5
+       ],
+       "ginny": [
+        -2.24,
+        -2.261,
+        1.5
+       ],
+       "skipper": [
+        -2.24,
+        -2.263,
+        1.5
+       ],
+       "nan": [
+        -2.24,
+        -2.326,
+        1.5
+       ],
+       "deckboss": [
+        -2.24,
+        -2.153,
+        1.5
+       ],
+       "packer": [
+        -2.24,
+        -2.273,
+        1.5
+       ],
+       "cutter": [
+        -2.24,
+        -2.339,
+        1.5
+       ],
+       "hand": [
+        -2.24,
+        -2.248,
+        1.5
+       ],
+       "boy": [
+        -2.24,
+        -2.454,
+        1.5
+       ],
+       "girl": [
+        -2.24,
+        -2.452,
+        1.5
+       ],
+       "harbourmaster": [
+        -2.24,
+        -2.229,
+        1.5
+       ],
+       "lightkeeper": [
+        -2.24,
+        -2.271,
+        1.5
+       ],
+       "ferry": [
+        -2.24,
+        -2.259,
+        1.5
+       ],
+       "monger": [
+        -2.24,
+        -2.202,
+        1.5
+       ],
+       "mender": [
+        -2.24,
+        -2.326,
+        1.5
+       ],
+       "boatwright": [
+        -2.24,
+        -2.25,
+        1.5
+       ],
+       "postie": [
+        -2.24,
+        -2.261,
+        1.5
+       ],
+       "grocer": [
+        -2.24,
+        -2.27,
+        1.5
+       ],
+       "diver": [
+        -2.24,
+        -2.304,
+        1.5
+       ],
+       "lobsterman": [
+        -2.24,
+        -2.166,
+        1.5
+       ],
+       "cafe": [
+        -2.24,
+        -2.282,
+        1.5
+       ],
+       "swimmer": [
+        -2.24,
+        -2.254,
+        1.5
+       ],
+       "oldsalt": [
+        -2.24,
+        -2.24,
+        1.5
+       ],
+       "lifeguard": [
+        -2.24,
+        -2.231,
+        1.5
+       ],
+       "painter": [
+        -2.24,
+        -2.193,
+        1.5
+       ],
+       "coastguard": [
+        -2.24,
+        -2.259,
+        1.5
+       ],
+       "mechanic": [
+        -2.24,
+        -2.27,
+        1.5
+       ],
+       "baker": [
+        -2.24,
+        -2.262,
+        1.5
+       ],
+       "tourist": [
+        -2.24,
+        -2.261,
+        1.5
+       ],
+       "paperboy": [
+        -2.24,
+        -2.452,
+        1.5
+       ]
+      },
+      "builds_ok": 27,
+      "of": 30,
+      "failing": [
+       "deckboss",
+       "lobsterman",
+       "painter"
+      ]
+     },
+     "note": "on the berth’s own centre line, the head at its aft end; every pin of every frame inside the mattress outline, the body 0.10 m under the deckhead",
+     "builds_ok": 23,
+     "of": 30,
+     "failing": [
+      "fisher",
+      "deckboss",
+      "harbourmaster",
+      "monger",
+      "lobsterman",
+      "lifeguard",
+      "painter"
+     ]
+    },
+    {
+     "id": "berth_guest_in",
+     "what": "the single berth, asleep",
+     "clip": "sleep",
+     "pivot": [
+      -1.22,
+      -2.153,
+      1.5
+     ],
+     "world_opts": {
+      "bedZ": 0.62
+     },
+     "head": "aft",
+     "length_m": 1.98,
+     "deckhead_z": 3.6,
+     "own_pivot": {
+      "what": "each build at its own pivot: its own head 0.12 m inside the head end, on the same centre line",
+      "pivot_by_build": {
+       "fisher": [
+        -1.22,
+        -2.202,
+        1.5
+       ],
+       "ginny": [
+        -1.22,
+        -2.261,
+        1.5
+       ],
+       "skipper": [
+        -1.22,
+        -2.263,
+        1.5
+       ],
+       "nan": [
+        -1.22,
+        -2.326,
+        1.5
+       ],
+       "deckboss": [
+        -1.22,
+        -2.153,
+        1.5
+       ],
+       "packer": [
+        -1.22,
+        -2.273,
+        1.5
+       ],
+       "cutter": [
+        -1.22,
+        -2.339,
+        1.5
+       ],
+       "hand": [
+        -1.22,
+        -2.248,
+        1.5
+       ],
+       "boy": [
+        -1.22,
+        -2.454,
+        1.5
+       ],
+       "girl": [
+        -1.22,
+        -2.452,
+        1.5
+       ],
+       "harbourmaster": [
+        -1.22,
+        -2.229,
+        1.5
+       ],
+       "lightkeeper": [
+        -1.22,
+        -2.271,
+        1.5
+       ],
+       "ferry": [
+        -1.22,
+        -2.259,
+        1.5
+       ],
+       "monger": [
+        -1.22,
+        -2.202,
+        1.5
+       ],
+       "mender": [
+        -1.22,
+        -2.326,
+        1.5
+       ],
+       "boatwright": [
+        -1.22,
+        -2.25,
+        1.5
+       ],
+       "postie": [
+        -1.22,
+        -2.261,
+        1.5
+       ],
+       "grocer": [
+        -1.22,
+        -2.27,
+        1.5
+       ],
+       "diver": [
+        -1.22,
+        -2.304,
+        1.5
+       ],
+       "lobsterman": [
+        -1.22,
+        -2.166,
+        1.5
+       ],
+       "cafe": [
+        -1.22,
+        -2.282,
+        1.5
+       ],
+       "swimmer": [
+        -1.22,
+        -2.254,
+        1.5
+       ],
+       "oldsalt": [
+        -1.22,
+        -2.24,
+        1.5
+       ],
+       "lifeguard": [
+        -1.22,
+        -2.231,
+        1.5
+       ],
+       "painter": [
+        -1.22,
+        -2.193,
+        1.5
+       ],
+       "coastguard": [
+        -1.22,
+        -2.259,
+        1.5
+       ],
+       "mechanic": [
+        -1.22,
+        -2.27,
+        1.5
+       ],
+       "baker": [
+        -1.22,
+        -2.262,
+        1.5
+       ],
+       "tourist": [
+        -1.22,
+        -2.261,
+        1.5
+       ],
+       "paperboy": [
+        -1.22,
+        -2.452,
+        1.5
+       ]
+      },
+      "builds_ok": 27,
+      "of": 30,
+      "failing": [
+       "deckboss",
+       "lobsterman",
+       "painter"
+      ]
+     },
+     "note": "on the berth’s own centre line, the head at its aft end; every pin of every frame inside the mattress outline, the body 0.10 m under the deckhead",
+     "builds_ok": 23,
+     "of": 30,
+     "failing": [
+      "fisher",
+      "deckboss",
+      "harbourmaster",
+      "monger",
+      "lobsterman",
+      "lifeguard",
+      "painter"
+     ]
+    },
+    {
+     "id": "berth_vip",
+     "what": "the double berth, asleep",
+     "clip": "sleep",
+     "pivot": [
+      1.625,
+      -2.153,
+      1.5
+     ],
+     "world_opts": {
+      "bedZ": 0.62
+     },
+     "head": "aft",
+     "length_m": 1.98,
+     "deckhead_z": 3.6,
+     "own_pivot": {
+      "what": "each build at its own pivot: its own head 0.12 m inside the head end, on the same centre line",
+      "pivot_by_build": {
+       "fisher": [
+        1.625,
+        -2.202,
+        1.5
+       ],
+       "ginny": [
+        1.625,
+        -2.261,
+        1.5
+       ],
+       "skipper": [
+        1.625,
+        -2.263,
+        1.5
+       ],
+       "nan": [
+        1.625,
+        -2.326,
+        1.5
+       ],
+       "deckboss": [
+        1.625,
+        -2.153,
+        1.5
+       ],
+       "packer": [
+        1.625,
+        -2.273,
+        1.5
+       ],
+       "cutter": [
+        1.625,
+        -2.339,
+        1.5
+       ],
+       "hand": [
+        1.625,
+        -2.248,
+        1.5
+       ],
+       "boy": [
+        1.625,
+        -2.454,
+        1.5
+       ],
+       "girl": [
+        1.625,
+        -2.452,
+        1.5
+       ],
+       "harbourmaster": [
+        1.625,
+        -2.229,
+        1.5
+       ],
+       "lightkeeper": [
+        1.625,
+        -2.271,
+        1.5
+       ],
+       "ferry": [
+        1.625,
+        -2.259,
+        1.5
+       ],
+       "monger": [
+        1.625,
+        -2.202,
+        1.5
+       ],
+       "mender": [
+        1.625,
+        -2.326,
+        1.5
+       ],
+       "boatwright": [
+        1.625,
+        -2.25,
+        1.5
+       ],
+       "postie": [
+        1.625,
+        -2.261,
+        1.5
+       ],
+       "grocer": [
+        1.625,
+        -2.27,
+        1.5
+       ],
+       "diver": [
+        1.625,
+        -2.304,
+        1.5
+       ],
+       "lobsterman": [
+        1.625,
+        -2.166,
+        1.5
+       ],
+       "cafe": [
+        1.625,
+        -2.282,
+        1.5
+       ],
+       "swimmer": [
+        1.625,
+        -2.254,
+        1.5
+       ],
+       "oldsalt": [
+        1.625,
+        -2.24,
+        1.5
+       ],
+       "lifeguard": [
+        1.625,
+        -2.231,
+        1.5
+       ],
+       "painter": [
+        1.625,
+        -2.193,
+        1.5
+       ],
+       "coastguard": [
+        1.625,
+        -2.259,
+        1.5
+       ],
+       "mechanic": [
+        1.625,
+        -2.27,
+        1.5
+       ],
+       "baker": [
+        1.625,
+        -2.262,
+        1.5
+       ],
+       "tourist": [
+        1.625,
+        -2.261,
+        1.5
+       ],
+       "paperboy": [
+        1.625,
+        -2.452,
+        1.5
+       ]
+      },
+      "builds_ok": 27,
+      "of": 30,
+      "failing": [
+       "deckboss",
+       "lobsterman",
+       "painter"
+      ]
+     },
+     "note": "on the berth’s own centre line, the head at its aft end; every pin of every frame inside the mattress outline, the body 0.10 m under the deckhead",
+     "builds_ok": 23,
+     "of": 30,
+     "failing": [
+      "fisher",
+      "deckboss",
+      "harbourmaster",
+      "monger",
+      "lobsterman",
+      "lifeguard",
+      "painter"
+     ]
+    },
+    {
+     "id": "berth_crew_lower",
+     "what": "the bunk berth, asleep",
+     "clip": "sleep",
+     "pivot": [
+      -0.896,
+      8.355,
+      1.5
+     ],
+     "world_opts": {
+      "bedZ": 1.12
+     },
+     "head": "port",
+     "length_m": 1.883,
+     "deckhead_z": 3.18,
+     "own_pivot": {
+      "what": "each build at its own pivot: its own head 0.12 m inside the head end, on the same centre line",
+      "pivot_by_build": {
+       "fisher": [
+        -0.945,
+        8.355,
+        1.5
+       ],
+       "ginny": [
+        -1.004,
+        8.355,
+        1.5
+       ],
+       "skipper": [
+        -1.006,
+        8.355,
+        1.5
+       ],
+       "nan": [
+        -1.069,
+        8.355,
+        1.5
+       ],
+       "deckboss": [
+        -0.896,
+        8.355,
+        1.5
+       ],
+       "packer": [
+        -1.016,
+        8.355,
+        1.5
+       ],
+       "cutter": [
+        -1.082,
+        8.355,
+        1.5
+       ],
+       "hand": [
+        -0.991,
+        8.355,
+        1.5
+       ],
+       "boy": [
+        -1.197,
+        8.355,
+        1.5
+       ],
+       "girl": [
+        -1.195,
+        8.355,
+        1.5
+       ],
+       "harbourmaster": [
+        -0.972,
+        8.355,
+        1.5
+       ],
+       "lightkeeper": [
+        -1.014,
+        8.355,
+        1.5
+       ],
+       "ferry": [
+        -1.002,
+        8.355,
+        1.5
+       ],
+       "monger": [
+        -0.945,
+        8.355,
+        1.5
+       ],
+       "mender": [
+        -1.069,
+        8.355,
+        1.5
+       ],
+       "boatwright": [
+        -0.992,
+        8.355,
+        1.5
+       ],
+       "postie": [
+        -1.004,
+        8.355,
+        1.5
+       ],
+       "grocer": [
+        -1.013,
+        8.355,
+        1.5
+       ],
+       "diver": [
+        -1.047,
+        8.355,
+        1.5
+       ],
+       "lobsterman": [
+        -0.909,
+        8.355,
+        1.5
+       ],
+       "cafe": [
+        -1.025,
+        8.355,
+        1.5
+       ],
+       "swimmer": [
+        -0.997,
+        8.355,
+        1.5
+       ],
+       "oldsalt": [
+        -0.983,
+        8.355,
+        1.5
+       ],
+       "lifeguard": [
+        -0.974,
+        8.355,
+        1.5
+       ],
+       "painter": [
+        -0.936,
+        8.355,
+        1.5
+       ],
+       "coastguard": [
+        -1.002,
+        8.355,
+        1.5
+       ],
+       "mechanic": [
+        -1.013,
+        8.355,
+        1.5
+       ],
+       "baker": [
+        -1.005,
+        8.355,
+        1.5
+       ],
+       "tourist": [
+        -1.004,
+        8.355,
+        1.5
+       ],
+       "paperboy": [
+        -1.195,
+        8.355,
+        1.5
+       ]
+      },
+      "builds_ok": 22,
+      "of": 30,
+      "failing": [
+       "fisher",
+       "deckboss",
+       "harbourmaster",
+       "monger",
+       "lobsterman",
+       "oldsalt",
+       "lifeguard",
+       "painter"
+      ]
+     },
+     "note": "on the berth’s own centre line, the head at its port end; every pin of every frame inside the mattress outline, the body 0.10 m under the deckhead",
+     "builds_ok": 3,
+     "of": 30,
+     "fit": [
+      "boy",
+      "girl",
+      "paperboy"
+     ]
+    },
+    {
+     "id": "berth_crew_upper",
+     "what": "the bunk berth, asleep",
+     "clip": "sleep",
+     "pivot": [
+      -0.903,
+      8.355,
+      1.5
+     ],
+     "world_opts": {
+      "bedZ": 1.86
+     },
+     "head": "port",
+     "length_m": 1.89,
+     "deckhead_z": 3.869,
+     "own_pivot": {
+      "what": "each build at its own pivot: its own head 0.12 m inside the head end, on the same centre line",
+      "pivot_by_build": {
+       "fisher": [
+        -0.952,
+        8.355,
+        1.5
+       ],
+       "ginny": [
+        -1.011,
+        8.355,
+        1.5
+       ],
+       "skipper": [
+        -1.013,
+        8.355,
+        1.5
+       ],
+       "nan": [
+        -1.076,
+        8.355,
+        1.5
+       ],
+       "deckboss": [
+        -0.903,
+        8.355,
+        1.5
+       ],
+       "packer": [
+        -1.023,
+        8.355,
+        1.5
+       ],
+       "cutter": [
+        -1.089,
+        8.355,
+        1.5
+       ],
+       "hand": [
+        -0.998,
+        8.355,
+        1.5
+       ],
+       "boy": [
+        -1.204,
+        8.355,
+        1.5
+       ],
+       "girl": [
+        -1.202,
+        8.355,
+        1.5
+       ],
+       "harbourmaster": [
+        -0.979,
+        8.355,
+        1.5
+       ],
+       "lightkeeper": [
+        -1.021,
+        8.355,
+        1.5
+       ],
+       "ferry": [
+        -1.009,
+        8.355,
+        1.5
+       ],
+       "monger": [
+        -0.952,
+        8.355,
+        1.5
+       ],
+       "mender": [
+        -1.076,
+        8.355,
+        1.5
+       ],
+       "boatwright": [
+        -0.999,
+        8.355,
+        1.5
+       ],
+       "postie": [
+        -1.011,
+        8.355,
+        1.5
+       ],
+       "grocer": [
+        -1.02,
+        8.355,
+        1.5
+       ],
+       "diver": [
+        -1.054,
+        8.355,
+        1.5
+       ],
+       "lobsterman": [
+        -0.916,
+        8.355,
+        1.5
+       ],
+       "cafe": [
+        -1.032,
+        8.355,
+        1.5
+       ],
+       "swimmer": [
+        -1.004,
+        8.355,
+        1.5
+       ],
+       "oldsalt": [
+        -0.99,
+        8.355,
+        1.5
+       ],
+       "lifeguard": [
+        -0.981,
+        8.355,
+        1.5
+       ],
+       "painter": [
+        -0.943,
+        8.355,
+        1.5
+       ],
+       "coastguard": [
+        -1.009,
+        8.355,
+        1.5
+       ],
+       "mechanic": [
+        -1.02,
+        8.355,
+        1.5
+       ],
+       "baker": [
+        -1.012,
+        8.355,
+        1.5
+       ],
+       "tourist": [
+        -1.011,
+        8.355,
+        1.5
+       ],
+       "paperboy": [
+        -1.201,
+        8.355,
+        1.5
+       ]
+      },
+      "builds_ok": 22,
+      "of": 30,
+      "failing": [
+       "fisher",
+       "deckboss",
+       "harbourmaster",
+       "monger",
+       "lobsterman",
+       "oldsalt",
+       "lifeguard",
+       "painter"
+      ]
+     },
+     "note": "on the berth’s own centre line, the head at its port end; every pin of every frame inside the mattress outline, the body 0.10 m under the deckhead",
+     "builds_ok": 4,
+     "of": 30,
+     "fit": [
+      "cutter",
+      "boy",
+      "girl",
+      "paperboy"
+     ]
+    },
+    {
+     "id": "walk_areas",
+     "what": "walk every area (51 of them) at the walker’s radius 0.23 m",
+     "clip": "walk",
+     "note": "each outline is inset by the walker’s radius, the widest 10.4 build’s collision radius or more: every build’s shoulders fit wherever the walker goes. Headroom is the stand fixtures’ (and the low places’ duck and crawl); steps are the step fixtures’.",
+     "builds_ok": 30,
+     "of": 30
+    },
+    {
+     "id": "stand_saloon",
+     "what": "stand up on saloon",
+     "clip": "idle",
+     "headroom_m": 2.01,
+     "headroomMax_m": 2.13,
+     "stands_somewhere": 30,
+     "builds_ok": 30,
+     "of": 30
+    },
+    {
+     "id": "stand_saloon_door",
+     "what": "stand up on saloon_door",
+     "clip": "idle",
+     "headroom_m": 2.13,
+     "headroomMax_m": 2.13,
+     "stands_somewhere": 30,
+     "builds_ok": 30,
+     "of": 30
+    },
+    {
+     "id": "stand_dining_helm",
+     "what": "stand up on dining_helm",
+     "clip": "idle",
+     "headroom_m": 2.03,
+     "headroomMax_m": 2.03,
+     "stands_somewhere": 30,
+     "builds_ok": 30,
+     "of": 30
+    },
+    {
+     "id": "stand_corridor",
+     "what": "stand up on corridor",
+     "clip": "idle",
+     "headroom_m": 2.1,
+     "headroomMax_m": 2.1,
+     "stands_somewhere": 30,
+     "builds_ok": 30,
+     "of": 30
+    },
+    {
+     "id": "stand_master_door",
+     "what": "stand up on master_door",
+     "clip": "idle",
+     "headroom_m": 2.1,
+     "headroomMax_m": 2.1,
+     "stands_somewhere": 30,
+     "builds_ok": 30,
+     "of": 30
+    },
+    {
+     "id": "stand_master_lobby",
+     "what": "stand up on master_lobby",
+     "clip": "idle",
+     "headroom_m": 2.1,
+     "headroomMax_m": 2.1,
+     "stands_somewhere": 30,
+     "builds_ok": 30,
+     "of": 30
+    },
+    {
+     "id": "stand_master_fwd",
+     "what": "stand up on master_fwd",
+     "clip": "idle",
+     "headroom_m": 2.1,
+     "headroomMax_m": 2.1,
+     "stands_somewhere": 30,
+     "builds_ok": 30,
+     "of": 30
+    },
+    {
+     "id": "stand_master_stbd",
+     "what": "stand up on master_stbd",
+     "clip": "idle",
+     "headroom_m": 2.1,
+     "headroomMax_m": 2.1,
+     "stands_somewhere": 30,
+     "builds_ok": 30,
+     "of": 30
+    },
+    {
+     "id": "stand_master_port",
+     "what": "stand up on master_port",
+     "clip": "idle",
+     "headroom_m": 2.1,
+     "headroomMax_m": 2.1,
+     "stands_somewhere": 30,
+     "builds_ok": 30,
+     "of": 30
+    },
+    {
+     "id": "stand_master_squeeze",
+     "what": "stand up on master_squeeze",
+     "clip": "idle",
+     "headroom_m": 2.1,
+     "headroomMax_m": 2.1,
+     "stands_somewhere": 30,
+     "builds_ok": 30,
+     "of": 30
+    },
+    {
+     "id": "stand_master_bath_door",
+     "what": "stand up on master_bath_door",
+     "clip": "idle",
+     "headroom_m": 2.1,
+     "headroomMax_m": 2.1,
+     "stands_somewhere": 30,
+     "builds_ok": 30,
+     "of": 30
+    },
+    {
+     "id": "stand_master_bath",
+     "what": "stand up on master_bath",
+     "clip": "idle",
+     "headroom_m": 2.1,
+     "headroomMax_m": 2.1,
+     "stands_somewhere": 30,
+     "builds_ok": 30,
+     "of": 30
+    },
+    {
+     "id": "stand_guest_door",
+     "what": "stand up on guest_door",
+     "clip": "idle",
+     "headroom_m": 2.1,
+     "headroomMax_m": 2.1,
+     "stands_somewhere": 30,
+     "builds_ok": 30,
+     "of": 30
+    },
+    {
+     "id": "stand_guest",
+     "what": "stand up on guest",
+     "clip": "idle",
+     "headroom_m": 2.1,
+     "headroomMax_m": 2.1,
+     "stands_somewhere": 30,
+     "builds_ok": 30,
+     "of": 30
+    },
+    {
+     "id": "stand_guest_head_door",
+     "what": "stand up on guest_head_door",
+     "clip": "idle",
+     "headroom_m": 2.1,
+     "headroomMax_m": 2.1,
+     "stands_somewhere": 30,
+     "builds_ok": 30,
+     "of": 30
+    },
+    {
+     "id": "stand_guest_head",
+     "what": "stand up on guest_head",
+     "clip": "idle",
+     "headroom_m": 2.1,
+     "headroomMax_m": 2.1,
+     "stands_somewhere": 30,
+     "builds_ok": 30,
+     "of": 30
+    },
+    {
+     "id": "stand_vip_door",
+     "what": "stand up on vip_door",
+     "clip": "idle",
+     "headroom_m": 2.1,
+     "headroomMax_m": 2.1,
+     "stands_somewhere": 30,
+     "builds_ok": 30,
+     "of": 30
+    },
+    {
+     "id": "stand_vip",
+     "what": "stand up on vip",
+     "clip": "idle",
+     "headroom_m": 2.1,
+     "headroomMax_m": 2.1,
+     "stands_somewhere": 30,
+     "builds_ok": 30,
+     "of": 30
+    },
+    {
+     "id": "stand_vip_head_door",
+     "what": "stand up on vip_head_door",
+     "clip": "idle",
+     "headroom_m": 2.1,
+     "headroomMax_m": 2.1,
+     "stands_somewhere": 30,
+     "builds_ok": 30,
+     "of": 30
+    },
+    {
+     "id": "stand_vip_head",
+     "what": "stand up on vip_head",
+     "clip": "idle",
+     "headroom_m": 2.1,
+     "headroomMax_m": 2.1,
+     "stands_somewhere": 30,
+     "builds_ok": 30,
+     "of": 30
+    },
+    {
+     "id": "stand_garage",
+     "what": "stand up on garage",
+     "clip": "idle",
+     "headroom_m": 1.3,
+     "headroomMax_m": 1.3,
+     "stands_somewhere": 3,
+     "builds_ok": 3,
+     "of": 30,
+     "fit": [
+      "boy",
+      "girl",
+      "paperboy"
+     ]
+    },
+    {
+     "id": "duck_garage",
+     "what": "ducked under garage’s deckhead (1.3 m)",
+     "clip": "duck",
+     "world_opts": {
+      "ceilZ": 1.3
+     },
+     "builds_ok": 30,
+     "of": 30
+    },
+    {
+     "id": "stand_garage_mouth",
+     "what": "stand up on garage_mouth",
+     "clip": "idle",
+     "headroom_m": 1.3,
+     "headroomMax_m": 1.3,
+     "stands_somewhere": 3,
+     "builds_ok": 3,
+     "of": 30,
+     "fit": [
+      "boy",
+      "girl",
+      "paperboy"
+     ]
+    },
+    {
+     "id": "duck_garage_mouth",
+     "what": "ducked under garage_mouth’s deckhead (1.3 m)",
+     "clip": "duck",
+     "world_opts": {
+      "ceilZ": 1.3
+     },
+     "builds_ok": 30,
+     "of": 30
+    },
+    {
+     "id": "stand_crew_mess",
+     "what": "stand up on crew_mess",
+     "clip": "idle",
+     "headroom_m": 1.838,
+     "headroomMax_m": 1.846,
+     "stands_somewhere": 28,
+     "builds_ok": 28,
+     "of": 30,
+     "failing": [
+      "deckboss",
+      "lobsterman"
+     ]
+    },
+    {
+     "id": "duck_crew_mess",
+     "what": "ducked under crew_mess’s deckhead (1.838 m)",
+     "clip": "duck",
+     "world_opts": {
+      "ceilZ": 1.838
+     },
+     "builds_ok": 30,
+     "of": 30
+    },
+    {
+     "id": "stand_crew_squeeze",
+     "what": "stand up on crew_squeeze",
+     "clip": "idle",
+     "headroom_m": 1.843,
+     "headroomMax_m": 1.867,
+     "stands_somewhere": 29,
+     "builds_ok": 28,
+     "of": 30,
+     "failing": [
+      "deckboss",
+      "lobsterman"
+     ]
+    },
+    {
+     "id": "duck_crew_squeeze",
+     "what": "ducked under crew_squeeze’s deckhead (1.843 m)",
+     "clip": "duck",
+     "world_opts": {
+      "ceilZ": 1.843
+     },
+     "builds_ok": 30,
+     "of": 30
+    },
+    {
+     "id": "stand_crew_cabin_door",
+     "what": "stand up on crew_cabin_door",
+     "clip": "idle",
+     "headroom_m": 1.864,
+     "headroomMax_m": 1.882,
+     "stands_somewhere": 29,
+     "builds_ok": 29,
+     "of": 30,
+     "failing": [
+      "deckboss"
+     ]
+    },
+    {
+     "id": "duck_crew_cabin_door",
+     "what": "ducked under crew_cabin_door’s deckhead (1.864 m)",
+     "clip": "duck",
+     "world_opts": {
+      "ceilZ": 1.864
+     },
+     "builds_ok": 30,
+     "of": 30
+    },
+    {
+     "id": "stand_crew_cabin",
+     "what": "stand up on crew_cabin",
+     "clip": "idle",
+     "headroom_m": 1.878,
+     "headroomMax_m": 1.9,
+     "stands_somewhere": 30,
+     "builds_ok": 29,
+     "of": 30,
+     "failing": [
+      "deckboss"
+     ]
+    },
+    {
+     "id": "duck_crew_cabin",
+     "what": "ducked under crew_cabin’s deckhead (1.878 m)",
+     "clip": "duck",
+     "world_opts": {
+      "ceilZ": 1.878
+     },
+     "builds_ok": 30,
+     "of": 30
+    },
+    {
+     "id": "stand_dining_port",
+     "what": "stand up on dining_port (excluded)",
+     "clip": "idle",
+     "headroom_m": 2.03,
+     "headroomMax_m": 2.03,
+     "stands_somewhere": 30,
+     "builds_ok": 30,
+     "of": 30
+    },
+    {
+     "id": "stand_crew_head",
+     "what": "stand up on crew_head (excluded)",
+     "clip": "idle",
+     "headroom_m": 1.843,
+     "headroomMax_m": 1.843,
+     "stands_somewhere": 28,
+     "builds_ok": 28,
+     "of": 30,
+     "failing": [
+      "deckboss",
+      "lobsterman"
+     ]
+    },
+    {
+     "id": "duck_crew_head",
+     "what": "ducked under crew_head’s deckhead (1.843 m)",
+     "clip": "duck",
+     "world_opts": {
+      "ceilZ": 1.843
+     },
+     "builds_ok": 30,
+     "of": 30
+    },
+    {
+     "id": "stand_crew_mess_table",
+     "what": "stand up on crew_mess_table (excluded)",
+     "clip": "idle",
+     "headroom_m": 1.833,
+     "headroomMax_m": 1.833,
+     "stands_somewhere": 28,
+     "builds_ok": 28,
+     "of": 30,
+     "failing": [
+      "deckboss",
+      "lobsterman"
+     ]
+    },
+    {
+     "id": "duck_crew_mess_table",
+     "what": "ducked under crew_mess_table’s deckhead (1.833 m)",
+     "clip": "duck",
+     "world_opts": {
+      "ceilZ": 1.833
+     },
+     "builds_ok": 30,
+     "of": 30
+    },
+    {
+     "id": "through_saloon_aft",
+     "what": "through the saloon_aft doorway upright (slide door, 1.98 x 2.08 m)",
+     "clip": "walk",
+     "clear_width_m": 1.98,
+     "clear_height_m": 2.08,
+     "too_wide": 0,
+     "must_duck": 0,
+     "builds_ok": 30,
+     "of": 30
+    },
+    {
+     "id": "through_garage_inner",
+     "what": "through the garage_inner doorway upright (hinge door, 0.7 x 1.25 m)",
+     "clip": "walk",
+     "clear_width_m": 0.7,
+     "clear_height_m": 1.25,
+     "too_wide": 0,
+     "must_duck": 30,
+     "builds_ok": 0,
+     "of": 30
+    },
+    {
+     "id": "duck_through_garage_inner",
+     "what": "through the garage_inner doorway ducked (0.7 x 1.25 m)",
+     "clip": "duck",
+     "world_opts": {
+      "ceilZ": 1.25
+     },
+     "builds_ok": 30,
+     "of": 30
+    },
+    {
+     "id": "through_master",
+     "what": "through the master doorway upright (hinge door, 0.9 x 2 m)",
+     "clip": "walk",
+     "clear_width_m": 0.9,
+     "clear_height_m": 2,
+     "too_wide": 0,
+     "must_duck": 0,
+     "builds_ok": 30,
+     "of": 30
+    },
+    {
+     "id": "through_master_bath",
+     "what": "through the master_bath doorway upright (hinge door, 0.6 x 2 m)",
+     "clip": "walk",
+     "clear_width_m": 0.6,
+     "clear_height_m": 2,
+     "too_wide": 0,
+     "must_duck": 0,
+     "builds_ok": 30,
+     "of": 30
+    },
+    {
+     "id": "through_guest",
+     "what": "through the guest doorway upright (hinge door, 0.7 x 2 m)",
+     "clip": "walk",
+     "clear_width_m": 0.7,
+     "width_along": "the wall (port face): clear.width",
+     "clear_height_m": 2,
+     "too_wide": 0,
+     "must_duck": 0,
+     "builds_ok": 30,
+     "of": 30
+    },
+    {
+     "id": "through_guest_head",
+     "what": "through the guest_head doorway upright (hinge door, 0.6 x 2 m)",
+     "clip": "walk",
+     "clear_width_m": 0.6,
+     "clear_height_m": 2,
+     "too_wide": 0,
+     "must_duck": 0,
+     "builds_ok": 30,
+     "of": 30
+    },
+    {
+     "id": "through_vip",
+     "what": "through the vip doorway upright (hinge door, 0.7 x 2 m)",
+     "clip": "walk",
+     "clear_width_m": 0.7,
+     "width_along": "the wall (starboard face): clear.width",
+     "clear_height_m": 2,
+     "too_wide": 0,
+     "must_duck": 0,
+     "builds_ok": 30,
+     "of": 30
+    },
+    {
+     "id": "through_vip_head",
+     "what": "through the vip_head doorway upright (hinge door, 0.6 x 2 m)",
+     "clip": "walk",
+     "clear_width_m": 0.6,
+     "clear_height_m": 2,
+     "too_wide": 0,
+     "must_duck": 0,
+     "builds_ok": 30,
+     "of": 30
+    },
+    {
+     "id": "through_crew_head",
+     "what": "through the crew_head doorway upright (hinge door, 0.6 x 1.782 m)",
+     "clip": "walk",
+     "clear_width_m": 0.6,
+     "width_along": "the wall (starboard face): clear.width",
+     "clear_height_m": 1.782,
+     "too_wide": 0,
+     "must_duck": 5,
+     "builds_ok": 25,
+     "of": 30,
+     "failing": [
+      "fisher",
+      "deckboss",
+      "monger",
+      "lobsterman",
+      "painter"
+     ]
+    },
+    {
+     "id": "duck_through_crew_head",
+     "what": "through the crew_head doorway ducked (0.6 x 1.782 m)",
+     "clip": "duck",
+     "world_opts": {
+      "ceilZ": 1.782
+     },
+     "builds_ok": 30,
+     "of": 30
+    },
+    {
+     "id": "through_crew_cabin",
+     "what": "through the crew_cabin doorway upright (hinge door, 0.6 x 1.817 m)",
+     "clip": "walk",
+     "clear_width_m": 0.6,
+     "clear_height_m": 1.817,
+     "too_wide": 0,
+     "must_duck": 2,
+     "builds_ok": 28,
+     "of": 30,
+     "failing": [
+      "deckboss",
+      "lobsterman"
+     ]
+    },
+    {
+     "id": "duck_through_crew_cabin",
+     "what": "through the crew_cabin doorway ducked (0.6 x 1.817 m)",
+     "clip": "duck",
+     "world_opts": {
+      "ceilZ": 1.817
+     },
+     "builds_ok": 30,
+     "of": 30
+    },
+    {
+     "id": "washboard_port",
+     "what": "along the port washboard, at its pinch",
+     "clip": "walk",
+     "clear_width_m": 0.49,
+     "builds_ok": 30,
+     "of": 30
+    },
+    {
+     "id": "washboard_starboard",
+     "what": "along the starboard washboard, at its pinch",
+     "clip": "walk",
+     "clear_width_m": 0.49,
+     "builds_ok": 30,
+     "of": 30
+    },
+    {
+     "id": "squeeze_master_squeeze",
+     "what": "side-on through master_squeeze (0.42 m across, open)",
+     "clip": "squeezeIn, squeeze, squeezeOut",
+     "world_opts": {
+      "gapW": 0.42,
+      "ceilZ": null
+     },
+     "needs_met": 30,
+     "narrowest_need_m": 0.3,
+     "builds_ok": 30,
+     "of": 30
+    },
+    {
+     "id": "squeeze_crew_squeeze",
+     "what": "side-on through crew_squeeze (0.42 m across, 1.843 m clear)",
+     "clip": "squeezeIn, squeeze, squeezeOut",
+     "world_opts": {
+      "gapW": 0.42,
+      "ceilZ": 1.843
+     },
+     "needs_met": 30,
+     "narrowest_need_m": 0.3,
+     "builds_ok": 30,
+     "of": 30
+    },
+    {
+     "id": "climb_house_steps_stbd",
+     "what": "house_steps_stbd (a stair), walked as its ramp 3.75 → 3.15 m, upright",
+     "clip": "walk",
+     "clear_width_m": 1.216,
+     "headroom_m": 1.8,
+     "ramp": {
+      "axis": "y",
+      "a0": 0.85,
+      "a1": 1.95,
+      "z0": 3.75,
+      "z1": 3.15
+     },
+     "note": "the ramp carries the root; the feet on the treads: stair_house_steps_stbd; under the soffit (1.8 m over the top tread) every build taller than 1.78 m ducks",
+     "builds_ok": 27,
+     "of": 30,
+     "failing": [
+      "deckboss",
+      "lobsterman",
+      "painter"
+     ]
+    },
+    {
+     "id": "stair_house_steps_stbd",
+     "what": "up and down house_steps_stbd tread by tread (0.2 / 0.25, 0.2 / 0.25, 0.2 / 0.25 m rise / depth, 1.8 m clear)",
+     "clip": "stairUp, stairDown",
+     "world_opts": {
+      "treads": [
+       {
+        "rise": 0.2,
+        "depth": 0.25
+       },
+       {
+        "rise": 0.2,
+        "depth": 0.25
+       },
+       {
+        "rise": 0.2,
+        "depth": 0.25
+       }
+      ],
+      "ceilZ": 1.8
+     },
+     "note": "the rig’s own treads",
+     "builds_ok": 30,
+     "of": 30
+    },
+    {
+     "id": "climb_spiral",
+     "what": "spiral (a stair), walked as its ramp 1.5 → 3.15 m, upright",
+     "clip": "walk",
+     "clear_width_m": 0.537,
+     "headroom_m": null,
+     "ramp": {
+      "axis": "y",
+      "a0": 0.33,
+      "a1": 1.75,
+      "z0": 1.5,
+      "z1": 3.15
+     },
+     "note": "the ramp carries the root; the feet on the treads: stair_spiral",
+     "builds_ok": 30,
+     "of": 30
+    },
+    {
+     "id": "stair_spiral",
+     "what": "up and down spiral, a spiral, tread by tread (0.183 / 0.237, 0.184 / 0.237, 0.183 / 0.237, 0.183 / 0.237, 0.184 / 0.237, 0.183 / 0.237, 0.183 / 0.237, 0.184 / 0.237, 0.183 / 0.237 m rise / depth)",
+     "clip": "stairUp, stairDown",
+     "world_opts": {
+      "treads": [
+       {
+        "rise": 0.183,
+        "depth": 0.237
+       },
+       {
+        "rise": 0.184,
+        "depth": 0.237
+       },
+       {
+        "rise": 0.183,
+        "depth": 0.237
+       },
+       {
+        "rise": 0.183,
+        "depth": 0.237
+       },
+       {
+        "rise": 0.184,
+        "depth": 0.237
+       },
+       {
+        "rise": 0.183,
+        "depth": 0.237
+       },
+       {
+        "rise": 0.183,
+        "depth": 0.237
+       },
+       {
+        "rise": 0.184,
+        "depth": 0.237
+       },
+       {
+        "rise": 0.183,
+        "depth": 0.237
+       }
+      ],
+      "ceilZ": null
+     },
+     "spiral": {
+      "centre": [
+       0.32,
+       1.04
+      ],
+      "up": "right",
+      "turn_deg": 20,
+      "rises": 9,
+      "whole_turn_deg": 180,
+      "going_m": 0.237
+     },
+     "note": "the rig’s own treads; the turn at each stand is not fitted here: B23 holds it to kit 10.4’s spiral check (its README §3, item 6 continued)",
+     "builds_ok": 30,
+     "of": 30
+    },
+    {
+     "id": "climb_garage_steps",
+     "what": "garage_steps (a stair), walked as its ramp 1.5 → 2.15 m, upright",
+     "clip": "walk",
+     "clear_width_m": 0.7,
+     "headroom_m": 1.25,
+     "ramp": {
+      "axis": "y",
+      "a0": -6.055,
+      "a1": -6.835,
+      "z0": 1.5,
+      "z1": 2.15
+     },
+     "note": "the ramp carries the root; the feet on the treads: stair_garage_steps; under the soffit (1.25 m over the top tread) every build taller than 1.23 m ducks",
+     "builds_ok": 0,
+     "of": 30
+    },
+    {
+     "id": "stair_garage_steps",
+     "what": "up and down garage_steps tread by tread (0.216 / 0.26, 0.217 / 0.26, 0.217 / 0.26 m rise / depth, 1.25 m clear)",
+     "clip": "stairUp, stairDown",
+     "world_opts": {
+      "treads": [
+       {
+        "rise": 0.216,
+        "depth": 0.26
+       },
+       {
+        "rise": 0.217,
+        "depth": 0.26
+       },
+       {
+        "rise": 0.217,
+        "depth": 0.26
+       }
+      ],
+      "ceilZ": 1.25
+     },
+     "note": "the rig’s own treads",
+     "builds_ok": 30,
+     "of": 30
+    },
+    {
+     "id": "climb_crew_ladder",
+     "what": "crew_ladder (a ladder), walked as its ramp 2 → 4.015 m, upright",
+     "clip": "walk",
+     "clear_width_m": 0.79,
+     "headroom_m": null,
+     "ramp": {
+      "axis": "y",
+      "a0": 7.37,
+      "a1": 7.906,
+      "z0": 2,
+      "z1": 4.015
+     },
+     "note": "the ramp carries the root; the climb: hatch_crew_ladder",
+     "builds_ok": 30,
+     "of": 30
+    },
+    {
+     "id": "hatch_crew_ladder",
+     "what": "up crew_ladder and out through its hatch (0.79 across x 0.75 back, rise 2.004 m), and down",
+     "clip": "ladderClimbIn … ladderClimbDownOut",
+     "world_opts": {
+      "rise": 2.004,
+      "pitch": 0.28,
+      "rake": 0,
+      "hatchW": 0.79,
+      "hatchL": 0.75
+     },
+     "needs_met": 30,
+     "builds_ok": 30,
+     "of": 30
+    },
+    {
+     "id": "climb_platform_steps",
+     "what": "platform_steps (a stair), walked as its ramp 2.15 → 3.75 m, upright",
+     "clip": "walk",
+     "clear_width_m": 0.65,
+     "headroom_m": null,
+     "ramp": {
+      "axis": "y",
+      "a0": -11.4,
+      "a1": -9.4,
+      "z0": 2.15,
+      "z1": 3.75
+     },
+     "note": "the ramp carries the root; the feet on the treads: stair_platform_steps",
+     "builds_ok": 30,
+     "of": 30
+    },
+    {
+     "id": "stair_platform_steps",
+     "what": "up and down platform_steps tread by tread (0.2 / 0.25, 0.2 / 0.25, 0.2 / 0.25, 0.2 / 0.25, 0.2 / 0.25, 0.2 / 0.25, 0.2 / 0.25, 0.2 / 0.25 m rise / depth)",
+     "clip": "stairUp, stairDown",
+     "world_opts": {
+      "treads": [
+       {
+        "rise": 0.2,
+        "depth": 0.25
+       },
+       {
+        "rise": 0.2,
+        "depth": 0.25
+       },
+       {
+        "rise": 0.2,
+        "depth": 0.25
+       },
+       {
+        "rise": 0.2,
+        "depth": 0.25
+       },
+       {
+        "rise": 0.2,
+        "depth": 0.25
+       },
+       {
+        "rise": 0.2,
+        "depth": 0.25
+       },
+       {
+        "rise": 0.2,
+        "depth": 0.25
+       },
+       {
+        "rise": 0.2,
+        "depth": 0.25
+       }
+      ],
+      "ceilZ": null
+     },
+     "note": "the rig’s own treads",
+     "builds_ok": 30,
+     "of": 30
+    },
+    {
+     "id": "climb_sun_deck_ladder",
+     "what": "sun_deck_ladder (a ladder), walked as its ramp 3.75 → 6.357 m, upright",
+     "clip": "walk",
+     "clear_width_m": 0.51,
+     "headroom_m": null,
+     "ramp": {
+      "axis": "y",
+      "a0": -8.1,
+      "a1": -6.8,
+      "z0": 3.75,
+      "z1": 6.357
+     },
+     "note": "the ramp carries the root; the climb: hatch_sun_deck_ladder",
+     "builds_ok": 30,
+     "of": 30
+    },
+    {
+     "id": "hatch_sun_deck_ladder",
+     "what": "up sun_deck_ladder and out through its hatch (0.9 across x 0.76 back, rise 2.606 m), and down",
+     "clip": "ladderClimbIn … ladderClimbDownOut",
+     "world_opts": {
+      "rise": 2.606,
+      "pitch": 0.28,
+      "rake": 18.963,
+      "hatchW": 0.9,
+      "hatchL": 0.76
+     },
+     "needs_met": 30,
+     "builds_ok": 30,
+     "of": 30
+    },
+    {
+     "id": "step_side_deck_stbd_foredeck_1",
+     "what": "step up side_deck_stbd → foredeck_1 (0.23 m)",
+     "clip": "board",
+     "world_opts": {
+      "railZ": 0.23
+     },
+     "range_m": [
+      0.06,
+      1
+     ],
+     "within_stepTol": true,
+     "builds_ok": 30,
+     "of": 30
+    },
+    {
+     "id": "step_side_deck_port_foredeck_1",
+     "what": "step up side_deck_port → foredeck_1 (0.23 m)",
+     "clip": "board",
+     "world_opts": {
+      "railZ": 0.23
+     },
+     "range_m": [
+      0.06,
+      1
+     ],
+     "within_stepTol": true,
+     "builds_ok": 30,
+     "of": 30
+    },
+    {
+     "id": "swim_ladder",
+     "what": "down the swim ladder",
+     "clip": "ladderDown",
+     "world_opts": {
+      "rung": 0.3
+     },
+     "note": "rungs at 0.30 m (the rig draws the ladder stowed); aboard by it: swim_ladder_aboard",
+     "builds_ok": 30,
+     "of": 30
+    },
+    {
+     "id": "swim_platform_ladder",
+     "what": "aboard from the water by the swim ladder (0.35 m over the water, 0.89 m to the transom)",
+     "clip": "ladderOn",
+     "world_opts": {
+      "platZ": 0.35,
+      "platD": 0.89
+     },
+     "note": "the ladder’s own numbers",
+     "builds_ok": 30,
+     "of": 30
+    },
+    {
+     "id": "sit_sofa_port",
+     "what": "sit on sofa_port (0.42 m over saloon, 1.59 m clear over it)",
+     "clip": "sitDown, sit, standUp",
+     "world_opts": {
+      "seatZ": 0.42,
+      "clearZ": 1.59
+     },
+     "floor": "saloon",
+     "floor_off_m": 0.505,
+     "builds_ok": 30,
+     "of": 30
+    },
+    {
+     "id": "sit_sofa_stbd",
+     "what": "sit on sofa_stbd (0.42 m over saloon, 1.59 m clear over it)",
+     "clip": "sitDown, sit, standUp",
+     "world_opts": {
+      "seatZ": 0.42,
+      "clearZ": 1.59
+     },
+     "floor": "saloon",
+     "floor_off_m": 0.505,
+     "builds_ok": 30,
+     "of": 30
+    },
+    {
+     "id": "sit_chair_aft",
+     "what": "sit on chair_aft (0.45 m over dining_helm, 1.58 m clear over it)",
+     "clip": "sitDown, sit, standUp",
+     "world_opts": {
+      "seatZ": 0.45,
+      "clearZ": 1.58
+     },
+     "floor": "dining_helm",
+     "floor_off_m": 0.455,
+     "builds_ok": 30,
+     "of": 30
+    },
+    {
+     "id": "sit_chair_mid",
+     "what": "sit on chair_mid (0.45 m over dining_helm, 1.58 m clear over it)",
+     "clip": "sitDown, sit, standUp",
+     "world_opts": {
+      "seatZ": 0.45,
+      "clearZ": 1.58
+     },
+     "floor": "dining_helm",
+     "floor_off_m": 0.455,
+     "builds_ok": 30,
+     "of": 30
+    },
+    {
+     "id": "sit_chair_fwd",
+     "what": "sit on chair_fwd (0.45 m over dining_helm, 1.58 m clear over it)",
+     "clip": "sitDown, sit, standUp",
+     "world_opts": {
+      "seatZ": 0.45,
+      "clearZ": 1.58
+     },
+     "floor": "dining_helm",
+     "floor_off_m": 0.45,
+     "builds_ok": 30,
+     "of": 30
+    },
+    {
+     "id": "sit_settee",
+     "what": "sit on settee (0.45 m over dining_helm, 1.58 m clear over it)",
+     "clip": "sitDown, sit, standUp",
+     "world_opts": {
+      "seatZ": 0.45,
+      "clearZ": 1.58
+     },
+     "floor": "dining_helm",
+     "floor_off_m": 0.405,
+     "builds_ok": 30,
+     "of": 30
+    },
+    {
+     "id": "sit_bench",
+     "what": "sit on bench (0.45 m over dining_port, 1.58 m clear over it)",
+     "clip": "sitDown, sit, standUp",
+     "world_opts": {
+      "seatZ": 0.45,
+      "clearZ": 1.58
+     },
+     "floor": "dining_port",
+     "floor_off_m": 0.175,
+     "builds_ok": 30,
+     "of": 30
+    },
+    {
+     "id": "sit_armchair_port_aft",
+     "what": "sit on armchair_port_aft (0.42 m over aft_deck_aft)",
+     "clip": "sitDown, sit, standUp",
+     "world_opts": {
+      "seatZ": 0.42,
+      "clearZ": null
+     },
+     "floor": "aft_deck_aft",
+     "floor_off_m": 0.52,
+     "builds_ok": 30,
+     "of": 30
+    },
+    {
+     "id": "sit_armchair_port_fwd",
+     "what": "sit on armchair_port_fwd (0.42 m over aft_deck_mid)",
+     "clip": "sitDown, sit, standUp",
+     "world_opts": {
+      "seatZ": 0.42,
+      "clearZ": null
+     },
+     "floor": "aft_deck_mid",
+     "floor_off_m": 0.52,
+     "builds_ok": 30,
+     "of": 30
+    },
+    {
+     "id": "sit_armchair_stbd_aft",
+     "what": "sit on armchair_stbd_aft (0.42 m over aft_deck_aft)",
+     "clip": "sitDown, sit, standUp",
+     "world_opts": {
+      "seatZ": 0.42,
+      "clearZ": null
+     },
+     "floor": "aft_deck_aft",
+     "floor_off_m": 0.52,
+     "builds_ok": 30,
+     "of": 30
+    },
+    {
+     "id": "sit_armchair_stbd_fwd",
+     "what": "sit on armchair_stbd_fwd (0.42 m over aft_deck_mid)",
+     "clip": "sitDown, sit, standUp",
+     "world_opts": {
+      "seatZ": 0.42,
+      "clearZ": null
+     },
+     "floor": "aft_deck_mid",
+     "floor_off_m": 0.52,
+     "builds_ok": 30,
+     "of": 30
+    },
+    {
+     "id": "sit_lounger_port",
+     "what": "sit on lounger_port (0.14 m over sun_deck_port)",
+     "clip": "sitDown, sit, standUp",
+     "world_opts": {
+      "seatZ": 0.14,
+      "clearZ": null
+     },
+     "floor": "sun_deck_port",
+     "floor_off_m": 0.43,
+     "outside_contract": {
+      "seatZ": [
+       0.14,
+       0.25,
+       0.7
+      ]
+     },
+     "clamped": true,
+     "builds_ok": 0,
+     "of": 30
+    },
+    {
+     "id": "sit_lounger_stbd",
+     "what": "sit on lounger_stbd (0.14 m over sun_deck_stbd)",
+     "clip": "sitDown, sit, standUp",
+     "world_opts": {
+      "seatZ": 0.14,
+      "clearZ": null
+     },
+     "floor": "sun_deck_stbd",
+     "floor_off_m": 0.43,
+     "outside_contract": {
+      "seatZ": [
+       0.14,
+       0.25,
+       0.7
+      ]
+     },
+     "clamped": true,
+     "builds_ok": 0,
+     "of": 30
+    },
+    {
+     "id": "sit_master_settee",
+     "what": "sit on master_settee (0.47 m over master_stbd, 1.63 m clear over it)",
+     "clip": "sitDown, sit, standUp",
+     "world_opts": {
+      "seatZ": 0.47,
+      "clearZ": 1.63
+     },
+     "floor": "master_stbd",
+     "floor_off_m": 0.497,
+     "builds_ok": 30,
+     "of": 30
+    },
+    {
+     "id": "sit_crew_settee",
+     "what": "sit on crew_settee (0.45 m over crew_mess_table, 1.383 m clear over it)",
+     "clip": "sitDown, sit, standUp",
+     "world_opts": {
+      "seatZ": 0.45,
+      "clearZ": 1.383
+     },
+     "floor": "crew_mess_table",
+     "floor_off_m": 0.3,
+     "builds_ok": 30,
+     "of": 30
+    }
+   ],
+   "waitsOn": []
+  }
+ }
+}

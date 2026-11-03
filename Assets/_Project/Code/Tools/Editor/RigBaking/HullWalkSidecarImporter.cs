@@ -109,7 +109,8 @@ namespace HiddenHarbours.Tools.RigBaking
             var deckAreas = new List<DeckArea>();
             foreach (HullWalkArea area in walk.Areas)
                 if (!area.IsClimb && cuts[area.Cut].Level == 0) deckAreas.AddRange(DeckAreas(area));
-            foreach (object raw in HullLayoutJson.Array(walk.Fields, "washboards"))
+            foreach (object raw in walk.Fields.ContainsKey("washboards")
+                ? HullLayoutJson.Array(walk.Fields, "washboards") : new List<object>())
             {
                 var w = HullLayoutJson.Object(raw, "washboards");
                 string side = HullLayoutJson.Text(w, "side");
@@ -163,12 +164,21 @@ namespace HiddenHarbours.Tools.RigBaking
                 }
             }
             interior.Levels = levels.ToArray();
-            interior.FootprintOutline = levels.Count == 0 ? Array.Empty<Vector2>() : HullWalkPolygonUnion.Union(levels.Select(l => l.Outline))[0];
+            interior.FootprintOutline = HouseEnvelope(walk.Hull, levels.Select(l => l.Outline),
+                walk.Areas.Where(a => a.IsClimb &&
+                    ((a.Cut != null && cuts.TryGetValue(a.Cut, out var hi) && hi.Level > 0) ||
+                     (a.CutLo != null && cuts.TryGetValue(a.CutLo, out var lo) && lo.Level > 0)))
+                    .Select(a => a.Polygon),
+                walk.Areas.Where(a => a.IsClimb).Select(a => (a.Id,
+                    cuts.TryGetValue(a.CutHi ?? a.Cut ?? "", out var hi) ? hi.Level : -1,
+                    cuts.TryGetValue(a.CutLo ?? "", out var lo) ? lo.Level : -1, a.Polygon)),
+                indoor.Select(a => (a.Id, a.Polygon)));
             interior.Door = walk.House == null ? new BoatInteriorDoor() : Door(HullLayoutJson.Child(walk.House, "door"), walk, result);
             interior.AdditionalDoors = walk.House != null && walk.House.TryGetValue("doors", out object doors)
                 ? HullLayoutJson.List(doors, "house.doors").Select(d => HullLayoutJson.Object(d, "house.doors"))
                     .Where(d => HullLayoutJson.Text(d, "id") != interior.Door?.Id).Select(d => Door(d, walk, result)).Where(d => d != null).ToArray()
                 : Array.Empty<BoatInteriorDoor>();
+            interior.InternalPassages = Passages(walk, rig, interior);
             interior.Anchors = HullLayoutJson.Array(walk.Fields, "interact").Select(raw =>
             {
                 var i = HullLayoutJson.Object(raw, "interact");
@@ -178,6 +188,71 @@ namespace HiddenHarbours.Tools.RigBaking
             interior.Routes = walk.Areas.Where(a => a.IsClimb).Select(a => Route(a, walk, cuts, levelForArea, deck, interior)).ToArray();
             EmitEntryLandings(walk, interior);
             return result;
+        }
+
+        public static Vector2[] HouseEnvelope(string hull, IEnumerable<Vector2[]> soles,
+                                              IEnumerable<Vector2[]> indoorClimbs,
+                                              IEnumerable<(string Id, int HighLevel, int LowLevel, Vector2[] Polygon)> climbs = null,
+                                              IEnumerable<(string Id, Vector2[] Polygon)> areas = null,
+                                              Action<string> log = null)
+        {
+            var outlines = soles.ToArray();
+            if (outlines.Length == 0) return Array.Empty<Vector2>();
+            if (HullWalkPolygonUnion.TryUnion(outlines, out var rings, out int floors)) return rings[0];
+            if (HullWalkPolygonUnion.TryUnion(outlines.Concat(indoorClimbs), out rings, out floors)) return rings[0];
+            var islands = rings.Skip(1).Where(r => HouseRingArea(r) > 0).ToArray();
+            var entries = (climbs ?? Array.Empty<(string Id, int HighLevel, int LowLevel, Vector2[] Polygon)>())
+                .Where(c => c.HighLevel == 0 && c.LowLevel > 0).ToArray();
+            if (islands.Length == floors - 1 && islands.All(r => entries.Any(c => HousePolygonsMeet(r, c.Polygon))))
+            {
+                var sources = (areas ?? Array.Empty<(string Id, Vector2[] Polygon)>()).ToArray();
+                foreach (var island in islands)
+                {
+                    var ids = sources.Where(a => HousePolygonsMeet(island, a.Polygon)).Select(a => a.Id)
+                        .Concat(entries.Where(c => HousePolygonsMeet(island, c.Polygon)).Select(c => c.Id))
+                        .Distinct().OrderBy(id => id, StringComparer.Ordinal);
+                    string message = hull + ": separate deck-entered compartment [" + string.Join(", ", ids) + "] " +
+                        HouseRingArea(island).ToString("0.###", System.Globalization.CultureInfo.InvariantCulture) + " m^2";
+                    if (log != null) log(message); else Debug.Log(message);
+                }
+                return rings[0];
+            }
+            throw new FormatException(hull + ": the soles and the indoor climbs do not join into one house envelope (" + floors + " floors)");
+        }
+
+        static double HouseRingArea(Vector2[] ring)
+        {
+            double area = 0;
+            for (int i = 0; i < ring.Length; i++)
+            {
+                Vector2 a = ring[i], b = ring[(i + 1) % ring.Length];
+                area += (double)a.x * b.y - (double)a.y * b.x;
+            }
+            return area * .5;
+        }
+
+        static bool HousePolygonsMeet(Vector2[] a, Vector2[] b)
+        {
+            foreach (var point in a)
+            {
+                if (DeckAreaMath.Contains(b, point)) return true;
+                DeckAreaMath.ClosestPointOnOutline(b, point, out float distance);
+                if (distance <= 1e-10f) return true;
+            }
+            foreach (var point in b)
+                if (DeckAreaMath.Contains(a, point)) return true;
+            for (int i = 0; i < a.Length; i++)
+                for (int j = 0; j < b.Length; j++)
+                {
+                    Vector2 ab = a[(i + 1) % a.Length] - a[i], cd = b[(j + 1) % b.Length] - b[j];
+                    Vector2 offset = b[j] - a[i];
+                    float cross = ab.x * cd.y - ab.y * cd.x;
+                    if (Mathf.Abs(cross) < 1e-10f) continue;
+                    float t = (offset.x * cd.y - offset.y * cd.x) / cross;
+                    float u = (offset.x * ab.y - offset.y * ab.x) / cross;
+                    if (t >= 0 && t <= 1 && u >= 0 && u <= 1) return true;
+                }
+            return false;
         }
 
         static void EmitEntryLandings(HullWalkRead walk, BoatInteriorDef interior)
@@ -235,22 +310,60 @@ namespace HiddenHarbours.Tools.RigBaking
         static BoatInteriorDoor Door(Dictionary<string, object> d, HullWalkRead walk, HullWalkImportResult result)
         {
             string id = HullLayoutJson.Text(d, "id");
-            if (d.TryGetValue("leaf", out object leaf) && leaf == null)
-            {
-                result.Refusals.Add(walk.Hull + ": house.doors." + id +
-                    ": leafless doorway: not imported until batch 1 (needs #916's door runtime)");
-                return null;
-            }
+            bool alwaysOpen = d.TryGetValue("leaf", out object leaf) && leaf == null;
+            string field = walk.Hull + ": house.doors." + id;
+            if (alwaysOpen && (!d.TryGetValue("open", out object opened) || !(opened is bool b) || !b))
+                throw new FormatException(field + ".open: leafless doorway must explicitly be open");
             float radius = walk.Radius;
             float x0 = HullLayoutJson.Number(d, "x0"), x1 = HullLayoutJson.Number(d, "x1"), y = HullLayoutJson.Number(d, "y");
-            bool hinge = HullLayoutJson.Text(d, "kind") == "hinge";
+            bool hinge = !alwaysOpen && HullLayoutJson.Text(d, "kind") == "hinge";
+            var clear = alwaysOpen && !d.ContainsKey("clear") ? null : HullLayoutJson.Child(d, "clear");
             return new BoatInteriorDoor { Id = id, Side = HullLayoutJson.Text(d, "face"),
-                ClearWidthMeters = HullLayoutJson.Number(HullLayoutJson.Child(d, "clear"), "width"),
-                ClearHeightMeters = HullLayoutJson.Number(HullLayoutJson.Child(d, "clear"), "height"),
+                OpeningMode = alwaysOpen ? BoatInteriorDoorOpeningMode.AlwaysOpen : BoatInteriorDoorOpeningMode.Leafed,
+                OpeningReason = alwaysOpen ? HullLayoutJson.Text(d, "reason", field) : "",
+                ClearWidthMeters = clear != null ? HullLayoutJson.Number(clear, "width") : x1 - x0,
+                ClearHeightMeters = clear != null ? HullLayoutJson.Number(clear, "height") : HullLayoutJson.Number(d, "z1") - HullLayoutJson.Number(d, "z0"),
                 ThresholdPoint = new Vector3((x0 + x1) / 2, y, HullLayoutJson.Number(d, "sillZ")),
                 Mechanism = hinge ? BoatInteriorDoorMechanism.Hinged : BoatInteriorDoorMechanism.Sliding,
                 KeepClear = hinge ? HullLayoutJson.Polygon(d["keepClear"], "house.door.keepClear", false) :
                     new[] { new Vector2(x0, y - 2 * radius), new Vector2(x1, y - 2 * radius), new Vector2(x1, y + 2 * radius), new Vector2(x0, y + 2 * radius) } };
+        }
+
+        static BoatInteriorPassage[] Passages(HullWalkRead walk, RigMeshData rig, BoatInteriorDef interior)
+        {
+            if (walk.House == null || !walk.House.TryGetValue("doorways", out object raw))
+                return Array.Empty<BoatInteriorPassage>();
+            var passages = new List<BoatInteriorPassage>();
+            foreach (object item in HullLayoutJson.List(raw, "house.doorways"))
+            {
+                var d = HullLayoutJson.Object(item, "house.doorways");
+                string id = HullLayoutJson.Text(d, "id"), field = walk.Hull + ": house.doorways." + id;
+                if (!d.ContainsKey("leaf") || d["leaf"] != null || !d.TryGetValue("open", out object opened) || !(opened is bool b) || !b)
+                    throw new FormatException(field + ": expected leaf null and open true");
+                if (passages.Any(p => p.Id == id)) throw new FormatException(field + ".id: duplicate");
+                string lv = HullLayoutJson.Text(d, "lv", field);
+                var declared = rig.Levels.Where(l => l.Id == lv && l.Enclosed).ToArray();
+                if (declared.Length != 1) throw new FormatException(field + ".lv: expected one enclosed published level");
+                var levels = interior.Levels.Where(l => l.Id == declared[0].DeckId &&
+                    Math.Abs(l.SoleZMeters - declared[0].SoleZ) < 0.0001).ToArray();
+                if (levels.Length != 1) throw new FormatException(field + ".lv: missing or ambiguous imported sole");
+                string wall = HullLayoutJson.Text(d, "wall", field);
+                var u = HullLayoutJson.Array(d, "u", field);
+                if ((wall != "x" && wall != "y") || u.Count != 2)
+                    throw new FormatException(field + ".wall / u: expected axis and two aperture endpoints");
+                var aperture = new Vector2(HullLayoutJson.Numeric(u[0], field + ".u[0]"), HullLayoutJson.Numeric(u[1], field + ".u[1]"));
+                var clear = HullLayoutJson.Child(d, "clear", field);
+                float width = HullLayoutJson.Number(clear, "width", field + ".clear");
+                float height = HullLayoutJson.Number(clear, "height", field + ".clear");
+                if (aperture.y <= aperture.x || width <= 0 || height <= 0 || width > aperture.y - aperture.x + 0.001f ||
+                    height > declared[0].CeilingZ - declared[0].SoleZ + 0.001f)
+                    throw new FormatException(field + ".clear: outside declared aperture or level");
+                passages.Add(new BoatInteriorPassage { Id = id, RigLevelId = lv, LevelId = levels[0].Id,
+                    SoleZMeters = levels[0].SoleZMeters, WallAxis = wall, WallAtMeters = HullLayoutJson.Number(d, "at", field),
+                    ApertureMeters = aperture, ClearWidthMeters = width, ClearHeightMeters = height,
+                    Reason = HullLayoutJson.Text(d, "reason", field) });
+            }
+            return passages.ToArray();
         }
 
         static BoatInteriorRoute Route(HullWalkArea area, HullWalkRead walk, Dictionary<string, HullMeshDef.LiftSet> cuts,

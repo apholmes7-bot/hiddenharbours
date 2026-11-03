@@ -210,9 +210,8 @@ namespace HiddenHarbours.Art
                 return;
             }
 
-            // Game-time delta for this presentation tick (the BoatWaveMotion pattern): the clock
-            // advances smoothly per frame; a paused clock yields dt 0 and the sea freezes with it.
-            double time = clock.TotalSeconds;
+            // Flow advances while the hour is held; the pause menu still stops both readings.
+            double time = clock.FlowSeconds;
             float dt = _hasLastTime ? Mathf.Max(0f, (float)(time - _lastTimeSeconds)) : Time.deltaTime;
             _lastTimeSeconds = time;
             _hasLastTime = true;
@@ -222,8 +221,8 @@ namespace HiddenHarbours.Art
             WaveFieldSettings field = GameServices.WaveField;
             WaveFieldAnimatorSettings smoothing = GameServices.WaveFieldAnimator;
             WaveTrains trains = env is IWaveWindSource history
-                ? _animator.Tick(time, history, in field)
-                : _animator.Tick(dt, time, sample.WindVector, sample.SeaState01, in field, in smoothing);
+                ? _animator.Tick(clock.TotalSeconds, time, history, in field)
+                : _animator.Tick(dt, clock.TotalSeconds, time, sample.WindVector, sample.SeaState01, in field, in smoothing);
             PublishGlobals(Pack(in trains));
             SharedWaveField.Publish(this, in trains);
 

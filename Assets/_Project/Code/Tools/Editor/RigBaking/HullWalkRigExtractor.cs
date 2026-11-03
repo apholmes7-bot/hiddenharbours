@@ -75,7 +75,7 @@ namespace HiddenHarbours.Tools.RigBaking
             var paints = Json(host, scope + ".matsFor()");
             var mats = HullLayoutJson.Child(paints, "MATS", "matsFor()");
             var exterior = FacesJson(host, scope + ".faceList({})");
-            var leaf = FacesJson(host, scope + ".doorFaces(0)");
+            var leaf = LeafFaces(host, scope, data, 0);
             var room = FacesJson(host, scope + ".interiorFaces()");
             exterior.AddRange(leaf);
             ReadFaces(exterior, mats, data, false, data.Faces, data.Materials,
@@ -113,8 +113,61 @@ namespace HiddenHarbours.Tools.RigBaking
         {
             var leaf = hull.WithFaces(new List<RigFace>());
             var mats = HullLayoutJson.Child(Json(host, scope + ".matsFor()"), "MATS");
-            ReadFaces(FacesJson(host, scope + ".doorFaces(" + pose.ToString("R", CultureInfo.InvariantCulture) + ")"),
-                      mats, leaf, false, leaf.Faces, leaf.Materials);
+            var exterior = FacesJson(host, scope + ".faceList({})");
+            exterior.AddRange(LeafFaces(host, scope, hull, 0));
+            ReadFaces(LeafFaces(host, scope, hull, pose), mats, leaf, false, leaf.Faces, leaf.Materials,
+                      SchemeStableGroups(host, scope, mats, exterior));
+            return leaf;
+        }
+
+        public static IEnumerable<Dictionary<string, object>> DeclaredDoors(HullWalkRead walk)
+        {
+            if (walk.House == null) yield break;
+            var primary = HullLayoutJson.Child(walk.House, "door");
+            var all = new List<Dictionary<string, object>> { primary };
+            if (walk.House.TryGetValue("doors", out object raw))
+                all.AddRange(HullLayoutJson.List(raw, "house.doors").Select(d => HullLayoutJson.Object(d, "house.doors")));
+            var seen = new HashSet<string>(StringComparer.Ordinal);
+            foreach (var d in all)
+                if (seen.Add(HullLayoutJson.Text(d, "id")) && d.TryGetValue("leaf", out object leaf) && leaf != null)
+                    yield return d;
+        }
+
+        static string DoorExpression(IRigScriptHost host, string scope, Dictionary<string, object> door, double pose)
+        {
+            string id = HullLayoutJson.Text(door, "id");
+            string Quote(string value) => "\"" + value.Replace("\\", "\\\\").Replace("\"", "\\\"") + "\"";
+            string t = pose.ToString("R", CultureInfo.InvariantCulture);
+            // The ship publishes partFaces for a whole door, including both leaves of a slider.
+            // Its doorFaces({id:t}) draws EVERY other door shut, so it is not an individual leaf API.
+            if (door.ContainsKey("leaves") || HullLayoutJson.Text(door, "leaf").Contains("doorFaces({"))
+            {
+                if (!host.EvaluateBool($"typeof {scope}.partFaces === 'function'"))
+                    throw new FormatException(id + ": missing per-door partFaces API");
+                var ids = door.TryGetValue("leaves", out object leaves)
+                    ? HullLayoutJson.List(leaves, "house.doors.leaves").Select(v => v as string).ToArray() : new[] { id };
+                if (ids.Any(string.IsNullOrEmpty)) throw new FormatException(id + ": invalid leaf id");
+                return scope + ".partFaces(" + Quote(id) + ",{doors:{" + string.Join(",", ids.Select(v => Quote(v) + ":" + t)) + "}})";
+            }
+            return scope + ".doorFaces(" + t + "," + Quote(id) + ")";
+        }
+
+        static List<object> LeafFaces(IRigScriptHost host, string scope, RigMeshData hull, double pose)
+        {
+            var result = new List<object>();
+            foreach (var door in DeclaredDoors(hull.Walk)) result.AddRange(FacesJson(host, DoorExpression(host, scope, door, pose)));
+            return result;
+        }
+
+        public static RigMeshData Door(IRigScriptHost host, string scope, RigMeshData hull, string id, double pose)
+        {
+            var door = DeclaredDoors(hull.Walk).Single(d => HullLayoutJson.Text(d, "id") == id);
+            var leaf = hull.WithFaces(new List<RigFace>());
+            var mats = HullLayoutJson.Child(Json(host, scope + ".matsFor()"), "MATS");
+            var exterior = FacesJson(host, scope + ".faceList({})");
+            exterior.AddRange(LeafFaces(host, scope, hull, 0));
+            ReadFaces(FacesJson(host, DoorExpression(host, scope, door, pose)), mats, leaf, false, leaf.Faces, leaf.Materials,
+                      SchemeStableGroups(host, scope, mats, exterior));
             return leaf;
         }
 

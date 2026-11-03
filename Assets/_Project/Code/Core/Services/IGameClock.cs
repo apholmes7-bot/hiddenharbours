@@ -22,6 +22,14 @@ namespace HiddenHarbours.Core
         bool IsPaused { get; set; }
         float TimeScale { get; set; }  // 1 = normal; >1 fast-forward (sleep/wait)
 
+        /// <summary>Hold the hour, calendar, tide, weather and routines while the world keeps flowing.
+        /// This is independent of the pause menu; existing clocks default to an unheld hour.</summary>
+        bool IsHeld { get => false; set { } }
+
+        /// <summary>The world's running seconds, equal to TotalSeconds except for spans the hour was held.
+        /// This reading is never saved and equals TotalSeconds again after any SeekTo.</summary>
+        double FlowSeconds => TotalSeconds;
+
         /// <summary>
         /// Seek the master clock to an <b>absolute</b> game-time (in-game seconds since a new game), the
         /// inverse of reading <see cref="TotalSeconds"/>. This is how a loaded save resumes at the saved

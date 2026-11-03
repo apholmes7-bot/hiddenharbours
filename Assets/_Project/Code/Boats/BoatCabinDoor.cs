@@ -173,6 +173,7 @@ namespace HiddenHarbours.Boats
         /// dropped when Unity destroys it (see <see cref="LeafIsLive"/>).
         /// </summary>
         private IHullDoorLeaf _leaf;
+        private IHullDoorLeaves _leaves;
 
         /// <summary>Unscaled seconds until the next search for <see cref="_leaf"/> while none is
         /// held.</summary>
@@ -206,6 +207,8 @@ namespace HiddenHarbours.Boats
 
         /// <summary>The cabin this door opens. Read by tests and by whoever places her.</summary>
         public BoatInterior Interior => _interior;
+
+        public bool IsAlwaysOpen => Door != null && Door.OpeningMode == BoatInteriorDoorOpeningMode.AlwaysOpen;
 
         /// <summary>
         /// <b>Is the leaf standing open?</b> The ruling's first sentence — <i>"a door is closed until its
@@ -370,7 +373,7 @@ namespace HiddenHarbours.Boats
         /// switch, no migration, and no window in which a half-built cabin is enterable.</para>
         /// </summary>
         public bool IsAvailable =>
-            BoatInteriorEntryPolicy.MayOffer(_interior) && Door != null && !IsCueing;
+            !IsAlwaysOpen && BoatInteriorEntryPolicy.MayOffer(_interior) && Door != null && !IsCueing;
 
         /// <inheritdoc/>
         public void Interact(in InteractActor actor) => TryUse();
@@ -415,11 +418,12 @@ namespace HiddenHarbours.Boats
             _openLabel = openLabel ?? "";
             _closeLabel = closeLabel ?? "";
             _cueElapsed = -1f;
-            IsOpen = false;             // the ruling's first sentence, restated at every wiring
+            IsOpen = IsAlwaysOpen;
             _sinceCrossingSeconds = float.PositiveInfinity;   // see the field: nothing has crossed yet
             _pastTheLineBefore = float.NaN;
             _wallMeasured = false;      // a re-wired door may open a different room
             _leaf = null;               // a re-wired door may stand on a different hull
+            _leaves = null;
             ShowLeafNow();
         }
 
@@ -438,7 +442,7 @@ namespace HiddenHarbours.Boats
         /// </summary>
         public void SetOpen(bool open)
         {
-            IsOpen = open;
+            IsOpen = IsAlwaysOpen || open;
             _cueElapsed = -1f;
             ShowLeafNow();
         }
@@ -542,16 +546,13 @@ namespace HiddenHarbours.Boats
         /// Put the drawn leaf on <see cref="IsOpen"/> now, searching for the renderer if none is held.
         /// Called at every change of state; changes are presses and wirings, never frames.
         ///
-        /// <para><b>Only the main threshold draws.</b> A hull's bake stores ALL her leaves as one pair
-        /// (the sport fisher skybridge's lounge slider is in it with her saloon door), and the pair
-        /// follows the door that is her way in. An additional door keeps its state and draws
-        /// nothing; two doors pushing one pair would fight over it.</para>
+        /// <para>Named leaves follow their own door. A legacy hull keeps primary-only drawing.</para>
         /// </summary>
         private void ShowLeafNow()
         {
-            if (_additionalDoorIndex >= 0) return;
+            if (IsAlwaysOpen) return;
             if (!LeafIsLive() && !FindLeaf()) return;
-            if (_leaf.DoorLeafShownOpen != IsOpen) _leaf.ShowDoorLeaf(IsOpen);
+            ApplyLeafState();
         }
 
         /// <summary>
@@ -561,7 +562,7 @@ namespace HiddenHarbours.Boats
         /// </summary>
         private void KeepLeafInStep(float unscaledDeltaSeconds)
         {
-            if (_additionalDoorIndex >= 0) return;
+            if (IsAlwaysOpen) return;
             if (!LeafIsLive())
             {
                 _leafSearchIn -= unscaledDeltaSeconds;
@@ -569,14 +570,26 @@ namespace HiddenHarbours.Boats
                 _leafSearchIn = LeafSearchIntervalSeconds;
                 if (!FindLeaf()) return;
             }
-            if (_leaf.DoorLeafShownOpen != IsOpen) _leaf.ShowDoorLeaf(IsOpen);
+            ApplyLeafState();
+        }
+
+        private void ApplyLeafState()
+        {
+            string id = Door?.Id;
+            if (_leaves != null && _leaves.HasDoorLeaf(id))
+            {
+                if (_leaves.DoorLeafShownOpenFor(id) != IsOpen) _leaves.ShowDoorLeaf(id, IsOpen);
+            }
+            else if (_additionalDoorIndex < 0 && _leaf != null && _leaf.DoorLeafShownOpen != IsOpen)
+                _leaf.ShowDoorLeaf(IsOpen);
         }
 
         /// <summary>
         /// ⚠️ Through <c>UnityEngine.Object</c>'s own <c>==</c>, as <c>BoatCutaway</c> does: an interface
         /// reference compared with <c>== null</c> is satisfied by a destroyed component's fake-null.
         /// </summary>
-        private bool LeafIsLive() => _leaf is UnityEngine.Object live && live != null;
+        private bool LeafIsLive() => (_leaves is UnityEngine.Object named && named != null)
+            || (_leaf is UnityEngine.Object live && live != null);
 
         /// <summary>
         /// Look for the leaf renderer under the boat ROOT: the cabin's own node (the installer puts
@@ -585,9 +598,11 @@ namespace HiddenHarbours.Boats
         private bool FindLeaf()
         {
             Transform root = _interior != null ? _interior.transform : transform.parent;
+            _leaves = root != null ? root.GetComponentInChildren<IHullDoorLeaves>(includeInactive: true) : null;
             _leaf = root != null ? root.GetComponentInChildren<IHullDoorLeaf>(includeInactive: true) : null;
             if (LeafIsLive()) return true;
             _leaf = null;
+            _leaves = null;
             return false;
         }
 

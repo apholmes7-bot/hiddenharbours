@@ -7,97 +7,6 @@
     "importSizeCap": 4096,
     "sheets": [
         {
-            "hullStem": "sportFisherIsoRig2.convertible",
-            "hullFileStem": "sportFisherConvertibleIso",
-            "defId": "interior.sport_fisher_convertible_iso",
-            "interiorHullKey": "sport53",
-            "variantSize": "",
-            "variantStyle": "",
-            "variantRegion": "",
-            "cellW": 820,
-            "cellH": 770,
-            "pivotX": 410,
-            "pivotY": 475,
-            "pixelsPerMetre": 32,
-            "levels": [
-                "house",
-                "below"
-            ],
-            "facings": 8,
-            "convention": "CounterClockwise",
-            "doorOpen": 0.0,
-            "night": false,
-            "lamp": false,
-            "clutter": true,
-            "weather": 0.30000001192092898,
-            "pages": [
-                {
-                    "file": "SportFisherConvertibleIsoInterior.png",
-                    "columns": 4,
-                    "rows": 4,
-                    "sheetW": 3280,
-                    "sheetH": 3080,
-                    "firstCell": 0,
-                    "cellCount": 16
-                }
-            ]
-        },
-        {
-            "hullStem": "sportFisherIsoRig2.skybridge",
-            "hullFileStem": "sportFisherSkybridgeIso",
-            "defId": "interior.sport_fisher_skybridge_iso",
-            "interiorHullKey": "sport90",
-            "variantSize": "",
-            "variantStyle": "",
-            "variantRegion": "",
-            "cellW": 1200,
-            "cellH": 1170,
-            "pivotX": 600,
-            "pivotY": 730,
-            "pixelsPerMetre": 32,
-            "levels": [
-                "bridge",
-                "house",
-                "below"
-            ],
-            "facings": 8,
-            "convention": "CounterClockwise",
-            "doorOpen": 0.0,
-            "night": false,
-            "lamp": false,
-            "clutter": true,
-            "weather": 0.30000001192092898,
-            "pages": [
-                {
-                    "file": "SportFisherSkybridgeIsoInterior0.png",
-                    "columns": 3,
-                    "rows": 3,
-                    "sheetW": 3600,
-                    "sheetH": 3510,
-                    "firstCell": 0,
-                    "cellCount": 8
-                },
-                {
-                    "file": "SportFisherSkybridgeIsoInterior1.png",
-                    "columns": 3,
-                    "rows": 3,
-                    "sheetW": 3600,
-                    "sheetH": 3510,
-                    "firstCell": 8,
-                    "cellCount": 8
-                },
-                {
-                    "file": "SportFisherSkybridgeIsoInterior2.png",
-                    "columns": 3,
-                    "rows": 3,
-                    "sheetW": 3600,
-                    "sheetH": 3510,
-                    "firstCell": 16,
-                    "cellCount": 8
-                }
-            ]
-        },
-        {
             "hullStem": "tankerIsoRig",
             "hullFileStem": "tankerIsoRig",
             "defId": "interior.tanker_iso",
@@ -117,11 +26,11 @@
             ],
             "facings": 8,
             "convention": "CounterClockwise",
-            "doorOpen": 0.0,
+            "doorOpen": 0,
             "night": false,
             "lamp": false,
             "clutter": true,
-            "weather": 0.30000001192092898,
+            "weather": 0.30000001192092896,
             "pages": [
                 {
                     "file": "TankerIsoInterior0.png",

@@ -395,9 +395,17 @@ namespace HiddenHarbours.Boats
             // Tear the SPRITE rig off this child/root (the A/B toggle's other direction): the compass
             // component, the hull picture, and any overlay the previous hull wore.
             var directional = root.GetComponent<DirectionalBoatSprite>();
-            if (directional != null) DestroyComponent(directional);
+            if (directional != null)
+            {
+                directional.enabled = false;
+                DestroyComponent(directional);
+            }
             var srOld = child.GetComponent<SpriteRenderer>();
-            if (srOld != null) DestroyComponent(srOld);
+            if (srOld != null)
+            {
+                srOld.enabled = false;
+                DestroyComponent(srOld);
+            }
             RemoveOars(root, child);
             RemoveMotor(root, child);
 
@@ -851,6 +859,8 @@ namespace HiddenHarbours.Boats
         // teardown path picks the right one and a re-skin is not left half-torn-down.
         private static void DestroyObject(GameObject go)
         {
+            // A replacement may render before deferred destruction finishes this frame.
+            go.SetActive(false);
             if (Application.isPlaying) Object.Destroy(go);
             else Object.DestroyImmediate(go);
         }
