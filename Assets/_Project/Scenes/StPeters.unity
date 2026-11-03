@@ -62515,7 +62515,7 @@ MonoBehaviour:
   _shape: 1
   _coneHalfAngle: 30
   _range: 0.14
-  _color: {r: 1, g: 0.79, b: 0.46, a: 1}
+  _color: {r: 1, g: 0.49563932, b: 0, a: 1}
   _intensity: 1.05
   _edgeSoftness: 0.9
   _angularSoftness: 0.4
@@ -62523,7 +62523,7 @@ MonoBehaviour:
   _gateThreshold: 0.12
   _gateSoftness: 0.35
   _gateFallback: 1
-  _flickerAmount: 0.15
+  _flickerAmount: 0.34
   _flickerSpeed: 1
   _sortingOrder: 32767
   _cameraDepthOffset: 0.1
@@ -62698,7 +62698,7 @@ MonoBehaviour:
   _shape: 1
   _coneHalfAngle: 30
   _range: 0.14
-  _color: {r: 1, g: 0.79, b: 0.46, a: 1}
+  _color: {r: 1, g: 0.49563932, b: 0, a: 1}
   _intensity: 1.05
   _edgeSoftness: 0.9
   _angularSoftness: 0.4
@@ -62706,7 +62706,7 @@ MonoBehaviour:
   _gateThreshold: 0.12
   _gateSoftness: 0.35
   _gateFallback: 1
-  _flickerAmount: 0.15
+  _flickerAmount: 0.34
   _flickerSpeed: 1
   _sortingOrder: 32767
   _cameraDepthOffset: 0.1
@@ -159636,7 +159636,7 @@ MonoBehaviour:
   _shape: 1
   _coneHalfAngle: 30
   _range: 0.26
-  _color: {r: 1, g: 0.79, b: 0.46, a: 1}
+  _color: {r: 1, g: 0.49563932, b: 0, a: 1}
   _intensity: 1.05
   _edgeSoftness: 0.9
   _angularSoftness: 0.4
@@ -159644,7 +159644,7 @@ MonoBehaviour:
   _gateThreshold: 0.12
   _gateSoftness: 0.35
   _gateFallback: 1
-  _flickerAmount: 0.15
+  _flickerAmount: 0.34
   _flickerSpeed: 1
   _sortingOrder: 32767
   _cameraDepthOffset: 0.1
@@ -159718,7 +159718,7 @@ MonoBehaviour:
   _shape: 1
   _coneHalfAngle: 30
   _range: 0.26
-  _color: {r: 1, g: 0.79, b: 0.46, a: 1}
+  _color: {r: 1, g: 0.49563932, b: 0, a: 1}
   _intensity: 1.05
   _edgeSoftness: 0.9
   _angularSoftness: 0.4
@@ -159726,7 +159726,7 @@ MonoBehaviour:
   _gateThreshold: 0.12
   _gateSoftness: 0.35
   _gateFallback: 1
-  _flickerAmount: 0.15
+  _flickerAmount: 0.34
   _flickerSpeed: 1
   _sortingOrder: 32767
   _cameraDepthOffset: 0.1
@@ -159800,7 +159800,7 @@ MonoBehaviour:
   _shape: 1
   _coneHalfAngle: 30
   _range: 0.26
-  _color: {r: 1, g: 0.79, b: 0.46, a: 1}
+  _color: {r: 1, g: 0.49563932, b: 0, a: 1}
   _intensity: 1.05
   _edgeSoftness: 0.9
   _angularSoftness: 0.4
@@ -159808,7 +159808,7 @@ MonoBehaviour:
   _gateThreshold: 0.12
   _gateSoftness: 0.35
   _gateFallback: 1
-  _flickerAmount: 0.15
+  _flickerAmount: 0.34
   _flickerSpeed: 1
   _sortingOrder: 32767
   _cameraDepthOffset: 0.1
@@ -159882,7 +159882,7 @@ MonoBehaviour:
   _shape: 1
   _coneHalfAngle: 30
   _range: 0.26
-  _color: {r: 1, g: 0.79, b: 0.46, a: 1}
+  _color: {r: 1, g: 0.49563932, b: 0, a: 1}
   _intensity: 1.05
   _edgeSoftness: 0.9
   _angularSoftness: 0.4
@@ -159890,7 +159890,7 @@ MonoBehaviour:
   _gateThreshold: 0.12
   _gateSoftness: 0.35
   _gateFallback: 1
-  _flickerAmount: 0.15
+  _flickerAmount: 0.34
   _flickerSpeed: 1
   _sortingOrder: 32767
   _cameraDepthOffset: 0.1
@@ -159964,7 +159964,7 @@ MonoBehaviour:
   _shape: 1
   _coneHalfAngle: 30
   _range: 3.4
-  _color: {r: 1, g: 0.82, b: 0.48, a: 1}
+  _color: {r: 1, g: 0.6538038, b: 0.34276658, a: 1}
   _intensity: 0.95
   _edgeSoftness: 0.88
   _angularSoftness: 0.4
@@ -159972,7 +159972,7 @@ MonoBehaviour:
   _gateThreshold: 0.12
   _gateSoftness: 0.35
   _gateFallback: 1
-  _flickerAmount: 0.05
+  _flickerAmount: 0
   _flickerSpeed: 1
   _sortingOrder: 32767
   _cameraDepthOffset: 0.1
@@ -160046,7 +160046,7 @@ MonoBehaviour:
   _shape: 1
   _coneHalfAngle: 30
   _range: 0.26
-  _color: {r: 1, g: 0.79, b: 0.46, a: 1}
+  _color: {r: 1, g: 0.49563932, b: 0, a: 1}
   _intensity: 1.05
   _edgeSoftness: 0.9
   _angularSoftness: 0.4
@@ -160054,7 +160054,7 @@ MonoBehaviour:
   _gateThreshold: 0.12
   _gateSoftness: 0.35
   _gateFallback: 1
-  _flickerAmount: 0.15
+  _flickerAmount: 0.34
   _flickerSpeed: 1
   _sortingOrder: 32767
   _cameraDepthOffset: 0.1
@@ -160128,7 +160128,7 @@ MonoBehaviour:
   _shape: 1
   _coneHalfAngle: 30
   _range: 0.26
-  _color: {r: 1, g: 0.79, b: 0.46, a: 1}
+  _color: {r: 1, g: 0.49563932, b: 0, a: 1}
   _intensity: 1.05
   _edgeSoftness: 0.9
   _angularSoftness: 0.4
@@ -160136,7 +160136,7 @@ MonoBehaviour:
   _gateThreshold: 0.12
   _gateSoftness: 0.35
   _gateFallback: 1
-  _flickerAmount: 0.15
+  _flickerAmount: 0.34
   _flickerSpeed: 1
   _sortingOrder: 32767
   _cameraDepthOffset: 0.1
@@ -160210,7 +160210,7 @@ MonoBehaviour:
   _shape: 1
   _coneHalfAngle: 30
   _range: 3.4
-  _color: {r: 1, g: 0.82, b: 0.48, a: 1}
+  _color: {r: 1, g: 0.6538038, b: 0.34276658, a: 1}
   _intensity: 0.95
   _edgeSoftness: 0.88
   _angularSoftness: 0.4
@@ -160218,7 +160218,7 @@ MonoBehaviour:
   _gateThreshold: 0.12
   _gateSoftness: 0.35
   _gateFallback: 1
-  _flickerAmount: 0.05
+  _flickerAmount: 0
   _flickerSpeed: 1
   _sortingOrder: 32767
   _cameraDepthOffset: 0.1
@@ -160292,7 +160292,7 @@ MonoBehaviour:
   _shape: 1
   _coneHalfAngle: 30
   _range: 0.26
-  _color: {r: 1, g: 0.79, b: 0.46, a: 1}
+  _color: {r: 1, g: 0.49563932, b: 0, a: 1}
   _intensity: 1.05
   _edgeSoftness: 0.9
   _angularSoftness: 0.4
@@ -160300,7 +160300,7 @@ MonoBehaviour:
   _gateThreshold: 0.12
   _gateSoftness: 0.35
   _gateFallback: 1
-  _flickerAmount: 0.15
+  _flickerAmount: 0.34
   _flickerSpeed: 1
   _sortingOrder: 32767
   _cameraDepthOffset: 0.1
@@ -160537,7 +160537,7 @@ MonoBehaviour:
   _shape: 1
   _coneHalfAngle: 30
   _range: 0.14
-  _color: {r: 1, g: 0.79, b: 0.46, a: 1}
+  _color: {r: 1, g: 0.49563932, b: 0, a: 1}
   _intensity: 1.05
   _edgeSoftness: 0.9
   _angularSoftness: 0.4
@@ -160545,7 +160545,7 @@ MonoBehaviour:
   _gateThreshold: 0.12
   _gateSoftness: 0.35
   _gateFallback: 1
-  _flickerAmount: 0.15
+  _flickerAmount: 0.34
   _flickerSpeed: 1
   _sortingOrder: 32767
   _cameraDepthOffset: 0.1
@@ -160752,7 +160752,7 @@ MonoBehaviour:
   _shape: 1
   _coneHalfAngle: 30
   _range: 0.14
-  _color: {r: 1, g: 0.79, b: 0.46, a: 1}
+  _color: {r: 1, g: 0.49563932, b: 0, a: 1}
   _intensity: 1.05
   _edgeSoftness: 0.9
   _angularSoftness: 0.4
@@ -160760,7 +160760,7 @@ MonoBehaviour:
   _gateThreshold: 0.12
   _gateSoftness: 0.35
   _gateFallback: 1
-  _flickerAmount: 0.15
+  _flickerAmount: 0.34
   _flickerSpeed: 1
   _sortingOrder: 32767
   _cameraDepthOffset: 0.1
@@ -160967,7 +160967,7 @@ MonoBehaviour:
   _shape: 1
   _coneHalfAngle: 30
   _range: 0.14
-  _color: {r: 1, g: 0.79, b: 0.46, a: 1}
+  _color: {r: 1, g: 0.49563932, b: 0, a: 1}
   _intensity: 1.05
   _edgeSoftness: 0.9
   _angularSoftness: 0.4
@@ -160975,7 +160975,7 @@ MonoBehaviour:
   _gateThreshold: 0.12
   _gateSoftness: 0.35
   _gateFallback: 1
-  _flickerAmount: 0.15
+  _flickerAmount: 0.34
   _flickerSpeed: 1
   _sortingOrder: 32767
   _cameraDepthOffset: 0.1
@@ -161182,7 +161182,7 @@ MonoBehaviour:
   _shape: 1
   _coneHalfAngle: 30
   _range: 0.14
-  _color: {r: 1, g: 0.79, b: 0.46, a: 1}
+  _color: {r: 1, g: 0.49563932, b: 0, a: 1}
   _intensity: 1.05
   _edgeSoftness: 0.9
   _angularSoftness: 0.4
@@ -161190,7 +161190,7 @@ MonoBehaviour:
   _gateThreshold: 0.12
   _gateSoftness: 0.35
   _gateFallback: 1
-  _flickerAmount: 0.15
+  _flickerAmount: 0.34
   _flickerSpeed: 1
   _sortingOrder: 32767
   _cameraDepthOffset: 0.1
@@ -161397,7 +161397,7 @@ MonoBehaviour:
   _shape: 1
   _coneHalfAngle: 30
   _range: 0.14
-  _color: {r: 1, g: 0.79, b: 0.46, a: 1}
+  _color: {r: 1, g: 0.49563932, b: 0, a: 1}
   _intensity: 1.05
   _edgeSoftness: 0.9
   _angularSoftness: 0.4
@@ -161405,7 +161405,7 @@ MonoBehaviour:
   _gateThreshold: 0.12
   _gateSoftness: 0.35
   _gateFallback: 1
-  _flickerAmount: 0.15
+  _flickerAmount: 0.34
   _flickerSpeed: 1
   _sortingOrder: 32767
   _cameraDepthOffset: 0.1
