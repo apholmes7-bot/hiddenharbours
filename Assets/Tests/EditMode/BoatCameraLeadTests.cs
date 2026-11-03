@@ -94,7 +94,8 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.AreEqual(RuledLeadSeconds, j.BoatLeadSeconds, 1e-6f, "BoatLeadSeconds" + retune);
             Assert.AreEqual(RuledLagCompensation, j.BoatLeadLagCompensation, 1e-6f, "BoatLeadLagCompensation" + retune);
             Assert.AreEqual(RuledMaxViewFraction, j.BoatLeadMaxViewFraction, 1e-6f, "BoatLeadMaxViewFraction" + retune);
-            Assert.AreEqual(RuledPullBackFraction, j.SpeedPullBackFraction, 1e-6f, "SpeedPullBackFraction" + retune);
+            Assert.AreEqual(0f, j.SpeedPullBackFraction, 1e-6f, "SpeedPullBackFraction" + retune);
+            Assert.AreEqual(0f, j.SpeedPullBackSeaStateFraction, 1e-6f, "SpeedPullBackSeaStateFraction" + retune);
             Assert.AreEqual(RuledPullBackStartMps, j.SpeedPullBackStartMps, 1e-6f, "SpeedPullBackStartMps" + retune);
             Assert.AreEqual(RuledPullBackFullMps, j.SpeedPullBackFullMps, 1e-6f, "SpeedPullBackFullMps" + retune);
             Assert.IsTrue(j.SpeedPullBackWhenCarriedAboard, "SpeedPullBackWhenCarriedAboard" + retune);
@@ -107,7 +108,7 @@ namespace HiddenHarbours.Tests.EditMode
         [Test]
         public void TheShippedPullBack_StartsWhereTheHullsCruise()
         {
-            JuiceSettings s = Shipped().Juice;
+            JuiceSettings s = HistoricalPullBack();
             Assert.AreEqual(0f, CameraFeel.PullBackTarget(RuledPullBackStartMps, 0f, s), "at 1 m/s: nothing yet");
             Assert.AreEqual(0.075f, CameraFeel.PullBackTarget(2.75f, 0f, s), 1e-6f,
                 "half way between 1 and 4.5 m/s: half of 15 %");
@@ -265,22 +266,24 @@ namespace HiddenHarbours.Tests.EditMode
         public void APassengersDeck_PullsBackAtSpeed_WithTheOwnersFlag()
         {
             var go = new GameObject("Cam");
+            var config = ScriptableObject.CreateInstance<GameConfig>();
+            config.Juice = HistoricalPullBack();
             try
             {
-                GameServices.Config = Shipped();
+                GameServices.Config = config;
                 CameraFollow follow = OnTheDeck(go, carried: true);
                 Camera cam = go.GetComponent<Camera>();
-                float baseOrtho = cam.orthographicSize;
+                Assert.AreEqual(8.4375f, cam.orthographicSize, 1e-4f);
 
                 SettleFeel(follow, 480, speed: 6f);
-                Assert.AreEqual(baseOrtho * (1f + RuledPullBackFraction), cam.orthographicSize, 1e-4f,
+                Assert.AreEqual(9.703125f, cam.orthographicSize, 1e-4f,
                     "4 s past 4.5 m/s as a passenger in a flat sea: framing × 1.15");
 
                 SettleFeel(follow, 480, speed: 0f);
-                Assert.AreEqual(baseOrtho, cam.orthographicSize, "stopped: the framing's number, exactly");
+                Assert.AreEqual(8.4375f, cam.orthographicSize, "stopped: the framing's number, exactly");
                 Assert.IsFalse(follow.FeelApplied);
             }
-            finally { Object.DestroyImmediate(go); }
+            finally { Object.DestroyImmediate(go); Object.DestroyImmediate(config); }
         }
 
         [Test]
@@ -309,6 +312,14 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         // ===== rigs ================================================================================
+
+        private static JuiceSettings HistoricalPullBack()
+        {
+            var settings = Shipped().Juice;
+            settings.SpeedPullBackFraction = 0.15f;
+            settings.SpeedPullBackSeaStateFraction = 0.05f;
+            return settings;
+        }
 
         private static GameConfig Shipped()
         {

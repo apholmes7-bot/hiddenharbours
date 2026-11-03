@@ -62,6 +62,7 @@ namespace HiddenHarbours.Tests.PlayMode
             _cam.orthographic = true;
             _cam.aspect = Aspect;                  // pinned: batchmode's screen aspect is not the game's
             _follow = _camGo.AddComponent<CameraFollow>();
+            _follow.ScreenPixelsOverride = new Vector2Int(1920, 1080);
             _follow.Target = null;                 // isolate the zoom from the follow
 
             // ⚠️ AND THE FRAMING EASE TOO. A mode change (ashore ⇄ helm) eases over the camera's own
@@ -125,9 +126,9 @@ namespace HiddenHarbours.Tests.PlayMode
             for (int frame = 0; frame < 5; frame++)
             {
                 yield return null;
-                Assert.AreEqual(5, _follow.PlayerZoomStep, $"frame {frame}: the tier drifted");
-                Assert.AreEqual(Ortho(StepHeight(5)), _cam.orthographicSize, 1e-4f,
-                    $"frame {frame}: the live camera left the x5 pixel-perfect step");
+                Assert.AreEqual(4, _follow.PlayerZoomStep, $"frame {frame}: the tier drifted");
+                Assert.AreEqual(4.21875f, _cam.orthographicSize, 1e-4f,
+                    $"frame {frame}: the live camera left the x4 pixel-perfect step");
             }
         }
 
@@ -139,14 +140,14 @@ namespace HiddenHarbours.Tests.PlayMode
 
             _follow.NudgePlayerZoom(-1);
             yield return null;
-            Assert.AreEqual(3, _follow.PlayerZoomStep);
-            Assert.AreEqual(Ortho(StepHeight(3)), _cam.orthographicSize, 1e-4f);
+            Assert.AreEqual(2, _follow.PlayerZoomStep);
+            Assert.AreEqual(8.4375f, _cam.orthographicSize, 1e-4f);
 
-            _follow.NudgePlayerZoom(+3);
+            _follow.NudgePlayerZoom(+4);
             yield return null;
             Assert.AreEqual(6, _follow.PlayerZoomStep);
-            Assert.AreEqual(Ortho(StepHeight(6)), _cam.orthographicSize, 1e-4f,
-                "three notches in from the widest stop is the closest stop — no stops skipped or invented");
+            Assert.AreEqual(2.8125f, _cam.orthographicSize, 1e-4f,
+                "four notches in from the widest stop is the closest stop — no stops skipped or invented");
         }
 
         // ===== boarding: the boat's ruled tier wins, and the walker's is given back ===============
@@ -156,7 +157,7 @@ namespace HiddenHarbours.Tests.PlayMode
         {
             StandOnFoot();
             yield return null;
-            _follow.NudgePlayerZoom(+2);            // she is zoomed right in when she boards
+            _follow.NudgePlayerZoom(+3);            // she is zoomed right in when she boards
             yield return null;
 
             _follow.OnActiveBoatChanged(new ActiveBoatChanged("boat.punt", 17f));
@@ -164,7 +165,7 @@ namespace HiddenHarbours.Tests.PlayMode
             _follow.TickZoom(200.0);
             yield return null;
 
-            Assert.AreEqual(Ortho(17f), _cam.orthographicSize, 1e-4f,
+            Assert.AreEqual(8.4375f, _cam.orthographicSize, 1e-4f,
                 "the helm frames the HULL's data-driven height — the wheel's rung is not carried aboard");
             Assert.AreEqual(0, _follow.PlayerBandOffset,
                 "…because arriving at a helm releases the band, so she is handed the ruled framing");
@@ -177,7 +178,7 @@ namespace HiddenHarbours.Tests.PlayMode
         {
             StandOnFoot();
             yield return null;
-            _follow.NudgePlayerZoom(+2);
+            _follow.NudgePlayerZoom(+3);
             yield return null;
 
             _follow.OnActiveBoatChanged(new ActiveBoatChanged("boat.punt", 17f));
@@ -190,7 +191,7 @@ namespace HiddenHarbours.Tests.PlayMode
             yield return null;
 
             Assert.AreEqual(6, _follow.PlayerZoomStep);
-            Assert.AreEqual(Ortho(StepHeight(6)), _cam.orthographicSize, 1e-4f,
+            Assert.AreEqual(2.8125f, _cam.orthographicSize, 1e-4f,
                 "ashore she gets the rung she left, not the standing default");
         }
 
@@ -212,8 +213,8 @@ namespace HiddenHarbours.Tests.PlayMode
             for (int frame = 0; frame < 5; frame++)
             {
                 yield return null;
-                Assert.AreEqual(5, _follow.PlayerZoomStep, $"frame {frame}: the walker's rung drifted");
-                Assert.AreEqual(Ortho(StepHeight(5)), _cam.orthographicSize, 1e-4f, $"frame {frame}");
+                Assert.AreEqual(4, _follow.PlayerZoomStep, $"frame {frame}: the walker's rung drifted");
+                Assert.AreEqual(4.21875f, _cam.orthographicSize, 1e-4f, $"frame {frame}");
             }
         }
 
@@ -237,7 +238,7 @@ namespace HiddenHarbours.Tests.PlayMode
             {
                 yield return null;
                 Assert.AreEqual(1, _follow.PlayerBandOffset, $"frame {frame}: the band offset drifted");
-                Assert.AreEqual(Ortho(StepHeight(3)), _cam.orthographicSize, 1e-4f,
+                Assert.AreEqual(5.625f, _cam.orthographicSize, 1e-4f,
                     $"frame {frame}: the live camera left the x3 pixel-perfect stop");
             }
 
@@ -258,7 +259,7 @@ namespace HiddenHarbours.Tests.PlayMode
             _follow.TickZoom(200.0);
             yield return null;
 
-            Assert.AreEqual(Ortho(CameraFollow.DeckWorldHeightMeters), _cam.orthographicSize, 1e-4f,
+            Assert.AreEqual(3.375f, _cam.orthographicSize, 1e-4f,
                 "the deck hands her the deck step first");
             Assert.IsTrue(_follow.WheelIsLive);
             Assert.IsTrue(_follow.NudgePlayerZoom(-1), "one stop wider, to see past the rail");
@@ -267,7 +268,7 @@ namespace HiddenHarbours.Tests.PlayMode
             {
                 yield return null;
                 Assert.AreEqual(-1, _follow.PlayerBandOffset, $"frame {frame}: the band offset drifted");
-                Assert.AreEqual(Ortho(StepHeight(4)), _cam.orthographicSize, 1e-4f,
+                Assert.AreEqual(4.21875f, _cam.orthographicSize, 1e-4f,
                     $"frame {frame}: the live camera left the x4 pixel-perfect stop");
             }
         }
@@ -291,7 +292,7 @@ namespace HiddenHarbours.Tests.PlayMode
             Assert.AreEqual(0, _follow.PlayerBandOffset, "a haul starting is a tier change");
             Assert.IsFalse(_follow.WheelIsLive, "…and the rope is the star while it lives");
             Assert.IsFalse(_follow.NudgePlayerZoom(+1));
-            Assert.AreEqual(Ortho(CameraFollow.HaulWorldHeightMeters), _cam.orthographicSize, 1e-4f);
+            Assert.AreEqual(2.8125f, _cam.orthographicSize, 1e-4f);
         }
 
         // ===== the reader ==========================================================================
@@ -327,7 +328,7 @@ namespace HiddenHarbours.Tests.PlayMode
 
             for (int frame = 0; frame < 20; frame++) yield return null;
 
-            Assert.AreEqual(Ortho(CameraFollow.OnFootWorldHeightMeters), _cam.orthographicSize, 1e-4f,
+            Assert.AreEqual(5.625f, _cam.orthographicSize, 1e-4f,
                 "an untouched wheel leaves the authored on-foot framing exactly where it was");
         }
 
@@ -366,7 +367,7 @@ namespace HiddenHarbours.Tests.PlayMode
                 Assert.AreEqual(0, heard, "a zoom step must publish nothing — it is presentation, not sim");
                 Assert.AreEqual(boundsBefore, GameServices.CurrentRegionBounds,
                     "…and must not touch the region seam the sim and the camera share");
-                Assert.AreEqual(5, _follow.PlayerZoomStep, "…while still having actually zoomed");
+                Assert.AreEqual(4, _follow.PlayerZoomStep, "…while still having actually zoomed");
             }
             finally
             {
