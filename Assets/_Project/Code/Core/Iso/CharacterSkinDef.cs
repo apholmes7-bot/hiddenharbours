@@ -361,6 +361,14 @@ namespace HiddenHarbours.Core
         [Serializable]
         public struct SkinClip
         {
+            [Tooltip("LF hash of an optional calibrated pose contract; empty on ordinary rig clips.")]
+            public string PoseContractSha256;
+            public Vector3[] SeatPins;
+            public Vector3[] HandLeftPins;
+            public Vector3[] HandRightPins;
+            public Vector3[] FootLeftPins;
+            public Vector3[] FootRightPins;
+
             [Tooltip("The rig ANIMS key this clip carries ('idle', 'walk', 'haul', …).")]
             public string Anim;
 

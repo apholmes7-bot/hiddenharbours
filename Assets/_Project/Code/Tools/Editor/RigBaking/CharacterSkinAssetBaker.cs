@@ -203,7 +203,7 @@ namespace HiddenHarbours.Tools.RigBaking
         /// <see cref="CharacterCarryPoseDef"/> asks for <c>buckets</c>. The rig bakes no run at the wheel
         /// or the oars, so there is none to switch on.</para>
         /// </summary>
-        public static readonly string[] CastMeshStates =
+        public static readonly string[] CastMeshStates = WithSeatedHelmStates(new[]
         {
             CharacterSkinStateMap.Idle, CharacterSkinStateMap.Walk,
             CharacterSkinStateMap.Run, CharacterSkinStateMap.Balance,
@@ -216,7 +216,7 @@ namespace HiddenHarbours.Tools.RigBaking
             "hauler", "bench", "chop", "lift",
             "place", "toss", "board_buckets", "board_tray",
             "board_pot", "boardDown_buckets", "boardDown_tray", "boardDown_pot",
-        };
+        });
 
         /// <summary>Where the characters' art defs live, one <c>{stem}Iso.asset</c> each. The
         /// visual-library builder that writes them refreshes in place, so it keeps the
@@ -670,6 +670,8 @@ namespace HiddenHarbours.Tools.RigBaking
                 if (LiveRigIsV9) CharacterSkinExtractor.Load9(host, LiveKit);
                 bake = LiveRigIsV9 ? ComposeV9(host, preset, existing, progress)
                                    : Compose(host, preset, existing, progress);
+                if (LiveKit == CharacterRigKit.Rig10)
+                    AppendSeatedHelms(host, bake.Def, bake.Bones, enable: false);
             }
 
             CharacterSkinDef def = bake.Def;
