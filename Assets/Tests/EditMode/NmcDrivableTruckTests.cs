@@ -106,6 +106,8 @@ namespace HiddenHarbours.Tests.EditMode
                 Assert.That(door.IsAvailable, Is.False, "resting does not offer somebody else's machine");
                 Assert.That(DriveSeats.TryClaim(door, trip), Is.True, "the trip can still claim its own wheel");
                 DriveSeats.ReleaseAllFor(trip);
+                trip.enabled = false;
+                Assert.That(door.IsAvailable, Is.True, "a disabled trip gives the machine back");
             }
             finally { Object.DestroyImmediate(go); }
         }

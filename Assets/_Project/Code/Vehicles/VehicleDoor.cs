@@ -82,8 +82,8 @@ namespace HiddenHarbours.Vehicles
         {
             get
             {
-                // A trip owns this machine even while its driver is at a post and the wheel is free.
-                if (GetComponent<ScheduledTrip>() != null) return false;
+                // An enabled trip owns this machine even while its driver is at a post and the wheel is free.
+                if (TryGetComponent(out ScheduledTrip trip) && trip.enabled) return false;
                 VehicleDef v = Vehicle;
                 if (v == null || !v.IsUsable()) return false;
                 if (_controller == null) _controller = GetComponent<VehicleController>();
