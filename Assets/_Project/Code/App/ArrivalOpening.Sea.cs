@@ -106,7 +106,11 @@ namespace HiddenHarbours.App
                 _seaLive = opening;
                 copy.SetActive(true);
                 bool begun = opening.BeginLocalArrival();
-                if (begun) opening.PlaceLensOnPassenger();
+                if (begun)
+                {
+                    opening.PlaceLensOnPassenger();
+                    opening.OpenCharacterCreator();
+                }
                 EventBus.Publish(new RegionTravelCover(false));
                 return begun;
             }
@@ -184,6 +188,8 @@ namespace HiddenHarbours.App
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         static void ResetSeaJourney()
         {
+            CloseCharacterCreator();
+            _characterCreator = null;
             _seaOrigin = _seaLive = null;
             _seaBooting = false;
             _crossing = null;
