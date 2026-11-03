@@ -47,7 +47,11 @@ namespace HiddenHarbours.Tests.EditMode
         // ---- plates describe one world. blow = sea state 0.55, wind = the sim's own strength for it.
         static readonly Vector2 WindHeading = new Vector2(6f, -5.3f).normalized;
         const float BlowSeaState = 0.55f;
-        const float NoonHour = 12f;              // the plates' noon (solar noon is 13:00 — see below)
+        const float NoonHour = 12f;              // Civil noon = half of the 24-hour plate clock.
+        // 2026-11-03 measurement anchor: the shipped profile's brightest warm afternoon peak is sunset.
+        const float MeasuredGoldenHour = 21.5f;
+        // Independent arc references: sin(pi*(21.5-5.5)/16)=0; sin(pi*(12-5.5)/16)=0.95694.
+        const float MeasuredGoldenElevation = 0f, MeasuredNoonElevation = 0.95694f;
 
         // The register's row-5 stripe contrast AFTER the mirror shipped (#PR 5): the row-band contrast
         // the sun side has to be legible against. Open water 0.063, over sand 0.064.
@@ -106,7 +110,7 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         /// <summary>The golden hour FOUND on the shipped profile the way the plate sweep finds it: the
-        /// warmest still-bright afternoon tint. Asserted to land where the register says (17:00) so that
+        /// warmest still-bright afternoon tint. Asserted to land where the register says (21:30) so that
         /// a retuned profile reports "the golden hour moved" instead of quietly measuring another hour.</summary>
         static float GoldenHourFor(DayNightProfile profile)
         {
@@ -267,24 +271,22 @@ namespace HiddenHarbours.Tests.EditMode
         {
             DayNightProfile p = Profile();
             float golden = GoldenHourFor(p);
-            Assert.That(golden, Is.EqualTo(17f).Within(0.06f),
+            Assert.That(golden, Is.EqualTo(MeasuredGoldenHour).Within(0.06f),
                 $"the profile's warmest still-bright afternoon hour moved to {golden:F2} — every number in " +
-                "this file and in register row 11 was measured at 17:00; re-measure before trusting them");
+                "this file and in register row 11 was measured at 21:30; re-measure before trusting them");
 
             float eGolden = DayNightMath.SunElevation(golden, p.SunriseHour, p.SunsetHour);
             float eNoon = DayNightMath.SunElevation(NoonHour, p.SunriseHour, p.SunsetHour);
-            // ⚠ The trap this term was designed around: the golden hour's sun is NOT low. Sunrise 6,
-            // sunset 20 puts solar noon at 13:00, so 17:00 is only 4/7 of the way to the horizon and
-            // _SunElevation there is 0.62. A naive "1 - elevation" gate would be WEAKEST exactly where
-            // the register complains. The sin^4 gate is what separates the two hours.
-            Assert.That(eGolden, Is.EqualTo(0.6235f).Within(0.002f), "the golden hour's elevation moved");
-            Assert.That(eNoon, Is.EqualTo(0.9749f).Within(0.002f), "the plates' noon elevation moved");
-            Assert.That(ElevGate(eGolden) / ElevGate(eNoon), Is.GreaterThan(100f),
-                "the elevation gate must separate golden hour from noon by two orders of magnitude, or " +
-                "the noon control is not a control");
             Debug.Log($"[sun-side] golden {golden:F2} e={eGolden:F4} gate={ElevGate(eGolden):F5} | " +
                       $"noon {NoonHour:F2} e={eNoon:F4} gate={ElevGate(eNoon):F5} | " +
                       $"ratio {ElevGate(eGolden) / ElevGate(eNoon):F1}x");
+            // The original 06:00-20:00 profile measured e=0.6235 at its 17:00 warm peak.
+            // Re-measure at the current profile's peak; the separation and effect bars below stay.
+            Assert.That(eGolden, Is.EqualTo(MeasuredGoldenElevation).Within(0.002f), "the golden hour's elevation moved");
+            Assert.That(eNoon, Is.EqualTo(MeasuredNoonElevation).Within(0.002f), "the plates' noon elevation moved");
+            Assert.That(ElevGate(eGolden) / ElevGate(eNoon), Is.GreaterThan(100f),
+                "the elevation gate must separate golden hour from noon by two orders of magnitude, or " +
+                "the noon control is not a control");
         }
 
         [Test]

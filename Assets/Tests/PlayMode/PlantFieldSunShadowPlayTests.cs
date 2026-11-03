@@ -19,6 +19,11 @@ namespace HiddenHarbours.Tests.PlayMode
     public class PlantFieldSunShadowPlayTests
     {
         const string Output = "artifacts/shadows/c";
+        // The old 23:00 control is one hour after the shipped profile's full-night boundary.
+        const float AfterNightHours = 1f;
+        // Civil noon is half of the 24-hour clock, retained for the daytime shadow control.
+        const int NoonMinute = 12 * 60;
+        static int NightMinute => Mathf.RoundToInt((DaylightHours.Shared.NightHour + AfterNightHours) * 60f);
         readonly HashSet<GameObject> _residents = new HashSet<GameObject>();
         readonly List<GameObject> _sleeping = new List<GameObject>();
         readonly Dictionary<string, Vector4> _globals = new Dictionary<string, Vector4>();
@@ -133,10 +138,16 @@ namespace HiddenHarbours.Tests.PlayMode
             Assert.That(_field.Definition.SunShadowStrength, Is.EqualTo(1));
         }
 
-        IEnumerator Pin(int day, int minute)
+        IEnumerator Pin(int dayOfSeason, int minute)
         {
             Time.timeScale = 1;
-            double time = (day + minute / 1440.0) * GameServices.Config.SecondsPerDay;
+            var config = GameServices.Config;
+            int day = Enumerable.Range(0, config.DaysPerSeason * 4).First(elapsedDay =>
+            {
+                CalendarDate date = GameCalendar.AtDay(elapsedDay, config.DaysPerSeason, config.StartDayOfYear);
+                return date.Season == Season.HighSummer && date.DayOfSeason == dayOfSeason;
+            });
+            double time = (day + minute / 1440.0) * config.SecondsPerDay;
             GameServices.Clock.SeekTo(time); GameServices.Clock.TimeScale = 0;
             Assert.That(GameServices.Clock.TotalSeconds, Is.EqualTo(time).Within(0.01));
             Color previous = Shader.GetGlobalColor("_DayNightTint"); int stable = 0;
@@ -157,7 +168,7 @@ namespace HiddenHarbours.Tests.PlayMode
 
         [UnityTest] public IEnumerator TheField_CastsByDay()
         {
-            yield return Load(); yield return Pin(44, 720);
+            yield return Load(); yield return Pin(17, NoonMinute);
             Assert.That(Shader.GetGlobalFloat("_SunElevation"), Is.GreaterThan(0));
             Assert.That(_field.ShadowRoot, Is.Not.Null); Assert.That(_field.ShadowRoot.activeSelf, Is.True);
             Assert.That(_field.ShadowDrawCount, Is.GreaterThan(0));
@@ -165,7 +176,7 @@ namespace HiddenHarbours.Tests.PlayMode
 
         [UnityTest] public IEnumerator AtTwentyThree_TheShadowRootIsInactive()
         {
-            yield return Load(); yield return Pin(44, 23 * 60);
+            yield return Load(); yield return Pin(17, NightMinute);
             Assert.That(Shader.GetGlobalFloat("_SunElevation"), Is.LessThanOrEqualTo(0));
             Assert.That(_field.ShadowRoot, Is.Not.Null); Assert.That(_field.ShadowRoot.activeSelf, Is.False);
             Assert.That(_field.ShadowDrawCount, Is.Zero);
@@ -183,10 +194,10 @@ namespace HiddenHarbours.Tests.PlayMode
             _pixel = _camera.GetComponents<Behaviour>().FirstOrDefault(b => b.GetType().Name == "PixelPerfectCamera");
             if (_follow != null) { _followEnabled = _follow.enabled; _follow.enabled = false; }
             if (_pixel != null) { _pixelEnabled = _pixel.enabled; _pixel.enabled = false; }
-            yield return Pair("ginnys-0800", 58, 118, 22.229f, 72.229f, 44, 480, false);
-            yield return Pair("ginnys-1200", 58, 118, 22.229f, 72.229f, 44, 720, false);
-            yield return Pair("ginnys-1700", 58, 118, 22.229f, 72.229f, 44, 1020, false);
-            yield return Pair("landing-high-water-1431", 190.555f, 215.445f, -4.351f, 9.649f, 29, 871, true);
+            yield return Pair("ginnys-0800", 58, 118, 22.229f, 72.229f, 17, 480, false);
+            yield return Pair("ginnys-1200", 58, 118, 22.229f, 72.229f, 17, 720, false);
+            yield return Pair("ginnys-1700", 58, 118, 22.229f, 72.229f, 17, 1020, false);
+            yield return Pair("landing-high-water-1431", 190.555f, 215.445f, -4.351f, 9.649f, 2, 871, true);
         }
 
         IEnumerator Pair(string name, float x0, float x1, float bottom, float top, int day, int minute, bool highWater)
@@ -240,7 +251,7 @@ namespace HiddenHarbours.Tests.PlayMode
             var sheet = new Texture2D(width * 2, height, TextureFormat.RGBA32, false);
             sheet.LoadRawTextureData(rgba); sheet.Apply(); File.WriteAllBytes(Output + "/plates/compare-" + name + ".png", sheet.EncodeToPNG());
             Object.DestroyImmediate(sheet);
-            string caption = $"OFF left | ON right; native panels {width}x{height}; day={day}; minute={minute}; HighSummer; strength=1; held clear visibility=1, sea=0.20; wind/tide/seed live.\n" +
+            string caption = $"OFF left | ON right; native panels {width}x{height}; dayOfSeason={day}; minute={minute}; HighSummer; strength=1; held clear visibility=1, sea=0.20; wind/tide/seed live.\n" +
                 $"station x={x0}..{x1}, y={bottom}..{top}; tide={tide}; changedPixels={changed}; plantChunksInView={plantCount}; shadowDrawsInView OFF/ON=0/{shadowCount}; totalPlantChunks={_field.ChunkCount}; totalShadowDraws={_field.ShadowDrawCount}.\n" +
                 $"Profiler draws OFF/ON={off[0]}/{on[0]}; batches={off[1]}/{on[1]}; <=0 means no positive counter reading.\n";
             File.WriteAllText(Output + "/plates/" + name + ".txt", caption); TestContext.WriteLine(caption);
