@@ -131,10 +131,14 @@ namespace HiddenHarbours.App.Editor
             "DoryOutboard",
             "Punt",
             "PuntUpgraded",
+            // Proposed 3.45 m/s; the carried tender has no picker rung.
+            "ExpeditionYacht120",
             "ConsoleSkiff",
             // Recreation tunable proposal: 4.60 m/s, between console and sport skiff.
             "ExpressCruiser",
             "SportSkiff",
+            // Proposed 4.98 m/s, using the skybridge's engine and handling tunables.
+            "MotorYacht84",
             // 5.08 m/s from the proposed Def, before the 5.19 m/s Mk2.
             "Bowrider",
             // The reshaped sport skiff, immediately after her v1 sister — which is BOTH things at once:
@@ -997,7 +1001,7 @@ namespace HiddenHarbours.App.Editor
         /// The north face carries exactly one fitting and this is it, so a small boat tied up there is
         /// tied to something rather than parked beside nothing.
         /// </summary>
-        public const float DoryMooredX = StPetersWharf.HeadCellX + 0.5f;
+        public static float DoryMooredX => StPetersWharf.DeckFootprint().xMax - StPetersLandingLayout.StandingInset;
 
         /// <summary>
         /// How far north she lies: the pier's NORTH face, plus the fendering gap, plus her own
@@ -1109,11 +1113,11 @@ namespace HiddenHarbours.App.Editor
 
         /// <summary>Bow end of the pocket's centre-line — her own bow at the berth.</summary>
         public static Vector2 BerthPocketFrom => new Vector2(
-            AlongsideBerthX - ArrivalHullLengthMetres * 0.5f, AlongsideBerthY);
+            StPetersLandingLayout.SouthPocketFrom.x, StPetersLandingLayout.SouthPocketFrom.y);
 
         /// <summary>Stern end of the pocket's centre-line — her own stern at the berth.</summary>
         public static Vector2 BerthPocketTo => new Vector2(
-            AlongsideBerthX + ArrivalHullLengthMetres * 0.5f, AlongsideBerthY);
+            StPetersLandingLayout.SouthPocketTo.x, StPetersLandingLayout.SouthPocketTo.y);
 
         /// <summary>The pocket's FLAT bottom: her whole beam, plus the room she is steered in with.</summary>
         public static float BerthPocketThalwegHalfWidth =>
@@ -1140,9 +1144,58 @@ namespace HiddenHarbours.App.Editor
         /// shallower than its own approach is a berth you can reach and cannot lie in.</summary>
         public static float BerthPocketBedElevation => ApproachBedElevation;
 
+        // A separate local cut at the dory's new north berth. The approach and old south pocket stay.
+        public static Vector2 NorthPocketFrom => (Vector2)DoryMooredPos + Vector2.left * (DoryLengthMetres * 0.5f);
+        public static Vector2 NorthPocketTo => (Vector2)DoryMooredPos + Vector2.right * (DoryLengthMetres * 0.5f);
+        public static float NorthPocketThalwegHalfWidth => DoryHalfBeamMetres + BerthPocketMarginMetres;
+        public static float NorthPocketHalfWidth => NorthPocketThalwegHalfWidth + BerthPocketShoulderMetres;
+        public static float NorthPocketBedElevation => ApproachBedElevation;
+        public static Rect NorthPocketRectangle => Rect.MinMaxRect(
+            NorthPocketFrom.x - NorthPocketHalfWidth, DoryMooredY - NorthPocketHalfWidth,
+            NorthPocketTo.x + NorthPocketHalfWidth, DoryMooredY + NorthPocketHalfWidth);
+
         /// <summary>ADR 0028: the ground renders as the splat-shaded field and the painter skips the
         /// ground/fringe tile layers. Flip to false and rebuild for the tiled-coast A/B.</summary>
         public const bool UseSplatGround = true;
+
+        public static void RefreshDevPickerRosterCli()
+        {
+            try { RefreshDevPickerRoster(); EditorApplication.Exit(0); }
+            catch (System.Exception error) { Debug.LogError(error); EditorApplication.Exit(1); }
+        }
+
+        /// <summary>Refresh only the dev picker's serialized roster, preserving the authored scene.</summary>
+        public static void RefreshDevPickerRoster()
+        {
+            string text = File.ReadAllText(ScenePath);
+            var pattern = new System.Text.RegularExpressions.Regex(
+                @"(?m)(^  m_EditorClassIdentifier: HiddenHarbours\.Boats::HiddenHarbours\.Boats\.DevBoatPicker\r?\n  _roster:\r?\n)((?:  - \{fileID: 11400000, guid: [0-9a-f]{32}, type: 2\}\r?\n)+)");
+            var matches = pattern.Matches(text);
+            if (matches.Count != 1) throw new System.InvalidOperationException("St Peters must contain exactly one serialized dev picker roster.");
+            var match = matches[0];
+            string eol = match.Value.Contains("\r\n") ? "\r\n" : "\n";
+            var oldRows = System.Text.RegularExpressions.Regex.Matches(match.Groups[2].Value, @"guid: ([0-9a-f]{32})")
+                .Cast<System.Text.RegularExpressions.Match>().Select(m => m.Groups[1].Value).ToArray();
+            var guids = DevPickerRosterFiles.Select(name => AssetDatabase.AssetPathToGUID(DataBoats + "/" + name + ".asset")).ToArray();
+            for (int i = 0; i < guids.Length; i++)
+            {
+                if (!string.IsNullOrEmpty(guids[i])) continue;
+                // The basic punt is a longstanding generated asset. Preserve its existing reference.
+                if (DevPickerRosterFiles[i] != "Punt" || i == 0 || i + 1 == guids.Length)
+                    throw new System.InvalidOperationException("Missing picker hull: " + DevPickerRosterFiles[i]);
+                int before = System.Array.IndexOf(oldRows, guids[i - 1]);
+                if (before < 0 || before + 2 >= oldRows.Length || oldRows[before + 2] != guids[i + 1])
+                    throw new System.InvalidOperationException("Cannot identify the existing generated punt reference.");
+                guids[i] = oldRows[before + 1];
+            }
+            int at = 0;
+            foreach (string guid in guids) if (at < oldRows.Length && oldRows[at] == guid) at++;
+            if (at != oldRows.Length) throw new System.InvalidOperationException("Roster refresh would remove or reorder an existing hull.");
+            string rows = string.Concat(guids.Select(g => "  - {fileID: 11400000, guid: " + g + ", type: 2}" + eol));
+            string changed = text.Substring(0, match.Groups[2].Index) + rows + text.Substring(match.Groups[2].Index + match.Groups[2].Length);
+            File.WriteAllText(ScenePath, changed, new System.Text.UTF8Encoding(false));
+            Debug.Log("[StPetersBuilder] Refreshed only the dev picker roster: " + guids.Length + " hulls.");
+        }
 
         [MenuItem("Hidden Harbours/Build St Peters Scene")]
         public static void Build()
@@ -1471,6 +1524,8 @@ namespace HiddenHarbours.App.Editor
                 CameraBackground = new Color(0.07f, 0.14f, 0.18f),   // St Peters' cool dawn water
                 PlayerStartPos   = StartSpawnPos,
                 BoatMooredPos    = DoryMooredPos,
+                BoatPictureDatum = StPetersLandingLayout.DatumElevation,
+                BoatPier = StPetersWharf.DeckFootprint(),
                 BoatMooredHeadingDegrees = DoryMooredHeadingDegrees,   // she lies ALONGSIDE, not athwart
                 TideGatedWalk    = true,
                 CurrentSceneName = SceneName,
@@ -2492,6 +2547,8 @@ namespace HiddenHarbours.App.Editor
 
             SetCoastSectors(so, "_coastSectors", CoastSectors);
             so.ApplyModifiedPropertiesWithoutUndo();
+            terrain.ConfigureNorthPocket(NorthPocketFrom, NorthPocketTo, NorthPocketHalfWidth,
+                                         NorthPocketThalwegHalfWidth, NorthPocketBedElevation);
         }
 
         /// <summary>Write the sector ring onto a serialized array field. Element-wise rather than by

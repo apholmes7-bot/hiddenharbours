@@ -428,6 +428,19 @@ namespace HiddenHarbours.Tools.RigBaking
                 "Assets/_Project/Data/Boats/HullMeshes/ExpressCruiserIsoHullMesh.asset", "hullmesh.express_cruiser_iso",
                 new[] { "Assets/_Project/Data/Boats/Visuals/ExpressCruiserIso.asset" }, new[] { "visual.express_cruiser_iso" },
                 false, "Express cruiser 31", extraction: new RigHullExtraction { HullScope = "byId('express_cruiser')" }),
+            new FleetHull("expeditionYacht120", "docs/art/rigs/expeditionYacht120IsoRig.js", "ExpeditionYacht120Iso",
+                "Assets/_Project/Data/Boats/HullMeshes/ExpeditionYacht120IsoHullMesh.asset", "hullmesh.expedition_yacht120_iso",
+                new[] { "Assets/_Project/Data/Boats/Visuals/ExpeditionYacht120Iso.asset" }, new[] { "visual.expedition_yacht120_iso" },
+                false, "Expedition yacht 120", extraction: new RigHullExtraction { HullScope = "byId('expedition_yacht_120')" }),
+            new FleetHull("yachtTender", "docs/art/rigs/yachtTenderIsoRig.js", "YachtTenderIso",
+                "Assets/_Project/Data/Boats/HullMeshes/YachtTenderIsoHullMesh.asset", "hullmesh.yacht_tender_iso",
+                new[] { "Assets/_Project/Data/Boats/Visuals/YachtTenderIso.asset" }, new[] { "visual.yacht_tender_iso" },
+                false, "Yacht tender", extraction: new RigHullExtraction { HullScope = "byId('yacht_tender')" }),
+            new FleetHull("motorYacht84", "docs/art/rigs/motorYacht84IsoRig.js", "MotorYacht84Iso",
+                "Assets/_Project/Data/Boats/HullMeshes/MotorYacht84IsoHullMesh.asset", "hullmesh.motor_yacht84_iso",
+                new[] { "Assets/_Project/Data/Boats/Visuals/MotorYacht84Iso.asset" }, new[] { "visual.motor_yacht84_iso" },
+                false, "Motor yacht 84", extraction: new RigHullExtraction { HullScope = "byId('motor_yacht_84')" }),
+
         };
 
         /// <summary>

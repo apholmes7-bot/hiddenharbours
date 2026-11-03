@@ -260,6 +260,13 @@ namespace HiddenHarbours.Tools.RigBaking
                           "F.forEach(function(f){var n=r[g[f.mat]];if(!t[n])t[n]=M[n];});return t;},{})",
                 schemeListExpr: "schemeIds.map(function(id){var s={G}.SCHEMES[id];return [id,s.name||'',s.note||''];})",
                 defaultSchemeExpr: "defaultScheme"),
+            PublishedWalkPaint("expeditionYacht120", "hullmesh.expedition_yacht120_iso", "ExpeditionYacht120Iso",
+                "paint.expedition_yacht120_", "expedition_yacht_120"),
+            PublishedWalkPaint("yachtTender", "hullmesh.yacht_tender_iso", "YachtTenderIso",
+                "paint.yacht_tender_", "yacht_tender"),
+            PublishedWalkPaint("motorYacht84", "hullmesh.motor_yacht84_iso", "MotorYacht84Iso",
+                "paint.motor_yacht84_", "motor_yacht_84"),
+
         };
 
         /// <summary>
@@ -311,15 +318,23 @@ namespace HiddenHarbours.Tools.RigBaking
                             defaultSchemeExpr: "resolve({}).paint",
                             shimSymbols: new[] { "matsFor" });
 
-        /// <summary>One hull of the sport fisher registry. She keeps the hero lobster's API and her
-        /// own <c>defaultPaint</c>, so this is the hero's row with the names swapped — her four
-        /// schemes are her own (12 materials, a teak and a stripe the lobster has not got).</summary>
+        /// <summary>Paints use the selected hull's public palette and the extractor's scheme-stable grouping.</summary>
         static PaintedHull Painted(SportFisherHull h) =>
-            new PaintedHull(h.Key, h.MeshId, h.AssetName, h.PaintIdPrefix,
-                            matsExpr: "matsFor({0}).MATS",
-                            schemeListExpr: "PAINTS.map(function(p){return [p.id,p.label||'',p.note||''];})",
-                            defaultSchemeExpr: "defaultPaint",
-                            shimSymbols: new[] { "matsFor" });
+            PublishedWalkPaint(h.Key, h.MeshId, h.AssetName, h.PaintIdPrefix, h.Hull);
+
+        static PaintedHull PublishedWalkPaint(string key, string meshId, string asset, string prefix, string hull) =>
+            new PaintedHull(key, meshId, asset, prefix,
+                matsExpr: "schemeIds.slice(0,1).reduce(function(t){" +
+                          "var H={G}.byId('" + hull + "'),D=H.matsFor().MATS,M=H.matsFor({0}).MATS," +
+                          "A=H.schemeIds.map(function(s){return H.matsFor(s).MATS;})," +
+                          "F=H.faceList({}).concat(H.doorFaces(0)),u={},g={},r={};" +
+                          "F.forEach(function(f){u[f.mat]=1;});" +
+                          "Object.keys(D).forEach(function(n){if(u[n]){" +
+                          "var k=JSON.stringify(A.map(function(m){return [m[n].off||0,m[n].ramp];}));" +
+                          "g[n]=k;if(!r[k])r[k]=n;}});" +
+                          "F.forEach(function(f){var n=r[g[f.mat]];if(!t[n])t[n]=M[n];});return t;},{})",
+                schemeListExpr: "byId('" + hull + "').PAINTS.map(function(p){return [p.id,p.label,p.note||''];})",
+                defaultSchemeExpr: "byId('" + hull + "').defaultScheme");
 
         /// <summary>
         /// <b>Hull rigs this baker deliberately does NOT paint, each with the reason</b> — the paint

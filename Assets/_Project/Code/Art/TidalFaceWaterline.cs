@@ -93,9 +93,14 @@ namespace HiddenHarbours.Art
                  "predates this must draw.")]
         [SerializeField] private bool _configured;
 
+        [SerializeField] private Texture2D _heightTexture;
+        [SerializeField] private Vector3 _heightDecode;
+
         private static Material _sharedMaterial;
         private static readonly int TideId = Shader.PropertyToID(TideProperty);
         private static readonly int SeaLevelId = Shader.PropertyToID(SeaLevelProperty);
+        private static readonly int HeightId = Shader.PropertyToID("_HHFaceHeight");
+        private static readonly int HeightDecodeId = Shader.PropertyToID("_HHFaceHeightDecode");
 
         private SpriteRenderer _renderer;
         private MaterialPropertyBlock _block;
@@ -165,6 +170,17 @@ namespace HiddenHarbours.Art
             Apply();
         }
 
+        /// <summary>A retained rig height at each pixel, for several piling rows on one sheet.</summary>
+        public void ConfigureHeight(Texture2D heightTexture, float minRigZ, float heightRange, float datumShift)
+        {
+            _heightTexture = heightTexture;
+            _heightDecode = new Vector3(minRigZ, heightRange, datumShift);
+            _configured = true;
+            Apply();
+        }
+
+        public static float DecodeHeight(float encoded, Vector3 decode) => decode.x + encoded * decode.y - decode.z;
+
         /// <summary>Draw the shipped, uncut picture (or stop) — the A/B switch, applied immediately so a
         /// plate fixture can shoot both halves of a pair on one placed dressing.</summary>
         public void SetRidesTheTide(bool rides)
@@ -202,6 +218,9 @@ namespace HiddenHarbours.Art
                 _lipElevation,
                 IsoGround.HeightScale,
                 _configured && _ridesTheTide ? 1f : 0f));
+            if (_heightTexture != null) _block.SetTexture(HeightId, _heightTexture);
+            _block.SetVector(HeightDecodeId, new Vector4(_heightDecode.x, _heightDecode.y,
+                _heightDecode.z, _heightTexture != null ? 1f : 0f));
             _renderer.SetPropertyBlock(_block);
         }
 

@@ -61,6 +61,10 @@ namespace HiddenHarbours.Tests.PlayMode
         public void SetUp()
         {
             GameServices.Reset();
+            var config = ScriptableObject.CreateInstance<GameConfig>();
+            config.RequireBoatRepairsBeforeBoarding = true;
+            _spawned.Add(config);
+            GameServices.Config = config;
             InteractionGate.Reset();
             EventBus.Clear<ControlModeChanged>();
             EventBus.Clear<ActiveBoatChanged>();

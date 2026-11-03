@@ -66,26 +66,26 @@ MonoBehaviour:
   - Name: dock
     Source: StPetersBuilder.DockZonePos
     Shape: 0
-    A: {x: 211.5, y: -5.8}
-    B: {x: 211.5, y: -5.8}
+    A: {x: 211, y: -0.266548067}
+    B: {x: 211, y: -0.266548067}
     Radius: 0
   - Name: disembark
     Source: StPetersBuilder.DisembarkPos
     Shape: 0
-    A: {x: 211.5, y: -1.9}
-    B: {x: 211.5, y: -1.9}
+    A: {x: 211, y: 3.633452}
+    B: {x: 211, y: 3.633452}
     Radius: 0
   - Name: arrival
     Source: StPetersBuilder.ArrivalPos
     Shape: 0
-    A: {x: 213.5, y: -5.8}
-    B: {x: 213.5, y: -5.8}
+    A: {x: 213, y: -0.266548067}
+    B: {x: 213, y: -0.266548067}
     Radius: 0
   - Name: dory berth
     Source: StPetersBuilder.DoryMooredPos
     Shape: 0
-    A: {x: 213.5, y: 4.25}
-    B: {x: 213.5, y: 4.25}
+    A: {x: 213, y: 7.502202}
+    B: {x: 213, y: 7.502202}
     Radius: 0
   - Name: entrance fairway leg 0
     Source: 'StPetersNavMarks.Entrance: Waypoints, HalfWidthMetres'
@@ -103,13 +103,13 @@ MonoBehaviour:
     Source: 'StPetersNavMarks.Entrance: Waypoints, HalfWidthMetres'
     Shape: 0
     A: {x: 255, y: 0}
-    B: {x: 211.5, y: -5.8}
+    B: {x: 211, y: -0.266548067}
     Radius: 10
   - Name: wharf
     Source: 'StPetersWharf.RootCellX to HeadCellX + 1, MinCellY to MaxCellY + 1'
     Shape: 1
-    A: {x: 183, y: -3}
-    B: {x: 214, y: 3}
+    A: {x: 183, y: 2.533452}
+    B: {x: 213.5, y: 6.252202}
     Radius: 0
   - Name: sandbar
     Source: 'StPetersBuilder.SandbarFrom, SandbarTo, SandbarHalfWidth'
@@ -198,26 +198,26 @@ MonoBehaviour:
   - Name: mark channel.stpeters_entrance.p2
     Source: StPetersNavMarks.Plan(terrain).Marks
     Shape: 0
-    A: {x: 262.9244, y: -9.031903}
-    B: {x: 262.9244, y: -9.031903}
+    A: {x: 262.676239, y: -9.953677}
+    B: {x: 262.676239, y: -9.953677}
     Radius: 0
   - Name: mark channel.stpeters_entrance.s2
     Source: StPetersNavMarks.Plan(terrain).Marks
     Shape: 0
-    A: {x: 247.0756, y: 9.031911}
-    B: {x: 247.0756, y: 9.031911}
+    A: {x: 247.323746, y: 9.953685}
+    B: {x: 247.323746, y: 9.953685}
     Radius: 0
   - Name: mark channel.stpeters_entrance.p3
     Source: StPetersNavMarks.Plan(terrain).Marks
     Shape: 0
-    A: {x: 212.8216, y: -15.71228}
-    B: {x: 212.8216, y: -15.71228}
+    A: {x: 211.060577, y: -10.2663651}
+    B: {x: 211.060577, y: -10.2663651}
     Radius: 0
   - Name: mark channel.stpeters_entrance.s3
     Source: StPetersNavMarks.Plan(terrain).Marks
     Shape: 0
-    A: {x: 210.1784, y: 4.112279}
-    B: {x: 210.1784, y: 4.112279}
+    A: {x: 210.939423, y: 9.733269}
+    B: {x: 210.939423, y: 9.733269}
     Radius: 0
   - Name: mark channel.stpeters_bar_gut.p0
     Source: StPetersNavMarks.Plan(terrain).Marks

@@ -86,9 +86,32 @@ namespace HiddenHarbours.Tools.RigBaking
         {
             FieldInfo field = target.GetType().GetField(name, BindingFlags.Instance | BindingFlags.Public);
             if (field == null) throw new ArgumentException(target.GetType().Name + "." + name + ": field missing");
+            if (typeof(UnityEngine.Object).IsAssignableFrom(field.FieldType))
+            {
+                field.SetValue(target, ReadReference(field, value));
+                return;
+            }
             field.SetValue(target, value == null ? null : field.FieldType.IsEnum
                 ? Enum.ToObject(field.FieldType, Convert.ToInt32(value, CultureInfo.InvariantCulture))
                 : Convert.ChangeType(value, field.FieldType, CultureInfo.InvariantCulture));
+        }
+
+        static UnityEngine.Object ReadReference(FieldInfo field, object value)
+        {
+            if (value == null || value is string text && text == "null") return null;
+            if (value is string reference)
+            {
+                var match = System.Text.RegularExpressions.Regex.Match(reference,
+                    @"^\{\s*fileID:\s*11400000,\s*guid:\s*([0-9a-fA-F]{32}),\s*type:\s*2\s*\}$");
+                if (match.Success)
+                {
+                    string guid = match.Groups[1].Value;
+                    var asset = AssetDatabase.LoadAssetAtPath(AssetDatabase.GUIDToAssetPath(guid), field.FieldType);
+                    if (asset == null) throw new FormatException(field.Name + ": reference " + guid + " did not load as " + field.FieldType.Name);
+                    return asset;
+                }
+            }
+            throw new FormatException(field.Name + ": unsupported reference value " + value);
         }
     }
 }

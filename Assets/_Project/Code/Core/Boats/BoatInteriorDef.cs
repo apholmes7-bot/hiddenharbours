@@ -3,6 +3,29 @@ using UnityEngine;
 
 namespace HiddenHarbours.Core
 {
+    /// <summary>Whether an external threshold has a movable leaf. Zero preserves existing assets.</summary>
+    public enum BoatInteriorDoorOpeningMode
+    {
+        Leafed = 0,
+        AlwaysOpen = 1,
+    }
+
+    /// <summary>An open connection within one sole. It has no cabin transition or interaction.</summary>
+    [Serializable]
+    public sealed class BoatInteriorPassage
+    {
+        public string Id = "";
+        public string LevelId = "";
+        public string RigLevelId = "";
+        public float SoleZMeters;
+        public string WallAxis = "";
+        public float WallAtMeters;
+        public Vector2 ApertureMeters;
+        public float ClearWidthMeters;
+        public float ClearHeightMeters;
+        public string Reason = "";
+    }
+
     /// <summary>How a cabin door actually opens — the sidecars' <c>THRESHOLD.mechanism</c>.</summary>
     public enum BoatInteriorDoorMechanism
     {
@@ -90,6 +113,9 @@ namespace HiddenHarbours.Core
     {
         [Tooltip("Optional authored entry surface at the head of this door's stair. Empty means legacy.")]
         public BoatInteriorEntryLanding EntryLanding;
+        [Tooltip("Leafed keeps the existing shut-on-load door; AlwaysOpen is an external opening with no leaf.")]
+        public BoatInteriorDoorOpeningMode OpeningMode = BoatInteriorDoorOpeningMode.Leafed;
+        public string OpeningReason = "";
 
         [Tooltip("The sidecar's threshold id — 'entry', 'sky_entry'.")]
         public string Id = "";
@@ -317,6 +343,9 @@ namespace HiddenHarbours.Core
         [Tooltip("Additional doors beyond the main threshold — the 90's skylounge slider onto the aft " +
                  "deck. Empty on every hull with one way in.")]
         public BoatInteriorDoor[] AdditionalDoors = Array.Empty<BoatInteriorDoor>();
+
+        [Tooltip("Open passages within their own sole. These never enter or exit the cabin.")]
+        public BoatInteriorPassage[] InternalPassages = Array.Empty<BoatInteriorPassage>();
 
         [Tooltip("What you can use inside. Ids append-only from the kit forward.")]
         public BoatInteriorAnchor[] Anchors = Array.Empty<BoatInteriorAnchor>();

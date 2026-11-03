@@ -37,7 +37,7 @@ namespace HiddenHarbours.Tests.EditMode
 
         // The shipped range as ladder steps. Steps ASCEND inward, so "closest" is the larger number.
         private const int ClosestStep = 6;  // 5.625 m — the live-haul step, the tightest the game ships
-        private const int FarthestStep = 3; // 11.25 m — one stop wider than standing on foot
+        private const int FarthestStep = 2; // 11.25 m — one stop wider than standing on foot
 
         // The aboard band (owner ruling 2026-08-22): a test hull, the stop it lands on, and the deck's.
         private const float PuntHeight = 17f;   // an authored hull framing between two stops, on purpose
@@ -199,16 +199,16 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         [Test]
-        public void TheShippedRange_IsFourStopsWideAndBracketsTheStandingView()
+        public void TheShippedRange_IsFiveStopsWideAndBracketsTheStandingView()
         {
             int standing = CameraZoomPolicy.StepForWorldHeight(
                 CameraFollow.OnFootWorldHeightMeters, Ppu, ScreenH);
 
-            Assert.AreEqual(4, standing, "today's on-foot framing quantises to the x4 stop");
+            Assert.AreEqual(3, standing, "today's on-foot framing quantises to the x3 stop");
             Assert.That(standing, Is.InRange(FarthestStep, ClosestStep),
                 "the walker's home rung must be inside the range, or the wheel starts out of bounds");
-            Assert.AreEqual(4, ClosestStep - FarthestStep + 1,
-                "four stops: one out from standing, and three in toward the interior close-up");
+            Assert.AreEqual(5, ClosestStep - FarthestStep + 1,
+                "five stops: one out from standing, and three in toward the interior close-up");
         }
 
         // ===== the shipped clamps vs the ladder (the anti-drift tripwire) ===========================
@@ -221,10 +221,10 @@ namespace HiddenHarbours.Tests.EditMode
             // (a PPU change, a design-screen change) and leaves those literals behind.
             PlayerZoomSettings shipped = PlayerZoomSettings.Default;
 
-            Assert.AreEqual(CameraZoomPolicy.WorldHeightForStep(ClosestStep, Ppu, ScreenH),
+            Assert.AreEqual(5.625f,
                 shipped.ClosestWorldHeightMeters, 1e-5f,
                 "the closest clamp must BE the x6 stop, not a number that merely rounds to it");
-            Assert.AreEqual(CameraZoomPolicy.WorldHeightForStep(FarthestStep, Ppu, ScreenH),
+            Assert.AreEqual(16.875f,
                 shipped.FarthestWorldHeightMeters, 1e-5f,
                 "the farthest clamp must BE the x3 stop");
             Assert.IsTrue(shipped.WheelEnabled, "the wheel ships on — the ruling is a feature, not a flag");
@@ -347,7 +347,7 @@ namespace HiddenHarbours.Tests.EditMode
             try
             {
                 CameraFollow follow = WalkingRig(go);
-                Assert.AreEqual(Ortho(CameraFollow.OnFootWorldHeightMeters),
+                Assert.AreEqual(5.625f,
                     go.GetComponent<Camera>().orthographicSize, 1e-4f);
                 Assert.AreEqual(CameraFollow.OnFootWorldHeightMeters,
                     follow.PlayerZoomWorldHeightMeters, 1e-4f);
@@ -365,9 +365,9 @@ namespace HiddenHarbours.Tests.EditMode
 
                 Assert.IsTrue(follow.NudgePlayerZoom(+1), "a notch inside the range moves the tier");
 
-                Assert.AreEqual(5, follow.PlayerZoomStep);
-                Assert.AreEqual(Ortho(StepHeight(5)), go.GetComponent<Camera>().orthographicSize, 1e-4f,
-                    "the view lands on the x5 stop — the same framing deck work uses");
+                Assert.AreEqual(4, follow.PlayerZoomStep);
+                Assert.AreEqual(4.21875f, go.GetComponent<Camera>().orthographicSize, 1e-4f,
+                    "the view lands on the x4 stop — the same framing deck work uses");
             }
             finally { UnityEngine.Object.DestroyImmediate(go); }
         }
@@ -382,8 +382,8 @@ namespace HiddenHarbours.Tests.EditMode
                 follow.NudgePlayerZoom(+2);
                 follow.NudgePlayerZoom(-2);
 
-                Assert.AreEqual(4, follow.PlayerZoomStep);
-                Assert.AreEqual(Ortho(CameraFollow.OnFootWorldHeightMeters),
+                Assert.AreEqual(3, follow.PlayerZoomStep);
+                Assert.AreEqual(5.625f,
                     go.GetComponent<Camera>().orthographicSize, 1e-4f,
                     "back home is the authored framing, not a rung that merely quantises to it");
             }
@@ -416,8 +416,8 @@ namespace HiddenHarbours.Tests.EditMode
             {
                 CameraFollow follow = AtTheHelm(go, PuntHeight);
 
-                Assert.AreEqual(Ortho(PuntHeight), go.GetComponent<Camera>().orthographicSize, 1e-4f,
-                    "arriving at the helm hands her the hull's ruled framing, untouched");
+                Assert.AreEqual(8.4375f, go.GetComponent<Camera>().orthographicSize, 1e-4f,
+                    "arriving at the helm hands her the stop selected by the hull's ruled framing");
                 Assert.IsTrue(follow.WheelIsLive, "…and the wheel is live there now (ruling 2026-08-22)");
 
                 Assert.IsTrue(follow.NudgePlayerZoom(+1));
@@ -428,9 +428,8 @@ namespace HiddenHarbours.Tests.EditMode
 
                 Assert.IsTrue(follow.NudgePlayerZoom(-1));
                 Assert.AreEqual(0, follow.PlayerBandOffset);
-                Assert.AreEqual(Ortho(PuntHeight), go.GetComponent<Camera>().orthographicSize, 1e-4f,
-                    "…and back at offset zero she is on the AUTHORED hull height byte-for-byte, not " +
-                    "on the step it merely quantises to");
+                Assert.AreEqual(8.4375f, go.GetComponent<Camera>().orthographicSize, 1e-4f,
+                    "…and back at offset zero she is on the hull's selected stop");
             }
             finally { UnityEngine.Object.DestroyImmediate(go); }
         }
@@ -478,13 +477,13 @@ namespace HiddenHarbours.Tests.EditMode
                     new TrapHaulState(TrapHaulPhase.Hauling, 0.5f, 0.1f, false)));
                 follow.TickZoom(30.0);
 
-                Assert.AreEqual(Ortho(CameraFollow.HaulWorldHeightMeters),
+                Assert.AreEqual(2.8125f,
                     go.GetComponent<Camera>().orthographicSize, 1e-4f,
                     "a haul starting is a tier change: her band is released and the rope is the star");
                 Assert.AreEqual(0, follow.PlayerBandOffset);
                 Assert.IsFalse(follow.WheelIsLive, "and the haul framing is ruled outright while it lives");
                 Assert.IsFalse(follow.NudgePlayerZoom(-2));
-                Assert.AreEqual(Ortho(CameraFollow.HaulWorldHeightMeters),
+                Assert.AreEqual(2.8125f,
                     go.GetComponent<Camera>().orthographicSize, 1e-4f);
             }
             finally { UnityEngine.Object.DestroyImmediate(go); }
@@ -503,7 +502,7 @@ namespace HiddenHarbours.Tests.EditMode
                 follow.OnControlModeChanged(new ControlModeChanged(ControlMode.OnDeck));
                 follow.TickZoom(200.0);
                 Assert.AreEqual(0, follow.PlayerBandOffset, "stepping onto the deck releases the band");
-                Assert.AreEqual(Ortho(CameraFollow.DeckWorldHeightMeters),
+                Assert.AreEqual(3.375f,
                     go.GetComponent<Camera>().orthographicSize, 1e-4f,
                     "…and the deck hands her the deck step, not the helm's leftover zoom");
 
@@ -511,7 +510,7 @@ namespace HiddenHarbours.Tests.EditMode
                 follow.OnControlModeChanged(new ControlModeChanged(ControlMode.Aboard));
                 follow.TickZoom(300.0);
                 Assert.AreEqual(0, follow.PlayerBandOffset, "and back the other way, the same");
-                Assert.AreEqual(Ortho(PuntHeight), go.GetComponent<Camera>().orthographicSize, 1e-4f);
+                Assert.AreEqual(8.4375f, go.GetComponent<Camera>().orthographicSize, 1e-4f);
             }
             finally { UnityEngine.Object.DestroyImmediate(go); }
         }
@@ -537,7 +536,7 @@ namespace HiddenHarbours.Tests.EditMode
 
                 follow.OnActiveBoatChanged(new ActiveBoatChanged("boat.dragger", 40f));
                 Assert.AreEqual(0, follow.PlayerBandOffset, "a DIFFERENT hull is a tier change");
-                Assert.AreEqual(Ortho(40f), go.GetComponent<Camera>().orthographicSize, 1e-4f,
+                Assert.AreEqual(16.875f, go.GetComponent<Camera>().orthographicSize, 1e-4f,
                     "…and the new hull is framed as IT was ruled, not as the last one was looked at");
             }
             finally { UnityEngine.Object.DestroyImmediate(go); }
@@ -552,7 +551,7 @@ namespace HiddenHarbours.Tests.EditMode
             try
             {
                 CameraFollow follow = WalkingRig(go);
-                follow.NudgePlayerZoom(+2);
+                follow.NudgePlayerZoom(+3);
                 Assert.AreEqual(ClosestStep, follow.PlayerZoomStep);
 
                 follow.OnActiveBoatChanged(new ActiveBoatChanged("boat.punt", PuntHeight));
@@ -567,7 +566,7 @@ namespace HiddenHarbours.Tests.EditMode
                 follow.TickZoom(300.0);
                 Assert.AreEqual(0, follow.PlayerBandOffset);
                 Assert.AreEqual(ClosestStep, follow.PlayerZoomStep, "her tier survived the trip");
-                Assert.AreEqual(Ortho(StepHeight(ClosestStep)),
+                Assert.AreEqual(2.8125f,
                     go.GetComponent<Camera>().orthographicSize, 1e-4f);
             }
             finally { UnityEngine.Object.DestroyImmediate(go); }
@@ -590,8 +589,8 @@ namespace HiddenHarbours.Tests.EditMode
                 Assert.IsTrue(follow.WheelIsLive, "the wheel must be hers from the first frame");
 
                 Assert.IsTrue(follow.NudgePlayerZoom(+1));
-                Assert.AreEqual(5, follow.PlayerZoomStep);
-                Assert.AreEqual(Ortho(StepHeight(5)), cam.orthographicSize, 1e-4f);
+                Assert.AreEqual(4, follow.PlayerZoomStep);
+                Assert.AreEqual(4.21875f, cam.orthographicSize, 1e-4f);
             }
             finally { UnityEngine.Object.DestroyImmediate(go); }
         }
@@ -605,20 +604,20 @@ namespace HiddenHarbours.Tests.EditMode
             try
             {
                 CameraFollow follow = WalkingRig(go);
-                follow.NudgePlayerZoom(+2);                          // she likes it close
+                follow.NudgePlayerZoom(+3);                          // she likes it close
                 Assert.AreEqual(6, follow.PlayerZoomStep);
 
                 follow.OnActiveBoatChanged(new ActiveBoatChanged("boat.punt", 17f));
                 follow.OnControlModeChanged(new ControlModeChanged(ControlMode.Aboard));
                 follow.TickZoom(20.0);
-                Assert.AreEqual(Ortho(17f), go.GetComponent<Camera>().orthographicSize, 1e-4f,
+                Assert.AreEqual(8.4375f, go.GetComponent<Camera>().orthographicSize, 1e-4f,
                     "the hull's ruled framing wins outright while aboard");
 
                 follow.OnControlModeChanged(new ControlModeChanged(ControlMode.OnFoot));
                 follow.TickZoom(30.0);
 
                 Assert.AreEqual(6, follow.PlayerZoomStep, "her tier survived the trip");
-                Assert.AreEqual(Ortho(StepHeight(6)), go.GetComponent<Camera>().orthographicSize, 1e-4f,
+                Assert.AreEqual(2.8125f, go.GetComponent<Camera>().orthographicSize, 1e-4f,
                     "ashore she gets her own rung back — not the standing default");
             }
             finally { UnityEngine.Object.DestroyImmediate(go); }
@@ -660,7 +659,7 @@ namespace HiddenHarbours.Tests.EditMode
                 CameraFollow follow = WalkingRig(go);
                 Assert.IsFalse(follow.WheelIsLive);
                 Assert.IsFalse(follow.NudgePlayerZoom(+1));
-                Assert.AreEqual(Ortho(CameraFollow.OnFootWorldHeightMeters),
+                Assert.AreEqual(5.625f,
                     go.GetComponent<Camera>().orthographicSize, 1e-4f);
             }
             finally
@@ -738,8 +737,8 @@ namespace HiddenHarbours.Tests.EditMode
 
                 Assert.AreEqual(1, notches, "the shipped notch size must be the shipped device's detent");
                 Assert.IsTrue(follow.NudgePlayerZoom(notches));
-                Assert.AreEqual(5, follow.PlayerZoomStep, "one detent, one rung — no more, no less");
-                Assert.AreEqual(Ortho(StepHeight(5)), go.GetComponent<Camera>().orthographicSize, 1e-4f);
+                Assert.AreEqual(4, follow.PlayerZoomStep, "one detent, one rung — no more, no less");
+                Assert.AreEqual(4.21875f, go.GetComponent<Camera>().orthographicSize, 1e-4f);
             }
             finally { UnityEngine.Object.DestroyImmediate(go); }
         }

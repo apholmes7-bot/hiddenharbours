@@ -115,7 +115,9 @@ namespace HiddenHarbours.Tests.RigBaking
             var report = new StringBuilder();
             // Added after generators: one hull per rig through the rig's published scope.
             var scopedSingles = new Dictionary<string, string>
-                { ["goFast"] = "go_fast", ["bowrider"] = "bowrider", ["expressCruiser"] = "express_cruiser" };
+                { ["goFast"] = "go_fast", ["bowrider"] = "bowrider", ["expressCruiser"] = "express_cruiser",
+                  ["expeditionYacht120"] = "expedition_yacht_120", ["yachtTender"] = "yacht_tender",
+                  ["motorYacht84"] = "motor_yacht_84" };
             foreach (FleetHull hull in HullMeshFleet.OneHullPerRig)
             {
                 if (scopedSingles.TryGetValue(hull.Key, out string id))

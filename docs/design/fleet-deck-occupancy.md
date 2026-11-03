@@ -15,7 +15,8 @@ does the shared 12 cover her?* A hull that demands more does not crash and does 
 (`IsoFacetHullRenderer.ClaimSlot`). It is a visual regression, not a fault, and it is the failure
 this document exists to see coming.
 
-**Status (2026-08-14).** Measured and pinned by `FleetDeckOccupancyTableTests`. Like the flotation
+**Status (2026-08-14; the sport fishers re-measured 2026-10-24 on kit 4's rig).** Measured and pinned
+by `FleetDeckOccupancyTableTests`. Like the flotation
 table, **nothing here is on an asset**, and for the same reason: `lobsterBoatVariantsIsoRig.js`,
 `zodiacIsoRig.js`, `sportSkiffMk2IsoRig.js` and `sportFisherIsoRig2.js` are all in
 `HullMeshFleet.NotHulls`, so there is no `BoatDeckGearDef` to write a mount onto. There is also no
@@ -24,7 +25,7 @@ field to write to even once they bake — the capacity is global. The table is t
 
 **Headline.** ✅ **All 23 hulls fit inside 12 as the shipped pattern actually dresses a deck.**
 ⚠️ **20 of the 23 overflow if every anchor their own rig defines is dressed** — the 18 lobster
-variants by 3, the sport fisher by 5 and 10. §5 is that finding and what to do about it.
+variants by 3, the sport fisher by 4 and 7. §5 is that finding and what to do about it.
 
 ---
 
@@ -97,8 +98,8 @@ further anchor the hull's own rig defines but nothing places yet (§5).
 | zodiac hurricane | 7.0 | 4 | 0 | 0 | 0 | **4** | 0 | **4** |
 | zodiac frc | 6.4 | 1 | 0 | 0 | 0 | **1** | 0 | **1** |
 | sport skiff v2 | 7.0 | 1 | 0 | 0 | 0 | **1** | 3 | **4** |
-| sport fisher convertible | 16.2 | 4 | 0 | 0 | 0 | **4** | 13 | **17** |
-| sport fisher skybridge | 27.4 | 4 | 0 | 0 | 0 | **4** | 18 | **22** |
+| sport fisher convertible | 16.2 | 4 | 0 | 0 | 0 | **4** | 12 | **16** |
+| sport fisher skybridge | 27.4 | 4 | 0 | 0 | 0 | **4** | 15 | **19** |
 
 **All 18 lobster variants carry one row.** Their anchor sets are byte-identical across every
 `(size, style, region)` cell — measured, not assumed: `helm 1 · hauler 1 · tubs 5 · mast 1`, 2 deck
@@ -119,9 +120,11 @@ finding `fleet-flotation.md` §3 recorded for the planking.
 - **sport skiff v2** — `sportSkiffMk2IsoRig.js`: `TUBS` line 1007 (3), `HELM` 999, `PILOT` 1013.
   `HELM` is the leaning-post cushion top and `PILOT` is the sole in front of it — one station, one
   person, counted once. `MOUNTS` (992) are the two outboards, excluded per §1.
-- **sport fisher** — `sportFisherIsoRig2.js`: `RODS` 867, `TUBS` 878, `MEZZ` 885, `CHAIR` 886, per-build
-  specs at 961-964 (convertible) and 1032-1035 (skybridge). Four crew stations — `HELM`,
-  `TOWER_STATION`, `CHAIR`, `MEZZ` — at four separate heights (convertible 4.80 / 7.10 / 1.45 / 2.17 m),
+- **sport fisher** — `sportFisherIsoRig2.js` (kit 4): `RODS` 1207-1208 (the rocket launcher plus the
+  covering-board rods), `TUBS` 1210, `MEZZ` and `CHAIR` 1213; per-build specs from line 1641 (skybridge)
+  and 1728 (convertible), with `capRods` and `tubs` at 1656 / 1743 and `rocket` at 1693 / 1773. Four crew
+  stations — `HELM`, `TOWER_STATION`, `CHAIR`, `MEZZ` — at four separate heights (convertible
+  4.40 / 8.00 / 1.88 / 2.16 m),
   which is the sportfisher scene: captain in the tower, angler in the chair, hands in the cockpit and
   on the mezzanine.
 
@@ -144,8 +147,8 @@ than the shipped pattern currently dresses**, and if a later lane dresses them a
 | hull | committed | + dressable | ceiling | over 12 by |
 | --- | --: | --- | --: | --: |
 | each lobster variant | 10 | 5 crate anchors (`tubSlots`) | 15 | **3** |
-| sport fisher convertible | 4 | 4 tubs + 9 rod mounts | 17 | **5** |
-| sport fisher skybridge | 4 | 5 tubs + 13 rod mounts | 22 | **10** |
+| sport fisher convertible | 4 | 2 tubs + 10 rod mounts | 16 | **4** |
+| sport fisher skybridge | 4 | 2 tubs + 13 rod mounts | 19 | **7** |
 
 **The lobster overflow is the interesting one**, because it is not hypothetical arithmetic about a
 hull nobody has built: the *committed* lobster boat has those same 5 crate anchors today
@@ -176,12 +179,15 @@ scope creep (CLAUDE.md rule 8).
 3. **Raise `DeckOccupantSlots`** — last, deliberately, and only with the id-budget trade in §4 on
    the table. It is one constant in two places and `DeckOccupantSlotTests` fails if they disagree.
 
-**⚠️ One thing measured and deliberately not claimed.** The sport fisher's rocket-launcher rods sit
-at z 5.99 / 8.42 m — **below** her tower station (7.10 / 9.85) and well below her masthead
-(9.50 / 11.95). Tower structure therefore stands above and around them and *can* occlude them from
-some facings, so they cannot be waved off as "too high to need a slot." That was the obvious
-argument for shrinking her ceiling and the geometry does not support it; it is recorded here so
-nobody spends the measurement again.
+**⚠️ One thing measured and deliberately not claimed** (re-measured 2026-10-24 on kit 4's rig). The
+sport fisher's rocket-launcher rods stand on her hardtop: at z 6.37 m on the convertible and 9.97 m on
+the skybridge. On the convertible they sit **below** her tower station (8.00), but her tuna tower is
+opt-in, and on her default hardtop build only the nav mast (6.40) stands above them. On the skybridge
+they sit **above** her upper station (8.55) and her hardtop (9.55); only the nav mast (10.00) stands
+higher. So the old argument, that tower structure stands above and around them and can occlude them,
+now holds only for the convertible with her tower built. The obvious argument for shrinking her
+ceiling ("too high to need a slot") is open again. It is **not** decided here (§6): the ceilings
+above still count every rod mount, which is the safe side of the budget.
 
 ## 6. What is not decided here
 

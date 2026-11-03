@@ -143,7 +143,7 @@ namespace HiddenHarbours.Tests.EditMode
                 string guid = AssetDatabase.AssetPathToGUID("Assets/_Project/Data/Vehicles/" + pair.Value + ".asset");
                 Assert.That(guid, Is.Not.Empty, pair.Key);
                 StringAssert.Contains("guid: " + guid, machine.Field("_vehicle"), pair.Key);
-                Assert.That(machine.Field("_drivable"), Is.EqualTo("0"), pair.Key);
+                Assert.That(machine.Field("_drivable"), Is.EqualTo("1"), pair.Key);
             }
             Assert.That(NineMileCreekWharfLandSide.ParkedPickupDefinition("vehicle.nmc_ramp_pickup"),
                 Is.EqualTo("Assets/_Project/Data/Vehicles/Modern3500.asset"));

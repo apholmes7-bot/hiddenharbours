@@ -261,6 +261,8 @@ namespace HiddenHarbours.Art
                 int before = output.Count;
                 bool fits = output.Add(hull.ReflectionHull, hull.ReflectionMesh, mirror, plane, camera)
                     && output.Add(hull.ReflectionLeaf, hull.ReflectionLeafMesh, mirror, plane, camera);
+                for (int leaf = 0; fits && leaf < hull.ReflectionDoorLeafCount; leaf++)
+                    fits = output.Add(hull.ReflectionDoorLeaf(leaf), hull.ReflectionDoorLeafMesh(leaf), mirror, plane, camera);
                 // Mesh fittings are explicitly owned by this hull and use the facet shader.
                 // The supplied List overload allocates only when authored topology grows.
                 hull.GetComponentsInChildren(false, output.Fittings);

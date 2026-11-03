@@ -106,6 +106,7 @@ namespace HiddenHarbours.App.Editor
             var opening = go.AddComponent<ArrivalOpening>();
             opening.Configure(skipper, Route(), Berth(), BerthHeadingDegrees(), StepAshore(),
                               StPetersBuilder.ApproachBedElevation);
+            opening.ConfigureHullPictureDatum(StPetersLandingLayout.DatumElevation);
 
             // ⭐ THE GAME OPENS BELOW HIS DECK. Stated by the REGION rather than left to a component
             // default, for the same reason the route, the berth and the landing are stated here: where a

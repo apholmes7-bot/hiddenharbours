@@ -36,6 +36,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 0430578bb881748d96c313c9fefa1912, type: 2}
   - {fileID: 11400000, guid: e559f57ad38bea0308da54f406a560f9, type: 2}
   - {fileID: 11400000, guid: 371aefe4f233236ad95ee77f204a16b2, type: 2}
+  - {fileID: 11400000, guid: 089e1ffb82c845b8b2d30641d71851ed, type: 2}
   KeptWalls:
   - 000
   - 001
