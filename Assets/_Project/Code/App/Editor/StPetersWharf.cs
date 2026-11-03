@@ -6,6 +6,7 @@ using UnityEngine;
 using HiddenHarbours.Core;                // ITidalTerrain — the deck height is MEASURED off the terrain
 using HiddenHarbours.Art;                 // SpriteShadow — the standing fittings cast (sun and lamp)
 using HiddenHarbours.Art.Editor;          // WharfKitCatalog — the kit's published semantic map
+using HiddenHarbours.Tools.RigBaking;
 
 namespace HiddenHarbours.App.Editor
 {
@@ -15,18 +16,11 @@ namespace HiddenHarbours.App.Editor
     /// modest, but can take powerboats there."</i>). Geometry and the auto-tile decisions are pure and
     /// public so a test can assert the pier without a scene; <see cref="Place"/> does the Unity work.
     ///
-    /// <para><b>Sprites, not a tilemap — and the kit's cell is why.</b> A wharf cell is <b>32 × 56 px</b>,
-    /// not 32 × 32: the top 32 rows are the deck (the tile) and the bottom 24 are the vertical face and its
-    /// waterline, which <b>overhang downward over the cell below</b>. So the kit only reads right if it is
-    /// drawn strictly BACK TO FRONT — north rows first — or a face overdraws the deck of its own southern
-    /// neighbour. A single chunked <see cref="UnityEngine.Tilemaps.Tilemap"/> does not give per-row draw
-    /// order for free, and this deck is ~230 cells rather than the coast's six figures, so plain sprites
-    /// with an explicit per-row sorting order are both cheaper to reason about and exactly correct. (The
-    /// coast uses a tilemap for the opposite reason — see <see cref="StPetersShorePainter"/>.)</para>
-    ///
-    /// <para><b>Pivot is TOP-LEFT (0, 1).</b> Centre is right for every other tile sheet in this repo and
-    /// would sink every wharf tile 12 px into the water — consistently enough to read as an art bug rather
-    /// than a placement one. The kit's own importer sets it; this class places against it.</para>
+    /// <para><b>The picture is the pass-two pier.</b> The scoped recipe bakes one sprite with the rig's
+    /// own pivot and a retained height channel. The visual origin is the board's context at the rig's
+    /// chart-datum offset. Under-pier tide occlusion is not yet consumed; it is a declared look finding.
+    /// The legacy cell geometry and variant/sort helpers remain the physical footprint contract and
+    /// the reference for the plate fixture's OFF reconstruction.</para>
     ///
     /// <para><b>The deck is FLOOR, not dressing.</b> It used to be dressing only: <c>TidalWalkability</c>
     /// answered purely from (terrain elevation vs water level), so the simulation saw 4.5 m of open water
@@ -105,6 +99,7 @@ namespace HiddenHarbours.App.Editor
         // row draws last.
         public const int SortingOrderMin = -4;
         public const int SortingOrderMax = 1;
+        public const int BakedDeckSortingOrder = 0;
 
         /// <summary>
         /// Sorting order for a deck row. North (high Y) draws FIRST/behind, south draws LAST/in front —
@@ -164,9 +159,8 @@ namespace HiddenHarbours.App.Editor
         /// geometry): cells <c>[RootCellX, HeadCellX]</c> × <c>[MinCellY, MaxCellY]</c>, each one metre, so
         /// the rect spans <c>HeadCellX + 1</c> and <c>MaxCellY + 1</c> at its far edges.
         /// </summary>
-        public static Rect DeckFootprint() => new Rect(
-            RootCellX, MinCellY,
-            LengthCells, WidthCells);
+        // The atlas grid is retained for the OFF fixture. The active walking top is measured data.
+        public static Rect DeckFootprint() => StPetersLandingLayout.Floor;
 
         /// <summary>
         /// The deck's standing height (m above chart datum), <b>MEASURED off the terrain</b> at the pier
@@ -181,7 +175,7 @@ namespace HiddenHarbours.App.Editor
         /// point because it is the one place where the planks meet walkable ground.</para>
         /// </summary>
         public static float DeckElevationFrom(ITidalTerrain terrain)
-            => terrain.ElevationAt(new Vector2(RootCellX + 0.5f, 0f));
+            => terrain.ElevationAt(StPetersLandingLayout.Datum);
 
         // --- FITTINGS ---------------------------------------------------------------------------------
         // Modest, and each one earns its place: you moor to the bollards, you climb the ladder from a
@@ -205,7 +199,8 @@ namespace HiddenHarbours.App.Editor
         /// is a different line the moment either of them moves. Re-site the pier and the arrival turns
         /// with it.</para>
         /// </summary>
-        public static Vector2 AxisInward() => new Vector2(RootCellX - HeadCellX, 0f).normalized;
+        public static Vector2 AxisInward() =>
+            new Vector2(DeckFootprint().xMin - DeckFootprint().xMax, 0f).normalized;
 
         /// <summary>
         /// The deck edge a hull ties up against: the <b>SOUTH</b> lip.
@@ -270,26 +265,28 @@ namespace HiddenHarbours.App.Editor
         public static List<Fitting> Fittings()
         {
             var list = new List<Fitting>();
-            float southEdge = MinCellY;          // the deck's south lip, in world metres
+            Rect deck = DeckFootprint();
+            float southEdge = deck.yMin;
+            float inset = StPetersLandingLayout.StandingInset;
 
             // Bollards down the mooring edge, from the head back toward the shore.
-            for (int x = HeadCellX - 1; x > RootCellX + 1; x -= BollardSpacing)
-                list.Add(new Fitting { Name = "bollard", Position = new Vector2(x + 0.5f, southEdge + 0.5f) });
+            for (float x = deck.xMax - 1.5f; x > deck.xMin + 1f; x -= BollardSpacing)
+                list.Add(new Fitting { Name = "bollard", Position = new Vector2(x, southEdge + inset) });
 
             // Tyre fenders, offset from the bollards so they read as a separate run of gear.
-            for (int x = HeadCellX - 5; x > RootCellX + 2; x -= BollardSpacing * 2)
-                list.Add(new Fitting { Name = "tyre", Position = new Vector2(x + 0.5f, southEdge) });
+            for (float x = deck.xMax - 5.5f; x > deck.xMin + 2f; x -= BollardSpacing * 2)
+                list.Add(new Fitting { Name = "tyre", Position = new Vector2(x, southEdge) });
 
             // A ladder at the head — how you get aboard a shallow boat at low water, and the one fitting
             // the "modest but takes powerboats" brief genuinely requires.
-            list.Add(new Fitting { Name = "ladder", Position = new Vector2(HeadCellX - 1.5f, southEdge) });
+            list.Add(new Fitting { Name = "ladder", Position = new Vector2(deck.xMax - StPetersLandingLayout.LadderInset, southEdge) });
 
             // The pier's own structure showing at the exposed corners.
-            list.Add(new Fitting { Name = "pilehead", Position = new Vector2(HeadCellX + 0.5f, southEdge + 0.5f) });
-            list.Add(new Fitting { Name = "pilehead", Position = new Vector2(HeadCellX + 0.5f, MaxCellY + 0.5f) });
+            list.Add(new Fitting { Name = "pilehead", Position = new Vector2(deck.xMax - inset, southEdge + inset) });
+            list.Add(new Fitting { Name = "pilehead", Position = new Vector2(deck.xMax - inset, deck.yMax - inset) });
 
             // One cleat by the ladder, for a painter line.
-            list.Add(new Fitting { Name = "cleat", Position = new Vector2(HeadCellX - 3.5f, southEdge + 0.5f) });
+            list.Add(new Fitting { Name = "cleat", Position = new Vector2(deck.xMax - StPetersLandingLayout.CleatInset, southEdge + inset) });
 
             return list;
         }
@@ -316,12 +313,12 @@ namespace HiddenHarbours.App.Editor
         {
             get
             {
-                float fittingRow = MinCellY + 0.5f;                       // where the bollards stand
+                float fittingRow = DeckFootprint().yMin + StPetersLandingLayout.StandingInset;
                 float reach = LightPresets.ReachMetres(LightPresets.Kind.Lightpost);
                 float furthestNorth = fittingRow + reach;
                 // Deck rows are cell centres; take the northernmost that is still within reach.
-                float row = MaxCellY + 0.5f;
-                while (row > furthestNorth && row > MinCellY + 0.5f) row -= 1f;
+                float row = DeckFootprint().yMax - StPetersLandingLayout.StandingInset;
+                while (row > furthestNorth && row > fittingRow) row -= 1f;
                 return row;
             }
         }
@@ -368,7 +365,7 @@ namespace HiddenHarbours.App.Editor
                     "and across the planks the pilehead the dory lies against"),
 
                 LampPosts.OnDeck(LampPosts.DecorFamily, LampPosts.LanternPost,
-                    new Vector2(RootCellX + 1.5f, row), LooksAtTheDeck, deck,
+                    new Vector2(deck.xMin + StPetersLandingLayout.LampRootInset, row), LooksAtTheDeck, deck,
                     "the root: where the planks meet the shore, so the pier can be found from the beach " +
                     "in the dark"),
             };
@@ -400,11 +397,10 @@ namespace HiddenHarbours.App.Editor
         /// than measured is a wharf that floods without anything failing.</param>
         public static int Place(ITidalTerrain terrain)
         {
-            var deck = LoadSheet(WharfKitCatalog.AtlasPath, "WharfAtlas");
-            if (deck.Count == 0)
+            Sprite deck = AssetDatabase.LoadAssetAtPath<Sprite>(StPetersLandingDeckBaker.SheetPath);
+            if (deck == null)
             {
-                Debug.LogWarning($"[StPetersWharf] no slices at {WharfKitCatalog.AtlasPath} — the dock was " +
-                                 "not built. Import/slice the wharf tile kit first.");
+                Debug.LogWarning("[StPetersWharf] the landing's pass-two pier has not been baked/imported.");
                 return 0;
             }
 
@@ -419,22 +415,17 @@ namespace HiddenHarbours.App.Editor
             float deckElevation = DeckElevationFrom(terrain);
             floor.Configure(SurfaceId, DeckFootprint(), deckElevation);
 
-            int placed = 0;
-            foreach (var cell in DeckCellsBackToFront())
-            {
-                int index = WharfKitCatalog.AtlasIndex(DeckMaterial, DeckVariantAt(cell.x, cell.y));
-                if (!deck.TryGetValue(index, out Sprite sprite) || sprite == null) continue;
-
-                var go = new GameObject($"Deck_{cell.x}_{cell.y}");
-                go.transform.SetParent(deckRoot.transform, worldPositionStays: false);
-                // TOP-LEFT pivot: put the sprite's origin at the cell's top-left corner, so the deck fills
-                // the cell and the 24 px face hangs into the cell below (the kit's whole 32x56 contract).
-                go.transform.position = new Vector3(cell.x, cell.y + 1f, 0f);
-                var sr = go.AddComponent<SpriteRenderer>();
-                sr.sprite = sprite;
-                sr.sortingOrder = SortingOrderFor(cell.y);
-                placed++;
-            }
+            var contract = StPetersLandingDeckBaker.ReadContract();
+            var deckVisual = new GameObject(StPetersLayerRefresh.LandingDeckVisualName);
+            deckVisual.transform.SetParent(deckRoot.transform, worldPositionStays: false);
+            deckVisual.transform.position = new Vector3(contract.originX, contract.originY, 0);
+            var deckRenderer = deckVisual.AddComponent<SpriteRenderer>();
+            deckRenderer.sprite = deck;
+            deckRenderer.sortingOrder = BakedDeckSortingOrder;
+            deckVisual.AddComponent<TidalFaceWaterline>().ConfigureHeight(
+                AssetDatabase.LoadAssetAtPath<Texture2D>(StPetersLandingDeckBaker.HeightPath),
+                contract.heightMinRigZ, contract.heightRange, contract.datumShift);
+            int placed = 1;
 
             // Fittings, on their own root and one order above the southernmost deck row so a bollard is
             // never swallowed by the planks it stands on.
@@ -484,8 +475,8 @@ namespace HiddenHarbours.App.Editor
                                         StPetersBuilder.TideMean + StPetersBuilder.TideAmplitude,
                                         "[StPetersWharf]");
 
-            Debug.Log($"[StPetersWharf] Built the one dock: {placed} '{DeckMaterial}' deck tiles over " +
-                      $"{LengthCells} x {WidthCells} m at the ratified berth, drawn back to front, plus " +
+            Debug.Log($"[StPetersWharf] Built the one dock: {placed} pass-two pier sprite over " +
+                      $"{LengthCells} x {WidthCells} m at the ratified berth, plus " +
                       $"{Fittings().Count} fittings ({cleats} of them mooring cleats). The deck is FLOOR: " +
                       $"registered as standable surface '{SurfaceId}' with its deck measured at " +
                       $"{deckElevation:0.00} m above datum, so the on-foot sim stands on the planks and " +
