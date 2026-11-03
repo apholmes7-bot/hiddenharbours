@@ -15,6 +15,38 @@ namespace HiddenHarbours.App.Editor
 {
     public static partial class NineMileCreekWharfLandSide
     {
+        public static void ApplyTrucksTwiceFromCommandLine()
+        {
+            const string evidence = "Evidence~/nmc-h6/trucks";
+            System.IO.Directory.CreateDirectory(evidence);
+            if (UnityEngine.SceneManagement.SceneManager.GetSceneByPath(NineMileCreekLayerRefresh.ScenePath).isLoaded)
+                UnityEditor.SceneManagement.EditorSceneManager.NewScene(UnityEditor.SceneManagement.NewSceneSetup.EmptyScene,
+                    UnityEditor.SceneManagement.NewSceneMode.Single);
+            var plans = NineMileCreekLayerRefresh.Run(false);
+            string operations = string.Join("\n", plans.SelectMany(s => s.Patches).Select(p => p.ToYaml()));
+            System.IO.File.WriteAllText(evidence + "/native-dry-run.yaml", operations);
+            string ready = evidence + "/native-review-ready.txt", proceed = evidence + "/native-review-proceed.txt";
+            if (System.IO.File.Exists(ready) || System.IO.File.Exists(proceed))
+                throw new Refusal("The native review files already exist; use a fresh reviewed launch.");
+            System.IO.File.WriteAllText(ready, DateTime.UtcNow.ToString("o"));
+            Debug.Log("[NmcTrucks] Dry-run operations written; waiting for their named review.");
+            var deadline = DateTime.UtcNow.AddMinutes(5);
+            while (!System.IO.File.Exists(proceed) && DateTime.UtcNow < deadline) System.Threading.Thread.Sleep(200);
+            if (!System.IO.File.Exists(proceed)) throw new Refusal("The native dry run was not reviewed within five minutes.");
+            NineMileCreekLayerRefresh.Run(true);
+            string Sha()
+            {
+                using var hash = System.Security.Cryptography.SHA256.Create();
+                return string.Concat(hash.ComputeHash(System.IO.File.ReadAllBytes(NineMileCreekLayerRefresh.ScenePath)).Select(b => b.ToString("x2")));
+            }
+            string first = Sha();
+            NineMileCreekLayerRefresh.Run(true);
+            string second = Sha();
+            System.IO.File.WriteAllText(evidence + "/native-second-apply-hashes.txt", first + "\n" + second + "\n");
+            if (first != second) throw new Refusal("The trucks' second native apply changed a byte.");
+            Debug.Log("[NmcTrucks] NATIVE APPLY: PASS " + first + " " + second);
+        }
+
         // The Modern 3500's committed six-document authoring is the driveable-machine template.
         static void AddTruckDriveParts(SceneYaml scene, IdAllocator ids, string row, long go, ObjRef vehicle,
             List<long> components, List<(string name, string text)> parts)
