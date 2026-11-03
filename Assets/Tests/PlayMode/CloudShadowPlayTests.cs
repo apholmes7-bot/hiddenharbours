@@ -258,6 +258,7 @@ namespace HiddenHarbours.Tests.PlayMode
             File.WriteAllText(Output + "/motion-floor.txt", motion); TestContext.WriteLine(motion);
             Assert.That(visibleMotion, Is.GreaterThanOrEqualTo(floor), "a person must see the same broken-weather shape move");
             yield return FrameCost();
+            yield return Plate("stp-wharf-1700", 1020, .5f, 0);
             yield return ClearPlate("stp-1700", 1020);
             yield return Plate("stp-noon-overcast", 720, 1, 0);
             yield return ClearPlate("stp-noon-clear-sky", 720);
