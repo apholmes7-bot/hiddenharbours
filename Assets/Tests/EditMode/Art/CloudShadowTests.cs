@@ -17,6 +17,8 @@ namespace HiddenHarbours.Tests.Art.EditMode
         [SetUp] public void SetUp()
         {
             _def = ScriptableObject.CreateInstance<CloudShadowDef>();
+            // Arithmetic fixtures pin their input independently of the owner's visible drift default.
+            _def.DriftMetresPerGameSecondPerMps = .001f;
             _def.Shader = Shader.Find("HiddenHarbours/CloudShadow");
             _host = new GameObject("CloudGuard"); _system = _host.AddComponent<CloudShadowSystem>(); _system.Configure(_def);
             _cameraHost = new GameObject("CloudGuardCamera"); _camera = _cameraHost.AddComponent<Camera>(); _camera.orthographic = true;
