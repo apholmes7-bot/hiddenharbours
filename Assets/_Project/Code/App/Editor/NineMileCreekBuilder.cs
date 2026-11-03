@@ -238,7 +238,7 @@ namespace HiddenHarbours.App.Editor
         /// a neutral name so nothing breaks. WHERE the shipwright's yard really lives is the
         /// coordinator's question — flagged, not settled (plan §10).</para>
         /// </summary>
-        public static Vector3 ShipwrightShedPos => NineMileCreekMainland.BoatShedPos;
+        public static Vector3 ShipwrightShedPos => NineMileCreekWharfYard.Door;
 
         /// <summary>The hard the damaged dory is bought off — and where the used-outboard man stands. On
         /// the spit beside the derelict herself, because the boat you are shown and the boat you are sold
@@ -246,14 +246,14 @@ namespace HiddenHarbours.App.Editor
         public static Vector3 DoryYardPos => NineMileCreekMainland.DoryYardPos;
 
         /// <summary>Hector's barrel — the used-outboard till. DERIVED from where he actually stands
-        /// (<see cref="NineMileCreekPeople.OutboardStallMetres"/> out from the yard toward the water), so
+        /// (<see cref="NineMileCreekPeople.OutboardStallMetres"/> from the yard quay's centre toward its face), so
         /// the man and the counter cannot come apart: a player who can talk to him but not buy from him
         /// has met a decoration.</summary>
         public static Vector3 HectorsBarrelPos
         {
             get
             {
-                Vector2 p = NineMileCreekPeople.Toward(DoryYardPos, NineMileCreekWharf.DeckFootprint().center,
+                Vector2 p = NineMileCreekPeople.Toward(NineMileCreekWharfYard.QuayPost, NineMileCreekWharfYard.QuayFace,
                                                        NineMileCreekPeople.OutboardStallMetres);
                 return new Vector3(p.x, p.y, 0f);
             }
@@ -675,7 +675,8 @@ namespace HiddenHarbours.App.Editor
             NineMileCreekWharf.Place(premise);
 
             // --- BUILDINGS (services + a couple of flavour houses), on the WEST land ---------
-            var shipwrightShed = MakeBuilding("ShipwrightShed",   LoadSpriteAny(ArtShipwright), ShipwrightShedPos, waterSprite, new Color(0.50f, 0.42f, 0.34f));
+            var shipwrightShed = new GameObject(NineMileCreekWharfYard.CatalogueName);
+            shipwrightShed.transform.position = ShipwrightShedPos;
             // The buyer's truck stands on the SPIT among the parked trucks, which is where a buyer stands
             // on a working wharf. See FishBuyerPos for why this is no longer "four metres off the planks"
             // and what the test measures instead.
@@ -846,7 +847,8 @@ namespace HiddenHarbours.App.Editor
             // the damaged-dory offer (buy → owned-but-unusable; pay TryRepair → usable). Its own GO so it
             // doesn't fight the Punt shipwright's offer; west land, beside the shed. Buy/repair screens are
             // ui-ux's, so no dev-input is added here (P already buys the Punt next door).
-            var doryYard = MakeBuilding("ShipwrightDoryYard", LoadSpriteAny(ArtShipwright), DoryYardPos, waterSprite, new Color(0.46f, 0.40f, 0.32f));
+            var doryYard = new GameObject(NineMileCreekWharfYard.DoryTradeName);
+            doryYard.transform.position = DoryYardPos;
             var doryShipwright = doryYard.AddComponent<Shipwright>();
             SetRef(doryShipwright, "_offer", damagedDoryOffer);
             SetString(doryShipwright, "_sellerId", SellerYard);
@@ -874,7 +876,7 @@ namespace HiddenHarbours.App.Editor
             // at the counter, through a dialogue row (design/shop-catalog-and-dialogue-choices.md §3.2).
             // Hector's own conversation is where his outboards will be browsed when he gets a row; until
             // then his till is reachable by the same seams it always was.
-            var outboardStall = new GameObject("UsedOutboardSeller");
+            var outboardStall = new GameObject(NineMileCreekWharfYard.OutboardTradeName);
             // At Hector's own spot rather than an offset off the yard's corner: NineMileCreekPeople
             // already derives where he stands (out from the yard toward the water), and the man and his
             // till coming apart is the exact failure NineMileCreekDoryTests measures.

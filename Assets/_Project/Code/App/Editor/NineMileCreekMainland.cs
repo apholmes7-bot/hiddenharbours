@@ -957,24 +957,16 @@ namespace HiddenHarbours.App.Editor
         public static readonly Vector3 FishStorePos      = new Vector3(120f, 112f, 0f);  // holds; NO processing
         public static readonly Vector3 BaitShedPos       = new Vector3(136f, 132f, 0f);
         public static readonly Vector3 TrapStorePos      = new Vector3(148f, 130f, 0f);
-        public static readonly Vector3 DerelictDoryPos   = new Vector3( 70f, 118f, 0f);  // on the hard (the 2026-07-25 rider)
+        public static Vector3 DerelictDoryPos => NineMileCreekWharfYard.DamagedDory;
         public static readonly Vector3 BoatRampHeadPos   = new Vector3( 66f, 100f, 0f);
         public static readonly Vector3 BoatRampToePos    = new Vector3( 78f,  90f, 0f);
         public static readonly Vector3 HarbourBeaconPos  = new Vector3(184f,  38f, 0f);  // breakwater head
 
         /// <summary>
-        /// THE DORY YARD — the hard the damaged dory is bought off, and where the used-outboard man stands
-        /// at his barrel. ⭐ <b>Added in Phase A-2.</b> A-1 positioned the derelict but not the ground you
-        /// buy her from, and the two cannot be far apart: the boat you are SHOWN and the boat you are SOLD
-        /// have to be the same boat, or §7.2's exit condition becomes two unrelated beats.
-        ///
-        /// <para>8.5 m west-south-west of her, at the spit's landward end — on the made ground, clear of
-        /// her hull, of the boat ramp's head and of the shanty row, and (the constraint that actually
-        /// binds) <b>off the sightline from where the player lands to the derelict</b>, which is what
-        /// <c>NineMileCreekDoryTests</c> measures. It is a YARD, not a shed: the 2026-07-25 ruling says
-        /// the man who sells her here is not a shipwright.</para>
+        /// The yard's four wares use the delivered shed's door anchor. The damaged hull has its own
+        /// key-scene row; the outboard seller keeps the existing derivation on the yard's quay.
         /// </summary>
-        public static readonly Vector3 DoryYardPos       = new Vector3( 64f, 112f, 0f);
+        public static Vector3 DoryYardPos => NineMileCreekWharfYard.Door;
 
         /// <summary>The shanty row — five gable sheds side by side along the yard's north edge, which is
         /// how they stand in the photograph (eight there; five reads as the same place at this scale).</summary>
@@ -1610,12 +1602,12 @@ namespace HiddenHarbours.App.Editor
             new Vector3(-94f, 158f, 0f),
         };
 
-        /// <summary>The nine points the town's buildings stand on today, whose ground the planting keeps clear until
+        /// <summary>The points the town's buildings stand on today, whose ground the planting keeps clear until
         /// each building's wave moves it (NMC H4: every building's exclusion is kept).</summary>
         public static readonly Vector3[] TownBuildings =
         {
             HarbourmasterPos, ChandleryPos, GeneralStorePos, TavernPos, ParishHallPos,
-            HouseNorthPos, HouseNorthWestPos, HouseSouthPos, BoatShedPos,
+            HouseNorthPos, HouseNorthWestPos, HouseSouthPos,
         };
 
         /// <summary>G3's id for each of <see cref="TownLots"/>, in its order.</summary>

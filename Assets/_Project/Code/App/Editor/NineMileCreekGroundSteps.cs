@@ -303,7 +303,8 @@ namespace HiddenHarbours.App.Editor
             };
             var steps = new List<Step>();
             string text = sceneText;
-            foreach (var (name, plan) in planners.Concat(RoadsV4Planners(inputs)).Concat(NineMileCreekWharfLandSide.Planners()))
+            foreach (var (name, plan) in planners.Concat(RoadsV4Planners(inputs)).Concat(NineMileCreekWharfLandSide.Planners())
+                .Concat(NineMileCreekWharfLandSide.YardPlanners()))
             {
                 if (steps.Count == 0 || steps[steps.Count - 1].Name != name) steps.Add(new Step(name));
                 SceneYaml scene = SceneYaml.Parse(text);
