@@ -110,7 +110,7 @@ namespace HiddenHarbours.Art
             if (profile == null) return Color.white;   // no profile → no tint (full daylight); never throw
             float t = TintPhase(hour, profile);
             Color sky = profile.SkyTint.Evaluate(t);
-            float intensity = Mathf.Max(profile.Intensity.Evaluate(t), 0f);
+            float intensity = Mathf.Max(profile.Intensity.Evaluate(IntensityPhase(hour, profile)), 0f);
             Color lit = new Color(sky.r * intensity, sky.g * intensity, sky.b * intensity, 1f);
 
             float dim = WeatherDim(visibility, seaState01, profile);
@@ -125,18 +125,26 @@ namespace HiddenHarbours.Art
 
         /// <summary>Map the clock onto the authored solar keys, using the same hours as the sun.</summary>
         public static float TintPhase(float hour, DayNightProfile profile)
+            => SolarPhase(hour, profile, profile.SunsetHour - profile.WarmKeyBeforeSunsetHours);
+
+        /// <summary>Brightness retains its existing key hours; the warm-colour lead does not retime it.</summary>
+        public static float IntensityPhase(float hour, DayNightProfile profile)
+            => SolarPhase(hour, profile, profile.SunsetHour);
+
+        static float SolarPhase(float hour, DayNightProfile profile, float warmHour)
         {
             float h = Mathf.Repeat(hour, 24f);
             float dawn = Mathf.Clamp(profile.SunriseHour, 0.001f, 23.99f);
             float dusk = Mathf.Clamp(profile.SunsetHour, dawn + 0.001f, 23.995f);
             float night = Mathf.Clamp(profile.NightHour, dusk + 0.001f, 23.999f);
             float noon = (dawn + dusk) * 0.5f;
+            float warm = Mathf.Clamp(warmHour, noon + 0.001f, dusk);
             float morning = Mathf.Clamp(dawn + profile.DawnBlendHours, dawn + 0.001f, noon - 0.001f);
             if (h < dawn) return Mathf.Lerp(0f, 0.20f, h / dawn);
             if (h < morning) return Mathf.Lerp(0.20f, 0.32f, Mathf.InverseLerp(dawn, morning, h));
             if (h < noon) return Mathf.Lerp(0.32f, 0.50f, Mathf.InverseLerp(morning, noon, h));
-            if (h < dusk) return Mathf.Lerp(0.50f, 0.75f, Mathf.InverseLerp(noon, dusk, h));
-            if (h < night) return Mathf.Lerp(0.75f, 0.80f, Mathf.InverseLerp(dusk, night, h));
+            if (h < warm) return Mathf.Lerp(0.50f, 0.75f, Mathf.InverseLerp(noon, warm, h));
+            if (h < night) return Mathf.Lerp(0.75f, 0.80f, Mathf.InverseLerp(warm, night, h));
             return Mathf.Lerp(0.80f, 1f, Mathf.InverseLerp(night, 24f, h));
         }
 

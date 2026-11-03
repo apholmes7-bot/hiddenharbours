@@ -124,6 +124,7 @@ MonoBehaviour:
   _sunsetHour: 21.5
   _nightHour: 22
   _dawnBlendHours: 2
+  _warmKeyBeforeSunsetHours: 3.4285715
   _shadowSouthBias: 0.2
   _shadowNoonLift: 0.9
   _fogVisibilityForFullDim: 0.15

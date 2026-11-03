@@ -154,7 +154,7 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.IsFalse(WatchFaceState.NightAt(20f));
             Assert.IsTrue(WatchFaceState.NightAt(21.5f));
             Assert.AreEqual(0.20f, DayNightMath.TintPhase(5.5f, sky), 1e-5f);
-            Assert.AreEqual(0.75f, DayNightMath.TintPhase(21.5f, sky), 1e-5f);
+            Assert.AreEqual(0.75f, DayNightMath.TintPhase(sky.SunsetHour - sky.WarmKeyBeforeSunsetHours, sky), 1e-5f);
             Assert.AreEqual(0.80f, DayNightMath.TintPhase(22f, sky), 1e-5f);
             Color afternoon = DayNightMath.DayNightTint(14.5f, sky, 1f, 0f);
             Assert.Greater(afternoon.b / afternoon.r, 0.95f, "the afternoon remains neutral daylight");

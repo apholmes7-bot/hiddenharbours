@@ -31,6 +31,13 @@ namespace HiddenHarbours.Art
     [CreateAssetMenu(menuName = "Hidden Harbours/Lighting/Day-Night Profile", fileName = "DayNightProfile")]
     public sealed class DayNightProfile : DaylightHours
     {
+        // Preserve the old 17:00 solar position: a 16-hour day leaves 16 * (3/14) hours to sunset.
+        public const float DefaultWarmKeyBeforeSunsetHours = 24f / 7f;
+
+        [Tooltip("Hours before the published sunset when the warm tint key (solar phase 0.75) peaks. " +
+                 "Moves colour timing without moving the sun's sunrise or sunset.")]
+        [SerializeField, Min(0f)] private float _warmKeyBeforeSunsetHours = DefaultWarmKeyBeforeSunsetHours;
+
         [Header("Day tint (the whole-screen multiply colour over 24h)")]
         [Tooltip("The global MULTIPLY colour across the solar phase (0 = midnight, 0.5 = solar noon, 1 = " +
                  "midnight). Warm + low at dawn, bright neutral/cool at noon, orange-red at dusk, dark " +
@@ -87,6 +94,7 @@ namespace HiddenHarbours.Art
         [Range(0f, 1f)] [SerializeField] private float _moonlightLiftMax = 0.45f;
 
         // ---- read-only accessors (the controller + DayNightMath read these) ----
+        public float WarmKeyBeforeSunsetHours => _warmKeyBeforeSunsetHours;
         public Gradient SkyTint => _skyTint;
         public AnimationCurve Intensity => _intensity;
         public float ShadowSouthBias => _shadowSouthBias;
@@ -107,7 +115,7 @@ namespace HiddenHarbours.Art
         /// </summary>
         public void ApplyDefaults()
         {
-            // Solar keys: .20 first light, .32 full morning, .50 solar noon, .75 sunset, .80 night.
+            // Solar keys: .20 first light, .32 full morning, .50 solar noon, .75 warm peak before sunset, .80 night.
             _skyTint = new Gradient
             {
                 // NOTE: Unity Gradient allows a MAXIMUM of 8 colour keys. Keep this at <= 8.
@@ -141,6 +149,7 @@ namespace HiddenHarbours.Art
                 new Keyframe(1.00f, 0.18f));
 
             ApplyHourDefaults();
+            _warmKeyBeforeSunsetHours = DefaultWarmKeyBeforeSunsetHours;
             _shadowSouthBias = 0.2f;
             _shadowNoonLift = 0.9f;
             _fogVisibilityForFullDim = 0.15f;
