@@ -12,15 +12,15 @@ it was measured against) are the only provenance you need to check.
     boatInteriorRig.js                     interior renderer (single source; sha in README §1)
     README.md                              program readme (brief §1–§7)
     MANIFEST.md                            this file
-    <hullStem>.interior.json          ×9   per-hull interior sidecars
+    <hullStem>.interior.json          ×7   per-hull interior sidecars
     lobsterBoatVariants/*.interior.json ×18 per-variant interior sidecars
-    hull-rigs/*.js                    ×9   exterior rigs (published HOUSE/loft/DOOR live here)
+    hull-rigs/*.js                    ×8   exterior rigs (published HOUSE/loft/DOOR live here)
                                            ⚠ capeIslanderIsoRig.js is OUR branch — do NOT adopt it;
                                              see README Corrections 3 (two divergent pass-2 branches)
-    gameplay/*.gameplay.json          ×9   hull gameplay sidecars, interiors merged in
+    gameplay/*.gameplay.json          ×7   hull gameplay sidecars, interiors merged in
     gameplay/lobsterBoatVariants/     ×18  variant gameplay sidecars, interiors merged in
 
-## Hull coverage (10 rig families, 27 hull instances)
+## Hull coverage (8 remaining families, 25 hull instances)
 | hull | door | interior levels | routes up |
 |---|---|---|---|
 | Lobster 12 m | slide, aft | house + cuddy | — (washboards) |
@@ -30,8 +30,6 @@ it was measured against) are the only provenance you need to check.
 | Stern trawler Mk II 38 m | hinge 110°, fwd | bridge/house/below | boat-deck ladder |
 | Coastal packet 60 m | hinge 110°, fwd | bridge/house/below | boat-deck ladder |
 | Tanker 110 m (16 px/m) | hinge 110°, aft (poop) | bridge/house/below | 2 break ladders + boat deck |
-| 53′ Convertible | slide, aft (glass) | helm deck + salon + below | interior stair + mezz→flybridge ladder |
-| 90′ Skybridge | slide ×2 (salon + skylounge) | skylounge + salon + below | interior stair + mezz→aft deck→coaming |
 | Lobster variants ×18 | slide, aft | house + cuddy | — |
 
 ## Consuming the sidecars
@@ -42,3 +40,5 @@ interactables only** — stair routes are declared in STAIRS, which carries each
 previous hull-rig sha so a stale merge is detectable. Door animation is an 8-frame baked cue
 (`doorOpen` = k/7, ~70 ms/frame), reversed on exit; interiors ride the hull's `rock(i)` on the same
 camera basis, so exterior and interior sheets stay in register mid-wave.
+
+The two sport fishers now use the published kit 4 hull-walk files. Their legacy sidecars and copied rigs are retired; the other kit inputs remain.

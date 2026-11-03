@@ -362,3 +362,14 @@ docs/art/rigs/road-path-kit-v4/**/*.cjs               text eol=lf
 docs/art/rigs/road-path-kit-v4/**/*.json              text eol=lf
 docs/art/rigs/road-path-kit-v4/**/*.md                text eol=lf
 docs/art/rigs/road-path-kit-v4/**/*.txt               text eol=lf
+
+# These seven rig and walk files stamp their exact LF bytes.
+docs/art/rigs/gameplay/sportFisherIsoRig2.convertible.walk.json text eol=lf
+docs/art/rigs/gameplay/sportFisherIsoRig2.skybridge.walk.json text eol=lf
+docs/art/rigs/sportFisherIsoRig2.js text eol=lf
+docs/art/rigs/expeditionYacht120IsoRig.js text eol=lf
+docs/art/rigs/gameplay/expeditionYacht120IsoRig.expedition_yacht_120.walk.json text eol=lf
+docs/art/rigs/gameplay/yachtTenderIsoRig.yacht_tender.walk.json text eol=lf
+docs/art/rigs/yachtTenderIsoRig.js text eol=lf
+docs/art/rigs/motorYacht84IsoRig.js text eol=lf
+docs/art/rigs/gameplay/motorYacht84IsoRig.motor_yacht_84.walk.json text eol=lf
