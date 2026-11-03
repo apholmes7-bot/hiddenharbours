@@ -3376,7 +3376,9 @@ and re-publishes every ~8 Hz tick). Delivery differs by hull kind, agreement doe
   migrate when the export contract grows one). Lobster boat 0.5 m (the spike's own probe framing:
   `spike/3d-water` `Spike3dWaterMenu.cs`, "sunk half a metre of draft"); side dragger 1.1 m (the
   same ≈0.38 visual-to-gameplay-draught ratio applied to her 2.9 m `DraughtMeters`). The draft
-  applies only while the displaced sea is active.
+  applies only while the displaced sea is active. The expedition yacht 120 and motor yacht 84 instead
+  keep their rigs' real drafts (2.74 m and 1.80 m), with gameplay draught rounded to 0.05 m;
+  `FleetHullDefLadderTests.RigDraftYachts` names this clause and holds both fields to those numbers.
 - **Sprite hulls** (the dory's rock-grid path and the legacy transform path alike) ride the same
   displaced height as a plain screen-vertical lift of the visual — no waterline clipping to keep
   honest, just the same sea under the whole fleet. The legacy path's bob cap deliberately does

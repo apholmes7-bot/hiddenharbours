@@ -128,6 +128,8 @@ namespace HiddenHarbours.App.Editor
             public Color CameraBackground;        // scene's clear colour (matches the region's water mood)
             public Vector3 PlayerStartPos;        // where the on-foot fisher spawns (the region's START)
             public Vector3 BoatMooredPos;         // where the moored Dory sits (its controller starts disabled)
+            public float BoatPictureDatum;
+            public Rect BoatPier;
             // ⭐ …and the heading she LIES ON there (compass, 0 = north, clockwise). Added 2026-09-02:
             // this builder used to set her position and nothing else, so she took the identity rotation
             // — bow due NORTH — and a 4.5 m boat lay ATHWART St Peters' east–west fairway with her stern
@@ -223,6 +225,12 @@ namespace HiddenHarbours.App.Editor
             // --- THE DORY (full hand-rowed rig; moored = controller disabled at start) --------------------
             var doryGo = new GameObject("Dory");
             doryGo.transform.position = p.BoatMooredPos;
+            if (p.BoatPier.width > 0f)
+            {
+                var ride = doryGo.GetComponent<HullTideRide>() ?? doryGo.AddComponent<HullTideRide>();
+                ride.Configure(p.BoatPictureDatum);
+                doryGo.AddComponent<HiddenHarbours.App.StPetersPierBoatSorting>().Configure(p.BoatPier, 1, -1);
+            }
             // A 2D hull's bow is transform.up, and the compass runs clockwise from north — so the
             // rotation that puts her bow on a heading is a NEGATIVE turn about Z. (Same convention as
             // ArrivalPilot.CompassOf, which reads it back the other way.)

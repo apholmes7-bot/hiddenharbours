@@ -1,0 +1,249 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ee76649f87a8cfd4890261ca9a64ffa3, type: 3}
+  m_Name: ExpeditionYacht120Iso_Expedition
+  m_EditorClassIdentifier: HiddenHarbours.Core::HiddenHarbours.Core.HullPaintSchemeDef
+  Id: paint.expedition_yacht120_expedition
+  Label: EXPEDITION GREY
+  Note: Warm-grey topsides, white house, a red boot stripe.
+  HullMeshId: hullmesh.expedition_yacht120_iso
+  SourceRigPath: docs/art/rigs/expeditionYacht120IsoRig.js
+  RigPaintId: expedition
+  Ramps:
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4278913029
+    - serializedVersion: 2
+      rgba: 4279373323
+    - serializedVersion: 2
+      rgba: 4279833874
+    - serializedVersion: 2
+      rgba: 4280360217
+    - serializedVersion: 2
+      rgba: 4280820769
+    Offset: 0
+    _hasDitherWeight: 0
+    _ditherWeight: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4279243398
+    - serializedVersion: 2
+      rgba: 4280560279
+    - serializedVersion: 2
+      rgba: 4281679528
+    - serializedVersion: 2
+      rgba: 4282798521
+    - serializedVersion: 2
+      rgba: 4283982793
+    Offset: 0
+    _hasDitherWeight: 0
+    _ditherWeight: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4282468172
+    - serializedVersion: 2
+      rgba: 4283389275
+    - serializedVersion: 2
+      rgba: 4284376170
+    - serializedVersion: 2
+      rgba: 4285363065
+    - serializedVersion: 2
+      rgba: 4286415753
+    - serializedVersion: 2
+      rgba: 4287468441
+    - serializedVersion: 2
+      rgba: 4288586921
+    Offset: 0
+    _hasDitherWeight: 0
+    _ditherWeight: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4279439373
+    - serializedVersion: 2
+      rgba: 4280293910
+    - serializedVersion: 2
+      rgba: 4281411874
+    - serializedVersion: 2
+      rgba: 4282727218
+    Offset: 0
+    _hasDitherWeight: 0
+    _ditherWeight: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4278978821
+    - serializedVersion: 2
+      rgba: 4279767562
+    - serializedVersion: 2
+      rgba: 4280424976
+    - serializedVersion: 2
+      rgba: 4281213975
+    - serializedVersion: 2
+      rgba: 4282331680
+    Offset: 0
+    _hasDitherWeight: 0
+    _ditherWeight: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4282925370
+    - serializedVersion: 2
+      rgba: 4284899158
+    - serializedVersion: 2
+      rgba: 4287399290
+    - serializedVersion: 2
+      rgba: 4289833887
+    - serializedVersion: 2
+      rgba: 4292005571
+    - serializedVersion: 2
+      rgba: 4293848550
+    Offset: 0
+    _hasDitherWeight: 0
+    _ditherWeight: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4278913029
+    - serializedVersion: 2
+      rgba: 4279373323
+    - serializedVersion: 2
+      rgba: 4279833874
+    - serializedVersion: 2
+      rgba: 4280360217
+    - serializedVersion: 2
+      rgba: 4280820769
+    Offset: -2
+    _hasDitherWeight: 0
+    _ditherWeight: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4279511103
+    - serializedVersion: 2
+      rgba: 4280104276
+    - serializedVersion: 2
+      rgba: 4280698476
+    - serializedVersion: 2
+      rgba: 4281424517
+    - serializedVersion: 2
+      rgba: 4282412700
+    - serializedVersion: 2
+      rgba: 4283663794
+    Offset: 0
+    _hasDitherWeight: 0
+    _ditherWeight: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4288123530
+    - serializedVersion: 2
+      rgba: 4289900455
+    - serializedVersion: 2
+      rgba: 4291480516
+    - serializedVersion: 2
+      rgba: 4292665563
+    - serializedVersion: 2
+      rgba: 4293521388
+    - serializedVersion: 2
+      rgba: 4294113526
+    - serializedVersion: 2
+      rgba: 4294573821
+    Offset: 0
+    _hasDitherWeight: 0
+    _ditherWeight: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4288123530
+    - serializedVersion: 2
+      rgba: 4289900455
+    - serializedVersion: 2
+      rgba: 4291480516
+    - serializedVersion: 2
+      rgba: 4292665563
+    - serializedVersion: 2
+      rgba: 4293521388
+    - serializedVersion: 2
+      rgba: 4294113526
+    - serializedVersion: 2
+      rgba: 4294573821
+    Offset: 0
+    _hasDitherWeight: 0
+    _ditherWeight: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4278190201
+    - serializedVersion: 2
+      rgba: 4279175056
+    - serializedVersion: 2
+      rgba: 4280889000
+    - serializedVersion: 2
+      rgba: 4282468800
+    - serializedVersion: 2
+      rgba: 4284048344
+    Offset: 0
+    _hasDitherWeight: 0
+    _ditherWeight: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4283713024
+    - serializedVersion: 2
+      rgba: 4285226267
+    - serializedVersion: 2
+      rgba: 4286871098
+    - serializedVersion: 2
+      rgba: 4288515925
+    - serializedVersion: 2
+      rgba: 4290161009
+    Offset: 0
+    _hasDitherWeight: 0
+    _ditherWeight: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4284375908
+    - serializedVersion: 2
+      rgba: 4285757561
+    - serializedVersion: 2
+      rgba: 4287139215
+    - serializedVersion: 2
+      rgba: 4288586661
+    - serializedVersion: 2
+      rgba: 4290099899
+    - serializedVersion: 2
+      rgba: 4291613138
+    Offset: 0
+    _hasDitherWeight: 0
+    _ditherWeight: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4278913029
+    - serializedVersion: 2
+      rgba: 4279373323
+    - serializedVersion: 2
+      rgba: 4279833874
+    - serializedVersion: 2
+      rgba: 4280360217
+    - serializedVersion: 2
+      rgba: 4280820769
+    Offset: -1
+    _hasDitherWeight: 0
+    _ditherWeight: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4282202164
+    - serializedVersion: 2
+      rgba: 4283518024
+    - serializedVersion: 2
+      rgba: 4284899677
+    - serializedVersion: 2
+      rgba: 4286347123
+    - serializedVersion: 2
+      rgba: 4287860361
+    - serializedVersion: 2
+      rgba: 4289373601
+    Offset: 0
+    _hasDitherWeight: 0
+    _ditherWeight: 0

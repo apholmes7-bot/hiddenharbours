@@ -125,7 +125,7 @@ namespace HiddenHarbours.App
         /// <c>screenH * (-step) / ppu</c>. Step 1 is the 1:1 pivot, so -1 is deliberately not a step —
         /// it would duplicate it.</summary>
         public const int MinStep = -8;   // 8:1 downscale — 270 m of world height at 1080p
-        public const int MaxStep = 8;    // x8 upscale — the tightest haul framing
+        public const int MaxStep = 16;   // supports the same close-up at a 2160-pixel viewport
 
         /// <summary>World height (m) a ladder step shows. The ONE place the ladder is defined.</summary>
         public static float WorldHeightForStep(int step, int ppu, int screenHeightPx)

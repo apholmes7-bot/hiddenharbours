@@ -130,6 +130,8 @@ namespace HiddenHarbours.App
                  "grounding is a flat per-hull depth, and its 3 m default against a −2.2 m spring low " +
                  "leaves 0.8 m under a hull that draws 1.4.")]
         [SerializeField] private float _channelBedElevation = -4f;
+        [SerializeField] private float _hullPictureDatum;
+        public void ConfigureHullPictureDatum(float value) => _hullPictureDatum = value;
 
         [Header("The skipper's hand on the helm")]
         [SerializeField] private ArrivalPilot.Settings _pilot = ArrivalPilot.Settings.Default;
@@ -724,6 +726,8 @@ namespace HiddenHarbours.App
 
             _boat = go.AddComponent<BoatController>();
             _boat.SetHull(_skipper.Boat);
+            var pictureRide = _boat.GetComponent<HullTideRide>() ?? _boat.gameObject.AddComponent<HullTideRide>();
+            pictureRide.Configure(_hullPictureDatum);
 
             // 🔴 THE PASSENGER IS NOT AT THE HELM — and this hull now offers her none BY CONSTRUCTION.
             // She used to need a workaround here (a HelmControlRelay added disabled, pre-empting the one

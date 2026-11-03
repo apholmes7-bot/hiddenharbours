@@ -376,8 +376,8 @@ namespace HiddenHarbours.App.Editor
             //     slip end lands ON the wharf deck (BerthTo is inside StPetersWharf.DeckFootprint), which
             //     is why the deck is a legal footing for a lane and not just for a person.
             int nSlip = Add(LaneSlipHead,
-                            new Vector2(StPetersBuilder.BerthTo.x, StPetersBuilder.BerthTo.y), nGreen,
-                            InteriorBends(StPetersStarterSplat.VillageToSlipPath()));
+                            StPetersLandingLayout.Entry, nGreen,
+                            InteriorBends(StPetersLandingLayout.WestEntryWalk()));
             Add(LaneWharfHead, BasilSpot, nSlip);
 
             return new LaneTable(names.ToArray(), positions.ToArray(), parents.ToArray(),
@@ -508,8 +508,8 @@ namespace HiddenHarbours.App.Editor
             Outdoor(StationFlatsLookout, lookout, 270f, LaneFlatsHead,
                     "a few strides inland of the digging, looking west — the sun goes down over the bar, " +
                     "and this is the only place on the island you can watch it do that");
-            Outdoor(StationSlipHead, new Vector2(StPetersBuilder.BerthTo.x, StPetersBuilder.BerthTo.y),
-                    HeadingTo(new Vector2(StPetersBuilder.BerthTo.x, StPetersBuilder.BerthTo.y), BasilSpot),
+            Outdoor(StationSlipHead, StPetersLandingLayout.Entry,
+                    HeadingTo(StPetersLandingLayout.Entry, BasilSpot),
                     LaneSlipHead,
                     "the shoreward end of the slip, on the planks — where a boat's line gets taken");
             Outdoor(StationWharfHead, BasilSpot, 90f, LaneWharfHead,

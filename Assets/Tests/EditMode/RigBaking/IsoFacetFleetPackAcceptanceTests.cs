@@ -126,7 +126,7 @@ namespace HiddenHarbours.Tests.RigBaking
 
         static IEnumerable<Subject> Photographed()
         {
-            foreach (string key in new[] { "goFast", "bowrider", "expressCruiser" })
+            foreach (string key in new[] { "goFast", "bowrider", "expressCruiser", "expeditionYacht120", "yachtTender", "motorYacht84" })
             {
                 var h = HullMeshFleet.Get(key);
                 string asset = Path.GetFileName(h.MeshAssetPath).Replace("HullMesh.asset", "");
@@ -311,6 +311,15 @@ namespace HiddenHarbours.Tests.RigBaking
                 string source = System.IO.File.ReadAllText(
                     System.IO.Path.Combine(RigCatalog.RepoRoot, s.ScriptPath));
                 bool declaresDither = source.Contains("dith:");
+                if (s.Key == "expeditionYacht120" || s.Key == "yachtTender" || s.Key == "motorYacht84")
+                {
+                    using var host = RigScriptHostFactory.Create();
+                    host.Execute(source);
+                    string mats = s.RenderScope + ".matsFor().MATS";
+                    declaresDither = host.EvaluateBool("(function(){var m=" + mats +
+                        ";return Object.keys(m).some(function(k){return typeof m[k].dith==='number' && m[k].dith!==1;});})()");
+                    Assert.IsFalse(declaresDither, s.Label + ": the public materials use full-scale Bayer dither");
+                }
                 bool exempted = Array.IndexOf(CarryUnmodelledDither, s.Key) >= 0;
 
                 Assert.AreEqual(exempted, declaresDither,

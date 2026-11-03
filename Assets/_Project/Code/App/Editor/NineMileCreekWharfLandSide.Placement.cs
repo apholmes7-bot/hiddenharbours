@@ -22,6 +22,7 @@ namespace HiddenHarbours.App.Editor
         public const string OfficeVendorName = "NmcWharfOfficeVendor";
         public const string MarketCounterName = "NmcWharfMarketCounter";
         public const string BuyerTruckRowId = "vehicle.nmc_buyer_truck";
+        public const string BuyerRunRowId = "vehicle.nmc_lot_e";
         static readonly Dictionary<string, string> ParkedPickupModels = new Dictionary<string, string>(StringComparer.Ordinal)
         {
             ["vehicle.nmc_lot_e"] = "Modern2500",
@@ -70,6 +71,10 @@ namespace HiddenHarbours.App.Editor
         public static Vector3 BuyerTruck
         {
             get { Vector2 p = KeyScene().Pieces.Single(r => r.Id == BuyerTruckRowId).At; return new Vector3(p.x, p.y, 0f); }
+        }
+        public static Vector3 BuyerRunBay
+        {
+            get { Vector2 p = KeyScene().Pieces.Single(r => r.Id == BuyerRunRowId).At; return new Vector3(p.x, p.y, 0f); }
         }
         public static Vector2 LicenceSpeaker => OfficeCounter;
         public static Vector2 ClamSpeaker => (Vector2)MarketCounter + new Vector2(0.7f, -0.7f);
@@ -158,8 +163,17 @@ namespace HiddenHarbours.App.Editor
                     long parked = Allocate(ids, RootName, row.Id + "/parked"); comps.Add(parked);
                     var script = Script("Assets/_Project/Code/Vehicles/" + (trailer ? "ParkedTrailer" : "ParkedVehicle") + ".cs",
                         "HiddenHarbours.Vehicles", "HiddenHarbours.Vehicles." + (trailer ? "ParkedTrailer" : "ParkedVehicle"));
+                    bool drivable = row.Kit == "VehicleIso";
                     parts.Add((row.Id + "/parked", MonoBehaviourYaml(parked, pieceGo, script,
-                        trailer ? new[] { "  _body: " + Asset(def).Yaml } : new[] { "  _vehicle: " + Asset(def).Yaml, "  _drivable: 0" })));
+                        trailer ? new[] { "  _body: " + Asset(def).Yaml } : new[] { "  _vehicle: " + Asset(def).Yaml, "  _drivable: " + (drivable ? "1" : "0") })));
+                    if (drivable) AddTruckDriveParts(scene, ids, row.Id, pieceGo, Asset(def), comps, parts);
+                    if (row.Id == BuyerRunRowId)
+                    {
+                        long trip = Allocate(ids, RootName, row.Id + "/trip"); comps.Add(trip);
+                        parts.Add((row.Id + "/trip", MonoBehaviourYaml(trip, pieceGo,
+                            Script("Assets/_Project/Code/Vehicles/ScheduledTrip.cs", "HiddenHarbours.Vehicles", "HiddenHarbours.Vehicles.ScheduledTrip"),
+                            CaptureBuyerRun(scene).Fields)));
+                    }
                     double angle = -KitDirHeading(row.Dir) * Math.PI / 360.0;
                     float z = (float)Math.Sin(angle), w = (float)Math.Cos(angle);
                     if (Math.Abs(z) < 1e-6f) z = 0f; if (Math.Abs(w) < 1e-6f) w = 0f;
@@ -265,7 +279,7 @@ namespace HiddenHarbours.App.Editor
             var patch = new LayerPatch(PlacementStep, "WendellArsenault", go.FileId);
             patch.Edit(tr, SetField(tr.Text, "m_LocalPosition", Vec3Yaml(point.x, point.y, 0)), "WendellArsenault/market counter position");
             Doc sort = scene.ComponentsOf(go).Single(d => d.IsScript("HiddenHarbours.Art.YSortSprite"));
-            patch.Edit(sort, SetField(sort.Text, "_dynamic", "0"), "WendellArsenault/sorting as on main");
+            patch.Edit(sort, SetField(sort.Text, "_dynamic", CaptureBuyerRun(scene).Dynamic ? "1" : "0"), "WendellArsenault/sorting from the buyer's run");
             return patch.Seal(scene);
         }
 

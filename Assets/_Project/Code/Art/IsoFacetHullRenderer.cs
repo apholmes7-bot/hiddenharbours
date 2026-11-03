@@ -18,6 +18,7 @@ namespace HiddenHarbours.Art
         /// (<see cref="HiddenHarbours.Core.HullMeshDef.DoorLeafClosed"/>). Both null on a hull with no
         /// split leaf, and then nothing is drawn beside the hull mesh.</summary>
         public Mesh DoorLeafClosed, DoorLeafOpen;
+        public HullMeshDef.DoorLeafPair[] DoorLeaves = Array.Empty<HullMeshDef.DoorLeafPair>();
         /// <summary>Palette ramp per rig material, in rig MATS order.</summary>
         public Color32[][] Ramps;
         /// <summary>Per-material constant ramp-index offset (the rig's <c>off</c>).</summary>
@@ -100,7 +101,7 @@ namespace HiddenHarbours.Art
     [DisallowMultipleComponent]
     public sealed class IsoFacetHullRenderer : MonoBehaviour,
         HiddenHarbours.Core.IHullMeshRenderer, HiddenHarbours.Core.IHullCutaway,
-        HiddenHarbours.Core.IHullDoorLeaf
+        HiddenHarbours.Core.IHullDoorLeaf, HiddenHarbours.Core.IHullDoorLeaves
     {
         [Tooltip("Heading in RIG dir units (1 unit = 45°, CCW, fractional allowed).")]
         [SerializeField] private float _headingDirUnits;
@@ -174,6 +175,9 @@ namespace HiddenHarbours.Art
         // re-Configure; the child does not (it dies with FacetMesh).
         private MeshFilter _leafFilter;
         private MeshRenderer _leafRenderer;
+        private readonly List<MeshFilter> _doorLeafFilters = new();
+        private readonly List<MeshRenderer> _doorLeafRenderers = new();
+        private readonly Dictionary<string, bool> _doorLeafStates = new(StringComparer.Ordinal);
         private bool _doorLeafOpen;
 
         /// <summary>
@@ -259,7 +263,7 @@ namespace HiddenHarbours.Art
         }
 
         /// <inheritdoc/>
-        public bool CarriesDoorLeaf => _leafFilter != null;
+        public bool CarriesDoorLeaf => _leafFilter != null || _doorLeafFilters.Count > 0;
 
         /// <inheritdoc/>
         public bool DoorLeafShownOpen => _doorLeafOpen;
@@ -269,8 +273,8 @@ namespace HiddenHarbours.Art
         /// <see cref="HiddenHarbours.Core.IHullDoorLeaf"/> seam, driven by <c>BoatCabinDoor</c> from its
         /// own <c>IsOpen</c> (owner playtest 2026-09-17: "i dont see the doors open").
         ///
-        /// <para>A mesh swap on the "DoorLeaf" child and nothing else. Both poses are the same faces in
-        /// the same vertex layout, and the child shares FacetMesh's material and property block, so the
+        /// <para>A mesh swap on the "DoorLeaf" child and nothing else. Both poses keep the shut faces'
+        /// vertex layout; a walk hull's open pose may add what it uncovers. The child shares FacetMesh's material and property block, so the
         /// leaf shades, dithers, composites and cuts away with the house exactly as it did while it was
         /// baked into the hull mesh.</para>
         ///
@@ -279,9 +283,38 @@ namespace HiddenHarbours.Art
         /// </summary>
         public void ShowDoorLeaf(bool open)
         {
+            if (_setup?.DoorLeaves != null && _setup.DoorLeaves.Length > 0)
+            {
+                ShowDoorLeaf(_setup.DoorLeaves[0].Id, open);
+                _doorLeafOpen = open;
+                return;
+            }
             if (open == _doorLeafOpen) return;
             _doorLeafOpen = open;
             ApplyDoorLeafMesh();
+        }
+
+        public bool HasDoorLeaf(string doorId) => NamedDoorIndex(doorId) >= 0;
+
+        public bool DoorLeafShownOpenFor(string doorId) => doorId != null &&
+            _doorLeafStates.TryGetValue(doorId, out bool open) && open;
+
+        public void ShowDoorLeaf(string doorId, bool open)
+        {
+            int index = NamedDoorIndex(doorId);
+            if (index < 0) return;
+            _doorLeafStates[doorId] = open;
+            if (index == 0) _doorLeafOpen = open;
+            var pair = _setup.DoorLeaves[index];
+            _doorLeafFilters[index].sharedMesh = open ? pair.Open : pair.Closed;
+        }
+
+        private int NamedDoorIndex(string doorId)
+        {
+            if (doorId == null || _setup?.DoorLeaves == null) return -1;
+            for (int i = 0; i < _doorLeafFilters.Count; i++)
+                if (string.Equals(_setup.DoorLeaves[i].Id, doorId, StringComparison.Ordinal)) return i;
+            return -1;
         }
 
         private void ApplyDoorLeafMesh()
@@ -740,7 +773,28 @@ namespace HiddenHarbours.Art
             // renderer on the same material, so the facet feature draws it in every pass (facet,
             // deck, guard) the hull mesh is drawn in. Its faces keep their 'house' level tag, so the
             // cutaway takes the leaf with the wall it hangs in.
-            if (setup.DoorLeafClosed != null && setup.DoorLeafOpen != null)
+            if (setup.DoorLeaves != null && setup.DoorLeaves.Length > 0)
+            {
+                foreach (var pair in setup.DoorLeaves)
+                {
+                    if (string.IsNullOrEmpty(pair.Id) || pair.Closed == null || pair.Open == null)
+                        throw new ArgumentException("A named door requires its id and both leaf poses.");
+                    var leafGo = new GameObject(_doorLeafFilters.Count == 0 ? "DoorLeaf" : "DoorLeaf." + pair.Id)
+                        { hideFlags = HideFlags.DontSave, layer = meshGo.layer };
+                    leafGo.transform.SetParent(_meshChild, false);
+                    var filter = leafGo.AddComponent<MeshFilter>();
+                    var renderer = leafGo.AddComponent<MeshRenderer>();
+                    renderer.sharedMaterial = _facetMaterial;
+                    renderer.shadowCastingMode = ShadowCastingMode.Off;
+                    renderer.receiveShadows = false;
+                    renderer.lightProbeUsage = LightProbeUsage.Off;
+                    renderer.allowOcclusionWhenDynamic = false;
+                    _doorLeafFilters.Add(filter);
+                    _doorLeafRenderers.Add(renderer);
+                    ShowDoorLeaf(pair.Id, DoorLeafShownOpenFor(pair.Id));
+                }
+            }
+            else if (setup.DoorLeafClosed != null && setup.DoorLeafOpen != null)
             {
                 var leafGo = new GameObject("DoorLeaf") { hideFlags = HideFlags.DontSave, layer = meshGo.layer };
                 leafGo.transform.SetParent(_meshChild, false);
@@ -830,6 +884,9 @@ namespace HiddenHarbours.Art
         internal MeshRenderer ReflectionLeaf => _leafRenderer;
         internal Mesh ReflectionMesh => _setup != null ? _setup.Mesh : null;
         internal Mesh ReflectionLeafMesh => _leafFilter != null ? _leafFilter.sharedMesh : null;
+        internal int ReflectionDoorLeafCount => _doorLeafFilters.Count;
+        internal MeshRenderer ReflectionDoorLeaf(int index) => _doorLeafRenderers[index];
+        internal Mesh ReflectionDoorLeafMesh(int index) => _doorLeafFilters[index].sharedMesh;
         internal float ReflectionElevation => _setup != null ? _setup.ElevationDeg : 0;
         internal float ReflectionHeave => _setup != null ? _heavePixels / (float)_setup.PxPerMetre : 0;
         internal void SetLegacyReflection(bool enabled)
@@ -970,6 +1027,8 @@ namespace HiddenHarbours.Art
             PublishDrawProperties(_meshRenderer, origin, depthShear, activeDeckSlots);
             if (_leafRenderer != null)
                 PublishDrawProperties(_leafRenderer, origin, depthShear, activeDeckSlots);
+            for (int i = 0; i < _doorLeafRenderers.Count; i++)
+                PublishDrawProperties(_doorLeafRenderers[i], origin, depthShear, activeDeckSlots);
             PublishDrawProperties(_overlayRenderer, origin, depthShear, activeDeckSlots);
         }
 
@@ -1221,6 +1280,8 @@ namespace HiddenHarbours.Art
             // The leaf's GameObject is a child of FacetMesh and dies with it above.
             _leafFilter = null;
             _leafRenderer = null;
+            _doorLeafFilters.Clear();
+            _doorLeafRenderers.Clear();
             _overlayRenderer = null;
             _facetMaterial = null;
             _overlayMaterial = null;

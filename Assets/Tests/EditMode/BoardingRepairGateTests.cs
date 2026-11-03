@@ -30,7 +30,14 @@ namespace HiddenHarbours.Tests.EditMode
         private readonly List<Object> _spawned = new();
 
         [SetUp]
-        public void SetUp() => GameServices.Reset();
+        public void SetUp()
+        {
+            GameServices.Reset();
+            var config = ScriptableObject.CreateInstance<GameConfig>();
+            config.RequireBoatRepairsBeforeBoarding = true;
+            _spawned.Add(config);
+            GameServices.Config = config;
+        }
 
         [TearDown]
         public void TearDown()
@@ -50,10 +57,11 @@ namespace HiddenHarbours.Tests.EditMode
 
         // A switcher with the player standing within board reach of the boat, started on foot. Hull id
         // "boat.dory". (Board-from-anywhere: boarding is gated by proximity to the boat, not a dock zone.)
-        private ControlSwitcher BuildInBoardZone()
+        private ControlSwitcher BuildInBoardZone(bool withDeckWalk = false)
         {
             var playerGo = NewGo("Player", new Vector3(0f, -11.5f, 0f));
             var walk = playerGo.AddComponent<PlayerWalkController>();
+            if (withDeckWalk) playerGo.AddComponent<DeckWalkController>().enabled = false;
             var boatGo = NewGo("Boat", new Vector3(0f, -13.8f, 0f));
             var boat = boatGo.AddComponent<BoatController>();
             var input = boatGo.AddComponent<DevBoatInput>();
@@ -71,6 +79,63 @@ namespace HiddenHarbours.Tests.EditMode
             var sw = swGo.AddComponent<ControlSwitcher>();
             sw.Configure(walk, boat, input, dock.transform, 3f, disembark.transform);
             return sw;
+        }
+
+        [TestCase(false)]
+        [TestCase(true)]
+        public void DefaultConfig_OwnedUnrepairedHullCanBoard(bool withConfig)
+        {
+            var config = ScriptableObject.CreateInstance<GameConfig>();
+            _spawned.Add(config);
+            Assert.IsFalse(config.RequireBoatRepairsBeforeBoarding, "repairs are deferred by default");
+            GameServices.Config = withConfig ? config : null;
+
+            var save = SaveMigration.NewGame();
+            save.OwnedBoats.Add("boat.dory");
+            GameServices.Save = new FakeSaveService(save);
+            var sw = BuildInBoardZone();
+
+            Assert.IsTrue(sw.BoardableNow());
+            Assert.IsTrue(sw.CanInteract());
+            Assert.IsTrue(sw.TryInteract());
+            Assert.AreEqual(ControlMode.OnDeck, sw.Mode);
+            Assert.IsEmpty(save.RepairedBoats, "boarding must not fabricate a repair");
+            CollectionAssert.AreEqual(new[] { "boat.dory" }, save.OwnedBoats);
+        }
+
+        [Test]
+        public void RepairsDisabled_OwnedUnrepairedHullCanBeginBoardingMove()
+        {
+            GameServices.Config.RequireBoatRepairsBeforeBoarding = false;
+            var save = SaveMigration.NewGame();
+            save.OwnedBoats.Add("boat.dory");
+            GameServices.Save = new FakeSaveService(save);
+            var sw = BuildInBoardZone(withDeckWalk: true);
+            sw.ConfigureBoardingMove(enabled: true, approachSpeed: 3f, approachMaxSeconds: 0.8f,
+                                     vaultSeconds: 0.5f, vaultHopMeters: 0.35f);
+
+            Assert.IsTrue(sw.BeginInteract(), "the normal interact path starts the boarding move");
+            Assert.IsTrue(sw.IsBoardingMove);
+            sw.TickBoardingMove(2f);
+            Assert.AreEqual(ControlMode.OnDeck, sw.Mode);
+            Assert.IsEmpty(save.RepairedBoats);
+        }
+
+        [Test]
+        public void TurningRepairsOff_ReopensTheGateWithoutChangingLedger()
+        {
+            var save = SaveMigration.NewGame();
+            save.OwnedBoats.Add("boat.dory");
+            GameServices.Save = new FakeSaveService(save);
+            var sw = BuildInBoardZone();
+            Assert.IsFalse(sw.BoardableNow());
+
+            GameServices.Config.RequireBoatRepairsBeforeBoarding = false;
+            Assert.IsTrue(sw.BoardableNow());
+            Assert.IsEmpty(save.RepairedBoats);
+
+            GameServices.Config.RequireBoatRepairsBeforeBoarding = true;
+            Assert.IsFalse(sw.BoardableNow(), "the retained ledger gate can be enabled again");
         }
 
         [Test]

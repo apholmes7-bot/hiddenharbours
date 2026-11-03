@@ -205,7 +205,8 @@ namespace HiddenHarbours.Tests.RigBaking
         // -------------------------------------------------------------------------------------------
 
         [Test]
-        public void TheFleetsWindowCountIsWhatWasMeasured()
+        // Formerly TheFleetsWindowCountIsWhatWasMeasured.
+        public void TheFleetsWindowCountMatchesTheDeliveredRigs()
         {
             // Measured 2026-09-03 against the rigs at main 3e22460b, and reproduced independently by a
             // standalone V8 harness before any of this shipped. It is pinned NOT because the number
@@ -219,10 +220,9 @@ namespace HiddenHarbours.Tests.RigBaking
                 if (w.Panes.Count > 0) hulls++;
             }
 
-            Assert.AreEqual(25, hulls,
-                "hulls with a lit room — 27 have a glazed room and TWO of them (the sport fishers) " +
-                "are refused because their record does not describe the side their glass is on");
-            Assert.AreEqual(218, panes,
+            Assert.AreEqual(26, hulls,
+                "lit hulls measured from the delivered rigs; the sport fishers' records now place their glass");
+            Assert.AreEqual(224, panes,
                 "lit panes across the fleet. If an art drop legitimately moved some glazing, re-run " +
                 "the probe's writer and update this number in the same commit.");
             Assert.AreEqual(72, bridge,
@@ -231,27 +231,32 @@ namespace HiddenHarbours.Tests.RigBaking
         }
 
         [Test]
-        public void TheTwoHullsWhoseRecordOutrunsTheirGeometryAreRefusedOutLoud()
+        // Formerly TheTwoHullsWhoseRecordOutrunsTheirGeometryAreRefusedOutLoud.
+        public void TheConvertiblesGlassMatchesHerRig_AndTheSkybridgesOffHullRecordIsRefusedOutLoud()
         {
-            // ⭐ THE PROBE'S OWN VALIDATION, PINNED — because a refusal that quietly stopped firing
-            // would ship a lit window hanging half a metre off the boat, and nothing else here would
-            // see it. The sport fishers' accommodation publishes a FLAT hx for a side that curves in
-            // plan (her portholes are drawn on a profile the record does not carry), so panes placed
-            // at ±hx float 0.32–0.51 m outboard of her actual side.
-            //
-            // ⚠️ And a refusal is not darkness: BoatLamps falls these two back to the disc they wear
-            // today (BoatLamps.HasWindows). Two hulls keeping yesterday's look is the cost, it is
-            // named, and the fix is upstream.
-            foreach (string key in new[] { "sportFisherConvertible", "sportFisherSkybridge" })
-            {
-                BoatWindowProbe.HullWindows w = Measured.Find(h => h.Key == key);
-                Assert.IsNotNull(w, $"{key} is not in the fleet catalog any more");
-                Assert.IsEmpty(w.Panes, $"{key}'s windows cannot be placed on her, so none are written");
-                Assert.IsNotNull(w.Refusal, $"{key} was dropped with no reason given");
-                StringAssert.Contains("UPSTREAM ASK", w.Refusal,
-                    "a refusal caused by a gap in a rig's published record has to name the ask, or " +
-                    "nobody upstream ever hears about it");
-            }
+            BoatWindowProbe.HullWindows convertible = Measured.Find(h => h.Key == "sportFisherConvertible");
+            Assert.IsNotNull(convertible);
+            Assert.IsNotEmpty(convertible.Panes, "the convertible's delivered glass is measured");
+            Assert.IsNull(convertible.Refusal);
+            var def = AssetDatabase.LoadAssetAtPath<HullMeshDef>(convertible.MeshAssetPath);
+            CollectionAssert.AreEqual(convertible.Panes, def.Panes, "the writer preserved every pane");
+            BoatWindowProbe.HullWindows skybridge = Measured.Find(h => h.Key == "sportFisherSkybridge");
+            Assert.IsNotNull(skybridge);
+            Assert.IsEmpty(skybridge.Panes);
+            StringAssert.Contains("UPSTREAM ASK", skybridge.Refusal);
+            Assert.Greater(skybridge.WorstCornerMetres, BoatWindowProbe.OnHullToleranceMetres);
+            // Keep the refusal's teeth on a synthetic record beside the delivered skybridge record.
+            var outside = new BoatWindowProbe.HullWindows
+                { Key = "synthetic-off-hull", MeshAssetPath = HullMeshFleet.Get("dory").MeshAssetPath };
+            outside.Panes.Add(new HullPane { CentreMetres = new Vector3(100, 100, 100),
+                HalfAcrossMetres = Vector3.right * 0.1f, HalfUpMetres = Vector3.up * 0.1f });
+            var validate = typeof(BoatWindowProbe).GetMethod("KeepOnlyWhatLandsOnHer",
+                System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic);
+            Assert.IsNotNull(validate);
+            validate.Invoke(null, new object[] { outside });
+            Assert.IsEmpty(outside.Panes);
+            StringAssert.Contains("UPSTREAM ASK", outside.Refusal);
+            Assert.Greater(outside.WorstCornerMetres, BoatWindowProbe.OnHullToleranceMetres);
         }
 
         [Test]

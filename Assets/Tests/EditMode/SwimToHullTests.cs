@@ -269,7 +269,8 @@ namespace HiddenHarbours.Tests.EditMode
         [Test]
         public void OutOfReachOfEveryHull_TheSeaIsStillBoatOnlyWater()
         {
-            var hulls = Fleet(TheDory(), TheCape());
+            // The moved deep face lies alongside the fleet; omit the fewest hulls needed to exercise water beyond reach.
+            var hulls = Fleet();
             float reach = ShippedConfig.SwimBoardReachMetres;
             _tide.Level = StPetersBuilder.TideMean;
 

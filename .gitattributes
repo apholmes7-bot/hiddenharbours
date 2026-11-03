@@ -36,6 +36,8 @@
 # would hand the test CRLF and fail it for line endings alone. (Not `unity-json`, which is a merge
 # macro for files Unity itself serialises.)
 *.recipe.json           text eol=lf linguist-language=json linguist-generated
+# This bake input is outside the rig ledger; its contract compares it byte for byte.
+Assets/_Project/Art/Sprites/StPeters/SetPieces/stpLandingDeck.bake.json text eol=lf
 
 # St Peters' terrain plan (terrain PR 5; T12). Both are compared byte for byte: the frozen sources must write back to
 # themselves, and the manifest records the sources' file sha256. A CRLF checkout would red both for line endings alone.
@@ -362,3 +364,14 @@ docs/art/rigs/road-path-kit-v4/**/*.cjs               text eol=lf
 docs/art/rigs/road-path-kit-v4/**/*.json              text eol=lf
 docs/art/rigs/road-path-kit-v4/**/*.md                text eol=lf
 docs/art/rigs/road-path-kit-v4/**/*.txt               text eol=lf
+
+# These seven rig and walk files stamp their exact LF bytes.
+docs/art/rigs/gameplay/sportFisherIsoRig2.convertible.walk.json text eol=lf
+docs/art/rigs/gameplay/sportFisherIsoRig2.skybridge.walk.json text eol=lf
+docs/art/rigs/sportFisherIsoRig2.js text eol=lf
+docs/art/rigs/expeditionYacht120IsoRig.js text eol=lf
+docs/art/rigs/gameplay/expeditionYacht120IsoRig.expedition_yacht_120.walk.json text eol=lf
+docs/art/rigs/gameplay/yachtTenderIsoRig.yacht_tender.walk.json text eol=lf
+docs/art/rigs/yachtTenderIsoRig.js text eol=lf
+docs/art/rigs/motorYacht84IsoRig.js text eol=lf
+docs/art/rigs/gameplay/motorYacht84IsoRig.motor_yacht_84.walk.json text eol=lf

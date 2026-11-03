@@ -252,6 +252,9 @@ namespace HiddenHarbours.Tests.PlayMode
         [UnityTest]
         public IEnumerator OutOfReachOfHer_TheWallStillRefusesHer()
         {
+            // Move this fixture's only live hull beyond reach so the unchanged sweep can test boat-only water.
+            _boat.transform.position += Vector3.right * 100f;
+            _boat.GetComponent<Rigidbody2D>().position = _boat.transform.position;
             yield return null;
 
             float reach = _walk.SwimBoardReach;

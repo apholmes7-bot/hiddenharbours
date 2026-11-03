@@ -846,29 +846,6 @@ namespace HiddenHarbours.Tools.RigBaking
                 // TheDoorLeaf_IsTaggedWithTheRoomItCloses asserts `leaf > 0` against the ROOT rig,
                 // which is the one the mesh bakes from. A root rig that stopped publishing
                 // doorFaces goes red there, loudly, on the hull it matters for.
-                ["sportFisherIsoRig2.js"] = new Dictionary<string, string>(StringComparer.Ordinal)
-                {
-                    ["variantFaces"] =
-                        "function(id){var h=null;for(var i=0;i<HULLS.length;i++)" +
-                        "if(HULLS[i].id===id)h=HULLS[i];" +
-                        "if(!h)throw new Error('sportFisherIsoRig2.js: no hull \"'+id+'\". " +
-                        "byId() would have returned the DEFAULT hull silently.');" +
-                        "var fl=h.faceList('stowed');" +
-                        "return typeof h.doorFaces==='function' " +
-                        "? fl.concat(h.doorFaces({doorOpen:0})) : fl;}",
-                    // Her paint is an axis, like the lobster's and the small craft's, and
-                    // `defaultPaint` is 'gelcoat' on both hulls — so this reads the table the rig
-                    // itself would use rather than transcribing one. Her twelve entries are
-                    // hull,boot,cream,stripe,teak,deck,grip,glas,steel,iron,blk,dark; order is
-                    // load-bearing because the face packer resolves an unknown material to index 0.
-                    ["MATS"] = "matsFor('gelcoat').MATS",
-                    // ⚠️ NO `defaultElev` entry, deliberately. It is not one of Required, so it is
-                    // never shimmed — it is read directly, and for this rig it is read from the HULL
-                    // (RigHullExtraction.HullScope), which is where she publishes it. A module-level
-                    // reconstruction would bind the same 40 by a second mechanism and hide the fact
-                    // that elevation is a per-hull fact on this rig.
-                },
-
                 // ---- the RESHAPED sport skiff (fleet rig pack, 2026-08-12; baked 2026-08-16) -----
                 // The FIFTH hull to lose her `MATS` const to a paint axis, and she takes the small
                 // craft's API for the same reason the Cape Islander does: she IS one of them, and
@@ -1441,38 +1418,6 @@ namespace HiddenHarbours.Tools.RigBaking
             InnerWidenings = new Dictionary<string, IReadOnlyList<InnerWidening>>(
                 StringComparer.OrdinalIgnoreCase)
             {
-                ["sportFisherIsoRig2.js"] = new[]
-                {
-                    new InnerWidening
-                    {
-                        // makeRig's own first property. Deliberately NOT a bare literal opener: this
-                        // rig has several (proj's `{x,y}`, DOORS, NAV), and an anchor that matched
-                        // one of those would expose nothing and fail far away.
-                        //
-                        // ⚠️ WIDENED TO TWO SHAPES 2026-09-02 (cutaway batch 5), and it has to
-                        // recognise BOTH for as long as both vintages are in the tree.
-                        //
-                        // Pass 2 gave makeRig a NAMED return — `const RIG = {…}; … return RIG;` —
-                        // because her render() now hands the object to BoatCutaway.filter and needs
-                        // a name for it. The old anchor was `return\s*\{\s*\n\s*id:spec\.id,`, which
-                        // matched exactly once on the pass-1 rig and ZERO times on batch 5's. That
-                        // is the good failure mode — the shim refuses rather than widening the wrong
-                        // literal — but re-aiming it at the new form alone then broke the OTHER
-                        // copy: this table is keyed by FILE NAME, and TWO vintages of
-                        // sportFisherIsoRig2.js live in this repo on purpose. Root is batch 5's pass
-                        // 3; docs/art/rigs/boat-interiors-kit/hull-rigs/ still holds the pass-2 loft
-                        // the 27 interior sidecars pin, and BoatInteriorDefShapeTests extracts from
-                        // THAT one. Measured on all three committed copies — root, the interiors
-                        // kit, and boat-cutaway-kit-5 — this union matches EXACTLY ONCE in each,
-                        // and neither branch of it matches anything in the other's file.
-                        AnchorPattern = @"(?:return|const\s+RIG\s*=)\s*\{\s*\n\s*id:spec\.id,",
-                        Insert = " faceList, F, RIGF,",
-                        Why = "makeRig() keeps this hull's face list in its own closure; the mesh " +
-                              "bake reads faceList('stowed') and concats the posed salon leaf, " +
-                              "which is exactly what her render() draws.",
-                    },
-                },
-
                 // ---- the pass-6 CHARACTER body (ADR 0044, mesh characters, 2026-09-09) -----------
                 // The character rig exports its geometry surface ALREADY: facesOf, pose, makeMats,
                 // GAIN, BIAS, LN, BAYER, ANIMS, BUILDS, CAST and propsOf are all on the API. So it
