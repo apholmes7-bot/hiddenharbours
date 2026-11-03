@@ -914,7 +914,13 @@ and none is a flat repeat of the last.
   **Intro-at-sea PR 1 adds `EastWater.unity` to the committed regions and build list:**
   760 × 520 m east of St Peters, a flat bed at the island's own −4 m, and a west passage home.
   Its species pool is St Peters' species data whose depth bands include 4 m. Its working name
-  is still owed; moving the opening there belongs to the next PR.
+  stands as East Water. **Intro-at-sea PR 2 moves the fresh-game opening aboard the cape
+  at the authored lie:** the clock holds its start hour (06:00), the watch hides, and the
+  captain sails west. Two region-local cape copies preserve heading, velocity and the
+  passenger's deck or sole point at the seam; St Peters' existing run-in and E step ashore
+  finish the journey. Under the cover, the opening places the existing lens on the passenger
+  once at each hop, so its first frame includes the cape. The hour releases only after landing.
+  Returning later runs normally.
 - **Contiguous clusters** (the inshore cluster: Coddle Cove + Sunkers + inshore Drownded Lands)
   may be authored as **one scene** or as adjacent scenes streamed without a visible load, so the
   player roams them seamlessly (§2.2). Cross-cluster passages are the scene/streaming boundaries.

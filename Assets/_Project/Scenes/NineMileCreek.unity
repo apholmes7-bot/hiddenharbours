@@ -1522,53 +1522,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
   m_BlendShapeWeights: []
---- !u!1 &7025736
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 7025737}
-  - component: {fileID: 7025738}
-  m_Layer: 0
-  m_Name: Review_lobster_offshore_open_nfld
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &7025737
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7025736}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 452, y: 42, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 2054628875}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &7025738
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7025736}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5d2f8a17c6b34e0fa91d3e7c48b25f61, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: HiddenHarbours.Boats::HiddenHarbours.Boats.MooredBoat
-  _owner: {fileID: 0}
-  _reviewVisual: {fileID: 11400000, guid: 3abec6ef3b146b04c82fa2089b8c23e8, type: 2}
-  _headingDegrees: 90
 --- !u!1 &7542980
 GameObject:
   m_ObjectHideFlags: 0
@@ -6162,7 +6115,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: HiddenHarbours.Boats::HiddenHarbours.Boats.MooredBoat
   _owner: {fileID: 11400000, guid: 118f9602b428b9a4c77ebd92f66173c3, type: 2}
-  _reviewVisual: {fileID: 0}
   _headingDegrees: 90
 --- !u!1 &35618823
 GameObject:
@@ -21947,53 +21899,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
   m_BlendShapeWeights: []
---- !u!1 &135434440
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 135434441}
-  - component: {fileID: 135434442}
-  m_Layer: 0
-  m_Name: Review_lobster_standard_hardtop_nfld
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &135434441
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 135434440}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 416, y: 28, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 2054628875}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &135434442
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 135434440}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5d2f8a17c6b34e0fa91d3e7c48b25f61, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: HiddenHarbours.Boats::HiddenHarbours.Boats.MooredBoat
-  _owner: {fileID: 0}
-  _reviewVisual: {fileID: 11400000, guid: 6c9dac1a42d97a74b914cfa157c61b9f, type: 2}
-  _headingDegrees: 90
 --- !u!1 &136257819
 GameObject:
   m_ObjectHideFlags: 0
@@ -37051,53 +36956,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
   m_BlendShapeWeights: []
---- !u!1 &223108077
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 223108078}
-  - component: {fileID: 223108079}
-  m_Layer: 0
-  m_Name: Review_lobster_standard_open_fundy
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &223108078
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 223108077}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 384, y: 28, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 2054628875}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &223108079
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 223108077}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5d2f8a17c6b34e0fa91d3e7c48b25f61, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: HiddenHarbours.Boats::HiddenHarbours.Boats.MooredBoat
-  _owner: {fileID: 0}
-  _reviewVisual: {fileID: 11400000, guid: 02b66f233527aa4499d3ff341cd40d2d, type: 2}
-  _headingDegrees: 90
 --- !u!1 &224635681
 GameObject:
   m_ObjectHideFlags: 0
@@ -47567,53 +47425,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
   m_BlendShapeWeights: []
---- !u!1 &289676765
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 289676766}
-  - component: {fileID: 289676767}
-  m_Layer: 0
-  m_Name: Review_lobster_standard_open_nfld
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &289676766
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 289676765}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 416, y: 70, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 2054628875}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &289676767
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 289676765}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5d2f8a17c6b34e0fa91d3e7c48b25f61, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: HiddenHarbours.Boats::HiddenHarbours.Boats.MooredBoat
-  _owner: {fileID: 0}
-  _reviewVisual: {fileID: 11400000, guid: e3773abe17863ee4f9572a963510e8d7, type: 2}
-  _headingDegrees: 90
 --- !u!1 &290768960
 GameObject:
   m_ObjectHideFlags: 0
@@ -61249,53 +61060,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
   m_BlendShapeWeights: []
---- !u!1 &378379636
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 378379637}
-  - component: {fileID: 378379638}
-  m_Layer: 0
-  m_Name: Review_zodiac_hurricane
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &378379637
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 378379636}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 312, y: 68, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 2054628875}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &378379638
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 378379636}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5d2f8a17c6b34e0fa91d3e7c48b25f61, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: HiddenHarbours.Boats::HiddenHarbours.Boats.MooredBoat
-  _owner: {fileID: 0}
-  _reviewVisual: {fileID: 11400000, guid: 0d233c4b2abd6eb44b448deeebf6d295, type: 2}
-  _headingDegrees: 90
 --- !u!1 &379378581
 GameObject:
   m_ObjectHideFlags: 0
@@ -66565,7 +66329,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1a2b3c4d5e6f70819203a4b5c6d7e8f9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.YSortSprite
-  _dynamic: 0
+  _dynamic: 1
   _baseOrder: 1202
   _orderPerUnit: 4
   _minOrder: 2
@@ -70518,7 +70282,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: HiddenHarbours.Boats::HiddenHarbours.Boats.MooredBoat
   _owner: {fileID: 11400000, guid: 10584b0fb7c866b2a6a5341c62cc3dd8, type: 2}
-  _reviewVisual: {fileID: 0}
   _headingDegrees: 90
 --- !u!1 &440376702
 GameObject:
@@ -107319,7 +107082,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: HiddenHarbours.Boats::HiddenHarbours.Boats.MooredBoat
   _owner: {fileID: 11400000, guid: cfa5fdaca39610de12e7a4cff6bcfeec, type: 2}
-  _reviewVisual: {fileID: 0}
   _headingDegrees: 90
 --- !u!1 &660120746
 GameObject:
@@ -125748,53 +125510,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
   m_BlendShapeWeights: []
---- !u!1 &768051998
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 768051999}
-  - component: {fileID: 768052000}
-  m_Layer: 0
-  m_Name: Review_lobster_offshore_open_fundy
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &768051999
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 768051998}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 452, y: 56, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 2054628875}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &768052000
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 768051998}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5d2f8a17c6b34e0fa91d3e7c48b25f61, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: HiddenHarbours.Boats::HiddenHarbours.Boats.MooredBoat
-  _owner: {fileID: 0}
-  _reviewVisual: {fileID: 11400000, guid: 78d54032aaf83014482b5a2d39cca22f, type: 2}
-  _headingDegrees: 90
 --- !u!1 &769097453
 GameObject:
   m_ObjectHideFlags: 0
@@ -141969,53 +141684,6 @@ MonoBehaviour:
   _profileMetres: 1.15
   _stripMetresT: 4
   _browLineAt: 0.42
---- !u!1 &866932401
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 866932402}
-  - component: {fileID: 866932403}
-  m_Layer: 0
-  m_Name: Review_lobster_offshore_open_nor
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &866932402
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 866932401}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 452, y: 70, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 2054628875}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &866932403
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 866932401}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5d2f8a17c6b34e0fa91d3e7c48b25f61, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: HiddenHarbours.Boats::HiddenHarbours.Boats.MooredBoat
-  _owner: {fileID: 0}
-  _reviewVisual: {fileID: 11400000, guid: 5c77f7f23690c904dbf1efa7693ca93f, type: 2}
-  _headingDegrees: 90
 --- !u!1 &867107567
 GameObject:
   m_ObjectHideFlags: 0
@@ -161330,100 +160998,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
   m_BlendShapeWeights: []
---- !u!1 &900829359
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 900829360}
-  - component: {fileID: 900829361}
-  m_Layer: 0
-  m_Name: Review_lobster_inshore_hardtop_nor
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &900829360
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 900829359}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 356, y: 28, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 2054628875}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &900829361
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 900829359}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5d2f8a17c6b34e0fa91d3e7c48b25f61, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: HiddenHarbours.Boats::HiddenHarbours.Boats.MooredBoat
-  _owner: {fileID: 0}
-  _reviewVisual: {fileID: 11400000, guid: ad58b56f9ed220f4090e1b560891ad60, type: 2}
-  _headingDegrees: 90
---- !u!1 &901854708
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 901854709}
-  - component: {fileID: 901854710}
-  m_Layer: 0
-  m_Name: Review_lobster_inshore_open_nfld
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &901854709
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 901854708}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 356, y: 42, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 2054628875}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &901854710
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 901854708}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5d2f8a17c6b34e0fa91d3e7c48b25f61, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: HiddenHarbours.Boats::HiddenHarbours.Boats.MooredBoat
-  _owner: {fileID: 0}
-  _reviewVisual: {fileID: 11400000, guid: 229ad390f4d4e7f458666c296fcb6469, type: 2}
-  _headingDegrees: 90
 --- !u!1 &903318688
 GameObject:
   m_ObjectHideFlags: 0
@@ -172018,53 +171592,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
   m_BlendShapeWeights: []
---- !u!1 &968001141
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 968001142}
-  - component: {fileID: 968001143}
-  m_Layer: 0
-  m_Name: Review_lobster_offshore_hardtop_nfld
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &968001142
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 968001141}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 488, y: 56, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 2054628875}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &968001143
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 968001141}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5d2f8a17c6b34e0fa91d3e7c48b25f61, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: HiddenHarbours.Boats::HiddenHarbours.Boats.MooredBoat
-  _owner: {fileID: 0}
-  _reviewVisual: {fileID: 11400000, guid: 4d6caf2904b63964a9a6cf27dbebe3d8, type: 2}
-  _headingDegrees: 90
 --- !u!1 &968036751
 GameObject:
   m_ObjectHideFlags: 0
@@ -190684,53 +190211,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
   m_BlendShapeWeights: []
---- !u!1 &1074582195
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1074582196}
-  - component: {fileID: 1074582197}
-  m_Layer: 0
-  m_Name: Review_lobster_standard_hardtop_nor
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1074582196
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1074582195}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 416, y: 56, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 2054628875}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1074582197
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1074582195}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5d2f8a17c6b34e0fa91d3e7c48b25f61, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: HiddenHarbours.Boats::HiddenHarbours.Boats.MooredBoat
-  _owner: {fileID: 0}
-  _reviewVisual: {fileID: 11400000, guid: 0d0a7d98db1515a47ba6308833d5775c, type: 2}
-  _headingDegrees: 90
 --- !u!1 &1075330323
 GameObject:
   m_ObjectHideFlags: 0
@@ -195178,53 +194658,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
   m_BlendShapeWeights: []
---- !u!1 &1097591697
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1097591698}
-  - component: {fileID: 1097591699}
-  m_Layer: 0
-  m_Name: Review_sport_fisher_90'_skybridge
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1097591698
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1097591697}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 262, y: 68, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 2054628875}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1097591699
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1097591697}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5d2f8a17c6b34e0fa91d3e7c48b25f61, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: HiddenHarbours.Boats::HiddenHarbours.Boats.MooredBoat
-  _owner: {fileID: 0}
-  _reviewVisual: {fileID: 11400000, guid: fa12ee657801c6240ac0694badecfd86, type: 2}
-  _headingDegrees: 90
 --- !u!1 &1098756015
 GameObject:
   m_ObjectHideFlags: 0
@@ -205266,53 +204699,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
   m_BlendShapeWeights: []
---- !u!1 &1139739977
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1139739978}
-  - component: {fileID: 1139739979}
-  m_Layer: 0
-  m_Name: Review_lobster_offshore_hardtop_nor
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1139739978
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1139739977}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 452, y: 28, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 2054628875}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1139739979
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1139739977}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5d2f8a17c6b34e0fa91d3e7c48b25f61, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: HiddenHarbours.Boats::HiddenHarbours.Boats.MooredBoat
-  _owner: {fileID: 0}
-  _reviewVisual: {fileID: 11400000, guid: 9b19b930df4babb4d959588c0cd53238, type: 2}
-  _headingDegrees: 90
 --- !u!1 &1141041714
 GameObject:
   m_ObjectHideFlags: 0
@@ -236333,53 +235719,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
   m_BlendShapeWeights: []
---- !u!1 &1307161390
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1307161391}
-  - component: {fileID: 1307161392}
-  m_Layer: 0
-  m_Name: Review_lobster_standard_open_nor
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1307161391
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1307161390}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 384, y: 42, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 2054628875}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1307161392
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1307161390}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5d2f8a17c6b34e0fa91d3e7c48b25f61, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: HiddenHarbours.Boats::HiddenHarbours.Boats.MooredBoat
-  _owner: {fileID: 0}
-  _reviewVisual: {fileID: 11400000, guid: f3df28dcae7f562418d72ca75f2c386c, type: 2}
-  _headingDegrees: 90
 --- !u!1 &1307680045
 GameObject:
   m_ObjectHideFlags: 0
@@ -244516,53 +243855,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
   m_BlendShapeWeights: []
---- !u!1 &1359097078
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1359097079}
-  - component: {fileID: 1359097080}
-  m_Layer: 0
-  m_Name: Review_lobster_standard_hardtop_fundy
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1359097079
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1359097078}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 416, y: 42, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 2054628875}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1359097080
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1359097078}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5d2f8a17c6b34e0fa91d3e7c48b25f61, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: HiddenHarbours.Boats::HiddenHarbours.Boats.MooredBoat
-  _owner: {fileID: 0}
-  _reviewVisual: {fileID: 11400000, guid: e223a806ebfbf3741886e346124e5a59, type: 2}
-  _headingDegrees: 90
 --- !u!1 &1359767582
 GameObject:
   m_ObjectHideFlags: 0
@@ -252968,53 +252260,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
   m_BlendShapeWeights: []
---- !u!1 &1405388364
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1405388365}
-  - component: {fileID: 1405388366}
-  m_Layer: 0
-  m_Name: Review_sport_fisher_53'_convertible
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1405388365
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1405388364}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 262, y: 40, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 2054628875}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1405388366
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1405388364}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5d2f8a17c6b34e0fa91d3e7c48b25f61, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: HiddenHarbours.Boats::HiddenHarbours.Boats.MooredBoat
-  _owner: {fileID: 0}
-  _reviewVisual: {fileID: 11400000, guid: 3bb2cdc9ddd20424aad004d751106abf, type: 2}
-  _headingDegrees: 90
 --- !u!1 &1405551606
 GameObject:
   m_ObjectHideFlags: 0
@@ -287894,53 +287139,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
   m_BlendShapeWeights: []
---- !u!1 &1523399464
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1523399465}
-  - component: {fileID: 1523399466}
-  m_Layer: 0
-  m_Name: Review_lobster_inshore_hardtop_fundy
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1523399465
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1523399464}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 384, y: 70, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 2054628875}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1523399466
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1523399464}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5d2f8a17c6b34e0fa91d3e7c48b25f61, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: HiddenHarbours.Boats::HiddenHarbours.Boats.MooredBoat
-  _owner: {fileID: 0}
-  _reviewVisual: {fileID: 11400000, guid: de23b72d325808948bb83883d5e39d76, type: 2}
-  _headingDegrees: 90
 --- !u!1 &1523796509
 GameObject:
   m_ObjectHideFlags: 0
@@ -293424,53 +292622,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
   m_BlendShapeWeights: []
---- !u!1 &1543259627
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1543259628}
-  - component: {fileID: 1543259629}
-  m_Layer: 0
-  m_Name: Review_zodiac_frc
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1543259628
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1543259627}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 312, y: 56, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 2054628875}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1543259629
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1543259627}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5d2f8a17c6b34e0fa91d3e7c48b25f61, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: HiddenHarbours.Boats::HiddenHarbours.Boats.MooredBoat
-  _owner: {fileID: 0}
-  _reviewVisual: {fileID: 11400000, guid: 30e6cae75666a814f865683f67beb9b9, type: 2}
-  _headingDegrees: 90
 --- !u!1 &1543553857
 GameObject:
   m_ObjectHideFlags: 0
@@ -298532,53 +297683,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
   m_BlendShapeWeights: []
---- !u!1 &1579378156
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1579378157}
-  - component: {fileID: 1579378158}
-  m_Layer: 0
-  m_Name: Review_lobster_inshore_open_nor
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1579378157
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1579378156}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 356, y: 70, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 2054628875}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1579378158
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1579378156}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5d2f8a17c6b34e0fa91d3e7c48b25f61, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: HiddenHarbours.Boats::HiddenHarbours.Boats.MooredBoat
-  _owner: {fileID: 0}
-  _reviewVisual: {fileID: 11400000, guid: 1bcc76f8bb663754eaaf58e08dcc5e49, type: 2}
-  _headingDegrees: 90
 --- !u!1 &1579717969
 GameObject:
   m_ObjectHideFlags: 0
@@ -318623,7 +317727,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: HiddenHarbours.Boats::HiddenHarbours.Boats.MooredBoat
   _owner: {fileID: 11400000, guid: 6a71c0519f00100a09cf21039ac456b8, type: 2}
-  _reviewVisual: {fileID: 0}
   _headingDegrees: 90
 --- !u!1 &1701853589
 GameObject:
@@ -323266,53 +322369,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
   m_BlendShapeWeights: []
---- !u!1 &1731113583
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1731113584}
-  - component: {fileID: 1731113585}
-  m_Layer: 0
-  m_Name: Review_sport_skiff_Mk2
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1731113584
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1731113583}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 312, y: 44, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 2054628875}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1731113585
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1731113583}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5d2f8a17c6b34e0fa91d3e7c48b25f61, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: HiddenHarbours.Boats::HiddenHarbours.Boats.MooredBoat
-  _owner: {fileID: 0}
-  _reviewVisual: {fileID: 11400000, guid: 4120aab75cea0ba42ab0460da002c334, type: 2}
-  _headingDegrees: 90
 --- !u!1 &1733463374
 GameObject:
   m_ObjectHideFlags: 0
@@ -334727,53 +333783,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
   m_BlendShapeWeights: []
---- !u!1 &1800825194
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1800825195}
-  - component: {fileID: 1800825196}
-  m_Layer: 0
-  m_Name: Review_lobster_inshore_hardtop_nfld
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1800825195
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1800825194}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 384, y: 56, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 2054628875}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1800825196
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1800825194}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5d2f8a17c6b34e0fa91d3e7c48b25f61, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: HiddenHarbours.Boats::HiddenHarbours.Boats.MooredBoat
-  _owner: {fileID: 0}
-  _reviewVisual: {fileID: 11400000, guid: 5bb21b9020222ab43b416b73416e8bc1, type: 2}
-  _headingDegrees: 90
 --- !u!1 &1801630565
 GameObject:
   m_ObjectHideFlags: 0
@@ -335972,7 +334981,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: HiddenHarbours.Boats::HiddenHarbours.Boats.MooredBoat
   _owner: {fileID: 11400000, guid: 96a6c193415e06ac8029fc1d4d3b89de, type: 2}
-  _reviewVisual: {fileID: 0}
   _headingDegrees: 90
 --- !u!1 &1807383215
 GameObject:
@@ -340250,53 +339258,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
   m_BlendShapeWeights: []
---- !u!1 &1828980511
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1828980512}
-  - component: {fileID: 1828980513}
-  m_Layer: 0
-  m_Name: Review_lobster_inshore_open_fundy
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1828980512
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1828980511}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 356, y: 56, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 2054628875}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1828980513
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1828980511}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5d2f8a17c6b34e0fa91d3e7c48b25f61, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: HiddenHarbours.Boats::HiddenHarbours.Boats.MooredBoat
-  _owner: {fileID: 0}
-  _reviewVisual: {fileID: 11400000, guid: ea5ecabc40d44a741af77a77f82473ab, type: 2}
-  _headingDegrees: 90
 --- !u!1 &1829063493
 GameObject:
   m_ObjectHideFlags: 0
@@ -360539,7 +359500,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: HiddenHarbours.Boats::HiddenHarbours.Boats.MooredBoat
   _owner: {fileID: 11400000, guid: 7e98b8c4444427052a11b8344f881100, type: 2}
-  _reviewVisual: {fileID: 0}
   _headingDegrees: 90
 --- !u!1 &1932403037
 GameObject:
@@ -366421,7 +365381,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: HiddenHarbours.Boats::HiddenHarbours.Boats.MooredBoat
   _owner: {fileID: 11400000, guid: a95fc23390fbc9e0e30a5126ae86fc1d, type: 2}
-  _reviewVisual: {fileID: 0}
   _headingDegrees: 90
 --- !u!1 &1964797281
 GameObject:
@@ -380055,60 +379014,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
   m_BlendShapeWeights: []
---- !u!1 &2054628874
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 2054628875}
-  m_Layer: 0
-  m_Name: FleetReviewAnchorage
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &2054628875
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2054628874}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 1097591698}
-  - {fileID: 1405388365}
-  - {fileID: 378379637}
-  - {fileID: 1543259628}
-  - {fileID: 1731113584}
-  - {fileID: 1579378157}
-  - {fileID: 1828980512}
-  - {fileID: 901854709}
-  - {fileID: 900829360}
-  - {fileID: 1523399465}
-  - {fileID: 1800825195}
-  - {fileID: 1307161391}
-  - {fileID: 223108078}
-  - {fileID: 289676766}
-  - {fileID: 1074582196}
-  - {fileID: 1359097079}
-  - {fileID: 135434441}
-  - {fileID: 866932402}
-  - {fileID: 768051999}
-  - {fileID: 7025737}
-  - {fileID: 1139739978}
-  - {fileID: 2107403563}
-  - {fileID: 968001142}
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2055661411
 GameObject:
   m_ObjectHideFlags: 0
@@ -388092,53 +386997,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
   m_BlendShapeWeights: []
---- !u!1 &2107403562
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 2107403563}
-  - component: {fileID: 2107403564}
-  m_Layer: 0
-  m_Name: Review_lobster_offshore_hardtop_fundy
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &2107403563
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2107403562}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 488, y: 70, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 2054628875}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &2107403564
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2107403562}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5d2f8a17c6b34e0fa91d3e7c48b25f61, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: HiddenHarbours.Boats::HiddenHarbours.Boats.MooredBoat
-  _owner: {fileID: 0}
-  _reviewVisual: {fileID: 11400000, guid: c55653bda33c1fa4ca4dcbb4ce7be213, type: 2}
-  _headingDegrees: 90
 --- !u!1 &2110138604
 GameObject:
   m_ObjectHideFlags: 0
@@ -400446,6 +399304,10 @@ GameObject:
   m_Component:
   - component: {fileID: 589154137}
   - component: {fileID: 1882835780}
+  - component: {fileID: 230974090}
+  - component: {fileID: 799713567}
+  - component: {fileID: 1285172395}
+  - component: {fileID: 1771838834}
   m_Layer: 0
   m_Name: vehicle.nmc_lot_e
   m_TagString: Untagged
@@ -400481,7 +399343,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: HiddenHarbours.Vehicles::HiddenHarbours.Vehicles.ParkedVehicle
   _vehicle: {fileID: 11400000, guid: 44b1877c02967b34fa43964bbb98a772, type: 2}
-  _drivable: 0
+  _drivable: 1
 --- !u!1 &825696571
 GameObject:
   m_ObjectHideFlags: 0
@@ -400492,6 +399354,9 @@ GameObject:
   m_Component:
   - component: {fileID: 538537957}
   - component: {fileID: 668578854}
+  - component: {fileID: 681375178}
+  - component: {fileID: 390511245}
+  - component: {fileID: 313996316}
   m_Layer: 0
   m_Name: vehicle.nmc_lot_a
   m_TagString: Untagged
@@ -400527,7 +399392,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: HiddenHarbours.Vehicles::HiddenHarbours.Vehicles.ParkedVehicle
   _vehicle: {fileID: 11400000, guid: 1825f967802c5cd41a0c6ce1d4f1c693, type: 2}
-  _drivable: 0
+  _drivable: 1
 --- !u!1 &1058170827
 GameObject:
   m_ObjectHideFlags: 0
@@ -400584,6 +399449,9 @@ GameObject:
   m_Component:
   - component: {fileID: 489877244}
   - component: {fileID: 862292857}
+  - component: {fileID: 1364211770}
+  - component: {fileID: 444763813}
+  - component: {fileID: 1905095004}
   m_Layer: 0
   m_Name: vehicle.nmc_lot_c
   m_TagString: Untagged
@@ -400619,7 +399487,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: HiddenHarbours.Vehicles::HiddenHarbours.Vehicles.ParkedVehicle
   _vehicle: {fileID: 11400000, guid: c16d5c8b7a91f5043924c580c9e0e487, type: 2}
-  _drivable: 0
+  _drivable: 1
 --- !u!1 &983099953
 GameObject:
   m_ObjectHideFlags: 0
@@ -400676,6 +399544,9 @@ GameObject:
   m_Component:
   - component: {fileID: 759933381}
   - component: {fileID: 1234151227}
+  - component: {fileID: 538586389}
+  - component: {fileID: 1363594650}
+  - component: {fileID: 1584487472}
   m_Layer: 0
   m_Name: vehicle.nmc_pickup_leo
   m_TagString: Untagged
@@ -400711,7 +399582,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: HiddenHarbours.Vehicles::HiddenHarbours.Vehicles.ParkedVehicle
   _vehicle: {fileID: 11400000, guid: 1825f967802c5cd41a0c6ce1d4f1c693, type: 2}
-  _drivable: 0
+  _drivable: 1
 --- !u!1 &511595638
 GameObject:
   m_ObjectHideFlags: 0
@@ -400722,6 +399593,9 @@ GameObject:
   m_Component:
   - component: {fileID: 2125258142}
   - component: {fileID: 1777984688}
+  - component: {fileID: 2127286530}
+  - component: {fileID: 1876316587}
+  - component: {fileID: 482835234}
   m_Layer: 0
   m_Name: vehicle.nmc_pickup_ross
   m_TagString: Untagged
@@ -400757,7 +399631,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: HiddenHarbours.Vehicles::HiddenHarbours.Vehicles.ParkedVehicle
   _vehicle: {fileID: 11400000, guid: 44b1877c02967b34fa43964bbb98a772, type: 2}
-  _drivable: 0
+  _drivable: 1
 --- !u!1 &633351791
 GameObject:
   m_ObjectHideFlags: 0
@@ -400768,6 +399642,9 @@ GameObject:
   m_Component:
   - component: {fileID: 1420472359}
   - component: {fileID: 790223660}
+  - component: {fileID: 1996578888}
+  - component: {fileID: 511932062}
+  - component: {fileID: 981364291}
   m_Layer: 0
   m_Name: vehicle.nmc_pickup_marie
   m_TagString: Untagged
@@ -400803,7 +399680,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: HiddenHarbours.Vehicles::HiddenHarbours.Vehicles.ParkedVehicle
   _vehicle: {fileID: 11400000, guid: 1825f967802c5cd41a0c6ce1d4f1c693, type: 2}
-  _drivable: 0
+  _drivable: 1
 --- !u!1 &110266995
 GameObject:
   m_ObjectHideFlags: 0
@@ -408873,6 +407750,384 @@ MonoBehaviour:
   _marketId: 1
   _supplyPerSale: 1
   _categoryDemand: []
+--- !u!50 &230974090
+Rigidbody2D:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 318424449}
+  m_BodyType: 0
+  m_Simulated: 1
+  m_UseFullKinematicContacts: 0
+  m_UseAutoMass: 0
+  m_Mass: 1
+  m_LinearDamping: 0
+  m_AngularDamping: 0.05
+  m_GravityScale: 0
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_Interpolate: 0
+  m_SleepingMode: 1
+  m_CollisionDetection: 0
+  m_Constraints: 0
+--- !u!114 &799713567
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 318424449}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 01e0d2be484a43840b04c50cc27e1304, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: HiddenHarbours.Vehicles::HiddenHarbours.Vehicles.VehicleController
+  _vehicle: {fileID: 11400000, guid: 44b1877c02967b34fa43964bbb98a772, type: 2}
+--- !u!114 &1285172395
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 318424449}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aeeb19a47979ad87e79f52bc06ce6c36, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: HiddenHarbours.Vehicles::HiddenHarbours.Vehicles.VehicleDoor
+  _reachMeters: 1.5
+  _requiresFacing: 0
+--- !u!114 &1771838834
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 318424449}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: df8a72cc69f34c689c4e483127a64fb9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: HiddenHarbours.Vehicles::HiddenHarbours.Vehicles.ScheduledTrip
+  _trip: {fileID: 11400000, guid: 76b663f22a6d4e218951f608ad23b06f, type: 2}
+  _machine: {fileID: 1882835780}
+  _driver: {fileID: 413417727}
+  _driverRenderer: {fileID: 413417730}
+  _driverTalkable: {fileID: 413417731}
+  _trailer: {fileID: 0}
+  _outbound:
+  - {x: -131, y: 78}
+  - {x: -130.67215, y: 90.7864685}
+  - {x: -100, y: 92}
+  - {x: -40, y: 92}
+  - {x: 14, y: 92}
+  - {x: 22, y: 95}
+  - {x: 27, y: 101}
+  - {x: 29, y: 108}
+  - {x: 30.5, y: 114}
+  - {x: 34, y: 118}
+  - {x: 50, y: 118}
+  - {x: 76.1421356, y: 120}
+  - {x: 99.5999985, y: 120}
+  - {x: 101, y: 121.400002}
+  - {x: 101, y: 128.399994}
+  _return:
+  - {x: 101, y: 128.399994}
+  - {x: 101, y: 121.400002}
+  - {x: 99.5999985, y: 120}
+  - {x: 76.1421356, y: 120}
+  - {x: 50, y: 118}
+  - {x: 34, y: 118}
+  - {x: 30.5, y: 114}
+  - {x: 29, y: 108}
+  - {x: 27, y: 101}
+  - {x: 22, y: 95}
+  - {x: 14, y: 92}
+  - {x: -40, y: 92}
+  - {x: -100, y: 92}
+  - {x: -130.67215, y: 90.7864685}
+  - {x: -131, y: 78}
+  _originPost: {x: -128.100952, y: 77.9256668}
+  _originPostFacing: {x: -0.999671459, y: 0.02563213}
+  _destinationPost: {x: 93.4146271, y: 123.14621}
+  _destinationPostFacing: {x: 0.743087113, y: -0.669194698}
+--- !u!50 &681375178
+Rigidbody2D:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 825696571}
+  m_BodyType: 0
+  m_Simulated: 1
+  m_UseFullKinematicContacts: 0
+  m_UseAutoMass: 0
+  m_Mass: 1
+  m_LinearDamping: 0
+  m_AngularDamping: 0.05
+  m_GravityScale: 0
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_Interpolate: 0
+  m_SleepingMode: 1
+  m_CollisionDetection: 0
+  m_Constraints: 0
+--- !u!114 &390511245
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 825696571}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 01e0d2be484a43840b04c50cc27e1304, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: HiddenHarbours.Vehicles::HiddenHarbours.Vehicles.VehicleController
+  _vehicle: {fileID: 11400000, guid: 1825f967802c5cd41a0c6ce1d4f1c693, type: 2}
+--- !u!114 &313996316
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 825696571}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aeeb19a47979ad87e79f52bc06ce6c36, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: HiddenHarbours.Vehicles::HiddenHarbours.Vehicles.VehicleDoor
+  _reachMeters: 1.5
+  _requiresFacing: 0
+--- !u!50 &1364211770
+Rigidbody2D:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1819326228}
+  m_BodyType: 0
+  m_Simulated: 1
+  m_UseFullKinematicContacts: 0
+  m_UseAutoMass: 0
+  m_Mass: 1
+  m_LinearDamping: 0
+  m_AngularDamping: 0.05
+  m_GravityScale: 0
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_Interpolate: 0
+  m_SleepingMode: 1
+  m_CollisionDetection: 0
+  m_Constraints: 0
+--- !u!114 &444763813
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1819326228}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 01e0d2be484a43840b04c50cc27e1304, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: HiddenHarbours.Vehicles::HiddenHarbours.Vehicles.VehicleController
+  _vehicle: {fileID: 11400000, guid: c16d5c8b7a91f5043924c580c9e0e487, type: 2}
+--- !u!114 &1905095004
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1819326228}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aeeb19a47979ad87e79f52bc06ce6c36, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: HiddenHarbours.Vehicles::HiddenHarbours.Vehicles.VehicleDoor
+  _reachMeters: 1.5
+  _requiresFacing: 0
+--- !u!50 &538586389
+Rigidbody2D:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 496508844}
+  m_BodyType: 0
+  m_Simulated: 1
+  m_UseFullKinematicContacts: 0
+  m_UseAutoMass: 0
+  m_Mass: 1
+  m_LinearDamping: 0
+  m_AngularDamping: 0.05
+  m_GravityScale: 0
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_Interpolate: 0
+  m_SleepingMode: 1
+  m_CollisionDetection: 0
+  m_Constraints: 0
+--- !u!114 &1363594650
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 496508844}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 01e0d2be484a43840b04c50cc27e1304, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: HiddenHarbours.Vehicles::HiddenHarbours.Vehicles.VehicleController
+  _vehicle: {fileID: 11400000, guid: 1825f967802c5cd41a0c6ce1d4f1c693, type: 2}
+--- !u!114 &1584487472
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 496508844}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aeeb19a47979ad87e79f52bc06ce6c36, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: HiddenHarbours.Vehicles::HiddenHarbours.Vehicles.VehicleDoor
+  _reachMeters: 1.5
+  _requiresFacing: 0
+--- !u!50 &2127286530
+Rigidbody2D:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 511595638}
+  m_BodyType: 0
+  m_Simulated: 1
+  m_UseFullKinematicContacts: 0
+  m_UseAutoMass: 0
+  m_Mass: 1
+  m_LinearDamping: 0
+  m_AngularDamping: 0.05
+  m_GravityScale: 0
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_Interpolate: 0
+  m_SleepingMode: 1
+  m_CollisionDetection: 0
+  m_Constraints: 0
+--- !u!114 &1876316587
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 511595638}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 01e0d2be484a43840b04c50cc27e1304, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: HiddenHarbours.Vehicles::HiddenHarbours.Vehicles.VehicleController
+  _vehicle: {fileID: 11400000, guid: 44b1877c02967b34fa43964bbb98a772, type: 2}
+--- !u!114 &482835234
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 511595638}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aeeb19a47979ad87e79f52bc06ce6c36, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: HiddenHarbours.Vehicles::HiddenHarbours.Vehicles.VehicleDoor
+  _reachMeters: 1.5
+  _requiresFacing: 0
+--- !u!50 &1996578888
+Rigidbody2D:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 633351791}
+  m_BodyType: 0
+  m_Simulated: 1
+  m_UseFullKinematicContacts: 0
+  m_UseAutoMass: 0
+  m_Mass: 1
+  m_LinearDamping: 0
+  m_AngularDamping: 0.05
+  m_GravityScale: 0
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_Interpolate: 0
+  m_SleepingMode: 1
+  m_CollisionDetection: 0
+  m_Constraints: 0
+--- !u!114 &511932062
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 633351791}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 01e0d2be484a43840b04c50cc27e1304, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: HiddenHarbours.Vehicles::HiddenHarbours.Vehicles.VehicleController
+  _vehicle: {fileID: 11400000, guid: 1825f967802c5cd41a0c6ce1d4f1c693, type: 2}
+--- !u!114 &981364291
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 633351791}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aeeb19a47979ad87e79f52bc06ce6c36, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: HiddenHarbours.Vehicles::HiddenHarbours.Vehicles.VehicleDoor
+  _reachMeters: 1.5
+  _requiresFacing: 0
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -408888,7 +408143,6 @@ SceneRoots:
   - {fileID: 1415496823}
   - {fileID: 1152889076}
   - {fileID: 2021735755}
-  - {fileID: 2054628875}
   - {fileID: 1809494775}
   - {fileID: 194637444}
   - {fileID: 273312153}

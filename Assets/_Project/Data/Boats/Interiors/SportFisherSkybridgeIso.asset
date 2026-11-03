@@ -14,402 +14,602 @@ MonoBehaviour:
   m_EditorClassIdentifier: HiddenHarbours.Core::HiddenHarbours.Core.BoatInteriorDef
   Id: interior.sport_fisher_skybridge_iso
   FitsHulls:
-  - sportFisherIsoRig2.skybridge
-  SourceSidecar: docs/art/rigs/boat-interiors-kit/sportFisherIsoRig2.skybridge.interior.json
-  SourceInteriorRig: docs/art/rigs/boat-interiors-kit/boatInteriorRig.js
-  SourceHullRig: docs/art/rigs/boat-interiors-kit/hull-rigs/sportFisherIsoRig2.js
-  InteriorRigSha256: 34bb781303b9de9a47c7029a685bf83d357adefe2ffb95ff54451233ea7c46a7
-  HullRigSha256: 205a93c9e0e39a1df72cadeacac335d9bbf7f87390a204ad98bcd4cc629c4691
+  - SportFisherSkybridgeIso
+  SourceSidecar: docs/art/rigs/gameplay/sportFisherIsoRig2.skybridge.walk.json
+  SourceInteriorRig: docs/art/rigs/sportFisherIsoRig2.js
+  SourceHullRig: docs/art/rigs/sportFisherIsoRig2.js
+  InteriorRigSha256: 69914ed2374b998407954b9170a37b7cf178158f2ff5843353e5cda63c9e83b6
+  HullRigSha256: 69914ed2374b998407954b9170a37b7cf178158f2ff5843353e5cda63c9e83b6
   PixelsPerMetre: 32
   CellPixels: {x: 1200, y: 1170}
   PivotPixels: {x: 600, y: 730}
   FootprintOutline:
-  - {x: -3.02, y: -10.05}
-  - {x: 3.02, y: -10.05}
-  - {x: 3.02, y: 1.2}
-  - {x: -3.02, y: 1.2}
+  - {x: -1.54, y: -8.6}
+  - {x: -0.46000004, y: -8.6}
+  - {x: -0.46, y: -7.96}
+  - {x: 2.819, y: -7.96}
+  - {x: 2.875, y: -7.52}
+  - {x: 2.875, y: -7.08}
+  - {x: 2.875, y: -6.64}
+  - {x: 2.875, y: -6.55}
+  - {x: 2.68, y: -6.55}
+  - {x: 2.68, y: -3.75}
+  - {x: 2.618, y: -3.75}
+  - {x: 2.618, y: -3.7}
+  - {x: 2.875, y: -3.7}
+  - {x: 2.875, y: -3.56}
+  - {x: 2.875, y: -3.52}
+  - {x: 2.618, y: -3.52}
+  - {x: 2.618, y: -3.42}
+  - {x: 2.18, y: -3.42}
+  - {x: 2.18, y: -2.72}
+  - {x: 2.18, y: -2.28}
+  - {x: 2.5671701, y: -2.28}
+  - {x: 2.565, y: -2.262}
+  - {x: 2.5629148, y: -2.25}
+  - {x: 2.18, y: -2.25}
+  - {x: 2.18, y: 0.81999993}
+  - {x: 2.8730907, y: 0.82}
+  - {x: 2.873, y: 0.84}
+  - {x: 2.861, y: 1.28}
+  - {x: 2.83, y: 1.72}
+  - {x: 2.778, y: 2.16}
+  - {x: 2.7514093, y: 2.31}
+  - {x: 0.87, y: 2.31}
+  - {x: 0.87, y: 2.38}
+  - {x: 1.6947473, y: 2.38}
+  - {x: 1.629, y: 2.797}
+  - {x: 1.6283728, y: 2.8}
+  - {x: 0.8, y: 2.8}
+  - {x: 0.8, y: 0.29999995}
+  - {x: 0.6, y: 0.3}
+  - {x: 0.6, y: 0.25}
+  - {x: 0.45, y: 0.25}
+  - {x: 0.45, y: 0.79999995}
+  - {x: 0.41, y: 0.79999995}
+  - {x: 0.41, y: 3.2}
+  - {x: 0.3, y: 3.2}
+  - {x: 0.3, y: 3.675}
+  - {x: 0.8, y: 3.675}
+  - {x: 0.8, y: 3.3}
+  - {x: 1.5245031, y: 3.3}
+  - {x: 1.443, y: 3.724}
+  - {x: 1.344, y: 4.187}
+  - {x: 1.242, y: 4.65}
+  - {x: 0.8000001, y: 4.65}
+  - {x: 0.8, y: 4.025}
+  - {x: 0.3, y: 4.025}
+  - {x: 0.3, y: 4.5}
+  - {x: 0.42, y: 4.5}
+  - {x: 0.42, y: 5.1}
+  - {x: 0.24999993, y: 5.1}
+  - {x: 0.25, y: 5.3}
+  - {x: 1.6487331, y: 5.3}
+  - {x: 1.64, y: 5.325}
+  - {x: 1.525, y: 5.7}
+  - {x: 1.378, y: 6.075}
+  - {x: 1.254, y: 6.45}
+  - {x: 1.102, y: 6.825}
+  - {x: 1.03, y: 7.025}
+  - {x: 1.03, y: 5.57}
+  - {x: -1.03, y: 5.57}
+  - {x: -1.03, y: 7.025}
+  - {x: -1.102, y: 6.825}
+  - {x: -1.254, y: 6.45}
+  - {x: -1.378, y: 6.075}
+  - {x: -1.525, y: 5.7}
+  - {x: -1.64, y: 5.325}
+  - {x: -1.6487331, y: 5.3}
+  - {x: -0.25, y: 5.3}
+  - {x: -0.25, y: 5.1}
+  - {x: -0.42, y: 5.1}
+  - {x: -0.42, y: 4.5}
+  - {x: -0.30000013, y: 4.5}
+  - {x: -0.3, y: 4.025}
+  - {x: -0.8, y: 4.025}
+  - {x: -0.8, y: 4.65}
+  - {x: -1.242, y: 4.65}
+  - {x: -1.344, y: 4.187}
+  - {x: -1.443, y: 3.724}
+  - {x: -1.5245032, y: 3.3}
+  - {x: -0.79999995, y: 3.3}
+  - {x: -0.8, y: 3.675}
+  - {x: -0.3, y: 3.675}
+  - {x: -0.3, y: 3.2}
+  - {x: -0.41, y: 3.2}
+  - {x: -0.41, y: 2.8}
+  - {x: -0.8499998, y: 2.8}
+  - {x: -0.8499999, y: 2.31}
+  - {x: -2.7514093, y: 2.31}
+  - {x: -2.778, y: 2.16}
+  - {x: -2.83, y: 1.72}
+  - {x: -2.8511364, y: 1.42}
+  - {x: -2.62, y: 1.42}
+  - {x: -2.18, y: 1.42}
+  - {x: -1.18, y: 1.42}
+  - {x: -1.18, y: 0.48000002}
+  - {x: -1.3200002, y: 0.48}
+  - {x: -1.32, y: -0.4499999}
+  - {x: -2.003389, y: -0.45}
+  - {x: -2.033, y: -0.907}
+  - {x: -2.059, y: -1.371}
+  - {x: -2.08, y: -1.834}
+  - {x: -2.092354, y: -2.12}
+  - {x: -2.18, y: -2.12}
+  - {x: -2.62, y: -2.12}
+  - {x: -2.875, y: -2.12}
+  - {x: -2.875, y: -2.24}
+  - {x: -2.875, y: -2.68}
+  - {x: -2.875, y: -2.88}
+  - {x: -2.6115036, y: -2.88}
+  - {x: -2.618, y: -3.109}
+  - {x: -2.618, y: -3.18}
+  - {x: -2.08, y: -3.18}
+  - {x: -2.08, y: -3.6199996}
+  - {x: -1.98, y: -3.6199996}
+  - {x: -1.98, y: -4.12}
+  - {x: -1.07, y: -4.12}
+  - {x: -1.07, y: -5.38}
+  - {x: -2.08, y: -5.38}
+  - {x: -2.08, y: -5.48}
+  - {x: -1.38, y: -5.48}
+  - {x: -1.38, y: -6.18}
+  - {x: -1.98, y: -6.18}
+  - {x: -1.98, y: -6.52}
+  - {x: -2.08, y: -6.52}
+  - {x: -2.52, y: -6.52}
+  - {x: -2.875, y: -6.52}
+  - {x: -2.875, y: -6.55}
+  - {x: -2.55, y: -6.55}
+  - {x: -2.35, y: -6.55}
+  - {x: -2.23, y: -6.55}
+  - {x: -1.98, y: -6.55}
+  - {x: -1.98, y: -7.06}
+  - {x: -1.75, y: -7.06}
+  - {x: -1.75, y: -7.96}
+  - {x: -1.54, y: -7.96}
   Levels:
   - Id: house_sole
-    SoleZMeters: 2.83
+    SoleZMeters: 2.88
     Outline:
-    - {x: -2.95, y: -9.98}
-    - {x: 2.95, y: -9.98}
-    - {x: 2.95, y: 1.13}
-    - {x: -2.95, y: 1.13}
-    Obstructions:
-    - Id: stove_counter
-      Footprint:
-      - {x: -2.92, y: -9.55}
-      - {x: -2.3, y: -9.55}
-      - {x: -2.3, y: -8.35}
-      - {x: -2.92, y: -8.35}
-      HeightAboveSoleMeters: 0.92
-      Treatment: waist_block
-    - Id: locker
-      Footprint:
-      - {x: 2.22, y: -9.65}
-      - {x: 2.94, y: -9.65}
-      - {x: 2.94, y: -8.55}
-      - {x: 2.22, y: -8.55}
-      HeightAboveSoleMeters: 1.85
-      Treatment: wall
-    - Id: island_port
-      Footprint:
-      - {x: -1.4, y: -8.95}
-      - {x: -0.05, y: -8.95}
-      - {x: -0.05, y: -7.95}
-      - {x: -1.4, y: -7.95}
-      HeightAboveSoleMeters: 0.95
-      Treatment: waist_block
-    - Id: stool_stbd
-      Footprint:
-      - {x: 0.3, y: -8.85}
-      - {x: 0.62, y: -8.85}
-      - {x: 0.62, y: -8.53}
-      - {x: 0.3, y: -8.53}
-      HeightAboveSoleMeters: 0.7
-      Treatment: waist_block
-    - Id: stool_stbd
-      Footprint:
-      - {x: 0.3, y: -8.35}
-      - {x: 0.62, y: -8.35}
-      - {x: 0.62, y: -8.03}
-      - {x: 0.3, y: -8.03}
-      HeightAboveSoleMeters: 0.7
-      Treatment: waist_block
-    - Id: fridge_port
-      Footprint:
-      - {x: -2.92, y: -8.1}
-      - {x: -2.4, y: -8.1}
-      - {x: -2.4, y: -7.5}
-      - {x: -2.92, y: -7.5}
-      HeightAboveSoleMeters: 2
-      Treatment: wall
-    - Id: settee_stbd
-      Footprint:
-      - {x: 2.12, y: -6.95}
-      - {x: 2.94, y: -6.95}
-      - {x: 2.94, y: -3.55}
-      - {x: 2.12, y: -3.55}
-      HeightAboveSoleMeters: 0.88
-      Treatment: waist_block
-    - Id: settee_stbd
-      Footprint:
-      - {x: 0.6, y: -4.3}
-      - {x: 2.12, y: -4.3}
-      - {x: 2.12, y: -3.55}
-      - {x: 0.6, y: -3.55}
-      HeightAboveSoleMeters: 0.88
-      Treatment: waist_block
-    - Id: settee_port
-      Footprint:
-      - {x: -2.94, y: -3.3}
-      - {x: -2.2, y: -3.3}
-      - {x: -2.2, y: -0.55}
-      - {x: -2.94, y: -0.55}
-      HeightAboveSoleMeters: 0.88
-      Treatment: waist_block
-    - Id: table_stbd
-      Footprint:
-      - {x: 1.05, y: -6.15}
-      - {x: 2, y: -6.15}
-      - {x: 2, y: -4.7}
-      - {x: 1.05, y: -4.7}
-      HeightAboveSoleMeters: 0.42
-      Treatment: step_over
-    - Id: sidetable_port
-      Footprint:
-      - {x: -2.18, y: -0.92}
-      - {x: -1.78, y: -0.92}
-      - {x: -1.78, y: -0.52}
-      - {x: -2.18, y: -0.52}
-      HeightAboveSoleMeters: 0.52
-      Treatment: waist_block
-    - Id: companionway_up_flight
-      Footprint:
-      - {x: 0.55, y: -7.55}
-      - {x: 1.35, y: -7.55}
-      - {x: 1.35, y: -6.55}
-      - {x: 0.55, y: -6.55}
-      HeightAboveSoleMeters: 1.2
-      Treatment: stair_flight
-    - Id: companionway_down_opening
-      Footprint:
-      - {x: -1.3, y: 0.3}
-      - {x: -0.55, y: 0.3}
-      - {x: -0.55, y: 1.05}
-      - {x: -1.3, y: 1.05}
-      HeightAboveSoleMeters: 0
-      Treatment: stair_opening
+    - {x: -1.54, y: -8.6}
+    - {x: -0.46000004, y: -8.6}
+    - {x: -0.46, y: -7.96}
+    - {x: 2.819, y: -7.96}
+    - {x: 2.875, y: -7.52}
+    - {x: 2.875, y: -7.08}
+    - {x: 2.875, y: -6.64}
+    - {x: 2.875, y: -6.55}
+    - {x: 1.9, y: -6.55}
+    - {x: 1.9, y: -6.2}
+    - {x: 1.8, y: -6.2}
+    - {x: 1.8, y: -3.8}
+    - {x: 1.9, y: -3.8}
+    - {x: 1.9, y: -3.7}
+    - {x: 2.875, y: -3.7}
+    - {x: 2.875, y: -3.56}
+    - {x: 2.875, y: -3.52}
+    - {x: 2.18, y: -3.52}
+    - {x: 2.18, y: -2.72}
+    - {x: 2.18, y: -2.28}
+    - {x: 2.18, y: 0.82}
+    - {x: 2.8730907, y: 0.82}
+    - {x: 2.873, y: 0.84}
+    - {x: 2.861, y: 1.28}
+    - {x: 2.83, y: 1.72}
+    - {x: 2.778, y: 2.16}
+    - {x: 2.7514093, y: 2.31}
+    - {x: 0.8100002, y: 2.31}
+    - {x: 0.81, y: 0.52}
+    - {x: 1.82, y: 0.52}
+    - {x: 1.82, y: -2.72}
+    - {x: 0.48, y: -2.72}
+    - {x: 0.48, y: -2.21}
+    - {x: -0.06, y: -2.21}
+    - {x: -0.06, y: -1.59}
+    - {x: 0.48, y: -1.59}
+    - {x: 0.48, y: -1.3099998}
+    - {x: -0.06, y: -1.31}
+    - {x: -0.06, y: -0.69}
+    - {x: 0.48, y: -0.69}
+    - {x: 0.48, y: -0.40999997}
+    - {x: -0.06, y: -0.41}
+    - {x: -0.06, y: 0.21}
+    - {x: 0.48, y: 0.21}
+    - {x: 0.48, y: 0.24000004}
+    - {x: 0.45, y: 0.24}
+    - {x: 0.45, y: 0.79999995}
+    - {x: -0.45, y: 0.8}
+    - {x: -0.45, y: 0.24}
+    - {x: -0.81, y: 0.24}
+    - {x: -0.81, y: 2.31}
+    - {x: -2.7514093, y: 2.31}
+    - {x: -2.778, y: 2.16}
+    - {x: -2.83, y: 1.72}
+    - {x: -2.8511364, y: 1.42}
+    - {x: -2.62, y: 1.42}
+    - {x: -2.18, y: 1.42}
+    - {x: -1.18, y: 1.42}
+    - {x: -1.18, y: 0.48}
+    - {x: -1.3200002, y: 0.48}
+    - {x: -1.32, y: -1.18}
+    - {x: -1.18, y: -1.18}
+    - {x: -1.18, y: -2.12}
+    - {x: -2.18, y: -2.12}
+    - {x: -2.62, y: -2.12}
+    - {x: -2.875, y: -2.12}
+    - {x: -2.875, y: -2.24}
+    - {x: -2.875, y: -2.68}
+    - {x: -2.875, y: -2.88}
+    - {x: -2.08, y: -2.88}
+    - {x: -2.08, y: -3.6199996}
+    - {x: -1.07, y: -3.62}
+    - {x: -1.07, y: -5.38}
+    - {x: -2.08, y: -5.38}
+    - {x: -2.08, y: -5.48}
+    - {x: -1.38, y: -5.48}
+    - {x: -1.38, y: -6.52}
+    - {x: -2.08, y: -6.52}
+    - {x: -2.52, y: -6.52}
+    - {x: -2.875, y: -6.52}
+    - {x: -2.875, y: -6.55}
+    - {x: -2.55, y: -6.55}
+    - {x: -2.35, y: -6.55}
+    - {x: -2.23, y: -6.55}
+    - {x: -1.75, y: -6.55}
+    - {x: -1.75, y: -7.03}
+    - {x: -1.75, y: -7.96}
+    - {x: -1.54, y: -7.96}
+    Obstructions: []
   - Id: bridge_sole
-    SoleZMeters: 7.3
+    SoleZMeters: 5.56
     Outline:
-    - {x: -2.21, y: -9.43}
-    - {x: 2.21, y: -9.43}
-    - {x: 2.21, y: -0.56}
-    - {x: -2.21, y: -0.56}
-    Obstructions:
-    - Id: helm_console
-      Footprint:
-      - {x: -0.62, y: -1.2}
-      - {x: 0.62, y: -1.2}
-      - {x: 0.62, y: -0.7}
-      - {x: -0.62, y: -0.7}
-      HeightAboveSoleMeters: 1.06
-      Treatment: wall
-    - Id: helm_seat
-      Footprint:
-      - {x: -0.24, y: -2.21}
-      - {x: 0.24, y: -2.21}
-      - {x: 0.24, y: -1.73}
-      - {x: -0.24, y: -1.73}
-      HeightAboveSoleMeters: 1.02
-      Treatment: wall
-    - Id: settee_port
-      Footprint:
-      - {x: -2.18, y: -6.6}
-      - {x: -1.52, y: -6.6}
-      - {x: -1.52, y: -3.6}
-      - {x: -2.18, y: -3.6}
-      HeightAboveSoleMeters: 0.88
-      Treatment: waist_block
-    - Id: sidetable_port
-      Footprint:
-      - {x: -2.08, y: -3.35}
-      - {x: -1.7, y: -3.35}
-      - {x: -1.7, y: -2.97}
-      - {x: -2.08, y: -2.97}
-      HeightAboveSoleMeters: 0.52
-      Treatment: waist_block
-    - Id: companionway_up_opening
-      Footprint:
-      - {x: 0.55, y: -8.45}
-      - {x: 1.35, y: -8.45}
-      - {x: 1.35, y: -7.4}
-      - {x: 0.55, y: -7.4}
-      HeightAboveSoleMeters: 0
-      Treatment: stair_opening
+    - {x: 2.618, y: -4.15}
+    - {x: 2.618, y: -3.956}
+    - {x: 2.618, y: -3.673}
+    - {x: 2.618, y: -3.42}
+    - {x: 1.73, y: -3.42}
+    - {x: 1.73, y: -2.28}
+    - {x: 2.5671701, y: -2.28}
+    - {x: 2.565, y: -2.262}
+    - {x: 2.5629148, y: -2.25}
+    - {x: 1.4200001, y: -2.25}
+    - {x: 1.42, y: -2.92}
+    - {x: 1.1999999, y: -2.92}
+    - {x: 1.2, y: -3.72}
+    - {x: 0.4, y: -3.72}
+    - {x: -0.4, y: -3.72}
+    - {x: -1.2, y: -3.72}
+    - {x: -1.2, y: -2.92}
+    - {x: -1.42, y: -2.92}
+    - {x: -1.42, y: -2.25}
+    - {x: -2.5629148, y: -2.25}
+    - {x: -2.565, y: -2.262}
+    - {x: -2.599, y: -2.544}
+    - {x: -2.61, y: -2.827}
+    - {x: -2.618, y: -3.109}
+    - {x: -2.618, y: -3.18}
+    - {x: -1.98, y: -3.18}
+    - {x: -1.98, y: -4.12}
+    - {x: -1.07, y: -4.12}
+    - {x: -1.07, y: -6.18}
+    - {x: -1.98, y: -6.18}
+    - {x: -1.98, y: -7.06}
+    - {x: 0.5899999, y: -7.06}
+    - {x: 0.59, y: -7.8}
+    - {x: 1.21, y: -7.8}
+    - {x: 1.21, y: -7.06}
+    - {x: 1.76, y: -7.06}
+    - {x: 1.76, y: -4.15}
+    Obstructions: []
   - Id: below_sole
-    SoleZMeters: 0.6
+    SoleZMeters: 0.82
     Outline:
-    - {x: -2.6, y: 0.2}
-    - {x: -2.553, y: 1.025}
-    - {x: -2.438, y: 1.85}
-    - {x: -2.303, y: 2.675}
-    - {x: -2.148, y: 3.5}
-    - {x: -1.977, y: 4.325}
-    - {x: -1.783, y: 5.15}
-    - {x: -1.577, y: 5.975}
-    - {x: -1.36, y: 6.8}
-    - {x: 1.36, y: 6.8}
-    - {x: 1.577, y: 5.975}
-    - {x: 1.783, y: 5.15}
-    - {x: 1.977, y: 4.325}
-    - {x: 2.148, y: 3.5}
-    - {x: 2.303, y: 2.675}
-    - {x: 2.438, y: 1.85}
-    - {x: 2.553, y: 1.025}
-    - {x: 2.6, y: 0.2}
-    Obstructions:
-    - Id: bunk
-      Footprint:
-      - {x: -1.1, y: 4.6}
-      - {x: 1.1, y: 4.6}
-      - {x: 1.1, y: 6.4}
-      - {x: -1.1, y: 6.4}
-      HeightAboveSoleMeters: 0.55
-      Treatment: waist_block
-    - Id: bunk_port
-      Footprint:
-      - {x: -1.95, y: 1.2}
-      - {x: -0.75, y: 1.2}
-      - {x: -0.75, y: 3.3}
-      - {x: -1.95, y: 3.3}
-      HeightAboveSoleMeters: 0.55
-      Treatment: waist_block
-    - Id: bunk_stbd
-      Footprint:
-      - {x: 0.75, y: 1.2}
-      - {x: 1.95, y: 1.2}
-      - {x: 1.95, y: 3.3}
-      - {x: 0.75, y: 3.3}
-      HeightAboveSoleMeters: 0.55
-      Treatment: waist_block
-    - Id: wardrobe_port
-      Footprint:
-      - {x: -2, y: 3.55}
-      - {x: -1.55, y: 3.55}
-      - {x: -1.55, y: 4.3}
-      - {x: -2, y: 4.3}
-      HeightAboveSoleMeters: 1.65
-      Treatment: wall
-    - Id: wardrobe_stbd
-      Footprint:
-      - {x: 1.55, y: 3.55}
-      - {x: 2, y: 3.55}
-      - {x: 2, y: 4.3}
-      - {x: 1.55, y: 4.3}
-      HeightAboveSoleMeters: 1.65
-      Treatment: wall
-    - Id: sidetable_port
-      Footprint:
-      - {x: -1.62, y: 5.95}
-      - {x: -1.24, y: 5.95}
-      - {x: -1.24, y: 6.33}
-      - {x: -1.62, y: 6.33}
-      HeightAboveSoleMeters: 0.52
-      Treatment: waist_block
-    - Id: sidetable_stbd
-      Footprint:
-      - {x: 1.24, y: 5.95}
-      - {x: 1.62, y: 5.95}
-      - {x: 1.62, y: 6.33}
-      - {x: 1.24, y: 6.33}
-      HeightAboveSoleMeters: 0.52
-      Treatment: waist_block
-    - Id: head_master
-      Footprint:
-      - {x: 1.3, y: 4.75}
-      - {x: 2, y: 4.75}
-      - {x: 2, y: 5.75}
-      - {x: 1.3, y: 5.75}
-      HeightAboveSoleMeters: 2.05
-      Treatment: wall
-    - Id: head_guest
-      Footprint:
-      - {x: -2.4, y: 0.3}
-      - {x: -1.6, y: 0.3}
-      - {x: -1.6, y: 1.05}
-      - {x: -2.4, y: 1.05}
-      HeightAboveSoleMeters: 2.05
-      Treatment: wall
+    - {x: 2.118, y: -2.76}
+    - {x: 2.1, y: -2.297}
+    - {x: 2.08, y: -1.834}
+    - {x: 2.059, y: -1.371}
+    - {x: 2.033, y: -0.907}
+    - {x: 2.003389, y: -0.45000002}
+    - {x: 0.35, y: -0.45}
+    - {x: 0.35, y: 0.05}
+    - {x: 0.8700001, y: 0.05}
+    - {x: 0.87, y: 2.38}
+    - {x: 1.6947473, y: 2.38}
+    - {x: 1.629, y: 2.797}
+    - {x: 1.6283728, y: 2.8}
+    - {x: 0.8, y: 2.8}
+    - {x: 0.8, y: 0.3}
+    - {x: 0.6, y: 0.3}
+    - {x: 0.6, y: 0.25}
+    - {x: -0.6, y: 0.25}
+    - {x: -0.6, y: 2.7}
+    - {x: 0.3, y: 2.7}
+    - {x: 0.3, y: 2.9}
+    - {x: 0.3, y: 3.2}
+    - {x: 0.3, y: 3.675}
+    - {x: 0.8, y: 3.675}
+    - {x: 0.8, y: 3.3}
+    - {x: 1.5245031, y: 3.3}
+    - {x: 1.443, y: 3.724}
+    - {x: 1.344, y: 4.187}
+    - {x: 1.242, y: 4.65}
+    - {x: 0.8000001, y: 4.65}
+    - {x: 0.8, y: 4.025}
+    - {x: 0.3, y: 4.025}
+    - {x: 0.3, y: 4.65}
+    - {x: -0.3000002, y: 4.65}
+    - {x: -0.3, y: 4.025}
+    - {x: -0.8, y: 4.025}
+    - {x: -0.8, y: 4.65}
+    - {x: -1.242, y: 4.65}
+    - {x: -1.344, y: 4.187}
+    - {x: -1.443, y: 3.724}
+    - {x: -1.5245032, y: 3.3}
+    - {x: -0.79999995, y: 3.3}
+    - {x: -0.8, y: 3.675}
+    - {x: -0.3, y: 3.675}
+    - {x: -0.3, y: 2.9}
+    - {x: -0.35, y: 2.9}
+    - {x: -0.35, y: 2.8}
+    - {x: -0.8499998, y: 2.8}
+    - {x: -0.85, y: 1.5}
+    - {x: -1.17, y: 1.5}
+    - {x: -1.17, y: 1.15}
+    - {x: -0.85, y: 1.15}
+    - {x: -0.85, y: -0.35}
+    - {x: -0.9, y: -0.35}
+    - {x: -0.9, y: -0.45}
+    - {x: -2.003389, y: -0.45}
+    - {x: -2.033, y: -0.907}
+    - {x: -2.059, y: -1.371}
+    - {x: -2.08, y: -1.834}
+    - {x: -2.1, y: -2.297}
+    - {x: -2.118, y: -2.76}
+    - {x: -1.6, y: -2.76}
+    - {x: -1.6, y: -2.35}
+    - {x: -1.08, y: -2.35}
+    - {x: -1.08, y: -0.77}
+    - {x: 1.08, y: -0.77}
+    - {x: 1.08, y: -2.35}
+    - {x: 1.6, y: -2.35}
+    - {x: 1.6, y: -2.76}
+    Obstructions: []
+  - Id: vip
+    SoleZMeters: 1.12
+    Outline:
+    - {x: 1.6487331, y: 5.3}
+    - {x: 1.64, y: 5.325}
+    - {x: 1.525, y: 5.7}
+    - {x: 1.378, y: 6.075}
+    - {x: 1.254, y: 6.45}
+    - {x: 1.102, y: 6.825}
+    - {x: 1.03, y: 7.025}
+    - {x: 1.03, y: 5.57}
+    - {x: -1.03, y: 5.57}
+    - {x: -1.03, y: 7.025}
+    - {x: -1.102, y: 6.825}
+    - {x: -1.254, y: 6.45}
+    - {x: -1.378, y: 6.075}
+    - {x: -1.525, y: 5.7}
+    - {x: -1.64, y: 5.325}
+    - {x: -1.6487331, y: 5.3}
+    - {x: -0.25, y: 5.3}
+    - {x: -0.25, y: 4.95}
+    - {x: 0.24999988, y: 4.95}
+    - {x: 0.25, y: 5.3}
+    Obstructions: []
   Door:
-    Id: entry
+    EntryLanding:
+      OpeningStart: {x: 0, y: 0}
+      OpeningEnd: {x: 0, y: 0}
+      UpperPlateau: []
+      HeightMetres: 0
+      RouteId: 
+    OpeningMode: 0
+    OpeningReason: 
+    Id: salon
     Side: aft
-    ClearWidthMeters: 1.4
-    ClearHeightMeters: 1.75
-    ThresholdPoint: {x: -0.6, y: -10.24, z: 2.83}
+    ClearWidthMeters: 1.508
+    ClearHeightMeters: 2.05
+    PullConeDegrees: 30
+    PullReachClearWidths: 1
+    CrossingConeDegrees: 60
+    CrossingSettleSeconds: 0.16
+    ThresholdPoint: {x: -1, y: -8.3, z: 2.88}
     Mechanism: 0
     KeepClear:
-    - {x: -1.3, y: -10.24}
-    - {x: 1.5, y: -10.24}
-    - {x: 1.5, y: -10.39}
-    - {x: -1.3, y: -10.39}
-    CueFrames: 8
-    CueMillisecondsPerFrame: 70
+    - {x: -1.8, y: -8.8}
+    - {x: -0.2, y: -8.8}
+    - {x: -0.2, y: -7.8}
+    - {x: -1.8, y: -7.8}
+    CueFrames: 0
+    CueMillisecondsPerFrame: 0
     CueReversedOnExit: 1
   AdditionalDoors:
-  - Id: sky_entry
+  - EntryLanding:
+      OpeningStart: {x: 0, y: 0}
+      OpeningEnd: {x: 0, y: 0}
+      UpperPlateau: []
+      HeightMetres: 0
+      RouteId: 
+    OpeningMode: 0
+    OpeningReason: 
+    Id: skylounge
     Side: aft
-    ClearWidthMeters: 0.95
-    ClearHeightMeters: 1.65
-    ThresholdPoint: {x: 0.825, y: -9.36, z: 7.28}
+    ClearWidthMeters: 1.018
+    ClearHeightMeters: 2
+    PullConeDegrees: 30
+    PullReachClearWidths: 1
+    CrossingConeDegrees: 60
+    CrossingSettleSeconds: 0.16
+    ThresholdPoint: {x: 0.90000004, y: -7.4, z: 5.56}
     Mechanism: 0
     KeepClear:
-    - {x: 0.35, y: -9.36}
-    - {x: 2.231, y: -9.36}
-    - {x: 2.231, y: -9.51}
-    - {x: 0.35, y: -9.51}
-    CueFrames: 8
-    CueMillisecondsPerFrame: 70
+    - {x: 0.35, y: -7.9}
+    - {x: 1.45, y: -7.9}
+    - {x: 1.45, y: -6.9}
+    - {x: 0.35, y: -6.9}
+    CueFrames: 0
+    CueMillisecondsPerFrame: 0
     CueReversedOnExit: 1
+  InternalPassages: []
   Anchors:
   - Id: helm
     Action: enter_helm
-    ReachPoint: {x: 0, y: -2.75, z: 7.3}
-    VisibleFacings:
-    - N
-    - NE
-    - E
-    - W
-    - NW
+    ReachPoint: {x: 0, y: -3.74, z: 5.56}
+    VisibleFacings: []
+  - Id: helm_top
+    Action: enter_helm
+    ReachPoint: {x: 0, y: -5.6, z: 7.97}
+    VisibleFacings: []
+  - Id: salon
+    Action: open_close
+    ReachPoint: {x: -1, y: -8.56, z: 2.88}
+    VisibleFacings: []
+  - Id: skylounge
+    Action: open_close
+    ReachPoint: {x: 0.9, y: -7.7, z: 5.56}
+    VisibleFacings: []
   - Id: stove
     Action: cook
-    ReachPoint: {x: -1.88, y: -8.95, z: 2.83}
-    VisibleFacings:
-    - N
-    - S
-    - SW
-    - W
-    - NW
+    ReachPoint: {x: 2.16, y: -0.95, z: 2.88}
+    VisibleFacings: []
   - Id: locker
     Action: storage
-    ReachPoint: {x: 1.8, y: -9.1, z: 2.83}
-    VisibleFacings:
-    - N
-    - NE
-    - E
-    - SE
-    - S
+    ReachPoint: {x: 2.16, y: -2.9, z: 2.88}
+    VisibleFacings: []
   - Id: bunk
     Action: sleep
-    ReachPoint: {x: 0, y: 4.1, z: 0.6}
-    VisibleFacings:
-    - N
-    - NE
-    - E
-    - SE
-    - S
-    - SW
-    - W
-    - NW
-  - Id: helm_bridge
-    Action: enter_helm
-    ReachPoint: {x: 0, y: -3.95, z: 9.74}
-    VisibleFacings:
-    - N
-    - NE
-    - E
-    - SE
-    - S
-    - SW
-    - W
-    - NW
+    ReachPoint: {x: -1.1, y: -1.935, z: 0.82}
+    VisibleFacings: []
+  - Id: bunk_port
+    Action: sleep
+    ReachPoint: {x: -1.145, y: 1.25, z: 0.82}
+    VisibleFacings: []
+  - Id: bunk_starboard
+    Action: sleep
+    ReachPoint: {x: 0.84, y: 1.15, z: 0.82}
+    VisibleFacings: []
+  - Id: bunk_vip
+    Action: sleep
+    ReachPoint: {x: -1.06, y: 6.8, z: 1.12}
+    VisibleFacings: []
+  - Id: head
+    Action: toilet
+    ReachPoint: {x: -1.73, y: -6.55, z: 2.88}
+    VisibleFacings: []
+  - Id: fighting_chair
+    Action: enter_ride
+    ReachPoint: {x: 0, y: -12.84, z: 1.45}
+    VisibleFacings: []
+  - Id: seat_mezzanine
+    Action: enter_ride
+    ReachPoint: {x: 0, y: -8.96, z: 2.88}
+    VisibleFacings: []
+  - Id: seat_helm_port
+    Action: enter_ride
+    ReachPoint: {x: -1.22, y: -3.3, z: 5.56}
+    VisibleFacings: []
+  - Id: seat_helm_starboard
+    Action: enter_ride
+    ReachPoint: {x: 1.22, y: -3.3, z: 5.56}
+    VisibleFacings: []
+  - Id: seat_salon_1
+    Action: enter_ride
+    ReachPoint: {x: -2.045, y: -5.4, z: 2.88}
+    VisibleFacings: []
+  - Id: seat_salon_2
+    Action: enter_ride
+    ReachPoint: {x: -1.95, y: -5.46, z: 2.88}
+    VisibleFacings: []
+  - Id: seat_salon_3
+    Action: enter_ride
+    ReachPoint: {x: -1.3, y: -0.35, z: 2.88}
+    VisibleFacings: []
+  - Id: seat_salon_4
+    Action: enter_ride
+    ReachPoint: {x: -1.9, y: -2.15, z: 2.88}
+    VisibleFacings: []
+  - Id: seat_salon_5
+    Action: enter_ride
+    ReachPoint: {x: -1.9, y: 1.45, z: 2.88}
+    VisibleFacings: []
+  - Id: seat_stool_1
+    Action: enter_ride
+    ReachPoint: {x: 0.25, y: -2.24, z: 2.88}
+    VisibleFacings: []
+  - Id: seat_stool_2
+    Action: enter_ride
+    ReachPoint: {x: 0.25, y: -1.34, z: 2.88}
+    VisibleFacings: []
+  - Id: seat_stool_3
+    Action: enter_ride
+    ReachPoint: {x: 0.25, y: -0.44, z: 2.88}
+    VisibleFacings: []
+  - Id: seat_skylounge_1
+    Action: enter_ride
+    ReachPoint: {x: -1.96, y: -6.21, z: 5.56}
+    VisibleFacings: []
+  - Id: seat_skylounge_2
+    Action: enter_ride
+    ReachPoint: {x: 1.705, y: -2.85, z: 5.56}
+    VisibleFacings: []
+  - Id: seat_aftdeck
+    Action: enter_ride
+    ReachPoint: {x: -0.7, y: -8.28, z: 5.52}
+    VisibleFacings: []
+  - Id: tub_port
+    Action: storage
+    ReachPoint: {x: -2.55, y: -12.57, z: 1.45}
+    VisibleFacings: []
+  - Id: tub_starboard
+    Action: storage
+    ReachPoint: {x: 2.55, y: -12.57, z: 1.45}
+    VisibleFacings: []
+  - Id: rods_port
+    Action: storage
+    ReachPoint: {x: -2.646, y: -12.22, z: 1.45}
+    VisibleFacings: []
+  - Id: rods_starboard
+    Action: storage
+    ReachPoint: {x: 2.646, y: -12.22, z: 1.45}
+    VisibleFacings: []
+  - Id: windlass
+    Action: anchor
+    ReachPoint: {x: 0, y: -3.74, z: 5.56}
+    VisibleFacings: []
   Routes:
-  - Id: house_to_bridge
+  - Id: upstair
     FromLevel: house_sole
     ToLevel: bridge_sole
     Mechanism: InteriorStair
     Exterior: 0
-    TotalRiseMeters: 4.47
+    TotalRiseMeters: 2.6799998
     Placed: 1
-    FromPoint: {x: 0.95000005, y: -5.09, z: 2.83}
-    ToPoint: {x: 0.95000005, y: -8.45, z: 7.3}
+    FromPoint: {x: 2.45, y: -7.15, z: 2.88}
+    ToPoint: {x: 2.45, y: -3.75, z: 5.56}
     NotPlacedBecause: 
-  - Id: house_to_below
+  - Id: companionway
     FromLevel: house_sole
     ToLevel: below_sole
     Mechanism: InteriorStair
     Exterior: 0
-    TotalRiseMeters: 2.23
+    TotalRiseMeters: -2.0600002
     Placed: 1
-    FromPoint: {x: -0.92499995, y: 0.3, z: 2.83}
-    ToPoint: {x: -0.92499995, y: 1.98, z: 0.6}
+    FromPoint: {x: 0, y: 0.3, z: 2.88}
+    ToPoint: {x: 0, y: 3.2, z: 0.82}
     NotPlacedBecause: 
-  - Id: aft_deck_ladder
-    FromLevel: mezzanine
-    ToLevel: aft_deck
-    Mechanism: vertical_ladder
-    Exterior: 1
-    TotalRiseMeters: 4.4500003
-    Placed: 0
-    FromPoint: {x: 2.05, y: -11, z: 2.83}
-    ToPoint: {x: 2.05, y: -11, z: 7.28}
-    NotPlacedBecause: "its from end (2.05, -11.00, 2.83) misses 'mezzanine' by 0.34
-      m in plan and 0.00 m in height (that floor is at 2.83 m there; tolerance 0.10
-      m) \u2014 the floor under that spot is 'cockpit' at 2.05 m"
-  - Id: bridge_ladder
-    FromLevel: aft_deck
-    ToLevel: helm_coaming
-    Mechanism: vertical_ladder
-    Exterior: 1
-    TotalRiseMeters: 2.23
-    Placed: 0
-    FromPoint: {x: 0, y: -9.4, z: 7.32}
-    ToPoint: {x: 0, y: -9.4, z: 9.55}
-    NotPlacedBecause: "its to end (0.00, -9.40, 9.55) misses 'helm_coaming' by 0.92
-      m in plan and -0.19 m in height (that floor is at 9.74 m there; tolerance 0.10
-      m) \u2014 the floor under that spot is 'bridge_sole' at 7.30 m"
+  - Id: belowstep
+    FromLevel: below_sole
+    ToLevel: vip
+    Mechanism: InteriorStair
+    Exterior: 0
+    TotalRiseMeters: 0.3
+    Placed: 1
+    FromPoint: {x: 0, y: 4.5, z: 0.82}
+    ToPoint: {x: 0, y: 5.1, z: 1.12}
+    NotPlacedBecause: 
   FloorToleranceMetres: 0.1
   RouteEndReachMetres: 0.3
   RidesHullRock: 1

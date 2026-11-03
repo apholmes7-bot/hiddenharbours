@@ -38,6 +38,7 @@ MonoBehaviour:
   SwimLimit: 2
   WadeSlowFactor: 0.6
   SwimSlowFactor: 0.25
+  RequireBoatRepairsBeforeBoarding: 0
   BoardReachMetres: 3.5
   StepAshoreReachMetres: 1.5
   StepAshoreFacingArcDegrees: 120
@@ -429,9 +430,10 @@ MonoBehaviour:
   - TrapDefId: trap.crab
     Count: 1
   PlayerZoom:
+    DefaultWorldHeightMeters: 11.25
     WheelEnabled: 1
     ClosestWorldHeightMeters: 5.625
-    FarthestWorldHeightMeters: 11.25
+    FarthestWorldHeightMeters: 16.875
     WheelUnitsPerNotch: 1
     StepSeconds: 0.18
     AboardStopsCloser: 2
@@ -460,10 +462,10 @@ MonoBehaviour:
     ImpactShakeMeters: 0.18
     ImpactShakeSeconds: 0.3
     ImpactShakeHz: 18
-    SpeedPullBackFraction: 0.15
+    SpeedPullBackFraction: 0
     SpeedPullBackStartMps: 1
     SpeedPullBackFullMps: 4.5
-    SpeedPullBackSeaStateFraction: 0.05
+    SpeedPullBackSeaStateFraction: 0
     SpeedPullBackSlewSeconds: 2
     FeelSeaStateRefreshHz: 4
     BoatLeadSeconds: 0.6

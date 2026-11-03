@@ -422,10 +422,12 @@ namespace HiddenHarbours.Tests.PlayMode
             yield return Arrive(StPetersScene, Night);
             yield return EnsureThePierLamps();
 
+            // No live boat moors at the new south face; its deck is above the hull picture, so stage the old coordinates.
+            const float StagedMainMooringFaceY = -3f;
+            const float StagedMainLadderX = 211.5f;
             float halfBeam = HalfBeamOf(owner);
-            Vector2 ladder = StPetersWharf.LadderPosition();
-            var boatAt = new Vector2(ladder.x,
-                                     StPetersWharf.MooringFaceY - StPetersBuilder.AlongsideFenderGapMetres - halfBeam);
+            var boatAt = new Vector2(StagedMainLadderX,
+                                     StagedMainMooringFaceY - StPetersBuilder.AlongsideFenderGapMetres - halfBeam);
             yield return Moor(owner, boatAt, StPetersBuilder.DoryMooredHeadingDegrees);
 
             IsoFacetHullRenderer hull = _boat.GetComponentInChildren<IsoFacetHullRenderer>(true);
@@ -434,7 +436,7 @@ namespace HiddenHarbours.Tests.PlayMode
                             "it is not drawn as a mesh hull, so claim 3's hull frame does not exist.");
             yield return LightTheHull(hull);
 
-            var at = new Vector2(_skipper.position.x, StPetersWharf.MooringFaceY + 0.2f);
+            var at = new Vector2(_skipper.position.x, StagedMainMooringFaceY + 0.2f);
             NoteNeighbours(at, 12f);
 
             yield return StandHer(at, new Vector2(boatAt.x, 0.5f * (at.y + boatAt.y) + FrameLiftMetres),
@@ -445,7 +447,7 @@ namespace HiddenHarbours.Tests.PlayMode
             {
                 Key = "4-south-hull-lamp-stpeters-night",
                 Frame = $"{StPetersScene} 02:00, {owner.Id} ({owner.Boat.name}, {owner.Boat.LengthMeters:0.0} m) " +
-                        $"moored at the south face at {Fmt(boatAt)} heading {StPetersBuilder.DoryMooredHeadingDegrees:0}; " +
+                        $"staged on main's old face numbers at {Fmt(boatAt)} heading {StPetersBuilder.DoryMooredHeadingDegrees:0}; " +
                         $"her on the deck at {Fmt(at)}, BEHIND the skipper on screen",
             });
         }

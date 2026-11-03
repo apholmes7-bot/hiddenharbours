@@ -202,7 +202,8 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.That(Hash(Read("Assets/_Project/Code/Core/Environment/BreakerMath.cs")),
                 Is.EqualTo("69e32d51219de35a79b8f20fc6f5c2da92cec815594a4bfd886efacf66baf61c"));
             Assert.That(Hash(Read("Assets/_Project/Code/Art/WaterSurface.cs")),
-                Is.EqualTo("cfdb7474d00a3ac1be4cc47c7747758c1072734d166ea280a40155240ec72e1b"));
+            // Intro at sea PR 2 moves the wind-shape lookup to the hour clock; the pinned source includes it.
+                Is.EqualTo("c4ccd73214cc2e2a08d2ca3272fd12b431dfba61fe01a345c74addf5e85ecab6"));
         }
 
         static void RequireGpu()

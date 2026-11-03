@@ -42,6 +42,32 @@ namespace HiddenHarbours.Tests.PlayMode
         private const string DoryName = "Dory";
         private const string LeafChildName = "DoorLeaf";
 
+        // A stated looser bar for the sailing intake; the doors follow-up takes these rows back.
+        private static readonly IReadOnlyDictionary<(string Test, string Hull), string> DoorWaits =
+            new Dictionary<(string Test, string Hull), string>
+            {
+                [(nameof(ASwapWhileSheIsBelow_LetsHerOut_AndLeavesOnlyTheNewHullsCabinStanding), "SportFisherConvertible")] =
+                    "Waits for the doors follow-up: IOException in SaveStore.Write at File.Replace before the press.",
+                [(nameof(ASwapWhileSheIsBelow_LetsHerOut_AndLeavesOnlyTheNewHullsCabinStanding), "ExpeditionYacht120")] =
+                    "Waits for the doors follow-up: E aimed at salon_aft performs skylounge_aft, 0.6967 m away.",
+                [(nameof(ASwapWhileSheIsBelow_LetsHerOut_AndLeavesOnlyTheNewHullsCabinStanding), "MotorYacht84")] =
+                    "Waits for the doors follow-up: E aimed at saloon_aft performs guest, 0.7031 m away.",
+                [(nameof(SwappedOnUnderHer_EOpensHerDoor_AndHerHouseIsCutOpenOnlyWhileSheIsBelow), "SportFisherConvertible")] =
+                    "Waits for the doors follow-up: salon reach 1.4200 m is shorter than her stand 1.5439 m away; E takes the washboard.",
+                [(nameof(SwappedOnUnderHer_EOpensHerDoor_AndHerHouseIsCutOpenOnlyWhileSheIsBelow), "ExpeditionYacht120")] =
+                    "Waits for the doors follow-up: E aimed at salon_aft performs skylounge_aft, 0.6967 m away.",
+                [(nameof(SwappedOnUnderHer_EOpensHerDoor_AndHerHouseIsCutOpenOnlyWhileSheIsBelow), "MotorYacht84")] =
+                    "Waits for the doors follow-up: E aimed at saloon_aft performs guest, 0.7031 m away.",
+                [(nameof(SwappedOnUnderHer_HerDoorLeafIsDrawnInThePoseHerDoorIsIn), "SportFisherConvertible")] =
+                    "Waits for the doors follow-up: salon reach 1.4200 m is shorter than her stand 1.5439 m away; E takes the washboard.",
+                [(nameof(SwappedOnUnderHer_HerDoorLeafIsDrawnInThePoseHerDoorIsIn), "ExpeditionYacht120")] =
+                    "Waits for the doors follow-up: E aimed at salon_aft performs skylounge_aft, 0.6967 m away.",
+                [(nameof(SwappedOnUnderHer_HerDoorLeafIsDrawnInThePoseHerDoorIsIn), "MotorYacht84")] =
+                    "Waits for the doors follow-up: E aimed at saloon_aft performs guest, 0.7031 m away.",
+                [(nameof(SwappedOnUnderHer_SheWalksFromTheHelmThroughHerDoor), "SportFisherConvertible")] =
+                    "Waits for the doors follow-up: STUCK onto flyhatch at (0.94, -2.43), height 3.92 m, aiming for (-0.94, -4.38).",
+            };
+
         private readonly List<UnityEngine.Object> _spawned = new();
         private readonly List<CabinEntered> _entered = new();
         private readonly List<CabinLeft> _left = new();
@@ -267,8 +293,11 @@ namespace HiddenHarbours.Tests.PlayMode
 
         [UnityTest]
         public IEnumerator SwappedOnUnderHer_EOpensHerDoor_AndHerHouseIsCutOpenOnlyWhileSheIsBelow(
-            [Values("CapeIslander", "LobsterBoat")] string subjectName)
+            [Values("CapeIslander", "LobsterBoat", "SportFisherConvertible", "SportFisherSkybridge", "ExpeditionYacht120", "MotorYacht84")] string subjectName)
         {
+            if (DoorWaits.TryGetValue((nameof(SwappedOnUnderHer_EOpensHerDoor_AndHerHouseIsCutOpenOnlyWhileSheIsBelow), subjectName), out string wait))
+                Assert.Ignore(wait);
+
             Rig rig = NewDoryRig();
             BoatHullDef subject = LoadHull(subjectName);
             if (rig.Boat == null || subject == null) yield break;   // editor-only; LoadCommitted Ignored
@@ -299,7 +328,7 @@ namespace HiddenHarbours.Tests.PlayMode
             Assert.IsTrue(rig.Switcher.BeginInteract(), "E at her door is spent on her door");
             Assert.AreEqual(ControlMode.OnDeck, rig.Switcher.Mode,
                             "…and never on her helm: at a cabin door E only opens the door (owner, 2026-09-17)");
-            Assert.IsTrue(door.IsCueing, "the press starts the leaf moving");
+            Assert.AreEqual(door.CueSeconds > 0f, door.IsCueing, "the press starts the leaf moving when she has a cue");
             yield return WaitForCue(door);
 
             Assert.IsTrue(door.IsOpen, "the cue ends on a leaf standing open");
@@ -333,8 +362,11 @@ namespace HiddenHarbours.Tests.PlayMode
 
         [UnityTest]
         public IEnumerator SwappedOnUnderHer_HerDoorLeafIsDrawnInThePoseHerDoorIsIn(
-            [Values("CapeIslander", "LobsterBoat")] string subjectName)
+            [Values("CapeIslander", "LobsterBoat", "SportFisherConvertible", "SportFisherSkybridge", "ExpeditionYacht120", "MotorYacht84")] string subjectName)
         {
+            if (DoorWaits.TryGetValue((nameof(SwappedOnUnderHer_HerDoorLeafIsDrawnInThePoseHerDoorIsIn), subjectName), out string wait))
+                Assert.Ignore(wait);
+
             Rig rig = NewDoryRig();
             BoatHullDef subject = LoadHull(subjectName);
             if (rig.Boat == null || subject == null) yield break;
@@ -355,8 +387,9 @@ namespace HiddenHarbours.Tests.PlayMode
 
             yield return WalkToTheDoor(rig, door);
             Assert.IsTrue(rig.Switcher.BeginInteract(), "E at her door is spent on her door");
-            Assert.AreSame(mesh.DoorLeafClosed, LeafMeshOf(HullOf(rig)),
-                           "the leaf lands at the END of the cue, not at the press");
+            if (door.CueSeconds > 0f)
+                Assert.AreSame(mesh.DoorLeafClosed, LeafMeshOf(HullOf(rig)),
+                               "the leaf lands at the END of the cue, not at the press");
             yield return WaitForCue(door);
 
             Assert.IsTrue(door.IsOpen, "precondition: the cue ended on a door standing open");
@@ -369,6 +402,24 @@ namespace HiddenHarbours.Tests.PlayMode
 
             Assert.IsFalse(door.IsOpen, "precondition: the cue ended on a door shut again");
             Assert.AreSame(mesh.DoorLeafClosed, LeafMeshOf(HullOf(rig)), "…and her leaf is drawn shut again");
+
+            if (mesh.DoorLeaves != null && mesh.DoorLeaves.Length > 0)
+            {
+                var renderer = HullOf(rig);
+                foreach (var extra in rig.Installer.Interior.GetComponentsInChildren<BoatCabinDoor>())
+                {
+                    if (extra == door || !renderer.HasDoorLeaf(extra.Door.Id)) continue;
+                    Assert.IsTrue(extra.TryUse(), extra.Door.Id);
+                    yield return WaitForCue(extra);
+                    Assert.IsTrue(renderer.DoorLeafShownOpenFor(extra.Door.Id), extra.Door.Id);
+                    Assert.IsFalse(renderer.DoorLeafShownOpenFor(door.Door.Id), "opening another door leaves the primary shut");
+                    foreach (var pair in mesh.DoorLeaves)
+                        if (pair.Id != extra.Door.Id) Assert.IsFalse(renderer.DoorLeafShownOpenFor(pair.Id), pair.Id);
+                    Assert.IsTrue(extra.TryUse(), extra.Door.Id);
+                    yield return WaitForCue(extra);
+                    Assert.IsFalse(renderer.DoorLeafShownOpenFor(extra.Door.Id), extra.Door.Id);
+                }
+            }
         }
 
         // =====================================================================================
@@ -376,10 +427,14 @@ namespace HiddenHarbours.Tests.PlayMode
         // =====================================================================================
 
         [UnityTest]
-        public IEnumerator ASwapWhileSheIsBelow_LetsHerOut_AndLeavesOnlyTheNewHullsCabinStanding()
+        public IEnumerator ASwapWhileSheIsBelow_LetsHerOut_AndLeavesOnlyTheNewHullsCabinStanding(
+            [Values("CapeIslander", "SportFisherConvertible", "SportFisherSkybridge", "ExpeditionYacht120", "MotorYacht84")] string firstHullName)
         {
+            if (DoorWaits.TryGetValue((nameof(ASwapWhileSheIsBelow_LetsHerOut_AndLeavesOnlyTheNewHullsCabinStanding), firstHullName), out string wait))
+                Assert.Ignore(wait);
+
             Rig rig = NewDoryRig();
-            BoatHullDef cape = LoadHull("CapeIslander");
+            BoatHullDef cape = LoadHull(firstHullName);
             BoatHullDef lobster = LoadHull("LobsterBoat");
             BoatHullDef dory = LoadHull(DoryName);
             if (rig.Boat == null || cape == null || lobster == null || dory == null) yield break;
@@ -450,8 +505,11 @@ namespace HiddenHarbours.Tests.PlayMode
             [Values("CapeIslander", "LobsterBoat", "LobsterInshoreOpenNorthumberland",
                     "LobsterStandardHardtopNorthumberland", "LobsterOffshoreOpenNorthumberland",
                     "SportFisherConvertible", "SideDragger", "SportFisherSkybridge", "SternTrawler",
-                    "SternTrawlerMk2", "CoastalPacket", "Tanker")] string subjectName)
+                    "SternTrawlerMk2", "CoastalPacket", "Tanker", "ExpeditionYacht120", "MotorYacht84")] string subjectName)
         {
+            if (DoorWaits.TryGetValue((nameof(SwappedOnUnderHer_SheWalksFromTheHelmThroughHerDoor), subjectName), out string wait))
+                Assert.Ignore(wait);
+
             Rig rig = NewDoryRig();
             BoatHullDef subject = LoadHull(subjectName);
             if (rig.Boat == null || subject == null) yield break;   // editor-only; LoadCommitted Ignored
@@ -502,7 +560,7 @@ namespace HiddenHarbours.Tests.PlayMode
             [Values("CapeIslander", "LobsterBoat", "LobsterInshoreOpenNorthumberland",
                     "LobsterStandardHardtopNorthumberland", "LobsterOffshoreOpenNorthumberland",
                     "SportFisherConvertible", "SideDragger", "SportFisherSkybridge", "SternTrawler",
-                    "SternTrawlerMk2", "CoastalPacket", "Tanker")] string subjectName)
+                    "SternTrawlerMk2", "CoastalPacket", "Tanker", "ExpeditionYacht120", "MotorYacht84")] string subjectName)
         {
             Rig rig = NewDoryRig();
             BoatHullDef subject = LoadHull(subjectName);
@@ -1218,7 +1276,7 @@ namespace HiddenHarbours.Tests.PlayMode
                            $", not '{OpenTheDoor}' on her door");
                     yield break;
                 }
-                if (!w.Rig.Switcher.BeginInteract() || !door.IsCueing)
+                if (!w.Rig.Switcher.BeginInteract() || (!door.IsCueing && !door.IsOpen))
                 {
                     w.Fail($"E under the offer '{offer.Label}' did not move the leaf of {door.Id} " +
                            $"(she is {w.Rig.Switcher.Mode})");

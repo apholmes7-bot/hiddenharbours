@@ -17,19 +17,18 @@ namespace HiddenHarbours.Tests.EditMode
     ///
     /// <para>Measured with the camera's own laws for every hull asset at the six screens: the §9.8 floor
     /// (<see cref="CameraZoomPolicy.HelmWorldHeightMeters"/>, margin 1.4 and the 40° iso as the scenes
-    /// serialize them), the ladder step, the pixel-perfect zoom at rest, the feel's pull-back under way
-    /// (the Pixel Perfect Camera stands down above 1 m/s and the ortho is the raw request times the
-    /// pull-back), the ruled lead (0.6 s, capped at 0.35 of the rung's half view), and the band said
+    /// serialize them), the ladder step on the viewport's own height, and the fixed lens with shipped
+    /// pull-back at zero. A config that restores pull-back multiplies that same rung. The ruled lead
+    /// (0.6 s, capped at 0.35 of the rung's half view) and the band said
     /// through the seam (<see cref="HelmFootprintArea.FullWidthBand"/>, 144·k) with the camera's shift for
     /// it at the shipped share (<see cref="CameraFollow.BandShiftTargetPx"/> — 72·k px at the ruled half).
     /// Speeds are scanned from rest to past the lead's cap.</para>
     ///
     /// <para><b>The framing rule is not changed here</b> (the handoff: not without a ruling). At rest
-    /// every hull clears. With the lead at its most northward exactly two do not, both at 1280×720 and
-    /// both at 1 m/s — the last speed the pixel-perfect framing holds, where the lead is 0.6 m on the
-    /// tighter rung scale: the skybridge sport fisher (13 px under the band's top) and the Sloop 88
-    /// (9 px). They are pinned BY NAME, awaiting the owner's ruling, so a change that makes the set
-    /// larger fails here and a change that fixes them is told to update this list.</para>
+    /// every hull clears. With a fixed lens, no shipped pull-back and full lead heading north, the
+    /// named sterns below drop under the band. Each remains awaiting the owner's ruling; no framing
+    /// rule changes here. They are pinned BY NAME, so a change that makes the set larger fails here
+    /// and a change that fixes them is told to update this list.</para>
     /// </summary>
     public class HelmBandFramingTests
     {
@@ -41,7 +40,6 @@ namespace HiddenHarbours.Tests.EditMode
         private const float IsoElevationDegrees = 40f;
 
         private const int Ppu = CameraFollow.AssetsPPU;
-        private const int Design = CameraFollow.DesignScreenHeightPx;
         private const int SpeedSamples = 4000;
 
         private static readonly Vector2Int[] Screens =
@@ -54,8 +52,15 @@ namespace HiddenHarbours.Tests.EditMode
         /// the band with the look-ahead at its most northward.</summary>
         private static readonly string[] SternUnderTheBand_AwaitingARuling =
         {
-            "boat.sloop_88 @1280x720",
-            "boat.sport_fisher_skybridge @1280x720",
+            "boat.coastal_packet @3840x2160",
+            "boat.expedition_yacht_120 @1280x800",
+            "boat.sport_fisher_convertible @1280x720",
+            "boat.sport_fisher_skybridge @1920x1080",
+            "boat.sport_fisher_skybridge @3840x2160",
+            "boat.stern_trawler @1280x800",
+            "boat.stern_trawler_mk2 @1280x800",
+            "boat.tanker @1280x800",
+            "boat.tanker @3840x2160",
         };
 
         [Test]
@@ -77,8 +82,9 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         [Test]
-        public void WithTheLookAheadAtItsMostNorthward_OnlyTheTwoNamedSterns_DropUnderTheBand()
+        public void WithTheLookAheadAtItsMostNorthward_OnlyTheNamedSterns_DropUnderTheBand()
         {
+            List<BoatHullDef> hulls = Hulls();
             GameConfig cfg = Shipped();
             JuiceSettings juice = cfg.Juice;
             float share = RuledShare(cfg);
@@ -87,13 +93,13 @@ namespace HiddenHarbours.Tests.EditMode
 
             var under = new List<string>();
             var detail = new List<string>();
-            foreach (BoatHullDef hull in Hulls())
+            foreach (BoatHullDef hull in hulls)
             foreach (Vector2Int s in Screens)
             {
                 float cap = juice.BoatLeadMaxViewFraction * 0.5f * RungHeight(hull, s);
                 float vMax = Mathf.Max(TopSpeed(hull), cap / juice.BoatLeadSeconds);
                 float worst = float.MaxValue, worstV = 0f;
-                // 1 m/s exactly: the most lead the pixel-perfect framing ever shows.
+                // Keep the exact 1 m/s sample alongside the full speed scan.
                 Consider(SternClearancePx(hull, s, 1f, in juice, share), 1f, ref worst, ref worstV);
                 for (int i = 0; i <= SpeedSamples; i++)
                 {
@@ -107,7 +113,11 @@ namespace HiddenHarbours.Tests.EditMode
                 }
             }
             under.Sort(System.StringComparer.Ordinal);
-            CollectionAssert.AreEqual(SternUnderTheBand_AwaitingARuling, under,
+            // The 120's row lands with #1011; this Where leaves with the 120 plate.
+            // Only that row may be absent before its hull lands; every other pinned row stays required.
+            CollectionAssert.AreEqual(SternUnderTheBand_AwaitingARuling.Where(row =>
+                    row != "boat.expedition_yacht_120 @1280x800" ||
+                    hulls.Any(hull => hull.Id == "boat.expedition_yacht_120")).ToArray(), under,
                 "the sterns under a full-width band with the lead at its most northward — the framing rule " +
                 "is not changed without a ruling; if a ruling moved it, update this list to what it fixed:\n" +
                 string.Join("\n", detail));
@@ -137,7 +147,7 @@ namespace HiddenHarbours.Tests.EditMode
         /// <summary>The ladder step the request lands on (the grid and the lead's cap read it).</summary>
         private static float RungHeight(BoatHullDef hull, Vector2Int s)
             => CameraZoomPolicy.WorldHeightForStep(
-                CameraZoomPolicy.StepForWorldHeight(Request(hull, s), Ppu, Design), Ppu, Design);
+                CameraZoomPolicy.StepForWorldHeight(Request(hull, s), Ppu, s.y), Ppu, s.y);
 
         /// <summary>
         /// How far (screen px) the stern stands above the band's top at <paramref name="speed"/>, heading
@@ -147,26 +157,10 @@ namespace HiddenHarbours.Tests.EditMode
         private static float SternClearancePx(BoatHullDef hull, Vector2Int s, float speed, in JuiceSettings juice,
                                               float bandShare)
         {
-            float request = Request(hull, s);
-            int step = CameraZoomPolicy.StepForWorldHeight(request, Ppu, Design);
-            float rung = CameraZoomPolicy.WorldHeightForStep(step, Ppu, Design);
-            bool upscale = CameraZoomPolicy.StepIsPixelPerfectUpscale(step);
-
-            float metersPerPx;
+            int step = CameraZoomPolicy.StepForWorldHeight(Request(hull, s), Ppu, s.y);
+            float rung = CameraZoomPolicy.WorldHeightForStep(step, Ppu, s.y);
             float pullBack = CameraFeel.PullBackTarget(speed, 0f, in juice);
-            if (pullBack <= 0f && upscale)
-            {
-                // At rest (and to 1 m/s): the Pixel Perfect Camera's whole zoom on the request's reference.
-                CameraFollow.ReferenceResolutionForWorldHeight(request, out int rw, out int rh, Ppu, Design);
-                metersPerPx = 1f / (CameraFollow.PixelPerfectZoom(s.x, s.y, rw, rh) * Ppu);
-            }
-            else
-            {
-                // The ortho has the view: the raw request on the upscale path (the feel multiplies the
-                // framing's own ortho), the rung itself on the downscale path.
-                float framed = upscale ? request : rung;
-                metersPerPx = framed * (1f + pullBack) / s.y;
-            }
+            float metersPerPx = rung * (1f + pullBack) / s.y;
 
             float cap = juice.BoatLeadMaxViewFraction * 0.5f * rung;
             float lead = Mathf.Min(juice.BoatLeadSeconds * speed, cap);

@@ -185,6 +185,10 @@ namespace HiddenHarbours.Core
         [Range(0f, 1f)] public float SwimSlowFactor = 0.25f;
 
         [Header("Getting aboard and ashore")]
+        [Tooltip("Require owned boats to be repaired before boarding. Off while damage and repairs are " +
+                 "deferred; enable to enforce the repair ledger.")]
+        public bool RequireBoatRepairsBeforeBoarding = false;
+
         [Tooltip("How close you must be to a hull to climb aboard, in metres — measured to her OUTLINE, " +
                  "not to her root, so a long hull is boardable from her own stern. Ships at the 3.5 m " +
                  "the switcher carried as a serialized field until 2026-09-03.")]
@@ -2370,6 +2374,11 @@ namespace HiddenHarbours.Core
     [System.Serializable]
     public struct PlayerZoomSettings
     {
+        public const float ShippedDefaultWorldHeightMeters = 11.25f;
+
+        [Tooltip("Walking world height before the wheel moves. It lands on the nearest crisp stop.")]
+        [Min(0.5f)] public float DefaultWorldHeightMeters;
+
         [Tooltip("Let the mouse wheel (and the gamepad's shoulder buttons) change the walking view at " +
                  "all. Off = the on-foot framing is fixed, exactly as it was before this existed.")]
         public bool WheelEnabled;
@@ -2380,7 +2389,7 @@ namespace HiddenHarbours.Core
         [Min(0.5f)] public float ClosestWorldHeightMeters;
 
         [Tooltip("FARTHEST the wheel may take the walking view, in metres of world height. Larger = " +
-                 "further out. 11.25 is one crisp stop wider than the standing on-foot framing — enough " +
+                 "further out. 16.875 is one crisp stop wider than the default walking view — enough " +
                  "to see where you are going outdoors without the fisher shrinking to a speck.")]
         [Min(0.5f)] public float FarthestWorldHeightMeters;
 
@@ -2417,21 +2426,22 @@ namespace HiddenHarbours.Core
         [Min(0)] public int AboardStopsWider;
 
         /// <summary>
-        /// The shipping range: 11.25 m out (one stop wider than standing on foot) to 5.625 m in (the
-        /// live-haul step, the closest framing already in the game), 120 units of scroll to the tier,
+        /// The shipping range: 16.875 m out (one stop wider than the 11.25 m walking default) to 5.625 m in (the
+        /// live-haul step, the closest framing already in the game), one input unit per tier,
         /// a short ease so a step reads as a move rather than a cut, and an aboard band of two stops
         /// either way around whatever the helm or the deck ruled.
         ///
-        /// <para>⚠️ The two heights are the ×3 and ×6 PPU-32 stops at 1080p written out as literals,
+        /// <para>⚠️ The range ends are the ×2 and ×6 PPU-32 stops at 1080p written out as literals,
         /// because the ladder that derives them lives in the App camera and Core may not reach it.
         /// <c>PlayerZoomTierTests</c> is the tripwire that fires if the ladder and these defaults ever
         /// drift apart.</para>
         /// </summary>
         public static PlayerZoomSettings Default => new PlayerZoomSettings
         {
+            DefaultWorldHeightMeters = ShippedDefaultWorldHeightMeters,
             WheelEnabled = true,
             ClosestWorldHeightMeters = 5.625f,   // 1080 / (6 x 32)
-            FarthestWorldHeightMeters = 11.25f,  // 1080 / (3 x 32)
+            FarthestWorldHeightMeters = 16.875f, // 1080 / (2 x 32)
             WheelUnitsPerNotch = 1f,             // one detent, in Input System units — MEASURED, not Win32's 120
             StepSeconds = 0.18f,
             AboardStopsCloser = 2,               // two stops in from the hull's ruled framing…
@@ -2456,7 +2466,7 @@ namespace HiddenHarbours.Core
         /// first.</para>
         /// </summary>
         public bool IsUnauthored =>
-            !WheelEnabled && ClosestWorldHeightMeters <= 0f && FarthestWorldHeightMeters <= 0f
+            DefaultWorldHeightMeters <= 0f && !WheelEnabled && ClosestWorldHeightMeters <= 0f && FarthestWorldHeightMeters <= 0f
             && WheelUnitsPerNotch <= 0f && StepSeconds <= 0f
             && AboardStopsCloser == 0 && AboardStopsWider == 0;
 
@@ -2477,6 +2487,7 @@ namespace HiddenHarbours.Core
 
             PlayerZoomSettings d = Default;
             PlayerZoomSettings s = this;
+            if (s.DefaultWorldHeightMeters <= 0f) s.DefaultWorldHeightMeters = d.DefaultWorldHeightMeters;
             if (s.ClosestWorldHeightMeters <= 0f) s.ClosestWorldHeightMeters = d.ClosestWorldHeightMeters;
             if (s.FarthestWorldHeightMeters <= 0f) s.FarthestWorldHeightMeters = d.FarthestWorldHeightMeters;
             if (s.WheelUnitsPerNotch <= 0f) s.WheelUnitsPerNotch = d.WheelUnitsPerNotch;

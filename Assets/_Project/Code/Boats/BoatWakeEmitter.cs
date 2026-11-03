@@ -395,7 +395,7 @@ namespace HiddenHarbours.Boats
             {
                 WaveFieldSettings waveField = GameServices.WaveField;
                 WaveFieldAnimatorSettings waveSmoothing = GameServices.WaveFieldAnimator;
-                _seaAnimator.Tick(dt, WaveFieldAnimator.GameTimeSeconds,
+                _seaAnimator.Tick(dt, WaveFieldAnimator.HourTimeSeconds, WaveFieldAnimator.GameTimeSeconds,
                                   s.WindVector, s.SeaState01, in waveField, in waveSmoothing);
                 // Not displaced: no animator, so every lift stays exactly 0 — but the context still answers
                 // DEPTH, which the age ramp needs to end each element on the water under it (W4-1, 3A).

@@ -655,7 +655,8 @@ namespace HiddenHarbours.Player
         }
 
         /// <summary>
-        /// The damaged-dory boarding gate (St Peters opening, P5): a boat bought DAMAGED is owned but
+        /// The optional damaged-dory boarding gate (St Peters opening, P5). Disabled by default through
+        /// <see cref="GameConfig.RequireBoatRepairsBeforeBoarding"/>. When enabled, a boat bought DAMAGED is owned but
         /// unusable until the player pays the shipwright to repair it. We read the single source of truth —
         /// <see cref="RepairLedger.IsRepaired"/> over the live <see cref="SaveData"/> — so the switcher and
         /// the shipwright can't disagree about "is she ready to sail?". Economy owns that economy-state and
@@ -670,6 +671,9 @@ namespace HiddenHarbours.Player
         /// </summary>
         public bool BoardableNow()
         {
+            if (GameServices.Config == null || !GameServices.Config.RequireBoatRepairsBeforeBoarding)
+                return true;
+
             var save = GameServices.Save?.Current;
             if (save == null) return true;                       // no save → don't gate (tests / pre-boot)
 
