@@ -652,6 +652,11 @@ namespace HiddenHarbours.Core
         /// config wired must resolve the SHIPPED look, and <c>GameConfig.asset</c> lags the code.</summary>
         public const bool DefaultBoatLegacyCabinGlow = false;
 
+        /// <summary>The carried automatic lantern's explicit, default-off way back.</summary>
+        public const bool DefaultWalkerAutoLantern = false;
+        [Tooltip("Restore the walker's automatic lantern while on foot. The headlamp still answers L.")]
+        public bool WalkerAutoLantern = DefaultWalkerAutoLantern;
+
         [Tooltip("Restore YESTERDAY'S boat glows for an A/B (owner's ruling, 2026-09-03)? OFF is the " +
                  "shipped look: a lit wheelhouse is drawn as its own WINDOWS, with a wash of spill " +
                  "leaving each glazed wall, and the navigation lamps are blooms the size of their own " +

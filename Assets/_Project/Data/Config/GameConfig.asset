@@ -318,6 +318,7 @@ MonoBehaviour:
   HullReflectionMaxPackets: 1024
   HullReflectionMaxTriangles: 1000000
   BoatLegacyCabinGlow: 0
+  WalkerAutoLantern: 0
   PixelGridSnap: 1
   CharacterBlink: 1
   CharacterHeadLook: 1
