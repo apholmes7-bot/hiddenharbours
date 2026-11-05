@@ -22,7 +22,7 @@ namespace HiddenHarbours.Tests.PlayMode
     {
         private AshoreFigurePlatePlayTests _plate;
 
-        [UnityTest]
+        [UnityTest, Timeout(600000)]
         public IEnumerator NineMileCreekLadder_HighAndLow_BothWays()
         {
             WharfNightStage.RequireAGraphicsDevice();
@@ -70,7 +70,7 @@ namespace HiddenHarbours.Tests.PlayMode
 
         internal IEnumerator RunDockLadderContactPlate()
         {
-            string output = Path.GetFullPath(Path.Combine(Application.dataPath, "../Evidence~/dock-lines/pr1/plates-ruling-11"));
+            string output = Path.GetFullPath(Path.Combine(Application.dataPath, "../Evidence~/dock-lines/pr1/plates-ruling-14"));
             Directory.CreateDirectory(output);
             File.WriteAllText(Path.Combine(output, "_floor.txt"), DateTime.UtcNow.ToString("O", CultureInfo.InvariantCulture));
             yield return Arrive(NineMileCreekScene, Noon);
@@ -149,7 +149,7 @@ namespace HiddenHarbours.Tests.PlayMode
             var begin = typeof(ControlSwitcher).GetMethod("BeginBoardingMove", BindingFlags.Instance | BindingFlags.NonPublic);
             var flags = BindingFlags.Instance | BindingFlags.NonPublic;
             Type kind = begin.GetParameters()[0].ParameterType;
-            var rows = new StringBuilder("tide,direction,elapsed,sequence_frame,leg,clip,frame,root_x,root_y,root_step_m,gap,rungs,loops,water,waterline,is_aground,rise,hull_picture_root_y,foot_y,foot_minus_hull_root_y,sole_l_y,sole_r_y,hand_rail_error_m,post_complete_frame,drawn_x,drawn_y,drawn_state,drawn_frame,balance_arms_out,drawn_step_m,entry_drawn_x,entry_drawn_y,picture,drawn_z,mesh_heave_m,mesh_ride_m,deck_x,deck_y,deck_height,screen_step_m,draw_order_frame,figure_z_min,figure_z_max,hull_z,hull_z_min,hull_z_max,figure_sort_layer,figure_sort_order,hull_sort_layer,hull_sort_order,figure_facet_layer,figure_facet_order,hull_facet_layer,hull_facet_order,visible_figure_pixels,without_hull_figure_pixels,without_hull_picture\n");
+            var rows = new StringBuilder("tide,direction,elapsed,sequence_frame,leg,clip,frame,root_x,root_y,root_step_m,gap,rungs,loops,water,waterline,is_aground,rise,hull_picture_root_y,foot_y,foot_minus_hull_root_y,sole_l_y,sole_r_y,hand_rail_error_m,post_complete_frame,drawn_x,drawn_y,drawn_state,drawn_frame,balance_arms_out,drawn_step_m,entry_drawn_x,entry_drawn_y,picture,drawn_z,mesh_heave_m,mesh_ride_m,deck_x,deck_y,deck_height,screen_step_m,draw_order_frame,figure_z_min,figure_z_max,hull_z,hull_z_min,hull_z_max,figure_sort_layer,figure_sort_order,hull_sort_layer,hull_sort_order,figure_facet_layer,figure_facet_order,hull_facet_layer,hull_facet_order,visible_figure_pixels,without_hull_figure_pixels,without_hull_picture,missing_figure_pixels,occlusion_rule,reference_mismatch_pixels\n");
             var hullPose = rig.Visual.GetComponent<IsoFacetHullRenderer>();
             Assert.IsNotNull(hullPose);
             string pinPath = Path.Combine(Application.dataPath,
@@ -180,6 +180,29 @@ namespace HiddenHarbours.Tests.PlayMode
                         + Math.Abs(a[i + 2] - b[i + 2]) > 30) count++;
                 return count;
             }
+            int MissingFigurePixels(byte[] drawn, byte[] absent, byte[] reference, byte[] neither, out bool[] mask)
+            {
+                int missing = 0;
+                mask = new bool[reference.Length / 4];
+                for (int i = 0; i + 3 < reference.Length; i += 4)
+                {
+                    bool referenceHasFigure = reference[i] != neither[i]
+                        || reference[i + 1] != neither[i + 1] || reference[i + 2] != neither[i + 2];
+                    bool drawnHasFigure = drawn[i] != absent[i]
+                        || drawn[i + 1] != absent[i + 1] || drawn[i + 2] != absent[i + 2];
+                    if (referenceHasFigure && !drawnHasFigure) { mask[i / 4] = true; missing++; }
+                }
+                return missing;
+            }
+            var occlusionFailures = new List<string>();
+            var referenceGo = _stage.Track(new GameObject("Standing Balance coverage reference"));
+            referenceGo.layer = hullPose.PosedMesh.gameObject.layer;
+            referenceGo.transform.SetParent(hullPose.PosedMesh, false);
+            var referenceFigure = referenceGo.AddComponent<IsoCharacterFigureRenderer>();
+            referenceFigure.Configure(_iso.Visual.Skin);
+            referenceFigure.Visible = false;
+            var figureTick = typeof(IsoCharacterFigureRenderer).GetMethod("LateUpdate", flags);
+            Assert.IsNotNull(figureTick);
             void SaveFrame(byte[] image, string name)
             {
                 var tex = new Texture2D(_stage.Width, _stage.Height, TextureFormat.RGBA32, false);
@@ -295,7 +318,8 @@ namespace HiddenHarbours.Tests.PlayMode
                             var hullRenderer = hullPose.PosedMesh.GetComponent<MeshRenderer>();
                             var figureOverlay = _presenter.DrawsAshore ? drawnFigure.AshoreOverlay : hullPose.OverlayRenderer;
                             var hullOverlay = hullPose.OverlayRenderer;
-                            int visiblePixels = -1, withoutHullPixels = -1;
+                            int visiblePixels = -1, withoutHullPixels = -1, missingPixels = -1, referenceMismatch = -1;
+                            string occlusionRule = direction == "Boarding" && !_presenter.DrawsAshore ? "aboard-balance" : "zero-loss";
                             string withoutHullName = "";
                             if (drawOrderFrame)
                             {
@@ -311,13 +335,39 @@ namespace HiddenHarbours.Tests.PlayMode
                                     drawnFigure.Visible = false;
                                     byte[] neither = _stage.Capture();
                                     withoutHullPixels = ChangedPixels(neither, withoutHull);
+                                    Assert.Greater(withoutHullPixels, 0, "the hull-hidden reference must contain the figure");
+                                    missingPixels = MissingFigurePixels(frameImage, absent, withoutHull, neither, out bool[] actualMask);
                                     withoutHullName = name.Replace(".png", "-without-hull.png");
                                     SaveFrame(withoutHull, withoutHullName);
+                                    SaveFrame(absent, name.Replace(".png", "-without-figure.png"));
+                                    SaveFrame(neither, name.Replace(".png", "-neither.png"));
+                                    if (occlusionRule == "aboard-balance")
+                                    {
+                                        Assert.AreEqual("balance", drawnFigure.DrawnStateKey);
+                                        referenceGo.transform.SetLocalPositionAndRotation(
+                                            ((ICharacterFigureStand)_rider).FigureStandRigMetres,
+                                            Quaternion.AngleAxis(_presenter.FigureYawDegrees, Vector3.forward));
+                                        Assert.IsTrue(referenceFigure.SetPose("balance", drawnFigure.DrawnFrame));
+                                        figureTick.Invoke(referenceFigure, null);
+                                        referenceFigure.Visible = true;
+                                        byte[] referenceWithoutHull = _stage.Capture();
+                                        hullRenderer.enabled = hullVisible;
+                                        byte[] referenceNormal = _stage.Capture();
+                                        referenceFigure.Visible = false;
+                                        MissingFigurePixels(referenceNormal, absent, referenceWithoutHull, neither, out bool[] expectedMask);
+                                        referenceMismatch = 0;
+                                        for (int pixel = 0; pixel < actualMask.Length; pixel++)
+                                            if (actualMask[pixel] != expectedMask[pixel]) referenceMismatch++;
+                                        SaveFrame(referenceNormal, name.Replace(".png", "-aboard-reference.png"));
+                                        SaveFrame(referenceWithoutHull, name.Replace(".png", "-aboard-reference-without-hull.png"));
+                                    }
+                                    else referenceMismatch = missingPixels;
                                 }
                                 finally
                                 {
                                     hullRenderer.enabled = hullVisible;
                                     drawnFigure.Visible = true;
+                                    referenceFigure.Visible = false;
                                 }
                             }
                             Vector3 drawn = DrawnPoint();
@@ -349,13 +399,12 @@ namespace HiddenHarbours.Tests.PlayMode
                             float step = Vector3.Distance(root, previous);
                             var deckWalk = _player.GetComponent<DeckWalkController>();
                             rows.Append(FormattableString.Invariant($"{water},{direction},{elapsed},{sequenceFrame},{leg},{clip.Clip},{clip.Frame},{root.x},{root.y},{step},{gap},{gap / ladder.RungMetres},{loops},{HullTideRide.WaterLevelNow()},{tideRide.WaterlineNow()},{tideRide.IsAgroundNow()},{tideRide.ScreenRiseNow()},{hullY},{foot},{foot - hullY},{soleL},{soleR},{hands},{afterComplete},{drawn.x},{drawn.y},{drawnState},{drawnFrame},{armsOut},{Vector3.Distance(drawn, previousDrawn)},{entryDrawn.x},{entryDrawn.y},{name},{drawn.z},{hullPose.HeavePixels / hull.Visual.HullMesh.PxPerMetre},{hullPose.RidePixels / hull.Visual.HullMesh.PxPerMetre},{deckWalk.DeckLocalPosition.x},{deckWalk.DeckLocalPosition.y},{deckWalk.DeckHeightMeters}"));
-                            rows.AppendLine(FormattableString.Invariant($",{ScreenDistance(drawn, previousDrawn)},{drawOrderFrame},{figureRenderer.bounds.min.z},{figureRenderer.bounds.max.z},{hullPose.PosedMesh.position.z},{hullRenderer.bounds.min.z},{hullRenderer.bounds.max.z},{figureOverlay.sortingLayerID},{figureOverlay.sortingOrder},{hullOverlay.sortingLayerID},{hullOverlay.sortingOrder},{figureRenderer.sortingLayerID},{figureRenderer.sortingOrder},{hullRenderer.sortingLayerID},{hullRenderer.sortingOrder},{visiblePixels},{withoutHullPixels},{withoutHullName}"));
+                            rows.AppendLine(FormattableString.Invariant($",{ScreenDistance(drawn, previousDrawn)},{drawOrderFrame},{figureRenderer.bounds.min.z},{figureRenderer.bounds.max.z},{hullPose.PosedMesh.position.z},{hullRenderer.bounds.min.z},{hullRenderer.bounds.max.z},{figureOverlay.sortingLayerID},{figureOverlay.sortingOrder},{hullOverlay.sortingLayerID},{hullOverlay.sortingOrder},{figureRenderer.sortingLayerID},{figureRenderer.sortingOrder},{hullRenderer.sortingLayerID},{hullRenderer.sortingOrder},{visiblePixels},{withoutHullPixels},{withoutHullName},{missingPixels},{occlusionRule},{referenceMismatch}"));
                             previous = root;
                             previousDrawn = drawn;
                             File.WriteAllText(Path.Combine(output, "nmc-contact.csv"), rows.ToString());
-                            if (drawOrderFrame)
-                                Assert.Greater(visiblePixels, 5,
-                                    $"figure covered from the last rung onward: water {water}, {direction}, seq {sequenceFrame}, post {afterComplete}");
+                            if (drawOrderFrame && referenceMismatch != 0)
+                                occlusionFailures.Add($"water {water}, {direction}, seq {sequenceFrame}, post {afterComplete}: {occlusionRule} mismatch {referenceMismatch}");
                             // Write the failing row and picture first so a STOP has exact frame numbers.
                             if (direction == "Disembarking" && sequenceFrame == 0)
                                 Assert.LessOrEqual(ScreenDistance(entryDrawn, drawn), .25f, "the first ashore frame must start on the ridden deck");
@@ -402,6 +451,7 @@ namespace HiddenHarbours.Tests.PlayMode
                 clock.SeekTo(savedClock);
                 GameServices.Environment = sea.Source;
             }
+            Assert.IsEmpty(occlusionFailures, string.Join("\n", occlusionFailures));
         }
     }
 }

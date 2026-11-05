@@ -901,8 +901,6 @@ namespace HiddenHarbours.Player
             {
                 case ControlMode.OnFoot:
                     if (!(WithinBoardReach() && BoardableNow())) return false;
-                    if (BeginBoardingMove(BoardingMoveKind.Boarding)) return true;
-                    if (_moveRefused || HasShoreLanding()) return false;
                     BoardDeck();
                     return true;
 
@@ -912,13 +910,7 @@ namespace HiddenHarbours.Player
                     // helm radius the helm stands down (owner, 2026-09-17): the door keeps the press, and
                     // BeginInteract is what hands it over.
                     if (TakesTheHelmOnThisPress()) { TakeHelm(); return true; }
-                    if (StepAshoreOnThisPress())
-                    {
-                        if (BeginBoardingMove(BoardingMoveKind.Disembarking)) return true;
-                        if (_moveRefused || HasShoreLanding()) return false;
-                        Disembark();
-                        return true;
-                    }
+                    if (StepAshoreOnThisPress()) { Disembark(); return true; }
                     return false;
 
                 case ControlMode.Driving:  // behind the wheel → get out at her door
@@ -981,8 +973,11 @@ namespace HiddenHarbours.Player
         {
             if (IsBoardingMove) return false;          // a move in flight owns the verb until it lands
 
-            if (Mode == ControlMode.OnFoot && WithinBoardReach() && BoardableNow()
-                && BeginBoardingMove(BoardingMoveKind.Boarding)) return true;
+            if (Mode == ControlMode.OnFoot && WithinBoardReach() && BoardableNow())
+            {
+                if (BeginBoardingMove(BoardingMoveKind.Boarding)) return true;
+                if (_moveRefused || HasShoreLanding()) return false;
+            }
 
             // ⭐ ON DECK, AWAY FROM THE HELM, THE REGISTRY IS ASKED BEFORE STEP-ASHORE (the ruling above).
             // Read ONCE and used twice, because the tail must not resolve the same press a second time.
@@ -999,8 +994,11 @@ namespace HiddenHarbours.Player
             // rung and the rail rung below have to mean the same thing by it, and evaluating the
             // predicate twice is how two rungs start to disagree.
             bool stepAshoreWantsThisPress = onDeckAwayFromTheHelm && StepAshoreOnThisPress();
-            if (stepAshoreWantsThisPress
-                && BeginBoardingMove(BoardingMoveKind.Disembarking)) return true;
+            if (stepAshoreWantsThisPress)
+            {
+                if (BeginBoardingMove(BoardingMoveKind.Disembarking)) return true;
+                if (_moveRefused || HasShoreLanding()) return false;
+            }
 
             // ⭐ …AND THEN THE RAIL (2026-09-02). The 08-25 deck ladder — helm → registry → step ashore —
             // grows one rung on the end: helm → registry → step ashore → WASHBOARD. Last on purpose. At a
@@ -2180,6 +2178,7 @@ namespace HiddenHarbours.Player
         /// </summary>
         private void TickLadderLeg(float legTwoElapsed, Vector3 climbStart)
         {
+            Player.GetComponent<DeckRiderMeshPresenter>()?.BeginLadderForeground(Boat);
             bool descending = _moveKind == BoardingMoveKind.Boarding;
             float trans = _moveTransitionSeconds;
             Vector3 climbEnd = LadderRungsEndWorld();
@@ -2482,6 +2481,9 @@ namespace HiddenHarbours.Player
         /// about everything else.</summary>
         private void EndBoardingMove()
         {
+            if (_moveRoute == BoardingRoute.Ladder && Player != null)
+                Player.GetComponent<DeckRiderMeshPresenter>()?.EndLadderForeground(
+                    _finishAtCurrentPosition && _moveKind == BoardingMoveKind.Disembarking);
             _moveKind = BoardingMoveKind.None;
             _moveReturning = false;
             _moveElapsed = 0f;
