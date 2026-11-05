@@ -1,0 +1,136 @@
+{
+  "schema": "hidden-harbours/st-peters-landing-fittings-recipes@1",
+  "ppu": 32,
+  "elevation": 40,
+  "facings": [
+    0,
+    7,
+    6,
+    5,
+    4,
+    3,
+    2,
+    1
+  ],
+  "scene": "keyscene.stp_landing",
+  "pieces": [
+    {
+      "id": "prop.stp_landing_tyre_west",
+      "defKey": "landingTyreWest",
+      "key": "tyre",
+      "source": "docs/art/rigs/st-peters-landing-fittings-kit/stPetersLandingFittings.js",
+      "global": "StPetersLandingFittings",
+      "options": {
+        "top": 5.354004,
+        "lowWater": -2.2,
+        "highWater": 2.2,
+        "weather": 0.35,
+        "diameter": 0.6,
+        "sectionDepth": 0.2
+      },
+      "defType": "SetPieceDef",
+      "sourceSha256": "fccc5d70ca6d49e54d1251c9794d5a77f7e67feeb12e3fed3ea29ac2e86f5d0e",
+      "rigDir": 4,
+      "existingAnchor": [
+        190,
+        2.533452
+      ],
+      "auditRow": "Tyre 190.5"
+    },
+    {
+      "id": "prop.stp_landing_tyre_east",
+      "defKey": "landingTyreEast",
+      "key": "tyre",
+      "source": "docs/art/rigs/st-peters-landing-fittings-kit/stPetersLandingFittings.js",
+      "global": "StPetersLandingFittings",
+      "options": {
+        "top": 5.354004,
+        "lowWater": -2.2,
+        "highWater": 2.2,
+        "weather": 0.35,
+        "diameter": 0.6,
+        "sectionDepth": 0.2
+      },
+      "defType": "SetPieceDef",
+      "sourceSha256": "fccc5d70ca6d49e54d1251c9794d5a77f7e67feeb12e3fed3ea29ac2e86f5d0e",
+      "rigDir": 4,
+      "existingAnchor": [
+        208,
+        2.533452
+      ],
+      "auditRow": "Tyre 208.5"
+    },
+    {
+      "id": "prop.stp_landing_rope",
+      "defKey": "landingRope",
+      "key": "ropeCoil",
+      "source": "docs/art/rigs/st-peters-landing-fittings-kit/stPetersLandingFittings.js",
+      "global": "StPetersLandingFittings",
+      "options": {
+        "top": 5.354004,
+        "lowWater": -2.2,
+        "highWater": 2.2,
+        "weather": 0.35,
+        "lineDiameter": 0.025,
+        "layers": 3,
+        "variant": 0,
+        "len": 0.4
+      },
+      "defType": "SetPieceDef",
+      "sourceSha256": "fccc5d70ca6d49e54d1251c9794d5a77f7e67feeb12e3fed3ea29ac2e86f5d0e",
+      "rigDir": 4,
+      "existingAnchor": [
+        206.5,
+        3.283452
+      ],
+      "auditRow": "Coiled line"
+    }
+  ],
+  "retiredByName": [
+    {
+      "scope": "St Peters tyre instances only",
+      "sheet": "Assets/_Project/Art/Tilesets/Wharf/WharfOverlays.png",
+      "slice": "WharfOverlays_tyre",
+      "replacedBy": [
+        "landingTyreWest",
+        "landingTyreEast"
+      ],
+      "delete": false
+    },
+    {
+      "scope": "prop.stp_landing_rope only",
+      "sheet": "Assets/_Project/Art/Sprites/Wharf/Decor/ropeCoil.png",
+      "slice": "ropeCoil_4",
+      "replacedBy": [
+        "landingRope"
+      ],
+      "delete": false
+    }
+  ],
+  "proofFrames": [
+    {
+      "id": "landing.wide_approach.1431",
+      "hour": 14.516666666666667,
+      "tide": 2.18,
+      "centre": [
+        203,
+        2.649
+      ],
+      "worldHeight": 14,
+      "width": 796,
+      "height": 448
+    },
+    {
+      "id": "cannery.wide_landing.0600",
+      "hour": 6,
+      "tide": -0.85,
+      "centre": [
+        181,
+        12.596
+      ],
+      "worldHeight": 14,
+      "width": 796,
+      "height": 448
+    }
+  ]
+}
