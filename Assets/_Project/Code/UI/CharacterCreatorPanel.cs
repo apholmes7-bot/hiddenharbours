@@ -11,14 +11,14 @@ namespace HiddenHarbours.UI
     [DisallowMultipleComponent]
     public sealed class CharacterCreatorPanel : MonoBehaviour
     {
-        private const int Columns = 18;
-        private const int Lines = 14;
+        private const int Columns = 16;
+        private const int Lines = 16;
         private const int Scale = DialogueBubbleKit.ArtScale;
         private const int PageCount = 5;
-        private const int KeyWidth = 26;
+        private const int KeyWidth = 24;
         private const int KeyHeight = 13;
         private const int KeyGap = 1;
-        private const float ScreenMargin = 40f;
+        private const float ScreenMargin = 24f;
         private CharacterCreatorModel _model;
         private GameObject _root, _thoughtAnchor;
         private RectTransform _book, _keyboardRoot, _previous, _next, _leave, _previousLeaf, _nextLeaf;
@@ -31,6 +31,13 @@ namespace HiddenHarbours.UI
         private Keyboard _keyboard;
         private int _visibleLeaf, _leafCount;
         private readonly List<int> _leafStarts = new List<int>();
+        private readonly List<Renderer> _figureRenderers = new List<Renderer>(16);
+        private readonly List<Canvas> _hudCanvases = new List<Canvas>(4);
+        private readonly List<bool> _hudVisibility = new List<bool>(4);
+        private Canvas _canvas;
+        private Camera _camera;
+        private float _figureHeightPixels;
+        private bool _layoutValid;
 
         public bool Open(CharacterCreatorModel model)
         {
@@ -41,6 +48,7 @@ namespace HiddenHarbours.UI
             MoveActionClaim.IsClaimed = true;
             CancelKeyClaim.Hold();
             Build();
+            HideHud();
             BindKeyboard();
             _model.Changed += Refresh;
             Refresh();
@@ -64,6 +72,7 @@ namespace HiddenHarbours.UI
             _model?.Cancel();
             UnbindKeyboard();
             if (_model != null) _model.Changed -= Refresh;
+            RestoreHud();
             if (_thoughtAnchor != null) Destroy(_thoughtAnchor);
             if (_root != null) Destroy(_root);
         }
@@ -84,7 +93,7 @@ namespace HiddenHarbours.UI
 
         private void Update()
         {
-            if (_model == null || !_model.IsOpen) return;
+            if (_model == null || !_model.IsOpen || !_layoutValid) return;
             BindKeyboard();
             Keyboard kb = _keyboard;
             Gamepad pad = Gamepad.current;
@@ -114,6 +123,83 @@ namespace HiddenHarbours.UI
                 (kb != null && kb.enterKey.wasPressedThisFrame) || (pad != null && pad.buttonSouth.wasPressedThisFrame),
                 (kb != null && kb.escapeKey.wasPressedThisFrame) || (pad != null && pad.buttonEast.wasPressedThisFrame));
             ReadMouse();
+        }
+
+        private void HideHud()
+        {
+            HudController hud = FindAnyObjectByType<HudController>();
+            if (hud == null) return;
+            hud.GetComponentsInChildren(true, _hudCanvases);
+            foreach (Canvas canvas in _hudCanvases)
+            {
+                _hudVisibility.Add(canvas.enabled);
+                canvas.enabled = false;
+            }
+        }
+
+        private void RestoreHud()
+        {
+            for (int i = 0; i < _hudCanvases.Count; i++)
+                if (_hudCanvases[i] != null) _hudCanvases[i].enabled = _hudVisibility[i];
+            _hudCanvases.Clear();
+            _hudVisibility.Clear();
+        }
+
+        private void LateUpdate()
+        {
+            if (_model == null || !_model.IsOpen) return;
+            if (_camera == null) _camera = Camera.main;
+            Transform player = GameServices.PlayerTransform;
+            if (_camera == null || player == null) return;
+
+            // The preserved body silhouette remains measurable when the mesh replaces its drawing.
+            // A cached result list avoids an array allocation on each pose; no feature type is read.
+            player.GetComponentsInChildren(true, _figureRenderers);
+            float height = 0f;
+            foreach (Renderer renderer in _figureRenderers)
+            {
+                if (renderer == null || !renderer.gameObject.activeInHierarchy) continue;
+                Bounds bounds = renderer.bounds;
+                Vector3 min = bounds.min, max = bounds.max;
+                float low = float.PositiveInfinity, high = float.NegativeInfinity;
+                for (int corner = 0; corner < 8; corner++)
+                {
+                    Vector3 point = _camera.WorldToScreenPoint(new Vector3(
+                        (corner & 1) == 0 ? min.x : max.x,
+                        (corner & 2) == 0 ? min.y : max.y,
+                        (corner & 4) == 0 ? min.z : max.z));
+                    if (point.z <= 0f) continue;
+                    low = Mathf.Min(low, point.y);
+                    high = Mathf.Max(high, point.y);
+                }
+                if (high > low) height = Mathf.Max(height, high - low);
+            }
+            _figureHeightPixels = Mathf.Max(_figureHeightPixels, height);
+            Vector3 screen = _camera.WorldToScreenPoint(player.position);
+            if (_figureHeightPixels <= 0f || screen.z <= 0f) return;
+            RectTransform frame = (RectTransform)_root.transform;
+            RectTransformUtility.ScreenPointToLocalPointInRectangle(frame, screen, null, out Vector2 local);
+            float factor = _canvas.scaleFactor;
+            float margin = ScreenMargin / factor;
+            float safeLeft = Mathf.Max(frame.rect.width * 0.5f + margin,
+                local.x + frame.rect.width * 0.5f + _figureHeightPixels / factor);
+            int pageWidth = NotebookKit.PageWidthFor(Columns);
+            int bookWidth = NotebookKit.SpreadWidthFor(Columns);
+            int overhang = NotebookKit.CoverPad + NotebookKit.Edge + pageWidth * 2
+                + NotebookKit.Gutter + NotebookKit.TabChipWidth - bookWidth;
+            int bookHeight = NotebookKit.SpreadHeightFor(Lines);
+            const int head = 34;
+            int bottom = bookHeight + 4 + (KeyHeight + KeyGap)
+                * (CharacterCreatorModel.KeyboardKeyCount / CharacterCreatorModel.KeyboardColumns) + 4;
+            int scale = Mathf.Min(Scale, Mathf.FloorToInt(Mathf.Min(
+                (frame.rect.width - margin - safeLeft) / (bookWidth + overhang),
+                (frame.rect.height - margin * 2f) / (bottom + head))));
+            _layoutValid = scale >= 1;
+            _book.gameObject.SetActive(_layoutValid);
+            if (!_layoutValid) return;
+            float top = (frame.rect.height - (bottom + head) * scale) * 0.5f + head * scale;
+            _book.localScale = Vector3.one * scale;
+            _book.anchoredPosition = new Vector2(-margin - overhang * scale, -top);
         }
 
         // Presentation navigation only: every destination is a row already owned by the model.
@@ -172,6 +258,7 @@ namespace HiddenHarbours.UI
             {
                 _model.Changed -= Refresh;
                 UnbindKeyboard();
+                RestoreHud();
                 _root.SetActive(false);
                 if (_thoughtAnchor != null) Destroy(_thoughtAnchor);
                 InteractionGate.IsBlocked = false;
@@ -203,7 +290,8 @@ namespace HiddenHarbours.UI
                 _keyLabels[i].text = _model.KeyLabel(i);
                 _keyImages[i].color = i == _model.KeyboardIndex ? NotebookInk.Gold : Color.white;
             }
-            _hint.text = Wrapped(_model.NameEditing ? CharacterCreatorViewStrings.NameHint : CharacterCreatorViewStrings.Hint, 54);
+            _hint.text = Wrapped(_model.NameEditing ? CharacterCreatorViewStrings.NameHint : CharacterCreatorViewStrings.Hint,
+                (NotebookKit.SpreadWidthFor(Columns) - NotebookKit.PadL * 2) / NotebookKit.CellWidth);
         }
 
         private string Guide(int page)
@@ -296,6 +384,7 @@ namespace HiddenHarbours.UI
             _root = new GameObject("CharacterCreator", typeof(RectTransform), typeof(Canvas), typeof(CanvasScaler));
             _root.transform.SetParent(transform, false);
             Canvas canvas = _root.GetComponent<Canvas>();
+            _canvas = canvas;
             canvas.renderMode = RenderMode.ScreenSpaceOverlay;
             canvas.sortingOrder = WardrobePicker.SortingOrder;
             canvas.referencePixelsPerUnit = NotebookKit.PixelsPerUnit;
@@ -304,11 +393,11 @@ namespace HiddenHarbours.UI
             scaler.referenceResolution = new Vector2(1920f, 1080f);
             scaler.matchWidthOrHeight = 0.5f;
             _book = Image(_root.transform, "Notebook", null, NotebookInk.Cover);
-            _book.anchorMin = _book.anchorMax = new Vector2(1f, 0.5f);
-            _book.pivot = new Vector2(1f, 0.5f);
-            _book.anchoredPosition = new Vector2(-ScreenMargin, 0f);
+            _book.anchorMin = _book.anchorMax = Vector2.one;
+            _book.pivot = Vector2.one;
             _book.sizeDelta = new Vector2(NotebookKit.SpreadWidthFor(Columns), NotebookKit.SpreadHeightFor(Lines));
             _book.localScale = Vector3.one * Scale;
+            _book.gameObject.SetActive(false);
             int inset = NotebookKit.CoverPad + NotebookKit.Edge;
             int pageWidth = NotebookKit.PageWidthFor(Columns), pageHeight = NotebookKit.PageHeightFor(Lines);
             RectTransform left = Leaf("Guide", inset, inset, pageWidth, pageHeight);
@@ -447,7 +536,7 @@ namespace HiddenHarbours.UI
         public const string OpeningThought = "New waters. A moment to settle in.";
         public const string Hint = "Up/down: choose   Left/right: change\nEnter/A: select   Esc/B: leave\nTab/shoulders: turn step";
         public const string NameHint = "Type, or arrows/stick and A: keys\nEnter/Start or Done: finish name\nEsc/B: finish name; again: leave";
-        public const string ChangeArrows = "< Previous  Next >";
+        public const string ChangeArrows = "< Prev   Next >";
         public const string Step = "Step ";
         public const string NameLimit = "Name limit: ";
         public const string NameLength = "Name length: ";
