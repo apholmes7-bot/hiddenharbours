@@ -288,11 +288,10 @@ namespace HiddenHarbours.App.Editor
         /// <summary>Where the outboard man stands — read from the cast, like every other post here.</summary>
         public static Vector2 DoryYardPost() => NineMileCreekPeople.Named(OutboardManAssetName).Position;
 
-        /// <summary>His box truck, pulled off Wharf Road beside his own yard. Wharf Road now ends in the
-        /// turning circle, which paves the yard, so she stands on the circle's south side, (56.7, 113.6),
-        /// clear of the road's line.</summary>
+        /// <summary>His box truck stands beside the yard road, clear of the shed-to-quay walks in both
+        /// parked headings. His post stays on the quay (H6 PR 3).</summary>
         public static Vector2 DoryYardBay() =>
-            ShoulderBay(WharfRoad, DoryYardPost());
+            NineMileCreekWharfYard.OutboardBay;
 
         // =============================================================================================
         //  THE ONE PLACE THEY BOTH DRIVE TO — Route 91
@@ -334,12 +333,14 @@ namespace HiddenHarbours.App.Editor
         /// pull-off. Both extra runs are the same shape from opposite ends of the village.</summary>
         public static Vector2[] ToTheForecourt(Vector2[] road, Vector2 post)
         {
-            Vector2 bay = ShoulderBay(road, post);
-            Vector2 join = ShoulderJoin(road, post);
+            bool fromYard = ReferenceEquals(road, WharfRoad) && post == DoryYardPost();
+            if (fromYard) road = NineMileCreekWharfYard.RoadApproach(road);
+            Vector2 bay = fromYard ? DoryYardBay() : ShoulderBay(road, post);
+            Vector2 join = fromYard ? NineMileCreekGroundPlan.YardRoadEnd : ShoulderJoin(road, post);
             Vector2 pumpsJoin = ShoulderJoin(ThroughRoad,
                                              NineMileCreekStation.Route91ForecourtPos);
 
-            var route = new List<Vector2> { bay, VergeAhead(road, post), join };
+            var route = new List<Vector2> { bay, fromYard ? new Vector2(bay.x, NineMileCreekGroundPlan.YardRoadY) : VergeAhead(road, post), join };
             if (!ReferenceEquals(road, ThroughRoad))
             {
                 // From Wharf Road: run west to the junction it dead-ends on, which is Route 19's own

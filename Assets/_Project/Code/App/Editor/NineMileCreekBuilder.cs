@@ -705,12 +705,8 @@ namespace HiddenHarbours.App.Editor
             NineMileCreekDressing.Place(premise);
 
             // --- THE PHOTOGRAPH PASS: the lots along Wharf Road, and the fleet at the berths -----------
-            // ⭐ THE LOTS. The owner's satellite view (2026-08-10) shows a cluster of buildings behind the
-            // basin, not one shed: bait sheds, a boatyard, a restaurant, and a shed per boat-owner. Harris
-            // & Sons is DRAWN from the baked shipyard kit at the smallYard tier he ruled; everything else
-            // is a NAMED RESERVED LOT, because no rig bakes a bait shed or a restaurant and a kit building
-            // standing in for one would look finished while being wrong. NineMileCreekLots reports the
-            // gap on every build so the art-director's ask cannot go quiet.
+            // The legacy reservation table no longer draws the old smallYard (H6 PR 3, Ruling 26).
+            // The delivered harbour.yard and its trades are placed through the named layer refresh.
             var creekOwners = NineMileCreekMooredFleet.LoadOwners();
             NineMileCreekLots.Place(premise, creekOwners);
 

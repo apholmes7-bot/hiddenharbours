@@ -1180,26 +1180,10 @@ namespace HiddenHarbours.App.Editor
         // is the exception and is drawn: the shipyard kit is baked, 25 sheets.
 
         /// <summary>
-        /// HARRIS &amp; SONS — the boatyard, at the owner's ruled <c>smallYard</c> tier. On the spit's new
-        /// eastern ground, beside the wharf head, which is the only 27 m of clear yard the region has (see
-        /// <see cref="SpitFill"/> for why it had to be made).
+        /// The active boatyard follows the delivered harbour.yard's walks and solids (H6 PR 3).
+        /// The retired shed row keeps its former square privately below, under Ruling 27.
         /// </summary>
-        /// <para>⚠ At y = 112 rather than 110, and the two metres are load-bearing: a 27 m square centred
-        /// at 110 reaches down to y = 96.5 and the north wall's deck reaches up to y = 97, so the yard
-        /// stood half a metre ON THE QUAY. Caught by
-        /// <c>TheBoatyardStandsOnMadeGround_ClearOfTheRoadAndTheQuay</c>.</para>
-        public static readonly Vector3 ShipyardPos = new Vector3(168f, 112f, 0f);
-
-        /// <summary>The ground the yard occupies, a side of the square in metres — the shipyard kit's
-        /// <c>smallYard</c> cell (1230 px at 32 px/m = 38.4 m drawn) read back through the pack's iso
-        /// projection to the ground square that drew it. A RECTANGLE rather than the circle a shed gets,
-        /// because at this size the difference is 8 m of yard and the road is 19 m away.</summary>
-        public const float ShipyardSideMetres = 27f;
-
-        /// <summary>The yard's footprint, for anything asking "is this in the boatyard?".</summary>
-        public static Rect ShipyardFootprint() => new Rect(
-            ShipyardPos.x - ShipyardSideMetres * 0.5f, ShipyardPos.y - ShipyardSideMetres * 0.5f,
-            ShipyardSideMetres, ShipyardSideMetres);
+        public static Rect ShipyardFootprint() => NineMileCreekWharfYard.Footprint;
 
         /// <summary>
         /// THE RESTAURANT — the photograph's one non-working building on the wharf front, near where the
@@ -1216,7 +1200,7 @@ namespace HiddenHarbours.App.Editor
         /// <see cref="WharfShedRadius"/> — 5 m. The kit's restaurant is 9.00 × 11.50 m, whose
         /// half-diagonal is <b>7.30 m</b>, and a 7.30 m circle on (112, 102) reaches down to y = 94.70:
         /// 1.30 m off the made ground and <b>2.30 m onto the working quay</b>. That is the same half-metre
-        /// mistake <see cref="ShipyardPos"/> records two paragraphs up, at four times the size.</para>
+        /// mistake the retired boatyard's square once exposed, at four times the size.</para>
         ///
         /// <para>The site below is the point that MAXIMISES the worst clearance rather than the one
         /// nearest the old lot: it clears the quay deck by <b>1.20 m</b>, Wharf Road by 1.27 m and the
@@ -1381,21 +1365,25 @@ namespace HiddenHarbours.App.Editor
         // The retired shed row keeps the sites on which its lots were measured before H6 moved the buyer.
         private static readonly Vector3 RetiredRowParkingPos = new Vector3(92f, 118f, 0f);
         private static readonly Vector3 RetiredRowFishBuyerPos = new Vector3(88f, 110f, 0f);
+        // Ruling 27 (20261105T021203Z): the retired row keeps the 08-10 square point for point.
+        private const float RetiredRowShipyardSideMetres = 27f;
+        private static readonly Rect RetiredRowShipyard = new Rect(
+            new Vector2(168f, 112f) - Vector2.one * (RetiredRowShipyardSideMetres * 0.5f),
+            Vector2.one * RetiredRowShipyardSideMetres);
 
         /// <summary>Is one of the plan's own working sites standing on <paramref name="p"/>? The sites a
         /// shed row has to give way to, at the radius each of them reserves.</summary>
         public static bool IsWorkingSiteInTheWay(Vector2 p)
-            => IsSiteInTheWay(p, ParkingPos, FishBuyerPos);
+            => IsSiteInTheWay(p, ParkingPos, FishBuyerPos, ShipyardFootprint());
 
         public static bool IsRetiredRowSiteInTheWay(Vector2 p)
-            => IsSiteInTheWay(p, RetiredRowParkingPos, RetiredRowFishBuyerPos);
+            => IsSiteInTheWay(p, RetiredRowParkingPos, RetiredRowFishBuyerPos, RetiredRowShipyard);
 
-        private static bool IsSiteInTheWay(Vector2 p, Vector3 parking, Vector3 buyer)
+        private static bool IsSiteInTheWay(Vector2 p, Vector3 parking, Vector3 buyer, Rect yard)
         {
             foreach (var site in new[] { BaitShedPos, TrapStorePos, FishStorePos, parking, buyer })
                 if (Vector2.Distance(p, new Vector2(site.x, site.y)) < WharfShedRadius * 2f) return true;
             // …and the boatyard, which is a rectangle rather than a circle.
-            Rect yard = ShipyardFootprint();
             if (p.x > yard.xMin - WharfShedRadius && p.x < yard.xMax + WharfShedRadius &&
                 p.y > yard.yMin - WharfShedRadius && p.y < yard.yMax + WharfShedRadius) return true;
             return false;

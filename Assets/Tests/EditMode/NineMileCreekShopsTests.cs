@@ -238,7 +238,7 @@ namespace HiddenHarbours.Tests.EditMode
                     $"{site.Key} at {site.Position} reserves {r:0.00} m and so reaches down to " +
                     $"y = {site.Position.y - r:0.00}, which is ON the north wall's deck (top " +
                     $"y = {deck.yMax:0.00}). That is the boatyard's own half-metre mistake — see " +
-                    "NineMileCreekMainland.ShipyardPos — at this building's size.");
+                    "the retired boatyard's square — at this building's size.");
 
                 // --- clear of Wharf Road's corridor, which runs onto this yard. Measured with the
                 //     plan's OWN DistanceToRoute — the same primitive

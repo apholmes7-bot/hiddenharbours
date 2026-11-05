@@ -113,7 +113,7 @@ namespace HiddenHarbours.Tests.EditMode
         public void TheCommittedYard_HasItsTradesAndSupports_AndNoOldStation()
         {
             var scene = SceneYaml.Parse(File.ReadAllText(NineMileCreekLayerRefresh.ScenePath));
-            foreach (string name in new[] { "ShipwrightDoryYard", "ShipwrightShed", "UsedOutboardSeller", "BoatShed" })
+            foreach (string name in new[] { "ShipwrightDoryYard", "ShipwrightShed", "UsedOutboardSeller", "BoatShed", "Shipyard_smallYard" })
                 Assert.That(scene.Docs.Any(d => d.ClassId == 1 && d.Field("m_Name") == name), Is.False, name);
             var yard = scene.RootNamed(NineMileCreekWharfYard.RootName);
             var inside = scene.SubtreeOf(yard.FileId);

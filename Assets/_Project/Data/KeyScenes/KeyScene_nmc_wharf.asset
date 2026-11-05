@@ -6000,3 +6000,5 @@ MonoBehaviour:
   - gull.nmc_flats
   - gull.nmc_restaurant
   - gull.nmc_market
+  - harbour.yard
+  - boat.nmc_damaged_dory

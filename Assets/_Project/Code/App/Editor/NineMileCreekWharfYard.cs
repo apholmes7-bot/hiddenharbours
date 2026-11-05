@@ -56,6 +56,61 @@ namespace HiddenHarbours.App.Editor
         }
         public static Vector2 QuayPost => Quay.center;
         public static Vector2 QuayFace => new Vector2(Quay.center.x, Quay.yMin);
+        public sealed class FootprintPart
+        {
+            public string Key, Id;
+            public readonly List<(string label, Vector2[] points)> Shapes = new List<(string, Vector2[])>();
+        }
+        static IReadOnlyList<FootprintPart> _footprints;
+        static Rect? _footprint;
+        /// <summary>The same delivered gameplay polygons that PlaceYard turns into walks and solids.</summary>
+        public static IReadOnlyList<FootprintPart> Footprints()
+        {
+            if (_footprints != null) return _footprints;
+            var parts = new List<FootprintPart>();
+            object today = DeckSidecarJson.Parse(File.ReadAllText(NmcShipyardKit.TodayPath));
+            foreach (object raw in DeckSidecarJson.AsArray(DeckSidecarJson.Member(today, "pieces")))
+            {
+                object game = DeckSidecarJson.Member(raw, "gameplay");
+                var placement = DeckSidecarJson.AsArray(DeckSidecarJson.Member(DeckSidecarJson.Member(game, "placement"), "at"));
+                var at = new Vector2(DeckSidecarJson.Float(placement[0]), DeckSidecarJson.Float(placement[1]));
+                var part = new FootprintPart { Key = DeckSidecarJson.String(DeckSidecarJson.Member(raw, "key")),
+                    Id = DeckSidecarJson.String(DeckSidecarJson.Member(game, "id")) };
+                foreach (var group in new[] { (field: "walkSurfaces", points: "poly", label: "walk"),
+                                              (field: "colliders", points: "pts", label: "solid") })
+                {
+                    int index = 0;
+                    foreach (object shape in DeckSidecarJson.AsArray(DeckSidecarJson.Member(game, group.field)))
+                    {
+                        var points = DeckSidecarJson.AsArray(DeckSidecarJson.Member(shape, group.points))
+                            .Select(p => DeckSidecarJson.AsArray(p))
+                            .Select(p => new Vector2(DeckSidecarJson.Float(p[0]), DeckSidecarJson.Float(p[1])) + at).ToArray();
+                        part.Shapes.Add((group.label + index++, points));
+                    }
+                }
+                if (part.Shapes.Count == 0) throw new InvalidOperationException(part.Id + " has no delivered footprint.");
+                parts.Add(part);
+            }
+            return _footprints = parts;
+        }
+        public static Rect Footprint
+        {
+            get
+            {
+                if (_footprint.HasValue) return _footprint.Value;
+                var points = Footprints().SelectMany(p => p.Shapes).SelectMany(s => s.points).ToArray();
+                var rect = Rect.MinMaxRect(points.Min(p => p.x), points.Min(p => p.y), points.Max(p => p.x), points.Max(p => p.y));
+                _footprint = rect;
+                return rect;
+            }
+        }
+        // Rulings 24–26: beside the unchanged road, with both parked headings clear of the player walks.
+        public const float OutboardBayEastOfRoadEndMetres = 5f, OutboardBaySouthOfRoadMetres = 1.5f;
+        public static Vector2 OutboardBay => new Vector2(
+            NineMileCreekGroundPlan.YardRoadEnd.x + OutboardBayEastOfRoadEndMetres,
+            NineMileCreekGroundPlan.YardRoadY - OutboardBaySouthOfRoadMetres);
+        public static Vector2[] RoadApproach(Vector2[] wharfRoad) => wharfRoad.Concat(new[]
+            { NineMileCreekGroundPlan.YardRoadStart, NineMileCreekGroundPlan.YardRoadEnd }).ToArray();
         public static SetPieceDef Definition(string key) => AssetDatabase.LoadAssetAtPath<SetPieceDef>(
             "Assets/_Project/Data/SetPieces/SetPiece_" + key + ".asset") ?? throw new InvalidOperationException("The yard Def is not baked: " + key);
     }

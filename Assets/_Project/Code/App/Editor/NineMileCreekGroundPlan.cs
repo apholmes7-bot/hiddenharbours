@@ -43,6 +43,8 @@ namespace HiddenHarbours.App.Editor
 
         /// <summary>Half a quay blocker's thickness, as the builder lays them.</summary>
         public const float BlockerHalfThickness = 0.175f;
+        // Foot radius 0.35 + scan allowance 0.05 + margin 0.1 clears the quay at either pier edge.
+        public const float RunwayClearance = 0.5f;
 
         /// <summary>The north cap: the whole north face, step to breakwater root.</summary>
         public static Rect NorthCap => new Rect(FaceStepX, NorthFaceY, NorthFaceEastX - FaceStepX, CapDepthMetres);

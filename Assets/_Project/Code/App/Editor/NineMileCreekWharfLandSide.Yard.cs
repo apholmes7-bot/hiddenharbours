@@ -19,6 +19,61 @@ namespace HiddenHarbours.App.Editor
         public const string YardStep = "16-wharf-boat-yard", YardRetireStep = "17-retire-old-yard";
         public static void YardDryRunFromCommandLine() => NineMileCreekLayerRefresh.Run(false);
         public static void YardApplyFromCommandLine() => NineMileCreekLayerRefresh.Run(true);
+        public static void YardRepairAndReviewFromCommandLine() => ReviewYardRepair("Evidence~/nmc-h6/pr3b");
+        public static void YardFinalRepairAndReviewFromCommandLine() => ReviewYardRepair("Evidence~/nmc-h6/pr3m");
+        public static void YardRunwayRepairAndReviewFromCommandLine() => ReviewYardRepair("Evidence~/nmc-h6/pr3p");
+        static void ReviewYardRepair(string evidence)
+        {
+            string ready = evidence + "/review-ready.txt", proceed = evidence + "/review-proceed.txt";
+            if (File.Exists(ready) || File.Exists(proceed)) throw new Refusal("Use fresh yard repair review files.");
+            if (UnityEngine.SceneManagement.SceneManager.GetSceneByPath(NineMileCreekLayerRefresh.ScenePath).isLoaded)
+                UnityEditor.SceneManagement.EditorSceneManager.NewScene(UnityEditor.SceneManagement.NewSceneSetup.EmptyScene,
+                    UnityEditor.SceneManagement.NewSceneMode.Single);
+            var plans = NineMileCreekLayerRefresh.Run(false);
+            File.WriteAllText(evidence + "/dry-run.yaml", string.Join("\n", plans.SelectMany(s => s.Patches).Select(p => p.ToYaml())));
+            File.WriteAllText(ready, DateTime.UtcNow.ToString("o"));
+            var deadline = DateTime.UtcNow.AddMinutes(5);
+            while (!File.Exists(proceed) && DateTime.UtcNow < deadline) System.Threading.Thread.Sleep(200);
+            if (!File.Exists(proceed)) throw new Refusal("The yard repair dry run was not reviewed.");
+            NineMileCreekLayerRefresh.Run(true);
+            byte[] first = File.ReadAllBytes(NineMileCreekLayerRefresh.ScenePath);
+            NineMileCreekLayerRefresh.Run(true);
+            byte[] second = File.ReadAllBytes(NineMileCreekLayerRefresh.ScenePath);
+            using var hash = System.Security.Cryptography.SHA256.Create();
+            string Sum(byte[] bytes) => string.Concat(hash.ComputeHash(bytes).Select(b => b.ToString("x2")));
+            File.WriteAllLines(evidence + "/second-apply-sha256.txt", new[] { Sum(first), Sum(second) });
+            if (!first.SequenceEqual(second)) throw new Refusal("The yard repair's second apply changed a byte.");
+            var stores = StoreWiringPatch.Run(false);
+            if (stores.Any(p => Regex.IsMatch(p.ToYaml(), @"(?m)^- fileID:")))
+                throw new Refusal("The yard repair needs an additional store operation reviewed.");
+            StoreWiringPatch.Run(true);
+        }
+        public static void YardBakeAndDryRunFromCommandLine()
+        {
+            NmcShipyardKit.BakeFromCommandLine();
+            NineMileCreekLayerRefresh.Run(false);
+        }
+        public static void YardApplyTwiceAndStoreFromCommandLine()
+        {
+            const string evidence = "Evidence~/nmc-h6/pr3";
+            NineMileCreekLayerRefresh.Run(true);
+            byte[] before = File.ReadAllBytes(NineMileCreekLayerRefresh.ScenePath);
+            NineMileCreekLayerRefresh.Run(true);
+            byte[] after = File.ReadAllBytes(NineMileCreekLayerRefresh.ScenePath);
+            using var hash = System.Security.Cryptography.SHA256.Create();
+            string Sum(byte[] bytes) => string.Concat(hash.ComputeHash(bytes).Select(b => b.ToString("x2")));
+            File.WriteAllLines(evidence + "/second-apply-sha256.txt", new[] { Sum(before), Sum(after) });
+            if (!before.SequenceEqual(after)) throw new Refusal("The yard's second apply changed the scene.");
+            StoreWiringPatch.Run(false);
+            File.WriteAllText(evidence + "/store-review-ready.txt", "Review the named store operations before proceeding.");
+            var clock = System.Diagnostics.Stopwatch.StartNew();
+            while (!File.Exists(evidence + "/store-review-proceed.txt"))
+            {
+                if (clock.Elapsed.TotalMinutes > 5) throw new Refusal("The yard store patch review did not finish.");
+                System.Threading.Thread.Sleep(250);
+            }
+            StoreWiringPatch.Run(true);
+        }
         public static IEnumerable<(string step, Func<SceneYaml, LayerPatch> plan)> YardPlanners()
         {
             yield return (YardStep, PlaceYard);
@@ -32,6 +87,19 @@ namespace HiddenHarbours.App.Editor
             yield return (YardRetireStep, s => RetireYardRoot(s, "ShipwrightShed", 2028377143));
             yield return (YardRetireStep, s => RetireYardRoot(s, "UsedOutboardSeller", 1268888616));
             yield return (YardRetireStep, s => RemoveChildren(s, "Yards", name => name == "BoatShed", 1, YardRetireStep));
+            yield return (YardRetireStep, RetireOldShipyardLot);
+        }
+        public static LayerPatch RetireOldShipyardLot(SceneYaml scene)
+        {
+            Doc old = scene.Docs.SingleOrDefault(d => d.ClassId == 1 && d.Field("m_Name") == "Shipyard_smallYard");
+            if (old != null)
+            {
+                long[] expected = { 2083176806, 2083176807, 2083176808, 2083176809, 2083176810 };
+                if (!scene.SubtreeOf(old.FileId).OrderBy(id => id).SequenceEqual(expected) ||
+                    scene.TransformOf(old).FieldRef("m_Father") != 1152889076)
+                    throw new Refusal("The retired smallYard differs from Ruling 26's five named documents.");
+            }
+            return RemoveChildren(scene, NineMileCreekLots.RootName, name => name == "Shipyard_smallYard", 1, YardRetireStep);
         }
         static LayerPatch RetireYardRoot(SceneYaml scene, string name, long id) => Retire(scene, YardRetireStep, name, id);
 
@@ -88,7 +156,8 @@ namespace HiddenHarbours.App.Editor
                     wanted.Add((key + "/tr", TransformYaml(wt, wg, Vector2.zero, Array.Empty<long>(), tr)));
                     wanted.Add((key + "/surface", MonoBehaviourYaml(ws, wg,
                         Script("Assets/_Project/Code/World/StandablePlatform.cs", "HiddenHarbours.World", "HiddenHarbours.World.StandablePlatform"),
-                        new[] { "  _id: " + piece.id + ".walk", "  _footprint: {x: " + F(rect.x) + ", y: " + F(rect.y) + ", width: " + F(rect.width) + ", height: " + F(rect.height) + "}",
+                        new[] { "  _id: " + piece.id + ".walk", "  _footprint:", "    serializedVersion: 2",
+                            "    x: " + F(rect.x), "    y: " + F(rect.y), "    width: " + F(rect.width), "    height: " + F(rect.height),
                             "  _deckElevation: " + F(piece.gameplay.placement.elevation + DeckSidecarJson.Float(DeckSidecarJson.Member(walk, "z"))) })));
                 }
                 wanted.Add((piece.key + "/go", GameObjectYaml(pg, piece.id, components)));
@@ -153,7 +222,9 @@ namespace HiddenHarbours.App.Editor
             {
                 var p = NineMileCreekWharfYard.Read().pieces.Single(p => p.key == key).gameplay;
                 float x0 = p.placement.at[0] + p.bounds.x[0], x1 = p.placement.at[0] + p.bounds.x[1];
-                paths.Add(NineMileCreekGroundSteps.Quad(new Vector2(start, 86), new Vector2(x0 - half, 86), half)); start = x1 + half;
+                paths.Add(NineMileCreekGroundSteps.Quad(new Vector2(start, 86),
+                    new Vector2(x0 - half - NineMileCreekGroundPlan.RunwayClearance, 86), half));
+                start = x1 + half + NineMileCreekGroundPlan.RunwayClearance;
             }
             paths.Add(NineMileCreekGroundSteps.Quad(new Vector2(start, 86), runs[1][1], half));
             string polygon = PolygonColliderYaml(collider.FileId, collider.FieldRef("m_GameObject"), paths);

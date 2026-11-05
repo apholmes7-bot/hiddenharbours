@@ -167,23 +167,24 @@ namespace HiddenHarbours.Tests.EditMode
 
         static readonly (long id, long go, long transform, string name, string sellerId, string offer, Vector2 at)[] YardSellers =
         {
-            (1268888617, 1268888616, 1268888618, "UsedOutboardSeller", "seller.hectors_barrel", Catalog + "Shipwright/DoryOutboardOffer.asset",
-             new Vector2(66.3862f, 111.25431f)),
-            (1499338002, 1499338001, 1499338006, "ShipwrightDoryYard", "seller.nmc_yard", Catalog + "Shipwright/DamagedDoryOffer.asset",
-             new Vector2(64f, 112f)),
-            (2028377147, 2028377143, 2028377151, "ShipwrightShed", "seller.nmc_yard", Catalog + "Shipwright/PuntOffer.asset",
-             new Vector2(-108f, 64f)),
+            (923606461, 2113343179, 456296322, "NmcWharfYardOutboardTrade", "seller.hectors_barrel", Catalog + "Shipwright/DoryOutboardOffer.asset",
+             new Vector2(198f, 88.5f)),
+            (1546611667, 1054019580, 137999828, "NmcWharfYardDoryTrade", "seller.nmc_yard", Catalog + "Shipwright/DamagedDoryOffer.asset",
+             new Vector2(197.8f, 123.9f)),
+            (922550797, 813580451, 560614108, "NmcWharfYardCatalogue", "seller.nmc_yard", Catalog + "Shipwright/PuntOffer.asset",
+             new Vector2(197.8f, 123.9f)),
         };
 
         /// <summary>Where the walk stands to use each counter: Phase A's approach steps, 3.5 m in front of the office
         /// and the store, and at the clam buyer's and the dory yard's speakers.</summary>
         static readonly Vector2 LicenceStep = new Vector2(83.6f, 110.566f), RodStep = new Vector2(-206f, 112.5f),
-                                ClamStep = new Vector2(93f, 123.45f), DoryStep = new Vector2(68.182f, 111.25f);
+                                ClamStep = new Vector2(93f, 123.45f), DoryStep = new Vector2(197.8f, 123.9f),
+                                OutboardStep = new Vector2(198f, 89.5f);
 
         static readonly (long sprite, long go, long transform, long interactable, string name, Vector2 at, Vector2 step)[] Speakers =
         {
             (413417729, 413417726, 413417727, 413417731, "WendellArsenault", new Vector2(93.41463f, 123.14621f), ClamStep),
-            (1871746044, 1871746041, 1871746046, 1871746042, "HectorBernard", new Vector2(66.3862f, 111.25431f), DoryStep),
+            (1871746044, 1871746041, 1871746046, 1871746042, "HectorBernard", new Vector2(198f, 88.5f), OutboardStep),
         };
 
         /// <summary>The clam counter and the yard's sellers keep their places: the scope's row 11 retains every XY.
@@ -330,7 +331,9 @@ namespace HiddenHarbours.Tests.EditMode
 
         /// <summary>The walk's box, a few metres beyond the walker's grid: still water there must lie under spring
         /// high for the walker's level to be the sea's.</summary>
-        static readonly Rect WalkBox = Rect.MinMaxRect(-225f, 60f, 165f, 165f);
+        // PR 3's walk reaches the quay's east edge and one grid cell beyond it.
+        const float YardQuayEast = 212f, YardWalkMaxX = YardQuayEast + Walker.Step;
+        static readonly Rect WalkBox = Rect.MinMaxRect(-225f, 60f, YardWalkMaxX, 165f);
 
         /// <summary>From where the scene stands the player to the berth's step-off, up to the harbourmaster's counter
         /// and the chandlery's, back down to the clam buyer and the dory yard's speaker, and home to the berth: each
@@ -364,8 +367,11 @@ namespace HiddenHarbours.Tests.EditMode
                 ("berth to the licence counter", G.DisembarkPos, LicenceStep, 24.406f),
                 ("licence to the rod counter", LicenceStep, RodStep, 297.076f),
                 ("rod to the clam buyer", RodStep, ClamStep, 311.890f),
-                ("clam buyer to the dory yard", ClamStep, DoryStep, 30.133f),
-                ("dory yard home to the berth", DoryStep, G.DisembarkPos, 31.403f),
+                // PR 3: the road to the shed, then its slab to the quay; only the two yard stops move.
+                // Rulings 24 and 26: measured without the retired smallYard, rounded up to 0.1 m.
+                ("clam buyer to the dory yard", ClamStep, DoryStep, 105.5f),
+                ("dory yard to the outboard", DoryStep, OutboardStep, 34.8f),
+                ("outboard home to the berth", OutboardStep, G.DisembarkPos, 113.1f),
             };
             foreach (var (name, from, to, phaseA) in legs)
             {
@@ -563,10 +569,11 @@ namespace HiddenHarbours.Tests.EditMode
         public sealed class Walker
         {
             /// <summary>The grid's cell, the stations' spacing and the solids' bucket, in metres.</summary>
-            const float Step = 0.5f, Station = 0.1f, Bucket = 2f;
-            /// <summary>Phase A's grid: x -220..160, y 65..160.</summary>
+            internal const float Step = 0.5f;
+            const float Station = 0.1f, Bucket = 2f;
+            /// <summary>PR 3's grid reaches the quay's east edge plus one cell; y stays 65..160.</summary>
             const float MinX = -220f, MinY = 65f;
-            const int Columns = 761, Rows = 191;
+            const int Columns = (int)((YardWalkMaxX - MinX) / Step) + 1, Rows = 191;
             public const float DryAllowance = 0.001f;
 
             readonly List<(Vector2 a, Vector2 b, float radius, string who)> _outlines;

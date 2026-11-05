@@ -60,14 +60,15 @@ namespace HiddenHarbours.Tests.PlayMode
         static readonly Vector2 LicenceSpeaker = new Vector2(83.6f, 110.566f); // the office trailer's counter
         static readonly Vector2 RodSpeaker = new Vector2(-206f, 112.5f);       // the general store's chandlery
         static readonly Vector2 ClamSpeaker = new Vector2(93f, 123.45f);      // the market's counter
-        static readonly Vector2 DorySpeaker = new Vector2(68.182f, 111.25f);   // the dory yard and Hector's barrel
+        static readonly Vector2 DorySpeaker = new Vector2(197.8f, 123.9f);     // the delivered yard shed door
+        static readonly Vector2 OutboardSpeaker = new Vector2(198f, 89.5f);   // a pace north of the quay seller
         const float SpeakerArriveMetres = 1.5f;
         const float StepOffArriveMetres = 0.4f;
 
         const string HarbourmasterSellerId = "seller.nmc_harbourmaster";
         const string ChandlerySellerId = "seller.nmc_chandlery";
         const string DoryYardSellerId = "seller.nmc_yard";
-        const string DoryYardName = "ShipwrightDoryYard";        // the yard's id is shared with the shed; the yard is this one
+        const string DoryYardName = "NmcWharfYardDoryTrade";       // the repair counter at the new yard shed
         const string OutboardSellerId = "seller.hectors_barrel";
         const string FishBuyerStallName = "NmcWharfMarketCounter";
         const string WharfGasPumpId = "fixture.nmc.wharf_pump_gas";
@@ -566,6 +567,7 @@ namespace HiddenHarbours.Tests.PlayMode
 
             // ---- a purchase: the used outboard ------------------------------------------------------------------------
             var hector = Only<Shipwright>(s => s.SellerId == OutboardSellerId, "Hector's barrel");
+            for (var e = WalkLeg(OutboardSpeaker, SpeakerArriveMetres, "from the shed to the outboard on the quay"); e.MoveNext();) yield return e.Current;
             Assert.That(Vector2.Distance(Body(), hector.transform.position), Is.LessThan(6f), "she is not at Hector's barrel.");
             ShipwrightOffer outboard = hector.Offer;
             Afford(outboard.Price, "the outboard");

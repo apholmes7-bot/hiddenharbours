@@ -1,0 +1,218 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 01b51978faec4dbb8e54e23107a97ef5, type: 3}
+  m_Name: SetPiece_shed
+  m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.SetPieceDef
+  Id: structure.nmc_yard_shed
+  DisplayName: 'Wharf boat yard: shed'
+  RigKey: shed
+  SceneId: keyscene.nmc_wharf
+  BakedOptionsJson: '{}'
+  Layer: raised
+  Walk: on
+  Mount: ground
+  BoundsMin: {x: -5.8, y: -11, z: -0.15}
+  BoundsMax: {x: 5.8, y: 13.5, z: 6.6}
+  Frames:
+  - Sprite: {fileID: 789125402540657643, guid: c30217ca1d0f78b47bf181d28744e408, type: 3}
+    RigDir: 0
+    ShowFaces: 0
+    BearingDeg: 0
+    CameraSees: yard part
+    NativeSize: {x: 381, y: 536}
+    NativePivot: {x: 190, y: 361}
+    Crop: {x: 4, y: 80}
+    Pivot: {x: 186, y: 281}
+  - Sprite: {fileID: -2491861524949155797, guid: c30217ca1d0f78b47bf181d28744e408, type: 3}
+    RigDir: 7
+    ShowFaces: 7
+    BearingDeg: 315
+    CameraSees: yard part
+    NativeSize: {x: 813, y: 479}
+    NativePivot: {x: 378, y: 304}
+    Crop: {x: 4, y: 4}
+    Pivot: {x: 374, y: 300}
+  - Sprite: {fileID: 4755704336366504532, guid: c30217ca1d0f78b47bf181d28744e408, type: 3}
+    RigDir: 6
+    ShowFaces: 6
+    BearingDeg: 270
+    CameraSees: yard part
+    NativeSize: {x: 793, y: 377}
+    NativePivot: {x: 356, y: 255}
+    Crop: {x: 4, y: 5}
+    Pivot: {x: 352, y: 250}
+  - Sprite: {fileID: 1094493376931581049, guid: c30217ca1d0f78b47bf181d28744e408, type: 3}
+    RigDir: 5
+    ShowFaces: 5
+    BearingDeg: 225
+    CameraSees: yard part
+    NativeSize: {x: 542, y: 548}
+    NativePivot: {x: 275, y: 323}
+    Crop: {x: 4, y: 5}
+    Pivot: {x: 271, y: 318}
+  - Sprite: {fileID: -6314172060131187236, guid: c30217ca1d0f78b47bf181d28744e408, type: 3}
+    RigDir: 4
+    ShowFaces: 4
+    BearingDeg: 180
+    CameraSees: yard part
+    NativeSize: {x: 381, y: 536}
+    NativePivot: {x: 190, y: 309}
+    Crop: {x: 4, y: 28}
+    Pivot: {x: 186, y: 281}
+  - Sprite: {fileID: -5883468636191625660, guid: c30217ca1d0f78b47bf181d28744e408, type: 3}
+    RigDir: 3
+    ShowFaces: 3
+    BearingDeg: 135
+    CameraSees: yard part
+    NativeSize: {x: 813, y: 473}
+    NativePivot: {x: 435, y: 304}
+    Crop: {x: 5, y: 4}
+    Pivot: {x: 430, y: 300}
+  - Sprite: {fileID: 687494081625810233, guid: c30217ca1d0f78b47bf181d28744e408, type: 3}
+    RigDir: 2
+    ShowFaces: 2
+    BearingDeg: 90
+    CameraSees: yard part
+    NativeSize: {x: 793, y: 377}
+    NativePivot: {x: 436, y: 255}
+    Crop: {x: 4, y: 5}
+    Pivot: {x: 432, y: 250}
+  - Sprite: {fileID: -721005101260708910, guid: c30217ca1d0f78b47bf181d28744e408, type: 3}
+    RigDir: 1
+    ShowFaces: 1
+    BearingDeg: 45
+    CameraSees: yard part
+    NativeSize: {x: 542, y: 548}
+    NativePivot: {x: 267, y: 359}
+    Crop: {x: 5, y: 4}
+    Pivot: {x: 262, y: 355}
+  CellSize: {x: 804, y: 538}
+  PixelsPerMetre: 32
+  ElevationDeg: 40
+  BakedLit: 0
+  Colliders:
+  - Type: polygon
+    Blocks: walk
+    Points:
+    - {x: 5.45, y: -5.5}
+    - {x: 5.45, y: 5.5}
+    - {x: 5.55, y: 5.5}
+    - {x: 5.55, y: -5.5}
+  - Type: polygon
+    Blocks: walk
+    Points:
+    - {x: -5.45, y: 5.5}
+    - {x: -5.45, y: 1.9}
+    - {x: -5.55, y: 1.9}
+    - {x: -5.55, y: 5.5}
+  - Type: polygon
+    Blocks: walk
+    Points:
+    - {x: -5.45, y: 0.9}
+    - {x: -5.45, y: -5.5}
+    - {x: -5.55, y: -5.5}
+    - {x: -5.55, y: 0.9}
+  - Type: polygon
+    Blocks: walk
+    Points:
+    - {x: 5.5, y: 5.45}
+    - {x: -5.5, y: 5.45}
+    - {x: -5.5, y: 5.55}
+    - {x: 5.5, y: 5.55}
+  - Type: polygon
+    Blocks: walk
+    Points:
+    - {x: -5.5, y: -5.45}
+    - {x: -3.5, y: -5.45}
+    - {x: -3.5, y: -5.55}
+    - {x: -5.5, y: -5.55}
+  - Type: polygon
+    Blocks: walk
+    Points:
+    - {x: 3.5, y: -5.45}
+    - {x: 5.5, y: -5.45}
+    - {x: 5.5, y: -5.55}
+    - {x: 3.5, y: -5.55}
+  - Type: polygon
+    Blocks: walk
+    Points:
+    - {x: 4.5, y: -6.5}
+    - {x: 5.45, y: -6.5}
+    - {x: 5.45, y: -1.5}
+    - {x: 4.5, y: -1.5}
+  - Type: polygon
+    Blocks: walk
+    Points:
+    - {x: 4.77, y: 4.47}
+    - {x: 5.33, y: 4.47}
+    - {x: 5.33, y: 8.53}
+    - {x: 4.77, y: 8.53}
+  - Type: polygon
+    Blocks: walk
+    Points:
+    - {x: -5.1, y: 4.18}
+    - {x: -3.9, y: 4.18}
+    - {x: -3.9, y: 4.82}
+    - {x: -5.1, y: 4.82}
+  - Type: polygon
+    Blocks: walk
+    Points:
+    - {x: -4.62, y: -7.25}
+    - {x: -3.9, y: -7.25}
+    - {x: -3.9, y: -6.2}
+    - {x: -4.62, y: -6.2}
+  - Type: polygon
+    Blocks: walk
+    Points:
+    - {x: -5.096, y: 2.454}
+    - {x: -3.854, y: 2.454}
+    - {x: -3.854, y: 3.696}
+    - {x: -5.096, y: 3.696}
+  Anchors:
+  - Name: door
+    Position: {x: -1.2, y: -7.5, z: 0}
+  Path: []
+  TideMarks: []
+  Words: []
+  HasLight: 0
+  Light:
+    Emitters: []
+    When: 
+  IsAnimated: 0
+  Animated:
+    Part: 
+    Input: 
+    Steps: 0
+    BakedAtDeg: 0
+    RigDir: 0
+    Headings: []
+  GameplayJson: '{"schema":"hidden-harbours/nmc-shipyard-part@1","generatedBy":"NmcShipyard
+    1.0.0","key":"shed","id":"structure.nmc_yard_shed","name":"Wharf boat yard: shed","defType":"SetPieceDef","scene":"keyscene.nmc_wharf","units":"metres
+    in the part frame, deck datum zero","bounds":{"x":[-5.8,5.8],"y":[-11,13.5],"z":[-0.15,6.6]},"layer":"raised","walk":"on","mount":"ground","colliders":[{"type":"polygon","blocks":"walk","pts":[[5.45,-5.5],[5.45,5.5],[5.55,5.5],[5.55,-5.5]]},{"type":"polygon","blocks":"walk","pts":[[-5.45,5.5],[-5.45,1.9],[-5.55,1.9],[-5.55,5.5]]},{"type":"polygon","blocks":"walk","pts":[[-5.45,0.9],[-5.45,-5.5],[-5.55,-5.5],[-5.55,0.9]]},{"type":"polygon","blocks":"walk","pts":[[5.5,5.45],[-5.5,5.45],[-5.5,5.55],[5.5,5.55]]},{"type":"polygon","blocks":"walk","pts":[[-5.5,-5.45],[-3.5,-5.45],[-3.5,-5.55],[-5.5,-5.55]]},{"type":"polygon","blocks":"walk","pts":[[3.5,-5.45],[5.5,-5.45],[5.5,-5.55],[3.5,-5.55]]},{"type":"polygon","blocks":"walk","pts":[[4.499999999999999,-6.500000000000001],[5.45,-6.500000000000001],[5.45,-1.5000000000000004],[4.499999999999999,-1.5000000000000004]]},{"type":"polygon","blocks":"walk","pts":[[4.7700000000000005,4.469999999999999],[5.330000000000001,4.469999999999999],[5.330000000000001,8.53],[4.7700000000000005,8.53]]},{"type":"polygon","blocks":"walk","pts":[[-5.099999999999999,4.180000000000001],[-3.8999999999999995,4.180000000000001],[-3.8999999999999995,4.820000000000001],[-5.099999999999999,4.820000000000001]]},{"type":"polygon","blocks":"walk","pts":[[-4.62,-7.249999999999999],[-3.900000000000001,-7.249999999999999],[-3.900000000000001,-6.199999999999999],[-4.62,-6.199999999999999]]},{"type":"polygon","blocks":"walk","pts":[[-5.096,2.4540000000000006],[-3.854,2.4540000000000006],[-3.854,3.696],[-5.096,3.696]]}],"facings":[{"dir":0,"showFaces":"0","bearingDeg":0,"cameraSees":"yard
+    part"},{"dir":1,"showFaces":"1","bearingDeg":45,"cameraSees":"yard part"},{"dir":2,"showFaces":"2","bearingDeg":90,"cameraSees":"yard
+    part"},{"dir":3,"showFaces":"3","bearingDeg":135,"cameraSees":"yard part"},{"dir":4,"showFaces":"4","bearingDeg":180,"cameraSees":"yard
+    part"},{"dir":5,"showFaces":"5","bearingDeg":225,"cameraSees":"yard part"},{"dir":6,"showFaces":"6","bearingDeg":270,"cameraSees":"yard
+    part"},{"dir":7,"showFaces":"7","bearingDeg":315,"cameraSees":"yard part"}],"cells":[{"dir":0,"w":381,"h":536,"pivot":[190,361]},{"dir":1,"w":542,"h":548,"pivot":[267,359]},{"dir":2,"w":793,"h":377,"pivot":[436,255]},{"dir":3,"w":813,"h":473,"pivot":[435,304]},{"dir":4,"w":381,"h":536,"pivot":[190,309]},{"dir":5,"w":542,"h":548,"pivot":[275,323]},{"dir":6,"w":793,"h":377,"pivot":[356,255]},{"dir":7,"w":813,"h":479,"pivot":[378,304]}],"anchors":{"door":[-1.2,-7.5,0]},"options":{},"placement":{"row":"harbour.yard","at":[199,131.4],"elevation":3.4,"dir":0},"walkSurfaces":[{"poly":[[5.3,5.3],[-5.3,5.3],[-5.3,-5.3],[5.3,-5.3]],"z":0,"surface":"power-floated
+    concrete"}],"records":[{"k":"walk","kind":"shed floor","poly":[[-5.3,-5.3],[5.3,-5.3],[5.3,5.3],[-5.3,5.3]],"z":0,"surface":"power-floated
+    concrete"},{"verb":"benchWork","also":["mendGear","fitParts"],"id":"shed.bench","fixture":"workbench","stand":[-4.12,4,0],"yaw":-90,"show":true,"seq":[{"clip":"bench","loop":true,"opts":{"workZ":0.8}}],"fits":[{"param":"bench","value":0.8,"range":[0.643,0.853],"ok":true}],"anim":{"clip":"bench","opts":{"workZ":0.8}},"k":"verb","fitsCreatorBodies":true},{"verb":"fetchParts","also":["stowParts"],"id":"shed.shelves","fixture":"parts
+    shelving","stand":[-4.38,-6.5,0],"yaw":-90,"show":true,"seq":[{"clip":"lift","once":true,"opts":{"workZ":0.85}},{"clip":"place","once":true,"opts":{"workZ":0.85}}],"fits":[{"param":"load","value":0.85,"range":[0.718,0.978],"ok":true}],"anim":{"clip":"lift","opts":{"workZ":0.85}},"k":"verb","fitsCreatorBodies":true},{"verb":"hoistPendant","id":"shed.crane","fixture":"5
+    t bridge crane pendant","stand":[-1.7,3.75,0],"yaw":0,"seq":[{"clip":"reach","loop":true,"opts":{"lift":0.95},"note":"the
+    pendant hangs to 1.05 m; up, down, east, west on its buttons"}],"fits":[{"param":"rest","value":0.95,"range":[0,1.012],"ok":true}],"k":"verb","fitsCreatorBodies":true},{"k":"shed","span":11,"length":11,"eave":5.4,"ridge":6.6,"floorZ":0,"door":{"width":7,"height":5,"open":true,"kind":"roll-up","wall":"north
+    (+y)"},"personnelDoor":{"wall":"east","width":1,"height":2.2},"cutaway":"none","cutH":1.35,"cutWalls":[],"crane":{"capacity_t":5,"railZ":4.1,"hookMinZ":0.3,"drawn":true}},{"k":"wall","id":"west","a":[-5.5,5.5],"b":[-5.5,-5.5],"gaps":[]},{"k":"wall","id":"east","a":[5.5,-5.5],"b":[5.5,5.5],"gaps":[[3.6,4.6]]},{"k":"wall","id":"south","a":[-5.5,-5.5],"b":[5.5,-5.5],"gaps":[]},{"k":"wall","id":"north","a":[5.5,5.5],"b":[-5.5,5.5],"gaps":[[2,9]]},{"verb":"walkIn","id":"shed.door","fixture":"roll-up
+    door","stand":[1.2,7.5,0],"yaw":180,"seq":[{"clip":"walk","loop":true,"note":"through
+    the roll-up door onto the shed floor, level with the apron"}],"fits":[],"show":true,"anim":{"clip":"walk","move":{"d":[0,-1,0],"len":5.5,"rate":0.72}},"k":"verb","fitsCreatorBodies":true}]}'
+  State: 
+  Variants: []
+  HasVendor: 0
+  Vendor:
+    Seller: 
+    At: {x: 0, y: 0, z: 0}
