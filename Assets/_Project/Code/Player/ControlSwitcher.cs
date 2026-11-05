@@ -901,7 +901,7 @@ namespace HiddenHarbours.Player
             {
                 case ControlMode.OnFoot:
                     if (!(WithinBoardReach() && BoardableNow())) return false;
-                    BoardDeck();
+                    BoardDeckFromShore();
                     return true;
 
                 case ControlMode.OnDeck:
@@ -1179,6 +1179,21 @@ namespace HiddenHarbours.Player
         /// takes the helm). The player stays visible and walks the deck; the boat stays un-driven (its
         /// controller/input off) and rocks/drifts under them; the rope is stowed while anyone's aboard.</summary>
         private void BoardDeck() => BoardDeckAt(null);
+
+        private void BoardDeckFromShore()
+        {
+            if (Player != null && Boat != null && BoardingLadders.TryFindNearestNow(
+                    Player.position, GameServices.LadderBoarding.LadderReachMetres, out IBoardingLadder ladder))
+            {
+                var deck = DeckWalk;
+                if (deck != null) deck.Bind(Boat);
+                Vector3 foot = LadderFootWorld(ladder, BoatDeckElevationNow(), IsoGround.CameraElevationDegrees);
+                // The deck root excludes the tide ride and mesh heave applied by its presenter.
+                BoardDeckAt(foot - Boat.position - HullRideOffsetNow());
+                return;
+            }
+            BoardDeck();
+        }
 
         private void BoardDeckAt(Vector2? ladderLanding)
         {
@@ -2117,12 +2132,22 @@ namespace HiddenHarbours.Player
             // WHERE THE CLIMBER STANDS. Not on the ladder line — the rig's pose was authored with the body
             // a MEASURED standoff off the plane, so seating the sprite on the stringers puts its hands
             // inside the wall. Never eyeballed (#454's contract states this outright).
-            Vector2 seat = ladder.WorldPosition + Vector2.up * ladder.ClimbTopScreenOffset
-                         + LadderBoardingMath.ProjectedSeatOffset(ladder.FaceHeadingDegrees,
-                             ladder.StandoffMetres, _moveBakeElevation);
-            _moveLadderSeat = new Vector3(seat.x, seat.y, 0f);
+            _moveLadderSeat = LadderSeatWorld(ladder, _moveBakeElevation);
             return true;
         }
+
+        private static Vector3 LadderSeatWorld(IBoardingLadder ladder, float cameraElevation)
+        {
+            Vector2 seat = ladder.WorldPosition + Vector2.up * ladder.ClimbTopScreenOffset
+                         + LadderBoardingMath.ProjectedSeatOffset(ladder.FaceHeadingDegrees,
+                             ladder.StandoffMetres, cameraElevation);
+            return new Vector3(seat.x, seat.y, 0f);
+        }
+
+        private static Vector3 LadderFootWorld(IBoardingLadder ladder, float deckElevation, float cameraElevation)
+            => LadderSeatWorld(ladder, cameraElevation) - Vector3.up * LadderBoardingMath.ProjectHeight(
+                Mathf.Max(0f, LadderBoardingMath.VerticalGap(ladder.TopElevationMeters, deckElevation)),
+                cameraElevation);
 
         private bool HasShoreLanding() => TryShoreLanding(out _) || OnLand();
 
