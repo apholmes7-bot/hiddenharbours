@@ -890,8 +890,9 @@ namespace HiddenHarbours.App.Editor
                 var go = new GameObject($"Ladder_{n}");
                 go.transform.SetParent(ladderRoot.transform, worldPositionStays: false);
                 go.transform.position = new Vector3(f.Position.x, f.Position.y, 0f);
-                go.AddComponent<HiddenHarbours.World.WharfLadder>()
-                  .Configure($"{SurfaceId}.ladder_{n}", deckElevation, MooringFaceHeadingDegrees);
+                var climb = go.AddComponent<HiddenHarbours.World.WharfLadder>();
+                climb.Configure($"{SurfaceId}.ladder_{n}", deckElevation, MooringFaceHeadingDegrees);
+                climb.ConfigureClimbTop(NineMileCreekGroundPlan.LadderClimbTopScreenOffset);
                 n++;
             }
             return n;

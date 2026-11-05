@@ -253,9 +253,9 @@ namespace HiddenHarbours.Tests.PlayMode
 
             // Board (→ the deck), then step ashore. The boat is inside the dock radius, so this is the tidy
             // dock landing: the ratified disembark point, on the planks.
-            Assert.IsTrue(_switcher.TryInteract(), "boarding from beside the boat succeeds");
+            Assert.IsTrue(HiddenHarbours.Tests.Support.TimedBoarding.Interact(_switcher), "boarding from beside the boat succeeds");
             Assert.AreEqual(ControlMode.OnDeck, _switcher.Mode, "boarding lands on the deck");
-            Assert.IsTrue(_switcher.TryInteract(), "and E from the deck steps ashore at the dock");
+            Assert.IsTrue(HiddenHarbours.Tests.Support.TimedBoarding.Interact(_switcher), "and E from the deck steps ashore at the dock");
             Assert.AreEqual(ControlMode.OnFoot, _switcher.Mode);
             Assert.Less(Vector3.Distance(_walk.transform.position, DisembarkPos), 0.01f,
                 $"the tidy dock landing puts her on the ratified disembark point, not at " +

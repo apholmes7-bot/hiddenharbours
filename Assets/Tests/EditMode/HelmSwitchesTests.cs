@@ -422,7 +422,7 @@ namespace HiddenHarbours.Tests.EditMode
             sw.Configure(walk, boat, input, dock.transform, 3f, dock.transform);
             sw.ConfigureHelm(new Vector2(0f, 0.5f), 0.2f);
             sw.ConfigureInteractVerb(true, 180f);
-            Assert.IsTrue(sw.TryInteract());
+            Assert.IsTrue(HiddenHarbours.Tests.Support.TimedBoarding.Interact(sw));
             Assert.AreEqual(ControlMode.OnDeck, sw.Mode);
             Interactables.Register(candidate);
             player.transform.position = candidate.WorldPosition;

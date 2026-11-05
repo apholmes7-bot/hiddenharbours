@@ -208,14 +208,14 @@ namespace HiddenHarbours.Tests.PlayMode
             Assert.IsTrue(r.Body.enabled, "ashore, the player's own renderer draws — unchanged by all this");
             Assert.IsFalse(r.RiderSr.enabled);
 
-            Assert.IsTrue(r.Switcher.TryInteract(), "boarding within reach lands the player on deck");
+            Assert.IsTrue(HiddenHarbours.Tests.Support.TimedBoarding.Interact(r.Switcher), "boarding within reach lands the player on deck");
             Assert.AreEqual(ControlMode.OnDeck, r.Switcher.Mode);
             yield return null;
             AssertSomethingDrawsThePlayer(r, "on deck");
             Assert.IsTrue(r.RiderSr.enabled, "on deck the RIDER draws, because it is the one that can lean");
             Assert.IsFalse(r.Body.enabled, "exactly one figure, not two");
 
-            Assert.IsTrue(r.Switcher.TryInteract(), "at the helm spot, E takes the helm");
+            Assert.IsTrue(HiddenHarbours.Tests.Support.TimedBoarding.Interact(r.Switcher), "at the helm spot, E takes the helm");
             Assert.AreEqual(ControlMode.Aboard, r.Switcher.Mode);
             yield return null;
 
@@ -233,9 +233,9 @@ namespace HiddenHarbours.Tests.PlayMode
             var r = NewRig(rowed: true, helmReach: 3f);
             yield return null;
 
-            Assert.IsTrue(r.Switcher.TryInteract(), "board");
+            Assert.IsTrue(HiddenHarbours.Tests.Support.TimedBoarding.Interact(r.Switcher), "board");
             yield return null;
-            Assert.IsTrue(r.Switcher.TryInteract(), "take the helm");
+            Assert.IsTrue(HiddenHarbours.Tests.Support.TimedBoarding.Interact(r.Switcher), "take the helm");
             yield return null;
 
             Assert.Less(Vector2.Distance(r.PlayerTransform.position, r.Switcher.HelmWorldPosition), 0.2f,
@@ -248,12 +248,12 @@ namespace HiddenHarbours.Tests.PlayMode
             var r = NewRig(rowed: true);
             yield return null;
 
-            Assert.IsTrue(r.Switcher.TryInteract(), "board");
+            Assert.IsTrue(HiddenHarbours.Tests.Support.TimedBoarding.Interact(r.Switcher), "board");
             yield return null;
             Assert.AreEqual(CharacterStance.Balance, r.Rider.RequestedStance,
                             "on a working deck the fisher braces");
 
-            Assert.IsTrue(r.Switcher.TryInteract(), "take the helm");
+            Assert.IsTrue(HiddenHarbours.Tests.Support.TimedBoarding.Interact(r.Switcher), "take the helm");
             yield return null;
             Assert.AreEqual(CharacterStance.Oars, r.Rider.RequestedStance,
                             "a hull wearing oar sheets rows — read off her own visual asset, not from code");
@@ -269,9 +269,9 @@ namespace HiddenHarbours.Tests.PlayMode
             var r = NewRig(rowed: false);
             yield return null;
 
-            Assert.IsTrue(r.Switcher.TryInteract(), "board");
+            Assert.IsTrue(HiddenHarbours.Tests.Support.TimedBoarding.Interact(r.Switcher), "board");
             yield return null;
-            Assert.IsTrue(r.Switcher.TryInteract(), "take the helm");
+            Assert.IsTrue(HiddenHarbours.Tests.Support.TimedBoarding.Interact(r.Switcher), "take the helm");
             yield return null;
 
             Assert.AreEqual(CharacterStance.Helm, r.Rider.RequestedStance,
@@ -288,7 +288,7 @@ namespace HiddenHarbours.Tests.PlayMode
             r.Rider.ConfigureRide(rideStrength: 1f, deckRollDegrees: 5f, deckHeavePixels: 1.6f,
                                   deckPitchLiftMeters: 0.02f, pixelsPerUnit: 32f, footing: 0.5f);
 
-            Assert.IsTrue(r.Switcher.TryInteract(), "board");
+            Assert.IsTrue(HiddenHarbours.Tests.Support.TimedBoarding.Interact(r.Switcher), "board");
             yield return null;
 
             // This hull carries no BoatWaveMotion, so the rider takes the documented fallback: the tilt the
@@ -318,7 +318,7 @@ namespace HiddenHarbours.Tests.PlayMode
             r.Rider.ConfigureRide(rideStrength: 0f, deckRollDegrees: 5f, deckHeavePixels: 1.6f,
                                   deckPitchLiftMeters: 0.02f, pixelsPerUnit: 32f, footing: 1f);
 
-            Assert.IsTrue(r.Switcher.TryInteract(), "board");
+            Assert.IsTrue(HiddenHarbours.Tests.Support.TimedBoarding.Interact(r.Switcher), "board");
             r.Hull.VisualTiltDegrees = 12f;
             yield return null;
 
@@ -335,14 +335,14 @@ namespace HiddenHarbours.Tests.PlayMode
             var r = NewRig(rowed: true, helmReach: 0.1f);
             yield return null;
 
-            Assert.IsTrue(r.Switcher.TryInteract(), "board");
+            Assert.IsTrue(HiddenHarbours.Tests.Support.TimedBoarding.Interact(r.Switcher), "board");
             yield return null;
             r.Hull.VisualTiltDegrees = 9f;
             yield return null;
             Assert.IsTrue(r.RiderSr.enabled, "the rider is drawing on deck");
             Assert.AreNotEqual(0f, r.Rider.Pose.RollDegrees, "…and leaning");
 
-            Assert.IsTrue(r.Switcher.TryInteract(), "at the dock, E steps ashore");
+            Assert.IsTrue(HiddenHarbours.Tests.Support.TimedBoarding.Interact(r.Switcher), "at the dock, E steps ashore");
             Assert.AreEqual(ControlMode.OnFoot, r.Switcher.Mode);
             yield return null;
 
@@ -396,7 +396,7 @@ namespace HiddenHarbours.Tests.PlayMode
             wave.Configure(r.HullVisual, new SpriteHullPresenter(r.Hull));
             yield return null;
 
-            Assert.IsTrue(r.Switcher.TryInteract(), "board");
+            Assert.IsTrue(HiddenHarbours.Tests.Support.TimedBoarding.Interact(r.Switcher), "board");
 
             // Let the animator settle onto the live sea and start cycling. Bounded, and it says so if the
             // harness never rocks rather than silently proving nothing.
@@ -480,7 +480,7 @@ namespace HiddenHarbours.Tests.PlayMode
             r.Rider.ConfigureRide(rideStrength: 1f, deckRollDegrees: 5f, deckHeavePixels: 1.6f,
                                   deckPitchLiftMeters: 0.02f, pixelsPerUnit: 32f, footing: 0.6f,
                                   hullRide: 1f);
-            Assert.IsTrue(r.Switcher.TryInteract(), "board");
+            Assert.IsTrue(HiddenHarbours.Tests.Support.TimedBoarding.Interact(r.Switcher), "board");
             Assert.AreEqual(ControlMode.OnDeck, r.Switcher.Mode);
 
             // Bounded by the SEA, not by a frame count (headless frames are not wall time): the sea
@@ -519,7 +519,7 @@ namespace HiddenHarbours.Tests.PlayMode
             r.Rider.ConfigureRide(rideStrength: 1f, deckRollDegrees: 5f, deckHeavePixels: 1.6f,
                                   deckPitchLiftMeters: 0.02f, pixelsPerUnit: 32f, footing: 0.6f,
                                   hullRide: 1f);
-            Assert.IsTrue(r.Switcher.TryInteract(), "board");
+            Assert.IsTrue(HiddenHarbours.Tests.Support.TimedBoarding.Interact(r.Switcher), "board");
 
             bool rocked = false;
             for (int f = 0; f < 200; f++)
@@ -647,9 +647,9 @@ namespace HiddenHarbours.Tests.PlayMode
             var r = NewRig(rowed: false);
             yield return null;
 
-            Assert.IsTrue(r.Switcher.TryInteract(), "board");
+            Assert.IsTrue(HiddenHarbours.Tests.Support.TimedBoarding.Interact(r.Switcher), "board");
             yield return null;
-            Assert.IsTrue(r.Switcher.TryInteract(), "take the helm");
+            Assert.IsTrue(HiddenHarbours.Tests.Support.TimedBoarding.Interact(r.Switcher), "take the helm");
             yield return null;
             Assert.IsTrue(r.RiderSr.enabled, "harness: the pilot must be DRAWN, or there is nothing to spin");
 
@@ -677,7 +677,7 @@ namespace HiddenHarbours.Tests.PlayMode
             GiveHerAMeasuredDeck(r);                        // the fleet's path, where the deck frame is real
             yield return null;
 
-            Assert.IsTrue(r.Switcher.TryInteract(), "board");
+            Assert.IsTrue(HiddenHarbours.Tests.Support.TimedBoarding.Interact(r.Switcher), "board");
             yield return null;
             Assert.AreEqual(ControlMode.OnDeck, r.Switcher.Mode);
             Assert.IsTrue(r.Character.IsHeadingHeld,
@@ -707,7 +707,7 @@ namespace HiddenHarbours.Tests.PlayMode
             var r = NewRig(rowed: true, helmReach: 0.1f);
             GiveHerAMeasuredDeck(r);
             yield return null;
-            Assert.IsTrue(r.Switcher.TryInteract(), "board");
+            Assert.IsTrue(HiddenHarbours.Tests.Support.TimedBoarding.Interact(r.Switcher), "board");
             yield return null;
 
             var deck = r.PlayerTransform.GetComponent<DeckWalkController>();
@@ -736,11 +736,11 @@ namespace HiddenHarbours.Tests.PlayMode
             var r = NewRig(rowed: true, helmReach: 0.1f);
             yield return null;
 
-            Assert.IsTrue(r.Switcher.TryInteract(), "board");
+            Assert.IsTrue(HiddenHarbours.Tests.Support.TimedBoarding.Interact(r.Switcher), "board");
             yield return null;
             Assert.IsTrue(r.Character.IsSpeedHeld, "aboard, the deck states the honest travelling speed");
 
-            Assert.IsTrue(r.Switcher.TryInteract(), "at the dock, E steps ashore");
+            Assert.IsTrue(HiddenHarbours.Tests.Support.TimedBoarding.Interact(r.Switcher), "at the dock, E steps ashore");
             yield return null;
 
             Assert.IsFalse(r.Character.IsHeadingHeld, "ashore the facing is back on motion");
@@ -755,7 +755,7 @@ namespace HiddenHarbours.Tests.PlayMode
             var r = NewRig(rowed: true);
             yield return null;
 
-            Assert.IsTrue(r.Switcher.TryInteract(), "board");
+            Assert.IsTrue(HiddenHarbours.Tests.Support.TimedBoarding.Interact(r.Switcher), "board");
             yield return null;
             Assert.IsTrue(r.RiderSr.enabled);
 
@@ -777,11 +777,11 @@ namespace HiddenHarbours.Tests.PlayMode
             yield return null;
 
             Assert.IsTrue(r.Body.enabled, "ashore");
-            Assert.IsTrue(r.Switcher.TryInteract(), "board");
+            Assert.IsTrue(HiddenHarbours.Tests.Support.TimedBoarding.Interact(r.Switcher), "board");
             yield return null;
             Assert.IsTrue(r.Body.enabled, "on deck, the body renderer draws as it always did");
 
-            Assert.IsTrue(r.Switcher.TryInteract(), "take the helm");
+            Assert.IsTrue(HiddenHarbours.Tests.Support.TimedBoarding.Interact(r.Switcher), "take the helm");
             yield return null;
             Assert.IsFalse(r.Body.enabled, "and at the helm the figure is hidden, as it always was");
         }

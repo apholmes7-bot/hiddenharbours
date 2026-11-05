@@ -125,6 +125,10 @@ namespace HiddenHarbours.Player
         // Ashore. A figure of her own under her body, the body it is hiding (and only while it is),
         // and the latch that decides when the id pool may be asked again.
         private IsoCharacterFigureRenderer _ashoreFigure;
+        private MeshRenderer _ladderFigureMesh;
+        private IsoFacetHullRenderer _ladderHull;
+        private int _ladderCompleteFrame = -1;
+        private const int LadderAshorePostFrames = 12;
         private CharacterSkinDef _ashoreConfigured;
         private string _ashoreStateKey;
         private double _ashoreStateStartSeconds;
@@ -134,6 +138,38 @@ namespace HiddenHarbours.Player
         private readonly System.Collections.Generic.HashSet<(CharacterSkinDef, string)> _missingMoves = new();
         private const string ClipCannotDrawReason = "the running clip cannot draw as mesh; the sprite owns this move";
         private PlayerWalkController _walk;
+
+        /// <summary>The free ladder figure clears only the hull it is climbing beside.</summary>
+        public void BeginLadderForeground(Transform boat)
+        {
+            if (boat == null || _ladderHull == null || !_ladderHull.transform.IsChildOf(boat))
+                _ladderHull = boat != null ? boat.GetComponentInChildren<IsoFacetHullRenderer>() : null;
+            _ladderCompleteFrame = -1;
+        }
+
+        public void EndLadderForeground(bool completedAshore)
+        {
+            if (completedAshore) _ladderCompleteFrame = Time.frameCount;
+            else { _ladderHull = null; _ladderCompleteFrame = -1; }
+        }
+
+        private void PlaceLadderForeground(CharacterSkinDef skin)
+        {
+            if (_ladderFigureMesh == null)
+                foreach (var mesh in _ashoreFigure.GetComponentsInChildren<MeshRenderer>(true))
+                    if (mesh != _ashoreFigure.AshoreOverlay) { _ladderFigureMesh = mesh; break; }
+            if (_ladderFigureMesh == null) return;
+            // Reset before every pose so the depth-only move cannot accumulate or outlive the climb.
+            _ladderFigureMesh.transform.localPosition = Vector3.zero;
+            if (_ladderCompleteFrame >= 0 && Time.frameCount > _ladderCompleteFrame + LadderAshorePostFrames)
+                EndLadderForeground(false);
+            if (_ladderHull == null || _ladderHull.PosedMesh == null) return;
+            var hullMesh = _ladderHull.PosedMesh.GetComponent<MeshRenderer>();
+            if (hullMesh == null) return;
+            // Move only private view depth: the climb stays visible without moving a screen pixel.
+            float shift = hullMesh.bounds.min.z - _ladderFigureMesh.bounds.max.z - 1f / skin.PxPerMetre;
+            if (shift < 0f) _ladderFigureMesh.transform.position += Vector3.forward * shift;
+        }
 
         // Character PR 2b: her look (ADR 0051). The body her recipe resolved to and the colours of each
         // of its materials, or both null for the body as baked; the builder's tables, loaded once.
@@ -237,6 +273,7 @@ namespace HiddenHarbours.Player
 
         private void OnDisable()
         {
+            EndLadderForeground(false);
             EventBus.Unsubscribe<PlayerAppearanceChanged>(OnAppearanceChanged);
             EventBus.Unsubscribe<PlayerAppearancePreviewRequested>(OnAppearancePreviewRequested);
             if (_rider != null) _rider.SetFigureOverride(null);
@@ -484,6 +521,7 @@ namespace HiddenHarbours.Player
             heading = FigureHeadingDial.Heading(heading, FigureHeadingDial.LiveSteps);   // the pixel look's dial; 0: as is
             float yaw = skin.AzimuthCounterClockwise ? -heading : heading;
             _ashoreFigure.SetAshoreYaw(yaw);
+            PlaceLadderForeground(skin);
             AshoreYawDegrees = yaw;
 
             // ONE FIGURE, NOT TWO: the mesh shows and the body hides on the same call.
@@ -893,6 +931,7 @@ namespace HiddenHarbours.Player
                 DestroySafely(_ashoreFigure.gameObject);
             }
             _ashoreFigure = null;
+            _ladderFigureMesh = null;
             _ashoreConfigured = null;
             _ashoreStateKey = null;
         }

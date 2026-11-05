@@ -31,6 +31,10 @@ namespace HiddenHarbours.App.Editor
         /// the cap's brow is read a quarter metre landward and its toe a quarter metre seaward.</summary>
         public const float NorthFaceY = 86f;
 
+        /// <summary>Measured screen rise from the north wall fitting at y86 to its drawn cap at y87.
+        /// Distinct from the plan cap's quarter-metre footprint.</summary>
+        public const float LadderClimbTopScreenOffset = 1f;
+
         /// <summary>The crane apron's face, west of the step.</summary>
         public const float CraneFaceY = 76f;
 

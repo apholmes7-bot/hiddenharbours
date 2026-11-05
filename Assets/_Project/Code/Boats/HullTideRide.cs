@@ -47,7 +47,7 @@ namespace HiddenHarbours.Boats
     /// accumulate every rounding error the tide ever made.</para>
     /// </summary>
     [DisallowMultipleComponent]
-    public sealed class HullTideRide : MonoBehaviour
+    public sealed class HullTideRide : MonoBehaviour, IHullTideRide
     {
         [Tooltip("The water level (m above chart datum) this hull's picture is CORRECT at — where her " +
                  "plan point puts her. 0 is the game's datum, which is mean water: a builder that " +

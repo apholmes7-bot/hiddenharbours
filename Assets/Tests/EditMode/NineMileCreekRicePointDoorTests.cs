@@ -419,10 +419,10 @@ namespace HiddenHarbours.Tests.EditMode
                 Holds("a walker again", ControlMode.OnFoot, true);
             }
             player.transform.position = new Vector3(0, -11.5f, 0);
-            Assert.That(sw.TryInteract(), Is.True, "the walker boards through the public interaction");
+            Assert.That(HiddenHarbours.Tests.Support.TimedBoarding.Interact(sw), Is.True, "the walker boards through the public interaction");
             Holds("a hand on the dory's deck", ControlMode.OnDeck, false);
             player.transform.position = sw.HelmWorldPosition;
-            Assert.That(sw.TryInteract(), Is.True, "and takes the oars");
+            Assert.That(HiddenHarbours.Tests.Support.TimedBoarding.Interact(sw), Is.True, "and takes the oars");
             Holds("the dory's oarsman", ControlMode.Aboard, false);
         }
 

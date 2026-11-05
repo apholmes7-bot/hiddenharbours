@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Reflection;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
@@ -44,6 +45,7 @@ namespace HiddenHarbours.Tests.PlayMode
         private GameObject _playerGo;
         private FixedTide _tide;
         private GameConfig _config;
+        private WharfLadder _ladder;
 
         [SetUp]
         public void SetUp()
@@ -267,6 +269,7 @@ namespace HiddenHarbours.Tests.PlayMode
 
             FaceDeckBearing(BearingToTheNearestPlank());
             yield return null;
+            AssertTheLadderServesThisExit();
             Assert.IsTrue(_switcher.BeginInteract(), "E must do something");
             yield return Settle();
 
@@ -314,15 +317,46 @@ namespace HiddenHarbours.Tests.PlayMode
             var pier = Spawn("Wharf").AddComponent<StandablePlatform>();
             pier.Configure("wharf.st_peters", StPetersWharf.DeckFootprint(),
                            StPetersWharf.DeckElevationFrom(GameServices.TidalTerrain));
+            AddThePiersLadder();
             AttachDeck("DoryIso");
             yield return BoardHer();
             Assert.IsTrue(_switcher.CanStepAshore(), "premise: she is lying against the planks");
         }
 
+        private void AddThePiersLadder()
+        {
+            var go = Spawn("Ladder_0");
+            go.SetActive(false);
+            go.transform.position = StPetersWharf.LadderPosition();
+            _ladder = go.AddComponent<WharfLadder>();
+            _ladder.Configure("wharf.st_peters.ladder_0", StPetersWharf.DeckElevationFrom(GameServices.TidalTerrain),
+                StPetersWharf.MooringFaceHeadingDegrees, LadderBoardingMath.RigRungMetres,
+                LadderBoardingMath.RigStandoffMetres);
+            go.SetActive(true); // the configured component publishes itself through OnEnable
+        }
+
+        private void AssertTheLadderServesThisExit()
+        {
+            const BindingFlags flags = BindingFlags.Instance | BindingFlags.NonPublic;
+            object[] shore = { Vector3.zero };
+            Assert.IsTrue((bool)typeof(ControlSwitcher).GetMethod("TryShoreLanding", flags).Invoke(_switcher, shore));
+            float deck = (float)typeof(ControlSwitcher).GetMethod("BoatDeckElevationNow", flags).Invoke(_switcher, null);
+            Vector2 point = (Vector3)shore[0];
+            float gap = _ladder.TopElevationMeters - deck;
+            var settings = GameServices.LadderBoarding;
+            Debug.Log($"[Ruling22 OverTheSide] gap={gap:R} clamp={settings.BoardClampMetres:R} shore={point} " +
+                $"ladder={_ladder.WorldPosition} distance={Vector2.Distance(point, _ladder.WorldPosition):R} " +
+                $"reach={settings.LadderReachMetres:R}");
+            Assert.Greater(gap, settings.BoardClampMetres, "the retired step fixture must really exceed the clamp");
+            Assert.IsTrue(BoardingLadders.TryFindNearestNow(point, settings.LadderReachMetres, out var found),
+                "the game's ladder must serve the fixture's actual shore point");
+            Assert.AreSame(_ladder, found);
+        }
+
         private IEnumerator Settle()
         {
-            float deadline = Time.realtimeSinceStartup + 10f;
-            while (_switcher.IsBoardingMove && Time.realtimeSinceStartup < deadline) yield return null;
+            // The move's climb duration follows the configured gap, rungs and loop seconds.
+            while (_switcher.IsBoardingMove) yield return null;
             yield return null;
         }
 

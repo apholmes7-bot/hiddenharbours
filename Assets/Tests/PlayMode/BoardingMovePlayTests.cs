@@ -397,7 +397,7 @@ namespace HiddenHarbours.Tests.PlayMode
 
             var r = Build(new Vector3(2.6f, 0f, 0f), Vector3.zero);
             yield return null;
-            r.Switcher.TryInteract();                                   // aboard instantly; this is about leaving
+            HiddenHarbours.Tests.Support.TimedBoarding.Interact(r.Switcher);                                   // aboard instantly; this is about leaving
             Assert.AreEqual(ControlMode.OnDeck, r.Switcher.Mode);
             yield return null;
 
@@ -440,6 +440,9 @@ namespace HiddenHarbours.Tests.PlayMode
             Assert.IsFalse(r.Switcher.BoardableNow(), "the gate has closed under them");
 
             yield return null;                                           // the switcher's own Update notices
+
+            float returning = 0f;                                        // a live refusal walks back, it does not snap
+            while (r.Switcher.IsBoardingMove && returning < 3f) { yield return null; returning += Time.deltaTime; }
 
             Assert.IsFalse(r.Switcher.IsBoardingMove, "the move is called off");
             Assert.AreEqual(ControlMode.OnFoot, r.Switcher.Mode, "she is not boarded");

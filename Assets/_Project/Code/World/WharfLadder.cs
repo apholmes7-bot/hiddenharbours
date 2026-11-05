@@ -45,6 +45,25 @@ namespace HiddenHarbours.World
                  "which boarding stops being a step.")]
         [SerializeField] private float _topElevationMeters;
 
+        [Tooltip("How far ABOVE this fitting's transform the cap of the climb stands, in screen metres. " +
+                 "Leaves the plan point, reach and berth unchanged. Zero keeps older ladders unchanged; " +
+                 "a raised cap also draws a runtime ladder span down to the waterline.")]
+        [Min(0f)]
+        [SerializeField] private float _climbTopScreenOffset;
+
+        [Tooltip("Published WharfIso.FIT.ladder.w: distance between the two rail centres, in metres.")]
+        [Min(0.01f)]
+        [SerializeField] private float _spanWidthMetres = 0.45f;
+
+        [Tooltip("Real seconds between tide-driven span updates; the ambient slow-tick cadence.")]
+        [Min(0.1f)]
+        [SerializeField] private float _spanSlowTickSeconds = 0.5f;
+
+        private SpriteRenderer _span;
+        private float _nextSpanTick;
+        // The unaltered kit tile's rails occupy columns 1 and 7 (nine pixels wide).
+        private const float TileRailCentreSpanPixels = 6f;
+
         [Header("Facing")]
         [Tooltip("Compass heading the ladder's FACE looks along (0 = North, 90 = East, clockwise) — out " +
                  "from the wall, over the water. The climber faces the reciprocal, back to the sea. On a " +
@@ -76,6 +95,9 @@ namespace HiddenHarbours.World
         public float TopElevationMeters => _topElevationMeters;
 
         /// <inheritdoc/>
+        public float ClimbTopScreenOffset => _climbTopScreenOffset;
+
+        /// <inheritdoc/>
         public float FaceHeadingDegrees => _faceHeadingDegrees;
 
         /// <inheritdoc/>
@@ -92,6 +114,9 @@ namespace HiddenHarbours.World
             _id = id;
             _topElevationMeters = topElevationMeters;
             _faceHeadingDegrees = faceHeadingDegrees;
+            // Explicit configuration publishes an active fitting before play-mode lifecycle callbacks.
+            if (isActiveAndEnabled) BoardingLadders.Register(this);
+            else BoardingLadders.Unregister(this);
         }
 
         /// <inheritdoc cref="Configure(string,float,float)"/>
@@ -103,8 +128,75 @@ namespace HiddenHarbours.World
             _standoffMetres = standoffMetres;
         }
 
-        private void OnEnable() => BoardingLadders.Register(this);
+        /// <summary>Author the cap separately from the plan fitting, so a rebuild cannot move its berth.</summary>
+        public void ConfigureClimbTop(float screenOffset)
+        {
+            _climbTopScreenOffset = Mathf.Max(0f, screenOffset);
+            if (Application.isPlaying && isActiveAndEnabled) RefreshSpan();
+        }
 
-        private void OnDisable() => BoardingLadders.Unregister(this);
+        private void OnEnable()
+        {
+            BoardingLadders.Register(this);
+            if (Application.isPlaying) RefreshSpan();
+        }
+
+        private void OnDisable()
+        {
+            BoardingLadders.Unregister(this);
+            if (_span != null) _span.enabled = false;
+        }
+
+        private void OnDestroy() => BoardingLadders.Unregister(this);
+
+        private void Update()
+        {
+            if (Time.unscaledTime < _nextSpanTick) return;
+            RefreshSpan();
+        }
+
+        private void RefreshSpan()
+        {
+            _nextSpanTick = Time.unscaledTime + Mathf.Max(0.1f, _spanSlowTickSeconds);
+            if (_climbTopScreenOffset <= 0f)
+            {
+                if (_span != null) _span.enabled = false;
+                return;
+            }
+
+            if (_span == null)
+            {
+                // A 9 x 4 px repeat cut from WharfOverlays_ladder, beginning on a rung.
+                // No new painted pixels or rig edit; the first sole pin sits at that rung under the cap.
+                Sprite tile = Resources.Load<Sprite>("WharfLadderTile");
+                if (tile == null)
+                {
+                    Debug.LogError("The raised wharf ladder needs Resources/WharfLadderTile.", this);
+                    enabled = false;
+                    return;
+                }
+                var picture = new GameObject("Ladder span") { hideFlags = HideFlags.DontSave };
+                picture.transform.SetParent(transform, false);
+                _span = picture.AddComponent<SpriteRenderer>();
+                _span.sprite = tile;
+                _span.drawMode = SpriteDrawMode.Tiled;
+                _span.tileMode = SpriteTileMode.Continuous;
+                // North wall = -3, hull composite = WharfDeckMax (1). The span sits between them.
+                _span.sortingOrder = SortingBands.WharfDeckMax - 1;
+            }
+
+            IEnvironmentService environment = GameServices.Environment;
+            float water = environment != null
+                ? environment.WaterLevelAt(GameServices.Clock?.TotalSeconds ?? 0.0) : 0f;
+            float height = Mathf.Max(0f, TidalRide.ScreenRise(_topElevationMeters, water));
+            // One repeat is one physical rung; project height once, irrespective of tile pixel density.
+            float scaleY = Mathf.Max(0.01f, _rungMetres) * IsoGround.HeightScale / _span.sprite.bounds.size.y;
+            float scaleX = _spanWidthMetres / (TileRailCentreSpanPixels / _span.sprite.pixelsPerUnit);
+            _span.transform.position = transform.position + Vector3.up * _climbTopScreenOffset;
+            _span.transform.rotation = Quaternion.identity;
+            _span.transform.localScale = new Vector3(scaleX, scaleY, 1f);
+            _span.size = new Vector2(_span.sprite.bounds.size.x, height / scaleY);
+            _span.enabled = height > 0f;
+        }
     }
 }

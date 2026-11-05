@@ -29,6 +29,10 @@ namespace HiddenHarbours.Core
         /// HERE — they sit <see cref="StandoffMetres"/> out along <see cref="FaceHeadingDegrees"/>.</summary>
         Vector2 WorldPosition { get; }
 
+        /// <summary>Screen-space rise from the fitting's plan point to the cap where the climb starts.
+        /// Does not change reach, mooring or berth geometry. Older fittings sit at their own top.</summary>
+        float ClimbTopScreenOffset => 0f;
+
         /// <summary>The height of the ladder's TOP above chart datum (m) — the deck it serves. Fixed: the
         /// wall does not float.</summary>
         float TopElevationMeters { get; }

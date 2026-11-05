@@ -162,11 +162,11 @@ namespace HiddenHarbours.Tests.PlayMode
             Walk.transform.position = Plan.PlayerStart;
             Walk.GetComponent<Rigidbody2D>().position = Walk.transform.position;
             Physics2D.SyncTransforms();
-            Assert.That(Switcher.TryInteract(), Is.True, "Board the dory through the live boarding gate.");
+            Assert.That(HiddenHarbours.Tests.Support.TimedBoarding.Interact(Switcher), Is.True, "Board the dory through the live boarding gate.");
             Assert.That(Switcher.Mode, Is.EqualTo(ControlMode.OnDeck));
             Walk.transform.position = Switcher.HelmWorldPosition;
             Walk.GetComponent<Rigidbody2D>().position = Walk.transform.position;
-            Assert.That(Switcher.TryInteract(), Is.True, "Take the rowing station.");
+            Assert.That(HiddenHarbours.Tests.Support.TimedBoarding.Interact(Switcher), Is.True, "Take the rowing station.");
             Assert.That(Switcher.Mode, Is.EqualTo(ControlMode.Aboard));
             Assert.That(Oars.RowingStationManned, Is.True);
             Oars.enabled = false; // Hardware polling must not overwrite scripted strokes.

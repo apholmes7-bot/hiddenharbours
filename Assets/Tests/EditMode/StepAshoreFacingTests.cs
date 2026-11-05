@@ -87,7 +87,7 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.IsTrue(sw.CanStepAshore(), "harness: there are planks to step onto");
             Assert.IsTrue(sw.FacesTheStepAshore(), "…and she is looking at them");
             Assert.IsTrue(sw.CanInteract(), "so the prompt offers the step off");
-            Assert.IsTrue(sw.TryInteract(), "and the press takes it");
+            Assert.IsTrue(HiddenHarbours.Tests.Support.TimedBoarding.Interact(sw), "and the press takes it");
             Assert.AreEqual(ControlMode.OnFoot, sw.Mode, "she is ashore");
         }
 
@@ -103,7 +103,7 @@ namespace HiddenHarbours.Tests.EditMode
                 "move re-reads at the far end of its arc");
             Assert.IsFalse(sw.FacesTheStepAshore(), "…but she is not looking at them");
             Assert.IsFalse(sw.CanInteract(), "so nothing is offered");
-            Assert.IsFalse(sw.TryInteract(), "and the press does nothing at all");
+            Assert.IsFalse(HiddenHarbours.Tests.Support.TimedBoarding.Interact(sw), "and the press does nothing at all");
             Assert.AreEqual(ControlMode.OnDeck, sw.Mode, "she is still on her own deck");
         }
 
@@ -116,7 +116,7 @@ namespace HiddenHarbours.Tests.EditMode
             FaceCompass(sw, 90f);
             Assert.IsFalse(sw.FacesTheStepAshore(), "90° off the wharf is walking the deck, not leaving her");
             Assert.AreEqual(ControlMode.OnDeck, sw.Mode);
-            Assert.IsFalse(sw.TryInteract());
+            Assert.IsFalse(HiddenHarbours.Tests.Support.TimedBoarding.Interact(sw));
         }
 
         /// <summary>The cone's edge, from both sides. ±1° of the half-arc, because an exact boundary
@@ -175,7 +175,7 @@ namespace HiddenHarbours.Tests.EditMode
             var sw = BoardedInTheDockZone();           // no rider, no injected facing
 
             Assert.IsTrue(sw.FacesTheStepAshore(), "an unknown facing faces everything");
-            Assert.IsTrue(sw.TryInteract(), "so every fixture that predates the rule still steps ashore");
+            Assert.IsTrue(HiddenHarbours.Tests.Support.TimedBoarding.Interact(sw), "so every fixture that predates the rule still steps ashore");
             Assert.AreEqual(ControlMode.OnFoot, sw.Mode);
         }
 
@@ -215,7 +215,7 @@ namespace HiddenHarbours.Tests.EditMode
 
             Assert.IsTrue(sw.CanStepAshore(), "the ground under her is bared");
             Assert.IsTrue(sw.FacesTheStepAshore(), "and there is no bearing to be wrong about");
-            Assert.IsTrue(sw.TryInteract());
+            Assert.IsTrue(HiddenHarbours.Tests.Support.TimedBoarding.Interact(sw));
             Assert.AreEqual(ControlMode.OnFoot, sw.Mode);
         }
 
@@ -229,7 +229,7 @@ namespace HiddenHarbours.Tests.EditMode
             FaceCompass(sw, 180f);
 
             Assert.IsTrue(sw.FacesTheStepAshore(), "360° is 'no arc', not 'a very wide one'");
-            Assert.IsTrue(sw.TryInteract());
+            Assert.IsTrue(HiddenHarbours.Tests.Support.TimedBoarding.Interact(sw));
             Assert.AreEqual(ControlMode.OnFoot, sw.Mode);
         }
 
@@ -331,7 +331,7 @@ namespace HiddenHarbours.Tests.EditMode
             var sw = swGo.AddComponent<ControlSwitcher>();
             sw.Configure(walk, boat, null, dock.transform, 3f, disembark.transform);
 
-            Assert.IsTrue(sw.TryInteract(), "harness: she boards");
+            Assert.IsTrue(HiddenHarbours.Tests.Support.TimedBoarding.Interact(sw), "harness: she boards");
             Assert.AreEqual(ControlMode.OnDeck, sw.Mode, "harness: boarding lands on the DECK");
             Assert.IsFalse(sw.WithinHelmReach(),
                 "harness: the board spot is away from the tiller, so E here is the step-ashore rung " +
