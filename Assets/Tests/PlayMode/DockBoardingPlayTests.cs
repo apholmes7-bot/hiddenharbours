@@ -154,13 +154,13 @@ namespace HiddenHarbours.Tests.PlayMode
             Build(water);
             yield return null;
             Vector3 before = _player.position;
-            Assert.IsTrue(_switcher.TryInteract());
+            Assert.IsTrue(_switcher.BeginInteract());
             Assert.Less(Vector3.Distance(before, _player.position), .002f,
-                "TryInteract must start the dock move without placing the player on the hull");
+                "E must start the dock move without placing the player on the hull");
             Assert.IsTrue(_switcher.IsBoardingMove);
             yield return ObserveMove(ControlMode.OnDeck);
             before = _player.position;
-            Assert.IsTrue(_switcher.TryInteract());
+            Assert.IsTrue(_switcher.BeginInteract());
             Assert.Less(Vector3.Distance(before, _player.position), .002f);
             yield return ObserveMove(ControlMode.OnFoot);
         }
@@ -263,6 +263,7 @@ namespace HiddenHarbours.Tests.PlayMode
         public IEnumerator AVisibleCancellationReturnsByAMoveInsteadOfRewinding()
         {
             Build(-2.2f);
+            GameServices.Config.RequireBoatRepairsBeforeBoarding = true;
             var save = new IsolatedSave();
             save.Current.OwnedBoats.Add("boat.dory");
             HiddenHarbours.Economy.RepairLedger.MarkRepaired(save.Current, "boat.dory");
@@ -284,6 +285,7 @@ namespace HiddenHarbours.Tests.PlayMode
         public IEnumerator ATeardownDuringALiveReturnSettlesAtOnce()
         {
             Build(-2.2f);
+            GameServices.Config.RequireBoatRepairsBeforeBoarding = true;
             var save = new IsolatedSave();
             save.Current.OwnedBoats.Add("boat.dory");
             HiddenHarbours.Economy.RepairLedger.MarkRepaired(save.Current, "boat.dory");

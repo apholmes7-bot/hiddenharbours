@@ -2149,7 +2149,23 @@ namespace HiddenHarbours.Player
                 Mathf.Max(0f, LadderBoardingMath.VerticalGap(ladder.TopElevationMeters, deckElevation)),
                 cameraElevation);
 
-        private bool HasShoreLanding() => TryShoreLanding(out _) || OnLand();
+        private bool HasShoreLanding()
+        {
+            if (OnLand()) return true;
+            if (Mode == ControlMode.OnFoot && Player != null
+                && GameServices.TidalTerrain != null && GameServices.Environment != null)
+            {
+                // A boat's authored zone does not put a fisher standing over water on shore.
+                double at = GameServices.Clock != null ? GameServices.Clock.TotalSeconds : 0.0;
+                float water = GameServices.Environment.WaterLevelAt(at);
+                if (StandableSurfaces.TryGetDeckElevationNow(Player.position, out float top) && top >= water)
+                    return true;
+                float depth = BoatCrossing.DepthAt(GameServices.TidalTerrain, GameServices.Environment, at,
+                                                  Player.position);
+                if (!float.IsPositiveInfinity(depth)) return IsStandableLandByDepth(depth);
+            }
+            return TryShoreLanding(out _);
+        }
 
         // Until a scene has dock fittings, its sole authored exit remains a timed way ashore.
         private bool OnlyAuthoredLanding()
