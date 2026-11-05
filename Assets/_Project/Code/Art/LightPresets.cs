@@ -52,6 +52,42 @@ namespace HiddenHarbours.Art
     /// </summary>
     public static class LightPresets
     {
+        /// <summary>Fixture temperatures, in Kelvin. Navigation signal colours are separate.</summary>
+        public static float TemperatureKelvin(Kind kind) => kind switch
+        {
+            Kind.Lantern => 1800f,
+            Kind.HungLantern => 1800f,
+            Kind.WindowGlow => 2700f,
+            Kind.Lightpost => 2100f,
+            Kind.Worklight => 4300f,
+            Kind.Floodlight => 5600f,
+            Kind.Headlamp => 6500f,
+            _ => 2700f,
+        };
+
+        /// <summary>Bounded black-body colour approximation. Pure; alpha and peak channel are one.</summary>
+        public static Color KelvinToColor(float kelvin)
+        {
+            float t = Mathf.Clamp(kelvin, 1000f, 40000f) / 100f;
+            float r = t <= 66f ? 255f : 329.698727f * Mathf.Pow(t - 60f, -.13320476f);
+            float g = t <= 66f ? 99.4708026f * Mathf.Log(t) - 161.119568f
+                               : 288.12217f * Mathf.Pow(t - 60f, -.07551485f);
+            float b = t >= 66f ? 255f : t <= 19f ? 0f : 138.517731f * Mathf.Log(t - 10f) - 305.044793f;
+            return new Color(Mathf.Clamp01(r / 255f), Mathf.Clamp01(g / 255f), Mathf.Clamp01(b / 255f), 1f);
+        }
+
+        static readonly Color[] FixtureColours = BuildFixtureColours();
+        static Color[] BuildFixtureColours()
+        {
+            var result = new Color[7];
+            for (int i = 0; i < result.Length; i++) result[i] = KelvinToColor(TemperatureKelvin((Kind)i));
+            return result;
+        }
+
+        /// <summary>Cached conversion: no allocation or transcendental work on a fitting's frame path.</summary>
+        public static Color ColorFor(Kind kind) => (uint)kind < FixtureColours.Length
+            ? FixtureColours[(int)kind] : FixtureColours[0];
+
         /// <summary>
         /// The kinds of preconfigured light a placed object can carry. Each maps to one <see cref="Config"/>
         /// below. (The boat SPOTLIGHT is deliberately NOT here — it is the aimed directional beam driven by the
@@ -132,11 +168,11 @@ namespace HiddenHarbours.Art
                 case Kind.WindowGlow:
                     return new Config(
                         SceneLight.LightShape.Radial,
-                        new Color(1f, 0.82f, 0.48f, 1f),   // warm amber interior
+                        ColorFor(Kind.WindowGlow),   // warm amber interior
                         intensity: 0.95f,
                         range: 3.4f,
                         edgeSoftness: 0.88f,
-                        flickerAmount: 0.05f,              // a living hearth/lamp within
+                        flickerAmount: 0f,              // a living hearth/lamp within
                         originOffset: new Vector2(0f, -0.35f));
 
                 // LAMPPOST — the warm glow of a LIT LANTERN on a post. Offset so the glow sits at the lamp
@@ -170,11 +206,11 @@ namespace HiddenHarbours.Art
                 case Kind.Lightpost:
                     return new Config(
                         SceneLight.LightShape.Radial,
-                        new Color(1f, 0.88f, 0.62f, 1f),   // warm sodium-ish lamp
+                        ColorFor(Kind.Lightpost),   // warm sodium-ish lamp
                         intensity: 1.3f,                   // the core carries what the radius gave up
                         range: 0.40f,                      // the BLOOM: streetLamp's own lantern lens
                         edgeSoftness: 0.88f,               // softer: the hard edge is what read as a disc
-                        flickerAmount: 0.02f,              // a barely-there electric hum
+                        flickerAmount: 0f,              // a barely-there electric hum
                         originOffset: new Vector2(0f, -0.2f));
 
                 // WORKLIGHT — a brighter, COOLER, steady work lamp on a wall. Near-white, rock-steady (no
@@ -192,7 +228,7 @@ namespace HiddenHarbours.Art
                 case Kind.Worklight:
                     return new Config(
                         SceneLight.LightShape.Radial,
-                        new Color(1f, 0.97f, 0.9f, 1f),    // near-white cool work light
+                        ColorFor(Kind.Worklight),    // near-white cool work light
                         intensity: 1.7f,
                         range: 0.50f,                      // the BLOOM: reasoned, not measured — see the note
                         edgeSoftness: 0.7f,
@@ -218,7 +254,7 @@ namespace HiddenHarbours.Art
                 case Kind.Floodlight:
                     return new Config(
                         SceneLight.LightShape.Radial,
-                        new Color(0.96f, 0.97f, 1f, 1f),   // cool mercury/LED flood
+                        ColorFor(Kind.Floodlight),   // cool mercury/LED flood
                         intensity: 1.45f,
                         range: 0.58f,                      // the BLOOM: yardLight's own cobra-head lens
                         edgeSoftness: 0.72f,               // harder-edged than a lamp pool: it is higher up
@@ -236,22 +272,22 @@ namespace HiddenHarbours.Art
                 case Kind.Lantern:
                     return new Config(
                         SceneLight.LightShape.Radial,
-                        new Color(1f, 0.79f, 0.46f, 1f),   // flame, not sodium
+                        ColorFor(Kind.Lantern),   // flame, not sodium
                         intensity: 1.05f,
                         range: 0.26f,                      // the BLOOM: the lantern's own glass
                         edgeSoftness: 0.9f,                // soft: it is a flame behind glass
-                        flickerAmount: 0.09f,              // ⭐ a wick breathing — the one live flame in the library
+                        flickerAmount: 0.28f,              // ⭐ a wick breathing — the one live flame in the library
                         originOffset: Vector2.zero);
 
                 // HUNG LANTERN — a fixed wick, with a stronger flicker at the glass.
                 case Kind.HungLantern:
                     return new Config(
                         SceneLight.LightShape.Radial,
-                        new Color(1f, 0.79f, 0.46f, 1f),
+                        ColorFor(Kind.HungLantern),
                         intensity: 1.05f,
                         range: 0.26f,
                         edgeSoftness: 0.9f,
-                        flickerAmount: 0.15f,
+                        flickerAmount: 0.34f,
                         originOffset: Vector2.zero);
 
                 // HEADLAMP — the only CONE in this library, and the only one that is not placed decor: it is
@@ -264,7 +300,7 @@ namespace HiddenHarbours.Art
                 case Kind.Headlamp:
                     return new Config(
                         SceneLight.LightShape.Cone,
-                        new Color(0.98f, 0.98f, 0.94f, 1f),   // near-white LED
+                        ColorFor(Kind.Headlamp),   // near-white LED
                         intensity: 1.25f,
                         range: 0.18f,                      // the BLOOM: a lamp the size of her brow
                         edgeSoftness: 0.85f,

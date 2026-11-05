@@ -117,6 +117,14 @@ namespace HiddenHarbours.Core
                  "ruling; was 1200 = 20 min). Raising this slows EVERY real-time pace in the game — tide, " +
                  "rot, routines, the moon — because they are all clocked in in-game hours.")]
         public float SecondsPerDay = DefaultSecondsPerDay;
+        [Tooltip("Hour a fresh game opens at. Scene-local start hours are obsolete and ignored.")]
+        [Range(0f, 24f)] public float StartHour = 7.5f;
+        [Tooltip("Season at elapsed day zero. Its offset uses DaysPerSeason, never a separate day count.")]
+        public Season StartSeason = Season.HighSummer;
+        [Tooltip("One-based day within the starting season. Changes labels, never simulation seconds.")]
+        [Min(1)] public int StartDayOfSeason = 1;
+        public int StartDayOfYear => (int)StartSeason * System.Math.Max(1, DaysPerSeason)
+                                 + Mathf.Clamp(StartDayOfSeason, 1, System.Math.Max(1, DaysPerSeason)) - 1;
         [Min(1)] public int DaysPerWeek = 7;
         [Min(1)] public int DaysPerSeason = DefaultDaysPerSeason;
         [Tooltip("Which weekday is Market Day at Nine Mile Creek (0 = Monday).")]
@@ -644,6 +652,11 @@ namespace HiddenHarbours.Core
         /// config wired must resolve the SHIPPED look, and <c>GameConfig.asset</c> lags the code.</summary>
         public const bool DefaultBoatLegacyCabinGlow = false;
 
+        /// <summary>The carried automatic lantern's explicit, default-off way back.</summary>
+        public const bool DefaultWalkerAutoLantern = false;
+        [Tooltip("Restore the walker's automatic lantern while on foot. The headlamp still answers L.")]
+        public bool WalkerAutoLantern = DefaultWalkerAutoLantern;
+
         [Tooltip("Restore YESTERDAY'S boat glows for an A/B (owner's ruling, 2026-09-03)? OFF is the " +
                  "shipped look: a lit wheelhouse is drawn as its own WINDOWS, with a wash of spill " +
                  "leaving each glazed wall, and the navigation lamps are blooms the size of their own " +
@@ -1080,6 +1093,45 @@ namespace HiddenHarbours.Core
         public float SecondsPerWeek => SecondsPerDay * DaysPerWeek;
         public float SecondsPerSeason => SecondsPerDay * DaysPerSeason;
         public float SecondsPerYear => SecondsPerSeason * 4f;
+    }
+
+    /// <summary>A calendar label; elapsed days and saved seconds retain their own epoch.</summary>
+    public readonly struct CalendarDate
+    {
+        public readonly Season Season;
+        public readonly int DayOfSeason;
+        public readonly int Year;
+
+        public CalendarDate(Season season, int dayOfSeason, int year)
+        {
+            Season = season;
+            DayOfSeason = dayOfSeason;
+            Year = year;
+        }
+    }
+
+    /// <summary>The one conversion from elapsed days to the four-season calendar.</summary>
+    public static class GameCalendar
+    {
+        public static CalendarDate AtDay(long elapsedDay, int daysPerSeason, int startDayOfYear)
+        {
+            int length = System.Math.Max(1, daysPerSeason);
+            long yearLength = 4L * length;
+            long calendarDay = elapsedDay + startDayOfYear;
+            long dayOfYear = ((calendarDay % yearLength) + yearLength) % yearLength;
+            return new CalendarDate((Season)(dayOfYear / length), (int)(dayOfYear % length) + 1,
+                                    (int)((calendarDay - dayOfYear) / yearLength) + 1);
+        }
+
+        /// <summary>Read an absolute simulation instant without seeking or modifying its seconds.</summary>
+        public static CalendarDate AtSeconds(double seconds, GameConfig config)
+        {
+            double dayLength = config != null ? config.SecondsPerDay : GameConfig.DefaultSecondsPerDay;
+            long elapsedDay = dayLength > 0d ? (long)System.Math.Floor(System.Math.Max(0d, seconds) / dayLength) : 0L;
+            int seasonLength = config != null ? config.DaysPerSeason : GameConfig.DefaultDaysPerSeason;
+            int offset = config != null ? config.StartDayOfYear : GameConfig.DefaultDaysPerSeason;
+            return AtDay(elapsedDay, seasonLength, offset);
+        }
     }
 
     /// <summary>
@@ -3029,9 +3081,8 @@ namespace HiddenHarbours.Core
                  "nothing this many hours either side. 0 = no golden hour.")]
         [Min(0f)] public float GradeGoldenHourWidthHours;
 
-        [Tooltip("How many hours after sunset the Night look takes to reach full weight (and how many " +
-                 "before sunrise it starts letting go). 0 = a hard step at the horizon.")]
-        [Min(0f)] public float GradeNightBlendHours;
+        [Tooltip("Legacy pure-math fixture input. The live grade reads the sky's sunset-to-night interval.")]
+        [HideInInspector, Min(0f)] public float GradeNightBlendHours;
 
         [Tooltip("Visibility (EnvironmentSample.Visibility, 0 fog .. 1 clear) at or above which the Fog " +
                  "look has NO weight.")]

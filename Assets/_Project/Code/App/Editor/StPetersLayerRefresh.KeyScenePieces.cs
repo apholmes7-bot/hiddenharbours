@@ -323,10 +323,26 @@ namespace HiddenHarbours.App.Editor
                 }
                 case DecorKit:
                 {
-                    int facing = assets.IsoFacing(p.Kit, p.Dir);
-                    if (!assets.TryIsoCell(p.Kit, p.Piece, facing, out at.Sprite))
-                        throw new Refusal($"{what}: the kit's '{p.Piece}' sheet has no cell {facing}.");
-                    at.Cell = $"cell {facing}";
+                    // Only the three landing IDs opt into their own option-specific sheets.
+                    string landingKey = p.Id == "prop.stp_landing_cart" ? "landingCart" :
+                        p.Id == "prop.stp_landing_traps" ? "landingTraps" :
+                        p.Id == "prop.stp_landing_totes" ? "landingTotes" : null;
+                    if (landingKey != null)
+                    {
+                        if (!assets.TrySetPiece(landingKey, out KeySceneSetPiece landing) || landing == null ||
+                            landing.Id != p.Id || landing.Frames == null || landing.Frames.Length != SetPieceDef.Facings)
+                            throw new Refusal($"{what}: missing or mismatched landing recipe '{landingKey}'.");
+                        int frame = SetPieceDef.FrameForRigDir(p.Dir);
+                        at.Sprite = landing.Frames[frame];
+                        at.Cell = $"{landingKey} frame {frame}";
+                    }
+                    else
+                    {
+                        int facing = assets.IsoFacing(p.Kit, p.Dir);
+                        if (!assets.TryIsoCell(p.Kit, p.Piece, facing, out at.Sprite))
+                            throw new Refusal($"{what}: the kit's '{p.Piece}' sheet has no cell {facing}.");
+                        at.Cell = $"cell {facing}";
+                    }
                     break;
                 }
                 case FindsKit:

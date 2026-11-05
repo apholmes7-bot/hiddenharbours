@@ -285,6 +285,14 @@ namespace HiddenHarbours.Boats
                  "oars are decor). Never decided in code — that is rule 2.")]
         public PilotStanceChoice PilotStance = PilotStanceChoice.Auto;
 
+        [Tooltip("Calibrated seated skin clip at this helm. Empty keeps the standing pilot. " +
+                 "Imported with the seat's floor origin from the hull's source walk.")]
+        public string SeatedHelmState = "";
+
+        [Tooltip("Ground/floor origin of the seated figure in unchanged hull rig metres. " +
+                 "This is not the cushion point and does not replace the standing helm anchor.")]
+        public Vector3 SeatedHelmFloorOrigin;
+
         [Header("Interior (ADR 0038 — the cabin, if she has been measured)")]
         [Tooltip("This hull's imported BoatInteriorDef, or none. Wired here for the same reason " +
                  "HullMesh is: the hull poses her and Art draws her, so the LINK belongs on the asset " +

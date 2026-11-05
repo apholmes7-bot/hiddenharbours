@@ -1,3 +1,5 @@
+using UnityEngine;
+
 namespace HiddenHarbours.Core
 {
     /// <summary>
@@ -15,15 +17,15 @@ namespace HiddenHarbours.Core
     ///
     /// <para><b>Time canon</b> (verified against <c>GameConfig</c>/<c>GameClock</c>): 4 seasons × 28 days,
     /// Mon-first week, day = <c>GameConfig.SecondsPerDay</c> real seconds (ships at 1800 = 30 real min),
-    /// new game starts Early Spring · Day 1 · 06:00. Season/Weekday
+    /// new game starts High Summer · Day 1 · 07:30. Season/Weekday
     /// enum orders match the rig's <c>SEASON_ABBR</c>/<c>WEEKDAYS</c> tables.</para>
     /// </summary>
     public readonly struct WatchFaceState
     {
         /// <summary>Default hour the day-panel lights (before this the watch shows its night backlight).</summary>
-        public const float DefaultDayStartHour = 6f;
+        public const float DefaultDayStartHour = DaylightHours.DefaultSunriseHour;
         /// <summary>Default hour night falls (matches the rig's <c>isNight</c> and <c>CottageDayNight</c>).</summary>
-        public const float DefaultNightStartHour = 19f;
+        public const float DefaultNightStartHour = DaylightHours.DefaultSunsetHour;
 
         public readonly int Hour;          // 0..23
         public readonly int Minute;        // 0..59
@@ -42,11 +44,14 @@ namespace HiddenHarbours.Core
             Season = season; Year = year; IsMarketDay = isMarketDay; IsNight = isNight;
         }
 
-        /// <summary>Night per the watch rule: before day-start OR at/after night-start (default 06:00 / 19:00).</summary>
-        public static bool NightAt(float hourOfDay,
-                                   float dayStartHour = DefaultDayStartHour,
-                                   float nightStartHour = DefaultNightStartHour)
-            => hourOfDay < dayStartHour || hourOfDay >= nightStartHour;
+        /// <summary>The watch backlight follows the sky's dawn and sunset, including authored changes.</summary>
+        public static bool NightAt(float hourOfDay, float? dayStartHour = null, float? nightStartHour = null)
+        {
+            DaylightHours hours = DaylightHours.Shared;
+            float dawn = dayStartHour ?? (hours != null ? hours.SunriseHour : DefaultDayStartHour);
+            float dusk = nightStartHour ?? (hours != null ? hours.SunsetHour : DefaultNightStartHour);
+            return hourOfDay < dawn || hourOfDay >= dusk;
+        }
 
         /// <summary>
         /// Map the live clock to a watch face. Hour/minute are TRUNCATED (a watch shows elapsed time, not
@@ -56,8 +61,8 @@ namespace HiddenHarbours.Core
         /// named params (rule 6 — no buried magic numbers) so the owner can move dusk later.
         /// </summary>
         public static WatchFaceState FromClock(IGameClock clock,
-                                               float dayStartHour = DefaultDayStartHour,
-                                               float nightStartHour = DefaultNightStartHour)
+                                               float? dayStartHour = null,
+                                               float? nightStartHour = null)
         {
             float hod = clock.HourOfDay;                 // 0..24
             int totalMinutes = (int)(hod * 60f);         // 0..1439 (same truncation the HUD uses)
@@ -72,4 +77,47 @@ namespace HiddenHarbours.Core
                 NightAt(hod, dayStartHour, nightStartHour));
         }
     }
+
+    /// <summary>Core's read-only lighting contract. The shipping art profile supplies its serialized hours.</summary>
+    public abstract class DaylightHours : ScriptableObject
+    {
+        public const float DefaultSunriseHour = 5.5f;
+        public const float DefaultSunsetHour = 21.5f;
+        public const float DefaultNightHour = 22f;
+        public const float DefaultDawnBlendHours = 2f;
+
+        [Header("One sun all year")]
+        [Tooltip("First light and the sunrise horizon, in clock hours. The same in every season.")]
+        [SerializeField, Range(0f, 24f)] protected float _sunriseHour = DefaultSunriseHour;
+        [Tooltip("Sunset horizon. Shadows, the watch, windows and birds follow this hour.")]
+        [SerializeField, Range(0f, 24f)] protected float _sunsetHour = DefaultSunsetHour;
+        [Tooltip("End of dusk: the tint and mood grade have reached full night.")]
+        [SerializeField, Range(0f, 24f)] protected float _nightHour = DefaultNightHour;
+        [Tooltip("Hours from first light to full morning colour and brightness.")]
+        [SerializeField, Min(0.01f)] protected float _dawnBlendHours = DefaultDawnBlendHours;
+
+        public float SunriseHour => _sunriseHour;
+        public float SunsetHour => _sunsetHour;
+        public float NightHour => _nightHour;
+        public float DawnBlendHours => _dawnBlendHours;
+
+        static DaylightHours _shared;
+        public static DaylightHours Shared
+        {
+            get
+            {
+                if (_shared == null) _shared = Resources.Load<DaylightHours>("DayNightProfile");
+                return _shared;
+            }
+        }
+
+        protected void ApplyHourDefaults()
+        {
+            _sunriseHour = DefaultSunriseHour;
+            _sunsetHour = DefaultSunsetHour;
+            _nightHour = DefaultNightHour;
+            _dawnBlendHours = DefaultDawnBlendHours;
+        }
+    }
+
 }

@@ -42,4 +42,6 @@ MonoBehaviour:
   MotorRockHeavePixels: 1.3
   MotorMountLocalMeters: {x: 0, y: -3.53, z: 0.72}
   PilotStance: 0
+  SeatedHelmState: drive_helm_express_cruiser
+  SeatedHelmFloorOrigin: {x: 0.52, y: -1.54, z: 1.17}
   Interior: {fileID: 11400000, guid: b499e0207bc8f0d448c4b9e1caa3c1a4, type: 2}

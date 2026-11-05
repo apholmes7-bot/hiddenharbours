@@ -1,4 +1,5 @@
 using UnityEngine;
+using HiddenHarbours.Core;
 
 namespace HiddenHarbours.Art
 {
@@ -299,8 +300,8 @@ namespace HiddenHarbours.Art
         {
             _mpb = new MaterialPropertyBlock();
             // A stable per-light seed (so two lights flicker out of phase) that is the SAME across runs for a
-            // given object — deterministic. Hash the name + sibling index, not the volatile instance id.
-            _flickerSeed = (name.GetHashCode() * 397) ^ transform.GetSiblingIndex();
+            // given object — deterministic. Hash its authored hierarchy names, never load order or instance ids.
+            _flickerSeed = StableFittingSeed(transform);
             EnsureQuad();
         }
 
@@ -329,6 +330,26 @@ namespace HiddenHarbours.Art
 
         // The pose follows the carrier every frame (a boat turns/moves faster than the throttle); cheap, no alloc.
         private void LateUpdate() => PoseQuad();
+
+        internal void RefreshMount() => PoseQuad();
+
+        private float FlickerAt(int worldSeed, double seconds) =>
+            LightMath.Flicker(_flickerSeed ^ worldSeed, (float)seconds, _flickerAmount, _flickerSpeed);
+
+        private static int StableFittingSeed(Transform fitting)
+        {
+            unchecked
+            {
+                uint hash = 2166136261u;
+                for (Transform node = fitting; node != null; node = node.parent)
+                {
+                    string label = node.name;
+                    for (int i = 0; i < label.Length; i++) hash = (hash ^ label[i]) * 16777619u;
+                    hash = (hash ^ 47u) * 16777619u;
+                }
+                return (int)hash;
+            }
+        }
 
         private void EnsureQuad()
         {
@@ -413,7 +434,9 @@ namespace HiddenHarbours.Art
 
             // Deterministic flicker (rule 5): a pure hash of (seed, time). Use the unscaled game time so it is
             // reproducible and pause-aware; it is purely cosmetic and saves nothing.
-            float flicker = LightMath.Flicker(_flickerSeed, Time.time, _flickerAmount, _flickerSpeed);
+            int worldSeed = GameServices.Environment != null ? GameServices.Environment.WorldSeed : 0;
+            double seconds = GameServices.Clock != null ? GameServices.Clock.TotalSeconds : Time.timeAsDouble;
+            float flicker = FlickerAt(worldSeed, seconds);
 
             // Geometry the shader needs to know in QUAD SPACE (q in [-1,1]^2): where the lamp sits and how far
             // it throws. A cone's lamp is at the bottom-centre (0,-1) throwing "up" 2 units across the quad; a
