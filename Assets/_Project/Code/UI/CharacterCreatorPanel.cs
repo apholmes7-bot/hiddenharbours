@@ -159,6 +159,8 @@ namespace HiddenHarbours.UI
             foreach (Renderer renderer in _figureRenderers)
             {
                 if (renderer == null || !renderer.gameObject.activeInHierarchy) continue;
+                // Temporary engine geometry is not an authored part of the person.
+                if ((renderer.gameObject.hideFlags & HideFlags.DontSave) != 0) continue;
                 Bounds bounds = renderer.bounds;
                 Vector3 min = bounds.min, max = bounds.max;
                 float low = float.PositiveInfinity, high = float.NegativeInfinity;
@@ -172,7 +174,17 @@ namespace HiddenHarbours.UI
                     low = Mathf.Min(low, point.y);
                     high = Mathf.Max(high, point.y);
                 }
-                if (high > low) height = Mathf.Max(height, high - low);
+                float projectedHeight = high - low;
+                // A person on this screen cannot be taller than its entire viewport.
+                if (projectedHeight > 0f && projectedHeight <= _camera.pixelHeight)
+                    height = Mathf.Max(height, projectedHeight);
+            }
+            if (height <= 0f)
+            {
+                _figureHeightPixels = 0f;
+                _layoutValid = false;
+                _book.gameObject.SetActive(false);
+                return;
             }
             _figureHeightPixels = Mathf.Max(_figureHeightPixels, height);
             Vector3 screen = _camera.WorldToScreenPoint(player.position);
