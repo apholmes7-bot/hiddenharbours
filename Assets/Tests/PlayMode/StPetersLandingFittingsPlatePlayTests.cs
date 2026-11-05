@@ -105,7 +105,15 @@ namespace HiddenHarbours.Tests.PlayMode
             }
             finally
             {
-                RestorePictures();foreach(var figure in figures)if(figure!=null)figure.LeaveAshore();
+                RestorePictures();
+                for(int i=0;i<originals.Length;i++)
+                {
+                    Assert.AreSame(sprites[i],originals[i].sprite,keys[i]+" sprite restored");
+                    Assert.AreSame(materials[i],originals[i].sharedMaterial,keys[i]+" material restored");
+                    Assert.AreEqual(positions[i],originals[i].transform.position,keys[i]+" anchor restored");
+                    File.AppendAllText(numbers,$"RESTORED {keys[i]} sprite={originals[i].sprite.name} material={originals[i].sharedMaterial.name} anchor={originals[i].transform.position:R}\n");
+                }
+                foreach(var figure in figures)if(figure!=null)figure.LeaveAshore();
                 GameServices.Environment=held;LandingPropsReleaseCamera();
             }
         }
