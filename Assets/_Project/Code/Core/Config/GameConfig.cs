@@ -117,6 +117,14 @@ namespace HiddenHarbours.Core
                  "ruling; was 1200 = 20 min). Raising this slows EVERY real-time pace in the game — tide, " +
                  "rot, routines, the moon — because they are all clocked in in-game hours.")]
         public float SecondsPerDay = DefaultSecondsPerDay;
+        [Tooltip("Hour a fresh game opens at. Scene-local start hours are obsolete and ignored.")]
+        [Range(0f, 24f)] public float StartHour = 7.5f;
+        [Tooltip("Season at elapsed day zero. Its offset uses DaysPerSeason, never a separate day count.")]
+        public Season StartSeason = Season.HighSummer;
+        [Tooltip("One-based day within the starting season. Changes labels, never simulation seconds.")]
+        [Min(1)] public int StartDayOfSeason = 1;
+        public int StartDayOfYear => (int)StartSeason * System.Math.Max(1, DaysPerSeason)
+                                 + Mathf.Clamp(StartDayOfSeason, 1, System.Math.Max(1, DaysPerSeason)) - 1;
         [Min(1)] public int DaysPerWeek = 7;
         [Min(1)] public int DaysPerSeason = DefaultDaysPerSeason;
         [Tooltip("Which weekday is Market Day at Nine Mile Creek (0 = Monday).")]
@@ -644,6 +652,11 @@ namespace HiddenHarbours.Core
         /// config wired must resolve the SHIPPED look, and <c>GameConfig.asset</c> lags the code.</summary>
         public const bool DefaultBoatLegacyCabinGlow = false;
 
+        /// <summary>The carried automatic lantern's explicit, default-off way back.</summary>
+        public const bool DefaultWalkerAutoLantern = false;
+        [Tooltip("Restore the walker's automatic lantern while on foot. The headlamp still answers L.")]
+        public bool WalkerAutoLantern = DefaultWalkerAutoLantern;
+
         [Tooltip("Restore YESTERDAY'S boat glows for an A/B (owner's ruling, 2026-09-03)? OFF is the " +
                  "shipped look: a lit wheelhouse is drawn as its own WINDOWS, with a wash of spill " +
                  "leaving each glazed wall, and the navigation lamps are blooms the size of their own " +
@@ -1080,6 +1093,45 @@ namespace HiddenHarbours.Core
         public float SecondsPerWeek => SecondsPerDay * DaysPerWeek;
         public float SecondsPerSeason => SecondsPerDay * DaysPerSeason;
         public float SecondsPerYear => SecondsPerSeason * 4f;
+    }
+
+    /// <summary>A calendar label; elapsed days and saved seconds retain their own epoch.</summary>
+    public readonly struct CalendarDate
+    {
+        public readonly Season Season;
+        public readonly int DayOfSeason;
+        public readonly int Year;
+
+        public CalendarDate(Season season, int dayOfSeason, int year)
+        {
+            Season = season;
+            DayOfSeason = dayOfSeason;
+            Year = year;
+        }
+    }
+
+    /// <summary>The one conversion from elapsed days to the four-season calendar.</summary>
+    public static class GameCalendar
+    {
+        public static CalendarDate AtDay(long elapsedDay, int daysPerSeason, int startDayOfYear)
+        {
+            int length = System.Math.Max(1, daysPerSeason);
+            long yearLength = 4L * length;
+            long calendarDay = elapsedDay + startDayOfYear;
+            long dayOfYear = ((calendarDay % yearLength) + yearLength) % yearLength;
+            return new CalendarDate((Season)(dayOfYear / length), (int)(dayOfYear % length) + 1,
+                                    (int)((calendarDay - dayOfYear) / yearLength) + 1);
+        }
+
+        /// <summary>Read an absolute simulation instant without seeking or modifying its seconds.</summary>
+        public static CalendarDate AtSeconds(double seconds, GameConfig config)
+        {
+            double dayLength = config != null ? config.SecondsPerDay : GameConfig.DefaultSecondsPerDay;
+            long elapsedDay = dayLength > 0d ? (long)System.Math.Floor(System.Math.Max(0d, seconds) / dayLength) : 0L;
+            int seasonLength = config != null ? config.DaysPerSeason : GameConfig.DefaultDaysPerSeason;
+            int offset = config != null ? config.StartDayOfYear : GameConfig.DefaultDaysPerSeason;
+            return AtDay(elapsedDay, seasonLength, offset);
+        }
     }
 
     /// <summary>
@@ -2369,6 +2421,11 @@ namespace HiddenHarbours.Core
     [System.Serializable]
     public struct PlayerZoomSettings
     {
+        public const float ShippedDefaultWorldHeightMeters = 11.25f;
+
+        [Tooltip("Walking world height before the wheel moves. It lands on the nearest crisp stop.")]
+        [Min(0.5f)] public float DefaultWorldHeightMeters;
+
         [Tooltip("Let the mouse wheel (and the gamepad's shoulder buttons) change the walking view at " +
                  "all. Off = the on-foot framing is fixed, exactly as it was before this existed.")]
         public bool WheelEnabled;
@@ -2379,7 +2436,7 @@ namespace HiddenHarbours.Core
         [Min(0.5f)] public float ClosestWorldHeightMeters;
 
         [Tooltip("FARTHEST the wheel may take the walking view, in metres of world height. Larger = " +
-                 "further out. 11.25 is one crisp stop wider than the standing on-foot framing — enough " +
+                 "further out. 16.875 is one crisp stop wider than the default walking view — enough " +
                  "to see where you are going outdoors without the fisher shrinking to a speck.")]
         [Min(0.5f)] public float FarthestWorldHeightMeters;
 
@@ -2416,21 +2473,22 @@ namespace HiddenHarbours.Core
         [Min(0)] public int AboardStopsWider;
 
         /// <summary>
-        /// The shipping range: 11.25 m out (one stop wider than standing on foot) to 5.625 m in (the
-        /// live-haul step, the closest framing already in the game), 120 units of scroll to the tier,
+        /// The shipping range: 16.875 m out (one stop wider than the 11.25 m walking default) to 5.625 m in (the
+        /// live-haul step, the closest framing already in the game), one input unit per tier,
         /// a short ease so a step reads as a move rather than a cut, and an aboard band of two stops
         /// either way around whatever the helm or the deck ruled.
         ///
-        /// <para>⚠️ The two heights are the ×3 and ×6 PPU-32 stops at 1080p written out as literals,
+        /// <para>⚠️ The range ends are the ×2 and ×6 PPU-32 stops at 1080p written out as literals,
         /// because the ladder that derives them lives in the App camera and Core may not reach it.
         /// <c>PlayerZoomTierTests</c> is the tripwire that fires if the ladder and these defaults ever
         /// drift apart.</para>
         /// </summary>
         public static PlayerZoomSettings Default => new PlayerZoomSettings
         {
+            DefaultWorldHeightMeters = ShippedDefaultWorldHeightMeters,
             WheelEnabled = true,
             ClosestWorldHeightMeters = 5.625f,   // 1080 / (6 x 32)
-            FarthestWorldHeightMeters = 11.25f,  // 1080 / (3 x 32)
+            FarthestWorldHeightMeters = 16.875f, // 1080 / (2 x 32)
             WheelUnitsPerNotch = 1f,             // one detent, in Input System units — MEASURED, not Win32's 120
             StepSeconds = 0.18f,
             AboardStopsCloser = 2,               // two stops in from the hull's ruled framing…
@@ -2455,7 +2513,7 @@ namespace HiddenHarbours.Core
         /// first.</para>
         /// </summary>
         public bool IsUnauthored =>
-            !WheelEnabled && ClosestWorldHeightMeters <= 0f && FarthestWorldHeightMeters <= 0f
+            DefaultWorldHeightMeters <= 0f && !WheelEnabled && ClosestWorldHeightMeters <= 0f && FarthestWorldHeightMeters <= 0f
             && WheelUnitsPerNotch <= 0f && StepSeconds <= 0f
             && AboardStopsCloser == 0 && AboardStopsWider == 0;
 
@@ -2476,6 +2534,7 @@ namespace HiddenHarbours.Core
 
             PlayerZoomSettings d = Default;
             PlayerZoomSettings s = this;
+            if (s.DefaultWorldHeightMeters <= 0f) s.DefaultWorldHeightMeters = d.DefaultWorldHeightMeters;
             if (s.ClosestWorldHeightMeters <= 0f) s.ClosestWorldHeightMeters = d.ClosestWorldHeightMeters;
             if (s.FarthestWorldHeightMeters <= 0f) s.FarthestWorldHeightMeters = d.FarthestWorldHeightMeters;
             if (s.WheelUnitsPerNotch <= 0f) s.WheelUnitsPerNotch = d.WheelUnitsPerNotch;
@@ -3022,9 +3081,8 @@ namespace HiddenHarbours.Core
                  "nothing this many hours either side. 0 = no golden hour.")]
         [Min(0f)] public float GradeGoldenHourWidthHours;
 
-        [Tooltip("How many hours after sunset the Night look takes to reach full weight (and how many " +
-                 "before sunrise it starts letting go). 0 = a hard step at the horizon.")]
-        [Min(0f)] public float GradeNightBlendHours;
+        [Tooltip("Legacy pure-math fixture input. The live grade reads the sky's sunset-to-night interval.")]
+        [HideInInspector, Min(0f)] public float GradeNightBlendHours;
 
         [Tooltip("Visibility (EnvironmentSample.Visibility, 0 fog .. 1 clear) at or above which the Fog " +
                  "look has NO weight.")]

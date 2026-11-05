@@ -66329,7 +66329,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1a2b3c4d5e6f70819203a4b5c6d7e8f9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.YSortSprite
-  _dynamic: 0
+  _dynamic: 1
   _baseOrder: 1202
   _orderPerUnit: 4
   _minOrder: 2
@@ -399306,6 +399306,10 @@ GameObject:
   m_Component:
   - component: {fileID: 589154137}
   - component: {fileID: 1882835780}
+  - component: {fileID: 230974090}
+  - component: {fileID: 799713567}
+  - component: {fileID: 1285172395}
+  - component: {fileID: 1771838834}
   m_Layer: 0
   m_Name: vehicle.nmc_lot_e
   m_TagString: Untagged
@@ -399341,7 +399345,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: HiddenHarbours.Vehicles::HiddenHarbours.Vehicles.ParkedVehicle
   _vehicle: {fileID: 11400000, guid: 44b1877c02967b34fa43964bbb98a772, type: 2}
-  _drivable: 0
+  _drivable: 1
 --- !u!1 &825696571
 GameObject:
   m_ObjectHideFlags: 0
@@ -399352,6 +399356,9 @@ GameObject:
   m_Component:
   - component: {fileID: 538537957}
   - component: {fileID: 668578854}
+  - component: {fileID: 681375178}
+  - component: {fileID: 390511245}
+  - component: {fileID: 313996316}
   m_Layer: 0
   m_Name: vehicle.nmc_lot_a
   m_TagString: Untagged
@@ -399387,7 +399394,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: HiddenHarbours.Vehicles::HiddenHarbours.Vehicles.ParkedVehicle
   _vehicle: {fileID: 11400000, guid: 1825f967802c5cd41a0c6ce1d4f1c693, type: 2}
-  _drivable: 0
+  _drivable: 1
 --- !u!1 &1058170827
 GameObject:
   m_ObjectHideFlags: 0
@@ -399444,6 +399451,9 @@ GameObject:
   m_Component:
   - component: {fileID: 489877244}
   - component: {fileID: 862292857}
+  - component: {fileID: 1364211770}
+  - component: {fileID: 444763813}
+  - component: {fileID: 1905095004}
   m_Layer: 0
   m_Name: vehicle.nmc_lot_c
   m_TagString: Untagged
@@ -399479,7 +399489,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: HiddenHarbours.Vehicles::HiddenHarbours.Vehicles.ParkedVehicle
   _vehicle: {fileID: 11400000, guid: c16d5c8b7a91f5043924c580c9e0e487, type: 2}
-  _drivable: 0
+  _drivable: 1
 --- !u!1 &983099953
 GameObject:
   m_ObjectHideFlags: 0
@@ -399536,6 +399546,9 @@ GameObject:
   m_Component:
   - component: {fileID: 759933381}
   - component: {fileID: 1234151227}
+  - component: {fileID: 538586389}
+  - component: {fileID: 1363594650}
+  - component: {fileID: 1584487472}
   m_Layer: 0
   m_Name: vehicle.nmc_pickup_leo
   m_TagString: Untagged
@@ -399571,7 +399584,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: HiddenHarbours.Vehicles::HiddenHarbours.Vehicles.ParkedVehicle
   _vehicle: {fileID: 11400000, guid: 1825f967802c5cd41a0c6ce1d4f1c693, type: 2}
-  _drivable: 0
+  _drivable: 1
 --- !u!1 &511595638
 GameObject:
   m_ObjectHideFlags: 0
@@ -399582,6 +399595,9 @@ GameObject:
   m_Component:
   - component: {fileID: 2125258142}
   - component: {fileID: 1777984688}
+  - component: {fileID: 2127286530}
+  - component: {fileID: 1876316587}
+  - component: {fileID: 482835234}
   m_Layer: 0
   m_Name: vehicle.nmc_pickup_ross
   m_TagString: Untagged
@@ -399617,7 +399633,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: HiddenHarbours.Vehicles::HiddenHarbours.Vehicles.ParkedVehicle
   _vehicle: {fileID: 11400000, guid: 44b1877c02967b34fa43964bbb98a772, type: 2}
-  _drivable: 0
+  _drivable: 1
 --- !u!1 &633351791
 GameObject:
   m_ObjectHideFlags: 0
@@ -399628,6 +399644,9 @@ GameObject:
   m_Component:
   - component: {fileID: 1420472359}
   - component: {fileID: 790223660}
+  - component: {fileID: 1996578888}
+  - component: {fileID: 511932062}
+  - component: {fileID: 981364291}
   m_Layer: 0
   m_Name: vehicle.nmc_pickup_marie
   m_TagString: Untagged
@@ -399663,7 +399682,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: HiddenHarbours.Vehicles::HiddenHarbours.Vehicles.ParkedVehicle
   _vehicle: {fileID: 11400000, guid: 1825f967802c5cd41a0c6ce1d4f1c693, type: 2}
-  _drivable: 0
+  _drivable: 1
 --- !u!1 &110266995
 GameObject:
   m_ObjectHideFlags: 0
@@ -407733,6 +407752,384 @@ MonoBehaviour:
   _marketId: 1
   _supplyPerSale: 1
   _categoryDemand: []
+--- !u!50 &230974090
+Rigidbody2D:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 318424449}
+  m_BodyType: 0
+  m_Simulated: 1
+  m_UseFullKinematicContacts: 0
+  m_UseAutoMass: 0
+  m_Mass: 1
+  m_LinearDamping: 0
+  m_AngularDamping: 0.05
+  m_GravityScale: 0
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_Interpolate: 0
+  m_SleepingMode: 1
+  m_CollisionDetection: 0
+  m_Constraints: 0
+--- !u!114 &799713567
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 318424449}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 01e0d2be484a43840b04c50cc27e1304, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: HiddenHarbours.Vehicles::HiddenHarbours.Vehicles.VehicleController
+  _vehicle: {fileID: 11400000, guid: 44b1877c02967b34fa43964bbb98a772, type: 2}
+--- !u!114 &1285172395
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 318424449}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aeeb19a47979ad87e79f52bc06ce6c36, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: HiddenHarbours.Vehicles::HiddenHarbours.Vehicles.VehicleDoor
+  _reachMeters: 1.5
+  _requiresFacing: 0
+--- !u!114 &1771838834
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 318424449}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: df8a72cc69f34c689c4e483127a64fb9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: HiddenHarbours.Vehicles::HiddenHarbours.Vehicles.ScheduledTrip
+  _trip: {fileID: 11400000, guid: 76b663f22a6d4e218951f608ad23b06f, type: 2}
+  _machine: {fileID: 1882835780}
+  _driver: {fileID: 413417727}
+  _driverRenderer: {fileID: 413417730}
+  _driverTalkable: {fileID: 413417731}
+  _trailer: {fileID: 0}
+  _outbound:
+  - {x: -131, y: 78}
+  - {x: -130.67215, y: 90.7864685}
+  - {x: -100, y: 92}
+  - {x: -40, y: 92}
+  - {x: 14, y: 92}
+  - {x: 22, y: 95}
+  - {x: 27, y: 101}
+  - {x: 29, y: 108}
+  - {x: 30.5, y: 114}
+  - {x: 34, y: 118}
+  - {x: 50, y: 118}
+  - {x: 76.1421356, y: 120}
+  - {x: 99.5999985, y: 120}
+  - {x: 101, y: 121.400002}
+  - {x: 101, y: 128.399994}
+  _return:
+  - {x: 101, y: 128.399994}
+  - {x: 101, y: 121.400002}
+  - {x: 99.5999985, y: 120}
+  - {x: 76.1421356, y: 120}
+  - {x: 50, y: 118}
+  - {x: 34, y: 118}
+  - {x: 30.5, y: 114}
+  - {x: 29, y: 108}
+  - {x: 27, y: 101}
+  - {x: 22, y: 95}
+  - {x: 14, y: 92}
+  - {x: -40, y: 92}
+  - {x: -100, y: 92}
+  - {x: -130.67215, y: 90.7864685}
+  - {x: -131, y: 78}
+  _originPost: {x: -128.100952, y: 77.9256668}
+  _originPostFacing: {x: -0.999671459, y: 0.02563213}
+  _destinationPost: {x: 93.4146271, y: 123.14621}
+  _destinationPostFacing: {x: 0.743087113, y: -0.669194698}
+--- !u!50 &681375178
+Rigidbody2D:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 825696571}
+  m_BodyType: 0
+  m_Simulated: 1
+  m_UseFullKinematicContacts: 0
+  m_UseAutoMass: 0
+  m_Mass: 1
+  m_LinearDamping: 0
+  m_AngularDamping: 0.05
+  m_GravityScale: 0
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_Interpolate: 0
+  m_SleepingMode: 1
+  m_CollisionDetection: 0
+  m_Constraints: 0
+--- !u!114 &390511245
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 825696571}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 01e0d2be484a43840b04c50cc27e1304, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: HiddenHarbours.Vehicles::HiddenHarbours.Vehicles.VehicleController
+  _vehicle: {fileID: 11400000, guid: 1825f967802c5cd41a0c6ce1d4f1c693, type: 2}
+--- !u!114 &313996316
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 825696571}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aeeb19a47979ad87e79f52bc06ce6c36, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: HiddenHarbours.Vehicles::HiddenHarbours.Vehicles.VehicleDoor
+  _reachMeters: 1.5
+  _requiresFacing: 0
+--- !u!50 &1364211770
+Rigidbody2D:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1819326228}
+  m_BodyType: 0
+  m_Simulated: 1
+  m_UseFullKinematicContacts: 0
+  m_UseAutoMass: 0
+  m_Mass: 1
+  m_LinearDamping: 0
+  m_AngularDamping: 0.05
+  m_GravityScale: 0
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_Interpolate: 0
+  m_SleepingMode: 1
+  m_CollisionDetection: 0
+  m_Constraints: 0
+--- !u!114 &444763813
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1819326228}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 01e0d2be484a43840b04c50cc27e1304, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: HiddenHarbours.Vehicles::HiddenHarbours.Vehicles.VehicleController
+  _vehicle: {fileID: 11400000, guid: c16d5c8b7a91f5043924c580c9e0e487, type: 2}
+--- !u!114 &1905095004
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1819326228}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aeeb19a47979ad87e79f52bc06ce6c36, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: HiddenHarbours.Vehicles::HiddenHarbours.Vehicles.VehicleDoor
+  _reachMeters: 1.5
+  _requiresFacing: 0
+--- !u!50 &538586389
+Rigidbody2D:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 496508844}
+  m_BodyType: 0
+  m_Simulated: 1
+  m_UseFullKinematicContacts: 0
+  m_UseAutoMass: 0
+  m_Mass: 1
+  m_LinearDamping: 0
+  m_AngularDamping: 0.05
+  m_GravityScale: 0
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_Interpolate: 0
+  m_SleepingMode: 1
+  m_CollisionDetection: 0
+  m_Constraints: 0
+--- !u!114 &1363594650
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 496508844}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 01e0d2be484a43840b04c50cc27e1304, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: HiddenHarbours.Vehicles::HiddenHarbours.Vehicles.VehicleController
+  _vehicle: {fileID: 11400000, guid: 1825f967802c5cd41a0c6ce1d4f1c693, type: 2}
+--- !u!114 &1584487472
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 496508844}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aeeb19a47979ad87e79f52bc06ce6c36, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: HiddenHarbours.Vehicles::HiddenHarbours.Vehicles.VehicleDoor
+  _reachMeters: 1.5
+  _requiresFacing: 0
+--- !u!50 &2127286530
+Rigidbody2D:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 511595638}
+  m_BodyType: 0
+  m_Simulated: 1
+  m_UseFullKinematicContacts: 0
+  m_UseAutoMass: 0
+  m_Mass: 1
+  m_LinearDamping: 0
+  m_AngularDamping: 0.05
+  m_GravityScale: 0
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_Interpolate: 0
+  m_SleepingMode: 1
+  m_CollisionDetection: 0
+  m_Constraints: 0
+--- !u!114 &1876316587
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 511595638}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 01e0d2be484a43840b04c50cc27e1304, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: HiddenHarbours.Vehicles::HiddenHarbours.Vehicles.VehicleController
+  _vehicle: {fileID: 11400000, guid: 44b1877c02967b34fa43964bbb98a772, type: 2}
+--- !u!114 &482835234
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 511595638}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aeeb19a47979ad87e79f52bc06ce6c36, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: HiddenHarbours.Vehicles::HiddenHarbours.Vehicles.VehicleDoor
+  _reachMeters: 1.5
+  _requiresFacing: 0
+--- !u!50 &1996578888
+Rigidbody2D:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 633351791}
+  m_BodyType: 0
+  m_Simulated: 1
+  m_UseFullKinematicContacts: 0
+  m_UseAutoMass: 0
+  m_Mass: 1
+  m_LinearDamping: 0
+  m_AngularDamping: 0.05
+  m_GravityScale: 0
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_Interpolate: 0
+  m_SleepingMode: 1
+  m_CollisionDetection: 0
+  m_Constraints: 0
+--- !u!114 &511932062
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 633351791}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 01e0d2be484a43840b04c50cc27e1304, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: HiddenHarbours.Vehicles::HiddenHarbours.Vehicles.VehicleController
+  _vehicle: {fileID: 11400000, guid: 1825f967802c5cd41a0c6ce1d4f1c693, type: 2}
+--- !u!114 &981364291
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 633351791}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aeeb19a47979ad87e79f52bc06ce6c36, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: HiddenHarbours.Vehicles::HiddenHarbours.Vehicles.VehicleDoor
+  _reachMeters: 1.5
+  _requiresFacing: 0
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

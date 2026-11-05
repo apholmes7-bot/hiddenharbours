@@ -214,9 +214,9 @@ namespace HiddenHarbours.Tests.EditMode
 
             float best = float.MaxValue;
             Vector2 from = Vector2.zero;
-            foreach (var cell in StPetersWharf.DeckCellsBackToFront())
+            foreach (var cell in LandingDockEvidence.PlankSamples())
             {
-                var p = new Vector2(cell.x + 0.5f, cell.y + 0.5f);
+                var p = cell;
                 float d = her.DistanceTo(p);
                 if (d < best) { best = d; from = p; }
             }

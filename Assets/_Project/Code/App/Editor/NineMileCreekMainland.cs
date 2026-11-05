@@ -951,9 +951,9 @@ namespace HiddenHarbours.App.Editor
         // Where the working things stand. Phase A places greybox markers; Phase B swaps in the kit.
         public static readonly Vector3 WinchPos          = new Vector3( 87f,  84f, 0f);  // west wall, by the apron
         public static readonly Vector3 UnloadApronPos    = new Vector3( 87f,  74f, 0f);
-        public static Vector3 ParkingPos => NineMileCreekWharfLandSide.BuyerTruck;  // the buyers' trucks: the buyer's own, where the wharf key scene parks it (vehicle.nmc_buyer_truck, in yard.parking_w)
+        public static Vector3 ParkingPos => NineMileCreekWharfLandSide.BuyerRunBay;  // the trip-owned Modern 2500's existing bay in yard.parking_w
         public static Vector3 FishBuyerPos => NineMileCreekWharfLandSide.MarketCounter;
-        public static Vector3 FishBuyerTruckPos => NineMileCreekWharfLandSide.BuyerTruck;
+        public static Vector3 FishBuyerTruckPos => NineMileCreekWharfLandSide.BuyerRunBay;
         public static readonly Vector3 FishStorePos      = new Vector3(120f, 112f, 0f);  // holds; NO processing
         public static readonly Vector3 BaitShedPos       = new Vector3(136f, 132f, 0f);
         public static readonly Vector3 TrapStorePos      = new Vector3(148f, 130f, 0f);

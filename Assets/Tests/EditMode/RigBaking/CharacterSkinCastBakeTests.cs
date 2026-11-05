@@ -65,6 +65,7 @@ namespace HiddenHarbours.Tests.RigBaking
             "hauler", "bench", "chop", "lift",
             "place", "toss", "board_buckets", "board_tray",
             "board_pot", "boardDown_buckets", "boardDown_tray", "boardDown_pot",
+            "drive_helm_go_fast", "drive_helm_bowrider", "drive_helm_express_cruiser",
         };
 
         IRigScriptHost _host, _host9;
@@ -295,7 +296,12 @@ namespace HiddenHarbours.Tests.RigBaking
             }
             Assert.That(states.Count, Is.GreaterThan(4), "harness: the rig's clip table did not read");
 
-            string[] missing = CharacterSkinAssetBaker.CastMeshStates.Where(s => !states.Contains(s)).ToArray();
+            // The three calibrated aliases are source-replayed frame/pin by frame/pin in
+            // SeatedHelmContractTests; they are not new ANIMS names in the immutable rig.
+            string[] calibrated = { "drive_helm_go_fast", "drive_helm_bowrider", "drive_helm_express_cruiser" };
+            string[] missing = CharacterSkinAssetBaker.CastMeshStates
+                .Where(s => Array.IndexOf(calibrated, s) < 0 && !states.Contains(s)).ToArray();
+            Assert.AreEqual(27, CharacterSkinAssetBaker.CastMeshStates.Count(s => Array.IndexOf(calibrated, s) < 0));
             Assert.IsEmpty(missing,
                 $"the rig bakes no clip for [{string.Join(", ", missing)}], so every fresh cast def would " +
                 "refuse its switch and the cast bake would stop on the first NPC.");

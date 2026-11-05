@@ -269,7 +269,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
         /// are thrown from, so a lamp left at ground level would pool correctly and glow at her feet.
         /// </summary>
         [Test]
-        public void BothLampsRideOnHer_AndTheBeamRidesHigher()
+        public void LegacyMountFallbacksRemainOnTheCarrier()
         {
             Assert.Greater(WalkerLights.LanternLiftMetres, 0f, "the lantern is not on the ground");
             Assert.Greater(WalkerLights.HeadlampLiftMetres, WalkerLights.LanternLiftMetres,

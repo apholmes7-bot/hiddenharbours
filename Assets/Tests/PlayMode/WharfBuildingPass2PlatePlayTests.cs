@@ -893,7 +893,8 @@ namespace HiddenHarbours.Tests.PlayMode
 
         string PlatePath()
         {
-            string dir = Path.Combine(Application.temporaryCachePath, PlateDir, _look);
+            string dir = _look == "k0-dock" ? Path.GetFullPath("Evidence~/stp-kits/k0/ruling-5/plates") :
+                Path.Combine(Application.temporaryCachePath, PlateDir, _look);
             Directory.CreateDirectory(dir);
             return dir;
         }

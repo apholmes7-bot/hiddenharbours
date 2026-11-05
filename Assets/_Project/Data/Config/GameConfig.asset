@@ -15,6 +15,9 @@ MonoBehaviour:
   VehicleDoorSweepSeconds: 0.85
   VehicleGearCrankSeconds: 2.4
   SecondsPerDay: 1800
+  StartHour: 7.5
+  StartSeason: 1
+  StartDayOfSeason: 1
   DaysPerWeek: 7
   DaysPerSeason: 28
   MarketDayIndex: 4
@@ -315,6 +318,7 @@ MonoBehaviour:
   HullReflectionMaxPackets: 1024
   HullReflectionMaxTriangles: 1000000
   BoatLegacyCabinGlow: 0
+  WalkerAutoLantern: 0
   PixelGridSnap: 1
   CharacterBlink: 1
   CharacterHeadLook: 1
@@ -429,9 +433,10 @@ MonoBehaviour:
   - TrapDefId: trap.crab
     Count: 1
   PlayerZoom:
+    DefaultWorldHeightMeters: 11.25
     WheelEnabled: 1
     ClosestWorldHeightMeters: 5.625
-    FarthestWorldHeightMeters: 11.25
+    FarthestWorldHeightMeters: 16.875
     WheelUnitsPerNotch: 1
     StepSeconds: 0.18
     AboardStopsCloser: 2
@@ -460,10 +465,10 @@ MonoBehaviour:
     ImpactShakeMeters: 0.18
     ImpactShakeSeconds: 0.3
     ImpactShakeHz: 18
-    SpeedPullBackFraction: 0.15
+    SpeedPullBackFraction: 0
     SpeedPullBackStartMps: 1
     SpeedPullBackFullMps: 4.5
-    SpeedPullBackSeaStateFraction: 0.05
+    SpeedPullBackSeaStateFraction: 0
     SpeedPullBackSlewSeconds: 2
     FeelSeaStateRefreshHz: 4
     BoatLeadSeconds: 0.6

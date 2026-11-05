@@ -11,8 +11,8 @@ namespace HiddenHarbours.Environment
     public class GameClock : MonoBehaviour, IGameClock
     {
         [SerializeField] private GameConfig _config;
-        [Tooltip("Hour of day a new game starts at (0..24).")]
-        [Range(0f, 24f)] [SerializeField] private float _startHour = 6f;
+        // Legacy scene YAML may still contain _startHour. There is no field to deserialize it into;
+        // GameConfig.StartHour is the only Inspector control and the only value read.
 
         private double _t;
         private double _flow;
@@ -27,7 +27,7 @@ namespace HiddenHarbours.Environment
         public double FlowSeconds => _flow;
         public bool IsHeld { get; set; }
         /// <summary>The authored new-game instant, also used by the opening's hour hold.</summary>
-        public double StartSeconds => _config != null ? _config.SecondsPerDay * (_startHour / 24f) : 0d;
+        public double StartSeconds => _config != null ? _config.SecondsPerDay * (_config.StartHour / 24d) : 0d;
         public GameTime Now => new GameTime(_t);
         public bool IsPaused { get; set; }
         public float TimeScale { get; set; } = 1f;
@@ -38,9 +38,10 @@ namespace HiddenHarbours.Environment
         /// <see cref="IGameClock.DayIndex"/>.</summary>
         public int DayIndex => TotalDays;
 
-        public Season Season => _config != null ? (Season)(TotalDays / _config.DaysPerSeason % 4) : Season.EarlySpring;
-        public int Year => _config != null ? TotalDays / _config.DaysPerSeason / 4 + 1 : 1;
-        public int DayOfSeason => _config != null ? TotalDays % _config.DaysPerSeason + 1 : 1;
+        private CalendarDate Calendar => GameCalendar.AtSeconds(_t, _config);
+        public Season Season => Calendar.Season;
+        public int Year => Calendar.Year;
+        public int DayOfSeason => Calendar.DayOfSeason;
         public Weekday Weekday => _config != null ? (Weekday)(TotalDays % _config.DaysPerWeek) : Weekday.Monday;
         public bool IsMarketDay => _config != null && (int)Weekday == _config.MarketDayIndex;
 

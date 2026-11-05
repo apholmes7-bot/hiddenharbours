@@ -1,0 +1,192 @@
+{
+  "schema": "hidden-harbours/nmc-trucks-proof@1",
+  "base": "b22cafb502dd45caccb25dbba72f8df8a6c4ed95",
+  "nativeCapture": "unforked NineMileCreekTrips.Place, one buyer Interactable",
+  "nativeDryRun": {
+    "reviewedPatches": 34,
+    "allEmpty": true
+  },
+  "firstApplySha256": "86e7ba52dd3e449da02a7ebd2d5613ad09509398890277565648d7cee60020c9",
+  "secondApplySha256": "86e7ba52dd3e449da02a7ebd2d5613ad09509398890277565648d7cee60020c9",
+  "editMode": [
+    {
+      "class": "NmcDrivableTruckTests",
+      "total": 8,
+      "passed": 8,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "class": "NmcWharfRowRecordTests",
+      "total": 5,
+      "passed": 5,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "class": "StoreWiringTests",
+      "total": 6,
+      "passed": 6,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "class": "NineMileCreekTripsTests",
+      "total": 18,
+      "passed": 18,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "class": "NineMileCreekRoutesTests",
+      "total": 13,
+      "passed": 13,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "class": "NineMileCreekTruckParkTests",
+      "total": 18,
+      "passed": 18,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "class": "NineMileCreekLayerRefreshTests",
+      "total": 6,
+      "passed": 6,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "class": "VehicleDriveModeTests",
+      "total": 38,
+      "passed": 38,
+      "failed": 0,
+      "skipped": 0
+    }
+  ],
+  "drivingAndTrips": [
+    {
+      "class": "NmcDrivableTrucksPlayTests",
+      "total": 5,
+      "passed": 5,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "class": "ScheduledTripPlayTests",
+      "total": 9,
+      "passed": 9,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "class": "ScheduledTripTowingPlayTests",
+      "total": 8,
+      "passed": 8,
+      "failed": 0,
+      "skipped": 0
+    }
+  ],
+  "unchangedLoop": [
+    {
+      "class": "NineMileCreekLoopPlayTests",
+      "total": 8,
+      "passed": 8,
+      "failed": 0,
+      "skipped": 0
+    }
+  ],
+  "models": [
+    {
+      "model": "Modern350",
+      "row": "vehicle.nmc_lot_a",
+      "headings": 8
+    },
+    {
+      "model": "Modern2500",
+      "row": "vehicle.nmc_pickup_ross",
+      "headings": 8
+    },
+    {
+      "model": "Modern3500",
+      "row": "vehicle.nmc_lot_c",
+      "headings": 8
+    }
+  ],
+  "buyer": {
+    "row": "vehicle.nmc_lot_e",
+    "model": "Modern2500",
+    "hours": [
+      {
+        "hour": 3,
+        "at": [
+          -131,
+          78
+        ],
+        "stage": "Resting"
+      },
+      {
+        "hour": 4.9,
+        "at": [
+          -87.27,
+          92
+        ],
+        "stage": "Driving"
+      },
+      {
+        "hour": 12,
+        "at": [
+          101,
+          128.4
+        ],
+        "stage": "Resting"
+      },
+      {
+        "hour": 22,
+        "at": [
+          -131,
+          78
+        ],
+        "stage": "Resting"
+      }
+    ],
+    "doorRefusedAtEverySample": true
+  },
+  "noonBays": {
+    "duallyEnteredAndExited": true,
+    "modern350EnteredAndExited": true,
+    "buyerInHisBay": true,
+    "approachesAndExitsOutsideOtherPublishedBodies": true
+  },
+  "cost": {
+    "leaseMinutes": 19.73,
+    "launches": 5,
+    "runningLaneMinutes": 110.46,
+    "runningLaneLaunches": 37,
+    "diskFreeBeforeBytes": 87167926272,
+    "diskFreeAtTakeBytes": 87167717376,
+    "diskFreeReturnBytes": 87102627840,
+    "expectedNetGrowthBytes": 1000000000
+  },
+  "editorClosed": true,
+  "launchedPidsGone": true,
+  "saveUnchanged": true,
+  "selfCleared": [
+    {
+      "case": "NmcDrivableTruckTests.EveryPlacedPickup_HasItsBodyControllerAndDoor",
+      "firstResult": "expected 7 components; buyer has 6",
+      "cause": "the GameObject was incorrectly included in the component count",
+      "classification": "KEPT: the unchanged base template has five components and six documents",
+      "fix": "five template components; buyer adds one ScheduledTrip; required component and binding assertions retained",
+      "rerun": "112 of 112 EditMode cases passed"
+    }
+  ],
+  "plates": [
+    "plates/noon-dually-exit.png",
+    "plates/noon-350-exit.png",
+    "plates/pickup_ross-heading-1.png",
+    "plates/lot_c-heading-3.png"
+  ]
+}

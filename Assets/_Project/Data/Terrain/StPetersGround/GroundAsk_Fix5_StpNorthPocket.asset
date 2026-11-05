@@ -1,0 +1,59 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9228011ec33219cb900c857cd02fc999, type: 3}
+  m_Name: GroundAsk_Fix5_StpNorthPocket
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.GroundAskDef
+  Id: ground.stp_north_pocket
+  DisplayName:
+  Source: 1
+  Kind: 0
+  Retired: 0
+  IssueBoxes: []
+  RetirementWhy:
+  Rule: "the dory north berth, by the owner ruling"
+  Package:
+  GroundFileSha256:
+  Scene:
+  FileKind:
+  Ruled: '2026-11-01: Dig a small pocket'
+  BoxMin: {x: 207.75, y: 4.25}
+  BoxMax: {x: 218.25, y: 10.75}
+  Step: 0.5
+  Width: 22
+  Height: 14
+  Patch: {fileID: 2800000, guid: f0288173687a43ec899b33403dd4a717, type: 3}
+  PatchSha256: 03ad771ecbc22dcfcc105c2050ab710ed8dacb0284bcc6c9574a66eb2ac231e9
+  PatchRange: {x: -4, y: 12}
+  Line: []
+  LineOf:
+  LineSource:
+  WindowMin: {x: -14, y: -86}
+  WindowMax: {x: 18, y: -54}
+  ShoreYScaleDeg: 40
+  SampleStep: 0.05
+  SampleRunOut: 6
+  Softness: 0.25
+  Sigma: 1
+  KernelSigmas: 4
+  AlongIn: {x: 0.5, y: 5}
+  AlongOut: {x: 13, y: 1}
+  SeaFade: {x: -1.2, y: 0.8}
+  LandFade: {x: 6, y: 2}
+  SeaZ: -1.05
+  SeaTail: 9
+  Margin: 0.05
+  FootprintStep: 0.02
+  Centre: {x: 0, y: 0}
+  Reach: 0
+  Level: 0
+  LevelTolerance: 0.01
+  KeepOutOf:

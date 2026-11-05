@@ -36,6 +36,8 @@
 # would hand the test CRLF and fail it for line endings alone. (Not `unity-json`, which is a merge
 # macro for files Unity itself serialises.)
 *.recipe.json           text eol=lf linguist-language=json linguist-generated
+# This bake input is outside the rig ledger; its contract compares it byte for byte.
+Assets/_Project/Art/Sprites/StPeters/SetPieces/stpLandingDeck.bake.json text eol=lf
 
 # St Peters' terrain plan (terrain PR 5; T12). Both are compared byte for byte: the frozen sources must write back to
 # themselves, and the manifest records the sources' file sha256. A CRLF checkout would red both for line endings alone.

@@ -174,8 +174,8 @@ namespace HiddenHarbours.Art
             //     _DayNightTint keeps meaning "the whole-frame multiply colour" for every consumer) ---
             Color tint = DayNightMath.DayNightTint(hour, _profile, visibility, seaState01,
                                                    moonIllumination, moonElevation);
-            float sunrise       = _profile != null ? _profile.SunriseHour : 6f;
-            float sunset        = _profile != null ? _profile.SunsetHour : 20f;
+            float sunrise       = _profile != null ? _profile.SunriseHour : DaylightHours.DefaultSunriseHour;
+            float sunset        = _profile != null ? _profile.SunsetHour : DaylightHours.DefaultSunsetHour;
             float bias          = _profile != null ? _profile.ShadowSouthBias : 0.2f;
             float lift          = _profile != null ? _profile.ShadowNoonLift : 0.9f;
             float overcastFades = _profile != null ? _profile.OvercastFadesShadow : 0.85f;

@@ -166,17 +166,17 @@ namespace HiddenHarbours.Tests.Art.EditMode
                     double At(double hour) => E(t, place, GullPlaceFiles.Inputs(HighSummer, hour, GullSky.Calm));
 
                     string id = region.IdOf(p);
-                    double dawn = At(6.5), morning = At(9.0), midday = At(13.0), evening = At(19.0);
-                    if (!(dawn < morning)) failures.Add(id + ": 06:30 " + dawn + " is not under 09:00 " + morning);
+                    double dawn = At(t.SunriseHour + 0.5), morning = At(9.0), midday = At(13.0), evening = At(t.SunsetHour - 1.0);
+                    if (!(dawn < morning)) failures.Add(id + ": half an hour after sunrise " + dawn + " is not under 09:00 " + morning);
                     bool works = place.Kind == BirdHauntKind.FishPlant || place.Kind == BirdHauntKind.Wharf;
                     if (works && !(midday < morning)) failures.Add(id + ": 13:00 " + midday + " is not under 09:00 " + morning);
-                    if (!(evening < midday)) failures.Add(id + ": 19:00 " + evening + " is not under 13:00 " + midday);
+                    if (!(evening < midday)) failures.Add(id + ": an hour before sunset " + evening + " is not under 13:00 " + midday);
                     if (At(23.0) != 0.0 || At(3.0) != 0.0) failures.Add(id + ": birds at night");
 
                     double last = -1.0;
                     for (int i = 0; i <= 30; i++)
                     {
-                        double hour = 5.5 + 0.05 * i;
+                        double hour = t.SunriseHour - 0.5 + 0.05 * i;
                         double e = At(hour);
                         if (e < last) failures.Add(id + ": the dawn count falls at " + hour.ToString("0.00"));
                         last = e;
@@ -820,6 +820,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
         /// The owner's table (DESIGN section 6), at the day's jitter set to 1: thirteen moments the
         /// birds were checked against by hand. A cell that moves is a change in the data or the rules,
         /// and the owner hears about it.
+        /// The dawn cell is read half an hour after sunrise, which was 06:30 when the owner's table was written.
         /// </summary>
         [Test]
         public void TheOwnerTableHolds()
@@ -835,7 +836,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
                 new HauntCell("birdhaunt.stp_wharf", HighSummer, 9.0, GullSky.Calm, high, true, 0.5, 12.48),
                 new HauntCell("birdhaunt.stp_crossing_mussels", TheTurn, 13.0, GullSky.Calm, low, false, 0.5, 6.44),
                 new HauntCell("birdhaunt.stp_crossing_mussels", TheTurn, 13.0, GullSky.Calm, high, false, 0.5, 2.254),
-                new HauntCell("birdhaunt.nmc_landing_flats", EarlySpring, 6.5, GullSky.Windy, low, false, 0.5, 2.625),
+                new HauntCell("birdhaunt.nmc_landing_flats", EarlySpring, t.SunriseHour + 0.5, GullSky.Windy, low, false, 0.5, 2.625),
                 new HauntCell(FlakeYard, HighSummer, 13.0, GullSky.Calm, 0.0, false, 0.5, 3.9),
                 new HauntCell(FlakeYard, HighSummer, 13.0, GullSky.Fog, 0.0, false, 0.5, 1.425),
             };
