@@ -364,6 +364,11 @@ namespace HiddenHarbours.Tests.EditMode
         public void AHopDuringALiveReturnKeepsTheCoordinatorsNewLanding()
         {
             using var rig = new HopRig();
+            // The repair gate is opt-in; this case exercises an enabled gate.
+            var config = ScriptableObject.CreateInstance<GameConfig>();
+            rig.Own(config);
+            config.RequireBoatRepairsBeforeBoarding = true;
+            GameServices.Config = config;
             Assert.IsTrue(rig.Controls.BeginInteract());
             rig.Controls.TickBoardingMove(.2f);
             rig.Save.Current.RepairedBoats.Remove("boat.dory");

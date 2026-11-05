@@ -114,6 +114,9 @@ namespace HiddenHarbours.World
             _id = id;
             _topElevationMeters = topElevationMeters;
             _faceHeadingDegrees = faceHeadingDegrees;
+            // Explicit configuration publishes an active fitting before play-mode lifecycle callbacks.
+            if (isActiveAndEnabled) BoardingLadders.Register(this);
+            else BoardingLadders.Unregister(this);
         }
 
         /// <inheritdoc cref="Configure(string,float,float)"/>
@@ -143,6 +146,8 @@ namespace HiddenHarbours.World
             BoardingLadders.Unregister(this);
             if (_span != null) _span.enabled = false;
         }
+
+        private void OnDestroy() => BoardingLadders.Unregister(this);
 
         private void Update()
         {
