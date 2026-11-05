@@ -53,7 +53,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
             Assert.That(actual.y, Is.EqualTo(r.y * s + 2f / ppu + d.y * 2 * c * h).Within(1e-5f));
         }
 
-        [TestCase(6f)] [TestCase(20f)] [TestCase(20.5f)] [TestCase(22.5f)]
+        [TestCase(5.5f)] [TestCase(21.5f)] [TestCase(22f)] [TestCase(22.5f)]
         public void SunAtOrBelowHorizon_IsDisabled(float hour)
         {
             var day = Resources.Load<DayNightProfile>("DayNightProfile");

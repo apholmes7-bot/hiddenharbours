@@ -1456,10 +1456,11 @@ namespace HiddenHarbours.Tools.RigBaking
         /// stores indices.
         /// </summary>
         public static RigSkinClip ReadClip9(IRigScriptHost host, string preset, string clipName,
-                                            RigBone[] bones, out string stateKey)
+                                            RigBone[] bones, out string stateKey, string optionsJson = null)
         {
             AssertPreset9(host, preset);
-            host.Execute($"globalThis.__hhClip={KitOf(host).GlobalName}.clip({Js(clipName)},{Js(preset)});");
+            host.Execute($"globalThis.__hhClip={KitOf(host).GlobalName}.clip({Js(clipName)},{Js(preset)}," +
+                         (optionsJson ?? "undefined") + ");");
             string anim = host.EvaluateString("String(globalThis.__hhClip.anim||'')");
             if (anim.Length == 0)
                 throw new InvalidOperationException($"{KitOf(host).Title} clip '{clipName}' names no anim.");

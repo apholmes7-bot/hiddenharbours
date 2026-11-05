@@ -1,4 +1,6 @@
+using System.Collections.Generic;
 using UnityEngine;
+using HiddenHarbours.Core;
 
 namespace HiddenHarbours.Art
 {
@@ -9,8 +11,7 @@ namespace HiddenHarbours.Art
     /// <para><b>Why a headlamp and not a torch in her hand.</b> The owner asked for <i>"a spotlight"</i>.
     /// A hand torch would cost a hand — and the TOOL CONTINUITY LAW (owner playtest, 2026-08-23) says what
     /// she is holding does not silently change underneath her, so a torch would have to be taken out and
-    /// put away, and would fight the rod and the catch for the same slot. A headlamp costs no slot, needs
-    /// no rig prop, and is what people who work on boats at night actually wear.</para>
+    /// put away, and would fight the rod and the catch for the same slot. A headlamp costs no slot. Its small housing and lens are drawn at the live mesh head point.</para>
     ///
     /// <para><b>It lights the world, not just a patch of ground</b> — which is the whole reason it is a
     /// <see cref="SceneLight"/> and not a sprite:
@@ -29,6 +30,7 @@ namespace HiddenHarbours.Art
     /// <para><b>Determinism (rule 5):</b> the beam's state is a transient the player toggles; nothing is
     /// saved, nothing is random, and the lamp is steady (a battery lamp does not flicker).</para>
     /// </summary>
+    [DefaultExecutionOrder(200)] // after the figure has drawn its pose at 100
     [DisallowMultipleComponent]
     [RequireComponent(typeof(SceneLight))]
     public sealed class Headlamp : MonoBehaviour, IWaterLightEmitter
@@ -42,6 +44,18 @@ namespace HiddenHarbours.Art
 
         private SceneLight _light;
         private WaterLightState _waterLight;
+        private bool _live = true;
+        private bool _hasHeadPoint;
+        private Vector2 _headOffset;
+        private float _projectedLift;
+        private Transform _carrier, _facet;
+        private IsoCharacterFigureRenderer _mountedFigure;
+        private SpriteRenderer _fitting;
+        private Camera _headCamera;
+        private readonly List<IsoCharacterFigureRenderer> _figures = new(2);
+        private readonly List<MeshFilter> _filters = new(3);
+        private static Sprite _fittingSprite;
+        private static Headlamp _decorOwner;
 
         /// <summary>Is the beam lit?</summary>
         public bool IsOn => _on;
@@ -55,6 +69,9 @@ namespace HiddenHarbours.Art
         public void Configure(float browHeightMetres)
         {
             SceneLight l = Light;
+            _hasHeadPoint = false;
+            _headOffset = Vector2.up * browHeightMetres;
+            _projectedLift = browHeightMetres;
             LightPresets.Apply(l, LightPresets.Kind.Headlamp);
             l.Shape = SceneLight.LightShape.Cone;
             l.ConeHalfAngle = LightPresets.ConeHalfDegrees(LightPresets.Kind.Headlamp);
@@ -87,7 +104,8 @@ namespace HiddenHarbours.Art
         /// </summary>
         public void SetLive(bool live)
         {
-            if (Light != null) Light.enabled = live && _on;
+            _live = live;
+            ApplyBeamState();
         }
 
         private void Awake() => _light = GetComponent<SceneLight>();
@@ -101,7 +119,12 @@ namespace HiddenHarbours.Art
             WaterLightBridge.Register(this);
         }
 
-        private void OnDisable() => WaterLightBridge.Unregister(this);
+        private void OnDisable()
+        {
+            WaterLightBridge.Unregister(this);
+            if (_fitting != null) _fitting.enabled = false;
+            ClearDecorIfStillOurs();
+        }
 
         /// <summary>
         /// <b>⭐ SHE WRITES THE ONE DECOR LAMP — the other half of "one publisher".</b>
@@ -129,7 +152,122 @@ namespace HiddenHarbours.Art
         /// belt and braces on purpose: either one alone leaves a single-frame flicker in the woods, which
         /// is exactly the class of defect nothing would ever report.</para>
         /// </summary>
-        private void LateUpdate() => PublishDecorLampIfOwned();
+        private void LateUpdate()
+        {
+            SynchronizeMount();
+            if (!PublishDecorLampIfOwned()) ClearDecorIfStillOurs();
+        }
+
+        internal static void DecorPublishedByBoat() => _decorOwner = null;
+
+        private void ClearDecorIfStillOurs()
+        {
+            if (_decorOwner != this) return;
+            WaterLightState dark = default;
+            DecorLampGlobals.Publish(in dark);
+            _decorOwner = null;
+        }
+
+        // A visible mesh is the source of truth. Hidden figures retain stale HeadSnapPoint data.
+        private void SynchronizeMount()
+        {
+            if (_carrier == null) _carrier = transform.parent;
+            if (_carrier == null || Light == null) return;
+            _carrier.GetComponentsInChildren(true, _figures);
+            IsoCharacterFigureRenderer liveFigure = null;
+            for (int i = 0; i < _figures.Count; i++)
+            {
+                var f = _figures[i];
+                if (f.isActiveAndEnabled && f.IsConfigured && f.IsAshore && f.Visible && f.HeadSnapPoint.w > .5f)
+                { liveFigure = f; break; }
+            }
+            if (liveFigure != null && liveFigure != _mountedFigure)
+            {
+                _mountedFigure = liveFigure;
+                _facet = null;
+                liveFigure.GetComponentsInChildren(true, _filters);
+                for (int i = 0; i < _filters.Count; i++)
+                    if (_filters[i].sharedMesh != null && _filters[i].sharedMesh.name == "HHCharacterSkinPosed")
+                    { _facet = _filters[i].transform; break; }
+            }
+            bool drawn = liveFigure != null && _facet != null;
+            if (drawn)
+            {
+                Vector4 h = liveFigure.HeadSnapPoint;
+                Vector3 head = SnapDrawnHead(_facet.TransformPoint(new Vector3(h.x, h.y, h.z)));
+                _headOffset = (Vector2)head - (Vector2)_carrier.position;
+                _projectedLift = IsoGround.HeightScale * Mathf.Max(.01f, h.z);
+                Light.LampHeightMeters = Mathf.Max(.01f, h.z);
+                _hasHeadPoint = true;
+            }
+            // ConstantLiftUntilFirstHeadPoint; after that, every sprite pose holds this root offset.
+            Vector2 point = (Vector2)_carrier.position + _headOffset;
+            transform.position = new Vector3(point.x, point.y - _projectedLift, _carrier.position.z);
+            Light.OriginOffset = Vector2.zero;
+            Light.BloomLiftMetres = _projectedLift;
+            Light.RefreshMount(); // SceneLight's earlier LateUpdate must not leave a one-frame bloom lag.
+            if (drawn && _hasHeadPoint && _fitting == null) BuildFitting();
+            if (_fitting != null)
+            {
+                _fitting.enabled = drawn && _live;
+                _fitting.transform.position = new Vector3(point.x, point.y, _carrier.position.z);
+                _fitting.transform.rotation = Quaternion.identity;
+                _fitting.color = _on ? Color.white : new Color(.55f, .55f, .55f, 1f);
+                if (drawn && liveFigure.AshoreOverlay != null)
+                {
+                    _fitting.sortingLayerID = liveFigure.AshoreOverlay.sortingLayerID;
+                    _fitting.sortingOrder = Mathf.Min(SceneLight.MaxSortingOrder - 10,
+                                                     liveFigure.AshoreOverlay.sortingOrder + 1);
+                }
+            }
+        }
+
+        private Vector3 SnapDrawnHead(Vector3 world)
+        {
+            if (_headCamera == null) _headCamera = SceneLight.ActiveCamera();
+            Camera camera = _headCamera;
+            if (camera == null) return world;
+            Vector3 pixel = camera.WorldToScreenPoint(world);
+            double perPixel = camera.orthographicSize * 2d / camera.pixelHeight;
+            double left = camera.transform.position.x - camera.orthographicSize * camera.aspect;
+            double bottom = camera.transform.position.y - camera.orthographicSize;
+            if (GameServices.Config != null && GameServices.Config.FigurePixelTarget &&
+                FigurePixelGrid.TryPlan(camera.pixelWidth, camera.pixelHeight, left, bottom, perPixel, out var plan))
+            {
+                pixel.x = (float)(plan.OffsetX + (System.Math.Floor(world.x * 32d) - plan.OriginTexelX + .5d) * plan.Magnification);
+                pixel.y = (float)(plan.OffsetY + (System.Math.Floor(world.y * 32d) - plan.OriginTexelY + .5d) * plan.Magnification);
+            }
+            else
+            {
+                pixel.x = Mathf.Floor(pixel.x) + .5f;
+                pixel.y = Mathf.Floor(pixel.y) + .5f;
+            }
+            return camera.ScreenToWorldPoint(pixel);
+        }
+
+        private void BuildFitting()
+        {
+            if (_fittingSprite == null)
+            {
+                var texture = new Texture2D(5, 3, TextureFormat.RGBA32, false)
+                { name = "HeadlampHousing", filterMode = FilterMode.Point, hideFlags = HideFlags.HideAndDontSave };
+                var pixels = new Color32[15];
+                for (int y = 0; y < 3; y++)
+                for (int x = 0; x < 5; x++)
+                    pixels[y * 5 + x] = y == 1 && x > 0 && x < 4
+                        ? new Color32(210, 220, 230, 255) : new Color32(38, 42, 46, 255);
+                texture.SetPixels32(pixels); texture.Apply();
+                // Centre the housing; its measured raster offset stays within one art pixel of the head origin.
+                var pivot = new Vector2(.5f, .5f);
+                _fittingSprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), pivot, 32f);
+                _fittingSprite.hideFlags = HideFlags.HideAndDontSave;
+            }
+            var go = new GameObject("HeadlampFitting") { hideFlags = HideFlags.DontSave, layer = gameObject.layer };
+            go.transform.SetParent(transform, false);
+            _fitting = go.AddComponent<SpriteRenderer>();
+            _fitting.sprite = _fittingSprite;
+            _fitting.sharedMaterial = Resources.Load<Material>("PlayerSubmerge");
+        }
 
         /// <summary>
         /// Publish this beam as the lit-decor path's one lamp, IF she is the one who owns it this frame.
@@ -145,12 +283,13 @@ namespace HiddenHarbours.Art
             if (!WalkerLights.OwnsDecorLight) return false;
             if (!TryGetWaterLight(out WaterLightState state)) return false;
             DecorLampGlobals.Publish(in state);
+            _decorOwner = this;
             return true;
         }
 
         private void ApplyBeamState()
         {
-            if (Light != null) Light.enabled = _on;
+            if (Light != null) Light.enabled = _live && _on;
         }
 
         /// <summary>

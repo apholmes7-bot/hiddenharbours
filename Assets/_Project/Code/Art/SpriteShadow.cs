@@ -603,8 +603,8 @@ namespace HiddenHarbours.Art
             SyncSilhouette();
 
             DayNightProfile p = _resolvedProfile;
-            float sunrise = p != null ? p.SunriseHour : 6f;
-            float sunset  = p != null ? p.SunsetHour : 20f;
+            float sunrise = p != null ? p.SunriseHour : DaylightHours.DefaultSunriseHour;
+            float sunset  = p != null ? p.SunsetHour : DaylightHours.DefaultSunsetHour;
             float bias    = p != null ? p.ShadowSouthBias : 0.2f;
             float lift    = p != null ? p.ShadowNoonLift : 0.9f;
             float overcastFades = p != null ? p.OvercastFadesShadow : 0.85f;

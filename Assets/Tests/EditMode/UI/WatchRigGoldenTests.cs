@@ -329,12 +329,12 @@ namespace HiddenHarbours.Tests.UI.EditMode
         public void NightFace_UsesTheBacklightPalette_NotTheDayInk()
         {
             WatchLcdLayout L = WatchRigGeometry.StandaloneLayout();
-            DrawSurface night = RenderFace(State(21, use24: true));
+            DrawSurface night = RenderFace(State(22, use24: true));
 
             Assert.AreEqual(0, LitPixels(night, L.Hour1),
                             "the night face must not draw day-palette segments");
 
-            Assert.IsTrue(State(21, true).Backlit, "21:00 is night");
+            Assert.IsTrue(State(22, true).Backlit, "22:00 is night");
             Assert.IsFalse(State(13, true).Backlit, "13:00 is day");
             Assert.IsTrue(new WatchRigState(new WatchFaceState(13, 0, 0, Weekday.Monday, 1,
                                                                Season.EarlySpring, 1, false, false),

@@ -144,9 +144,9 @@ namespace HiddenHarbours.Art
                 // it exactly, as the honest arm of the owner's A/B (see <see cref="Legacy"/>).
                 case HullLampKind.CabinGlow:
                     return new LightPresets.Config(
-                        SceneLight.LightShape.Cone, CabinAmber,
+                        SceneLight.LightShape.Cone, LightPresets.ColorFor(LightPresets.Kind.WindowGlow),
                         intensity: 0.5f, range: MinWallSpillMetres,
-                        edgeSoftness: 0.9f, flickerAmount: 0.03f, originOffset: Vector2.zero);
+                        edgeSoftness: 0.9f, flickerAmount: 0f, originOffset: Vector2.zero);
 
                 // THE RANGE LIGHT. The second masthead a big ship carries, and it is the SAME LAMP:
                 // the rule of the road distinguishes the two by where they are hung and how high, not

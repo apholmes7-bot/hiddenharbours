@@ -1,0 +1,84 @@
+{
+ "schema": "hidden-harbours/seated-helm@1",
+ "rig": "docs/art/rigs/character/rig10/Art/characterIsoRig10.js",
+ "poses": "docs/art/rigs/character/rig10/Art/characterIsoRig10.poses.js",
+ "rigSha256": "ad563075475740cea1258de68d05c184f2fc136491357bc22988a10d810413f3",
+ "posesSha256": "a28e5d92638d3cf1b26bbc49f887b23221acd3a9590bc36fd8b842ac6127c92d",
+ "rows": [
+  {
+   "hull": "boat.go_fast",
+   "visual": "Assets/_Project/Data/Boats/Visuals/GoFastIso.asset",
+   "state": "drive_helm_go_fast",
+   "floorOrigin": {
+    "x": 0.42,
+    "y": -2.18,
+    "z": 0.62
+   },
+   "seat": {
+    "x": 0.42,
+    "y": -2.2,
+    "z": 1.18
+   },
+   "wheel": {
+    "x": 0.42,
+    "y": -1.78,
+    "z": 1.4
+   },
+   "seatZ": 0.56,
+   "wheelZ": 0.78,
+   "wheelY": 0.4,
+   "walk": "docs/art/rigs/gameplay/goFastIsoRig.go_fast.walk.json",
+   "walkSha256": "7bc3e970bf73e60cdd13615a7f3d213be24e3c60a480d19b297bee891c3ef1e5"
+  },
+  {
+   "hull": "boat.bowrider",
+   "visual": "Assets/_Project/Data/Boats/Visuals/BowriderIso.asset",
+   "state": "drive_helm_bowrider",
+   "floorOrigin": {
+    "x": 0.5,
+    "y": -0.36,
+    "z": 0.34
+   },
+   "seat": {
+    "x": 0.5,
+    "y": -0.38,
+    "z": 0.7
+   },
+   "wheel": {
+    "x": 0.5,
+    "y": 0.02,
+    "z": 1
+   },
+   "seatZ": 0.36,
+   "wheelZ": 0.66,
+   "wheelY": 0.38,
+   "walk": "docs/art/rigs/gameplay/bowriderIsoRig.bowrider.walk.json",
+   "walkSha256": "9bb406b6df4734c2a4b2299c188fd6488b960be39eef66685b2a1bd9736bc02b"
+  },
+  {
+   "hull": "boat.express_cruiser",
+   "visual": "Assets/_Project/Data/Boats/Visuals/ExpressCruiserIso.asset",
+   "state": "drive_helm_express_cruiser",
+   "floorOrigin": {
+    "x": 0.52,
+    "y": -1.54,
+    "z": 1.17
+   },
+   "seat": {
+    "x": 0.52,
+    "y": -1.56,
+    "z": 1.68
+   },
+   "wheel": {
+    "x": 0.52,
+    "y": -1.14,
+    "z": 1.96
+   },
+   "seatZ": 0.51,
+   "wheelZ": 0.79,
+   "wheelY": 0.4,
+   "walk": "docs/art/rigs/gameplay/cruiserIsoRig.express_cruiser.walk.json",
+   "walkSha256": "905b16c2f222dcf05528da07e425d26cc640bd1ce66232d5ae43b79c6c6b0f72"
+  }
+ ]
+}
