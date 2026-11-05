@@ -91,6 +91,7 @@ namespace HiddenHarbours.Tests.PlayMode
                         for(int i=0;i<3;i++)
                         {
                             Assert.AreEqual(positions[i],originals[i].transform.position,keys[i]+" anchor unchanged");
+                            LandingPropsCamera(board.At);
                             var projected=_cam.WorldToViewportPoint(positions[i]);
                             File.AppendAllText(numbers,$"{board.Id}-{state} {keys[i]} anchorViewport={projected:R} sprite={originals[i].sprite.name}\n");
                             if(board.West!=(i==0))continue;
