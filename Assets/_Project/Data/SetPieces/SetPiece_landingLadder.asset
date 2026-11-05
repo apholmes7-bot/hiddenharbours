@@ -1,0 +1,131 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 01b51978faec4dbb8e54e23107a97ef5, type: 3}
+  m_Name: SetPiece_landingLadder
+  m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.SetPieceDef
+  Id: prop.stp_landing_ladder
+  DisplayName: landingLadder
+  RigKey: landingLadder
+  SceneId: keyscene.stp_landing
+  BakedOptionsJson: '{"height":8.1,"top":5.354004,"lowWater":-2.2,"highWater":2.2,"rung":0.3,"standoff":0.275}'
+  Layer: raised
+  Walk: behind
+  Mount: wall
+  BoundsMin: {x: -0.305, y: -0.023, z: -8.116644}
+  BoundsMax: {x: 0.305, y: 0.3, z: 0}
+  Frames:
+  - Sprite: {fileID: 786589292546770760, guid: ccb1f4a510a826b44a941af26a00fd99, type: 3}
+    RigDir: 0
+    ShowFaces: recipe facing
+    BearingDeg: 0
+    CameraSees: metric rig
+    NativeSize: {x: 420, y: 760}
+    NativePivot: {x: 210, y: 160}
+    Crop: {x: 197, y: 152}
+    Pivot: {x: 13, y: 8}
+  - Sprite: {fileID: -8259247726179687587, guid: ccb1f4a510a826b44a941af26a00fd99, type: 3}
+    RigDir: 7
+    ShowFaces: recipe facing
+    BearingDeg: 45
+    CameraSees: metric rig
+    NativeSize: {x: 420, y: 760}
+    NativePivot: {x: 210, y: 160}
+    Crop: {x: 197, y: 152}
+    Pivot: {x: 13, y: 8}
+  - Sprite: {fileID: -794480979425280347, guid: ccb1f4a510a826b44a941af26a00fd99, type: 3}
+    RigDir: 6
+    ShowFaces: recipe facing
+    BearingDeg: 90
+    CameraSees: metric rig
+    NativeSize: {x: 420, y: 760}
+    NativePivot: {x: 210, y: 160}
+    Crop: {x: 197, y: 152}
+    Pivot: {x: 13, y: 8}
+  - Sprite: {fileID: -2632567114759650698, guid: ccb1f4a510a826b44a941af26a00fd99, type: 3}
+    RigDir: 5
+    ShowFaces: recipe facing
+    BearingDeg: 135
+    CameraSees: metric rig
+    NativeSize: {x: 420, y: 760}
+    NativePivot: {x: 210, y: 160}
+    Crop: {x: 197, y: 152}
+    Pivot: {x: 13, y: 8}
+  - Sprite: {fileID: 6578884898650929053, guid: ccb1f4a510a826b44a941af26a00fd99, type: 3}
+    RigDir: 4
+    ShowFaces: recipe facing
+    BearingDeg: 180
+    CameraSees: metric rig
+    NativeSize: {x: 420, y: 760}
+    NativePivot: {x: 210, y: 160}
+    Crop: {x: 197, y: 152}
+    Pivot: {x: 13, y: 8}
+  - Sprite: {fileID: -4842347186570765316, guid: ccb1f4a510a826b44a941af26a00fd99, type: 3}
+    RigDir: 3
+    ShowFaces: recipe facing
+    BearingDeg: 225
+    CameraSees: metric rig
+    NativeSize: {x: 420, y: 760}
+    NativePivot: {x: 210, y: 160}
+    Crop: {x: 197, y: 152}
+    Pivot: {x: 13, y: 8}
+  - Sprite: {fileID: 5306807927046477080, guid: ccb1f4a510a826b44a941af26a00fd99, type: 3}
+    RigDir: 2
+    ShowFaces: recipe facing
+    BearingDeg: 270
+    CameraSees: metric rig
+    NativeSize: {x: 420, y: 760}
+    NativePivot: {x: 210, y: 160}
+    Crop: {x: 197, y: 152}
+    Pivot: {x: 13, y: 8}
+  - Sprite: {fileID: -6453379754277844118, guid: ccb1f4a510a826b44a941af26a00fd99, type: 3}
+    RigDir: 1
+    ShowFaces: recipe facing
+    BearingDeg: 315
+    CameraSees: metric rig
+    NativeSize: {x: 420, y: 760}
+    NativePivot: {x: 210, y: 160}
+    Crop: {x: 197, y: 152}
+    Pivot: {x: 13, y: 8}
+  CellSize: {x: 26, y: 215}
+  PixelsPerMetre: 32
+  ElevationDeg: 40
+  BakedLit: 0
+  Colliders: []
+  Anchors:
+  - Name: hanger
+    Position: {x: 0, y: 0, z: 0}
+  - Name: foot
+    Position: {x: 0, y: 0.275, z: -8.1}
+  Path: []
+  TideMarks: []
+  Words: []
+  HasLight: 0
+  Light:
+    Emitters: []
+    When: 
+  IsAnimated: 0
+  Animated:
+    Part: 
+    Input: 
+    Steps: 0
+    BakedAtDeg: 0
+    RigDir: 0
+    Headings: []
+  GameplayJson: '{"schema":"hidden-harbours/st-peters-ladder@1","id":"prop.stp_landing_ladder","fittingId":"wharf.st_peters.ladder_0","units":"metres","height":8.1,"top":5.354004,"foot":-2.745996,"rungSpacing":0.3,"standoff":0.275,"lowWater":-2.2,"highWater":2.2,"hangerPivot":[0,0,0],"localAxes":"+x
+    across, +y out from pier, +z up; world heading 180 faces south","rungZ":[-0.3,-0.6,-0.9,-1.2,-1.5,-1.8,-2.1,-2.4,-2.7,-3,-3.3,-3.6,-3.9,-4.2,-4.5,-4.8,-5.1,-5.4,-5.7,-6,-6.3,-6.6,-6.9,-7.2,-7.5,-7.8,-8.1],"rungWorldZ":[5.054004,4.754004,4.454004,4.154004,3.854004,3.554004,3.254004,2.954004,2.654004,2.354004,2.054004,1.754004,1.454004,1.154004,0.854004,0.554004,0.254004,-0.045996,-0.345996,-0.645996,-0.945996,-1.245996,-1.545996,-1.845996,-2.145996,-2.445996,-2.745996],"rungSpan":[-0.25,0.25],"stileCentresX":[-0.25,0.25],"stileDiameter":0.05,"rungDiameter":0.035,"handsLine":{"y":0.275,"x":[-0.25,0.25],"z":[-8.1,0]},"feetLine":{"y":0.275,"x":[-0.2,0.2],"z":[-0.3,-0.6,-0.9,-1.2,-1.5,-1.8,-2.1,-2.4,-2.7,-3,-3.3,-3.6,-3.9,-4.2,-4.5,-4.8,-5.1,-5.4,-5.7,-6,-6.3,-6.6,-6.9,-7.2,-7.5,-7.8,-8.1]},"bodyClearanceLine":{"y":0.575,"z":[-8.1,0]},"facePlaneY":0,"wetBandWorldZ":[-2.745996,2.2],"weedBandWorldZ":[-2.745996,-1.5000000000000002],"placementOwner":"dock-lines;
+    this contract supplies art and contacts only"}'
+  State: 
+  Variants: []
+  HasVendor: 0
+  Vendor:
+    Seller: 
+    At: {x: 0, y: 0, z: 0}

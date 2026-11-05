@@ -1,0 +1,78 @@
+{
+  "schema": "hidden-harbours/st-peters-dock-props-recipes@1",
+  "ppu": 32,
+  "elevation": 40,
+  "facings": [
+    0,
+    7,
+    6,
+    5,
+    4,
+    3,
+    2,
+    1
+  ],
+  "scene": "keyscene.stp_landing",
+  "pieces": [
+    {
+      "id": "prop.stp_landing_cart",
+      "defKey": "landingCart",
+      "key": "dockCart",
+      "source": "docs/art/rigs/st-peters-dock-props-kit/stPetersDockProps.js",
+      "global": "StPetersDockProps",
+      "options": {
+        "loaded": true,
+        "weather": 0.35
+      },
+      "defType": "SetPieceDef",
+      "sourceSha256": "ec4bd182a8dcf6e17310e1d1716d9e007ab499a3e7ec76864203d8534519b342",
+      "rigDir": 4
+    },
+    {
+      "id": "prop.stp_landing_traps",
+      "defKey": "landingTraps",
+      "key": "trapStack",
+      "source": "docs/art/rigs/iso-rig-pack/wharf-decor-iso/wharfDecorRig.js",
+      "global": "WharfDecor",
+      "options": {
+        "variant": 0,
+        "len": 0.5,
+        "weather": 0.35
+      },
+      "defType": "SetPieceDef",
+      "sourceSha256": "dba6ced6644e879e42cf2a3d6340ae76f90acf2cee0a0962cf4bbb0719a1b05a",
+      "rigDir": 4
+    },
+    {
+      "id": "prop.stp_landing_totes",
+      "defKey": "landingTotes",
+      "key": "toteStack",
+      "source": "docs/art/rigs/iso-rig-pack/wharf-decor-iso/wharfDecorRig.js",
+      "global": "WharfDecor",
+      "options": {
+        "variant": 1
+      },
+      "defType": "SetPieceDef",
+      "sourceSha256": "dba6ced6644e879e42cf2a3d6340ae76f90acf2cee0a0962cf4bbb0719a1b05a",
+      "rigDir": 4
+    },
+    {
+      "id": "prop.stp_landing_ladder",
+      "defKey": "landingLadder",
+      "key": "ladder",
+      "source": "docs/art/rigs/st-peters-dock-props-kit/stPetersDockProps.js",
+      "global": "StPetersDockProps",
+      "options": {
+        "height": 8.1,
+        "top": 5.354004,
+        "lowWater": -2.2,
+        "highWater": 2.2,
+        "rung": 0.3,
+        "standoff": 0.275
+      },
+      "defType": "SetPieceDef",
+      "sourceSha256": "ec4bd182a8dcf6e17310e1d1716d9e007ab499a3e7ec76864203d8534519b342",
+      "rigDir": 4
+    }
+  ]
+}

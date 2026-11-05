@@ -1,0 +1,18 @@
+{
+    "schema": "hidden-harbours/st-peters-landing-props-height@1",
+    "recipeSha256Lf": "baa43f9f9d41c5d6139c4fa78c3339ae9bbd6f92f75e589b821aeb395ee68b7b",
+    "maps": [
+        {
+            "key": "landingCart",
+            "path": "Assets/_Project/Art/Sprites/StPeters/LandingProps/SetPiece_landingCart_height.png",
+            "minimumLocalZ": 0.003134011058136821,
+            "maximumLocalZ": 1.0056785345077515
+        },
+        {
+            "key": "landingLadder",
+            "path": "Assets/_Project/Art/Sprites/StPeters/LandingProps/SetPiece_landingLadder_height.png",
+            "minimumLocalZ": -8.116643905639649,
+            "maximumLocalZ": 0.0
+        }
+    ]
+}
