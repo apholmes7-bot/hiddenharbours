@@ -33,6 +33,11 @@ namespace HiddenHarbours.UI
         private Keyboard _keyboard;
         private Camera _worldCamera, _creatorCamera;
         private RenderTexture _creatorTarget;
+        private Mesh _creatorQuadMesh;
+        private Material _creatorOverlayMaterial;
+        private MeshRenderer _creatorOverlay;
+        private MaterialPropertyBlock _creatorProperties;
+        private bool _fallbackExportReady;
         private Canvas _canvas;
         private int _figureLayer, _pixelMultiple, _creatorWarmFrames;
         private bool _creatorProbeDone, _fallback, _turnHeld, _refreshRenderers;
@@ -90,6 +95,7 @@ namespace HiddenHarbours.UI
 
         private void CaptureWorld()
         {
+            _creatorProperties ??= new MaterialPropertyBlock();
             _worldCamera = Camera.main;
             _figureLayer = LayerMask.NameToLayer("UI");
             if (_worldCamera != null && _figureLayer >= 0)
@@ -101,7 +107,7 @@ namespace HiddenHarbours.UI
                 _creatorCamera.orthographic = true;
                 _creatorCamera.cullingMask = 1 << _figureLayer;
                 _creatorCamera.clearFlags = CameraClearFlags.SolidColor;
-                _creatorCamera.backgroundColor = Color.clear;
+                _creatorCamera.backgroundColor = BackdropColor;
                 _creatorCamera.allowHDR = false; _creatorCamera.allowMSAA = false;
                 _creatorCamera.nearClipPlane = _worldCamera.nearClipPlane;
                 _creatorCamera.farClipPlane = _worldCamera.farClipPlane;
@@ -260,11 +266,21 @@ namespace HiddenHarbours.UI
                 _pixelMultiple = Mathf.Max(1, Mathf.FloorToInt(Screen.height * TargetFraction / artHeight));
                 _creatorCamera.orthographicSize = Screen.height / (2f * FigurePixelGrid.ArtPixelsPerMetre * _pixelMultiple);
                 Vector3 center = bounds.center;
-                center.y -= _creatorCamera.orthographicSize * StripHeight / Height;
-                _creatorCamera.transform.SetPositionAndRotation(new Vector3(center.x, center.y, _worldCamera.transform.position.z), _worldCamera.transform.rotation);
-                Vector3 min = _creatorCamera.WorldToScreenPoint(bounds.min), max = _creatorCamera.WorldToScreenPoint(bounds.max);
-                _figureScreenRect = Rect.MinMaxRect(min.x, min.y, max.x, max.y);
+                Quaternion rotation = _worldCamera.transform.rotation;
+                Vector3 forward = rotation * Vector3.forward, up = rotation * Vector3.up;
+                float distance = Mathf.Max(bounds.extents.magnitude + _creatorCamera.nearClipPlane,
+                    Mathf.Abs(Vector3.Dot(bounds.center - _worldCamera.transform.position, forward)));
+                center -= up * (_creatorCamera.orthographicSize * StripHeight / Height);
+                _creatorCamera.transform.SetPositionAndRotation(center - forward * distance, rotation);
+                _creatorCamera.aspect = (float)_creatorTarget.width / _creatorTarget.height;
+                _figureScreenRect = ProjectBounds(_creatorCamera, bounds);
                 _figureHeightPixels = _figureScreenRect.height;
+                if (!EnsureCreatorOverlay()) { UseFallback("The figure overlay shader is unavailable."); return; }
+                _tallestRenderer.GetPropertyBlock(_creatorProperties);
+                _creatorOverlay.SetPropertyBlock(_creatorProperties);
+                _creatorOverlay.transform.localPosition = Vector3.forward * (_creatorCamera.nearClipPlane + 1f);
+                _creatorOverlay.transform.localScale = new Vector3(_creatorCamera.orthographicSize * _creatorCamera.aspect * 2f,
+                    _creatorCamera.orthographicSize * 2f, 1f);
                 _creatorCamera.enabled = true;
             }
             _layoutValid = true;
@@ -275,35 +291,38 @@ namespace HiddenHarbours.UI
         {
             if (_portrait == null || _model == null || !_model.IsOpen || !_layoutValid) return;
             if ((!_fallback && camera != _creatorCamera) || (_fallback && camera != _worldCamera)) return;
-            Texture texture = Shader.GetGlobalTexture(FigureTexture);
-            Vector4 map = Shader.GetGlobalVector(FigureMap);
-            bool available = texture != null && texture.width > 1 && map.w > 0f;
             if (!_fallback)
             {
                 if (++_creatorWarmFrames < 3) return;
                 if (!_creatorProbeDone)
                 {
                     _creatorProbeDone = true;
-                    if (!available || !IsIsolatedFigure(texture as RenderTexture))
-                    { UseFallback("One creator-camera render could not isolate a non-empty figure on the existing UI layer."); return; }
+                    if (!IsIsolatedFigure(_creatorTarget, true))
+                    { UseFallback("The creator camera produced no isolated figure; the fallback must supply a written figure export."); return; }
                 }
-                _portrait.enabled = available;
-                if (!available) return;
-                // The project's facet pass exports the isolated live figure. Compose that camera's
-                // point-sampled export into our own target; its water/deck colour pass is never shown.
-                texture.filterMode = FilterMode.Point;
-                Vector2 scale = new Vector2(camera.pixelWidth / (map.w * texture.width), camera.pixelHeight / (map.w * texture.height));
-                Vector2 offset = new Vector2(-map.x / (map.w * texture.width), -map.y / (map.w * texture.height));
-                RenderTexture previous = RenderTexture.active;
-                try { Graphics.Blit(texture, _creatorTarget, scale, offset); }
-                finally { RenderTexture.active = previous; }
-                _portrait.texture = _creatorTarget; _portrait.uvRect = new Rect(0f, 0f, 1f, 1f);
+                // The view's overlay reads the GPU-bound export during this camera's ordinary
+                // sprite pass. Shader.GetGlobalTexture can still return its CPU placeholder.
+                _portrait.texture = _creatorTarget;
+                _portrait.uvRect = new Rect(0f, 0f, 1f, 1f);
+                _portrait.enabled = true;
                 Stretch(_portrait.rectTransform);
             }
             else
             {
-                _portrait.enabled = available;
-                if (!available || _tallestRenderer == null) return;
+                Texture texture = Shader.GetGlobalTexture(FigureTexture);
+                Vector4 map = Shader.GetGlobalVector(FigureMap);
+                bool available = texture is RenderTexture export && export.IsCreated()
+                    && texture.width >= 8 && texture.height >= 8 && map.w > 0f;
+                if (!available)
+                {
+                    _portrait.enabled = false;
+                    _viewReason = "FAILED: no written figure export is available; placeholder textures are never scaled.";
+                    return;
+                }
+                if (!_fallbackExportReady) _fallbackExportReady = IsIsolatedFigure((RenderTexture)texture);
+                _portrait.enabled = _fallbackExportReady;
+                if (!_fallbackExportReady || _tallestRenderer == null)
+                { _viewReason = "FAILED: the figure export has not produced an isolated figure."; return; }
                 Vector3 min = camera.WorldToScreenPoint(_tallestRenderer.bounds.min), max = camera.WorldToScreenPoint(_tallestRenderer.bounds.max);
                 Vector2 low = new Vector2((min.x - map.x) / map.w, (min.y - map.y) / map.w);
                 Vector2 high = new Vector2((max.x - map.x) / map.w, (max.y - map.y) / map.w);
@@ -311,6 +330,12 @@ namespace HiddenHarbours.UI
                 float x = Mathf.Max(0f, Mathf.Floor(low.x) - FigurePixelGrid.GuardTexels), y = Mathf.Max(0f, Mathf.Floor(low.y) - FigurePixelGrid.GuardTexels);
                 float w = Mathf.Min(texture.width - x, Mathf.Ceil(high.x) + FigurePixelGrid.GuardTexels - x);
                 float h = Mathf.Min(texture.height - y, Mathf.Ceil(high.y) + FigurePixelGrid.GuardTexels - y);
+                if (w <= 0f || h <= 0f || high.y <= low.y)
+                {
+                    _portrait.enabled = false;
+                    _viewReason = "FAILED: the figure bounds do not intersect the written export.";
+                    return;
+                }
                 RectTransform rect = _portrait.rectTransform;
                 rect.anchorMin = rect.anchorMax = new Vector2(0.5f, (1f + StripHeight / Height) * 0.5f); rect.pivot = Vector2.one * 0.5f;
                 rect.anchoredPosition = Vector2.zero; rect.sizeDelta = new Vector2(w, h) * _pixelMultiple / _canvas.scaleFactor;
@@ -323,6 +348,38 @@ namespace HiddenHarbours.UI
             }
         }
 
+        private bool EnsureCreatorOverlay()
+        {
+            if (_creatorOverlay != null) return true;
+            Shader shader = Shader.Find("HiddenHarbours/IsoFacetOverlay");
+            if (shader == null || !shader.isSupported) return false;
+            _creatorOverlayMaterial = new Material(shader) { name = "CreatorFigureOverlay", hideFlags = HideFlags.DontSave };
+            _creatorQuadMesh = new Mesh { name = "CreatorFigureQuad", hideFlags = HideFlags.DontSave };
+            _creatorQuadMesh.vertices = new[] { new Vector3(-.5f,-.5f,0f), new Vector3(.5f,-.5f,0f),
+                new Vector3(.5f,.5f,0f), new Vector3(-.5f,.5f,0f) };
+            _creatorQuadMesh.triangles = new[] { 0,1,2,0,2,3 };
+            _creatorQuadMesh.RecalculateBounds();
+            var host = new GameObject("CreatorFigureOverlay", typeof(MeshFilter), typeof(MeshRenderer)) { layer = _figureLayer };
+            host.transform.SetParent(_creatorCamera.transform, false);
+            host.GetComponent<MeshFilter>().sharedMesh = _creatorQuadMesh;
+            _creatorOverlay = host.GetComponent<MeshRenderer>();
+            _creatorOverlay.sharedMaterial = _creatorOverlayMaterial;
+            _creatorOverlay.sortingOrder = short.MaxValue;
+            return true;
+        }
+
+        private static Rect ProjectBounds(Camera camera, Bounds bounds)
+        {
+            Vector2 low = new Vector2(float.PositiveInfinity, float.PositiveInfinity);
+            Vector2 high = new Vector2(float.NegativeInfinity, float.NegativeInfinity);
+            for (int i = 0; i < 8; i++)
+            {
+                Vector3 point = camera.WorldToScreenPoint(bounds.center + Vector3.Scale(bounds.extents,
+                    new Vector3((i & 1) == 0 ? -1f : 1f, (i & 2) == 0 ? -1f : 1f, (i & 4) == 0 ? -1f : 1f)));
+                low = Vector2.Min(low, point); high = Vector2.Max(high, point);
+            }
+            return Rect.MinMaxRect(low.x, low.y, high.x, high.y);
+        }
         private void EnsureCreatorTarget()
         {
             if (_creatorTarget != null && _creatorTarget.width == Screen.width && _creatorTarget.height == Screen.height) return;
@@ -336,9 +393,9 @@ namespace HiddenHarbours.UI
                 { name = "CreatorFigureTarget", filterMode = FilterMode.Point, antiAliasing = 1 };
             _creatorTarget.Create(); _creatorCamera.targetTexture = _creatorTarget;
         }
-        private static bool IsIsolatedFigure(RenderTexture texture)
+        private static bool IsIsolatedFigure(RenderTexture texture, bool backdrop = false)
         {
-            if (texture == null) return false;
+            if (texture == null || !texture.IsCreated() || texture.width < 8 || texture.height < 8) return false;
             RenderTexture previous = RenderTexture.active;
             var probe = new Texture2D(texture.width, texture.height, TextureFormat.RGBA32, false);
             try
@@ -348,16 +405,26 @@ namespace HiddenHarbours.UI
                 Color32[] pixels = probe.GetPixels32();
                 bool emptyCorners = pixels[0].a == 0 && pixels[texture.width - 1].a == 0
                     && pixels[pixels.Length - 1].a == 0 && pixels[pixels.Length - texture.width].a == 0;
+                if (backdrop)
+                    emptyCorners = SamePixel(pixels[0], pixels[texture.width - 1])
+                        && SamePixel(pixels[0], pixels[pixels.Length - 1])
+                        && SamePixel(pixels[0], pixels[pixels.Length - texture.width]);
                 if (!emptyCorners) return false;
-                foreach (Color32 pixel in pixels) if (pixel.a > 0) return true;
+                foreach (Color32 pixel in pixels) if (backdrop ? !SamePixel(pixel, pixels[0]) : pixel.a > 0) return true;
                 return false;
             }
             finally { RenderTexture.active = previous; Destroy(probe); }
         }
+        private static bool SamePixel(Color32 a, Color32 b) => Math.Abs(a.r - b.r) + Math.Abs(a.g - b.g)
+            + Math.Abs(a.b - b.b) + Math.Abs(a.a - b.a) <= 4;
+
         private void RestoreLayers()
         { foreach (var pair in _layers) if (pair.Key != null) pair.Key.layer = pair.Value; _layers.Clear(); }
         private void ReleaseCreatorCamera()
         {
+            if (_creatorOverlay != null) { Destroy(_creatorOverlay.gameObject); _creatorOverlay = null; }
+            if (_creatorOverlayMaterial != null) { Destroy(_creatorOverlayMaterial); _creatorOverlayMaterial = null; }
+            if (_creatorQuadMesh != null) { Destroy(_creatorQuadMesh); _creatorQuadMesh = null; }
             if (_portrait != null) { _portrait.enabled = false; _portrait.texture = null; }
             if (_creatorCamera != null) { _creatorCamera.enabled = false; _creatorCamera.targetTexture = null; Destroy(_creatorCamera.gameObject); _creatorCamera = null; }
             if (_creatorTarget != null)
@@ -367,7 +434,7 @@ namespace HiddenHarbours.UI
             }
         }
         private void UseFallback(string reason)
-        { _fallback = true; _viewReason = reason; RestoreLayers(); ReleaseCreatorCamera(); _refreshRenderers = true; }
+        { _fallback = true; _fallbackExportReady = false; _viewReason = reason; RestoreLayers(); ReleaseCreatorCamera(); _refreshRenderers = true; }
 
         private void Rotate(int direction)
         {
