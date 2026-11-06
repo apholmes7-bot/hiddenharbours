@@ -47,6 +47,8 @@ namespace HiddenHarbours.App.Editor
 
         /// <summary>Half a quay blocker's thickness, as the builder lays them.</summary>
         public const float BlockerHalfThickness = 0.175f;
+        // Foot radius 0.35 + scan allowance 0.05 + margin 0.1 clears the quay at either pier edge.
+        public const float RunwayClearance = 0.5f;
 
         /// <summary>The north cap: the whole north face, step to breakwater root.</summary>
         public static Rect NorthCap => new Rect(FaceStepX, NorthFaceY, NorthFaceEastX - FaceStepX, CapDepthMetres);
@@ -164,13 +166,13 @@ namespace HiddenHarbours.App.Editor
         public const string TurningPadName = "WharfTurningPad";
 
         /// <summary>The yard's own road (the wharf key scene's yard.main_road) runs straight along this y from the
-        /// turning pad's east side to the boat yard's gate. H6 PR 2 paves its first 30 m to the west lot.</summary>
+        /// turning pad's east side to the boat yard's gate. H6 PR 3 carries the same way beyond the west lot.</summary>
         public const float YardRoadY = 120f;
         public const string YardRoadName = "WharfYardRoad";
         public const float YardRoadHalfWidth = 3.75f;
         public static Vector2 YardRoadStart => new Vector2(76f, YardRoadY);
-        // PR 3 carries this same way on to the record's (190, 120).
-        public static Vector2 YardRoadEnd => new Vector2(106f, YardRoadY);
+        // The record's yard.main_road carries the same way through the gate to (190, 120).
+        public static Vector2 YardRoadEnd => new Vector2(190f, YardRoadY);
 
         /// <summary>Where the yard road's line leaves the turning circle on its east side, (76.14, 120): where a
         /// truck leaves the pad for the buyers' gravel.</summary>
@@ -210,7 +212,7 @@ namespace HiddenHarbours.App.Editor
                         false, "the turning circle at the head of Wharf Road's ramp: a truck that came up it turns here"));
                     list.Add(new NineMileCreekRoads.Way(YardRoadName, NineMileCreekRoads.GravelSurface,
                         new[] { YardRoadStart, YardRoadEnd }, YardRoadHalfWidth, NineMileCreekRoads.RankWharfRoad, true,
-                        "the wharf key scene's yard.main_road: the pad's east side to the west lot (H6 PR 2); PR 3 runs it on to the gate"));
+                        "the wharf key scene's yard.main_road: the pad's east side through the boat yard gate (H6 PR 3)"));
                 }
                 else if (way.Name.StartsWith(NineMileCreekRoads.TownWalkNamePrefix, System.StringComparison.Ordinal))
                     continue;   // re-derived below, joining the final lines

@@ -98,13 +98,13 @@ namespace HiddenHarbours.App.Editor
         static Doc ExistingRoot(SceneYaml scene, string name) => scene.Docs.SingleOrDefault(d =>
             d.ClassId == 1 && !d.Stripped && d.Field("m_Name") == name && scene.TransformOf(d).FieldRef("m_Father") == 0);
 
-        static LayerPatch WriteRoot(SceneYaml scene, string name, long rootId, List<(string name, string text)> wanted)
+        static LayerPatch WriteRoot(SceneYaml scene, string name, long rootId, List<(string name, string text)> wanted, string step = PlacementStep)
         {
             Doc root = ExistingRoot(scene, name);
             if (root != null && root.FileId != rootId) throw new Refusal(PlacementStep + ": a root has an unexpected identity: " + name);
             var mine = root == null ? new HashSet<long>() : scene.SubtreeOf(rootId);
             var wantIds = new HashSet<long>(wanted.Select(w => new Doc(w.text).FileId));
-            var patch = new LayerPatch(PlacementStep, name, rootId);
+            var patch = new LayerPatch(step, name, rootId);
             foreach (long id in mine.Where(id => !wantIds.Contains(id)).OrderBy(id => id))
                 patch.Delete(scene.Require(id, name), name + "/retired &" + id);
             foreach (var w in wanted)
@@ -287,6 +287,9 @@ namespace HiddenHarbours.App.Editor
         {
             string text = File.ReadAllText(KeyScenePath);
             string[] ids = PlacementRows().Select(p => p.Id).ToArray();
+            if (SceneYaml.Parse(File.ReadAllText(NineMileCreekLayerRefresh.ScenePath)).Docs.Any(d =>
+                d.ClassId == 1 && d.Field("m_Name") == NineMileCreekWharfYard.RootName))
+                ids = ids.Concat(new[] { NineMileCreekWharfYard.RowId, NineMileCreekWharfYard.DamagedDoryRowId }).ToArray();
             text = Regex.Replace(text, @"(?m)^  Placed: [01]$", "  Placed: 1");
             text = Regex.Replace(text, @"(?m)^  PlacementIds:(?: \[\])?(?:\n  - [^\n]+)*", "  PlacementIds:\n" + string.Join("\n", ids.Select(id => "  - " + id)));
             if (text != File.ReadAllText(KeyScenePath)) File.WriteAllText(KeyScenePath, text);

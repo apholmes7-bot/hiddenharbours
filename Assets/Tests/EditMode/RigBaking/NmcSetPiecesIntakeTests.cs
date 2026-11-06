@@ -364,9 +364,9 @@ namespace HiddenHarbours.Tests.RigBaking
                 "prop.nmc_traps_9,prop.nmc_traps_10,prop.nmc_traps_11,prop.nmc_quay_traps_0,prop.nmc_quay_traps_1," +
                 "prop.nmc_quay_traps_2,prop.nmc_buoys_leo,prop.nmc_buoys_marie,prop.nmc_nets_a,prop.nmc_baskets," +
                 "prop.nmc_barrow,prop.nmc_ring_w,prop.nmc_ring_e,prop.nmc_notice,gull.nmc_shed," +
-                "gull.nmc_flats,gull.nmc_restaurant,gull.nmc_market").Split(',');
-            Assert.That(placements.Length, Is.EqualTo(98));
-            Assert.That(placements.Distinct().Count(), Is.EqualTo(98));
+                "gull.nmc_flats,gull.nmc_restaurant,gull.nmc_market,harbour.yard,boat.nmc_damaged_dory").Split(',');
+            Assert.That(placements.Length, Is.EqualTo(100));
+            Assert.That(placements.Distinct().Count(), Is.EqualTo(100));
             string patched = Path.GetFullPath(Abs("Assets/_Project/Scenes/NineMileCreek.unity"));
             foreach (string scene in Directory.GetFiles(Abs("Assets/_Project/Scenes"), "*.unity", SearchOption.AllDirectories))
             {

@@ -874,24 +874,38 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         [Test]
-        public void NothingBlocksTheViewOfTheDerelictDoryFromWhereThePlayerLands()
+        public void NothingBlocksTheViewOfTheDerelictDoryFromWhereThePlayerReachesTheYard()
         {
-            // ⚠️ THE REGION'S OPENING BEAT. NineMileCreekDory measures this line and the whole §7.2 exit
-            // condition hangs off it: you step ashore and you SEE the boat you are going to buy. A first
-            // draft of this pass put the fuel pump 0.28 m off it.
-            //
-            // ⚠️ LEGACY GEOMETRY: the plan's landing, not the activated scene's. These props were laid for
-            // NineMileCreekMainland.DisembarkPos, so the line is measured from there. The activated scene
-            // lands the player at NineMileCreekGroundPlan's step-off (NineMileCreekDory.ArrivalStandingPos
-            // follows it), and from there the plan's fuel pump and oil tank stand on the line: they move
-            // with their decorative wave. This test does not prove the activated scene.
-            Vector2 landing = NineMileCreekMainland.DisembarkPos;
+            // The legacy landing line retires: on 11-06 the derelict follows the delivered yard,
+            // about 100 m from the landing and outside its camera frame. The ruled view is from
+            // the yard approach. There is no gate placement row, so the delivered yard road's end
+            // is the viewpoint. The owner still decides canon 7.2's arrival beat while the PR is draft.
+            Vector2 approach = NineMileCreekGroundPlan.YardRoadEnd;
+            float minimum = float.MaxValue;
+            void AssertClear(string name, Vector2 at)
+            {
+                float distance = NineMileCreekDory.DistancePointToSegment(at, approach, NineMileCreekDory.HaulOutPos);
+                minimum = Mathf.Min(minimum, distance);
+                Assert.That(distance, Is.GreaterThan(NineMileCreekDressing.DoryYardClearanceMetres),
+                    $"'{name}' at {at} stands on the line from the yard approach {approach} to the derelict");
+            }
             foreach (var prop in Props())
-                Assert.That(
-                    NineMileCreekDory.DistancePointToSegment(prop.Position, landing, NineMileCreekDory.HaulOutPos),
-                    Is.GreaterThan(NineMileCreekDressing.DoryYardClearanceMetres),
-                    $"'{prop.Key}' at {prop.Position} stands on the line from the plan's landing {landing} to " +
-                    "the derelict. Move the prop; the beat is not negotiable");
+                AssertClear(prop.Key, prop.Position);
+            var scene = NineMileCreekLiveGround.Scene;
+            int wares = 0;
+            foreach (string name in new[] { NineMileCreekWharfYard.CatalogueName, NineMileCreekWharfYard.DoryTradeName })
+            {
+                var root = scene.RootNamed(name);
+                foreach (var ware in scene.ComponentsOf(root).Where(d =>
+                    d.IsScript("HiddenHarbours.Economy.Shipwright") || d.IsScript("HiddenHarbours.Economy.PotShop")))
+                {
+                    AssertClear(name + " ware &" + ware.FileId, NineMileCreekLiveGround.WorldPosition(root));
+                    wares++;
+                }
+            }
+            Assert.That(wares, Is.EqualTo(4), "the punt, two pot offers and damaged dory stand at the shed door");
+            TestContext.WriteLine($"yard sightline {approach} to {NineMileCreekDory.HaulOutPos}: " +
+                                  $"{Props().Count} props and {wares} wares, minimum clearance {minimum:0.000000} m");
         }
 
         [Test]

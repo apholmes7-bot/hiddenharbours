@@ -143,15 +143,22 @@ namespace HiddenHarbours.Tests.EditMode
         [Test]
         public void EveryTownLot_HasExactlyOneYard()
         {
+            // Ruling 20 (20261104T005510Z): BoatShed's named lot stays in H4's record; its yard is retired.
             IReadOnlyList<Yard> yards = NineMileCreekYards.Yards;
-            Assert.AreEqual(NineMileCreekMainland.TownLots.Length, yards.Count,
-                "one yard per town lot: a lot that quietly loses its row grows a meadow through its " +
-                "dooryard and nothing says so.");
-
-            foreach (Vector3 lot in NineMileCreekMainland.TownLots)
+            Assert.AreEqual(5, NineMileCreekMainland.TownLots.Length, "the five town-lot records remain");
+            Assert.AreEqual("lot.nmc_boat_shed", NineMileCreekMainland.TownLotIds[4]);
+            Assert.AreEqual(new Vector3(-94f, 158f, 0f), NineMileCreekMainland.TownLots[4]);
+            Assert.IsFalse(YardPlan.HasYardFor(yards, new Vector2(-94f, 158f)), "BoatShed's yard is retired by name");
+            Assert.AreEqual(4, yards.Count, "one yard per active property");
+            string[] names = { "Chandlery", "ParishHall", "HouseSouth", "HouseMill" };
+            Vector2[] owners = { new Vector2(-160f,237.26f), new Vector2(-152f,62f),
+                                 new Vector2(-200f,-8f), new Vector2(-264.5f,152f) };
+            for (int i = 0; i < names.Length; i++)
             {
-                var site = new Vector2(lot.x, lot.y);
-                Assert.IsTrue(YardPlan.HasYardFor(yards, site), $"the lot at {site} has no yard.");
+                Yard yard = YardPlan.Require(yards, names[i]);
+                Assert.AreEqual(owners[i], yard.Owner, names[i] + " keeps its exact owner point");
+                Assert.AreEqual(owners[i], (Vector2)NineMileCreekMainland.TownLots[i]);
+                Assert.IsTrue(YardPlan.HasYardFor(yards, owners[i]), names[i] + " keeps its yard");
             }
         }
 

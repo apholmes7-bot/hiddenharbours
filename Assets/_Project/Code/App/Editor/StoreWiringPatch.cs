@@ -107,13 +107,13 @@ namespace HiddenHarbours.App.Editor
         /// <summary>Nine Mile Creek: the yard's shed and dory yard, the harbourmaster, the chandlery, and Hector's barrel.</summary>
         public static readonly Region NineMileCreek = new Region("NineMileCreek", NineMileCreekScenePath, new[]
         {
-            new Seller("ShipwrightShed", typeof(Shipwright), "boat.punt", NineMileCreekBuilder.SellerYard),
-            new Seller("ShipwrightShed", typeof(PotShop), "offer.lobster_pot", NineMileCreekBuilder.SellerYard),
-            new Seller("ShipwrightShed", typeof(PotShop), "offer.crab_pot", NineMileCreekBuilder.SellerYard),
+            new Seller(NineMileCreekWharfYard.CatalogueName, typeof(Shipwright), "boat.punt", NineMileCreekBuilder.SellerYard),
+            new Seller(NineMileCreekWharfYard.CatalogueName, typeof(PotShop), "offer.lobster_pot", NineMileCreekBuilder.SellerYard),
+            new Seller(NineMileCreekWharfYard.CatalogueName, typeof(PotShop), "offer.crab_pot", NineMileCreekBuilder.SellerYard),
             new Seller(NineMileCreekWharfLandSide.OfficeVendorName, typeof(LicenseVendor), "license.cod", NineMileCreekBuilder.SellerHarbourmaster),
             new Seller("GeneralStore", typeof(GearShop), "gear.rod", NineMileCreekBuilder.SellerChandlery),
-            new Seller("ShipwrightDoryYard", typeof(Shipwright), "boat.dory", NineMileCreekBuilder.SellerYard),
-            new Seller("UsedOutboardSeller", typeof(Shipwright), "boat.dory_outboard", NineMileCreekBuilder.SellerHectorsBarrel),
+            new Seller(NineMileCreekWharfYard.DoryTradeName, typeof(Shipwright), "boat.dory", NineMileCreekBuilder.SellerYard),
+            new Seller(NineMileCreekWharfYard.OutboardTradeName, typeof(Shipwright), "boat.dory_outboard", NineMileCreekBuilder.SellerHectorsBarrel),
         });
 
         public static readonly IReadOnlyList<Region> Regions = new[] { StPeters, NineMileCreek };

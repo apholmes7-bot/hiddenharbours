@@ -1,0 +1,5306 @@
+{
+ "schema": "hidden-harbours/nmc-shipyard-today@1",
+ "kit": {
+  "folder": "docs/art/rigs/nmc-shipyard-kit",
+  "global": "NmcShipyard",
+  "version": "1.0.0",
+  "scripts": [
+   {
+    "path": "../nmc-set-pieces-kit/lib/weatherSky.js",
+    "sha256Lf": "38300697d5fe685b4800b2a5252aa3c9f0fbcb08bad40e80f6ce3aee1e9c7062"
+   },
+   {
+    "path": "../nmc-set-pieces-kit/lib/coastalPass.js",
+    "sha256Lf": "041b0bc32040c10a1bafc57da1d3f19e76047285c2b802861cff67caca5b166d"
+   },
+   {
+    "path": "wharfRig2.geo.js",
+    "sha256Lf": "cc295e419ea54e83bb47035cbb668a7bacda2fed0cc420466bf219f00da4a9d1"
+   },
+   {
+    "path": "wharfRig2.fam.js",
+    "sha256Lf": "d6933679ddca834c92043f595ad13958c3e512445ba46065e63bbbf1332c299c"
+   },
+   {
+    "path": "wharfRig2.verbs.js",
+    "sha256Lf": "e4f6cb4cc3277aa222b7e09ed9379464eb022646c8507fb4600f4ad91e6b4709"
+   },
+   {
+    "path": "wharfRig2.js",
+    "sha256Lf": "c29219aeb9e3f36698a4a47715069343f3491922baafd5d410a2fc5fd032b4a6"
+   },
+   {
+    "path": "wharfRig2.kit.js",
+    "sha256Lf": "e896eeeb84567c0790a6fdf5d64ff27d2e5f9fbeb2e0d5bdc17c0e4a7185fbc1"
+   },
+   {
+    "path": "marinaRig.js",
+    "sha256Lf": "7c4733acd839b831d36cc18040b9f02de4b8236f2e96647e040a8133cde48602"
+   },
+   {
+    "path": "bowriderIsoRig.js",
+    "sha256Lf": "6ee22200da1cdd33154e54a0ff6a9dff7996a4c1896b5e4c46ad4dcaceff4043"
+   },
+   {
+    "path": "sportSkiffIsoRig.js",
+    "sha256Lf": "843624c728c7019e4a3528b329be90be1eff6ca03f2eaa86f965d247c520f802"
+   },
+   {
+    "path": "lobsterBoatVariantsIsoRig.js",
+    "sha256Lf": "ed8d0e7a43c9e8ee68f4dfc0d48919e1e162b749252a86d193d86cdaa4772795"
+   },
+   {
+    "path": "capeIslanderIsoRig.js",
+    "sha256Lf": "009775b481758f9802515fb205af2716c7f12ba87d46f392d50804d7cd3257db"
+   },
+   {
+    "path": "marinaBoats.js",
+    "sha256Lf": "888ed44486475890354e41502a6685cbc87f193392c0554838382435beb08229"
+   },
+   {
+    "path": "shipyardRig2.js",
+    "sha256Lf": "f228320e85e8045d73a56058aa1ff82723320ff33d62a04c99e7986228eb3fb3"
+   },
+   {
+    "path": "nmcWharf.js",
+    "sha256Lf": "2e42f3877fcc22ff1e433c409b3642a19c8d2f50db50af6302d5b336de8138cd"
+   },
+   {
+    "path": "yard-layout.js",
+    "sha256Lf": "a7747f879c7f1eb1ebc2d06773bd891e767dfdb567389ef0b3dc9b091f56b321"
+   },
+   {
+    "path": "nmcShipyard.js",
+    "sha256Lf": "64ca7865209c9e9e8056efc35bdcb912198e5888b69c39c2200a12fbbb33e378"
+   }
+  ]
+ },
+ "bake": {
+  "sky": {
+   "time": 14,
+   "cloud": 0.1,
+   "wind": 0.3
+  },
+  "lit": 0,
+  "outline": false,
+  "facings": 8,
+  "importSizeCap": 4096
+ },
+ "leftOut": [],
+ "pieces": [
+  {
+   "key": "yardFront",
+   "id": "structure.nmc_yard_yard_front",
+   "scene": "keyscene.nmc_wharf",
+   "options": {},
+   "variants": [],
+   "gameplay": {
+    "schema": "hidden-harbours/nmc-shipyard-part@1",
+    "generatedBy": "NmcShipyard 1.0.0",
+    "key": "yardFront",
+    "id": "structure.nmc_yard_yard_front",
+    "name": "Wharf boat yard: yardFront",
+    "defType": "SetPieceDef",
+    "scene": "keyscene.nmc_wharf",
+    "units": "metres in the part frame, deck datum zero",
+    "bounds": {
+     "x": [
+      -14.06,
+      14.06
+     ],
+     "y": [
+      -5.297873,
+      5.06
+     ],
+     "z": [
+      -9.066359,
+      2.69
+     ]
+    },
+    "layer": "floor",
+    "walk": "on",
+    "mount": "ground",
+    "colliders": [],
+    "facings": [
+     {
+      "dir": 0,
+      "showFaces": "0",
+      "bearingDeg": 0,
+      "cameraSees": "yard part"
+     },
+     {
+      "dir": 1,
+      "showFaces": "1",
+      "bearingDeg": 45,
+      "cameraSees": "yard part"
+     },
+     {
+      "dir": 2,
+      "showFaces": "2",
+      "bearingDeg": 90,
+      "cameraSees": "yard part"
+     },
+     {
+      "dir": 3,
+      "showFaces": "3",
+      "bearingDeg": 135,
+      "cameraSees": "yard part"
+     },
+     {
+      "dir": 4,
+      "showFaces": "4",
+      "bearingDeg": 180,
+      "cameraSees": "yard part"
+     },
+     {
+      "dir": 5,
+      "showFaces": "5",
+      "bearingDeg": 225,
+      "cameraSees": "yard part"
+     },
+     {
+      "dir": 6,
+      "showFaces": "6",
+      "bearingDeg": 270,
+      "cameraSees": "yard part"
+     },
+     {
+      "dir": 7,
+      "showFaces": "7",
+      "bearingDeg": 315,
+      "cameraSees": "yard part"
+     }
+    ],
+    "cells": [
+     {
+      "dir": 0,
+      "w": 909,
+      "h": 439,
+      "pivot": [
+       454,
+       109
+      ]
+     },
+     {
+      "dir": 1,
+      "w": 875,
+      "h": 786,
+      "pivot": [
+       437,
+       283
+      ]
+     },
+     {
+      "dir": 2,
+      "w": 341,
+      "h": 834,
+      "pivot": [
+       166,
+       319
+      ]
+     },
+     {
+      "dir": 3,
+      "w": 875,
+      "h": 823,
+      "pivot": [
+       437,
+       319
+      ]
+     },
+     {
+      "dir": 4,
+      "w": 909,
+      "h": 504,
+      "pivot": [
+       454,
+       174
+      ]
+     },
+     {
+      "dir": 5,
+      "w": 875,
+      "h": 823,
+      "pivot": [
+       438,
+       319
+      ]
+     },
+     {
+      "dir": 6,
+      "w": 341,
+      "h": 834,
+      "pivot": [
+       174,
+       319
+      ]
+     },
+     {
+      "dir": 7,
+      "w": 875,
+      "h": 786,
+      "pivot": [
+       438,
+       283
+      ]
+     }
+    ],
+    "anchors": {},
+    "options": {},
+    "placement": {
+     "row": "harbour.yard",
+     "at": [
+      198,
+      91
+     ],
+     "elevation": 3.4,
+     "dir": 0
+    },
+    "walkSurfaces": [
+     {
+      "poly": [
+       [
+        14,
+        5
+       ],
+       [
+        -14,
+        5
+       ],
+       [
+        -14,
+        -5
+       ],
+       [
+        14,
+        -5
+       ]
+      ],
+      "z": 0,
+      "surface": "concrete"
+     }
+    ],
+    "records": []
+   }
+  },
+  {
+   "key": "pierW",
+   "id": "structure.nmc_yard_pier_w",
+   "scene": "keyscene.nmc_wharf",
+   "options": {},
+   "variants": [],
+   "gameplay": {
+    "schema": "hidden-harbours/nmc-shipyard-part@1",
+    "generatedBy": "NmcShipyard 1.0.0",
+    "key": "pierW",
+    "id": "structure.nmc_yard_pier_w",
+    "name": "Wharf boat yard: pierW",
+    "defType": "SetPieceDef",
+    "scene": "keyscene.nmc_wharf",
+    "units": "metres in the part frame, deck datum zero",
+    "bounds": {
+     "x": [
+      -1.3,
+      1.3
+     ],
+     "y": [
+      -9.75,
+      9.6
+     ],
+     "z": [
+      -7.802818,
+      0
+     ]
+    },
+    "layer": "floor",
+    "walk": "on",
+    "mount": "ground",
+    "colliders": [],
+    "facings": [
+     {
+      "dir": 0,
+      "showFaces": "0",
+      "bearingDeg": 0,
+      "cameraSees": "yard part"
+     },
+     {
+      "dir": 1,
+      "showFaces": "1",
+      "bearingDeg": 45,
+      "cameraSees": "yard part"
+     },
+     {
+      "dir": 2,
+      "showFaces": "2",
+      "bearingDeg": 90,
+      "cameraSees": "yard part"
+     },
+     {
+      "dir": 3,
+      "showFaces": "3",
+      "bearingDeg": 135,
+      "cameraSees": "yard part"
+     },
+     {
+      "dir": 4,
+      "showFaces": "4",
+      "bearingDeg": 180,
+      "cameraSees": "yard part"
+     },
+     {
+      "dir": 5,
+      "showFaces": "5",
+      "bearingDeg": 225,
+      "cameraSees": "yard part"
+     },
+     {
+      "dir": 6,
+      "showFaces": "6",
+      "bearingDeg": 270,
+      "cameraSees": "yard part"
+     },
+     {
+      "dir": 7,
+      "showFaces": "7",
+      "bearingDeg": 315,
+      "cameraSees": "yard part"
+     }
+    ],
+    "cells": [
+     {
+      "dir": 0,
+      "w": 93,
+      "h": 598,
+      "pivot": [
+       46,
+       202
+      ]
+     },
+     {
+      "dir": 1,
+      "w": 504,
+      "h": 513,
+      "pivot": [
+       251,
+       163
+      ]
+     },
+     {
+      "dir": 2,
+      "w": 629,
+      "h": 247,
+      "pivot": [
+       312,
+       31
+      ]
+     },
+     {
+      "dir": 3,
+      "w": 504,
+      "h": 460,
+      "pivot": [
+       251,
+       164
+      ]
+     },
+     {
+      "dir": 4,
+      "w": 93,
+      "h": 532,
+      "pivot": [
+       46,
+       203
+      ]
+     },
+     {
+      "dir": 5,
+      "w": 504,
+      "h": 467,
+      "pivot": [
+       252,
+       164
+      ]
+     },
+     {
+      "dir": 6,
+      "w": 629,
+      "h": 249,
+      "pivot": [
+       317,
+       31
+      ]
+     },
+     {
+      "dir": 7,
+      "w": 504,
+      "h": 514,
+      "pivot": [
+       252,
+       163
+      ]
+     }
+    ],
+    "anchors": {},
+    "options": {},
+    "placement": {
+     "row": "harbour.yard",
+     "at": [
+      192,
+      76.4
+     ],
+     "elevation": 3.4,
+     "dir": 0
+    },
+    "walkSurfaces": [
+     {
+      "poly": [
+       [
+        -1.3,
+        9.6
+       ],
+       [
+        -1.3,
+        -9.6
+       ],
+       [
+        1.3,
+        -9.6
+       ],
+       [
+        1.3,
+        9.6
+       ]
+      ],
+      "z": 0,
+      "surface": "concrete"
+     }
+    ],
+    "records": []
+   }
+  },
+  {
+   "key": "pierE",
+   "id": "structure.nmc_yard_pier_e",
+   "scene": "keyscene.nmc_wharf",
+   "options": {},
+   "variants": [],
+   "gameplay": {
+    "schema": "hidden-harbours/nmc-shipyard-part@1",
+    "generatedBy": "NmcShipyard 1.0.0",
+    "key": "pierE",
+    "id": "structure.nmc_yard_pier_e",
+    "name": "Wharf boat yard: pierE",
+    "defType": "SetPieceDef",
+    "scene": "keyscene.nmc_wharf",
+    "units": "metres in the part frame, deck datum zero",
+    "bounds": {
+     "x": [
+      -1.3,
+      1.3
+     ],
+     "y": [
+      -9.75,
+      9.6
+     ],
+     "z": [
+      -7.859065,
+      0
+     ]
+    },
+    "layer": "floor",
+    "walk": "on",
+    "mount": "ground",
+    "colliders": [],
+    "facings": [
+     {
+      "dir": 0,
+      "showFaces": "0",
+      "bearingDeg": 0,
+      "cameraSees": "yard part"
+     },
+     {
+      "dir": 1,
+      "showFaces": "1",
+      "bearingDeg": 45,
+      "cameraSees": "yard part"
+     },
+     {
+      "dir": 2,
+      "showFaces": "2",
+      "bearingDeg": 90,
+      "cameraSees": "yard part"
+     },
+     {
+      "dir": 3,
+      "showFaces": "3",
+      "bearingDeg": 135,
+      "cameraSees": "yard part"
+     },
+     {
+      "dir": 4,
+      "showFaces": "4",
+      "bearingDeg": 180,
+      "cameraSees": "yard part"
+     },
+     {
+      "dir": 5,
+      "showFaces": "5",
+      "bearingDeg": 225,
+      "cameraSees": "yard part"
+     },
+     {
+      "dir": 6,
+      "showFaces": "6",
+      "bearingDeg": 270,
+      "cameraSees": "yard part"
+     },
+     {
+      "dir": 7,
+      "showFaces": "7",
+      "bearingDeg": 315,
+      "cameraSees": "yard part"
+     }
+    ],
+    "cells": [
+     {
+      "dir": 0,
+      "w": 93,
+      "h": 600,
+      "pivot": [
+       46,
+       202
+      ]
+     },
+     {
+      "dir": 1,
+      "w": 504,
+      "h": 516,
+      "pivot": [
+       251,
+       163
+      ]
+     },
+     {
+      "dir": 2,
+      "w": 629,
+      "h": 250,
+      "pivot": [
+       312,
+       31
+      ]
+     },
+     {
+      "dir": 3,
+      "w": 504,
+      "h": 464,
+      "pivot": [
+       251,
+       164
+      ]
+     },
+     {
+      "dir": 4,
+      "w": 93,
+      "h": 529,
+      "pivot": [
+       46,
+       203
+      ]
+     },
+     {
+      "dir": 5,
+      "w": 504,
+      "h": 456,
+      "pivot": [
+       252,
+       164
+      ]
+     },
+     {
+      "dir": 6,
+      "w": 629,
+      "h": 244,
+      "pivot": [
+       317,
+       31
+      ]
+     },
+     {
+      "dir": 7,
+      "w": 504,
+      "h": 509,
+      "pivot": [
+       252,
+       163
+      ]
+     }
+    ],
+    "anchors": {},
+    "options": {},
+    "placement": {
+     "row": "harbour.yard",
+     "at": [
+      204,
+      76.4
+     ],
+     "elevation": 3.4,
+     "dir": 0
+    },
+    "walkSurfaces": [
+     {
+      "poly": [
+       [
+        -1.3,
+        9.6
+       ],
+       [
+        -1.3,
+        -9.6
+       ],
+       [
+        1.3,
+        -9.6
+       ],
+       [
+        1.3,
+        9.6
+       ]
+      ],
+      "z": 0,
+      "surface": "concrete"
+     }
+    ],
+    "records": []
+   }
+  },
+  {
+   "key": "lift",
+   "id": "structure.nmc_yard_lift",
+   "scene": "keyscene.nmc_wharf",
+   "options": {},
+   "variants": [],
+   "gameplay": {
+    "schema": "hidden-harbours/nmc-shipyard-part@1",
+    "generatedBy": "NmcShipyard 1.0.0",
+    "key": "lift",
+    "id": "structure.nmc_yard_lift",
+    "name": "Wharf boat yard: lift",
+    "defType": "SetPieceDef",
+    "scene": "keyscene.nmc_wharf",
+    "units": "metres in the part frame, deck datum zero",
+    "bounds": {
+     "x": [
+      -6.45,
+      8.11
+     ],
+     "y": [
+      -7.3,
+      7.3
+     ],
+     "z": [
+      -3.001033,
+      9.3
+     ]
+    },
+    "layer": "raised",
+    "walk": "solid",
+    "mount": "ground",
+    "colliders": [
+     {
+      "type": "polygon",
+      "blocks": "walk",
+      "pts": [
+       [
+        6.45,
+        7.2
+       ],
+       [
+        5.55,
+        7.2
+       ],
+       [
+        5.55,
+        4.4
+       ],
+       [
+        6.45,
+        4.4
+       ]
+      ]
+     },
+     {
+      "type": "polygon",
+      "blocks": "walk",
+      "pts": [
+       [
+        6.45,
+        -4.4
+       ],
+       [
+        5.55,
+        -4.4
+       ],
+       [
+        5.55,
+        -7.2
+       ],
+       [
+        6.45,
+        -7.2
+       ]
+      ]
+     },
+     {
+      "type": "polygon",
+      "blocks": "walk",
+      "pts": [
+       [
+        -5.55,
+        7.2
+       ],
+       [
+        -6.45,
+        7.2
+       ],
+       [
+        -6.45,
+        4.4
+       ],
+       [
+        -5.55,
+        4.4
+       ]
+      ]
+     },
+     {
+      "type": "polygon",
+      "blocks": "walk",
+      "pts": [
+       [
+        -5.55,
+        -4.4
+       ],
+       [
+        -6.45,
+        -4.4
+       ],
+       [
+        -6.45,
+        -7.2
+       ],
+       [
+        -5.55,
+        -7.2
+       ]
+      ]
+     }
+    ],
+    "facings": [
+     {
+      "dir": 0,
+      "showFaces": "0",
+      "bearingDeg": 0,
+      "cameraSees": "yard part"
+     },
+     {
+      "dir": 1,
+      "showFaces": "1",
+      "bearingDeg": 45,
+      "cameraSees": "yard part"
+     },
+     {
+      "dir": 2,
+      "showFaces": "2",
+      "bearingDeg": 90,
+      "cameraSees": "yard part"
+     },
+     {
+      "dir": 3,
+      "showFaces": "3",
+      "bearingDeg": 135,
+      "cameraSees": "yard part"
+     },
+     {
+      "dir": 4,
+      "showFaces": "4",
+      "bearingDeg": 180,
+      "cameraSees": "yard part"
+     },
+     {
+      "dir": 5,
+      "showFaces": "5",
+      "bearingDeg": 225,
+      "cameraSees": "yard part"
+     },
+     {
+      "dir": 6,
+      "showFaces": "6",
+      "bearingDeg": 270,
+      "cameraSees": "yard part"
+     },
+     {
+      "dir": 7,
+      "showFaces": "7",
+      "bearingDeg": 315,
+      "cameraSees": "yard part"
+     }
+    ],
+    "cells": [
+     {
+      "dir": 0,
+      "w": 475,
+      "h": 567,
+      "pivot": [
+       211,
+       370
+      ]
+     },
+     {
+      "dir": 1,
+      "w": 653,
+      "h": 618,
+      "pivot": [
+       312,
+       424
+      ]
+     },
+     {
+      "dir": 2,
+      "w": 477,
+      "h": 499,
+      "pivot": [
+       238,
+       365
+      ]
+     },
+     {
+      "dir": 3,
+      "w": 656,
+      "h": 618,
+      "pivot": [
+       344,
+       424
+      ]
+     },
+     {
+      "dir": 4,
+      "w": 475,
+      "h": 578,
+      "pivot": [
+       264,
+       370
+      ]
+     },
+     {
+      "dir": 5,
+      "w": 653,
+      "h": 618,
+      "pivot": [
+       341,
+       424
+      ]
+     },
+     {
+      "dir": 6,
+      "w": 477,
+      "h": 499,
+      "pivot": [
+       238,
+       365
+      ]
+     },
+     {
+      "dir": 7,
+      "w": 656,
+      "h": 618,
+      "pivot": [
+       312,
+       424
+      ]
+     }
+    ],
+    "anchors": {},
+    "options": {},
+    "placement": {
+     "row": "harbour.yard",
+     "at": [
+      198,
+      75.4
+     ],
+     "elevation": 3.4,
+     "dir": 0
+    },
+    "walkSurfaces": [],
+    "records": [
+     {
+      "k": "hull",
+      "id": "lift.hull",
+      "type": "capeIslander",
+      "label": "capeIslander",
+      "paint": "banks-white",
+      "rig": "CapeIslanderIso",
+      "loa": 8,
+      "beam": 2.5,
+      "t": 3,
+      "store": "slings",
+      "keelZ": -1,
+      "ground": 0,
+      "heading": 0,
+      "foot": [
+       [
+        -2.1,
+        -6.4
+       ],
+       [
+        2.1,
+        -6.4
+       ],
+       [
+        2.1,
+        6.4
+       ],
+       [
+        -2.1,
+        6.4
+       ]
+      ],
+      "deckZ": -2.244,
+      "topZ": 1.566,
+      "faces": 517,
+      "mastUnstepped": false,
+      "slings": [
+       {
+        "y": -3.6,
+        "eyeZ": -0.661,
+        "under": -1.04
+       },
+       {
+        "y": 3.6,
+        "eyeZ": 0.086,
+        "under": -1.04
+       }
+      ]
+     },
+     {
+      "verb": "pressureWash",
+      "id": "lift.wash",
+      "fixture": "hull in the slings",
+      "stand": [
+       -5.1,
+       -3,
+       0
+      ],
+      "yaw": 90,
+      "show": true,
+      "seq": [
+       {
+        "clip": "reach",
+        "loop": true,
+        "opts": {
+         "lift": 1.012
+        },
+        "note": "the lance up at the bottom as she drips",
+        "request": "sprayUp"
+       }
+      ],
+      "fits": [
+       {
+        "param": "rest",
+        "value": 1.012,
+        "range": [
+         0,
+         1.012
+        ],
+        "ok": true
+       }
+      ],
+      "anim": {
+       "clip": "reach",
+       "opts": {
+        "lift": 1.012
+       }
+      },
+      "k": "verb",
+      "fitsCreatorBodies": true
+     },
+     {
+      "verb": "driveLift",
+      "id": "lift.drive",
+      "fixture": "travel lift remote",
+      "stand": [
+       5.4,
+       -8.2,
+       0
+      ],
+      "yaw": 0,
+      "show": true,
+      "seq": [
+       {
+        "clip": "walk",
+        "loop": true,
+        "speed": 0.4,
+        "note": "the lift creeps at 0.40 m/s; the operator walks the east runway behind it",
+        "request": "carryRemote"
+       }
+      ],
+      "fits": [],
+      "anim": {
+       "clip": "walk",
+       "move": {
+        "d": [
+         0,
+         1,
+         0
+        ],
+        "len": 1.6,
+        "rate": 0.4
+       }
+      },
+      "k": "verb",
+      "fitsCreatorBodies": true
+     },
+     {
+      "k": "lift",
+      "capacity_t": 150,
+      "clearWidth": 11.2,
+      "underBeamZ": 7.05,
+      "track": 12,
+      "wheelbase": 11.6,
+      "maxBeam": 9.6,
+      "maxLoa": 32,
+      "openEnd": "+y (masts and bows pass)",
+      "creep_mps": 0.4,
+      "hull": "capeIslander",
+      "slings": [
+       {
+        "y": -3.6,
+        "eyeZ": -0.661,
+        "under": -1.04
+       },
+       {
+        "y": 3.6,
+        "eyeZ": 0.086,
+        "under": -1.04
+       }
+      ]
+     },
+     {
+      "k": "block",
+      "kind": "lift leg",
+      "poly": [
+       [
+        -6.45,
+        -7.199999999999999
+       ],
+       [
+        -5.55,
+        -7.199999999999999
+       ],
+       [
+        -5.55,
+        -4.4
+       ],
+       [
+        -6.45,
+        -4.4
+       ]
+      ],
+      "z0": 0,
+      "z1": 7.8
+     },
+     {
+      "k": "block",
+      "kind": "lift leg",
+      "poly": [
+       [
+        -6.45,
+        4.4
+       ],
+       [
+        -5.55,
+        4.4
+       ],
+       [
+        -5.55,
+        7.199999999999999
+       ],
+       [
+        -6.45,
+        7.199999999999999
+       ]
+      ],
+      "z0": 0,
+      "z1": 7.8
+     },
+     {
+      "k": "block",
+      "kind": "lift leg",
+      "poly": [
+       [
+        5.55,
+        -7.199999999999999
+       ],
+       [
+        6.45,
+        -7.199999999999999
+       ],
+       [
+        6.45,
+        -4.4
+       ],
+       [
+        5.55,
+        -4.4
+       ]
+      ],
+      "z0": 0,
+      "z1": 7.8
+     },
+     {
+      "k": "block",
+      "kind": "lift leg",
+      "poly": [
+       [
+        5.55,
+        4.4
+       ],
+       [
+        6.45,
+        4.4
+       ],
+       [
+        6.45,
+        7.199999999999999
+       ],
+       [
+        5.55,
+        7.199999999999999
+       ]
+      ],
+      "z0": 0,
+      "z1": 7.8
+     }
+    ]
+   }
+  },
+  {
+   "key": "slab",
+   "id": "structure.nmc_yard_slab",
+   "scene": "keyscene.nmc_wharf",
+   "options": {},
+   "variants": [],
+   "gameplay": {
+    "schema": "hidden-harbours/nmc-shipyard-part@1",
+    "generatedBy": "NmcShipyard 1.0.0",
+    "key": "slab",
+    "id": "structure.nmc_yard_slab",
+    "name": "Wharf boat yard: slab",
+    "defType": "SetPieceDef",
+    "scene": "keyscene.nmc_wharf",
+    "units": "metres in the part frame, deck datum zero",
+    "bounds": {
+     "x": [
+      -13.75,
+      13.75
+     ],
+     "y": [
+      -15,
+      15
+     ],
+     "z": [
+      -0.15,
+      0
+     ]
+    },
+    "layer": "floor",
+    "walk": "on",
+    "mount": "ground",
+    "colliders": [],
+    "facings": [
+     {
+      "dir": 0,
+      "showFaces": "0",
+      "bearingDeg": 0,
+      "cameraSees": "yard part"
+     },
+     {
+      "dir": 1,
+      "showFaces": "1",
+      "bearingDeg": 45,
+      "cameraSees": "yard part"
+     },
+     {
+      "dir": 2,
+      "showFaces": "2",
+      "bearingDeg": 90,
+      "cameraSees": "yard part"
+     },
+     {
+      "dir": 3,
+      "showFaces": "3",
+      "bearingDeg": 135,
+      "cameraSees": "yard part"
+     },
+     {
+      "dir": 4,
+      "showFaces": "4",
+      "bearingDeg": 180,
+      "cameraSees": "yard part"
+     },
+     {
+      "dir": 5,
+      "showFaces": "5",
+      "bearingDeg": 225,
+      "cameraSees": "yard part"
+     },
+     {
+      "dir": 6,
+      "showFaces": "6",
+      "bearingDeg": 270,
+      "cameraSees": "yard part"
+     },
+     {
+      "dir": 7,
+      "showFaces": "7",
+      "bearingDeg": 315,
+      "cameraSees": "yard part"
+     }
+    ],
+    "cells": [
+     {
+      "dir": 0,
+      "w": 889,
+      "h": 630,
+      "pivot": [
+       444,
+       313
+      ]
+     },
+     {
+      "dir": 1,
+      "w": 1311,
+      "h": 849,
+      "pivot": [
+       655,
+       423
+      ]
+     },
+     {
+      "dir": 2,
+      "w": 969,
+      "h": 579,
+      "pivot": [
+       484,
+       287
+      ]
+     },
+     {
+      "dir": 3,
+      "w": 1311,
+      "h": 849,
+      "pivot": [
+       655,
+       423
+      ]
+     },
+     {
+      "dir": 4,
+      "w": 890,
+      "h": 630,
+      "pivot": [
+       445,
+       313
+      ]
+     },
+     {
+      "dir": 5,
+      "w": 1311,
+      "h": 849,
+      "pivot": [
+       655,
+       423
+      ]
+     },
+     {
+      "dir": 6,
+      "w": 970,
+      "h": 579,
+      "pivot": [
+       485,
+       287
+      ]
+     },
+     {
+      "dir": 7,
+      "w": 1311,
+      "h": 849,
+      "pivot": [
+       655,
+       423
+      ]
+     }
+    ],
+    "anchors": {},
+    "options": {},
+    "placement": {
+     "row": "harbour.yard",
+     "at": [
+      198,
+      111
+     ],
+     "elevation": 3.4,
+     "dir": 0
+    },
+    "walkSurfaces": [
+     {
+      "poly": [
+       [
+        -13.75,
+        -15
+       ],
+       [
+        13.75,
+        -15
+       ],
+       [
+        13.75,
+        15
+       ],
+       [
+        -13.75,
+        15
+       ]
+      ],
+      "z": 0,
+      "surface": "concrete slab"
+     }
+    ],
+    "records": [
+     {
+      "k": "walk",
+      "kind": "concrete",
+      "poly": [
+       [
+        -13.75,
+        -15
+       ],
+       [
+        13.75,
+        -15
+       ],
+       [
+        13.75,
+        15
+       ],
+       [
+        -13.75,
+        15
+       ]
+      ],
+      "z": 0,
+      "surface": "concrete slab"
+     }
+    ]
+   }
+  },
+  {
+   "key": "hardA",
+   "id": "structure.nmc_yard_hard_a",
+   "scene": "keyscene.nmc_wharf",
+   "options": {},
+   "variants": [],
+   "gameplay": {
+    "schema": "hidden-harbours/nmc-shipyard-part@1",
+    "generatedBy": "NmcShipyard 1.0.0",
+    "key": "hardA",
+    "id": "structure.nmc_yard_hard_a",
+    "name": "Wharf boat yard: hardA",
+    "defType": "SetPieceDef",
+    "scene": "keyscene.nmc_wharf",
+    "units": "metres in the part frame, deck datum zero",
+    "bounds": {
+     "x": [
+      -6.36,
+      6.04
+     ],
+     "y": [
+      -2.16,
+      2.16
+     ],
+     "z": [
+      -0.020653,
+      6.389125
+     ]
+    },
+    "layer": "raised",
+    "walk": "solid",
+    "mount": "ground",
+    "colliders": [
+     {
+      "type": "polygon",
+      "blocks": "walk",
+      "pts": [
+       [
+        -6.43,
+        2.86
+       ],
+       [
+        -6.43,
+        -2.86
+       ],
+       [
+        6.03,
+        -2.86
+       ],
+       [
+        6.03,
+        2.86
+       ]
+      ]
+     }
+    ],
+    "facings": [
+     {
+      "dir": 0,
+      "showFaces": "0",
+      "bearingDeg": 0,
+      "cameraSees": "yard part"
+     },
+     {
+      "dir": 1,
+      "showFaces": "1",
+      "bearingDeg": 45,
+      "cameraSees": "yard part"
+     },
+     {
+      "dir": 2,
+      "showFaces": "2",
+      "bearingDeg": 90,
+      "cameraSees": "yard part"
+     },
+     {
+      "dir": 3,
+      "showFaces": "3",
+      "bearingDeg": 135,
+      "cameraSees": "yard part"
+     },
+     {
+      "dir": 4,
+      "showFaces": "4",
+      "bearingDeg": 180,
+      "cameraSees": "yard part"
+     },
+     {
+      "dir": 5,
+      "showFaces": "5",
+      "bearingDeg": 225,
+      "cameraSees": "yard part"
+     },
+     {
+      "dir": 6,
+      "showFaces": "6",
+      "bearingDeg": 270,
+      "cameraSees": "yard part"
+     },
+     {
+      "dir": 7,
+      "showFaces": "7",
+      "bearingDeg": 315,
+      "cameraSees": "yard part"
+     }
+    ],
+    "cells": [
+     {
+      "dir": 0,
+      "w": 406,
+      "h": 225,
+      "pivot": [
+       208,
+       182
+      ]
+     },
+     {
+      "dir": 1,
+      "w": 323,
+      "h": 322,
+      "pivot": [
+       177,
+       213
+      ]
+     },
+     {
+      "dir": 2,
+      "w": 148,
+      "h": 349,
+      "pivot": [
+       74,
+       213
+      ]
+     },
+     {
+      "dir": 3,
+      "w": 323,
+      "h": 325,
+      "pivot": [
+       146,
+       213
+      ]
+     },
+     {
+      "dir": 4,
+      "w": 406,
+      "h": 225,
+      "pivot": [
+       198,
+       182
+      ]
+     },
+     {
+      "dir": 5,
+      "w": 323,
+      "h": 247,
+      "pivot": [
+       146,
+       151
+      ]
+     },
+     {
+      "dir": 6,
+      "w": 148,
+      "h": 305,
+      "pivot": [
+       74,
+       181
+      ]
+     },
+     {
+      "dir": 7,
+      "w": 323,
+      "h": 253,
+      "pivot": [
+       177,
+       157
+      ]
+     }
+    ],
+    "anchors": {},
+    "options": {},
+    "placement": {
+     "row": "harbour.yard",
+     "at": [
+      191.5,
+      103.5
+     ],
+     "elevation": 3.4,
+     "dir": 0
+    },
+    "walkSurfaces": [],
+    "records": [
+     {
+      "verb": "climbUp",
+      "id": "hardA.ladder.up",
+      "fixture": "boat ladder at the stern",
+      "stand": [
+       -6.605,
+       0.756,
+       0
+      ],
+      "yaw": 90,
+      "note": "aboard over the transom of the lobStdHardtopFundy",
+      "rungs": [
+       0.24,
+       0.48
+      ],
+      "landingZ": 0.85,
+      "seq": [
+       {
+        "join": true,
+        "ms": 300,
+        "request": "ladderOn",
+        "note": "idle at the foot to ladderDown u 0"
+       },
+       {
+        "clip": "ladderDown",
+        "loop": true,
+        "reverse": true,
+        "opts": {
+         "rung": 0.24
+        },
+        "rootMotion": [
+         0,
+         0,
+         0.436
+        ],
+        "until": "the top station, 0.13 m"
+       },
+       {
+        "clip": "board",
+        "once": true,
+        "opts": {
+         "railZ": 0.72
+        },
+        "advance": {
+         "m": 0.6,
+         "t": [
+          0.28,
+          0.88
+         ]
+        },
+        "note": "onto the landing at 0.85 m"
+       }
+      ],
+      "fits": [
+       {
+        "param": "rung",
+        "value": 0.24,
+        "range": [
+         0.211,
+         0.273
+        ],
+        "ok": true
+       },
+       {
+        "param": "rail",
+        "value": 0.72,
+        "range": [
+         0.549,
+         0.724
+        ],
+        "ok": true
+       }
+      ],
+      "anim": {
+       "clip": "ladderDown",
+       "reverse": true,
+       "at": [
+        -6.605,
+        0.756,
+        0.1
+       ],
+       "move": {
+        "d": [
+         0,
+         0,
+         1
+        ],
+        "len": 0.3,
+        "rate": 0.436
+       }
+      },
+      "k": "verb",
+      "fitsCreatorBodies": true
+     },
+     {
+      "verb": "climbDown",
+      "id": "hardA.ladder.down",
+      "fixture": "boat ladder at the stern",
+      "stand": [
+       -6.605,
+       0.756,
+       0.13
+      ],
+      "yaw": 90,
+      "seq": [
+       {
+        "join": true,
+        "ms": 300,
+        "request": "ladderOn",
+        "note": "from idle on the landing, back to the ladder, to ladderDown u 0 at the top station"
+       },
+       {
+        "clip": "ladderDown",
+        "loop": true,
+        "opts": {
+         "rung": 0.24
+        },
+        "rootMotion": [
+         0,
+         0,
+         -0.436
+        ],
+        "until": "the foot"
+       },
+       {
+        "join": true,
+        "ms": 300,
+        "request": "ladderOff"
+       }
+      ],
+      "fits": [
+       {
+        "param": "rung",
+        "value": 0.24,
+        "range": [
+         0.211,
+         0.273
+        ],
+        "ok": true
+       },
+       {
+        "param": "rail",
+        "value": 0.72,
+        "range": [
+         0.549,
+         0.724
+        ],
+        "ok": true
+       }
+      ],
+      "k": "verb",
+      "fitsCreatorBodies": true
+     },
+     {
+      "verb": "sandBottom",
+      "also": [
+       "antifoul"
+      ],
+      "id": "hardA.sand0",
+      "fixture": "hull bottom",
+      "stand": [
+       -2.171,
+       -2.325,
+       0
+      ],
+      "yaw": 0,
+      "show": true,
+      "seq": [
+       {
+        "clip": "reach",
+        "loop": true,
+        "opts": {
+         "lift": 0.95
+        },
+        "note": "the sander or the roller on the skin at 1.05 m"
+       }
+      ],
+      "fits": [
+       {
+        "param": "rest",
+        "value": 0.95,
+        "range": [
+         0,
+         1.012
+        ],
+        "ok": true
+       }
+      ],
+      "anim": {
+       "clip": "reach",
+       "opts": {
+        "lift": 0.95
+       }
+      },
+      "k": "verb",
+      "fitsCreatorBodies": true
+     },
+     {
+      "verb": "sandBottom",
+      "also": [
+       "antifoul"
+      ],
+      "id": "hardA.sand1",
+      "fixture": "hull bottom",
+      "stand": [
+       2.171,
+       -1.809,
+       0
+      ],
+      "yaw": 0,
+      "show": false,
+      "seq": [
+       {
+        "clip": "reach",
+        "loop": true,
+        "opts": {
+         "lift": 0.95
+        },
+        "note": "the sander or the roller on the skin at 1.05 m"
+       }
+      ],
+      "fits": [
+       {
+        "param": "rest",
+        "value": 0.95,
+        "range": [
+         0,
+         1.012
+        ],
+        "ok": true
+       }
+      ],
+      "anim": {
+       "clip": "reach",
+       "opts": {
+        "lift": 0.95
+       }
+      },
+      "k": "verb",
+      "fitsCreatorBodies": true
+     },
+     {
+      "verb": "setStand",
+      "id": "hardA.stand0",
+      "fixture": "jack stand screw",
+      "stand": [
+       -3.618,
+       1.857,
+       0
+      ],
+      "yaw": 180,
+      "seq": [
+       {
+        "clip": "reach",
+        "loop": true,
+        "opts": {
+         "lift": 0.47
+        },
+        "note": "the bar through the screw at 0.47 m"
+       }
+      ],
+      "fits": [
+       {
+        "param": "rest",
+        "value": 0.47,
+        "range": [
+         0,
+         1.012
+        ],
+        "ok": true
+       }
+      ],
+      "k": "verb",
+      "fitsCreatorBodies": true
+     },
+     {
+      "verb": "setStand",
+      "id": "hardA.stand1",
+      "fixture": "jack stand screw",
+      "stand": [
+       -3.618,
+       -1.857,
+       0
+      ],
+      "yaw": 0,
+      "seq": [
+       {
+        "clip": "reach",
+        "loop": true,
+        "opts": {
+         "lift": 0.47
+        },
+        "note": "the bar through the screw at 0.47 m"
+       }
+      ],
+      "fits": [
+       {
+        "param": "rest",
+        "value": 0.47,
+        "range": [
+         0,
+         1.012
+        ],
+        "ok": true
+       }
+      ],
+      "k": "verb",
+      "fitsCreatorBodies": true
+     },
+     {
+      "verb": "setStand",
+      "id": "hardA.stand2",
+      "fixture": "jack stand screw",
+      "stand": [
+       0,
+       1.973,
+       0
+      ],
+      "yaw": 180,
+      "seq": [
+       {
+        "clip": "reach",
+        "loop": true,
+        "opts": {
+         "lift": 0.47
+        },
+        "note": "the bar through the screw at 0.47 m"
+       }
+      ],
+      "fits": [
+       {
+        "param": "rest",
+        "value": 0.47,
+        "range": [
+         0,
+         1.012
+        ],
+        "ok": true
+       }
+      ],
+      "k": "verb",
+      "fitsCreatorBodies": true
+     },
+     {
+      "verb": "setStand",
+      "id": "hardA.stand3",
+      "fixture": "jack stand screw",
+      "stand": [
+       0,
+       -1.973,
+       0
+      ],
+      "yaw": 0,
+      "seq": [
+       {
+        "clip": "reach",
+        "loop": true,
+        "opts": {
+         "lift": 0.47
+        },
+        "note": "the bar through the screw at 0.47 m"
+       }
+      ],
+      "fits": [
+       {
+        "param": "rest",
+        "value": 0.47,
+        "range": [
+         0,
+         1.012
+        ],
+        "ok": true
+       }
+      ],
+      "k": "verb",
+      "fitsCreatorBodies": true
+     },
+     {
+      "verb": "setStand",
+      "id": "hardA.stand4",
+      "fixture": "jack stand screw",
+      "stand": [
+       3.618,
+       1.586,
+       0
+      ],
+      "yaw": 180,
+      "seq": [
+       {
+        "clip": "reach",
+        "loop": true,
+        "opts": {
+         "lift": 1.012
+        },
+        "note": "the bar through the screw at 1.16 m",
+        "request": "stepLadder"
+       }
+      ],
+      "fits": [
+       {
+        "param": "rest",
+        "value": 1.157,
+        "range": [
+         0,
+         1.012
+        ],
+        "ok": false
+       }
+      ],
+      "k": "verb",
+      "fitsCreatorBodies": false
+     },
+     {
+      "verb": "setStand",
+      "id": "hardA.stand5",
+      "fixture": "jack stand screw",
+      "stand": [
+       3.618,
+       -1.586,
+       0
+      ],
+      "yaw": 0,
+      "seq": [
+       {
+        "clip": "reach",
+        "loop": true,
+        "opts": {
+         "lift": 1.012
+        },
+        "note": "the bar through the screw at 1.16 m",
+        "request": "stepLadder"
+       }
+      ],
+      "fits": [
+       {
+        "param": "rest",
+        "value": 1.157,
+        "range": [
+         0,
+         1.012
+        ],
+        "ok": false
+       }
+      ],
+      "k": "verb",
+      "fitsCreatorBodies": false
+     },
+     {
+      "verb": "chainStands",
+      "id": "hardA.chainP",
+      "fixture": "stand chain",
+      "stand": [
+       -1.809,
+       2.007,
+       0
+      ],
+      "yaw": 180,
+      "seq": [
+       {
+        "clip": "reach",
+        "loop": true,
+        "opts": {
+         "lift": 0.3
+        },
+        "note": "the chain hooks on the stand legs at 0.30 m",
+        "request": "crouchWork"
+       }
+      ],
+      "fits": [
+       {
+        "param": "rest",
+        "value": 0.3,
+        "range": [
+         0,
+         1.012
+        ],
+        "ok": true
+       }
+      ],
+      "k": "verb",
+      "fitsCreatorBodies": true
+     },
+     {
+      "verb": "chainStands",
+      "id": "hardA.chainS",
+      "fixture": "stand chain",
+      "stand": [
+       -1.809,
+       -2.007,
+       0
+      ],
+      "yaw": 0,
+      "seq": [
+       {
+        "clip": "reach",
+        "loop": true,
+        "opts": {
+         "lift": 0.3
+        },
+        "note": "the chain hooks on the stand legs at 0.30 m",
+        "request": "crouchWork"
+       }
+      ],
+      "fits": [
+       {
+        "param": "rest",
+        "value": 0.3,
+        "range": [
+         0,
+         1.012
+        ],
+        "ok": true
+       }
+      ],
+      "k": "verb",
+      "fitsCreatorBodies": true
+     },
+     {
+      "k": "hull",
+      "id": "hardA",
+      "type": "lobStdHardtopFundy",
+      "label": "lobStdHardtopFundy",
+      "paint": "gelcoat",
+      "rig": "LobsterBoatVariantsIso",
+      "loa": 8,
+      "beam": 2.5,
+      "t": 3,
+      "store": "hard",
+      "keelZ": 0.55,
+      "ground": 0,
+      "heading": 90,
+      "foot": [
+       [
+        -6.03,
+        2.16
+       ],
+       [
+        -6.03,
+        -2.16
+       ],
+       [
+        6.03,
+        -2.16
+       ],
+       [
+        6.03,
+        2.16
+       ]
+      ],
+      "deckZ": 0.542,
+      "topZ": 6.389,
+      "faces": 670,
+      "mastUnstepped": false,
+      "wrap": null,
+      "blocks": [
+       {
+        "at": [
+         -3.754,
+         0
+        ],
+        "top": 0.55
+       },
+       {
+        "at": [
+         0.868,
+         0
+        ],
+        "top": 0.55
+       },
+       {
+        "at": [
+         5.49,
+         0
+        ],
+        "top": 0.55
+       }
+      ],
+      "stands": [
+       {
+        "at": [
+         -3.618,
+         1.257
+        ],
+        "padZ": 0.548,
+        "nutZ": 0.47
+       },
+       {
+        "at": [
+         -3.618,
+         -1.257
+        ],
+        "padZ": 0.548,
+        "nutZ": 0.47
+       },
+       {
+        "at": [
+         0,
+         1.373
+        ],
+        "padZ": 0.548,
+        "nutZ": 0.47
+       },
+       {
+        "at": [
+         0,
+         -1.373
+        ],
+        "padZ": 0.548,
+        "nutZ": 0.47
+       },
+       {
+        "at": [
+         3.618,
+         0.986
+        ],
+        "padZ": 1.667,
+        "nutZ": 1.157
+       },
+       {
+        "at": [
+         3.618,
+         -0.986
+        ],
+        "padZ": 1.667,
+        "nutZ": 1.157
+       }
+      ],
+      "ladder": {
+       "at": [
+        -6.33,
+        0.756
+       ],
+       "landingZ": 0.85,
+       "rungs": 2
+      }
+     },
+     {
+      "k": "block",
+      "kind": "hull on the hard",
+      "poly": [
+       [
+        -6.43,
+        2.86
+       ],
+       [
+        -6.43,
+        -2.86
+       ],
+       [
+        6.03,
+        -2.86
+       ],
+       [
+        6.03,
+        2.86
+       ]
+      ],
+      "z0": 0,
+      "z1": 6.389
+     }
+    ]
+   }
+  },
+  {
+   "key": "hardB",
+   "id": "structure.nmc_yard_hard_b",
+   "scene": "keyscene.nmc_wharf",
+   "options": {},
+   "variants": [],
+   "gameplay": {
+    "schema": "hidden-harbours/nmc-shipyard-part@1",
+    "generatedBy": "NmcShipyard 1.0.0",
+    "key": "hardB",
+    "id": "structure.nmc_yard_hard_b",
+    "name": "Wharf boat yard: hardB",
+    "defType": "SetPieceDef",
+    "scene": "keyscene.nmc_wharf",
+    "units": "metres in the part frame, deck datum zero",
+    "bounds": {
+     "x": [
+      -3.875,
+      3.545
+     ],
+     "y": [
+      -1.316678,
+      1.304299
+     ],
+     "z": [
+      -0.016955,
+      3.30842
+     ]
+    },
+    "layer": "raised",
+    "walk": "solid",
+    "mount": "ground",
+    "colliders": [
+     {
+      "type": "polygon",
+      "blocks": "walk",
+      "pts": [
+       [
+        -3.945,
+        1.968
+       ],
+       [
+        -3.945,
+        -1.968
+       ],
+       [
+        3.545,
+        -1.968
+       ],
+       [
+        3.545,
+        1.968
+       ]
+      ]
+     }
+    ],
+    "facings": [
+     {
+      "dir": 0,
+      "showFaces": "0",
+      "bearingDeg": 0,
+      "cameraSees": "yard part"
+     },
+     {
+      "dir": 1,
+      "showFaces": "1",
+      "bearingDeg": 45,
+      "cameraSees": "yard part"
+     },
+     {
+      "dir": 2,
+      "showFaces": "2",
+      "bearingDeg": 90,
+      "cameraSees": "yard part"
+     },
+     {
+      "dir": 3,
+      "showFaces": "3",
+      "bearingDeg": 135,
+      "cameraSees": "yard part"
+     },
+     {
+      "dir": 4,
+      "showFaces": "4",
+      "bearingDeg": 180,
+      "cameraSees": "yard part"
+     },
+     {
+      "dir": 5,
+      "showFaces": "5",
+      "bearingDeg": 225,
+      "cameraSees": "yard part"
+     },
+     {
+      "dir": 6,
+      "showFaces": "6",
+      "bearingDeg": 270,
+      "cameraSees": "yard part"
+     },
+     {
+      "dir": 7,
+      "showFaces": "7",
+      "bearingDeg": 315,
+      "cameraSees": "yard part"
+     }
+    ],
+    "cells": [
+     {
+      "dir": 0,
+      "w": 247,
+      "h": 131,
+      "pivot": [
+       128,
+       99
+      ]
+     },
+     {
+      "dir": 1,
+      "w": 198,
+      "h": 173,
+      "pivot": [
+       109,
+       111
+      ]
+     },
+     {
+      "dir": 2,
+      "w": 93,
+      "h": 211,
+      "pivot": [
+       46,
+       126
+      ]
+     },
+     {
+      "dir": 3,
+      "w": 198,
+      "h": 183,
+      "pivot": [
+       88,
+       111
+      ]
+     },
+     {
+      "dir": 4,
+      "w": 247,
+      "h": 119,
+      "pivot": [
+       118,
+       88
+      ]
+     },
+     {
+      "dir": 5,
+      "w": 198,
+      "h": 161,
+      "pivot": [
+       88,
+       110
+      ]
+     },
+     {
+      "dir": 6,
+      "w": 93,
+      "h": 179,
+      "pivot": [
+       47,
+       133
+      ]
+     },
+     {
+      "dir": 7,
+      "w": 198,
+      "h": 171,
+      "pivot": [
+       109,
+       120
+      ]
+     }
+    ],
+    "anchors": {},
+    "options": {},
+    "placement": {
+     "row": "harbour.yard",
+     "at": [
+      204,
+      113
+     ],
+     "elevation": 3.4,
+     "dir": 0
+    },
+    "walkSurfaces": [],
+    "records": [
+     {
+      "verb": "climbUp",
+      "id": "hardB.ladder.up",
+      "fixture": "boat ladder at the stern",
+      "stand": [
+       -4.12,
+       0.444,
+       0
+      ],
+      "yaw": 90,
+      "note": "aboard over the transom of the sport skiff",
+      "rungs": [
+       0.24,
+       0.48,
+       0.72
+      ],
+      "landingZ": 1.01,
+      "seq": [
+       {
+        "join": true,
+        "ms": 300,
+        "request": "ladderOn",
+        "note": "idle at the foot to ladderDown u 0"
+       },
+       {
+        "clip": "ladderDown",
+        "loop": true,
+        "reverse": true,
+        "opts": {
+         "rung": 0.24
+        },
+        "rootMotion": [
+         0,
+         0,
+         0.436
+        ],
+        "until": "the top station, 0.29 m"
+       },
+       {
+        "clip": "board",
+        "once": true,
+        "opts": {
+         "railZ": 0.72
+        },
+        "advance": {
+         "m": 0.6,
+         "t": [
+          0.28,
+          0.88
+         ]
+        },
+        "note": "onto the landing at 1.01 m"
+       }
+      ],
+      "fits": [
+       {
+        "param": "rung",
+        "value": 0.24,
+        "range": [
+         0.211,
+         0.273
+        ],
+        "ok": true
+       },
+       {
+        "param": "rail",
+        "value": 0.72,
+        "range": [
+         0.549,
+         0.724
+        ],
+        "ok": true
+       }
+      ],
+      "anim": {
+       "clip": "ladderDown",
+       "reverse": true,
+       "at": [
+        -4.12,
+        0.444,
+        0.1
+       ],
+       "move": {
+        "d": [
+         0,
+         0,
+         1
+        ],
+        "len": 0.3,
+        "rate": 0.436
+       }
+      },
+      "k": "verb",
+      "fitsCreatorBodies": true
+     },
+     {
+      "verb": "climbDown",
+      "id": "hardB.ladder.down",
+      "fixture": "boat ladder at the stern",
+      "stand": [
+       -4.12,
+       0.444,
+       0.29
+      ],
+      "yaw": 90,
+      "seq": [
+       {
+        "join": true,
+        "ms": 300,
+        "request": "ladderOn",
+        "note": "from idle on the landing, back to the ladder, to ladderDown u 0 at the top station"
+       },
+       {
+        "clip": "ladderDown",
+        "loop": true,
+        "opts": {
+         "rung": 0.24
+        },
+        "rootMotion": [
+         0,
+         0,
+         -0.436
+        ],
+        "until": "the foot"
+       },
+       {
+        "join": true,
+        "ms": 300,
+        "request": "ladderOff"
+       }
+      ],
+      "fits": [
+       {
+        "param": "rung",
+        "value": 0.24,
+        "range": [
+         0.211,
+         0.273
+        ],
+        "ok": true
+       },
+       {
+        "param": "rail",
+        "value": 0.72,
+        "range": [
+         0.549,
+         0.724
+        ],
+        "ok": true
+       }
+      ],
+      "k": "verb",
+      "fitsCreatorBodies": true
+     },
+     {
+      "verb": "sandBottom",
+      "also": [
+       "antifoul"
+      ],
+      "id": "hardB.sand0",
+      "fixture": "hull bottom",
+      "stand": [
+       -1.276,
+       -1.615,
+       0
+      ],
+      "yaw": 0,
+      "show": true,
+      "seq": [
+       {
+        "clip": "reach",
+        "loop": true,
+        "opts": {
+         "lift": 0.95
+        },
+        "note": "the sander or the roller on the skin at 1.05 m"
+       }
+      ],
+      "fits": [
+       {
+        "param": "rest",
+        "value": 0.95,
+        "range": [
+         0,
+         1.012
+        ],
+        "ok": true
+       }
+      ],
+      "anim": {
+       "clip": "reach",
+       "opts": {
+        "lift": 0.95
+       }
+      },
+      "k": "verb",
+      "fitsCreatorBodies": true
+     },
+     {
+      "verb": "sandBottom",
+      "also": [
+       "antifoul"
+      ],
+      "id": "hardB.sand1",
+      "fixture": "hull bottom",
+      "stand": [
+       1.276,
+       -1.393,
+       0
+      ],
+      "yaw": 0,
+      "show": false,
+      "seq": [
+       {
+        "clip": "reach",
+        "loop": true,
+        "opts": {
+         "lift": 0.95
+        },
+        "note": "the sander or the roller on the skin at 1.05 m"
+       }
+      ],
+      "fits": [
+       {
+        "param": "rest",
+        "value": 0.95,
+        "range": [
+         0,
+         1.012
+        ],
+        "ok": true
+       }
+      ],
+      "anim": {
+       "clip": "reach",
+       "opts": {
+        "lift": 0.95
+       }
+      },
+      "k": "verb",
+      "fitsCreatorBodies": true
+     },
+     {
+      "verb": "setStand",
+      "id": "hardB.stand0",
+      "fixture": "jack stand screw",
+      "stand": [
+       -1.702,
+       1.453,
+       0
+      ],
+      "yaw": 180,
+      "seq": [
+       {
+        "clip": "reach",
+        "loop": true,
+        "opts": {
+         "lift": 1.012
+        },
+        "note": "the bar through the screw at 1.41 m",
+        "request": "stepLadder"
+       }
+      ],
+      "fits": [
+       {
+        "param": "rest",
+        "value": 1.409,
+        "range": [
+         0,
+         1.012
+        ],
+        "ok": false
+       }
+      ],
+      "k": "verb",
+      "fitsCreatorBodies": false
+     },
+     {
+      "verb": "setStand",
+      "id": "hardB.stand1",
+      "fixture": "jack stand screw",
+      "stand": [
+       -1.702,
+       -1.453,
+       0
+      ],
+      "yaw": 0,
+      "seq": [
+       {
+        "clip": "reach",
+        "loop": true,
+        "opts": {
+         "lift": 1.012
+        },
+        "note": "the bar through the screw at 1.41 m",
+        "request": "stepLadder"
+       }
+      ],
+      "fits": [
+       {
+        "param": "rest",
+        "value": 1.409,
+        "range": [
+         0,
+         1.012
+        ],
+        "ok": false
+       }
+      ],
+      "k": "verb",
+      "fitsCreatorBodies": false
+     },
+     {
+      "verb": "setStand",
+      "id": "hardB.stand2",
+      "fixture": "jack stand screw",
+      "stand": [
+       1.702,
+       1.363,
+       0
+      ],
+      "yaw": 180,
+      "seq": [
+       {
+        "clip": "reach",
+        "loop": true,
+        "opts": {
+         "lift": 0.73
+        },
+        "note": "the bar through the screw at 0.73 m"
+       }
+      ],
+      "fits": [
+       {
+        "param": "rest",
+        "value": 0.73,
+        "range": [
+         0,
+         1.012
+        ],
+        "ok": true
+       }
+      ],
+      "k": "verb",
+      "fitsCreatorBodies": true
+     },
+     {
+      "verb": "setStand",
+      "id": "hardB.stand3",
+      "fixture": "jack stand screw",
+      "stand": [
+       1.702,
+       -1.363,
+       0
+      ],
+      "yaw": 0,
+      "seq": [
+       {
+        "clip": "reach",
+        "loop": true,
+        "opts": {
+         "lift": 0.73
+        },
+        "note": "the bar through the screw at 0.73 m"
+       }
+      ],
+      "fits": [
+       {
+        "param": "rest",
+        "value": 0.73,
+        "range": [
+         0,
+         1.012
+        ],
+        "ok": true
+       }
+      ],
+      "k": "verb",
+      "fitsCreatorBodies": true
+     },
+     {
+      "verb": "chainStands",
+      "id": "hardB.chainP",
+      "fixture": "stand chain",
+      "stand": [
+       0,
+       1.603,
+       0
+      ],
+      "yaw": 180,
+      "seq": [
+       {
+        "clip": "reach",
+        "loop": true,
+        "opts": {
+         "lift": 0.3
+        },
+        "note": "the chain hooks on the stand legs at 0.30 m",
+        "request": "crouchWork"
+       }
+      ],
+      "fits": [
+       {
+        "param": "rest",
+        "value": 0.3,
+        "range": [
+         0,
+         1.012
+        ],
+        "ok": true
+       }
+      ],
+      "k": "verb",
+      "fitsCreatorBodies": true
+     },
+     {
+      "verb": "chainStands",
+      "id": "hardB.chainS",
+      "fixture": "stand chain",
+      "stand": [
+       0,
+       -1.603,
+       0
+      ],
+      "yaw": 0,
+      "seq": [
+       {
+        "clip": "reach",
+        "loop": true,
+        "opts": {
+         "lift": 0.3
+        },
+        "note": "the chain hooks on the stand legs at 0.30 m",
+        "request": "crouchWork"
+       }
+      ],
+      "fits": [
+       {
+        "param": "rest",
+        "value": 0.3,
+        "range": [
+         0,
+         1.012
+        ],
+        "ok": true
+       }
+      ],
+      "k": "verb",
+      "fitsCreatorBodies": true
+     },
+     {
+      "k": "hull",
+      "id": "hardB",
+      "type": "sportSkiff",
+      "label": "sport skiff",
+      "paint": "gelcoat-white",
+      "rig": "SportSkiffIso",
+      "loa": 7,
+      "beam": 2.54,
+      "draft": 0.45,
+      "t": 2.3,
+      "store": "hard",
+      "keelZ": 0.55,
+      "ground": 0,
+      "heading": 90,
+      "foot": [
+       [
+        -3.545,
+        1.268
+       ],
+       [
+        -3.545,
+        -1.268
+       ],
+       [
+        3.545,
+        -1.268
+       ],
+       [
+        3.545,
+        1.268
+       ]
+      ],
+      "deckZ": 1.01,
+      "topZ": 3.308,
+      "faces": 1168,
+      "mastUnstepped": false,
+      "wrap": null,
+      "blocks": [
+       {
+        "at": [
+         -3.155,
+         0
+        ],
+        "top": 0.55
+       },
+       {
+        "at": [
+         1.493,
+         0
+        ],
+        "top": 0.55
+       }
+      ],
+      "stands": [
+       {
+        "at": [
+         -1.702,
+         0.853
+        ],
+        "padZ": 1.919,
+        "nutZ": 1.409
+       },
+       {
+        "at": [
+         -1.702,
+         -0.853
+        ],
+        "padZ": 1.919,
+        "nutZ": 1.409
+       },
+       {
+        "at": [
+         1.702,
+         0.763
+        ],
+        "padZ": 1.24,
+        "nutZ": 0.73
+       },
+       {
+        "at": [
+         1.702,
+         -0.763
+        ],
+        "padZ": 1.24,
+        "nutZ": 0.73
+       }
+      ],
+      "ladder": {
+       "at": [
+        -3.845,
+        0.444
+       ],
+       "landingZ": 1.01,
+       "rungs": 3
+      }
+     },
+     {
+      "k": "block",
+      "kind": "hull on the hard",
+      "poly": [
+       [
+        -3.945,
+        1.968
+       ],
+       [
+        -3.945,
+        -1.968
+       ],
+       [
+        3.545,
+        -1.968
+       ],
+       [
+        3.545,
+        1.968
+       ]
+      ],
+      "z0": 0,
+      "z1": 3.308
+     }
+    ]
+   }
+  },
+  {
+   "key": "hardC",
+   "id": "structure.nmc_yard_hard_c",
+   "scene": "keyscene.nmc_wharf",
+   "options": {},
+   "variants": [],
+   "gameplay": {
+    "schema": "hidden-harbours/nmc-shipyard-part@1",
+    "generatedBy": "NmcShipyard 1.0.0",
+    "key": "hardC",
+    "id": "structure.nmc_yard_hard_c",
+    "name": "Wharf boat yard: hardC",
+    "defType": "SetPieceDef",
+    "scene": "keyscene.nmc_wharf",
+    "units": "metres in the part frame, deck datum zero",
+    "bounds": {
+     "x": [
+      -3.075,
+      3.405
+     ],
+     "y": [
+      -1.226077,
+      1.236348
+     ],
+     "z": [
+      -0.020097,
+      2.57
+     ]
+    },
+    "layer": "raised",
+    "walk": "solid",
+    "mount": "ground",
+    "colliders": [
+     {
+      "type": "polygon",
+      "blocks": "walk",
+      "pts": [
+       [
+        3.475,
+        -1.844
+       ],
+       [
+        3.475,
+        1.844
+       ],
+       [
+        -3.075,
+        1.844
+       ],
+       [
+        -3.075,
+        -1.844
+       ]
+      ]
+     }
+    ],
+    "facings": [
+     {
+      "dir": 0,
+      "showFaces": "0",
+      "bearingDeg": 0,
+      "cameraSees": "yard part"
+     },
+     {
+      "dir": 1,
+      "showFaces": "1",
+      "bearingDeg": 45,
+      "cameraSees": "yard part"
+     },
+     {
+      "dir": 2,
+      "showFaces": "2",
+      "bearingDeg": 90,
+      "cameraSees": "yard part"
+     },
+     {
+      "dir": 3,
+      "showFaces": "3",
+      "bearingDeg": 135,
+      "cameraSees": "yard part"
+     },
+     {
+      "dir": 4,
+      "showFaces": "4",
+      "bearingDeg": 180,
+      "cameraSees": "yard part"
+     },
+     {
+      "dir": 5,
+      "showFaces": "5",
+      "bearingDeg": 225,
+      "cameraSees": "yard part"
+     },
+     {
+      "dir": 6,
+      "showFaces": "6",
+      "bearingDeg": 270,
+      "cameraSees": "yard part"
+     },
+     {
+      "dir": 7,
+      "showFaces": "7",
+      "bearingDeg": 315,
+      "cameraSees": "yard part"
+     }
+    ],
+    "cells": [
+     {
+      "dir": 0,
+      "w": 217,
+      "h": 98,
+      "pivot": [
+       103,
+       68
+      ]
+     },
+     {
+      "dir": 1,
+      "w": 175,
+      "h": 152,
+      "pivot": [
+       78,
+       115
+      ]
+     },
+     {
+      "dir": 2,
+      "w": 88,
+      "h": 179,
+      "pivot": [
+       44,
+       138
+      ]
+     },
+     {
+      "dir": 3,
+      "w": 167,
+      "h": 163,
+      "pivot": [
+       88,
+       126
+      ]
+     },
+     {
+      "dir": 4,
+      "w": 217,
+      "h": 111,
+      "pivot": [
+       113,
+       81
+      ]
+     },
+     {
+      "dir": 5,
+      "w": 175,
+      "h": 154,
+      "pivot": [
+       96,
+       97
+      ]
+     },
+     {
+      "dir": 6,
+      "w": 88,
+      "h": 189,
+      "pivot": [
+       44,
+       114
+      ]
+     },
+     {
+      "dir": 7,
+      "w": 167,
+      "h": 161,
+      "pivot": [
+       78,
+       97
+      ]
+     }
+    ],
+    "anchors": {},
+    "options": {},
+    "placement": {
+     "row": "harbour.yard",
+     "at": [
+      208.2,
+      121.8
+     ],
+     "elevation": 3.4,
+     "dir": 0
+    },
+    "walkSurfaces": [],
+    "records": [
+     {
+      "verb": "climbUp",
+      "id": "hardC.ladder.up",
+      "fixture": "boat ladder at the stern",
+      "stand": [
+       3.65,
+       -0.4,
+       0
+      ],
+      "yaw": -90,
+      "note": "aboard over the transom of the bowrider",
+      "rungs": [
+       0.24,
+       0.48,
+       0.72,
+       0.96,
+       1.2
+      ],
+      "landingZ": 1.57,
+      "seq": [
+       {
+        "join": true,
+        "ms": 300,
+        "request": "ladderOn",
+        "note": "idle at the foot to ladderDown u 0"
+       },
+       {
+        "clip": "ladderDown",
+        "loop": true,
+        "reverse": true,
+        "opts": {
+         "rung": 0.24
+        },
+        "rootMotion": [
+         0,
+         0,
+         0.436
+        ],
+        "until": "the top station, 0.85 m"
+       },
+       {
+        "clip": "board",
+        "once": true,
+        "opts": {
+         "railZ": 0.72
+        },
+        "advance": {
+         "m": 0.6,
+         "t": [
+          0.28,
+          0.88
+         ]
+        },
+        "note": "onto the landing at 1.57 m"
+       }
+      ],
+      "fits": [
+       {
+        "param": "rung",
+        "value": 0.24,
+        "range": [
+         0.211,
+         0.273
+        ],
+        "ok": true
+       },
+       {
+        "param": "rail",
+        "value": 0.72,
+        "range": [
+         0.549,
+         0.724
+        ],
+        "ok": true
+       }
+      ],
+      "anim": {
+       "clip": "ladderDown",
+       "reverse": true,
+       "at": [
+        3.65,
+        -0.4,
+        0.1
+       ],
+       "move": {
+        "d": [
+         0,
+         0,
+         1
+        ],
+        "len": 0.75,
+        "rate": 0.436
+       }
+      },
+      "k": "verb",
+      "fitsCreatorBodies": true
+     },
+     {
+      "verb": "climbDown",
+      "id": "hardC.ladder.down",
+      "fixture": "boat ladder at the stern",
+      "stand": [
+       3.65,
+       -0.4,
+       0.85
+      ],
+      "yaw": -90,
+      "seq": [
+       {
+        "join": true,
+        "ms": 300,
+        "request": "ladderOn",
+        "note": "from idle on the landing, back to the ladder, to ladderDown u 0 at the top station"
+       },
+       {
+        "clip": "ladderDown",
+        "loop": true,
+        "opts": {
+         "rung": 0.24
+        },
+        "rootMotion": [
+         0,
+         0,
+         -0.436
+        ],
+        "until": "the foot"
+       },
+       {
+        "join": true,
+        "ms": 300,
+        "request": "ladderOff"
+       }
+      ],
+      "fits": [
+       {
+        "param": "rung",
+        "value": 0.24,
+        "range": [
+         0.211,
+         0.273
+        ],
+        "ok": true
+       },
+       {
+        "param": "rail",
+        "value": 0.72,
+        "range": [
+         0.549,
+         0.724
+        ],
+        "ok": true
+       }
+      ],
+      "k": "verb",
+      "fitsCreatorBodies": true
+     },
+     {
+      "verb": "sandBottom",
+      "also": [
+       "antifoul"
+      ],
+      "id": "hardC.sand0",
+      "fixture": "hull bottom",
+      "stand": [
+       1.107,
+       1.508,
+       0
+      ],
+      "yaw": -180,
+      "show": true,
+      "seq": [
+       {
+        "clip": "reach",
+        "loop": true,
+        "opts": {
+         "lift": 0.95
+        },
+        "note": "the sander or the roller on the skin at 1.05 m"
+       }
+      ],
+      "fits": [
+       {
+        "param": "rest",
+        "value": 0.95,
+        "range": [
+         0,
+         1.012
+        ],
+        "ok": true
+       }
+      ],
+      "anim": {
+       "clip": "reach",
+       "opts": {
+        "lift": 0.95
+       }
+      },
+      "k": "verb",
+      "fitsCreatorBodies": true
+     },
+     {
+      "verb": "sandBottom",
+      "also": [
+       "antifoul"
+      ],
+      "id": "hardC.sand1",
+      "fixture": "hull bottom",
+      "stand": [
+       -1.107,
+       1.393,
+       0
+      ],
+      "yaw": -180,
+      "show": false,
+      "seq": [
+       {
+        "clip": "reach",
+        "loop": true,
+        "opts": {
+         "lift": 0.95
+        },
+        "note": "the sander or the roller on the skin at 1.05 m"
+       }
+      ],
+      "fits": [
+       {
+        "param": "rest",
+        "value": 0.95,
+        "range": [
+         0,
+         1.012
+        ],
+        "ok": true
+       }
+      ],
+      "anim": {
+       "clip": "reach",
+       "opts": {
+        "lift": 0.95
+       }
+      },
+      "k": "verb",
+      "fitsCreatorBodies": true
+     },
+     {
+      "verb": "setStand",
+      "id": "hardC.stand0",
+      "fixture": "jack stand screw",
+      "stand": [
+       0,
+       -1.378,
+       0
+      ],
+      "yaw": 0,
+      "seq": [
+       {
+        "clip": "reach",
+        "loop": true,
+        "opts": {
+         "lift": 0.494
+        },
+        "note": "the bar through the screw at 0.49 m"
+       }
+      ],
+      "fits": [
+       {
+        "param": "rest",
+        "value": 0.494,
+        "range": [
+         0,
+         1.012
+        ],
+        "ok": true
+       }
+      ],
+      "k": "verb",
+      "fitsCreatorBodies": true
+     },
+     {
+      "verb": "setStand",
+      "id": "hardC.stand1",
+      "fixture": "jack stand screw",
+      "stand": [
+       0,
+       1.378,
+       0
+      ],
+      "yaw": -180,
+      "seq": [
+       {
+        "clip": "reach",
+        "loop": true,
+        "opts": {
+         "lift": 0.494
+        },
+        "note": "the bar through the screw at 0.49 m"
+       }
+      ],
+      "fits": [
+       {
+        "param": "rest",
+        "value": 0.494,
+        "range": [
+         0,
+         1.012
+        ],
+        "ok": true
+       }
+      ],
+      "k": "verb",
+      "fitsCreatorBodies": true
+     },
+     {
+      "k": "hull",
+      "id": "hardC",
+      "type": "bowrider",
+      "label": "bowrider",
+      "paint": "harbour-white",
+      "rig": "BowriderIso",
+      "loa": 5.64,
+      "beam": 2.29,
+      "draft": 0.4,
+      "t": 1.4,
+      "store": "hard",
+      "keelZ": 0.55,
+      "ground": 0,
+      "heading": -90,
+      "foot": [
+       [
+        3.075,
+        -1.144
+       ],
+       [
+        3.075,
+        1.144
+       ],
+       [
+        -3.075,
+        1.144
+       ],
+       [
+        -3.075,
+        -1.144
+       ]
+      ],
+      "deckZ": 0.97,
+      "topZ": 2.042,
+      "faces": 1246,
+      "mastUnstepped": false,
+      "wrap": null,
+      "blocks": [
+       {
+        "at": [
+         2.775,
+         0
+        ],
+        "top": 0.55
+       },
+       {
+        "at": [
+         -1.438,
+         0
+        ],
+        "top": 0.55
+       }
+      ],
+      "stands": [
+       {
+        "at": [
+         0,
+         -0.778
+        ],
+        "padZ": 0.89,
+        "nutZ": 0.494
+       },
+       {
+        "at": [
+         0,
+         0.778
+        ],
+        "padZ": 0.89,
+        "nutZ": 0.494
+       }
+      ],
+      "ladder": {
+       "at": [
+        3.375,
+        -0.4
+       ],
+       "landingZ": 1.57,
+       "rungs": 5
+      }
+     },
+     {
+      "k": "block",
+      "kind": "hull on the hard",
+      "poly": [
+       [
+        3.475,
+        -1.844
+       ],
+       [
+        3.475,
+        1.844
+       ],
+       [
+        -3.075,
+        1.844
+       ],
+       [
+        -3.075,
+        -1.844
+       ]
+      ],
+      "z0": 0,
+      "z1": 2.042
+     }
+    ]
+   }
+  },
+  {
+   "key": "shed",
+   "id": "structure.nmc_yard_shed",
+   "scene": "keyscene.nmc_wharf",
+   "options": {},
+   "variants": [],
+   "gameplay": {
+    "schema": "hidden-harbours/nmc-shipyard-part@1",
+    "generatedBy": "NmcShipyard 1.0.0",
+    "key": "shed",
+    "id": "structure.nmc_yard_shed",
+    "name": "Wharf boat yard: shed",
+    "defType": "SetPieceDef",
+    "scene": "keyscene.nmc_wharf",
+    "units": "metres in the part frame, deck datum zero",
+    "bounds": {
+     "x": [
+      -5.8,
+      5.8
+     ],
+     "y": [
+      -11,
+      13.5
+     ],
+     "z": [
+      -0.15,
+      6.6
+     ]
+    },
+    "layer": "raised",
+    "walk": "on",
+    "mount": "ground",
+    "colliders": [
+     {
+      "type": "polygon",
+      "blocks": "walk",
+      "pts": [
+       [
+        5.45,
+        -5.5
+       ],
+       [
+        5.45,
+        5.5
+       ],
+       [
+        5.55,
+        5.5
+       ],
+       [
+        5.55,
+        -5.5
+       ]
+      ]
+     },
+     {
+      "type": "polygon",
+      "blocks": "walk",
+      "pts": [
+       [
+        -5.45,
+        5.5
+       ],
+       [
+        -5.45,
+        1.9
+       ],
+       [
+        -5.55,
+        1.9
+       ],
+       [
+        -5.55,
+        5.5
+       ]
+      ]
+     },
+     {
+      "type": "polygon",
+      "blocks": "walk",
+      "pts": [
+       [
+        -5.45,
+        0.9
+       ],
+       [
+        -5.45,
+        -5.5
+       ],
+       [
+        -5.55,
+        -5.5
+       ],
+       [
+        -5.55,
+        0.9
+       ]
+      ]
+     },
+     {
+      "type": "polygon",
+      "blocks": "walk",
+      "pts": [
+       [
+        5.5,
+        5.45
+       ],
+       [
+        -5.5,
+        5.45
+       ],
+       [
+        -5.5,
+        5.55
+       ],
+       [
+        5.5,
+        5.55
+       ]
+      ]
+     },
+     {
+      "type": "polygon",
+      "blocks": "walk",
+      "pts": [
+       [
+        -5.5,
+        -5.45
+       ],
+       [
+        -3.5,
+        -5.45
+       ],
+       [
+        -3.5,
+        -5.55
+       ],
+       [
+        -5.5,
+        -5.55
+       ]
+      ]
+     },
+     {
+      "type": "polygon",
+      "blocks": "walk",
+      "pts": [
+       [
+        3.5,
+        -5.45
+       ],
+       [
+        5.5,
+        -5.45
+       ],
+       [
+        5.5,
+        -5.55
+       ],
+       [
+        3.5,
+        -5.55
+       ]
+      ]
+     },
+     {
+      "type": "polygon",
+      "blocks": "walk",
+      "pts": [
+       [
+        4.499999999999999,
+        -6.500000000000001
+       ],
+       [
+        5.45,
+        -6.500000000000001
+       ],
+       [
+        5.45,
+        -1.5000000000000004
+       ],
+       [
+        4.499999999999999,
+        -1.5000000000000004
+       ]
+      ]
+     },
+     {
+      "type": "polygon",
+      "blocks": "walk",
+      "pts": [
+       [
+        4.7700000000000005,
+        4.469999999999999
+       ],
+       [
+        5.330000000000001,
+        4.469999999999999
+       ],
+       [
+        5.330000000000001,
+        8.53
+       ],
+       [
+        4.7700000000000005,
+        8.53
+       ]
+      ]
+     },
+     {
+      "type": "polygon",
+      "blocks": "walk",
+      "pts": [
+       [
+        -5.099999999999999,
+        4.180000000000001
+       ],
+       [
+        -3.8999999999999995,
+        4.180000000000001
+       ],
+       [
+        -3.8999999999999995,
+        4.820000000000001
+       ],
+       [
+        -5.099999999999999,
+        4.820000000000001
+       ]
+      ]
+     },
+     {
+      "type": "polygon",
+      "blocks": "walk",
+      "pts": [
+       [
+        -4.62,
+        -7.249999999999999
+       ],
+       [
+        -3.900000000000001,
+        -7.249999999999999
+       ],
+       [
+        -3.900000000000001,
+        -6.199999999999999
+       ],
+       [
+        -4.62,
+        -6.199999999999999
+       ]
+      ]
+     },
+     {
+      "type": "polygon",
+      "blocks": "walk",
+      "pts": [
+       [
+        -5.096,
+        2.4540000000000006
+       ],
+       [
+        -3.854,
+        2.4540000000000006
+       ],
+       [
+        -3.854,
+        3.696
+       ],
+       [
+        -5.096,
+        3.696
+       ]
+      ]
+     }
+    ],
+    "facings": [
+     {
+      "dir": 0,
+      "showFaces": "0",
+      "bearingDeg": 0,
+      "cameraSees": "yard part"
+     },
+     {
+      "dir": 1,
+      "showFaces": "1",
+      "bearingDeg": 45,
+      "cameraSees": "yard part"
+     },
+     {
+      "dir": 2,
+      "showFaces": "2",
+      "bearingDeg": 90,
+      "cameraSees": "yard part"
+     },
+     {
+      "dir": 3,
+      "showFaces": "3",
+      "bearingDeg": 135,
+      "cameraSees": "yard part"
+     },
+     {
+      "dir": 4,
+      "showFaces": "4",
+      "bearingDeg": 180,
+      "cameraSees": "yard part"
+     },
+     {
+      "dir": 5,
+      "showFaces": "5",
+      "bearingDeg": 225,
+      "cameraSees": "yard part"
+     },
+     {
+      "dir": 6,
+      "showFaces": "6",
+      "bearingDeg": 270,
+      "cameraSees": "yard part"
+     },
+     {
+      "dir": 7,
+      "showFaces": "7",
+      "bearingDeg": 315,
+      "cameraSees": "yard part"
+     }
+    ],
+    "cells": [
+     {
+      "dir": 0,
+      "w": 381,
+      "h": 536,
+      "pivot": [
+       190,
+       361
+      ]
+     },
+     {
+      "dir": 1,
+      "w": 542,
+      "h": 548,
+      "pivot": [
+       267,
+       359
+      ]
+     },
+     {
+      "dir": 2,
+      "w": 793,
+      "h": 377,
+      "pivot": [
+       436,
+       255
+      ]
+     },
+     {
+      "dir": 3,
+      "w": 813,
+      "h": 473,
+      "pivot": [
+       435,
+       304
+      ]
+     },
+     {
+      "dir": 4,
+      "w": 381,
+      "h": 536,
+      "pivot": [
+       190,
+       309
+      ]
+     },
+     {
+      "dir": 5,
+      "w": 542,
+      "h": 548,
+      "pivot": [
+       275,
+       323
+      ]
+     },
+     {
+      "dir": 6,
+      "w": 793,
+      "h": 377,
+      "pivot": [
+       356,
+       255
+      ]
+     },
+     {
+      "dir": 7,
+      "w": 813,
+      "h": 479,
+      "pivot": [
+       378,
+       304
+      ]
+     }
+    ],
+    "anchors": {
+     "door": [
+      -1.2,
+      -7.5,
+      0
+     ]
+    },
+    "options": {},
+    "placement": {
+     "row": "harbour.yard",
+     "at": [
+      199,
+      131.4
+     ],
+     "elevation": 3.4,
+     "dir": 0
+    },
+    "walkSurfaces": [
+     {
+      "poly": [
+       [
+        5.3,
+        5.3
+       ],
+       [
+        -5.3,
+        5.3
+       ],
+       [
+        -5.3,
+        -5.3
+       ],
+       [
+        5.3,
+        -5.3
+       ]
+      ],
+      "z": 0,
+      "surface": "power-floated concrete"
+     }
+    ],
+    "records": [
+     {
+      "k": "walk",
+      "kind": "shed floor",
+      "poly": [
+       [
+        -5.3,
+        -5.3
+       ],
+       [
+        5.3,
+        -5.3
+       ],
+       [
+        5.3,
+        5.3
+       ],
+       [
+        -5.3,
+        5.3
+       ]
+      ],
+      "z": 0,
+      "surface": "power-floated concrete"
+     },
+     {
+      "verb": "benchWork",
+      "also": [
+       "mendGear",
+       "fitParts"
+      ],
+      "id": "shed.bench",
+      "fixture": "workbench",
+      "stand": [
+       -4.12,
+       4,
+       0
+      ],
+      "yaw": -90,
+      "show": true,
+      "seq": [
+       {
+        "clip": "bench",
+        "loop": true,
+        "opts": {
+         "workZ": 0.8
+        }
+       }
+      ],
+      "fits": [
+       {
+        "param": "bench",
+        "value": 0.8,
+        "range": [
+         0.643,
+         0.853
+        ],
+        "ok": true
+       }
+      ],
+      "anim": {
+       "clip": "bench",
+       "opts": {
+        "workZ": 0.8
+       }
+      },
+      "k": "verb",
+      "fitsCreatorBodies": true
+     },
+     {
+      "verb": "fetchParts",
+      "also": [
+       "stowParts"
+      ],
+      "id": "shed.shelves",
+      "fixture": "parts shelving",
+      "stand": [
+       -4.38,
+       -6.5,
+       0
+      ],
+      "yaw": -90,
+      "show": true,
+      "seq": [
+       {
+        "clip": "lift",
+        "once": true,
+        "opts": {
+         "workZ": 0.85
+        }
+       },
+       {
+        "clip": "place",
+        "once": true,
+        "opts": {
+         "workZ": 0.85
+        }
+       }
+      ],
+      "fits": [
+       {
+        "param": "load",
+        "value": 0.85,
+        "range": [
+         0.718,
+         0.978
+        ],
+        "ok": true
+       }
+      ],
+      "anim": {
+       "clip": "lift",
+       "opts": {
+        "workZ": 0.85
+       }
+      },
+      "k": "verb",
+      "fitsCreatorBodies": true
+     },
+     {
+      "verb": "hoistPendant",
+      "id": "shed.crane",
+      "fixture": "5 t bridge crane pendant",
+      "stand": [
+       -1.7,
+       3.75,
+       0
+      ],
+      "yaw": 0,
+      "seq": [
+       {
+        "clip": "reach",
+        "loop": true,
+        "opts": {
+         "lift": 0.95
+        },
+        "note": "the pendant hangs to 1.05 m; up, down, east, west on its buttons"
+       }
+      ],
+      "fits": [
+       {
+        "param": "rest",
+        "value": 0.95,
+        "range": [
+         0,
+         1.012
+        ],
+        "ok": true
+       }
+      ],
+      "k": "verb",
+      "fitsCreatorBodies": true
+     },
+     {
+      "k": "shed",
+      "span": 11,
+      "length": 11,
+      "eave": 5.4,
+      "ridge": 6.6,
+      "floorZ": 0,
+      "door": {
+       "width": 7,
+       "height": 5,
+       "open": true,
+       "kind": "roll-up",
+       "wall": "north (+y)"
+      },
+      "personnelDoor": {
+       "wall": "east",
+       "width": 1,
+       "height": 2.2
+      },
+      "cutaway": "none",
+      "cutH": 1.35,
+      "cutWalls": [],
+      "crane": {
+       "capacity_t": 5,
+       "railZ": 4.1,
+       "hookMinZ": 0.3,
+       "drawn": true
+      }
+     },
+     {
+      "k": "wall",
+      "id": "west",
+      "a": [
+       -5.5,
+       5.5
+      ],
+      "b": [
+       -5.5,
+       -5.5
+      ],
+      "gaps": []
+     },
+     {
+      "k": "wall",
+      "id": "east",
+      "a": [
+       5.5,
+       -5.5
+      ],
+      "b": [
+       5.5,
+       5.5
+      ],
+      "gaps": [
+       [
+        3.6,
+        4.6
+       ]
+      ]
+     },
+     {
+      "k": "wall",
+      "id": "south",
+      "a": [
+       -5.5,
+       -5.5
+      ],
+      "b": [
+       5.5,
+       -5.5
+      ],
+      "gaps": []
+     },
+     {
+      "k": "wall",
+      "id": "north",
+      "a": [
+       5.5,
+       5.5
+      ],
+      "b": [
+       -5.5,
+       5.5
+      ],
+      "gaps": [
+       [
+        2,
+        9
+       ]
+      ]
+     },
+     {
+      "verb": "walkIn",
+      "id": "shed.door",
+      "fixture": "roll-up door",
+      "stand": [
+       1.2,
+       7.5,
+       0
+      ],
+      "yaw": 180,
+      "seq": [
+       {
+        "clip": "walk",
+        "loop": true,
+        "note": "through the roll-up door onto the shed floor, level with the apron"
+       }
+      ],
+      "fits": [],
+      "show": true,
+      "anim": {
+       "clip": "walk",
+       "move": {
+        "d": [
+         0,
+         -1,
+         0
+        ],
+        "len": 5.5,
+        "rate": 0.72
+       }
+      },
+      "k": "verb",
+      "fitsCreatorBodies": true
+     }
+    ]
+   }
+  },
+  {
+   "key": "floodW",
+   "id": "structure.nmc_yard_flood_w",
+   "scene": "keyscene.nmc_wharf",
+   "options": {},
+   "variants": [],
+   "gameplay": {
+    "schema": "hidden-harbours/nmc-shipyard-part@1",
+    "generatedBy": "NmcShipyard 1.0.0",
+    "key": "floodW",
+    "id": "structure.nmc_yard_flood_w",
+    "name": "Wharf boat yard: floodW",
+    "defType": "SetPieceDef",
+    "scene": "keyscene.nmc_wharf",
+    "units": "metres in the part frame, deck datum zero",
+    "bounds": {
+     "x": [
+      -1,
+      1
+     ],
+     "y": [
+      -0.3,
+      0.3
+     ],
+     "z": [
+      0,
+      8
+     ]
+    },
+    "layer": "raised",
+    "walk": "solid",
+    "mount": "ground",
+    "colliders": [
+     {
+      "type": "polygon",
+      "blocks": "walk",
+      "pts": [
+       [
+        -0.3,
+        -0.3
+       ],
+       [
+        0.3,
+        -0.3
+       ],
+       [
+        0.3,
+        0.3
+       ],
+       [
+        -0.3,
+        0.3
+       ]
+      ]
+     }
+    ],
+    "facings": [
+     {
+      "dir": 0,
+      "showFaces": "0",
+      "bearingDeg": 0,
+      "cameraSees": "yard part"
+     },
+     {
+      "dir": 1,
+      "showFaces": "1",
+      "bearingDeg": 45,
+      "cameraSees": "yard part"
+     },
+     {
+      "dir": 2,
+      "showFaces": "2",
+      "bearingDeg": 90,
+      "cameraSees": "yard part"
+     },
+     {
+      "dir": 3,
+      "showFaces": "3",
+      "bearingDeg": 135,
+      "cameraSees": "yard part"
+     },
+     {
+      "dir": 4,
+      "showFaces": "4",
+      "bearingDeg": 180,
+      "cameraSees": "yard part"
+     },
+     {
+      "dir": 5,
+      "showFaces": "5",
+      "bearingDeg": 225,
+      "cameraSees": "yard part"
+     },
+     {
+      "dir": 6,
+      "showFaces": "6",
+      "bearingDeg": 270,
+      "cameraSees": "yard part"
+     },
+     {
+      "dir": 7,
+      "showFaces": "7",
+      "bearingDeg": 315,
+      "cameraSees": "yard part"
+     }
+    ],
+    "cells": [
+     {
+      "dir": 0,
+      "w": 73,
+      "h": 214,
+      "pivot": [
+       36,
+       203
+      ]
+     },
+     {
+      "dir": 1,
+      "w": 63,
+      "h": 224,
+      "pivot": [
+       31,
+       210
+      ]
+     },
+     {
+      "dir": 2,
+      "w": 29,
+      "h": 225,
+      "pivot": [
+       14,
+       214
+      ]
+     },
+     {
+      "dir": 3,
+      "w": 63,
+      "h": 224,
+      "pivot": [
+       31,
+       210
+      ]
+     },
+     {
+      "dir": 4,
+      "w": 73,
+      "h": 214,
+      "pivot": [
+       36,
+       203
+      ]
+     },
+     {
+      "dir": 5,
+      "w": 63,
+      "h": 224,
+      "pivot": [
+       31,
+       210
+      ]
+     },
+     {
+      "dir": 6,
+      "w": 29,
+      "h": 225,
+      "pivot": [
+       14,
+       214
+      ]
+     },
+     {
+      "dir": 7,
+      "w": 63,
+      "h": 224,
+      "pivot": [
+       31,
+       210
+      ]
+     }
+    ],
+    "anchors": {},
+    "options": {},
+    "placement": {
+     "row": "harbour.yard",
+     "at": [
+      186,
+      97.6
+     ],
+     "elevation": 3.4,
+     "dir": 0
+    },
+    "walkSurfaces": [],
+    "records": []
+   }
+  },
+  {
+   "key": "floodE",
+   "id": "structure.nmc_yard_flood_e",
+   "scene": "keyscene.nmc_wharf",
+   "options": {},
+   "variants": [],
+   "gameplay": {
+    "schema": "hidden-harbours/nmc-shipyard-part@1",
+    "generatedBy": "NmcShipyard 1.0.0",
+    "key": "floodE",
+    "id": "structure.nmc_yard_flood_e",
+    "name": "Wharf boat yard: floodE",
+    "defType": "SetPieceDef",
+    "scene": "keyscene.nmc_wharf",
+    "units": "metres in the part frame, deck datum zero",
+    "bounds": {
+     "x": [
+      -1,
+      1
+     ],
+     "y": [
+      -0.3,
+      0.3
+     ],
+     "z": [
+      0,
+      8
+     ]
+    },
+    "layer": "raised",
+    "walk": "solid",
+    "mount": "ground",
+    "colliders": [
+     {
+      "type": "polygon",
+      "blocks": "walk",
+      "pts": [
+       [
+        -0.3,
+        -0.3
+       ],
+       [
+        0.3,
+        -0.3
+       ],
+       [
+        0.3,
+        0.3
+       ],
+       [
+        -0.3,
+        0.3
+       ]
+      ]
+     }
+    ],
+    "facings": [
+     {
+      "dir": 0,
+      "showFaces": "0",
+      "bearingDeg": 0,
+      "cameraSees": "yard part"
+     },
+     {
+      "dir": 1,
+      "showFaces": "1",
+      "bearingDeg": 45,
+      "cameraSees": "yard part"
+     },
+     {
+      "dir": 2,
+      "showFaces": "2",
+      "bearingDeg": 90,
+      "cameraSees": "yard part"
+     },
+     {
+      "dir": 3,
+      "showFaces": "3",
+      "bearingDeg": 135,
+      "cameraSees": "yard part"
+     },
+     {
+      "dir": 4,
+      "showFaces": "4",
+      "bearingDeg": 180,
+      "cameraSees": "yard part"
+     },
+     {
+      "dir": 5,
+      "showFaces": "5",
+      "bearingDeg": 225,
+      "cameraSees": "yard part"
+     },
+     {
+      "dir": 6,
+      "showFaces": "6",
+      "bearingDeg": 270,
+      "cameraSees": "yard part"
+     },
+     {
+      "dir": 7,
+      "showFaces": "7",
+      "bearingDeg": 315,
+      "cameraSees": "yard part"
+     }
+    ],
+    "cells": [
+     {
+      "dir": 0,
+      "w": 73,
+      "h": 214,
+      "pivot": [
+       36,
+       203
+      ]
+     },
+     {
+      "dir": 1,
+      "w": 63,
+      "h": 224,
+      "pivot": [
+       31,
+       210
+      ]
+     },
+     {
+      "dir": 2,
+      "w": 29,
+      "h": 225,
+      "pivot": [
+       14,
+       214
+      ]
+     },
+     {
+      "dir": 3,
+      "w": 63,
+      "h": 224,
+      "pivot": [
+       31,
+       210
+      ]
+     },
+     {
+      "dir": 4,
+      "w": 73,
+      "h": 214,
+      "pivot": [
+       36,
+       203
+      ]
+     },
+     {
+      "dir": 5,
+      "w": 63,
+      "h": 224,
+      "pivot": [
+       31,
+       210
+      ]
+     },
+     {
+      "dir": 6,
+      "w": 29,
+      "h": 225,
+      "pivot": [
+       14,
+       214
+      ]
+     },
+     {
+      "dir": 7,
+      "w": 63,
+      "h": 224,
+      "pivot": [
+       31,
+       210
+      ]
+     }
+    ],
+    "anchors": {},
+    "options": {},
+    "placement": {
+     "row": "harbour.yard",
+     "at": [
+      210,
+      124
+     ],
+     "elevation": 3.4,
+     "dir": 0
+    },
+    "walkSurfaces": [],
+    "records": []
+   }
+  },
+  {
+   "key": "fence",
+   "id": "structure.nmc_yard_fence",
+   "scene": "keyscene.nmc_wharf",
+   "options": {},
+   "variants": [],
+   "gameplay": {
+    "schema": "hidden-harbours/nmc-shipyard-part@1",
+    "generatedBy": "NmcShipyard 1.0.0",
+    "key": "fence",
+    "id": "structure.nmc_yard_fence",
+    "name": "Wharf boat yard: fence",
+    "defType": "SetPieceDef",
+    "scene": "keyscene.nmc_wharf",
+    "units": "metres in the part frame, deck datum zero",
+    "bounds": {
+     "x": [
+      -0.038971,
+      0.038971
+     ],
+     "y": [
+      -19.045,
+      19.045
+     ],
+     "z": [
+      0,
+      2.1
+     ]
+    },
+    "layer": "raised",
+    "walk": "solid",
+    "mount": "ground",
+    "colliders": [
+     {
+      "type": "polygon",
+      "blocks": "walk",
+      "pts": [
+       [
+        -0.045,
+        -19
+       ],
+       [
+        -0.045,
+        -2
+       ],
+       [
+        0.045,
+        -2
+       ],
+       [
+        0.045,
+        -19
+       ]
+      ]
+     },
+     {
+      "type": "polygon",
+      "blocks": "walk",
+      "pts": [
+       [
+        -0.045,
+        7
+       ],
+       [
+        -0.045,
+        19
+       ],
+       [
+        0.045,
+        19
+       ],
+       [
+        0.045,
+        7
+       ]
+      ]
+     }
+    ],
+    "facings": [
+     {
+      "dir": 0,
+      "showFaces": "0",
+      "bearingDeg": 0,
+      "cameraSees": "yard part"
+     },
+     {
+      "dir": 1,
+      "showFaces": "1",
+      "bearingDeg": 45,
+      "cameraSees": "yard part"
+     },
+     {
+      "dir": 2,
+      "showFaces": "2",
+      "bearingDeg": 90,
+      "cameraSees": "yard part"
+     },
+     {
+      "dir": 3,
+      "showFaces": "3",
+      "bearingDeg": 135,
+      "cameraSees": "yard part"
+     },
+     {
+      "dir": 4,
+      "showFaces": "4",
+      "bearingDeg": 180,
+      "cameraSees": "yard part"
+     },
+     {
+      "dir": 5,
+      "showFaces": "5",
+      "bearingDeg": 225,
+      "cameraSees": "yard part"
+     },
+     {
+      "dir": 6,
+      "showFaces": "6",
+      "bearingDeg": 270,
+      "cameraSees": "yard part"
+     },
+     {
+      "dir": 7,
+      "showFaces": "7",
+      "bearingDeg": 315,
+      "cameraSees": "yard part"
+     }
+    ],
+    "cells": [
+     {
+      "dir": 0,
+      "w": 12,
+      "h": 844,
+      "pivot": [
+       6,
+       448
+      ]
+     },
+     {
+      "dir": 1,
+      "w": 872,
+      "h": 615,
+      "pivot": [
+       436,
+       333
+      ]
+     },
+     {
+      "dir": 2,
+      "w": 1228,
+      "h": 63,
+      "pivot": [
+       614,
+       57
+      ]
+     },
+     {
+      "dir": 3,
+      "w": 872,
+      "h": 615,
+      "pivot": [
+       436,
+       333
+      ]
+     },
+     {
+      "dir": 4,
+      "w": 12,
+      "h": 844,
+      "pivot": [
+       6,
+       448
+      ]
+     },
+     {
+      "dir": 5,
+      "w": 872,
+      "h": 615,
+      "pivot": [
+       436,
+       333
+      ]
+     },
+     {
+      "dir": 6,
+      "w": 1228,
+      "h": 63,
+      "pivot": [
+       614,
+       57
+      ]
+     },
+     {
+      "dir": 7,
+      "w": 872,
+      "h": 615,
+      "pivot": [
+       436,
+       333
+      ]
+     }
+    ],
+    "anchors": {},
+    "options": {},
+    "placement": {
+     "row": "harbour.yard",
+     "at": [
+      184.4,
+      117
+     ],
+     "elevation": 3.4,
+     "dir": 0
+    },
+    "walkSurfaces": [],
+    "records": [
+     {
+      "k": "fenceRun",
+      "a": [
+       0,
+       -19
+      ],
+      "b": [
+       0,
+       19
+      ],
+      "height": 2
+     },
+     {
+      "k": "gate",
+      "span": [
+       17,
+       26
+      ],
+      "width": 9,
+      "open": true
+     }
+    ]
+   }
+  },
+  {
+   "key": "props",
+   "id": "structure.nmc_yard_props",
+   "scene": "keyscene.nmc_wharf",
+   "options": {},
+   "variants": [],
+   "gameplay": {
+    "schema": "hidden-harbours/nmc-shipyard-part@1",
+    "generatedBy": "NmcShipyard 1.0.0",
+    "key": "props",
+    "id": "structure.nmc_yard_props",
+    "name": "Wharf boat yard: props",
+    "defType": "SetPieceDef",
+    "scene": "keyscene.nmc_wharf",
+    "units": "metres in the part frame, deck datum zero",
+    "bounds": {
+     "x": [
+      -10.896,
+      14.513946
+     ],
+     "y": [
+      -12.123586,
+      12.516
+     ],
+     "z": [
+      -0.01167,
+      2.1
+     ]
+    },
+    "layer": "raised",
+    "walk": "solid",
+    "mount": "ground",
+    "colliders": [
+     {
+      "type": "polygon",
+      "blocks": "walk",
+      "pts": [
+       [
+        9.9,
+        -12.3
+       ],
+       [
+        15.9,
+        -12.3
+       ],
+       [
+        15.9,
+        -10.9
+       ],
+       [
+        9.9,
+        -10.9
+       ]
+      ]
+     },
+     {
+      "type": "polygon",
+      "blocks": "walk",
+      "pts": [
+       [
+        9.4,
+        2.2
+       ],
+       [
+        11.4,
+        2.2
+       ],
+       [
+        11.4,
+        3.6
+       ],
+       [
+        9.4,
+        3.6
+       ]
+      ]
+     },
+     {
+      "type": "polygon",
+      "blocks": "walk",
+      "pts": [
+       [
+        -11.3,
+        10.9
+       ],
+       [
+        -9.3,
+        10.9
+       ],
+       [
+        -9.3,
+        12.3
+       ],
+       [
+        -11.3,
+        12.3
+       ]
+      ]
+     }
+    ],
+    "facings": [
+     {
+      "dir": 0,
+      "showFaces": "0",
+      "bearingDeg": 0,
+      "cameraSees": "yard part"
+     },
+     {
+      "dir": 1,
+      "showFaces": "1",
+      "bearingDeg": 45,
+      "cameraSees": "yard part"
+     },
+     {
+      "dir": 2,
+      "showFaces": "2",
+      "bearingDeg": 90,
+      "cameraSees": "yard part"
+     },
+     {
+      "dir": 3,
+      "showFaces": "3",
+      "bearingDeg": 135,
+      "cameraSees": "yard part"
+     },
+     {
+      "dir": 4,
+      "showFaces": "4",
+      "bearingDeg": 180,
+      "cameraSees": "yard part"
+     },
+     {
+      "dir": 5,
+      "showFaces": "5",
+      "bearingDeg": 225,
+      "cameraSees": "yard part"
+     },
+     {
+      "dir": 6,
+      "showFaces": "6",
+      "bearingDeg": 270,
+      "cameraSees": "yard part"
+     },
+     {
+      "dir": 7,
+      "showFaces": "7",
+      "bearingDeg": 315,
+      "cameraSees": "yard part"
+     }
+    ],
+    "cells": [
+     {
+      "dir": 0,
+      "w": 823,
+      "h": 537,
+      "pivot": [
+       353,
+       283
+      ]
+     },
+     {
+      "dir": 1,
+      "w": 1127,
+      "h": 262,
+      "pivot": [
+       530,
+       235
+      ]
+     },
+     {
+      "dir": 2,
+      "w": 798,
+      "h": 577,
+      "pivot": [
+       405,
+       348
+      ]
+     },
+     {
+      "dir": 3,
+      "w": 364,
+      "h": 776,
+      "pivot": [
+       324,
+       434
+      ]
+     },
+     {
+      "dir": 4,
+      "w": 823,
+      "h": 560,
+      "pivot": [
+       469,
+       298
+      ]
+     },
+     {
+      "dir": 5,
+      "w": 1127,
+      "h": 286,
+      "pivot": [
+       597,
+       75
+      ]
+     },
+     {
+      "dir": 6,
+      "w": 798,
+      "h": 553,
+      "pivot": [
+       392,
+       250
+      ]
+     },
+     {
+      "dir": 7,
+      "w": 364,
+      "h": 749,
+      "pivot": [
+       39,
+       364
+      ]
+     }
+    ],
+    "anchors": {},
+    "options": {},
+    "placement": {
+     "row": "harbour.yard",
+     "at": [
+      197.4,
+      115.6
+     ],
+     "elevation": 3.4,
+     "dir": 0
+    },
+    "walkSurfaces": [],
+    "records": [
+     {
+      "k": "block",
+      "kind": "stands",
+      "poly": [
+       [
+        9.899999999999995,
+        -12.299999999999994
+       ],
+       [
+        15.899999999999993,
+        -12.299999999999994
+       ],
+       [
+        15.899999999999993,
+        -10.899999999999995
+       ],
+       [
+        9.899999999999995,
+        -10.899999999999995
+       ]
+      ],
+      "z0": 0,
+      "z1": 1.2
+     },
+     {
+      "k": "block",
+      "kind": "blocking",
+      "poly": [
+       [
+        9.399999999999995,
+        2.2000000000000055
+       ],
+       [
+        11.399999999999993,
+        2.2000000000000055
+       ],
+       [
+        11.399999999999993,
+        3.600000000000006
+       ],
+       [
+        9.399999999999995,
+        3.600000000000006
+       ]
+      ],
+      "z0": 0,
+      "z1": 1.2
+     },
+     {
+      "k": "block",
+      "kind": "drums",
+      "poly": [
+       [
+        -11.299999999999994,
+        10.90000000000001
+       ],
+       [
+        -9.299999999999995,
+        10.90000000000001
+       ],
+       [
+        -9.299999999999995,
+        12.300000000000008
+       ],
+       [
+        -11.299999999999994,
+        12.300000000000008
+       ]
+      ],
+      "z0": 0,
+      "z1": 1.2
+     }
+    ]
+   }
+  }
+ ]
+}

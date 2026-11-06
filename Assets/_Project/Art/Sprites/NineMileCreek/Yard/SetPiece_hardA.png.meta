@@ -1,0 +1,338 @@
+fileFormatVersion: 2
+guid: 3371ed0389278814db7092f905b50a78
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 4331259379219313445
+    second: SetPiece_hardA_0
+  - first:
+      213: -5997367599594075807
+    second: SetPiece_hardA_1
+  - first:
+      213: -7921808474268162828
+    second: SetPiece_hardA_2
+  - first:
+      213: -2522394781271629446
+    second: SetPiece_hardA_3
+  - first:
+      213: 7745295924594827258
+    second: SetPiece_hardA_4
+  - first:
+      213: 4385339431449291374
+    second: SetPiece_hardA_5
+  - first:
+      213: -2412523651578696122
+    second: SetPiece_hardA_6
+  - first:
+      213: 4913219575798720189
+    second: SetPiece_hardA_7
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 4096
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: SetPiece_hardA_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 397
+        height: 340
+      alignment: 9
+      pivot: {x: 0.5138539, y: 0.4764706}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 52332781579bb1c30800000000000000
+      internalID: 4331259379219313445
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SetPiece_hardA_1
+      rect:
+        serializedVersion: 2
+        x: 397
+        y: 0
+        width: 397
+        height: 340
+      alignment: 9
+      pivot: {x: 0.43324938, y: 0.5529412}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 16902ce81f115cca0800000000000000
+      internalID: -5997367599594075807
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SetPiece_hardA_2
+      rect:
+        serializedVersion: 2
+        x: 794
+        y: 0
+        width: 397
+        height: 340
+      alignment: 9
+      pivot: {x: 0.17380352, y: 0.48235294}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4f421980a25101290800000000000000
+      internalID: -7921808474268162828
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SetPiece_hardA_3
+      rect:
+        serializedVersion: 2
+        x: 1191
+        y: 0
+        width: 397
+        height: 340
+      alignment: 9
+      pivot: {x: 0.35516372, y: 0.57058823}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a7161078f47aefcd0800000000000000
+      internalID: -2522394781271629446
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SetPiece_hardA_4
+      rect:
+        serializedVersion: 2
+        x: 1588
+        y: 0
+        width: 397
+        height: 340
+      alignment: 9
+      pivot: {x: 0.4861461, y: 0.4764706}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: aff51c96b91dc7b60800000000000000
+      internalID: 7745295924594827258
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SetPiece_hardA_5
+      rect:
+        serializedVersion: 2
+        x: 1985
+        y: 0
+        width: 397
+        height: 340
+      alignment: 9
+      pivot: {x: 0.35516372, y: 0.3882353}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e6a6c077afadbdc30800000000000000
+      internalID: 4385339431449291374
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SetPiece_hardA_6
+      rect:
+        serializedVersion: 2
+        x: 2382
+        y: 0
+        width: 397
+        height: 340
+      alignment: 9
+      pivot: {x: 0.17380352, y: 0.3852941}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 64e6c6f558ef48ed0800000000000000
+      internalID: -2412523651578696122
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SetPiece_hardA_7
+      rect:
+        serializedVersion: 2
+        x: 2779
+        y: 0
+        width: 397
+        height: 340
+      alignment: 9
+      pivot: {x: 0.43324938, y: 0.3882353}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: db66afe3c234f2440800000000000000
+      internalID: 4913219575798720189
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 5d09ef462582b134bbbfc9d4bbdb72d9
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      SetPiece_hardA_0: 4331259379219313445
+      SetPiece_hardA_1: -5997367599594075807
+      SetPiece_hardA_2: -7921808474268162828
+      SetPiece_hardA_3: -2522394781271629446
+      SetPiece_hardA_4: 7745295924594827258
+      SetPiece_hardA_5: 4385339431449291374
+      SetPiece_hardA_6: -2412523651578696122
+      SetPiece_hardA_7: 4913219575798720189
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
