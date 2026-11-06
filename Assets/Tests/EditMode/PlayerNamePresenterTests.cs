@@ -333,6 +333,7 @@ namespace HiddenHarbours.Tests.EditMode
             var hold = new MemoryHold();
             hold.TryAdd(new CatchItem("fish.test", "For {player}", FishCategory.InshoreGroundfish, 1f, 1, 0f));
             Set(screen, "_hold", hold);
+            Set(screen, "_spoil", SpoilContext.Capture());
             Call(screen, "RebuildSpeciesList");
             Call(screen, "SelectSpecies", "fish.test");
             StringAssert.Contains("For " + expected, Drawn(screen));

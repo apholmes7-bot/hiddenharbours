@@ -13,12 +13,13 @@ namespace HiddenHarbours.Tests.EditMode
         private const string KnownTokens =
             "{player}|" +                         // Core/Save/PlayerName.cs, through PlayerName.Of.
             "{payout}|{units}|" +                 // World/DialogueOption.cs; DialoguePresenter.CounterSellAnswer.
-            "{species1}|{price1}|{species2}|{price2}"; // Art/SetPieceDef.cs, Words.Format for market.today.
+            "{species1}|{price1}|{species2}|{price2}|" + // Art/SetPieceDef.cs, Words.Format for market.today.
+            "{Submit}|{Cancel}";                  // Input/HiddenHarbours.inputactions, Input System usage bindings.
 
         private static readonly HashSet<string> Allowed = new HashSet<string>(KnownTokens.Split('|'), StringComparer.Ordinal);
-        // Inspect serialized string values, not YAML flow mappings. Quoted JSON object keys are
-        // structure; placeholders inside the imported JSON's strings are still inspected.
-        private static readonly Regex Token = new Regex(@"\{[^{}""\r\n]+\}");
+        // A placeholder holds only an identifier. Colons, commas and whitespace belong to
+        // builder objects; placeholders inside imported strings are still inspected.
+        private static readonly Regex Token = new Regex(@"\{[A-Za-z0-9_.]+\}");
 
         public static List<string> Problems(string text, string path)
         {
@@ -64,7 +65,7 @@ namespace HiddenHarbours.Tests.EditMode
         [TestCase("{name}")]
         [TestCase("{Player}")]
         [TestCase("{player_name}")]
-        [TestCase("{player:upper}")]
+        [TestCase("{no_such_token}")]
         public void UnknownTokensFailWithTheirAssetAndSpelling(string token)
         {
             var problems = Problems("Hello " + token, "fixture.asset");
