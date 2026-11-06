@@ -16,6 +16,12 @@ namespace HiddenHarbours.Core
         [Tooltip("Maximum name length after trimming surrounding spaces.")]
         [Min(1)] public int PlayerNameMaxLength = DefaultPlayerNameMaxLength;
 
+        public const float DefaultCreatorFigureHeightFraction = 0.6f;
+
+        [Header("Character creator view")]
+        public Color CreatorBackdropColor = NotebookInk.Paper;
+        [Range(0.1f, 0.7f)] public float CreatorFigureHeightFraction = DefaultCreatorFigureHeightFraction;
+
         [Header("Curling breakers")]
         public CurlingBreakerSettings CurlingBreakers = CurlingBreakerSettings.Default;
 

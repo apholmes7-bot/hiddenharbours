@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: NanBuild
   m_EditorClassIdentifier: HiddenHarbours.Core::HiddenHarbours.Core.CharacterBuildDef
   Id: char_build.nan
+  PlayerDisplayName: Build D
   Preset: nan
   Visual: {fileID: 11400000, guid: cc7e4619e6983df4c8922f506e46b7ae, type: 2}
   Skin: 

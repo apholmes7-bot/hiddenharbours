@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: HandBuild
   m_EditorClassIdentifier: HiddenHarbours.Core::HiddenHarbours.Core.CharacterBuildDef
   Id: char_build.hand
+  PlayerDisplayName: Build H
   Preset: hand
   Visual: {fileID: 11400000, guid: c839d1e7133d76b48aa89106daa35530, type: 2}
   Skin: 

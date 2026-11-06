@@ -17,6 +17,7 @@ namespace HiddenHarbours.UI
         private readonly List<string> _unavailable = new List<string>();
         private readonly List<string> _outfits = new List<string> { string.Empty };
         private readonly List<string> _colourFields = new List<string>();
+        private readonly Random _random = new Random();
         private CharacterRecipe _recipe;
         private string _outfit;
         private string _name;
@@ -94,6 +95,33 @@ namespace HiddenHarbours.UI
         }
 
         public bool SelectBody(string id) => PreviewRecipe(new CharacterRecipe { BuildId = id });
+
+        /// <summary>Roll only offered data; the name and the save stay untouched.</summary>
+        public bool Randomize(Random random = null)
+        {
+            if (!IsOpen || _bodies.Count == 0) return false;
+            random ??= _random;
+            CharacterRecipe candidate = new CharacterRecipe { BuildId = _bodies[random.Next(_bodies.Count)] };
+            foreach (CharacterField field in _builder.Contract.Fields)
+            {
+                if (field == null || field.Kind != CharacterFieldKind.Colour || field.Options == null) continue;
+                var allowed = new List<string>();
+                foreach (string value in field.Options)
+                {
+                    CharacterRecipe trial = candidate.Clone();
+                    trial.Set(field.Name, value);
+                    if (CharacterBuilder.TryBuild(_builder, trial, CharacterAudience.Player, out _, out _)) allowed.Add(value);
+                }
+                if (allowed.Count > 0) candidate.Set(field.Name, allowed[random.Next(allowed.Count)]);
+            }
+            if (!CharacterBuilder.TryBuild(_builder, candidate, CharacterAudience.Player, out _, out string why)) return Refuse(why);
+            if (!PreviewRecipe(candidate)) return false;
+            var starters = new List<string>();
+            if (_wardrobe != null && _wardrobe.Outfits != null)
+                foreach (CharacterOutfitDef outfit in _wardrobe.Outfits)
+                    if (outfit != null && !string.IsNullOrEmpty(outfit.Id)) starters.Add(outfit.Id);
+            return starters.Count == 0 || SelectOutfit(starters[random.Next(starters.Count)]);
+        }
 
         public IReadOnlyList<string> ColourOptions(string field)
         {
@@ -290,7 +318,7 @@ namespace HiddenHarbours.UI
             {
                 CharacterBuildDef build = _builder != null
                     ? _builder.Build(string.IsNullOrEmpty(_recipe.BuildId) ? _builder.PlayerDefaultBuildId : _recipe.BuildId) : null;
-                return CharacterCreatorStrings.Body + (build != null ? build.Preset : _recipe.BuildId);
+                return CharacterCreatorStrings.Body + (build != null ? build.PlayerDisplayName : "");
             }
             if (row < OutfitRow)
             {
@@ -318,18 +346,9 @@ namespace HiddenHarbours.UI
         private void ReadColourFields()
         {
             _colourFields.Clear();
-            if (!CharacterBuilder.TryBuild(_builder, _recipe, CharacterAudience.Player, out CharacterLook look, out _)) return;
-            var used = new HashSet<string>(StringComparer.Ordinal);
-            foreach (CharacterSkinDef.Material material in look.Skin.Materials)
-            {
-                CharacterPaintRule rule = _builder.Contract.Rule(material.Name);
-                if (rule == null) continue;
-                if (rule.Source == CharacterPaintSource.Axis) used.Add(rule.Field);
-                if (rule.Source == CharacterPaintSource.Table && rule.TableFields != null)
-                    foreach (string field in rule.TableFields) used.Add(field);
-            }
+            if (_builder == null || _builder.Contract == null) return;
             foreach (CharacterField field in _builder.Contract.Fields)
-                if (field != null && field.Kind == CharacterFieldKind.Colour && used.Contains(field.Name))
+                if (field != null && field.Kind == CharacterFieldKind.Colour)
                     _colourFields.Add(field.Name);
         }
     }

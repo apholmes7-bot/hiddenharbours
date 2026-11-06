@@ -227,6 +227,36 @@ namespace HiddenHarbours.Tests.UI.EditMode
         }
 
         [Test]
+        public void EveryCreatableBodyHasNeutralEditableDisplayName()
+        {
+            foreach (string id in _model.Bodies)
+            {
+                string label = _builder.Build(id).PlayerDisplayName;
+                Assert.IsFalse(string.IsNullOrWhiteSpace(label), id);
+                Assert.AreNotEqual(id.Substring(id.LastIndexOf('.') + 1), label, id);
+            }
+        }
+
+        [Test]
+        public void RandomizeHundredTimes_AllColourAxesAccepted_NameAndSaveUnchanged()
+        {
+            _model.SetName("My name");
+            var random = new System.Random(4129);
+            foreach (CharacterField field in _builder.Contract.Fields)
+                if (field.Kind == CharacterFieldKind.Colour) CollectionAssert.Contains(_model.ColourFields, field.Name);
+            for (int i = 0; i < 100; i++)
+            {
+                Assert.IsTrue(_model.Randomize(random), _model.Refusal);
+                Assert.IsNull(CharacterBuilder.Refuse(_builder, _model.Recipe, CharacterAudience.Player));
+                foreach (string field in _model.ColourFields) Assert.IsNotEmpty(_model.Recipe.Get(field), field);
+                CollectionAssert.Contains(_model.Outfits, _model.OutfitId);
+                Assert.AreEqual("My name", _model.Name);
+            }
+            Assert.AreEqual(0, _writes);
+            Assert.AreEqual(0, _save.Requests.Count);
+        }
+
+        [Test]
         public void DrawnKeyboardTypesChangesCaseBackspacesAndFinishes()
         {
             _model.Focus(_model.NameRow);

@@ -84,6 +84,10 @@ namespace HiddenHarbours.Core
     /// </summary>
     public interface ICharacterFigure
     {
+        /// <summary>The live figure's presentation transform, when its owner permits a modal view to
+        /// frame and turn it. This is never a duplicate or the character's gameplay transform.</summary>
+        Transform PresentationRoot => null;
+
         /// <summary>True on the frames this figure is really on screen, so the sprite must not be. False
         /// the moment anything is missing — a skin, a hull, a clip — because two figures is a worse
         /// failure than the old one.</summary>
