@@ -1,0 +1,125 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 01b51978faec4dbb8e54e23107a97ef5, type: 3}
+  m_Name: SetPiece_landingRope
+  m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.SetPieceDef
+  Id: prop.stp_landing_rope
+  DisplayName: landingRope
+  RigKey: landingRope
+  SceneId: keyscene.stp_landing
+  BakedOptionsJson: '{"top":5.354004,"lowWater":-2.2,"highWater":2.2,"weather":0.35,"lineDiameter":0.025,"layers":3,"variant":0,"len":0.4}'
+  Layer: raised
+  Walk: on
+  Mount: ground
+  BoundsMin: {x: -0.4165, y: -0.40605748, z: 0}
+  BoundsMax: {x: 0.72528297, y: 0.40605748, z: 0.07308528}
+  Frames:
+  - Sprite: {fileID: 1481561769488888062, guid: 38f513c2c77025f49bc8d0dc6f2060ad, type: 3}
+    RigDir: 0
+    ShowFaces: recipe facing
+    BearingDeg: 0
+    CameraSees: metric rig
+    NativeSize: {x: 420, y: 760}
+    NativePivot: {x: 210, y: 160}
+    Crop: {x: 187, y: 149}
+    Pivot: {x: 23, y: 11}
+  - Sprite: {fileID: -44304248290497292, guid: 38f513c2c77025f49bc8d0dc6f2060ad, type: 3}
+    RigDir: 7
+    ShowFaces: recipe facing
+    BearingDeg: 45
+    CameraSees: metric rig
+    NativeSize: {x: 420, y: 760}
+    NativePivot: {x: 210, y: 160}
+    Crop: {x: 187, y: 149}
+    Pivot: {x: 23, y: 11}
+  - Sprite: {fileID: -2392580227026184826, guid: 38f513c2c77025f49bc8d0dc6f2060ad, type: 3}
+    RigDir: 6
+    ShowFaces: recipe facing
+    BearingDeg: 90
+    CameraSees: metric rig
+    NativeSize: {x: 420, y: 760}
+    NativePivot: {x: 210, y: 160}
+    Crop: {x: 187, y: 149}
+    Pivot: {x: 23, y: 11}
+  - Sprite: {fileID: -7386788937104222016, guid: 38f513c2c77025f49bc8d0dc6f2060ad, type: 3}
+    RigDir: 5
+    ShowFaces: recipe facing
+    BearingDeg: 135
+    CameraSees: metric rig
+    NativeSize: {x: 420, y: 760}
+    NativePivot: {x: 210, y: 160}
+    Crop: {x: 187, y: 149}
+    Pivot: {x: 23, y: 11}
+  - Sprite: {fileID: -4674798933791994786, guid: 38f513c2c77025f49bc8d0dc6f2060ad, type: 3}
+    RigDir: 4
+    ShowFaces: recipe facing
+    BearingDeg: 180
+    CameraSees: metric rig
+    NativeSize: {x: 420, y: 760}
+    NativePivot: {x: 210, y: 160}
+    Crop: {x: 187, y: 149}
+    Pivot: {x: 23, y: 11}
+  - Sprite: {fileID: 1867662926620991108, guid: 38f513c2c77025f49bc8d0dc6f2060ad, type: 3}
+    RigDir: 3
+    ShowFaces: recipe facing
+    BearingDeg: 225
+    CameraSees: metric rig
+    NativeSize: {x: 420, y: 760}
+    NativePivot: {x: 210, y: 160}
+    Crop: {x: 187, y: 149}
+    Pivot: {x: 23, y: 11}
+  - Sprite: {fileID: 7367353667420121675, guid: 38f513c2c77025f49bc8d0dc6f2060ad, type: 3}
+    RigDir: 2
+    ShowFaces: recipe facing
+    BearingDeg: 270
+    CameraSees: metric rig
+    NativeSize: {x: 420, y: 760}
+    NativePivot: {x: 210, y: 160}
+    Crop: {x: 187, y: 149}
+    Pivot: {x: 23, y: 11}
+  - Sprite: {fileID: -2111646960988650607, guid: 38f513c2c77025f49bc8d0dc6f2060ad, type: 3}
+    RigDir: 1
+    ShowFaces: recipe facing
+    BearingDeg: 315
+    CameraSees: metric rig
+    NativeSize: {x: 420, y: 760}
+    NativePivot: {x: 210, y: 160}
+    Crop: {x: 187, y: 149}
+    Pivot: {x: 23, y: 11}
+  CellSize: {x: 46, y: 21}
+  PixelsPerMetre: 32
+  ElevationDeg: 40
+  BakedLit: 0
+  Colliders: []
+  Anchors: []
+  Path: []
+  TideMarks: []
+  Words: []
+  HasLight: 0
+  Light:
+    Emitters: []
+    When: 
+  IsAnimated: 0
+  Animated:
+    Part: 
+    Input: 
+    Steps: 0
+    BakedAtDeg: 0
+    RigDir: 0
+    Headings: []
+  GameplayJson: '{"id":"prop.stp_landing_rope","kind":"coiled line","lineDiameter":0.025,"layers":3,"concentricTurns":4,"looseTail":[[0.404,0,0.06082531754730548],[0.444,0,0.052871235692066844],[0.484,0,0.04520845425454637],[0.524,0,0.03808392580450949],[0.5640000000000001,0,0.031662658773652735],[0.604,0,0.02600259641768312],[0.644,0,0.02104579548089363],[0.6839999999999999,0,0.016627247531587737],[0.724,0,0.0125]],"tailDiameter":0.025,"top":5.354004,"bounds":{"x":[-0.41650000000000004,0.7252829535434211],"y":[-0.40605747542372955,0.40605747542372955],"z":[0,0.07308527503519684]}}'
+  State: 
+  Variants: []
+  HasVendor: 0
+  Vendor:
+    Seller: 
+    At: {x: 0, y: 0, z: 0}

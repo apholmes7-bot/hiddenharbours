@@ -1,0 +1,342 @@
+{
+  "schema": "hidden-harbours/stp-landing-fittings-node@1",
+  "node": "v24.19.0",
+  "frames": [
+    {
+      "key": "landingTyreWest",
+      "cell": 0,
+      "dir": 0,
+      "width": 420,
+      "height": 760,
+      "pivotX": 210,
+      "pivotY": 160,
+      "rgbaSha256": "724c01dfc258b2f8bdf0b4c82bf0da56c9afcac5fc829c88393201f03fa697a1",
+      "heightSha256": "6a5162ef312eaebe24bd482bc760a913b62fb9b3a566970603282e8ffd821ef2"
+    },
+    {
+      "key": "landingTyreWest",
+      "cell": 1,
+      "dir": 7,
+      "width": 420,
+      "height": 760,
+      "pivotX": 210,
+      "pivotY": 160,
+      "rgbaSha256": "4d9282e2c31b385edd8d565e5cebfe3f0bce0e130531cc3ceedd2f58737764bd",
+      "heightSha256": "ad2f6a6c994715ffa2c2330e948740ce41fec6258610fa0e68a542eb420941e7"
+    },
+    {
+      "key": "landingTyreWest",
+      "cell": 2,
+      "dir": 6,
+      "width": 420,
+      "height": 760,
+      "pivotX": 210,
+      "pivotY": 160,
+      "rgbaSha256": "8f9eda682e98926ccbdc72c821b5d3e88e0dc8f2e5bfe600781610c0b5eed129",
+      "heightSha256": "f0e4012665b707fdede336b73f0144869e32842ba6c79163294bdc7569ed23a0"
+    },
+    {
+      "key": "landingTyreWest",
+      "cell": 3,
+      "dir": 5,
+      "width": 420,
+      "height": 760,
+      "pivotX": 210,
+      "pivotY": 160,
+      "rgbaSha256": "47ee93acb28059f9261e77a06ae692329e982ce6895182b67cf07cf97ea70475",
+      "heightSha256": "d3e579a6bc3cc18a475313f341fc4d0ea0dee034167eb1c09adc6a4906afc2ab"
+    },
+    {
+      "key": "landingTyreWest",
+      "cell": 4,
+      "dir": 4,
+      "width": 420,
+      "height": 760,
+      "pivotX": 210,
+      "pivotY": 160,
+      "rgbaSha256": "6452c54759b075c83beb99615552883e99ad5a4e722c1688373649051993f088",
+      "heightSha256": "eac97a37cfb17bf53703ad4346c3dfc7dce47e831ec64074095761c231fe3d8a"
+    },
+    {
+      "key": "landingTyreWest",
+      "cell": 5,
+      "dir": 3,
+      "width": 420,
+      "height": 760,
+      "pivotX": 210,
+      "pivotY": 160,
+      "rgbaSha256": "4d5e8285ccb8fa8329f7df7b9ddbc338b076368b00f617b82c6236a7594023c9",
+      "heightSha256": "5a9240d3c70503eda91ea3aa8587b0edb219ea9efbe5b2609a1e6a31bcff8c9b"
+    },
+    {
+      "key": "landingTyreWest",
+      "cell": 6,
+      "dir": 2,
+      "width": 420,
+      "height": 760,
+      "pivotX": 210,
+      "pivotY": 160,
+      "rgbaSha256": "40140a24ae345117b9f28d847f66244efb5ec21c9b16c7bce6b584028f364301",
+      "heightSha256": "be810482af27bf5e934807fa9d567cd6d5d383c2af7d52a8e5692e915030e2fa"
+    },
+    {
+      "key": "landingTyreWest",
+      "cell": 7,
+      "dir": 1,
+      "width": 420,
+      "height": 760,
+      "pivotX": 210,
+      "pivotY": 160,
+      "rgbaSha256": "394b5dadcd42301a0116132a11283c7beebf5cd82869f73edf2a2681fd4a18f9",
+      "heightSha256": "f04fde0fc1a8076825a96ad470732540f3a164a9fc9e8eb779991f8dc4444cb4"
+    },
+    {
+      "key": "landingTyreEast",
+      "cell": 0,
+      "dir": 0,
+      "width": 420,
+      "height": 760,
+      "pivotX": 210,
+      "pivotY": 160,
+      "rgbaSha256": "724c01dfc258b2f8bdf0b4c82bf0da56c9afcac5fc829c88393201f03fa697a1",
+      "heightSha256": "6a5162ef312eaebe24bd482bc760a913b62fb9b3a566970603282e8ffd821ef2"
+    },
+    {
+      "key": "landingTyreEast",
+      "cell": 1,
+      "dir": 7,
+      "width": 420,
+      "height": 760,
+      "pivotX": 210,
+      "pivotY": 160,
+      "rgbaSha256": "4d9282e2c31b385edd8d565e5cebfe3f0bce0e130531cc3ceedd2f58737764bd",
+      "heightSha256": "ad2f6a6c994715ffa2c2330e948740ce41fec6258610fa0e68a542eb420941e7"
+    },
+    {
+      "key": "landingTyreEast",
+      "cell": 2,
+      "dir": 6,
+      "width": 420,
+      "height": 760,
+      "pivotX": 210,
+      "pivotY": 160,
+      "rgbaSha256": "8f9eda682e98926ccbdc72c821b5d3e88e0dc8f2e5bfe600781610c0b5eed129",
+      "heightSha256": "f0e4012665b707fdede336b73f0144869e32842ba6c79163294bdc7569ed23a0"
+    },
+    {
+      "key": "landingTyreEast",
+      "cell": 3,
+      "dir": 5,
+      "width": 420,
+      "height": 760,
+      "pivotX": 210,
+      "pivotY": 160,
+      "rgbaSha256": "47ee93acb28059f9261e77a06ae692329e982ce6895182b67cf07cf97ea70475",
+      "heightSha256": "d3e579a6bc3cc18a475313f341fc4d0ea0dee034167eb1c09adc6a4906afc2ab"
+    },
+    {
+      "key": "landingTyreEast",
+      "cell": 4,
+      "dir": 4,
+      "width": 420,
+      "height": 760,
+      "pivotX": 210,
+      "pivotY": 160,
+      "rgbaSha256": "6452c54759b075c83beb99615552883e99ad5a4e722c1688373649051993f088",
+      "heightSha256": "eac97a37cfb17bf53703ad4346c3dfc7dce47e831ec64074095761c231fe3d8a"
+    },
+    {
+      "key": "landingTyreEast",
+      "cell": 5,
+      "dir": 3,
+      "width": 420,
+      "height": 760,
+      "pivotX": 210,
+      "pivotY": 160,
+      "rgbaSha256": "4d5e8285ccb8fa8329f7df7b9ddbc338b076368b00f617b82c6236a7594023c9",
+      "heightSha256": "5a9240d3c70503eda91ea3aa8587b0edb219ea9efbe5b2609a1e6a31bcff8c9b"
+    },
+    {
+      "key": "landingTyreEast",
+      "cell": 6,
+      "dir": 2,
+      "width": 420,
+      "height": 760,
+      "pivotX": 210,
+      "pivotY": 160,
+      "rgbaSha256": "40140a24ae345117b9f28d847f66244efb5ec21c9b16c7bce6b584028f364301",
+      "heightSha256": "be810482af27bf5e934807fa9d567cd6d5d383c2af7d52a8e5692e915030e2fa"
+    },
+    {
+      "key": "landingTyreEast",
+      "cell": 7,
+      "dir": 1,
+      "width": 420,
+      "height": 760,
+      "pivotX": 210,
+      "pivotY": 160,
+      "rgbaSha256": "394b5dadcd42301a0116132a11283c7beebf5cd82869f73edf2a2681fd4a18f9",
+      "heightSha256": "f04fde0fc1a8076825a96ad470732540f3a164a9fc9e8eb779991f8dc4444cb4"
+    },
+    {
+      "key": "landingRope",
+      "cell": 0,
+      "dir": 0,
+      "width": 420,
+      "height": 760,
+      "pivotX": 210,
+      "pivotY": 160,
+      "rgbaSha256": "8d1df4c9ad35b4ae5fc145e605ce9f0248393b5c6e1f4081ecafb30aa3539724",
+      "heightSha256": "57ad57e744ad9c6632e48c6f219b7d13e3d27671fb145af65db4b91e40ebc847"
+    },
+    {
+      "key": "landingRope",
+      "cell": 1,
+      "dir": 7,
+      "width": 420,
+      "height": 760,
+      "pivotX": 210,
+      "pivotY": 160,
+      "rgbaSha256": "964309aef0fb7af28ff82333640ee9bda7c2129ba5e7d59bc443b2c87ae4f7e3",
+      "heightSha256": "c6f3c08f4fbf385900475073982acef0c7b9951aca5ceb1b7dffdaea51ea15d4"
+    },
+    {
+      "key": "landingRope",
+      "cell": 2,
+      "dir": 6,
+      "width": 420,
+      "height": 760,
+      "pivotX": 210,
+      "pivotY": 160,
+      "rgbaSha256": "c05d673fe1d81d5a0de602aed908990e8aab7c1b8b8415b495edeb390cadc447",
+      "heightSha256": "c7d241f8ce5c9f0a85a822d96ab18a3a01afa2549f5d19a8878b0bd13c20822a"
+    },
+    {
+      "key": "landingRope",
+      "cell": 3,
+      "dir": 5,
+      "width": 420,
+      "height": 760,
+      "pivotX": 210,
+      "pivotY": 160,
+      "rgbaSha256": "85225d5fbbe81d721cc6417cb2aff078ca6c768f8f6fa631ada15f27dcc8edd9",
+      "heightSha256": "41cbf538551ce95c6f8bd970061b93e80e8494e049b4407a9cafaeb518bd7667"
+    },
+    {
+      "key": "landingRope",
+      "cell": 4,
+      "dir": 4,
+      "width": 420,
+      "height": 760,
+      "pivotX": 210,
+      "pivotY": 160,
+      "rgbaSha256": "c9ddebb6bc3d7f442f3b3876481435816e1542b6888a6b3d2086748eb40a60c8",
+      "heightSha256": "8cec8ff45c5c146fec82633e8be86e6254548fa0f43143b7bd0f00008373fa26"
+    },
+    {
+      "key": "landingRope",
+      "cell": 5,
+      "dir": 3,
+      "width": 420,
+      "height": 760,
+      "pivotX": 210,
+      "pivotY": 160,
+      "rgbaSha256": "787813a5fc0265a385a8263837dc45731f711f2c2943724ebabbcc02f46973a1",
+      "heightSha256": "5fba90261ef5805df6a3d7b3f1e855b316fd6c04ed99695d4209f165fda0d684"
+    },
+    {
+      "key": "landingRope",
+      "cell": 6,
+      "dir": 2,
+      "width": 420,
+      "height": 760,
+      "pivotX": 210,
+      "pivotY": 160,
+      "rgbaSha256": "c05d673fe1d81d5a0de602aed908990e8aab7c1b8b8415b495edeb390cadc447",
+      "heightSha256": "c7d241f8ce5c9f0a85a822d96ab18a3a01afa2549f5d19a8878b0bd13c20822a"
+    },
+    {
+      "key": "landingRope",
+      "cell": 7,
+      "dir": 1,
+      "width": 420,
+      "height": 760,
+      "pivotX": 210,
+      "pivotY": 160,
+      "rgbaSha256": "076386d20e42b4ce396f8e9b3b06a27bf8e71c393bd949a064fde0e4ad09eb5b",
+      "heightSha256": "9bfb008370bf215aa39dc9712347b19853869f8ae8d23f61e67cd7d880a5f40d"
+    }
+  ],
+  "protectedFiles": [
+    {
+      "path": "docs/art/rigs/st-peters-dock-props-kit/stPetersDockProps.js",
+      "lf": true,
+      "sha256": "ec4bd182a8dcf6e17310e1d1716d9e007ab499a3e7ec76864203d8534519b342"
+    },
+    {
+      "path": "Assets/_Project/Art/Tilesets/Wharf/WharfOverlays.png",
+      "lf": false,
+      "sha256": "d1c4137a33ef102ce93ca8189bfdeeeacf5a434679c951a99e2b098fc866c960"
+    },
+    {
+      "path": "Assets/_Project/Art/Sprites/Wharf/Decor/ropeCoil.png",
+      "lf": false,
+      "sha256": "457f305ac27abe8b61563b59831b3763c362965522497c346a50cbaba85e7b1f"
+    },
+    {
+      "path": "Assets/_Project/Code/App/Editor/NineMileCreekDressing.cs",
+      "lf": true,
+      "sha256": "4c254f27d5528c1dff06d0090a287cbf766ede730aee81fc615f225894b47b60"
+    },
+    {
+      "path": "Assets/_Project/Art/Editor/WharfKitCatalog.cs",
+      "lf": true,
+      "sha256": "a467b81619da6bcf3c0b3814473f282dcd8a6b34f64b9cbed65b8f9caf73204a"
+    },
+    {
+      "path": "Assets/_Project/Code/Tools/Editor/RigBaking/IsoPropSheetBaker.cs",
+      "lf": true,
+      "sha256": "3fe9f2e9fb93d0bdef02cc655baf1cca821b3688713fb015665f0419821e579b"
+    },
+    {
+      "path": "docs/art/rigs/iso-rig-pack/wharf-decor-iso/wharfDecorRig.js",
+      "lf": true,
+      "sha256": "dba6ced6644e879e42cf2a3d6340ae76f90acf2cee0a0962cf4bbb0719a1b05a"
+    },
+    {
+      "path": "Assets/_Project/Art/Tilesets/Wharf/WharfAtlas.png",
+      "lf": false,
+      "sha256": "b0cf5948d28605fc6f0804c3feba7729498bcb55d1adb6cf4e12792b58aab336"
+    },
+    {
+      "path": "Assets/_Project/Art/Sprites/Wharf/Decor/dockCart.png",
+      "lf": false,
+      "sha256": "fb5a9518ddfa3a010a6e0ea075c6f914d311066398fb655546fb48a523dcd42c"
+    },
+    {
+      "path": "Assets/_Project/Art/Sprites/Wharf/Decor/dockCart.recipe.json",
+      "lf": true,
+      "sha256": "c08daf6a43cd81e0eec5bfb93f830ec3358a27a699f395fee4d672c5a81b1c54"
+    },
+    {
+      "path": "Assets/_Project/Art/Sprites/Wharf/Decor/trapStack.png",
+      "lf": false,
+      "sha256": "e418abaf437d51f4bcc5adaf568d0287895a3884501e5de9fd6f4bfcb41c1445"
+    },
+    {
+      "path": "Assets/_Project/Art/Sprites/Wharf/Decor/trapStack.recipe.json",
+      "lf": true,
+      "sha256": "7315d0f9a1485436569352c0b8a3de28b2a307cc95fb02fdb9e5496ed0628fe0"
+    },
+    {
+      "path": "Assets/_Project/Art/Sprites/Wharf/Decor/toteStack.png",
+      "lf": false,
+      "sha256": "372b181543daedd9846c5f9d3d9f0cb32ad8a56f99b54f639d6047f08c2f5c4e"
+    },
+    {
+      "path": "Assets/_Project/Art/Sprites/Wharf/Decor/toteStack.recipe.json",
+      "lf": true,
+      "sha256": "04a69bcd412d10209b0b2d7f4dc300d6e1a62086b6522af440d02da661b3aaea"
+    }
+  ]
+}
