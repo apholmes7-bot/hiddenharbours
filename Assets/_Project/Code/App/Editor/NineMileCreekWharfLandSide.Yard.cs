@@ -206,6 +206,18 @@ namespace HiddenHarbours.App.Editor
             patch.Edit(tr, SetField(tr.Text, "m_LocalPosition", Vec3Yaml(at.x, at.y, at.z)), name + "/yard position");
             return patch.Seal(scene);
         }
+        /// <summary>The two delivered pier spans, with ruling 33's half-metre walking clearance.</summary>
+        public static IReadOnlyList<Vector2> YardRunwayOpenings()
+        {
+            var pieces = NineMileCreekWharfYard.Read().pieces;
+            float clearance = NineMileCreekGroundPlan.RunwayClearance;
+            return new[] { "pierW", "pierE" }.Select(key =>
+            {
+                var p = pieces.Single(p => p.key == key).gameplay;
+                return new Vector2(p.placement.at[0] + p.bounds.x[0] - clearance,
+                                   p.placement.at[0] + p.bounds.x[1] + clearance);
+            }).ToArray();
+        }
         static LayerPatch OpenYardRunways(SceneYaml scene)
         {
             Doc root = scene.RootNamed(NineMileCreekWharf.RootName);
@@ -218,13 +230,11 @@ namespace HiddenHarbours.App.Editor
             var runs = NineMileCreekGroundSteps.QuayRuns(half);
             paths.Add(NineMileCreekGroundSteps.Quad(runs[0][2], runs[0][3], half));
             float start = runs[1][0].x;
-            foreach (string key in new[] { "pierW", "pierE" })
+            foreach (Vector2 opening in YardRunwayOpenings())
             {
-                var p = NineMileCreekWharfYard.Read().pieces.Single(p => p.key == key).gameplay;
-                float x0 = p.placement.at[0] + p.bounds.x[0], x1 = p.placement.at[0] + p.bounds.x[1];
                 paths.Add(NineMileCreekGroundSteps.Quad(new Vector2(start, 86),
-                    new Vector2(x0 - half - NineMileCreekGroundPlan.RunwayClearance, 86), half));
-                start = x1 + half + NineMileCreekGroundPlan.RunwayClearance;
+                    new Vector2(opening.x - half, 86), half));
+                start = opening.y + half;
             }
             paths.Add(NineMileCreekGroundSteps.Quad(new Vector2(start, 86), runs[1][1], half));
             string polygon = PolygonColliderYaml(collider.FileId, collider.FieldRef("m_GameObject"), paths);

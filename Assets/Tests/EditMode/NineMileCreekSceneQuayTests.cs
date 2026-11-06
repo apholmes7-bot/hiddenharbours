@@ -17,7 +17,7 @@ namespace HiddenHarbours.Tests.EditMode
     /// ⭐ <b>THE QUAY NINE MILE CREEK SHIPS</b> (NMC H2, PR 2): the activated scene's wharf, held to G3, the ground
     /// it now stands on. Every fixture reads NineMileCreek.unity as N1 writes it (<see cref="NineMileCreekLiveGround.Scene"/>)
     /// and probes G3 through PR 1's seam (<see cref="NineMileCreekLiveGround.Plan"/>), so what passes is what ships:
-    /// the two caps on their faces, the faces' water and their joins, the wall with the brow's one opening, the
+    /// the two caps on their faces, the faces' water and their joins, the wall with its brow and pier openings, the
     /// breakwater on its arms, the design boat's track clear of every solid outline, the brow and its float, the two
     /// ladders, the fifteen shore cleats, the north courses and the five wall berths.
     ///
@@ -179,7 +179,7 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         [Test]
-        public void TheQuayIsWalledAlongItsFaces_OpenOnlyForTheBrow()
+        public void TheQuayIsWalledAlongItsFaces_OpenOnlyForTheBrowAndTheTwoPierRunways()
         {
             Doc quay = At(Wharf(NineMileCreekWalls.RootName));
             Doc boundary = Script(quay, "HiddenHarbours.World.PropertyBoundary");
@@ -210,25 +210,42 @@ namespace HiddenHarbours.Tests.EditMode
                 return Paths(b).Select(p => p.Select(v => ToWorld(walls, v)).ToArray());
             }).ToList();
 
-            // Every quarter metre of the face line is walled, but for the brow's opening, which nothing walls.
+            // Ruling 33 opened the two delivered pier runways; every other quarter metre stays walled.
+            var runways = NineMileCreekWharfLandSide.YardRunwayOpenings();
+            Assert.That(runways.Count, Is.EqualTo(2), "the two delivered piers have two runway openings");
             var line = new[] { west[0], west[1], west[2], new Vector2(G.NorthFaceEastX, G.NorthFaceY) };
             int walled = 0, open = 0;
+            int browOpen = 0;
+            var runwayOpen = new int[runways.Count];
             for (int s = 0; s < line.Length - 1; s++)
             {
                 int n = Mathf.RoundToInt(Vector2.Distance(line[s], line[s + 1]) / 0.25f);
                 for (int i = 0; i <= n; i++)
                 {
                     Vector2 p = Vector2.Lerp(line[s], line[s + 1], i / (float)n);
-                    bool inOpening = Mathf.Approximately(p.y, G.NorthFaceY) && Mathf.Abs(p.x - brow) < gap;
+                    bool onNorthFace = Mathf.Approximately(p.y, G.NorthFaceY);
+                    bool atBrow = onNorthFace && Mathf.Abs(p.x - brow) < gap;
+                    bool atRunway = false;
+                    for (int r = 0; r < runways.Count; r++)
+                        if (onNorthFace && p.x > runways[r].x && p.x < runways[r].y)
+                        {
+                            atRunway = true;
+                            runwayOpen[r]++;
+                        }
+                    bool inOpening = atBrow || atRunway;
                     bool isWalled = paths.Any(path => Inside(path, p));
                     Assert.That(isWalled, Is.EqualTo(!inOpening),
-                        $"({Shown(p.x)}, {Shown(p.y)}) must be {(inOpening ? "open for the brow" : "walled")}.");
+                        $"({Shown(p.x)}, {Shown(p.y)}) must be {(inOpening ? "open for the brow or a pier runway" : "walled")}.");
+                    if (atBrow) browOpen++;
                     if (inOpening) open++;
                     else walled++;
                 }
             }
-            TestContext.WriteLine($"face line: {walled} quarter-metre points walled, {open} open at the brow");
+            TestContext.WriteLine($"face line: {walled} quarter-metre points walled, {open} open: " +
+                                  $"brow {browOpen}, pier runways {string.Join(", ", runwayOpen)}");
             Assert.That(open, Is.GreaterThan(0));
+            Assert.That(browOpen, Is.GreaterThan(0));
+            Assert.That(runwayOpen, Is.All.GreaterThan(0), "each of the two pier runways stays open");
 
             // The opening is wider than the brow, and no blocker strays from the face it walls.
             Doc gangway = Script(At(Wharf("FloatingDock/Gangway")), "HiddenHarbours.World.GangwayPlatform");
