@@ -22,7 +22,7 @@ MonoBehaviour:
     off that road. That is the whole of the difference, and neither one of us is wrong
     about it.'
   RepeatLines:
-  - 'Back over, are you. Have a look — the shelf changes every time the truck does.'
+  - 'Back over, are you, {player}? Have a look — the shelf changes every time the truck does.'
   Options:
   - Id: option.browse_wares
     Label: 'What have you got in?'

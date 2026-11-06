@@ -369,14 +369,27 @@ namespace HiddenHarbours.World
             HideRoot();
         }
 
-        private void OnEnable() => EventBus.Subscribe<CatalogClosed>(OnCatalogClosed);
+        private void OnEnable()
+        {
+            EventBus.Subscribe<CatalogClosed>(OnCatalogClosed);
+            EventBus.Subscribe<PlayerNameChanged>(OnPlayerNameChanged);
+        }
 
         private void OnDisable()
         {
             EventBus.Unsubscribe<CatalogClosed>(OnCatalogClosed);
+            EventBus.Unsubscribe<PlayerNameChanged>(OnPlayerNameChanged);
 
             // A bubble destroyed/disabled mid-line must never leave interaction wedged off.
             if (IsShowing) InteractionGate.Reset();
+        }
+
+        private void OnPlayerNameChanged(PlayerNameChanged changed)
+        {
+            if (!IsShowing) return;
+            if (_nameText != null) _nameText.text = PlayerName.Resolve(_speakerName) ?? "";
+            SizeBubbleFor(_typewriter != null ? _typewriter.Text : _bodyText != null ? _bodyText.text : "");
+            if (_picker != null) DrawOptions();
         }
 
         /// <summary>
@@ -561,12 +574,14 @@ namespace HiddenHarbours.World
 
         private void Render(in DialogueLine line)
         {
-            _typewriter = new DialogueTypewriter(line.Text ?? string.Empty, _voice);
-            if (_nameText != null) _nameText.text = line.Speaker ?? "";
+            string text = PlayerName.Resolve(line.Text) ?? string.Empty;
+            _typewriter = new DialogueTypewriter(text, _voice);
+            _speakerName = line.Speaker;
+            if (_nameText != null) _nameText.text = PlayerName.Resolve(line.Speaker) ?? "";
 
             // Size the bubble from the WHOLE line, then let it fill: a bubble that grew line-by-line as
             // the words arrived would jitter under the tail, which is the one thing the anchoring is for.
-            SizeBubbleFor(line.Text ?? string.Empty);
+            SizeBubbleFor(text);
             ShowHint(false);
             Draw();
         }
@@ -1034,9 +1049,10 @@ namespace HiddenHarbours.World
                 if (!used) continue;
 
                 bool selected = i == _picker.Index;
+                string label = PlayerName.Resolve(_options[i].Label);
                 _optionRows[i].text = hasCursorArt
-                    ? _options[i].Label
-                    : (selected ? WorldStrings.OptionCursor : "   ") + _options[i].Label;
+                    ? label
+                    : (selected ? WorldStrings.OptionCursor : "   ") + label;
 
                 // On gold, the selected label is dark ink at full strength; the unselected rows keep
                 // the greybox's soft treatment either way.

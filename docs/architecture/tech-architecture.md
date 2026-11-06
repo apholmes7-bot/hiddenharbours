@@ -76,6 +76,7 @@ scaffold remains as-is pending the input lane's PR 1; no binding or key is added
 | **NpcDirector** | Drives NPC routines/schedules against time/tide/weather; tiered simulation (active/nearby/dormant). | Positions recomputed on demand for dormant NPCs. (`design/npcs-and-routines.md`) |
 | **InputService** | Translates raw input → **intents** (`MoveIntent`, `ThrottleIntent`, `InteractIntent`, `SetHeadingIntent`). | Platform-swappable. **Landed 2026-09-02 as ADR 0043:** per-mode intent structs in Core (`WalkIntents`, `DeckIntents`, `DriveDemand`; `HelmIntents` in PR 1), one `IControlIntentSource<T>` read per mode per frame, bindings as data in `Data/Input/HiddenHarbours.inputactions`. |
 | **SaveService** | Versioned save/load, autosave, app-suspend safety. | See §6. |
+| **PlayerName** | Reads the existing save name through `Of`; resolves the single name token `{player}` with literal replacement when text is drawn. | `GameConfig.PlayerNameFallback` supplies `skipper` for an unnamed player. `Set` saves a changed name, then publishes Core's `PlayerNameChanged`; standing book pages, choices and labels redraw on that event. Already spoken lines retain their words. No save-format change or per-frame substitution. |
 | **AudioDirector** | Adaptive ambient/music/SFX driven by region + EnvironmentSample. | (`design/art-and-audio-bible.md`) |
 
 ### Authored gull perches (O3 wave 1b)

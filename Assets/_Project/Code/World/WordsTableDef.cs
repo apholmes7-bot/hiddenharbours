@@ -1,4 +1,5 @@
 using System;
+using HiddenHarbours.Core;
 using UnityEngine;
 
 namespace HiddenHarbours.World
@@ -35,6 +36,14 @@ namespace HiddenHarbours.World
                     }
             entry = null;
             return false;
+        }
+
+        /// <summary>Read a board's words for drawing; authored entries remain raw.</summary>
+        public bool TryGetText(string id, out string text)
+        {
+            bool found = TryGet(id, out WordsEntry entry);
+            text = found ? PlayerName.Resolve(entry.Text) : null;
+            return found;
         }
     }
 

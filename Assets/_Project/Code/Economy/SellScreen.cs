@@ -83,6 +83,19 @@ namespace HiddenHarbours.Economy
             if (_instance == this) _instance = null;
         }
 
+        private void OnEnable() => EventBus.Subscribe<PlayerNameChanged>(OnPlayerNameChanged);
+        private void OnDisable() => EventBus.Unsubscribe<PlayerNameChanged>(OnPlayerNameChanged);
+
+        private void OnPlayerNameChanged(PlayerNameChanged changed)
+        {
+            if (_hold == null || _speciesList == null) return;
+            float quantity = _qtySlider.value;
+            RebuildSpeciesList();
+            SelectSpecies(_selectedSpecies);
+            _qtySlider.SetValueWithoutNotify(quantity);
+            UpdatePriceLabels();
+        }
+
         private void Bind(IHold hold, IWallet wallet)
         {
             _hold = hold;
@@ -113,7 +126,13 @@ namespace HiddenHarbours.Economy
 
         private void RebuildSpeciesList()
         {
-            foreach (var b in _speciesButtons) if (b != null) Destroy(b);
+            foreach (var b in _speciesButtons)
+            {
+                if (b == null) continue;
+                b.transform.SetParent(null, false);
+                b.SetActive(false);
+                if (Application.isPlaying) Destroy(b); else DestroyImmediate(b);
+            }
             _speciesButtons.Clear();
 
             var seen = new HashSet<string>();
@@ -129,7 +148,7 @@ namespace HiddenHarbours.Economy
                 int count = SellService.CountSellableOf(_hold, it.SpeciesId, _spoil);
                 if (count == 0) continue;
                 string id = it.SpeciesId;
-                string label = it.DisplayName + "   ×" + count;
+                string label = PlayerName.Resolve(it.DisplayName) + "   ×" + count;
 
                 // Show the species icon at the row's left (resolved by id via the Core IconRegistry — the
                 // sell screen never references the Fishing def). When an icon resolves, indent the label
@@ -172,7 +191,8 @@ namespace HiddenHarbours.Economy
             }
 
             CatchItem sample = SampleOf(speciesId);
-            _detailName.text = sample.DisplayName;
+            string name = PlayerName.Resolve(sample.DisplayName);
+            _detailName.text = name;
 
             // The selected species' icon beside the name (resolved by id via the Core IconRegistry).
             if (_detailIcon != null)
@@ -181,7 +201,7 @@ namespace HiddenHarbours.Economy
                 _detailIcon.sprite = icon;
                 _detailIcon.enabled = icon != null;
             }
-            if (_sellTypeLabel != null) _sellTypeLabel.text = "Sell all " + sample.DisplayName;
+            if (_sellTypeLabel != null) _sellTypeLabel.text = "Sell all " + name;
 
             _qtySlider.gameObject.SetActive(true);
             _qtySlider.minValue = 1;

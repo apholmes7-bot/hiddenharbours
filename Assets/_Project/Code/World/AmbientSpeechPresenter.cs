@@ -136,6 +136,7 @@ namespace HiddenHarbours.World
 
             public Vector3 AnchorOffset;
             public string SpeakerId;
+            public string SpeakerName;
             public AmbientSpeechKind Kind;
             public DialogueVoice Voice;
             public DialogueTypewriter Typewriter;
@@ -298,17 +299,33 @@ namespace HiddenHarbours.World
         {
             if (_subscribed) return;
             EventBus.Subscribe<AmbientSpeechRequested>(OnRequested);
+            EventBus.Subscribe<PlayerNameChanged>(OnPlayerNameChanged);
             _subscribed = true;
         }
 
         private void OnDisable()
         {
-            if (_subscribed) EventBus.Unsubscribe<AmbientSpeechRequested>(OnRequested);
+            if (_subscribed)
+            {
+                EventBus.Unsubscribe<AmbientSpeechRequested>(OnRequested);
+                EventBus.Unsubscribe<PlayerNameChanged>(OnPlayerNameChanged);
+            }
             _subscribed = false;
 
             // Everything up is cancelled, so a caller waiting on an end signal is never left hanging by
             // a presenter that went away underneath it.
             CancelAll();
+        }
+
+        private void OnPlayerNameChanged(PlayerNameChanged changed)
+        {
+            if (_slots == null) return;
+            foreach (Slot slot in _slots)
+            {
+                if (!slot.Active || slot.Kind == AmbientSpeechKind.InnerVoice || slot.NameText == null) continue;
+                slot.NameText.text = PlayerName.Resolve(slot.SpeakerName) ?? string.Empty;
+                SizeBubbleFor(slot, slot.Typewriter.Text);
+            }
         }
 
         // ---- the request ------------------------------------------------------------------------
@@ -330,20 +347,22 @@ namespace HiddenHarbours.World
             slot.HadAnchor = request.Anchor != null;
             slot.AnchorOffset = request.AnchorOffset;
             slot.SpeakerId = request.SpeakerId;
+            slot.SpeakerName = request.SpeakerName;
             slot.Kind = request.Kind;
             slot.Voice = ResolveVoice(request.VoiceId);
-            slot.Typewriter = new DialogueTypewriter(request.Line, slot.Voice);
+            string text = PlayerName.Resolve(request.Line);
+            slot.Typewriter = new DialogueTypewriter(text, slot.Voice);
             slot.Elapsed = 0f;
-            slot.Dwell = AmbientDwell.Seconds(request.Line, slot.Voice);
+            slot.Dwell = AmbientDwell.Seconds(text, slot.Voice);
             slot.Sequence = ++_sequence;
 
             // The player's own thought has no speaker but her — a name chip over her head would be a
             // label on the person you are playing.
             string name = request.Kind == AmbientSpeechKind.InnerVoice ? null : request.SpeakerName;
-            if (slot.NameText != null) slot.NameText.text = name ?? string.Empty;
+            if (slot.NameText != null) slot.NameText.text = PlayerName.Resolve(name) ?? string.Empty;
 
             ApplyLook(slot);
-            SizeBubbleFor(slot, request.Line);
+            SizeBubbleFor(slot, text);
             slot.BodyText.text = string.Empty;
             slot.Root.SetActive(true);
             Track(slot);
