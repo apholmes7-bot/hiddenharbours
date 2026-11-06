@@ -44,6 +44,7 @@ namespace HiddenHarbours.World
 
         // What is drawn right now, and what it was drawn FOR. Both are the change-detection.
         private string _text;
+        private string _sourceText;
         private int _builtScreenW = -1, _builtScreenH = -1;
         private bool _overflowReported;
 
@@ -67,8 +68,18 @@ namespace HiddenHarbours.World
         public void Show(string text)
         {
             string next = string.IsNullOrEmpty(text) ? null : text;
-            if (next == _text) return;
-            _text = next;
+            if (next == _sourceText) return;
+            _sourceText = next;
+            RedrawText();
+        }
+
+        private void OnEnable() => EventBus.Subscribe<PlayerNameChanged>(OnPlayerNameChanged);
+        private void OnDisable() => EventBus.Unsubscribe<PlayerNameChanged>(OnPlayerNameChanged);
+        private void OnPlayerNameChanged(PlayerNameChanged changed) => RedrawText();
+
+        private void RedrawText()
+        {
+            _text = PlayerName.Resolve(_sourceText);
             Rebuild();
         }
 
@@ -103,7 +114,10 @@ namespace HiddenHarbours.World
 
         private void OnDestroy()
         {
-            if (_canvas != null) Destroy(_canvas.gameObject);
+            if (_canvas != null)
+            {
+                if (Application.isPlaying) Destroy(_canvas.gameObject); else DestroyImmediate(_canvas.gameObject);
+            }
         }
 
         // ---- the drawing --------------------------------------------------------------------------

@@ -49,11 +49,12 @@ namespace HiddenHarbours.World
     /// (#565, SaveData v11). They arrive here already loaded; this file does not touch the save
     /// service.</para>
     ///
-    /// <para>Pure and engine-free on purpose — the tab set, the ordering and the block contents are
-    /// all provable headlessly, so the presenter is left holding nothing but the drawing.</para>
+    /// <para>Built when the book is drawn. Resolve authored fields before wrapping them; the Defs
+    /// and the player's own notes remain unchanged.</para>
     /// </summary>
     public static class NotebookContent
     {
+        public const string OwnershipTitle = "{player}'s notebook";
         public const string TabQuests = "tab.quests";
         public const string TabDone = "tab.done";
         public const string TabNotes = "tab.notes";
@@ -140,10 +141,10 @@ namespace HiddenHarbours.World
                         : i == reading.CurrentStepIndex ? NotebookStepState.Current
                         : NotebookStepState.Todo;
 
-                    steps.Add((step.Label, state));
+                    steps.Add((PlayerName.Resolve(step.Label), state));
                 }
 
-                blocks.Add(NotebookLayout.Quest(quest.Title, quest.Context, steps, cols,
+                blocks.Add(NotebookLayout.Quest(PlayerName.Resolve(quest.Title), PlayerName.Resolve(quest.Context), steps, cols,
                                                 quest.Id, reading.Archived));
             }
 
@@ -171,10 +172,13 @@ namespace HiddenHarbours.World
                     blocks = new List<NotebookBlock>();
                     byTab[page.TabId] = blocks;
                     order.Add(page.TabId);
-                    labels[page.TabId] = page.TabLabel;
+                    labels[page.TabId] = PlayerName.Resolve(page.TabLabel);
                 }
 
-                blocks.Add(NotebookLayout.Section(page.Head, page.Body, cols, page.Id));
+                var paragraphs = new List<string>();
+                if (page.Body != null)
+                    foreach (string paragraph in page.Body) paragraphs.Add(PlayerName.Resolve(paragraph));
+                blocks.Add(NotebookLayout.Section(PlayerName.Resolve(page.Head), paragraphs, cols, page.Id));
             }
 
             foreach (string tabId in order)

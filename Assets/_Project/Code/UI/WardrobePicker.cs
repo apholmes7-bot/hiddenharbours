@@ -130,11 +130,16 @@ namespace HiddenHarbours.UI
             _instance = this;
         }
 
-        private void OnEnable() => EventBus.Subscribe<WardrobeRequested>(OnWardrobeRequested);
+        private void OnEnable()
+        {
+            EventBus.Subscribe<WardrobeRequested>(OnWardrobeRequested);
+            EventBus.Subscribe<PlayerNameChanged>(OnPlayerNameChanged);
+        }
 
         private void OnDisable()
         {
             EventBus.Unsubscribe<WardrobeRequested>(OnWardrobeRequested);
+            EventBus.Unsubscribe<PlayerNameChanged>(OnPlayerNameChanged);
             // A picker torn down mid-choice must not leave a preview on the fisher, nor the player unable
             // to walk. One close path, taken by every ending.
             CancelAndClose();
@@ -678,7 +683,12 @@ namespace HiddenHarbours.UI
         /// <summary>What the row reads. The Def's label where content gave one, and the id itself where it
         /// did not — a row that showed nothing would be a coat you could wear but not name.</summary>
         private static string LabelOf(CharacterOutfitDef def, string id) =>
-            def != null && !string.IsNullOrEmpty(def.Label) ? def.Label : id;
+            PlayerName.Resolve(def != null && !string.IsNullOrEmpty(def.Label) ? def.Label : id);
+
+        private void OnPlayerNameChanged(PlayerNameChanged changed)
+        {
+            if (IsOpen) DrawRows();
+        }
 
         private void BuildCanvas()
         {

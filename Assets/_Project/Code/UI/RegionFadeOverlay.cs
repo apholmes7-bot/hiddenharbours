@@ -44,6 +44,7 @@ namespace HiddenHarbours.UI
         private bool _fading;
         private bool _subscribed;
         private bool _loading;
+        private string _arrivalTitle;
 
         private void Awake()
         {
@@ -67,6 +68,7 @@ namespace HiddenHarbours.UI
             if (_subscribed) return;
             SceneManager.activeSceneChanged += OnActiveSceneChanged;
             EventBus.Subscribe<RegionTravelCover>(OnTravelCover);
+            EventBus.Subscribe<PlayerNameChanged>(OnPlayerNameChanged);
             _subscribed = true;
         }
 
@@ -75,6 +77,7 @@ namespace HiddenHarbours.UI
             if (!_subscribed) return;
             SceneManager.activeSceneChanged -= OnActiveSceneChanged;
             EventBus.Unsubscribe<RegionTravelCover>(OnTravelCover);
+            EventBus.Unsubscribe<PlayerNameChanged>(OnPlayerNameChanged);
             _subscribed = false;
         }
 
@@ -91,7 +94,8 @@ namespace HiddenHarbours.UI
             {
                 bool show = _showArrivalCard;
                 _arrivalLabel.enabled = show;
-                if (show) _arrivalLabel.text = RegionFade.ArrivalTitle(next.name);
+                _arrivalTitle = RegionFade.ArrivalTitle(next.name);
+                if (show) _arrivalLabel.text = PlayerName.Resolve(_arrivalTitle);
             }
             Apply(1f); // flash black immediately
         }
@@ -111,6 +115,12 @@ namespace HiddenHarbours.UI
                 _fading = false; // fade always completes → no stuck-black
                 if (_arrivalLabel != null) _arrivalLabel.enabled = false;
             }
+        }
+
+        private void OnPlayerNameChanged(PlayerNameChanged changed)
+        {
+            if (_arrivalLabel != null && _arrivalLabel.enabled)
+                _arrivalLabel.text = PlayerName.Resolve(_arrivalTitle);
         }
 
         private void OnTravelCover(RegionTravelCover cover)

@@ -21,7 +21,7 @@ MonoBehaviour:
   - 'And I''ll not price my neighbours the way they do over at Nine Mile Creek. A store
     that squeezes a small place kills it — and then where''s the store?'
   RepeatLines:
-  - 'Back again. If you''re for the flats, go on the falling tide — I''ll still be here
+  - 'Back again, {player}. If you''re for the flats, go on the falling tide — I''ll still be here
     after.'
   Options:
   - Id: option.browse_wares

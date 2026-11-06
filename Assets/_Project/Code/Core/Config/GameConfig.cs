@@ -11,10 +11,14 @@ namespace HiddenHarbours.Core
     public class GameConfig : ScriptableObject
     {
         public const int DefaultPlayerNameMaxLength = 32;
+        public const string DefaultPlayerNameFallback = "skipper";
 
         [Header("Player name")]
         [Tooltip("Maximum name length after trimming surrounding spaces.")]
         [Min(1)] public int PlayerNameMaxLength = DefaultPlayerNameMaxLength;
+
+        [Tooltip("How authored text addresses a player who has left their name blank.")]
+        public string PlayerNameFallback = DefaultPlayerNameFallback;
 
         [Header("Curling breakers")]
         public CurlingBreakerSettings CurlingBreakers = CurlingBreakerSettings.Default;

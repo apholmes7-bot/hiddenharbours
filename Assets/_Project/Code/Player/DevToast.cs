@@ -88,7 +88,7 @@ namespace HiddenHarbours.Player
             e.Active = true;
             if (e.Text != null)
             {
-                e.Text.text = message;
+                e.Text.text = PlayerName.Resolve(message);
                 var c = e.Text.color; c.a = 1f; e.Text.color = c;
                 e.Text.enabled = true;
                 e.Text.transform.SetAsLastSibling();   // newest at the visual top of the stack

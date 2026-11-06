@@ -28,7 +28,7 @@ MonoBehaviour:
   - 'Then sail her home to Coddle Cove. That''s where your harbour starts. Off you go,
     now — the tide won''t wait on us.'
   RepeatLines:
-  - 'Back already? Good. Watch the tide — clams on the flats at low water, then the
+  - 'Back already, {player}? Good. Watch the tide — clams on the flats at low water, then the
     bar to Nine Mile Creek.'
   - 'Sell, licence, rod, then buy and mend that dory. Earn her, and she''ll be yours
     for good.'

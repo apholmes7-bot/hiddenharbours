@@ -66,11 +66,13 @@ namespace HiddenHarbours.Economy
         {
             _instance = this;
             EventBus.Subscribe<CatalogViewRequested>(OnRequested);
+            EventBus.Subscribe<PlayerNameChanged>(OnPlayerNameChanged);
         }
 
         private void OnDisable()
         {
             EventBus.Unsubscribe<CatalogViewRequested>(OnRequested);
+            EventBus.Unsubscribe<PlayerNameChanged>(OnPlayerNameChanged);
             // A book torn down mid-read must still hand the conversation back, or the bubble above stays
             // dimmed for ever with no picker and no way out.
             if (_showing) Publish();
@@ -78,6 +80,11 @@ namespace HiddenHarbours.Economy
         }
 
         private void OnRequested(CatalogViewRequested request) => Open(request.SellerId, request.Section);
+
+        private void OnPlayerNameChanged(PlayerNameChanged changed)
+        {
+            if (_showing) Draw();
+        }
 
         // ---- opening and closing ------------------------------------------------------------------
 
@@ -222,7 +229,13 @@ namespace HiddenHarbours.Economy
             EnsureArt();
             if (_spread == null || _book == null) return;
 
-            for (int i = _spread.childCount - 1; i >= 0; i--) Destroy(_spread.GetChild(i).gameObject);
+            for (int i = _spread.childCount - 1; i >= 0; i--)
+            {
+                GameObject child = _spread.GetChild(i).gameObject;
+                child.transform.SetParent(null, false);
+                child.SetActive(false);
+                if (Application.isPlaying) Destroy(child); else DestroyImmediate(child);
+            }
             _root.SetActive(true);
 
             int cols = NotebookKit.ClosestTierCols;
@@ -251,7 +264,7 @@ namespace HiddenHarbours.Economy
         /// place ADR 0039 §2 put it in her notebook, so money never has two spellings.</summary>
         private void DrawHead(int leafW)
         {
-            Label(_book.SellerName, NotebookKit.PadL, 3, leafW, NotebookInk.InkStrong);
+            Label(PlayerName.Resolve(_book.SellerName), NotebookKit.PadL, 3, leafW, NotebookInk.InkStrong);
             Label(CatalogBook.Price(_book.Purse), leafW + NotebookKit.Gutter, 3, leafW,
                   NotebookInk.Ink, TextAnchor.UpperRight);
         }
@@ -298,7 +311,7 @@ namespace HiddenHarbours.Economy
                     ink = NotebookInk.InkStrong;
                 }
 
-                Label(row.DisplayName, textX, y, textW, ink);
+                Label(PlayerName.Resolve(row.DisplayName), textX, y, textW, ink);
                 Label(CatalogBook.Price(row.Quote.Price), textX, y, textW, ink, TextAnchor.UpperRight);
 
                 // Ownership is a STAMP, a rule through the price and a sentence — three codings of one
@@ -329,11 +342,11 @@ namespace HiddenHarbours.Economy
             int w = leafW - NotebookKit.PadL - NotebookKit.PadR;
             int y = NotebookKit.HeadHeight + NotebookKit.Pitch;
 
-            Label(row.DisplayName.ToUpperInvariant(), x, y, w, NotebookInk.InkStrong);
+            Label(PlayerName.Resolve(row.DisplayName).ToUpperInvariant(), x, y, w, NotebookInk.InkStrong);
             y += NotebookKit.Pitch * 2;
 
-            y = Wrapped(row.Flavor, x, y, w, NotebookInk.Ink);
-            if (!string.IsNullOrEmpty(row.Note)) y = Wrapped(row.Note, x, y + NotebookKit.Pitch, w,
+            y = Wrapped(PlayerName.Resolve(row.Flavor), x, y, w, NotebookInk.Ink);
+            if (!string.IsNullOrEmpty(row.Note)) y = Wrapped(PlayerName.Resolve(row.Note), x, y + NotebookKit.Pitch, w,
                                                             NotebookInk.Ink);
 
             // the buy line, at the foot of the leaf

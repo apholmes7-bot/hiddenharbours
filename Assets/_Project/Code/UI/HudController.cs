@@ -726,7 +726,7 @@ namespace HiddenHarbours.UI
         private void ShowCatchCard(in CatchItem item)
         {
             if (_catchCardLabel == null) return;
-            _catchCardLabel.text = HudFormat.CatchCard(item.DisplayName, item.WeightKg, item.BaseValue);
+            _catchCardLabel.text = HudFormat.CatchCard(PlayerName.Resolve(item.DisplayName), item.WeightKg, item.BaseValue);
 
             // Show the caught species' icon beside the card text, resolved by id through the Core
             // IconRegistry (so the UI never references the Fishing/FishSpeciesDef def). Null icon

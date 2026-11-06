@@ -214,6 +214,9 @@ namespace HiddenHarbours.World
         /// </summary>
         public static NotebookPresenter Instance => _instance != null ? _instance : null;
 
+        /// <summary>The ownership title last laid out in the book's wide title lane.</summary>
+        public string Title { get; private set; }
+
         /// <summary>
         /// <b>Esc belongs to the book right now</b> — true while it is up, AND on the frame it was shut.
         /// Read by <c>ShellPresenter.CanTogglePause</c> through <see cref="CancelKeyClaim"/>, because UI
@@ -353,6 +356,7 @@ namespace HiddenHarbours.World
         private void OnEnable()
         {
             EventBus.Subscribe<NotebookRequested>(OnRequested);
+            EventBus.Subscribe<PlayerNameChanged>(OnPlayerNameChanged);
             // The purse is only drawn while the book is open, but the balance has to be RIGHT the
             // moment it opens — including after a sale made while it was shut, which is the ordinary
             // case. So the money is followed all the time and only lettered when there is a page.
@@ -365,6 +369,7 @@ namespace HiddenHarbours.World
         private void OnDisable()
         {
             EventBus.Unsubscribe<NotebookRequested>(OnRequested);
+            EventBus.Unsubscribe<PlayerNameChanged>(OnPlayerNameChanged);
             EventBus.Unsubscribe<MoneyChanged>(OnMoneyChanged);
             EventBus.Unsubscribe<CatchSold>(OnCatchSold);
             EventBus.Unsubscribe<CatchLanded>(OnCatchLanded);
@@ -373,6 +378,13 @@ namespace HiddenHarbours.World
         }
 
         private void OnRequested(NotebookRequested e) => Toggle();
+
+        private void OnPlayerNameChanged(PlayerNameChanged changed)
+        {
+            if (!IsOpen) return;
+            RebuildModel();
+            Rebuild();
+        }
 
         public void Toggle()
         {
@@ -464,7 +476,18 @@ namespace HiddenHarbours.World
             _tabs.Clear();
             var built = NotebookContent.Build(
                 _quests?.Invoke(), _knowledge?.Invoke(), _notes?.Invoke(), _flags, Fit.Cols);
-            _tabs.AddRange(built);
+            Title = PlayerName.Resolve(NotebookContent.OwnershipTitle);
+            foreach (NotebookTab tab in built)
+            {
+                // The kit wraps a title at full size, including a maximum-length name. The purse
+                // and register keep their running heads; ownership starts each tab's first leaf.
+                var blocks = new List<NotebookBlock>
+                {
+                    NotebookLayout.Section(Title, null, Fit.Cols, "notebook.owner"),
+                };
+                blocks.AddRange(tab.Blocks);
+                _tabs.Add(new NotebookTab(tab.Key, tab.Label, tab.Kind, blocks));
+            }
 
             if (_tabs.Count == 0)
             {

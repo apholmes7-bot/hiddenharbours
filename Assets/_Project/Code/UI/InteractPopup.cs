@@ -82,6 +82,9 @@ namespace HiddenHarbours.UI
         private InteractOfferChanged _offer;
         private bool _shown;
         private string _painted;
+        private string _sourceLabel;
+        private string _fittedLabel;
+        private bool _labelResolved;
 
         // What the panel is placed FOR: the helm's footprint and the screen (ADR 0050). Re-placed only
         // on a change, so a quiet frame costs a struct compare and two int compares.
@@ -105,6 +108,7 @@ namespace HiddenHarbours.UI
         private void OnEnable()
         {
             EventBus.Subscribe<InteractOfferChanged>(OnOffer);
+            EventBus.Subscribe<PlayerNameChanged>(OnPlayerNameChanged);
 
             // Catch up with whatever is already standing. The offer channel is edge-triggered, so a popup
             // enabled after the player has walked up to a fixture would otherwise sit blank until they
@@ -113,7 +117,17 @@ namespace HiddenHarbours.UI
             Apply();
         }
 
-        private void OnDisable() => EventBus.Unsubscribe<InteractOfferChanged>(OnOffer);
+        private void OnDisable()
+        {
+            EventBus.Unsubscribe<InteractOfferChanged>(OnOffer);
+            EventBus.Unsubscribe<PlayerNameChanged>(OnPlayerNameChanged);
+        }
+
+        private void OnPlayerNameChanged(PlayerNameChanged changed)
+        {
+            _labelResolved = false;
+            Apply();
+        }
 
         private void OnOffer(InteractOfferChanged e) { _offer = e; Apply(); }
 
@@ -168,7 +182,13 @@ namespace HiddenHarbours.UI
             bool show = _offer.Has && !Suppressed();
             if (show)
             {
-                string text = InteractPopupLayout.Fit(_offer.Label);
+                if (!_labelResolved || _sourceLabel != _offer.Label)
+                {
+                    _sourceLabel = _offer.Label;
+                    _fittedLabel = InteractPopupLayout.Fit(PlayerName.Resolve(_sourceLabel));
+                    _labelResolved = true;
+                }
+                string text = _fittedLabel;
                 if (!string.Equals(text, _painted, System.StringComparison.Ordinal))
                 {
                     _painted = text;
