@@ -37,6 +37,7 @@ namespace HiddenHarbours.UI
         private Canvas _canvas;
         private Camera _camera;
         private float _figureHeightPixels;
+        private Renderer _tallestRenderer;
         private bool _layoutValid;
 
         public bool Open(CharacterCreatorModel model)
@@ -156,6 +157,7 @@ namespace HiddenHarbours.UI
             // A cached result list avoids an array allocation on each pose; no feature type is read.
             player.GetComponentsInChildren(true, _figureRenderers);
             float height = 0f;
+            _tallestRenderer = null;
             foreach (Renderer renderer in _figureRenderers)
             {
                 if (renderer == null || !renderer.gameObject.activeInHierarchy) continue;
@@ -176,8 +178,11 @@ namespace HiddenHarbours.UI
                 }
                 float projectedHeight = high - low;
                 // A person on this screen cannot be taller than its entire viewport.
-                if (projectedHeight > 0f && projectedHeight <= _camera.pixelHeight)
-                    height = Mathf.Max(height, projectedHeight);
+                if (projectedHeight > height && projectedHeight <= _camera.pixelHeight)
+                {
+                    height = projectedHeight;
+                    _tallestRenderer = renderer;
+                }
             }
             if (height <= 0f)
             {
@@ -186,7 +191,8 @@ namespace HiddenHarbours.UI
                 _book.gameObject.SetActive(false);
                 return;
             }
-            _figureHeightPixels = Mathf.Max(_figureHeightPixels, height);
+            // Each pose replaces the last measurement; one tall pass must not shrink later pages.
+            _figureHeightPixels = height;
             Vector3 screen = _camera.WorldToScreenPoint(player.position);
             if (_figureHeightPixels <= 0f || screen.z <= 0f) return;
             RectTransform frame = (RectTransform)_root.transform;
