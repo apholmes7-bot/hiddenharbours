@@ -303,24 +303,28 @@ namespace HiddenHarbours.App.Editor
             Source(true); _camera.Render(); _camera.Render(); _camera.Render();
             Color32[] before = Read(_target);
             Source(false); _camera.Render(); Color32[] after = Read(_target), band = Read(BandTarget());
-            var mask = new Color32[band.Length]; double sum = 0, max = 0; int count = 0, outside = 0;
+            var mask = new Color32[band.Length]; double sum = 0, max = 0; int count = 0, inside = 0, outside = 0;
             for (int i = 0; i < band.Length; i++)
             {
                 bool allowed = band[i].a >= 128 && band[i].a < 255;
                 mask[i] = allowed ? new Color32(255,255,255,255) : new Color32(0,0,0,255);
-                if (allowed) { count++; double shift = LumaShift(before[i], after[i]); sum += shift; max = Math.Max(max, shift); }
+                if (allowed) { count++; double shift = LumaShift(before[i], after[i]); sum += shift; max = Math.Max(max, shift);
+                    if (before[i].r != after[i].r || before[i].g != after[i].g || before[i].b != after[i].b) inside++; }
                 else if (before[i].r != after[i].r || before[i].g != after[i].g || before[i].b != after[i].b) outside++;
             }
             if (outside != 0) throw new InvalidOperationException("Shipped on-foot dory crop changed outside the band.");
             string json = JsonUtility.ToJson(new PairProof { name = "dory-noon-calm-shipped-on-foot", hull = "dory", state = "at berth; shipped on-foot zoom",
                 sha = System.Environment.GetEnvironmentVariable("HH_WATER_HULLS_SHA"), beforeSha = Base, hour = 12, wind = _weather.Wind,
                 strength = _strength, width = GameServices.Config.HullCausticBandMeters,
-                tuningVeinGainBefore = 1, tuningVeinGainAfter = _veinGain, bandPixels = count, changedOutsideBand = outside,
+                tuningVeinGainBefore = 1, tuningVeinGainAfter = _veinGain, bandPixels = count, changedInsideBand = inside, changedOutsideBand = outside,
+                seaState = _weather.Sea,
                 meanShift = count > 0 ? sum / count : 0, maxShift = max,
                 source = "Production camera orientation and shipped zoom policy at 1280x720; native crop, before above after." }, true);
             WritePng("dory-noon-calm-shipped-on-foot-before.png", before);
             WritePng("dory-noon-calm-shipped-on-foot-after.png", after);
             WritePng("dory-noon-calm-shipped-on-foot-band-mask.png", mask);
+            foreach (string suffix in new[] { "before", "after", "band-mask" })
+                File.WriteAllText(Path.Combine(_output, "dory-noon-calm-shipped-on-foot-" + suffix + ".json"), json);
             WriteBandCrop("dory-noon-calm-shipped-on-foot-band-crop", before, after, mask, json);
             _camera.orthographicSize = priorOrtho;
             Source(false); _camera.Render();
