@@ -12,6 +12,9 @@ namespace HiddenHarbours.Art
         public const int KindCount = 5;
         public const float StripMetres = 4f;
         public const float RepeatMetres = 8f;
+        // RGBAHalf offsets stay within +/-8m. Half's maximum rounding error there is
+        // sqrt(2)/512m; this outward safety bound keeps quantization inside the band.
+        public const float AddressSafetyMetres = 1f / 256f;
         public static readonly float[] Anchors = { .40f, .24f, .46f, .34f, .38f };
 
         public readonly struct Segment
@@ -27,8 +30,17 @@ namespace HiddenHarbours.Art
             public readonly int Width, Height;
             public readonly Color[][] Addresses;
             public readonly Segment[][] Lines;
-            public Result(int width, int height, Color[][] addresses, Segment[][] lines)
-            { Width = width; Height = height; Addresses = addresses; Lines = lines; }
+            public readonly Vector2 Min, Size;
+            public Result(int width, int height, Vector2 min, Vector2 size, Color[][] addresses, Segment[][] lines)
+            { Width = width; Height = height; Min = min; Size = size; Addresses = addresses; Lines = lines; }
+
+            public Color Sample(int kind, Vector2 point)
+            {
+                int x = Mathf.Clamp(Mathf.FloorToInt((point.x - Min.x) / Size.x * Width), 0, Width - 1);
+                int y = Mathf.Clamp(Mathf.FloorToInt((point.y - Min.y) / Size.y * Height), 0, Height - 1);
+                Vector2 center = Min + Vector2.Scale(new Vector2((x + .5f) / Width, (y + .5f) / Height), Size);
+                return Decode(Addresses[kind][y * Width + x], center, point);
+            }
         }
 
         /// <summary>The shader's texel-centre bilinear mapping, in metres above datum.</summary>
@@ -82,13 +94,14 @@ namespace HiddenHarbours.Art
             var addresses = new Color[KindCount][];
             for (int kind = 0; kind < KindCount; kind++)
                 addresses[kind] = Raster(grid, lines[kind], width, height);
-            return new Result(width, height, addresses, lines);
+            return new Result(width, height, grid.Min, grid.Size, addresses, lines);
         }
 
         static List<Line> Contours(Grid grid, float level)
         {
             int w = grid.Width, h = grid.Height;
             var e = grid.Elevations;
+            bool[] ocean = OceanConnected(grid, level);
             var ids = new Dictionary<int, int>();
             var keys = new List<int>();
             var points = new List<Vector2>();
@@ -104,7 +117,15 @@ namespace HiddenHarbours.Art
                 adj.Add(new List<int>(2)); return id;
             }
             void Link(int ka, int kb)
-            { int a = Node(ka), b = Node(kb); adj[a].Add(b); adj[b].Add(a); }
+            {
+                bool OceanEdge(int key)
+                {
+                    int i = key >> 1, j = (key & 1) == 0 ? i + 1 : i + w;
+                    return ocean[e[i] <= level ? i : j];
+                }
+                if (!OceanEdge(ka) || !OceanEdge(kb)) return;
+                int a = Node(ka), b = Node(kb); adj[a].Add(b); adj[b].Add(a);
+            }
             var cross = new int[4];
             for (int y = 0; y < h - 1; y++)
             for (int x = 0; x < w - 1; x++)
@@ -147,6 +168,43 @@ namespace HiddenHarbours.Art
             return result;
         }
 
+        // An inland hollow is not a shore. Flood the wet vertices from the region boundary,
+        // including only the diagonal links the bilinear saddle actually connects.
+        static bool[] OceanConnected(Grid grid, float level)
+        {
+            int w = grid.Width, h = grid.Height;
+            float[] e = grid.Elevations;
+            var ocean = new bool[e.Length];
+            var queue = new Queue<int>();
+            void Visit(int x, int y)
+            {
+                if (x < 0 || y < 0 || x >= w || y >= h) return;
+                int i = y * w + x;
+                if (ocean[i] || e[i] > level) return;
+                ocean[i] = true; queue.Enqueue(i);
+            }
+            for (int x = 0; x < w; x++) { Visit(x, 0); Visit(x, h - 1); }
+            for (int y = 1; y < h - 1; y++) { Visit(0, y); Visit(w - 1, y); }
+            while (queue.Count > 0)
+            {
+                int i = queue.Dequeue(), x = i % w, y = i / w;
+                Visit(x - 1, y); Visit(x + 1, y); Visit(x, y - 1); Visit(x, y + 1);
+                for (int sy = -1; sy <= 1; sy += 2)
+                for (int sx = -1; sx <= 1; sx += 2)
+                {
+                    int nx = x + sx, ny = y + sy;
+                    if (nx < 0 || ny < 0 || nx >= w || ny >= h || e[ny * w + nx] > level) continue;
+                    int cell = Mathf.Min(y, ny) * w + Mathf.Min(x, nx);
+                    float a = e[cell] - level, b = e[cell + 1] - level,
+                        c = e[cell + w + 1] - level, d = e[cell + w] - level;
+                    double determinant = (double)a * c - (double)b * d;
+                    if ((a <= 0 && c <= 0 && determinant >= 0)
+                        || (b <= 0 && d <= 0 && determinant < 0)) Visit(nx, ny);
+                }
+            }
+            return ocean;
+        }
+
         static Segment[] Segments(Grid grid, List<Line> lines)
         {
             var result = new List<Segment>();
@@ -154,7 +212,7 @@ namespace HiddenHarbours.Art
             return result.ToArray();
         }
 
-        static void AddSegments(Grid grid, Line line, bool[] valid, List<Segment> result)
+        static void AddSegments(Grid grid, Line line, bool[] valid, List<Segment> result, Vector2[] seawardHints = null)
         {
             int count = line.Closed ? line.Points.Count : line.Points.Count - 1;
             float length = 0;
@@ -169,7 +227,8 @@ namespace HiddenHarbours.Art
                 if (len > 1e-6f && (valid == null || (valid[i] && valid[j])))
                 {
                     Vector2 seaward = new Vector2(tangent.y, -tangent.x) / len;
-                    if (Vector2.Dot(seaward, grid.Gradient((a + b) * .5f)) > 0) seaward = -seaward;
+                    Vector2 hint = seawardHints == null ? -grid.Gradient((a + b) * .5f) : seawardHints[i] + seawardHints[j];
+                    if (Vector2.Dot(seaward, hint) < 0) seaward = -seaward;
                     result.Add(new Segment(a, b, seaward, arc, scale));
                 }
                 arc += len;
@@ -183,23 +242,39 @@ namespace HiddenHarbours.Art
             {
                 var brow = new Line { Closed = source.Closed };
                 var valid = new bool[source.Points.Count];
+                var hints = new Vector2[source.Points.Count];
                 for (int i = 0; i < source.Points.Count; i++)
                 {
                     Vector2 q = source.Points[i], inland = grid.Gradient(q).normalized, found = q;
-                    float peak = 0; bool broke = false;
-                    for (float run = 0; run <= def.BrowSearchMetres; run += def.BrowStepMetres)
+                    hints[i] = -inland;
+                    float peak = Vector2.Dot(grid.Gradient(q), inland); bool broke = false;
+                    for (float run = def.BrowStepMetres; peak >= def.ScarpMinimumSlope && run <= def.BrowSearchMetres; run += def.BrowStepMetres)
                     {
                         Vector2 p = q + inland * run;
                         float slope = Vector2.Dot(grid.Gradient(p), inland);
                         peak = Mathf.Max(peak, slope);
-                        if (peak >= def.ScarpMinimumSlope && slope <= peak * def.BrowSlopeFallFraction
-                            && grid.At(p) >= def.SpringHigh + def.BrowRiseMetres)
-                        { found = p; broke = true; break; }
+                        // The FIRST break belongs to the shore profile. If it is too shallow,
+                        // stop without a brow; never continue through a flat to an inland hill.
+                        if (slope <= peak * def.BrowSlopeFallFraction)
+                        { found = p; broke = grid.At(p) >= def.SpringHigh + def.BrowRiseMetres; break; }
                     }
                     brow.Points.Add(found);
                     valid[i] = broke && (turf ? peak >= def.TurfMinimumSlope : peak < def.TurfMinimumSlope);
                 }
-                AddSegments(grid, brow, valid, segments);
+                // Neighbouring rays can reach different banks or fold across a concavity. Neither
+                // a long connector nor a reversed connector is part of the shore's brow curve.
+                var local = new List<Segment>();
+                AddSegments(grid, brow, valid, local, hints);
+                int count = source.Closed ? source.Points.Count : source.Points.Count - 1;
+                var rejected = new HashSet<Vector2>();
+                for (int i = 0; i < count; i++)
+                {
+                    int j = (i + 1) % source.Points.Count;
+                    Vector2 original = source.Points[j] - source.Points[i], mapped = brow.Points[j] - brow.Points[i];
+                    if (mapped.magnitude > original.magnitude + 2 * def.BrowStepMetres || Vector2.Dot(mapped, original) <= 0)
+                        rejected.Add(brow.Points[i]);
+                }
+                foreach (Segment segment in local) if (!rejected.Contains(segment.A)) segments.Add(segment);
             }
             return segments.ToArray();
         }
@@ -210,6 +285,21 @@ namespace HiddenHarbours.Art
             return t >= 0 && t <= 1;
         }
 
+        /// <summary>A complete decoded address also guards the unsigned distance to a shore point.</summary>
+        public static bool InBand(int kind, Color address) => InBand(kind, address.r) && address.a >= 0
+            && address.a <= StripMetres * (address.r < 0 ? Anchors[kind] : 1 - Anchors[kind]) - AddressSafetyMetres;
+
+        public static Color Decode(Color packed, Vector2 cellCenter, Vector2 point)
+        {
+            if (Mathf.Abs(packed.a) < .5f) return new Color(8, 0, 1, 8);
+            Vector2 nearest = cellCenter + new Vector2(packed.r, packed.g), delta = point - nearest;
+            Vector2 normal = new Vector2(Mathf.Cos(packed.b), Mathf.Sin(packed.b));
+            float distance = delta.magnitude, signed = distance * (Vector2.Dot(delta, normal) < 0 ? -1 : 1);
+            Vector2 tangent = new Vector2(-normal.y, normal.x) * Mathf.Sign(packed.a);
+            float phase = (Mathf.Abs(packed.a) - 1 + Vector2.Dot(delta, tangent) / RepeatMetres) * (2 * Mathf.PI);
+            return new Color(signed, Mathf.Sin(phase), Mathf.Cos(phase), distance);
+        }
+
         static Color[] Raster(Grid grid, Segment[] segments, int width, int height)
         {
             Vector2 texel = new Vector2(grid.Size.x / width, grid.Size.y / height);
@@ -217,7 +307,7 @@ namespace HiddenHarbours.Art
             var distance = new float[width * height];
             var result = new Color[distance.Length];
             for (int i = 0; i < result.Length; i++)
-            { distance[i] = padding * padding; result[i] = new Color(padding * 2, 0, 1, 0); }
+            { distance[i] = padding * padding; result[i] = Color.clear; }
             foreach (Segment segment in segments)
             {
                 Vector2 delta = segment.B - segment.A;
@@ -235,9 +325,12 @@ namespace HiddenHarbours.Art
                     float d2 = across.sqrMagnitude; int index = y * width + x;
                     if (d2 >= distance[index]) continue;
                     distance[index] = d2;
-                    float d = Mathf.Sqrt(d2) * (Vector2.Dot(across, segment.Seaward) < 0 ? -1 : 1);
-                    float phase = (segment.Arc + t * len) * segment.RepeatScale * (Mathf.PI * 2 / RepeatMetres);
-                    result[index] = new Color(d, Mathf.Sin(phase), Mathf.Cos(phase), 1);
+                    float arc = (segment.Arc + t * len) * segment.RepeatScale / RepeatMetres;
+                    float direction = Vector2.Dot(delta, new Vector2(-segment.Seaward.y, segment.Seaward.x)) < 0 ? -1 : 1;
+                    // Point-sampled offsets retain an actual point on the curve. Interpolating
+                    // nearest points or signed distances would invent curves between branches.
+                    result[index] = new Color(-across.x, -across.y, Mathf.Atan2(segment.Seaward.y, segment.Seaward.x),
+                        direction * (1 + arc - Mathf.Floor(arc)));
                 }
             }
             return result;

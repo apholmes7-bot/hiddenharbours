@@ -71,10 +71,10 @@ namespace HiddenHarbours.Tests.EditMode
             int y = result.Height / 2;
             for (int x = 0; x < result.Width; x++)
             {
-                Color a = result.Addresses[2][y * result.Width + x];
+                Color a = result.Sample(2, new Vector2(-16 + x + .5f, -16 + y + .5f));
                 float expectedDistance = -16 + x + .5f + 2.2f;
-                if (a.a > .99f) Assert.AreEqual(expectedDistance, a.r, 1e-4f);
-                bool inBand = a.a > .99f && ShoreLineDerivation.InBand(2, a.r);
+                if (Mathf.Abs(expectedDistance) < 5) Assert.AreEqual(expectedDistance, a.r, 1e-4f);
+                bool inBand = ShoreLineDerivation.InBand(2, a);
                 Assert.AreEqual(expectedDistance >= -1.84f && expectedDistance <= 2.16f, inBand);
                 if (inBand) visible++;
             }
@@ -108,12 +108,37 @@ namespace HiddenHarbours.Tests.EditMode
             {
                 float radius = new Vector2(-16 + x + .5f, -16 + y + .5f).magnitude;
                 if (Mathf.Abs(radius - 3.8f) > 2) continue;
-                Color address = result.Addresses[2][y * result.Width + x];
-                Assert.AreEqual(1, address.a);
+                Color address = result.Sample(2, new Vector2(-16 + x + .5f, -16 + y + .5f));
+                Assert.AreEqual(Mathf.Abs(address.r), address.a, 1e-4f);
                 Assert.AreEqual(radius - 3.8f, address.r, .08f, "Distance must follow the bend, not a world axis or height delta.");
                 checkedPoints++;
             }
             Assert.Greater(checkedPoints, 50);
+        }
+
+        [Test] public void InlandBump_DoesNotBecomeAShoreBrowOrStrip()
+        {
+            var grid = Fixture(p => 2.2f + p.y * (p.y < 0 ? .5f : .02f)
+                + 6 * Mathf.Max(0, 1 - (p - new Vector2(0, 8)).sqrMagnitude / 9));
+            var result = ShoreLineDerivation.Build(grid, _def);
+            Assert.AreEqual(0, result.Lines[0].Length, "An inland hill beyond the first shallow break is not a turf brow.");
+            Assert.AreEqual(0, result.Lines[1].Length, "A flat shore must not search onward to an inland hill.");
+            for (int y = 0; y < result.Height; y++)
+            for (int x = 0; x < result.Width; x++)
+            {
+                var p = new Vector2(-16 + x + .5f, -16 + y + .5f);
+                if (Vector2.Distance(p, new Vector2(0, 8)) > 4) continue;
+                for (int kind = 0; kind < 5; kind++) Assert.IsFalse(ShoreLineDerivation.InBand(kind,
+                    result.Sample(kind, p)), "No strip belongs at the inland bump.");
+            }
+        }
+
+        [Test] public void FilteringOppositeSigns_CannotInventAnInlandBand()
+        {
+            // Both samples are five metres from a curve. Filtering their signs must not make a new curve.
+            Color filtered = Color.Lerp(new Color(-5, 0, 1, 5), new Color(5, 0, 1, 5), .5f);
+            Assert.AreEqual(0, filtered.r);
+            for (int kind = 0; kind < 5; kind++) Assert.IsFalse(ShoreLineDerivation.InBand(kind, filtered));
         }
 
         [Test] public void ArrayPins_AllFifteenSlicesAndTheirBytes()
@@ -156,6 +181,8 @@ namespace HiddenHarbours.Tests.EditMode
             StringAssert.Contains("int kind = 4 - order;", shader);
             Assert.AreEqual(1, Regex.Matches(shader, @"SAMPLE_TEXTURE2D_ARRAY_LOD\(_ShoreStrips").Count);
             StringAssert.Contains("_ShoreLoaded < 0.5", shader);
+            StringAssert.Contains("_ShoreFields.Load", shader);
+            StringAssert.DoesNotContain("SAMPLE_TEXTURE2D_ARRAY_LOD(_ShoreFields", shader);
         }
 
         [Test] public void NoShoreCpuWorkInFrameCallbacks_AndSplatLayoutUnchanged()

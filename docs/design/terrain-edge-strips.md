@@ -135,8 +135,16 @@ including later changes to that floor.
 
 `ShoreLineDerivation` decodes contours with the bilinear saddle determinant, orders loops by
 stable grid-edge keys, and computes world-metre segment distance and along-shore arc length.
-Closed loops fit a whole number of 8 m repeats; the raster stores sine/cosine phase so filtering
-across a repeat seam stays continuous. Open contours retain their metric arc. The region's
+Closed loops fit a whole number of 8 m repeats; open contours retain their metric arc. Tide
+contours include only water connected to the region boundary. A brow uses the first slope
+break from the shore, rejects a break without the minimum rise, and disconnects long or
+reversed joins between neighbouring shore profiles, rather than tracing an inland hill.
+
+Each point-sampled address texel stores an offset to an actual curve point, its seaward
+normal angle, and signed repeat phase. The shader loads that texel and computes metric
+distance at the pixel; it never interpolates opposite signed distances into a false line.
+The packed phase also carries tangent direction for local along-shore extrapolation. A
+1/256 m inset covers half-float point-offset rounding at the anchored band edges. The region's
 address array is rebuilt on enable, hidden and unsaved, and released on disable. It is never
 updated on the frame loop. At the St Peters Def's 1 m spacing, five RGBAHalf slices are
 15.076 MiB on the GPU; the temporary CPU arrays are released after upload.
@@ -158,3 +166,6 @@ six RGBA maps (24 slots), with 21 materials. This feature spends none. The exist
 `TerrainSplatBandPinTests` remains the layout guard; `TerrainShoreLinesTests` adds the fifteen
 slice/byte/import pins, deterministic reconstruction, fixed band limits, bend distances,
 closed-loop phase continuity, brow tracing and absence of CPU work in the frame callback.
+An inland-bump fixture and an opposite-sign address regression guard against disconnected
+inland strips. A transect crossing several folded shore segments may intersect multiple
+bands; every sampled point must still lie within its own anchored four-metre support.

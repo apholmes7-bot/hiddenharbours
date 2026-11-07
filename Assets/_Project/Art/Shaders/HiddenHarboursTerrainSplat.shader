@@ -233,6 +233,7 @@ Shader "HiddenHarbours/TerrainSplat"
                 float _DetailLoaded, _DetailOffsetCellMetres;
                 float _ShoreLoaded, _ShoreStep4, _ShoreBlendMetres, _ShoreSourceBlendMetres;
                 float4 _ShoreSteps0123;
+                float4 _ShoreGrid;
 
                 float  _RelightLoaded;
                 float4 _TLSunF;

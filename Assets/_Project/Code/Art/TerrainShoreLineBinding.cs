@@ -11,6 +11,7 @@ namespace HiddenHarbours.Art
         readonly Texture2DArray _fields, _strips;
         static readonly int Loaded = Shader.PropertyToID("_ShoreLoaded");
         static readonly int Fields = Shader.PropertyToID("_ShoreFields");
+        static readonly int Grid = Shader.PropertyToID("_ShoreGrid");
         static readonly int Strips = Shader.PropertyToID("_ShoreStrips");
         static readonly int Steps = Shader.PropertyToID("_ShoreSteps0123");
         static readonly int Step4 = Shader.PropertyToID("_ShoreStep4");
@@ -45,7 +46,7 @@ namespace HiddenHarbours.Art
                 TextureFormat.RGBAHalf, false, true)
             {
                 name = "TransientShoreAddresses", hideFlags = HideFlags.HideAndDontSave,
-                filterMode = FilterMode.Bilinear, wrapMode = TextureWrapMode.Clamp, anisoLevel = 0,
+                filterMode = FilterMode.Point, wrapMode = TextureWrapMode.Clamp, anisoLevel = 0,
             };
             try
             {
@@ -61,6 +62,7 @@ namespace HiddenHarbours.Art
         internal void Bind(MaterialPropertyBlock block)
         {
             block.SetTexture(Fields, _fields); block.SetTexture(Strips, _strips);
+            block.SetVector(Grid, new Vector4(_fields.width, _fields.height, 1f / _fields.width, 1f / _fields.height));
             block.SetVector(Steps, new Vector4((int)_def.Turf, (int)_def.Scarp, (int)_def.Wrack, (int)_def.Weedline));
             block.SetFloat(Step4, (int)_def.Reefedge);
             block.SetFloat(Blend, _def.BlendMetres); block.SetFloat(SourceBlend, _def.UnderlyingBlendMetres);
