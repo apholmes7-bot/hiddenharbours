@@ -40,13 +40,15 @@ namespace HiddenHarbours.App.Editor
         private static ProfilerRecorder _mainThread;
         private static float _strength;
         private static float _veinGain;
+        private static readonly bool SameGainControl =
+            System.Environment.GetEnvironmentVariable("HH_WATER_HULLS_L4_CONTROL") == "1";
 
         public static bool Step(string output)
         {
             if (Time.frameCount == _lastFrame) return false;
             _lastFrame = Time.frameCount;
             if (_camera == null) Initialize(output);
-            if (_case < 0) { BeginCase(0); return false; }
+            if (_case < 0) { BeginCase(SameGainControl ? 8 : 0); return false; }
             if (_case < 13)
             {
                 if (_case < 12 && ((_case / 3) % 2) == 1)
@@ -58,6 +60,7 @@ namespace HiddenHarbours.App.Editor
                 _stageFrames++;
                 if (_stageFrames < 60 || EditorApplication.timeSinceStartup - _stageStart < 3
                     || ShaderUtil.anythingCompiling) return false;
+                if (SameGainControl) { CaptureSameGainBlow(); return true; }
                 CapturePair(_case);
                 if (_case == 12) { BeginCost(); return false; }
                 BeginCase(_case + 1);
@@ -250,6 +253,60 @@ namespace HiddenHarbours.App.Editor
             if (index == 0 || index == 6)
                 WriteBandCrop(name + "-band-crop", before, after, mask, json);
             if (index == 0) CaptureOnFootCrop();
+        }
+
+        private static void CaptureSameGainBlow()
+        {
+            // Match CapturePair's settled stage and synchronous three-render/one-render sequence.
+            // Both sides retain the shared sea, enabled band and the committed vein gain.
+            Source(false);
+            _camera.Render(); _camera.Render(); _camera.Render();
+            Color32[] first = Read(_target);
+            int frameA = Time.frameCount, renderedA = Time.renderedFrameCount;
+            float timeA = Time.time;
+            Source(false);
+            _camera.Render();
+            Color32[] second = Read(_target), band = Read(BandTarget());
+            var proof = new SameGainProof {
+                sha = System.Environment.GetEnvironmentVariable("HH_WATER_HULLS_SHA"),
+                hull = "side-dragger", state = "at berth", hour = GameServices.Clock.HourOfDay,
+                wind = _weather.Wind, seaState = _weather.Sea, gainA = _veinGain, gainB = _veinGain,
+                frameA = frameA, frameB = Time.frameCount, renderedFrameA = renderedA,
+                renderedFrameB = Time.renderedFrameCount, timeA = timeA, timeB = Time.time,
+                source = "shared sea and enabled band at the same gain on both sides; original synchronous 3-render/1-render sequence after one 60-frame/3-second stage settle" };
+            int minX = _target.width, minY = _target.height, maxX = -1, maxY = -1;
+            var samples = new List<PixelSample>();
+            var mask = new Color32[band.Length];
+            for (int i = 0; i < first.Length; i++)
+            {
+                bool allowed = band[i].a >= 128 && band[i].a < 255;
+                mask[i] = allowed ? new Color32(255,255,255,255) : new Color32(0,0,0,255);
+                if (allowed) { proof.bandPixels++; continue; }
+                int delta = Math.Max(Math.Abs(second[i].r - first[i].r),
+                    Math.Max(Math.Abs(second[i].g - first[i].g), Math.Abs(second[i].b - first[i].b)));
+                if (delta == 0) continue;
+                proof.changedOutside++; proof.maxChannelDelta = Math.Max(proof.maxChannelDelta, delta);
+                int x = i % _target.width, y = _target.height - 1 - i / _target.width;
+                minX = Math.Min(minX, x); minY = Math.Min(minY, y);
+                maxX = Math.Max(maxX, x); maxY = Math.Max(maxY, y);
+                if (samples.Count < 8) samples.Add(new PixelSample { x = x, y = y, first = first[i], second = second[i] });
+            }
+            proof.bbox = proof.changedOutside > 0 ? new[] { minX, minY, maxX, maxY } : Array.Empty<int>();
+            proof.samples = samples.ToArray();
+            string json = JsonUtility.ToJson(proof, true);
+            const string name = "heavy-berth-blow-same-gain";
+            WritePng(name + "-a.png", first); WritePng(name + "-b.png", second);
+            WritePng(name + "-band-mask.png", mask);
+            File.WriteAllText(Path.Combine(_output, name + ".json"), json);
+            foreach (string suffix in new[] { "a", "b", "band-mask" })
+                File.WriteAllText(Path.Combine(_output, name + "-" + suffix + ".json"), json);
+            File.AppendAllText(Path.Combine(_output, "band-shift.txt"), FormattableString.Invariant(
+                $"L4 SAME-GAIN heavy-berth-blow | gain {proof.gainA} / {proof.gainB} | band px {proof.bandPixels} | changed outside {proof.changedOutside} | max channel delta {proof.maxChannelDelta} | frames {proof.frameA}/{proof.frameB} | times {proof.timeA}/{proof.timeB}\n"));
+            if (proof.changedOutside == 0)
+                throw new InvalidOperationException("L4 SAME-GAIN ZERO: outside-band images are byte-identical; do not amend the gate (ruling 2b).");
+            if (proof.maxChannelDelta > 2)
+                throw new InvalidOperationException("L4 SAME-GAIN UNSETTLED: outside max channel delta "
+                    + proof.maxChannelDelta + ", count " + proof.changedOutside + " (ruling 2c).");
         }
 
         private static double LumaShift(Color32 before, Color32 after)
@@ -453,6 +510,16 @@ namespace HiddenHarbours.App.Editor
           public float tuningVeinGainBefore, tuningVeinGainAfter; public double meanShift, maxShift;
           public bool darkTargetUnchangedByGain; }
         [Serializable] private sealed class PairList { public PairProof[] pairs; }
+        [Serializable] private sealed class PixelSample
+        { public int x, y; public Color32 first, second; }
+        [Serializable] private sealed class SameGainProof
+        {
+            public string sha, hull, state, source;
+            public float hour, seaState, gainA, gainB, timeA, timeB;
+            public Vector2 wind;
+            public int changedOutside, maxChannelDelta, bandPixels, frameA, frameB, renderedFrameA, renderedFrameB;
+            public int[] bbox; public PixelSample[] samples;
+        }
         [Serializable] private sealed class CostProof
         { public int hulls, width, height, retainedDarkTargetBytes, addedPasses, addedMrtSlots;
           public double cpuMainThreadOffMs, cpuMainThreadOnMs, gpuFrameOffMs, gpuFrameOnMs, fleetPoseOffMs, fleetPoseOnMs;
