@@ -617,6 +617,7 @@ namespace HiddenHarbours.App
             _stepping = false;
             if (!_transferring && !_waitingForSea)
             {
+                CloseCharacterCreator();
                 ReleaseThePlayer();
                 ReleaseTheHour();
             }
@@ -1325,6 +1326,7 @@ namespace HiddenHarbours.App
             // the door and pressed them (playtest 2026-09-04). Below the arrival ran a walk and above it
             // ran none, and that asymmetry was the whole of "going outside locks them in place".
             Vector2 move = CabinInputSource.Read().Move;
+            if (MoveActionClaim.IsClaimed) move = Vector2.zero;
             if (IsBelowDecks) WalkTheCabin(move, Time.deltaTime);
             else              WalkTheDeck(move, Time.deltaTime);
 
@@ -1844,6 +1846,8 @@ namespace HiddenHarbours.App
         /// </summary>
         private void HandOver()
         {
+            // The close acknowledgement precedes releasing the hour or the captain's line.
+            if (HoldHandoverForCharacterCreator()) return;
             ReleaseThePlayer();
             ReleaseTheHour();
 

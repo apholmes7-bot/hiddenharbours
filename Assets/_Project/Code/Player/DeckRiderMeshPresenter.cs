@@ -188,6 +188,9 @@ namespace HiddenHarbours.Player
         /// <summary>The ABOARD figure, once one exists. Null before she has ever drawn aboard.</summary>
         public IsoCharacterFigureRenderer Figure => _figure;
 
+        /// <inheritdoc/>
+        public Transform PresentationRoot => _figure != null ? _figure.transform : null;
+
         /// <summary>The facet hull she is riding, or null.</summary>
         public IsoFacetHullRenderer Hull => _hull;
 

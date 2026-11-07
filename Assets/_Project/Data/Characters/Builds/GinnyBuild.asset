@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: GinnyBuild
   m_EditorClassIdentifier: HiddenHarbours.Core::HiddenHarbours.Core.CharacterBuildDef
   Id: char_build.ginny
+  PlayerDisplayName: Build B
   Preset: ginny
   Visual: {fileID: 11400000, guid: e31275373da33fb4d9829f65374f5296, type: 2}
   Skin: 

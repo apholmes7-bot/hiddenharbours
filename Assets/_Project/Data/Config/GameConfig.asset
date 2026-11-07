@@ -516,3 +516,5 @@ MonoBehaviour:
     ReadableFrameBar: 12
     DefaultPixelsPerMetre: 96
     FrameRate: 60
+  CreatorBackdropColor: {r: 0.921, g: 0.886, b: 0.8, a: 1}
+  CreatorFigureHeightFraction: 0.6

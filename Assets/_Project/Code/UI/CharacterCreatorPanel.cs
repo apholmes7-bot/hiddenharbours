@@ -1,33 +1,94 @@
+using System;
+using System.Collections.Generic;
 using HiddenHarbours.Core;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.Rendering;
 using UnityEngine.UI;
 
 namespace HiddenHarbours.UI
 {
-    /// <summary>Runtime-built HUD view. The model owns choices, focus, keyboard and input latches.
-    /// Phase B opens this view aboard; nothing installs or opens it automatically.</summary>
-    [DisallowMultipleComponent]
+    /// <summary>A modal view of the live player, with notebook choices beside the figure.</summary>
+    [DisallowMultipleComponent, DefaultExecutionOrder(200)]
     public sealed class CharacterCreatorPanel : MonoBehaviour
     {
-        private const float PanelWidth = 470f;
-        private const float PanelHeight = 670f;
-        private const float RowHeight = 32f;
-        private const float KeyWidth = 52f;
-        private const float KeyHeight = 42f;
-        private const float Padding = 18f;
-        private const int CopySize = 17;
-        private static readonly Color Stock = new Color(0.941f, 0.925f, 0.878f, 0.98f);
-        private static readonly Color Ink = new Color(0.10f, 0.16f, 0.16f, 1f);
-        private static readonly Color Selected = new Color(0.72f, 0.83f, 0.79f, 1f);
+        private const int Scale = DialogueBubbleKit.ArtScale;
+        private const int PageCount = 5;
+        private const float Width = 1920f, Height = 1080f;
+        private const float Margin = NotebookKit.CellHeight * Scale;
+        private const float StripHeight = NotebookKit.Pitch * Scale * 9;
+        private const float RowHeight = NotebookKit.TabHeight * Scale;
+        private const float SelectorWidth = NotebookKit.CellWidth * Scale * 36;
+        private const float GroupTop = NotebookKit.Pitch * Scale * 8 + NotebookKit.Edge * Scale * 8;
+        private const float SelectorTop = RowHeight + NotebookKit.Edge * Scale * 4;
+        private const float SelectorPitch = NotebookKit.Pitch * Scale * 2;
+        [SerializeField] private bool _nameGridGamepadOnly = true;
+        private static readonly int FigureTexture = Shader.PropertyToID("_HHFigureScreenTex");
+        private static readonly int FigureMap = Shader.PropertyToID("_HHFigurePixelMap");
         private CharacterCreatorModel _model;
         private GameObject _root;
-        private GameObject _keyboardRoot;
-        private Text[] _rows;
-        private Text[] _keys;
-        private Text _status;
-        private Text _hint;
+        private RectTransform _book, _keyboardRoot, _rotateLeft, _rotateRight, _animationButton, _randomize;
+        private RectTransform _youGroup, _clothesGroup, _nameGroup, _readyGroup, _actions, _nameDone;
+        private RectTransform[] _tabs, _rows, _keyRects;
+        private Image[] _tabImages, _rowImages, _keyImages;
+        private Image[] _swatches;
+        private Text[] _rowLabels, _keyLabels;
+        private Text _hint, _summary, _animationLabel;
+        private Text _nameInstructions;
+        private CharacterRampsDef _ramps;
+        private string[] _colourFields;
+        private int[] _focusOrder;
+        private bool _lastInputGamepad;
+        private Image _background;
+        private RawImage _portrait;
+        private Font _face;
+        private Sprite _previousMark, _nextMark, _caretMark;
+        private RectTransform _nameCaret;
         private Keyboard _keyboard;
+        private Camera _worldCamera, _creatorCamera;
+        private RenderTexture _creatorTarget;
+        private Mesh _creatorQuadMesh;
+        private Material _creatorOverlayMaterial;
+        private MeshRenderer _creatorOverlay;
+        private MaterialPropertyBlock _creatorProperties;
+        private bool _fallbackExportReady;
+        private Canvas _canvas;
+        private int _figureLayer, _pixelMultiple, _creatorWarmFrames;
+        private bool _creatorProbeDone, _fallback, _turnHeld, _refreshRenderers;
+        private string _viewReason;
+        private Rect _figureScreenRect;
+        private IsoCharacterSprite _character;
+        private ICharacterFigure _figure;
+        private Transform _figureRoot;
+        private Quaternion _poseRotation;
+        private float _openingHeading, _openingSpeed;
+        private bool _headingHeld, _speedHeld;
+        private CharacterStance _openingStance;
+        private readonly Dictionary<Renderer, bool> _rendering = new Dictionary<Renderer, bool>();
+        private readonly Dictionary<Canvas, bool> _canvases = new Dictionary<Canvas, bool>();
+        private readonly Dictionary<GameObject, int> _layers = new Dictionary<GameObject, int>();
+        private readonly List<Renderer> _figureRenderers = new List<Renderer>(8);
+        private float _figureHeightPixels;
+        private Renderer _tallestRenderer;
+        private bool _layoutValid;
+        private int _facingIndex, _animationIndex;
+
+        public float FigureHeightPixels => _figureHeightPixels;
+        public float TargetFraction => GameServices.CreatorFigureHeightFraction;
+        public Color BackdropColor => GameServices.CreatorBackdropColor;
+        public int FacingIndex => _facingIndex;
+        public string AnimationName => CharacterCreatorViewStrings.Animations[_animationIndex];
+        public bool HasPortrait => _layoutValid && _portrait != null && _portrait.enabled;
+        public RectTransform ControlStrip => _book;
+        public int PixelMultiple => _pixelMultiple;
+        public Rect FigureScreenRect => _figureScreenRect;
+        public string ViewMode => _fallback ? "Figure texture, point scaled" : "Creator camera, isolated UI layer";
+        public string ViewReason => _viewReason;
+        private int Page => PageFor(_model.FocusRow, _model.OutfitRow);
+        internal static int PageFor(int row, int outfitRow) => row == 0 ? 0 : row < outfitRow ? 1
+            : row == outfitRow ? 2 : row == outfitRow + 1 ? 3 : 4;
+        private int FirstRow(int page) => page == 0 ? 0 : page == 1 ? 1 : page == 2 ? _model.OutfitRow
+            : page == 3 ? _model.NameRow : _model.ResetRow;
 
         public bool Open(CharacterCreatorModel model)
         {
@@ -38,99 +99,439 @@ namespace HiddenHarbours.UI
             MoveActionClaim.IsClaimed = true;
             CancelKeyClaim.Hold();
             Build();
+            CaptureWorld();
             BindKeyboard();
+            RenderPipelineManager.endCameraRendering += OnCameraRendered;
             _model.Changed += Refresh;
             Refresh();
             return true;
         }
 
-        private void OnDisable() => _model?.Cancel();
+        private void CaptureWorld()
+        {
+            _worldCamera = Camera.main;
+            _figureLayer = LayerMask.NameToLayer("UI");
+            if (SystemInfo.graphicsDeviceType == GraphicsDeviceType.Null)
+                UseFallback("No graphics device: the creator camera cannot render the figure.");
+            else if (_worldCamera != null && _figureLayer >= 0)
+            {
+                _creatorProperties ??= new MaterialPropertyBlock();
+                var cameraHost = new GameObject("CreatorCamera", typeof(Camera));
+                cameraHost.transform.SetParent(transform, false);
+                _creatorCamera = cameraHost.GetComponent<Camera>();
+                _creatorCamera.enabled = false;
+                _creatorCamera.orthographic = true;
+                _creatorCamera.cullingMask = 1 << _figureLayer;
+                _creatorCamera.clearFlags = CameraClearFlags.SolidColor;
+                _creatorCamera.backgroundColor = BackdropColor;
+                _creatorCamera.allowHDR = false; _creatorCamera.allowMSAA = false;
+                _creatorCamera.nearClipPlane = _worldCamera.nearClipPlane;
+                _creatorCamera.farClipPlane = _worldCamera.farClipPlane;
+                _creatorCamera.depth = _worldCamera.depth + 1f;
+                _viewReason = "Only the live mesh uses the existing UI layer; the existing facet export excludes water and deck.";
+            }
+            else UseFallback("The existing UI layer or world camera is unavailable.");
+            Transform player = GameServices.PlayerTransform;
+            if (player != null)
+            {
+                foreach (MonoBehaviour component in player.GetComponentsInChildren<MonoBehaviour>(true))
+                {
+                    if (component is ICharacterFigureStand stand && stand.FigureCharacter != null) _character = stand.FigureCharacter;
+                    if (component is ICharacterFigure figure && figure.PresentationRoot != null) _figure = figure;
+                }
+                if (_character == null) _character = player.GetComponentInChildren<IsoCharacterSprite>();
+            }
+            if (_character != null)
+            {
+                _openingHeading = _character.HeadingDegrees; _openingSpeed = _character.Speed;
+                _headingHeld = _character.IsHeadingHeld; _speedHeld = _character.IsSpeedHeld;
+                _openingStance = _character.Stance;
+            }
+            foreach (Canvas canvas in FindObjectsByType<Canvas>(FindObjectsSortMode.None))
+                if (!canvas.transform.IsChildOf(_root.transform))
+                { _canvases[canvas] = canvas.enabled; canvas.enabled = false; }
+            _refreshRenderers = true;
+        }
 
+        private void RestoreWorld()
+        {
+            RenderPipelineManager.endCameraRendering -= OnCameraRendered;
+            if (_figureRoot != null) _figureRoot.localRotation = _poseRotation;
+            foreach (var pair in _rendering) if (pair.Key != null) pair.Key.forceRenderingOff = pair.Value;
+            _rendering.Clear();
+            foreach (var pair in _canvases) if (pair.Key != null) pair.Key.enabled = pair.Value;
+            _canvases.Clear();
+            RestoreLayers();
+            ReleaseCreatorCamera();
+            if (_character != null)
+            {
+                _character.Stance = _openingStance;
+                if (_headingHeld) _character.HoldHeading(_openingHeading); else _character.ReleaseHeading();
+                if (_speedHeld) _character.HoldSpeed(_openingSpeed); else _character.ReleaseSpeed();
+                _character = null;
+            }
+        }
+
+        private void OnDisable() => _model?.Cancel();
         private void OnDestroy()
         {
             _model?.Cancel();
             UnbindKeyboard();
             if (_model != null) _model.Changed -= Refresh;
+            RestoreWorld();
             if (_root != null) Destroy(_root);
         }
-
         private void BindKeyboard()
         {
             if (ReferenceEquals(_keyboard, Keyboard.current)) return;
-            UnbindKeyboard();
-            _keyboard = Keyboard.current;
+            UnbindKeyboard(); _keyboard = Keyboard.current;
             if (_keyboard != null) _keyboard.onTextInput += Type;
         }
-
         private void UnbindKeyboard()
+        { if (_keyboard != null) _keyboard.onTextInput -= Type; _keyboard = null; }
+        private void Type(char character)
+        { SetInputMode(false); _model?.Type(character); }
+
+        private void SetInputMode(bool gamepad)
         {
-            if (_keyboard != null) _keyboard.onTextInput -= Type;
-            _keyboard = null;
+            if (_lastInputGamepad == gamepad) return;
+            _lastInputGamepad = gamepad;
+            if (_model != null && _model.IsOpen) Refresh();
         }
 
-        private void Type(char character) => _model?.Type(character);
+        private void ReadInputMode(Keyboard keyboard, Gamepad pad)
+        {
+            Mouse mouse = Mouse.current;
+            bool keys = keyboard != null && keyboard.anyKey.wasPressedThisFrame;
+            bool pointer = mouse != null && mouse.wasUpdatedThisFrame && (mouse.leftButton.wasPressedThisFrame
+                || mouse.rightButton.wasPressedThisFrame || mouse.delta.ReadValue().sqrMagnitude > 0f
+                || mouse.scroll.ReadValue().sqrMagnitude > 0f);
+            float threshold = WardrobePickerModel.AxisThreshold * WardrobePickerModel.AxisThreshold;
+            bool controller = pad != null && pad.wasUpdatedThisFrame && (pad.leftStick.ReadValue().sqrMagnitude >= threshold
+                || pad.rightStick.ReadValue().sqrMagnitude >= threshold || pad.dpad.ReadValue().sqrMagnitude >= threshold
+                || pad.buttonSouth.wasPressedThisFrame || pad.buttonEast.wasPressedThisFrame
+                || pad.buttonWest.wasPressedThisFrame || pad.buttonNorth.wasPressedThisFrame
+                || pad.leftShoulder.wasPressedThisFrame || pad.rightShoulder.wasPressedThisFrame
+                || pad.startButton.wasPressedThisFrame || pad.selectButton.wasPressedThisFrame
+                || pad.leftTrigger.wasPressedThisFrame || pad.rightTrigger.wasPressedThisFrame);
+            if (controller || keys || pointer)
+            {
+                double otherTime = Math.Max(keys ? keyboard.lastUpdateTime : double.MinValue,
+                    pointer ? mouse.lastUpdateTime : double.MinValue);
+                SetInputMode(controller && pad.lastUpdateTime >= otherTime);
+            }
+            bool show = _model.NameEditing && (!_nameGridGamepadOnly || _lastInputGamepad);
+            if (_keyboardRoot.gameObject.activeSelf != show) Refresh();
+        }
 
         private void Update()
         {
             if (_model == null || !_model.IsOpen) return;
             BindKeyboard();
-            Keyboard kb = _keyboard;
-            Gamepad pad = Gamepad.current;
-            float x = 0f, y = 0f;
-            if (kb != null)
+            // The world's stand states its context at order 100; these presentation-only holds
+            // follow it, before the skin and the existing mesh presenter consume them in LateUpdate.
+            if (_character != null && _character.Visual != null)
             {
-                if (kb.leftArrowKey.isPressed) x--;
-                if (kb.rightArrowKey.isPressed) x++;
-                if (kb.upArrowKey.isPressed) y++;
-                if (kb.downArrowKey.isPressed) y--;
-                if (_model.NameEditing && kb.backspaceKey.wasPressedThisFrame) _model.Backspace();
-                if (_model.NameEditing && kb.enterKey.wasPressedThisFrame) { _model.Back(); return; }
+                _character.Stance = CharacterStance.Free;
+                _character.HoldSpeed(_animationIndex == 0 ? 0f : _character.Visual.WalkSpeedThreshold);
             }
-            if (pad != null && x == 0f && y == 0f)
+            Keyboard kb = _keyboard; Gamepad pad = Gamepad.current;
+            ReadInputMode(kb, pad);
+            if ((kb != null && kb.tabKey.wasPressedThisFrame) || (pad != null && pad.rightShoulder.wasPressedThisFrame))
+            { ChoosePage((Page + 1) % PageCount); return; }
+            if (pad != null && pad.leftShoulder.wasPressedThisFrame)
+            { ChoosePage((Page + PageCount - 1) % PageCount); return; }
+            if (_model.NameEditing)
             {
-                Vector2 axis = pad.dpad.ReadValue();
-                if (axis.sqrMagnitude < WardrobePickerModel.AxisThreshold * WardrobePickerModel.AxisThreshold)
-                    axis = pad.leftStick.ReadValue();
-                x = axis.x;
-                y = axis.y;
-                if (_model.NameEditing && pad.startButton.wasPressedThisFrame) { _model.Back(); return; }
+                if (kb != null && kb.backspaceKey.wasPressedThisFrame) _model.Backspace();
+                if ((kb != null && kb.enterKey.wasPressedThisFrame) || (pad != null && pad.startButton.wasPressedThisFrame))
+                { _model.Back(); return; }
+                Vector2 axis = pad != null ? pad.dpad.ReadValue() : Vector2.zero;
+                if (pad != null && axis.sqrMagnitude < WardrobePickerModel.AxisThreshold * WardrobePickerModel.AxisThreshold) axis = pad.leftStick.ReadValue();
+                if (kb != null) axis += new Vector2((kb.rightArrowKey.isPressed ? 1 : 0) - (kb.leftArrowKey.isPressed ? 1 : 0),
+                    (kb.upArrowKey.isPressed ? 1 : 0) - (kb.downArrowKey.isPressed ? 1 : 0));
+                _model.Input(axis.x, axis.y, pad != null && pad.buttonSouth.wasPressedThisFrame,
+                    (kb != null && kb.escapeKey.wasPressedThisFrame) || (pad != null && pad.buttonEast.wasPressedThisFrame));
             }
-            bool confirm = (kb != null && kb.enterKey.wasPressedThisFrame)
-                || (pad != null && pad.buttonSouth.wasPressedThisFrame);
-            bool cancel = (kb != null && kb.escapeKey.wasPressedThisFrame)
-                || (pad != null && pad.buttonEast.wasPressedThisFrame);
-            _model.Input(x, y, confirm, cancel);
+            else
+            {
+                float turn = pad != null ? pad.leftStick.x.ReadValue() : 0f;
+                if (kb != null) turn += (kb.rightArrowKey.isPressed ? 1 : 0) - (kb.leftArrowKey.isPressed ? 1 : 0);
+                bool held = Mathf.Abs(turn) >= WardrobePickerModel.AxisThreshold;
+                if (held && !_turnHeld) Rotate(turn > 0f ? 1 : -1);
+                _turnHeld = held;
+                if ((kb != null && kb.spaceKey.wasPressedThisFrame) || (pad != null && pad.buttonNorth.wasPressedThisFrame)) CycleAnimation();
+                if ((kb != null && kb.rKey.wasPressedThisFrame) || (pad != null && pad.buttonWest.wasPressedThisFrame)) _model.Randomize();
+                Vector2 axis = pad != null ? pad.dpad.ReadValue() : Vector2.zero;
+                if (kb != null) axis += new Vector2((kb.dKey.isPressed ? 1 : 0) - (kb.aKey.isPressed ? 1 : 0),
+                    (kb.upArrowKey.isPressed ? 1 : 0) - (kb.downArrowKey.isPressed ? 1 : 0));
+                InputChoices(axis.x, axis.y, (kb != null && kb.enterKey.wasPressedThisFrame) || (pad != null && pad.buttonSouth.wasPressedThisFrame),
+                    (kb != null && kb.escapeKey.wasPressedThisFrame) || (pad != null && pad.buttonEast.wasPressedThisFrame));
+            }
             ReadMouse();
         }
 
+        private void InputChoices(float x, float y, bool confirm, bool cancel)
+        {
+            int before = _model.FocusRow;
+            _model.Input(x, y, confirm, cancel);
+            // Keep the model's release/held gates; only map an accepted row move into display order.
+            if (!_model.IsOpen || _model.NameEditing || confirm || cancel
+                || Mathf.Abs(y) <= Mathf.Abs(x) || _model.FocusRow == before) return;
+            int index = Array.IndexOf(_focusOrder, before);
+            int direction = y > 0f ? -1 : 1;
+            _model.Focus(_focusOrder[(index + direction + _focusOrder.Length) % _focusOrder.Length]);
+        }
+
+        private void LateUpdate()
+        {
+            if (_model == null || !_model.IsOpen || _worldCamera == null) return;
+            Transform player = GameServices.PlayerTransform;
+            if ((_figure == null || _figure.PresentationRoot == null) && player != null)
+                foreach (MonoBehaviour component in player.GetComponentsInChildren<MonoBehaviour>(true))
+                    if (component is ICharacterFigure figure && figure.PresentationRoot != null) { _figure = figure; break; }
+            Transform root = _figure?.PresentationRoot;
+            if (root == null || _character == null || _character.Visual == null) { _layoutValid = false; return; }
+            if (_figureRoot != root) { _figureRoot = root; _refreshRenderers = true; }
+            // The real mesh is still posed by its owner, in its original stand. Turn only its
+            // presentation transform after that pose; the gameplay transform is never moved.
+            _poseRotation = root.localRotation;
+            root.localRotation = _poseRotation * Quaternion.AngleAxis(_facingIndex * (360f / _character.Visual.FacingCount), Vector3.forward);
+            if (_fallback && _refreshRenderers)
+            {
+                foreach (Renderer renderer in FindObjectsByType<Renderer>(FindObjectsSortMode.None))
+                    if (!_rendering.ContainsKey(renderer)) _rendering.Add(renderer, renderer.forceRenderingOff);
+                _refreshRenderers = false;
+            }
+            if (_fallback)
+                foreach (var pair in _rendering)
+                    if (pair.Key != null) pair.Key.forceRenderingOff = !pair.Key.transform.IsChildOf(root) || pair.Value;
+            root.GetComponentsInChildren(true, _figureRenderers);
+            _tallestRenderer = null;
+            float height = 0f;
+            Bounds bounds = default;
+            foreach (Renderer renderer in _figureRenderers)
+                if (renderer != null && renderer.enabled && renderer.gameObject.activeInHierarchy && renderer.bounds.size.y > height)
+                { _tallestRenderer = renderer; bounds = renderer.bounds; height = bounds.size.y; }
+            if (height <= 0f) { _layoutValid = false; return; }
+            if (!_fallback)
+            {
+                foreach (Renderer renderer in _figureRenderers)
+                    if (renderer != null)
+                    {
+                        GameObject host = renderer.gameObject;
+                        if (!_layers.ContainsKey(host)) _layers.Add(host, host.layer);
+                        host.layer = _figureLayer;
+                    }
+                EnsureCreatorTarget();
+                float artHeight = height * FigurePixelGrid.ArtPixelsPerMetre;
+                _pixelMultiple = Mathf.Max(1, Mathf.FloorToInt(Screen.height * TargetFraction / artHeight));
+                _creatorCamera.orthographicSize = Screen.height / (2f * FigurePixelGrid.ArtPixelsPerMetre * _pixelMultiple);
+                Vector3 center = bounds.center;
+                Quaternion rotation = _worldCamera.transform.rotation;
+                Vector3 forward = rotation * Vector3.forward, up = rotation * Vector3.up;
+                float distance = Mathf.Max(bounds.extents.magnitude + _creatorCamera.nearClipPlane,
+                    Mathf.Abs(Vector3.Dot(bounds.center - _worldCamera.transform.position, forward)));
+                center -= up * (_creatorCamera.orthographicSize * StripHeight / Height);
+                _creatorCamera.transform.SetPositionAndRotation(center - forward * distance, rotation);
+                _creatorCamera.aspect = (float)_creatorTarget.width / _creatorTarget.height;
+                _figureScreenRect = ProjectBounds(_creatorCamera, bounds);
+                _figureHeightPixels = _figureScreenRect.height;
+                if (!EnsureCreatorOverlay()) { UseFallback("The figure overlay shader is unavailable."); return; }
+                _tallestRenderer.GetPropertyBlock(_creatorProperties);
+                _creatorOverlay.SetPropertyBlock(_creatorProperties);
+                _creatorOverlay.transform.localPosition = Vector3.forward * (_creatorCamera.nearClipPlane + 1f);
+                _creatorOverlay.transform.localScale = new Vector3(_creatorCamera.orthographicSize * _creatorCamera.aspect * 2f,
+                    _creatorCamera.orthographicSize * 2f, 1f);
+                _creatorCamera.enabled = true;
+            }
+            _layoutValid = true;
+            Color backdrop = BackdropColor; backdrop.a = 1f; _background.color = backdrop;
+        }
+
+        private void OnCameraRendered(ScriptableRenderContext context, Camera camera)
+        {
+            if (_portrait == null || _model == null || !_model.IsOpen || !_layoutValid) return;
+            if ((!_fallback && camera != _creatorCamera) || (_fallback && camera != _worldCamera)) return;
+            if (!_fallback)
+            {
+                if (++_creatorWarmFrames < 3) return;
+                if (!_creatorProbeDone)
+                {
+                    _creatorProbeDone = true;
+                    if (!IsIsolatedFigure(_creatorTarget, true))
+                    { UseFallback("The creator camera produced no isolated figure; the fallback must supply a written figure export."); return; }
+                }
+                // The view's overlay reads the GPU-bound export during this camera's ordinary
+                // sprite pass. Shader.GetGlobalTexture can still return its CPU placeholder.
+                _portrait.texture = _creatorTarget;
+                _portrait.uvRect = new Rect(0f, 0f, 1f, 1f);
+                _portrait.enabled = true;
+                Stretch(_portrait.rectTransform);
+            }
+            else
+            {
+                Texture texture = Shader.GetGlobalTexture(FigureTexture);
+                Vector4 map = Shader.GetGlobalVector(FigureMap);
+                bool available = texture is RenderTexture export && export.IsCreated()
+                    && texture.width >= 8 && texture.height >= 8 && map.w > 0f;
+                if (!available)
+                {
+                    _portrait.enabled = false;
+                    _viewReason = "FAILED: no written figure export is available; placeholder textures are never scaled.";
+                    return;
+                }
+                if (!_fallbackExportReady) _fallbackExportReady = IsIsolatedFigure((RenderTexture)texture);
+                _portrait.enabled = _fallbackExportReady;
+                if (!_fallbackExportReady || _tallestRenderer == null)
+                { _viewReason = "FAILED: the figure export has not produced an isolated figure."; return; }
+                Vector3 min = camera.WorldToScreenPoint(_tallestRenderer.bounds.min), max = camera.WorldToScreenPoint(_tallestRenderer.bounds.max);
+                Vector2 low = new Vector2((min.x - map.x) / map.w, (min.y - map.y) / map.w);
+                Vector2 high = new Vector2((max.x - map.x) / map.w, (max.y - map.y) / map.w);
+                _pixelMultiple = Mathf.Max(1, Mathf.FloorToInt(Screen.height * TargetFraction / (high.y - low.y)));
+                float x = Mathf.Max(0f, Mathf.Floor(low.x) - FigurePixelGrid.GuardTexels), y = Mathf.Max(0f, Mathf.Floor(low.y) - FigurePixelGrid.GuardTexels);
+                float w = Mathf.Min(texture.width - x, Mathf.Ceil(high.x) + FigurePixelGrid.GuardTexels - x);
+                float h = Mathf.Min(texture.height - y, Mathf.Ceil(high.y) + FigurePixelGrid.GuardTexels - y);
+                if (w <= 0f || h <= 0f || high.y <= low.y)
+                {
+                    _portrait.enabled = false;
+                    _viewReason = "FAILED: the figure bounds do not intersect the written export.";
+                    return;
+                }
+                RectTransform rect = _portrait.rectTransform;
+                rect.anchorMin = rect.anchorMax = new Vector2(0.5f, (1f + StripHeight / Height) * 0.5f); rect.pivot = Vector2.one * 0.5f;
+                rect.anchoredPosition = Vector2.zero; rect.sizeDelta = new Vector2(w, h) * _pixelMultiple / _canvas.scaleFactor;
+                _portrait.texture = texture; _portrait.uvRect = new Rect(x / texture.width, y / texture.height, w / texture.width, h / texture.height);
+                Vector2 origin = new Vector2(Screen.width * 0.5f - w * _pixelMultiple * 0.5f,
+                    Screen.height * (1f + StripHeight / Height) * 0.5f - h * _pixelMultiple * 0.5f);
+                _figureScreenRect = Rect.MinMaxRect(origin.x + (low.x - x) * _pixelMultiple, origin.y + (low.y - y) * _pixelMultiple,
+                    origin.x + (high.x - x) * _pixelMultiple, origin.y + (high.y - y) * _pixelMultiple);
+                _figureHeightPixels = _figureScreenRect.height;
+            }
+        }
+
+        private bool EnsureCreatorOverlay()
+        {
+            if (_creatorOverlay != null) return true;
+            Shader shader = Shader.Find("HiddenHarbours/IsoFacetOverlay");
+            if (shader == null || !shader.isSupported) return false;
+            _creatorOverlayMaterial = new Material(shader) { name = "CreatorFigureOverlay", hideFlags = HideFlags.DontSave };
+            _creatorQuadMesh = new Mesh { name = "CreatorFigureQuad", hideFlags = HideFlags.DontSave };
+            _creatorQuadMesh.vertices = new[] { new Vector3(-.5f,-.5f,0f), new Vector3(.5f,-.5f,0f),
+                new Vector3(.5f,.5f,0f), new Vector3(-.5f,.5f,0f) };
+            _creatorQuadMesh.triangles = new[] { 0,1,2,0,2,3 };
+            _creatorQuadMesh.RecalculateBounds();
+            var host = new GameObject("CreatorFigureOverlay", typeof(MeshFilter), typeof(MeshRenderer)) { layer = _figureLayer };
+            host.transform.SetParent(_creatorCamera.transform, false);
+            host.GetComponent<MeshFilter>().sharedMesh = _creatorQuadMesh;
+            _creatorOverlay = host.GetComponent<MeshRenderer>();
+            _creatorOverlay.sharedMaterial = _creatorOverlayMaterial;
+            _creatorOverlay.sortingOrder = short.MaxValue;
+            return true;
+        }
+
+        private static Rect ProjectBounds(Camera camera, Bounds bounds)
+        {
+            Vector2 low = new Vector2(float.PositiveInfinity, float.PositiveInfinity);
+            Vector2 high = new Vector2(float.NegativeInfinity, float.NegativeInfinity);
+            for (int i = 0; i < 8; i++)
+            {
+                Vector3 point = camera.WorldToScreenPoint(bounds.center + Vector3.Scale(bounds.extents,
+                    new Vector3((i & 1) == 0 ? -1f : 1f, (i & 2) == 0 ? -1f : 1f, (i & 4) == 0 ? -1f : 1f)));
+                low = Vector2.Min(low, point); high = Vector2.Max(high, point);
+            }
+            return Rect.MinMaxRect(low.x, low.y, high.x, high.y);
+        }
+        private void EnsureCreatorTarget()
+        {
+            if (_creatorTarget != null && _creatorTarget.width == Screen.width && _creatorTarget.height == Screen.height) return;
+            if (_creatorTarget != null)
+            {
+                _creatorCamera.targetTexture = null;
+                if (RenderTexture.active == _creatorTarget) RenderTexture.active = null;
+                _creatorTarget.Release(); Destroy(_creatorTarget);
+            }
+            _creatorTarget = new RenderTexture(Screen.width, Screen.height, 24, RenderTextureFormat.ARGB32)
+                { name = "CreatorFigureTarget", filterMode = FilterMode.Point, antiAliasing = 1 };
+            _creatorTarget.Create(); _creatorCamera.targetTexture = _creatorTarget;
+        }
+        private static bool IsIsolatedFigure(RenderTexture texture, bool backdrop = false)
+        {
+            if (texture == null || !texture.IsCreated() || texture.width < 8 || texture.height < 8) return false;
+            RenderTexture previous = RenderTexture.active;
+            var probe = new Texture2D(texture.width, texture.height, TextureFormat.RGBA32, false);
+            try
+            {
+                RenderTexture.active = texture;
+                probe.ReadPixels(new Rect(0f, 0f, texture.width, texture.height), 0, 0); probe.Apply(false, false);
+                Color32[] pixels = probe.GetPixels32();
+                bool emptyCorners = pixels[0].a == 0 && pixels[texture.width - 1].a == 0
+                    && pixels[pixels.Length - 1].a == 0 && pixels[pixels.Length - texture.width].a == 0;
+                if (backdrop)
+                    emptyCorners = SamePixel(pixels[0], pixels[texture.width - 1])
+                        && SamePixel(pixels[0], pixels[pixels.Length - 1])
+                        && SamePixel(pixels[0], pixels[pixels.Length - texture.width]);
+                if (!emptyCorners) return false;
+                foreach (Color32 pixel in pixels) if (backdrop ? !SamePixel(pixel, pixels[0]) : pixel.a > 0) return true;
+                return false;
+            }
+            finally { RenderTexture.active = previous; Destroy(probe); }
+        }
+        private static bool SamePixel(Color32 a, Color32 b) => Math.Abs(a.r - b.r) + Math.Abs(a.g - b.g)
+            + Math.Abs(a.b - b.b) + Math.Abs(a.a - b.a) <= 4;
+
+        private void RestoreLayers()
+        { foreach (var pair in _layers) if (pair.Key != null) pair.Key.layer = pair.Value; _layers.Clear(); }
+        private void ReleaseCreatorCamera()
+        {
+            if (_creatorOverlay != null) { Destroy(_creatorOverlay.gameObject); _creatorOverlay = null; }
+            if (_creatorOverlayMaterial != null) { Destroy(_creatorOverlayMaterial); _creatorOverlayMaterial = null; }
+            if (_creatorQuadMesh != null) { Destroy(_creatorQuadMesh); _creatorQuadMesh = null; }
+            if (_portrait != null) { _portrait.enabled = false; _portrait.texture = null; }
+            if (_creatorCamera != null) { _creatorCamera.enabled = false; _creatorCamera.targetTexture = null; Destroy(_creatorCamera.gameObject); _creatorCamera = null; }
+            if (_creatorTarget != null)
+            {
+                if (RenderTexture.active == _creatorTarget) RenderTexture.active = null;
+                _creatorTarget.Release(); Destroy(_creatorTarget); _creatorTarget = null;
+            }
+        }
+        private void UseFallback(string reason)
+        { _fallback = true; _fallbackExportReady = false; _viewReason = reason; RestoreLayers(); ReleaseCreatorCamera(); _refreshRenderers = true; }
+
+        private void Rotate(int direction)
+        {
+            if (_character == null || _character.Visual == null) return;
+            int count = _character.Visual.FacingCount;
+            _facingIndex = (_facingIndex + direction + count) % count;
+        }
+        private void CycleAnimation()
+        { _animationIndex = (_animationIndex + 1) % CharacterCreatorViewStrings.Animations.Length; _animationLabel.text = CharacterCreatorViewStrings.Pose + AnimationName; }
+        private void ChoosePage(int page)
+        { if (_model.NameEditing) _model.Back(); _model.Focus(FirstRow(page)); }
+        private static bool Hit(RectTransform rect, Vector2 point) => rect != null && rect.gameObject.activeInHierarchy
+            && RectTransformUtility.RectangleContainsScreenPoint(rect, point);
         private void ReadMouse()
         {
             Mouse mouse = Mouse.current;
-            if (mouse == null || !_model.IsOpen) return;
+            if (mouse == null || !mouse.leftButton.wasPressedThisFrame) return;
             Vector2 point = mouse.position.ReadValue();
+            for (int i = 0; i < _tabs.Length; i++) if (Hit(_tabs[i], point)) { ChoosePage(i); return; }
+            if (Hit(_rotateLeft, point)) { Rotate(-1); return; }
+            if (Hit(_rotateRight, point)) { Rotate(1); return; }
+            if (Hit(_animationButton, point)) { CycleAnimation(); return; }
+            if (Hit(_randomize, point) && !_model.NameEditing) { _model.Randomize(); return; }
             if (_model.NameEditing)
             {
-                if (!mouse.leftButton.wasPressedThisFrame) return;
-                for (int i = 0; i < _keys.Length; i++)
-                    if (RectTransformUtility.RectangleContainsScreenPoint(_keys[i].rectTransform, point))
-                    { _model.PressKey(i); return; }
+                if (Hit(_nameDone, point)) { _model.Back(); return; }
+                for (int i = 0; i < _keyRects.Length; i++) if (Hit(_keyRects[i], point)) { _model.PressKey(i); return; }
                 return;
             }
-            if (mouse.delta.ReadValue().sqrMagnitude == 0f && !mouse.leftButton.wasPressedThisFrame) return;
-            for (int i = 0; i < _rows.Length; i++)
+            for (int i = 0; i < _rows.Length; i++) if (Hit(_rows[i], point))
             {
-                RectTransform rect = _rows[i].rectTransform;
-                if (!RectTransformUtility.RectangleContainsScreenPoint(rect, point)) continue;
+                RectTransformUtility.ScreenPointToLocalPointInRectangle(_rows[i], point, null, out Vector2 local);
+                int direction = local.x < _rows[i].rect.width * 0.5f ? -1 : 1;
                 _model.Focus(i);
-                if (mouse.leftButton.wasPressedThisFrame)
-                {
-                    if (i <= _model.OutfitRow)
-                    {
-                        RectTransformUtility.ScreenPointToLocalPointInRectangle(rect, point, null, out Vector2 local);
-                        _model.Adjust(local.x < 0f ? -1 : 1);
-                    }
-                    else _model.Activate();
-                }
+                if (i <= _model.OutfitRow) _model.Adjust(direction); else _model.Activate();
                 return;
             }
         }
@@ -139,116 +540,242 @@ namespace HiddenHarbours.UI
         {
             if (!_model.IsOpen)
             {
-                _model.Changed -= Refresh;
-                UnbindKeyboard();
-                _root.SetActive(false);
-                InteractionGate.IsBlocked = false;
-                MoveActionClaim.IsClaimed = false;
-                CancelKeyClaim.Release();
-                return;
+                _model.Changed -= Refresh; UnbindKeyboard(); RestoreWorld(); _root.SetActive(false);
+                InteractionGate.IsBlocked = false; MoveActionClaim.IsClaimed = false; CancelKeyClaim.Release(); return;
             }
-            if (_rows.Length != _model.RowCount) Build();
+            _refreshRenderers = true;
+            bool appearance = Page < 3;
+            _youGroup.gameObject.SetActive(appearance);
+            _clothesGroup.gameObject.SetActive(appearance);
+            _nameGroup.gameObject.SetActive(Page == 3);
+            _readyGroup.gameObject.SetActive(Page == 4);
+            for (int i = 0; i < _tabs.Length; i++) _tabImages[i].color = i == Page ? NotebookInk.Gold : NotebookInk.Paper;
             for (int i = 0; i < _rows.Length; i++)
             {
-                _rows[i].text = (i <= _model.OutfitRow ? "<  " : "") + _model.RowLabel(i)
-                    + (i <= _model.OutfitRow ? "  >" : "");
-                _rows[i].transform.parent.GetComponent<Image>().color = i == _model.FocusRow ? Selected : Stock;
+                bool show = i <= _model.OutfitRow ? appearance : i == _model.NameRow ? Page == 3 : Page == 4;
+                _rows[i].gameObject.SetActive(show);
+                if (!show) continue;
+                _rowLabels[i].text = RowCopy(i);
+                _rowImages[i].color = i == _model.FocusRow ? NotebookInk.Gold : NotebookInk.Paper;
+                if (_swatches[i] != null)
+                {
+                    CharacterRamp ramp = RampFor(i);
+                    _swatches[i].transform.parent.gameObject.SetActive(ramp != null && ramp.IsUsable);
+                    if (ramp != null && ramp.IsUsable) _swatches[i].color = ramp.Shades[ramp.Shades.Length / 2];
+                }
             }
-            _keyboardRoot.SetActive(_model.NameEditing);
-            for (int i = 0; i < _keys.Length; i++)
+            if (Page == 4) _summary.text = _model.RowLabel(0) + "\n" + _model.RowLabel(_model.OutfitRow) + "\n" + _model.RowLabel(_model.NameRow);
+            bool grid = _model.NameEditing && (!_nameGridGamepadOnly || _lastInputGamepad);
+            _keyboardRoot.gameObject.SetActive(grid);
+            _nameDone.gameObject.SetActive(_model.NameEditing);
+            _nameCaret.gameObject.SetActive(_model.NameEditing);
+            if (_model.NameEditing && _caretMark != null)
+                Place(_nameCaret, NotebookKit.Edge * Scale + (CharacterCreatorStrings.Name.Length + _model.Name.Length) * HarbourType.Advance * Scale,
+                    Mathf.Floor((RowHeight / Scale - _caretMark.rect.height) * .5f) * Scale,
+                    _caretMark.rect.width * Scale, _caretMark.rect.height * Scale);
+            _nameInstructions.text = grid ? CharacterCreatorViewStrings.PadNameInstructions : CharacterCreatorViewStrings.TypedNameInstructions;
+            for (int i = 0; i < _keyLabels.Length; i++)
+            { _keyLabels[i].text = _model.KeyLabel(i); _keyImages[i].color = i == _model.KeyboardIndex ? NotebookInk.Gold : NotebookInk.Paper; }
+            _hint.text = _model.Refusal ?? (_model.NameEditing ? (grid ? CharacterCreatorViewStrings.NameHint : CharacterCreatorViewStrings.TypedNameHint) : CharacterCreatorViewStrings.Hint);
+            _hint.color = _model.Refusal != null ? NotebookInk.InkStrong : NotebookInk.Ink;
+        }
+
+        private CharacterRamp RampFor(int row)
+        {
+            if (_ramps == null || row <= 0 || row >= _model.OutfitRow) return null;
+            string copy = _model.RowLabel(row);
+            int colon = copy.IndexOf(':');
+            return colon < 0 ? null : _ramps.Ramp(_colourFields[row - 1], copy.Substring(colon + 1).Trim());
+        }
+
+        private string RowCopy(int row)
+        {
+            if (row == _model.NameRow && _model.NameEditing) return CharacterCreatorStrings.Name + _model.Name;
+            string copy = _model.RowLabel(row);
+            if (row > 0 && row < _model.OutfitRow)
             {
-                _keys[i].text = _model.KeyLabel(i);
-                _keys[i].transform.parent.GetComponent<Image>().color = i == _model.KeyboardIndex ? Selected : Stock;
+                int colon = copy.IndexOf(':');
+                string value = colon < 0 ? copy : copy.Substring(colon + 1).Trim();
+                CharacterRamp ramp = RampFor(row);
+                if (!string.IsNullOrEmpty(ramp?.Label)) value = ramp.Label;
+                return CharacterCreatorViewStrings.FieldName(_colourFields[row - 1]) + ": " + value;
             }
-            _hint.text = _model.NameEditing ? CharacterCreatorStrings.NameHint : CharacterCreatorStrings.Hint;
-            _status.text = _model.Refusal ?? string.Join("\n", _model.UnavailableBodies);
+            return row == _model.OutfitRow && copy.StartsWith(CharacterCreatorStrings.Outfit, StringComparison.Ordinal)
+                ? CharacterCreatorViewStrings.Wear + copy.Substring(CharacterCreatorStrings.Outfit.Length) : copy;
+        }
+
+        private int SelectorIndex(int row, out bool clothes)
+        {
+            clothes = false;
+            if (row == 0) return 0;
+            if (row == _model.OutfitRow) { clothes = true; return 5; }
+            switch (_colourFields[row - 1])
+            {
+                case "skin": return 1;
+                case "hair": return 2;
+                case "eyes": return 3;
+                case "shirt": clothes = true; return 0;
+                case "outfit": clothes = true; return 1;
+                case "hatCol": clothes = true; return 2;
+                case "apronCol": clothes = true; return 3;
+                default: clothes = true; return 4;
+            }
         }
 
         private void Build()
         {
-            if (_root != null) Destroy(_root);
+            _face = Resources.Load<Font>(HarbourType.ResourceKey);
+            if (_face == null) _face = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            _ramps = CharacterBuilderDef.LoadShipped()?.Ramps;
+            _previousMark = Resources.Load<Sprite>(NotebookKit.ResourceKeyFor(NotebookKit.PieceMarkPrev));
+            _nextMark = Resources.Load<Sprite>(NotebookKit.ResourceKeyFor(NotebookKit.PieceMarkNext));
+            _caretMark = Resources.Load<Sprite>(NotebookKit.ResourceKeyFor(NotebookKit.PieceCaret));
+            var fields = _model.ColourFields;
+            _colourFields = new string[fields.Count];
+            for (int i = 0; i < fields.Count; i++) _colourFields[i] = fields[i];
             _root = new GameObject("CharacterCreator", typeof(RectTransform), typeof(Canvas), typeof(CanvasScaler));
             _root.transform.SetParent(transform, false);
-            Canvas canvas = _root.GetComponent<Canvas>();
-            canvas.renderMode = RenderMode.ScreenSpaceOverlay;
-            canvas.sortingOrder = WardrobePicker.SortingOrder;
-            CanvasScaler scaler = _root.GetComponent<CanvasScaler>();
-            scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
-            scaler.referenceResolution = new Vector2(1280f, 720f);
-            scaler.matchWidthOrHeight = 0.5f;
-
-            RectTransform panel = Box(_root.transform, "Choices", Stock);
-            panel.anchorMin = panel.anchorMax = new Vector2(1f, 0.5f);
-            panel.pivot = new Vector2(1f, 0.5f);
-            panel.anchoredPosition = new Vector2(-Padding, 0f);
-            panel.sizeDelta = new Vector2(PanelWidth, PanelHeight);
-            Label(panel, "Title", CharacterCreatorStrings.Title, Padding, Padding, PanelWidth - Padding * 2f, RowHeight);
-            _rows = new Text[_model.RowCount];
-            for (int i = 0; i < _rows.Length; i++)
+            Canvas canvas = _root.GetComponent<Canvas>(); canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+            _canvas = canvas;
+            canvas.sortingOrder = short.MaxValue; canvas.referencePixelsPerUnit = NotebookKit.PixelsPerUnit;
+            CanvasScaler scaler = _root.GetComponent<CanvasScaler>(); scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
+            scaler.referenceResolution = new Vector2(Width, Height); scaler.matchWidthOrHeight = 0.5f;
+            RectTransform background = Image(_root.transform, "BlankGround", BackdropColor); Stretch(background);
+            _background = background.GetComponent<Image>();
+            var portrait = new GameObject("LiveFigure", typeof(RectTransform), typeof(RawImage));
+            portrait.transform.SetParent(_root.transform, false); _portrait = portrait.GetComponent<RawImage>();
+            _portrait.raycastTarget = false; _portrait.enabled = false; Stretch((RectTransform)portrait.transform);
+            _book = Image(_root.transform, "Controls", NotebookInk.Paper);
+            _book.anchorMin = new Vector2(0f,0f); _book.anchorMax = new Vector2(1f,0f); _book.pivot = Vector2.zero;
+            _book.sizeDelta = new Vector2(0f,StripHeight);
+            _tabs = new RectTransform[PageCount]; _tabImages = new Image[PageCount];
+            for (int i=0;i<PageCount;i++)
+            { _tabs[i]=Button(_book,"Step"+i,CharacterCreatorViewStrings.Tabs[i],Margin+i*210f,NotebookKit.Edge*Scale,200f); _tabImages[i]=_tabs[i].GetComponent<Image>(); }
+            _actions = new GameObject("FigureActions", typeof(RectTransform)).GetComponent<RectTransform>();
+            _actions.SetParent(_root.transform, false); Stretch(_actions);
+            float actionTop = Height - StripHeight - RowHeight * 2f + NotebookKit.Edge * Scale * 2f;
+            _rotateLeft=Button(_actions,"TurnLeft","",670f,actionTop,60f);
+            _rotateRight=Button(_actions,"TurnRight","",742f,actionTop,60f);
+            Mark(_rotateLeft,"Direction",_previousMark,60f);
+            Mark(_rotateRight,"Direction",_nextMark,60f);
+            _animationButton=Button(_actions,"Animation",CharacterCreatorViewStrings.Pose + AnimationName,826f,actionTop,180f);
+            _animationLabel=_animationButton.GetComponentInChildren<Text>();
+            _randomize=Button(_actions,"Randomize",CharacterCreatorViewStrings.Randomize,1030f,actionTop,220f);
+            _hint=Label(_book,"Hint","",Margin,StripHeight-NotebookKit.CellHeight*Scale*2f,Width-Margin*2f,NotebookKit.CellHeight*Scale*2f);
+            _hint.horizontalOverflow = HorizontalWrapMode.Wrap;
+            _youGroup = Group("You", CharacterCreatorViewStrings.You, Margin*4f, GroupTop, SelectorWidth, SelectorPitch*5f);
+            _clothesGroup = Group("Clothes", CharacterCreatorViewStrings.Clothes, Width-Margin*4f-SelectorWidth, GroupTop, SelectorWidth, SelectorPitch*7f);
+            _nameGroup = Group("NameEntry", CharacterCreatorViewStrings.YourName, Width-Margin-SelectorWidth-120f, GroupTop, SelectorWidth+120f, SelectorPitch*5f);
+            _readyGroup = Group("ReadyChoices", CharacterCreatorViewStrings.Ready, Margin*4f, GroupTop, SelectorWidth, SelectorPitch*7f);
+            _summary=Label(_readyGroup,"Summary","",0f,SelectorTop,SelectorWidth,SelectorPitch*2f);
+            _summary.horizontalOverflow = HorizontalWrapMode.Wrap;
+            _nameDone=Button(_nameGroup,"NameDone",CharacterCreatorViewStrings.Done,0f,SelectorPitch*2f,180f);
+            _nameInstructions=Label(_nameGroup,"NameInstructions","",0f,SelectorPitch*3f,SelectorWidth+120f,SelectorPitch*1.5f);
+            _nameInstructions.horizontalOverflow = HorizontalWrapMode.Wrap;
+            _rows=new RectTransform[_model.RowCount]; _rowImages=new Image[_rows.Length]; _rowLabels=new Text[_rows.Length];
+            _swatches=new Image[_rows.Length];
+            var focusOrder = new List<int>(_rows.Length);
+            for (int group=0;group<2;group++)
+                for (int slot=0;slot<=5;slot++)
+                    for (int row=0;row<=_model.OutfitRow;row++)
+                        if (SelectorIndex(row,out bool clothes)==slot && clothes==(group==1)) focusOrder.Add(row);
+            for (int row=_model.NameRow;row<_rows.Length;row++) focusOrder.Add(row);
+            _focusOrder=focusOrder.ToArray();
+            for (int i=0;i<_rows.Length;i++)
             {
-                RectTransform row = Box(panel, "Choice" + i, Stock);
-                Place(row, Padding, Padding + RowHeight * (i + 1), PanelWidth - Padding * 2f, RowHeight);
-                _rows[i] = Label(row, "Label", "", 0f, 0f, row.sizeDelta.x, RowHeight);
+                RectTransform parent; float top, width=SelectorWidth;
+                if (i <= _model.OutfitRow)
+                {
+                    int index = SelectorIndex(i, out bool clothes);
+                    parent=clothes?_clothesGroup:_youGroup; top=SelectorTop+index*SelectorPitch;
+                }
+                else if (i == _model.NameRow) { parent=_nameGroup; top=SelectorTop; width+=120f; }
+                else { parent=_readyGroup; top=SelectorPitch*3f+(i-_model.ResetRow)*SelectorPitch; }
+                _rows[i]=Button(parent,"Choice"+i,"",0f,top,width);
+                _rowImages[i]=_rows[i].GetComponent<Image>(); _rowLabels[i]=_rows[i].GetComponentInChildren<Text>();
+                if (i <= _model.OutfitRow)
+                {
+                    float lane=NotebookKit.CellWidth*Scale*2f;
+                    Mark(_rows[i],"Previous",_previousMark,lane);
+                    RectTransform next=Mark(_rows[i],"Next",_nextMark,lane);
+                    next.anchoredPosition += Vector2.right * (width-lane);
+                    float reserve = i>0 && i<_model.OutfitRow ? RowHeight+NotebookKit.Edge*Scale*2f : 0f;
+                    Place(_rowLabels[i].rectTransform,lane,0f,width-lane*2f-reserve,RowHeight);
+                    if (reserve > 0f)
+                    {
+                        RectTransform border=Image(_rows[i],"ColourFrame",NotebookInk.InkStrong);
+                        Place(border,width-lane-RowHeight-NotebookKit.Edge*Scale,0f,RowHeight,RowHeight);
+                        RectTransform swatch=Image(border,"Colour",Color.clear);
+                        Place(swatch,NotebookKit.Edge*Scale,NotebookKit.Edge*Scale,RowHeight-NotebookKit.Edge*Scale*2f,RowHeight-NotebookKit.Edge*Scale*2f);
+                        _swatches[i]=swatch.GetComponent<Image>();
+                    }
+                }
             }
-            _status = Label(panel, "Refusal", "", Padding, Padding + RowHeight * (_rows.Length + 1),
-                PanelWidth - Padding * 2f, RowHeight * 4f);
-            _status.fontSize = CopySize - 3;
-            _status.alignment = TextAnchor.UpperLeft;
-            _hint = Label(panel, "Controls", "", Padding, PanelHeight - RowHeight * 2f - Padding,
-                PanelWidth - Padding * 2f, RowHeight * 2f);
-            _hint.fontSize = CopySize - 3;
-
-            RectTransform keyboard = Box(_root.transform, "NameKeyboard", Stock);
-            keyboard.anchorMin = keyboard.anchorMax = new Vector2(0f, 0f);
-            keyboard.pivot = Vector2.zero;
-            keyboard.anchoredPosition = new Vector2(Padding, Padding);
-            keyboard.sizeDelta = new Vector2(KeyWidth * CharacterCreatorModel.KeyboardColumns + Padding * 2f,
-                KeyHeight * (CharacterCreatorModel.KeyboardKeyCount / CharacterCreatorModel.KeyboardColumns) + Padding * 2f);
-            _keyboardRoot = keyboard.gameObject;
-            _keys = new Text[CharacterCreatorModel.KeyboardKeyCount];
-            for (int i = 0; i < _keys.Length; i++)
-            {
-                RectTransform key = Box(keyboard, "Key" + i, Stock);
-                Place(key, Padding + i % CharacterCreatorModel.KeyboardColumns * KeyWidth,
-                    Padding + i / CharacterCreatorModel.KeyboardColumns * KeyHeight, KeyWidth, KeyHeight);
-                _keys[i] = Label(key, "Label", "", 0f, 0f, KeyWidth, KeyHeight);
-                _keys[i].alignment = TextAnchor.MiddleCenter;
-            }
+            _nameCaret=Image(_rows[_model.NameRow],"Caret",Color.white);
+            _nameCaret.GetComponent<Image>().sprite=_caretMark;
+            _nameCaret.GetComponent<Image>().preserveAspect=true;
+            _keyboardRoot=Image(_book,"NameKeyboard",NotebookInk.Paper);
+            Place(_keyboardRoot,Margin,RowHeight+NotebookKit.Edge*Scale*4f,Width-Margin*2f,RowHeight*4f);
+            _keyRects=new RectTransform[CharacterCreatorModel.KeyboardKeyCount]; _keyImages=new Image[_keyRects.Length]; _keyLabels=new Text[_keyRects.Length];
+            float keyWidth=(Width-Margin*2f)/CharacterCreatorModel.KeyboardColumns;
+            for (int i=0;i<_keyRects.Length;i++)
+            { _keyRects[i]=Button(_keyboardRoot,"Key"+i,"",(i%CharacterCreatorModel.KeyboardColumns)*keyWidth,(i/CharacterCreatorModel.KeyboardColumns)*RowHeight,keyWidth-NotebookKit.Edge*Scale);
+                _keyImages[i]=_keyRects[i].GetComponent<Image>(); _keyLabels[i]=_keyRects[i].GetComponentInChildren<Text>(); }
         }
-
-        private static RectTransform Box(Transform parent, string label, Color colour)
+        private RectTransform Mark(Transform parent,string name,Sprite sprite,float lane)
         {
-            var go = new GameObject(label, typeof(RectTransform), typeof(Image));
-            go.transform.SetParent(parent, false);
-            Image image = go.GetComponent<Image>();
-            image.color = colour;
-            image.raycastTarget = false;
-            return (RectTransform)go.transform;
+            RectTransform rect=Image(parent,name,Color.white);
+            Image mark=rect.GetComponent<Image>(); mark.sprite=sprite; mark.preserveAspect=true;
+            if (sprite != null) Place(rect,Mathf.Floor((lane/Scale-sprite.rect.width)*.5f)*Scale,
+                Mathf.Floor((RowHeight/Scale-sprite.rect.height)*.5f)*Scale,sprite.rect.width*Scale,sprite.rect.height*Scale);
+            return rect;
         }
 
-        private static Text Label(Transform parent, string label, string copy, float x, float y, float width, float height)
+        private RectTransform Group(string name,string title,float x,float y,float width,float height)
         {
-            var go = new GameObject(label, typeof(RectTransform), typeof(Text));
-            go.transform.SetParent(parent, false);
-            Text text = go.GetComponent<Text>();
-            text.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-            text.text = copy;
-            text.fontSize = CopySize;
-            text.color = Ink;
-            text.alignment = TextAnchor.MiddleLeft;
-            text.raycastTarget = false;
-            text.horizontalOverflow = HorizontalWrapMode.Wrap;
-            text.verticalOverflow = VerticalWrapMode.Truncate;
-            Place(text.rectTransform, x, y, width, height);
-            return text;
+            RectTransform rect=Image(_root.transform,name,NotebookInk.Paper); Place(rect,x,y,width,height);
+            Text heading=Label(rect,"Heading",title,0f,0f,width,RowHeight); heading.color=NotebookInk.InkStrong;
+            RectTransform rule=Image(rect,"Rule",NotebookInk.Rule);
+            Place(rule,0f,RowHeight,width,NotebookKit.Edge*Scale);
+            return rect;
         }
+        private RectTransform Button(Transform parent,string name,string copy,float x,float y,float width)
+        {
+            RectTransform rect=Image(parent,name,NotebookInk.Paper); Place(rect,x,y,width,RowHeight);
+            Label(rect,"Label",copy,NotebookKit.Edge*Scale,0f,width-NotebookKit.Edge*Scale,RowHeight); return rect;
+        }
+        private static RectTransform Image(Transform parent,string name,Color color)
+        {
+            var go=new GameObject(name,typeof(RectTransform),typeof(Image)); go.transform.SetParent(parent,false);
+            Image image=go.GetComponent<Image>(); image.color=color; image.raycastTarget=false; return (RectTransform)go.transform;
+        }
+        private Text Label(Transform parent,string name,string copy,float x,float y,float width,float height)
+        {
+            var go=new GameObject(name,typeof(RectTransform),typeof(Text)); go.transform.SetParent(parent,false);
+            Text text=go.GetComponent<Text>(); text.font=_face; text.fontSize=NotebookKit.GlyphHeight*Scale; text.text=copy; text.color=NotebookInk.Ink;
+            text.alignment=TextAnchor.MiddleLeft; text.raycastTarget=false; text.horizontalOverflow=HorizontalWrapMode.Overflow;
+            text.verticalOverflow=VerticalWrapMode.Truncate; Place(text.rectTransform,x,y,width,height); return text;
+        }
+        private static void Stretch(RectTransform rect)
+        { rect.anchorMin=Vector2.zero; rect.anchorMax=Vector2.one; rect.offsetMin=rect.offsetMax=Vector2.zero; }
+        private static void Place(RectTransform rect,float x,float y,float width,float height)
+        { rect.anchorMin=rect.anchorMax=new Vector2(0f,1f); rect.pivot=new Vector2(0f,1f); rect.anchoredPosition=new Vector2(x,-y); rect.sizeDelta=new Vector2(width,height); }
+    }
 
-        private static void Place(RectTransform rect, float x, float y, float width, float height)
-        {
-            rect.anchorMin = rect.anchorMax = new Vector2(0f, 1f);
-            rect.pivot = new Vector2(0.5f, 0.5f);
-            rect.anchoredPosition = new Vector2(x + width * 0.5f, -y - height * 0.5f);
-            rect.sizeDelta = new Vector2(width, height);
-        }
+    internal static class CharacterCreatorViewStrings
+    {
+        public static readonly string[] Tabs={"BODY","COLOURS","OUTFIT","NAME","READY"};
+        public static readonly string[] Animations={"Idle","Walk"};
+        public const string Hint="Arrows/stick: turn   Space/Y: pose   R/X: randomize\nUp/down: select   A/D or d-pad: change   Tab/shoulders: step   Enter/A: choose   Esc/B: leave";
+        public const string NameHint="D-pad/stick: pick a key   A: type   Start/Done: finish   B: back";
+        public const string TypedNameHint="Type a name   Enter or Done: finish   Esc/B: back";
+        public const string TypedNameInstructions="Type a name, or leave it blank.\nEnter or Done: finish.";
+        public const string PadNameInstructions="Use the letter grid below.\nStart or Done: finish.";
+        public const string You="YOU", Clothes="CLOTHES", YourName="YOUR NAME (OPTIONAL)", Ready="READY";
+        public const string Pose="Pose: ", Wear="Wear: ", Done="Done";
+        public const string Randomize="Randomize";
+        public static string FieldName(string field) => field == "skin" ? "Skin" : field == "hair" ? "Hair"
+            : field == "eyes" ? "Eyes" : field == "shirt" ? "Shirt" : field == "outfit" ? "Outfit"
+            : field == "hatCol" ? "Hat" : field == "apronCol" ? "Apron" : field;
     }
 }

@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: FisherBuild
   m_EditorClassIdentifier: HiddenHarbours.Core::HiddenHarbours.Core.CharacterBuildDef
   Id: char_build.fisher
+  PlayerDisplayName: Build A
   Preset: fisher
   Visual: {fileID: 11400000, guid: d18a2f3452843654099637d9cf859b95, type: 2}
   Skin: 
