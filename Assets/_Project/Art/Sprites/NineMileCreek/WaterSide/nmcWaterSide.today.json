@@ -257,7 +257,7 @@
    ],
    "note": "where WharfRig2Kit.gangwayFrom puts it off the apron (the bake logs it)"
   },
-  "recFloat": "three rec boats off the east quay’s gate",
+  "recFloat": "three rec boats off the east quay\u2019s gate",
   "ladders": [
    {
     "id": "ladder.nmc_berth0",
@@ -553,7 +553,9 @@
    ],
    "parts": [
     "west_apron",
+    "west_float_back",
     "west_float",
+    "west_float_front",
     "west_rampUpper",
     "west_rampLower",
     "west_gangway_s0",
@@ -728,8 +730,12 @@
    "parts": [
     "fleet_crib",
     "fleet_conc",
+    "fleet_fingerA_back",
     "fleet_fingerA",
+    "fleet_fingerA_front",
+    "fleet_fingerB_back",
     "fleet_fingerB",
+    "fleet_fingerB_front",
     "fleet_gangway0_s0",
     "fleet_gangway0_s1",
     "fleet_gangway0_s2",
@@ -1029,7 +1035,9 @@
    ],
    "parts": [
     "east_east",
+    "east_recFloat_back",
     "east_recFloat",
+    "east_recFloat_front",
     "east_gangway_s0",
     "east_gangway_s1",
     "east_gangway_s2",
@@ -2110,8 +2118,8 @@
         "fits": true,
         "afloatAtDatum": true,
         "ukc": 0.5,
-        "line": "16–22 mm",
-        "fender": "tyre · foam",
+        "line": "16\u201322 mm",
+        "fender": "tyre \u00b7 foam",
         "fenderX": [
          -8.12,
          -3.45,
@@ -2144,7 +2152,7 @@
         "fits": true,
         "afloatAtDatum": true,
         "ukc": 0.3,
-        "line": "12–16 mm",
+        "line": "12\u201316 mm",
         "fender": "foam",
         "fenderX": [
          7.12,
@@ -2215,7 +2223,7 @@
     {
      "frame": 0,
      "dir": 0,
-     "file": "WaterSide_west_float_0.png",
+     "file": "WaterSide_west_float_body_0.png",
      "rect": [
       0,
       766,
@@ -2242,7 +2250,7 @@
     {
      "frame": 1,
      "dir": 7,
-     "file": "WaterSide_west_float_0.png",
+     "file": "WaterSide_west_float_body_0.png",
      "rect": [
       809,
       766,
@@ -2269,7 +2277,7 @@
     {
      "frame": 2,
      "dir": 6,
-     "file": "WaterSide_west_float_0.png",
+     "file": "WaterSide_west_float_body_0.png",
      "rect": [
       1618,
       766,
@@ -2296,7 +2304,7 @@
     {
      "frame": 3,
      "dir": 5,
-     "file": "WaterSide_west_float_0.png",
+     "file": "WaterSide_west_float_body_0.png",
      "rect": [
       2427,
       766,
@@ -2323,7 +2331,7 @@
     {
      "frame": 4,
      "dir": 4,
-     "file": "WaterSide_west_float_0.png",
+     "file": "WaterSide_west_float_body_0.png",
      "rect": [
       3236,
       766,
@@ -2350,7 +2358,7 @@
     {
      "frame": 5,
      "dir": 3,
-     "file": "WaterSide_west_float_0.png",
+     "file": "WaterSide_west_float_body_0.png",
      "rect": [
       0,
       0,
@@ -2377,7 +2385,7 @@
     {
      "frame": 6,
      "dir": 2,
-     "file": "WaterSide_west_float_0.png",
+     "file": "WaterSide_west_float_body_0.png",
      "rect": [
       809,
       0,
@@ -2404,7 +2412,7 @@
     {
      "frame": 7,
      "dir": 1,
-     "file": "WaterSide_west_float_0.png",
+     "file": "WaterSide_west_float_body_0.png",
      "rect": [
       1618,
       0,
@@ -2431,17 +2439,18 @@
    ],
    "sheets": [
     {
-     "file": "WaterSide_west_float_0.png",
+     "file": "WaterSide_west_float_body_0.png",
      "width": 4045,
      "height": 1532,
-     "rgbaSha256": "b3f83eb9aa3338dbe034a29b2448bfff8adca0850f3996bd1c8520e139f82b38"
+     "rgbaSha256": "ba721562803fcfe833497a3f1a65bd186cbdfbf45c08a658edfde54424330e88"
     }
    ],
    "modelKey": "harbour:h5_west_float",
    "cellSize": [
     809,
     766
-   ]
+   ],
+   "motionLayer": "body"
   },
   {
    "key": "west_rampUpper",
@@ -7097,8 +7106,8 @@
         "fits": true,
         "afloatAtDatum": true,
         "ukc": 0.5,
-        "line": "16–22 mm",
-        "fender": "tyre · foam",
+        "line": "16\u201322 mm",
+        "fender": "tyre \u00b7 foam",
         "fenderX": [
          -9.26,
          -4.59,
@@ -7131,7 +7140,7 @@
         "fits": true,
         "afloatAtDatum": true,
         "ukc": 0.3,
-        "line": "12–16 mm",
+        "line": "12\u201316 mm",
         "fender": "foam",
         "fenderX": [
          6.89,
@@ -7178,8 +7187,8 @@
         "fits": true,
         "afloatAtDatum": true,
         "ukc": 0.5,
-        "line": "16–22 mm",
-        "fender": "tyre · foam",
+        "line": "16\u201322 mm",
+        "fender": "tyre \u00b7 foam",
         "fenderX": [
          -9.26,
          -4.59,
@@ -7212,7 +7221,7 @@
         "fits": true,
         "afloatAtDatum": true,
         "ukc": 0.3,
-        "line": "12–16 mm",
+        "line": "12\u201316 mm",
         "fender": "foam",
         "fenderX": [
          6.89,
@@ -7277,7 +7286,7 @@
     {
      "frame": 0,
      "dir": 0,
-     "file": "WaterSide_fleet_fingerA_0.png",
+     "file": "WaterSide_fleet_fingerA_body_0.png",
      "rect": [
       0,
       829,
@@ -7304,7 +7313,7 @@
     {
      "frame": 1,
      "dir": 7,
-     "file": "WaterSide_fleet_fingerA_0.png",
+     "file": "WaterSide_fleet_fingerA_body_0.png",
      "rect": [
       911,
       829,
@@ -7331,7 +7340,7 @@
     {
      "frame": 2,
      "dir": 6,
-     "file": "WaterSide_fleet_fingerA_0.png",
+     "file": "WaterSide_fleet_fingerA_body_0.png",
      "rect": [
       1822,
       829,
@@ -7358,7 +7367,7 @@
     {
      "frame": 3,
      "dir": 5,
-     "file": "WaterSide_fleet_fingerA_0.png",
+     "file": "WaterSide_fleet_fingerA_body_0.png",
      "rect": [
       2733,
       829,
@@ -7385,7 +7394,7 @@
     {
      "frame": 4,
      "dir": 4,
-     "file": "WaterSide_fleet_fingerA_0.png",
+     "file": "WaterSide_fleet_fingerA_body_0.png",
      "rect": [
       0,
       0,
@@ -7412,7 +7421,7 @@
     {
      "frame": 5,
      "dir": 3,
-     "file": "WaterSide_fleet_fingerA_0.png",
+     "file": "WaterSide_fleet_fingerA_body_0.png",
      "rect": [
       911,
       0,
@@ -7439,7 +7448,7 @@
     {
      "frame": 6,
      "dir": 2,
-     "file": "WaterSide_fleet_fingerA_0.png",
+     "file": "WaterSide_fleet_fingerA_body_0.png",
      "rect": [
       1822,
       0,
@@ -7466,7 +7475,7 @@
     {
      "frame": 7,
      "dir": 1,
-     "file": "WaterSide_fleet_fingerA_0.png",
+     "file": "WaterSide_fleet_fingerA_body_0.png",
      "rect": [
       2733,
       0,
@@ -7493,17 +7502,18 @@
    ],
    "sheets": [
     {
-     "file": "WaterSide_fleet_fingerA_0.png",
+     "file": "WaterSide_fleet_fingerA_body_0.png",
      "width": 3644,
      "height": 1658,
-     "rgbaSha256": "73c6cb2e5cb73a473fb2ab66d41764f8cb6ddd27228c876a744ae51eb64560da"
+     "rgbaSha256": "2930b45796cf20a1c0bb199f89975bf14ef01f0fbc3c31fc48794c9ec0bee7f3"
     }
    ],
    "modelKey": "harbour:h5_fleet_fingerA",
    "cellSize": [
     911,
     829
-   ]
+   ],
+   "motionLayer": "body"
   },
   {
    "key": "fleet_fingerB",
@@ -7725,8 +7735,8 @@
         "fits": true,
         "afloatAtDatum": true,
         "ukc": 0.5,
-        "line": "16–22 mm",
-        "fender": "tyre · foam",
+        "line": "16\u201322 mm",
+        "fender": "tyre \u00b7 foam",
         "fenderX": [
          -9.26,
          -4.59,
@@ -7759,7 +7769,7 @@
         "fits": true,
         "afloatAtDatum": true,
         "ukc": 0.3,
-        "line": "12–16 mm",
+        "line": "12\u201316 mm",
         "fender": "foam",
         "fenderX": [
          6.89,
@@ -7806,8 +7816,8 @@
         "fits": true,
         "afloatAtDatum": true,
         "ukc": 0.5,
-        "line": "16–22 mm",
-        "fender": "tyre · foam",
+        "line": "16\u201322 mm",
+        "fender": "tyre \u00b7 foam",
         "fenderX": [
          -9.26,
          -4.59,
@@ -7840,7 +7850,7 @@
         "fits": true,
         "afloatAtDatum": true,
         "ukc": 0.3,
-        "line": "12–16 mm",
+        "line": "12\u201316 mm",
         "fender": "foam",
         "fenderX": [
          6.89,
@@ -7905,7 +7915,7 @@
     {
      "frame": 0,
      "dir": 0,
-     "file": "WaterSide_fleet_fingerB_0.png",
+     "file": "WaterSide_fleet_fingerB_body_0.png",
      "rect": [
       0,
       831,
@@ -7932,7 +7942,7 @@
     {
      "frame": 1,
      "dir": 7,
-     "file": "WaterSide_fleet_fingerB_0.png",
+     "file": "WaterSide_fleet_fingerB_body_0.png",
      "rect": [
       911,
       831,
@@ -7959,7 +7969,7 @@
     {
      "frame": 2,
      "dir": 6,
-     "file": "WaterSide_fleet_fingerB_0.png",
+     "file": "WaterSide_fleet_fingerB_body_0.png",
      "rect": [
       1822,
       831,
@@ -7986,7 +7996,7 @@
     {
      "frame": 3,
      "dir": 5,
-     "file": "WaterSide_fleet_fingerB_0.png",
+     "file": "WaterSide_fleet_fingerB_body_0.png",
      "rect": [
       2733,
       831,
@@ -8013,7 +8023,7 @@
     {
      "frame": 4,
      "dir": 4,
-     "file": "WaterSide_fleet_fingerB_0.png",
+     "file": "WaterSide_fleet_fingerB_body_0.png",
      "rect": [
       0,
       0,
@@ -8040,7 +8050,7 @@
     {
      "frame": 5,
      "dir": 3,
-     "file": "WaterSide_fleet_fingerB_0.png",
+     "file": "WaterSide_fleet_fingerB_body_0.png",
      "rect": [
       911,
       0,
@@ -8067,7 +8077,7 @@
     {
      "frame": 6,
      "dir": 2,
-     "file": "WaterSide_fleet_fingerB_0.png",
+     "file": "WaterSide_fleet_fingerB_body_0.png",
      "rect": [
       1822,
       0,
@@ -8094,7 +8104,7 @@
     {
      "frame": 7,
      "dir": 1,
-     "file": "WaterSide_fleet_fingerB_0.png",
+     "file": "WaterSide_fleet_fingerB_body_0.png",
      "rect": [
       2733,
       0,
@@ -8121,17 +8131,18 @@
    ],
    "sheets": [
     {
-     "file": "WaterSide_fleet_fingerB_0.png",
+     "file": "WaterSide_fleet_fingerB_body_0.png",
      "width": 3644,
      "height": 1662,
-     "rgbaSha256": "2562fe312b1e24b4a8537543d52e0151a1cc8394f441fd5f002b67cf91684406"
+     "rgbaSha256": "9630af13422ce34481cc8ec6b7d07519060d142220a759dd3d1ec304242043db"
     }
    ],
    "modelKey": "harbour:h5_fleet_fingerB",
    "cellSize": [
     911,
     831
-   ]
+   ],
+   "motionLayer": "body"
   },
   {
    "key": "fleet_gangway0_s0",
@@ -13609,8 +13620,8 @@
         "fits": true,
         "afloatAtDatum": true,
         "ukc": 0.5,
-        "line": "16–22 mm",
-        "fender": "tyre · foam",
+        "line": "16\u201322 mm",
+        "fender": "tyre \u00b7 foam",
         "fenderX": [
          -6.96,
          -2.87,
@@ -13643,7 +13654,7 @@
         "fits": true,
         "afloatAtDatum": true,
         "ukc": 0.3,
-        "line": "12–16 mm",
+        "line": "12\u201316 mm",
         "fender": "foam",
         "fenderX": [
          6.49,
@@ -13778,7 +13789,7 @@
     {
      "frame": 0,
      "dir": 0,
-     "file": "WaterSide_east_recFloat_0.png",
+     "file": "WaterSide_east_recFloat_body_0.png",
      "rect": [
       0,
       693,
@@ -13805,7 +13816,7 @@
     {
      "frame": 1,
      "dir": 7,
-     "file": "WaterSide_east_recFloat_0.png",
+     "file": "WaterSide_east_recFloat_body_0.png",
      "rect": [
       714,
       693,
@@ -13832,7 +13843,7 @@
     {
      "frame": 2,
      "dir": 6,
-     "file": "WaterSide_east_recFloat_0.png",
+     "file": "WaterSide_east_recFloat_body_0.png",
      "rect": [
       1428,
       693,
@@ -13859,7 +13870,7 @@
     {
      "frame": 3,
      "dir": 5,
-     "file": "WaterSide_east_recFloat_0.png",
+     "file": "WaterSide_east_recFloat_body_0.png",
      "rect": [
       2142,
       693,
@@ -13886,7 +13897,7 @@
     {
      "frame": 4,
      "dir": 4,
-     "file": "WaterSide_east_recFloat_0.png",
+     "file": "WaterSide_east_recFloat_body_0.png",
      "rect": [
       2856,
       693,
@@ -13913,7 +13924,7 @@
     {
      "frame": 5,
      "dir": 3,
-     "file": "WaterSide_east_recFloat_0.png",
+     "file": "WaterSide_east_recFloat_body_0.png",
      "rect": [
       0,
       0,
@@ -13940,7 +13951,7 @@
     {
      "frame": 6,
      "dir": 2,
-     "file": "WaterSide_east_recFloat_0.png",
+     "file": "WaterSide_east_recFloat_body_0.png",
      "rect": [
       714,
       0,
@@ -13967,7 +13978,7 @@
     {
      "frame": 7,
      "dir": 1,
-     "file": "WaterSide_east_recFloat_0.png",
+     "file": "WaterSide_east_recFloat_body_0.png",
      "rect": [
       1428,
       0,
@@ -13994,17 +14005,18 @@
    ],
    "sheets": [
     {
-     "file": "WaterSide_east_recFloat_0.png",
+     "file": "WaterSide_east_recFloat_body_0.png",
      "width": 3570,
      "height": 1386,
-     "rgbaSha256": "4c721157ed28d2bd4b5ad7d00a34911ec8c6243c12c502bbbac01355c7528a1a"
+     "rgbaSha256": "748abd3e19e43913cd6c0b82937f4960a370b9df0b85d5abfbc920259b0e6f88"
     }
    ],
    "modelKey": "harbour:h5_east_recFloat",
    "cellSize": [
     714,
     693
-   ]
+   ],
+   "motionLayer": "body"
   },
   {
    "key": "east_gangway_s0",
@@ -18645,10 +18657,2411 @@
     991,
     822
    ]
+  },
+  {
+   "key": "west_float_back",
+   "harbour": "west",
+   "name": "float_back",
+   "at": [
+    60,
+    59.835
+   ],
+   "elevation": 0,
+   "floating": false,
+   "freeboard": 0.45,
+   "draught": 0.85,
+   "bounds": {
+    "min": [
+     -12,
+     -1.39,
+     -4.423836
+    ],
+    "max": [
+     13.24,
+     2.6,
+     6.09
+    ]
+   },
+   "module": {
+    "id": "float",
+    "key": "float",
+    "grp": 1,
+    "rot": 3.141592653589793,
+    "at": [
+     -4,
+     59.835
+    ],
+    "o": {
+     "hull": "timber",
+     "bays": 8,
+     "bayLen": 3,
+     "width": 2.4,
+     "freeboard": 0.45,
+     "tideRange": 4.4,
+     "faces": [
+      "water"
+     ],
+     "open": {
+      "shore": [
+       [
+        -7,
+        -5
+       ]
+      ]
+     },
+     "fixtures": []
+    }
+   },
+   "frames": [
+    {
+     "frame": 0,
+     "dir": 0,
+     "file": "WaterSide_west_float_back_0.png",
+     "rect": [
+      0,
+      766,
+      809,
+      766
+     ],
+     "native": [
+      817,
+      273
+     ],
+     "nativePivot": [
+      388,
+      188
+     ],
+     "crop": [
+      4,
+      5
+     ],
+     "pivot": [
+      384,
+      183
+     ]
+    },
+    {
+     "frame": 1,
+     "dir": 7,
+     "file": "WaterSide_west_float_back_0.png",
+     "rect": [
+      809,
+      766,
+      809,
+      766
+     ],
+     "native": [
+      668,
+      621
+     ],
+     "nativePivot": [
+      305,
+      344
+     ],
+     "crop": [
+      4,
+      4
+     ],
+     "pivot": [
+      301,
+      340
+     ]
+    },
+    {
+     "frame": 2,
+     "dir": 6,
+     "file": "WaterSide_west_float_back_0.png",
+     "rect": [
+      1618,
+      766,
+      809,
+      766
+     ],
+     "native": [
+      137,
+      778
+     ],
+     "nativePivot": [
+      49,
+      393
+     ],
+     "crop": [
+      5,
+      7
+     ],
+     "pivot": [
+      44,
+      386
+     ]
+    },
+    {
+     "frame": 3,
+     "dir": 5,
+     "file": "WaterSide_west_float_back_0.png",
+     "rect": [
+      2427,
+      766,
+      809,
+      766
+     ],
+     "native": [
+      611,
+      687
+     ],
+     "nativePivot": [
+      305,
+      344
+     ],
+     "crop": [
+      4,
+      49
+     ],
+     "pivot": [
+      301,
+      295
+     ]
+    },
+    {
+     "frame": 4,
+     "dir": 4,
+     "file": "WaterSide_west_float_back_0.png",
+     "rect": [
+      3236,
+      766,
+      809,
+      766
+     ],
+     "native": [
+      817,
+      351
+     ],
+     "nativePivot": [
+      428,
+      185
+     ],
+     "crop": [
+      4,
+      65
+     ],
+     "pivot": [
+      424,
+      120
+     ]
+    },
+    {
+     "frame": 5,
+     "dir": 3,
+     "file": "WaterSide_west_float_back_0.png",
+     "rect": [
+      0,
+      0,
+      809,
+      766
+     ],
+     "native": [
+      668,
+      606
+     ],
+     "nativePivot": [
+      363,
+      324
+     ],
+     "crop": [
+      5,
+      29
+     ],
+     "pivot": [
+      358,
+      295
+     ]
+    },
+    {
+     "frame": 6,
+     "dir": 2,
+     "file": "WaterSide_west_float_back_0.png",
+     "rect": [
+      809,
+      0,
+      809,
+      766
+     ],
+     "native": [
+      137,
+      719
+     ],
+     "nativePivot": [
+      88,
+      391
+     ],
+     "crop": [
+      5,
+      5
+     ],
+     "pivot": [
+      83,
+      386
+     ]
+    },
+    {
+     "frame": 7,
+     "dir": 1,
+     "file": "WaterSide_west_float_back_0.png",
+     "rect": [
+      1618,
+      0,
+      809,
+      766
+     ],
+     "native": [
+      611,
+      582
+     ],
+     "nativePivot": [
+      306,
+      344
+     ],
+     "crop": [
+      5,
+      4
+     ],
+     "pivot": [
+      301,
+      340
+     ]
+    }
+   ],
+   "sheets": [
+    {
+     "file": "WaterSide_west_float_back_0.png",
+     "width": 4045,
+     "height": 1532,
+     "rgbaSha256": "9f5005e3d9e87e6f8c710cddd6ce275aed6b3c13153e96ea9cba231843018c7d"
+    }
+   ],
+   "modelKey": "harbour:h5_west_float",
+   "cellSize": [
+    809,
+    766
+   ],
+   "motionLayer": "back"
+  },
+  {
+   "key": "west_float_front",
+   "harbour": "west",
+   "name": "float_front",
+   "at": [
+    60,
+    59.835
+   ],
+   "elevation": 0,
+   "floating": false,
+   "freeboard": 0.45,
+   "draught": 0.85,
+   "bounds": {
+    "min": [
+     -12,
+     -1.39,
+     -4.423836
+    ],
+    "max": [
+     13.24,
+     2.6,
+     6.09
+    ]
+   },
+   "module": {
+    "id": "float",
+    "key": "float",
+    "grp": 1,
+    "rot": 3.141592653589793,
+    "at": [
+     -4,
+     59.835
+    ],
+    "o": {
+     "hull": "timber",
+     "bays": 8,
+     "bayLen": 3,
+     "width": 2.4,
+     "freeboard": 0.45,
+     "tideRange": 4.4,
+     "faces": [
+      "water"
+     ],
+     "open": {
+      "shore": [
+       [
+        -7,
+        -5
+       ]
+      ]
+     },
+     "fixtures": []
+    }
+   },
+   "frames": [
+    {
+     "frame": 0,
+     "dir": 0,
+     "file": "WaterSide_west_float_front_0.png",
+     "rect": [
+      0,
+      766,
+      809,
+      766
+     ],
+     "native": [
+      817,
+      273
+     ],
+     "nativePivot": [
+      388,
+      188
+     ],
+     "crop": [
+      4,
+      5
+     ],
+     "pivot": [
+      384,
+      183
+     ]
+    },
+    {
+     "frame": 1,
+     "dir": 7,
+     "file": "WaterSide_west_float_front_0.png",
+     "rect": [
+      809,
+      766,
+      809,
+      766
+     ],
+     "native": [
+      668,
+      621
+     ],
+     "nativePivot": [
+      305,
+      344
+     ],
+     "crop": [
+      4,
+      4
+     ],
+     "pivot": [
+      301,
+      340
+     ]
+    },
+    {
+     "frame": 2,
+     "dir": 6,
+     "file": "WaterSide_west_float_front_0.png",
+     "rect": [
+      1618,
+      766,
+      809,
+      766
+     ],
+     "native": [
+      137,
+      778
+     ],
+     "nativePivot": [
+      49,
+      393
+     ],
+     "crop": [
+      5,
+      7
+     ],
+     "pivot": [
+      44,
+      386
+     ]
+    },
+    {
+     "frame": 3,
+     "dir": 5,
+     "file": "WaterSide_west_float_front_0.png",
+     "rect": [
+      2427,
+      766,
+      809,
+      766
+     ],
+     "native": [
+      611,
+      687
+     ],
+     "nativePivot": [
+      305,
+      344
+     ],
+     "crop": [
+      4,
+      49
+     ],
+     "pivot": [
+      301,
+      295
+     ]
+    },
+    {
+     "frame": 4,
+     "dir": 4,
+     "file": "WaterSide_west_float_front_0.png",
+     "rect": [
+      3236,
+      766,
+      809,
+      766
+     ],
+     "native": [
+      817,
+      351
+     ],
+     "nativePivot": [
+      428,
+      185
+     ],
+     "crop": [
+      4,
+      65
+     ],
+     "pivot": [
+      424,
+      120
+     ]
+    },
+    {
+     "frame": 5,
+     "dir": 3,
+     "file": "WaterSide_west_float_front_0.png",
+     "rect": [
+      0,
+      0,
+      809,
+      766
+     ],
+     "native": [
+      668,
+      606
+     ],
+     "nativePivot": [
+      363,
+      324
+     ],
+     "crop": [
+      5,
+      29
+     ],
+     "pivot": [
+      358,
+      295
+     ]
+    },
+    {
+     "frame": 6,
+     "dir": 2,
+     "file": "WaterSide_west_float_front_0.png",
+     "rect": [
+      809,
+      0,
+      809,
+      766
+     ],
+     "native": [
+      137,
+      719
+     ],
+     "nativePivot": [
+      88,
+      391
+     ],
+     "crop": [
+      5,
+      5
+     ],
+     "pivot": [
+      83,
+      386
+     ]
+    },
+    {
+     "frame": 7,
+     "dir": 1,
+     "file": "WaterSide_west_float_front_0.png",
+     "rect": [
+      1618,
+      0,
+      809,
+      766
+     ],
+     "native": [
+      611,
+      582
+     ],
+     "nativePivot": [
+      306,
+      344
+     ],
+     "crop": [
+      5,
+      4
+     ],
+     "pivot": [
+      301,
+      340
+     ]
+    }
+   ],
+   "sheets": [
+    {
+     "file": "WaterSide_west_float_front_0.png",
+     "width": 4045,
+     "height": 1532,
+     "rgbaSha256": "51c911cf64ebf0f6a2228b2bdf68f967b683a92fb8f61dce0086eb86c1d42913"
+    }
+   ],
+   "modelKey": "harbour:h5_west_float",
+   "cellSize": [
+    809,
+    766
+   ],
+   "motionLayer": "front"
+  },
+  {
+   "key": "fleet_fingerA_back",
+   "harbour": "fleet",
+   "name": "fingerA_back",
+   "at": [
+    109.7,
+    57.435
+   ],
+   "elevation": 0,
+   "floating": false,
+   "freeboard": 0.45,
+   "draught": 0.85,
+   "bounds": {
+    "min": [
+     -2.6,
+     -13.6,
+     -4.363525
+    ],
+    "max": [
+     1.82,
+     14.84,
+     6.09
+    ]
+   },
+   "module": {
+    "id": "fingerA",
+    "key": "float",
+    "grp": 1,
+    "rot": -1.5707963267948966,
+    "at": [
+     -10.3,
+     57.435
+    ],
+    "o": {
+     "hull": "timber",
+     "bays": 8,
+     "bayLen": 3.4,
+     "width": 2.4,
+     "freeboard": 0.45,
+     "tideRange": 4.4,
+     "faces": [
+      "water",
+      "shore"
+     ],
+     "guideFace": "water",
+     "fixtures": []
+    }
+   },
+   "frames": [
+    {
+     "frame": 0,
+     "dir": 0,
+     "file": "WaterSide_fleet_fingerA_back_0.png",
+     "rect": [
+      0,
+      829,
+      911,
+      829
+     ],
+     "native": [
+      151,
+      806
+     ],
+     "nativePivot": [
+      88,
+      424
+     ],
+     "crop": [
+      5,
+      5
+     ],
+     "pivot": [
+      83,
+      419
+     ]
+    },
+    {
+     "frame": 1,
+     "dir": 7,
+     "file": "WaterSide_fleet_fingerA_back_0.png",
+     "rect": [
+      911,
+      829,
+      911,
+      829
+     ],
+     "native": [
+      683,
+      674
+     ],
+     "nativePivot": [
+      341,
+      347
+     ],
+     "crop": [
+      4,
+      29
+     ],
+     "pivot": [
+      337,
+      318
+     ]
+    },
+    {
+     "frame": 2,
+     "dir": 6,
+     "file": "WaterSide_fleet_fingerA_back_0.png",
+     "rect": [
+      1822,
+      829,
+      911,
+      829
+     ],
+     "native": [
+      920,
+      304
+     ],
+     "nativePivot": [
+      440,
+      157
+     ],
+     "crop": [
+      4,
+      37
+     ],
+     "pivot": [
+      436,
+      120
+     ]
+    },
+    {
+     "frame": 3,
+     "dir": 5,
+     "file": "WaterSide_fleet_fingerA_back_0.png",
+     "rect": [
+      2733,
+      829,
+      911,
+      829
+     ],
+     "native": [
+      742,
+      672
+     ],
+     "nativePivot": [
+      342,
+      347
+     ],
+     "crop": [
+      4,
+      29
+     ],
+     "pivot": [
+      338,
+      318
+     ]
+    },
+    {
+     "frame": 4,
+     "dir": 4,
+     "file": "WaterSide_fleet_fingerA_back_0.png",
+     "rect": [
+      0,
+      0,
+      911,
+      829
+     ],
+     "native": [
+      151,
+      840
+     ],
+     "nativePivot": [
+      63,
+      426
+     ],
+     "crop": [
+      5,
+      7
+     ],
+     "pivot": [
+      58,
+      419
+     ]
+    },
+    {
+     "frame": 5,
+     "dir": 3,
+     "file": "WaterSide_fleet_fingerA_back_0.png",
+     "rect": [
+      911,
+      0,
+      911,
+      829
+     ],
+     "native": [
+      683,
+      731
+     ],
+     "nativePivot": [
+      342,
+      368
+     ],
+     "crop": [
+      4,
+      5
+     ],
+     "pivot": [
+      338,
+      363
+     ]
+    },
+    {
+     "frame": 6,
+     "dir": 2,
+     "file": "WaterSide_fleet_fingerA_back_0.png",
+     "rect": [
+      1822,
+      0,
+      911,
+      829
+     ],
+     "native": [
+      920,
+      351
+     ],
+     "nativePivot": [
+      479,
+      188
+     ],
+     "crop": [
+      4,
+      5
+     ],
+     "pivot": [
+      475,
+      183
+     ]
+    },
+    {
+     "frame": 7,
+     "dir": 1,
+     "file": "WaterSide_fleet_fingerA_back_0.png",
+     "rect": [
+      2733,
+      0,
+      911,
+      829
+     ],
+     "native": [
+      742,
+      650
+     ],
+     "nativePivot": [
+      399,
+      368
+     ],
+     "crop": [
+      4,
+      5
+     ],
+     "pivot": [
+      395,
+      363
+     ]
+    }
+   ],
+   "sheets": [
+    {
+     "file": "WaterSide_fleet_fingerA_back_0.png",
+     "width": 3644,
+     "height": 1658,
+     "rgbaSha256": "a7160ef5a8aa7dc8e7ea6f4aae5e8c73c7455c2e9563453a2a518eea4fab2677"
+    }
+   ],
+   "modelKey": "harbour:h5_fleet_fingerA",
+   "cellSize": [
+    911,
+    829
+   ],
+   "motionLayer": "back"
+  },
+  {
+   "key": "fleet_fingerA_front",
+   "harbour": "fleet",
+   "name": "fingerA_front",
+   "at": [
+    109.7,
+    57.435
+   ],
+   "elevation": 0,
+   "floating": false,
+   "freeboard": 0.45,
+   "draught": 0.85,
+   "bounds": {
+    "min": [
+     -2.6,
+     -13.6,
+     -4.363525
+    ],
+    "max": [
+     1.82,
+     14.84,
+     6.09
+    ]
+   },
+   "module": {
+    "id": "fingerA",
+    "key": "float",
+    "grp": 1,
+    "rot": -1.5707963267948966,
+    "at": [
+     -10.3,
+     57.435
+    ],
+    "o": {
+     "hull": "timber",
+     "bays": 8,
+     "bayLen": 3.4,
+     "width": 2.4,
+     "freeboard": 0.45,
+     "tideRange": 4.4,
+     "faces": [
+      "water",
+      "shore"
+     ],
+     "guideFace": "water",
+     "fixtures": []
+    }
+   },
+   "frames": [
+    {
+     "frame": 0,
+     "dir": 0,
+     "file": "WaterSide_fleet_fingerA_front_0.png",
+     "rect": [
+      0,
+      829,
+      911,
+      829
+     ],
+     "native": [
+      151,
+      806
+     ],
+     "nativePivot": [
+      88,
+      424
+     ],
+     "crop": [
+      5,
+      5
+     ],
+     "pivot": [
+      83,
+      419
+     ]
+    },
+    {
+     "frame": 1,
+     "dir": 7,
+     "file": "WaterSide_fleet_fingerA_front_0.png",
+     "rect": [
+      911,
+      829,
+      911,
+      829
+     ],
+     "native": [
+      683,
+      674
+     ],
+     "nativePivot": [
+      341,
+      347
+     ],
+     "crop": [
+      4,
+      29
+     ],
+     "pivot": [
+      337,
+      318
+     ]
+    },
+    {
+     "frame": 2,
+     "dir": 6,
+     "file": "WaterSide_fleet_fingerA_front_0.png",
+     "rect": [
+      1822,
+      829,
+      911,
+      829
+     ],
+     "native": [
+      920,
+      304
+     ],
+     "nativePivot": [
+      440,
+      157
+     ],
+     "crop": [
+      4,
+      37
+     ],
+     "pivot": [
+      436,
+      120
+     ]
+    },
+    {
+     "frame": 3,
+     "dir": 5,
+     "file": "WaterSide_fleet_fingerA_front_0.png",
+     "rect": [
+      2733,
+      829,
+      911,
+      829
+     ],
+     "native": [
+      742,
+      672
+     ],
+     "nativePivot": [
+      342,
+      347
+     ],
+     "crop": [
+      4,
+      29
+     ],
+     "pivot": [
+      338,
+      318
+     ]
+    },
+    {
+     "frame": 4,
+     "dir": 4,
+     "file": "WaterSide_fleet_fingerA_front_0.png",
+     "rect": [
+      0,
+      0,
+      911,
+      829
+     ],
+     "native": [
+      151,
+      840
+     ],
+     "nativePivot": [
+      63,
+      426
+     ],
+     "crop": [
+      5,
+      7
+     ],
+     "pivot": [
+      58,
+      419
+     ]
+    },
+    {
+     "frame": 5,
+     "dir": 3,
+     "file": "WaterSide_fleet_fingerA_front_0.png",
+     "rect": [
+      911,
+      0,
+      911,
+      829
+     ],
+     "native": [
+      683,
+      731
+     ],
+     "nativePivot": [
+      342,
+      368
+     ],
+     "crop": [
+      4,
+      5
+     ],
+     "pivot": [
+      338,
+      363
+     ]
+    },
+    {
+     "frame": 6,
+     "dir": 2,
+     "file": "WaterSide_fleet_fingerA_front_0.png",
+     "rect": [
+      1822,
+      0,
+      911,
+      829
+     ],
+     "native": [
+      920,
+      351
+     ],
+     "nativePivot": [
+      479,
+      188
+     ],
+     "crop": [
+      4,
+      5
+     ],
+     "pivot": [
+      475,
+      183
+     ]
+    },
+    {
+     "frame": 7,
+     "dir": 1,
+     "file": "WaterSide_fleet_fingerA_front_0.png",
+     "rect": [
+      2733,
+      0,
+      911,
+      829
+     ],
+     "native": [
+      742,
+      650
+     ],
+     "nativePivot": [
+      399,
+      368
+     ],
+     "crop": [
+      4,
+      5
+     ],
+     "pivot": [
+      395,
+      363
+     ]
+    }
+   ],
+   "sheets": [
+    {
+     "file": "WaterSide_fleet_fingerA_front_0.png",
+     "width": 3644,
+     "height": 1658,
+     "rgbaSha256": "b8a835e0cfcaa070c959b77b25d6ba26d1b2ede189babef7f62a9181ec95a110"
+    }
+   ],
+   "modelKey": "harbour:h5_fleet_fingerA",
+   "cellSize": [
+    911,
+    829
+   ],
+   "motionLayer": "front"
+  },
+  {
+   "key": "fleet_fingerB_back",
+   "harbour": "fleet",
+   "name": "fingerB_back",
+   "at": [
+    142.3,
+    57.435
+   ],
+   "elevation": 0,
+   "floating": false,
+   "freeboard": 0.45,
+   "draught": 0.85,
+   "bounds": {
+    "min": [
+     -2.6,
+     -13.6,
+     -4.498189
+    ],
+    "max": [
+     1.82,
+     14.84,
+     6.09
+    ]
+   },
+   "module": {
+    "id": "fingerB",
+    "key": "float",
+    "grp": 2,
+    "rot": -1.5707963267948966,
+    "at": [
+     22.3,
+     57.435
+    ],
+    "o": {
+     "hull": "timber",
+     "bays": 8,
+     "bayLen": 3.4,
+     "width": 2.4,
+     "freeboard": 0.45,
+     "tideRange": 4.4,
+     "faces": [
+      "water",
+      "shore"
+     ],
+     "guideFace": "water",
+     "fixtures": []
+    }
+   },
+   "frames": [
+    {
+     "frame": 0,
+     "dir": 0,
+     "file": "WaterSide_fleet_fingerB_back_0.png",
+     "rect": [
+      0,
+      831,
+      911,
+      831
+     ],
+     "native": [
+      151,
+      804
+     ],
+     "nativePivot": [
+      88,
+      424
+     ],
+     "crop": [
+      5,
+      5
+     ],
+     "pivot": [
+      83,
+      419
+     ]
+    },
+    {
+     "frame": 1,
+     "dir": 7,
+     "file": "WaterSide_fleet_fingerB_back_0.png",
+     "rect": [
+      911,
+      831,
+      911,
+      831
+     ],
+     "native": [
+      683,
+      672
+     ],
+     "nativePivot": [
+      341,
+      347
+     ],
+     "crop": [
+      4,
+      29
+     ],
+     "pivot": [
+      337,
+      318
+     ]
+    },
+    {
+     "frame": 2,
+     "dir": 6,
+     "file": "WaterSide_fleet_fingerB_back_0.png",
+     "rect": [
+      1822,
+      831,
+      911,
+      831
+     ],
+     "native": [
+      920,
+      307
+     ],
+     "nativePivot": [
+      440,
+      157
+     ],
+     "crop": [
+      4,
+      37
+     ],
+     "pivot": [
+      436,
+      120
+     ]
+    },
+    {
+     "frame": 3,
+     "dir": 5,
+     "file": "WaterSide_fleet_fingerB_back_0.png",
+     "rect": [
+      2733,
+      831,
+      911,
+      831
+     ],
+     "native": [
+      742,
+      677
+     ],
+     "nativePivot": [
+      342,
+      347
+     ],
+     "crop": [
+      4,
+      29
+     ],
+     "pivot": [
+      338,
+      318
+     ]
+    },
+    {
+     "frame": 4,
+     "dir": 4,
+     "file": "WaterSide_fleet_fingerB_back_0.png",
+     "rect": [
+      0,
+      0,
+      911,
+      831
+     ],
+     "native": [
+      151,
+      843
+     ],
+     "nativePivot": [
+      63,
+      426
+     ],
+     "crop": [
+      5,
+      7
+     ],
+     "pivot": [
+      58,
+      419
+     ]
+    },
+    {
+     "frame": 5,
+     "dir": 3,
+     "file": "WaterSide_fleet_fingerB_back_0.png",
+     "rect": [
+      911,
+      0,
+      911,
+      831
+     ],
+     "native": [
+      683,
+      734
+     ],
+     "nativePivot": [
+      342,
+      368
+     ],
+     "crop": [
+      4,
+      5
+     ],
+     "pivot": [
+      338,
+      363
+     ]
+    },
+    {
+     "frame": 6,
+     "dir": 2,
+     "file": "WaterSide_fleet_fingerB_back_0.png",
+     "rect": [
+      1822,
+      0,
+      911,
+      831
+     ],
+     "native": [
+      920,
+      353
+     ],
+     "nativePivot": [
+      479,
+      188
+     ],
+     "crop": [
+      4,
+      5
+     ],
+     "pivot": [
+      475,
+      183
+     ]
+    },
+    {
+     "frame": 7,
+     "dir": 1,
+     "file": "WaterSide_fleet_fingerB_back_0.png",
+     "rect": [
+      2733,
+      0,
+      911,
+      831
+     ],
+     "native": [
+      742,
+      648
+     ],
+     "nativePivot": [
+      399,
+      368
+     ],
+     "crop": [
+      4,
+      5
+     ],
+     "pivot": [
+      395,
+      363
+     ]
+    }
+   ],
+   "sheets": [
+    {
+     "file": "WaterSide_fleet_fingerB_back_0.png",
+     "width": 3644,
+     "height": 1662,
+     "rgbaSha256": "88c99efe39a712528fc13be3e9577bbac0ed9de6d97290f4253bb9430691b648"
+    }
+   ],
+   "modelKey": "harbour:h5_fleet_fingerB",
+   "cellSize": [
+    911,
+    831
+   ],
+   "motionLayer": "back"
+  },
+  {
+   "key": "fleet_fingerB_front",
+   "harbour": "fleet",
+   "name": "fingerB_front",
+   "at": [
+    142.3,
+    57.435
+   ],
+   "elevation": 0,
+   "floating": false,
+   "freeboard": 0.45,
+   "draught": 0.85,
+   "bounds": {
+    "min": [
+     -2.6,
+     -13.6,
+     -4.498189
+    ],
+    "max": [
+     1.82,
+     14.84,
+     6.09
+    ]
+   },
+   "module": {
+    "id": "fingerB",
+    "key": "float",
+    "grp": 2,
+    "rot": -1.5707963267948966,
+    "at": [
+     22.3,
+     57.435
+    ],
+    "o": {
+     "hull": "timber",
+     "bays": 8,
+     "bayLen": 3.4,
+     "width": 2.4,
+     "freeboard": 0.45,
+     "tideRange": 4.4,
+     "faces": [
+      "water",
+      "shore"
+     ],
+     "guideFace": "water",
+     "fixtures": []
+    }
+   },
+   "frames": [
+    {
+     "frame": 0,
+     "dir": 0,
+     "file": "WaterSide_fleet_fingerB_front_0.png",
+     "rect": [
+      0,
+      831,
+      911,
+      831
+     ],
+     "native": [
+      151,
+      804
+     ],
+     "nativePivot": [
+      88,
+      424
+     ],
+     "crop": [
+      5,
+      5
+     ],
+     "pivot": [
+      83,
+      419
+     ]
+    },
+    {
+     "frame": 1,
+     "dir": 7,
+     "file": "WaterSide_fleet_fingerB_front_0.png",
+     "rect": [
+      911,
+      831,
+      911,
+      831
+     ],
+     "native": [
+      683,
+      672
+     ],
+     "nativePivot": [
+      341,
+      347
+     ],
+     "crop": [
+      4,
+      29
+     ],
+     "pivot": [
+      337,
+      318
+     ]
+    },
+    {
+     "frame": 2,
+     "dir": 6,
+     "file": "WaterSide_fleet_fingerB_front_0.png",
+     "rect": [
+      1822,
+      831,
+      911,
+      831
+     ],
+     "native": [
+      920,
+      307
+     ],
+     "nativePivot": [
+      440,
+      157
+     ],
+     "crop": [
+      4,
+      37
+     ],
+     "pivot": [
+      436,
+      120
+     ]
+    },
+    {
+     "frame": 3,
+     "dir": 5,
+     "file": "WaterSide_fleet_fingerB_front_0.png",
+     "rect": [
+      2733,
+      831,
+      911,
+      831
+     ],
+     "native": [
+      742,
+      677
+     ],
+     "nativePivot": [
+      342,
+      347
+     ],
+     "crop": [
+      4,
+      29
+     ],
+     "pivot": [
+      338,
+      318
+     ]
+    },
+    {
+     "frame": 4,
+     "dir": 4,
+     "file": "WaterSide_fleet_fingerB_front_0.png",
+     "rect": [
+      0,
+      0,
+      911,
+      831
+     ],
+     "native": [
+      151,
+      843
+     ],
+     "nativePivot": [
+      63,
+      426
+     ],
+     "crop": [
+      5,
+      7
+     ],
+     "pivot": [
+      58,
+      419
+     ]
+    },
+    {
+     "frame": 5,
+     "dir": 3,
+     "file": "WaterSide_fleet_fingerB_front_0.png",
+     "rect": [
+      911,
+      0,
+      911,
+      831
+     ],
+     "native": [
+      683,
+      734
+     ],
+     "nativePivot": [
+      342,
+      368
+     ],
+     "crop": [
+      4,
+      5
+     ],
+     "pivot": [
+      338,
+      363
+     ]
+    },
+    {
+     "frame": 6,
+     "dir": 2,
+     "file": "WaterSide_fleet_fingerB_front_0.png",
+     "rect": [
+      1822,
+      0,
+      911,
+      831
+     ],
+     "native": [
+      920,
+      353
+     ],
+     "nativePivot": [
+      479,
+      188
+     ],
+     "crop": [
+      4,
+      5
+     ],
+     "pivot": [
+      475,
+      183
+     ]
+    },
+    {
+     "frame": 7,
+     "dir": 1,
+     "file": "WaterSide_fleet_fingerB_front_0.png",
+     "rect": [
+      2733,
+      0,
+      911,
+      831
+     ],
+     "native": [
+      742,
+      648
+     ],
+     "nativePivot": [
+      399,
+      368
+     ],
+     "crop": [
+      4,
+      5
+     ],
+     "pivot": [
+      395,
+      363
+     ]
+    }
+   ],
+   "sheets": [
+    {
+     "file": "WaterSide_fleet_fingerB_front_0.png",
+     "width": 3644,
+     "height": 1662,
+     "rgbaSha256": "b3f13d9c739d46685ba6adffe2e480156696f954e18cf275189582bbf80e6f22"
+    }
+   ],
+   "modelKey": "harbour:h5_fleet_fingerB",
+   "cellSize": [
+    911,
+    831
+   ],
+   "motionLayer": "front"
+  },
+  {
+   "key": "east_recFloat_back",
+   "harbour": "east",
+   "name": "recFloat_back",
+   "at": [
+    175.1,
+    69.88
+   ],
+   "elevation": 0,
+   "floating": false,
+   "freeboard": 0.48,
+   "draught": 0.85,
+   "bounds": {
+    "min": [
+     -10.55,
+     -1.44,
+     -4.471069
+    ],
+    "max": [
+     11.74,
+     2.65,
+     6.09
+    ]
+   },
+   "module": {
+    "id": "recFloat",
+    "key": "float",
+    "grp": 1,
+    "rot": 3.141592653589793,
+    "at": [
+     2.1,
+     69.88
+    ],
+    "o": {
+     "hull": "composite",
+     "bays": 7,
+     "bayLen": 3,
+     "width": 2.5,
+     "freeboard": 0.48,
+     "tideRange": 4.4,
+     "faces": [
+      "water"
+     ],
+     "guideFace": "shore",
+     "open": {
+      "shore": [
+       [
+        3.4,
+        5
+       ]
+      ]
+     },
+     "fixtures": [],
+     "marina": {
+      "conduits": [
+       "water",
+       "shore"
+      ],
+      "items": [
+       {
+        "kind": "dockLight",
+        "x": -8.5,
+        "y": -1.05,
+        "rot": 0
+       },
+       {
+        "kind": "dockLight",
+        "x": -2.5,
+        "y": 1.05,
+        "rot": 0
+       },
+       {
+        "kind": "dockLight",
+        "x": 3.5,
+        "y": -1.05,
+        "rot": 0
+       },
+       {
+        "kind": "dockLight",
+        "x": 9.5,
+        "y": 1.05,
+        "rot": 0
+       },
+       {
+        "kind": "pedestal2",
+        "id": "ped0",
+        "x": -6.8,
+        "y": 0.95,
+        "rot": 3.141592653589793,
+        "serves": [
+         "rec0"
+        ]
+       },
+       {
+        "kind": "pedestal2",
+        "id": "ped1",
+        "x": 0.4,
+        "y": 0.95,
+        "rot": 3.141592653589793,
+        "serves": [
+         "rec1"
+        ]
+       },
+       {
+        "kind": "pedestal2",
+        "id": "ped2",
+        "x": 7.4,
+        "y": 0.95,
+        "rot": 3.141592653589793,
+        "serves": [
+         "rec2"
+        ]
+       }
+      ],
+      "cleats": []
+     }
+    }
+   },
+   "frames": [
+    {
+     "frame": 0,
+     "dir": 0,
+     "file": "WaterSide_east_recFloat_back_0.png",
+     "rect": [
+      0,
+      693,
+      714,
+      693
+     ],
+     "native": [
+      723,
+      274
+     ],
+     "nativePivot": [
+      342,
+      189
+     ],
+     "crop": [
+      4,
+      5
+     ],
+     "pivot": [
+      338,
+      184
+     ]
+    },
+    {
+     "frame": 1,
+     "dir": 7,
+     "file": "WaterSide_east_recFloat_back_0.png",
+     "rect": [
+      714,
+      693,
+      714,
+      693
+     ],
+     "native": [
+      602,
+      566
+     ],
+     "nativePivot": [
+      272,
+      323
+     ],
+     "crop": [
+      5,
+      4
+     ],
+     "pivot": [
+      267,
+      319
+     ]
+    },
+    {
+     "frame": 2,
+     "dir": 6,
+     "file": "WaterSide_east_recFloat_back_0.png",
+     "rect": [
+      1428,
+      693,
+      714,
+      693
+     ],
+     "native": [
+      140,
+      706
+     ],
+     "nativePivot": [
+      51,
+      363
+     ],
+     "crop": [
+      5,
+      8
+     ],
+     "pivot": [
+      46,
+      355
+     ]
+    },
+    {
+     "frame": 3,
+     "dir": 5,
+     "file": "WaterSide_east_recFloat_back_0.png",
+     "rect": [
+      2142,
+      693,
+      714,
+      693
+     ],
+     "native": [
+      545,
+      634
+     ],
+     "nativePivot": [
+      272,
+      323
+     ],
+     "crop": [
+      5,
+      50
+     ],
+     "pivot": [
+      267,
+      273
+     ]
+    },
+    {
+     "frame": 4,
+     "dir": 4,
+     "file": "WaterSide_east_recFloat_back_0.png",
+     "rect": [
+      2856,
+      693,
+      714,
+      693
+     ],
+     "native": [
+      723,
+      343
+     ],
+     "nativePivot": [
+      380,
+      187
+     ],
+     "crop": [
+      4,
+      68
+     ],
+     "pivot": [
+      376,
+      119
+     ]
+    },
+    {
+     "frame": 5,
+     "dir": 3,
+     "file": "WaterSide_east_recFloat_back_0.png",
+     "rect": [
+      0,
+      0,
+      714,
+      693
+     ],
+     "native": [
+      602,
+      589
+     ],
+     "nativePivot": [
+      330,
+      304
+     ],
+     "crop": [
+      4,
+      31
+     ],
+     "pivot": [
+      326,
+      273
+     ]
+    },
+    {
+     "frame": 6,
+     "dir": 2,
+     "file": "WaterSide_east_recFloat_back_0.png",
+     "rect": [
+      714,
+      0,
+      714,
+      693
+     ],
+     "native": [
+      140,
+      681
+     ],
+     "nativePivot": [
+      89,
+      360
+     ],
+     "crop": [
+      4,
+      5
+     ],
+     "pivot": [
+      85,
+      355
+     ]
+    },
+    {
+     "frame": 7,
+     "dir": 1,
+     "file": "WaterSide_east_recFloat_back_0.png",
+     "rect": [
+      1428,
+      0,
+      714,
+      693
+     ],
+     "native": [
+      545,
+      562
+     ],
+     "nativePivot": [
+      273,
+      323
+     ],
+     "crop": [
+      4,
+      4
+     ],
+     "pivot": [
+      269,
+      319
+     ]
+    }
+   ],
+   "sheets": [
+    {
+     "file": "WaterSide_east_recFloat_back_0.png",
+     "width": 3570,
+     "height": 1386,
+     "rgbaSha256": "4905380a9f9d37bf1e4f0ca98afd08a67a159f26e108ec17c20d582e224e509a"
+    }
+   ],
+   "modelKey": "harbour:h5_east_recFloat",
+   "cellSize": [
+    714,
+    693
+   ],
+   "motionLayer": "back"
+  },
+  {
+   "key": "east_recFloat_front",
+   "harbour": "east",
+   "name": "recFloat_front",
+   "at": [
+    175.1,
+    69.88
+   ],
+   "elevation": 0,
+   "floating": false,
+   "freeboard": 0.48,
+   "draught": 0.85,
+   "bounds": {
+    "min": [
+     -10.55,
+     -1.44,
+     -4.471069
+    ],
+    "max": [
+     11.74,
+     2.65,
+     6.09
+    ]
+   },
+   "module": {
+    "id": "recFloat",
+    "key": "float",
+    "grp": 1,
+    "rot": 3.141592653589793,
+    "at": [
+     2.1,
+     69.88
+    ],
+    "o": {
+     "hull": "composite",
+     "bays": 7,
+     "bayLen": 3,
+     "width": 2.5,
+     "freeboard": 0.48,
+     "tideRange": 4.4,
+     "faces": [
+      "water"
+     ],
+     "guideFace": "shore",
+     "open": {
+      "shore": [
+       [
+        3.4,
+        5
+       ]
+      ]
+     },
+     "fixtures": [],
+     "marina": {
+      "conduits": [
+       "water",
+       "shore"
+      ],
+      "items": [
+       {
+        "kind": "dockLight",
+        "x": -8.5,
+        "y": -1.05,
+        "rot": 0
+       },
+       {
+        "kind": "dockLight",
+        "x": -2.5,
+        "y": 1.05,
+        "rot": 0
+       },
+       {
+        "kind": "dockLight",
+        "x": 3.5,
+        "y": -1.05,
+        "rot": 0
+       },
+       {
+        "kind": "dockLight",
+        "x": 9.5,
+        "y": 1.05,
+        "rot": 0
+       },
+       {
+        "kind": "pedestal2",
+        "id": "ped0",
+        "x": -6.8,
+        "y": 0.95,
+        "rot": 3.141592653589793,
+        "serves": [
+         "rec0"
+        ]
+       },
+       {
+        "kind": "pedestal2",
+        "id": "ped1",
+        "x": 0.4,
+        "y": 0.95,
+        "rot": 3.141592653589793,
+        "serves": [
+         "rec1"
+        ]
+       },
+       {
+        "kind": "pedestal2",
+        "id": "ped2",
+        "x": 7.4,
+        "y": 0.95,
+        "rot": 3.141592653589793,
+        "serves": [
+         "rec2"
+        ]
+       }
+      ],
+      "cleats": []
+     }
+    }
+   },
+   "frames": [
+    {
+     "frame": 0,
+     "dir": 0,
+     "file": "WaterSide_east_recFloat_front_0.png",
+     "rect": [
+      0,
+      693,
+      714,
+      693
+     ],
+     "native": [
+      723,
+      274
+     ],
+     "nativePivot": [
+      342,
+      189
+     ],
+     "crop": [
+      4,
+      5
+     ],
+     "pivot": [
+      338,
+      184
+     ]
+    },
+    {
+     "frame": 1,
+     "dir": 7,
+     "file": "WaterSide_east_recFloat_front_0.png",
+     "rect": [
+      714,
+      693,
+      714,
+      693
+     ],
+     "native": [
+      602,
+      566
+     ],
+     "nativePivot": [
+      272,
+      323
+     ],
+     "crop": [
+      5,
+      4
+     ],
+     "pivot": [
+      267,
+      319
+     ]
+    },
+    {
+     "frame": 2,
+     "dir": 6,
+     "file": "WaterSide_east_recFloat_front_0.png",
+     "rect": [
+      1428,
+      693,
+      714,
+      693
+     ],
+     "native": [
+      140,
+      706
+     ],
+     "nativePivot": [
+      51,
+      363
+     ],
+     "crop": [
+      5,
+      8
+     ],
+     "pivot": [
+      46,
+      355
+     ]
+    },
+    {
+     "frame": 3,
+     "dir": 5,
+     "file": "WaterSide_east_recFloat_front_0.png",
+     "rect": [
+      2142,
+      693,
+      714,
+      693
+     ],
+     "native": [
+      545,
+      634
+     ],
+     "nativePivot": [
+      272,
+      323
+     ],
+     "crop": [
+      5,
+      50
+     ],
+     "pivot": [
+      267,
+      273
+     ]
+    },
+    {
+     "frame": 4,
+     "dir": 4,
+     "file": "WaterSide_east_recFloat_front_0.png",
+     "rect": [
+      2856,
+      693,
+      714,
+      693
+     ],
+     "native": [
+      723,
+      343
+     ],
+     "nativePivot": [
+      380,
+      187
+     ],
+     "crop": [
+      4,
+      68
+     ],
+     "pivot": [
+      376,
+      119
+     ]
+    },
+    {
+     "frame": 5,
+     "dir": 3,
+     "file": "WaterSide_east_recFloat_front_0.png",
+     "rect": [
+      0,
+      0,
+      714,
+      693
+     ],
+     "native": [
+      602,
+      589
+     ],
+     "nativePivot": [
+      330,
+      304
+     ],
+     "crop": [
+      4,
+      31
+     ],
+     "pivot": [
+      326,
+      273
+     ]
+    },
+    {
+     "frame": 6,
+     "dir": 2,
+     "file": "WaterSide_east_recFloat_front_0.png",
+     "rect": [
+      714,
+      0,
+      714,
+      693
+     ],
+     "native": [
+      140,
+      681
+     ],
+     "nativePivot": [
+      89,
+      360
+     ],
+     "crop": [
+      4,
+      5
+     ],
+     "pivot": [
+      85,
+      355
+     ]
+    },
+    {
+     "frame": 7,
+     "dir": 1,
+     "file": "WaterSide_east_recFloat_front_0.png",
+     "rect": [
+      1428,
+      0,
+      714,
+      693
+     ],
+     "native": [
+      545,
+      562
+     ],
+     "nativePivot": [
+      273,
+      323
+     ],
+     "crop": [
+      4,
+      4
+     ],
+     "pivot": [
+      269,
+      319
+     ]
+    }
+   ],
+   "sheets": [
+    {
+     "file": "WaterSide_east_recFloat_front_0.png",
+     "width": 3570,
+     "height": 1386,
+     "rgbaSha256": "1f8129fba495c118e211d69b857cae7936cb6fcc7554f1fc956e6effe7b1d703"
+    }
+   ],
+   "modelKey": "harbour:h5_east_recFloat",
+   "cellSize": [
+    714,
+    693
+   ],
+   "motionLayer": "front"
   }
  ],
  "crib": {
   "decision": "west to x 78",
   "renderedLast": "fleet_crib"
- }
+ },
+ "motionLayers": "fixed back / tide body / fixed front; original sprite identities retained"
 }

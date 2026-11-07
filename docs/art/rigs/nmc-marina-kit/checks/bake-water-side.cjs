@@ -107,4 +107,4 @@ function write(planOnly,metadataOnly=false){
  return output;
 }
 if(require.main===module)write(process.argv.includes('--plan-only'),process.argv.includes('--metadata-only'));
-module.exports={write,parts,pieces,OUT,KIT,ROOT,SCRIPTS,C};
+module.exports={write,parts,pieces,OUT,KIT,ROOT,SCRIPTS,C,png,sha};

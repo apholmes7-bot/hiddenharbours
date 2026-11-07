@@ -14,6 +14,9 @@ PARTS={p['key']:p for p in TODAY['parts']}
 
 def guid(name):return hashlib.md5(('nmc-h5/'+name).encode()).hexdigest()
 def local_id(name):return int.from_bytes(hashlib.sha256(name.encode()).digest()[:8],'little') & ((1<<63)-1)
+def sheet_guid(file):
+    existing=Path(str(ART/file)+'.meta')
+    return yaml.safe_load(existing.read_text(encoding='utf-8'))['guid'] if existing.exists() else guid(file)
 def yaml_strings(value):
     if value is None:return ''
     if isinstance(value,dict):return {k:yaml_strings(v) for k,v in value.items()}
@@ -42,7 +45,7 @@ for part in PARTS.values():
         path=ART/sheet['file'];header=path.read_bytes()[:24]
         if struct.unpack('>II',header[16:24])!=(sheet['width'],sheet['height']):raise ValueError('PNG dimensions differ')
         if max(sheet['width'],sheet['height'])>4096:raise ValueError('Atlas exceeds the declared cap')
-        m=copy.deepcopy(template_meta);m['guid']=guid(sheet['file']);imp=m['TextureImporter']
+        m=copy.deepcopy(template_meta);m['guid']=sheet_guid(sheet['file']);imp=m['TextureImporter']
         imp['maxTextureSize']=4096;imp['isReadable']=0;imp['textureCompression']=0
         imp['internalIDToNameTable']=[];sprites=[];names={}
         for f in part['frames']:
@@ -68,7 +71,7 @@ def frames(part):
     result=[]
     for f in sorted(part['frames'],key=lambda f:f['frame']):
         name='WaterSide_'+part['key']+'_'+str(f['frame'])
-        result.append({'Sprite':{'fileID':local_id(name),'guid':guid(f['file']),'type':3},'RigDir':f['dir'],
+        result.append({'Sprite':{'fileID':local_id(name),'guid':sheet_guid(f['file']),'type':3},'RigDir':f['dir'],
             'ShowFaces':str(f['dir']),'BearingDeg':f['dir']*45,'CameraSees':'delivered harbour module',
             'NativeSize':vec(f['native']),'NativePivot':vec(f['nativePivot']),'Crop':vec(f['crop']),'Pivot':vec(f['pivot'])})
     return result

@@ -1,0 +1,393 @@
+fileFormatVersion: 2
+guid: c80c7fc509b76b2683150090c1657316
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 1255674422906752064
+    second: WaterSide_fleet_fingerA_front_0
+  - first:
+      213: 5244142697381440252
+    second: WaterSide_fleet_fingerA_front_1
+  - first:
+      213: 1784602984689659377
+    second: WaterSide_fleet_fingerA_front_2
+  - first:
+      213: 5298246866557839504
+    second: WaterSide_fleet_fingerA_front_3
+  - first:
+      213: 6691894041284967265
+    second: WaterSide_fleet_fingerA_front_4
+  - first:
+      213: 1047799005716418737
+    second: WaterSide_fleet_fingerA_front_5
+  - first:
+      213: 2509079057662582964
+    second: WaterSide_fleet_fingerA_front_6
+  - first:
+      213: 3374050012159769438
+    second: WaterSide_fleet_fingerA_front_7
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 4096
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot:
+    x: 0.5
+    y: 0.5
+  spritePixelsToUnits: 32
+  spriteBorder:
+    x: 0
+    y: 0
+    z: 0
+    w: 0
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 4096
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 4096
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 4096
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: WaterSide_fleet_fingerA_front_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 829
+        width: 911
+        height: 829
+      alignment: 9
+      pivot:
+        x: 0.09110867178924259
+        y: 0.49457177322074786
+      border:
+        x: 0
+        y: 0
+        z: 0
+        w: 0
+      customData: ''
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cc3214eb18a51f5f9b0aa11510cd1630
+      internalID: 1255674422906752064
+      vertices: []
+      indices: ''
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaterSide_fleet_fingerA_front_1
+      rect:
+        serializedVersion: 2
+        x: 911
+        y: 829
+        width: 911
+        height: 829
+      alignment: 9
+      pivot:
+        x: 0.3699231613611416
+        y: 0.6164053075995175
+      border:
+        x: 0
+        y: 0
+        z: 0
+        w: 0
+      customData: ''
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 28ba7193f5e6b28eeb00f78d2da2ff6e
+      internalID: 5244142697381440252
+      vertices: []
+      indices: ''
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaterSide_fleet_fingerA_front_2
+      rect:
+        serializedVersion: 2
+        x: 1822
+        y: 829
+        width: 911
+        height: 829
+      alignment: 9
+      pivot:
+        x: 0.47859495060373214
+        y: 0.8552472858866104
+      border:
+        x: 0
+        y: 0
+        z: 0
+        w: 0
+      customData: ''
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5da99eb2745755f55357e5a6b38c782e
+      internalID: 1784602984689659377
+      vertices: []
+      indices: ''
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaterSide_fleet_fingerA_front_3
+      rect:
+        serializedVersion: 2
+        x: 2733
+        y: 829
+        width: 911
+        height: 829
+      alignment: 9
+      pivot:
+        x: 0.37102085620197583
+        y: 0.6164053075995175
+      border:
+        x: 0
+        y: 0
+        z: 0
+        w: 0
+      customData: ''
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: eeeb213a6a9338f7d4e5d3f6b91df275
+      internalID: 5298246866557839504
+      vertices: []
+      indices: ''
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaterSide_fleet_fingerA_front_4
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 911
+        height: 829
+      alignment: 9
+      pivot:
+        x: 0.06366630076838639
+        y: 0.49457177322074786
+      border:
+        x: 0
+        y: 0
+        z: 0
+        w: 0
+      customData: ''
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 511e9e0f11d37c007b97f699c9c69c92
+      internalID: 6691894041284967265
+      vertices: []
+      indices: ''
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaterSide_fleet_fingerA_front_5
+      rect:
+        serializedVersion: 2
+        x: 911
+        y: 0
+        width: 911
+        height: 829
+      alignment: 9
+      pivot:
+        x: 0.37102085620197583
+        y: 0.5621230398069964
+      border:
+        x: 0
+        y: 0
+        z: 0
+        w: 0
+      customData: ''
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8ea1ce7a4bba8ac2fc1ece7098948bde
+      internalID: 1047799005716418737
+      vertices: []
+      indices: ''
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaterSide_fleet_fingerA_front_6
+      rect:
+        serializedVersion: 2
+        x: 1822
+        y: 0
+        width: 911
+        height: 829
+      alignment: 9
+      pivot:
+        x: 0.5214050493962679
+        y: 0.7792521109770808
+      border:
+        x: 0
+        y: 0
+        z: 0
+        w: 0
+      customData: ''
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e0ca2ccaad73f665b36c2f1917ca6991
+      internalID: 2509079057662582964
+      vertices: []
+      indices: ''
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaterSide_fleet_fingerA_front_7
+      rect:
+        serializedVersion: 2
+        x: 2733
+        y: 0
+        width: 911
+        height: 829
+      alignment: 9
+      pivot:
+        x: 0.433589462129528
+        y: 0.5621230398069964
+      border:
+        x: 0
+        y: 0
+        z: 0
+        w: 0
+      customData: ''
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 39f54ef0ee2fb29e65c8c9775032c991
+      internalID: 3374050012159769438
+      vertices: []
+      indices: ''
+      edges: []
+      weights: []
+    outline: []
+    customData: ''
+    physicsShape: []
+    bones: []
+    spriteID: 3f431f8f57144e742b087f55e61507bc
+    internalID: 0
+    vertices: []
+    indices: ''
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      WaterSide_fleet_fingerA_front_0: 1255674422906752064
+      WaterSide_fleet_fingerA_front_1: 5244142697381440252
+      WaterSide_fleet_fingerA_front_2: 1784602984689659377
+      WaterSide_fleet_fingerA_front_3: 5298246866557839504
+      WaterSide_fleet_fingerA_front_4: 6691894041284967265
+      WaterSide_fleet_fingerA_front_5: 1047799005716418737
+      WaterSide_fleet_fingerA_front_6: 2509079057662582964
+      WaterSide_fleet_fingerA_front_7: 3374050012159769438
+  mipmapLimitGroupName: ''
+  pSDRemoveMatte: 0
+  userData: ''
+  assetBundleName: ''
+  assetBundleVariant: ''
+  textureCompression: 0
