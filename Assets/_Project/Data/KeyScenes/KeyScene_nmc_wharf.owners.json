@@ -1,11 +1,11 @@
 {
   "schema": "hidden-harbours/key-scene-owners@1",
   "scene": "keyscene.nmc_wharf",
-  "ownershipRule": "H6 yard is the union of [42,212,86,138] and [42,104,86,146], less the apron [47,78,76,96] (H5) and less, by kind, H5 arms, wall, floats and harbour lights, N8 moored boats and N9 crane controls. H6 terrace is [156,184,136,152]. Rectangles are [xmin,xmax,ymin,ymax], inclusive. Decor and gull perches follow their place. harbour.yard and BuyersParking belong to H6; WinchApron belongs to H5. The rules below encode these selections; an unowned or multiply owned row is refused.",
+  "ownershipRule": "H6 yard is the union of [42,212,86,138] and [42,104,86,146], less the apron [47,78,76,96] (H5) and less, by kind, H5 arms, wall, floats and harbour lights, N8 moored boats and N9 crane controls. H6 terrace is [156,184,136,152]. Rectangles are [xmin,xmax,ymin,ymax], inclusive. Decor and gull perches follow their place. harbour.yard and BuyersParking belong to H6; WinchApron belongs to H5. The rules below encode these selections; an unowned or multiply owned row is refused. The three resident boats (boat.nmc_celeste, boat.nmc_alma, boat.nmc_dan) are H5's by the H5 charter's Decision 4 (11-06); N8 keeps the finger berths and yields where H5 names a boat.",
   "rules": [
     {
       "owner": "H5",
-      "description": "The apron, crane and pad, two arms and their harbour lights, wall, floats and fingers; WinchApron belongs here.",
+      "description": "The apron, crane and pad, two arms and their harbour lights, wall, floats and fingers; WinchApron belongs here, and the three resident boats (Decision 4).",
       "ids": [
         "harbour.west",
         "harbour.fleet",
@@ -13,7 +13,10 @@
         "harbour.arm_w",
         "harbour.arm_e",
         "gull.nmc_light",
-        "gull.nmc_arm"
+        "gull.nmc_arm",
+        "boat.nmc_celeste",
+        "boat.nmc_alma",
+        "boat.nmc_dan"
       ],
       "rectangles": [
         {
@@ -76,7 +79,8 @@
     },
     {
       "owner": "N8",
-      "description": "The three moored boats.",
+      "description": "The finger boats to come; a boat H5 names by id is H5's.",
+      "excludeOwners": ["H5"],
       "kinds": [
         {
           "kind": "boat",

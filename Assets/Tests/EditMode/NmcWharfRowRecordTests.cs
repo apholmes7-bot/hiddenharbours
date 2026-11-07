@@ -94,12 +94,19 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         [Test]
-        public void TheRowsThisPhasePlaces_AreASubsetOfH6()
+        public void TheRowsPlacedSoFar_AreOwnedByH6OrH5_NeverN8OrN9_AndNeverAWaitingRow()
         {
             Record record = Read();
             KeySceneDef scene = Scene();
-            var h6 = new HashSet<string>(record.rows.Where(r => r.owner == "H6").Select(r => r.id));
-            foreach (string id in scene.PlacementIds) Assert.IsTrue(h6.Contains(id), "non-H6 placement: " + id);
+            // seat ruling s9, 11-07: this guard admits eligible H5 rows; completeness belongs to Phase B.
+            var byId = record.rows.ToDictionary(r => r.id);
+            foreach (string id in scene.PlacementIds)
+            {
+                Assert.That(byId.ContainsKey(id), Is.True, id);
+                Assert.That(byId[id].owner, Is.EqualTo("H6").Or.EqualTo("H5"), id);
+                Assert.That(string.IsNullOrEmpty(byId[id].waits), Is.True, id);
+            }
+            CollectionAssert.DoesNotContain(scene.PlacementIds, "prop.nmc_light_ramp");
             foreach (string id in new[] { "structure.nmc_harbourmaster", "structure.nmc_fish_market", "structure.nmc_restaurant" })
                 CollectionAssert.Contains(scene.PlacementIds, id);
             Assert.IsTrue(scene.Placed, "This phase must activate its explicit placement subset.");
@@ -118,6 +125,7 @@ namespace HiddenHarbours.Tests.EditMode
             {
                 Assert.AreEqual("fuelStopRig (pass 6)", scene.Pieces.Single(p => p.Id == id).Kit, id);
                 CollectionAssert.DoesNotContain(scene.PlacementIds, id);
+                // seat ruling s8, 11-07, Decision 4 lean a: the ramp light remains H5's waiting row.
                 Assert.AreEqual(id == "prop.nmc_light_ramp" ? "H5" : "H6", record.rows.Single(r => r.id == id).owner, id);
             }
         }
@@ -147,6 +155,7 @@ namespace HiddenHarbours.Tests.EditMode
             }
             Assert.That(NineMileCreekWharfLandSide.ParkedPickupDefinition("vehicle.nmc_ramp_pickup"),
                 Is.EqualTo("Assets/_Project/Data/Vehicles/Modern3500.asset"));
+            // seat ruling s9, 11-07: the ramp-pickup expectation returns with Phase B's placement.
             Assert.That(yaml.Docs.Any(d => d.ClassId == 1 && d.Field("m_Name") == "vehicle.nmc_ramp_pickup"), Is.False,
                 "The ramp pickup waits for H5; this phase places no H5 row.");
             Assert.Throws<StPetersLayerRefresh.Refusal>(() => NineMileCreekWharfLandSide.ParkedPickupDefinition("vehicle.fixture_unassigned"));
@@ -159,7 +168,17 @@ namespace HiddenHarbours.Tests.EditMode
             var outside = new KeyScenePiece { Id = "prop.fixture_outside", At = new Vector2(0, 1000), Kit = "wharfDecor", Piece = "trapStack" };
             Assert.IsEmpty(OwnersFor(outside, record));
             var overlap = new KeyScenePiece { Id = "boat.fixture_overlap", Kind = "boat", StandsOn = "water", At = new Vector2(60, 80) };
-            CollectionAssert.AreEquivalent(new[] { "H5", "N8" }, OwnersFor(overlap, record));
+            // seat ruling s8, 11-07, Decision 4 lean a: N8 yields to the asset's H5 apron rule.
+            CollectionAssert.AreEquivalent(new[] { "H5" }, OwnersFor(overlap, record));
+            var twoOwners = new Record
+            {
+                rules = new[]
+                {
+                    new Rule { owner = "H5", ids = new[] { overlap.Id } },
+                    new Rule { owner = "N8", kinds = new[] { new KindRule { kind = "boat", standsOn = "water" } } },
+                },
+            };
+            CollectionAssert.AreEquivalent(new[] { "H5", "N8" }, OwnersFor(overlap, twoOwners));
         }
     }
 }

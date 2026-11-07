@@ -21,6 +21,20 @@ namespace HiddenHarbours.App.Editor
 
         public static KeySceneDef Scene() => AssetDatabase.LoadAssetAtPath<KeySceneDef>(KeyScenePath)
             ?? throw new InvalidOperationException("The wharf key scene is unavailable.");
+        [Serializable] sealed class OwnedRow { public string id, owner, waits; }
+        [Serializable] sealed class Ownership { public OwnedRow[] rows; }
+        public static KeyScenePiece[] PlacementRows()
+        {
+            var owned = JsonUtility.FromJson<Ownership>(File.ReadAllText(NineMileCreekWharfLandSide.RecordPath)).rows;
+            var eligible = owned.Where(r => r.owner == "H5" && string.IsNullOrEmpty(r.waits)).ToArray();
+            var ids = new HashSet<string>(eligible.Select(r => r.id));
+            var rows = Scene().Pieces.Where(p => ids.Contains(p.Id)).ToArray();
+            if (rows.Length != eligible.Length)
+                throw new StPetersLayerRefresh.Refusal("The H5 placement subset names an absent row.");
+            if (rows.Any(p => owned.Any(r => r.id == p.Id && (r.owner != "H5" || !string.IsNullOrEmpty(r.waits)))))
+                throw new StPetersLayerRefresh.Refusal("The H5 placement subset names a waiting row.");
+            return rows;
+        }
         public static object Register()
         {
             var row = Scene().Pieces.Single(p => p.Id == "harbour.west");
