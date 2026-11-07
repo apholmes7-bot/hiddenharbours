@@ -284,6 +284,7 @@ namespace HiddenHarbours.Art
         public static readonly int GuardTex = Shader.PropertyToID("_HHHullGuardTex");
         public static readonly int FacetTex = Shader.PropertyToID("_HHFacetTex");
         public static readonly int DarkTex = Shader.PropertyToID("_HHDarkTex");
+        public static readonly int HullCausticTex = Shader.PropertyToID("_HHHullCausticTex");
         public static readonly int KeyTex = Shader.PropertyToID("_HHKeyTex");
         public static readonly int DepthTex = Shader.PropertyToID("_HHDepthTex");
         /// <summary>The keyline gate (ADR 0031 — the keyline retirement): 1 = the resolve floods the

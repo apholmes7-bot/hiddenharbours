@@ -171,6 +171,10 @@ Shader "HiddenHarbours/IsoFacet"
             // is live — is byte-identical to before ADR 0033 (the A/B contract).
             float4 _HullShear;
 
+#ifndef HH_FIGURE
+            #include "Include/HullCaustics.hlsl"
+#endif
+
 #ifdef HH_LEVEL_GATE
             // WHICH LEVEL THE OCCUPANT IS INSIDE. 0 = show the exterior, which is the shipped
             // behaviour and the state every hull starts and ends in.
@@ -301,6 +305,10 @@ Shader "HiddenHarbours/IsoFacet"
                 float reflectionHeight : TEXCOORD6;
                 float reflectionDepth : TEXCOORD7;
                 float3 wpos : TEXCOORD2;         // xy = dither frame  z = TRUE unbiased depth
+#ifndef HH_FIGURE
+                float3 causticPoint : TEXCOORD8; // plane-projected world XY and physical height
+                nointerpolation float2 causticFace : TEXCOORD9; // rendered side exterior, upward normal
+#endif
 #ifdef HH_LEVEL_GATE
                 // xy = the level tag, z = 1 when the camera is rendering this
                 // face's FRONT (decoded from the stored normal exactly as vertGuard does).
@@ -329,6 +337,20 @@ Shader "HiddenHarbours/IsoFacet"
                 // The object matrix is orthogonal (rotation times mirror), so inverse-transpose
                 // equals the matrix itself — the plain mul is exact, as in the spike.
                 float3 wn = normalize(mul((float3x3)unity_ObjectToWorld, v.normalOS));
+
+#ifndef HH_FIGURE
+                float planeLength2 = max(dot(_HHHullCausticPlane.xyz, _HHHullCausticPlane.xyz), 1e-6);
+                float height = dot(float4(wp, 1.0), _HHHullCausticPlane);
+                o.causticPoint = float3(wp.xy - _HHHullCausticPlane.xy * (height / planeLength2), height);
+                bool causticFront = dot(wn, UNITY_MATRIX_V[2].xyz) >= 0.0;
+                int causticCode = (int)round(v.attrs.w);
+                bool causticInterior = causticCode == 1 || causticCode == (causticFront ? 2 : 3);
+#ifdef HH_LEVEL_GATE
+                causticInterior = causticInterior || v.levelTag.y > 0.5;
+#endif
+                o.causticFace = float2(causticInterior ? 0.0 : 1.0,
+                    abs(dot(wn, _HHHullCausticPlane.xyz * rsqrt(planeLength2))));
+#endif
 
                 // The rig: sh = shadeOf(n, se, ce). In iso-rotated world space that is exactly a
                 // dot with LN — see the header comment.
@@ -653,6 +675,27 @@ Shader "HiddenHarbours/IsoFacet"
                 o.dark  = float4(_DarkRampTex.Load(int3(idx, m, 0)).rgb, 1.0);
 #endif
                 o.key   = float4(_KeyColor.rgb, 1.0);
+#ifndef HH_FIGURE
+                // Only the ordinary facet draw receives the band; reflected packets keep their original art.
+                if (!reflection && _HHHullCausticSettings.z > 0.5)
+                {
+                    float causticWeight = HHHullCausticWeight(i.causticPoint.z, i.causticFace,
+                        _HHHullCausticSettings, _SunElevation, _DayNightTint.rgb,
+                        _CausticDayGate, _Chop, _CausticAmount);
+                    [branch]
+                    if (causticWeight > 0.0)
+                    {
+                        float veins = HHCausticVeins(i.causticPoint.xy, _Time.y, _HHHullCausticPainted,
+                            TEXTURE2D_ARGS(_CausticTex, sampler_CausticTex));
+                        // PR 1: the five field inputs are flat. No local sea sampling is reproduced here.
+                        float pattern = HHCausticPattern(veins, 0, 0, 0, 0, 0, _CausticCurvatureStep,
+                            _CausticCurvatureGain, _CausticCurvatureBlend, _HHHullCausticEnvelope);
+                        // Hull alpha stays in [0.5,1], above the figure classifier. Keep resolved RGB
+                        // unchanged for the legacy reflection; the main overlay applies this weight.
+                        o.dark.a = 1.0 - saturate(pattern * causticWeight) * 0.5;
+                    }
+                }
+#endif
                 o.depth = reflection ? i.reflectionDepth : i.wpos.z;
                 return o;
             }

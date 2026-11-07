@@ -45,6 +45,9 @@ Shader "HiddenHarbours/IsoFacetOverlay"
             // has ever run, IsoFacetHullRegistry binds a 1x1 CLEAR fallback so this discards
             // everywhere instead of sampling the grey unbound placeholder.
             Texture2D<float4> _HHHullScreenTex;
+            Texture2D<float4> _HHHullCausticTex;
+            float4 _HHHullCausticSettings;
+            float4 _CausticColor;
 
             // Per draw via MaterialPropertyBlock: this hull's ids, already divided by 255.
             // _HullIdFore is the BASE of her reserved FORE BLOCK — the deck-occupant split (see the
@@ -109,7 +112,15 @@ Shader "HiddenHarbours/IsoFacetOverlay"
 
             float4 frag (Varyings i) : SV_Target
             {
-                float4 c = HHFigureOver(_HHHullScreenTex.Load(int3(int2(i.positionCS.xy), 0)), i.positionCS.xy);
+                int2 p = int2(i.positionCS.xy);
+                float4 c = _HHHullScreenTex.Load(int3(p, 0));
+                if (_HHHullCausticSettings.z > 0.5 && HHIsThisHull(c.a))
+                {
+                    float encoded = _HHHullCausticTex.Load(int3(p, 0)).a;
+                    if (encoded >= 0.5 && encoded < 1.0)
+                        c.rgb += _CausticColor.rgb * ((1.0 - encoded) * 2.0);
+                }
+                c = HHFigureOver(c, i.positionCS.xy);
                 // Only THIS hull's pixels — either of her ids.
                 clip(HHIsThisHull(c.a) ? 1.0 : -1.0);
                 clip(c.a - 0.5 / 255.0);

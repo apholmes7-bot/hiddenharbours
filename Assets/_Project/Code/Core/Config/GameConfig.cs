@@ -556,6 +556,11 @@ namespace HiddenHarbours.Core
                  "and boat and sea stay on the same water, never retuned apart.")]
         public DisplacedWaterSettings DisplacedWater = DisplacedWaterSettings.Default;
 
+        [Header("Light from the water on hull sides")]
+        [Min(0f)] public float HullCausticBandMeters = 0.8f;
+        [Min(0f)] public float HullCausticStrength = 0.18f;
+        [Range(0f, 1f)] public float HullCausticMaxUpwardNormal = 0.5f;
+
         // -----------------------------------------------------------------------------------------
         //  The floor in the shallows (W4-4; ruling 7 of 2026-10-10, "Shallows: 2B")
         // -----------------------------------------------------------------------------------------

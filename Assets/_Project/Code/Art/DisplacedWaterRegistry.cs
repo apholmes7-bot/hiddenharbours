@@ -146,6 +146,7 @@ namespace HiddenHarbours.Art
 
         internal static void Unregister(DisplacedWaterSurface surface)
         {
+            HullCausticLighting.Clear(surface);
             s_Live.Remove(surface);
             // The frame dies with its publisher: no active displaced sea ⇒ no hull offset.
             if (ReferenceEquals(s_FrameOwner, surface))

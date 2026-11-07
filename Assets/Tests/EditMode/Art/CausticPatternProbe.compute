@@ -1,0 +1,55 @@
+#pragma kernel ComparePattern
+#pragma kernel CompareWeight
+#pragma kernel CompareVeins
+#define TEXTURE2D_PARAM(tex, smp) Texture2D tex, SamplerState smp
+#define TEXTURE2D_ARGS(tex, smp) tex, smp
+#define SAMPLE_TEXTURE2D(tex, smp, uv) tex.SampleLevel(smp, uv, 0)
+float _PixelsPerUnit, _NoiseScale, _BandScaleResponse, _Chop, _Flow;
+float _CausticScale, _PaintScale, _UntileStrength, _CausticTexStrength;
+Texture2D _CausticTex;
+SamplerState sampler_CausticTex;
+#define HH_CAUSTIC_VEINS
+#include "Assets/_Project/Art/Shaders/Include/CausticPattern.hlsl"
+#include "Assets/_Project/Art/Shaders/Include/HullCausticWeight.hlsl"
+
+struct Sample
+{
+    float independentPattern, centre, positiveX, negativeX, positiveY, negativeY;
+    float step, gain, blend, waveEnvelope;
+};
+StructuredBuffer<Sample> _Inputs;
+RWStructuredBuffer<float> _Outputs;
+int _Count;
+
+[numthreads(8, 1, 1)]
+void ComparePattern(uint3 id : SV_DispatchThreadID)
+{
+    if (id.x >= (uint)_Count) return;
+    Sample p = _Inputs[id.x];
+    _Outputs[id.x] = HHCausticPattern(p.independentPattern, p.centre, p.positiveX, p.negativeX,
+        p.positiveY, p.negativeY, p.step, p.gain, p.blend, p.waveEnvelope);
+}
+
+struct WeightSample
+{
+    float height, exterior, upward, width, strength, wet, maxUpward, sun, tintSum, gate, chop, amount;
+};
+StructuredBuffer<WeightSample> _WeightInputs;
+[numthreads(8, 1, 1)]
+void CompareWeight(uint3 id : SV_DispatchThreadID)
+{
+    if (id.x >= (uint)_Count) return;
+    WeightSample p = _WeightInputs[id.x];
+    _Outputs[id.x] = HHHullCausticWeight(p.height, float2(p.exterior, p.upward),
+        float4(p.width, p.strength, p.wet, p.maxUpward), p.sun, float3(p.tintSum, 0, 0),
+        p.gate, p.chop, p.amount);
+}
+
+StructuredBuffer<float4> _VeinInputs;
+[numthreads(8, 1, 1)]
+void CompareVeins(uint3 id : SV_DispatchThreadID)
+{
+    if (id.x >= (uint)_Count) return;
+    float4 p = _VeinInputs[id.x];
+    _Outputs[id.x] = HHCausticVeins(p.xy, p.z, p.w, TEXTURE2D_ARGS(_CausticTex, sampler_CausticTex));
+}
