@@ -796,26 +796,12 @@ namespace HiddenHarbours.App.Editor
         /// <summary>Drop the cached line. Call after editing the register — the builder does.</summary>
         public static void InvalidateBerthLine() => _berthCentres = null;
 
-        /// <summary>
-        /// The centre of every berth, west to east, packed at the fender gap from
-        /// <see cref="BerthLineWestX"/>. Each hull's span is half her length plus a fender either side,
-        /// and neighbouring spans abut — so between two hulls there is exactly two fenders of clear
-        /// water, and no berth is wider than the boat that lies in it.
-        /// </summary>
+        /// <summary>The six wall-slot centres read from the authored wharf register. Cached for terrain derivation.</summary>
         public static float[] BerthCentres()
         {
             if (_berthCentres != null) return _berthCentres;
 
-            float[] lengths = BerthLengths();
-            var centres = new float[lengths.Length];
-            float x = BerthLineWestX;
-            for (int i = 0; i < lengths.Length; i++)
-            {
-                float half = BerthHalfSpanFor(lengths[i]);
-                centres[i] = x + half;
-                x = centres[i] + half;
-            }
-            return _berthCentres = centres;
+            return _berthCentres = NineMileCreekWharfWaterSide.WallCentres();
         }
 
         /// <summary>How many berths the wall has — an OUTPUT now: the player's, plus one per owner the

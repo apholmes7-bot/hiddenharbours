@@ -21,5 +21,5 @@ MonoBehaviour:
   ShedFootprintMetres: 6.0
   LotIndex: 7
   Moorage: 1
-  BerthIndex: 6
+  BerthIndex: 1
   Skipper: {fileID: 11400000, guid: cc7e4619e6983df4c8922f506e46b7ae, type: 2}

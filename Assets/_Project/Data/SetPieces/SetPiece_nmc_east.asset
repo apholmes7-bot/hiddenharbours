@@ -1,0 +1,2062 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject:
+    fileID: 0
+  m_PrefabInstance:
+    fileID: 0
+  m_PrefabAsset:
+    fileID: 0
+  m_GameObject:
+    fileID: 0
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script:
+    fileID: 11500000
+    guid: 01b51978faec4dbb8e54e23107a97ef5
+    type: 3
+  m_Name: SetPiece_nmc_east
+  m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.SetPieceDef
+  Id: harbour.east
+  DisplayName: Wharf water side east
+  RigKey: nmc_east
+  SceneId: keyscene.nmc_wharf
+  BakedOptionsJson: '{}'
+  Layer: floor
+  Walk: 'on'
+  Mount: ground
+  BoundsMin:
+    x: -10.56
+    y: 68.44
+    z: -5.681813
+  BoundsMax:
+    x: 13.839999999999995
+    y: 96.06
+    z: 7.66
+  Frames:
+  - Sprite:
+      fileID: 1258741295058945193
+      guid: 1a05b7f4acd5c1633bb177bdf33893d7
+      type: 3
+    RigDir: 0
+    ShowFaces: '0'
+    BearingDeg: 0
+    CameraSees: delivered harbour module
+    NativeSize:
+      x: 685
+      y: 439
+    NativePivot:
+      x: 342
+      y: 109
+    Crop:
+      x: 4
+      y: 5
+    Pivot:
+      x: 338
+      y: 104
+  - Sprite:
+      fileID: 1927020967501546120
+      guid: 1a05b7f4acd5c1633bb177bdf33893d7
+      type: 3
+    RigDir: 7
+    ShowFaces: '7'
+    BearingDeg: 315
+    CameraSees: delivered harbour module
+    NativeSize:
+      x: 717
+      y: 685
+    NativePivot:
+      x: 358
+      y: 232
+    Crop:
+      x: 4
+      y: 4
+    Pivot:
+      x: 354
+      y: 228
+  - Sprite:
+      fileID: 9195954048837076044
+      guid: 1a05b7f4acd5c1633bb177bdf33893d7
+      type: 3
+    RigDir: 6
+    ShowFaces: '6'
+    BearingDeg: 270
+    CameraSees: delivered harbour module
+    NativeSize:
+      x: 341
+      y: 688
+    NativePivot:
+      x: 174
+      y: 245
+    Crop:
+      x: 4
+      y: 22
+    Pivot:
+      x: 170
+      y: 223
+  - Sprite:
+      fileID: 8630430810821175663
+      guid: 1a05b7f4acd5c1633bb177bdf33893d7
+      type: 3
+    RigDir: 5
+    ShowFaces: '5'
+    BearingDeg: 225
+    CameraSees: delivered harbour module
+    NativeSize:
+      x: 717
+      y: 720
+    NativePivot:
+      x: 358
+      y: 267
+    Crop:
+      x: 4
+      y: 5
+    Pivot:
+      x: 354
+      y: 262
+  - Sprite:
+      fileID: 7145347834244126342
+      guid: 1a05b7f4acd5c1633bb177bdf33893d7
+      type: 3
+    RigDir: 4
+    ShowFaces: '4'
+    BearingDeg: 180
+    CameraSees: delivered harbour module
+    NativeSize:
+      x: 685
+      y: 521
+    NativePivot:
+      x: 342
+      y: 190
+    Crop:
+      x: 4
+      y: 4
+    Pivot:
+      x: 338
+      y: 186
+  - Sprite:
+      fileID: 2932712009560027875
+      guid: 1a05b7f4acd5c1633bb177bdf33893d7
+      type: 3
+    RigDir: 3
+    ShowFaces: '3'
+    BearingDeg: 135
+    CameraSees: delivered harbour module
+    NativeSize:
+      x: 717
+      y: 720
+    NativePivot:
+      x: 358
+      y: 267
+    Crop:
+      x: 4
+      y: 5
+    Pivot:
+      x: 354
+      y: 262
+  - Sprite:
+      fileID: 3266765997170047973
+      guid: 1a05b7f4acd5c1633bb177bdf33893d7
+      type: 3
+    RigDir: 2
+    ShowFaces: '2'
+    BearingDeg: 90
+    CameraSees: delivered harbour module
+    NativeSize:
+      x: 341
+      y: 688
+    NativePivot:
+      x: 166
+      y: 245
+    Crop:
+      x: 4
+      y: 23
+    Pivot:
+      x: 162
+      y: 222
+  - Sprite:
+      fileID: 743120831981097338
+      guid: 1a05b7f4acd5c1633bb177bdf33893d7
+      type: 3
+    RigDir: 1
+    ShowFaces: '1'
+    BearingDeg: 45
+    CameraSees: delivered harbour module
+    NativeSize:
+      x: 717
+      y: 685
+    NativePivot:
+      x: 358
+      y: 232
+    Crop:
+      x: 4
+      y: 4
+    Pivot:
+      x: 354
+      y: 228
+  CellSize:
+    x: 708
+    y: 710
+  PixelsPerMetre: 32
+  ElevationDeg: 40
+  BakedLit: 0
+  Colliders: []
+  Anchors:
+  - Name: berth.nmc_recreation_rec0
+    Position:
+      x: 8.900000000000006
+      y: 68.63
+      z: 0.48
+  - Name: berth.nmc_recreation_rec1
+    Position:
+      x: 1.6999999999999886
+      y: 68.63
+      z: 0.48
+  - Name: berth.nmc_recreation_rec2
+    Position:
+      x: -5.300000000000011
+      y: 68.63
+      z: 0.48
+  - Name: cleat.nmc_east_recFloat_0
+    Position:
+      x: 11.969999999999999
+      y: 68.92999999999999
+      z: 0.48
+  - Name: cleat.nmc_east_recFloat_1
+    Position:
+      x: 6.889999999999986
+      y: 68.92999999999999
+      z: 0.48
+  - Name: cleat.nmc_east_recFloat_2
+    Position:
+      x: 3.049999999999983
+      y: 68.92999999999999
+      z: 0.48
+  - Name: cleat.nmc_east_recFloat_3
+    Position:
+      x: -2.030000000000001
+      y: 68.92999999999999
+      z: 0.48
+  - Name: cleat.nmc_east_recFloat_4
+    Position:
+      x: -2.7700000000000102
+      y: 68.92999999999999
+      z: 0.48
+  - Name: cleat.nmc_east_recFloat_5
+    Position:
+      x: -4.840000000000003
+      y: 68.92999999999999
+      z: 0.48
+  - Name: cleat.nmc_east_recFloat_6
+    Position:
+      x: -6.189999999999998
+      y: 68.92999999999999
+      z: 0.48
+  - Name: cleat.nmc_east_recFloat_7
+    Position:
+      x: -7.77000000000001
+      y: 68.92999999999999
+      z: 0.48
+  - Name: float.nmc_recreation
+    Position:
+      x: 2.0999999999999943
+      y: 69.88
+      z: 0.48
+  - Name: gangway.nmc_east_gangway.head
+    Position:
+      x: 6.300000000000011
+      y: 86
+      z: 3.3999999999999995
+  - Name: gangway.nmc_east_gangway.toe
+    Position:
+      x: 6.300000000000011
+      y: 70.53
+      z: 0.45
+  - Name: ladder.nmc_east
+    Position:
+      x: 7.199999999999989
+      y: 86
+      z: 3.4
+  Path: []
+  TideMarks:
+  - Z: -2.2
+    OverDatum: 0.0
+    At:
+      x: 0
+      y: 0
+      z: -2.2
+    Label: '0.0'
+    Kind: spring low
+  - Z: 2.2
+    OverDatum: 4.4
+    At:
+      x: 0
+      y: 0
+      z: 2.2
+    Label: '4.4'
+    Kind: spring high
+  Words: []
+  HasLight: 0
+  Light:
+    Emitters: []
+    When: ''
+  IsAnimated: 0
+  Animated:
+    Part: ''
+    Input: ''
+    Steps: 0
+    BakedAtDeg: 0
+    RigDir: 0
+    Headings: []
+  GameplayJson: '{"schema":"hidden-harbours/nmc-water-side@1","id":"harbour.east","origin":[173,0],"parts":[{"key":"east_east","harbour":"east","name":"east","at":[173,91],"elevation":3.4,"floating":false,"freeboard":0,"draught":0,"bounds":{"min":[-10.56,-5.297873,-9.081813],"max":[10.56,5.06,4.26]},"walkPolygon":[[183.5,96],[162.5,96],[162.5,86],[183.5,86]],"fittings":{"ladders":[{"x":-7.2,"y":5,"side":1,"face":"water","berth":"east"}],"tyres":[{"x":-5,"y":5,"side":1,"face":"water","berth":"east"},{"x":-9.4,"y":5,"side":1,"face":"water","berth":"east"}],"foams":[],"panels":[],"fenderPiles":[{"x":-6.3,"y":5.16,"side":1,"face":"water"},{"x":-2.0999999999999996,"y":5.16,"side":1,"face":"water"},{"x":2.1000000000000014,"y":5.16,"side":1,"face":"water"},{"x":6.300000000000001,"y":5.16,"side":1,"face":"water"}],"cleats":[],"bollards":[],"rings":[],"rails":[],"berths":{"water":{"list":[{"id":"east","x":-7.2,"cls":"B","fenderX":[-5,-9.4],"lines":[-10.2]}],"faceLen":22,"kind":"quay","utilisation":1,"segments":[],"dry":[]}},"gaps":{"water":[[-7.575,-6.825]],"shore":[]},"top":0,"hx":10.5,"hy":5,"L":21,"tyreRecs":[{"x":-5,"y":5.17,"z":-0.78,"top":-0.28,"pivot":[-5,5.05,-0.16]},{"x":-9.4,"y":5.17,"z":-0.78,"top":-0.28,"pivot":[-9.4,5.05,-0.16]}],"fixtures":[{"id":"ringPost0","kind":"ringPost","face":"water","x":0.05,"y":4.5,"rot":0,"side":1,"z":0,"grp":0},{"id":"ringPost1","kind":"ringPost","face":"water","x":-5.2,"y":4.5,"rot":0,"side":1,"z":0,"grp":0},{"id":"fishSpot2","kind":"fishSpot","face":"shore","x":5.3,"y":-4.55,"rot":3.141592653589793,"side":-1,"z":0,"grp":0}]},"module":{"id":"east","key":"concreteQuay","at":[0,91],"rot":3.141592653589793,"o":{"bays":5,"bayLen":4.4,"width":10,"deckZ":5.6,"tideRange":4.4,"curb":"wood","berthPlanned":{"water":{"list":[{"id":"east","x":-7.2,"cls":"B","fenderX":[-5,-9.4],"lines":[-10.2]}],"faceLen":22,"kind":"quay","utilisation":1,"segments":[],"dry":[]}},"marina":{"items":[{"kind":"gate","id":"gate","x":-2.2,"y":3.6,"rot":3.141592653589793},{"kind":"lampPost","x":-4.9,"y":3.8,"rot":0}],"cleats":[]}}},"frames":[{"frame":0,"dir":0,"file":"WaterSide_east_east_0.png","rect":[0,710,708,710],"native":[685,439],"nativePivot":[342,109],"crop":[4,5],"pivot":[338,104]},{"frame":1,"dir":7,"file":"WaterSide_east_east_0.png","rect":[708,710,708,710],"native":[717,685],"nativePivot":[358,232],"crop":[4,4],"pivot":[354,228]},{"frame":2,"dir":6,"file":"WaterSide_east_east_0.png","rect":[1416,710,708,710],"native":[341,688],"nativePivot":[174,245],"crop":[4,22],"pivot":[170,223]},{"frame":3,"dir":5,"file":"WaterSide_east_east_0.png","rect":[2124,710,708,710],"native":[717,720],"nativePivot":[358,267],"crop":[4,5],"pivot":[354,262]},{"frame":4,"dir":4,"file":"WaterSide_east_east_0.png","rect":[2832,710,708,710],"native":[685,521],"nativePivot":[342,190],"crop":[4,4],"pivot":[338,186]},{"frame":5,"dir":3,"file":"WaterSide_east_east_0.png","rect":[0,0,708,710],"native":[717,720],"nativePivot":[358,267],"crop":[4,5],"pivot":[354,262]},{"frame":6,"dir":2,"file":"WaterSide_east_east_0.png","rect":[708,0,708,710],"native":[341,688],"nativePivot":[166,245],"crop":[4,23],"pivot":[162,222]},{"frame":7,"dir":1,"file":"WaterSide_east_east_0.png","rect":[1416,0,708,710],"native":[717,685],"nativePivot":[358,232],"crop":[4,4],"pivot":[354,228]}],"sheets":[{"file":"WaterSide_east_east_0.png","width":3540,"height":1420,"rgbaSha256":"bdbba1aa0ae611baf244b2441ac6ca06ddf8476bd30518277f9fcbfaca0b26d2"}],"modelKey":"harbour:h5_east_east","cellSize":[708,710]},{"key":"east_recFloat","harbour":"east","name":"recFloat","at":[175.1,69.88],"elevation":0,"floating":true,"freeboard":0.48,"draught":0.85,"bounds":{"min":[-10.55,-1.44,-4.471069],"max":[11.74,2.65,6.09]},"walkPolygon":[[185.6,71.13],[164.6,71.13],[164.6,68.63],[185.6,68.63]],"fittings":{"ladders":[],"tyres":[],"foams":[],"panels":[],"fenderPiles":[],"cleats":[{"x":-9.87,"y":0.95,"z":0.48,"side":1,"face":"water","berth":"berth0","lead":"bow"},{"x":-4.79,"y":0.95,"z":0.48,"side":1,"face":"water","berth":"berth0","lead":"spring"},{"x":-0.95,"y":0.95,"z":0.48,"side":1,"face":"water","berth":"berth0","lead":"spring"},{"x":4.13,"y":0.95,"z":0.48,"side":1,"face":"water","berth":"berth0","lead":"stern"},{"x":4.87,"y":0.95,"z":0.48,"side":1,"face":"water","berth":"berth1","lead":"bow"},{"x":6.94,"y":0.95,"z":0.48,"side":1,"face":"water","berth":"berth1","lead":"spring"},{"x":8.29,"y":0.95,"z":0.48,"side":1,"face":"water","berth":"berth1","lead":"spring"},{"x":9.87,"y":0.95,"z":0.48,"side":1,"face":"water","berth":"berth1","lead":"stern"}],"bollards":[],"rings":[],"rails":[],"berths":{"water":{"list":[{"id":"berth0","hull":"cape","label":"Cape Islander","cls":"B","loa":12.8,"beam":4.4,"draft":1.4,"gun":1.15,"sole":0.4,"x":-2.87,"x0":-9.27,"x1":3.53,"slot":[-10.47,4.73],"fits":true,"afloatAtDatum":true,"ukc":0.5,"line":"16\u201322 mm","fender":"tyre \u00b7 foam","fenderX":[-6.96,-2.87,1.23],"lines":[-9.87,-4.79,-0.95,4.13]},{"id":"berth1","hull":"dory","label":"dory","cls":"A","loa":4.5,"beam":1.5,"draft":0.26,"gun":0.34,"sole":-0.14,"x":7.62,"x0":5.37,"x1":9.87,"slot":[4.77,10.47],"fits":true,"afloatAtDatum":true,"ukc":0.3,"line":"12\u201316 mm","fender":"foam","fenderX":[6.49,8.74],"lines":[4.77,6.94,8.29,10.47]}],"faceLen":21,"kind":"float","utilisation":1,"segments":[[-10.5,10.5]],"dry":[]}},"gaps":{"water":[],"shore":[]},"top":0.48,"hx":10.5,"hy":1.25,"L":21,"tyreRecs":[],"fixtures":[]},"module":{"id":"recFloat","key":"float","grp":1,"rot":3.141592653589793,"at":[2.1,69.88],"o":{"hull":"composite","bays":7,"bayLen":3,"width":2.5,"freeboard":0.48,"tideRange":4.4,"faces":["water"],"guideFace":"shore","open":{"shore":[[3.4,5]]},"fixtures":[],"marina":{"conduits":["water","shore"],"items":[{"kind":"dockLight","x":-8.5,"y":-1.05,"rot":0},{"kind":"dockLight","x":-2.5,"y":1.05,"rot":0},{"kind":"dockLight","x":3.5,"y":-1.05,"rot":0},{"kind":"dockLight","x":9.5,"y":1.05,"rot":0},{"kind":"pedestal2","id":"ped0","x":-6.8,"y":0.95,"rot":3.141592653589793,"serves":["rec0"]},{"kind":"pedestal2","id":"ped1","x":0.4,"y":0.95,"rot":3.141592653589793,"serves":["rec1"]},{"kind":"pedestal2","id":"ped2","x":7.4,"y":0.95,"rot":3.141592653589793,"serves":["rec2"]}],"cleats":[]}}},"frames":[{"frame":0,"dir":0,"file":"WaterSide_east_recFloat_0.png","rect":[0,693,714,693],"native":[723,274],"nativePivot":[342,189],"crop":[4,5],"pivot":[338,184]},{"frame":1,"dir":7,"file":"WaterSide_east_recFloat_0.png","rect":[714,693,714,693],"native":[602,566],"nativePivot":[272,323],"crop":[5,4],"pivot":[267,319]},{"frame":2,"dir":6,"file":"WaterSide_east_recFloat_0.png","rect":[1428,693,714,693],"native":[140,706],"nativePivot":[51,363],"crop":[5,8],"pivot":[46,355]},{"frame":3,"dir":5,"file":"WaterSide_east_recFloat_0.png","rect":[2142,693,714,693],"native":[545,634],"nativePivot":[272,323],"crop":[5,50],"pivot":[267,273]},{"frame":4,"dir":4,"file":"WaterSide_east_recFloat_0.png","rect":[2856,693,714,693],"native":[723,343],"nativePivot":[380,187],"crop":[4,68],"pivot":[376,119]},{"frame":5,"dir":3,"file":"WaterSide_east_recFloat_0.png","rect":[0,0,714,693],"native":[602,589],"nativePivot":[330,304],"crop":[4,31],"pivot":[326,273]},{"frame":6,"dir":2,"file":"WaterSide_east_recFloat_0.png","rect":[714,0,714,693],"native":[140,681],"nativePivot":[89,360],"crop":[4,5],"pivot":[85,355]},{"frame":7,"dir":1,"file":"WaterSide_east_recFloat_0.png","rect":[1428,0,714,693],"native":[545,562],"nativePivot":[273,323],"crop":[4,4],"pivot":[269,319]}],"sheets":[{"file":"WaterSide_east_recFloat_0.png","width":3570,"height":1386,"rgbaSha256":"4c721157ed28d2bd4b5ad7d00a34911ec8c6243c12c502bbbac01355c7528a1a"}],"modelKey":"harbour:h5_east_recFloat","cellSize":[714,693]},{"key":"east_gangway_s0","harbour":"east","name":"gangway_s0","at":[179.3,86],"elevation":3.3999999999999995,"gangway":{"id":"gangway","step":0,"drop":0.72,"hinge":[179.3,86],"landing":[179.3,70.53],"width":1.24,"length":16.2,"floatModule":"recFloat"},"bounds":{"min":[-0.625,-16.633992,-1.090281],"max":[0.625,0.22,1.023976]},"frames":[{"frame":0,"dir":0,"file":"WaterSide_east_gangway_s0_0.png","rect":[0,385,539,385],"native":[50,394],"nativePivot":[24,30],"crop":[4,5],"pivot":[20,25]},{"frame":1,"dir":7,"file":"WaterSide_east_gangway_s0_0.png","rect":[539,385,539,385],"native":[418,314],"nativePivot":[394,38],"crop":[5,4],"pivot":[389,34]},{"frame":2,"dir":6,"file":"WaterSide_east_gangway_s0_0.png","rect":[1078,385,539,385],"native":[549,86],"nativePivot":[537,42],"crop":[5,5],"pivot":[532,37]},{"frame":3,"dir":5,"file":"WaterSide_east_gangway_s0_0.png","rect":[1617,385,539,385],"native":[418,279],"nativePivot":[394,256],"crop":[5,4],"pivot":[389,252]},{"frame":4,"dir":4,"file":"WaterSide_east_gangway_s0_0.png","rect":[2156,385,539,385],"native":[50,359],"nativePivot":[24,345],"crop":[4,4],"pivot":[20,341]},{"frame":5,"dir":3,"file":"WaterSide_east_gangway_s0_0.png","rect":[2695,385,539,385],"native":[418,279],"nativePivot":[24,256],"crop":[5,4],"pivot":[19,252]},{"frame":6,"dir":2,"file":"WaterSide_east_gangway_s0_0.png","rect":[3234,385,539,385],"native":[549,86],"nativePivot":[12,42],"crop":[5,5],"pivot":[7,37]},{"frame":7,"dir":1,"file":"WaterSide_east_gangway_s0_0.png","rect":[0,0,539,385],"native":[418,314],"nativePivot":[24,38],"crop":[5,4],"pivot":[19,34]}],"sheets":[{"file":"WaterSide_east_gangway_s0_0.png","width":3773,"height":770,"rgbaSha256":"51a7dceb8a237022a08d929afc4f89c3bd8036b51e2d16d42ea0204acd950c32"}],"modelKey":"harbour:h5_east_gangway_s0","cellSize":[539,385]},{"key":"east_gangway_s1","harbour":"east","name":"gangway_s1","at":[179.3,86],"elevation":3.3999999999999995,"gangway":{"id":"gangway","step":1,"drop":1.27,"hinge":[179.3,86],"landing":[179.3,70.53],"width":1.24,"length":16.2,"floatModule":"recFloat"},"bounds":{"min":[-0.625,-16.600142,-1.640218],"max":[0.625,0.22,1.023926]},"frames":[{"frame":0,"dir":0,"file":"WaterSide_east_gangway_s1_0.png","rect":[0,398,538,398],"native":[50,407],"nativePivot":[24,30],"crop":[4,5],"pivot":[20,25]},{"frame":1,"dir":7,"file":"WaterSide_east_gangway_s1_0.png","rect":[538,398,538,398],"native":[417,327],"nativePivot":[393,38],"crop":[5,4],"pivot":[388,34]},{"frame":2,"dir":6,"file":"WaterSide_east_gangway_s1_0.png","rect":[1076,398,538,398],"native":[548,100],"nativePivot":[536,42],"crop":[5,5],"pivot":[531,37]},{"frame":3,"dir":5,"file":"WaterSide_east_gangway_s1_0.png","rect":[1614,398,538,398],"native":[417,265],"nativePivot":[393,242],"crop":[5,4],"pivot":[388,238]},{"frame":4,"dir":4,"file":"WaterSide_east_gangway_s1_0.png","rect":[2152,398,538,398],"native":[50,345],"nativePivot":[24,331],"crop":[4,5],"pivot":[20,326]},{"frame":5,"dir":3,"file":"WaterSide_east_gangway_s1_0.png","rect":[2690,398,538,398],"native":[417,265],"nativePivot":[24,242],"crop":[5,4],"pivot":[19,238]},{"frame":6,"dir":2,"file":"WaterSide_east_gangway_s1_0.png","rect":[3228,398,538,398],"native":[548,100],"nativePivot":[12,42],"crop":[5,5],"pivot":[7,37]},{"frame":7,"dir":1,"file":"WaterSide_east_gangway_s1_0.png","rect":[0,0,538,398],"native":[417,327],"nativePivot":[24,38],"crop":[5,4],"pivot":[19,34]}],"sheets":[{"file":"WaterSide_east_gangway_s1_0.png","width":3766,"height":796,"rgbaSha256":"f5a074cb0e893924af0fe3bdd4c89ffa629538955969ed3931a741602da96e24"}],"modelKey":"harbour:h5_east_gangway_s1","cellSize":[538,398]},{"key":"east_gangway_s2","harbour":"east","name":"gangway_s2","at":[179.3,86],"elevation":3.3999999999999995,"gangway":{"id":"gangway","step":2,"drop":1.82,"hinge":[179.3,86],"landing":[179.3,70.53],"width":1.24,"length":16.2,"floatModule":"recFloat"},"bounds":{"min":[-0.625,-16.547441,-2.190119],"max":[0.625,0.22,1.023848]},"frames":[{"frame":0,"dir":0,"file":"WaterSide_east_gangway_s2_0.png","rect":[0,410,537,410],"native":[50,419],"nativePivot":[24,30],"crop":[4,5],"pivot":[20,25]},{"frame":1,"dir":7,"file":"WaterSide_east_gangway_s2_0.png","rect":[537,410,537,410],"native":[416,340],"nativePivot":[392,38],"crop":[5,4],"pivot":[387,34]},{"frame":2,"dir":6,"file":"WaterSide_east_gangway_s2_0.png","rect":[1074,410,537,410],"native":[546,113],"nativePivot":[534,42],"crop":[4,5],"pivot":[530,37]},{"frame":3,"dir":5,"file":"WaterSide_east_gangway_s2_0.png","rect":[1611,410,537,410],"native":[416,251],"nativePivot":[392,228],"crop":[5,5],"pivot":[387,223]},{"frame":4,"dir":4,"file":"WaterSide_east_gangway_s2_0.png","rect":[2148,410,537,410],"native":[50,330],"nativePivot":[24,316],"crop":[4,4],"pivot":[20,312]},{"frame":5,"dir":3,"file":"WaterSide_east_gangway_s2_0.png","rect":[2685,410,537,410],"native":[416,251],"nativePivot":[24,228],"crop":[5,5],"pivot":[19,223]},{"frame":6,"dir":2,"file":"WaterSide_east_gangway_s2_0.png","rect":[3222,410,537,410],"native":[546,113],"nativePivot":[12,42],"crop":[5,5],"pivot":[7,37]},{"frame":7,"dir":1,"file":"WaterSide_east_gangway_s2_0.png","rect":[0,0,537,410],"native":[416,340],"nativePivot":[24,38],"crop":[5,4],"pivot":[19,34]}],"sheets":[{"file":"WaterSide_east_gangway_s2_0.png","width":3759,"height":820,"rgbaSha256":"69240dc81c640e7461364979dc31c2e3f992b84a0a85038f22337a2f51c7cb9b"}],"modelKey":"harbour:h5_east_gangway_s2","cellSize":[537,410]},{"key":"east_gangway_s3","harbour":"east","name":"gangway_s3","at":[179.3,86],"elevation":3.3999999999999995,"gangway":{"id":"gangway","step":3,"drop":2.37,"hinge":[179.3,86],"landing":[179.3,70.53],"width":1.24,"length":16.2,"floatModule":"recFloat"},"bounds":{"min":[-0.625,-16.475701,-2.739985],"max":[0.625,0.22,1.023742]},"frames":[{"frame":0,"dir":0,"file":"WaterSide_east_gangway_s3_0.png","rect":[0,422,534,422],"native":[50,431],"nativePivot":[24,30],"crop":[4,5],"pivot":[20,25]},{"frame":1,"dir":7,"file":"WaterSide_east_gangway_s3_0.png","rect":[534,422,534,422],"native":[414,352],"nativePivot":[390,38],"crop":[5,4],"pivot":[385,34]},{"frame":2,"dir":6,"file":"WaterSide_east_gangway_s3_0.png","rect":[1068,422,534,422],"native":[544,127],"nativePivot":[532,42],"crop":[5,5],"pivot":[527,37]},{"frame":3,"dir":5,"file":"WaterSide_east_gangway_s3_0.png","rect":[1602,422,534,422],"native":[414,236],"nativePivot":[390,213],"crop":[5,4],"pivot":[385,209]},{"frame":4,"dir":4,"file":"WaterSide_east_gangway_s3_0.png","rect":[2136,422,534,422],"native":[50,315],"nativePivot":[24,301],"crop":[4,4],"pivot":[20,297]},{"frame":5,"dir":3,"file":"WaterSide_east_gangway_s3_0.png","rect":[2670,422,534,422],"native":[414,236],"nativePivot":[24,213],"crop":[5,4],"pivot":[19,209]},{"frame":6,"dir":2,"file":"WaterSide_east_gangway_s3_0.png","rect":[3204,422,534,422],"native":[544,127],"nativePivot":[12,42],"crop":[5,5],"pivot":[7,37]},{"frame":7,"dir":1,"file":"WaterSide_east_gangway_s3_0.png","rect":[0,0,534,422],"native":[414,352],"nativePivot":[24,38],"crop":[5,4],"pivot":[19,34]}],"sheets":[{"file":"WaterSide_east_gangway_s3_0.png","width":3738,"height":844,"rgbaSha256":"0b2d1da920005094758bc07722b739ad202166d3d02e6985d39527de7461464b"}],"modelKey":"harbour:h5_east_gangway_s3","cellSize":[534,422]},{"key":"east_gangway_s4","harbour":"east","name":"gangway_s4","at":[179.3,86],"elevation":3.3999999999999995,"gangway":{"id":"gangway","step":4,"drop":2.92,"hinge":[179.3,86],"landing":[179.3,70.53],"width":1.24,"length":16.2,"floatModule":"recFloat"},"bounds":{"min":[-0.625,-16.384667,-3.289814],"max":[0.625,0.22,1.023607]},"frames":[{"frame":0,"dir":0,"file":"WaterSide_east_gangway_s4_0.png","rect":[0,434,531,434],"native":[50,443],"nativePivot":[24,30],"crop":[4,5],"pivot":[20,25]},{"frame":1,"dir":7,"file":"WaterSide_east_gangway_s4_0.png","rect":[531,434,531,434],"native":[412,364],"nativePivot":[388,38],"crop":[5,4],"pivot":[383,34]},{"frame":2,"dir":6,"file":"WaterSide_east_gangway_s4_0.png","rect":[1062,434,531,434],"native":[541,140],"nativePivot":[529,42],"crop":[5,5],"pivot":[524,37]},{"frame":3,"dir":5,"file":"WaterSide_east_gangway_s4_0.png","rect":[1593,434,531,434],"native":[412,221],"nativePivot":[388,198],"crop":[5,4],"pivot":[383,194]},{"frame":4,"dir":4,"file":"WaterSide_east_gangway_s4_0.png","rect":[2124,434,531,434],"native":[50,300],"nativePivot":[24,286],"crop":[4,5],"pivot":[20,281]},{"frame":5,"dir":3,"file":"WaterSide_east_gangway_s4_0.png","rect":[2655,434,531,434],"native":[412,221],"nativePivot":[24,198],"crop":[5,4],"pivot":[19,194]},{"frame":6,"dir":2,"file":"WaterSide_east_gangway_s4_0.png","rect":[3186,434,531,434],"native":[541,140],"nativePivot":[12,42],"crop":[5,5],"pivot":[7,37]},{"frame":7,"dir":1,"file":"WaterSide_east_gangway_s4_0.png","rect":[0,0,531,434],"native":[412,364],"nativePivot":[24,38],"crop":[5,4],"pivot":[19,34]}],"sheets":[{"file":"WaterSide_east_gangway_s4_0.png","width":3717,"height":868,"rgbaSha256":"304942849779c5833002cca1ebf0972d15dc25927f75bdef5716ac6dce9f784b"}],"modelKey":"harbour:h5_east_gangway_s4","cellSize":[531,434]},{"key":"east_gangway_s5","harbour":"east","name":"gangway_s5","at":[179.3,86],"elevation":3.3999999999999995,"gangway":{"id":"gangway","step":5,"drop":3.47,"hinge":[179.3,86],"landing":[179.3,70.53],"width":1.24,"length":16.2,"floatModule":"recFloat"},"bounds":{"min":[-0.625,-16.274004,-3.839607],"max":[0.625,0.22,1.023443]},"frames":[{"frame":0,"dir":0,"file":"WaterSide_east_gangway_s5_0.png","rect":[0,445,528,445],"native":[50,454],"nativePivot":[24,30],"crop":[4,5],"pivot":[20,25]},{"frame":1,"dir":7,"file":"WaterSide_east_gangway_s5_0.png","rect":[528,445,528,445],"native":[409,376],"nativePivot":[385,38],"crop":[4,4],"pivot":[381,34]},{"frame":2,"dir":6,"file":"WaterSide_east_gangway_s5_0.png","rect":[1056,445,528,445],"native":[537,154],"nativePivot":[525,42],"crop":[4,5],"pivot":[521,37]},{"frame":3,"dir":5,"file":"WaterSide_east_gangway_s5_0.png","rect":[1584,445,528,445],"native":[409,206],"nativePivot":[385,183],"crop":[4,4],"pivot":[381,179]},{"frame":4,"dir":4,"file":"WaterSide_east_gangway_s5_0.png","rect":[2112,445,528,445],"native":[50,284],"nativePivot":[24,270],"crop":[4,4],"pivot":[20,266]},{"frame":5,"dir":3,"file":"WaterSide_east_gangway_s5_0.png","rect":[2640,445,528,445],"native":[409,206],"nativePivot":[24,183],"crop":[5,4],"pivot":[19,179]},{"frame":6,"dir":2,"file":"WaterSide_east_gangway_s5_0.png","rect":[3168,445,528,445],"native":[537,154],"nativePivot":[12,42],"crop":[5,5],"pivot":[7,37]},{"frame":7,"dir":1,"file":"WaterSide_east_gangway_s5_0.png","rect":[0,0,528,445],"native":[409,376],"nativePivot":[24,38],"crop":[5,4],"pivot":[19,34]}],"sheets":[{"file":"WaterSide_east_gangway_s5_0.png","width":3696,"height":890,"rgbaSha256":"c8826e5cbc80cd28579352617f09436a904953a8560c0c1fb5950e4a0a3ef8ec"}],"modelKey":"harbour:h5_east_gangway_s5","cellSize":[528,445]},{"key":"east_gangway_s6","harbour":"east","name":"gangway_s6","at":[179.3,86],"elevation":3.3999999999999995,"gangway":{"id":"gangway","step":6,"drop":4.02,"hinge":[179.3,86],"landing":[179.3,70.53],"width":1.24,"length":16.2,"floatModule":"recFloat"},"bounds":{"min":[-0.625,-16.143298,-4.389363],"max":[0.625,0.22,1.023249]},"frames":[{"frame":0,"dir":0,"file":"WaterSide_east_gangway_s6_0.png","rect":[0,456,524,456],"native":[50,465],"nativePivot":[24,30],"crop":[4,5],"pivot":[20,25]},{"frame":1,"dir":7,"file":"WaterSide_east_gangway_s6_0.png","rect":[524,456,524,456],"native":[406,388],"nativePivot":[382,38],"crop":[5,4],"pivot":[377,34]},{"frame":2,"dir":6,"file":"WaterSide_east_gangway_s6_0.png","rect":[1048,456,524,456],"native":[533,167],"nativePivot":[521,42],"crop":[4,5],"pivot":[517,37]},{"frame":3,"dir":5,"file":"WaterSide_east_gangway_s6_0.png","rect":[1572,456,524,456],"native":[406,191],"nativePivot":[382,168],"crop":[4,4],"pivot":[378,164]},{"frame":4,"dir":4,"file":"WaterSide_east_gangway_s6_0.png","rect":[2096,456,524,456],"native":[50,268],"nativePivot":[24,254],"crop":[4,4],"pivot":[20,250]},{"frame":5,"dir":3,"file":"WaterSide_east_gangway_s6_0.png","rect":[2620,456,524,456],"native":[406,191],"nativePivot":[24,168],"crop":[5,4],"pivot":[19,164]},{"frame":6,"dir":2,"file":"WaterSide_east_gangway_s6_0.png","rect":[3144,456,524,456],"native":[533,167],"nativePivot":[12,42],"crop":[5,5],"pivot":[7,37]},{"frame":7,"dir":1,"file":"WaterSide_east_gangway_s6_0.png","rect":[0,0,524,456],"native":[406,388],"nativePivot":[24,38],"crop":[5,4],"pivot":[19,34]}],"sheets":[{"file":"WaterSide_east_gangway_s6_0.png","width":3668,"height":912,"rgbaSha256":"1a71c886e523b2d1d4f0f0cbea81b067bea0479f41421b89c0240a690ab395a2"}],"modelKey":"harbour:h5_east_gangway_s6","cellSize":[524,456]},{"key":"east_gangway_s7","harbour":"east","name":"gangway_s7","at":[179.3,86],"elevation":3.3999999999999995,"gangway":{"id":"gangway","step":7,"drop":4.57,"hinge":[179.3,86],"landing":[179.3,70.53],"width":1.24,"length":16.2,"floatModule":"recFloat"},"bounds":{"min":[-0.625,-15.992043,-4.93908],"max":[0.625,0.22,1.023025]},"frames":[{"frame":0,"dir":0,"file":"WaterSide_east_gangway_s7_0.png","rect":[0,466,519,466],"native":[50,475],"nativePivot":[24,30],"crop":[4,5],"pivot":[20,25]},{"frame":1,"dir":7,"file":"WaterSide_east_gangway_s7_0.png","rect":[519,466,519,466],"native":[403,399],"nativePivot":[379,38],"crop":[5,4],"pivot":[374,34]},{"frame":2,"dir":6,"file":"WaterSide_east_gangway_s7_0.png","rect":[1038,466,519,466],"native":[528,180],"nativePivot":[516,42],"crop":[4,5],"pivot":[512,37]},{"frame":3,"dir":5,"file":"WaterSide_east_gangway_s7_0.png","rect":[1557,466,519,466],"native":[403,175],"nativePivot":[379,152],"crop":[5,4],"pivot":[374,148]},{"frame":4,"dir":4,"file":"WaterSide_east_gangway_s7_0.png","rect":[2076,466,519,466],"native":[50,252],"nativePivot":[24,237],"crop":[4,4],"pivot":[20,233]},{"frame":5,"dir":3,"file":"WaterSide_east_gangway_s7_0.png","rect":[2595,466,519,466],"native":[403,175],"nativePivot":[24,152],"crop":[5,4],"pivot":[19,148]},{"frame":6,"dir":2,"file":"WaterSide_east_gangway_s7_0.png","rect":[3114,466,519,466],"native":[528,180],"nativePivot":[12,42],"crop":[5,5],"pivot":[7,37]},{"frame":7,"dir":1,"file":"WaterSide_east_gangway_s7_0.png","rect":[0,0,519,466],"native":[403,399],"nativePivot":[24,38],"crop":[5,4],"pivot":[19,34]}],"sheets":[{"file":"WaterSide_east_gangway_s7_0.png","width":3633,"height":932,"rgbaSha256":"fdce247ed9e940a66c2e885aef7ffcc165c0e768722966c07a44a46fcae073cf"}],"modelKey":"harbour:h5_east_gangway_s7","cellSize":[519,466]},{"key":"east_gangway_s8","harbour":"east","name":"gangway_s8","at":[179.3,86],"elevation":3.3999999999999995,"gangway":{"id":"gangway","step":8,"drop":5.12,"hinge":[179.3,86],"landing":[179.3,70.53],"width":1.24,"length":16.2,"floatModule":"recFloat"},"bounds":{"min":[-0.625,-15.819632,-5.488757],"max":[0.625,0.22,1.02277]},"frames":[{"frame":0,"dir":0,"file":"WaterSide_east_gangway_s8_0.png","rect":[0,476,513,476],"native":[50,485],"nativePivot":[24,30],"crop":[4,5],"pivot":[20,25]},{"frame":1,"dir":7,"file":"WaterSide_east_gangway_s8_0.png","rect":[513,476,513,476],"native":[399,410],"nativePivot":[375,38],"crop":[5,4],"pivot":[370,34]},{"frame":2,"dir":6,"file":"WaterSide_east_gangway_s8_0.png","rect":[1026,476,513,476],"native":[523,194],"nativePivot":[511,42],"crop":[5,5],"pivot":[506,37]},{"frame":3,"dir":5,"file":"WaterSide_east_gangway_s8_0.png","rect":[1539,476,513,476],"native":[399,159],"nativePivot":[375,136],"crop":[5,4],"pivot":[370,132]},{"frame":4,"dir":4,"file":"WaterSide_east_gangway_s8_0.png","rect":[2052,476,513,476],"native":[50,235],"nativePivot":[24,220],"crop":[4,4],"pivot":[20,216]},{"frame":5,"dir":3,"file":"WaterSide_east_gangway_s8_0.png","rect":[2565,476,513,476],"native":[399,159],"nativePivot":[24,136],"crop":[5,4],"pivot":[19,132]},{"frame":6,"dir":2,"file":"WaterSide_east_gangway_s8_0.png","rect":[3078,476,513,476],"native":[523,194],"nativePivot":[12,42],"crop":[5,5],"pivot":[7,37]},{"frame":7,"dir":1,"file":"WaterSide_east_gangway_s8_0.png","rect":[0,0,513,476],"native":[399,410],"nativePivot":[24,38],"crop":[5,4],"pivot":[19,34]}],"sheets":[{"file":"WaterSide_east_gangway_s8_0.png","width":3591,"height":952,"rgbaSha256":"3d26b826488cda5676666e42971b264835676f00a51d93e4b81dfdc029cd8ee5"}],"modelKey":"harbour:h5_east_gangway_s8","cellSize":[513,476]}],"register":{"fingers":[{"id":"float.nmc_finger_a","x":109.7,"y":[43.9,71.1],"width":2.4,"gangway":{"from":[109.7,86],"length":16}},{"id":"float.nmc_finger_b","x":142.3,"y":[43.9,71.1],"width":2.4,"gangway":{"from":[142.3,86],"length":16}}],"berths":[{"id":"berth.nmc_wall_0","owner":"the player","slot":[78.6,93.8],"face":86,"hull":null,"note":"kept for the player"},{"id":"berth.nmc_wall_1","owner":"Leo Arsenault","slot":[93.8,108.2],"face":86,"hull":"lobStdHardtopNth"},{"id":"berth.nmc_wall_2","owner":"Marie Gallant","slot":[111.2,126.4],"face":86,"hull":"capeIslander"},{"id":"berth.nmc_wall_3","owner":"Yvette Doiron","slot":[126.4,140.8],"face":86,"hull":"lobStdOpenFundy"},{"id":"berth.nmc_wall_4","owner":"Ross MacDonald","slot":[143.8,154.8],"face":86,"hull":"lobInHardtopNfld"},{"id":"berth.nmc_wall_5","owner":"Hughie Campbell","slot":[154.8,165.8],"face":86,"hull":"lobInOpenNth"}],"fingerBerths":[{"id":"berth.nmc_finger_a_w0","hull":"lobInHardtopNfld","x":106.552,"y":[61.821,70.435],"heading":"N","who":"the ambient fleet (a shed lot each when the register grows)"},{"id":"berth.nmc_finger_a_w1","hull":"capeIslander","x":106.26,"y":[47.621,60.421],"heading":"N","who":"the ambient fleet (a shed lot each when the register grows)"},{"id":"berth.nmc_finger_a_e2","hull":"lobStdHardtopNth","x":113.26,"y":[58.31,70.435],"heading":"N","who":"the ambient fleet (a shed lot each when the register grows)"},{"id":"berth.nmc_finger_a_e3","hull":"lobInOpenNth","x":112.816,"y":[48.22,56.91],"heading":"N","who":"the ambient fleet (a shed lot each when the register grows)"},{"id":"berth.nmc_finger_b_w4","hull":"lobStdOpenFundy","x":138.8,"y":[58.375,70.435],"heading":"N","who":"the ambient fleet (a shed lot each when the register grows)"},{"id":"berth.nmc_finger_b_w5","hull":"lobInHardtopNfld","x":139.152,"y":[48.361,56.975],"heading":"N","who":"the ambient fleet (a shed lot each when the register grows)"},{"id":"berth.nmc_finger_b_e6","hull":"lobStdHardtopFundy","x":145.8,"y":[58.375,70.435],"heading":"N","who":"the ambient fleet (a shed lot each when the register grows)"},{"id":"berth.nmc_finger_b_e7","hull":"capeIslander","x":145.74,"y":[44.175,56.975],"heading":"N","who":"the ambient fleet (a shed lot each when the register grows)"}],"crane":{"berth":[52,78],"face":76,"boat":"Yvette Doiron, bow west, her cockpit under the hook"},"workingFloat":{"x":[48,72],"y":[58.635,61.035],"note":"where WharfRig2Kit.gangwayFrom puts it off the apron (the bake logs it)"},"recFloat":"three rec boats off the east quay\u2019s gate","ladders":[{"id":"ladder.nmc_berth0","x":86.19999999999999,"face":86},{"id":"ladder.nmc_berth1","x":101,"face":86},{"id":"ladder.nmc_berth2","x":118.80000000000001,"face":86},{"id":"ladder.nmc_berth3","x":133.60000000000002,"face":86},{"id":"ladder.nmc_berth4","x":149.3,"face":86},{"id":"ladder.nmc_berth5","x":160.3,"face":86},{"id":"ladder.nmc_east","x":180.2,"face":86},{"id":"ladder.nmc_unload_w","x":55.5,"face":76},{"id":"ladder.nmc_unload_e","x":76.6,"face":76}],"clearance":{"min":30,"over":[96,156],"need":-4.1,"designBoat":{"type":"capeIslander","loa":12.8,"beam":4.4,"draught":1.4,"berth":"fingerA west, the south berth","at":[106.26,54.02],"heading":"north"}},"tracks":{"in":[[137,-45],[137,-10],[136.2,5],[131,16.5],[121,23.5],[108,27],[98.5,31.5],[94.5,38],[96.5,44],[100.8,47.6],[104.6,50.6],[106.26,54.02]],"outAstern":[[106.26,54.02],[106.1,46],[104.806248,38.5]],"out":[[104.806248,38.5],[108.2,31.5],[115,25.5],[126,21],[133.5,13],[136.6,2],[137,-10],[137,-45]]},"lights":{"west":[115.2,2,"green"],"east":[158.6,-5.6,"red"]},"roads":{"main":{"pts":[[76,120],[190,120]],"w":7.5,"gate":[184.4,115,124]},"parking":[{"id":"yard.parking_w","box":[96.5,106,124.1,133.1]},{"id":"yard.parking_e","box":[141.2,146.8,123.5,132.5]}],"truckTurn":{"id":"yard.restaurant_turn","box":[160.5,176.5,118,131]},"cars":[{"id":"vehicle.nmc_buyer_truck","rig":"VehicleIso","at":[98.2,128.4],"dir":4},{"id":"vehicle.nmc_lot_e","rig":"VehicleIso","at":[101,128.4],"dir":4},{"id":"vehicle.nmc_lot_a","rig":"VehicleIso","at":[103.8,128.4],"dir":4},{"id":"vehicle.nmc_lot_b","rig":"VanIso","at":[142.6,128],"dir":4},{"id":"vehicle.nmc_lot_c","rig":"VehicleIso","at":[145.4,128],"dir":4},{"id":"vehicle.nmc_delivery","rig":"VanIso","at":[171.2,127.8],"dir":6}]}}}'
+  State: ''
+  Variants:
+  - Name: recFloat
+    BakedOptionsJson: '{"module": "east_recFloat"}'
+    GameplayJson: '{"key":"east_recFloat","harbour":"east","name":"recFloat","at":[175.1,69.88],"elevation":0,"floating":true,"freeboard":0.48,"draught":0.85,"bounds":{"min":[-10.55,-1.44,-4.471069],"max":[11.74,2.65,6.09]},"walkPolygon":[[185.6,71.13],[164.6,71.13],[164.6,68.63],[185.6,68.63]],"fittings":{"ladders":[],"tyres":[],"foams":[],"panels":[],"fenderPiles":[],"cleats":[{"x":-9.87,"y":0.95,"z":0.48,"side":1,"face":"water","berth":"berth0","lead":"bow"},{"x":-4.79,"y":0.95,"z":0.48,"side":1,"face":"water","berth":"berth0","lead":"spring"},{"x":-0.95,"y":0.95,"z":0.48,"side":1,"face":"water","berth":"berth0","lead":"spring"},{"x":4.13,"y":0.95,"z":0.48,"side":1,"face":"water","berth":"berth0","lead":"stern"},{"x":4.87,"y":0.95,"z":0.48,"side":1,"face":"water","berth":"berth1","lead":"bow"},{"x":6.94,"y":0.95,"z":0.48,"side":1,"face":"water","berth":"berth1","lead":"spring"},{"x":8.29,"y":0.95,"z":0.48,"side":1,"face":"water","berth":"berth1","lead":"spring"},{"x":9.87,"y":0.95,"z":0.48,"side":1,"face":"water","berth":"berth1","lead":"stern"}],"bollards":[],"rings":[],"rails":[],"berths":{"water":{"list":[{"id":"berth0","hull":"cape","label":"Cape Islander","cls":"B","loa":12.8,"beam":4.4,"draft":1.4,"gun":1.15,"sole":0.4,"x":-2.87,"x0":-9.27,"x1":3.53,"slot":[-10.47,4.73],"fits":true,"afloatAtDatum":true,"ukc":0.5,"line":"16\u201322 mm","fender":"tyre \u00b7 foam","fenderX":[-6.96,-2.87,1.23],"lines":[-9.87,-4.79,-0.95,4.13]},{"id":"berth1","hull":"dory","label":"dory","cls":"A","loa":4.5,"beam":1.5,"draft":0.26,"gun":0.34,"sole":-0.14,"x":7.62,"x0":5.37,"x1":9.87,"slot":[4.77,10.47],"fits":true,"afloatAtDatum":true,"ukc":0.3,"line":"12\u201316 mm","fender":"foam","fenderX":[6.49,8.74],"lines":[4.77,6.94,8.29,10.47]}],"faceLen":21,"kind":"float","utilisation":1,"segments":[[-10.5,10.5]],"dry":[]}},"gaps":{"water":[],"shore":[]},"top":0.48,"hx":10.5,"hy":1.25,"L":21,"tyreRecs":[],"fixtures":[]},"module":{"id":"recFloat","key":"float","grp":1,"rot":3.141592653589793,"at":[2.1,69.88],"o":{"hull":"composite","bays":7,"bayLen":3,"width":2.5,"freeboard":0.48,"tideRange":4.4,"faces":["water"],"guideFace":"shore","open":{"shore":[[3.4,5]]},"fixtures":[],"marina":{"conduits":["water","shore"],"items":[{"kind":"dockLight","x":-8.5,"y":-1.05,"rot":0},{"kind":"dockLight","x":-2.5,"y":1.05,"rot":0},{"kind":"dockLight","x":3.5,"y":-1.05,"rot":0},{"kind":"dockLight","x":9.5,"y":1.05,"rot":0},{"kind":"pedestal2","id":"ped0","x":-6.8,"y":0.95,"rot":3.141592653589793,"serves":["rec0"]},{"kind":"pedestal2","id":"ped1","x":0.4,"y":0.95,"rot":3.141592653589793,"serves":["rec1"]},{"kind":"pedestal2","id":"ped2","x":7.4,"y":0.95,"rot":3.141592653589793,"serves":["rec2"]}],"cleats":[]}}},"frames":[{"frame":0,"dir":0,"file":"WaterSide_east_recFloat_0.png","rect":[0,693,714,693],"native":[723,274],"nativePivot":[342,189],"crop":[4,5],"pivot":[338,184]},{"frame":1,"dir":7,"file":"WaterSide_east_recFloat_0.png","rect":[714,693,714,693],"native":[602,566],"nativePivot":[272,323],"crop":[5,4],"pivot":[267,319]},{"frame":2,"dir":6,"file":"WaterSide_east_recFloat_0.png","rect":[1428,693,714,693],"native":[140,706],"nativePivot":[51,363],"crop":[5,8],"pivot":[46,355]},{"frame":3,"dir":5,"file":"WaterSide_east_recFloat_0.png","rect":[2142,693,714,693],"native":[545,634],"nativePivot":[272,323],"crop":[5,50],"pivot":[267,273]},{"frame":4,"dir":4,"file":"WaterSide_east_recFloat_0.png","rect":[2856,693,714,693],"native":[723,343],"nativePivot":[380,187],"crop":[4,68],"pivot":[376,119]},{"frame":5,"dir":3,"file":"WaterSide_east_recFloat_0.png","rect":[0,0,714,693],"native":[602,589],"nativePivot":[330,304],"crop":[4,31],"pivot":[326,273]},{"frame":6,"dir":2,"file":"WaterSide_east_recFloat_0.png","rect":[714,0,714,693],"native":[140,681],"nativePivot":[89,360],"crop":[4,5],"pivot":[85,355]},{"frame":7,"dir":1,"file":"WaterSide_east_recFloat_0.png","rect":[1428,0,714,693],"native":[545,562],"nativePivot":[273,323],"crop":[4,4],"pivot":[269,319]}],"sheets":[{"file":"WaterSide_east_recFloat_0.png","width":3570,"height":1386,"rgbaSha256":"4c721157ed28d2bd4b5ad7d00a34911ec8c6243c12c502bbbac01355c7528a1a"}],"modelKey":"harbour:h5_east_recFloat","cellSize":[714,693]}'
+    BoundsMin:
+      x: -10.55
+      y: -1.44
+      z: -4.471069
+    BoundsMax:
+      x: 11.74
+      y: 2.65
+      z: 6.09
+    Frames:
+    - Sprite:
+        fileID: 6554482280655877578
+        guid: 3ee26371731c70729d1394771b2edd6b
+        type: 3
+      RigDir: 0
+      ShowFaces: '0'
+      BearingDeg: 0
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 723
+        y: 274
+      NativePivot:
+        x: 342
+        y: 189
+      Crop:
+        x: 4
+        y: 5
+      Pivot:
+        x: 338
+        y: 184
+    - Sprite:
+        fileID: 944517777678418111
+        guid: 3ee26371731c70729d1394771b2edd6b
+        type: 3
+      RigDir: 7
+      ShowFaces: '7'
+      BearingDeg: 315
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 602
+        y: 566
+      NativePivot:
+        x: 272
+        y: 323
+      Crop:
+        x: 5
+        y: 4
+      Pivot:
+        x: 267
+        y: 319
+    - Sprite:
+        fileID: 8332603264241998789
+        guid: 3ee26371731c70729d1394771b2edd6b
+        type: 3
+      RigDir: 6
+      ShowFaces: '6'
+      BearingDeg: 270
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 140
+        y: 706
+      NativePivot:
+        x: 51
+        y: 363
+      Crop:
+        x: 5
+        y: 8
+      Pivot:
+        x: 46
+        y: 355
+    - Sprite:
+        fileID: 4795294161755811053
+        guid: 3ee26371731c70729d1394771b2edd6b
+        type: 3
+      RigDir: 5
+      ShowFaces: '5'
+      BearingDeg: 225
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 545
+        y: 634
+      NativePivot:
+        x: 272
+        y: 323
+      Crop:
+        x: 5
+        y: 50
+      Pivot:
+        x: 267
+        y: 273
+    - Sprite:
+        fileID: 3284244308595323852
+        guid: 3ee26371731c70729d1394771b2edd6b
+        type: 3
+      RigDir: 4
+      ShowFaces: '4'
+      BearingDeg: 180
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 723
+        y: 343
+      NativePivot:
+        x: 380
+        y: 187
+      Crop:
+        x: 4
+        y: 68
+      Pivot:
+        x: 376
+        y: 119
+    - Sprite:
+        fileID: 5740987608885349216
+        guid: 3ee26371731c70729d1394771b2edd6b
+        type: 3
+      RigDir: 3
+      ShowFaces: '3'
+      BearingDeg: 135
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 602
+        y: 589
+      NativePivot:
+        x: 330
+        y: 304
+      Crop:
+        x: 4
+        y: 31
+      Pivot:
+        x: 326
+        y: 273
+    - Sprite:
+        fileID: 1571875532958037551
+        guid: 3ee26371731c70729d1394771b2edd6b
+        type: 3
+      RigDir: 2
+      ShowFaces: '2'
+      BearingDeg: 90
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 140
+        y: 681
+      NativePivot:
+        x: 89
+        y: 360
+      Crop:
+        x: 4
+        y: 5
+      Pivot:
+        x: 85
+        y: 355
+    - Sprite:
+        fileID: 4900096014593199720
+        guid: 3ee26371731c70729d1394771b2edd6b
+        type: 3
+      RigDir: 1
+      ShowFaces: '1'
+      BearingDeg: 45
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 545
+        y: 562
+      NativePivot:
+        x: 273
+        y: 323
+      Crop:
+        x: 4
+        y: 4
+      Pivot:
+        x: 269
+        y: 319
+    Anchors: []
+    Colliders: []
+  - Name: gangway_s0
+    BakedOptionsJson: '{"module": "east_gangway_s0"}'
+    GameplayJson: '{"key":"east_gangway_s0","harbour":"east","name":"gangway_s0","at":[179.3,86],"elevation":3.3999999999999995,"gangway":{"id":"gangway","step":0,"drop":0.72,"hinge":[179.3,86],"landing":[179.3,70.53],"width":1.24,"length":16.2,"floatModule":"recFloat"},"bounds":{"min":[-0.625,-16.633992,-1.090281],"max":[0.625,0.22,1.023976]},"frames":[{"frame":0,"dir":0,"file":"WaterSide_east_gangway_s0_0.png","rect":[0,385,539,385],"native":[50,394],"nativePivot":[24,30],"crop":[4,5],"pivot":[20,25]},{"frame":1,"dir":7,"file":"WaterSide_east_gangway_s0_0.png","rect":[539,385,539,385],"native":[418,314],"nativePivot":[394,38],"crop":[5,4],"pivot":[389,34]},{"frame":2,"dir":6,"file":"WaterSide_east_gangway_s0_0.png","rect":[1078,385,539,385],"native":[549,86],"nativePivot":[537,42],"crop":[5,5],"pivot":[532,37]},{"frame":3,"dir":5,"file":"WaterSide_east_gangway_s0_0.png","rect":[1617,385,539,385],"native":[418,279],"nativePivot":[394,256],"crop":[5,4],"pivot":[389,252]},{"frame":4,"dir":4,"file":"WaterSide_east_gangway_s0_0.png","rect":[2156,385,539,385],"native":[50,359],"nativePivot":[24,345],"crop":[4,4],"pivot":[20,341]},{"frame":5,"dir":3,"file":"WaterSide_east_gangway_s0_0.png","rect":[2695,385,539,385],"native":[418,279],"nativePivot":[24,256],"crop":[5,4],"pivot":[19,252]},{"frame":6,"dir":2,"file":"WaterSide_east_gangway_s0_0.png","rect":[3234,385,539,385],"native":[549,86],"nativePivot":[12,42],"crop":[5,5],"pivot":[7,37]},{"frame":7,"dir":1,"file":"WaterSide_east_gangway_s0_0.png","rect":[0,0,539,385],"native":[418,314],"nativePivot":[24,38],"crop":[5,4],"pivot":[19,34]}],"sheets":[{"file":"WaterSide_east_gangway_s0_0.png","width":3773,"height":770,"rgbaSha256":"51a7dceb8a237022a08d929afc4f89c3bd8036b51e2d16d42ea0204acd950c32"}],"modelKey":"harbour:h5_east_gangway_s0","cellSize":[539,385]}'
+    BoundsMin:
+      x: -0.625
+      y: -16.633992
+      z: -1.090281
+    BoundsMax:
+      x: 0.625
+      y: 0.22
+      z: 1.023976
+    Frames:
+    - Sprite:
+        fileID: 3318759474363626473
+        guid: 785abcdb7baaf0fc1e3b50943cd2712d
+        type: 3
+      RigDir: 0
+      ShowFaces: '0'
+      BearingDeg: 0
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 50
+        y: 394
+      NativePivot:
+        x: 24
+        y: 30
+      Crop:
+        x: 4
+        y: 5
+      Pivot:
+        x: 20
+        y: 25
+    - Sprite:
+        fileID: 2864994182555389958
+        guid: 785abcdb7baaf0fc1e3b50943cd2712d
+        type: 3
+      RigDir: 7
+      ShowFaces: '7'
+      BearingDeg: 315
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 418
+        y: 314
+      NativePivot:
+        x: 394
+        y: 38
+      Crop:
+        x: 5
+        y: 4
+      Pivot:
+        x: 389
+        y: 34
+    - Sprite:
+        fileID: 8910291836221876107
+        guid: 785abcdb7baaf0fc1e3b50943cd2712d
+        type: 3
+      RigDir: 6
+      ShowFaces: '6'
+      BearingDeg: 270
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 549
+        y: 86
+      NativePivot:
+        x: 537
+        y: 42
+      Crop:
+        x: 5
+        y: 5
+      Pivot:
+        x: 532
+        y: 37
+    - Sprite:
+        fileID: 8615531670202126955
+        guid: 785abcdb7baaf0fc1e3b50943cd2712d
+        type: 3
+      RigDir: 5
+      ShowFaces: '5'
+      BearingDeg: 225
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 418
+        y: 279
+      NativePivot:
+        x: 394
+        y: 256
+      Crop:
+        x: 5
+        y: 4
+      Pivot:
+        x: 389
+        y: 252
+    - Sprite:
+        fileID: 7594163920469461253
+        guid: 785abcdb7baaf0fc1e3b50943cd2712d
+        type: 3
+      RigDir: 4
+      ShowFaces: '4'
+      BearingDeg: 180
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 50
+        y: 359
+      NativePivot:
+        x: 24
+        y: 345
+      Crop:
+        x: 4
+        y: 4
+      Pivot:
+        x: 20
+        y: 341
+    - Sprite:
+        fileID: 2725230594866438898
+        guid: 785abcdb7baaf0fc1e3b50943cd2712d
+        type: 3
+      RigDir: 3
+      ShowFaces: '3'
+      BearingDeg: 135
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 418
+        y: 279
+      NativePivot:
+        x: 24
+        y: 256
+      Crop:
+        x: 5
+        y: 4
+      Pivot:
+        x: 19
+        y: 252
+    - Sprite:
+        fileID: 3449392856129410266
+        guid: 785abcdb7baaf0fc1e3b50943cd2712d
+        type: 3
+      RigDir: 2
+      ShowFaces: '2'
+      BearingDeg: 90
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 549
+        y: 86
+      NativePivot:
+        x: 12
+        y: 42
+      Crop:
+        x: 5
+        y: 5
+      Pivot:
+        x: 7
+        y: 37
+    - Sprite:
+        fileID: 2556056359666520338
+        guid: 785abcdb7baaf0fc1e3b50943cd2712d
+        type: 3
+      RigDir: 1
+      ShowFaces: '1'
+      BearingDeg: 45
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 418
+        y: 314
+      NativePivot:
+        x: 24
+        y: 38
+      Crop:
+        x: 5
+        y: 4
+      Pivot:
+        x: 19
+        y: 34
+    Anchors: []
+    Colliders: []
+  - Name: gangway_s1
+    BakedOptionsJson: '{"module": "east_gangway_s1"}'
+    GameplayJson: '{"key":"east_gangway_s1","harbour":"east","name":"gangway_s1","at":[179.3,86],"elevation":3.3999999999999995,"gangway":{"id":"gangway","step":1,"drop":1.27,"hinge":[179.3,86],"landing":[179.3,70.53],"width":1.24,"length":16.2,"floatModule":"recFloat"},"bounds":{"min":[-0.625,-16.600142,-1.640218],"max":[0.625,0.22,1.023926]},"frames":[{"frame":0,"dir":0,"file":"WaterSide_east_gangway_s1_0.png","rect":[0,398,538,398],"native":[50,407],"nativePivot":[24,30],"crop":[4,5],"pivot":[20,25]},{"frame":1,"dir":7,"file":"WaterSide_east_gangway_s1_0.png","rect":[538,398,538,398],"native":[417,327],"nativePivot":[393,38],"crop":[5,4],"pivot":[388,34]},{"frame":2,"dir":6,"file":"WaterSide_east_gangway_s1_0.png","rect":[1076,398,538,398],"native":[548,100],"nativePivot":[536,42],"crop":[5,5],"pivot":[531,37]},{"frame":3,"dir":5,"file":"WaterSide_east_gangway_s1_0.png","rect":[1614,398,538,398],"native":[417,265],"nativePivot":[393,242],"crop":[5,4],"pivot":[388,238]},{"frame":4,"dir":4,"file":"WaterSide_east_gangway_s1_0.png","rect":[2152,398,538,398],"native":[50,345],"nativePivot":[24,331],"crop":[4,5],"pivot":[20,326]},{"frame":5,"dir":3,"file":"WaterSide_east_gangway_s1_0.png","rect":[2690,398,538,398],"native":[417,265],"nativePivot":[24,242],"crop":[5,4],"pivot":[19,238]},{"frame":6,"dir":2,"file":"WaterSide_east_gangway_s1_0.png","rect":[3228,398,538,398],"native":[548,100],"nativePivot":[12,42],"crop":[5,5],"pivot":[7,37]},{"frame":7,"dir":1,"file":"WaterSide_east_gangway_s1_0.png","rect":[0,0,538,398],"native":[417,327],"nativePivot":[24,38],"crop":[5,4],"pivot":[19,34]}],"sheets":[{"file":"WaterSide_east_gangway_s1_0.png","width":3766,"height":796,"rgbaSha256":"f5a074cb0e893924af0fe3bdd4c89ffa629538955969ed3931a741602da96e24"}],"modelKey":"harbour:h5_east_gangway_s1","cellSize":[538,398]}'
+    BoundsMin:
+      x: -0.625
+      y: -16.600142
+      z: -1.640218
+    BoundsMax:
+      x: 0.625
+      y: 0.22
+      z: 1.023926
+    Frames:
+    - Sprite:
+        fileID: 4249851768097417141
+        guid: b28df9af277ae12da262b4bd841b8c25
+        type: 3
+      RigDir: 0
+      ShowFaces: '0'
+      BearingDeg: 0
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 50
+        y: 407
+      NativePivot:
+        x: 24
+        y: 30
+      Crop:
+        x: 4
+        y: 5
+      Pivot:
+        x: 20
+        y: 25
+    - Sprite:
+        fileID: 8284651834968721721
+        guid: b28df9af277ae12da262b4bd841b8c25
+        type: 3
+      RigDir: 7
+      ShowFaces: '7'
+      BearingDeg: 315
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 417
+        y: 327
+      NativePivot:
+        x: 393
+        y: 38
+      Crop:
+        x: 5
+        y: 4
+      Pivot:
+        x: 388
+        y: 34
+    - Sprite:
+        fileID: 3915868675837991009
+        guid: b28df9af277ae12da262b4bd841b8c25
+        type: 3
+      RigDir: 6
+      ShowFaces: '6'
+      BearingDeg: 270
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 548
+        y: 100
+      NativePivot:
+        x: 536
+        y: 42
+      Crop:
+        x: 5
+        y: 5
+      Pivot:
+        x: 531
+        y: 37
+    - Sprite:
+        fileID: 3294146964576402074
+        guid: b28df9af277ae12da262b4bd841b8c25
+        type: 3
+      RigDir: 5
+      ShowFaces: '5'
+      BearingDeg: 225
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 417
+        y: 265
+      NativePivot:
+        x: 393
+        y: 242
+      Crop:
+        x: 5
+        y: 4
+      Pivot:
+        x: 388
+        y: 238
+    - Sprite:
+        fileID: 7990077609078896625
+        guid: b28df9af277ae12da262b4bd841b8c25
+        type: 3
+      RigDir: 4
+      ShowFaces: '4'
+      BearingDeg: 180
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 50
+        y: 345
+      NativePivot:
+        x: 24
+        y: 331
+      Crop:
+        x: 4
+        y: 5
+      Pivot:
+        x: 20
+        y: 326
+    - Sprite:
+        fileID: 217015624067199274
+        guid: b28df9af277ae12da262b4bd841b8c25
+        type: 3
+      RigDir: 3
+      ShowFaces: '3'
+      BearingDeg: 135
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 417
+        y: 265
+      NativePivot:
+        x: 24
+        y: 242
+      Crop:
+        x: 5
+        y: 4
+      Pivot:
+        x: 19
+        y: 238
+    - Sprite:
+        fileID: 3678281791374659407
+        guid: b28df9af277ae12da262b4bd841b8c25
+        type: 3
+      RigDir: 2
+      ShowFaces: '2'
+      BearingDeg: 90
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 548
+        y: 100
+      NativePivot:
+        x: 12
+        y: 42
+      Crop:
+        x: 5
+        y: 5
+      Pivot:
+        x: 7
+        y: 37
+    - Sprite:
+        fileID: 7317233264458798157
+        guid: b28df9af277ae12da262b4bd841b8c25
+        type: 3
+      RigDir: 1
+      ShowFaces: '1'
+      BearingDeg: 45
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 417
+        y: 327
+      NativePivot:
+        x: 24
+        y: 38
+      Crop:
+        x: 5
+        y: 4
+      Pivot:
+        x: 19
+        y: 34
+    Anchors: []
+    Colliders: []
+  - Name: gangway_s2
+    BakedOptionsJson: '{"module": "east_gangway_s2"}'
+    GameplayJson: '{"key":"east_gangway_s2","harbour":"east","name":"gangway_s2","at":[179.3,86],"elevation":3.3999999999999995,"gangway":{"id":"gangway","step":2,"drop":1.82,"hinge":[179.3,86],"landing":[179.3,70.53],"width":1.24,"length":16.2,"floatModule":"recFloat"},"bounds":{"min":[-0.625,-16.547441,-2.190119],"max":[0.625,0.22,1.023848]},"frames":[{"frame":0,"dir":0,"file":"WaterSide_east_gangway_s2_0.png","rect":[0,410,537,410],"native":[50,419],"nativePivot":[24,30],"crop":[4,5],"pivot":[20,25]},{"frame":1,"dir":7,"file":"WaterSide_east_gangway_s2_0.png","rect":[537,410,537,410],"native":[416,340],"nativePivot":[392,38],"crop":[5,4],"pivot":[387,34]},{"frame":2,"dir":6,"file":"WaterSide_east_gangway_s2_0.png","rect":[1074,410,537,410],"native":[546,113],"nativePivot":[534,42],"crop":[4,5],"pivot":[530,37]},{"frame":3,"dir":5,"file":"WaterSide_east_gangway_s2_0.png","rect":[1611,410,537,410],"native":[416,251],"nativePivot":[392,228],"crop":[5,5],"pivot":[387,223]},{"frame":4,"dir":4,"file":"WaterSide_east_gangway_s2_0.png","rect":[2148,410,537,410],"native":[50,330],"nativePivot":[24,316],"crop":[4,4],"pivot":[20,312]},{"frame":5,"dir":3,"file":"WaterSide_east_gangway_s2_0.png","rect":[2685,410,537,410],"native":[416,251],"nativePivot":[24,228],"crop":[5,5],"pivot":[19,223]},{"frame":6,"dir":2,"file":"WaterSide_east_gangway_s2_0.png","rect":[3222,410,537,410],"native":[546,113],"nativePivot":[12,42],"crop":[5,5],"pivot":[7,37]},{"frame":7,"dir":1,"file":"WaterSide_east_gangway_s2_0.png","rect":[0,0,537,410],"native":[416,340],"nativePivot":[24,38],"crop":[5,4],"pivot":[19,34]}],"sheets":[{"file":"WaterSide_east_gangway_s2_0.png","width":3759,"height":820,"rgbaSha256":"69240dc81c640e7461364979dc31c2e3f992b84a0a85038f22337a2f51c7cb9b"}],"modelKey":"harbour:h5_east_gangway_s2","cellSize":[537,410]}'
+    BoundsMin:
+      x: -0.625
+      y: -16.547441
+      z: -2.190119
+    BoundsMax:
+      x: 0.625
+      y: 0.22
+      z: 1.023848
+    Frames:
+    - Sprite:
+        fileID: 5535955827316847927
+        guid: 5ffd9b09d6ede9e2328a90c55af59406
+        type: 3
+      RigDir: 0
+      ShowFaces: '0'
+      BearingDeg: 0
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 50
+        y: 419
+      NativePivot:
+        x: 24
+        y: 30
+      Crop:
+        x: 4
+        y: 5
+      Pivot:
+        x: 20
+        y: 25
+    - Sprite:
+        fileID: 545985552271359296
+        guid: 5ffd9b09d6ede9e2328a90c55af59406
+        type: 3
+      RigDir: 7
+      ShowFaces: '7'
+      BearingDeg: 315
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 416
+        y: 340
+      NativePivot:
+        x: 392
+        y: 38
+      Crop:
+        x: 5
+        y: 4
+      Pivot:
+        x: 387
+        y: 34
+    - Sprite:
+        fileID: 4204862654167733813
+        guid: 5ffd9b09d6ede9e2328a90c55af59406
+        type: 3
+      RigDir: 6
+      ShowFaces: '6'
+      BearingDeg: 270
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 546
+        y: 113
+      NativePivot:
+        x: 534
+        y: 42
+      Crop:
+        x: 4
+        y: 5
+      Pivot:
+        x: 530
+        y: 37
+    - Sprite:
+        fileID: 3535117630689137341
+        guid: 5ffd9b09d6ede9e2328a90c55af59406
+        type: 3
+      RigDir: 5
+      ShowFaces: '5'
+      BearingDeg: 225
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 416
+        y: 251
+      NativePivot:
+        x: 392
+        y: 228
+      Crop:
+        x: 5
+        y: 5
+      Pivot:
+        x: 387
+        y: 223
+    - Sprite:
+        fileID: 2836399000390532876
+        guid: 5ffd9b09d6ede9e2328a90c55af59406
+        type: 3
+      RigDir: 4
+      ShowFaces: '4'
+      BearingDeg: 180
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 50
+        y: 330
+      NativePivot:
+        x: 24
+        y: 316
+      Crop:
+        x: 4
+        y: 4
+      Pivot:
+        x: 20
+        y: 312
+    - Sprite:
+        fileID: 7279872677685102899
+        guid: 5ffd9b09d6ede9e2328a90c55af59406
+        type: 3
+      RigDir: 3
+      ShowFaces: '3'
+      BearingDeg: 135
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 416
+        y: 251
+      NativePivot:
+        x: 24
+        y: 228
+      Crop:
+        x: 5
+        y: 5
+      Pivot:
+        x: 19
+        y: 223
+    - Sprite:
+        fileID: 3880354429671335385
+        guid: 5ffd9b09d6ede9e2328a90c55af59406
+        type: 3
+      RigDir: 2
+      ShowFaces: '2'
+      BearingDeg: 90
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 546
+        y: 113
+      NativePivot:
+        x: 12
+        y: 42
+      Crop:
+        x: 5
+        y: 5
+      Pivot:
+        x: 7
+        y: 37
+    - Sprite:
+        fileID: 1270802800313540503
+        guid: 5ffd9b09d6ede9e2328a90c55af59406
+        type: 3
+      RigDir: 1
+      ShowFaces: '1'
+      BearingDeg: 45
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 416
+        y: 340
+      NativePivot:
+        x: 24
+        y: 38
+      Crop:
+        x: 5
+        y: 4
+      Pivot:
+        x: 19
+        y: 34
+    Anchors: []
+    Colliders: []
+  - Name: gangway_s3
+    BakedOptionsJson: '{"module": "east_gangway_s3"}'
+    GameplayJson: '{"key":"east_gangway_s3","harbour":"east","name":"gangway_s3","at":[179.3,86],"elevation":3.3999999999999995,"gangway":{"id":"gangway","step":3,"drop":2.37,"hinge":[179.3,86],"landing":[179.3,70.53],"width":1.24,"length":16.2,"floatModule":"recFloat"},"bounds":{"min":[-0.625,-16.475701,-2.739985],"max":[0.625,0.22,1.023742]},"frames":[{"frame":0,"dir":0,"file":"WaterSide_east_gangway_s3_0.png","rect":[0,422,534,422],"native":[50,431],"nativePivot":[24,30],"crop":[4,5],"pivot":[20,25]},{"frame":1,"dir":7,"file":"WaterSide_east_gangway_s3_0.png","rect":[534,422,534,422],"native":[414,352],"nativePivot":[390,38],"crop":[5,4],"pivot":[385,34]},{"frame":2,"dir":6,"file":"WaterSide_east_gangway_s3_0.png","rect":[1068,422,534,422],"native":[544,127],"nativePivot":[532,42],"crop":[5,5],"pivot":[527,37]},{"frame":3,"dir":5,"file":"WaterSide_east_gangway_s3_0.png","rect":[1602,422,534,422],"native":[414,236],"nativePivot":[390,213],"crop":[5,4],"pivot":[385,209]},{"frame":4,"dir":4,"file":"WaterSide_east_gangway_s3_0.png","rect":[2136,422,534,422],"native":[50,315],"nativePivot":[24,301],"crop":[4,4],"pivot":[20,297]},{"frame":5,"dir":3,"file":"WaterSide_east_gangway_s3_0.png","rect":[2670,422,534,422],"native":[414,236],"nativePivot":[24,213],"crop":[5,4],"pivot":[19,209]},{"frame":6,"dir":2,"file":"WaterSide_east_gangway_s3_0.png","rect":[3204,422,534,422],"native":[544,127],"nativePivot":[12,42],"crop":[5,5],"pivot":[7,37]},{"frame":7,"dir":1,"file":"WaterSide_east_gangway_s3_0.png","rect":[0,0,534,422],"native":[414,352],"nativePivot":[24,38],"crop":[5,4],"pivot":[19,34]}],"sheets":[{"file":"WaterSide_east_gangway_s3_0.png","width":3738,"height":844,"rgbaSha256":"0b2d1da920005094758bc07722b739ad202166d3d02e6985d39527de7461464b"}],"modelKey":"harbour:h5_east_gangway_s3","cellSize":[534,422]}'
+    BoundsMin:
+      x: -0.625
+      y: -16.475701
+      z: -2.739985
+    BoundsMax:
+      x: 0.625
+      y: 0.22
+      z: 1.023742
+    Frames:
+    - Sprite:
+        fileID: 7497564608555475807
+        guid: 029d29ff7da52575caa6081e3646ecdc
+        type: 3
+      RigDir: 0
+      ShowFaces: '0'
+      BearingDeg: 0
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 50
+        y: 431
+      NativePivot:
+        x: 24
+        y: 30
+      Crop:
+        x: 4
+        y: 5
+      Pivot:
+        x: 20
+        y: 25
+    - Sprite:
+        fileID: 4473975781179411249
+        guid: 029d29ff7da52575caa6081e3646ecdc
+        type: 3
+      RigDir: 7
+      ShowFaces: '7'
+      BearingDeg: 315
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 414
+        y: 352
+      NativePivot:
+        x: 390
+        y: 38
+      Crop:
+        x: 5
+        y: 4
+      Pivot:
+        x: 385
+        y: 34
+    - Sprite:
+        fileID: 719384055588029429
+        guid: 029d29ff7da52575caa6081e3646ecdc
+        type: 3
+      RigDir: 6
+      ShowFaces: '6'
+      BearingDeg: 270
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 544
+        y: 127
+      NativePivot:
+        x: 532
+        y: 42
+      Crop:
+        x: 5
+        y: 5
+      Pivot:
+        x: 527
+        y: 37
+    - Sprite:
+        fileID: 1363856425824500275
+        guid: 029d29ff7da52575caa6081e3646ecdc
+        type: 3
+      RigDir: 5
+      ShowFaces: '5'
+      BearingDeg: 225
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 414
+        y: 236
+      NativePivot:
+        x: 390
+        y: 213
+      Crop:
+        x: 5
+        y: 4
+      Pivot:
+        x: 385
+        y: 209
+    - Sprite:
+        fileID: 4113919075425130727
+        guid: 029d29ff7da52575caa6081e3646ecdc
+        type: 3
+      RigDir: 4
+      ShowFaces: '4'
+      BearingDeg: 180
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 50
+        y: 315
+      NativePivot:
+        x: 24
+        y: 301
+      Crop:
+        x: 4
+        y: 4
+      Pivot:
+        x: 20
+        y: 297
+    - Sprite:
+        fileID: 7889002496250567602
+        guid: 029d29ff7da52575caa6081e3646ecdc
+        type: 3
+      RigDir: 3
+      ShowFaces: '3'
+      BearingDeg: 135
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 414
+        y: 236
+      NativePivot:
+        x: 24
+        y: 213
+      Crop:
+        x: 5
+        y: 4
+      Pivot:
+        x: 19
+        y: 209
+    - Sprite:
+        fileID: 3402394583611713514
+        guid: 029d29ff7da52575caa6081e3646ecdc
+        type: 3
+      RigDir: 2
+      ShowFaces: '2'
+      BearingDeg: 90
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 544
+        y: 127
+      NativePivot:
+        x: 12
+        y: 42
+      Crop:
+        x: 5
+        y: 5
+      Pivot:
+        x: 7
+        y: 37
+    - Sprite:
+        fileID: 645947467481859783
+        guid: 029d29ff7da52575caa6081e3646ecdc
+        type: 3
+      RigDir: 1
+      ShowFaces: '1'
+      BearingDeg: 45
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 414
+        y: 352
+      NativePivot:
+        x: 24
+        y: 38
+      Crop:
+        x: 5
+        y: 4
+      Pivot:
+        x: 19
+        y: 34
+    Anchors: []
+    Colliders: []
+  - Name: gangway_s4
+    BakedOptionsJson: '{"module": "east_gangway_s4"}'
+    GameplayJson: '{"key":"east_gangway_s4","harbour":"east","name":"gangway_s4","at":[179.3,86],"elevation":3.3999999999999995,"gangway":{"id":"gangway","step":4,"drop":2.92,"hinge":[179.3,86],"landing":[179.3,70.53],"width":1.24,"length":16.2,"floatModule":"recFloat"},"bounds":{"min":[-0.625,-16.384667,-3.289814],"max":[0.625,0.22,1.023607]},"frames":[{"frame":0,"dir":0,"file":"WaterSide_east_gangway_s4_0.png","rect":[0,434,531,434],"native":[50,443],"nativePivot":[24,30],"crop":[4,5],"pivot":[20,25]},{"frame":1,"dir":7,"file":"WaterSide_east_gangway_s4_0.png","rect":[531,434,531,434],"native":[412,364],"nativePivot":[388,38],"crop":[5,4],"pivot":[383,34]},{"frame":2,"dir":6,"file":"WaterSide_east_gangway_s4_0.png","rect":[1062,434,531,434],"native":[541,140],"nativePivot":[529,42],"crop":[5,5],"pivot":[524,37]},{"frame":3,"dir":5,"file":"WaterSide_east_gangway_s4_0.png","rect":[1593,434,531,434],"native":[412,221],"nativePivot":[388,198],"crop":[5,4],"pivot":[383,194]},{"frame":4,"dir":4,"file":"WaterSide_east_gangway_s4_0.png","rect":[2124,434,531,434],"native":[50,300],"nativePivot":[24,286],"crop":[4,5],"pivot":[20,281]},{"frame":5,"dir":3,"file":"WaterSide_east_gangway_s4_0.png","rect":[2655,434,531,434],"native":[412,221],"nativePivot":[24,198],"crop":[5,4],"pivot":[19,194]},{"frame":6,"dir":2,"file":"WaterSide_east_gangway_s4_0.png","rect":[3186,434,531,434],"native":[541,140],"nativePivot":[12,42],"crop":[5,5],"pivot":[7,37]},{"frame":7,"dir":1,"file":"WaterSide_east_gangway_s4_0.png","rect":[0,0,531,434],"native":[412,364],"nativePivot":[24,38],"crop":[5,4],"pivot":[19,34]}],"sheets":[{"file":"WaterSide_east_gangway_s4_0.png","width":3717,"height":868,"rgbaSha256":"304942849779c5833002cca1ebf0972d15dc25927f75bdef5716ac6dce9f784b"}],"modelKey":"harbour:h5_east_gangway_s4","cellSize":[531,434]}'
+    BoundsMin:
+      x: -0.625
+      y: -16.384667
+      z: -3.289814
+    BoundsMax:
+      x: 0.625
+      y: 0.22
+      z: 1.023607
+    Frames:
+    - Sprite:
+        fileID: 8623177013771278244
+        guid: 6441eb20fa6e6f3d3b152369692b5ed2
+        type: 3
+      RigDir: 0
+      ShowFaces: '0'
+      BearingDeg: 0
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 50
+        y: 443
+      NativePivot:
+        x: 24
+        y: 30
+      Crop:
+        x: 4
+        y: 5
+      Pivot:
+        x: 20
+        y: 25
+    - Sprite:
+        fileID: 7144945661355220228
+        guid: 6441eb20fa6e6f3d3b152369692b5ed2
+        type: 3
+      RigDir: 7
+      ShowFaces: '7'
+      BearingDeg: 315
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 412
+        y: 364
+      NativePivot:
+        x: 388
+        y: 38
+      Crop:
+        x: 5
+        y: 4
+      Pivot:
+        x: 383
+        y: 34
+    - Sprite:
+        fileID: 7335741981552102536
+        guid: 6441eb20fa6e6f3d3b152369692b5ed2
+        type: 3
+      RigDir: 6
+      ShowFaces: '6'
+      BearingDeg: 270
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 541
+        y: 140
+      NativePivot:
+        x: 529
+        y: 42
+      Crop:
+        x: 5
+        y: 5
+      Pivot:
+        x: 524
+        y: 37
+    - Sprite:
+        fileID: 6654672643295182226
+        guid: 6441eb20fa6e6f3d3b152369692b5ed2
+        type: 3
+      RigDir: 5
+      ShowFaces: '5'
+      BearingDeg: 225
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 412
+        y: 221
+      NativePivot:
+        x: 388
+        y: 198
+      Crop:
+        x: 5
+        y: 4
+      Pivot:
+        x: 383
+        y: 194
+    - Sprite:
+        fileID: 6151083954957489531
+        guid: 6441eb20fa6e6f3d3b152369692b5ed2
+        type: 3
+      RigDir: 4
+      ShowFaces: '4'
+      BearingDeg: 180
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 50
+        y: 300
+      NativePivot:
+        x: 24
+        y: 286
+      Crop:
+        x: 4
+        y: 5
+      Pivot:
+        x: 20
+        y: 281
+    - Sprite:
+        fileID: 44462623616402081
+        guid: 6441eb20fa6e6f3d3b152369692b5ed2
+        type: 3
+      RigDir: 3
+      ShowFaces: '3'
+      BearingDeg: 135
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 412
+        y: 221
+      NativePivot:
+        x: 24
+        y: 198
+      Crop:
+        x: 5
+        y: 4
+      Pivot:
+        x: 19
+        y: 194
+    - Sprite:
+        fileID: 4182525873869190295
+        guid: 6441eb20fa6e6f3d3b152369692b5ed2
+        type: 3
+      RigDir: 2
+      ShowFaces: '2'
+      BearingDeg: 90
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 541
+        y: 140
+      NativePivot:
+        x: 12
+        y: 42
+      Crop:
+        x: 5
+        y: 5
+      Pivot:
+        x: 7
+        y: 37
+    - Sprite:
+        fileID: 3268108251301340044
+        guid: 6441eb20fa6e6f3d3b152369692b5ed2
+        type: 3
+      RigDir: 1
+      ShowFaces: '1'
+      BearingDeg: 45
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 412
+        y: 364
+      NativePivot:
+        x: 24
+        y: 38
+      Crop:
+        x: 5
+        y: 4
+      Pivot:
+        x: 19
+        y: 34
+    Anchors: []
+    Colliders: []
+  - Name: gangway_s5
+    BakedOptionsJson: '{"module": "east_gangway_s5"}'
+    GameplayJson: '{"key":"east_gangway_s5","harbour":"east","name":"gangway_s5","at":[179.3,86],"elevation":3.3999999999999995,"gangway":{"id":"gangway","step":5,"drop":3.47,"hinge":[179.3,86],"landing":[179.3,70.53],"width":1.24,"length":16.2,"floatModule":"recFloat"},"bounds":{"min":[-0.625,-16.274004,-3.839607],"max":[0.625,0.22,1.023443]},"frames":[{"frame":0,"dir":0,"file":"WaterSide_east_gangway_s5_0.png","rect":[0,445,528,445],"native":[50,454],"nativePivot":[24,30],"crop":[4,5],"pivot":[20,25]},{"frame":1,"dir":7,"file":"WaterSide_east_gangway_s5_0.png","rect":[528,445,528,445],"native":[409,376],"nativePivot":[385,38],"crop":[4,4],"pivot":[381,34]},{"frame":2,"dir":6,"file":"WaterSide_east_gangway_s5_0.png","rect":[1056,445,528,445],"native":[537,154],"nativePivot":[525,42],"crop":[4,5],"pivot":[521,37]},{"frame":3,"dir":5,"file":"WaterSide_east_gangway_s5_0.png","rect":[1584,445,528,445],"native":[409,206],"nativePivot":[385,183],"crop":[4,4],"pivot":[381,179]},{"frame":4,"dir":4,"file":"WaterSide_east_gangway_s5_0.png","rect":[2112,445,528,445],"native":[50,284],"nativePivot":[24,270],"crop":[4,4],"pivot":[20,266]},{"frame":5,"dir":3,"file":"WaterSide_east_gangway_s5_0.png","rect":[2640,445,528,445],"native":[409,206],"nativePivot":[24,183],"crop":[5,4],"pivot":[19,179]},{"frame":6,"dir":2,"file":"WaterSide_east_gangway_s5_0.png","rect":[3168,445,528,445],"native":[537,154],"nativePivot":[12,42],"crop":[5,5],"pivot":[7,37]},{"frame":7,"dir":1,"file":"WaterSide_east_gangway_s5_0.png","rect":[0,0,528,445],"native":[409,376],"nativePivot":[24,38],"crop":[5,4],"pivot":[19,34]}],"sheets":[{"file":"WaterSide_east_gangway_s5_0.png","width":3696,"height":890,"rgbaSha256":"c8826e5cbc80cd28579352617f09436a904953a8560c0c1fb5950e4a0a3ef8ec"}],"modelKey":"harbour:h5_east_gangway_s5","cellSize":[528,445]}'
+    BoundsMin:
+      x: -0.625
+      y: -16.274004
+      z: -3.839607
+    BoundsMax:
+      x: 0.625
+      y: 0.22
+      z: 1.023443
+    Frames:
+    - Sprite:
+        fileID: 513691999552129349
+        guid: f269832093a0c42cd5b90785c3f7bce9
+        type: 3
+      RigDir: 0
+      ShowFaces: '0'
+      BearingDeg: 0
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 50
+        y: 454
+      NativePivot:
+        x: 24
+        y: 30
+      Crop:
+        x: 4
+        y: 5
+      Pivot:
+        x: 20
+        y: 25
+    - Sprite:
+        fileID: 3374887031537384292
+        guid: f269832093a0c42cd5b90785c3f7bce9
+        type: 3
+      RigDir: 7
+      ShowFaces: '7'
+      BearingDeg: 315
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 409
+        y: 376
+      NativePivot:
+        x: 385
+        y: 38
+      Crop:
+        x: 4
+        y: 4
+      Pivot:
+        x: 381
+        y: 34
+    - Sprite:
+        fileID: 8144981393764290471
+        guid: f269832093a0c42cd5b90785c3f7bce9
+        type: 3
+      RigDir: 6
+      ShowFaces: '6'
+      BearingDeg: 270
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 537
+        y: 154
+      NativePivot:
+        x: 525
+        y: 42
+      Crop:
+        x: 4
+        y: 5
+      Pivot:
+        x: 521
+        y: 37
+    - Sprite:
+        fileID: 4492719521768606794
+        guid: f269832093a0c42cd5b90785c3f7bce9
+        type: 3
+      RigDir: 5
+      ShowFaces: '5'
+      BearingDeg: 225
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 409
+        y: 206
+      NativePivot:
+        x: 385
+        y: 183
+      Crop:
+        x: 4
+        y: 4
+      Pivot:
+        x: 381
+        y: 179
+    - Sprite:
+        fileID: 8701965365104317662
+        guid: f269832093a0c42cd5b90785c3f7bce9
+        type: 3
+      RigDir: 4
+      ShowFaces: '4'
+      BearingDeg: 180
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 50
+        y: 284
+      NativePivot:
+        x: 24
+        y: 270
+      Crop:
+        x: 4
+        y: 4
+      Pivot:
+        x: 20
+        y: 266
+    - Sprite:
+        fileID: 5885716921212920754
+        guid: f269832093a0c42cd5b90785c3f7bce9
+        type: 3
+      RigDir: 3
+      ShowFaces: '3'
+      BearingDeg: 135
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 409
+        y: 206
+      NativePivot:
+        x: 24
+        y: 183
+      Crop:
+        x: 5
+        y: 4
+      Pivot:
+        x: 19
+        y: 179
+    - Sprite:
+        fileID: 8041697170641409489
+        guid: f269832093a0c42cd5b90785c3f7bce9
+        type: 3
+      RigDir: 2
+      ShowFaces: '2'
+      BearingDeg: 90
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 537
+        y: 154
+      NativePivot:
+        x: 12
+        y: 42
+      Crop:
+        x: 5
+        y: 5
+      Pivot:
+        x: 7
+        y: 37
+    - Sprite:
+        fileID: 761796621006767193
+        guid: f269832093a0c42cd5b90785c3f7bce9
+        type: 3
+      RigDir: 1
+      ShowFaces: '1'
+      BearingDeg: 45
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 409
+        y: 376
+      NativePivot:
+        x: 24
+        y: 38
+      Crop:
+        x: 5
+        y: 4
+      Pivot:
+        x: 19
+        y: 34
+    Anchors: []
+    Colliders: []
+  - Name: gangway_s6
+    BakedOptionsJson: '{"module": "east_gangway_s6"}'
+    GameplayJson: '{"key":"east_gangway_s6","harbour":"east","name":"gangway_s6","at":[179.3,86],"elevation":3.3999999999999995,"gangway":{"id":"gangway","step":6,"drop":4.02,"hinge":[179.3,86],"landing":[179.3,70.53],"width":1.24,"length":16.2,"floatModule":"recFloat"},"bounds":{"min":[-0.625,-16.143298,-4.389363],"max":[0.625,0.22,1.023249]},"frames":[{"frame":0,"dir":0,"file":"WaterSide_east_gangway_s6_0.png","rect":[0,456,524,456],"native":[50,465],"nativePivot":[24,30],"crop":[4,5],"pivot":[20,25]},{"frame":1,"dir":7,"file":"WaterSide_east_gangway_s6_0.png","rect":[524,456,524,456],"native":[406,388],"nativePivot":[382,38],"crop":[5,4],"pivot":[377,34]},{"frame":2,"dir":6,"file":"WaterSide_east_gangway_s6_0.png","rect":[1048,456,524,456],"native":[533,167],"nativePivot":[521,42],"crop":[4,5],"pivot":[517,37]},{"frame":3,"dir":5,"file":"WaterSide_east_gangway_s6_0.png","rect":[1572,456,524,456],"native":[406,191],"nativePivot":[382,168],"crop":[4,4],"pivot":[378,164]},{"frame":4,"dir":4,"file":"WaterSide_east_gangway_s6_0.png","rect":[2096,456,524,456],"native":[50,268],"nativePivot":[24,254],"crop":[4,4],"pivot":[20,250]},{"frame":5,"dir":3,"file":"WaterSide_east_gangway_s6_0.png","rect":[2620,456,524,456],"native":[406,191],"nativePivot":[24,168],"crop":[5,4],"pivot":[19,164]},{"frame":6,"dir":2,"file":"WaterSide_east_gangway_s6_0.png","rect":[3144,456,524,456],"native":[533,167],"nativePivot":[12,42],"crop":[5,5],"pivot":[7,37]},{"frame":7,"dir":1,"file":"WaterSide_east_gangway_s6_0.png","rect":[0,0,524,456],"native":[406,388],"nativePivot":[24,38],"crop":[5,4],"pivot":[19,34]}],"sheets":[{"file":"WaterSide_east_gangway_s6_0.png","width":3668,"height":912,"rgbaSha256":"1a71c886e523b2d1d4f0f0cbea81b067bea0479f41421b89c0240a690ab395a2"}],"modelKey":"harbour:h5_east_gangway_s6","cellSize":[524,456]}'
+    BoundsMin:
+      x: -0.625
+      y: -16.143298
+      z: -4.389363
+    BoundsMax:
+      x: 0.625
+      y: 0.22
+      z: 1.023249
+    Frames:
+    - Sprite:
+        fileID: 6748021161080275959
+        guid: c7bb12e4253db7c2eab9910c7f649379
+        type: 3
+      RigDir: 0
+      ShowFaces: '0'
+      BearingDeg: 0
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 50
+        y: 465
+      NativePivot:
+        x: 24
+        y: 30
+      Crop:
+        x: 4
+        y: 5
+      Pivot:
+        x: 20
+        y: 25
+    - Sprite:
+        fileID: 6183885323347940903
+        guid: c7bb12e4253db7c2eab9910c7f649379
+        type: 3
+      RigDir: 7
+      ShowFaces: '7'
+      BearingDeg: 315
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 406
+        y: 388
+      NativePivot:
+        x: 382
+        y: 38
+      Crop:
+        x: 5
+        y: 4
+      Pivot:
+        x: 377
+        y: 34
+    - Sprite:
+        fileID: 870216795630544635
+        guid: c7bb12e4253db7c2eab9910c7f649379
+        type: 3
+      RigDir: 6
+      ShowFaces: '6'
+      BearingDeg: 270
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 533
+        y: 167
+      NativePivot:
+        x: 521
+        y: 42
+      Crop:
+        x: 4
+        y: 5
+      Pivot:
+        x: 517
+        y: 37
+    - Sprite:
+        fileID: 2535611246285754099
+        guid: c7bb12e4253db7c2eab9910c7f649379
+        type: 3
+      RigDir: 5
+      ShowFaces: '5'
+      BearingDeg: 225
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 406
+        y: 191
+      NativePivot:
+        x: 382
+        y: 168
+      Crop:
+        x: 4
+        y: 4
+      Pivot:
+        x: 378
+        y: 164
+    - Sprite:
+        fileID: 5771257286529854916
+        guid: c7bb12e4253db7c2eab9910c7f649379
+        type: 3
+      RigDir: 4
+      ShowFaces: '4'
+      BearingDeg: 180
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 50
+        y: 268
+      NativePivot:
+        x: 24
+        y: 254
+      Crop:
+        x: 4
+        y: 4
+      Pivot:
+        x: 20
+        y: 250
+    - Sprite:
+        fileID: 1245552189185531081
+        guid: c7bb12e4253db7c2eab9910c7f649379
+        type: 3
+      RigDir: 3
+      ShowFaces: '3'
+      BearingDeg: 135
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 406
+        y: 191
+      NativePivot:
+        x: 24
+        y: 168
+      Crop:
+        x: 5
+        y: 4
+      Pivot:
+        x: 19
+        y: 164
+    - Sprite:
+        fileID: 3026864603004751269
+        guid: c7bb12e4253db7c2eab9910c7f649379
+        type: 3
+      RigDir: 2
+      ShowFaces: '2'
+      BearingDeg: 90
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 533
+        y: 167
+      NativePivot:
+        x: 12
+        y: 42
+      Crop:
+        x: 5
+        y: 5
+      Pivot:
+        x: 7
+        y: 37
+    - Sprite:
+        fileID: 904486432054608864
+        guid: c7bb12e4253db7c2eab9910c7f649379
+        type: 3
+      RigDir: 1
+      ShowFaces: '1'
+      BearingDeg: 45
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 406
+        y: 388
+      NativePivot:
+        x: 24
+        y: 38
+      Crop:
+        x: 5
+        y: 4
+      Pivot:
+        x: 19
+        y: 34
+    Anchors: []
+    Colliders: []
+  - Name: gangway_s7
+    BakedOptionsJson: '{"module": "east_gangway_s7"}'
+    GameplayJson: '{"key":"east_gangway_s7","harbour":"east","name":"gangway_s7","at":[179.3,86],"elevation":3.3999999999999995,"gangway":{"id":"gangway","step":7,"drop":4.57,"hinge":[179.3,86],"landing":[179.3,70.53],"width":1.24,"length":16.2,"floatModule":"recFloat"},"bounds":{"min":[-0.625,-15.992043,-4.93908],"max":[0.625,0.22,1.023025]},"frames":[{"frame":0,"dir":0,"file":"WaterSide_east_gangway_s7_0.png","rect":[0,466,519,466],"native":[50,475],"nativePivot":[24,30],"crop":[4,5],"pivot":[20,25]},{"frame":1,"dir":7,"file":"WaterSide_east_gangway_s7_0.png","rect":[519,466,519,466],"native":[403,399],"nativePivot":[379,38],"crop":[5,4],"pivot":[374,34]},{"frame":2,"dir":6,"file":"WaterSide_east_gangway_s7_0.png","rect":[1038,466,519,466],"native":[528,180],"nativePivot":[516,42],"crop":[4,5],"pivot":[512,37]},{"frame":3,"dir":5,"file":"WaterSide_east_gangway_s7_0.png","rect":[1557,466,519,466],"native":[403,175],"nativePivot":[379,152],"crop":[5,4],"pivot":[374,148]},{"frame":4,"dir":4,"file":"WaterSide_east_gangway_s7_0.png","rect":[2076,466,519,466],"native":[50,252],"nativePivot":[24,237],"crop":[4,4],"pivot":[20,233]},{"frame":5,"dir":3,"file":"WaterSide_east_gangway_s7_0.png","rect":[2595,466,519,466],"native":[403,175],"nativePivot":[24,152],"crop":[5,4],"pivot":[19,148]},{"frame":6,"dir":2,"file":"WaterSide_east_gangway_s7_0.png","rect":[3114,466,519,466],"native":[528,180],"nativePivot":[12,42],"crop":[5,5],"pivot":[7,37]},{"frame":7,"dir":1,"file":"WaterSide_east_gangway_s7_0.png","rect":[0,0,519,466],"native":[403,399],"nativePivot":[24,38],"crop":[5,4],"pivot":[19,34]}],"sheets":[{"file":"WaterSide_east_gangway_s7_0.png","width":3633,"height":932,"rgbaSha256":"fdce247ed9e940a66c2e885aef7ffcc165c0e768722966c07a44a46fcae073cf"}],"modelKey":"harbour:h5_east_gangway_s7","cellSize":[519,466]}'
+    BoundsMin:
+      x: -0.625
+      y: -15.992043
+      z: -4.93908
+    BoundsMax:
+      x: 0.625
+      y: 0.22
+      z: 1.023025
+    Frames:
+    - Sprite:
+        fileID: 3885514842859347211
+        guid: 7a5d2598d187368ab67da2e35b85ec2d
+        type: 3
+      RigDir: 0
+      ShowFaces: '0'
+      BearingDeg: 0
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 50
+        y: 475
+      NativePivot:
+        x: 24
+        y: 30
+      Crop:
+        x: 4
+        y: 5
+      Pivot:
+        x: 20
+        y: 25
+    - Sprite:
+        fileID: 4862406460001209285
+        guid: 7a5d2598d187368ab67da2e35b85ec2d
+        type: 3
+      RigDir: 7
+      ShowFaces: '7'
+      BearingDeg: 315
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 403
+        y: 399
+      NativePivot:
+        x: 379
+        y: 38
+      Crop:
+        x: 5
+        y: 4
+      Pivot:
+        x: 374
+        y: 34
+    - Sprite:
+        fileID: 3564430848730427027
+        guid: 7a5d2598d187368ab67da2e35b85ec2d
+        type: 3
+      RigDir: 6
+      ShowFaces: '6'
+      BearingDeg: 270
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 528
+        y: 180
+      NativePivot:
+        x: 516
+        y: 42
+      Crop:
+        x: 4
+        y: 5
+      Pivot:
+        x: 512
+        y: 37
+    - Sprite:
+        fileID: 2777823422282328806
+        guid: 7a5d2598d187368ab67da2e35b85ec2d
+        type: 3
+      RigDir: 5
+      ShowFaces: '5'
+      BearingDeg: 225
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 403
+        y: 175
+      NativePivot:
+        x: 379
+        y: 152
+      Crop:
+        x: 5
+        y: 4
+      Pivot:
+        x: 374
+        y: 148
+    - Sprite:
+        fileID: 8187631164117143933
+        guid: 7a5d2598d187368ab67da2e35b85ec2d
+        type: 3
+      RigDir: 4
+      ShowFaces: '4'
+      BearingDeg: 180
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 50
+        y: 252
+      NativePivot:
+        x: 24
+        y: 237
+      Crop:
+        x: 4
+        y: 4
+      Pivot:
+        x: 20
+        y: 233
+    - Sprite:
+        fileID: 5284472425660928617
+        guid: 7a5d2598d187368ab67da2e35b85ec2d
+        type: 3
+      RigDir: 3
+      ShowFaces: '3'
+      BearingDeg: 135
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 403
+        y: 175
+      NativePivot:
+        x: 24
+        y: 152
+      Crop:
+        x: 5
+        y: 4
+      Pivot:
+        x: 19
+        y: 148
+    - Sprite:
+        fileID: 802560282742565572
+        guid: 7a5d2598d187368ab67da2e35b85ec2d
+        type: 3
+      RigDir: 2
+      ShowFaces: '2'
+      BearingDeg: 90
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 528
+        y: 180
+      NativePivot:
+        x: 12
+        y: 42
+      Crop:
+        x: 5
+        y: 5
+      Pivot:
+        x: 7
+        y: 37
+    - Sprite:
+        fileID: 1202125575370731758
+        guid: 7a5d2598d187368ab67da2e35b85ec2d
+        type: 3
+      RigDir: 1
+      ShowFaces: '1'
+      BearingDeg: 45
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 403
+        y: 399
+      NativePivot:
+        x: 24
+        y: 38
+      Crop:
+        x: 5
+        y: 4
+      Pivot:
+        x: 19
+        y: 34
+    Anchors: []
+    Colliders: []
+  - Name: gangway_s8
+    BakedOptionsJson: '{"module": "east_gangway_s8"}'
+    GameplayJson: '{"key":"east_gangway_s8","harbour":"east","name":"gangway_s8","at":[179.3,86],"elevation":3.3999999999999995,"gangway":{"id":"gangway","step":8,"drop":5.12,"hinge":[179.3,86],"landing":[179.3,70.53],"width":1.24,"length":16.2,"floatModule":"recFloat"},"bounds":{"min":[-0.625,-15.819632,-5.488757],"max":[0.625,0.22,1.02277]},"frames":[{"frame":0,"dir":0,"file":"WaterSide_east_gangway_s8_0.png","rect":[0,476,513,476],"native":[50,485],"nativePivot":[24,30],"crop":[4,5],"pivot":[20,25]},{"frame":1,"dir":7,"file":"WaterSide_east_gangway_s8_0.png","rect":[513,476,513,476],"native":[399,410],"nativePivot":[375,38],"crop":[5,4],"pivot":[370,34]},{"frame":2,"dir":6,"file":"WaterSide_east_gangway_s8_0.png","rect":[1026,476,513,476],"native":[523,194],"nativePivot":[511,42],"crop":[5,5],"pivot":[506,37]},{"frame":3,"dir":5,"file":"WaterSide_east_gangway_s8_0.png","rect":[1539,476,513,476],"native":[399,159],"nativePivot":[375,136],"crop":[5,4],"pivot":[370,132]},{"frame":4,"dir":4,"file":"WaterSide_east_gangway_s8_0.png","rect":[2052,476,513,476],"native":[50,235],"nativePivot":[24,220],"crop":[4,4],"pivot":[20,216]},{"frame":5,"dir":3,"file":"WaterSide_east_gangway_s8_0.png","rect":[2565,476,513,476],"native":[399,159],"nativePivot":[24,136],"crop":[5,4],"pivot":[19,132]},{"frame":6,"dir":2,"file":"WaterSide_east_gangway_s8_0.png","rect":[3078,476,513,476],"native":[523,194],"nativePivot":[12,42],"crop":[5,5],"pivot":[7,37]},{"frame":7,"dir":1,"file":"WaterSide_east_gangway_s8_0.png","rect":[0,0,513,476],"native":[399,410],"nativePivot":[24,38],"crop":[5,4],"pivot":[19,34]}],"sheets":[{"file":"WaterSide_east_gangway_s8_0.png","width":3591,"height":952,"rgbaSha256":"3d26b826488cda5676666e42971b264835676f00a51d93e4b81dfdc029cd8ee5"}],"modelKey":"harbour:h5_east_gangway_s8","cellSize":[513,476]}'
+    BoundsMin:
+      x: -0.625
+      y: -15.819632
+      z: -5.488757
+    BoundsMax:
+      x: 0.625
+      y: 0.22
+      z: 1.02277
+    Frames:
+    - Sprite:
+        fileID: 7981787140451961382
+        guid: aa765c9ef9105122e22aaabd2380ed71
+        type: 3
+      RigDir: 0
+      ShowFaces: '0'
+      BearingDeg: 0
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 50
+        y: 485
+      NativePivot:
+        x: 24
+        y: 30
+      Crop:
+        x: 4
+        y: 5
+      Pivot:
+        x: 20
+        y: 25
+    - Sprite:
+        fileID: 4569257139702001817
+        guid: aa765c9ef9105122e22aaabd2380ed71
+        type: 3
+      RigDir: 7
+      ShowFaces: '7'
+      BearingDeg: 315
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 399
+        y: 410
+      NativePivot:
+        x: 375
+        y: 38
+      Crop:
+        x: 5
+        y: 4
+      Pivot:
+        x: 370
+        y: 34
+    - Sprite:
+        fileID: 1346280286644892956
+        guid: aa765c9ef9105122e22aaabd2380ed71
+        type: 3
+      RigDir: 6
+      ShowFaces: '6'
+      BearingDeg: 270
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 523
+        y: 194
+      NativePivot:
+        x: 511
+        y: 42
+      Crop:
+        x: 5
+        y: 5
+      Pivot:
+        x: 506
+        y: 37
+    - Sprite:
+        fileID: 3292130564016774504
+        guid: aa765c9ef9105122e22aaabd2380ed71
+        type: 3
+      RigDir: 5
+      ShowFaces: '5'
+      BearingDeg: 225
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 399
+        y: 159
+      NativePivot:
+        x: 375
+        y: 136
+      Crop:
+        x: 5
+        y: 4
+      Pivot:
+        x: 370
+        y: 132
+    - Sprite:
+        fileID: 154764089745180150
+        guid: aa765c9ef9105122e22aaabd2380ed71
+        type: 3
+      RigDir: 4
+      ShowFaces: '4'
+      BearingDeg: 180
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 50
+        y: 235
+      NativePivot:
+        x: 24
+        y: 220
+      Crop:
+        x: 4
+        y: 4
+      Pivot:
+        x: 20
+        y: 216
+    - Sprite:
+        fileID: 7079751728876980904
+        guid: aa765c9ef9105122e22aaabd2380ed71
+        type: 3
+      RigDir: 3
+      ShowFaces: '3'
+      BearingDeg: 135
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 399
+        y: 159
+      NativePivot:
+        x: 24
+        y: 136
+      Crop:
+        x: 5
+        y: 4
+      Pivot:
+        x: 19
+        y: 132
+    - Sprite:
+        fileID: 3645777639260636014
+        guid: aa765c9ef9105122e22aaabd2380ed71
+        type: 3
+      RigDir: 2
+      ShowFaces: '2'
+      BearingDeg: 90
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 523
+        y: 194
+      NativePivot:
+        x: 12
+        y: 42
+      Crop:
+        x: 5
+        y: 5
+      Pivot:
+        x: 7
+        y: 37
+    - Sprite:
+        fileID: 7679779297976056241
+        guid: aa765c9ef9105122e22aaabd2380ed71
+        type: 3
+      RigDir: 1
+      ShowFaces: '1'
+      BearingDeg: 45
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 399
+        y: 410
+      NativePivot:
+        x: 24
+        y: 38
+      Crop:
+        x: 5
+        y: 4
+      Pivot:
+        x: 19
+        y: 34
+    Anchors: []
+    Colliders: []
+  HasVendor: 0
+  Vendor:
+    Seller: ''
+    At:
+      x: 0
+      y: 0
+      z: 0

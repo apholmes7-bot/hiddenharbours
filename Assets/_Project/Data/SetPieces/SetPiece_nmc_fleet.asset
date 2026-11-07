@@ -1,0 +1,4351 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject:
+    fileID: 0
+  m_PrefabInstance:
+    fileID: 0
+  m_PrefabAsset:
+    fileID: 0
+  m_GameObject:
+    fileID: 0
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script:
+    fileID: 11500000
+    guid: 01b51978faec4dbb8e54e23107a97ef5
+    type: 3
+  m_Name: SetPiece_nmc_fleet
+  m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.SetPieceDef
+  Id: harbour.fleet
+  DisplayName: Wharf water side fleet
+  RigKey: nmc_fleet
+  SceneId: keyscene.nmc_wharf
+  BakedOptionsJson: '{}'
+  Layer: floor
+  Walk: 'on'
+  Mount: ground
+  BoundsMin:
+    x: -42.14
+    y: 43.835
+    z: -5.65991
+  BoundsMax:
+    x: 42.06000000000002
+    y: 96.1
+    z: 6.09
+  Frames:
+  - Sprite:
+      fileID: 3311220279167630630
+      guid: a52c712d5cc71632c863b0215d83cec4
+      type: 3
+    RigDir: 0
+    ShowFaces: '0'
+    BearingDeg: 0
+    CameraSees: delivered harbour module
+    NativeSize:
+      x: 1094
+      y: 459
+    NativePivot:
+      x: 547
+      y: 131
+    Crop:
+      x: 5
+      y: 5
+    Pivot:
+      x: 542
+      y: 126
+  - Sprite:
+      fileID: 2767768619639629056
+      guid: a52c712d5cc71632c863b0215d83cec4
+      type: 3
+    RigDir: 7
+    ShowFaces: '7'
+    BearingDeg: 315
+    CameraSees: delivered harbour module
+    NativeSize:
+      x: 1003
+      y: 866
+    NativePivot:
+      x: 503
+      y: 323
+    Crop:
+      x: 4
+      y: 4
+    Pivot:
+      x: 499
+      y: 319
+  - Sprite:
+      fileID: 8615874822615592938
+      guid: a52c712d5cc71632c863b0215d83cec4
+      type: 3
+    RigDir: 6
+    ShowFaces: '6'
+    BearingDeg: 270
+    CameraSees: delivered harbour module
+    NativeSize:
+      x: 342
+      y: 929
+    NativePivot:
+      x: 174
+      y: 356
+    Crop:
+      x: 5
+      y: 4
+    Pivot:
+      x: 169
+      y: 352
+  - Sprite:
+      fileID: 254616530040089951
+      guid: a52c712d5cc71632c863b0215d83cec4
+      type: 3
+    RigDir: 5
+    ShowFaces: '5'
+    BearingDeg: 225
+    CameraSees: delivered harbour module
+    NativeSize:
+      x: 1003
+      y: 870
+    NativePivot:
+      x: 500
+      y: 328
+    Crop:
+      x: 4
+      y: 4
+    Pivot:
+      x: 496
+      y: 324
+  - Sprite:
+      fileID: 945757524859205427
+      guid: a52c712d5cc71632c863b0215d83cec4
+      type: 3
+    RigDir: 4
+    ShowFaces: '4'
+    BearingDeg: 180
+    CameraSees: delivered harbour module
+    NativeSize:
+      x: 1094
+      y: 470
+    NativePivot:
+      x: 547
+      y: 142
+    Crop:
+      x: 5
+      y: 4
+    Pivot:
+      x: 542
+      y: 138
+  - Sprite:
+      fileID: 2418523399016711802
+      guid: a52c712d5cc71632c863b0215d83cec4
+      type: 3
+    RigDir: 3
+    ShowFaces: '3'
+    BearingDeg: 135
+    CameraSees: delivered harbour module
+    NativeSize:
+      x: 1003
+      y: 871
+    NativePivot:
+      x: 500
+      y: 329
+    Crop:
+      x: 4
+      y: 5
+    Pivot:
+      x: 496
+      y: 324
+  - Sprite:
+      fileID: 7809532664989233735
+      guid: a52c712d5cc71632c863b0215d83cec4
+      type: 3
+    RigDir: 2
+    ShowFaces: '2'
+    BearingDeg: 90
+    CameraSees: delivered harbour module
+    NativeSize:
+      x: 342
+      y: 930
+    NativePivot:
+      x: 168
+      y: 357
+    Crop:
+      x: 4
+      y: 4
+    Pivot:
+      x: 164
+      y: 353
+  - Sprite:
+      fileID: 5210205662315052190
+      guid: a52c712d5cc71632c863b0215d83cec4
+      type: 3
+    RigDir: 1
+    ShowFaces: '1'
+    BearingDeg: 45
+    CameraSees: delivered harbour module
+    NativeSize:
+      x: 1003
+      y: 866
+    NativePivot:
+      x: 503
+      y: 323
+    Crop:
+      x: 4
+      y: 4
+    Pivot:
+      x: 499
+      y: 319
+  CellSize:
+    x: 1084
+    y: 921
+  PixelsPerMetre: 32
+  ElevationDeg: 40
+  BakedLit: 0
+  Colliders: []
+  Anchors:
+  - Name: berth.nmc_finger_a_e2
+    Position:
+      x: -6.739999999999995
+      y: 64.3725
+      z: 0.45
+  - Name: berth.nmc_finger_a_e2.cleat.bow
+    Position:
+      x: -9.099999999999994
+      y: 70.435
+      z: 0.45
+  - Name: berth.nmc_finger_a_e2.cleat.stern
+    Position:
+      x: -9.099999999999994
+      y: 58.31
+      z: 0.45
+  - Name: berth.nmc_finger_a_e3
+    Position:
+      x: -7.1839999999999975
+      y: 52.565
+      z: 0.45
+  - Name: berth.nmc_finger_a_e3.cleat.bow
+    Position:
+      x: -9.099999999999994
+      y: 56.91
+      z: 0.45
+  - Name: berth.nmc_finger_a_e3.cleat.stern
+    Position:
+      x: -9.099999999999994
+      y: 48.22
+      z: 0.45
+  - Name: berth.nmc_finger_a_w0
+    Position:
+      x: -13.447999999999993
+      y: 66.128
+      z: 0.45
+  - Name: berth.nmc_finger_a_w0.cleat.bow
+    Position:
+      x: -11.5
+      y: 70.435
+      z: 0.45
+  - Name: berth.nmc_finger_a_w0.cleat.stern
+    Position:
+      x: -11.5
+      y: 61.821
+      z: 0.45
+  - Name: berth.nmc_finger_a_w1
+    Position:
+      x: -13.739999999999995
+      y: 54.021
+      z: 0.45
+  - Name: berth.nmc_finger_a_w1.cleat.bow
+    Position:
+      x: -11.5
+      y: 60.421
+      z: 0.45
+  - Name: berth.nmc_finger_a_w1.cleat.stern
+    Position:
+      x: -11.5
+      y: 47.621
+      z: 0.45
+  - Name: berth.nmc_finger_b_e6
+    Position:
+      x: 25.80000000000001
+      y: 64.405
+      z: 0.45
+  - Name: berth.nmc_finger_b_e6.cleat.bow
+    Position:
+      x: 23.5
+      y: 70.435
+      z: 0.45
+  - Name: berth.nmc_finger_b_e6.cleat.stern
+    Position:
+      x: 23.5
+      y: 58.375
+      z: 0.45
+  - Name: berth.nmc_finger_b_e7
+    Position:
+      x: 25.74000000000001
+      y: 50.575
+      z: 0.45
+  - Name: berth.nmc_finger_b_e7.cleat.bow
+    Position:
+      x: 23.5
+      y: 56.975
+      z: 0.45
+  - Name: berth.nmc_finger_b_e7.cleat.stern
+    Position:
+      x: 23.5
+      y: 44.175
+      z: 0.45
+  - Name: berth.nmc_finger_b_w4
+    Position:
+      x: 18.80000000000001
+      y: 64.405
+      z: 0.45
+  - Name: berth.nmc_finger_b_w4.cleat.bow
+    Position:
+      x: 21.100000000000023
+      y: 70.435
+      z: 0.45
+  - Name: berth.nmc_finger_b_w4.cleat.stern
+    Position:
+      x: 21.100000000000023
+      y: 58.375
+      z: 0.45
+  - Name: berth.nmc_finger_b_w5
+    Position:
+      x: 19.151999999999987
+      y: 52.668
+      z: 0.45
+  - Name: berth.nmc_finger_b_w5.cleat.bow
+    Position:
+      x: 21.100000000000023
+      y: 56.975
+      z: 0.45
+  - Name: berth.nmc_finger_b_w5.cleat.stern
+    Position:
+      x: 21.100000000000023
+      y: 48.361
+      z: 0.45
+  - Name: berth.nmc_wall_0
+    Position:
+      x: -33.80000000000001
+      y: 86
+      z: 3.4
+  - Name: berth.nmc_wall_1
+    Position:
+      x: -19.0
+      y: 86
+      z: 3.4
+  - Name: berth.nmc_wall_2
+    Position:
+      x: -1.1999999999999886
+      y: 86
+      z: 3.4
+  - Name: berth.nmc_wall_3
+    Position:
+      x: 13.600000000000023
+      y: 86
+      z: 3.4
+  - Name: berth.nmc_wall_4
+    Position:
+      x: 29.30000000000001
+      y: 86
+      z: 3.4
+  - Name: berth.nmc_wall_5
+    Position:
+      x: 40.30000000000001
+      y: 86
+      z: 3.4
+  - Name: cleat.nmc_fleet_conc_0
+    Position:
+      x: -7.799999999999983
+      y: 86.3
+      z: 3.4
+  - Name: cleat.nmc_fleet_conc_1
+    Position:
+      x: 0.8000000000000114
+      y: 86.3
+      z: 3.4
+  - Name: cleat.nmc_fleet_conc_2
+    Position:
+      x: 5.500000000000014
+      y: 86.3
+      z: 3.4
+  - Name: cleat.nmc_fleet_conc_3
+    Position:
+      x: 7.300000000000011
+      y: 86.3
+      z: 3.4
+  - Name: cleat.nmc_fleet_conc_4
+    Position:
+      x: 15.600000000000023
+      y: 86.3
+      z: 3.4
+  - Name: cleat.nmc_fleet_conc_5
+    Position:
+      x: 19.900000000000006
+      y: 86.3
+      z: 3.4
+  - Name: cleat.nmc_fleet_conc_6
+    Position:
+      x: 24.700000000000017
+      y: 86.3
+      z: 3.4
+  - Name: cleat.nmc_fleet_conc_7
+    Position:
+      x: 31.30000000000001
+      y: 86.3
+      z: 3.4
+  - Name: cleat.nmc_fleet_conc_8
+    Position:
+      x: 33.900000000000006
+      y: 86.3
+      z: 3.4
+  - Name: cleat.nmc_fleet_conc_9
+    Position:
+      x: 35.70000000000002
+      y: 86.3
+      z: 3.4
+  - Name: cleat.nmc_fleet_crib_0
+    Position:
+      x: -40.5
+      y: 86.3
+      z: 3.4
+  - Name: cleat.nmc_fleet_crib_1
+    Position:
+      x: -31.799999999999997
+      y: 86.3
+      z: 3.4
+  - Name: cleat.nmc_fleet_crib_2
+    Position:
+      x: -27.10000000000001
+      y: 86.3
+      z: 3.4
+  - Name: cleat.nmc_fleet_crib_3
+    Position:
+      x: -25.299999999999997
+      y: 86.3
+      z: 3.4
+  - Name: cleat.nmc_fleet_crib_4
+    Position:
+      x: -17.0
+      y: 86.3
+      z: 3.4
+  - Name: cleat.nmc_fleet_crib_5
+    Position:
+      x: -12.700000000000003
+      y: 86.3
+      z: 3.4
+  - Name: cleat.nmc_fleet_fingerA_0
+    Position:
+      x: -9.399999999999991
+      y: 69.925
+      z: 0.45
+  - Name: cleat.nmc_fleet_fingerA_1
+    Position:
+      x: -9.399999999999991
+      y: 64.215
+      z: 0.45
+  - Name: cleat.nmc_fleet_fingerA_10
+    Position:
+      x: -11.200000000000003
+      y: 59.835
+      z: 0.45
+  - Name: cleat.nmc_fleet_fingerA_11
+    Position:
+      x: -11.200000000000003
+      y: 54.125
+      z: 0.45
+  - Name: cleat.nmc_fleet_fingerA_12
+    Position:
+      x: -11.200000000000003
+      y: 53.015
+      z: 0.45
+  - Name: cleat.nmc_fleet_fingerA_13
+    Position:
+      x: -11.200000000000003
+      y: 49.805
+      z: 0.45
+  - Name: cleat.nmc_fleet_fingerA_14
+    Position:
+      x: -11.200000000000003
+      y: 47.555
+      z: 0.45
+  - Name: cleat.nmc_fleet_fingerA_15
+    Position:
+      x: -11.200000000000003
+      y: 44.445
+      z: 0.45
+  - Name: cleat.nmc_fleet_fingerA_2
+    Position:
+      x: -9.399999999999991
+      y: 59.835
+      z: 0.45
+  - Name: cleat.nmc_fleet_fingerA_3
+    Position:
+      x: -9.399999999999991
+      y: 54.125
+      z: 0.45
+  - Name: cleat.nmc_fleet_fingerA_4
+    Position:
+      x: -9.399999999999991
+      y: 53.015
+      z: 0.45
+  - Name: cleat.nmc_fleet_fingerA_5
+    Position:
+      x: -9.399999999999991
+      y: 49.805
+      z: 0.45
+  - Name: cleat.nmc_fleet_fingerA_6
+    Position:
+      x: -9.399999999999991
+      y: 47.555
+      z: 0.45
+  - Name: cleat.nmc_fleet_fingerA_7
+    Position:
+      x: -9.399999999999991
+      y: 44.445
+      z: 0.45
+  - Name: cleat.nmc_fleet_fingerA_8
+    Position:
+      x: -11.200000000000003
+      y: 69.925
+      z: 0.45
+  - Name: cleat.nmc_fleet_fingerA_9
+    Position:
+      x: -11.200000000000003
+      y: 64.215
+      z: 0.45
+  - Name: cleat.nmc_fleet_fingerB_0
+    Position:
+      x: 23.200000000000017
+      y: 69.925
+      z: 0.45
+  - Name: cleat.nmc_fleet_fingerB_1
+    Position:
+      x: 23.200000000000017
+      y: 64.215
+      z: 0.45
+  - Name: cleat.nmc_fleet_fingerB_10
+    Position:
+      x: 21.400000000000006
+      y: 59.835
+      z: 0.45
+  - Name: cleat.nmc_fleet_fingerB_11
+    Position:
+      x: 21.400000000000006
+      y: 54.125
+      z: 0.45
+  - Name: cleat.nmc_fleet_fingerB_12
+    Position:
+      x: 21.400000000000006
+      y: 53.015
+      z: 0.45
+  - Name: cleat.nmc_fleet_fingerB_13
+    Position:
+      x: 21.400000000000006
+      y: 49.805
+      z: 0.45
+  - Name: cleat.nmc_fleet_fingerB_14
+    Position:
+      x: 21.400000000000006
+      y: 47.555
+      z: 0.45
+  - Name: cleat.nmc_fleet_fingerB_15
+    Position:
+      x: 21.400000000000006
+      y: 44.445
+      z: 0.45
+  - Name: cleat.nmc_fleet_fingerB_2
+    Position:
+      x: 23.200000000000017
+      y: 59.835
+      z: 0.45
+  - Name: cleat.nmc_fleet_fingerB_3
+    Position:
+      x: 23.200000000000017
+      y: 54.125
+      z: 0.45
+  - Name: cleat.nmc_fleet_fingerB_4
+    Position:
+      x: 23.200000000000017
+      y: 53.015
+      z: 0.45
+  - Name: cleat.nmc_fleet_fingerB_5
+    Position:
+      x: 23.200000000000017
+      y: 49.805
+      z: 0.45
+  - Name: cleat.nmc_fleet_fingerB_6
+    Position:
+      x: 23.200000000000017
+      y: 47.555
+      z: 0.45
+  - Name: cleat.nmc_fleet_fingerB_7
+    Position:
+      x: 23.200000000000017
+      y: 44.445
+      z: 0.45
+  - Name: cleat.nmc_fleet_fingerB_8
+    Position:
+      x: 21.400000000000006
+      y: 69.925
+      z: 0.45
+  - Name: cleat.nmc_fleet_fingerB_9
+    Position:
+      x: 21.400000000000006
+      y: 64.215
+      z: 0.45
+  - Name: float.nmc_finger_a
+    Position:
+      x: -10.299999999999997
+      y: 57.5
+      z: 0.45
+  - Name: float.nmc_finger_b
+    Position:
+      x: 22.30000000000001
+      y: 57.5
+      z: 0.45
+  - Name: gangway.nmc_fleet_gangway0.head
+    Position:
+      x: -10.299999999999997
+      y: 86
+      z: 3.3999999999999995
+  - Name: gangway.nmc_fleet_gangway0.toe
+    Position:
+      x: -10.299999999999997
+      y: 70.435
+      z: 0.45
+  - Name: gangway.nmc_fleet_gangway1.head
+    Position:
+      x: 22.30000000000001
+      y: 86
+      z: 3.3999999999999995
+  - Name: gangway.nmc_fleet_gangway1.toe
+    Position:
+      x: 22.30000000000001
+      y: 70.435
+      z: 0.45
+  - Name: ladder.nmc_berth0
+    Position:
+      x: -33.80000000000001
+      y: 86
+      z: 3.4
+  - Name: ladder.nmc_berth1
+    Position:
+      x: -19
+      y: 86
+      z: 3.4
+  - Name: ladder.nmc_berth2
+    Position:
+      x: -1.1999999999999886
+      y: 86
+      z: 3.4
+  - Name: ladder.nmc_berth3
+    Position:
+      x: 13.600000000000023
+      y: 86
+      z: 3.4
+  - Name: ladder.nmc_berth4
+    Position:
+      x: 29.30000000000001
+      y: 86
+      z: 3.4
+  - Name: ladder.nmc_berth5
+    Position:
+      x: 40.30000000000001
+      y: 86
+      z: 3.4
+  Path: []
+  TideMarks:
+  - Z: -2.2
+    OverDatum: 0.0
+    At:
+      x: 0
+      y: 0
+      z: -2.2
+    Label: '0.0'
+    Kind: spring low
+  - Z: 2.2
+    OverDatum: 4.4
+    At:
+      x: 0
+      y: 0
+      z: 2.2
+    Label: '4.4'
+    Kind: spring high
+  Words: []
+  HasLight: 0
+  Light:
+    Emitters: []
+    When: ''
+  IsAnimated: 0
+  Animated:
+    Part: ''
+    Input: ''
+    Steps: 0
+    BakedAtDeg: 0
+    RigDir: 0
+    Headings: []
+  GameplayJson: '{"schema":"hidden-harbours/nmc-water-side@1","id":"harbour.fleet","origin":[120,0],"parts":[{"key":"fleet_crib","harbour":"fleet","name":"crib","at":[94.8,91],"elevation":3.4,"floating":false,"freeboard":0,"draught":0,"bounds":{"min":[-16.94,-5.291244,-9.05991],"max":[16.94,5.1,1.45]},"walkPolygon":[[111.6,96],[78,96],[78,86],[111.6,86]],"fittings":{"ladders":[{"x":8.6,"y":5,"side":1,"face":"water","berth":"berth0"},{"x":-6.2,"y":5,"side":1,"face":"water","berth":"berth1"}],"tyres":[{"x":13.6,"y":5,"side":1,"face":"water","berth":"berth0"},{"x":3.6,"y":5,"side":1,"face":"water","berth":"berth0"},{"x":-1.6,"y":5,"side":1,"face":"water","berth":"berth1"},{"x":-10.8,"y":5,"side":1,"face":"water","berth":"berth1"}],"foams":[],"panels":[],"fenderPiles":[],"cleats":[{"x":15.3,"y":4.7,"z":0,"side":1,"face":"water","berth":"berth0","lead":"bow"},{"x":6.6,"y":4.7,"z":0,"side":1,"face":"water","berth":"berth0","lead":"spring"},{"x":1.9,"y":4.7,"z":0,"side":1,"face":"water","berth":"berth0","lead":"stern"},{"x":0.1,"y":4.7,"z":0,"side":1,"face":"water","berth":"berth1","lead":"bow"},{"x":-8.2,"y":4.7,"z":0,"side":1,"face":"water","berth":"berth1","lead":"spring"},{"x":-12.5,"y":4.7,"z":0,"side":1,"face":"water","berth":"berth1","lead":"stern"}],"bollards":[],"rings":[],"rails":[],"berths":{"water":{"list":[{"id":"berth0","x":8.6,"cls":"B","fenderX":[13.6,3.6],"lines":[15.3,6.6,1.9]},{"id":"berth1","x":-6.2,"cls":"B","fenderX":[-1.6,-10.8],"lines":[0.1,-8.2,-12.5]}],"faceLen":33.6,"kind":"quay","utilisation":1,"segments":[],"dry":[]}},"gaps":{"water":[[8.225,8.975],[-6.575,-5.825],[-16.1,-13.700000000000001]],"shore":[]},"top":0,"hx":16.8,"hy":5,"L":33.6,"tyreRecs":[{"x":13.6,"y":5.17,"z":-0.78,"top":-0.28,"pivot":[13.6,5.05,-0.16]},{"x":3.6,"y":5.17,"z":-0.78,"top":-0.28,"pivot":[3.6,5.05,-0.16]},{"x":-1.6,"y":5.17,"z":-0.78,"top":-0.28,"pivot":[-1.6,5.05,-0.16]},{"x":-10.8,"y":5.17,"z":-0.78,"top":-0.28,"pivot":[-10.8,5.05,-0.16]}],"fixtures":[{"id":"ringPost0","kind":"ringPost","face":"water","x":-1,"y":4.5,"rot":0,"side":1,"z":0,"grp":0},{"id":"fishTable1","kind":"fishTable","face":"shore","x":-8.5,"y":-4.15,"rot":3.141592653589793,"side":-1,"z":0,"grp":0},{"id":"dockBox2","kind":"dockBox","face":"shore","x":8.5,"y":-4.12,"rot":3.141592653589793,"side":-1,"z":0,"grp":0},{"id":"fishSpot3","kind":"fishSpot","face":"shore","x":4.25,"y":-4.55,"rot":3.141592653589793,"side":-1,"z":0,"grp":0}]},"module":{"id":"crib","key":"logCrib","at":[-25.2,91],"rot":3.141592653589793,"o":{"bays":8,"bayLen":4.2,"width":10,"deckZ":5.6,"tideRange":4.4,"cap":"concrete","curb":"wood","ends":{"nx":"join"},"open":{"water":[[-16.1,-13.700000000000001]]},"berthPlanned":{"water":{"list":[{"id":"berth0","x":8.6,"cls":"B","fenderX":[13.6,3.6],"lines":[15.3,6.6,1.9]},{"id":"berth1","x":-6.2,"cls":"B","fenderX":[-1.6,-10.8],"lines":[0.1,-8.2,-12.5]}],"faceLen":33.6,"kind":"quay","utilisation":1,"segments":[],"dry":[]}}}},"frames":[{"frame":0,"dir":0,"file":"WaterSide_fleet_crib_0.png","rect":[0,1842,1084,921],"native":[1094,459],"nativePivot":[547,131],"crop":[5,5],"pivot":[542,126]},{"frame":1,"dir":7,"file":"WaterSide_fleet_crib_0.png","rect":[1084,1842,1084,921],"native":[1003,866],"nativePivot":[503,323],"crop":[4,4],"pivot":[499,319]},{"frame":2,"dir":6,"file":"WaterSide_fleet_crib_0.png","rect":[2168,1842,1084,921],"native":[342,929],"nativePivot":[174,356],"crop":[5,4],"pivot":[169,352]},{"frame":3,"dir":5,"file":"WaterSide_fleet_crib_0.png","rect":[0,921,1084,921],"native":[1003,870],"nativePivot":[500,328],"crop":[4,4],"pivot":[496,324]},{"frame":4,"dir":4,"file":"WaterSide_fleet_crib_0.png","rect":[1084,921,1084,921],"native":[1094,470],"nativePivot":[547,142],"crop":[5,4],"pivot":[542,138]},{"frame":5,"dir":3,"file":"WaterSide_fleet_crib_0.png","rect":[2168,921,1084,921],"native":[1003,871],"nativePivot":[500,329],"crop":[4,5],"pivot":[496,324]},{"frame":6,"dir":2,"file":"WaterSide_fleet_crib_0.png","rect":[0,0,1084,921],"native":[342,930],"nativePivot":[168,357],"crop":[4,4],"pivot":[164,353]},{"frame":7,"dir":1,"file":"WaterSide_fleet_crib_0.png","rect":[1084,0,1084,921],"native":[1003,866],"nativePivot":[503,323],"crop":[4,4],"pivot":[499,319]}],"sheets":[{"file":"WaterSide_fleet_crib_0.png","width":3252,"height":2763,"rgbaSha256":"eaf4d917ed689a5cbaaa6c4ce2c589ed47a4a9fd90c59eb870077c765119c0d9"}],"modelKey":"harbour:h5_fleet_crib","cellSize":[1084,921]},{"key":"fleet_conc","harbour":"fleet","name":"conc","at":[136.8,91],"elevation":3.4,"floating":false,"freeboard":0,"draught":0,"bounds":{"min":[-25.2,-5.297873,-9.02736],"max":[25.26,5.06,2.69]},"walkPolygon":[[162,96],[111.6,96],[111.6,86],[162,86]],"fittings":{"ladders":[{"x":18,"y":5,"side":1,"face":"water","berth":"berth2"},{"x":3.2,"y":5,"side":1,"face":"water","berth":"berth3"},{"x":-12.5,"y":5,"side":1,"face":"water","berth":"berth4"},{"x":-23.5,"y":5,"side":1,"face":"water","berth":"berth5"}],"tyres":[{"x":23,"y":5,"side":1,"face":"water","berth":"berth2"},{"x":13,"y":5,"side":1,"face":"water","berth":"berth2"},{"x":7.8,"y":5,"side":1,"face":"water","berth":"berth3"},{"x":-1.4,"y":5,"side":1,"face":"water","berth":"berth3"},{"x":-9.6,"y":5,"side":1,"face":"water","berth":"berth4"},{"x":-15.4,"y":5,"side":1,"face":"water","berth":"berth4"},{"x":-20.6,"y":5,"side":1,"face":"water","berth":"berth5"}],"foams":[],"panels":[],"fenderPiles":[{"x":3.552713678800501e-15,"y":5.16,"side":1,"face":"water"},{"x":4.200000000000003,"y":5.16,"side":1,"face":"water"},{"x":16.8,"y":5.16,"side":1,"face":"water"},{"x":21.000000000000004,"y":5.16,"side":1,"face":"water"}],"cleats":[{"x":24.6,"y":4.7,"z":0,"side":1,"face":"water","berth":"berth2","lead":"bow"},{"x":16,"y":4.7,"z":0,"side":1,"face":"water","berth":"berth2","lead":"spring"},{"x":11.3,"y":4.7,"z":0,"side":1,"face":"water","berth":"berth2","lead":"stern"},{"x":9.5,"y":4.7,"z":0,"side":1,"face":"water","berth":"berth3","lead":"bow"},{"x":1.2,"y":4.7,"z":0,"side":1,"face":"water","berth":"berth3","lead":"spring"},{"x":-3.1,"y":4.7,"z":0,"side":1,"face":"water","berth":"berth3","lead":"stern"},{"x":-7.9,"y":4.7,"z":0,"side":1,"face":"water","berth":"berth4","lead":"bow"},{"x":-14.5,"y":4.7,"z":0,"side":1,"face":"water","berth":"berth4","lead":"spring"},{"x":-17.1,"y":4.7,"z":0,"side":1,"face":"water","berth":"berth4","lead":"stern"},{"x":-18.9,"y":4.7,"z":0,"side":1,"face":"water","berth":"berth5","lead":"bow"}],"bollards":[],"rings":[],"rails":[],"berths":{"water":{"list":[{"id":"berth2","x":18,"cls":"B","fenderX":[23,13],"lines":[24.7,16,11.3]},{"id":"berth3","x":3.2,"cls":"B","fenderX":[7.8,-1.4],"lines":[9.5,1.2,-3.1]},{"id":"berth4","x":-12.5,"cls":"B","fenderX":[-9.6,-15.4],"lines":[-7.9,-14.5,-17.1]},{"id":"berth5","x":-23.5,"cls":"B","fenderX":[-20.6],"lines":[-18.9]}],"faceLen":50.4,"kind":"quay","utilisation":1,"segments":[],"dry":[]}},"gaps":{"water":[[17.625,18.375],[2.825,3.575],[-12.875,-12.125],[-23.875,-23.125],[-6.7,-4.3]],"shore":[]},"top":0,"hx":25.2,"hy":5,"L":50.4,"tyreRecs":[{"x":23,"y":5.17,"z":-0.78,"top":-0.28,"pivot":[23,5.05,-0.16]},{"x":13,"y":5.17,"z":-0.78,"top":-0.28,"pivot":[13,5.05,-0.16]},{"x":7.8,"y":5.17,"z":-0.78,"top":-0.28,"pivot":[7.8,5.05,-0.16]},{"x":-1.4,"y":5.17,"z":-0.78,"top":-0.28,"pivot":[-1.4,5.05,-0.16]},{"x":-9.6,"y":5.17,"z":-0.78,"top":-0.28,"pivot":[-9.6,5.05,-0.16]},{"x":-15.4,"y":5.17,"z":-0.78,"top":-0.28,"pivot":[-15.4,5.05,-0.16]},{"x":-20.6,"y":5.17,"z":-0.78,"top":-0.28,"pivot":[-20.6,5.05,-0.16]}],"fixtures":[{"id":"ringPost0","kind":"ringPost","face":"water","x":0.1,"y":4.5,"rot":0,"side":1,"z":0,"grp":0},{"id":"ringPost1","kind":"ringPost","face":"water","x":-10.9,"y":4.5,"rot":0,"side":1,"z":0,"grp":0},{"id":"fishSpot2","kind":"fishSpot","face":"shore","x":12.6,"y":-4.55,"rot":3.141592653589793,"side":-1,"z":0,"grp":0}]},"module":{"id":"conc","key":"concreteQuay","at":[16.8,91],"rot":3.141592653589793,"o":{"bays":12,"bayLen":4.2,"width":10,"deckZ":5.6,"tideRange":4.4,"curb":"wood","ends":{"px":"join"},"open":{"water":[[-6.7,-4.3]]},"berthPlanned":{"water":{"list":[{"id":"berth2","x":18,"cls":"B","fenderX":[23,13],"lines":[24.7,16,11.3]},{"id":"berth3","x":3.2,"cls":"B","fenderX":[7.8,-1.4],"lines":[9.5,1.2,-3.1]},{"id":"berth4","x":-12.5,"cls":"B","fenderX":[-9.6,-15.4],"lines":[-7.9,-14.5,-17.1]},{"id":"berth5","x":-23.5,"cls":"B","fenderX":[-20.6],"lines":[-18.9]}],"faceLen":50.4,"kind":"quay","utilisation":1,"segments":[],"dry":[]}}}},"frames":[{"frame":0,"dir":0,"file":"WaterSide_fleet_conc_0.png","rect":[0,2532,1617,1266],"native":[1624,438],"nativePivot":[811,109],"crop":[4,5],"pivot":[807,104]},{"frame":1,"dir":7,"file":"WaterSide_fleet_conc_0.png","rect":[1617,2532,1617,1266],"native":[1382,1110],"nativePivot":[691,445],"crop":[4,4],"pivot":[687,441]},{"frame":2,"dir":6,"file":"WaterSide_fleet_conc_0.png","rect":[0,1266,1617,1266],"native":[341,1292],"nativePivot":[174,547],"crop":[4,21],"pivot":[170,526]},{"frame":3,"dir":5,"file":"WaterSide_fleet_conc_0.png","rect":[1617,1266,1617,1266],"native":[1381,1146],"nativePivot":[691,481],"crop":[4,5],"pivot":[687,476]},{"frame":4,"dir":4,"file":"WaterSide_fleet_conc_0.png","rect":[0,0,1617,1266],"native":[1624,503],"nativePivot":[813,174],"crop":[4,5],"pivot":[809,169]},{"frame":5,"dir":3,"file":"WaterSide_fleet_conc_0.png","rect":[1617,0,1617,1266],"native":[1382,1146],"nativePivot":[691,481],"crop":[4,5],"pivot":[687,476]},{"frame":6,"dir":2,"file":"WaterSide_fleet_conc_1.png","rect":[0,0,1617,1266],"native":[341,1292],"nativePivot":[166,547],"crop":[4,22],"pivot":[162,525]},{"frame":7,"dir":1,"file":"WaterSide_fleet_conc_1.png","rect":[1617,0,1617,1266],"native":[1381,1111],"nativePivot":[689,445],"crop":[4,4],"pivot":[685,441]}],"sheets":[{"file":"WaterSide_fleet_conc_0.png","width":3234,"height":3798,"rgbaSha256":"533f67b54e88e5781e71d853883672f6a15aca4f3eea470228fcd416df10a480"},{"file":"WaterSide_fleet_conc_1.png","width":3234,"height":1266,"rgbaSha256":"4fdd71232805d22c7af6bb97647646e7481157be9411e33318c8934312bb7549"}],"modelKey":"harbour:h5_fleet_conc","cellSize":[1617,1266]},{"key":"fleet_fingerA","harbour":"fleet","name":"fingerA","at":[109.7,57.435],"elevation":0,"floating":true,"freeboard":0.45,"draught":0.85,"bounds":{"min":[-2.6,-13.6,-4.363525],"max":[1.82,14.84,6.09]},"walkPolygon":[[108.5,71.035],[108.5,43.835],[110.9,43.835],[110.9,71.035]],"fittings":{"ladders":[],"tyres":[],"foams":[],"panels":[],"fenderPiles":[],"cleats":[{"x":-12.49,"y":0.8999999999999999,"z":0.45,"side":1,"face":"water","berth":"berth0","lead":"bow"},{"x":-6.78,"y":0.8999999999999999,"z":0.45,"side":1,"face":"water","berth":"berth0","lead":"spring"},{"x":-2.4,"y":0.8999999999999999,"z":0.45,"side":1,"face":"water","berth":"berth0","lead":"spring"},{"x":3.31,"y":0.8999999999999999,"z":0.45,"side":1,"face":"water","berth":"berth0","lead":"stern"},{"x":4.42,"y":0.8999999999999999,"z":0.45,"side":1,"face":"water","berth":"berth1","lead":"bow"},{"x":7.63,"y":0.8999999999999999,"z":0.45,"side":1,"face":"water","berth":"berth1","lead":"spring"},{"x":9.88,"y":0.8999999999999999,"z":0.45,"side":1,"face":"water","berth":"berth1","lead":"spring"},{"x":12.99,"y":0.8999999999999999,"z":0.45,"side":1,"face":"water","berth":"berth1","lead":"stern"},{"x":-12.49,"y":-0.8999999999999999,"z":0.45,"side":-1,"face":"shore","berth":"berth0","lead":"bow"},{"x":-6.78,"y":-0.8999999999999999,"z":0.45,"side":-1,"face":"shore","berth":"berth0","lead":"spring"},{"x":-2.4,"y":-0.8999999999999999,"z":0.45,"side":-1,"face":"shore","berth":"berth0","lead":"spring"},{"x":3.31,"y":-0.8999999999999999,"z":0.45,"side":-1,"face":"shore","berth":"berth0","lead":"stern"},{"x":4.42,"y":-0.8999999999999999,"z":0.45,"side":-1,"face":"shore","berth":"berth1","lead":"bow"},{"x":7.63,"y":-0.8999999999999999,"z":0.45,"side":-1,"face":"shore","berth":"berth1","lead":"spring"},{"x":9.88,"y":-0.8999999999999999,"z":0.45,"side":-1,"face":"shore","berth":"berth1","lead":"spring"},{"x":12.99,"y":-0.8999999999999999,"z":0.45,"side":-1,"face":"shore","berth":"berth1","lead":"stern"}],"bollards":[],"rings":[],"rails":[],"berths":{"water":{"list":[{"id":"berth0","hull":"lobsterOff","label":"lobster boat, offshore","cls":"B","loa":14.6,"beam":5.05,"draft":1.55,"gun":1.2,"sole":0.45,"x":-4.59,"x0":-11.89,"x1":2.71,"slot":[-13.09,3.91],"fits":true,"afloatAtDatum":true,"ukc":0.5,"line":"16\u201322 mm","fender":"tyre \u00b7 foam","fenderX":[-9.26,-4.59,0.08],"lines":[-12.49,-6.78,-2.4,3.31]},{"id":"berth1","hull":"hurricane","label":"7.3 m Hurricane","cls":"A","loa":7.47,"beam":2.6,"draft":0.45,"gun":0.58,"sole":0.12,"x":8.75,"x0":5.02,"x1":12.49,"slot":[4.42,13.09],"fits":true,"afloatAtDatum":true,"ukc":0.3,"line":"12\u201316 mm","fender":"foam","fenderX":[6.89,10.62],"lines":[4.42,7.63,9.88,13.09]}],"faceLen":27.2,"kind":"float","utilisation":0.94,"segments":[[-13.6,13.6]],"dry":[]},"shore":{"list":[{"id":"berth0","hull":"lobsterOff","label":"lobster boat, offshore","cls":"B","loa":14.6,"beam":5.05,"draft":1.55,"gun":1.2,"sole":0.45,"x":-4.59,"x0":-11.89,"x1":2.71,"slot":[-13.09,3.91],"fits":true,"afloatAtDatum":true,"ukc":0.5,"line":"16\u201322 mm","fender":"tyre \u00b7 foam","fenderX":[-9.26,-4.59,0.08],"lines":[-12.49,-6.78,-2.4,3.31]},{"id":"berth1","hull":"hurricane","label":"7.3 m Hurricane","cls":"A","loa":7.47,"beam":2.6,"draft":0.45,"gun":0.58,"sole":0.12,"x":8.75,"x0":5.02,"x1":12.49,"slot":[4.42,13.09],"fits":true,"afloatAtDatum":true,"ukc":0.3,"line":"12\u201316 mm","fender":"foam","fenderX":[6.89,10.62],"lines":[4.42,7.63,9.88,13.09]}],"faceLen":27.2,"kind":"float","utilisation":0.94,"segments":[[-13.6,13.6]],"dry":[]}},"gaps":{"water":[],"shore":[]},"top":0.45,"hx":13.6,"hy":1.2,"L":27.2,"tyreRecs":[],"fixtures":[]},"module":{"id":"fingerA","key":"float","grp":1,"rot":-1.5707963267948966,"at":[-10.3,57.435],"o":{"hull":"timber","bays":8,"bayLen":3.4,"width":2.4,"freeboard":0.45,"tideRange":4.4,"faces":["water","shore"],"guideFace":"water","fixtures":[]}},"frames":[{"frame":0,"dir":0,"file":"WaterSide_fleet_fingerA_0.png","rect":[0,829,911,829],"native":[151,806],"nativePivot":[88,424],"crop":[5,5],"pivot":[83,419]},{"frame":1,"dir":7,"file":"WaterSide_fleet_fingerA_0.png","rect":[911,829,911,829],"native":[683,674],"nativePivot":[341,347],"crop":[4,29],"pivot":[337,318]},{"frame":2,"dir":6,"file":"WaterSide_fleet_fingerA_0.png","rect":[1822,829,911,829],"native":[920,304],"nativePivot":[440,157],"crop":[4,37],"pivot":[436,120]},{"frame":3,"dir":5,"file":"WaterSide_fleet_fingerA_0.png","rect":[2733,829,911,829],"native":[742,672],"nativePivot":[342,347],"crop":[4,29],"pivot":[338,318]},{"frame":4,"dir":4,"file":"WaterSide_fleet_fingerA_0.png","rect":[0,0,911,829],"native":[151,840],"nativePivot":[63,426],"crop":[5,7],"pivot":[58,419]},{"frame":5,"dir":3,"file":"WaterSide_fleet_fingerA_0.png","rect":[911,0,911,829],"native":[683,731],"nativePivot":[342,368],"crop":[4,5],"pivot":[338,363]},{"frame":6,"dir":2,"file":"WaterSide_fleet_fingerA_0.png","rect":[1822,0,911,829],"native":[920,351],"nativePivot":[479,188],"crop":[4,5],"pivot":[475,183]},{"frame":7,"dir":1,"file":"WaterSide_fleet_fingerA_0.png","rect":[2733,0,911,829],"native":[742,650],"nativePivot":[399,368],"crop":[4,5],"pivot":[395,363]}],"sheets":[{"file":"WaterSide_fleet_fingerA_0.png","width":3644,"height":1658,"rgbaSha256":"73c6cb2e5cb73a473fb2ab66d41764f8cb6ddd27228c876a744ae51eb64560da"}],"modelKey":"harbour:h5_fleet_fingerA","cellSize":[911,829]},{"key":"fleet_fingerB","harbour":"fleet","name":"fingerB","at":[142.3,57.435],"elevation":0,"floating":true,"freeboard":0.45,"draught":0.85,"bounds":{"min":[-2.6,-13.6,-4.498189],"max":[1.82,14.84,6.09]},"walkPolygon":[[141.1,71.035],[141.1,43.835],[143.5,43.835],[143.5,71.035]],"fittings":{"ladders":[],"tyres":[],"foams":[],"panels":[],"fenderPiles":[],"cleats":[{"x":-12.49,"y":0.8999999999999999,"z":0.45,"side":1,"face":"water","berth":"berth0","lead":"bow"},{"x":-6.78,"y":0.8999999999999999,"z":0.45,"side":1,"face":"water","berth":"berth0","lead":"spring"},{"x":-2.4,"y":0.8999999999999999,"z":0.45,"side":1,"face":"water","berth":"berth0","lead":"spring"},{"x":3.31,"y":0.8999999999999999,"z":0.45,"side":1,"face":"water","berth":"berth0","lead":"stern"},{"x":4.42,"y":0.8999999999999999,"z":0.45,"side":1,"face":"water","berth":"berth1","lead":"bow"},{"x":7.63,"y":0.8999999999999999,"z":0.45,"side":1,"face":"water","berth":"berth1","lead":"spring"},{"x":9.88,"y":0.8999999999999999,"z":0.45,"side":1,"face":"water","berth":"berth1","lead":"spring"},{"x":12.99,"y":0.8999999999999999,"z":0.45,"side":1,"face":"water","berth":"berth1","lead":"stern"},{"x":-12.49,"y":-0.8999999999999999,"z":0.45,"side":-1,"face":"shore","berth":"berth0","lead":"bow"},{"x":-6.78,"y":-0.8999999999999999,"z":0.45,"side":-1,"face":"shore","berth":"berth0","lead":"spring"},{"x":-2.4,"y":-0.8999999999999999,"z":0.45,"side":-1,"face":"shore","berth":"berth0","lead":"spring"},{"x":3.31,"y":-0.8999999999999999,"z":0.45,"side":-1,"face":"shore","berth":"berth0","lead":"stern"},{"x":4.42,"y":-0.8999999999999999,"z":0.45,"side":-1,"face":"shore","berth":"berth1","lead":"bow"},{"x":7.63,"y":-0.8999999999999999,"z":0.45,"side":-1,"face":"shore","berth":"berth1","lead":"spring"},{"x":9.88,"y":-0.8999999999999999,"z":0.45,"side":-1,"face":"shore","berth":"berth1","lead":"spring"},{"x":12.99,"y":-0.8999999999999999,"z":0.45,"side":-1,"face":"shore","berth":"berth1","lead":"stern"}],"bollards":[],"rings":[],"rails":[],"berths":{"water":{"list":[{"id":"berth0","hull":"lobsterOff","label":"lobster boat, offshore","cls":"B","loa":14.6,"beam":5.05,"draft":1.55,"gun":1.2,"sole":0.45,"x":-4.59,"x0":-11.89,"x1":2.71,"slot":[-13.09,3.91],"fits":true,"afloatAtDatum":true,"ukc":0.5,"line":"16\u201322 mm","fender":"tyre \u00b7 foam","fenderX":[-9.26,-4.59,0.08],"lines":[-12.49,-6.78,-2.4,3.31]},{"id":"berth1","hull":"hurricane","label":"7.3 m Hurricane","cls":"A","loa":7.47,"beam":2.6,"draft":0.45,"gun":0.58,"sole":0.12,"x":8.75,"x0":5.02,"x1":12.49,"slot":[4.42,13.09],"fits":true,"afloatAtDatum":true,"ukc":0.3,"line":"12\u201316 mm","fender":"foam","fenderX":[6.89,10.62],"lines":[4.42,7.63,9.88,13.09]}],"faceLen":27.2,"kind":"float","utilisation":0.94,"segments":[[-13.6,13.6]],"dry":[]},"shore":{"list":[{"id":"berth0","hull":"lobsterOff","label":"lobster boat, offshore","cls":"B","loa":14.6,"beam":5.05,"draft":1.55,"gun":1.2,"sole":0.45,"x":-4.59,"x0":-11.89,"x1":2.71,"slot":[-13.09,3.91],"fits":true,"afloatAtDatum":true,"ukc":0.5,"line":"16\u201322 mm","fender":"tyre \u00b7 foam","fenderX":[-9.26,-4.59,0.08],"lines":[-12.49,-6.78,-2.4,3.31]},{"id":"berth1","hull":"hurricane","label":"7.3 m Hurricane","cls":"A","loa":7.47,"beam":2.6,"draft":0.45,"gun":0.58,"sole":0.12,"x":8.75,"x0":5.02,"x1":12.49,"slot":[4.42,13.09],"fits":true,"afloatAtDatum":true,"ukc":0.3,"line":"12\u201316 mm","fender":"foam","fenderX":[6.89,10.62],"lines":[4.42,7.63,9.88,13.09]}],"faceLen":27.2,"kind":"float","utilisation":0.94,"segments":[[-13.6,13.6]],"dry":[]}},"gaps":{"water":[],"shore":[]},"top":0.45,"hx":13.6,"hy":1.2,"L":27.2,"tyreRecs":[],"fixtures":[]},"module":{"id":"fingerB","key":"float","grp":2,"rot":-1.5707963267948966,"at":[22.3,57.435],"o":{"hull":"timber","bays":8,"bayLen":3.4,"width":2.4,"freeboard":0.45,"tideRange":4.4,"faces":["water","shore"],"guideFace":"water","fixtures":[]}},"frames":[{"frame":0,"dir":0,"file":"WaterSide_fleet_fingerB_0.png","rect":[0,831,911,831],"native":[151,804],"nativePivot":[88,424],"crop":[5,5],"pivot":[83,419]},{"frame":1,"dir":7,"file":"WaterSide_fleet_fingerB_0.png","rect":[911,831,911,831],"native":[683,672],"nativePivot":[341,347],"crop":[4,29],"pivot":[337,318]},{"frame":2,"dir":6,"file":"WaterSide_fleet_fingerB_0.png","rect":[1822,831,911,831],"native":[920,307],"nativePivot":[440,157],"crop":[4,37],"pivot":[436,120]},{"frame":3,"dir":5,"file":"WaterSide_fleet_fingerB_0.png","rect":[2733,831,911,831],"native":[742,677],"nativePivot":[342,347],"crop":[4,29],"pivot":[338,318]},{"frame":4,"dir":4,"file":"WaterSide_fleet_fingerB_0.png","rect":[0,0,911,831],"native":[151,843],"nativePivot":[63,426],"crop":[5,7],"pivot":[58,419]},{"frame":5,"dir":3,"file":"WaterSide_fleet_fingerB_0.png","rect":[911,0,911,831],"native":[683,734],"nativePivot":[342,368],"crop":[4,5],"pivot":[338,363]},{"frame":6,"dir":2,"file":"WaterSide_fleet_fingerB_0.png","rect":[1822,0,911,831],"native":[920,353],"nativePivot":[479,188],"crop":[4,5],"pivot":[475,183]},{"frame":7,"dir":1,"file":"WaterSide_fleet_fingerB_0.png","rect":[2733,0,911,831],"native":[742,648],"nativePivot":[399,368],"crop":[4,5],"pivot":[395,363]}],"sheets":[{"file":"WaterSide_fleet_fingerB_0.png","width":3644,"height":1662,"rgbaSha256":"2562fe312b1e24b4a8537543d52e0151a1cc8394f441fd5f002b67cf91684406"}],"modelKey":"harbour:h5_fleet_fingerB","cellSize":[911,831]},{"key":"fleet_gangway0_s0","harbour":"fleet","name":"gangway0_s0","at":[109.7,86],"elevation":3.3999999999999995,"gangway":{"id":"gangway0","step":0,"drop":0.75,"hinge":[109.7,86],"landing":[109.7,70.435],"width":1.24,"length":16.3,"floatModule":"fingerA"},"bounds":{"min":[-0.625,-16.732736,-1.120279],"max":[0.625,0.22,1.023975]},"frames":[{"frame":0,"dir":0,"file":"WaterSide_fleet_gangway0_s0_0.png","rect":[0,388,542,388],"native":[50,397],"nativePivot":[24,30],"crop":[4,5],"pivot":[20,25]},{"frame":1,"dir":7,"file":"WaterSide_fleet_gangway0_s0_0.png","rect":[542,388,542,388],"native":[420,316],"nativePivot":[396,38],"crop":[5,4],"pivot":[391,34]},{"frame":2,"dir":6,"file":"WaterSide_fleet_gangway0_s0_0.png","rect":[1084,388,542,388],"native":[552,87],"nativePivot":[540,42],"crop":[5,5],"pivot":[535,37]},{"frame":3,"dir":5,"file":"WaterSide_fleet_gangway0_s0_0.png","rect":[1626,388,542,388],"native":[420,280],"nativePivot":[396,257],"crop":[5,5],"pivot":[391,252]},{"frame":4,"dir":4,"file":"WaterSide_fleet_gangway0_s0_0.png","rect":[2168,388,542,388],"native":[50,360],"nativePivot":[24,346],"crop":[4,4],"pivot":[20,342]},{"frame":5,"dir":3,"file":"WaterSide_fleet_gangway0_s0_0.png","rect":[2710,388,542,388],"native":[420,280],"nativePivot":[24,257],"crop":[5,5],"pivot":[19,252]},{"frame":6,"dir":2,"file":"WaterSide_fleet_gangway0_s0_0.png","rect":[3252,388,542,388],"native":[552,87],"nativePivot":[12,42],"crop":[5,5],"pivot":[7,37]},{"frame":7,"dir":1,"file":"WaterSide_fleet_gangway0_s0_0.png","rect":[0,0,542,388],"native":[420,316],"nativePivot":[24,38],"crop":[5,4],"pivot":[19,34]}],"sheets":[{"file":"WaterSide_fleet_gangway0_s0_0.png","width":3794,"height":776,"rgbaSha256":"b95bcd69b889585ea345bc523705b16763d32b10082c2f98249d92db7741a02d"}],"modelKey":"harbour:h5_fleet_gangway0_s0","cellSize":[542,388]},{"key":"fleet_gangway0_s1","harbour":"fleet","name":"gangway0_s1","at":[109.7,86],"elevation":3.3999999999999995,"gangway":{"id":"gangway0","step":1,"drop":1.3,"hinge":[109.7,86],"landing":[109.7,70.435],"width":1.24,"length":16.3,"floatModule":"fingerA"},"bounds":{"min":[-0.625,-16.698077,-1.670214],"max":[0.625,0.22,1.023924]},"frames":[{"frame":0,"dir":0,"file":"WaterSide_fleet_gangway0_s1_0.png","rect":[0,400,541,400],"native":[50,410],"nativePivot":[24,30],"crop":[4,5],"pivot":[20,25]},{"frame":1,"dir":7,"file":"WaterSide_fleet_gangway0_s1_0.png","rect":[541,400,541,400],"native":[419,329],"nativePivot":[395,38],"crop":[5,4],"pivot":[390,34]},{"frame":2,"dir":6,"file":"WaterSide_fleet_gangway0_s1_0.png","rect":[1082,400,541,400],"native":[551,100],"nativePivot":[539,42],"crop":[5,5],"pivot":[534,37]},{"frame":3,"dir":5,"file":"WaterSide_fleet_gangway0_s1_0.png","rect":[1623,400,541,400],"native":[419,266],"nativePivot":[395,243],"crop":[5,5],"pivot":[390,238]},{"frame":4,"dir":4,"file":"WaterSide_fleet_gangway0_s1_0.png","rect":[2164,400,541,400],"native":[50,346],"nativePivot":[24,332],"crop":[4,4],"pivot":[20,328]},{"frame":5,"dir":3,"file":"WaterSide_fleet_gangway0_s1_0.png","rect":[2705,400,541,400],"native":[419,266],"nativePivot":[24,243],"crop":[5,5],"pivot":[19,238]},{"frame":6,"dir":2,"file":"WaterSide_fleet_gangway0_s1_0.png","rect":[3246,400,541,400],"native":[551,100],"nativePivot":[12,42],"crop":[5,5],"pivot":[7,37]},{"frame":7,"dir":1,"file":"WaterSide_fleet_gangway0_s1_0.png","rect":[0,0,541,400],"native":[419,329],"nativePivot":[24,38],"crop":[5,4],"pivot":[19,34]}],"sheets":[{"file":"WaterSide_fleet_gangway0_s1_0.png","width":3787,"height":800,"rgbaSha256":"3ef4d291a133a9009a307fdf32e7b866d9616a334e74a6000d0c4bb1bffe389b"}],"modelKey":"harbour:h5_fleet_gangway0_s1","cellSize":[541,400]},{"key":"fleet_gangway0_s2","harbour":"fleet","name":"gangway0_s2","at":[109.7,86],"elevation":3.3999999999999995,"gangway":{"id":"gangway0","step":2,"drop":1.85,"hinge":[109.7,86],"landing":[109.7,70.435],"width":1.24,"length":16.3,"floatModule":"fingerA"},"bounds":{"min":[-0.625,-16.644675,-2.220115],"max":[0.625,0.22,1.023845]},"frames":[{"frame":0,"dir":0,"file":"WaterSide_fleet_gangway0_s2_0.png","rect":[0,413,540,413],"native":[50,422],"nativePivot":[24,30],"crop":[4,5],"pivot":[20,25]},{"frame":1,"dir":7,"file":"WaterSide_fleet_gangway0_s2_0.png","rect":[540,413,540,413],"native":[418,342],"nativePivot":[394,38],"crop":[5,4],"pivot":[389,34]},{"frame":2,"dir":6,"file":"WaterSide_fleet_gangway0_s2_0.png","rect":[1080,413,540,413],"native":[549,114],"nativePivot":[537,42],"crop":[4,5],"pivot":[533,37]},{"frame":3,"dir":5,"file":"WaterSide_fleet_gangway0_s2_0.png","rect":[1620,413,540,413],"native":[418,251],"nativePivot":[394,228],"crop":[5,4],"pivot":[389,224]},{"frame":4,"dir":4,"file":"WaterSide_fleet_gangway0_s2_0.png","rect":[2160,413,540,413],"native":[50,332],"nativePivot":[24,317],"crop":[4,4],"pivot":[20,313]},{"frame":5,"dir":3,"file":"WaterSide_fleet_gangway0_s2_0.png","rect":[2700,413,540,413],"native":[418,251],"nativePivot":[24,228],"crop":[5,4],"pivot":[19,224]},{"frame":6,"dir":2,"file":"WaterSide_fleet_gangway0_s2_0.png","rect":[3240,413,540,413],"native":[549,114],"nativePivot":[12,42],"crop":[5,5],"pivot":[7,37]},{"frame":7,"dir":1,"file":"WaterSide_fleet_gangway0_s2_0.png","rect":[0,0,540,413],"native":[418,342],"nativePivot":[24,38],"crop":[5,4],"pivot":[19,34]}],"sheets":[{"file":"WaterSide_fleet_gangway0_s2_0.png","width":3780,"height":826,"rgbaSha256":"91330b50b836b1fbd10745edc62e435bc33c94dc67e1639329442522e550c754"}],"modelKey":"harbour:h5_fleet_gangway0_s2","cellSize":[540,413]},{"key":"fleet_gangway0_s3","harbour":"fleet","name":"gangway0_s3","at":[109.7,86],"elevation":3.3999999999999995,"gangway":{"id":"gangway0","step":3,"drop":2.4,"hinge":[109.7,86],"landing":[109.7,70.435],"width":1.24,"length":16.3,"floatModule":"fingerA"},"bounds":{"min":[-0.625,-16.572345,-2.769981],"max":[0.625,0.22,1.023738]},"frames":[{"frame":0,"dir":0,"file":"WaterSide_fleet_gangway0_s3_0.png","rect":[0,425,537,425],"native":[50,434],"nativePivot":[24,30],"crop":[4,5],"pivot":[20,25]},{"frame":1,"dir":7,"file":"WaterSide_fleet_gangway0_s3_0.png","rect":[537,425,537,425],"native":[416,354],"nativePivot":[392,38],"crop":[4,4],"pivot":[388,34]},{"frame":2,"dir":6,"file":"WaterSide_fleet_gangway0_s3_0.png","rect":[1074,425,537,425],"native":[547,127],"nativePivot":[535,42],"crop":[5,5],"pivot":[530,37]},{"frame":3,"dir":5,"file":"WaterSide_fleet_gangway0_s3_0.png","rect":[1611,425,537,425],"native":[416,237],"nativePivot":[392,214],"crop":[5,4],"pivot":[387,210]},{"frame":4,"dir":4,"file":"WaterSide_fleet_gangway0_s3_0.png","rect":[2148,425,537,425],"native":[50,317],"nativePivot":[24,302],"crop":[4,4],"pivot":[20,298]},{"frame":5,"dir":3,"file":"WaterSide_fleet_gangway0_s3_0.png","rect":[2685,425,537,425],"native":[416,237],"nativePivot":[24,214],"crop":[5,4],"pivot":[19,210]},{"frame":6,"dir":2,"file":"WaterSide_fleet_gangway0_s3_0.png","rect":[3222,425,537,425],"native":[547,127],"nativePivot":[12,42],"crop":[5,5],"pivot":[7,37]},{"frame":7,"dir":1,"file":"WaterSide_fleet_gangway0_s3_0.png","rect":[0,0,537,425],"native":[416,354],"nativePivot":[24,38],"crop":[5,4],"pivot":[19,34]}],"sheets":[{"file":"WaterSide_fleet_gangway0_s3_0.png","width":3759,"height":850,"rgbaSha256":"56bb5d46f2ecc9ff0657fe685b2c00f14b7a3bd6859013b10a0cd8147408f4b4"}],"modelKey":"harbour:h5_fleet_gangway0_s3","cellSize":[537,425]},{"key":"fleet_gangway0_s4","harbour":"fleet","name":"gangway0_s4","at":[109.7,86],"elevation":3.3999999999999995,"gangway":{"id":"gangway0","step":4,"drop":2.95,"hinge":[109.7,86],"landing":[109.7,70.435],"width":1.24,"length":16.3,"floatModule":"fingerA"},"bounds":{"min":[-0.625,-16.48083,-3.31981],"max":[0.625,0.22,1.023604]},"frames":[{"frame":0,"dir":0,"file":"WaterSide_fleet_gangway0_s4_0.png","rect":[0,436,534,436],"native":[50,446],"nativePivot":[24,30],"crop":[4,5],"pivot":[20,25]},{"frame":1,"dir":7,"file":"WaterSide_fleet_gangway0_s4_0.png","rect":[534,436,534,436],"native":[414,367],"nativePivot":[390,38],"crop":[5,4],"pivot":[385,34]},{"frame":2,"dir":6,"file":"WaterSide_fleet_gangway0_s4_0.png","rect":[1068,436,534,436],"native":[544,141],"nativePivot":[532,42],"crop":[5,5],"pivot":[527,37]},{"frame":3,"dir":5,"file":"WaterSide_fleet_gangway0_s4_0.png","rect":[1602,436,534,436],"native":[414,222],"nativePivot":[390,199],"crop":[4,4],"pivot":[386,195]},{"frame":4,"dir":4,"file":"WaterSide_fleet_gangway0_s4_0.png","rect":[2136,436,534,436],"native":[50,301],"nativePivot":[24,287],"crop":[4,4],"pivot":[20,283]},{"frame":5,"dir":3,"file":"WaterSide_fleet_gangway0_s4_0.png","rect":[2670,436,534,436],"native":[414,222],"nativePivot":[24,199],"crop":[5,4],"pivot":[19,195]},{"frame":6,"dir":2,"file":"WaterSide_fleet_gangway0_s4_0.png","rect":[3204,436,534,436],"native":[544,141],"nativePivot":[12,42],"crop":[5,5],"pivot":[7,37]},{"frame":7,"dir":1,"file":"WaterSide_fleet_gangway0_s4_0.png","rect":[0,0,534,436],"native":[414,367],"nativePivot":[24,38],"crop":[5,4],"pivot":[19,34]}],"sheets":[{"file":"WaterSide_fleet_gangway0_s4_0.png","width":3738,"height":872,"rgbaSha256":"6ccaec2da480751a4834a00c118575b4b2a776333c7eb8d58b85cc9327f5e98c"}],"modelKey":"harbour:h5_fleet_gangway0_s4","cellSize":[534,436]},{"key":"fleet_gangway0_s5","harbour":"fleet","name":"gangway0_s5","at":[109.7,86],"elevation":3.3999999999999995,"gangway":{"id":"gangway0","step":5,"drop":3.5,"hinge":[109.7,86],"landing":[109.7,70.435],"width":1.24,"length":16.3,"floatModule":"fingerA"},"bounds":{"min":[-0.625,-16.369799,-3.869604],"max":[0.625,0.22,1.02344]},"frames":[{"frame":0,"dir":0,"file":"WaterSide_fleet_gangway0_s5_0.png","rect":[0,448,531,448],"native":[50,457],"nativePivot":[24,30],"crop":[4,5],"pivot":[20,25]},{"frame":1,"dir":7,"file":"WaterSide_fleet_gangway0_s5_0.png","rect":[531,448,531,448],"native":[412,378],"nativePivot":[388,38],"crop":[5,4],"pivot":[383,34]},{"frame":2,"dir":6,"file":"WaterSide_fleet_gangway0_s5_0.png","rect":[1062,448,531,448],"native":[540,154],"nativePivot":[528,42],"crop":[4,5],"pivot":[524,37]},{"frame":3,"dir":5,"file":"WaterSide_fleet_gangway0_s5_0.png","rect":[1593,448,531,448],"native":[412,207],"nativePivot":[388,184],"crop":[5,4],"pivot":[383,180]},{"frame":4,"dir":4,"file":"WaterSide_fleet_gangway0_s5_0.png","rect":[2124,448,531,448],"native":[50,286],"nativePivot":[24,271],"crop":[4,4],"pivot":[20,267]},{"frame":5,"dir":3,"file":"WaterSide_fleet_gangway0_s5_0.png","rect":[2655,448,531,448],"native":[412,207],"nativePivot":[24,184],"crop":[5,4],"pivot":[19,180]},{"frame":6,"dir":2,"file":"WaterSide_fleet_gangway0_s5_0.png","rect":[3186,448,531,448],"native":[540,154],"nativePivot":[12,42],"crop":[5,5],"pivot":[7,37]},{"frame":7,"dir":1,"file":"WaterSide_fleet_gangway0_s5_0.png","rect":[0,0,531,448],"native":[412,378],"nativePivot":[24,38],"crop":[5,4],"pivot":[19,34]}],"sheets":[{"file":"WaterSide_fleet_gangway0_s5_0.png","width":3717,"height":896,"rgbaSha256":"9a11855898d5b5227e8c5409110d73c7dc82bc40787cad63f94cf162f5aafea8"}],"modelKey":"harbour:h5_fleet_gangway0_s5","cellSize":[531,448]},{"key":"fleet_gangway0_s6","harbour":"fleet","name":"gangway0_s6","at":[109.7,86],"elevation":3.3999999999999995,"gangway":{"id":"gangway0","step":6,"drop":4.05,"hinge":[109.7,86],"landing":[109.7,70.435],"width":1.24,"length":16.3,"floatModule":"fingerA"},"bounds":{"min":[-0.625,-16.238841,-4.41936],"max":[0.625,0.22,1.023247]},"frames":[{"frame":0,"dir":0,"file":"WaterSide_fleet_gangway0_s6_0.png","rect":[0,458,527,458],"native":[50,468],"nativePivot":[24,30],"crop":[4,5],"pivot":[20,25]},{"frame":1,"dir":7,"file":"WaterSide_fleet_gangway0_s6_0.png","rect":[527,458,527,458],"native":[409,390],"nativePivot":[385,38],"crop":[6,4],"pivot":[379,34]},{"frame":2,"dir":6,"file":"WaterSide_fleet_gangway0_s6_0.png","rect":[1054,458,527,458],"native":[536,168],"nativePivot":[524,42],"crop":[4,5],"pivot":[520,37]},{"frame":3,"dir":5,"file":"WaterSide_fleet_gangway0_s6_0.png","rect":[1581,458,527,458],"native":[409,192],"nativePivot":[385,169],"crop":[6,5],"pivot":[379,164]},{"frame":4,"dir":4,"file":"WaterSide_fleet_gangway0_s6_0.png","rect":[2108,458,527,458],"native":[50,269],"nativePivot":[24,255],"crop":[4,4],"pivot":[20,251]},{"frame":5,"dir":3,"file":"WaterSide_fleet_gangway0_s6_0.png","rect":[2635,458,527,458],"native":[409,192],"nativePivot":[24,169],"crop":[5,5],"pivot":[19,164]},{"frame":6,"dir":2,"file":"WaterSide_fleet_gangway0_s6_0.png","rect":[3162,458,527,458],"native":[536,168],"nativePivot":[12,42],"crop":[5,5],"pivot":[7,37]},{"frame":7,"dir":1,"file":"WaterSide_fleet_gangway0_s6_0.png","rect":[0,0,527,458],"native":[409,390],"nativePivot":[24,38],"crop":[5,4],"pivot":[19,34]}],"sheets":[{"file":"WaterSide_fleet_gangway0_s6_0.png","width":3689,"height":916,"rgbaSha256":"37795bb870ad82f4b3fa1e0d4c418266a9317770e44da46532b4050dcd1bf5a5"}],"modelKey":"harbour:h5_fleet_gangway0_s6","cellSize":[527,458]},{"key":"fleet_gangway0_s7","harbour":"fleet","name":"gangway0_s7","at":[109.7,86],"elevation":3.3999999999999995,"gangway":{"id":"gangway0","step":7,"drop":4.6,"hinge":[109.7,86],"landing":[109.7,70.435],"width":1.24,"length":16.3,"floatModule":"fingerA"},"bounds":{"min":[-0.625,-16.087455,-4.969079],"max":[0.625,0.22,1.023024]},"frames":[{"frame":0,"dir":0,"file":"WaterSide_fleet_gangway0_s7_0.png","rect":[0,469,522,469],"native":[50,478],"nativePivot":[24,30],"crop":[4,5],"pivot":[20,25]},{"frame":1,"dir":7,"file":"WaterSide_fleet_gangway0_s7_0.png","rect":[522,469,522,469],"native":[405,401],"nativePivot":[381,38],"crop":[5,4],"pivot":[376,34]},{"frame":2,"dir":6,"file":"WaterSide_fleet_gangway0_s7_0.png","rect":[1044,469,522,469],"native":[531,181],"nativePivot":[519,42],"crop":[4,5],"pivot":[515,37]},{"frame":3,"dir":5,"file":"WaterSide_fleet_gangway0_s7_0.png","rect":[1566,469,522,469],"native":[405,176],"nativePivot":[381,153],"crop":[5,4],"pivot":[376,149]},{"frame":4,"dir":4,"file":"WaterSide_fleet_gangway0_s7_0.png","rect":[2088,469,522,469],"native":[50,253],"nativePivot":[24,239],"crop":[4,5],"pivot":[20,234]},{"frame":5,"dir":3,"file":"WaterSide_fleet_gangway0_s7_0.png","rect":[2610,469,522,469],"native":[405,176],"nativePivot":[24,153],"crop":[5,4],"pivot":[19,149]},{"frame":6,"dir":2,"file":"WaterSide_fleet_gangway0_s7_0.png","rect":[3132,469,522,469],"native":[531,181],"nativePivot":[12,42],"crop":[5,5],"pivot":[7,37]},{"frame":7,"dir":1,"file":"WaterSide_fleet_gangway0_s7_0.png","rect":[0,0,522,469],"native":[405,401],"nativePivot":[24,38],"crop":[5,4],"pivot":[19,34]}],"sheets":[{"file":"WaterSide_fleet_gangway0_s7_0.png","width":3654,"height":938,"rgbaSha256":"40da60234c23eafa51d1b6667f9af3ba86d14781950bb308adff1ff6189b1c0a"}],"modelKey":"harbour:h5_fleet_gangway0_s7","cellSize":[522,469]},{"key":"fleet_gangway0_s8","harbour":"fleet","name":"gangway0_s8","at":[109.7,86],"elevation":3.3999999999999995,"gangway":{"id":"gangway0","step":8,"drop":5.15,"hinge":[109.7,86],"landing":[109.7,70.435],"width":1.24,"length":16.3,"floatModule":"fingerA"},"bounds":{"min":[-0.625,-15.915041,-5.518758],"max":[0.625,0.22,1.022771]},"frames":[{"frame":0,"dir":0,"file":"WaterSide_fleet_gangway0_s8_0.png","rect":[0,479,516,479],"native":[50,488],"nativePivot":[24,30],"crop":[4,5],"pivot":[20,25]},{"frame":1,"dir":7,"file":"WaterSide_fleet_gangway0_s8_0.png","rect":[516,479,516,479],"native":[401,412],"nativePivot":[377,38],"crop":[4,4],"pivot":[373,34]},{"frame":2,"dir":6,"file":"WaterSide_fleet_gangway0_s8_0.png","rect":[1032,479,516,479],"native":[526,195],"nativePivot":[514,42],"crop":[5,5],"pivot":[509,37]},{"frame":3,"dir":5,"file":"WaterSide_fleet_gangway0_s8_0.png","rect":[1548,479,516,479],"native":[401,160],"nativePivot":[377,137],"crop":[4,4],"pivot":[373,133]},{"frame":4,"dir":4,"file":"WaterSide_fleet_gangway0_s8_0.png","rect":[2064,479,516,479],"native":[50,236],"nativePivot":[24,222],"crop":[4,5],"pivot":[20,217]},{"frame":5,"dir":3,"file":"WaterSide_fleet_gangway0_s8_0.png","rect":[2580,479,516,479],"native":[401,160],"nativePivot":[24,137],"crop":[5,4],"pivot":[19,133]},{"frame":6,"dir":2,"file":"WaterSide_fleet_gangway0_s8_0.png","rect":[3096,479,516,479],"native":[526,195],"nativePivot":[12,42],"crop":[5,5],"pivot":[7,37]},{"frame":7,"dir":1,"file":"WaterSide_fleet_gangway0_s8_0.png","rect":[0,0,516,479],"native":[401,412],"nativePivot":[24,38],"crop":[5,4],"pivot":[19,34]}],"sheets":[{"file":"WaterSide_fleet_gangway0_s8_0.png","width":3612,"height":958,"rgbaSha256":"c5c5f3b400364cdbab6d7a3609ef86d732f2fd3f11bb7cd2c812bf0ab6a4eb31"}],"modelKey":"harbour:h5_fleet_gangway0_s8","cellSize":[516,479]},{"key":"fleet_gangway1_s0","harbour":"fleet","name":"gangway1_s0","at":[142.3,86],"elevation":3.3999999999999995,"gangway":{"id":"gangway1","step":0,"drop":0.75,"hinge":[142.3,86],"landing":[142.3,70.435],"width":1.24,"length":16.3,"floatModule":"fingerB"},"bounds":{"min":[-0.625,-16.732736,-1.120279],"max":[0.625,0.22,1.023975]},"frames":[{"frame":0,"dir":0,"file":"WaterSide_fleet_gangway1_s0_0.png","rect":[0,388,542,388],"native":[50,397],"nativePivot":[24,30],"crop":[4,5],"pivot":[20,25]},{"frame":1,"dir":7,"file":"WaterSide_fleet_gangway1_s0_0.png","rect":[542,388,542,388],"native":[420,316],"nativePivot":[396,38],"crop":[5,4],"pivot":[391,34]},{"frame":2,"dir":6,"file":"WaterSide_fleet_gangway1_s0_0.png","rect":[1084,388,542,388],"native":[552,87],"nativePivot":[540,42],"crop":[5,5],"pivot":[535,37]},{"frame":3,"dir":5,"file":"WaterSide_fleet_gangway1_s0_0.png","rect":[1626,388,542,388],"native":[420,280],"nativePivot":[396,257],"crop":[5,5],"pivot":[391,252]},{"frame":4,"dir":4,"file":"WaterSide_fleet_gangway1_s0_0.png","rect":[2168,388,542,388],"native":[50,360],"nativePivot":[24,346],"crop":[4,4],"pivot":[20,342]},{"frame":5,"dir":3,"file":"WaterSide_fleet_gangway1_s0_0.png","rect":[2710,388,542,388],"native":[420,280],"nativePivot":[24,257],"crop":[5,5],"pivot":[19,252]},{"frame":6,"dir":2,"file":"WaterSide_fleet_gangway1_s0_0.png","rect":[3252,388,542,388],"native":[552,87],"nativePivot":[12,42],"crop":[5,5],"pivot":[7,37]},{"frame":7,"dir":1,"file":"WaterSide_fleet_gangway1_s0_0.png","rect":[0,0,542,388],"native":[420,316],"nativePivot":[24,38],"crop":[5,4],"pivot":[19,34]}],"sheets":[{"file":"WaterSide_fleet_gangway1_s0_0.png","width":3794,"height":776,"rgbaSha256":"b95bcd69b889585ea345bc523705b16763d32b10082c2f98249d92db7741a02d"}],"modelKey":"harbour:h5_fleet_gangway1_s0","cellSize":[542,388]},{"key":"fleet_gangway1_s1","harbour":"fleet","name":"gangway1_s1","at":[142.3,86],"elevation":3.3999999999999995,"gangway":{"id":"gangway1","step":1,"drop":1.3,"hinge":[142.3,86],"landing":[142.3,70.435],"width":1.24,"length":16.3,"floatModule":"fingerB"},"bounds":{"min":[-0.625,-16.698077,-1.670214],"max":[0.625,0.22,1.023924]},"frames":[{"frame":0,"dir":0,"file":"WaterSide_fleet_gangway1_s1_0.png","rect":[0,400,541,400],"native":[50,410],"nativePivot":[24,30],"crop":[4,5],"pivot":[20,25]},{"frame":1,"dir":7,"file":"WaterSide_fleet_gangway1_s1_0.png","rect":[541,400,541,400],"native":[419,329],"nativePivot":[395,38],"crop":[5,4],"pivot":[390,34]},{"frame":2,"dir":6,"file":"WaterSide_fleet_gangway1_s1_0.png","rect":[1082,400,541,400],"native":[551,100],"nativePivot":[539,42],"crop":[5,5],"pivot":[534,37]},{"frame":3,"dir":5,"file":"WaterSide_fleet_gangway1_s1_0.png","rect":[1623,400,541,400],"native":[419,266],"nativePivot":[395,243],"crop":[5,5],"pivot":[390,238]},{"frame":4,"dir":4,"file":"WaterSide_fleet_gangway1_s1_0.png","rect":[2164,400,541,400],"native":[50,346],"nativePivot":[24,332],"crop":[4,4],"pivot":[20,328]},{"frame":5,"dir":3,"file":"WaterSide_fleet_gangway1_s1_0.png","rect":[2705,400,541,400],"native":[419,266],"nativePivot":[24,243],"crop":[5,5],"pivot":[19,238]},{"frame":6,"dir":2,"file":"WaterSide_fleet_gangway1_s1_0.png","rect":[3246,400,541,400],"native":[551,100],"nativePivot":[12,42],"crop":[5,5],"pivot":[7,37]},{"frame":7,"dir":1,"file":"WaterSide_fleet_gangway1_s1_0.png","rect":[0,0,541,400],"native":[419,329],"nativePivot":[24,38],"crop":[5,4],"pivot":[19,34]}],"sheets":[{"file":"WaterSide_fleet_gangway1_s1_0.png","width":3787,"height":800,"rgbaSha256":"3ef4d291a133a9009a307fdf32e7b866d9616a334e74a6000d0c4bb1bffe389b"}],"modelKey":"harbour:h5_fleet_gangway1_s1","cellSize":[541,400]},{"key":"fleet_gangway1_s2","harbour":"fleet","name":"gangway1_s2","at":[142.3,86],"elevation":3.3999999999999995,"gangway":{"id":"gangway1","step":2,"drop":1.85,"hinge":[142.3,86],"landing":[142.3,70.435],"width":1.24,"length":16.3,"floatModule":"fingerB"},"bounds":{"min":[-0.625,-16.644675,-2.220115],"max":[0.625,0.22,1.023845]},"frames":[{"frame":0,"dir":0,"file":"WaterSide_fleet_gangway1_s2_0.png","rect":[0,413,540,413],"native":[50,422],"nativePivot":[24,30],"crop":[4,5],"pivot":[20,25]},{"frame":1,"dir":7,"file":"WaterSide_fleet_gangway1_s2_0.png","rect":[540,413,540,413],"native":[418,342],"nativePivot":[394,38],"crop":[5,4],"pivot":[389,34]},{"frame":2,"dir":6,"file":"WaterSide_fleet_gangway1_s2_0.png","rect":[1080,413,540,413],"native":[549,114],"nativePivot":[537,42],"crop":[4,5],"pivot":[533,37]},{"frame":3,"dir":5,"file":"WaterSide_fleet_gangway1_s2_0.png","rect":[1620,413,540,413],"native":[418,251],"nativePivot":[394,228],"crop":[5,4],"pivot":[389,224]},{"frame":4,"dir":4,"file":"WaterSide_fleet_gangway1_s2_0.png","rect":[2160,413,540,413],"native":[50,332],"nativePivot":[24,317],"crop":[4,4],"pivot":[20,313]},{"frame":5,"dir":3,"file":"WaterSide_fleet_gangway1_s2_0.png","rect":[2700,413,540,413],"native":[418,251],"nativePivot":[24,228],"crop":[5,4],"pivot":[19,224]},{"frame":6,"dir":2,"file":"WaterSide_fleet_gangway1_s2_0.png","rect":[3240,413,540,413],"native":[549,114],"nativePivot":[12,42],"crop":[5,5],"pivot":[7,37]},{"frame":7,"dir":1,"file":"WaterSide_fleet_gangway1_s2_0.png","rect":[0,0,540,413],"native":[418,342],"nativePivot":[24,38],"crop":[5,4],"pivot":[19,34]}],"sheets":[{"file":"WaterSide_fleet_gangway1_s2_0.png","width":3780,"height":826,"rgbaSha256":"91330b50b836b1fbd10745edc62e435bc33c94dc67e1639329442522e550c754"}],"modelKey":"harbour:h5_fleet_gangway1_s2","cellSize":[540,413]},{"key":"fleet_gangway1_s3","harbour":"fleet","name":"gangway1_s3","at":[142.3,86],"elevation":3.3999999999999995,"gangway":{"id":"gangway1","step":3,"drop":2.4,"hinge":[142.3,86],"landing":[142.3,70.435],"width":1.24,"length":16.3,"floatModule":"fingerB"},"bounds":{"min":[-0.625,-16.572345,-2.769981],"max":[0.625,0.22,1.023738]},"frames":[{"frame":0,"dir":0,"file":"WaterSide_fleet_gangway1_s3_0.png","rect":[0,425,537,425],"native":[50,434],"nativePivot":[24,30],"crop":[4,5],"pivot":[20,25]},{"frame":1,"dir":7,"file":"WaterSide_fleet_gangway1_s3_0.png","rect":[537,425,537,425],"native":[416,354],"nativePivot":[392,38],"crop":[4,4],"pivot":[388,34]},{"frame":2,"dir":6,"file":"WaterSide_fleet_gangway1_s3_0.png","rect":[1074,425,537,425],"native":[547,127],"nativePivot":[535,42],"crop":[5,5],"pivot":[530,37]},{"frame":3,"dir":5,"file":"WaterSide_fleet_gangway1_s3_0.png","rect":[1611,425,537,425],"native":[416,237],"nativePivot":[392,214],"crop":[5,4],"pivot":[387,210]},{"frame":4,"dir":4,"file":"WaterSide_fleet_gangway1_s3_0.png","rect":[2148,425,537,425],"native":[50,317],"nativePivot":[24,302],"crop":[4,4],"pivot":[20,298]},{"frame":5,"dir":3,"file":"WaterSide_fleet_gangway1_s3_0.png","rect":[2685,425,537,425],"native":[416,237],"nativePivot":[24,214],"crop":[5,4],"pivot":[19,210]},{"frame":6,"dir":2,"file":"WaterSide_fleet_gangway1_s3_0.png","rect":[3222,425,537,425],"native":[547,127],"nativePivot":[12,42],"crop":[5,5],"pivot":[7,37]},{"frame":7,"dir":1,"file":"WaterSide_fleet_gangway1_s3_0.png","rect":[0,0,537,425],"native":[416,354],"nativePivot":[24,38],"crop":[5,4],"pivot":[19,34]}],"sheets":[{"file":"WaterSide_fleet_gangway1_s3_0.png","width":3759,"height":850,"rgbaSha256":"56bb5d46f2ecc9ff0657fe685b2c00f14b7a3bd6859013b10a0cd8147408f4b4"}],"modelKey":"harbour:h5_fleet_gangway1_s3","cellSize":[537,425]},{"key":"fleet_gangway1_s4","harbour":"fleet","name":"gangway1_s4","at":[142.3,86],"elevation":3.3999999999999995,"gangway":{"id":"gangway1","step":4,"drop":2.95,"hinge":[142.3,86],"landing":[142.3,70.435],"width":1.24,"length":16.3,"floatModule":"fingerB"},"bounds":{"min":[-0.625,-16.48083,-3.31981],"max":[0.625,0.22,1.023604]},"frames":[{"frame":0,"dir":0,"file":"WaterSide_fleet_gangway1_s4_0.png","rect":[0,436,534,436],"native":[50,446],"nativePivot":[24,30],"crop":[4,5],"pivot":[20,25]},{"frame":1,"dir":7,"file":"WaterSide_fleet_gangway1_s4_0.png","rect":[534,436,534,436],"native":[414,367],"nativePivot":[390,38],"crop":[5,4],"pivot":[385,34]},{"frame":2,"dir":6,"file":"WaterSide_fleet_gangway1_s4_0.png","rect":[1068,436,534,436],"native":[544,141],"nativePivot":[532,42],"crop":[5,5],"pivot":[527,37]},{"frame":3,"dir":5,"file":"WaterSide_fleet_gangway1_s4_0.png","rect":[1602,436,534,436],"native":[414,222],"nativePivot":[390,199],"crop":[4,4],"pivot":[386,195]},{"frame":4,"dir":4,"file":"WaterSide_fleet_gangway1_s4_0.png","rect":[2136,436,534,436],"native":[50,301],"nativePivot":[24,287],"crop":[4,4],"pivot":[20,283]},{"frame":5,"dir":3,"file":"WaterSide_fleet_gangway1_s4_0.png","rect":[2670,436,534,436],"native":[414,222],"nativePivot":[24,199],"crop":[5,4],"pivot":[19,195]},{"frame":6,"dir":2,"file":"WaterSide_fleet_gangway1_s4_0.png","rect":[3204,436,534,436],"native":[544,141],"nativePivot":[12,42],"crop":[5,5],"pivot":[7,37]},{"frame":7,"dir":1,"file":"WaterSide_fleet_gangway1_s4_0.png","rect":[0,0,534,436],"native":[414,367],"nativePivot":[24,38],"crop":[5,4],"pivot":[19,34]}],"sheets":[{"file":"WaterSide_fleet_gangway1_s4_0.png","width":3738,"height":872,"rgbaSha256":"6ccaec2da480751a4834a00c118575b4b2a776333c7eb8d58b85cc9327f5e98c"}],"modelKey":"harbour:h5_fleet_gangway1_s4","cellSize":[534,436]},{"key":"fleet_gangway1_s5","harbour":"fleet","name":"gangway1_s5","at":[142.3,86],"elevation":3.3999999999999995,"gangway":{"id":"gangway1","step":5,"drop":3.5,"hinge":[142.3,86],"landing":[142.3,70.435],"width":1.24,"length":16.3,"floatModule":"fingerB"},"bounds":{"min":[-0.625,-16.369799,-3.869604],"max":[0.625,0.22,1.02344]},"frames":[{"frame":0,"dir":0,"file":"WaterSide_fleet_gangway1_s5_0.png","rect":[0,448,531,448],"native":[50,457],"nativePivot":[24,30],"crop":[4,5],"pivot":[20,25]},{"frame":1,"dir":7,"file":"WaterSide_fleet_gangway1_s5_0.png","rect":[531,448,531,448],"native":[412,378],"nativePivot":[388,38],"crop":[5,4],"pivot":[383,34]},{"frame":2,"dir":6,"file":"WaterSide_fleet_gangway1_s5_0.png","rect":[1062,448,531,448],"native":[540,154],"nativePivot":[528,42],"crop":[4,5],"pivot":[524,37]},{"frame":3,"dir":5,"file":"WaterSide_fleet_gangway1_s5_0.png","rect":[1593,448,531,448],"native":[412,207],"nativePivot":[388,184],"crop":[5,4],"pivot":[383,180]},{"frame":4,"dir":4,"file":"WaterSide_fleet_gangway1_s5_0.png","rect":[2124,448,531,448],"native":[50,286],"nativePivot":[24,271],"crop":[4,4],"pivot":[20,267]},{"frame":5,"dir":3,"file":"WaterSide_fleet_gangway1_s5_0.png","rect":[2655,448,531,448],"native":[412,207],"nativePivot":[24,184],"crop":[5,4],"pivot":[19,180]},{"frame":6,"dir":2,"file":"WaterSide_fleet_gangway1_s5_0.png","rect":[3186,448,531,448],"native":[540,154],"nativePivot":[12,42],"crop":[5,5],"pivot":[7,37]},{"frame":7,"dir":1,"file":"WaterSide_fleet_gangway1_s5_0.png","rect":[0,0,531,448],"native":[412,378],"nativePivot":[24,38],"crop":[5,4],"pivot":[19,34]}],"sheets":[{"file":"WaterSide_fleet_gangway1_s5_0.png","width":3717,"height":896,"rgbaSha256":"9a11855898d5b5227e8c5409110d73c7dc82bc40787cad63f94cf162f5aafea8"}],"modelKey":"harbour:h5_fleet_gangway1_s5","cellSize":[531,448]},{"key":"fleet_gangway1_s6","harbour":"fleet","name":"gangway1_s6","at":[142.3,86],"elevation":3.3999999999999995,"gangway":{"id":"gangway1","step":6,"drop":4.05,"hinge":[142.3,86],"landing":[142.3,70.435],"width":1.24,"length":16.3,"floatModule":"fingerB"},"bounds":{"min":[-0.625,-16.238841,-4.41936],"max":[0.625,0.22,1.023247]},"frames":[{"frame":0,"dir":0,"file":"WaterSide_fleet_gangway1_s6_0.png","rect":[0,458,527,458],"native":[50,468],"nativePivot":[24,30],"crop":[4,5],"pivot":[20,25]},{"frame":1,"dir":7,"file":"WaterSide_fleet_gangway1_s6_0.png","rect":[527,458,527,458],"native":[409,390],"nativePivot":[385,38],"crop":[6,4],"pivot":[379,34]},{"frame":2,"dir":6,"file":"WaterSide_fleet_gangway1_s6_0.png","rect":[1054,458,527,458],"native":[536,168],"nativePivot":[524,42],"crop":[4,5],"pivot":[520,37]},{"frame":3,"dir":5,"file":"WaterSide_fleet_gangway1_s6_0.png","rect":[1581,458,527,458],"native":[409,192],"nativePivot":[385,169],"crop":[6,5],"pivot":[379,164]},{"frame":4,"dir":4,"file":"WaterSide_fleet_gangway1_s6_0.png","rect":[2108,458,527,458],"native":[50,269],"nativePivot":[24,255],"crop":[4,4],"pivot":[20,251]},{"frame":5,"dir":3,"file":"WaterSide_fleet_gangway1_s6_0.png","rect":[2635,458,527,458],"native":[409,192],"nativePivot":[24,169],"crop":[5,5],"pivot":[19,164]},{"frame":6,"dir":2,"file":"WaterSide_fleet_gangway1_s6_0.png","rect":[3162,458,527,458],"native":[536,168],"nativePivot":[12,42],"crop":[5,5],"pivot":[7,37]},{"frame":7,"dir":1,"file":"WaterSide_fleet_gangway1_s6_0.png","rect":[0,0,527,458],"native":[409,390],"nativePivot":[24,38],"crop":[5,4],"pivot":[19,34]}],"sheets":[{"file":"WaterSide_fleet_gangway1_s6_0.png","width":3689,"height":916,"rgbaSha256":"37795bb870ad82f4b3fa1e0d4c418266a9317770e44da46532b4050dcd1bf5a5"}],"modelKey":"harbour:h5_fleet_gangway1_s6","cellSize":[527,458]},{"key":"fleet_gangway1_s7","harbour":"fleet","name":"gangway1_s7","at":[142.3,86],"elevation":3.3999999999999995,"gangway":{"id":"gangway1","step":7,"drop":4.6,"hinge":[142.3,86],"landing":[142.3,70.435],"width":1.24,"length":16.3,"floatModule":"fingerB"},"bounds":{"min":[-0.625,-16.087455,-4.969079],"max":[0.625,0.22,1.023024]},"frames":[{"frame":0,"dir":0,"file":"WaterSide_fleet_gangway1_s7_0.png","rect":[0,469,522,469],"native":[50,478],"nativePivot":[24,30],"crop":[4,5],"pivot":[20,25]},{"frame":1,"dir":7,"file":"WaterSide_fleet_gangway1_s7_0.png","rect":[522,469,522,469],"native":[405,401],"nativePivot":[381,38],"crop":[5,4],"pivot":[376,34]},{"frame":2,"dir":6,"file":"WaterSide_fleet_gangway1_s7_0.png","rect":[1044,469,522,469],"native":[531,181],"nativePivot":[519,42],"crop":[4,5],"pivot":[515,37]},{"frame":3,"dir":5,"file":"WaterSide_fleet_gangway1_s7_0.png","rect":[1566,469,522,469],"native":[405,176],"nativePivot":[381,153],"crop":[5,4],"pivot":[376,149]},{"frame":4,"dir":4,"file":"WaterSide_fleet_gangway1_s7_0.png","rect":[2088,469,522,469],"native":[50,253],"nativePivot":[24,239],"crop":[4,5],"pivot":[20,234]},{"frame":5,"dir":3,"file":"WaterSide_fleet_gangway1_s7_0.png","rect":[2610,469,522,469],"native":[405,176],"nativePivot":[24,153],"crop":[5,4],"pivot":[19,149]},{"frame":6,"dir":2,"file":"WaterSide_fleet_gangway1_s7_0.png","rect":[3132,469,522,469],"native":[531,181],"nativePivot":[12,42],"crop":[5,5],"pivot":[7,37]},{"frame":7,"dir":1,"file":"WaterSide_fleet_gangway1_s7_0.png","rect":[0,0,522,469],"native":[405,401],"nativePivot":[24,38],"crop":[5,4],"pivot":[19,34]}],"sheets":[{"file":"WaterSide_fleet_gangway1_s7_0.png","width":3654,"height":938,"rgbaSha256":"40da60234c23eafa51d1b6667f9af3ba86d14781950bb308adff1ff6189b1c0a"}],"modelKey":"harbour:h5_fleet_gangway1_s7","cellSize":[522,469]},{"key":"fleet_gangway1_s8","harbour":"fleet","name":"gangway1_s8","at":[142.3,86],"elevation":3.3999999999999995,"gangway":{"id":"gangway1","step":8,"drop":5.15,"hinge":[142.3,86],"landing":[142.3,70.435],"width":1.24,"length":16.3,"floatModule":"fingerB"},"bounds":{"min":[-0.625,-15.915041,-5.518758],"max":[0.625,0.22,1.022771]},"frames":[{"frame":0,"dir":0,"file":"WaterSide_fleet_gangway1_s8_0.png","rect":[0,479,516,479],"native":[50,488],"nativePivot":[24,30],"crop":[4,5],"pivot":[20,25]},{"frame":1,"dir":7,"file":"WaterSide_fleet_gangway1_s8_0.png","rect":[516,479,516,479],"native":[401,412],"nativePivot":[377,38],"crop":[4,4],"pivot":[373,34]},{"frame":2,"dir":6,"file":"WaterSide_fleet_gangway1_s8_0.png","rect":[1032,479,516,479],"native":[526,195],"nativePivot":[514,42],"crop":[5,5],"pivot":[509,37]},{"frame":3,"dir":5,"file":"WaterSide_fleet_gangway1_s8_0.png","rect":[1548,479,516,479],"native":[401,160],"nativePivot":[377,137],"crop":[4,4],"pivot":[373,133]},{"frame":4,"dir":4,"file":"WaterSide_fleet_gangway1_s8_0.png","rect":[2064,479,516,479],"native":[50,236],"nativePivot":[24,222],"crop":[4,5],"pivot":[20,217]},{"frame":5,"dir":3,"file":"WaterSide_fleet_gangway1_s8_0.png","rect":[2580,479,516,479],"native":[401,160],"nativePivot":[24,137],"crop":[5,4],"pivot":[19,133]},{"frame":6,"dir":2,"file":"WaterSide_fleet_gangway1_s8_0.png","rect":[3096,479,516,479],"native":[526,195],"nativePivot":[12,42],"crop":[5,5],"pivot":[7,37]},{"frame":7,"dir":1,"file":"WaterSide_fleet_gangway1_s8_0.png","rect":[0,0,516,479],"native":[401,412],"nativePivot":[24,38],"crop":[5,4],"pivot":[19,34]}],"sheets":[{"file":"WaterSide_fleet_gangway1_s8_0.png","width":3612,"height":958,"rgbaSha256":"c5c5f3b400364cdbab6d7a3609ef86d732f2fd3f11bb7cd2c812bf0ab6a4eb31"}],"modelKey":"harbour:h5_fleet_gangway1_s8","cellSize":[516,479]}],"register":{"fingers":[{"id":"float.nmc_finger_a","x":109.7,"y":[43.9,71.1],"width":2.4,"gangway":{"from":[109.7,86],"length":16}},{"id":"float.nmc_finger_b","x":142.3,"y":[43.9,71.1],"width":2.4,"gangway":{"from":[142.3,86],"length":16}}],"berths":[{"id":"berth.nmc_wall_0","owner":"the player","slot":[78.6,93.8],"face":86,"hull":null,"note":"kept for the player"},{"id":"berth.nmc_wall_1","owner":"Leo Arsenault","slot":[93.8,108.2],"face":86,"hull":"lobStdHardtopNth"},{"id":"berth.nmc_wall_2","owner":"Marie Gallant","slot":[111.2,126.4],"face":86,"hull":"capeIslander"},{"id":"berth.nmc_wall_3","owner":"Yvette Doiron","slot":[126.4,140.8],"face":86,"hull":"lobStdOpenFundy"},{"id":"berth.nmc_wall_4","owner":"Ross MacDonald","slot":[143.8,154.8],"face":86,"hull":"lobInHardtopNfld"},{"id":"berth.nmc_wall_5","owner":"Hughie Campbell","slot":[154.8,165.8],"face":86,"hull":"lobInOpenNth"}],"fingerBerths":[{"id":"berth.nmc_finger_a_w0","hull":"lobInHardtopNfld","x":106.552,"y":[61.821,70.435],"heading":"N","who":"the ambient fleet (a shed lot each when the register grows)"},{"id":"berth.nmc_finger_a_w1","hull":"capeIslander","x":106.26,"y":[47.621,60.421],"heading":"N","who":"the ambient fleet (a shed lot each when the register grows)"},{"id":"berth.nmc_finger_a_e2","hull":"lobStdHardtopNth","x":113.26,"y":[58.31,70.435],"heading":"N","who":"the ambient fleet (a shed lot each when the register grows)"},{"id":"berth.nmc_finger_a_e3","hull":"lobInOpenNth","x":112.816,"y":[48.22,56.91],"heading":"N","who":"the ambient fleet (a shed lot each when the register grows)"},{"id":"berth.nmc_finger_b_w4","hull":"lobStdOpenFundy","x":138.8,"y":[58.375,70.435],"heading":"N","who":"the ambient fleet (a shed lot each when the register grows)"},{"id":"berth.nmc_finger_b_w5","hull":"lobInHardtopNfld","x":139.152,"y":[48.361,56.975],"heading":"N","who":"the ambient fleet (a shed lot each when the register grows)"},{"id":"berth.nmc_finger_b_e6","hull":"lobStdHardtopFundy","x":145.8,"y":[58.375,70.435],"heading":"N","who":"the ambient fleet (a shed lot each when the register grows)"},{"id":"berth.nmc_finger_b_e7","hull":"capeIslander","x":145.74,"y":[44.175,56.975],"heading":"N","who":"the ambient fleet (a shed lot each when the register grows)"}],"crane":{"berth":[52,78],"face":76,"boat":"Yvette Doiron, bow west, her cockpit under the hook"},"workingFloat":{"x":[48,72],"y":[58.635,61.035],"note":"where WharfRig2Kit.gangwayFrom puts it off the apron (the bake logs it)"},"recFloat":"three rec boats off the east quay\u2019s gate","ladders":[{"id":"ladder.nmc_berth0","x":86.19999999999999,"face":86},{"id":"ladder.nmc_berth1","x":101,"face":86},{"id":"ladder.nmc_berth2","x":118.80000000000001,"face":86},{"id":"ladder.nmc_berth3","x":133.60000000000002,"face":86},{"id":"ladder.nmc_berth4","x":149.3,"face":86},{"id":"ladder.nmc_berth5","x":160.3,"face":86},{"id":"ladder.nmc_east","x":180.2,"face":86},{"id":"ladder.nmc_unload_w","x":55.5,"face":76},{"id":"ladder.nmc_unload_e","x":76.6,"face":76}],"clearance":{"min":30,"over":[96,156],"need":-4.1,"designBoat":{"type":"capeIslander","loa":12.8,"beam":4.4,"draught":1.4,"berth":"fingerA west, the south berth","at":[106.26,54.02],"heading":"north"}},"tracks":{"in":[[137,-45],[137,-10],[136.2,5],[131,16.5],[121,23.5],[108,27],[98.5,31.5],[94.5,38],[96.5,44],[100.8,47.6],[104.6,50.6],[106.26,54.02]],"outAstern":[[106.26,54.02],[106.1,46],[104.806248,38.5]],"out":[[104.806248,38.5],[108.2,31.5],[115,25.5],[126,21],[133.5,13],[136.6,2],[137,-10],[137,-45]]},"lights":{"west":[115.2,2,"green"],"east":[158.6,-5.6,"red"]},"roads":{"main":{"pts":[[76,120],[190,120]],"w":7.5,"gate":[184.4,115,124]},"parking":[{"id":"yard.parking_w","box":[96.5,106,124.1,133.1]},{"id":"yard.parking_e","box":[141.2,146.8,123.5,132.5]}],"truckTurn":{"id":"yard.restaurant_turn","box":[160.5,176.5,118,131]},"cars":[{"id":"vehicle.nmc_buyer_truck","rig":"VehicleIso","at":[98.2,128.4],"dir":4},{"id":"vehicle.nmc_lot_e","rig":"VehicleIso","at":[101,128.4],"dir":4},{"id":"vehicle.nmc_lot_a","rig":"VehicleIso","at":[103.8,128.4],"dir":4},{"id":"vehicle.nmc_lot_b","rig":"VanIso","at":[142.6,128],"dir":4},{"id":"vehicle.nmc_lot_c","rig":"VehicleIso","at":[145.4,128],"dir":4},{"id":"vehicle.nmc_delivery","rig":"VanIso","at":[171.2,127.8],"dir":6}]}}}'
+  State: ''
+  Variants:
+  - Name: conc
+    BakedOptionsJson: '{"module": "fleet_conc"}'
+    GameplayJson: '{"key":"fleet_conc","harbour":"fleet","name":"conc","at":[136.8,91],"elevation":3.4,"floating":false,"freeboard":0,"draught":0,"bounds":{"min":[-25.2,-5.297873,-9.02736],"max":[25.26,5.06,2.69]},"walkPolygon":[[162,96],[111.6,96],[111.6,86],[162,86]],"fittings":{"ladders":[{"x":18,"y":5,"side":1,"face":"water","berth":"berth2"},{"x":3.2,"y":5,"side":1,"face":"water","berth":"berth3"},{"x":-12.5,"y":5,"side":1,"face":"water","berth":"berth4"},{"x":-23.5,"y":5,"side":1,"face":"water","berth":"berth5"}],"tyres":[{"x":23,"y":5,"side":1,"face":"water","berth":"berth2"},{"x":13,"y":5,"side":1,"face":"water","berth":"berth2"},{"x":7.8,"y":5,"side":1,"face":"water","berth":"berth3"},{"x":-1.4,"y":5,"side":1,"face":"water","berth":"berth3"},{"x":-9.6,"y":5,"side":1,"face":"water","berth":"berth4"},{"x":-15.4,"y":5,"side":1,"face":"water","berth":"berth4"},{"x":-20.6,"y":5,"side":1,"face":"water","berth":"berth5"}],"foams":[],"panels":[],"fenderPiles":[{"x":3.552713678800501e-15,"y":5.16,"side":1,"face":"water"},{"x":4.200000000000003,"y":5.16,"side":1,"face":"water"},{"x":16.8,"y":5.16,"side":1,"face":"water"},{"x":21.000000000000004,"y":5.16,"side":1,"face":"water"}],"cleats":[{"x":24.6,"y":4.7,"z":0,"side":1,"face":"water","berth":"berth2","lead":"bow"},{"x":16,"y":4.7,"z":0,"side":1,"face":"water","berth":"berth2","lead":"spring"},{"x":11.3,"y":4.7,"z":0,"side":1,"face":"water","berth":"berth2","lead":"stern"},{"x":9.5,"y":4.7,"z":0,"side":1,"face":"water","berth":"berth3","lead":"bow"},{"x":1.2,"y":4.7,"z":0,"side":1,"face":"water","berth":"berth3","lead":"spring"},{"x":-3.1,"y":4.7,"z":0,"side":1,"face":"water","berth":"berth3","lead":"stern"},{"x":-7.9,"y":4.7,"z":0,"side":1,"face":"water","berth":"berth4","lead":"bow"},{"x":-14.5,"y":4.7,"z":0,"side":1,"face":"water","berth":"berth4","lead":"spring"},{"x":-17.1,"y":4.7,"z":0,"side":1,"face":"water","berth":"berth4","lead":"stern"},{"x":-18.9,"y":4.7,"z":0,"side":1,"face":"water","berth":"berth5","lead":"bow"}],"bollards":[],"rings":[],"rails":[],"berths":{"water":{"list":[{"id":"berth2","x":18,"cls":"B","fenderX":[23,13],"lines":[24.7,16,11.3]},{"id":"berth3","x":3.2,"cls":"B","fenderX":[7.8,-1.4],"lines":[9.5,1.2,-3.1]},{"id":"berth4","x":-12.5,"cls":"B","fenderX":[-9.6,-15.4],"lines":[-7.9,-14.5,-17.1]},{"id":"berth5","x":-23.5,"cls":"B","fenderX":[-20.6],"lines":[-18.9]}],"faceLen":50.4,"kind":"quay","utilisation":1,"segments":[],"dry":[]}},"gaps":{"water":[[17.625,18.375],[2.825,3.575],[-12.875,-12.125],[-23.875,-23.125],[-6.7,-4.3]],"shore":[]},"top":0,"hx":25.2,"hy":5,"L":50.4,"tyreRecs":[{"x":23,"y":5.17,"z":-0.78,"top":-0.28,"pivot":[23,5.05,-0.16]},{"x":13,"y":5.17,"z":-0.78,"top":-0.28,"pivot":[13,5.05,-0.16]},{"x":7.8,"y":5.17,"z":-0.78,"top":-0.28,"pivot":[7.8,5.05,-0.16]},{"x":-1.4,"y":5.17,"z":-0.78,"top":-0.28,"pivot":[-1.4,5.05,-0.16]},{"x":-9.6,"y":5.17,"z":-0.78,"top":-0.28,"pivot":[-9.6,5.05,-0.16]},{"x":-15.4,"y":5.17,"z":-0.78,"top":-0.28,"pivot":[-15.4,5.05,-0.16]},{"x":-20.6,"y":5.17,"z":-0.78,"top":-0.28,"pivot":[-20.6,5.05,-0.16]}],"fixtures":[{"id":"ringPost0","kind":"ringPost","face":"water","x":0.1,"y":4.5,"rot":0,"side":1,"z":0,"grp":0},{"id":"ringPost1","kind":"ringPost","face":"water","x":-10.9,"y":4.5,"rot":0,"side":1,"z":0,"grp":0},{"id":"fishSpot2","kind":"fishSpot","face":"shore","x":12.6,"y":-4.55,"rot":3.141592653589793,"side":-1,"z":0,"grp":0}]},"module":{"id":"conc","key":"concreteQuay","at":[16.8,91],"rot":3.141592653589793,"o":{"bays":12,"bayLen":4.2,"width":10,"deckZ":5.6,"tideRange":4.4,"curb":"wood","ends":{"px":"join"},"open":{"water":[[-6.7,-4.3]]},"berthPlanned":{"water":{"list":[{"id":"berth2","x":18,"cls":"B","fenderX":[23,13],"lines":[24.7,16,11.3]},{"id":"berth3","x":3.2,"cls":"B","fenderX":[7.8,-1.4],"lines":[9.5,1.2,-3.1]},{"id":"berth4","x":-12.5,"cls":"B","fenderX":[-9.6,-15.4],"lines":[-7.9,-14.5,-17.1]},{"id":"berth5","x":-23.5,"cls":"B","fenderX":[-20.6],"lines":[-18.9]}],"faceLen":50.4,"kind":"quay","utilisation":1,"segments":[],"dry":[]}}}},"frames":[{"frame":0,"dir":0,"file":"WaterSide_fleet_conc_0.png","rect":[0,2532,1617,1266],"native":[1624,438],"nativePivot":[811,109],"crop":[4,5],"pivot":[807,104]},{"frame":1,"dir":7,"file":"WaterSide_fleet_conc_0.png","rect":[1617,2532,1617,1266],"native":[1382,1110],"nativePivot":[691,445],"crop":[4,4],"pivot":[687,441]},{"frame":2,"dir":6,"file":"WaterSide_fleet_conc_0.png","rect":[0,1266,1617,1266],"native":[341,1292],"nativePivot":[174,547],"crop":[4,21],"pivot":[170,526]},{"frame":3,"dir":5,"file":"WaterSide_fleet_conc_0.png","rect":[1617,1266,1617,1266],"native":[1381,1146],"nativePivot":[691,481],"crop":[4,5],"pivot":[687,476]},{"frame":4,"dir":4,"file":"WaterSide_fleet_conc_0.png","rect":[0,0,1617,1266],"native":[1624,503],"nativePivot":[813,174],"crop":[4,5],"pivot":[809,169]},{"frame":5,"dir":3,"file":"WaterSide_fleet_conc_0.png","rect":[1617,0,1617,1266],"native":[1382,1146],"nativePivot":[691,481],"crop":[4,5],"pivot":[687,476]},{"frame":6,"dir":2,"file":"WaterSide_fleet_conc_1.png","rect":[0,0,1617,1266],"native":[341,1292],"nativePivot":[166,547],"crop":[4,22],"pivot":[162,525]},{"frame":7,"dir":1,"file":"WaterSide_fleet_conc_1.png","rect":[1617,0,1617,1266],"native":[1381,1111],"nativePivot":[689,445],"crop":[4,4],"pivot":[685,441]}],"sheets":[{"file":"WaterSide_fleet_conc_0.png","width":3234,"height":3798,"rgbaSha256":"533f67b54e88e5781e71d853883672f6a15aca4f3eea470228fcd416df10a480"},{"file":"WaterSide_fleet_conc_1.png","width":3234,"height":1266,"rgbaSha256":"4fdd71232805d22c7af6bb97647646e7481157be9411e33318c8934312bb7549"}],"modelKey":"harbour:h5_fleet_conc","cellSize":[1617,1266]}'
+    BoundsMin:
+      x: -25.2
+      y: -5.297873
+      z: -9.02736
+    BoundsMax:
+      x: 25.26
+      y: 5.06
+      z: 2.69
+    Frames:
+    - Sprite:
+        fileID: 2324535541954764506
+        guid: a4c664979855505a096021677188f7c0
+        type: 3
+      RigDir: 0
+      ShowFaces: '0'
+      BearingDeg: 0
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 1624
+        y: 438
+      NativePivot:
+        x: 811
+        y: 109
+      Crop:
+        x: 4
+        y: 5
+      Pivot:
+        x: 807
+        y: 104
+    - Sprite:
+        fileID: 6410331298749410470
+        guid: a4c664979855505a096021677188f7c0
+        type: 3
+      RigDir: 7
+      ShowFaces: '7'
+      BearingDeg: 315
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 1382
+        y: 1110
+      NativePivot:
+        x: 691
+        y: 445
+      Crop:
+        x: 4
+        y: 4
+      Pivot:
+        x: 687
+        y: 441
+    - Sprite:
+        fileID: 8873651272489075758
+        guid: a4c664979855505a096021677188f7c0
+        type: 3
+      RigDir: 6
+      ShowFaces: '6'
+      BearingDeg: 270
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 341
+        y: 1292
+      NativePivot:
+        x: 174
+        y: 547
+      Crop:
+        x: 4
+        y: 21
+      Pivot:
+        x: 170
+        y: 526
+    - Sprite:
+        fileID: 4807352521082169884
+        guid: a4c664979855505a096021677188f7c0
+        type: 3
+      RigDir: 5
+      ShowFaces: '5'
+      BearingDeg: 225
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 1381
+        y: 1146
+      NativePivot:
+        x: 691
+        y: 481
+      Crop:
+        x: 4
+        y: 5
+      Pivot:
+        x: 687
+        y: 476
+    - Sprite:
+        fileID: 3697435377928532401
+        guid: a4c664979855505a096021677188f7c0
+        type: 3
+      RigDir: 4
+      ShowFaces: '4'
+      BearingDeg: 180
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 1624
+        y: 503
+      NativePivot:
+        x: 813
+        y: 174
+      Crop:
+        x: 4
+        y: 5
+      Pivot:
+        x: 809
+        y: 169
+    - Sprite:
+        fileID: 5204487510778142713
+        guid: a4c664979855505a096021677188f7c0
+        type: 3
+      RigDir: 3
+      ShowFaces: '3'
+      BearingDeg: 135
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 1382
+        y: 1146
+      NativePivot:
+        x: 691
+        y: 481
+      Crop:
+        x: 4
+        y: 5
+      Pivot:
+        x: 687
+        y: 476
+    - Sprite:
+        fileID: 3080439508534412364
+        guid: 42c7deb22d28dbac1520888536eb1ef4
+        type: 3
+      RigDir: 2
+      ShowFaces: '2'
+      BearingDeg: 90
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 341
+        y: 1292
+      NativePivot:
+        x: 166
+        y: 547
+      Crop:
+        x: 4
+        y: 22
+      Pivot:
+        x: 162
+        y: 525
+    - Sprite:
+        fileID: 1632307496695290806
+        guid: 42c7deb22d28dbac1520888536eb1ef4
+        type: 3
+      RigDir: 1
+      ShowFaces: '1'
+      BearingDeg: 45
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 1381
+        y: 1111
+      NativePivot:
+        x: 689
+        y: 445
+      Crop:
+        x: 4
+        y: 4
+      Pivot:
+        x: 685
+        y: 441
+    Anchors: []
+    Colliders: []
+  - Name: fingerA
+    BakedOptionsJson: '{"module": "fleet_fingerA"}'
+    GameplayJson: '{"key":"fleet_fingerA","harbour":"fleet","name":"fingerA","at":[109.7,57.435],"elevation":0,"floating":true,"freeboard":0.45,"draught":0.85,"bounds":{"min":[-2.6,-13.6,-4.363525],"max":[1.82,14.84,6.09]},"walkPolygon":[[108.5,71.035],[108.5,43.835],[110.9,43.835],[110.9,71.035]],"fittings":{"ladders":[],"tyres":[],"foams":[],"panels":[],"fenderPiles":[],"cleats":[{"x":-12.49,"y":0.8999999999999999,"z":0.45,"side":1,"face":"water","berth":"berth0","lead":"bow"},{"x":-6.78,"y":0.8999999999999999,"z":0.45,"side":1,"face":"water","berth":"berth0","lead":"spring"},{"x":-2.4,"y":0.8999999999999999,"z":0.45,"side":1,"face":"water","berth":"berth0","lead":"spring"},{"x":3.31,"y":0.8999999999999999,"z":0.45,"side":1,"face":"water","berth":"berth0","lead":"stern"},{"x":4.42,"y":0.8999999999999999,"z":0.45,"side":1,"face":"water","berth":"berth1","lead":"bow"},{"x":7.63,"y":0.8999999999999999,"z":0.45,"side":1,"face":"water","berth":"berth1","lead":"spring"},{"x":9.88,"y":0.8999999999999999,"z":0.45,"side":1,"face":"water","berth":"berth1","lead":"spring"},{"x":12.99,"y":0.8999999999999999,"z":0.45,"side":1,"face":"water","berth":"berth1","lead":"stern"},{"x":-12.49,"y":-0.8999999999999999,"z":0.45,"side":-1,"face":"shore","berth":"berth0","lead":"bow"},{"x":-6.78,"y":-0.8999999999999999,"z":0.45,"side":-1,"face":"shore","berth":"berth0","lead":"spring"},{"x":-2.4,"y":-0.8999999999999999,"z":0.45,"side":-1,"face":"shore","berth":"berth0","lead":"spring"},{"x":3.31,"y":-0.8999999999999999,"z":0.45,"side":-1,"face":"shore","berth":"berth0","lead":"stern"},{"x":4.42,"y":-0.8999999999999999,"z":0.45,"side":-1,"face":"shore","berth":"berth1","lead":"bow"},{"x":7.63,"y":-0.8999999999999999,"z":0.45,"side":-1,"face":"shore","berth":"berth1","lead":"spring"},{"x":9.88,"y":-0.8999999999999999,"z":0.45,"side":-1,"face":"shore","berth":"berth1","lead":"spring"},{"x":12.99,"y":-0.8999999999999999,"z":0.45,"side":-1,"face":"shore","berth":"berth1","lead":"stern"}],"bollards":[],"rings":[],"rails":[],"berths":{"water":{"list":[{"id":"berth0","hull":"lobsterOff","label":"lobster boat, offshore","cls":"B","loa":14.6,"beam":5.05,"draft":1.55,"gun":1.2,"sole":0.45,"x":-4.59,"x0":-11.89,"x1":2.71,"slot":[-13.09,3.91],"fits":true,"afloatAtDatum":true,"ukc":0.5,"line":"16\u201322 mm","fender":"tyre \u00b7 foam","fenderX":[-9.26,-4.59,0.08],"lines":[-12.49,-6.78,-2.4,3.31]},{"id":"berth1","hull":"hurricane","label":"7.3 m Hurricane","cls":"A","loa":7.47,"beam":2.6,"draft":0.45,"gun":0.58,"sole":0.12,"x":8.75,"x0":5.02,"x1":12.49,"slot":[4.42,13.09],"fits":true,"afloatAtDatum":true,"ukc":0.3,"line":"12\u201316 mm","fender":"foam","fenderX":[6.89,10.62],"lines":[4.42,7.63,9.88,13.09]}],"faceLen":27.2,"kind":"float","utilisation":0.94,"segments":[[-13.6,13.6]],"dry":[]},"shore":{"list":[{"id":"berth0","hull":"lobsterOff","label":"lobster boat, offshore","cls":"B","loa":14.6,"beam":5.05,"draft":1.55,"gun":1.2,"sole":0.45,"x":-4.59,"x0":-11.89,"x1":2.71,"slot":[-13.09,3.91],"fits":true,"afloatAtDatum":true,"ukc":0.5,"line":"16\u201322 mm","fender":"tyre \u00b7 foam","fenderX":[-9.26,-4.59,0.08],"lines":[-12.49,-6.78,-2.4,3.31]},{"id":"berth1","hull":"hurricane","label":"7.3 m Hurricane","cls":"A","loa":7.47,"beam":2.6,"draft":0.45,"gun":0.58,"sole":0.12,"x":8.75,"x0":5.02,"x1":12.49,"slot":[4.42,13.09],"fits":true,"afloatAtDatum":true,"ukc":0.3,"line":"12\u201316 mm","fender":"foam","fenderX":[6.89,10.62],"lines":[4.42,7.63,9.88,13.09]}],"faceLen":27.2,"kind":"float","utilisation":0.94,"segments":[[-13.6,13.6]],"dry":[]}},"gaps":{"water":[],"shore":[]},"top":0.45,"hx":13.6,"hy":1.2,"L":27.2,"tyreRecs":[],"fixtures":[]},"module":{"id":"fingerA","key":"float","grp":1,"rot":-1.5707963267948966,"at":[-10.3,57.435],"o":{"hull":"timber","bays":8,"bayLen":3.4,"width":2.4,"freeboard":0.45,"tideRange":4.4,"faces":["water","shore"],"guideFace":"water","fixtures":[]}},"frames":[{"frame":0,"dir":0,"file":"WaterSide_fleet_fingerA_0.png","rect":[0,829,911,829],"native":[151,806],"nativePivot":[88,424],"crop":[5,5],"pivot":[83,419]},{"frame":1,"dir":7,"file":"WaterSide_fleet_fingerA_0.png","rect":[911,829,911,829],"native":[683,674],"nativePivot":[341,347],"crop":[4,29],"pivot":[337,318]},{"frame":2,"dir":6,"file":"WaterSide_fleet_fingerA_0.png","rect":[1822,829,911,829],"native":[920,304],"nativePivot":[440,157],"crop":[4,37],"pivot":[436,120]},{"frame":3,"dir":5,"file":"WaterSide_fleet_fingerA_0.png","rect":[2733,829,911,829],"native":[742,672],"nativePivot":[342,347],"crop":[4,29],"pivot":[338,318]},{"frame":4,"dir":4,"file":"WaterSide_fleet_fingerA_0.png","rect":[0,0,911,829],"native":[151,840],"nativePivot":[63,426],"crop":[5,7],"pivot":[58,419]},{"frame":5,"dir":3,"file":"WaterSide_fleet_fingerA_0.png","rect":[911,0,911,829],"native":[683,731],"nativePivot":[342,368],"crop":[4,5],"pivot":[338,363]},{"frame":6,"dir":2,"file":"WaterSide_fleet_fingerA_0.png","rect":[1822,0,911,829],"native":[920,351],"nativePivot":[479,188],"crop":[4,5],"pivot":[475,183]},{"frame":7,"dir":1,"file":"WaterSide_fleet_fingerA_0.png","rect":[2733,0,911,829],"native":[742,650],"nativePivot":[399,368],"crop":[4,5],"pivot":[395,363]}],"sheets":[{"file":"WaterSide_fleet_fingerA_0.png","width":3644,"height":1658,"rgbaSha256":"73c6cb2e5cb73a473fb2ab66d41764f8cb6ddd27228c876a744ae51eb64560da"}],"modelKey":"harbour:h5_fleet_fingerA","cellSize":[911,829]}'
+    BoundsMin:
+      x: -2.6
+      y: -13.6
+      z: -4.363525
+    BoundsMax:
+      x: 1.82
+      y: 14.84
+      z: 6.09
+    Frames:
+    - Sprite:
+        fileID: 3332140974236964989
+        guid: b0209635e6f4ce3e3db33be317796b3d
+        type: 3
+      RigDir: 0
+      ShowFaces: '0'
+      BearingDeg: 0
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 151
+        y: 806
+      NativePivot:
+        x: 88
+        y: 424
+      Crop:
+        x: 5
+        y: 5
+      Pivot:
+        x: 83
+        y: 419
+    - Sprite:
+        fileID: 6104279539115332637
+        guid: b0209635e6f4ce3e3db33be317796b3d
+        type: 3
+      RigDir: 7
+      ShowFaces: '7'
+      BearingDeg: 315
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 683
+        y: 674
+      NativePivot:
+        x: 341
+        y: 347
+      Crop:
+        x: 4
+        y: 29
+      Pivot:
+        x: 337
+        y: 318
+    - Sprite:
+        fileID: 7199162086918313864
+        guid: b0209635e6f4ce3e3db33be317796b3d
+        type: 3
+      RigDir: 6
+      ShowFaces: '6'
+      BearingDeg: 270
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 920
+        y: 304
+      NativePivot:
+        x: 440
+        y: 157
+      Crop:
+        x: 4
+        y: 37
+      Pivot:
+        x: 436
+        y: 120
+    - Sprite:
+        fileID: 1242370003388734466
+        guid: b0209635e6f4ce3e3db33be317796b3d
+        type: 3
+      RigDir: 5
+      ShowFaces: '5'
+      BearingDeg: 225
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 742
+        y: 672
+      NativePivot:
+        x: 342
+        y: 347
+      Crop:
+        x: 4
+        y: 29
+      Pivot:
+        x: 338
+        y: 318
+    - Sprite:
+        fileID: 2378759881551898957
+        guid: b0209635e6f4ce3e3db33be317796b3d
+        type: 3
+      RigDir: 4
+      ShowFaces: '4'
+      BearingDeg: 180
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 151
+        y: 840
+      NativePivot:
+        x: 63
+        y: 426
+      Crop:
+        x: 5
+        y: 7
+      Pivot:
+        x: 58
+        y: 419
+    - Sprite:
+        fileID: 1842469984548610302
+        guid: b0209635e6f4ce3e3db33be317796b3d
+        type: 3
+      RigDir: 3
+      ShowFaces: '3'
+      BearingDeg: 135
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 683
+        y: 731
+      NativePivot:
+        x: 342
+        y: 368
+      Crop:
+        x: 4
+        y: 5
+      Pivot:
+        x: 338
+        y: 363
+    - Sprite:
+        fileID: 116403755825540235
+        guid: b0209635e6f4ce3e3db33be317796b3d
+        type: 3
+      RigDir: 2
+      ShowFaces: '2'
+      BearingDeg: 90
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 920
+        y: 351
+      NativePivot:
+        x: 479
+        y: 188
+      Crop:
+        x: 4
+        y: 5
+      Pivot:
+        x: 475
+        y: 183
+    - Sprite:
+        fileID: 3126593577223837949
+        guid: b0209635e6f4ce3e3db33be317796b3d
+        type: 3
+      RigDir: 1
+      ShowFaces: '1'
+      BearingDeg: 45
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 742
+        y: 650
+      NativePivot:
+        x: 399
+        y: 368
+      Crop:
+        x: 4
+        y: 5
+      Pivot:
+        x: 395
+        y: 363
+    Anchors: []
+    Colliders: []
+  - Name: fingerB
+    BakedOptionsJson: '{"module": "fleet_fingerB"}'
+    GameplayJson: '{"key":"fleet_fingerB","harbour":"fleet","name":"fingerB","at":[142.3,57.435],"elevation":0,"floating":true,"freeboard":0.45,"draught":0.85,"bounds":{"min":[-2.6,-13.6,-4.498189],"max":[1.82,14.84,6.09]},"walkPolygon":[[141.1,71.035],[141.1,43.835],[143.5,43.835],[143.5,71.035]],"fittings":{"ladders":[],"tyres":[],"foams":[],"panels":[],"fenderPiles":[],"cleats":[{"x":-12.49,"y":0.8999999999999999,"z":0.45,"side":1,"face":"water","berth":"berth0","lead":"bow"},{"x":-6.78,"y":0.8999999999999999,"z":0.45,"side":1,"face":"water","berth":"berth0","lead":"spring"},{"x":-2.4,"y":0.8999999999999999,"z":0.45,"side":1,"face":"water","berth":"berth0","lead":"spring"},{"x":3.31,"y":0.8999999999999999,"z":0.45,"side":1,"face":"water","berth":"berth0","lead":"stern"},{"x":4.42,"y":0.8999999999999999,"z":0.45,"side":1,"face":"water","berth":"berth1","lead":"bow"},{"x":7.63,"y":0.8999999999999999,"z":0.45,"side":1,"face":"water","berth":"berth1","lead":"spring"},{"x":9.88,"y":0.8999999999999999,"z":0.45,"side":1,"face":"water","berth":"berth1","lead":"spring"},{"x":12.99,"y":0.8999999999999999,"z":0.45,"side":1,"face":"water","berth":"berth1","lead":"stern"},{"x":-12.49,"y":-0.8999999999999999,"z":0.45,"side":-1,"face":"shore","berth":"berth0","lead":"bow"},{"x":-6.78,"y":-0.8999999999999999,"z":0.45,"side":-1,"face":"shore","berth":"berth0","lead":"spring"},{"x":-2.4,"y":-0.8999999999999999,"z":0.45,"side":-1,"face":"shore","berth":"berth0","lead":"spring"},{"x":3.31,"y":-0.8999999999999999,"z":0.45,"side":-1,"face":"shore","berth":"berth0","lead":"stern"},{"x":4.42,"y":-0.8999999999999999,"z":0.45,"side":-1,"face":"shore","berth":"berth1","lead":"bow"},{"x":7.63,"y":-0.8999999999999999,"z":0.45,"side":-1,"face":"shore","berth":"berth1","lead":"spring"},{"x":9.88,"y":-0.8999999999999999,"z":0.45,"side":-1,"face":"shore","berth":"berth1","lead":"spring"},{"x":12.99,"y":-0.8999999999999999,"z":0.45,"side":-1,"face":"shore","berth":"berth1","lead":"stern"}],"bollards":[],"rings":[],"rails":[],"berths":{"water":{"list":[{"id":"berth0","hull":"lobsterOff","label":"lobster boat, offshore","cls":"B","loa":14.6,"beam":5.05,"draft":1.55,"gun":1.2,"sole":0.45,"x":-4.59,"x0":-11.89,"x1":2.71,"slot":[-13.09,3.91],"fits":true,"afloatAtDatum":true,"ukc":0.5,"line":"16\u201322 mm","fender":"tyre \u00b7 foam","fenderX":[-9.26,-4.59,0.08],"lines":[-12.49,-6.78,-2.4,3.31]},{"id":"berth1","hull":"hurricane","label":"7.3 m Hurricane","cls":"A","loa":7.47,"beam":2.6,"draft":0.45,"gun":0.58,"sole":0.12,"x":8.75,"x0":5.02,"x1":12.49,"slot":[4.42,13.09],"fits":true,"afloatAtDatum":true,"ukc":0.3,"line":"12\u201316 mm","fender":"foam","fenderX":[6.89,10.62],"lines":[4.42,7.63,9.88,13.09]}],"faceLen":27.2,"kind":"float","utilisation":0.94,"segments":[[-13.6,13.6]],"dry":[]},"shore":{"list":[{"id":"berth0","hull":"lobsterOff","label":"lobster boat, offshore","cls":"B","loa":14.6,"beam":5.05,"draft":1.55,"gun":1.2,"sole":0.45,"x":-4.59,"x0":-11.89,"x1":2.71,"slot":[-13.09,3.91],"fits":true,"afloatAtDatum":true,"ukc":0.5,"line":"16\u201322 mm","fender":"tyre \u00b7 foam","fenderX":[-9.26,-4.59,0.08],"lines":[-12.49,-6.78,-2.4,3.31]},{"id":"berth1","hull":"hurricane","label":"7.3 m Hurricane","cls":"A","loa":7.47,"beam":2.6,"draft":0.45,"gun":0.58,"sole":0.12,"x":8.75,"x0":5.02,"x1":12.49,"slot":[4.42,13.09],"fits":true,"afloatAtDatum":true,"ukc":0.3,"line":"12\u201316 mm","fender":"foam","fenderX":[6.89,10.62],"lines":[4.42,7.63,9.88,13.09]}],"faceLen":27.2,"kind":"float","utilisation":0.94,"segments":[[-13.6,13.6]],"dry":[]}},"gaps":{"water":[],"shore":[]},"top":0.45,"hx":13.6,"hy":1.2,"L":27.2,"tyreRecs":[],"fixtures":[]},"module":{"id":"fingerB","key":"float","grp":2,"rot":-1.5707963267948966,"at":[22.3,57.435],"o":{"hull":"timber","bays":8,"bayLen":3.4,"width":2.4,"freeboard":0.45,"tideRange":4.4,"faces":["water","shore"],"guideFace":"water","fixtures":[]}},"frames":[{"frame":0,"dir":0,"file":"WaterSide_fleet_fingerB_0.png","rect":[0,831,911,831],"native":[151,804],"nativePivot":[88,424],"crop":[5,5],"pivot":[83,419]},{"frame":1,"dir":7,"file":"WaterSide_fleet_fingerB_0.png","rect":[911,831,911,831],"native":[683,672],"nativePivot":[341,347],"crop":[4,29],"pivot":[337,318]},{"frame":2,"dir":6,"file":"WaterSide_fleet_fingerB_0.png","rect":[1822,831,911,831],"native":[920,307],"nativePivot":[440,157],"crop":[4,37],"pivot":[436,120]},{"frame":3,"dir":5,"file":"WaterSide_fleet_fingerB_0.png","rect":[2733,831,911,831],"native":[742,677],"nativePivot":[342,347],"crop":[4,29],"pivot":[338,318]},{"frame":4,"dir":4,"file":"WaterSide_fleet_fingerB_0.png","rect":[0,0,911,831],"native":[151,843],"nativePivot":[63,426],"crop":[5,7],"pivot":[58,419]},{"frame":5,"dir":3,"file":"WaterSide_fleet_fingerB_0.png","rect":[911,0,911,831],"native":[683,734],"nativePivot":[342,368],"crop":[4,5],"pivot":[338,363]},{"frame":6,"dir":2,"file":"WaterSide_fleet_fingerB_0.png","rect":[1822,0,911,831],"native":[920,353],"nativePivot":[479,188],"crop":[4,5],"pivot":[475,183]},{"frame":7,"dir":1,"file":"WaterSide_fleet_fingerB_0.png","rect":[2733,0,911,831],"native":[742,648],"nativePivot":[399,368],"crop":[4,5],"pivot":[395,363]}],"sheets":[{"file":"WaterSide_fleet_fingerB_0.png","width":3644,"height":1662,"rgbaSha256":"2562fe312b1e24b4a8537543d52e0151a1cc8394f441fd5f002b67cf91684406"}],"modelKey":"harbour:h5_fleet_fingerB","cellSize":[911,831]}'
+    BoundsMin:
+      x: -2.6
+      y: -13.6
+      z: -4.498189
+    BoundsMax:
+      x: 1.82
+      y: 14.84
+      z: 6.09
+    Frames:
+    - Sprite:
+        fileID: 8830646951676290980
+        guid: b1899c523073265b6c0492fc75c387e6
+        type: 3
+      RigDir: 0
+      ShowFaces: '0'
+      BearingDeg: 0
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 151
+        y: 804
+      NativePivot:
+        x: 88
+        y: 424
+      Crop:
+        x: 5
+        y: 5
+      Pivot:
+        x: 83
+        y: 419
+    - Sprite:
+        fileID: 2370999174495464298
+        guid: b1899c523073265b6c0492fc75c387e6
+        type: 3
+      RigDir: 7
+      ShowFaces: '7'
+      BearingDeg: 315
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 683
+        y: 672
+      NativePivot:
+        x: 341
+        y: 347
+      Crop:
+        x: 4
+        y: 29
+      Pivot:
+        x: 337
+        y: 318
+    - Sprite:
+        fileID: 6197756725520889545
+        guid: b1899c523073265b6c0492fc75c387e6
+        type: 3
+      RigDir: 6
+      ShowFaces: '6'
+      BearingDeg: 270
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 920
+        y: 307
+      NativePivot:
+        x: 440
+        y: 157
+      Crop:
+        x: 4
+        y: 37
+      Pivot:
+        x: 436
+        y: 120
+    - Sprite:
+        fileID: 6036741440411843197
+        guid: b1899c523073265b6c0492fc75c387e6
+        type: 3
+      RigDir: 5
+      ShowFaces: '5'
+      BearingDeg: 225
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 742
+        y: 677
+      NativePivot:
+        x: 342
+        y: 347
+      Crop:
+        x: 4
+        y: 29
+      Pivot:
+        x: 338
+        y: 318
+    - Sprite:
+        fileID: 1653557736140967301
+        guid: b1899c523073265b6c0492fc75c387e6
+        type: 3
+      RigDir: 4
+      ShowFaces: '4'
+      BearingDeg: 180
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 151
+        y: 843
+      NativePivot:
+        x: 63
+        y: 426
+      Crop:
+        x: 5
+        y: 7
+      Pivot:
+        x: 58
+        y: 419
+    - Sprite:
+        fileID: 1220590366345991932
+        guid: b1899c523073265b6c0492fc75c387e6
+        type: 3
+      RigDir: 3
+      ShowFaces: '3'
+      BearingDeg: 135
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 683
+        y: 734
+      NativePivot:
+        x: 342
+        y: 368
+      Crop:
+        x: 4
+        y: 5
+      Pivot:
+        x: 338
+        y: 363
+    - Sprite:
+        fileID: 4854769811634950809
+        guid: b1899c523073265b6c0492fc75c387e6
+        type: 3
+      RigDir: 2
+      ShowFaces: '2'
+      BearingDeg: 90
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 920
+        y: 353
+      NativePivot:
+        x: 479
+        y: 188
+      Crop:
+        x: 4
+        y: 5
+      Pivot:
+        x: 475
+        y: 183
+    - Sprite:
+        fileID: 851369817702448224
+        guid: b1899c523073265b6c0492fc75c387e6
+        type: 3
+      RigDir: 1
+      ShowFaces: '1'
+      BearingDeg: 45
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 742
+        y: 648
+      NativePivot:
+        x: 399
+        y: 368
+      Crop:
+        x: 4
+        y: 5
+      Pivot:
+        x: 395
+        y: 363
+    Anchors: []
+    Colliders: []
+  - Name: gangway0_s0
+    BakedOptionsJson: '{"module": "fleet_gangway0_s0"}'
+    GameplayJson: '{"key":"fleet_gangway0_s0","harbour":"fleet","name":"gangway0_s0","at":[109.7,86],"elevation":3.3999999999999995,"gangway":{"id":"gangway0","step":0,"drop":0.75,"hinge":[109.7,86],"landing":[109.7,70.435],"width":1.24,"length":16.3,"floatModule":"fingerA"},"bounds":{"min":[-0.625,-16.732736,-1.120279],"max":[0.625,0.22,1.023975]},"frames":[{"frame":0,"dir":0,"file":"WaterSide_fleet_gangway0_s0_0.png","rect":[0,388,542,388],"native":[50,397],"nativePivot":[24,30],"crop":[4,5],"pivot":[20,25]},{"frame":1,"dir":7,"file":"WaterSide_fleet_gangway0_s0_0.png","rect":[542,388,542,388],"native":[420,316],"nativePivot":[396,38],"crop":[5,4],"pivot":[391,34]},{"frame":2,"dir":6,"file":"WaterSide_fleet_gangway0_s0_0.png","rect":[1084,388,542,388],"native":[552,87],"nativePivot":[540,42],"crop":[5,5],"pivot":[535,37]},{"frame":3,"dir":5,"file":"WaterSide_fleet_gangway0_s0_0.png","rect":[1626,388,542,388],"native":[420,280],"nativePivot":[396,257],"crop":[5,5],"pivot":[391,252]},{"frame":4,"dir":4,"file":"WaterSide_fleet_gangway0_s0_0.png","rect":[2168,388,542,388],"native":[50,360],"nativePivot":[24,346],"crop":[4,4],"pivot":[20,342]},{"frame":5,"dir":3,"file":"WaterSide_fleet_gangway0_s0_0.png","rect":[2710,388,542,388],"native":[420,280],"nativePivot":[24,257],"crop":[5,5],"pivot":[19,252]},{"frame":6,"dir":2,"file":"WaterSide_fleet_gangway0_s0_0.png","rect":[3252,388,542,388],"native":[552,87],"nativePivot":[12,42],"crop":[5,5],"pivot":[7,37]},{"frame":7,"dir":1,"file":"WaterSide_fleet_gangway0_s0_0.png","rect":[0,0,542,388],"native":[420,316],"nativePivot":[24,38],"crop":[5,4],"pivot":[19,34]}],"sheets":[{"file":"WaterSide_fleet_gangway0_s0_0.png","width":3794,"height":776,"rgbaSha256":"b95bcd69b889585ea345bc523705b16763d32b10082c2f98249d92db7741a02d"}],"modelKey":"harbour:h5_fleet_gangway0_s0","cellSize":[542,388]}'
+    BoundsMin:
+      x: -0.625
+      y: -16.732736
+      z: -1.120279
+    BoundsMax:
+      x: 0.625
+      y: 0.22
+      z: 1.023975
+    Frames:
+    - Sprite:
+        fileID: 5443471194707316447
+        guid: 2e0bd8e59e0a926dea59bd7e3ebb8c1e
+        type: 3
+      RigDir: 0
+      ShowFaces: '0'
+      BearingDeg: 0
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 50
+        y: 397
+      NativePivot:
+        x: 24
+        y: 30
+      Crop:
+        x: 4
+        y: 5
+      Pivot:
+        x: 20
+        y: 25
+    - Sprite:
+        fileID: 6842367150273989399
+        guid: 2e0bd8e59e0a926dea59bd7e3ebb8c1e
+        type: 3
+      RigDir: 7
+      ShowFaces: '7'
+      BearingDeg: 315
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 420
+        y: 316
+      NativePivot:
+        x: 396
+        y: 38
+      Crop:
+        x: 5
+        y: 4
+      Pivot:
+        x: 391
+        y: 34
+    - Sprite:
+        fileID: 2915781451902726354
+        guid: 2e0bd8e59e0a926dea59bd7e3ebb8c1e
+        type: 3
+      RigDir: 6
+      ShowFaces: '6'
+      BearingDeg: 270
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 552
+        y: 87
+      NativePivot:
+        x: 540
+        y: 42
+      Crop:
+        x: 5
+        y: 5
+      Pivot:
+        x: 535
+        y: 37
+    - Sprite:
+        fileID: 993555714387456873
+        guid: 2e0bd8e59e0a926dea59bd7e3ebb8c1e
+        type: 3
+      RigDir: 5
+      ShowFaces: '5'
+      BearingDeg: 225
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 420
+        y: 280
+      NativePivot:
+        x: 396
+        y: 257
+      Crop:
+        x: 5
+        y: 5
+      Pivot:
+        x: 391
+        y: 252
+    - Sprite:
+        fileID: 36429523662314790
+        guid: 2e0bd8e59e0a926dea59bd7e3ebb8c1e
+        type: 3
+      RigDir: 4
+      ShowFaces: '4'
+      BearingDeg: 180
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 50
+        y: 360
+      NativePivot:
+        x: 24
+        y: 346
+      Crop:
+        x: 4
+        y: 4
+      Pivot:
+        x: 20
+        y: 342
+    - Sprite:
+        fileID: 1023466519853655900
+        guid: 2e0bd8e59e0a926dea59bd7e3ebb8c1e
+        type: 3
+      RigDir: 3
+      ShowFaces: '3'
+      BearingDeg: 135
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 420
+        y: 280
+      NativePivot:
+        x: 24
+        y: 257
+      Crop:
+        x: 5
+        y: 5
+      Pivot:
+        x: 19
+        y: 252
+    - Sprite:
+        fileID: 3812591418526810370
+        guid: 2e0bd8e59e0a926dea59bd7e3ebb8c1e
+        type: 3
+      RigDir: 2
+      ShowFaces: '2'
+      BearingDeg: 90
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 552
+        y: 87
+      NativePivot:
+        x: 12
+        y: 42
+      Crop:
+        x: 5
+        y: 5
+      Pivot:
+        x: 7
+        y: 37
+    - Sprite:
+        fileID: 2340447093486338732
+        guid: 2e0bd8e59e0a926dea59bd7e3ebb8c1e
+        type: 3
+      RigDir: 1
+      ShowFaces: '1'
+      BearingDeg: 45
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 420
+        y: 316
+      NativePivot:
+        x: 24
+        y: 38
+      Crop:
+        x: 5
+        y: 4
+      Pivot:
+        x: 19
+        y: 34
+    Anchors: []
+    Colliders: []
+  - Name: gangway0_s1
+    BakedOptionsJson: '{"module": "fleet_gangway0_s1"}'
+    GameplayJson: '{"key":"fleet_gangway0_s1","harbour":"fleet","name":"gangway0_s1","at":[109.7,86],"elevation":3.3999999999999995,"gangway":{"id":"gangway0","step":1,"drop":1.3,"hinge":[109.7,86],"landing":[109.7,70.435],"width":1.24,"length":16.3,"floatModule":"fingerA"},"bounds":{"min":[-0.625,-16.698077,-1.670214],"max":[0.625,0.22,1.023924]},"frames":[{"frame":0,"dir":0,"file":"WaterSide_fleet_gangway0_s1_0.png","rect":[0,400,541,400],"native":[50,410],"nativePivot":[24,30],"crop":[4,5],"pivot":[20,25]},{"frame":1,"dir":7,"file":"WaterSide_fleet_gangway0_s1_0.png","rect":[541,400,541,400],"native":[419,329],"nativePivot":[395,38],"crop":[5,4],"pivot":[390,34]},{"frame":2,"dir":6,"file":"WaterSide_fleet_gangway0_s1_0.png","rect":[1082,400,541,400],"native":[551,100],"nativePivot":[539,42],"crop":[5,5],"pivot":[534,37]},{"frame":3,"dir":5,"file":"WaterSide_fleet_gangway0_s1_0.png","rect":[1623,400,541,400],"native":[419,266],"nativePivot":[395,243],"crop":[5,5],"pivot":[390,238]},{"frame":4,"dir":4,"file":"WaterSide_fleet_gangway0_s1_0.png","rect":[2164,400,541,400],"native":[50,346],"nativePivot":[24,332],"crop":[4,4],"pivot":[20,328]},{"frame":5,"dir":3,"file":"WaterSide_fleet_gangway0_s1_0.png","rect":[2705,400,541,400],"native":[419,266],"nativePivot":[24,243],"crop":[5,5],"pivot":[19,238]},{"frame":6,"dir":2,"file":"WaterSide_fleet_gangway0_s1_0.png","rect":[3246,400,541,400],"native":[551,100],"nativePivot":[12,42],"crop":[5,5],"pivot":[7,37]},{"frame":7,"dir":1,"file":"WaterSide_fleet_gangway0_s1_0.png","rect":[0,0,541,400],"native":[419,329],"nativePivot":[24,38],"crop":[5,4],"pivot":[19,34]}],"sheets":[{"file":"WaterSide_fleet_gangway0_s1_0.png","width":3787,"height":800,"rgbaSha256":"3ef4d291a133a9009a307fdf32e7b866d9616a334e74a6000d0c4bb1bffe389b"}],"modelKey":"harbour:h5_fleet_gangway0_s1","cellSize":[541,400]}'
+    BoundsMin:
+      x: -0.625
+      y: -16.698077
+      z: -1.670214
+    BoundsMax:
+      x: 0.625
+      y: 0.22
+      z: 1.023924
+    Frames:
+    - Sprite:
+        fileID: 1838431232053986008
+        guid: 4cdb1bc02375b01fea02650936bc9496
+        type: 3
+      RigDir: 0
+      ShowFaces: '0'
+      BearingDeg: 0
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 50
+        y: 410
+      NativePivot:
+        x: 24
+        y: 30
+      Crop:
+        x: 4
+        y: 5
+      Pivot:
+        x: 20
+        y: 25
+    - Sprite:
+        fileID: 2920875242485885842
+        guid: 4cdb1bc02375b01fea02650936bc9496
+        type: 3
+      RigDir: 7
+      ShowFaces: '7'
+      BearingDeg: 315
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 419
+        y: 329
+      NativePivot:
+        x: 395
+        y: 38
+      Crop:
+        x: 5
+        y: 4
+      Pivot:
+        x: 390
+        y: 34
+    - Sprite:
+        fileID: 282365183741634833
+        guid: 4cdb1bc02375b01fea02650936bc9496
+        type: 3
+      RigDir: 6
+      ShowFaces: '6'
+      BearingDeg: 270
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 551
+        y: 100
+      NativePivot:
+        x: 539
+        y: 42
+      Crop:
+        x: 5
+        y: 5
+      Pivot:
+        x: 534
+        y: 37
+    - Sprite:
+        fileID: 7905364941551118597
+        guid: 4cdb1bc02375b01fea02650936bc9496
+        type: 3
+      RigDir: 5
+      ShowFaces: '5'
+      BearingDeg: 225
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 419
+        y: 266
+      NativePivot:
+        x: 395
+        y: 243
+      Crop:
+        x: 5
+        y: 5
+      Pivot:
+        x: 390
+        y: 238
+    - Sprite:
+        fileID: 7876599061765298691
+        guid: 4cdb1bc02375b01fea02650936bc9496
+        type: 3
+      RigDir: 4
+      ShowFaces: '4'
+      BearingDeg: 180
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 50
+        y: 346
+      NativePivot:
+        x: 24
+        y: 332
+      Crop:
+        x: 4
+        y: 4
+      Pivot:
+        x: 20
+        y: 328
+    - Sprite:
+        fileID: 3821398917699966664
+        guid: 4cdb1bc02375b01fea02650936bc9496
+        type: 3
+      RigDir: 3
+      ShowFaces: '3'
+      BearingDeg: 135
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 419
+        y: 266
+      NativePivot:
+        x: 24
+        y: 243
+      Crop:
+        x: 5
+        y: 5
+      Pivot:
+        x: 19
+        y: 238
+    - Sprite:
+        fileID: 3702851646877802534
+        guid: 4cdb1bc02375b01fea02650936bc9496
+        type: 3
+      RigDir: 2
+      ShowFaces: '2'
+      BearingDeg: 90
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 551
+        y: 100
+      NativePivot:
+        x: 12
+        y: 42
+      Crop:
+        x: 5
+        y: 5
+      Pivot:
+        x: 7
+        y: 37
+    - Sprite:
+        fileID: 1627592066143284818
+        guid: 4cdb1bc02375b01fea02650936bc9496
+        type: 3
+      RigDir: 1
+      ShowFaces: '1'
+      BearingDeg: 45
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 419
+        y: 329
+      NativePivot:
+        x: 24
+        y: 38
+      Crop:
+        x: 5
+        y: 4
+      Pivot:
+        x: 19
+        y: 34
+    Anchors: []
+    Colliders: []
+  - Name: gangway0_s2
+    BakedOptionsJson: '{"module": "fleet_gangway0_s2"}'
+    GameplayJson: '{"key":"fleet_gangway0_s2","harbour":"fleet","name":"gangway0_s2","at":[109.7,86],"elevation":3.3999999999999995,"gangway":{"id":"gangway0","step":2,"drop":1.85,"hinge":[109.7,86],"landing":[109.7,70.435],"width":1.24,"length":16.3,"floatModule":"fingerA"},"bounds":{"min":[-0.625,-16.644675,-2.220115],"max":[0.625,0.22,1.023845]},"frames":[{"frame":0,"dir":0,"file":"WaterSide_fleet_gangway0_s2_0.png","rect":[0,413,540,413],"native":[50,422],"nativePivot":[24,30],"crop":[4,5],"pivot":[20,25]},{"frame":1,"dir":7,"file":"WaterSide_fleet_gangway0_s2_0.png","rect":[540,413,540,413],"native":[418,342],"nativePivot":[394,38],"crop":[5,4],"pivot":[389,34]},{"frame":2,"dir":6,"file":"WaterSide_fleet_gangway0_s2_0.png","rect":[1080,413,540,413],"native":[549,114],"nativePivot":[537,42],"crop":[4,5],"pivot":[533,37]},{"frame":3,"dir":5,"file":"WaterSide_fleet_gangway0_s2_0.png","rect":[1620,413,540,413],"native":[418,251],"nativePivot":[394,228],"crop":[5,4],"pivot":[389,224]},{"frame":4,"dir":4,"file":"WaterSide_fleet_gangway0_s2_0.png","rect":[2160,413,540,413],"native":[50,332],"nativePivot":[24,317],"crop":[4,4],"pivot":[20,313]},{"frame":5,"dir":3,"file":"WaterSide_fleet_gangway0_s2_0.png","rect":[2700,413,540,413],"native":[418,251],"nativePivot":[24,228],"crop":[5,4],"pivot":[19,224]},{"frame":6,"dir":2,"file":"WaterSide_fleet_gangway0_s2_0.png","rect":[3240,413,540,413],"native":[549,114],"nativePivot":[12,42],"crop":[5,5],"pivot":[7,37]},{"frame":7,"dir":1,"file":"WaterSide_fleet_gangway0_s2_0.png","rect":[0,0,540,413],"native":[418,342],"nativePivot":[24,38],"crop":[5,4],"pivot":[19,34]}],"sheets":[{"file":"WaterSide_fleet_gangway0_s2_0.png","width":3780,"height":826,"rgbaSha256":"91330b50b836b1fbd10745edc62e435bc33c94dc67e1639329442522e550c754"}],"modelKey":"harbour:h5_fleet_gangway0_s2","cellSize":[540,413]}'
+    BoundsMin:
+      x: -0.625
+      y: -16.644675
+      z: -2.220115
+    BoundsMax:
+      x: 0.625
+      y: 0.22
+      z: 1.023845
+    Frames:
+    - Sprite:
+        fileID: 731445501101772380
+        guid: e693423b162928a223b9c9f8762c85b7
+        type: 3
+      RigDir: 0
+      ShowFaces: '0'
+      BearingDeg: 0
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 50
+        y: 422
+      NativePivot:
+        x: 24
+        y: 30
+      Crop:
+        x: 4
+        y: 5
+      Pivot:
+        x: 20
+        y: 25
+    - Sprite:
+        fileID: 6399067983232913555
+        guid: e693423b162928a223b9c9f8762c85b7
+        type: 3
+      RigDir: 7
+      ShowFaces: '7'
+      BearingDeg: 315
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 418
+        y: 342
+      NativePivot:
+        x: 394
+        y: 38
+      Crop:
+        x: 5
+        y: 4
+      Pivot:
+        x: 389
+        y: 34
+    - Sprite:
+        fileID: 8713059779524218800
+        guid: e693423b162928a223b9c9f8762c85b7
+        type: 3
+      RigDir: 6
+      ShowFaces: '6'
+      BearingDeg: 270
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 549
+        y: 114
+      NativePivot:
+        x: 537
+        y: 42
+      Crop:
+        x: 4
+        y: 5
+      Pivot:
+        x: 533
+        y: 37
+    - Sprite:
+        fileID: 711472236805960236
+        guid: e693423b162928a223b9c9f8762c85b7
+        type: 3
+      RigDir: 5
+      ShowFaces: '5'
+      BearingDeg: 225
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 418
+        y: 251
+      NativePivot:
+        x: 394
+        y: 228
+      Crop:
+        x: 5
+        y: 4
+      Pivot:
+        x: 389
+        y: 224
+    - Sprite:
+        fileID: 5324700100316860848
+        guid: e693423b162928a223b9c9f8762c85b7
+        type: 3
+      RigDir: 4
+      ShowFaces: '4'
+      BearingDeg: 180
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 50
+        y: 332
+      NativePivot:
+        x: 24
+        y: 317
+      Crop:
+        x: 4
+        y: 4
+      Pivot:
+        x: 20
+        y: 313
+    - Sprite:
+        fileID: 2979089531843266827
+        guid: e693423b162928a223b9c9f8762c85b7
+        type: 3
+      RigDir: 3
+      ShowFaces: '3'
+      BearingDeg: 135
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 418
+        y: 251
+      NativePivot:
+        x: 24
+        y: 228
+      Crop:
+        x: 5
+        y: 4
+      Pivot:
+        x: 19
+        y: 224
+    - Sprite:
+        fileID: 747988767118683865
+        guid: e693423b162928a223b9c9f8762c85b7
+        type: 3
+      RigDir: 2
+      ShowFaces: '2'
+      BearingDeg: 90
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 549
+        y: 114
+      NativePivot:
+        x: 12
+        y: 42
+      Crop:
+        x: 5
+        y: 5
+      Pivot:
+        x: 7
+        y: 37
+    - Sprite:
+        fileID: 8822785054776645360
+        guid: e693423b162928a223b9c9f8762c85b7
+        type: 3
+      RigDir: 1
+      ShowFaces: '1'
+      BearingDeg: 45
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 418
+        y: 342
+      NativePivot:
+        x: 24
+        y: 38
+      Crop:
+        x: 5
+        y: 4
+      Pivot:
+        x: 19
+        y: 34
+    Anchors: []
+    Colliders: []
+  - Name: gangway0_s3
+    BakedOptionsJson: '{"module": "fleet_gangway0_s3"}'
+    GameplayJson: '{"key":"fleet_gangway0_s3","harbour":"fleet","name":"gangway0_s3","at":[109.7,86],"elevation":3.3999999999999995,"gangway":{"id":"gangway0","step":3,"drop":2.4,"hinge":[109.7,86],"landing":[109.7,70.435],"width":1.24,"length":16.3,"floatModule":"fingerA"},"bounds":{"min":[-0.625,-16.572345,-2.769981],"max":[0.625,0.22,1.023738]},"frames":[{"frame":0,"dir":0,"file":"WaterSide_fleet_gangway0_s3_0.png","rect":[0,425,537,425],"native":[50,434],"nativePivot":[24,30],"crop":[4,5],"pivot":[20,25]},{"frame":1,"dir":7,"file":"WaterSide_fleet_gangway0_s3_0.png","rect":[537,425,537,425],"native":[416,354],"nativePivot":[392,38],"crop":[4,4],"pivot":[388,34]},{"frame":2,"dir":6,"file":"WaterSide_fleet_gangway0_s3_0.png","rect":[1074,425,537,425],"native":[547,127],"nativePivot":[535,42],"crop":[5,5],"pivot":[530,37]},{"frame":3,"dir":5,"file":"WaterSide_fleet_gangway0_s3_0.png","rect":[1611,425,537,425],"native":[416,237],"nativePivot":[392,214],"crop":[5,4],"pivot":[387,210]},{"frame":4,"dir":4,"file":"WaterSide_fleet_gangway0_s3_0.png","rect":[2148,425,537,425],"native":[50,317],"nativePivot":[24,302],"crop":[4,4],"pivot":[20,298]},{"frame":5,"dir":3,"file":"WaterSide_fleet_gangway0_s3_0.png","rect":[2685,425,537,425],"native":[416,237],"nativePivot":[24,214],"crop":[5,4],"pivot":[19,210]},{"frame":6,"dir":2,"file":"WaterSide_fleet_gangway0_s3_0.png","rect":[3222,425,537,425],"native":[547,127],"nativePivot":[12,42],"crop":[5,5],"pivot":[7,37]},{"frame":7,"dir":1,"file":"WaterSide_fleet_gangway0_s3_0.png","rect":[0,0,537,425],"native":[416,354],"nativePivot":[24,38],"crop":[5,4],"pivot":[19,34]}],"sheets":[{"file":"WaterSide_fleet_gangway0_s3_0.png","width":3759,"height":850,"rgbaSha256":"56bb5d46f2ecc9ff0657fe685b2c00f14b7a3bd6859013b10a0cd8147408f4b4"}],"modelKey":"harbour:h5_fleet_gangway0_s3","cellSize":[537,425]}'
+    BoundsMin:
+      x: -0.625
+      y: -16.572345
+      z: -2.769981
+    BoundsMax:
+      x: 0.625
+      y: 0.22
+      z: 1.023738
+    Frames:
+    - Sprite:
+        fileID: 5110672198601140315
+        guid: 4e83f6da668bd5e7fa0ae6ab7d3f6b38
+        type: 3
+      RigDir: 0
+      ShowFaces: '0'
+      BearingDeg: 0
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 50
+        y: 434
+      NativePivot:
+        x: 24
+        y: 30
+      Crop:
+        x: 4
+        y: 5
+      Pivot:
+        x: 20
+        y: 25
+    - Sprite:
+        fileID: 5359354095332882832
+        guid: 4e83f6da668bd5e7fa0ae6ab7d3f6b38
+        type: 3
+      RigDir: 7
+      ShowFaces: '7'
+      BearingDeg: 315
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 416
+        y: 354
+      NativePivot:
+        x: 392
+        y: 38
+      Crop:
+        x: 4
+        y: 4
+      Pivot:
+        x: 388
+        y: 34
+    - Sprite:
+        fileID: 4339802133652408763
+        guid: 4e83f6da668bd5e7fa0ae6ab7d3f6b38
+        type: 3
+      RigDir: 6
+      ShowFaces: '6'
+      BearingDeg: 270
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 547
+        y: 127
+      NativePivot:
+        x: 535
+        y: 42
+      Crop:
+        x: 5
+        y: 5
+      Pivot:
+        x: 530
+        y: 37
+    - Sprite:
+        fileID: 3824121703942214756
+        guid: 4e83f6da668bd5e7fa0ae6ab7d3f6b38
+        type: 3
+      RigDir: 5
+      ShowFaces: '5'
+      BearingDeg: 225
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 416
+        y: 237
+      NativePivot:
+        x: 392
+        y: 214
+      Crop:
+        x: 5
+        y: 4
+      Pivot:
+        x: 387
+        y: 210
+    - Sprite:
+        fileID: 5212594313767026278
+        guid: 4e83f6da668bd5e7fa0ae6ab7d3f6b38
+        type: 3
+      RigDir: 4
+      ShowFaces: '4'
+      BearingDeg: 180
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 50
+        y: 317
+      NativePivot:
+        x: 24
+        y: 302
+      Crop:
+        x: 4
+        y: 4
+      Pivot:
+        x: 20
+        y: 298
+    - Sprite:
+        fileID: 6362676843810374855
+        guid: 4e83f6da668bd5e7fa0ae6ab7d3f6b38
+        type: 3
+      RigDir: 3
+      ShowFaces: '3'
+      BearingDeg: 135
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 416
+        y: 237
+      NativePivot:
+        x: 24
+        y: 214
+      Crop:
+        x: 5
+        y: 4
+      Pivot:
+        x: 19
+        y: 210
+    - Sprite:
+        fileID: 4415275602990518177
+        guid: 4e83f6da668bd5e7fa0ae6ab7d3f6b38
+        type: 3
+      RigDir: 2
+      ShowFaces: '2'
+      BearingDeg: 90
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 547
+        y: 127
+      NativePivot:
+        x: 12
+        y: 42
+      Crop:
+        x: 5
+        y: 5
+      Pivot:
+        x: 7
+        y: 37
+    - Sprite:
+        fileID: 9111167028861142760
+        guid: 4e83f6da668bd5e7fa0ae6ab7d3f6b38
+        type: 3
+      RigDir: 1
+      ShowFaces: '1'
+      BearingDeg: 45
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 416
+        y: 354
+      NativePivot:
+        x: 24
+        y: 38
+      Crop:
+        x: 5
+        y: 4
+      Pivot:
+        x: 19
+        y: 34
+    Anchors: []
+    Colliders: []
+  - Name: gangway0_s4
+    BakedOptionsJson: '{"module": "fleet_gangway0_s4"}'
+    GameplayJson: '{"key":"fleet_gangway0_s4","harbour":"fleet","name":"gangway0_s4","at":[109.7,86],"elevation":3.3999999999999995,"gangway":{"id":"gangway0","step":4,"drop":2.95,"hinge":[109.7,86],"landing":[109.7,70.435],"width":1.24,"length":16.3,"floatModule":"fingerA"},"bounds":{"min":[-0.625,-16.48083,-3.31981],"max":[0.625,0.22,1.023604]},"frames":[{"frame":0,"dir":0,"file":"WaterSide_fleet_gangway0_s4_0.png","rect":[0,436,534,436],"native":[50,446],"nativePivot":[24,30],"crop":[4,5],"pivot":[20,25]},{"frame":1,"dir":7,"file":"WaterSide_fleet_gangway0_s4_0.png","rect":[534,436,534,436],"native":[414,367],"nativePivot":[390,38],"crop":[5,4],"pivot":[385,34]},{"frame":2,"dir":6,"file":"WaterSide_fleet_gangway0_s4_0.png","rect":[1068,436,534,436],"native":[544,141],"nativePivot":[532,42],"crop":[5,5],"pivot":[527,37]},{"frame":3,"dir":5,"file":"WaterSide_fleet_gangway0_s4_0.png","rect":[1602,436,534,436],"native":[414,222],"nativePivot":[390,199],"crop":[4,4],"pivot":[386,195]},{"frame":4,"dir":4,"file":"WaterSide_fleet_gangway0_s4_0.png","rect":[2136,436,534,436],"native":[50,301],"nativePivot":[24,287],"crop":[4,4],"pivot":[20,283]},{"frame":5,"dir":3,"file":"WaterSide_fleet_gangway0_s4_0.png","rect":[2670,436,534,436],"native":[414,222],"nativePivot":[24,199],"crop":[5,4],"pivot":[19,195]},{"frame":6,"dir":2,"file":"WaterSide_fleet_gangway0_s4_0.png","rect":[3204,436,534,436],"native":[544,141],"nativePivot":[12,42],"crop":[5,5],"pivot":[7,37]},{"frame":7,"dir":1,"file":"WaterSide_fleet_gangway0_s4_0.png","rect":[0,0,534,436],"native":[414,367],"nativePivot":[24,38],"crop":[5,4],"pivot":[19,34]}],"sheets":[{"file":"WaterSide_fleet_gangway0_s4_0.png","width":3738,"height":872,"rgbaSha256":"6ccaec2da480751a4834a00c118575b4b2a776333c7eb8d58b85cc9327f5e98c"}],"modelKey":"harbour:h5_fleet_gangway0_s4","cellSize":[534,436]}'
+    BoundsMin:
+      x: -0.625
+      y: -16.48083
+      z: -3.31981
+    BoundsMax:
+      x: 0.625
+      y: 0.22
+      z: 1.023604
+    Frames:
+    - Sprite:
+        fileID: 872908802241788523
+        guid: 1d9cb977a3294f1bcdc6b5aa3789f9fe
+        type: 3
+      RigDir: 0
+      ShowFaces: '0'
+      BearingDeg: 0
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 50
+        y: 446
+      NativePivot:
+        x: 24
+        y: 30
+      Crop:
+        x: 4
+        y: 5
+      Pivot:
+        x: 20
+        y: 25
+    - Sprite:
+        fileID: 6603436426342033146
+        guid: 1d9cb977a3294f1bcdc6b5aa3789f9fe
+        type: 3
+      RigDir: 7
+      ShowFaces: '7'
+      BearingDeg: 315
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 414
+        y: 367
+      NativePivot:
+        x: 390
+        y: 38
+      Crop:
+        x: 5
+        y: 4
+      Pivot:
+        x: 385
+        y: 34
+    - Sprite:
+        fileID: 1949996664549053001
+        guid: 1d9cb977a3294f1bcdc6b5aa3789f9fe
+        type: 3
+      RigDir: 6
+      ShowFaces: '6'
+      BearingDeg: 270
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 544
+        y: 141
+      NativePivot:
+        x: 532
+        y: 42
+      Crop:
+        x: 5
+        y: 5
+      Pivot:
+        x: 527
+        y: 37
+    - Sprite:
+        fileID: 961975036381682968
+        guid: 1d9cb977a3294f1bcdc6b5aa3789f9fe
+        type: 3
+      RigDir: 5
+      ShowFaces: '5'
+      BearingDeg: 225
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 414
+        y: 222
+      NativePivot:
+        x: 390
+        y: 199
+      Crop:
+        x: 4
+        y: 4
+      Pivot:
+        x: 386
+        y: 195
+    - Sprite:
+        fileID: 2887582631453805119
+        guid: 1d9cb977a3294f1bcdc6b5aa3789f9fe
+        type: 3
+      RigDir: 4
+      ShowFaces: '4'
+      BearingDeg: 180
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 50
+        y: 301
+      NativePivot:
+        x: 24
+        y: 287
+      Crop:
+        x: 4
+        y: 4
+      Pivot:
+        x: 20
+        y: 283
+    - Sprite:
+        fileID: 7022159196140829835
+        guid: 1d9cb977a3294f1bcdc6b5aa3789f9fe
+        type: 3
+      RigDir: 3
+      ShowFaces: '3'
+      BearingDeg: 135
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 414
+        y: 222
+      NativePivot:
+        x: 24
+        y: 199
+      Crop:
+        x: 5
+        y: 4
+      Pivot:
+        x: 19
+        y: 195
+    - Sprite:
+        fileID: 7206007033453714362
+        guid: 1d9cb977a3294f1bcdc6b5aa3789f9fe
+        type: 3
+      RigDir: 2
+      ShowFaces: '2'
+      BearingDeg: 90
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 544
+        y: 141
+      NativePivot:
+        x: 12
+        y: 42
+      Crop:
+        x: 5
+        y: 5
+      Pivot:
+        x: 7
+        y: 37
+    - Sprite:
+        fileID: 6534143315134441203
+        guid: 1d9cb977a3294f1bcdc6b5aa3789f9fe
+        type: 3
+      RigDir: 1
+      ShowFaces: '1'
+      BearingDeg: 45
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 414
+        y: 367
+      NativePivot:
+        x: 24
+        y: 38
+      Crop:
+        x: 5
+        y: 4
+      Pivot:
+        x: 19
+        y: 34
+    Anchors: []
+    Colliders: []
+  - Name: gangway0_s5
+    BakedOptionsJson: '{"module": "fleet_gangway0_s5"}'
+    GameplayJson: '{"key":"fleet_gangway0_s5","harbour":"fleet","name":"gangway0_s5","at":[109.7,86],"elevation":3.3999999999999995,"gangway":{"id":"gangway0","step":5,"drop":3.5,"hinge":[109.7,86],"landing":[109.7,70.435],"width":1.24,"length":16.3,"floatModule":"fingerA"},"bounds":{"min":[-0.625,-16.369799,-3.869604],"max":[0.625,0.22,1.02344]},"frames":[{"frame":0,"dir":0,"file":"WaterSide_fleet_gangway0_s5_0.png","rect":[0,448,531,448],"native":[50,457],"nativePivot":[24,30],"crop":[4,5],"pivot":[20,25]},{"frame":1,"dir":7,"file":"WaterSide_fleet_gangway0_s5_0.png","rect":[531,448,531,448],"native":[412,378],"nativePivot":[388,38],"crop":[5,4],"pivot":[383,34]},{"frame":2,"dir":6,"file":"WaterSide_fleet_gangway0_s5_0.png","rect":[1062,448,531,448],"native":[540,154],"nativePivot":[528,42],"crop":[4,5],"pivot":[524,37]},{"frame":3,"dir":5,"file":"WaterSide_fleet_gangway0_s5_0.png","rect":[1593,448,531,448],"native":[412,207],"nativePivot":[388,184],"crop":[5,4],"pivot":[383,180]},{"frame":4,"dir":4,"file":"WaterSide_fleet_gangway0_s5_0.png","rect":[2124,448,531,448],"native":[50,286],"nativePivot":[24,271],"crop":[4,4],"pivot":[20,267]},{"frame":5,"dir":3,"file":"WaterSide_fleet_gangway0_s5_0.png","rect":[2655,448,531,448],"native":[412,207],"nativePivot":[24,184],"crop":[5,4],"pivot":[19,180]},{"frame":6,"dir":2,"file":"WaterSide_fleet_gangway0_s5_0.png","rect":[3186,448,531,448],"native":[540,154],"nativePivot":[12,42],"crop":[5,5],"pivot":[7,37]},{"frame":7,"dir":1,"file":"WaterSide_fleet_gangway0_s5_0.png","rect":[0,0,531,448],"native":[412,378],"nativePivot":[24,38],"crop":[5,4],"pivot":[19,34]}],"sheets":[{"file":"WaterSide_fleet_gangway0_s5_0.png","width":3717,"height":896,"rgbaSha256":"9a11855898d5b5227e8c5409110d73c7dc82bc40787cad63f94cf162f5aafea8"}],"modelKey":"harbour:h5_fleet_gangway0_s5","cellSize":[531,448]}'
+    BoundsMin:
+      x: -0.625
+      y: -16.369799
+      z: -3.869604
+    BoundsMax:
+      x: 0.625
+      y: 0.22
+      z: 1.02344
+    Frames:
+    - Sprite:
+        fileID: 2228449003690194096
+        guid: 2757f2f487766662bfd0a4c926fde799
+        type: 3
+      RigDir: 0
+      ShowFaces: '0'
+      BearingDeg: 0
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 50
+        y: 457
+      NativePivot:
+        x: 24
+        y: 30
+      Crop:
+        x: 4
+        y: 5
+      Pivot:
+        x: 20
+        y: 25
+    - Sprite:
+        fileID: 3981084233382739149
+        guid: 2757f2f487766662bfd0a4c926fde799
+        type: 3
+      RigDir: 7
+      ShowFaces: '7'
+      BearingDeg: 315
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 412
+        y: 378
+      NativePivot:
+        x: 388
+        y: 38
+      Crop:
+        x: 5
+        y: 4
+      Pivot:
+        x: 383
+        y: 34
+    - Sprite:
+        fileID: 4048164330250544436
+        guid: 2757f2f487766662bfd0a4c926fde799
+        type: 3
+      RigDir: 6
+      ShowFaces: '6'
+      BearingDeg: 270
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 540
+        y: 154
+      NativePivot:
+        x: 528
+        y: 42
+      Crop:
+        x: 4
+        y: 5
+      Pivot:
+        x: 524
+        y: 37
+    - Sprite:
+        fileID: 6698953711310789020
+        guid: 2757f2f487766662bfd0a4c926fde799
+        type: 3
+      RigDir: 5
+      ShowFaces: '5'
+      BearingDeg: 225
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 412
+        y: 207
+      NativePivot:
+        x: 388
+        y: 184
+      Crop:
+        x: 5
+        y: 4
+      Pivot:
+        x: 383
+        y: 180
+    - Sprite:
+        fileID: 1434197280681884720
+        guid: 2757f2f487766662bfd0a4c926fde799
+        type: 3
+      RigDir: 4
+      ShowFaces: '4'
+      BearingDeg: 180
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 50
+        y: 286
+      NativePivot:
+        x: 24
+        y: 271
+      Crop:
+        x: 4
+        y: 4
+      Pivot:
+        x: 20
+        y: 267
+    - Sprite:
+        fileID: 4799723539953925386
+        guid: 2757f2f487766662bfd0a4c926fde799
+        type: 3
+      RigDir: 3
+      ShowFaces: '3'
+      BearingDeg: 135
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 412
+        y: 207
+      NativePivot:
+        x: 24
+        y: 184
+      Crop:
+        x: 5
+        y: 4
+      Pivot:
+        x: 19
+        y: 180
+    - Sprite:
+        fileID: 6772922849301983062
+        guid: 2757f2f487766662bfd0a4c926fde799
+        type: 3
+      RigDir: 2
+      ShowFaces: '2'
+      BearingDeg: 90
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 540
+        y: 154
+      NativePivot:
+        x: 12
+        y: 42
+      Crop:
+        x: 5
+        y: 5
+      Pivot:
+        x: 7
+        y: 37
+    - Sprite:
+        fileID: 3209661279112807948
+        guid: 2757f2f487766662bfd0a4c926fde799
+        type: 3
+      RigDir: 1
+      ShowFaces: '1'
+      BearingDeg: 45
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 412
+        y: 378
+      NativePivot:
+        x: 24
+        y: 38
+      Crop:
+        x: 5
+        y: 4
+      Pivot:
+        x: 19
+        y: 34
+    Anchors: []
+    Colliders: []
+  - Name: gangway0_s6
+    BakedOptionsJson: '{"module": "fleet_gangway0_s6"}'
+    GameplayJson: '{"key":"fleet_gangway0_s6","harbour":"fleet","name":"gangway0_s6","at":[109.7,86],"elevation":3.3999999999999995,"gangway":{"id":"gangway0","step":6,"drop":4.05,"hinge":[109.7,86],"landing":[109.7,70.435],"width":1.24,"length":16.3,"floatModule":"fingerA"},"bounds":{"min":[-0.625,-16.238841,-4.41936],"max":[0.625,0.22,1.023247]},"frames":[{"frame":0,"dir":0,"file":"WaterSide_fleet_gangway0_s6_0.png","rect":[0,458,527,458],"native":[50,468],"nativePivot":[24,30],"crop":[4,5],"pivot":[20,25]},{"frame":1,"dir":7,"file":"WaterSide_fleet_gangway0_s6_0.png","rect":[527,458,527,458],"native":[409,390],"nativePivot":[385,38],"crop":[6,4],"pivot":[379,34]},{"frame":2,"dir":6,"file":"WaterSide_fleet_gangway0_s6_0.png","rect":[1054,458,527,458],"native":[536,168],"nativePivot":[524,42],"crop":[4,5],"pivot":[520,37]},{"frame":3,"dir":5,"file":"WaterSide_fleet_gangway0_s6_0.png","rect":[1581,458,527,458],"native":[409,192],"nativePivot":[385,169],"crop":[6,5],"pivot":[379,164]},{"frame":4,"dir":4,"file":"WaterSide_fleet_gangway0_s6_0.png","rect":[2108,458,527,458],"native":[50,269],"nativePivot":[24,255],"crop":[4,4],"pivot":[20,251]},{"frame":5,"dir":3,"file":"WaterSide_fleet_gangway0_s6_0.png","rect":[2635,458,527,458],"native":[409,192],"nativePivot":[24,169],"crop":[5,5],"pivot":[19,164]},{"frame":6,"dir":2,"file":"WaterSide_fleet_gangway0_s6_0.png","rect":[3162,458,527,458],"native":[536,168],"nativePivot":[12,42],"crop":[5,5],"pivot":[7,37]},{"frame":7,"dir":1,"file":"WaterSide_fleet_gangway0_s6_0.png","rect":[0,0,527,458],"native":[409,390],"nativePivot":[24,38],"crop":[5,4],"pivot":[19,34]}],"sheets":[{"file":"WaterSide_fleet_gangway0_s6_0.png","width":3689,"height":916,"rgbaSha256":"37795bb870ad82f4b3fa1e0d4c418266a9317770e44da46532b4050dcd1bf5a5"}],"modelKey":"harbour:h5_fleet_gangway0_s6","cellSize":[527,458]}'
+    BoundsMin:
+      x: -0.625
+      y: -16.238841
+      z: -4.41936
+    BoundsMax:
+      x: 0.625
+      y: 0.22
+      z: 1.023247
+    Frames:
+    - Sprite:
+        fileID: 2780651893688696775
+        guid: cca04f87d668a42c216188b8a0c1ac77
+        type: 3
+      RigDir: 0
+      ShowFaces: '0'
+      BearingDeg: 0
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 50
+        y: 468
+      NativePivot:
+        x: 24
+        y: 30
+      Crop:
+        x: 4
+        y: 5
+      Pivot:
+        x: 20
+        y: 25
+    - Sprite:
+        fileID: 5764878052060828596
+        guid: cca04f87d668a42c216188b8a0c1ac77
+        type: 3
+      RigDir: 7
+      ShowFaces: '7'
+      BearingDeg: 315
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 409
+        y: 390
+      NativePivot:
+        x: 385
+        y: 38
+      Crop:
+        x: 6
+        y: 4
+      Pivot:
+        x: 379
+        y: 34
+    - Sprite:
+        fileID: 6249953041228363326
+        guid: cca04f87d668a42c216188b8a0c1ac77
+        type: 3
+      RigDir: 6
+      ShowFaces: '6'
+      BearingDeg: 270
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 536
+        y: 168
+      NativePivot:
+        x: 524
+        y: 42
+      Crop:
+        x: 4
+        y: 5
+      Pivot:
+        x: 520
+        y: 37
+    - Sprite:
+        fileID: 1289750713866343578
+        guid: cca04f87d668a42c216188b8a0c1ac77
+        type: 3
+      RigDir: 5
+      ShowFaces: '5'
+      BearingDeg: 225
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 409
+        y: 192
+      NativePivot:
+        x: 385
+        y: 169
+      Crop:
+        x: 6
+        y: 5
+      Pivot:
+        x: 379
+        y: 164
+    - Sprite:
+        fileID: 3137250000652111050
+        guid: cca04f87d668a42c216188b8a0c1ac77
+        type: 3
+      RigDir: 4
+      ShowFaces: '4'
+      BearingDeg: 180
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 50
+        y: 269
+      NativePivot:
+        x: 24
+        y: 255
+      Crop:
+        x: 4
+        y: 4
+      Pivot:
+        x: 20
+        y: 251
+    - Sprite:
+        fileID: 5518566190394029587
+        guid: cca04f87d668a42c216188b8a0c1ac77
+        type: 3
+      RigDir: 3
+      ShowFaces: '3'
+      BearingDeg: 135
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 409
+        y: 192
+      NativePivot:
+        x: 24
+        y: 169
+      Crop:
+        x: 5
+        y: 5
+      Pivot:
+        x: 19
+        y: 164
+    - Sprite:
+        fileID: 6722971223918750436
+        guid: cca04f87d668a42c216188b8a0c1ac77
+        type: 3
+      RigDir: 2
+      ShowFaces: '2'
+      BearingDeg: 90
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 536
+        y: 168
+      NativePivot:
+        x: 12
+        y: 42
+      Crop:
+        x: 5
+        y: 5
+      Pivot:
+        x: 7
+        y: 37
+    - Sprite:
+        fileID: 3734157600986084074
+        guid: cca04f87d668a42c216188b8a0c1ac77
+        type: 3
+      RigDir: 1
+      ShowFaces: '1'
+      BearingDeg: 45
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 409
+        y: 390
+      NativePivot:
+        x: 24
+        y: 38
+      Crop:
+        x: 5
+        y: 4
+      Pivot:
+        x: 19
+        y: 34
+    Anchors: []
+    Colliders: []
+  - Name: gangway0_s7
+    BakedOptionsJson: '{"module": "fleet_gangway0_s7"}'
+    GameplayJson: '{"key":"fleet_gangway0_s7","harbour":"fleet","name":"gangway0_s7","at":[109.7,86],"elevation":3.3999999999999995,"gangway":{"id":"gangway0","step":7,"drop":4.6,"hinge":[109.7,86],"landing":[109.7,70.435],"width":1.24,"length":16.3,"floatModule":"fingerA"},"bounds":{"min":[-0.625,-16.087455,-4.969079],"max":[0.625,0.22,1.023024]},"frames":[{"frame":0,"dir":0,"file":"WaterSide_fleet_gangway0_s7_0.png","rect":[0,469,522,469],"native":[50,478],"nativePivot":[24,30],"crop":[4,5],"pivot":[20,25]},{"frame":1,"dir":7,"file":"WaterSide_fleet_gangway0_s7_0.png","rect":[522,469,522,469],"native":[405,401],"nativePivot":[381,38],"crop":[5,4],"pivot":[376,34]},{"frame":2,"dir":6,"file":"WaterSide_fleet_gangway0_s7_0.png","rect":[1044,469,522,469],"native":[531,181],"nativePivot":[519,42],"crop":[4,5],"pivot":[515,37]},{"frame":3,"dir":5,"file":"WaterSide_fleet_gangway0_s7_0.png","rect":[1566,469,522,469],"native":[405,176],"nativePivot":[381,153],"crop":[5,4],"pivot":[376,149]},{"frame":4,"dir":4,"file":"WaterSide_fleet_gangway0_s7_0.png","rect":[2088,469,522,469],"native":[50,253],"nativePivot":[24,239],"crop":[4,5],"pivot":[20,234]},{"frame":5,"dir":3,"file":"WaterSide_fleet_gangway0_s7_0.png","rect":[2610,469,522,469],"native":[405,176],"nativePivot":[24,153],"crop":[5,4],"pivot":[19,149]},{"frame":6,"dir":2,"file":"WaterSide_fleet_gangway0_s7_0.png","rect":[3132,469,522,469],"native":[531,181],"nativePivot":[12,42],"crop":[5,5],"pivot":[7,37]},{"frame":7,"dir":1,"file":"WaterSide_fleet_gangway0_s7_0.png","rect":[0,0,522,469],"native":[405,401],"nativePivot":[24,38],"crop":[5,4],"pivot":[19,34]}],"sheets":[{"file":"WaterSide_fleet_gangway0_s7_0.png","width":3654,"height":938,"rgbaSha256":"40da60234c23eafa51d1b6667f9af3ba86d14781950bb308adff1ff6189b1c0a"}],"modelKey":"harbour:h5_fleet_gangway0_s7","cellSize":[522,469]}'
+    BoundsMin:
+      x: -0.625
+      y: -16.087455
+      z: -4.969079
+    BoundsMax:
+      x: 0.625
+      y: 0.22
+      z: 1.023024
+    Frames:
+    - Sprite:
+        fileID: 2464128642865036519
+        guid: 6706731ae4bcbc385e28daf5117eb282
+        type: 3
+      RigDir: 0
+      ShowFaces: '0'
+      BearingDeg: 0
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 50
+        y: 478
+      NativePivot:
+        x: 24
+        y: 30
+      Crop:
+        x: 4
+        y: 5
+      Pivot:
+        x: 20
+        y: 25
+    - Sprite:
+        fileID: 5463715404960587610
+        guid: 6706731ae4bcbc385e28daf5117eb282
+        type: 3
+      RigDir: 7
+      ShowFaces: '7'
+      BearingDeg: 315
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 405
+        y: 401
+      NativePivot:
+        x: 381
+        y: 38
+      Crop:
+        x: 5
+        y: 4
+      Pivot:
+        x: 376
+        y: 34
+    - Sprite:
+        fileID: 9011003790119683582
+        guid: 6706731ae4bcbc385e28daf5117eb282
+        type: 3
+      RigDir: 6
+      ShowFaces: '6'
+      BearingDeg: 270
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 531
+        y: 181
+      NativePivot:
+        x: 519
+        y: 42
+      Crop:
+        x: 4
+        y: 5
+      Pivot:
+        x: 515
+        y: 37
+    - Sprite:
+        fileID: 250856282888847769
+        guid: 6706731ae4bcbc385e28daf5117eb282
+        type: 3
+      RigDir: 5
+      ShowFaces: '5'
+      BearingDeg: 225
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 405
+        y: 176
+      NativePivot:
+        x: 381
+        y: 153
+      Crop:
+        x: 5
+        y: 4
+      Pivot:
+        x: 376
+        y: 149
+    - Sprite:
+        fileID: 148654934014653639
+        guid: 6706731ae4bcbc385e28daf5117eb282
+        type: 3
+      RigDir: 4
+      ShowFaces: '4'
+      BearingDeg: 180
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 50
+        y: 253
+      NativePivot:
+        x: 24
+        y: 239
+      Crop:
+        x: 4
+        y: 5
+      Pivot:
+        x: 20
+        y: 234
+    - Sprite:
+        fileID: 56062356093819209
+        guid: 6706731ae4bcbc385e28daf5117eb282
+        type: 3
+      RigDir: 3
+      ShowFaces: '3'
+      BearingDeg: 135
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 405
+        y: 176
+      NativePivot:
+        x: 24
+        y: 153
+      Crop:
+        x: 5
+        y: 4
+      Pivot:
+        x: 19
+        y: 149
+    - Sprite:
+        fileID: 9129739902873066151
+        guid: 6706731ae4bcbc385e28daf5117eb282
+        type: 3
+      RigDir: 2
+      ShowFaces: '2'
+      BearingDeg: 90
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 531
+        y: 181
+      NativePivot:
+        x: 12
+        y: 42
+      Crop:
+        x: 5
+        y: 5
+      Pivot:
+        x: 7
+        y: 37
+    - Sprite:
+        fileID: 5905067695541731155
+        guid: 6706731ae4bcbc385e28daf5117eb282
+        type: 3
+      RigDir: 1
+      ShowFaces: '1'
+      BearingDeg: 45
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 405
+        y: 401
+      NativePivot:
+        x: 24
+        y: 38
+      Crop:
+        x: 5
+        y: 4
+      Pivot:
+        x: 19
+        y: 34
+    Anchors: []
+    Colliders: []
+  - Name: gangway0_s8
+    BakedOptionsJson: '{"module": "fleet_gangway0_s8"}'
+    GameplayJson: '{"key":"fleet_gangway0_s8","harbour":"fleet","name":"gangway0_s8","at":[109.7,86],"elevation":3.3999999999999995,"gangway":{"id":"gangway0","step":8,"drop":5.15,"hinge":[109.7,86],"landing":[109.7,70.435],"width":1.24,"length":16.3,"floatModule":"fingerA"},"bounds":{"min":[-0.625,-15.915041,-5.518758],"max":[0.625,0.22,1.022771]},"frames":[{"frame":0,"dir":0,"file":"WaterSide_fleet_gangway0_s8_0.png","rect":[0,479,516,479],"native":[50,488],"nativePivot":[24,30],"crop":[4,5],"pivot":[20,25]},{"frame":1,"dir":7,"file":"WaterSide_fleet_gangway0_s8_0.png","rect":[516,479,516,479],"native":[401,412],"nativePivot":[377,38],"crop":[4,4],"pivot":[373,34]},{"frame":2,"dir":6,"file":"WaterSide_fleet_gangway0_s8_0.png","rect":[1032,479,516,479],"native":[526,195],"nativePivot":[514,42],"crop":[5,5],"pivot":[509,37]},{"frame":3,"dir":5,"file":"WaterSide_fleet_gangway0_s8_0.png","rect":[1548,479,516,479],"native":[401,160],"nativePivot":[377,137],"crop":[4,4],"pivot":[373,133]},{"frame":4,"dir":4,"file":"WaterSide_fleet_gangway0_s8_0.png","rect":[2064,479,516,479],"native":[50,236],"nativePivot":[24,222],"crop":[4,5],"pivot":[20,217]},{"frame":5,"dir":3,"file":"WaterSide_fleet_gangway0_s8_0.png","rect":[2580,479,516,479],"native":[401,160],"nativePivot":[24,137],"crop":[5,4],"pivot":[19,133]},{"frame":6,"dir":2,"file":"WaterSide_fleet_gangway0_s8_0.png","rect":[3096,479,516,479],"native":[526,195],"nativePivot":[12,42],"crop":[5,5],"pivot":[7,37]},{"frame":7,"dir":1,"file":"WaterSide_fleet_gangway0_s8_0.png","rect":[0,0,516,479],"native":[401,412],"nativePivot":[24,38],"crop":[5,4],"pivot":[19,34]}],"sheets":[{"file":"WaterSide_fleet_gangway0_s8_0.png","width":3612,"height":958,"rgbaSha256":"c5c5f3b400364cdbab6d7a3609ef86d732f2fd3f11bb7cd2c812bf0ab6a4eb31"}],"modelKey":"harbour:h5_fleet_gangway0_s8","cellSize":[516,479]}'
+    BoundsMin:
+      x: -0.625
+      y: -15.915041
+      z: -5.518758
+    BoundsMax:
+      x: 0.625
+      y: 0.22
+      z: 1.022771
+    Frames:
+    - Sprite:
+        fileID: 2227585315069856777
+        guid: 49d97016c850e216f98abb92e124b344
+        type: 3
+      RigDir: 0
+      ShowFaces: '0'
+      BearingDeg: 0
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 50
+        y: 488
+      NativePivot:
+        x: 24
+        y: 30
+      Crop:
+        x: 4
+        y: 5
+      Pivot:
+        x: 20
+        y: 25
+    - Sprite:
+        fileID: 138858866860873342
+        guid: 49d97016c850e216f98abb92e124b344
+        type: 3
+      RigDir: 7
+      ShowFaces: '7'
+      BearingDeg: 315
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 401
+        y: 412
+      NativePivot:
+        x: 377
+        y: 38
+      Crop:
+        x: 4
+        y: 4
+      Pivot:
+        x: 373
+        y: 34
+    - Sprite:
+        fileID: 2353268968686468501
+        guid: 49d97016c850e216f98abb92e124b344
+        type: 3
+      RigDir: 6
+      ShowFaces: '6'
+      BearingDeg: 270
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 526
+        y: 195
+      NativePivot:
+        x: 514
+        y: 42
+      Crop:
+        x: 5
+        y: 5
+      Pivot:
+        x: 509
+        y: 37
+    - Sprite:
+        fileID: 5979971405750711798
+        guid: 49d97016c850e216f98abb92e124b344
+        type: 3
+      RigDir: 5
+      ShowFaces: '5'
+      BearingDeg: 225
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 401
+        y: 160
+      NativePivot:
+        x: 377
+        y: 137
+      Crop:
+        x: 4
+        y: 4
+      Pivot:
+        x: 373
+        y: 133
+    - Sprite:
+        fileID: 700984455124768222
+        guid: 49d97016c850e216f98abb92e124b344
+        type: 3
+      RigDir: 4
+      ShowFaces: '4'
+      BearingDeg: 180
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 50
+        y: 236
+      NativePivot:
+        x: 24
+        y: 222
+      Crop:
+        x: 4
+        y: 5
+      Pivot:
+        x: 20
+        y: 217
+    - Sprite:
+        fileID: 1653773313670577181
+        guid: 49d97016c850e216f98abb92e124b344
+        type: 3
+      RigDir: 3
+      ShowFaces: '3'
+      BearingDeg: 135
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 401
+        y: 160
+      NativePivot:
+        x: 24
+        y: 137
+      Crop:
+        x: 5
+        y: 4
+      Pivot:
+        x: 19
+        y: 133
+    - Sprite:
+        fileID: 199056522220716891
+        guid: 49d97016c850e216f98abb92e124b344
+        type: 3
+      RigDir: 2
+      ShowFaces: '2'
+      BearingDeg: 90
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 526
+        y: 195
+      NativePivot:
+        x: 12
+        y: 42
+      Crop:
+        x: 5
+        y: 5
+      Pivot:
+        x: 7
+        y: 37
+    - Sprite:
+        fileID: 8388141126962762139
+        guid: 49d97016c850e216f98abb92e124b344
+        type: 3
+      RigDir: 1
+      ShowFaces: '1'
+      BearingDeg: 45
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 401
+        y: 412
+      NativePivot:
+        x: 24
+        y: 38
+      Crop:
+        x: 5
+        y: 4
+      Pivot:
+        x: 19
+        y: 34
+    Anchors: []
+    Colliders: []
+  - Name: gangway1_s0
+    BakedOptionsJson: '{"module": "fleet_gangway1_s0"}'
+    GameplayJson: '{"key":"fleet_gangway1_s0","harbour":"fleet","name":"gangway1_s0","at":[142.3,86],"elevation":3.3999999999999995,"gangway":{"id":"gangway1","step":0,"drop":0.75,"hinge":[142.3,86],"landing":[142.3,70.435],"width":1.24,"length":16.3,"floatModule":"fingerB"},"bounds":{"min":[-0.625,-16.732736,-1.120279],"max":[0.625,0.22,1.023975]},"frames":[{"frame":0,"dir":0,"file":"WaterSide_fleet_gangway1_s0_0.png","rect":[0,388,542,388],"native":[50,397],"nativePivot":[24,30],"crop":[4,5],"pivot":[20,25]},{"frame":1,"dir":7,"file":"WaterSide_fleet_gangway1_s0_0.png","rect":[542,388,542,388],"native":[420,316],"nativePivot":[396,38],"crop":[5,4],"pivot":[391,34]},{"frame":2,"dir":6,"file":"WaterSide_fleet_gangway1_s0_0.png","rect":[1084,388,542,388],"native":[552,87],"nativePivot":[540,42],"crop":[5,5],"pivot":[535,37]},{"frame":3,"dir":5,"file":"WaterSide_fleet_gangway1_s0_0.png","rect":[1626,388,542,388],"native":[420,280],"nativePivot":[396,257],"crop":[5,5],"pivot":[391,252]},{"frame":4,"dir":4,"file":"WaterSide_fleet_gangway1_s0_0.png","rect":[2168,388,542,388],"native":[50,360],"nativePivot":[24,346],"crop":[4,4],"pivot":[20,342]},{"frame":5,"dir":3,"file":"WaterSide_fleet_gangway1_s0_0.png","rect":[2710,388,542,388],"native":[420,280],"nativePivot":[24,257],"crop":[5,5],"pivot":[19,252]},{"frame":6,"dir":2,"file":"WaterSide_fleet_gangway1_s0_0.png","rect":[3252,388,542,388],"native":[552,87],"nativePivot":[12,42],"crop":[5,5],"pivot":[7,37]},{"frame":7,"dir":1,"file":"WaterSide_fleet_gangway1_s0_0.png","rect":[0,0,542,388],"native":[420,316],"nativePivot":[24,38],"crop":[5,4],"pivot":[19,34]}],"sheets":[{"file":"WaterSide_fleet_gangway1_s0_0.png","width":3794,"height":776,"rgbaSha256":"b95bcd69b889585ea345bc523705b16763d32b10082c2f98249d92db7741a02d"}],"modelKey":"harbour:h5_fleet_gangway1_s0","cellSize":[542,388]}'
+    BoundsMin:
+      x: -0.625
+      y: -16.732736
+      z: -1.120279
+    BoundsMax:
+      x: 0.625
+      y: 0.22
+      z: 1.023975
+    Frames:
+    - Sprite:
+        fileID: 4801312586190406291
+        guid: 827a0f87df9ddf83da1882c75f796020
+        type: 3
+      RigDir: 0
+      ShowFaces: '0'
+      BearingDeg: 0
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 50
+        y: 397
+      NativePivot:
+        x: 24
+        y: 30
+      Crop:
+        x: 4
+        y: 5
+      Pivot:
+        x: 20
+        y: 25
+    - Sprite:
+        fileID: 812201967127051363
+        guid: 827a0f87df9ddf83da1882c75f796020
+        type: 3
+      RigDir: 7
+      ShowFaces: '7'
+      BearingDeg: 315
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 420
+        y: 316
+      NativePivot:
+        x: 396
+        y: 38
+      Crop:
+        x: 5
+        y: 4
+      Pivot:
+        x: 391
+        y: 34
+    - Sprite:
+        fileID: 8356182748044249322
+        guid: 827a0f87df9ddf83da1882c75f796020
+        type: 3
+      RigDir: 6
+      ShowFaces: '6'
+      BearingDeg: 270
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 552
+        y: 87
+      NativePivot:
+        x: 540
+        y: 42
+      Crop:
+        x: 5
+        y: 5
+      Pivot:
+        x: 535
+        y: 37
+    - Sprite:
+        fileID: 9013453640052850968
+        guid: 827a0f87df9ddf83da1882c75f796020
+        type: 3
+      RigDir: 5
+      ShowFaces: '5'
+      BearingDeg: 225
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 420
+        y: 280
+      NativePivot:
+        x: 396
+        y: 257
+      Crop:
+        x: 5
+        y: 5
+      Pivot:
+        x: 391
+        y: 252
+    - Sprite:
+        fileID: 218629076363180697
+        guid: 827a0f87df9ddf83da1882c75f796020
+        type: 3
+      RigDir: 4
+      ShowFaces: '4'
+      BearingDeg: 180
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 50
+        y: 360
+      NativePivot:
+        x: 24
+        y: 346
+      Crop:
+        x: 4
+        y: 4
+      Pivot:
+        x: 20
+        y: 342
+    - Sprite:
+        fileID: 8311027757842338360
+        guid: 827a0f87df9ddf83da1882c75f796020
+        type: 3
+      RigDir: 3
+      ShowFaces: '3'
+      BearingDeg: 135
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 420
+        y: 280
+      NativePivot:
+        x: 24
+        y: 257
+      Crop:
+        x: 5
+        y: 5
+      Pivot:
+        x: 19
+        y: 252
+    - Sprite:
+        fileID: 4651352483248411425
+        guid: 827a0f87df9ddf83da1882c75f796020
+        type: 3
+      RigDir: 2
+      ShowFaces: '2'
+      BearingDeg: 90
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 552
+        y: 87
+      NativePivot:
+        x: 12
+        y: 42
+      Crop:
+        x: 5
+        y: 5
+      Pivot:
+        x: 7
+        y: 37
+    - Sprite:
+        fileID: 4747647383363299791
+        guid: 827a0f87df9ddf83da1882c75f796020
+        type: 3
+      RigDir: 1
+      ShowFaces: '1'
+      BearingDeg: 45
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 420
+        y: 316
+      NativePivot:
+        x: 24
+        y: 38
+      Crop:
+        x: 5
+        y: 4
+      Pivot:
+        x: 19
+        y: 34
+    Anchors: []
+    Colliders: []
+  - Name: gangway1_s1
+    BakedOptionsJson: '{"module": "fleet_gangway1_s1"}'
+    GameplayJson: '{"key":"fleet_gangway1_s1","harbour":"fleet","name":"gangway1_s1","at":[142.3,86],"elevation":3.3999999999999995,"gangway":{"id":"gangway1","step":1,"drop":1.3,"hinge":[142.3,86],"landing":[142.3,70.435],"width":1.24,"length":16.3,"floatModule":"fingerB"},"bounds":{"min":[-0.625,-16.698077,-1.670214],"max":[0.625,0.22,1.023924]},"frames":[{"frame":0,"dir":0,"file":"WaterSide_fleet_gangway1_s1_0.png","rect":[0,400,541,400],"native":[50,410],"nativePivot":[24,30],"crop":[4,5],"pivot":[20,25]},{"frame":1,"dir":7,"file":"WaterSide_fleet_gangway1_s1_0.png","rect":[541,400,541,400],"native":[419,329],"nativePivot":[395,38],"crop":[5,4],"pivot":[390,34]},{"frame":2,"dir":6,"file":"WaterSide_fleet_gangway1_s1_0.png","rect":[1082,400,541,400],"native":[551,100],"nativePivot":[539,42],"crop":[5,5],"pivot":[534,37]},{"frame":3,"dir":5,"file":"WaterSide_fleet_gangway1_s1_0.png","rect":[1623,400,541,400],"native":[419,266],"nativePivot":[395,243],"crop":[5,5],"pivot":[390,238]},{"frame":4,"dir":4,"file":"WaterSide_fleet_gangway1_s1_0.png","rect":[2164,400,541,400],"native":[50,346],"nativePivot":[24,332],"crop":[4,4],"pivot":[20,328]},{"frame":5,"dir":3,"file":"WaterSide_fleet_gangway1_s1_0.png","rect":[2705,400,541,400],"native":[419,266],"nativePivot":[24,243],"crop":[5,5],"pivot":[19,238]},{"frame":6,"dir":2,"file":"WaterSide_fleet_gangway1_s1_0.png","rect":[3246,400,541,400],"native":[551,100],"nativePivot":[12,42],"crop":[5,5],"pivot":[7,37]},{"frame":7,"dir":1,"file":"WaterSide_fleet_gangway1_s1_0.png","rect":[0,0,541,400],"native":[419,329],"nativePivot":[24,38],"crop":[5,4],"pivot":[19,34]}],"sheets":[{"file":"WaterSide_fleet_gangway1_s1_0.png","width":3787,"height":800,"rgbaSha256":"3ef4d291a133a9009a307fdf32e7b866d9616a334e74a6000d0c4bb1bffe389b"}],"modelKey":"harbour:h5_fleet_gangway1_s1","cellSize":[541,400]}'
+    BoundsMin:
+      x: -0.625
+      y: -16.698077
+      z: -1.670214
+    BoundsMax:
+      x: 0.625
+      y: 0.22
+      z: 1.023924
+    Frames:
+    - Sprite:
+        fileID: 6650959111391645856
+        guid: d35d29960101a79b9f82ca0303720ad4
+        type: 3
+      RigDir: 0
+      ShowFaces: '0'
+      BearingDeg: 0
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 50
+        y: 410
+      NativePivot:
+        x: 24
+        y: 30
+      Crop:
+        x: 4
+        y: 5
+      Pivot:
+        x: 20
+        y: 25
+    - Sprite:
+        fileID: 5911013145497883570
+        guid: d35d29960101a79b9f82ca0303720ad4
+        type: 3
+      RigDir: 7
+      ShowFaces: '7'
+      BearingDeg: 315
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 419
+        y: 329
+      NativePivot:
+        x: 395
+        y: 38
+      Crop:
+        x: 5
+        y: 4
+      Pivot:
+        x: 390
+        y: 34
+    - Sprite:
+        fileID: 2022435553790358049
+        guid: d35d29960101a79b9f82ca0303720ad4
+        type: 3
+      RigDir: 6
+      ShowFaces: '6'
+      BearingDeg: 270
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 551
+        y: 100
+      NativePivot:
+        x: 539
+        y: 42
+      Crop:
+        x: 5
+        y: 5
+      Pivot:
+        x: 534
+        y: 37
+    - Sprite:
+        fileID: 1667381771389082511
+        guid: d35d29960101a79b9f82ca0303720ad4
+        type: 3
+      RigDir: 5
+      ShowFaces: '5'
+      BearingDeg: 225
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 419
+        y: 266
+      NativePivot:
+        x: 395
+        y: 243
+      Crop:
+        x: 5
+        y: 5
+      Pivot:
+        x: 390
+        y: 238
+    - Sprite:
+        fileID: 1775578208626726907
+        guid: d35d29960101a79b9f82ca0303720ad4
+        type: 3
+      RigDir: 4
+      ShowFaces: '4'
+      BearingDeg: 180
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 50
+        y: 346
+      NativePivot:
+        x: 24
+        y: 332
+      Crop:
+        x: 4
+        y: 4
+      Pivot:
+        x: 20
+        y: 328
+    - Sprite:
+        fileID: 9196230870809033052
+        guid: d35d29960101a79b9f82ca0303720ad4
+        type: 3
+      RigDir: 3
+      ShowFaces: '3'
+      BearingDeg: 135
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 419
+        y: 266
+      NativePivot:
+        x: 24
+        y: 243
+      Crop:
+        x: 5
+        y: 5
+      Pivot:
+        x: 19
+        y: 238
+    - Sprite:
+        fileID: 2127504965560494146
+        guid: d35d29960101a79b9f82ca0303720ad4
+        type: 3
+      RigDir: 2
+      ShowFaces: '2'
+      BearingDeg: 90
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 551
+        y: 100
+      NativePivot:
+        x: 12
+        y: 42
+      Crop:
+        x: 5
+        y: 5
+      Pivot:
+        x: 7
+        y: 37
+    - Sprite:
+        fileID: 7177590371074709728
+        guid: d35d29960101a79b9f82ca0303720ad4
+        type: 3
+      RigDir: 1
+      ShowFaces: '1'
+      BearingDeg: 45
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 419
+        y: 329
+      NativePivot:
+        x: 24
+        y: 38
+      Crop:
+        x: 5
+        y: 4
+      Pivot:
+        x: 19
+        y: 34
+    Anchors: []
+    Colliders: []
+  - Name: gangway1_s2
+    BakedOptionsJson: '{"module": "fleet_gangway1_s2"}'
+    GameplayJson: '{"key":"fleet_gangway1_s2","harbour":"fleet","name":"gangway1_s2","at":[142.3,86],"elevation":3.3999999999999995,"gangway":{"id":"gangway1","step":2,"drop":1.85,"hinge":[142.3,86],"landing":[142.3,70.435],"width":1.24,"length":16.3,"floatModule":"fingerB"},"bounds":{"min":[-0.625,-16.644675,-2.220115],"max":[0.625,0.22,1.023845]},"frames":[{"frame":0,"dir":0,"file":"WaterSide_fleet_gangway1_s2_0.png","rect":[0,413,540,413],"native":[50,422],"nativePivot":[24,30],"crop":[4,5],"pivot":[20,25]},{"frame":1,"dir":7,"file":"WaterSide_fleet_gangway1_s2_0.png","rect":[540,413,540,413],"native":[418,342],"nativePivot":[394,38],"crop":[5,4],"pivot":[389,34]},{"frame":2,"dir":6,"file":"WaterSide_fleet_gangway1_s2_0.png","rect":[1080,413,540,413],"native":[549,114],"nativePivot":[537,42],"crop":[4,5],"pivot":[533,37]},{"frame":3,"dir":5,"file":"WaterSide_fleet_gangway1_s2_0.png","rect":[1620,413,540,413],"native":[418,251],"nativePivot":[394,228],"crop":[5,4],"pivot":[389,224]},{"frame":4,"dir":4,"file":"WaterSide_fleet_gangway1_s2_0.png","rect":[2160,413,540,413],"native":[50,332],"nativePivot":[24,317],"crop":[4,4],"pivot":[20,313]},{"frame":5,"dir":3,"file":"WaterSide_fleet_gangway1_s2_0.png","rect":[2700,413,540,413],"native":[418,251],"nativePivot":[24,228],"crop":[5,4],"pivot":[19,224]},{"frame":6,"dir":2,"file":"WaterSide_fleet_gangway1_s2_0.png","rect":[3240,413,540,413],"native":[549,114],"nativePivot":[12,42],"crop":[5,5],"pivot":[7,37]},{"frame":7,"dir":1,"file":"WaterSide_fleet_gangway1_s2_0.png","rect":[0,0,540,413],"native":[418,342],"nativePivot":[24,38],"crop":[5,4],"pivot":[19,34]}],"sheets":[{"file":"WaterSide_fleet_gangway1_s2_0.png","width":3780,"height":826,"rgbaSha256":"91330b50b836b1fbd10745edc62e435bc33c94dc67e1639329442522e550c754"}],"modelKey":"harbour:h5_fleet_gangway1_s2","cellSize":[540,413]}'
+    BoundsMin:
+      x: -0.625
+      y: -16.644675
+      z: -2.220115
+    BoundsMax:
+      x: 0.625
+      y: 0.22
+      z: 1.023845
+    Frames:
+    - Sprite:
+        fileID: 6110958602053691139
+        guid: 339b4a3c9ebbe3bbcdf3bfcdb62f971b
+        type: 3
+      RigDir: 0
+      ShowFaces: '0'
+      BearingDeg: 0
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 50
+        y: 422
+      NativePivot:
+        x: 24
+        y: 30
+      Crop:
+        x: 4
+        y: 5
+      Pivot:
+        x: 20
+        y: 25
+    - Sprite:
+        fileID: 2134943019101754574
+        guid: 339b4a3c9ebbe3bbcdf3bfcdb62f971b
+        type: 3
+      RigDir: 7
+      ShowFaces: '7'
+      BearingDeg: 315
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 418
+        y: 342
+      NativePivot:
+        x: 394
+        y: 38
+      Crop:
+        x: 5
+        y: 4
+      Pivot:
+        x: 389
+        y: 34
+    - Sprite:
+        fileID: 1266312009115179288
+        guid: 339b4a3c9ebbe3bbcdf3bfcdb62f971b
+        type: 3
+      RigDir: 6
+      ShowFaces: '6'
+      BearingDeg: 270
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 549
+        y: 114
+      NativePivot:
+        x: 537
+        y: 42
+      Crop:
+        x: 4
+        y: 5
+      Pivot:
+        x: 533
+        y: 37
+    - Sprite:
+        fileID: 910456479583098191
+        guid: 339b4a3c9ebbe3bbcdf3bfcdb62f971b
+        type: 3
+      RigDir: 5
+      ShowFaces: '5'
+      BearingDeg: 225
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 418
+        y: 251
+      NativePivot:
+        x: 394
+        y: 228
+      Crop:
+        x: 5
+        y: 4
+      Pivot:
+        x: 389
+        y: 224
+    - Sprite:
+        fileID: 5437202152622364578
+        guid: 339b4a3c9ebbe3bbcdf3bfcdb62f971b
+        type: 3
+      RigDir: 4
+      ShowFaces: '4'
+      BearingDeg: 180
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 50
+        y: 332
+      NativePivot:
+        x: 24
+        y: 317
+      Crop:
+        x: 4
+        y: 4
+      Pivot:
+        x: 20
+        y: 313
+    - Sprite:
+        fileID: 8801532293896884151
+        guid: 339b4a3c9ebbe3bbcdf3bfcdb62f971b
+        type: 3
+      RigDir: 3
+      ShowFaces: '3'
+      BearingDeg: 135
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 418
+        y: 251
+      NativePivot:
+        x: 24
+        y: 228
+      Crop:
+        x: 5
+        y: 4
+      Pivot:
+        x: 19
+        y: 224
+    - Sprite:
+        fileID: 4906960493701461280
+        guid: 339b4a3c9ebbe3bbcdf3bfcdb62f971b
+        type: 3
+      RigDir: 2
+      ShowFaces: '2'
+      BearingDeg: 90
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 549
+        y: 114
+      NativePivot:
+        x: 12
+        y: 42
+      Crop:
+        x: 5
+        y: 5
+      Pivot:
+        x: 7
+        y: 37
+    - Sprite:
+        fileID: 2081556254950313648
+        guid: 339b4a3c9ebbe3bbcdf3bfcdb62f971b
+        type: 3
+      RigDir: 1
+      ShowFaces: '1'
+      BearingDeg: 45
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 418
+        y: 342
+      NativePivot:
+        x: 24
+        y: 38
+      Crop:
+        x: 5
+        y: 4
+      Pivot:
+        x: 19
+        y: 34
+    Anchors: []
+    Colliders: []
+  - Name: gangway1_s3
+    BakedOptionsJson: '{"module": "fleet_gangway1_s3"}'
+    GameplayJson: '{"key":"fleet_gangway1_s3","harbour":"fleet","name":"gangway1_s3","at":[142.3,86],"elevation":3.3999999999999995,"gangway":{"id":"gangway1","step":3,"drop":2.4,"hinge":[142.3,86],"landing":[142.3,70.435],"width":1.24,"length":16.3,"floatModule":"fingerB"},"bounds":{"min":[-0.625,-16.572345,-2.769981],"max":[0.625,0.22,1.023738]},"frames":[{"frame":0,"dir":0,"file":"WaterSide_fleet_gangway1_s3_0.png","rect":[0,425,537,425],"native":[50,434],"nativePivot":[24,30],"crop":[4,5],"pivot":[20,25]},{"frame":1,"dir":7,"file":"WaterSide_fleet_gangway1_s3_0.png","rect":[537,425,537,425],"native":[416,354],"nativePivot":[392,38],"crop":[4,4],"pivot":[388,34]},{"frame":2,"dir":6,"file":"WaterSide_fleet_gangway1_s3_0.png","rect":[1074,425,537,425],"native":[547,127],"nativePivot":[535,42],"crop":[5,5],"pivot":[530,37]},{"frame":3,"dir":5,"file":"WaterSide_fleet_gangway1_s3_0.png","rect":[1611,425,537,425],"native":[416,237],"nativePivot":[392,214],"crop":[5,4],"pivot":[387,210]},{"frame":4,"dir":4,"file":"WaterSide_fleet_gangway1_s3_0.png","rect":[2148,425,537,425],"native":[50,317],"nativePivot":[24,302],"crop":[4,4],"pivot":[20,298]},{"frame":5,"dir":3,"file":"WaterSide_fleet_gangway1_s3_0.png","rect":[2685,425,537,425],"native":[416,237],"nativePivot":[24,214],"crop":[5,4],"pivot":[19,210]},{"frame":6,"dir":2,"file":"WaterSide_fleet_gangway1_s3_0.png","rect":[3222,425,537,425],"native":[547,127],"nativePivot":[12,42],"crop":[5,5],"pivot":[7,37]},{"frame":7,"dir":1,"file":"WaterSide_fleet_gangway1_s3_0.png","rect":[0,0,537,425],"native":[416,354],"nativePivot":[24,38],"crop":[5,4],"pivot":[19,34]}],"sheets":[{"file":"WaterSide_fleet_gangway1_s3_0.png","width":3759,"height":850,"rgbaSha256":"56bb5d46f2ecc9ff0657fe685b2c00f14b7a3bd6859013b10a0cd8147408f4b4"}],"modelKey":"harbour:h5_fleet_gangway1_s3","cellSize":[537,425]}'
+    BoundsMin:
+      x: -0.625
+      y: -16.572345
+      z: -2.769981
+    BoundsMax:
+      x: 0.625
+      y: 0.22
+      z: 1.023738
+    Frames:
+    - Sprite:
+        fileID: 5973002822152624279
+        guid: 6db20259ca99155bf96b8d335cb00834
+        type: 3
+      RigDir: 0
+      ShowFaces: '0'
+      BearingDeg: 0
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 50
+        y: 434
+      NativePivot:
+        x: 24
+        y: 30
+      Crop:
+        x: 4
+        y: 5
+      Pivot:
+        x: 20
+        y: 25
+    - Sprite:
+        fileID: 4691008075825323498
+        guid: 6db20259ca99155bf96b8d335cb00834
+        type: 3
+      RigDir: 7
+      ShowFaces: '7'
+      BearingDeg: 315
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 416
+        y: 354
+      NativePivot:
+        x: 392
+        y: 38
+      Crop:
+        x: 4
+        y: 4
+      Pivot:
+        x: 388
+        y: 34
+    - Sprite:
+        fileID: 1521122182594924758
+        guid: 6db20259ca99155bf96b8d335cb00834
+        type: 3
+      RigDir: 6
+      ShowFaces: '6'
+      BearingDeg: 270
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 547
+        y: 127
+      NativePivot:
+        x: 535
+        y: 42
+      Crop:
+        x: 5
+        y: 5
+      Pivot:
+        x: 530
+        y: 37
+    - Sprite:
+        fileID: 2747978733552070978
+        guid: 6db20259ca99155bf96b8d335cb00834
+        type: 3
+      RigDir: 5
+      ShowFaces: '5'
+      BearingDeg: 225
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 416
+        y: 237
+      NativePivot:
+        x: 392
+        y: 214
+      Crop:
+        x: 5
+        y: 4
+      Pivot:
+        x: 387
+        y: 210
+    - Sprite:
+        fileID: 3406144136712252592
+        guid: 6db20259ca99155bf96b8d335cb00834
+        type: 3
+      RigDir: 4
+      ShowFaces: '4'
+      BearingDeg: 180
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 50
+        y: 317
+      NativePivot:
+        x: 24
+        y: 302
+      Crop:
+        x: 4
+        y: 4
+      Pivot:
+        x: 20
+        y: 298
+    - Sprite:
+        fileID: 428492872857152917
+        guid: 6db20259ca99155bf96b8d335cb00834
+        type: 3
+      RigDir: 3
+      ShowFaces: '3'
+      BearingDeg: 135
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 416
+        y: 237
+      NativePivot:
+        x: 24
+        y: 214
+      Crop:
+        x: 5
+        y: 4
+      Pivot:
+        x: 19
+        y: 210
+    - Sprite:
+        fileID: 4418289285364807662
+        guid: 6db20259ca99155bf96b8d335cb00834
+        type: 3
+      RigDir: 2
+      ShowFaces: '2'
+      BearingDeg: 90
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 547
+        y: 127
+      NativePivot:
+        x: 12
+        y: 42
+      Crop:
+        x: 5
+        y: 5
+      Pivot:
+        x: 7
+        y: 37
+    - Sprite:
+        fileID: 406106948577044099
+        guid: 6db20259ca99155bf96b8d335cb00834
+        type: 3
+      RigDir: 1
+      ShowFaces: '1'
+      BearingDeg: 45
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 416
+        y: 354
+      NativePivot:
+        x: 24
+        y: 38
+      Crop:
+        x: 5
+        y: 4
+      Pivot:
+        x: 19
+        y: 34
+    Anchors: []
+    Colliders: []
+  - Name: gangway1_s4
+    BakedOptionsJson: '{"module": "fleet_gangway1_s4"}'
+    GameplayJson: '{"key":"fleet_gangway1_s4","harbour":"fleet","name":"gangway1_s4","at":[142.3,86],"elevation":3.3999999999999995,"gangway":{"id":"gangway1","step":4,"drop":2.95,"hinge":[142.3,86],"landing":[142.3,70.435],"width":1.24,"length":16.3,"floatModule":"fingerB"},"bounds":{"min":[-0.625,-16.48083,-3.31981],"max":[0.625,0.22,1.023604]},"frames":[{"frame":0,"dir":0,"file":"WaterSide_fleet_gangway1_s4_0.png","rect":[0,436,534,436],"native":[50,446],"nativePivot":[24,30],"crop":[4,5],"pivot":[20,25]},{"frame":1,"dir":7,"file":"WaterSide_fleet_gangway1_s4_0.png","rect":[534,436,534,436],"native":[414,367],"nativePivot":[390,38],"crop":[5,4],"pivot":[385,34]},{"frame":2,"dir":6,"file":"WaterSide_fleet_gangway1_s4_0.png","rect":[1068,436,534,436],"native":[544,141],"nativePivot":[532,42],"crop":[5,5],"pivot":[527,37]},{"frame":3,"dir":5,"file":"WaterSide_fleet_gangway1_s4_0.png","rect":[1602,436,534,436],"native":[414,222],"nativePivot":[390,199],"crop":[4,4],"pivot":[386,195]},{"frame":4,"dir":4,"file":"WaterSide_fleet_gangway1_s4_0.png","rect":[2136,436,534,436],"native":[50,301],"nativePivot":[24,287],"crop":[4,4],"pivot":[20,283]},{"frame":5,"dir":3,"file":"WaterSide_fleet_gangway1_s4_0.png","rect":[2670,436,534,436],"native":[414,222],"nativePivot":[24,199],"crop":[5,4],"pivot":[19,195]},{"frame":6,"dir":2,"file":"WaterSide_fleet_gangway1_s4_0.png","rect":[3204,436,534,436],"native":[544,141],"nativePivot":[12,42],"crop":[5,5],"pivot":[7,37]},{"frame":7,"dir":1,"file":"WaterSide_fleet_gangway1_s4_0.png","rect":[0,0,534,436],"native":[414,367],"nativePivot":[24,38],"crop":[5,4],"pivot":[19,34]}],"sheets":[{"file":"WaterSide_fleet_gangway1_s4_0.png","width":3738,"height":872,"rgbaSha256":"6ccaec2da480751a4834a00c118575b4b2a776333c7eb8d58b85cc9327f5e98c"}],"modelKey":"harbour:h5_fleet_gangway1_s4","cellSize":[534,436]}'
+    BoundsMin:
+      x: -0.625
+      y: -16.48083
+      z: -3.31981
+    BoundsMax:
+      x: 0.625
+      y: 0.22
+      z: 1.023604
+    Frames:
+    - Sprite:
+        fileID: 2596235999038182592
+        guid: 7323d3d866440895b253ca139d80982a
+        type: 3
+      RigDir: 0
+      ShowFaces: '0'
+      BearingDeg: 0
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 50
+        y: 446
+      NativePivot:
+        x: 24
+        y: 30
+      Crop:
+        x: 4
+        y: 5
+      Pivot:
+        x: 20
+        y: 25
+    - Sprite:
+        fileID: 6326370980511002658
+        guid: 7323d3d866440895b253ca139d80982a
+        type: 3
+      RigDir: 7
+      ShowFaces: '7'
+      BearingDeg: 315
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 414
+        y: 367
+      NativePivot:
+        x: 390
+        y: 38
+      Crop:
+        x: 5
+        y: 4
+      Pivot:
+        x: 385
+        y: 34
+    - Sprite:
+        fileID: 1537432075414000747
+        guid: 7323d3d866440895b253ca139d80982a
+        type: 3
+      RigDir: 6
+      ShowFaces: '6'
+      BearingDeg: 270
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 544
+        y: 141
+      NativePivot:
+        x: 532
+        y: 42
+      Crop:
+        x: 5
+        y: 5
+      Pivot:
+        x: 527
+        y: 37
+    - Sprite:
+        fileID: 4753287017920755099
+        guid: 7323d3d866440895b253ca139d80982a
+        type: 3
+      RigDir: 5
+      ShowFaces: '5'
+      BearingDeg: 225
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 414
+        y: 222
+      NativePivot:
+        x: 390
+        y: 199
+      Crop:
+        x: 4
+        y: 4
+      Pivot:
+        x: 386
+        y: 195
+    - Sprite:
+        fileID: 5169579417426970847
+        guid: 7323d3d866440895b253ca139d80982a
+        type: 3
+      RigDir: 4
+      ShowFaces: '4'
+      BearingDeg: 180
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 50
+        y: 301
+      NativePivot:
+        x: 24
+        y: 287
+      Crop:
+        x: 4
+        y: 4
+      Pivot:
+        x: 20
+        y: 283
+    - Sprite:
+        fileID: 7978209468333815496
+        guid: 7323d3d866440895b253ca139d80982a
+        type: 3
+      RigDir: 3
+      ShowFaces: '3'
+      BearingDeg: 135
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 414
+        y: 222
+      NativePivot:
+        x: 24
+        y: 199
+      Crop:
+        x: 5
+        y: 4
+      Pivot:
+        x: 19
+        y: 195
+    - Sprite:
+        fileID: 3901139790641617129
+        guid: 7323d3d866440895b253ca139d80982a
+        type: 3
+      RigDir: 2
+      ShowFaces: '2'
+      BearingDeg: 90
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 544
+        y: 141
+      NativePivot:
+        x: 12
+        y: 42
+      Crop:
+        x: 5
+        y: 5
+      Pivot:
+        x: 7
+        y: 37
+    - Sprite:
+        fileID: 1332587481988754425
+        guid: 7323d3d866440895b253ca139d80982a
+        type: 3
+      RigDir: 1
+      ShowFaces: '1'
+      BearingDeg: 45
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 414
+        y: 367
+      NativePivot:
+        x: 24
+        y: 38
+      Crop:
+        x: 5
+        y: 4
+      Pivot:
+        x: 19
+        y: 34
+    Anchors: []
+    Colliders: []
+  - Name: gangway1_s5
+    BakedOptionsJson: '{"module": "fleet_gangway1_s5"}'
+    GameplayJson: '{"key":"fleet_gangway1_s5","harbour":"fleet","name":"gangway1_s5","at":[142.3,86],"elevation":3.3999999999999995,"gangway":{"id":"gangway1","step":5,"drop":3.5,"hinge":[142.3,86],"landing":[142.3,70.435],"width":1.24,"length":16.3,"floatModule":"fingerB"},"bounds":{"min":[-0.625,-16.369799,-3.869604],"max":[0.625,0.22,1.02344]},"frames":[{"frame":0,"dir":0,"file":"WaterSide_fleet_gangway1_s5_0.png","rect":[0,448,531,448],"native":[50,457],"nativePivot":[24,30],"crop":[4,5],"pivot":[20,25]},{"frame":1,"dir":7,"file":"WaterSide_fleet_gangway1_s5_0.png","rect":[531,448,531,448],"native":[412,378],"nativePivot":[388,38],"crop":[5,4],"pivot":[383,34]},{"frame":2,"dir":6,"file":"WaterSide_fleet_gangway1_s5_0.png","rect":[1062,448,531,448],"native":[540,154],"nativePivot":[528,42],"crop":[4,5],"pivot":[524,37]},{"frame":3,"dir":5,"file":"WaterSide_fleet_gangway1_s5_0.png","rect":[1593,448,531,448],"native":[412,207],"nativePivot":[388,184],"crop":[5,4],"pivot":[383,180]},{"frame":4,"dir":4,"file":"WaterSide_fleet_gangway1_s5_0.png","rect":[2124,448,531,448],"native":[50,286],"nativePivot":[24,271],"crop":[4,4],"pivot":[20,267]},{"frame":5,"dir":3,"file":"WaterSide_fleet_gangway1_s5_0.png","rect":[2655,448,531,448],"native":[412,207],"nativePivot":[24,184],"crop":[5,4],"pivot":[19,180]},{"frame":6,"dir":2,"file":"WaterSide_fleet_gangway1_s5_0.png","rect":[3186,448,531,448],"native":[540,154],"nativePivot":[12,42],"crop":[5,5],"pivot":[7,37]},{"frame":7,"dir":1,"file":"WaterSide_fleet_gangway1_s5_0.png","rect":[0,0,531,448],"native":[412,378],"nativePivot":[24,38],"crop":[5,4],"pivot":[19,34]}],"sheets":[{"file":"WaterSide_fleet_gangway1_s5_0.png","width":3717,"height":896,"rgbaSha256":"9a11855898d5b5227e8c5409110d73c7dc82bc40787cad63f94cf162f5aafea8"}],"modelKey":"harbour:h5_fleet_gangway1_s5","cellSize":[531,448]}'
+    BoundsMin:
+      x: -0.625
+      y: -16.369799
+      z: -3.869604
+    BoundsMax:
+      x: 0.625
+      y: 0.22
+      z: 1.02344
+    Frames:
+    - Sprite:
+        fileID: 2354680349750545092
+        guid: 02f018276a284195411ac44c7ef8c571
+        type: 3
+      RigDir: 0
+      ShowFaces: '0'
+      BearingDeg: 0
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 50
+        y: 457
+      NativePivot:
+        x: 24
+        y: 30
+      Crop:
+        x: 4
+        y: 5
+      Pivot:
+        x: 20
+        y: 25
+    - Sprite:
+        fileID: 4976818597403082245
+        guid: 02f018276a284195411ac44c7ef8c571
+        type: 3
+      RigDir: 7
+      ShowFaces: '7'
+      BearingDeg: 315
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 412
+        y: 378
+      NativePivot:
+        x: 388
+        y: 38
+      Crop:
+        x: 5
+        y: 4
+      Pivot:
+        x: 383
+        y: 34
+    - Sprite:
+        fileID: 1235898604677571344
+        guid: 02f018276a284195411ac44c7ef8c571
+        type: 3
+      RigDir: 6
+      ShowFaces: '6'
+      BearingDeg: 270
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 540
+        y: 154
+      NativePivot:
+        x: 528
+        y: 42
+      Crop:
+        x: 4
+        y: 5
+      Pivot:
+        x: 524
+        y: 37
+    - Sprite:
+        fileID: 8300410898434346820
+        guid: 02f018276a284195411ac44c7ef8c571
+        type: 3
+      RigDir: 5
+      ShowFaces: '5'
+      BearingDeg: 225
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 412
+        y: 207
+      NativePivot:
+        x: 388
+        y: 184
+      Crop:
+        x: 5
+        y: 4
+      Pivot:
+        x: 383
+        y: 180
+    - Sprite:
+        fileID: 3549524398983510528
+        guid: 02f018276a284195411ac44c7ef8c571
+        type: 3
+      RigDir: 4
+      ShowFaces: '4'
+      BearingDeg: 180
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 50
+        y: 286
+      NativePivot:
+        x: 24
+        y: 271
+      Crop:
+        x: 4
+        y: 4
+      Pivot:
+        x: 20
+        y: 267
+    - Sprite:
+        fileID: 9118148079682392795
+        guid: 02f018276a284195411ac44c7ef8c571
+        type: 3
+      RigDir: 3
+      ShowFaces: '3'
+      BearingDeg: 135
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 412
+        y: 207
+      NativePivot:
+        x: 24
+        y: 184
+      Crop:
+        x: 5
+        y: 4
+      Pivot:
+        x: 19
+        y: 180
+    - Sprite:
+        fileID: 6585149741802583189
+        guid: 02f018276a284195411ac44c7ef8c571
+        type: 3
+      RigDir: 2
+      ShowFaces: '2'
+      BearingDeg: 90
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 540
+        y: 154
+      NativePivot:
+        x: 12
+        y: 42
+      Crop:
+        x: 5
+        y: 5
+      Pivot:
+        x: 7
+        y: 37
+    - Sprite:
+        fileID: 8785642539272255079
+        guid: 02f018276a284195411ac44c7ef8c571
+        type: 3
+      RigDir: 1
+      ShowFaces: '1'
+      BearingDeg: 45
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 412
+        y: 378
+      NativePivot:
+        x: 24
+        y: 38
+      Crop:
+        x: 5
+        y: 4
+      Pivot:
+        x: 19
+        y: 34
+    Anchors: []
+    Colliders: []
+  - Name: gangway1_s6
+    BakedOptionsJson: '{"module": "fleet_gangway1_s6"}'
+    GameplayJson: '{"key":"fleet_gangway1_s6","harbour":"fleet","name":"gangway1_s6","at":[142.3,86],"elevation":3.3999999999999995,"gangway":{"id":"gangway1","step":6,"drop":4.05,"hinge":[142.3,86],"landing":[142.3,70.435],"width":1.24,"length":16.3,"floatModule":"fingerB"},"bounds":{"min":[-0.625,-16.238841,-4.41936],"max":[0.625,0.22,1.023247]},"frames":[{"frame":0,"dir":0,"file":"WaterSide_fleet_gangway1_s6_0.png","rect":[0,458,527,458],"native":[50,468],"nativePivot":[24,30],"crop":[4,5],"pivot":[20,25]},{"frame":1,"dir":7,"file":"WaterSide_fleet_gangway1_s6_0.png","rect":[527,458,527,458],"native":[409,390],"nativePivot":[385,38],"crop":[6,4],"pivot":[379,34]},{"frame":2,"dir":6,"file":"WaterSide_fleet_gangway1_s6_0.png","rect":[1054,458,527,458],"native":[536,168],"nativePivot":[524,42],"crop":[4,5],"pivot":[520,37]},{"frame":3,"dir":5,"file":"WaterSide_fleet_gangway1_s6_0.png","rect":[1581,458,527,458],"native":[409,192],"nativePivot":[385,169],"crop":[6,5],"pivot":[379,164]},{"frame":4,"dir":4,"file":"WaterSide_fleet_gangway1_s6_0.png","rect":[2108,458,527,458],"native":[50,269],"nativePivot":[24,255],"crop":[4,4],"pivot":[20,251]},{"frame":5,"dir":3,"file":"WaterSide_fleet_gangway1_s6_0.png","rect":[2635,458,527,458],"native":[409,192],"nativePivot":[24,169],"crop":[5,5],"pivot":[19,164]},{"frame":6,"dir":2,"file":"WaterSide_fleet_gangway1_s6_0.png","rect":[3162,458,527,458],"native":[536,168],"nativePivot":[12,42],"crop":[5,5],"pivot":[7,37]},{"frame":7,"dir":1,"file":"WaterSide_fleet_gangway1_s6_0.png","rect":[0,0,527,458],"native":[409,390],"nativePivot":[24,38],"crop":[5,4],"pivot":[19,34]}],"sheets":[{"file":"WaterSide_fleet_gangway1_s6_0.png","width":3689,"height":916,"rgbaSha256":"37795bb870ad82f4b3fa1e0d4c418266a9317770e44da46532b4050dcd1bf5a5"}],"modelKey":"harbour:h5_fleet_gangway1_s6","cellSize":[527,458]}'
+    BoundsMin:
+      x: -0.625
+      y: -16.238841
+      z: -4.41936
+    BoundsMax:
+      x: 0.625
+      y: 0.22
+      z: 1.023247
+    Frames:
+    - Sprite:
+        fileID: 1255171352509694956
+        guid: 935936db805b6c9e3decf8bcbbc8fb0e
+        type: 3
+      RigDir: 0
+      ShowFaces: '0'
+      BearingDeg: 0
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 50
+        y: 468
+      NativePivot:
+        x: 24
+        y: 30
+      Crop:
+        x: 4
+        y: 5
+      Pivot:
+        x: 20
+        y: 25
+    - Sprite:
+        fileID: 5071229715622588503
+        guid: 935936db805b6c9e3decf8bcbbc8fb0e
+        type: 3
+      RigDir: 7
+      ShowFaces: '7'
+      BearingDeg: 315
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 409
+        y: 390
+      NativePivot:
+        x: 385
+        y: 38
+      Crop:
+        x: 6
+        y: 4
+      Pivot:
+        x: 379
+        y: 34
+    - Sprite:
+        fileID: 7643176082968976332
+        guid: 935936db805b6c9e3decf8bcbbc8fb0e
+        type: 3
+      RigDir: 6
+      ShowFaces: '6'
+      BearingDeg: 270
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 536
+        y: 168
+      NativePivot:
+        x: 524
+        y: 42
+      Crop:
+        x: 4
+        y: 5
+      Pivot:
+        x: 520
+        y: 37
+    - Sprite:
+        fileID: 50626069787065645
+        guid: 935936db805b6c9e3decf8bcbbc8fb0e
+        type: 3
+      RigDir: 5
+      ShowFaces: '5'
+      BearingDeg: 225
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 409
+        y: 192
+      NativePivot:
+        x: 385
+        y: 169
+      Crop:
+        x: 6
+        y: 5
+      Pivot:
+        x: 379
+        y: 164
+    - Sprite:
+        fileID: 7396600283443774981
+        guid: 935936db805b6c9e3decf8bcbbc8fb0e
+        type: 3
+      RigDir: 4
+      ShowFaces: '4'
+      BearingDeg: 180
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 50
+        y: 269
+      NativePivot:
+        x: 24
+        y: 255
+      Crop:
+        x: 4
+        y: 4
+      Pivot:
+        x: 20
+        y: 251
+    - Sprite:
+        fileID: 5357946994039286790
+        guid: 935936db805b6c9e3decf8bcbbc8fb0e
+        type: 3
+      RigDir: 3
+      ShowFaces: '3'
+      BearingDeg: 135
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 409
+        y: 192
+      NativePivot:
+        x: 24
+        y: 169
+      Crop:
+        x: 5
+        y: 5
+      Pivot:
+        x: 19
+        y: 164
+    - Sprite:
+        fileID: 6385689754746880748
+        guid: 935936db805b6c9e3decf8bcbbc8fb0e
+        type: 3
+      RigDir: 2
+      ShowFaces: '2'
+      BearingDeg: 90
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 536
+        y: 168
+      NativePivot:
+        x: 12
+        y: 42
+      Crop:
+        x: 5
+        y: 5
+      Pivot:
+        x: 7
+        y: 37
+    - Sprite:
+        fileID: 4098034390653897678
+        guid: 935936db805b6c9e3decf8bcbbc8fb0e
+        type: 3
+      RigDir: 1
+      ShowFaces: '1'
+      BearingDeg: 45
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 409
+        y: 390
+      NativePivot:
+        x: 24
+        y: 38
+      Crop:
+        x: 5
+        y: 4
+      Pivot:
+        x: 19
+        y: 34
+    Anchors: []
+    Colliders: []
+  - Name: gangway1_s7
+    BakedOptionsJson: '{"module": "fleet_gangway1_s7"}'
+    GameplayJson: '{"key":"fleet_gangway1_s7","harbour":"fleet","name":"gangway1_s7","at":[142.3,86],"elevation":3.3999999999999995,"gangway":{"id":"gangway1","step":7,"drop":4.6,"hinge":[142.3,86],"landing":[142.3,70.435],"width":1.24,"length":16.3,"floatModule":"fingerB"},"bounds":{"min":[-0.625,-16.087455,-4.969079],"max":[0.625,0.22,1.023024]},"frames":[{"frame":0,"dir":0,"file":"WaterSide_fleet_gangway1_s7_0.png","rect":[0,469,522,469],"native":[50,478],"nativePivot":[24,30],"crop":[4,5],"pivot":[20,25]},{"frame":1,"dir":7,"file":"WaterSide_fleet_gangway1_s7_0.png","rect":[522,469,522,469],"native":[405,401],"nativePivot":[381,38],"crop":[5,4],"pivot":[376,34]},{"frame":2,"dir":6,"file":"WaterSide_fleet_gangway1_s7_0.png","rect":[1044,469,522,469],"native":[531,181],"nativePivot":[519,42],"crop":[4,5],"pivot":[515,37]},{"frame":3,"dir":5,"file":"WaterSide_fleet_gangway1_s7_0.png","rect":[1566,469,522,469],"native":[405,176],"nativePivot":[381,153],"crop":[5,4],"pivot":[376,149]},{"frame":4,"dir":4,"file":"WaterSide_fleet_gangway1_s7_0.png","rect":[2088,469,522,469],"native":[50,253],"nativePivot":[24,239],"crop":[4,5],"pivot":[20,234]},{"frame":5,"dir":3,"file":"WaterSide_fleet_gangway1_s7_0.png","rect":[2610,469,522,469],"native":[405,176],"nativePivot":[24,153],"crop":[5,4],"pivot":[19,149]},{"frame":6,"dir":2,"file":"WaterSide_fleet_gangway1_s7_0.png","rect":[3132,469,522,469],"native":[531,181],"nativePivot":[12,42],"crop":[5,5],"pivot":[7,37]},{"frame":7,"dir":1,"file":"WaterSide_fleet_gangway1_s7_0.png","rect":[0,0,522,469],"native":[405,401],"nativePivot":[24,38],"crop":[5,4],"pivot":[19,34]}],"sheets":[{"file":"WaterSide_fleet_gangway1_s7_0.png","width":3654,"height":938,"rgbaSha256":"40da60234c23eafa51d1b6667f9af3ba86d14781950bb308adff1ff6189b1c0a"}],"modelKey":"harbour:h5_fleet_gangway1_s7","cellSize":[522,469]}'
+    BoundsMin:
+      x: -0.625
+      y: -16.087455
+      z: -4.969079
+    BoundsMax:
+      x: 0.625
+      y: 0.22
+      z: 1.023024
+    Frames:
+    - Sprite:
+        fileID: 3834967534022676848
+        guid: 5476dc5588a64229404d81353bd78eed
+        type: 3
+      RigDir: 0
+      ShowFaces: '0'
+      BearingDeg: 0
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 50
+        y: 478
+      NativePivot:
+        x: 24
+        y: 30
+      Crop:
+        x: 4
+        y: 5
+      Pivot:
+        x: 20
+        y: 25
+    - Sprite:
+        fileID: 1784511998669166334
+        guid: 5476dc5588a64229404d81353bd78eed
+        type: 3
+      RigDir: 7
+      ShowFaces: '7'
+      BearingDeg: 315
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 405
+        y: 401
+      NativePivot:
+        x: 381
+        y: 38
+      Crop:
+        x: 5
+        y: 4
+      Pivot:
+        x: 376
+        y: 34
+    - Sprite:
+        fileID: 8650812786499431569
+        guid: 5476dc5588a64229404d81353bd78eed
+        type: 3
+      RigDir: 6
+      ShowFaces: '6'
+      BearingDeg: 270
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 531
+        y: 181
+      NativePivot:
+        x: 519
+        y: 42
+      Crop:
+        x: 4
+        y: 5
+      Pivot:
+        x: 515
+        y: 37
+    - Sprite:
+        fileID: 632025693333843973
+        guid: 5476dc5588a64229404d81353bd78eed
+        type: 3
+      RigDir: 5
+      ShowFaces: '5'
+      BearingDeg: 225
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 405
+        y: 176
+      NativePivot:
+        x: 381
+        y: 153
+      Crop:
+        x: 5
+        y: 4
+      Pivot:
+        x: 376
+        y: 149
+    - Sprite:
+        fileID: 8742536295829257658
+        guid: 5476dc5588a64229404d81353bd78eed
+        type: 3
+      RigDir: 4
+      ShowFaces: '4'
+      BearingDeg: 180
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 50
+        y: 253
+      NativePivot:
+        x: 24
+        y: 239
+      Crop:
+        x: 4
+        y: 5
+      Pivot:
+        x: 20
+        y: 234
+    - Sprite:
+        fileID: 8299701625991686220
+        guid: 5476dc5588a64229404d81353bd78eed
+        type: 3
+      RigDir: 3
+      ShowFaces: '3'
+      BearingDeg: 135
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 405
+        y: 176
+      NativePivot:
+        x: 24
+        y: 153
+      Crop:
+        x: 5
+        y: 4
+      Pivot:
+        x: 19
+        y: 149
+    - Sprite:
+        fileID: 7864973446339447099
+        guid: 5476dc5588a64229404d81353bd78eed
+        type: 3
+      RigDir: 2
+      ShowFaces: '2'
+      BearingDeg: 90
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 531
+        y: 181
+      NativePivot:
+        x: 12
+        y: 42
+      Crop:
+        x: 5
+        y: 5
+      Pivot:
+        x: 7
+        y: 37
+    - Sprite:
+        fileID: 2163173480971888789
+        guid: 5476dc5588a64229404d81353bd78eed
+        type: 3
+      RigDir: 1
+      ShowFaces: '1'
+      BearingDeg: 45
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 405
+        y: 401
+      NativePivot:
+        x: 24
+        y: 38
+      Crop:
+        x: 5
+        y: 4
+      Pivot:
+        x: 19
+        y: 34
+    Anchors: []
+    Colliders: []
+  - Name: gangway1_s8
+    BakedOptionsJson: '{"module": "fleet_gangway1_s8"}'
+    GameplayJson: '{"key":"fleet_gangway1_s8","harbour":"fleet","name":"gangway1_s8","at":[142.3,86],"elevation":3.3999999999999995,"gangway":{"id":"gangway1","step":8,"drop":5.15,"hinge":[142.3,86],"landing":[142.3,70.435],"width":1.24,"length":16.3,"floatModule":"fingerB"},"bounds":{"min":[-0.625,-15.915041,-5.518758],"max":[0.625,0.22,1.022771]},"frames":[{"frame":0,"dir":0,"file":"WaterSide_fleet_gangway1_s8_0.png","rect":[0,479,516,479],"native":[50,488],"nativePivot":[24,30],"crop":[4,5],"pivot":[20,25]},{"frame":1,"dir":7,"file":"WaterSide_fleet_gangway1_s8_0.png","rect":[516,479,516,479],"native":[401,412],"nativePivot":[377,38],"crop":[4,4],"pivot":[373,34]},{"frame":2,"dir":6,"file":"WaterSide_fleet_gangway1_s8_0.png","rect":[1032,479,516,479],"native":[526,195],"nativePivot":[514,42],"crop":[5,5],"pivot":[509,37]},{"frame":3,"dir":5,"file":"WaterSide_fleet_gangway1_s8_0.png","rect":[1548,479,516,479],"native":[401,160],"nativePivot":[377,137],"crop":[4,4],"pivot":[373,133]},{"frame":4,"dir":4,"file":"WaterSide_fleet_gangway1_s8_0.png","rect":[2064,479,516,479],"native":[50,236],"nativePivot":[24,222],"crop":[4,5],"pivot":[20,217]},{"frame":5,"dir":3,"file":"WaterSide_fleet_gangway1_s8_0.png","rect":[2580,479,516,479],"native":[401,160],"nativePivot":[24,137],"crop":[5,4],"pivot":[19,133]},{"frame":6,"dir":2,"file":"WaterSide_fleet_gangway1_s8_0.png","rect":[3096,479,516,479],"native":[526,195],"nativePivot":[12,42],"crop":[5,5],"pivot":[7,37]},{"frame":7,"dir":1,"file":"WaterSide_fleet_gangway1_s8_0.png","rect":[0,0,516,479],"native":[401,412],"nativePivot":[24,38],"crop":[5,4],"pivot":[19,34]}],"sheets":[{"file":"WaterSide_fleet_gangway1_s8_0.png","width":3612,"height":958,"rgbaSha256":"c5c5f3b400364cdbab6d7a3609ef86d732f2fd3f11bb7cd2c812bf0ab6a4eb31"}],"modelKey":"harbour:h5_fleet_gangway1_s8","cellSize":[516,479]}'
+    BoundsMin:
+      x: -0.625
+      y: -15.915041
+      z: -5.518758
+    BoundsMax:
+      x: 0.625
+      y: 0.22
+      z: 1.022771
+    Frames:
+    - Sprite:
+        fileID: 1530128362439028784
+        guid: 0be3a782ce6eb94dd72caaf688c2ddf9
+        type: 3
+      RigDir: 0
+      ShowFaces: '0'
+      BearingDeg: 0
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 50
+        y: 488
+      NativePivot:
+        x: 24
+        y: 30
+      Crop:
+        x: 4
+        y: 5
+      Pivot:
+        x: 20
+        y: 25
+    - Sprite:
+        fileID: 1093437206833430283
+        guid: 0be3a782ce6eb94dd72caaf688c2ddf9
+        type: 3
+      RigDir: 7
+      ShowFaces: '7'
+      BearingDeg: 315
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 401
+        y: 412
+      NativePivot:
+        x: 377
+        y: 38
+      Crop:
+        x: 4
+        y: 4
+      Pivot:
+        x: 373
+        y: 34
+    - Sprite:
+        fileID: 5937942442460457841
+        guid: 0be3a782ce6eb94dd72caaf688c2ddf9
+        type: 3
+      RigDir: 6
+      ShowFaces: '6'
+      BearingDeg: 270
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 526
+        y: 195
+      NativePivot:
+        x: 514
+        y: 42
+      Crop:
+        x: 5
+        y: 5
+      Pivot:
+        x: 509
+        y: 37
+    - Sprite:
+        fileID: 2187299396712698924
+        guid: 0be3a782ce6eb94dd72caaf688c2ddf9
+        type: 3
+      RigDir: 5
+      ShowFaces: '5'
+      BearingDeg: 225
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 401
+        y: 160
+      NativePivot:
+        x: 377
+        y: 137
+      Crop:
+        x: 4
+        y: 4
+      Pivot:
+        x: 373
+        y: 133
+    - Sprite:
+        fileID: 6511588970078078872
+        guid: 0be3a782ce6eb94dd72caaf688c2ddf9
+        type: 3
+      RigDir: 4
+      ShowFaces: '4'
+      BearingDeg: 180
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 50
+        y: 236
+      NativePivot:
+        x: 24
+        y: 222
+      Crop:
+        x: 4
+        y: 5
+      Pivot:
+        x: 20
+        y: 217
+    - Sprite:
+        fileID: 6993891954760464506
+        guid: 0be3a782ce6eb94dd72caaf688c2ddf9
+        type: 3
+      RigDir: 3
+      ShowFaces: '3'
+      BearingDeg: 135
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 401
+        y: 160
+      NativePivot:
+        x: 24
+        y: 137
+      Crop:
+        x: 5
+        y: 4
+      Pivot:
+        x: 19
+        y: 133
+    - Sprite:
+        fileID: 2137672580735156798
+        guid: 0be3a782ce6eb94dd72caaf688c2ddf9
+        type: 3
+      RigDir: 2
+      ShowFaces: '2'
+      BearingDeg: 90
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 526
+        y: 195
+      NativePivot:
+        x: 12
+        y: 42
+      Crop:
+        x: 5
+        y: 5
+      Pivot:
+        x: 7
+        y: 37
+    - Sprite:
+        fileID: 3641028853691102209
+        guid: 0be3a782ce6eb94dd72caaf688c2ddf9
+        type: 3
+      RigDir: 1
+      ShowFaces: '1'
+      BearingDeg: 45
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 401
+        y: 412
+      NativePivot:
+        x: 24
+        y: 38
+      Crop:
+        x: 5
+        y: 4
+      Pivot:
+        x: 19
+        y: 34
+    Anchors: []
+    Colliders: []
+  HasVendor: 0
+  Vendor:
+    Seller: ''
+    At:
+      x: 0
+      y: 0
+      z: 0

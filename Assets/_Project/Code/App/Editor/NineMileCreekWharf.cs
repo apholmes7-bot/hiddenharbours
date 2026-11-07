@@ -229,18 +229,10 @@ namespace HiddenHarbours.App.Editor
         /// structure, with its own rule for how high it is (a ramp, not a height).</summary>
         public const string GangwaySurfaceId = "wharf.nine_mile_creek.gangway";
 
-        /// <summary>
-        /// The float's plan outline: the authored run (y = 70, x = 104 → 152) given the width the ART
-        /// draws it at — <see cref="NineMileCreekQuayFace.BakedRigFloatWidthMetres"/>, the wharf rig's
-        /// own float-family default. Taken from the kit rather than picked, because a walkable footprint
-        /// wider than the drawn dock is a player standing on water that merely looks solid.
-        /// </summary>
+        /// <summary>The working float footprint from the authored harbour register.</summary>
         public static Rect FloatFootprint()
         {
-            float width = NineMileCreekQuayFace.BakedRigFloatWidthMetres;
-            return new Rect(NineMileCreekMainland.FloatRunWestX,
-                            NineMileCreekMainland.FloatRunY - width * 0.5f,
-                            NineMileCreekMainland.FloatRunLengthMetres, width);
+            return NineMileCreekWharfWaterSide.WorkingFloat();
         }
 
         /// <summary>How far apart the bed is sampled when measuring what the float grounds on: one metre.
@@ -321,15 +313,13 @@ namespace HiddenHarbours.App.Editor
         /// </summary>
         public const float FloatCleatSpacingMetres = 5.5f;
 
+        /// <summary>Tie-offs on the working float south face, in the three registered resident berth slots.</summary>
         public static List<Vector2> FloatCleatPositions()
         {
             var list = new List<Vector2>();
-            float spacing = FloatCleatSpacingMetres;
-            float run = NineMileCreekMainland.FloatRunLengthMetres;
-            int count = Mathf.Max(1, Mathf.FloorToInt(run / spacing));
-            for (int i = 0; i < count; i++)
-                list.Add(new Vector2(NineMileCreekMainland.FloatRunWestX + spacing * (i + 0.5f),
-                                     NineMileCreekMainland.FloatRunY));
+            float face = FloatFootprint().yMin;
+            foreach (var row in NineMileCreekWharfWaterSide.FloatBoatRows())
+                list.Add(new Vector2(row.At.x, face));
             return list;
         }
 
@@ -492,43 +482,17 @@ namespace HiddenHarbours.App.Editor
         public static float FloatBerthOffsetMetres =>
             FloatFootprint().height * 0.5f + MooredStandoffMetres;
 
-        /// <summary>
-        /// The two places a boat can lie at float berth <paramref name="index"/> — one off each side of
-        /// the finger. Pure, so the layout can be asserted without a terrain or a scene.
-        ///
-        /// <para>A float has water on both sides and a real one is worked from both; which side a given
-        /// berth actually uses is not a taste question here but a depth one, and
-        /// <see cref="FloatBerthPos(int, ITidalTerrain)"/> measures it.</para>
-        /// </summary>
+        /// <summary>Compatibility view of a fixed registered berth. Both entries name the authored position.</summary>
         public static (Vector2 North, Vector2 South) FloatBerthSides(int index)
         {
-            var cleats = FloatCleatPositions();
-            if (cleats.Count == 0) return (Vector2.zero, Vector2.zero);
-            Vector2 cleat = cleats[Mathf.Clamp(index, 0, cleats.Count - 1)];
-            float off = FloatBerthOffsetMetres;
-            return (new Vector2(cleat.x, cleat.y + off), new Vector2(cleat.x, cleat.y - off));
+            Vector2 at = NineMileCreekWharfWaterSide.FloatBerth(index);
+            return (at, at);
         }
 
-        /// <summary>
-        /// ⭐ <b>WHICH SIDE OF THE FINGER SHE LIES ON, MEASURED</b> — the side of float berth
-        /// <paramref name="index"/> with more water under it.
-        ///
-        /// <para><b>It cannot be a constant, and the meander is why.</b> S1's lane does not run down the
-        /// float's own latitude — it wanders across it (y = 70 at the head, 67 at the southern swing,
-        /// 71 at the northern one), so the deeper side of the dock CHANGES ALONG HER LENGTH. Picking one
-        /// side for the whole run would berth some boats on the lane and some on its bank, and the ones
-        /// on the bank would be the ones that took the ground. Measured per berth off the same terrain
-        /// the float's own bed is measured off, this puts every boat on the water there actually is —
-        /// and puts them on BOTH sides of the finger, which is what the photograph shows.</para>
-        ///
-        /// <para>Ties go SOUTH, arbitrarily and harmlessly: with equal water either side the choice is
-        /// free, and a deterministic tie-break is what stops a rebuild from reshuffling the fleet.</para>
-        /// </summary>
+        /// <summary>The registered small-craft position. Depth is a refusal gate and never chooses another side.</summary>
         public static Vector2 FloatBerthPos(int index, ITidalTerrain terrain)
         {
-            (Vector2 north, Vector2 south) = FloatBerthSides(index);
-            if (terrain == null) return south;                  // no terrain, no claim: the authored side
-            return terrain.ElevationAt(north) < terrain.ElevationAt(south) ? north : south;
+            return NineMileCreekWharfWaterSide.FloatBerth(index);
         }
 
         /// <summary>The water over the bed at float berth <paramref name="index"/> at <b>spring low</b> —
@@ -580,20 +544,10 @@ namespace HiddenHarbours.App.Editor
         /// </summary>
         public static float WidestHalfBeamAFloatBerthCarries => MooredStandoffMetres;
 
-        /// <summary>
-        /// The compass heading a boat lying at the float points her bow.
-        ///
-        /// <para><b>DERIVED the same way the wall's is</b> — parallel to what she is tied to, pointing the
-        /// way she leaves. The float runs east–west, and the end that is NOT the brow's landing
-        /// (<see cref="GangwayFloatEnd"/>) is the seaward one, so that is the way her bow lies. Re-hinge
-        /// the gangway on the other end and the fleet turns round with it.</para>
-        /// </summary>
+        /// <summary>Heading of the registered small-craft rows, in the kit facing convention.</summary>
         public static float FloatMooredHeadingDegrees()
         {
-            Rect box = FloatFootprint();
-            float toEast = Mathf.Abs(box.xMax - GangwayFloatEnd.x);
-            float toWest = Mathf.Abs(GangwayFloatEnd.x - box.xMin);
-            return toEast > toWest ? 90f : 270f;
+            return StPetersLayerRefresh.KitDirHeading(NineMileCreekWharfWaterSide.FloatBoatRows()[0].Dir);
         }
 
         // =====================================================================================

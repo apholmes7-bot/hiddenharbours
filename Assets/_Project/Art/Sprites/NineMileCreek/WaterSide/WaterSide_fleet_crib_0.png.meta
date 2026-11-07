@@ -1,0 +1,393 @@
+fileFormatVersion: 2
+guid: a52c712d5cc71632c863b0215d83cec4
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 3311220279167630630
+    second: WaterSide_fleet_crib_0
+  - first:
+      213: 2767768619639629056
+    second: WaterSide_fleet_crib_1
+  - first:
+      213: 8615874822615592938
+    second: WaterSide_fleet_crib_2
+  - first:
+      213: 254616530040089951
+    second: WaterSide_fleet_crib_3
+  - first:
+      213: 945757524859205427
+    second: WaterSide_fleet_crib_4
+  - first:
+      213: 2418523399016711802
+    second: WaterSide_fleet_crib_5
+  - first:
+      213: 7809532664989233735
+    second: WaterSide_fleet_crib_6
+  - first:
+      213: 5210205662315052190
+    second: WaterSide_fleet_crib_7
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 4096
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot:
+    x: 0.5
+    y: 0.5
+  spritePixelsToUnits: 32
+  spriteBorder:
+    x: 0
+    y: 0
+    z: 0
+    w: 0
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 4096
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 4096
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 4096
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: WaterSide_fleet_crib_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 1842
+        width: 1084
+        height: 921
+      alignment: 9
+      pivot:
+        x: 0.5
+        y: 0.8631921824104234
+      border:
+        x: 0
+        y: 0
+        z: 0
+        w: 0
+      customData: ''
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 84f30a9490ac4434baebd9dfb5d42dfa
+      internalID: 3311220279167630630
+      vertices: []
+      indices: ''
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaterSide_fleet_crib_1
+      rect:
+        serializedVersion: 2
+        x: 1084
+        y: 1842
+        width: 1084
+        height: 921
+      alignment: 9
+      pivot:
+        x: 0.4603321033210332
+        y: 0.6536373507057547
+      border:
+        x: 0
+        y: 0
+        z: 0
+        w: 0
+      customData: ''
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0ab405ad038adc52bd929d4abcc7de83
+      internalID: 2767768619639629056
+      vertices: []
+      indices: ''
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaterSide_fleet_crib_2
+      rect:
+        serializedVersion: 2
+        x: 2168
+        y: 1842
+        width: 1084
+        height: 921
+      alignment: 9
+      pivot:
+        x: 0.1559040590405904
+        y: 0.6178067318132465
+      border:
+        x: 0
+        y: 0
+        z: 0
+        w: 0
+      customData: ''
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f326f2e132e1d964b594d57722d82800
+      internalID: 8615874822615592938
+      vertices: []
+      indices: ''
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaterSide_fleet_crib_3
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 921
+        width: 1084
+        height: 921
+      alignment: 9
+      pivot:
+        x: 0.4575645756457565
+        y: 0.6482084690553747
+      border:
+        x: 0
+        y: 0
+        z: 0
+        w: 0
+      customData: ''
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cce7335f0d0677e3566bef9b9eb5e070
+      internalID: 254616530040089951
+      vertices: []
+      indices: ''
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaterSide_fleet_crib_4
+      rect:
+        serializedVersion: 2
+        x: 1084
+        y: 921
+        width: 1084
+        height: 921
+      alignment: 9
+      pivot:
+        x: 0.5
+        y: 0.8501628664495113
+      border:
+        x: 0
+        y: 0
+        z: 0
+        w: 0
+      customData: ''
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8ae815f6759da9c07c7ddcb63f74e1cf
+      internalID: 945757524859205427
+      vertices: []
+      indices: ''
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaterSide_fleet_crib_5
+      rect:
+        serializedVersion: 2
+        x: 2168
+        y: 921
+        width: 1084
+        height: 921
+      alignment: 9
+      pivot:
+        x: 0.4575645756457565
+        y: 0.6482084690553747
+      border:
+        x: 0
+        y: 0
+        z: 0
+        w: 0
+      customData: ''
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 322296c712e3e9cef40280f1bf15c8c8
+      internalID: 2418523399016711802
+      vertices: []
+      indices: ''
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaterSide_fleet_crib_6
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 1084
+        height: 921
+      alignment: 9
+      pivot:
+        x: 0.15129151291512916
+        y: 0.6167209554831705
+      border:
+        x: 0
+        y: 0
+        z: 0
+        w: 0
+      customData: ''
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 03bca494f7202c3e0f22b04b38e5eac8
+      internalID: 7809532664989233735
+      vertices: []
+      indices: ''
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaterSide_fleet_crib_7
+      rect:
+        serializedVersion: 2
+        x: 1084
+        y: 0
+        width: 1084
+        height: 921
+      alignment: 9
+      pivot:
+        x: 0.4603321033210332
+        y: 0.6536373507057547
+      border:
+        x: 0
+        y: 0
+        z: 0
+        w: 0
+      customData: ''
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 005bf5bc8d37f918d58d7105fe3ae986
+      internalID: 5210205662315052190
+      vertices: []
+      indices: ''
+      edges: []
+      weights: []
+    outline: []
+    customData: ''
+    physicsShape: []
+    bones: []
+    spriteID: 3f431f8f57144e742b087f55e61507bc
+    internalID: 0
+    vertices: []
+    indices: ''
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      WaterSide_fleet_crib_0: 3311220279167630630
+      WaterSide_fleet_crib_1: 2767768619639629056
+      WaterSide_fleet_crib_2: 8615874822615592938
+      WaterSide_fleet_crib_3: 254616530040089951
+      WaterSide_fleet_crib_4: 945757524859205427
+      WaterSide_fleet_crib_5: 2418523399016711802
+      WaterSide_fleet_crib_6: 7809532664989233735
+      WaterSide_fleet_crib_7: 5210205662315052190
+  mipmapLimitGroupName: ''
+  pSDRemoveMatte: 0
+  userData: ''
+  assetBundleName: ''
+  assetBundleVariant: ''
+  textureCompression: 0
