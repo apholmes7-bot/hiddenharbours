@@ -1,9 +1,10 @@
 # Terrain edge strips — the lines a blend cannot draw
 
-**Status:** imported, not wired. The twelve PNGs are in the repo under
+**Status:** the St Peters hookup derives its shore addresses at load (implementation below, §7).
+The fifteen PNGs are in the repo under
 `Assets/_Project/Art/Terrain/Edges/` with their decal import settings pinned by
-`TerrainSplatBandPinTests`. Nothing samples them yet. This note is the design so the
-next person does not have to re-derive it from the kit README.
+`TerrainSplatBandPinTests` and `TerrainShoreLinesTests`. This note keeps the kit's addressing
+contract alongside the first region's implementation.
 
 **Lane:** art-pipeline (the strip array + shader) with a `gameplay-systems` dependency —
 the shoreline spline is the part that does not exist yet. See §3.
@@ -117,3 +118,43 @@ names it as the obvious candidate. Re-bake with `TB3.bakeEdge` if it is wanted;
 
 **Kit source:** `docs/art/rigs/terrain/` — `README.md` §6, `edges.json`, `edges.jpg`
 (contact sheet: every strip at Lo · base · Hi over its usual neighbours), `terrainBake3.js`.
+
+## 7. The shore lines: St Peters first
+
+`TerrainShoreLinesDef` selects a region by its painted height texture. The only shipped opt-in
+is `Data/Resources/TerrainShoreLines/StPetersShoreLines.asset`; no scene placement or paint is
+needed. Its five strengths select Off, Lo, base or Hi. Change the Def and reload the region to
+rederive and bind its look. Other regions have no shore-line binding.
+
+The fixed marks are spring high (+2.2 m), mean high (+1.595 m) and mean low (−1.595 m), above
+datum. Mean marks use the region's mean-zero, 2.2 m amplitude and mean spring/neap envelope
+with neap fraction 0.45. They never follow the live tide. Turf and scarp trace inland from
+spring high until the height field's slope falls beyond its brow: the Def owns the step,
+search, rise, slope fall and steep/gentle classification. This follows the painted floor,
+including later changes to that floor.
+
+`ShoreLineDerivation` decodes contours with the bilinear saddle determinant, orders loops by
+stable grid-edge keys, and computes world-metre segment distance and along-shore arc length.
+Closed loops fit a whole number of 8 m repeats; the raster stores sine/cosine phase so filtering
+across a repeat seam stays continuous. Open contours retain their metric arc. The region's
+address array is rebuilt on enable, hidden and unsaved, and released on disable. It is never
+updated on the frame loop. At the St Peters Def's 1 m spacing, five RGBAHalf slices are
+15.076 MiB on the GPU; the temporary CPU arrays are released after upload.
+
+`TerrainEdgeArrayImporter` packs PNG bytes into a Library artifact at
+`Art/Resources/TerrainShoreLines/TerrainEdge256x128.hhshorearray`: Turf, Scarp, Wrack, Weedline,
+Reefedge, each Lo/base/Hi. Fifteen RGBA32 slices, 256 × 128, 1.875 MiB, Point, no mips,
+Repeat along / Clamp across, sRGB and straight alpha. Source imports are unchanged.
+
+The terrain shader samples an enabled strip once inside its anchored 4 m band and skips that
+sample outside it. Reefedge is composited first, then Weedline, Wrack, Scarp and Turf. Near an
+active line, the ground-weight lookup expands the distance domain to tighten the existing
+material transition to the Def's 0.25 m blend; material texture tiling stays in world metres.
+The water's shared albedo include and floor binding do not read this ground-only address data.
+Water drawing, cliff drawing and lighting presets are unchanged.
+
+The historical channel figures in §5 predate later terrain additions: the current splat has
+six RGBA maps (24 slots), with 21 materials. This feature spends none. The existing named
+`TerrainSplatBandPinTests` remains the layout guard; `TerrainShoreLinesTests` adds the fifteen
+slice/byte/import pins, deterministic reconstruction, fixed band limits, bend distances,
+closed-loop phase continuity, brow tracing and absence of CPU work in the frame callback.
