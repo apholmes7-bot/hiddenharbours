@@ -460,8 +460,8 @@ namespace HiddenHarbours.Tests.PlayMode
                     Renderer r = BandRenderer(wall, band);
                     if (r == null || ColourOf(r) == null)
                         Assert.Ignore($"SKIPPED, NOT VERIFIED: {s.Wall} has no baked {band} band on this box — the " +
-                                      "cliff faces are gitignored and this checkout has not baked them (Hidden " +
-                                      "Harbours ▸ Dev ▸ Bake Cliff Kit — v10), so there is no cliff to photograph.");
+                                      "cliff faces are committed under LFS since 11-07 and this checkout lacks " +
+                                      "them (git lfs pull), so there is no cliff to plate.");
                 }
             }
 

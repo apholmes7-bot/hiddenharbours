@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Security.Cryptography;
+using System.Text;
 using UnityEditor;
 using UnityEngine;
 using HiddenHarbours.Art.Editor;
@@ -39,6 +41,15 @@ namespace HiddenHarbours.Tools.RigBaking
         public double RenderMilliseconds, TotalMilliseconds;
         public long TotalPngBytes;
         public int FaceCount, StripCount, LedgeCount, ProfileCount;
+
+        /// <summary>How many <c>.meta</c> files this bake wrote with their <see cref="CliffBaker.StableGuid"/>
+        /// (a file or folder that had none).</summary>
+        public int MetasWritten;
+
+        /// <summary>Kit files whose EXISTING <c>.meta</c> carries a GUID other than the one its place in the
+        /// kit hashes to. Left as they are (a scene on this box may name them); <see cref="CliffBakeMenu"/>
+        /// warns.</summary>
+        public readonly List<string> ForeignGuids = new List<string>();
     }
 
     /// <summary>
@@ -46,14 +57,17 @@ namespace HiddenHarbours.Tools.RigBaking
     /// <c>docs/art/rigs/cliff-face-kit/bake/cliffRig.js</c> into <see cref="CliffCatalog.BakeRoot"/> —
     /// faces, brow/toe decals, iso ledge sheets and the plan-displacement profiles.
     ///
-    /// <para><b>⭐ THIS BAKER'S OUTPUT IS NOT COMMITTED, AND THAT INVERTS THE SIBLING PATTERN.</b> Every
-    /// other kit in the repo commits its sheets. This one cannot: the kit is parametric and the numbers
-    /// are brutal — the FULL set is 720 face PNGs (the rig's README: ~90 MB), and even the narrow St
-    /// Peters subset this baker ships by default measured <b>16.0 MB across 63 PNGs</b>. Sixteen
-    /// megabytes of LFS binaries that go stale the moment a coefficient moves, to pin bytes that are
-    /// really just the PNG encoder's, is a bad trade. So: the RIG is committed, this baker is committed,
-    /// <c>CliffRigBakeTests</c> drives the rig through V8 on every CI run, and the pixels are a menu
-    /// item away whenever anyone needs them. <see cref="CliffCatalog.BakeRoot"/> is gitignored.</para>
+    /// <para><b>⭐ THIS BAKER'S OUTPUT IS COMMITTED (terrain-fidelity P1, 11-07), WITH GUIDs IT DERIVES.</b>
+    /// Until then <see cref="CliffCatalog.BakeRoot"/> was gitignored — the pixels were "a menu item away"
+    /// — and that left a hole no menu item closed: the walls in the committed scenes name each face by the
+    /// GUID in its <c>.meta</c>, and Unity mints a NEW GUID for every file a bake writes from nothing, so a
+    /// clone, CI, a new box and any build from them drew every cliff wall with no face (an 11-06 bake
+    /// measured 0 of the 62 face GUIDs St Peters names). So the kit's 163 PNGs (9.6 MB, LFS) and their
+    /// metas are committed, and every GUID is a hash of the file's place in the kit
+    /// (<see cref="StableGuid"/>), written by this baker into a <c>.meta</c> before Unity first sees the
+    /// file: a bake from nothing writes the GUIDs the scenes already hold. A re-bake is a PR that
+    /// re-commits what it changed. <c>CliffRigBakeTests</c> still drives the rig through V8 on every CI
+    /// run, and <c>CliffFaceGuidTests</c> holds the GUIDs.</para>
     ///
     /// <para><b>What is baked by default, and why so little of it.</b> St Peters is a red sandstone
     /// coast, so <see cref="DefaultRock"/> is the only rock. All five aspects, because the aspect law IS
@@ -101,7 +115,7 @@ namespace HiddenHarbours.Tools.RigBaking
         ///
         /// <para><b>⚠ Not the same list as <see cref="CliffCatalog.Rocks"/>.</b> That is every rock the
         /// rig knows (basalt is a future grey headland); this is the two the region actually consumes.
-        /// Adding a rock here costs a bake, not a commit — the sheets are gitignored by design.</para>
+        /// Adding a rock here costs a bake and a commit of what it writes (the sheets are committed).</para>
         /// </summary>
         public static readonly string[] DefaultRocks = { DefaultRock, OverburdenRock };
 
@@ -132,6 +146,10 @@ namespace HiddenHarbours.Tools.RigBaking
             rock ??= DefaultRock;
             var total = Stopwatch.StartNew();
 
+            // A second copy of the kit inside Assets would carry the kit's GUIDs twice (they hash from the
+            // path INSIDE the kit, not from where the kit sits), and Unity re-GUIDs one of the two.
+            AssertNotASecondKitInAssets(outputFolder);
+
             // Before anything renders: a set holding BOTH colour-slot files is one this baker will not
             // resolve by guessing which of them a scene's GUID means.
             AssertSlotsUnambiguous(outputFolder, new[] { rock });
@@ -147,9 +165,17 @@ namespace HiddenHarbours.Tools.RigBaking
             var result = new CliffBakeResult { EngineName = host.EngineName, Px = px };
             var renderClock = new Stopwatch();
 
+            // The folders get their metas here too (each beside its folder, written first), so a bake from
+            // nothing leaves no GUID for Unity to mint.
+            Directory.CreateDirectory(Path.GetDirectoryName(Path.Combine(RigCatalog.RepoRoot, outputFolder)));
+            WriteStableMeta(result, outputFolder, outputFolder, folder: true);
+            Directory.CreateDirectory(Path.Combine(RigCatalog.RepoRoot, outputFolder));
             foreach (CliffAssetKind kind in new[] { CliffAssetKind.Face, CliffAssetKind.Strip,
                                                     CliffAssetKind.Ledge, CliffAssetKind.Profile })
+            {
+                WriteStableMeta(result, outputFolder, SubFolder(outputFolder, kind), folder: true);
                 Directory.CreateDirectory(Path.Combine(RigCatalog.RepoRoot, SubFolder(outputFolder, kind)));
+            }
 
             BakeFaces(px ? pxHost : host, px, result, renderClock, outputFolder, rock, progress);
             BakeStrips(px ? pxHost : host, px ? PG : G, result, renderClock, outputFolder, progress);
@@ -482,11 +508,11 @@ namespace HiddenHarbours.Tools.RigBaking
         /// wants <c>_index</c>, v10 wants <c>_unlit</c>, and whichever of the two is on disk is MOVED
         /// (<see cref="AssetDatabase.MoveAsset"/>), never deleted and re-created.
         ///
-        /// <para><b>⭐ Why a move.</b> The walls reference a face by the GUID in its <c>.meta</c>, and
-        /// those GUIDs exist only in the checkout that baked them (the bake is gitignored). A move keeps
-        /// the GUID, so a coast built on the v10 look samples the px pixels with no rebuild and no scene
-        /// change; a fresh file would mint a new GUID and leave every wall pointing at nothing. The band
-        /// field keeps its v10 name (<see cref="CliffCatalog.ColourChannel"/> says what it holds).</para>
+        /// <para><b>⭐ Why a move.</b> The walls reference a face by the GUID in its <c>.meta</c>. A move
+        /// keeps the GUID, so a coast built on the v10 look samples the px pixels with no rebuild and no
+        /// scene change. (Both names also HASH to that one GUID — <see cref="GuidKey"/> names the slot, not
+        /// the look — so a set baked from nothing in either look carries it too.) The band field keeps its
+        /// v10 name (<see cref="CliffCatalog.ColourChannel"/> says what it holds).</para>
         /// </summary>
         public static void ClaimSlot(string outputFolder, string rock, string aspect, int batter, bool px)
         {
@@ -666,6 +692,117 @@ namespace HiddenHarbours.Tools.RigBaking
         }
 
         // =====================================================================================
+        //  stable GUIDs (terrain-fidelity P1)
+        // =====================================================================================
+
+        /// <summary>What every kit GUID's hash key starts with, so no other file in the project can hash to
+        /// a kit GUID by sharing a relative path.</summary>
+        public const string GuidNamespace = "hh.cliff-face-kit/";
+
+        /// <summary>The colour slot's name in a GUID key. v10's <c>_unlit</c> and the px <c>_index</c> are
+        /// ONE slot (<see cref="ClaimSlot"/> moves one onto the other), so they hash to one GUID.</summary>
+        public const string ColourSlotKey = "_colour";
+
+        /// <summary>
+        /// The text a kit file's GUID is hashed from: <see cref="GuidNamespace"/> + its path INSIDE the kit
+        /// (<c>Faces/Sandstone_E_S62_colour.png</c>, <c>Decals</c>; the kit's own folder is the empty path),
+        /// '/'-separated, with a face's colour channel named for its slot. Where the kit sits is not part of
+        /// it: a bake into <c>Temp/</c> writes the GUIDs the committed kit carries.
+        /// </summary>
+        public static string GuidKey(string pathInKit)
+        {
+            string p = Norm(pathInKit).TrimStart('/');
+            string faces = SubFolder("", CliffAssetKind.Face).TrimStart('/') + "/";
+            if (p.StartsWith(faces, StringComparison.Ordinal))
+                foreach (string colour in new[] { CliffCatalog.IndexChannel, CliffCatalog.UnlitChannel })
+                {
+                    string tail = colour + ".png";
+                    if (!p.EndsWith(tail, StringComparison.Ordinal)) continue;
+                    p = p.Substring(0, p.Length - tail.Length) + ColourSlotKey + ".png";
+                    break;
+                }
+            return GuidNamespace + p;
+        }
+
+        /// <summary>
+        /// A kit file's GUID: the MD5 of its <see cref="GuidKey"/>, as the 32 lower-case hex digits a
+        /// <c>.meta</c> holds. Deterministic, so the scenes' face references survive a bake from nothing.
+        /// <para>⚠ Changing this function, its namespace or <see cref="ColourSlotKey"/> re-GUIDs the whole kit:
+        /// it is a PR that rewrites every kit meta AND every scene reference together
+        /// (<c>CliffFaceGuidTests</c> fails until both agree).</para>
+        /// </summary>
+        public static string StableGuid(string pathInKit)
+        {
+            using (MD5 md5 = MD5.Create())
+            {
+                byte[] hash = md5.ComputeHash(Encoding.UTF8.GetBytes(GuidKey(pathInKit)));
+                var hex = new StringBuilder(32);
+                foreach (byte b in hash) hex.Append(b.ToString("x2"));
+                return hex.ToString();
+            }
+        }
+
+        /// <summary>An asset path's place inside a kit rooted at <paramref name="outputFolder"/> ("" for the
+        /// root itself). Throws for a path outside it.</summary>
+        public static string PathInKit(string outputFolder, string assetPath)
+        {
+            string root = Norm(outputFolder), p = Norm(assetPath);
+            if (p == root) return "";
+            if (p.StartsWith(root + "/", StringComparison.Ordinal)) return p.Substring(root.Length + 1);
+            throw new ArgumentException($"[cliff-baker] {assetPath} is not inside the kit at {outputFolder}.");
+        }
+
+        /// <summary>The GUID a <c>.meta</c> file holds, or null.</summary>
+        public static string MetaGuid(string metaFilePath)
+        {
+            foreach (string line in File.ReadLines(metaFilePath))
+                if (line.StartsWith("guid: ", StringComparison.Ordinal)) return line.Substring(6).Trim();
+            return null;
+        }
+
+        /// <summary>🔴 Refuses a kit inside Assets that is not <see cref="CliffCatalog.BakeRoot"/>: its GUIDs
+        /// would be the kit's own (<see cref="GuidKey"/> leaves the location out), and Unity re-GUIDs one of
+        /// two files that share a GUID.</summary>
+        public static void AssertNotASecondKitInAssets(string outputFolder)
+        {
+            string f = Norm(outputFolder);
+            bool inAssets = f.Equals("Assets", StringComparison.OrdinalIgnoreCase) ||
+                            f.StartsWith("Assets/", StringComparison.OrdinalIgnoreCase);
+            if (inAssets && !string.Equals(f, Norm(CliffCatalog.BakeRoot), StringComparison.OrdinalIgnoreCase))
+                throw new InvalidOperationException(
+                    $"[cliff-baker] {outputFolder} is inside Assets but is not {CliffCatalog.BakeRoot}. Every kit " +
+                    "GUID hashes from the file's place IN the kit, so a second kit in Assets would carry the same " +
+                    "GUIDs and Unity would re-GUID one of them. Bake into the kit, or outside Assets (Temp/...).");
+        }
+
+        /// <summary>
+        /// Writes <c>&lt;asset&gt;.meta</c> holding the asset's <see cref="StableGuid"/> when it has none,
+        /// BEFORE the asset itself lands, so Unity never mints one. Unity fills in the importer when it
+        /// imports and keeps the GUID. An existing meta is never rewritten (a scene on this box may name its
+        /// GUID); one that disagrees with the hash is recorded in <see cref="CliffBakeResult.ForeignGuids"/>.
+        /// </summary>
+        static void WriteStableMeta(CliffBakeResult result, string outputFolder, string assetPath, bool folder)
+        {
+            string meta = Path.Combine(RigCatalog.RepoRoot, assetPath + ".meta");
+            string want = StableGuid(PathInKit(outputFolder, assetPath));
+            if (File.Exists(meta))
+            {
+                string have = MetaGuid(meta);
+                if (have != want) result.ForeignGuids.Add($"{assetPath} holds {have}; its place hashes to {want}");
+                return;
+            }
+            // Unity's own folder meta, byte for byte; an asset's carries only the GUID until its import.
+            string text = $"fileFormatVersion: 2\nguid: {want}\n" + (folder
+                ? "folderAsset: yes\nDefaultImporter:\n  externalObjects: {}\n  userData: \n" +
+                  "  assetBundleName: \n  assetBundleVariant: \n"
+                : "");
+            File.WriteAllText(meta, text, new UTF8Encoding(false));
+            result.MetasWritten++;
+        }
+
+        static string Norm(string path) => (path ?? "").Replace('\\', '/').TrimEnd('/');
+
+        // =====================================================================================
         //  pixels out
         // =====================================================================================
 
@@ -674,6 +811,7 @@ namespace HiddenHarbours.Tools.RigBaking
         {
             string assetPath = $"{SubFolder(outputFolder, kind)}/{name}.png";
             byte[] png = EncodePng(rgba, w, h);
+            WriteStableMeta(result, outputFolder, assetPath, folder: false);   // the GUID first, then the file
             File.WriteAllBytes(Path.Combine(RigCatalog.RepoRoot, assetPath), png);
 
             result.TotalPngBytes += png.Length;

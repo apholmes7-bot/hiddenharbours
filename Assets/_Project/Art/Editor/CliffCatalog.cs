@@ -16,9 +16,10 @@ namespace HiddenHarbours.Art.Editor
     /// arithmetic: MEASURED on this drop, even the narrow St Peters subset (one rock, five aspects,
     /// three batters, one wear step, three of the four channels) is <b>16.0 MB across 63 PNGs</b>. So the
     /// pipeline here inverts the sibling kits' one: <see cref="HiddenHarbours.Tools.RigBaking.CliffBaker"/>
-    /// writes the sheets into <see cref="BakeRoot"/> on demand (one menu item, seconds), that folder is
-    /// <c>.gitignore</c>d, and what the repository carries is the RIG plus a contract test that drives it
-    /// through V8 on every CI run. A pinned byte in a committed sheet would only ever pin the encoder.</para>
+    /// writes the sheets into <see cref="BakeRoot"/> on demand (one menu item, seconds), and the repository
+    /// carries the RIG plus a contract test that drives it through V8 on every CI run. (Amended 11-07,
+    /// terrain-fidelity P1: the St Peters subset the baker writes — 163 PNGs, 9.6 MB — IS committed now,
+    /// because the scenes name its faces by GUID and a checkout without them drew no cliff.)</para>
     ///
     /// <para><b>Faces are TEXTURES, not sprites</b> — the one place this kit breaks the sibling pattern.
     /// Every other rig in the repo bakes sprites with a pivot; a cliff face is a periodic material tiled
@@ -44,8 +45,9 @@ namespace HiddenHarbours.Art.Editor
         /// <summary>The JS global the rig installs.</summary>
         public const string RigGlobalName = "CliffRig";
 
-        /// <summary>Where <see cref="HiddenHarbours.Tools.RigBaking.CliffBaker"/> writes. Gitignored on
-        /// purpose (see the class note): a bake is a local, reproducible artefact, not a commit.</summary>
+        /// <summary>Where <see cref="HiddenHarbours.Tools.RigBaking.CliffBaker"/> writes. COMMITTED since
+        /// terrain-fidelity P1 (11-07), with GUIDs the baker derives from each file's place in the kit
+        /// (<c>CliffBaker.StableGuid</c>): the scenes name the faces by GUID, so a clone must carry them.</summary>
         public const string BakeRoot = "Assets/_Project/Art/Terrain/Cliffs";
 
         // =====================================================================================
@@ -313,8 +315,8 @@ namespace HiddenHarbours.Art.Editor
         public const string PxKeyword = "_HH_CLIFF_PX";
 
         /// <summary>
-        /// Where the px palette LUT lives — <b>TRACKED</b>, outside the gitignored
-        /// <see cref="BakeRoot"/>. The material is committed and references it by GUID, so the LUT and
+        /// Where the px palette LUT lives — <b>TRACKED</b>, outside <see cref="BakeRoot"/> (which was
+        /// gitignored when this was written, and is committed since 11-07). The material is committed and references it by GUID, so the LUT and
         /// its meta are committed too: a clone must never hold a material whose palette resolves only
         /// on the machine that baked it.
         /// </summary>

@@ -205,17 +205,14 @@ namespace HiddenHarbours.Tests.EditMode
             // ⚠⚠ THE WALL COUNT IS DELIBERATELY *NOT* ASSERTED NON-ZERO, AND THAT IS THE WHOLE POINT OF
             // THIS COMMENT — the first version of this test did assert it, and it was the one red in CI.
             //
-            // The Cliff Face kit's baked pixels are GITIGNORED BY DESIGN (.gitignore: "⭐ DELIBERATELY NOT
-            // COMMITTED, unlike every sibling kit's sheets… ~90 MB… every byte of it regenerable in
-            // seconds and stale the moment a rig coefficient moves"). The rig is the committed source and
-            // CliffRigBakeTests guards it. So on a fresh clone — which is exactly what CI is — every
-            // TryLoadBands fails, no CliffWallSurface is created, and the count is legitimately 0. The
-            // gitignore even says so in as many words: "A fresh clone renders cliff geometry untextured
-            // until the bake is run once."
+            // When this was written the Cliff Face kit's baked pixels were GITIGNORED, so on a fresh
+            // clone (which is what CI is) every TryLoadBands failed, no CliffWallSurface was created, and
+            // the count was legitimately 0. Since terrain-fidelity P1 (11-07) the faces are COMMITTED
+            // under LFS (~9.6 MB; CliffFaceGuidTests holds their GUIDs), so a clone has them; a checkout
+            // whose LFS objects never landed still reads 0 here, and that is not this test's to judge.
             //
-            // Asserting >0 here made a CI-facing test depend on a local bake, which is a false red that
-            // could only be "fixed" by reversing that decision and committing ~90 MB of regenerable
-            // binaries. The property this test is FOR is idempotence — that a second pass replaces the
+            // Asserting >0 here made a CI-facing test depend on a local bake. The property this test is
+            // FOR is idempotence — that a second pass replaces the
             // first rather than stacking on it — and equality holds perfectly well at zero. That the
             // walls are cut at all is proved where it belongs, by
             // NineMileCreekWallsAgreeWithGroundTests.TheDefsCutTheSameWallsTwice, which cuts them from their
