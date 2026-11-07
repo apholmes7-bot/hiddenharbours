@@ -1249,8 +1249,9 @@ namespace HiddenHarbours.Tests.PlayMode
                 $"the camera sits at ({p.x:0.####}, {p.y:0.####}), not on the station ({at.x:0.###}, {at.y:0.###}), " +
                 $"after {_eased}: something else drives it (a region-bounds clamp, a cinematic), so the plate would " +
                 "show another stretch of coast and the two runs would not line up.");
-            Assert.That(worldHeight, Is.InRange(8f, 9.5f),
-                $"the camera frames {worldHeight:0.###} m tall, not the on-foot view (8.4375 m at 1080 px).");
+            Assert.That(worldHeight, Is.EqualTo(_askedHeight).Within(0.5f),
+                $"the camera frames {worldHeight:0.###} m tall, not the on-foot stop its own follow was asked for " +
+                $"({_askedHeight:0.###} m, WorldHeightFor OnFoot).");
         }
 
         IEnumerator EaseOntoTheCentre(Vector2 at)
@@ -1378,7 +1379,7 @@ namespace HiddenHarbours.Tests.PlayMode
             sb.AppendLine($"asked centre ({s.Centre.x:0.###}, {s.Centre.y:0.###}); camera at ({p.x:0.####}, {p.y:0.####}, {p.z:0.###}); {_eased}");
             sb.AppendLine($"ortho {_cam.orthographicSize:0.#####} -> {worldHeight * _cam.aspect:0.###} x {worldHeight:0.####} m, " +
                           $"render texture {_w}x{_h} px, {_follow.WorldUnitsPerRenderedPixel:0.#####} m per rendered pixel");
-            sb.AppendLine($"framing: asked {_askedHeight:0.###} m (WorldHeightFor OnFoot); committed {_follow.Framing} (known {_follow.FramingKnown})");
+            sb.AppendLine($"framing: asked {_askedHeight:0.###} m (WorldHeightFor OnFoot), framed {worldHeight:0.###} m; committed {_follow.Framing} (known {_follow.FramingKnown})");
             sb.AppendLine(DescribePixelPerfect());
             sb.AppendLine($"hour, sun and tide: {_pinned}");
             sb.AppendLine(s.Figure.HasValue
