@@ -23,40 +23,45 @@ namespace HiddenHarbours.App.Editor
             var mine=scene.SubtreeOf(wharf.FileId);
             Doc walls=scene.Docs.Single(d=>d.ClassId==1&&d.Field("m_Name")==NineMileCreekWalls.RootName&&mine.Contains(d.FileId));
             Doc colliderGo=scene.ChildNamed(scene.TransformOf(walls),PropertyBoundary.CollidersChildName);
-            Doc collider=scene.ComponentsOf(colliderGo).First(d=>d.ClassId==60);
             var patch=new LayerPatch(WaterStep,"NineMileCreekWharf/QuayWalls",walls.FileId);
-            string block=Regex.Match(collider.Text,@"(?ms)^  m_Points:.*?(?=^  m_UseDelaunayMesh:)").Value;
-            var rectangles=new List<Rect>();
-            foreach(Match group in Regex.Matches(block,@"(?m)^    - - [^\n]*(?:\n      - [^\n]*)*"))
+            foreach(Doc collider in scene.ComponentsOf(colliderGo).Where(d=>d.ClassId==60))
             {
-                var points=Regex.Matches(group.Value,@"\{x: [^}]+\}").Cast<Match>().Select(m=>new Vector2(WaterCoordinate(m.Value,"x"),WaterCoordinate(m.Value,"y"))).ToArray();
-                if(points.Length!=4)throw new Refusal("H5 gangway opening: the inherited quay path is not a quadrilateral.");
-                var rect=Rect.MinMaxRect(points.Min(p=>p.x),points.Min(p=>p.y),points.Max(p=>p.x),points.Max(p=>p.y));
-                if(points.Any(p=>(Mathf.Abs(p.x-rect.xMin)>.001f&&Mathf.Abs(p.x-rect.xMax)>.001f)||(Mathf.Abs(p.y-rect.yMin)>.001f&&Mathf.Abs(p.y-rect.yMax)>.001f)))
-                    throw new Refusal("H5 gangway opening: an inherited quay path is not axis-aligned.");
-                rectangles.Add(rect);
-            }
-            if(rectangles.Count==0)throw new Refusal("H5 gangway opening: the inherited quay has no paths.");
-            var parts=WA(WM(NineMileCreekWharfWaterSide.ReadToday(),"parts"));
-            foreach(var part in parts.Where(p=>WM(p,"gangway")!=null&&WN(WM(WM(p,"gangway"),"step"))==0))
-            {
-                var gang=WM(part,"gangway");Vector2 head=WP(WM(gang,"hinge"));float half=WN(WM(gang,"width"))*.5f;
-                var opening=Rect.MinMaxRect(head.x-half,head.y-1,head.x+half,head.y+1);
-                var next=new List<Rect>();
-                foreach(var rect in rectangles)
+                string block=Regex.Match(collider.Text,@"(?ms)^  m_Points:.*?(?=^  m_UseDelaunayMesh:)").Value;
+                var rectangles=new List<Rect>();
+                foreach(Match group in Regex.Matches(block,@"(?m)^    - - [^\n]*(?:\n      - [^\n]*)*"))
                 {
-                    if(!rect.Overlaps(opening)){next.Add(rect);continue;}
-                    float x0=Mathf.Max(rect.xMin,opening.xMin),x1=Mathf.Min(rect.xMax,opening.xMax),y0=Mathf.Max(rect.yMin,opening.yMin),y1=Mathf.Min(rect.yMax,opening.yMax);
-                    void Keep(float left,float bottom,float right,float top){if(right-left>.001f&&top-bottom>.001f)next.Add(Rect.MinMaxRect(left,bottom,right,top));}
-                    Keep(rect.xMin,rect.yMin,x0,rect.yMax);Keep(x1,rect.yMin,rect.xMax,rect.yMax);
-                    Keep(x0,rect.yMin,x1,y0);Keep(x0,y1,x1,rect.yMax);
+                    var points=Regex.Matches(group.Value,@"\{x: [^}]+\}").Cast<Match>().Select(m=>new Vector2(WaterCoordinate(m.Value,"x"),WaterCoordinate(m.Value,"y"))).ToArray();
+                    if(points.Length!=4)throw new Refusal("H5 gangway opening: the inherited quay path is not a quadrilateral.");
+                    var rect=Rect.MinMaxRect(points.Min(p=>p.x),points.Min(p=>p.y),points.Max(p=>p.x),points.Max(p=>p.y));
+                    if(points.Any(p=>(Mathf.Abs(p.x-rect.xMin)>.001f&&Mathf.Abs(p.x-rect.xMax)>.001f)||(Mathf.Abs(p.y-rect.yMin)>.001f&&Mathf.Abs(p.y-rect.yMax)>.001f)))
+                        throw new Refusal("H5 gangway opening: an inherited quay path is not axis-aligned.");
+                    rectangles.Add(rect);
                 }
-                rectangles=next;
+                if(rectangles.Count==0)throw new Refusal("H5 gangway opening: the inherited quay has no paths.");
+                var parts=WA(WM(NineMileCreekWharfWaterSide.ReadToday(),"parts"));
+                bool changed=false;
+                foreach(var part in parts.Where(p=>WM(p,"gangway")!=null&&WN(WM(WM(p,"gangway"),"step"))==0))
+                {
+                    var gang=WM(part,"gangway");Vector2 head=WP(WM(gang,"hinge"));float half=WN(WM(gang,"width"))*.5f;
+                    var opening=Rect.MinMaxRect(head.x-half,head.y-1,head.x+half,head.y+1);
+                    var next=new List<Rect>();
+                    foreach(var rect in rectangles)
+                    {
+                        if(!rect.Overlaps(opening)){next.Add(rect);continue;}
+                        changed=true;
+                        float x0=Mathf.Max(rect.xMin,opening.xMin),x1=Mathf.Min(rect.xMax,opening.xMax),y0=Mathf.Max(rect.yMin,opening.yMin),y1=Mathf.Min(rect.yMax,opening.yMax);
+                        void Keep(float left,float bottom,float right,float top){if(right-left>.001f&&top-bottom>.001f)next.Add(Rect.MinMaxRect(left,bottom,right,top));}
+                        Keep(rect.xMin,rect.yMin,x0,rect.yMax);Keep(x1,rect.yMin,rect.xMax,rect.yMax);
+                        Keep(x0,rect.yMin,x1,y0);Keep(x0,y1,x1,rect.yMax);
+                    }
+                    rectangles=next;
+                }
+                if(!changed)continue;
+                var paths=rectangles.Select(r=>new[]{new Vector2(r.xMin,r.yMin),new Vector2(r.xMax,r.yMin),new Vector2(r.xMax,r.yMax),new Vector2(r.xMin,r.yMax)}).ToList();
+                string polygon=PolygonColliderYaml(collider.FileId,collider.FieldRef("m_GameObject"),paths);
+                string replacement=Regex.Match(polygon,@"(?ms)^  m_Points:.*?(?=^  m_UseDelaunayMesh:)").Value;
+                patch.Edit(collider,Regex.Replace(collider.Text,@"(?ms)^  m_Points:.*?(?=^  m_UseDelaunayMesh:)",_=>replacement),"QuayWalls / the four native gangway mouths; existing yard openings retained");
             }
-            var paths=rectangles.Select(r=>new[]{new Vector2(r.xMin,r.yMin),new Vector2(r.xMax,r.yMin),new Vector2(r.xMax,r.yMax),new Vector2(r.xMin,r.yMax)}).ToList();
-            string polygon=PolygonColliderYaml(collider.FileId,collider.FieldRef("m_GameObject"),paths);
-            string replacement=Regex.Match(polygon,@"(?ms)^  m_Points:.*?(?=^  m_UseDelaunayMesh:)").Value;
-            patch.Edit(collider,Regex.Replace(collider.Text,@"(?ms)^  m_Points:.*?(?=^  m_UseDelaunayMesh:)",_=>replacement),"QuayWalls / the four native gangway mouths; existing yard openings retained");
             return patch.Seal(scene);
         }
 
