@@ -30,6 +30,15 @@ namespace HiddenHarbours.Art
         [Range(.01f, .99f)] public float BrowSlopeFallFraction = .35f;
         [Min(.001f)] public float ScarpMinimumSlope = .12f;
         [Min(.001f)] public float TurfMinimumSlope = 1f;
+        [Header("Seeded strip variation, in world metres")]
+        public int PatternSeed = 17041;
+        public Vector2 WrackLengthMetres = new Vector2(1, 3);
+        public Vector2 WrackGapMetres = new Vector2(2, 6);
+        [Range(.1f, 4f)] public float WrackAcrossMetres = 2.5f;
+        public Vector2 LipDepthMetres = new Vector2(.5f, 1f);
+        public Vector2 LipBreakMetres = new Vector2(1, 2);
+        [Min(.1f)] public float LipPitchMetres = .6f;
+        public Color LipShadow = new Color(.025f, .020f, .016f, 1);
 
         public Step Strength(int kind) => kind switch
         {

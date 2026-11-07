@@ -368,10 +368,17 @@ namespace HiddenHarbours.Art
             _mpb ??= new MaterialPropertyBlock();
             EnsureBuilt();
             _shoreLines?.Dispose();
-            _shoreLines = TerrainShoreLineBinding.Create(_heightTexture, _heightMin, _heightMax, _worldCenter, _worldSize);
+            _shoreLines = TerrainShoreLineBinding.Create(_heightTexture, _heightMin, _heightMax, _worldCenter, _worldSize,
+                _splatA, _splatB, _splatC, _splatD, _splatE, _splatF);
             PushAll();
             if (!s_Live.Contains(this)) s_Live.Add(this);
             LiveVersion++;
+        }
+
+        private void Start()
+        {
+            _shoreLines?.CaptureWalls(gameObject.scene);
+            PushAll();
         }
 
         private void OnDisable()

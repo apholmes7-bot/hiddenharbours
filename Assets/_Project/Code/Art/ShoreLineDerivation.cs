@@ -31,15 +31,89 @@ namespace HiddenHarbours.Art
             public readonly Color[][] Addresses;
             public readonly Segment[][] Lines;
             public readonly Vector2 Min, Size;
-            public Result(int width, int height, Vector2 min, Vector2 size, Color[][] addresses, Segment[][] lines)
-            { Width = width; Height = height; Min = min; Size = size; Addresses = addresses; Lines = lines; }
+            public readonly Segment[] Segments;
+            public readonly Color[] SegmentTexels;
+            public readonly int[] KindStarts;
+            public readonly int[] SegmentIds;
+            public readonly float[] IndexTexels;
+            readonly Grid _grid;
+            public Result(int width, int height, Grid grid, Color[][] addresses, Segment[][] lines, Segment[] segments, int[] segmentIds)
+            {
+                Width = width; Height = height; Min = grid.Min; Size = grid.Size;
+                Addresses = addresses; Lines = lines; Segments = segments; _grid = grid;
+                SegmentIds = segmentIds;
+                IndexTexels = new float[Mathf.Max(1, Mathf.CeilToInt(segmentIds.Length / 1024f)) * 1024];
+                for (int i = 0; i < segmentIds.Length; i++) IndexTexels[i] = segmentIds[i];
+                KindStarts = new int[KindCount + 1]; KindStarts[0] = 1;
+                for (int kind = 0; kind < KindCount; kind++) KindStarts[kind + 1] = KindStarts[kind] + lines[kind].Length;
+                SegmentTexels = new Color[segments.Length * 2];
+                for (int i = 1; i < segments.Length; i++)
+                {
+                    Segment s = segments[i];
+                    SegmentTexels[i] = new Color(s.A.x, s.A.y, s.B.x, s.B.y);
+                    SegmentTexels[segments.Length + i] = new Color(s.Seaward.x, s.Seaward.y, s.Arc, s.RepeatScale);
+                }
+            }
 
             public Color Sample(int kind, Vector2 point)
             {
-                int x = Mathf.Clamp(Mathf.FloorToInt((point.x - Min.x) / Size.x * Width), 0, Width - 1);
-                int y = Mathf.Clamp(Mathf.FloorToInt((point.y - Min.y) / Size.y * Height), 0, Height - 1);
-                Vector2 center = Min + Vector2.Scale(new Vector2((x + .5f) / Width, (y + .5f) / Height), Size);
-                return Decode(Addresses[kind][y * Width + x], center, point);
+                Color best = new Color(8, 0, 0, 8);
+                Substrate cover = _grid.CoverAt(point);
+                if (cover.ProtectedFoot || (kind < 2 && !cover.QualifyingBrow)) return best;
+                int x = Mathf.FloorToInt((point.x - Min.x) / Size.x * Width);
+                int y = Mathf.FloorToInt((point.y - Min.y) / Size.y * Height);
+                Color packed = Addresses[kind][Mathf.Clamp(y, 0, Height - 1) * Width + Mathf.Clamp(x, 0, Width - 1)];
+                int start = Mathf.RoundToInt(packed.r) + 1024 * Mathf.RoundToInt(packed.g) + 1048576 * Mathf.RoundToInt(packed.b);
+                for (int i = 0; i < Mathf.RoundToInt(packed.a); i++)
+                {
+                    Color a = Address(Segments[SegmentIds[start + i]], point);
+                    if (a.a < best.a) best = a;
+                }
+                return best;
+            }
+        }
+
+        public readonly struct Substrate
+        {
+            public readonly float Turf, Sand, Shingle, Talus, Ledge, Shelf;
+            public Substrate(float turf, float sand = 0, float shingle = 0, float talus = 0, float ledge = 0, float shelf = 0)
+            { Turf = turf; Sand = sand; Shingle = shingle; Talus = talus; Ledge = ledge; Shelf = shelf; }
+            public bool ProtectedFoot => Talus > .5f || Ledge > .5f || Shelf > .5f;
+            public bool QualifyingBrow => Turf >= .5f && Sand < .01f && Shingle < .01f && !ProtectedFoot;
+        }
+
+        /// <summary>A load-only snapshot of the six existing linear splats. No material slot is added.</summary>
+        public sealed class SplatReader
+        {
+            readonly Color32[][] _pixels = new Color32[6][];
+            readonly Vector2Int[] _sizes = new Vector2Int[6];
+            public SplatReader(params Texture2D[] textures)
+            {
+                for (int i = 0; i < 6; i++)
+                {
+                    Texture2D texture = i < textures.Length ? textures[i] : null;
+                    if (texture == null) continue;
+                    if (!texture.isReadable) throw new ArgumentException("Shore splat must be readable.");
+                    _pixels[i] = texture.GetPixels32(); _sizes[i] = new Vector2Int(texture.width, texture.height);
+                }
+            }
+            Color Sample(int map, Vector2 uv)
+            {
+                if (_pixels[map] == null) return Color.clear;
+                int w = _sizes[map].x, h = _sizes[map].y;
+                float fx = uv.x * w - .5f, fy = uv.y * h - .5f;
+                int x = Mathf.FloorToInt(fx), y = Mathf.FloorToInt(fy);
+                Color Read(int ix, int iy) => _pixels[map][Mathf.Clamp(iy, 0, h - 1) * w + Mathf.Clamp(ix, 0, w - 1)];
+                return Color.Lerp(Color.Lerp(Read(x, y), Read(x + 1, y), fx - x),
+                    Color.Lerp(Read(x, y + 1), Read(x + 1, y + 1), fx - x), fy - y);
+            }
+            public Substrate At(Vector2 uv)
+            {
+                Color a = Sample(0, uv), b = Sample(1, uv), c = Sample(2, uv), d = Sample(3, uv),
+                    e = Sample(4, uv), f = Sample(5, uv);
+                float sum = a.r+a.g+a.b+a.a+b.r+b.g+b.b+b.a+c.r+c.g+c.b+c.a+d.r+d.g+d.b+d.a+e.r+e.g+e.b+e.a+f.r;
+                float norm = 1 / Mathf.Max(1, sum);
+                return new Substrate((a.r+b.a+e.b+e.a)*norm, a.b*norm, a.a*norm, c.a*norm, d.r*norm, b.g*norm);
             }
         }
 
@@ -49,7 +123,9 @@ namespace HiddenHarbours.Art
             public readonly float[] Elevations;
             public readonly int Width, Height;
             public readonly Vector2 Min, Size, Texel;
-            public Grid(float[] elevations, int width, int height, Vector2 min, Vector2 size)
+            readonly Func<Vector2, Substrate> _substrate;
+            public Grid(float[] elevations, int width, int height, Vector2 min, Vector2 size,
+                Func<Vector2, Substrate> substrate = null)
             {
                 if (width < 2 || height < 2 || elevations == null || elevations.Length != width * height
                     || size.x <= 0 || size.y <= 0) throw new ArgumentException("Invalid shore height grid.");
@@ -57,7 +133,10 @@ namespace HiddenHarbours.Art
                     if (float.IsNaN(e) || float.IsInfinity(e)) throw new ArgumentException("Nonfinite shore height.");
                 Elevations = elevations; Width = width; Height = height; Min = min; Size = size;
                 Texel = new Vector2(size.x / width, size.y / height);
+                _substrate = substrate;
             }
+            // Geometry-only fixtures explicitly model a turf cap. Region bindings supply their splat reader.
+            public Substrate CoverAt(Vector2 q) => _substrate == null ? new Substrate(1) : _substrate(q);
             public float At(Vector2 q)
             {
                 float fx = (q.x - Min.x) / Texel.x - .5f, fy = (q.y - Min.y) / Texel.y - .5f;
@@ -92,9 +171,18 @@ namespace HiddenHarbours.Art
             lines[3] = Segments(grid, Contours(grid, def.MeanHigh));
             lines[4] = Segments(grid, Contours(grid, def.MeanLow));
             var addresses = new Color[KindCount][];
+            var all = new List<Segment> { default };
+            var ids = new List<int>();
+            var foot = new bool[width * height];
+            for (int y = 0; y < height; y++)
+            for (int x = 0; x < width; x++) foot[y * width + x] = grid.CoverAt(grid.Min +
+                Vector2.Scale(new Vector2((x + .5f) / width, (y + .5f) / height), grid.Size)).ProtectedFoot;
             for (int kind = 0; kind < KindCount; kind++)
-                addresses[kind] = Raster(grid, lines[kind], width, height);
-            return new Result(width, height, grid.Min, grid.Size, addresses, lines);
+            {
+                addresses[kind] = Raster(grid, lines[kind], width, height, all.Count, foot, ids);
+                all.AddRange(lines[kind]);
+            }
+            return new Result(width, height, grid, addresses, lines, all.ToArray(), ids.ToArray());
         }
 
         static List<Line> Contours(Grid grid, float level)
@@ -259,7 +347,8 @@ namespace HiddenHarbours.Art
                         { found = p; broke = grid.At(p) >= def.SpringHigh + def.BrowRiseMetres; break; }
                     }
                     brow.Points.Add(found);
-                    valid[i] = broke && (turf ? peak >= def.TurfMinimumSlope : peak < def.TurfMinimumSlope);
+                    valid[i] = broke && peak >= def.ScarpMinimumSlope && grid.CoverAt(found).QualifyingBrow
+                        && (turf || peak < def.TurfMinimumSlope);
                 }
                 // Neighbouring rays can reach different banks or fold across a concavity. Neither
                 // a long connector nor a reversed connector is part of the shore's brow curve.
@@ -289,18 +378,16 @@ namespace HiddenHarbours.Art
         public static bool InBand(int kind, Color address) => InBand(kind, address.r) && address.a >= 0
             && address.a <= StripMetres * (address.r < 0 ? Anchors[kind] : 1 - Anchors[kind]) - AddressSafetyMetres;
 
-        public static Color Decode(Color packed, Vector2 cellCenter, Vector2 point)
+        public static Color Address(Segment segment, Vector2 point)
         {
-            if (Mathf.Abs(packed.a) < .5f) return new Color(8, 0, 1, 8);
-            Vector2 nearest = cellCenter + new Vector2(packed.r, packed.g), delta = point - nearest;
-            Vector2 normal = new Vector2(Mathf.Cos(packed.b), Mathf.Sin(packed.b));
-            float distance = delta.magnitude, signed = distance * (Vector2.Dot(delta, normal) < 0 ? -1 : 1);
-            Vector2 tangent = new Vector2(-normal.y, normal.x) * Mathf.Sign(packed.a);
-            float phase = (Mathf.Abs(packed.a) - 1 + Vector2.Dot(delta, tangent) / RepeatMetres) * (2 * Mathf.PI);
-            return new Color(signed, Mathf.Sin(phase), Mathf.Cos(phase), distance);
+            Vector2 ab = segment.B - segment.A;
+            float t = Mathf.Clamp01(Vector2.Dot(point - segment.A, ab) / ab.sqrMagnitude);
+            Vector2 delta = point - (segment.A + t * ab);
+            float distance = delta.magnitude, signed = distance * (Vector2.Dot(delta, segment.Seaward) < 0 ? -1 : 1);
+            return new Color(signed, segment.Arc + t * ab.magnitude, segment.RepeatScale, distance);
         }
 
-        static Color[] Raster(Grid grid, Segment[] segments, int width, int height)
+        static Color[] Raster(Grid grid, Segment[] segments, int width, int height, int firstId, bool[] foot, List<int> ids)
         {
             Vector2 texel = new Vector2(grid.Size.x / width, grid.Size.y / height);
             float padding = StripMetres + texel.magnitude;
@@ -308,8 +395,9 @@ namespace HiddenHarbours.Art
             var result = new Color[distance.Length];
             for (int i = 0; i < result.Length; i++)
             { distance[i] = padding * padding; result[i] = Color.clear; }
-            foreach (Segment segment in segments)
+            for (int si = 0; si < segments.Length; si++)
             {
+                Segment segment = segments[si];
                 Vector2 delta = segment.B - segment.A;
                 float len2 = delta.sqrMagnitude, len = Mathf.Sqrt(len2);
                 int x0 = Mathf.Clamp(Mathf.FloorToInt((Mathf.Min(segment.A.x, segment.B.x) - padding - grid.Min.x) / texel.x), 0, width - 1);
@@ -320,18 +408,43 @@ namespace HiddenHarbours.Art
                 for (int x = x0; x <= x1; x++)
                 {
                     Vector2 q = grid.Min + Vector2.Scale(new Vector2(x + .5f, y + .5f), texel);
+                    if (foot[y * width + x]) continue;
                     float t = Mathf.Clamp01(Vector2.Dot(q - segment.A, delta) / len2);
                     Vector2 across = q - (segment.A + delta * t);
                     float d2 = across.sqrMagnitude; int index = y * width + x;
                     if (d2 >= distance[index]) continue;
                     distance[index] = d2;
-                    float arc = (segment.Arc + t * len) * segment.RepeatScale / RepeatMetres;
-                    float direction = Vector2.Dot(delta, new Vector2(-segment.Seaward.y, segment.Seaward.x)) < 0 ? -1 : 1;
-                    // Point-sampled offsets retain an actual point on the curve. Interpolating
-                    // nearest points or signed distances would invent curves between branches.
-                    result[index] = new Color(-across.x, -across.y, Mathf.Atan2(segment.Seaward.y, segment.Seaward.x),
-                        direction * (1 + arc - Mathf.Floor(arc)));
+                    // Integers split at ten bits remain exact in RGBAHalf. Curve geometry is
+                    // loaded separately as floats, then projected at the fragment, not quantised.
+                    int id = firstId + si;
+                    result[index] = new Color(id % 1024, id / 1024, 0, 1);
                 }
+            }
+            // Distance is 1-Lipschitz. Any segment that wins anywhere within a cell must be
+            // within d(center) + twice the cell radius at its centre. Retain the complete set.
+            var buckets = new List<int>[result.Length];
+            for (int si = 0; si < segments.Length; si++)
+            {
+                Segment s = segments[si]; Vector2 ab = s.B - s.A;
+                int x0 = Mathf.Clamp(Mathf.FloorToInt((Mathf.Min(s.A.x,s.B.x)-padding-grid.Min.x)/texel.x),0,width-1);
+                int x1 = Mathf.Clamp(Mathf.CeilToInt((Mathf.Max(s.A.x,s.B.x)+padding-grid.Min.x)/texel.x),0,width-1);
+                int y0 = Mathf.Clamp(Mathf.FloorToInt((Mathf.Min(s.A.y,s.B.y)-padding-grid.Min.y)/texel.y),0,height-1);
+                int y1 = Mathf.Clamp(Mathf.CeilToInt((Mathf.Max(s.A.y,s.B.y)+padding-grid.Min.y)/texel.y),0,height-1);
+                for (int y=y0;y<=y1;y++) for(int x=x0;x<=x1;x++)
+                {
+                    int i=y*width+x;if(foot[i])continue;
+                    Vector2 p=grid.Min+Vector2.Scale(new Vector2(x+.5f,y+.5f),texel);
+                    float t=Mathf.Clamp01(Vector2.Dot(p-s.A,ab)/ab.sqrMagnitude);
+                    if(Vector2.Distance(p,s.A+ab*t)>Mathf.Sqrt(distance[i])+texel.magnitude)continue;
+                    (buckets[i]??=new List<int>()).Add(firstId+si);
+                }
+            }
+            for(int i=0;i<result.Length;i++)
+            {
+                var bucket=buckets[i];if(bucket==null){result[i]=Color.clear;continue;}
+                if(bucket.Count>2048)throw new ArgumentException("Shore candidate cell exceeds exact half-float count.");
+                int start=ids.Count;ids.AddRange(bucket);
+                result[i]=new Color(start%1024,(start/1024)%1024,start/1048576,bucket.Count);
             }
             return result;
         }
