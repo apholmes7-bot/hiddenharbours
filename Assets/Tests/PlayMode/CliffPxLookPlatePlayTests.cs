@@ -181,6 +181,7 @@ namespace HiddenHarbours.Tests.PlayMode
         float _followSmoothOnEntry;
         GameObject _anchor;
         float _askedHeight;
+        int _askedGridPx;
         string _eased = "(not framed)";
         RenderTexture _rt;
         int _w, _h;
@@ -1222,8 +1223,6 @@ namespace HiddenHarbours.Tests.PlayMode
             _follow.Target = _anchor.transform;
             _follow.Smooth = 1000f;   // any residue arrives in a frame, not over a second of easing
             _cam.transform.position = new Vector3(at.x, at.y, _cam.transform.position.z);
-            _askedHeight = _follow.WorldHeightFor(CameraFraming.OnFoot);
-            _follow.SetFraming(_askedHeight, 0f);
 
             if (_rt == null)
             {
@@ -1233,6 +1232,9 @@ namespace HiddenHarbours.Tests.PlayMode
                 _rt.Create();
             }
             _cam.targetTexture = _rt;
+            _askedGridPx = _cam.targetTexture.height;   // the follow frames on its camera's render texture
+            _askedHeight = _follow.WorldHeightFor(CameraFraming.OnFoot);
+            _follow.SetFraming(_askedHeight, 0f);
             for (int i = 0; i < 2; i++) yield return null;   // the follow reads the anchor while nothing can move
 
             Time.timeScale = 1f;
@@ -1379,7 +1381,7 @@ namespace HiddenHarbours.Tests.PlayMode
             sb.AppendLine($"asked centre ({s.Centre.x:0.###}, {s.Centre.y:0.###}); camera at ({p.x:0.####}, {p.y:0.####}, {p.z:0.###}); {_eased}");
             sb.AppendLine($"ortho {_cam.orthographicSize:0.#####} -> {worldHeight * _cam.aspect:0.###} x {worldHeight:0.####} m, " +
                           $"render texture {_w}x{_h} px, {_follow.WorldUnitsPerRenderedPixel:0.#####} m per rendered pixel");
-            sb.AppendLine($"framing: asked {_askedHeight:0.###} m (WorldHeightFor OnFoot), framed {worldHeight:0.###} m; committed {_follow.Framing} (known {_follow.FramingKnown})");
+            sb.AppendLine($"framing: asked {_askedHeight:0.###} m (WorldHeightFor OnFoot on a {_askedGridPx} px grid), framed {worldHeight:0.###} m; committed {_follow.Framing} (known {_follow.FramingKnown})");
             sb.AppendLine(DescribePixelPerfect());
             sb.AppendLine($"hour, sun and tide: {_pinned}");
             sb.AppendLine(s.Figure.HasValue
