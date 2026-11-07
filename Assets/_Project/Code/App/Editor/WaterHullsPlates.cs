@@ -194,7 +194,7 @@ namespace HiddenHarbours.App.Editor
             _camera.Render(); Color32[] before = Read(_target);
             Source(false);
             _camera.Render(); Color32[] after = Read(_target);
-            var bandTarget = Shader.GetGlobalTexture("_HHHullCausticTex") as RenderTexture;
+            var bandTarget = BandTarget();
             if (bandTarget == null) throw new InvalidOperationException("The facet band target was not published.");
             Color32[] band = Read(bandTarget);
             int inside = 0, outside = 0, bandPixels = 0;
@@ -242,6 +242,37 @@ namespace HiddenHarbours.App.Editor
             _camera.orthographicSize = Mathf.Max(bounds.extents.y + 5, bounds.extents.x / (1280f / 720f) + 5);
             Source(false); GameServices.Config.HullCausticStrength = 0;
             _mainThread = ProfilerRecorder.StartNew(ProfilerCategory.Internal, "Main Thread");
+        }
+
+        private static RenderTexture BandTarget()
+        {
+            // Command-buffer globals need not update Shader.GetGlobalTexture's CPU property sheet.
+            // Read the actual retained target owned by this camera, without changing the renderer.
+            const BindingFlags fields = BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public;
+            var diagnostic = new List<string> {
+                "strength=" + _strength, "configuredStrength=" + GameServices.Config.HullCausticStrength,
+                "width=" + GameServices.Config.HullCausticBandMeters,
+                "displacedSurfaces=" + DisplacedWaterRegistry.Count,
+                "cpuGlobal=" + (Shader.GetGlobalTexture("_HHHullCausticTex") != null
+                    ? Shader.GetGlobalTexture("_HHHullCausticTex").GetType().Name : "null") };
+            foreach (var asset in Resources.FindObjectsOfTypeAll<ScriptableObject>())
+            {
+                if (asset.GetType().Name != "IsoFacetHullFeature") continue;
+                object pass = asset.GetType().GetField("_pass", fields)?.GetValue(asset);
+                if (pass == null) continue;
+                var targets = pass.GetType().GetField("_causticDarkTargets", fields)?.GetValue(pass)
+                    as System.Collections.IDictionary;
+                diagnostic.Add("cameraTargets=" + (targets != null ? targets.Count : -1));
+                if (targets == null || !targets.Contains(_camera.GetEntityId())) continue;
+                object handle = targets[_camera.GetEntityId()];
+                var texture = handle.GetType().GetProperty("rt")?.GetValue(handle) as RenderTexture;
+                if (texture == null) continue;
+                diagnostic.Add("retainedTarget=" + texture.name + " " + texture.width + "x" + texture.height);
+                File.WriteAllLines(Path.Combine(_output, "band-target-readback.txt"), diagnostic);
+                return texture;
+            }
+            File.WriteAllLines(Path.Combine(_output, "band-target-readback.txt"), diagnostic);
+            return null;
         }
 
         private static bool CostStep()
