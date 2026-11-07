@@ -5984,3 +5984,25 @@ MonoBehaviour:
   - gull.nmc_market
   - harbour.yard
   - boat.nmc_damaged_dory
+  - harbour.west
+  - harbour.fleet
+  - harbour.east
+  - harbour.arm_w
+  - harbour.arm_e
+  - structure.nmc_wharf_crane
+  - prop.nmc_crane_pad
+  - structure.nmc_light_west
+  - structure.nmc_light_east
+  - boat.nmc_celeste
+  - boat.nmc_alma
+  - boat.nmc_dan
+  - vehicle.nmc_ramp_pickup
+  - prop.nmc_totes_0
+  - prop.nmc_totes_1
+  - prop.nmc_totes_2
+  - prop.nmc_totes_3
+  - prop.nmc_ice_crane
+  - prop.nmc_ring_ramp
+  - gull.nmc_crane
+  - gull.nmc_light
+  - gull.nmc_arm

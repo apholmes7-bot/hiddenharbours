@@ -158,6 +158,17 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         [Test]
+        public void TheH5RowsPlaced_AreExactlyTheEligibleTwentyTwo()
+        {
+            Record record = Read();
+            var expected = record.rows.Where(r => r.owner == "H5" && string.IsNullOrEmpty(r.waits)).Select(r => r.id).ToArray();
+            Assert.That(expected, Has.Length.EqualTo(22));
+            var owned = new HashSet<string>(record.rows.Where(r => r.owner == "H5").Select(r => r.id));
+            CollectionAssert.AreEquivalent(expected, Scene().PlacementIds.Where(owned.Contains).ToArray());
+            CollectionAssert.DoesNotContain(Scene().PlacementIds, "prop.nmc_light_ramp");
+        }
+
+        [Test]
         public void TheRampPickupIsTheModern3500_InTheCandidate()
         {
             var yaml = WaterSideCandidate();
@@ -346,6 +357,7 @@ namespace HiddenHarbours.Tests.EditMode
                 ["vehicle.nmc_pickup_leo"] = "Modern350",
                 ["vehicle.nmc_pickup_ross"] = "Modern2500",
                 ["vehicle.nmc_pickup_marie"] = "Modern350",
+                ["vehicle.nmc_ramp_pickup"] = "Modern3500",
             };
             foreach (var pair in expected)
             {
@@ -359,9 +371,8 @@ namespace HiddenHarbours.Tests.EditMode
             }
             Assert.That(NineMileCreekWharfLandSide.ParkedPickupDefinition("vehicle.nmc_ramp_pickup"),
                 Is.EqualTo("Assets/_Project/Data/Vehicles/Modern3500.asset"));
-            // seat ruling s9, 11-07: the ramp-pickup expectation returns with Phase B's placement.
-            Assert.That(yaml.Docs.Any(d => d.ClassId == 1 && d.Field("m_Name") == "vehicle.nmc_ramp_pickup"), Is.False,
-                "The ramp pickup waits for H5; this phase places no H5 row.");
+            // seat ruling s9, 11-07: H5 places by Decision 4; its ramp pickup now stands on its row.
+            Assert.That(yaml.Docs.Any(d => d.ClassId == 1 && d.Field("m_Name") == "vehicle.nmc_ramp_pickup"), Is.True);
             Assert.Throws<StPetersLayerRefresh.Refusal>(() => NineMileCreekWharfLandSide.ParkedPickupDefinition("vehicle.fixture_unassigned"));
         }
 
