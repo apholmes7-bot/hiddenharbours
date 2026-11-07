@@ -262,11 +262,13 @@ namespace HiddenHarbours.App.Editor
             Add(PlaceWaterSide(yaml,false));Add(MoveWaterFleet(yaml));Add(BindPlayerWaterLadder(yaml));
             foreach(var patch in WaterRetirements(yaml).ToArray())Add(patch);
             Add(RemoveChildren(yaml,"NineMileCreekDressing",n=>n=="fuelPump_10"||n=="oilTank_11",2,WaterStep));
+            Add(OpenWaterGangwayHeads(yaml));Add(PlaceWaterFuel(yaml));
             // The owner's westward crib is the final scene placement operation.
             Add(PlaceWaterSide(yaml,true));
             File.WriteAllText(evidence+"/placement-patches.yaml",string.Join("\n",patches.Select(p=>p.ToYaml())));
             File.WriteAllText(evidence+"/candidate.unity",yaml.Render());
             var repeat=PlaceWaterSide(yaml,true).Apply(yaml);repeat=MoveWaterFleet(repeat).Apply(repeat);repeat=BindPlayerWaterLadder(repeat).Apply(repeat);
+            repeat=OpenWaterGangwayHeads(repeat).Apply(repeat);repeat=PlaceWaterFuel(repeat).Apply(repeat);
             if(repeat.Render()!=yaml.Render())throw new Refusal("H5's second apply changes a scene byte.");
             File.WriteAllText(evidence+"/repeat-identical.txt","The second apply changes no scene byte.\n");
             if(!apply)return;

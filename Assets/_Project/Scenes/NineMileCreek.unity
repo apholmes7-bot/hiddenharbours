@@ -217457,11 +217457,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8803658912853190592, guid: 2020aa4fd008670489c1f37b38a8b55f, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 90.245
+      value: 60.9400024
       objectReference: {fileID: 0}
     - target: {fileID: 8803658912853190592, guid: 2020aa4fd008670489c1f37b38a8b55f, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 62
+      value: 84.3399963
       objectReference: {fileID: 0}
     - target: {fileID: 8803658912853190592, guid: 2020aa4fd008670489c1f37b38a8b55f, type: 3}
       propertyPath: m_LocalPosition.z
@@ -337204,22 +337204,34 @@ PolygonCollider2D:
   m_AutoTiling: 0
   m_Points:
     m_Paths:
-    - - {x: 77.8249969, y: 86.1750031}
-      - {x: 104.400002, y: 86.1750031}
+    - - {x: 77.8249969, y: 85.8249969}
       - {x: 104.400002, y: 85.8249969}
-      - {x: 77.8249969, y: 85.8249969}
-    - - {x: 105.599998, y: 86.1750031}
-      - {x: 190.199997, y: 86.1750031}
+      - {x: 104.400002, y: 86.1750031}
+      - {x: 77.8249969, y: 86.1750031}
+    - - {x: 105.599998, y: 85.8249969}
+      - {x: 109.079994, y: 85.8249969}
+      - {x: 109.079994, y: 86.1750031}
+      - {x: 105.599998, y: 86.1750031}
+    - - {x: 110.32, y: 85.8249969}
+      - {x: 141.680008, y: 85.8249969}
+      - {x: 141.680008, y: 86.1750031}
+      - {x: 110.32, y: 86.1750031}
+    - - {x: 142.919998, y: 85.8249969}
+      - {x: 178.680008, y: 85.8249969}
+      - {x: 178.680008, y: 86.1750031}
+      - {x: 142.919998, y: 86.1750031}
+    - - {x: 179.919998, y: 85.8249969}
       - {x: 190.199997, y: 85.8249969}
-      - {x: 105.599998, y: 85.8249969}
-    - - {x: 193.800003, y: 86.1750031}
-      - {x: 202.199997, y: 86.1750031}
+      - {x: 190.199997, y: 86.1750031}
+      - {x: 179.919998, y: 86.1750031}
+    - - {x: 193.800003, y: 85.8249969}
       - {x: 202.199997, y: 85.8249969}
-      - {x: 193.800003, y: 85.8249969}
-    - - {x: 205.800003, y: 86.1750031}
-      - {x: 212.175003, y: 86.1750031}
+      - {x: 202.199997, y: 86.1750031}
+      - {x: 193.800003, y: 86.1750031}
+    - - {x: 205.800003, y: 85.8249969}
       - {x: 212.175003, y: 85.8249969}
-      - {x: 205.800003, y: 85.8249969}
+      - {x: 212.175003, y: 86.1750031}
+      - {x: 205.800003, y: 86.1750031}
   m_UseDelaunayMesh: 1
 --- !u!1 &1771227350
 GameObject:
@@ -346645,11 +346657,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8803658912853190592, guid: 2020aa4fd008670489c1f37b38a8b55f, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 90.245
+      value: 56.9400024
       objectReference: {fileID: 0}
     - target: {fileID: 8803658912853190592, guid: 2020aa4fd008670489c1f37b38a8b55f, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 66
+      value: 84.3399963
       objectReference: {fileID: 0}
     - target: {fileID: 8803658912853190592, guid: 2020aa4fd008670489c1f37b38a8b55f, type: 3}
       propertyPath: m_LocalPosition.z
@@ -378705,7 +378717,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &2009072848
 Transform:
   m_ObjectHideFlags: 0
