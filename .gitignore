@@ -115,20 +115,15 @@ InitTestScene*.unity*
 # path on Windows (Git Bash makes it a real directory). Harmless duplicate of .git/hooks.
 /dev/
 
-# The CLIFF FACE KIT's baked pixels (Hidden Harbours ▸ Dev ▸ Bake Cliff Face Kit).
-#
-# ⭐ DELIBERATELY NOT COMMITTED, unlike every sibling kit's sheets. The kit is parametric — 3 rocks
-# × 5 aspects × 4 batters × 3 wear steps, four co-registered channels each — and its own README puts
-# the full bake at ~90 MB. MEASURED: even the narrow St Peters subset the baker ships by default is
-# 16.0 MB across 63 PNGs, every byte of it regenerable in seconds and stale the moment a rig
-# coefficient moves. So docs/art/rigs/cliff-face-kit/ is the committed source, CliffBaker is the
-# tool, CliffRigBakeTests guards the contract against the rig on every CI run, and the pixels live
-# here locally. A fresh clone renders cliff geometry untextured until the bake is run once.
-/[Aa]ssets/_Project/Art/Terrain/Cliffs/
-/[Aa]ssets/_Project/Art/Terrain/Cliffs.meta
+# The CLIFF FACE KIT's baked pixels (Assets/_Project/Art/Terrain/Cliffs/) are COMMITTED, under LFS
+# (*.png), since terrain-fidelity P1 (11-07). They were ignored here until then, and that broke
+# every clone: the walls name their faces by .meta GUID, a bake from nothing minted fresh GUIDs,
+# so a clone, CI and a build drew the St Peters and Nine Mile Creek cliffs with no face. CliffBaker
+# now writes each GUID from the file's place in the kit (CliffFaceGuidTests holds it), and a
+# re-bake after a rig edit is a PR that re-commits what it wrote (~9.6 MB for all three rocks).
 
 # The NMC ROAD FLOOR's baked chunks (`node tools/nmc-roads/bake-chunks.cjs` over the committed
-# network file). DELIBERATELY NOT COMMITTED, like the cliff face kit above: 3,744 PNGs (1,248 each
+# network file). DELIBERATELY NOT COMMITTED, as the cliff face kit was until 11-07: 3,744 PNGs (1,248 each
 # of normal, light and detail) = 160 MB, every byte regenerable by the builder and stale the moment
 # the network or the kit moves. The manifest RoadFloor.json and the folder metas ARE committed;
 # RoadFloorManifestTests reads the manifest and ignores when it is absent; RoadFloorStreamer reads

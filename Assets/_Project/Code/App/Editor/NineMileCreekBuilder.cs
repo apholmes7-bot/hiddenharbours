@@ -1184,9 +1184,10 @@ namespace HiddenHarbours.App.Editor
             // band either way round. It runs second only so its log line is the last thing about the
             // ground the owner reads.
             //
-            // ⚠ EnsureBaked FIRST: the Cliff Face kit's pixels are gitignored by design (the rig is the
-            // committed source), so a fresh checkout has no faces and the coast would stand up untextured
-            // without a word. St Peters' builder makes the same call for the same reason.
+            // ⚠ EnsureBaked FIRST: the Cliff Face kit's pixels were gitignored until terrain-fidelity P1
+            // (11-07) and are committed under LFS since; the call stays for a checkout whose LFS objects
+            // never landed, so the coast never stands up untextured without a word. St Peters' builder
+            // makes the same call for the same reason.
             //
             // ⚠ THE WALLS COME FROM THEIR DEFS (NMC H3), never the premise: the premise is the coast plan
             // before G3, and walking it would stand the old walls back up. The Defs are what N1 step
