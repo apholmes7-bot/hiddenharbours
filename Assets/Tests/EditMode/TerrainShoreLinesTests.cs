@@ -18,13 +18,14 @@ namespace HiddenHarbours.Tests.EditMode
         [SetUp] public void SetUp() => _def = ScriptableObject.CreateInstance<TerrainShoreLinesDef>();
         [TearDown] public void TearDown() => UnityEngine.Object.DestroyImmediate(_def);
 
-        static ShoreLineDerivation.Grid Fixture(Func<Vector2, float> elevation)
+        static ShoreLineDerivation.Grid Fixture(Func<Vector2, float> elevation,
+            Func<Vector2, ShoreLineDerivation.Substrate> substrate = null)
         {
             const int size = 64;
             var values = new float[size * size];
             for (int y = 0; y < size; y++)
             for (int x = 0; x < size; x++) values[y * size + x] = elevation(new Vector2((x + .5f) * .5f - 16, (y + .5f) * .5f - 16));
-            return new ShoreLineDerivation.Grid(values, size, size, new Vector2(-16, -16), new Vector2(32, 32));
+            return new ShoreLineDerivation.Grid(values, size, size, new Vector2(-16, -16), new Vector2(32, 32), substrate);
         }
 
         static string Hash(ShoreLineDerivation.Result result)
@@ -139,6 +140,108 @@ namespace HiddenHarbours.Tests.EditMode
             Color filtered = Color.Lerp(new Color(-5, 0, 1, 5), new Color(5, 0, 1, 5), .5f);
             Assert.AreEqual(0, filtered.r);
             for (int kind = 0; kind < 5; kind++) Assert.IsFalse(ShoreLineDerivation.InBand(kind, filtered));
+        }
+
+        [Test] public void SandBermRejectsCliffStrips_WhileTurfBermAtPointTwoSlopeHasBoth()
+        {
+            float Berm(Vector2 p) => 2.2f + Mathf.Min(p.y, 1.5f) * .2f;
+            var sand = ShoreLineDerivation.Build(Fixture(Berm, p => new ShoreLineDerivation.Substrate(0, sand: 1)), _def);
+            Assert.AreEqual(0, sand.Lines[0].Length); Assert.AreEqual(0, sand.Lines[1].Length);
+            Assert.IsTrue(sand.Addresses.Take(2).SelectMany(a => a).All(c => c == Color.clear));
+            var turf = ShoreLineDerivation.Build(Fixture(Berm, p => new ShoreLineDerivation.Substrate(1)), _def);
+            Assert.Greater(turf.Lines[0].Length, 0); Assert.Greater(turf.Lines[1].Length, 0);
+        }
+
+        [Test] public void TalusAboveHalfWritesNoStripCell_AndPointFourWithTurfKeepsLip()
+        {
+            float Berm(Vector2 p) => 2.2f + Mathf.Min(p.y, 1.5f) * .2f;
+            ShoreLineDerivation.Substrate Cover(Vector2 p, float talus) => p.y >= 1 && p.y <= 3
+                ? new ShoreLineDerivation.Substrate(1 - talus, talus: talus) : new ShoreLineDerivation.Substrate(1);
+            var blocked = ShoreLineDerivation.Build(Fixture(Berm, p => Cover(p, .6f)), _def);
+            for (int y = 17; y <= 18; y++)
+            for (int x = 0; x < blocked.Width; x++)
+            for (int kind = 0; kind < 5; kind++) Assert.AreEqual(Color.clear, blocked.Addresses[kind][y * blocked.Width + x]);
+            var allowed = ShoreLineDerivation.Build(Fixture(Berm, p => Cover(p, .4f)), _def);
+            Assert.Greater(allowed.Lines[0].Length, 0);
+            Assert.IsTrue(ShoreLineDerivation.InBand(0, allowed.Sample(0, new Vector2(0, 2))));
+            Assert.IsTrue(new ShoreLineDerivation.Substrate(1, ledge: .6f).ProtectedFoot);
+            Assert.IsTrue(new ShoreLineDerivation.Substrate(1, shelf: .6f).ProtectedFoot);
+        }
+
+        [Test] public void FragmentProjectionFollowsCurvedShoreWithinQuarterMetre()
+        {
+            var result = ShoreLineDerivation.Build(Fixture(p => 6 - p.magnitude), _def);
+            int checkedPoints = 0;
+            for (float y = -6; y <= 6; y += .125f)
+            for (float x = -6; x <= 6; x += .125f)
+            {
+                Vector2 point = new Vector2(x, y); float expected = point.magnitude - 3.8f;
+                if (Mathf.Abs(expected) > 2) continue;
+                Assert.LessOrEqual(Mathf.Abs(result.Sample(2, point).r - expected), .25f);
+                checkedPoints++;
+            }
+            Assert.Greater(checkedPoints, 1000);
+        }
+
+        [Test] public void ShaderPatterns_AreSparseSeededAndHaveNoTwentyMetreRepeat()
+        {
+            const string code = @"Shader ""Hidden/ShorePatternPin"" { SubShader { Pass { ZWrite Off ZTest Always Cull Off
+HLSLPROGRAM
+#pragma target 3.5
+#pragma vertex vert
+#pragma fragment frag
+#include ""Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl""
+float _ShoreLoaded,_ShoreStep4,_ShoreBlendMetres,_ShoreSourceBlendMetres;
+float4 _ShoreSteps0123,_ShoreGrid,_HeightWorldMin,_HeightWorldSize;
+float4 _ShoreRange01,_ShoreRange23,_ShoreRange4;
+int _ShoreSeed;float4 _ShoreWrack,_ShorePattern,_ShoreLip,_ShoreLipShadow;
+float _ShoreWallsLoaded;float4 _ShoreWallGrid;
+#include ""Assets/_Project/Art/Shaders/Include/TerrainShoreLines.hlsl""
+struct V {float4 position:SV_POSITION;float2 uv:TEXCOORD0;};
+V vert(uint id:SV_VertexID){V o;o.uv=float2((id<<1)&2,id&2);o.position=float4(o.uv*2-1,0,1);return o;}
+float4 frag(V i):SV_Target {float d=i.uv.y*4-2;float4 a=float4(d,i.uv.x*64,1,abs(d));float2 uv;
+return float4(SL_Wrack(a,uv),SL_Lip(a),SL_Variant((int)floor(a.g/6))/3.0,1);}
+ENDHLSL
+} } }";
+            Shader shader = ShaderUtil.CreateShaderAsset(code);
+            var material = new Material(shader); var rt = new RenderTexture(2048, 128, 0, RenderTextureFormat.ARGBFloat);
+            var pixels = new Texture2D(2048, 128, TextureFormat.RGBAFloat, false, true);
+            RenderTexture previous = RenderTexture.active;
+            try
+            {
+                material.SetInt("_ShoreSeed", 17041); material.SetFloat("_ShoreBlendMetres", .25f);
+                material.SetVector("_ShoreWrack", new Vector4(1, 3, 6, .5f));
+                material.SetVector("_ShorePattern", new Vector4(2.5f, .6f, 0, 0));
+                material.SetVector("_ShoreLip", new Vector4(.5f, 1, 1, 2));
+                ShaderUtil.CompilePass(material, 0, true);
+                Assert.IsFalse(ShaderUtil.GetShaderMessages(shader).Any(m => m.severity == UnityEditor.Rendering.ShaderCompilerMessageSeverity.Error));
+                Graphics.SetRenderTarget(rt); GL.Clear(false, true, Color.clear); material.SetPass(0);
+                Graphics.DrawProceduralNow(MeshTopology.Triangles, 3);
+                pixels.ReadPixels(new Rect(0, 0, 2048, 128), 0, 0); pixels.Apply();
+                Color[] data = pixels.GetPixels();
+                float coverage = data.Count(c => c.r > 0) / (float)data.Length;
+                Assert.That(coverage, Is.GreaterThan(.01f).And.LessThanOrEqualTo(.4f));
+                Assert.IsTrue(data.Any(c => c.g > 0));
+                Assert.IsTrue(Enumerable.Range(0, 640).Any(x => Math.Abs(data[64 * 2048 + x].r - data[64 * 2048 + x + 640].r) > .01f));
+                // seat ruling s11, 11-07: the readback row's orientation is not assumed; the lip is landward only
+                int lipRow = 48, mirror = 127 - 48;
+                float lipMax = Enumerable.Range(0, 2048).Max(x => data[lipRow * 2048 + x].g);
+                float mirrorMax = Enumerable.Range(0, 2048).Max(x => data[mirror * 2048 + x].g);
+                bool lipPresent = lipMax > .01f, mirrorPresent = mirrorMax > .01f;
+                string rowDump = FormattableString.Invariant($"seat ruling s11: row {lipRow} max g={lipMax:R}, presence={lipPresent}; row {mirror} max g={mirrorMax:R}, presence={mirrorPresent}");
+                TestContext.Progress.WriteLine(rowDump);
+                Assert.IsTrue(lipPresent ^ mirrorPresent, rowDump);
+                int measuredLipRow = lipPresent ? lipRow : mirror;
+                Assert.IsTrue(Enumerable.Range(0, 640).Any(x => Math.Abs(data[measuredLipRow * 2048 + x].g - data[measuredLipRow * 2048 + x + 640].g) > .01f), rowDump);
+                int[] variants = Enumerable.Range(0, 10).Select(i => Mathf.RoundToInt(data[(i * 192 + 96)].b * 3)).ToArray();
+                Assert.GreaterOrEqual(variants.Distinct().Count(), 3);
+                for (int i = 1; i < variants.Length; i++) Assert.AreNotEqual(variants[i - 1], variants[i]);
+            }
+            finally
+            {
+                RenderTexture.active = previous; rt.Release(); UnityEngine.Object.DestroyImmediate(rt);
+                UnityEngine.Object.DestroyImmediate(pixels); UnityEngine.Object.DestroyImmediate(material); UnityEngine.Object.DestroyImmediate(shader);
+            }
         }
 
         [Test] public void ArrayPins_AllFifteenSlicesAndTheirBytes()
