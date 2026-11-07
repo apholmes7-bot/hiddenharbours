@@ -109,11 +109,13 @@ namespace HiddenHarbours.UI
 
         private void CaptureWorld()
         {
-            _creatorProperties ??= new MaterialPropertyBlock();
             _worldCamera = Camera.main;
             _figureLayer = LayerMask.NameToLayer("UI");
-            if (_worldCamera != null && _figureLayer >= 0)
+            if (SystemInfo.graphicsDeviceType == GraphicsDeviceType.Null)
+                UseFallback("No graphics device: the creator camera cannot render the figure.");
+            else if (_worldCamera != null && _figureLayer >= 0)
             {
+                _creatorProperties ??= new MaterialPropertyBlock();
                 var cameraHost = new GameObject("CreatorCamera", typeof(Camera));
                 cameraHost.transform.SetParent(transform, false);
                 _creatorCamera = cameraHost.GetComponent<Camera>();
