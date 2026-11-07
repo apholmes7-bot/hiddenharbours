@@ -368,8 +368,7 @@ namespace HiddenHarbours.Art
             _mpb ??= new MaterialPropertyBlock();
             EnsureBuilt();
             _shoreLines?.Dispose();
-            _shoreLines = TerrainShoreLineBinding.Create(_heightTexture, _heightMin, _heightMax, _worldCenter, _worldSize,
-                _splatA, _splatB, _splatC, _splatD, _splatE, _splatF);
+            _shoreLines = null;
             PushAll();
             if (!s_Live.Contains(this)) s_Live.Add(this);
             LiveVersion++;
@@ -377,7 +376,11 @@ namespace HiddenHarbours.Art
 
         private void Start()
         {
-            _shoreLines?.CaptureWalls(gameObject.scene);
+            // seat ruling s12, 11-07: all wall meshes must exist before the load-only footprint
+            // qualifies the cliff coast. Start follows every scene component's OnEnable.
+            if (_shoreLines == null)
+                _shoreLines = TerrainShoreLineBinding.Create(_heightTexture, _heightMin, _heightMax, _worldCenter, _worldSize,
+                    gameObject.scene, _splatA, _splatB, _splatC, _splatD, _splatE, _splatF);
             PushAll();
         }
 

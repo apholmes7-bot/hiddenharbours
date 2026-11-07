@@ -97,20 +97,18 @@ float SL_Lip(float4 address)
         * (1 - smoothstep(max(0, depth - _ShoreBlendMetres), depth, landward));
 }
 
+float SL_WallProtected(float2 uv)
+{
+    // seat ruling s12, 11-07: the load-time triangle mask already includes one address texel.
+    // Painted Talus/Ledge/Shelf on the exposed foreshore are not wall faces.
+    if (_ShoreWallsLoaded < 0.5) return 0;
+    int2 cell = clamp(int2(floor(uv * _ShoreWallGrid.xy)), int2(0, 0), int2(_ShoreWallGrid.xy) - 1);
+    return _ShoreWallMask.Load(int3(cell, 0)).r;
+}
 float2 SL_Prepare(float2 wp, float2 uv, float protectedFoot, float organic, float beach, out float4 addresses[5])
 {
     for (int clear = 0; clear < 5; clear++) addresses[clear] = float4(8, 0, 0, 8);
-    [branch] if (_ShoreLoaded < 0.5 || protectedFoot > 0.5) return wp;
-    [branch] if (_ShoreWallsLoaded > 0.5)
-    {
-        int2 cell = int2(floor(uv * _ShoreWallGrid.xy));
-        [unroll] for (int y = -1; y <= 1; y++)
-        [unroll] for (int x = -1; x <= 1; x++)
-        {
-            int2 at = clamp(cell + int2(x, y), int2(0, 0), int2(_ShoreWallGrid.xy) - 1);
-            if (_ShoreWallMask.Load(int3(at, 0)).r > 0.5) return wp;
-        }
-    }
+    [branch] if (_ShoreLoaded < 0.5 || SL_WallProtected(uv) > 0.5) return wp;
     float2 offset = float2(0, 0); float nearest = 1e6;
     [unroll] for (int kind = 0; kind < 5; kind++)
     {

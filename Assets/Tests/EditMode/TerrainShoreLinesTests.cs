@@ -183,6 +183,32 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.Greater(checkedPoints, 1000);
         }
 
+        [Test] public void CliffCoast_LandwardTurfAndExposedSpringLowHaveAddressesOutsideWallFaces()
+        {
+            // seat ruling s12, 11-07: real wall geometry separates a rock brow and painted
+            // foot from the exposed foreshore. Neither paint alone is a wall footprint.
+            var walls = new ShoreLineDerivation.WallFootprint(new Vector2(-16, -16), new Vector2(32, 32), .25f, 1);
+            walls.AddTriangle(new Vector2(-16, -1), new Vector2(16, -1), new Vector2(16, 1));
+            walls.AddTriangle(new Vector2(-16, -1), new Vector2(16, 1), new Vector2(-16, 1));
+            float Height(Vector2 p) => p.y > 3 ? 6 : p.y >= -1 ? 6 + (p.y - 3) * 2 : -2 + (p.y + 1) * .1f;
+            var baseGrid = Fixture(Height);
+            var grid = new ShoreLineDerivation.Grid(baseGrid.Elevations, baseGrid.Width, baseGrid.Height,
+                baseGrid.Min, baseGrid.Size, p => p.y > 3.75f ? new ShoreLineDerivation.Substrate(1)
+                    : new ShoreLineDerivation.Substrate(0, talus: .75f), walls);
+            var data = ShoreLineDerivation.Build(grid, _def);
+            foreach (int kind in new[] { 0, 1 })
+            {
+                Assert.Greater(data.Lines[kind].Length, 0, "The landward turf qualifies the rock brow.");
+                Assert.IsTrue(Enumerable.Range(0, 64).Select(y => new Vector2(0, y * .125f + 2))
+                    .Any(p => ShoreLineDerivation.InBand(kind, data.Sample(kind, p))), "A landward brow envelope must survive.");
+            }
+            Assert.IsTrue(Enumerable.Range(0, 80).Select(y => new Vector2(0, -6 + y * .1f))
+                .Any(p => ShoreLineDerivation.InBand(3, data.Sample(3, p))), "Spring-low weed must address the exposed foreshore.");
+            foreach (float y in new[] { -1f, 0f, 1f })
+            for (int kind = 0; kind < 5; kind++)
+                Assert.IsFalse(ShoreLineDerivation.InBand(kind, data.Sample(kind, new Vector2(0, y))), "No strip belongs inside wall faces.");
+        }
+
         [Test] public void ShaderPatterns_AreSparseSeededAndHaveNoTwentyMetreRepeat()
         {
             const string code = @"Shader ""Hidden/ShorePatternPin"" { SubShader { Pass { ZWrite Off ZTest Always Cull Off

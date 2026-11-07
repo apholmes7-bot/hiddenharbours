@@ -163,17 +163,19 @@ material transition to the Def's 0.25 m blend; material texture tiling stays in 
 The water's shared albedo include and floor binding do not read this ground-only address data.
 Water drawing, cliff drawing and lighting presets are unchanged.
 
-Cliff strips require the first qualifying shore brow, a slope at least ScarpMinimumSlope,
-and turf or soil in the existing splat channels. Sand and shingle reject them. A gentle
-soil brow can carry both lip and scarp; TurfMinimumSlope still separates a steep cliff from
-the scarp. All five address fields skip cells whose Talus, Ledge or Shelf share exceeds 0.5,
-and the fragment checks the unshifted surface before either its blend lookup or its strip.
+Cliff strips require the first qualifying shore brow and a slope at least ScarpMinimumSlope.
+Seat ruling s12, 11-07: qualify the break by turf or soil one BrowStepMetres inland;
+the break itself may be rock. Sand and shingle still reject the strips. A wall coast can
+carry both brow envelopes; the existing steep/gentle classification remains on soft shores.
 
-After the walls build on enable, Start captures their mesh footprints once into a transient
-R8 mask at BlendMetres spacing. Expanded wall-renderer bounds conservatively protect thin geometry. Selection is by CliffWallSurface, including its brow and toe
-decal geometry. A conservative one-texel guard excludes that footprint from all strips and
-from blend tightening. The ground therefore cannot alter the existing wall through a decal
-or a transparent edge. No cliff material, texture, geometry or lighting setting changes.
+Seat ruling s12, 11-07: after all walls build on enable, Start rasterizes their actual world-XY
+mesh triangles once into a transient R8 mask at BlendMetres spacing, with a one-address-texel
+margin. CPU addressing and the fragment use the same footprint. Broad renderer rectangles
+and painted Talus/Ledge/Shelf shares do not identify a wall face. Exposed foreshore remains
+addressable: wrack uses spring high, and cliff-coast weed uses spring low (minus SpringHigh).
+A shore-normal trace identifies the wall coast; soft-shore weed retains its mean-high mark.
+The footprint excludes all strips and blend tightening. No cliff material, texture, geometry
+or lighting setting changes.
 
 The Def's seed varies the authored PNG sampling. Wrack occupies irregular clumps 1â€“3 m long,
 with 2â€“6 m gaps, rotation, scale, offsets and four variants that differ between neighbours.

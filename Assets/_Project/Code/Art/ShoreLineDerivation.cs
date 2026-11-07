@@ -59,7 +59,7 @@ namespace HiddenHarbours.Art
             {
                 Color best = new Color(8, 0, 0, 8);
                 Substrate cover = _grid.CoverAt(point);
-                if (cover.ProtectedFoot || (kind < 2 && !cover.QualifyingBrow)) return best;
+                if (_grid.ProtectedAt(point) || (kind < 2 && !cover.QualifyingBrow)) return best;
                 int x = Mathf.FloorToInt((point.x - Min.x) / Size.x * Width);
                 int y = Mathf.FloorToInt((point.y - Min.y) / Size.y * Height);
                 Color packed = Addresses[kind][Mathf.Clamp(y, 0, Height - 1) * Width + Mathf.Clamp(x, 0, Width - 1)];
@@ -80,6 +80,56 @@ namespace HiddenHarbours.Art
             { Turf = turf; Sand = sand; Shingle = shingle; Talus = talus; Ledge = ledge; Shelf = shelf; }
             public bool ProtectedFoot => Talus > .5f || Ledge > .5f || Shelf > .5f;
             public bool QualifyingBrow => Turf >= .5f && Sand < .01f && Shingle < .01f && !ProtectedFoot;
+        }
+
+        /// <summary>The actual wall triangles in world XY, expanded by one address texel at load.</summary>
+        public sealed class WallFootprint
+        {
+            public readonly int Width, Height;
+            public readonly Vector2 Min, Size;
+            public readonly byte[] Pixels;
+            readonly float _margin;
+            public WallFootprint(Vector2 min, Vector2 size, float texel, float margin)
+            {
+                Min = min; Size = size; _margin = margin;
+                Width = Mathf.CeilToInt(size.x / texel); Height = Mathf.CeilToInt(size.y / texel);
+                Pixels = new byte[Width * Height];
+            }
+            public bool At(Vector2 p)
+            {
+                int x = Mathf.FloorToInt((p.x - Min.x) / Size.x * Width);
+                int y = Mathf.FloorToInt((p.y - Min.y) / Size.y * Height);
+                return x >= 0 && x < Width && y >= 0 && y < Height && Pixels[y * Width + x] != 0;
+            }
+            static float Cross(Vector2 a, Vector2 b) => a.x * b.y - a.y * b.x;
+            static float DistanceSquared(Vector2 p, Vector2 a, Vector2 b)
+            {
+                Vector2 ab = b - a;
+                return (p - a - ab * Mathf.Clamp01(Vector2.Dot(p - a, ab) / Mathf.Max(ab.sqrMagnitude, 1e-12f))).sqrMagnitude;
+            }
+            public void AddTriangle(Vector2 a, Vector2 b, Vector2 c)
+            {
+                // seat ruling s12, 11-07: protect the drawn triangles plus one address texel,
+                // never a renderer's rectangular bounds or the whole painted foreshore.
+                float rx = Size.x / Width, ry = Size.y / Height;
+                int x0 = Mathf.Clamp(Mathf.FloorToInt((Mathf.Min(a.x, Mathf.Min(b.x, c.x)) - _margin - Min.x) / rx), 0, Width - 1);
+                int x1 = Mathf.Clamp(Mathf.CeilToInt((Mathf.Max(a.x, Mathf.Max(b.x, c.x)) + _margin - Min.x) / rx), 0, Width - 1);
+                int y0 = Mathf.Clamp(Mathf.FloorToInt((Mathf.Min(a.y, Mathf.Min(b.y, c.y)) - _margin - Min.y) / ry), 0, Height - 1);
+                int y1 = Mathf.Clamp(Mathf.CeilToInt((Mathf.Max(a.y, Mathf.Max(b.y, c.y)) + _margin - Min.y) / ry), 0, Height - 1);
+                float margin2 = _margin * _margin;
+                for (int y = y0; y <= y1; y++)
+                for (int x = x0; x <= x1; x++)
+                {
+                    int i = y * Width + x;
+                    if (Pixels[i] != 0) continue;
+                    Vector2 p = Min + new Vector2((x + .5f) * rx, (y + .5f) * ry);
+                    float u = Cross(b - a, p - a), v = Cross(c - b, p - b), w = Cross(a - c, p - c);
+                    bool inside = Mathf.Abs(Cross(b - a, c - a)) > 1e-10f
+                        && ((u >= 0 && v >= 0 && w >= 0) || (u <= 0 && v <= 0 && w <= 0));
+                    if (inside || DistanceSquared(p, a, b) <= margin2 || DistanceSquared(p, b, c) <= margin2
+                        || DistanceSquared(p, c, a) <= margin2) Pixels[i] = 255;
+                }
+            }
         }
 
         /// <summary>A load-only snapshot of the six existing linear splats. No material slot is added.</summary>
@@ -124,8 +174,9 @@ namespace HiddenHarbours.Art
             public readonly int Width, Height;
             public readonly Vector2 Min, Size, Texel;
             readonly Func<Vector2, Substrate> _substrate;
+            readonly WallFootprint _walls;
             public Grid(float[] elevations, int width, int height, Vector2 min, Vector2 size,
-                Func<Vector2, Substrate> substrate = null)
+                Func<Vector2, Substrate> substrate = null, WallFootprint walls = null)
             {
                 if (width < 2 || height < 2 || elevations == null || elevations.Length != width * height
                     || size.x <= 0 || size.y <= 0) throw new ArgumentException("Invalid shore height grid.");
@@ -133,10 +184,21 @@ namespace HiddenHarbours.Art
                     if (float.IsNaN(e) || float.IsInfinity(e)) throw new ArgumentException("Nonfinite shore height.");
                 Elevations = elevations; Width = width; Height = height; Min = min; Size = size;
                 Texel = new Vector2(size.x / width, size.y / height);
-                _substrate = substrate;
+                _substrate = substrate; _walls = walls;
             }
             // Geometry-only fixtures explicitly model a turf cap. Region bindings supply their splat reader.
             public Substrate CoverAt(Vector2 q) => _substrate == null ? new Substrate(1) : _substrate(q);
+            // seat ruling s12, 11-07: region bindings supply real wall geometry; legacy geometry-only
+            // fixtures keep their explicit painted-foot premise when no wall geometry is supplied.
+            public bool ProtectedAt(Vector2 q) => _walls == null ? CoverAt(q).ProtectedFoot : _walls.At(q);
+            public bool CliffCoast(Vector2 q, TerrainShoreLinesDef def)
+            {
+                if (_walls == null) return false;
+                Vector2 inland = Gradient(q).normalized;
+                for (float run = -StripMetres; run <= def.BrowSearchMetres; run += def.BrowStepMetres)
+                    if (_walls.At(q + inland * run)) return true;
+                return false;
+            }
             public float At(Vector2 q)
             {
                 float fx = (q.x - Min.x) / Texel.x - .5f, fy = (q.y - Min.y) / Texel.y - .5f;
@@ -168,15 +230,22 @@ namespace HiddenHarbours.Art
             lines[0] = Brows(grid, high, def, true);
             lines[1] = Brows(grid, high, def, false);
             lines[2] = Segments(grid, high);
-            lines[3] = Segments(grid, Contours(grid, def.MeanHigh));
+            var weed = new List<Segment>();
+            // seat ruling s12, 11-07: cliff foreshore weed addresses spring low (-spring high).
+            // Soft shores retain their existing mean-high line, keeping fixture and beach coverage.
+            foreach (var s in Segments(grid, Contours(grid, def.MeanHigh)))
+                if (!grid.CliffCoast((s.A + s.B) * .5f, def)) weed.Add(s);
+            foreach (var s in Segments(grid, Contours(grid, -def.SpringHigh)))
+                if (grid.CliffCoast((s.A + s.B) * .5f, def)) weed.Add(s);
+            lines[3] = weed.ToArray();
             lines[4] = Segments(grid, Contours(grid, def.MeanLow));
             var addresses = new Color[KindCount][];
             var all = new List<Segment> { default };
             var ids = new List<int>();
             var foot = new bool[width * height];
             for (int y = 0; y < height; y++)
-            for (int x = 0; x < width; x++) foot[y * width + x] = grid.CoverAt(grid.Min +
-                Vector2.Scale(new Vector2((x + .5f) / width, (y + .5f) / height), grid.Size)).ProtectedFoot;
+            for (int x = 0; x < width; x++) foot[y * width + x] = grid.ProtectedAt(grid.Min +
+                Vector2.Scale(new Vector2((x + .5f) / width, (y + .5f) / height), grid.Size));
             for (int kind = 0; kind < KindCount; kind++)
             {
                 addresses[kind] = Raster(grid, lines[kind], width, height, all.Count, foot, ids);
@@ -347,8 +416,11 @@ namespace HiddenHarbours.Art
                         { found = p; broke = grid.At(p) >= def.SpringHigh + def.BrowRiseMetres; break; }
                     }
                     brow.Points.Add(found);
-                    valid[i] = broke && peak >= def.ScarpMinimumSlope && grid.CoverAt(found).QualifyingBrow
-                        && (turf || peak < def.TurfMinimumSlope);
+                    // seat ruling s12, 11-07: the break itself can be rock; qualify its turf
+                    // one search step inland without moving the geometrically found brow.
+                    valid[i] = broke && peak >= def.ScarpMinimumSlope
+                        && grid.CoverAt(found + inland * def.BrowStepMetres).QualifyingBrow
+                        && (turf || peak < def.TurfMinimumSlope || grid.CliffCoast(found, def));
                 }
                 // Neighbouring rays can reach different banks or fold across a concavity. Neither
                 // a long connector nor a reversed connector is part of the shore's brow curve.

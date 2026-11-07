@@ -13,7 +13,7 @@ namespace HiddenHarbours.Art
         readonly Texture2D _indices;
         readonly Vector2 _min, _size;
         readonly int[] _kindStarts;
-        RenderTexture _walls;
+        Texture2D _walls;
         static readonly int Loaded = Shader.PropertyToID("_ShoreLoaded");
         static readonly int Fields = Shader.PropertyToID("_ShoreFields");
         static readonly int Grid = Shader.PropertyToID("_ShoreGrid");
@@ -29,7 +29,7 @@ namespace HiddenHarbours.Art
         { _def = def; _fields = fields; _strips = strips; _segments = segments; _min = min; _size = size; _kindStarts = kindStarts; _indices = indices; }
 
         internal static TerrainShoreLineBinding Create(Texture2D height, float min, float max, Vector2 center, Vector2 size,
-            params Texture2D[] splats)
+            UnityEngine.SceneManagement.Scene scene, params Texture2D[] splats)
         {
             TerrainShoreLinesDef def = TerrainShoreLinesDef.Find(height);
             if (def == null) return null; // Explicit region opt-in: no NMC change.
@@ -50,8 +50,9 @@ namespace HiddenHarbours.Art
             }
             var reader = new ShoreLineDerivation.SplatReader(splats);
             Vector2 worldMin = center - size * .5f;
+            var footprint = CaptureWalls(scene, worldMin, size, def);
             var grid = new ShoreLineDerivation.Grid(elevations, height.width, height.height, worldMin, size,
-                p => reader.At(new Vector2((p.x-worldMin.x)/size.x, (p.y-worldMin.y)/size.y)));
+                p => reader.At(new Vector2((p.x-worldMin.x)/size.x, (p.y-worldMin.y)/size.y)), footprint);
             ShoreLineDerivation.Result data = ShoreLineDerivation.Build(grid, def);
             if (data.Segments.Length > SystemInfo.maxTextureSize) throw new InvalidOperationException("Shore segment table exceeds texture limit.");
             var segments = new Texture2D(data.Segments.Length, 2, TextureFormat.RGBAFloat, false, true)
@@ -72,7 +73,12 @@ namespace HiddenHarbours.Art
                 fields.Apply(false, true); // Keep the GPU data, release its CPU copy.
                 segments.SetPixels(data.SegmentTexels); segments.Apply(false, true);
                 indices.SetPixelData(data.IndexTexels,0);indices.Apply(false,true);
-                return new TerrainShoreLineBinding(def, fields, strips, segments, worldMin, size, data.KindStarts, indices);
+                var binding = new TerrainShoreLineBinding(def, fields, strips, segments, worldMin, size, data.KindStarts, indices);
+                binding._walls = new Texture2D(footprint.Width, footprint.Height, TextureFormat.R8, false, true)
+                    { name = "TransientShoreWallFootprint", hideFlags = HideFlags.HideAndDontSave,
+                      filterMode = FilterMode.Point, wrapMode = TextureWrapMode.Clamp };
+                binding._walls.SetPixelData(footprint.Pixels, 0); binding._walls.Apply(false, true);
+                return binding;
             }
             catch { Destroy(fields); Destroy(segments); Destroy(indices); throw; }
         }
@@ -111,57 +117,32 @@ namespace HiddenHarbours.Art
             block.SetVector("_ShoreLip", new Vector4(def.LipDepthMetres.x, def.LipDepthMetres.y, def.LipBreakMetres.x, def.LipBreakMetres.y));
             block.SetColor("_ShoreLipShadow", def.LipShadow);
         }
-        // Start runs after all walls have built on enable. This is one load-only raster, not frame work.
-        // The full wall mesh, including its brow/toe decals, is deliberately conservative: a new
-        // ground strip cannot show through any part of the existing wall's footprint.
-        internal void CaptureWalls(UnityEngine.SceneManagement.Scene scene)
+        // seat ruling s12, 11-07: raster the real wall triangles, never broad renderer bounds.
+        // The one-address-texel margin is baked once; both CPU fields and shader read this mask.
+        internal static ShoreLineDerivation.WallFootprint CaptureWalls(UnityEngine.SceneManagement.Scene scene,
+            Vector2 min, Vector2 size, TerrainShoreLinesDef def)
         {
-            if (_walls != null) return;
-            var walls = UnityEngine.Object.FindObjectsByType<CliffWallSurface>(FindObjectsSortMode.None);
-            var meshes = new System.Collections.Generic.List<MeshRenderer>();
-            foreach (var wall in walls) if (wall.gameObject.scene == scene)
-                meshes.AddRange(wall.GetComponentsInChildren<MeshRenderer>());
-            if (meshes.Count == 0) return;
-            Shader shader = Resources.Load<Shader>("TerrainShoreLines/ShoreWallMask");
-            if (shader == null) throw new InvalidOperationException("Shore wall protection shader missing.");
-            var material = new Material(shader) { hideFlags = HideFlags.HideAndDontSave };
-            _walls = new RenderTexture(Mathf.CeilToInt(_size.x / _def.BlendMetres),
-                Mathf.CeilToInt(_size.y / _def.BlendMetres), 0, RenderTextureFormat.R8, RenderTextureReadWrite.Linear)
-                { name = "TransientShoreWallFootprint", hideFlags = HideFlags.HideAndDontSave, filterMode = FilterMode.Point, wrapMode = TextureWrapMode.Clamp };
-            var command = new UnityEngine.Rendering.CommandBuffer { name = "Shore wall footprint at load" };
-            var rectangle=new Mesh{hideFlags=HideFlags.HideAndDontSave};
-            rectangle.vertices=new[]{new Vector3(-.5f,-.5f),new Vector3(.5f,-.5f),new Vector3(.5f,.5f),new Vector3(-.5f,.5f)};
-            rectangle.triangles=new[]{0,1,2,0,2,3};
-            try
+            var footprint = new ShoreLineDerivation.WallFootprint(min, size, def.BlendMetres, def.AddressTexelMetres);
+            foreach (var wall in UnityEngine.Object.FindObjectsByType<CliffWallSurface>(FindObjectsSortMode.None))
             {
-                _walls.Create(); command.SetRenderTarget(_walls);
-                command.SetViewport(new Rect(0, 0, _walls.width, _walls.height));
-                command.ClearRenderTarget(false, true, Color.black);
-                Vector2 center = _min + _size * .5f;
-                var view = Matrix4x4.Scale(new Vector3(1, 1, -1))
-                    * Matrix4x4.Translate(new Vector3(-center.x, -center.y, 100));
-                var projection = GL.GetGPUProjectionMatrix(Matrix4x4.Ortho(-_size.x*.5f, _size.x*.5f,
-                    -_size.y*.5f, _size.y*.5f, .01f, 1000), true);
-                // This is world-Y-addressed data, read with Load rather than a camera blit.
-                // A top-origin backend needs the explicit row inversion for those addresses.
-                if (SystemInfo.graphicsUVStartsAtTop) projection.m11 = -projection.m11;
-                command.SetViewProjectionMatrices(view, projection);
-                foreach (var renderer in meshes)
+                if (wall.gameObject.scene != scene) continue;
+                foreach (var filter in wall.GetComponentsInChildren<MeshFilter>())
                 {
-                    if (!renderer.enabled)continue;
-                    Bounds bounds=renderer.bounds;float pad=_def.BlendMetres;
-                    command.DrawMesh(rectangle,Matrix4x4.TRS(bounds.center,Quaternion.identity,
-                        new Vector3(bounds.size.x+2*pad,bounds.size.y+2*pad,1)),material);
+                    var renderer = filter.GetComponent<MeshRenderer>();
+                    if (renderer == null || !renderer.enabled || filter.sharedMesh == null) continue;
+                    var vertices = filter.sharedMesh.vertices; var triangles = filter.sharedMesh.triangles;
+                    var world = filter.transform.localToWorldMatrix;
+                    for (int i = 0; i < vertices.Length; i++) vertices[i] = world.MultiplyPoint3x4(vertices[i]);
+                    for (int i = 0; i < triangles.Length; i += 3)
+                        footprint.AddTriangle(vertices[triangles[i]], vertices[triangles[i + 1]], vertices[triangles[i + 2]]);
                 }
-                command.SetViewProjectionMatrices(Shader.GetGlobalMatrix("unity_MatrixV"), Shader.GetGlobalMatrix("unity_MatrixP"));
-                Graphics.ExecuteCommandBuffer(command);
             }
-            finally { command.Release(); Destroy(material); Destroy(rectangle); }
+            return footprint;
         }
         public void Dispose()
         {
             Destroy(_fields); Destroy(_segments); Destroy(_indices);
-            if (_walls != null) { _walls.Release(); Destroy(_walls); }
+            Destroy(_walls);
         }
         static void Destroy(UnityEngine.Object obj)
         { if (Application.isPlaying) UnityEngine.Object.Destroy(obj); else UnityEngine.Object.DestroyImmediate(obj); }
