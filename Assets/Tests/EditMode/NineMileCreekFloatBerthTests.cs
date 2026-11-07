@@ -6,6 +6,7 @@ using HiddenHarbours.App.Editor;
 using HiddenHarbours.Boats;
 using HiddenHarbours.Core;
 using HiddenHarbours.World;
+using HiddenHarbours.Tools.RigBaking;
 
 namespace HiddenHarbours.Tests.EditMode
 {
@@ -120,28 +121,35 @@ namespace HiddenHarbours.Tests.EditMode
         public void EveryFloatBerthLiesAlongsideTheFinger_NeverOnHerDeck()
         {
             Rect dock = NineMileCreekWharf.FloatFootprint();
-            float off = NineMileCreekWharf.FloatBerthOffsetMetres;
+            // seat ruling s10, 11-07: the key scene's registered float.
+            var working = DeckSidecarJson.Member(NineMileCreekWharfWaterSide.Register(), "workingFloat");
+            var xs = DeckSidecarJson.AsArray(DeckSidecarJson.Member(working, "x"));
+            var ys = DeckSidecarJson.AsArray(DeckSidecarJson.Member(working, "y"));
+            var authored = Rect.MinMaxRect(DeckSidecarJson.Float(xs[0]), DeckSidecarJson.Float(ys[0]),
+                DeckSidecarJson.Float(xs[1]), DeckSidecarJson.Float(ys[1]));
+            var rows = NineMileCreekWharfWaterSide.Scene().Pieces.Where(row => row.Kind == KeySceneDef.KindBoat &&
+                row.StandsOn == "water").OrderBy(row => row.At.x).ToArray();
+            Assert.That(NineMileCreekWharf.FloatBerthCount, Is.EqualTo(rows.Length));
 
             for (int i = 0; i < NineMileCreekWharf.FloatBerthCount; i++)
             {
                 (Vector2 north, Vector2 south) = NineMileCreekWharf.FloatBerthSides(i);
+                Vector2 slot = rows[i].At;
+                float edge = slot.y < authored.yMin ? authored.yMin : authored.yMax;
+                float standoff = Mathf.Abs(slot.y - edge);
 
                 foreach (Vector2 side in new[] { north, south })
                 {
                     Assert.IsFalse(dock.Contains(side),
                         $"float berth {i} at {side} is INSIDE the dock's own footprint {dock} — a boat " +
                         "berthed there is drawn lying on the planking, not beside it");
-                    Assert.That(side.x, Is.InRange(dock.xMin, dock.xMax),
+                    Assert.That(side.x, Is.InRange(authored.xMin, authored.xMax),
                         $"float berth {i} at {side} is off the END of a {dock.width:0.#} m finger — she " +
                         "would be tied to open water past the last cleat");
-                    Assert.That(Mathf.Abs(side.y - NineMileCreekMainland.FloatRunY),
-                        Is.EqualTo(off).Within(1e-4f),
-                        $"float berth {i} stands {Mathf.Abs(side.y - NineMileCreekMainland.FloatRunY):0.00} m " +
-                        $"off the run rather than the derived {off:0.00} m");
+                    Assert.That(side, Is.EqualTo(slot), rows[i].Id);
+                    Assert.That(Mathf.Abs(side.y - edge), Is.EqualTo(standoff).Within(1e-4f),
+                        $"{rows[i].Id}: registered alongside standoff {standoff:0.000} m");
                 }
-
-                Assert.That(north.y, Is.GreaterThan(south.y),
-                    $"float berth {i}'s two sides are not on two sides");
             }
         }
 
@@ -234,34 +242,27 @@ namespace HiddenHarbours.Tests.EditMode
             }
         }
 
-        /// <summary>
-        /// ⭐⭐ <b>AND THE DEEPER SIDE IS NOT ONE SIDE FOR THE WHOLE RUN — which is the entire reason this
-        /// is measured rather than typed.</b> S1's lane does not run down the float's latitude; it wanders
-        /// across it (y = 70 at the head, 67 at the southern swing, 71 at the northern one), so the water
-        /// is on the north side of some berths and the south side of others. A constant would have berthed
-        /// part of the fleet on the bank of the cut, and those are exactly the boats that would take the
-        /// ground.
-        ///
-        /// <para>It also happens to be the picture: boats on both sides of the finger is what the
-        /// photograph shows.</para>
-        /// </summary>
+        /// <summary>Replaces TheDeeperSideIsNotOneSideForTheWholeRun and ChoosingTheDeeperSideBuysRealDepth:
+        /// seat ruling s10, 11-07, retires the old side choice and keeps per-resident spring-low capacity.</summary>
         [Test]
-        public void TheDeeperSideIsNotOneSideForTheWholeRun()
+        public void EveryRegisteredFloatBerthCarriesItsResidentAtSpringLow()
         {
-            int north = 0, south = 0;
-            for (int i = 0; i < NineMileCreekWharf.FloatBerthCount; i++)
+            var residents = AtTheFloat().OrderBy(owner => owner.BerthIndex).ToArray();
+            Assert.That(residents.Length, Is.EqualTo(3));
+            var terrain = NineMileCreekGround.Load();
+            foreach (var resident in residents)
             {
-                (Vector2 n, _) = NineMileCreekWharf.FloatBerthSides(i);
-                if (NineMileCreekWharf.FloatBerthPos(i, Plan) == n) north++; else south++;
+                var row = NineMileCreekWharfWaterSide.FloatRowForOwner(resident.Id);
+                Assert.That(NineMileCreekWharf.FloatBerthPos(resident.BerthIndex, terrain), Is.EqualTo(row.At), row.Id);
+                Assert.That(resident.Boat, Is.Not.Null, row.Id);
+                float depth = SpringLow - terrain.ElevationAt(row.At);
+                float carries = depth - Clearance;
+                Assert.That(NineMileCreekWharf.DeepestDraughtAFloatBerthCarries(resident.BerthIndex, terrain),
+                    Is.EqualTo(carries).Within(1e-4f), row.Id);
+                Assert.That(carries, Is.GreaterThan(resident.Boat.DraughtMeters),
+                    $"{row.Id} at {row.At}: depth {depth:0.000000} m, clearance {Clearance:0.00} m, " +
+                    $"carries {carries:0.000000} m, resident draught {resident.Boat.DraughtMeters:0.00} m");
             }
-
-            Assert.That(north, Is.GreaterThan(0),
-                $"all {south} float berths came out on the SOUTH side. If that is real the meander no " +
-                "longer crosses the float run and the per-berth measurement is buying nothing — but it " +
-                "is far more likely the lane moved and half the fleet is now on the bank of the cut.");
-            Assert.That(south, Is.GreaterThan(0),
-                $"all {north} float berths came out on the NORTH side — see the note on the other half " +
-                "of this assertion; the same warning applies mirrored.");
         }
 
         /// <summary>With no terrain there is nothing to measure and nothing is claimed: the berth falls
@@ -370,44 +371,14 @@ namespace HiddenHarbours.Tests.EditMode
             }
         }
 
-        /// <summary>
-        /// ⭐⭐ <b>CHOOSING THE DEEPER SIDE BUYS REAL DEPTH — the counterfactual that justifies measuring
-        /// at all.</b> If both sides of every berth carried much the same water, the per-berth measurement
-        /// would be ceremony and a constant would do. They do not: on at least one berth the shallow side
-        /// would not float the small craft this register keeps, so a wrong-side constant is a boat on the
-        /// bottom rather than a boat slightly off centre.
-        /// </summary>
+        /// <summary>seat ruling s10, 11-07: the named player berth contains the unchanged step-off.</summary>
         [Test]
-        public void ChoosingTheDeeperSideBuysRealDepth()
+        public void ThePlayersBerthIsWhereSheStepsOff()
         {
-            var small = AtTheFloat().Where(o => o.Boat != null).ToList();
-            Assert.IsNotEmpty(small, "nobody is authored at the float");
-            float needs = small.Max(o => o.Boat.DraughtMeters) + Clearance;
-
-            bool aSideWouldGroundHer = false;
-            float widestSpread = 0f;
-
-            for (int i = 0; i < NineMileCreekWharf.FloatBerthCount; i++)
-            {
-                (Vector2 north, Vector2 south) = NineMileCreekWharf.FloatBerthSides(i);
-                float deep = SpringLow - Mathf.Min(Plan.ElevationAt(north),
-                                                   Plan.ElevationAt(south));
-                float shallow = SpringLow - Mathf.Max(Plan.ElevationAt(north),
-                                                      Plan.ElevationAt(south));
-
-                widestSpread = Mathf.Max(widestSpread, deep - shallow);
-                if (shallow < needs) aSideWouldGroundHer = true;
-
-                Assert.That(NineMileCreekWharf.FloatBerthDepthAtSpringLow(i, Plan),
-                    Is.EqualTo(deep).Within(1e-4f),
-                    $"float berth {i} reports a depth that is not its deeper side's");
-            }
-
-            Assert.IsTrue(aSideWouldGroundHer,
-                $"both sides of every float berth carry the {needs:0.00} m this register's small craft " +
-                "need. That would make the per-berth side measurement free to replace with a constant — " +
-                "which is worth knowing, but check the lane has not simply been widened under the whole " +
-                $"run before you simplify it. Widest side-to-side spread measured: {widestSpread:0.00} m.");
+            int player = NineMileCreekMooredFleet.PlayerBerthIndex();
+            Assert.That(player, Is.EqualTo(0));
+            Vector2 span = NineMileCreekWharfWaterSide.WallSlot(player);
+            Assert.That(NineMileCreekGroundPlan.DisembarkPos.x, Is.InRange(span.x, span.y));
         }
 
         /// <summary>
