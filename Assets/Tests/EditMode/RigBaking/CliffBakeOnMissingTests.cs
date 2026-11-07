@@ -16,8 +16,12 @@ namespace HiddenHarbours.Tests.RigBaking
     /// coordinator made one consequence binding: <i>"PR 2's builder must bake-on-missing so a fresh clone
     /// self-heals — a checkout that renders pink until someone finds a menu item is not shipped."</i></para>
     ///
-    /// <para><b>Why this is a TEST and not a line in a PR body.</b> The bake root is gitignored, so on CI
-    /// — and in any fresh clone — it genuinely does not exist. That makes this the one place where the
+    /// <para><b>⭐ 11-07:</b> the bake root is COMMITTED under LFS since terrain-fidelity P1, so a clone carries
+    /// the faces; the self-heal now covers a checkout whose LFS objects never landed. The paragraph below is
+    /// why it was built.</para>
+    ///
+    /// <para><b>Why this is a TEST and not a line in a PR body.</b> The bake root was gitignored, so on CI
+    /// — and in any fresh clone — it genuinely did not exist. That makes this the one place where the
     /// self-heal can be exercised for real instead of reasoned about: the suite finds no baked faces,
     /// calls the same entry point the region builder calls, and then asserts the faces are there. A
     /// claim in prose would have been indistinguishable from a claim about code that was never run.</para>
