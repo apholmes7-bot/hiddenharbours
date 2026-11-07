@@ -47,6 +47,7 @@ Shader "HiddenHarbours/IsoFacetOverlay"
             Texture2D<float4> _HHHullScreenTex;
             Texture2D<float4> _HHHullCausticTex;
             float4 _HHHullCausticSettings;
+            float _HHHullCausticGain;
             float4 _CausticColor;
 
             // Per draw via MaterialPropertyBlock: this hull's ids, already divided by 255.
@@ -118,7 +119,7 @@ Shader "HiddenHarbours/IsoFacetOverlay"
                 {
                     float encoded = _HHHullCausticTex.Load(int3(p, 0)).a;
                     if (encoded >= 0.5 && encoded < 1.0)
-                        c.rgb += _CausticColor.rgb * ((1.0 - encoded) * 2.0);
+                        c.rgb += _CausticColor.rgb * ((1.0 - encoded) * 2.0 * _HHHullCausticGain);
                 }
                 c = HHFigureOver(c, i.positionCS.xy);
                 // Only THIS hull's pixels — either of her ids.

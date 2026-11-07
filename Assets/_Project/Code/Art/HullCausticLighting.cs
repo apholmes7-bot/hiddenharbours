@@ -20,6 +20,7 @@ namespace HiddenHarbours.Art
         private static readonly int WaterId = Shader.PropertyToID("_WaterLevel");
         private static readonly int PlaneId = Shader.PropertyToID("_HHHullCausticPlane");
         private static readonly int SettingsId = Shader.PropertyToID("_HHHullCausticSettings");
+        private static readonly int GainId = Shader.PropertyToID("_HHHullCausticGain");
         private static readonly int PaintedId = Shader.PropertyToID("_HHHullCausticPainted");
         private static readonly int EnvelopeId = Shader.PropertyToID("_HHHullCausticEnvelope");
         private static Object _owner;
@@ -79,6 +80,8 @@ namespace HiddenHarbours.Art
         {
             target.SetVector(SettingsId, settings);
             if (settings.z < 0.5f) return;
+            target.SetFloat(GainId, GameServices.Config != null
+                ? Mathf.Max(0, GameServices.Config.HullCausticVeinGain) : 0);
             for (int i = 0; i < Ids.Length; i++) target.SetFloat(Ids[i], Values[i]);
             target.SetColor(ColorId, _color);
             if (_texture != null) target.SetTexture(TextureId, _texture);

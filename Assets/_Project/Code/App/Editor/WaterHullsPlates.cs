@@ -39,6 +39,7 @@ namespace HiddenHarbours.App.Editor
         private static readonly FrameTiming[] _timings = new FrameTiming[1];
         private static ProfilerRecorder _mainThread;
         private static float _strength;
+        private static float _veinGain;
 
         public static bool Step(string output)
         {
@@ -69,6 +70,7 @@ namespace HiddenHarbours.App.Editor
         {
             _output = output;
             _strength = GameServices.Config.HullCausticStrength;
+            _veinGain = GameServices.Config.HullCausticVeinGain;
             _camera = Camera.main;
             if (_camera == null) throw new InvalidOperationException("No production camera for plates.");
             foreach (Behaviour behaviour in _camera.GetComponents<Behaviour>())
@@ -197,7 +199,19 @@ namespace HiddenHarbours.App.Editor
             var bandTarget = BandTarget();
             if (bandTarget == null) throw new InvalidOperationException("The facet band target was not published.");
             Color32[] band = Read(bandTarget);
+            // The gain must not alter even one byte of the existing dark target.
+            GameServices.Config.HullCausticVeinGain = 1;
+            foreach (var hull in Object.FindObjectsByType<IsoFacetHullRenderer>(FindObjectsSortMode.None)) hull.ApplyPose();
+            _camera.Render();
+            Color32[] priorBand = Read(BandTarget());
+            for (int i = 0; i < band.Length; i++)
+                if (!band[i].Equals(priorBand[i]))
+                    throw new InvalidOperationException(name + ": vein gain changed the dark target.");
+            GameServices.Config.HullCausticVeinGain = _veinGain;
+            foreach (var hull in Object.FindObjectsByType<IsoFacetHullRenderer>(FindObjectsSortMode.None)) hull.ApplyPose();
+            _camera.Render();
             int inside = 0, outside = 0, bandPixels = 0;
+            double shiftSum = 0, maxShift = 0;
             var mask = new Color32[band.Length];
             for (int i = 0; i < band.Length; i++)
             {
@@ -206,6 +220,11 @@ namespace HiddenHarbours.App.Editor
                 mask[i] = allowed ? new Color32(255,255,255,255) : new Color32(0,0,0,255);
                 bool changed = before[i].r != after[i].r || before[i].g != after[i].g || before[i].b != after[i].b;
                 if (changed) { if (allowed) inside++; else outside++; }
+                if (allowed)
+                {
+                    double shift = LumaShift(before[i], after[i]);
+                    shiftSum += shift; maxShift = Math.Max(maxShift, shift);
+                }
             }
             WritePng(name + "-before.png", before); WritePng(name + "-after.png", after);
             WritePng(name + "-band-mask.png", mask);
@@ -214,15 +233,97 @@ namespace HiddenHarbours.App.Editor
                 wind = _weather.Wind, seaState = _weather.Sea, sha = System.Environment.GetEnvironmentVariable("HH_WATER_HULLS_SHA"),
                 beforeSha = Base, name = name, changedInsideBand = inside, changedOutsideBand = outside,
                 bandPixels = bandPixels, strength = _strength, width = GameServices.Config.HullCausticBandMeters,
+                tuningVeinGainBefore = 1, tuningVeinGainAfter = _veinGain,
+                meanShift = bandPixels > 0 ? shiftSum / bandPixels : 0, maxShift = maxShift,
+                darkTargetUnchangedByGain = true,
                 source = "before: measured base sea shader and band off; after: shared sea shader and band on" };
             _pairs.Add(proof);
             string json = JsonUtility.ToJson(proof, true);
             File.WriteAllText(Path.Combine(_output, name + "-before.json"), json);
             File.WriteAllText(Path.Combine(_output, name + "-after.json"), json);
+            File.WriteAllText(Path.Combine(_output, name + "-band-mask.json"), json);
             File.WriteAllText(Path.Combine(_output, "pixel-change-counts.json"), JsonUtility.ToJson(new PairList { pairs = _pairs.ToArray() }, true));
+            WriteBandShifts();
             if (outside != 0) throw new InvalidOperationException(name + ": " + outside + " pixels changed outside the bands.");
             if ((index == 0 || index == 6) && (bandPixels == 0 || inside == 0))
                 throw new InvalidOperationException(name + ": the calm noon band produced no visible light.");
+            if (index == 0 || index == 6)
+                WriteBandCrop(name + "-band-crop", before, after, mask, json);
+            if (index == 0) CaptureOnFootCrop();
+        }
+
+        private static double LumaShift(Color32 before, Color32 after)
+            => Math.Abs(.299 * (after.r - before.r) + .587 * (after.g - before.g) + .114 * (after.b - before.b));
+
+        private static void WriteBandShifts()
+        {
+            var lines = new List<string> {
+                "Exact RGB changed-pixel counts. Shift = abs(0.299*dR + 0.587*dG + 0.114*dB), in 0..255 units; mean over ALL band pixels.",
+                "HullCausticVeinGain: 1 -> " + _veinGain + "; HullCausticStrength unchanged " + _strength
+                    + "; HullCausticBandMeters unchanged " + GameServices.Config.HullCausticBandMeters,
+                "name | band px | changed inside | mean shift | max shift | changed outside | dark target unchanged by gain" };
+            foreach (PairProof pair in _pairs)
+                lines.Add(FormattableString.Invariant($"{pair.name} | {pair.bandPixels} | {pair.changedInsideBand} | {pair.meanShift:F4} | {pair.maxShift:F4} | {pair.changedOutsideBand} | {pair.darkTargetUnchangedByGain}"));
+            File.WriteAllLines(Path.Combine(_output, "band-shift.txt"), lines);
+        }
+
+        private static void WriteBandCrop(string name, Color32[] before, Color32[] after, Color32[] mask, string json)
+        {
+            int minX = _target.width, minY = _target.height, maxX = -1, maxY = -1;
+            for (int y = 0; y < _target.height; y++) for (int x = 0; x < _target.width; x++)
+                if (mask[y * _target.width + x].r > 0)
+                { minX = Math.Min(minX, x); minY = Math.Min(minY, y); maxX = Math.Max(maxX, x); maxY = Math.Max(maxY, y); }
+            if (maxX < 0) throw new InvalidOperationException(name + ": no band for 1:1 crop.");
+            minX = Math.Max(0, minX - 8); minY = Math.Max(0, minY - 8);
+            maxX = Math.Min(_target.width - 1, maxX + 8); maxY = Math.Min(_target.height - 1, maxY + 8);
+            int width = maxX - minX + 1, height = maxY - minY + 1;
+            var pixels = new Color32[width * height * 2];
+            for (int y = 0; y < height; y++) for (int x = 0; x < width; x++)
+            {
+                int source = (minY + y) * _target.width + minX + x;
+                pixels[y * width + x] = after[source];
+                pixels[(y + height) * width + x] = before[source];
+            }
+            var texture = new Texture2D(width, height * 2, TextureFormat.RGBA32, false);
+            try { texture.SetPixels32(pixels); texture.Apply(); File.WriteAllBytes(Path.Combine(_output, name + ".png"), texture.EncodeToPNG()); }
+            finally { Object.DestroyImmediate(texture); }
+            File.WriteAllText(Path.Combine(_output, name + ".json"), json);
+            File.WriteAllText(Path.Combine(_output, name + "-layout.txt"),
+                $"Native pixels, no rescale. BEFORE above AFTER. Source bottom-left crop x={minX}, y={minY}, width={width}, height={height}. Camera ortho={_camera.orthographicSize}.");
+        }
+
+        private static void CaptureOnFootCrop()
+        {
+            float priorOrtho = _camera.orthographicSize;
+            var zoom = GameServices.Config.PlayerZoom.Sanitized();
+            int ppu = CameraFollow.AssetsPPU;
+            int step = CameraZoomPolicy.StepForWorldHeight(zoom.DefaultWorldHeightMeters, ppu, _target.height);
+            _camera.orthographicSize = CameraFollow.OrthoSizeForWorldHeight(
+                CameraZoomPolicy.WorldHeightForStep(step, ppu, _target.height));
+            Source(true); _camera.Render(); _camera.Render(); _camera.Render();
+            Color32[] before = Read(_target);
+            Source(false); _camera.Render(); Color32[] after = Read(_target), band = Read(BandTarget());
+            var mask = new Color32[band.Length]; double sum = 0, max = 0; int count = 0, outside = 0;
+            for (int i = 0; i < band.Length; i++)
+            {
+                bool allowed = band[i].a >= 128 && band[i].a < 255;
+                mask[i] = allowed ? new Color32(255,255,255,255) : new Color32(0,0,0,255);
+                if (allowed) { count++; double shift = LumaShift(before[i], after[i]); sum += shift; max = Math.Max(max, shift); }
+                else if (before[i].r != after[i].r || before[i].g != after[i].g || before[i].b != after[i].b) outside++;
+            }
+            if (outside != 0) throw new InvalidOperationException("Shipped on-foot dory crop changed outside the band.");
+            string json = JsonUtility.ToJson(new PairProof { name = "dory-noon-calm-shipped-on-foot", hull = "dory", state = "at berth; shipped on-foot zoom",
+                sha = System.Environment.GetEnvironmentVariable("HH_WATER_HULLS_SHA"), beforeSha = Base, hour = 12, wind = _weather.Wind,
+                strength = _strength, width = GameServices.Config.HullCausticBandMeters,
+                tuningVeinGainBefore = 1, tuningVeinGainAfter = _veinGain, bandPixels = count, changedOutsideBand = outside,
+                meanShift = count > 0 ? sum / count : 0, maxShift = max,
+                source = "Production camera orientation and shipped zoom policy at 1280x720; native crop, before above after." }, true);
+            WritePng("dory-noon-calm-shipped-on-foot-before.png", before);
+            WritePng("dory-noon-calm-shipped-on-foot-after.png", after);
+            WritePng("dory-noon-calm-shipped-on-foot-band-mask.png", mask);
+            WriteBandCrop("dory-noon-calm-shipped-on-foot-band-crop", before, after, mask, json);
+            _camera.orthographicSize = priorOrtho;
+            Source(false); _camera.Render();
         }
 
         private static void BeginCost()
@@ -344,7 +445,9 @@ namespace HiddenHarbours.App.Editor
         }
         [Serializable] private sealed class PairProof
         { public string name, hull, state, sha, beforeSha, source; public float hour, seaState, strength, width;
-          public Vector2 wind; public int changedInsideBand, changedOutsideBand, bandPixels; }
+          public Vector2 wind; public int changedInsideBand, changedOutsideBand, bandPixels;
+          public float tuningVeinGainBefore, tuningVeinGainAfter; public double meanShift, maxShift;
+          public bool darkTargetUnchangedByGain; }
         [Serializable] private sealed class PairList { public PairProof[] pairs; }
         [Serializable] private sealed class CostProof
         { public int hulls, width, height, retainedDarkTargetBytes, addedPasses, addedMrtSlots;

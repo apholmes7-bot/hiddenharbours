@@ -559,6 +559,8 @@ namespace HiddenHarbours.Core
         [Header("Light from the water on hull sides")]
         [Min(0f)] public float HullCausticBandMeters = 0.8f;
         [Min(0f)] public float HullCausticStrength = 0.18f;
+        [Tooltip("Visible vein gain inside the existing hull band; does not widen its mask.")]
+        [Min(0f)] public float HullCausticVeinGain = 4.4f;
         [Range(0f, 1f)] public float HullCausticMaxUpwardNormal = 0.5f;
 
         // -----------------------------------------------------------------------------------------
