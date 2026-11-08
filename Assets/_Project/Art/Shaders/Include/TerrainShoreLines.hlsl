@@ -4,6 +4,7 @@ TEXTURE2D_ARRAY(_ShoreStrips); SAMPLER(sampler_ShoreStrips);
 Texture2D<float4> _ShoreSegments;
 Texture2D<float> _ShoreIndexList;
 Texture2D<float4> _ShoreWallMask;
+Texture2D<float4> _ShoreWallDomain;
 static const float SL_ANCHOR[5] = { 0.40, 0.24, 0.46, 0.34, 0.38 };
 float SL_Step(int kind) { return kind == 4 ? _ShoreStep4 : _ShoreSteps0123[clamp(kind, 0, 3)]; }
 
@@ -105,10 +106,20 @@ float SL_WallProtected(float2 uv)
     int2 cell = clamp(int2(floor(uv * _ShoreWallGrid.xy)), int2(0, 0), int2(_ShoreWallGrid.xy) - 1);
     return _ShoreWallMask.Load(int3(cell, 0)).r;
 }
+float SL_FootGuard(float2 uv, float proceduralFoot)
+{
+    // seat ruling s15, 11-07: preserve the procedural exclusion when no wall protects
+    // this strand. The existing wall-coast domain includes its exposed cliff foreshore.
+    if (_ShoreWallsLoaded < 0.5) return proceduralFoot;
+    float physical = SL_WallProtected(uv);
+    if (physical > 0.5) return physical;
+    int2 cell = clamp(int2(floor(uv * _ShoreGrid.xy)), int2(0, 0), int2(_ShoreGrid.xy) - 1);
+    return _ShoreWallDomain.Load(int3(cell, 0)).r > 0.5 ? physical : proceduralFoot;
+}
 float2 SL_Prepare(float2 wp, float2 uv, float protectedFoot, float organic, float beach, out float4 addresses[5])
 {
     for (int clear = 0; clear < 5; clear++) addresses[clear] = float4(8, 0, 0, 8);
-    [branch] if (_ShoreLoaded < 0.5 || SL_WallProtected(uv) > 0.5) return wp;
+    [branch] if (_ShoreLoaded < 0.5 || protectedFoot > 0.5) return wp;
     float2 offset = float2(0, 0); float nearest = 1e6;
     [unroll] for (int kind = 0; kind < 5; kind++)
     {

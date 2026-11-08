@@ -450,8 +450,9 @@ Shader "HiddenHarbours/TerrainSplat"
                 float w[HH_MAT_COUNT], intensity[HH_MAT_COUNT];
                 TSA_GroundWeights(wp, wpx, uv, e, w, intensity);
                 float4 shoreAddresses[5];
-                // seat ruling s12, 11-07: the wall-face footprint is the protected foot.
-                float protectedFoot = SL_WallProtected(uv);
+                // seat ruling s15, 11-07: physical protection on a wall's strand;
+                // the S11 procedural foot exclusion elsewhere, including fixtures without walls.
+                float protectedFoot = SL_FootGuard(uv, max(w[5], max(w[11], w[12])));
                 float2 weightWP = SL_Prepare(wp, uv, protectedFoot, w[0] + w[7] + w[18] + w[19],
                     max(w[2], w[3]), shoreAddresses);
                 float2 weightUV = (weightWP - _HeightWorldMin.xy) / max(_HeightWorldSize.xy, float2(1e-3, 1e-3));

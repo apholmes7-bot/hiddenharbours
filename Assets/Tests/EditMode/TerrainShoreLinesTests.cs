@@ -301,6 +301,65 @@ ENDHLSL
             }
         }
 
+        [Test] public void FootFallback_UsesProceduralExclusionExceptOnAWallsStrand()
+        {
+            const string code = @"Shader ""Hidden/ShoreFootFallbackPin"" { SubShader { Pass { ZWrite Off ZTest Always Cull Off
+HLSLPROGRAM
+#pragma target 3.5
+#pragma vertex vert
+#pragma fragment frag
+#include ""Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl""
+float _ShoreLoaded,_ShoreStep4,_ShoreBlendMetres,_ShoreSourceBlendMetres,_ShoreWallsLoaded;
+float4 _ShoreSteps0123,_ShoreGrid,_HeightWorldMin,_HeightWorldSize,_ShoreWallGrid;
+float4 _ShoreRange01,_ShoreRange23,_ShoreRange4;
+int _ShoreSeed;float4 _ShoreWrack,_ShorePattern,_ShoreLip,_ShoreLipShadow;
+#include ""Assets/_Project/Art/Shaders/Include/TerrainShoreLines.hlsl""
+struct V {float4 position:SV_POSITION;float2 uv:TEXCOORD0;};
+V vert(uint id:SV_VertexID){V o;o.uv=float2((id<<1)&2,id&2);o.position=float4(o.uv*2-1,0,1);return o;}
+float4 frag(V i):SV_Target{return float4(SL_FootGuard(i.uv,.75),SL_FootGuard(i.uv,.25),SL_WallProtected(i.uv),1);}
+ENDHLSL
+} } }";
+            var shader = ShaderUtil.CreateShaderAsset(code);
+            var material = new Material(shader);
+            var walls = new Texture2D(4, 1, TextureFormat.R8, false, true);
+            var domain = new Texture2D(4, 1, TextureFormat.R8, false, true);
+            var target = new RenderTexture(4, 1, 0, RenderTextureFormat.ARGBFloat);
+            var pixels = new Texture2D(4, 1, TextureFormat.RGBAFloat, false, true);
+            RenderTexture previous = RenderTexture.active;
+            try
+            {
+                walls.SetPixelData(new byte[] { 0, 0, 255, 255 }, 0); walls.Apply();
+                domain.SetPixelData(new byte[] { 0, 255, 255, 0 }, 0); domain.Apply();
+                material.SetTexture("_ShoreWallMask", walls); material.SetTexture("_ShoreWallDomain", domain);
+                material.SetVector("_ShoreWallGrid", new Vector4(4, 1, .25f, 1));
+                material.SetVector("_ShoreGrid", new Vector4(4, 1, .25f, 1));
+                ShaderUtil.CompilePass(material, 0, true);
+                Assert.IsFalse(ShaderUtil.GetShaderMessages(shader).Any(m => m.severity == UnityEditor.Rendering.ShaderCompilerMessageSeverity.Error));
+                for (int loaded = 0; loaded <= 1; loaded++)
+                {
+                    material.SetFloat("_ShoreWallsLoaded", loaded);
+                    Graphics.SetRenderTarget(target); GL.Clear(false, true, Color.clear); material.SetPass(0);
+                    Graphics.DrawProceduralNow(MeshTopology.Triangles, 3);
+                    pixels.ReadPixels(new Rect(0, 0, 4, 1), 0, 0); pixels.Apply();
+                    Color[] data = pixels.GetPixels();
+                    for (int x = 0; x < 4; x++)
+                    {
+                        bool face = loaded == 1 && x >= 2;
+                        bool cliffForeshore = loaded == 1 && x == 1;
+                        Assert.AreEqual(face ? 1 : cliffForeshore ? 0 : .75f, data[x].r, 1e-6f);
+                        Assert.AreEqual(face ? 1 : cliffForeshore ? 0 : .25f, data[x].g, 1e-6f);
+                        Assert.AreEqual(face ? 1 : 0, data[x].b, 1e-6f);
+                    }
+                }
+            }
+            finally
+            {
+                RenderTexture.active = previous; target.Release();
+                foreach (var obj in new UnityEngine.Object[] { pixels, target, walls, domain, material, shader })
+                    UnityEngine.Object.DestroyImmediate(obj);
+            }
+        }
+
         [Test] public void ShaderSamplesOnlyInsideBand_SeawardFirst()
         {
             string shader = File.ReadAllText("Assets/_Project/Art/Shaders/Include/TerrainShoreLines.hlsl");

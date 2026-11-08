@@ -14,6 +14,7 @@ namespace HiddenHarbours.Art
         readonly Vector2 _min, _size;
         readonly int[] _kindStarts;
         Texture2D _walls;
+        Texture2D _wallDomain;
         static readonly int Loaded = Shader.PropertyToID("_ShoreLoaded");
         static readonly int Fields = Shader.PropertyToID("_ShoreFields");
         static readonly int Grid = Shader.PropertyToID("_ShoreGrid");
@@ -78,6 +79,26 @@ namespace HiddenHarbours.Art
                     { name = "TransientShoreWallFootprint", hideFlags = HideFlags.HideAndDontSave,
                       filterMode = FilterMode.Point, wrapMode = TextureWrapMode.Clamp };
                 binding._walls.SetPixelData(footprint.Pixels, 0); binding._walls.Apply(false, true);
+                // seat ruling s15, 11-07: a wall protects its shore-normal strand, including
+                // the exposed foreshore. Elsewhere the procedural foot exclusion stays in force.
+                // Reuse the S12 coast classification; no brow, contour or face footprint moves.
+                var domain = new byte[data.Width * data.Height];
+                for (int y = 0; y < data.Height; y++)
+                for (int x = 0; x < data.Width; x++)
+                {
+                    int i = y * data.Width + x;
+                    bool addressed = false;
+                    for (int kind = 0; kind < ShoreLineDerivation.KindCount; kind++)
+                        addressed |= data.Addresses[kind][i].a > 0;
+                    if (!addressed) continue;
+                    Vector2 p = worldMin + Vector2.Scale(new Vector2((x + .5f) / data.Width,
+                        (y + .5f) / data.Height), size);
+                    if (grid.CliffCoast(p, def)) domain[i] = 255;
+                }
+                binding._wallDomain = new Texture2D(data.Width, data.Height, TextureFormat.R8, false, true)
+                    { name = "TransientShoreWallDomain", hideFlags = HideFlags.HideAndDontSave,
+                      filterMode = FilterMode.Point, wrapMode = TextureWrapMode.Clamp };
+                binding._wallDomain.SetPixelData(domain, 0); binding._wallDomain.Apply(false, true);
                 return binding;
             }
             catch { Destroy(fields); Destroy(segments); Destroy(indices); throw; }
@@ -97,6 +118,7 @@ namespace HiddenHarbours.Art
             if (_walls != null)
             {
                 block.SetTexture("_ShoreWallMask", _walls);
+                block.SetTexture("_ShoreWallDomain", _wallDomain);
                 block.SetVector("_ShoreWallGrid", new Vector4(_walls.width, _walls.height, 1f / _walls.width, 1f / _walls.height));
             }
             block.SetVector(Grid, new Vector4(_fields.width, _fields.height, 1f / _fields.width, 1f / _fields.height));
@@ -143,6 +165,7 @@ namespace HiddenHarbours.Art
         {
             Destroy(_fields); Destroy(_segments); Destroy(_indices);
             Destroy(_walls);
+            Destroy(_wallDomain);
         }
         static void Destroy(UnityEngine.Object obj)
         { if (Application.isPlaying) UnityEngine.Object.Destroy(obj); else UnityEngine.Object.DestroyImmediate(obj); }

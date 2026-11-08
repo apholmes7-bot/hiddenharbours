@@ -177,6 +177,11 @@ A shore-normal trace identifies the wall coast; soft-shore weed retains its mean
 The footprint excludes all strips and blend tightening. No cliff material, texture, geometry
 or lighting setting changes.
 
+Seat ruling s15, 11-07: the physical rule applies to a wall-protected strand, including
+its exposed foreshore. A load-only R8 domain reuses the S12 shore-normal wall-coast trace.
+Outside that domain, or with no walls loaded, the existing procedural/painted foot exclusion
+remains active. The footprint itself is unchanged; no brow or tide contour moves.
+
 The Def's seed varies the authored PNG sampling. Wrack occupies irregular clumps 1â€“3 m long,
 with 2â€“6 m gaps, rotation, scale, offsets and four variants that differ between neighbours.
 Its across extent is bounded so its maximum area coverage stays below 40 percent of the
