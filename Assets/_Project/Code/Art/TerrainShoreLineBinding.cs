@@ -144,7 +144,9 @@ namespace HiddenHarbours.Art
         internal static ShoreLineDerivation.WallFootprint CaptureWalls(UnityEngine.SceneManagement.Scene scene,
             Vector2 min, Vector2 size, TerrainShoreLinesDef def)
         {
-            var footprint = new ShoreLineDerivation.WallFootprint(min, size, def.BlendMetres, def.AddressTexelMetres);
+            // seat ruling s17: a metre of margin erases a .5-1m lip. Protect real faces plus
+            // one mask texel; the brow decal's plan-ground portion is not a wall face.
+            var footprint = new ShoreLineDerivation.WallFootprint(min, size, def.BlendMetres, def.BlendMetres);
             foreach (var wall in UnityEngine.Object.FindObjectsByType<CliffWallSurface>(FindObjectsSortMode.None))
             {
                 if (wall.gameObject.scene != scene) continue;
@@ -152,14 +154,28 @@ namespace HiddenHarbours.Art
                 {
                     var renderer = filter.GetComponent<MeshRenderer>();
                     if (renderer == null || !renderer.enabled || filter.sharedMesh == null) continue;
-                    var vertices = filter.sharedMesh.vertices; var triangles = filter.sharedMesh.triangles;
-                    var world = filter.transform.localToWorldMatrix;
-                    for (int i = 0; i < vertices.Length; i++) vertices[i] = world.MultiplyPoint3x4(vertices[i]);
-                    for (int i = 0; i < triangles.Length; i += 3)
-                        footprint.AddTriangle(vertices[triangles[i]], vertices[triangles[i + 1]], vertices[triangles[i + 2]]);
+                    var vertices = FaceVertices(filter, wall);
+                    for (int i = 0; i < vertices.Length; i += 3)
+                        footprint.AddTriangle(vertices[i], vertices[i + 1], vertices[i + 2]);
                 }
             }
             return footprint;
+        }
+        internal static Vector3[] FaceVertices(MeshFilter filter, CliffWallSurface wall)
+        {
+            var mesh = filter.sharedMesh; var vertices = mesh.vertices;
+            var world = filter.transform.localToWorldMatrix;
+            for (int i = 0; i < vertices.Length; i++) vertices[i] = world.MultiplyPoint3x4(vertices[i]);
+            if (filter.name == CliffWallSurface.BrowChildName)
+            {
+                // Read the builder's existing value; do not duplicate a kit tuning constant.
+                float line = (float)typeof(CliffWallSurface).GetField("_browLineAt",
+                    System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic).GetValue(wall);
+                return ShoreLineDerivation.FaceVertices(vertices, mesh.uv, mesh.triangles, line);
+            }
+            var result = new Vector3[mesh.triangles.Length]; var triangles = mesh.triangles;
+            for (int i = 0; i < result.Length; i++) result[i] = vertices[triangles[i]];
+            return result;
         }
         public void Dispose()
         {

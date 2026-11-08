@@ -100,7 +100,7 @@ float SL_Lip(float4 address)
 
 float SL_WallProtected(float2 uv)
 {
-    // seat ruling s12, 11-07: the load-time triangle mask already includes one address texel.
+    // seat ruling s12, 11-07: the load-time face mask includes one shading-mask texel (seat ruling s17).
     // Painted Talus/Ledge/Shelf on the exposed foreshore are not wall faces.
     if (_ShoreWallsLoaded < 0.5) return 0;
     int2 cell = clamp(int2(floor(uv * _ShoreWallGrid.xy)), int2(0, 0), int2(_ShoreWallGrid.xy) - 1);

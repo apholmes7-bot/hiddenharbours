@@ -82,7 +82,7 @@ namespace HiddenHarbours.Art
             public bool QualifyingBrow => Turf >= .5f && Sand < .01f && Shingle < .01f && !ProtectedFoot;
         }
 
-        /// <summary>The actual wall triangles in world XY, expanded by one address texel at load.</summary>
+        /// <summary>The actual wall faces in world XY, expanded by the supplied guard at load.</summary>
         public sealed class WallFootprint
         {
             public readonly int Width, Height;
@@ -109,7 +109,7 @@ namespace HiddenHarbours.Art
             }
             public void AddTriangle(Vector2 a, Vector2 b, Vector2 c)
             {
-                // seat ruling s12, 11-07: protect the drawn triangles plus one address texel,
+                // Protect the drawn face triangles plus the supplied guard,
                 // never a renderer's rectangular bounds or the whole painted foreshore.
                 float rx = Size.x / Width, ry = Size.y / Height;
                 int x0 = Mathf.Clamp(Mathf.FloorToInt((Mathf.Min(a.x, Mathf.Min(b.x, c.x)) - _margin - Min.x) / rx), 0, Width - 1);
@@ -130,6 +130,32 @@ namespace HiddenHarbours.Art
                         || DistanceSquared(p, c, a) <= margin2) Pixels[i] = 255;
                 }
             }
+        }
+
+        /// <summary>The brow decal's upper part is plan ground. Clip only its face portion,
+        /// interpolating on the already drawn triangles; no wall vertex or material changes.</summary>
+        public static Vector3[] FaceVertices(Vector3[] vertices, Vector2[] uv, int[] triangles, float browLine)
+        {
+            var result = new List<Vector3>();
+            var polygon = new List<(Vector3 p, float v)>(4);
+            for (int i = 0; i < triangles.Length; i += 3)
+            {
+                polygon.Clear();
+                int previous = triangles[i + 2];
+                for (int corner = 0; corner < 3; corner++)
+                {
+                    int current = triangles[i + corner];
+                    float a = uv[previous].y, b = uv[current].y;
+                    bool insideA = a >= browLine, insideB = b >= browLine;
+                    if (insideA != insideB) polygon.Add((Vector3.LerpUnclamped(vertices[previous], vertices[current],
+                        (browLine - a) / (b - a)), browLine));
+                    if (insideB) polygon.Add((vertices[current], b));
+                    previous = current;
+                }
+                for (int j = 1; j + 1 < polygon.Count; j++)
+                { result.Add(polygon[0].p); result.Add(polygon[j].p); result.Add(polygon[j + 1].p); }
+            }
+            return result.ToArray();
         }
 
         /// <summary>A load-only snapshot of the six existing linear splats. No material slot is added.</summary>
@@ -175,6 +201,12 @@ namespace HiddenHarbours.Art
             public readonly Vector2 Min, Size, Texel;
             readonly Func<Vector2, Substrate> _substrate;
             readonly WallFootprint _walls;
+            Segment[] _profiles;
+            bool[] _profileWalls;
+            List<int>[] _profileBuckets;
+            int _profileWidth, _profileHeight;
+            float _profileCell;
+            public bool HasWallFootprint => _walls != null;
             public Grid(float[] elevations, int width, int height, Vector2 min, Vector2 size,
                 Func<Vector2, Substrate> substrate = null, WallFootprint walls = null)
             {
@@ -193,11 +225,48 @@ namespace HiddenHarbours.Art
             public bool ProtectedAt(Vector2 q) => _walls == null ? CoverAt(q).ProtectedFoot : _walls.At(q);
             public bool CliffCoast(Vector2 q, TerrainShoreLinesDef def)
             {
-                if (_walls == null) return false;
-                Vector2 inland = Gradient(q).normalized;
-                for (float run = -StripMetres; run <= def.BrowSearchMetres; run += def.BrowStepMetres)
-                    if (_walls.At(q + inland * run)) return true;
-                return false;
+                if (_profileBuckets == null) return false;
+                int x = Mathf.Clamp(Mathf.FloorToInt((q.x - Min.x) / _profileCell), 0, _profileWidth - 1);
+                int y = Mathf.Clamp(Mathf.FloorToInt((q.y - Min.y) / _profileCell), 0, _profileHeight - 1);
+                var bucket = _profileBuckets[y * _profileWidth + x];
+                if (bucket == null) return false;
+                float best = def.BrowSearchMetres * def.BrowSearchMetres; bool owned = false;
+                foreach (int i in bucket)
+                {
+                    var s = _profiles[i]; Vector2 ab = s.B - s.A;
+                    float t = Mathf.Clamp01(Vector2.Dot(q - s.A, ab) / ab.sqrMagnitude);
+                    float d = (q - s.A - ab * t).sqrMagnitude;
+                    if (d < best) { best = d; owned = _profileWalls[i]; }
+                }
+                return owned;
+            }
+            internal void PrepareCoast(Segment[] high, TerrainShoreLinesDef def)
+            {
+                if (_walls == null) return;
+                // seat ruling s17: ownership follows a qualified high-water profile whose brow
+                // actually meets a wall, never a remote hit from a noisy foreshore gradient.
+                _profiles = high; _profileWalls = new bool[high.Length];
+                _profileCell = def.BrowSearchMetres;
+                _profileWidth = Mathf.Max(1, Mathf.CeilToInt(Size.x / _profileCell));
+                _profileHeight = Mathf.Max(1, Mathf.CeilToInt(Size.y / _profileCell));
+                _profileBuckets = new List<int>[_profileWidth * _profileHeight];
+                for (int i = 0; i < high.Length; i++)
+                {
+                    var s = high[i];
+                    if (FindBrow(this, (s.A + s.B) * .5f, def, out var found, out var inland, out _)
+                        && CoverAt(found + inland * def.BrowStepMetres).QualifyingBrow)
+                    {
+                        for (float run = -def.BrowStepMetres; run <= def.BrowStepMetres; run += def.BrowStepMetres)
+                            _profileWalls[i] |= _walls.At(found + inland * run);
+                    }
+                    float pad = def.BrowSearchMetres;
+                    int x0 = Mathf.Clamp(Mathf.FloorToInt((Mathf.Min(s.A.x, s.B.x) - pad - Min.x) / _profileCell), 0, _profileWidth - 1);
+                    int x1 = Mathf.Clamp(Mathf.FloorToInt((Mathf.Max(s.A.x, s.B.x) + pad - Min.x) / _profileCell), 0, _profileWidth - 1);
+                    int y0 = Mathf.Clamp(Mathf.FloorToInt((Mathf.Min(s.A.y, s.B.y) - pad - Min.y) / _profileCell), 0, _profileHeight - 1);
+                    int y1 = Mathf.Clamp(Mathf.FloorToInt((Mathf.Max(s.A.y, s.B.y) + pad - Min.y) / _profileCell), 0, _profileHeight - 1);
+                    for (int y = y0; y <= y1; y++) for (int x = x0; x <= x1; x++)
+                        (_profileBuckets[y * _profileWidth + x] ??= new List<int>()).Add(i);
+                }
             }
             public float At(Vector2 q)
             {
@@ -226,16 +295,19 @@ namespace HiddenHarbours.Art
             int width = Mathf.Max(1, Mathf.CeilToInt(grid.Size.x / def.AddressTexelMetres));
             int height = Mathf.Max(1, Mathf.CeilToInt(grid.Size.y / def.AddressTexelMetres));
             List<Line> high = Contours(grid, def.SpringHigh);
+            var highSegments = Segments(grid, high);
+            grid.PrepareCoast(highSegments, def);
             var lines = new Segment[KindCount][];
             lines[0] = Brows(grid, high, def, true);
             lines[1] = Brows(grid, high, def, false);
-            lines[2] = Segments(grid, high);
+            lines[2] = highSegments;
             var weed = new List<Segment>();
-            // seat ruling s12, 11-07: cliff foreshore weed addresses spring low (-spring high).
+            // seat ruling s17: the spring-low contour can be tens of metres offshore; the
+            // exposed cliff foot follows the region's existing mean-low contour instead.
             // Soft shores retain their existing mean-high line, keeping fixture and beach coverage.
             foreach (var s in Segments(grid, Contours(grid, def.MeanHigh)))
                 if (!grid.CliffCoast((s.A + s.B) * .5f, def)) weed.Add(s);
-            foreach (var s in Segments(grid, Contours(grid, -def.SpringHigh)))
+            foreach (var s in Segments(grid, Contours(grid, def.MeanLow)))
                 if (grid.CliffCoast((s.A + s.B) * .5f, def)) weed.Add(s);
             lines[3] = weed.ToArray();
             lines[4] = Segments(grid, Contours(grid, def.MeanLow));
@@ -244,7 +316,9 @@ namespace HiddenHarbours.Art
             var ids = new List<int>();
             var foot = new bool[width * height];
             for (int y = 0; y < height; y++)
-            for (int x = 0; x < width; x++) foot[y * width + x] = grid.ProtectedAt(grid.Min +
+            // seat ruling s17: a partially protected address cell still needs candidates.
+            // The exact CPU sample / GPU fragment mask, not its cell centre, rejects faces.
+            for (int x = 0; x < width; x++) foot[y * width + x] = !grid.HasWallFootprint && grid.ProtectedAt(grid.Min +
                 Vector2.Scale(new Vector2((x + .5f) / width, (y + .5f) / height), grid.Size));
             for (int kind = 0; kind < KindCount; kind++)
             {
@@ -392,6 +466,21 @@ namespace HiddenHarbours.Art
             }
         }
 
+        static bool FindBrow(Grid grid, Vector2 q, TerrainShoreLinesDef def, out Vector2 found,
+            out Vector2 inland, out float peak)
+        {
+            inland = grid.Gradient(q).normalized; found = q;
+            peak = Vector2.Dot(grid.Gradient(q), inland);
+            for (float run = def.BrowStepMetres; peak >= def.ScarpMinimumSlope && run <= def.BrowSearchMetres; run += def.BrowStepMetres)
+            {
+                Vector2 p = q + inland * run;
+                float slope = Vector2.Dot(grid.Gradient(p), inland); peak = Mathf.Max(peak, slope);
+                if (slope <= peak * def.BrowSlopeFallFraction)
+                { found = p; return grid.At(p) >= def.SpringHigh + def.BrowRiseMetres; }
+            }
+            return false;
+        }
+
         static Segment[] Brows(Grid grid, List<Line> high, TerrainShoreLinesDef def, bool turf)
         {
             var segments = new List<Segment>();
@@ -402,25 +491,16 @@ namespace HiddenHarbours.Art
                 var hints = new Vector2[source.Points.Count];
                 for (int i = 0; i < source.Points.Count; i++)
                 {
-                    Vector2 q = source.Points[i], inland = grid.Gradient(q).normalized, found = q;
+                    Vector2 q = source.Points[i];
+                    bool broke = FindBrow(grid, q, def, out var found, out var inland, out var peak);
                     hints[i] = -inland;
-                    float peak = Vector2.Dot(grid.Gradient(q), inland); bool broke = false;
-                    for (float run = def.BrowStepMetres; peak >= def.ScarpMinimumSlope && run <= def.BrowSearchMetres; run += def.BrowStepMetres)
-                    {
-                        Vector2 p = q + inland * run;
-                        float slope = Vector2.Dot(grid.Gradient(p), inland);
-                        peak = Mathf.Max(peak, slope);
-                        // The FIRST break belongs to the shore profile. If it is too shallow,
-                        // stop without a brow; never continue through a flat to an inland hill.
-                        if (slope <= peak * def.BrowSlopeFallFraction)
-                        { found = p; broke = grid.At(p) >= def.SpringHigh + def.BrowRiseMetres; break; }
-                    }
                     brow.Points.Add(found);
-                    // seat ruling s12, 11-07: the break itself can be rock; qualify its turf
-                    // one search step inland without moving the geometrically found brow.
+                    // seat ruling s17: only a wall-owned brow uses the S12 landward turf.
+                    // Soft banks keep S11's break-point qualifier and steep/gentle exclusion.
+                    bool cliff = grid.CliffCoast(q, def);
                     valid[i] = broke && peak >= def.ScarpMinimumSlope
-                        && grid.CoverAt(found + inland * def.BrowStepMetres).QualifyingBrow
-                        && (turf || peak < def.TurfMinimumSlope || grid.CliffCoast(found, def));
+                        && grid.CoverAt(cliff ? found + inland * def.BrowStepMetres : found).QualifyingBrow
+                        && (turf || peak < def.TurfMinimumSlope);
                 }
                 // Neighbouring rays can reach different banks or fold across a concavity. Neither
                 // a long connector nor a reversed connector is part of the shore's brow curve.

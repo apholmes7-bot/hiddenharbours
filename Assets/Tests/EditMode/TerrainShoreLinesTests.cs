@@ -183,14 +183,16 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.Greater(checkedPoints, 1000);
         }
 
-        [Test] public void CliffCoast_LandwardTurfAndExposedSpringLowHaveAddressesOutsideWallFaces()
+        [Test] public void CliffCoast_LandwardTurfAndExposedFootHaveAddressesOutsideWallFaces()
         {
             // seat ruling s12, 11-07: real wall geometry separates a rock brow and painted
             // foot from the exposed foreshore. Neither paint alone is a wall footprint.
-            var walls = new ShoreLineDerivation.WallFootprint(new Vector2(-16, -16), new Vector2(32, 32), .25f, 1);
-            walls.AddTriangle(new Vector2(-16, -1), new Vector2(16, -1), new Vector2(16, 1));
-            walls.AddTriangle(new Vector2(-16, -1), new Vector2(16, 1), new Vector2(-16, 1));
-            float Height(Vector2 p) => p.y > 3 ? 6 : p.y >= -1 ? 6 + (p.y - 3) * 2 : -2 + (p.y + 1) * .1f;
+            // The nonzero scarp assertion moves to a gentle wall profile: S17 restores
+            // the steep/gentle exclusion; the original steep-brow regression remains above.
+            var walls = new ShoreLineDerivation.WallFootprint(new Vector2(-16, -16), new Vector2(32, 32), .25f, .25f);
+            walls.AddTriangle(new Vector2(-16, -9), new Vector2(16, -9), new Vector2(16, 3.25f));
+            walls.AddTriangle(new Vector2(-16, -9), new Vector2(16, 3.25f), new Vector2(-16, 3.25f));
+            float Height(Vector2 p) => p.y > 3 ? 6 : p.y >= -9 ? 6 + (p.y - 3) * .5f : (p.y + 9) * .5f;
             var baseGrid = Fixture(Height);
             var grid = new ShoreLineDerivation.Grid(baseGrid.Elevations, baseGrid.Width, baseGrid.Height,
                 baseGrid.Min, baseGrid.Size, p => p.y > 3.75f ? new ShoreLineDerivation.Substrate(1)
@@ -202,11 +204,46 @@ namespace HiddenHarbours.Tests.EditMode
                 Assert.IsTrue(Enumerable.Range(0, 64).Select(y => new Vector2(0, y * .125f + 2))
                     .Any(p => ShoreLineDerivation.InBand(kind, data.Sample(kind, p))), "A landward brow envelope must survive.");
             }
-            Assert.IsTrue(Enumerable.Range(0, 80).Select(y => new Vector2(0, -6 + y * .1f))
-                .Any(p => ShoreLineDerivation.InBand(3, data.Sample(3, p))), "Spring-low weed must address the exposed foreshore.");
+            Assert.IsTrue(Enumerable.Range(0, 80).Select(y => new Vector2(0, -16 + y * .1f))
+                .Any(p => ShoreLineDerivation.InBand(3, data.Sample(3, p))), "Weed must address the exposed mean-low foot.");
             foreach (float y in new[] { -1f, 0f, 1f })
             for (int kind = 0; kind < 5; kind++)
                 Assert.IsFalse(ShoreLineDerivation.InBand(kind, data.Sample(kind, new Vector2(0, y))), "No strip belongs inside wall faces.");
+        }
+
+        [Test] public void SoftBankDoesNotBorrowLandwardTurfFromBeyondItsRejectedBrow()
+        {
+            var grid = Fixture(p => 2.2f + Mathf.Min(p.y, 1.5f) * .2f,
+                p => p.y > 2 ? new ShoreLineDerivation.Substrate(1) : new ShoreLineDerivation.Substrate(0, shelf: 1));
+            var data = ShoreLineDerivation.Build(grid, _def);
+            Assert.AreEqual(0, data.Lines[0].Length); Assert.AreEqual(0, data.Lines[1].Length);
+        }
+
+        [Test] public void PartialWallAddressCellKeepsTheUnprotectedSubcellShore()
+        {
+            var walls = new ShoreLineDerivation.WallFootprint(new Vector2(-16, -16), new Vector2(32, 32), .25f, .25f);
+            walls.AddTriangle(new Vector2(-16, 0), new Vector2(16, 0), new Vector2(16, .5f));
+            walls.AddTriangle(new Vector2(-16, 0), new Vector2(16, .5f), new Vector2(-16, .5f));
+            var baseGrid = Fixture(p => 2.2f - p.y);
+            var grid = new ShoreLineDerivation.Grid(baseGrid.Elevations, baseGrid.Width, baseGrid.Height,
+                baseGrid.Min, baseGrid.Size, walls: walls);
+            var data = ShoreLineDerivation.Build(grid, _def);
+            Assert.IsTrue(walls.At(new Vector2(.5f, .5f)), "The address centre is protected.");
+            Assert.IsFalse(walls.At(new Vector2(.5f, .9f)), "The point in that same address cell is ground.");
+            Assert.IsTrue(ShoreLineDerivation.InBand(2, data.Sample(2, new Vector2(.5f, .9f))));
+            Assert.IsFalse(ShoreLineDerivation.InBand(2, data.Sample(2, new Vector2(.5f, .5f))));
+        }
+
+        [Test] public void BrowFaceClipKeepsTheWallAndExcludesItsPlanGround()
+        {
+            var vertices = new[] { new Vector3(-1, -1), new Vector3(1, -1), new Vector3(1, 1), new Vector3(-1, 1) };
+            var copy = (Vector3[])vertices.Clone();
+            var uv = new[] { new Vector2(0, 0), new Vector2(1, 0), new Vector2(1, 1), new Vector2(0, 1) };
+            var face = ShoreLineDerivation.FaceVertices(vertices, uv, new[] { 0, 1, 2, 0, 2, 3 }, .5f);
+            Assert.IsTrue(face.All(p => p.y >= 0));
+            float area = 0;
+            for (int i = 0; i < face.Length; i += 3) area += Vector3.Cross(face[i + 1] - face[i], face[i + 2] - face[i]).magnitude * .5f;
+            Assert.AreEqual(2, area, 1e-6f); CollectionAssert.AreEqual(copy, vertices);
         }
 
         [Test] public void ShaderPatterns_AreSparseSeededAndHaveNoTwentyMetreRepeat()

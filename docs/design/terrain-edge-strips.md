@@ -164,23 +164,25 @@ The water's shared albedo include and floor binding do not read this ground-only
 Water drawing, cliff drawing and lighting presets are unchanged.
 
 Cliff strips require the first qualifying shore brow and a slope at least ScarpMinimumSlope.
-Seat ruling s12, 11-07: qualify the break by turf or soil one BrowStepMetres inland;
-the break itself may be rock. Sand and shingle still reject the strips. A wall coast can
-carry both brow envelopes; the existing steep/gentle classification remains on soft shores.
+On a wall-owned profile, turf or soil one BrowStepMetres inland qualifies the break, which
+may itself be rock. Soft banks qualify at the break. Sand and shingle reject both, and the
+existing steep/gentle scarp classification applies to both.
 
-Seat ruling s12, 11-07: after all walls build on enable, Start rasterizes their actual world-XY
-mesh triangles once into a transient R8 mask at BlendMetres spacing, with a one-address-texel
-margin. CPU addressing and the fragment use the same footprint. Broad renderer rectangles
-and painted Talus/Ledge/Shelf shares do not identify a wall face. Exposed foreshore remains
-addressable: wrack uses spring high, and cliff-coast weed uses spring low (minus SpringHigh).
-A shore-normal trace identifies the wall coast; soft-shore weed retains its mean-high mark.
+After all walls build on enable, Start rasterizes their actual world-XY face triangles once
+into a transient R8 mask at BlendMetres spacing, with one shading-mask texel of margin.
+The brow decal is clipped at its builder-pushed plan/face line. CPU addressing and the
+fragment use the same footprint; partial address cells retain candidates for their exposed
+parts. Broad renderer rectangles and painted Talus/Ledge/Shelf shares do not identify a wall
+face. Exposed foreshore remains addressable: wrack uses spring high, and cliff-coast weed
+uses mean low. Soft-shore weed retains its mean-high mark. Wall ownership follows the nearest
+qualified high-water profile whose brow meets a wall face within one brow step.
 The footprint excludes all strips and blend tightening. No cliff material, texture, geometry
 or lighting setting changes.
 
-Seat ruling s15, 11-07: the physical rule applies to a wall-protected strand, including
-its exposed foreshore. A load-only R8 domain reuses the S12 shore-normal wall-coast trace.
+The physical rule applies to a wall-protected strand, including its exposed foreshore.
+A load-only R8 domain records that profile ownership.
 Outside that domain, or with no walls loaded, the existing procedural/painted foot exclusion
-remains active. The footprint itself is unchanged; no brow or tide contour moves.
+remains active.
 
 The Def's seed varies the authored PNG sampling. Wrack occupies irregular clumps 1â€“3 m long,
 with 2â€“6 m gaps, rotation, scale, offsets and four variants that differ between neighbours.
