@@ -2382,7 +2382,8 @@ Shader "HiddenHarbours/Water"
                 float2 wpx = floor(wp * ppm) / ppm;
                 float2 uv = (wp - _HeightWorldMin.xy) / max(_HeightWorldSize.xy, float2(1e-3, 1e-3));
                 float w[HH_MAT_COUNT], intensity[HH_MAT_COUNT];
-                TSA_GroundWeights(wp, wpx, uv, e, w, intensity);
+                float2 suv = TSA_WarpUV(wpx, uv);
+                TSA_GroundWeights(wp, wpx, suv, e, w, intensity);
                 float3 ground = TSA_KitAlbedo(wp, w, intensity, dwx, dwy);
                 ground = TSA_Macro(ground, wp);
                 ground = TSA_Wet(ground, e, level);

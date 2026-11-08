@@ -448,7 +448,8 @@ Shader "HiddenHarbours/TerrainSplat"
                 // The ground's weights and ladder intensities: the height bands under the painted
                 // splats (Include/TerrainSplatAlbedo.hlsl, the sea's floor reads the same).
                 float w[HH_MAT_COUNT], intensity[HH_MAT_COUNT];
-                TSA_GroundWeights(wp, wpx, uv, e, w, intensity);
+                float2 suv = TSA_WarpUV(wpx, uv);
+                TSA_GroundWeights(wp, wpx, suv, e, w, intensity);
                 float4 shoreAddresses[5];
                 // seat ruling s15, 11-07: physical protection on a wall's strand;
                 // the S11 procedural foot exclusion elsewhere, including fixtures without walls.
@@ -461,7 +462,10 @@ Shader "HiddenHarbours/TerrainSplat"
                 {
                     float weightHeight01 = SAMPLE_TEXTURE2D_LOD(_HeightTex, sampler_HeightTex, weightUV, 0).r;
                     weightE = lerp(_HeightMin, _HeightMax, weightHeight01);
-                    TSA_GroundWeights(weightWP, floor(weightWP * ppm) / ppm, weightUV, weightE, w, intensity);
+                    // The re-read takes the same warp at its own point (one law): the weights stay continuous
+                    // where the shore offset fades to zero at its band's edge.
+                    float2 weightWPX = floor(weightWP * ppm) / ppm;
+                    TSA_GroundWeights(weightWP, weightWPX, TSA_WarpUV(weightWPX, weightUV), weightE, w, intensity);
                 }
 
                 // --- SHADE ------------------------------------------------------------------------
