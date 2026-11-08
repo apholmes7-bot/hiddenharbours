@@ -459,7 +459,8 @@ Shader "HiddenHarbours/TerrainSplat"
                 float weightE = e;
                 [branch] if (any(weightWP != wp))
                 {
-                    weightE = lerp(_HeightMin, _HeightMax, SAMPLE_TEXTURE2D_LOD(_HeightTex, sampler_HeightTex, weightUV, 0).r);
+                    float weightHeight01 = SAMPLE_TEXTURE2D_LOD(_HeightTex, sampler_HeightTex, weightUV, 0).r;
+                    weightE = lerp(_HeightMin, _HeightMax, weightHeight01);
                     TSA_GroundWeights(weightWP, floor(weightWP * ppm) / ppm, weightUV, weightE, w, intensity);
                 }
 

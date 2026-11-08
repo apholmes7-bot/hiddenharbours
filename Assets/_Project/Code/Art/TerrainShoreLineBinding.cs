@@ -33,6 +33,10 @@ namespace HiddenHarbours.Art
         internal static TerrainShoreLineBinding Create(Texture2D height, float min, float max, Vector2 center, Vector2 size,
             UnityEngine.SceneManagement.Scene scene, params Texture2D[] splats)
         {
+            // CI runs Unity with NO graphics device ("Null Device"). It has no pixels to
+            // verify and no real texture limit; leave the shore lines disabled there.
+            if (SystemInfo.graphicsDeviceType == UnityEngine.Rendering.GraphicsDeviceType.Null)
+                return null;
             TerrainShoreLinesDef def = TerrainShoreLinesDef.Find(height);
             if (def == null) return null; // Explicit region opt-in: no NMC change.
             var strips = Resources.Load<Texture2DArray>("TerrainShoreLines/TerrainEdge256x128");

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using NUnit.Framework;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 namespace HiddenHarbours.Tests.Art.EditMode
 {
@@ -26,6 +27,8 @@ namespace HiddenHarbours.Tests.Art.EditMode
         }
         [Test] public void RenderedClockIsFrozenAfterUrpCameraSetupAndRestoresCoreClock()
         {
+            if (SystemInfo.graphicsDeviceType == GraphicsDeviceType.Null)
+                Assert.Ignore("SKIPPED, NOT VERIFIED - no graphics device (Null Device), so nothing rendered; verified by the p9 harness on the dev box.");
             const string source = @"Shader ""Hidden/ShoreCaptureClockPin"" { SubShader { Tags { ""RenderPipeline""=""UniversalPipeline"" } Pass { Tags { ""LightMode""=""Universal2D"" } ZWrite Off Cull Off
 HLSLPROGRAM
 #pragma vertex vert
