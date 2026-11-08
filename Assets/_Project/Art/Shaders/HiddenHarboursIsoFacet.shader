@@ -307,7 +307,7 @@ Shader "HiddenHarbours/IsoFacet"
                 float3 wpos : TEXCOORD2;         // xy = dither frame  z = TRUE unbiased depth
 #ifndef HH_FIGURE
                 float3 causticPoint : TEXCOORD8; // plane-projected world XY and physical height
-                nointerpolation float2 causticFace : TEXCOORD9; // rendered side exterior, upward normal
+                nointerpolation float4 causticFace : TEXCOORD9; // exterior, upward normal, ground-plane normal
 #endif
 #ifdef HH_LEVEL_GATE
                 // xy = the level tag, z = 1 when the camera is rendering this
@@ -348,8 +348,9 @@ Shader "HiddenHarbours/IsoFacet"
 #ifdef HH_LEVEL_GATE
                 causticInterior = causticInterior || v.levelTag.y > 0.5;
 #endif
-                o.causticFace = float2(causticInterior ? 0.0 : 1.0,
-                    abs(dot(wn, _HHHullCausticPlane.xyz * rsqrt(planeLength2))));
+                o.causticFace = float4(causticInterior ? 0.0 : 1.0,
+                    abs(dot(wn, _HHHullCausticPlane.xyz * rsqrt(planeLength2))),
+                    HHHullHorizontalNormal(wn, _HHHullCausticBearing.xy));
 #endif
 
                 // The rig: sh = shadeOf(n, se, ce). In iso-rotated world space that is exactly a
@@ -681,7 +682,8 @@ Shader "HiddenHarbours/IsoFacet"
                 {
                     float causticWeight = HHHullCausticWeight(i.causticPoint.z, i.causticFace,
                         _HHHullCausticSettings, _SunElevation, _DayNightTint.rgb,
-                        _CausticDayGate, _Chop, _CausticAmount);
+                        _CausticDayGate, _Chop, _CausticAmount, _HHHullCausticOptics,
+                        _SunDir.xy, _HHHullCausticBearing.z, _ShadowStrength, _HHHullCausticIrradiance.xy);
                     [branch]
                     if (causticWeight > 0.0)
                     {
@@ -692,7 +694,7 @@ Shader "HiddenHarbours/IsoFacet"
                             _CausticCurvatureGain, _CausticCurvatureBlend, _HHHullCausticEnvelope);
                         // Hull alpha stays in [0.5,1], above the figure classifier. Keep resolved RGB
                         // unchanged for the legacy reflection; the main overlay applies this weight.
-                        o.dark.a = 1.0 - saturate(pattern * causticWeight) * 0.5;
+                        o.dark.a = HHHullCausticEncodeAlpha(_HHHullCausticPreGain, pattern, causticWeight);
                     }
                 }
 #endif

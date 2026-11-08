@@ -4,7 +4,7 @@ using UnityEngine;
 namespace HiddenHarbours.Art
 {
     /// <summary>
-    /// Pure arithmetic twin of HiddenHarboursWater.shader's caustic block (ADR 0027 #2).
+    /// Pure shared caustic arithmetic (ADR 0027 #2) and the hull's reflected-sun law.
     /// The caller supplies the five heights already sampled on the shader's pixelized world grid.
     /// This does not sample or advance waves, change depth, or supply gameplay lighting.
     /// All artistic strengths are arguments from material data; constants below mirror shader guards.
@@ -12,6 +12,35 @@ namespace HiddenHarbours.Art
     /// </summary>
     public static class CausticMath
     {
+        /// <summary>Schlick water reflectance; elevation is the sun's angle above the horizon.</summary>
+        public static float FresnelAtDegrees(float elevationDegrees, float f0, float power)
+            => FresnelFromSun(Mathf.Sin(elevationDegrees * Mathf.Deg2Rad), f0, power);
+
+        public static float FresnelFromSun(float sunElevation, float f0, float power)
+        {
+            float reflectance = Mathf.Clamp01(f0);
+            return reflectance + (1 - reflectance)
+                * Mathf.Pow(1 - Mathf.Clamp01(sunElevation), Mathf.Max(1, power));
+        }
+
+        public static float Irradiance(float sunElevation, float power, float floor)
+            => Mathf.Max(Mathf.Clamp01(floor), Mathf.Pow(Mathf.Clamp01(sunElevation), Mathf.Max(.01f, power)));
+
+        /// <summary>Schlick at the wave facet's incidence, not at the sun's elevation.</summary>
+        public static float FacetFresnel(float sunElevation, float chop, float f0, float power, float tiltDegrees)
+        {
+            float elevation = Mathf.Asin(Mathf.Clamp01(sunElevation)) * Mathf.Rad2Deg;
+            float incidence = Mathf.Clamp(90 - elevation - Mathf.Max(0, tiltDegrees) * Mathf.Clamp01(chop), 0, 90);
+            return FresnelFromSun(Mathf.Cos(incidence * Mathf.Deg2Rad), f0, power);
+        }
+
+        public static float EncodeAlpha(float gain, float pattern, float weight)
+            => Mathf.Max(128f / 255f, 1 - Mathf.Clamp01(gain * pattern * weight) * .5f);
+
+        public static float DecodeAlpha(float alpha) => alpha >= .5f && alpha < 1 ? (1-alpha)*2 : 0;
+
+        public static float QuantizeAlpha8(float alpha) => Mathf.Round(Mathf.Clamp01(alpha)*255)/255;
+
         public struct VeinSettings
         {
             public float PixelsPerUnit, Scale, Flow, PaintScale, UntileStrength;

@@ -1045,7 +1045,7 @@ namespace HiddenHarbours.Art
             // lit flag). Get replaces the scratch block, including clearing it for a bare renderer,
             // so none of those values can leak from the mesh to the leaf or overlay next frame.
             target.GetPropertyBlock(_props);
-            HullCausticLighting.Apply(_props, _causticPlane, _causticSettings);
+            HullCausticLighting.Apply(_props, _causticPlane, _causticSettings, _setup.ElevationDeg);
             // The hull ORIGIN the dither grid is phased against is this root — NOT the heaved
             // child: the rig subtracts heave from screen y AFTER projecting, so its dither stays
             // indexed by the final screen pixel, which the world-derived cell coordinate

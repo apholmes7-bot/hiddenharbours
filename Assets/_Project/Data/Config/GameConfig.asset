@@ -326,6 +326,20 @@ MonoBehaviour:
   CharacterLookRadiusMetres: 5
   CharacterLookTargetHeightMetres: 1.63
   MeshFigureKeyline: 1
+  HullCausticBandMeters: 0.8
+  HullCausticBandBaseMeters: 0.35
+  HullCausticBandPerChopMeters: 0.9
+  HullCausticFresnelF0: 0.02
+  HullCausticReferenceElevationDegrees: 15
+  HullCausticFresnelPower: 5
+  HullCausticChopDimming: 0.5
+  HullCausticAwayFloor: 0.15
+  HullCausticIrradiancePower: 1
+  HullCausticIrradianceFloor: 0.05
+  HullCausticFacetTiltDegrees: 12
+  HullCausticStrength: 0.18
+  HullCausticVeinGain: 768
+  HullCausticMaxUpwardNormal: 0.5
   FigurePixelTarget: 1
   FigureHeadingSteps: 0
   MeshCharacter: 1

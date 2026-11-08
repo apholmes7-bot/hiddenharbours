@@ -16,7 +16,7 @@ namespace HiddenHarbours.App.Editor
 {
     /// <summary>Paired runtime plates, with a before shader compiled directly from the measured base.
     /// Source is held in memory; no authored asset or scene is saved.</summary>
-    public static class WaterHullsPlates
+    public static partial class WaterHullsPlates
     {
         private const string Base = "3a0b19cf1e778ee43a5efbcf57a318f4f75ea53d";
         private static int _lastFrame = -1, _case = -1, _stageFrames, _costPhase;
@@ -42,14 +42,30 @@ namespace HiddenHarbours.App.Editor
         private static float _veinGain;
         private static readonly bool SameGainControl =
             System.Environment.GetEnvironmentVariable("HH_WATER_HULLS_L4_CONTROL") == "1";
+        private static readonly bool Realism =
+            System.Environment.GetEnvironmentVariable("HH_WATER_HULLS_REALISM") == "1";
+        private static readonly bool BearingStudy =
+            System.Environment.GetEnvironmentVariable("HH_WATER_HULLS_BEARING") == "1";
+        private static int PairCount => BearingStudy ? 16 : 13;
+        private static int _bearingTriangle = -1;
+        private static Vector3 _bearingRigNormal;
+        private static bool _calibrated, _authoringLocked, _inMotion;
+        private static float _gainBeforeTuning, _priorCaptureDelta;
+        private static int _motionPose, _motionStartFrame = -1;
+        private static readonly int[] MotionCases = { 7, 1, 6 };
+        private static readonly List<Color32[]> MotionFrames = new List<Color32[]>();
+        private static readonly List<float> MotionTimes = new List<float>();
+        private static readonly List<double> MotionGameTimes = new List<double>();
+        private static double _motionGameStart;
 
         public static bool Step(string output)
         {
             if (Time.frameCount == _lastFrame) return false;
             _lastFrame = Time.frameCount;
             if (_camera == null) Initialize(output);
-            if (_case < 0) { BeginCase(SameGainControl ? 8 : 0); return false; }
-            if (_case < 13)
+            if (_inMotion) return MotionStep();
+            if (_case < 0) { BeginCase(LadderStudy ? 6 : SameGainControl ? 8 : Realism ? 7 : 0); return false; }
+            if (_case < PairCount)
             {
                 if (_case < 12 && ((_case / 3) % 2) == 1)
                 {
@@ -61,8 +77,20 @@ namespace HiddenHarbours.App.Editor
                 if (_stageFrames < 60 || EditorApplication.timeSinceStartup - _stageStart < 3
                     || ShaderUtil.anythingCompiling) return false;
                 if (SameGainControl) { CaptureSameGainBlow(); return true; }
+                if (LadderStudy)
+                {
+                    if (!_calibrated) { MeasurePhysicalRung(); _calibrated = true; }
+                    if (_case == 6 || _case == 0 || _case == 7) CaptureGainLadder(_case);
+                    CapturePair(_case);
+                    int order = Array.IndexOf(LadderOrder, _case);
+                    if (order == LadderOrder.Length-1) BeginMotion(0); else BeginCase(LadderOrder[order+1]);
+                    return false;
+                }
+                if (Realism && !_calibrated) { if (BearingStudy) MeasureFixedGainReference(); else CalibrateGain(); _calibrated = true; }
                 CapturePair(_case);
-                if (_case == 12) { BeginCost(); return false; }
+                if (Realism && _case == 7 && _pairs.Count == 1) { BeginCase(0); return false; }
+                if (Realism && _case == 6) { BeginCase(8); return false; }
+                if (_case == PairCount - 1) { if (Realism) BeginMotion(0); else BeginCost(); return false; }
                 BeginCase(_case + 1);
                 return false;
             }
@@ -74,6 +102,13 @@ namespace HiddenHarbours.App.Editor
             _output = output;
             _strength = GameServices.Config.HullCausticStrength;
             _veinGain = GameServices.Config.HullCausticVeinGain;
+            _gainBeforeTuning = _veinGain;
+            if (Realism)
+            {
+                AssetDatabase.DisallowAutoRefresh();
+                EditorApplication.LockReloadAssemblies();
+                _authoringLocked = true;
+            }
             _camera = Camera.main;
             if (_camera == null) throw new InvalidOperationException("No production camera for plates.");
             foreach (Behaviour behaviour in _camera.GetComponents<Behaviour>())
@@ -105,6 +140,7 @@ namespace HiddenHarbours.App.Editor
             _beforeShader.hideFlags = HideFlags.HideAndDontSave;
             if (ShaderUtil.ShaderHasError(_beforeShader)) throw new InvalidOperationException("The before sea shader failed to compile.");
             GameServices.Environment = _weather;
+            if (LadderStudy) InitializeLadder();
         }
 
         private static GameObject MakeBoat(string name, string visualName)
@@ -123,13 +159,17 @@ namespace HiddenHarbours.App.Editor
         private static void BeginCase(int index)
         {
             _case = index; _stageFrames = 0; _stageStart = EditorApplication.timeSinceStartup;
+            _geometricMask = null;
             int hull = index < 12 ? index / 6 : 1;
             bool underway = index < 12 && ((index / 3) % 2) == 1;
             int condition = index < 12 ? index % 3 : 0;
             _weather.Wind = condition == 2 ? new Vector2(-15, -10) : new Vector2(1, .5f);
-            _weather.Sea = condition == 2 ? .85f : .05f;
+            _weather.Sea = index == 15 ? 0 : condition == 2 ? .85f : .05f;
+            if (index == 15) _weather.Wind = Vector2.zero;
+            foreach (GameObject boat in _boats) boat.GetComponent<MeshHullDriver>().enabled = true;
             _weather.Tide = .63f;
-            GameServices.Clock.SeekTo(GameServices.SecondsPerDay * (condition == 1 ? 17d : 12d) / 24d);
+            float hour = index >= 13 ? SolarHourAtElevation(20, true) : Realism ? SolarHour(condition == 1) : condition == 1 ? 17 : 12;
+            GameServices.Clock.SeekTo(GameServices.SecondsPerDay * hour / 24d);
             GameServices.Clock.TimeScale = 0;
             foreach (GameObject boat in _boats) boat.SetActive(false);
             _boats[hull].transform.position = _berth + (underway ? new Vector3(-8, -28, 0) : Vector3.zero);
@@ -137,12 +177,55 @@ namespace HiddenHarbours.App.Editor
             foreach (var listener in _boats[hull].GetComponentsInChildren<MonoBehaviour>())
                 if (listener is IVesselWayListener way) way.OnVesselWayChanged(underway ? VesselWay.UnderWay : VesselWay.Moored);
             _camera.orthographicSize = hull == 0 ? 5 : 13;
+            if (Realism && hull == 0)
+            {
+                var zoom = GameServices.Config.PlayerZoom.Sanitized();
+                int step = CameraZoomPolicy.StepForWorldHeight(zoom.DefaultWorldHeightMeters, CameraFollow.AssetsPPU, _target.height);
+                _camera.orthographicSize = CameraFollow.OrthoSizeForWorldHeight(
+                    CameraZoomPolicy.WorldHeightForStep(step, CameraFollow.AssetsPPU, _target.height));
+            }
             Vector3 centre = _boats[hull].transform.position;
             if (index == 12) centre += new Vector3(-14, -13, 0);
             _camera.transform.position = new Vector3(centre.x, centre.y, _camera.transform.position.z);
             foreach (var bridge in Object.FindObjectsByType<WaveFieldBridge>(FindObjectsSortMode.None))
             { bridge.enabled = false; bridge.enabled = true; }
             PushSea();
+            if (index >= 13) PoseBearingFace(index);
+        }
+
+        private static void PoseBearingFace(int index)
+        {
+            _boats[1].GetComponent<MeshHullDriver>().enabled = false;
+            var hull = _boats[1].GetComponentInChildren<IsoFacetHullRenderer>();
+            hull.transform.rotation = Quaternion.identity;
+            hull.RollDegrees = hull.PitchDegrees = hull.HeadingDirUnits = 0;
+            hull.ApplyPose();
+            var mesh = hull.PosedMesh.GetComponent<MeshFilter>().sharedMesh;
+            if (_bearingTriangle < 0)
+            {
+                Vector3[] vertices = mesh.vertices, normals = mesh.normals; int[] triangles = mesh.triangles;
+                var attrs = new List<Vector4>(); mesh.GetUVs(0, attrs);
+                var block = new MaterialPropertyBlock(); hull.PosedMesh.GetComponent<Renderer>().GetPropertyBlock(block);
+                Vector4 plane = block.GetVector("_HHHullCausticPlane");
+                float width = block.GetVector("_HHHullCausticSettings").x;
+                float area = 0;
+                for (int t = 0; t < triangles.Length; t += 3)
+                {
+                    int a = triangles[t], b = triangles[t+1], c = triangles[t+2];
+                    if (Mathf.Abs(normals[a].z) >= .25f || Mathf.RoundToInt(attrs[a].w) == 1) continue;
+                    float Height(int v) { Vector3 p = hull.PosedMesh.TransformPoint(vertices[v]); return Vector4.Dot(plane, new Vector4(p.x,p.y,p.z,1)); }
+                    float ha=Height(a), hb=Height(b), hc=Height(c);
+                    if (Mathf.Min(ha,Mathf.Min(hb,hc)) >= width || Mathf.Max(ha,Mathf.Max(hb,hc)) <= 0) continue;
+                    float candidate = Vector3.Cross(vertices[b]-vertices[a],vertices[c]-vertices[a]).sqrMagnitude;
+                    if (candidate <= area) continue;
+                    area = candidate; _bearingTriangle = t / 3; _bearingRigNormal = normals[a];
+                }
+                if (_bearingTriangle < 0) throw new InvalidOperationException("No production hull side crosses the receiving band for bearing plates.");
+            }
+            // Keep this same physical hull face visible from the production camera, east/west with a south lean.
+            Vector2 target = new Vector2(index == 13 ? 1 : -1, -.35f).normalized;
+            hull.HeadingDirUnits = (Mathf.Atan2(target.y,target.x) - Mathf.Atan2(_bearingRigNormal.y,_bearingRigNormal.x)) * Mathf.Rad2Deg / 45;
+            hull.ApplyPose();
         }
 
         private static void PushSea()
@@ -188,10 +271,12 @@ namespace HiddenHarbours.App.Editor
 
         private static void CapturePair(int index)
         {
+            if (LadderStudy) { CaptureLadderPair(index); return; }
             int h = index < 12 ? index / 6 : 1;
             bool underway = index < 12 && ((index / 3) % 2) == 1;
             int condition = index < 12 ? index % 3 : 0;
-            string name = index == 12 ? "open-sea-berth" : (h == 0 ? "dory" : "heavy")
+            string name = index >= 13 ? new[] { "bearing-east-morning", "bearing-west-morning", "bearing-west-flat-calm" }[index-13]
+                : index == 12 ? "open-sea-berth" : (h == 0 ? "dory" : "heavy")
                 + "-" + (underway ? "underway" : "berth") + "-" + new[] { "noon-calm", "low-sun", "blow" }[condition];
             Source(true);
             // Stable feedback for the shipped resolved-image reflection. Repeated renders use dt=0 in foam.
@@ -213,7 +298,7 @@ namespace HiddenHarbours.App.Editor
             GameServices.Config.HullCausticVeinGain = _veinGain;
             foreach (var hull in Object.FindObjectsByType<IsoFacetHullRenderer>(FindObjectsSortMode.None)) hull.ApplyPose();
             _camera.Render();
-            int inside = 0, outside = 0, bandPixels = 0;
+            int inside = 0, outside = 0, bandPixels = 0, maxOutsideDelta = 0;
             double shiftSum = 0, maxShift = 0;
             var mask = new Color32[band.Length];
             for (int i = 0; i < band.Length; i++)
@@ -222,7 +307,12 @@ namespace HiddenHarbours.App.Editor
                 if (allowed) bandPixels++;
                 mask[i] = allowed ? new Color32(255,255,255,255) : new Color32(0,0,0,255);
                 bool changed = before[i].r != after[i].r || before[i].g != after[i].g || before[i].b != after[i].b;
-                if (changed) { if (allowed) inside++; else outside++; }
+                if (changed)
+                {
+                    if (allowed) inside++;
+                    else { outside++; maxOutsideDelta = Math.Max(maxOutsideDelta,
+                        Math.Max(Math.Abs(after[i].r - before[i].r), Math.Max(Math.Abs(after[i].g - before[i].g), Math.Abs(after[i].b - before[i].b)))); }
+                }
                 if (allowed)
                 {
                     double shift = LumaShift(before[i], after[i]);
@@ -231,15 +321,41 @@ namespace HiddenHarbours.App.Editor
             }
             WritePng(name + "-before.png", before); WritePng(name + "-after.png", after);
             WritePng(name + "-band-mask.png", mask);
-            var proof = new PairProof { hull = h == 0 ? "dory" : "side-dragger",
+            var proof = new PairProof { index = index, hull = h == 0 ? "dory" : "side-dragger",
                 state = underway ? "underway at 3 m/s" : "at berth", hour = GameServices.Clock.HourOfDay,
                 wind = _weather.Wind, seaState = _weather.Sea, sha = System.Environment.GetEnvironmentVariable("HH_WATER_HULLS_SHA"),
                 beforeSha = Base, name = name, changedInsideBand = inside, changedOutsideBand = outside,
-                bandPixels = bandPixels, strength = _strength, width = GameServices.Config.HullCausticBandMeters,
-                tuningVeinGainBefore = 1, tuningVeinGainAfter = _veinGain,
+                bandPixels = bandPixels, strength = _strength, width = HullCausticLighting.BandWidth(GameServices.Config, HullCausticLighting.LiveChop),
+                maxOutsideDelta = maxOutsideDelta, chop = HullCausticLighting.LiveChop,
+                widthBase = GameServices.Config.HullCausticBandBaseMeters, widthPerChop = GameServices.Config.HullCausticBandPerChopMeters,
+                sunElevation = Shader.GetGlobalFloat("_SunElevation"),
+                sunBearing = Shader.GetGlobalVector("_SunDir"), shadowStrength = Shader.GetGlobalFloat("_ShadowStrength"),
+                awayFloor = GameServices.Config.HullCausticAwayFloor,
+                sourceTree = System.Environment.GetEnvironmentVariable("HH_WATER_HULLS_SOURCE_TREE"),
+                tuningVeinGainBefore = _gainBeforeTuning, tuningVeinGainAfter = _veinGain,
+                f0 = GameServices.Config.HullCausticFresnelF0,
+                referenceElevationDegrees = GameServices.Config.HullCausticReferenceElevationDegrees,
+                fresnelPower = GameServices.Config.HullCausticFresnelPower, chopDimming = GameServices.Config.HullCausticChopDimming,
+                maxUpwardNormal = GameServices.Config.HullCausticMaxUpwardNormal,
                 meanShift = bandPixels > 0 ? shiftSum / bandPixels : 0, maxShift = maxShift,
                 darkTargetUnchangedByGain = true,
                 source = "before: measured base sea shader and band off; after: shared sea shader and band on" };
+            if (index >= 13)
+            {
+                var hull = _boats[1].GetComponentInChildren<IsoFacetHullRenderer>();
+                var block = new MaterialPropertyBlock(); hull.PosedMesh.GetComponent<Renderer>().GetPropertyBlock(block);
+                Vector4 basis = block.GetVector("_HHHullCausticBearing");
+                Vector3 n = hull.PosedMesh.localToWorldMatrix.MultiplyVector(_bearingRigNormal).normalized;
+                proof.witnessFaceNormal = new Vector2(n.x, n.y*basis.x+n.z*basis.y).normalized;
+                proof.witnessFacing = HullCausticLighting.Facing(proof.witnessFaceNormal,
+                    new Vector2(proof.sunBearing.x,proof.sunBearing.y), proof.awayFloor, proof.chop);
+                proof.witnessTriangle = _bearingTriangle; proof.headingDirUnits = hull.HeadingDirUnits;
+                proof.bearingFixture = "same production heavy hull and physical face; east/west bearing with south lean for camera visibility; 20-degree morning; west flat calm pins zero floor";
+                if (index == 13 && proof.witnessFaceNormal.x <= 0 || index >= 14 && proof.witnessFaceNormal.x >= 0)
+                    throw new InvalidOperationException("Bearing witness did not face the named compass side.");
+                if (index >= 14 && proof.witnessFacing != proof.awayFloor * proof.chop)
+                    throw new InvalidOperationException("Away-facing witness did not take only the chop floor.");
+            }
             _pairs.Add(proof);
             string json = JsonUtility.ToJson(proof, true);
             File.WriteAllText(Path.Combine(_output, name + "-before.json"), json);
@@ -247,12 +363,195 @@ namespace HiddenHarbours.App.Editor
             File.WriteAllText(Path.Combine(_output, name + "-band-mask.json"), json);
             File.WriteAllText(Path.Combine(_output, "pixel-change-counts.json"), JsonUtility.ToJson(new PairList { pairs = _pairs.ToArray() }, true));
             WriteBandShifts();
-            if (outside != 0) throw new InvalidOperationException(name + ": " + outside + " pixels changed outside the bands.");
-            if ((index == 0 || index == 6) && (bandPixels == 0 || inside == 0))
+            // seat ruling l6, 11-07: the shared vein path rounds differently from the inline original in the blow sea; max 2/255
+            if (maxOutsideDelta > 2) throw new InvalidOperationException(name + ": outside max channel delta " + maxOutsideDelta);
+            if (Realism && index == 7)
+            {
+                var calibration = JsonUtility.FromJson<CalibrationProof>(File.ReadAllText(Path.Combine(_output, BearingStudy ? "l7-reference-cap.json" : "l5-calibration-final.json")));
+                if (maxShift > calibration.cap + 1e-7)
+                    throw new InvalidOperationException("Reference plate peak exceeds the derived Fresnel cap.");
+            }
+            if (!Realism && (index == 0 || index == 6) && (bandPixels == 0 || inside == 0))
                 throw new InvalidOperationException(name + ": the calm noon band produced no visible light.");
-            if (index == 0 || index == 6)
+            if (Realism ? index == 1 || index == 6 || index == 7 : index == 0 || index == 6)
                 WriteBandCrop(name + "-band-crop", before, after, mask, json);
-            if (index == 0) CaptureOnFootCrop();
+            if (!Realism && index == 0) CaptureOnFootCrop();
+        }
+
+        private static float SolarHour(bool reference)
+        {
+            var sun = Object.FindFirstObjectByType<DayNightController>();
+            var profile = sun != null ? typeof(DayNightController).GetField("_profile",
+                BindingFlags.Instance | BindingFlags.NonPublic).GetValue(sun) as DayNightProfile : null;
+            float sunrise = profile != null ? profile.SunriseHour : DaylightHours.DefaultSunriseHour;
+            float sunset = profile != null ? profile.SunsetHour : DaylightHours.DefaultSunsetHour;
+            float noon = (sunrise + sunset) * .5f;
+            return reference ? SolarHourAtElevation(GameServices.Config.HullCausticReferenceElevationDegrees, false) : noon;
+        }
+
+        private static float SolarHourAtElevation(float degrees, bool morning)
+        {
+            var sun = Object.FindFirstObjectByType<DayNightController>();
+            var profile = sun != null ? typeof(DayNightController).GetField("_profile",
+                BindingFlags.Instance | BindingFlags.NonPublic).GetValue(sun) as DayNightProfile : null;
+            float rise = profile != null ? profile.SunriseHour : DaylightHours.DefaultSunriseHour;
+            float set = profile != null ? profile.SunsetHour : DaylightHours.DefaultSunsetHour;
+            return (rise + set) * .5f + (morning ? -1 : 1) * (set - rise) * .5f * (1 - degrees / 90f);
+        }
+
+        private static void MeasureFixedGainReference()
+        {
+            Source(true); _camera.Render(); _camera.Render(); _camera.Render(); Color32[] before = Read(_target);
+            Source(false); _camera.Render(); Color32[] band = Read(BandTarget()), after = Read(_target);
+            int[] lit = {390,311,413,328}, shaded = {303,314,316,330};
+            double litLuma = FacetLuma(before,band,lit), shadeLuma = FacetLuma(before,band,shaded);
+            var config = GameServices.Config;
+            float f = CausticMath.FresnelAtDegrees(config.HullCausticReferenceElevationDegrees,config.HullCausticFresnelF0,config.HullCausticFresnelPower);
+            double cap = f*(litLuma-shadeLuma), peak = 0;
+            for(int i=0;i<band.Length;i++) if(band[i].a>=128 && band[i].a<255) peak = Math.Max(peak,LumaShift(before[i],after[i]));
+            if(cap<=0 || peak>cap) throw new InvalidOperationException("Unchanged l5 gain exceeds the measured reference cap with l7 factors.");
+            var proof = new CalibrationProof { lawSha=System.Environment.GetEnvironmentVariable("HH_WATER_HULLS_SHA"),
+                sourceTree=System.Environment.GetEnvironmentVariable("HH_WATER_HULLS_SOURCE_TREE"),
+                editorPid=Process.GetCurrentProcess().Id, frame=Time.frameCount, hour=GameServices.Clock.HourOfDay,
+                gainBefore=_veinGain,gain=_veinGain,cap=cap,referenceReflectance=f,litRoi=lit,shadedRoi=shaded,
+                sunlitLuma=litLuma,shadedLuma=shadeLuma,peakAtCeiling=peak,peakAtDerivedGain=peak,
+                sunElevation=Shader.GetGlobalFloat("_SunElevation"),sunBearing=Shader.GetGlobalVector("_SunDir"),
+                shadowStrength=Shader.GetGlobalFloat("_ShadowStrength") };
+            File.WriteAllText(Path.Combine(_output,"l7-reference-cap.json"),JsonUtility.ToJson(proof,true));
+        }
+
+        public static void ReleaseAuthoringLocks()
+        {
+            if (!_authoringLocked) return;
+            _authoringLocked = false;
+            AssetDatabase.AllowAutoRefresh();
+            EditorApplication.UnlockReloadAssemblies();
+        }
+
+        private static void CalibrateGain()
+        {
+            var config = GameServices.Config;
+            float expectedSun = Mathf.Sin(config.HullCausticReferenceElevationDegrees * Mathf.Deg2Rad);
+            if (Mathf.Abs(Shader.GetGlobalFloat("_SunElevation") - expectedSun) > 1e-4f)
+                throw new InvalidOperationException("Reference plate did not reach the configured sun elevation.");
+            Source(true); _camera.Render(); _camera.Render(); _camera.Render();
+            Color32[] before = Read(_target);
+            Source(false); _camera.Render();
+            Color32[] band = Read(BandTarget());
+            // Two visible cabin facets, above the hull band, chosen before the numerical solve.
+            int[] lit = { 390, 311, 413, 328 }, shaded = { 303, 314, 316, 330 };
+            double litLuma = FacetLuma(before, band, lit), shadeLuma = FacetLuma(before, band, shaded);
+            float referenceF = CausticMath.FresnelAtDegrees(config.HullCausticReferenceElevationDegrees,
+                config.HullCausticFresnelF0, config.HullCausticFresnelPower);
+            double cap = referenceF * (litLuma - shadeLuma);
+            if (cap <= 0) throw new InvalidOperationException("The named sunlit/shaded facet samples do not define a positive Fresnel cap.");
+            double Peak(float gain)
+            {
+                config.HullCausticVeinGain = gain;
+                foreach (var hull in Object.FindObjectsByType<IsoFacetHullRenderer>(FindObjectsSortMode.None)) hull.ApplyPose();
+                _camera.Render(); Color32[] image = Read(_target);
+                double peak = 0;
+                for (int i = 0; i < image.Length; i++)
+                    if (band[i].a >= 128 && band[i].a < 255) peak = Math.Max(peak, LumaShift(before[i], image[i]));
+                return peak;
+            }
+            float low = 0, high = _gainBeforeTuning;
+            if (high > 4.4f) throw new InvalidOperationException("The calibration ceiling exceeds the owner's 4.4 bound.");
+            if (Peak(0) > cap) throw new InvalidOperationException("The zero-gain comparison already exceeds the reference luminance cap.");
+            double peakAtCeiling = Peak(high);
+            if (peakAtCeiling <= cap) low = high;
+            else for (int i = 0; i < 12; i++)
+            {
+                float middle = (low + high) * .5f;
+                if (Peak(middle) <= cap) low = middle; else high = middle;
+            }
+            _veinGain = low; config.HullCausticVeinGain = low;
+            double peakAtGain = Peak(low);
+            var ready = new CalibrationProof {
+                lawSha = System.Environment.GetEnvironmentVariable("HH_WATER_HULLS_SHA"),
+                sourceTree = System.Environment.GetEnvironmentVariable("HH_WATER_HULLS_SOURCE_TREE"),
+                editorPid = Process.GetCurrentProcess().Id, gainBefore = _gainBeforeTuning, gain = low,
+                cap = cap, sunlitLuma = litLuma, shadedLuma = shadeLuma, referenceReflectance = referenceF,
+                peakAtCeiling = peakAtCeiling, peakAtDerivedGain = peakAtGain,
+                litRoi = lit, shadedRoi = shaded, frame = Time.frameCount, hour = GameServices.Clock.HourOfDay,
+                sunElevation = Shader.GetGlobalFloat("_SunElevation"),
+                sunBearing = Shader.GetGlobalVector("_SunDir"), shadowStrength = Shader.GetGlobalFloat("_ShadowStrength"), capBinding = peakAtCeiling > cap };
+            File.WriteAllText(Path.Combine(_output, "l5-calibration-ready.json"), JsonUtility.ToJson(ready, true));
+            WritePng("heavy-low-sun-calibration-before.png", before);
+            File.WriteAllText(Path.Combine(_output, "heavy-low-sun-calibration-before.json"), JsonUtility.ToJson(ready, true));
+            // Pause this same game frame while the parent commits only the measured gain data.
+            // Auto-refresh/reload are locked; the live config already equals the final data value.
+            string goPath = Path.Combine(_output, "l5-calibration-go.json");
+            var deadline = Stopwatch.StartNew();
+            while (deadline.Elapsed.TotalSeconds < 90)
+            {
+                if (File.Exists(goPath))
+                {
+                    var go = JsonUtility.FromJson<CalibrationGo>(File.ReadAllText(goPath));
+                    if (go.editorPid == ready.editorPid && go.lawSha == ready.lawSha
+                        && go.finalSha != null && go.finalSha.Length == 40 && go.gain == ready.gain)
+                    {
+                        System.Environment.SetEnvironmentVariable("HH_WATER_HULLS_SHA", go.finalSha);
+                        File.WriteAllText(Path.Combine(_output, "l5-calibration-final.json"), JsonUtility.ToJson(ready, true));
+                        return;
+                    }
+                }
+                System.Threading.Thread.Sleep(25);
+            }
+            throw new TimeoutException("Measured gain was not committed within the calibration handshake.");
+        }
+
+        private static double FacetLuma(Color32[] before, Color32[] band, int[] roi)
+        {
+            double sum = 0; int count = 0;
+            for (int y = roi[1]; y < roi[3]; y++) for (int x = roi[0]; x < roi[2]; x++)
+            {
+                int i = (_target.height - 1 - y) * _target.width + x;
+                if (band[i].a >= 128 && band[i].a < 255)
+                    throw new InvalidOperationException("A facet calibration sample overlaps the hull light band.");
+                Color32 c = before[i]; sum += .299 * c.r + .587 * c.g + .114 * c.b; count++;
+            }
+            return sum / count;
+        }
+
+        private static void BeginMotion(int pose)
+        {
+            if (pose == 0) { _priorCaptureDelta = Time.captureDeltaTime; Time.captureDeltaTime = 1f / (8 * 7); }
+            _inMotion = true; _motionPose = pose; _motionStartFrame = -1;
+            MotionFrames.Clear(); MotionTimes.Clear(); MotionGameTimes.Clear();
+            BeginCase(MotionCases[pose]);
+        }
+
+        private static bool MotionStep()
+        {
+            if (++_stageFrames < 60 || EditorApplication.timeSinceStartup - _stageStart < 3
+                || ShaderUtil.anythingCompiling) return false;
+            if (_motionStartFrame < 0) { _motionStartFrame = Time.frameCount; _motionGameStart = GameServices.Clock.TotalSeconds; }
+            if (Time.frameCount < _motionStartFrame + MotionFrames.Count * 8) return false;
+            GameServices.Clock.SeekTo(_motionGameStart + MotionFrames.Count / 7d);
+            Source(false); _camera.Render();
+            MotionFrames.Add(Read(_target)); MotionTimes.Add(Time.time); MotionGameTimes.Add(GameServices.Clock.TotalSeconds);
+            string[] names = { "heavy-berth-low-sun", "dory-berth-low-sun", "heavy-berth-noon-calm" };
+            string name = names[_motionPose]; int frame = MotionFrames.Count - 1;
+            Directory.CreateDirectory(Path.Combine(_output, "motion", "raw"));
+            WritePng("motion/raw/" + name + "-" + frame.ToString("D2") + ".png", MotionFrames[frame]);
+            Color32[] band = Read(BandTarget());
+            var mask = new Color32[band.Length];
+            for (int i = 0; i < band.Length; i++) mask[i] = band[i].a >= 128 && band[i].a < 255
+                ? new Color32(255,255,255,255) : new Color32(0,0,0,255);
+            if (LadderStudy) { _geometricMask = null; mask = GeometricMask(); }
+            WritePng("motion/raw/" + name + "-" + frame.ToString("D2") + "-mask.png", mask);
+            if (MotionFrames.Count < 8) return false;
+            File.WriteAllText(Path.Combine(_output, "motion", name + ".json"), JsonUtility.ToJson(new MotionProof {
+                name = name, sha = System.Environment.GetEnvironmentVariable("HH_WATER_HULLS_SHA"),
+                hour = GameServices.Clock.HourOfDay, wind = _weather.Wind, gain = _veinGain,
+                times = MotionTimes.ToArray(), gameSeconds = MotionGameTimes.ToArray(),
+                width = HullCausticLighting.BandWidth(GameServices.Config, HullCausticLighting.LiveChop),
+                chop = HullCausticLighting.LiveChop, sunBearing = Shader.GetGlobalVector("_SunDir"),
+                shadowStrength = Shader.GetGlobalFloat("_ShadowStrength"), nominalSeconds = 1, gifFps = 8 }, true));
+            if (_motionPose < 2) BeginMotion(_motionPose + 1);
+            else { _inMotion = false; Time.captureDeltaTime = _priorCaptureDelta; BeginCost(); }
+            return false;
         }
 
         private static void CaptureSameGainBlow()
@@ -314,13 +613,17 @@ namespace HiddenHarbours.App.Editor
 
         private static void WriteBandShifts()
         {
+            if (LadderStudy) { WriteLadderBandShifts(); return; }
             var lines = new List<string> {
                 "Exact RGB changed-pixel counts. Shift = abs(0.299*dR + 0.587*dG + 0.114*dB), in 0..255 units; mean over ALL band pixels.",
-                "HullCausticVeinGain: 1 -> " + _veinGain + "; HullCausticStrength unchanged " + _strength
-                    + "; HullCausticBandMeters unchanged " + GameServices.Config.HullCausticBandMeters,
-                "name | band px | changed inside | mean shift | max shift | changed outside | dark target unchanged by gain" };
-            foreach (PairProof pair in _pairs)
-                lines.Add(FormattableString.Invariant($"{pair.name} | {pair.bandPixels} | {pair.changedInsideBand} | {pair.meanShift:F4} | {pair.maxShift:F4} | {pair.changedOutsideBand} | {pair.darkTargetUnchangedByGain}"));
+                "HullCausticVeinGain: " + _gainBeforeTuning + " -> " + _veinGain + "; HullCausticStrength unchanged " + _strength,
+                "Fresnel F0=" + GameServices.Config.HullCausticFresnelF0 + "; reference degrees=" + GameServices.Config.HullCausticReferenceElevationDegrees
+                    + "; power=" + GameServices.Config.HullCausticFresnelPower + "; chop dimming=" + GameServices.Config.HullCausticChopDimming
+                    + "; hull slope=clamp01(1-absUp/" + GameServices.Config.HullCausticMaxUpwardNormal + ")",
+                "Live reach = base " + GameServices.Config.HullCausticBandBaseMeters + " + per-chop " + GameServices.Config.HullCausticBandPerChopMeters + " * live chop; width and chop recorded per row.",
+                "name | band px | changed inside | mean shift | max shift | changed outside | max outside delta | width m | chop | sun bearing x,y | ShadowStrength | dark RGB unchanged" };
+            foreach (PairProof pair in _pairs.OrderBy(p => p.index))
+                lines.Add(FormattableString.Invariant($"{pair.name} | {pair.bandPixels} | {pair.changedInsideBand} | {pair.meanShift:F4} | {pair.maxShift:F4} | {pair.changedOutsideBand} | {pair.maxOutsideDelta} | {pair.width:F4} | {pair.chop:F4} | {pair.sunBearing.x:F6},{pair.sunBearing.y:F6} | {pair.shadowStrength:F6} | {pair.darkRgbUnchanged}"));
             File.WriteAllLines(Path.Combine(_output, "band-shift.txt"), lines);
         }
 
@@ -330,7 +633,18 @@ namespace HiddenHarbours.App.Editor
             for (int y = 0; y < _target.height; y++) for (int x = 0; x < _target.width; x++)
                 if (mask[y * _target.width + x].r > 0)
                 { minX = Math.Min(minX, x); minY = Math.Min(minY, y); maxX = Math.Max(maxX, x); maxY = Math.Max(maxY, y); }
-            if (maxX < 0) throw new InvalidOperationException(name + ": no band for 1:1 crop.");
+            bool emptyWeightedBand = maxX < 0;
+            if (emptyWeightedBand)
+            {
+                // A faint/noon band may quantize to zero. Keep its native waterline context visible.
+                int hullIndex = _case < 12 ? _case / 6 : 1;
+                Bounds bounds = _boats[hullIndex].GetComponentInChildren<IsoFacetHullRenderer>().PosedMesh.GetComponent<Renderer>().bounds;
+                Vector3 lo = _camera.WorldToScreenPoint(bounds.min), hi = _camera.WorldToScreenPoint(bounds.max);
+                minX = Mathf.Clamp(Mathf.FloorToInt(Mathf.Min(lo.x, hi.x)), 0, _target.width - 1);
+                maxX = Mathf.Clamp(Mathf.CeilToInt(Mathf.Max(lo.x, hi.x)), minX, _target.width - 1);
+                minY = Mathf.Clamp(Mathf.FloorToInt(Mathf.Min(lo.y, hi.y)), 0, _target.height - 1);
+                maxY = Mathf.Clamp(Mathf.CeilToInt((lo.y + hi.y) * .5f), minY, _target.height - 1);
+            }
             minX = Math.Max(0, minX - 8); minY = Math.Max(0, minY - 8);
             maxX = Math.Min(_target.width - 1, maxX + 8); maxY = Math.Min(_target.height - 1, maxY + 8);
             int width = maxX - minX + 1, height = maxY - minY + 1;
@@ -346,7 +660,7 @@ namespace HiddenHarbours.App.Editor
             finally { Object.DestroyImmediate(texture); }
             File.WriteAllText(Path.Combine(_output, name + ".json"), json);
             File.WriteAllText(Path.Combine(_output, name + "-layout.txt"),
-                $"Native pixels, no rescale. BEFORE above AFTER. Source bottom-left crop x={minX}, y={minY}, width={width}, height={height}. Camera ortho={_camera.orthographicSize}.");
+                $"Native pixels, no rescale. BEFORE above AFTER. Source bottom-left crop x={minX}, y={minY}, width={width}, height={height}. Camera ortho={_camera.orthographicSize}. Empty weighted band={emptyWeightedBand}; if empty, lower hull bounds provide waterline context.");
         }
 
         private static void CaptureOnFootCrop()
@@ -389,11 +703,11 @@ namespace HiddenHarbours.App.Editor
 
         private static void BeginCost()
         {
-            _case = 13; _costPhase = 0; _stageFrames = 0;
+            _case = PairCount; _costPhase = 0; _stageFrames = 0;
             foreach (GameObject boat in _boats) boat.SetActive(false);
             foreach (GameObject boat in _ambient) boat.SetActive(true);
             _weather.Wind = new Vector2(1, .5f); _weather.Sea = .05f;
-            GameServices.Clock.SeekTo(GameServices.SecondsPerDay * .5);
+            GameServices.Clock.SeekTo(GameServices.SecondsPerDay * (Realism ? SolarHour(false) : 12) / 24d);
             _camera.transform.position = new Vector3(_berth.x + 20, _berth.y - 12, _camera.transform.position.z);
             _camera.orthographicSize = 45;
             var fleet = Object.FindObjectsByType<IsoFacetHullRenderer>(FindObjectsSortMode.None);
@@ -413,7 +727,8 @@ namespace HiddenHarbours.App.Editor
             const BindingFlags fields = BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public;
             var diagnostic = new List<string> {
                 "strength=" + _strength, "configuredStrength=" + GameServices.Config.HullCausticStrength,
-                "width=" + GameServices.Config.HullCausticBandMeters,
+                "width=" + HullCausticLighting.BandWidth(GameServices.Config, HullCausticLighting.LiveChop),
+                "liveChop=" + HullCausticLighting.LiveChop,
                 "displacedSurfaces=" + DisplacedWaterRegistry.Count,
                 "cpuGlobal=" + (Shader.GetGlobalTexture("_HHHullCausticTex") != null
                     ? Shader.GetGlobalTexture("_HHHullCausticTex").GetType().Name : "null") };
@@ -505,11 +820,25 @@ namespace HiddenHarbours.App.Editor
             public WaveWindSample WaveWindAt(double time) => new WaveWindSample(Wind, Sea);
         }
         [Serializable] private sealed class PairProof
-        { public string name, hull, state, sha, beforeSha, source; public float hour, seaState, strength, width;
-          public Vector2 wind; public int changedInsideBand, changedOutsideBand, bandPixels;
+        { public string name, hull, state, sha, beforeSha, source, sourceTree, bearingFixture;
+          public Vector2 witnessFaceNormal; public float witnessFacing, headingDirUnits; public int witnessTriangle; public float hour, seaState, strength, width;
+          public Vector2 wind; public int index, changedInsideBand, changedOutsideBand, bandPixels, maxOutsideDelta;
+          public float chop, widthBase, widthPerChop, sunElevation, shadowStrength, awayFloor; public Vector4 sunBearing;
+          public float f0, referenceElevationDegrees, fresnelPower, chopDimming, maxUpwardNormal;
           public float tuningVeinGainBefore, tuningVeinGainAfter; public double meanShift, maxShift;
-          public bool darkTargetUnchangedByGain; }
+          public bool darkTargetUnchangedByGain, darkRgbUnchanged;
+          public int alphaChangedOutsideBand, clippedHullPixels; public double decodedMean, decodedMax, maximumLinearHullChannel;
+          public float physicalGain, rungMultiplier, irradiancePower, irradianceFloor, facetTiltDegrees; }
         [Serializable] private sealed class PairList { public PairProof[] pairs; }
+        [Serializable] private sealed class CalibrationProof
+        { public string lawSha, sourceTree; public Vector4 sunBearing; public float shadowStrength; public int editorPid, frame; public float gainBefore, gain, hour, sunElevation;
+          public double cap, sunlitLuma, shadedLuma, referenceReflectance, peakAtCeiling, peakAtDerivedGain;
+          public int[] litRoi, shadedRoi; public bool capBinding; }
+        [Serializable] private sealed class CalibrationGo
+        { public string lawSha, finalSha; public int editorPid; public float gain; }
+        [Serializable] private sealed class MotionProof
+        { public string name, sha; public Vector4 sunBearing; public float shadowStrength; public float hour, gain, width, chop, nominalSeconds; public int gifFps;
+          public Vector2 wind; public float[] times; public double[] gameSeconds; }
         [Serializable] private sealed class PixelSample
         { public int x, y; public Color32 first, second; }
         [Serializable] private sealed class SameGainProof

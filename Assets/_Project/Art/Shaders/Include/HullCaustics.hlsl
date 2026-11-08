@@ -3,6 +3,14 @@
 float4 _HHHullCausticPlane;
 // width, owner strength, wet/active, maximum absolute upward normal
 float4 _HHHullCausticSettings;
+// F0, facet tilt degrees, Schlick power, chop dimming; all from GameConfig.
+float _HHHullCausticPreGain;
+float4 _HHHullCausticOptics;
+float4 _HHHullCausticIrradiance; // power, floor, reserved, reserved
+// Posed iso elevation sine/cosine and the chop-scaled away-facing floor.
+float4 _HHHullCausticBearing;
+float4 _SunDir;
+float _ShadowStrength;
 float _HHHullCausticPainted, _HHHullCausticEnvelope;
 float _PixelsPerUnit, _NoiseScale, _BandScaleResponse, _Chop, _Flow;
 float _CausticScale, _PaintScale, _UntileStrength, _CausticTexStrength;

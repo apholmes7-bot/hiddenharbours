@@ -6,6 +6,8 @@
 #define SAMPLE_TEXTURE2D(tex, smp, uv) tex.SampleLevel(smp, uv, 0)
 float _PixelsPerUnit, _NoiseScale, _BandScaleResponse, _Chop, _Flow;
 float _CausticScale, _PaintScale, _UntileStrength, _CausticTexStrength;
+float4 _HHHullCausticOptics;
+float4 _HHHullCausticIrradiance;
 Texture2D _CausticTex;
 SamplerState sampler_CausticTex;
 #define HH_CAUSTIC_VEINS
@@ -33,6 +35,7 @@ void ComparePattern(uint3 id : SV_DispatchThreadID)
 struct WeightSample
 {
     float height, exterior, upward, width, strength, wet, maxUpward, sun, tintSum, gate, chop, amount;
+    float normalX, normalY, normalZ, isoSin, isoCos, sunX, sunY, awayFloor, shadowStrength;
 };
 StructuredBuffer<WeightSample> _WeightInputs;
 [numthreads(8, 1, 1)]
@@ -40,9 +43,10 @@ void CompareWeight(uint3 id : SV_DispatchThreadID)
 {
     if (id.x >= (uint)_Count) return;
     WeightSample p = _WeightInputs[id.x];
-    _Outputs[id.x] = HHHullCausticWeight(p.height, float2(p.exterior, p.upward),
+    _Outputs[id.x] = HHHullCausticWeight(p.height, float4(p.exterior, p.upward,
+        HHHullHorizontalNormal(float3(p.normalX, p.normalY, p.normalZ), float2(p.isoSin, p.isoCos))),
         float4(p.width, p.strength, p.wet, p.maxUpward), p.sun, float3(p.tintSum, 0, 0),
-        p.gate, p.chop, p.amount);
+        p.gate, p.chop, p.amount, _HHHullCausticOptics, float2(p.sunX, p.sunY), p.awayFloor, p.shadowStrength, _HHHullCausticIrradiance.xy);
 }
 
 StructuredBuffer<float4> _VeinInputs;

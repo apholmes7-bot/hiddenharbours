@@ -232,10 +232,12 @@ namespace HiddenHarbours.App.Editor
             {
                 SessionState.SetBool(Active, true);
                 EditorApplication.isPlaying = false;
+                if (Plates) WaterHullsPlates.ReleaseAuthoringLocks();
             }
             else
             {
                 SessionState.SetBool(Active, false);
+                if (Plates) WaterHullsPlates.ReleaseAuthoringLocks();
                 EditorApplication.Exit(code);
             }
         }

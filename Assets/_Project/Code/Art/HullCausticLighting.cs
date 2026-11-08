@@ -20,7 +20,11 @@ namespace HiddenHarbours.Art
         private static readonly int WaterId = Shader.PropertyToID("_WaterLevel");
         private static readonly int PlaneId = Shader.PropertyToID("_HHHullCausticPlane");
         private static readonly int SettingsId = Shader.PropertyToID("_HHHullCausticSettings");
+        private static readonly int PreGainId = Shader.PropertyToID("_HHHullCausticPreGain");
         private static readonly int GainId = Shader.PropertyToID("_HHHullCausticGain");
+        private static readonly int IrradianceId = Shader.PropertyToID("_HHHullCausticIrradiance");
+        private static readonly int BearingId = Shader.PropertyToID("_HHHullCausticBearing");
+        private static readonly int OpticsId = Shader.PropertyToID("_HHHullCausticOptics");
         private static readonly int PaintedId = Shader.PropertyToID("_HHHullCausticPainted");
         private static readonly int EnvelopeId = Shader.PropertyToID("_HHHullCausticEnvelope");
         private static Object _owner;
@@ -28,7 +32,18 @@ namespace HiddenHarbours.Art
         private static Texture _texture;
         private static float _painted, _envelope, _waterLevel;
         internal static bool Enabled => _owner != null && GameServices.Config != null
-            && GameServices.Config.HullCausticBandMeters > 0 && GameServices.Config.HullCausticStrength > 0;
+            && BandWidth(GameServices.Config, LiveChop) > 0 && GameServices.Config.HullCausticStrength > 0;
+
+        public static float LiveChop => Mathf.Clamp01(Values[3]);
+
+        public static float BandWidth(GameConfig config, float chop)
+            => Mathf.Max(0, config.HullCausticBandBaseMeters)
+                + Mathf.Max(0, config.HullCausticBandPerChopMeters) * Mathf.Clamp01(chop);
+
+        public static Vector4 Optics(GameConfig config)
+            => new Vector4(Mathf.Clamp01(config.HullCausticFresnelF0),
+                Mathf.Max(0, config.HullCausticFacetTiltDegrees),
+                Mathf.Max(1, config.HullCausticFresnelPower), Mathf.Clamp01(config.HullCausticChopDimming));
 
         private static int[] BuildIds()
         {
@@ -62,7 +77,7 @@ namespace HiddenHarbours.Art
             settings = Vector4.zero;
             GameConfig config = GameServices.Config;
             if (!receives || _owner == null || config == null || hull.PosedMesh == null
-                || config.HullCausticBandMeters <= 0 || config.HullCausticStrength <= 0
+                || BandWidth(config, LiveChop) <= 0 || config.HullCausticStrength <= 0
                 || !DisplacedWaterRegistry.TryGetIsoDepthFrame(out WaterIsoDepthFrame frame)) return;
 
             plane = Plane(frame, hull.DepthShear.x);
@@ -72,16 +87,24 @@ namespace HiddenHarbours.Art
                 && GameServices.TidalTerrain.ElevationAt(root) >= _waterLevel) wet = false;
             if (!wet) return;
 
-            settings = new Vector4(config.HullCausticBandMeters,
+            settings = new Vector4(BandWidth(config, LiveChop),
                 config.HullCausticStrength, 1, config.HullCausticMaxUpwardNormal);
         }
 
-        internal static void Apply(MaterialPropertyBlock target, Vector4 plane, Vector4 settings)
+        internal static void Apply(MaterialPropertyBlock target, Vector4 plane, Vector4 settings, float elevationDegrees = 45)
         {
             target.SetVector(SettingsId, settings);
             if (settings.z < 0.5f) return;
-            target.SetFloat(GainId, GameServices.Config != null
+            target.SetFloat(PreGainId, GameServices.Config != null
                 ? Mathf.Max(0, GameServices.Config.HullCausticVeinGain) : 0);
+            target.SetFloat(GainId, 1);
+            float elevation = elevationDegrees * Mathf.Deg2Rad;
+            target.SetVector(BearingId, new Vector4(Mathf.Sin(elevation), Mathf.Cos(elevation),
+                GameServices.Config != null ? Mathf.Clamp01(GameServices.Config.HullCausticAwayFloor) : 0, 0));
+            target.SetVector(OpticsId, GameServices.Config != null ? Optics(GameServices.Config) : Vector4.zero);
+            target.SetVector(IrradianceId, GameServices.Config != null
+                ? new Vector4(Mathf.Max(.01f, GameServices.Config.HullCausticIrradiancePower),
+                    Mathf.Clamp01(GameServices.Config.HullCausticIrradianceFloor), 0, 0) : Vector4.zero);
             for (int i = 0; i < Ids.Length; i++) target.SetFloat(Ids[i], Values[i]);
             target.SetColor(ColorId, _color);
             if (_texture != null) target.SetTexture(TextureId, _texture);
@@ -116,13 +139,30 @@ namespace HiddenHarbours.Art
         /// <summary>C# twin of the facet's geometric/day/chop weight; optical value is separate.</summary>
         public static float Weight(float height, float width, bool exterior, float upwardNormal,
                                    float maxUpwardNormal, bool wet, float sun, float tintSum,
-                                   float dayGate, float chop, float amount, float strength)
+                                   float dayGate, float chop, float amount, float strength, Vector4 optics, Vector2 irradiance)
+            => Weight(height, width, exterior, upwardNormal, maxUpwardNormal, wet, sun, tintSum,
+                dayGate, chop, amount, strength, optics, irradiance, Vector2.right, Vector2.right, 0, 1);
+
+        public static float Facing(Vector2 faceHorizontalNormal, Vector2 sunHorizontalDir, float awayFloor, float chop)
+            => Mathf.Max(Mathf.Clamp01(Vector2.Dot(faceHorizontalNormal.normalized, sunHorizontalDir.normalized)),
+                Mathf.Clamp01(awayFloor) * Mathf.Clamp01(chop));
+
+        public static float Weight(float height, float width, bool exterior, float upwardNormal,
+                                   float maxUpwardNormal, bool wet, float sun, float tintSum,
+                                   float dayGate, float chop, float amount, float strength, Vector4 optics, Vector2 irradiance,
+                                   Vector2 faceHorizontalNormal, Vector2 sunHorizontalDir, float awayFloor, float shadowStrength)
         {
             if (!wet || !exterior || height <= 0 || height >= width || width <= 0
-                || upwardNormal >= maxUpwardNormal) return 0;
+                || upwardNormal >= maxUpwardNormal || sun <= 0) return 0;
             float fade = 1 - height / width;
-            return fade * fade * CausticMath.DayGate(sun, tintSum, dayGate)
-                   * (1 - Mathf.Clamp01(chop)) * amount * strength;
+            float sunUp = Mathf.Clamp01(sun);
+            float reflectance = CausticMath.FacetFresnel(sunUp, chop, optics.x, optics.z, optics.y);
+            float hullSlope = Mathf.Clamp01(1 - upwardNormal / maxUpwardNormal);
+            // Legacy tint/day arguments remain for callers; published SunOut is the l9 solar gate.
+            return fade * fade * CausticMath.Irradiance(sunUp, irradiance.x, irradiance.y)
+                   * reflectance * hullSlope
+                   * (1 - optics.w * Mathf.Clamp01(chop)) * amount * strength
+                   * Facing(faceHorizontalNormal, sunHorizontalDir, awayFloor, chop) * Mathf.Clamp01(shadowStrength);
         }
     }
 }
