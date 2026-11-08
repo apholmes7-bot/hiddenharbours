@@ -298,7 +298,14 @@ namespace HiddenHarbours.Tests.PlayMode
             Assert.That((Vector2)landing.position,Is.EqualTo(new Vector2(86.2f,87.35f)));
             Assert.That((Vector2)arrival.position,Is.EqualTo(new Vector2(86.2f,83.1f)));
             var ladder=Object.FindObjectsByType<WharfLadder>().Single(l=>l.Id=="ladder.nmc_berth0");
-            Stand(landing.position);var rig=Rig(ladder,arrival.position,dock,landing);yield return null;yield return null;
+            Stand(landing.position);var rig=Rig(ladder,arrival.position,dock,landing);
+            // Arrival is the design hull's centre; a narrower hull lies further in on the same fender line.
+            var berthBody=rig.boat.GetComponent<Rigidbody2D>();
+            berthBody.position=new Vector2(arrival.position.x,dock.position.y-HullPresence.HalfBeamOf(rig.boat.Hull));
+            Physics2D.SyncTransforms();yield return null;yield return null;
+            File.WriteAllText(Evidence+"/berth-zero-premise.txt","Hull "+rig.boat.Hull.Id+"; actual half-beam "+HullPresence.HalfBeamOf(rig.boat.Hull)+
+                "; centre "+berthBody.position+"; fender "+dock.position+"; player "+player.transform.position+
+                "; within board reach "+rig.control.WithinBoardReach()+"; boardable "+rig.control.BoardableNow()+"; dock "+rig.control.InDockZone()+"\n");
             Assert.That(rig.control.InDockZone(),Is.True);Assert.That(rig.control.BeginInteract(),Is.True);
             for(var move=FinishMove(rig.control,rig.boat);move.MoveNext();)yield return move.Current;
             Assert.That(rig.control.Mode,Is.EqualTo(ControlMode.OnDeck));
@@ -307,6 +314,231 @@ namespace HiddenHarbours.Tests.PlayMode
             Assert.That(rig.control.Mode,Is.EqualTo(ControlMode.OnFoot));
             Assert.That(Vector2.Distance(player.transform.position,landing.position),Is.LessThan(.15f));
             File.WriteAllText(Evidence+"/berth-zero.txt","Dock (86.2,85.5); arrival (86.2,83.1); actual stepped-off position "+player.transform.position+"; native ladder "+ladder.Id+"; spring high 2.2.\n");
+        }
+
+        [Serializable] sealed class QuayEnvelope
+        {
+            public string id="",category="";
+            public float x0=0,y0=0,x1=0,y1=0;
+        }
+        static object Member(object value,string key)=>((Dictionary<string,object>)value)[key];
+        static Vector2 Point(object value)
+        {
+            var xy=(List<object>)value;
+            return new Vector2(Convert.ToSingle(xy[0],CultureInfo.InvariantCulture),Convert.ToSingle(xy[1],CultureInfo.InvariantCulture));
+        }
+        static Vector2 Curve(Vector2[] points,int k,float t)
+        {
+            var a=points[Mathf.Max(0,k-1)];var b=points[k];var c=points[k+1];var d=points[Mathf.Min(points.Length-1,k+2)];
+            return .5f*(2*b+(-a+c)*t+(2*a-5*b+4*c-d)*t*t+(-a+3*b-3*c+d)*t*t*t);
+        }
+        static Rect HullBounds(HullFootprint footprint)
+        {
+            var corners=Enumerable.Range(0,4).Select(footprint.Corner).ToArray();
+            return Rect.MinMaxRect(corners.Min(p=>p.x),corners.Min(p=>p.y),corners.Max(p=>p.x),corners.Max(p=>p.y));
+        }
+        static float RectDistance(Rect a,Rect b)=>new Vector2(
+            Mathf.Max(b.xMin-a.xMax,a.xMin-b.xMax,0),Mathf.Max(b.yMin-a.yMax,a.yMin-b.yMax,0)).magnitude;
+        static QuayEnvelope[] NativeQuays()
+        {
+            var result=new List<QuayEnvelope>();
+            foreach(Dictionary<string,object> part in (List<object>)Member(NineMileCreekWharfWaterSide.ReadToday(),"parts"))
+            {
+                if(part.TryGetValue("floating",out object moving)&&moving is bool floating&&floating)continue;
+                if(part.TryGetValue("gangway",out object gangway)&&gangway!=null)continue;
+                if(!part.TryGetValue("walkPolygon",out object walk)||!(walk is List<object> polygon)||polygon.Count<3)continue;
+                if(!part.TryGetValue("bounds",out object bounds))continue;
+                Vector2 at=Point(part["at"]),lo=Point(Member(bounds,"min")),hi=Point(Member(bounds,"max"));
+                result.Add(new QuayEnvelope{id="quay."+part["key"],category="quay",x0=at.x+lo.x,y0=at.y+lo.y,x1=at.x+hi.x,y1=at.y+hi.y});
+            }
+            return result.ToArray();
+        }
+
+        [UnityTest,Timeout(300000)]
+        public IEnumerator TheLiveDesignHull_TracesEveryRegisteredTrack_WithOneMetreClearance()
+        {
+            yield return Load();water.Level=2.2f;
+            var owner=NineMileCreekMooredFleet.LoadOwners().Single(o=>o.Id=="owner.gallant_marie");
+            var go=New("H5 guided design hull",new Vector2(137,-45));
+            var controller=go.AddComponent<BoatController>();controller.SetHull(owner.Boat);controller.enabled=false;
+            var hull=go.GetComponent<HullPresence>();Assert.That(hull,Is.Not.Null);
+            Assert.That(hull.LengthMetres,Is.EqualTo(12.9f).Within(.0001f));
+            Assert.That(2*hull.HalfBeamMetres,Is.EqualTo(4.8f).Within(.0001f));
+            var motion=go.GetComponent<Rigidbody2D>();motion.bodyType=RigidbodyType2D.Kinematic;motion.rotation=0;
+            var floats=Object.FindObjectsByType<FloatingPlatform>();Assert.That(floats.Length,Is.EqualTo(4));
+            var residents=Object.FindObjectsByType<MooredBoat>();Assert.That(residents.Length,Is.EqualTo(8));
+            foreach(var resident in residents)Assert.That(resident.GetComponent<HullPresence>(),Is.Not.Null,resident.Owner.Id+" publishes its actual hull");
+            var quay=NativeQuays();Assert.That(quay.Length,Is.GreaterThan(0));
+            var register=NineMileCreekWharfWaterSide.Register();
+            var tracks=(Dictionary<string,object>)Member(register,"tracks");
+            var ownFinger=((List<object>)Member(register,"fingers"))[0];
+            var limits=(List<object>)Member(ownFinger,"y");float south=Convert.ToSingle(limits[0]),north=Convert.ToSingle(limits[1]);
+            string csv=Evidence+"/s12-live-design-hull.csv";
+            File.WriteAllText(csv,"track,segment,t,x,y,half_length,half_beam,own_exempt,minimum_required_clearance\n");
+            var summary=new System.Text.StringBuilder("Guided kinematic Rigidbody2D traverse of the real design BoatController and its installed HullPresence, north heading throughout under the standing envelope ruling. No production route controller added. Quay envelopes use the full native fixed-module bounds including submerged footings; float and eight resident hull bounds are sampled live. Full curve calculation is recorded separately.\n");
+            foreach(string name in new[]{"in","outAstern","out"})
+            {
+                var points=((List<object>)tracks[name]).Select(Point).ToArray();var minima=new Dictionary<string,float>();int samples=0;
+                for(int k=0;k<points.Length-1;k++)
+                {
+                    int count=Mathf.Max(32,Mathf.CeilToInt(Vector2.Distance(points[k],points[k+1])/.02f));
+                    for(int i=0;i<=count;i++)
+                    {
+                        float t=(float)i/count;Vector2 requested=Curve(points,k,t);
+                        motion.MovePosition(requested);yield return new WaitForFixedUpdate();
+                        Assert.That(Vector2.Distance(motion.position,requested),Is.LessThan(.01f),"the real body follows the registered curve");
+                        Rect actual=HullBounds(hull.Footprint);bool exempt=actual.yMax>=south&&actual.yMin<=north;float required=float.PositiveInfinity;
+                        void Check(string group,float gap,bool waived=false)
+                        {
+                            if(!minima.ContainsKey(group)||gap<minima[group])minima[group]=gap;
+                            if(!waived){required=Mathf.Min(required,gap);Assert.That(gap,Is.GreaterThanOrEqualTo(1f),name+" "+group+" at "+motion.position);}
+                        }
+                        foreach(var platform in floats)
+                        {
+                            bool own=platform.Id=="float.nmc_finger_a";
+                            Check(own?(exempt?"own_EXEMPT":"own_outside"):"other_float",RectDistance(actual,platform.Footprint),own&&exempt);
+                        }
+                        foreach(var resident in residents)Check("other_hull",RectDistance(actual,HullBounds(resident.GetComponent<HullPresence>().Footprint)));
+                        foreach(var box in quay)Check("quay",RectDistance(actual,Rect.MinMaxRect(box.x0,box.y0,box.x1,box.y1)));
+                        if(samples++%10==0)File.AppendAllText(csv,string.Join(",",new[]{name,k.ToString(),t.ToString("R",CultureInfo.InvariantCulture),motion.position.x.ToString("R",CultureInfo.InvariantCulture),motion.position.y.ToString("R",CultureInfo.InvariantCulture),hull.Footprint.HalfLength.ToString("R",CultureInfo.InvariantCulture),hull.HalfBeamMetres.ToString("R",CultureInfo.InvariantCulture),exempt.ToString(),required.ToString("R",CultureInfo.InvariantCulture)})+"\n");
+                    }
+                }
+                summary.AppendLine(name+"; physics samples "+samples+"; "+string.Join("; ",minima.Select(p=>p.Key+"="+p.Value.ToString("R",CultureInfo.InvariantCulture))));
+            }
+            File.WriteAllText(Evidence+"/s12-live-design-hull.txt",summary.ToString());
+        }
+
+        [Serializable] sealed class PlateMetadata
+        {
+            public string state,view,utc,graphics,craneSprite;
+            public double time;
+            public float hour,water,cameraSize,profileAmplitude;
+            public int worldSeed;
+            public Vector3 camera;
+            public Color tint;
+            public int width,height;
+            public string[] floatDecks;
+        }
+        [Serializable] sealed class PerformanceMetadata
+        {
+            public int frames,textureCount;
+            public double meanMs,medianMs,p95Ms,baselineMeanMs,deltaMeanMs;
+            public long textureBytes,baselineTextureBytes,deltaTextureBytes;
+            public float cameraSize;
+            public Vector3 camera;
+            public string graphics,utc;
+        }
+        const string Plates=Evidence+"/s12-plates";
+        IEnumerator FramePlate(Vector2 at,float size)
+        {
+            Time.timeScale=1;
+            if(stage.Camera!=null&&stage.Camera.targetTexture!=null)
+            {
+                var old=stage.Camera.targetTexture;stage.Camera.targetTexture=null;old.Release();Object.DestroyImmediate(old);
+            }
+            var follow=Object.FindAnyObjectByType<CameraFollow>();follow.enabled=true;
+            Camera.main.aspect=1600f/900;
+            yield return stage.FrameOn(at);
+            Time.timeScale=1;follow.enabled=false;
+            if(size!=14.0625f)foreach(var pixels in stage.Camera.GetComponents<Behaviour>())
+                if(pixels.GetType().Name=="PixelPerfectCamera")pixels.enabled=false;
+            stage.Camera.transform.position=new Vector3(at.x,at.y,stage.Camera.transform.position.z);
+            stage.Camera.orthographicSize=size;
+            for(int i=0;i<8;i++)yield return null;
+            Time.timeScale=0;
+            for(int i=0;i<2;i++)yield return null;
+        }
+        void WritePlate(string name)
+        {
+            Directory.CreateDirectory(Plates);
+            var texture=new Texture2D(stage.Width,stage.Height,TextureFormat.RGBA32,false);
+            texture.LoadRawTextureData(stage.Capture());texture.Apply();
+            File.WriteAllBytes(Plates+"/"+name+".png",texture.EncodeToPNG());Object.DestroyImmediate(texture);
+            var crane=Object.FindAnyObjectByType<NmcWharfCraneVisual>();
+            var metadata=new PlateMetadata{state=walkLabel,view=name,utc=DateTime.UtcNow.ToString("o"),graphics=SystemInfo.graphicsDeviceType.ToString(),
+                time=GameServices.Clock.TotalSeconds,hour=GameServices.Clock.HourOfDay,water=GameServices.Environment.WaterLevelAt(GameServices.Clock.TotalSeconds),
+                camera=stage.Camera.transform.position,cameraSize=stage.Camera.orthographicSize,tint=Shader.GetGlobalColor("_DayNightTint"),width=stage.Width,height=stage.Height,
+                worldSeed=GameServices.Environment.WorldSeed,profileAmplitude=GameServices.Environment.ActiveTideProfile.Amplitude,
+                craneSprite=crane!=null?crane.GetComponent<SpriteRenderer>().sprite.name:"missing",
+                floatDecks=Object.FindObjectsByType<FloatingPlatform>().OrderBy(f=>f.Id).Select(f=>f.Id+"="+f.DeckElevationNow().ToString("R",CultureInfo.InvariantCulture)).ToArray()};
+            File.WriteAllText(Plates+"/"+name+".json",JsonUtility.ToJson(metadata,true));
+            File.AppendAllText(Plates+"/INDEX.md","- "+name+".png — hour "+metadata.hour.ToString("F3",CultureInfo.InvariantCulture)+"; water "+metadata.water.ToString("F5",CultureInfo.InvariantCulture)+" m; camera "+metadata.camera+"; size "+metadata.cameraSize+"; crane "+metadata.craneSprite+"\n");
+        }
+        IEnumerator MeasureMainFraming()
+        {
+            yield return stage.SetNight(14);
+            yield return FramePlate(new Vector2(120,80),14.0625f);
+            Time.timeScale=1;
+            for(int i=0;i<60;i++)yield return null;
+            var elapsed=System.Diagnostics.Stopwatch.StartNew();double previous=elapsed.Elapsed.TotalMilliseconds;
+            var frames=new List<double>();
+            for(int i=0;i<300;i++)
+            {
+                yield return null;double now=elapsed.Elapsed.TotalMilliseconds;frames.Add(now-previous);previous=now;
+            }
+            var textures=Resources.FindObjectsOfTypeAll<Texture2D>();long bytes=textures.Sum(t=>UnityEngine.Profiling.Profiler.GetRuntimeMemorySizeLong(t));frames.Sort();
+            var result=new PerformanceMetadata{frames=300,meanMs=frames.Average(),medianMs=frames[frames.Count/2],p95Ms=frames[(int)(frames.Count*.95)],
+                textureBytes=bytes,textureCount=textures.Length,baselineTextureBytes=1081563601,deltaTextureBytes=bytes-1081563601,
+                baselineMeanMs=16.803906,deltaMeanMs=frames.Average()-16.803906,camera=stage.Camera.transform.position,cameraSize=stage.Camera.orthographicSize,
+                graphics=SystemInfo.graphicsDeviceType.ToString(),utc=DateTime.UtcNow.ToString("o")};
+            File.WriteAllText(Evidence+"/s12-performance.json",JsonUtility.ToJson(result,true));
+            Time.timeScale=0;walkLabel="baseline-day14";WritePlate("performance-main-framing");
+        }
+        IEnumerator CaptureWaterState(bool night,bool high,bool performance)
+        {
+            yield return Load();
+            var plateEnvironment=Object.FindObjectsByType<HiddenHarbours.Environment.EnvironmentService>()
+                .Single(e=>e.gameObject.scene.name=="NineMileCreek");
+            File.WriteAllText(Evidence+"/s12-plate-environment.txt","Previously published amplitude "+previousEnvironment.ActiveTideProfile.Amplitude+
+                "; selected scene "+plateEnvironment.gameObject.scene.name+"; scene amplitude "+plateEnvironment.ActiveTideProfile.Amplitude+"\n");
+            GameServices.Environment=plateEnvironment;Time.timeScale=1;
+            Directory.CreateDirectory(Plates);
+            if(performance)yield return MeasureMainFraming();
+            Time.timeScale=1;float requestedHour=night?2:14;yield return stage.SetNight(requestedHour);
+            double chosen=0;float best=high?float.NegativeInfinity:float.PositiveInfinity;
+            for(int day=0;day<60;day++)for(int minute=-300;minute<=(night?174:120);minute+=6)
+            {
+                double at=(day+(requestedHour+minute/60.0)/24.0)*GameServices.Config.SecondsPerDay;
+                if(at<0)continue;
+                float level=((IEnvironmentService)plateEnvironment).WaterLevelAt(at);
+                if(high?level>best:level<best){best=level;chosen=at;}
+            }
+            GameServices.Clock.TimeScale=1;GameServices.Clock.SeekTo(chosen);Time.timeScale=1;
+            Color last=Shader.GetGlobalColor("_DayNightTint");int still=0,settled=0;
+            for(;settled<600&&still<8;settled++)
+            {
+                yield return null;Color now=Shader.GetGlobalColor("_DayNightTint");
+                float delta=Mathf.Abs(now.r-last.r)+Mathf.Abs(now.g-last.g)+Mathf.Abs(now.b-last.b);still=delta<1e-4f?still+1:0;last=now;
+            }
+            Assert.That(settled,Is.LessThan(600));GameServices.Clock.TimeScale=0;
+            yield return new WaitForSecondsRealtime(1.2f);
+            walkLabel=(night?"night":"day")+"-"+(high?"spring-high":"low");
+            float actual=GameServices.Environment.WaterLevelAt(GameServices.Clock.TotalSeconds);
+            Assert.That(high?actual:-actual,Is.GreaterThan(2f),"the real tide reaches the requested end of its range");
+            foreach(var view in new[]{("working",new Vector2(63,76),16f),("fleet",new Vector2(128,72),23f),("recreation",new Vector2(181,76),16f),("overview",new Vector2(124,40),65f)})
+            {
+                yield return FramePlate(view.Item2,view.Item3);WritePlate(walkLabel+"-"+view.Item1);
+            }
+        }
+        [UnityTest,Timeout(180000)]public IEnumerator H5Plate_DayLow()
+        {
+            WharfNightStage.RequireAGraphicsDevice();
+            for(var capture=CaptureWaterState(false,false,true);capture.MoveNext();)yield return capture.Current;
+        }
+        [UnityTest,Timeout(180000)]public IEnumerator H5Plate_DaySpringHigh()
+        {
+            WharfNightStage.RequireAGraphicsDevice();
+            for(var capture=CaptureWaterState(false,true,false);capture.MoveNext();)yield return capture.Current;
+        }
+        [UnityTest,Timeout(180000)]public IEnumerator H5Plate_NightLow()
+        {
+            WharfNightStage.RequireAGraphicsDevice();
+            for(var capture=CaptureWaterState(true,false,false);capture.MoveNext();)yield return capture.Current;
+        }
+        [UnityTest,Timeout(180000)]public IEnumerator H5Plate_NightSpringHigh()
+        {
+            WharfNightStage.RequireAGraphicsDevice();
+            for(var capture=CaptureWaterState(true,true,false);capture.MoveNext();)yield return capture.Current;
         }
     }
 }

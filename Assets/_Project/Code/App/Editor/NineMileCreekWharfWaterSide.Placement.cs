@@ -39,6 +39,7 @@ namespace HiddenHarbours.App.Editor
             public Vector2 At;
             public List<long> Components = new List<long>(), Children = new List<long>();
             public string Rotation;
+            public float PictureScaleY=1f;
         }
         sealed class WaterWriter
         {
@@ -83,6 +84,7 @@ namespace HiddenHarbours.App.Editor
             {
                 foreach(var n in Nodes){Docs.Add((n.Name,GameObjectYaml(n.Go,n.Name,n.Components)));
                     string text=TransformYaml(n.Tr,n.Go,n.At,n.Children,n.Parent);if(n.Rotation!=null)text=SetField(text,"m_LocalRotation",n.Rotation);
+                    if(n.PictureScaleY!=1f)text=SetField(text,"m_LocalScale","{x: 1, y: "+F(n.PictureScaleY)+", z: 1}");
                     Docs.Add((n.Name+"/transform",text));}
                 return WriteRoot(scene,root.Name,root.Go,Docs,WaterStep);
             }
@@ -133,12 +135,13 @@ namespace HiddenHarbours.App.Editor
                         if(gang!=null&&WN(WM(gang,"step"))!=0)continue;
                         Vector2 at=WP(WM(p,"at"));float elevation=WN(WM(p,"elevation"));
                         var node=writer.Node(row.Id+"/"+name,name,at-row.At+Vector2.up*(elevation*IsoGround.HeightScale),rowNode);
+                        if(gang==null)node.PictureScaleY=1f/IsoGround.GroundDepthScale;
                         Sprite sprite=WaterSprite(def,partKey==keys[0]?null:name,0);
                         string layer=WS(WM(p,"motionLayer"));
                         int order=NineMileCreekWharf.FloatSortingOrder+(layer=="back"?-1:layer=="front"?1:0);
                         writer.Picture(node,sprite,order);
                         if(WB(WM(p,"floating")))writer.Mono(node,"ride","Assets/_Project/Code/World/FloatingPlatformVisual.cs","HiddenHarbours.World","HiddenHarbours.World.FloatingPlatformVisual",
-                            new[]{"  _platform: {fileID: "+floats[name]+"}","  _bakedDeckElevation: "+F(WN(WM(p,"freeboard"))),"  _planY: "+F(at.y)});
+                            new[]{"  _platform: {fileID: "+floats[name]+"}","  _bakedDeckElevation: "+F(WN(WM(p,"freeboard"))*node.PictureScaleY),"  _planY: "+F(at.y)});
                         else if(gang!=null)
                         {
                             string id="gangway.nmc_"+key+"_"+WS(WM(gang,"id"));
@@ -147,9 +150,11 @@ namespace HiddenHarbours.App.Editor
                                 new[]{"  _id: "+id,"  _shoreEnd: "+Vec2Yaml(WP(WM(gang,"hinge"))),"  _floatEnd: "+Vec2Yaml(WP(WM(gang,"landing"))),
                                     "  _halfWidthMetres: "+F(WN(WM(gang,"width"))*.5f),"  _abutmentElevation: "+F(elevation),"  _landing: {fileID: "+floats[WS(WM(gang,"floatModule"))]+"}"});
                             var poses=parts.Where(q=>WS(WM(q,"harbour"))==key&&WM(q,"gangway")!=null&&WS(WM(WM(q,"gangway"),"id"))==WS(WM(gang,"id"))).OrderBy(q=>WN(WM(WM(q,"gangway"),"step"))).ToArray();
-                            writer.Mono(node,"slope","Assets/_Project/Code/World/GangwayVisual.cs","HiddenHarbours.World","HiddenHarbours.World.GangwayVisual",
+                            long visual=writer.Mono(node,"slope","Assets/_Project/Code/World/GangwayVisual.cs","HiddenHarbours.World","HiddenHarbours.World.GangwayVisual",
                                 new[]{"  _brow: {fileID: "+brow+"}","  _rungs:"}.Concat(poses.Select(q=>"  - "+SpriteAsset(WaterSprite(def,WS(WM(q,"name")),0)).Sprite.Yaml))
                                 .Concat(new[]{"  _rungDrops:"}).Concat(poses.Select(q=>"  - "+F(WN(WM(WM(q,"gangway"),"drop"))))));
+                            writer.Mono(node,"ground-span","Assets/_Project/Code/App/NmcWharfBrowSpanVisual.cs","HiddenHarbours.App","HiddenHarbours.App.NmcWharfBrowSpanVisual",
+                                new[]{"  _visual: {fileID: "+visual+"}","  _planY: "+F(at.y)});
                         }
                         else if(WM(p,"walkPolygon")!=null)
                         {
