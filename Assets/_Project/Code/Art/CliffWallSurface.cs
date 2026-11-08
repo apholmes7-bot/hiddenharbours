@@ -167,10 +167,17 @@ namespace HiddenHarbours.Art
     /// station is laid and triangulated exactly as it always was, to the bit. Where a top was moved out, the texture
     /// can keep running along where it was (<c>_textureBrowPlan</c>), and the run's offsets downstream with it.</para>
     ///
-    /// <para><b>Pure look.</b> Drives no sim and saves nothing (rule 5). Walkability at a cliff belongs to
-    /// the terrain's own slope, not to this component — a wall is a picture OF the height field, and the
-    /// height field remains the single source of truth for where a player may stand. The waterline is
-    /// colour on rock and changes nothing about that.</para>
+    /// <para><b>A look, and the one wall the look implies.</b> Drives no sim and saves nothing (rule 5). Where a
+    /// player may stand is still the height field's to say, with one exception the picture forces: <b>a cliff face
+    /// drawn over the sea is a wall</b> (ruling t10, 2026-11-08). The face is drawn down-screen of its plan toe by
+    /// its drop (<see cref="CliffWallGeometry.ToeScreen"/>), so at St Peters' West Ledges it covers 5.9 m of sea
+    /// inside the walker's swim band, and she swam in and vanished behind it. So each chunk carries a BLOCKER
+    /// along its DRAWN toe (<see cref="BlockerChildName"/>): the quay wall's collider kind and layer (one
+    /// <see cref="PolygonCollider2D"/> quad per segment, <see cref="CliffWallGeometry.BlockerThicknessMetres"/>
+    /// thick, each run half a thickness past both ends, on Default, as <c>PropertyBoundary</c> builds them), built
+    /// from the stations alone, so it stands whether or not the face's channels are baked, and where the drawn toe
+    /// lies over dry ground too. It is derived on every build like the meshes and never saved. The waterline is
+    /// colour on rock and changes nothing about any of this.</para>
     /// </summary>
     [ExecuteAlways]
     [DisallowMultipleComponent]
@@ -279,6 +286,13 @@ namespace HiddenHarbours.Art
         public const string BrowChildName = "CliffWallBrowDecal";
         public const string ToeChildName = "CliffWallToeDecal";
 
+        /// <summary>The generated child carrying the drawn toe's blocker (see the class note).</summary>
+        public const string BlockerChildName = "CliffWallToeBlocker";
+
+        /// <summary>The blocker's layer: Default, the layer the quay wall's colliders stand on and the walker's
+        /// foot (and every hull) collides with.</summary>
+        public const int BlockerLayer = 0;
+
         /// <summary>How many stations this chunk carries — read by the builder's own idempotence check
         /// and by the tests, so neither has to reach into a serialized field by name.</summary>
         public int StationCount => _browPlan != null ? _browPlan.Length : 0;
@@ -294,6 +308,20 @@ namespace HiddenHarbours.Art
         /// <summary>How many renderers this chunk actually built — face bands plus whichever decals had a
         /// texture. Pinned rather than inferred, because "the strata are on" is otherwise invisible.</summary>
         public int RendererCount { get; private set; }
+
+        /// <summary>How many blocker quads this chunk built: one per drawn-toe segment, 0 before it has built.
+        /// The collider count the cost line reads.</summary>
+        public int BlockerColliderCount { get; private set; }
+
+        /// <summary>The chunk's toe in PLAN, one per station, world XY: the Def's line as the builder pushed it.</summary>
+        public IReadOnlyList<Vector2> ToePlan => _toePlan;
+
+        /// <summary>The ground height at each station's toe, metres (empty for a scene saved before the waterline).</summary>
+        public IReadOnlyList<float> ToeElevations => _toeElevations;
+
+        /// <summary>The chunk's DRAWN toe, one point per station, world XY: the line its blocker stands on.</summary>
+        public Vector2[] DrawnToe() =>
+            CliffWallGeometry.DrawnToe(BuildSamples(_browPlan, _toePlan, _dropMetres, _toeElevations));
 
         /// <summary>Metres of shore spent before this chunk, within its run. See the class note.</summary>
         public float AlongOffsetMetres => _alongOffsetMetres;
@@ -402,11 +430,12 @@ namespace HiddenHarbours.Art
             {
                 Transform child = transform.GetChild(i);
                 if (child.name.StartsWith(BandChildPrefix) ||
-                    child.name == BrowChildName || child.name == ToeChildName)
+                    child.name == BrowChildName || child.name == ToeChildName || child.name == BlockerChildName)
                     DestroyGo(child.gameObject);
             }
 
             RendererCount = 0;
+            BlockerColliderCount = 0;
         }
 
         private void Rebuild()
@@ -414,6 +443,10 @@ namespace HiddenHarbours.Art
             Teardown();
             int stations = StationCount;
             if (stations < 2 || _toePlan.Length < stations || _dropMetres.Length < stations) return;
+
+            // The wall the face implies, from the stations alone: before the channel and material checks, so a
+            // checkout that has never baked the kit's PNGs walks the same coast as one that has.
+            BuildBlocker(CliffWallGeometry.DrawnToe(BuildSamples(_browPlan, _toePlan, _dropMetres, _toeElevations)));
 
             bool anyBand = false;
             for (int i = 0; i < _bands.Length; i++) if (_bands[i].HasChannels) { anyBand = true; break; }
@@ -527,6 +560,47 @@ namespace HiddenHarbours.Art
             if (_profile == null) return 0f;
             float grey = _profile.GetPixelBilinear(CliffWallGeometry.WrapTile01(uTiles), 1f - t).r;
             return CliffWallGeometry.ProfileMetresFromGrey(grey, _profileMetres);
+        }
+
+        /// <summary>
+        /// Stand the blocker on the drawn toe: one solid <see cref="PolygonCollider2D"/> quad per segment, centred
+        /// on the line, <see cref="CliffWallGeometry.BlockerThicknessMetres"/> thick and run half a thickness past
+        /// both ends, on a DontSave child at <see cref="BlockerLayer"/>. The quad is <c>PropertyBoundary</c>'s, for
+        /// its reasons: one collider per segment, because several paths on one collider turn their overlaps (every
+        /// corner) into holes; the ends overlapped, because butt-ended quads leave a pinhole on the outside of each
+        /// turn. A chunk's last point is the next chunk's first, so the run's blocker is closed across the join.
+        /// </summary>
+        private void BuildBlocker(Vector2[] drawnToe)
+        {
+            if (drawnToe == null || drawnToe.Length < 2) return;
+
+            var go = new GameObject(BlockerChildName) { hideFlags = HideFlags.DontSave, layer = BlockerLayer };
+            go.transform.SetParent(transform, false);
+            go.transform.localPosition = Vector3.zero;
+            go.transform.localRotation = Quaternion.identity;
+            go.transform.localScale = Vector3.one;
+
+            float half = CliffWallGeometry.BlockerThicknessMetres * 0.5f;
+            int built = 0;
+            for (int s = 0; s + 1 < drawnToe.Length; s++)
+            {
+                Vector2 a = go.transform.InverseTransformPoint(drawnToe[s]);
+                Vector2 b = go.transform.InverseTransformPoint(drawnToe[s + 1]);
+                Vector2 along = b - a;
+                float len = along.magnitude;
+                if (len <= 1e-4f) continue;                       // a repeated station is not a wall
+                along /= len;
+                Vector2 side = new Vector2(-along.y, along.x) * half;
+                Vector2 ext = along * half;
+
+                var quad = go.AddComponent<PolygonCollider2D>();
+                quad.pathCount = 1;
+                quad.SetPath(0, new[] { a - ext + side, b + ext + side, b + ext - side, a - ext - side });
+                built++;
+            }
+
+            _generated.Add(go);
+            BlockerColliderCount = built;
         }
 
         private void BuildBand(CliffWallColumns columns, in CliffFaceBand band, int rows,
