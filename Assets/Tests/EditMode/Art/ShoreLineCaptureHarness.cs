@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
+using HiddenHarbours.Art;
 using HiddenHarbours.Core;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -14,6 +16,30 @@ namespace HiddenHarbours.Tests.Art.EditMode
     {
         public const int SettleFrames = 4;
         public const int MedianFrames = 3;
+
+        public static Vector3[] FacePositions(Renderer renderer)
+        {
+            var filter = renderer.GetComponent<MeshFilter>();
+            var wall = renderer.GetComponentInParent<CliffWallSurface>(true);
+            if (filter == null || filter.sharedMesh == null || wall == null) return Array.Empty<Vector3>();
+            var binding = typeof(TerrainSplatSurface).Assembly.GetType("HiddenHarbours.Art.TerrainShoreLineBinding");
+            return (Vector3[])binding.GetMethod("FaceVertices", BindingFlags.Static | BindingFlags.NonPublic)
+                .Invoke(null, new object[] { filter, wall });
+        }
+        public static ShoreLineDerivation.WallFootprint SnapshotFaces(IEnumerable<Renderer> renderers,
+            IReadOnlyDictionary<Renderer, bool> originalEnabled, Vector2 min, Vector2 size, float texel)
+        {
+            // Diagnostic passes disable walls while drawing ground. Their original state,
+            // not the temporary current state, defines the independent distance reference.
+            var result = new ShoreLineDerivation.WallFootprint(min, size, texel, texel);
+            foreach (var renderer in renderers)
+            {
+                if (!originalEnabled.TryGetValue(renderer, out bool enabled) || !enabled) continue;
+                var positions = FacePositions(renderer);
+                for (int i = 0; i < positions.Length; i += 3) result.AddTriangle(positions[i], positions[i + 1], positions[i + 2]);
+            }
+            return result;
+        }
 
         public sealed class PoseClock : IDisposable
         {

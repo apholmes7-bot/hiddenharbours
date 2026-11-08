@@ -1,4 +1,6 @@
 using HiddenHarbours.Core;
+using HiddenHarbours.Art;
+using System.Collections.Generic;
 using NUnit.Framework;
 using UnityEditor;
 using UnityEngine;
@@ -59,6 +61,29 @@ ENDHLSL
                 target.Release();
                 foreach (var obj in new Object[] { quad, cameraObject, mesh, target, material, shader }) Object.DestroyImmediate(obj);
             }
+        }
+
+        [Test] public void DistanceSnapshotUsesOriginalEnabledStateWhileWallsAreHidden()
+        {
+            var host = new GameObject("Wall snapshot fixture") { hideFlags = HideFlags.HideAndDontSave };
+            host.SetActive(false); host.AddComponent<CliffWallSurface>();
+            var child = new GameObject("Face") { hideFlags = HideFlags.HideAndDontSave }; child.transform.SetParent(host.transform);
+            var mesh = new Mesh();
+            try
+            {
+                mesh.vertices = new[] { new Vector3(-1, -1), new Vector3(1, -1), new Vector3(1, 1), new Vector3(-1, 1) };
+                mesh.triangles = new[] { 0, 1, 2, 0, 2, 3 };
+                child.AddComponent<MeshFilter>().sharedMesh = mesh;
+                var renderer = child.AddComponent<MeshRenderer>(); renderer.enabled = false;
+                var original = new Dictionary<Renderer, bool> { [renderer] = true };
+                var snapshot = ShoreLineCaptureHarness.SnapshotFaces(new[] { renderer }, original,
+                    new Vector2(-2, -2), new Vector2(4, 4), .25f);
+                Assert.IsTrue(snapshot.At(Vector2.zero)); Assert.IsFalse(renderer.enabled);
+                original[renderer] = false;
+                Assert.IsFalse(ShoreLineCaptureHarness.SnapshotFaces(new[] { renderer }, original,
+                    new Vector2(-2, -2), new Vector2(4, 4), .25f).At(Vector2.zero));
+            }
+            finally { Object.DestroyImmediate(host); Object.DestroyImmediate(mesh); }
         }
     }
 }
