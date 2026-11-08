@@ -63,7 +63,7 @@ namespace HiddenHarbours.Tests.PlayMode
         const int SettleRenders = 4, MedianRenders = 3, ControlGapFrames = 30;
 
         // ---- the cost (t12) ---------------------------------------------------------------------------------
-        const int CostRounds = 3, CostSettleFrames = 30, CostWindowFrames = 240;
+        const int CostRounds = 5, CostSettleFrames = 30, CostWindowFrames = 240, GpuDraws = 10, GpuWarmSamples = 3, GpuSamples = 15;
 
         /// <summary>Piece 2's board frames, then piece 3's splat windows (the headless run-count's windows).</summary>
         static readonly (string Name, Vector2 Centre)[] Poses =
@@ -212,8 +212,11 @@ namespace HiddenHarbours.Tests.PlayMode
             (string Name, Vector2 Centre) pose = Poses[1];
             yield return FrameOn(pose.Centre);
 
-            List<Renderer> drawn = Object.FindObjectsByType<Renderer>()
-                .Where(r => r.enabled && r.gameObject.scene.name == StPeters && r.sharedMaterial != null &&
+            // The ground's quad is made with HideFlags.DontSave (TerrainSplatSurface), which FindObjectsByType
+            // never returns: walk the region scene's roots instead, where GetComponentsInChildren sees it.
+            List<Renderer> drawn = SceneManager.GetSceneByName(StPeters).GetRootGameObjects()
+                .SelectMany(root => root.GetComponentsInChildren<Renderer>())
+                .Where(r => r.enabled && r.sharedMaterial != null &&
                             r.sharedMaterial.shader != null &&
                             (r.sharedMaterial.shader.name == TerrainShader || r.sharedMaterial.shader.name == WaterShader))
                 .ToList();
@@ -229,6 +232,13 @@ namespace HiddenHarbours.Tests.PlayMode
             Time.timeScale = 1f;
             var shown = new List<float>();
             var hidden = new List<float>();
+            var shownGpu = new List<float>();
+            var hiddenGpu = new List<float>();
+            // The CPU never waits on the GPU by itself, so a frame time alone misses the draw: each frame reads one
+            // pixel back (the CPU waits for the last frame's draw), and the GPU's own frame time is kept beside it
+            // wherever FrameTimingManager reports one.
+            var probe = new Texture2D(1, 1, TextureFormat.RGBAFloat, false, true);
+            var timings = new FrameTiming[1];
             try
             {
                 for (int round = 0; round < CostRounds; round++)
@@ -236,14 +246,24 @@ namespace HiddenHarbours.Tests.PlayMode
                     foreach (bool on in new[] { true, false })
                     {
                         foreach (Renderer r in drawn) r.enabled = on;
-                        for (int i = 0; i < CostSettleFrames; i++) yield return null;
+                        for (int i = 0; i < CostSettleFrames; i++)
+                        {
+                            yield return null;
+                            WaitForTheGpu(probe);
+                        }
                         var window = new List<float>(CostWindowFrames);
+                        var gpuWindow = new List<float>(CostWindowFrames);
                         for (int i = 0; i < CostWindowFrames; i++)
                         {
                             yield return null;
+                            WaitForTheGpu(probe);
                             window.Add(Time.unscaledDeltaTime * 1000f);
+                            FrameTimingManager.CaptureFrameTimings();
+                            if (FrameTimingManager.GetLatestTimings(1, timings) > 0 && timings[0].gpuFrameTime > 0.0)
+                                gpuWindow.Add((float)timings[0].gpuFrameTime);
                         }
                         (on ? shown : hidden).Add(Median(window));
+                        if (gpuWindow.Count > 0) (on ? shownGpu : hiddenGpu).Add(Median(gpuWindow));
                     }
                 }
             }
@@ -253,17 +273,70 @@ namespace HiddenHarbours.Tests.PlayMode
                 _hidden.Clear();
                 QualitySettings.vSyncCount = vsync;
                 Application.targetFrameRate = target;
+                Object.Destroy(probe);
             }
 
+            // The GPU's own price, with the rest of the frame left out: the visible ground and sea drawn GpuDraws times
+            // back to back by one command buffer into the plate texture (every pass, depth cleared between draws),
+            // timed between two GPU waits, less an empty buffer timed the same way. The GPU stays loaded the whole
+            // time, so its clock does not wander the way it does between waited frames.
+            Plane[] planes = GeometryUtility.CalculateFrustumPlanes(_cam);
+            List<Renderer> seen = drawn.Where(r => r != null && GeometryUtility.TestPlanesAABB(planes, r.bounds)).ToList();
+            int seenGround = seen.Count(r => r.sharedMaterial.shader.name == TerrainShader);
+            var price = new List<float>();
+            var waitProbe = new Texture2D(1, 1, TextureFormat.RGBAFloat, false, true);
+            var full = new CommandBuffer { name = "splat-warp-price" };
+            var empty = new CommandBuffer { name = "splat-warp-price-empty" };
+            try
+            {
+                foreach (CommandBuffer cb in new[] { full, empty })
+                {
+                    cb.SetRenderTarget(_rt);
+                    cb.SetViewProjectionMatrices(_cam.worldToCameraMatrix, _cam.projectionMatrix);
+                }
+                for (int k = 0; k < GpuDraws; k++)
+                {
+                    full.ClearRenderTarget(true, false, Color.clear);
+                    empty.ClearRenderTarget(true, false, Color.clear);
+                    foreach (Renderer r in seen)
+                    {
+                        Material[] mats = r.sharedMaterials;
+                        for (int m = 0; m < mats.Length; m++)
+                            if (mats[m] != null) full.DrawRenderer(r, mats[m], m, -1);
+                    }
+                }
+                for (int s = 0; s < GpuWarmSamples + GpuSamples; s++)
+                {
+                    float fullMs = TimeOnTheGpu(full, waitProbe), emptyMs = TimeOnTheGpu(empty, waitProbe);
+                    if (s >= GpuWarmSamples) price.Add((fullMs - emptyMs) / GpuDraws);
+                }
+            }
+            finally
+            {
+                full.Release();
+                empty.Release();
+                Object.Destroy(waitProbe);
+            }
+            var sortedPrice = price.OrderBy(v => v).ToList();
+            string gpuPrice = $"GPU price of the visible ground and sea ({seenGround} ground and {seen.Count - seenGround} sea " +
+                              $"renderers in view, every pass, {GpuDraws} draws per sample): median {Median(price):0.####} ms per draw, " +
+                              $"quartiles {sortedPrice[sortedPrice.Count / 4]:0.####} to {sortedPrice[(3 * sortedPrice.Count) / 4]:0.####} ms, " +
+                              $"{GpuSamples} samples [{string.Join(", ", price.Select(v => v.ToString("0.####")))}]";
+
             float shownMs = shown.Average(), hiddenMs = hidden.Average(), delta = shownMs - hiddenMs;
+            string gpu = shownGpu.Count == CostRounds && hiddenGpu.Count == CostRounds
+                ? $"GPU frame time drawn {shownGpu.Average():0.###} ms [{string.Join(", ", shownGpu.Select(v => v.ToString("0.###")))}], " +
+                  $"hidden {hiddenGpu.Average():0.###} ms [{string.Join(", ", hiddenGpu.Select(v => v.ToString("0.###")))}]; " +
+                  $"GPU difference {shownGpu.Average() - hiddenGpu.Average():+0.###;-0.###} ms"
+                : $"GPU frame time not reported by FrameTimingManager ({shownGpu.Count} drawn and {hiddenGpu.Count} hidden windows of {CostRounds})";
             string figures = $"the ground and the sea at the plate pose {pose.Name} ({pose.Centre}), noon: " +
-                             $"{ground} ground and {sea} sea renderers; frame median drawn {shownMs:0.###} ms " +
+                             $"{ground} ground and {sea} sea renderers; frame median (each frame waits on the GPU) drawn {shownMs:0.###} ms " +
                              $"[{string.Join(", ", shown.Select(v => v.ToString("0.###")))}], hidden {hiddenMs:0.###} ms " +
                              $"[{string.Join(", ", hidden.Select(v => v.ToString("0.###")))}]; difference {delta:+0.###;-0.###} ms; " +
-                             $"{CostRounds} interleaved rounds of {CostWindowFrames} frames, vsync off; render texture {_w}x{_h}";
+                             $"{gpu}; {CostRounds} interleaved rounds of {CostWindowFrames} frames, vsync off; {gpuPrice}; render texture {_w}x{_h}";
             SaveCaption("splat-warp-cost-ground-and-sea.txt", figures);
             Debug.Log($"[{PlateDir}] {figures}");
-            Assert.IsTrue(shown.Concat(hidden).All(v => v > 0f && !float.IsInfinity(v) && !float.IsNaN(v)), figures);
+            Assert.IsTrue(shown.Concat(hidden).Concat(price).All(v => v > 0f && !float.IsInfinity(v) && !float.IsNaN(v)), figures);
         }
 
         // =============================================================================================
@@ -312,6 +385,25 @@ namespace HiddenHarbours.Tests.PlayMode
         }
 
         static byte Middle(byte a, byte b, byte c) => (byte)(a + b + c - Math.Min(a, Math.Min(b, c)) - Math.Max(a, Math.Max(b, c)));
+
+        /// <summary>One pixel read back from the plate texture: the CPU waits until the last frame's draw is done.</summary>
+        void WaitForTheGpu(Texture2D probe)
+        {
+            RenderTexture prevActive = RenderTexture.active;
+            RenderTexture.active = _rt;
+            probe.ReadPixels(new Rect(0, 0, 1, 1), 0, 0, false);
+            RenderTexture.active = prevActive;
+        }
+
+        /// <summary>A command buffer's run, from a GPU wait before it to a GPU wait after it, in ms.</summary>
+        float TimeOnTheGpu(CommandBuffer cb, Texture2D probe)
+        {
+            WaitForTheGpu(probe);
+            var watch = System.Diagnostics.Stopwatch.StartNew();
+            Graphics.ExecuteCommandBuffer(cb);
+            WaitForTheGpu(probe);
+            return (float)watch.Elapsed.TotalMilliseconds;
+        }
 
         static float Median(List<float> values)
         {
