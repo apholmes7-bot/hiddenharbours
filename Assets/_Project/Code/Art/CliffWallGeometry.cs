@@ -90,6 +90,29 @@ namespace HiddenHarbours.Art
         public static Vector2 ToeScreen(in CliffWallSample s) =>
             new Vector2(s.ToePlan.x, s.ToePlan.y - s.DropMetres * SpriteLightMath.HeightScale);
 
+        /// <summary>
+        /// ⭐ <b>A chunk's DRAWN toe, station by station, in world XY: the line its blocker stands on</b>
+        /// (<see cref="ToeScreen"/> of each sample, in order). A cliff face drawn over the sea is a wall (ruling
+        /// t10, 2026-11-08): what the face covers, nobody enters on foot, so the line where the picture ends is
+        /// the line that stops her. Joined walls share their join station exactly (the builder refuses a Def that
+        /// does not start on the last station of the wall it follows), so joined chunks' lines meet with no gap.
+        /// </summary>
+        public static Vector2[] DrawnToe(CliffWallSample[] samples)
+        {
+            int n = samples == null ? 0 : samples.Length;
+            var toe = new Vector2[n];
+            for (int i = 0; i < n; i++) toe[i] = ToeScreen(in samples[i]);
+            return toe;
+        }
+
+        /// <summary>
+        /// The blocker's thickness, metres: <c>PropertyBoundary.DefaultThicknessMetres</c>'s 0.35, the figure the
+        /// quay wall the walker is stopped by stands at (thicker than her per-step travel, so a fast body cannot
+        /// tunnel it). Restated here only because Art depends on Core alone (project-structure §5) and cannot
+        /// reach World's constant; <c>CliffWallToeBlockerTests</c> pins the two equal, so they cannot drift.
+        /// </summary>
+        public const float BlockerThicknessMetres = 0.35f;
+
         /// <summary>How far out the face reaches in PLAN — the horizontal run of the plunge, metres.</summary>
         public static float PlanRunMetres(in CliffWallSample s) => (s.ToePlan - s.BrowPlan).magnitude;
 

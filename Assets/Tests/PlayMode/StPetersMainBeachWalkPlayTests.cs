@@ -42,7 +42,16 @@ namespace HiddenHarbours.Tests.PlayMode
     /// board's axis (<c>beach-b.png</c> of the 10-02 St Peters review: the path and the steps above, the sand to
     /// the water below, the bay to the east). Every caption records the framed height, as the cliff plates do.</para>
     ///
-    /// <para>A plate needs a GPU: without a graphics device both cases skip by name (CI). The shared save is never
+    /// <para><b>⭐ The west end (W2, ruling t10, 2026-11-08): a cliff face drawn over the sea is a wall.</b> Piece 2's
+    /// west leg went on to x -6 and swam her 1.49 m deep into the sea <c>wall.stp_058</c>'s face is drawn over, where
+    /// the face hid her. The west leg now ends where the dry beach ends: the point on <c>wall.stp_057</c>'s toe where
+    /// the water meets it, measured off the scene's own chunk, never typed; and it must stay under the walker's own
+    /// wade depth all the way. Then ONE leg walks her at the face from the water side, toward that point behind it: her
+    /// foot must never cross a drawn toe, and she must be held AT one, by a cliff's blocker, not short of it. The other
+    /// 15 legs are piece 2's. The third case prices the blockers: their quad count, and the frame at a plate pose with
+    /// them and without, interleaved.</para>
+    ///
+    /// <para>A plate needs a GPU: without a graphics device every case skips by name (CI). The shared save is never
     /// opened: each case asserts the run's own save before it walks or shoots.</para>
     /// </summary>
     public class StPetersMainBeachWalkPlayTests
@@ -65,8 +74,21 @@ namespace HiddenHarbours.Tests.PlayMode
         const float ToTheWaterMaxMetres = 45f;
         const float EdgeTargetDepth = -0.1f;      // along the bay she keeps to ground 0.1 m over the water
         const float EdgeSteerGain = 4f;
-        const float EastReachX = 40f, WestReachX = -6f;
+        const float EastReachX = 40f;
         const float FootProbeSlack = 0.15f, AheadProbeMetres = 0.6f;
+
+        // ---- the west end (W2, t10) ------------------------------------------------------------------------------
+        /// <summary>The wall whose toe the dry beach ends on, by real id (<c>wall.stp_057</c>, the seat's ruling). The
+        /// point itself is measured off the scene's chunk at the hour, never typed.</summary>
+        const string DryBeachEndWallRealId = "057";
+        /// <summary>How far round the face leg's start the drawn toes are gathered for the crossing check.</summary>
+        const float FaceToesWithinMetres = 15f;
+        /// <summary>Held AT the toe means within her foot's radius, half the blocker and this much of the drawn line.</summary>
+        const float FaceStopSlackMetres = 0.15f;
+
+        // ---- the blockers' cost (t10 iii) ----------------------------------------------------------------------
+        const int CostRounds = 3, CostSettleFrames = 30, CostWindowFrames = 240;
+        const float CostBudgetMs = 0.2f;
 
         /// <summary>The way down, from the data: <c>path.stp_cliff_walk</c>'s points east of the junction, then
         /// <c>path.stp_west_gap_path</c>'s five (its second-last pair are the steps' head and foot, as
@@ -96,10 +118,12 @@ namespace HiddenHarbours.Tests.PlayMode
             public bool Survey, Reached;
             public Vector2 From, To, End, Aim;
             public float Metres, Seconds;
+            public float Deepest = float.NegativeInfinity;   // the deepest the walker read under her body on the leg
             public string Why, Blockers;
             public override string ToString() =>
                 $"{Name}: {(Reached ? "REACHED" : "STOPPED")} from ({From.x:0.##}, {From.y:0.##}) toward ({To.x:0.##}, {To.y:0.##}), " +
                 $"ended at ({End.x:0.###}, {End.y:0.###}), {Metres:0.##} m in {Seconds:0.##} s" +
+                (float.IsNegativeInfinity(Deepest) ? "" : $", deepest {Deepest:0.###} m") +
                 (Why != null ? $", {Why}" : "") + (Blockers != null ? $"; {Blockers}" : "");
         }
 
@@ -110,6 +134,7 @@ namespace HiddenHarbours.Tests.PlayMode
         bool _loadedAny, _introOnEntry, _enteredWorld;
         Vector2 _askedCentre;
         string _healed = "none", _pinned = "(not pinned)", _saveLine = "(not read)", _eased = "(not framed)";
+        string _westEnd = "(not walked)";
         int _plateIndex;
 
         CameraFollow _follow;
@@ -231,9 +256,50 @@ namespace HiddenHarbours.Tests.PlayMode
             var east = new Leg { Name = "along the bay east", Survey = true, From = Body(), To = new Vector2(EastReachX, Body().y) };
             yield return AlongTheEdge(east, +1f, EastReachX);
             yield return Plate(east.Reached ? "the-bay-east-end" : "the-bay-east-stop", east);
-            var west = new Leg { Name = "along the bay west", Survey = true, From = Body(), To = new Vector2(WestReachX, Body().y) };
-            yield return AlongTheEdge(west, -1f, WestReachX);
+            // West only as far as the dry beach goes (t10): the water's crossing of wall.stp_057's toe, measured now.
+            Vector2 dryEnd = DryBeachEnd(out string dryEndHow);
+            var west = new Leg { Name = "along the bay west", Survey = true, From = Body(), To = new Vector2(dryEnd.x, Body().y) };
+            yield return AlongTheEdge(west, -1f, dryEnd.x);
             yield return Plate(west.Reached ? "the-bay-west-end" : "the-bay-west-stop", west);
+
+            // ---- at the face from the water (t10): held at the drawn toe, never behind the face -------------------
+            List<Vector2[]> toes = DrawnToesNear(Body(), FaceToesWithinMetres);
+            Assert.IsNotEmpty(toes, $"no cliff chunk's drawn toe lies within {FaceToesWithinMetres} m of the bay's west end at " +
+                                    $"{Body()}: the face leg would walk at nothing.");
+            Vector2 footWas = FootNow();
+            string crossedAt = null;
+            var face = new Leg { Name = "at the face from the water", Survey = true, From = Body(), To = dryEnd };
+            float faceBudget = Vector2.Distance(Body(), dryEnd) / LegMetresPerSecondFloor + LegSlackSeconds;
+            yield return Pursue(face, faceBudget, at =>
+            {
+                Vector2 foot = FootNow();
+                if (crossedAt == null && CrossesAny(footWas, foot, toes, out Vector2 x))
+                    crossedAt = $"({x.x:0.###}, {x.y:0.###}), foot ({footWas.x:0.###}, {footWas.y:0.###}) to ({foot.x:0.###}, {foot.y:0.###})";
+                footWas = foot;
+                return Vector2.Distance(at, dryEnd) <= ArriveMetres;
+            }, at => (dryEnd - at).normalized);
+            Vector2 footEnd = FootNow();
+            float toToe = DistanceToToes(footEnd, toes, out Vector2 nearest);
+            float holdAt = FootRadius() + CliffWallGeometry.BlockerThicknessMetres * 0.5f + FaceStopSlackMetres;
+            yield return Plate(face.Reached ? "behind-the-face" : "held-at-the-face", face);
+
+            var westEnd = new List<string>();
+            if (!(west.Deepest < _player.WadeDepth))
+                westEnd.Add($"the west leg went {west.Deepest:0.###} m deep, not under the walker's wade depth {_player.WadeDepth:0.###} m: " +
+                            $"she swam on past where the dry beach ends ({dryEnd.x:0.###}, {dryEnd.y:0.###}).");
+            if (face.Reached)
+                westEnd.Add($"she reached ({dryEnd.x:0.###}, {dryEnd.y:0.###}) behind the face: nothing held her at the drawn toe.");
+            if (crossedAt != null)
+                westEnd.Add($"her foot crossed a drawn toe at {crossedAt}: she went behind the face.");
+            if (toToe > holdAt)
+                westEnd.Add($"she ended {toToe:0.###} m from the nearest drawn toe ({nearest.x:0.###}, {nearest.y:0.###}), past the " +
+                            $"{holdAt:0.###} m a blocker holds her at: something short of the toe stopped her, not the face's wall.");
+            if (face.Blockers == null || !face.Blockers.Contains(CliffWallSurface.BlockerChildName))
+                westEnd.Add($"what her foot meets at the end is not a cliff's blocker: {face.Blockers ?? "(she was not stopped)"}.");
+            _westEnd = $"the dry beach ends at ({dryEnd.x:0.###}, {dryEnd.y:0.###}): {dryEndHow}; the west leg's deepest {west.Deepest:0.###} m " +
+                       $"(wade depth {_player.WadeDepth:0.###} m); the face leg ended with her foot at ({footEnd.x:0.###}, {footEnd.y:0.###}), " +
+                       $"{toToe:0.###} m from the drawn toe at ({nearest.x:0.###}, {nearest.y:0.###}) (held within {holdAt:0.###} m); " +
+                       $"crossed a drawn toe: {crossedAt ?? "never"}; {toes.Count} chunks' drawn toes within {FaceToesWithinMetres} m";
 
             // ---- back to the water's edge below the path, and up the way she came -------------------------------
             yield return WalkLeg("back: the water's edge below the path", edge, survey: false);
@@ -242,10 +308,74 @@ namespace HiddenHarbours.Tests.PlayMode
 
             WriteTheWalkLog();
             List<Leg> stops = _legs.Where(l => !l.Survey && !l.Reached).ToList();
-            Assert.That(stops, Is.Empty,
-                $"the walk stopped {stops.Count} time(s) on the way down, to the water or back up:\n  " +
-                string.Join("\n  ", stops.Select(s => s.ToString())) +
-                $"\nthe whole walk:\n  {string.Join("\n  ", _legs.Select(l => l.ToString()))}");
+            var failures = new List<string>();
+            if (stops.Count > 0)
+                failures.Add($"the walk stopped {stops.Count} time(s) on the way down, to the water or back up:\n  " +
+                             string.Join("\n  ", stops.Select(s => s.ToString())));
+            failures.AddRange(westEnd.Select(w => "the west end (t10): " + w));
+            Assert.That(failures, Is.Empty,
+                string.Join("\n", failures) + $"\nthe whole walk:\n  {string.Join("\n  ", _legs.Select(l => l.ToString()))}");
+        }
+
+        /// <summary>t10 (iii): what the cliff blockers cost. Their quad count, and the frame at the board's second plate
+        /// pose with them and without, three interleaved rounds of 240 frames each way, vsync off; the medians'
+        /// mean difference must sit within <see cref="CostBudgetMs"/>.</summary>
+        [UnityTest, Timeout(300000)]
+        public IEnumerator TheCliffBlockers_CostAtThePlatePose()
+        {
+            RequireAGraphicsDevice();
+            yield return LoadStPeters();
+            AssertTheSaveIsTheRunsOwn();
+            yield return PinTheHour(NoonHours);
+            yield return FrameOn(TheBoardsFrames[1].Centre);
+
+            List<CliffWallSurface> chunks = Object.FindObjectsByType<CliffWallSurface>()
+                                                  .Where(s => s.gameObject.scene.name == StPeters).ToList();
+            List<GameObject> blockers = chunks.Select(s => s.transform.Find(CliffWallSurface.BlockerChildName))
+                                              .Where(t => t != null).Select(t => t.gameObject).ToList();
+            int quads = blockers.Sum(b => b.GetComponents<PolygonCollider2D>().Length);
+            Assert.Greater(quads, 0, $"St Peters' {chunks.Count} cliff chunks carry no blocker quads: there is nothing to price.");
+
+            int vsync = QualitySettings.vSyncCount, target = Application.targetFrameRate;
+            QualitySettings.vSyncCount = 0;
+            Application.targetFrameRate = -1;
+            Time.timeScale = 1f;
+            var with = new List<float>();
+            var without = new List<float>();
+            try
+            {
+                for (int round = 0; round < CostRounds; round++)
+                {
+                    foreach (bool on in new[] { true, false })
+                    {
+                        foreach (GameObject b in blockers) b.SetActive(on);
+                        for (int i = 0; i < CostSettleFrames; i++) yield return null;
+                        var window = new List<float>(CostWindowFrames);
+                        for (int i = 0; i < CostWindowFrames; i++)
+                        {
+                            yield return null;
+                            window.Add(Time.unscaledDeltaTime * 1000f);
+                        }
+                        (on ? with : without).Add(Median(window));
+                    }
+                }
+            }
+            finally
+            {
+                foreach (GameObject b in blockers) if (b != null) b.SetActive(true);
+                QualitySettings.vSyncCount = vsync;
+                Application.targetFrameRate = target;
+            }
+
+            float withMs = with.Average(), withoutMs = without.Average(), delta = withMs - withoutMs;
+            string figures = $"the cliff blockers at the board's plate pose {TheBoardsFrames[1].Name} ({TheBoardsFrames[1].Centre}), noon: " +
+                             $"{blockers.Count} of {chunks.Count} chunks carry one, {quads} PolygonCollider2D quads in all; " +
+                             $"frame median with them {withMs:0.###} ms [{string.Join(", ", with.Select(v => v.ToString("0.###")))}], " +
+                             $"without {withoutMs:0.###} ms [{string.Join(", ", without.Select(v => v.ToString("0.###")))}]; " +
+                             $"difference {delta:+0.###;-0.###} ms (budget {CostBudgetMs} ms); {CostRounds} interleaved rounds of {CostWindowFrames} frames, vsync off";
+            SaveCaption("beach-cost-cliff-blockers.txt", figures);
+            Debug.Log($"[{PlateDir}] {figures}");
+            Assert.LessOrEqual(delta, CostBudgetMs, figures);
         }
 
         /// <summary>2.3: the bay at noon from the board's framing, three on-foot frames down its axis.</summary>
@@ -340,6 +470,7 @@ namespace HiddenHarbours.Tests.PlayMode
             Time.timeScale = 1f;
             float spent = 0f, sinceCheck = 0f;
             Vector2 checkpoint = Body(), was = Body();
+            leg.Deepest = Mathf.Max(leg.Deepest, Depth(was));
             while (true)
             {
                 Vector2 at = Body();
@@ -353,6 +484,7 @@ namespace HiddenHarbours.Tests.PlayMode
                 sinceCheck += dt;
                 Vector2 now = Body();
                 leg.Metres += Vector2.Distance(was, now);
+                leg.Deepest = Mathf.Max(leg.Deepest, Depth(now));
                 was = now;
                 if (sinceCheck >= StallWindowSeconds)
                 {
@@ -392,6 +524,97 @@ namespace HiddenHarbours.Tests.PlayMode
                    $"depth {d:0.###} m, ground {Water() - d:0.###} m, water {Water():0.###} m";
         }
 
+        // ---- the west end (W2, t10) ------------------------------------------------------------------------------
+
+        Vector2 FootNow() => _foot.bounds.center;
+        float FootRadius() => Mathf.Max(_foot.bounds.extents.x, _foot.bounds.extents.y);
+
+        /// <summary>Where the dry beach ends at the bay's west end: the point on <c>wall.stp_057</c>'s toe where the water
+        /// meets it now, between the last station still dry and the first under, read off the scene's own chunk (its toe
+        /// in plan and the ground height at each station's toe, which the Def carries).</summary>
+        static Vector2 DryBeachEnd(out string how)
+        {
+            List<CliffWallSurface> named = Object.FindObjectsByType<CliffWallSurface>()
+                .Where(s => s.gameObject.scene.name == StPeters && s.name.StartsWith("CliffWall_") &&
+                            s.name.EndsWith("_" + DryBeachEndWallRealId))
+                .ToList();
+            Assert.AreEqual(1, named.Count, $"St Peters has {named.Count} cliff chunk(s) named for wall {DryBeachEndWallRealId}: " +
+                                            "the dry beach's end cannot be measured on its toe.");
+            CliffWallSurface wall = named[0];
+            IReadOnlyList<Vector2> toe = wall.ToePlan;
+            IReadOnlyList<float> ground = wall.ToeElevations;
+            Assert.AreEqual(toe.Count, ground.Count, $"'{wall.name}' carries {ground.Count} toe heights for {toe.Count} stations.");
+            float water = Water();
+            for (int i = 0; i + 1 < toe.Count; i++)
+            {
+                float a = ground[i] - water, b = ground[i + 1] - water;
+                if ((a >= 0f) == (b >= 0f)) continue;
+                float t = a / (a - b);
+                Vector2 p = Vector2.Lerp(toe[i], toe[i + 1], t);
+                how = $"the water ({water:0.###} m) meets '{wall.name}''s toe between station {i} ({ground[i]:0.###} m at " +
+                      $"({toe[i].x:0.###}, {toe[i].y:0.###})) and station {i + 1} ({ground[i + 1]:0.###} m at " +
+                      $"({toe[i + 1].x:0.###}, {toe[i + 1].y:0.###})), {t:0.###} of the way";
+                return p;
+            }
+            Assert.Fail($"the water ({water:0.###} m) never meets '{wall.name}''s toe (heights {string.Join(", ", ground.Select(g => g.ToString("0.##")))}): " +
+                        "there is no dry beach's end on it to walk to.");
+            how = null;
+            return default;
+        }
+
+        /// <summary>The drawn toe of every St Peters cliff chunk with a point within <paramref name="within"/> of
+        /// <paramref name="at"/>: the lines her foot must never cross.</summary>
+        static List<Vector2[]> DrawnToesNear(Vector2 at, float within)
+        {
+            var toes = new List<Vector2[]>();
+            foreach (CliffWallSurface s in Object.FindObjectsByType<CliffWallSurface>())
+            {
+                if (s.gameObject.scene.name != StPeters) continue;
+                Vector2[] t = s.DrawnToe();
+                if (t.Length >= 2 && t.Any(p => Vector2.Distance(p, at) <= within)) toes.Add(t);
+            }
+            return toes;
+        }
+
+        static bool CrossesAny(Vector2 a, Vector2 b, List<Vector2[]> toes, out Vector2 at)
+        {
+            static float Side(Vector2 p, Vector2 q, Vector2 r) => (q.x - p.x) * (r.y - p.y) - (q.y - p.y) * (r.x - p.x);
+            foreach (Vector2[] line in toes)
+                for (int i = 0; i + 1 < line.Length; i++)
+                {
+                    Vector2 c = line[i], d = line[i + 1];
+                    float d1 = Side(c, d, a), d2 = Side(c, d, b), d3 = Side(a, b, c), d4 = Side(a, b, d);
+                    if ((d1 > 0f) == (d2 > 0f) || (d3 > 0f) == (d4 > 0f)) continue;
+                    at = c + (d - c) * (d3 / (d3 - d4));
+                    return true;
+                }
+            at = default;
+            return false;
+        }
+
+        static float DistanceToToes(Vector2 p, List<Vector2[]> toes, out Vector2 nearest)
+        {
+            float best = float.PositiveInfinity;
+            nearest = p;
+            foreach (Vector2[] line in toes)
+                for (int i = 0; i + 1 < line.Length; i++)
+                {
+                    Vector2 c = line[i], d = line[i + 1], cd = d - c;
+                    float t = cd.sqrMagnitude > 0f ? Mathf.Clamp01(Vector2.Dot(p - c, cd) / cd.sqrMagnitude) : 0f;
+                    Vector2 q = c + cd * t;
+                    float dist = Vector2.Distance(p, q);
+                    if (dist < best) { best = dist; nearest = q; }
+                }
+            return best;
+        }
+
+        static float Median(List<float> values)
+        {
+            var sorted = values.OrderBy(v => v).ToList();
+            int n = sorted.Count;
+            return n == 0 ? float.NaN : n % 2 == 1 ? sorted[n / 2] : 0.5f * (sorted[n / 2 - 1] + sorted[n / 2]);
+        }
+
         static string PathOf(Transform t)
         {
             var parts = new List<string>();
@@ -407,6 +630,7 @@ namespace HiddenHarbours.Tests.PlayMode
             sb.AppendLine($"hour, sun and tide: {_pinned}");
             sb.AppendLine($"the walker: tide-gated {_tideGated}; foot {_foot.GetType().Name} {_foot.bounds.size.x:0.###} x {_foot.bounds.size.y:0.###} m; " +
                           $"layer {LayerMask.LayerToName(_player.gameObject.layer)}");
+            sb.AppendLine($"the west end (t10): {_westEnd}");
             foreach (Leg l in _legs) sb.AppendLine((l.Survey ? "  survey " : "  route  ") + l);
             SaveCaption("beach-walk-log.txt", sb.ToString());
         }
