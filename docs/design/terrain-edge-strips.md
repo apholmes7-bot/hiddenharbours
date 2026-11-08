@@ -181,8 +181,10 @@ or lighting setting changes.
 
 The physical rule applies to a wall-protected strand, including its exposed foreshore.
 A load-only R8 domain records that profile ownership.
-Outside that domain, or with no walls loaded, the existing procedural/painted foot exclusion
-remains active.
+Outside that domain, the S11 wall-bounds mask and procedural/painted foot exclusions remain
+active. With no walls loaded the procedural/painted rule remains. Weed chooses the existing
+mean-low address slice inside the domain and the complete mean-high slice outside, so a
+nearby wall's foot contour cannot admit weed on soft shore. The five address slices suffice.
 
 The Def's seed varies the authored PNG sampling. Wrack occupies irregular clumps 1â€“3 m long,
 with 2â€“6 m gaps, rotation, scale, offsets and four variants that differ between neighbours.

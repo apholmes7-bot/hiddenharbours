@@ -37,10 +37,12 @@ namespace HiddenHarbours.Art
             public readonly int[] SegmentIds;
             public readonly float[] IndexTexels;
             readonly Grid _grid;
-            public Result(int width, int height, Grid grid, Color[][] addresses, Segment[][] lines, Segment[] segments, int[] segmentIds)
+            readonly bool[] _wallOwned;
+            public Result(int width, int height, Grid grid, Color[][] addresses, Segment[][] lines, Segment[] segments, int[] segmentIds, bool[] wallOwned)
             {
                 Width = width; Height = height; Min = grid.Min; Size = grid.Size;
                 Addresses = addresses; Lines = lines; Segments = segments; _grid = grid;
+                _wallOwned = wallOwned;
                 SegmentIds = segmentIds;
                 IndexTexels = new float[Mathf.Max(1, Mathf.CeilToInt(segmentIds.Length / 1024f)) * 1024];
                 for (int i = 0; i < segmentIds.Length; i++) IndexTexels[i] = segmentIds[i];
@@ -55,14 +57,21 @@ namespace HiddenHarbours.Art
                 }
             }
 
+            int Cell(Vector2 point)
+            {
+                int x = Mathf.Clamp(Mathf.FloorToInt((point.x - Min.x) / Size.x * Width), 0, Width - 1);
+                int y = Mathf.Clamp(Mathf.FloorToInt((point.y - Min.y) / Size.y * Height), 0, Height - 1);
+                return y * Width + x;
+            }
+            public bool WallOwnedAt(Vector2 point) => _wallOwned[Cell(point)];
+            public int AddressKind(int kind, Vector2 point) => kind == 3 && WallOwnedAt(point) ? 4 : kind;
+            public Segment[] ReferenceLines(int kind, Vector2 point) => Lines[AddressKind(kind, point)];
             public Color Sample(int kind, Vector2 point)
             {
                 Color best = new Color(8, 0, 0, 8);
                 Substrate cover = _grid.CoverAt(point);
                 if (_grid.ProtectedAt(point) || (kind < 2 && !cover.QualifyingBrow)) return best;
-                int x = Mathf.FloorToInt((point.x - Min.x) / Size.x * Width);
-                int y = Mathf.FloorToInt((point.y - Min.y) / Size.y * Height);
-                Color packed = Addresses[kind][Mathf.Clamp(y, 0, Height - 1) * Width + Mathf.Clamp(x, 0, Width - 1)];
+                Color packed = Addresses[AddressKind(kind, point)][Cell(point)];
                 int start = Mathf.RoundToInt(packed.r) + 1024 * Mathf.RoundToInt(packed.g) + 1048576 * Mathf.RoundToInt(packed.b);
                 for (int i = 0; i < Mathf.RoundToInt(packed.a); i++)
                 {
@@ -301,31 +310,30 @@ namespace HiddenHarbours.Art
             lines[0] = Brows(grid, high, def, true);
             lines[1] = Brows(grid, high, def, false);
             lines[2] = highSegments;
-            var weed = new List<Segment>();
-            // seat ruling s17: the spring-low contour can be tens of metres offshore; the
-            // exposed cliff foot follows the region's existing mean-low contour instead.
-            // Soft shores retain their existing mean-high line, keeping fixture and beach coverage.
-            foreach (var s in Segments(grid, Contours(grid, def.MeanHigh)))
-                if (!grid.CliffCoast((s.A + s.B) * .5f, def)) weed.Add(s);
-            foreach (var s in Segments(grid, Contours(grid, def.MeanLow)))
-                if (grid.CliffCoast((s.A + s.B) * .5f, def)) weed.Add(s);
-            lines[3] = weed.ToArray();
+            // The pixel's wall ownership chooses the existing mean-low slice for cliff weed.
+            // Keep the complete mean-high curve here so adjacent soft shore cannot borrow it.
+            lines[3] = Segments(grid, Contours(grid, def.MeanHigh));
             lines[4] = Segments(grid, Contours(grid, def.MeanLow));
             var addresses = new Color[KindCount][];
             var all = new List<Segment> { default };
             var ids = new List<int>();
             var foot = new bool[width * height];
+            var wallOwned = new bool[width * height];
             for (int y = 0; y < height; y++)
-            // seat ruling s17: a partially protected address cell still needs candidates.
-            // The exact CPU sample / GPU fragment mask, not its cell centre, rejects faces.
-            for (int x = 0; x < width; x++) foot[y * width + x] = !grid.HasWallFootprint && grid.ProtectedAt(grid.Min +
-                Vector2.Scale(new Vector2((x + .5f) / width, (y + .5f) / height), grid.Size));
+            for (int x = 0; x < width; x++)
+            {
+                int cell = y * width + x;
+                Vector2 point = grid.Min + Vector2.Scale(new Vector2((x + .5f) / width, (y + .5f) / height), grid.Size);
+                wallOwned[cell] = grid.CliffCoast(point, def);
+                // Keep partial-cell candidates on a loaded wall strand; elsewhere retain S11.
+                foot[cell] = !wallOwned[cell] && grid.CoverAt(point).ProtectedFoot;
+            }
             for (int kind = 0; kind < KindCount; kind++)
             {
                 addresses[kind] = Raster(grid, lines[kind], width, height, all.Count, foot, ids);
                 all.AddRange(lines[kind]);
             }
-            return new Result(width, height, grid, addresses, lines, all.ToArray(), ids.ToArray());
+            return new Result(width, height, grid, addresses, lines, all.ToArray(), ids.ToArray(), wallOwned);
         }
 
         static List<Line> Contours(Grid grid, float level)

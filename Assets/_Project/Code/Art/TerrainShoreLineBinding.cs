@@ -15,6 +15,7 @@ namespace HiddenHarbours.Art
         readonly int[] _kindStarts;
         Texture2D _walls;
         Texture2D _wallDomain;
+        RenderTexture _wallFallback;
         static readonly int Loaded = Shader.PropertyToID("_ShoreLoaded");
         static readonly int Fields = Shader.PropertyToID("_ShoreFields");
         static readonly int Grid = Shader.PropertyToID("_ShoreGrid");
@@ -93,12 +94,13 @@ namespace HiddenHarbours.Art
                     if (!addressed) continue;
                     Vector2 p = worldMin + Vector2.Scale(new Vector2((x + .5f) / data.Width,
                         (y + .5f) / data.Height), size);
-                    if (grid.CliffCoast(p, def)) domain[i] = 255;
+                    if (data.WallOwnedAt(p)) domain[i] = 255;
                 }
                 binding._wallDomain = new Texture2D(data.Width, data.Height, TextureFormat.R8, false, true)
                     { name = "TransientShoreWallDomain", hideFlags = HideFlags.HideAndDontSave,
                       filterMode = FilterMode.Point, wrapMode = TextureWrapMode.Clamp };
                 binding._wallDomain.SetPixelData(domain, 0); binding._wallDomain.Apply(false, true);
+                binding.CaptureFallback(scene);
                 return binding;
             }
             catch { Destroy(fields); Destroy(segments); Destroy(indices); throw; }
@@ -119,6 +121,7 @@ namespace HiddenHarbours.Art
             {
                 block.SetTexture("_ShoreWallMask", _walls);
                 block.SetTexture("_ShoreWallDomain", _wallDomain);
+                block.SetTexture("_ShoreWallFallback", _wallFallback);
                 block.SetVector("_ShoreWallGrid", new Vector4(_walls.width, _walls.height, 1f / _walls.width, 1f / _walls.height));
             }
             block.SetVector(Grid, new Vector4(_fields.width, _fields.height, 1f / _fields.width, 1f / _fields.height));
@@ -139,8 +142,7 @@ namespace HiddenHarbours.Art
             block.SetVector("_ShoreLip", new Vector4(def.LipDepthMetres.x, def.LipDepthMetres.y, def.LipBreakMetres.x, def.LipBreakMetres.y));
             block.SetColor("_ShoreLipShadow", def.LipShadow);
         }
-        // seat ruling s12, 11-07: raster the real wall triangles, never broad renderer bounds.
-        // The one-address-texel margin is baked once; both CPU fields and shader read this mask.
+        // Raster the real faces for the qualified wall strand; CPU and fragment share this mask.
         internal static ShoreLineDerivation.WallFootprint CaptureWalls(UnityEngine.SceneManagement.Scene scene,
             Vector2 min, Vector2 size, TerrainShoreLinesDef def)
         {
@@ -177,11 +179,57 @@ namespace HiddenHarbours.Art
             for (int i = 0; i < result.Length; i++) result[i] = vertices[triangles[i]];
             return result;
         }
+        // S11 fallback is consulted only where no qualified loaded wall owns the pixel.
+        void CaptureFallback(UnityEngine.SceneManagement.Scene scene)
+        {
+            if (_wallFallback != null) return;
+            var walls = UnityEngine.Object.FindObjectsByType<CliffWallSurface>(FindObjectsSortMode.None);
+            var meshes = new System.Collections.Generic.List<MeshRenderer>();
+            foreach (var wall in walls) if (wall.gameObject.scene == scene)
+                meshes.AddRange(wall.GetComponentsInChildren<MeshRenderer>());
+            if (meshes.Count == 0) return;
+            Shader shader = Resources.Load<Shader>("TerrainShoreLines/ShoreWallMask");
+            if (shader == null) throw new InvalidOperationException("Shore wall protection shader missing.");
+            var material = new Material(shader) { hideFlags = HideFlags.HideAndDontSave };
+            _wallFallback = new RenderTexture(Mathf.CeilToInt(_size.x / _def.BlendMetres),
+                Mathf.CeilToInt(_size.y / _def.BlendMetres), 0, RenderTextureFormat.R8, RenderTextureReadWrite.Linear)
+                { name = "TransientShoreWallFootprint", hideFlags = HideFlags.HideAndDontSave, filterMode = FilterMode.Point, wrapMode = TextureWrapMode.Clamp };
+            var command = new UnityEngine.Rendering.CommandBuffer { name = "Soft-shore fallback footprint at load" };
+            var rectangle=new Mesh{hideFlags=HideFlags.HideAndDontSave};
+            rectangle.vertices=new[]{new Vector3(-.5f,-.5f),new Vector3(.5f,-.5f),new Vector3(.5f,.5f),new Vector3(-.5f,.5f)};
+            rectangle.triangles=new[]{0,1,2,0,2,3};
+            try
+            {
+                _wallFallback.Create(); command.SetRenderTarget(_wallFallback);
+                command.SetViewport(new Rect(0, 0, _wallFallback.width, _wallFallback.height));
+                command.ClearRenderTarget(false, true, Color.black);
+                Vector2 center = _min + _size * .5f;
+                var view = Matrix4x4.Scale(new Vector3(1, 1, -1))
+                    * Matrix4x4.Translate(new Vector3(-center.x, -center.y, 100));
+                var projection = GL.GetGPUProjectionMatrix(Matrix4x4.Ortho(-_size.x*.5f, _size.x*.5f,
+                    -_size.y*.5f, _size.y*.5f, .01f, 1000), true);
+                // This is world-Y-addressed data, read with Load rather than a camera blit.
+                // A top-origin backend needs the explicit row inversion for those addresses.
+                if (SystemInfo.graphicsUVStartsAtTop) projection.m11 = -projection.m11;
+                command.SetViewProjectionMatrices(view, projection);
+                foreach (var renderer in meshes)
+                {
+                    if (!renderer.enabled)continue;
+                    Bounds bounds=renderer.bounds;float pad=_def.BlendMetres;
+                    command.DrawMesh(rectangle,Matrix4x4.TRS(bounds.center,Quaternion.identity,
+                        new Vector3(bounds.size.x+2*pad,bounds.size.y+2*pad,1)),material);
+                }
+                command.SetViewProjectionMatrices(Shader.GetGlobalMatrix("unity_MatrixV"), Shader.GetGlobalMatrix("unity_MatrixP"));
+                Graphics.ExecuteCommandBuffer(command);
+            }
+            finally { command.Release(); Destroy(material); Destroy(rectangle); }
+        }
         public void Dispose()
         {
             Destroy(_fields); Destroy(_segments); Destroy(_indices);
             Destroy(_walls);
             Destroy(_wallDomain);
+            if (_wallFallback != null) { _wallFallback.Release(); Destroy(_wallFallback); }
         }
         static void Destroy(UnityEngine.Object obj)
         { if (Application.isPlaying) UnityEngine.Object.Destroy(obj); else UnityEngine.Object.DestroyImmediate(obj); }

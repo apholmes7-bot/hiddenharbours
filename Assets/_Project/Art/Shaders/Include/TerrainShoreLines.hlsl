@@ -5,6 +5,7 @@ Texture2D<float4> _ShoreSegments;
 Texture2D<float> _ShoreIndexList;
 Texture2D<float4> _ShoreWallMask;
 Texture2D<float4> _ShoreWallDomain;
+Texture2D<float4> _ShoreWallFallback;
 static const float SL_ANCHOR[5] = { 0.40, 0.24, 0.46, 0.34, 0.38 };
 float SL_Step(int kind) { return kind == 4 ? _ShoreStep4 : _ShoreSteps0123[clamp(kind, 0, 3)]; }
 
@@ -12,7 +13,8 @@ float4 SL_LoadAddress(float2 wp, float2 uv, int kind, out float2 normal)
 {
     float4 best=float4(8,0,0,8);normal=float2(0,1);
     int2 cell=clamp(int2(floor(uv*_ShoreGrid.xy)),int2(0,0),int2(_ShoreGrid.xy)-1);
-    float4 packed=_ShoreFields.Load(int4(cell,kind,0));
+    int sourceKind = kind == 3 && _ShoreWallsLoaded > 0.5 && _ShoreWallDomain.Load(int3(cell,0)).r > 0.5 ? 4 : kind;
+    float4 packed=_ShoreFields.Load(int4(cell,sourceKind,0));
     int start=(int)round(packed.r)+1024*(int)round(packed.g)+1048576*(int)round(packed.b);
     int count=(int)round(packed.a);
     // The load-time list contains every segment that can win anywhere in this cell.
@@ -114,7 +116,16 @@ float SL_FootGuard(float2 uv, float proceduralFoot)
     float physical = SL_WallProtected(uv);
     if (physical > 0.5) return physical;
     int2 cell = clamp(int2(floor(uv * _ShoreGrid.xy)), int2(0, 0), int2(_ShoreGrid.xy) - 1);
-    return _ShoreWallDomain.Load(int3(cell, 0)).r > 0.5 ? physical : proceduralFoot;
+    if (_ShoreWallDomain.Load(int3(cell, 0)).r > 0.5) return physical;
+    // Outside a qualified loaded-wall strand, keep S11's original wall-bounds exclusion.
+    int2 wallCell = int2(floor(uv * _ShoreWallGrid.xy));
+    [unroll] for (int y = -1; y <= 1; y++)
+    [unroll] for (int x = -1; x <= 1; x++)
+    {
+        int2 at = clamp(wallCell + int2(x,y), int2(0,0), int2(_ShoreWallGrid.xy)-1);
+        proceduralFoot = max(proceduralFoot, _ShoreWallFallback.Load(int3(at,0)).r);
+    }
+    return proceduralFoot;
 }
 float2 SL_Prepare(float2 wp, float2 uv, float protectedFoot, float organic, float beach, out float4 addresses[5])
 {

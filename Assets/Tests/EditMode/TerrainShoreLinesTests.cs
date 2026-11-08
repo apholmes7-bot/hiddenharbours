@@ -211,6 +211,23 @@ namespace HiddenHarbours.Tests.EditMode
                 Assert.IsFalse(ShoreLineDerivation.InBand(kind, data.Sample(kind, new Vector2(0, y))), "No strip belongs inside wall faces.");
         }
 
+        [Test] public void WeedAtTheWallFootCannotLeakIntoTheAdjacentSoftShore()
+        {
+            var walls = new ShoreLineDerivation.WallFootprint(new Vector2(-16, -16), new Vector2(32, 32), .25f, .25f);
+            walls.AddTriangle(new Vector2(0, -9), new Vector2(16, -9), new Vector2(16, 3.25f));
+            walls.AddTriangle(new Vector2(0, -9), new Vector2(16, 3.25f), new Vector2(0, 3.25f));
+            float Height(Vector2 p) => p.y > 3 ? 6 : p.y >= -9 ? 6 + (p.y - 3) * .5f : (p.y + 9) * .5f;
+            var source = Fixture(Height);
+            var plain = ShoreLineDerivation.Build(source, _def);
+            var loaded = ShoreLineDerivation.Build(new ShoreLineDerivation.Grid(source.Elevations, source.Width,
+                source.Height, source.Min, source.Size, walls: walls), _def);
+            var soft = new Vector2(-1.5f, -12.2f); var foot = new Vector2(2.5f, -12.2f);
+            Assert.IsFalse(loaded.WallOwnedAt(soft)); Assert.IsTrue(loaded.WallOwnedAt(foot));
+            Assert.AreEqual(plain.Sample(3, soft).r, loaded.Sample(3, soft).r, .0001f);
+            Assert.IsFalse(ShoreLineDerivation.InBand(3, loaded.Sample(3, soft)), "A nearby wall's mean-low curve must not admit weed on soft shore.");
+            Assert.IsTrue(ShoreLineDerivation.InBand(3, loaded.Sample(3, foot)), "The loaded foot retains its mean-low weed.");
+        }
+
         [Test] public void SoftBankDoesNotBorrowLandwardTurfFromBeyondItsRejectedBrow()
         {
             var grid = Fixture(p => 2.2f + Mathf.Min(p.y, 1.5f) * .2f,
