@@ -7,6 +7,8 @@ using System.Text;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.Rendering;
+using UnityEngine.Rendering.RenderGraphModule;
+using UnityEngine.Rendering.Universal;
 using UnityEngine.SceneManagement;
 using UnityEngine.TestTools;
 using HiddenHarbours.App;
@@ -29,6 +31,13 @@ namespace HiddenHarbours.Tests.PlayMode
     /// <see cref="ControlGapFrames"/> frames later, the same settled capture again; the pixels the two
     /// differ in are the pose's noise mask, written beside the plate, and a before/after comparison
     /// excludes them and lists them by count.</para>
+    ///
+    /// <para><b>SHADER TIME, PINNED</b> (t17): <see cref="Time.timeScale"/> 0 holds <c>_Time</c> still inside one launch,
+    /// but at whatever Unity's own clock read when loading ended, so two launches differed (12.47 s and 55.64 s in
+    /// p3b) and with them the water, the shallows' patterns and the swaying plants. The plate case pins the six time
+    /// globals to the noon hour in seconds by the shore capture's law (<see cref="ShaderTimePin"/>) from before its
+    /// first pose to its end, the same value in every launch; the settle, the median of three and the control are
+    /// the same calls as before, under it. The cost case is not pinned: it prices the draw as it ships.</para>
     ///
     /// <para><b>THE POSES</b>: the board's three on-foot frames (piece 2,
     /// <c>StPetersMainBeachWalkPlayTests.TheBoardsFrames</c>) and piece 3's four splat windows, the south
@@ -58,6 +67,7 @@ namespace HiddenHarbours.Tests.PlayMode
         const float LeadEaseOutSeconds = 6f;
         const float OnTheCentreMetres = 0.001f;
         const float NoonHours = 12f;
+        const float SecondsPerHour = 3600f;   // the shore capture's law: shader time = the pose's hour in seconds
 
         // ---- the settled capture (t11) ----------------------------------------------------------------------
         const int SettleRenders = 4, MedianRenders = 3, ControlGapFrames = 30;
@@ -94,6 +104,7 @@ namespace HiddenHarbours.Tests.PlayMode
         RenderTexture _rt;
         int _w, _h, _askedGridPx;
         float _askedHeight;
+        ShaderTimePin _shaderTime;
 
         [OneTimeSetUp]
         public void MarkTheRun() => _runStartedUtc = DateTime.UtcNow;
@@ -110,6 +121,7 @@ namespace HiddenHarbours.Tests.PlayMode
         public IEnumerator TearDownRegion()
         {
             LogAssert.ignoreFailingMessages = false;
+            _shaderTime?.Dispose(); _shaderTime = null;   // t17: a case stopped mid-pose still puts shader time back
             Time.timeScale = 1f;   // a STATIC: left at 0 it stops every test that follows
             foreach (Renderer r in _hidden) if (r != null) r.enabled = true;
             _hidden.Clear();
@@ -162,6 +174,7 @@ namespace HiddenHarbours.Tests.PlayMode
             yield return LoadStPeters();
             AssertTheSaveIsTheRunsOwn();
             yield return PinTheHour(NoonHours);
+            using var shaderTime = _shaderTime = new ShaderTimePin(camera => camera == _cam, NoonHours * SecondsPerHour);
             var log = new StringBuilder();
             foreach (var f in Poses)
             {
@@ -173,6 +186,7 @@ namespace HiddenHarbours.Tests.PlayMode
                 double clockB = GameServices.Clock.TotalSeconds;
                 Vector4 timeB = Shader.GetGlobalVector("_Time");
                 Color32[] control = ReadMedian();
+                Vector4 timeC = Shader.GetGlobalVector("_Time");
 
                 var noise = new Color32[plate.Length];
                 int noisy = 0;
@@ -192,11 +206,56 @@ namespace HiddenHarbours.Tests.PlayMode
                                  $"the control {ControlGapFrames} frames later; noise {noisy} px of {plate.Length}; " +
                                  $"clock {clockA:0.000} s -> {clockB:0.000} s; _Time.y {timeA.y:0.0000} -> {timeB.y:0.0000}; " +
                                  $"Time.timeScale {Time.timeScale}, clock TimeScale {GameServices.Clock.TimeScale}";
+                settled += $"; shader time pinned at _Time.y {shaderTime.Seconds:0.0} s (the shore capture's law, the plate camera only), " +
+                           $"applied {shaderTime.Applied} renders so far; _Time.y after the control {timeC.y:0.0000}";
                 SaveCaption(name + ".txt", Caption(name, "the splat warp's settled plate: " + f.Name, _askedCentre, settled));
                 log.AppendLine($"{f.Name}: noise {noisy} px; clock moved {clockB - clockA:0.000} s; _Time.y moved {timeB.y - timeA.y:0.0000}");
+                log.AppendLine($"{f.Name}: shader time pinned {shaderTime.Seconds:0.0} s, applied {shaderTime.Applied} renders; _Time.y after the control {timeC.y:0.0000}");
             }
             SaveCaption("splat-warp-plates-log.txt", log.ToString());
             Debug.Log($"[{PlateDir}] settled plates:\n{log}");
+        }
+
+        /// <summary>t17: the pin sets the six time globals to the shore capture's law the moment it stands, and puts
+        /// back exactly what it found when disposed; a second dispose changes nothing. It reads globals and renders
+        /// nothing, so it needs no device and runs on CI.</summary>
+        [Test]
+        public void TheShaderTimePin_SetsTheLawAndRestoresWhatItFound()
+        {
+            float seconds = NoonHours * SecondsPerHour;
+            Vector4[] found = ShaderTimePin.Names.Select(Shader.GetGlobalVector).ToArray();
+            Vector4[] sentinel = ShaderTimePin.Names.Select((n, i) => new Vector4(i + 0.25f, -i, 7f, i * 0.5f)).ToArray();
+            try
+            {
+                for (int i = 0; i < sentinel.Length; i++) Shader.SetGlobalVector(ShaderTimePin.Names[i], sentinel[i]);
+                var law = new Dictionary<string, Vector4>();
+                ShaderTimePin.Law(seconds, (n, v) => law[n] = v);
+                CollectionAssert.AreEquivalent(ShaderTimePin.Names, law.Keys, "the law sets the six globals URP feeds the shaders' time");
+                Assert.AreEqual(new Vector4(2160f, 43200f, 86400f, 129600f), law["_Time"], "noon is 43200 s: _Time = (t/20, t, 2t, 3t)");
+                Assert.AreEqual(Vector4.zero, law["unity_DeltaTime"], "a pinned clock has no step");
+
+                var pin = new ShaderTimePin(camera => false, seconds);
+                try
+                {
+                    Assert.IsTrue(pin.Pinning);
+                    Assert.AreEqual(seconds, pin.Seconds);
+                    foreach (string n in ShaderTimePin.Names)
+                        Assert.AreEqual(law[n], Shader.GetGlobalVector(n), n + " holds the law while the pin stands");
+                    Assert.AreEqual(0, pin.Applied, "nothing rendered, so the pass never ran");
+                }
+                finally { pin.Dispose(); }
+
+                Assert.IsFalse(pin.Pinning);
+                for (int i = 0; i < sentinel.Length; i++)
+                    Assert.AreEqual(sentinel[i], Shader.GetGlobalVector(ShaderTimePin.Names[i]), ShaderTimePin.Names[i] + " is put back as found");
+                Shader.SetGlobalVector("_Time", new Vector4(1f, 2f, 3f, 4f));
+                pin.Dispose();
+                Assert.AreEqual(new Vector4(1f, 2f, 3f, 4f), Shader.GetGlobalVector("_Time"), "a second dispose changes nothing");
+            }
+            finally
+            {
+                for (int i = 0; i < found.Length; i++) Shader.SetGlobalVector(ShaderTimePin.Names[i], found[i]);
+            }
         }
 
         /// <summary>What the warp lives in, priced at the board's plate pose: the ground and the sea drawn against
@@ -385,6 +444,91 @@ namespace HiddenHarbours.Tests.PlayMode
         }
 
         static byte Middle(byte a, byte b, byte c) => (byte)(a + b + c - Math.Min(a, Math.Min(b, c)) - Math.Max(a, Math.Max(b, c)));
+
+        // =============================================================================================
+        //  Shader time, pinned across launches (t17)
+        // =============================================================================================
+
+        /// <summary>
+        /// <b>SHADER TIME, PINNED</b> (t17), by the shore capture's law (<c>ShoreLineCaptureHarness.PoseClock</c>, whose
+        /// <c>RenderedClockIsFrozenAfterUrpCameraSetupAndRestoresCoreClock</c> renders it): URP writes the six time
+        /// globals from Unity's clock at each camera's setup, so the pin writes them again after that setup, at
+        /// <c>BeforeRenderingSprites</c> on the lowest sorting layer, before any sprite draws. It is queued at camera
+        /// start, so the queue's stable sort keeps it ahead of the water's own pass at that point (queued later, from
+        /// <c>AddRenderPasses</c>, with a later classic event). Only the camera <c>subject</c> names is pinned. The values
+        /// are also set the moment the pin stands, so a test reads them without rendering. <see cref="Dispose"/>
+        /// unsubscribes and puts back the six values it found; a second call does nothing. The game clock and
+        /// <see cref="Time.timeScale"/> are the settled path's and this does not touch them.
+        /// </summary>
+        internal sealed class ShaderTimePin : IDisposable
+        {
+            internal static readonly string[] Names = { "_Time", "_SinTime", "_CosTime", "unity_DeltaTime", "_TimeParameters", "_LastTimeParameters" };
+            readonly Func<Camera, bool> _subject;
+            readonly Vector4[] _found;
+            readonly TimePass _pass;
+            public readonly float Seconds;
+            public bool Pinning { get; private set; }
+            public int Applied => _pass.Applied;
+
+            public ShaderTimePin(Func<Camera, bool> subject, float seconds)
+            {
+                _subject = subject; Seconds = seconds;
+                _found = Names.Select(Shader.GetGlobalVector).ToArray();
+                _pass = new TimePass(seconds);
+                Law(seconds, Shader.SetGlobalVector);
+                RenderPipelineManager.beginCameraRendering += Begin;
+                Pinning = true;
+            }
+
+            /// <summary>The six values for shader time <paramref name="t"/> seconds, statement for statement the shore capture's.</summary>
+            internal static void Law(float t, Action<string, Vector4> set)
+            {
+                set("_Time", new Vector4(t / 20, t, t * 2, t * 3));
+                set("_SinTime", new Vector4(Mathf.Sin(t / 8), Mathf.Sin(t / 4), Mathf.Sin(t / 2), Mathf.Sin(t)));
+                set("_CosTime", new Vector4(Mathf.Cos(t / 8), Mathf.Cos(t / 4), Mathf.Cos(t / 2), Mathf.Cos(t)));
+                set("unity_DeltaTime", new Vector4(0, 0, 0, 0));
+                var parameters = new Vector4(t, Mathf.Sin(t), Mathf.Cos(t), 0);
+                set("_TimeParameters", parameters);
+                set("_LastTimeParameters", parameters);
+            }
+
+            void Begin(ScriptableRenderContext context, Camera camera)
+            {
+                if (camera != null && _subject(camera)) camera.GetUniversalAdditionalCameraData().scriptableRenderer.EnqueuePass(_pass);
+            }
+
+            public void Dispose()
+            {
+                if (!Pinning) return;
+                Pinning = false;
+                RenderPipelineManager.beginCameraRendering -= Begin;
+                for (int i = 0; i < Names.Length; i++) Shader.SetGlobalVector(Names[i], _found[i]);
+            }
+
+            sealed class TimePass : ScriptableRenderPass2D
+            {
+                sealed class Data { public float Seconds; }
+                readonly float _seconds;
+                public int Applied;
+                public TimePass(float seconds)
+                {
+                    _seconds = seconds;
+                    renderPassEvent2D = RenderPassEvent2D.BeforeRenderingSprites;
+                    renderPassSortingLayerID = SortingLayer.layers.OrderBy(l => l.value).First().id;
+                }
+                public override void RecordRenderGraph(RenderGraph graph, ContextContainer frame)
+                {
+                    using var builder = graph.AddUnsafePass<Data>("Splat warp plates pinned shader time", out var data);
+                    data.Seconds = _seconds;
+                    builder.AllowPassCulling(false); builder.AllowGlobalStateModification(true);
+                    builder.SetRenderFunc((Data d, UnsafeGraphContext context) =>
+                    {
+                        Law(d.Seconds, context.cmd.SetGlobalVector);
+                        Applied++;
+                    });
+                }
+            }
+        }
 
         /// <summary>One pixel read back from the plate texture: the CPU waits until the last frame's draw is done.</summary>
         void WaitForTheGpu(Texture2D probe)
