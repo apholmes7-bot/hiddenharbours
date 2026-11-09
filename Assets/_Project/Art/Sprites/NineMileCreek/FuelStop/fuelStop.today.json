@@ -19,7 +19,7 @@
    },
    {
     "path": "fuelStopGameplay.js",
-    "sha256Lf": "67d88c1827cc24769f059fc03a644d93279fc0294fe8a321d56e7aa6dbbeefe7"
+    "sha256Lf": "0667d5819f9c927be1467e48f1de7c6e00c2182155d3ff99e97c5f5212fd90ef"
    }
   ]
  },
@@ -902,7 +902,30 @@
     "layer": "ground",
     "walk": "around",
     "mount": "ground",
-    "colliders": [],
+    "colliders": [
+     {
+      "type": "polygon",
+      "blocks": "walk",
+      "pts": [
+       [
+        2,
+        0.7
+       ],
+       [
+        -2,
+        0.7
+       ],
+       [
+        -2,
+        -0.7
+       ],
+       [
+        2,
+        -0.7
+       ]
+      ]
+     }
+    ],
     "facings": [
      {
       "dir": 0,
@@ -1083,7 +1106,30 @@
     "layer": "ground",
     "walk": "around",
     "mount": "ground",
-    "colliders": [],
+    "colliders": [
+     {
+      "type": "polygon",
+      "blocks": "walk",
+      "pts": [
+       [
+        0.85,
+        0.45
+       ],
+       [
+        -0.85,
+        0.45
+       ],
+       [
+        -0.85,
+        -0.45
+       ],
+       [
+        0.85,
+        -0.45
+       ]
+      ]
+     }
+    ],
     "facings": [
      {
       "dir": 0,
@@ -1264,7 +1310,30 @@
     "layer": "ground",
     "walk": "around",
     "mount": "ground",
-    "colliders": [],
+    "colliders": [
+     {
+      "type": "polygon",
+      "blocks": "walk",
+      "pts": [
+       [
+        0.9,
+        0.5
+       ],
+       [
+        -0.9,
+        0.5
+       ],
+       [
+        -0.9,
+        -0.5
+       ],
+       [
+        0.9,
+        -0.5
+       ]
+      ]
+     }
+    ],
     "facings": [
      {
       "dir": 0,
@@ -1438,7 +1507,30 @@
     "layer": "ground",
     "walk": "around",
     "mount": "ground",
-    "colliders": [],
+    "colliders": [
+     {
+      "type": "polygon",
+      "blocks": "walk",
+      "pts": [
+       [
+        0.35,
+        0.25
+       ],
+       [
+        -0.5,
+        0.25
+       ],
+       [
+        -0.5,
+        -0.25
+       ],
+       [
+        0.35,
+        -0.25
+       ]
+      ]
+     }
+    ],
     "facings": [
      {
       "dir": 0,
@@ -1601,7 +1693,30 @@
     "layer": "ground",
     "walk": "around",
     "mount": "ground",
-    "colliders": [],
+    "colliders": [
+     {
+      "type": "polygon",
+      "blocks": "walk",
+      "pts": [
+       [
+        0.4,
+        0.4
+       ],
+       [
+        -1,
+        0.4
+       ],
+       [
+        -1,
+        -0.4
+       ],
+       [
+        0.4,
+        -0.4
+       ]
+      ]
+     }
+    ],
     "facings": [
      {
       "dir": 0,
@@ -1764,7 +1879,30 @@
     "layer": "ground",
     "walk": "around",
     "mount": "ground",
-    "colliders": [],
+    "colliders": [
+     {
+      "type": "polygon",
+      "blocks": "walk",
+      "pts": [
+       [
+        1.95,
+        1.35
+       ],
+       [
+        -1.95,
+        1.35
+       ],
+       [
+        -1.95,
+        -1.35
+       ],
+       [
+        1.95,
+        -1.35
+       ]
+      ]
+     }
+    ],
     "facings": [
      {
       "dir": 0,
@@ -1927,7 +2065,30 @@
     "layer": "ground",
     "walk": "around",
     "mount": "ground",
-    "colliders": [],
+    "colliders": [
+     {
+      "type": "polygon",
+      "blocks": "walk",
+      "pts": [
+       [
+        0.85,
+        0.3
+       ],
+       [
+        -0.85,
+        0.3
+       ],
+       [
+        -0.85,
+        -0.3
+       ],
+       [
+        0.85,
+        -0.3
+       ]
+      ]
+     }
+    ],
     "facings": [
      {
       "dir": 0,
@@ -2090,7 +2251,30 @@
     "layer": "ground",
     "walk": "around",
     "mount": "ground",
-    "colliders": [],
+    "colliders": [
+     {
+      "type": "polygon",
+      "blocks": "walk",
+      "pts": [
+       [
+        1,
+        0.56
+       ],
+       [
+        -1,
+        0.56
+       ],
+       [
+        -1,
+        -0.5
+       ],
+       [
+        1,
+        -0.5
+       ]
+      ]
+     }
+    ],
     "facings": [
      {
       "dir": 0,
@@ -2253,7 +2437,30 @@
     "layer": "ground",
     "walk": "around",
     "mount": "ground",
-    "colliders": [],
+    "colliders": [
+     {
+      "type": "polygon",
+      "blocks": "walk",
+      "pts": [
+       [
+        0.35,
+        0.35
+       ],
+       [
+        -0.35,
+        0.35
+       ],
+       [
+        -0.35,
+        -0.35
+       ],
+       [
+        0.35,
+        -0.35
+       ]
+      ]
+     }
+    ],
     "facings": [
      {
       "dir": 0,
@@ -2423,7 +2630,30 @@
     "layer": "ground",
     "walk": "around",
     "mount": "ground",
-    "colliders": [],
+    "colliders": [
+     {
+      "type": "polygon",
+      "blocks": "walk",
+      "pts": [
+       [
+        1.4,
+        0.1
+       ],
+       [
+        -1.4,
+        0.1
+       ],
+       [
+        -1.4,
+        -0.1
+       ],
+       [
+        1.4,
+        -0.1
+       ]
+      ]
+     }
+    ],
     "facings": [
      {
       "dir": 0,
@@ -2586,7 +2816,30 @@
     "layer": "ground",
     "walk": "around",
     "mount": "ground",
-    "colliders": [],
+    "colliders": [
+     {
+      "type": "polygon",
+      "blocks": "walk",
+      "pts": [
+       [
+        0.1,
+        0.1
+       ],
+       [
+        -0.1,
+        0.1
+       ],
+       [
+        -0.1,
+        -0.1
+       ],
+       [
+        0.1,
+        -0.1
+       ]
+      ]
+     }
+    ],
     "facings": [
      {
       "dir": 0,
@@ -2749,7 +3002,30 @@
     "layer": "ground",
     "walk": "around",
     "mount": "ground",
-    "colliders": [],
+    "colliders": [
+     {
+      "type": "polygon",
+      "blocks": "walk",
+      "pts": [
+       [
+        0.95,
+        0.8
+       ],
+       [
+        -0.95,
+        0.8
+       ],
+       [
+        -0.95,
+        -0.8
+       ],
+       [
+        0.95,
+        -0.8
+       ]
+      ]
+     }
+    ],
     "facings": [
      {
       "dir": 0,
@@ -2912,7 +3188,30 @@
     "layer": "ground",
     "walk": "around",
     "mount": "ground",
-    "colliders": [],
+    "colliders": [
+     {
+      "type": "polygon",
+      "blocks": "walk",
+      "pts": [
+       [
+        0.9,
+        0.1
+       ],
+       [
+        -0.9,
+        0.1
+       ],
+       [
+        -0.9,
+        -0.1
+       ],
+       [
+        0.9,
+        -0.1
+       ]
+      ]
+     }
+    ],
     "facings": [
      {
       "dir": 0,
@@ -3075,7 +3374,30 @@
     "layer": "ground",
     "walk": "around",
     "mount": "ground",
-    "colliders": [],
+    "colliders": [
+     {
+      "type": "polygon",
+      "blocks": "walk",
+      "pts": [
+       [
+        0.3,
+        0.3
+       ],
+       [
+        -0.3,
+        0.3
+       ],
+       [
+        -0.3,
+        -0.3
+       ],
+       [
+        0.3,
+        -0.3
+       ]
+      ]
+     }
+    ],
     "facings": [
      {
       "dir": 0,

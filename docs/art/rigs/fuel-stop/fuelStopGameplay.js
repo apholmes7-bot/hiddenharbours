@@ -15,6 +15,10 @@
   const PIECES = Object.fromEntries(KEYS.map(key => [key, {id: IDS[key], name: F.KINDS[key].label,
     defType: 'SetPieceDef', scene: 'keyscene.nmc_fuel_stop'}]));
   const turn = p => [-p[0], -p[1], p[2] || 0];
+  function footprint(key) {
+    const f = F.footprint(key);
+    return [[[-f[0], -f[2]], [-f[1], -f[2]], [-f[1], -f[3]], [-f[0], -f[3]]]];
+  }
   const spec = (key, options) => {
     if (!PIECES[key]) throw new Error('Unknown fuel stop piece: ' + key);
     return Object.assign({}, options || {});
@@ -47,7 +51,8 @@
       units: 'metres, model frame rotated by pi from FuelStop plan metres',
       bounds: {x: extent(0), y: extent(1), z: extent(2)},
       layer: 'ground', walk: 'around', mount: 'ground',
-      colliders: [],
+      colliders: /^(store|canopy|truck)$/.test(key) ? [] :
+        footprint(key).map(pts => ({type: 'polygon', blocks: 'walk', pts})),
       facings: Array.from({length: 8}, (_, dir) => ({dir, showFaces: String(dir), bearingDeg: dir * 45,
         cameraSees: 'fuel stop piece'})), cells: cells(key, o), anchors, options: o,
       light: /^(store|canopy|truck|pylon|iceBox|lampPole)$/.test(key) ?
@@ -55,6 +60,6 @@
       notes: 'Footprint bounds are not walk blockers: canopy lanes and store doors must remain open. Collision and light placement are verified in the scene phase.'};
   }
   root.FuelStopGameplay = {VERSION, PPU, KEYS, PIECES, spec, gameplay, verbs, turn,
-    footprint: key => { const f = F.footprint(key); return [[-f[0], -f[2]], [-f[1], -f[2]], [-f[1], -f[3]], [-f[0], -f[3]]]; },
+    footprint,
     render: (key, dir, o) => F.render(key, dir, o)};
 })(typeof globalThis !== 'undefined' ? globalThis : this);

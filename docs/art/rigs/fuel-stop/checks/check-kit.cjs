@@ -4,6 +4,8 @@ const {NM, ctx} = require('./write-today.cjs');
 assert.equal(NM.KEYS.length, 17);
 assert.equal(new Set(NM.KEYS.map(k => NM.PIECES[k].id)).size, 17);
 for (const k of NM.KEYS) {
+  assert.equal(NM.footprint(k).length, 1);
+  assert.equal(NM.footprint(k)[0].length, 4);
   const a = ctx.FuelStop.stations(k, {}), b = NM.verbs(k, {});
   a.forEach((v, i) => {
     assert.deepEqual(Array.from(b[i].at), [-v.at[0], -v.at[1], v.at[2] || 0]);
@@ -23,4 +25,8 @@ assert.deepEqual(toWorld4([-155, 139], NM.turn([-9.1, -8.65, 0])), [-164.1, 130.
 assert.equal(NM.verbs('pylon', {}).at(-1).id, 'prices_read');
 assert.equal(NM.verbs('propane', {}).at(-1).id, 'buy_propane');
 assert.equal(NM.verbs('iceBox', {}).at(-1).id, 'buy_ice');
+const live = NM.KEYS.flatMap(k => NM.verbs(k, {}).map(v => v.id));
+for (const id of ['roof_ladder_climb', 'hotcase_food', 'snacks_browse',
+  'fill_mixed_tanker_fill', 'fill_gas_tanker_fill', 'fill_diesel_tanker_fill', 'fillport_sVent'])
+  assert.ok(!live.includes(id), 'Retired legacy fitting regained a verb: '+id);
 console.log('PASS: 17 kinds; every station and standing point turned by pi; ruled service anchors; composition frame');

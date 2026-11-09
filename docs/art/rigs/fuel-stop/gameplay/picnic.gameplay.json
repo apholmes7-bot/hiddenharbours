@@ -26,7 +26,30 @@
   "layer": "ground",
   "walk": "around",
   "mount": "ground",
-  "colliders": [],
+  "colliders": [
+   {
+    "type": "polygon",
+    "blocks": "walk",
+    "pts": [
+     [
+      0.95,
+      0.8
+     ],
+     [
+      -0.95,
+      0.8
+     ],
+     [
+      -0.95,
+      -0.8
+     ],
+     [
+      0.95,
+      -0.8
+     ]
+    ]
+   }
+  ],
   "facings": [
    {
     "dir": 0,
