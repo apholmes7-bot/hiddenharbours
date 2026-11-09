@@ -193,6 +193,7 @@ namespace HiddenHarbours.Tests.PlayMode
             foreach (var f in Poses)
             {
                 yield return FrameOn(f.Centre);   // ends with the world stopped (Time.timeScale 0)
+                int reTicked = ReTickTheSpriteShadows();   // t20: each shadow ticks once from the settled pose
                 double clockA = GameServices.Clock.TotalSeconds;
                 Vector4 timeA = Shader.GetGlobalVector("_Time");
                 int plateFrame = Time.frameCount;
@@ -232,10 +233,10 @@ namespace HiddenHarbours.Tests.PlayMode
                                  $"Time.timeScale {Time.timeScale}, clock TimeScale {GameServices.Clock.TimeScale}";
                 settled += $"; shader time pinned at _Time.y {shaderTime.Seconds:0.0} s (the shore capture's law, the plate camera only), " +
                            $"applied {shaderTime.Applied} renders so far; _Time.y after the control {timeC.y:0.0000}";
-                settled += $"; {retake}; ambient particles {_particlesHeld}";
+                settled += $"; {retake}; sprite shadows re-ticked before the plate {reTicked}; ambient particles {_particlesHeld}";
                 SaveCaption(name + ".txt", Caption(name, "the splat warp's settled plate: " + f.Name, _askedCentre, settled));
                 log.AppendLine($"{f.Name}: noise {noisy} px; clock moved {clockB - clockA:0.000} s; _Time.y moved {timeB.y - timeA.y:0.0000}");
-                log.AppendLine($"{f.Name}: {retake}");
+                log.AppendLine($"{f.Name}: {retake}; sprite shadows re-ticked {reTicked}");
                 log.AppendLine($"{f.Name}: shader time pinned {shaderTime.Seconds:0.0} s, applied {shaderTime.Applied} renders; _Time.y after the control {timeC.y:0.0000}");
             }
             SaveCaption("splat-warp-plates-log.txt", log.ToString());
@@ -533,6 +534,33 @@ namespace HiddenHarbours.Tests.PlayMode
                 .Concat(Resources.FindObjectsOfTypeAll<SurfSprayEmitter>())
                 .Concat(Resources.FindObjectsOfTypeAll<SprayEmitter>())
                 .Where(e => e != null && e.gameObject.scene.IsValid());
+        }
+
+        // =============================================================================================
+        //  The sprite shadows, re-ticked after each pose (t20)
+        // =============================================================================================
+
+        /// <summary>
+        /// <b>THE SPRITE SHADOWS, RE-TICKED</b> (seat ruling t20). A <see cref="SpriteShadow"/> recomputes on a
+        /// <c>Time.deltaTime</c> throttle, so under <see cref="Time.timeScale"/> 0 it stands at whatever its last tick
+        /// read: the second re-plate caught Ginny's plot with its shadows missing twice (one launch's plate and its
+        /// control, and another launch's first take, which the retake caught).
+        /// After each pose settles and before its plate is read, every enabled shadow in the loaded scenes is
+        /// disabled and enabled again: its <c>OnEnable</c> resets the throttle and ticks once from the settled camera
+        /// and the pinned globals. Nothing is re-seeded and the component is not changed; a shadow already settled
+        /// ticks to what it drew. The plate's own retake stays the backstop. Returns how many were re-ticked.
+        /// </summary>
+        static int ReTickTheSpriteShadows()
+        {
+            int reTicked = 0;
+            foreach (SpriteShadow s in Resources.FindObjectsOfTypeAll<SpriteShadow>())
+            {
+                if (s == null || !s.gameObject.scene.IsValid() || !s.isActiveAndEnabled) continue;
+                s.enabled = false;   // OnDisable: the shadow and its pool off, out of the lamps' list
+                s.enabled = true;    // OnEnable: the throttle reset, one tick now, back in the lamps' list
+                reTicked++;
+            }
+            return reTicked;
         }
 
         // =============================================================================================
