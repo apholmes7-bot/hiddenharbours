@@ -562,6 +562,23 @@ namespace HiddenHarbours.Core
                  "and boat and sea stay on the same water, never retuned apart.")]
         public DisplacedWaterSettings DisplacedWater = DisplacedWaterSettings.Default;
 
+        [Header("Light from the water on hull sides")]
+        [HideInInspector] public float HullCausticBandMeters = 0.8f; // Serialized legacy width; live reach uses the two terms below.
+        [Min(0f)] public float HullCausticBandBaseMeters = 0.35f;
+        [Min(0f)] public float HullCausticBandPerChopMeters = 0.9f;
+        [Range(0f, 1f)] public float HullCausticFresnelF0 = 0.02f;
+        [Range(0.01f, 90f)] public float HullCausticReferenceElevationDegrees = 15f;
+        [Min(1f)] public float HullCausticFresnelPower = 5f;
+        [Range(0f, 1f)] public float HullCausticChopDimming = 0.5f;
+        [Range(0f, 1f)] public float HullCausticAwayFloor = 0.15f;
+        [Min(0.01f)] public float HullCausticIrradiancePower = 1f;
+        [Range(0f, 1f)] public float HullCausticIrradianceFloor = 0.05f;
+        [Range(0f, 45f)] public float HullCausticFacetTiltDegrees = 12f;
+        [Min(0f)] public float HullCausticStrength = 0.18f;
+        [Tooltip("Visible vein gain inside the existing hull band; does not widen its mask.")]
+        [Min(0f)] public float HullCausticVeinGain = 1f;
+        [Range(0f, 1f)] public float HullCausticMaxUpwardNormal = 0.5f;
+
         // -----------------------------------------------------------------------------------------
         //  The floor in the shallows (W4-4; ruling 7 of 2026-10-10, "Shallows: 2B")
         // -----------------------------------------------------------------------------------------

@@ -14,6 +14,7 @@ namespace HiddenHarbours.Art
         /// <summary>The extracted hull mesh (RigMeshBuilder layout: flat per-face normals, UV0 =
         /// (materialId, faceBias b, depthBias db, 0)).</summary>
         public Mesh Mesh;
+        public bool ReceivesWaterCaustics;
         /// <summary>Her door leaf shut and open, in <see cref="Mesh"/>'s layout
         /// (<see cref="HiddenHarbours.Core.HullMeshDef.DoorLeafClosed"/>). Both null on a hull with no
         /// split leaf, and then nothing is drawn beside the hull mesh.</summary>
@@ -126,6 +127,8 @@ namespace HiddenHarbours.Art
         private MeshRenderer _overlayRenderer;
         private SortingGroup _sortingGroup;
         private MaterialPropertyBlock _props;
+        private Vector3[] _causticVertices;
+        private Vector4 _causticPlane, _causticSettings;
         private int _hullId;
         // THE DECK-OCCUPANT SPLIT (owner playtest 2026-08-07: sprites showing through closed
         // cabins). A contiguous BLOCK of registry ids — one per occupancy band — held for this
@@ -579,6 +582,7 @@ namespace HiddenHarbours.Art
 
             ReleaseOwned();
             _setup = setup;
+            _causticVertices = setup.ReceivesWaterCaustics ? setup.Mesh.vertices : null;
             _footprintRadiusMeters = DisplacedWaterMath.FootprintRadiusMeters(
                 setup.CellW, setup.PxPerMetre);
             _hasInteriorFaces = MeshCarriesInteriorFaces(setup.Mesh);
@@ -1021,6 +1025,8 @@ namespace HiddenHarbours.Art
             }
 
             int activeDeckSlots = UpdateDeckSlots();
+            HullCausticLighting.Prepare(this, _setup.ReceivesWaterCaustics && _hasInteriorFaces,
+                _causticVertices, out _causticPlane, out _causticSettings);
             _props ??= new MaterialPropertyBlock();
             Vector3 p = transform.position;
             var origin = new Vector4(p.x, p.y, 0f, 0f);
@@ -1039,6 +1045,7 @@ namespace HiddenHarbours.Art
             // lit flag). Get replaces the scratch block, including clearing it for a bare renderer,
             // so none of those values can leak from the mesh to the leaf or overlay next frame.
             target.GetPropertyBlock(_props);
+            HullCausticLighting.Apply(_props, _causticPlane, _causticSettings, _setup.ElevationDeg);
             // The hull ORIGIN the dither grid is phased against is this root — NOT the heaved
             // child: the rig subtracts heave from screen y AFTER projecting, so its dither stays
             // indexed by the final screen pixel, which the world-derived cell coordinate

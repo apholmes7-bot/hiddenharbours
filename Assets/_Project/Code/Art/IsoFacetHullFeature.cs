@@ -413,6 +413,9 @@ namespace HiddenHarbours.Art
             // differ in size, and thrashing a single handle between sizes would reallocate every
             // frame. Bounded by the number of live cameras; released in Dispose.
             private readonly Dictionary<EntityId, RTHandle> _resolveTargets = new Dictionary<EntityId, RTHandle>();
+            // Reuse the existing dark MRT slot. Retain it through the main overlay so its hull-alpha
+            // band weight can be applied after reflection sampling, without another pass or MRT.
+            private readonly Dictionary<EntityId, RTHandle> _causticDarkTargets = new Dictionary<EntityId, RTHandle>();
             // The displaced water's persistent per-camera target (same lifetime rules). HDR half
             // float on purpose: the water fragment's night light content is PRE-COMPENSATED far
             // above 1 for the day/night multiply overlay and must survive the round trip through
@@ -1232,7 +1235,10 @@ namespace HiddenHarbours.Art
                 if (drawHulls)
                 {
                     facet = MakeColorTarget(renderGraph, w, h, "_HHFacetTex");
-                    dark = MakeColorTarget(renderGraph, w, h, "_HHDarkTex");
+                    dark = HullCausticLighting.Enabled && DrawWater
+                        ? renderGraph.ImportTexture(GetCausticDarkTarget(cameraData.camera.GetEntityId(), w, h),
+                            new ImportResourceParams { clearOnFirstUse = true, clearColor = Color.clear, discardOnLastUse = false })
+                        : MakeColorTarget(renderGraph, w, h, "_HHDarkTex");
                     key = MakeColorTarget(renderGraph, w, h, "_HHKeyTex");
                     depthVal = renderGraph.CreateTexture(new TextureDesc(w, h)
                     {
@@ -1270,6 +1276,8 @@ namespace HiddenHarbours.Art
                     builder.SetRenderAttachment(dark, 1);
                     builder.SetRenderAttachment(key, 2);
                     builder.SetRenderAttachment(depthVal, 3);
+                    if (HullCausticLighting.Enabled && DrawWater)
+                        builder.SetGlobalTextureAfterPass(dark, IsoFacetShaderIds.HullCausticTex);
                     builder.SetRenderAttachmentDepth(depthBuf);
                     builder.SetRenderFunc((FacetPassData data, RasterGraphContext ctx) =>
                     {
@@ -1426,6 +1434,16 @@ namespace HiddenHarbours.Art
                 return handle;
             }
 
+            private RTHandle GetCausticDarkTarget(EntityId cameraId, int w, int h)
+            {
+                _causticDarkTargets.TryGetValue(cameraId, out RTHandle handle);
+                var desc = new RenderTextureDescriptor(w, h, RenderTextureFormat.ARGB32, 0)
+                { sRGB = true, msaaSamples = 1 };
+                _allocateTarget(ref handle, desc, "_HHHullCausticTex");
+                _causticDarkTargets[cameraId] = handle;
+                return handle;
+            }
+
             private RTHandle GetWaterTarget(EntityId cameraId, int w, int h)
             {
                 _waterTargets.TryGetValue(cameraId, out RTHandle handle);
@@ -1576,6 +1594,8 @@ namespace HiddenHarbours.Art
                 foreach (var kv in _resolveTargets)
                     kv.Value?.Release();
                 _resolveTargets.Clear();
+                foreach (var kv in _causticDarkTargets) kv.Value?.Release();
+                _causticDarkTargets.Clear();
                 foreach (var kv in _waterTargets)
                     kv.Value?.Release();
                 _waterTargets.Clear();

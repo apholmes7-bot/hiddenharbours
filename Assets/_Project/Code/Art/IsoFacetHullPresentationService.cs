@@ -476,6 +476,7 @@ namespace HiddenHarbours.Art
             {
                 Mesh = def.Mesh,
                 // A pair or nothing: a half-baked def must not draw one pose and never the other.
+                ReceivesWaterCaustics = def.RestingDraftMeters > 0,
                 DoorLeafClosed = def.HasDoorLeaf() ? def.DoorLeafClosed : null,
                 DoorLeafOpen = def.HasDoorLeaf() ? def.DoorLeafOpen : null,
                 DoorLeaves = def.DoorLeaves,

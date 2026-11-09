@@ -1792,6 +1792,9 @@ Shader "HiddenHarbours/Water"
                 float  _RippleFadeFloor;
             CBUFFER_END
 
+            #define HH_CAUSTIC_VEINS
+            #include "Include/CausticPattern.hlsl"
+
             // ---- pixelize: snap a world coord to the PPU grid so every layer reads as pixel art (ADR 0010 (2)) ----
             float2 Pixelize(float2 p)
             {
@@ -5719,20 +5722,12 @@ Shader "HiddenHarbours/Water"
                 causticGate = saturate(causticGate);
                 if (causticGate > 0.001 && _CausticAmount > 0.001)
                 {
-                    float2 cp = Pixelize(worldXY * _CausticScale + float2(t * _Flow, -t * _Flow * 0.7));
-                    float ca = ValueNoise(cp);
-                    float cb = ValueNoise(cp * 1.7 + 11.1);
-                    float caustic = pow(saturate(1.0 - abs(ca - cb) * 3.0), 2.0);   // ridged -> bright veins
                 #if defined(_USE_CAUSTICTEX)
-                    // Painted caustics (grayscale), distorted by time, blended over the procedural veins;
-                    // still depth-gated to the shallows by causticGate. Two counter-scrolling samples mul
-                    // to a moving ripple so a static tile still "swims".
-                    float2 cScroll = float2(t * _Flow * 0.6, -t * _Flow * 0.4);
-                    float ct = UntileSampleW(TEXTURE2D_ARGS(_CausticTex, sampler_CausticTex),
-                                   worldXY, _PaintScale * 2.0, cScroll, _UntileStrength).r
-                             * UntileSampleW(TEXTURE2D_ARGS(_CausticTex, sampler_CausticTex),
-                                   worldXY, _PaintScale * 2.0, -cScroll * 1.3, _UntileStrength).r;
-                    caustic = lerp(caustic, ct * 2.0, _CausticTexStrength);   // *2: counter-mul darkens, restore range
+                    float caustic = HHCausticVeins(worldXY, t, 1.0,
+                        TEXTURE2D_ARGS(_CausticTex, sampler_CausticTex));
+                #else
+                    float caustic = HHCausticVeins(worldXY, t, 0.0,
+                        TEXTURE2D_ARGS(_CausticTex, sampler_CausticTex));
                 #endif
                     // ---- ADR 0027 #2: FIELD-DRIVEN caustics (default OFF = the independent noise above) ----
                     // Caustics are focused light: brightest where the surface is locally CONVEX toward the
@@ -5764,12 +5759,8 @@ Shader "HiddenHarbours/Water"
                                         chy1, cslopeT, ccrestT, cprimT);
                         WaveFieldSample(Pixelize(worldXY - float2(0.0, ce)), waveFreqScale, waveFetchFactors,
                                         chy0, cslopeT, ccrestT, cprimT);
-                        // Laplacian < 0 = locally convex UP (a dome toward the sun) -> focused light.
-                        float lap = (chx1 + chx0 + chy1 + chy0 - 4.0 * waveHeight) / (ce * ce);
-                        float curvBright = saturate(-lap * max(_CausticCurvatureGain, 0.0));
-                        float fieldLive = saturate(_WaveFieldParams.z * 40.0);
-                        caustic = lerp(caustic, curvBright,
-                                       saturate(_CausticCurvatureBlend) * fieldLive);
+                        caustic = HHCausticPattern(caustic, waveHeight, chx1, chx0, chy1, chy0,
+                            ce, _CausticCurvatureGain, _CausticCurvatureBlend, _WaveFieldParams.z);
                     }
                     // DAY GATE (Arc C, default OFF): fade the sun-dappled caustic add out at night so the light
                     // nets only show when the sun is UP. Driver is saturate(_SunElevation) — 1 at noon, 0 below
