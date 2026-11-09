@@ -497,6 +497,10 @@ namespace HiddenHarbours.Tests.PlayMode
         /// wisps and motes. Their hosts go off for the plate case and the teardown turns them back on; nothing is
         /// re-seeded or re-aged. A host that carries anything besides its emitter is left on and named in the caption.
         /// The gulls run on the unscaled clock, outside the ruling's list, and stay on.
+        ///
+        /// <para><b>The emitter alone</b> (seat ruling t20): a host is its Transform and its emitter, or those two and
+        /// the <see cref="SortingGroup"/> the emitter adds to its own host in <c>Awake</c> (the rain, the surf spray
+        /// and the spray do; the second re-plate left those three on because the guard counted only two).</para>
         /// </summary>
         void HoldTheAmbientParticlesOff()
         {
@@ -507,7 +511,9 @@ namespace HiddenHarbours.Tests.PlayMode
             {
                 GameObject host = e.gameObject;
                 if (!host.activeSelf || _particlesOff.Contains(host)) continue;
-                if (host.GetComponents<Component>().Length != 2) { left.Add($"{e.GetType().Name} on {host.name}"); continue; }
+                Component[] parts = host.GetComponents<Component>();
+                bool alone = parts.Length == 2 || (parts.Length == 3 && parts[2] is SortingGroup);
+                if (!alone) { left.Add($"{e.GetType().Name} on {host.name}"); continue; }
                 host.SetActive(false);
                 _particlesOff.Add(host);
                 held.Add($"{e.GetType().Name} ({host.name})");

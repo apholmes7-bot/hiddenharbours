@@ -43,10 +43,14 @@ namespace HiddenHarbours.Tests.Art.EditMode
             Assert.AreEqual(Held.Length, Count(emitters, "FindObjectsOfTypeAll<"), "the six and nothing else");
             StringAssert.Contains(".gameObject.scene.IsValid()", emitters, "a loaded prefab asset is not a host");
 
-            // the hold: each host off and recorded; a host that carries more than its emitter is left on; no re-seeding
+            // the hold: each host off and recorded; a host that carries more than its emitter is left on; no re-seeding.
+            // t20: the emitter alone is its Transform and the emitter, or those and the SortingGroup its Awake adds
             string hold = Squash(Body(code, Hold));
             StringAssert.Contains("host.SetActive(false);_particlesOff.Add(host);", hold);
-            StringAssert.Contains("host.GetComponents<Component>().Length!=2", hold, "only a host that is its emitter alone");
+            StringAssert.Contains("Component[]parts=host.GetComponents<Component>();" +
+                                  "boolalone=parts.Length==2||(parts.Length==3&&parts[2]isSortingGroup);" +
+                                  "if(!alone){", hold, "only a host that is its emitter alone, or with its own SortingGroup");
+            Assert.AreEqual(0, Count(hold, @"Length!=2"), "the two-part count alone left the rain and the sprays on");
             foreach (string word in new[] { "SetActive(true)", "_spawnCounter", "Random", "Hash01", "enabled=" })
                 Assert.IsFalse(hold.Contains(word), "held off, not re-seeded or re-aged: " + word);
 
