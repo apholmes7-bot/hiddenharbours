@@ -3,6 +3,7 @@ using HiddenHarbours.Art;
 using NUnit.Framework;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 namespace HiddenHarbours.Tests.Art.EditMode
 {
@@ -28,6 +29,8 @@ namespace HiddenHarbours.Tests.Art.EditMode
         [Test]
         public void SharedHlsl_AgreesWithTheCSharpTwin_AtSampledHeights()
         {
+            if (SystemInfo.graphicsDeviceType == GraphicsDeviceType.Null)
+                Assert.Ignore("SKIPPED, NOT VERIFIED — no graphics device (Null Device); the shared-pattern probe needs a GPU.");
             if (!SystemInfo.supportsComputeShaders) Assert.Ignore("A compute-capable graphics device is required.");
             var shader = AssetDatabase.LoadAssetAtPath<ComputeShader>(
                 "Assets/Tests/EditMode/Art/CausticPatternProbe.compute");

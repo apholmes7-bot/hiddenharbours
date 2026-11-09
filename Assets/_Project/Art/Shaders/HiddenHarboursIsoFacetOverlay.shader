@@ -114,14 +114,14 @@ Shader "HiddenHarbours/IsoFacetOverlay"
             float4 frag (Varyings i) : SV_Target
             {
                 int2 p = int2(i.positionCS.xy);
-                float4 c = _HHHullScreenTex.Load(int3(p, 0));
-                if (_HHHullCausticSettings.z > 0.5 && HHIsThisHull(c.a))
+                float4 hull = _HHHullScreenTex.Load(int3(p, 0));
+                if (_HHHullCausticSettings.z > 0.5 && HHIsThisHull(hull.a))
                 {
                     float encoded = _HHHullCausticTex.Load(int3(p, 0)).a;
                     if (encoded >= 0.5 && encoded < 1.0)
-                        c.rgb += _CausticColor.rgb * ((1.0 - encoded) * 2.0 * _HHHullCausticGain);
+                        hull.rgb += _CausticColor.rgb * ((1.0 - encoded) * 2.0 * _HHHullCausticGain);
                 }
-                c = HHFigureOver(c, i.positionCS.xy);
+                float4 c = HHFigureOver(hull, i.positionCS.xy);
                 // Only THIS hull's pixels — either of her ids.
                 clip(HHIsThisHull(c.a) ? 1.0 : -1.0);
                 clip(c.a - 0.5 / 255.0);
