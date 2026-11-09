@@ -39,6 +39,14 @@ namespace HiddenHarbours.Tests.PlayMode
     /// first pose to its end, the same value in every launch; the settle, the median of three and the control are
     /// the same calls as before, under it. The cost case is not pinned: it prices the draw as it ships.</para>
     ///
+    /// <para><b>THE AMBIENT PARTICLES, HELD OFF</b> (t19): with shader time pinned, two launches still differed by about
+    /// a million pixels per state (t18), the sea mist and the dust motes frozen by <see cref="Time.timeScale"/> 0 at
+    /// whatever age each launch left them. The plate case holds off the hosts of the ambient emitters that place or age
+    /// themselves from <c>Time.deltaTime</c>, <c>Time.time</c> or a spawn counter, from before its first pose; the
+    /// teardown turns them back on. They are not re-seeded. The capture and the cost case keep them (the cost prices
+    /// the frame as it ships). A plate whose control disagrees is re-taken once, the first take kept beside it, and
+    /// the caption logs both counts and their frame numbers.</para>
+    ///
     /// <para><b>THE POSES</b>: the board's three on-foot frames (piece 2,
     /// <c>StPetersMainBeachWalkPlayTests.TheBoardsFrames</c>) and piece 3's four splat windows, the south
     /// sand patch among them (the crop the owner judges by, at 1 to 1). Noon.</para>
@@ -105,6 +113,8 @@ namespace HiddenHarbours.Tests.PlayMode
         int _w, _h, _askedGridPx;
         float _askedHeight;
         ShaderTimePin _shaderTime;
+        readonly List<GameObject> _particlesOff = new List<GameObject>();
+        string _particlesHeld = "(not held)";
 
         [OneTimeSetUp]
         public void MarkTheRun() => _runStartedUtc = DateTime.UtcNow;
@@ -125,6 +135,8 @@ namespace HiddenHarbours.Tests.PlayMode
             Time.timeScale = 1f;   // a STATIC: left at 0 it stops every test that follows
             foreach (Renderer r in _hidden) if (r != null) r.enabled = true;
             _hidden.Clear();
+            foreach (GameObject go in _particlesOff) if (go != null) go.SetActive(true);   // t19: the plate case held them off
+            _particlesOff.Clear(); _particlesHeld = "(not held)";
 
             if (_follow != null && _followCaptured)
             {
@@ -175,30 +187,42 @@ namespace HiddenHarbours.Tests.PlayMode
             AssertTheSaveIsTheRunsOwn();
             yield return PinTheHour(NoonHours);
             using var shaderTime = _shaderTime = new ShaderTimePin(camera => camera == _cam, NoonHours * SecondsPerHour);
+            HoldTheAmbientParticlesOff();   // t19: from before the first pose to the teardown
             var log = new StringBuilder();
+            log.AppendLine($"ambient particles: {_particlesHeld}");
             foreach (var f in Poses)
             {
                 yield return FrameOn(f.Centre);   // ends with the world stopped (Time.timeScale 0)
                 double clockA = GameServices.Clock.TotalSeconds;
                 Vector4 timeA = Shader.GetGlobalVector("_Time");
+                int plateFrame = Time.frameCount;
                 Color32[] plate = ReadMedian();
                 for (int i = 0; i < ControlGapFrames; i++) yield return null;
                 double clockB = GameServices.Clock.TotalSeconds;
                 Vector4 timeB = Shader.GetGlobalVector("_Time");
+                int controlFrame = Time.frameCount;
                 Color32[] control = ReadMedian();
                 Vector4 timeC = Shader.GetGlobalVector("_Time");
 
+                string name = "splat-warp-" + f.Name;
                 var noise = new Color32[plate.Length];
-                int noisy = 0;
-                for (int i = 0; i < plate.Length; i++)
+                int noisy = Noise(plate, control, noise);
+                string retake = "not retaken: the control agrees";
+                if (noisy > 0)
                 {
-                    bool differs = plate[i].r != control[i].r || plate[i].g != control[i].g || plate[i].b != control[i].b;
-                    if (differs) noisy++;
-                    byte v = differs ? (byte)255 : (byte)0;
-                    noise[i] = new Color32(v, v, v, 255);
+                    // t19: re-taken once by the same calls; the first take is kept beside it
+                    SavePlate(name + "-take1.png", plate, _w);
+                    SavePlate(name + "-take1-control.png", control, _w);
+                    retake = $"retaken once: take 1 noise {noisy} px (plate frame {plateFrame}, control frame {controlFrame})";
+                    plateFrame = Time.frameCount;
+                    plate = ReadMedian();
+                    for (int i = 0; i < ControlGapFrames; i++) yield return null;
+                    controlFrame = Time.frameCount;
+                    control = ReadMedian();
+                    noisy = Noise(plate, control, noise);
+                    retake += $"; take 2 noise {noisy} px (plate frame {plateFrame}, control frame {controlFrame})";
                 }
 
-                string name = "splat-warp-" + f.Name;
                 SavePlate(name + ".png", plate, _w);
                 SavePlate(name + "-control.png", control, _w);
                 SavePlate(name + "-noise.png", noise, _w);
@@ -208,8 +232,10 @@ namespace HiddenHarbours.Tests.PlayMode
                                  $"Time.timeScale {Time.timeScale}, clock TimeScale {GameServices.Clock.TimeScale}";
                 settled += $"; shader time pinned at _Time.y {shaderTime.Seconds:0.0} s (the shore capture's law, the plate camera only), " +
                            $"applied {shaderTime.Applied} renders so far; _Time.y after the control {timeC.y:0.0000}";
+                settled += $"; {retake}; ambient particles {_particlesHeld}";
                 SaveCaption(name + ".txt", Caption(name, "the splat warp's settled plate: " + f.Name, _askedCentre, settled));
                 log.AppendLine($"{f.Name}: noise {noisy} px; clock moved {clockB - clockA:0.000} s; _Time.y moved {timeB.y - timeA.y:0.0000}");
+                log.AppendLine($"{f.Name}: {retake}");
                 log.AppendLine($"{f.Name}: shader time pinned {shaderTime.Seconds:0.0} s, applied {shaderTime.Applied} renders; _Time.y after the control {timeC.y:0.0000}");
             }
             SaveCaption("splat-warp-plates-log.txt", log.ToString());
@@ -444,6 +470,64 @@ namespace HiddenHarbours.Tests.PlayMode
         }
 
         static byte Middle(byte a, byte b, byte c) => (byte)(a + b + c - Math.Min(a, Math.Min(b, c)) - Math.Max(a, Math.Max(b, c)));
+
+        /// <summary>The pixels where the plate and its control differ in any channel, written white into
+        /// <paramref name="noise"/> (the rest black); returns their count.</summary>
+        static int Noise(Color32[] plate, Color32[] control, Color32[] noise)
+        {
+            int noisy = 0;
+            for (int i = 0; i < plate.Length; i++)
+            {
+                bool differs = plate[i].r != control[i].r || plate[i].g != control[i].g || plate[i].b != control[i].b;
+                if (differs) noisy++;
+                byte v = differs ? (byte)255 : (byte)0;
+                noise[i] = new Color32(v, v, v, 255);
+            }
+            return noisy;
+        }
+
+        // =============================================================================================
+        //  The ambient particles, held off in the plate case (t19)
+        // =============================================================================================
+
+        /// <summary>
+        /// <b>THE AMBIENT PARTICLES, HELD OFF</b> (seat ruling t19). Each emitter of <see cref="AmbientParticleConfig"/>
+        /// that places or ages itself from <c>Time.deltaTime</c>, <c>Time.time</c> or a spawn counter keeps whatever age
+        /// loading and the hour's pin left it when <see cref="Time.timeScale"/> stops, so two launches froze different
+        /// wisps and motes. Their hosts go off for the plate case and the teardown turns them back on; nothing is
+        /// re-seeded or re-aged. A host that carries anything besides its emitter is left on and named in the caption.
+        /// The gulls run on the unscaled clock, outside the ruling's list, and stay on.
+        /// </summary>
+        void HoldTheAmbientParticlesOff()
+        {
+            _particlesOff.Clear();
+            var held = new List<string>();
+            var left = new List<string>();
+            foreach (MonoBehaviour e in AmbientEmitters())
+            {
+                GameObject host = e.gameObject;
+                if (!host.activeSelf || _particlesOff.Contains(host)) continue;
+                if (host.GetComponents<Component>().Length != 2) { left.Add($"{e.GetType().Name} on {host.name}"); continue; }
+                host.SetActive(false);
+                _particlesOff.Add(host);
+                held.Add($"{e.GetType().Name} ({host.name})");
+            }
+            _particlesHeld = $"held off {held.Count}: {(held.Count == 0 ? "none" : string.Join(", ", held))}" +
+                             (left.Count == 0 ? "" : $"; left on, the host carries more: {string.Join(", ", left)}");
+        }
+
+        /// <summary>The emitters the t19 typed read of <see cref="AmbientParticleConfig"/> found, from every loaded
+        /// object (the self-installed hosts are HideAndDontSave, which the scene finders skip), in scenes only.</summary>
+        static IEnumerable<MonoBehaviour> AmbientEmitters()
+        {
+            return Resources.FindObjectsOfTypeAll<SeaMistEmitter>().Cast<MonoBehaviour>()
+                .Concat(Resources.FindObjectsOfTypeAll<DustMotes>())
+                .Concat(Resources.FindObjectsOfTypeAll<ChimneySmoke>())
+                .Concat(Resources.FindObjectsOfTypeAll<RainEmitter>())
+                .Concat(Resources.FindObjectsOfTypeAll<SurfSprayEmitter>())
+                .Concat(Resources.FindObjectsOfTypeAll<SprayEmitter>())
+                .Where(e => e != null && e.gameObject.scene.IsValid());
+        }
 
         // =============================================================================================
         //  Shader time, pinned across launches (t17)

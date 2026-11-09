@@ -119,7 +119,15 @@ namespace HiddenHarbours.Tests.Art.EditMode
                 StringComparison.Ordinal);
             Assert.Greater(steps, poses, "the settle and median, then the control gap, as before, under the pin");
             Assert.Greater(plate.IndexOf("Color32[]control=ReadMedian();", steps, StringComparison.Ordinal), steps);
-            Assert.AreEqual(2, Count(plate, @"ReadMedian\(\)"), "the plate and its control, and no third capture");
+            // t19: a plate whose control disagrees is re-taken once, by the same two calls, inside one if
+            Assert.AreEqual(1, Count(plate, @"if\(noisy>0\)\{"), "one retake, and only when the control disagrees");
+            Assert.Greater(plate.IndexOf("if(noisy>0){", StringComparison.Ordinal), steps, "after the first plate and control");
+            string again = Squash(Body(plate, "if(noisy>0)"));
+            StringAssert.Contains("plate=ReadMedian();for(inti=0;i<ControlGapFrames;i++)yieldreturnnull;", again);
+            StringAssert.Contains("control=ReadMedian();noisy=Noise(plate,control,noise);", again);
+            Assert.AreEqual(2, Count(again, @"ReadMedian\(\)"), "the retake is one plate and one control");
+            Assert.IsFalse(again.Contains("while(") || again.Contains("goto"), "re-taken once, not until it agrees");
+            Assert.AreEqual(4, Count(plate, @"ReadMedian\(\)"), "the plate, its control and their one retake; no third take");
             Assert.AreEqual(0, Count(plate, @"\.Dispose\(\)"), "nothing lifts the pin before the case ends");
 
             string squashed = Squash(code);
