@@ -12,7 +12,8 @@ namespace HiddenHarbours.Tests.RigBaking
     /// NMC H9: the fuel stop kit (pass 6) comes into the repo unchanged, on the owner's word, as PR 999 brought the
     /// set-pieces kit: the drop's <c>hh-nmc-key-scenes/fuel-stop/</c> filed under its own folder name. The four files
     /// are pinned by the size and sha256 of their LF bytes (the drop's bytes are LF; a box with core.autocrlf checks
-    /// text out with CRLF and CI checks it out LF), the folder holds nothing else, and no file is an LFS pointer.
+    /// text out with CRLF and CI checks it out LF). Only the named sibling export and bake files may accompany them;
+    /// no delivered file is an LFS pointer.
     /// File reads only: no rig host, no editor.
     /// </summary>
     public class FuelStopKitIntakeTests
@@ -49,7 +50,12 @@ namespace HiddenHarbours.Tests.RigBaking
             string prefix = Path.GetFullPath(Kit);
             var files = Directory.GetFiles(prefix, "*", SearchOption.AllDirectories)
                 .Select(f => Path.GetFullPath(f).Substring(prefix.Length).TrimStart('\\', '/').Replace('\\', '/'));
-            Assert.That(files, Is.EquivalentTo(Delivered.Select(d => d.File)), "the kit folder holds other files");
+            var authored = new[] { "README.md", "fuelStopGameplay.js", "fuelStopBake.html", "checks/check-kit.cjs",
+                "checks/write-today.cjs", "checks/bake-headless.cjs", "checks/check-sheets.cjs" };
+            var kinds = new[] { "store", "canopy", "truck", "pylon", "iceBox", "propane", "air", "vacuum",
+                "dumpster", "bench", "firewood", "lampPole", "barSign", "stopSign", "picnic", "wheelStop", "bin" };
+            Assert.That(files, Is.EquivalentTo(Delivered.Select(d => d.File).Concat(authored)
+                .Concat(kinds.Select(k => "gameplay/" + k + ".gameplay.json"))), "the kit folder holds unaccounted files");
             foreach (var pin in Delivered)
             {
                 byte[] lf = LfBytes(Kit + pin.File);

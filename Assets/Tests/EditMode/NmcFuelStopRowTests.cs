@@ -212,28 +212,43 @@ namespace HiddenHarbours.Tests.EditMode
             {
                 Assert.That(placed.TryGetValue(row.Id, out var objects) ? objects.Count : 0, Is.EqualTo(1), row.Id + " placed once");
                 Assert.That(RecordField(record, row.Id, "waits"), Is.Null.Or.Empty, row.Id + " still waits in the owners record");
+                Assert.That(scene.Ancestry(objects.Single()), Has.Member("NmcWharfLandSide"), row.Id + " must share the wharf dressing parent");
             }
             Assert.That(ListField(WharfPath, "PlacementIds"), Is.SupersetOf(Eleven.Select(r => r.Id)));
         }
 
         [Test]
-        public void EveryRowOnTheKit_HasItsSetPieceDef_OnTheRowsId()
+        public void EveryRowOnTheKit_HasItsSetPieceDef_OnTheRuledKindId()
         {
             var defs = Directory.GetFiles(DefFolder, "*.asset")
                 .Select(f => (Id: TopField(f, "Id"), RigKey: TopField(f, "RigKey"), File: f.Replace('\\', '/'))).ToList();
             var asking = Rows(FuelStopPath).Concat(Rows(WharfPath)).Where(r => r.Kit.StartsWith(KitPrefix, StringComparison.Ordinal)).ToList();
-            var baked = asking.Where(r => defs.Any(d => d.Id == r.Id)).ToList();
+            var baked = asking.Where(r => defs.Any(d => d.RigKey == r.Piece)).ToList();
             if (baked.Count == 0)
                 Assert.Ignore($"the fuel stop kit's bake has not landed: no SetPieceDef in {DefFolder} carries any of the {asking.Count} rows' ids.");
             foreach (var row in asking)
             {
-                var mine = defs.Where(d => d.Id == row.Id).ToList();
+                var shared = new Dictionary<string, string> {
+                    { "wheelStop", "prop.nmc_wheel_stop" }, { "stopSign", "prop.nmc_stop_sign" },
+                    { "lampPole", "prop.nmc_lamp_pole" }, { "picnic", "prop.nmc_picnic" },
+                    { "bin", "prop.nmc_bin" }, { "iceBox", "prop.nmc_ice_box" }, { "dumpster", "prop.nmc_dumpster" } };
+                string id = shared.TryGetValue(row.Piece, out var kindId) ? kindId : row.Id;
+                var mine = defs.Where(d => d.Id == id).ToList();
                 Assert.That(mine, Has.Count.EqualTo(1), row.Id + " has no SetPieceDef, or two");
                 Assert.That(mine[0].RigKey, Is.EqualTo(row.Piece), row.Id + " " + mine[0].File);
             }
         }
 
         // ---------------------------------------------------------------- text readers
+
+        [Test]
+        public void H6SkipsFuelStopRigRows_WhileKeepingItsMissingRowGuard()
+        {
+            string source = File.ReadAllText("Assets/_Project/Code/App/Editor/NineMileCreekWharfLandSide.Placement.cs");
+            StringAssert.Contains("rows = rows.Where(p => !p.Kit.StartsWith(\"fuelStopRig\", StringComparison.Ordinal)).ToArray();", source);
+            Assert.That(source.IndexOf("if (rows.Length != ids.Count)", StringComparison.Ordinal),
+                Is.LessThan(source.IndexOf("rows = rows.Where", StringComparison.Ordinal)));
+        }
 
         sealed class Row
         {

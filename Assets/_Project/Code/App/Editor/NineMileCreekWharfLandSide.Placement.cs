@@ -51,6 +51,7 @@ namespace HiddenHarbours.App.Editor
                 r.id != "harbour.yard" && r.id != "boat.nmc_damaged_dory").Select(r => r.id));
             KeyScenePiece[] rows = KeyScene().Pieces.Where(p => ids.Contains(p.Id)).ToArray();
             if (rows.Length != ids.Count) throw new Refusal("The H6 placement subset names an absent row.");
+            rows = rows.Where(p => !p.Kit.StartsWith("fuelStopRig", StringComparison.Ordinal)).ToArray();
             return rows;
         }
         static SetPieceDef Definition(string key) => AssetDatabase.LoadAssetAtPath<SetPieceDef>(
