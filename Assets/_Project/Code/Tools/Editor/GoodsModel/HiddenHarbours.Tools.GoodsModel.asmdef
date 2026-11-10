@@ -1,0 +1,7 @@
+{
+  "name": "HiddenHarbours.Tools.GoodsModel",
+  "rootNamespace": "HiddenHarbours.Tools.GoodsModel",
+  "references": [],
+  "includePlatforms": ["Editor"],
+  "autoReferenced": false
+}
