@@ -78,7 +78,7 @@ namespace HiddenHarbours.Player
                  "a hull's OUTLINE to board her: from ANYWHERE within this reach, not only at a dock " +
                  "zone. Forgiving (P5 cozy) so you can step aboard a boat you've nudged up to a beach. " +
                  "Read through GameServices.Config when one is wired, so the owner tunes the ASSET.")]
-        [SerializeField] private float _boardReach = GameConfig.DefaultBoardReachMetres;
+        [SerializeField] private float _boardReach = 3.5f;
 
         /// <summary>
         /// The reach actually in force — the owner's <see cref="GameConfig"/> value when a config is
@@ -93,13 +93,13 @@ namespace HiddenHarbours.Player
         /// <summary>How far a wharf deck may lie off a hull's outline and still be somewhere you can step
         /// ashore onto — the owner's <see cref="GameConfig"/> value, else the fendering gap with room.</summary>
         public float StepAshoreReachMetres =>
-            GameServices.Config != null ? GameServices.Config.StepAshoreReachMetres : GameConfig.DefaultStepAshoreReachMetres;
+            GameServices.Config != null ? GameServices.Config.StepAshoreReachMetres : 1.5f;
 
         /// <summary>Full width, in degrees, of the arc she must be LOOKING along for a press on deck to
         /// mean "step ashore" (rule 6 — <c>GameConfig.StepAshoreFacingArcDegrees</c>). No config wired
         /// falls back to the shipped 120°, the same way every other tunable here does.</summary>
         public float StepAshoreFacingArcDegrees =>
-            GameServices.Config != null ? GameServices.Config.StepAshoreFacingArcDegrees : GameConfig.DefaultStepAshoreFacingArcDegrees;
+            GameServices.Config != null ? GameServices.Config.StepAshoreFacingArcDegrees : 120f;
 
         [Header("Disembark only onto LAND (no stepping off over water)")]
         [Tooltip("Disembarking is allowed only where the step-off point is actual standable LAND — never over " +
@@ -1768,15 +1768,15 @@ namespace HiddenHarbours.Player
         /// beside the hull rather than inside her own boat's footprint. The owner's number, like the two
         /// washboard tunables beside it: a distance you can only settle by watching somebody go in.</summary>
         private float OverTheSideBodyWidthMetres =>
-            GameServices.Config != null ? GameServices.Config.OverTheSideBodyWidthMetres : GameConfig.DefaultOverTheSideBodyWidthMetres;
+            GameServices.Config != null ? GameServices.Config.OverTheSideBodyWidthMetres : 0.7f;
 
         /// <summary>The gunwale band's width for a hull with no authored washboards — the owner's number.</summary>
         private float WashboardWidthMetres =>
-            GameServices.Config != null ? GameServices.Config.WashboardWidthMetres : GameConfig.DefaultWashboardWidthMetres;
+            GameServices.Config != null ? GameServices.Config.WashboardWidthMetres : 0.45f;
 
         /// <summary>How much the rail slows her — the owner's number.</summary>
         private float WashboardSlowFactor =>
-            GameServices.Config != null ? GameServices.Config.WashboardSlowFactor : GameConfig.DefaultWashboardSlowFactor;
+            GameServices.Config != null ? GameServices.Config.WashboardSlowFactor : 0.5f;
 
         /// <summary>
         /// 🔴 <b>Is she below decks in the hull this switcher is steering?</b> Deferred from PR 1 of this

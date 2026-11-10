@@ -198,14 +198,6 @@ namespace HiddenHarbours.Core
                  "slow + exposed.")]
         [Range(0f, 1f)] public float SwimSlowFactor = 0.25f;
 
-        // Shared with consumers that have no config wired; keep the existing boarding rules in one place.
-        public const float DefaultBoardReachMetres = 3.5f;
-        public const float DefaultStepAshoreReachMetres = 1.5f;
-        public const float DefaultStepAshoreFacingArcDegrees = 120f;
-        public const float DefaultWashboardWidthMetres = 0.45f;
-        public const float DefaultWashboardSlowFactor = 0.5f;
-        public const float DefaultOverTheSideBodyWidthMetres = 0.7f;
-
         [Header("Getting aboard and ashore")]
         [Tooltip("Require owned boats to be repaired before boarding. Off while damage and repairs are " +
                  "deferred; enable to enforce the repair ledger.")]
@@ -214,7 +206,7 @@ namespace HiddenHarbours.Core
         [Tooltip("How close you must be to a hull to climb aboard, in metres — measured to her OUTLINE, " +
                  "not to her root, so a long hull is boardable from her own stern. Ships at the 3.5 m " +
                  "the switcher carried as a serialized field until 2026-09-03.")]
-        [Min(0.1f)] public float BoardReachMetres = DefaultBoardReachMetres;
+        [Min(0.1f)] public float BoardReachMetres = 3.5f;
         [Tooltip("How far a registered standing surface (a wharf deck) may be from the hull's WALKABLE " +
                  "deck edge and still be somewhere you can step ashore onto, in metres. ⚠ It must span " +
                  "more than the fendering gap: a hull's walkable strip is set in from her rail, so the " +
@@ -222,7 +214,7 @@ namespace HiddenHarbours.Core
                  "dory alongside St Peters that is 0.625 + 0.40 = 1.03 m, so 1.5 leaves margin for a " +
                  "boat lying a little off her lines — while staying small enough that it never invents " +
                  "a step across open water to a pier you are not actually alongside.")]
-        [Min(0.1f)] public float StepAshoreReachMetres = DefaultStepAshoreReachMetres;
+        [Min(0.1f)] public float StepAshoreReachMetres = 1.5f;
         [Tooltip("How wide the arc must be, in DEGREES of full width centred on the way she is looking, " +
                  "for a press on deck to mean 'step ashore' (owner playtest 2026-09-07: 'im also close " +
                  "to the dock so i understand why it happens but this will be an everyday occurance " +
@@ -233,23 +225,23 @@ namespace HiddenHarbours.Core
                  "again. 120 leaves ±60° — forgiving enough that you need not aim, tight enough that a " +
                  "quarter-turn away means no. 360 switches the rule off (the A/B, and the escape hatch): " +
                  "the arc can then exclude nothing and the press behaves exactly as it did before.")]
-        [Range(0f, 360f)] public float StepAshoreFacingArcDegrees = DefaultStepAshoreFacingArcDegrees;
+        [Range(0f, 360f)] public float StepAshoreFacingArcDegrees = 120f;
         [Tooltip("Width of the gunwale band on a hull with NO authored washboard areas, in metres — the " +
                  "strip just inside her walkable edge that the two-press exit treats as the rail. ⚠ Only " +
                  "the cape islander and the lobster family carry real washboards; an open boat (the " +
                  "starter dory, the punt, the skiffs) has none, and absence is data — this is the band " +
                  "she gets instead. Clamped so it can never exceed half the walkable half-width, or on a " +
                  "narrow hull the 'band' would be the whole deck.")]
-        [Min(0.05f)] public float WashboardWidthMetres = DefaultWashboardWidthMetres;
+        [Min(0.05f)] public float WashboardWidthMetres = 0.45f;
         [Tooltip("Move-speed multiplier while standing out on the washboard (0..1). You are on the " +
                  "gunwale over open water: it should feel like somewhere you pick your way along, not " +
                  "somewhere you stroll.")]
-        [Range(0.05f, 1f)] public float WashboardSlowFactor = DefaultWashboardSlowFactor;
+        [Range(0.05f, 1f)] public float WashboardSlowFactor = 0.5f;
         [Tooltip("How far outboard of the rail she lands when she goes over the side, in metres — one " +
                  "body's width, so she is in the water BESIDE the hull rather than inside her own boat's " +
                  "footprint. Too small and she surfaces on top of the boat she just left; too large and " +
                  "she is flung clear of a hull she is supposed to be able to climb straight back onto.")]
-        [Min(0.1f)] public float OverTheSideBodyWidthMetres = DefaultOverTheSideBodyWidthMetres;
+        [Min(0.1f)] public float OverTheSideBodyWidthMetres = 0.7f;
         [Tooltip("How close a swimmer must be to a HULL OUTLINE, in metres, for the boat-only soft " +
                  "wall to step aside and let her into deep water — the owner's 2026-09-02 ask ('a " +
                  "player should be able to swim up to a hull and climb aboard anywhere'). ⚠ This is " +
