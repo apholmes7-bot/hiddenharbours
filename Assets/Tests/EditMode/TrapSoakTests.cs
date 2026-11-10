@@ -1,5 +1,7 @@
 using NUnit.Framework;
 using HiddenHarbours.Fishing;
+using HiddenHarbours.Core;
+using UnityEngine;
 
 namespace HiddenHarbours.Tests.EditMode
 {
@@ -10,9 +12,15 @@ namespace HiddenHarbours.Tests.EditMode
     /// </summary>
     public class TrapSoakTests
     {
+        [TearDown]
+        public void ClearServices() => GameServices.Reset();
+
+        [SetUp]
+        public void ResetServices() => GameServices.Reset();
+
         private const double PlacedAt = 10_000.0;   // an arbitrary placement instant (in-game seconds)
         private const float SoakHours = 12f;
-        private static readonly double SoakSpan = 12.0 * 3600.0;   // 43,200 s
+        private static readonly double SoakSpan = 12.0 * 75.0;   // 900 clock seconds
 
         [Test]
         public void NotReady_BeforeSoakSpanElapses()
@@ -52,10 +60,40 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.AreEqual(1f, TrapSoak.Progress01(PlacedAt, PlacedAt, 0f), 1e-6f);
         }
 
+        [TestCase(1800d, 900d)]
+        [TestCase(86400d, 43200d)]
+        public void TwelveGameHours_FinishAtHalfTheConfiguredDay(double day, double span)
+        {
+            Assert.AreEqual(span, TrapSoak.SoakSeconds(12f, day));
+            Assert.IsFalse(TrapSoak.IsReady(PlacedAt, PlacedAt + span - 1d, 12f, day));
+            Assert.IsTrue(TrapSoak.IsReady(PlacedAt, PlacedAt + span, 12f, day));
+            Assert.AreEqual(0.5f, TrapSoak.Progress01(PlacedAt, PlacedAt + span / 2d, 12f, day));
+            Assert.AreEqual(1f, TrapSoak.Progress01(PlacedAt, PlacedAt + span, 12f, day));
+        }
+
+        [TestCase(1800f, 900d)]
+        [TestCase(86400f, 43200d)]
+        public void RuntimeWrappers_ReadTheLiveClockConfiguration(float day, double span)
+        {
+            var previous = GameServices.Config;
+            var config = ScriptableObject.CreateInstance<GameConfig>();
+            try
+            {
+                config.SecondsPerDay = day;
+                GameServices.Config = config;
+                Assert.AreEqual(span, TrapSoak.SoakSeconds(12f));
+                Assert.AreEqual(0.5f, TrapSoak.Progress01(PlacedAt, PlacedAt + span / 2d, 12f));
+                Assert.IsFalse(TrapSoak.IsReady(PlacedAt, PlacedAt + span - 1d, 12f));
+                Assert.IsTrue(TrapSoak.IsReady(PlacedAt, PlacedAt + span, 12f));
+                Assert.AreEqual(0.5f, TrapFill.Fill01(PlacedAt, PlacedAt + span * 2d, 12f, 36f));
+            }
+            finally { GameServices.Config = previous; Object.DestroyImmediate(config); }
+        }
+
         [Test]
         public void SoakSeconds_ConvertsHoursToSeconds()
         {
-            Assert.AreEqual(43_200.0, TrapSoak.SoakSeconds(12f), 1e-6);
+            Assert.AreEqual(900.0, TrapSoak.SoakSeconds(12f), 1e-6);
             Assert.AreEqual(0.0, TrapSoak.SoakSeconds(0f), 1e-6);
             Assert.AreEqual(0.0, TrapSoak.SoakSeconds(-3f), 1e-6, "a negative soak is treated as instant");
         }

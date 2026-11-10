@@ -274,8 +274,9 @@ bycatch follows the passive-gear model (§3.4 and the multi-catch open question 
 > **Trap runtime status (arc builds).** The trap arc ships in slices: **Build 1** the wave-driven buoy
 > (visual), **Build 2** the trap/bait/crab **content** (`TrapDef`/`BaitDef` + the lobster/crab pot and
 > herring/mackerel/fish-scrap assets), **Build 3** the **logical `PlacedTrap` runtime** — a deterministic
-> **soak** (ready when `now − placedAt ≥ SoakHours·3600`, recomputed not saved, rule 5) and a **seeded
-> catch** resolved on-demand from a *stable* hash of `(worldSeed, InstanceId, placementTime)` so a
+> **soak** (ready when `now − placedAt ≥ SoakHours · (SecondsPerDay / 24)`, recomputed not saved,
+> rule 5) and a **seeded catch** resolved on-demand from a *stable* hash of
+> `(worldSeed, InstanceId, placementTime)` so a
 > save→load→haul lands the **identical** catch. The catch reuses the existing `CatchResolver` over the
 > trap's `AllowedCatchFishIds` (resolved id→Def at runtime via a Resources-loaded `FishSpeciesLibrary`);
 > the loaded **bait soft-weights** the roll toward its `FavorsSpeciesIds` (a nudge, both catches stay

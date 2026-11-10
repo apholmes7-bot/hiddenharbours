@@ -75,7 +75,7 @@ namespace HiddenHarbours.Tests.EditMode
         private BaitDef _herring;
 
         private const double PlaceTime = 5000.0;
-        private static readonly double LobsterSoakSpan = 12.0 * 3600.0;   // TrapDef.SoakHours = 12
+        private static readonly double LobsterSoakSpan = 12.0 * 75.0;   // TrapDef.SoakHours = 12
 
         [SetUp]
         public void SetUp()
@@ -217,7 +217,7 @@ namespace HiddenHarbours.Tests.EditMode
 
             // Half-way up the fill curve (12h ready → 36h full ⇒ 24h is fill 0.5): the count itself is a
             // seed-varied roll here, which is exactly what must reproduce across the reload.
-            double midFill = live.PlacementGameTimeSeconds + 24.0 * 3600.0;
+            double midFill = live.PlacementGameTimeSeconds + 24.0 * 75.0;
             var ctx = TrapContext();
             var before = new List<CatchItem>();
             int beforeCount = live.ResolveCatches(midFill, in ctx, before);
@@ -287,7 +287,7 @@ namespace HiddenHarbours.Tests.EditMode
             var svc = MakeService();
             PlacedTrap live = svc.PlaceTrap(_lobsterTrap, _herring, new Vector2(2f, 2f), "region.coddle_cove");
 
-            _clock.Seconds = live.PlacementGameTimeSeconds + _lobsterTrap.HoursToFullPot * 3600.0;
+            _clock.Seconds = live.PlacementGameTimeSeconds + _lobsterTrap.HoursToFullPot * 75.0;
 
             int caught = 0;
             void OnCaught(FishCaught _) => caught++;
@@ -313,7 +313,7 @@ namespace HiddenHarbours.Tests.EditMode
             var svc = MakeService();
             PlacedTrap live = svc.PlaceTrap(_lobsterTrap, _herring, new Vector2(2f, 2f), "region.coddle_cove");
 
-            _clock.Seconds = live.PlacementGameTimeSeconds + _lobsterTrap.HoursToFullPot * 3600.0;   // full pot: 4
+            _clock.Seconds = live.PlacementGameTimeSeconds + _lobsterTrap.HoursToFullPot * 75.0;   // full pot: 4
 
             var hold = new FakeHold { Capacity = 2 };   // room for 2 of the 4
             Assert.IsFalse(svc.HaulTrap(live, hold, TrapContext()), "not enough room for the whole catch → refused");

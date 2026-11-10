@@ -16,18 +16,22 @@ namespace HiddenHarbours.Tests.EditMode
     /// </summary>
     public class TrapFillTests
     {
+        [SetUp]
+        public void ResetServices() => GameServices.Reset();
+
         private const int WorldSeed = 4242;
         private const string InstanceId = "trap.lobster#77.3";
         private const double PlaceTime = 5000.0;
         private const float SoakHours = 12f;
         private const float FullHours = 36f;
-        private const double Hour = 3600.0;
+        private const double Hour = 75.0;
 
         private readonly List<Object> _spawned = new();
 
         [TearDown]
         public void TearDown()
         {
+            GameServices.Reset();
             foreach (var o in _spawned) if (o != null) Object.DestroyImmediate(o);
             _spawned.Clear();
         }
