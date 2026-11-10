@@ -68,6 +68,14 @@ namespace HiddenHarbours.Tests.PlayMode
 
         protected static void Step(string step) => CumberlandTestProgress.Mark(step);
 
+        // A capture owns its floor. Requiring a manually seeded file makes a filtered run depend
+        // on another run's evidence, even when the scene and its fixture loaded successfully.
+        protected static void BeginPlateRun(string folder, string floorName)
+        {
+            Directory.CreateDirectory(folder);
+            File.WriteAllText(Path.Combine(folder, floorName), DateTime.UtcNow.ToString("O", CultureInfo.InvariantCulture));
+        }
+
         protected IEnumerator LoadDirect()
         {
             Step("load-direct/begin");
@@ -438,6 +446,8 @@ namespace HiddenHarbours.Tests.PlayMode
         {
             if (SystemInfo.graphicsDeviceType == GraphicsDeviceType.Null)
                 Assert.Ignore("Plates need a graphics device.");
+            string folder = Path.Combine(Application.temporaryCachePath, "cumberland-cmb0-b");
+            BeginPlateRun(folder, "cmb0-phase-b.floor");
             _asyncShaders = ShaderUtil.allowAsyncCompilation;
             _shaderSettingCaptured = true;
             ShaderUtil.allowAsyncCompilation = false;
@@ -452,7 +462,6 @@ namespace HiddenHarbours.Tests.PlayMode
             _camera.targetTexture = _target;
             _camera.aspect = (float)Width / Height;
             var views = JsonUtility.FromJson<SourceViews>(Plan.Source.text).keyscenes.list;
-            string folder = Path.Combine(Application.temporaryCachePath, "cumberland-cmb0-b");
             Directory.CreateDirectory(folder);
             Assert.That(File.Exists(Path.Combine(folder, "cmb0-phase-b.floor")), Is.True, "A plate floor must precede capture.");
             var manifest = new StringBuilder("view,tide,day_index,hour,water_m,path,utc\n");
@@ -506,6 +515,8 @@ namespace HiddenHarbours.Tests.PlayMode
         {
             if (SystemInfo.graphicsDeviceType == GraphicsDeviceType.Null)
                 Assert.Ignore("Plates need a graphics device.");
+            string folder = Path.Combine(Application.temporaryCachePath, "cumberland-cmb0-b");
+            BeginPlateRun(folder, "cmb0-phase-b.floor");
             _asyncShaders = ShaderUtil.allowAsyncCompilation;
             _shaderSettingCaptured = true;
             ShaderUtil.allowAsyncCompilation = false;
@@ -527,7 +538,6 @@ namespace HiddenHarbours.Tests.PlayMode
                 (box[1] - box[0]) / (2 * _camera.aspect)) * 1.05f;
             yield return new WaitForSecondsRealtime(2);
             for (int frame = 0; frame < 30; ++frame) yield return null;
-            string folder = Path.Combine(Application.temporaryCachePath, "cumberland-cmb0-b");
             Assert.That(File.Exists(Path.Combine(folder, "cmb0-phase-b.floor")), Is.True);
             Step("course-daylight/capture");
             Capture(Path.Combine(folder, "course-daylight-mean-flood.png"));
