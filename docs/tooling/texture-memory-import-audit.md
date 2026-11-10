@@ -75,7 +75,7 @@ not measured; this is not a mobile-format audit.
 
 The authoritative default-setting implementation is
 [`ArtImportPipeline`](../../Assets/_Project/Art/Editor/ArtImportPipeline.cs), with
-the policy in [Art & Audio Bible section 9.2](../design/art-and-audio-bible.md#92-unity-import-settings-lock-these-per-adr0001-engine-choice-md-2d-urp).
+the policy in [Art & Audio Bible section 9.2](../design/art-and-audio-bible.md).
 The pipeline stamps the defaults **only on first import**, then respects intentional
 manual overrides. Its scope is TextureImporter under `Assets/_Project/Art/`.
 Other asset paths and native texture arrays receive inventory rows but are not
