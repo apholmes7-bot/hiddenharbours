@@ -547,10 +547,24 @@ namespace HiddenHarbours.Tests.PlayMode
             walkLabel=(night?"night":"day")+"-"+(high?"spring-high":"low");
             float actual=GameServices.Environment.WaterLevelAt(GameServices.Clock.TotalSeconds);
             Assert.That(high?actual:-actual,Is.GreaterThan(2f),"the real tide reaches the requested end of its range");
+            WriteLightStates();
             foreach(var view in new[]{("working",new Vector2(63,76),16f),("fleet",new Vector2(128,72),23f),("recreation",new Vector2(181,76),16f),("overview",new Vector2(124,40),65f)})
             {
                 yield return FramePlate(view.Item2,view.Item3);WritePlate(walkLabel+"-"+view.Item1);
             }
+        }
+        /// <summary>What every scene light is doing at the plate's hour: a record beside the plates, read when a
+        /// night plate shows no lamp pool. It changes no light.</summary>
+        void WriteLightStates()
+        {
+            Color tint=Shader.GetGlobalColor("_DayNightTint");
+            string I(float v)=>v.ToString("R",CultureInfo.InvariantCulture);
+            var rows=new List<string>{"state,light,parent,enabled,active,intensity,range,x,y,hour,tint_r,tint_g,tint_b"};
+            foreach(var light in Object.FindObjectsByType<SceneLight>(FindObjectsInactive.Include).OrderBy(l=>l.transform.position.x).ThenBy(l=>l.name))
+                rows.Add(string.Join(",",walkLabel,light.name,light.transform.parent!=null?light.transform.parent.name:"",light.enabled?"1":"0",
+                    light.gameObject.activeInHierarchy?"1":"0",I(light.Intensity),I(light.Range),I(light.transform.position.x),I(light.transform.position.y),
+                    I(GameServices.Clock.HourOfDay),I(tint.r),I(tint.g),I(tint.b)));
+            File.WriteAllText(Evidence+"/s18a-lights-"+walkLabel+".csv",string.Join("\n",rows)+"\n");
         }
         [UnityTest,Timeout(180000)]public IEnumerator H5Plate_DayLow()
         {
