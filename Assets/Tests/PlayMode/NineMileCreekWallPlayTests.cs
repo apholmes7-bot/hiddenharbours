@@ -239,11 +239,44 @@ namespace HiddenHarbours.Tests.PlayMode
             return probes;
         }
 
+        /// <summary>The yard's walking clearance either side of a pier, where the pier's runway opens the wall
+        /// (m): the number the land side cut the two runways with.</summary>
+        const float RunwayClearMetres = 0.5f;
+
+        /// <summary>The fixed decks the quay leads straight onto: every standable platform at a cap's own height
+        /// that is not one of the caps. At Nine Mile Creek, the yard's two piers.</summary>
+        static List<Rect> DecksTheQuayLeadsOnto(List<StandablePlatform> caps) =>
+            Object.FindObjectsByType<StandablePlatform>()
+                  .Where(p => !caps.Contains(p) && p.Id != FloatId && p.Id != GangwayId
+                              && caps.Any(c => Mathf.Abs(c.DeckElevation - p.DeckElevation) <= 0.05f))
+                  .Select(p => p.Footprint)
+                  .ToList();
+
+        /// <summary>Is <paramref name="p"/> in a pier's runway: one step off the face, is she on a fixed deck or
+        /// within the yard's walking clearance of its side?</summary>
+        static bool OnAPiersRunway(Vector2 p, Vector2 outward, List<Rect> landings)
+        {
+            Vector2 beyond = p + outward * QuayEdgePlan.WalkStepMetres;
+            foreach (Rect deck in landings)
+            {
+                float dx = Mathf.Max(deck.xMin - beyond.x, 0f, beyond.x - deck.xMax);
+                float dy = Mathf.Max(deck.yMin - beyond.y, 0f, beyond.y - deck.yMax);
+                if (Mathf.Sqrt(dx * dx + dy * dy) <= RunwayClearMetres + 1e-3f) return true;
+            }
+            return false;
+        }
+
         /// <summary>Every <see cref="QuayEdgePlan.WalkStepMetres"/> of a cap's face that is a fall with no
-        /// wall over it — a place she could step off. The brow is excused, as wide a gate as the plan would
-        /// ever cut for it; a cap's quarter-metre ends are stubs and are not walked.</summary>
+        /// wall over it — a place she could step off. A brow is excused, as wide a gate as the plan would
+        /// ever cut for it, and so is a pier's runway, as wide as the yard cut it; a cap's quarter-metre ends
+        /// are stubs and are not walked.
+        ///
+        /// <para>Since the wharf's water side (NMC H5) the wall's stored runs name its openings: four brows
+        /// hinge on the faces where one did, and the two pier runways the blockers already had are in the
+        /// runs too. Every opening must be one of those six, each with its structure in it.</para></summary>
         static List<string> UnwalledFalls(List<QuayDeck> decks, System.Func<Vector2, float> ground,
-                                          List<Vector2[]> runs, float halfThickness, GangwayPlatform brow)
+                                          List<Vector2[]> runs, float halfThickness,
+                                          IReadOnlyList<GangwayPlatform> brows, List<Rect> landings)
         {
             var open = new List<string>();
             foreach (QuayDeck cap in decks)
@@ -266,7 +299,8 @@ namespace HiddenHarbours.Tests.PlayMode
                         Vector2 p = Vector2.Lerp(a, b, s / (float)steps);
                         if (!QuayEdgePlan.IsFallEdge(decks, cap.Elevation, p, outward, ground)) continue;
                         if (DistanceToWall(p, runs) <= halfThickness + 0.01f) continue;
-                        if (brow != null && InTheBrowsGate(p, brow)) continue;
+                        if (brows.Any(brow => InTheBrowsGate(p, brow))) continue;
+                        if (OnAPiersRunway(p, outward, landings)) continue;
                         open.Add($"({p.x:0.0}, {p.y:0.0})");
                     }
                 }
@@ -324,9 +358,9 @@ namespace HiddenHarbours.Tests.PlayMode
                 "or the sampler have collapsed and a green here would mean nothing.");
 
             List<string> open = UnwalledFalls(decks, ground, runs, walls.ThicknessMetres * 0.5f,
-                                              Object.FindObjectsByType<GangwayPlatform>().FirstOrDefault());
+                                              Object.FindObjectsByType<GangwayPlatform>(), DecksTheQuayLeadsOnto(caps));
             Assert.IsEmpty(open,
-                $"{open.Count} point(s) of the quay's faces drop to the basin with no wall over them and no brow " +
+                $"{open.Count} point(s) of the quay's faces drop to the basin with no wall over them, no brow and no pier " +
                 "— the walk off the quay is open there: " + string.Join(" ", open.Take(12)));
 
             var worst = new List<string>();

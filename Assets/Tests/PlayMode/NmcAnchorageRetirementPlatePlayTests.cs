@@ -53,9 +53,12 @@ namespace HiddenHarbours.Tests.PlayMode
             yield return _stage.SetNight(14f);
             var boats = Object.FindObjectsByType<MooredBoat>(FindObjectsSortMode.None);
             int review = boats.Count(b => b.name.StartsWith("Review_", StringComparison.Ordinal));
-            var working = boats.Where(b => b.name.StartsWith("Moored_owner.", StringComparison.Ordinal)).ToArray();
+            // The wharf's water side (NMC H5) names the float residents by their registered rows (boat.nmc_*) and
+            // the register has three of them where the old float had two; the five wall boats keep their names.
+            var working = boats.Where(b => b.name.StartsWith("Moored_owner.", StringComparison.Ordinal)
+                                           || b.name.StartsWith("boat.nmc_", StringComparison.Ordinal)).ToArray();
             Assert.AreEqual(baseline ? 23 : 0, review);
-            Assert.AreEqual(7, working.Length);
+            Assert.AreEqual(baseline ? 7 : 8, working.Length);
             foreach (var boat in working)
             {
                 Assert.IsTrue(boat.IsPresented, boat.name);
