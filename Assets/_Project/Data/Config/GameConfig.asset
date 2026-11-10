@@ -154,6 +154,7 @@ MonoBehaviour:
   MarketPriceLevelNineMileCreek: 1
   MarketPriceLevelStPetersStore: 0.6
   MarketDailyRecovery: 0.5
+  CounterBerthReachMeters: 10
   FrontedLicenceFee: 20
   MaxOneHandFishLengthMeters: 0.62
   FishLengthPerKgCubeRootMeters: 0.477

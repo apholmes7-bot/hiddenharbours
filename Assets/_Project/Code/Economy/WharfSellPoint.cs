@@ -114,11 +114,36 @@ namespace HiddenHarbours.Economy
         /// <c>SellScreen</c> and returns 0 by design, which is exactly what a sale spoken in a bubble must
         /// not do: the row's whole point is that a sale at a counter is something a person tells you, with
         /// them still standing there. <c>SellScreen</c> is untouched and keeps its own callers.</para>
+        ///
+        /// <para><b>And the catch in your boat, when she is at the wharf.</b> A fish landed from the
+        /// deck is in the boat's hold, which no island counter was ever wired to — so it had no buyer.
+        /// After the wired hold is sold exactly as before, the counter asks <see cref="BerthedCatch"/>
+        /// whether a boat is lying at a wharf and takes her catch too: a second sale through the same
+        /// <see cref="Sell(IHold, IWallet)"/> seam, priced into whatever glut the first one left.
+        /// <see cref="LastPayout"/> and <see cref="LastUnitsSold"/> then report the two together, which
+        /// is what the person at the counter says. With no boat at a wharf this is the old method to
+        /// the unit and the coin; with a catch aboard a boat that is NOT at a wharf it says so
+        /// (<see cref="BerthedCatch.NoticeBoatNotBerthed"/>) and leaves it aboard.</para>
         /// </summary>
         public int SellOverTheCounter()
         {
             LastUnitsSold = 0;
-            return Sell(_hold, _wallet);
+            int paid = Sell(_hold, _wallet);
+
+            IBoatHold alongside = BerthedCatch.AlongsideNow(_hold);
+            if (alongside != null)
+            {
+                int carriedUnits = LastUnitsSold;
+                LastUnitsSold = 0;
+                paid += Sell(alongside, _wallet);
+                LastUnitsSold += carriedUnits;
+                LastPayout = paid;
+            }
+            else if (BerthedCatch.CatchLeftAboardNow(_hold))
+            {
+                EventBus.Publish(new DevNotice(BerthedCatch.NoticeBoatNotBerthed));
+            }
+            return paid;
         }
     }
 }

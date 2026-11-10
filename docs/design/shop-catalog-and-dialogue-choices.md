@@ -446,6 +446,16 @@ sells through `WharfSellPoint`'s existing seam, and answers `CounterSellReported
 around them are authored on the option asset with `{payout}`/`{units}` tokens. That keeps
 `FeeFronted`'s standing rule: *the economy never writes dialogue.*
 
+**4a. The same row also takes the catch in your boat, when she lies at a wharf** (2026-11-10). A fish
+landed from the deck is in the boat's hold, and an island counter is wired to the pail, so that fish had
+no buyer. `WharfSellPoint.SellOverTheCounter` now sells its wired hold exactly as before and then asks
+Economy's `BerthedCatch` for a boat hold (Core `IBoatHold`, found through the Core `BoatHolds` registry,
+never a Boats class) whose boat lies within `GameConfig.CounterBerthReachMeters` of a shore-side fitting
+in `MooringCleats`. If there is one, her catch is a second sale through the same buyer and market, and
+the report carries the two together. `0` on that number turns it off. A boat with a catch that is NOT at
+a wharf is left alone and the player is told so. No scene, dialogue asset or screen changed for it; the
+clerk's authored lines still say "pail" and are World's to reword.
+
 > ⚠⚠ **THE SHIPPED SCENES DO NOT CARRY ANY OF THIS YET, AND THAT IS THE NORMAL STATE.** Region scenes
 > are authored from the builders and banked separately by the owner's Build click; the last bank was
 > **2026-08-23**, and PR 1's builder edits (the `CatalogBookPresenter` on `DialogueUI`, `_sellerId` on

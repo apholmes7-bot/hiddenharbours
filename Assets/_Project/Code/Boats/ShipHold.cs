@@ -7,8 +7,13 @@ namespace HiddenHarbours.Boats
     /// <summary>
     /// The boat's cargo hold. Capacity comes from the hull (HU). Implements <see cref="IHold"/> so
     /// Fishing fills it and the market empties it, all through the Core contract.
+    ///
+    /// <para>It is an <see cref="IBoatHold"/> too, and says so in <see cref="BoatHolds"/> while it is
+    /// enabled: a buyer ashore that was never wired to this boat can still find her catch and ask
+    /// where she lies. The hold only reports her position — whether that counts as berthed is the
+    /// buyer's question, not the boat's.</para>
     /// </summary>
-    public class ShipHold : MonoBehaviour, IHold
+    public class ShipHold : MonoBehaviour, IBoatHold
     {
         [SerializeField] private BoatHullDef _hull;
 
@@ -42,8 +47,21 @@ namespace HiddenHarbours.Boats
         // save blob (cheap — a handful of units, event-time only; the DISK write stays SaveService's
         // autosave), and the GameLoaded edge restores it — so freshness survives a reload exactly
         // (spoil is a pure function of the restored state + the restored clock).
-        private void OnEnable() => EventBus.Subscribe<GameLoaded>(OnGameLoaded);
-        private void OnDisable() => EventBus.Unsubscribe<GameLoaded>(OnGameLoaded);
+        private void OnEnable()
+        {
+            EventBus.Subscribe<GameLoaded>(OnGameLoaded);
+            BoatHolds.Register(this);
+        }
+
+        private void OnDisable()
+        {
+            EventBus.Unsubscribe<GameLoaded>(OnGameLoaded);
+            BoatHolds.Unregister(this);
+        }
+
+        /// <summary>Where this boat lies right now (her root, world metres) — the
+        /// <see cref="IBoatHold"/> read. Live, never cached: she swings on her line.</summary>
+        public Vector2 WorldPosition => transform.position;
 
         private void OnGameLoaded(GameLoaded _)
         {

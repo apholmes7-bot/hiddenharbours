@@ -410,6 +410,19 @@ namespace HiddenHarbours.Core
                  "on day rollover, not per frame.")]
         [Range(0f, 1f)] public float MarketDailyRecovery = 0.5f;
 
+        /// <summary>The code default for <see cref="CounterBerthReachMeters"/>, and what an unwired
+        /// config (EditMode, a bare scene) falls back to.</summary>
+        public const float DefaultCounterBerthReachMeters = 10f;
+
+        [Tooltip("How near a wharf fitting your boat must lie for a counter to take the catch in her " +
+                 "hold along with what you carry (metres, from the boat's centre to the nearest bollard, " +
+                 "cleat or float cleat on the shore side). Inside it, selling at a counter sells the " +
+                 "boat's catch too; outside it the counter takes only what was wired to it (your pail) " +
+                 "and the catch stays aboard. St Peters' bollards stand 9 m apart with the berth about " +
+                 "4.5 m off them, so 10 covers a boat lying anywhere alongside. 0 = counters never take " +
+                 "a boat's catch (the behaviour before this number existed).")]
+        [Min(0f)] public float CounterBerthReachMeters = DefaultCounterBerthReachMeters;
+
         [Header("The fronted licence fee (plan-to-m1 §7.5 — the Aunt Ginny beat)")]
         // ⚠ THIS NUMBER EXISTS TO PREVENT A DEADLOCK, not for flavour. CatchLicensePolicy.MayLand FAILS
         // CLOSED: a species some licence gates cannot be landed without that licence. The clam licence gates
