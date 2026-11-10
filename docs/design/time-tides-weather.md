@@ -78,8 +78,13 @@ reload wakes on the same morning. The wake hour is `GameConfig.WakeHour` (6). Th
 | While the hour is held (the opening) | the clock does not move; the rest only saves | none |
 
 A bunk aboard follows the same rule as a bed ashore: nothing is simulated through the night, so the hull is
-where she was left, on the new tide. Stamina, the Nap/wait verb and Pass out are not built yet. The rest has no
-fade of its own yet: the light changes at the press, under the existing sleeping pose.
+where she was left, on the new tide. Stamina, the Nap/wait verb and Pass out are not built yet.
+
+The light changes under a dark screen. The rest raises the existing screen cover (`RegionTravelCover`, held)
+before the clock moves, and releases it after the save is written; the release is what starts the cover's own
+fade back to clear. It is one call inside the frame of the press, so nothing waits on the fade and no frame is
+drawn with the clock half moved. The dark arrives as a cut, as on a region crossing: the cover has no fade *to*
+black yet. A rest that will not move the clock (a held hour) raises no cover.
 
 ### 1.4 Reading the clock
 

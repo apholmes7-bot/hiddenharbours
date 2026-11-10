@@ -36,6 +36,18 @@ namespace HiddenHarbours.Core
     /// <see cref="IGameClock"/> contract, and a clock that refuses (the hour is held, or there is no
     /// clock) leaves the rest exactly the save-only beat it was before.</para>
     ///
+    /// <para><b>The light changes under a dark screen.</b> The night is hours of light gone in one
+    /// call, and seen bare it reads as a fault. So the same order is wrapped in the screen cover the
+    /// game already has: <see cref="RegionTravelCover"/> is raised held (the screen is black from that
+    /// instant), the clock moves and the save is written under it, and the cover is released, which
+    /// is what starts its fade back to clear over the cover's own duration. All of it is one
+    /// synchronous call inside the frame of the press, so there is no wait to bound and nothing to
+    /// time out: no frame is ever drawn with the clock half moved, and the release sits in a
+    /// <c>finally</c> so a throwing save cannot leave the screen black. Nobody listening (a test rig,
+    /// a scene with no cover) is a legal outcome and leaves the rest exactly as it was. The dark
+    /// arrives as a cut, as it does on a region crossing; the cover has no fade TO black, and this
+    /// type does not grow one.</para>
+    ///
     /// <para><b>Refusal is a normal outcome, not a fault.</b> A save asked for at the title is refused by
     /// the service's own write gate, and a context with no save service at all (EditMode, a bare region
     /// scene opened for review) has nothing to write to. Both answer with an <c>Ok:false</c>
@@ -91,16 +103,34 @@ namespace HiddenHarbours.Core
         /// </summary>
         public static GameSaved Fulfil(RestSaveRequested request)
         {
-            // The morning comes FIRST: the write below snapshots the clock, and a reload must wake on
-            // the morning the player just saw. It comes whether or not anything here can keep the day,
-            // because sleeping and saving are two things and only one of them needs a disk.
-            bool woke = RestMorning.Bring(GameServices.Clock, GameServices.Config);
+            IGameClock clock = GameServices.Clock;
+            GameConfig config = GameServices.Config;
 
-            ISaveService save = GameServices.Save;
+            // Dark BEFORE the clock moves. The cover is asked for only when the morning is actually
+            // coming: a held hour or a clockless context changes no light and so hides nothing.
+            bool covered = RestMorning.WillBring(clock, config);
+            if (covered) EventBus.Publish(new RegionTravelCover(true));
 
-            GameSaved outcome = save == null
-                ? new GameSaved(false, NoServiceText)
-                : Write(save, request, woke);
+            GameSaved outcome;
+            try
+            {
+                // The morning comes FIRST: the write below snapshots the clock, and a reload must wake
+                // on the morning the player just saw. It comes whether or not anything here can keep
+                // the day, because sleeping and saving are two things and only one of them needs a disk.
+                bool woke = RestMorning.Bring(clock, config);
+
+                ISaveService save = GameServices.Save;
+
+                outcome = save == null
+                    ? new GameSaved(false, NoServiceText)
+                    : Write(save, request, woke);
+            }
+            finally
+            {
+                // Released on EVERY path out, a throwing save included: a cover that is held and never
+                // let go is a black screen the player cannot leave.
+                if (covered) EventBus.Publish(new RegionTravelCover(false));
+            }
 
             EventBus.Publish(outcome);
             return outcome;

@@ -98,5 +98,24 @@ namespace HiddenHarbours.Core
             double wake = WakeSeconds(now, config);
             return wake > now && clock.FastForwardTo(wake);
         }
+
+        /// <summary>
+        /// Whether a rest asked for right now is going to move <paramref name="clock"/>: there is a
+        /// living clock, its hour is not held, and the wake instant is ahead of it. The question a
+        /// presenter asks BEFORE the morning comes, so the screen can be dark while the light changes.
+        ///
+        /// <para>It is a forecast, not a promise. A clock with no backing store (most test fakes) answers
+        /// true here and still refuses <see cref="Bring"/>, so a caller must act on what
+        /// <see cref="Bring"/> returned, never on this.</para>
+        /// </summary>
+        public static bool WillBring(IGameClock clock, GameConfig config)
+        {
+            if (clock == null) return false;
+            if (clock is UnityEngine.Object unityObject && unityObject == null) return false;
+            if (clock.IsHeld) return false;
+
+            double now = clock.TotalSeconds;
+            return WakeSeconds(now, config) > now;
+        }
     }
 }
