@@ -65,6 +65,27 @@ The player ends a day (or skips ahead) in three sanctioned ways. All three are j
 
 **Implementation:** sleeping never simulates intervening ticks step-by-step. Because the whole environment is deterministic from `gameTime`, we just set `gameTime = targetTime` and re-sample. (Economy/NPC systems that *do* need discrete daily ticks subscribe to an `OnDayRollover(dayIndex)` event and run their resupply once per crossed midnight — see §9.4.)
 
+**As built — Sleep (the player's own bed).** Lying down runs one fixed order: the clock is fast-forwarded to
+the wake hour (`IGameClock.FastForwardTo`, target from `RestMorning`), `DayStarted` is published once per
+midnight slept through (and `SeasonChanged` where a season turns), and only then is the save written, so a
+reload wakes on the same morning. The wake hour is `GameConfig.WakeHour` (6). The edges:
+
+| Lying down at | Wakes at | Day rollover |
+|---|---|---|
+| Evening or daytime (22:00, noon) | **tomorrow's** wake hour | fires once |
+| After midnight, before the wake hour (02:00, 05:50) | **this morning's** wake hour — a short lie-down, not a lost day | none: the day already started at midnight |
+| Exactly at the wake hour (a second rest straight after the first) | tomorrow's wake hour | fires once |
+| While the hour is held (the opening) | the clock does not move; the rest only saves | none |
+
+A bunk aboard follows the same rule as a bed ashore: nothing is simulated through the night, so the hull is
+where she was left, on the new tide. Stamina, the Nap/wait verb and Pass out are not built yet.
+
+The light changes under a dark screen. The rest raises the existing screen cover (`RegionTravelCover`, held)
+before the clock moves, and releases it after the save is written; the release is what starts the cover's own
+fade back to clear. It is one call inside the frame of the press, so nothing waits on the fade and no frame is
+drawn with the clock half moved. The dark arrives as a cut, as on a region crossing: the cover has no fade *to*
+black yet. A rest that will not move the clock (a held hour) raises no cover.
+
 ### 1.4 Reading the clock
 
 - HUD shows a **24h clock** (canon) with an analog sun/moon dial and digital `HH:MM`. Skipper vernacular for time-of-day flavor is fine in ambient text ("first light", "the turn of the tide") but the HUD is literal.
