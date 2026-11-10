@@ -223,8 +223,11 @@ namespace HiddenHarbours.Tests.PlayMode
         public IEnumerator TearDownRegion()
         {
             // A region boot can leave static shell/gate state behind the discarded core.
-            ShellFlow.Reset();
-            InteractionGate.Reset();
+            if (_loadedAny)
+            {
+                ShellFlow.Reset();
+                InteractionGate.Reset();
+            }
             LogAssert.ignoreFailingMessages = false;
             Time.timeScale = 1f;   // ⚠ a STATIC: left at 0 it stops every test that follows
 
