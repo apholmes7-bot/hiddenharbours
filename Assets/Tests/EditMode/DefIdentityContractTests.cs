@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text.RegularExpressions;
 using NUnit.Framework;
 using UnityEditor;
 using UnityEngine;
@@ -16,6 +17,10 @@ namespace HiddenHarbours.Tests.EditMode
     {
         private const string ContentRoot = "Assets/_Project";
         private const string LedgerPath = "Assets/Tests/EditMode/Fixtures/DefIdentityLedger.json";
+        // Fixtures such as CumberlandRegionTests save disposable proof copies of real Defs (same id, fresh GUID)
+        // into a folder or file suffixed with a 32-hex run id, and keep them for inspection by design. They are
+        // not committed content, so the identity contract does not count them.
+        private static readonly Regex DisposableProof = new Regex("_[0-9a-f]{32}(/|\\.|$)");
 
         [Serializable]
         public class Identity
@@ -126,6 +131,7 @@ namespace HiddenHarbours.Tests.EditMode
             foreach (string guid in AssetDatabase.FindAssets("t:" + type.Name, new[] { ContentRoot }))
             {
                 string path = AssetDatabase.GUIDToAssetPath(guid);
+                if (DisposableProof.IsMatch(path)) continue;
                 var asset = AssetDatabase.LoadAssetAtPath(path, type);
                 Assert.That(asset, Is.Not.Null, path);
                 Assert.That(asset.GetType(), Is.EqualTo(type), path);
