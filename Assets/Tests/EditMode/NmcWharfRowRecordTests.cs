@@ -184,6 +184,33 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.That(machine.Field("_drivable"), Is.EqualTo("1"));
         }
 
+        /// <summary>H5 re-homes the five wall boats on the register's slots (Decision 4), and they stay on G3's north
+        /// face: in the dry-run candidate each lies with her side on the fender line, and running H5's steps again
+        /// leaves her transform as the scene holds it. The placer once took the builder's berth without the face's
+        /// move and laid all five a metre north; the scene's own guard is
+        /// <c>NineMileCreekSceneQuayTests.TheWallBoatsLieAlongTheG3Face_AfloatAtSpringLow</c>.</summary>
+        [Test]
+        public void TheWallBoatsStayOnTheG3FenderLine_WhenH5RunsAgain()
+        {
+            var candidate = WaterSideCandidate();
+            var committed = StPetersLayerRefresh.SceneYaml.Parse(File.ReadAllText(NineMileCreekLayerRefresh.ScenePath));
+            int wall = 0;
+            foreach (var owner in NineMileCreekMooredFleet.LoadOwners().Where(o => !o.LiesAtTheFloat))
+            {
+                var go = candidate.Docs.SingleOrDefault(d => d.ClassId == 1 && d.Field("m_Name") == "Moored_" + owner.Id);
+                if (go == null) continue; // an owner the wall does not present
+                string at = candidate.TransformOf(go).Field("m_LocalPosition");
+                float y = float.Parse(Regex.Match(at, @"y: ([-\d.eE+]+)").Groups[1].Value, CultureInfo.InvariantCulture);
+                Assert.That(y + NineMileCreekMooredFleet.HalfBeamOf(owner),
+                    Is.EqualTo(NineMileCreekGroundPlan.FenderLineY).Within(0.01f), owner.Id + " lies with her side on the G3 fender line");
+                var held = committed.Docs.Single(d => d.ClassId == 1 && d.Field("m_Name") == "Moored_" + owner.Id);
+                Assert.That(committed.TransformOf(held).Field("m_LocalPosition"), Is.EqualTo(at),
+                    owner.Id + " stays where the scene holds her when H5's steps run again");
+                wall++;
+            }
+            Assert.That(wall, Is.EqualTo(5), "the five wall boats");
+        }
+
         [TestCase("west", "float")]
         [TestCase("fleet", "fingerA")]
         [TestCase("fleet", "fingerB")]

@@ -239,7 +239,7 @@ namespace HiddenHarbours.App.Editor
                 if(owner.Id=="owner.boudreau_alma")continue; // the previously absent resident is H5's named new row.
                 string row=owner.LiesAtTheFloat?NineMileCreekWharfWaterSide.FloatRowForOwner(owner.Id).Id:null;
                 var go=scene.Docs.Single(d=>d.ClassId==1&&(d.Field("m_Name")=="Moored_"+owner.Id||(row!=null&&d.Field("m_Name")==row)));
-                var transform=scene.TransformOf(go);Vector2 at=owner.LiesAtTheFloat?NineMileCreekWharf.FloatBerthPos(owner.BerthIndex,ground):NineMileCreekMainland.BerthPos(owner.BerthIndex,NineMileCreekMooredFleet.HalfBeamOf(owner));
+                var transform=scene.TransformOf(go);Vector2 at=owner.LiesAtTheFloat?NineMileCreekWharf.FloatBerthPos(owner.BerthIndex,ground):NineMileCreekGroundSteps.WallBerth(owner.BerthIndex,NineMileCreekMooredFleet.HalfBeamOf(owner));
                 patch.Edit(transform,SetField(transform.Text,"m_LocalPosition",Vec3Yaml(at.x,at.y,0)),owner.Id+" / registered berth");
                 var mono=scene.ComponentsOf(go).Single(d=>d.IsScript("HiddenHarbours.Boats.MooredBoat"));
                 patch.Edit(mono,SetField(mono.Text,"_headingDegrees",F(owner.LiesAtTheFloat?NineMileCreekWharf.FloatMooredHeadingDegrees():NineMileCreekMooredFleet.MooredHeadingDegrees())),owner.Id+" / heading");
