@@ -95,6 +95,13 @@ namespace HiddenHarbours.App.Editor
             if(name==null)return def.SpriteFor(frame);
             return def.Variants.Single(v=>v.Name==name).Frames[frame].Sprite;
         }
+        /// <summary>How far a float's picture lies from where the bake drew it: the float's own shift for the float
+        /// and its back and front layers, nothing for any other part.</summary>
+        static Vector2 FloatShift(Dictionary<string,Vector2> shifts,string part)
+        {
+            foreach(var s in shifts)if(part==s.Key||part.StartsWith(s.Key+"_",StringComparison.Ordinal))return s.Value;
+            return Vector2.zero;
+        }
         static string RectFields(Rect r) => "    serializedVersion: 2\n    x: "+F(r.x)+"\n    y: "+F(r.y)+"\n    width: "+F(r.width)+"\n    height: "+F(r.height);
 
         public static LayerPatch PlaceWaterSide(SceneYaml scene, bool crib)
@@ -114,13 +121,15 @@ namespace HiddenHarbours.App.Editor
                     writer.Source(rowNode,def,"Assets/_Project/Data/SetPieces/SetPiece_nmc_"+key+".asset",row.Id,row.Dir);
                     object piece=native.Single(p=>WS(WM(p,"key"))==key);
                     var keys=WA(WM(piece,"parts")).Select(WS).ToArray();
-                    var floats=new Dictionary<string,long>();
+                    var floats=new Dictionary<string,long>();var shifts=new Dictionary<string,Vector2>();
                     // Surfaces first: each brow and moving cleat references the same float.
                     foreach(var p in parts.Where(p=>WS(WM(p,"harbour"))==key && WB(WM(p,"floating"))))
                     {
                         string name=WS(WM(p,"name")),id=name=="float"?"float.nmc_working":name=="recFloat"?"float.nmc_recreation":name=="fingerA"?"float.nmc_finger_a":"float.nmc_finger_b";
                         Vector2[] poly=WA(WM(p,"walkPolygon")).Select(WP).ToArray();
                         Rect rect=Rect.MinMaxRect(poly.Min(q=>q.x),poly.Min(q=>q.y),poly.Max(q=>q.x),poly.Max(q=>q.y));
+                        // The working float lies where the register says; the bake's polygon gives her size only.
+                        shifts[name]=name=="float"?NineMileCreekWharfWaterSide.WorkingFloat().min-rect.min:Vector2.zero;rect.position+=shifts[name];
                         float bed=float.NegativeInfinity;
                         for(float x=rect.xMin;x<=rect.xMax+.001f;x+=.2f)for(float y=rect.yMin;y<=rect.yMax+.001f;y+=.2f)bed=Mathf.Max(bed,ground.ElevationAt(new Vector2(x,y)));
                         var surface=writer.Node(row.Id+"/surface/"+name,id,Vector2.zero,root);
@@ -133,7 +142,7 @@ namespace HiddenHarbours.App.Editor
                         if(partKey=="fleet_crib"&&!crib)continue;
                         string name=WS(WM(p,"name"));object gang=WM(p,"gangway");
                         if(gang!=null&&WN(WM(gang,"step"))!=0)continue;
-                        Vector2 at=WP(WM(p,"at"));float elevation=WN(WM(p,"elevation"));
+                        Vector2 at=WP(WM(p,"at"))+FloatShift(shifts,name);float elevation=WN(WM(p,"elevation"));
                         var node=writer.Node(row.Id+"/"+name,name,at-row.At+Vector2.up*(elevation*IsoGround.HeightScale),rowNode);
                         if(gang==null)node.PictureScaleY=1f/IsoGround.GroundDepthScale;
                         Sprite sprite=WaterSprite(def,partKey==keys[0]?null:name,0);
@@ -169,12 +178,12 @@ namespace HiddenHarbours.App.Editor
                     }
                     foreach(var anchor in def.Anchors.Where(a=>a.Name.StartsWith("cleat.")||a.Name.Contains(".cleat.")))
                     {
-                        Vector2 at=row.At+(Vector2)anchor.Position;var n=writer.Node(row.Id+"/"+anchor.Name,anchor.Name,at,root);
                         string floatName=null;
                         if(key=="fleet"&&(anchor.Name.Contains("finger_a")||anchor.Name.Contains("_fingerA_")))floatName="fingerA";
                         else if(key=="fleet"&&(anchor.Name.Contains("finger_b")||anchor.Name.Contains("_fingerB_")))floatName="fingerB";
                         else if(key=="west"&&anchor.Name.Contains("_float_"))floatName="float";
                         else if(key=="east"&&anchor.Name.Contains("_recFloat_"))floatName="recFloat";
+                        Vector2 at=row.At+(Vector2)anchor.Position+(floatName!=null?shifts[floatName]:Vector2.zero);var n=writer.Node(row.Id+"/"+anchor.Name,anchor.Name,at,root);
                         if(floatName!=null)writer.Mono(n,"cleat","Assets/_Project/Code/World/FloatCleat.cs","HiddenHarbours.World","HiddenHarbours.World.FloatCleat",new[]{"  _id: "+anchor.Name,"  _platform: {fileID: "+floats[floatName]+"}"});
                         else writer.Mono(n,"cleat","Assets/_Project/Code/World/ShoreCleat.cs","HiddenHarbours.World","HiddenHarbours.World.ShoreCleat",new[]{"  _id: "+anchor.Name,"  _elevationMeters: "+F(anchor.Position.z)});
                     }

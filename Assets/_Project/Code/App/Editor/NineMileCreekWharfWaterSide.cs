@@ -58,6 +58,13 @@ namespace HiddenHarbours.App.Editor
             object f = M(Register(), "workingFloat"); var x = A(M(f, "x")); var y = A(M(f, "y"));
             return Rect.MinMaxRect(F(x[0]), F(y[0]), F(x[1]), F(y[1]));
         }
+        /// <summary>Where the rig's bake drew the working float: its own walk polygon. The register moves her.</summary>
+        public static Rect BakedWorkingFloat()
+        {
+            object part = A(M(ReadToday(), "parts")).Single(p => DeckSidecarJson.String(M(p, "key")) == "west_float");
+            var poly = A(M(part, "walkPolygon")).Select(q => { var xy = A(q); return new Vector2(F(xy[0]), F(xy[1])); }).ToArray();
+            return Rect.MinMaxRect(poly.Min(q => q.x), poly.Min(q => q.y), poly.Max(q => q.x), poly.Max(q => q.y));
+        }
         public static KeyScenePiece[] FloatBoatRows() => Scene().Pieces.Where(p =>
             p.Kind == KeySceneDef.KindBoat && p.StandsOn == "water").OrderBy(p => p.At.x).ToArray();
         public static Vector2 FloatBerth(int index)

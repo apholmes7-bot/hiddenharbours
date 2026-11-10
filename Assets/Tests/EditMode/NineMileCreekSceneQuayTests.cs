@@ -165,14 +165,15 @@ namespace HiddenHarbours.Tests.EditMode
 
         /// <summary>The four registered brows (NMC H5), each with the float it lands on and the mouth H5 opened for
         /// it in the wall: the working float's on the crane face, the two finger brows' and the recreation float's
-        /// on the north face. The old brow at x 105 and its float are retired. The working float takes the ground
-        /// below about -1.6 m (0.85 m of draught over a bed at -2.44), so at spring low her brow lands on a float
-        /// that sits on the bottom; the other three stay afloat through the whole range. The slopes are the brows'
-        /// own: drop over run at spring low and spring high, and the step down onto the float at spring high.</summary>
+        /// on the north face. The old brow at x 105 and its float are retired. All four floats stay afloat through
+        /// the whole range: the register lies the working float a metre east of where the bake drew her, clear of
+        /// the basin's edge slope that grounded her west end (held below). The slopes are the brows' own: drop over
+        /// run at spring low and spring high, and the step down onto the float at spring high.</summary>
+        const string WorkingFloatId = "float.nmc_working";
         static readonly (string brow, long id, string landing, long landingId, float x, float faceY, bool agroundAtSpringLow,
                          float slopeLow, float slopeHigh, float stepDownHigh)[] Brows =
         {
-            ("gangway.nmc_west_gangway", 1916874940L, "float.nmc_working", 482568552L, 54f, G.CraneFaceY, true, 0.2920f, 0.0482f, 0.75f),
+            ("gangway.nmc_west_gangway", 1916874940L, WorkingFloatId, 482568552L, 54f, G.CraneFaceY, false, 0.3309f, 0.0482f, 0.75f),
             ("gangway.nmc_fleet_gangway0", 1822863346L, "float.nmc_finger_a", 963455038L, 109.7f, G.NorthFaceY, false, 0.3309f, 0.0482f, 0.75f),
             ("gangway.nmc_fleet_gangway1", 939760229L, "float.nmc_finger_b", 833421161L, 142.3f, G.NorthFaceY, false, 0.3309f, 0.0482f, 0.75f),
             ("gangway.nmc_east_gangway", 446611123L, "float.nmc_recreation", 1545836378L, 179.3f, G.NorthFaceY, false, 0.3310f, 0.0465f, 0.72f),
@@ -480,6 +481,74 @@ namespace HiddenHarbours.Tests.EditMode
                 Assert.That(abutment - deckHigh, Is.EqualTo(row.stepDownHigh).Within(1e-3f),
                     $"you step DOWN {Shown(row.stepDownHigh)} m onto {row.landing} at spring high");
             }
+        }
+
+        // ---- the floats afloat ------------------------------------------------------------------------------
+        // A float pinned by one corner of her footprint hangs level above the falling water, and whatever is berthed
+        // at her hangs with her. The stored bed is the highest under her, so one high sample grounds the whole float.
+
+        /// <summary>How many samples of <paramref name="footprint"/> stand on a bed too high to float her at spring
+        /// low, by the game's own grounding rule and her own draught. The grid is the 0.05 m one her stored bed is
+        /// held on.</summary>
+        static int SamplesAground(Rect footprint, float draught, out int total, out float highest)
+        {
+            const float step = 0.05f;
+            int nx = Mathf.CeilToInt(footprint.width / step), ny = Mathf.CeilToInt(footprint.height / step), aground = 0;
+            total = 0; highest = float.NegativeInfinity;
+            for (int i = 0; i <= nx; i++)
+                for (int j = 0; j <= ny; j++)
+                {
+                    float bed = Ground(Mathf.Min(footprint.xMin + i * step, footprint.xMax), Mathf.Min(footprint.yMin + j * step, footprint.yMax));
+                    total++; highest = Mathf.Max(highest, bed);
+                    if (FloatingPlatform.IsAground(Low, bed, draught)) aground++;
+                }
+            return aground;
+        }
+
+        /// <summary>At the lowest water of the spring cycle every sample of every float's footprint has her draught of
+        /// water under it. The four registered floats are the creek's only floats: the old one is retired.</summary>
+        [Test]
+        public void EveryFloatHasWaterUnderHerWholeFootprint_AtSpringLow()
+        {
+            var floats = WaterSideParts("HiddenHarbours.World.FloatingPlatform");
+            Assert.That(floats, Has.Count.EqualTo(Brows.Length), "the four registered floats");
+            foreach (var (_, dock) in floats)
+            {
+                Rect footprint = RectOf(dock, "_footprint");
+                float draught = Number(dock, "_draughtMetres");
+                int aground = SamplesAground(footprint, draught, out int total, out float highest);
+                Debug.Log($"[NineMileCreekSceneQuayTests] {dock.Field("_id")} at spring low ({Shown(Low)} m): {aground} of {total} samples " +
+                          $"aground; highest bed {highest:0.######} m, she needs {Low - draught:0.######} m or deeper");
+                Assert.That(aground, Is.Zero,
+                    $"{dock.Field("_id")}: {aground} of {total} samples of her footprint are aground at spring low (highest bed " +
+                    $"{highest:0.######} m against the {Low - draught:0.######} m her {Shown(draught)} m draught needs). A float pinned " +
+                    "by one corner hangs above the falling water, and her boats with her: move her by the register, not the ground.");
+            }
+        }
+
+        /// <summary>The guard's red arm, and why the register and the bake differ. Where the rig's bake drew the working
+        /// float her west end stands on the basin's edge slope and grounds her; the register lies her east of it, the
+        /// same float (moved, not shortened), and the scene's float lies where the register says.</summary>
+        [Test]
+        public void TheRegisterLiesTheWorkingFloatClearOfTheBasinsEdge_WhereTheBakeWouldGroundHer()
+        {
+            Rect baked = NineMileCreekWharfWaterSide.BakedWorkingFloat(), registered = NineMileCreekWharfWaterSide.WorkingFloat();
+            Doc dock = WaterSideParts("HiddenHarbours.World.FloatingPlatform").Single(f => f.part.Field("_id") == WorkingFloatId).part;
+            Rect placed = RectOf(dock, "_footprint");
+            float draught = Number(dock, "_draughtMetres");
+            Assert.That(Vector2.Distance(placed.min, registered.min), Is.LessThan(1e-3f), "the scene's float lies where the register says");
+            Assert.That(Vector2.Distance(placed.size, registered.size), Is.LessThan(1e-3f), "the scene's float is the register's size");
+            Assert.That(Vector2.Distance(registered.size, baked.size), Is.LessThan(1e-3f), "moved, not shortened: her picture is the bake's");
+            Assert.That(registered.yMin, Is.EqualTo(baked.yMin).Within(1e-3f), "moved along the apron only");
+            int before = SamplesAground(baked, draught, out int bakedTotal, out float bakedHighest);
+            int after = SamplesAground(registered, draught, out int total, out float highest);
+            Debug.Log($"[NineMileCreekSceneQuayTests] the working float at spring low: at the bake's place (x {Shown(baked.xMin)} to " +
+                      $"{Shown(baked.xMax)}) {before} of {bakedTotal} samples aground, highest bed {bakedHighest:0.######} m; at the register's " +
+                      $"(x {Shown(registered.xMin)} to {Shown(registered.xMax)}) {after} of {total}, highest bed {highest:0.######} m; " +
+                      $"she needs {Low - draught:0.######} m or deeper");
+            Assert.That(before, Is.GreaterThan(0),
+                "the bake's place floats her whole, so the register has no reason to differ from it: lie her where the bake drew her");
+            Assert.That(after, Is.Zero, $"the register's place still grounds her: {after} of {total} samples, highest bed {highest:0.######} m");
         }
 
         // ---- row 5: the ladders and the shore cleats -------------------------------------------------------
