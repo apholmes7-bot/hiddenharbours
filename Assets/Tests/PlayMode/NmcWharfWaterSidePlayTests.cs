@@ -253,9 +253,26 @@ namespace HiddenHarbours.Tests.PlayMode
         [UnityTest,Timeout(300000)]
         public IEnumerator AllFourNativeGangways_AreWalkedToTheirFloats_AtBothTides()
         {
+            for(var walks=WalkTheGangways(false,"gangway-walks");walks.MoveNext();)yield return walks.Current;
+        }
+        /// <summary>The same eight walks with the walker's tide gate ON. The scene's walker ships with the gate off,
+        /// where the water state is Dry by construction; with the gate on the walker reads the real depth at its feet
+        /// every tick and the water-edge wall is live, so the Dry assertion in <see cref="WalkTo"/> and the arrival
+        /// on the float prove the brows and floats carry the walker above the water at both ends of the range.</summary>
+        [UnityTest,Timeout(300000)]
+        public IEnumerator AllFourNativeGangways_AreWalkedDry_WithTheTideGateOn_AtBothTides()
+        {
+            for(var walks=WalkTheGangways(true,"gangway-walks-tide-gated");walks.MoveNext();)yield return walks.Current;
+        }
+        IEnumerator WalkTheGangways(bool tideGated,string proofName)
+        {
             yield return Load();
+            var gate=typeof(PlayerWalkController).GetField("_tideGatedWalk",BindingFlags.Instance|BindingFlags.NonPublic);
+            Assert.That(gate,Is.Not.Null,"PlayerWalkController._tideGatedWalk was renamed or removed; re-point this fixture.");
+            gate.SetValue(player,tideGated);
+            Assert.That((bool)gate.GetValue(player),Is.EqualTo(tideGated));
             var brows=Object.FindObjectsByType<GangwayPlatform>().OrderBy(g=>g.Id).ToArray();Assert.That(brows.Length,Is.EqualTo(4));
-            string proof=Evidence+"/gangway-walks.csv";File.WriteAllText(proof,"id,water,shore_x,shore_y,toe_x,toe_y,end_x,end_y\n");
+            string proof=Evidence+"/"+proofName+".csv";File.WriteAllText(proof,"id,water,shore_x,shore_y,toe_x,toe_y,end_x,end_y\n");
             File.WriteAllText(Evidence+"/gangway-stall-trace.csv","id,water,frame,feet_x,feet_y,body_x,body_y,velocity_x,velocity_y,remaining\n");
             foreach(float level in new[]{-2.2f,2.2f})foreach(var brow in brows)
             {
