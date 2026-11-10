@@ -9,9 +9,9 @@ using UnityEngine;
 
 namespace HiddenHarbours.Tests.EditMode
 {
-    /// <summary>Identity-only coverage for all Id-bearing Def types. Existing records are permanent:
+    /// <summary>Identity-only coverage for Def types with Id or Spec.Id. Existing records are permanent:
     /// append new identities, preserve old GUID/type/id bindings, and handle retirement explicitly.
-    /// Four Def types without Id are tracked separately by the content audit, not granted identities here.</summary>
+    /// Two Def types without identity are tracked separately by the audit, not granted identities here.</summary>
     public class DefIdentityContractTests
     {
         private const string ContentRoot = "Assets/_Project";
@@ -39,13 +39,27 @@ namespace HiddenHarbours.Tests.EditMode
         public static IEnumerable<Type> IdentifiedDefTypes() => TypeCache.GetTypesDerivedFrom<ScriptableObject>()
             .Where(type => !type.IsAbstract && type.Name.EndsWith("Def", StringComparison.Ordinal)
                 && type.Namespace != null && type.Namespace.StartsWith("HiddenHarbours", StringComparison.Ordinal)
-                && IdField(type) != null)
+                && HasIdentity(type))
             .OrderBy(type => type.FullName, StringComparer.Ordinal);
 
         private static FieldInfo IdField(Type type)
         {
             var field = type.GetField("Id", BindingFlags.Instance | BindingFlags.Public);
             return field != null && field.FieldType == typeof(string) ? field : null;
+        }
+
+        private static FieldInfo SpecField(Type type) => type.GetField("Spec", BindingFlags.Instance | BindingFlags.Public);
+
+        private static bool HasIdentity(Type type) => IdField(type) != null
+            || (SpecField(type) != null && IdField(SpecField(type).FieldType) != null);
+
+        private static string ReadIdentity(Type type, UnityEngine.Object asset)
+        {
+            if (IdField(type) != null) return (string)IdField(type).GetValue(asset);
+            var specField = SpecField(type);
+            object spec = specField.GetValue(asset);
+            Assert.That(spec, Is.Not.Null, type.FullName + ".Spec");
+            return (string)IdField(specField.FieldType).GetValue(spec);
         }
 
         [OneTimeTearDown]
@@ -115,7 +129,7 @@ namespace HiddenHarbours.Tests.EditMode
                 var asset = AssetDatabase.LoadAssetAtPath(path, type);
                 Assert.That(asset, Is.Not.Null, path);
                 Assert.That(asset.GetType(), Is.EqualTo(type), path);
-                rows.Add(new Identity { Type = type.FullName, Guid = guid, Id = (string)IdField(type).GetValue(asset) });
+                rows.Add(new Identity { Type = type.FullName, Guid = guid, Id = ReadIdentity(type, asset) });
             }
             return Observed[type] = rows.ToArray();
         }

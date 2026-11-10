@@ -104,7 +104,9 @@
     "HiddenHarbours.World.VillagePlanDef",
     "HiddenHarbours.World.WaterfallDef",
     "HiddenHarbours.World.WordsTableDef",
-    "HiddenHarbours.World.YardDef"
+    "HiddenHarbours.World.YardDef",
+    "HiddenHarbours.Core.CharacterClothingFitDef",
+    "HiddenHarbours.Core.CharacterGarmentDef"
   ],
   "Entries": [
     {
@@ -9526,6 +9528,11 @@
       "Type": "HiddenHarbours.World.YardDef",
       "Guid": "69eedcf67316a400bc63da5f0b350c9a",
       "Id": "yard.st_peters.white_gable"
+    },
+    {
+      "Type": "HiddenHarbours.Core.CharacterClothingFitDef",
+      "Guid": "2d9057d58a5888f4b9b7b8c7fae1870c",
+      "Id": "fit.character_v10"
     }
   ]
 }
