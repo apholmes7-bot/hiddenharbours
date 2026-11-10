@@ -17,6 +17,43 @@ namespace HiddenHarbours.App.Editor
         static Vector2 WaterLocalPosition(Doc transform) => new Vector2(
             WaterCoordinate(transform.Field("m_LocalPosition"), "x"), WaterCoordinate(transform.Field("m_LocalPosition"), "y"));
 
+        /// <summary>The registered brows that hinge on a quay face: where each mouth opens, and how wide.</summary>
+        static IEnumerable<(Vector2 head, float half)> WaterBrowMouths() =>
+            WA(WM(NineMileCreekWharfWaterSide.ReadToday(),"parts")).Where(p=>WM(p,"gangway")!=null&&WN(WM(WM(p,"gangway"),"step"))==0)
+                .Select(p=>WM(p,"gangway")).Select(gang=>(WP(WM(gang,"hinge")),WN(WM(gang,"width"))*.5f));
+
+        /// <summary>The quay's wall as its boundary's authored runs: the crane face, the step and the north face,
+        /// open only where the register hinges a brow on a face and where the yard runs a pier out. An opening's
+        /// ends stand a blocker's half thickness back, so its clear width is the brow's or the runway's exactly.
+        /// The brow H5 retired has no mouth here: the wall runs through where it stood.</summary>
+        public static Vector2[][] WaterQuayRuns(float halfThickness)
+        {
+            var line=new[]
+            {
+                new Vector2(NineMileCreekGroundPlan.CraneFaceWestX,NineMileCreekGroundPlan.CraneFaceY),new Vector2(NineMileCreekGroundPlan.FaceStepX,NineMileCreekGroundPlan.CraneFaceY),
+                new Vector2(NineMileCreekGroundPlan.FaceStepX,NineMileCreekGroundPlan.NorthFaceY),new Vector2(NineMileCreekGroundPlan.NorthFaceEastX,NineMileCreekGroundPlan.NorthFaceY),
+            };
+            // West edge, east edge and the face each opening is cut in; doubles, so a run's end is the nearest float.
+            var openings=new List<(double west,double east,float face)>();
+            foreach(var (head,half) in WaterBrowMouths())openings.Add(((double)head.x-half,(double)head.x+half,head.y));
+            foreach(Vector2 runway in YardRunwayOpenings())openings.Add((runway.x,runway.y,NineMileCreekGroundPlan.NorthFaceY));
+            var runs=new List<Vector2[]>();var run=new List<Vector2>{line[0]};int cut=0;
+            for(int s=0;s<line.Length-1;s++)
+            {
+                Vector2 a=line[s],b=line[s+1];
+                if(Mathf.Abs(a.y-b.y)<1e-4f)
+                    foreach(var o in openings.Where(open=>Mathf.Abs(open.face-a.y)<1e-3f&&open.west>a.x&&open.east<b.x).OrderBy(open=>open.west))
+                    {
+                        run.Add(new Vector2((float)(o.west-halfThickness),a.y));runs.Add(run.ToArray());
+                        run=new List<Vector2>{new Vector2((float)(o.east+halfThickness),a.y)};cut++;
+                    }
+                run.Add(b);
+            }
+            runs.Add(run.ToArray());
+            if(cut!=openings.Count)throw new Refusal("H5 quay wall: a brow or a pier runway opens off the face line.");
+            return runs.ToArray();
+        }
+
         static LayerPatch OpenWaterGangwayHeads(SceneYaml scene)
         {
             Doc wharf=scene.RootNamed(NineMileCreekWharf.RootName);
@@ -24,6 +61,18 @@ namespace HiddenHarbours.App.Editor
             Doc walls=scene.Docs.Single(d=>d.ClassId==1&&d.Field("m_Name")==NineMileCreekWalls.RootName&&mine.Contains(d.FileId));
             Doc colliderGo=scene.ChildNamed(scene.TransformOf(walls),PropertyBoundary.CollidersChildName);
             var patch=new LayerPatch(WaterStep,"NineMileCreekWharf/QuayWalls",walls.FileId);
+            // The runs are the authored fact and the blockers the physics: one plan for both.
+            Doc boundary=scene.ComponentsOf(walls).Single(d=>d.IsScript("HiddenHarbours.World.PropertyBoundary"));
+            float thickness=float.Parse(boundary.Field("_thicknessMetres"),CultureInfo.InvariantCulture)*.5f;
+            Vector2[][] runs=WaterQuayRuns(thickness);
+            var planned=new List<Rect>();
+            foreach(Vector2[] planRun in runs)
+                for(int i=0;i+1<planRun.Length;i++)
+                {
+                    Vector2[] quad=NineMileCreekGroundSteps.Quad(planRun[i],planRun[i+1],thickness);
+                    planned.Add(Rect.MinMaxRect(quad.Min(p=>p.x),quad.Min(p=>p.y),quad.Max(p=>p.x),quad.Max(p=>p.y)));
+                }
+            var stands=new bool[planned.Count];
             foreach(Doc collider in scene.ComponentsOf(colliderGo).Where(d=>d.ClassId==60))
             {
                 string block=Regex.Match(collider.Text,@"(?ms)^  m_Points:.*?(?=^  m_UseDelaunayMesh:)").Value;
@@ -38,11 +87,9 @@ namespace HiddenHarbours.App.Editor
                     rectangles.Add(rect);
                 }
                 if(rectangles.Count==0)throw new Refusal("H5 gangway opening: the inherited quay has no paths.");
-                var parts=WA(WM(NineMileCreekWharfWaterSide.ReadToday(),"parts"));
                 bool changed=false;
-                foreach(var part in parts.Where(p=>WM(p,"gangway")!=null&&WN(WM(WM(p,"gangway"),"step"))==0))
+                foreach(var (head,half) in WaterBrowMouths())
                 {
-                    var gang=WM(part,"gangway");Vector2 head=WP(WM(gang,"hinge"));float half=WN(WM(gang,"width"))*.5f;
                     var opening=Rect.MinMaxRect(head.x-half,head.y-1,head.x+half,head.y+1);
                     var next=new List<Rect>();
                     foreach(var rect in rectangles)
@@ -56,12 +103,40 @@ namespace HiddenHarbours.App.Editor
                     }
                     rectangles=next;
                 }
+                if(collider.Field("m_Enabled")=="1")
+                {
+                    // A standing blocker walls exactly the runs: a mouth no brow hinges on any more (the retired
+                    // brow's, at the old gangway) is walled again, and nothing stands off the face line.
+                    const float slack=.01f;
+                    var walled=new List<Rect>();int held=0;
+                    for(int i=0;i<planned.Count;i++)
+                    {
+                        Rect plan=planned[i];
+                        var inside=rectangles.Where(r=>r.xMin>=plan.xMin-slack&&r.xMax<=plan.xMax+slack&&r.yMin>=plan.yMin-slack&&r.yMax<=plan.yMax+slack).ToList();
+                        if(inside.Count==0)continue;
+                        if(stands[i])throw new Refusal("H5 quay wall: two blockers wall one run.");
+                        stands[i]=true;held+=inside.Count;
+                        var whole=Rect.MinMaxRect(inside.Min(r=>r.xMin),inside.Min(r=>r.yMin),inside.Max(r=>r.xMax),inside.Max(r=>r.yMax));
+                        if(Mathf.Abs(whole.xMin-plan.xMin)>slack||Mathf.Abs(whole.xMax-plan.xMax)>slack||Mathf.Abs(whole.yMin-plan.yMin)>slack||Mathf.Abs(whole.yMax-plan.yMax)>slack)
+                            throw new Refusal("H5 quay wall: a blocker stops short of the run it walls.");
+                        if(inside.Count>1)changed=true;
+                        walled.Add(whole);
+                    }
+                    if(held!=rectangles.Count)throw new Refusal("H5 quay wall: a standing blocker lies off the runs.");
+                    rectangles=walled;
+                }
                 if(!changed)continue;
                 var paths=rectangles.Select(r=>new[]{new Vector2(r.xMin,r.yMin),new Vector2(r.xMax,r.yMin),new Vector2(r.xMax,r.yMax),new Vector2(r.xMin,r.yMax)}).ToList();
                 string polygon=PolygonColliderYaml(collider.FileId,collider.FieldRef("m_GameObject"),paths);
                 string replacement=Regex.Match(polygon,@"(?ms)^  m_Points:.*?(?=^  m_UseDelaunayMesh:)").Value;
-                patch.Edit(collider,Regex.Replace(collider.Text,@"(?ms)^  m_Points:.*?(?=^  m_UseDelaunayMesh:)",_=>replacement),"QuayWalls / the four native gangway mouths; existing yard openings retained");
+                patch.Edit(collider,Regex.Replace(collider.Text,@"(?ms)^  m_Points:.*?(?=^  m_UseDelaunayMesh:)",_=>replacement),"QuayWalls / the four registered brow mouths and the two pier runways; the retired brow's mouth walled");
             }
+            if(stands.Any(s=>!s))throw new Refusal("H5 quay wall: a run has no standing blocker.");
+            string authored="  _runs:\n"+string.Concat(runs.Select(r=>"  - Points:\n"+string.Concat(r.Select(p=>"    - {x: "+NineMileCreekGroundSteps.N(p.x)+", y: "+NineMileCreekGroundSteps.N(p.y)+"}\n"))));
+            var stored=new Regex(@"(?m)^  _runs:\n(?:  - Points:\n(?:    - [^\n]*\n)*)*");
+            if(stored.Matches(boundary.Text).Count!=1)throw new Refusal("H5 quay wall: the boundary has no stored runs.");
+            string named=stored.Replace(boundary.Text,_=>authored);
+            if(named!=boundary.Text)patch.Edit(boundary,named,"QuayWalls / the runs name the four brow mouths and the two pier runways");
             return patch.Seal(scene);
         }
 

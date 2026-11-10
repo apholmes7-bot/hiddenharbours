@@ -260,6 +260,9 @@ namespace HiddenHarbours.App.Editor
         public static IEnumerable<LayerPatch> WaterRetirements(SceneYaml scene)
         {
             yield return RemoveChildren(scene,"NineMileCreekWharf",name=>name=="FloatingDock"||name=="MooringCleats"||name=="Ladder_0",3,WaterStep);
+            // A retired fitting's picture goes with it: the ladder nobody can climb any more, and the fourteen bollards
+            // and the cleat that drew the fifteen cap-row cleats. The registered cleats are drawn in the delivered wall art.
+            yield return RemoveChildren(scene,"NineMileCreekWharf",name=>name=="Fitting_ladder"||name=="Fitting_bollard"||name=="Fitting_cleat",16,WaterStep);
         }
         public static void ApplyWaterSide(string evidence, bool apply = false)
         {

@@ -112,7 +112,8 @@ namespace HiddenHarbours.App.Editor
         public static Vector2 BerthLadderPos => new Vector2(BerthX, NorthFaceY);
 
         public const string BerthLadderName = "Ladder_Berth0";
-        public const string BerthLadderId = "wharf.nine_mile_creek.ladder_berth_0";
+        /// <summary>The player's berth ladder's stable id: the one the wharf's register gives it (NMC H5).</summary>
+        public const string BerthLadderId = "ladder.nmc_berth0";
 
         // =====================================================================================
         //  the Otter, parked safe for now (owner ruling)

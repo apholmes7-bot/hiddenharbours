@@ -201,8 +201,8 @@ namespace HiddenHarbours.Tests.EditMode
 
         /// <summary>The wall stands along the crane face, the step and the north face, and is open in six places only:
         /// the four mouths H5 opened, one for each registered brow and as wide as that brow, and the two pier runways.
-        /// The retired brow's mouth at x 105 is not one of them. H5 cut the mouths in the blockers and left the
-        /// boundary's stored runs as they were, so the runs are held only to the face line they trace.</summary>
+        /// The retired brow's mouth at x 105 is not one of them: H5 walled it again. The boundary's stored runs name
+        /// the same six openings, each run ending a blocker's half thickness short of one.</summary>
         [Test]
         public void TheQuayIsWalledAlongItsFaces_OpenOnlyForTheFourBrowsAndTheTwoPierRunways()
         {
@@ -216,7 +216,7 @@ namespace HiddenHarbours.Tests.EditMode
             };
             List<Vector2[]> runs = Runs(boundary);
             Assert.That(runs.Count, Is.GreaterThanOrEqualTo(1), "the wall's runs");
-            Near(runs[0].Take(3).ToArray(), new[] { line[0], line[1], line[2] }, "the wall starts along the crane face and the step");
+            Near(runs[0][0], line[0], "the wall starts at the crane face's west end");
             Near(runs[runs.Count - 1].Last(), line[3], "the wall ends at the north face's east end");
             foreach (Vector2 v in runs.SelectMany(r => r))
                 Assert.That(Enumerable.Range(0, line.Length - 1).Min(s => DistanceToSegment(v, line[s], line[s + 1])),
@@ -251,6 +251,30 @@ namespace HiddenHarbours.Tests.EditMode
             // Ruling 33 opened the two delivered pier runways; every other quarter metre stays walled.
             var runways = NineMileCreekWharfLandSide.YardRunwayOpenings();
             Assert.That(runways.Count, Is.EqualTo(2), "the two delivered piers have two runway openings");
+
+            // The stored runs name exactly those six openings: along the face line, a run ends a blocker's half
+            // thickness short of each mouth and each runway, and the next starts as far beyond it.
+            var openings = new List<(float west, float east, float faceY)>();
+            for (int b = 0; b < Brows.Length; b++)
+                openings.Add((Brows[b].x - halfWidths[b], Brows[b].x + halfWidths[b], Brows[b].faceY));
+            foreach (Vector2 runway in runways) openings.Add((runway.x, runway.y, G.NorthFaceY));
+            var named = new List<Vector2[]>();
+            var run = new List<Vector2> { line[0] };
+            for (int face = 0; face < line.Length - 1; face++)
+            {
+                float y = line[face].y;
+                if (Mathf.Approximately(y, line[face + 1].y))
+                    foreach (var o in openings.Where(m => Mathf.Approximately(m.faceY, y)).OrderBy(m => m.west))
+                    {
+                        run.Add(new Vector2(o.west - half, y));
+                        named.Add(run.ToArray());
+                        run = new List<Vector2> { new Vector2(o.east + half, y) };
+                    }
+                run.Add(line[face + 1]);
+            }
+            named.Add(run.ToArray());
+            Assert.That(runs.Count, Is.EqualTo(named.Count), "the wall's runs: one more than its six openings");
+            for (int k = 0; k < named.Count; k++) Near(runs[k], named[k], $"run {k} of the wall");
             int walled = 0, open = 0;
             var mouthOpen = new int[Brows.Length];
             var runwayOpen = new int[runways.Count];
@@ -463,6 +487,10 @@ namespace HiddenHarbours.Tests.EditMode
         /// <summary>The stable id H5 bound to the player's berth ladder: the register's anchor for wall berth 0.</summary>
         public const string RegisteredBerthLadderId = "ladder.nmc_berth0";
 
+        [Test]
+        public void ThePlanNamesTheBerthLadderByItsRegisteredId() =>
+            Assert.That(G.BerthLadderId, Is.EqualTo(RegisteredBerthLadderId));
+
         /// <summary>The nine registered ladders (NMC H5): one at each of the six wall berths and one east of them on
         /// the north face, two on the crane face for the unloading apron. Ladder_0 at x 139.25 is retired.</summary>
         static readonly (string id, float x, float faceY)[] RegisteredLadders =
@@ -555,6 +583,10 @@ namespace HiddenHarbours.Tests.EditMode
             }
             Assert.That((north, apron), Is.EqualTo((16, 3)), "sixteen along the north cap, three on the crane apron");
             List<Doc> fittings = Children(At(Wharf("Fittings")));
+            // A retired fitting's picture went with it: no bollard or cleat is drawn for the fifteen old cap-row
+            // cleats, and no ladder is drawn where Ladder_0 stood. The berth ladder's own picture stays.
+            Assert.That(fittings.Select(Name).Where(n => n == "Fitting_bollard" || n == "Fitting_cleat" || n == "Fitting_ladder"),
+                        Is.Empty, "no picture is left of a fitting H5 retired");
             Assert.That(fittings.Where(f => WorldPosition(f).y >= G.NorthFaceY + 0.75f && WorldPosition(f).y <= G.OldNorthFaceY + 0.5f)
                                 .Select(Name), Is.Empty, "no fitting is left on the old face's rows");
         }
@@ -597,10 +629,13 @@ namespace HiddenHarbours.Tests.EditMode
 
         // ---- row 6: the five wall berths ---------------------------------------------------------------------
 
+        /// <summary>Each wall boat's keel clearance at spring low, measured over the G3 bed under her hull where she
+        /// lies now: at the centre of the slot the wharf's register gives her (NMC H5). The scope's five numbers were
+        /// measured on the packed line the boats left; these are the same measurement at the registered slots.</summary>
         static readonly Dictionary<long, float> WallBerthClearance = new Dictionary<long, float>
         {
-            { 439298300, 0.783461f }, { 658256920, 0.815770f }, { 1807033261, 0.661387f },
-            { 1930628943, 0.925303f }, { 1964796412, 0.999753f },
+            { 439298300, 0.761416f }, { 658256920, 0.824559f }, { 1807033261, 0.715770f },
+            { 1930628943, 0.925303f }, { 1964796412, 0.962562f },
         };
 
         [Test]
