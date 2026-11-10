@@ -230,20 +230,24 @@ namespace HiddenHarbours.App.Editor
             return writer.Finish(scene,root);
         }
 
+        /// <summary>The float residents lie on the rows the register names for them. The wall boats are not H5's
+        /// to place: <see cref="NineMileCreekGroundSteps.WallBerths"/> is their one placer, and it reads the
+        /// register's slot centres through <see cref="NineMileCreekGroundSteps.WallBerth"/>.</summary>
         public static LayerPatch MoveWaterFleet(SceneYaml scene)
         {
             var root=scene.RootNamed("NineMileCreekFleet");var patch=new LayerPatch(WaterStep,"NineMileCreekFleet",root.FileId);
-            var ground=NineMileCreekGround.Load();
+            float heading=StPetersLayerRefresh.KitDirHeading(NineMileCreekWharfWaterSide.FloatBoatRows()[0].Dir);
             foreach(var owner in NineMileCreekMooredFleet.LoadOwners())
             {
+                if(!owner.LiesAtTheFloat)continue; // the wall boats keep their one placer.
                 if(owner.Id=="owner.boudreau_alma")continue; // the previously absent resident is H5's named new row.
-                string row=owner.LiesAtTheFloat?NineMileCreekWharfWaterSide.FloatRowForOwner(owner.Id).Id:null;
-                var go=scene.Docs.Single(d=>d.ClassId==1&&(d.Field("m_Name")=="Moored_"+owner.Id||(row!=null&&d.Field("m_Name")==row)));
-                var transform=scene.TransformOf(go);Vector2 at=owner.LiesAtTheFloat?NineMileCreekWharf.FloatBerthPos(owner.BerthIndex,ground):NineMileCreekGroundSteps.WallBerth(owner.BerthIndex,NineMileCreekMooredFleet.HalfBeamOf(owner));
-                patch.Edit(transform,SetField(transform.Text,"m_LocalPosition",Vec3Yaml(at.x,at.y,0)),owner.Id+" / registered berth");
+                var row=NineMileCreekWharfWaterSide.FloatRowForOwner(owner.Id);
+                var go=scene.Docs.Single(d=>d.ClassId==1&&(d.Field("m_Name")=="Moored_"+owner.Id||d.Field("m_Name")==row.Id));
+                var transform=scene.TransformOf(go);
+                patch.Edit(transform,SetField(transform.Text,"m_LocalPosition",Vec3Yaml(row.At.x,row.At.y,0)),owner.Id+" / registered berth");
                 var mono=scene.ComponentsOf(go).Single(d=>d.IsScript("HiddenHarbours.Boats.MooredBoat"));
-                patch.Edit(mono,SetField(mono.Text,"_headingDegrees",F(owner.LiesAtTheFloat?NineMileCreekWharf.FloatMooredHeadingDegrees():NineMileCreekMooredFleet.MooredHeadingDegrees())),owner.Id+" / heading");
-                if(row!=null)patch.Edit(go,SetField(go.Text,"m_Name",row),row+" / Decision 4");
+                patch.Edit(mono,SetField(mono.Text,"_headingDegrees",F(heading)),owner.Id+" / heading");
+                patch.Edit(go,SetField(go.Text,"m_Name",row.Id),row.Id+" / Decision 4");
             }
             return patch.Seal(scene);
         }

@@ -106,9 +106,12 @@ namespace HiddenHarbours.App.Editor
             }
         }
 
-        /// <summary>A wall berth on the G3 north face: the builder's berth for that hull, moved with the face.</summary>
+        /// <summary>A wall berth on the G3 north face: the centre of the slot the wharf's register gives that
+        /// berth, on the builder's fender line for that hull moved with the face. The analytic plan keeps its own
+        /// packed line; the scene's wall boats lie where the register says, and this is the one place that reads it.</summary>
         public static Vector2 WallBerth(int index, float halfBeamMetres) =>
-            NineMileCreekMainland.BerthPos(index, halfBeamMetres) + new Vector2(0f, G.WallBerthShiftMetres);
+            new Vector2(NineMileCreekWharfWaterSide.WallCentres()[index],
+                        NineMileCreekMainland.BerthPos(index, halfBeamMetres).y + G.WallBerthShiftMetres);
 
         /// <summary>One road tile on disk: its asset, its sprite and its flags.</summary>
         public sealed class RoadTile

@@ -5,7 +5,6 @@ using UnityEditor;
 using UnityEngine;
 using HiddenHarbours.Boats;   // BoatOwnerDef / BoatMoorage / MooredBoat
 using HiddenHarbours.Core;    // ITidalTerrain — what the float berths are measured against
-using HiddenHarbours.Tools.RigBaking;
 
 namespace HiddenHarbours.App.Editor
 {
@@ -23,8 +22,10 @@ namespace HiddenHarbours.App.Editor
     /// <c>NineMileCreek.unity</c> and the fleet would silently never be mesh, with the right number of
     /// boats in exactly the right places. See <see cref="MooredBoat"/> for the whole argument.</para>
     ///
-    /// <para><b>⚠ THE PLAYER'S BERTH IS NOT SOMEBODY ELSE'S.</b> The register names the player's berth;
-    /// the dock zone remains the arrival's distance gate. No owner may occupy that registered berth.</para>
+    /// <para><b>⚠ THE PLAYER'S BERTH IS NOT SOMEBODY ELSE'S</b>, and which one that is gets DERIVED
+    /// rather than assumed: the region's dock zone is a pure distance test against where the player's
+    /// boat parks, so the berth nearest <c>DockZonePos</c> is the one she takes, and no owner may be
+    /// authored into it. Moving the dock zone moves the exclusion with it.</para>
     ///
     /// <para><b>⭐ TWO MOORINGS, ONE PLACER (S3).</b> The owner's photograph shows small craft on the
     /// float fingers in the middle of the bullpen and working boats against the tall quay walls, so an
@@ -51,14 +52,22 @@ namespace HiddenHarbours.App.Editor
         public const string OwnersFolder = "Assets/_Project/Data/Boats/Owners";
 
         /// <summary>
-        /// The player's named register berth, independent of the dock zone's distance-test geometry.
+        /// Which berth the PLAYER takes when she docks — derived from the region's own dock geometry, so
+        /// it cannot drift from the thing that actually decides where she parks.
         /// </summary>
         public static int PlayerBerthIndex()
         {
-            var berths = DeckSidecarJson.AsArray(DeckSidecarJson.Member(NineMileCreekWharfWaterSide.Register(), "berths"));
-            int index = berths.FindIndex(berth => DeckSidecarJson.String(DeckSidecarJson.Member(berth, "id")) == "berth.nmc_wall_0");
-            if (index < 0) throw new StPetersLayerRefresh.Refusal("The register has no player's berth.nmc_wall_0.");
-            return index;
+            int best = 0;
+            float bestDistance = float.MaxValue;
+            var dock = new Vector2(NineMileCreekMainland.DockZonePos.x,
+                                   NineMileCreekMainland.DockZonePos.y);
+
+            for (int i = 0; i < NineMileCreekMainland.BerthCount; i++)
+            {
+                float d = Vector2.Distance(NineMileCreekMainland.BerthPos(i), dock);
+                if (d < bestDistance) { bestDistance = d; best = i; }
+            }
+            return best;
         }
 
         /// <summary>
