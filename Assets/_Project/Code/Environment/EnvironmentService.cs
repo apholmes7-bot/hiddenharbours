@@ -152,6 +152,13 @@ namespace HiddenHarbours.Environment
         public float TideHeightAt(double totalSeconds) =>
             TideModel.Height(totalSeconds, _activeTideProfile, _config);
 
+        /// <summary>Which tide a moment belongs to (<see cref="IEnvironmentService.TideCycleIndexAt"/>):
+        /// the pure <see cref="TideModel.CycleIndex"/> over the same profile and config
+        /// <see cref="TideHeightAt"/> reads, so the count turns exactly where the drawn tide tops out.
+        /// Recomputed, never saved (rule 5). No config reads as one endless tide.</summary>
+        public long TideCycleIndexAt(double totalSeconds) =>
+            TideModel.CycleIndex(totalSeconds, _activeTideProfile, _config);
+
         /// <summary>
         /// The continuous sea state at an ARBITRARY time (<see cref="IEnvironmentService.SeaState01At"/>) —
         /// the same pure <see cref="WeatherModel"/> evaluation <see cref="Sample"/> performs, just at the

@@ -307,6 +307,15 @@ This single rule produces *every* tidal gameplay consequence:
 > `WaterLevel`) that gates the dig, so the picture can never disagree with the gate (the discipline the
 > St Peters tide-reveal overlay follows). On a bared hole a single Interact lands one clam into the
 > on-foot bucket (the by-hand first catch, P4).
+>
+> **A dug hole is spent for one tide (implementation note).** A hole yields one clam a tide. Dug, or
+> frightened by a player who loitered, it stays spent until the next high water has covered the flat;
+> on the ebb after that it is fresh. "Which tide" is `IEnvironmentService.TideCycleIndexAt(t)`: a pure
+> function of the clock and the region's tide profile that steps by one at each high water
+> (`TideModel.CycleIndex`, the same carrier the height uses). The save keeps only **when** each hole was
+> spent (`SaveData.SpentClamHoles`, one row per authored hole id, pruned to the running tide). The
+> cycle itself is recomputed, never stored, so a reload in the same tide finds the hole still dug and a
+> reload after the flood finds it fresh.
 
 ### 3.6 The tide table (the player's core tool)
 
