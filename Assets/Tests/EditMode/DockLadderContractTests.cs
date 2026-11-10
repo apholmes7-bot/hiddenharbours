@@ -424,12 +424,15 @@ namespace HiddenHarbours.Tests.EditMode
         [TestCase("return berth", "StPeters", "wharf.st_peters.ladder_0", "required")]
         [TestCase("arrival passenger", "StPeters", "wharf.st_peters.ladder_0", "required")]
         [TestCase("north dory: deferred to K0 session", "StPeters", "", "deferred")]
-        [TestCase("player berth 0", "NineMileCreek", "wharf.nine_mile_creek.ladder_berth_0", "required")]
-        [TestCase("wall 1", "NineMileCreek", "", "resident")]
-        [TestCase("wall 2", "NineMileCreek", "", "resident")]
-        [TestCase("wall 3: existing ladder retained", "NineMileCreek", "wharf.nine_mile_creek.ladder_0", "resident")]
-        [TestCase("wall 4", "NineMileCreek", "", "resident")]
-        [TestCase("wall 5", "NineMileCreek", "", "resident")]
+        // NMC H5: the wharf's register gives every wall berth a ladder of its own, on its registered id. The old
+        // Ladder_0 between berths is retired with its id; the player's berth ladder keeps its place under the
+        // registered id.
+        [TestCase("player berth 0", "NineMileCreek", "ladder.nmc_berth0", "required")]
+        [TestCase("wall 1", "NineMileCreek", "ladder.nmc_berth1", "resident")]
+        [TestCase("wall 2", "NineMileCreek", "ladder.nmc_berth2", "resident")]
+        [TestCase("wall 3", "NineMileCreek", "ladder.nmc_berth3", "resident")]
+        [TestCase("wall 4", "NineMileCreek", "ladder.nmc_berth4", "resident")]
+        [TestCase("wall 5", "NineMileCreek", "ladder.nmc_berth5", "resident")]
         [TestCase("float 0", "NineMileCreek", "", "float")]
         [TestCase("float 1", "NineMileCreek", "", "float")]
         [TestCase("float 2", "NineMileCreek", "", "float")]
@@ -493,20 +496,29 @@ namespace HiddenHarbours.Tests.EditMode
         {
             string text = File.ReadAllText(Path.Combine(Application.dataPath, "_Project/Scenes/NineMileCreek.unity"));
             var yaml = StPetersLayerRefresh.SceneYaml.Parse(text.Replace("\r", ""));
-            var floating = yaml.Docs.Single(d => d.ClassId == 114 && d.Field("_id") == "wharf.nine_mile_creek.float");
-            float Read(string key) => float.Parse(floating.Field(key), CultureInfo.InvariantCulture);
-            float floatTop = HiddenHarbours.World.FloatingPlatform.DeckElevation(tide,
-                Read("_bedElevation"), Read("_draughtMetres"), Read("_freeboardMetres"));
+            // NMC H5 retired the one old float (wharf.nine_mile_creek.float) for the wharf's four registered floats:
+            // the same step, held on each of them.
+            var floats = yaml.Docs.Where(d => d.ClassId == 114 && d.IsScript("HiddenHarbours.World.FloatingPlatform")).ToArray();
+            CollectionAssert.AreEquivalent(
+                new[] { "float.nmc_working", "float.nmc_finger_a", "float.nmc_finger_b", "float.nmc_recreation" },
+                floats.Select(f => f.Field("_id")), "the wharf's four registered floats");
             var hull = AssetDatabase.LoadAssetAtPath<BoatHullDef>("Assets/_Project/Data/Boats/Dory.asset");
             var deck = AssetDatabase.LoadAssetAtPath<BoatDeckDef>("Assets/_Project/Data/Boats/Decks/DoryIso.asset");
             var config = AssetDatabase.LoadAssetAtPath<GameConfig>("Assets/_Project/Data/Config/GameConfig.asset");
-            foreach (var area in deck.Areas.Where(a => a.Kind == DeckAreaKind.Deck))
-                foreach (Vector2 point in area.Outline)
-                {
-                    float height = DeckAreaMath.HeightAt(area.HeightPlane, point);
-                    float boatDeck = tide + MooringLineMath.CleatHeightAboveWaterline(height, hull.DraughtMeters);
-                    Assert.LessOrEqual(Mathf.Abs(floatTop - boatDeck), config.LadderBoarding.BoardClampMetres);
-                }
+            foreach (var floating in floats)
+            {
+                float Read(string key) => float.Parse(floating.Field(key), CultureInfo.InvariantCulture);
+                float floatTop = HiddenHarbours.World.FloatingPlatform.DeckElevation(tide,
+                    Read("_bedElevation"), Read("_draughtMetres"), Read("_freeboardMetres"));
+                foreach (var area in deck.Areas.Where(a => a.Kind == DeckAreaKind.Deck))
+                    foreach (Vector2 point in area.Outline)
+                    {
+                        float height = DeckAreaMath.HeightAt(area.HeightPlane, point);
+                        float boatDeck = tide + MooringLineMath.CleatHeightAboveWaterline(height, hull.DraughtMeters);
+                        Assert.LessOrEqual(Mathf.Abs(floatTop - boatDeck), config.LadderBoarding.BoardClampMetres,
+                            $"{floating.Field("_id")}: her deck at {floatTop:0.000} m and the dory's at {boatDeck:0.000} m, tide {tide:0.0}");
+                    }
+            }
         }
     }
 }
