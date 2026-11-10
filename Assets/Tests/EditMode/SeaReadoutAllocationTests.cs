@@ -3,6 +3,9 @@ using System.Globalization;
 using HiddenHarbours.Core;
 using HiddenHarbours.UI;
 using NUnit.Framework;
+using UnityEngine;
+using UnityEngine.TestTools.Constraints;
+using Is = UnityEngine.TestTools.Constraints.Is;
 
 namespace HiddenHarbours.Tests.EditMode
 {
@@ -44,21 +47,30 @@ namespace HiddenHarbours.Tests.EditMode
         [Test]
         public void WarmSeaReadouts_AllocateZeroManagedBytes()
         {
-            GC.GetAllocatedBytesForCurrentThread();
-            long probeStart = GC.GetAllocatedBytesForCurrentThread();
-            var probe = new byte[1024];
-            long probeBytes = GC.GetAllocatedBytesForCurrentThread() - probeStart;
-            GC.KeepAlive(probe);
-            Assert.Greater(probeBytes, 0L, "The allocation counter must observe a known allocation.");
-
             string last = null;
             for (int i = 0; i < 1000; i++) last = HudFormat.Sea((SeaState)(i % 8));
-            GC.GetAllocatedBytesForCurrentThread();
+            Assert.That(() => { _allocationSink = new object[64]; }, Is.AllocatingGCMemory(),
+                "harness: the GC.Alloc recorder must detect a known allocation");
+            Assert.That(() => { for (int i = 0; i < 10000; i++) last = HudFormat.Sea((SeaState)(i % 8)); },
+                Is.Not.AllocatingGCMemory(), "The displayed sea values must reuse their cached strings.");
+            Assert.AreEqual("Sea: Storm (7/7)", last);
+
+            // Some Unity runtimes report zero for every thread-counter read (the CI editor does). The GC.Alloc
+            // recorder above is the proof; the byte count is only asserted where this counter works.
+            long probeStart = GC.GetAllocatedBytesForCurrentThread();
+            _allocationSink = new byte[1024];
+            if (GC.GetAllocatedBytesForCurrentThread() - probeStart <= 0)
+            {
+                Debug.Log("[SeaReadoutAllocationTests] GC.GetAllocatedBytesForCurrentThread counts nothing on this " +
+                    "runtime. The GC.Alloc recorder above is the allocation measurement.");
+                return;
+            }
             long before = GC.GetAllocatedBytesForCurrentThread();
             for (int i = 0; i < 10000; i++) last = HudFormat.Sea((SeaState)(i % 8));
             long allocated = GC.GetAllocatedBytesForCurrentThread() - before;
             Assert.AreEqual(0L, allocated, "The displayed sea values must reuse their cached strings.");
-            Assert.AreEqual("Sea: Storm (7/7)", last);
         }
+
+        private static object _allocationSink;
     }
 }
