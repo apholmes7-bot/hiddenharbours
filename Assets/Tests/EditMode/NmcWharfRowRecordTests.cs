@@ -117,7 +117,11 @@ namespace HiddenHarbours.Tests.EditMode
         static string waterDryRunFailure;
         static StPetersLayerRefresh.SceneYaml WaterSideCandidate()
         {
-            const string evidence = "Evidence~/nmc-h5/phase-b";
+            // The dry run's proof goes where HH_NMC_H5_EVIDENCE names a folder (a lane's own run), otherwise under the
+            // temporary cache: a CI run writes nothing into the tree.
+            string named = System.Environment.GetEnvironmentVariable("HH_NMC_H5_EVIDENCE");
+            string evidence = string.IsNullOrEmpty(named)
+                ? Path.Combine(Application.temporaryCachePath, "nmc-h5", "phase-b").Replace('\\', '/') : named;
             if (!waterDryRunStarted)
             {
                 waterDryRunStarted = true;

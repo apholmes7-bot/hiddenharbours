@@ -24,7 +24,22 @@ namespace HiddenHarbours.Tests.PlayMode
 {
     public class NmcWharfWaterSidePlayTests
     {
-        const string Evidence="Evidence~/nmc-h5/phase-b";
+        // Proof files go where HH_NMC_H5_EVIDENCE names a folder (a lane's own run); otherwise under the temporary
+        // cache, so a CI run writes nothing into the tree.
+        static string evidence;
+        static string Evidence
+        {
+            get
+            {
+                if(evidence==null)
+                {
+                    string named=System.Environment.GetEnvironmentVariable("HH_NMC_H5_EVIDENCE");
+                    evidence=string.IsNullOrEmpty(named)?Path.Combine(Application.temporaryCachePath,"nmc-h5","phase-b").Replace('\\','/'):named;
+                    Directory.CreateDirectory(evidence);
+                }
+                return evidence;
+            }
+        }
         WharfNightStage stage;
         PlayerWalkController player;
         Rigidbody2D body;
@@ -445,7 +460,7 @@ namespace HiddenHarbours.Tests.PlayMode
             public Vector3 camera;
             public string graphics,utc;
         }
-        const string Plates=Evidence+"/s12-plates";
+        static string Plates=>Evidence+"/s12-plates";
         IEnumerator FramePlate(Vector2 at,float size)
         {
             Time.timeScale=1;
