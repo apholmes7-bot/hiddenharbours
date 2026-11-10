@@ -10,7 +10,8 @@ import results
 def xml(cases, **attributes):
     attrs = dict(total=len(cases), passed=sum('result="Passed"' in c for c in cases),
                  failed=sum('result="Failed"' in c for c in cases),
-                 skipped=sum('result="Skipped"' in c for c in cases), inconclusive=0)
+                 skipped=sum('result="Skipped"' in c for c in cases),
+                 inconclusive=sum('result="Inconclusive"' in c for c in cases))
     attrs.update(attributes)
     text = " ".join(f'{k}="{v}"' for k, v in attrs.items())
     return io.BytesIO((f'<test-run {text}><test-suite testcasecount="900">'
@@ -41,6 +42,11 @@ class ResultsTests(unittest.TestCase):
         self.assertEqual(summary.problems(), [])
         self.assertEqual(summary.counts["Passed"], 0)
 
+    def test_run_failure_outside_a_case_cannot_read_green(self):
+        summary = results.read_results(xml(['<test-case result="Passed"/>'], result="Failed"))
+        self.assertEqual(summary.counts["Failed"], 0)
+        self.assertEqual(summary.problems(), ["test run failed outside a case (setup or cleanup)"])
+
     def test_total_and_outcome_mismatches_are_rejected(self):
         for attrs in ({"total": 2}, {"passed": 0}, {"failed": "invalid"}):
             with self.subTest(attrs=attrs):
@@ -61,7 +67,7 @@ class ResultsTests(unittest.TestCase):
     def test_missing_truncated_empty_and_failing_files_exit_nonzero(self):
         with tempfile.TemporaryDirectory() as folder:
             path = Path(folder) / "results.xml"
-            for payload in (None, b'<test-run>', xml([]).getvalue(),
+            for payload in (None, b'<test-run>', b'<wrong-root/>', xml([]).getvalue(),
                             xml(['<test-case result="Failed"/>']).getvalue()):
                 with self.subTest(payload=payload), contextlib.redirect_stdout(io.StringIO()):
                     if payload is not None:

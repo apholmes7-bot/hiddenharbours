@@ -49,6 +49,8 @@ class Summary:
             errors.append("unknown case outcomes: " + ", ".join(sorted(unknown)))
         if self.counts["Failed"] or self.counts["Inconclusive"]:
             errors.append("tests failed or were inconclusive")
+        elif self.attributes.get("result", "").split(":")[0] in ("Failed", "Inconclusive"):
+            errors.append("test run failed outside a case (setup or cleanup)")
         return errors
 
 

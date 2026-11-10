@@ -14,7 +14,7 @@ the Unity package or intercept unrelated editor invocations.
 
 The command returns nonzero for a missing or truncated file, a wrong XML root,
 zero case records, missing or inconsistent execution totals, failed or inconclusive
-cases, or an unknown case outcome. It reads every case and compares observed counts
+cases, a run failure outside a case, or an unknown case outcome. It reads every case and compares observed counts
 with the root totals. Discovery counts and a root `result="Passed"` cannot override
 zero matches. Parameterized names and XML entities retain their meaning.
 
@@ -26,9 +26,9 @@ CI supplies both filenames explicitly, so a missing file cannot disappear throug
 a glob. The summary pipeline preserves Python's failing exit code through `tee`.
 Setup and licensing failures still take precedence in the final environment verdict.
 
-The eight standalone unit tests exercise the false-green root with positive discovery
+The nine standalone unit tests exercise the false-green root with positive discovery
 count, truncated and missing XML, inconsistent totals, unknown/inconclusive outcomes,
-skips, bounded diagnostics, real failures and a passing control. Run them without Unity:
+skips, bounded diagnostics, case and cleanup failures, and a passing control. Run them without Unity:
 
 ```sh
 python3 -m unittest discover -s tools/ci -p 'test_*.py' -v
