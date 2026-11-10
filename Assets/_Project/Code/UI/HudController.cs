@@ -478,7 +478,7 @@ namespace HiddenHarbours.UI
         private void UpdateSea(SeaState state)
         {
             // Icon-ish severity dots + the word (redundant coding, never colour alone).
-            string text = "Sea: " + HudStrings.SeaState(state) + " (" + (int)state + "/7)";
+            string text = HudFormat.Sea(state);
             if (text != _seaCache)
             {
                 _seaCache = text;
