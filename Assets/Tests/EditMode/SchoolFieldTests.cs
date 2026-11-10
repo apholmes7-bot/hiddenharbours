@@ -68,6 +68,20 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         [Test]
+        public void DepthCycleBudget_AcceptsSinglePrecisionOne_AndRejectsAnOverBudgetProfile()
+        {
+            var b = _fish.LivingBehaviour;
+            // Authored decimal tenths round to single precision. Mono may keep their addition wider.
+            Assert.IsTrue(b.IsValid, "0.6f plus 0.4f is the authored unit budget");
+            b.TidalDepthStrength01 = 0.40001f;
+            Assert.IsFalse(b.IsValid, "numeric roundoff must not admit a genuinely excessive budget");
+            b.DailyDepthStrength01 = 1f; b.TidalDepthStrength01 = 0f;
+            Assert.IsTrue(b.IsValid);
+            b.TidalDepthStrength01 = 0.000001f;
+            Assert.IsFalse(b.IsValid);
+        }
+
+        [Test]
         public void SameSeedTime_IsExact_AfterReverseAndUnrelatedQueries_AndNewInstance()
         {
             var expected = new SchoolFieldSample[32];

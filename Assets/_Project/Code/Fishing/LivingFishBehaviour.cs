@@ -22,6 +22,10 @@ namespace HiddenHarbours.Fishing
     [Serializable]
     public struct LivingFishBehaviour
     {
+        // Half a single-precision ULP at one: accept a budget that rounds to 1f, irrespective of
+        // Mono retaining wider intermediates (0.6f + 0.4f can otherwise compare greater than 1f).
+        // This is numeric precision, not a gameplay/balance tolerance.
+        private const double SingleUnitRoundoff = 1d / 16777216d;
         public bool Enabled;
         public LivingFishKind Kind;
         public FishHabitat AllowedHabitats;
@@ -51,7 +55,8 @@ namespace HiddenHarbours.Fishing
             NonNegative(ScatteredFootprintMetres) && ScatteredFootprintMetres >= NormalFootprintMetres &&
             NonNegative(ScatterDistanceMetres) && Finite(ReactionDurationGameSeconds) &&
             ReactionDurationGameSeconds > 0d && NonNegative(DailyDepthStrength01) &&
-            NonNegative(TidalDepthStrength01) && DailyDepthStrength01 + TidalDepthStrength01 <= 1f;
+            NonNegative(TidalDepthStrength01) &&
+            (double)DailyDepthStrength01 + TidalDepthStrength01 <= 1d + SingleUnitRoundoff;
 
         internal static bool Finite(double value) => !double.IsNaN(value) && !double.IsInfinity(value);
         private static bool NonNegative(float value) => Finite(value) && value >= 0f;
