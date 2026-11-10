@@ -623,15 +623,18 @@ namespace HiddenHarbours.Tests.PlayMode
         }
 
         // =============================================================================================
-        //  5. THE WHARF'S PUMPS — stood down on their ids
+        //  5. THE WHARF'S PUMPS — live again on their ids, re-sited by H5
         // =============================================================================================
 
         /// <summary>The wharf's two fuel pedestals stood on the old west apron, which G3 dredged: they stood in 2.2 m of
-        /// water at the month's lowest. Both stand down with their ids kept (the owner's ruling) until H5's drawn wharf
-        /// re-sites them, and boats fuel by can from Route 91. Each id must still name one pump in the creek, and
-        /// neither that pump nor its pedestal may be live.</summary>
+        /// water at the month's lowest, so both stood down with their ids kept (the owner's ruling) until H5's drawn
+        /// wharf re-sited them. H5 has re-sited them onto the drawn wharf with the ids kept, so boats fuel at the wharf
+        /// again. Each id must still name exactly one pump in the creek, and that pump and its pedestal must both be
+        /// live. That each pedestal SELLS through its retained wallet binding is proved in
+        /// <c>NmcWharfWaterSidePlayTests</c> (<c>TheExistingWharfGasPedestal_SellsIntoTheHeldCan</c>,
+        /// <c>TheExistingWharfDieselPedestal_SellsIntoTheHeldCan</c>); this guard does not repeat the purchase.</summary>
         [UnityTest, Timeout(300000)]
-        public IEnumerator TheWharfPumps_StandDown_OnTheirIds()
+        public IEnumerator TheWharfPumps_AreLive_OnTheirIds_AfterH5()
         {
             yield return null;
             FuelPump[] pumps = Object.FindObjectsByType<FuelPump>(FindObjectsInactive.Include);
@@ -640,12 +643,12 @@ namespace HiddenHarbours.Tests.PlayMode
                 var named = new List<FuelPump>();
                 foreach (FuelPump p in pumps)
                     if (p.Id == id) named.Add(p);
-                Assert.That(named.Count, Is.EqualTo(1), $"{id} names {named.Count} pumps in the creek; the stand-down keeps it on one.");
+                Assert.That(named.Count, Is.EqualTo(1), $"{id} names {named.Count} pumps in the creek; the re-siting keeps it on one.");
                 GameObject hose = named[0].gameObject, pedestal = hose.transform.parent.gameObject;
                 TestContext.WriteLine($"{id}: '{hose.name}' on '{pedestal.name}', live {hose.activeInHierarchy}, " +
                                       $"pedestal live {pedestal.activeInHierarchy}");
-                Assert.That(hose.activeInHierarchy, Is.False, $"{id} is live; the wharf pumps stand down until H5 re-sites them.");
-                Assert.That(pedestal.activeInHierarchy, Is.False, $"{id}'s pedestal '{pedestal.name}' still draws.");
+                Assert.That(hose.activeInHierarchy, Is.True, $"{id} is not live; H5 re-sited the wharf pumps and they sell again.");
+                Assert.That(pedestal.activeInHierarchy, Is.True, $"{id}'s pedestal '{pedestal.name}' does not draw.");
             }
         }
 
