@@ -1,0 +1,15 @@
+{
+    "name": "HiddenHarbours.Tests.LandedCatch.EditMode",
+    "rootNamespace": "HiddenHarbours.Tests.LandedCatch",
+    "references": [
+        "UnityEngine.TestRunner",
+        "UnityEditor.TestRunner",
+        "HiddenHarbours.Core",
+        "HiddenHarbours.Tools.LandedCatch.Editor"
+    ],
+    "includePlatforms": ["Editor"],
+    "precompiledReferences": ["nunit.framework.dll"],
+    "defineConstraints": ["UNITY_INCLUDE_TESTS"],
+    "overrideReferences": true,
+    "autoReferenced": false
+}
