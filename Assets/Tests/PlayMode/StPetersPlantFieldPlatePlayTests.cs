@@ -19,34 +19,51 @@ namespace HiddenHarbours.Tests.PlayMode
         sealed class P1Board
         {
             public string Id; public float X0, X1, Top, Bottom, BoardTide, Tide;
-            public int Day, Minute;
-            public P1Board(string id, float x0, float x1, float top, float bottom, int day, int minute, float boardTide, float tide)
-            { Id = id; X0 = x0; X1 = x1; Top = top; Bottom = bottom; Day = day; Minute = minute; BoardTide = boardTide; Tide = tide; }
+            public CalendarDate Date; public int Minute;
+            public P1Board(string id, float x0, float x1, float top, float bottom, Season season, int dayOfSeason, int minute, float boardTide, float tide)
+            { Id = id; X0 = x0; X1 = x1; Top = top; Bottom = bottom; Date = new CalendarDate(season, dayOfSeason, 1); Minute = minute; BoardTide = boardTide; Tide = tide; }
         }
         static readonly P1Board[] P1Boards =
         {
-            new P1Board("landing.wide_approach.1431",190.555f,215.445f,9.649f,-4.351f,29,871,2.18f,1.999786f),
-            new P1Board("cannery.wide_landing.0600",168.555f,193.445f,19.596f,5.596f,39,360,-.85f,-.842258f),
-            new P1Board("ne_light.wide_station_0600",195.055f,219.945f,81.026f,67.026f,39,360,-.85f,-.842258f),
-            new P1Board("crossing.head_open",-90,-46,12.046f,-12.704f,52,1064,-.1f,-.140773f),
-            new P1Board("ginnys_plot.plot_noon",58,118,72.229f,22.229f,44,720,.63f,.755822f),
-            new P1Board("alder_fall.noon",91,121,70.053f,50.053f,44,720,.63f,.755822f),
-            new P1Board("gap_bridge.bridge_noon",142,171,-28.642f,-45.642f,44,720,.63f,.755822f),
-            new P1Board("whelps_lookout.lookout_noon",154,199,-26.893f,-50.893f,44,720,.63f,.755822f),
+            new P1Board("landing.wide_approach.1431",190.555f,215.445f,9.649f,-4.351f,Season.TheTurn,2,871,2.18f,1.999786f),
+            new P1Board("cannery.wide_landing.0600",168.555f,193.445f,19.596f,5.596f,Season.TheTurn,12,360,-.85f,-.842258f),
+            new P1Board("ne_light.wide_station_0600",195.055f,219.945f,81.026f,67.026f,Season.TheTurn,12,360,-.85f,-.842258f),
+            new P1Board("crossing.head_open",-90,-46,12.046f,-12.704f,Season.TheTurn,25,1064,-.1f,-.140773f),
+            new P1Board("ginnys_plot.plot_noon",58,118,72.229f,22.229f,Season.TheTurn,17,720,.63f,.755822f),
+            new P1Board("alder_fall.noon",91,121,70.053f,50.053f,Season.TheTurn,17,720,.63f,.755822f),
+            new P1Board("gap_bridge.bridge_noon",142,171,-28.642f,-45.642f,Season.TheTurn,17,720,.63f,.755822f),
+            new P1Board("whelps_lookout.lookout_noon",154,199,-26.893f,-50.893f,Season.TheTurn,17,720,.63f,.755822f),
         };
+        // These boards retain their simulation instants and tide pins. Since the calendar starts in
+        // HighSummer, their dates are in TheTurn; calling elapsed day 29 "summer" was the stale premise.
+        static int P1ElapsedDay(CalendarDate date)
+        {
+            var config = GameServices.Config;
+            Assert.IsNotNull(config);
+            int daysPerYear = config.DaysPerSeason * 4;
+            for (int day = 0; day < daysPerYear; day++)
+            {
+                CalendarDate candidate = GameCalendar.AtDay(day, config.DaysPerSeason, config.StartDayOfYear);
+                if (candidate.Season == date.Season && candidate.DayOfSeason == date.DayOfSeason && candidate.Year == date.Year)
+                    return day;
+            }
+            Assert.Fail($"No elapsed day in the first year names {date.Season} {date.DayOfSeason}, year {date.Year}.");
+            return -1;
+        }
+
         [Serializable] sealed class P1Numbers
         {
-            public string board, phase, hour, file;
-            public int dayIndex, minute, plants, authored, chunks, missing, dormant;
+            public string board, phase, hour, file, season;
+            public int dayIndex, dayOfSeason, year, minute, plants, authored, chunks, missing, dormant;
             public float boardTide, actualTide, tintR, tintG, tintB;
             public long draws, batches, loadedTextureBytes, fieldMapBytes;
             public double cpuP95Ms;
         }
 
         [UnityTest, Timeout(600000)]
-        public IEnumerator StPeters_PlantField_Before_AtTheEightSummerFrames() => P1Capture(false);
+        public IEnumerator StPeters_PlantField_Before_AtTheEightBoardDates() => P1Capture(false);
         [UnityTest, Timeout(600000)]
-        public IEnumerator StPeters_PlantField_After_AtTheEightSummerFrames() => P1Capture(true);
+        public IEnumerator StPeters_PlantField_After_AtTheEightBoardDates() => P1Capture(true);
 
         IEnumerator P1Capture(bool after)
         {
@@ -69,9 +86,11 @@ namespace HiddenHarbours.Tests.PlayMode
                 foreach (var board in P1Boards)
                 {
                     var clock = GameServices.Clock; Assert.IsNotNull(clock); Assert.IsNotNull(GameServices.Config);
-                    double time = (board.Day + board.Minute / 1440.0) * GameServices.Config.SecondsPerDay;
+                    double time = (P1ElapsedDay(board.Date) + board.Minute / 1440.0) * GameServices.Config.SecondsPerDay;
                     Time.timeScale = 1; clock.SeekTo(time); clock.TimeScale = 0;
-                    Assert.AreEqual(Season.HighSummer, clock.Season);
+                    Assert.AreEqual(board.Date.Season, clock.Season);
+                    Assert.AreEqual(board.Date.DayOfSeason, clock.DayOfSeason);
+                    Assert.AreEqual(board.Date.Year, clock.Year);
                     Assert.AreEqual(board.Tide, GameServices.Environment.WaterLevelAt(time), .005f);
                     Color previous = Shader.GetGlobalColor("_DayNightTint"); int stable = 0; float waited = 0;
                     for (int i = 0; i < 900; i++)
@@ -85,7 +104,7 @@ namespace HiddenHarbours.Tests.PlayMode
                     }
                     if (after)
                     {
-                        field.RefreshAppearance(); Assert.AreEqual(1,field.CurrentSeason);
+                        field.RefreshAppearance(); Assert.AreEqual((int)board.Date.Season,field.CurrentSeason);
                         Assert.AreEqual(0,field.MissingCells,"every authored state needs a bound map");
                     }
                     _cam.targetTexture = null;
@@ -117,7 +136,7 @@ namespace HiddenHarbours.Tests.PlayMode
                     var textures=Resources.FindObjectsOfTypeAll<Texture>().Where(t=>t!=null).Distinct().ToArray();
                     var maps=after ? field.Species.SelectMany(s=>s.Pages).SelectMany(p=>new[]{p.Albedo,p.Normal,p.Light,p.Detail}).Where(t=>t!=null).Distinct().ToArray() : Array.Empty<Texture2D>();
                     var tint=Shader.GetGlobalColor("_DayNightTint");
-                    var row=new P1Numbers { board=board.Id,phase=phase,file=file,dayIndex=board.Day,minute=board.Minute,
+                    var row=new P1Numbers { board=board.Id,phase=phase,file=file,dayIndex=clock.DayIndex,dayOfSeason=clock.DayOfSeason,year=clock.Year,season=clock.Season.ToString(),minute=board.Minute,
                         hour=(board.Minute/60).ToString("00")+":"+(board.Minute%60).ToString("00"),boardTide=board.BoardTide,
                         actualTide=GameServices.Environment.WaterLevelAt(time),tintR=tint.r,tintG=tint.g,tintB=tint.b,
                         draws=draw,batches=batch,cpuP95Ms=times.Count>0?times[Math.Min(times.Count-1,(int)(times.Count*.95))]:-1,
@@ -159,7 +178,9 @@ namespace HiddenHarbours.Tests.PlayMode
                 double top = 0, bottom = 0, daylightTop = 0, daylightBottom = 0;
                 float max = float.MinValue, min = float.MaxValue, dayMax = float.MinValue, dayMin = float.MaxValue;
                 // Seek the actual extrema inside High Summer; do not override the game's water level.
-                for (int minute = 29 * 1440; minute < 57 * 1440; minute++)
+                int firstSummerDay = P1ElapsedDay(new CalendarDate(Season.HighSummer, 1, 1));
+                int afterSummerDay = firstSummerDay + config.DaysPerSeason;
+                for (int minute = firstSummerDay * 1440; minute < afterSummerDay * 1440; minute++)
                 {
                     double t = minute * config.SecondsPerDay / 1440.0;
                     float water = GameServices.Environment.WaterLevelAt(t);
