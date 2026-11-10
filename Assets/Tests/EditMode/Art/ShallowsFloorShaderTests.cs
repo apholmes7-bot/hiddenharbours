@@ -88,7 +88,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
         private static readonly string[] SharedFunctions =
         {
             "TSA_Hash21", "TSA_VNoise", "TSA_Fbm3", "TSA_DistToSegment", "TSA_Band", "TSA_MatUV", "TSA_SampleMat",
-            "TSA_Hem", "TSA_GroundWeights", "TSA_KitAlbedo", "TSA_Macro", "TSA_Wet",
+            "TSA_Hem", "TSA_GroundWeights", "TSA_KitAlbedo", "TSA_Macro", "TSA_Wet", "TSA_WarpUV",
         };
 
         /// <summary>The base terrain's helpers that moved into the include. Source: b8710c59's
@@ -138,7 +138,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
             string frag = Squash(Body(terrain, TerrainFrag));
             foreach (string call in new[]
                      {
-                         "floatalpha=TSA_Hem(e);", "TSA_GroundWeights(wp,wpx,uv,e,w,intensity);",
+                         "floatalpha=TSA_Hem(e);", "float2suv=TSA_WarpUV(wpx,uv);", "TSA_GroundWeights(wp,wpx,suv,e,w,intensity);",
                          "col=TSA_KitAlbedo(wp,w,intensity,dwx,dwy);", "col=TSA_Macro(col,wp);",
                          "col=TSA_Wet(col,e,_WaterLevel);",
                      })
@@ -294,7 +294,8 @@ namespace HiddenHarbours.Tests.Art.EditMode
                          "float2wpx=floor(wp*ppm)/ppm;",
                          "float2uv=(wp-_HeightWorldMin.xy)/max(_HeightWorldSize.xy,float2(1e-3,1e-3));",
                          "floatw[HH_MAT_COUNT],intensity[HH_MAT_COUNT];",
-                         "TSA_GroundWeights(wp,wpx,uv,e,w,intensity);",
+                         "float2suv=TSA_WarpUV(wpx,uv);",
+                         "TSA_GroundWeights(wp,wpx,suv,e,w,intensity);",
                      })
             {
                 StringAssert.Contains(statement, helper, "the floor: " + statement);
