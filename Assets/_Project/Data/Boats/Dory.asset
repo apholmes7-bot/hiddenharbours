@@ -32,6 +32,7 @@ MonoBehaviour:
   WindExposure: 0.6
   MaxSafeSeaState: 4
   HasAnchor: 1
+  PainterLengthMeters: 4
   AnchorMassKg: 4
   RodeMeters: 6
   SeakeepingMassFactor: 1
