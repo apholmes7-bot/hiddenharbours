@@ -38,14 +38,21 @@ Shader "HiddenHarbours/Plant"
             #define POINTS_N 24
             float4 _GrassTrail[WALKERS_N * POINTS_N];
             float4 _GrassWalkers[WALKERS_N];
+            // The clump law's tone steps (PlantClumpDef.ToneSteps), set per chunk by PlantField. Entry 0 is unused.
+            #define TONES_N 8
+            float4 _PlantTone[TONES_N];
             struct Input { float3 vertex : POSITION; float2 uv : TEXCOORD0; float4 root : TEXCOORD1; };
-            struct Output { float4 vertex : SV_POSITION; float2 uv : TEXCOORD0; };
+            struct Output { float4 vertex : SV_POSITION; float2 uv : TEXCOORD0; nointerpolation half3 tone : TEXCOORD1; };
             Output Vert(Input v)
             {
                 Output o;
                 float3 wp = TransformObjectToWorld(v.vertex);
                 // root.z is height above this cell's pivot, supplied by the mesh, independent of atlas UV.
                 float bend = v.root.z * v.root.z;
+                // root.w carries the foot-bend flag in its unit and the tone step in twos above it.
+                // Step 0 is "as drawn": the tint is exactly 1 and the table is never read.
+                float toneStep = floor(v.root.w * 0.5);
+                float foot = v.root.w - toneStep * 2;
                 float2 offset = PlantWindOffset(v.root.xy, _Time.y, _WindWorld.xy, _Sway);
                 float best = 0; float2 direction = 0;
                 [loop] for (int w = 0; w < WALKERS_N; w++)
@@ -61,12 +68,15 @@ Shader "HiddenHarbours/Plant"
                         if (push > best) { best = push; direction = dist > 0.0001 ? delta / dist : float2(0, 1); }
                     }
                 }
-                wp.xy += (offset + direction * best * _FootStrength * v.root.w) * bend * (1 - saturate(_FoliageSnow) * 0.8);
+                wp.xy += (offset + direction * best * _FootStrength * foot) * bend * (1 - saturate(_FoliageSnow) * 0.8);
+                o.tone = toneStep < 0.5 ? half3(1, 1, 1) : _PlantTone[(int)min(toneStep, TONES_N - 1)].rgb;
                 o.vertex = TransformWorldToHClip(wp); o.uv = v.uv; return o;
             }
             half4 Frag(Output i) : SV_Target
             {
                 half4 albedo = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, i.uv); clip(albedo.a - 0.01);
+                // One tone step for the whole plant: a discrete tint, never a gradient across it.
+                albedo.rgb *= i.tone;
                 float3 n = normalize(SAMPLE_TEXTURE2D(_NormalTex, sampler_MainTex, i.uv).rgb * 2 - 1);
                 float3 light = SAMPLE_TEXTURE2D(_LightTex, sampler_MainTex, i.uv).rgb;
                 // The import moves part from the detail map's b to r (PlantRig5Baker.Load), so Standalone keeps it as R8.

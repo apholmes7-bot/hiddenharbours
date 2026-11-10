@@ -22,6 +22,9 @@ namespace HiddenHarbours.Art
         public BiomeRecipeDef[] Recipes = Array.Empty<BiomeRecipeDef>();
         public PlantSpeciesDef[] Species = Array.Empty<PlantSpeciesDef>();
         public Material Material;
+        // The clump law the recipe scatter grows under (PlantClumpLaw). Taken from the Definition at
+        // Rebuild; none, or strength 0, is the scatter exactly as it shipped. Authored sites never read it.
+        [NonSerialized] public PlantClumpDef Clump;
 
         public int PlantCount => _sites.Count;
         public int ChunkCount => _chunks.Count;
@@ -60,6 +63,10 @@ namespace HiddenHarbours.Art
         static readonly int ShadowLengthId = Shader.PropertyToID("_ShadowLen"), ShadowColorId = Shader.PropertyToID("_ShadowColor");
         static readonly int MainTextureId = Shader.PropertyToID("_MainTex"), ShadowUvPerUnitId = Shader.PropertyToID("_ShadowUVPerUnit");
         static readonly int SwayId = Shader.PropertyToID("_Sway");
+        static readonly int ToneTableId = Shader.PropertyToID("_PlantTone");
+        // The shader's tone table: entry 0 is "no step" and is never read, 1..7 are the law's steps.
+        readonly Vector4[] _toneTable = new Vector4[PlantClumpDef.MaxToneSteps + 1];
+        bool _toned;
         GameObject _shadowRoot;
         Material _shadowMaterial;
         bool _shadowMeshes;
@@ -71,6 +78,7 @@ namespace HiddenHarbours.Art
         {
             public float X, Y, Z;
             public int Stage, Variant, Tide, Order;
+            public int Tone; // 0 = as drawn; n = the clump law's tone step n - 1
             public PlantSpeciesDef Def;
             public PlantCell Cell;
             public bool CastsSun;
@@ -109,6 +117,7 @@ namespace HiddenHarbours.Art
                 SunShadowStrength = Definition.SunShadowStrength;
                 SubmergedOrder = Definition.SubmergedOrder; Recipes = Definition.Recipes;
                 Species = Definition.Species; Material = Definition.Material;
+                Clump = Definition.Clump;
             }
             _ground = GroundSource as IPlantFieldGround;
             if (_ground == null) throw new InvalidOperationException("Plant field needs IPlantFieldGround");
@@ -125,6 +134,12 @@ namespace HiddenHarbours.Art
             }
             _sites.Clear(); _plane = new byte[Width * Height];
             _season = _ground.PlantSeason; MissingCells = 0; DormantCells = 0;
+            // The clump law acts here, where the scatter is derived, and nowhere else: it scales a cell's
+            // density, steps its growth stage and names its tone. Nothing baked or authored is read or moved.
+            bool clumped = PlantClumpLaw.IsOn(Clump);
+            _toned = clumped && Clump.ToneSteps != null && Clump.ToneSteps.Length > 0;
+            for (int i = 0; i < _toneTable.Length; i++)
+                _toneTable[i] = _toned && i > 0 ? (Vector4)PlantClumpLaw.ToneColor(i - 1, Clump) : Vector4.one;
             for (int y = 0; y < Height; y++) for (int x = 0; x < Width; x++)
             {
                 float px = Origin.x + (x + 0.5f) * CellSize + PlantFieldScatter.Offset(x, y, Seed, false, CellSize);
@@ -133,13 +148,20 @@ namespace HiddenHarbours.Art
                 if (g.Excluded || g.Recipe < 0) continue;
                 if (g.Recipe >= Recipes.Length || Recipes[g.Recipe] == null) throw new InvalidOperationException("Unknown biome recipe");
                 var recipe = Recipes[g.Recipe];
-                byte code = PlantFieldScatter.Choose(recipe.ForMaterial(g.Material), g.Elevation,
-                    CellSize * CellSize * GroundMetresPerY, x, y, Seed, recipe.YoungChance);
+                var row = recipe.ForMaterial(g.Material);
+                double clump = clumped && row != null ? PlantClumpLaw.Field(px, py, Seed, Clump) : 0;
+                byte code = PlantFieldScatter.Choose(row, g.Elevation,
+                    CellSize * CellSize * GroundMetresPerY, x, y, Seed, recipe.YoungChance,
+                    clumped && row != null ? PlantClumpLaw.DensityGain(clump, Clump) : 1.0);
+                if (code != 0 && clumped)
+                    code = PlantFieldScatter.Pack(PlantFieldScatter.Species(code),
+                        PlantClumpLaw.StageFor(PlantFieldScatter.Stage(code), clump, x, y, Seed, Clump));
                 _plane[y * Width + x] = code; if (code == 0) continue;
                 var def = _codes[PlantFieldScatter.Species(code)];
                 if (def == null) throw new InvalidOperationException("Unbound plant code");
                 var s = new Site { X = px, Y = py, Z = g.Elevation, Def = def,
-                    Stage = PlantFieldScatter.Stage(code), Variant = PlantFieldScatter.Variant(x, y, Seed) };
+                    Stage = PlantFieldScatter.Stage(code), Variant = PlantFieldScatter.Variant(x, y, Seed),
+                    Tone = _toned ? PlantClumpLaw.ToneFor(clump, px, py, x, y, Seed, Clump) + 1 : 0 };
                 RefreshSite(s); _sites.Add(s);
             }
             if (Definition != null)
@@ -244,7 +266,8 @@ namespace HiddenHarbours.Art
                     float cx = col * c.Rect.width, cy = row * c.Rect.height / strips;
                     verts.Add(new Vector3(s.X + (cx - c.Pivot.x) / 32, rootY + (cy - c.Pivot.y) / 32, 0));
                     uv.Add(new Vector2((c.Rect.x + cx) / page.Albedo.width, (c.Rect.y + cy) / page.Albedo.height));
-                    roots.Add(new Vector4(s.X, rootY, Mathf.Max(0, (cy - c.Pivot.y) / Math.Max(1, c.Rect.height - c.Pivot.y)), s.Def.Family == "shrub" ? 0 : 1));
+                    // w: the foot-bend flag in the unit, the tone step in twos above it (HiddenHarboursPlant.shader).
+                    roots.Add(new Vector4(s.X, rootY, Mathf.Max(0, (cy - c.Pivot.y) / Math.Max(1, c.Rect.height - c.Pivot.y)), (s.Def.Family == "shrub" ? 0 : 1) + 2 * s.Tone));
                 }
                 for (int row = 0; row < strips; row++)
                 {
@@ -265,6 +288,7 @@ namespace HiddenHarbours.Art
             go.AddComponent<SortingGroup>().sortingOrder = first.Order;
             var props = new MaterialPropertyBlock(); props.SetTexture("_MainTex", page.Albedo);
             props.SetTexture("_NormalTex", page.Normal); props.SetTexture("_LightTex", page.Light); props.SetTexture("_DetailTex", page.Detail);
+            if (_toned) props.SetVectorArray(ToneTableId, _toneTable);
             mr.SetPropertyBlock(props); _chunks.Add(key, (go, mesh));
         }
         void ClearChunk((int, int, int, int) key)

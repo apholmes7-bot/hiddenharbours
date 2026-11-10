@@ -890,6 +890,7 @@ The handoff's §4 is the starting point. This session corrects it in three ways:
 - `PlantSpeciesDef` × 48, one file each. The 16 shore species keep their `shoreplant.*` ids.
 - `BiomeRecipeDef` × 5, measured from the drop's scene JSON.
 - `Code/Art/PlantField.cs`, `PlantFieldCodec.cs` and `PlantFieldScatter.cs`: the field, modelled on `GrassField` (stored once, derived at load, chunked). It keeps the footstep trails (`GrassFootstep`'s hooks) and the shore plants' tide response (`ShorePlantTideMath`, per instance).
+- `Code/Art/PlantClumpLaw.cs` and `PlantClumpDef` (added later): the clump law. Where the scatter is derived, a low-frequency field of world position and the field's seed thins the recipe's density into bare ground and clumps, steps a plant's growth stage down at a clump's rim, and gives each plant one discrete tone step. Every number is in `Data/Plants5/PlantClump_StPeters.asset`; strength 0, or no asset bound, is the scatter exactly as it shipped. Authored sites and the ground payload are never read by it. `PlantClumpLawTests` and `StPetersPlantClumpTests` hold it.
 
 **Tests added:**
 - `PlantFieldCodecTests` (PlantFieldCodec): round trip and the byte format.

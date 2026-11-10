@@ -45658,3 +45658,4 @@ MonoBehaviour:
     Species: 7
     Stage: 0
     Variant: 1
+  Clump: {fileID: 11400000, guid: 06a1ab00e51747379199b42dc4b1e7c1, type: 2}
