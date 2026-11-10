@@ -243,6 +243,240 @@ namespace HiddenHarbours.Tests.PlayMode
             Debug.Log($"[{PlateDir}] settled plates:\n{log}");
         }
 
+        // =============================================================================================
+        //  The blends, drawn (terrain blends): soft against drawn in ONE launch
+        // =============================================================================================
+
+        /// <summary>The blend law's four tunables as one state of the ground. <c>On</c> 0 is the soft blend.</summary>
+        readonly struct BlendState
+        {
+            public readonly string Name;
+            public readonly float On, Fringe, Ragged, ClumpMetres;
+            public BlendState(string name, float on, float fringe, float ragged, float clumpMetres)
+            { Name = name; On = on; Fringe = fringe; Ragged = ragged; ClumpMetres = clumpMetres; }
+            public override string ToString() =>
+                $"{Name}: on {On:0}, fringe {Fringe:0.###}, ragged {Ragged:0.###}, clump {ClumpMetres:0.###} m";
+        }
+
+        static readonly int BlendOnId = Shader.PropertyToID("_BlendPixelTrue"), BlendFringeId = Shader.PropertyToID("_BlendFringe"),
+                            BlendRaggedId = Shader.PropertyToID("_BlendRagged"), BlendClumpId = Shader.PropertyToID("_BlendClumpMetres");
+
+        /// <summary>The poses the blends are judged at: the south sand patch (the owner's crop), an inland path
+        /// edge, a lawn edge, the beach's bands above the water, and the sand where it meets the sea.</summary>
+        static readonly (string Name, Vector2 Centre)[] BlendPoses =
+        {
+            ("window-south-sand-patch", new Vector2(77.5f, -87.5f)),
+            ("window-ginnys-path", new Vector2(65f, 27.5f)),
+            ("window-lawn-edge", new Vector2(19f, 21f)),
+            ("board-1-the-path-and-the-steps", new Vector2(10.5f, -60f)),
+            ("board-2-the-sand-to-the-water", new Vector2(10f, -72f)),
+        };
+
+        /// <summary>The settings looked at beside the shipped one, so one launch answers "which reads best".</summary>
+        static readonly BlendState[] BlendTrials =
+        {
+            new BlendState("line", 1f, 0f, 0f, 0.75f),
+            new BlendState("ordered", 1f, 0.5f, 0f, 0.75f),
+            new BlendState("tongues", 1f, 0.7f, 0.85f, 0.4f),
+            new BlendState("tongues-full", 1f, 0.8f, 1f, 0.4f),
+            new BlendState("tongues-wide", 1f, 0.9f, 0.9f, 0.5f),
+            new BlendState("tongues-fine", 1f, 0.7f, 0.9f, 0.3f),
+        };
+
+        const int BlendPanPose = 2, BlendPriceWarm = 3, BlendPriceSamples = 15;
+
+        /// <summary>
+        /// Every blend pose at noon, the ground SOFT (the law off: the blend as it was), DRAWN (the material's
+        /// shipped values) and at each trial setting, from one settled camera in one launch: the law is a
+        /// property, so before and after share the run, the pose, the pinned shader time and the held
+        /// particles, and differ in nothing else. A soft CONTROL closes each pose; its count is the pose's
+        /// noise. Then the camera steps one rendered pixel (half an art texel at the on-foot stop) at one pose:
+        /// the drawn plate, shifted back by that pixel, is the plate before it wherever the world holds still,
+        /// which is what "anchored in the world" means for the eye. Last, the GPU's price of the ground alone,
+        /// soft against drawn, interleaved at two poses.
+        /// </summary>
+        [UnityTest, Timeout(900000)]
+        public IEnumerator TheBlends_PlatedSoftAndDrawn()
+        {
+            RequireAGraphicsDevice();
+            yield return LoadStPeters();
+            AssertTheSaveIsTheRunsOwn();
+            yield return PinTheHour(NoonHours);
+            using var shaderTime = _shaderTime = new ShaderTimePin(camera => camera == _cam, NoonHours * SecondsPerHour);
+            HoldTheAmbientParticlesOff();
+
+            List<Renderer> ground = SceneManager.GetSceneByName(StPeters).GetRootGameObjects()
+                .SelectMany(root => root.GetComponentsInChildren<Renderer>())
+                .Where(r => r.enabled && r.sharedMaterial != null && r.sharedMaterial.shader != null &&
+                            r.sharedMaterial.shader.name == TerrainShader)
+                .ToList();
+            Assert.Greater(ground.Count, 0, "St Peters draws no ground with " + TerrainShader + ": there is no blend to plate.");
+            Material shippedMaterial = ground[0].sharedMaterial;
+            Assert.IsTrue(shippedMaterial.HasProperty(BlendOnId), "the ground's material has no _BlendPixelTrue: the law is not in this build.");
+            var shipped = new BlendState("drawn", shippedMaterial.GetFloat(BlendOnId), shippedMaterial.GetFloat(BlendFringeId),
+                                         shippedMaterial.GetFloat(BlendRaggedId), shippedMaterial.GetFloat(BlendClumpId));
+            var soft = new BlendState("soft", 0f, shipped.Fringe, shipped.Ragged, shipped.ClumpMetres);
+            Assert.Greater(shipped.On, 0.5f, "the law ships ON; this material has it off, so 'drawn' would be the soft blend.");
+
+            var log = new StringBuilder();
+            log.AppendLine($"ground renderers {ground.Count}; shipped {shipped}; ambient particles {_particlesHeld}");
+            var block = new MaterialPropertyBlock();
+            void Set(BlendState s)
+            {
+                foreach (Renderer r in ground)
+                {
+                    r.GetPropertyBlock(block);
+                    block.SetFloat(BlendOnId, s.On); block.SetFloat(BlendFringeId, s.Fringe);
+                    block.SetFloat(BlendRaggedId, s.Ragged); block.SetFloat(BlendClumpId, s.ClumpMetres);
+                    r.SetPropertyBlock(block);
+                }
+            }
+            static int Differing(Color32[] a, Color32[] b)
+            {
+                int n = 0;
+                for (int i = 0; i < a.Length; i++) if (a[i].r != b[i].r || a[i].g != b[i].g || a[i].b != b[i].b) n++;
+                return n;
+            }
+
+            try
+            {
+                for (int p = 0; p < BlendPoses.Length; p++)
+                {
+                    (string Name, Vector2 Centre) pose = BlendPoses[p];
+                    yield return FrameOn(pose.Centre);
+                    int reTicked = ReTickTheSpriteShadows();
+                    string name = "blends-" + pose.Name;
+
+                    Set(soft);
+                    Color32[] softPlate = ReadMedian();
+                    SavePlate(name + "-soft.png", softPlate, _w);
+                    Set(shipped);
+                    Color32[] drawnPlate = ReadMedian();
+                    SavePlate(name + "-drawn.png", drawnPlate, _w);
+                    var counts = new List<string> { $"drawn {Differing(softPlate, drawnPlate)}" };
+                    foreach (BlendState trial in BlendTrials)
+                    {
+                        Set(trial);
+                        Color32[] plate = ReadMedian();
+                        SavePlate($"{name}-trial-{trial.Name}.png", plate, _w);
+                        counts.Add($"{trial.Name} {Differing(softPlate, plate)}");
+                    }
+                    Set(soft);
+                    for (int i = 0; i < ControlGapFrames; i++) yield return null;
+                    int noise = Differing(softPlate, ReadMedian());
+                    string line = $"{pose.Name}: px that differ from soft of {softPlate.Length}: {string.Join(", ", counts)}; " +
+                                  $"soft control {ControlGapFrames} frames later {noise}; sprite shadows re-ticked {reTicked}";
+                    log.AppendLine(line);
+                    SaveCaption(name + ".txt", Caption(name, "the blends, soft against drawn: " + pose.Name, _askedCentre,
+                        line + $"; shipped {shipped}; trials {string.Join(" | ", BlendTrials.Select(t => t.ToString()))}; " +
+                        $"shader time pinned at _Time.y {shaderTime.Seconds:0.0} s; ambient particles {_particlesHeld}"));
+
+                    if (p == BlendPanPose)
+                    {
+                        // The camera steps by whole rendered pixels (its own grid; a rendered pixel is half an art
+                        // texel at the on-foot stop): one, then three. Where the camera truly went is read back
+                        // from its transform, and every shift within four pixels is counted, so the answer names
+                        // the shift the picture took and does not assume it.
+                        float step = _follow.WorldUnitsPerRenderedPixel;
+                        Assert.Greater(step, 0f, "the follow reports no rendered pixel, so there is no step to take.");
+                        Vector2 home = _askedCentre;
+                        Vector3 camHome = _cam.transform.position;
+                        foreach (int steps in new[] { 1, 3 })
+                        {
+                            yield return FrameOn(home + new Vector2(steps * step, steps * step));
+                            Vector3 camMoved = _cam.transform.position - camHome;
+                            ReTickTheSpriteShadows();
+                            foreach (BlendState s in new[] { soft, shipped })
+                            {
+                                Set(s);
+                                Color32[] before = s.On > 0.5f ? drawnPlate : softPlate;
+                                Color32[] after = ReadMedian();
+                                SavePlate($"{name}-pan{steps}-{s.Name}.png", after, _w);
+                                const int reach = 4;
+                                int best = int.MaxValue, bestDx = 0, bestDy = 0, still = 0;
+                                for (int dy = -reach; dy <= reach; dy++)
+                                for (int dx = -reach; dx <= reach; dx++)
+                                {
+                                    int n = 0;
+                                    for (int y = reach; y < _h - reach; y++)
+                                    for (int x = reach; x < _w - reach; x++)
+                                    {
+                                        Color32 c = after[y * _w + x], d = before[(y + dy) * _w + x + dx];
+                                        if (c.r != d.r || c.g != d.g || c.b != d.b) n++;
+                                    }
+                                    if (n < best) { best = n; bestDx = dx; bestDy = dy; }
+                                    if (dx == 0 && dy == 0) still = n;
+                                }
+                                string pan = $"{pose.Name} pan, {s.Name}, {steps} rendered px of {step:0.######} m asked east and north: the camera went " +
+                                             $"({camMoved.x:0.######}, {camMoved.y:0.######}) m; of {(_w - 2 * reach) * (_h - 2 * reach)} px the plate " +
+                                             $"differs from the plate before it by {still} unshifted and by {best} at its best shift ({bestDx:+0;-0;0},{bestDy:+0;-0;0}) px";
+                                log.AppendLine(pan);
+                                SaveCaption($"{name}-pan{steps}-{s.Name}.txt", Caption($"{name}-pan{steps}-{s.Name}", "the blends under a camera step", _askedCentre, pan));
+                            }
+                        }
+                    }
+
+                    if (p == 1 || p == 3)
+                    {
+                        // The ground alone, soft against drawn, interleaved on one command buffer (the cost case's
+                        // method): the renderers carry the state in their own blocks, so one buffer draws either.
+                        Plane[] planes = GeometryUtility.CalculateFrustumPlanes(_cam);
+                        List<Renderer> seen = ground.Where(r => r != null && GeometryUtility.TestPlanesAABB(planes, r.bounds)).ToList();
+                        var softMs = new List<float>();
+                        var drawnMs = new List<float>();
+                        var waitProbe = new Texture2D(1, 1, TextureFormat.RGBAFloat, false, true);
+                        var full = new CommandBuffer { name = "blends-price" };
+                        var empty = new CommandBuffer { name = "blends-price-empty" };
+                        try
+                        {
+                            foreach (CommandBuffer cb in new[] { full, empty })
+                            {
+                                cb.SetRenderTarget(_rt);
+                                cb.SetViewProjectionMatrices(_cam.worldToCameraMatrix, _cam.projectionMatrix);
+                            }
+                            for (int k = 0; k < GpuDraws; k++)
+                            {
+                                full.ClearRenderTarget(true, false, Color.clear);
+                                empty.ClearRenderTarget(true, false, Color.clear);
+                                foreach (Renderer r in seen)
+                                {
+                                    Material[] mats = r.sharedMaterials;
+                                    for (int m = 0; m < mats.Length; m++)
+                                        if (mats[m] != null) full.DrawRenderer(r, mats[m], m, -1);
+                                }
+                            }
+                            for (int s = 0; s < BlendPriceWarm + BlendPriceSamples; s++)
+                            {
+                                Set(soft);
+                                float a = (TimeOnTheGpu(full, waitProbe) - TimeOnTheGpu(empty, waitProbe)) / GpuDraws;
+                                Set(shipped);
+                                float b = (TimeOnTheGpu(full, waitProbe) - TimeOnTheGpu(empty, waitProbe)) / GpuDraws;
+                                if (s >= BlendPriceWarm) { softMs.Add(a); drawnMs.Add(b); }
+                            }
+                        }
+                        finally
+                        {
+                            full.Release();
+                            empty.Release();
+                            Object.Destroy(waitProbe);
+                        }
+                        string price = $"{pose.Name} GPU price of the ground alone ({seen.Count} renderers in view, {GpuDraws} draws per sample, " +
+                                       $"{BlendPriceSamples} interleaved samples, {_w}x{_h}): soft median {Median(softMs):0.####} ms per draw, " +
+                                       $"drawn median {Median(drawnMs):0.####} ms per draw, drawn less soft {Median(drawnMs) - Median(softMs):+0.####;-0.####} ms; " +
+                                       $"soft [{string.Join(", ", softMs.Select(v => v.ToString("0.###")))}]; drawn [{string.Join(", ", drawnMs.Select(v => v.ToString("0.###")))}]";
+                        log.AppendLine(price);
+                        Assert.IsTrue(softMs.Concat(drawnMs).All(v => !float.IsInfinity(v) && !float.IsNaN(v)), price);
+                    }
+                }
+            }
+            finally
+            {
+                Set(shipped);   // the renderers' blocks end on the material's own values
+            }
+            SaveCaption("blends-plates-log.txt", log.ToString());
+            Debug.Log($"[{PlateDir}] the blends, soft against drawn:\n{log}");
+        }
+
         /// <summary>t17: the pin sets the six time globals to the shore capture's law the moment it stands, and puts
         /// back exactly what it found when disposed; a second dispose changes nothing. It reads globals and renders
         /// nothing, so it needs no device and runs on CI.</summary>

@@ -20,7 +20,8 @@ namespace HiddenHarbours.Tests.Art.EditMode
     {
         private const string PlatePath = "Assets/Tests/PlayMode/StPetersSplatWarpPlatePlayTests.cs";
         private const string PlateCase = "public IEnumerator TheSplatEdges_PlatedSettledAtNoon()";
-        private const string Hold = "void HoldTheAmbientParticlesOff()";
+        private const string BlendCase = "public IEnumerator TheBlends_PlatedSoftAndDrawn()";
+        private const string Hold ="void HoldTheAmbientParticlesOff()";
         private const string Emitters = "static IEnumerable<MonoBehaviour> AmbientEmitters()";
         private const string Capture = "Color32[] ReadMedian()";
         private const string CostCase = "public IEnumerator TheGroundAndTheSea_CostAtThePlatePose()";
@@ -70,11 +71,23 @@ namespace HiddenHarbours.Tests.Art.EditMode
             Assert.Greater(on, -1, "the teardown puts the hosts back on");
             Assert.Less(on, tear.IndexOf("if(!_loadedAny)yieldbreak;", StringComparison.Ordinal), "whatever the case loaded");
 
-            // neither the capture nor the cost case touches them, and the plate case is the only caller
+            // the blend plate case (pixel-true blends) plates the same ground under the same law: it holds them off
+            // once, after shader time is pinned, before its first pose, at its top level
+            string blends = Squash(Body(code, BlendCase));
+            int blendCalls = Count(blends, Regex.Escape(call));
+            Assert.AreEqual(1, blendCalls, "the blend plate case holds them off once");
+            int blendAt = blends.IndexOf(call, StringComparison.Ordinal);
+            Assert.Greater(blendAt, blends.IndexOf("newShaderTimePin(", StringComparison.Ordinal), "the blends: after shader time is pinned");
+            Assert.Less(blendAt, blends.IndexOf("for(intp=0;p<BlendPoses.Length;p++)", StringComparison.Ordinal), "the blends: before the first pose");
+            string blendBefore = blends.Substring(0, blendAt);
+            Assert.AreEqual(Count(blendBefore, @"\{"), Count(blendBefore, @"\}"), "the blends: at the case's top level");
+
+            // neither the capture nor the cost case touches them, and the two named plate cases are the only callers
             foreach (string body in new[] { Body(code, Capture), Body(code, CostCase) })
                 foreach (string word in new[] { "HoldTheAmbientParticlesOff", "AmbientEmitters", "_particlesOff", "SetActive" })
                     Assert.IsFalse(Squash(body).Contains(word), "the capture and the cost case keep the particles: " + word);
-            Assert.AreEqual(1, Count(Squash(code), Regex.Escape(call)), "the plate case is the only caller");
+            Assert.AreEqual(1 + blendCalls, Count(Squash(code), Regex.Escape(call)),
+                "the splat-warp and the blend plate cases are the only callers: a new caller is named here or fails");
         }
     }
 }
