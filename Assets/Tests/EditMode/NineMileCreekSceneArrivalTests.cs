@@ -302,7 +302,7 @@ namespace HiddenHarbours.Tests.EditMode
                 Doc go = GameObjectOf(ladder);
                 TestContext.WriteLine($"{what}: nearest ladder {Name(go)} at {Vector2.Distance(WorldPosition(go), at):0.###} m");
                 Assert.That(Name(go), Is.EqualTo(G.BerthLadderName), $"{what} chooses berth 0's ladder");
-                Assert.That(ladder.Field("_id"), Is.EqualTo(G.BerthLadderId), $"{what} chooses berth 0's ladder");
+                Assert.That(ladder.Field("_id"), Is.EqualTo(NineMileCreekSceneQuayTests.RegisteredBerthLadderId), $"{what} chooses berth 0's ladder");
             }
 
             int ways = Array.IndexOf(anchor.Lines, "  _arrivals:");
