@@ -46,5 +46,25 @@ namespace HiddenHarbours.Core
         /// derived state rather than a thing to re-fire.</para>
         /// </summary>
         void SeekTo(double totalSeconds) { }
+
+        /// <summary>
+        /// <b>Fast-forward</b> the master clock to a LATER absolute game-time, as time passing: the
+        /// opposite contract to <see cref="SeekTo"/>. Every midnight between now and the target publishes
+        /// <see cref="DayStarted"/> once, in order (and <see cref="SeasonChanged"/> where a season turns),
+        /// exactly as if the hours had been waited out, so once-a-day systems (the market's recovery, the
+        /// snow cover) settle once per day slept through (time-tides-weather §1.3, §9.4). Nothing between
+        /// is simulated step by step: the environment is a pure function of <c>(worldSeed, gameTime)</c>
+        /// and is simply read at the new time (CLAUDE.md rule 5).
+        ///
+        /// <para>Returns true if the clock moved. A clock REFUSES, and returns false, when the target is
+        /// not later than now (time never runs backwards through this door: that is <see cref="SeekTo"/>'s)
+        /// or when the hour is held (<see cref="IsHeld"/>: whoever holds the hour owns it). A refusal
+        /// changes nothing and publishes nothing.</para>
+        ///
+        /// <para><b>Additive &amp; non-breaking</b>, like <see cref="SeekTo"/>: a default interface method
+        /// that refuses, so a test fake with no backing store compiles unchanged and a rest taken against
+        /// one is simply a rest with no morning.</para>
+        /// </summary>
+        bool FastForwardTo(double totalSeconds) => false;
     }
 }

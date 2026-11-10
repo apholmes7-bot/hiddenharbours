@@ -125,6 +125,17 @@ namespace HiddenHarbours.Core
         public float SecondsPerDay = DefaultSecondsPerDay;
         [Tooltip("Hour a fresh game opens at. Scene-local start hours are obsolete and ignored.")]
         [Range(0f, 24f)] public float StartHour = 7.5f;
+
+        /// <summary>The hour a night's rest wakes at when no config is wired (EditMode, a bare test
+        /// rig): the design's 06:00 (time-tides-weather §1.3). The sibling of
+        /// <see cref="DefaultSecondsPerDay"/>, read by <see cref="RestMorning"/>.</summary>
+        public const float DefaultWakeHour = 6f;
+
+        [Tooltip("Hour of the morning your own bed wakes you at. Lying down brings the NEXT time the " +
+                 "clock reads this hour: tomorrow's when you turn in during the day or the evening, " +
+                 "this morning's when you turn in after midnight. 6 = 06:00, the design's wake time. " +
+                 "The day rollover (market recovery, snow cover) fires for every midnight slept through.")]
+        [Range(0f, 24f)] public float WakeHour = DefaultWakeHour;
         [Tooltip("Season at elapsed day zero. Its offset uses DaysPerSeason, never a separate day count.")]
         public Season StartSeason = Season.HighSummer;
         [Tooltip("One-based day within the starting season. Changes labels, never simulation seconds.")]

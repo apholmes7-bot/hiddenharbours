@@ -27,6 +27,15 @@ namespace HiddenHarbours.Core
     /// them there instead of at the authored spawn. A rest in a context with no region reported records
     /// nothing and still saves the day — see <see cref="AnchorFor"/>.</para>
     ///
+    /// <para><b>It brings the morning first, and THEN writes.</b> A rest is fulfilled in one fixed order:
+    /// the clock is fast-forwarded to the next wake hour (<see cref="RestMorning"/>; the day rollover
+    /// fires on the way, so the market has recovered and the tide has moved), the rest anchor is
+    /// stamped, and only then is the save written. The order is the feature: the write snapshots the
+    /// clock, so a save taken before the morning would reload into last night, and a reload must wake
+    /// on the same morning the player just saw. This type still moves no clock itself. It asks the
+    /// <see cref="IGameClock"/> contract, and a clock that refuses (the hour is held, or there is no
+    /// clock) leaves the rest exactly the save-only beat it was before.</para>
+    ///
     /// <para><b>Refusal is a normal outcome, not a fault.</b> A save asked for at the title is refused by
     /// the service's own write gate, and a context with no save service at all (EditMode, a bare region
     /// scene opened for review) has nothing to write to. Both answer with an <c>Ok:false</c>
@@ -38,6 +47,11 @@ namespace HiddenHarbours.Core
         /// <summary>What the player is told when the save landed. Public so the test asserts on the
         /// contract rather than on a re-typed string literal.</summary>
         public const string SavedText = "You turn in. The day is kept.";
+
+        /// <summary>What the player is told when the rest brought the morning AND the save landed: the
+        /// ordinary outcome in play. <see cref="SavedText"/> remains the answer when the clock did not
+        /// move (a held hour, a context with no clock).</summary>
+        public const string WokeText = "You sleep through to morning. The day is kept.";
 
         /// <summary>What the player is told when there is no save service to write to.</summary>
         public const string NoServiceText = "You lie down a while, but nothing here keeps the day.";
@@ -77,11 +91,16 @@ namespace HiddenHarbours.Core
         /// </summary>
         public static GameSaved Fulfil(RestSaveRequested request)
         {
+            // The morning comes FIRST: the write below snapshots the clock, and a reload must wake on
+            // the morning the player just saw. It comes whether or not anything here can keep the day,
+            // because sleeping and saving are two things and only one of them needs a disk.
+            bool woke = RestMorning.Bring(GameServices.Clock, GameServices.Config);
+
             ISaveService save = GameServices.Save;
 
             GameSaved outcome = save == null
                 ? new GameSaved(false, NoServiceText)
-                : Write(save, request);
+                : Write(save, request, woke);
 
             EventBus.Publish(outcome);
             return outcome;
@@ -121,7 +140,7 @@ namespace HiddenHarbours.Core
         /// <c>Save</c>) and this PR is not the place for it — the failure it hides is "the player pressed
         /// rest while at the title", which they cannot do from inside a bedroom.</para>
         /// </summary>
-        static GameSaved Write(ISaveService save, in RestSaveRequested request)
+        static GameSaved Write(ISaveService save, in RestSaveRequested request, bool woke)
         {
             // Where you slept goes in BEFORE the write, because the write is what makes it durable —
             // stamping after it would keep the anchor only until the next save happened to run, and the
@@ -131,7 +150,7 @@ namespace HiddenHarbours.Core
 
             save.Save();
             return save.LoadedExistingSave
-                ? new GameSaved(true, SavedText)
+                ? new GameSaved(true, woke ? WokeText : SavedText)
                 : new GameSaved(false, NoServiceText);
         }
     }
