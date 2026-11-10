@@ -1,0 +1,49 @@
+# Proposed addition to the data model
+
+**Proposal only.** This is an addition for review against [the architectural catalog](../../architecture/data-model.md), ADR 0003 and ADR 0008. It creates no ScriptableObjects, C# types, save schema, shipped content ids or migration. `lead-architect` owns Core contracts/save shape; `gameplay-systems` owns carry/container mechanics and boat/vehicle access; `economy-sim` owns commodity, cold-chain and buyer policy. No feature module consumes another feature's concrete type.
+
+## Immutable ScriptableObject Defs
+
+One entity per file, stable append-only `type.snake_case` ids. Resolve cross-owner references by id through `ContentDatabase`, never by file name, Unity instance id or object name. Proposed folders and ids are not reserved until implementation.
+
+| Def / candidate folder | Fields that belong together | Author / validator |
+|---|---|---|
+| `GoodsProfileDef`, `Data/Goods/Profiles/`; example `goods.cod_raw` | Existing species/commodity id; permitted life states; envelope/size curve id; hand class; grip keys; allowed orientations; preservation compatibility; optional survival duration by condition; spoil policy reference. Species values stay in the existing species Def rather than copied here. | economy-sim, gameplay-systems review; unique ids, valid species links and positive envelopes |
+| `ContainerDef`, `Data/Goods/Containers/`; `container.hand_pail` | Outside envelope; inside shape/volume and grid origin/cell size/mask/layers; mouth shape; count ceiling if used; accepted profile ids; allowed child Def ids; empty mass; hand/two-hand/device lift limits; grip keys; wet/ice/lid/drain capabilities; overflow policy id; compatible stack group and maximum total height/count; empty-nesting depth. | gameplay-systems mechanics, economy-sim capacities; inner shape contained by shell, opening admits accepted envelopes, capacity includes ice/water |
+| `GoodsPlacementDef`, `Data/Goods/Placements/`; `placement.pail_shells` | An authored layout for one container/profile combination: metric slots or cells, layer bounds, accepted rotations, stable placement order. M1 uses these explicit layouts instead of a general packing solver. | gameplay-systems; all envelopes inside shape, no overlaps, no claim of capacity beyond the container |
+| `CargoMountDef`, `Data/Goods/Mounts/`; `cargo.wharf_cart_small` | Carrier/rig identity, support polygon and local height, access/opening state, container allowlist, tie-down/latch keys, payload/stack limits, machine compatibility and support frame id. Geometry comes from a SHA-stamped sidecar, not hand-copied coordinates. | art-director geometry; gameplay-systems operating limits; tools-editor importer |
+| `GoodsHandlingSettings`, `Data/Config/` | Max one-/two-hand gross load/envelope, reach, validation tolerances, slow-tick cadence, prompt string ids, transaction/id rules. Reuse existing GameConfig length curve and threshold via one authoritative reference. | lead-architect shape, economy-sim tuning, gameplay-systems mechanics |
+
+Visual references remain art-owned: `CatchItemLibrary`, held prop meshes, container interior/support sidecars and sprite/fill mappings. The container references their stable keys; it does not copy palettes, per-facing offsets or pixels. Do not create a second species catalog or second freshness implementation.
+
+## Mutable records proposed for a future version
+
+| Record | Minimum facts to persist |
+|---|---|
+| `GoodsItemState` | Stable instance id, profile/species id, exact caught mass, resolved dimensions (or immutable size-curve version plus sampled size), quantity **1** for individual animals, origin/acquisition id, freshness triple, optional life state and survival boundary. Aggregate display does not aggregate ownership. Bait/ice batches later need a separately specified quantity/unit model. |
+| `ContainerState` | Stable instance id, Def id, own location, ordered child item/container ids and placements; lid/drain state, wet condition, ice/cooling budget, last cold-chain settle instant. Content membership has one authority, not another copy in item and vehicle DTOs. |
+| `GoodsLocation` | One tagged case: `Hand(playerId, left/right/both)`; `Inside(containerId, slot/placement)`; `Supported(regionId, levelId, supportInstanceId, localMetricPose)`; or explicit `Recovery(recordId, reason)`. A boat/truck/cart is a support parent, not a string treated as a region. Parent chains resolve to a region and level. |
+| `SupportState` | Stable fixture/vehicle/boat/container instance id, authored support key and current region/level/frame. Only player-mutated pose is saved; rig geometry is resolved. Stacked container support and containment are validated as a combined acyclic graph. |
+| `GoodsRegistryState` | Monotonic next-instance sequence, schema marker and transfer consistency metadata. Ids use world seed plus persistent sequence (or an equivalent lead-architect-approved deterministic allocator), not wall clock or hidden global RNG. |
+| `ReceivingState` | Counter instance id, receiving-container id and delivered item ids through ordinary container membership; no remote source pointer. Sale commit consumes selected delivered goods with wallet/market updates once. An unconfirmed delivery remains owned by the player and can be taken back. |
+
+`Inside` membership is stored on the container; an item's location index may be reconstructed from it. Persist only top-level hand/supported/recovery locations separately. Reject conflicting duplicate ownership at validation, rather than treating two independently saved pointers as authoritative. Any cached item→parent map is recomputed. A portable container's descendants stay inside it across walking, vehicle motion and additive-region transitions.
+
+A transaction validates both source and destination revisions, then commits one authoritative state change before publishing a Core event. Disk snapshots observe pre- or post-commit state, never half of each. Retry of a committed transaction id cannot create another item or charge. If source or destination disappears before commit, retain the original source location and explain the refusal. Save requests during a held transfer animation wait for the stable commit boundary; presentation never owns the only item copy.
+
+## Migration plan, owned by lead-architect
+
+1. At implementation time, read the then-current schema and allocate the next version. Do **not** reserve a version number here or edit `SaveData` in this docs PR.
+2. Expand legacy `BoatHoldCatch`, `BucketCatch` and `FreezerCatch` quantities in stable list order into distinct ids. Bind the legacy boat aggregate only to its saved active boat; do not copy it to every owned boat. Create one matching legacy belt-pail container and one freezer fixture record, preserving ownership gates and all freshness triples. Mark the old lists migrated so loading twice cannot duplicate stock.
+3. Legacy records never saved exact weight. Use the existing species-template midpoint **only for legacy conversion**, record that provenance, and never claim it recovers a historical roll. New records preserve exact weight/size through repeated saves.
+4. A legal legacy inventory may exceed new geometric capacity. Do not delete, scatter or silently resize it. Keep an explicitly marked, take-only legacy compartment at its original fixture/boat/pail, visible and reachable, preserving its entire payload and freshness. It refuses new puts until emptied; each take uses the normal hand rules. Content/rig support must exist before migration is enabled. This is an acknowledged one-time capacity exception, not an upgrade to buy.
+5. If an old save predates ice persistence, retain main's existing conversion semantics; never invent free cooling time. New-version cooling resources round-trip exactly. Unsupported old hand/world-pail state was never saved and cannot be recovered from the file; no fictional reconstruction.
+6. Missing Def/region/support must retain raw ids and state in a visible recovery manifest; allow retrieval only at an explicitly owned recovery interaction, with normal hand limits. Do not place cargo automatically at an unrelated counter or erase it. Define that recovery interaction before releasing the migration.
+
+Required tests for the eventual change: prior-version load and load-again idempotence; oversized legacy payload retained in take-only storage; new rolled size exact after round-trip; nested pail on truck on load; hand left/right/both occupancy; in-hand fish across save/region hop; unresolved ids preserved; rejected transfer has zero mutation; one item cannot be in two parents; cold protection expires identically with continuous play, sleep and reload. Use disposable fixtures only, never a live player's save.
+
+## Computed truth and content gates
+
+Derived: Def resolution, total occupied shape/volume/gross mass, open access, stack clearance, hand eligibility, fill and sort order, current spoil and species-compatible protection. Tide/weather remain Core's deterministic recomputation. Player-selected placement/order, consumed ice and accumulated spoil history cannot be regenerated from seed alone and must be stored.
+
+Content validation rejects duplicate ids, missing cross-owner refs, nonfinite dimensions, inside > outside, impossible accepted profiles, unmeasured support anchors, unsupported lift methods, stack/nest/containment cycles and any profile that promises a survival/protection rule without data. The general grid editor, batch bait commodities, live-animal mortality and machinery are later phase features; proposed fields do not authorize their code now.
