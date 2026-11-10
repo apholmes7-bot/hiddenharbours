@@ -30,10 +30,12 @@ namespace HiddenHarbours.Fishing
     /// reference). This is a <b>real-time cosmetic reaction</b> like the squirt cue — it touches no sim/save
     /// state, so determinism is unaffected (rule 5).</para>
     ///
-    /// <para><b>Once-spent → gone.</b> Whether the hole was dug (it yielded) or escaped (it burrowed away),
-    /// <see cref="ClamDig.Consumed"/> goes true; a dug hole vanishes promptly, an escaped one after its sink
-    /// animation. Either way the spent hole disappears for the rest of the play-session. A reload rebuilds the
-    /// deterministic hole field afresh (the spent state isn't saved), so nothing here touches determinism.</para>
+    /// <para><b>Once-spent → gone until the tide turns.</b> Whether the hole was dug (it yielded) or escaped
+    /// (it burrowed away), <see cref="ClamDig.Consumed"/> goes true; a dug hole vanishes promptly, an escaped
+    /// one after its sink animation. It stays gone for as long as the dig says it is spent, and no longer:
+    /// when the tide has covered the flat again <see cref="ClamDig.Consumed"/> reads false and the hole is
+    /// drawn again the next time its ground is bared. The picture keeps no opinion of its own about that —
+    /// it follows the dig, which follows the deterministic tide and the save.</para>
     ///
     /// <para><b>Cheap &amp; allocation-free.</b> Two <see cref="SpriteRenderer"/>s, a throttled tick for the
     /// show/hide + frame step, and an index into a cached frame array — no per-frame GC (rule 7). The escape
@@ -85,7 +87,7 @@ namespace HiddenHarbours.Fishing
         private float _lingerTimer;   // how long the player has been inside the escape radius (resets on leave)
         private bool _sinking;        // mid sink-into-sand animation (escape fired)
         private float _sinkClock;     // progress through the sink animation
-        private bool _hidden;         // spent (dug or escaped) → gone for the session
+        private bool _hidden;         // spent (dug or escaped) → gone until the dig is fresh again
 
         private Vector3 _baseScale;
         private Color _holeBaseColor;
@@ -138,7 +140,14 @@ namespace HiddenHarbours.Fishing
         public void Tick(float dt)
         {
             EnsureInit();
-            if (_hidden) return;
+            if (_hidden)
+            {
+                // Hidden because the dig was spent. It stays hidden exactly as long as that is true: once
+                // the tide has turned the dig reads fresh, and the hole comes back (drawn below as soon as
+                // its ground is bared). A hidden hole with no dig has nothing to come back for.
+                if (_dig == null || _dig.Consumed) return;
+                Reappear();
+            }
 
             // Spent by a dig elsewhere (the hole yielded its clam) → vanish promptly. The escape path runs its
             // sink animation first (below), so only a NOT-yet-sinking consumed hole vanishes here.
@@ -242,13 +251,25 @@ namespace HiddenHarbours.Fishing
             if (t >= 1f) Hide();
         }
 
-        // Spent and gone for the session: both renderers off, scale/colour restored so a reused object is clean.
+        // Spent and gone: both renderers off, scale/colour restored so the hole is clean when it comes back.
         private void Hide()
         {
             _hidden = true;
             if (_holeRenderer != null) { _holeRenderer.enabled = false; _holeRenderer.color = _holeBaseColor; }
             if (_squirtRenderer != null) _squirtRenderer.enabled = false;
             transform.localScale = _baseScale;
+        }
+
+        // The dig is fresh again (the tide turned): forget the spent hole's animation state so this is a
+        // new hole to the escape timer and the draw. Renderers stay off here; the throttled draw turns the
+        // holes on when the ground is bared, the same path a never-dug hole takes.
+        private void Reappear()
+        {
+            _hidden = false;
+            _sinking = false;
+            _sinkClock = 0f;
+            _lingerTimer = 0f;
+            _refreshTimer = 0f;
         }
 
         /// <summary>Wire the visual in one call (editor / builder).</summary>
@@ -285,7 +306,8 @@ namespace HiddenHarbours.Fishing
         public SpriteRenderer SquirtRenderer { get { EnsureInit(); return _squirtRenderer; } }
         /// <summary>True while the holes are sinking into the sand (the escape animation is playing).</summary>
         public bool IsSinking => _sinking;
-        /// <summary>True once the hole is spent and gone for the session (dug or escaped).</summary>
+        /// <summary>True while the hole is spent and gone (dug or escaped); false again once the tide has
+        /// turned and the dig is fresh.</summary>
         public bool IsHidden => _hidden;
         /// <summary>Seconds the player has currently lingered inside the escape radius (resets on leave).</summary>
         public float LingerTimer => _lingerTimer;

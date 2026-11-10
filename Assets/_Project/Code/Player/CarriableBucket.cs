@@ -258,7 +258,7 @@ namespace HiddenHarbours.Player
 
             if (!_hands.TryGiveCatchTo(this))
             {
-                EventBus.Publish(new DevNotice("The bucket's full — head to Nine Mile Creek and sell."));
+                EventBus.Publish(new DevNotice(BucketStrings.Full));
                 return;
             }
 
