@@ -2069,6 +2069,36 @@ Shader "HiddenHarbours/Water"
                 return lerp(lerp(a, b, u.x), lerp(c, d, u.x), u.y);
             }
 
+            // ---- the FOAM lattice: a hash with no short period ----------------------------------------------
+            // Hash21 above scales the lattice cell by (123.34, 345.45) and keeps the fraction. On whole cells
+            // that fraction steps by 17/50 along x and 9/20 along y, so Hash21 REPEATS every 50 cells in x and
+            // every 20 cells in y. The whitecap field compresses its cross-wind axis by _FoamStreakStretch, so
+            // one cluster of crests came back every 20 / (cells per metre x stretch) metres across the wind:
+            // 1.7 m measured on a 1:1 plate, a dozen times inside one screen. In 32-bit floats the same hash
+            // also loses values as the cell index grows (drift x time), down to a few hundred levels.
+            // Hash21 is arithmetic shared with the hull caustic pattern and is left exactly as it is. The foam
+            // fields read THIS lattice instead: three fracs and a dot, a pure function of the cell, no texture,
+            // no time, no state, and no period short of the float mantissa.
+            float FoamHash21(float2 p)
+            {
+                float3 p3 = frac(float3(p.x, p.y, p.x) * 0.1031);
+                p3 += dot(p3, p3.yzx + 33.33);
+                return frac((p3.x + p3.y) * p3.z);
+            }
+
+            // ValueNoise on the foam lattice: the same cell corners and the same smoothstep weights.
+            float FoamValueNoise(float2 p)
+            {
+                float2 i = floor(p);
+                float2 f = frac(p);
+                float2 u = f * f * (3.0 - 2.0 * f);
+                float a = FoamHash21(i + float2(0, 0));
+                float b = FoamHash21(i + float2(1, 0));
+                float c = FoamHash21(i + float2(0, 1));
+                float d = FoamHash21(i + float2(1, 1));
+                return lerp(lerp(a, b, u.x), lerp(c, d, u.x), u.y);
+            }
+
             // ---- WIND-DRIVEN chop octave (a SEPARATE scroll from the tidal current) -------------------------
             // A 2-octave value-noise field scrolled along the WIND direction (normalize(_WindDir.xy)) at its
             // OWN rate (_WindChopSpeed) and scale (_WindChopScale) — NOT along _FlowDir. This is what lets the
@@ -2242,7 +2272,7 @@ Shader "HiddenHarbours/Water"
                 float2 oB = Hash22(float2(zi + 1.0,  37.2)) * 8.0;
                 // crossfade the two samples by the smoothed sub-step phase: maxima from A fade as B's rise.
                 float fade = zf * zf * (3.0 - 2.0 * zf);             // smoothstep(0,1,zf) — no popping at step edges
-                float pair = lerp(ValueNoise(p + oA), ValueNoise(p + oB), fade);
+                float pair = lerp(FoamValueNoise(p + oA), FoamValueNoise(p + oB), fade);
 
                 // A SECOND boil pair half a step out of phase, averaged in, so the morph never momentarily freezes
                 // at a step boundary (when one pair's fade hits an endpoint the other is mid-sweep). Cheap continuity.
@@ -2252,7 +2282,7 @@ Shader "HiddenHarbours/Water"
                 float2 oC = Hash22(float2(zi2,       91.7)) * 8.0;
                 float2 oD = Hash22(float2(zi2 + 1.0, 91.7)) * 8.0;
                 float fade2 = zf2 * zf2 * (3.0 - 2.0 * zf2);
-                float pair2 = lerp(ValueNoise(p + oC), ValueNoise(p + oD), fade2);
+                float pair2 = lerp(FoamValueNoise(p + oC), FoamValueNoise(p + oD), fade2);
 
                 // average the two out-of-phase pairs => a continuously MORPHING ~0..1 field (in-place evolution).
                 return (pair + pair2) * 0.5;
