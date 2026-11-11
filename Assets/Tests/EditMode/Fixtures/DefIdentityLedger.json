@@ -106,7 +106,11 @@
     "HiddenHarbours.World.WordsTableDef",
     "HiddenHarbours.World.YardDef",
     "HiddenHarbours.Core.CharacterClothingFitDef",
-    "HiddenHarbours.Core.CharacterGarmentDef"
+    "HiddenHarbours.Core.CharacterGarmentDef",
+    "HiddenHarbours.Art.PlantClumpDef",
+    "HiddenHarbours.Fishing.FishEcologyDef",
+    "HiddenHarbours.Tools.GoodsModel.GoodsContainerDef",
+    "HiddenHarbours.Tools.GoodsModel.GoodsHandlingDef"
   ],
   "Entries": [
     {
@@ -9533,6 +9537,96 @@
       "Type": "HiddenHarbours.Core.CharacterClothingFitDef",
       "Guid": "2d9057d58a5888f4b9b7b8c7fae1870c",
       "Id": "fit.character_v10"
+    },
+    {
+      "Type": "HiddenHarbours.Art.PlantClumpDef",
+      "Guid": "06a1ab00e51747379199b42dc4b1e7c1",
+      "Id": "plant_clump.st_peters"
+    },
+    {
+      "Type": "HiddenHarbours.Fishing.FishEcologyDef",
+      "Guid": "260d42c8df0f4c9abfdbb9c7e68482e8",
+      "Id": "ecology.atlantic_cod"
+    },
+    {
+      "Type": "HiddenHarbours.Fishing.FishEcologyDef",
+      "Guid": "854e8f93c8a448b0aaf77dcff96171c6",
+      "Id": "ecology.atlantic_herring"
+    },
+    {
+      "Type": "HiddenHarbours.Fishing.FishEcologyDef",
+      "Guid": "890448acb55b48858cbf4b4e3417d88b",
+      "Id": "ecology.haddock"
+    },
+    {
+      "Type": "HiddenHarbours.Fishing.FishEcologyDef",
+      "Guid": "6233e1a26e724acea2c2653d95d60ae0",
+      "Id": "ecology.lobster"
+    },
+    {
+      "Type": "HiddenHarbours.Fishing.FishEcologyDef",
+      "Guid": "5cc9f0a20cd14f1a93ed1e1a930ce757",
+      "Id": "ecology.mackerel"
+    },
+    {
+      "Type": "HiddenHarbours.Fishing.FishEcologyDef",
+      "Guid": "f63a006abbbb43ae83c8091ca9625084",
+      "Id": "ecology.pollock"
+    },
+    {
+      "Type": "HiddenHarbours.Fishing.FishEcologyDef",
+      "Guid": "566beb1a2ea649fb8935d94678583fc5",
+      "Id": "ecology.rock_crab"
+    },
+    {
+      "Type": "HiddenHarbours.Fishing.FishEcologyDef",
+      "Guid": "38f6e36551c244af972ce427830032d0",
+      "Id": "ecology.soft_shell_clam"
+    },
+    {
+      "Type": "HiddenHarbours.Fishing.FishEcologyDef",
+      "Guid": "4ce6ff5f75a0450b960a73a5d5414ade",
+      "Id": "ecology.striped_bass"
+    },
+    {
+      "Type": "HiddenHarbours.Fishing.FishEcologyDef",
+      "Guid": "a7caa16a9e9a44198fec0e6b7c223303",
+      "Id": "ecology.winter_flounder"
+    },
+    {
+      "Type": "HiddenHarbours.Tools.GoodsModel.GoodsContainerDef",
+      "Guid": "e2421db1128b45dcbe4b492cc414df6a",
+      "Id": "container.research_fish_tub_460"
+    },
+    {
+      "Type": "HiddenHarbours.Tools.GoodsModel.GoodsContainerDef",
+      "Guid": "b26b110b367b455b8988401195bcebd8",
+      "Id": "container.research_fish_tub_660"
+    },
+    {
+      "Type": "HiddenHarbours.Tools.GoodsModel.GoodsContainerDef",
+      "Guid": "3befe119b3c74942803924cffd46e1fa",
+      "Id": "container.research_hand_pail"
+    },
+    {
+      "Type": "HiddenHarbours.Tools.GoodsModel.GoodsContainerDef",
+      "Guid": "e407e5c6fc5d412583b41f85c460b9eb",
+      "Id": "container.research_low_pan"
+    },
+    {
+      "Type": "HiddenHarbours.Tools.GoodsModel.GoodsContainerDef",
+      "Guid": "3d2f6aaac55a4476927b2d4dd268dfdb",
+      "Id": "container.research_portable_tote_65"
+    },
+    {
+      "Type": "HiddenHarbours.Tools.GoodsModel.GoodsContainerDef",
+      "Guid": "f31c0ccc96c9422982a07e649141cf98",
+      "Id": "container.research_portable_tote_70"
+    },
+    {
+      "Type": "HiddenHarbours.Tools.GoodsModel.GoodsHandlingDef",
+      "Guid": "a4b1e5075acc4f9bbbdf18742c947dab",
+      "Id": "handling.research_two_hands"
     }
   ]
 }
