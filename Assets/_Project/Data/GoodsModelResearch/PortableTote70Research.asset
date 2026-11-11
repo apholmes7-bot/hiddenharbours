@@ -1,0 +1,47 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c674d767b67f40f698c9b954139c7253, type: 3}
+  m_Name: PortableTote70Research
+  m_EditorClassIdentifier: HiddenHarbours.Tools.GoodsModel::HiddenHarbours.Tools.GoodsModel.GoodsContainerDef
+  Spec:
+    Id: container.research_portable_tote_70
+    Outside: {LengthMm: 750, WidthMm: 500, HeightMm: 340}
+    Inside: {LengthMm: 680, WidthMm: 410, HeightMm: 290}
+    Opening: {LengthMm: 660, WidthMm: 390, HeightMm: 290}
+    UsableVolumeMl: 70000
+    CountLimit: 2
+    AcceptedProfiles:
+    - goods.raw_fish
+    - goods.small_shellfish
+    Slots:
+    - Xmm: 0
+      Ymm: 0
+      Zmm: 0
+      Size: {LengthMm: 330, WidthMm: 390, HeightMm: 290}
+    - Xmm: 330
+      Ymm: 0
+      Zmm: 0
+      Size: {LengthMm: 330, WidthMm: 390, HeightMm: 290}
+    EmptyMassG: 12000
+    LidMassG: 0
+    MaxGrossMassG: 50000
+    RequiredHands: 0
+    MaxHandGrossMassG: 0
+    HasLid: 0
+    StackGroup: ""
+    MaxStackCount: 1
+    MaxStackHeightMm: 340
+    MaxSupportedMassG: 0
+    StackRequiresLid: 0
+    AllowHandCarriedStack: 0
+  DimensionSource: https://www.saeplast.com/wp-content/uploads/2025/09/Containing-Quality-2023.pdf
+  Provenance: "Catalogue page 2: 70 L, external 750x500x340 mm, internal 660-680x390-410x290 mm, 12 kg and listed lid 4.5 kg. Separate-lid height was not established, so this profile is open-only and does not permit stacking or hand lifting. Limits and slots are game proposals."
