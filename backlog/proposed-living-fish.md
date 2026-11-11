@@ -1,11 +1,32 @@
 # Proposed living-fish backlog
 
-Proposals only; phase order follows [the roadmap](../docs/roadmap.md). The design is in [living fish](../docs/design/living-fish/01-behaviour-model.md). Stable species ids and the existing school/sonar/catch honesty rule remain binding.
+Implementation rows remain proposals; phase order follows [the roadmap](../docs/roadmap.md). The design is in [living fish](../docs/design/living-fish/01-behaviour-model.md). The RULED choices below settle direction, not implementation status. Stable species ids and the existing school/sonar/catch honesty rule remain binding.
+
+## RULED — 2026-11-11
+
+The owner's words on the eight choices in PR #1044: **"i go with all leans for now"**. Every recommendation in [the choice sheet](../docs/design/living-fish/09-owner-questions.md) is therefore the selected direction, recorded here as RULED. The choice sheet remains the historical options and reasoning; these are no longer unanswered owner questions.
+
+| Choice | Status | Selected direction and boundary |
+|---|---|---|
+| 1. Landed movement | RULED | Short, quiet tail movements, with an immediate quiet-presentation option. No prolonged distress loop. |
+| 2. Live-sale value | RULED | Same price in the first handling slice; retain freshness rewards without adding a live premium. |
+| 3. First bucket | RULED | Suitable shellfish only receive live-storage protection. Finfish may still be carried by hand in an ordinary bucket with their unprotected budget; it is not a finfish livewell. |
+| 4. Field activation | RULED | Turn on the field as **one tested slice after habitat and consumer wiring**. Existing sonar, bite influence and visible school readers must switch together to one population. **Habitat enforcement may proceed ONLY inside that one tested slice and must remain switched off elsewhere.** Existing defaults remain disabled outside it. |
+| 5. Travel between habitats | RULED | Safe local patrols first; connected daily/tidal routes follow in M2 after certified corridors exist. |
+| 6. Next individual creatures | RULED | Existing finfish next; regional lobster/crab and sessile shellfish follow with actual support data. No swimming clams. |
+| 7. Handling urgency | RULED | Short, gentle alive time and short movement, with no HUD death countdown. Author and playtest the handling budgets as game tuning, not global biological survival claims. |
+| 8. Underwater effect | RULED | Retain today's underwater look until the water lane is ready. Share transmission/refraction only after its owners define the path, approved comparisons and a laptop GPU profile exist. |
+
+Choice 4 resolves the parked spawn-versus-habitat enforcement direction within that slice only. It does not remove LF-02's reviewed Core habitat certificate, explicit unknown values, safe-patch authoring or shared-consumer proof requirements. It does not authorize global ecology enforcement. Implementation stays off elsewhere, and this document activates nothing.
+
+These selections preserve by-hand loading, carrying and unloading with visible storage fill and supported bodies. They do not authorize a save-format, ground, art or renderer change; those still need their named implementation slices and reviews.
+
+## Implementation proposals
 
 | Proposal | Phase | Owning roles | Acceptance criteria |
 |---|---|---|---|
 | LF-01: model foundation | M1, this charter | gameplay-systems; qa-test | Disabled-by-default Def data; continuous deterministic species/cell centre; bounded depth, habitat footprint and scatter; call-order tests; content validation; no scene/render/save changes. Code draft #1041. |
-| LF-02: certified habitat and one population | Proposed M1 slice follow-up | world-content + lead-architect + gameplay-systems | Reviewed Core contract returns explicit known/unknown substrate/vegetation and conservative safe patches from authored geometry. No colour inference. Switch the existing sonar, bite influence and visible school consumers together to one producer. Invalid/unavailable habitat fails closed; no parallel decorative population. Preserve catch tuning and test all three consumers on the same schools. Migrate the baseline opt-out test explicitly when activation becomes authorized. |
+| LF-02: certified habitat and one population | M1 follow-up, one tested slice only (RULED choice 4) | world-content + lead-architect + gameplay-systems | Reviewed Core contract returns explicit known/unknown substrate/vegetation and conservative safe patches from authored geometry. No colour inference. After habitat and consumer wiring, switch the existing sonar, bite influence and visible school consumers together to one producer inside one tested slice only. Habitat enforcement is permitted ONLY inside that slice and stays switched off elsewhere. Invalid/unavailable habitat fails closed within the slice; no parallel decorative population. Preserve catch tuning and test all three consumers on the same schools. Migrate the baseline opt-out test explicitly for the tested slice while preserving disabled defaults elsewhere. |
 | LF-03: reactive inshore groups | M2 | gameplay-systems + qa-test | Per-species source radii/sensitivities in Defs; fixed-capacity reaction history; deterministic hull/mate/noise/lure priority; no centre/member teleport on event replacement; measured speed/displacement bounds; finite recovery and no per-frame GC; save/load policy for active owned encounters documented. |
 | LF-04: hand, deck and storage life | M2 | gameplay-systems + economy-sim + lead-architect + art-pipeline | Physical hand/deck/container placement and visible fill; no remote hold additions; supported body on moving deck; monotone alive exposure and existing spoil preserved across every transfer/sleep/load; finite ice melt; no revival; old-save migration; release removes exactly one owned catch only at valid water. Finfish do not gain shellfish live protection in an ordinary bucket. No gore or prolonged distress loop. |
 | LF-05: bed creatures | M2 | world-content + gameplay-systems + art-pipeline | Actual-position bed sample keeps lobster/crab attached to support; clams/mussels/oysters never swim; vegetation/habitat availability is explicit; finite shell/leg response; low/high tide and boat-support tests; approved art/plates from the art owner without rebaselining to hide regressions. |
