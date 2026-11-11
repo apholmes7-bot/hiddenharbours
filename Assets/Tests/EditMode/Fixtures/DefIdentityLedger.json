@@ -1109,6 +1109,31 @@
       "Id": "structure.stp_cannery_trolley_line"
     },
     {
+      "Type": "HiddenHarbours.Art.SetPieceDef",
+      "Guid": "49a7dfb2dd7bc91bc68eb498f89553dd",
+      "Id": "harbour.arm_e"
+    },
+    {
+      "Type": "HiddenHarbours.Art.SetPieceDef",
+      "Guid": "8f2a2e31bc8f0e3a6768c190b6fc2270",
+      "Id": "harbour.arm_w"
+    },
+    {
+      "Type": "HiddenHarbours.Art.SetPieceDef",
+      "Guid": "95f7a693cbf63a832e4f47d2a0ea4eba",
+      "Id": "harbour.east"
+    },
+    {
+      "Type": "HiddenHarbours.Art.SetPieceDef",
+      "Guid": "a410251f8aad7d0ece165c2e2054d2ed",
+      "Id": "harbour.fleet"
+    },
+    {
+      "Type": "HiddenHarbours.Art.SetPieceDef",
+      "Guid": "1b18a2c48a9951fbf60b3e0536727655",
+      "Id": "harbour.west"
+    },
+    {
       "Type": "HiddenHarbours.Art.ShorePlantDef",
       "Guid": "6c0a39876f6a79afdc96a2e5a9e45cd6",
       "Id": "shoreplant.bayberry"
