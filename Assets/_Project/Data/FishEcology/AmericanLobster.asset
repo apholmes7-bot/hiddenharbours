@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 51d5aaf6c73f47f1b2335fa4906c6153, type: 3}
+  m_Name: AmericanLobster
+  m_EditorClassIdentifier: HiddenHarbours.Fishing::HiddenHarbours.Fishing.FishEcologyDef
+  Id: "ecology.lobster"
+  SpeciesId: "fish.lobster"
+  ScientificName: "Homarus americanus"
+  LifeStageAndScope: "Post-larval fishable coastal animals; typical reference habitat only. Adults unless the notes explicitly distinguish juveniles."
+  TypicalMinDepthMetres: 0
+  TypicalMaxDepthMetres: 50
+  DepthEvidence: "Authored inshore reference band only. NOAA records offshore animals much deeper, so 50 m must never become a species survival or catch ceiling."
+  Layer: 3
+  Habitats: 30
+  PreferredVegetation: 0
+  VegetationEvidence: "The cited profile does not establish a species-wide eelgrass or kelp preference; zero means no preference inferred, not avoidance."
+  Grouping: 3
+  DayHabit: 2
+  TideHabit: 1
+  HabitEvidence: "Shallow-water lobsters commonly shelter by day and forage at night; this is a preference, not a ban on daytime activity or a tide exclusion."
+  BiologyNotes: "Adults walk supported seabed and use shelter; planktonic larvae are excluded from this reference."
+  SourceUrls:
+  - "https://www.fisheries.noaa.gov/species/american-lobster"
+  - "https://seagrant.sunysb.edu/articles/1175/nysg-lis-lobster-research-initiative-about-li-sound-lobsters"
