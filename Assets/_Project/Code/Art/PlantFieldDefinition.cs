@@ -17,6 +17,9 @@ namespace HiddenHarbours.Art
         public PlantSpeciesDef[] Species = Array.Empty<PlantSpeciesDef>();
         public Material Material;
         public PlantFieldSite[] Authored = Array.Empty<PlantFieldSite>();
+        // The clump law the recipe scatter grows under. None = the scatter as it shipped. Declared after
+        // Authored so binding it adds one line at the foot of the asset and moves no authored byte.
+        public PlantClumpDef Clump;
     }
 
     [Serializable]

@@ -102,6 +102,11 @@ namespace HiddenHarbours.Fishing
         /// <summary>Does this species state its own density, or fall back to the global chance?</summary>
         public bool StatesSchoolDensity => SchoolsPerSquareKilometre > 0f;
 
+        [Header("Living fish (inactive model; opt in only with certified habitat data)")]
+        [Tooltip("Disabled by default. Occupancy data for the engine-light SchoolField; no current " +
+                 "presenter, bite path or save consumes it. Speeds use Core game-clock seconds.")]
+        public LivingFishBehaviour LivingBehaviour;
+
         [Header("The fight (owner ruling 2026-09-06: a hooked jumper jumps too)")]
         [Tooltip("How often a HOOKED fish of this species tries a jump while she is up at the surface, " +
                  "in seconds. Only ever read for a species that carries the Jumps behaviour flag - a " +

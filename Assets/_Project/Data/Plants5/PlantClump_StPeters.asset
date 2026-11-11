@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 50b477746d2c4df29b5acb5e115af361, type: 3}
+  m_Name: PlantClump_StPeters
+  m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.PlantClumpDef
+  Id: plant_clump.st_peters
+  Strength: 0.8
+  PatchMetres: 6
+  DetailMetres: 2.2
+  DetailWeight: 0.5
+  BareBelow: 0.38
+  FullAbove: 0.56
+  ClumpGain: 1.45
+  RimStepChance: 0.8
+  SecondStepShare: 0.35
+  CoreGrowChance: 0.5
+  TonePatchMetres: 11
+  ToneFollowsClump: 0.5
+  ToneStrayChance: 0.15
+  ToneSteps:
+  - {r: 1.09, g: 1.05, b: 0.88, a: 1}
+  - {r: 1.04, g: 1.02, b: 0.95, a: 1}
+  - {r: 1, g: 1, b: 1, a: 1}
+  - {r: 0.94, g: 0.97, b: 0.95, a: 1}
+  - {r: 0.86, g: 0.92, b: 0.92, a: 1}

@@ -315,6 +315,10 @@ namespace HiddenHarbours.Tests.PlayMode
 
             if (!_loadedAny) yield break;
 
+            Scene additiveDestination = SceneManager.GetSceneByName(NineMileCreekScene);
+            if (additiveDestination.IsValid() && additiveDestination.isLoaded)
+                yield return SceneManager.UnloadSceneAsync(additiveDestination);
+
             foreach (GameObject go in PersistentRoots())
                 if (go != null && !_residentBefore.Contains(go)) Object.DestroyImmediate(go);
 
@@ -658,7 +662,24 @@ namespace HiddenHarbours.Tests.PlayMode
         public IEnumerator Switch_BesideTheDually_RefusalShownHonestly_NineMileCreekNoon()
         {
             WharfNightStage.RequireAGraphicsDevice();
-            yield return Arrive(NineMileCreekScene, Noon);
+            // This switch belongs to the persistent player, built on St Peters. Travel with that
+            // player rather than opening the editor-only Nine Mile Creek rig in isolation.
+            yield return Arrive(StPetersScene, Noon);
+            Transform carriedPlayer = GameServices.PlayerTransform;
+            Assert.IsNotNull(carriedPlayer, "St Peters did not publish its persistent player.");
+            var loader = Object.FindFirstObjectByType<HiddenHarbours.World.RegionSceneLoader>();
+            Assert.IsNotNull(loader);
+            Assert.IsTrue(loader.Registry.TryGet("region.nine_mile_creek", out var destination));
+            Assert.IsTrue(loader.Travel(destination), "The fixture must take the game's additive travel path.");
+            float arrivalDeadline = Time.realtimeSinceStartup + 30f;
+            while (SceneManager.GetActiveScene().name != NineMileCreekScene && Time.realtimeSinceStartup < arrivalDeadline)
+                yield return null;
+            Assert.AreEqual(NineMileCreekScene, SceneManager.GetActiveScene().name, "The destination never became active.");
+            Assert.AreSame(carriedPlayer, GameServices.PlayerTransform, "Travel replaced the persistent player.");
+            Assert.IsTrue(SceneManager.GetSceneByName(StPetersScene).isLoaded, "Travel must retain the origin scene.");
+            _scene = NineMileCreekScene;
+            yield return _stage.SetNight(Noon);
+            yield return HoldTheSwitchOff();
             int hullsAtArrival = IsoFacetHullRegistry.Count, figuresAtArrival = IsoFacetHullRegistry.FigureCount;
 
             GameObject truck = TheDually(out Bounds tb, out Vector2 at);

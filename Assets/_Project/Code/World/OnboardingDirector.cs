@@ -15,10 +15,14 @@ namespace HiddenHarbours.World
     ///   <item>pay to REPAIR her,</item>
     ///   <item>sail her home to Coddle Cove.</item>
     /// </list>
-    /// The dory is <b>earned, never inherited</b> (P4). It reads the opening flags (met Ginny) and
-    /// listens on existing Core signals — <see cref="FishCaught"/> (the clam dig), <see cref="LicensePurchased"/>,
-    /// <see cref="GearPurchased"/>, <see cref="BoatPurchased"/>, <see cref="BoatRepaired"/> — to know which
-    /// step you're on; it never references another module's types (cross-module talk via Core/EventBus).
+    /// The dory is <b>earned, never inherited</b> (P4). Which step you're on is DERIVED from what the
+    /// save holds (<see cref="OnboardingProgress"/>: the opening flags, the cod licence by its Def id,
+    /// the owned rod, the repaired dory), so a new game, a Continue and a reload show the same line for
+    /// the same state. The Core signals — <see cref="FishCaught"/> (the clam dig), <see cref="LicensePurchased"/>,
+    /// <see cref="GearPurchased"/>, <see cref="BoatPurchased"/>, <see cref="BoatRepaired"/> — are still
+    /// heard, for the session's own sake (a rig with no save service must still walk the steps) and to
+    /// record the two beats that leave nothing behind to read. It never references another module's
+    /// types (cross-module talk via Core/EventBus).
     ///
     /// Persistence: the loop closes when the dory is REPAIRED (the climactic earned-and-seaworthy beat),
     /// which sets <c>onboarded</c> via <see cref="OnboardingFlags"/> (save-backed); the closing line then
@@ -38,28 +42,32 @@ namespace HiddenHarbours.World
         [Tooltip("How long the closing 'sail her home / fair winds' line lingers after the dory is repaired (real seconds).")]
         [SerializeField] private float _doneSeconds = 6f;
 
-        // Stable ids the nudge keys off (matching the economy data assets). Not gameplay magic numbers —
-        // these are content ids (CLAUDE.md rule 2's id seam), surfaced so the owner can see what each beat
-        // waits on. The director only compares incoming signal ids to these.
-        private const string RodGearId = "gear.rod";
-        private const string DoryBoatId = "boat.dory";
+        // The stable content ids each beat waits on live in OnboardingProgress (the one place the
+        // derivation and the signal handlers below both read them from).
 
         private OnboardingFlags _flags;
+
+        // VS-08: persisted via the save file, not PlayerPrefs. Lazy, because an EditMode AddComponent
+        // does not run Awake and the step must still be askable there.
+        private OnboardingFlags Flags => _flags ??= new OnboardingFlags(new SaveFlagStore());
 
         // The note the nudge is written on. Made here rather than found, so the opening works in any
         // scene that has a director — the same reasoning that had this file build its own canvas before.
         private QuestPanelPresenter _panel;
 
-        private bool _clamsDug;
-        private bool _licenced;
-        private bool _gotRod;
+        // What THIS SESSION has heard on the bus. Never the answer by itself: each is OR-ed with the
+        // fact read from the save (see Facts), so they only matter where the save cannot answer yet —
+        // a rig with no save service, or the frame between a signal and the write behind it. Cleared
+        // when a game is loaded, so one save's session cannot colour the next one's note.
+        private bool _landedCatch;
+        private bool _hasCodLicence;
+        private bool _hasRod;
         private bool _boughtDory;
         private float _doneTimer;
         private bool _subscribed;
 
         private void Awake()
         {
-            _flags = new OnboardingFlags(new SaveFlagStore());   // VS-08: persisted via the save file, not PlayerPrefs
             _panel = GetComponent<QuestPanelPresenter>();
             if (_panel == null) _panel = gameObject.AddComponent<QuestPanelPresenter>();
         }
@@ -76,6 +84,7 @@ namespace HiddenHarbours.World
             EventBus.Subscribe<GearPurchased>(OnGear);
             EventBus.Subscribe<BoatPurchased>(OnBoatBought);
             EventBus.Subscribe<BoatRepaired>(OnBoatRepaired);
+            EventBus.Subscribe<GameLoaded>(OnGameLoaded);
             _subscribed = true;
         }
 
@@ -87,6 +96,7 @@ namespace HiddenHarbours.World
             EventBus.Unsubscribe<GearPurchased>(OnGear);
             EventBus.Unsubscribe<BoatPurchased>(OnBoatBought);
             EventBus.Unsubscribe<BoatRepaired>(OnBoatRepaired);
+            EventBus.Unsubscribe<GameLoaded>(OnGameLoaded);
             _subscribed = false;
         }
 
@@ -95,7 +105,8 @@ namespace HiddenHarbours.World
             if (_panel == null) return;
 
             // Once the loop's done (dory repaired), nudge "sail her home" briefly, then go quiet for good.
-            if (_flags.Onboarded)
+            OnboardingStep step = CurrentStep;
+            if (step == OnboardingStep.Done)
             {
                 if (_doneTimer > 0f)
                 {
@@ -107,42 +118,90 @@ namespace HiddenHarbours.World
                 return;
             }
 
-            SetHint(NextStep());
+            SetHint(OnboardingProgress.LineFor(step));
         }
 
-        private string NextStep()
+        /// <summary>
+        /// The beat the player is on, decided from state: what the save holds
+        /// (<see cref="OnboardingProgress.Read"/>) OR what this session has heard. Public and
+        /// input-free, so a test can build a director over a save and ask — which is also the proof
+        /// that a Continue and a reload land on the same beat as the session that made the save.
+        /// Alloc-free (a few short list scans), so asking every frame is within rule 7.
+        /// </summary>
+        public OnboardingStep CurrentStep
         {
-            if (!_flags.MetGinny) return WorldStrings.OnboardTalkGinny;   // meet your aunt
-            if (!_clamsDug)       return WorldStrings.OnboardDigClams;    // first catch, by hand
-            if (!_licenced)       return WorldStrings.OnboardBuyLicence;  // cross the bar, buy a cod licence
-            if (!_gotRod)         return WorldStrings.OnboardBuyRod;      // a rod to hand-line cod
-            if (!_boughtDory)     return WorldStrings.OnboardBuyDory;     // buy the damaged dory
-            return WorldStrings.OnboardRepairDory;                        // pay to repair her
+            get
+            {
+                OnboardingFacts facts = Facts();
+                return OnboardingProgress.StepFor(in facts);
+            }
+        }
+
+        private OnboardingFacts Facts()
+        {
+            OnboardingFacts saved = OnboardingProgress.Read(GameServices.Save?.Current, Flags);
+            bool boughtDory = saved.BoughtDory || _boughtDory;
+            bool hasRod = saved.HasRod || _hasRod;
+            bool hasCodLicence = saved.HasCodLicence || _hasCodLicence;
+            return new OnboardingFacts(
+                metGinny: saved.MetGinny,
+                landedCatch: saved.LandedCatch || _landedCatch || hasCodLicence || hasRod || boughtDory,
+                hasCodLicence: hasCodLicence,
+                hasRod: hasRod,
+                boughtDory: boughtDory,
+                doryRepaired: saved.DoryRepaired,
+                onboarded: saved.Onboarded);
         }
 
         // ---- signals ------------------------------------------------------------------------
+        // Public so a test can drive each through the same path the bus uses (an EditMode AddComponent
+        // does not run OnEnable, so nothing is subscribed there).
 
-        // Any landed catch on the island is the clam dig (the first by-hand catch, before any rod).
-        private void OnCaught(FishCaught e) => _clamsDug = true;
-
-        private void OnLicence(LicensePurchased e) => _licenced = true;
-
-        private void OnGear(GearPurchased e)
+        /// <summary>Any landed catch on the island is the clam dig (the first by-hand catch, before any
+        /// rod). Sold, it leaves nothing in the save to read — so the first one is written down.</summary>
+        public void OnCaught(FishCaught e)
         {
-            if (e.GearId == RodGearId) _gotRod = true;
+            _landedCatch = true;
+            if (!Flags.LandedCatch) Flags.LandedCatch = true;
         }
 
-        private void OnBoatBought(BoatPurchased e)
+        /// <summary>Only the COD licence moves the note on. A licence is the one named by its Def id:
+        /// the clam licence Ginny fronts is a different licence and must not count as this one.</summary>
+        public void OnLicence(LicensePurchased e)
         {
-            if (e.BoatId == DoryBoatId) _boughtDory = true;
+            if (e.LicenseId == OnboardingProgress.CodLicenceId) _hasCodLicence = true;
         }
 
-        private void OnBoatRepaired(BoatRepaired e)
+        public void OnGear(GearPurchased e)
         {
-            if (_flags.Onboarded) return;
-            if (e.BoatId != DoryBoatId) return;
-            _flags.Onboarded = true;     // the dory is earned + seaworthy — persist so the opening never re-triggers
+            if (e.GearId == OnboardingProgress.RodGearId) _hasRod = true;
+        }
+
+        /// <summary>The damaged dory, paid for. Written down because <c>SaveData.OwnedBoats</c> cannot
+        /// say it: that list also takes every hull she has had the helm of.</summary>
+        public void OnBoatBought(BoatPurchased e)
+        {
+            if (e.BoatId != OnboardingProgress.DoryBoatId) return;
+            _boughtDory = true;
+            if (!Flags.BoughtDory) Flags.BoughtDory = true;
+        }
+
+        public void OnBoatRepaired(BoatRepaired e)
+        {
+            if (Flags.Onboarded) return;
+            if (e.BoatId != OnboardingProgress.DoryBoatId) return;
+            Flags.Onboarded = true;      // the dory is earned + seaworthy — persist so the opening never re-triggers
             _doneTimer = _doneSeconds;
+        }
+
+        /// <summary>A game was loaded over this session: what the session heard belonged to the game
+        /// before it. The save just restored is the whole truth from here.</summary>
+        public void OnGameLoaded(GameLoaded e)
+        {
+            _landedCatch = false;
+            _hasCodLicence = false;
+            _hasRod = false;
+            _boughtDory = false;
         }
 
         // ---- the nudge ----------------------------------------------------------------------

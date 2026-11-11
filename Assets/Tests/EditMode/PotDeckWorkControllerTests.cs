@@ -84,7 +84,7 @@ namespace HiddenHarbours.Tests.EditMode
         private DeckWorkDef _deckDef;
 
         private const double PlaceTime = 5000.0;
-        private static readonly double SoakSpan = 12.0 * 3600.0;
+        private static readonly double SoakSpan = 12.0 * 75.0;
 
         [SetUp]
         public void SetUp()

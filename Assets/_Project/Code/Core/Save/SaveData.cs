@@ -317,6 +317,45 @@ namespace HiddenHarbours.Core
 
         /// <summary>The chosen player name, added in v17. Empty means no name.</summary>
         public string PlayerName = "";
+
+        /// <summary>
+        /// The clam holes that have been spent (dug, or the clam took fright), each with the game time
+        /// it happened at. A hole in this list stays spent until the tide has come in over the flat
+        /// again; then it is fresh, and its row is dropped the next time any hole is spent.
+        ///
+        /// <para><b>A fact, not the tide.</b> Only WHEN a hole was spent is stored. Which tide that
+        /// moment belongs to, and whether the flood has been since, are recomputed from the clock through
+        /// <see cref="IEnvironmentService.TideCycleIndexAt"/> (rule 5) — the
+        /// <see cref="PlacedTrapDto.PlacementGameTimeSeconds"/> precedent: keep the timestamp, derive the
+        /// rest.</para>
+        ///
+        /// <para>Added in v17 as an additive member on the <see cref="HullChartplotterPrefs"/> precedent:
+        /// an absent list is the correct old-save state (no hole has been dug), so there is no migration
+        /// step and no version bump. Bounded by the number of authored holes — one row per hole id.</para>
+        /// FLAG lead-architect: additive save member (clam flats, catch-honesty).
+        /// </summary>
+        public List<SpentClamHoleDto> SpentClamHoles = new();
+    }
+
+    /// <summary>
+    /// One spent clam hole: which hole, and the game time it was spent at. Flat and JsonUtility-friendly.
+    /// Deliberately carries nothing about the tide — see <see cref="SaveData.SpentClamHoles"/>.
+    /// </summary>
+    [Serializable]
+    public struct SpentClamHoleDto
+    {
+        /// <summary>The hole's stable authored id (<c>fixture.clam_hole.&lt;cell&gt;</c>). A hole with no
+        /// authored id is never written here: its fallback id does not survive a reload.</summary>
+        public string HoleId;
+
+        /// <summary>The game clock (<c>IGameClock.TotalSeconds</c>) at the moment the hole was spent.</summary>
+        public double SpentAtGameSeconds;
+
+        public SpentClamHoleDto(string holeId, double spentAtGameSeconds)
+        {
+            HoleId = holeId;
+            SpentAtGameSeconds = spentAtGameSeconds;
+        }
     }
 
     /// <summary>

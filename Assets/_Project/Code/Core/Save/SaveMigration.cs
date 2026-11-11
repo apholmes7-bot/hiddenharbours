@@ -364,6 +364,7 @@ namespace HiddenHarbours.Core
             data.PlayerRecipe ??= new CharacterRecipe();
             data.PlayerRecipe.Heal();    // a field JsonUtility left null reads as "the preset's own"
             data.PlayerName ??= "";
+            data.SpentClamHoles ??= new System.Collections.Generic.List<SpentClamHoleDto>();
             // Same defensive spirit as the null-repair above, for the one field where a zero is not a
             // value but a crash: a hand-edited JSON, or a row written by a build between the field landing
             // and this heal, would otherwise divide by it. Idempotent — after the v9 step there is nothing

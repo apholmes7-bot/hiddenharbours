@@ -16,6 +16,7 @@ MonoBehaviour:
   VehicleGearCrankSeconds: 2.4
   SecondsPerDay: 1800
   StartHour: 7.5
+  WakeHour: 6
   StartSeason: 1
   StartDayOfSeason: 1
   DaysPerWeek: 7

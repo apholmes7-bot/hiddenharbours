@@ -116,7 +116,11 @@ namespace HiddenHarbours.Tests.Art.EditMode
             // The ground's shore re-read takes the same law at its own point (t16, one law or none: one).
             StringAssert.Contains("float2weightWPX=floor(weightWP*ppm)/ppm;", terrain);
             StringAssert.Contains("TSA_GroundWeights(weightWP,weightWPX,TSA_WarpUV(weightWPX,weightUV),weightE,w,intensity);", terrain);
-            Assert.AreEqual(2, Count(terrain, @"TSA_WarpUV\("), "the ground warps its first read and its shore re-read, no third");
+            // The pixel-true blend reads the ground a third time, at the art texel's centre, by the same law
+            // (terrain blends; TerrainPixelTrueBlendTests holds that read). A moved premise: two on the base.
+            StringAssert.Contains("TSA_GroundWeights(texelWP,texelWPX,TSA_WarpUV(texelWPX,texelUV),texelE,w,intensity);", terrain);
+            Assert.AreEqual(3, Count(terrain, @"TSA_WarpUV\("),
+                "the ground warps its first read, its shore re-read and its texel re-read, no fourth");
             Assert.AreEqual(1, Count(floor, @"TSA_WarpUV\("), "the floor warps its one read");
         }
     }

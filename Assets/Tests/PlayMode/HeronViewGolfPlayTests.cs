@@ -83,10 +83,11 @@ namespace HiddenHarbours.Tests.PlayMode
         {
             if (SystemInfo.graphicsDeviceType == UnityEngine.Rendering.GraphicsDeviceType.Null)
                 Assert.Ignore("Plates need a graphics device.");
+            string folder = "artifacts/golf/b/plates";
+            BeginPlateRun(Path.GetDirectoryName(folder), "plate-floor.txt");
             _asyncShaders = ShaderUtil.allowAsyncCompilation; _shadersSaved = true;
             ShaderUtil.allowAsyncCompilation = false;
             yield return LoadDirect();
-            string folder = "artifacts/golf/b/plates";
             Directory.CreateDirectory(folder);
             DateTime floor = DateTime.Parse(File.ReadAllText("artifacts/golf/b/plate-floor.txt"),
                 System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.RoundtripKind).ToUniversalTime();

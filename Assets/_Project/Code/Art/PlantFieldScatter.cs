@@ -43,14 +43,18 @@ namespace HiddenHarbours.Art
         public static float Offset(int x, int y, int seed, bool north, float cellSize) =>
             (float)((Hash(x, y, seed, north ? 2 : 1) - 0.5) * cellSize * 0.8);
 
+        // densityGain is the clump law's multiplier on this cell's density (PlantClumpLaw.DensityGain).
+        // The roll it is compared against is the same one, so a gain of 1 is the shipped scatter bit for
+        // bit, a gain below 1 can only remove sites and a gain above 1 can only add them.
         public static byte Choose(PlantMaterialRecipe row, float elevation, double cellArea,
-            int x, int y, int seed, float youngChance)
+            int x, int y, int seed, float youngChance, double densityGain = 1.0)
         {
             if (row == null) return 0;
             if (double.IsNaN(cellArea) || double.IsInfinity(cellArea) || cellArea <= 0 ||
                 float.IsNaN(row.Density) || float.IsInfinity(row.Density) || row.Density < 0 ||
+                double.IsNaN(densityGain) || double.IsInfinity(densityGain) || densityGain < 0 ||
                 youngChance < 0 || youngChance > 1 || float.IsNaN(youngChance)) throw new ArgumentException("Invalid scatter input");
-            if (Hash(x, y, seed, 3) >= Math.Min(1, row.Density * cellArea)) return 0;
+            if (Hash(x, y, seed, 3) >= Math.Min(1, row.Density * cellArea * densityGain)) return 0;
             double total = 0;
             foreach (var c in row.Choices)
             {

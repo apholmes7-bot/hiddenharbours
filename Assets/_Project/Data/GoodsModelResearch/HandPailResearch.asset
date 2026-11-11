@@ -1,0 +1,119 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c674d767b67f40f698c9b954139c7253, type: 3}
+  m_Name: HandPailResearch
+  m_EditorClassIdentifier: HiddenHarbours.Tools.GoodsModel::HiddenHarbours.Tools.GoodsModel.GoodsContainerDef
+  Spec:
+    Id: container.research_hand_pail
+    Outside: {LengthMm: 320, WidthMm: 320, HeightMm: 380}
+    Inside: {LengthMm: 198, WidthMm: 198, HeightMm: 300}
+    Opening: {LengthMm: 198, WidthMm: 198, HeightMm: 300}
+    UsableVolumeMl: 11000
+    CountLimit: 20
+    AcceptedProfiles:
+    - goods.raw_fish
+    - goods.small_shellfish
+    Slots:
+    - Xmm: 0
+      Ymm: 0
+      Zmm: 0
+      Size: {LengthMm: 45, WidthMm: 45, HeightMm: 90}
+    - Xmm: 45
+      Ymm: 0
+      Zmm: 0
+      Size: {LengthMm: 45, WidthMm: 45, HeightMm: 90}
+    - Xmm: 90
+      Ymm: 0
+      Zmm: 0
+      Size: {LengthMm: 45, WidthMm: 45, HeightMm: 90}
+    - Xmm: 135
+      Ymm: 0
+      Zmm: 0
+      Size: {LengthMm: 45, WidthMm: 45, HeightMm: 90}
+    - Xmm: 0
+      Ymm: 45
+      Zmm: 0
+      Size: {LengthMm: 45, WidthMm: 45, HeightMm: 90}
+    - Xmm: 45
+      Ymm: 45
+      Zmm: 0
+      Size: {LengthMm: 45, WidthMm: 45, HeightMm: 90}
+    - Xmm: 90
+      Ymm: 45
+      Zmm: 0
+      Size: {LengthMm: 45, WidthMm: 45, HeightMm: 90}
+    - Xmm: 135
+      Ymm: 45
+      Zmm: 0
+      Size: {LengthMm: 45, WidthMm: 45, HeightMm: 90}
+    - Xmm: 0
+      Ymm: 90
+      Zmm: 0
+      Size: {LengthMm: 45, WidthMm: 45, HeightMm: 90}
+    - Xmm: 45
+      Ymm: 90
+      Zmm: 0
+      Size: {LengthMm: 45, WidthMm: 45, HeightMm: 90}
+    - Xmm: 90
+      Ymm: 90
+      Zmm: 0
+      Size: {LengthMm: 45, WidthMm: 45, HeightMm: 90}
+    - Xmm: 135
+      Ymm: 90
+      Zmm: 0
+      Size: {LengthMm: 45, WidthMm: 45, HeightMm: 90}
+    - Xmm: 0
+      Ymm: 135
+      Zmm: 0
+      Size: {LengthMm: 45, WidthMm: 45, HeightMm: 90}
+    - Xmm: 45
+      Ymm: 135
+      Zmm: 0
+      Size: {LengthMm: 45, WidthMm: 45, HeightMm: 90}
+    - Xmm: 90
+      Ymm: 135
+      Zmm: 0
+      Size: {LengthMm: 45, WidthMm: 45, HeightMm: 90}
+    - Xmm: 135
+      Ymm: 135
+      Zmm: 0
+      Size: {LengthMm: 45, WidthMm: 45, HeightMm: 90}
+    - Xmm: 0
+      Ymm: 0
+      Zmm: 90
+      Size: {LengthMm: 45, WidthMm: 45, HeightMm: 90}
+    - Xmm: 45
+      Ymm: 0
+      Zmm: 90
+      Size: {LengthMm: 45, WidthMm: 45, HeightMm: 90}
+    - Xmm: 90
+      Ymm: 0
+      Zmm: 90
+      Size: {LengthMm: 45, WidthMm: 45, HeightMm: 90}
+    - Xmm: 135
+      Ymm: 0
+      Zmm: 90
+      Size: {LengthMm: 45, WidthMm: 45, HeightMm: 90}
+    EmptyMassG: 1000
+    LidMassG: 0
+    MaxGrossMassG: 20000
+    RequiredHands: 1
+    MaxHandGrossMassG: 8000
+    HasLid: 0
+    StackGroup: ""
+    MaxStackCount: 1
+    MaxStackHeightMm: 380
+    MaxSupportedMassG: 0
+    StackRequiresLid: 0
+    AllowHandCarriedStack: 0
+  DimensionSource: Goods-handling design proposal, model table
+  Provenance: "Game proposal, not a measured product. Inscribed square conservatively bounds the round pail. Twenty small-shell placements retain the proposed legacy count ceiling. Mass and operating limits are unapproved prototype data."
