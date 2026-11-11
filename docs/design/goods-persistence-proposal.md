@@ -47,10 +47,10 @@ Save all authoritative timestamps as absolute game seconds from `IGameClock.Tota
 
 ## Transfers and sale commits
 
-1. Validate source and destination revisions, reach, route, hands, opening, fit, support, weight and ownership. A normal put that does not fit refuses and leaves the item at its source, following the earlier proposal's recommended default. An explicit later tip/spill is a separate operation.
+1. Validate source and destination revisions, reach, route, hands, opening, fit, support, weight and ownership. A normal put that does not fit refuses without mutation; a hand put leaves the same item in hand, following the [RULED 2026-11-11 choices](../../backlog/proposed-goods-handling.md#ruled-handling-choices--2026-11-11). A large fish requires both hands after setting down the rod; the one-hand pail limit is 8 kg gross. An explicit later tip/spill is a separate operation. These handling decisions do not ratify this proposed schema.
 2. At the pickup commit, move the entity from source to a durable hand/device location. Movement and animation never hold the only copy. A destination disappearing during carrying leaves it in the carrier's hands; a cancelled pickup leaves it at source.
 3. At set-down, validate again and commit one location change. A save may capture source, held or destination state, never a half-applied transfer. Publish the Core event only after commit.
-4. Delivery to a buyer retains player ownership until confirmation or an authorized staff sell policy commits. Take-back uses ordinary hand rules. A whole-pail delivery transfers selected contents; it does not sell the reusable pail.
+4. The first buyer delivery is one fish set on the counter. Delivery retains player ownership until confirmation or, in later staff work, an authorized sell policy commits. Take-back uses ordinary hand rules. Later whole-pail delivery transfers selected contents; it does not sell the reusable pail.
 5. Sale removes only delivered goods and updates wallet, market supply and receipt in one snapshot revision. Duplicate confirmation/retry must produce the same result once. No remote hold pointer supplies a counter sale.
 
 An in-memory snapshot lock/revision can make a single-slot save atomic without introducing an unbounded transaction journal. If asynchronous durable commands are later added, specify their bounded idempotency ledger separately. Capture failure keeps the previous complete file; it must not overwrite a valid save with a partial graph.

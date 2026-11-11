@@ -1,6 +1,6 @@
 # Landed catch state research
 
-This editor-only plain-class experiment separates life from quality without registering a gameplay system. It extends the proposed [goods handling canon](https://github.com/apholmes7-bot/hiddenharbours/pull/1042), using its recommended default of live shellfish and still fish. It supplies no species facts, sprites, content assets, biological durations or shipping tuning. The current wet-bucket policy and all current catch, sale and save paths continue to use their existing code.
+This editor-only plain-class experiment separates life from quality without registering a gameplay system. It follows the [RULED 2026-11-11 goods choices](../../backlog/proposed-goods-handling.md#ruled-handling-choices--2026-11-11): live shellfish and still fish. That decision settles the handling direction; it supplies no species facts, sprites, content assets, biological durations or shipping tuning. The current wet-bucket policy and all current catch, sale and save paths continue to use their existing code.
 
 ## Inputs and rules
 

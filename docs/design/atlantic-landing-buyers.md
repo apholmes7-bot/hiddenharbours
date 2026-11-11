@@ -28,7 +28,7 @@ Each row identifies its source's scope. A documented plant process is not a prac
 | Live-holding tray/rack | Compartments, stack/support clearance and facility habitat dependency | Tray placement supplies no live protection without the compatible operating facility |
 | Receiving scale/support | Accessible load surface, opening, gross load and allowed container/profile ids | No weighing while cargo remains remotely in a boat or truck; an oversized load needs another supported route |
 
-Measured dimensions, local pan sizes and closed-lid stack ratings remain in the [handling research work](https://github.com/apholmes7-bot/hiddenharbours/pull/1050). Do not infer measurements, tare or machine capacity from a product name or photo. These equipment fields carry no sprite or rig prescription.
+Measured dimensions, local pan sizes and closed-lid stack ratings remain in the [handling research work](https://github.com/apholmes7-bot/hiddenharbours/pull/1050). The [RULED choices of 2026-11-11](../../backlog/proposed-goods-handling.md#ruled-handling-choices--2026-11-11) select a 0.65 × 0.45 m outside footprint for the low sorting pan and two-total compatible insulated-tote stacks; they do not supply measured tare, lid geometry or support ratings. The short sorting pan is distinct from the long counter receiving pan required to fit current large cod. Do not infer measurements, tare or machine capacity from a product name or photo. These equipment fields carry no sprite or rig prescription.
 
 ## Proposed data records
 
@@ -52,7 +52,7 @@ The reusable tub remains a separate owned entity. Sorting the product into accep
 
 ## First playable receiving route and later expansion
 
-Follow the earlier goods proposal's default: first set one fish on a compatible counter support, inspect it, show the ordinary quote/refusal, confirm the sale and take back anything refused. This is a manual receiving interaction; it does not add official monitoring, laboratory work or a plant conveyor. Preserve today's price rules until a separate pricing change is approved.
+Follow the ruled first-sale decision: first set one fish on a compatible counter support, inspect it, show the ordinary quote/refusal, confirm the sale and take back anything refused. This is a manual receiving interaction; it does not add official monitoring, laboratory work or a plant conveyor. Preserve today's price rules until a separate pricing change is approved.
 
 M2 may accept a delivered pail or compatible tote, retain lot identity and return the empty container. Plant sampling, industrial tubs/live racks and [paid carrying](goods-carrying-staff-proposal.md) follow their M3/facility prerequisites; freight remains M4. Pending grade or measurement leaves the actual goods in receiving storage, never in a remote source pointer. The [future save contract](goods-persistence-proposal.md) must preserve that location, provenance, cooling and once-only settlement before this loop ships.
 

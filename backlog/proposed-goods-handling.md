@@ -1,6 +1,34 @@
 # Proposed goods handling backlog
 
-Status: **Proposed / unclaimed**. Coordinating owner: **lead-architect**. Pillars P2, P3, P4, P5. Based on the 2026-11-10 manual-handling ruling and [design packet](../docs/design/goods-handling/00-today.md). These are new proposals, not edits to existing milestone work or a claim that code has shipped. Implementation re-traces the then-current main and open file ownership. [Phasing](../docs/design/goods-handling/06-phasing.md) reconciles the current St Peters M1 with the roadmap's historical text.
+Status: **Handling choices RULED; implementation deliveries Proposed / unclaimed**. Coordinating owner: **lead-architect**. Pillars P2, P3, P4, P5. Based on the 2026-11-10 manual-handling ruling and [design packet](../docs/design/goods-handling/00-today.md). The decisions below settle the nine choices; they do not claim that code has shipped or approve the proposed Core/save contracts. Implementation re-traces the then-current main and open file ownership. [Phasing](../docs/design/goods-handling/06-phasing.md) reconciles the current St Peters M1 with the roadmap's historical text.
+
+## RULED handling choices — 2026-11-11
+
+The owner said **"i go with all leans for now"**, accepting all nine recommendations in [PR 1042](https://github.com/apholmes7-bot/hiddenharbours/pull/1042). That PR is merged. These are the chosen rules for subsequent work; the [former questions page](../docs/design/goods-handling/09-owner-questions.md) now records decisions in the same order.
+
+| Choice | Status | Decision and boundary |
+|---|---|---|
+| 1. Pail in one hand | **RULED 2026-11-11** | At most **8 kg gross, including the pail**. Shape/opening fit still applies; this is not 8 kg of contents plus shell. |
+| 2. Large fish leaving the boat | **RULED 2026-11-11** | **Both hands after putting the rod down**, within the authored carry envelope. A larger fish needs a compatible pan/device; the rod never gains a hidden hand. |
+| 3. Full container | **RULED 2026-11-11** | **Refuse the normal put** and leave the same item in hand. Later deliberate tipping is a separate supported action, never automatic overflow. |
+| 4. Landed life treatment | **RULED 2026-11-11** | **Live shellfish, still fish**, without distress or gore. Species-compatible holding and any death timer still need data; this records direction without adding animation or mortality. |
+| 5. First sale | **RULED 2026-11-11** | **One fish set on the counter** before quote/confirmation. Delivered pails come later, with the empty pail retained; parking a carrier never sells its load. |
+| 6. First small sorting container | **RULED 2026-11-11** | **Low pan, 0.65 × 0.45 m outside footprint**. Depth, clear space, local measurements and ratings remain implementation inputs. It is for short catch, distinct from the long receiving pan needed for large cod. |
+| 7. First new cart | **RULED 2026-11-11** | **Four-wheel low wharf cart** with a visible supported bed and handle. Loading/unloading stays manual; it cannot make an oversized or overweight tub liftable. |
+| 8. Powered shore machines | **RULED 2026-11-11** | **After working trucks and hand carts**, at M3 enterprise scale: shore tractor/trailer, then forklift/lifting gear as sites become usable. No machinery moves into the first carry slice. |
+| 9. Small insulated tote stacks | **RULED 2026-11-11** | **Two total, including the base**, only with compatible locating lids and sufficient support. Unmeasured lids gain no stacking capability. Empty nesting and other container kinds retain their separate data/review. |
+
+The 8 kg pail limit and selected pan footprint are accepted design values. Other proposed numbers, including the 16 kg two-hand limit, 12 kg catch limit, added hand envelopes, pan depth, payloads and support ratings, remain subject to their stated implementation review. Existing runtime tuning is unchanged. The low sorting pan cannot receive the current approximately 1.092 m cod: retain the direct two-hand route to a measured long receiving pan, without enlarging art or shrinking catch.
+
+## Follow-up document audit — 2026-11-11
+
+| Merged work | Recheck against the rulings |
+|---|---|
+| PR 1050 — [handling research](../docs/design/goods-model-research.md) | Matches 8 kg gross, full-put refusal, the chosen low pan and two-total compatible tote stacks. Corrected the recommendation labels; other research limits, unmeasured lids and three-total low-pan stacks remain separate provisional data. Editor-only fixtures are unchanged. |
+| PR 1062 — [landed catch research](../docs/design/landed-catch-research.md) | Matches live shellfish / still fish. Corrected the default's authority; synthetic survival inputs still authorize no shipping mortality or art. |
+| PR 1064 — [persistence proposal](../docs/design/goods-persistence-proposal.md) | Matches refusal without mutation, rod set-down for both hands and first one-fish delivery. Clarified accepted handling versus the future schema and later whole-pail delivery; no save contract is ratified here. |
+| PR 1064 — [hired hands proposal](../docs/design/goods-carrying-staff-proposal.md) | Matches manual first sale, refusal, four-wheel wharf cart and machines after carts/trucks. Replaced default language with the ruled decisions; M3 hires remain later work. |
+| PR 1064 — [buyer receiving table](../docs/design/atlantic-landing-buyers.md) | Matches one fish physically on the counter before sale. Clarified the selected low pan versus the long receiving pan; actual tare, drain/weigh methods, grade timing and prices remain unapproved receiving inputs. |
 
 ## Delivery and acceptance
 
@@ -21,7 +49,7 @@ Status: **Proposed / unclaimed**. Coordinating owner: **lead-architect**. Pillar
 
 ## Rules spanning the deliveries
 
-- Proposed schema/contract names and numeric handling limits require the owning roles' implementation review; this file does not lock them as canon facts.
+- Proposed schema/contract names and numeric limits beyond the RULED choices require the owning roles' implementation review. The nine decisions above settle design choices; they do not approve a technical contract or change live tuning.
 - Every production goods adapter is Core-mediated. App composes services, and presentation reads committed state. No buyer enumerates arbitrary holds or vehicle cargo.
 - First repair proves a manual unloading loop without a machine. First cart proves carrier capacity without staff. Industrial full tubs require an actual lift, not a generous hand limit.
 - GH-02/GH-05 must cover every reachable M1 species size maximum, including the current 12 kg cod (about 1.092 m), from source to eligible hands to a receiving pan that really fits. A new 1.0 m hand ceiling or a 0.90 m tray would strand existing legal catch. GH-02 includes taking a fish back out of the intermediate tote; it cannot become a one-way store while whole-container sales are deferred.

@@ -2,6 +2,8 @@
 
 This is a starting inventory from general knowledge of Atlantic Canadian fishing, **not a surveyed local equipment list**. Dimensions are outside length × width × height in metres; usable space is smaller. Except for the named tub spot-check, dimensions and loads below are rough class estimates. I am unsure which crate, pan, bag and hoist sizes are usual at the particular harbour being depicted; the owner can correct those without changing the handling rule. Colour alone does not identify a tub's size or rating. Capacities are working design references, not lifting instructions or game balance already approved.
 
+The [RULED game choices of 2026-11-11](../../../backlog/proposed-goods-handling.md#ruled-handling-choices--2026-11-11) select an 8 kg gross one-hand pail, a low sorting pan with a 0.65 × 0.45 m outside footprint, a four-wheel low wharf cart and two-total compatible insulated-tote stacks. These chosen design values do not turn the approximate real-equipment examples below into surveyed specifications. Pan depth, tare, clear space and support/lid ratings remain unverified; the small sorting pan is separate from the long counter receiving pan.
+
 One measured check anchors the scale: a [Sæplast manufacturer sheet](https://asia.saeplast.com/static/extras/files/1456739542-hk_460-and-660_customer_161015_en.pdf) lists its 460-class tub at 1.23 × 1.02 × 0.57 m, 451 L and 40 kg empty; its 660-class is 1.22 × 1.02 × 0.74 m, 640 L and 51 kg empty. Other revisions differ. These are machine loads even before filling. The remaining figures are explicitly estimates rather than product specifications.
 
 | Gear and actual job | Approximate size and rough capacity | Stack / nest / float | Who moves it; game implication |
