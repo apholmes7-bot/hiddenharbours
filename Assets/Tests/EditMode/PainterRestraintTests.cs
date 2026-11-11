@@ -119,7 +119,10 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         [TestCase("Assets/_Project/Scenes/StPeters.unity", 5)]
-        [TestCase("Assets/_Project/Scenes/NineMileCreek.unity", 23)]
+        // NMC H5 (#1039) retired main's 23 (14 bollards, 1 cleat, 8 on the one retired float) and authored 83: 19 cap
+        // ShoreCleats (10 concrete, 6 crib, 3 west apron) + 64 FloatCleats (8 west float, 16+16 fingers A/B, 8 east rec
+        // float, 16 bow/stern on the eight finger berths).
+        [TestCase("Assets/_Project/Scenes/NineMileCreek.unity", 83)]
         public void EveryAuthoredWharfFitting_StillAcceptsAMadeFastLine(string path, int expected)
         {
             var r = Rig();
