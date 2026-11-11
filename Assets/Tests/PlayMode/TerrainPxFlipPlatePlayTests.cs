@@ -33,12 +33,10 @@ namespace HiddenHarbours.Tests.PlayMode
     /// </list>
     ///
     /// <para><b>THE FRAME.</b> Every plate goes through the persistent core's camera and its own
-    /// <see cref="CameraFollow"/>, asked for the on-foot framing. That asks 9 m, which picks zoom 4 at the
-    /// 1080 px design screen (reference 480 x 270), and the PixelPerfectCamera then re-imposes the size from
-    /// the TARGET: 1080 / (4 x 32) = 8.4375 m tall. So the render texture is 1080 px tall, which is what a
-    /// 1080p player sees: 15 x 8.4375 m at 1920 px, 30 x 8.4375 m at 3840 px. A 900 px plate would frame
-    /// 9.375 m through zoom 3, a view nobody plays. The frame centres were scored with no Unity against the
-    /// committed height and splat maps at that size, at this hour.</para>
+    /// <see cref="CameraFollow"/>, asked for the selected on-foot stop AFTER the 1080 px render texture
+    /// is attached. Since fixed zoom stops, its metre height depends on that target's pixel grid. The
+    /// camera must reach the requested height exactly; the caption records both the request and the
+    /// resulting frame. The wider plate has twice the width at the same stop.</para>
     ///
     /// <para><b>THE HOUR.</b> The day-1 daylight low water, found by scanning the live environment minute by
     /// minute from 06:00 to 18:00 (-2.087 m at 09:09 on the committed config). Same hour in both runs.</para>
@@ -208,7 +206,7 @@ namespace HiddenHarbours.Tests.PlayMode
             yield return PinTheDaylightLowWater();
             yield return FrameOn(LowTideWide, WidePlateWidthPx);
             ShootThePlate("plate-2-stpeters-low-tide-ripple-and-foreshore-wide",
-                "St Peters: the low-tide flats, Ripple and Foreshore, 30 m wide to show the 8 m repeat", LowTideWide);
+                "St Peters: the low-tide flats, Ripple and Foreshore, twice the play width to show the 8 m repeat", LowTideWide);
         }
 
         /// <summary>
@@ -511,14 +509,15 @@ namespace HiddenHarbours.Tests.PlayMode
             _follow.Target = anchor.transform;
             _follow.Smooth = 1000f;   // any residue arrives in a frame, not over a second of easing
             _cam.transform.position = new Vector3(at.x, at.y, _cam.transform.position.z);
-            _askedHeight = _follow.WorldHeightFor(CameraFraming.OnFoot);
-            _follow.SetFraming(_askedHeight, 0f);
 
             _w = widthPx;
             _h = PlateHeightPx;
             _rt = new RenderTexture(_w, _h, 24, RenderTextureFormat.ARGBHalf);
             _rt.Create();
             _cam.targetTexture = _rt;
+            // Fixed zoom stops are measured on the target's grid, so ask only after attaching it.
+            _askedHeight = _follow.WorldHeightFor(CameraFraming.OnFoot);
+            _follow.SetFraming(_askedHeight, 0f);
             for (int i = 0; i < 2; i++) yield return null;   // the follow reads the anchor while nothing can move
 
             Time.timeScale = 1f;
@@ -535,8 +534,9 @@ namespace HiddenHarbours.Tests.PlayMode
                 $"the camera sits at ({p.x:0.####}, {p.y:0.####}), not on the frame centre ({at.x:0.###}, {at.y:0.###}), " +
                 $"after {_eased}: something else drives it (a region-bounds clamp, a cinematic), so the plate would " +
                 "show other ground and the two arms would not line up.");
-            Assert.That(worldHeight, Is.InRange(8f, 9.5f),
-                $"the camera frames {worldHeight:0.###} m tall, not the on-foot view (8.4375 m at 1080 px).");
+            Assert.That(worldHeight, Is.EqualTo(_askedHeight).Within(OnTheCentreMetres),
+                $"the camera frames {worldHeight:0.###} m tall, not the on-foot stop its follow was asked for " +
+                $"({_askedHeight:0.###} m on the {_h} px target).");
         }
 
         /// <summary>
