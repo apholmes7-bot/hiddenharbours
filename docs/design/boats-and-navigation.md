@@ -914,8 +914,8 @@ The on-foot ⇄ aboard control loop is the `ControlSwitcher` (Player lane); seve
 - **Hold / root the mooring line** — the **rope / mooring mechanic** (`BoatMooring`, Boats lane; P1 + P5).
   This *replaces* the earlier auto-tie-on-disembark with the owner's refinement:
   - **On disembark the player HOLDS the rope** (`Hold(player)`): the line is made fast to the **player's own
-    position**, so the boat is tethered to the player and trails them on the leash as they move. A quick
-    hop-off never loses the boat (P5 cozy).
+    position**. At the painter's length the player's walk stops; walking inland cannot drag the hull
+    up the shore. Drop the line or make fast to a fitting before walking away (P5 cozy).
   - **Press `Q` to ROOT the line to the ground** at the player's feet (`ToggleMooring` → `Root`): the boat
     now tethers to that **fixed spot** and the player is free to roam. **`Q` again** takes the line back in
     hand (`Hold`). Re-boarding (`E`) **stows** the rope (the helm takes over).
@@ -930,8 +930,9 @@ The on-foot ⇄ aboard control loop is the `ControlSwitcher` (Player lane); seve
     (`ConstrainToRope`) guarantees she can never sit more than the tiny `give` past rope-length (the
     "inextensible" part). The greybox `LineRenderer` draws the **slack rope as a drooping catenary** that
     straightens and goes taut only at the limit (`Slack01` / `SampleRopeCurve`).
-  - **Tunables are owner-editable serialized fields, no magic numbers**: rope length, the firm-limit give /
-    stiffness / damping, and the slack-sag amount on `BoatMooring`. Drift uses only the deterministic
+  - **Tunables are data**: painter length is `BoatHullDef.PainterLengthMeters` (authored on the dory;
+    existing component length remains the fallback for older hull data). Firm-limit give / stiffness /
+    damping and slack sag remain on `BoatMooring`. Drift uses only the deterministic
     `EnvironmentSample`; the tether is a pure physics constraint (firm limit + damping + positional clamp) —
     nothing saved, no RNG (CLAUDE.md rule 5). The constraint + drift + curve math are pure static helpers,
     EditMode-tested (slack-inside vs firm-limit; held-at-the-rope's-end vs untethered-runs-away;
@@ -982,6 +983,11 @@ interface the tether reads a live `Position` from each tick:
 | `HeldByPlayer` | the player's hand (`TransformAnchor`) | no |
 | `RootedToGround` | a fixed ground spot (`FixedAnchor`) | no |
 | `MadeFastToCleat` | a shore cleat, with the other end on one of the hull's own cleats (`CleatAnchor`) | **yes** |
+
+The held painter restrains on-foot movement through Core's `IWalkMovementConstraint`, so the walk
+motor never depends on Boats. After each physics step an unmanned, tethered hull is checked against
+the existing terrain depth law: afloat she cannot enter water shallower than her draught; an ebb
+may leave her aground in place, but she cannot move onto higher bottom. No terrain or art changes.
 
 #### The cleat moor (M2-38, built 2026-08-06)
 

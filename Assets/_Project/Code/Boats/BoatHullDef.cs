@@ -91,6 +91,9 @@ namespace HiddenHarbours.Boats
         public SeaState MaxSafeSeaState = SeaState.Lively;
 
         [Header("Ground tackle")]
+        [Tooltip("Painter length in metres. A person holding it cannot walk farther from the hull.")]
+        [Min(0f)] public float PainterLengthMeters = 4f;
+
         [Tooltip("Does she carry an ANCHOR at all? Owner ruling: every hull on the ladder does — the " +
                  "dory heaves a grapnel over the bow, the trawler drops a hook off a windlass — so " +
                  "this is TRUE by default and false is the deliberate exception (a hull that genuinely " +

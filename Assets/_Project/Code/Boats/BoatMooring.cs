@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using HiddenHarbours.Core;
 
@@ -17,8 +18,8 @@ namespace HiddenHarbours.Boats
         /// <summary>The boat is crewed/under way (or not yet disembarked). The rope is stowed; this does nothing.</summary>
         Stowed,
         /// <summary>Disembarked, rope IN HAND. The line is made fast to the player's own position, so the boat
-        /// is tethered to the player and follows them on the leash as they move. It still feels wind + tide
-        /// (it bobs/swings) but can never pull past rope-length of the player's hand.</summary>
+        /// remains in water while the painter restrains the player's walk at its length. The boat still
+        /// feels wind and tide; dropping or making fast releases the walking restraint.</summary>
         HeldByPlayer,
         /// <summary>Disembarked, rope ROOTED to a fixed ground spot. The boat is tethered to that point and the
         /// player is free to walk away; the boat still drifts on wind + tide but stays within rope-length of
@@ -43,7 +44,7 @@ namespace HiddenHarbours.Boats
     ///
     /// <list type="bullet">
     ///   <item><b>Held (rope in hand).</b> On disembark the player holds the line: the boat is tethered to
-    ///   the player's live position and trails them on the leash. A quick hop-off never loses the boat.</item>
+    ///   the player's live position, and the taut painter stops their walk. The hull stays in water.</item>
     ///   <item><b>Rooted (made fast to the ground).</b> Press the root key and the line is dropped to a fixed
     ///   spot at the player's feet; the boat tethers there and the player roams free. Press again to take the
     ///   line back in hand.</item>
@@ -87,7 +88,7 @@ namespace HiddenHarbours.Boats
     /// <c>MooringAnchor.cs</c> and design/boats-and-navigation.md §9.6.</para>
     /// </summary>
     [RequireComponent(typeof(Rigidbody2D))]
-    public class BoatMooring : MonoBehaviour
+    public class BoatMooring : MonoBehaviour, IWalkMovementConstraint
     {
         [Header("Rope length (owner-editable feel)")]
         [Tooltip("How long the mooring rope is (m). While moored, the boat is free to bob/swing anywhere " +
@@ -134,6 +135,10 @@ namespace HiddenHarbours.Boats
         private Rigidbody2D _rb;
         private BoatController _boat;
         private LineRenderer _rope;
+        private IConstrainedWalker _heldWalker;
+        private Rigidbody2D _heldBody;
+        private Vector2 _lastHullPosition;
+        private bool _hasHullPosition;
 
         // The tie target. While Held this tracks the player transform; while Rooted it's a fixed spot;
         // while MadeFastToCleat it is the SHORE cleat (the end that holds still).
@@ -174,7 +179,8 @@ namespace HiddenHarbours.Boats
         /// <summary>True whenever a rope of any kind should be drawn — painter or made-fast line.</summary>
         public bool HasLineOut => State != MooringState.Stowed;
 
-        public float RopeLength => _ropeLength;
+        public float RopeLength => _boat != null && _boat.Hull != null && _boat.Hull.PainterLengthMeters > 0f
+            ? Mathf.Max(0f, _boat.Hull.PainterLengthMeters) : Mathf.Max(0f, _ropeLength);
 
         // ---- made-fast reads (M2-38) ----------------------------------------------------------------
 
@@ -219,6 +225,87 @@ namespace HiddenHarbours.Boats
             BuildRopeVisual();
         }
 
+        private void OnEnable() => StartCoroutine(RestrainAfterPhysics());
+
+        private void OnDisable() => StopAllCoroutines();
+
+        private void OnDestroy() => ReleaseWalker();
+
+        private void ReleaseWalker()
+        {
+            if (_heldWalker is Object o && o == null) _heldWalker = null;
+            if (_heldWalker != null && ReferenceEquals(_heldWalker.MovementConstraint, this))
+                _heldWalker.MovementConstraint = null;
+            _heldWalker = null;
+            _heldBody = null;
+        }
+
+        /// <summary>The hand is stopped by a taut painter; walking never relocates the hull.</summary>
+        public Vector2 ConstrainWalk(Vector2 destination)
+        {
+            EnsureRefs();
+            return IsHeld && _rb != null
+                ? ConstrainToRope(destination, _rb.position, RopeLength, 0f) : destination;
+        }
+
+        /// <summary>Use the existing depth law. An ebb may ground her in place, but she cannot
+        /// move across dry, level bottom while aground, or enter less than her draught while afloat.</summary>
+        public static Vector2 ConstrainToWater(ITidalTerrain terrain, IEnvironmentService sea,
+            double now, Vector2 previous, Vector2 proposed, float draught)
+        {
+            float before = BoatCrossing.DepthAt(terrain, sea, now, previous);
+            float after = BoatCrossing.DepthAt(terrain, sea, now, proposed);
+            return after >= Mathf.Max(0f, draught) || (before < draught && after > before)
+                ? proposed : previous;
+        }
+
+        private IEnumerator RestrainAfterPhysics()
+        {
+            var endOfStep = new WaitForFixedUpdate();
+            while (true)
+            {
+                yield return endOfStep;
+                if (!HasLineOut) { _hasHullPosition = false; continue; }
+                GuardWater();
+                if (IsHeld && _heldBody != null)
+                {
+                    Vector2 held = ConstrainWalk(_heldBody.position);
+                    if (held != _heldBody.position)
+                    {
+                        _heldBody.position = held;
+                        RemoveOutwardVelocity(_heldBody, _rb.position);
+                    }
+                }
+            }
+        }
+
+        private void GuardWater()
+        {
+            EnsureRefs();
+            if (_rb == null) return;
+            if (_hasHullPosition)
+            {
+                Vector2 held = ConstrainToWater(GameServices.TidalTerrain, GameServices.Environment,
+                    GameServices.Clock != null ? GameServices.Clock.TotalSeconds : 0d,
+                    _lastHullPosition, _rb.position, _boat != null && _boat.Hull != null
+                        ? _boat.Hull.DraughtMeters : 0f);
+                if (held != _rb.position)
+                {
+                    _rb.position = held;
+                    _rb.linearVelocity = Vector2.zero;
+                }
+            }
+            _lastHullPosition = _rb.position;
+            _hasHullPosition = true;
+        }
+
+        private static void RemoveOutwardVelocity(Rigidbody2D body, Vector2 centre)
+        {
+            Vector2 radial = (body.position - centre).normalized;
+            float outward = Vector2.Dot(body.linearVelocity, radial);
+            if (outward > 0f) body.linearVelocity -= radial * outward;
+        }
+
         /// <summary>Resolve the sibling rigidbody/controller lazily so the transition methods work even
         /// before <see cref="Awake"/> has run (EditMode / first-tick wiring) — Unity doesn't call Awake on
         /// an AddComponent in edit mode, mirroring <see cref="BoatController.Stop(bool)"/>'s lazy lookup.</summary>
@@ -232,8 +319,8 @@ namespace HiddenHarbours.Boats
 
         /// <summary>
         /// Take the rope IN HAND — the default on disembark (the player holds the line). The boat is tethered
-        /// to <paramref name="player"/>'s live position and trails them on the leash; it bobs/swings on wind +
-        /// tide but stays within rope-length of the player's hand. Idempotent: re-holding just re-points the
+        /// to <paramref name="player"/>'s live position; it bobs/swings on wind and tide, while a taut line
+        /// stops the player's walk. Idempotent: re-holding just re-points the
         /// hand. Brings the boat to rest so an unmanned, just-disembarked boat sits quiet under the player's hand.
         /// </summary>
         public void Hold(Transform player)
@@ -242,9 +329,17 @@ namespace HiddenHarbours.Boats
             // hand — she is tied, and taking the line back is CastOff at the cleat (M2-38).
             if (State == MooringState.MadeFastToCleat) return;
             EnsureRefs();
+            ReleaseWalker();
+            if (player != null)
+            {
+                _heldWalker = player.GetComponent<IConstrainedWalker>();
+                _heldBody = player.GetComponent<Rigidbody2D>();
+                if (_heldWalker != null) _heldWalker.MovementConstraint = this;
+            }
             _anchor = new TransformAnchor(player);
             State = MooringState.HeldByPlayer;
             if (_boat != null) _boat.Stop();   // drop velocity + held input; the rope keeps her here
+            GuardWater();
             UpdateRopeVisual();
         }
 
@@ -257,8 +352,10 @@ namespace HiddenHarbours.Boats
         {
             if (State == MooringState.MadeFastToCleat) return;   // she is on a cleat, not on the ground
             EnsureRefs();
+            ReleaseWalker();
             _anchor = new FixedAnchor(groundPoint);
             State = MooringState.RootedToGround;
+            GuardWater();
             UpdateRopeVisual();
         }
 
@@ -276,7 +373,9 @@ namespace HiddenHarbours.Boats
         public void Stow()
         {
             if (State == MooringState.MadeFastToCleat) return;   // she is properly moored; leave her tied
+            ReleaseWalker();
             State = MooringState.Stowed;
+            _hasHullPosition = false;
             _anchor = null;
             ClearLine();
             UpdateRopeVisual();
@@ -299,12 +398,14 @@ namespace HiddenHarbours.Boats
             if (boatCleat.Side != CleatSide.Boat || shoreCleat.Side != CleatSide.Shore) return false;
 
             EnsureRefs();
+            ReleaseWalker();
             _boatCleat = boatCleat;
             _shoreCleat = shoreCleat;
             _scopeMetres = ClampScope(scopeMetres);
             _overloadSeconds = 0f;
             _anchor = new CleatAnchor(shoreCleat);        // the end that holds still
             State = MooringState.MadeFastToCleat;
+            GuardWater();
 
             _load01 = ComputeLoad01();
             Publish(MooringLineEvent.MadeFast);
@@ -520,6 +621,7 @@ namespace HiddenHarbours.Boats
         {
             if (State == MooringState.Stowed) return;
             EnsureRefs();
+            GuardWater();
             BoatHullDef hull = _boat != null ? _boat.Hull : null;
             if (_rb == null || hull == null || _anchor == null) return;   // nothing to drift/tether against
 
@@ -557,7 +659,7 @@ namespace HiddenHarbours.Boats
             // centred so that the BOAT'S CLEAT, not her origin, is the end being held. Shifting the tie
             // by the cleat's own offset is exactly equivalent to constraining the cleat point, and it
             // lets the tested tether/clamp helpers below stay untouched.
-            float reach = _ropeLength;
+            float reach = RopeLength;
             bool hanging = false;
             if (State == MooringState.MadeFastToCleat)
             {
@@ -738,7 +840,7 @@ namespace HiddenHarbours.Boats
             }
             else
             {
-                slack = Slack01((boat - tie).magnitude, _ropeLength);
+                slack = Slack01((boat - tie).magnitude, RopeLength);
             }
 
             int n = Mathf.Max(2, _ropeSegments);

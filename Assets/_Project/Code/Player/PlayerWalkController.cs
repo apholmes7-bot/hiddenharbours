@@ -35,7 +35,7 @@ namespace HiddenHarbours.Player
     /// </summary>
     [RequireComponent(typeof(Rigidbody2D))]
     [RequireComponent(typeof(SpriteRenderer))]
-    public class PlayerWalkController : MonoBehaviour
+    public class PlayerWalkController : MonoBehaviour, IConstrainedWalker
     {
         [Tooltip("Walk speed on foot (m/s).")]
         [SerializeField] private float _moveSpeed = 3f;
@@ -141,6 +141,8 @@ namespace HiddenHarbours.Player
         private bool _waterStateInit;
 
         public Facing CurrentFacing => _facing;
+
+        public IWalkMovementConstraint MovementConstraint { get; set; }
 
         /// <summary>The source the walk is read from — the bindings asset until something else is
         /// configured. Made lazily, so a controller that never runs a frame never touches the input
@@ -519,6 +521,11 @@ namespace HiddenHarbours.Player
                 UpdateWaterState(depthAtFeet);
             }
 
+            var constraint = MovementConstraint;
+            if (constraint is Object obj && obj == null) MovementConstraint = constraint = null;
+            if (constraint != null && Time.fixedDeltaTime > 0f)
+                desired = (constraint.ConstrainWalk(_rb.position + desired * Time.fixedDeltaTime)
+                           - _rb.position) / Time.fixedDeltaTime;
             _rb.linearVelocity = desired;
         }
 
