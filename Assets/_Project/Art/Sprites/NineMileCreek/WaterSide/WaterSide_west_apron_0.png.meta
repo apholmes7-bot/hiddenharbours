@@ -1,0 +1,392 @@
+fileFormatVersion: 2
+guid: 2d55ed5d235b359e31f70d83ec27d981
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 1199452794057329991
+    second: WaterSide_west_apron_0
+  - first:
+      213: 8314830862398032028
+    second: WaterSide_west_apron_1
+  - first:
+      213: 6454904936392309285
+    second: WaterSide_west_apron_2
+  - first:
+      213: 6019886438866197535
+    second: WaterSide_west_apron_3
+  - first:
+      213: 9129494882776459420
+    second: WaterSide_west_apron_4
+  - first:
+      213: 3943577306575434338
+    second: WaterSide_west_apron_5
+  - first:
+      213: 3329450969288268553
+    second: WaterSide_west_apron_6
+  - first:
+      213: 4740523619817861566
+    second: WaterSide_west_apron_7
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot:
+    x: 0.5
+    y: 0.5
+  spritePixelsToUnits: 32
+  spriteBorder:
+    x: 0
+    y: 0
+    z: 0
+    w: 0
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 4096
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: WaterSide_west_apron_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 809
+        width: 912
+        height: 809
+      alignment: 9
+      pivot:
+        x: 0.4934210526315789
+        y: 0.8454882571075402
+      border:
+        x: 0
+        y: 0
+        z: 0
+        w: 0
+      customData: ''
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9ec6501dc583c242f50b61d1e3f0d20f
+      internalID: 1199452794057329991
+      vertices: []
+      indices: ''
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaterSide_west_apron_1
+      rect:
+        serializedVersion: 2
+        x: 912
+        y: 809
+        width: 912
+        height: 809
+      alignment: 9
+      pivot:
+        x: 0.5
+        y: 0.6378244746600742
+      border:
+        x: 0
+        y: 0
+        z: 0
+        w: 0
+      customData: ''
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 85abdb5c634ea313ee59b149c3367ba3
+      internalID: 8314830862398032028
+      vertices: []
+      indices: ''
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaterSide_west_apron_2
+      rect:
+        serializedVersion: 2
+        x: 1824
+        y: 809
+        width: 912
+        height: 809
+      alignment: 9
+      pivot:
+        x: 0.22039473684210525
+        y: 0.6365883807169345
+      border:
+        x: 0
+        y: 0
+        z: 0
+        w: 0
+      customData: ''
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d47287fdc41fa88cd84f868d3b80e615
+      internalID: 6454904936392309285
+      vertices: []
+      indices: ''
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaterSide_west_apron_3
+      rect:
+        serializedVersion: 2
+        x: 2736
+        y: 809
+        width: 912
+        height: 809
+      alignment: 9
+      pivot:
+        x: 0.5
+        y: 0.5933250927070457
+      border:
+        x: 0
+        y: 0
+        z: 0
+        w: 0
+      customData: ''
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cded1102eb09ce47c40339a2cf214b45
+      internalID: 6019886438866197535
+      vertices: []
+      indices: ''
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaterSide_west_apron_4
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 912
+        height: 809
+      alignment: 9
+      pivot:
+        x: 0.4934210526315789
+        y: 0.765142150803461
+      border:
+        x: 0
+        y: 0
+        z: 0
+        w: 0
+      customData: ''
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4472102a380607493e81b5162d8224b0
+      internalID: 9129494882776459420
+      vertices: []
+      indices: ''
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaterSide_west_apron_5
+      rect:
+        serializedVersion: 2
+        x: 912
+        y: 0
+        width: 912
+        height: 809
+      alignment: 9
+      pivot:
+        x: 0.5
+        y: 0.5933250927070457
+      border:
+        x: 0
+        y: 0
+        z: 0
+        w: 0
+      customData: ''
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a724bd169a8448a1436ba14512c7e32c
+      internalID: 3943577306575434338
+      vertices: []
+      indices: ''
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaterSide_west_apron_6
+      rect:
+        serializedVersion: 2
+        x: 1824
+        y: 0
+        width: 912
+        height: 809
+      alignment: 9
+      pivot:
+        x: 0.21271929824561403
+        y: 0.6365883807169345
+      border:
+        x: 0
+        y: 0
+        z: 0
+        w: 0
+      customData: ''
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5dc28dde7651903f5c2035ad8c9a5c21
+      internalID: 3329450969288268553
+      vertices: []
+      indices: ''
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaterSide_west_apron_7
+      rect:
+        serializedVersion: 2
+        x: 2736
+        y: 0
+        width: 912
+        height: 809
+      alignment: 9
+      pivot:
+        x: 0.5
+        y: 0.6378244746600742
+      border:
+        x: 0
+        y: 0
+        z: 0
+        w: 0
+      customData: ''
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a0f3d74944f81c75bb17ea3b5a8fb5f5
+      internalID: 4740523619817861566
+      vertices: []
+      indices: ''
+      edges: []
+      weights: []
+    outline: []
+    customData: ''
+    physicsShape: []
+    bones: []
+    spriteID: 3f431f8f57144e742b087f55e61507bc
+    internalID: 0
+    vertices: []
+    indices: ''
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      WaterSide_west_apron_0: 1199452794057329991
+      WaterSide_west_apron_1: 8314830862398032028
+      WaterSide_west_apron_2: 6454904936392309285
+      WaterSide_west_apron_3: 6019886438866197535
+      WaterSide_west_apron_4: 9129494882776459420
+      WaterSide_west_apron_5: 3943577306575434338
+      WaterSide_west_apron_6: 3329450969288268553
+      WaterSide_west_apron_7: 4740523619817861566
+  mipmapLimitGroupName: ''
+  pSDRemoveMatte: 0
+  userData: ''
+  assetBundleName: ''
+  assetBundleVariant: ''

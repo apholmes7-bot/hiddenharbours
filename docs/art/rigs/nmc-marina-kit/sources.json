@@ -1,0 +1,25 @@
+{
+  "schema": "hidden-harbours/nmc-marina-sources@1",
+  "files": [
+    {
+      "file": "marinaKit.js",
+      "bytes": 37741,
+      "sha256": "8a261b943dd697eac31ba2d34828afa9b3b4c39ecfdfc01a25b7895906856211"
+    },
+    {
+      "file": "marinaRig.js",
+      "bytes": 56016,
+      "sha256": "7c4733acd839b831d36cc18040b9f02de4b8236f2e96647e040a8133cde48602"
+    },
+    {
+      "file": "marinaBoats.js",
+      "bytes": 8588,
+      "sha256": "888ed44486475890354e41502a6685cbc87f193392c0554838382435beb08229"
+    },
+    {
+      "file": "nmcWharf.js",
+      "bytes": 60356,
+      "sha256": "2e42f3877fcc22ff1e433c409b3642a19c8d2f50db50af6302d5b336de8138cd"
+    }
+  ]
+}

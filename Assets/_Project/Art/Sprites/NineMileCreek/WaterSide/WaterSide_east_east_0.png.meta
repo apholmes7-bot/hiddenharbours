@@ -1,0 +1,392 @@
+fileFormatVersion: 2
+guid: 1a05b7f4acd5c1633bb177bdf33893d7
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 1258741295058945193
+    second: WaterSide_east_east_0
+  - first:
+      213: 1927020967501546120
+    second: WaterSide_east_east_1
+  - first:
+      213: 9195954048837076044
+    second: WaterSide_east_east_2
+  - first:
+      213: 8630430810821175663
+    second: WaterSide_east_east_3
+  - first:
+      213: 7145347834244126342
+    second: WaterSide_east_east_4
+  - first:
+      213: 2932712009560027875
+    second: WaterSide_east_east_5
+  - first:
+      213: 3266765997170047973
+    second: WaterSide_east_east_6
+  - first:
+      213: 743120831981097338
+    second: WaterSide_east_east_7
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot:
+    x: 0.5
+    y: 0.5
+  spritePixelsToUnits: 32
+  spriteBorder:
+    x: 0
+    y: 0
+    z: 0
+    w: 0
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 4096
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: WaterSide_east_east_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 710
+        width: 708
+        height: 710
+      alignment: 9
+      pivot:
+        x: 0.4774011299435028
+        y: 0.8535211267605634
+      border:
+        x: 0
+        y: 0
+        z: 0
+        w: 0
+      customData: ''
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cfc8bd32ea99301000d1522448e3d86e
+      internalID: 1258741295058945193
+      vertices: []
+      indices: ''
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaterSide_east_east_1
+      rect:
+        serializedVersion: 2
+        x: 708
+        y: 710
+        width: 708
+        height: 710
+      alignment: 9
+      pivot:
+        x: 0.5
+        y: 0.6788732394366197
+      border:
+        x: 0
+        y: 0
+        z: 0
+        w: 0
+      customData: ''
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b1e9b9d74ea98817e63caa5ba39fc1d5
+      internalID: 1927020967501546120
+      vertices: []
+      indices: ''
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaterSide_east_east_2
+      rect:
+        serializedVersion: 2
+        x: 1416
+        y: 710
+        width: 708
+        height: 710
+      alignment: 9
+      pivot:
+        x: 0.2401129943502825
+        y: 0.6859154929577465
+      border:
+        x: 0
+        y: 0
+        z: 0
+        w: 0
+      customData: ''
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 34039a88983cbfaee1ccf0fa9b95e059
+      internalID: 9195954048837076044
+      vertices: []
+      indices: ''
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaterSide_east_east_3
+      rect:
+        serializedVersion: 2
+        x: 2124
+        y: 710
+        width: 708
+        height: 710
+      alignment: 9
+      pivot:
+        x: 0.5
+        y: 0.6309859154929578
+      border:
+        x: 0
+        y: 0
+        z: 0
+        w: 0
+      customData: ''
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bed2f673c6d3a3f4e48f0bc4b41f0cbf
+      internalID: 8630430810821175663
+      vertices: []
+      indices: ''
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaterSide_east_east_4
+      rect:
+        serializedVersion: 2
+        x: 2832
+        y: 710
+        width: 708
+        height: 710
+      alignment: 9
+      pivot:
+        x: 0.4774011299435028
+        y: 0.7380281690140845
+      border:
+        x: 0
+        y: 0
+        z: 0
+        w: 0
+      customData: ''
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 637abfca66d132171829edb19f903b0a
+      internalID: 7145347834244126342
+      vertices: []
+      indices: ''
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaterSide_east_east_5
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 708
+        height: 710
+      alignment: 9
+      pivot:
+        x: 0.5
+        y: 0.6309859154929578
+      border:
+        x: 0
+        y: 0
+        z: 0
+        w: 0
+      customData: ''
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 19babf1013c923e351c1e42bb22ecdfa
+      internalID: 2932712009560027875
+      vertices: []
+      indices: ''
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaterSide_east_east_6
+      rect:
+        serializedVersion: 2
+        x: 708
+        y: 0
+        width: 708
+        height: 710
+      alignment: 9
+      pivot:
+        x: 0.2288135593220339
+        y: 0.6873239436619718
+      border:
+        x: 0
+        y: 0
+        z: 0
+        w: 0
+      customData: ''
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 43b18bd68c916f2af1bf969ce19d7fad
+      internalID: 3266765997170047973
+      vertices: []
+      indices: ''
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaterSide_east_east_7
+      rect:
+        serializedVersion: 2
+        x: 1416
+        y: 0
+        width: 708
+        height: 710
+      alignment: 9
+      pivot:
+        x: 0.5
+        y: 0.6788732394366197
+      border:
+        x: 0
+        y: 0
+        z: 0
+        w: 0
+      customData: ''
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1b19af9b24c51e75421f55f3afdcfb9d
+      internalID: 743120831981097338
+      vertices: []
+      indices: ''
+      edges: []
+      weights: []
+    outline: []
+    customData: ''
+    physicsShape: []
+    bones: []
+    spriteID: 3f431f8f57144e742b087f55e61507bc
+    internalID: 0
+    vertices: []
+    indices: ''
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      WaterSide_east_east_0: 1258741295058945193
+      WaterSide_east_east_1: 1927020967501546120
+      WaterSide_east_east_2: 9195954048837076044
+      WaterSide_east_east_3: 8630430810821175663
+      WaterSide_east_east_4: 7145347834244126342
+      WaterSide_east_east_5: 2932712009560027875
+      WaterSide_east_east_6: 3266765997170047973
+      WaterSide_east_east_7: 743120831981097338
+  mipmapLimitGroupName: ''
+  pSDRemoveMatte: 0
+  userData: ''
+  assetBundleName: ''
+  assetBundleVariant: ''

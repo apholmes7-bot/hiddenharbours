@@ -367,18 +367,29 @@ namespace HiddenHarbours.Tests.RigBaking
                 "gull.nmc_flats,gull.nmc_restaurant,gull.nmc_market,harbour.yard,boat.nmc_damaged_dory").Split(',');
             Assert.That(placements.Length, Is.EqualTo(100));
             Assert.That(placements.Distinct().Count(), Is.EqualTo(100));
+            // seat ruling s11, 11-07: the App.Editor-dependent guards live in NmcWharfRowRecordTests.
+            // This intake can read the authored record and the explicit placed subset without an App.Editor reference.
+            var eligible = new HashSet<string>(A(M(Read("Assets/_Project/Data/KeyScenes/KeyScene_nmc_wharf.owners.json"), "rows"))
+                .Where(r => S(r, "owner") == "H5" && string.IsNullOrEmpty(S(r, "waits"))).Select(r => S(r, "id")));
+            var keyScene = AssetDatabase.LoadAssetAtPath<HiddenHarbours.World.KeySceneDef>("Assets/_Project/Data/KeyScenes/KeyScene_nmc_wharf.asset");
+            var placed = new HashSet<string>(keyScene.PlacementIds);
+            var h5 = keyScene.Pieces.Where(r => eligible.Contains(r.Id) && placed.Contains(r.Id)).ToArray();
+
             string patched = Path.GetFullPath(Abs("Assets/_Project/Scenes/NineMileCreek.unity"));
             foreach (string scene in Directory.GetFiles(Abs("Assets/_Project/Scenes"), "*.unity", SearchOption.AllDirectories))
             {
                 string text = File.ReadAllText(scene);
                 foreach (var piece in Pieces)
                 {
-                    int copies = piece.Key == "officeTrailer" ? 1 : piece.Key == "fishMarket" || piece.Key == "restaurant" ? 3 : 0;
+                    // seat ruling s9, 11-07: H5 places by Decision 4; count only the eligible rows using this Def.
+                    int h5Copies = h5.Count(r => r.Kit == "nmcSetPieces" && r.Piece == piece.Key);
+                    int copies = piece.Key == "officeTrailer" ? 1 : piece.Key == "fishMarket" || piece.Key == "restaurant" ? 3 :
+                        h5Copies * (piece.Key == "harbourLight" ? 1 : 3);
                     bool here = Path.GetFullPath(scene) == patched;
                     Assert.That(Regex.Matches(text, Regex.Escape(piece.Id)).Count, Is.EqualTo(here ? copies : 0), scene + ": " + piece.Id);
                     string guid = AssetDatabase.AssetPathToGUID($"Assets/_Project/Data/SetPieces/SetPiece_{piece.Key}.asset");
                     Assert.That(guid, Is.Not.Empty);
-                    Assert.That(Regex.Matches(text, guid).Count, Is.EqualTo(here && copies > 0 ? 1 : 0), scene + ": " + piece.Key);
+                    Assert.That(Regex.Matches(text, guid).Count, Is.EqualTo(here ? (h5Copies > 0 ? h5Copies : copies > 0 ? 1 : 0) : 0), scene + ": " + piece.Key);
                 }
             }
             foreach (string record in Directory.GetFiles(Abs("Assets/_Project/Data/KeyScenes"), "*.asset"))
@@ -390,8 +401,11 @@ namespace HiddenHarbours.Tests.RigBaking
                 Match list = Regex.Match(text, @"(?m)^  PlacementIds:(?: \[\])?(?:\r?\n  - [^\r\n]*)*");
                 Assert.That(list.Success, Is.True, record);
                 string[] actual = Regex.Matches(list.Value, @"(?m)^  - ([^\r\n]+)").Cast<Match>().Select(m => m.Groups[1].Value).ToArray();
-                Assert.That(actual.Length, Is.EqualTo(wharf ? placements.Length : 0), record);
-                CollectionAssert.AreEquivalent(wharf ? placements : Array.Empty<string>(), actual, record);
+                // seat ruling s9, 11-07: H5 places by Decision 4; the H6 hundred are a subset, and every other id is eligible H5.
+                Assert.That(actual.Length, Is.EqualTo(wharf ? placements.Length + h5.Length : 0), record);
+                if (wharf) foreach (string id in placements) CollectionAssert.Contains(actual, id, record);
+                CollectionAssert.AreEquivalent(wharf ? h5.Select(r => r.Id).ToArray() : Array.Empty<string>(),
+                    actual.Except(placements).ToArray(), record);
             }
         }
 

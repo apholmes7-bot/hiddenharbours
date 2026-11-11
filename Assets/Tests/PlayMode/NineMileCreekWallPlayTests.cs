@@ -5,6 +5,7 @@ using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.TestTools;
+using HiddenHarbours.App.Editor;
 using HiddenHarbours.Core;
 using HiddenHarbours.World;
 using Object = UnityEngine.Object;
@@ -239,13 +240,86 @@ namespace HiddenHarbours.Tests.PlayMode
             return probes;
         }
 
-        /// <summary>Every <see cref="QuayEdgePlan.WalkStepMetres"/> of a cap's face that is a fall with no
-        /// wall over it — a place she could step off. The brow is excused, as wide a gate as the plan would
-        /// ever cut for it; a cap's quarter-metre ends are stubs and are not walked.</summary>
-        static List<string> UnwalledFalls(List<QuayDeck> decks, System.Func<Vector2, float> ground,
-                                          List<Vector2[]> runs, float halfThickness, GangwayPlatform brow)
+        /// <summary>Open points of a face in one brow's mouth: a 1.24 m mouth walked at
+        /// <see cref="QuayEdgePlan.WalkStepMetres"/>, less the wall's own reach at either jamb.</summary>
+        const int OpenPointsInABrowMouth = 13;
+
+        /// <summary>Open points of a face in one pier runway: the pier deck and the yard's clearance either side,
+        /// 3.6 m, walked the same way.</summary>
+        const int OpenPointsInAPierRunway = 35;
+
+        /// <summary>The fixed decks the quay leads straight onto: every standable platform at a cap's own height
+        /// that is not one of the caps. At Nine Mile Creek that is the yard's two piers and the apron's own deck;
+        /// only a deck that runs out past a face excuses anything (<see cref="OnAPiersRunway"/>).</summary>
+        static List<Rect> DecksAtTheQuaysHeight(List<StandablePlatform> caps) =>
+            Object.FindObjectsByType<StandablePlatform>()
+                  .Where(p => !caps.Contains(p) && p.Id != FloatId && p.Id != GangwayId
+                              && caps.Any(c => Mathf.Abs(c.DeckElevation - p.DeckElevation) <= 0.05f))
+                  .Select(p => p.Footprint)
+                  .ToList();
+
+        /// <summary>Is <paramref name="p"/> in a pier's runway? Geometry only: she is inside a fixed deck's own
+        /// footprint grown by the yard's walking clearance (the number the land side cut the runways with, read
+        /// where it lives), and that deck runs on out past the face further than the clearance, so the way off the
+        /// quay there is onto a deck and not into the basin.</summary>
+        static bool OnAPiersRunway(Vector2 p, Vector2 outward, List<Rect> landings)
         {
-            var open = new List<string>();
+            float clear = NineMileCreekGroundPlan.RunwayClearance;
+            foreach (Rect deck in landings)
+            {
+                if (p.x < deck.xMin - clear || p.x > deck.xMax + clear || p.y < deck.yMin - clear || p.y > deck.yMax + clear) continue;
+                float reach = Mathf.Max(Vector2.Dot(deck.min - p, outward), Vector2.Dot(deck.max - p, outward));
+                if (reach > clear) return true;
+            }
+            return false;
+        }
+
+        /// <summary>The decks that excuse a runway: those of <see cref="DecksAtTheQuaysHeight"/> whose own middle
+        /// crosses a cap's face where the ground under it falls away, and which run on out past that face. (The
+        /// quay's faces here run east and west, so a deck's middle is read along x.)</summary>
+        static List<Rect> PierDecks(List<QuayDeck> decks, List<Rect> landings, System.Func<Vector2, float> ground)
+        {
+            var piers = new List<Rect>();
+            foreach (Rect deck in landings)
+                foreach (QuayDeck cap in decks)
+                {
+                    Rect r = cap.Footprint;
+                    float x = deck.center.x;
+                    if (x < r.xMin || x > r.xMax || piers.Contains(deck)) continue;
+                    var faces = new (Vector2 at, Vector2 outward)[]
+                    {
+                        (new Vector2(x, r.yMin), Vector2.down),
+                        (new Vector2(x, r.yMax), Vector2.up),
+                    };
+                    if (faces.Any(f => QuayEdgePlan.IsFallEdge(decks, cap.Elevation, f.at, f.outward, ground)
+                                       && OnAPiersRunway(f.at, f.outward, new List<Rect> { deck })))
+                        piers.Add(deck);
+                }
+            return piers;
+        }
+
+        /// <summary>What the walk along the faces found: the open points nothing excuses, and how many each excuse
+        /// took. The counts are asserted, so an excuse that grows fails the case.</summary>
+        sealed class FaceWalk
+        {
+            public readonly List<string> Open = new List<string>();
+            public int AtBrows, AtRunways;
+        }
+
+        /// <summary>Every <see cref="QuayEdgePlan.WalkStepMetres"/> of a cap's face that is a fall with no
+        /// wall over it — a place she could step off. A brow is excused, as wide a gate as the plan would
+        /// ever cut for it, and so is a pier's runway, as wide as the yard cut it; a cap's quarter-metre ends
+        /// are stubs and are not walked.
+        ///
+        /// <para>Since the wharf's water side (NMC H5) the wall's stored runs name its openings: four brows
+        /// hinge on the faces where one did, and the two pier runways the blockers already had are in the
+        /// runs too. Every opening must be one of those six, each with its structure in it.</para></summary>
+        static FaceWalk UnwalledFalls(List<QuayDeck> decks, System.Func<Vector2, float> ground,
+                                      List<Vector2[]> runs, float halfThickness,
+                                      IReadOnlyList<GangwayPlatform> brows, List<Rect> landings)
+        {
+            var walk = new FaceWalk();
+            List<string> open = walk.Open;
             foreach (QuayDeck cap in decks)
             {
                 Rect r = cap.Footprint;
@@ -266,12 +340,13 @@ namespace HiddenHarbours.Tests.PlayMode
                         Vector2 p = Vector2.Lerp(a, b, s / (float)steps);
                         if (!QuayEdgePlan.IsFallEdge(decks, cap.Elevation, p, outward, ground)) continue;
                         if (DistanceToWall(p, runs) <= halfThickness + 0.01f) continue;
-                        if (brow != null && InTheBrowsGate(p, brow)) continue;
+                        if (brows.Any(brow => InTheBrowsGate(p, brow))) { walk.AtBrows++; continue; }
+                        if (OnAPiersRunway(p, outward, landings)) { walk.AtRunways++; continue; }
                         open.Add($"({p.x:0.0}, {p.y:0.0})");
                     }
                 }
             }
-            return open;
+            return walk;
         }
 
         static float DistanceToWall(Vector2 p, List<Vector2[]> runs)
@@ -323,11 +398,30 @@ namespace HiddenHarbours.Tests.PlayMode
                 $"only {probes.Count} places to push at on a quay whose walls run to about 170 m — the walls " +
                 "or the sampler have collapsed and a green here would mean nothing.");
 
-            List<string> open = UnwalledFalls(decks, ground, runs, walls.ThicknessMetres * 0.5f,
-                                              Object.FindObjectsByType<GangwayPlatform>().FirstOrDefault());
+            GangwayPlatform[] brows = Object.FindObjectsByType<GangwayPlatform>();
+            List<Rect> landings = DecksAtTheQuaysHeight(caps);
+            List<Rect> piers = PierDecks(decks, landings, ground);
+            FaceWalk faces = UnwalledFalls(decks, ground, runs, walls.ThicknessMetres * 0.5f, brows, landings);
+            List<string> open = faces.Open;
             Assert.IsEmpty(open,
-                $"{open.Count} point(s) of the quay's faces drop to the basin with no wall over them and no brow " +
+                $"{open.Count} point(s) of the quay's faces drop to the basin with no wall over them, no brow and no pier " +
                 "— the walk off the quay is open there: " + string.Join(" ", open.Take(12)));
+
+            // The excuses are counted. Each brow's mouth and each pier's runway is as wide as it was cut and no
+            // wider: an excuse that grows (a wider gate, a deck that is not a pier, a longer clearance) fails here.
+            Assert.AreEqual(brows.Length * OpenPointsInABrowMouth, faces.AtBrows,
+                $"{faces.AtBrows} open point(s) of the faces were excused as a brow's mouth; {brows.Length} brow(s) " +
+                $"at {OpenPointsInABrowMouth} each is {brows.Length * OpenPointsInABrowMouth}. A mouth is wider or narrower than its brow.");
+            Assert.AreEqual(piers.Count * OpenPointsInAPierRunway, faces.AtRunways,
+                $"{faces.AtRunways} open point(s) of the faces were excused as a pier's runway; {piers.Count} pier(s) " +
+                $"at {OpenPointsInAPierRunway} each is {piers.Count * OpenPointsInAPierRunway}. A runway is not the pier's deck and " +
+                $"the yard's {NineMileCreekGroundPlan.RunwayClearance:0.##} m either side.");
+
+            // Every run is pushed at, or a run could stand unproved behind the others.
+            foreach (Vector2[] run in runs)
+                Assert.IsTrue(probes.Any(p => DistanceToWall(p.On, new List<Vector2[]> { run }) < 1e-3f),
+                    $"the run from ({run[0].x:0.#}, {run[0].y:0.#}) to ({run[run.Length - 1].x:0.#}, {run[run.Length - 1].y:0.#}) " +
+                    "has no place to push at: it is all stubs, and a green here would not have tried it.");
 
             var worst = new List<string>();
             foreach (Probe p in probes)
@@ -348,8 +442,57 @@ namespace HiddenHarbours.Tests.PlayMode
                 yield return null;
             }
 
-            Debug.Log($"[NineMileCreekWallPlayTests] held at all {probes.Count} edges " +
-                      $"({QuayEdgePlan.TotalLength(runs):0.#} m of wall): " + string.Join(" | ", worst));
+            Debug.Log($"[NineMileCreekWallPlayTests] held at all {probes.Count} edges of {runs.Count} runs " +
+                      $"({QuayEdgePlan.TotalLength(runs):0.#} m of wall); excused {faces.AtBrows} open points at {brows.Length} " +
+                      $"brow mouths and {faces.AtRunways} at {piers.Count} pier runways: " + string.Join(" | ", worst));
+        }
+
+        /// <summary>
+        /// <b>The converse of the runway's excuse.</b> The walk along the faces excuses the open points over a
+        /// pier's deck and the yard's clearance either side of it. That is only honest if she really walks off
+        /// the quay ONTO the pier there: pushed from inside the wall at the middle of each runway she must come
+        /// out past the face and be standing on the pier's own deck. An excuse that hid a missing blocker over
+        /// open water would leave her off it.
+        /// </summary>
+        [UnityTest]
+        public IEnumerator AtEachPierRunway_SheWalksThroughOntoThePiersDeck()
+        {
+            yield return LoadTheCreek();
+
+            List<StandablePlatform> caps = RequireCaps();
+            List<QuayDeck> decks = Decks(caps);
+            List<Rect> piers = PierDecks(decks, DecksAtTheQuaysHeight(caps), Ground());
+            Assert.AreEqual(2, piers.Count,
+                $"{piers.Count} fixed deck(s) run out past the quay's faces; the yard has two piers, and each has a runway.");
+
+            var readings = new List<string>();
+            foreach (Rect pier in piers)
+            {
+                QuayDeck cap = decks.OrderBy(d => Mathf.Abs(d.Footprint.yMin - pier.yMax)).First();
+                var runway = new Probe { On = new Vector2(pier.center.x, cap.Footprint.yMin), Outward = Vector2.down };
+                Assert.IsTrue(OnAPiersRunway(runway.On, runway.Outward, new List<Rect> { pier }),
+                    $"the face at ({runway.On.x:0.#}, {runway.On.y:0.#}) is not on the runway of the pier it was read from.");
+
+                Rigidbody2D rb = Walker(runway.On - runway.Outward * StartInset);
+                yield return Push(rb, runway.Outward);
+
+                float past = PastTheLine(rb, runway);
+                Vector2 foot = FootOf(rb);
+                readings.Add($"({runway.On.x:0.#}, {runway.On.y:0.#}) -> {past:+0.00;-0.00}, foot ({foot.x:0.0}, {foot.y:0.0})");
+                Assert.Greater(past, 1f,
+                    $"the runway at ({runway.On.x:0.#}, {runway.On.y:0.#}) did not let her through: she got {past:0.00} m " +
+                    "past the face. The yard's runway is walled, and the pier is cut off from the quay.");
+                Assert.IsTrue(StandablePlatform.Contains(pier, foot),
+                    $"through the runway at ({runway.On.x:0.#}, {runway.On.y:0.#}) she ended at ({foot.x:0.0}, {foot.y:0.0}), " +
+                    $"which is not on the pier's deck (x {pier.xMin:0.#} to {pier.xMax:0.#}, y {pier.yMin:0.#} to {pier.yMax:0.#}). " +
+                    "The excuse is hiding an opening that does not lead onto the pier.");
+
+                Object.Destroy(rb.gameObject);
+                _spawned.Remove(rb.gameObject);
+                yield return null;
+            }
+
+            Debug.Log($"[NineMileCreekWallPlayTests] through both pier runways onto the piers: " + string.Join(" | ", readings));
         }
 
         /// <summary>

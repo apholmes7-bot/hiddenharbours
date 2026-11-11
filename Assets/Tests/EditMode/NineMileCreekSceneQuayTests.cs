@@ -17,9 +17,9 @@ namespace HiddenHarbours.Tests.EditMode
     /// ⭐ <b>THE QUAY NINE MILE CREEK SHIPS</b> (NMC H2, PR 2): the activated scene's wharf, held to G3, the ground
     /// it now stands on. Every fixture reads NineMileCreek.unity as N1 writes it (<see cref="NineMileCreekLiveGround.Scene"/>)
     /// and probes G3 through PR 1's seam (<see cref="NineMileCreekLiveGround.Plan"/>), so what passes is what ships:
-    /// the two caps on their faces, the faces' water and their joins, the wall with its brow and pier openings, the
-    /// breakwater on its arms, the design boat's track clear of every solid outline, the brow and its float, the two
-    /// ladders, the fifteen shore cleats, the north courses and the five wall berths.
+    /// the two caps on their faces, the faces' water and their joins, the wall with its brow mouths and pier openings, the
+    /// breakwater on its arms, the design boat's track clear of every solid outline, the four brows and their floats, the nine
+    /// ladders, the nineteen shore cleats, the north courses and the five wall berths.
     ///
     /// <para><b>Whose numbers.</b> The thresholds are the scope's (PR 2 rows 1 to 6), measured on G3 before the scene
     /// moved; each test prints what it measured. The builder's wharf on the plan's analytic premise is
@@ -152,10 +152,32 @@ namespace HiddenHarbours.Tests.EditMode
             TestContext.WriteLine(string.Join("\n", log));
         }
 
-        // ---- the wall: blockers along the faces, one opening for the brow ---------------------------------
+        // ---- the wall: blockers along the faces, one mouth for each registered brow ------------------------
 
         static readonly long[] LiveBlockers = { 1770550000, 1770549994, 1770549993 };
         static readonly long[] RetiredBlockers = { 1770549995, 1770549996, 1770549997, 1770549998, 1770549999 };
+
+        /// <summary>The H5 water side's own parts that carry <paramref name="script"/>, each with its GameObject.</summary>
+        static List<(Doc go, Doc part)> WaterSideParts(string script) =>
+            Children(At(NineMileCreekWharfWaterSide.RootName))
+                .Select(go => (go, part: Scene.ComponentsOf(go).SingleOrDefault(d => d.IsScript(script))))
+                .Where(p => p.part != null).ToList();
+
+        /// <summary>The four registered brows (NMC H5), each with the float it lands on and the mouth H5 opened for
+        /// it in the wall: the working float's on the crane face, the two finger brows' and the recreation float's
+        /// on the north face. The old brow at x 105 and its float are retired. All four floats stay afloat through
+        /// the whole range: the register lies the working float a metre east of where the bake drew her, clear of
+        /// the basin's edge slope that grounded her west end (held below). The slopes are the brows' own: drop over
+        /// run at spring low and spring high, and the step down onto the float at spring high.</summary>
+        const string WorkingFloatId = "float.nmc_working";
+        static readonly (string brow, long id, string landing, long landingId, float x, float faceY, bool agroundAtSpringLow,
+                         float slopeLow, float slopeHigh, float stepDownHigh)[] Brows =
+        {
+            ("gangway.nmc_west_gangway", 1916874940L, WorkingFloatId, 482568552L, 54f, G.CraneFaceY, false, 0.3309f, 0.0482f, 0.75f),
+            ("gangway.nmc_fleet_gangway0", 1822863346L, "float.nmc_finger_a", 963455038L, 109.7f, G.NorthFaceY, false, 0.3309f, 0.0482f, 0.75f),
+            ("gangway.nmc_fleet_gangway1", 939760229L, "float.nmc_finger_b", 833421161L, 142.3f, G.NorthFaceY, false, 0.3309f, 0.0482f, 0.75f),
+            ("gangway.nmc_east_gangway", 446611123L, "float.nmc_recreation", 1545836378L, 179.3f, G.NorthFaceY, false, 0.3310f, 0.0465f, 0.72f),
+        };
 
         static List<Vector2[]> Runs(Doc boundary)
         {
@@ -178,22 +200,28 @@ namespace HiddenHarbours.Tests.EditMode
             return runs;
         }
 
+        /// <summary>The wall stands along the crane face, the step and the north face, and is open in six places only:
+        /// the four mouths H5 opened, one for each registered brow and as wide as that brow, and the two pier runways.
+        /// The retired brow's mouth at x 105 is not one of them: H5 walled it again. The boundary's stored runs name
+        /// the same six openings, each run ending a blocker's half thickness short of one.</summary>
         [Test]
-        public void TheQuayIsWalledAlongItsFaces_OpenOnlyForTheBrowAndTheTwoPierRunways()
+        public void TheQuayIsWalledAlongItsFaces_OpenOnlyForTheFourBrowsAndTheTwoPierRunways()
         {
             Doc quay = At(Wharf(NineMileCreekWalls.RootName));
             Doc boundary = Script(quay, "HiddenHarbours.World.PropertyBoundary");
-            float half = G.BlockerHalfThickness, gap = G.GangwayOpeningHalfWidth, brow = G.GangwayShoreEnd.x;
-            var west = new[]
+            float half = G.BlockerHalfThickness;
+            var line = new[]
             {
                 new Vector2(G.CraneFaceWestX, G.CraneFaceY), new Vector2(G.FaceStepX, G.CraneFaceY),
-                new Vector2(G.FaceStepX, G.NorthFaceY), new Vector2(brow - gap - half, G.NorthFaceY),
+                new Vector2(G.FaceStepX, G.NorthFaceY), new Vector2(G.NorthFaceEastX, G.NorthFaceY),
             };
-            var east = new[] { new Vector2(brow + gap + half, G.NorthFaceY), new Vector2(G.NorthFaceEastX, G.NorthFaceY) };
             List<Vector2[]> runs = Runs(boundary);
-            Assert.That(runs.Count, Is.EqualTo(2), "the wall is two runs: crane, step and north to the brow; the brow east");
-            Near(runs[0], west, "the west run");
-            Near(runs[1], east, "the east run");
+            Assert.That(runs.Count, Is.GreaterThanOrEqualTo(1), "the wall's runs");
+            Near(runs[0][0], line[0], "the wall starts at the crane face's west end");
+            Near(runs[runs.Count - 1].Last(), line[3], "the wall ends at the north face's east end");
+            foreach (Vector2 v in runs.SelectMany(r => r))
+                Assert.That(Enumerable.Range(0, line.Length - 1).Min(s => DistanceToSegment(v, line[s], line[s + 1])),
+                    Is.LessThanOrEqualTo(1e-3f), $"run point ({Shown(v.x)}, {Shown(v.y)}) lies on the face line");
             Assert.That(Number(boundary, "_thicknessMetres"), Is.EqualTo(2f * half).Within(1e-6f));
 
             Doc walls = Scene.ChildNamed(Scene.TransformOf(quay), PropertyBoundary.CollidersChildName);
@@ -201,7 +229,7 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.That(blockers.Select(b => b.FileId), Is.EquivalentTo(LiveBlockers.Concat(RetiredBlockers)),
                 "all eight blockers keep their ids");
             Assert.That(blockers.Where(Enabled).Select(b => b.FileId), Is.EquivalentTo(LiveBlockers),
-                "the north (split at the brow), the step and the crane blockers stand; the five basin ghosts are retired");
+                "the north, the step and the crane blockers stand; the five basin ghosts are retired");
             Assert.That(Live(walls), Is.True);
             Assert.That(Scene.TransformOf(walls).Field("m_LocalPosition"), Is.EqualTo("{x: 0, y: 0, z: 0}"));
             var paths = blockers.Where(Enabled).SelectMany(b =>
@@ -210,13 +238,48 @@ namespace HiddenHarbours.Tests.EditMode
                 return Paths(b).Select(p => p.Select(v => ToWorld(walls, v)).ToArray());
             }).ToList();
 
+            // Each registered brow hinges on its face, at its mouth; the mouth is as wide as the brow.
+            var brows = WaterSideParts("HiddenHarbours.World.GangwayPlatform");
+            Assert.That(brows.Count, Is.EqualTo(Brows.Length), "the four registered brows");
+            var halfWidths = new float[Brows.Length];
+            for (int b = 0; b < Brows.Length; b++)
+            {
+                Doc brow = brows.Single(g => g.part.Field("_id") == Brows[b].brow).part;
+                Near(Vector(brow, "_shoreEnd"), new Vector2(Brows[b].x, Brows[b].faceY), Brows[b].brow + " hinges on its face at its mouth");
+                halfWidths[b] = Number(brow, "_halfWidthMetres");
+            }
+
             // Ruling 33 opened the two delivered pier runways; every other quarter metre stays walled.
             var runways = NineMileCreekWharfLandSide.YardRunwayOpenings();
             Assert.That(runways.Count, Is.EqualTo(2), "the two delivered piers have two runway openings");
-            var line = new[] { west[0], west[1], west[2], new Vector2(G.NorthFaceEastX, G.NorthFaceY) };
+
+            // The stored runs name exactly those six openings: along the face line, a run ends a blocker's half
+            // thickness short of each mouth and each runway, and the next starts as far beyond it.
+            var openings = new List<(float west, float east, float faceY)>();
+            for (int b = 0; b < Brows.Length; b++)
+                openings.Add((Brows[b].x - halfWidths[b], Brows[b].x + halfWidths[b], Brows[b].faceY));
+            foreach (Vector2 runway in runways) openings.Add((runway.x, runway.y, G.NorthFaceY));
+            var named = new List<Vector2[]>();
+            var run = new List<Vector2> { line[0] };
+            for (int face = 0; face < line.Length - 1; face++)
+            {
+                float y = line[face].y;
+                if (Mathf.Approximately(y, line[face + 1].y))
+                    foreach (var o in openings.Where(m => Mathf.Approximately(m.faceY, y)).OrderBy(m => m.west))
+                    {
+                        run.Add(new Vector2(o.west - half, y));
+                        named.Add(run.ToArray());
+                        run = new List<Vector2> { new Vector2(o.east + half, y) };
+                    }
+                run.Add(line[face + 1]);
+            }
+            named.Add(run.ToArray());
+            Assert.That(runs.Count, Is.EqualTo(named.Count), "the wall's runs: one more than its six openings");
+            for (int k = 0; k < named.Count; k++) Near(runs[k], named[k], $"run {k} of the wall");
             int walled = 0, open = 0;
-            int browOpen = 0;
+            var mouthOpen = new int[Brows.Length];
             var runwayOpen = new int[runways.Count];
+            var wrong = new List<string>();
             for (int s = 0; s < line.Length - 1; s++)
             {
                 int n = Mathf.RoundToInt(Vector2.Distance(line[s], line[s + 1]) / 0.25f);
@@ -224,33 +287,33 @@ namespace HiddenHarbours.Tests.EditMode
                 {
                     Vector2 p = Vector2.Lerp(line[s], line[s + 1], i / (float)n);
                     bool onNorthFace = Mathf.Approximately(p.y, G.NorthFaceY);
-                    bool atBrow = onNorthFace && Mathf.Abs(p.x - brow) < gap;
-                    bool atRunway = false;
+                    bool inOpening = false;
+                    for (int b = 0; b < Brows.Length; b++)
+                        if (Mathf.Approximately(p.y, Brows[b].faceY) && Mathf.Abs(p.x - Brows[b].x) < halfWidths[b])
+                        {
+                            inOpening = true;
+                            mouthOpen[b]++;
+                        }
                     for (int r = 0; r < runways.Count; r++)
                         if (onNorthFace && p.x > runways[r].x && p.x < runways[r].y)
                         {
-                            atRunway = true;
+                            inOpening = true;
                             runwayOpen[r]++;
                         }
-                    bool inOpening = atBrow || atRunway;
                     bool isWalled = paths.Any(path => Inside(path, p));
-                    Assert.That(isWalled, Is.EqualTo(!inOpening),
-                        $"({Shown(p.x)}, {Shown(p.y)}) must be {(inOpening ? "open for the brow or a pier runway" : "walled")}.");
-                    if (atBrow) browOpen++;
+                    if (isWalled == inOpening)
+                        wrong.Add($"({Shown(p.x)}, {Shown(p.y)}) must be {(inOpening ? "open for a brow or a pier runway" : "walled")}");
                     if (inOpening) open++;
                     else walled++;
                 }
             }
             TestContext.WriteLine($"face line: {walled} quarter-metre points walled, {open} open: " +
-                                  $"brow {browOpen}, pier runways {string.Join(", ", runwayOpen)}");
-            Assert.That(open, Is.GreaterThan(0));
-            Assert.That(browOpen, Is.GreaterThan(0));
+                                  $"brow mouths {string.Join(", ", mouthOpen)}, pier runways {string.Join(", ", runwayOpen)}");
+            Assert.That(wrong, Is.Empty, "the wall is closed everywhere except the four brow mouths and the two pier runways");
+            Assert.That(mouthOpen, Is.All.GreaterThan(0), "each of the four brow mouths is open");
             Assert.That(runwayOpen, Is.All.GreaterThan(0), "each of the two pier runways stays open");
 
-            // The opening is wider than the brow, and no blocker strays from the face it walls.
-            Doc gangway = Script(At(Wharf("FloatingDock/Gangway")), "HiddenHarbours.World.GangwayPlatform");
-            Assert.That(2f * gap, Is.GreaterThanOrEqualTo(2f * Number(gangway, "_halfWidthMetres") + 0.25f - 1e-4f),
-                "the brow passes the opening with the scope's 0.25 m to spare");
+            // No blocker strays from the face it walls.
             foreach (Vector2 v in paths.SelectMany(p => p))
             {
                 float off = Enumerable.Range(0, line.Length - 1).Min(s => DistanceToSegment(v, line[s], line[s + 1]));
@@ -366,116 +429,233 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.That(worst, Is.GreaterThanOrEqualTo(1.0), $"the hull comes within 1 m of {nearest}");
         }
 
-        // ---- row 4: the brow and its float -----------------------------------------------------------------
+        // ---- row 4: the brows and their floats ---------------------------------------------------------------
 
         [Test]
-        public void TheBrowLandsOnTheFloat_AndRidesEveryTide()
+        public void EveryBrowLandsOnItsFloat_AndRidesEveryTide()
         {
-            Doc browGo = At(Wharf("FloatingDock/Gangway")), floatGo = At(Wharf("FloatingDock/Float"));
-            Doc brow = Script(browGo, "HiddenHarbours.World.GangwayPlatform");
-            Doc dock = Script(floatGo, "HiddenHarbours.World.FloatingPlatform");
-            Assert.That((brow.FileId, dock.FileId), Is.EqualTo((1838025610L, 197115774L)), "the brow and the float keep their ids");
-            Assert.That(brow.Field("_id"), Is.EqualTo("wharf.nine_mile_creek.gangway"));
-            Assert.That(dock.Field("_id"), Is.EqualTo("wharf.nine_mile_creek.float"));
-            Assert.That(Live(browGo) && Live(floatGo) && Enabled(brow) && Enabled(dock), Is.True);
-            Assert.That(brow.FieldRef("_landing"), Is.EqualTo(dock.FileId), "the brow lands on the float");
+            var brows = WaterSideParts("HiddenHarbours.World.GangwayPlatform");
+            var floats = WaterSideParts("HiddenHarbours.World.FloatingPlatform");
+            Assert.That(brows.Select(b => b.part.Field("_id")), Is.EquivalentTo(Brows.Select(b => b.brow)), "the four registered brows");
+            Assert.That(floats.Select(f => f.part.Field("_id")), Is.EquivalentTo(Brows.Select(b => b.landing)), "the four registered floats");
+            foreach (var row in Brows)
+            {
+                var (browGo, brow) = brows.Single(b => b.part.Field("_id") == row.brow);
+                var (floatGo, dock) = floats.Single(f => f.part.Field("_id") == row.landing);
+                Assert.That((brow.FileId, dock.FileId), Is.EqualTo((row.id, row.landingId)), $"{row.brow} and {row.landing} keep their ids");
+                Assert.That(Live(browGo) && Live(floatGo) && Enabled(brow) && Enabled(dock), Is.True, row.brow);
+                Assert.That(brow.FieldRef("_landing"), Is.EqualTo(dock.FileId), $"{row.brow} lands on {row.landing}");
 
-            Vector2 shore = Vector(brow, "_shoreEnd"), landing = Vector(brow, "_floatEnd");
-            float abutment = Number(brow, "_abutmentElevation"), halfWidth = Number(brow, "_halfWidthMetres");
-            Assert.That(shore, Is.EqualTo(G.GangwayShoreEnd));
-            Assert.That(landing, Is.EqualTo(G.GangwayFloatEnd));
-            Assert.That(abutment, Is.EqualTo(G.DeckElevation));
-            Near(WorldPosition(browGo), (shore + landing) / 2f, "the brow stands at its midpoint");
-            Assert.That(Mathf.Abs(Ground(shore) - abutment), Is.LessThanOrEqualTo(ContactTolerance),
-                $"the hinge stands on G3's deck behind the face (G3 {Shown(Ground(shore))})");
+                Vector2 shore = Vector(brow, "_shoreEnd"), landing = Vector(brow, "_floatEnd");
+                float abutment = Number(brow, "_abutmentElevation"), halfWidth = Number(brow, "_halfWidthMetres");
+                Near(shore, new Vector2(row.x, row.faceY), $"{row.brow} hinges on its face");
+                Assert.That(landing.x, Is.EqualTo(shore.x).Within(1e-4f), $"{row.brow} runs square off its face");
+                Assert.That(abutment, Is.EqualTo(G.DeckElevation));
+                Vector2 behind = shore + new Vector2(0f, 0.5f);
+                Assert.That(Mathf.Abs(Ground(behind) - abutment), Is.LessThanOrEqualTo(ContactTolerance),
+                    $"{row.brow}'s hinge stands on G3's deck behind the face (G3 {Shown(Ground(behind))})");
 
-            Rect footprint = RectOf(dock, "_footprint");
-            Near(WorldPosition(floatGo), footprint.center, "the float stands at her footprint's centre");
-            foreach (float dx in new[] { -halfWidth, 0f, halfWidth })
-                Assert.That(StandablePlatform.Contains(footprint, landing + new Vector2(dx, 0f)), Is.True,
-                    $"the brow's landing lands its whole width on the float (offset {Shown(dx)})");
+                Rect footprint = RectOf(dock, "_footprint");
+                foreach (float dx in new[] { -halfWidth, 0f, halfWidth })
+                    Assert.That(StandablePlatform.Contains(footprint, landing + new Vector2(dx, 0f)), Is.True,
+                        $"{row.brow} lands its whole width on {row.landing} (offset {Shown(dx)})");
 
-            // Her stored bed is G3's highest under her, so she grounds where G3 would ground her.
-            float bed = Number(dock, "_bedElevation"), highest = Highest(footprint, 0.05f);
-            TestContext.WriteLine($"float bed: stored {bed:0.######}, G3 highest under her at 0.05 m {highest:0.######}");
-            Assert.That(Mathf.Abs(bed - highest), Is.LessThanOrEqualTo(0.01f));
+                // Her stored bed is G3's highest under her, so she grounds where G3 would ground her.
+                float bed = Number(dock, "_bedElevation"), highest = Highest(footprint, 0.05f);
+                TestContext.WriteLine($"{row.landing} bed: stored {bed:0.######}, G3 highest under her at 0.05 m {highest:0.######}");
+                Assert.That(Mathf.Abs(bed - highest), Is.LessThanOrEqualTo(0.01f), $"{row.landing}'s stored bed is G3's highest under her");
 
-            float draught = Number(dock, "_draughtMetres"), freeboard = Number(dock, "_freeboardMetres");
-            Assert.That(FloatingPlatform.IsAground(Low, bed, draught), Is.False, "the float is afloat at spring low");
-            float run = Vector2.Distance(shore, landing);
-            float deckLow = FloatingPlatform.DeckElevation(Low, bed, draught, freeboard);
-            float deckHigh = FloatingPlatform.DeckElevation(High, bed, draught, freeboard);
-            float slopeLow = (abutment - deckLow) / run, slopeHigh = (abutment - deckHigh) / run;
-            TestContext.WriteLine($"brow run {Shown(run)} m; deck {Shown(deckLow)}..{Shown(deckHigh)}; slope {slopeLow:0.######} " +
-                                  $"at spring low, {slopeHigh:0.######} at spring high");
-            Assert.That(slopeLow, Is.EqualTo(0.339869f).Within(1e-3f), "the scope's 33.9869 % at spring low");
-            Assert.That(slopeHigh, Is.EqualTo(0.052288f).Within(1e-3f), "the scope's 5.2288 % at spring high");
-            Assert.That(abutment - deckHigh, Is.EqualTo(0.8f).Within(1e-3f), "you step DOWN 0.8 m onto the float at spring high");
+                float draught = Number(dock, "_draughtMetres"), freeboard = Number(dock, "_freeboardMetres");
+                Assert.That(FloatingPlatform.IsAground(Low, bed, draught), Is.EqualTo(row.agroundAtSpringLow),
+                    $"{row.landing} at spring low: {(row.agroundAtSpringLow ? "on the bottom" : "afloat")} " +
+                    $"(she takes the ground below {Shown(bed + draught)} m)");
+                Assert.That(FloatingPlatform.IsAground(High, bed, draught), Is.False, $"{row.landing} is afloat at spring high");
+                float run = Vector2.Distance(shore, landing);
+                float deckLow = FloatingPlatform.DeckElevation(Low, bed, draught, freeboard);
+                float deckHigh = FloatingPlatform.DeckElevation(High, bed, draught, freeboard);
+                float slopeLow = (abutment - deckLow) / run, slopeHigh = (abutment - deckHigh) / run;
+                TestContext.WriteLine($"{row.brow} run {Shown(run)} m; deck {Shown(deckLow)}..{Shown(deckHigh)}; slope {slopeLow:0.######} " +
+                                      $"at spring low, {slopeHigh:0.######} at spring high");
+                Assert.That(slopeLow, Is.EqualTo(row.slopeLow).Within(1e-3f), $"{row.brow}'s slope at spring low");
+                Assert.That(slopeHigh, Is.EqualTo(row.slopeHigh).Within(1e-3f), $"{row.brow}'s slope at spring high");
+                Assert.That(abutment - deckHigh, Is.EqualTo(row.stepDownHigh).Within(1e-3f),
+                    $"you step DOWN {Shown(row.stepDownHigh)} m onto {row.landing} at spring high");
+            }
+        }
+
+        // ---- the floats afloat ------------------------------------------------------------------------------
+        // A float pinned by one corner of her footprint hangs level above the falling water, and whatever is berthed
+        // at her hangs with her. The stored bed is the highest under her, so one high sample grounds the whole float.
+
+        /// <summary>How many samples of <paramref name="footprint"/> stand on a bed too high to float her at spring
+        /// low, by the game's own grounding rule and her own draught. The grid is the 0.05 m one her stored bed is
+        /// held on.</summary>
+        static int SamplesAground(Rect footprint, float draught, out int total, out float highest)
+        {
+            const float step = 0.05f;
+            int nx = Mathf.CeilToInt(footprint.width / step), ny = Mathf.CeilToInt(footprint.height / step), aground = 0;
+            total = 0; highest = float.NegativeInfinity;
+            for (int i = 0; i <= nx; i++)
+                for (int j = 0; j <= ny; j++)
+                {
+                    float bed = Ground(Mathf.Min(footprint.xMin + i * step, footprint.xMax), Mathf.Min(footprint.yMin + j * step, footprint.yMax));
+                    total++; highest = Mathf.Max(highest, bed);
+                    if (FloatingPlatform.IsAground(Low, bed, draught)) aground++;
+                }
+            return aground;
+        }
+
+        /// <summary>At the lowest water of the spring cycle every sample of every float's footprint has her draught of
+        /// water under it. The four registered floats are the creek's only floats: the old one is retired.</summary>
+        [Test]
+        public void EveryFloatHasWaterUnderHerWholeFootprint_AtSpringLow()
+        {
+            var floats = WaterSideParts("HiddenHarbours.World.FloatingPlatform");
+            Assert.That(floats, Has.Count.EqualTo(Brows.Length), "the four registered floats");
+            foreach (var (_, dock) in floats)
+            {
+                Rect footprint = RectOf(dock, "_footprint");
+                float draught = Number(dock, "_draughtMetres");
+                int aground = SamplesAground(footprint, draught, out int total, out float highest);
+                Debug.Log($"[NineMileCreekSceneQuayTests] {dock.Field("_id")} at spring low ({Shown(Low)} m): {aground} of {total} samples " +
+                          $"aground; highest bed {highest:0.######} m, she needs {Low - draught:0.######} m or deeper");
+                Assert.That(aground, Is.Zero,
+                    $"{dock.Field("_id")}: {aground} of {total} samples of her footprint are aground at spring low (highest bed " +
+                    $"{highest:0.######} m against the {Low - draught:0.######} m her {Shown(draught)} m draught needs). A float pinned " +
+                    "by one corner hangs above the falling water, and her boats with her: move her by the register, not the ground.");
+            }
+        }
+
+        /// <summary>The guard's red arm, and why the register and the bake differ. Where the rig's bake drew the working
+        /// float her west end stands on the basin's edge slope and grounds her; the register lies her east of it, the
+        /// same float (moved, not shortened), and the scene's float lies where the register says.</summary>
+        [Test]
+        public void TheRegisterLiesTheWorkingFloatClearOfTheBasinsEdge_WhereTheBakeWouldGroundHer()
+        {
+            Rect baked = NineMileCreekWharfWaterSide.BakedWorkingFloat(), registered = NineMileCreekWharfWaterSide.WorkingFloat();
+            Doc dock = WaterSideParts("HiddenHarbours.World.FloatingPlatform").Single(f => f.part.Field("_id") == WorkingFloatId).part;
+            Rect placed = RectOf(dock, "_footprint");
+            float draught = Number(dock, "_draughtMetres");
+            Assert.That(Vector2.Distance(placed.min, registered.min), Is.LessThan(1e-3f), "the scene's float lies where the register says");
+            Assert.That(Vector2.Distance(placed.size, registered.size), Is.LessThan(1e-3f), "the scene's float is the register's size");
+            Assert.That(Vector2.Distance(registered.size, baked.size), Is.LessThan(1e-3f), "moved, not shortened: her picture is the bake's");
+            Assert.That(registered.yMin, Is.EqualTo(baked.yMin).Within(1e-3f), "moved along the apron only");
+            int before = SamplesAground(baked, draught, out int bakedTotal, out float bakedHighest);
+            int after = SamplesAground(registered, draught, out int total, out float highest);
+            Debug.Log($"[NineMileCreekSceneQuayTests] the working float at spring low: at the bake's place (x {Shown(baked.xMin)} to " +
+                      $"{Shown(baked.xMax)}) {before} of {bakedTotal} samples aground, highest bed {bakedHighest:0.######} m; at the register's " +
+                      $"(x {Shown(registered.xMin)} to {Shown(registered.xMax)}) {after} of {total}, highest bed {highest:0.######} m; " +
+                      $"she needs {Low - draught:0.######} m or deeper");
+            Assert.That(before, Is.GreaterThan(0),
+                "the bake's place floats her whole, so the register has no reason to differ from it: lie her where the bake drew her");
+            Assert.That(after, Is.Zero, $"the register's place still grounds her: {after} of {total} samples, highest bed {highest:0.######} m");
         }
 
         // ---- row 5: the ladders and the shore cleats -------------------------------------------------------
 
+        /// <summary>The stable id H5 bound to the player's berth ladder: the register's anchor for wall berth 0.</summary>
+        public const string RegisteredBerthLadderId = "ladder.nmc_berth0";
+
+        [Test]
+        public void ThePlanNamesTheBerthLadderByItsRegisteredId() =>
+            Assert.That(G.BerthLadderId, Is.EqualTo(RegisteredBerthLadderId));
+
+        /// <summary>The nine registered ladders (NMC H5): one at each of the six wall berths and one east of them on
+        /// the north face, two on the crane face for the unloading apron. Ladder_0 at x 139.25 is retired.</summary>
+        static readonly (string id, float x, float faceY)[] RegisteredLadders =
+        {
+            (RegisteredBerthLadderId, G.BerthLadderPos.x, G.NorthFaceY), ("ladder.nmc_berth1", 101f, G.NorthFaceY),
+            ("ladder.nmc_berth2", 118.8f, G.NorthFaceY), ("ladder.nmc_berth3", 133.6f, G.NorthFaceY),
+            ("ladder.nmc_berth4", 149.3f, G.NorthFaceY), ("ladder.nmc_berth5", 160.3f, G.NorthFaceY),
+            ("ladder.nmc_east", 180.2f, G.NorthFaceY),
+            ("ladder.nmc_unload_w", 55.5f, G.CraneFaceY), ("ladder.nmc_unload_e", 76.6f, G.CraneFaceY),
+        };
+
         [Test]
         public void TheLaddersClimbTheFace_OneAtTheBerth()
         {
-            List<Doc> ladders = Children(At(Wharf("Ladders")));
-            Assert.That(ladders.Select(Name), Is.EqualTo(new[] { "Ladder_0", G.BerthLadderName }));
-            foreach (var (go, id, at) in new[]
-                     {
-                         (ladders[0], "wharf.nine_mile_creek.ladder_0", G.WharfLadderPos),
-                         (ladders[1], G.BerthLadderId, G.BerthLadderPos),
-                     })
+            List<Doc> kept = Children(At(Wharf("Ladders")));
+            Assert.That(kept.Select(Name), Is.EqualTo(new[] { G.BerthLadderName }), "the player's ladder stays; Ladder_0 is retired");
+            var ladders = kept.Select(go => (go, part: Script(go, "HiddenHarbours.World.WharfLadder")))
+                              .Concat(WaterSideParts("HiddenHarbours.World.WharfLadder")).ToList();
+            Assert.That(ladders.Select(l => l.part.Field("_id")), Is.EquivalentTo(RegisteredLadders.Select(l => l.id)),
+                "the nine registered ladders");
+            foreach (var row in RegisteredLadders)
             {
-                Doc ladder = Script(go, "HiddenHarbours.World.WharfLadder");
-                Assert.That(Live(go) && Enabled(ladder), Is.True, $"{Name(go)} is climbable");
-                Assert.That(ladder.Field("_id"), Is.EqualTo(id));
-                Near(WorldPosition(go), at, Name(go));
-                Assert.That(Number(ladder, "_topElevationMeters"), Is.EqualTo(G.DeckElevation), $"{Name(go)} tops out at the deck");
-                Assert.That(Number(ladder, "_faceHeadingDegrees"), Is.EqualTo(180f), $"{Name(go)} faces the water");
-                float foot = Ground(at.x, G.NorthFaceY - 0.25f), top = Ground(at.x, G.NorthFaceY + 0.25f);
-                TestContext.WriteLine($"{Name(go)} at x {Shown(at.x)}: foot G3 {foot:0.######}, top contact G3 {top:0.######}");
-                Assert.That(foot, Is.LessThan(Low), $"{Name(go)}'s foot is in water at spring low");
-                Assert.That(Mathf.Abs(top - G.DeckElevation), Is.LessThanOrEqualTo(ContactTolerance), $"{Name(go)} tops onto the deck");
+                var (go, ladder) = ladders.Single(l => l.part.Field("_id") == row.id);
+                var at = new Vector2(row.x, row.faceY);
+                Assert.That(Live(go) && Enabled(ladder), Is.True, $"{row.id} is climbable");
+                Near(WorldPosition(go), at, row.id);
+                Assert.That(Number(ladder, "_topElevationMeters"), Is.EqualTo(G.DeckElevation), $"{row.id} tops out at the deck");
+                Assert.That(Number(ladder, "_faceHeadingDegrees"), Is.EqualTo(180f), $"{row.id} faces the water");
+                float foot = Ground(at.x, row.faceY - 0.25f), top = Ground(at.x, row.faceY + 0.25f);
+                TestContext.WriteLine($"{row.id} at x {Shown(at.x)}: foot G3 {foot:0.######}, top contact G3 {top:0.######}");
+                Assert.That(foot, Is.LessThan(Low), $"{row.id}'s foot is in water at spring low");
+                Assert.That(Mathf.Abs(top - G.DeckElevation), Is.LessThanOrEqualTo(ContactTolerance), $"{row.id} tops onto the deck");
             }
-            Assert.That(Script(ladders[0], "HiddenHarbours.World.WharfLadder").FileId, Is.EqualTo(1827630107L), "the old ladder keeps its id");
-            Assert.That(ladders.Count(l => WorldPosition(l).x >= G.BerthSlotWestX && WorldPosition(l).x <= G.BerthSlotEastX),
+            Assert.That(ladders.Count(l => WorldPosition(l.go).x >= G.BerthSlotWestX && WorldPosition(l.go).x <= G.BerthSlotEastX),
                 Is.EqualTo(1), "exactly one ladder at the player's berth");
+            Assert.That(Name(ladders.Single(l => l.part.Field("_id") == RegisteredBerthLadderId).go), Is.EqualTo(G.BerthLadderName),
+                "the player's ladder carries the registered id");
 
-            // The berth ladder is drawn as the old one is, where it stands.
-            List<Doc> fittings = Children(At(Wharf("Fittings")));
-            Doc picture = fittings.Single(f => Name(f) == NineMileCreekGroundSteps.BerthLadderFittingName);
-            Doc old = fittings.Single(f => Name(f) == "Fitting_ladder");
+            // Each of the five wall boats has one ladder on the north face at her berth's centre, where she lies.
+            var wallBoats = Scene.Docs.Where(d => d.ClassId == 1 && Name(d).StartsWith("Moored_owner.", StringComparison.Ordinal)).ToList();
+            Assert.That(wallBoats.Count, Is.EqualTo(5), "the five wall boats");
+            foreach (Doc boat in wallBoats)
+                Assert.That(ladders.Count(l => Mathf.Approximately(WorldPosition(l.go).y, G.NorthFaceY) &&
+                                               Mathf.Abs(WorldPosition(l.go).x - WorldPosition(boat).x) <= 0.01f),
+                    Is.EqualTo(1), $"{Name(boat)} has one ladder at her berth's centre");
+
+            // The berth ladder is drawn where it stands.
+            Doc picture = Children(At(Wharf("Fittings"))).Single(f => Name(f) == NineMileCreekGroundSteps.BerthLadderFittingName);
             Assert.That(Live(picture), Is.True);
             Near(WorldPosition(picture), G.BerthLadderPos, "the berth ladder's picture");
-            Assert.That(Components(picture, SpriteRendererClass).Single().Field("m_Sprite"),
-                Is.EqualTo(Components(old, SpriteRendererClass).Single().Field("m_Sprite")), "the same ladder sprite");
+            StringAssert.Contains("guid:", Components(picture, SpriteRendererClass).Single().Field("m_Sprite"), "the berth ladder has its sprite");
 
             // The player steps off 1.35 m from it, on dry deck.
             Assert.That(Vector2.Distance(G.DisembarkPos, G.BerthLadderPos), Is.EqualTo(1.35f).Within(1e-4f));
             Assert.That(Ground(G.DisembarkPos), Is.GreaterThan(High), "the step-off point is dry at spring high");
         }
 
+        /// <summary>How far inboard of its face a registered shore cleat stands (the register's anchors).</summary>
+        const float RegisteredCleatInset = 0.3f;
+
+        /// <summary>The nineteen registered shore cleats (NMC H5) replace the fifteen on the old cap row: sixteen along
+        /// the north cap for the six wall berths and three on the crane apron, each 0.3 m inboard of its face and
+        /// stored at the deck's height. They are drawn in the delivered wall art, so no fitting picture is asked of
+        /// them here.</summary>
         [Test]
-        public void TheShoreCleatsStandOnTheCapRow_AtTheirG3Height()
+        public void TheShoreCleatsStandOnTheirCaps_AtTheDeckHeight()
         {
-            List<Doc> cleats = Children(At(Wharf("MooringCleats")));
-            List<Doc> fittings = Children(At(Wharf("Fittings")));
-            Assert.That(cleats.Count, Is.EqualTo(15));
-            foreach (Doc go in cleats)
+            var cleats = WaterSideParts("HiddenHarbours.World.ShoreCleat");
+            Assert.That(cleats.Count, Is.EqualTo(19));
+            Assert.That(cleats.Select(c => c.part.Field("_id")).Distinct().Count(), Is.EqualTo(19), "each has its own id");
+            int north = 0, apron = 0;
+            foreach (var (go, cleat) in cleats)
             {
-                Doc cleat = Script(go, "HiddenHarbours.World.ShoreCleat");
                 Vector2 at = WorldPosition(go);
                 float stored = Number(cleat, "_elevationMeters");
-                Assert.That(Live(go) && Enabled(cleat), Is.True, Name(go));
-                Assert.That(at.y, Is.EqualTo(G.CleatRowY), $"{Name(go)} stands on the cap row");
-                Assert.That(at.x, Is.InRange(G.FaceStepX, G.NorthFaceEastX), $"{Name(go)} stands along the north cap");
-                Assert.That(stored, Is.EqualTo(Ground(at)).Within(1e-4f), $"{Name(go)} stands at G3's height");
-                Assert.That(stored, Is.GreaterThan(High), $"{Name(go)} is dry at spring high");
-                string kind = Name(go).Split('_')[1];
-                Assert.That(fittings.Any(f => Name(f) == "Fitting_" + kind && Vector2.Distance(WorldPosition(f), at) <= 1e-4f),
-                    Is.True, $"{Name(go)} is drawn where it stands");
+                string id = cleat.Field("_id");
+                Assert.That(Live(go) && Enabled(cleat), Is.True, id);
+                StringAssert.StartsWith("cleat.nmc_", id);
+                bool onNorth = Mathf.Abs(at.y - (G.NorthFaceY + RegisteredCleatInset)) <= 1e-4f &&
+                               at.x >= G.FaceStepX && at.x <= G.NorthFaceEastX;
+                bool onApron = Mathf.Abs(at.y - (G.CraneFaceY + RegisteredCleatInset)) <= 1e-4f &&
+                               at.x >= G.CraneFaceWestX && at.x <= G.FaceStepX;
+                Assert.That(onNorth || onApron, Is.True, $"{id} at ({Shown(at.x)}, {Shown(at.y)}) stands on the north cap or the crane apron");
+                if (onNorth) north++;
+                else apron++;
+                Assert.That(stored, Is.EqualTo(G.DeckElevation), $"{id} is stored at the deck's height");
+                Assert.That(Mathf.Abs(Ground(at) - stored), Is.LessThanOrEqualTo(ContactTolerance),
+                    $"{id} stands on G3's deck (G3 {Shown(Ground(at))})");
+                Assert.That(stored, Is.GreaterThan(High), $"{id} is dry at spring high");
             }
-            Near(WorldPosition(cleats.Single(c => Name(c) == "Cleat_cleat_14")), G.WestCleat, "the west cleat");
+            Assert.That((north, apron), Is.EqualTo((16, 3)), "sixteen along the north cap, three on the crane apron");
+            List<Doc> fittings = Children(At(Wharf("Fittings")));
+            // A retired fitting's picture went with it: no bollard or cleat is drawn for the fifteen old cap-row
+            // cleats, and no ladder is drawn where Ladder_0 stood. The berth ladder's own picture stays.
+            Assert.That(fittings.Select(Name).Where(n => n == "Fitting_bollard" || n == "Fitting_cleat" || n == "Fitting_ladder"),
+                        Is.Empty, "no picture is left of a fitting H5 retired");
             Assert.That(fittings.Where(f => WorldPosition(f).y >= G.NorthFaceY + 0.75f && WorldPosition(f).y <= G.OldNorthFaceY + 0.5f)
                                 .Select(Name), Is.Empty, "no fitting is left on the old face's rows");
         }
@@ -518,10 +698,13 @@ namespace HiddenHarbours.Tests.EditMode
 
         // ---- row 6: the five wall berths ---------------------------------------------------------------------
 
+        /// <summary>Each wall boat's keel clearance at spring low, measured over the G3 bed under her hull where she
+        /// lies now: at the centre of the slot the wharf's register gives her (NMC H5). The scope's five numbers were
+        /// measured on the packed line the boats left; these are the same measurement at the registered slots.</summary>
         static readonly Dictionary<long, float> WallBerthClearance = new Dictionary<long, float>
         {
-            { 439298300, 0.783461f }, { 658256920, 0.815770f }, { 1807033261, 0.661387f },
-            { 1930628943, 0.925303f }, { 1964796412, 0.999753f },
+            { 439298300, 0.761416f }, { 658256920, 0.824559f }, { 1807033261, 0.715770f },
+            { 1930628943, 0.925303f }, { 1964796412, 0.962562f },
         };
 
         [Test]
@@ -556,40 +739,33 @@ namespace HiddenHarbours.Tests.EditMode
             (392040810, "HiddenHarbours.World.StandablePlatform", "wharf.nine_mile_creek"),
             (1824537357, "HiddenHarbours.World.StandablePlatform", "wharf.nine_mile_creek.apron"),
             (1594378569, "68", null),
-            (197115774, "HiddenHarbours.World.FloatingPlatform", "wharf.nine_mile_creek.float"),
-            (1838025610, "HiddenHarbours.World.GangwayPlatform", "wharf.nine_mile_creek.gangway"),
-            (423332918, "HiddenHarbours.World.FloatCleat", "wharf.nine_mile_creek.float.cleat_0"),
-            (1549994791, "HiddenHarbours.World.FloatCleat", "wharf.nine_mile_creek.float.cleat_1"),
-            (1672905203, "HiddenHarbours.World.FloatCleat", "wharf.nine_mile_creek.float.cleat_2"),
-            (941845350, "HiddenHarbours.World.FloatCleat", "wharf.nine_mile_creek.float.cleat_3"),
-            (1309766030, "HiddenHarbours.World.FloatCleat", "wharf.nine_mile_creek.float.cleat_4"),
-            (2131233888, "HiddenHarbours.World.FloatCleat", "wharf.nine_mile_creek.float.cleat_5"),
-            (1658270516, "HiddenHarbours.World.FloatCleat", "wharf.nine_mile_creek.float.cleat_6"),
-            (1237254907, "HiddenHarbours.World.FloatCleat", "wharf.nine_mile_creek.float.cleat_7"),
-            (1827630107, "HiddenHarbours.World.WharfLadder", "wharf.nine_mile_creek.ladder_0"),
-            (475879148, "HiddenHarbours.World.ShoreCleat", "wharf.nine_mile_creek.bollard_0"),
-            (115453692, "HiddenHarbours.World.ShoreCleat", "wharf.nine_mile_creek.bollard_1"),
-            (650892435, "HiddenHarbours.World.ShoreCleat", "wharf.nine_mile_creek.bollard_2"),
-            (1413601334, "HiddenHarbours.World.ShoreCleat", "wharf.nine_mile_creek.bollard_3"),
-            (139615876, "HiddenHarbours.World.ShoreCleat", "wharf.nine_mile_creek.bollard_4"),
-            (1185731800, "HiddenHarbours.World.ShoreCleat", "wharf.nine_mile_creek.bollard_5"),
-            (89061061, "HiddenHarbours.World.ShoreCleat", "wharf.nine_mile_creek.bollard_6"),
-            (999094374, "HiddenHarbours.World.ShoreCleat", "wharf.nine_mile_creek.bollard_7"),
-            (1197550133, "HiddenHarbours.World.ShoreCleat", "wharf.nine_mile_creek.bollard_8"),
-            (7895873, "HiddenHarbours.World.ShoreCleat", "wharf.nine_mile_creek.bollard_9"),
-            (295038245, "HiddenHarbours.World.ShoreCleat", "wharf.nine_mile_creek.bollard_10"),
-            (717937506, "HiddenHarbours.World.ShoreCleat", "wharf.nine_mile_creek.bollard_11"),
-            (1889992478, "HiddenHarbours.World.ShoreCleat", "wharf.nine_mile_creek.bollard_12"),
-            (1740556376, "HiddenHarbours.World.ShoreCleat", "wharf.nine_mile_creek.bollard_13"),
-            (1310633823, "HiddenHarbours.World.ShoreCleat", "wharf.nine_mile_creek.cleat_14"),
-            // The wharf's two fuel pumps, stood down in step 05 on their ids (the owner's ruling).
+            // The wharf's two fuel pumps, kept on their ids (the owner's ruling).
             (1955470195, "HiddenHarbours.Economy.FuelPump", "fixture.nmc.wharf_pump_diesel"),
             (2073826116, "HiddenHarbours.Economy.FuelPump", "fixture.nmc.wharf_pump_gas"),
+            // What H5 registered in the retired fittings' place: the eight ladders it placed.
+            (672714673, "HiddenHarbours.World.WharfLadder", "ladder.nmc_berth1"),
+            (2078310295, "HiddenHarbours.World.WharfLadder", "ladder.nmc_berth2"),
+            (430371545, "HiddenHarbours.World.WharfLadder", "ladder.nmc_berth3"),
+            (396678018, "HiddenHarbours.World.WharfLadder", "ladder.nmc_berth4"),
+            (1680297167, "HiddenHarbours.World.WharfLadder", "ladder.nmc_berth5"),
+            (1863683145, "HiddenHarbours.World.WharfLadder", "ladder.nmc_east"),
+            (958240204, "HiddenHarbours.World.WharfLadder", "ladder.nmc_unload_e"),
+            (1282779944, "HiddenHarbours.World.WharfLadder", "ladder.nmc_unload_w"),
         };
 
-        /// <summary>Every id rows 1 to 6 keep still names its object: the class, and the stable id where it has one; so
-        /// do the wharf's two fuel pumps, stood down on theirs. The blockers, the waterlines and the wall berths are held
-        /// by their own tests above.</summary>
+        /// <summary>The ids H5's fitting fates retired, by the PR's ledger: the old float, its brow and its eight
+        /// cleats, Ladder_0, and the fifteen shore cleats of the old cap row. Their work is done by the registered
+        /// floats, brows, ladders and cleats, held by their own tests above.</summary>
+        static readonly long[] Retired =
+        {
+            197115774, 1838025610, 423332918, 1549994791, 1672905203, 941845350, 1309766030, 2131233888, 1658270516,
+            1237254907, 1827630107, 475879148, 115453692, 650892435, 1413601334, 139615876, 1185731800, 89061061,
+            999094374, 1197550133, 7895873, 295038245, 717937506, 1889992478, 1740556376, 1310633823,
+        };
+
+        /// <summary>Every id the scope still keeps names its object: the class, and the stable id where it has one; so
+        /// do the wharf's two fuel pumps and the ladders H5 placed. The ids H5 retired are gone. The blockers, the
+        /// waterlines, the wall berths, the brows and the floats are held by their own tests above.</summary>
         [Test]
         public void EveryIdTheScopeKeeps_StillNamesItsObject()
         {
@@ -600,6 +776,7 @@ namespace HiddenHarbours.Tests.EditMode
                 Assert.That(int.TryParse(kind, out int cls) ? d.ClassId == cls : d.IsScript(kind), Is.True, $"&{id} is not a {kind}");
                 if (stableId != null) Assert.That(d.Field("_id"), Is.EqualTo(stableId), $"&{id}'s stable id");
             }
+            foreach (long id in Retired) Assert.That(Scene.Get(id), Is.Null, $"&{id} is retired with its fitting");
         }
     }
 }

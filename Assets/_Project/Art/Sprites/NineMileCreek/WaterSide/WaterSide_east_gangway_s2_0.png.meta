@@ -1,0 +1,392 @@
+fileFormatVersion: 2
+guid: 5ffd9b09d6ede9e2328a90c55af59406
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 5535955827316847927
+    second: WaterSide_east_gangway_s2_0
+  - first:
+      213: 545985552271359296
+    second: WaterSide_east_gangway_s2_1
+  - first:
+      213: 4204862654167733813
+    second: WaterSide_east_gangway_s2_2
+  - first:
+      213: 3535117630689137341
+    second: WaterSide_east_gangway_s2_3
+  - first:
+      213: 2836399000390532876
+    second: WaterSide_east_gangway_s2_4
+  - first:
+      213: 7279872677685102899
+    second: WaterSide_east_gangway_s2_5
+  - first:
+      213: 3880354429671335385
+    second: WaterSide_east_gangway_s2_6
+  - first:
+      213: 1270802800313540503
+    second: WaterSide_east_gangway_s2_7
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot:
+    x: 0.5
+    y: 0.5
+  spritePixelsToUnits: 32
+  spriteBorder:
+    x: 0
+    y: 0
+    z: 0
+    w: 0
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 4096
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: WaterSide_east_gangway_s2_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 410
+        width: 537
+        height: 410
+      alignment: 9
+      pivot:
+        x: 0.037243947858473
+        y: 0.9390243902439024
+      border:
+        x: 0
+        y: 0
+        z: 0
+        w: 0
+      customData: ''
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a1ffe8202baa2ed07b83d05431125720
+      internalID: 5535955827316847927
+      vertices: []
+      indices: ''
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaterSide_east_gangway_s2_1
+      rect:
+        serializedVersion: 2
+        x: 537
+        y: 410
+        width: 537
+        height: 410
+      alignment: 9
+      pivot:
+        x: 0.7206703910614525
+        y: 0.9170731707317074
+      border:
+        x: 0
+        y: 0
+        z: 0
+        w: 0
+      customData: ''
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c35765c7bc90f0f6e90edd7b5a96f620
+      internalID: 545985552271359296
+      vertices: []
+      indices: ''
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaterSide_east_gangway_s2_2
+      rect:
+        serializedVersion: 2
+        x: 1074
+        y: 410
+        width: 537
+        height: 410
+      alignment: 9
+      pivot:
+        x: 0.9869646182495344
+        y: 0.9097560975609756
+      border:
+        x: 0
+        y: 0
+        z: 0
+        w: 0
+      customData: ''
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 155df00deb291072259d88d094f415ba
+      internalID: 4204862654167733813
+      vertices: []
+      indices: ''
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaterSide_east_gangway_s2_3
+      rect:
+        serializedVersion: 2
+        x: 1611
+        y: 410
+        width: 537
+        height: 410
+      alignment: 9
+      pivot:
+        x: 0.7206703910614525
+        y: 0.4560975609756097
+      border:
+        x: 0
+        y: 0
+        z: 0
+        w: 0
+      customData: ''
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c192b09b847fbdba40c9bb800a4eca89
+      internalID: 3535117630689137341
+      vertices: []
+      indices: ''
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaterSide_east_gangway_s2_4
+      rect:
+        serializedVersion: 2
+        x: 2148
+        y: 410
+        width: 537
+        height: 410
+      alignment: 9
+      pivot:
+        x: 0.037243947858473
+        y: 0.23902439024390243
+      border:
+        x: 0
+        y: 0
+        z: 0
+        w: 0
+      customData: ''
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5c404532fce3f15081519d1228c9a048
+      internalID: 2836399000390532876
+      vertices: []
+      indices: ''
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaterSide_east_gangway_s2_5
+      rect:
+        serializedVersion: 2
+        x: 2685
+        y: 410
+        width: 537
+        height: 410
+      alignment: 9
+      pivot:
+        x: 0.035381750465549346
+        y: 0.4560975609756097
+      border:
+        x: 0
+        y: 0
+        z: 0
+        w: 0
+      customData: ''
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0f0edef494db45c75a97247651569c91
+      internalID: 7279872677685102899
+      vertices: []
+      indices: ''
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaterSide_east_gangway_s2_6
+      rect:
+        serializedVersion: 2
+        x: 3222
+        y: 410
+        width: 537
+        height: 410
+      alignment: 9
+      pivot:
+        x: 0.01303538175046555
+        y: 0.9097560975609756
+      border:
+        x: 0
+        y: 0
+        z: 0
+        w: 0
+      customData: ''
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d6859672dd2f9c23280b21acba052629
+      internalID: 3880354429671335385
+      vertices: []
+      indices: ''
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaterSide_east_gangway_s2_7
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 537
+        height: 410
+      alignment: 9
+      pivot:
+        x: 0.035381750465549346
+        y: 0.9170731707317074
+      border:
+        x: 0
+        y: 0
+        z: 0
+        w: 0
+      customData: ''
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 653c48e47e6592bf6310a73fc12dd373
+      internalID: 1270802800313540503
+      vertices: []
+      indices: ''
+      edges: []
+      weights: []
+    outline: []
+    customData: ''
+    physicsShape: []
+    bones: []
+    spriteID: 3f431f8f57144e742b087f55e61507bc
+    internalID: 0
+    vertices: []
+    indices: ''
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      WaterSide_east_gangway_s2_0: 5535955827316847927
+      WaterSide_east_gangway_s2_1: 545985552271359296
+      WaterSide_east_gangway_s2_2: 4204862654167733813
+      WaterSide_east_gangway_s2_3: 3535117630689137341
+      WaterSide_east_gangway_s2_4: 2836399000390532876
+      WaterSide_east_gangway_s2_5: 7279872677685102899
+      WaterSide_east_gangway_s2_6: 3880354429671335385
+      WaterSide_east_gangway_s2_7: 1270802800313540503
+  mipmapLimitGroupName: ''
+  pSDRemoveMatte: 0
+  userData: ''
+  assetBundleName: ''
+  assetBundleVariant: ''
