@@ -6,7 +6,8 @@ using HiddenHarbours.Core;
 namespace HiddenHarbours.UI
 {
     /// <summary>
-    /// Pure string formatters for the HUD readouts. These DO allocate (they build display strings),
+    /// Pure string formatters for the HUD readouts. Except for the opt-in cached sea formatter, these
+    /// allocate (they build display strings),
     /// so the HUD only calls them when the underlying displayed value actually changes — a minute
     /// ticked, a height bucket changed, the balance moved. Kept pure (no Unity, no state) so they
     /// are EditMode-testable and so the no-per-frame-allocation discipline lives entirely in the
@@ -15,6 +16,35 @@ namespace HiddenHarbours.UI
     public static class HudFormat
     {
         private static readonly CultureInfo Inv = CultureInfo.InvariantCulture;
+
+        /// <summary>The sea label has a finite set of fixed words and numbers. Cache those strings
+        /// once so sampling an unchanged sea does not allocate. The HUD can opt into this formatter
+        /// when its controller is available for integration.</summary>
+        public static string Sea(SeaState state)
+        {
+            int index = (int)state;
+            return index >= 0 && index <= (int)SeaState.Storm
+                ? SeaReadoutCache.Values[index]
+                : SeaText(state);
+        }
+
+        // Existing formatters do not initialize this unused cache. Only an explicit Sea call does.
+        private static class SeaReadoutCache
+        {
+            internal static readonly string[] Values = BuildSeaReadouts();
+            static SeaReadoutCache() { }
+        }
+
+        private static string[] BuildSeaReadouts()
+        {
+            var readouts = new string[(int)SeaState.Storm + 1];
+            for (int i = 0; i < readouts.Length; i++) readouts[i] = SeaText((SeaState)i);
+            return readouts;
+        }
+
+        // Keep the existing invalid-enum fallback, including the caller's numeric culture.
+        private static string SeaText(SeaState state)
+            => "Sea: " + HudStrings.SeaState(state) + " (" + (int)state + "/7)";
 
         /// <summary>"06:30" from an hour-of-day in [0,24). 24h clock, zero-padded. Minutes are
         /// rounded (not truncated) so 23h59m reads "23:59", not "23:58".</summary>
