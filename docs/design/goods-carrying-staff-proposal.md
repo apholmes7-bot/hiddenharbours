@@ -16,7 +16,7 @@ Authority: [P4](../vision-and-pillars.md#3-the-five-pillars), [economy staff and
 | Add machinery after carts and trucks work | Provide the proper operator, equipment, access and unloading support | A full tub moves on compatible forks or lifting gear, then rests on the truck/store support | A tractor or forklift supports the weight throughout; a hauler cannot hand-lift an industrial tub |
 | Delegate site logistics to a manager | Have working staffed routes, payroll and authored storage/receiving capacity | Staff continue their visible work; the player hears about blocked routes, low ice or unmet policy instead of assigning each tote | A manager chooses among the same legal jobs; later multi-site/freight scope remains in its own phase |
 
-Use the [earlier goods proposal](https://github.com/apholmes7-bot/hiddenharbours/pull/1042) defaults: normal puts refuse when full, the first sale presents one fish, the first cart is a low wharf cart, and powered machines follow working carts/trucks. A large fish uses both hands within its authored envelope. No carry limit, wage, unlock count or speed is hard-coded by this proposal. Each job's manual version remains usable after hiring.
+Use the [RULED 2026-11-11 goods choices](../../backlog/proposed-goods-handling.md#ruled-handling-choices--2026-11-11): normal puts refuse when full, the first sale presents one fish on the counter, the first cart is a four-wheel low wharf cart, and powered machines follow working carts/trucks. A large fish uses both hands after setting down the rod, within its authored envelope. No carry limit, wage, unlock count or speed is hard-coded by this proposal. Each job's manual version remains usable after hiring.
 
 ## The first hauler order
 

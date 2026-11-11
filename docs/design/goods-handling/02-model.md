@@ -2,6 +2,8 @@
 
 **Proposed design, no game code or balance change.** Authority: [canon](../../vision-and-pillars.md) P2/P4/P5, the 2026-11-10 handling ruling, and [existing physical inventory §4](../diegetic-ui-and-inventory.md#4-physical-limited-inventory). Every move follows a visible supported route: source → hand or lifting device → destination. Walking near a boat, shop or truck never transfers ownership. A counter may purchase only goods physically presented there.
 
+The [nine handling choices are RULED as of 2026-11-11](../../../backlog/proposed-goods-handling.md#ruled-handling-choices--2026-11-11). This model follows them; its extra dimensions, limits and technical contracts remain proposals. No runtime tuning or presentation changes here.
+
 ## Hands and sizes
 
 Keep the existing two-hand sharing rule and continuity law: a pickup fills a free hand and never silently displaces the other item. One loose catch at a time; a quantity of clams is carried inside a container, not as an unlimited hand stack. A small catch plus a pail, or a pail plus a tool, can share the pair. A two-hand load reserves the pair for one entity. No extra cargo slot is created by putting a tool on a sling.
@@ -13,11 +15,11 @@ Store an item's actual caught weight and size envelope; resolve its handling cla
 | `small_piece` | One clam or banded lobster, tiny fish | One catch hand; individual dimensions still required. No stack in the hand. |
 | `one_hand_fish` | Fish at or below the existing 0.62 m length default | One catch hand if the other occupant is a permitted different kind. New mass ceiling is a proposed Def dial, not a change shipped here. |
 | `two_hand_fish` | A fish longer than that threshold but within the two-hand envelope | Both hands free; no displaced rod. A proposed **1.15 m / 12 kg** upper envelope includes the current 12 kg cod (about 1.092 m under main's size curve). Validate every reachable M1 species maximum before cutover; oversized fish require a dimensionally compatible pan/device, not any small pan by name. |
-| `one_hand_container` | Modestly filled pail | Bail grip, proposed gross hand limit 8 kg. Contents must fit the inner volume and opening. A few 0.25 m fish and many 0.10–0.15 m fish can be alternative loads; a 0.9 m cod cannot fit a pail. |
+| `one_hand_container` | Modestly filled pail | Bail grip, ruled gross pail limit 8 kg including shell. Contents must fit the inner volume and opening. A few 0.25 m fish and many 0.10–0.15 m fish can be alternative loads; a 0.9 m cod cannot fit a pail. |
 | `two_hand_container` | Light handled pan or small tote | Both hands and two authored grips; proposed gross limit 16 kg, also constrained by size. Cannot be filled while occupying both hands; set it down first. |
 | `device_load` | Loaded lobster crate, large insulated tub, pallet | Refuse hand pickup. Requires compatible cart, fork pockets or lifting points. Two-person handling is later work; until implemented, a second person is not assumed to exist. |
 
-Keep capacity **size based** as canon requires. Mass is only a lift/device limit, not a replacement for geometric fit or a new HUD weight meter. Existing one-hand length and species length-from-weight defaults remain until a separately reviewed rule migration; the proposed extra lift limits need gameplay-systems and economy-sim validation.
+Keep capacity **size based** as canon requires. Mass is only a lift/device limit, not a replacement for geometric fit or a new HUD weight meter. Existing one-hand length and species length-from-weight defaults remain until a separately reviewed rule migration. The 8 kg gross pail choice is ruled; extra lift limits beyond it still need gameplay-systems and economy-sim validation.
 
 ## Container and storage rules
 
@@ -25,9 +27,9 @@ Each container has a `ContainerDef`: outside dimensions and opening, usable insi
 
 The full target uses the canon's fullscreen container grid, with item footprints, allowed rotations and bounded layers; circular pails mask out corner cells. Depth is explicit, not an infinite stack behind a flat icon. Cells are an inspection/packing abstraction backed by metric envelopes and occupied volume. Small shellfish keep individual identity even when an art fill sprite depicts several. M1 uses authored placements and per-profile capacities derived from these dimensions, retaining the current count ceiling as an additional ceiling; it does not build a general packing editor/solver. M2 adds manual arrangement. A placement algorithm has stable ordering `(placementOrder, itemId)`, never a physics settle or unseeded shuffle.
 
-Representative **game proposals**, not surveyed product specifications; internal dimensions must be checked by content validation. A rectangular figure below is usable clear space; pail is a cylinder. Sizes are metres. Gross lift limits above include shell, ice, water and contents. Fixed storage has reach/opening/support facts even though it cannot be lifted.
+Representative **game profiles**, not surveyed product specifications; the low pan's 0.65 × 0.45 m outside footprint and two-total compatible insulated-tote stack choice are ruled. Other dimensions and ratings remain proposals, and internal dimensions must be checked by content validation. A rectangular figure below is usable clear space; pail is a cylinder. Sizes are metres. Gross lift limits above include shell, ice, water and contents. Fixed storage has reach/opening/support facts even though it cannot be lifted.
 
-| Container kind | Outside / usable inside; first candidate load | Acceptance and stacking | Overflow recommendation |
+| Container kind | Outside / usable inside; first candidate load | Acceptance and stacking | Overflow rule |
 |---|---|---|---|
 | Pail | Ø0.32 × 0.38 / Ø0.28 × 0.30, about 18 L; loose small catch, legacy ceiling 20 units in first slice | Catch profiles that pass the opening and height; one-hand only below gross limit. Empty nesting only with declared depth; loaded stacking off. Wet shellfish only where species policy allows. | **Block**; a quiet refusal leaves the fish in hand. |
 | Low fish pan | 0.65 × 0.45 × 0.16 / 0.60 × 0.40 × 0.12, 28.8 L; short fish or sorted shellfish | Two handles, light load two hands; compatible rims at most 3 filled pans, top access only. No mixing live shellfish with frozen fish. | **Block** normal puts. Later explicit “Tip onto deck” can spill to a verified receiving surface; a full put never triggers it. |
