@@ -103,6 +103,7 @@ namespace HiddenHarbours.Tests.PlayMode
         private const int MaxStepsToStop = 400;
         private const int MaxStepsForTheCrank = 600;   // 12 s; the published crank is 2.4 s
         private const int ControlSteps = 150;          // the A/B arms: 3 s of physics
+        private const int MinTowFramesSampled = 100;   // a 30 m tow is many hundreds; fewer is a probe that never ran
 
         private const string PupMesh = "Assets/_Project/Data/Vehicles/Meshes/TrailerReefer28VehicleMesh.asset";
 
@@ -529,13 +530,17 @@ namespace HiddenHarbours.Tests.PlayMode
             Assert.That(trailer.CoupledTo, Is.SameAs(hitch), $"{trailerGo.name} does not know her tractor.");
             yield return WaitForTheCrank(trailer, trailerDoors, legsUp: true, who);
 
-            // ---- 5. In, and tow her thirty metres through the lane, pin on the plate the whole way.
+            // ---- 5. In, and tow her thirty metres through the lane, pin on the plate the whole way —
+            // read by the probe after the hitch's LateUpdate follow (the picture's moment), through
+            // frames the probe deals out unevenly so a long frame is a schedule, not a runner's luck.
             yield return ClimbIn(door, who);
             Vector2 trailerStart = trailerGo.transform.position;
-            Vector3 pinLocal = new Vector3(trailer.Kingpin.CouplingPointLocal.x,
-                                           trailer.Kingpin.CouplingPointLocal.y, 0f);
             float odometerAtHitch = ctl.OdometerMeters;
-            float worstPinOffPlate = 0f, worstDrawnPinOffPlate = 0f, worstFold = 0f;
+            float worstFold = 0f;
+            var probeGo = new GameObject("PinOnPlateProbe");
+            _spawned.Add(probeGo);
+            var probe = probeGo.AddComponent<PinOnPlateProbe>();
+            probe.Arm(hitch, trailer);
             Vector2 laneCentre = LaneCentreUnderBay(placement.Unit.Bay);
             Vector2 laneEnd = TheLanesFarEnd();
             bool onTheLane = false;
@@ -549,24 +554,28 @@ namespace HiddenHarbours.Tests.PlayMode
                     onTheLane = true;
                 _held.Set(Toward(go.transform, onTheLane ? laneEnd : laneCentre, false));
                 yield return new WaitForFixedUpdate();
-                yield return null;   // the follow runs in LateUpdate, after the physics step
+                // ⚠️ Not a pin sample: a coroutine resumes BEFORE the hitch's LateUpdate follow, so the
+                // pin read here lags by the frame's own physics travel (probe's summary). The probe reads it.
+                yield return null;
                 SampleTheGroundUnder(go);
-
-                worstPinOffPlate = Mathf.Max(worstPinOffPlate,
-                    Vector2.Distance(trailer.KingpinWorld, hitch.CouplingPointWorld));
-                worstDrawnPinOffPlate = Mathf.Max(worstDrawnPinOffPlate,
-                    Vector2.Distance(trailerGo.transform.TransformPoint(pinLocal), hitch.CouplingPointWorld));
                 worstFold = Mathf.Max(worstFold, Mathf.Abs(trailer.ArticulationAgainst(hitch.HeadingDegrees)));
             }
+            probe.Disarm();
             yield return Park(ctl, who);
 
             Assert.That(trailer.IsCoupled, Is.True, $"{who}: the trailer came off during the tow.");
-            Assert.That(worstPinOffPlate, Is.LessThan(0.05f),
-                $"{who}: her pin came {worstPinOffPlate:0.###} m off the plate during the tow — she was " +
-                "dragged alongside rather than pulled by the coupling.");
-            Assert.That(worstDrawnPinOffPlate, Is.LessThan(0.05f),
-                $"{who}: the PICTURE drew her pin {worstDrawnPinOffPlate:0.###} m off the plate — the " +
-                "follow places her in a different frame from the one she is drawn in.");
+            Assert.That(probe.FramesSampled, Is.GreaterThan(MinTowFramesSampled),
+                $"{who}: the probe read {probe.FramesSampled} frames of a {TowMetres} m tow — the pin " +
+                "claims below would be about nothing.");
+            Assert.That(probe.MostStepsInAFrame, Is.GreaterThanOrEqualTo(3),
+                $"{who}: no tow frame held more than {probe.MostStepsInAFrame} physics step(s) — the " +
+                "long frames this tow is dealt on purpose never came, so it proved nothing about them.");
+            Assert.That(probe.WorstPinOffPlate, Is.LessThan(0.05f),
+                $"{who}: her pin came {probe.WorstPinOffPlate:0.###} m off the plate during the tow — she " +
+                "was dragged alongside rather than pulled by the coupling.");
+            Assert.That(probe.WorstDrawnPinOffPlate, Is.LessThan(0.05f),
+                $"{who}: the PICTURE drew her pin {probe.WorstDrawnPinOffPlate:0.###} m off the plate — " +
+                "the follow places her in a different frame from the one she is drawn in.");
             Assert.That(worstFold, Is.LessThanOrEqualTo(hitch.JackknifeCapDegrees + 0.01f),
                 $"{who}: folded {worstFold:0.#}°, past the cap the geometry allows.");
             Assert.That(Vector2.Distance(trailerStart, trailerGo.transform.position), Is.GreaterThan(20f),
