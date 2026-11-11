@@ -47,6 +47,7 @@ namespace HiddenHarbours.Tests.PlayMode
         HeldWalkIntents held;
         IEnvironmentService previousEnvironment;
         IWallet previousWallet;
+        ISaveService previousSave;bool republishedSave;
         readonly List<GameObject> spawned=new List<GameObject>();
         readonly List<Object> assets=new List<Object>();
         PinnedWater water;
@@ -173,6 +174,14 @@ namespace HiddenHarbours.Tests.PlayMode
             Assert.That(previousEnvironment,Is.Not.Null);
             water=new PinnedWater{Original=previousEnvironment,ActiveTideProfile=previousEnvironment.ActiveTideProfile};
             GameServices.Environment=water;Time.timeScale=4;
+            // The persistent [SaveService] publishes itself to GameServices.Save once, in Awake. Earlier PlayMode
+            // classes end with GameServices.Reset() or `GameServices.Save = null` while that service lives on
+            // (DontDestroyOnLoad) and never publishes again, so in the full suite this class found Save null and
+            // Rig() threw at `GameServices.Save.Current` (CI run 42773913621). Publish the live service whose run
+            // file was asserted above, and put back whatever was there in TearDown.
+            Assert.That(save!=null&&save.Current!=null,Is.True,"the live save service holds a game");
+            previousSave=GameServices.Save;republishedSave=!ReferenceEquals(previousSave,save);
+            if(republishedSave)GameServices.Save=save;
             Directory.CreateDirectory(Evidence);
         }
         [UnityTearDown]
@@ -181,6 +190,7 @@ namespace HiddenHarbours.Tests.PlayMode
             held?.Release();if(player!=null)player.ConfigureWalkInput(null);
             if(previousEnvironment!=null)GameServices.Environment=previousEnvironment;
             if(previousWallet!=null)GameServices.Wallet=previousWallet;
+            if(republishedSave)GameServices.Save=previousSave;republishedSave=false;previousSave=null;
             foreach(var go in spawned)if(go!=null)Object.Destroy(go);spawned.Clear();
             foreach(var asset in assets)if(asset!=null)Object.Destroy(asset);assets.Clear();
             Time.timeScale=1;
@@ -261,9 +271,20 @@ namespace HiddenHarbours.Tests.PlayMode
                 if(frames%100==0)TraceWalk(frames,goal);
                 Assert.That(player.WaterState,Is.EqualTo(OnFootWaterState.Dry),"wet tread at "+Feet);
             }
-            if(Vector2.Distance(Feet,goal)>radius+.04f)DumpWalkStall(goal,frames);
-            held.Release();yield return null;
-            Assert.That(Vector2.Distance(Feet,goal),Is.LessThanOrEqualTo(radius+.04f),"real walk did not reach "+goal+"; stopped at "+Feet);
+            // Arrival is judged on the fixed step the feet came within the radius. The walker reads its intent once
+            // per frame in Update (ADR 0043 §2) and steps it in FixedUpdate, so the fixed steps still left in the
+            // frame after the release carry the last intent: at timeScale 4 one step is 3 m/s x 4 x 0.02 s = 0.24 m,
+            // and a slow CI frame coasted one or two of them past the goal (run 42773913621: 0.29 m and 0.30 m with
+            // the twins green). Judging after that coast measured frame timing, not the route.
+            Vector2 arrived=Feet;float reached=Vector2.Distance(arrived,goal);
+            if(reached>radius+.04f)DumpWalkStall(goal,frames);
+            held.Release();
+            yield return null;                    // the walker's Update has read the release
+            yield return new WaitForFixedUpdate(); // and a fixed step has run with no intent
+            TraceWalk(-1,goal);
+            Assert.That(reached,Is.LessThanOrEqualTo(radius+.04f),"real walk did not reach "+goal+"; stopped at "+arrived);
+            Assert.That(body.linearVelocity.magnitude,Is.LessThan(1e-3f),"the walker stops once its intent is released, at "+Feet);
+            Assert.That(player.WaterState,Is.EqualTo(OnFootWaterState.Dry),"wet tread where the walker stopped, at "+Feet);
         }
         [UnityTest,Timeout(300000)]
         public IEnumerator AllFourNativeGangways_AreWalkedToTheirFloats_AtBothTides()
