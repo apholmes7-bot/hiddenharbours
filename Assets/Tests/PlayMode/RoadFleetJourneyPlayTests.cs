@@ -554,8 +554,8 @@ namespace HiddenHarbours.Tests.PlayMode
                     onTheLane = true;
                 _held.Set(Toward(go.transform, onTheLane ? laneEnd : laneCentre, false));
                 yield return new WaitForFixedUpdate();
-                // ⚠️ Not a pin sample: a coroutine resumes BEFORE the hitch's LateUpdate follow, so the
-                // pin read here lags by the frame's own physics travel (probe's summary). The probe reads it.
+                // ⚠️ Not a pin sample: this resumes in the next frame's Update, BEFORE the hitch's LateUpdate
+                // follow, so a pin read here lags by that frame's physics travel (probe's summary).
                 yield return null;
                 SampleTheGroundUnder(go);
                 worstFold = Mathf.Max(worstFold, Mathf.Abs(trailer.ArticulationAgainst(hitch.HeadingDegrees)));

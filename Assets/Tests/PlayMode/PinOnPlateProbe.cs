@@ -10,14 +10,14 @@ namespace HiddenHarbours.Tests.PlayMode
     ///
     /// <para><b>Why a probe and not a line in the test's loop.</b> <see cref="VehicleHitch"/> places her
     /// trailer in <c>LateUpdate</c>, from the tractor's post-physics pose. A coroutine can only resume
-    /// before that: after <see cref="WaitForFixedUpdate"/> or after <c>Update</c> (<c>yield return
-    /// null</c>). Read there, the pin is off the plate by however far the tractor drove in the physics
-    /// steps since the last follow — one step's travel (~0.03 m on the tow) in an even frame, two or
-    /// three times that in a long one. That window was what <c>RoadFleetJourneyPlayTests</c> measured
-    /// until 11-11, so a runner frame long enough to hold two physics steps read 0.051–0.068 m against
-    /// the 0.05 m bar, while the pin the camera drew sat exactly on the plate. This runs its
-    /// <c>LateUpdate</c> after every vehicle script (order 10000; the hitch has none, the mesh driver
-    /// is −110), which is the last thing before the frame is drawn.</para>
+    /// before that: after <see cref="WaitForFixedUpdate"/>, or after the next frame's <c>Update</c>
+    /// (<c>yield return null</c>). Read there, the pin is off the plate by however far the tractor drove
+    /// in that frame's physics steps — nothing on a fast machine, whose next frame steps nothing, but
+    /// ~0.08 m per step at tow speed when it does (measured 11-11: 0.081 for one step, 0.159 for two).
+    /// That window was what <c>RoadFleetJourneyPlayTests</c> measured until 11-11, so a runner whose
+    /// frames each held a step read 0.051–0.068 m against the 0.05 m bar, while the pin the camera drew
+    /// sat 8 µm from the plate. This runs its <c>LateUpdate</c> after every vehicle script (order 10000;
+    /// the hitch has none, the mesh driver is −110), the last thing before the frame is drawn.</para>
     ///
     /// <para><b>The cadence is the guard.</b> While armed it sets <see cref="Time.captureDeltaTime"/>
     /// for the next frame from a fixed cycle of whole and part physics steps, so the tow runs frames of
