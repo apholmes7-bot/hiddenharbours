@@ -200,6 +200,12 @@ FishingContext {
 > reading the spot), but rerolls as conditions/time advance (P1). `spotJitter` lets tide pools and
 > flats have stable micro-spots ("the good pool by the third sunker").
 
+The current rod and clam controllers derive their default RNG from the world seed, a stable
+source id (rod region or authored clam-hole id), and the exact in-game time at cast/drop or dig.
+They use the same stable hash as placed traps; recreating a controller at that action time replays
+its rolls. A missing environment or clock contributes zero. Non-zero inspector/test seeds retain
+their existing continuous RNG stream. No catch tuning or save fields change.
+
 ### 3.3 Hotspots & schools (optional surface layer)
 
 To make grounds *legible* (P3 "living coast") and reward observation, the world may render **visible

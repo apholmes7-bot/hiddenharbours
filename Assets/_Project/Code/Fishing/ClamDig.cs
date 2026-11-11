@@ -90,7 +90,7 @@ namespace HiddenHarbours.Fishing
                  "must be unique among live holes. The builder gives each hole a readable one derived " +
                  "from its cell; left empty an instance-scoped fallback keeps it unique but unreadable.")]
         [SerializeField] private string _id;
-        [Tooltip("0 = time-seeded weight roll; non-zero for reproducible clam weights in testing.")]
+        [Tooltip("0 = world seed + hole id + game time per dig; non-zero keeps an explicit RNG stream for testing.")]
         [SerializeField] private int _rngSeed = 0;
         [Tooltip("Land the dug clam IN THE FISHER'S HAND rather than straight into the pail (the owner's " +
                  "ruling, 2026-08-13: 'a clam can be in hand but needs to be placed in a container to " +
@@ -163,9 +163,17 @@ namespace HiddenHarbours.Fishing
 
         private void Awake()
         {
-            _rng = _rngSeed == 0 ? new System.Random() : new System.Random(_rngSeed);
+            ResetCatchRandom();
             if (_bucketProvider != null) _bucket = _bucketProvider.GetComponent<IHold>();
             ResolveSpurtTiming();
+        }
+
+        private void ResetCatchRandom()
+        {
+            int seed = _rngSeed != 0 ? _rngSeed : StableHash.CatchSeed(
+                GameServices.Environment?.WorldSeed ?? 0, "clam:" + _id,
+                GameServices.Clock?.TotalSeconds ?? 0.0);
+            _rng = new System.Random(seed);
         }
 
         /// <summary>
@@ -273,6 +281,9 @@ namespace HiddenHarbours.Fishing
                 }
             }
 
+            // A recreated hole at the same game instant yields the same weight. Use the authored id,
+            // never the registry's process-local fallback, and pick up services installed after Awake.
+            if (_rngSeed == 0) ResetCatchRandom();
             float weight = CatchResolver.RollWeight(_clamSpecies, _rng);
             // Stamp the freshness clock at the dig (M1 §7.3) — a clam in the pail is on the clock too.
             double dugAt = GameServices.Clock != null ? GameServices.Clock.TotalSeconds : 0.0;
@@ -622,14 +633,14 @@ namespace HiddenHarbours.Fishing
             _bucket = bucket;
             _spot = spot;
             _shovelGearId = shovelGearId;
-            _rng = seed == 0 ? new System.Random() : new System.Random(seed);
+            _rngSeed = seed;
+            ResetCatchRandom();
             if (reachRadius >= 0f) _reachRadius = reachRadius;
 
             // The hole's position may have just moved, and the spot IS its identity — so re-roll
             // rather than keep a timing that belonged to a different hole. The seed recorded here
             // only reaches the spurt in a scene with no environment service (see SpurtWorldSeed);
             // in play the world's seed wins, which is what the charter asks for.
-            _rngSeed = seed;
             ResolveSpurtTiming();
         }
 

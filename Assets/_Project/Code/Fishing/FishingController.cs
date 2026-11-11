@@ -68,7 +68,7 @@ namespace HiddenHarbours.Fishing
         [Tooltip("Every tackle the player can tie on (the dev cycle walks this list).")]
         [SerializeField] private TackleDef[] _tackleBox;
 
-        [Tooltip("0 = time-seeded RNG; set non-zero for reproducible bites/fights in testing.")]
+        [Tooltip("0 = world seed + game time per cast/drop; non-zero keeps an explicit RNG stream for testing.")]
         [SerializeField] private int _rngSeed = 0;
         [Tooltip("Shared GameConfig for the owner's flick-cast tuning (GameConfig.FlickCast — no magic " +
                  "numbers, rule 6). Left unset, the code falls back to FlickCastSettings.Default, so a " +
@@ -172,7 +172,7 @@ namespace HiddenHarbours.Fishing
 
         private void Awake()
         {
-            _rng = _rngSeed == 0 ? new System.Random() : new System.Random(_rngSeed);
+            ResetCatchRandom();
             EnsureHold();
             if (_hold == null)
                 Debug.LogWarning("[FishingController] No IHold found on the hold provider.", this);
@@ -328,7 +328,8 @@ namespace HiddenHarbours.Fishing
             }
         }
 
-        /// <summary>Wire the controller without the scene lifecycle (tests / editor). Seed 0 = time-seeded.
+        /// <summary>Wire the controller without the scene lifecycle (tests / editor). Seed 0 derives
+        /// each cast/drop from the world seed, region and in-game start time.
         /// Licences default to none (nothing gated); use the overload to supply the licence data.</summary>
         public void Configure(IHold hold, FishSpeciesDef[] regionFish, string regionId, Gear gear, int seed)
             => Configure(hold, regionFish, regionId, gear, seed, null);
@@ -344,7 +345,8 @@ namespace HiddenHarbours.Fishing
             _regionId = regionId;
             _gear = gear;
             _licenses = licenses;
-            _rng = seed == 0 ? new System.Random() : new System.Random(seed);
+            _rngSeed = seed;
+            ResetCatchRandom();
             _phase = FishingPhase.Idle;
             _state = FishingState.Idle;
             _actionWasHeld = false;
@@ -378,6 +380,14 @@ namespace HiddenHarbours.Fishing
 
         // ---- phase transitions --------------------------------------------------------------
 
+        private void ResetCatchRandom()
+        {
+            int seed = _rngSeed != 0 ? _rngSeed : StableHash.CatchSeed(
+                GameServices.Environment?.WorldSeed ?? 0, "rod:" + EffectiveRegionId,
+                GameServices.Clock?.TotalSeconds ?? 0.0);
+            _rng = new System.Random(seed);
+        }
+
         #region The flick-cast (WindBack → Cast → touchdown; the maths is FlickCastMath)
 
         /// <summary>The press edge: start winding the rod back and sampling the drag. The hold-full
@@ -409,6 +419,10 @@ namespace HiddenHarbours.Fishing
 
             _pendingFish = null;
             _pendingWeight = 0f;
+
+            // Read live services at the action boundary: Awake can precede the persistent core.
+            // Explicit seeds retain their continuous stream, including across successive casts.
+            if (_rngSeed == 0) ResetCatchRandom();
 
             // Gear decides the branch (v2 §2.1): a weighted rig DROPS and reads the column — no cast,
             // no gesture, no bobber (rebase resolution: the depth branch moved here from the retired
