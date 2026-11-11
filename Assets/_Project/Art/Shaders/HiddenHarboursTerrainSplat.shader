@@ -175,6 +175,12 @@ Shader "HiddenHarbours/TerrainSplat"
         _MacroStrength  ("Macro strength", Range(0, 1)) = 0.22
         _MacroTint      ("Macro tint", Color) = (0.72, 0.66, 0.55, 1)
 
+        [Header(Pixel true blends. Zero on the first line is the soft blend as it was)]
+        _BlendPixelTrue   ("Pixel true blends on", Float) = 1.0
+        _BlendFringe      ("Fringe. Share of a blend that breaks into pixels", Range(0, 1)) = 0.75
+        _BlendRagged      ("Ragged. Clumps over the ordered pattern", Range(0, 1)) = 0.9
+        _BlendClumpMetres ("Clump scale in metres", Float) = 0.4
+
         [Header(Wet band above the waterline)]
         _WetBandMetres ("Wet band in metres", Float) = 0.45
         _WetStrength   ("Wet strength", Range(0, 1)) = 0.45
@@ -263,6 +269,7 @@ Shader "HiddenHarbours/TerrainSplat"
 
                 float  _PixelsPerMetre, _GrainScale, _MacroScale, _MacroStrength;
                 float4 _MacroTint;
+                float  _BlendPixelTrue, _BlendFringe, _BlendRagged, _BlendClumpMetres;
                 float  _WetBandMetres, _WetStrength;
                 float4 _WetTint;
 
@@ -360,6 +367,8 @@ Shader "HiddenHarbours/TerrainSplat"
             #define TSA_SAMPLE_SPLAT(tex, smp, uv) SAMPLE_TEXTURE2D(tex, smp, uv)
             #define TSA_SAMPLE_KIT(uv, slice, duvx, duvy) SAMPLE_TEXTURE2D_ARRAY_GRAD(_DetailArr256, sampler_DetailArr256, uv, slice, duvx, duvy)
             #include "Assets/_Project/Art/Shaders/Include/TerrainSplatAlbedo.hlsl"
+            // The blends drawn: one material per art texel where the weights are fractions (terrain blends).
+            #include "Assets/_Project/Art/Shaders/Include/TerrainPixelTrueBlend.hlsl"
 
             // The same material RELIT (terrain pass 9): TSA_SampleMat's ladder bracket, each step's texel
             // relit by TerrainLight6 from the kit's maps, and the two steps lerped by the same k. The
@@ -466,6 +475,25 @@ Shader "HiddenHarbours/TerrainSplat"
                     // where the shore offset fades to zero at its band's edge.
                     float2 weightWPX = floor(weightWP * ppm) / ppm;
                     TSA_GroundWeights(weightWP, weightWPX, TSA_WarpUV(weightWPX, weightUV), weightE, w, intensity);
+                }
+
+                // THE BLENDS, DRAWN (terrain blends; Include/TerrainPixelTrueBlend.hlsl). Where the weights
+                // above are fractions, the ground is read once more at the centre of the art texel this pixel
+                // lies in (the same law at its own point, as the shore re-read is) and one material takes the
+                // texel: every screen pixel of a texel reaches the same answer, so a blend edge lands on the
+                // sprites' pixel grid at any zoom and stays put under the camera. The reads above are left as
+                // they were: the shore lines take the soft weights they always have, and with _BlendPixelTrue
+                // at 0 this block never runs and the ground is the soft blend, bit for bit.
+                [branch] if (_BlendPixelTrue > 0.5 && TPB_Blended(w))
+                {
+                    float2 texel = floor(weightWP * ppm);
+                    float2 texelWPX = texel / ppm;
+                    float2 texelWP = (texel + 0.5) / ppm;
+                    float2 texelUV = (texelWP - _HeightWorldMin.xy) / max(_HeightWorldSize.xy, float2(1e-3, 1e-3));
+                    float texelHeight01 = SAMPLE_TEXTURE2D_LOD(_HeightTex, sampler_HeightTex, texelUV, 0).r;
+                    float texelE = lerp(_HeightMin, _HeightMax, texelHeight01);
+                    TSA_GroundWeights(texelWP, texelWPX, TSA_WarpUV(texelWPX, texelUV), texelE, w, intensity);
+                    TPB_Pick(TPB_Fringe(TPB_Threshold(texel, texelWPX, _BlendRagged, _BlendClumpMetres), _BlendFringe), w);
                 }
 
                 // --- SHADE ------------------------------------------------------------------------

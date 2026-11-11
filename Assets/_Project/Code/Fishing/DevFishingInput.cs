@@ -62,6 +62,25 @@ namespace HiddenHarbours.Fishing
         // into a fresh cast the instant the haul ends. Only a live haul arms it (not the deck/modal gates).
         private bool _requireReleaseBeforeCast;
 
+        // The raw cast action on the previous tick: a refused cast speaks on the PRESS (the rising edge),
+        // once, and never on the frames the key stays down.
+        private bool _rawHeldLastTick;
+
+        /// <summary>
+        /// What a refused cast says, on the notice channel (<see cref="DevNotice"/>). Constants on the
+        /// component, the in-lane pattern <see cref="DevTrapInput"/> keeps: Fishing may not reach the
+        /// HUD's or the player's strings class (rule 4), and a notice is the ruled home of a refusal.
+        /// The keys named are the ones this file and the interact verb read today (Space / left mouse
+        /// here, E for the interact) — main binds no display name to read them from, so if either is
+        /// rebound these lines move with it.
+        /// </summary>
+        public const string NoticeCastAtHelm =
+            "No casting from the helm — E to step back on deck, then cast.";
+
+        /// <inheritdoc cref="NoticeCastAtHelm"/>
+        public const string NoticeCastNeedsRod =
+            "Pick up a rod first (E) — then hold left mouse or Space and flick to cast.";
+
         /// <summary>The handline FSM this drives (required sibling). Resolved lazily + cached so it works
         /// whether Awake has run (play mode) or not (EditMode AddComponent doesn't fire Awake).</summary>
         private FishingController Fishing => _fishing != null ? _fishing : (_fishing = GetComponent<FishingController>());
@@ -225,6 +244,11 @@ namespace HiddenHarbours.Fishing
             if ((Haul != null && Haul.IsHauling) || (DeckWork != null && DeckWork.HasPotAboard))
                 _requireReleaseBeforeCast = true;
 
+            // A PRESS that cannot cast says why, once (the frames the key stays down say nothing).
+            bool pressed = rawHeld && !_rawHeldLastTick;
+            _rawHeldLastTick = rawHeld;
+            if (pressed) SayWhyTheCastIsRefused();
+
             // Whenever this tick will NOT deliver the raw hold (the gate is closed, or the latch is about
             // to swallow it), a wind-back in progress is ABORTED rather than force-released: the controller
             // reads held=false as "the player let go" and would EVALUATE the half-made gesture into a flung
@@ -244,6 +268,35 @@ namespace HiddenHarbours.Fishing
 
             bool held = live && rawHeld;
             Fishing.Tick(dt, held, pointerWorld, pointerValid);
+        }
+
+        /// <summary>
+        /// The press that could not cast: tell the player what to do, through the notice channel, for
+        /// the two reasons that are HERS to fix — she is at the helm with the rod in her hands, or she
+        /// is on her feet without it. Called on the rising edge only, so it is one notice per press.
+        ///
+        /// <para><b>Silent whenever somebody else owns the key</b>, because then the press was not a
+        /// cast at all: a modal page or a stopped world, a rope at a cleat
+        /// (<see cref="CastActionClaim"/>), a live haul or a pot on the deck (the release latch, armed
+        /// by both). And silent at the helm with EMPTY hands — Space is the oar brace there and the
+        /// mouse drags the helm's own controls, so a rower would be told about a rod at every stroke.</para>
+        ///
+        /// <para>No allocation: both lines are constants and <see cref="DevNotice"/> is a struct.</para>
+        /// </summary>
+        private void SayWhyTheCastIsRefused()
+        {
+            if (_requireReleaseBeforeCast) return;
+            if (InteractionGate.IsBlocked || ShellFlow.WorldInputBlocked || CastActionClaim.IsClaimed) return;
+
+            bool rodInHand = CarriedItem.InHand(_rodToolId);
+            if (_mode == ControlMode.Aboard)
+            {
+                if (rodInHand) EventBus.Publish(new DevNotice(NoticeCastAtHelm));
+                return;
+            }
+
+            if (_mode != ControlMode.OnFoot && _mode != ControlMode.OnDeck) return;
+            if (_requireRodInHand && !rodInHand) EventBus.Publish(new DevNotice(NoticeCastNeedsRod));
         }
     }
 }

@@ -22,7 +22,8 @@ namespace HiddenHarbours.Tests.Art.EditMode
     {
         private const string PlatePath = "Assets/Tests/PlayMode/StPetersSplatWarpPlatePlayTests.cs";
         private const string PlateCase = "public IEnumerator TheSplatEdges_PlatedSettledAtNoon()";
-        private const string ReTick = "static int ReTickTheSpriteShadows()";
+        private const string BlendCase = "public IEnumerator TheBlends_PlatedSoftAndDrawn()";
+        private const string ReTick ="static int ReTickTheSpriteShadows()";
         private const string Capture = "Color32[] ReadMedian()";
         private const string CostCase = "public IEnumerator TheGroundAndTheSea_CostAtThePlatePose()";
 
@@ -56,10 +57,31 @@ namespace HiddenHarbours.Tests.Art.EditMode
             Assert.Greater(retake, settle, "the retake comes after the first plate");
             Assert.IsFalse(Body(plate, "if(noisy>0)").Contains(call), "the retake does not re-tick");
 
-            // neither the capture nor the cost case re-ticks, and the plate case is the only caller
+            // the blend plate case (pixel-true blends) re-ticks at each settled camera, before that camera's first plate:
+            // once in the pose loop right after each pose settles, and once in the pan right after each camera step
+            // settles (the step moves the camera the shadows are read from). Two call sites, no more.
+            string blends = Squash(Body(code, BlendCase));
+            int blendCalls = Count(blends, Regex.Escape(call));
+            Assert.AreEqual(2, blendCalls, "the blend plate case re-ticks once per settled pose and once per pan step");
+            int blendPoses = blends.IndexOf("for(intp=0;p<BlendPoses.Length;p++)", StringComparison.Ordinal);
+            int blendSettle = blends.IndexOf("yieldreturnFrameOn(pose.Centre);intreTicked=ReTickTheSpriteShadows();",
+                                             StringComparison.Ordinal);
+            Assert.Greater(blendPoses, -1);
+            Assert.Greater(blendSettle, blendPoses, "the blends: inside the pose loop, right after the pose settles");
+            Assert.Less(blendSettle, blends.IndexOf("ReadMedian()", StringComparison.Ordinal), "the blends: before the pose's first plate");
+            string pan = Body(blends, "if(p==BlendPanPose)");
+            Assert.AreEqual(1, Count(pan, Regex.Escape(call)), "the pan re-ticks once per camera step");
+            const string panSettle = "yieldreturnFrameOn(home+newVector2(steps*step,steps*step));" +
+                                     "Vector3camMoved=_cam.transform.position-camHome;ReTickTheSpriteShadows();";
+            int panAt = pan.IndexOf(panSettle, StringComparison.Ordinal);
+            Assert.Greater(panAt, -1, "the pan: right after the step settles");
+            Assert.Less(panAt, pan.IndexOf("ReadMedian()", StringComparison.Ordinal), "the pan: before the step's plate");
+
+            // neither the capture nor the cost case re-ticks, and the two named plate cases are the only callers
             foreach (string body in new[] { Body(code, Capture), Body(code, CostCase) })
                 Assert.IsFalse(Squash(body).Contains("ReTickTheSpriteShadows"), "the capture and the cost case keep the shadows");
-            Assert.AreEqual(1, Count(Squash(code), Regex.Escape(call)), "the plate case is the only caller");
+            Assert.AreEqual(1 + blendCalls, Count(Squash(code), Regex.Escape(call)),
+                "the splat-warp and the blend plate cases are the only callers: a new caller is named here or fails");
         }
     }
 }

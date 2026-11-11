@@ -381,14 +381,19 @@ namespace HiddenHarbours.Fishing
         #region The flick-cast (WindBack → Cast → touchdown; the maths is FlickCastMath)
 
         /// <summary>The press edge: start winding the rod back and sampling the drag. The hold-full
-        /// refusal lives here (same UX as the retired press-to-cast: a full hold never starts a cast).</summary>
+        /// refusal lives here (same UX as the retired press-to-cast: a full hold never starts a cast),
+        /// and it is SAID: this runs once per press, so the refusal earns one sentence per attempt
+        /// rather than a silent dead rod.</summary>
         private void BeginWindBack(Vector2 pointerWorld)
         {
             EnsureHold();
             if (_hold == null) { Debug.LogWarning("[Fishing] No hold to land into.", this); return; }
             if (_hold.UsedUnits >= _hold.CapacityUnits)
             {
-                Debug.Log("[Fishing] Hold is full — head in and sell.");
+                // Refused BEFORE the line is wet: nothing is hooked, fought and then lost for want of
+                // room. Told to the player on the one feedback channel, not only to the console.
+                Debug.Log($"[Fishing] {FishingStrings.HoldFull}");
+                EventBus.Publish(new DevNotice(FishingStrings.HoldFull));
                 return; // stay Idle; nothing to cast into
             }
 
@@ -758,7 +763,11 @@ namespace HiddenHarbours.Fishing
             }
             else
             {
-                Debug.Log("[Fishing] Landed it, but the hold's full — nowhere to stow it.");
+                // The cast gate refuses a full hold, so this is only reached when the hold filled (or
+                // went away) between the cast and the landing. The fish has nowhere to go; say so, so a
+                // lost fish is never a silent one.
+                Debug.Log($"[Fishing] {FishingStrings.LandedNoRoom}");
+                EventBus.Publish(new DevNotice(FishingStrings.LandedNoRoom));
             }
 
             _phaseTimer = _resultDisplay;

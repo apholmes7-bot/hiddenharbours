@@ -75,7 +75,7 @@ namespace HiddenHarbours.Tests.EditMode
         private BaitDef _bait;
 
         private const double PlaceTime = 5000.0;
-        private static readonly double SoakSpan = 12.0 * 3600.0;   // TrapDef.SoakHours = 12
+        private static readonly double SoakSpan = 12.0 * 75.0;   // TrapDef.SoakHours = 12
 
         [SetUp]
         public void SetUp()

@@ -95,7 +95,7 @@ namespace HiddenHarbours.Tests.EditMode
 
         private CatchContext ContextAt(Vector2 hook, double time)
             => new CatchContext("region.deliberately_not_the_line", Environment.TideHeightAt(time),
-                (float)((time / 3600d) % 24d), Season.HighSummer, Gear.Trap, -99f, -99f);
+                (float)((time / 75d) % 24d), Season.HighSummer, Gear.Trap, -99f, -99f);
 
         public void Dispose()
         {

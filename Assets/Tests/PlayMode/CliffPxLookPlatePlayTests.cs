@@ -222,6 +222,12 @@ namespace HiddenHarbours.Tests.PlayMode
         [UnityTearDown]
         public IEnumerator TearDownRegion()
         {
+            // A region boot can leave static shell/gate state behind the discarded core.
+            if (_loadedAny)
+            {
+                ShellFlow.Reset();
+                InteractionGate.Reset();
+            }
             LogAssert.ignoreFailingMessages = false;
             Time.timeScale = 1f;   // ⚠ a STATIC: left at 0 it stops every test that follows
 
@@ -271,6 +277,8 @@ namespace HiddenHarbours.Tests.PlayMode
             foreach (GameObject go in PersistentRoots())
                 if (go != null && !_residentBefore.Contains(go)) Object.DestroyImmediate(go);
             GameServices.Reset();
+            ShellFlow.Reset();
+            InteractionGate.Reset();
             _loadedAny = false;
             yield return null;
         }
@@ -477,13 +485,32 @@ namespace HiddenHarbours.Tests.PlayMode
                 : "not in this frame";
 
             // --- one frame: the picture, its subject-removed control and, in px, the −1 arm (no yield) ---
+            // Prime the index-control frame and prove that the original is stable before any arm.
+            if (take.Arm && _px) Capture();
             byte[] picture = Capture();
-            byte[] control = CaptureWithoutTheCliffs();
+            if (take.Arm && _px)
+            {
+                byte[] repeated = Capture();
+                if (Fnv1a(picture) != Fnv1a(repeated))
+                    failures.Add("the original frame changed before any index control was applied");
+            }
             SavePlate($"{plate}.png", picture, _w);
-            if (_controlsSaved.Add($"{s.Shot}-{_look}")) SavePlate($"{s.Shot}-control-{_look}.png", control, _w);
             byte[] same = null, shifted = null;
             string armNote = null;
-            if (take.Arm && _px) CaptureTheAspectShift(failures, out same, out shifted, out armNote);
+            if (take.Arm && _px)
+            {
+                CaptureTheAspectShift(failures, out same, out shifted, out armNote);
+                if (same != null) SavePlate($"{s.Shot}-{hhmm}-px-unshifted-control.png", same, _w);
+                byte[] restored = Capture();
+                SavePlate($"{s.Shot}-{hhmm}-px-restored-control.png", restored, _w);
+                if (Fnv1a(restored) != Fnv1a(picture))
+                    failures.Add("the original frame changed after its index textures were restored");
+            }
+
+            // Renderer-disable controls alter camera-dependent state. Take that destructive arm
+            // after the texture identity comparisons, so it cannot contaminate their original frame.
+            byte[] control = CaptureWithoutTheCliffs();
+            if (_controlsSaved.Add($"{s.Shot}-{_look}")) SavePlate($"{s.Shot}-control-{_look}.png", control, _w);
 
             ulong hPicture = Fnv1a(picture), hControl = Fnv1a(control);
             double share = ChangedShare(picture, control);
@@ -1219,10 +1246,8 @@ namespace HiddenHarbours.Tests.PlayMode
                 _anchor = new GameObject("CliffPxLookPlateAnchor");
                 _spawned.Add(_anchor);
             }
-            _anchor.transform.position = new Vector3(at.x, at.y, 0f);
             _follow.Target = _anchor.transform;
             _follow.Smooth = 1000f;   // any residue arrives in a frame, not over a second of easing
-            _cam.transform.position = new Vector3(at.x, at.y, _cam.transform.position.z);
 
             if (_rt == null)
             {
@@ -1235,6 +1260,11 @@ namespace HiddenHarbours.Tests.PlayMode
             _askedGridPx = _cam.targetTexture.height;   // the follow frames on its camera's render texture
             _askedHeight = _follow.WorldHeightFor(CameraFraming.OnFoot);
             _follow.SetFraming(_askedHeight, 0f);
+            // Ask for a representable station on the camera's selected grid. The ledge's nominal
+            // y = -58.1 lies between pixels; the position tolerance still applies to the exact anchor.
+            if (GameServices.PixelGridSnap) at = PixelGrid.Snap(at, _follow.WorldUnitsPerRenderedPixel);
+            _anchor.transform.position = new Vector3(at.x, at.y, 0f);
+            _cam.transform.position = new Vector3(at.x, at.y, _cam.transform.position.z);
             for (int i = 0; i < 2; i++) yield return null;   // the follow reads the anchor while nothing can move
 
             Time.timeScale = 1f;
@@ -1248,7 +1278,7 @@ namespace HiddenHarbours.Tests.PlayMode
             Vector3 p = _cam.transform.position;
             float worldHeight = _cam.orthographicSize * 2f;
             Assert.LessOrEqual(Vector2.Distance(new Vector2(p.x, p.y), at), OnTheCentreMetres,
-                $"the camera sits at ({p.x:0.####}, {p.y:0.####}), not on the station ({at.x:0.###}, {at.y:0.###}), " +
+                $"the camera sits at ({p.x:0.####}, {p.y:0.####}), not on the pixel-aligned station ({at.x:0.###}, {at.y:0.###}), " +
                 $"after {_eased}: something else drives it (a region-bounds clamp, a cinematic), so the plate would " +
                 "show another stretch of coast and the two runs would not line up.");
             Assert.That(worldHeight, Is.EqualTo(_askedHeight).Within(0.5f),

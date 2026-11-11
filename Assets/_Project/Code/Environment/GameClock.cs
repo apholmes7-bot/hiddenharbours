@@ -82,6 +82,53 @@ namespace HiddenHarbours.Environment
         }
 
         /// <summary>
+        /// Fast-forward to a later game-time as time PASSING (<see cref="IGameClock.FastForwardTo"/>): how
+        /// a night's rest brings the morning. Unlike <see cref="SeekTo"/>, every midnight crossed
+        /// publishes <see cref="DayStarted"/> once, in order, and <see cref="SeasonChanged"/> where a
+        /// season turns, exactly as <see cref="Advance"/> would have had the hours been waited out.
+        ///
+        /// <para><b>Each day is announced from its own first instant.</b> The clock stands at that
+        /// day's midnight while its <see cref="DayStarted"/> is out, so a subscriber that reads the clock
+        /// inside its handler sees the day it is being told about, as it does on a waited rollover. The
+        /// payload is taken from the day's index, not re-derived from seconds, so it cannot be off by a
+        /// rounding of the very boundary it stands on.</para>
+        ///
+        /// <para><b>Flow moves with the hour.</b> <see cref="FlowSeconds"/> advances by the same span:
+        /// the world ran through the night too, and whatever a held span had put between the two
+        /// readings stays between them.</para>
+        ///
+        /// <para>Refused (false, nothing changed, nothing published) with no config, while the hour is
+        /// held (<see cref="IsHeld"/>: the holder owns the hour), or for a target that is not later than
+        /// now. <see cref="IsPaused"/> does not refuse: a pause stops the flow of frames, and this is
+        /// not a frame.</para>
+        /// </summary>
+        public bool FastForwardTo(double totalSeconds)
+        {
+            if (_config == null || IsHeld) return false;
+            double dayLength = _config.SecondsPerDay;
+            if (!(dayLength > 0d) || !(totalSeconds > _t)) return false;
+
+            double span = totalSeconds - _t;
+            int lastDay = (int)(totalSeconds / dayLength);
+            for (int day = _lastTotalDays + 1; day <= lastDay; day++)
+            {
+                _t = day * dayLength;
+                _lastTotalDays = day;
+                CalendarDate date = GameCalendar.AtDay(day, _config.DaysPerSeason, _config.StartDayOfYear);
+                EventBus.Publish(new DayStarted(date.DayOfSeason, date.Season, date.Year));
+                if (date.Season != _lastSeason)
+                {
+                    _lastSeason = date.Season;
+                    EventBus.Publish(new SeasonChanged(date.Season, date.Year));
+                }
+            }
+
+            _t = totalSeconds;
+            _flow += span;
+            return true;
+        }
+
+        /// <summary>
         /// The clock reads WALL time, never <c>Time.timeScale</c> (rule 5; lead-architect ruling 2026-09-09).
         /// <c>Time.timeScale</c> is a FEEL channel (the landing hit-stop dips it); the world's time is
         /// <c>(seed, gameTime)</c> and a feel dip must not slow the tide. <see cref="IsPaused"/> is the only
