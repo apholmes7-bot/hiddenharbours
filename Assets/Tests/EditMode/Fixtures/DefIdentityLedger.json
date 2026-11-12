@@ -118,7 +118,8 @@
     "HiddenHarbours.Art.PlantClumpDef",
     "HiddenHarbours.Fishing.FishEcologyDef",
     "HiddenHarbours.Tools.GoodsModel.GoodsContainerDef",
-    "HiddenHarbours.Tools.GoodsModel.GoodsHandlingDef"
+    "HiddenHarbours.Tools.GoodsModel.GoodsHandlingDef",
+    "HiddenHarbours.Fishing.NpcTrawlDayDef"
   ],
   "Entries": [
     {
@@ -9955,6 +9956,11 @@
       "Type": "HiddenHarbours.World.NpcDef",
       "Guid": "a230a2fa97d941adbac15d45912324e3",
       "Id": "npc.rpt_wreck"
+    },
+    {
+      "Type": "HiddenHarbours.Fishing.NpcTrawlDayDef",
+      "Guid": "b4da6f77c5404bf1bdd2e74cc7ab5007",
+      "Id": "trawlday.rpt_face"
     }
   ]
 }
