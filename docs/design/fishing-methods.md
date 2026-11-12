@@ -175,6 +175,21 @@ today's once today's set is done, yesterday's until today's haul.
   never enters the player's pot service, pot locker or save.
 - A content test holds every authored day to the real ground: afloat the whole way at spring low,
   pots in fishable water, every rope reaching the surface at spring high.
+- `NpcPotDayCatch` (Fishing) resolves what each pot holds from the same tables and seeded streams as a
+  player's pot (`TrapFill`, `PlacedTrapCatch`, `DeckPot`): soaked since yesterday's set, hauled at
+  today's haul, read against the Def's `CatchRegionId`. Each animal then takes a fixed share of the
+  deck time in order: picked and gauged at the rail; a keeper banded at the bench and carried to the
+  crate for its size grade; a short or berried one put back over the side; last, the pot baited. The
+  crates at any clock second are a count over the day's plan.
+- `NpcPotDeck` (App) shows it: the skipper stands at the helm, the rail, the bench or a crate as the
+  clock says, the animal is drawn at her hand until it is stowed or let go, and the crates fill one
+  animal at a time. Nothing appears in a crate that did not pass through her hands.
+- `NpcPotLanding` (Fishing) is the landing: once she is fast, each crate that holds a keeper is picked
+  up off the deck, carried over the rail, up the ladder and along the Def's `LandingRoute` to the
+  buyer's counter, and put down; she walks back for the next. When the last crate is down the buyer
+  weighs the lot and she walks home aboard. `NpcPotLandingWalk` (App) draws her ashore with the
+  crate in her hands and the crates at the counter. The landing moves no money and does not touch
+  the market: whether NPC landings should move the price the player is paid is an open owner ruling.
 
 ## 4. Longline (first)
 

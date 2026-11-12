@@ -203,8 +203,20 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.That(rows, Is.Not.Empty, "no dialogue row opens a wares book or sells at a counter: the guard would pass on nothing");
 
             var problems = new List<string>();
+            List<(string scene, long doc, string id)> buyOnly = BuyOnlyCounters();
+            foreach (var group in buyOnly.GroupBy(b => b.id).Where(g => g.Count() > 1))
+                problems.Add($"{group.Count()} sell points name themselves {group.Key}; a counter sale would find either");
+            foreach (var b in buyOnly.Where(b => vendors.Any(v => v.SellerId == b.id)))
+                problems.Add($"{b.scene}'s sell point &{b.doc} names itself {b.id}, which a vendor already sells as; the vendors name that counter");
             foreach (TradeRow row in rows)
             {
+                // A buy-only counter (no vendor stands on it) names itself on its sell point, and the desk asks it
+                // after every vendor arm; only a sell row may name one, because it has no wares book.
+                if (buyOnly.Any(b => b.id == row.Seller))
+                {
+                    if (!row.Sell) problems.Add($"{row}: {row.Seller} is a buy-only counter, with no wares book to open");
+                    continue;
+                }
                 List<Vendor> carrying = vendors.Where(v => v.SellerId == row.Seller).ToList();
                 if (carrying.Count == 0)
                 {
@@ -351,6 +363,25 @@ namespace HiddenHarbours.Tests.EditMode
                         Guids = GuidRx.Matches(t.Text(id)).Cast<Match>().Select(m => m.Groups[1].Value).ToList(),
                         SellPointBeside = t.Has(go) && t.Refs(go, "m_Component").Any(c => t.ClassOf(c) == 114 && t.Field(c, "m_EditorClassIdentifier") == sellPoint),
                     });
+                }
+            }
+            return list;
+        }
+
+        /// <summary>Every sell point in the two region scenes that names itself (a buy-only counter's
+        /// <c>_buyOnlySellerId</c>), with the id it names.</summary>
+        static List<(string scene, long doc, string id)> BuyOnlyCounters()
+        {
+            string sellPoint = ClassIdOf(typeof(WharfSellPoint));
+            var list = new List<(string scene, long doc, string id)>();
+            foreach (string path in Scenes)
+            {
+                var t = new LayerRefreshSceneText(File.ReadAllText(path));
+                foreach (long id in t.Order)
+                {
+                    if (t.ClassOf(id) != 114 || t.IsStripped(id) || t.Field(id, "m_EditorClassIdentifier") != sellPoint) continue;
+                    string self = t.Field(id, "_buyOnlySellerId");
+                    if (!string.IsNullOrEmpty(self)) list.Add((Path.GetFileNameWithoutExtension(path), id, self));
                 }
             }
             return list;
