@@ -1,3 +1,4 @@
+using HiddenHarbours.Tests.Support;
 using System;
 using NUnit.Framework;
 using UnityEngine;
@@ -287,13 +288,14 @@ namespace HiddenHarbours.Tests.EditMode
         {
             var patch = Patch();
             for (int i = 0; i < 128; i++) _field.TrySample(_fish, 0, 0, i, patch, DeepWater, default, out _);
-            long before = GC.GetAllocatedBytesForCurrentThread();
+            using var allocation = new ManagedAllocationProbe();
+            allocation.Begin();
             bool allPresent = true;
             for (int i = 0; i < 1024; i++)
                 allPresent &= _field.TrySample(_fish, 0, 0, i, patch, DeepWater, default, out _);
-            long allocated = GC.GetAllocatedBytesForCurrentThread() - before;
+            long allocationEvents = allocation.End();
             Assert.IsTrue(allPresent);
-            Assert.AreEqual(0L, allocated);
+            Assert.AreEqual(0L, allocationEvents);
         }
     }
 }

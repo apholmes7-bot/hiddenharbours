@@ -133,7 +133,7 @@ namespace HiddenHarbours.Tests.RigBaking
 
         // These delivered walks use role gates instead of the legacy ceiling.lid contract.
         private static readonly HashSet<string> WalkLidExclusions = new HashSet<string>
-            { "sportFisherConvertible", "sportFisherSkybridge" };
+            { "sportFisherConvertible", "sportFisherSkybridge", "sternTrawler", "sternTrawlerMk2" };
 
         private static IEnumerable<FleetHull> UntaggedHulls =>
             HullMeshFleet.Hulls.Where(h => !Pass3Keys.Contains(h.Key)
@@ -728,10 +728,8 @@ namespace HiddenHarbours.Tests.RigBaking
                 {
                     "capeIslander.cuddy -> foredeck (15 faces)",
                     "lobsterBoat.cuddy -> foredeck (15 faces)",
-                    "sternTrawler.below -> main_deck (142 faces)",
                     "coastalPacket.below -> main_deck (92 faces)",
                     "sideDragger.below -> main_deck (119 faces)",
-                    "sternTrawlerMk2.below -> main_deck (142 faces)",
                     "tanker.below -> poop_deck (56 faces)",
                 }
                 .Concat(LobsterVariantFleet.All.Select(v => $"{v.Key}.cuddy -> foredeck (15 faces)"))
@@ -797,11 +795,11 @@ namespace HiddenHarbours.Tests.RigBaking
                 }
             }
 
-            Assert.AreEqual(25, lids,
+            Assert.AreEqual(23, lids,
                 "Batch 1 declares three lids (lobster cuddy, both ships' below), batch 2 declares " +
                 "twenty-one (three ships' below — the TANKER's onto poop_deck, not main_deck — and " +
                 "the eighteen variants' cuddy), pass 4 adds the CAPE's cuddy onto her whaleback " +
-                "foredeck. The sport fishers now use walk role gates. A different count means every property above was " +
+                "foredeck. The sport fishers and both stern trawlers now use walk role gates. A different count means every property above was " +
                 "checked against a different set of rigs than the one this fixture was written for.");
         }
 
@@ -877,10 +875,8 @@ namespace HiddenHarbours.Tests.RigBaking
                 {
                     "capeIslander.cuddy -> foredeck",
                     "lobsterBoat.cuddy -> foredeck",
-                    "sternTrawler.below -> main_deck",
                     "coastalPacket.below -> main_deck",
                     "sideDragger.below -> main_deck",
-                    "sternTrawlerMk2.below -> main_deck",
                     "tanker.below -> poop_deck",
                 }
                 .Concat(LobsterVariantFleet.All.Select(v => $"{v.Key}.cuddy -> foredeck"))
@@ -894,6 +890,8 @@ namespace HiddenHarbours.Tests.RigBaking
 
         [TestCase("sportFisherConvertible")]
         [TestCase("sportFisherSkybridge")]
+        [TestCase("sternTrawler")]
+        [TestCase("sternTrawlerMk2")]
         public void GoingBelowOnAWalkSportFisher_RemovesExteriorFaces(string key)
         {
             var hull = HullMeshFleet.Get(key);

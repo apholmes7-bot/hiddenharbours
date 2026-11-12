@@ -9860,6 +9860,46 @@
       "Id": "berth.rpt_trawler_outside"
     },
     {
+      "Type": "HiddenHarbours.Core.HullPaintSchemeDef",
+      "Guid": "b6dad690c3366964783d11461ccdbb58",
+      "Id": "paint.stern_trawler_bank_green"
+    },
+    {
+      "Type": "HiddenHarbours.Core.HullPaintSchemeDef",
+      "Guid": "bae5877a14776e84e914627ce5889892",
+      "Id": "paint.stern_trawler_harbour_blue"
+    },
+    {
+      "Type": "HiddenHarbours.Core.HullPaintSchemeDef",
+      "Guid": "1970c252730087d4ba660055f5402ae5",
+      "Id": "paint.stern_trawler_north_grey"
+    },
+    {
+      "Type": "HiddenHarbours.Core.HullPaintSchemeDef",
+      "Guid": "16f13d757f9cf964b9681d49d589735f",
+      "Id": "paint.stern_trawler_oxide_red"
+    },
+    {
+      "Type": "HiddenHarbours.Core.HullPaintSchemeDef",
+      "Guid": "553c0fa62e7e3e34da388e37b5d0935d",
+      "Id": "paint.stern_trawler_mk2_atlantic_blue"
+    },
+    {
+      "Type": "HiddenHarbours.Core.HullPaintSchemeDef",
+      "Guid": "c5e32be90b812854dbc95b955ff5b5bb",
+      "Id": "paint.stern_trawler_mk2_slate_grey"
+    },
+    {
+      "Type": "HiddenHarbours.Core.HullPaintSchemeDef",
+      "Guid": "384e47fe0aef0fa43bc982d40c02c6a1",
+      "Id": "paint.stern_trawler_mk2_spruce_green"
+    },
+    {
+      "Type": "HiddenHarbours.Core.HullPaintSchemeDef",
+      "Guid": "7bcdddfaae6329a45aa2cc1188af2e5d",
+      "Id": "paint.stern_trawler_mk2_tar_black"
+    },
+    {
       "Type": "HiddenHarbours.World.Golf.GolfSurfaceDef",
       "Guid": "66280ea24e8e4bb790c33321a6403b9c",
       "Id": "golf_surface.tee"

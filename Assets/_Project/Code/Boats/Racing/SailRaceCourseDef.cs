@@ -76,7 +76,41 @@ namespace HiddenHarbours.Boats
         public int Laps;
         public SailRaceRules Rules;
 
+        // Club-specific parts of this course, not independent content entities. The original Build
+        // remains valid without them; callers opt into the club model through BuildClubSession.
+        public SailRaceClubRules ClubRules;
+        public SailRaceHandicap[] ClubHandicaps = Array.Empty<SailRaceHandicap>();
+        public int[] ClubPlacePoints = Array.Empty<int>();
+        public int ClubNonFinisherPoints;
+
         public SailRaceCourse Build() => new SailRaceCourse(Id, Start, Marks, Finish, Laps, Rules);
+
+        public SailRaceHandicap HandicapFor(string hullId)
+        {
+            RaceGeometry.RequireId(hullId, "boat.");
+            if (ClubHandicaps == null) throw new ArgumentException("Author this course's club handicap table.");
+            int found = -1;
+            for (int i = 0; i < ClubHandicaps.Length; i++)
+            {
+                var h = ClubHandicaps[i]; _ = new SailRaceHandicap(h.HullId, h.TimeMultiplier);
+                for (int j = 0; j < i; j++) if (ClubHandicaps[j].HullId == h.HullId) throw new ArgumentException("Duplicate hull handicap.");
+                if (h.HullId == hullId) found = i;
+            }
+            if (found < 0) throw new ArgumentException("Hull has no authored club handicap.");
+            return ClubHandicaps[found];
+        }
+
+        public SailRaceSession BuildClubSession(double gunTime, SailRaceEntry[] entries)
+        {
+            if (entries == null) throw new ArgumentNullException(nameof(entries));
+            foreach (var entry in entries)
+                if (HandicapFor(entry.Handicap.HullId).TimeMultiplier != entry.Handicap.TimeMultiplier)
+                    throw new ArgumentException("Entry must use this course's authored hull rating.");
+            return new SailRaceSession(Build(), ClubRules, gunTime, entries);
+        }
+
+        public SailRaceSeason BuildClubSeason(string[] raceIds, string[] racerIds)
+            => new SailRaceSeason(raceIds, racerIds, ClubPlacePoints, ClubNonFinisherPoints);
     }
 
     /// <summary>Validated, immutable snapshot. Inspector edits cannot move an active race's gates.</summary>

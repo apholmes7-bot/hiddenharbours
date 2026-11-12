@@ -1,3 +1,4 @@
+using HiddenHarbours.Tests.Support;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -339,6 +340,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
                 if(_counterFrame==10){_offDraws=_draws.LastValue;_offBatches=_batches.LastValue;_counterCaster.ShadowRenderer.forceRenderingOff=false;}
                 if(_counterFrame<15)return;
                 if(!_draws.Valid||!_batches.Valid)throw new InvalidOperationException("The rendering counters are unavailable in PlayMode.");
+                ManagedAllocationProbe.RequireWorkingThreadByteCounter();
                 long before=GC.GetAllocatedBytesForCurrentThread();
                 for(int i=0;i<256;i++)_counterCaster.Tick();
                 long allocated=GC.GetAllocatedBytesForCurrentThread()-before;

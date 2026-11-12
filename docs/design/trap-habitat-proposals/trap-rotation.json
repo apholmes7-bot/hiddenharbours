@@ -1,0 +1,11 @@
+{
+  "Id": "trap_rotation.home_bay_proposal",
+  "Settings": {
+    "PoorCatchPerGameHour": 0.25,
+    "MinimumDensityGain01": 0.15,
+    "MinSpacingMetres": 14,
+    "MaxMoveMetres": 300,
+    "MinDepthMetres": 3,
+    "MaxDepthMetres": 40
+  }
+}

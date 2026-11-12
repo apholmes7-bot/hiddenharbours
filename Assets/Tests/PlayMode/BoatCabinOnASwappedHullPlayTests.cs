@@ -293,7 +293,7 @@ namespace HiddenHarbours.Tests.PlayMode
 
         [UnityTest]
         public IEnumerator SwappedOnUnderHer_EOpensHerDoor_AndHerHouseIsCutOpenOnlyWhileSheIsBelow(
-            [Values("CapeIslander", "LobsterBoat", "SportFisherConvertible", "SportFisherSkybridge", "ExpeditionYacht120", "MotorYacht84")] string subjectName)
+            [Values("CapeIslander", "LobsterBoat", "SportFisherConvertible", "SportFisherSkybridge", "SternTrawler", "SternTrawlerMk2", "ExpeditionYacht120", "MotorYacht84")] string subjectName)
         {
             if (DoorWaits.TryGetValue((nameof(SwappedOnUnderHer_EOpensHerDoor_AndHerHouseIsCutOpenOnlyWhileSheIsBelow), subjectName), out string wait))
                 Assert.Ignore(wait);

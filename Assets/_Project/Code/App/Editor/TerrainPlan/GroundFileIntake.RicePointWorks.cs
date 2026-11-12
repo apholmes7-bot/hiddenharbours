@@ -14,16 +14,24 @@ namespace HiddenHarbours.App.Editor
     /// </summary>
     public static partial class GroundFileIntake
     {
-        public const string HarbourWorksSchema = "hidden-harbours/harbour-works@1";
+        public const string HarbourWorksSchema = "hidden-harbours/harbour-works@2";
         public const string RicePointBaseFolder = "Issue2Base";
         public const string RicePointWorksFile = "harbour-works.json";
 
-        /// <summary>One dredged cut: a line with a flat bed out to a half width, then a batter up to the old ground.</summary>
+        /// <summary>
+        /// One dredged cut: a line with a flat bed out to a half width, then a batter up to the old
+        /// ground. Where the batter meets the old ground it does not stop at a crease: the two are
+        /// blended over <see cref="BlendRun"/> metres, so a waterline that falls there is a rounded
+        /// shore and not the stepped edge of a shape.
+        /// </summary>
         public sealed class HarbourCut
         {
             public string Id;
-            public double Bed, HalfWidth, SideRun;
+            public double Bed, HalfWidth, SideRun, BlendRun;
             public double[][] Line;
+
+            /// <summary>The blend as a height: how far apart the batter and the old ground may be and still be rounded together.</summary>
+            public double BlendHeight => BlendRun / SideRun;
 
             /// <summary>The bed this cut asks for at a point: its bed inside, rising one metre per <see cref="SideRun"/> metres outside.</summary>
             public double TargetAt(double x, double y)
@@ -58,6 +66,36 @@ namespace HiddenHarbours.App.Editor
                 foreach (var cut in Cuts) target = Math.Min(target, cut.TargetAt(x, y));
                 return target;
             }
+
+            /// <summary>
+            /// The ground here after the works, given the ground before. Ground at or above
+            /// <see cref="KeepAbove"/> is never touched. Elsewhere it is the lower of the old ground
+            /// and what the deepest-asking cut wants, with the join between the two rounded off over
+            /// that cut's blend: within the blend the ground dips up to a quarter of the blend height
+            /// below both, and never below the lower of the cut's bed and the old ground. Outside the
+            /// blend this is exactly the old ground (no cut) or exactly the cut.
+            /// </summary>
+            public double DredgedHeight(double x, double y, double height)
+            {
+                if (!(height < KeepAbove)) return height;
+                HarbourCut governing = null;
+                double target = double.PositiveInfinity;
+                foreach (var cut in Cuts)
+                {
+                    double asks = cut.TargetAt(x, y);
+                    if (asks < target) { target = asks; governing = cut; }
+                }
+                if (governing == null) return height;
+                double lower = Math.Min(height, target);
+                double blend = governing.BlendHeight;
+                if (!(blend > 0)) return lower;
+                double near = Math.Max(blend - Math.Abs(height - target), 0) / blend;
+                double rounded = lower - near * near * blend / 4;
+                return Math.Max(rounded, Math.Min(height, governing.Bed));
+            }
+
+            /// <summary>Do the works (a cut, or the blend at its limit) lower ground of this height here?</summary>
+            public bool Reaches(double x, double y, double height) => DredgedHeight(x, y, height) < height;
         }
 
         public static HarbourWorks ReadHarbourWorks(string json)
@@ -69,13 +107,14 @@ namespace HiddenHarbours.App.Editor
                 Range = Nums(doc, "range", 2), KeepAbove = Num(doc, "keepAbove"),
                 Cuts = Rows(doc, "cuts").Select(c => new HarbourCut {
                     Id = Str(c, "id"), Bed = Num(c, "bed"), HalfWidth = Num(c, "halfWidth"), SideRun = Num(c, "sideRun"),
+                    BlendRun = Num(c, "blendRun"),
                     Line = Arr(c, "line").Select(p => ((List<object>)p).Select(n => (double)n).ToArray()).ToArray()
                 }).ToArray()
             };
             if (works.Range.Any(n => !Finite(n)) || works.Range[0] >= works.Range[1] || !Finite(works.KeepAbove) || works.Cuts.Length == 0)
                 throw Bad("invalid harbour works frame");
             foreach (var cut in works.Cuts)
-                if (string.IsNullOrEmpty(cut.Id) || !Finite(cut.Bed) || !(cut.HalfWidth > 0) || !(cut.SideRun > 0) ||
+                if (string.IsNullOrEmpty(cut.Id) || !Finite(cut.Bed) || !(cut.HalfWidth > 0) || !(cut.SideRun > 0) || !(cut.BlendRun >= 0) || !Finite(cut.BlendRun) ||
                     cut.Line.Length < 2 || cut.Line.Any(p => p.Length != 2 || p.Any(n => !Finite(n))) ||
                     cut.Bed < works.Range[0] || cut.Bed >= works.KeepAbove)
                     throw Bad("invalid harbour cut " + cut.Id);
@@ -84,9 +123,10 @@ namespace HiddenHarbours.App.Editor
         }
 
         /// <summary>
-        /// The base ground with the works applied: every texel is the lower of the base and what the
-        /// cuts ask, except ground at or above <see cref="HarbourWorks.KeepAbove"/> (the wharf and its
-        /// wall), which no cut touches. Heights and still-water levels are re-encoded to the works'
+        /// The base ground with the works applied: every texel is <see cref="HarbourWorks.DredgedHeight"/>
+        /// of the base (the lower of the base and what the cuts ask, blended where they meet), except
+        /// ground at or above <see cref="HarbourWorks.KeepAbove"/> (the wharf and its wall), which no
+        /// cut touches. Heights and still-water levels are re-encoded to the works'
         /// range. A cut that would reach a still-water pool is refused.
         /// </summary>
         public static RicePointRaster RicePointDredged(RicePointRaster ground, HarbourWorks works)
@@ -107,9 +147,9 @@ namespace HiddenHarbours.App.Editor
                     double height = ground.Decode(ground.Heights[i]);
                     double x = -ground.Size[0] / 2 + (col + 0.5) / ground.PerMetre;
                     double y = ground.Size[1] / 2 - (row + 0.5) / ground.PerMetre;
-                    double target = works.TargetAt(x, y);
-                    bool cut = height < works.KeepAbove && target < height;
-                    if (cut) height = target;
+                    double dredged = works.DredgedHeight(x, y, height);
+                    bool cut = dredged < height;
+                    height = dredged;
                     result.Heights[i] = (ushort)Math.Round((height - lo) * 65535d / span);
                     ushort still = ground.Still[i];
                     if (still == 0) continue;
