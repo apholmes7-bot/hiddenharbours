@@ -110,6 +110,7 @@ namespace HiddenHarbours.Tests.RigBaking
                 "the two halves of the partition do not add up to the folder");
 
             // ⚠️ ANTI-VACUITY. Nothing below this line would fail on an empty hull list.
+            // The floor falls by one with each hull rebuilt off the old layout (her sidecar retires).
             Assert.GreaterOrEqual(hulls.Length, 29,
                 $"only {hulls.Length} hull sidecar(s) survived discovery out of {all.Length} files. " +
                 "The fleet is thirty-odd measured hulls; a number this low means the exclusion ate " +

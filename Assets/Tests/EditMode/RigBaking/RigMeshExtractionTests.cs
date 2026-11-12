@@ -28,12 +28,15 @@ namespace HiddenHarbours.Tests.RigBaking
     /// </summary>
     public class RigMeshExtractionTests
     {
-        /// <summary>The two hulls ADR 0022 measured, plus the punt — the rig whose sprite bake is
-        /// byte-identical to the hand export, so a defect here cannot be blamed on the rig.</summary>
+        /// <summary>The lobster boat ADR 0022 measured, plus the punt — the rig whose sprite bake is
+        /// byte-identical to the hand export, so a defect here cannot be blamed on the rig.
+        /// <para>The side dragger, the other hull ADR 0022 measured, was here until she was rebuilt to the
+        /// hull layout: she has left the old-layout extraction this fixture is the golden master of. Her
+        /// new path is guarded by <c>tools/rig-recipes/hull-layout-check.mjs</c> and by
+        /// <c>IsoFacetFleetPackAcceptanceTests.EveryFleetPackHull_RendersAsHerOwnRig</c>.</para></summary>
         static readonly (string label, string path, string global)[] Hulls =
         {
             ("lobsterBoat", "docs/art/rigs/lobsterBoatIsoRig.js", "LobsterBoatIso"),
-            ("sideDragger", "docs/art/rigs/sideDraggerIsoRig.js", "SideDraggerIso"),
             ("punt",        "docs/art/rigs/puntIsoRig.js",        "PuntIso"),
         };
 
