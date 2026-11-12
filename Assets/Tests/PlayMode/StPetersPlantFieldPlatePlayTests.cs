@@ -60,24 +60,34 @@ namespace HiddenHarbours.Tests.PlayMode
             public double cpuP95Ms;
         }
 
+        // The shipped scene's one plant field, switched off at run time: the field's cost and picture
+        // against the same boards with it on. This is NOT the island before the field: the PR that added
+        // it also retired the grass, shrub and flower roots it replaced, so a picture of the old island
+        // needs the old scene, which no longer ships.
         [UnityTest, Timeout(600000)]
-        public IEnumerator StPeters_PlantField_Before_AtTheEightBoardDates() => P1Capture(false);
+        public IEnumerator StPeters_PlantField_Off_AtTheEightBoardDates() => P1Capture(false);
         [UnityTest, Timeout(600000)]
         public IEnumerator StPeters_PlantField_After_AtTheEightBoardDates() => P1Capture(true);
 
         IEnumerator P1Capture(bool after)
         {
             RequireAGraphicsDevice();
-            string phase = after ? "after" : "before";
+            string phase = after ? "after" : "off";
             string folder = Path.Combine(Application.temporaryCachePath, "stp-p1-" + phase);
             Directory.CreateDirectory(folder);
             File.WriteAllText(Path.Combine(folder, "_floor.txt"), DateTime.UtcNow.ToString("O"));
             TestContext.WriteLine("P1_FOLDER: " + folder);
             yield return LoadRegion(StPeters); EnsureTheFollow(); HoldTheMood();
             var fields = Object.FindObjectsByType<PlantField>(FindObjectsSortMode.None);
-            Assert.AreEqual(after ? 1 : 0, fields.Length, "the selected scene version does not match this capture");
-            var field = after ? fields[0] : null;
+            Assert.AreEqual(1, fields.Length, "St Peters ships one plant field");
+            var field = fields[0];
             if (after) Assert.AreEqual(9115, field.AuthoredPlantCount);
+            else
+            {
+                field.enabled = false;
+                Assert.AreEqual(0, fields.Count(f => f.isActiveAndEnabled), "the field must be off for this capture");
+                Assert.AreEqual(0, field.ChunkCount, "a switched-off field draws no plants");
+            }
             Behaviour pixel = _cam.GetComponents<Behaviour>().FirstOrDefault(b => b.GetType().Name == "PixelPerfectCamera");
             bool pixelEnabled = pixel != null && pixel.enabled, followEnabled = _follow.enabled;
             try
@@ -147,7 +157,7 @@ namespace HiddenHarbours.Tests.PlayMode
                     TestContext.WriteLine("P1 "+JsonUtility.ToJson(row));
                 }
             }
-            finally { _follow.enabled=followEnabled; if(pixel!=null)pixel.enabled=pixelEnabled; Time.timeScale=1; }
+            finally { _follow.enabled=followEnabled; if(pixel!=null)pixel.enabled=pixelEnabled; Time.timeScale=1; if(!after)field.enabled=true; }
         }
 
         [Serializable] sealed class P1ShallowsFacts

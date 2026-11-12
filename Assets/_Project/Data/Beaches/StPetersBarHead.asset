@@ -1,0 +1,84 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 629410f70cf949a7b4d47657daed56d6, type: 3}
+  m_Name: StPetersBarHead
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.BeachDef
+  Id: beach.st_peters.bar_head
+  RegionId: region.st_peters
+  LaneNodeName: flats_head
+  Approach: []
+  Spots:
+  - Top: {x: -54, y: -10}
+    Toe: {x: -66, y: -10}
+    Why: South side of the bar head, well clear of the path down.
+  - Top: {x: -54, y: -7}
+    Toe: {x: -66, y: -7}
+    Why: South side.
+  - Top: {x: -54, y: -4.5}
+    Toe: {x: -66, y: -4.5}
+    Why: South of the wet bucket, four metres off it.
+  - Top: {x: -54, y: 5.5}
+    Toe: {x: -66, y: 5.5}
+    Why: North of the clammer and his spot at the head of the path.
+  - Top: {x: -54, y: 8}
+    Toe: {x: -66, y: 8}
+    Why: North side.
+  - Top: {x: -54, y: 10.5}
+    Toe: {x: -66, y: 10.5}
+    Why: North side, the last of the even slope.
+  Promenade:
+  - Top: {x: -54, y: -13}
+    Toe: {x: -66, y: -13}
+    Why: The south end of the walk.
+  - Top: {x: -54, y: -1.5}
+    Toe: {x: -100, y: -1.5}
+    Why: Out along the spine of the bar when the tide lets them, the root of it when not.
+  - Top: {x: -54, y: 3}
+    Toe: {x: -66, y: 3}
+    Why: Round the north shoulder, at the root of the bar.
+  - Top: {x: -54, y: 13}
+    Toe: {x: -66, y: 13}
+    Why: The north end of the walk.
+  Flats:
+  - Top: {x: -64, y: 1.5}
+    Toe: {x: -108, y: 1.5}
+    Why: The crown of the bar, bare soonest and longest.
+  - Top: {x: -64, y: 3.5}
+    Toe: {x: -108, y: 3.5}
+    Why: The north shoulder of the bar.
+  - Top: {x: -64, y: -3.5}
+    Toe: {x: -108, y: -3.5}
+    Why: The south shoulder of the bar.
+  - Top: {x: -64, y: -5}
+    Toe: {x: -108, y: -5}
+    Why: The low south edge: only on a good ebb.
+  Shallows:
+  - Top: {x: -54, y: -19}
+    Toe: {x: -68, y: -19}
+    Why: The south face, an even slope to below low water.
+  - Top: {x: -54, y: -15.5}
+    Toe: {x: -68, y: -15.5}
+    Why: The south face, nearer the bar.
+  - Top: {x: -54, y: 15.5}
+    Toe: {x: -68, y: 15.5}
+    Why: The north face, nearer the bar.
+  - Top: {x: -54, y: 19}
+    Toe: {x: -68, y: 19}
+    Why: The north face.
+  Gatherings:
+  - Top: {x: -51.5, y: 23}
+    Toe: {x: -58, y: 23}
+    Why: The north shoulder above the wade: open sand, clear of every other line.
+  - Top: {x: -51, y: 25.5}
+    Toe: {x: -57.5, y: 25.5}
+    Why: Further round the north shoulder.
+  SampleStepMetres: 0.25

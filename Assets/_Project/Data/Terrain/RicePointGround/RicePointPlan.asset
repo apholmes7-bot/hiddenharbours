@@ -69,7 +69,7 @@ MonoBehaviour:
   Backdrop: {r: 0.05, g: 0.1, b: 0.15, a: 1}
   EdgeThickness: 2
   MaxShoreGradient: 4
-  PaintFloor: -6
+  PaintFloor: -10
   HeightBands:
   - -2.2
   - 0
