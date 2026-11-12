@@ -1008,6 +1008,10 @@ namespace HiddenHarbours.Tests.Art.EditMode
                 "default draws the sea it drew before.");
             StringAssert.Contains("_WakeBowLiftMetres   (\"Wake lift: mound at her leading end (m, 0 = OFF)\", Range(0,1)) = 0",
                 Read(ShaderPath), "The mound ships OFF: its dial's default is 0.");
+            StringAssert.Contains("if (_WakeBowLiftMetres > 0.0 && _WakeBowShade > 0.0)", shader,
+                "The light on the mound must be skipped whole while the mound's dial is 0.");
+            StringAssert.Contains("if (_WakeBowLiftMetres <= 0.0 || _WakeLiftMetres <= 0.0 || _WakeLiftDecayMetres <= 0.0)",
+                shader, "The mound's slope must return before reading a slot whenever the mound draws nothing.");
         }
 
         [Test]

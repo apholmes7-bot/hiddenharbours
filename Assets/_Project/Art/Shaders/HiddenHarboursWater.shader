@@ -1119,6 +1119,12 @@ Shader "HiddenHarbours/Water"
         // astern): one mound, this tall at full wake gate, drawn only like the train above. 0 = OFF and
         // ships OFF: the mound is a look for the owner to turn up, and at 0 no slot's length is read.
         _WakeBowLiftMetres   ("Wake lift: mound at her leading end (m, 0 = OFF)", Range(0,1)) = 0
+        // The light on that mound. Moving the sea a few tenths of a metre moves its texture a few pixels
+        // and no more (measured: the 0.5 m mound could not be found in its own plate), so the mound's
+        // own slope is turned to the one sun: its sunward side lifts in value, its far side drops. The
+        // number multiplies the mound's true slope (metres per metre). 0 = no light; inert while the
+        // mound above is 0.
+        _WakeBowShade        ("Wake lift: light on the mound's face (x slope, 0 = OFF)", Range(0,20)) = 8
     }
 
     SubShader
@@ -1782,6 +1788,7 @@ Shader "HiddenHarbours/Water"
                 float  _WakeLiftMetres;
                 float  _WakeLiftDecayMetres;
                 float  _WakeBowLiftMetres;
+                float  _WakeBowShade;
                 // ADR 0027 #10 — the capillary ripple band (default OFF: _RippleStrength 0).
                 float  _RippleStrength;
                 float  _RippleWavelength;
@@ -2649,6 +2656,33 @@ Shader "HiddenHarbours/Water"
                                                  _WakeBowLiftMetres * shape.x, shape.z);
                 }
                 return total;
+            }
+
+            // The mound's slope (metres per metre, world X and Y), every hull summed: a central difference
+            // of the twin-pinned WakeBowHeightAt, so the light the fragment puts on the mound is the slope
+            // of the very water the vertex stage raised. Plumbing like the loop above, no C# twin. Exactly
+            // 0 before a slot is read whenever the mound itself draws nothing.
+            #define HH_WAKE_BOW_SLOPE_STEP 0.25        // metres either side of the pixel
+            float2 WakeBowSlope(float2 worldXY)
+            {
+                if (_WakeBowLiftMetres <= 0.0 || _WakeLiftMetres <= 0.0 || _WakeLiftDecayMetres <= 0.0)
+                    return 0.0;
+                float2 total = 0.0;
+                float2 ex = float2(HH_WAKE_BOW_SLOPE_STEP, 0.0);
+                float2 ey = float2(0.0, HH_WAKE_BOW_SLOPE_STEP);
+                [unroll]
+                for (int i = 0; i < HH_WAKE_LIFT_MAX; i++)
+                {
+                    float4 shape = _HHWakeLiftShape[i];
+                    if (shape.x <= 0.0 || shape.y <= 0.0 || shape.w <= 0.0) continue;
+                    float4 root = _HHWakeLiftRoot[i];
+                    float tall = _WakeBowLiftMetres * shape.x;
+                    total.x += WakeBowHeightAt(worldXY + ex, root.xy, root.zw, shape.w, tall, shape.z)
+                             - WakeBowHeightAt(worldXY - ex, root.xy, root.zw, shape.w, tall, shape.z);
+                    total.y += WakeBowHeightAt(worldXY + ey, root.xy, root.zw, shape.w, tall, shape.z)
+                             - WakeBowHeightAt(worldXY - ey, root.xy, root.zw, shape.w, tall, shape.z);
+                }
+                return total / (2.0 * HH_WAKE_BOW_SLOPE_STEP);
             }
 
 
@@ -5594,6 +5628,22 @@ Shader "HiddenHarbours/Water"
                     // +/-0.033 — shading, not glare — and the §13 palette rail bounds the extremes like
                     // every other layer.
                     col.rgb += faceSigned * saturate(_SwellFaceShade) * swellReadGate * 0.15;
+                }
+
+                // ---- THE LIGHT ON THE MOUND AT HER LEADING END (col.rgb ONLY) ----------------------------
+                // The same facing as the swell's above, on the mound's own slope and with the same 0.15 add
+                // ceiling, but NOT behind the calm gate: she pushes water up on a glassy sea too. Fades at
+                // the shore with the lift it lights. Skipped whole while the mound's dial is 0 (as shipped).
+                if (_WakeBowLiftMetres > 0.0 && _WakeBowShade > 0.0)
+                {
+                    float2 moundSlope = WakeBowSlope(Pixelize(worldXY));
+                    if (moundSlope.x != 0.0 || moundSlope.y != 0.0)
+                    {
+                        float2 moundSunXY = dot(_SunDir.xy, _SunDir.xy) > 1e-6 ? _SunDir.xy : _LightDir.xy;
+                        float2 moundLd = normalize(moundSunXY + float2(1e-4, 0));
+                        col.rgb += clamp(-dot(moundSlope, moundLd) * _WakeBowShade, -1.0, 1.0)
+                                   * ShoreFade01(depth, _ShoreFadeBand) * 0.15;
+                    }
                 }
 
                 // ---- SUN SIDE (register row 11: "the light needs to affect the environment") ------------
