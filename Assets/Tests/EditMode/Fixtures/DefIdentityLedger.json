@@ -9877,6 +9877,26 @@
       "Id": "paint.stern_trawler_oxide_red"
     },
     {
+      "Type": "HiddenHarbours.Core.HullPaintSchemeDef",
+      "Guid": "553c0fa62e7e3e34da388e37b5d0935d",
+      "Id": "paint.stern_trawler_mk2_atlantic_blue"
+    },
+    {
+      "Type": "HiddenHarbours.Core.HullPaintSchemeDef",
+      "Guid": "c5e32be90b812854dbc95b955ff5b5bb",
+      "Id": "paint.stern_trawler_mk2_slate_grey"
+    },
+    {
+      "Type": "HiddenHarbours.Core.HullPaintSchemeDef",
+      "Guid": "384e47fe0aef0fa43bc982d40c02c6a1",
+      "Id": "paint.stern_trawler_mk2_spruce_green"
+    },
+    {
+      "Type": "HiddenHarbours.Core.HullPaintSchemeDef",
+      "Guid": "7bcdddfaae6329a45aa2cc1188af2e5d",
+      "Id": "paint.stern_trawler_mk2_tar_black"
+    },
+    {
       "Type": "HiddenHarbours.Boats.WreckDef",
       "Guid": "af733760af404813a9a3c0cc81d2c411",
       "Id": "wreck.rpt_stern_trawler"

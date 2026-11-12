@@ -12,7 +12,7 @@ namespace HiddenHarbours.Tests.EditMode
 {
     /// <summary>Identity-only coverage for Def types with Id or Spec.Id. Existing records are permanent:
     /// append new identities, preserve old GUID/type/id bindings, and handle retirement explicitly.
-    /// Two Def types without identity are tracked separately by the audit, not granted identities here.</summary>
+    /// Structural Defs are explicitly exempt; content ids are unique per type.</summary>
     public class DefIdentityContractTests
     {
         private const string ContentRoot = "Assets/_Project";
@@ -21,6 +21,36 @@ namespace HiddenHarbours.Tests.EditMode
         // into a folder or file suffixed with a 32-hex run id, and keep them for inspection by design. They are
         // not committed content, so the identity contract does not count them.
         private static readonly Regex DisposableProof = new Regex("_[0-9a-f]{32}(/|\\.|$)");
+
+        private const string PlantSpeciesType = "HiddenHarbours.Art.PlantSpeciesDef";
+        private const string ShorePlantType = "HiddenHarbours.Art.ShorePlantDef";
+        private static readonly Dictionary<string, string> StructuralDefs = new Dictionary<string, string>
+        {
+            { "HiddenHarbours.Art.SeagullVisualDef", "Resources singleton for the gull's animation, not a content entity." },
+            { "HiddenHarbours.Boats.BoatInteriorCellsDef", "Imported pixel cache keyed by its boat interior's id, not a content entity." },
+        };
+
+        // Append-only record of the same plant represented by two systems. These 16 pairs are
+        // the complete approved exception, not a prefix rule permitting future shared ids.
+        private static readonly string[] SharedPlantIds =
+        {
+            "shoreplant.bayberry",
+            "shoreplant.beach_pea",
+            "shoreplant.black_rush",
+            "shoreplant.bladderwrack",
+            "shoreplant.cattail",
+            "shoreplant.cordgrass",
+            "shoreplant.eelgrass",
+            "shoreplant.glasswort",
+            "shoreplant.irish_moss",
+            "shoreplant.knotted_wrack",
+            "shoreplant.marram_grass",
+            "shoreplant.saltmeadow_hay",
+            "shoreplant.sea_lettuce",
+            "shoreplant.sugar_kelp",
+            "shoreplant.sweet_fern",
+            "shoreplant.threesquare",
+        };
 
         [Serializable]
         public class Identity
@@ -41,11 +71,13 @@ namespace HiddenHarbours.Tests.EditMode
         private static Ledger _ledger;
         private static Ledger ReadLedger() => _ledger ??= JsonUtility.FromJson<Ledger>(File.ReadAllText(LedgerPath));
 
-        public static IEnumerable<Type> IdentifiedDefTypes() => TypeCache.GetTypesDerivedFrom<ScriptableObject>()
+        private static IEnumerable<Type> ConcreteDefTypes() => TypeCache.GetTypesDerivedFrom<ScriptableObject>()
             .Where(type => !type.IsAbstract && type.Name.EndsWith("Def", StringComparison.Ordinal)
-                && type.Namespace != null && type.Namespace.StartsWith("HiddenHarbours", StringComparison.Ordinal)
-                && HasIdentity(type))
+                && type.Namespace != null && type.Namespace.StartsWith("HiddenHarbours", StringComparison.Ordinal))
             .OrderBy(type => type.FullName, StringComparer.Ordinal);
+
+        public static IEnumerable<Type> IdentifiedDefTypes() => ConcreteDefTypes()
+            .Where(type => !StructuralDefs.ContainsKey(type.FullName) && HasIdentity(type));
 
         private static FieldInfo IdField(Type type)
         {
@@ -122,6 +154,83 @@ namespace HiddenHarbours.Tests.EditMode
                 Assert.That(ids.Add(row.Type + "\n" + row.Id), Is.True, row.Type + " " + row.Id);
                 Assert.That(guids.Add(row.Guid), Is.True, row.Guid);
             }
+        }
+
+        [Test]
+        public void DefTypes_RequireIdentityExceptTheTwoNamedStructuralTypes()
+        {
+            var types = ConcreteDefTypes().ToArray();
+            Assert.That(StructuralDefs.Count, Is.EqualTo(2));
+            foreach (var exemption in StructuralDefs)
+            {
+                var type = types.Single(candidate => candidate.FullName == exemption.Key);
+                Assert.That(HasIdentity(type), Is.False, exemption.Key + ": " + exemption.Value);
+                Assert.That(string.IsNullOrWhiteSpace(exemption.Value), Is.False, exemption.Key);
+                CollectionAssert.DoesNotContain(ReadLedger().Types, exemption.Key);
+            }
+            foreach (var type in types.Where(type => !StructuralDefs.ContainsKey(type.FullName)))
+                Assert.That(HasIdentity(type), Is.True, "Unclassified content Def: " + type.FullName);
+        }
+
+        [Test]
+        public void CrossTypeIds_ContainExactlyTheSixteenRecordedPlantPairs()
+        {
+            Assert.That(SharedPlantIds.Length, Is.EqualTo(16));
+            CollectionAssert.AllItemsAreUnique(SharedPlantIds);
+            AssertSharedPlantPairs(IdentifiedDefTypes().SelectMany(ReadAssets));
+        }
+
+        private static void AssertSharedPlantPairs(IEnumerable<Identity> identities)
+        {
+            var shared = identities.GroupBy(row => row.Id, StringComparer.Ordinal)
+                .Where(group => group.Select(row => row.Type).Distinct(StringComparer.Ordinal).Count() > 1)
+                .ToDictionary(group => group.Key, group => group.Select(row => row.Type)
+                    .Distinct(StringComparer.Ordinal).ToArray(), StringComparer.Ordinal);
+            CollectionAssert.AreEquivalent(SharedPlantIds, shared.Keys,
+                "Preserve the approved pairs; a seventeenth shared id or any other cross-type collision requires a ruling.");
+            foreach (string id in SharedPlantIds)
+                CollectionAssert.AreEquivalent(new[] { PlantSpeciesType, ShorePlantType }, shared[id], id);
+        }
+
+        private static List<Identity> ApprovedPlantPairs() => SharedPlantIds.SelectMany(id => new[]
+        {
+            new Identity { Type = PlantSpeciesType, Id = id },
+            new Identity { Type = ShorePlantType, Id = id },
+        }).ToList();
+
+        [Test]
+        public void CrossTypePolicy_AcceptsRecordedPairsAndUnsharedContent()
+        {
+            var rows = ApprovedPlantPairs();
+            rows.Add(new Identity { Type = "OtherDef", Id = "other.unique" });
+            AssertSharedPlantPairs(rows);
+        }
+
+        [TestCase("seventeenth-plant")]
+        [TestCase("unrelated-collision")]
+        [TestCase("third-type")]
+        [TestCase("missing-pair")]
+        public void CrossTypePolicy_RejectsUnapprovedOrRemovedPairs(string mutation)
+        {
+            var rows = ApprovedPlantPairs();
+            switch (mutation)
+            {
+                case "seventeenth-plant":
+                    rows.Add(new Identity { Type = PlantSpeciesType, Id = "shoreplant.unapproved" });
+                    rows.Add(new Identity { Type = ShorePlantType, Id = "shoreplant.unapproved" });
+                    break;
+                case "unrelated-collision":
+                    rows.Add(new Identity { Type = "OtherDef", Id = "other.collision" });
+                    rows.Add(new Identity { Type = "AnotherDef", Id = "other.collision" });
+                    break;
+                case "third-type":
+                    rows.Add(new Identity { Type = "OtherDef", Id = SharedPlantIds[0] });
+                    break;
+                case "missing-pair":
+                    rows.RemoveAt(0);
+                    break;
+            }
+            Assert.Throws<AssertionException>(() => AssertSharedPlantPairs(rows));
         }
 
         private static Identity[] ReadAssets(Type type)

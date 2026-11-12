@@ -87,6 +87,7 @@ namespace HiddenHarbours.Tests.RigBaking
         [TestCase("ExpeditionYacht120Iso")]
         [TestCase("MotorYacht84Iso")]
         [TestCase("SternTrawlerIso")]
+        [TestCase("SternTrawlerMk2Iso")]
         public void IntakeRoom_IsGeometryAndShipsNoSheetContract(string stem)
         {
             string path = InteriorDefFolder + "/" + stem + ".asset";

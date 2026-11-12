@@ -14,7 +14,7 @@ Every populated sample is compared field by field, including exact float/double 
 
 At a proposed four refreshes per real second, that allowance is 8 ms of CPU per second, or 0.8% of one core. This is a bounded query workload for a future slow-tick integration, not a production scheduling change or measured frame-time promise. More cells/species, habitat certification, consumers, rendering and garbage collection elsewhere need separate profiling before activation. The median reduces scheduler noise; it deliberately does not claim a maximum or percentile frame budget. Investigate a regression rather than raising the limit to match it.
 
-The separate allocation case demands zero measured managed bytes over 16 warmed ticks (8,192 successful samples). It first allocates a probe to verify the runtime counter: an unsupported/stubbed counter explicitly skips that case and supplies no allocation proof. The timing case still runs.
+The separate allocation case demands zero managed allocation events over 16 warmed ticks (8,192 successful samples). Its current-thread `GC.Alloc` recorder must first detect a retained allocation and then an empty scope. An unavailable or unresponsive recorder fails explicitly. This supersedes the earlier positive thread-byte probe that skipped unsupported counters; the zero-allocation rule, workload and successful-sample assertion are unchanged. See the [allocation guard audit](../../verification/managed-allocation-guards.md).
 
 ## Recorded validation
 

@@ -89,6 +89,16 @@ namespace HiddenHarbours.Tests.EditMode
             return def;
         }
 
+        [TestCase(0f)]
+        [TestCase(0.6f)]
+        public void NullRng_IsRejectedEvenWithoutJitter(float jitter)
+        {
+            var def = MakeDef(jitter: jitter);
+            var error = Assert.Throws<System.ArgumentNullException>(
+                () => new RodFightSim(def, null));
+            Assert.AreEqual("rng", error.ParamName);
+        }
+
         [Test]
         public void CompetentHand_LandsTheFish()
         {
