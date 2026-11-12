@@ -79,6 +79,59 @@
    "wheelY": 0.4,
    "walk": "docs/art/rigs/gameplay/cruiserIsoRig.express_cruiser.walk.json",
    "walkSha256": "905b16c2f222dcf05528da07e425d26cc640bd1ce66232d5ae43b79c6c6b0f72"
+  },
+  {
+   "hull": "boat.jet_ski",
+   "visual": "Assets/_Project/Data/Boats/Visuals/JetSkiIso.asset",
+   "state": "astride_helm_jet_ski",
+   "clip": "astride",
+   "floorOrigin": {
+    "x": 0,
+    "y": -0.13,
+    "z": 0.3
+   },
+   "seat": {
+    "x": 0,
+    "y": -0.15,
+    "z": 0.76
+   },
+   "wheel": {
+    "x": 0,
+    "y": 0.262,
+    "z": 0.988
+   },
+   "seatZ": 0.46,
+   "wheelZ": 0.688,
+   "wheelY": 0.392,
+   "saddle": {
+    "seat": {
+     "x": 0,
+     "y": -0.02,
+     "z": 0.46
+    },
+    "gripL": {
+     "x": -0.27,
+     "y": 0.392,
+     "z": 0.688
+    },
+    "gripR": {
+     "x": 0.27,
+     "y": 0.392,
+     "z": 0.688
+    },
+    "pegL": {
+     "x": -0.34,
+     "y": 0.23,
+     "z": 0
+    },
+    "pegR": {
+     "x": 0.34,
+     "y": 0.23,
+     "z": 0
+    }
+   },
+   "walk": "docs/art/rigs/gameplay/jetSkiIsoRig.jet_ski.walk.json",
+   "walkSha256": "6737e08657641bfee3a938a74d993b40bf29b1c1981f900d21434aad20b1e1bb"
   }
  ]
 }

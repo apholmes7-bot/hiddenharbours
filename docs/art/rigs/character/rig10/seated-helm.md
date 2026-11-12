@@ -26,3 +26,10 @@ The real-region plate suite boards each hull through the St Peters picker and he
 then captures all eight headings with the scene camera. The source replay guard checks every
 calibrated frame and contact pin on all ten persisted skins; the legacy 27 mesh states remain
 guarded separately from the three new states. Other hulls in the fleet census remain findings.
+
+## The jetski's saddle
+
+A fourth row calibrates the rig's `astride` clip instead of `drive`. Its `clip` field says so, and
+its `saddle` block hands the rig the jetski's own seat, grips and footwells in the figure's frame.
+The figure's ground pivot sits under the seat at footwell height. The state is
+`astride_helm_jet_ski`; the tool, the bake and the replay guard treat it like the three cockpit rows.
