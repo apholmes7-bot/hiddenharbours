@@ -4692,6 +4692,11 @@
     },
     {
       "Type": "HiddenHarbours.Core.HullPropMeshDef",
+      "Guid": "f01d1903ad2c2184898fcbabe49ce377",
+      "Id": "hullprop.jet_ski_handlebar"
+    },
+    {
+      "Type": "HiddenHarbours.Core.HullPropMeshDef",
       "Guid": "ef94ad121c781a84db3911aab73718e0",
       "Id": "hullprop.punt_motor_basic"
     },
