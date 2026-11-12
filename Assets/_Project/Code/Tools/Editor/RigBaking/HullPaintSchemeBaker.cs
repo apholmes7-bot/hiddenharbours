@@ -288,6 +288,20 @@ namespace HiddenHarbours.Tools.RigBaking
                           "F.forEach(function(f){var n=r[g[f.mat]];if(!t[n])t[n]=M[n];});return t;},{})",
                 schemeListExpr: "schemeIds.map(function(id){var s={G}.SCHEMES[id];return [id,s.name||'',s.note||''];})",
                 defaultSchemeExpr: "defaultScheme"),
+            // The Mk2 publishes the same three names as the Mk1 (SCHEMES / schemeIds / defaultScheme,
+            // no PAINTS record), so she takes the same spelled-out row under her own scope and ids.
+            new PaintedHull("sternTrawlerMk2", "hullmesh.stern_trawler_mk2_iso", "SternTrawlerMk2Iso", "paint.stern_trawler_mk2_",
+                matsExpr: "schemeIds.slice(0,1).reduce(function(t){" +
+                          "var H={G}.byId('stern_trawler_mk2'),D=H.matsFor().MATS,M=H.matsFor({0}).MATS," +
+                          "A=H.schemeIds.map(function(s){return H.matsFor(s).MATS;})," +
+                          "F=H.faceList({}).concat(H.doorFaces(0)),u={},g={},r={};" +
+                          "F.forEach(function(f){u[f.mat]=1;});" +
+                          "Object.keys(D).forEach(function(n){if(u[n]){" +
+                          "var k=JSON.stringify(A.map(function(m){return [m[n].off||0,m[n].ramp,m[n].dith==null?1:m[n].dith];}));" +
+                          "g[n]=k;if(!r[k])r[k]=n;}});" +
+                          "F.forEach(function(f){var n=r[g[f.mat]];if(!t[n])t[n]=M[n];});return t;},{})",
+                schemeListExpr: "schemeIds.map(function(id){var s={G}.SCHEMES[id];return [id,s.name||'',s.note||''];})",
+                defaultSchemeExpr: "defaultScheme"),
             PublishedWalkPaint("expeditionYacht120", "hullmesh.expedition_yacht120_iso", "ExpeditionYacht120Iso",
                 "paint.expedition_yacht120_", "expedition_yacht_120"),
             PublishedWalkPaint("yachtTender", "hullmesh.yacht_tender_iso", "YachtTenderIso",
@@ -399,10 +413,6 @@ namespace HiddenHarbours.Tools.RigBaking
                 ["sideDraggerIsoRig.js"] =
                     "Side dragger (T4) — no paint axis. The first offshore hull, and the first of the " +
                     "upper fleet: none of the five rigs the ADR was written for carries one.",
-
-                ["sternTrawlerMk2IsoRig.js"] =
-                    "Stern trawler Mk2 (T5) — no paint axis. A separate rig file, so a separate entry: " +
-                    "an axis landing on one of the two would not reach the other.",
 
                 ["coastalPacketIsoRig.js"] =
                     "Coastal packet (T6) — no paint axis. The first merchant hull, and the tier where a " +
