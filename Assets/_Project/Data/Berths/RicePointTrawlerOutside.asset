@@ -16,7 +16,7 @@ MonoBehaviour:
   RegionId: region.rice_point
   DisplayName: Outside the face berth
   Stern: {x: -49.81, y: -133.17}
-  Bow: {x: -32.03, y: -99.59}
+  Bow: {x: -32.03, y: -99.58}
   BeamMeters: 10.4
   MaxDraughtMeters: 4.3
   KeelClearanceMeters: 0.45
