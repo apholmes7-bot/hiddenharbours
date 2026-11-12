@@ -4,9 +4,14 @@
 and lobster for crustacenas out of NMC, crab likes mud, lobsters need rock, sounder shows
 rock/bottom types"
 
-**Status.** A one-page design, not a build. Read against main `12bc04b19a`. Paths are under
+**Status.** A one-page plan, not a build. Read against main `12bc04b19a`. Paths are under
 `Assets/_Project/` unless they start with `docs/`. It goes with `docs/design/helm-tools-review.md`
-section 4 and replaces that section's step 3 (see "Where the data lives").
+section 4.
+
+**Scope.** The Core interface, the deterministic bottom-type model (rock, mud, sand), the habitat
+preference data, the migration term and the trap-rotation planner are the fish lane's, on its own
+branch. This note does not define them. It says what the NPC boats, the scenes and the sounder need
+from that seam and how they use it.
 
 ## What main already has
 
@@ -28,52 +33,43 @@ section 4 and replaces that section's step 3 (see "Where the data lives").
 - **No Core seam.** `ITidalTerrain` answers elevation only. The fish finder's bottom picture is
   invented (helm tools review, defect 1).
 
-## The property
+## What the users need from the seam
 
-One answer for one point of sea floor: **a kind (rock, sand or mud) and a hardness from 0 to 1.**
-It is authored, it depends on position only, and it is never saved. It does not change with the
-seed, the tide or the clock.
+Requirements on the fish lane's work, not a definition of it:
 
-```
-Core:  enum SeabedKind { Unknown, Mud, Sand, Rock }
-       readonly struct SeabedSample { SeabedKind Kind; float Hardness01; }
-       interface ISeabed { SeabedSample At(string regionId, Vector2 worldPos); }
-       GameServices.Seabed   // never null; the empty default answers Unknown
-```
+- **One answer for one point of sea floor:** rock, sand or mud, and how hard. The same answer for
+  every reader, the same every run, nothing saved.
+- **Answerable for a region that is not loaded.** NPC days are planned for regions the player is not
+  in, so the question must take a region, not assume the loaded one.
+- **Answerable everywhere, not only on fishing grounds.** The sounder must read a bottom where no
+  one fishes. `FishingGroundDef.Bottom` must agree with it under each ground.
+- **A never-null default** that answers "unknown", so a scene with no bottom data draws and plans as
+  it does today.
+- **A word on gravel.** The Bank is authored rock and gravel; the player-facing words are three.
 
-The region id is an argument because NPC plans are built for regions that are not loaded.
+## How it is used
 
-## Where the data lives
-
-One `SeabedDef` per region (`Data/Seabed/`, id `seabed.<region>`): a default kind and hardness, and
-an ordered list of patches (a shape, a kind, a hardness; the later patch wins where two overlap).
-The provider answers by containment. This is the single source.
-
-`FishingGroundDef.Bottom` and `Hardness01` stay as they are for now, and a content test requires
-each ground to agree with the seabed under its centre. That is why the provider is not built on the
-grounds, as the review first proposed: the bottom exists where no one fishes, and the sounder must
-answer there too.
-
-Lean: gravel is not a fourth word. It is authored as rock at a lower hardness. The Bank (rock and
-gravel, 0.8) becomes rock at 0.8.
-
-## The three readers
-
-1. **What can be caught (the spawn side).** Lobster's ecology becomes rock (and gravel); crab's
-   becomes mud, with sand allowed. Two places read the seam:
-   - the trap pool: a species whose habitat does not match the bottom under the trap is dropped
-     from the pool, so a lobster trap on mud fishes empty and a crab trap on rock does the same.
-     The player's traps and the NPC pots go through the same code;
-   - the school field's habitat patch, where it is built, takes its bottom from the seam.
-   The mapping from `SeabedKind` to the two Fishing enums is one function in Fishing.
+1. **What a pot lands.** The player's traps and the NPC pots resolve catch through the same code
+   (`PlacedTrapCatch`, `NpcPotDayCatch`). Both ask the seam for the bottom under the pot and the
+   fish lane's preference data for what that bottom holds. A lobster pot on mud and a crab pot on
+   rock should land little or nothing, by the same rule for player and NPC.
 2. **Where the NPC boats set.** A pot day stops owning one fixed string. It lists candidate strings
-   (start, bearing). Each day the plan picks one, as a function of `(worldSeed, day)` and a rotation
-   period that is a Def field, from the candidates whose pots all lie on a bottom its trap's species
-   wants. That is the rotation "as catch migrates": the boats move ground on a rhythm the player can
-   learn, and never set on the wrong bottom. A content test checks every candidate.
+   (start, bearing) as data, and each day asks the fish lane's rotation planner which one to work.
+   The pot day keeps what is its own: the passage to the string, the timings, the deck work. This
+   is the rotation "as catch migrates": the boats move ground on a rhythm the player can learn and
+   are never seen setting on the wrong bottom. A content test checks every candidate string lies on
+   a bottom its trap's species wants.
 3. **The sounder.** One read on `IHelmInstruments` beside the depth read, throttled the same way.
    The fish finder's bottom bands (`Code/UI/Draw/FishRigRender.cs:343-358`) are driven by kind and
    hardness; the depth sounder gains one bottom word. No instrument asks Fishing.
+
+## What the player sees
+
+- At Nine Mile Creek, lobster boats work the rock ledges and a crab boat works the mud, and over the
+  weeks each shifts its string to another piece of the same kind of bottom.
+- Running a sounder over a string of NPC buoys shows why they are there: hard bottom under the
+  lobster pots, soft under the crab pots.
+- The player's own pots obey the same rule, so watching the fleet teaches where to set.
 
 ## Crab as a Nine Mile Creek catch
 
@@ -88,18 +84,18 @@ gravel, 0.8) becomes rock at 0.8.
 
 ## Cost, order and what it changes
 
-- Cost: a containment test over a few patches per read; readers already read on the slow tick or a
-  throttle. Nothing per frame, nothing saved, no save-format change.
-- It changes catch: a player's lobster trap on mud that fishes today will fish empty. That is the
-  owner's rule, and it wants the sounder to ship in the same step or before, so the player can see
-  why.
-- Order: (1) Core seam, `SeabedDef`, provider, the South Water authored to match its grounds;
-  (2) the sounder and finder read; (3) Nine Mile Creek seabed, the species' regions and habitats,
-  the trap pool filter; (4) candidate strings and rotation, and the crab boat.
+- Cost: every reader here already reads on the slow tick or a throttle. Nothing per frame, nothing
+  saved, no save-format change on this side.
+- It changes catch: a player's lobster trap on mud that fishes today will fish poorly or empty. That
+  is the owner's rule, and it wants the sounder to ship in the same step or before, so the player
+  can see why.
+- Order, after the fish lane's seam is on main: (1) the creek's bottom authored, and the South
+  Water's to match its grounds; (2) the sounder and finder read; (3) the species' regions, and pot
+  catch reading the bottom; (4) candidate strings on the pot days, rotation, and the crab boat.
 
 ## Open, for the seat
 
-- Whose the provider is. This note puts the Def type in Core and the provider in World.
-- Whether a wrong-bottom trap fishes empty (this note) or only poorly.
+- Who authors the bottom of each region: this lane (scene content) or the fish lane with its model.
+- Whether a wrong-bottom trap fishes empty or only poorly; the fish lane's preference data decides.
 - Whether changing `CatchRegionId` from St Peters to the creek changes what the three boats land
   today; to be read before step 3, not assumed.
