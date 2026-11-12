@@ -14,7 +14,8 @@ namespace HiddenHarbours.Tests.EditMode
         {
             { nameof(SailRaceCourseTests), 8 }, { nameof(SailRaceTrackTests), 11 },
             { nameof(SailRaceRoundingTests), 11 }, { nameof(SailRaceRightOfWayTests), 6 },
-            { nameof(SailRaceNpcTests), 14 }
+            { nameof(SailRaceNpcTests), 14 }, { nameof(YachtRaceClubTests), 25 },
+            { nameof(YachtRaceSkipperTests), 10 }, { nameof(YachtRaceAllocationTests), 3 }
         };
         private readonly List<string> _lines = new List<string>();
         private readonly HashSet<string> _seen = new HashSet<string>(StringComparer.Ordinal);
