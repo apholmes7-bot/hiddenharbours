@@ -118,8 +118,7 @@
     "HiddenHarbours.Art.PlantClumpDef",
     "HiddenHarbours.Fishing.FishEcologyDef",
     "HiddenHarbours.Tools.GoodsModel.GoodsContainerDef",
-    "HiddenHarbours.Tools.GoodsModel.GoodsHandlingDef",
-    "HiddenHarbours.World.CampaignBarrierDef"
+    "HiddenHarbours.Tools.GoodsModel.GoodsHandlingDef"
   ],
   "Entries": [
     {
@@ -9956,11 +9955,6 @@
       "Type": "HiddenHarbours.World.NpcDef",
       "Guid": "a230a2fa97d941adbac15d45912324e3",
       "Id": "npc.rpt_wreck"
-    },
-    {
-      "Type": "HiddenHarbours.World.CampaignBarrierDef",
-      "Guid": "f9865dd969ef467eae4cd410c8acb60a",
-      "Id": "campaign_barrier.intro_storm_east_water_south"
     }
   ]
 }
