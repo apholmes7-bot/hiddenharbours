@@ -26,7 +26,8 @@ namespace HiddenHarbours.Tools.Editor
             "Assets/_Project/Scenes/NineMileCreek.unity",
             "Assets/_Project/Scenes/RicePoint.unity",
             "Assets/_Project/Scenes/Cumberland.unity",
-            "Assets/_Project/Scenes/EastWater.unity"
+            "Assets/_Project/Scenes/EastWater.unity",
+            "Assets/_Project/Scenes/SouthWater.unity"
         };
 
         [MenuItem("Hidden Harbours/Build/Windows Player (slot required)")]
