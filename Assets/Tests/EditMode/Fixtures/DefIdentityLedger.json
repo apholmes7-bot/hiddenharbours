@@ -26,6 +26,8 @@
     "HiddenHarbours.Boats.DeckGearKitDef",
     "HiddenHarbours.Boats.HelmConsoleDef",
     "HiddenHarbours.Boats.NavBuoyDef",
+    "HiddenHarbours.Boats.SailRaceCourseDef",
+    "HiddenHarbours.Boats.SailRaceNpcDef",
     "HiddenHarbours.Core.ActionTimingDef",
     "HiddenHarbours.Core.BoatInteriorDef",
     "HiddenHarbours.Core.CarryAnchorTableDef",
