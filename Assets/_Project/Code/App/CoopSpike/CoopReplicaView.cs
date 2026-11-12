@@ -38,7 +38,7 @@ namespace HiddenHarbours.CoopSpike
                 BoatHullSkinner.ApplyHull(gameObject, _hull, hull, null);
                 _hullId = id;
             }
-            _skipper.localPosition = state.SkipperLocal;
+            _skipper.localPosition = state.SkipperLocal + state.SkipperVisualOffset;
             _skipper.rotation = Quaternion.identity;
             _character.HoldHeading(state.SkipperHeading);
         }

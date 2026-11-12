@@ -138,6 +138,9 @@ namespace HiddenHarbours.CoopSpike
             PlayerWalkController player, ControlSwitcher switcher, bool client)
         {
             var position = settings.HostStart + (client ? settings.ClientOffset : Vector2.zero);
+            // The persistent boat came from the elevated St Peters landing. Its picture's
+            // old datum does not describe these open-water spawn coordinates.
+            boat.GetComponent<HullTideRide>()?.Configure(settings.PictureDatumElevation);
             boat.transform.position = position;
             var body = boat.GetComponent<Rigidbody2D>();
             body.position = position;

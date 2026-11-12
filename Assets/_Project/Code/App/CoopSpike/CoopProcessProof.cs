@@ -27,7 +27,10 @@ namespace HiddenHarbours.CoopSpike
         [Serializable]
         private sealed class Placement
         {
-            public Vector3 gameplayFoot, drawnFoot, deckStand, remoteFoot, remoteHull;
+            public Vector3 gameplayFoot, drawnFoot, deckStand, remoteFoot, remoteHull, localHull, localVisual;
+            public bool meshEnabled, meshPresent, meshDrawing, riderCarried;
+            public string meshReason, riderName, drawnState;
+            public float pictureDatum, tideRise;
             public string[] shaders;
         }
 
@@ -110,7 +113,24 @@ namespace HiddenHarbours.CoopSpike
                 placement.gameplayFoot = rider.transform.position;
                 placement.deckStand = rider.DeckStandRigLocal;
                 var presenter = rider.GetComponent<DeckRiderMeshPresenter>();
-                placement.drawnFoot = presenter != null && presenter.PresentationRoot != null
+                placement.riderName = rider.gameObject.name;
+                placement.meshEnabled = GameServices.Config != null && GameServices.Config.MeshCharacter;
+                placement.meshPresent = presenter != null;
+                placement.meshDrawing = presenter != null && presenter.DrawsInsteadOfSprite;
+                placement.meshReason = presenter != null ? presenter.NotDrawingReason : "no presenter";
+                placement.drawnState = presenter != null ? presenter.DrawnStateKey : null;
+                placement.riderCarried = rider.IsCarried;
+                var boat = FindFirstObjectByType<HiddenHarbours.Boats.BoatController>();
+                var tide = boat != null ? boat.GetComponent<HiddenHarbours.Boats.HullTideRide>() : null;
+                if (boat != null)
+                {
+                    placement.localHull = boat.transform.position;
+                    var hull = HiddenHarbours.Boats.BoatHullPresenterHost.Resolve(boat.gameObject);
+                    placement.localVisual = hull != null && hull.Visual != null ? hull.Visual.position : boat.transform.position;
+                }
+                placement.pictureDatum = tide != null ? tide.BakedWaterlineElevation : 0f;
+                placement.tideRise = tide != null ? tide.ScreenRiseNow() : 0f;
+                placement.drawnFoot = presenter != null && presenter.DrawsInsteadOfSprite && presenter.PresentationRoot != null
                     ? presenter.PresentationRoot.position
                     : rider.RiderTransform != null ? rider.RiderTransform.position : rider.transform.position;
             }

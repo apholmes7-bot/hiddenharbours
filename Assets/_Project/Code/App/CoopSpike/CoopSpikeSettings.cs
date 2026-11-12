@@ -16,6 +16,8 @@ namespace HiddenHarbours.CoopSpike
         public Sprite RodSprite;
         public Vector2 HostStart = new(0, -16);
         public Vector2 ClientOffset = new(7, 0);
+        // The trial's spawn points are plan coordinates at the world's mean-water datum.
+        public float PictureDatumElevation;
         public string Scene = "EastWater";
         public ushort Port = 7777;
         public BoatHullDef Hull(string id)

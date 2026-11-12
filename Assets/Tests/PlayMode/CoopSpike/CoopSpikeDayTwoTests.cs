@@ -234,13 +234,46 @@ namespace HiddenHarbours.Tests.CoopSpike
                     Assert.That(view.Character.HeadingDegrees, Is.EqualTo(rigs[i].Character.HeadingDegrees).Within(0.001f));
                     Assert.That(view.Skipper.GetComponent<SpriteRenderer>().enabled, Is.True);
                     Assert.That(Vector3.Distance(view.Skipper.position,
-                        remotes[i].transform.TransformPoint(remotes[i].Boat.Value.SkipperLocal)), Is.LessThan(0.001f));
+                        remotes[i].transform.TransformPoint(remotes[i].Boat.Value.SkipperLocal
+                            + remotes[i].Boat.Value.SkipperVisualOffset)), Is.LessThan(0.001f));
                     Assert.That(remotes[i].GetComponent<BoatController>(), Is.Null);
                     Assert.That(view.Skipper.GetComponent<PlayerWalkController>(), Is.Null);
                     Assert.That(view.Skipper.GetComponent<CarryHands>(), Is.Null);
                 }
             }
             yield return CaptureHostFrame(rigs[0].Boat.gameObject, ClientAtHost.gameObject);
+        }
+
+        [UnityTest]
+        public IEnumerator RemoteSkipperFollowsTheDrawnDeckAcrossATideRise()
+        {
+            yield return EnterEastWater();
+            GameServices.Config = AssetDatabase.LoadAssetAtPath<GameConfig>("Assets/_Project/Data/Config/GameConfig.asset");
+            var settings = Resources.Load<CoopSpikeSettings>(CoopSpikeSettings.ResourcePath);
+            var rig = MakeLocalRig(settings, false);
+            Bind(Host, rig);
+            foreach (float datum in new[] { -2f, 2f })
+            {
+                var tide = rig.Boat.GetComponent<HullTideRide>();
+                tide.Configure(datum);
+                yield return WaitForConditionOrTimeOut(() =>
+                {
+                    var mesh = rig.Player.GetComponent<DeckRiderMeshPresenter>();
+                    var view = HostAtClient.GetComponent<CoopReplicaView>();
+                    var hull = BoatHullPresenterHost.Resolve(rig.Boat.gameObject);
+                    return mesh != null && mesh.DrawsInsteadOfSprite && mesh.PresentationRoot != null
+                        && Mathf.Abs(hull.Visual.position.y - rig.Boat.transform.position.y - tide.ScreenRiseNow()) < 0.001f
+                        && HostAtClient.Boat.Value.SkipperVisualOffset.magnitude > 1f
+                        && Vector2.Distance(view.Skipper.position, mesh.PresentationRoot.position) < 0.002f;
+                });
+                Assert.That(s_GlobalTimeoutHelper.TimedOut, Is.False, "The peer must draw the fisher on the tide-shifted deck.");
+                var presenter = rig.Player.GetComponent<DeckRiderMeshPresenter>();
+                Assert.That(presenter.DrawsInsteadOfSprite, Is.True);
+                Assert.That(Vector2.Distance(rig.Player.transform.position, presenter.PresentationRoot.position), Is.GreaterThan(1f),
+                    "This regression must exercise a visible separation of plan and picture.");
+                Assert.That(Vector2.Distance(HostAtClient.GetComponent<CoopReplicaView>().Skipper.position,
+                    presenter.PresentationRoot.position), Is.LessThan(0.002f));
+            }
         }
 
         private sealed class SeaWorld : IFishSchoolWorld, IEnvironmentService

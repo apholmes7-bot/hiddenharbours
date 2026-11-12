@@ -1,5 +1,6 @@
 using System;
 using HiddenHarbours.Core;
+using HiddenHarbours.Player;
 using Unity.Netcode;
 using Unity.Netcode.Components;
 using UnityEngine;
@@ -8,6 +9,7 @@ namespace HiddenHarbours.CoopSpike
 {
     /// <summary>One network boat per participant. Its owner follows the existing local gameplay boat.</summary>
     [RequireComponent(typeof(NetworkObject), typeof(NetworkTransform))]
+    [DefaultExecutionOrder(200)] // sample after the authored rider's LateUpdate (100)
     public sealed class CoopBoatReplica : NetworkBehaviour
     {
         public readonly NetworkVariable<CoopBoatState> Boat = new(default,
@@ -20,6 +22,7 @@ namespace HiddenHarbours.CoopSpike
         private float _nextSea;
         private Transform _localBoat, _localSkipper;
         private IsoCharacterSprite _localCharacter;
+        private DeckRiderVisual _localRider;
         private Func<string> _hull, _recipe;
         private CoopReplicaView _view;
         public bool ClockAccepted { get; private set; }
@@ -53,6 +56,7 @@ namespace HiddenHarbours.CoopSpike
         {
             _localBoat = boat; _localSkipper = skipper; _hull = hull; _recipe = recipe;
             _localCharacter = skipper != null ? skipper.GetComponent<IsoCharacterSprite>() : null;
+            _localRider = skipper != null ? skipper.GetComponent<DeckRiderVisual>() : null;
         }
 
         public void PublishBoat(CoopBoatState value)
@@ -83,11 +87,30 @@ namespace HiddenHarbours.CoopSpike
             }
             if (!IsOwner || _localBoat == null) return;
             transform.SetPositionAndRotation(_localBoat.position, _localBoat.rotation);
+        }
+
+        private void LateUpdate()
+        {
+            if (!IsSpawned || !IsOwner || _localBoat == null) return;
+            Vector3 foot = _localSkipper != null ? _localSkipper.position : _localBoat.position;
+            Vector3 drawn = foot;
+            if (_localRider != null)
+            {
+                var mesh = _localRider.GetComponent<DeckRiderMeshPresenter>();
+                if (mesh != null && mesh.DrawsInsteadOfSprite && mesh.PresentationRoot != null)
+                    drawn = mesh.PresentationRoot.position;
+                else if (!_localRider.BodyShownOnRoot && _localRider.RiderTransform != null)
+                    drawn = _localRider.RiderTransform.position;
+                // Mesh z belongs to the private hull depth buffer, not a sprite's scene depth.
+                drawn.z = foot.z;
+            }
+            Vector3 local = _localBoat.InverseTransformPoint(foot);
             var value = new CoopBoatState
             {
                 HullId = _hull?.Invoke() ?? string.Empty,
                 Recipe = _recipe?.Invoke() ?? string.Empty,
-                SkipperLocal = _localSkipper != null ? _localBoat.InverseTransformPoint(_localSkipper.position) : Vector3.zero,
+                SkipperLocal = local,
+                SkipperVisualOffset = _localBoat.InverseTransformPoint(drawn) - local,
                 SkipperHeading = _localCharacter != null ? _localCharacter.HeadingDegrees
                     : _localSkipper != null ? _localSkipper.eulerAngles.z : 0
             };

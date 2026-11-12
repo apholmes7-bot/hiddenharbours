@@ -63,6 +63,9 @@ namespace HiddenHarbours.Tests.CoopSpike
             var switcher = Object.FindAnyObjectByType<ControlSwitcher>();
             Assert.That(switcher.Mode, Is.EqualTo(ControlMode.Aboard));
             var settings = Resources.Load<CoopSpikeSettings>(CoopSpikeSettings.ResourcePath);
+            Assert.That(Object.FindAnyObjectByType<BoatController>().GetComponent<HullTideRide>()
+                .BakedWaterlineElevation, Is.EqualTo(settings.PictureDatumElevation),
+                "The open-water spawn must not inherit the landing's elevated picture datum.");
             Assert.That(CarriedItem.InHand(GameServices.Hands, settings.Rod.Id), Is.True);
             Assert.That(Vector2.Distance(Object.FindAnyObjectByType<BoatController>().transform.position,
                 settings.HostStart), Is.LessThan(0.1f));
