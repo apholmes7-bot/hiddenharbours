@@ -12,21 +12,20 @@ it was measured against) are the only provenance you need to check.
     boatInteriorRig.js                     interior renderer (single source; sha in README §1)
     README.md                              program readme (brief §1–§7)
     MANIFEST.md                            this file
-    <hullStem>.interior.json          ×6   per-hull interior sidecars
+    <hullStem>.interior.json          ×5   per-hull interior sidecars
     lobsterBoatVariants/*.interior.json ×18 per-variant interior sidecars
     hull-rigs/*.js                    ×8   exterior rigs (published HOUSE/loft/DOOR live here)
                                            ⚠ capeIslanderIsoRig.js is OUR branch — do NOT adopt it;
                                              see README Corrections 3 (two divergent pass-2 branches)
-    gameplay/*.gameplay.json          ×6   hull gameplay sidecars, interiors merged in
+    gameplay/*.gameplay.json          ×5   hull gameplay sidecars, interiors merged in
     gameplay/lobsterBoatVariants/     ×18  variant gameplay sidecars, interiors merged in
 
-## Hull coverage (7 remaining families, 24 hull instances)
+## Hull coverage (6 remaining families, 23 hull instances)
 | hull | door | interior levels | routes up |
 |---|---|---|---|
 | Lobster 12 m | slide, aft | house + cuddy | — (washboards) |
 | Cape Islander ⚠ | slide, aft | house + cuddy | — |
 | Side dragger 25 m | hinge 110°, fwd | bridge/house/below | boat-deck ladder |
-| Stern trawler Mk II 38 m | hinge 110°, fwd | bridge/house/below | boat-deck ladder |
 | Coastal packet 60 m | hinge 110°, fwd | bridge/house/below | boat-deck ladder |
 | Tanker 110 m (16 px/m) | hinge 110°, aft (poop) | bridge/house/below | 2 break ladders + boat deck |
 | Lobster variants ×18 | slide, aft | house + cuddy | — |
