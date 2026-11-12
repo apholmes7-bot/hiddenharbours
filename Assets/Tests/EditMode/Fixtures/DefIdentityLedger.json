@@ -113,7 +113,11 @@
     "HiddenHarbours.Art.PlantClumpDef",
     "HiddenHarbours.Fishing.FishEcologyDef",
     "HiddenHarbours.Tools.GoodsModel.GoodsContainerDef",
-    "HiddenHarbours.Tools.GoodsModel.GoodsHandlingDef"
+    "HiddenHarbours.Tools.GoodsModel.GoodsHandlingDef",
+    "HiddenHarbours.World.Golf.GolfClubDef",
+    "HiddenHarbours.World.Golf.GolfHoleDef",
+    "HiddenHarbours.World.Golf.GolfRulesDef",
+    "HiddenHarbours.World.Golf.GolfSurfaceDef"
   ],
   "Entries": [
     {
@@ -9705,6 +9709,81 @@
       "Type": "HiddenHarbours.World.BeachActivityDef",
       "Guid": "fa52b85ddbcb48d0a23de6a3534427fb",
       "Id": "beachactivity.winter_walk"
+    },
+    {
+      "Type": "HiddenHarbours.World.Golf.GolfSurfaceDef",
+      "Guid": "66280ea24e8e4bb790c33321a6403b9c",
+      "Id": "golf_surface.tee"
+    },
+    {
+      "Type": "HiddenHarbours.World.Golf.GolfSurfaceDef",
+      "Guid": "b0ebcd2adbd842dd84b8eb7b71e579d1",
+      "Id": "golf_surface.fairway"
+    },
+    {
+      "Type": "HiddenHarbours.World.Golf.GolfSurfaceDef",
+      "Guid": "f89c7addbc0a48e1bf94a25164b1ee3e",
+      "Id": "golf_surface.green"
+    },
+    {
+      "Type": "HiddenHarbours.World.Golf.GolfSurfaceDef",
+      "Guid": "020d6e3ddeca4e128449c41f81aaccb4",
+      "Id": "golf_surface.rough"
+    },
+    {
+      "Type": "HiddenHarbours.World.Golf.GolfSurfaceDef",
+      "Guid": "466bf55d3d434b0aaf11de6afafcf603",
+      "Id": "golf_surface.bunker"
+    },
+    {
+      "Type": "HiddenHarbours.World.Golf.GolfSurfaceDef",
+      "Guid": "7eb1f2d0c62a4ed0986d3e6ab6c5b00d",
+      "Id": "golf_surface.water"
+    },
+    {
+      "Type": "HiddenHarbours.World.Golf.GolfClubDef",
+      "Guid": "72e083b08a5e44bf99e96c3918e828e9",
+      "Id": "golf_club.driver"
+    },
+    {
+      "Type": "HiddenHarbours.World.Golf.GolfClubDef",
+      "Guid": "a4fb35d135a84518b959a344bca700e9",
+      "Id": "golf_club.iron"
+    },
+    {
+      "Type": "HiddenHarbours.World.Golf.GolfClubDef",
+      "Guid": "d505a456e61b4b71afd791437641687a",
+      "Id": "golf_club.wedge"
+    },
+    {
+      "Type": "HiddenHarbours.World.Golf.GolfClubDef",
+      "Guid": "9af20e0507cf487f98f3bf797153fbe7",
+      "Id": "golf_club.putter"
+    },
+    {
+      "Type": "HiddenHarbours.World.Golf.GolfRulesDef",
+      "Guid": "e76af9d094d8451b8157691f2cc4aee1",
+      "Id": "golf_rules.practice"
+    },
+    {
+      "Type": "HiddenHarbours.World.Golf.GolfHoleDef",
+      "Guid": "ebff5d15c9b34e72b2a8c73b08db1296",
+      "Id": "hole.cmb_1"
+    },
+    {
+      "Type": "HiddenHarbours.World.Golf.GolfHoleDef",
+      "Guid": "c411d9dbf0b1459992d637549ca064bb",
+      "Id": "hole.cmb_2"
+    },
+    {
+      "Type": "HiddenHarbours.World.Golf.GolfHoleDef",
+      "Guid": "0e657313285e48eea5750bc5bcbc8e1c",
+      "Id": "hole.cmb_3"
+    },
+    {
+      "Type": "HiddenHarbours.World.Golf.GolfHoleDef",
+      "Guid": "8a61cad9735348cc872eb93bc3ac85f2",
+      "Id": "hole.cmb_4"
     }
   ]
 }
