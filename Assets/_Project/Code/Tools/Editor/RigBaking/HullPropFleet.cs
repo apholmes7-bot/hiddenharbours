@@ -201,7 +201,9 @@ namespace HiddenHarbours.Tools.RigBaking
             extraction: new RigPropExtraction
             {
                 // partFaces, not handlebarFaces: the same faces, but carrying the deck level the bake demands.
-                FaceBuilderCall = "byId('jet_ski').partFaces('handlebar',{})",
+                FaceBuilderCall = "byId('jet_ski').partFaces('handlebar',{})" +
+                    // The walk rig tags a level by number; the fitting bake reads it by name.
+                    ".map(function(f){return Object.assign({},f,{lv:'main_deck'});})",
                 PivotCall = "HANDLEBAR.pivot",
                 MaxSteerCall = "HANDLEBAR.lock",
                 SteerAxisCall = "HANDLEBAR.axis",
