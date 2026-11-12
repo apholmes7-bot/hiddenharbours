@@ -1,0 +1,26 @@
+{
+  "schema": "hidden-harbours/harbour-works@1",
+  "id": "harbour_works.rice_point",
+  "region": "region.rice_point",
+  "why": "The wharf takes the trawlers. The deepest of them draws 4.3 m and the lowest tide of the year is 2.2 m below the mean, so a bed 7.0 m below the mean leaves 4.8 m of water at that tide: her draught and half a metre under the keel. The ground is the second issue (kept as issued in Issue2Base) with these cuts applied.",
+  "range": [-10, 6],
+  "keepAbove": 2.0,
+  "cuts": [
+    {
+      "id": "cut.rpt_trawler_basin",
+      "what": "the basin off the wharf face: two trawlers lie in it, one alongside and one outside her",
+      "bed": -7.0,
+      "halfWidth": 11.45,
+      "sideRun": 3,
+      "line": [[-56.32, -134.25], [-34.79, -93.60]]
+    },
+    {
+      "id": "cut.rpt_south_channel",
+      "what": "the way in from the open water to the south, as deep as the basin the whole way to the region's edge",
+      "bed": -7.0,
+      "halfWidth": 14,
+      "sideRun": 3,
+      "line": [[-50, -128], [-46, -150], [-40, -185]]
+    }
+  ]
+}
