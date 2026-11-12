@@ -281,8 +281,13 @@ namespace HiddenHarbours.Tools.RigBaking
             // repeating them in a comment is how a comment goes stale.
 
             // Phase 5's hull, and the one that motivated the ADR.
-            MeshOnly("sideDragger", "sideDraggerIsoRig.js", "SideDraggerIso", "SideDraggerIso",
-                     "side_dragger_iso", "side dragger (T4, 25 m — the first offshore hull)"),
+            // Hull layout (ADR 0048 batch 3, the third of the working ships): like the stern trawlers
+            // below, her published scope owns her cell and her walk sidecar answers for her deck and rooms.
+            new FleetHull("sideDragger", "docs/art/rigs/sideDraggerIsoRig.js", "SideDraggerIso",
+                "Assets/_Project/Data/Boats/HullMeshes/SideDraggerIsoHullMesh.asset", "hullmesh.side_dragger_iso",
+                new[] { "Assets/_Project/Data/Boats/Visuals/SideDraggerIso.asset" }, new[] { "visual.side_dragger_iso" },
+                false, "side dragger (T4, 25 m — the first offshore hull)",
+                extraction: new RigHullExtraction { HullScope = "byId('side_dragger')" }),
 
             // Hull layout (ADR 0048 batch 3, the first of the working ships): her published scope
             // owns her cell, and her walk sidecar answers for her deck and rooms.

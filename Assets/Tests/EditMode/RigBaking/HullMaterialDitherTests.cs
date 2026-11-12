@@ -166,6 +166,7 @@ namespace HiddenHarbours.Tests.RigBaking
         [TestCase("goFast", "go_fast")]
         [TestCase("sternTrawler", "stern_trawler")]
         [TestCase("sternTrawlerMk2", "stern_trawler_mk2")]
+        [TestCase("sideDragger", "side_dragger")]
         public void LayoutExtraction_AndDefTransfer_AgreeWithTheRigsOwnMats(string key, string id)
         {
             var hull = HullMeshFleet.Get(key);

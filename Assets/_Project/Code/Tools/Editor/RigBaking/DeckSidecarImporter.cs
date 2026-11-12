@@ -66,7 +66,6 @@ namespace HiddenHarbours.Tools.RigBaking
                 ["sportSkiffMk2Iso"]      = new[] { "SportSkiffMk2Iso" },
                 ["lobsterBoatIsoRig"]     = new[] { "LobsterBoatIso" },
                 ["capeIslanderIsoRig"]    = new[] { "CapeIslanderIso" },
-                ["sideDraggerIsoRig"]     = new[] { "SideDraggerIso" },
                 ["coastalPacketIsoRig"]   = new[] { "CoastalPacketIso" },
                 ["tankerIsoRig"]          = new[] { "TankerIso" },
             };

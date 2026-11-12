@@ -118,7 +118,7 @@ namespace HiddenHarbours.Tests.RigBaking
                 { ["goFast"] = "go_fast", ["bowrider"] = "bowrider", ["expressCruiser"] = "express_cruiser",
                   ["expeditionYacht120"] = "expedition_yacht_120", ["yachtTender"] = "yacht_tender",
                   ["motorYacht84"] = "motor_yacht_84", ["sternTrawler"] = "stern_trawler",
-                  ["sternTrawlerMk2"] = "stern_trawler_mk2" };
+                  ["sternTrawlerMk2"] = "stern_trawler_mk2", ["sideDragger"] = "side_dragger" };
             foreach (FleetHull hull in HullMeshFleet.OneHullPerRig)
             {
                 if (scopedSingles.TryGetValue(hull.Key, out string id))

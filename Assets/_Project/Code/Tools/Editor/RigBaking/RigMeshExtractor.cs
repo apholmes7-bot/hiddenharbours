@@ -617,12 +617,8 @@ namespace HiddenHarbours.Tools.RigBaking
                 // the room it closes rather than leaving it hanging over an opened wheelhouse.
                 // (The stern trawler Mk II was the middle one of the three until she followed the Mk1
                 // to the hull layout, whose extraction reads her published scope and never reaches
-                // this table; her measured line above is kept as the record.)
-                ["sideDraggerIsoRig.js"] = new Dictionary<string, string>(StringComparer.Ordinal)
-                {
-                    ["F"] = "F.concat(doorFaces({doorOpen:0}))",
-                },
-
+                // this table; her measured line above is kept as the record. The dragger, the first
+                // of the three, followed them and left the table the same way; her line is kept too.)
                 ["tankerIsoRig.js"] = new Dictionary<string, string>(StringComparer.Ordinal)
                 {
                     ["F"] = "F.concat(doorFaces({doorOpen:0}))",
