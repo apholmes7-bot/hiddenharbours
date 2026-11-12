@@ -187,18 +187,16 @@ namespace HiddenHarbours.Tests.RigBaking
                 $"Whole-cell divergence beyond ADR 0022's measured shader class:\n{report}");
         }
 
-        /// <summary>A big working ship — one heading, to prove the class scales. Run on the side dragger
-        /// (the hull that motivated the ADR) until she was rebuilt to the hull layout; the pass under test
-        /// draws old-layout extractions, so it runs on the coastal packet, which still is one.</summary>
+        /// <summary>The hull that motivated the ADR — one heading, to prove the class scales.</summary>
         [Test]
-        public void UrpPass_AWorkingShip_ReproducesTheOracle()
+        public void UrpPass_SideDragger_ReproducesTheOracle()
         {
             RequireAGraphicsDevice();
 
             RigMeshData data;
             using (var host = RigScriptHostFactory.Create())
                 data = RigMeshExtractor.ExtractFrom(
-                    host, "docs/art/rigs/coastalPacketIsoRig.js", "CoastalPacketIso");
+                    host, "docs/art/rigs/sideDraggerIsoRig.js", "SideDraggerIso");
             var build = RigMeshBuilder.Build(data);
             try
             {
@@ -208,11 +206,11 @@ namespace HiddenHarbours.Tests.RigBaking
                 byte[] gpu = scene.Render();
                 byte[] oracle = RigMeshReferenceRasterizer.RenderFromMesh(data, build.Mesh, view);
                 var diff = RigMeshReferenceRasterizer.Compare(oracle, gpu, data.W, data.H);
-                Debug.Log($"[iso-facet-urp] packet {view.ToJsArgs()}: {diff}");
+                Debug.Log($"[iso-facet-urp] dragger {view.ToJsArgs()}: {diff}");
 
                 Assert.LessOrEqual(diff.LargestDifferingCluster, MaxGpuNoiseCluster,
-                    $"packet {view.ToJsArgs()}: connected divergence ({diff}) on the working ship.");
-                Assert.Less(diff.PercentDiffering, MaxGpuPercent, $"packet: {diff}");
+                    $"dragger {view.ToJsArgs()}: connected divergence ({diff}) on the 25 m hull.");
+                Assert.Less(diff.PercentDiffering, MaxGpuPercent, $"dragger: {diff}");
             }
             finally
             {
