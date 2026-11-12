@@ -60,6 +60,7 @@
     "HiddenHarbours.Fishing.BiteDef",
     "HiddenHarbours.Fishing.DeckWorkDef",
     "HiddenHarbours.Fishing.FishSpeciesDef",
+    "HiddenHarbours.Fishing.FishingGroundDef",
     "HiddenHarbours.Fishing.LonglineDef",
     "HiddenHarbours.Fishing.NpcPotDayDef",
     "HiddenHarbours.Fishing.RodFightDef",
@@ -5709,6 +5710,21 @@
       "Id": "fish.winter_flounder"
     },
     {
+      "Type": "HiddenHarbours.Fishing.FishingGroundDef",
+      "Guid": "7568f22cc8064b9cb5303ba2a0480f23",
+      "Id": "fishing_ground.south_water_bank"
+    },
+    {
+      "Type": "HiddenHarbours.Fishing.FishingGroundDef",
+      "Guid": "3b54aad9649346d09babc4aaefcd1c6d",
+      "Id": "fishing_ground.south_water_deep_mud"
+    },
+    {
+      "Type": "HiddenHarbours.Fishing.FishingGroundDef",
+      "Guid": "353c8618820046d3be1dca42b5504ba8",
+      "Id": "fishing_ground.south_water_shelf"
+    },
+    {
       "Type": "HiddenHarbours.Fishing.LonglineDef",
       "Guid": "f656103fa23648e9a35afdae940d7093",
       "Id": "longline.groundfish_tub"
@@ -9067,6 +9083,11 @@
       "Type": "HiddenHarbours.World.RegionDef",
       "Guid": "26222517019e45e095fc986a3e54569c",
       "Id": "region.rice_point"
+    },
+    {
+      "Type": "HiddenHarbours.World.RegionDef",
+      "Guid": "3b2dfb18a14b410789d38a37c68675fb",
+      "Id": "region.south_water"
     },
     {
       "Type": "HiddenHarbours.World.RegionDef",
