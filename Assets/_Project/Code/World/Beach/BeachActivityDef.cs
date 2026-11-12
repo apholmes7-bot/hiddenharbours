@@ -197,11 +197,11 @@ namespace HiddenHarbours.World
         [Tooltip("Colour of the glow.")]
         [ColorUsage(false, true)] public Color GlowColor = new Color(1f, 0.62f, 0.28f, 1f);
 
-        [Tooltip("How far the glow reaches, in metres.")]
+        [Tooltip("How far the glow lights the ground round it, in metres (its pool, not the size of the flame).")]
         [Min(0.1f)] public float GlowRangeMetres = 5f;
 
-        [Tooltip("How strong the glow is.")]
-        [Min(0f)] public float GlowIntensity = 1.3f;
+        [Tooltip("How strong the glow is, as a multiple of the lighting library's own flame (1 = as the library has it).")]
+        [Min(0f)] public float GlowIntensity = 1f;
 
         [Tooltip("How much it flickers (0 steady .. 1 a strong wobble).")]
         [Range(0f, 1f)] public float GlowFlicker01 = 0.35f;

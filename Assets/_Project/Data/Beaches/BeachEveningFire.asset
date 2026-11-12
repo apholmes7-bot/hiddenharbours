@@ -19,7 +19,7 @@ MonoBehaviour:
   Replaces: 3
   Tag: 3
   Who: []
-  ChancePerDay: 0.15
+  ChancePerDay: 0.25
   EarliestHour: 17.5
   LatestHour: 21.5
   InEarlySpring: 1
@@ -53,9 +53,9 @@ MonoBehaviour:
   CentreIsLit: 1
   GlowColor: {r: 1, g: 0.62, b: 0.28, a: 1}
   GlowRangeMetres: 5
-  GlowIntensity: 1.3
+  GlowIntensity: 1.5
   GlowFlicker01: 0.35
-  GlowHeightMetres: 0.4
+  GlowHeightMetres: 0.9
   CentreLingersMinutes: 45
   Talk:
   - Lines:

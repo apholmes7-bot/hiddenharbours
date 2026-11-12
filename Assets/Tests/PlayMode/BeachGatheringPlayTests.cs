@@ -5,6 +5,8 @@ using HiddenHarbours.World;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
+using UnityEngine.TestTools.Constraints;
+using Is = UnityEngine.TestTools.Constraints.Is;
 
 namespace HiddenHarbours.Tests.PlayMode
 {
@@ -288,6 +290,39 @@ namespace HiddenHarbours.Tests.PlayMode
 
             yield return At(20f);
             Assert.That(_said.Count, Is.EqualTo(2), "one exchange an evening: it is not said again");
+        }
+
+        [UnityTest]
+        public IEnumerator ALineNobodyAnswers_DoesNotKeepThemByTheFire()
+        {
+            BeachLifeDirector director = BeachLifeDirector.Instance;
+
+            yield return At(19.5f);
+            Assert.That(director.IsTalkRunning, Is.True);
+            Assert.That(_first.IsTalking || _second.IsTalking, Is.True, "they turn to each other to talk");
+
+            // Nothing ever says the line was read (no bubbles on screen), and the evening ends.
+            yield return At(FreeUntil + 0.25f);
+            Assert.That(director.IsTalkRunning, Is.False, "the exchange ends with the gathering");
+            Assert.That(_first.IsTalking || _second.IsTalking, Is.False, "and nobody is left held on the sand");
+        }
+
+        [UnityTest]
+        public IEnumerator WithTheFireLitAndTheTalkHad_LookingAtTheGatheringMakesNoGarbage()
+        {
+            BeachLifeDirector director = BeachLifeDirector.Instance;
+
+            yield return At(19.5f);
+            Assert.That(director.MiddlesShown, Is.EqualTo(1));
+            while (_said.Count > 0 && director.IsTalkRunning)
+                EventBus.Publish(new AmbientSpeechEnded(_said[_said.Count - 1].Id, AmbientSpeechEndReason.Dwelled));
+            Assert.That(director.IsTalkRunning, Is.False);
+
+            // The steady state of a gathering evening: the fire is down, the exchange has been had.
+            // The director looks twice a second for as long as they stand there; that look is free.
+            director.RefreshGatheringsNow();
+            Assert.That(() => director.RefreshGatheringsNow(),
+                        Is.Not.AllocatingGCMemory());
         }
 
         [UnityTest]

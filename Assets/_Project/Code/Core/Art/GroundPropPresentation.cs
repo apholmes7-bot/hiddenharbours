@@ -10,7 +10,7 @@ namespace HiddenHarbours.Core
 
         public Color Color;
 
-        /// <summary>How far the glow reaches, in metres.</summary>
+        /// <summary>How far the glow lights the ground round it, in metres.</summary>
         public float RangeMetres;
 
         public float Intensity;

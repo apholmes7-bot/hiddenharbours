@@ -23,6 +23,10 @@ namespace HiddenHarbours.World
         /// beyond the ring.</summary>
         public const float AtGatheringSlackMetres = 1f;
 
+        /// <summary>How long an exchange may run, in real seconds, before the director gives it up and
+        /// lets them go: nobody is left standing by a fire because a line was never answered.</summary>
+        public const float TalkGivesUpSeconds = 30f;
+
         private const int StreamTalk = 11;
 
         /// <summary>One gathering of one day, as the plans handed out so far describe it.</summary>
@@ -50,6 +54,7 @@ namespace HiddenHarbours.World
         private BeachTalk _talk;
         private int _talkLine = -1;
         private int _pendingSpeechId;
+        private float _talkBegan;
 
         /// <summary>How many gatherings have something in the middle right now (a fire burning).</summary>
         public int MiddlesShown
@@ -145,6 +150,11 @@ namespace HiddenHarbours.World
 
                 if (middleThere && g.Middle == null) PutDownMiddle(g);
                 else if (!middleThere && g.Middle != null) Clear(g);
+
+                // Talk belongs to the hours they are there, and it does not hold anybody for long.
+                if (ReferenceEquals(_talkingAt, g) &&
+                    (!peopleThere || Time.unscaledTime - _talkBegan > TalkGivesUpSeconds))
+                    FinishTalk();
 
                 if (peopleThere && _talkingAt == null && g.TalkedOnDay != g.Day) TryStartTalk(g);
             }
@@ -246,6 +256,7 @@ namespace HiddenHarbours.World
             }
 
             _talkingAt = g;
+            _talkBegan = Time.unscaledTime;
             _talk = talk;
             _talkLine = -1;
             g.TalkedOnDay = g.Day;

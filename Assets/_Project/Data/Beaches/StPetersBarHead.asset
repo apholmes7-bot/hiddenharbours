@@ -75,10 +75,10 @@ MonoBehaviour:
     Toe: {x: -68, y: 19}
     Why: The north face.
   Gatherings:
-  - Top: {x: -49, y: 23}
+  - Top: {x: -51.5, y: 23}
     Toe: {x: -58, y: 23}
     Why: The north shoulder above the wade: open sand, clear of every other line.
-  - Top: {x: -47, y: 27.5}
-    Toe: {x: -56, y: 27.5}
+  - Top: {x: -51, y: 25.5}
+    Toe: {x: -57.5, y: 25.5}
     Why: Further round the north shoulder.
   SampleStepMetres: 0.25
