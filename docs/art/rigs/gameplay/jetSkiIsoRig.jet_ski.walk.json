@@ -1,0 +1,607 @@
+{
+ "schema": "hidden-harbours/hull-walk@1",
+ "rig": "jetSkiIsoRig.js",
+ "exportSymbol": "JetSkiIso",
+ "hull": "jet_ski",
+ "label": "Jetski",
+ "kind": "open",
+ "derivedFromRigSha256": "a33ab13caee203a520dcddfe784581f1b990aea1e4a012108d3ce38954bbf137",
+ "authoring": "Written by the rig: JetSkiIso.byId('jet_ski').walk(), every number its own (mm), stamped with the rig's LF sha256 and fitted to character rig 10.3 (qa.character) by tools/rig-recipes/hull-walk.mjs. Regenerate with node tools/rig-recipes/hull-walk.mjs --write; never edit by hand.",
+ "units": "metres",
+ "frame": "metres; +x starboard, +y bow, +z up; origin amidships, keel bottom, centreline; polygons counter-clockwise seen from above",
+ "loa_m": 3.3,
+ "loh_m": 3.2,
+ "beam_m": 1.2,
+ "DWL": 0.3,
+ "cockpitZ": 0.3,
+ "cell": {
+  "W": 128,
+  "H": 120,
+  "pivot": {
+   "x": 64,
+   "y": 72
+  },
+  "pxPerM": 32,
+  "defaultElev": 40,
+  "order": [
+   "N",
+   "NE",
+   "E",
+   "SE",
+   "S",
+   "SW",
+   "W",
+   "NW"
+  ]
+ },
+ "tags": {
+  "lv": {
+   "hull": 0,
+   "main_deck": 1,
+   "house": 2,
+   "bridge": 3,
+   "below": 4,
+   "rigging": 5,
+   "foredeck": 6,
+   "top": 7
+  },
+  "ro": {
+   "shell": 0,
+   "wall": 1,
+   "roof": 2,
+   "lining": 3,
+   "part": 4,
+   "floor": 5,
+   "fit": 6,
+   "tall": 7,
+   "trim": 8,
+   "rig": 9
+  },
+  "ghostRoles": [
+   "shell",
+   "wall",
+   "roof",
+   "lining",
+   "part",
+   "tall",
+   "trim"
+  ]
+ },
+ "walk": {
+  "radius": 0.23,
+  "stepTol": 0.34,
+  "rule": "A step is legal when the target point is inside an area polygon and outside its holes, and |area z - player z| < stepTol. Ramps interpolate z along their axis (x or y) between a0 and a1, and hold z0 / z1 beyond them. cut = the cutaway key while standing there; cutHi / cutLo replace it above / below zMid (stairs and ladders). Polygons are player-centre: already inset by radius, so the reader never insets them again.",
+  "spawn": {
+   "x": 0,
+   "y": -1.332,
+   "area": "aft_deck"
+  },
+  "areas": [
+   {
+    "id": "aft_deck",
+    "cut": "deck",
+    "z": 0.39,
+    "poly": [
+     [
+      -0.302,
+      -1.37
+     ],
+     [
+      0.302,
+      -1.37
+     ],
+     [
+      0.302,
+      -1.293
+     ],
+     [
+      -0.302,
+      -1.293
+     ]
+    ],
+    "holes": [],
+    "note": "the boarding deck, 0.6 m fore and aft and 1.064 m across at the transom: the only surface aboard that takes the walker’s 0.46 m. The centre has 0.077 m fore and aft between the transom edge and the grab handle. It is where she is boarded and where the saddle is mounted from."
+   }
+  ]
+ },
+ "house": null,
+ "anchors": {
+  "helm": {
+   "x": 0,
+   "y": -0.15,
+   "z": 0.76
+  },
+  "passenger": {
+   "x": 0,
+   "y": -0.7,
+   "z": 0.84
+  },
+  "seats": [
+   {
+    "id": "helm",
+    "x": 0,
+    "y": -0.15,
+    "z": 0.76
+   },
+   {
+    "id": "passenger",
+    "x": 0,
+    "y": -0.7,
+    "z": 0.84
+   }
+  ],
+  "feet": [
+   {
+    "id": "port",
+    "x": -0.34,
+    "y": 0.1,
+    "z": 0.3
+   },
+   {
+    "id": "stbd",
+    "x": 0.34,
+    "y": 0.1,
+    "z": 0.3
+   }
+  ],
+  "grips": [
+   {
+    "id": "port",
+    "x": -0.27,
+    "y": 0.262,
+    "z": 0.988
+   },
+   {
+    "id": "stbd",
+    "x": 0.27,
+    "y": 0.262,
+    "z": 0.988
+   }
+  ],
+  "handlebar": {
+   "pivot": {
+    "x": 0,
+    "y": 0.36,
+    "z": 0.88
+   },
+   "head": {
+    "x": 0,
+    "y": 0.299,
+    "z": 1.017
+   },
+   "axis": [
+    0,
+    -0.406737,
+    0.913545
+   ],
+   "lock_deg": 35
+  },
+  "nozzle": {
+   "pivot": {
+    "x": 0,
+    "y": -1.6,
+    "z": 0.14
+   },
+   "axis": [
+    0,
+    0,
+    1
+   ],
+   "lock_deg": 22
+  },
+  "painter": {
+   "x": 0,
+   "y": 1.559,
+   "z": 0.568
+  },
+  "sternEye": {
+   "x": 0,
+   "y": -1.61,
+   "z": 0.335
+  },
+  "platform": {
+   "x": 0,
+   "y": -1.332,
+   "z": 0.39
+  }
+ },
+ "interact": [
+  {
+   "id": "helm",
+   "action": "enter_helm",
+   "label": "Handlebars",
+   "prompt": "Ride",
+   "at": {
+    "x": 0,
+    "y": 0.299,
+    "z": 1.017
+   },
+   "reach": {
+    "x": 0,
+    "y": -1.293,
+    "z": 0.39
+   },
+   "area": "aft_deck",
+   "seat": {
+    "x": 0,
+    "y": -0.15,
+    "z": 0.76
+   },
+   "feet": [
+    {
+     "id": "port",
+     "x": -0.34,
+     "y": 0.1,
+     "z": 0.3
+    },
+    {
+     "id": "stbd",
+     "x": 0.34,
+     "y": 0.1,
+     "z": 0.3
+    }
+   ],
+   "grips": [
+    {
+     "id": "port",
+     "x": -0.27,
+     "y": 0.262,
+     "z": 0.988
+    },
+    {
+     "id": "stbd",
+     "x": 0.27,
+     "y": 0.262,
+     "z": 0.988
+    }
+   ],
+   "waitsOn": [
+    "straddle"
+   ],
+   "note": "mounted from the boarding deck, over the passenger seat. Astride at anchors.helm, feet in the footwells, hands on the grips (see _excluded saddle_helm)"
+  },
+  {
+   "id": "seat_passenger",
+   "action": "enter_ride",
+   "label": "Passenger seat",
+   "prompt": "Ride",
+   "at": {
+    "x": 0,
+    "y": -0.7,
+    "z": 0.84
+   },
+   "reach": {
+    "x": 0,
+    "y": -1.293,
+    "z": 0.39
+   },
+   "area": "aft_deck",
+   "waitsOn": [
+    "sit"
+   ]
+  },
+  {
+   "id": "hood_bin",
+   "action": "storage",
+   "label": "Storage bin",
+   "prompt": "Store · retrieve",
+   "at": {
+    "x": 0,
+    "y": 0.93,
+    "z": 0.796
+   },
+   "reach": {
+    "x": -0.311,
+    "y": 0.15,
+    "z": 0.3
+   },
+   "area": null,
+   "offWalk": "footwell_port",
+   "note": "under the lid on the cowl’s crown, reached from the forward end of the port footwell"
+  },
+  {
+   "id": "swim",
+   "action": "enter_water",
+   "label": "Boarding deck",
+   "prompt": "Swim",
+   "at": {
+    "x": 0,
+    "y": -1.6,
+    "z": 0.39
+   },
+   "reach": {
+    "x": 0,
+    "y": -1.37,
+    "z": 0.39
+   },
+   "area": "aft_deck",
+   "waitsOn": [
+    "ladderOn"
+   ],
+   "note": "off the stern; back aboard from the swim waits on ladderOn (see _excluded reboarding)"
+  }
+ ],
+ "cleats": [
+  {
+   "id": "bow_eye",
+   "type": "bow_eye",
+   "pos": [
+    0,
+    1.559,
+    0.568
+   ],
+   "note": "the painter and trailer eye on the stem: she lies to it at a wharf"
+  },
+  {
+   "id": "stern_eye",
+   "type": "eye",
+   "pos": [
+    0,
+    -1.61,
+    0.335
+   ],
+   "note": "the stern eye on the transom over the pump: the stern line and the tow line"
+  }
+ ],
+ "washboards": [],
+ "_excluded": [
+  {
+   "id": "footwell_port",
+   "of": "area",
+   "z": 0.3,
+   "poly": [
+    [
+     -0.19,
+     0.3
+    ],
+    [
+     -0.433,
+     0.3
+    ],
+    [
+     -0.48,
+     0.04
+    ],
+    [
+     -0.5,
+     -0.22
+    ],
+    [
+     -0.5,
+     -0.48
+    ],
+    [
+     -0.5,
+     -0.74
+    ],
+    [
+     -0.5,
+     -1
+    ],
+    [
+     -0.19,
+     -1
+    ]
+   ],
+   "gaps_m": {
+    "width": 0.31,
+    "width_forward": 0.243,
+    "length": 1.3
+   },
+   "reason": "a footwell: 0.31 m between the saddle’s pedestal and the liner (0.243 m at its forward end), 1.3 m long. The walker needs 0.46 m clear, so no centre point fits; a well wide enough for the walker would leave no saddle on a 1.20 m beam. It is where the rider’s feet go (anchors.feet), not a place to walk."
+  },
+  {
+   "id": "footwell_stbd",
+   "of": "area",
+   "z": 0.3,
+   "poly": [
+    [
+     0.19,
+     -1
+    ],
+    [
+     0.5,
+     -1
+    ],
+    [
+     0.5,
+     -0.74
+    ],
+    [
+     0.5,
+     -0.48
+    ],
+    [
+     0.5,
+     -0.22
+    ],
+    [
+     0.48,
+     0.04
+    ],
+    [
+     0.433,
+     0.3
+    ],
+    [
+     0.19,
+     0.3
+    ]
+   ],
+   "gaps_m": {
+    "width": 0.31,
+    "width_forward": 0.243,
+    "length": 1.3
+   },
+   "reason": "as footwell_port."
+  },
+  {
+   "id": "gunwale_port",
+   "of": "area",
+   "reason": "the gunwale cap beside the footwell: 0.067-0.067 m of moulding, narrower than the walker. She is boarded over the stern (aft_deck), not over the side."
+  },
+  {
+   "id": "gunwale_stbd",
+   "of": "area",
+   "reason": "as gunwale_port."
+  },
+  {
+   "id": "cowl",
+   "of": "area",
+   "z": 0.81,
+   "reason": "the cowl: a crowned hood 0.24 m above the rail, falling to the stem. No flat on it and no way onto it past the handlebars; the storage bin under its lid is reached from the footwell (interact hood_bin)."
+  },
+  {
+   "id": "saddle_helm",
+   "of": "seat",
+   "at": {
+    "x": 0,
+    "y": -0.15,
+    "z": 0.76
+   },
+   "reason": "the driver’s seat: astride the saddle, a foot in each footwell, both hands on the grips. 10.3’s only seated clip is drive, whose legs are together and whose hands hold a wheel rim: riding waits on a straddle clip.",
+   "waitsOn": [
+    "straddle"
+   ]
+  },
+  {
+   "id": "seat_passenger",
+   "of": "seat",
+   "at": {
+    "x": 0,
+    "y": -0.7,
+    "z": 0.84
+   },
+   "reason": "the raised seat behind the driver, astride: a seat, not a standing surface. Sitting waits on a sit clip (10.3 has none).",
+   "waitsOn": [
+    "sit"
+   ]
+  },
+  {
+   "id": "reboarding",
+   "of": "note",
+   "z": 0.39,
+   "reason": "coming back aboard from the water is over the stern onto aft_deck, 0.09 m above the waterline, by the grab handle. No boarding step is drawn.",
+   "waitsOn": [
+    "ladderOn"
+   ]
+  },
+  {
+   "id": "washboards",
+   "of": "washboards",
+   "reason": "an open boat 1.20 m across: no side deck to work from; the caps are 0.067-0.067 m of moulding (gunwale_port, gunwale_stbd). Lines are worked from the boarding deck and the saddle."
+  }
+ ],
+ "rock": {
+  "frames": 8,
+  "rollA": 6,
+  "pitchA": 3.2,
+  "heaveA": 1.6,
+  "period": 1.6
+ },
+ "qa": {
+  "fitCheck": {
+   "tol": 0.01,
+   "faces": 0,
+   "outside": 0,
+   "worst": 0,
+   "note": "an open boat: no room faces to check"
+  },
+  "character": {
+   "rig": "characterIsoRig10.js",
+   "exportSymbol": "CharacterIso10",
+   "revision": "10.3",
+   "derivedFromRigSha256": "ad563075475740cea1258de68d05c184f2fc136491357bc22988a10d810413f3",
+   "posesDerivedFromRigSha256": "a28e5d92638d3cf1b26bbc49f887b23221acd3a9590bc36fd8b842ac6127c92d",
+   "builds": 30,
+   "crown_m": [
+    1.257,
+    1.8641
+   ],
+   "collision_radius_m": [
+    0.142,
+    0.23
+   ],
+   "board_range_m": [
+    0.06,
+    1
+   ],
+   "boardDown_range_m": [
+    0.06,
+    1.3
+   ],
+   "method": "every frame of each clip for all thirty builds (evalClip + pinsOf), world opts from the walk; hands vs the wheel rim, the lying body vs the berth outline and deckhead, crowns vs headroom, shoulders (2 x collision radius) vs clear widths",
+   "fixtures": [
+    {
+     "id": "walk_areas",
+     "what": "walk every area (1 of them) at the walker’s radius 0.23 m",
+     "clip": "walk",
+     "note": "each outline is inset by the walker’s radius, the widest 10.3 build’s collision radius or more: every build’s shoulders fit wherever the walker goes. Headroom is the stand fixtures’; steps are the step fixtures’.",
+     "builds_ok": 30,
+     "of": 30
+    },
+    {
+     "id": "between_footwell_port",
+     "what": "stand in footwell_port between its fittings (the narrowest gap a figure stands in: 0.31 m)",
+     "clip": "walk",
+     "clear_width_m": 0.31,
+     "walker_radius_m": 0.23,
+     "builds_ok": 6,
+     "of": 30,
+     "fit": [
+      "cutter",
+      "boy",
+      "girl",
+      "lightkeeper",
+      "diver",
+      "paperboy"
+     ]
+    },
+    {
+     "id": "between_footwell_stbd",
+     "what": "stand in footwell_stbd between its fittings (the narrowest gap a figure stands in: 0.31 m)",
+     "clip": "walk",
+     "clear_width_m": 0.31,
+     "walker_radius_m": 0.23,
+     "builds_ok": 6,
+     "of": 30,
+     "fit": [
+      "cutter",
+      "boy",
+      "girl",
+      "lightkeeper",
+      "diver",
+      "paperboy"
+     ]
+    },
+    {
+     "id": "aboard_from_the_water",
+     "what": "come aboard from the water (onto reboarding, 0.09 m above the waterline; no ladder)",
+     "clip": null,
+     "waitsOn": [
+      "ladderOn"
+     ],
+     "note": "no ladder on this hull: a swimmer cannot climb back aboard (see _excluded reboarding)",
+     "builds_ok": 0,
+     "of": 30
+    },
+    {
+     "id": "seats",
+     "what": "sit as a passenger (seat_passenger)",
+     "clip": null,
+     "waitsOn": [
+      "sit"
+     ],
+     "note": "10.3 has no sit clip: drive is its only seated clip, and its hands hold a wheel",
+     "builds_ok": 0,
+     "of": 30
+    }
+   ],
+   "waitsOn": [
+    "ladderOn",
+    "sit",
+    "straddle"
+   ]
+  }
+ }
+}

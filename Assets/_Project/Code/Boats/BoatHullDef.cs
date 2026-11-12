@@ -62,6 +62,11 @@ namespace HiddenHarbours.Boats
                  "throttle/rudder (boats you buy). Buying an engine boat swaps hand-rowing for a helm (P4).")]
         public PropulsionType Propulsion = PropulsionType.Oars;   // the starting boat is the rowed dory
 
+        [Header("Wake")]
+        [Tooltip("How she drives the water astern, which shapes the wash she leaves. Propeller = the wide " +
+                 "churn strip every hull has had. Jet = one narrow stream thrown hard astern (the jetski).")]
+        public WakeStyle WakeStyle = WakeStyle.Propeller;
+
         [Header("Engine handling (Propulsion = Engine)")]
         [Tooltip("Thrust at full throttle (design units).")]
         public float EnginePower = 1200f;
