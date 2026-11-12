@@ -1115,6 +1115,10 @@ Shader "HiddenHarbours/Water"
         // divergent as s^-1/3; one owner-facing length replaces both (rule 6). At the shipped 20 m a
         // 6 m/s hull (23 m wavelength) shows about three crests before the sea is flat again.
         _WakeLiftDecayMetres ("Wake lift: metres astern it decays over (0 = OFF)", Range(0,80)) = 20
+        // The water she pushes up at her LEADING end (the bow making way ahead, the transom making way
+        // astern): one mound, this tall at full wake gate, drawn only like the train above. 0 = OFF and
+        // ships OFF: the mound is a look for the owner to turn up, and at 0 no slot's length is read.
+        _WakeBowLiftMetres   ("Wake lift: mound at her leading end (m, 0 = OFF)", Range(0,1)) = 0
     }
 
     SubShader
@@ -1394,7 +1398,8 @@ Shader "HiddenHarbours/Water"
             //   _HHWakeLiftRoot[i]  : xy = her transom in world m, zw = her unit forward direction.
             //   _HHWakeLiftShape[i] : x = the wake gate 0..1 (0 at rest), y = the transverse wavelength
             //                         (m) that keeps station at her speed THROUGH THE WATER,
-            //                         z = her churned half-beam (m), w unused.
+            //                         z = her churned half-beam (m), w = metres from the root
+            //                         forward to her leading end (0 = she raises no mound there).
             // x or y at 0 is an UNUSED SLOT and the loop skips it — which is also exactly how a boat
             // lying to her mooring costs nothing. UNSET reads as all-zero, i.e. no hull anywhere.
             //
@@ -1776,6 +1781,7 @@ Shader "HiddenHarbours/Water"
                 // displacement of any kind, so it reads them not at all.
                 float  _WakeLiftMetres;
                 float  _WakeLiftDecayMetres;
+                float  _WakeBowLiftMetres;
                 // ADR 0027 #10 — the capillary ripple band (default OFF: _RippleStrength 0).
                 float  _RippleStrength;
                 float  _RippleWavelength;
@@ -2504,6 +2510,7 @@ Shader "HiddenHarbours/Water"
             #define HH_WAKE_DIV_SIN      0.57735027    // sin(theta_c) = sqrt(1/3)
             #define HH_WAKE_DIV_K_RATIO  1.5           // 1/cos^2(theta_c), exact
             #define HH_WAKE_MEMBER_SHARE 0.5           // two members sharing the ONE amplitude dial
+            #define HH_WAKE_BOW_HALF_BEAMS 2.0         // WakeLiftMath.BowMoundHalfBeams
 
             // Twin: FoamBuffer.Profile — this project's ONE falloff curve, here in its third copy (the C#,
             // HiddenHarboursFoamBufferAdvect's FoamProfile01, and this). Flat out to the half, smooth to
@@ -2594,6 +2601,28 @@ Shader "HiddenHarbours/Water"
                                        halfBeamMetres, decayMetres);
             }
 
+            // Twin: WakeLiftMath.BowHeight. The mound she pushes up at her leading end: the falloff curve
+            // above by distance from that end, round, out to a fixed number of her half-beams.
+            float WakeBowHeight(float aheadMetres, float lateralMetres,
+                                float amplitudeMetres, float halfBeamMetres)
+            {
+                if (amplitudeMetres <= 0.0 || halfBeamMetres <= 0.0) return 0.0;
+                float reach = HH_WAKE_BOW_HALF_BEAMS * halfBeamMetres;
+                float away = sqrt(aheadMetres * aheadMetres + lateralMetres * lateralMetres);
+                return amplitudeMetres * WakeProfile01(away, reach);
+            }
+
+            // Twin: WakeLiftMath.BowHeightAt. The same frame change as the train, measured from her
+            // leading end instead of her trailing one.
+            float WakeBowHeightAt(float2 worldXY, float2 rootXY, float2 heading, float lengthMetres,
+                                  float amplitudeMetres, float halfBeamMetres)
+            {
+                float2 d = worldXY - rootXY;
+                float ahead = d.x * heading.x + d.y * heading.y - lengthMetres;
+                float lateral = d.x * heading.y - d.y * heading.x;
+                return WakeBowHeight(ahead, lateral, amplitudeMetres, halfBeamMetres);
+            }
+
             // Every hull making way, summed. This loop is the ONLY part with no C# twin — it is plumbing,
             // not law, and what it plumbs is pinned instead by the registry's own slot tests.
             //
@@ -2615,6 +2644,9 @@ Shader "HiddenHarbours/Water"
                     float4 root = _HHWakeLiftRoot[i];
                     total += WakeHeightAt(worldXY, root.xy, root.zw, _WakeLiftMetres * shape.x,
                                           shape.y, shape.z, _WakeLiftDecayMetres);
+                    if (_WakeBowLiftMetres > 0.0 && shape.w > 0.0)
+                        total += WakeBowHeightAt(worldXY, root.xy, root.zw, shape.w,
+                                                 _WakeBowLiftMetres * shape.x, shape.z);
                 }
                 return total;
             }

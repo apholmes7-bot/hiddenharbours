@@ -394,6 +394,9 @@ namespace HiddenHarbours.Tests.Art.EditMode
             s = s.Replace("DivergentCos", "HH_WAKE_DIV_COS");
             s = s.Replace("DivergentSin", "HH_WAKE_DIV_SIN");
             s = s.Replace("MemberShare", "HH_WAKE_MEMBER_SHARE");
+            s = s.Replace("BowMoundHalfBeams", "HH_WAKE_BOW_HALF_BEAMS");
+            s = s.Replace("BowHeight(", "WakeBowHeight(");
+            s = s.Replace("Mathf.Sqrt", "sqrt");
             s = s.Replace("FoamBuffer.Profile(", "WakeProfile01(");
             s = s.Replace("HalfWidth(", "WakeHalfWidth(");
             s = s.Replace("RootRamp01(", "WakeRootRamp01(");
@@ -950,6 +953,76 @@ namespace HiddenHarbours.Tests.Art.EditMode
             {
                 FoamInjectionRegistry.ClearWakeLift();
             }
+        }
+
+        // ==== THE MOUND AT HER LEADING END ===========================================================
+
+        [Test]
+        public void TheBowMound_IsTranscribedLineForLine()
+        {
+            AssertTwin("public static float BowHeight(float aheadMetres, float lateralMetres,", TwinPath,
+                       "float WakeBowHeight(float aheadMetres, float lateralMetres,",
+                       "The mound at her leading end (WakeLiftMath.BowHeight / WakeBowHeight)");
+            AssertTwin("public static float BowHeightAt(Vector2 worldXY, Vector2 rootXY, Vector2 heading, float lengthMetres,",
+                       TwinPath,
+                       "float WakeBowHeightAt(float2 worldXY, float2 rootXY, float2 heading, float lengthMetres,",
+                       "The mound's frame change (WakeLiftMath.BowHeightAt / WakeBowHeightAt)");
+            Assert.AreEqual(WakeLiftMath.BowMoundHalfBeams, Define(Read(ShaderPath), "HH_WAKE_BOW_HALF_BEAMS"), 1e-6f,
+                "HH_WAKE_BOW_HALF_BEAMS stands in for WakeLiftMath.BowMoundHalfBeams in the twin comparison.");
+        }
+
+        [Test]
+        public void TheBowMound_StandsAtHerLeadingEnd_AndNowhereElse()
+        {
+            const float tall = 0.15f, length = 7f;
+            var root = new Vector2(40f, -12f);
+            Vector2 heading = new Vector2(0.6f, 0.8f);
+            Vector2 lead = root + heading * length;
+            float reach = WakeLiftMath.BowMoundHalfBeams * Beam;
+
+            Assert.AreEqual(tall, WakeLiftMath.BowHeightAt(lead, root, heading, length, tall, Beam), 1e-6f,
+                "At her leading end the mound is as tall as the dial says.");
+            Assert.AreEqual(0f, WakeLiftMath.BowHeightAt(root, root, heading, length, tall, Beam),
+                "Her trailing end is a whole hull away from the mound: nothing stands there.");
+            var side = new Vector2(heading.y, -heading.x);
+            foreach (Vector2 way in new[] { heading, -heading, side, -side })
+            {
+                Assert.AreEqual(0f, WakeLiftMath.BowHeightAt(lead + way * (reach + 0.01f), root, heading, length, tall, Beam),
+                    "Past its reach the mound is exactly flat sea.");
+                float near = WakeLiftMath.BowHeightAt(lead + way * (reach * 0.75f), root, heading, length, tall, Beam);
+                Assert.That(near, Is.GreaterThan(0f).And.LessThan(tall), "Inside its reach it falls away smoothly.");
+            }
+            Assert.AreEqual(WakeLiftMath.BowHeightAt(lead + side * 1.3f, root, heading, length, tall, Beam),
+                            WakeLiftMath.BowHeightAt(lead - side * 1.3f, root, heading, length, tall, Beam), 1e-6f,
+                "The mound is the same to port as to starboard.");
+        }
+
+        [Test]
+        public void TheBowMound_IsExactlyNothing_WithTheDialAtZeroOrNoBeam()
+        {
+            Assert.AreEqual(0f, WakeLiftMath.BowHeight(0f, 0f, 0f, Beam), "The dial at 0 is OFF, exactly.");
+            Assert.AreEqual(0f, WakeLiftMath.BowHeight(0f, 0f, 0.2f, 0f), "A hull with no beam raises nothing.");
+            string shader = StripComments(Read(ShaderPath));
+            StringAssert.Contains("if (_WakeBowLiftMetres > 0.0 && shape.w > 0.0)", shader,
+                "The shader must skip the mound before reading a length when the dial is 0, so the shipped " +
+                "default draws the sea it drew before.");
+            StringAssert.Contains("_WakeBowLiftMetres   (\"Wake lift: mound at her leading end (m, 0 = OFF)\", Range(0,1)) = 0",
+                Read(ShaderPath), "The mound ships OFF: its dial's default is 0.");
+        }
+
+        [Test]
+        public void TheRegistry_CarriesHerLength_ForTheMound()
+        {
+            FoamInjectionRegistry.ClearWakeLift();
+            try
+            {
+                Assert.IsTrue(FoamInjectionRegistry.PublishWakeLift(new Vector2(3f, 4f), Vector2.up, Lambda, Beam, 1f, 7.5f));
+                var shape = new Vector4[FoamBuffer.MaxInjectors];
+                FoamInjectionRegistry.ReadWakeLift(null, shape);
+                Assert.AreEqual(7.5f, shape[0].w, 1e-6f, "shape.w is the metres from her root to her leading end.");
+                Assert.AreEqual(Beam, shape[0].z, 1e-6f, "...and the half-beam beside it is untouched.");
+            }
+            finally { FoamInjectionRegistry.ClearWakeLift(); }
         }
 
         [Test]

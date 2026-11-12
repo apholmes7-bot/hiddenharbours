@@ -756,7 +756,9 @@ namespace HiddenHarbours.Art
             Vector2 heading = _trailFromBow ? -_wakeHeading : _wakeHeading;
             float mag = heading.magnitude;
             heading = mag > 1e-6f ? heading / mag : Vector2.up;
-            FoamInjectionRegistry.PublishWakeLift(root, heading, wavelengthMetres, RadiusMeters, gate01);
+            // Her leading end is her whole length ahead of the end she trails from, whichever that is.
+            FoamInjectionRegistry.PublishWakeLift(root, heading, wavelengthMetres, RadiusMeters, gate01,
+                                                  2f * Mathf.Max(_sternOffsetMeters, 0f));
         }
     }
 }
