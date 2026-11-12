@@ -100,10 +100,13 @@ They are a review queue, not 696 proven defects or instructions to change art.
 | imported dimensions smaller than source | 0 |
 | Standalone override compression differs from Uncompressed | 0 |
 
-The six PPU differences are the tanker interior views, each at PPU
-**16** rather than 32. A scale correction could move visible
-geometry; this audit makes none. The nine filter differences are listed below.
-Their non-sprite/data roles need review before any proposal to change sampling.
+The six PPU differences are tanker interior views at **16**, as required by
+their per-hull scale contract. The nine filter differences below are displacement
+profiles with a **Bilinear** kit contract. The
+[owning-rule references and per-file exception list](texture-import-exceptions.md)
+document both groups and distinguish geometry data from sprite defaults.
+These remain raw deviations in this historical table; no setting or audit count
+has been changed.
 
 | Texture | Filter | Importer role |
 |---|---|---|

@@ -182,7 +182,7 @@ namespace HiddenHarbours.Tests
             // Re-measured on her hull-walk@1 room: the house is level 0 (her main deck is no longer a
             // room level) and its aft wall stands at y 1.81, where the Mk II's stays at 1.57.
             { "SternTrawlerIso", new[] { 0, -1119040320, 1072147988, 0, -1082130432 } },
-            { "SternTrawlerMk2Iso", new[] { 1, -1119040320, 1070134723, 0, -1082130432 } },
+            { "SternTrawlerMk2Iso", new[] { 0, -1119040320, 1072147988, 0, -1082130432 } },
             { "TankerIso", new[] { 2, 0, -1035854152, 0, -1082130432 } },
         };
 

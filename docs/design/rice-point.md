@@ -143,9 +143,20 @@ encode anything below -6 m, so the ground the game sails on is now **the second 
   read them. Where `plan.json` measures the berth face (-2.0 m), the way in (a sill at -2.62 m) and the south
   edge (-2.9 to -4.3 m, "no change at any stage"), it is describing the base, not the dredged harbour.
 - **The works are data.** `RicePointGround/harbour-works.json` names each cut (a line, a half width, a bed, a
-  batter) and the raster's new range, -10 to +6 m. Two cuts, both to -7.0 m: the basin off the wharf face and
-  the channel from it to the south edge. No cut lowers ground at or above +2.0 m, so the wharf and its wall
+  batter) and the raster's new range, -10 to +6 m. Two cuts to -7.0 m, the basin off the wharf face and
+  the channel from it to the south edge, and a third to -3.0 m that takes down the toe of the mud flat on the
+  channel's east bank. No cut lowers ground at or above +2.0 m, so the wharf and its wall
   stand; a cut that would reach a still-water pool is refused.
+- **A cut meets the old ground through a blend, not a crease.** Each cut has a `blendRun` (3 m here): where
+  its side slope reaches the old ground the two are rounded together over that run. Without it the slope stopped
+  at a crease, and at spring low the tide's edge fell on that crease across the mud flat east of the basin, so
+  the shore there was the stepped outline of the cut with broken foam along it. The blend lowers ground only
+  where slope and old ground are within 1 m of each other in height, by at most 0.25 m, and never below a bed.
+- **The toe of the east mud flat is taken down with the channel.** What the channel left of the flat's
+  south-west point was a tongue 0 to 0.2 m above the lowest tide: too flat to hold a shoreline, so the tide's
+  edge there broke into teeth. `cut.rpt_channel_east_toe` lowers it to -3.0 m, below that tide. The flat now ends
+  in a blunt corner whose shore at the lowest tide lies on ground rising at least 0.1 m in a metre (the issued
+  ground there rose as little as 0.01 m in a metre). Above the lowest tide the flat is as issued.
 - **The live rasters are the base with the works applied, and nothing else.**
   `GroundFileIntake.RicePointDredged` is the one function; the builder refuses to create or refresh the scene
   unless the committed rasters are exactly its output, and the paint maps are derived from the dredged ground.
