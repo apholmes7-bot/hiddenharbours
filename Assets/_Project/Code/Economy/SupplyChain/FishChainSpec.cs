@@ -13,6 +13,8 @@ namespace HiddenHarbours.Economy.SupplyChain
         public FishStoreKind Kind;
         public long MassCapacityGrams, VolumeCapacityMl;
         public int LotSlots;
+
+        public FishStorageSpec Snapshot() => (FishStorageSpec)MemberwiseClone();
     }
 
     [Serializable]
@@ -22,6 +24,8 @@ namespace HiddenHarbours.Economy.SupplyChain
         public FishProduct Product;
         public int YieldPpm, BatchFish, ProcessSeconds, RequiredWorkers, LabourSecondsPerFish;
         public long WorkMassCapacityGrams, WorkVolumeCapacityMl;
+
+        public FishLineSpec Snapshot() => (FishLineSpec)MemberwiseClone();
     }
 
     [Serializable]
@@ -33,6 +37,14 @@ namespace HiddenHarbours.Economy.SupplyChain
         public int PricePerFish;
         public int[] DemandByWeekday = new int[7];
         public int[] SeasonalDemandPpm = new int[4];
+
+        public FishOutletSpec Snapshot()
+        {
+            var copy = (FishOutletSpec)MemberwiseClone();
+            copy.DemandByWeekday = (int[])DemandByWeekday?.Clone();
+            copy.SeasonalDemandPpm = (int[])SeasonalDemandPpm?.Clone();
+            return copy;
+        }
     }
 
     [Serializable]
@@ -43,6 +55,8 @@ namespace HiddenHarbours.Economy.SupplyChain
         public bool LeavesIsland;
         public string SourceStorageId, CargoStorageId, DestinationStorageId;
         public int HandFishPerStep, HandSecondsPerFish, TravelSeconds;
+
+        public FishTruckRunSpec Snapshot() => (FishTruckRunSpec)MemberwiseClone();
     }
 
     public sealed class FishChainSpec

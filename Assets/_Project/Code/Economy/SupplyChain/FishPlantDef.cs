@@ -28,10 +28,11 @@ namespace HiddenHarbours.Economy.SupplyChain
                 StepSeconds = StepSeconds, SecondsPerDay = checked((int)ClockConfig.SecondsPerDay),
                 DaysPerSeason = ClockConfig.DaysPerSeason, StartDayOfYear = ClockConfig.StartDayOfYear,
                 DailyIntakeGrams = DailyIntakeGrams,
-                Storages = System.Array.ConvertAll(Storages, d => JsonUtility.FromJson<FishStorageSpec>(JsonUtility.ToJson(d.Spec))),
-                Lines = System.Array.ConvertAll(Lines, d => JsonUtility.FromJson<FishLineSpec>(JsonUtility.ToJson(d.Spec))),
-                Outlets = System.Array.ConvertAll(Outlets, d => JsonUtility.FromJson<FishOutletSpec>(JsonUtility.ToJson(d.Spec))),
-                Runs = System.Array.ConvertAll(Runs, d => JsonUtility.FromJson<FishTruckRunSpec>(JsonUtility.ToJson(d.Spec)))
+                // These are managed data snapshots, independent of Unity's JSON serialization path.
+                Storages = System.Array.ConvertAll(Storages, d => d.Spec.Snapshot()),
+                Lines = System.Array.ConvertAll(Lines, d => d.Spec.Snapshot()),
+                Outlets = System.Array.ConvertAll(Outlets, d => d.Spec.Snapshot()),
+                Runs = System.Array.ConvertAll(Runs, d => d.Spec.Snapshot())
             };
             spec.Validate();
             return spec;

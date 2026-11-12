@@ -84,6 +84,41 @@ namespace HiddenHarbours.Tests.Economy
         }
 
         [Test]
+        public void Snapshots_PreserveConfiguredFieldsAndDetachMutableRowsAndCalendars()
+        {
+            var spec = Fixture();
+            object[] sources = { spec.Storages[0], spec.Lines[0], spec.Outlets[0], spec.Runs[0] };
+            object[] copies = { spec.Storages[0].Snapshot(), spec.Lines[0].Snapshot(),
+                spec.Outlets[0].Snapshot(), spec.Runs[0].Snapshot() };
+            for (int i = 0; i < sources.Length; i++)
+            {
+                Assert.That(copies[i], Is.Not.SameAs(sources[i]));
+                foreach (var field in sources[i].GetType().GetFields())
+                    Assert.That(field.GetValue(copies[i]), Is.EqualTo(field.GetValue(sources[i])), field.Name);
+            }
+            var storage = (FishStorageSpec)copies[0];
+            var line = (FishLineSpec)copies[1];
+            var outlet = (FishOutletSpec)copies[2];
+            var run = (FishTruckRunSpec)copies[3];
+            spec.Storages[0].Id = "changed";
+            spec.Lines[0].YieldPpm = 1;
+            spec.Outlets[0].DemandByWeekday[0]++;
+            spec.Outlets[0].SeasonalDemandPpm[0]++;
+            spec.Runs[0].HandFishPerStep++;
+            Assert.That(storage.Id, Is.EqualTo("wharf"));
+            Assert.That(line.YieldPpm, Is.EqualTo(500000));
+            Assert.That(outlet.DemandByWeekday[0], Is.EqualTo(spec.Outlets[0].DemandByWeekday[0] - 1));
+            Assert.That(outlet.SeasonalDemandPpm[0], Is.EqualTo(spec.Outlets[0].SeasonalDemandPpm[0] - 1));
+            Assert.That(run.HandFishPerStep, Is.EqualTo(spec.Runs[0].HandFishPerStep - 1));
+
+            spec.Outlets[0].DemandByWeekday = null;
+            spec.Outlets[0].SeasonalDemandPpm = null;
+            var invalid = spec.Outlets[0].Snapshot();
+            Assert.That(invalid.DemandByWeekday, Is.Null);
+            Assert.That(invalid.SeasonalDemandPpm, Is.Null);
+        }
+
+        [Test]
         public void Calendar_UsesSharedCoreSeasonOffsetAtTheConfiguredDayBoundary()
         {
             var spec = Fixture(); spec.StartDayOfYear = 2;

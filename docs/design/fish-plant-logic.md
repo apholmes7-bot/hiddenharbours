@@ -6,8 +6,10 @@ Nothing instantiates it in normal play; no scene, prefab, save format, existing
 Def value, appearance or player economy changes. The full plant's location is
 `region.nine_mile_creek` only, with no coordinates.
 
-`FishPlantDef.BuildSpec` snapshots the individual storage, line, outlet and truck
-run assets and validates their references. Construct `FishChainModel` once and
+`FishPlantDef.BuildSpec` takes managed snapshots of the individual storage, line,
+outlet and truck run assets and validates their references. It copies row fields
+directly and detaches outlet calendar arrays, without a JSON serialization roundtrip.
+Construct `FishChainModel` once and
 feed `AdvanceTo(IGameClock.TotalSeconds)` rounded down to an integral game second
 from the future slow-tick composition root. It catches up every fixed step, in
 order, and rejects time reversal. Day zero is weekday index zero. Calendar length
@@ -89,12 +91,15 @@ remain LATER under the enterprise and freight phases.
 `FishChainModelTests` covers per-tick conservation of both species counts and
 grams, deterministic replay across polling intervals, empty/full plants, exact
 daily/seasonal demand at all six outlets, boundary-gated export, missing hands or
-routes, blocked output, unstaffed lines, and storage limits. Its allocation test
+routes, blocked output, unstaffed lines, storage limits, and snapshot field preservation
+and isolation from source rows and calendar arrays. Its allocation test
 first calibrates the counter with a retained allocation, then measures busy
 transfer/processing/demand steps; an unusable counter is a reported skip.
 
 `FishChainUnityTests` loads the actual 41 new Def assets, checks the six outlet
-kinds/counts, stable ids and existing species/vehicle/trip/region references. Its
+kinds/counts, stable ids and existing species/vehicle/trip/region references. It also
+compares every constructed row field with the corresponding imported Def and checks
+that row objects and calendar arrays are detached. Its
 full-plant test drives the existing `Market` API via a test adapter and proves a
 lower quote plus exactly-once supply registration. The adapter is test-only; live
 integration remains parked. No existing rule assert or plate is weakened.

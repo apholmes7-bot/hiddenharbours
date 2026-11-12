@@ -25,6 +25,10 @@ namespace HiddenHarbours.Tests.Economy
             Assert.That(spec.RegionId, Is.EqualTo("region.nine_mile_creek"));
             Assert.That(spec.Storages.Length, Is.EqualTo(21)); Assert.That(spec.Lines.Length, Is.EqualTo(4));
             Assert.That(spec.Outlets.Length, Is.EqualTo(6)); Assert.That(spec.Runs.Length, Is.EqualTo(9));
+            for (int i = 0; i < spec.Storages.Length; i++) AssertSnapshot(plant.Storages[i].Spec, spec.Storages[i]);
+            for (int i = 0; i < spec.Lines.Length; i++) AssertSnapshot(plant.Lines[i].Spec, spec.Lines[i]);
+            for (int i = 0; i < spec.Outlets.Length; i++) AssertSnapshot(plant.Outlets[i].Spec, spec.Outlets[i]);
+            for (int i = 0; i < spec.Runs.Length; i++) AssertSnapshot(plant.Runs[i].Spec, spec.Runs[i]);
             Assert.That(AssetDatabase.FindAssets("t:FishPlantDef", new[] { Root }).Length, Is.EqualTo(1));
             Assert.That(AssetDatabase.FindAssets("t:FishStorageDef", new[] { Root }).Length, Is.EqualTo(21));
             Assert.That(AssetDatabase.FindAssets("t:FishLineDef", new[] { Root }).Length, Is.EqualTo(4));
@@ -73,6 +77,17 @@ namespace HiddenHarbours.Tests.Economy
         {
             StringAssert.IsMatch(@"^[a-z][a-z0-9_]*\.[a-z][a-z0-9_]*$", id);
             Assert.That(ids.Add(id), Is.True, id);
+        }
+
+        private static void AssertSnapshot(object source, object snapshot)
+        {
+            Assert.That(snapshot, Is.Not.SameAs(source));
+            foreach (var field in source.GetType().GetFields())
+            {
+                object authored = field.GetValue(source), copied = field.GetValue(snapshot);
+                Assert.That(copied, Is.EqualTo(authored), field.Name);
+                if (authored is System.Array) Assert.That(copied, Is.Not.SameAs(authored), field.Name);
+            }
         }
 
         private static HashSet<string> ContentIds(string type)
