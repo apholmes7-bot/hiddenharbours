@@ -21,6 +21,10 @@ namespace HiddenHarbours.Boats
         public float RoundingLaneFraction;
         public float RoundingStepDeg;
         public float GateOvershootDeg;
+        public SailRaceSkipperRules ClubSkipper;
+
+        public SailRaceNpc.Skipper BuildSkipper(string racerId, SailRaceCourse course, int worldSeed, double gunTime,
+            IRaceWindSource wind) => Build(racerId, course, worldSeed, gunTime).CreateSkipper(wind, ClubSkipper);
 
         public SailRaceNpc Build(string racerId, SailRaceCourse course, int worldSeed, double gunTime)
         {
