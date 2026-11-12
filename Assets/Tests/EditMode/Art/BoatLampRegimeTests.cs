@@ -83,6 +83,20 @@ namespace HiddenHarbours.Tests.Art.EditMode
         }
 
         [Test]
+        public void ADerelictShowsNoLampAtAll_AboardOrNot()
+        {
+            // A wreck on a beach has no power and nobody aboard. If she burned an anchor light or a
+            // lit wheelhouse she would read as a boat somebody is keeping, which is the one thing a
+            // wreck must not say.
+            foreach (HullLampKind kind in System.Enum.GetValues(typeof(HullLampKind)))
+            {
+                Assert.IsFalse(BoatLamps.ShowsWhen(kind, VesselWay.Derelict, Aboard), kind + " burns on a derelict");
+                Assert.IsFalse(BoatLamps.ShowsWhen(kind, VesselWay.Derelict, NobodyAboard), kind + " burns on a derelict");
+            }
+            Assert.AreEqual(2, (int)VesselWay.Derelict, "appended after Moored; the first two never renumber");
+        }
+
+        [Test]
         public void EveryLampKindHasAnAnswerInBothRegimes()
         {
             // A new kind added to the enum without a thought here would fall into the "not the anchor
