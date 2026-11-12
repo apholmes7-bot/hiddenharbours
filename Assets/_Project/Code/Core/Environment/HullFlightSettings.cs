@@ -88,11 +88,11 @@ namespace HiddenHarbours.Core
         public static HullFlightSettings Default => new HullFlightSettings
         {
             Enabled = true,
-            KeelClearFraction = 1f,
+            KeelClearFraction = 0.3f,
             MinAirSeconds = 0.15f,
             PlaningStiffnessPerFroude = 2f,
             MaxPlaningStiffness = 8f,
-            MinDampingRatio = 1.5f,
+            MinDampingRatio = 1f,
             MaxFollowSlope = 0.2f,
             FollowRiseBase = 0.5f,
             MaxBuryDraughts = 2f,

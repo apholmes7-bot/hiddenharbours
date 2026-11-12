@@ -545,11 +545,11 @@ MonoBehaviour:
     SideReach: 0.7
   HullFlight:
     Enabled: 1
-    KeelClearFraction: 1
+    KeelClearFraction: 0.3
     MinAirSeconds: 0.15
     PlaningStiffnessPerFroude: 2
     MaxPlaningStiffness: 8
-    MinDampingRatio: 1.5
+    MinDampingRatio: 1
     MaxFollowSlope: 0.2
     FollowRiseBase: 0.5
     MaxBuryDraughts: 2

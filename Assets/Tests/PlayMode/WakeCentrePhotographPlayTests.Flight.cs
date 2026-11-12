@@ -24,13 +24,14 @@ namespace HiddenHarbours.Tests.PlayMode
         const string FlightVisualPath = "Assets/_Project/Data/Boats/Visuals/SportSkiffSingle.asset";
         // The last try is the mechanism alone: the outboard dory held far faster than she goes.
         const string FlightFallbackHullPath = "Assets/_Project/Data/Boats/DoryOutboard.asset";
-        // Each try asks for a harder sea and more speed than the last: a sheltered creek raises less sea
-        // than open water does for the same wind.
-        static readonly float[] FlightSeas = { 0.8f, 1f, 1f };
-        static readonly float[] FlightSpeeds = { 10f, 10f, 16f };
+        // In the shipped storm the sport skiff at her own top speed hops about once in nine seconds, so
+        // one short run usually catches none. She is given several short runs, each a fresh hull woken on
+        // the water at one of the open-water anchors, rather than one long run that leaves the region.
+        static readonly float[] FlightSeas = { 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f };
+        static readonly float[] FlightSpeeds = { 10f, 10f, 10f, 10f, 10f, 10f, 10f, 10f, 16f };
         const float FlightSecondsPerTry = 7f;
         /// <summary>Air under her keel, metres, before the flight plate is taken.</summary>
-        const float FlightPlateClearance = 0.35f;
+        const float FlightPlateClearance = 0.15f;
         /// <summary>Seconds after the landing is reported before the splash plate is taken.</summary>
         const float SplashPlateDelay = 0.10f;
         /// <summary>Half the height of the frame both plates are taken at, metres.</summary>
@@ -107,10 +108,10 @@ namespace HiddenHarbours.Tests.PlayMode
                         visual = LoadAsset<BoatVisualDef>(DoryVisualPath);
                         if (hull == null || visual == null) break;
                     }
-                    Spawned she = Spawn("flight", hull, visual, false, new Leg("try" + i, headingDeg, 0f), anchors[i]);
+                    Spawned she = Spawn("flight", hull, visual, false, new Leg("try" + i, headingDeg, 0f), anchors[i % anchors.Count]);
                     GameObject go = she.Go;
 
-                    var run = new Bounds(new Vector3(anchors[i].x, anchors[i].y, 0f), Vector3.one * 30f);
+                    var run = new Bounds(new Vector3(anchors[i % anchors.Count].x, anchors[i % anchors.Count].y, 0f), Vector3.one * 30f);
                     yield return FrameOn(go.transform, run);
 
                     // SetHour stops the game clock, and a stopped clock is a FROZEN sea: nothing comes to meet
@@ -156,8 +157,8 @@ namespace HiddenHarbours.Tests.PlayMode
                         "[{0}] flight/try{1}: from ({2:0.0}, {3:0.0}) heading {4:0} deg at {5:0.0} m/s, sea {6:0.00}, wind " +
                         "({7:0.0}, {8:0.0}) m/s; airborne seen: {9}; most air {10:0.00} m; flight plate: {11}; splash plate: {12}; "
                         + "fetch at the start {13:0.00}; share of the open sea under her from {14:0.00} to {15:0.00}.",
-                        PlateDir, i, anchors[i].x, anchors[i].y, headingDeg, FlightSpeed, FlightSea01, wind.x, wind.y,
-                        airborneSeen, peak, gotFlight, gotSplash, GameServices.FetchAt(anchors[i]).Fraction, lowest, highest)
+                        PlateDir, i, anchors[i % anchors.Count].x, anchors[i % anchors.Count].y, headingDeg, FlightSpeed, FlightSea01, wind.x, wind.y,
+                        airborneSeen, peak, gotFlight, gotSplash, GameServices.FetchAt(anchors[i % anchors.Count]).Fraction, lowest, highest)
                         + string.Format(CultureInfo.InvariantCulture, " Hull {0}, {1:0.00} m long, drawing {2:0.00} m; slowest she was read at {3:0.0} m/s; aground seen: {4}; flight switched on: {5}.", hull.Id, hull.LengthMeters, hull.DraughtMeters, slowest, agroundSeen, GameServices.HullFlight.Enabled)
                         + string.Format(CultureInfo.InvariantCulture, " Live sea {0:0.00} m rms against the formula's {1:0.00} m, " +
                           "after waiting {2:0.0} s; shared field published: {3}.", haveRms, wantRms, builtSeconds, SharedWaveField.IsPublished));

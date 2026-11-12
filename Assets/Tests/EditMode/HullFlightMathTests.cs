@@ -24,6 +24,38 @@ namespace HiddenHarbours.Tests.EditMode
             public List<float> Rides;
         }
 
+        // THE SHIPPED SEA, not the code defaults. The law is tuned to the sea the player actually sails
+        // (measured live at 0.33 m rms in a rough sea, 0.43 m in a storm); the wave field's code defaults
+        // raise one about twice as high, and a law pinned on those flies nothing in the real game. So the
+        // settings are read from the shipped config, the same file the coverage test reads.
+        static readonly WaveFieldSettings ShippedSea = Shipped(WaveFieldSettings.Default, "WaveField");
+        static readonly HullWeightSettings ShippedWeight = Shipped(HullWeightSettings.Default, "HullWeight");
+
+        static T Shipped<T>(T fallback, string block) where T : struct
+        {
+            object boxed = fallback;
+            bool inside = false;
+            int read = 0;
+            foreach (string line in System.IO.File.ReadAllLines("Assets/_Project/Data/Config/GameConfig.asset"))
+            {
+                if (line.StartsWith("  " + block + ":")) { inside = true; continue; }
+                if (!inside) continue;
+                if (!line.StartsWith("    ")) break;
+                string[] kv = line.Trim().Split(':');
+                System.Reflection.FieldInfo f = typeof(T).GetField(kv[0]);
+                if (f == null) continue;
+                string v = kv[1].Trim();
+                var inv = System.Globalization.CultureInfo.InvariantCulture;
+                if (f.FieldType == typeof(float)) f.SetValue(boxed, float.Parse(v, inv));
+                else if (f.FieldType == typeof(int)) f.SetValue(boxed, int.Parse(v, inv));
+                else if (f.FieldType == typeof(bool)) f.SetValue(boxed, v == "1");
+                else continue;
+                read++;
+            }
+            Assert.Greater(read, 0, $"the shipped config has no {block} block to read");
+            return (T)boxed;
+        }
+
         // The game's own seas, by the wind that raises them and the sea state: (wind m/s, sea 0..1).
         // The winds are the ones the weather itself gives for each sea state (WeatherModel.WindStrengthFor):
         // its storm tops out at 14 m/s.
@@ -36,9 +68,9 @@ namespace HiddenHarbours.Tests.EditMode
                          HullFlightSettings cfg, float seconds = 60f, bool keepRides = false)
         {
             HullHeaveResponse heave = HullHeaveResponseMath.Resolve(length, halfBeam, draught, 0.6f, G,
-                                                                    HullWeightSettings.Default);
+                                                                    ShippedWeight);
             Assert.IsTrue(heave.IsHonest, "the test hull must resolve a real heave spring");
-            WaveFieldSettings field = WaveFieldSettings.Default;
+            WaveFieldSettings field = ShippedSea;
             WaveTrains trains = WaveMath.TrainsFrom(new Vector2(Seas[sea].wind, 0f), Seas[sea].sea, in field);
             Vector2 heading = new Vector2(-1f, 0f);   // into the sea
             var state = default(HullFlightState);
@@ -80,7 +112,7 @@ namespace HiddenHarbours.Tests.EditMode
         {
             // Up to 2.3 m/s, as fast as the rowed dory goes. (The outboard dory flat out at 3 m/s takes one
             // hop of under 0.2 m a minute in a gale or a storm: recorded in the PR, not pinned here.)
-            foreach (float speed in new[] { 0f, 0.8f, 1.5f, 2.3f })
+            foreach (float speed in new[] { 0f, 0.8f, 1.5f, 2.3f, 3f })
                 for (int sea = Breeze; sea <= Gale; sea++)
                 {
                     Run run = Dory(speed, sea);
@@ -108,6 +140,32 @@ namespace HiddenHarbours.Tests.EditMode
                 Assert.AreEqual(HullFlightEvent.None, step.Event, "Glass launches nothing at any speed.");
                 Assert.AreEqual(0f, step.ClearanceMeters);
             }
+        }
+
+        // ---- the game's own hulls, at speeds they really make, on the sea the game really raises --------
+
+        [Test]
+        public void ASportSkiffAtHerTopSpeed_OnTheShippedSea_HopsInAStorm_AndNeverInAnOrdinarySea()
+        {
+            // 7 m, half a metre of draught, 10.3 m/s: the sport skiff flat out.
+            Run Skiff(int sea) => Drive(10.3f, 7f, 1.2f, 0.5f, sea, HullFlightSettings.Default, 300f);
+            Assert.AreEqual(0, Skiff(Breeze).Launches, "A breeze's sea must not throw a 7 m skiff.");
+            Assert.AreEqual(0, Skiff(Moderate).Launches, "A moderate sea must not throw a 7 m skiff.");
+            Run storm = Skiff(Gale);
+            Assert.Greater(storm.Launches, 0, "Flat out into the shipped storm she must leave the water.");
+            Assert.Less(storm.Launches, 15 * 5, "…in hops, not a pogo: fewer than fifteen a minute.");
+            Assert.Less(storm.LongestAir, 1f, "…and each hop is short.");
+            Assert.Less(storm.PeakClearance, 1f, "…and low.");
+        }
+
+        [Test]
+        public void ATwelveMetreWorkBoatAtCruisingSpeed_OnTheShippedSea_NeverLeavesIt()
+        {
+            // 12.9 m, 1.4 m of draught: a Cape Islander's dimensions, at 6 and 10 m/s.
+            foreach (float speed in new[] { 6f, 10f })
+                for (int sea = Breeze; sea <= Gale; sea++)
+                    Assert.AreEqual(0, Drive(speed, 12.9f, 2.4f, 1.4f, sea, HullFlightSettings.Default, 300f).Launches,
+                                    $"12.9 m of work boat flew at {speed} m/s in sea {sea}.");
         }
 
         // ---- the same hull, the same sea: speed decides ---------------------------------------------
