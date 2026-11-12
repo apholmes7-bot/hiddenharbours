@@ -156,6 +156,26 @@ exist. Swell haul math (`Code/Fishing/TrapHaulMath.cs:32`), haul and deck contro
 `Data/Boats/DeckGear/LobsterBoatDeckGear.asset:18`). M2-33's powered winch remains unbuilt
 (`backlog/backlog.md:250`).
 
+### NPC pot boats (the same job, on the clock)
+
+A resident lobster boat works a string of pots off her home harbour as a pure function of
+`(worldSeed, gameTime)`; nothing about her or her gear is saved. One `NpcPotDayDef` per boat
+(`potday.*`, in `Data/Traps`, listed in `Resources/NpcPotDayLibrary`) holds the berth, the passage out
+and home, the string, the times of each part of the job, and the rope and buoy. `NpcPotDay` (Fishing)
+builds the whole day from it once; the boat and every pot at any clock second are then lookups, so a
+game loaded mid-day finds them where the clock says. A pot lies where the latest set put it:
+today's once today's set is done, yesterday's until today's haul.
+
+- The pot is always worked at the starboard rail: she lies to it, gaffs the buoy, hauls the pot up
+  the rope, works it aboard, eases to the new mark and sets it again, buoy last.
+- `PotRopeMath` gives the buoy: the rope is a fixed length, so the buoy streams off the pot by a
+  share of the spare scope, one way on the flood and the other on the ebb, and closes up over the pot
+  as the tide rises.
+- `NpcPotBoats` (App) moves the scene's own `MooredBoat` and draws buoy, rope and pot. NPC gear
+  never enters the player's pot service, pot locker or save.
+- A content test holds every authored day to the real ground: afloat the whole way at spring low,
+  pots in fishable water, every rope reaching the surface at spring high.
+
 ## 4. Longline (first)
 
 Method source: [boat gear, sections 6.1 and 6.2](boats-and-navigation.md#61-gear-methods-mounted-as-gear-components)

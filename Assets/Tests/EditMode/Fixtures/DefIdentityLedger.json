@@ -59,6 +59,7 @@
     "HiddenHarbours.Fishing.DeckWorkDef",
     "HiddenHarbours.Fishing.FishSpeciesDef",
     "HiddenHarbours.Fishing.LonglineDef",
+    "HiddenHarbours.Fishing.NpcPotDayDef",
     "HiddenHarbours.Fishing.RodFightDef",
     "HiddenHarbours.Fishing.TackleDef",
     "HiddenHarbours.Fishing.TrapDef",
@@ -5699,6 +5700,11 @@
       "Type": "HiddenHarbours.Fishing.LonglineDef",
       "Guid": "f656103fa23648e9a35afdae940d7093",
       "Id": "longline.groundfish_tub"
+    },
+    {
+      "Type": "HiddenHarbours.Fishing.NpcPotDayDef",
+      "Guid": "ea84cea831934f47895968c596e96c29",
+      "Id": "potday.nmc_doiron_yvette"
     },
     {
       "Type": "HiddenHarbours.Fishing.RodFightDef",
