@@ -284,8 +284,13 @@ namespace HiddenHarbours.Tools.RigBaking
             MeshOnly("sideDragger", "sideDraggerIsoRig.js", "SideDraggerIso", "SideDraggerIso",
                      "side_dragger_iso", "side dragger (T4, 25 m — the first offshore hull)"),
 
-            MeshOnly("sternTrawler", "sternTrawlerIsoRig.js", "SternTrawlerIso", "SternTrawlerIso",
-                     "stern_trawler_iso", "stern trawler (T5, ~38 m — stern ramp, gantry, net drum)"),
+            // Hull layout (ADR 0048 batch 3, the first of the working ships): her published scope
+            // owns her cell, and her walk sidecar answers for her deck and rooms.
+            new FleetHull("sternTrawler", "docs/art/rigs/sternTrawlerIsoRig.js", "SternTrawlerIso",
+                "Assets/_Project/Data/Boats/HullMeshes/SternTrawlerIsoHullMesh.asset", "hullmesh.stern_trawler_iso",
+                new[] { "Assets/_Project/Data/Boats/Visuals/SternTrawlerIso.asset" }, new[] { "visual.stern_trawler_iso" },
+                false, "stern trawler (T5, ~38 m — stern ramp, gantry, net drum)",
+                extraction: new RigHullExtraction { HullScope = "byId('stern_trawler')" }),
 
             // A genuinely separate rig, not a variant flag on the first: the art director shipped two
             // files. Baked as two hulls because that is what they are on disk.

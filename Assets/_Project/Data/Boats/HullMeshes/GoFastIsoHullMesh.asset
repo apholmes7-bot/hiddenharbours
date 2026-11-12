@@ -137,6 +137,7 @@ MonoBehaviour:
   - {x: 14186, y: 4}
   DoorLeafClosed: {fileID: 4915131377032838400}
   DoorLeafOpen: {fileID: 5729671438985905850}
+  DoorLeaves: []
   Ramps:
   - Colors:
     - serializedVersion: 2

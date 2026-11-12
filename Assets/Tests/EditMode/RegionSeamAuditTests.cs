@@ -15,7 +15,7 @@ namespace HiddenHarbours.Tests.EditMode
     /// <summary>Reads committed Force Text and existing Defs; never opens, rebuilds or saves a scene.</summary>
     public class RegionSeamAuditTests
     {
-        private static readonly string[] Scenes = { "EastWater", "Greywick", "NineMileCreek", "StPeters", "RicePoint", "Cumberland", "Greybox" };
+        private static readonly string[] Scenes = { "EastWater", "Greywick", "NineMileCreek", "StPeters", "RicePoint", "Cumberland", "Greybox", "SouthWater" };
         private static readonly Dictionary<string, SceneYaml> Parsed = new(StringComparer.Ordinal);
         private static readonly Dictionary<string, string> ScriptGuids = new(StringComparer.Ordinal);
         private static readonly Dictionary<string, string> RegionScenes = Directory.GetFiles("Assets/_Project/Data/Regions", "*.asset")
@@ -111,6 +111,7 @@ namespace HiddenHarbours.Tests.EditMode
             ["RicePoint"] = new[] { "door.rpt_sea|NineMileCreek|rpt_sea|Sea|True", "door.rpt_route_91|NineMileCreek|rpt_route_91|Road|False", "door.rpt_strand|NineMileCreek|rpt_strand|Foot|True" },
             ["Cumberland"] = new[] { "door.cmb_route_91|NineMileCreek|cmb_route_91|Road|True", "door.cmb_north_beach|NineMileCreek|cmb_north_beach|Foot|True", "door.cmb_bay|NineMileCreek|cmb_bay|Sea|True" },
             ["Greybox"] = new[] { "PassageToPortGreywick|||Sea|True" },
+            ["SouthWater"] = new[] { "PassageToRicePoint|RicePoint|south_water|Sea|True", "PassageToStPeters|StPeters|south_water|Sea|True", "PassageToEastWater|EastWater|south_water|Sea|True" },
         };
 
         private static readonly Dictionary<string, string[]> ExpectedKeys = new(StringComparer.Ordinal)
@@ -122,6 +123,7 @@ namespace HiddenHarbours.Tests.EditMode
             ["RicePoint"] = new[] { "nmc_sea", "nmc_strand", "nmc_route_91" },
             ["Cumberland"] = new[] { "nmc_route_91", "nmc_north_beach", "nmc_bay" },
             ["Greybox"] = Array.Empty<string>(),
+            ["SouthWater"] = new[] { "rice_point", "st_peters", "east_water" },
         };
 
         private static readonly Dictionary<string, string[]> ExpectedPoints = new(StringComparer.Ordinal)
@@ -133,6 +135,7 @@ namespace HiddenHarbours.Tests.EditMode
             ["RicePoint"] = new[] { "default.boat|-53.285|-109.825|0.0", "default.foot|-56.0|-108.4|0.0", "nmc_sea.boat|366.0|-162.5|0.0", "nmc_sea.foot|366.0|-90.0|0.0", "nmc_strand.foot|366.0|-96.0|0.0", "nmc_route_91.foot|366.0|-42.0|0.0" },
             ["Cumberland"] = new[] { "default.boat|210.25|-128.25|0.0", "default.foot|210.25|-125.25|0.0", "nmc_route_91.foot|-186.0|-266.0|0.0", "nmc_north_beach.foot|67.0|-266.0|0.0", "nmc_bay.boat|240.0|-266.0|0.0", "nmc_bay.foot|45.25|-266.0|0.0" },
             ["Greybox"] = new[] { "default.boat|-2.5|-13.5|0.0", "default.foot|0.0|-10.5|0.0" },
+            ["SouthWater"] = new[] { "default.boat|250.0|536.0|0.0", "rice_point.boat|-900.0|536.0|0.0", "st_peters.boat|250.0|536.0|0.0", "east_water.boat|950.0|536.0|0.0" },
         };
 
 
@@ -143,6 +146,7 @@ namespace HiddenHarbours.Tests.EditMode
         [TestCase("RicePoint")]
         [TestCase("Cumberland")]
         [TestCase("Greybox")]
+        [TestCase("SouthWater")]
         public void CommittedPassages_MatchTheDocumentedGraph(string name)
         {
             var actual = ReadEdges().Where(e => e.From == name).Select(e =>
@@ -157,6 +161,7 @@ namespace HiddenHarbours.Tests.EditMode
         [TestCase("RicePoint")]
         [TestCase("Cumberland")]
         [TestCase("Greybox")]
+        [TestCase("SouthWater")]
         public void NamedArrivals_MatchTheDocumentedKeys(string name)
             => Assert.That(Named(Anchor(name)).Select(m => m.Groups[1].Value).OrderBy(s => s, StringComparer.Ordinal),
                 Is.EqualTo(ExpectedKeys[name].OrderBy(s => s, StringComparer.Ordinal)));
@@ -168,6 +173,7 @@ namespace HiddenHarbours.Tests.EditMode
         [TestCase("RicePoint")]
         [TestCase("Cumberland")]
         [TestCase("Greybox")]
+        [TestCase("SouthWater")]
         public void ArrivalTransforms_MatchTheDocumentedCoordinates(string name)
         {
             var scene = Scene(name);
@@ -216,6 +222,7 @@ namespace HiddenHarbours.Tests.EditMode
         [TestCase("RicePoint")]
         [TestCase("Cumberland")]
         [TestCase("Greybox")]
+        [TestCase("SouthWater")]
         public void ArrivalCentres_AreOutsideEveryEnabledPassageBand(string name)
         {
             var scene = Scene(name); var anchor = Anchor(name);
@@ -256,9 +263,10 @@ namespace HiddenHarbours.Tests.EditMode
             => Assert.That(Graph().ReachableFrom("StPeters"), Is.EqualTo(new[] { "EastWater", "Greybox", "NineMileCreek", "RicePoint", "StPeters" }));
 
         [Test]
-        public void MissingNamedArrivals_AreTheThreeCumberlandKeysAndShutRicePointRoad()
+        public void MissingNamedArrivals_AreCumberlandsKeysTheShutRicePointRoadAndTheSouthWatersUnansweredDoors()
             => Assert.That(Graph().MissingNamedArrivals(), Is.EqualTo(new[] {
-                "Cumberland/door.cmb_bay", "Cumberland/door.cmb_north_beach", "Cumberland/door.cmb_route_91", "RicePoint/door.rpt_route_91" }));
+                "Cumberland/door.cmb_bay", "Cumberland/door.cmb_north_beach", "Cumberland/door.cmb_route_91", "RicePoint/door.rpt_route_91",
+                "SouthWater/PassageToEastWater", "SouthWater/PassageToRicePoint", "SouthWater/PassageToStPeters" }));
 
         [Test]
         public void UnavailableTargets_AreTwoWestWaterDoorsAndTheUnwiredGreyboxExit()
@@ -266,10 +274,19 @@ namespace HiddenHarbours.Tests.EditMode
                 "Greybox/PassageToPortGreywick", "NineMileCreek/PassageToWestWater", "StPeters/PassageToWestWater" }));
 
         [Test]
-        public void UnpairedLiveEdges_AreCumberlandAndTheTwoCoveEntries()
+        public void UnpairedLiveEdges_AreCumberlandTheTwoCoveEntriesAndTheSouthWatersThreeDoors()
             => Assert.That(Graph().UnpairedEdges(), Is.EqualTo(new[] {
                 "Cumberland/door.cmb_bay", "Cumberland/door.cmb_north_beach", "Cumberland/door.cmb_route_91",
-                "Greywick/PassageToCoddleCove", "NineMileCreek/PassageToCoddleCove" }));
+                "Greywick/PassageToCoddleCove", "NineMileCreek/PassageToCoddleCove",
+                "SouthWater/PassageToEastWater", "SouthWater/PassageToRicePoint", "SouthWater/PassageToStPeters" }));
+
+        [Test]
+        public void TheSouthWater_IsNotReachableUntilANeighbourOpensItsHalf()
+        {
+            Assert.That(Graph().ReachableFrom("StPeters"), Does.Not.Contain("SouthWater"));
+            Assert.That(Graph().ReachableFrom("SouthWater"), Is.EqualTo(new[] {
+                "EastWater", "Greybox", "NineMileCreek", "RicePoint", "SouthWater", "StPeters" }));
+        }
 
         [Test]
         public void BuildAndIdentityFacts_MatchTheAudit()
@@ -278,7 +295,7 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.That(BuildScenes().Contains("WestWater"), Is.False);
             Assert.That(File.Exists("Assets/_Project/Scenes/WestWater.unity"), Is.False);
             Assert.That(RegionScenes.Values.OrderBy(s => s, StringComparer.Ordinal), Is.EqualTo(new[] {
-                "Cumberland", "EastWater", "Greybox", "NineMileCreek", "RicePoint", "StPeters", "WestWater" }));
+                "Cumberland", "EastWater", "Greybox", "NineMileCreek", "RicePoint", "SouthWater", "StPeters", "WestWater" }));
             Assert.That(Anchor("Greywick").Field("_regionId"), Is.EqualTo(SaveMigration.RenamedRegionFrom));
             Assert.That(Anchor("NineMileCreek").Field("_regionId"), Is.EqualTo(SaveMigration.RenamedRegionTo));
         }
