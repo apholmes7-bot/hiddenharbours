@@ -200,12 +200,13 @@ namespace HiddenHarbours.Tools.RigBaking
             propId: "hullprop.jet_ski_handlebar",
             extraction: new RigPropExtraction
             {
-                FaceBuilderCall = "handlebarFaces(0)",
+                // partFaces, not handlebarFaces: the same faces, but carrying the deck level the bake demands.
+                FaceBuilderCall = "byId('jet_ski').partFaces('handlebar',{})",
                 PivotCall = "HANDLEBAR.pivot",
                 MaxSteerCall = "HANDLEBAR.lock",
                 SteerAxisCall = "HANDLEBAR.axis",
                 CellPath = "",
-                ExtraSymbols = new[] { "handlebarFaces", "HANDLEBAR" },
+                ExtraSymbols = new[] { "byId", "HANDLEBAR" },
             },
             wornBy: new[] { ($"{Visuals}/JetSkiIso.asset", "HelmBar") },
             label: "jetski handlebars (turn about the raked column)");
