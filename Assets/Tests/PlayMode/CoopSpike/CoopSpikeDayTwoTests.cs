@@ -219,9 +219,12 @@ namespace HiddenHarbours.Tests.CoopSpike
                     rigs[i].Player.transform.position = rigs[i].Boat.transform.TransformPoint(new Vector3(0.2f * step, -0.3f * step));
                 yield return WaitForConditionOrTimeOut(() => Enumerable.Range(0, remotes.Length).All(i =>
                     Vector3.Distance(remotes[i].Boat.Value.SkipperLocal, new Vector3(0.2f * step, -0.3f * step)) < 0.001f
-                    && Mathf.Abs(Mathf.DeltaAngle(remotes[i].Boat.Value.SkipperHeading, rigs[i].Character.HeadingDegrees)) < 0.001f));
+                    && Mathf.Abs(Mathf.DeltaAngle(remotes[i].Boat.Value.SkipperHeading, rigs[i].Character.HeadingDegrees)) < 0.001f
+                    && Mathf.Abs(remotes[i].GetComponent<CoopReplicaView>().Character.HeadingDegrees
+                        - rigs[i].Character.HeadingDegrees) < 0.001f));
                 Assert.That(s_GlobalTimeoutHelper.TimedOut, Is.False);
-                yield return null;
+                // The drawn heading updates after the network value. Wait for that observable
+                // above; an extra arbitrary frame can invalidate the snapshot just accepted.
                 for (int i = 0; i < remotes.Length; i++)
                 {
                     var view = remotes[i].GetComponent<CoopReplicaView>();
