@@ -2505,6 +2505,11 @@
     },
     {
       "Type": "HiddenHarbours.Core.CharacterSkinDef",
+      "Guid": "31d414b2ca56bc343b8af672394f540a",
+      "Id": "charskin.fisher_rig11"
+    },
+    {
+      "Type": "HiddenHarbours.Core.CharacterSkinDef",
       "Guid": "2d5b0f205af4eba4db8585337910cdf8",
       "Id": "charskin.ginny"
     },
@@ -2522,6 +2527,11 @@
       "Type": "HiddenHarbours.Core.CharacterSkinDef",
       "Guid": "33a7705957f0c9d419fa7ce386e04fbc",
       "Id": "charskin.nan"
+    },
+    {
+      "Type": "HiddenHarbours.Core.CharacterSkinDef",
+      "Guid": "2aeb3b6c32dd8c14e8b607c74e3b31c9",
+      "Id": "charskin.nan_rig11"
     },
     {
       "Type": "HiddenHarbours.Core.CharacterSkinDef",
