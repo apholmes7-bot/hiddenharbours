@@ -460,7 +460,9 @@ namespace HiddenHarbours.Art
             // ---- the two motion channels ----------------------------------------------------------
             // (Her way through the water is taken above, where the trailing end is chosen.)
             float wakeExponent = _way == VesselWay.Moored ? _mooredWakeExponent : _wakeExponent;
-            float horizontalSpeed = through.magnitude;
+            // A moored hull makes no way of her own, so she has no leading end and no swept side; but the
+            // stream still runs past her, and that is the speed her trail and her wave train are gated on.
+            float horizontalSpeed = _way == VesselWay.Moored ? sample.CurrentVector.magnitude : through.magnitude;
             float verticalRate = FoamBuffer.RelativeHeaveRate(_surfaceY, _hullY,
                                                               _previousSurfaceY, _previousHullY, dt);
 
