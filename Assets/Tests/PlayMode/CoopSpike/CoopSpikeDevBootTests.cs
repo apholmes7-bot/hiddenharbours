@@ -36,13 +36,24 @@ namespace HiddenHarbours.Tests.CoopSpike
             Assert.That(Application.productName, Is.EqualTo(CoopDevStart.SpikeProduct));
             _previousSave = GameServices.Save;
             GameServices.Save = new MemorySave();
-            yield return SceneManager.LoadSceneAsync("Assets/_Project/Scenes/StPeters.unity", LoadSceneMode.Single);
+            // Match the player's AfterSceneLoad hook: create the bootstrap before the
+            // first physics tick, not after an extra frame of on-foot simulation.
+            void StartTrial(Scene scene, LoadSceneMode mode)
+            {
+                if (scene.name != "StPeters") return;
+                var bootObject = new GameObject("CoopDevBootFixture");
+                Object.DontDestroyOnLoad(bootObject);
+                _boot = bootObject.AddComponent<CoopDevStart>();
+            }
+            SceneManager.sceneLoaded += StartTrial;
+            try
+            {
+                yield return SceneManager.LoadSceneAsync("Assets/_Project/Scenes/StPeters.unity", LoadSceneMode.Single);
+            }
+            finally { SceneManager.sceneLoaded -= StartTrial; }
             yield return null;
             Assert.That(GameServices.Ready, Is.True, "Use the authored core rather than reconstructing one in the test.");
             var clock = GameServices.Clock;
-            var bootObject = new GameObject("CoopDevBootFixture");
-            Object.DontDestroyOnLoad(bootObject);
-            _boot = bootObject.AddComponent<CoopDevStart>();
             float deadline = Time.realtimeSinceStartup + 60;
             while (!_boot.Ready && Time.realtimeSinceStartup < deadline) yield return null;
             Assert.That(_boot.Ready, Is.True, "The real dev-start coroutine must finish.");
@@ -69,6 +80,13 @@ namespace HiddenHarbours.Tests.CoopSpike
             Assert.That(CarriedItem.InHand(GameServices.Hands, settings.Rod.Id), Is.True);
             Assert.That(Vector2.Distance(Object.FindAnyObjectByType<BoatController>().transform.position,
                 settings.HostStart), Is.LessThan(0.1f));
+            yield return new WaitForFixedUpdate();
+            var bootPlayer = Object.FindAnyObjectByType<PlayerWalkController>();
+            Assert.That(bootPlayer.enabled, Is.False, "The helm owns input after relocation.");
+            Assert.That(bootPlayer.WaterState, Is.EqualTo(OnFootWaterState.Dry),
+                "The direct boat start must not pass through an on-foot swimming state.");
+            Assert.That(bootPlayer.GetComponent<CharacterClipPlayer>().IsPlaying, Is.False,
+                "No transient scene-hop clip may keep claiming the skipper at the helm.");
             TestContext.WriteLine("Authored StPeters core -> real dev start -> EastWater; host listening, owned proxy, helm and rod.");
             // Opt-in evidence of the actual authored transforms; no camera or pose is changed.
             string trace = System.Environment.GetEnvironmentVariable("HH_COOP_TEST_TRACE");

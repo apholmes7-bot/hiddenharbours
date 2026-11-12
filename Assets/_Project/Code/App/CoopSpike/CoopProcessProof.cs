@@ -29,7 +29,7 @@ namespace HiddenHarbours.CoopSpike
         {
             public Vector3 gameplayFoot, drawnFoot, deckStand, remoteFoot, remoteHull, localHull, localVisual;
             public bool meshEnabled, meshPresent, meshDrawing, riderCarried;
-            public string meshReason, riderName, drawnState;
+            public string meshReason, riderName, drawnState, activeClip, waterState;
             public float pictureDatum, tideRise;
             public string[] shaders;
         }
@@ -114,6 +114,10 @@ namespace HiddenHarbours.CoopSpike
                 placement.deckStand = rider.DeckStandRigLocal;
                 var presenter = rider.GetComponent<DeckRiderMeshPresenter>();
                 placement.riderName = rider.gameObject.name;
+                var clip = rider.GetComponent<CharacterClipPlayer>();
+                placement.activeClip = clip != null ? clip.Clip.ToString() : "no clip player";
+                var walker = rider.GetComponent<PlayerWalkController>();
+                placement.waterState = walker != null ? walker.WaterState.ToString() : "no walker";
                 placement.meshEnabled = GameServices.Config != null && GameServices.Config.MeshCharacter;
                 placement.meshPresent = presenter != null;
                 placement.meshDrawing = presenter != null && presenter.DrawsInsteadOfSprite;

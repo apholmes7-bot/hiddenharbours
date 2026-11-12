@@ -77,6 +77,10 @@ namespace HiddenHarbours.CoopSpike
             foreach (var save in FindObjectsByType<SaveService>(FindObjectsSortMode.None))
                 DestroyImmediate(save);
             GameServices.Save = new SessionSave();
+            // AfterSceneLoad is before the first physics tick. This trial starts aboard,
+            // so the authored on-foot spawn must not sample deep water while we await core Start.
+            _player = FindFirstObjectByType<PlayerWalkController>();
+            if (_player != null) _player.enabled = false;
             Application.runInBackground = true;
             Debug.Log("[Coop] Fresh memory-only session; no session persistence.");
         }
@@ -92,17 +96,21 @@ namespace HiddenHarbours.CoopSpike
             foreach (var opening in FindObjectsByType<ArrivalOpening>(FindObjectsSortMode.None))
                 opening.enabled = false;
             ShellFlow.ContinueGame();
+            // Board before loading open water. Destination wiring reasserts the current
+            // control mode, so an OnFoot hop could restart walking over deep water.
+            _boat = FindFirstObjectByType<BoatController>();
+            _player = FindFirstObjectByType<PlayerWalkController>();
+            var switcher = FindFirstObjectByType<ControlSwitcher>();
+            if (_boat == null || _player == null || switcher == null || GameServices.Clock == null)
+                throw new InvalidOperationException("The spike needs the authored persistent boat/player core.");
+            PlaceAtHelm(_settings, _boat, _player, switcher, _client);
             if (SceneManager.GetActiveScene().name != _settings.Scene)
             {
                 // Water regions contain no replacement core. Carry the authored core across the hop.
                 yield return SceneManager.LoadSceneAsync(_settings.Scene, LoadSceneMode.Single);
             }
             yield return null;
-            _boat = FindFirstObjectByType<BoatController>();
-            _player = FindFirstObjectByType<PlayerWalkController>();
-            var switcher = FindFirstObjectByType<ControlSwitcher>();
-            if (_boat == null || _player == null || switcher == null || GameServices.Clock == null)
-                throw new InvalidOperationException("The spike needs the authored persistent boat/player core.");
+            // The region's ordinary arrival positioning has now finished; apply the trial spawn.
             PrepareLocal(_settings, _boat, _player, switcher, _client);
 
             // The manager rides this process's persistent service root, never a remote gameplay clone.
@@ -137,6 +145,15 @@ namespace HiddenHarbours.CoopSpike
         public static CarriableTool PrepareLocal(CoopSpikeSettings settings, BoatController boat,
             PlayerWalkController player, ControlSwitcher switcher, bool client)
         {
+            PlaceAtHelm(settings, boat, player, switcher, client);
+            var picker = boat.GetComponent<DevBoatPicker>() ?? boat.gameObject.AddComponent<DevBoatPicker>();
+            picker.Configure(settings.Roster, boat, boat.GetComponent<ShipHold>(), boat.GetComponent<SpriteRenderer>());
+            return EquipRod(settings, player);
+        }
+
+        private static void PlaceAtHelm(CoopSpikeSettings settings, BoatController boat,
+            PlayerWalkController player, ControlSwitcher switcher, bool client)
+        {
             var position = settings.HostStart + (client ? settings.ClientOffset : Vector2.zero);
             // The persistent boat came from the elevated St Peters landing. Its picture's
             // old datum does not describe these open-water spawn coordinates.
@@ -154,9 +171,6 @@ namespace HiddenHarbours.CoopSpike
                 throw new InvalidOperationException("The dev start could not take its own helm.");
             if (switcher.Mode != ControlMode.Aboard)
                 throw new InvalidOperationException("The dev start must finish aboard at the local helm.");
-            var picker = boat.GetComponent<DevBoatPicker>() ?? boat.gameObject.AddComponent<DevBoatPicker>();
-            picker.Configure(settings.Roster, boat, boat.GetComponent<ShipHold>(), boat.GetComponent<SpriteRenderer>());
-            return EquipRod(settings, player);
         }
 
         private static CarriableTool EquipRod(CoopSpikeSettings settings, PlayerWalkController player)
