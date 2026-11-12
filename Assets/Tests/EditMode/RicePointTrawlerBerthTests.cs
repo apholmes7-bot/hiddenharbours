@@ -136,6 +136,56 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.That(field.ElevationAt(plan.PlayerStart), Is.GreaterThan(plan.Region.TideMeanLevel + plan.Region.TideAmplitude), "the wharf deck is still dry");
         }
 
+        /// <summary>
+        /// The dredge is reproducible from the committed inputs: re-run it from the issued base and
+        /// the works file and it gives these rasters, by hash, and the committed live rasters are them.
+        /// </summary>
+        [Test]
+        public void TheDredgeReRunFromTheCommittedInputs_GivesTheCommittedRasters_ByHash()
+        {
+            var rerun = GroundFileIntake.RicePointDredged(GroundFileIntake.ReadRicePointFolder(RicePointBuilder.GroundFolder), Works());
+            Assert.That(GroundFileIntake.RasterCodeHash(rerun.Heights), Is.EqualTo("ab387e6bb82ba8434394505e0dfddff43e0e27ef8bd728451f46fa678025b57e"));
+            Assert.That(GroundFileIntake.RasterCodeHash(rerun.Still), Is.EqualTo("409a0d8819000f217b7eafe7cb9d1dcaa22b4fef8fdc5390a9edbc3de45988eb"));
+            foreach (var (file, codes) in new[] { ("RicePointSeabed_HeightTex_plan.png", rerun.Heights), ("RicePointSeabed_StillTex_plan.png", rerun.Still) })
+                Assert.That(GroundFileIntake.RasterCodeHash(TerrainPlanPng.ReadFile(RicePointBuilder.GroundFolder + "/" + file).Channel(0)),
+                    Is.EqualTo(GroundFileIntake.RasterCodeHash(codes)), file + " is not the dredge's output");
+        }
+
+        /// <summary>
+        /// Widening the range moved nothing that matters: every texel no dredge shape asks to lower
+        /// (the shore, the wharf, every arrival and door, the whole seam) keeps its issued height to
+        /// within one step of the new encoding, and so does every still-water level.
+        /// </summary>
+        [Test]
+        public void OutsideTheDredgeShapes_EveryTexelKeepsItsIssuedHeight_WithinOneEncodeStep()
+        {
+            var works = Works();
+            var issued = GroundFileIntake.ReadRicePointFolder(RicePointBuilder.GroundFolder);
+            var live = GroundFileIntake.ReadRicePointGround(RicePointBuilder.GroundFolder);
+            double step = (works.Range[1] - works.Range[0]) / 65535d;
+            int outside = 0;
+            for (int row = 0; row < issued.Height; row++)
+                for (int col = 0; col < issued.Width; col++)
+                {
+                    int i = row * issued.Width + col;
+                    double before = issued.Decode(issued.Heights[i]);
+                    double x = -issued.Size[0] / 2 + (col + 0.5) / issued.PerMetre, y = issued.Size[1] / 2 - (row + 0.5) / issued.PerMetre;
+                    bool asked = before < works.KeepAbove && works.TargetAt(x, y) < before;
+                    if (asked) continue;
+                    outside++;
+                    if (Math.Abs(live.Decode(live.Heights[i]) - before) > step) Assert.Fail($"texel {col},{row} is outside every dredge shape and moved");
+                    if (issued.Still[i] != 0 && Math.Abs(live.Decode(live.Still[i]) - issued.Decode(issued.Still[i])) > step)
+                        Assert.Fail($"the still water at texel {col},{row} changed level");
+                    if ((issued.Still[i] == 0) != (live.Still[i] == 0)) Assert.Fail($"still water appeared or vanished at texel {col},{row}");
+                }
+            Assert.That(outside, Is.GreaterThan(issued.Heights.Length * 0.97), "the dredge is a small part of the region");
+            // The places people and boats arrive keep their ground: the player's start on the wharf and every door.
+            var plan = Plan();
+            foreach (var door in plan.Doors)
+                foreach (var at in new[] { door.Centre, door.Arrival, door.Disembark })
+                    Assert.That(works.TargetAt(at.x, at.y), Is.GreaterThan(works.KeepAbove), door.Id + " is clear of every cut");
+        }
+
         [Test]
         public void TheDredgedBedFitsInsideTheGroundsEncodingRange()
         {
