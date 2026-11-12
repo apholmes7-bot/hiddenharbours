@@ -45,6 +45,40 @@ namespace HiddenHarbours.Tests.EditMode
             return plan;
         }
 
+        [TestCase(6f, 18f)]
+        [TestCase(22f, 6f)]
+        public void ReloadAtEveryHourAndTripTransition_MatchesTheClockWithoutReplay(float outbound, float home)
+        {
+            VehicleTripPlan live = Built(outbound, home);
+            var hours = new System.Collections.Generic.List<float>();
+            for (int hour = 0; hour < 24; hour++)
+            {
+                hours.Add(hour);
+                hours.Add(hour + 0.375f);
+            }
+            const float edge = 1f / 4096f;
+            for (int leg = 0; leg < live.DepartureHours.Length; leg++)
+            {
+                float departure = live.DepartureHours[leg];
+                float next = live.DepartureHours[(leg + 1) % live.DepartureHours.Length];
+                hours.Add(departure - edge);
+                hours.Add(departure);
+                hours.Add(departure + edge);
+                hours.Add(departure + DaySchedule.ElapsedHours(next, departure) * 0.5f);
+            }
+            hours.Reverse();
+            foreach (float hour in hours)
+            {
+                live.SampleAt(DaySchedule.Wrap24(hour + 11f));
+                VehicleTripPlan loaded = Built(outbound, home);
+                Assert.That(loaded.DepartureHours, Is.EqualTo(live.DepartureHours));
+                // Struct value equality checks every machine, driver, stage, and trailer field.
+                Assert.That(loaded.SampleAt(hour), Is.EqualTo(live.SampleAt(hour)), $"hour={hour:R}");
+            }
+            Assert.That(live.SampleAt(outbound).Stage, Is.EqualTo(VehicleTripStage.Boarding));
+            Assert.That(live.SampleAt(home).Stage, Is.EqualTo(VehicleTripStage.Boarding));
+        }
+
         // =============================================================================================
         //  DETERMINISM — the rule the whole shape exists for
         // =============================================================================================

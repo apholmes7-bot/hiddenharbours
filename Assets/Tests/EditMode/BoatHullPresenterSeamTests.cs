@@ -189,6 +189,8 @@ namespace HiddenHarbours.Tests.EditMode
             "visual.go_fast_iso",
             "visual.bowrider_iso",
             "visual.express_cruiser_iso",
+            // The jetski: mesh-only from her first bake.
+            "visual.jet_ski_iso",
         };
 
         [Test]
