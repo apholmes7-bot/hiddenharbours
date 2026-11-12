@@ -256,8 +256,33 @@ namespace HiddenHarbours.Art
             return ShoreFadeMath.DisplacedHeight(height, level - bed, sea.ShoreFadeBandMeters, sea.Exaggeration);
         }
 
+        // In the air she makes no wake; where she lands she lays a patch of foam (owner 2026-11-12).
+        private bool _airborne;
+        private float _landingLeft;
+        private float _landingImpact;
+
+        private bool IsMine(object boat)
+            => boat is Component c && _hullBody != null && c != null && c.gameObject == _hullBody.gameObject;
+
+        private void OnHullLeftWater(HullLeftWater e)
+        {
+            if (IsMine(e.Boat)) _airborne = true;
+        }
+
+        private void OnHullLanded(HullLanded e)
+        {
+            if (!IsMine(e.Boat)) return;
+            _airborne = false;
+            _landingImpact = Mathf.Clamp01(e.Impact01);
+            _landingLeft = Mathf.Max(0f, GameServices.HullFlight.LandingFoamSeconds) * _landingImpact;
+        }
+
         private void OnEnable()
         {
+            EventBus.Subscribe<HullLeftWater>(OnHullLeftWater);
+            EventBus.Subscribe<HullLanded>(OnHullLanded);
+            _airborne = false;
+            _landingLeft = 0f;
             _way = GetComponentInParent<IVesselWay>()?.Way ?? VesselWay.UnderWay;
             _primed = false;
             _hasPending = false;
@@ -268,6 +293,8 @@ namespace HiddenHarbours.Art
 
         private void OnDisable()
         {
+            EventBus.Unsubscribe<HullLeftWater>(OnHullLeftWater);
+            EventBus.Unsubscribe<HullLanded>(OnHullLanded);
             Leave();
             _primed = false;
             _hasPending = false;
@@ -394,6 +421,9 @@ namespace HiddenHarbours.Art
             float verticalRate = FoamBuffer.RelativeHeaveRate(_surfaceY, _hullY,
                                                               _previousSurfaceY, _previousHullY, dt);
 
+            // Over the water she churns none of it: no trail, no slap, no wave train, until she lands.
+            if (_airborne) { horizontalSpeed = 0f; verticalRate = 0f; }
+
             float rate01 = FoamBuffer.Injection01(horizontalSpeed, verticalRate,
                                                   _wakeSpeedKnee, wakeExponent, _wakeWeight,
                                                   _slapRateKnee, _slapExponent, _slapWeight);
@@ -424,7 +454,23 @@ namespace HiddenHarbours.Art
             if (share > 0f && rate01 > 1e-6f) amount *= 1f - share * (wake01 / rate01);
 
             // The capsule from last frame's position to this one — continuous at any frame rate.
-            _pending = new FoamInjection(_previousPosition, position, RadiusMeters,
+            // The patch she lands in: for a moment the stamp runs her whole length and spreads past her
+            // band, strongest at the slam and fading as it grows.
+            Vector2 stampFrom = _previousPosition;
+            float stampRadius = RadiusMeters;
+            if (_landingLeft > 0f)
+            {
+                HullFlightSettings flight = GameServices.HullFlight;
+                float whole = Mathf.Max(flight.LandingFoamSeconds * _landingImpact, 1e-3f);
+                float grown = 1f - Mathf.Clamp01(_landingLeft / whole);
+                stampFrom = 2f * (Vector2)transform.position - position;   // her other end
+                stampRadius *= 1f + Mathf.Max(0f, flight.LandingFoamSpread) * _landingImpact * grown;
+                amount = Mathf.Max(amount, _landingImpact * (1f - grown)
+                                         * Mathf.Max(_depositPerSecond, 0f) * dt * Mathf.Max(_strength, 0f));
+                vigour = Mathf.Max(vigour, _landingImpact);
+                _landingLeft -= dt;
+            }
+            _pending = new FoamInjection(stampFrom, position, stampRadius,
                                          Mathf.Clamp01(amount), vigour, in dispersal);
             // The dispersal can outlive the stamp it was taken from: a gently-working hull whose
             // amount rounds toward nothing may still have a live edge, and dropping the injection

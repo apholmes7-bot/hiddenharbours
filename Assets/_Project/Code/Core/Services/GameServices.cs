@@ -663,6 +663,12 @@ namespace HiddenHarbours.Core
         public static HullWeightSettings HullWeight =>
             Config != null ? Config.HullWeight : HullWeightSettings.Default;
 
+        /// <summary>The HULL-FLIGHT policy (when a hull leaves the water and how hard she lands), same
+        /// contract as <see cref="HullWeight"/>. Read by the boat's physics tick and by what draws and
+        /// sounds the landing.</summary>
+        public static HullFlightSettings HullFlight =>
+            Config != null ? Config.HullFlight : HullFlightSettings.Default;
+
         /// <summary>The GROUND-TACKLE policy (the rode, the swing circle, the firm limit, the drag creep),
         /// same contract as <see cref="WaveField"/> including the <c>Config != null</c> discipline (never
         /// <c>?.</c>/<c>??</c> on a <c>UnityEngine.Object</c>) and the resolved-per-read liveness, so

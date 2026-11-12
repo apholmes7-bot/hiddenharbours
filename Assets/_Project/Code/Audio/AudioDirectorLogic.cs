@@ -134,6 +134,7 @@ namespace HiddenHarbours.Audio
             JuiceMoment.Landing   => CueFor(AudioMoment.Landing),
             JuiceMoment.DigStrike => CueFor(AudioMoment.DigStrike),
             JuiceMoment.CastEntry => CueFor(AudioMoment.CastEntry),
+            JuiceMoment.HullSlam  => CueFor(AudioMoment.Landing),   // the water hit, until audio cuts a slam
             _                     => AudioCue.None,
         };
 

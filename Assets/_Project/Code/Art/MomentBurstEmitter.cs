@@ -207,6 +207,14 @@ namespace HiddenHarbours.Art
                 case JuiceMoment.CastEntry:
                     SpawnRings(e.At, j.CastRingCount, j.CastRingSeconds);
                     break;
+                case JuiceMoment.HullSlam:
+                {
+                    // A hull coming down on the water: the same drops a landed fish throws, by how hard.
+                    HullFlightSettings flight = GameServices.HullFlight;
+                    int drops = Mathf.RoundToInt(flight.SlamSplashDrops * Mathf.Clamp01(e.Strength));
+                    if (drops > 0) SpawnSplash(e.At, drops, flight.SlamSplashSeconds);
+                    break;
+                }
                 default:
                     break;   // Sale: the coins are the notebook's
             }

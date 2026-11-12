@@ -297,6 +297,12 @@ namespace HiddenHarbours.Core
                  "surface-bolted ride bit-for-bit; that is the A/B.")]
         public HullWeightSettings HullWeight = HullWeightSettings.Default;
 
+        [Header("Hulls leave the water (owner 2026-11-12)")]
+        [Tooltip("When a hull flies and how hard she lands: a fast hull meeting a steep face is thrown " +
+                 "clear of the water, comes down with a slam that takes speed off her, a splash and a " +
+                 "patch of foam. A slow hull never leaves the surface. Enabled off = no hull ever flies.")]
+        public HullFlightSettings HullFlight = HullFlightSettings.Default;
+
         [Header("Hull trim (the bow answers her speed — owner 2026-09-21)")]
         [Tooltip("World-wide policy for how a hull TRIMS (owner 2026-09-21: \"Also i want trim " +
                  "added to the boats depending on speed and deacceleration\"). Her bow rises as she " +

@@ -543,6 +543,11 @@ namespace HiddenHarbours.Boats
             // stays byte-identical, exactly as every other term of this ride is.
             if (rideActive) rideMeters += SurfLiftMeters();
 
+            // ---- IN THE AIR (owner 2026-11-12) ----------------------------------------------------
+            // The air under her keel is solved on the physics tick (BoatController.FlightClearanceMeters)
+            // and read here, never re-solved: the picture rises by the flight that sheds her speed.
+            if (rideActive) rideMeters += FlightLiftMeters();
+
             // Decomposed + smoothed BEFORE the path split: the transform path maps these onto the
             // visual as before, and the hull-owned paths now read the same smoothed slope for their
             // storm attitude/surge. The smoothing TIGHTENS with the storm blend (velvet is for calm;
@@ -601,6 +606,24 @@ namespace HiddenHarbours.Boats
             return _controller != null && _controller.Hull != null
                 ? BoatController.ResponseFor(_controller.Hull)
                 : new SeakeepingResponse(1f, 0f);
+        }
+
+        // In the air: the clearance and the bow lift the physics tick solved (HullFlightMath).
+        private float FlightLiftMeters()
+        {
+            if (!_controllerResolved)
+            {
+                _controller = GetComponent<BoatController>();
+                _controllerResolved = true;
+            }
+            if (_controller == null) return 0f;
+            return _controller.FlightClearanceMeters * Mathf.Max(0f, GameServices.HullFlight.DrawnClearanceScale);
+        }
+
+        private float FlightNoseUpDegrees()
+        {
+            if (_controller == null) return 0f;
+            return HullFlightMath.NoseUpDegrees(_controller.FlightClearanceMeters, GameServices.HullFlight);
         }
 
         /// <summary>
@@ -1023,6 +1046,7 @@ namespace HiddenHarbours.Boats
                     }
                 }
 
+                extraPitch += FlightNoseUpDegrees();   // her bow lifts with the air under her keel
                 hull.SetStormRock(responseMultiplier, extraRoll, extraPitch);
                 hull.SetDisplacedHeaveMeters(rideMeters);
                 RestoreVisual();    // her ROCK is the driver's, in pixels — never this transform
