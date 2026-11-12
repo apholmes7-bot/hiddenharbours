@@ -54,6 +54,28 @@ relay/project-link step still belongs to the owner.
 All recommendations below remain proposals to validate. No test result or observed latency is
 implied by describing the intended design.
 
+## LAN trial follow-up
+
+The later two-machine trial charter authorizes a local Windows package, superseding the historical
+delivery hold for this bounded experiment. Creator integration remains held. The spike now integrates
+the queued main locally, without a PR or publication. No scene, art asset or rendering rule is authored
+by this follow-up.
+
+The explicit host launch listens on all IPv4 interfaces; a client supplies a numeric host address and
+both peers may select the UDP port. The host admits at most two participants. Trial boot replaces the
+isolated product's disk save service with a fresh memory-only service before the core enters the world;
+the normal game's save path is never selected. The game continues running while its window is in the
+background. Invalid endpoint arguments fail before a network session starts.
+
+An opt-in diagnostic observes each built process's network objects, accepted host time, actual school
+model output at a shared sample time, and screenshots from its unchanged camera. Standalone endpoint
+checks and a compile against the earlier build's assemblies pass. Current-main editor validation and
+the two-process LAN experiment are pending; these preliminary checks do not establish either result.
+
+This remains a LAN experiment with local catches and inventories, no relay, no shared transactions,
+no synchronized region travel, no reconnect identity and no session persistence. A two-process pass
+on one computer would still not prove installation or latency on a second physical machine.
+
 ## Proposed transport and authority
 
 Use state synchronization, never lockstep. Unity boat physics is not the deterministic sea.

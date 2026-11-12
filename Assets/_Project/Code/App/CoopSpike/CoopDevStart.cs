@@ -1,5 +1,8 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
+using System.Net;
+using System.Net.Sockets;
 using HiddenHarbours.App;
 using HiddenHarbours.Boats;
 using HiddenHarbours.Core;
@@ -22,6 +25,7 @@ namespace HiddenHarbours.CoopSpike
         private PlayerWalkController _player;
         private bool _client;
         private CoopSpikeSettings _settings;
+        private CoopLaunchOptions _options;
         public bool Ready { get; private set; }
         public NetworkManager Manager => _manager;
 
@@ -37,10 +41,44 @@ namespace HiddenHarbours.CoopSpike
         private static void Boot()
         {
             var args = System.Environment.GetCommandLineArgs();
-            if (!ShouldStart(args, Application.productName)) return;
+            if (Application.productName != SpikeProduct || !Array.Exists(args,
+                arg => arg.StartsWith("--coop-spike-", StringComparison.Ordinal))) return;
+            var settings = Resources.Load<CoopSpikeSettings>(CoopSpikeSettings.ResourcePath);
+            string error = null;
+            CoopLaunchOptions options = null;
+            if (settings == null || !CoopLaunchOptions.TryParse(args, settings.Port, out options, out error))
+            {
+                Debug.LogError("[Coop] Invalid launch: " + (settings == null ? "settings missing" : error));
+                Application.Quit(2);
+                return;
+            }
             var root = new GameObject("CoopSpikeDevStart");
             DontDestroyOnLoad(root);
-            root.AddComponent<CoopDevStart>()._client = Array.IndexOf(args, ClientArgument) >= 0;
+            var boot = root.AddComponent<CoopDevStart>();
+            boot._options = options;
+            boot._client = options.Client;
+        }
+
+        private sealed class SessionSave : ISaveService
+        {
+            private readonly Dictionary<string, bool> _flags = new();
+            public SaveData Current { get; } = SaveMigration.NewGame();
+            public bool GetFlag(string key) => _flags.TryGetValue(key, out bool value) && value;
+            public void SetFlag(string key, bool value) { if (!string.IsNullOrEmpty(key)) _flags[key] = value; }
+            public void Save() { }
+        }
+
+        private void Awake()
+        {
+            if (Application.productName != SpikeProduct)
+                throw new InvalidOperationException("The trial requires its isolated product.");
+            // AfterSceneLoad precedes the authored core's Start/load-restore. The isolated
+            // product's disk service has opened, but cannot autosave once removed here.
+            foreach (var save in FindObjectsByType<SaveService>(FindObjectsSortMode.None))
+                DestroyImmediate(save);
+            GameServices.Save = new SessionSave();
+            Application.runInBackground = true;
+            Debug.Log("[Coop] Fresh memory-only session; no session persistence.");
         }
 
         private IEnumerator Start()
@@ -70,18 +108,29 @@ namespace HiddenHarbours.CoopSpike
             // The manager rides this process's persistent service root, never a remote gameplay clone.
             var core = ((Component)GameServices.Clock).gameObject;
             var transport = core.AddComponent<UnityTransport>();
-            transport.SetConnectionData("127.0.0.1", _settings.Port);
+            _options ??= new CoopLaunchOptions(false, "127.0.0.1", _settings.Port);
+            transport.SetConnectionData(_options.Address, _options.Port, _client ? null : "0.0.0.0");
             _manager = core.AddComponent<NetworkManager>();
             _manager.NetworkConfig = new NetworkConfig
             {
                 NetworkTransport = transport, PlayerPrefab = _settings.PlayerPrefab,
-                EnableSceneManagement = false
+                EnableSceneManagement = false, ConnectionApproval = true
             };
             _manager.AddNetworkPrefab(_settings.PlayerPrefab);
+            _manager.ConnectionApprovalCallback = (request, response) =>
+            {
+                response.Approved = _manager.ConnectedClientsIds.Count < 2;
+                response.CreatePlayerObject = response.Approved;
+                response.Reason = response.Approved ? string.Empty : "This trial supports two players.";
+            };
             _manager.OnClientConnectedCallback += OnConnected;
+            _manager.OnClientDisconnectCallback += OnDisconnected;
             bool started = _client ? _manager.StartClient() : _manager.StartHost();
             if (!started) throw new InvalidOperationException("The local transport did not start.");
             Ready = true;
+            Debug.Log($"[Coop] {(_client ? "Joining" : "Hosting")} {_options.Address}:{_options.Port} UDP; scene={_settings.Scene}");
+            if (!string.IsNullOrEmpty(System.Environment.GetEnvironmentVariable("HH_COOP_PROOF_DIR")))
+                gameObject.AddComponent<CoopProcessProof>().Boot = this;
         }
 
         // Also used by the in-process fixture: no save, opening or second service context is created.
@@ -121,7 +170,15 @@ namespace HiddenHarbours.CoopSpike
             return tool;
         }
 
-        private void OnConnected(ulong clientId) => StartCoroutine(BindReplicas());
+        private void OnConnected(ulong clientId)
+        {
+            Debug.Log($"[Coop] Connected participant {clientId}; local={_manager.LocalClientId}");
+            StartCoroutine(BindReplicas());
+        }
+        private void OnDisconnected(ulong clientId)
+        {
+            Debug.LogWarning($"[Coop] Disconnected participant {clientId}: {_manager.DisconnectReason}");
+        }
         private IEnumerator BindReplicas()
         {
             yield return null;
@@ -137,7 +194,60 @@ namespace HiddenHarbours.CoopSpike
         }
         private void OnDestroy()
         {
-            if (_manager != null) _manager.OnClientConnectedCallback -= OnConnected;
+            if (_manager != null)
+            {
+                _manager.OnClientConnectedCallback -= OnConnected;
+                _manager.OnClientDisconnectCallback -= OnDisconnected;
+            }
+        }
+    }
+
+    /// <summary>Strict network endpoint parsing without an editor, scene or socket.</summary>
+    public sealed class CoopLaunchOptions
+    {
+        public const string AddressArgument = "--coop-spike-address";
+        public const string PortArgument = "--coop-spike-port";
+        public bool Client { get; }
+        public string Address { get; }
+        public ushort Port { get; }
+        public CoopLaunchOptions(bool client, string address, ushort port)
+        { Client = client; Address = address; Port = port; }
+
+        public static bool TryParse(string[] args, ushort defaultPort, out CoopLaunchOptions options, out string error)
+        {
+            options = null; error = "Choose exactly one host/client role and a valid IPv4 endpoint.";
+            if (!CoopDevStart.ShouldStart(args, CoopDevStart.SpikeProduct) || defaultPort == 0) return false;
+            bool client = Array.IndexOf(args, CoopDevStart.ClientArgument) >= 0;
+            string address = "127.0.0.1";
+            ushort port = defaultPort;
+            var seen = new HashSet<string>();
+            for (int i = 0; i < args.Length; i++)
+            {
+                string key = args[i];
+                if (!key.StartsWith("--coop-spike-", StringComparison.Ordinal)) continue;
+                if (!seen.Add(key)) return false;
+                if (key == CoopDevStart.HostArgument || key == CoopDevStart.ClientArgument) continue;
+                if (key != AddressArgument && key != PortArgument) return false;
+                if (++i >= args.Length) return false;
+                if (key == PortArgument)
+                {
+                    if (!ushort.TryParse(args[i], System.Globalization.NumberStyles.None,
+                        System.Globalization.CultureInfo.InvariantCulture, out port) || port == 0) return false;
+                }
+                else
+                {
+                    string[] octets = args[i].Split('.');
+                    if (octets.Length != 4) return false;
+                    foreach (string octet in octets)
+                        if (!byte.TryParse(octet, System.Globalization.NumberStyles.None,
+                            System.Globalization.CultureInfo.InvariantCulture, out _)) return false;
+                    if (!IPAddress.TryParse(args[i], out var ip) || ip.AddressFamily != AddressFamily.InterNetwork
+                        || ip.Equals(IPAddress.Any) || ip.Equals(IPAddress.Broadcast) || ip.GetAddressBytes()[0] >= 224) return false;
+                    address = ip.ToString();
+                }
+            }
+            if (client && !seen.Contains(AddressArgument)) { error = "Client requires --coop-spike-address with the host IPv4 address."; return false; }
+            options = new CoopLaunchOptions(client, address, port); error = null; return true;
         }
     }
 }

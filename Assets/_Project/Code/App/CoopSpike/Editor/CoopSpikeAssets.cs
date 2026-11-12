@@ -16,6 +16,24 @@ namespace HiddenHarbours.CoopSpike.Editor
     {
         public const string Root = "Assets/_Project/Resources/CoopSpike";
         public const string SettingsPath = Root + "/Settings.asset";
+        public static void BuildWindowsTrial()
+        {
+            if (Application.productName != CoopDevStart.SpikeProduct)
+                throw new System.InvalidOperationException("The trial requires the isolated spike product.");
+            string destination = Path.GetFullPath("Evidence~/gpt-coop/package/HiddenHarboursCoopSpike.exe");
+            Directory.CreateDirectory(Path.GetDirectoryName(destination));
+            var report = BuildPipeline.BuildPlayer(new BuildPlayerOptions
+            {
+                scenes = EditorBuildSettings.scenes.Where(scene => scene.enabled).Select(scene => scene.path).ToArray(),
+                locationPathName = destination,
+                target = BuildTarget.StandaloneWindows64,
+                options = BuildOptions.Development
+            });
+            File.WriteAllText("Evidence~/gpt-coop/build-summary.txt",
+                $"result={report.summary.result}\nseconds={report.summary.totalTime.TotalSeconds:F3}\nbytes={report.summary.totalSize}\nerrors={report.summary.totalErrors}\nwarnings={report.summary.totalWarnings}\n");
+            if (report.summary.result != BuildResult.Succeeded)
+                throw new System.InvalidOperationException("The trial build failed.");
+        }
         public static void BuildWindowsCost()
         {
             if (Application.productName != CoopDevStart.SpikeProduct)

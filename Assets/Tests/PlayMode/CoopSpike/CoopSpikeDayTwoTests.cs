@@ -442,9 +442,9 @@ namespace HiddenHarbours.Tests.CoopSpike
                 yield return null;
                 camera.Render(); RenderTexture.active = target;
                 texture.ReadPixels(new Rect(0, 0, target.width, target.height), 0, 0); texture.Apply();
-                string folder = Path.GetFullPath(Path.Combine(Application.dataPath, "..", "Evidence~", "coop-spike"));
+                string folder = Path.GetFullPath(Path.Combine(Application.dataPath, "..", "Evidence~", "gpt-coop"));
                 Directory.CreateDirectory(folder);
-                string path = Path.Combine(folder, "day2-host-two-boats.png");
+                string path = Path.Combine(folder, "network-fixture-two-boats.png");
                 File.WriteAllBytes(path, texture.EncodeToPNG());
                 TestContext.WriteLine("Host view frame: " + path);
             }

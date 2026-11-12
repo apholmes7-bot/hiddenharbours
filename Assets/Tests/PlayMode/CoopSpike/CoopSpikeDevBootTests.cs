@@ -44,6 +44,11 @@ namespace HiddenHarbours.Tests.CoopSpike
             float deadline = Time.realtimeSinceStartup + 60;
             while (!_boot.Ready && Time.realtimeSinceStartup < deadline) yield return null;
             Assert.That(_boot.Ready, Is.True, "The real dev-start coroutine must finish.");
+            Assert.That(Object.FindAnyObjectByType<SaveService>(), Is.Null, "No disk writer may survive the trial boot.");
+            Assert.That(GameServices.Save.LoadedExistingSave, Is.False);
+            Assert.That(Application.runInBackground, Is.True);
+            Assert.That(_boot.Manager.GetComponent<Unity.Netcode.Transports.UTP.UnityTransport>()
+                .ConnectionData.ServerListenAddress, Is.EqualTo("0.0.0.0"));
             Assert.That(SceneManager.GetActiveScene().name, Is.EqualTo("EastWater"));
             Assert.That(GameServices.CurrentRegionId, Is.EqualTo("region.east_water"));
             Assert.That(GameServices.Clock, Is.SameAs(clock), "The starting core must survive the water-region hop.");
@@ -82,7 +87,7 @@ namespace HiddenHarbours.Tests.CoopSpike
             var start = SceneManager.GetSceneByName("StPeters");
             if (start.IsValid() && start.isLoaded) yield return SceneManager.UnloadSceneAsync(start);
             GameServices.Reset();
-            GameServices.Save = _previousSave;
+            GameServices.Save = _previousSave is Object prior && prior == null ? new MemorySave() : _previousSave;
         }
     }
 }
