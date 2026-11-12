@@ -41,6 +41,8 @@ namespace HiddenHarbours.Tests.PlayMode
         const double PlateHour = 12;
         /// <summary>The day's light follows the clock on a throttled tick, so a picture waits real time, not frames.</summary>
         const float PlateSettleSeconds = 1f;
+        /// <summary>A noon picture is not a night one: the least mean brightness (0 to 255) a plate may have.</summary>
+        const float PlateLeastMeanBrightness = 40f;
 
         RegionTravelCoordinator _coordinator;
         string _key;
@@ -173,6 +175,10 @@ namespace HiddenHarbours.Tests.PlayMode
             var pixels = new Texture2D(PlateWidth, PlateHeight, TextureFormat.RGB24, false);
             pixels.ReadPixels(new Rect(0, 0, PlateWidth, PlateHeight), 0, 0);
             pixels.Apply();
+            double sum = 0;
+            Color32[] read = pixels.GetPixels32();
+            foreach (Color32 c in read) sum += (c.r + c.g + c.b) / 3.0;
+            double brightness = sum / read.Length;
             string folder = Path.Combine(Evidence, "south-water-door");
             Directory.CreateDirectory(folder);
             File.WriteAllBytes(Path.Combine(folder, name + ".png"), pixels.EncodeToPNG());
@@ -187,6 +193,8 @@ namespace HiddenHarbours.Tests.PlayMode
             Object.DestroyImmediate(pixels);
             target.Release();
             Object.DestroyImmediate(target);
+            TestContext.WriteLine($"plate {name}: mean brightness {brightness:0.0} at hour {PlateHour}");
+            Assert.That(brightness, Is.GreaterThan(PlateLeastMeanBrightness), $"plate {name} is lit as at noon, not dark");
         }
 
         [UnityTearDown]
