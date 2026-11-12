@@ -187,7 +187,7 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.That(r.TideMeanLevel, Is.EqualTo(neighbour.TideMeanLevel));
             Assert.That(r.TideAmplitude, Is.EqualTo(neighbour.TideAmplitude));
             Assert.That(r.TidePhaseHours, Is.EqualTo(neighbour.TidePhaseHours));
-            var source = GroundFileIntake.ReadRicePointFolder(RicePointBuilder.GroundFolder);
+            var source = GroundFileIntake.ReadRicePointGround(RicePointBuilder.GroundFolder);
             var field = p.Ground.Field;
             for (int row = 0; row < source.Height; row++)
                 for (int col = 0; col < source.Width; col++)
@@ -254,7 +254,7 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.That(ids.Distinct().Count(), Is.EqualTo(ids.Length));
             foreach (var d in p.Doors) Assert.That(ids, Does.Contain(d.Target.Id));
             Assert.That(p.Ground.Field.ElevationAt(p.PlayerStart), Is.GreaterThan(p.Region.TideMeanLevel + p.Region.TideAmplitude));
-            Assert.That(p.Ground.Field.ElevationAt(p.BoatStart), Is.EqualTo(-2).Within(0.001));
+            Assert.That(p.Ground.Field.ElevationAt(p.BoatStart), Is.EqualTo(-7).Within(0.001), "the boat starts in the dredged basin off the wharf face");
             Assert.That(Vector2.Distance(p.PlayerStart, p.BoatStart), Is.LessThan(3.5));
             foreach (var t in new[] { p.Ground.HeightTexture, p.Ground.StillLevelTexture })
             {
