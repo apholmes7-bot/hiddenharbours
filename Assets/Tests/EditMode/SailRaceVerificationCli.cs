@@ -13,7 +13,7 @@ namespace HiddenHarbours.Tests.EditMode
         private static readonly Dictionary<string, int> RaceCounts = new Dictionary<string, int>
         {
             { nameof(SailRaceCourseTests), 8 }, { nameof(SailRaceTrackTests), 11 },
-            { nameof(SailRaceRoundingTests), 9 }, { nameof(SailRaceRightOfWayTests), 6 },
+            { nameof(SailRaceRoundingTests), 11 }, { nameof(SailRaceRightOfWayTests), 6 },
             { nameof(SailRaceNpcTests), 14 }
         };
         private readonly List<string> _lines = new List<string>();

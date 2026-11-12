@@ -72,6 +72,11 @@ namespace HiddenHarbours.Boats
 
         public bool Advance(RaceMark mark, Vector2 from, Vector2 to, out float fraction)
         {
+            // Intersect in the buoy's local frame. Interpolating a gate point in large world
+            // coordinates rounds away enough precision to reject a valid angular sweep.
+            from -= mark.Position;
+            to -= mark.Position;
+            mark.Position = Vector2.zero;
             fraction = 0f;
             float entryFraction = 0f;
             if (!_entered)

@@ -94,5 +94,28 @@ namespace HiddenHarbours.Tests.EditMode
                 Assert.That(fraction, Is.EqualTo(0.75).Within(0.0001));
             }
         }
+
+        [TestCase(RaceRoundingSide.Port)]
+        [TestCase(RaceRoundingSide.Starboard)]
+        public void FarFromWorldOrigin_StillCountsValidRounding(RaceRoundingSide side)
+        {
+            float sign = side == RaceRoundingSide.Port ? 1 : -1;
+            foreach (float offset in new[] { 10000f, 100000f })
+            foreach (float bearing in new[] { 0f, 30f, 90f, 180f, 270f, 330f })
+            {
+                Vector2 Transform(float x, float y)
+                {
+                    float cos = Mathf.Cos(bearing * Mathf.Deg2Rad), sin = Mathf.Sin(bearing * Mathf.Deg2Rad);
+                    return new Vector2(x * cos + y * sin, -x * sin + y * cos) + new Vector2(offset, -offset);
+                }
+                var mark = Local(side); mark.Position = Transform(0, 0);
+                mark.EntryBearingDeg += bearing; mark.ExitBearingDeg += bearing;
+                var detector = new SailRaceRounding();
+                detector.Advance(mark, Transform(5, -sign), Transform(5, sign), out _);
+                detector.Advance(mark, Transform(5, sign), Transform(3, 4 * sign), out _);
+                Assert.That(detector.Advance(mark, Transform(3, 4 * sign), Transform(-1, 5 * sign), out _),
+                    Is.True, "offset=" + offset + ", rotation=" + bearing);
+            }
+        }
     }
 }
