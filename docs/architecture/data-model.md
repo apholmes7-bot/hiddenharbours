@@ -162,9 +162,20 @@ possible.
 1. Create a new asset file in the right `Data/...` folder (one entity per file).
 2. Set a unique `id` (check the existing ids; ids are append-only).
 3. Fill fields per the relevant `design/` doc; reference other content by id.
-4. If new art is needed, coordinate with `art-pipeline` (placeholder is fine in M0).
-5. Run the EditMode content-validation test (`qa-test` provides one: checks unique ids, resolvable
+4. Register the asset's exact full Def type, existing Unity GUID and stable id in a new
+   `Assets/Tests/EditMode/Fixtures/DefIdentityAdditions/<guid>.json` file. A new id-bearing Def
+   type also gets `<full-type-name>.type.json`, including a type with no assets yet; an existing
+   type needs no second declaration. Follow the [addition-file shapes and metadata rules](../../Assets/Tests/EditMode/Fixtures/DefIdentityAdditions/README.md).
+   New registrations use these independent files instead of appending to the shared baseline.
+   Both identity contract readers validate the baseline plus additions as one inventory, rejecting
+   duplicate GUIDs, `(Type, Id)` pairs and type declarations with their source files named.
+5. If new art is needed, coordinate with `art-pipeline` (placeholder is fine in M0).
+6. Run `DefIdentityLedgerTests`, `DefIdentityContractTests` and `NmcH7ContentValidationTests`,
+   plus the EditMode content-validation test (`qa-test` provides one: checks unique ids, resolvable
    references, required fields). Green = safe to commit.
+
+The existing baseline rows remain in place. Converting pending PRs and adding a rule that
+enforces a baseline freeze are deferred to a separate integration step.
 
 ## 7. Open questions
 - Spawn tables: embedded in `RegionDef` vs separate `SpawnTableDef` assets — separate scales
