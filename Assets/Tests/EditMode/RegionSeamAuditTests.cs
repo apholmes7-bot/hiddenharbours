@@ -278,7 +278,7 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.That(BuildScenes().Contains("WestWater"), Is.False);
             Assert.That(File.Exists("Assets/_Project/Scenes/WestWater.unity"), Is.False);
             Assert.That(RegionScenes.Values.OrderBy(s => s, StringComparer.Ordinal), Is.EqualTo(new[] {
-                "Cumberland", "EastWater", "Greybox", "NineMileCreek", "RicePoint", "StPeters", "WestWater" }));
+                "Cumberland", "EastWater", "Greybox", "NineMileCreek", "RicePoint", "SouthWater", "StPeters", "WestWater" }));
             Assert.That(Anchor("Greywick").Field("_regionId"), Is.EqualTo(SaveMigration.RenamedRegionFrom));
             Assert.That(Anchor("NineMileCreek").Field("_regionId"), Is.EqualTo(SaveMigration.RenamedRegionTo));
         }

@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c4bd292c292a4908bec7138b09e18a88, type: 3}
+  m_Name: SouthWaterDeepMud
+  m_EditorClassIdentifier: HiddenHarbours.Fishing::HiddenHarbours.Fishing.FishingGroundDef
+  Id: fishing_ground.south_water_deep_mud
+  DisplayName: The Deep Mud (working name)
+  Description: Seventy metres of water over soft mud, wide and flat. The draggers' ground.
+  RegionId: region.south_water
+  Center: {x: 500, y: -300}
+  HalfSize: {x: 400, y: 200}
+  MinDepthMetres: 70
+  MaxDepthMetres: 70
+  Bottom: 4
+  FishIds:
+  - fish.haddock
+  - fish.atlantic_cod
