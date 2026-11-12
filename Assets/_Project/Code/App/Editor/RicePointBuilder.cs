@@ -16,14 +16,14 @@ namespace HiddenHarbours.App.Editor
         [MenuItem("Hidden Harbours/Regions/Rice Point/CREATE Scene")]
         public static void Create()
         {
-            GroundFileIntake.ReadRicePointFolder(GroundFolder);
+            GroundFileIntake.ReadRicePointGround(GroundFolder);
             LandSceneTemplate.Create(LoadPlan());
         }
 
         [MenuItem("Hidden Harbours/Regions/Rice Point/REFRESH Logic")]
         public static void Refresh()
         {
-            GroundFileIntake.ReadRicePointFolder(GroundFolder);
+            GroundFileIntake.ReadRicePointGround(GroundFolder);
             LandSceneTemplate.Refresh(LoadPlan());
         }
 
