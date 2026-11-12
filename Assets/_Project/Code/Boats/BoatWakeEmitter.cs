@@ -1190,11 +1190,14 @@ namespace HiddenHarbours.Boats
             public void Tick(Vector2 current, Vector2 wind, float roughness, float time, float dt,
                              in WakeConfig cfg, Color foamColor, in WakeLineConfig lineCfg, Color lineColor,
                              in WakeGradeConfig grade, in BowSprayGradeConfig spray, Color sprayColor,
-                             in WakeTrailConfig trail, in BowWaveConfig bowWave,
+                             in WakeTrailConfig sharedTrail, in BowWaveConfig bowWave,
                              in WakeWaveConfig wave, Color waveColor, in SeaLift lift,
                              in WakeAgeRamp ramp, in SeaPaletteState palette, in WakeBubbleConfig bubbles,
                              in BowImpactConfig impact, float waterLevel)
             {
+                // The trail this hull lays: a jet-driven hull throws a narrow hard stream, not a churn strip.
+                WakeTrailConfig trail = WakeTrailMath.ForStyle(
+                    in sharedTrail, Boat != null && Boat.Hull != null ? Boat.Hull.WakeStyle : WakeStyle.Propeller);
                 if (Boat == null) return;
 
                 Vector2 pos = Boat.transform.position;
