@@ -1,6 +1,6 @@
 # Verification of three unused source candidates
 
-Checked against base `d9d4b8558aaa77b49b6bad9dbb35345d2059814c`.
+Rechecked against main `12bc04b19a2efb33e352b4eea58104f7a5599be1` after merging it into the draft.
 This records the follow-up to the source-only inventory in PR #1063.
 
 | Candidate | Declaration | Finding | Disposition |
@@ -14,13 +14,20 @@ This records the follow-up to the source-only inventory in PR #1063.
 The exact whole-word search over **all tracked text**, rather than only C# callers, was:
 
 ```text
-GIT_NO_LAZY_FETCH=1 GIT_OPTIONAL_LOCKS=0 git grep -I -n -w -e AudioBus -e FindInSceneMonoBehaviours -e Chirp d9d4b8558aaa77b49b6bad9dbb35345d2059814c -- .
+GIT_NO_LAZY_FETCH=1 GIT_OPTIONAL_LOCKS=0 git grep -I -n -w -e AudioBus -e FindInSceneMonoBehaviours -e Chirp 12bc04b19a2efb33e352b4eea58104f7a5599be1 -- .
 ```
 
 It returned exactly the three declarations listed above. This scope includes tracked
 editor scripts, tests, tooling, scenes, prefabs, data, project settings, package files,
 and documents. It checks literal string and serialized references as well as direct
 source references. It cannot establish use by untracked tools or external consumers.
+
+The refreshed working tree gives the same three declaration matches when this report
+is excluded from the search, since the report itself names the candidates. The NPC
+lobster fleet, South Water, Rice Point berths/dredge, trawl logic, and Nine Mile Creek
+H7 Phase A introduce no use of any candidate. All three containing source files are
+unchanged from the original audited base. The signatures, attributes, live generic
+scanner callers, and candidate-host dispatch checks were re-inspected and still pass.
 
 The two private helpers have no entry-point attributes and their names and signatures
 are not Unity lifecycle callbacks. Their containing code has no `GetMethod`,
