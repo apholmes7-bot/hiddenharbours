@@ -379,11 +379,19 @@ namespace HiddenHarbours.World
             // Nobody stands on somebody else. People on a walk all use the same lines, so each keeps
             // their own distance up from the water's edge; people who each have a line only share one
             // when there are more of them than lines.
-            int abreast = activity.Kind == BeachActivityKind.Stroll ? rank : rank / lines.Length;
+            // Walkers keep abreast: each has a lane of their own to one side of the authored line, so
+            // two of them are apart whatever the tide does to either one's stay (their stays differ,
+            // so "a little further up the sand" alone can put two people on one spot).
+            bool stroll = activity.Kind == BeachActivityKind.Stroll;
+            int lanesAbreast = Mathf.Max(1, activity.WalkersAbreast);
+            int abreast = stroll ? rank / lanesAbreast : rank / lines.Length;
             float backOff = Mathf.Max(0, abreast) * activity.PersonSpacingMetres;
+            float aside = stroll
+                ? ((rank % lanesAbreast) - (lanesAbreast - 1) * 0.5f) * activity.PersonSpacingMetres
+                : 0f;
 
-            if (!TryPlace(lines[index], depth01, backOff, activity.MinDryMetres, terrain, keepAbove, sample,
-                          out Vector2 place))
+            if (!TryPlace(Aside(lines[index], aside), depth01, backOff, activity.MinDryMetres, terrain,
+                          keepAbove, sample, out Vector2 place))
                 return false;
             if (!IsDryLeg(terrain, head, place, keepAbove, sample)) return false;
 
@@ -411,7 +419,7 @@ namespace HiddenHarbours.World
                 {
                     int candidate = index + direction;
                     if (candidate >= 0 && candidate < lines.Length &&
-                        TryPlace(lines[candidate], depth01, backOff, activity.MinDryMetres, terrain,
+                        TryPlace(Aside(lines[candidate], aside), depth01, backOff, activity.MinDryMetres, terrain,
                                  keepAbove, sample, out onward) &&
                         IsDryLeg(terrain, last, onward, keepAbove, sample) &&
                         IsDryLeg(terrain, onward, head, keepAbove, sample))
@@ -433,6 +441,17 @@ namespace HiddenHarbours.World
                 index = to;
             }
             return true;
+        }
+
+        /// <summary>The same line, moved sideways (along the shore) by <paramref name="metres"/>.</summary>
+        private static BeachTransect Aside(in BeachTransect line, float metres)
+        {
+            if (metres == 0f) return line;
+            Vector2 down = line.Toe - line.Top;
+            float length = down.magnitude;
+            if (length <= 0f) return line;
+            Vector2 shift = new Vector2(-down.y, down.x) / length * metres;
+            return new BeachTransect { Top = line.Top + shift, Toe = line.Toe + shift, Why = line.Why };
         }
 
         private static bool TryPlace(in BeachTransect line, float depth01, float backOffMetres,

@@ -26,28 +26,25 @@ MonoBehaviour:
   - Top: {x: -54, y: -4.5}
     Toe: {x: -66, y: -4.5}
     Why: South of the wet bucket, four metres off it.
-  - Top: {x: -54, y: 6}
-    Toe: {x: -66, y: 6}
+  - Top: {x: -54, y: 5.5}
+    Toe: {x: -66, y: 5.5}
     Why: North of the clammer and his spot at the head of the path.
-  - Top: {x: -54, y: 8.5}
-    Toe: {x: -66, y: 8.5}
+  - Top: {x: -54, y: 8}
+    Toe: {x: -66, y: 8}
     Why: North side.
-  - Top: {x: -54, y: 11}
-    Toe: {x: -66, y: 11}
+  - Top: {x: -54, y: 10.5}
+    Toe: {x: -66, y: 10.5}
     Why: North side, the last of the even slope.
   Promenade:
   - Top: {x: -54, y: -13}
     Toe: {x: -66, y: -13}
     Why: The south end of the walk.
-  - Top: {x: -54, y: -6}
-    Toe: {x: -66, y: -6}
-    Why: Coming round the south shoulder.
   - Top: {x: -54, y: -1.5}
     Toe: {x: -100, y: -1.5}
     Why: Out along the spine of the bar when the tide lets them, the root of it when not.
-  - Top: {x: -54, y: 7.25}
-    Toe: {x: -66, y: 7.25}
-    Why: Round the north shoulder.
+  - Top: {x: -54, y: 3}
+    Toe: {x: -66, y: 3}
+    Why: Round the north shoulder, at the root of the bar.
   - Top: {x: -54, y: 13}
     Toe: {x: -66, y: 13}
     Why: The north end of the walk.

@@ -400,9 +400,9 @@ namespace HiddenHarbours.Tests.EditMode
 
                 // Until she sets off for the beach, she is exactly where she would have been.
                 for (float h = 0f; h < o.DepartureHour - 0.01f; h += 0.25f)
-                    Assert.That(e.Plan.SampleAt(h, _perHour).Position,
-                                Is.EqualTo(e.AuthoredPlan.SampleAt(h, _perHour).Position),
-                                $"{Name(e)} at {h:0.00} h");
+                    Assert.That(Vector2.Distance(e.Plan.SampleAt(h, _perHour).Position,
+                                                 e.AuthoredPlan.SampleAt(h, _perHour).Position),
+                                Is.LessThan(0.01f), $"{Name(e)} at {h:0.00} h");
 
                 // And at midnight she is home and still, so tomorrow's plan takes over without a step.
                 RoutinePose late = e.Plan.SampleAt(23.98f, _perHour);

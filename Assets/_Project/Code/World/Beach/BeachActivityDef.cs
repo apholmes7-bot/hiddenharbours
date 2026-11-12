@@ -119,6 +119,10 @@ namespace HiddenHarbours.World
                  "metres up the sand from one another.")]
         [Min(0f)] public float PersonSpacingMetres = 1.2f;
 
+        [Tooltip("Stroll only: how many walkers have a lane of their own, side by side along the " +
+                 "shore, each PersonSpacingMetres from the next. More walkers than this follow behind.")]
+        [Min(1)] public int WalkersAbreast = 4;
+
         [Header("How long")]
         [Tooltip("Not worth the walk for less than this, in game minutes on the beach.")]
         [Min(0f)] public float MinStayMinutes = 30f;
