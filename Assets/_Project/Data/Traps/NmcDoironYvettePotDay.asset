@@ -1,0 +1,68 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a788a22d6c374109bf5d9ec0909317a7, type: 3}
+  m_Name: NmcDoironYvettePotDay
+  m_EditorClassIdentifier: HiddenHarbours.Fishing::HiddenHarbours.Fishing.NpcPotDayDef
+  Id: potday.nmc_doiron_yvette
+  OwnerId: owner.doiron_yvette
+  RegionSceneName: NineMileCreek
+  Trap: {fileID: 11400000, guid: 028d7dace8964b369c36e8b39f67a3d0, type: 2}
+  BerthPosition: {x: 133.6, y: 83.07}
+  BerthHeadingDegrees: 90
+  DraughtMeters: 1.3
+  KeelClearanceMeters: 0.2
+  DepartHour: 6
+  DepartJitterMinutes: 20
+  PassageOut:
+  - {x: 136, y: 72}
+  - {x: 137, y: 30}
+  - {x: 137, y: -6}
+  - {x: 142, y: -26}
+  - {x: 200, y: -26}
+  - {x: 236.8, y: 2}
+  PassageHome:
+  - {x: 226, y: 80}
+  - {x: 226, y: 2}
+  - {x: 200, y: -26}
+  - {x: 142, y: -26}
+  - {x: 137, y: -6}
+  - {x: 137, y: 30}
+  - {x: 136, y: 72}
+  HarbourLegCount: 3
+  HarbourSpeed: 2.2
+  CruiseSpeed: 4.5
+  WorkSpeed: 1.6
+  TurnSeconds: 4
+  MakeFastSeconds: 8
+  StringStart: {x: 240, y: 16}
+  StringBearingDegrees: 0
+  PotCount: 6
+  PotSpacingMeters: 14
+  DailyShiftMeters: 3
+  LayAlongsideMeters: 3.2
+  HaulerLocalMeters: {x: 1.3, y: -0.8}
+  GaffSeconds: 6
+  HaulSeconds: 14
+  DeckWorkSeconds: 30
+  SetSeconds: 8
+  RopeLengthMeters: 10.5
+  FloodBearingDegrees: 270
+  FullStreamRiseMetersPerHour: 1
+  StreamLean01: 0.35
+  BuoyColour: {r: 0.86, g: 0.2, b: 0.16, a: 1}
+  RopeColour: {r: 0.82, g: 0.76, b: 0.6, a: 0.9}
+  RopeWidthMeters: 0.06
+  DepthDrawFraction: 0.35
+  SeenToDepthMeters: 2.5
+  HaulRopeSagMeters: 0.4
+  BuoySortingOrder: 3
+  RopeSortingOrder: 2
