@@ -293,7 +293,10 @@ namespace HiddenHarbours.Tests.PlayMode
         [UnityTest]
         public IEnumerator InAGale_ThereIsNoGathering_AndNoFire()
         {
-            _sea.WindStrength = 12f;
+            // A new sea, not a changed one: the weather of a day is a function of the clock, and the
+            // director only plans again when the world it reads is replaced.
+            _sea = new FakeSea { WindStrength = 12f };
+            GameServices.Environment = _sea;
             yield return At(19.5f);
             Assert.That(_first.IsVariedToday || _second.IsVariedToday, Is.False, "nobody goes down in a gale");
             Assert.That(BeachLifeDirector.Instance.MiddlesShown, Is.EqualTo(0));

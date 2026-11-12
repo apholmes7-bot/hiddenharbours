@@ -192,6 +192,7 @@ namespace HiddenHarbours.World
             FinishTalk();
             for (int i = 0; i < _gatherings.Count; i++) Clear(_gatherings[i]);
             _gatherings.Clear();
+            _bodies.Clear();
         }
 
         // ---- talk ---------------------------------------------------------------------------------
@@ -319,7 +320,13 @@ namespace HiddenHarbours.World
         private void RefreshBodies(string regionId)
         {
             float now = Time.unscaledTime;
-            if (now - _bodiesAt <= RosterTrustSeconds && _bodies.Count > 0) return;
+            // A body that was destroyed since the last look (a region left and entered again) makes the
+            // whole list stale, however recently it was read.
+            bool stale = _bodies.Count == 0 || now - _bodiesAt > RosterTrustSeconds;
+            if (!stale)
+                foreach (KeyValuePair<string, VillagerRoutine> body in _bodies)
+                    if (body.Value == null) { stale = true; break; }
+            if (!stale) return;
             _bodiesAt = now;
             _bodies.Clear();
             foreach (VillagerRoutine v in FindObjectsByType<VillagerRoutine>(FindObjectsSortMode.None))
