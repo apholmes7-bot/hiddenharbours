@@ -9854,6 +9854,26 @@
       "Type": "HiddenHarbours.World.BerthDef",
       "Guid": "45859f8feba04e0f9036011239f83e31",
       "Id": "berth.rpt_trawler_outside"
+    },
+    {
+      "Type": "HiddenHarbours.Core.HullPaintSchemeDef",
+      "Guid": "b6dad690c3366964783d11461ccdbb58",
+      "Id": "paint.stern_trawler_bank_green"
+    },
+    {
+      "Type": "HiddenHarbours.Core.HullPaintSchemeDef",
+      "Guid": "bae5877a14776e84e914627ce5889892",
+      "Id": "paint.stern_trawler_harbour_blue"
+    },
+    {
+      "Type": "HiddenHarbours.Core.HullPaintSchemeDef",
+      "Guid": "1970c252730087d4ba660055f5402ae5",
+      "Id": "paint.stern_trawler_north_grey"
+    },
+    {
+      "Type": "HiddenHarbours.Core.HullPaintSchemeDef",
+      "Guid": "16f13d757f9cf964b9681d49d589735f",
+      "Id": "paint.stern_trawler_oxide_red"
     }
   ]
 }

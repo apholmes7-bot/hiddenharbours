@@ -85,19 +85,6 @@
       "_batch2_note": "2026-08-27, CUTAWAY BATCH 2: this hull's exterior rig MOVED, and the fields above are the drop-1 adjudication, kept as written. Read them as historical. Root canon went 3e82a11e… -> c4ad1816… (pass 3), and the kit copy the interior sidecars actually pinned went b5223748… -> the SAME c4ad1816…, so docs/art/rigs/ and boat-interiors-kit/hull-rigs/ hold identical bytes for this hull for the first time. 'drift: none possible - one version across the entire history' was true when written and is now false; there are two. The verdict is unchanged and was not re-earned - see _corrections, 2026-08-27."
     },
     {
-      "hull_stem": "sternTrawlerIsoRig",
-      "verdict": "CLEAN",
-      "axis_a_interior_pin": "PASS (renderer 34bb7813, verified 27/27)",
-      "axis_b_hull_baseline": "PASS",
-      "baseline_source": "discovered - main has exactly one version, ever (self-referential stamp)",
-      "baseline_lf_sha256": "5bd2b3d474add41b94b4483df68d64a89048a6390a4f80eb8751b98c4499ed9b",
-      "main_lf_sha256": "5bd2b3d474add41b94b4483df68d64a89048a6390a4f80eb8751b98c4499ed9b",
-      "drift": "none possible - one version across the entire history",
-      "evidence": "One distinct blob across all refs. Bundled revision swaps the aft wall face + painted backPanel door for real DOOR geometry. AXIS A NOW PASSES: the re-export re-stamped every sidecar to the renderer that shipped (34bb7813), verified computationally. The bundled hull rig is byte-identical to drop 1, so the Axis B finding above is unchanged.",
-      "upstream_ask": "Nothing. Axis A and Axis B both pass against the re-export.",
-      "_superseded_verdict": "REFUSED-PIN in drop 1 — cleared by the re-export."
-    },
-    {
       "hull_stem": "sternTrawlerMk2IsoRig",
       "verdict": "CLEAN",
       "axis_a_interior_pin": "PASS (renderer 34bb7813, verified 27/27)",
@@ -253,6 +240,13 @@
     "  'STAMP_AT_EXPORT_LF_SHA256_OF_sportFisherIsoRig2.js'. The gate's '27/27' is true of the GAMEPLAY",
     "  sidecars, which it checked; the interior sidecars' hull pins were not checked on that axis.",
     "  It is present in the delivered zip, so it is upstream, not the landing.",
-    "NET: the re-export CLEARS 24 and BREAKS the 2 that were already clean."
+    "NET: the re-export CLEARS 24 and BREAKS the 2 that were already clean.",
+    "2026-11-12, sternTrawlerIsoRig: ROW REMOVED, not re-adjudicated. The stern trawler moved to the hull",
+    "  layout (hull-geometry@1 / hull-walk@1, ADR 0048 batch 3): her rooms are now read from",
+    "  docs/art/rigs/gameplay/sternTrawlerIsoRig.stern_trawler.walk.json, and her kit sidecars",
+    "  (sternTrawlerIsoRig.interior.json and gameplay/sternTrawlerIsoRig.gameplay.json) left the kit with",
+    "  her @1 sidecar. Her CLEAN verdict was true of those files and is not withdrawn; there is simply",
+    "  nothing left in the kit for it to clear. The kit's three hull-rigs copies of her old rig are kept as",
+    "  the record. Seven families remain (24 sidecars); the Mk II keeps her own row and her own files."
   ]
 }

@@ -253,8 +253,9 @@ for (const [name, P] of Object.entries(REFS)) {
 
 // ============================================================================================
 console.log(`\n=== 5 · THE SAME QUESTION ON TWO SHIPS (3 levels each) ===`);
-for (const [file, sym, key] of [['sideDraggerIsoRig.js', 'SideDraggerIso', 'dragger'],
-                                ['sternTrawlerIsoRig.js', 'SternTrawlerIso', 'trawler']]) {
+// The stern trawler was the second ship here until she moved to the hull layout (hull-walk@1):
+// her root rig no longer publishes a bare F for this proof to read.
+for (const [file, sym, key] of [['sideDraggerIsoRig.js', 'SideDraggerIso', 'dragger']]) {
   const k = {}; load(rigs('boat-interiors-kit/hull-rigs/' + file), k); load(rigs('boat-interiors-kit/boatInteriorRig.js'), k);
   const M = load(rigs(file), {}, { marker: `root.${sym} = {`, syms: ['F'] })[sym];
   console.log(`  ${key}: ${M.F.length} faces, materials ${JSON.stringify(hist(M.F))}`);
