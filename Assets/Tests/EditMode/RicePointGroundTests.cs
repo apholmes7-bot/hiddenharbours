@@ -87,7 +87,7 @@ namespace HiddenHarbours.Tests.EditMode
         [Test]
         public void RicePointPaint_CoversEveryTexelWithoutRoadPlacement()
         {
-            var r = Read();
+            var r = GroundFileIntake.ReadRicePointGround(Folder); // the ground as sailed: the issued base, dredged
             var maps = Enumerable.Range(0, 6).Select(i => TerrainPlanPng.ReadFile(Folder + "/RicePointSplat" + (char)('A' + i) + ".png")).ToArray();
             var expected = GroundFileIntake.RicePointStarterPaint(r, File.ReadAllText(Folder + "/surface-rules.json"));
             for (int m = 0; m < maps.Length; m++)

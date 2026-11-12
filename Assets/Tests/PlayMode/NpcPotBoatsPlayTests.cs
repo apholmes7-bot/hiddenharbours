@@ -103,6 +103,13 @@ namespace HiddenHarbours.Tests.PlayMode
             _hull = go.AddComponent<MooredBoat>();
             _hull.Configure(owner, _def.BerthHeadingDegrees);
             go.SetActive(true);
+
+            // The deck reads the catch off the species registry; a bare test scene has not booted it.
+            foreach (string guid in AssetDatabase.FindAssets("t:FishSpeciesDef", new[] { "Assets/_Project/Data/Fish" }))
+            {
+                var fish = AssetDatabase.LoadAssetAtPath<FishSpeciesDef>(AssetDatabase.GUIDToAssetPath(guid));
+                if (fish != null) FishSpeciesRegistry.Register(fish);
+            }
 #else
             Assert.Ignore("Needs the AssetDatabase: this drives the real committed Def and owner.");
 #endif
@@ -318,6 +325,128 @@ namespace HiddenHarbours.Tests.PlayMode
                 if (shownPlayedThrough[i])
                     Assert.That((Buoy(i) - buoysPlayedThrough[i]).magnitude, Is.LessThan(0.3f), $"pot {i}'s buoy (it bobs)");
             }
+        }
+
+        [UnityTest]
+        public IEnumerator OnDeck_EveryKeeperGoesThroughHerHands_RailToBenchToItsCrate()
+        {
+            Assert.IsTrue(_boats.TryBind(_def, _hull));
+            yield return At(_today.DepartSeconds + 30.0);
+            NpcPotDeck deck = _boats.DeckOf(_def.Id);
+            NpcPotDayCatch caught = _boats.CatchOf(_def.Id);
+            Assert.IsNotNull(deck);
+            Assert.IsNotNull(caught);
+            Assert.That((deck.StandDeckMeters - deck.HelmDeckMeters).magnitude, Is.LessThan(0.01f), "on passage she is at the helm");
+            Assert.IsFalse(deck.InHand.enabled, "with nothing in her hands");
+            for (int g = 0; g < deck.GradeCount; g++) Assert.That(deck.ShownInCrate(g), Is.EqualTo(0), "and empty crates");
+
+            int pot = -1, keeper = -1;
+            for (int p = 0; p < caught.PotCount && pot < 0; p++)
+                for (int k = 0; k < caught.Animals(p).Count && pot < 0; k++)
+                    if (caught.Animals(p)[k].Keeper) { pot = p; keeper = k; }
+            Assert.That(pot, Is.GreaterThanOrEqualTo(0), "seed 4242 day 2 lands at least one keeper");
+            NpcPotAnimal animal = caught.Animals(pot)[keeper];
+
+            yield return At(_today.HaulStart[pot] + 1.0);
+            Assert.That((deck.StandDeckMeters - deck.RailDeckMeters).magnitude, Is.LessThan(0.01f), "she hauls from the rail");
+
+            yield return At(animal.PickedAt + 0.9 * _def.PickSeconds);
+            Assert.That(deck.Step, Is.EqualTo(NpcDeckStep.Picking));
+            Assert.That((deck.StandDeckMeters - deck.RailDeckMeters).magnitude, Is.LessThan(0.01f));
+            if (animal.Sprite != null)
+            {
+                Assert.IsTrue(deck.InHand.enabled, "the animal is in her hand");
+                Assert.That(deck.InHand.sprite, Is.EqualTo(animal.Sprite));
+            }
+            int before = deck.ShownInCrate(animal.Grade);
+            Assert.That(before, Is.EqualTo(caught.StowedAt(animal.PickedAt, animal.Grade)));
+
+            yield return At(animal.PickedAt + _def.PickSeconds + 0.8 * _def.BandSeconds);
+            Assert.That(deck.Step, Is.EqualTo(NpcDeckStep.Banding));
+            Assert.That((deck.StandDeckMeters - deck.BenchDeckMeters).magnitude, Is.LessThan(0.01f), "she bands it at the bench");
+            Assert.That(deck.ShownInCrate(animal.Grade), Is.EqualTo(before), "not stowed while it is still in her hand");
+
+            yield return At(animal.PickedAt + _def.PickSeconds + _def.BandSeconds + 0.5 * _def.StowSeconds);
+            Assert.That(deck.Step, Is.EqualTo(NpcDeckStep.Stowing));
+            Vector2 crate = deck.CrateDeckMeters(animal.Grade);
+            Assert.That((deck.StandDeckMeters - (deck.BenchDeckMeters + crate) * 0.5f).magnitude, Is.LessThan(0.05f),
+                        "half way through the carry she is half way to the crate");
+            if (animal.Sprite != null)
+                Assert.That(((Vector2)deck.InHand.transform.localPosition - deck.StandDeckMeters).magnitude, Is.LessThan(0.01f),
+                            "and the animal is where her hand is");
+
+            yield return At(animal.DoneAt + 0.05);
+            Assert.That(deck.ShownInCrate(animal.Grade), Is.EqualTo(before + 1), "it is in the crate for its grade");
+
+            yield return At(_today.ReturnSeconds + 5.0);
+            int shown = 0, expected = 0;
+            for (int g = 0; g < deck.GradeCount; g++)
+            {
+                shown += deck.ShownInCrate(g);
+                expected += Mathf.Min(caught.StowedAt(_today.ReturnSeconds, g), _def.CrateShownCapacity);
+            }
+            Assert.That(shown, Is.EqualTo(expected), "home, her crates hold the day's keepers");
+            Assert.That(shown, Is.GreaterThan(0));
+            Assert.IsFalse(deck.InHand.enabled);
+            Assert.That((deck.StandDeckMeters - deck.HelmDeckMeters).magnitude, Is.LessThan(0.01f));
+        }
+
+        [UnityTest]
+        public IEnumerator Landing_SheCarriesEachCrateUpTheLadderToTheBuyer_AndItIsSold()
+        {
+            Assert.IsTrue(_boats.TryBind(_def, _hull));
+            yield return At(_today.ReturnSeconds + 5.0);
+            NpcPotLanding plan = _boats.LandingOf(_def.Id);
+            NpcPotLandingWalk walk = _boats.LandingWalkOf(_def.Id);
+            NpcPotDeck deck = _boats.DeckOf(_def.Id);
+            Assert.IsNotNull(plan);
+            Assert.IsNotNull(walk);
+            Assert.IsTrue(plan.HasLanding, "seed 4242 day 2 lands keepers");
+            Assert.IsFalse(walk.IsAshore, "fast at her berth, she is still aboard");
+            for (int g = 0; g < walk.GradeCount; g++) Assert.IsFalse(walk.ShownAtCounter(g), "nothing is at the counter yet");
+
+            int crate = -1;
+            for (int g = 0; g < plan.GradeCount && crate < 0; g++)
+                if (plan.AboardAt(plan.StartSeconds, g) > 0) crate = g;
+            Assert.That(crate, Is.GreaterThanOrEqualTo(0));
+            Assert.That(deck.ShownInCrate(crate), Is.GreaterThan(0), "the crate is on her deck");
+
+            // The plan's own times for this crate: on the wharf with it, and the moment it is down.
+            double onTheWharf = -1.0, down = -1.0;
+            Vector2 secondCorner = _def.LandingRoute[1];
+            for (double t = plan.StartSeconds; t < plan.SoldAtSeconds && down < 0.0; t += 0.25)
+            {
+                NpcLandingMoment m = plan.MomentAt(t);
+                if (onTheWharf < 0.0 && m.Ashore && m.Crate == crate && m.Position.y > secondCorner.y) onTheWharf = t;
+                if (plan.AtCounterAt(t, crate) > 0) down = t;
+            }
+            Assert.That(onTheWharf, Is.GreaterThan(0.0));
+            Assert.That(down, Is.GreaterThan(onTheWharf));
+
+            yield return At(onTheWharf);
+            Assert.IsTrue(walk.IsAshore, "she is on the wharf");
+            Assert.That(walk.Step, Is.EqualTo(NpcLandingStep.Carrying));
+            Assert.That((walk.Position - plan.MomentAt(onTheWharf).Position).magnitude, Is.LessThan(1.5f), "where the clock says");
+            Assert.That(walk.Position.y, Is.GreaterThan(_def.LandingRoute[0].y), "past the top of the ladder");
+            if (_def.LandingCrateSprite != null) Assert.IsTrue(walk.InHands.enabled, "with the crate in her hands");
+            Assert.That(deck.ShownInCrate(crate), Is.EqualTo(0), "and it is no longer on the deck");
+            Assert.IsFalse(walk.ShownAtCounter(crate), "nor at the counter yet");
+            Assert.IsFalse(deck.InHand.enabled);
+            SpriteRenderer aboard = _hull.GetComponentInChildren<IsoCharacterSprite>(true)?.GetComponent<SpriteRenderer>();
+            if (aboard != null) Assert.IsFalse(aboard.enabled, "there is one of her: the figure on the boat is hidden");
+
+            yield return At(down + 0.3);
+            if (_def.LandingCrateSprite != null) Assert.IsTrue(walk.ShownAtCounter(crate), "the crate is down at the buyer's counter");
+            Assert.IsFalse(walk.InHands.enabled, "and out of her hands");
+
+            yield return At(plan.SoldAtSeconds + 0.5);
+            for (int g = 0; g < walk.GradeCount; g++) Assert.IsFalse(walk.ShownAtCounter(g), "the buyer has taken the lot");
+
+            yield return At(plan.EndSeconds + 1.0);
+            Assert.IsFalse(walk.IsAshore, "she is back aboard");
+            if (aboard != null) Assert.IsTrue(aboard.enabled);
+            for (int g = 0; g < deck.GradeCount; g++) Assert.That(deck.ShownInCrate(g), Is.EqualTo(0), "with empty crates");
+            Assert.That((deck.StandDeckMeters - deck.HelmDeckMeters).magnitude, Is.LessThan(0.01f));
         }
 
         [UnityTest]

@@ -194,8 +194,36 @@ namespace HiddenHarbours.App.Editor
                 WaterSceneTemplate.SetString(passage, "_arrivalKey", door.TargetArrival);
                 SetBand(passage, door);
             }
+            RefreshGroundRange(plan, root.Find(VisualName));
             // No destroy/recreate, no re-paint, no transform resets, no new file IDs on a no-op refresh.
             EditorSceneManager.SaveScene(scene);
+        }
+
+        /// <summary>
+        /// The two surfaces that decode the height raster keep its encoding range (and the paint its
+        /// floor) as their own numbers. When the ground's range moves (a harbour dredged below the old
+        /// floor), a refresh carries the plan's numbers to them; when it has not, this writes nothing.
+        /// </summary>
+        static void RefreshGroundRange(LandScenePlanDef plan, Transform visuals)
+        {
+            if (visuals == null) return;
+            SetFloats(visuals.Find("SurfacePaint")?.GetComponent<TerrainSplatSurface>(),
+                ("_heightMin", plan.Ground.MinElevation), ("_heightMax", plan.Ground.MaxElevation), ("_floorPaint", plan.PaintFloor));
+            SetFloats(visuals.Find("Sea")?.GetComponent<WaterSurface>(),
+                ("_heightMin", plan.Ground.MinElevation), ("_heightMax", plan.Ground.MaxElevation));
+        }
+
+        static void SetFloats(Object target, params (string Name, float Value)[] values)
+        {
+            if (target == null) return;
+            var so = new SerializedObject(target);
+            foreach (var (name, value) in values)
+            {
+                var property = so.FindProperty(name);
+                if (property == null) throw new InvalidOperationException("No " + name + " on " + target.GetType().Name);
+                if (property.floatValue != value) property.floatValue = value;
+            }
+            so.ApplyModifiedPropertiesWithoutUndo();
         }
 
         static RegionDef[] Targets(LandScenePlanDef plan) => new[] { plan.Region }
