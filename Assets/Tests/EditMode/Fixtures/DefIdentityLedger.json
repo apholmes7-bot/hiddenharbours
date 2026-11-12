@@ -71,6 +71,8 @@
     "HiddenHarbours.World.CoastRecipeDef",
     "HiddenHarbours.World.CoastSectionDef",
     "HiddenHarbours.World.CommonsDef",
+    "HiddenHarbours.World.BeachActivityDef",
+    "HiddenHarbours.World.BeachDef",
     "HiddenHarbours.World.ConversationDef",
     "HiddenHarbours.World.DialogueDef",
     "HiddenHarbours.World.DialogueVoiceDef",
@@ -9652,6 +9654,31 @@
       "Type": "HiddenHarbours.Tools.GoodsModel.GoodsHandlingDef",
       "Guid": "a4b1e5075acc4f9bbbdf18742c947dab",
       "Id": "handling.research_two_hands"
+    },
+    {
+      "Type": "HiddenHarbours.World.BeachDef",
+      "Guid": "60cc5419c7994a05914b444264392ddc",
+      "Id": "beach.st_peters.bar_head"
+    },
+    {
+      "Type": "HiddenHarbours.World.BeachActivityDef",
+      "Guid": "dd8ba62b370747fc9d304d9bb5b292ee",
+      "Id": "beachactivity.clam_dig"
+    },
+    {
+      "Type": "HiddenHarbours.World.BeachActivityDef",
+      "Guid": "c679955b8201414590ca6f1df9179463",
+      "Id": "beachactivity.tide_line_walk"
+    },
+    {
+      "Type": "HiddenHarbours.World.BeachActivityDef",
+      "Guid": "a79cc944ed404cdca2d7012ff0f40aaa",
+      "Id": "beachactivity.watch_the_water"
+    },
+    {
+      "Type": "HiddenHarbours.World.BeachActivityDef",
+      "Guid": "fa52b85ddbcb48d0a23de6a3534427fb",
+      "Id": "beachactivity.winter_walk"
     }
   ]
 }

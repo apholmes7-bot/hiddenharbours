@@ -867,6 +867,30 @@ knows you.
   are placed in the region scenes (`world-and-regions.md` §9) and referenced by id from NPC data, so
   the same NPC data is scene-portable and designer-editable.
 
+### 7.1 As built: a day that depends on the sea and the sky (beach life)
+
+The first conditional days (the §2.5 idea) are the people of St Peters using their beach.
+
+- **A day is a list of stops.** `RoutinePlanner.ResolveStops` turns a `RoutineDef` into stops (hour,
+  station, tag); `RoutinePlanner.BuildFromStops` turns stops into the walked plan. A stop may hang
+  off a lane junction by its own approach path, and two stops on the same strand are walked between
+  directly. The authored day is those two steps with nothing in between.
+- **One seam varies the day.** `VillagerRoutine` asks `IRoutineDaySource` once per game day for
+  that day's plan; null means the authored day. The answer must be a pure function of the day, the
+  world seed and the at-time environment, and must agree with the authored day at midnight, so
+  nothing is saved and a load at any hour finds everybody where they would have been.
+- **Beach life is data.** A `BeachDef` (`Data/Beaches/`, id `beach.*`) is the sand as lines running
+  from above the highest tide down to the water: spots to stand, a walk along the tide line, and the
+  flats the ebb bares. A `BeachActivityDef` (id `beachactivity.*`) is one thing people do there and
+  its gates: hours, seasons, tide level, wind, sea state, fog, a chance per day, and how far above
+  the water people keep. `Resources/BeachLifeLibrary` lists them in priority order.
+- **Only free time is given to the beach.** An activity replaces a `Recreation` block and nothing
+  else, so work, meals and sleep stay where the authored day has them. The gates are asked across
+  the whole stay: people leave at the hour the weather turns or the tide comes over the flats, and
+  everybody stands above the highest water of their stay plus the activity's clearance.
+- **What the sim does not have yet.** No rain (fog and a rough sea stand for a poor day) and no
+  temperature (season and hour stand for warmth).
+
 ---
 
 ## 8. Open questions / decisions deferred
