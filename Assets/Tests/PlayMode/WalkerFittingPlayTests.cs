@@ -1,3 +1,4 @@
+using HiddenHarbours.Tests.Support;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -692,14 +693,15 @@ namespace HiddenHarbours.Tests.PlayMode
             var action = (Action)Delegate.CreateDelegate(typeof(Action), _walker.Beam,
                 typeof(Headlamp).GetMethod("LateUpdate", Private));
             for (int i = 0; i < 100; i++) action();
+            using var allocation = new ManagedAllocationProbe();
             var timer = Stopwatch.StartNew();
-            long start = GC.GetAllocatedBytesForCurrentThread();
+            allocation.Begin();
             for (int i = 0; i < 10000; i++) action();
+            long allocationEvents = allocation.End();
             timer.Stop();
-            long bytes = GC.GetAllocatedBytesForCurrentThread() - start;
             File.WriteAllText(Path.Combine(PlateDir, "follower-cost.txt"),
-                $"calls=10000\nmean_cpu_ms={timer.Elapsed.TotalMilliseconds / 10000:R}\nallocated_bytes={bytes}\nextra_fitting_draws=1\n");
-            Assert.LessOrEqual(bytes, 0, "follower allocates nothing per frame after warmup");
+                $"calls=10000\nmean_cpu_ms={timer.Elapsed.TotalMilliseconds / 10000:R}\nmanaged_allocation_events={allocationEvents}\nextra_fitting_draws=1\n");
+            Assert.LessOrEqual(allocationEvents, 0, "follower allocates nothing per frame after warmup");
             var fitting = Fitting();
             var pixel = new Texture2D(1, 1, TextureFormat.RGBA32, false);
             double on = 0, off = 0, worstDelta = double.NegativeInfinity;
