@@ -28,6 +28,7 @@
     "HiddenHarbours.Boats.NavBuoyDef",
     "HiddenHarbours.Boats.SailRaceCourseDef",
     "HiddenHarbours.Boats.SailRaceNpcDef",
+    "HiddenHarbours.Boats.WreckDef",
     "HiddenHarbours.Core.ActionTimingDef",
     "HiddenHarbours.Core.BoatInteriorDef",
     "HiddenHarbours.Core.CarryAnchorTableDef",
@@ -9939,6 +9940,21 @@
       "Type": "HiddenHarbours.Core.HullPaintSchemeDef",
       "Guid": "6f09698abde9336468afc0c8708472e1",
       "Id": "paint.stern_trawler_wrecked"
+    },
+    {
+      "Type": "HiddenHarbours.Boats.WreckDef",
+      "Guid": "af733760af404813a9a3c0cc81d2c411",
+      "Id": "wreck.rpt_stern_trawler"
+    },
+    {
+      "Type": "HiddenHarbours.World.DialogueDef",
+      "Guid": "2b52cbe6fc9c440ea7c5395d2b8da622",
+      "Id": "dialogue.rpt_wreck"
+    },
+    {
+      "Type": "HiddenHarbours.World.NpcDef",
+      "Guid": "a230a2fa97d941adbac15d45912324e3",
+      "Id": "npc.rpt_wreck"
     }
   ]
 }

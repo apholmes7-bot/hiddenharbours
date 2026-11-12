@@ -69,5 +69,9 @@ namespace HiddenHarbours.Core
         /// <summary>She is lying still — made fast alongside, or brought up to her anchor. Anchor
         /// light only, plus whatever glows out of a room somebody is in.</summary>
         Moored = 1,
+
+        /// <summary>She is a wreck or a hulk: nobody aboard, no power, nothing lit. Every lamp is
+        /// dark, the anchor light and the cabin included, whatever else is true of her.</summary>
+        Derelict = 2,
     }
 }
