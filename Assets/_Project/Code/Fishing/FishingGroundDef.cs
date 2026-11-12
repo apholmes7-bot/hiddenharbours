@@ -34,6 +34,8 @@ namespace HiddenHarbours.Fishing
         [Min(0f)] public float MaxDepthMetres;
         [Tooltip("What the bottom is made of.")]
         public EcologyHabitat Bottom = EcologyHabitat.Mud;
+        [Tooltip("How hard the bottom is on towed gear: 0 soft mud, 1 bare ledge.")]
+        [Range(0f, 1f)] public float Hardness01;
 
         [Header("The fish")]
         [Tooltip("Species this ground holds (fish.snake_case). Each must also list the region.")]

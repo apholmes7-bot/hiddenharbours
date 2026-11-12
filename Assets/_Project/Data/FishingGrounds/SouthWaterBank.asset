@@ -21,6 +21,7 @@ MonoBehaviour:
   MinDepthMetres: 35
   MaxDepthMetres: 35
   Bottom: 24
+  Hardness01: 0.8
   FishIds:
   - fish.atlantic_cod
   - fish.pollock
