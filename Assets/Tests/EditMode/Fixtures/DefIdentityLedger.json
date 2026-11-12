@@ -117,7 +117,8 @@
     "HiddenHarbours.Art.PlantClumpDef",
     "HiddenHarbours.Fishing.FishEcologyDef",
     "HiddenHarbours.Tools.GoodsModel.GoodsContainerDef",
-    "HiddenHarbours.Tools.GoodsModel.GoodsHandlingDef"
+    "HiddenHarbours.Tools.GoodsModel.GoodsHandlingDef",
+    "HiddenHarbours.Fishing.NpcTrawlDayDef"
   ],
   "Entries": [
     {
@@ -9894,6 +9895,11 @@
       "Type": "HiddenHarbours.Core.HullPaintSchemeDef",
       "Guid": "7bcdddfaae6329a45aa2cc1188af2e5d",
       "Id": "paint.stern_trawler_mk2_tar_black"
+    },
+    {
+      "Type": "HiddenHarbours.Fishing.NpcTrawlDayDef",
+      "Guid": "b4da6f77c5404bf1bdd2e74cc7ab5007",
+      "Id": "trawlday.rpt_face"
     }
   ]
 }
