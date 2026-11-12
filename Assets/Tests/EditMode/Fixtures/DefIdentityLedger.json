@@ -118,7 +118,8 @@
     "HiddenHarbours.Art.PlantClumpDef",
     "HiddenHarbours.Fishing.FishEcologyDef",
     "HiddenHarbours.Tools.GoodsModel.GoodsContainerDef",
-    "HiddenHarbours.Tools.GoodsModel.GoodsHandlingDef"
+    "HiddenHarbours.Tools.GoodsModel.GoodsHandlingDef",
+    "HiddenHarbours.Fishing.NpcTrawlDayDef"
   ],
   "Entries": [
     {
@@ -9957,24 +9958,9 @@
       "Id": "npc.rpt_wreck"
     },
     {
-      "Type": "HiddenHarbours.Core.HullPaintSchemeDef",
-      "Guid": "03784ef8b946c56488dfc5fcbe035b07",
-      "Id": "paint.side_dragger_coal_black"
-    },
-    {
-      "Type": "HiddenHarbours.Core.HullPaintSchemeDef",
-      "Guid": "3a4ea4196b9e4004db64b78da30a7c0f",
-      "Id": "paint.side_dragger_gulf_blue"
-    },
-    {
-      "Type": "HiddenHarbours.Core.HullPaintSchemeDef",
-      "Guid": "63793007538e0a3478d13a1441a3a07c",
-      "Id": "paint.side_dragger_moss_green"
-    },
-    {
-      "Type": "HiddenHarbours.Core.HullPaintSchemeDef",
-      "Guid": "d00c642fa78820d45976bba981a2e09f",
-      "Id": "paint.side_dragger_rust_red"
+      "Type": "HiddenHarbours.Fishing.NpcTrawlDayDef",
+      "Guid": "b4da6f77c5404bf1bdd2e74cc7ab5007",
+      "Id": "trawlday.rpt_face"
     }
   ]
 }
