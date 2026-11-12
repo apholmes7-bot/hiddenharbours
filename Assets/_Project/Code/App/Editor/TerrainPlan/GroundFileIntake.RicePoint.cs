@@ -77,10 +77,14 @@ namespace HiddenHarbours.App.Editor
                 return BitConverter.ToString(sha.ComputeHash(bytes)).Replace("-", "").ToLowerInvariant();
         }
 
-        /// <summary>Validate committed inputs before any CREATE or REFRESH can mutate the scene.</summary>
+        /// <summary>
+        /// The ground as the creative director issued it (plan.json and the rasters it hashes, kept
+        /// untouched in <see cref="RicePointBaseFolder"/>). The ground the game sails on is this,
+        /// dredged: <see cref="ReadRicePointGround"/>.
+        /// </summary>
         public static RicePointRaster ReadRicePointFolder(string folder) => ReadRicePoint(
             File.ReadAllText(Path.Combine(folder, "plan.json")),
-            File.ReadAllBytes(Path.Combine(folder, "RicePointSeabed_HeightTex_plan.png")),
-            File.ReadAllBytes(Path.Combine(folder, "RicePointSeabed_StillTex_plan.png")));
+            File.ReadAllBytes(Path.Combine(folder, RicePointBaseFolder, "RicePointSeabed_HeightTex_plan.png")),
+            File.ReadAllBytes(Path.Combine(folder, RicePointBaseFolder, "RicePointSeabed_StillTex_plan.png")));
     }
 }
