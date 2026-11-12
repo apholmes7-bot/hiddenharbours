@@ -71,7 +71,7 @@ namespace HiddenHarbours.Tests.PlayMode
             Vector2 expectLead = WakeRootMath.ProjectAlongHeading((Vector2)she.Go.transform.position,
                                                                   (Vector2)she.Go.transform.up,
                                                                   she.SternOffset, she.ElevationDeg);
-            Assert.AreEqual(Vector2.Distance(expectLead, expectRoot), shape.w, 0.05f,
+            Assert.AreEqual(Vector2.Dot(expectLead - new Vector2(root.x, root.y), new Vector2(root.z, root.w)), shape.w, 0.05f,
                             "she did not publish her length, so the shader cannot find her leading end");
 
             var was = new List<float>();
