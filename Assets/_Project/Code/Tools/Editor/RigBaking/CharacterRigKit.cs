@@ -33,6 +33,27 @@ namespace HiddenHarbours.Tools.RigBaking
             "characterRig10", "characterIsoRig10", "10.3", 10, "v10", "CAST10", faceMarks: true,
             exportsNumbers: true);
 
+        /// <summary>Rig 11.0: the next-iteration proposal (2026-11-11), a copy of rig 10.3 with a key
+        /// that leans left, a larger head and hands and a higher tone gain. It is no one's live rig:
+        /// <see cref="CharacterSkinAssetBaker.BakeVariant"/> bakes named presets from it into their own
+        /// folder under their own ids, beside the shipped skins, and nothing in the game reads them.
+        /// Same API and exports as rig 10, so the same reader reads it.</summary>
+        public static readonly CharacterRigKit Rig11 = new CharacterRigKit(
+            "characterRig11", "characterIsoRig11", "11.0", 11, "v11", "CAST10", faceMarks: true,
+            exportsNumbers: true);
+
+        /// <summary>Every kit the reader knows, oldest first.</summary>
+        public static readonly CharacterRigKit[] All = { Rig9, Rig10, Rig11 };
+
+        /// <summary>The kit whose body script is <paramref name="scriptPath"/> (repo-relative, as a
+        /// skin def records it), or null when no kit's is.</summary>
+        public static CharacterRigKit ForScriptPath(string scriptPath)
+        {
+            foreach (CharacterRigKit kit in All)
+                if (string.Equals(kit.ScriptPath, scriptPath, StringComparison.Ordinal)) return kit;
+            return null;
+        }
+
         /// <summary>The <see cref="RigCatalog"/> key of the rig's body script.</summary>
         public readonly string CatalogKey;
 
