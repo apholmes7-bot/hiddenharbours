@@ -369,6 +369,7 @@ namespace HiddenHarbours.Tests.EditMode
 
             const int Rounds = 5;
             var ticks = new long[recipes.Count * Rounds];
+            bool countsAllocations = CountsAllocations();
             int n = 0, gen0 = GC.CollectionCount(0);
             long allocated = GC.GetAllocatedBytesForCurrentThread();
             for (int round = 0; round < Rounds; round++)
@@ -385,6 +386,7 @@ namespace HiddenHarbours.Tests.EditMode
             double Us(long t) => t * 1e6 / Stopwatch.Frequency;
             double median = Us(ticks[n / 2]), p95 = Us(ticks[(int)(n * 0.95)]), worst = Us(ticks[n - 1]);
             double perBuild = allocated / (double)n;
+            string allocationReport = countsAllocations ? $"{perBuild:F0} B allocated per build" : "allocated bytes unavailable";
             int maxMaterials = b.Builds.Max(x => x.Visual.Skin.Materials.Length);
             int maxShades = b.Builds.Max(x => x.Visual.Skin.Materials.Max(m => m.Colors?.Length ?? 0));
             long colourBytes = 4L * (b.Ramps.Axes.Sum(a => a.Ramps.Sum(r => r.Shades.Length)) +
@@ -394,7 +396,7 @@ namespace HiddenHarbours.Tests.EditMode
                 .Sum(o => new FileInfo(AssetDatabase.GetAssetPath(o)).Length);
 
             Debug.Log($"[CharacterBuilderContentTests] ADR 0051 cost: {n} builds ({recipes.Count} recipes × {Rounds}): " +
-                      $"median {median:F1} µs, p95 {p95:F1} µs, worst {worst:F1} µs; {perBuild:F0} B allocated per build, " +
+                      $"median {median:F1} µs, p95 {p95:F1} µs, worst {worst:F1} µs; {allocationReport}, " +
                       $"{gen0} gen-0 collections; a recolour redraws ≤ {maxMaterials} ramps of ≤ {maxShades} shades " +
                       $"(3 RGBA32 textures, ≤ {3 * 4 * maxMaterials * maxShades} B, replacing the figure's own); the tables " +
                       $"hold {colourBytes} B of colour, {fileBytes} B on disk, loaded once.");
@@ -402,7 +404,7 @@ namespace HiddenHarbours.Tests.EditMode
             // Only the median is bounded: the worst of thousands catches whatever the editor's
             // collector or another thread did meanwhile, and is reported, not asserted.
             Assert.Less(median, 1000.0, "a build's median is over a millisecond: it is no longer a lookup");
-            if (CountsAllocations())
+            if (countsAllocations)
                 Assert.Less(perBuild, 4096.0, "a build allocates more than its look");
             else
                 Debug.Log("[CharacterBuilderContentTests] GC.GetAllocatedBytesForCurrentThread counts nothing on this " +

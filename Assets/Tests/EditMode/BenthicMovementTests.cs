@@ -1,3 +1,4 @@
+using HiddenHarbours.Tests.Support;
 using System;
 using HiddenHarbours.Fishing;
 using NUnit.Framework;
@@ -206,13 +207,14 @@ namespace HiddenHarbours.Tests.EditMode
         public void WarmQueries_AllocateZeroManagedBytes()
         {
             for (int i = 0; i < 100; i++) Sample(1, i, Lobster);
-            long before = GC.GetAllocatedBytesForCurrentThread();
+            using var allocation = new ManagedAllocationProbe();
+            allocation.Begin();
             bool allValid = true;
             for (int i = 0; i < 1024; i++)
                 allValid &= BenthicMovement.TrySample(1, "occupant.test", i, in Bed, in Lobster, out _);
-            long allocated = GC.GetAllocatedBytesForCurrentThread() - before;
+            long allocationEvents = allocation.End();
             Assert.IsTrue(allValid);
-            Assert.AreEqual(0, allocated);
+            Assert.AreEqual(0, allocationEvents);
         }
     }
 }

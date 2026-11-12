@@ -1,3 +1,4 @@
+using HiddenHarbours.Tests.Support;
 using System;
 using System.Collections.Generic;
 using HiddenHarbours.Art;
@@ -57,10 +58,11 @@ namespace HiddenHarbours.Tests.Art.EditMode
         public void WarmUpdates_AllocateZeroManagedBytes()
         {
             for (int i = 0; i < 32; i++) _caster.Tick();
-            long before = GC.GetAllocatedBytesForCurrentThread();
+            using var allocation = new ManagedAllocationProbe();
+            allocation.Begin();
             for (int i = 0; i < 256; i++) _caster.Tick();
-            long bytes = GC.GetAllocatedBytesForCurrentThread() - before;
-            Assert.That(bytes, Is.Zero, "Warm cached projection updates must not allocate managed memory.");
+            long allocationEvents = allocation.End();
+            Assert.That(allocationEvents, Is.Zero, "Warm cached projection updates must not allocate managed memory.");
         }
 
         [Test]
