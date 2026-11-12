@@ -195,6 +195,16 @@ namespace HiddenHarbours.Tools.RigBaking
                     $"{RigFolder}/character/rig10/Art/characterIsoRig10.js",
                     "CharacterIso10",
                     AzimuthConvention.Clockwise),
+
+                // Added by the next-iteration art pass (2026-11-11): rig 11.0, a copy of rig 10.3
+                // with its light, proportions and tone gain changed, landed under character/rig11/
+                // beside rig 10 (untouched). The same shape as rig 10's entry. Nothing is live from
+                // it: CharacterSkinAssetBaker.BakeVariant bakes named presets from it to their own
+                // folder and ids (CharacterRigKit.Rig11).
+                ["characterRig11"] = new RigEntry(
+                    $"{RigFolder}/character/rig11/Art/characterIsoRig11.js",
+                    "CharacterIso11",
+                    AzimuthConvention.Clockwise),
             };
     }
 }

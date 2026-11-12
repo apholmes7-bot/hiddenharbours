@@ -62,6 +62,16 @@ namespace HiddenHarbours.World
         [SerializeField] private SpriteRenderer _renderer;
 
         private RoutinePlan _plan;
+        private RoutineStop[] _stops = System.Array.Empty<RoutineStop>();
+
+        // ---- today, when today differs from the authored day (see IRoutineDaySource) --------------
+        private RoutinePlan _dayPlan;
+        private BuildingInterior[] _dayInteriors = System.Array.Empty<BuildingInterior>();
+        private IRoutineDaySource _dayAskedOf;
+        private int _dayAskedFor;
+        private int _dayAskedVersion;
+        private float _dayAskedSecondsPerHour;
+        private bool _dayAsked;
         private readonly ConversationHold _hold = new ConversationHold();
         private Transform _talkingTo;
         private BuildingInterior[] _blockInteriors = System.Array.Empty<BuildingInterior>();
@@ -78,6 +88,28 @@ namespace HiddenHarbours.World
 
         /// <summary>The resolved plan, or null while inert. For tests and tooling.</summary>
         public RoutinePlan Plan => _plan;
+
+        /// <summary>
+        /// The one source of varied days, or null (every day is the authored one). Set by whoever owns
+        /// conditional days; a villager asks it once per game day. Static because it is a question about
+        /// the world, not about one villager, and the villagers are baked into scenes that must not be
+        /// re-saved to learn a new reference.
+        /// </summary>
+        public static IRoutineDaySource DaySource { get; set; }
+
+        /// <summary>The plan she is living TODAY: the day source's answer when it gave one, otherwise
+        /// <see cref="Plan"/>. Null until she has planned.</summary>
+        public RoutinePlan Today => _dayPlan ?? _plan;
+
+        /// <summary>True on a day the day source changed.</summary>
+        public bool IsVariedToday => _dayPlan != null;
+
+        /// <summary>Her authored day as resolved stops (jittered hours, real stations). What a day source
+        /// varies. Empty until she has planned. Do not write to it.</summary>
+        public RoutineStop[] AuthoredStops => _stops;
+
+        /// <summary>The lane network her walks are routed on.</summary>
+        public RoutineLanes Lanes => _lanes;
 
         /// <summary>The pose last written onto the transform. For tests and tooling.</summary>
         public RoutinePose Pose { get; private set; }
@@ -114,7 +146,7 @@ namespace HiddenHarbours.World
             RoutinePose pose = Pose;
             Vector2 here = transform.position;   // where she VISIBLY is, which is the spot she must keep
             if (!_hold.TryBegin(here, player != null ? (Vector2)player.position : here,
-                                _plan.InterruptibleAt(pose.BlockIndex), pose.Shelter, pose.BlockIndex))
+                                Today.InterruptibleAt(pose.BlockIndex), pose.Shelter, pose.BlockIndex))
                 return false;
 
             _talkingTo = player;
@@ -185,7 +217,9 @@ namespace HiddenHarbours.World
             if (_plan == null) return;
 
             float secondsPerGameHour = GameServices.SecondsPerDay / RoutineSchedule.HoursPerDay;
-            RoutinePose pose = _plan.SampleAt(clock.HourOfDay, secondsPerGameHour);
+            RefreshDay(clock.DayIndex, secondsPerGameHour);
+            RoutinePlan today = _dayPlan ?? _plan;
+            RoutinePose pose = today.SampleAt(clock.HourOfDay, secondsPerGameHour);
             Pose = pose;
 
             // ⭐ THE OVERLAY, AND WHERE IT SITS. The pose above is the clock's answer and is computed
@@ -196,7 +230,7 @@ namespace HiddenHarbours.World
             // SCALED delta, deliberately — a paused game stops the whole village, and a villager
             // hurrying back onto her day while the world is frozen would be the one thing on screen
             // still moving. (The BUBBLE fills on UNSCALED time, because reading is not simulation.)
-            Vector2 drawn = _hold.Step(pose.Position, Time.deltaTime, _plan.CatchUpSpeedMetresPerSecond);
+            Vector2 drawn = _hold.Step(pose.Position, Time.deltaTime, today.CatchUpSpeedMetresPerSecond);
 
             // The position. Z is left alone — the Y-sort owns the draw order and nothing here is 3D.
             Vector3 p = transform.position;
@@ -232,8 +266,24 @@ namespace HiddenHarbours.World
 
             _planned = true;
             _plannedSeed = env.WorldSeed;
-            _plan = RoutinePlanner.Build(_routine, _stations, _lanes, _plannedSeed,
-                                         out _blockInteriors, out string problem);
+            _dayPlan = null;
+            _dayInteriors = System.Array.Empty<BuildingInterior>();
+            _dayAsked = false;
+            _plan = null;
+            _blockInteriors = System.Array.Empty<BuildingInterior>();
+
+            // Resolve, then build — the two halves of RoutinePlanner.Build, kept apart here so the
+            // resolved stops are on hand for a day source to vary (the hours in them are already this
+            // person's own, so a varied day keeps every untouched block exactly where it was).
+            _stops = RoutinePlanner.ResolveStops(_routine, _stations, _lanes, _plannedSeed,
+                                                 out string problem);
+            if (_stops != null)
+                _plan = RoutinePlanner.BuildFromStops(_routine.Id, _stops, _lanes,
+                                                      _routine.WalkSpeedMetresPerSecond,
+                                                      _routine.CatchUpSpeedMetresPerSecond,
+                                                      out _blockInteriors, out problem);
+            else
+                _stops = System.Array.Empty<RoutineStop>();
 
             // The skin and the talk point are looked up HERE rather than in Awake: a builder (or a test) may
             // add either after this component, and Awake would have cached the null forever. This is the
@@ -250,6 +300,39 @@ namespace HiddenHarbours.World
                     "builder placed them on, which is what an islander without a routine already does — " +
                     "fix the content rather than the placement.", this);
             }
+        }
+
+        /// <summary>
+        /// Ask the day source for today, once per game day. Four compares on every other frame.
+        ///
+        /// <para>Asked from <c>Update</c> rather than on an event so the answer is there on the first
+        /// frame of the day: the pose at 00:00 is sampled from the new day's plan, never from
+        /// yesterday's for a tick. A varied day is expected to END where the authored one does (its last
+        /// block is never the one varied), which is what makes the midnight change of plan invisible.</para>
+        /// </summary>
+        void RefreshDay(int dayIndex, float secondsPerGameHour)
+        {
+            IRoutineDaySource source = DaySource;
+            int version = source != null ? source.Version : 0;
+            if (_dayAsked && dayIndex == _dayAskedFor && version == _dayAskedVersion &&
+                secondsPerGameHour == _dayAskedSecondsPerHour && ReferenceEquals(source, _dayAskedOf))
+                return;
+
+            _dayAsked = true;
+            _dayAskedFor = dayIndex;
+            _dayAskedVersion = version;
+            _dayAskedSecondsPerHour = secondsPerGameHour;
+            _dayAskedOf = source;
+
+            _dayPlan = null;
+            _dayInteriors = System.Array.Empty<BuildingInterior>();
+            if (source == null) return;
+
+            RoutinePlan plan = source.PlanDay(this, dayIndex, secondsPerGameHour,
+                                              out BuildingInterior[] interiors);
+            if (plan == null) return;
+            _dayPlan = plan;
+            _dayInteriors = interiors ?? System.Array.Empty<BuildingInterior>();
         }
 
         /// <summary>
@@ -342,15 +425,16 @@ namespace HiddenHarbours.World
         /// <see cref="ApplyShelter"/>.</summary>
         BuildingInterior InteriorFor(RoutineShelter shelter, int blockIndex)
         {
-            int n = _blockInteriors.Length;
+            BuildingInterior[] interiors = _dayPlan != null ? _dayInteriors : _blockInteriors;
+            int n = interiors.Length;
             if (n == 0 || blockIndex < 0) return null;
 
             switch (shelter)
             {
                 case RoutineShelter.InsideDestination:
-                    return _blockInteriors[blockIndex % n];
+                    return interiors[blockIndex % n];
                 case RoutineShelter.InsideOrigin:
-                    return _blockInteriors[(blockIndex - 1 + n) % n];
+                    return interiors[(blockIndex - 1 + n) % n];
                 default:
                     return null;
             }
