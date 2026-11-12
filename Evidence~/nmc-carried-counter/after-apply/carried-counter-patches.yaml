@@ -1,0 +1,8 @@
+# StPetersLayerRefresh: one step's patch to one root. Whole Unity YAML documents.
+step: "13-wharf-land-side"
+root: "NmcWharfMarketCounter"
+rootGameObject: 1737976318
+differences: []
+deletions: []
+edits: []
+additions: []
