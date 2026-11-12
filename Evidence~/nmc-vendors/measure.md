@@ -61,3 +61,17 @@ The slice's own wording, "a carried tote presented to the counter is the IHold t
 - **If no**, the creek's carried counter is GH-03 itself, built after GH-01/GH-02. That is a different item with lead-architect, gameplay-systems, world-content (pan site) and art (receiving pan) collaborators, not a one-PR slice.
 
 Nothing in this branch changes code, data, scene, save, price or look. PR 1 (vendor anchors) stands on its own.
+
+## Owner's answer (2026-11-11): "Yes, pail first"
+
+The creek's interim first sale is the delivered pail, ahead of GH-03. What was built, smallest first:
+
+- **The sale reads the pail in her hands.** `WharfSellPoint` gains `_sellsWhatIsCarried`. On such a counter, `SellOverTheCounter` reads `CarriedHold.From(GameServices.Hands)`: the first container held, right hand first, through Core's `ICarrier` and `IHold` only. The boat's hold provider is never resolved there. Empty hands sell nothing.
+- **No new Core contract.** The `ICounterReceiving` stand-in proposed above was not needed: Core's existing hands and hold interfaces carry it, so nothing waits on lead-architect.
+- **Presented, not set down.** The pail stays in hand through the sale and comes back empty, which is the ruling's "empty pail retained" without a set-down animation or a receiving surface.
+- **Wendell pays the wharf price.** His counter is the creek's existing wharf-market counter (`WharfSellPoint` + `FishBuyer` + `Market`), so the price is `SellService`'s against that market. No price, offer or tuning changed.
+- **Named to the desk by its own id.** The counter carries `_buyOnlySellerId: seller.nmc_wharf_market`, which `CounterSellDesk` asks after the vendor arms. `WendellFirst` gains one sell row naming it.
+- **Through the builder.** `PlaceMarketCounter` dresses the two fields; `CarriedCounterApplyFromCommandLine` writes the scene and proves a second apply identical.
+- **St Peters unchanged.** Both fields default off and empty there.
+
+Still owed by the owner: the line in the goods-handling ruling table recording the pail-first step (that file is not economy-sim's).
