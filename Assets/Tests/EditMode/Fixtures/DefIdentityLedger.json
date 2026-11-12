@@ -116,7 +116,8 @@
     "HiddenHarbours.Art.PlantClumpDef",
     "HiddenHarbours.Fishing.FishEcologyDef",
     "HiddenHarbours.Tools.GoodsModel.GoodsContainerDef",
-    "HiddenHarbours.Tools.GoodsModel.GoodsHandlingDef"
+    "HiddenHarbours.Tools.GoodsModel.GoodsHandlingDef",
+    "HiddenHarbours.World.CampaignBarrierDef"
   ],
   "Entries": [
     {
@@ -9843,6 +9844,11 @@
       "Type": "HiddenHarbours.Art.SetPieceDef",
       "Guid": "a937ec00f67b487fb75af7d9cdc88c96",
       "Id": "structure.nmc_wall_stairs"
+    },
+    {
+      "Type": "HiddenHarbours.World.CampaignBarrierDef",
+      "Guid": "f9865dd969ef467eae4cd410c8acb60a",
+      "Id": "campaign_barrier.intro_storm_east_water_south"
     }
   ]
 }

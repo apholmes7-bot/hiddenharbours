@@ -263,7 +263,7 @@ namespace HiddenHarbours.Audio
                 return;
             }
 
-            var sample = env.Sample();
+            var sample = LocalWeather.Shade(env.Sample());   // the ear hears an authored local storm
             float wind = sample.WindVector.magnitude;
             _tellActive = AudioDirectorLogic.TellActive(wind, _tellActive);
             _tell01 = _tellActive ? AudioDirectorLogic.WindTell01(wind) : 0f;
