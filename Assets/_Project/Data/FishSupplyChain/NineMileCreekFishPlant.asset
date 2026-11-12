@@ -1,0 +1,154 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject:
+    fileID: 0
+  m_PrefabInstance:
+    fileID: 0
+  m_PrefabAsset:
+    fileID: 0
+  m_GameObject:
+    fileID: 0
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script:
+    fileID: 11500000
+    guid: 384e14cdd801482699ebac72e4bca74f
+    type: 3
+  m_Name: NineMileCreekFishPlant
+  m_EditorClassIdentifier: HiddenHarbours.Economy::HiddenHarbours.Economy.SupplyChain.FishPlantDef
+  Id: fishplant.nmc_industrial
+  RegionId: region.nine_mile_creek
+  IntakeStorageId: fishstore.plant_intake
+  StepSeconds: 5
+  ClockConfig:
+    fileID: 11400000
+    guid: b5e714f27a4ccce4f869add9ff981ff8
+    type: 2
+  DailyIntakeGrams: 24000000
+  Storages:
+  - fileID: 11400000
+    guid: e0ab3380f91444aa9089028391ee2928
+    type: 2
+  - fileID: 11400000
+    guid: 61821f17b9bf43f084f242c86bf4dbf6
+    type: 2
+  - fileID: 11400000
+    guid: 1a642b5302204d7f8b36bb098d1d22fd
+    type: 2
+  - fileID: 11400000
+    guid: a46b3a6224604cf18599dcf8967c0915
+    type: 2
+  - fileID: 11400000
+    guid: 7286f980cf3f4fdd836d0581b7c35c9e
+    type: 2
+  - fileID: 11400000
+    guid: 9c0efb5f3e23474c9e2b2b9502171ea4
+    type: 2
+  - fileID: 11400000
+    guid: d1bdbb8e506c4243ad2a053a1055be14
+    type: 2
+  - fileID: 11400000
+    guid: 34ed6f0cca57425d86b87432d85548d9
+    type: 2
+  - fileID: 11400000
+    guid: d5ca1cee1b5d4f0ba68c02c292a230c9
+    type: 2
+  - fileID: 11400000
+    guid: e697f28a42e449fca0fd4b5334a9232f
+    type: 2
+  - fileID: 11400000
+    guid: 3abee32521f24e30bd7c723697255a3a
+    type: 2
+  - fileID: 11400000
+    guid: c4888ea7915647a48c3ff335f08c5b56
+    type: 2
+  - fileID: 11400000
+    guid: 0840363d640d44feaa8e200c7ac0d823
+    type: 2
+  - fileID: 11400000
+    guid: 2e70fe3a6e8a4fc492b42cd6e7146c14
+    type: 2
+  - fileID: 11400000
+    guid: e28d2db6aedd4b5aba85a6f2a18963ef
+    type: 2
+  - fileID: 11400000
+    guid: cdfe576bef70481e89d87af6b776be56
+    type: 2
+  - fileID: 11400000
+    guid: 63feb3b18bc142e2b933d284f44407a4
+    type: 2
+  - fileID: 11400000
+    guid: fb97e5a61df441f29c6bc8fbd460791e
+    type: 2
+  - fileID: 11400000
+    guid: bbefbd288dc04109b6d3dbc256051075
+    type: 2
+  - fileID: 11400000
+    guid: d6bd66b3841b4ae6a972a840a5ac7ff6
+    type: 2
+  - fileID: 11400000
+    guid: 3959569a031341c18529eb660331d87a
+    type: 2
+  Lines:
+  - fileID: 11400000
+    guid: 39bec60edaba44b4bc9c7404d06c7f8f
+    type: 2
+  - fileID: 11400000
+    guid: 59ecaa5c163d43f9a7d7e2efc2614cfc
+    type: 2
+  - fileID: 11400000
+    guid: f104a188239b4844a7e25718b852495d
+    type: 2
+  - fileID: 11400000
+    guid: abd844cc98f84eb0a3a791ac2c75c2a8
+    type: 2
+  Outlets:
+  - fileID: 11400000
+    guid: ede5f308358b4e69924f253ad1fe6151
+    type: 2
+  - fileID: 11400000
+    guid: 10b3ad8a4acc470f8fde2ef34f6d1d10
+    type: 2
+  - fileID: 11400000
+    guid: 2451169e9f8245019a7cc1e1b4f60f76
+    type: 2
+  - fileID: 11400000
+    guid: ace8c39049d04c67b7695731ce8463e9
+    type: 2
+  - fileID: 11400000
+    guid: c7d8050b7f5e4e7dae735a14d0902606
+    type: 2
+  - fileID: 11400000
+    guid: 4fa83fe70fca4eefa17394fa931bb56c
+    type: 2
+  Runs:
+  - fileID: 11400000
+    guid: ef0c2ef19feb421bb2b02ff4b5e0d102
+    type: 2
+  - fileID: 11400000
+    guid: 8fe7095788f9465c8b226c38c325879f
+    type: 2
+  - fileID: 11400000
+    guid: 518a9debef064696b4ad0ac2e0c73cc2
+    type: 2
+  - fileID: 11400000
+    guid: 04e9b4a331fa4809be3e624ee6804aab
+    type: 2
+  - fileID: 11400000
+    guid: 52ad062e621b428e94acffadb3cd9ca7
+    type: 2
+  - fileID: 11400000
+    guid: 85a6c6b2c3034b4ab074ceff4cf9cdf5
+    type: 2
+  - fileID: 11400000
+    guid: 30b01fa2e6bb42fbab073e6a34eff524
+    type: 2
+  - fileID: 11400000
+    guid: 4df919b5f46547a38646cc7cf6050fa7
+    type: 2
+  - fileID: 11400000
+    guid: c6a8e482b75d438d96a023a08e08a964
+    type: 2
