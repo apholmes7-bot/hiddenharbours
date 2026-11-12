@@ -32,9 +32,11 @@ namespace HiddenHarbours.CoopSpike
             if (!int.TryParse(System.Environment.GetEnvironmentVariable("HH_COOP_PROOF_SECONDS"), out int seconds)) seconds = 90;
             seconds = Math.Clamp(seconds, 30, 300);
             float end = Time.realtimeSinceStartup + seconds;
+            float nextCapture = 0;
             bool captured = false;
             while (Time.realtimeSinceStartup < end)
             {
+                if (Boot.Manager == null || !Boot.Manager.IsListening || Boot.Manager.SpawnManager == null) break;
                 var sample = new Sample { role = role, region = GameServices.CurrentRegionId,
                     memoryOnly = FindAnyObjectByType<SaveService>() == null,
                     clockSeconds = GameServices.Clock.TotalSeconds };
@@ -70,20 +72,39 @@ namespace HiddenHarbours.CoopSpike
                     sample.fishHash = Digest(_schools);
                 }
                 File.AppendAllText(record, JsonUtility.ToJson(sample) + "\n");
-                if (!captured && sample.boats == 2 && sample.remoteViews == 1 && sample.clockAccepted
+                if (!captured && Time.realtimeSinceStartup >= nextCapture
+                    && sample.boats == 2 && sample.remoteViews == 1 && sample.clockAccepted
                     && sample.localInFrame && sample.remoteInFrame && sample.schools > 0)
                 {
                     yield return new WaitForEndOfFrame();
-                    ScreenCapture.CaptureScreenshot(Path.Combine(directory, role + ".png"));
-                    captured = true;
-                    Debug.Log("[Coop] Two-process proof screenshot requested for " + role);
+                    captured = Capture(Path.Combine(directory, role + ".png"));
+                    nextCapture = Time.realtimeSinceStartup + 5;
+                    if (captured) Debug.Log("[Coop] Two-process proof screenshot saved for " + role);
                 }
                 yield return new WaitForSecondsRealtime(0.2f);
             }
-            Boot.Manager.Shutdown();
+            if (Boot.Manager != null && Boot.Manager.IsListening) Boot.Manager.Shutdown();
             yield return null;
             Debug.Log("[Coop] Diagnostic run complete; closing player.");
             Application.Quit(captured ? 0 : 3);
+        }
+
+        private static bool Capture(string path)
+        {
+            Texture2D texture = null;
+            try
+            {
+                texture = ScreenCapture.CaptureScreenshotAsTexture();
+                if (texture == null || texture.width == 0 || texture.height == 0) return false;
+                File.WriteAllBytes(path, texture.EncodeToPNG());
+                return true;
+            }
+            catch (Exception error)
+            {
+                Debug.LogWarning("[Coop] Proof capture unavailable: " + error.Message);
+                return false;
+            }
+            finally { if (texture != null) Destroy(texture); }
         }
 
         private static bool InFrame(Vector3 position)
