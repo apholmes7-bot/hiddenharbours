@@ -305,6 +305,7 @@
   const HATCH   = { id:'hold_hatch',     y:-6.4, hw:1.20, hl:1.0, h:0.30, maxDeg:95 };   // the after fish hatch, hinged on its forward edge
   const HATCH_F = { id:'hold_hatch_fwd', y:-3.2, hw:1.20, hl:1.0, h:0.30, maxDeg:95 };   // the forward fish hatch, the same
   const HATCHES = [HATCH, HATCH_F];
+  const SORT = { hw:2.30, y0:-9.30, y1:-7.90, spillY:-9.40, sorterX:1.20, sorterY:-8.20 };   // the sorting ground: clear deck between the net drum and the aft hatch
   const WINCH = { y:0.5, x:1.9, hx:0.95, hy:0.50 };                      // the split trawl winch: a drum either side of the door
   const DRUMG = { y:-11.3, z:4.75, hx:1.90, stand:2.35, rFl:0.78, rFull:0.66, rBare:0.28 };
   // the stern gantry: a plated arch whose legs stand in the bulwarks at x0 and lean in to x1 under a deep box beam
@@ -1640,7 +1641,15 @@
         holdHatch:{ x:0, y:HATCH.y, z:q3(DECK+HATCH.h), halfW:HATCH.hw, halfL:HATCH.hl, hinge:nlV([0,HATCH.y+HATCH.hl+0.04,DECK+HATCH.h]) },
         holdHatches:HATCHES.map(Hh=>({ id:Hh.id, x:0, y:Hh.y, z:q3(DECK+Hh.h), halfW:Hh.hw, halfL:Hh.hl, hinge:nlV([0,Hh.y+Hh.hl+0.04,DECK+Hh.h]) })),
         gantry:GANTRY.map(nlPt), tubs:TUBS.map(nlPt), nav:{ port:nlPt(NAV.port), star:nlPt(NAV.star), stern:nlPt(NAV.stern), mast:nlPt(NAV.mast) },
-        windlass:nlPt({ x:0, y:14.0, z:fdAt(14.0).z+0.48 }), boatDeckLadder:{ x:LADX, y:q3(HYa-0.12), z0:DECK, z1:WZ0 } },
+        windlass:nlPt({ x:0, y:14.0, z:fdAt(14.0).z+0.48 }), boatDeckLadder:{ x:LADX, y:q3(HYa-0.12), z0:DECK, z1:WZ0 },
+        // ---- the trawl's working points, named for the tow, the haul and the hands that sort (gameplay reads these by name)
+        warps:[-1,1].map((s,i)=>({ id:s<0?'warp_port':'warp_stbd', side:s<0?'port':'starboard',
+          winch:{ x:s*WINCH.x, y:WINCH.y, z:q3(DECK+0.74) }, lead:nlPt(GANTRY[i]), door:nlPt(GAL_BLOCK[i]) })),
+        codEnd:{ rampFoot:{ x:0, y:q3(-L/2), z:RZ0 }, rampHead:{ x:0, y:RYT, z:q3(DECK-0.02) }, spill:{ x:0, y:SORT.spillY, z:DECK } },
+        sorting:{ x0:-SORT.hw, x1:SORT.hw, y0:SORT.y0, y1:SORT.y1, z:DECK, totes:[nlPt(TUBS[2]), nlPt(TUBS[3])] },
+        crew:[ { id:'winchman', at:'winch' }, { id:'drum_hand', at:'net_drum' }, { id:'door_hand_port', at:'gallows_port' }, { id:'door_hand_stbd', at:'gallows_stbd' },
+               { id:'sorter_port', x:-SORT.sorterX, y:SORT.sorterY, z:DECK }, { id:'sorter_stbd', x:SORT.sorterX, y:SORT.sorterY, z:DECK },
+               { id:'hatch_hand', at:'hold_hatch' } ] },
       interact, cleats, washboards:[], _excluded,
       rock:{ frames:ROCK.frames, rollA:ROCK.rollA, pitchA:ROCK.pitchA, heaveA:ROCK.heaveA, period:ROCK.period },
       qa:{ fitCheck:fitCheck(), surfaceFit:{ foredeck:fd.worst, tol:0.02 } },
