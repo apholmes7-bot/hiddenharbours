@@ -93,10 +93,11 @@ namespace HiddenHarbours.Fishing
 
         /// <summary>Start a fight from a species' authored personality. <paramref name="rng"/> seeds
         /// both the run rhythm and the surface choreography — a seeded controller replays the whole
-        /// fight identically (tests); null falls back to time-seeded.</summary>
+        /// fight identically (tests). The caller must supply an RNG.</summary>
+        /// <exception cref="System.ArgumentNullException"><paramref name="rng"/> is null.</exception>
         public RodFightSim(RodFightDef def, System.Random rng)
         {
-            rng ??= new System.Random();
+            if (rng == null) throw new System.ArgumentNullException(nameof(rng));
             _rhythm = new RodFightRhythm(def.StaminaCadence, rng);
             _pattern = def.MovementPattern;
             _motionSeed = rng.Next();

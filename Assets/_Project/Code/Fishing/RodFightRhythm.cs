@@ -44,13 +44,14 @@ namespace HiddenHarbours.Fishing
         public float Effort01 => _running ? 1f : 0f;
 
         /// <summary>Start the rhythm mid-RUN (the strike is the moment she bolts). <paramref name="rng"/>
-        /// is injected so a seeded fight replays identically (tests); null falls back to time-seeded.</summary>
+        /// is required so a seeded fight replays identically, even when cadence jitter is zero.</summary>
+        /// <exception cref="System.ArgumentNullException"><paramref name="rng"/> is null.</exception>
         public RodFightRhythm(in StaminaCadence cadence, System.Random rng)
         {
             _runSeconds = cadence.RunSeconds;
             _slackSeconds = cadence.SlackSeconds;
             _jitter01 = cadence.Jitter01 < 0f ? 0f : (cadence.Jitter01 > 1f ? 1f : cadence.Jitter01);
-            _rng = rng ?? new System.Random();
+            _rng = rng ?? throw new System.ArgumentNullException(nameof(rng));
             _running = true;
             _remaining = NextPhaseSeconds(_runSeconds);
         }
