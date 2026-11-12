@@ -756,9 +756,12 @@ namespace HiddenHarbours.Art
             Vector2 heading = _trailFromBow ? -_wakeHeading : _wakeHeading;
             float mag = heading.magnitude;
             heading = mag > 1e-6f ? heading / mag : Vector2.up;
-            // Her leading end is her whole length ahead of the end she trails from, whichever that is.
+            // Her leading end as she is DRAWN (the same foreshortening the root took), measured along the
+            // heading from the end she trails from, whichever that is.
+            Vector2 lead = WakeRootMath.ProjectAlongHeading(transform.position, heading,
+                                                            Mathf.Max(_sternOffsetMeters, 0f), _bakeElevationDegrees);
             FoamInjectionRegistry.PublishWakeLift(root, heading, wavelengthMetres, RadiusMeters, gate01,
-                                                  2f * Mathf.Max(_sternOffsetMeters, 0f));
+                                                  Mathf.Max(Vector2.Dot(lead - root, heading), 0f));
         }
     }
 }

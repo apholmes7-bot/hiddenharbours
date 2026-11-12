@@ -2609,14 +2609,15 @@ Shader "HiddenHarbours/Water"
             }
 
             // Twin: WakeLiftMath.BowHeight. The mound she pushes up at her leading end: the falloff curve
-            // above by distance from that end, round, out to a fixed number of her half-beams.
+            // above by distance from that end, round, out to a fixed number of her half-beams. Only the
+            // curve's falling half is used, so the mound is a peak at her stem and has no flat top.
             float WakeBowHeight(float aheadMetres, float lateralMetres,
                                 float amplitudeMetres, float halfBeamMetres)
             {
                 if (amplitudeMetres <= 0.0 || halfBeamMetres <= 0.0) return 0.0;
                 float reach = HH_WAKE_BOW_HALF_BEAMS * halfBeamMetres;
                 float away = sqrt(aheadMetres * aheadMetres + lateralMetres * lateralMetres);
-                return amplitudeMetres * WakeProfile01(away, reach);
+                return amplitudeMetres * WakeProfile01(0.5 * (reach + away), reach);
             }
 
             // Twin: WakeLiftMath.BowHeightAt. The same frame change as the train, measured from her

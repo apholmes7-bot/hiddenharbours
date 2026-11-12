@@ -208,7 +208,7 @@ namespace HiddenHarbours.Art
             if (amplitudeMetres <= 0f || halfBeamMetres <= 0f) return 0f;
             float reach = BowMoundHalfBeams * halfBeamMetres;
             float away = Mathf.Sqrt(aheadMetres * aheadMetres + lateralMetres * lateralMetres);
-            return amplitudeMetres * FoamBuffer.Profile(away, reach);
+            return amplitudeMetres * FoamBuffer.Profile(0.5f * (reach + away), reach);
         }
 
         /// <summary>

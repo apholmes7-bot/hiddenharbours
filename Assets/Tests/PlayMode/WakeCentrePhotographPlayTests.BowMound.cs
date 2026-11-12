@@ -68,7 +68,10 @@ namespace HiddenHarbours.Tests.PlayMode
                                                         she.SternOffset, she.ElevationDeg);
             int slot = IdentifyTheLiftSlot(subject, "under way", expectRoot, out Vector4 root, out Vector4 shape);
             Assert.Greater(shape.x, 0f, "her wake gate is shut, so there is no mound to draw");
-            Assert.AreEqual(2f * she.SternOffset, shape.w, 0.01f,
+            Vector2 expectLead = WakeRootMath.ProjectAlongHeading((Vector2)she.Go.transform.position,
+                                                                  (Vector2)she.Go.transform.up,
+                                                                  she.SternOffset, she.ElevationDeg);
+            Assert.AreEqual(Vector2.Distance(expectLead, expectRoot), shape.w, 0.05f,
                             "she did not publish her length, so the shader cannot find her leading end");
 
             var was = new List<float>();
