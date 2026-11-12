@@ -80,9 +80,15 @@ namespace HiddenHarbours.Boats
         public const float MaxSubStepSeconds = 0.02f;
         /// <summary>Ceiling on sub-steps per call. A guard.</summary>
         public const int MaxSubSteps = 16;
-        /// <summary>Ceiling on spring frequency x sub-step, so a very stiff planing spring stays stable
-        /// in semi-implicit Euler (the bound is 2). A guard.</summary>
-        public const float MaxOmegaStep = 1f;
+        /// <summary>Points along her length the caller means the surface over (see
+        /// <see cref="FootprintOffset"/>). A wave shorter than the hull cancels under her.</summary>
+        public const int FootprintPoints = 5;
+        /// <summary>Share of her length those points span.</summary>
+        public const float FootprintSpan = 0.8f;
+
+        /// <summary>Metres along her keel from her middle to footprint point <paramref name="i"/>.</summary>
+        public static float FootprintOffset(int i, float lengthMeters)
+            => ((float)i / (FootprintPoints - 1) - 0.5f) * FootprintSpan * lengthMeters;
         /// <summary>Ceiling on the surface's finite-difference rate (m/s): beyond it is a teleport, not
         /// a wave. A guard.</summary>
         public const float MaxSurfaceRateMetersPerSec = 20f;
@@ -121,7 +127,7 @@ namespace HiddenHarbours.Boats
 
         /// <summary>
         /// One step. <paramref name="surfaceMeters"/> is the water's height under her now (the mean
-        /// over her length); <paramref name="restOmega"/> and <paramref name="dampingRatio"/> are her
+        /// over <see cref="FootprintPoints"/> points of her length); <paramref name="restOmega"/> and <paramref name="dampingRatio"/> are her
         /// own heave spring at rest; <paramref name="speedMetersPerSec"/> is her speed through the water.
         /// </summary>
         public static HullFlightStep Step(ref HullFlightState s, float surfaceMeters, float dt, float gravity,
@@ -149,7 +155,11 @@ namespace HiddenHarbours.Boats
             s.PrevSurfaceMeters = surfaceMeters;
 
             float clear = Mathf.Max(0.01f, cfg.KeelClearFraction) * draughtMeters;
-            float zeta = Mathf.Max(0f, dampingRatio);
+            float zeta = Mathf.Max(Mathf.Max(0f, dampingRatio), cfg.MinDampingRatio);
+            float bury = Mathf.Max(1f, cfg.MaxBuryDraughts) * draughtMeters;
+            // The fastest the water can lift her: a face steeper than she can follow she punches through.
+            float maxRise = Mathf.Max(0f, cfg.FollowRiseBase)
+                          + Mathf.Max(0f, cfg.MaxFollowSlope) * Mathf.Max(0f, speedMetersPerSec);
             float stiff = PlaningStiffness(FroudeNumber(speedMetersPerSec, lengthMeters, gravity), in cfg);
             float x = s.RideMeters, v = s.VelocityMetersPerSec;
 
@@ -158,26 +168,28 @@ namespace HiddenHarbours.Boats
             {
                 float h = Mathf.Min(remaining, MaxSubStepSeconds);
                 remaining -= h;
-                float omega = Mathf.Min(restOmega * stiff, MaxOmegaStep / h);
-                float accel;
+                float omega = restOmega * stiff;
                 if (x - surfaceMeters >= clear)
                 {
-                    accel = -gravity;                       // keel out: nothing but gravity
+                    v -= gravity * h;                       // keel out: nothing but gravity
                 }
                 else
                 {
-                    accel = omega * omega * (surfaceMeters - x) - 2f * zeta * omega * (v - surfaceRate);
-                    if (accel < -gravity) accel = -gravity; // the water never pulls her down
+                    // The spring and its damper, solved implicitly: stable at any stiffness.
+                    float next = (v + h * (omega * omega * (surfaceMeters - x) + 2f * zeta * omega * surfaceRate))
+                               / (1f + 2f * zeta * omega * h + omega * omega * h * h);
+                    if (next < v - gravity * h) next = v - gravity * h;   // the water never pulls her down
+                    if (next > maxRise) next = Mathf.Max(v, maxRise);     // ...and lifts her only so fast
+                    v = next;
                 }
-                v += accel * h;
                 x += v * h;
             }
 
-            // She never rides more than her own draught under the surface: a risen sea carries her up.
-            if (x < surfaceMeters - draughtMeters)
+            // Pushed under as far as she goes, the water carries her bodily.
+            if (x < surfaceMeters - bury)
             {
-                x = surfaceMeters - draughtMeters;
-                if (v < surfaceRate) v = surfaceRate;
+                x = surfaceMeters - bury;
+                if (v < surfaceRate) v = Mathf.Min(surfaceRate, maxRise);
             }
 
             float clearance = x - surfaceMeters - clear;

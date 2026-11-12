@@ -327,7 +327,7 @@ namespace HiddenHarbours.Boats
         /// <summary>Metres of air under her keel as of her last physics tick; 0 in the water.</summary>
         public float FlightClearanceMeters => _flightClearanceMeters;
 
-        // The water's height under her, meaned over three points of her length so a wave shorter than
+        // The water's height under her, meaned over points along her length so a wave shorter than
         // the hull cancels under her, then the flight law. On a landing the slam takes speed off her.
         private void StepFlight(Vector2 pos, Vector2 fwd, Vector2 throughWater, double sampleTime,
                                 in WaveTrains trains, in WaveSample centre, float gravity)
@@ -339,10 +339,17 @@ namespace HiddenHarbours.Boats
                 _flightClearanceMeters = 0f;
                 return;
             }
-            float third = _hull.LengthMeters / 3f;
-            float surface = (centre.Height
-                + WaveMath.Sample(pos + fwd * third, sampleTime, in trains, GameServices.FetchAt(pos)).Height
-                + WaveMath.Sample(pos - fwd * third, sampleTime, in trains, GameServices.FetchAt(pos)).Height) / 3f;
+            float sum = 0f;
+            WaveFetchSample fetch = GameServices.FetchAt(pos);
+            int middle = HullFlightMath.FootprintPoints / 2;
+            for (int i = 0; i < HullFlightMath.FootprintPoints; i++)
+            {
+                sum += i == middle
+                    ? centre.Height
+                    : WaveMath.Sample(pos + fwd * HullFlightMath.FootprintOffset(i, _hull.LengthMeters),
+                                      sampleTime, in trains, fetch).Height;
+            }
+            float surface = sum / HullFlightMath.FootprintPoints;
             HullHeaveResponse heave = HullHeaveResponseMath.Resolve(
                 _hull.LengthMeters, HullPresence.HalfBeamOf(_hull), _hull.DraughtMeters,
                 _hull.SeakeepingDamping, gravity, GameServices.HullWeight);
