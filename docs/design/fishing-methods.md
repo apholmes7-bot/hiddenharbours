@@ -190,6 +190,14 @@ today's once today's set is done, yesterday's until today's haul.
   weighs the lot and she walks home aboard. `NpcPotLandingWalk` (App) draws her ashore with the
   crate in her hands and the crates at the counter. The landing moves no money and does not touch
   the market: whether NPC landings should move the price the player is paid is an open owner ruling.
+- **The fleet** is one `NpcPotDayDef` per boat, all listed in the library: three lobster boats work
+  off Nine Mile Creek. A new boat is a new Def with her own berth, departure hour, passage, string,
+  buoy colour, ladder and patch of the buyer's counter; no code. The fleet tests hold the Defs to
+  it: no two hulls ever overlap (they cast off at different hours and pass abeam), no two owners'
+  pots share ground, every skipper has her own ladder and counter patch. The side trawlers at the
+  wall are not pot boats and stay at their berths. One frame of the whole fleet is timed in
+  `NpcPotFleetTests` (clock lookups) and `NpcPotFleetPlayTests` (the presenter's own frame) and
+  must allocate nothing.
 
 ## 4. Longline (first)
 
