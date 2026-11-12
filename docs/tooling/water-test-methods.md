@@ -1,16 +1,16 @@
 # Water test method index
 
-Snapshot: `d9d4b8558aaa77b49b6bad9dbb35345d2059814c` (2026-11-11).
+Snapshot: `12bc04b19a2efb33e352b4eea58104f7a5599be1` (2026-11-12).
 Read the [inventory and code legend](water-test-inventory.md) before treating any row as execution or image evidence.
-This index contains 3,019 declared methods in 476 source files. Lines refer to the snapshot; input annotations are not expanded case counts.
+This index contains 3,093 declared methods in 492 source files. Lines refer to the snapshot; input annotations are not expanded case counts.
 A source-file heading identifies a file, not necessarily a fixture class: some classes are partial across several files.
 
 ## Expected Null-device selection
 
 | Suite | Methods | R | R* | G | A | O |
 |---|---:|---:|---:|---:|---:|---:|
-| EditMode | 2,798 | 2,692 | 30 | 68 | 8 | 0 |
-| PlayMode | 221 | 124 | 23 | 73 | 0 | 1 |
+| EditMode | 2,865 | 2,759 | 30 | 68 | 8 | 0 |
+| PlayMode | 228 | 128 | 23 | 76 | 0 | 1 |
 
 ## Graphics-gated and mixed source files
 
@@ -58,6 +58,8 @@ Counts are methods in this inventory. The method rows below distinguish CPU arms
 | [NmcAnchorageRetirementPlatePlayTests.cs](../../Assets/Tests/PlayMode/NmcAnchorageRetirementPlatePlayTests.cs) | 1 | 1 | 0 |
 | [NmcWharfWaterSidePlayTests.cs](../../Assets/Tests/PlayMode/NmcWharfWaterSidePlayTests.cs) | 11 | 4 | 0 |
 | [RicePointPlatePlayTests.cs](../../Assets/Tests/PlayMode/RicePointPlatePlayTests.cs) | 1 | 1 | 0 |
+| [RicePointTrawlerBerthPlatePlayTests.cs](../../Assets/Tests/PlayMode/RicePointTrawlerBerthPlatePlayTests.cs) | 1 | 1 | 0 |
+| [SouthWaterPlatePlayTests.cs](../../Assets/Tests/PlayMode/SouthWaterPlatePlayTests.cs) | 1 | 1 | 0 |
 | [StPetersGroundPlatePlayTests.cs](../../Assets/Tests/PlayMode/StPetersGroundPlatePlayTests.cs) | 7 | 7 | 0 |
 | [StPetersKeyScenePlatePlayTests.cs](../../Assets/Tests/PlayMode/StPetersKeyScenePlatePlayTests.cs) | 2 | 2 | 0 |
 | [StPetersLandingPropsPlatePlayTests.cs](../../Assets/Tests/PlayMode/StPetersLandingPropsPlatePlayTests.cs) | 1 | 1 | 0 |
@@ -69,6 +71,7 @@ Counts are methods in this inventory. The method rows below distinguish CPU arms
 | [WakeCentrePhotographPlayTests.FoamVisibility.cs](../../Assets/Tests/PlayMode/WakeCentrePhotographPlayTests.FoamVisibility.cs) | 2 | 2 | 0 |
 | [WakeCentrePhotographPlayTests.GameplayAcceptance.cs](../../Assets/Tests/PlayMode/WakeCentrePhotographPlayTests.GameplayAcceptance.cs) | 1 | 0 | 1 |
 | [WakeCentrePhotographPlayTests.SternResponse.cs](../../Assets/Tests/PlayMode/WakeCentrePhotographPlayTests.SternResponse.cs) | 8 | 8 | 0 |
+| [WakeCentrePhotographPlayTests.WholeHull.cs](../../Assets/Tests/PlayMode/WakeCentrePhotographPlayTests.WholeHull.cs) | 1 | 1 | 0 |
 | [WakeCentrePhotographPlayTests.cs](../../Assets/Tests/PlayMode/WakeCentrePhotographPlayTests.cs) | 4 | 4 | 0 |
 | [WaveMemoryPlatePlayTests.cs](../../Assets/Tests/PlayMode/WaveMemoryPlatePlayTests.cs) | 1 | 1 | 0 |
 
@@ -2044,6 +2047,14 @@ Counts are methods in this inventory. The method rows below distinguish CPU arms
 | `TheLedger_KeepsOneRowAHole_AndOnlyTheRunningTide` (486) | Test | R |
 | `NothingAboutTheTide_IsSaved_OnlyWhichHoleAndWhen` (512) | Test | R |
 | `TheHoleOnTheSand_ComesBack_WhenTheTideHasTurned` (553) | Test | R |
+### CatchResolverBoundaryTests.cs
+
+[Source](../../Assets/Tests/EditMode/CatchResolverBoundaryTests.cs) — 2 included methods.
+
+| Test method (source line) | Inputs | Null CI |
+|---|---|---|
+| `TideGate_IncludesBothEndpoints` (91) | 4 TestCase | R |
+| `MovingWaterGate_UsesMagnitude_IncludesThreshold_AndAllowsUnknown` (133) | 5 TestCase | R |
 ### CatchResolverTests.cs
 
 [Source](../../Assets/Tests/EditMode/CatchResolverTests.cs) — 1 included method.
@@ -2338,6 +2349,15 @@ Counts are methods in this inventory. The method rows below distinguish CPU arms
 | `LetItRun_BottomsOut_AtTheBathymetryCappedFloor_WithTheSlackTell` (173) | Test | R |
 | `ReelUpSlightly_LiftsOffTheFloor_AndClosesTheSlack` (192) | Test | R |
 | `DepthGame_StillLandsAFish_ThroughTheUnchangedCatchPath` (211) | Test | R |
+### FishingGroundContentTests.cs
+
+[Source](../../Assets/Tests/EditMode/FishingGroundContentTests.cs) — 3 included methods.
+
+| Test method (source line) | Inputs | Null CI |
+|---|---|---|
+| `TheSouthWaterHasThreeNamedGrounds` (54) | Test | R |
+| `TheSouthWatersRealBedLiesInsideEachGroundsAuthoredDepths` (134) | Test | R |
+| `EveryFishThatListsTheSouthWaterIsOnOneOfItsGrounds` (168) | Test | R |
 ### FishingOnFootTests.cs
 
 [Source](../../Assets/Tests/EditMode/FishingOnFootTests.cs) — 7 included methods.
@@ -2433,6 +2453,29 @@ Counts are methods in this inventory. The method rows below distinguish CPU arms
 | `StillWater_EveryStepIsBitIdenticalToTheOriginalIntegrator` (24) | Test | R |
 | `UndampedBody_ReceivesNoCurrentCorrection` (43) | Test | R |
 | `Trim_DriftingWithCurrent_HasNoBodyDampingAcceleration` (48) | Test | R |
+### HullContactFoamTests.cs
+
+[Source](../../Assets/Tests/EditMode/HullContactFoamTests.cs) — 17 included methods.
+
+| Test method (source line) | Inputs | Null CI |
+|---|---|---|
+| `Ahead_TheTrailIsShedFromTheTransom` (22) | Test | R |
+| `Astern_TheTrailIsShedFromTheBow` (26) | Test | R |
+| `AtRest_TheTrailKeepsTheEndItHad` (30) | Test | R |
+| `AZeroedFlipSpeed_StillHasADeadBand` (40) | Test | R |
+| `Ahead_TheBowThrowsTheLeadingFoam_AcrossHer` (51) | Test | R |
+| `Astern_TheTransomThrowsTheLeadingFoam` (63) | Test | R |
+| `TheLeadingFoam_GrowsWithSpeed_AndIsNoneAtRest` (72) | Test | R |
+| `SlidingToStarboard_FoamsTheWholeStarboardSide` (85) | Test | R |
+| `SlidingToPort_FoamsThePortSide` (96) | Test | R |
+| `PivotingToPort_FoamsOppositeQuarters_BowToPort_SternToStarboard` (104) | Test | R |
+| `LateralSpeed_IsSwayPlusWhatTheTurnAddsAtThatEnd` (115) | Test | R |
+| `RunningDeadStraight_TheSidesAreQuiet` (123) | Test | R |
+| `ZeroWeights_LayNothing_TheGameAsItShipped` (129) | Test | R |
+| `AHullWithNoMeasuredLength_LaysNoContactFoam` (137) | Test | R |
+| `TheDefaultSettings_AreTheOnesGameConfigShips` (144) | Test | R |
+| `AHullPoint_IsDrawnForeshortened_TheWayHerArtIs` (159) | Test | R |
+| `TheBowPoint_AgreesWithTheWakeRootProjection` (177) | Test | R |
 ### HullFootprintTests.cs
 
 [Source](../../Assets/Tests/EditMode/HullFootprintTests.cs) — 1 included method.
@@ -3019,6 +3062,14 @@ Counts are methods in this inventory. The method rows below distinguish CPU arms
 | `TheRegisteredWallSlotsDoNotLap_AndEachHullWithHerFendersFitsHerOwn` (66) | Test | R |
 | `ThePlayersRegisteredBerthIsWhereSheArrivesAndStepsOff` (106) | Test | R |
 | `EveryRegisteredFloatBerthLiesAlongsideTheWorkingFloat_AndCarriesItsResidentAtSpringLow` (115) | Test | R |
+### NpcPotDayContentTests.cs
+
+[Source](../../Assets/Tests/EditMode/NpcPotDayContentTests.cs) — 2 included methods.
+
+| Test method (source line) | Inputs | Null CI |
+|---|---|---|
+| `SheFloats_TheWholeDay_AtSpringLow` (103) | Test | R |
+| `HerPots_LieInFishableWater_AndEveryRopeReachesTheSurfaceAtSpringHigh` (137) | Test | R |
 ### OnboardingProgressTests.cs
 
 [Source](../../Assets/Tests/EditMode/OnboardingProgressTests.cs) — 1 included method.
@@ -3148,6 +3199,16 @@ Counts are methods in this inventory. The method rows below distinguish CPU arms
 | `SurfacingADeckWorkingTrap_LandsThePot_NotTheCatch` (236) | Test | R |
 | `TheDeckCycle_PickBandBaitSet_EndToEnd` (296) | Test | R |
 | `T_RefusesAnUnworkedPot_WithTheCozyReason` (350) | Test | R |
+### PotRopeMathTests.cs
+
+[Source](../../Assets/Tests/EditMode/PotRopeMathTests.cs) — 4 included methods.
+
+| Test method (source line) | Inputs | Null CI |
+|---|---|---|
+| `Scope_IsTheSpareRope_AndNoneWhenTheWaterIsAsDeepAsTheRope` (15) | Test | R |
+| `AsTheTideRises_TheBuoyClosesUpOverThePot` (39) | Test | R |
+| `TheStream_ComesFromTheTidesRateOfRise_InGameHours` (53) | Test | R |
+| `SomethingUnderWater_DrawsDownScreen_AndFadesWithDepth` (68) | Test | R |
 ### RegionExtentTests.cs
 
 [Source](../../Assets/Tests/EditMode/RegionExtentTests.cs) — 1 included method.
@@ -3162,6 +3223,17 @@ Counts are methods in this inventory. The method rows below distinguish CPU arms
 | Test method (source line) | Inputs | Null CI |
 |---|---|---|
 | `TheLineCheck_RedsWhenTheBlockIsGoneOrNotTheSurfaces` (141) | Test | R |
+### RegionSeamAuditTests.cs
+
+[Source](../../Assets/Tests/EditMode/RegionSeamAuditTests.cs) — 5 included methods.
+
+| Test method (source line) | Inputs | Null CI |
+|---|---|---|
+| `MissingNamedArrivals_AreCumberlandsKeysTheShutRicePointRoadAndTheSouthWatersUnansweredDoors` (266) | Test | R |
+| `UnavailableTargets_AreTwoWestWaterDoorsAndTheUnwiredGreyboxExit` (272) | Test | R |
+| `UnpairedLiveEdges_AreCumberlandTheTwoCoveEntriesAndTheSouthWatersThreeDoors` (277) | Test | R |
+| `TheSouthWater_IsNotReachableUntilANeighbourOpensItsHalf` (284) | Test | R |
+| `Opening_ReusesTheEastWaterAndHomeNamedArrivals` (304) | Test | R |
 ### RegionValidationTests.cs
 
 [Source](../../Assets/Tests/EditMode/RegionValidationTests.cs) — 3 included methods.
@@ -3185,6 +3257,16 @@ Counts are methods in this inventory. The method rows below distinguish CPU arms
 | Test method (source line) | Inputs | Null CI |
 |---|---|---|
 | `RicePointRegion_IsData_IdSizeSceneAndTide` (179) | Test | R |
+### RicePointTrawlerBerthTests.cs
+
+[Source](../../Assets/Tests/EditMode/RicePointTrawlerBerthTests.cs) — 4 included methods.
+
+| Test method (source line) | Inputs | Null CI |
+|---|---|---|
+| `EachTrawlerFloatsInEachTrawlerBerth_AtTheLowestTideOfTheYear` (60) | ValueSource | R |
+| `EachTrawlerFloatsTheWholeWayIn_FromTheSouthEdge_AtTheLowestTideOfTheYear` (76) | ValueSource | R |
+| `TheTwoBerthsLieSideBySide_WithoutSharingWater` (97) | Test | R |
+| `HarbourWorks_RefuseACutThroughStillWater_AndACutBelowTheRange` (223) | Test | R |
 ### RigBaking/CliffRigBakeTests.cs
 
 [Source](../../Assets/Tests/EditMode/RigBaking/CliffRigBakeTests.cs) — 1 included method.
@@ -3511,6 +3593,13 @@ Counts are methods in this inventory. The method rows below distinguish CPU arms
 | `NineMileCreek_TheBarIsIntertidal_TheCrossingIsTheShorelineThatMoves` (257) | Test | R |
 | `BothTerrains_AreDeterministic_NoRng` (275) | Test | R |
 | `RebuildLogicSubtree_WiresTheConvergedWaterModel` (335) | Test | R |
+### SimulationReplayAuditTests.cs
+
+[Source](../../Assets/Tests/EditMode/SimulationReplayAuditTests.cs) — 1 included method.
+
+| Test method (source line) | Inputs | Null CI |
+|---|---|---|
+| `TideAndWeather_ReconstructAfterOtherSeedsAndBackwardSeeks` (139) | 4 TestCase | R |
 ### SloopGroundingTests.cs
 
 [Source](../../Assets/Tests/EditMode/SloopGroundingTests.cs) — 2 included methods.
@@ -3531,6 +3620,34 @@ Counts are methods in this inventory. The method rows below distinguish CPU arms
 | `TheBandIsCentredOnTheOrigin` (116) | Test | R |
 | `TheWholeLadderFitsInAShort` (128) | Test | R |
 | `YSortSpriteShipsTheBandsOwnNumbers` (138) | Test | R |
+### SouthWaterTests.cs
+
+[Source](../../Assets/Tests/EditMode/SouthWaterTests.cs) — 22 included methods.
+
+| Test method (source line) | Inputs | Null CI |
+|---|---|---|
+| `TheRegionIsOneRectangle2400By1200Metres` (50) | Test | R |
+| `TheTideIsTheIslandsTide` (58) | Test | R |
+| `TheNorthEdgeIsAboutTwentyMetresDeepBetweenTheApproaches` (66) | Test | R |
+| `TheWaterDeepensSouthwardToTrawlingDepth` (88) | Test | R |
+| `MostOfTheRegionIsTheDeepFloor` (108) | Test | R |
+| `TheBankStandsUpOffTheDeepFloor` (122) | Test | R |
+| `EachApproachReadsItsNeighboursOwnFloorAtTheEdgeAndTheDoorLine` (133) | Test | R |
+| `TheApproachesDoNotOverlap` (154) | Test | R |
+| `FortyMetresInsideEachDoorTheWaterIsAlreadyDeep` (165) | Test | R |
+| `NothingBaresAndTheCapeFloatsEverywhereAtSpringLow` (174) | Test | R |
+| `ATrawlerFloatsInTheRicePointApproachAtSpringLow` (186) | Test | R |
+| `ATrawlerFloatsOverEveryGroundAtSpringLow` (202) | Test | R |
+| `TheBedIsDeterministic_TwoBuildsAgreeToTheBit` (212) | Test | R |
+| `TheCommittedRegionMatchesThePlan` (233) | Test | R |
+| `EveryDoorHasTheIslandsInsetAndLiesOnTheNorthEdge` (266) | Test | R |
+| `EveryDoorsWholeBandLiesOverItsNeighboursOwnFloor` (279) | Test | R |
+| `TheBandsDoNotTouchEachOtherOrTheRegionsSides` (290) | Test | R |
+| `EveryArrivalIsFortyMetresInsideItsDoorClearOfEveryBandAndDeep` (301) | Test | R |
+| `ATrawlerFloatsFromTheRicePointDoorToItsArrivalAtSpringLow` (316) | Test | R |
+| `TheArrivalKeysAreDistinctAndTheDefaultIsTheStPetersArrival` (326) | Test | R |
+| `TheCommittedSceneHoldsThePlansDoorsBandsAndArrivals` (339) | Test | R |
+| `TheCommittedSceneIsEnabledInTheBuildList` (364) | Test | R |
 ### SpriteRockFrameCycleTests.cs
 
 [Source](../../Assets/Tests/EditMode/SpriteRockFrameCycleTests.cs) — 3 included methods.
@@ -3548,6 +3665,15 @@ Counts are methods in this inventory. The method rows below distinguish CPU arms
 |---|---|---|
 | `TheDredgedWaterIsCONTINUOUS_FromTheChannelIntoTheBerth` (269) | Test | R |
 | `TheBerthPocketDigsTheBerthAndNothingElse` (320) | Test | R |
+### StPetersBeachLifeTests.cs
+
+[Source](../../Assets/Tests/EditMode/StPetersBeachLifeTests.cs) — 3 included methods.
+
+| Test method (source line) | Inputs | Null CI |
+|---|---|---|
+| `TheBeach_HangsOffARealLane_AndItsDryLinesStartAboveTheHighestTide` (239) | Test | R |
+| `TheSameClockTideAndWeather_GiveTheSameBeach` (280) | Test | R |
+| `NobodyIsEverBelowTheWater` (356) | Test | R |
 ### StPetersCamperLotTests.cs
 
 [Source](../../Assets/Tests/EditMode/StPetersCamperLotTests.cs) — 1 included method.
@@ -3707,6 +3833,16 @@ Counts are methods in this inventory. The method rows below distinguish CPU arms
 | `Sabotage_ComposingTheIslandBandsWithMax_FloodsTheWholeSeabedToShelfDepth` (597) | Test | R |
 | `TheCommittedSeabed_CoversTheRegion_AtTheRegionsOwnResolution` (668) | Test | R* |
 | `TheCommittedSeabed_DecodesToTheGroundFilesImport` (722) | Test | R* |
+### StPetersSeabedColourTests.cs
+
+[Source](../../Assets/Tests/EditMode/StPetersSeabedColourTests.cs) — 4 included methods.
+
+| Test method (source line) | Inputs | Null CI |
+|---|---|---|
+| `TheCommittedSeabedColourIsTheBakeOfTheCommittedGround` (51) | Test | R |
+| `ThePocketNorthOfTheWharfHeadIsNotPaintedPalerThanItsDepth` (89) | Test | R |
+| `TheShelfRoundTheIslandIsNotPaintedAsTheDeepFloor` (121) | Test | R |
+| `TheSceneDrawsThisColourOverThisGround` (149) | Test | R |
 ### StPetersShoreMapTests.cs
 
 [Source](../../Assets/Tests/EditMode/StPetersShoreMapTests.cs) — 26 included methods.
@@ -5274,6 +5410,14 @@ Counts are methods in this inventory. The method rows below distinguish CPU arms
 | Test method (source line) | Inputs | Null CI |
 |---|---|---|
 | `ThreeMachinesAtTheShop_AndThePlayerAstrideOne` (120) | UnityTest | G |
+### BeachLifePlayTests.cs
+
+[Source](../../Assets/Tests/PlayMode/BeachLifePlayTests.cs) — 2 included methods.
+
+| Test method (source line) | Inputs | Null CI |
+|---|---|---|
+| `OnAFairEvening_SheStandsOnTheSand_AboveTheWater` (190) | UnityTest | R |
+| `WithTheTideOverTheSand_SheStaysOnTheGreen` (273) | UnityTest | R |
 ### BoardingMovePlayTests.cs
 
 [Source](../../Assets/Tests/PlayMode/BoardingMovePlayTests.cs) — 1 included method.
@@ -5295,15 +5439,15 @@ Counts are methods in this inventory. The method rows below distinguish CPU arms
 
 | Test method (source line) | Inputs | Null CI |
 |---|---|---|
-| `AHullLeftInTheBrokenWater_IsCarriedShoreward` (171) | UnityTest | R |
-| `WithTheSurfDialledOff_SheStaysPut` (195) | UnityTest | R |
-| `TwoHullsOfDifferentMass_DriftInTheRightOrder` (223) | UnityTest | R |
-| `TheSameSeaAndTimeReproduceTheSameDrift` (246) | UnityTest | R |
-| `SheIsShovedNotTeleported` (300) | UnityTest | R |
-| `ARuntimeSpawnedHull_ResolvesTheSharedGameConfig` (325) | UnityTest | R |
-| `TheDriftArrivesInBEATS_NotAsASteadyLean` (515) | UnityTest | R |
-| `TheBoresLift_ReachesTheHullsRide` (571) | UnityTest | R |
-| `InDeepWaterOffTheShoal_TheSurfDoesNothing` (672) | UnityTest | R |
+| `AHullLeftInTheBrokenWater_IsCarriedShoreward` (178) | UnityTest | R |
+| `WithTheSurfDialledOff_SheStaysPut` (202) | UnityTest | R |
+| `TwoHullsOfDifferentMass_DriftInTheRightOrder` (230) | UnityTest | R |
+| `TheSameSeaAndTimeReproduceTheSameDrift` (253) | UnityTest | R |
+| `SheIsShovedNotTeleported` (310) | UnityTest | R |
+| `ARuntimeSpawnedHull_ResolvesTheSharedGameConfig` (335) | UnityTest | R |
+| `TheDriftArrivesInBEATS_NotAsASteadyLean` (547) | UnityTest | R |
+| `TheBoresLift_ReachesTheHullsRide` (603) | UnityTest | R |
+| `InDeepWaterOffTheShoal_TheSurfDoesNothing` (704) | UnityTest | R |
 ### ControlRebindPlayTests.cs
 
 [Source](../../Assets/Tests/PlayMode/ControlRebindPlayTests.cs) — 1 included method.
@@ -5649,6 +5793,13 @@ Counts are methods in this inventory. The method rows below distinguish CPU arms
 | Test method (source line) | Inputs | Null CI |
 |---|---|---|
 | `Strand_Marsh_Gut_Ledges_AtThreeShippedTides` (28) | UnityTest | G |
+### RicePointTrawlerBerthPlatePlayTests.cs
+
+[Source](../../Assets/Tests/PlayMode/RicePointTrawlerBerthPlatePlayTests.cs) — 1 included method.
+
+| Test method (source line) | Inputs | Null CI |
+|---|---|---|
+| `ATrawlerLiesInEachBerth_AtSpringLow` (35) | UnityTest | G |
 ### RowingIntegrationPlayTests.cs
 
 [Source](../../Assets/Tests/PlayMode/RowingIntegrationPlayTests.cs) — 1 included method.
@@ -5707,6 +5858,21 @@ Counts are methods in this inventory. The method rows below distinguish CPU arms
 | `Aground_TheGlassReadsZero_NeverANegativeSounding` (158) | UnityTest | R |
 | `TheCard_ShowsWithTheFit_AndStandsDownWithout` (306) | UnityTest | R |
 | `TheGlass_IsAPlateInTheBand_AndRaisesOnlyWhenAsked` (368) | UnityTest | R |
+### SouthWaterArrivalPlayTests.cs
+
+[Source](../../Assets/Tests/PlayMode/SouthWaterArrivalPlayTests.cs) — 2 included methods.
+
+| Test method (source line) | Inputs | Null CI |
+|---|---|---|
+| `ABoatArrivesFromEachNorthEdge_AfloatWithTheHelmLive` (120) | ValueSource | R |
+| `AnUnknownKeyLandsAtTheDefaultArrival_StillAfloat` (148) | UnityTest | R |
+### SouthWaterPlatePlayTests.cs
+
+[Source](../../Assets/Tests/PlayMode/SouthWaterPlatePlayTests.cs) — 1 included method.
+
+| Test method (source line) | Inputs | Null CI |
+|---|---|---|
+| `TheOpenWater_InALightAirAndInAGale` (113) | UnityTest | G |
 ### StPetersEastDoorPlayTests.cs
 
 [Source](../../Assets/Tests/PlayMode/StPetersEastDoorPlayTests.cs) — 2 included methods.
@@ -5756,7 +5922,7 @@ Counts are methods in this inventory. The method rows below distinguish CPU arms
 
 | Test method (source line) | Inputs | Null CI |
 |---|---|---|
-| `StPeters_KeptShallows_AtHighAndLowTide` (163) | UnityTest | G |
+| `StPeters_KeptShallows_AtHighAndLowTide` (173) | UnityTest | G |
 ### StPetersSplatWarpPlatePlayTests.cs
 
 [Source](../../Assets/Tests/PlayMode/StPetersSplatWarpPlatePlayTests.cs) — 1 included method.
@@ -5883,6 +6049,13 @@ Counts are methods in this inventory. The method rows below distinguish CPU arms
 | `V24_AuthoredIntroRoute_RenderedSternThroughScriptedTurns` (348) | UnityTest | G |
 | `V24_Lobster_CardinalsAndBothTurns` (397) | UnityTest | G |
 | `V24_Cape_SpeedAndAgeResponse` (401) | UnityTest | G |
+### WakeCentrePhotographPlayTests.WholeHull.cs
+
+[Source](../../Assets/Tests/PlayMode/WakeCentrePhotographPlayTests.WholeHull.cs) — 1 included method.
+
+| Test method (source line) | Inputs | Null CI |
+|---|---|---|
+| `TheCape_AheadAsternAndSliding_PhotographsTheWholeHullsFoam` (38) | UnityTest | G |
 ### WakeCentrePhotographPlayTests.cs
 
 [Source](../../Assets/Tests/PlayMode/WakeCentrePhotographPlayTests.cs) — 4 included methods.

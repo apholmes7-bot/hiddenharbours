@@ -1,6 +1,6 @@
 # Water, surf, wake and seabed test inventory
 
-Source snapshot: `d9d4b8558aaa77b49b6bad9dbb35345d2059814c`, audited 2026-11-11.
+Source snapshot: `12bc04b19a2efb33e352b4eea58104f7a5599be1`, refreshed 2026-11-12.
 This is a documentation audit for planning the water renderer's future. It changes no
 test, expectation, material, scene, import setting, tuned value or render pipeline.
 No Unity editor or CI test run was performed for this audit.
@@ -10,6 +10,12 @@ wave law, authored heights, foam arithmetic, component wiring and shader source
 contracts. The tests that actually sample rendered water generally skip there.
 An image written by a CPU diagram test is also different evidence from a frame
 rendered by the production water pass.
+
+## Refresh against current main
+
+The earlier snapshot contained 3,019 methods in 476 files. This refresh adds 74 declarations in 16 additional files, retains every previous declaration and its graphics classification, and updates moved source lines. Additions include 17 `HullContactFoamTests` numeric cases; the whole-hull wake photograph; South Water ground, seam and arrival contracts and its GPU plate; Rice Point trawler-berth logic and its GPU plate; and new tide, catch-depth, replay and beach/ground contracts selected by the same scope rules. The trawler-berth plate was added explicitly during the omission review because berth/ground pictures are in scope. No new run or accepted image baseline is claimed.
+
+The surf-drift fixture now locks frame cadence and reads the physics-grid clock in both arms; this changes its source setup, not its graphics eligibility. Rice Point's ground/region fixtures now read the dredged ground, with the boat start asserted at -7 m. These remain source/data or physical-state evidence, not composed-image proof.
 
 ## Complete source index and counting rules
 
@@ -23,12 +29,12 @@ Some adjacent terrain, chart and berth checks are deliberately retained: they
 constrain water inputs without judging the water's image. General fuel/economy
 and fish simulation tests that merely consume a sea-state value are outside scope.
 
-The inventory contains **3,019 methods in 476 source files**.
+The inventory contains **3,093 methods in 492 source files**.
 
 | Suite | Methods | R | R* | G | A | O |
 |---|---:|---:|---:|---:|---:|---:|
-| EditMode | 2,798 | 2,692 | 30 | 68 | 8 | 0 |
-| PlayMode | 221 | 124 | 23 | 73 | 0 | 1 |
+| EditMode | 2,865 | 2,759 | 30 | 68 | 8 | 0 |
+| PlayMode | 228 | 128 | 23 | 76 | 0 | 1 |
 
 These are **declared methods, not expanded NUnit cases or execution counts**.
 `TestCase` rows can expand to several cases; `Values`/`ValueSource` and
@@ -86,7 +92,7 @@ the invariant protected in CI from the image that still needs graphics evidence.
 | Wake origins, widening, foam age and transport | `OneWakeRoot`, `FoamTrailRoot`, `WakeProjection`, `WakeSternOffsetRig`, `WakeDispersal*`, `WakeParticleSystem`, `WakeBubbleSystem`, `WakeTrailMath`, `WakeFoamAgeing*`, `FoamBuffer*`, `FoamSelection`, `FoamTransport*`, `WakeDepositPlay` | Can protect stern routing, pooled state, deposits, CPU transport and density arithmetic. GPU transport/binding/history suites skip, as do rendered wake photographs and fade/root plates |
 | Wake stability during camera motion | `WakeFoamWindowPlay` uses real frames and a camera but checks the C# buffer/window arithmetic | Runs without rendering; its name "TheDrawnBand" does not imply pixel readback. Conversely, `OneWakeRootPlate` draws a CPU diagram rather than the production water |
 | Reflections and illumination | `WaterReflection`, `WaterReflectionWarp`, `WaterReflectionLadder`, reflector registration/property tests, `WaterLightBridge`, `BeamWaveRelief`, `HullCausticLighting` CPU arms; GPU `ObjectReflectionProbe`, `BeamReliefRender`, sweep mirror/night/lamp/sun-side arms | Can pin gates, ladders and light uniforms; cannot certify a mirror, glitter, beam relief, reflected hull or final grading on a Null device |
-| Hull contact and occlusion | Hull waterline residual/settle tests, `HullWaterlineAcceptance`, `HullReflectionPivotPlay`, `HullsRideTheTidePlay`, `HullsRideTheTidePlatePlay` | State/height contracts can run. Nine waterline acceptance render methods and all tide plates skip; existing waterline/boat-occlusion GPU tests mean this subject is **partially tested**, not absent |
+| Hull contact and occlusion | `HullContactFoamTests` (17 numeric methods), the graphics-gated whole-hull wake photograph, hull waterline residual/settle tests, `HullWaterlineAcceptance`, `HullReflectionPivotPlay`, `HullsRideTheTidePlay`, `HullsRideTheTidePlatePlay` | State/height contracts can run. Nine waterline acceptance render methods and all tide plates skip; existing waterline/boat-occlusion GPU tests mean this subject is **partially tested**, not absent |
 | Rain, spray and swimming | `RainActivation`, `RainIntensity`, `BowSprayGrading`, `SprayIntensity`, `SurfSpray`, `WadeSplashRate`, submerge/swim tests | Data, launch geometry, rates, event routing and animation state are guarded; that is not proof that water particles visibly sort or blend correctly |
 | Whole scene and shader health | `WaterShaderCompileGuard` discovers project material shaders and compiles shipped keyword/pass variants; region water/shore/tide plates, `LeeSeaPlatePlay`, `WaveMemoryPlatePlay`, terrain/shore plates and native wake photographs | Import/compile checks do not prove the image. Named scene plates are graphics-gated, often diagnostic captures rather than an approved image-equality oracle |
 
