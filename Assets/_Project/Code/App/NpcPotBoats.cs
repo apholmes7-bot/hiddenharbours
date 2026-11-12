@@ -111,6 +111,12 @@ namespace HiddenHarbours.App
         /// <summary>What <paramref name="defId"/>'s pots hold today, or null before her first frame.</summary>
         public NpcPotDayCatch CatchOf(string defId) => Find(defId)?.Catch;
 
+        /// <summary>The plan for landing <paramref name="defId"/>'s catch today, or null before her first frame.</summary>
+        public NpcPotLanding LandingOf(string defId) => Find(defId)?.Landing;
+
+        /// <summary>Her figure and crates ashore, or null.</summary>
+        public NpcPotLandingWalk LandingWalkOf(string defId) => Find(defId)?.Walk;
+
         /// <summary>
         /// Binds <paramref name="hull"/> to <paramref name="def"/>'s day. The library path calls this for each Def
         /// whose region scene is loaded; a test calls it with its own hull. False (with the reason logged) when the
@@ -150,6 +156,9 @@ namespace HiddenHarbours.App
             boat.HaulGradient = SolidRope(def.RopeColour);
             for (int i = 0; i < boat.Pots.Length; i++) boat.Pots[i] = BuildPot(boat, i);
             boat.Deck = new NpcPotDeck(def, hull, boat.Skipper);
+            boat.Walk = new NpcPotLandingWalk(def, hull.Owner != null ? hull.Owner.Skipper : null,
+                                              boat.Skipper != null ? boat.Skipper.GetComponent<SpriteRenderer>() : null,
+                                              boat.GearRoot.transform, boat.Z);
             _boats.Add(boat);
             _nextSlowTick = 0f;   // read the tide and lay the gear on the very next frame
             return true;
@@ -203,6 +212,7 @@ namespace HiddenHarbours.App
                     boat.Yesterday = NpcPotDay.Build(boat.Def, seed, dayIndex - 1, secondsPerDay);
                     boat.Catch = NpcPotDayCatch.Build(boat.Def, seed, boat.Today, boat.Yesterday, clock.Season,
                                                       env.WaterLevelAt, secondsPerDay);
+                    boat.Landing = NpcPotLanding.Build(boat.Def, boat.Today, boat.Catch);
                     boat.Seed = seed;
                     boat.SecondsPerDay = secondsPerDay;
                     if (!boat.Today.FitsTheDay(secondsPerDay))
@@ -223,7 +233,8 @@ namespace HiddenHarbours.App
 
                 NpcPotBoatPose pose = boat.Today.PoseAt(now);
                 PlaceHull(boat, pose);
-                boat.Deck.Tick(in pose, boat.Today, boat.Catch, now);
+                boat.Deck.Tick(in pose, boat.Today, boat.Catch, now, boat.Landing);
+                boat.Walk.Tick(boat.Landing, now);
 
                 for (int i = 0; i < boat.Pots.Length; i++)
                 {
@@ -504,6 +515,7 @@ namespace HiddenHarbours.App
 
         private static void Release(Boat boat)
         {
+            boat.Walk?.Dispose();
             if (boat.GearRoot != null) Destroy(boat.GearRoot);
             if (boat.Hull == null) return;   // her scene went with her
             boat.Deck?.Dispose();
@@ -537,6 +549,8 @@ namespace HiddenHarbours.App
             public NpcPotDeck Deck;
             public NpcPotDay Today, Yesterday;
             public NpcPotDayCatch Catch;
+            public NpcPotLanding Landing;
+            public NpcPotLandingWalk Walk;
             public int Seed;
             public double SecondsPerDay;
 
