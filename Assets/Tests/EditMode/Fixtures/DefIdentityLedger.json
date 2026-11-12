@@ -59,6 +59,7 @@
     "HiddenHarbours.Fishing.DeckWorkDef",
     "HiddenHarbours.Fishing.FishSpeciesDef",
     "HiddenHarbours.Fishing.LonglineDef",
+    "HiddenHarbours.Fishing.NpcPotDayDef",
     "HiddenHarbours.Fishing.RodFightDef",
     "HiddenHarbours.Fishing.TackleDef",
     "HiddenHarbours.Fishing.TrapDef",
@@ -5701,6 +5702,11 @@
       "Id": "longline.groundfish_tub"
     },
     {
+      "Type": "HiddenHarbours.Fishing.NpcPotDayDef",
+      "Guid": "ea84cea831934f47895968c596e96c29",
+      "Id": "potday.nmc_doiron_yvette"
+    },
+    {
       "Type": "HiddenHarbours.Fishing.RodFightDef",
       "Guid": "3ab88869623e42cb966c377e339b6d09",
       "Id": "rodfight.atlantic_cod"
@@ -8192,6 +8198,16 @@
     },
     {
       "Type": "HiddenHarbours.World.DialogueDef",
+      "Guid": "c48c74c1d02f4b63ac5f0160f8c49f04",
+      "Id": "dialogue.nmc_harbourmaster_first"
+    },
+    {
+      "Type": "HiddenHarbours.World.DialogueDef",
+      "Guid": "7a5c45ec843f4c199ca87a9f5a1106f0",
+      "Id": "dialogue.nmc_yard_first"
+    },
+    {
+      "Type": "HiddenHarbours.World.DialogueDef",
       "Guid": "9d0881d7098e00047b7d2279d75b8e4a",
       "Id": "dialogue.orrin_first"
     },
@@ -8679,6 +8695,16 @@
       "Type": "HiddenHarbours.World.NpcDef",
       "Guid": "d075ec7e653da73458f66fe89db02c59",
       "Id": "npc.nella_tarn"
+    },
+    {
+      "Type": "HiddenHarbours.World.NpcDef",
+      "Guid": "7b6b6a02fe474a608bf512334a461d35",
+      "Id": "npc.nmc_harbourmaster"
+    },
+    {
+      "Type": "HiddenHarbours.World.NpcDef",
+      "Guid": "007c0c1931c642f48c317b313d2648c0",
+      "Id": "npc.nmc_yard"
     },
     {
       "Type": "HiddenHarbours.World.NpcDef",
