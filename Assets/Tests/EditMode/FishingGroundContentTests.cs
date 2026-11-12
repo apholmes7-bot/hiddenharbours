@@ -117,6 +117,20 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         [Test]
+        public void EveryGroundSaysHowHardItIsAndRockIsHarderThanMud()
+        {
+            const EcologyHabitat hard = EcologyHabitat.Rock | EcologyHabitat.Gravel;
+            var grounds = Grounds();
+            foreach (var g in grounds)
+                Assert.That(g.Hardness01, Is.InRange(0f, 1f), g.Id);
+            foreach (var rocky in grounds.Where(g => (g.Bottom & EcologyHabitat.Rock) != 0))
+            foreach (var soft in grounds.Where(g => (g.Bottom & hard) == 0))
+                Assert.Greater(rocky.Hardness01, soft.Hardness01, $"{rocky.Id} against {soft.Id}");
+            Assert.IsTrue(grounds.Any(g => (g.Bottom & EcologyHabitat.Rock) != 0) &&
+                          grounds.Any(g => (g.Bottom & hard) == 0), "one hard ground and one soft, at least");
+        }
+
+        [Test]
         public void TheSouthWatersRealBedLiesInsideEachGroundsAuthoredDepths()
         {
             foreach (var g in Grounds().Where(g => g.RegionId == SouthWaterPlan.RegionId))

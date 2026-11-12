@@ -57,10 +57,14 @@ flowchart LR
     NM -->|legacy cove exit| GB
     ST -.-> WW[WestWater: scene absent]
     NM -.-> WW
+    SW[SouthWater: no incoming route] -->|sea; neighbours hold no south_water arrival yet| RP
+    SW --> ST
+    SW --> EW
 ```
 
 There are 16 passage components in the requested six scenes, plus Greybox's
-unwired exit: 17 audited records. Referenced prefabs (13 distinct sources,
+unwired exit: 17 audited records. The South Water adds three more (see
+"The South Water's north seams" below): 20. Referenced prefabs (13 distinct sources,
 including recursive discovery) contain no additional passage, anchor or loader.
 The opening is a separate scripted hop: the built first scene is St Peters;
 its `ArrivalOpening` reads `ArrivalSea.asset`, hops to East Water at `opening`,
@@ -100,6 +104,35 @@ prefabs. Cumberland's north Route 91 continuation near (-213,280) and east road
 end at (380,18) are **closed geography**, not transfer edges; their onward regions
 are not authored. East Water and Greywick have no road doors.
 
+## The South Water's north seams
+
+The South Water (`region.south_water`, 2400 × 1200 m, north edge y = 600) holds **its own
+halves only**: three sea doors on its north edge and the three named arrivals the neighbours'
+exits will ask for. No neighbour scene was written. Until a neighbour opens its half, no route
+leads INTO the South Water, and its three doors send the key `south_water`, which no neighbour
+resolves yet: they are reported under missing named arrivals and unpaired edges, and a boat
+sent north today would land at the neighbour's default arrival.
+
+| South Water door | Centre | Band (w × d) | Sends key | Arrival here | Arrival key here | Bed at door |
+| --- | --- | --- | --- | --- | --- | --- |
+| `PassageToRicePoint` | (-900, 576) | 260 × 6 | `south_water` | (-900, 536) | `rice_point` | −7 m, Rice Point's trawler channel |
+| `PassageToStPeters` | (250, 576) | 260 × 6 | `south_water` | (250, 536) | `st_peters` | −4 m, St Peters' harbour floor |
+| `PassageToEastWater` | (950, 576) | 260 × 6 | `south_water` | (950, 536) | `east_water` | −4 m, the East Water's floor |
+
+Every door is inset 24 m from the edge and every arrival stands 40 m inside its door, in
+15.6 m of water or more at mean tide. The default arrival is the St Peters one.
+
+**What each neighbour needs (their lanes, their builders; each in its own scene coordinates):**
+
+| Neighbour | Exit band centre | Band (w × d) | Sends key | Named arrival to add | Arrival point | Notes |
+| --- | --- | --- | --- | --- | --- | --- |
+| Rice Point (760 × 360, south edge y = −180) | (-45, -156) | 14 × 6 | `rice_point` | `south_water` | (-45, -116) | In the dredged channel (x −52 to −38, bed −7 m), inset 24 m from the south edge; the arrival 40 m further up the channel. The channel must run at −7 m at least from y −180 to y −116. |
+| St Peters (760 × 520, south edge y = −260) | (x, -236) | up to 260 × 6 | `st_peters` | `south_water` | (x, -196) | x is St Peters' choice anywhere its south water is at the harbour floor (−4 m) from the edge to the arrival. |
+| East Water (760 × 520, south edge y = −260) | (0, -236) | up to 260 × 6 | `east_water` | `south_water` | (0, -196) | The whole bed is −4 m, so any x clear of the west door serves; the mid-line is proposed. |
+
+A band on a south edge lies along x; the shared water builder's default band is an east or
+west wall, so each neighbour states its band size.
+
 ## Reachability from a normal start
 
 | Region | Result at this base | Path / limitation |
@@ -111,6 +144,7 @@ are not authored. East Water and Greywick have no road doors.
 | Cumberland | **No** | All three authored edges are outgoing; no reachable scene targets Cumberland. Direct Play/scene selection does not count. |
 | Greywick | **No, legacy** | No incoming target and no RegionDef naming its scene. Its anchor still says `region.port_greywick`, which `SaveMigration` migrates to `region.nine_mile_creek`. |
 | Greybox / Coddle Cove, external | Yes, but a trap | NMC's legacy cove edge enters it; no working outgoing edge. |
+| SouthWater | **No, by design at this step** | Its three doors lead out; no neighbour has an exit to it yet. |
 | WestWater, external | **No** | Both scenes and older design text reference it, but this base has only its Def/builder/plan, not the scene file. Build registration cannot substitute for a scene asset. |
 
 All seven existing top-level RegionDefs have blank unlock flags. The passage's

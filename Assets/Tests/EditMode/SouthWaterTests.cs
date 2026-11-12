@@ -2,6 +2,7 @@ using System.Linq;
 using NUnit.Framework;
 using UnityEditor;
 using UnityEngine;
+using HiddenHarbours.App;
 using HiddenHarbours.App.Editor;
 using HiddenHarbours.Boats;
 using HiddenHarbours.Core;
@@ -244,6 +245,119 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.IsEmpty(def.SpawnFishIds);
             Assert.IsEmpty(def.UnlockFlag ?? "", "no gate: nothing in this PR locks the region");
             StringAssert.Contains("working name", def.DisplayName);
+        }
+
+        // ---- the three north seams (this region's halves) -------------------------------------------
+
+        static (string Name, Vector3 Door, string Key, Vector3 Arrival, float Floor)[] Seams() => new[]
+        {
+            (SouthWaterPlan.ToRicePointPassageName, SouthWaterPlan.ToRicePointPassagePos,
+                SouthWaterPlan.FromRicePointArrivalKey, SouthWaterPlan.FromRicePointArrivalPos,
+                SouthWaterPlan.RicePointChannelBedElevation),
+            (SouthWaterPlan.ToStPetersPassageName, SouthWaterPlan.ToStPetersPassagePos,
+                SouthWaterPlan.FromStPetersArrivalKey, SouthWaterPlan.FromStPetersArrivalPos,
+                StPetersBuilder.DeepHarbourElevation),
+            (SouthWaterPlan.ToEastWaterPassageName, SouthWaterPlan.ToEastWaterPassagePos,
+                SouthWaterPlan.FromEastWaterArrivalKey, SouthWaterPlan.FromEastWaterArrivalPos,
+                EastWaterPlan.BayFloorElevation),
+        };
+
+        [Test]
+        public void EveryDoorHasTheIslandsInsetAndLiesOnTheNorthEdge()
+        {
+            Assert.AreEqual(3, SouthWaterPlan.Passages.Length);
+            foreach (var s in Seams())
+            {
+                Assert.AreEqual(SouthWaterPlan.NorthEdgeY - WestWaterPlan.DoorInsetMetres, s.Door.y, 1e-4f, s.Name);
+                Assert.IsTrue(SouthWaterPlan.Plan.WorldBounds.Contains((Vector2)s.Door), s.Name);
+            }
+            Assert.Greater(SouthWaterPlan.PassageBandSize.x, SouthWaterPlan.PassageBandSize.y,
+                "a door on a north edge lies along x");
+        }
+
+        [Test]
+        public void EveryDoorsWholeBandLiesOverItsNeighboursOwnFloor()
+        {
+            var band = SouthWaterPlan.PassageBandSize;
+            foreach (var s in Seams())
+                for (float dx = -band.x * 0.5f; dx <= band.x * 0.5f; dx += 10f)
+                foreach (float dy in new[] { -band.y * 0.5f, 0f, band.y * 0.5f })
+                    Assert.AreEqual(s.Floor, _bed.ElevationAt((Vector2)s.Door + new Vector2(dx, dy)), 1e-4f,
+                        $"{s.Name} at ({dx}, {dy})");
+        }
+
+        [Test]
+        public void TheBandsDoNotTouchEachOtherOrTheRegionsSides()
+        {
+            var seams = Seams().OrderBy(s => s.Door.x).ToArray();
+            float half = SouthWaterPlan.PassageBandSize.x * 0.5f;
+            for (int i = 1; i < seams.Length; i++)
+                Assert.Greater(seams[i].Door.x - half, seams[i - 1].Door.x + half);
+            Assert.Greater(seams[0].Door.x - half, SouthWaterPlan.Plan.WorldBounds.xMin);
+            Assert.Less(seams[seams.Length - 1].Door.x + half, SouthWaterPlan.Plan.WorldBounds.xMax);
+        }
+
+        [Test]
+        public void EveryArrivalIsFortyMetresInsideItsDoorClearOfEveryBandAndDeep()
+        {
+            var band = SouthWaterPlan.PassageBandSize;
+            foreach (var s in Seams())
+            {
+                Assert.AreEqual(s.Door.x, s.Arrival.x, 1e-4f, s.Name);
+                Assert.AreEqual(s.Door.y - WestWaterPlan.ArrivalClearanceMetres, s.Arrival.y, 1e-4f, s.Name);
+                foreach (var other in Seams())
+                    Assert.IsFalse(new Rect((Vector2)other.Door - band * 0.5f, band).Contains((Vector2)s.Arrival),
+                        $"{s.Key} arrival lies in {other.Name}");
+                Assert.That(SouthWaterPlan.SpringLowDepthAt(s.Arrival), Is.GreaterThan(10f), s.Key);
+            }
+        }
+
+        [Test]
+        public void ATrawlerFloatsFromTheRicePointDoorToItsArrivalAtSpringLow()
+        {
+            float deepest = TrawlerHullAssets.Max(p => AssetDatabase.LoadAssetAtPath<BoatHullDef>(p).DraughtMeters);
+            float need = deepest + StPetersBuilder.BerthUnderKeelClearance;
+            float x = SouthWaterPlan.RicePointApproachX;
+            for (float y = SouthWaterPlan.NorthEdgeY; y >= SouthWaterPlan.FromRicePointArrivalPos.y; y -= 2f)
+                Assert.That(SouthWaterPlan.SpringLowDepthAt(new Vector2(x, y)), Is.GreaterThanOrEqualTo(need), $"y {y}");
+        }
+
+        [Test]
+        public void TheArrivalKeysAreDistinctAndTheDefaultIsTheStPetersArrival()
+        {
+            var keys = SouthWaterPlan.NamedArrivals.Select(a => a.Key).ToArray();
+            CollectionAssert.AreEquivalent(new[] { "rice_point", "st_peters", "east_water" }, keys);
+            Assert.AreEqual(SouthWaterPlan.FromStPetersArrivalPos, SouthWaterPlan.DefaultArrivalPos);
+            foreach (var p in SouthWaterPlan.Passages)
+            {
+                Assert.AreEqual("south_water", p.ArrivalKey, p.Name);
+                Assert.IsNotNull(AssetDatabase.LoadAssetAtPath<RegionDef>(p.RegionAssetPath), p.RegionAssetPath);
+            }
+        }
+
+        [Test]
+        public void TheCommittedSceneHoldsThePlansDoorsBandsAndArrivals()
+        {
+            var scene = UnityEditor.SceneManagement.EditorSceneManager.OpenScene(
+                WaterSceneTemplate.ScenePathFor(SouthWaterPlan.SceneName),
+                UnityEditor.SceneManagement.OpenSceneMode.Additive);
+            try
+            {
+                var roots = scene.GetRootGameObjects();
+                var passages = roots.SelectMany(r => r.GetComponentsInChildren<RegionPassage>(true)).ToArray();
+                Assert.AreEqual(3, passages.Length);
+                foreach (var s in Seams())
+                {
+                    var passage = passages.Single(p => p.name == s.Name);
+                    Assert.AreEqual(s.Door, passage.transform.position, s.Name);
+                    var box = passage.GetComponent<BoxCollider2D>();
+                    Assert.IsTrue(box.isTrigger, s.Name);
+                    Assert.AreEqual(SouthWaterPlan.PassageBandSize, box.size, s.Name);
+                }
+                var anchor = roots.SelectMany(r => r.GetComponentsInChildren<RegionAnchor>(true)).Single();
+                Assert.AreEqual(SouthWaterPlan.RegionId, anchor.RegionId);
+            }
+            finally { UnityEditor.SceneManagement.EditorSceneManager.CloseScene(scene, true); }
         }
 
         [Test]

@@ -20,7 +20,7 @@ namespace HiddenHarbours.App.Editor
         {
             var camera = WaterSceneTemplate.BuildRegion(
                 SouthWaterPlan.Plan, SouthWaterPlan.DefaultArrivalPos, SouthWaterPlan.DefaultArrivalPos,
-                new (string Key, Vector3 Position)[0]);
+                SouthWaterPlan.NamedArrivals, SouthWaterPlan.PassageBandSize, SouthWaterPlan.Passages);
 
             var args = System.Environment.GetCommandLineArgs();
             int review = System.Array.IndexOf(args, "-southWaterReview");

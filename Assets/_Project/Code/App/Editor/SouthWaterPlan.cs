@@ -105,11 +105,61 @@ namespace HiddenHarbours.App.Editor
         /// <summary>Still water over a point at the lowest tide of the year.</summary>
         public static float SpringLowDepthAt(Vector2 worldPos) => SpringLowWater - ElevationAt(worldPos);
 
+        // ---- the three north seams ------------------------------------------------------------------
+        // This region's halves only. Each door lies along the north edge, inset as every sea door is,
+        // across the whole flat apron of its approach; each arrival is the island's clearance inside.
+        // The matching exits live in the neighbours' scenes and are wired by THEIR builders.
+
+        public const string RicePointRegionAssetName = "RicePoint";
+        public const string StPetersRegionAssetName = "StPeters";
+
+        /// <summary>The key every door here sends: the name the neighbour's anchor must resolve.</summary>
+        public const string ArrivalKeySentToNeighbours = "south_water";
+        /// <summary>The keys the neighbours' exits name when they send a boat here.</summary>
+        public const string FromRicePointArrivalKey = "rice_point";
+        public const string FromStPetersArrivalKey = "st_peters";
+        public const string FromEastWaterArrivalKey = "east_water";
+
+        public const string ToRicePointPassageName = "PassageToRicePoint";
+        public const string ToStPetersPassageName = "PassageToStPeters";
+        public const string ToEastWaterPassageName = "PassageToEastWater";
+
+        /// <summary>A door's band: the apron's full width along the edge, the shared depth across it.</summary>
+        public static Vector2 PassageBandSize =>
+            new Vector2(ApproachHalfSize.x * 2f, Plan.EdgeBandDepthMetres);
+
+        static Vector3 DoorAt(float x) => new Vector3(x, NorthEdgeY - DoorInsetMetres, 0f);
+        static Vector3 ArrivalAt(float x) =>
+            new Vector3(x, NorthEdgeY - DoorInsetMetres - ArrivalClearanceMetres, 0f);
+
+        public static Vector3 ToRicePointPassagePos => DoorAt(RicePointApproachX);
+        public static Vector3 ToStPetersPassagePos => DoorAt(StPetersApproachX);
+        public static Vector3 ToEastWaterPassagePos => DoorAt(EastWaterApproachX);
+        public static Vector3 FromRicePointArrivalPos => ArrivalAt(RicePointApproachX);
+        public static Vector3 FromStPetersArrivalPos => ArrivalAt(StPetersApproachX);
+        public static Vector3 FromEastWaterArrivalPos => ArrivalAt(EastWaterApproachX);
+
+        public static (string Key, Vector3 Position)[] NamedArrivals => new[]
+        {
+            (FromRicePointArrivalKey, FromRicePointArrivalPos),
+            (FromStPetersArrivalKey, FromStPetersArrivalPos),
+            (FromEastWaterArrivalKey, FromEastWaterArrivalPos),
+        };
+
+        public static (string Name, Vector3 Position, string RegionAssetPath, string ArrivalKey)[] Passages => new[]
+        {
+            (ToRicePointPassageName, ToRicePointPassagePos,
+                WaterSceneTemplate.RegionAssetPathFor(RicePointRegionAssetName), ArrivalKeySentToNeighbours),
+            (ToStPetersPassageName, ToStPetersPassagePos,
+                WaterSceneTemplate.RegionAssetPathFor(StPetersRegionAssetName), ArrivalKeySentToNeighbours),
+            (ToEastWaterPassageName, ToEastWaterPassagePos,
+                WaterSceneTemplate.RegionAssetPathFor(EastWaterPlan.RegionAssetName), ArrivalKeySentToNeighbours),
+        };
+
         // ---- where a boat is put down ---------------------------------------------------------------
         /// <summary>Inside the St Peters approach, clear of the edge: the place a boat lies when the
         /// region is opened without a named arrival.</summary>
-        public static Vector3 DefaultArrivalPos =>
-            new Vector3(StPetersApproachX, NorthEdgeY - DoorInsetMetres - ArrivalClearanceMetres, 0f);
+        public static Vector3 DefaultArrivalPos => FromStPetersArrivalPos;
 
         public static WaterScenePlan Plan => new WaterScenePlan
         {
