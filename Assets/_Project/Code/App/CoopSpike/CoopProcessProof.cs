@@ -109,9 +109,10 @@ namespace HiddenHarbours.CoopSpike
             {
                 placement.gameplayFoot = rider.transform.position;
                 placement.deckStand = rider.DeckStandRigLocal;
-                var hull = rider.LiveHullPresenter;
-                placement.drawnFoot = hull != null && hull.Visual != null
-                    ? hull.Visual.TransformPoint(rider.DeckStandRigLocal) : rider.transform.position;
+                var presenter = rider.GetComponent<DeckRiderMeshPresenter>();
+                placement.drawnFoot = presenter != null && presenter.PresentationRoot != null
+                    ? presenter.PresentationRoot.position
+                    : rider.RiderTransform != null ? rider.RiderTransform.position : rider.transform.position;
             }
             foreach (var view in FindObjectsByType<CoopReplicaView>(FindObjectsSortMode.None))
             {
