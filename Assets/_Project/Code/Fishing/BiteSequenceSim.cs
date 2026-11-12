@@ -87,11 +87,12 @@ namespace HiddenHarbours.Fishing
         public bool IsOver => Phase == BitePhase.Hooked || Phase == BitePhase.Gone;
 
         /// <summary>Start a sequence. <paramref name="rng"/> seeds every schedule roll — a seeded
-        /// caller replays the whole sequence identically (tests); null falls back to time-seeded.</summary>
+        /// caller replays the whole sequence identically (tests). The caller must supply an RNG.</summary>
+        /// <exception cref="System.ArgumentNullException"><paramref name="rng"/> is null.</exception>
         public BiteSequenceSim(in BiteProfile profile, System.Random rng)
         {
             _profile = profile;
-            _rng = rng ?? new System.Random();
+            _rng = rng ?? throw new System.ArgumentNullException(nameof(rng));
             BeginPass();
         }
 

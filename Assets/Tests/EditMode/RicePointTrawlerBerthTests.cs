@@ -144,7 +144,7 @@ namespace HiddenHarbours.Tests.EditMode
         public void TheDredgeReRunFromTheCommittedInputs_GivesTheCommittedRasters_ByHash()
         {
             var rerun = GroundFileIntake.RicePointDredged(GroundFileIntake.ReadRicePointFolder(RicePointBuilder.GroundFolder), Works());
-            Assert.That(GroundFileIntake.RasterCodeHash(rerun.Heights), Is.EqualTo("ab387e6bb82ba8434394505e0dfddff43e0e27ef8bd728451f46fa678025b57e"));
+            Assert.That(GroundFileIntake.RasterCodeHash(rerun.Heights), Is.EqualTo("7a6ed2ebc68e8700f8acd4d97f2a9b462e2d40a80f5fba7db9c2454346f16a99"));
             Assert.That(GroundFileIntake.RasterCodeHash(rerun.Still), Is.EqualTo("409a0d8819000f217b7eafe7cb9d1dcaa22b4fef8fdc5390a9edbc3de45988eb"));
             foreach (var (file, codes) in new[] { ("RicePointSeabed_HeightTex_plan.png", rerun.Heights), ("RicePointSeabed_StillTex_plan.png", rerun.Still) })
                 Assert.That(GroundFileIntake.RasterCodeHash(TerrainPlanPng.ReadFile(RicePointBuilder.GroundFolder + "/" + file).Channel(0)),
@@ -152,9 +152,10 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         /// <summary>
-        /// Widening the range moved nothing that matters: every texel no dredge shape asks to lower
-        /// (the shore, the wharf, every arrival and door, the whole seam) keeps its issued height to
-        /// within one step of the new encoding, and so does every still-water level.
+        /// Widening the range moved nothing that matters: every texel that no dredge shape, and no
+        /// blend at a shape's limit, asks to lower (the shore, the wharf, every arrival and door, the
+        /// whole seam) keeps its issued height to within one step of the new encoding, and so does
+        /// every still-water level.
         /// </summary>
         [Test]
         public void OutsideTheDredgeShapes_EveryTexelKeepsItsIssuedHeight_WithinOneEncodeStep()
@@ -170,10 +171,10 @@ namespace HiddenHarbours.Tests.EditMode
                     int i = row * issued.Width + col;
                     double before = issued.Decode(issued.Heights[i]);
                     double x = -issued.Size[0] / 2 + (col + 0.5) / issued.PerMetre, y = issued.Size[1] / 2 - (row + 0.5) / issued.PerMetre;
-                    bool asked = before < works.KeepAbove && works.TargetAt(x, y) < before;
+                    bool asked = works.Reaches(x, y, before);
                     if (asked) continue;
                     outside++;
-                    if (Math.Abs(live.Decode(live.Heights[i]) - before) > step) Assert.Fail($"texel {col},{row} is outside every dredge shape and moved");
+                    if (Math.Abs(live.Decode(live.Heights[i]) - before) > step) Assert.Fail($"texel {col},{row} is outside every dredge shape and its blend margin, and moved");
                     if (issued.Still[i] != 0 && Math.Abs(live.Decode(live.Still[i]) - issued.Decode(issued.Still[i])) > step)
                         Assert.Fail($"the still water at texel {col},{row} changed level");
                     if ((issued.Still[i] == 0) != (live.Still[i] == 0)) Assert.Fail($"still water appeared or vanished at texel {col},{row}");
@@ -184,6 +185,52 @@ namespace HiddenHarbours.Tests.EditMode
             foreach (var door in plan.Doors)
                 foreach (var at in new[] { door.Centre, door.Arrival, door.Disembark })
                     Assert.That(works.TargetAt(at.x, at.y), Is.GreaterThan(works.KeepAbove), door.Id + " is clear of every cut");
+        }
+
+        /// <summary>
+        /// A cut's side slope does not stop at a crease. Where it meets the old ground the two are
+        /// rounded together over the cut's blend, so a tide's edge that falls there is a shore and
+        /// not the stepped outline of a shape (the mud flat east of the basin at spring low). The
+        /// blend is small and bounded: it reaches only where the slope and the old ground are within
+        /// the blend height of each other, dips at most a quarter of that, and never digs below a bed.
+        /// </summary>
+        [Test]
+        public void EachCutMeetsTheOldGroundThroughABlend_SmallBounded_AndNeverBelowItsBed()
+        {
+            var works = Works();
+            foreach (var cut in works.Cuts)
+                Assert.That(cut.BlendRun, Is.GreaterThan(0), cut.Id + " would meet the old ground at a crease");
+            double widest = works.Cuts.Max(c => c.BlendHeight), deepestBed = works.Cuts.Min(c => c.Bed);
+            var issued = GroundFileIntake.ReadRicePointFolder(RicePointBuilder.GroundFolder);
+            var live = GroundFileIntake.RicePointDredged(issued, works);
+            double step = (works.Range[1] - works.Range[0]) / 65535d;
+            int blended = 0;
+            for (int row = 0; row < issued.Height; row++)
+                for (int col = 0; col < issued.Width; col++)
+                {
+                    int i = row * issued.Width + col;
+                    double before = issued.Decode(issued.Heights[i]), after = live.Decode(live.Heights[i]);
+                    double x = -issued.Size[0] / 2 + (col + 0.5) / issued.PerMetre, y = issued.Size[1] / 2 - (row + 0.5) / issued.PerMetre;
+                    double target = works.TargetAt(x, y), hard = before < works.KeepAbove ? Math.Min(before, target) : before;
+                    Assert.That(after, Is.LessThanOrEqualTo(hard + step), $"the blend raised ground at texel {col},{row}");
+                    Assert.That(after, Is.GreaterThanOrEqualTo(hard - widest / 4 - step), $"the blend dug too deep at texel {col},{row}");
+                    Assert.That(after, Is.GreaterThanOrEqualTo(Math.Min(before, deepestBed) - step), $"texel {col},{row} is below every bed");
+                    if (hard - after <= step) continue;
+                    blended++;
+                    Assert.That(Math.Abs(before - target), Is.LessThan(widest), $"the blend reached texel {col},{row}, where slope and ground are far apart");
+                }
+            Assert.That(blended, Is.GreaterThan(0), "the blend does something");
+            // Along the ground the blend reaches no farther than its run: the lowered ground at the south
+            // edge is the hard cut's band widened by at most that on each side.
+            var hardWorks = GroundFileIntake.ReadHarbourWorks(File.ReadAllText(RicePointBuilder.GroundFolder + "/" + GroundFileIntake.RicePointWorksFile));
+            foreach (var cut in hardWorks.Cuts) cut.BlendRun = 0;
+            var hardGround = GroundFileIntake.RicePointDredged(issued, hardWorks);
+            int last = (issued.Height - 1) * issued.Width;
+            var moved = Enumerable.Range(0, issued.Width).Where(c => Math.Abs(live.Decode(live.Heights[last + c]) - issued.Decode(issued.Heights[last + c])) > step).ToArray();
+            var movedHard = Enumerable.Range(0, issued.Width).Where(c => Math.Abs(hardGround.Decode(hardGround.Heights[last + c]) - issued.Decode(issued.Heights[last + c])) > step).ToArray();
+            double reach = works.Cuts.Max(c => c.BlendRun) * issued.PerMetre;
+            Assert.That(movedHard.Min() - moved.Min(), Is.InRange(0, reach + 1));
+            Assert.That(moved.Max() - movedHard.Max(), Is.InRange(0, reach + 1));
         }
 
         [Test]
@@ -230,6 +277,8 @@ namespace HiddenHarbours.Tests.EditMode
             // A pool of still water stands somewhere inland; a cut laid across the whole region must find one and be refused.
             Assert.Throws<InvalidDataException>(() => GroundFileIntake.RicePointDredged(issued,
                 GroundFileIntake.ReadHarbourWorks(json.Replace("\"halfWidth\": 14", "\"halfWidth\": 400"))));
+            // A cut must say how it meets the old ground, and not with a negative run.
+            Assert.Throws<InvalidDataException>(() => GroundFileIntake.ReadHarbourWorks(json.Replace("\"blendRun\": 3", "\"blendRun\": -1")));
         }
     }
 }

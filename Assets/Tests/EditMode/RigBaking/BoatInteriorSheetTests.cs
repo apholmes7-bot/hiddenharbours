@@ -263,12 +263,12 @@ namespace HiddenHarbours.Tests.RigBaking
             // Then the SHEETS started retiring per hull as rooms became geometry (ADR 0041, fleet
             // rollout PR 0, 2026-09-01): the cleared count stays 27 and the shipped count is 27 minus
             // however many hulls are on RigMeshAssetBaker.MeshInteriorHulls — read, not typed.
-            Assert.AreEqual(25, _cleanHullStems.Length,
-                $"the intake cleared {_cleanHullStems.Length} hulls where the remaining kit has 25. If the ledger " +
+            Assert.AreEqual(23, _cleanHullStems.Length,
+                $"the intake cleared {_cleanHullStems.Length} hulls where the remaining kit has 23. If the ledger " +
                 "has genuinely changed — a hull regressed, or a new drop arrived — this number moves " +
                 "WITH a ledger change and an ADR note, never on its own.");
-            Assert.AreEqual(25 - _convertedHullStems.Length, shipped.Length,
-                $"the kit ships {shipped.Length} interior sheet sets for 25 remaining cleared hulls of which " +
+            Assert.AreEqual(23 - _convertedHullStems.Length, shipped.Length,
+                $"the kit ships {shipped.Length} interior sheet sets for 23 remaining cleared hulls of which " +
                 $"{_convertedHullStems.Length} are converted to mesh rooms.");
         }
 
