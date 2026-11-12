@@ -115,7 +115,7 @@ Route 91's band off.
 
 The south edge shows open bay; the west shows open water, plain beach, dune, pasture and wood continuing unbuilt.
 North is farmland and woodland with no road. Solid perimeter bands sit just outside all four extents;
-the east travel triggers sit inside them. There are no west or north travel doors and nothing may leave those edges. The south has one: the channel mouth
+the east travel triggers sit inside them. There are no west or north travel doors and nothing may leave those edges. The south has one: the channel mouth
 to the South Water (`door.rpt_south_water`, below), 24 m inside the edge.
 The camera and height frame end together. There is no invented land or scenic extension beyond them.
 
