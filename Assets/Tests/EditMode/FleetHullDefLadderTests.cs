@@ -566,6 +566,25 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.Greater(TerminalSpeed(mk2), TerminalSpeed(v1), "…and she is the quicker boat");
         }
 
+        // ---- the jetski -------------------------------------------------------------------------
+
+        [Test]
+        public void TheJetski_IsQuickForHerSize_JetDriven_AndNeverTheFastestThingAfloat()
+        {
+            BoatHullDef jetski = Hull("JetSki");
+            Assert.AreEqual("boat.jet_ski", jetski.Id);
+            Assert.AreEqual(WakeStyle.Jet, jetski.WakeStyle, "her wash is a jet's narrow stream, in data");
+            float speed = TerminalSpeed(jetski);
+            Assert.That(speed, Is.EqualTo(5.5f).Within(0.05f), "tuned to 5.5 m/s");
+
+            var roster = StPetersBuilder.DevPickerRosterFiles;
+            int at = System.Array.IndexOf(roster, "JetSki");
+            Assert.GreaterOrEqual(at, 1, "she has a rung");
+            Assert.That(speed, Is.GreaterThan(TerminalSpeed(Hull(roster[at - 1]))), "the ramp stays ordered by speed below her");
+            Assert.That(speed, Is.LessThan(TerminalSpeed(Hull(roster[at + 1]))), "...and above her");
+            Assert.That(speed, Is.LessThan(TerminalSpeed(Hull("ZodiacHurricane"))), "the Hurricane is still the fastest");
+        }
+
         // ---- the picker cycle, read off the builder's own list ---------------------------------
 
         [Test]
