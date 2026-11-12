@@ -113,6 +113,34 @@ namespace HiddenHarbours.Tests.EditMode
         // =============================================================================================
 
         [Test]
+        public void ReloadAtEveryHourAndCouplingTransition_MatchesEveryClockPoseField()
+        {
+            VehicleTripPlan live = BuiltPlan(out string problem);
+            Assert.That(live, Is.Not.Null, problem);
+            var hours = new System.Collections.Generic.List<float>();
+            for (int hour = 0; hour < 24; hour++) hours.Add(hour + 0.375f);
+            const float edge = 1f / 4096f;
+            for (int leg = 0; leg < live.DepartureHours.Length; leg++)
+            {
+                float departure = live.DepartureHours[leg];
+                float next = live.DepartureHours[(leg + 1) % live.DepartureHours.Length];
+                hours.Add(departure - edge);
+                hours.Add(departure);
+                hours.Add(departure + edge);
+                hours.Add(departure + DaySchedule.ElapsedHours(next, departure) * 0.5f);
+            }
+            hours.Reverse();
+            foreach (float hour in hours)
+            {
+                live.SampleAt(DaySchedule.Wrap24(hour + 11f));
+                VehicleTripPlan loaded = BuiltPlan(out problem);
+                Assert.That(loaded, Is.Not.Null, problem);
+                Assert.That(loaded.DepartureHours, Is.EqualTo(live.DepartureHours));
+                Assert.That(loaded.SampleAt(hour), Is.EqualTo(live.SampleAt(hour)), $"hour={hour:R}");
+            }
+        }
+
+        [Test]
         public void ATowingTripRunsTenBlocks_AndOnlyTwoHoursAreStillTheOwners()
         {
             VehicleTripPlan plan = BuiltPlan(out string problem);
