@@ -14,6 +14,9 @@ namespace HiddenHarbours.World
         Stroll = 1,
         /// <summary>Work one place out on the flats while they are bare.</summary>
         Dig = 2,
+        /// <summary>Leave the dry sand, go in to the shallows of a <see cref="BeachDef.Shallows"/> line
+        /// and follow the water's edge as the tide moves it, then come back out.</summary>
+        Wade = 3,
     }
 
     /// <summary>
@@ -130,8 +133,32 @@ namespace HiddenHarbours.World
         [Tooltip("Stroll only: how long they pause at each point of the walk, in game minutes.")]
         [Min(0f)] public float LingerMinutes = 8f;
 
-        /// <summary>Enough authored to plan with.</summary>
-        public bool IsRunnable => !string.IsNullOrEmpty(Id) && Beach != null && Beach.IsUsable;
+        [Header("In the water (Wade only)")]
+        [Tooltip("The shallowest water they stand in, in metres over the ground.")]
+        [Min(0f)] public float MinWadeDepthMetres = 0.08f;
+
+        [Tooltip("The deepest water they choose to stand in. Each standing place is seeded between the two.")]
+        [Min(0f)] public float MaxWadeDepthMetres = 0.25f;
+
+        [Tooltip("Never deeper than this at any moment, walking or standing, whatever the tide does " +
+                 "while they are in. A place that would break it is not taken.")]
+        [Min(0f)] public float DeepestWadeMetres = 0.4f;
+
+        [Tooltip("How long they are in the water, in game minutes, before coming back up the sand.")]
+        [Min(0f)] public float WadeMinutes = 25f;
+
+        [Tooltip("How far to either side of their line they wander along the shore, in metres. Keep it " +
+                 "well under half the distance between the beach's shallows lines.")]
+        [Min(0f)] public float WadeWanderMetres = 0.7f;
+
+        [Header("Not ready")]
+        [Tooltip("Why this activity is authored but does not run yet (a missing animation or prop). " +
+                 "Empty = it runs. The data stays so the day it can run is a one-field change.")]
+        public string WaitsOn = "";
+
+        /// <summary>Enough authored to plan with, and nothing it waits on.</summary>
+        public bool IsRunnable => !string.IsNullOrEmpty(Id) && Beach != null && Beach.IsUsable &&
+                                  string.IsNullOrEmpty(WaitsOn);
 
         /// <summary>Does it happen in <paramref name="season"/> at all.</summary>
         public bool InSeason(Season season)

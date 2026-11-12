@@ -14,6 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.BeachLifeLibrary
   Activities:
   - {fileID: 11400000, guid: dd8ba62b370747fc9d304d9bb5b292ee, type: 2}
+  - {fileID: 11400000, guid: b3a1f0c27d5e4c8e9a6b1d2e3f405162, type: 2}
+  - {fileID: 11400000, guid: 5c9e7a1b3d2f4e60a8b7c6d5e4f30211, type: 2}
   - {fileID: 11400000, guid: c679955b8201414590ca6f1df9179463, type: 2}
   - {fileID: 11400000, guid: a79cc944ed404cdca2d7012ff0f40aaa, type: 2}
   - {fileID: 11400000, guid: fa52b85ddbcb48d0a23de6a3534427fb, type: 2}
+  - {fileID: 11400000, guid: 9d8c7b6a5f4e4d3c8b2a190817263544, type: 2}
