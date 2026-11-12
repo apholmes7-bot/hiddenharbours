@@ -26,6 +26,8 @@
     "HiddenHarbours.Boats.DeckGearKitDef",
     "HiddenHarbours.Boats.HelmConsoleDef",
     "HiddenHarbours.Boats.NavBuoyDef",
+    "HiddenHarbours.Boats.SailRaceCourseDef",
+    "HiddenHarbours.Boats.SailRaceNpcDef",
     "HiddenHarbours.Core.ActionTimingDef",
     "HiddenHarbours.Core.BoatInteriorDef",
     "HiddenHarbours.Core.CarryAnchorTableDef",
@@ -2503,6 +2505,11 @@
     },
     {
       "Type": "HiddenHarbours.Core.CharacterSkinDef",
+      "Guid": "31d414b2ca56bc343b8af672394f540a",
+      "Id": "charskin.fisher_rig11"
+    },
+    {
+      "Type": "HiddenHarbours.Core.CharacterSkinDef",
       "Guid": "2d5b0f205af4eba4db8585337910cdf8",
       "Id": "charskin.ginny"
     },
@@ -2520,6 +2527,11 @@
       "Type": "HiddenHarbours.Core.CharacterSkinDef",
       "Guid": "33a7705957f0c9d419fa7ce386e04fbc",
       "Id": "charskin.nan"
+    },
+    {
+      "Type": "HiddenHarbours.Core.CharacterSkinDef",
+      "Guid": "2aeb3b6c32dd8c14e8b607c74e3b31c9",
+      "Id": "charskin.nan_rig11"
     },
     {
       "Type": "HiddenHarbours.Core.CharacterSkinDef",
@@ -9730,6 +9742,21 @@
       "Type": "HiddenHarbours.World.BeachActivityDef",
       "Guid": "9d8c7b6a5f4e4d3c8b2a190817263544",
       "Id": "beachactivity.swim"
+    },
+    {
+      "Type": "HiddenHarbours.World.BeachActivityDef",
+      "Guid": "c1d7e4a09b3f4f2a8e6d5c4b3a291807",
+      "Id": "beachactivity.supper_on_the_sand"
+    },
+    {
+      "Type": "HiddenHarbours.World.BeachActivityDef",
+      "Guid": "7e2b9c4d1a6f4b3e9d8c0f1e2a3b4c5d",
+      "Id": "beachactivity.evening_fire"
+    },
+    {
+      "Type": "HiddenHarbours.World.BeachActivityDef",
+      "Guid": "3f6a8d2c5b914e7fa1c0b9e8d7f6a5b4",
+      "Id": "beachactivity.fly_a_kite"
     }
   ]
 }

@@ -17,6 +17,29 @@ namespace HiddenHarbours.World
         /// <summary>Leave the dry sand, go in to the shallows of a <see cref="BeachDef.Shallows"/> line
         /// and follow the water's edge as the tide moves it, then come back out.</summary>
         Wade = 3,
+        /// <summary>Several people round one place on a <see cref="BeachDef.Gatherings"/> line: a
+        /// supper on the sand, a fire. The day is decided ONCE for everybody, and so is the place.</summary>
+        Gather = 4,
+    }
+
+    /// <summary>One line of talk on the beach: who says it and what they say.</summary>
+    [Serializable]
+    public struct BeachTalkLine
+    {
+        [Tooltip("Who says it. They must be at the gathering or the exchange is not started.")]
+        public NpcDef Speaker;
+
+        [TextArea(2, 3)]
+        [Tooltip("What they say. One bubble of it.")]
+        public string Text;
+    }
+
+    /// <summary>A short exchange between people at one gathering. One of them is had per gathering,
+    /// chosen by the day.</summary>
+    [Serializable]
+    public struct BeachTalk
+    {
+        public BeachTalkLine[] Lines;
     }
 
     /// <summary>
@@ -150,6 +173,49 @@ namespace HiddenHarbours.World
         [Tooltip("How far to either side of their line they wander along the shore, in metres. Keep it " +
                  "well under half the distance between the beach's shallows lines.")]
         [Min(0f)] public float WadeWanderMetres = 0.7f;
+
+        [Header("Together (Gather only)")]
+        [Tooltip("How far from the middle of the gathering each person is, in metres.")]
+        [Min(0.5f)] public float GatherRadiusMetres = 1.5f;
+
+        [Tooltip("How many places there are round the middle. More people than this make a second, " +
+                 "wider ring, PersonSpacingMetres further out.")]
+        [Min(2)] public int GatherPlaces = 6;
+
+        [Tooltip("The part of the circle left open, as a compass bearing from the middle (0 = North, " +
+                 "clockwise). Places are shared out evenly from here, so with fewer people than places " +
+                 "the gap is on this side.")]
+        [Range(0f, 360f)] public float GatherOpenBearingDegrees = 270f;
+
+        [Tooltip("What sits in the middle while anybody is there (a fire pit, later a blanket). None = " +
+                 "nothing is put down.")]
+        public Sprite CentreSprite;
+
+        [Tooltip("The thing in the middle gives light: a fire. The glow fades in with the dark by itself.")]
+        public bool CentreIsLit;
+
+        [Tooltip("Colour of the glow.")]
+        [ColorUsage(false, true)] public Color GlowColor = new Color(1f, 0.62f, 0.28f, 1f);
+
+        [Tooltip("How far the glow lights the ground round it, in metres (its pool, not the size of the flame).")]
+        [Min(0.1f)] public float GlowRangeMetres = 5f;
+
+        [Tooltip("How strong the glow is, as a multiple of the lighting library's own flame (1 = as the library has it).")]
+        [Min(0f)] public float GlowIntensity = 1f;
+
+        [Tooltip("How much it flickers (0 steady .. 1 a strong wobble).")]
+        [Range(0f, 1f)] public float GlowFlicker01 = 0.35f;
+
+        [Tooltip("How high above the sand the light sits, in metres.")]
+        [Min(0f)] public float GlowHeightMetres = 0.4f;
+
+        [Tooltip("How long the thing in the middle stays after the last person has left, in game " +
+                 "minutes: a fire burns down, it is not carried home.")]
+        [Min(0f)] public float CentreLingersMinutes = 45f;
+
+        [Tooltip("Things people say to each other here. One exchange per gathering, chosen by the day " +
+                 "from those whose speakers are all there.")]
+        public BeachTalk[] Talk = Array.Empty<BeachTalk>();
 
         [Header("Not ready")]
         [Tooltip("Why this activity is authored but does not run yet (a missing animation or prop). " +
