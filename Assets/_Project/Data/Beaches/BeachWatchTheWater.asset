@@ -1,0 +1,42 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d885412cd35443658a752ed3d82c526c, type: 3}
+  m_Name: BeachWatchTheWater
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.BeachActivityDef
+  Id: beachactivity.watch_the_water
+  DisplayName: Watching the water
+  Beach: {fileID: 11400000, guid: 60cc5419c7994a05914b444264392ddc, type: 2}
+  Kind: 0
+  Replaces: 3
+  Tag: 3
+  Who: []
+  ChancePerDay: 0.3
+  EarliestHour: 6
+  LatestHour: 21.25
+  InEarlySpring: 1
+  InHighSummer: 1
+  InTheTurn: 1
+  InHardWinter: 0
+  MinWaterLevelMetres: -100
+  MaxWaterLevelMetres: 100
+  MinWindStrength: 0
+  MaxWindStrength: 6
+  MaxSeaState01: 0.57
+  MinVisibility01: 0.55
+  GateSampleMinutes: 10
+  ClearanceMetres: 0.35
+  MinDepth01: 0.7
+  MaxDepth01: 1
+  MinDryMetres: 0
+  PersonSpacingMetres: 1.2
+  MinStayMinutes: 30
+  LingerMinutes: 0
