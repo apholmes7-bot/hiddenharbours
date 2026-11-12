@@ -88,6 +88,7 @@ namespace HiddenHarbours.App.Editor
             yield return (YardRetireStep, s => RetireYardRoot(s, "UsedOutboardSeller", 1268888616));
             yield return (YardRetireStep, s => RemoveChildren(s, "Yards", name => name == "BoatShed", 1, YardRetireStep));
             yield return (YardRetireStep, RetireOldShipyardLot);
+            yield return (VendorAnchorsStep, RegisterVendorAnchors);
         }
         public static LayerPatch RetireOldShipyardLot(SceneYaml scene)
         {
@@ -168,7 +169,7 @@ namespace HiddenHarbours.App.Editor
             return WriteRoot(scene, name, go, wanted, YardStep);
         }
 
-        static LayerPatch CloneYardCounter(SceneYaml scene, string name, string oldName, Vector3 at, params string[] scripts)
+        static LayerPatch CloneYardCounter(SceneYaml scene, string name, string oldName, Vector3 at, string talkNpc, params string[] scripts)
         {
             Doc current = ExistingRoot(scene, name), template = current ?? scene.RootNamed(oldName);
             var ids = new IdAllocator(scene, current == null ? new HashSet<long>() : scene.SubtreeOf(current.FileId));
@@ -177,9 +178,12 @@ namespace HiddenHarbours.App.Editor
             if (monos.Length == 0) throw new Refusal(name + ": no vendor template.");
             var map = monos.ToDictionary(d => d.FileId, d => Allocate(ids, name, d.Field("m_EditorClassIdentifier") + "/" + d.Field("_offer")));
             map[template.FileId] = go; map[scene.TransformOf(template).FileId] = tr;
+            var talk = talkNpc == null ? default : TalkAnchor(ids, name, go, talkNpc);
+            var components = new[] { tr }.Concat(monos.Select(d => map[d.FileId])).ToList();
+            if (talkNpc != null) components.Add(talk.id);
             var wanted = new List<(string name, string text)>
             {
-                (name + "/go", GameObjectYaml(go, name, new[] { tr }.Concat(monos.Select(d => map[d.FileId])).ToArray())),
+                (name + "/go", GameObjectYaml(go, name, components)),
                 (name + "/tr", TransformYaml(tr, go, at, Array.Empty<long>(), 0)),
             };
             foreach (Doc mono in monos)
@@ -189,14 +193,15 @@ namespace HiddenHarbours.App.Editor
                     ? "{fileID: " + target + "}" : m.Value);
                 wanted.Add((name + "/" + map[mono.FileId], text));
             }
-            return WriteRoot(scene, name, go, wanted, YardStep);
+            if (talkNpc != null) wanted.Add((name + "/talk", talk.text));
+            return WriteRoot(scene, name, go, wanted, YardStep, besideRoot: talkNpc != null);
         }
-        static LayerPatch PlaceYardCatalogue(SceneYaml s) => CloneYardCounter(s, NineMileCreekWharfYard.CatalogueName, "ShipwrightShed",
-            NineMileCreekWharfYard.Door, "HiddenHarbours.Economy.Shipwright", "HiddenHarbours.Economy.PotShop");
+        public static LayerPatch PlaceYardCatalogue(SceneYaml s) => CloneYardCounter(s, NineMileCreekWharfYard.CatalogueName, "ShipwrightShed",
+            NineMileCreekWharfYard.Door, YardNpcPath, "HiddenHarbours.Economy.Shipwright", "HiddenHarbours.Economy.PotShop");
         static LayerPatch PlaceYardDoryTrade(SceneYaml s) => CloneYardCounter(s, NineMileCreekWharfYard.DoryTradeName, "ShipwrightDoryYard",
-            NineMileCreekWharfYard.Door, "HiddenHarbours.Economy.Shipwright");
+            NineMileCreekWharfYard.Door, null, "HiddenHarbours.Economy.Shipwright");
         static LayerPatch PlaceYardOutboardTrade(SceneYaml s) => CloneYardCounter(s, NineMileCreekWharfYard.OutboardTradeName, "UsedOutboardSeller",
-            NineMileCreekBuilder.HectorsBarrelPos, "HiddenHarbours.Economy.Shipwright");
+            NineMileCreekBuilder.HectorsBarrelPos, null, "HiddenHarbours.Economy.Shipwright");
         static LayerPatch MoveDamagedDory(SceneYaml scene) => MoveYardObject(scene, NineMileCreekDory.RootName, NineMileCreekWharfYard.DamagedDory);
         static LayerPatch MoveYardSeller(SceneYaml scene) => MoveYardObject(scene, NineMileCreekTrips.OutboardManAssetName, NineMileCreekBuilder.HectorsBarrelPos);
         static LayerPatch MoveYardObject(SceneYaml scene, string name, Vector3 at)
