@@ -175,7 +175,11 @@ namespace HiddenHarbours.App
 
         // ---- the frame ------------------------------------------------------------------------------
 
-        private void Update()
+        private void Update() => Tick();
+
+        /// <summary>One frame of every bound boat: hull, deck, landing and gear, from the clock. Update
+        /// calls it; public so a frame can be timed on its own.</summary>
+        public void Tick()
         {
             if (!GameServices.Ready) return;
 

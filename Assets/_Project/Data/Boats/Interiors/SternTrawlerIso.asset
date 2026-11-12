@@ -14,289 +14,287 @@ MonoBehaviour:
   m_EditorClassIdentifier: HiddenHarbours.Core::HiddenHarbours.Core.BoatInteriorDef
   Id: interior.stern_trawler_iso
   FitsHulls:
-  - sternTrawlerIsoRig
-  SourceSidecar: docs/art/rigs/boat-interiors-kit/sternTrawlerIsoRig.interior.json
-  SourceInteriorRig: docs/art/rigs/boat-interiors-kit/boatInteriorRig.js
-  SourceHullRig: docs/art/rigs/boat-interiors-kit/hull-rigs/sternTrawlerIsoRig.js
-  InteriorRigSha256: 34bb781303b9de9a47c7029a685bf83d357adefe2ffb95ff54451233ea7c46a7
-  HullRigSha256: 3f306e419d071a41644ec91133efd067fca6db3fa37fe4af8032ca1a006a5e9e
+  - SternTrawlerIso
+  SourceSidecar: docs/art/rigs/gameplay/sternTrawlerIsoRig.stern_trawler.walk.json
+  SourceInteriorRig: docs/art/rigs/sternTrawlerIsoRig.js
+  SourceHullRig: docs/art/rigs/sternTrawlerIsoRig.js
+  InteriorRigSha256: 7deb92477d961dbbb9661123b5f06d70e1ac6cc08b88ed8c189ac0955b310b6e
+  HullRigSha256: 7deb92477d961dbbb9661123b5f06d70e1ac6cc08b88ed8c189ac0955b310b6e
   PixelsPerMetre: 32
   CellPixels: {x: 1344, y: 1152}
   PivotPixels: {x: 672, y: 672}
   FootprintOutline:
-  - {x: -3.45, y: 1.5}
-  - {x: 3.45, y: 1.5}
-  - {x: 3.45, y: 9.55}
-  - {x: -3.45, y: 9.55}
+  - {x: -2.39, y: 1.81}
+  - {x: 1.72, y: 1.81}
+  - {x: 1.72, y: 3.13}
+  - {x: 2.67, y: 3.13}
+  - {x: 2.67, y: 3.77}
+  - {x: 2.39, y: 3.77}
+  - {x: 1.99, y: 3.77}
+  - {x: 1.99, y: 4.67}
+  - {x: 1.52, y: 4.67}
+  - {x: 1.52, y: 6}
+  - {x: 2.67, y: 6}
+  - {x: 2.67, y: 6.32}
+  - {x: 2.17, y: 6.32}
+  - {x: 2.17, y: 7.87}
+  - {x: 1.99, y: 7.87}
+  - {x: 1.99, y: 7.97}
+  - {x: 0.78, y: 7.97}
+  - {x: 0.78, y: 7.87}
+  - {x: 0.41999996, y: 7.87}
+  - {x: 0.42, y: 8.67}
+  - {x: 0.32, y: 8.67}
+  - {x: 0.32, y: 8.77}
+  - {x: -1.79, y: 8.77}
+  - {x: -1.79, y: 7.97}
+  - {x: -1.99, y: 7.97}
+  - {x: -1.99, y: 7.87}
+  - {x: -2.12, y: 7.87}
+  - {x: -2.12, y: 3.77}
+  - {x: -2.39, y: 3.77}
   Levels:
-  - Id: main_deck
-    SoleZMeters: 3.5
+  - Id: house
+    SoleZMeters: 3.52
     Outline:
-    - {x: -2.833, y: -18.45}
-    - {x: -3.297, y: -15.646}
-    - {x: -3.628, y: -12.842}
-    - {x: -3.831, y: -10.038}
-    - {x: -3.923, y: -7.234}
-    - {x: -3.982, y: -4.43}
-    - {x: -3.979, y: -1.626}
-    - {x: -3.946, y: 1.178}
-    - {x: -3.868, y: 3.982}
-    - {x: -3.621, y: 6.786}
-    - {x: -3.282, y: 9.59}
-    - {x: 3.282, y: 9.59}
-    - {x: 3.621, y: 6.786}
-    - {x: 3.868, y: 3.982}
-    - {x: 3.946, y: 1.178}
-    - {x: 3.979, y: -1.626}
-    - {x: 3.982, y: -4.43}
-    - {x: 3.923, y: -7.234}
-    - {x: 3.831, y: -10.038}
-    - {x: 3.628, y: -12.842}
-    - {x: 3.297, y: -15.646}
-    - {x: 2.833, y: -18.45}
-    - {x: 1.7, y: -18.45}
-    - {x: 1.7, y: -13.6}
-    - {x: -1.7, y: -13.6}
-    - {x: -1.7, y: -18.45}
-    Obstructions:
-    - Id: deckhouse
-      Footprint:
-      - {x: -3.45, y: 1.5}
-      - {x: 3.45, y: 1.5}
-      - {x: 3.45, y: 9.55}
-      - {x: -3.45, y: 9.55}
-      HeightAboveSoleMeters: 3
-      Treatment: wall
-  - Id: house_sole
-    SoleZMeters: 3.5
+    - {x: -2.39, y: 1.81}
+    - {x: 1.72, y: 1.81}
+    - {x: 1.72, y: 3.23}
+    - {x: 2.39, y: 3.23}
+    - {x: 2.39, y: 3.77}
+    - {x: 1.52, y: 3.77}
+    - {x: 1.52, y: 6.9}
+    - {x: 0.31999993, y: 6.9}
+    - {x: 0.32, y: 8.77}
+    - {x: -1.79, y: 8.77}
+    - {x: -1.79, y: 6.77}
+    - {x: -1.07, y: 6.77}
+    - {x: -1.07, y: 3.77}
+    - {x: -2.39, y: 3.77}
+    Obstructions: []
+  - Id: bridge
+    SoleZMeters: 6.58
     Outline:
-    - {x: -3.38, y: 1.57}
-    - {x: 3.38, y: 1.57}
-    - {x: 3.38, y: 9.48}
-    - {x: -3.38, y: 9.48}
-    Obstructions:
-    - Id: stove_counter
-      Footprint:
-      - {x: -3.32, y: 2.3}
-      - {x: -2.68, y: 2.3}
-      - {x: -2.68, y: 3.5}
-      - {x: -3.32, y: 3.5}
-      HeightAboveSoleMeters: 0.92
-      Treatment: waist_block
-    - Id: locker
-      Footprint:
-      - {x: 2.68, y: 2.5}
-      - {x: 3.32, y: 2.5}
-      - {x: 3.32, y: 3.6}
-      - {x: 2.68, y: 3.6}
-      HeightAboveSoleMeters: 1.72
-      Treatment: wall
-    - Id: bench
-      Footprint:
-      - {x: -3.32, y: 7.55}
-      - {x: -1.95, y: 7.55}
-      - {x: -1.95, y: 8.05}
-      - {x: -3.32, y: 8.05}
-      HeightAboveSoleMeters: 0.46
-      Treatment: step_over
-    - Id: table_port
-      Footprint:
-      - {x: -2.95, y: 6.35}
-      - {x: -2.05, y: 6.35}
-      - {x: -2.05, y: 7.35}
-      - {x: -2.95, y: 7.35}
-      HeightAboveSoleMeters: 0.78
-      Treatment: waist_block
-    - Id: companionway_up_flight
-      Footprint:
-      - {x: 2.3, y: 6.1}
-      - {x: 3.05, y: 6.1}
-      - {x: 3.05, y: 8.45}
-      - {x: 2.3, y: 8.45}
-      HeightAboveSoleMeters: 1.2
-      Treatment: stair_flight
-    - Id: companionway_down_opening
-      Footprint:
-      - {x: -0.45, y: 2.55}
-      - {x: 0.45, y: 2.55}
-      - {x: 0.45, y: 4.25}
-      - {x: -0.45, y: 4.25}
-      HeightAboveSoleMeters: 0
-      Treatment: stair_opening
-  - Id: bridge_sole
-    SoleZMeters: 6.56
-    Outline:
-    - {x: -2.83, y: 3.47}
-    - {x: 2.83, y: 3.47}
-    - {x: 2.83, y: 8.69}
-    - {x: -2.83, y: 8.69}
-    Obstructions:
-    - Id: helm_console
-      Footprint:
-      - {x: -0.62, y: 7.86}
-      - {x: 0.62, y: 7.86}
-      - {x: 0.62, y: 8.38}
-      - {x: -0.62, y: 8.38}
-      HeightAboveSoleMeters: 1.06
-      Treatment: wall
-    - Id: helm_seat
-      Footprint:
-      - {x: -0.24, y: 7.26}
-      - {x: 0.24, y: 7.26}
-      - {x: 0.24, y: 7.74}
-      - {x: -0.24, y: 7.74}
-      HeightAboveSoleMeters: 1.02
-      Treatment: wall
-    - Id: chart_port
-      Footprint:
-      - {x: -2.55, y: 3.8}
-      - {x: -1.6, y: 3.8}
-      - {x: -1.6, y: 4.45}
-      - {x: -2.55, y: 4.45}
-      HeightAboveSoleMeters: 0.98
-      Treatment: wall
-    - Id: companionway_up_opening
-      Footprint:
-      - {x: 2.3, y: 7.55}
-      - {x: 3.05, y: 7.55}
-      - {x: 3.05, y: 8.6}
-      - {x: 2.3, y: 8.6}
-      HeightAboveSoleMeters: 0
-      Treatment: stair_opening
-  - Id: below_sole
+    - {x: 0.23, y: 3.71}
+    - {x: 1.99, y: 3.71}
+    - {x: 1.99, y: 4.67}
+    - {x: 1.17, y: 4.67}
+    - {x: 1.17, y: 6.83}
+    - {x: 1.99, y: 6.83}
+    - {x: 1.99, y: 7.97}
+    - {x: 0.78, y: 7.97}
+    - {x: 0.78, y: 7.07}
+    - {x: -0.18, y: 7.07}
+    - {x: -0.18, y: 7.97}
+    - {x: -1.99, y: 7.97}
+    - {x: -1.99, y: 6.4}
+    - {x: -1.07, y: 6.4}
+    - {x: -1.07, y: 4.08}
+    - {x: 0.23000002, y: 4.08}
+    Obstructions: []
+  - Id: below
     SoleZMeters: 1.15
     Outline:
-    - {x: -3.775, y: 2.1}
-    - {x: -3.743, y: 2.95}
-    - {x: -3.711, y: 3.8}
-    - {x: -3.679, y: 4.65}
-    - {x: -3.562, y: 5.5}
-    - {x: -3.433, y: 6.35}
-    - {x: -3.304, y: 7.2}
-    - {x: -3.174, y: 8.05}
-    - {x: -3.044, y: 8.9}
-    - {x: 3.044, y: 8.9}
-    - {x: 3.174, y: 8.05}
-    - {x: 3.304, y: 7.2}
-    - {x: 3.433, y: 6.35}
-    - {x: 3.562, y: 5.5}
-    - {x: 3.679, y: 4.65}
-    - {x: 3.711, y: 3.8}
-    - {x: 3.743, y: 2.95}
-    - {x: 3.775, y: 2.1}
+    - {x: -0.42, y: 2.33}
+    - {x: 0.42, y: 2.33}
+    - {x: 0.42, y: 3.13}
+    - {x: 2.67, y: 3.13}
+    - {x: 2.67, y: 3.77}
+    - {x: 1.52, y: 3.77}
+    - {x: 1.52, y: 6}
+    - {x: 2.67, y: 6}
+    - {x: 2.67, y: 6.32}
+    - {x: 2.17, y: 6.32}
+    - {x: 2.17, y: 7.87}
+    - {x: 0.41999996, y: 7.87}
+    - {x: 0.42, y: 8.67}
+    - {x: -0.42, y: 8.67}
+    - {x: -0.42, y: 7.87}
+    - {x: -2.12, y: 7.87}
+    - {x: -2.12, y: 3.13}
+    - {x: -0.41999996, y: 3.13}
     Obstructions:
-    - Id: bunk
+    - Id: below_hole_0
       Footprint:
-      - {x: -3.05, y: 5.6}
-      - {x: -1.95, y: 5.6}
-      - {x: -1.95, y: 7.75}
-      - {x: -3.05, y: 7.75}
-      HeightAboveSoleMeters: 0.5
-      Treatment: step_over
-    - Id: bunk_stbd
-      Footprint:
-      - {x: 1.95, y: 5.6}
-      - {x: 3.05, y: 5.6}
-      - {x: 3.05, y: 7.75}
-      - {x: 1.95, y: 7.75}
-      HeightAboveSoleMeters: 0.5
-      Treatment: step_over
-    - Id: bunk_port
-      Footprint:
-      - {x: -3.05, y: 2.6}
-      - {x: -1.95, y: 2.6}
-      - {x: -1.95, y: 4.75}
-      - {x: -3.05, y: 4.75}
-      HeightAboveSoleMeters: 0.5
-      Treatment: step_over
+      - {x: -0.07000005, y: 4.37}
+      - {x: -1.53, y: 4.37}
+      - {x: -1.53, y: 6.23}
+      - {x: -0.07, y: 6.23}
+      HeightAboveSoleMeters: 0
+      Treatment: wall
   Door:
-    Id: entry
+    EntryLanding:
+      OpeningStart: {x: 0, y: 0}
+      OpeningEnd: {x: 0, y: 0}
+      UpperPlateau: []
+      HeightMetres: 0
+      RouteId: 
+    OpeningMode: 0
+    OpeningReason: 
+    Id: house_door
     Side: aft
     ClearWidthMeters: 1
-    ClearHeightMeters: 1.8
-    ThresholdPoint: {x: -0.05, y: 1.5, z: 3.5}
+    ClearHeightMeters: 2
+    PullConeDegrees: 30
+    PullReachClearWidths: 1
+    CrossingConeDegrees: 60
+    CrossingSettleSeconds: 0.16
+    ThresholdPoint: {x: -0.050000012, y: 1.5, z: 3.5}
     Mechanism: 1
     KeepClear:
-    - {x: -0.55, y: 1.5}
-    - {x: 0.45, y: 1.5}
-    - {x: 0.024, y: 0.681}
-    - {x: -0.892, y: 0.56}
-    CueFrames: 8
-    CueMillisecondsPerFrame: 70
+    - {x: -0.55, y: 1.485}
+    - {x: 0.49, y: 1.485}
+    - {x: 0.46, y: 1.238}
+    - {x: 0.372, y: 1.005}
+    - {x: 0.232, y: 0.799}
+    - {x: 0.047, y: 0.633}
+    - {x: -0.173, y: 0.516}
+    - {x: -0.414, y: 0.454}
+    - {x: -0.663, y: 0.451}
+    - {x: -0.906, y: 0.508}
+    CueFrames: 0
+    CueMillisecondsPerFrame: 0
     CueReversedOnExit: 1
-  AdditionalDoors: []
+  AdditionalDoors:
+  - EntryLanding:
+      OpeningStart: {x: 0, y: 0}
+      OpeningEnd: {x: 0, y: 0}
+      UpperPlateau: []
+      HeightMetres: 0
+      RouteId: 
+    OpeningMode: 0
+    OpeningReason: 
+    Id: wheelhouse_door
+    Side: aft
+    ClearWidthMeters: 0.7
+    ClearHeightMeters: 1.94
+    PullConeDegrees: 30
+    PullReachClearWidths: 1
+    CrossingConeDegrees: 60
+    CrossingSettleSeconds: 0.16
+    ThresholdPoint: {x: 1.3, y: 3.4, z: 6.56}
+    Mechanism: 1
+    KeepClear:
+    - {x: 1.65, y: 3.385}
+    - {x: 0.91, y: 3.385}
+    - {x: 0.929, y: 3.217}
+    - {x: 0.986, y: 3.058}
+    - {x: 1.078, y: 2.916}
+    - {x: 1.2, y: 2.798}
+    - {x: 1.345, y: 2.711}
+    - {x: 1.506, y: 2.659}
+    - {x: 1.674, y: 2.645}
+    - {x: 1.842, y: 2.67}
+    CueFrames: 0
+    CueMillisecondsPerFrame: 0
+    CueReversedOnExit: 1
+  InternalPassages: []
   Anchors:
   - Id: helm
-    Action: enter_helm
-    ReachPoint: {x: 0, y: 6.72, z: 6.56}
-    VisibleFacings:
-    - N
-    - NE
-    - E
-    - W
-    - NW
-  - Id: stove
-    Action: cook
-    ReachPoint: {x: -2.26, y: 2.9, z: 3.5}
-    VisibleFacings:
-    - N
-    - S
-    - SW
-    - W
-    - NW
-  - Id: locker
-    Action: storage
-    ReachPoint: {x: 2.26, y: 3.05, z: 3.5}
-    VisibleFacings:
-    - N
-    - NE
-    - E
-    - SE
-    - S
-  - Id: bunk
+    Action: helm
+    ReachPoint: {x: -0.45, y: 7.6, z: 6.58}
+    VisibleFacings: []
+  - Id: house_door
+    Action: open_close
+    ReachPoint: {x: -0.05, y: 1.07, z: 3.5}
+    VisibleFacings: []
+  - Id: wheelhouse_door
+    Action: open_close
+    ReachPoint: {x: 1.3, y: 3.91, z: 6.58}
+    VisibleFacings: []
+  - Id: berth_aft_port
     Action: sleep
-    ReachPoint: {x: -2.5, y: 5.1, z: 1.15}
-    VisibleFacings:
-    - N
-    - NE
-    - E
-    - SE
-    - S
-    - SW
-    - W
-    - NW
+    ReachPoint: {x: -0.3, y: 2.62, z: 1.15}
+    VisibleFacings: []
+  - Id: berth_aft_stbd
+    Action: sleep
+    ReachPoint: {x: 0.3, y: 2.62, z: 1.15}
+    VisibleFacings: []
+  - Id: berth_fwd_port
+    Action: sleep
+    ReachPoint: {x: -0.3, y: 8.38, z: 1.15}
+    VisibleFacings: []
+  - Id: berth_fwd_stbd
+    Action: sleep
+    ReachPoint: {x: 0.3, y: 8.38, z: 1.15}
+    VisibleFacings: []
+  - Id: winch
+    Action: haul
+    ReachPoint: {x: 0, y: 0, z: 3.5}
+    VisibleFacings: []
+  - Id: net_drum
+    Action: shoot_haul
+    ReachPoint: {x: 0, y: -9.98, z: 3.5}
+    VisibleFacings: []
+  - Id: gallows_port
+    Action: trawl_door
+    ReachPoint: {x: -2.3, y: -17.2, z: 3.5}
+    VisibleFacings: []
+  - Id: gallows_stbd
+    Action: trawl_door
+    ReachPoint: {x: 2.3, y: -17.2, z: 3.5}
+    VisibleFacings: []
+  - Id: hold_hatch
+    Action: open_close
+    ReachPoint: {x: 0, y: -4.17, z: 3.5}
+    VisibleFacings: []
+  - Id: galley
+    Action: cook
+    ReachPoint: {x: -0.1, y: 8.6, z: 3.52}
+    VisibleFacings: []
+  - Id: mess_table
+    Action: use
+    ReachPoint: {x: 0.2, y: 7.9, z: 3.52}
+    VisibleFacings: []
+  - Id: chart_table
+    Action: use
+    ReachPoint: {x: 1, y: 5.75, z: 6.58}
+    VisibleFacings: []
+  - Id: windlass
+    Action: anchor
+    ReachPoint: {x: 0, y: 13.05, z: 5.566}
+    VisibleFacings: []
   Routes:
-  - Id: house_to_bridge
-    FromLevel: house_sole
-    ToLevel: bridge_sole
+  - Id: fore_stair_star
+    FromLevel: house_alley_star
+    ToLevel: focsle_deck_1c
+    Mechanism: InteriorStair
+    Exterior: 1
+    TotalRiseMeters: 1.5
+    Placed: 1
+    FromPoint: {x: 3.08, y: 7.25, z: 3.5}
+    ToPoint: {x: 3.08, y: 9.95, z: 5}
+    NotPlacedBecause: 
+  - Id: fore_stair_port
+    FromLevel: house_alley_port
+    ToLevel: focsle_deck_1c
+    Mechanism: InteriorStair
+    Exterior: 1
+    TotalRiseMeters: 1.5
+    Placed: 1
+    FromPoint: {x: -3.08, y: 7.25, z: 3.5}
+    ToPoint: {x: -3.08, y: 9.95, z: 5}
+    NotPlacedBecause: 
+  - Id: stair_bridge
+    FromLevel: house
+    ToLevel: bridge
     Mechanism: InteriorStair
     Exterior: 0
     TotalRiseMeters: 3.06
     Placed: 1
-    FromPoint: {x: 2.675, y: 6.9200006, z: 3.5}
-    ToPoint: {x: 2.675, y: 8.6, z: 6.56}
+    FromPoint: {x: -1.7, y: 3.7, z: 3.52}
+    ToPoint: {x: -1.7, y: 6.45, z: 6.58}
     NotPlacedBecause: 
-  - Id: house_to_below
-    FromLevel: house_sole
-    ToLevel: below_sole
+  - Id: stair_below
+    FromLevel: house
+    ToLevel: below
     Mechanism: InteriorStair
     Exterior: 0
-    TotalRiseMeters: 2.35
+    TotalRiseMeters: -2.37
     Placed: 1
-    FromPoint: {x: 0, y: 4.25, z: 3.5}
-    ToPoint: {x: 0, y: 2.81, z: 1.15}
+    FromPoint: {x: 2.15, y: 3.7, z: 3.52}
+    ToPoint: {x: 2.15, y: 6.3, z: 1.15}
     NotPlacedBecause: 
-  - Id: boat_deck_ladder
-    FromLevel: 
-    ToLevel: 
-    Mechanism: vertical_ladder
-    Exterior: 1
-    TotalRiseMeters: 3.0300002
-    Placed: 0
-    FromPoint: {x: 0, y: 0, z: 0}
-    ToPoint: {x: 0, y: 0, z: 0}
-    NotPlacedBecause: 'it does not name the two floors it joins (connects: [foot,
-      head])'
   FloorToleranceMetres: 0.1
   RouteEndReachMetres: 0.3
   RidesHullRock: 1

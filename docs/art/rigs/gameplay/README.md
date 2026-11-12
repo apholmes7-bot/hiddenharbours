@@ -4,7 +4,8 @@ One file per **hull**. Authored by **art-director** (this folder is that role's 
 `agents/art-director.md`); consumed by the deck sidecar importer and the deck-boarding/mooring
 work (M2-37..39).
 
-**Switched hulls (`hull-walk@1`).** The recreation boats use one generated
+**Switched hulls (`hull-walk@1`).** The recreation boats, and since 2026-11-12 the stern trawler
+(`sternTrawlerIsoRig.stern_trawler.walk.json`, the first of the working ships), use one generated
 `<rig stem>.<hull id>.walk.json` per hull. `HullWalkSidecarReader` reads it and
 `HullWalkSidecarImporter` creates its deck and, when authored, room Defs; the mesh bake reads the
 same hull through its global's `byId`. `LayoutSchema` and `NoHullReadsBothLayoutsTests` keep this
@@ -71,8 +72,8 @@ error). Never invent a section to fill a gap.
   (art-director charter rule 2). The importer enforces this: a mismatch is a loud refusal
   and that hull keeps the greybox rectangle — it never silently imports polygons cut from a
   different boat.
-  - ⚠️ **Eight of the eleven SHAs below are CRLF hashes** (cape, packet, lobster, sideDragger,
-    sportSkiff, both sternTrawlers, tanker) — they were derived from working copies with
+  - ⚠️ **Seven of the ten SHAs below are CRLF hashes** (cape, packet, lobster, sideDragger,
+    sportSkiff, sternTrawlerMk2, tanker) — they were derived from working copies with
     Windows line endings, and the repo stores the rigs with LF. The importer accepts a match
     on either convention and says so on every run, because a line ending cannot move a
     vertex; every cited line number and constant in those files still reads exactly as
@@ -141,7 +142,7 @@ stay known:
 - coastalPacket, sternTrawlerMk2 and tanker apply `flareExp` inside their deck-width
   functions; sternTrawler (mk1) and sideDragger do not.
 
-## Current set (11 single-hull rigs + the lobster generator's 18)
+## Current set (10 single-hull rigs + the lobster generator's 18)
 
 | hull | LOA | DECK | WASHBOARD | CLEATS |
 |---|---|---|---|---|
@@ -152,7 +153,6 @@ stay known:
 | capeIslander | 12.8 m | cockpit + whaleback foredeck (3d) | both sides, 0.42 m (full run to the foredeck; narrows past the house) | bow bitt + 2 stern |
 | lobsterBoat | 12.0 m | cockpit + foredeck (3d) | both sides, 0.44 m (full length) | bow samson + 2 stern |
 | sideDragger | 25 m | aft deck, house alleys, working deck, foc'sle (3d) | — bulwarks | samson + 2 bow + 2 quarter bollards |
-| sternTrawler | 38 m | ramp strips, trawl deck, house alleys, foc'sle (3d) | — bulwarks | samson + 2 bow + 2 quarter bollards |
 | sternTrawlerMk2 | 38 m | ramp strips, trawl deck, house alleys, foc'sle (3d) | — bulwarks | samson + 2 bow + 2 quarter bollards |
 | coastalPacket | 60 m | aft deck, house alleys, hold walkways, gaps, foc'sle (3d) | — merchant rails | 2 bow + 2 quarter bollards |
 | tanker | 110 m | poop, alleys, tank lanes, fore deck, catwalk, foc'sle (3d) | — bulwarks | centre bitt + 2 bow + 2 quarter + 2 stern bollards |
