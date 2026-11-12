@@ -1,6 +1,12 @@
 # Lobster handling reference and data proposal
 
-**Research checked 2026-11-11; documents only.** This supports the proposed NPC deck job and the [manual goods model](goods-handling/02-model.md), serving P3/P4/P5. Canadian public fisheries sources supply the observations below. Commercial suppliers supply equipment specifications and their own grades. Proposed fields and defaults are design inferences; this document creates no content asset, price, code, save contract or art instruction.
+**Research checked 2026-11-11; documents only.** This supports the existing NPC deck job and its future physical-goods extensions and the [manual goods model](goods-handling/02-model.md), serving P3/P4/P5. Canadian public fisheries sources supply the observations below. Commercial suppliers supply equipment specifications and their own grades. Proposed fields and defaults are design inferences; this document creates no content asset, price, code, save contract or art instruction.
+
+## Current implementation boundary ? refreshed 2026-11-12
+
+Checked against main `12bc04b19a2efb33e352b4eea58104f7a5599be1`. The [NPC catch plan](../../Assets/_Project/Code/Fishing/NpcPotDayCatch.cs) already derives individual animals, gauge/berried outcomes, keeper grades, inspection, banding and stow/return work from the world seed and game clock. Its [day Def](../../Assets/_Project/Code/Fishing/NpcPotDayDef.cs) owns existing species/bait, grade, timing and crate inputs. The [landing plan](../../Assets/_Project/Code/Fishing/NpcPotLanding.cs) already sequences crate lift, hand carry, set-down, weighing and the walk back. This is a deterministic fleet plan, not a wallet payment or the proposed persisted goods/receipt system. Extend these models rather than create a second NPC catch or landing clock.
+
+The [carried-counter adapter](../../Assets/_Project/Code/Economy/CarriedHold.cs) and [sell point](../../Assets/_Project/Code/Economy/WharfSellPoint.cs) now select the container in Core hands for flagged carried counters, retain the emptied pail and sell nothing from empty hands. This bounded player route does not implement the proposed commercial mass grades, scale tare, habitat or crate-instance authority below. The reference is evidence for future extensions; none of its research defaults replace shipped tuneables.
 
 ## Gauge, retention and release
 

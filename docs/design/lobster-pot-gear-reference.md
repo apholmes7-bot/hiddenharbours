@@ -1,6 +1,12 @@
 # Lobster pot gear reference and data proposal
 
-**Research checked 2026-11-11; documents only.** This complements the [lobster handling reference](lobster-handling-reference.md) for a future complete NPC deck job, serving P1/P3/P4/P5. Dimensions, historic observations, licence limits and proposed game inputs have different authority. No asset, code, price, current tuning, save format or visual changes are included.
+**Research checked 2026-11-11; documents only.** This complements the [lobster handling reference](lobster-handling-reference.md) for extensions to the existing NPC deck job, serving P1/P3/P4/P5. Dimensions, historic observations, licence limits and proposed game inputs have different authority. No asset, code, price, current tuning, save format or visual changes are included.
+
+## Current implementation boundary ? refreshed 2026-11-12
+
+Checked against main `12bc04b19a2efb33e352b4eea58104f7a5599be1`. [NpcPotDay](../../Assets/_Project/Code/Fishing/NpcPotDay.cs) already plans the route and repeated pot work; [NpcPotDayCatch](../../Assets/_Project/Code/Fishing/NpcPotDayCatch.cs) resolves deterministic animals, grades and deck work; [NpcPotLanding](../../Assets/_Project/Code/Fishing/NpcPotLanding.cs) plans the physical hand-carried crate route to the counter. [NpcPotBoats](../../Assets/_Project/Code/App/NpcPotBoats.cs) composes these plans with the existing Core clock/environment and the deck/landing views. `NpcPotDayDef` already carries bait, catch region, work timing, crate and landing-route inputs. The earlier future-only wording for the whole NPC job is superseded.
+
+The physical gear profiles, wet-mass/support validation, connected set-instance topology, capacity blocking and economic delivery authority below remain proposals. The current landing plan moves no money and writes no save. Preserve its observation-independent clock queries and extend its existing data/tests; do not replace it with a parallel catch, soak or NPC work system.
 
 ## Trap envelope, mass and support
 
@@ -55,7 +61,7 @@ Keep a selected rope's sinking/floating behaviour explicit. A too-short line may
 
 **Recommended research fixtures:** a small synthetic operation with 100 pots and a Gulf-scale one with 272 pots, each revisited on a nominal 24-hour cycle; a separate delayed 48-hour case exercises weather interruption. These are workload scenarios, not new catch rates, crew speeds or guaranteed daily completions. The 272-pot value corresponds to the 2026 26A-1 PEI allowance already cited; minimum traps-per-line applicability must still be selected by subarea. Daily hauling can process deployed gear sequentially, so 272 deployed pots does not imply 272 pots stacked aboard at once.
 
-For a future NPC planner, derive completed hauls from travel, buoy approach, line/depth/hauler limits, pot handling, animal-by-animal inspection/banding/stowage, rebaiting, resetting and return/unload time. A busy or full receiver blocks the same step for a skipper as for the player. Long soak does not promise linear extra catch or free storage. Do not replace current `TrapDef.SoakHours`, `HoursToFullPot`, catch capacity, depth bands or deterministic catch resolution with these observations.
+When extending the existing `NpcPotDay`, `NpcPotDayCatch` and `NpcPotLanding` planner, derive completed hauls from travel, buoy approach, line/depth/hauler limits, pot handling, animal-by-animal inspection/banding/stowage, rebaiting, resetting and return/unload time. A busy or full receiver blocks the same step for a skipper as for the player. Long soak does not promise linear extra catch or free storage. Do not replace current `TrapDef.SoakHours`, `HoursToFullPot`, catch capacity, depth bands or deterministic catch resolution with these observations.
 
 ## Proposed Def fields and implementation gates
 
