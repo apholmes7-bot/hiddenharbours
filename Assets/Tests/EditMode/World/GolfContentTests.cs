@@ -59,7 +59,8 @@ namespace HiddenHarbours.Tests.World.EditMode
         [Test] public void IncompleteSourceHolesAreNotInvented_AndPracticeRoundIsFourHoles()
         {
             var plan = JsonUtility.FromJson<Plan>(File.ReadAllText(PlanPath));
-            CollectionAssert.AreEqual(new[] { 1, 2, 3, 4 }, plan.course.holes.Where(h => h.tee != null && h.green != null).Select(h => h.n));
+            // A complete endpoint is a coordinate pair; JsonUtility can project JSON null as an empty array.
+            CollectionAssert.AreEqual(new[] { 1, 2, 3, 4 }, plan.course.holes.Where(h => h.tee?.Length == 2 && h.green?.Length == 2).Select(h => h.n));
             Assert.That(AssetDatabase.LoadAssetAtPath<GolfHoleDef>(Root + "CumberlandHole05.asset"), Is.Null);
             Assert.That(AssetDatabase.LoadAssetAtPath<GolfHoleDef>(Root + "CumberlandHole18.asset"), Is.Null);
             GolfHole[] holes = Enumerable.Range(1, 4).Select(n =>

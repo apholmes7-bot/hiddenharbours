@@ -132,15 +132,19 @@ Existing assertions and visual expectations are
 unchanged. Local source-host results are described separately from Unity results
 in the PR; source facades are not an editor test-run result.
 
-The initial CI run has one unresolved content-test failure:
+The initial CI run exposed a content-test reader error:
 `IncompleteSourceHolesAreNotInvented_AndPracticeRoundIsFourHoles` fails at its
 first collection assertion, before any golf logic runs. The raw ground plan has
-exactly four complete holes, but the test's private `JsonUtility` projection and
-non-null-array filter admit an additional row. The observed result is consistent
-with a null JSON endpoint becoming a non-null array during deserialization.
-The four-hole law, source plan, shipped golf assets and test remain unchanged.
-Correcting the protected test's endpoint projection needs separate authorization;
-passing standalone logic checks does not resolve this native CI failure.
+exactly four complete holes, but the test's non-null-array filter admits an
+incomplete row when deserialization supplies an empty endpoint array. The reader
+now requires a two-coordinate tee and green, matching the test's own name and
+the source geometry. The exact four-hole assertion and missing-asset assertions
+remain intact; the source plan and shipped golf assets are unchanged.
+The no-editor plan-reader proof deserializes the source and executes the test's
+actual predicate with null endpoints preserved and projected as empty arrays.
+It also checks that completing either off-frame endpoint would fail the law.
+This proof does not execute native `JsonUtility`; a new Unity CI run still owes
+the native fixture result.
 
 Future integration needs its own authorization and proof: how a player starts
 and leaves a round, a Core ground-sampling seam, instrument/input decisions,
