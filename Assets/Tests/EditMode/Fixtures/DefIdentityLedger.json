@@ -117,7 +117,8 @@
     "HiddenHarbours.Art.PlantClumpDef",
     "HiddenHarbours.Fishing.FishEcologyDef",
     "HiddenHarbours.Tools.GoodsModel.GoodsContainerDef",
-    "HiddenHarbours.Tools.GoodsModel.GoodsHandlingDef"
+    "HiddenHarbours.Tools.GoodsModel.GoodsHandlingDef",
+    "HiddenHarbours.Boats.WorkingHelmFitDef"
   ],
   "Entries": [
     {
@@ -9854,6 +9855,21 @@
       "Type": "HiddenHarbours.World.BerthDef",
       "Guid": "45859f8feba04e0f9036011239f83e31",
       "Id": "berth.rpt_trawler_outside"
+    },
+    {
+      "Type": "HiddenHarbours.Boats.WorkingHelmFitDef",
+      "Guid": "357cec11f871439da88da76caa072e46",
+      "Id": "helm_fit.dory"
+    },
+    {
+      "Type": "HiddenHarbours.Boats.WorkingHelmFitDef",
+      "Guid": "62768242f52b42fab6fffd3c011f85ec",
+      "Id": "helm_fit.lobster_boat"
+    },
+    {
+      "Type": "HiddenHarbours.Boats.WorkingHelmFitDef",
+      "Guid": "141e7e5c8fba4c8cbdb5422ac3f4074f",
+      "Id": "helm_fit.stern_trawler"
     }
   ]
 }
