@@ -1,8 +1,32 @@
 # Routine and scheduled-trip clock audit
 
-Audit base: `d9d4b8558aaa77b49b6bad9dbb35345d2059814c`. Scope is the existing villager routine engine, scheduled road trips, ambient fleet, and conversation overlays. This is a source audit and test addition; production behavior is unchanged. The NPC pot-day and beach-life work proposed separately in PRs #1091 and #1093 is outside this base and needs its own audit after integration.
+Original audit base: `d9d4b8558aaa77b49b6bad9dbb35345d2059814c`; refreshed against main `12bc04b19a2efb33e352b4eea58104f7a5599be1`. Scope includes the villager routine engine, scheduled road trips, ambient fleet, conversation overlays, and the newly integrated NPC pot fleet and beach-day routines. This is a source audit and test addition; production behavior is unchanged. Line references in the original findings below refer to the original base; the refresh checks identify current members by name.
 
 The clock samplers can reconstruct their answers without earlier ticks. That statement applies to the plan, with fixed authored content and day length. It does not establish that every live presenter or interaction has identical state after loading.
+
+## Refresh checks on integrated routines
+
+| Check | Result at the refreshed base |
+|---|---|
+| Existing clock pins | **PASS, managed execution:** all 11 original no-editor regression cases still pass against freshly compiled Core, World, Boats, and Fishing. The six added pure cases retain their exact pose and boundary assertions. The four original new Unity-dependent cases compile and still require CI execution. |
+| Split routine planner | `RoutinePlanner.Build` now delegates to `ResolveStops` and `BuildFromStops`; the same seeded departure calculation feeds the unchanged `RoutinePlan.SampleAt`. **PASS, source/compile check:** `RoutineStopPlanTests.TheTwoSteps_AreExactlyTheOldOne`, `TheSeedMovesTheHours_AndTheSameSeedGivesTheSameHours`, and both approach/strand cases remain present and compile. Native fixture execution is pending CI. |
+| Conditional beach day | `IRoutineDaySource` adds explicit authored stops, seed, day, day length, and source version. `BeachPlanning` also takes activity order, roster rank, terrain, season, and the time-addressed sky. **PASS, source/compile check:** `StPetersBeachLifeTests.TheSameClockTideAndWeather_GiveTheSameBeach` and `WorkMealsAndSleep_AreExactlyWhereTheAuthoredDayHasThem` compile with the complete fixture. Its real-scene and native setup was not run offline. |
+| NPC pot clock and seed | `NpcPotDay.Build` derives the departure and complete segment table from Def, seed, day index, and day length; `PoseAt` and `PotAt` only sample those tables. **PASS, managed execution:** the existing `Hash01_IsStable_AndInRange`, `CompassHelpers_AgreeWithTheHouseConvention`, and `DayIndexOf_FloorsNegativeTime` cases pass. |
+| NPC pot and landing sampling | **PASS, managed synthetic tables:** 130 clock probes each for the actual `NpcPotDay.PoseAt`, `NpcPotDay.PotAt`, and `NpcPotLanding.MomentAt` implementations. Probes cover quarter-hours, both sides of stage edges, all pose fields, previous-versus-current set position/soak time, crate pickup/counter/sale thresholds, non-monotonic history, and fresh-plan equality. These probes populate managed plan tables through reflection; they do not run or substitute the authored Def builders. |
+| Authored fleet reconstruction | **PASS, source/compile check:** `NpcPotDayTests.SameSeedAndDay_GiveTheSameBoatAndPots` and `AcrossMidnight_NoPotMoves`, `NpcPotFleetTests.LoadedMidDay_EveryBoatIsWhereTheClockSays`, and `NpcPotLandingTests.AskedAgain_MidLanding_ThePlanIsTheSame` remain intact and compile. These cases require native objects or AssetDatabase and await CI execution. |
+| Catch and landing inputs | `NpcPotDayCatch.Build` additionally consumes species/deck content, season, and historical water levels. `NpcPotLanding.Build` consumes the derived catch and authored carrying route. Their samplers read precomputed timelines rather than accumulating ticks. The entire catch and landing fixtures compile; this is not an executed authored-catch or market claim. |
+| Other integrated work | South Water, Rice Point berths/dredge, trawl logic, and Nine Mile Creek H7 Phase A do not modify `RoutinePlan`, `VehicleTripPlan`, or `AmbientFleetSchedule`. Their scene, geometry, and service inputs remain outside a fixed-plan clock proof. No scene or authored content is changed by this refresh. |
+
+The expanded offline run executed **14 actual NUnit cases** (the original 11 plus three pot helper cases), and all ten selected test fixtures compile. The synthetic sampler probes are additional harness checks, not extra NUnit cases. There was no editor launch, native fixture execution, scene load, or rendered comparison.
+
+The integrated presenters add these explicit limits to F1–F14:
+
+- `VillagerRoutine.RefreshDay` invalidates on day, day-source reference, version, or seconds per game hour. The base plan still detects seed changes on the shelter poll. A cached day-source failure is not automatically retried until an invalidation input changes.
+- `BeachLifeDirector.Version` tracks terrain/service identity, tide profile, and library reload. Its rank is taken from a sorted, deduplicated roster of currently discovered villagers, refreshed by unscaled time. The rank can therefore depend on activation and discovery timing; sorting does not make an incomplete roster complete. Same-input beach-plan proof does not establish identical cold-load versus retained-presenter behavior.
+- Beach gathering registrations, speech progress, and polling remain transient. They do not acquire a save/load contract from the sampler tests.
+- `NpcPotBoats.Tick` rebuilds today, yesterday, catch, and landing when day, seed, or day length changes. A same-day clock seek resamples those plans. Auto-binding, terrain/water probes, and rope/presentation state use a slow real-time tick; content or environment replacement alone is not part of its plan cache key. The source check makes no first-frame or pixel-equality promise.
+
+These are documented boundaries for follow-up decisions, not changes to save format, native lifecycle, routines, or presentation. No existing test assertion was removed or weakened.
 
 ## Inputs that are already explicit
 

@@ -362231,6 +362231,8 @@ MonoBehaviour:
   _interactables:
   - {fileID: 413417731}
   - {fileID: 1871746042}
+  - {fileID: 1340358786}
+  - {fileID: 1107880298}
   _radius: 1.8
   _facingArcDegrees: 120
 --- !u!4 &1912614192
@@ -413406,6 +413408,7 @@ GameObject:
   m_Component:
   - component: {fileID: 305855482}
   - component: {fileID: 1240423985}
+  - component: {fileID: 1340358786}
   m_Layer: 0
   m_Name: NmcWharfOfficeVendor
   m_TagString: Untagged
@@ -413446,6 +413449,24 @@ MonoBehaviour:
   _onPurchased:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &1340358786
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1023890145}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4a24425962914e759250d447c6d94771, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.Interactable
+  _npc: {fileID: 11400000, guid: 7b6b6a02fe474a608bf512334a461d35, type: 2}
+  _bubbleAnchor: {fileID: 0}
+  _kind: 0
+  _speaker: 
+  _conversationId: 
+  _completionFlag: 
 --- !u!1 &1737976318
 GameObject:
   m_ObjectHideFlags: 0
@@ -413498,6 +413519,8 @@ MonoBehaviour:
   _onSold:
     m_PersistentCalls:
       m_Calls: []
+  _buyOnlySellerId: seller.nmc_wharf_market
+  _sellsWhatIsCarried: 1
 --- !u!114 &1544789642
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -416175,6 +416198,7 @@ GameObject:
   - component: {fileID: 922550797}
   - component: {fileID: 1979513581}
   - component: {fileID: 846461072}
+  - component: {fileID: 1107880298}
   m_Layer: 0
   m_Name: NmcWharfYardCatalogue
   m_TagString: Untagged
@@ -416254,6 +416278,24 @@ MonoBehaviour:
   _onPurchased:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &1107880298
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 813580451}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4a24425962914e759250d447c6d94771, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.Interactable
+  _npc: {fileID: 11400000, guid: 007c0c1931c642f48c317b313d2648c0, type: 2}
+  _bubbleAnchor: {fileID: 0}
+  _kind: 0
+  _speaker: 
+  _conversationId: 
+  _completionFlag: 
 --- !u!1 &1054019580
 GameObject:
   m_ObjectHideFlags: 0

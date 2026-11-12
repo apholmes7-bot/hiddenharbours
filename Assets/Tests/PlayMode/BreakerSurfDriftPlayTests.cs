@@ -53,11 +53,15 @@ namespace HiddenHarbours.Tests.PlayMode
             /// <summary>The first sea time this clock handed out INSIDE a physics step — what a hull's first
             /// FixedUpdate actually read. NaN until then. RunArm reports it; nothing asserts on it.</summary>
             public double FirstStepRead = double.NaN;
+            /// <summary>Read the physics grid even OUTSIDE a step (RunArm's arms). Inside FixedUpdate the two
+            /// times are the same number; outside it this hands the last step's time to a frame-phase reader —
+            /// the wave bridge's bake — instead of the frame's own.</summary>
+            public bool OnGrid;
             public double TotalSeconds
             {
                 get
                 {
-                    double t = Time.timeAsDouble - LiveOrigin;
+                    double t = (OnGrid ? Time.fixedTimeAsDouble : Time.timeAsDouble) - LiveOrigin;
                     if (double.IsNaN(FirstStepRead) && Time.inFixedTimeStep) FirstStepRead = t;
                     return t;
                 }
@@ -78,10 +82,12 @@ namespace HiddenHarbours.Tests.PlayMode
         private readonly List<Object> _spawned = new();
         private SurfEnv _env;
         private GameConfig _config;
+        private float _captureBefore;   // RunArm's frame lock sets Time.captureDeltaTime; TearDown puts it back
 
         [SetUp]
         public void SetUp()
         {
+            _captureBefore = Time.captureDeltaTime;
             GameServices.Reset();
             InteractionGate.Reset();
             HelmKeyCapture.Reset();
@@ -100,6 +106,7 @@ namespace HiddenHarbours.Tests.PlayMode
         [TearDown]
         public void TearDown()
         {
+            Time.captureDeltaTime = _captureBefore;
             DisplacedSea.Clear(this);   // the lift arms publish one; never leak it into the next fixture
             EventBus.Clear<ControlModeChanged>();
             InteractionGate.Reset();
@@ -261,7 +268,10 @@ namespace HiddenHarbours.Tests.PlayMode
             // the same sea, same seed — rather than a weaker one. ⚠️ "The same instant" holds only if the
             // reset lands ON THE PHYSICS GRID. Reset to the frame's own time, the first arm could start up to
             // one step off the second, and that — not hidden state — is what reddened this test on main and
-            // on PRs from 09-06 on. RunArm locks it; the measurements are in its comment.
+            // on PRs from 09-06 on. RunArm locks it; the measurements are in its comment. ⚠️ And "the same
+            // instant" needs the same FRAMES too: the sea she feels is baked once per rendered frame (the wave
+            // bridge), so a long frame on a loaded runner fed one arm a staler sea — 0.027790 m apart with both
+            // arms on the grid (run 43035431810, attempt 4). RunArm's frame lock deals one step per frame.
             float period = BorePeriodSeconds();
             var first = new List<float>();
             var second = new List<float>();
@@ -468,8 +478,10 @@ namespace HiddenHarbours.Tests.PlayMode
 
             // ⭐ THE LOCK: the origin is the last PHYSICS STEP, never this frame. The hull reads the sea only
             // inside FixedUpdate, where Time.timeAsDouble IS the fixed time, so with the origin on the fixed
-            // grid her first step reads exactly one fixedDeltaTime of sea time, and every step after it a
-            // whole number of them — in every arm, on any machine, however the frames fell.
+            // grid her first step reads a whole number of fixedDeltaTimes of sea time (two: the bridge gets one
+            // frame to bake this arm's sea first, see the frame lock below), and every step after it one more.
+            // That held — but it was only half of the lock: her DIRECT clock reads were on the grid, and the
+            // sea she feels is not read at her clock (the frame lock below).
             //
             // The origin used to be Time.timeAsDouble read HERE: the frame's own time, which sits anywhere
             // from 0 to one step past the last physics step, so her first step read anywhere in (0, Δ]. A
@@ -485,9 +497,27 @@ namespace HiddenHarbours.Tests.PlayMode
             // a second arm of 0.8961–0.8962 in all 27. BEATS's pulsed arm, first in its test too, wandered
             // 3.069–3.094 m over the same runs while its steady arm, whose beat is a constant 1, read
             // 10.106 m every time.
+            //
+            // ⭐ THE FRAME LOCK (the second half, 11-11): the grid origin alone does not put her on the
+            // same sea. She reads the waves and the bore off SharedWaveField, which WaveFieldBridge — a hidden
+            // host in every play session — bakes ONCE PER RENDERED FRAME, in its Update, at the clock's time
+            // THEN. So every step reads the sea of the last frame's Update, and how far behind that is depends
+            // on how the frames fell: on a loaded runner a long frame holds two or three steps that all feel
+            // one stale sea. Both arms of run 43035431810 attempt 4 started on the grid (first steps 0.020000 s,
+            // 313 steps each) and still stood 0.027790 m apart. So the arm now (a) deals the frames itself —
+            // Time.captureDeltaTime = one physics step, so every frame holds exactly one step on any machine,
+            // however loaded — and (b) reads the clock on the grid outside a step too (TestClock.OnGrid), so the
+            // bridge bakes the last step's sea and her step k always feels the sea of step k−1, in every arm.
+            Time.captureDeltaTime = Time.fixedDeltaTime;
+            yield return null;   // the deal starts on the next frame; from there each frame is one step
+
             double frameAheadOfGrid = Time.timeAsDouble - Time.fixedTimeAsDouble;   // what the old origin added
-            var clock = new TestClock { LiveOrigin = Time.fixedTimeAsDouble };
+            var clock = new TestClock { LiveOrigin = Time.fixedTimeAsDouble, OnGrid = true };
             GameServices.Clock = clock;
+            int originFrame = Time.frameCount;
+            // The bridge already baked THIS frame with the previous clock (the old arm's, or SetUp's); let it
+            // bake once with this arm's clock before her first step reads the field.
+            yield return null;
 
             float x = StrongestSurfX();
             BoatController boat = NewBoat(Hull(400f, $"boat.beat_{borePulse01:F0}"),
@@ -500,7 +530,9 @@ namespace HiddenHarbours.Tests.PlayMode
             yield return SampleVelocities(rb, period, periods, bins, increments);
             float drift = rb.position.x - start;
             long steps = (long)System.Math.Round((Time.fixedTimeAsDouble - clock.LiveOrigin) / Time.fixedDeltaTime);
-            Debug.Log($"[surf-arm] pulse {borePulse01:F0}: drift {drift:F6} m over {steps} physics steps; her " +
+            int frames = Time.frameCount - originFrame;   // = steps while the deal holds one step per frame
+            Debug.Log($"[surf-arm] pulse {borePulse01:F0}: drift {drift:F6} m over {steps} physics steps in " +
+                      $"{frames} frames; her " +
                       $"first step read {clock.FirstStepRead:F6} s of sea time (one step is " +
                       $"{Time.fixedDeltaTime:F6} s; the old per-frame origin would have read " +
                       $"{Time.fixedDeltaTime - frameAheadOfGrid:F6} s).");

@@ -156,6 +156,49 @@ exist. Swell haul math (`Code/Fishing/TrapHaulMath.cs:32`), haul and deck contro
 `Data/Boats/DeckGear/LobsterBoatDeckGear.asset:18`). M2-33's powered winch remains unbuilt
 (`backlog/backlog.md:250`).
 
+### NPC pot boats (the same job, on the clock)
+
+A resident lobster boat works a string of pots off her home harbour as a pure function of
+`(worldSeed, gameTime)`; nothing about her or her gear is saved. One `NpcPotDayDef` per boat
+(`potday.*`, in `Data/Traps`, listed in `Resources/NpcPotDayLibrary`) holds the berth, the passage out
+and home, the string, the times of each part of the job, and the rope and buoy. `NpcPotDay` (Fishing)
+builds the whole day from it once; the boat and every pot at any clock second are then lookups, so a
+game loaded mid-day finds them where the clock says. A pot lies where the latest set put it:
+today's once today's set is done, yesterday's until today's haul.
+
+- The pot is always worked at the starboard rail: she lies to it, gaffs the buoy, hauls the pot up
+  the rope, works it aboard, eases to the new mark and sets it again, buoy last.
+- `PotRopeMath` gives the buoy: the rope is a fixed length, so the buoy streams off the pot by a
+  share of the spare scope, one way on the flood and the other on the ebb, and closes up over the pot
+  as the tide rises.
+- `NpcPotBoats` (App) moves the scene's own `MooredBoat` and draws buoy, rope and pot. NPC gear
+  never enters the player's pot service, pot locker or save.
+- A content test holds every authored day to the real ground: afloat the whole way at spring low,
+  pots in fishable water, every rope reaching the surface at spring high.
+- `NpcPotDayCatch` (Fishing) resolves what each pot holds from the same tables and seeded streams as a
+  player's pot (`TrapFill`, `PlacedTrapCatch`, `DeckPot`): soaked since yesterday's set, hauled at
+  today's haul, read against the Def's `CatchRegionId`. Each animal then takes a fixed share of the
+  deck time in order: picked and gauged at the rail; a keeper banded at the bench and carried to the
+  crate for its size grade; a short or berried one put back over the side; last, the pot baited. The
+  crates at any clock second are a count over the day's plan.
+- `NpcPotDeck` (App) shows it: the skipper stands at the helm, the rail, the bench or a crate as the
+  clock says, the animal is drawn at her hand until it is stowed or let go, and the crates fill one
+  animal at a time. Nothing appears in a crate that did not pass through her hands.
+- `NpcPotLanding` (Fishing) is the landing: once she is fast, each crate that holds a keeper is picked
+  up off the deck, carried over the rail, up the ladder and along the Def's `LandingRoute` to the
+  buyer's counter, and put down; she walks back for the next. When the last crate is down the buyer
+  weighs the lot and she walks home aboard. `NpcPotLandingWalk` (App) draws her ashore with the
+  crate in her hands and the crates at the counter. The landing moves no money and does not touch
+  the market: whether NPC landings should move the price the player is paid is an open owner ruling.
+- **The fleet** is one `NpcPotDayDef` per boat, all listed in the library: three lobster boats work
+  off Nine Mile Creek. A new boat is a new Def with her own berth, departure hour, passage, string,
+  buoy colour, ladder and patch of the buyer's counter; no code. The fleet tests hold the Defs to
+  it: no two hulls ever overlap (they cast off at different hours and pass abeam), no two owners'
+  pots share ground, every skipper has her own ladder and counter patch. The side trawlers at the
+  wall are not pot boats and stay at their berths. One frame of the whole fleet is timed in
+  `NpcPotFleetTests` (clock lookups) and `NpcPotFleetPlayTests` (the presenter's own frame) and
+  must allocate nothing.
+
 ## 4. Longline (first)
 
 Method source: [boat gear, sections 6.1 and 6.2](boats-and-navigation.md#61-gear-methods-mounted-as-gear-components)

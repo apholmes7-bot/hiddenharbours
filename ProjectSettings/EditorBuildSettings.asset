@@ -29,5 +29,8 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/_Project/Scenes/EastWater.unity
     guid: 12438b2c0e9f95a47aa209a0e377619c
+  - enabled: 1
+    path: Assets/_Project/Scenes/SouthWater.unity
+    guid: c0eb6127158c5c049a8dff5274987da2
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: f4e6011c9df149ac82504cb1b0661745, type: 3}
