@@ -113,6 +113,62 @@ namespace HiddenHarbours.Fishing
         [Tooltip("Setting: the pot goes over, sinks, and the buoy follows it.")]
         [Min(0.1f)] public float SetSeconds = 8f;
 
+        [Header("The catch and the deck (clock seconds per animal)")]
+        [Tooltip("Region id (region.*) whose catch tables her pots are read against. A species comes up only if it " +
+                 "lists this region, exactly as for a player's pot set there.")]
+        public string CatchRegionId = "region.";
+
+        [Tooltip("The bait she fishes with. It leans the catch toward the species it favours, as it does for the player.")]
+        public HiddenHarbours.Economy.BaitDef Bait;
+
+        [Tooltip("Taking one animal out of the pot and putting the gauge on it.")]
+        [Min(0.1f)] public float PickSeconds = 2.5f;
+
+        [Tooltip("Banding a keeper's claws.")]
+        [Min(0.1f)] public float BandSeconds = 2f;
+
+        [Tooltip("Carrying a banded keeper to its crate.")]
+        [Min(0.1f)] public float StowSeconds = 2f;
+
+        [Tooltip("Putting a short or a berried one back over the side.")]
+        [Min(0.1f)] public float ReturnSeconds = 1.5f;
+
+        [Tooltip("Baiting the emptied pot. A full pot of keepers plus this must fit inside DeckWorkSeconds.")]
+        [Min(0f)] public float BaitSeconds = 4f;
+
+        [Tooltip("Clock seconds the hand takes to walk from the rail back to the helm once the last pot is set.")]
+        [Min(0f)] public float DeckWalkSeconds = 2.5f;
+
+        [Tooltip("Carapace lengths (mm, ascending) at which a keeper moves up a grade. Each grade has its own crate.")]
+        public float[] GradeBreaksMm = { 95f, 110f };
+
+        [Tooltip("Where the catch is banded, hull-local metres (x = starboard, y = toward the bow).")]
+        public Vector2 BenchLocalMeters = new Vector2(0.8f, -1.6f);
+
+        [Tooltip("Where the first grade's crate sits, hull-local metres.")]
+        public Vector2 CrateLocalMeters = new Vector2(-0.9f, -2.2f);
+
+        [Tooltip("Hull-local step from one grade's crate to the next.")]
+        public Vector2 CrateStepLocalMeters = new Vector2(0f, -0.7f);
+
+        [Tooltip("A crate's inside, metres across the boat by along it. Stowed animals are laid out inside it.")]
+        public Vector2 CrateInsideMeters = new Vector2(0.75f, 0.5f);
+
+        [Tooltip("Animals laid side by side across a crate before the next row starts.")]
+        [Range(1, 12)] public int CrateRowLength = 4;
+
+        [Tooltip("Most animals one crate is drawn holding. Past it the crate is full to the eye; the count carries on.")]
+        [Range(1, 60)] public int CrateShownCapacity = 16;
+
+        [Tooltip("How far over the side a returned animal is dropped, metres from the rail.")]
+        [Min(0f)] public float ReturnOverTheSideMeters = 0.9f;
+
+        [Tooltip("Scale an animal's deck sprite is drawn at in her hand and in a crate, so it reads at its real size beside her.")]
+        [Range(0.05f, 2f)] public float CatchDrawScale = 0.4f;
+
+        [Tooltip("Sorting order of an animal in hand or in a crate (above the hull and its crew).")]
+        public int CatchSortingOrder = 30;
+
         [Header("Rope and buoy")]
         [Tooltip("Rope from pot to buoy, metres. Must exceed the deepest water over the string.")]
         [Min(0.5f)] public float RopeLengthMeters = 10.5f;

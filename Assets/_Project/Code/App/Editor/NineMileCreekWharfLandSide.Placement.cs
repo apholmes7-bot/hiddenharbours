@@ -249,9 +249,34 @@ namespace HiddenHarbours.App.Editor
             PlaceVendor(scene, OfficeVendorName, OldOfficeRoot, OfficeVendor, new[] { "HiddenHarbours.Economy.LicenseVendor" }, HarbourmasterNpcPath);
         public static LayerPatch PlaceMarketCounter(SceneYaml scene) =>
             PlaceVendor(scene, MarketCounterName, OldBuyerRoot, MarketCounter,
-                new[] { "HiddenHarbours.Economy.WharfSellPoint", "HiddenHarbours.Economy.FishBuyer", "HiddenHarbours.Economy.Market" });
+                new[] { "HiddenHarbours.Economy.WharfSellPoint", "HiddenHarbours.Economy.FishBuyer", "HiddenHarbours.Economy.Market" },
+                dress: CarriedCounter);
 
-        static LayerPatch PlaceVendor(SceneYaml scene, string name, long oldRoot, Vector3 at, string[] scripts, string talkNpc = null)
+        /// <summary>Wendell's counter: the seller id his conversation's sell row names, for a counter no vendor stands on.</summary>
+        public const string WendellSellerId = "seller.nmc_wharf_market";
+
+        /// <summary>
+        /// The delivered pail (owner ruling 2026-11-11): Wendell's sell point carries its own seller id and sells what is carried,
+        /// never the boat's hold. Its buyer, market, providers and place are the counter's as they were.
+        /// </summary>
+        static string CarriedCounter(Doc mono, string text) =>
+            !mono.IsScript("HiddenHarbours.Economy.WharfSellPoint") ? text
+                : WithField(WithField(text, "_buyOnlySellerId", WendellSellerId), "_sellsWhatIsCarried", "1");
+
+        /// <summary>Sets a top-level field, appending it at the document's end (where Unity writes a field declared last) when
+        /// the document does not have it yet.</summary>
+        static string WithField(string text, string key, string value)
+        {
+            var rx = new Regex(@"(?m)^  " + Regex.Escape(key) + @":.*$");
+            int found = rx.Matches(text).Count;
+            if (found > 1) throw new Refusal(PlacementStep + ": field " + key + " appears " + found + " times");
+            if (found == 1) return rx.Replace(text, _ => "  " + key + ": " + value);
+            // A document's text ends without its newline: Render writes one after each document.
+            return text.TrimEnd('\n') + "\n  " + key + ": " + value;
+        }
+
+        static LayerPatch PlaceVendor(SceneYaml scene, string name, long oldRoot, Vector3 at, string[] scripts, string talkNpc = null,
+            Func<Doc, string, string> dress = null)
         {
             Doc current = ExistingRoot(scene, name);
             var ids = new IdAllocator(scene, current == null ? new HashSet<long>() : scene.SubtreeOf(current.FileId));
@@ -273,6 +298,7 @@ namespace HiddenHarbours.App.Editor
                 string text = Regex.Replace(mono.Text, @"^--- !u!114 &-?\d+", "--- !u!114 &" + map[mono.FileId]);
                 text = Regex.Replace(text, @"\{fileID: (-?\d+)\}", m => map.TryGetValue(long.Parse(m.Groups[1].Value, CultureInfo.InvariantCulture), out long target)
                     ? "{fileID: " + target.ToString(CultureInfo.InvariantCulture) + "}" : m.Value);
+                if (dress != null) text = dress(mono, text);
                 wanted.Add((name + "/" + mono.Field("m_EditorClassIdentifier"), text));
             }
             if (talkNpc != null) wanted.Add((name + "/talk", talk.text));
@@ -334,23 +360,31 @@ namespace HiddenHarbours.App.Editor
         /// in order, on the committed scene. Writes the patches and the candidate under <paramref name="evidence"/>, proves
         /// that a second apply changes no byte, and writes the scene only when <paramref name="apply"/> is set.
         /// </summary>
-        public static void ApplyVendorAnchors(string evidence, bool apply = false)
+        public static void ApplyVendorAnchors(string evidence, bool apply = false) =>
+            ApplyCounterPatches(evidence, "vendor-anchor", "The vendor anchors",
+                new Func<SceneYaml, LayerPatch>[] { PlaceOfficeVendor, PlaceYardCatalogue, RegisterVendorAnchors }, apply);
+
+        /// <summary>Wendell's carried counter (the delivered pail), applied the same way: <see cref="PlaceMarketCounter"/> alone.</summary>
+        public static void ApplyCarriedCounter(string evidence, bool apply = false) =>
+            ApplyCounterPatches(evidence, "carried-counter", "The carried counter",
+                new Func<SceneYaml, LayerPatch>[] { PlaceMarketCounter }, apply);
+
+        static void ApplyCounterPatches(string evidence, string label, string what, Func<SceneYaml, LayerPatch>[] plans, bool apply)
         {
             Directory.CreateDirectory(evidence);
-            if (EditorApplication.isPlaying) throw new Refusal("Leave play before the vendor-anchor patch.");
+            if (EditorApplication.isPlaying) throw new Refusal("Leave play before the " + label + " patch.");
             UnityEditor.SceneManagement.EditorSceneManager.NewScene(UnityEditor.SceneManagement.NewSceneSetup.EmptyScene,
                 UnityEditor.SceneManagement.NewSceneMode.Single);
             string before = File.ReadAllText(NineMileCreekLayerRefresh.ScenePath);
             SceneYaml yaml = SceneYaml.Parse(before);
-            var plans = new Func<SceneYaml, LayerPatch>[] { PlaceOfficeVendor, PlaceYardCatalogue, RegisterVendorAnchors };
             var patches = new List<LayerPatch>();
             foreach (var plan in plans) { LayerPatch p = plan(yaml); patches.Add(p); yaml = p.Apply(yaml); }
             string after = yaml.Render();
-            File.WriteAllText(evidence + "/vendor-anchor-patches.yaml", string.Join("\n", patches.Select(p => p.ToYaml())));
-            File.WriteAllText(evidence + "/vendor-anchor-summary.txt", string.Join("\n", patches.Select(p => p.Summary())) + "\n");
+            File.WriteAllText(evidence + "/" + label + "-patches.yaml", string.Join("\n", patches.Select(p => p.ToYaml())));
+            File.WriteAllText(evidence + "/" + label + "-summary.txt", string.Join("\n", patches.Select(p => p.Summary())) + "\n");
             SceneYaml repeat = yaml;
             foreach (var plan in plans) repeat = plan(repeat).Apply(repeat);
-            if (repeat.Render() != after) throw new Refusal("The vendor anchors' second apply changes a scene byte.");
+            if (repeat.Render() != after) throw new Refusal(what + "' second apply changes a scene byte.");
             File.WriteAllText(evidence + "/repeat-identical.txt", "The second apply changes no scene byte.\n");
             if (apply && after != before) File.WriteAllText(NineMileCreekLayerRefresh.ScenePath, after, new System.Text.UTF8Encoding(false));
         }
@@ -360,6 +394,14 @@ namespace HiddenHarbours.App.Editor
             ApplyVendorAnchors("Evidence~/nmc-vendors/dry-run");
             ApplyVendorAnchors("Evidence~/nmc-vendors/apply", true);
             ApplyVendorAnchors("Evidence~/nmc-vendors/after-apply");
+            AssetDatabase.Refresh();
+        }
+        public static void CarriedCounterDryRunFromCommandLine() => ApplyCarriedCounter("Evidence~/nmc-carried-counter/dry-run");
+        public static void CarriedCounterApplyFromCommandLine()
+        {
+            ApplyCarriedCounter("Evidence~/nmc-carried-counter/dry-run");
+            ApplyCarriedCounter("Evidence~/nmc-carried-counter/apply", true);
+            ApplyCarriedCounter("Evidence~/nmc-carried-counter/after-apply");
             AssetDatabase.Refresh();
         }
 

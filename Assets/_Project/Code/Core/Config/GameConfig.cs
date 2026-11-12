@@ -348,6 +348,11 @@ namespace HiddenHarbours.Core
                  "feel and wants a feel verdict, like the spectrum did.")]
         public WaveFetchSettings WaveFetch = WaveFetchSettings.Default;
 
+        [Tooltip("THE WHOLE HULL MAKES FOAM: where a hull churns the water besides her trail. Her trail is " +
+                 "shed from the bow when she goes astern; the end she drives into the water and the side " +
+                 "she pushes through it foam too. Drawn only: no boat feels it. Weights at 0 = the trail alone.")]
+        public HullFoamSettings HullFoam = HullFoamSettings.Default;
+
         [Tooltip("BREAKING WAVES (ADR 0040): where the sea gives out and how — the breaker index γ, " +
                  "the Iribarren thresholds that separate a spilling crumble from a plunging barrel, and " +
                  "the whitewater decay. Ships at the TEXTBOOK PHYSICS (γ = 0.78, Battjes' 0.5/3.3/5.0), " +
