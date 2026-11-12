@@ -5,7 +5,7 @@
  "hull": "stern_trawler",
  "label": "Stern Trawler · 38 m",
  "kind": "ship",
- "derivedFromRigSha256": "7deb92477d961dbbb9661123b5f06d70e1ac6cc08b88ed8c189ac0955b310b6e",
+ "derivedFromRigSha256": "afb6d70457268f55fcde43859bb5072c1710a7f8fe701aa5629c1711ef5701d2",
  "authoring": "Written by the rig: SternTrawlerIso.byId('stern_trawler').walk(), every number its own (mm), stamped with the rig's LF sha256 and fitted to character rig 10.3 (qa.character) by tools/rig-recipes/hull-walk.mjs. Regenerate with node tools/rig-recipes/hull-walk.mjs --write; never edit by hand.",
  "units": "metres",
  "frame": "metres; +x starboard, +y bow, +z up; origin amidships, keel bottom, centreline; polygons counter-clockwise seen from above",
@@ -1656,7 +1656,117 @@
    "y": 1.38,
    "z0": 3.5,
    "z1": 6.56
-  }
+  },
+  "warps": [
+   {
+    "id": "warp_port",
+    "side": "port",
+    "winch": {
+     "x": -1.9,
+     "y": 0.5,
+     "z": 4.24
+    },
+    "lead": {
+     "x": -1.25,
+     "y": -14.4,
+     "z": 7.3
+    },
+    "door": {
+     "x": -3.796,
+     "y": -17.4,
+     "z": 6.55
+    }
+   },
+   {
+    "id": "warp_stbd",
+    "side": "starboard",
+    "winch": {
+     "x": 1.9,
+     "y": 0.5,
+     "z": 4.24
+    },
+    "lead": {
+     "x": 1.25,
+     "y": -14.4,
+     "z": 7.3
+    },
+    "door": {
+     "x": 3.796,
+     "y": -17.4,
+     "z": 6.55
+    }
+   }
+  ],
+  "codEnd": {
+   "rampFoot": {
+    "x": 0,
+    "y": -19,
+    "z": 1.75
+   },
+   "rampHead": {
+    "x": 0,
+    "y": -13.6,
+    "z": 3.48
+   },
+   "spill": {
+    "x": 0,
+    "y": -7.7,
+    "z": 3.5
+   }
+  },
+  "sorting": {
+   "x0": -2.3,
+   "x1": 2.3,
+   "y0": -7.6,
+   "y1": -6.76,
+   "z": 3.5,
+   "totes": [
+    {
+     "x": -3.3,
+     "y": -8.8,
+     "z": 3.5
+    },
+    {
+     "x": 3.3,
+     "y": -8.8,
+     "z": 3.5
+    }
+   ]
+  },
+  "crew": [
+   {
+    "id": "winchman",
+    "at": "winch"
+   },
+   {
+    "id": "drum_hand",
+    "at": "net_drum"
+   },
+   {
+    "id": "door_hand_port",
+    "at": "gallows_port"
+   },
+   {
+    "id": "door_hand_stbd",
+    "at": "gallows_stbd"
+   },
+   {
+    "id": "sorter_port",
+    "x": -1.2,
+    "y": -7.18,
+    "z": 3.5
+   },
+   {
+    "id": "sorter_stbd",
+    "x": 1.2,
+    "y": -7.18,
+    "z": 3.5
+   },
+   {
+    "id": "hatch_hand",
+    "at": "hold_hatch"
+   }
+  ]
  },
  "interact": [
   {
