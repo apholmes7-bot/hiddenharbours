@@ -284,14 +284,23 @@ namespace HiddenHarbours.Tools.RigBaking
             MeshOnly("sideDragger", "sideDraggerIsoRig.js", "SideDraggerIso", "SideDraggerIso",
                      "side_dragger_iso", "side dragger (T4, 25 m — the first offshore hull)"),
 
-            MeshOnly("sternTrawler", "sternTrawlerIsoRig.js", "SternTrawlerIso", "SternTrawlerIso",
-                     "stern_trawler_iso", "stern trawler (T5, ~38 m — stern ramp, gantry, net drum)"),
+            // Hull layout (ADR 0048 batch 3, the first of the working ships): her published scope
+            // owns her cell, and her walk sidecar answers for her deck and rooms.
+            new FleetHull("sternTrawler", "docs/art/rigs/sternTrawlerIsoRig.js", "SternTrawlerIso",
+                "Assets/_Project/Data/Boats/HullMeshes/SternTrawlerIsoHullMesh.asset", "hullmesh.stern_trawler_iso",
+                new[] { "Assets/_Project/Data/Boats/Visuals/SternTrawlerIso.asset" }, new[] { "visual.stern_trawler_iso" },
+                false, "stern trawler (T5, ~38 m — stern ramp, gantry, net drum)",
+                extraction: new RigHullExtraction { HullScope = "byId('stern_trawler')" }),
 
             // A genuinely separate rig, not a variant flag on the first: the art director shipped two
             // files. Baked as two hulls because that is what they are on disk.
-            MeshOnly("sternTrawlerMk2", "sternTrawlerMk2IsoRig.js", "SternTrawlerMk2Iso",
-                     "SternTrawlerMk2Iso", "stern_trawler_mk2_iso",
-                     "stern trawler Mk2 (T5, ~38 m)"),
+            // Hull layout (ADR 0048 batch 3, the second of the working ships): like the Mk1 above,
+            // her published scope owns her cell and her walk sidecar answers for her deck and rooms.
+            new FleetHull("sternTrawlerMk2", "docs/art/rigs/sternTrawlerMk2IsoRig.js", "SternTrawlerMk2Iso",
+                "Assets/_Project/Data/Boats/HullMeshes/SternTrawlerMk2IsoHullMesh.asset", "hullmesh.stern_trawler_mk2_iso",
+                new[] { "Assets/_Project/Data/Boats/Visuals/SternTrawlerMk2Iso.asset" }, new[] { "visual.stern_trawler_mk2_iso" },
+                false, "stern trawler Mk2 (T5, ~38 m)",
+                extraction: new RigHullExtraction { HullScope = "byId('stern_trawler_mk2')" }),
 
             MeshOnly("coastalPacket", "coastalPacketIsoRig.js", "CoastalPacketIso", "CoastalPacketIso",
                      "coastal_packet_iso", "coastal packet (T6, ~60 m — the first merchant hull)"),

@@ -141,8 +141,8 @@ namespace HiddenHarbours.Tests.RigBaking
         [Test]
         public void TheCommittedLedgerCoversEveryHullFamilyInTheKit()
         {
-            Assert.AreEqual(8, Committed().Count,
-                            "eight remaining kit families after both sport fishers moved to walks");
+            Assert.AreEqual(6, Committed().Count,
+                            "six remaining kit families after both sport fishers and both stern trawlers moved to walks");
         }
 
         [Test]
@@ -187,9 +187,9 @@ namespace HiddenHarbours.Tests.RigBaking
             CollectionAssert.AreEqual(
                 new[] { "capeIslanderIsoRig", "coastalPacketIsoRig", "lobsterBoatIsoRig",
                         "lobsterBoatVariantsIsoRig", "sideDraggerIsoRig",
-                        "sternTrawlerIsoRig", "sternTrawlerMk2IsoRig", "tankerIsoRig" },
+                        "tankerIsoRig" },
                 byVerdict[BoatInteriorS0Verdict.Clean],
-                "eight remaining families clear — 25 sidecars once the eighteen " +
+                "six remaining families clear — 23 sidecars once the eighteen " +
                 "lobster variants are counted");
         }
 

@@ -59,10 +59,12 @@ namespace HiddenHarbours.Tests.PlayMode
         /// committed visual and interior def but no BoatHullDef, so the journey wraps her visual in one.</summary>
         private const string VariantVisualPath = "Assets/_Project/Data/Boats/Visuals/LobsterStandardHardtopFundyIso.asset";
 
-        /// <summary>One of the four working ships (ADR 0041 rollout PR 2). She is the batch's journey
+        /// <summary>The coastal packet: a working ship still on the layout this journey is about (ADR 0041
+        /// rollout PR 2). Both stern trawlers were rebuilt to the hull layout and no longer have the tie, so
+        /// the journey moved to a ship that does. She is the batch's journey
         /// because every one of the four declares an OPEN main deck at her house sole's height and her
         /// door's threshold sits there too — the tie a converted hull has no cells to break.</summary>
-        private const string ShipVisualPath = "Assets/_Project/Data/Boats/Visuals/SternTrawlerIso.asset";
+        private const string ShipVisualPath = "Assets/_Project/Data/Boats/Visuals/CoastalPacketIso.asset";
 
         /// <summary>The shader property the hull's occluding id block is written into. Named here because
         /// the test reads back what reached the RENDERER, which is the only thing the GPU would see.</summary>
@@ -329,7 +331,7 @@ namespace HiddenHarbours.Tests.PlayMode
             var visual = LoadCommitted<BoatVisualDef>(ShipVisualPath);
             if (visual == null) yield break;
             BoatInteriorDef def = visual.Interior;
-            Assert.IsNotNull(def, "the trawler's visual must link her interior def");
+            Assert.IsNotNull(def, "the ship's visual must link her interior def");
             Assert.IsTrue(visual.HasHullMesh() && visual.HullMesh.HasMeshInterior(),
                           "her committed hull mesh must carry her room (re-bake her)");
 
@@ -339,20 +341,20 @@ namespace HiddenHarbours.Tests.PlayMode
             foreach (BoatInteriorLevel l in def.Levels)
                 if (l != null && l.IsUsable() && Mathf.Abs(l.SoleZMeters - sill) < 1e-4f) equidistant.Add(l);
             Assert.GreaterOrEqual(equidistant.Count, 2,
-                $"the trawler's sill at z {sill:0.###} is meant to be equidistant from her main deck and " +
+                $"the ship's sill at z {sill:0.###} is meant to be equidistant from her main deck and " +
                 "her house sole — if it is not any more, this journey has stopped testing the tie.");
 
             var hullDef = ScriptableObject.CreateInstance<BoatHullDef>();
             hullDef.Visual = visual;
             _spawned.Add(hullDef);
 
-            var boatGo = Spawn("SternTrawler");
+            var boatGo = Spawn("CoastalPacket");
             var boat = boatGo.AddComponent<BoatController>();
             boatGo.AddComponent<DevBoatInput>().enabled = false;
             boat.SetHull(hullDef);
             BoatHullSkinner.Rig skin = BoatHullSkinner.Apply(
                 boatGo, visual, boat, new BoatHullSkinner.Options { SkipWaveMotion = true });
-            Assert.IsTrue(skin.Skinned, "the trawler must skin — she is a MESH hull");
+            Assert.IsTrue(skin.Skinned, "the ship must skin — she is a MESH hull");
 
             var installer = boatGo.GetComponent<BoatInteriorInstaller>();
             installer.Build();

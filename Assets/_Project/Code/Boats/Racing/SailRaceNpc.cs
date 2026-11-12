@@ -125,6 +125,136 @@ namespace HiddenHarbours.Boats
             return new SailRaceNpcSample(new RaceBoatMotion(_id, position, forward, velocity), race);
         }
 
+        public Skipper CreateSkipper(IRaceWindSource wind, SailRaceSkipperRules rules) => new Skipper(this, wind, rules);
+
+        /// <summary>Reusable incremental course runner. One Tick advances one complete authored step,
+        /// anchored at the gun. The existing At replay retains its original navigation/query contract.
+        /// Polar/profile inputs must remain unchanged for this runner's lifetime.</summary>
+        public sealed class Skipper
+        {
+            private readonly SailRaceNpc _model;
+            private readonly IRaceWindSource _wind;
+            private readonly SailRaceSkipperRules _rules;
+            private Vector2 _position, _forward, _velocity;
+            private int _waypoint, _tack;
+            private long _tick;
+            private double _lastTack = double.NegativeInfinity;
+            private float _windFromAtTack;
+            public SailRaceEntrant Race { get; }
+            public int TackCount { get; private set; }
+            public int HeaderTackCount { get; private set; }
+            public double Time => _model._gunTime + _tick * (double)_model._step;
+            public RaceBoatMotion Motion => new RaceBoatMotion(_model._id, _position, _forward, _velocity);
+
+            internal Skipper(SailRaceNpc model, IRaceWindSource wind, SailRaceSkipperRules rules)
+            {
+                rules.Validate(); _model = model; _wind = wind ?? throw new ArgumentNullException(nameof(wind)); _rules = rules;
+                _position = model._start; _forward = RaceGeometry.Bearing(model._initialBearing);
+                Race = new SailRaceEntrant(model._id, model._course, model._gunTime, new RaceTrackSample(model._gunTime, _position));
+            }
+
+            public SailRaceNpcSample Tick()
+            {
+                if (Race.Finished) return new SailRaceNpcSample(Motion, Race);
+                double time = Time, end = _model._gunTime + (_tick + 1) * (double)_model._step;
+                if (end - _model._gunTime > _model._horizon) throw new InvalidOperationException("Skipper horizon exceeded.");
+                Vector2 wind = _wind.WindAt(_model._seed, time);
+                RaceGeometry.RequireFinite(wind, nameof(wind));
+                while (_waypoint < _model._route.Length && _position == _model._route[_waypoint].Position)
+                {
+                    Waypoint reached = _model._route[_waypoint];
+                    if ((reached.RequiresStart && !Race.Started) || (reached.RequiredLap >= 0 &&
+                        (Race.CompletedLaps < reached.RequiredLap ||
+                        (Race.CompletedLaps == reached.RequiredLap && Race.NextMarkIndex < reached.RequiredMark))))
+                    { _waypoint = reached.RetryIndex; break; }
+                    _waypoint++;
+                }
+                if (_waypoint == _model._route.Length) throw new InvalidOperationException("Route ended before finish.");
+                Vector2 delta = _model._route[_waypoint].Position - _position;
+                _velocity = ChooseVelocity(wind, delta, time);
+                Vector2 move = _velocity * _model._step;
+                if (move.magnitude > delta.magnitude) move *= delta.magnitude / move.magnitude;
+                _velocity = move / _model._step;
+                Vector2 previous = _position;
+                _position += move;
+                Race.Advance(new RaceTrackSample(end, _position));
+                if (Race.Finished)
+                {
+                    _position = Vector2.LerpUnclamped(previous, _position, (float)((Race.FinishTime - time) / (end - time)));
+                    _velocity = Vector2.zero;
+                }
+                _tick++;
+                return new SailRaceNpcSample(Motion, Race);
+            }
+
+            private Vector2 ChooseVelocity(Vector2 wind, Vector2 delta, double time)
+            {
+                if (wind.magnitude <= _model._course.Rules.CalmWindMetresPerSecond || delta.sqrMagnitude == 0f)
+                    return Vector2.zero;
+                Vector2 desired = delta.normalized;
+                float directSpeed = _model.Speed(wind, desired);
+                int directTack = Tack(wind, desired);
+                if (directSpeed > 0f && (_tack == 0 || directTack == _tack ||
+                    time - _lastTack >= _rules.MinimumTackSeconds))
+                {
+                    SelectTack(directTack, wind, time, false);
+                    _forward = desired;
+                    return desired * directSpeed;
+                }
+
+                // Find the polar's best close-hauled upwind VMG. Search relative to THIS wind,
+                // so a shifted wind never leaves a selected moving heading inside the no-go.
+                float from = BoatKinematics.BearingDegrees(-wind), bestVmg = 0f, angle = 0f;
+                for (int i = 0; i < _model._headingSamples; i++)
+                {
+                    float candidateAngle = _model._noGo + 0.001f + (90f - _model._noGo - 0.001f) * i / _model._headingSamples;
+                    if (candidateAngle >= 90f) continue;
+                    Vector2 candidate = RaceGeometry.Bearing(from + candidateAngle);
+                    float vmg = _model.Speed(wind, candidate) * Mathf.Cos(candidateAngle * Mathf.Deg2Rad);
+                    if (vmg > bestVmg) { bestVmg = vmg; angle = candidateAngle; }
+                }
+                if (bestVmg == 0f) return Vector2.zero;
+                // Positive relative true angle means starboard: heading counterclockwise from wind-from.
+                Vector2 starboard = RaceGeometry.Bearing(from - angle), port = RaceGeometry.Bearing(from + angle);
+                float starVmg = Vector2.Dot(starboard, desired) * _model.Speed(wind, starboard);
+                float portVmg = Vector2.Dot(port, desired) * _model.Speed(wind, port);
+                int chosen = _tack;
+                bool headerTack = false;
+                if (chosen == 0)
+                    chosen = starVmg == portVmg ? ((_model._headingOffset & 1) == 0 ? 1 : -1) : starVmg > portVmg ? 1 : -1;
+                else if (time - _lastTack >= _rules.MinimumTackSeconds)
+                {
+                    Vector2 current = chosen > 0 ? starboard : port, other = chosen > 0 ? port : starboard;
+                    float currentVmg = chosen > 0 ? starVmg : portVmg, otherVmg = chosen > 0 ? portVmg : starVmg;
+                    float denominator = RaceGeometry.Cross(current, other);
+                    float remaining = denominator == 0f ? float.PositiveInfinity : RaceGeometry.Cross(delta, other) / denominator;
+                    float headerDegrees = -chosen * BoatKinematics.RelativeBearingDegrees(_windFromAtTack, from);
+                    bool header = headerDegrees >= _rules.HeaderDegrees && otherVmg > currentVmg;
+                    if ((remaining <= _rules.LaylineMarginMetres || header) && otherVmg > 0f)
+                    { chosen = -chosen; headerTack = header; }
+                }
+                Vector2 heading = chosen > 0 ? starboard : port;
+                if (Vector2.Dot(heading, desired) <= 0f) return Vector2.zero;
+                SelectTack(chosen, wind, time, headerTack);
+                _forward = heading;
+                return heading * _model.Speed(wind, heading);
+            }
+
+            private static int Tack(Vector2 wind, Vector2 heading)
+            {
+                float angle = SailDrive.ResolveWind(wind, heading, Vector2.zero).TrueAngleDeg;
+                return angle == 0f || Mathf.Abs(angle) == 180f ? 0 : angle > 0f ? 1 : -1;
+            }
+
+            private void SelectTack(int tack, Vector2 wind, double time, bool header)
+            {
+                if (tack == 0 || tack == _tack) return;
+                if (_tack != 0) { TackCount++; if (header) HeaderTackCount++; }
+                _tack = tack; _lastTack = time;
+                _windFromAtTack = BoatKinematics.BearingDegrees(-wind);
+            }
+        }
+
         private Vector2 BestVelocity(Vector2 wind, Vector2 desired, out Vector2 forward)
         {
             forward = desired;

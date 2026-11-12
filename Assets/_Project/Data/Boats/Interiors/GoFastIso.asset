@@ -26,10 +26,22 @@ MonoBehaviour:
   FootprintOutline: []
   Levels: []
   Door:
+    EntryLanding:
+      OpeningStart: {x: 0, y: 0}
+      OpeningEnd: {x: 0, y: 0}
+      UpperPlateau: []
+      HeightMetres: 0
+      RouteId: 
+    OpeningMode: 0
+    OpeningReason: 
     Id: cuddy_door
     Side: aft
     ClearWidthMeters: 0.4
     ClearHeightMeters: 0.51
+    PullConeDegrees: 30
+    PullReachClearWidths: 1
+    CrossingConeDegrees: 60
+    CrossingSettleSeconds: 0.16
     ThresholdPoint: {x: 0, y: -1.56, z: 0.66}
     Mechanism: 0
     KeepClear:
@@ -41,6 +53,7 @@ MonoBehaviour:
     CueMillisecondsPerFrame: 0
     CueReversedOnExit: 1
   AdditionalDoors: []
+  InternalPassages: []
   Anchors:
   - Id: helm
     Action: enter_helm
