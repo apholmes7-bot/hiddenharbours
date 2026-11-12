@@ -10192,6 +10192,11 @@
       "Type": "HiddenHarbours.Boats.FuelSpeedProfileDef",
       "Guid": "2bad8f76dd2d5ca1870dc4c974266753",
       "Id": "fuelprofile.zodiac_hurricane"
+    },
+    {
+      "Type": "HiddenHarbours.Boats.FuelSpeedProfileDef",
+      "Guid": "b897d3bf018a5c6fb649da675bb97340",
+      "Id": "fuelprofile.jet_ski"
     }
   ]
 }

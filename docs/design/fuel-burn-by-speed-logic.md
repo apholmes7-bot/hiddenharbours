@@ -4,7 +4,9 @@ This is isolated logic and new data, based on main `c9c9ef73dee59ee9b6e8c072ea98
 
 ## Calibration without choosing new hull speeds
 
-Each of the 45 existing hulls has one new `FuelSpeedProfileDef` pointing to that hull and a class-curve Def. Existing hull YAML remains unchanged. `CreateModel` requires a **supplied measured calm/light cruise speed through water**. Main has no measured cruise/top fields, so this proposal neither invents those numbers nor infers them from engine thrust, mass, drag or real-boat specifications. Tests use several arbitrary supplied cruise speeds to prove that calibration holds independently of that choice. A future integrator must measure and supply the speed; the factory does not certify the provenance of its float argument.
+Each of the 46 existing hulls has one new `FuelSpeedProfileDef` pointing to that hull and a class-curve Def. Existing hull YAML remains unchanged. `CreateModel` requires a **supplied measured calm/light cruise speed through water**. Main has no measured cruise/top fields, so this proposal neither invents those numbers nor infers them from engine thrust, mass, drag or real-boat specifications. Tests use several arbitrary supplied cruise speeds to prove that calibration holds independently of that choice. A future integrator must measure and supply the speed; the factory does not certify the provenance of its float argument.
+
+The fleet at refreshed main `f814d34d789ab4a12ee7362266dbf5e5e6ae22c0` includes `boat.jet_ski`. The original 45-hull coverage gate correctly rejected the expanded fleet in CI before the arithmetic and imported-reference checks could run. The new separate jetski profile uses the existing candidate planing curve and the hull's unchanged 40-litre capacity and 30-litre/hour full-throttle rate. Both fleet-count assertions now require exactly 46 hulls; the planing count requires exactly 14. Every hull still requires one unique binding, with no skipped hull or relaxed assertion.
 
 The existing fuel design names 0.7 throttle as an example cruise duty. Both new class Defs explicitly carry that reference duty. Read the caller's existing `FuelSettings` and the hull's authored full-throttle rate `R`, with hold/slip/sea inputs zero:
 
@@ -42,9 +44,9 @@ The initial **candidate** class assignments are conservative and explicit in the
 | Class | Hulls |
 |---|---|
 | Displacement (32) | Rowed and outboard dory; both punts; Cape Islander; base lobster boat plus all 18 lobster variants; side dragger; both stern trawlers; coastal packet; tanker; expedition yacht; both sloops' auxiliaries |
-| Planing (13) | Console skiff; three sport skiffs; bowrider; express cruiser; go-fast; motor yacht; convertible and skybridge sportfishers; yacht tender; both Zodiac hulls |
+| Planing (14) | Console skiff; three sport skiffs; bowrider; express cruiser; go-fast; motor yacht; convertible and skybridge sportfishers; yacht tender; both Zodiac hulls; jetski |
 
-There are **45 bindings total**. Regional lobster traditions are not a measured hydrodynamic classification. A semi-displacement or planing working-boat fit can get its own curve after measurement/review without editing a hull's authored numbers. No hull is reclassified in the live game by this proposal.
+There are **46 bindings total**. Regional lobster traditions are not a measured hydrodynamic classification. A semi-displacement or planing working-boat fit can get its own curve after measurement/review without editing a hull's authored numbers. No hull is reclassified in the live game by this proposal.
 
 ## What switching it on would mean
 
@@ -57,17 +59,17 @@ For a **comparison scenario** where full speed is cruise speed divided by 0.7, t
 | Displacement | 0.24429 | 1.39429 | 2.854 |
 | Planing | 0.29805 | 0.94627 | 1.587 |
 
-`range = capacity / hourly burn * speed * 3600`, in metres with speed m/s. Every one of the 44 fuel-engine/auxiliary profiles must have **strictly** longer range at half-full speed in this scenario. The rowed dory is explicitly tested as the sole zero-capacity/no-fuel case; both distances are unbounded by fuel, and infinity cannot strictly exceed itself. This is not an exception that weakens a previous test: no existing test or balance rule is changed. Extremely slow idle-dominated travel need not improve range further, and the range claim is not made for arbitrary unreviewed curve tuning.
+`range = capacity / hourly burn * speed * 3600`, in metres with speed m/s. Every one of the 45 fuel-engine/auxiliary profiles must have **strictly** longer range at half-full speed in this scenario. The rowed dory is explicitly tested as the sole zero-capacity/no-fuel case; both distances are unbounded by fuel, and infinity cannot strictly exceed itself. No balance rule is changed. Extremely slow idle-dominated travel need not improve range further, and the range claim is not made for arbitrary unreviewed curve tuning.
 
 Fuel ticks use real seconds (`3600` per hour), preserving the existing fuel clock. No game-calendar conversion enters the model. A later integration must retain fuel availability, hand refuelling, load/sea cost, engine state, measured speed provenance and current behavior when disabled. That is separate reviewed composition work.
 
 ## Named proof and limits
 
-- `Reproduction_MatchesAuthoredCruiseBurnForEveryHullDef`: 45 hull cases, three supplied cruise speeds, forward/astern, engine-off and preserved idle; reads the actual hull/curve/profile YAML and serialized fuel settings.
-- `BurnIsMonotonicInSpeedForEveryHullDef`: 45 cases, 1000 increasing speed samples each; strict rise for 44 fueled profiles and exact zero for the rowed dory.
-- `RangeAtHalfSpeedExceedsRangeAtFullSpeedForEveryHullDef`: 45 cases, strict comparison for all 44 fuel budgets and the explicit rowed-dory invariant.
-- `ZeroAllocationsPerTick_AcrossEveryHullAndCurveBranch`: warmed Core-interface dispatch over 20,000 busy ticks, all 45 models, engine-off/idle/astern/both curve branches, with a known allocation as a mandatory counter/recorder positive control.
+- `Reproduction_MatchesAuthoredCruiseBurnForEveryHullDef`: 46 hull cases, three supplied cruise speeds, forward/astern, engine-off and preserved idle; reads the actual hull/curve/profile YAML and serialized fuel settings.
+- `BurnIsMonotonicInSpeedForEveryHullDef`: 46 cases, 1000 increasing speed samples each; strict rise for 45 fueled profiles and exact zero for the rowed dory.
+- `RangeAtHalfSpeedExceedsRangeAtFullSpeedForEveryHullDef`: 46 cases, strict comparison for all 45 fuel budgets and the explicit rowed-dory invariant.
+- `ZeroAllocationsPerTick_AcrossEveryHullAndCurveBranch`: warmed Core-interface dispatch over 20,000 busy ticks, all 46 models, engine-off/idle/astern/both curve branches, with a known allocation as a mandatory counter/recorder positive control.
 - Additional cases pin the cubic law, hump continuity/flatter high-speed behavior, repeatable real-hour integration and invalid-input handling.
-- `ImportedProfiles_ResolveEveryHullAndFactoryReproducesCruise`: Unity-only import/factory validation of the 45 actual Def references. The source compiles headlessly; executing it and Unity's allocation recorder requires CI. No editor lease is granted for this charter.
+- `ImportedProfiles_ResolveEveryHullAndFactoryReproducesCruise`: Unity-only import/factory validation of the 46 actual Def references. The source compiles headlessly; executing it and Unity's allocation recorder requires CI. No editor lease is granted for this charter.
 
 Native NUnit execution runs the real pure production sources and the file-based fleet cases. It is not a Unity physics, asset-import, player-feel or graphics test. A managed-assembly compilation checks full Core/Boats source and the conditional editor test code. The model remains unregistered and no runtime caller is added.

@@ -93,7 +93,7 @@ namespace HiddenHarbours.Tests.EditMode
                 else profiles.Add(f);
             }
             Assert.AreEqual(2, curves.Count, "One Def for each candidate hydrodynamic class.");
-            Assert.AreEqual(45, hulls.Count, "Pinned-main fleet changed: deliberately review content coverage.");
+            Assert.AreEqual(46, hulls.Count, "Pinned-main fleet changed: deliberately review content coverage.");
             Assert.AreEqual(hulls.Count, profiles.Count, "Every hull needs exactly one separate binding.");
             CollectionAssert.AreEquivalent(new[] { "fuelcurve.displacement", "fuelcurve.planing" },
                 curves.Values.Select(c => c["Id"]));
@@ -123,7 +123,7 @@ namespace HiddenHarbours.Tests.EditMode
                 });
             }
             Assert.AreEqual(32, result.Count(h => h.Curve.HullClass == FuelSpeedHullClass.Displacement));
-            Assert.AreEqual(13, result.Count(h => h.Curve.HullClass == FuelSpeedHullClass.Planing));
+            Assert.AreEqual(14, result.Count(h => h.Curve.HullClass == FuelSpeedHullClass.Planing));
             return result.OrderBy(h => h.Id, StringComparer.Ordinal).ToArray();
         }
 
@@ -286,7 +286,7 @@ namespace HiddenHarbours.Tests.EditMode
             var profiles = UnityEditor.AssetDatabase.FindAssets("t:FuelSpeedProfileDef", new[] { "Assets/_Project/Data" })
                 .Select(g => UnityEditor.AssetDatabase.LoadAssetAtPath<FuelSpeedProfileDef>(UnityEditor.AssetDatabase.GUIDToAssetPath(g)))
                 .ToArray();
-            Assert.AreEqual(45, hulls.Count);
+            Assert.AreEqual(46, hulls.Count);
             Assert.AreEqual(hulls.Count, profiles.Length);
             var seen = new HashSet<string>();
             foreach (var p in profiles)
