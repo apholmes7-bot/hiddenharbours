@@ -1,6 +1,6 @@
 # App → World
 
-Audit base: `7276a5c018160fecec7508bff0cbc51a0afbf45c`. Documentation only; static source inspection, no Unity run.
+Audit base: `12bc04b19a2efb33e352b4eea58104f7a5599be1`. Documentation only; static source inspection, no Unity run.
 
 **Priority: after the first goods transaction boundary. Classification: permitted composition; no feature-to-feature rule-4 violation identified.** App wires region content and a wharf presentation adapter. The [composition exception](../project-structure.md#5-assembly-definitions-asmdefs--the-dependency-rules-and-the-real-graph) applies. World must still expose reachable storage/support through Core when goods are integrated; these direct references are not a shortcut to inventory ownership.
 
@@ -15,7 +15,7 @@ Audit base: `7276a5c018160fecec7508bff0cbc51a0afbf45c`. Documentation only; stat
 | [ArrivalSeaDef.cs:11](../../../Assets/_Project/Code/App/ArrivalSeaDef.cs#L11) | `RegionDef` 11, 12 |
 | [NmcWharfBrowSpanVisual.cs:8](../../../Assets/_Project/Code/App/NmcWharfBrowSpanVisual.cs#L8) | `GangwayVisual` 8, 11 |
 
-`App.Editor` is a separate Editor-only assembly with its own declared World edge and 105 import directives to this target. Its scene builders, authoring tools and capture helpers are editor composition; they are excluded from the runtime table and are not shipped feature-to-feature violations.
+`App.Editor` is a separate Editor-only assembly with its own declared World edge and 106 import directives to this target. Its scene builders, authoring tools and capture helpers are editor composition; they are excluded from the runtime table and are not shipped feature-to-feature violations.
 
 ## Existing composition and future goods seam
 

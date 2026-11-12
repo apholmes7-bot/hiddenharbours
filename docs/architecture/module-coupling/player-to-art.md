@@ -1,6 +1,6 @@
 # Player → Art
 
-Audit base: `7276a5c018160fecec7508bff0cbc51a0afbf45c`. Static source review; no Unity execution or visual acceptance. This is a **permitted composition edge**, not an unrecorded feature-module dependency. [Player's asmdef:4](../../../Assets/_Project/Code/Player/HiddenHarbours.Player.asmdef#L4) references Art, and eight Player source files import it.
+Audit base: `12bc04b19a2efb33e352b4eea58104f7a5599be1`. Static source review; no Unity execution or visual acceptance. This is a **permitted composition edge**, not an unrecorded feature-module dependency. [Player's asmdef:4](../../../Assets/_Project/Code/Player/HiddenHarbours.Player.asmdef#L4) references Art, and eight Player source files import it.
 
 **Goods priority: medium for separating item identity/handling from presentation; low for rod and figure rendering.** [ADR 0055](../../adr/0055-goods-are-carried.md) requires presentation to read committed goods state. It does not require a headless lane to replace renderers, move sprite assets or change the look before the transfer model can be designed.
 

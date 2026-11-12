@@ -1,6 +1,6 @@
 # App → Environment
 
-Audit base: `7276a5c018160fecec7508bff0cbc51a0afbf45c`. Documentation only; static source inspection, no Unity run.
+Audit base: `12bc04b19a2efb33e352b4eea58104f7a5599be1`. Documentation only; static source inspection, no Unity run.
 
 **Priority: preserve during the first slice; no blocking edge removal. Classification: permitted service composition.** App constructs the concrete clock/environment and publishes their Core interfaces. One opening-specific downcast reads authored start time. This is different from making goods freshness depend on an Environment implementation.
 

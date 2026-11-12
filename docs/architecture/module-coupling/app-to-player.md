@@ -1,6 +1,6 @@
 # App → Player
 
-Audit base: `7276a5c018160fecec7508bff0cbc51a0afbf45c`. Documentation only; static source inspection, no Unity run.
+Audit base: `12bc04b19a2efb33e352b4eea58104f7a5599be1`. Documentation only; static source inspection, no Unity run.
 
 **Goods priority: medium, as a preservation requirement during first-slice integration, not a demonstrated defect. Classification: permitted composition.** App wires player control, input and wallet implementations. The [composition exception](../project-structure.md#5-assembly-definitions-asmdefs--the-dependency-rules-and-the-real-graph) permits these references. Goods ownership and transfer policy should not migrate into these cinematic/travel adapters.
 

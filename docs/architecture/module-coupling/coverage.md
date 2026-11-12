@@ -1,10 +1,10 @@
 # Audit coverage and source inventory
 
-Snapshot: `7276a5c018160fecec7508bff0cbc51a0afbf45c`. Counts describe that tree, not later branches. [Findings and priority](README.md).
+Snapshot: `12bc04b19a2efb33e352b4eea58104f7a5599be1`. Counts describe that tree, not later branches. [Findings and priority](README.md).
 
 ## Scope and method
 
-Enumerated all 37 asmdefs and 2,954 C# files under `Assets`, assigning each source to its nearest parent asmdef. No `.asmref` files were found. The project has 12 runtime assemblies, 10 editor-only project assemblies, and 15 test assemblies. `Tools.GoodsModel` is editor-only by `includePlatforms`, despite its name lacking the `.Editor` suffix. Platform metadata, rather than directory name or suffix alone, determines the audit boundary.
+Enumerated all 37 asmdefs and 3,027 C# files under `Assets`, assigning each source to its nearest parent asmdef. No `.asmref` files were found. The project has 12 runtime assemblies, 10 editor-only project assemblies, and 15 test assemblies. `Tools.GoodsModel` is editor-only by `includePlatforms`, despite its name lacking the `.Editor` suffix. Platform metadata, rather than directory name or suffix alone, determines the audit boundary.
 
 Read each runtime reference list, then searched namespace imports, aliases, static imports, fully qualified names, namespace-relative qualifiers, and relevant component discovery/reflection call sites. Removed comments from lexical candidates; reviewed candidates against target type declarations and actual usage. Namespace imports alone do not prove a concrete dependency. Strings naming friend assemblies/input assets, documentation references, same-module subnamespaces and Core types were excluded. This is a static source audit with manually reviewed candidates, not a compiler semantic-model proof or a runtime test. Conditional source is included; no Unity execution, player build, scene load, plate, save, or pricing verification is claimed.
 
@@ -31,7 +31,7 @@ There are ten directed non-Core runtime project edges: one recorded feature exce
 
 ## Cross-feature import ledger
 
-All 40 non-Core cross-feature `using` directives in runtime project sources are listed below, including the unused import noted on the Player → Boats page. Source lines are pinned to the snapshot. Full concrete type and member inventories are on the individual edge pages. Paths are relative to `Assets/_Project/Code/`.
+All 43 non-Core cross-feature `using` directives in runtime project sources are listed below, including the unused import noted on the Player → Boats page. Source lines are pinned to the snapshot. Full concrete type and member inventories are on the individual edge pages. Paths are relative to `Assets/_Project/Code/`.
 
 | Edge | Source/import line | Imported namespace |
 |---|---|---|
@@ -39,12 +39,15 @@ All 40 non-Core cross-feature `using` directives in runtime project sources are 
 | App → Boats | [App/ArrivalDeckWalk.cs:3](../../../Assets/_Project/Code/App/ArrivalDeckWalk.cs#L3) | `HiddenHarbours.Boats` |
 | App → Boats | [App/ArrivalOpening.cs:3](../../../Assets/_Project/Code/App/ArrivalOpening.cs#L3) | `HiddenHarbours.Boats` |
 | App → Boats | [App/NpcPotBoats.cs:4](../../../Assets/_Project/Code/App/NpcPotBoats.cs#L4) | `HiddenHarbours.Boats` |
+| App → Boats | [App/NpcPotDeck.cs:2](../../../Assets/_Project/Code/App/NpcPotDeck.cs#L2) | `HiddenHarbours.Boats` |
 | App → Boats | [App/PersistentHoldProxy.cs:5](../../../Assets/_Project/Code/App/PersistentHoldProxy.cs#L5) | `HiddenHarbours.Boats` |
 | App → Boats | [App/PilotageHelm.cs:2](../../../Assets/_Project/Code/App/PilotageHelm.cs#L2) | `HiddenHarbours.Boats` |
 | App → Boats | [App/RegionTravelCoordinator.cs:4](../../../Assets/_Project/Code/App/RegionTravelCoordinator.cs#L4) | `HiddenHarbours.Boats` |
 | App → Environment | [App/ArrivalOpening.Sea.cs:2](../../../Assets/_Project/Code/App/ArrivalOpening.Sea.cs#L2) | `HiddenHarbours.Environment` |
 | App → Environment | [App/GameRoot.cs:3](../../../Assets/_Project/Code/App/GameRoot.cs#L3) | `HiddenHarbours.Environment` |
 | App → Fishing | [App/NpcPotBoats.cs:6](../../../Assets/_Project/Code/App/NpcPotBoats.cs#L6) | `HiddenHarbours.Fishing` |
+| App → Fishing | [App/NpcPotDeck.cs:4](../../../Assets/_Project/Code/App/NpcPotDeck.cs#L4) | `HiddenHarbours.Fishing` |
+| App → Fishing | [App/NpcPotLandingWalk.cs:3](../../../Assets/_Project/Code/App/NpcPotLandingWalk.cs#L3) | `HiddenHarbours.Fishing` |
 | App → Player | [App/ArrivalDeckWalk.cs:4](../../../Assets/_Project/Code/App/ArrivalDeckWalk.cs#L4) | `HiddenHarbours.Player` |
 | App → Player | [App/ArrivalOpening.cs:4](../../../Assets/_Project/Code/App/ArrivalOpening.cs#L4) | `HiddenHarbours.Player` |
 | App → Player | [App/GameRoot.cs:4](../../../Assets/_Project/Code/App/GameRoot.cs#L4) | `HiddenHarbours.Player` |
@@ -76,13 +79,14 @@ All 40 non-Core cross-feature `using` directives in runtime project sources are 
 | Player → Economy | [Player/GinnyFreezer.cs:5](../../../Assets/_Project/Code/Player/GinnyFreezer.cs#L5) | `HiddenHarbours.Economy` |
 | Player → Economy | [Player/WetBucketPoint.cs:4](../../../Assets/_Project/Code/Player/WetBucketPoint.cs#L4) | `HiddenHarbours.Economy` |
 
-Three fully qualified runtime feature uses supplement the imports:
+Four fully qualified runtime feature uses supplement the imports:
 
 | Edge | Source | Token |
 |---|---|---|
 | Player → Art | [Player/CarryHands.cs:84](../../../Assets/_Project/Code/Player/CarryHands.cs#L84) | `HiddenHarbours.Art.CatchItemLibrary` |
 | Player → Art | [Player/CarryHands.cs:599](../../../Assets/_Project/Code/Player/CarryHands.cs#L599) | `HiddenHarbours.Art.CatchItemLibrary` |
 | Player → Art | [Player/CarryHands.cs:602](../../../Assets/_Project/Code/Player/CarryHands.cs#L602) | `HiddenHarbours.Art.CatchItemLibrary` |
+| Fishing → Economy | [Fishing/NpcPotDayDef.cs:122](../../../Assets/_Project/Code/Fishing/NpcPotDayDef.cs#L122) | `HiddenHarbours.Economy.BaitDef` |
 
 ## Exclusions and negative findings
 

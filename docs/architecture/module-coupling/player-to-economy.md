@@ -1,6 +1,6 @@
 # Player → Economy
 
-Audit base: `7276a5c018160fecec7508bff0cbc51a0afbf45c`. Static source review; no Unity execution. This is a **permitted composition edge**, under [project structure §5](../project-structure.md#5-assembly-definitions-asmdefs--the-dependency-rules-and-the-real-graph), with goods migration debt. It is not an additional unrecorded feature-module exception.
+Audit base: `12bc04b19a2efb33e352b4eea58104f7a5599be1`. Static source review; no Unity execution. This is a **permitted composition edge**, under [project structure §5](../project-structure.md#5-assembly-definitions-asmdefs--the-dependency-rules-and-the-real-graph), with goods migration debt. It is not an additional unrecorded feature-module exception.
 
 **Goods priority: high for the freezer interaction; low for the repair query and reach default.** Replacing the namespace import alone would not make transfers physical or atomic. [ADR 0055](../../adr/0055-goods-are-carried.md) requires an explicitly selected, reachable container and one transaction authority.
 

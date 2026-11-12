@@ -1,6 +1,6 @@
 # App → Economy
 
-Audit base: `7276a5c018160fecec7508bff0cbc51a0afbf45c`. Documentation only; static source inspection, no Unity run.
+Audit base: `12bc04b19a2efb33e352b4eea58104f7a5599be1`. Documentation only; static source inspection, no Unity run.
 
 **Priority: housekeeping only. Classification: declared assembly edge without a runtime source dependency.** App's asmdef lists Economy, but the runtime source scan finds no Economy import, qualified type use, or unqualified Economy type reference resolved from an import. The separate editor assembly does use Economy. An assembly declaration is not evidence of a concrete-class violation by itself.
 
