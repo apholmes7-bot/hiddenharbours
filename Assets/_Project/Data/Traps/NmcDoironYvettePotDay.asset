@@ -54,6 +54,26 @@ MonoBehaviour:
   HaulSeconds: 14
   DeckWorkSeconds: 30
   SetSeconds: 8
+  CatchRegionId: region.st_peters
+  Bait: {fileID: 11400000, guid: b21273961c48421c907782e724b25bab, type: 2}
+  PickSeconds: 2.5
+  BandSeconds: 2
+  StowSeconds: 2
+  ReturnSeconds: 1.5
+  BaitSeconds: 4
+  DeckWalkSeconds: 2.5
+  GradeBreaksMm:
+  - 95
+  - 110
+  BenchLocalMeters: {x: 0.8, y: -1.6}
+  CrateLocalMeters: {x: -0.9, y: -2.2}
+  CrateStepLocalMeters: {x: 0, y: -0.7}
+  CrateInsideMeters: {x: 0.75, y: 0.5}
+  CrateRowLength: 4
+  CrateShownCapacity: 16
+  ReturnOverTheSideMeters: 0.9
+  CatchDrawScale: 0.4
+  CatchSortingOrder: 30
   RopeLengthMeters: 10.5
   FloodBearingDegrees: 270
   FullStreamRiseMetersPerHour: 1
