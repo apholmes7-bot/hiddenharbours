@@ -71,6 +71,11 @@ namespace HiddenHarbours.World
         [Tooltip("Lines out over the flats: ground that is bare only at low water (digging).")]
         public BeachTransect[] Flats = Array.Empty<BeachTransect>();
 
+        [Tooltip("Lines down an even, gentle face that reaches below low water: where people leave " +
+                 "their things above the tide and go in to wade. One person per line; keep them at " +
+                 "least three metres apart.")]
+        public BeachTransect[] Shallows = Array.Empty<BeachTransect>();
+
         [Header("Sampling")]
         [Tooltip("How finely the ground is read along a line or a leg, in metres.")]
         [Min(0.05f)] public float SampleStepMetres = 0.25f;

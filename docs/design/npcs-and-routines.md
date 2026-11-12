@@ -888,6 +888,12 @@ The first conditional days (the §2.5 idea) are the people of St Peters using th
   else, so work, meals and sleep stay where the authored day has them. The gates are asked across
   the whole stay: people leave at the hour the weather turns or the tide comes over the flats, and
   everybody stands above the highest water of their stay plus the activity's clearance.
+- **The water is entered on purpose, by data.** A `Wade` activity leaves the dry sand, stands in
+  the shallows of a `Shallows` line and follows the edge as the tide moves it, then comes back out.
+  Each standing place is found for the water at the time they stand there, and none is taken if the
+  water over the ground would pass `DeepestWadeMetres` before they could be back on dry sand.
+- **An activity can wait on art.** `WaitsOn` (a swim animation, a prop) keeps an authored activity
+  in the library but out of the day; clearing the field is the whole of turning it on.
 - **What the sim does not have yet.** No rain (fog and a rough sea stand for a poor day) and no
   temperature (season and hour stand for warmth).
 

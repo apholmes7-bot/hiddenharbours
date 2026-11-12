@@ -9705,6 +9705,21 @@
       "Type": "HiddenHarbours.World.BeachActivityDef",
       "Guid": "fa52b85ddbcb48d0a23de6a3534427fb",
       "Id": "beachactivity.winter_walk"
+    },
+    {
+      "Type": "HiddenHarbours.World.BeachActivityDef",
+      "Guid": "b3a1f0c27d5e4c8e9a6b1d2e3f405162",
+      "Id": "beachactivity.wade"
+    },
+    {
+      "Type": "HiddenHarbours.World.BeachActivityDef",
+      "Guid": "5c9e7a1b3d2f4e60a8b7c6d5e4f30211",
+      "Id": "beachactivity.skip_stones"
+    },
+    {
+      "Type": "HiddenHarbours.World.BeachActivityDef",
+      "Guid": "9d8c7b6a5f4e4d3c8b2a190817263544",
+      "Id": "beachactivity.swim"
     }
   ]
 }
