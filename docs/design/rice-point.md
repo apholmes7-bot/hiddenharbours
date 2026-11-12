@@ -131,6 +131,38 @@ Package items the game cannot yet express or this wave deliberately leaves to th
 - NMC's next issue owns `field.nmc_west_farm_south`, `hedge.nmc_y_minus96` and the bluff-column correction.
   Package seam evidence is authoritative for this wave; a comparison to the game's NMC ground follows H2.
 
+## The trawler berths and the harbour works
+
+The owner's ruling of 2026-11-12: Rice Point wharf takes the trawlers. The deepest of them
+(`boat.stern_trawler_mk2`) draws 4.3 m and the lowest tide of the year is 2.2 m below the mean, so a berth needs
+its bed about 7 m below the mean. The second issue of the ground stops at -5.75 m and its raster could not
+encode anything below -6 m, so the ground the game sails on is now **the second issue, dredged**:
+
+- **The issued ground is kept as issued.** The second-issue rasters sit untouched in
+  `RicePointGround/Issue2Base/`; `plan.json` and its hashes still describe them, and the first-issue tests still
+  read them. Where `plan.json` measures the berth face (-2.0 m), the way in (a sill at -2.62 m) and the south
+  edge (-2.9 to -4.3 m, "no change at any stage"), it is describing the base, not the dredged harbour.
+- **The works are data.** `RicePointGround/harbour-works.json` names each cut (a line, a half width, a bed, a
+  batter) and the raster's new range, -10 to +6 m. Two cuts, both to -7.0 m: the basin off the wharf face and
+  the channel from it to the south edge. No cut lowers ground at or above +2.0 m, so the wharf and its wall
+  stand; a cut that would reach a still-water pool is refused.
+- **The live rasters are the base with the works applied, and nothing else.**
+  `GroundFileIntake.RicePointDredged` is the one function; the builder refuses to create or refresh the scene
+  unless the committed rasters are exactly its output, and the paint maps are derived from the dredged ground.
+- **The berths are data.** `Data/Berths/RicePointTrawlerFace.asset` (`berth.rpt_trawler_face`, alongside, a
+  metre off the wall) and `RicePointTrawlerOutside.asset` (`berth.rpt_trawler_outside`, the second boat lying
+  outside the first). A `BerthDef` says the length, beam and draught it takes, the water it promises under the
+  keel at the lowest tide (0.45 m here; the ground gives 0.5 m) and the way in from open water.
+  `RicePointTrawlerBerthTests` holds each trawler's draught against each berth and the whole way in.
+- **The way in is from the south.** The channel reaches the south edge between about x -55 and x -27, where
+  the open water to the south will join. The door to Nine Mile Creek is as shallow as it was: trawlers do not go
+  that way. The east edge is not moved by more than the re-encoding's last digit (0.12 mm).
+- **The scene keeps the range as numbers** on its two surfaces; `REFRESH Logic` now carries the plan's range
+  and paint floor to them.
+
+Not built: mooring a trawler at these berths in play, a ladder for them, and the south exit itself (its band
+comes from the south water's lane).
+
 ## Validation and Phase B handoff
 
 Pure tests, executed headlessly:

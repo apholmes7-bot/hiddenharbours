@@ -375,3 +375,10 @@ docs/art/rigs/gameplay/yachtTenderIsoRig.yacht_tender.walk.json text eol=lf
 docs/art/rigs/yachtTenderIsoRig.js text eol=lf
 docs/art/rigs/motorYacht84IsoRig.js text eol=lf
 docs/art/rigs/gameplay/motorYacht84IsoRig.motor_yacht_84.walk.json text eol=lf
+
+# Next-iteration rig sources (proposals beside the shipped rigs; hashed as written, LF)
+docs/art/rigs/treeIsoRig5.js                          text eol=lf
+docs/art/rigs/character/rig11/**/*.js                 text eol=lf
+docs/art/rigs/character/rig11/**/*.txt                text eol=lf
+docs/art/rigs/character/rig11/**/*.md                 text eol=lf
+docs/art/rigs/character/rig11/**/*.json               text eol=lf
