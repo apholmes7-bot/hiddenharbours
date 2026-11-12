@@ -62,7 +62,7 @@ namespace HiddenHarbours.Tests.PlayMode
         /// <summary>One of the four working ships (ADR 0041 rollout PR 2). She is the batch's journey
         /// because every one of the four declares an OPEN main deck at her house sole's height and her
         /// door's threshold sits there too — the tie a converted hull has no cells to break.</summary>
-        private const string ShipVisualPath = "Assets/_Project/Data/Boats/Visuals/SternTrawlerIso.asset";
+        private const string ShipVisualPath = "Assets/_Project/Data/Boats/Visuals/SternTrawlerMk2Iso.asset";
 
         /// <summary>The shader property the hull's occluding id block is written into. Named here because
         /// the test reads back what reached the RENDERER, which is the only thing the GPU would see.</summary>

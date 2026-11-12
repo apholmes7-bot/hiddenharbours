@@ -9747,6 +9747,26 @@
       "Type": "HiddenHarbours.World.BeachActivityDef",
       "Guid": "3f6a8d2c5b914e7fa1c0b9e8d7f6a5b4",
       "Id": "beachactivity.fly_a_kite"
+    },
+    {
+      "Type": "HiddenHarbours.Core.HullPaintSchemeDef",
+      "Guid": "b6dad690c3366964783d11461ccdbb58",
+      "Id": "paint.stern_trawler_bank_green"
+    },
+    {
+      "Type": "HiddenHarbours.Core.HullPaintSchemeDef",
+      "Guid": "bae5877a14776e84e914627ce5889892",
+      "Id": "paint.stern_trawler_harbour_blue"
+    },
+    {
+      "Type": "HiddenHarbours.Core.HullPaintSchemeDef",
+      "Guid": "1970c252730087d4ba660055f5402ae5",
+      "Id": "paint.stern_trawler_north_grey"
+    },
+    {
+      "Type": "HiddenHarbours.Core.HullPaintSchemeDef",
+      "Guid": "16f13d757f9cf964b9681d49d589735f",
+      "Id": "paint.stern_trawler_oxide_red"
     }
   ]
 }

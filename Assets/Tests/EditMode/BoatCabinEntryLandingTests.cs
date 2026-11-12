@@ -179,7 +179,9 @@ namespace HiddenHarbours.Tests
             // Re-measured with kit 4 in this PR; both hulls keep the doorway band guard.
             { "SportFisherConvertibleIso", new[] { 0, 1066947052, -1064598241, 1065353216, -2147483648 } },
             { "SportFisherSkybridgeIso", new[] { 0, -1082130432, -1056335462, 0, -1082130432 } },
-            { "SternTrawlerIso", new[] { 1, -1119040320, 1070134723, 0, -1082130432 } },
+            // Re-measured on her hull-walk@1 room: the house is level 0 (her main deck is no longer a
+            // room level) and its aft wall stands at y 1.81, where the Mk II's stays at 1.57.
+            { "SternTrawlerIso", new[] { 0, -1119040320, 1072147988, 0, -1082130432 } },
             { "SternTrawlerMk2Iso", new[] { 1, -1119040320, 1070134723, 0, -1082130432 } },
             { "TankerIso", new[] { 2, 0, -1035854152, 0, -1082130432 } },
         };

@@ -349,6 +349,7 @@ docs/art/rigs/cruiserIsoRig.js text eol=lf
 docs/art/rigs/gameplay/goFastIsoRig.go_fast.walk.json text eol=lf
 docs/art/rigs/gameplay/bowriderIsoRig.bowrider.walk.json text eol=lf
 docs/art/rigs/gameplay/cruiserIsoRig.express_cruiser.walk.json text eol=lf
+docs/art/rigs/gameplay/sternTrawlerIsoRig.stern_trawler.walk.json text eol=lf
 tools/rig-recipes/hull-walk.mjs text eol=lf
 tools/rig-recipes/hull-layout-check.mjs text eol=lf
 docs/art/rigs/gameplay/vehicles/modern2500.rig.gameplay.json text eol=lf
