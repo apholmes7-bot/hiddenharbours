@@ -533,3 +533,13 @@ MonoBehaviour:
     FrameRate: 60
   CreatorBackdropColor: {r: 0.921, g: 0.886, b: 0.8, a: 1}
   CreatorFigureHeightFraction: 0.6
+  HullFoam:
+    TrailFlipSpeed: 0.15
+    LeadWeight: 0.6
+    LeadSpeedKnee: 3
+    LeadSpanHalfBeams: 0.8
+    LeadRadiusHalfBeams: 0.35
+    SideWeight: 0.8
+    SideSpeedKnee: 1.2
+    SideRadiusHalfBeams: 0.3
+    SideReach: 0.7
