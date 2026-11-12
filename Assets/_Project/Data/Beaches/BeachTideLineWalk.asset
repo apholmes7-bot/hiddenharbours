@@ -37,7 +37,8 @@ MonoBehaviour:
   MinDepth01: 1
   MaxDepth01: 1
   MinDryMetres: 0
-  PersonSpacingMetres: 1.2
+  PersonSpacingMetres: 0.9
+  WalkersAbreast: 4
   MinStayMinutes: 30
   LingerMinutes: 8
   MinWadeDepthMetres: 0.08

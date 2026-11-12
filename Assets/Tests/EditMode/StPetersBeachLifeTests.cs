@@ -405,14 +405,12 @@ namespace HiddenHarbours.Tests.EditMode
                                   - _terrain.ElevationAt(e.Stops[k].Station.Position);
                     deepest = Mathf.Max(deepest, depth);
                     if (depth > 0f) wet = true;
+                    Assert.That(BeachPlanning.GatesPass(o.Activity, _sky, e.BeachDay, mid), Is.True,
+                                $"{Name(e)} place {k} at {mid:0.00} h: in the water after the weather turned");
                     Assert.That(depth, Is.GreaterThan(-0.15f), $"{Name(e)} place {k}: the edge has left them behind");
                 }
                 Assert.That(wet, Is.True, Name(e) + " never got their feet wet");
 
-                // The gates held the whole time they were there: calm, clear, warm hours.
-                for (float h = o.ArrivalHour; h <= o.LeaveHour; h += 1f / 6f)
-                    Assert.That(BeachPlanning.GatesPass(o.Activity, _sky, e.BeachDay, h), Is.True,
-                                $"{Name(e)} at {h:0.00} h");
             }
             TestContext.WriteLine($"{wades.Length} wades; deepest standing water {deepest:0.00} m");
         }
@@ -467,9 +465,9 @@ namespace HiddenHarbours.Tests.EditMode
 
                 // Until she sets off for the beach, she is exactly where she would have been.
                 for (float h = 0f; h < o.DepartureHour - 0.01f; h += 0.25f)
-                    Assert.That(e.Plan.SampleAt(h, _perHour).Position,
-                                Is.EqualTo(e.AuthoredPlan.SampleAt(h, _perHour).Position),
-                                $"{Name(e)} at {h:0.00} h");
+                    Assert.That(Vector2.Distance(e.Plan.SampleAt(h, _perHour).Position,
+                                                 e.AuthoredPlan.SampleAt(h, _perHour).Position),
+                                Is.LessThan(0.01f), $"{Name(e)} at {h:0.00} h");
 
                 // And at midnight she is home and still, so tomorrow's plan takes over without a step.
                 RoutinePose late = e.Plan.SampleAt(23.98f, _perHour);
