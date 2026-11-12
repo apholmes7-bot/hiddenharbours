@@ -392,6 +392,64 @@ namespace HiddenHarbours.Tests.PlayMode
         }
 
         [UnityTest]
+        public IEnumerator Landing_SheCarriesEachCrateUpTheLadderToTheBuyer_AndItIsSold()
+        {
+            Assert.IsTrue(_boats.TryBind(_def, _hull));
+            yield return At(_today.ReturnSeconds + 5.0);
+            NpcPotLanding plan = _boats.LandingOf(_def.Id);
+            NpcPotLandingWalk walk = _boats.LandingWalkOf(_def.Id);
+            NpcPotDeck deck = _boats.DeckOf(_def.Id);
+            Assert.IsNotNull(plan);
+            Assert.IsNotNull(walk);
+            Assert.IsTrue(plan.HasLanding, "seed 4242 day 2 lands keepers");
+            Assert.IsFalse(walk.IsAshore, "fast at her berth, she is still aboard");
+            for (int g = 0; g < walk.GradeCount; g++) Assert.IsFalse(walk.ShownAtCounter(g), "nothing is at the counter yet");
+
+            int crate = -1;
+            for (int g = 0; g < plan.GradeCount && crate < 0; g++)
+                if (plan.AboardAt(plan.StartSeconds, g) > 0) crate = g;
+            Assert.That(crate, Is.GreaterThanOrEqualTo(0));
+            Assert.That(deck.ShownInCrate(crate), Is.GreaterThan(0), "the crate is on her deck");
+
+            // The plan's own times for this crate: on the wharf with it, and the moment it is down.
+            double onTheWharf = -1.0, down = -1.0;
+            Vector2 secondCorner = _def.LandingRoute[1];
+            for (double t = plan.StartSeconds; t < plan.SoldAtSeconds && down < 0.0; t += 0.25)
+            {
+                NpcLandingMoment m = plan.MomentAt(t);
+                if (onTheWharf < 0.0 && m.Ashore && m.Crate == crate && m.Position.y > secondCorner.y) onTheWharf = t;
+                if (plan.AtCounterAt(t, crate) > 0) down = t;
+            }
+            Assert.That(onTheWharf, Is.GreaterThan(0.0));
+            Assert.That(down, Is.GreaterThan(onTheWharf));
+
+            yield return At(onTheWharf);
+            Assert.IsTrue(walk.IsAshore, "she is on the wharf");
+            Assert.That(walk.Step, Is.EqualTo(NpcLandingStep.Carrying));
+            Assert.That((walk.Position - plan.MomentAt(onTheWharf).Position).magnitude, Is.LessThan(1.5f), "where the clock says");
+            Assert.That(walk.Position.y, Is.GreaterThan(_def.LandingRoute[0].y), "past the top of the ladder");
+            if (_def.LandingCrateSprite != null) Assert.IsTrue(walk.InHands.enabled, "with the crate in her hands");
+            Assert.That(deck.ShownInCrate(crate), Is.EqualTo(0), "and it is no longer on the deck");
+            Assert.IsFalse(walk.ShownAtCounter(crate), "nor at the counter yet");
+            Assert.IsFalse(deck.InHand.enabled);
+            SpriteRenderer aboard = _hull.GetComponentInChildren<IsoCharacterSprite>(true)?.GetComponent<SpriteRenderer>();
+            if (aboard != null) Assert.IsFalse(aboard.enabled, "there is one of her: the figure on the boat is hidden");
+
+            yield return At(down + 0.3);
+            if (_def.LandingCrateSprite != null) Assert.IsTrue(walk.ShownAtCounter(crate), "the crate is down at the buyer's counter");
+            Assert.IsFalse(walk.InHands.enabled, "and out of her hands");
+
+            yield return At(plan.SoldAtSeconds + 0.5);
+            for (int g = 0; g < walk.GradeCount; g++) Assert.IsFalse(walk.ShownAtCounter(g), "the buyer has taken the lot");
+
+            yield return At(plan.EndSeconds + 1.0);
+            Assert.IsFalse(walk.IsAshore, "she is back aboard");
+            if (aboard != null) Assert.IsTrue(aboard.enabled);
+            for (int g = 0; g < deck.GradeCount; g++) Assert.That(deck.ShownInCrate(g), Is.EqualTo(0), "with empty crates");
+            Assert.That((deck.StandDeckMeters - deck.HelmDeckMeters).magnitude, Is.LessThan(0.01f));
+        }
+
+        [UnityTest]
         public IEnumerator HomeAgain_SheIsMooredAtHerBerth_AndTomorrowSheHaulsTodaysSet()
         {
             Assert.IsTrue(_boats.TryBind(_def, _hull));

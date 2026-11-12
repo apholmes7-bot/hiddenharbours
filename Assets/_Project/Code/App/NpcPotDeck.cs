@@ -109,7 +109,8 @@ namespace HiddenHarbours.App
         }
 
         /// <summary>Draws the deck at <paramref name="now"/>.</summary>
-        public void Tick(in NpcPotBoatPose pose, NpcPotDay today, NpcPotDayCatch catchOfTheDay, double now)
+        public void Tick(in NpcPotBoatPose pose, NpcPotDay today, NpcPotDayCatch catchOfTheDay, double now,
+                         NpcPotLanding landing = null)
         {
             Vector2 stand = _helm;
             float facing = 0f;            // degrees off the bow the hand faces
@@ -204,16 +205,41 @@ namespace HiddenHarbours.App
                 }
             }
 
+            // Home and landing: on deck she is where the landing says, a lifted crate in her hands; once she
+            // is on the ladder the figure ashore is the one drawn and the deck's hand is empty.
+            if (landing != null && landing.HasLanding && now >= landing.StartSeconds && now < landing.EndSeconds)
+            {
+                NpcLandingMoment at = landing.MomentAt(now);
+                if (!at.Ashore)
+                {
+                    stand = ToDeck(at.Position);
+                    facing = at.HeadingDegrees - pose.HeadingDegrees;
+                    if (at.Crate >= 0 && at.Step == NpcLandingStep.Carrying)
+                    {
+                        carried = _def.LandingCrateSprite;
+                        carriedAt = stand;
+                    }
+                }
+            }
+
             Step = step;
             StandAt(stand);
             Face(pose.HeadingDegrees + facing);
             Carry(carried, carriedAt);
             if (_wasReturning && !returning) Splash();
             _wasReturning = returning;
-            FillCrates(catchOfTheDay, now);
+            FillCrates(catchOfTheDay, now, landing);
         }
 
         // ---- the hand ---------------------------------------------------------------------------------
+
+        /// <summary>A world point as hull-local metres on a boat lying at the Def's berth.</summary>
+        private Vector2 ToDeck(Vector2 world)
+        {
+            Vector2 d = world - _def.BerthPosition;
+            return new Vector2(Vector2.Dot(d, NpcPotDay.Starboard(_def.BerthHeadingDegrees)),
+                               Vector2.Dot(d, NpcPotDay.Along(_def.BerthHeadingDegrees)));
+        }
 
         private Vector2 OnDeck(Vector2 deckPoint)
         {
@@ -251,7 +277,8 @@ namespace HiddenHarbours.App
             if (_inHand.sprite != sprite)
             {
                 _inHand.sprite = sprite;
-                _inHand.transform.localScale = new Vector3(_def.CatchDrawScale, _def.CatchDrawScale, 1f);
+                float scale = sprite == _def.LandingCrateSprite ? 1f : _def.CatchDrawScale;
+                _inHand.transform.localScale = new Vector3(scale, scale, 1f);
             }
             _inHand.transform.localPosition = new Vector3(hullLocal.x, hullLocal.y, 0f);
             if (!_inHand.enabled) _inHand.enabled = true;
@@ -267,12 +294,14 @@ namespace HiddenHarbours.App
 
         // ---- the crates -------------------------------------------------------------------------------
 
-        private void FillCrates(NpcPotDayCatch catchOfTheDay, double now)
+        private void FillCrates(NpcPotDayCatch catchOfTheDay, double now, NpcPotLanding landing)
         {
+            bool landed = landing != null && landing.HasLanding && now >= landing.StartSeconds;
             bool newDay = catchOfTheDay != null && catchOfTheDay.DayIndex != _shownDay;
             for (int g = 0; g < _crates.Length; g++)
             {
                 int stowed = catchOfTheDay != null ? catchOfTheDay.StowedAt(now, g) : 0;
+                if (landed && landing.AboardAt(now, g) == 0) stowed = 0;   // that crate has gone up the ladder
                 int show = Mathf.Min(stowed, _crates[g].Length);
                 if (show == _shown[g] && !newDay) continue;
 

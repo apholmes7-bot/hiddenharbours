@@ -169,6 +169,46 @@ namespace HiddenHarbours.Fishing
         [Tooltip("Sorting order of an animal in hand or in a crate (above the hull and its crew).")]
         public int CatchSortingOrder = 30;
 
+        [Header("The landing (clock seconds; she carries each crate to the buyer by hand)")]
+        [Tooltip("Where she walks once ashore, world metres: the top of the ladder at her berth first, the buyer's counter last.")]
+        public Vector2[] LandingRoute = Array.Empty<Vector2>();
+
+        [Tooltip("Where she steps off the boat to the ladder, hull-local metres (x starboard, y bow).")]
+        public Vector2 StepAshoreLocalMeters = new Vector2(-1.5f, 0f);
+
+        [Tooltip("Where she stands at the wheel when the landing starts and ends, hull-local metres.")]
+        public Vector2 LandingHelmLocalMeters = new Vector2(0f, 1f);
+
+        [Tooltip("After she is fast, how long before she starts on the crates.")]
+        [Min(0f)] public float LandingStartDelaySeconds = 10f;
+
+        [Tooltip("Walking pace with a crate, metres per second.")]
+        [Min(0.1f)] public float LandingWalkSpeed = 1.3f;
+
+        [Tooltip("Time on the ladder between the rail and the wharf top, either way.")]
+        [Min(0.1f)] public float LadderSeconds = 6f;
+
+        [Tooltip("Time to pick a crate up off the deck.")]
+        [Min(0f)] public float CrateLiftSeconds = 3f;
+
+        [Tooltip("Time to put a crate down at the counter.")]
+        [Min(0f)] public float CrateSetDownSeconds = 3f;
+
+        [Tooltip("Time the buyer takes to weigh the lot once the last crate is down.")]
+        [Min(0f)] public float SaleSeconds = 20f;
+
+        [Tooltip("The crate she carries and puts down at the counter.")]
+        public Sprite LandingCrateSprite;
+
+        [Tooltip("Where the crate is drawn in her hands ashore, metres from her feet.")]
+        public Vector2 CrateCarryOffsetMeters = new Vector2(0f, 0.3f);
+
+        [Tooltip("Where the crates go down, metres from the end of the route.")]
+        public Vector2 CounterCrateOffsetMeters = new Vector2(0f, 0.5f);
+
+        [Tooltip("Gap between the crates put down at the counter, metres.")]
+        [Min(0f)] public float CounterCrateSpacingMeters = 0.7f;
+
         [Header("Rope and buoy")]
         [Tooltip("Rope from pot to buoy, metres. Must exceed the deepest water over the string.")]
         [Min(0.5f)] public float RopeLengthMeters = 10.5f;
