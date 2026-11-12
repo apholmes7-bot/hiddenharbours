@@ -1,0 +1,83 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d885412cd35443658a752ed3d82c526c, type: 3}
+  m_Name: BeachEveningFire
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.BeachActivityDef
+  Id: beachactivity.evening_fire
+  DisplayName: A fire on the beach at the end of the day
+  Beach: {fileID: 11400000, guid: 60cc5419c7994a05914b444264392ddc, type: 2}
+  Kind: 4
+  Replaces: 3
+  Tag: 3
+  Who: []
+  ChancePerDay: 0.15
+  EarliestHour: 17.5
+  LatestHour: 21.5
+  InEarlySpring: 1
+  InHighSummer: 1
+  InTheTurn: 1
+  InHardWinter: 0
+  MinWaterLevelMetres: -100
+  MaxWaterLevelMetres: 100
+  MinWindStrength: 0
+  MaxWindStrength: 5.5
+  MaxSeaState01: 0.5
+  MinVisibility01: 0.5
+  GateSampleMinutes: 10
+  ClearanceMetres: 0.6
+  MinDepth01: 0.3
+  MaxDepth01: 0.6
+  MinDryMetres: 4
+  PersonSpacingMetres: 1.2
+  WalkersAbreast: 4
+  MinStayMinutes: 45
+  LingerMinutes: 0
+  MinWadeDepthMetres: 0.08
+  MaxWadeDepthMetres: 0.25
+  DeepestWadeMetres: 0.4
+  WadeMinutes: 25
+  WadeWanderMetres: 0.7
+  GatherRadiusMetres: 1.7
+  GatherPlaces: 6
+  GatherOpenBearingDegrees: 270
+  CentreSprite: {fileID: 1338651293, guid: 40e5fbe6f4b5ff84b9c29b8ff50d8f3c, type: 3}
+  CentreIsLit: 1
+  GlowColor: {r: 1, g: 0.62, b: 0.28, a: 1}
+  GlowRangeMetres: 5
+  GlowIntensity: 1.3
+  GlowFlicker01: 0.35
+  GlowHeightMetres: 0.4
+  CentreLingersMinutes: 45
+  Talk:
+  - Lines:
+    - Speaker: {fileID: 11400000, guid: 1812e1b614eb4f5da2ad5be5808f804f, type: 2}
+      Text: That driftwood was wetter than it looked.
+    - Speaker: {fileID: 11400000, guid: 4083b8134ca747f68837268d2bd45653, type: 2}
+      Text: It is burning, is it not? Leave it be.
+  - Lines:
+    - Speaker: {fileID: 11400000, guid: 5b26b6a8c5154f86b2ea4b17e2511e1f, type: 2}
+      Text: My mother lit one on this very spot.
+    - Speaker: {fileID: 11400000, guid: 2f8985f554ea4c9c84e248e9b8be1859, type: 2}
+      Text: Everybody lit one on this very spot.
+    - Speaker: {fileID: 11400000, guid: 5b26b6a8c5154f86b2ea4b17e2511e1f, type: 2}
+      Text: Then it is a good spot.
+  - Lines:
+    - Speaker: {fileID: 11400000, guid: 4083b8134ca747f68837268d2bd45653, type: 2}
+      Text: Tide is on the turn. Hear it?
+    - Speaker: {fileID: 11400000, guid: 1812e1b614eb4f5da2ad5be5808f804f, type: 2}
+      Text: I hear my supper settling.
+  - Lines:
+    - Speaker: {fileID: 11400000, guid: 2f8985f554ea4c9c84e248e9b8be1859, type: 2}
+      Text: Who is bringing the wood next time?
+    - Speaker: {fileID: 11400000, guid: 1812e1b614eb4f5da2ad5be5808f804f, type: 2}
+      Text: Whoever asks.
+  WaitsOn: 

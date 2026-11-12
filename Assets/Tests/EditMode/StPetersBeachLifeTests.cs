@@ -196,6 +196,27 @@ namespace HiddenHarbours.Tests.EditMode
                 Assert.That(a.Id, Does.StartWith("beachactivity."), a.name);
                 Assert.That(a.IsRunnable, Is.EqualTo(string.IsNullOrEmpty(a.WaitsOn)),
                     a.Id + ": an activity runs unless it says what it waits on");
+                if (a.Kind == BeachActivityKind.Gather)
+                {
+                    Assert.That(a.Beach.Gatherings, Is.Not.Empty, a.Id + ": a gathering needs gathering lines");
+                    // Round the ring, neighbours are a chord apart: nobody stands on somebody else.
+                    float chord = 2f * a.GatherRadiusMetres * Mathf.Sin(Mathf.PI / Mathf.Max(2, a.GatherPlaces));
+                    Assert.That(chord, Is.GreaterThan(1f), a.Id + ": the places round the middle are too close");
+                    Assert.That(a.CentreLingersMinutes / 60f,
+                                Is.LessThanOrEqualTo(BeachPlanning.GatherLeaveMarginHours),
+                                a.Id + ": the middle is only kept above the water for the margin after the latest hour");
+                    foreach (BeachTalk talk in a.Talk)
+                    {
+                        Assert.That(talk.Lines, Is.Not.Empty, a.Id + ": an exchange with nothing said");
+                        foreach (BeachTalkLine line in talk.Lines)
+                        {
+                            Assert.That(line.Speaker, Is.Not.Null, a.Id + ": a line nobody says");
+                            Assert.That(line.Text, Is.Not.Empty, a.Id + ": a line with nothing in it");
+                            Assert.That(_routines.Any(r => r.Npc == line.Speaker), Is.True,
+                                $"{a.Id}: {line.Speaker.DisplayName} has no day in St Peters, so could never be there");
+                        }
+                    }
+                }
                 if (a.Kind == BeachActivityKind.Wade)
                 {
                     Assert.That(a.MinWadeDepthMetres, Is.LessThanOrEqualTo(a.MaxWadeDepthMetres), a.Id);
@@ -239,7 +260,8 @@ namespace HiddenHarbours.Tests.EditMode
                             $"{beach.Id}: shallows lines {i} and {j} are too close for two people to wander");
                 }
 
-                foreach (BeachTransect line in beach.Spots.Concat(beach.Promenade).Concat(beach.Shallows))
+                foreach (BeachTransect line in beach.Spots.Concat(beach.Promenade).Concat(beach.Shallows)
+                                                    .Concat(beach.Gatherings))
                 {
                     Assert.That(_terrain.ElevationAt(line.Top), Is.GreaterThan(springHigh + 1f),
                         $"{beach.Id}: the top of the line at {line.Top} must stay dry on a spring high");
@@ -413,6 +435,57 @@ namespace HiddenHarbours.Tests.EditMode
 
             }
             TestContext.WriteLine($"{wades.Length} wades; deepest standing water {deepest:0.00} m");
+        }
+
+        [Test]
+        public void AGathering_IsOnePlaceForEverybody_AndTheyFaceIt()
+        {
+            int gatherings = 0, biggest = 0, withTalk = 0;
+            foreach (IGrouping<int, Evening> day in Outings
+                         .Where(e => e.Outing.Activity.Kind == BeachActivityKind.Gather).GroupBy(e => e.Day))
+            {
+                Evening[] there = day.ToArray();
+                gatherings++;
+                biggest = Mathf.Max(biggest, there.Length);
+                BeachActivityDef activity = there[0].Outing.Activity;
+                Assert.That(BeachPlanning.TryGatheringCentre(activity, _terrain, _sky, there[0].BeachDay,
+                                                            out Vector2 middle), Is.True, Name(there[0]));
+
+                foreach (Evening e in there)
+                {
+                    Assert.That(e.Outing.Activity, Is.SameAs(activity), Name(e) + ": one gathering a day");
+                    Assert.That(Vector2.Distance(e.Outing.GatherAt, middle), Is.LessThan(0.001f), Name(e));
+                    Assert.That(e.Outing.StopCount, Is.EqualTo(1), Name(e));
+
+                    RoutineStationEntry place = e.Stops[e.Outing.FirstStop].Station;
+                    float out_ = Vector2.Distance(place.Position, middle);
+                    Assert.That(out_, Is.GreaterThan(activity.GatherRadiusMetres - 0.01f), Name(e));
+                    Assert.That(out_, Is.LessThan(activity.GatherRadiusMetres + activity.PersonSpacingMetres + 0.01f),
+                                Name(e));
+
+                    float facing = place.StandHeadingDegrees * Mathf.Deg2Rad;
+                    Vector2 looks = new Vector2(Mathf.Sin(facing), Mathf.Cos(facing));
+                    Assert.That(Vector2.Dot(looks, (middle - place.Position).normalized), Is.GreaterThan(0.99f),
+                                Name(e) + ": they face the middle");
+                }
+
+                // The middle (a fire) is above the water from the first arrival until it has burnt down.
+                float from = there.Min(e => e.Outing.ArrivalHour);
+                float until = there.Max(e => e.Outing.LeaveHour) + activity.CentreLingersMinutes / 60f;
+                for (float h = from; h <= until; h += 1f / 30f)
+                    Assert.That(_terrain.ElevationAt(middle) - _sky.WaterLevelAt(there[0].BeachDay.TimeAt(h)),
+                                Is.GreaterThan(0.3f), $"{Name(there[0])}: the middle at {h:0.00} h");
+
+                // Somebody has something to say when two who share an exchange are both standing there.
+                foreach (BeachTalk talk in activity.Talk)
+                    if (talk.Lines.All(l => there.Any(e => e.Routine.Npc == l.Speaker))) { withTalk++; break; }
+            }
+
+            Assert.That(gatherings, Is.GreaterThan(3), "the village gathers on the sand some evenings of the year");
+            Assert.That(biggest, Is.GreaterThanOrEqualTo(3), "and it is a gathering: several of them at once");
+            Assert.That(withTalk, Is.GreaterThan(0), "with something said at some of them");
+            TestContext.WriteLine($"{gatherings} gatherings in the year, the biggest of {biggest}; " +
+                                  $"{withTalk} with an exchange that could be had");
         }
 
         [Test]

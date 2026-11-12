@@ -46,4 +46,16 @@ MonoBehaviour:
   DeepestWadeMetres: 1.4
   WadeMinutes: 15
   WadeWanderMetres: 0.7
+  GatherRadiusMetres: 1.5
+  GatherPlaces: 6
+  GatherOpenBearingDegrees: 270
+  CentreSprite: {fileID: 0}
+  CentreIsLit: 0
+  GlowColor: {r: 1, g: 0.62, b: 0.28, a: 1}
+  GlowRangeMetres: 5
+  GlowIntensity: 1.3
+  GlowFlicker01: 0.35
+  GlowHeightMetres: 0.4
+  CentreLingersMinutes: 45
+  Talk: []
   WaitsOn: a swim and tread animation for villagers; the two clips that exist are for the player figure only
