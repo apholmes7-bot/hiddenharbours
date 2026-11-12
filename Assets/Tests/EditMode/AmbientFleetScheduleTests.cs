@@ -16,6 +16,33 @@ namespace HiddenHarbours.Tests.EditMode
         private const float WorkEnd = 0.8f;
         private const float Flip = 0.675f;          // the work window's midpoint
 
+        [TestCase(0f)]
+        [TestCase(2.5f)]
+        public void LoadAtEveryHourAndBuoyFlip_MatchesAnIndependentEventReplay(float phase)
+        {
+            var samples = new System.Collections.Generic.List<double>();
+            for (int quarterHour = 0; quarterHour < 96; quarterHour++)
+                samples.Add(AmbientFleetSchedule.SlotPosition(quarterHour / 96f, 12, phase));
+            for (int slot = 0; slot < 16; slot++)
+            {
+                samples.Add(slot + (double)Flip - 1e-7);
+                samples.Add(slot + (double)Flip);
+                samples.Add(slot + (double)Flip + 1e-7);
+            }
+            samples.Reverse();
+            foreach (double at in samples)
+            {
+                // Independent oracle: replay each completed place/haul event from the empty day.
+                // The loaded schedule gets only the target clock and never receives these events.
+                var replayed = new bool[K];
+                for (int visit = 0; visit + (double)Flip <= at; visit++)
+                    replayed[visit % K] = !replayed[visit % K];
+                for (int spot = 0; spot < K; spot++)
+                    Assert.That(AmbientFleetSchedule.BuoyPresent(at, spot, K, Flip),
+                        Is.EqualTo(replayed[spot]), $"phase={phase:R}, slot={at:R}, spot={spot}");
+            }
+        }
+
         [Test]
         public void WorkFlip_IsTheWindowMidpoint()
         {
