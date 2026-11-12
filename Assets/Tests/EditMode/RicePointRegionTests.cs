@@ -114,11 +114,14 @@ namespace HiddenHarbours.Tests.EditMode
             plan.Validate();
             var neighbour = AssetDatabase.LoadAssetAtPath<RegionDef>("Assets/_Project/Data/Regions/NineMileCreek.asset");
             var passages = roots.SelectMany(g => g.GetComponentsInChildren<RegionPassage>(true)).ToArray();
-            Assert.That(passages.Length, Is.EqualTo(3));
+            Assert.That(passages.Length, Is.EqualTo(plan.Doors.Length));
+            var southWater = RicePointDoors.SouthWaterDoor(plan).Target;
+            Assert.That(southWater != null && southWater.Id == "region.south_water", Is.True, "the channel mouth leads to the South Water");
             foreach (var door in plan.Doors)
             {
                 var passage = passages.Single(p => p.name == door.Id);
-                Assert.That(passage.Target != null && passage.Target == neighbour, Is.True, door.Id + " lost its target.");
+                var leadsTo = door.OwnArrival == RicePointDoors.FromSouthWaterArrivalKey ? southWater : neighbour;
+                Assert.That(passage.Target != null && passage.Target == leadsTo, Is.True, door.Id + " lost its target.");
                 Assert.That(Saved(passage, "_loader").Single() != null, Is.True, door.Id + " lost its loader.");
                 Assert.That(passage.ArrivalKey, Is.EqualTo(door.TargetArrival));
             }
@@ -127,7 +130,7 @@ namespace HiddenHarbours.Tests.EditMode
             var loaders = roots.SelectMany(g => g.GetComponentsInChildren<RegionSceneLoader>(true)).ToArray();
             Assert.That(loaders.Length, Is.EqualTo(2));
             foreach (var loader in loaders)
-                Assert.That(Saved(loader, "_regions"), Is.EqualTo(new Object[] { plan.Region, neighbour }));
+                Assert.That(Saved(loader, "_regions"), Is.EqualTo(new Object[] { plan.Region, neighbour, southWater }));
             var boat = roots.SelectMany(g => g.GetComponentsInChildren<BoatController>(true)).Single();
             var hold = roots.SelectMany(g => g.GetComponentsInChildren<ShipHold>(true)).Single();
             Assert.That(boat.Hull == plan.DevHull && hold.Hull == plan.DevHull, Is.True, "The dev boat lost its hull.");
@@ -204,12 +207,13 @@ namespace HiddenHarbours.Tests.EditMode
             {
                 var loader = root.AddComponent<RegionSceneLoader>();
                 LandSceneTemplate.AddDoors(p, root.transform, loader);
-                Assert.That(root.GetComponentsInChildren<RegionPassage>().Length, Is.EqualTo(3));
+                Assert.That(root.GetComponentsInChildren<RegionPassage>().Length, Is.EqualTo(p.Doors.Length));
                 foreach (var d in p.Doors)
                 {
                     var go = root.transform.Find(d.Id);
                     var passage = go.GetComponent<RegionPassage>();
-                    Assert.That(passage.Target.Id, Is.EqualTo("region.nine_mile_creek"));
+                    Assert.That(passage.Target.Id, Is.EqualTo(
+                        d.OwnArrival == RicePointDoors.FromSouthWaterArrivalKey ? "region.south_water" : "region.nine_mile_creek"));
                     Assert.That(passage.ArrivalKey, Is.EqualTo(d.TargetArrival));
                     Assert.That(go.GetComponent<BoxCollider2D>().size, Is.EqualTo(d.Size));
                     Assert.That(go.GetComponent<BoxCollider2D>().isTrigger, Is.True);
@@ -238,7 +242,7 @@ namespace HiddenHarbours.Tests.EditMode
                 Assert.That(first.WorldBounds.size, Is.EqualTo(new Vector2(760, 360)));
                 Assert.That(second.WorldBounds.size, Is.EqualTo(new Vector2(80, 60)));
                 Assert.That(first.RegionId, Is.Not.EqualTo(second.RegionId));
-                Assert.That(first.Arrivals.Length, Is.EqualTo(3)); Assert.That(second.Arrivals, Is.Empty);
+                Assert.That(first.Arrivals.Length, Is.EqualTo(p.Doors.Length)); Assert.That(second.Arrivals, Is.Empty);
                 foreach (var d in p.Doors.Where(d => d.OnFootOnly))
                     Assert.That(first.Arrivals.Single(x => x.Key == d.OwnArrival).ArrivalPoint, Is.Null, "Walking does not move the boat");
             }
