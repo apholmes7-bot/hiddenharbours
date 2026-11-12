@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 55ec0f12c6cf499394e829f1e429aa3d, type: 3}
+  m_Name: RicePointTrawlerOutside
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.BerthDef
+  Id: berth.rpt_trawler_outside
+  RegionId: region.rice_point
+  DisplayName: Outside the face berth
+  Stern: {x: -49.81, y: -133.17}
+  Bow: {x: -32.03, y: -99.59}
+  BeamMeters: 10.4
+  MaxDraughtMeters: 4.3
+  KeelClearanceMeters: 0.45
+  Approach:
+  - {x: -41.13, y: -178.4}
+  - {x: -46, y: -150}
+  - {x: -49.09, y: -133}
+  ApproachHalfWidthMeters: 9
+  Why: The second trawler lies outside the first, the way a working wharf doubles up, in the same dredged basin.
