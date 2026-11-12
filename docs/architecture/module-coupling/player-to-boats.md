@@ -1,0 +1,49 @@
+# Player → Boats
+
+Audit base: `7276a5c018160fecec7508bff0cbc51a0afbf45c`. Static source review; no Unity execution. This is a **permitted composition edge** under [project structure §5](../project-structure.md#5-assembly-definitions-asmdefs--the-dependency-rules-and-the-real-graph). It is still a major boundary for the [ADR 0055](../../adr/0055-goods-are-carried.md) hold→hand→deck→shore route.
+
+**Goods priority: high.** A portable container's support must follow the same hull frame and deck access as its carrier, while rope work must respect the two occupied hands. Merely replacing class names in Player would not prove either rule.
+
+## Complete source inventory
+
+[Player's asmdef:4](../../../Assets/_Project/Code/Player/HiddenHarbours.Player.asmdef#L4) references Boats. Five Player files import it; four use Boats types. The table records all explicitly named foreign types at code/declaration sites, with receiver behavior grouped beside them. Comments and unrelated members that happen to share a type name are excluded.
+
+| Consumer / import | Boats types and explicit reference lines | Boundary responsibility |
+|---|---|---|
+| [ControlSwitcher.cs:4](../../../Assets/_Project/Code/Player/ControlSwitcher.cs#L4) | `BoatController`: 55, 1805, 2934; `BoatMooring`: 61, 290, 295; `BoatCrossing`: 641, 2163; `BoatDeckAreas`: 483; `BoatDeckDef`: 483, 514; `BoatHullDef`: 1236, 2693; `BoatInterior`: 1800, 1806; `DeckAreaMath`: 451, 535, 2866, 2885 | Configures/toggles/stops the live boat, reads hull id/draught, ticks unmanned drift, resolves deck/interior access, and changes mooring state during boarding/shore transitions. |
+| [DeckWalkController.cs:2](../../../Assets/_Project/Code/Player/DeckWalkController.cs#L2) | `BoatDeckDef`: 76, 139, 235, 330, 360, 443, 446, 494, 559, 607, 642, 765, 803, 847, 891, 935, 985, 988, 998, 1026, 1314, 1360, 1409, 1514, 1557, 1585, 1604, 1632. `BoatDeckAreas`: 389, 446, 988. `BoatCabinWalkMath`: 257, 269, 270, 271. `BoatHullPresenterHost`: 388, 435, 437, 962, 964, 976, 978, 1268. `DirectionalBoatSprite`: 413, 966. `DeckArea`: 942; `DeckAreaKind`: 943. `DeckAreaMath`: 285, 298, 455, 500, 518, 585, 725, 774, 811, 832, 944, 945, 975, 979, 1071, 1091, 1115, 1160, 1520, 1529, 1611, 1636, 1645. `IBoatHullPresenter`: 75, 84, 93, 432, 963, 977, 1242, 1265, 1281. | Resolves current hull/deck, maps projected and rig-local coordinates, clamps steps to walkable decks/cabins and handles levels, thresholds and routes. |
+| [DeckRiderVisual.cs:2](../../../Assets/_Project/Code/Player/DeckRiderVisual.cs#L2) | `BoatWaveMotion`: 239, 1343; `BoatController`: 240, 1344; `BoatHullPresenterHost`: 1114, 1345; `BoatVisualDef`: 705, 739, 1241; `DeckArea`: 716; `DeckAreaKind`: 718; `DeckAreaMath`: 718; `DirectionalBoatSprite`: 1063; `MountedRockPoseMath`: 1289; `IBoatHullPresenter`: 241, 262, 341, 423, 445, 862, 1060, 1111, 1258. | Resolves current hull pose, deck stand/helm anchors, authored visual dimensions and wave/movement state, then keeps the drawn rider on that support. |
+| [MooringController.cs:4](../../../Assets/_Project/Code/Player/MooringController.cs#L4) | `BoatMooring`: 61, 101, 139 | Reads `IsMadeFast` (196), calls `MakeFast` (277), `CastOff` (309), `AdjustScope` (319), and compares `BoatCleat`/`ShoreCleat` (329–330). |
+| [DeckRiderMeshPresenter.cs:2](../../../Assets/_Project/Code/Player/DeckRiderMeshPresenter.cs#L2) | None | Import-only. Its renderer dependencies belong to [Player → Art](player-to-art.md). This unused directive is not counted as another concrete consumer. |
+
+There are **17 distinct top-level Boats types** across four concrete consumers: 15 classes, one enum (`DeckAreaKind`) and one interface (`IBoatHullPresenter`). That interface still resides in Boats, not Core; it is not evidence that this edge already obeys the general Core-contract rule. `BoatAnchor(...)` in `ControlSwitcher` is a local method (3358), not a reference to the Boats component with the same name. `Pose` in `DeckRiderVisual` is a local property/Core pose value, not a Boats type dependency. No additional qualified Boats references, aliases, string type lookups or reflection loads were found in Player.
+
+## Core handoff proposal
+
+New names below are proposed API shapes. Preserve existing data asset identity and presentation math; this audit does not authorize moving definitions or rendering code.
+
+| Coupling group | Contract or signal that should carry it | Existing seams to reuse |
+|---|---|---|
+| Boat controller lifecycle / hull identity | Proposed Core `IBoatControl` exposes typed helm enable/stop/unmanned tick commands and an immutable hull identity/draught read; the composition root wires it. Do not expose `MonoBehaviour.enabled` as the gameplay protocol. | Existing `IActiveBoatService`, helm service and `ControlModeChanged` already publish mode context. Keep mode transition authority in one place. |
+| Deck Def, area math, interior discovery and crossing checks | Proposed Core `IBoardingAccess` / `IDeckAccess` provide current walkable deck/level, route and boarding results. Proposed `IGoodsSupport` exposes the actual region/level/hull instance, support polygon/height, opening state and interaction point needed by transfers. | Existing `IBoardingLadder`, `ICabinThreshold`, floor/door seams and `IDeckOccupantSlots` carry parts of the answer. Keep Boats' implementation and authored `BoatDeckDef` identity behind the adapter. |
+| `IBoatHullPresenter`, presenter host, visual Def, wave motion and pose helpers | A narrow Core support-frame/pose read should expose the current hull transform, rig-local→world mapping and resolved height/attitude needed for the carried support. Presentation-specific rider operations may remain an explicit composition adapter or use a proposed `IDeckRiderPresentation` handle. | Existing `IHullTideRide`, `IHullMeshRenderer`, `IHullPresence`, `ICharacterFigureStand` and Core `DeckRidePose` / `DeckRideMath` already provide related data. Avoid a second cached heading/height that can diverge from the live hull. |
+| `BoatMooring` commands | Proposed Core `IMooringCommands` / `IMooringRead` expose hold/stow/make-fast/cast-off/scope outcomes and live endpoints. Each player action receives a hand reservation or a typed refusal before changing rope state. | Existing `IMooringCleat`, `MooringCleats` and `MooringLineChanged` are Core. The event reports a completed result; it must not be the request or the only rope/hand state. |
+
+The proposed goods authority should consume support/access results rather than concrete Boats geometry. It must resolve a moving parent at commit, reject an unreachable/closed/different-level destination, and keep the item's stable id. Do not use an asynchronous event subscriber to make a transfer happen after the player has already released ownership.
+
+## Source-proven gap and failing-case descriptions
+
+**Rope work has no hand-capacity transaction at this boundary.** These are static deductions, not executed failing tests:
+
+- [ControlSwitcher.cs:1283](../../../Assets/_Project/Code/Player/ControlSwitcher.cs#L1283) calls `Mooring.Hold(Player)` on shore handoff whenever both references exist. The surrounding transition (1257–1287) changes mode/position and requests rope state without checking `ICatchHands`, `IHandsCarrier` or a hand reservation. [BoatMooring.Hold:326–340](../../../Assets/_Project/Code/Boats/BoatMooring.cs#L326) returns immediately when already `MadeFastToCleat`; otherwise it can enter the held state. Reproduction: occupy both hand slots, use a boat not already made fast to a cleat, take this shore transition, and inspect whether the rope becomes held while both slots remain occupied. ADR 0055 requires an explicit supported transfer or refusal; it does not grant a third hand or permit silently replacing the catch. This does not claim every disembarkation takes a rope in hand.
+- [MooringController.cs:220](../../../Assets/_Project/Code/Player/MooringController.cs#L220) starts the throw after checking input, pointer, cleat and mooring; it does not check hands. [Line 277](../../../Assets/_Project/Code/Player/MooringController.cs#L277) makes fast after the trajectory reaches the opposing cleat. Reproduction: two occupied hand slots, valid nearby cleats, then a valid toss gesture. The code path can progress to `MakeFast` without proving a free hand. Future exact-result test: a refused rope action preserves the catch ids, both slots, endpoints and rope phase; freeing the required hand enables the same action.
+
+These gaps are adjacent to the allowed composition edge; the edge itself is not proof of a gameplay bug. No deck geometry or rendering regression was established. Source comments about prior defects are not counted as current defects. The audit deliberately makes no claim that a currently authored scene offers every repro route.
+
+## Migration order and proof
+
+1. Define the Core support/access and hand-reservation results alongside the first goods transaction contract. Prove full hands and unreachable source/destination failures with exact unchanged-state assertions.
+2. Adapt the current boat/deck implementation without changing asset GUIDs, level geometry, boarding routes, mooring tuning or saved data. Preserve the live hull pose read used by both walker and rider; test a moving/rocking deck and a hull swap against stale-support rejection.
+3. Prove the real hold→hand→deck→shore→counter route in the owning integration/art lanes. The carrying item must retain its id, hand occupancy and support through boarding, disembarkation and mooring. Visual proof belongs to those lanes; this document neither judges nor re-baselines pixels.
+
+Pure compilation/asmdef cleanliness cannot prove these route guarantees. A contract extraction can precede implementation, while renderer-wide cleanup stays lower priority. No shipped behavior, save format, tuned number, scene, art asset or test assertion changes in this audit.
