@@ -11563,6 +11563,7 @@ Transform:
   - {fileID: 1007019259}
   - {fileID: 713340019}
   - {fileID: 1577524529}
+  - {fileID: 702815532}
   m_Father: {fileID: 1610473398}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &544055001
@@ -11624,6 +11625,56 @@ MonoBehaviour:
   m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.PaintedTidalTerrain
   _map: {fileID: 11400000, guid: e06039ea1a5f453ba635ba95499e5c10, type: 2}
   _fallbackElevation: -10
+--- !u!1 &623558543
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 623558544}
+  - component: {fileID: 623558545}
+  m_Layer: 0
+  m_Name: LookPort
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &623558544
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 623558543}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -4.7950034, y: -0.00000333786, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1897343195}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &623558545
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 623558543}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4a24425962914e759250d447c6d94771, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.Interactable
+  _npc: {fileID: 11400000, guid: a230a2fa97d941adbac15d45912324e3, type: 2}
+  _bubbleAnchor: {fileID: 0}
+  _kind: 0
+  _speaker: 
+  _conversationId: 
+  _completionFlag: 
 --- !u!1 &644588972
 GameObject:
   m_ObjectHideFlags: 0
@@ -11777,6 +11828,38 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
   m_BlendShapeWeights: []
+--- !u!1 &702815531
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 702815532}
+  m_Layer: 0
+  m_Name: Wrecks
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &702815532
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 702815531}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1897343195}
+  m_Father: {fileID: 544055000}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &713340018
 GameObject:
   m_ObjectHideFlags: 0
@@ -12938,6 +13021,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1610473398}
+  - component: {fileID: 1610473400}
+  - component: {fileID: 1610473399}
   m_Layer: 0
   m_Name: LandRegion
   m_TagString: Untagged
@@ -12962,6 +13047,47 @@ Transform:
   - {fileID: 1029145088}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1610473399
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1610473397}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6f0e0ef66ad54d0694700eb0351c9e3a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.WorldInteractor
+  _player: {fileID: 0}
+  _presenter: {fileID: 1610473400}
+  _interactables:
+  - {fileID: 623558545}
+  - {fileID: 1986854846}
+  _radius: 1.8
+  _facingArcDegrees: 120
+--- !u!114 &1610473400
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1610473397}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1f837550d63649559592b22c1783a339, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.DialoguePresenter
+  _bubbleSprite: {fileID: 0}
+  _tailSprite: {fileID: 0}
+  _optionSprite: {fileID: 0}
+  _goldSprite: {fileID: 0}
+  _tailSprites: []
+  _markerSprites: []
+  _caretSprite: {fileID: 0}
+  _cursorSprite: {fileID: 0}
+  _camera: {fileID: 0}
+  _optionPlacement: 0
 --- !u!1 &1684081378
 GameObject:
   m_ObjectHideFlags: 0
@@ -13513,6 +13639,100 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
   m_BlendShapeWeights: []
+--- !u!1 &1897343194
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1897343195}
+  - component: {fileID: 1897343197}
+  - component: {fileID: 1897343196}
+  m_Layer: 0
+  m_Name: wreck.rpt_stern_trawler
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1897343195
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1897343194}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0.6755902, w: 0.7372774}
+  m_LocalPosition: {x: -120, y: -124, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 623558544}
+  - {fileID: 1986854845}
+  m_Father: {fileID: 702815532}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!61 &1897343196
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1897343194}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
+  m_Offset: {x: 0, y: 0}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0, y: 0}
+    oldSize: {x: 0, y: 0}
+    newSize: {x: 0, y: 0}
+    adaptiveTilingThreshold: 0
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  m_Size: {x: 7.99, y: 32.3}
+  m_EdgeRadius: 0
+--- !u!114 &1897343197
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1897343194}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b588711d4b0d44d8804d10bc1132583c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: HiddenHarbours.Boats::HiddenHarbours.Boats.BeachedWreck
+  _wreck: {fileID: 11400000, guid: af733760af404813a9a3c0cc81d2c411, type: 2}
 --- !u!1 &1904229284
 GameObject:
   m_ObjectHideFlags: 0
@@ -13565,6 +13785,56 @@ Transform:
   - {fileID: 644588973}
   m_Father: {fileID: 1431544416}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1986854844
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1986854845}
+  - component: {fileID: 1986854846}
+  m_Layer: 0
+  m_Name: LookStarboard
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1986854845
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1986854844}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 4.794996, y: 0.0000042915344, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1897343195}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1986854846
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1986854844}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4a24425962914e759250d447c6d94771, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.Interactable
+  _npc: {fileID: 11400000, guid: a230a2fa97d941adbac15d45912324e3, type: 2}
+  _bubbleAnchor: {fileID: 0}
+  _kind: 0
+  _speaker: 
+  _conversationId: 
+  _completionFlag: 
 --- !u!1 &2112610779
 GameObject:
   m_ObjectHideFlags: 0
