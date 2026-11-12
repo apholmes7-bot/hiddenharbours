@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Security.Cryptography;
 using HiddenHarbours.Core;
+using HiddenHarbours.Player;
 using UnityEngine;
 
 namespace HiddenHarbours.CoopSpike
@@ -21,6 +22,13 @@ namespace HiddenHarbours.CoopSpike
             public int seed, boats, remoteViews, schools;
             public double sampleSeconds, clockSeconds;
             public bool clockAccepted, memoryOnly, localInFrame, remoteInFrame;
+        }
+
+        [Serializable]
+        private sealed class Placement
+        {
+            public Vector3 gameplayFoot, drawnFoot, deckStand, remoteFoot, remoteHull;
+            public string[] shaders;
         }
 
         private IEnumerator Start()
@@ -79,7 +87,11 @@ namespace HiddenHarbours.CoopSpike
                     yield return new WaitForEndOfFrame();
                     captured = Capture(Path.Combine(directory, role + ".png"));
                     nextCapture = Time.realtimeSinceStartup + 5;
-                    if (captured) Debug.Log("[Coop] Two-process proof screenshot saved for " + role);
+                    if (captured)
+                    {
+                        RecordPlacement(Path.Combine(directory, role + "-placement.json"));
+                        Debug.Log("[Coop] Two-process proof screenshot saved for " + role);
+                    }
                 }
                 yield return new WaitForSecondsRealtime(0.2f);
             }
@@ -87,6 +99,33 @@ namespace HiddenHarbours.CoopSpike
             yield return null;
             Debug.Log("[Coop] Diagnostic run complete; closing player.");
             Application.Quit(captured ? 0 : 3);
+        }
+
+        private void RecordPlacement(string path)
+        {
+            var rider = FindFirstObjectByType<DeckRiderVisual>();
+            var placement = new Placement();
+            if (rider != null)
+            {
+                placement.gameplayFoot = rider.transform.position;
+                placement.deckStand = rider.DeckStandRigLocal;
+                var hull = rider.LiveHullPresenter;
+                placement.drawnFoot = hull != null && hull.Visual != null
+                    ? hull.Visual.TransformPoint(rider.DeckStandRigLocal) : rider.transform.position;
+            }
+            foreach (var view in FindObjectsByType<CoopReplicaView>(FindObjectsSortMode.None))
+            {
+                placement.remoteFoot = view.Skipper.position;
+                placement.remoteHull = view.transform.position;
+            }
+            string[] names = { "HiddenHarbours/DeckOccludedSprite", "Hidden/HiddenHarbours/FoamBufferAdvect",
+                "HiddenHarbours/SilhouetteMask", "Hidden/HiddenHarbours/FigurePixelTarget" };
+            placement.shaders = Array.ConvertAll(names, name =>
+            {
+                var shader = Shader.Find(name);
+                return name + ": " + (shader == null ? "MISSING" : shader.isSupported ? "SUPPORTED" : "UNSUPPORTED");
+            });
+            File.WriteAllText(path, JsonUtility.ToJson(placement, true));
         }
 
         private static bool Capture(string path)
