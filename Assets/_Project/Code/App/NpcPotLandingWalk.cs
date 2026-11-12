@@ -18,6 +18,7 @@ namespace HiddenHarbours.App
     {
         private readonly NpcPotDayDef _def;
         private readonly SpriteRenderer _aboard;
+        private readonly Transform _hull;
         private readonly GameObject _root;
         private readonly Transform _figure;
         private readonly SpriteRenderer _body;
@@ -39,10 +40,13 @@ namespace HiddenHarbours.App
         public bool ShownAtCounter(int grade) => grade >= 0 && grade < _atCounter.Length && _atCounter[grade].enabled;
 
         /// <param name="aboard">The figure's renderer on the boat, hidden while she is ashore. May be null.</param>
-        public NpcPotLandingWalk(NpcPotDayDef def, CharacterVisualDef skipper, SpriteRenderer aboard, Transform parent, float z)
+        /// <param name="hull">Her hull, as it is drawn: the foot of the ladder is pinned to its rail. May be null.</param>
+        public NpcPotLandingWalk(NpcPotDayDef def, CharacterVisualDef skipper, SpriteRenderer aboard, Transform hull,
+                                 Transform parent, float z)
         {
             _def = def;
             _aboard = aboard;
+            _hull = hull;
             _root = new GameObject("NpcPotLanding_" + def.Id);
             _root.transform.SetParent(parent, worldPositionStays: true);
 
@@ -98,12 +102,25 @@ namespace HiddenHarbours.App
 
             if (ashore)
             {
+                Vector2 at = moment.Position;
+                if (moment.OnLadder && _hull != null && _def.LandingRoute.Length > 0)
+                {
+                    // The foot of the ladder is her rail where the hull is drawn (she rides the tide); the
+                    // top is the wharf. Up with a crate, down without.
+                    Vector2 foot = _hull.TransformPoint(new Vector3(_def.StepAshoreLocalMeters.x, _def.StepAshoreLocalMeters.y, 0f));
+                    Vector2 top = _def.LandingRoute[0];
+                    at = moment.Step == NpcLandingStep.Carrying ? Vector2.Lerp(foot, top, moment.Step01)
+                                                               : Vector2.Lerp(top, foot, moment.Step01);
+                }
                 Vector3 p = _figure.position;
-                _figure.position = new Vector3(moment.Position.x, moment.Position.y, p.z);
-                _iso.HoldHeading(Mathf.Repeat(moment.HeadingDegrees, 360f));
-                _body.sortingOrder = OrderAt(moment.Position.y);
+                _figure.position = new Vector3(at.x, at.y, p.z);
+                float heading = Mathf.Repeat(moment.HeadingDegrees, 360f);
+                _iso.HoldHeading(heading);
+                _body.sortingOrder = OrderAt(at.y);
                 bool holding = moment.Crate >= 0 && _inHands.sprite != null;
-                if (holding) _inHands.sortingOrder = _body.sortingOrder + 1;
+                // Walking away from the camera the crate is in front of her, so her back hides it.
+                bool away = heading < 90f || heading > 270f;
+                if (holding) _inHands.sortingOrder = _body.sortingOrder + (away ? -1 : 1);
                 if (_inHands.enabled != holding) _inHands.enabled = holding;
             }
             else if (_inHands.enabled) _inHands.enabled = false;

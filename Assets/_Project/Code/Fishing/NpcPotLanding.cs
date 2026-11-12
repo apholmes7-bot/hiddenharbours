@@ -34,10 +34,16 @@ namespace HiddenHarbours.Fishing
         /// <summary>True once she is off the boat: on the ladder or the wharf.</summary>
         public readonly bool Ashore;
         public readonly float Step01;
+        /// <summary>True on the ladder between her rail and the wharf top. <see cref="Step01"/> then runs
+        /// from where the leg starts to where it ends, so a presenter can pin the foot of the ladder to
+        /// the hull as the tide has it.</summary>
+        public readonly bool OnLadder;
 
-        public NpcLandingMoment(NpcLandingStep step, Vector2 position, float headingDegrees, int crate, bool ashore, float step01)
+        public NpcLandingMoment(NpcLandingStep step, Vector2 position, float headingDegrees, int crate, bool ashore, float step01,
+                                bool onLadder = false)
         {
             Step = step; Position = position; HeadingDegrees = headingDegrees; Crate = crate; Ashore = ashore; Step01 = step01;
+            OnLadder = onLadder;
         }
     }
 
@@ -59,6 +65,7 @@ namespace HiddenHarbours.Fishing
             public NpcLandingStep Step;
             public int Crate;
             public bool Ashore;
+            public bool Ladder;
             public float Heading;
         }
 
@@ -138,7 +145,7 @@ namespace HiddenHarbours.Fishing
                 plan._liftedAt[g] = t;
 
                 plan.Walk(ref t, ref at, rail, def.DeckWalkSeconds, NpcLandingStep.Carrying, g, false);
-                plan.Walk(ref t, ref at, route[0], def.LadderSeconds, NpcLandingStep.Carrying, g, true);
+                plan.Walk(ref t, ref at, route[0], def.LadderSeconds, NpcLandingStep.Carrying, g, true, ladder: true);
                 for (int i = 1; i < route.Length; i++)
                     plan.Walk(ref t, ref at, route[i], Seconds(at, route[i], def.LandingWalkSpeed), NpcLandingStep.Carrying, g, true);
                 plan.Dwell(ref t, at, def.CrateSetDownSeconds, NpcLandingStep.SettingDown, g, true);
@@ -152,7 +159,7 @@ namespace HiddenHarbours.Fishing
                 }
                 for (int i = route.Length - 2; i >= 0; i--)
                     plan.Walk(ref t, ref at, route[i], Seconds(at, route[i], def.LandingWalkSpeed), NpcLandingStep.WalkingBack, -1, true);
-                plan.Walk(ref t, ref at, rail, def.LadderSeconds, NpcLandingStep.WalkingBack, -1, true);
+                plan.Walk(ref t, ref at, rail, def.LadderSeconds, NpcLandingStep.WalkingBack, -1, true, ladder: true);
             }
             plan.Walk(ref t, ref at, helm, def.DeckWalkSeconds, NpcLandingStep.WalkingBack, -1, false);
             plan.EndSeconds = t;
@@ -180,7 +187,7 @@ namespace HiddenHarbours.Fishing
             Key k = _keys[lo];
             double span = k.T1 - k.T0;
             float u = span > 1e-9 ? Mathf.Clamp01((float)((totalSeconds - k.T0) / span)) : 1f;
-            return new NpcLandingMoment(k.Step, Vector2.LerpUnclamped(k.A, k.B, u), k.Heading, k.Crate, k.Ashore, u);
+            return new NpcLandingMoment(k.Step, Vector2.LerpUnclamped(k.A, k.B, u), k.Heading, k.Crate, k.Ashore, u, k.Ladder);
         }
 
         /// <summary>Animals still in the boat's crate for <paramref name="grade"/> at <paramref name="totalSeconds"/>.</summary>
@@ -202,11 +209,12 @@ namespace HiddenHarbours.Fishing
 
         private static float Seconds(Vector2 a, Vector2 b, float speed) => (b - a).magnitude / Mathf.Max(0.01f, speed);
 
-        private void Walk(ref double t, ref Vector2 at, Vector2 to, float seconds, NpcLandingStep step, int crate, bool ashore)
+        private void Walk(ref double t, ref Vector2 at, Vector2 to, float seconds, NpcLandingStep step, int crate, bool ashore,
+                          bool ladder = false)
         {
             float heading = NpcPotDay.Bearing(at, to, _keys.Count > 0 ? _keys[_keys.Count - 1].Heading : 0f);
             if (seconds > 1e-6f)
-                _keys.Add(new Key { T0 = t, T1 = t + seconds, A = at, B = to, Step = step, Crate = crate, Ashore = ashore, Heading = heading });
+                _keys.Add(new Key { T0 = t, T1 = t + seconds, A = at, B = to, Step = step, Crate = crate, Ashore = ashore, Ladder = ladder, Heading = heading });
             t += Mathf.Max(0f, seconds);
             at = to;
         }

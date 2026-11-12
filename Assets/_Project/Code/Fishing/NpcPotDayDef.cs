@@ -163,6 +163,9 @@ namespace HiddenHarbours.Fishing
         [Tooltip("How far over the side a returned animal is dropped, metres from the rail.")]
         [Min(0f)] public float ReturnOverTheSideMeters = 0.9f;
 
+        [Tooltip("Scale an animal's deck sprite is drawn at in her hand and in a crate, so it reads at its real size beside her.")]
+        [Range(0.05f, 2f)] public float CatchDrawScale = 0.4f;
+
         [Tooltip("Sorting order of an animal in hand or in a crate (above the hull and its crew).")]
         public int CatchSortingOrder = 30;
 
@@ -198,7 +201,7 @@ namespace HiddenHarbours.Fishing
         public Sprite LandingCrateSprite;
 
         [Tooltip("Where the crate is drawn in her hands ashore, metres from her feet.")]
-        public Vector2 CrateCarryOffsetMeters = new Vector2(0f, 0.55f);
+        public Vector2 CrateCarryOffsetMeters = new Vector2(0f, 0.3f);
 
         [Tooltip("Where the crates go down, metres from the end of the route.")]
         public Vector2 CounterCrateOffsetMeters = new Vector2(0f, 0.5f);

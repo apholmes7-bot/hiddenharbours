@@ -158,7 +158,7 @@ namespace HiddenHarbours.App
             boat.Deck = new NpcPotDeck(def, hull, boat.Skipper);
             boat.Walk = new NpcPotLandingWalk(def, hull.Owner != null ? hull.Owner.Skipper : null,
                                               boat.Skipper != null ? boat.Skipper.GetComponent<SpriteRenderer>() : null,
-                                              boat.GearRoot.transform, boat.Z);
+                                              hull.transform, boat.GearRoot.transform, boat.Z);
             _boats.Add(boat);
             _nextSlowTick = 0f;   // read the tide and lay the gear on the very next frame
             return true;
