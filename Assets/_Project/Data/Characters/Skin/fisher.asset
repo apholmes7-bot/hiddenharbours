@@ -620,7 +620,7 @@ MonoBehaviour:
     OwnsVertex: 0
   MaxInfluences: 2
   Clips:
-  - PoseContractSha256:
+  - PoseContractSha256: 
     SeatPins: []
     HandLeftPins: []
     HandRightPins: []
@@ -975,7 +975,7 @@ MonoBehaviour:
     Power: 
     Face: 01070a01070a01070a01070a01070a01070a
     Tool: []
-  - PoseContractSha256:
+  - PoseContractSha256: 
     SeatPins: []
     HandLeftPins: []
     HandRightPins: []
@@ -1442,7 +1442,7 @@ MonoBehaviour:
     Power: 
     Face: 01070a01070a01070a01070a01070a01070a01070a01070a
     Tool: []
-  - PoseContractSha256:
+  - PoseContractSha256: 
     SeatPins: []
     HandLeftPins: []
     HandRightPins: []
@@ -1797,7 +1797,7 @@ MonoBehaviour:
     Power: 
     Face: 01070a01070a01070a01070a01070a01070a
     Tool: []
-  - PoseContractSha256:
+  - PoseContractSha256: 
     SeatPins: []
     HandLeftPins: []
     HandRightPins: []
@@ -2194,7 +2194,7 @@ MonoBehaviour:
       Bend: 0.03
       Length: 1.25
       Advisory: 0
-  - PoseContractSha256:
+  - PoseContractSha256: 
     SeatPins: []
     HandLeftPins: []
     HandRightPins: []
@@ -2843,7 +2843,7 @@ MonoBehaviour:
       Bend: 0.1
       Length: 1.25
       Advisory: 0
-  - PoseContractSha256:
+  - PoseContractSha256: 
     SeatPins: []
     HandLeftPins: []
     HandRightPins: []
@@ -3492,7 +3492,7 @@ MonoBehaviour:
       Bend: 0
       Length: 1.05
       Advisory: 0
-  - PoseContractSha256:
+  - PoseContractSha256: 
     SeatPins: []
     HandLeftPins: []
     HandRightPins: []
@@ -3959,7 +3959,7 @@ MonoBehaviour:
     Power: 
     Face: 01090a01090a01090a01090a01090a01090a01090a01090a
     Tool: []
-  - PoseContractSha256:
+  - PoseContractSha256: 
     SeatPins: []
     HandLeftPins: []
     HandRightPins: []
@@ -4538,7 +4538,7 @@ MonoBehaviour:
     Power: 
     Face: 04080b04080b04080b04080b04080b04080b04080b04080b04080b04080b
     Tool: []
-  - PoseContractSha256:
+  - PoseContractSha256: 
     SeatPins: []
     HandLeftPins: []
     HandRightPins: []
@@ -4935,7 +4935,7 @@ MonoBehaviour:
       Bend: 0.06
       Length: 1.25
       Advisory: 0
-  - PoseContractSha256:
+  - PoseContractSha256: 
     SeatPins: []
     HandLeftPins: []
     HandRightPins: []
@@ -5332,7 +5332,7 @@ MonoBehaviour:
       Bend: 0.41
       Length: 1.25
       Advisory: 0
-  - PoseContractSha256:
+  - PoseContractSha256: 
     SeatPins: []
     HandLeftPins: []
     HandRightPins: []
@@ -6107,7 +6107,7 @@ MonoBehaviour:
       Bend: 0.42
       Length: 1.25
       Advisory: 0
-  - PoseContractSha256:
+  - PoseContractSha256: 
     SeatPins: []
     HandLeftPins: []
     HandRightPins: []
@@ -6882,7 +6882,7 @@ MonoBehaviour:
       Bend: 0.13
       Length: 1.25
       Advisory: 0
-  - PoseContractSha256:
+  - PoseContractSha256: 
     SeatPins: []
     HandLeftPins: []
     HandRightPins: []
@@ -7279,7 +7279,7 @@ MonoBehaviour:
       Bend: 0.09
       Length: 1.25
       Advisory: 0
-  - PoseContractSha256:
+  - PoseContractSha256: 
     SeatPins: []
     HandLeftPins: []
     HandRightPins: []
@@ -7802,7 +7802,7 @@ MonoBehaviour:
       Bend: 0.09
       Length: 1.25
       Advisory: 0
-  - PoseContractSha256:
+  - PoseContractSha256: 
     SeatPins: []
     HandLeftPins: []
     HandRightPins: []
@@ -8381,7 +8381,7 @@ MonoBehaviour:
     Power: 
     Face: 01070a01070a01070a01070a01090a01090a01090a01070a01070a01070a
     Tool: []
-  - PoseContractSha256:
+  - PoseContractSha256: 
     SeatPins: []
     HandLeftPins: []
     HandRightPins: []
@@ -8736,7 +8736,7 @@ MonoBehaviour:
     Power: 
     Face: 01070a01070a01070a01070a01070a01070a
     Tool: []
-  - PoseContractSha256:
+  - PoseContractSha256: 
     SeatPins: []
     HandLeftPins: []
     HandRightPins: []
@@ -9203,7 +9203,7 @@ MonoBehaviour:
     Power: 
     Face: 01070a01070a01090c01070a01070a01070a01090c01070a
     Tool: []
-  - PoseContractSha256:
+  - PoseContractSha256: 
     SeatPins: []
     HandLeftPins: []
     HandRightPins: []
@@ -9782,7 +9782,7 @@ MonoBehaviour:
     Power: 
     Face: 01070a01070a01070a01070a01070a01070a01070a01070a01070a01070a
     Tool: []
-  - PoseContractSha256:
+  - PoseContractSha256: 
     SeatPins: []
     HandLeftPins: []
     HandRightPins: []
@@ -10249,7 +10249,7 @@ MonoBehaviour:
     Power: 
     Face: 01070a01070a01070a01090c01090c01090c01070a01070a
     Tool: []
-  - PoseContractSha256:
+  - PoseContractSha256: 
     SeatPins: []
     HandLeftPins: []
     HandRightPins: []
@@ -10828,7 +10828,7 @@ MonoBehaviour:
     Power: 
     Face: 01070a01070a01070a01070a01070a01070a01070a01070a01070a01070a
     Tool: []
-  - PoseContractSha256:
+  - PoseContractSha256: 
     SeatPins: []
     HandLeftPins: []
     HandRightPins: []
@@ -11351,7 +11351,7 @@ MonoBehaviour:
       Bend: 0
       Length: 0.22
       Advisory: 0
-  - PoseContractSha256:
+  - PoseContractSha256: 
     SeatPins: []
     HandLeftPins: []
     HandRightPins: []
@@ -11818,7 +11818,7 @@ MonoBehaviour:
     Power: 
     Face: 01070a01070a01070a01070a01090c01090c01090c01070a
     Tool: []
-  - PoseContractSha256:
+  - PoseContractSha256: 
     SeatPins: []
     HandLeftPins: []
     HandRightPins: []
@@ -12285,7 +12285,7 @@ MonoBehaviour:
     Power: 
     Face: 01070a01070a01070a01070a01070a01070a01070a01070a
     Tool: []
-  - PoseContractSha256:
+  - PoseContractSha256: 
     SeatPins: []
     HandLeftPins: []
     HandRightPins: []
@@ -12752,7 +12752,7 @@ MonoBehaviour:
     Power: 
     Face: 01070a01070a01070a01090c01090c01080b01080b01080b
     Tool: []
-  - PoseContractSha256:
+  - PoseContractSha256: 
     SeatPins: []
     HandLeftPins: []
     HandRightPins: []
@@ -13219,7 +13219,7 @@ MonoBehaviour:
     Power: 
     Face: 01070a01070a01070a01070a01070b01070a01070a01070a
     Tool: []
-  - PoseContractSha256:
+  - PoseContractSha256: 
     SeatPins: []
     HandLeftPins: []
     HandRightPins: []
@@ -13574,7 +13574,7 @@ MonoBehaviour:
     Power: 
     Face: 01070a01070a01070a01070a01070a01070a
     Tool: []
-  - PoseContractSha256:
+  - PoseContractSha256: 
     SeatPins: []
     HandLeftPins: []
     HandRightPins: []
@@ -13929,7 +13929,7 @@ MonoBehaviour:
     Power: 
     Face: 03070a03070a03070a03070a03070a03070a
     Tool: []
-  - PoseContractSha256:
+  - PoseContractSha256: 
     SeatPins: []
     HandLeftPins: []
     HandRightPins: []
@@ -14284,7 +14284,7 @@ MonoBehaviour:
     Power: 
     Face: 01070a01070a01070a01070a01070a01070a
     Tool: []
-  - PoseContractSha256:
+  - PoseContractSha256: 
     SeatPins: []
     HandLeftPins: []
     HandRightPins: []
@@ -14681,7 +14681,7 @@ MonoBehaviour:
       Bend: 0
       Length: 0
       Advisory: 0
-  - PoseContractSha256:
+  - PoseContractSha256: 
     SeatPins: []
     HandLeftPins: []
     HandRightPins: []
@@ -15036,7 +15036,7 @@ MonoBehaviour:
     Power: 
     Face: 01070a01070a01070a01070a01070a01070a
     Tool: []
-  - PoseContractSha256:
+  - PoseContractSha256: 
     SeatPins: []
     HandLeftPins: []
     HandRightPins: []
@@ -15503,7 +15503,7 @@ MonoBehaviour:
     Power: 
     Face: 01070a01070a01070a01070a01070a01070a01070a01070a
     Tool: []
-  - PoseContractSha256:
+  - PoseContractSha256: 
     SeatPins: []
     HandLeftPins: []
     HandRightPins: []
@@ -16418,7 +16418,7 @@ MonoBehaviour:
     Power: 
     Face: 01070a01070a01070a01070a01070a01070a01070a01070a01070a01070a01070a01070a01070a01070a01070a01070a
     Tool: []
-  - PoseContractSha256:
+  - PoseContractSha256: 
     SeatPins: []
     HandLeftPins: []
     HandRightPins: []
@@ -17221,7 +17221,7 @@ MonoBehaviour:
     Power: 
     Face: 01070a01070a01070a01070a01070a01070a01070a01070a01070a01070a01070a01070a01070a01070a
     Tool: []
-  - PoseContractSha256:
+  - PoseContractSha256: 
     SeatPins: []
     HandLeftPins: []
     HandRightPins: []
@@ -18248,7 +18248,7 @@ MonoBehaviour:
     Power: 
     Face: 01070a01070a01070a01070a01070a01070a01070a01070a01070a01070a01070a01070a01070a01070a01070a01070a01070a01070a
     Tool: []
-  - PoseContractSha256:
+  - PoseContractSha256: 
     SeatPins: []
     HandLeftPins: []
     HandRightPins: []
@@ -19163,7 +19163,7 @@ MonoBehaviour:
     Power: 
     Face: 01070a01070a01070a01070a01070a01070a01070a01070a01070a01070a01070a01070a01070a01070a01070a01070a
     Tool: []
-  - PoseContractSha256:
+  - PoseContractSha256: 
     SeatPins: []
     HandLeftPins: []
     HandRightPins: []
@@ -19518,7 +19518,7 @@ MonoBehaviour:
     Power: 
     Face: 01070a01070a01070a01070a01070a01070a
     Tool: []
-  - PoseContractSha256:
+  - PoseContractSha256: 
     SeatPins: []
     HandLeftPins: []
     HandRightPins: []
@@ -19985,7 +19985,7 @@ MonoBehaviour:
     Power: 
     Face: 01070a01070a01070a01070a01070a01070a01070a01070a
     Tool: []
-  - PoseContractSha256:
+  - PoseContractSha256: 
     SeatPins: []
     HandLeftPins: []
     HandRightPins: []
@@ -20340,7 +20340,7 @@ MonoBehaviour:
     Power: 
     Face: 01070a01070a01070a01070a01070a01070a
     Tool: []
-  - PoseContractSha256:
+  - PoseContractSha256: 
     SeatPins: []
     HandLeftPins: []
     HandRightPins: []
@@ -20807,7 +20807,7 @@ MonoBehaviour:
     Power: 
     Face: 01070a01070a01090a01070a01070a01070a01090a01070a
     Tool: []
-  - PoseContractSha256:
+  - PoseContractSha256: 
     SeatPins: []
     HandLeftPins: []
     HandRightPins: []
@@ -21162,7 +21162,7 @@ MonoBehaviour:
     Power: 
     Face: 01070a01070a01070a01070a01070a01070a
     Tool: []
-  - PoseContractSha256:
+  - PoseContractSha256: 
     SeatPins: []
     HandLeftPins: []
     HandRightPins: []
@@ -21629,7 +21629,7 @@ MonoBehaviour:
     Power: 
     Face: 01070a01070a01070a01070a01070a01070a01070a01070a
     Tool: []
-  - PoseContractSha256:
+  - PoseContractSha256: 
     SeatPins: []
     HandLeftPins: []
     HandRightPins: []
@@ -21984,7 +21984,7 @@ MonoBehaviour:
     Power: 
     Face: 01070a01070a01070a01070a01070a01070a
     Tool: []
-  - PoseContractSha256:
+  - PoseContractSha256: 
     SeatPins: []
     HandLeftPins: []
     HandRightPins: []
@@ -22563,7 +22563,7 @@ MonoBehaviour:
     Power: 
     Face: 01070a01070a01070a01070a01090a01090a01090a01070a01070a01070a
     Tool: []
-  - PoseContractSha256:
+  - PoseContractSha256: 
     SeatPins: []
     HandLeftPins: []
     HandRightPins: []
@@ -22918,7 +22918,7 @@ MonoBehaviour:
     Power: 
     Face: 01070a01070a01070a01070a01070a01070a
     Tool: []
-  - PoseContractSha256:
+  - PoseContractSha256: 
     SeatPins: []
     HandLeftPins: []
     HandRightPins: []
@@ -23273,7 +23273,7 @@ MonoBehaviour:
     Power: 
     Face: 01070a01070a01070a01070a01070a01070a
     Tool: []
-  - PoseContractSha256:
+  - PoseContractSha256: 
     SeatPins: []
     HandLeftPins: []
     HandRightPins: []
@@ -23740,7 +23740,7 @@ MonoBehaviour:
     Power: 
     Face: 01070a01070a01070a01070a01070a01070a01070a01070a
     Tool: []
-  - PoseContractSha256:
+  - PoseContractSha256: 
     SeatPins: []
     HandLeftPins: []
     HandRightPins: []
@@ -24095,7 +24095,7 @@ MonoBehaviour:
     Power: 
     Face: 01070a01070a01070a01070a01070a01070a
     Tool: []
-  - PoseContractSha256:
+  - PoseContractSha256: 
     SeatPins: []
     HandLeftPins: []
     HandRightPins: []
@@ -24674,7 +24674,7 @@ MonoBehaviour:
     Power: 
     Face: 01070a01070a01070a01070a01090a01090a01090a01070a01070a01070a
     Tool: []
-  - PoseContractSha256:
+  - PoseContractSha256: 
     SeatPins: []
     HandLeftPins: []
     HandRightPins: []
@@ -25029,7 +25029,7 @@ MonoBehaviour:
     Power: 
     Face: 01070a01070a01070a01070a01070a01070a
     Tool: []
-  - PoseContractSha256:
+  - PoseContractSha256: 
     SeatPins: []
     HandLeftPins: []
     HandRightPins: []
@@ -25384,7 +25384,7 @@ MonoBehaviour:
     Power: 
     Face: 01070a01070a01070a01070a01070a01070a
     Tool: []
-  - PoseContractSha256:
+  - PoseContractSha256: 
     SeatPins: []
     HandLeftPins: []
     HandRightPins: []
@@ -25851,7 +25851,7 @@ MonoBehaviour:
     Power: 
     Face: 01070a01070a01070a01070a01070a01070a01070a01070a
     Tool: []
-  - PoseContractSha256:
+  - PoseContractSha256: 
     SeatPins: []
     HandLeftPins: []
     HandRightPins: []
@@ -26430,7 +26430,7 @@ MonoBehaviour:
     Power: 
     Face: 01070a01070a01070a01070a01090a01090a01090a01070a01070a01070a
     Tool: []
-  - PoseContractSha256:
+  - PoseContractSha256: 
     SeatPins: []
     HandLeftPins: []
     HandRightPins: []
@@ -26785,7 +26785,7 @@ MonoBehaviour:
     Power: 
     Face: 01070a01070a01070a01070a01070a01070a
     Tool: []
-  - PoseContractSha256: 84623a764351f4c94cffcb20a86b9f770ec73a3e040c33a3fe2c0144dbdc6c5f
+  - PoseContractSha256: 348486ae17b9b6750e4a73e0bca2485ad9857649d9a126d35e56b5a345f1f2ca
     SeatPins:
     - {x: 0, y: -0.01999998, z: 0.55999994}
     - {x: 0, y: -0.01999998, z: 0.55999994}
@@ -27166,11 +27166,11 @@ MonoBehaviour:
       Rotation: {x: 0.3263052, y: 0.4568273, z: 0.67340255, w: 0.48100182}
     ParkedParts: []
     Mount: wheel
-    Carry:
-    Power:
+    Carry: 
+    Power: 
     Face: 01070a01070a01070a01070a01070a01070a
     Tool: []
-  - PoseContractSha256: 84623a764351f4c94cffcb20a86b9f770ec73a3e040c33a3fe2c0144dbdc6c5f
+  - PoseContractSha256: 348486ae17b9b6750e4a73e0bca2485ad9857649d9a126d35e56b5a345f1f2ca
     SeatPins:
     - {x: 0, y: -0.01999998, z: 0.35999998}
     - {x: 0, y: -0.01999998, z: 0.35999998}
@@ -27551,11 +27551,11 @@ MonoBehaviour:
       Rotation: {x: 0.3263052, y: 0.4568273, z: 0.67340255, w: 0.48100182}
     ParkedParts: []
     Mount: wheel
-    Carry:
-    Power:
+    Carry: 
+    Power: 
     Face: 01070a01070a01070a01070a01070a01070a
     Tool: []
-  - PoseContractSha256: 84623a764351f4c94cffcb20a86b9f770ec73a3e040c33a3fe2c0144dbdc6c5f
+  - PoseContractSha256: 348486ae17b9b6750e4a73e0bca2485ad9857649d9a126d35e56b5a345f1f2ca
     SeatPins:
     - {x: 0, y: -0.01999998, z: 0.51}
     - {x: 0, y: -0.01999998, z: 0.51}
@@ -27936,8 +27936,393 @@ MonoBehaviour:
       Rotation: {x: 0.3263052, y: 0.4568273, z: 0.67340255, w: 0.48100182}
     ParkedParts: []
     Mount: wheel
-    Carry:
-    Power:
+    Carry: 
+    Power: 
+    Face: 01070a01070a01070a01070a01070a01070a
+    Tool: []
+  - PoseContractSha256: 348486ae17b9b6750e4a73e0bca2485ad9857649d9a126d35e56b5a345f1f2ca
+    SeatPins:
+    - {x: 0, y: -0.02000001, z: 0.45999998}
+    - {x: 0, y: -0.02000001, z: 0.45999998}
+    - {x: 0, y: -0.02000001, z: 0.45999998}
+    - {x: 0, y: -0.02000001, z: 0.45999998}
+    - {x: 0, y: -0.02000001, z: 0.45999998}
+    - {x: 0, y: -0.02000001, z: 0.45999998}
+    HandLeftPins:
+    - {x: -0.27, y: 0.392, z: 0.688}
+    - {x: -0.27, y: 0.392, z: 0.688}
+    - {x: -0.27, y: 0.392, z: 0.688}
+    - {x: -0.27, y: 0.392, z: 0.688}
+    - {x: -0.27, y: 0.392, z: 0.688}
+    - {x: -0.27, y: 0.392, z: 0.688}
+    HandRightPins:
+    - {x: 0.27, y: 0.392, z: 0.688}
+    - {x: 0.27, y: 0.392, z: 0.688}
+    - {x: 0.27, y: 0.392, z: 0.688}
+    - {x: 0.27, y: 0.392, z: 0.688}
+    - {x: 0.27, y: 0.392, z: 0.688}
+    - {x: 0.27, y: 0.392, z: 0.688}
+    FootLeftPins:
+    - {x: -0.3458, y: 0.2848, z: -0.0163}
+    - {x: -0.3458, y: 0.2848, z: -0.0181}
+    - {x: -0.3458, y: 0.2848, z: -0.0146}
+    - {x: -0.3458, y: 0.2848, z: -0.0163}
+    - {x: -0.3458, y: 0.2848, z: -0.0181}
+    - {x: -0.3458, y: 0.2848, z: -0.0146}
+    FootRightPins:
+    - {x: 0.3458, y: 0.2848, z: -0.0163}
+    - {x: 0.3458, y: 0.2848, z: -0.0146}
+    - {x: 0.3458, y: 0.2848, z: -0.0181}
+    - {x: 0.3458, y: 0.2848, z: -0.0163}
+    - {x: 0.3458, y: 0.2848, z: -0.0146}
+    - {x: 0.3458, y: 0.2848, z: -0.0181}
+    Anim: astride
+    State: astride_helm_jet_ski
+    FramesPerSecond: 5.882353
+    Settle: 0
+    Loop: 1
+    FrameCount: 6
+    Keys:
+    - Position: {x: 0, y: 0, z: 0}
+      Rotation: {x: 0, y: 0, z: 0, w: 1}
+    - Position: {x: 0, y: 0.15, z: 0.535}
+      Rotation: {x: -0.043619387, y: 0, z: 0, w: 0.99904823}
+    - Position: {x: 0, y: 0, z: 0.06641379}
+      Rotation: {x: -0.047106452, y: 0, z: 0, w: 0.99888986}
+    - Position: {x: 0, y: 0, z: 0.21031034}
+      Rotation: {x: -0.031410757, y: 0, z: 0, w: 0.99950653}
+    - Position: {x: 0, y: 0, z: 0.2601207}
+      Rotation: {x: 0.027485473, y: 0, z: 0, w: 0.9996222}
+    - Position: {x: 0, y: 0, z: 0.06087931}
+      Rotation: {x: 0.019633692, y: 0, z: 0, w: 0.99980724}
+    - Position: {x: -0.186, y: 0, z: 0.1937069}
+      Rotation: {x: -0.21175046, y: 0.3725864, z: -0.16352253, w: 0.8885952}
+    - Position: {x: 0, y: 0, z: -0.3}
+      Rotation: {x: 0.83219814, y: 1.2514273e-17, z: 2.5028546e-17, w: 0.5544784}
+    - Position: {x: 0, y: 0, z: -0.27}
+      Rotation: {x: 0, y: 0, z: 0, w: 1}
+    - Position: {x: 0.186, y: 0, z: 0.1937069}
+      Rotation: {x: -0.21175046, y: -0.3725864, z: 0.16352253, w: 0.8885952}
+    - Position: {x: 0, y: 0, z: -0.3}
+      Rotation: {x: 0.83219814, y: -1.2514273e-17, z: -2.5028546e-17, w: 0.5544784}
+    - Position: {x: 0, y: 0, z: -0.27}
+      Rotation: {x: 0, y: 0, z: 0, w: 1}
+    - Position: {x: -0.088, y: 0, z: -0.04427586}
+      Rotation: {x: 0.57474285, y: 0.33000353, z: 0.24784434, w: 0.70664096}
+    - Position: {x: 0, y: 0, z: -0.42}
+      Rotation: {x: -0.78860325, y: -2.6800796e-17, z: -1.1284545e-17, w: 0.6149024}
+    - Position: {x: 0, y: 0, z: -0.41}
+      Rotation: {x: 0.27191967, y: -0.050840687, z: -0.36385405, w: 0.8894297}
+    - Position: {x: 0.088, y: 0, z: -0.04427586}
+      Rotation: {x: 0.57474285, y: -0.33000353, z: -0.24784434, w: 0.70664096}
+    - Position: {x: 0, y: 0, z: -0.42}
+      Rotation: {x: -0.78860325, y: 2.6800796e-17, z: 1.1284545e-17, w: 0.6149024}
+    - Position: {x: 0, y: 0, z: -0.41}
+      Rotation: {x: 0.27191967, y: 0.050840687, z: 0.36385405, w: 0.8894297}
+    - Position: {x: -2.2551405e-17, y: 4.510281e-17, z: -0.065}
+      Rotation: {x: 0, y: 0, z: 0, w: 1}
+    - Position: {x: -2.7755576e-17, y: 0.5, z: -1.3877788e-16}
+      Rotation: {x: 0, y: 0, z: 0, w: 1}
+    - Position: {x: -1.110223e-16, y: 0.375, z: -4.1633363e-17}
+      Rotation: {x: 0, y: 0, z: 0, w: 1}
+    - Position: {x: 2.2551405e-17, y: 4.510281e-17, z: -0.065}
+      Rotation: {x: 0, y: 0, z: 0, w: 1}
+    - Position: {x: 2.7755576e-17, y: 0.5, z: -1.3877788e-16}
+      Rotation: {x: 0, y: 0, z: 0, w: 1}
+    - Position: {x: 1.110223e-16, y: 0.375, z: -4.1633363e-17}
+      Rotation: {x: 0, y: 0, z: 0, w: 1}
+    - Position: {x: -2.2551405e-17, y: 4.510281e-17, z: -0.065}
+      Rotation: {x: 0, y: 0, z: 0, w: 1}
+    - Position: {x: 2.2551405e-17, y: 4.510281e-17, z: -0.065}
+      Rotation: {x: 0, y: 0, z: 0, w: 1}
+    - Position: {x: 0, y: 0.22139242, z: -0.06849113}
+      Rotation: {x: 0, y: 0, z: 0, w: 1}
+    - Position: {x: 0, y: -0.125, z: 0.12}
+      Rotation: {x: 0.3263052, y: 0.4568273, z: 0.67340255, w: 0.48100182}
+    - Position: {x: 0, y: 0, z: 0}
+      Rotation: {x: 0, y: 0, z: 0, w: 1}
+    - Position: {x: 0, y: 0.15, z: 0.5393301}
+      Rotation: {x: -0.043619387, y: 0, z: 0, w: 0.99904823}
+    - Position: {x: 0, y: 0, z: 0.06641379}
+      Rotation: {x: -0.05389852, y: 0.0060371724, z: 0.0003258743, w: 0.9985281}
+    - Position: {x: 0, y: 0, z: 0.21031034}
+      Rotation: {x: -0.03140785, y: 0.00042728294, z: -0.013596363, w: 0.9994141}
+    - Position: {x: 0, y: 0, z: 0.2601207}
+      Rotation: {x: 0.027485473, y: 0, z: 0, w: 0.9996222}
+    - Position: {x: 0, y: 0, z: 0.06087931}
+      Rotation: {x: 0.019633692, y: 0, z: 0, w: 0.99980724}
+    - Position: {x: -0.186, y: 0, z: 0.1937069}
+      Rotation: {x: -0.22637488, y: 0.37416667, z: -0.1601416, w: 0.8849341}
+    - Position: {x: 0, y: 0, z: -0.3}
+      Rotation: {x: 0.8313854, y: -1.24868456e-17, z: 0, w: 0.5556963}
+    - Position: {x: 0, y: 0, z: -0.27}
+      Rotation: {x: 0, y: 0, z: 0, w: 1}
+    - Position: {x: 0.186, y: 0, z: 0.1937069}
+      Rotation: {x: -0.19992033, y: -0.36984077, z: 0.1697562, w: 0.89130944}
+    - Position: {x: 0, y: 0, z: -0.3}
+      Rotation: {x: 0.8318192, y: 5.0005834e-17, z: 0, w: 0.55504674}
+    - Position: {x: 0, y: 0, z: -0.27}
+      Rotation: {x: 0, y: 0, z: 0, w: 1}
+    - Position: {x: -0.088, y: 0, z: -0.04427586}
+      Rotation: {x: 0.5706853, y: 0.32697374, z: 0.2497111, w: 0.7106693}
+    - Position: {x: 0, y: 0, z: -0.42}
+      Rotation: {x: -0.7836894, y: 6.1440455e-17, z: -2.2341983e-17, w: 0.62115294}
+    - Position: {x: 0, y: 0, z: -0.41}
+      Rotation: {x: 0.27061403, y: -0.050603554, z: -0.36252898, w: 0.890382}
+    - Position: {x: 0.088, y: 0, z: -0.04427586}
+      Rotation: {x: 0.5730073, y: -0.32870278, z: -0.2486458, w: 0.70837307}
+    - Position: {x: 0, y: 0, z: -0.42}
+      Rotation: {x: -0.78650934, y: -4.49426e-17, z: -9.550302e-17, w: 0.6175784}
+    - Position: {x: 0, y: 0, z: -0.41}
+      Rotation: {x: 0.27137148, y: 0.05073529, z: 0.36328235, w: 0.8898367}
+    - Position: {x: -1.7347235e-18, y: -3.469447e-18, z: -0.065}
+      Rotation: {x: 0, y: 0, z: 0, w: 1}
+    - Position: {x: 0, y: 0.5, z: 8.326673e-17}
+      Rotation: {x: 0, y: 0, z: 0, w: 1}
+    - Position: {x: 8.326673e-17, y: 0.375, z: 0}
+      Rotation: {x: 0, y: 0, z: 0, w: 1}
+    - Position: {x: -1.2143064e-17, y: 3.469447e-18, z: -0.065}
+      Rotation: {x: 0, y: 0, z: 0, w: 1}
+    - Position: {x: 2.7755576e-17, y: 0.5, z: 0}
+      Rotation: {x: 0, y: 0, z: 0, w: 1}
+    - Position: {x: -5.551115e-17, y: 0.375, z: -4.1633363e-17}
+      Rotation: {x: 0, y: 0, z: 0, w: 1}
+    - Position: {x: -1.7347235e-18, y: -3.469447e-18, z: -0.065}
+      Rotation: {x: 0, y: 0, z: 0, w: 1}
+    - Position: {x: -1.2143064e-17, y: 3.469447e-18, z: -0.065}
+      Rotation: {x: 0, y: 0, z: 0, w: 1}
+    - Position: {x: -0.0071110805, y: 0.22044209, z: -0.06987364}
+      Rotation: {x: 0, y: 0, z: 0, w: 1}
+    - Position: {x: 0, y: -0.125, z: 0.12}
+      Rotation: {x: 0.3263052, y: 0.4568273, z: 0.67340255, w: 0.48100182}
+    - Position: {x: 0, y: 0, z: 0}
+      Rotation: {x: 0, y: 0, z: 0, w: 1}
+    - Position: {x: 0, y: 0.15, z: 0.53066987}
+      Rotation: {x: -0.043619387, y: 0, z: 0, w: 0.99904823}
+    - Position: {x: 0, y: 0, z: 0.06641379}
+      Rotation: {x: -0.04031048, y: 0.0060410467, z: 0.00024372005, w: 0.99916893}
+    - Position: {x: 0, y: 0, z: 0.21031034}
+      Rotation: {x: -0.03140785, y: 0.00042728294, z: -0.013596363, w: 0.9994141}
+    - Position: {x: 0, y: 0, z: 0.2601207}
+      Rotation: {x: 0.027485473, y: 0, z: 0, w: 0.9996222}
+    - Position: {x: 0, y: 0, z: 0.06087931}
+      Rotation: {x: 0.019633692, y: 0, z: 0, w: 0.99980724}
+    - Position: {x: -0.186, y: 0, z: 0.1937069}
+      Rotation: {x: -0.22368126, y: 0.37515986, z: -0.15743312, w: 0.88568425}
+    - Position: {x: 0, y: 0, z: -0.3}
+      Rotation: {x: 0.83244354, y: -6.261298e-17, z: 7.5135575e-17, w: 0.5541099}
+    - Position: {x: 0, y: 0, z: -0.27}
+      Rotation: {x: 0, y: 0, z: 0, w: 1}
+    - Position: {x: 0.186, y: 0, z: 0.1937069}
+      Rotation: {x: -0.19665904, y: -0.3707039, z: 0.16755904, w: 0.8920918}
+    - Position: {x: 0, y: 0, z: -0.3}
+      Rotation: {x: 0.83272946, y: 5.0129266e-17, z: 7.5193894e-17, w: 0.55368006}
+    - Position: {x: 0, y: 0, z: -0.27}
+      Rotation: {x: 0, y: 0, z: 0, w: 1}
+    - Position: {x: -0.088, y: 0, z: -0.04427586}
+      Rotation: {x: 0.57877344, y: 0.33305228, z: 0.24596605, w: 0.70256543}
+    - Position: {x: 0, y: 0, z: -0.42}
+      Rotation: {x: -0.7934194, y: -8.407494e-17, z: -2.2799985e-17, w: 0.60867536}
+    - Position: {x: 0, y: 0, z: -0.41}
+      Rotation: {x: 0.27313182, y: -0.051108535, z: -0.36521068, w: 0.8884864}
+    - Position: {x: 0.088, y: 0, z: -0.04427586}
+      Rotation: {x: 0.57647353, y: -0.33130777, z: -0.24704078, w: 0.7049002}
+    - Position: {x: 0, y: 0, z: -0.42}
+      Rotation: {x: -0.79067916, y: -3.116792e-17, z: -3.966826e-17, w: 0.6122307}
+    - Position: {x: 0, y: 0, z: -0.41}
+      Rotation: {x: 0.2724507, y: 0.050951727, z: 0.36443153, w: 0.8890243}
+    - Position: {x: 1.0408341e-17, y: -4.1633363e-17, z: -0.065}
+      Rotation: {x: 0, y: 0, z: 0, w: 1}
+    - Position: {x: -8.326673e-17, y: 0.5, z: -2.7755576e-17}
+      Rotation: {x: 0, y: 0, z: 0, w: 1}
+    - Position: {x: -5.551115e-17, y: 0.375, z: 0}
+      Rotation: {x: 0, y: 0, z: 0, w: 1}
+    - Position: {x: 4.6837534e-17, y: 3.469447e-18, z: -0.065}
+      Rotation: {x: 0, y: 0, z: 0, w: 1}
+    - Position: {x: -8.326673e-17, y: 0.5, z: 2.7755576e-17}
+      Rotation: {x: 0, y: 0, z: 0, w: 1}
+    - Position: {x: -8.326673e-17, y: 0.375, z: 1.2490009e-16}
+      Rotation: {x: 0, y: 0, z: 0, w: 1}
+    - Position: {x: 1.0408341e-17, y: -4.1633363e-17, z: -0.065}
+      Rotation: {x: 0, y: 0, z: 0, w: 1}
+    - Position: {x: 4.6837534e-17, y: 3.469447e-18, z: -0.065}
+      Rotation: {x: 0, y: 0, z: 0, w: 1}
+    - Position: {x: -0.0072676046, y: 0.22219059, z: -0.06713625}
+      Rotation: {x: 0, y: 0, z: 0, w: 1}
+    - Position: {x: 0, y: -0.125, z: 0.12}
+      Rotation: {x: 0.3263052, y: 0.4568273, z: 0.67340255, w: 0.48100182}
+    - Position: {x: 0, y: 0, z: 0}
+      Rotation: {x: 0, y: 0, z: 0, w: 1}
+    - Position: {x: 0, y: 0.15, z: 0.535}
+      Rotation: {x: -0.043619387, y: 0, z: 0, w: 0.99904823}
+    - Position: {x: 0, y: 0, z: 0.06641379}
+      Rotation: {x: -0.047106452, y: 8.5401564e-19, z: 4.0274355e-20, w: 0.99888986}
+    - Position: {x: 0, y: 0, z: 0.21031034}
+      Rotation: {x: -0.031410757, y: 6.0423954e-20, z: -1.9227216e-18, w: 0.99950653}
+    - Position: {x: 0, y: 0, z: 0.2601207}
+      Rotation: {x: 0.027485473, y: 0, z: 0, w: 0.9996222}
+    - Position: {x: 0, y: 0, z: 0.06087931}
+      Rotation: {x: 0.019633692, y: 0, z: 0, w: 0.99980724}
+    - Position: {x: -0.186, y: 0, z: 0.1937069}
+      Rotation: {x: -0.21175046, y: 0.3725864, z: -0.16352253, w: 0.8885952}
+    - Position: {x: 0, y: 0, z: -0.3}
+      Rotation: {x: 0.83219814, y: 1.2514273e-17, z: 2.5028546e-17, w: 0.5544784}
+    - Position: {x: 0, y: 0, z: -0.27}
+      Rotation: {x: 0, y: 0, z: 0, w: 1}
+    - Position: {x: 0.186, y: 0, z: 0.1937069}
+      Rotation: {x: -0.21175046, y: -0.3725864, z: 0.16352253, w: 0.8885952}
+    - Position: {x: 0, y: 0, z: -0.3}
+      Rotation: {x: 0.83219814, y: -1.2514273e-17, z: -2.5028546e-17, w: 0.5544784}
+    - Position: {x: 0, y: 0, z: -0.27}
+      Rotation: {x: 0, y: 0, z: 0, w: 1}
+    - Position: {x: -0.088, y: 0, z: -0.04427586}
+      Rotation: {x: 0.57474285, y: 0.33000353, z: 0.24784434, w: 0.70664096}
+    - Position: {x: 0, y: 0, z: -0.42}
+      Rotation: {x: -0.78860325, y: -2.6800796e-17, z: -1.1284545e-17, w: 0.6149024}
+    - Position: {x: 0, y: 0, z: -0.41}
+      Rotation: {x: 0.27191967, y: -0.050840687, z: -0.36385405, w: 0.8894297}
+    - Position: {x: 0.088, y: 0, z: -0.04427586}
+      Rotation: {x: 0.57474285, y: -0.33000353, z: -0.24784434, w: 0.70664096}
+    - Position: {x: 0, y: 0, z: -0.42}
+      Rotation: {x: -0.78860325, y: 2.6800796e-17, z: 1.1284545e-17, w: 0.6149024}
+    - Position: {x: 0, y: 0, z: -0.41}
+      Rotation: {x: 0.27191967, y: 0.050840687, z: 0.36385405, w: 0.8894297}
+    - Position: {x: -2.2551405e-17, y: 4.510281e-17, z: -0.065}
+      Rotation: {x: 0, y: 0, z: 0, w: 1}
+    - Position: {x: -2.7755576e-17, y: 0.5, z: -1.3877788e-16}
+      Rotation: {x: 0, y: 0, z: 0, w: 1}
+    - Position: {x: -1.110223e-16, y: 0.375, z: -4.1633363e-17}
+      Rotation: {x: 0, y: 0, z: 0, w: 1}
+    - Position: {x: 2.2551405e-17, y: 4.510281e-17, z: -0.065}
+      Rotation: {x: 0, y: 0, z: 0, w: 1}
+    - Position: {x: 2.7755576e-17, y: 0.5, z: -1.3877788e-16}
+      Rotation: {x: 0, y: 0, z: 0, w: 1}
+    - Position: {x: 1.110223e-16, y: 0.375, z: -4.1633363e-17}
+      Rotation: {x: 0, y: 0, z: 0, w: 1}
+    - Position: {x: -2.2551405e-17, y: 4.510281e-17, z: -0.065}
+      Rotation: {x: 0, y: 0, z: 0, w: 1}
+    - Position: {x: 2.2551405e-17, y: 4.510281e-17, z: -0.065}
+      Rotation: {x: 0, y: 0, z: 0, w: 1}
+    - Position: {x: -1.0166717e-18, y: 0.22139242, z: -0.06849113}
+      Rotation: {x: 0, y: 0, z: 0, w: 1}
+    - Position: {x: 0, y: -0.125, z: 0.12}
+      Rotation: {x: 0.3263052, y: 0.4568273, z: 0.67340255, w: 0.48100182}
+    - Position: {x: 0, y: 0, z: 0}
+      Rotation: {x: 0, y: 0, z: 0, w: 1}
+    - Position: {x: 0, y: 0.15, z: 0.5393301}
+      Rotation: {x: -0.043619387, y: 0, z: 0, w: 0.99904823}
+    - Position: {x: 0, y: 0, z: 0.06641379}
+      Rotation: {x: -0.05389852, y: -0.0060371724, z: -0.0003258743, w: 0.9985281}
+    - Position: {x: 0, y: 0, z: 0.21031034}
+      Rotation: {x: -0.03140785, y: -0.00042728294, z: 0.013596363, w: 0.9994141}
+    - Position: {x: 0, y: 0, z: 0.2601207}
+      Rotation: {x: 0.027485473, y: 0, z: 0, w: 0.9996222}
+    - Position: {x: 0, y: 0, z: 0.06087931}
+      Rotation: {x: 0.019633692, y: 0, z: 0, w: 0.99980724}
+    - Position: {x: -0.186, y: 0, z: 0.1937069}
+      Rotation: {x: -0.19992033, y: 0.36984077, z: -0.1697562, w: 0.89130944}
+    - Position: {x: 0, y: 0, z: -0.3}
+      Rotation: {x: 0.8318192, y: -5.0005834e-17, z: 0, w: 0.55504674}
+    - Position: {x: 0, y: 0, z: -0.27}
+      Rotation: {x: 0, y: 0, z: 0, w: 1}
+    - Position: {x: 0.186, y: 0, z: 0.1937069}
+      Rotation: {x: -0.22637488, y: -0.37416667, z: 0.1601416, w: 0.8849341}
+    - Position: {x: 0, y: 0, z: -0.3}
+      Rotation: {x: 0.8313854, y: 1.24868456e-17, z: 0, w: 0.5556963}
+    - Position: {x: 0, y: 0, z: -0.27}
+      Rotation: {x: 0, y: 0, z: 0, w: 1}
+    - Position: {x: -0.088, y: 0, z: -0.04427586}
+      Rotation: {x: 0.5706853, y: 0.32697374, z: 0.2497111, w: 0.7106693}
+    - Position: {x: 0, y: 0, z: -0.42}
+      Rotation: {x: -0.7836894, y: 6.1440455e-17, z: -2.2341983e-17, w: 0.62115294}
+    - Position: {x: 0, y: 0, z: -0.41}
+      Rotation: {x: 0.27061403, y: -0.050603554, z: -0.36252898, w: 0.890382}
+    - Position: {x: 0.088, y: 0, z: -0.04427586}
+      Rotation: {x: 0.5730073, y: -0.32870278, z: -0.2486458, w: 0.70837307}
+    - Position: {x: 0, y: 0, z: -0.42}
+      Rotation: {x: -0.78650934, y: -4.49426e-17, z: -9.550302e-17, w: 0.6175784}
+    - Position: {x: 0, y: 0, z: -0.41}
+      Rotation: {x: 0.27137148, y: 0.05073529, z: 0.36328235, w: 0.8898367}
+    - Position: {x: 1.2143064e-17, y: 3.469447e-18, z: -0.065}
+      Rotation: {x: 0, y: 0, z: 0, w: 1}
+    - Position: {x: -2.7755576e-17, y: 0.5, z: 0}
+      Rotation: {x: 0, y: 0, z: 0, w: 1}
+    - Position: {x: 5.551115e-17, y: 0.375, z: -4.1633363e-17}
+      Rotation: {x: 0, y: 0, z: 0, w: 1}
+    - Position: {x: 1.7347235e-18, y: -3.469447e-18, z: -0.065}
+      Rotation: {x: 0, y: 0, z: 0, w: 1}
+    - Position: {x: 0, y: 0.5, z: 8.326673e-17}
+      Rotation: {x: 0, y: 0, z: 0, w: 1}
+    - Position: {x: -8.326673e-17, y: 0.375, z: 0}
+      Rotation: {x: 0, y: 0, z: 0, w: 1}
+    - Position: {x: 1.2143064e-17, y: 3.469447e-18, z: -0.065}
+      Rotation: {x: 0, y: 0, z: 0, w: 1}
+    - Position: {x: 1.7347235e-18, y: -3.469447e-18, z: -0.065}
+      Rotation: {x: 0, y: 0, z: 0, w: 1}
+    - Position: {x: 0.0071110805, y: 0.22044209, z: -0.06987364}
+      Rotation: {x: 0, y: 0, z: 0, w: 1}
+    - Position: {x: 0, y: -0.125, z: 0.12}
+      Rotation: {x: 0.3263052, y: 0.4568273, z: 0.67340255, w: 0.48100182}
+    - Position: {x: 0, y: 0, z: 0}
+      Rotation: {x: 0, y: 0, z: 0, w: 1}
+    - Position: {x: 0, y: 0.15, z: 0.53066987}
+      Rotation: {x: -0.043619387, y: 0, z: 0, w: 0.99904823}
+    - Position: {x: 0, y: 0, z: 0.06641379}
+      Rotation: {x: -0.04031048, y: -0.0060410467, z: -0.00024372005, w: 0.99916893}
+    - Position: {x: 0, y: 0, z: 0.21031034}
+      Rotation: {x: -0.03140785, y: -0.00042728294, z: 0.013596363, w: 0.9994141}
+    - Position: {x: 0, y: 0, z: 0.2601207}
+      Rotation: {x: 0.027485473, y: 0, z: 0, w: 0.9996222}
+    - Position: {x: 0, y: 0, z: 0.06087931}
+      Rotation: {x: 0.019633692, y: 0, z: 0, w: 0.99980724}
+    - Position: {x: -0.186, y: 0, z: 0.1937069}
+      Rotation: {x: -0.19665904, y: 0.3707039, z: -0.16755904, w: 0.8920918}
+    - Position: {x: 0, y: 0, z: -0.3}
+      Rotation: {x: 0.83272946, y: -5.0129266e-17, z: -7.5193894e-17, w: 0.55368006}
+    - Position: {x: 0, y: 0, z: -0.27}
+      Rotation: {x: 0, y: 0, z: 0, w: 1}
+    - Position: {x: 0.186, y: 0, z: 0.1937069}
+      Rotation: {x: -0.22368126, y: -0.37515986, z: 0.15743312, w: 0.88568425}
+    - Position: {x: 0, y: 0, z: -0.3}
+      Rotation: {x: 0.83244354, y: 6.261298e-17, z: -7.5135575e-17, w: 0.5541099}
+    - Position: {x: 0, y: 0, z: -0.27}
+      Rotation: {x: 0, y: 0, z: 0, w: 1}
+    - Position: {x: -0.088, y: 0, z: -0.04427586}
+      Rotation: {x: 0.57877344, y: 0.33305228, z: 0.24596605, w: 0.70256543}
+    - Position: {x: 0, y: 0, z: -0.42}
+      Rotation: {x: -0.7934194, y: -8.407494e-17, z: -2.2799985e-17, w: 0.60867536}
+    - Position: {x: 0, y: 0, z: -0.41}
+      Rotation: {x: 0.27313182, y: -0.051108535, z: -0.36521068, w: 0.8884864}
+    - Position: {x: 0.088, y: 0, z: -0.04427586}
+      Rotation: {x: 0.57647353, y: -0.33130777, z: -0.24704078, w: 0.7049002}
+    - Position: {x: 0, y: 0, z: -0.42}
+      Rotation: {x: -0.79067916, y: -3.116792e-17, z: -3.966826e-17, w: 0.6122307}
+    - Position: {x: 0, y: 0, z: -0.41}
+      Rotation: {x: 0.2724507, y: 0.050951727, z: 0.36443153, w: 0.8890243}
+    - Position: {x: -8.673617e-18, y: 3.469447e-17, z: -0.065}
+      Rotation: {x: 0, y: 0, z: 0, w: 1}
+    - Position: {x: 8.326673e-17, y: 0.5, z: 2.7755576e-17}
+      Rotation: {x: 0, y: 0, z: 0, w: 1}
+    - Position: {x: 8.326673e-17, y: 0.375, z: 1.2490009e-16}
+      Rotation: {x: 0, y: 0, z: 0, w: 1}
+    - Position: {x: -1.0408341e-17, y: -4.1633363e-17, z: -0.065}
+      Rotation: {x: 0, y: 0, z: 0, w: 1}
+    - Position: {x: 8.326673e-17, y: 0.5, z: -2.7755576e-17}
+      Rotation: {x: 0, y: 0, z: 0, w: 1}
+    - Position: {x: 5.551115e-17, y: 0.375, z: 0}
+      Rotation: {x: 0, y: 0, z: 0, w: 1}
+    - Position: {x: -8.673617e-18, y: 3.469447e-17, z: -0.065}
+      Rotation: {x: 0, y: 0, z: 0, w: 1}
+    - Position: {x: -1.0408341e-17, y: -4.1633363e-17, z: -0.065}
+      Rotation: {x: 0, y: 0, z: 0, w: 1}
+    - Position: {x: 0.0072676046, y: 0.22219059, z: -0.06713625}
+      Rotation: {x: 0, y: 0, z: 0, w: 1}
+    - Position: {x: 0, y: -0.125, z: 0.12}
+      Rotation: {x: 0.3263052, y: 0.4568273, z: 0.67340255, w: 0.48100182}
+    ParkedParts: []
+    Mount: saddle
+    Carry: 
+    Power: 
     Face: 01070a01070a01070a01070a01070a01070a
     Tool: []
   MeshStates:
@@ -27971,6 +28356,7 @@ MonoBehaviour:
   - drive_helm_go_fast
   - drive_helm_bowrider
   - drive_helm_express_cruiser
+  - astride_helm_jet_ski
 --- !u!43 &5568630699522671562
 Mesh:
   m_ObjectHideFlags: 0
