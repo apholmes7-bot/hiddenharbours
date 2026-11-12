@@ -1,0 +1,50 @@
+# StPetersLayerRefresh: one step's patch to one root. Whole Unity YAML documents.
+step: "13-wharf-land-side"
+root: "NmcWharfMarketCounter"
+rootGameObject: 1737976318
+differences: []
+deletions: []
+edits:
+- fileID: 1064512360
+  name: "NmcWharfMarketCounter/HiddenHarbours.Economy::HiddenHarbours.Economy.WharfSellPoint"
+  before: |-
+    --- !u!114 &1064512360
+    MonoBehaviour:
+      m_ObjectHideFlags: 0
+      m_CorrespondingSourceObject: {fileID: 0}
+      m_PrefabInstance: {fileID: 0}
+      m_PrefabAsset: {fileID: 0}
+      m_GameObject: {fileID: 1737976318}
+      m_Enabled: 1
+      m_EditorHideFlags: 0
+      m_Script: {fileID: 11500000, guid: b6eba99244bdcf648afb4c370b96518d, type: 3}
+      m_Name: 
+      m_EditorClassIdentifier: HiddenHarbours.Economy::HiddenHarbours.Economy.WharfSellPoint
+      _buyer: {fileID: 1544789642}
+      _holdProvider: {fileID: 957678902}
+      _walletProvider: {fileID: 957678902}
+      _onSold:
+        m_PersistentCalls:
+          m_Calls: []
+  after: |-
+    --- !u!114 &1064512360
+    MonoBehaviour:
+      m_ObjectHideFlags: 0
+      m_CorrespondingSourceObject: {fileID: 0}
+      m_PrefabInstance: {fileID: 0}
+      m_PrefabAsset: {fileID: 0}
+      m_GameObject: {fileID: 1737976318}
+      m_Enabled: 1
+      m_EditorHideFlags: 0
+      m_Script: {fileID: 11500000, guid: b6eba99244bdcf648afb4c370b96518d, type: 3}
+      m_Name: 
+      m_EditorClassIdentifier: HiddenHarbours.Economy::HiddenHarbours.Economy.WharfSellPoint
+      _buyer: {fileID: 1544789642}
+      _holdProvider: {fileID: 957678902}
+      _walletProvider: {fileID: 957678902}
+      _onSold:
+        m_PersistentCalls:
+          m_Calls: []
+      _buyOnlySellerId: seller.nmc_wharf_market
+      _sellsWhatIsCarried: 1
+additions: []

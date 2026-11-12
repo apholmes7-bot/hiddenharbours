@@ -156,6 +156,10 @@ namespace HiddenHarbours.Tests.RigBaking
             // Ordinal order puts "characterRig10" before "characterRig9".
             new Snapshot("characterRig10", "docs/art/rigs/character/rig10/Art/characterIsoRig10.js",
                          "CharacterIso10", AzimuthConvention.Clockwise),
+            // Added by the next-iteration art pass (2026-11-11): rig 11.0, a proposal beside rig 10.
+            // Its own body, so no prerequisite. Ordinal order puts it between rig 10 and rig 9.
+            new Snapshot("characterRig11", "docs/art/rigs/character/rig11/Art/characterIsoRig11.js",
+                         "CharacterIso11", AzimuthConvention.Clockwise),
             // Added by the character rig intake, PR 1 (2026-09-25): Claude Design's kit v9.2, landed
             // as delivered. Its own body, so no prerequisite; its poses and checks are sidecars that
             // CharacterSkinExtractor.Load9 runs, not entries.
