@@ -9750,6 +9750,71 @@
       "Id": "beachactivity.fly_a_kite"
     },
     {
+      "Type": "HiddenHarbours.Art.SetPieceDef",
+      "Guid": "f7190111aeed4823962a1cb0cff3bc90",
+      "Id": "prop.nmc_bench"
+    },
+    {
+      "Type": "HiddenHarbours.Art.SetPieceDef",
+      "Guid": "593f0aa7c54840e6a42facbe78faa869",
+      "Id": "structure.nmc_town_boardwalk"
+    },
+    {
+      "Type": "HiddenHarbours.Art.SetPieceDef",
+      "Guid": "85c3c8d6b1344defa3bf3e9a2cc67703",
+      "Id": "prop.nmc_boardwalk_lamp"
+    },
+    {
+      "Type": "HiddenHarbours.Art.SetPieceDef",
+      "Guid": "cb6aa24788f64a129f7c77599cc67d6b",
+      "Id": "structure.nmc_the_falls_water"
+    },
+    {
+      "Type": "HiddenHarbours.Art.SetPieceDef",
+      "Guid": "d0abea49cdb34b66875f174e8e18c71b",
+      "Id": "structure.nmc_chandlery"
+    },
+    {
+      "Type": "HiddenHarbours.Art.SetPieceDef",
+      "Guid": "0cfdc6ed69cb40b3a9bb093813b32c49",
+      "Id": "structure.nmc_falls_deck"
+    },
+    {
+      "Type": "HiddenHarbours.Art.SetPieceDef",
+      "Guid": "6cb1308203424743a34afde40a11f3b5",
+      "Id": "prop.nmc_guard_rail"
+    },
+    {
+      "Type": "HiddenHarbours.Art.SetPieceDef",
+      "Guid": "a3ce9ea280624aac9431c43301817057",
+      "Id": "prop.nmc_picnic_table"
+    },
+    {
+      "Type": "HiddenHarbours.Art.SetPieceDef",
+      "Guid": "47c3708dc9ae4a2f93d098b9172f3f5e",
+      "Id": "structure.nmc_river_deck"
+    },
+    {
+      "Type": "HiddenHarbours.Art.SetPieceDef",
+      "Guid": "71152184c4294253bb0c698db1d517d2",
+      "Id": "structure.nmc_river_wall"
+    },
+    {
+      "Type": "HiddenHarbours.Art.SetPieceDef",
+      "Guid": "1c48e3195d314295a78a7b79ffaebf12",
+      "Id": "structure.nmc_route91_bridge"
+    },
+    {
+      "Type": "HiddenHarbours.Art.SetPieceDef",
+      "Guid": "f3731e82dfa049bb80aab28536d6cf8f",
+      "Id": "prop.nmc_sign_board"
+    },
+    {
+      "Type": "HiddenHarbours.Art.SetPieceDef",
+      "Guid": "a937ec00f67b487fb75af7d9cdc88c96",
+      "Id": "structure.nmc_wall_stairs"
+    },
+    {
       "Type": "HiddenHarbours.World.BerthDef",
       "Guid": "9e3b35aad7704b25be1bd06cf2c92450",
       "Id": "berth.rpt_trawler_face"
