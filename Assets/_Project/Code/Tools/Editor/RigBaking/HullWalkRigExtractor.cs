@@ -11,6 +11,16 @@ namespace HiddenHarbours.Tools.RigBaking
     /// <summary>The hull-layout bake reads only published members of the selected hull.</summary>
     public static class HullWalkRigExtractor
     {
+        /// <summary>Hulls whose helm bar is baked as its own fitting (HullPropFleet), so that it can turn
+        /// with the helm. Their body is baked with the rig's wheel state off; every other hull's body
+        /// carries her wheel as before.</summary>
+        public static readonly HashSet<string> HelmBarIsAFitting = new HashSet<string> { "jet_ski" };
+
+        static string BodyFaceCall(IRigScriptHost host, string scope) =>
+            HelmBarIsAFitting.Contains(host.EvaluateString($"String({scope}.id)"))
+                ? ".faceList({wheel:false})"
+                : ".faceList({})";
+
         public const string GeometrySchema = "hidden-harbours/hull-geometry@1";
 
         public static string FindWalk(string scriptPath, IRigScriptHost host, string scope)
@@ -60,7 +70,7 @@ namespace HiddenHarbours.Tools.RigBaking
                 if (a.Count != b.Count || a.Any(k => !b.TryGetValue(k.Key, out int tag) || tag != k.Value))
                     throw new FormatException(walk.Hull + ": tags." + pair.Item1 + ": differs from geometry");
             }
-            data.SourceFaceExpression = scope + ".faceList({})";
+            data.SourceFaceExpression = scope + BodyFaceCall(host, scope);
             data.W = (int)Number(host, scope, "W"); data.H = (int)Number(host, scope, "H");
             data.PxPerMetre = (int)Number(host, scope, "PX");
             data.PivotX = Number(host, scope, "pivot.x"); data.PivotY = Number(host, scope, "pivot.y");
@@ -74,7 +84,7 @@ namespace HiddenHarbours.Tools.RigBaking
                     data.Bayer[x, y] = data.BayerWasExported ? Number(host, scope, $"BAYER[{x}][{y}]") : (RigMeshSymbols.CanonicalBayer[x, y] + 0.5) / 16;
             var paints = Json(host, scope + ".matsFor()");
             var mats = HullLayoutJson.Child(paints, "MATS", "matsFor()");
-            var exterior = FacesJson(host, scope + ".faceList({})");
+            var exterior = FacesJson(host, scope + BodyFaceCall(host, scope));
             var leaf = LeafFaces(host, scope, data, 0);
             var room = FacesJson(host, scope + ".interiorFaces()");
             exterior.AddRange(leaf);
@@ -113,7 +123,7 @@ namespace HiddenHarbours.Tools.RigBaking
         {
             var leaf = hull.WithFaces(new List<RigFace>());
             var mats = HullLayoutJson.Child(Json(host, scope + ".matsFor()"), "MATS");
-            var exterior = FacesJson(host, scope + ".faceList({})");
+            var exterior = FacesJson(host, scope + BodyFaceCall(host, scope));
             exterior.AddRange(LeafFaces(host, scope, hull, 0));
             ReadFaces(LeafFaces(host, scope, hull, pose), mats, leaf, false, leaf.Faces, leaf.Materials,
                       SchemeStableGroups(host, scope, mats, exterior));
@@ -164,7 +174,7 @@ namespace HiddenHarbours.Tools.RigBaking
             var door = DeclaredDoors(hull.Walk).Single(d => HullLayoutJson.Text(d, "id") == id);
             var leaf = hull.WithFaces(new List<RigFace>());
             var mats = HullLayoutJson.Child(Json(host, scope + ".matsFor()"), "MATS");
-            var exterior = FacesJson(host, scope + ".faceList({})");
+            var exterior = FacesJson(host, scope + BodyFaceCall(host, scope));
             exterior.AddRange(LeafFaces(host, scope, hull, 0));
             ReadFaces(FacesJson(host, DoorExpression(host, scope, door, pose)), mats, leaf, false, leaf.Faces, leaf.Materials,
                       SchemeStableGroups(host, scope, mats, exterior));

@@ -55,6 +55,30 @@ namespace HiddenHarbours.Tools.RigBaking
             }
         }
 
+        /// <summary>Batch entry for ONE fitting, named by the environment variable HH_PROP_KEY (a
+        /// <see cref="FleetProp.Key"/>). A new hull's fitting is baked without re-baking the fleet's.</summary>
+        public static void BakeOnePropCli()
+        {
+            try
+            {
+                string key = Environment.GetEnvironmentVariable("HH_PROP_KEY") ?? "";
+                var one = new List<FleetProp>();
+                foreach (FleetProp p in HullPropFleet.All) if (p.Key == key) one.Add(p);
+                if (one.Count != 1 || BakeAllInternal(one) > 0)
+                {
+                    Debug.LogError($"[rig-prop] CLI bake FAILED for HH_PROP_KEY '{key}' ({one.Count} rows match).");
+                    EditorApplication.Exit(1);
+                    return;
+                }
+                Debug.Log("[rig-prop] CLI bake OK: " + key);
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"[rig-prop] CLI bake FAILED: {e}");
+                EditorApplication.Exit(1);
+            }
+        }
+
         static int BakeAllInternal(IReadOnlyList<FleetProp> props)
         {
             var report = new StringBuilder($"[rig-prop] fitting bake — {props.Count}\n");
@@ -154,6 +178,9 @@ namespace HiddenHarbours.Tools.RigBaking
             def.PivotLocalMeters = pivot;
             def.MaxSteerDegrees = maxSteer;
             def.MaxTiltDegrees = maxTilt;
+            def.SteerAxisLocal = string.IsNullOrEmpty(p.Extraction.SteerAxisCall)
+                ? Vector3.zero
+                : ReadVector3(host, $"{p.GlobalName}.{p.Extraction.SteerAxisCall}", "the fitting's steer axis");
             def.LateralMountsMeters = mounts;
 
             def.Ramps = new HullMeshDef.Ramp[data.Materials.Count];
@@ -223,6 +250,7 @@ namespace HiddenHarbours.Tools.RigBaking
                     // ONE motor field, whatever the fit: the twin is this same def instantiated twice
                     // at the mounts the def carries, not a second engine asset.
                     case "Motor": visual.MotorMesh = def; break;
+                    case "HelmBar": visual.HelmBarMesh = def; break;
                     default:
                         Debug.LogError(
                             $"[rig-prop] {p.Label}: unknown fitting slot '{slot}' on {assetPath}. The " +
