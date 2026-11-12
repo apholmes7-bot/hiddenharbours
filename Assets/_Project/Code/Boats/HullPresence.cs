@@ -94,6 +94,18 @@ namespace HiddenHarbours.Boats
             return presence;
         }
 
+        /// <summary>The draught the flight law reads, in metres: how deep she is DRAWN in the water (the
+        /// mesh's resting draught), because that is the keel the player watches leave the sea. A hull
+        /// with no mesh, or one that states none, falls back to her gameplay draught. Grounding still
+        /// reads the gameplay draught and is not touched by this.</summary>
+        public static float FlightDraughtOf(BoatHullDef hull, BoatVisualDef visual = null)
+        {
+            if (hull == null) return 0f;
+            BoatVisualDef skin = visual != null ? visual : hull.Visual;
+            float drawn = skin != null && skin.HullMesh != null ? skin.HullMesh.RestingDraftMeters : 0f;
+            return drawn > 0f ? drawn : Mathf.Max(0f, hull.DraughtMeters);
+        }
+
         /// <summary>Half her beam in metres — the authored mesh value where there is one, else the
         /// <see cref="BeamFraction"/> stand-in. The ONE derivation (see the class note).</summary>
         public static float HalfBeamOf(BoatHullDef hull, BoatVisualDef visual = null)

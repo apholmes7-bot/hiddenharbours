@@ -65,11 +65,15 @@ namespace HiddenHarbours.Tests.EditMode
         // A hull making `speed` m/s straight into the sea the wave field raises for that wind. The water
         // under her is the mean over the law's own footprint points, exactly as the boat's tick reads it.
         static Run Drive(float speed, float length, float halfBeam, float draught, int sea,
-                         HullFlightSettings cfg, float seconds = 60f, bool keepRides = false)
+                         HullFlightSettings cfg, float seconds = 60f, bool keepRides = false,
+                         float damping = 0.6f, bool anyHull = false)
         {
-            HullHeaveResponse heave = HullHeaveResponseMath.Resolve(length, halfBeam, draught, 0.6f, G,
+            HullHeaveResponse heave = HullHeaveResponseMath.Resolve(length, halfBeam, draught, damping, G,
                                                                     ShippedWeight);
-            Assert.IsTrue(heave.IsHonest, "the test hull must resolve a real heave spring");
+            if (!anyHull) Assert.IsTrue(heave.IsHonest, "the test hull must resolve a real heave spring");
+            // A hull the weight policy has not measured: the wall-sided spring, as the boat's tick does.
+            float omega = heave.IsHonest ? heave.NaturalFrequencyRadPerSec : Mathf.Sqrt(G / Mathf.Max(0.05f, draught));
+            float zeta = heave.IsHonest ? heave.DampingRatio : 1f;
             WaveFieldSettings field = ShippedSea;
             WaveTrains trains = WaveMath.TrainsFrom(new Vector2(Seas[sea].wind, 0f), Seas[sea].sea, in field);
             Vector2 heading = new Vector2(-1f, 0f);   // into the sea
@@ -85,7 +89,7 @@ namespace HiddenHarbours.Tests.EditMode
                     surface += WaveMath.Sample(at + heading * HullFlightMath.FootprintOffset(n, length), t, in trains).Height;
                 surface /= HullFlightMath.FootprintPoints;
                 HullFlightStep step = HullFlightMath.Step(ref state, surface, Tick, G,
-                    heave.NaturalFrequencyRadPerSec, heave.DampingRatio, draught, length, speed, in cfg);
+                    omega, zeta, draught, length, speed, in cfg);
                 if (step.Event == HullFlightEvent.Launched) run.Launches++;
                 if (step.Event == HullFlightEvent.Landed)
                 {
@@ -195,6 +199,43 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.Less(jetski.PeakClearance, 1f, "…and low.");
             Assert.AreEqual(0, Drive(5.5f, 3.3f, 0.6f, 0.3f, Moderate, HullFlightSettings.Default, 300f).Launches,
                             "…and never in a moderate sea.");
+        }
+
+        // The one hull meant to fly at her own speed (owner, 2026-11-12: "flight stays with the jetski for
+        // now"). She is not on main yet; when she lands this law must not read her as a defect.
+        static readonly string[] MeantToFly = { "boat.jet_ski" };
+
+        [Test]
+        public void NoHullOnMain_AtHerTrueTopSpeed_LeavesTheWater_InAnySea_OnHerDrawnWaterline()
+        {
+            // EVERY hull Def, not a hand-picked list: her own length, half beam, seakeeping and the draught
+            // the game's tick feeds the law (HullPresence.FlightDraughtOf, the drawn waterline), at the top
+            // speed her engine and drag really give, on the shipped sea with the shipped flight dials.
+            HullFlightSettings cfg = Shipped(HullFlightSettings.Default, "HullFlight");
+            string[] paths = System.Array.ConvertAll(
+                UnityEditor.AssetDatabase.FindAssets("t:" + nameof(BoatHullDef), new[] { "Assets/_Project/Data/Boats" }),
+                UnityEditor.AssetDatabase.GUIDToAssetPath);
+            int driven = 0;
+            var flew = new List<string>();
+            foreach (string path in paths)
+            {
+                BoatHullDef hull = UnityEditor.AssetDatabase.LoadAssetAtPath<BoatHullDef>(path);
+                if (hull == null || hull.EnginePower <= 0f) continue;
+                if (System.Array.IndexOf(MeantToFly, hull.Id) >= 0) continue;
+                float top = hull.EnginePower * 0.01f / (hull.ForwardDrag * 0.01f + hull.MassKg / 100f * 0.2f);
+                float draught = HullPresence.FlightDraughtOf(hull);
+                Assert.Greater(draught, 0f, $"{hull.Id} has no draught for the flight law to read.");
+                driven++;
+                for (int sea = Breeze; sea <= Gale; sea++)
+                {
+                    Run run = Drive(top, hull.LengthMeters, HullPresence.HalfBeamOf(hull), draught, sea, cfg, 300f,
+                                    damping: hull.SeakeepingDamping, anyHull: true);
+                    if (run.Launches > 0)
+                        flew.Add($"{hull.Id} at {top:0.00} m/s in sea {sea}: {run.Launches} hops, {run.PeakClearance:0.00} m");
+                }
+            }
+            Assert.Greater(driven, 20, "the fleet's hull Defs were not found");
+            Assert.IsEmpty(flew, "No hull on main flies at her own top speed: " + string.Join("; ", flew));
         }
 
         // ---- the same hull, the same sea: speed decides ---------------------------------------------

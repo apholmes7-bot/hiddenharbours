@@ -350,16 +350,18 @@ namespace HiddenHarbours.Boats
                                       sampleTime, in trains, fetch).Height;
             }
             float surface = sum / HullFlightMath.FootprintPoints;
+            // The drawn waterline, not the gameplay draught: the law lifts the keel the player sees.
+            float flightDraught = HullPresence.FlightDraughtOf(_hull);
             HullHeaveResponse heave = HullHeaveResponseMath.Resolve(
-                _hull.LengthMeters, HullPresence.HalfBeamOf(_hull), _hull.DraughtMeters,
+                _hull.LengthMeters, HullPresence.HalfBeamOf(_hull), flightDraught,
                 _hull.SeakeepingDamping, gravity, GameServices.HullWeight);
             // A hull the weight policy has not measured still has a draught: the wall-sided spring.
             float omega = heave.IsHonest
                 ? heave.NaturalFrequencyRadPerSec
-                : Mathf.Sqrt(gravity / Mathf.Max(0.05f, _hull.DraughtMeters));
+                : Mathf.Sqrt(gravity / Mathf.Max(0.05f, flightDraught));
             float zeta = heave.IsHonest ? heave.DampingRatio : 1f;
             HullFlightStep step = HullFlightMath.Step(ref _flight, surface, Time.fixedDeltaTime, gravity,
-                omega, zeta, _hull.DraughtMeters, _hull.LengthMeters, throughWater.magnitude, in cfg);
+                omega, zeta, flightDraught, _hull.LengthMeters, throughWater.magnitude, in cfg);
             _flightClearanceMeters = step.ClearanceMeters;
             if (step.Event == HullFlightEvent.Launched)
             {
