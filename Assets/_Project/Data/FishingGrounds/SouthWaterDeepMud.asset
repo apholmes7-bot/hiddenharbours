@@ -21,6 +21,7 @@ MonoBehaviour:
   MinDepthMetres: 70
   MaxDepthMetres: 70
   Bottom: 4
+  Hardness01: 0.05
   FishIds:
   - fish.haddock
   - fish.atlantic_cod

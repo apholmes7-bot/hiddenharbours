@@ -21,6 +21,7 @@ MonoBehaviour:
   MinDepthMetres: 20
   MaxDepthMetres: 21
   Bottom: 2
+  Hardness01: 0.2
   FishIds:
   - fish.atlantic_cod
   - fish.atlantic_herring
