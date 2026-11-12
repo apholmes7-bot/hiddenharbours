@@ -274,7 +274,7 @@ namespace HiddenHarbours.Tests.PlayMode
             float closest = 0f, longest = 0f;
             var wait = new WaitForFixedUpdate();
             int steps = Mathf.CeilToInt(120f / Time.fixedDeltaTime);
-            bool sawStorm = false;
+            bool sawStorm = false, sawStormWind = false;
             for (int i = 0; i < steps; i++)
             {
                 boat.SetControl(1f, 0f);
@@ -284,11 +284,18 @@ namespace HiddenHarbours.Tests.PlayMode
                 {
                     sawStorm = true;
                     var seen = LocalWeather.Shade(GameServices.Environment.Sample());
-                    Assert.Greater(seen.WindVector.magnitude, FairWeather.Fair.WindVector.magnitude);
+                    // On the first step past the start line the shade is too faint to move a float.
+                    Assert.GreaterOrEqual(seen.WindVector.magnitude, FairWeather.Fair.WindVector.magnitude);
+                    if (_director.Storm01 > 0.05f)
+                    {
+                        sawStormWind = true;
+                        Assert.Greater(seen.WindVector.magnitude, FairWeather.Fair.WindVector.magnitude);
+                    }
                     Assert.AreEqual(FairWeather.Fair.SeaState, seen.SeaState);
                 }
             }
             Assert.IsTrue(sawStorm, "she was in the storm for part of the run");
+            Assert.IsTrue(sawStormWind, "and deep enough in it that the wind she was shown was stronger");
 
             _save.SetFlag(_wall.LiftedByFlag, true);
             yield return Drive(boat, 5f, false, (c, l) => { closest = c; longest = l; });
