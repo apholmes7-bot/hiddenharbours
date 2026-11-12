@@ -194,7 +194,14 @@ namespace HiddenHarbours.Tests.EditMode
             {
                 Assert.That(a, Is.Not.Null);
                 Assert.That(a.Id, Does.StartWith("beachactivity."), a.name);
-                Assert.That(a.IsRunnable, Is.True, a.Id);
+                Assert.That(a.IsRunnable, Is.EqualTo(string.IsNullOrEmpty(a.WaitsOn)),
+                    a.Id + ": an activity runs unless it says what it waits on");
+                if (a.Kind == BeachActivityKind.Wade)
+                {
+                    Assert.That(a.MinWadeDepthMetres, Is.LessThanOrEqualTo(a.MaxWadeDepthMetres), a.Id);
+                    Assert.That(a.MaxWadeDepthMetres, Is.LessThanOrEqualTo(a.DeepestWadeMetres), a.Id);
+                    Assert.That(a.Beach.Shallows, Is.Not.Empty, a.Id + ": wading needs shallows lines");
+                }
                 Assert.That(a.Beach.Id, Does.StartWith("beach."), a.Id);
                 Assert.That(a.Replaces, Is.EqualTo(RoutineActivity.Recreation),
                     a.Id + ": the beach fills free time; it never takes work, a meal or sleep");
@@ -221,7 +228,18 @@ namespace HiddenHarbours.Tests.EditMode
                 Assert.That(beach.Promenade.Length, Is.GreaterThanOrEqualTo(2), beach.Id);
                 Assert.That(beach.Flats, Is.Not.Empty, beach.Id);
 
-                foreach (BeachTransect line in beach.Spots.Concat(beach.Promenade))
+                BeachTransect[] shallows = beach.Shallows;
+                for (int i = 0; i < shallows.Length; i++)
+                {
+                    Assert.That(_terrain.ElevationAt(shallows[i].Toe),
+                        Is.LessThan(StPetersBuilder.TideMean - StPetersBuilder.TideAmplitude * 0.4f),
+                        $"{beach.Id}: the shallows line at {shallows[i].Top} must reach well below mid tide");
+                    for (int j = i + 1; j < shallows.Length; j++)
+                        Assert.That(Vector2.Distance(shallows[i].Top, shallows[j].Top), Is.GreaterThanOrEqualTo(3f),
+                            $"{beach.Id}: shallows lines {i} and {j} are too close for two people to wander");
+                }
+
+                foreach (BeachTransect line in beach.Spots.Concat(beach.Promenade).Concat(beach.Shallows))
                 {
                     Assert.That(_terrain.ElevationAt(line.Top), Is.GreaterThan(springHigh + 1f),
                         $"{beach.Id}: the top of the line at {line.Top} must stay dry on a spring high");
@@ -259,7 +277,7 @@ namespace HiddenHarbours.Tests.EditMode
         [Test]
         public void OverAYear_EveryFairWeatherActivityHappens()
         {
-            foreach (BeachActivityDef activity in _library.Activities)
+            foreach (BeachActivityDef activity in _library.Activities.Where(a => a.IsRunnable))
                 Assert.That(Outings.Count(e => e.Outing.Activity == activity), Is.GreaterThan(0),
                     activity.Id + " never happened in a whole year: its gates cannot all pass");
 
@@ -336,6 +354,13 @@ namespace HiddenHarbours.Tests.EditMode
                     float ground = _terrain.ElevationAt(pose.Position);
                     float water = _sky.WaterLevelAt(e.BeachDay.TimeAt(h));
                     samples++;
+                    if (o.Activity.Kind == BeachActivityKind.Wade)
+                    {
+                        // Waders are in the water on purpose, and never over the depth the activity allows.
+                        Assert.That(water - ground, Is.LessThanOrEqualTo(o.Activity.DeepestWadeMetres + 0.02f),
+                            $"{Name(e)} at {h:0.00} h is at {pose.Position}: {water - ground:0.00} m of water");
+                        continue;
+                    }
                     lowest = Mathf.Min(lowest, ground - water);
                     Assert.That(ground, Is.GreaterThan(water + 0.05f),
                         $"{Name(e)} at {h:0.00} h is at {pose.Position}: ground {ground:0.00} m, water {water:0.00} m");
@@ -348,6 +373,46 @@ namespace HiddenHarbours.Tests.EditMode
             }
             Assert.That(samples, Is.GreaterThan(1000), "the year put people on the sand to be checked");
             TestContext.WriteLine($"lowest ground above water over {samples} samples: {lowest:0.00} m");
+        }
+
+        [Test]
+        public void Waders_GoIn_FollowTheEdge_AndComeBackOut()
+        {
+            Evening[] wades = Outings.Where(e => e.Outing.Activity.Kind == BeachActivityKind.Wade).ToArray();
+            Assert.That(wades, Is.Not.Empty, "nobody waded in a whole year");
+
+            float deepest = 0f;
+            foreach (Evening e in wades)
+            {
+                BeachOuting o = e.Outing;
+                Assert.That(e.BeachDay.Season, Is.EqualTo(Season.HighSummer), Name(e) + ": warm days only");
+                Assert.That(o.StopCount, Is.GreaterThanOrEqualTo(3), Name(e) + ": dry sand, the water, dry sand");
+
+                // First and last places are the same dry place, above the water for the whole stay.
+                RoutineStop first = e.Stops[o.FirstStop], last = e.Stops[o.FirstStop + o.StopCount - 1];
+                Assert.That(last.Station.Position, Is.EqualTo(first.Station.Position), Name(e));
+                Assert.That(_terrain.ElevationAt(first.Station.Position),
+                            Is.GreaterThanOrEqualTo(o.KeepAboveMetres - 0.01f), Name(e));
+
+                // In between they stand in water: wet at the middle of a standing place.
+                bool wet = false;
+                for (int k = o.FirstStop + 1; k < o.FirstStop + o.StopCount - 1; k++)
+                {
+                    float reached = e.Plan.DepartureHours[k] + e.Plan.TravelHours(k, _perHour);
+                    float leaves = e.Plan.DepartureHours[k + 1];
+                    float mid = (reached + leaves) * 0.5f;
+                    float depth = _sky.WaterLevelAt(e.BeachDay.TimeAt(mid))
+                                  - _terrain.ElevationAt(e.Stops[k].Station.Position);
+                    deepest = Mathf.Max(deepest, depth);
+                    if (depth > 0f) wet = true;
+                    Assert.That(BeachPlanning.GatesPass(o.Activity, _sky, e.BeachDay, mid), Is.True,
+                                $"{Name(e)} place {k} at {mid:0.00} h: in the water after the weather turned");
+                    Assert.That(depth, Is.GreaterThan(-0.15f), $"{Name(e)} place {k}: the edge has left them behind");
+                }
+                Assert.That(wet, Is.True, Name(e) + " never got their feet wet");
+
+            }
+            TestContext.WriteLine($"{wades.Length} wades; deepest standing water {deepest:0.00} m");
         }
 
         [Test]

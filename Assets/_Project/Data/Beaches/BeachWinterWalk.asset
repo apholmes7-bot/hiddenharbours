@@ -41,3 +41,9 @@ MonoBehaviour:
   WalkersAbreast: 4
   MinStayMinutes: 20
   LingerMinutes: 4
+  MinWadeDepthMetres: 0.08
+  MaxWadeDepthMetres: 0.25
+  DeepestWadeMetres: 0.4
+  WadeMinutes: 25
+  WadeWanderMetres: 0.7
+  WaitsOn: 
