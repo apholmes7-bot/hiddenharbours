@@ -28,6 +28,7 @@
     "HiddenHarbours.Boats.NavBuoyDef",
     "HiddenHarbours.Boats.SailRaceCourseDef",
     "HiddenHarbours.Boats.SailRaceNpcDef",
+    "HiddenHarbours.Boats.WreckDef",
     "HiddenHarbours.Core.ActionTimingDef",
     "HiddenHarbours.Core.BoatInteriorDef",
     "HiddenHarbours.Core.CarryAnchorTableDef",
@@ -117,12 +118,7 @@
     "HiddenHarbours.Art.PlantClumpDef",
     "HiddenHarbours.Fishing.FishEcologyDef",
     "HiddenHarbours.Tools.GoodsModel.GoodsContainerDef",
-    "HiddenHarbours.Tools.GoodsModel.GoodsHandlingDef",
-    "HiddenHarbours.Economy.SupplyChain.FishLineDef",
-    "HiddenHarbours.Economy.SupplyChain.FishOutletDef",
-    "HiddenHarbours.Economy.SupplyChain.FishPlantDef",
-    "HiddenHarbours.Economy.SupplyChain.FishStorageDef",
-    "HiddenHarbours.Economy.SupplyChain.FishTruckRunDef"
+    "HiddenHarbours.Tools.GoodsModel.GoodsHandlingDef"
   ],
   "Entries": [
     {
@@ -9946,209 +9942,19 @@
       "Id": "paint.stern_trawler_wrecked"
     },
     {
-      "Type": "HiddenHarbours.Economy.SupplyChain.FishOutletDef",
-      "Guid": "c7d8050b7f5e4e7dae735a14d0902606",
-      "Id": "fishoutlet.bay_hotel"
+      "Type": "HiddenHarbours.Boats.WreckDef",
+      "Guid": "af733760af404813a9a3c0cc81d2c411",
+      "Id": "wreck.rpt_stern_trawler"
     },
     {
-      "Type": "HiddenHarbours.Economy.SupplyChain.FishStorageDef",
-      "Guid": "fb97e5a61df441f29c6bc8fbd460791e",
-      "Id": "fishstore.bay_hotel_stock"
+      "Type": "HiddenHarbours.World.DialogueDef",
+      "Guid": "2b52cbe6fc9c440ea7c5395d2b8da622",
+      "Id": "dialogue.rpt_wreck"
     },
     {
-      "Type": "HiddenHarbours.Economy.SupplyChain.FishLineDef",
-      "Guid": "f104a188239b4844a7e25718b852495d",
-      "Id": "fishline.nmc_canned"
-    },
-    {
-      "Type": "HiddenHarbours.Economy.SupplyChain.FishOutletDef",
-      "Guid": "ede5f308358b4e69924f253ad1fe6151",
-      "Id": "fishoutlet.creek_grocery"
-    },
-    {
-      "Type": "HiddenHarbours.Economy.SupplyChain.FishStorageDef",
-      "Guid": "e697f28a42e449fca0fd4b5334a9232f",
-      "Id": "fishstore.creek_grocery_stock"
-    },
-    {
-      "Type": "HiddenHarbours.Economy.SupplyChain.FishOutletDef",
-      "Guid": "4fa83fe70fca4eefa17394fa931bb56c",
-      "Id": "fishoutlet.export_customer"
-    },
-    {
-      "Type": "HiddenHarbours.Economy.SupplyChain.FishStorageDef",
-      "Guid": "d6bd66b3841b4ae6a972a840a5ac7ff6",
-      "Id": "fishstore.export_customer_stock"
-    },
-    {
-      "Type": "HiddenHarbours.Economy.SupplyChain.FishLineDef",
-      "Guid": "39bec60edaba44b4bc9c7404d06c7f8f",
-      "Id": "fishline.nmc_fresh_fillet"
-    },
-    {
-      "Type": "HiddenHarbours.Economy.SupplyChain.FishLineDef",
-      "Guid": "59ecaa5c163d43f9a7d7e2efc2614cfc",
-      "Id": "fishline.nmc_frozen"
-    },
-    {
-      "Type": "HiddenHarbours.Economy.SupplyChain.FishOutletDef",
-      "Guid": "2451169e9f8245019a7cc1e1b4f60f76",
-      "Id": "fishoutlet.harbour_restaurant"
-    },
-    {
-      "Type": "HiddenHarbours.Economy.SupplyChain.FishStorageDef",
-      "Guid": "2e70fe3a6e8a4fc492b42cd6e7146c14",
-      "Id": "fishstore.harbour_restaurant_stock"
-    },
-    {
-      "Type": "HiddenHarbours.Economy.SupplyChain.FishOutletDef",
-      "Guid": "10b3ad8a4acc470f8fde2ef34f6d1d10",
-      "Id": "fishoutlet.island_grocery"
-    },
-    {
-      "Type": "HiddenHarbours.Economy.SupplyChain.FishStorageDef",
-      "Guid": "c4888ea7915647a48c3ff335f08c5b56",
-      "Id": "fishstore.island_grocery_stock"
-    },
-    {
-      "Type": "HiddenHarbours.Economy.SupplyChain.FishLineDef",
-      "Guid": "abd844cc98f84eb0a3a791ac2c75c2a8",
-      "Id": "fishline.nmc_lobster"
-    },
-    {
-      "Type": "HiddenHarbours.Economy.SupplyChain.FishOutletDef",
-      "Guid": "ace8c39049d04c67b7695731ce8463e9",
-      "Id": "fishoutlet.lobster_restaurant"
-    },
-    {
-      "Type": "HiddenHarbours.Economy.SupplyChain.FishStorageDef",
-      "Guid": "cdfe576bef70481e89d87af6b776be56",
-      "Id": "fishstore.lobster_restaurant_stock"
-    },
-    {
-      "Type": "HiddenHarbours.Economy.SupplyChain.FishPlantDef",
-      "Guid": "9626682030b94e85934a4c57209ff04e",
-      "Id": "fishplant.nmc_industrial"
-    },
-    {
-      "Type": "HiddenHarbours.Economy.SupplyChain.FishStorageDef",
-      "Guid": "d1bdbb8e506c4243ad2a053a1055be14",
-      "Id": "fishstore.nmc_to_plant_cargo"
-    },
-    {
-      "Type": "HiddenHarbours.Economy.SupplyChain.FishTruckRunDef",
-      "Guid": "ef0c2ef19feb421bb2b02ff4b5e0d102",
-      "Id": "fishrun.nmc_to_plant"
-    },
-    {
-      "Type": "HiddenHarbours.Economy.SupplyChain.FishStorageDef",
-      "Guid": "e0ab3380f91444aa9089028391ee2928",
-      "Id": "fishstore.nmc_wharf"
-    },
-    {
-      "Type": "HiddenHarbours.Economy.SupplyChain.FishStorageDef",
-      "Guid": "7286f980cf3f4fdd836d0581b7c35c9e",
-      "Id": "fishstore.plant_cold"
-    },
-    {
-      "Type": "HiddenHarbours.Economy.SupplyChain.FishStorageDef",
-      "Guid": "9c0efb5f3e23474c9e2b2b9502171ea4",
-      "Id": "fishstore.plant_dry"
-    },
-    {
-      "Type": "HiddenHarbours.Economy.SupplyChain.FishStorageDef",
-      "Guid": "a46b3a6224604cf18599dcf8967c0915",
-      "Id": "fishstore.plant_intake"
-    },
-    {
-      "Type": "HiddenHarbours.Economy.SupplyChain.FishStorageDef",
-      "Guid": "bbefbd288dc04109b6d3dbc256051075",
-      "Id": "fishstore.plant_to_bay_hotel_cargo"
-    },
-    {
-      "Type": "HiddenHarbours.Economy.SupplyChain.FishTruckRunDef",
-      "Guid": "4df919b5f46547a38646cc7cf6050fa7",
-      "Id": "fishrun.plant_to_bay_hotel"
-    },
-    {
-      "Type": "HiddenHarbours.Economy.SupplyChain.FishStorageDef",
-      "Guid": "3abee32521f24e30bd7c723697255a3a",
-      "Id": "fishstore.plant_to_creek_grocery_cargo"
-    },
-    {
-      "Type": "HiddenHarbours.Economy.SupplyChain.FishTruckRunDef",
-      "Guid": "04e9b4a331fa4809be3e624ee6804aab",
-      "Id": "fishrun.plant_to_creek_grocery"
-    },
-    {
-      "Type": "HiddenHarbours.Economy.SupplyChain.FishStorageDef",
-      "Guid": "3959569a031341c18529eb660331d87a",
-      "Id": "fishstore.plant_to_export_customer_cargo"
-    },
-    {
-      "Type": "HiddenHarbours.Economy.SupplyChain.FishTruckRunDef",
-      "Guid": "c6a8e482b75d438d96a023a08e08a964",
-      "Id": "fishrun.plant_to_export_customer"
-    },
-    {
-      "Type": "HiddenHarbours.Economy.SupplyChain.FishStorageDef",
-      "Guid": "e28d2db6aedd4b5aba85a6f2a18963ef",
-      "Id": "fishstore.plant_to_harbour_restaurant_cargo"
-    },
-    {
-      "Type": "HiddenHarbours.Economy.SupplyChain.FishTruckRunDef",
-      "Guid": "85a6c6b2c3034b4ab074ceff4cf9cdf5",
-      "Id": "fishrun.plant_to_harbour_restaurant"
-    },
-    {
-      "Type": "HiddenHarbours.Economy.SupplyChain.FishStorageDef",
-      "Guid": "0840363d640d44feaa8e200c7ac0d823",
-      "Id": "fishstore.plant_to_island_grocery_cargo"
-    },
-    {
-      "Type": "HiddenHarbours.Economy.SupplyChain.FishTruckRunDef",
-      "Guid": "52ad062e621b428e94acffadb3cd9ca7",
-      "Id": "fishrun.plant_to_island_grocery"
-    },
-    {
-      "Type": "HiddenHarbours.Economy.SupplyChain.FishStorageDef",
-      "Guid": "63feb3b18bc142e2b933d284f44407a4",
-      "Id": "fishstore.plant_to_lobster_restaurant_cargo"
-    },
-    {
-      "Type": "HiddenHarbours.Economy.SupplyChain.FishTruckRunDef",
-      "Guid": "30b01fa2e6bb42fbab073e6a34eff524",
-      "Id": "fishrun.plant_to_lobster_restaurant"
-    },
-    {
-      "Type": "HiddenHarbours.Economy.SupplyChain.FishStorageDef",
-      "Guid": "34ed6f0cca57425d86b87432d85548d9",
-      "Id": "fishstore.rice_point_to_plant_cargo"
-    },
-    {
-      "Type": "HiddenHarbours.Economy.SupplyChain.FishTruckRunDef",
-      "Guid": "8fe7095788f9465c8b226c38c325879f",
-      "Id": "fishrun.rice_point_to_plant"
-    },
-    {
-      "Type": "HiddenHarbours.Economy.SupplyChain.FishStorageDef",
-      "Guid": "61821f17b9bf43f084f242c86bf4dbf6",
-      "Id": "fishstore.rice_point_wharf"
-    },
-    {
-      "Type": "HiddenHarbours.Economy.SupplyChain.FishStorageDef",
-      "Guid": "d5ca1cee1b5d4f0ba68c02c292a230c9",
-      "Id": "fishstore.st_peters_to_plant_cargo"
-    },
-    {
-      "Type": "HiddenHarbours.Economy.SupplyChain.FishTruckRunDef",
-      "Guid": "518a9debef064696b4ad0ac2e0c73cc2",
-      "Id": "fishrun.st_peters_to_plant"
-    },
-    {
-      "Type": "HiddenHarbours.Economy.SupplyChain.FishStorageDef",
-      "Guid": "1a642b5302204d7f8b36bb098d1d22fd",
-      "Id": "fishstore.st_peters_wharf"
+      "Type": "HiddenHarbours.World.NpcDef",
+      "Guid": "a230a2fa97d941adbac15d45912324e3",
+      "Id": "npc.rpt_wreck"
     }
   ]
 }
