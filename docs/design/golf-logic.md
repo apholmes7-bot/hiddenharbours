@@ -132,6 +132,16 @@ Existing assertions and visual expectations are
 unchanged. Local source-host results are described separately from Unity results
 in the PR; source facades are not an editor test-run result.
 
+The initial CI run has one unresolved content-test failure:
+`IncompleteSourceHolesAreNotInvented_AndPracticeRoundIsFourHoles` fails at its
+first collection assertion, before any golf logic runs. The raw ground plan has
+exactly four complete holes, but the test's private `JsonUtility` projection and
+non-null-array filter admit an additional row. The observed result is consistent
+with a null JSON endpoint becoming a non-null array during deserialization.
+The four-hole law, source plan, shipped golf assets and test remain unchanged.
+Correcting the protected test's endpoint projection needs separate authorization;
+passing standalone logic checks does not resolve this native CI failure.
+
 Future integration needs its own authorization and proof: how a player starts
 and leaves a round, a Core ground-sampling seam, instrument/input decisions,
 physical club/ball handling, and ball/swing presentation reviewed by an art lane.
