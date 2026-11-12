@@ -76,6 +76,9 @@ namespace HiddenHarbours.Core
         public InstrumentStatus Status;
         public float WaterDepthMetres, UnderKeelMetres, AlarmWaterDepthMetres;
         public bool ShallowAlarm;
+        /// <summary>Unknown when the sounder or substrate query has no current reading.
+        /// This is gameplay geology from the shared Core map, never a terrain-art classification.</summary>
+        public BottomType Bottom;
     }
 
     public struct MotionInstrumentReading

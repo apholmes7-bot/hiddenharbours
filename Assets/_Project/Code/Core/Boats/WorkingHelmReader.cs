@@ -13,6 +13,7 @@ namespace HiddenHarbours.Core
         private readonly IWorkingHullInstruments _hull;
         private readonly IEnvironmentService _environment;
         private readonly IHelmWaypoints _waypoints;
+        private readonly IBottomMap _bottomMap;
         private string _selectedWaypointId;
 
         // No accessory/power switch model exists on main. This transient input is the later switch adapter's seam.
@@ -25,9 +26,15 @@ namespace HiddenHarbours.Core
         public AuxiliaryInstrumentReading Bilge { get; private set; }
         public AuxiliaryInstrumentReading Battery { get; private set; }
 
+        /// <summary>Compose with the same Core bottom map used by other gameplay readers.
+        /// An absent map leaves the substrate unknown without hiding a valid depth reading.</summary>
         public WorkingHelmReader(IHelmInstruments glass, IWorkingHullInstruments hull,
-                                 IEnvironmentService environment, IHelmWaypoints waypoints)
-        { _glass = glass; _hull = hull; _environment = environment; _waypoints = waypoints; }
+                                 IEnvironmentService environment, IHelmWaypoints waypoints,
+                                 IBottomMap bottomMap = null)
+        {
+            _glass = glass; _hull = hull; _environment = environment; _waypoints = waypoints;
+            _bottomMap = bottomMap;
+        }
 
         public void SetPower(WorkingInstrument instruments, bool on)
         { Powered = on ? Powered | instruments : Powered & ~instruments; }
@@ -61,6 +68,13 @@ namespace HiddenHarbours.Core
                         depth.UnderKeelMetres = water - hull.DraughtMetres;
                         depth.AlarmWaterDepthMetres = prefs.AlarmMetres;
                         depth.ShallowAlarm = DepthSounder.ShallowAlarm(water, prefs);
+                        if (_bottomMap != null && _glass.TryReadPosition(out Vector2 position)
+                            && NavMath.IsFinite(position))
+                        {
+                            BottomType bottom = _bottomMap.BottomAt(position);
+                            if (bottom == BottomType.Rock || bottom == BottomType.Mud || bottom == BottomType.Sand)
+                                depth.Bottom = bottom;
+                        }
                     }
                 }
             }

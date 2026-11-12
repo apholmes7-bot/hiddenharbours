@@ -76,6 +76,28 @@ The World adapter projects the existing objects; callers choose which sea passag
 chart, supply stable passage keys and rebuild on region/content changes. It never discovers a scene,
 activates travel or treats target-region arrival coordinates as source-region positions.
 
+## Bottom-type reading through Core
+
+`WorkingHelmReader` optionally accepts the shared `IBottomMap` introduced with the bottom-type
+logic. A powered, fitted sounder with a valid depth reads `BottomAt` at the existing glass's
+current world position and exposes rock, mud or sand in `KeelDepthReading.Bottom`. This does
+not require a fitted or powered plotter. No fishing implementation is referenced, and no
+new map is created inside the reader: composition supplies the same instance used by other
+gameplay readers.
+
+`BottomType.Unknown` means no current substrate reading. Each tick clears the previous value
+when the sounder is off, not fitted, missing its hull/depth/position, or given an unknown or
+unrecognized map result. Missing map/position/substrate leaves an otherwise valid depth and
+alarm available. The enum is transient, never saved. The injected deterministic map is proposed
+gameplay geology, not a classification of painted seabed; this change does not install that map
+in a scene or put a new label on the live glass.
+
+The optional `docs/design/helm-tools-review.md` review is absent from the pinned main used for
+this refresh, so no claim of answering its findings is made. Existing model coverage includes
+draught-aware alarms, speed/heading, true/apparent wind, selected waypoint range/bearing,
+estimated RPM and fuel endurance; the added model covers bottom type. Physical mounting,
+accessory-switch wiring, live presentation and battery/bilge simulation remain outstanding.
+
 ## Verification and limits
 
 Named EditMode fixtures: `WorkingHelmInstrumentTests` covers known reads for every instrument,
@@ -87,13 +109,23 @@ module-boundary checks remain unchanged. The managed runner executes pure logic 
 editor; Unity-target compilation and offline YAML/GUID/ledger checks are separate proofs. Native
 asset loading and GameObject lifecycle tests require CI: no editor slot is granted to this charter.
 
-Local no-editor evidence: 68 managed cases passed (31 reader cases, three actual-YAML fit checks,
+Local no-editor evidence before the bottom-type addition: 68 managed cases passed (31 reader cases, three actual-YAML fit checks,
 two managed catalogue/projection checks, seven existing depth cases, 21 existing fuel cases and
 four module-boundary guards). The allocation case measured exactly zero bytes over 10,000 warmed
 ticks. Fresh Core/Boats/World compilation and the selected native EditMode fixtures passed against
 Unity managed assemblies; existing serialized-field warnings are outside the added files. The
 offline ledger check preserved all 1,947 prior identities and added one type/three rows. This is
 not an editor run, native asset-import proof, PlayMode result or CI-green claim.
+
+The refresh preserves both sides of the sole ledger conflict: all 1,955 pinned-main identities
+and the three helm additions, with both ordered sequences retained. `WorkingHelmBottomTypeTests`
+adds 14 cases: fixed seed 713 over known rock/mud/sand positions, power and equipment gating,
+clearing stale readings, absent/invalid inputs and unrecognized substrate values. Its busy test
+samples all three substrates over 10,000 warmed ticks and requires exactly zero allocation with
+a positive control. The managed arm counts bytes; the native Unity arm uses the existing
+calibrated allocation-event probe. All 82 selected no-editor cases passed after the addition;
+Core/Boats/World and the selected fixtures, including the native probe arm, compiled with zero
+errors. Native probe execution still requires Unity/CI.
 
 Tick storage consists of value readings, retained references and caller-provided strings/catalogue.
 Setup allocates the reader and catalogue once. Fit resolution, component discovery, asset loading,
