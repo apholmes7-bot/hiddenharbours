@@ -163,6 +163,30 @@ encode anything below -6 m, so the ground the game sails on is now **the second 
 Not built: mooring a trawler at these berths in play, a ladder for them, and the south exit itself (its band
 comes from the south water's lane).
 
+## The beached trawler
+
+One wreck lies on the shore west of the wharf: `wreck.rpt_stern_trawler`, a `WreckDef` (one per file, in
+`Data/Wrecks/`). The Def says which hull she is (`boat.stern_trawler`, by reference, so she follows that hull if
+its model changes), where her middle lies, the bearing of her bow, how far over she lies (65 degrees, chosen by
+plate: at less she reads as a boat seen from above), how much of her is solid, and where a person stands to look.
+
+- **She is scenery.** `BeachedWreck` draws her real hull heeled and still. She does not float or ride the tide;
+  the sea comes and goes round her. Nobody can tie up to her. She is solid to walk or sail into.
+- **She is above the low-tide line and below the high one**, along her whole length: the ground under her is
+  between 0.25 m below the mean and 1.9 m above it. She is clear of both trawler berths and the way in.
+- **She shows no lamps.** She answers `VesselWay.Derelict` (a third value, appended), and every hull lamp is dark
+  for a derelict. Without this she burned an anchor light at night like a boat somebody keeps.
+- **Looking at her speaks a line.** A look point off each side reads `npc.rpt_wreck` (three lines the first
+  time, one after). It sets no flag.
+- **The promise is only data.** `RepairableLater` is true and `Promise` says in words what is meant. Nothing
+  reads either: no repair loop, no campaign step, no owner. A test fails the day code reads the field, so the
+  day that is built is a deliberate one.
+- **She shows no damage yet.** The stern trawler rig has no paint axis, so there is no rust or bare plate to
+  give her. The Def has an empty `Paint` slot; a wrecked scheme drops in there as data when the rig gains one.
+
+`RicePointWrecks.Ensure` puts her in the scene from the Def during the builder's create and refresh; a second
+run changes nothing. Guard tests: `RicePointBeachedTrawlerTests`. Plates: `RicePointBeachedTrawlerPlatePlayTests`.
+
 ## Validation and Phase B handoff
 
 Pure tests, executed headlessly:
