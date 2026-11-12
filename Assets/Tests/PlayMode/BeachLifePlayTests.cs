@@ -74,6 +74,7 @@ namespace HiddenHarbours.Tests.PlayMode
         Slope _slope;
         VillagerRoutine _villager;
         BeachActivityDef _activity;
+        BeachLifeLibrary _library;
 
         [SetUp]
         public void SetUp()
@@ -139,10 +140,10 @@ namespace HiddenHarbours.Tests.PlayMode
             _activity.MinDepth01 = 0.7f;
             _activity.MaxDepth01 = 1f;
 
-            var library = Make<BeachLifeLibrary>();
-            library.Activities = new[] { _activity };
+            _library = Make<BeachLifeLibrary>();
+            _library.Activities = new[] { _activity };
             Assert.That(BeachLifeDirector.Instance, Is.Not.Null, "the director installs itself before the first scene");
-            BeachLifeDirector.Instance.LoadLibrary(library);
+            BeachLifeDirector.Instance.LoadLibrary(_library);
 
             var go = Spawn("Villager");
             go.transform.position = new Vector3(Green.x, Green.y, 0f);
@@ -216,6 +217,47 @@ namespace HiddenHarbours.Tests.PlayMode
             Assert.That(_villager.Today.SampleAt(17.25f, GameConfig.DefaultSecondsPerDay / 24f).Walking, Is.True);
             Assert.That(Where.x, Is.LessThan(0.01f).And.GreaterThan(SandTopX - 0.01f),
                         $"on her way along the lane: {Where}");
+        }
+
+        [UnityTest]
+        public IEnumerator OnAWarmCalmEvening_SheWadesIn_AndComesBackOut()
+        {
+            _activity.Kind = BeachActivityKind.Wade;
+            _activity.Beach.Shallows = _activity.Beach.Spots;
+            _activity.LingerMinutes = 4f;
+            BeachLifeDirector.Instance.LoadLibrary(_library);   // the content changed: plan again
+
+            yield return At(17f);
+            Assert.That(_villager.IsVariedToday, Is.True);
+
+            // Find, in the plan for today, a minute she is standing in the water. Then go and look.
+            float perHour = GameConfig.DefaultSecondsPerDay / 24f;
+            float wetHour = -1f;
+            for (float h = 17f; h < 21f && wetHour < 0f; h += 1f / 120f)
+            {
+                RoutinePose pose = _villager.Today.SampleAt(h, perHour);
+                if (!pose.Walking && _slope.ElevationAt(pose.Position) < _sea.Water) wetHour = h;
+            }
+            Assert.That(wetHour, Is.GreaterThan(0f), "her evening has no standing place in the water");
+
+            yield return At(wetHour);
+            float depth = _sea.Water - _slope.ElevationAt(Where);
+            Assert.That(depth, Is.GreaterThan(0f).And.LessThanOrEqualTo(_activity.DeepestWadeMetres),
+                        $"ankle deep, not over her depth: {depth:0.00} m at {Where}");
+
+            yield return At(21f);
+            Assert.That(_slope.ElevationAt(Where), Is.GreaterThanOrEqualTo(_sea.Water + _activity.ClearanceMetres - 0.01f),
+                        $"and back up on the dry sand afterwards: {Where}");
+        }
+
+        [UnityTest]
+        public IEnumerator AnActivityThatWaitsOnArt_DoesNotRun()
+        {
+            _activity.WaitsOn = "a pose that does not exist yet";
+            BeachLifeDirector.Instance.LoadLibrary(_library);
+            yield return At(19f);
+            Assert.That(_villager.IsVariedToday, Is.False);
+            Assert.That(Vector2.Distance(Where, Green), Is.LessThan(0.05f));
         }
 
         [UnityTest]
