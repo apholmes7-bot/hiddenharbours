@@ -120,6 +120,74 @@ namespace HiddenHarbours.Tests.PlayMode
 #endif
         }
 
+        /// <summary>The stern trawler as a wreck: her wrecked paint scheme, heeled sixty degrees on drying
+        /// ground, at the same two headings. A hull on her own (no boat controller), the way a scene would
+        /// place a wreck from the hull mesh Def and a paint scheme Def.</summary>
+        [UnityTest]
+        public IEnumerator SternTrawler_Wrecked_Heeled()
+        {
+            WharfNightStage.RequireAGraphicsDevice();
+#if UNITY_EDITOR
+            const float HeelDegrees = 60f;
+            var def = AssetDatabase.LoadAssetAtPath<HullMeshDef>("Assets/_Project/Data/Boats/HullMeshes/SternTrawlerIsoHullMesh.asset");
+            var scheme = AssetDatabase.LoadAssetAtPath<HullPaintSchemeDef>("Assets/_Project/Data/Boats/PaintSchemes/SternTrawlerIso_Wrecked.asset");
+            Assert.IsNotNull(def, "the stern trawler's hull mesh Def"); Assert.IsNotNull(scheme, "her wrecked paint scheme");
+            Assert.AreEqual("paint.stern_trawler_wrecked", scheme.Id);
+            _intro = GameServices.OpeningCinematicRunning; _loaded = true;
+            _stage = new WharfNightStage("StPeters", Plates);
+            yield return _stage.Load();
+            ShellFlow.Reset(); InteractionGate.Reset(); GameServices.OpeningCinematicRunning = false;
+            yield return _stage.SetNight(12f);
+            var picker = Object.FindFirstObjectByType<DevBoatPicker>();
+            Assert.IsNotNull(picker);
+            Vector2 ground = FindDryingGround(picker.transform.position, out float depth);
+            var root = new GameObject("WreckedSternTrawlerPlate");
+            var host = new GameObject("FacetMesh"); host.transform.SetParent(root.transform, false);
+            root.transform.position = new Vector3(ground.x, ground.y, 0f);
+            IHullMeshRenderer wreck = new HiddenHarbours.Art.IsoFacetHullPresentationService().Install(host, def, scheme);
+            Assert.IsNotNull(wreck, "the install path took the Def and the scheme");
+            Directory.CreateDirectory(Plates);
+            var caption = new System.Text.StringBuilder();
+            foreach (float heading in Headings)
+            {
+                wreck.HeadingDirUnits = HullMeshMath.HeadingToDirUnits(heading, 0f, def.AzimuthCounterClockwise);
+                wreck.RollDegrees = HeelDegrees;
+                var reviewCamera = Camera.main;
+                if (reviewCamera != null) reviewCamera.orthographicSize = WreckFrameMeters;
+                yield return null;
+                yield return _stage.FrameOn(ground);
+                string name = "SternTrawler-wrecked-heeled-" + heading.ToString("000");
+                _stage.SavePlate(name + ".png", _stage.Capture());
+                caption.AppendLine($"{name}: {scheme.Id}; St Peters drying ground ({depth:0.0} m of water); noon; roll {wreck.RollDegrees:0}; " +
+                                   $"camera {_stage.Camera.transform.position}, ortho {_stage.Camera.orthographicSize:0.0}");
+            }
+            File.WriteAllText(Path.Combine(Plates, "SternTrawler-wrecked-heeled.txt"), caption.ToString());
+            Object.DestroyImmediate(root);
+#else
+            Assert.Ignore("Editor-authored plate");
+            yield break;
+#endif
+        }
+
+        const float WreckFrameMeters = 30f;   // half-height of the wreck plate: a 38 m hull with room round her
+
+        // The nearest ground to the berth that the tide leaves bare or nearly so: where a wreck lies.
+        static Vector2 FindDryingGround(Vector2 origin, out float depth)
+        {
+            double now = GameServices.Clock != null ? GameServices.Clock.TotalSeconds : 0;
+            for (int radius = 40; radius <= 1600; radius += 20)
+                for (int step = 0; step < 16; step++)
+                {
+                    float angle = step * Mathf.PI / 8f;
+                    Vector2 at = origin + new Vector2(Mathf.Cos(angle), Mathf.Sin(angle)) * radius;
+                    depth = BoatCrossing.DepthAt(GameServices.TidalTerrain, GameServices.Environment, now, at);
+                    if (depth > -.6f && depth < .3f) return at;
+                }
+            depth = float.NaN;
+            Assert.Fail("no drying ground found near the St Peters berth");
+            return origin;
+        }
+
         // The deepest still water near the berth, found the same way every run: same hull, same spot. St Peters
         // has no ground as deep as the big trawlers draw, so the plate takes the deepest patch and says how deep.
         static Vector2 FindSea(Vector2 origin, float requiredDepth, out float depth)

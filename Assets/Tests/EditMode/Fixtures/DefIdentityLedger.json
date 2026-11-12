@@ -9937,6 +9937,11 @@
     },
     {
       "Type": "HiddenHarbours.Core.HullPaintSchemeDef",
+      "Guid": "6f09698abde9336468afc0c8708472e1",
+      "Id": "paint.stern_trawler_wrecked"
+    },
+    {
+      "Type": "HiddenHarbours.Core.HullPaintSchemeDef",
       "Guid": "03784ef8b946c56488dfc5fcbe035b07",
       "Id": "paint.side_dragger_coal_black"
     },
