@@ -5676,8 +5676,18 @@
     },
     {
       "Type": "HiddenHarbours.Fishing.NpcPotDayDef",
+      "Guid": "5d1c7e4a9b0f43e28a6c1f37d2e80b94",
+      "Id": "potday.nmc_arsenault_leo"
+    },
+    {
+      "Type": "HiddenHarbours.Fishing.NpcPotDayDef",
       "Guid": "ea84cea831934f47895968c596e96c29",
       "Id": "potday.nmc_doiron_yvette"
+    },
+    {
+      "Type": "HiddenHarbours.Fishing.NpcPotDayDef",
+      "Guid": "c3a90f61e7d24b58b1f4a6027c9d5e13",
+      "Id": "potday.nmc_gallant_marie"
     },
     {
       "Type": "HiddenHarbours.Fishing.RodFightDef",
