@@ -45,6 +45,14 @@ namespace HiddenHarbours.Tests.CoopSpike
         }
         protected override IEnumerator OnServerAndClientsConnected()
         {
+#if UNITY_EDITOR
+            Assert.That(Application.productName, Is.EqualTo(CoopDevStart.SpikeProduct));
+            // The self-installed disk service keeps its EventBus subscriptions even when
+            // GameServices.Save is replaced. Remove it before F publishes ActiveBoatChanged.
+            foreach (var save in Object.FindObjectsByType<SaveService>()) Object.DestroyImmediate(save);
+            GameServices.Save = new MemorySave();
+            Assert.That(Object.FindAnyObjectByType<SaveService>(), Is.Null);
+#endif
             _hostClock = new Clock(); _hostClock.SeekTo(1234.5);
             _clientClock = new Clock(); _clientClock.SeekTo(17);
             foreach (var obj in m_ServerNetworkManager.SpawnManager.SpawnedObjects.Values)

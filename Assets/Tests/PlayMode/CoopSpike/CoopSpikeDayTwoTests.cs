@@ -54,6 +54,7 @@ namespace HiddenHarbours.Tests.CoopSpike
             _previousSave = GameServices.Save;
             _dayTwoContext = true;
             GameServices.Reset();
+            GameServices.Save = new MemorySave();
             _previousScene = SceneManager.GetActiveScene();
             _waterScene = SceneManager.GetSceneByName("EastWater");
             if (!_waterScene.IsValid() || !_waterScene.isLoaded)
