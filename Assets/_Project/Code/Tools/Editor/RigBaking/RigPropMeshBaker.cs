@@ -71,6 +71,8 @@ namespace HiddenHarbours.Tools.RigBaking
                     return;
                 }
                 Debug.Log("[rig-prop] CLI bake OK: " + key);
+                // A batch -executeMethod editor stays open until told to go: say so, or the slot idles.
+                EditorApplication.Exit(0);
             }
             catch (Exception e)
             {

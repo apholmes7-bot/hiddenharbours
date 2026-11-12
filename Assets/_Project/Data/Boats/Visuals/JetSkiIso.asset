@@ -37,7 +37,7 @@ MonoBehaviour:
   MotorFit: 0
   MotorMesh: {fileID: 0}
   MotorMeshFitmentOffsetMeters: {x: 0, y: 0, z: 0}
-  HelmBarMesh: {fileID: 0}
+  HelmBarMesh: {fileID: 11400000, guid: f01d1903ad2c2184898fcbabe49ce377, type: 2}
   MotorRockRollDegrees: 3.4
   MotorRockPitchDegrees: 1.9
   MotorRockHeavePixels: 1.3
