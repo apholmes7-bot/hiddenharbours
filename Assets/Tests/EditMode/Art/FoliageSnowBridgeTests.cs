@@ -73,6 +73,8 @@ namespace HiddenHarbours.Tests.Art.EditMode
         public void Publish_DoesNotAllocate()
         {
             FoliageSnowBridge.Publish(Season.TheTurn, 24);   // warm the statics and the property id
+            Assert.That(() => { System.GC.KeepAlive(new byte[1024]); }, Is.AllocatingGCMemory(),
+                "A known allocation must be detected before accepting zero allocation.");
             Assert.That(() => FoliageSnowBridge.Publish(Season.TheTurn, 25), Is.Not.AllocatingGCMemory());
         }
 

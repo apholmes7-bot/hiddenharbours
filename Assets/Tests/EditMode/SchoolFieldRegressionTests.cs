@@ -1,3 +1,4 @@
+using HiddenHarbours.Tests.Support;
 using System;
 using System.Diagnostics;
 using NUnit.Framework;
@@ -227,19 +228,15 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         [Test]
-        public void SlowTick_ReusesCallerBuffersWithoutManagedAllocations_WhenCounterWorks()
+        public void SlowTick_ReusesCallerBuffersWithoutManagedAllocations()
         {
-            long probeBefore = GC.GetAllocatedBytesForCurrentThread();
-            var probe = new byte[1024];
-            long probeBytes = GC.GetAllocatedBytesForCurrentThread() - probeBefore;
-            GC.KeepAlive(probe);
-            if (probeBytes <= 0L) Assert.Ignore("This runtime stubs the managed allocation counter; no allocation proof.");
-            long before = GC.GetAllocatedBytesForCurrentThread();
+            using var allocation = new ManagedAllocationProbe();
+            allocation.Begin();
             int samples = 0;
             for (int tick = 0; tick < TicksPerRound; tick++) samples += Tick(tick);
-            long allocated = GC.GetAllocatedBytesForCurrentThread() - before;
+            long allocationEvents = allocation.End();
             Assert.AreEqual(TicksPerRound * CellsPerTick * SpeciesPerCell, samples);
-            Assert.AreEqual(0L, allocated);
+            Assert.AreEqual(0L, allocationEvents);
         }
 
         private int Tick(int tick)

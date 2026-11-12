@@ -1,0 +1,18 @@
+{
+  "Id": "fish.nmc_mud_crab_proposal",
+  "DisplayName": "Bay mud crab (proposal)",
+  "Category": "Shellfish",
+  "RegionIds": ["region.st_peters"],
+  "AllowedGear": "Trap",
+  "Seasons": "AllYear",
+  "BehaviorFlags": "Bottom",
+  "Status": "PROPOSAL ONLY; not a registered FishSpeciesDef asset",
+  "ActivationRequires": [
+    "Resolve the biological species and legal-size policy before authoring a species asset",
+    "Review weight, value, tide and hour fields; no inherited defaults are accepted",
+    "Review the new species identity and individual population ownership",
+    "Append the approved new identity to the ledger and validate content",
+    "Review trap membership, deck sort rules, market and licence data",
+    "Review shared bottom-map composition and safe physical NPC work routes"
+  ]
+}

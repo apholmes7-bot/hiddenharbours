@@ -615,12 +615,10 @@ namespace HiddenHarbours.Tools.RigBaking
                 //     tanker               1,932 + 16
                 // Every leaf face carries lv:'house' on all three, so a cutaway takes the door with
                 // the room it closes rather than leaving it hanging over an opened wheelhouse.
+                // (The stern trawler Mk II was the middle one of the three until she followed the Mk1
+                // to the hull layout, whose extraction reads her published scope and never reaches
+                // this table; her measured line above is kept as the record.)
                 ["sideDraggerIsoRig.js"] = new Dictionary<string, string>(StringComparer.Ordinal)
-                {
-                    ["F"] = "F.concat(doorFaces({doorOpen:0}))",
-                },
-
-                ["sternTrawlerMk2IsoRig.js"] = new Dictionary<string, string>(StringComparer.Ordinal)
                 {
                     ["F"] = "F.concat(doorFaces({doorOpen:0}))",
                 },

@@ -898,7 +898,6 @@ namespace HiddenHarbours.Tools.RigBaking
             // sole, which is why this batch also had to give the mesh path its own answer to "is this
             // level somewhere you can be" (BoatInterior.LevelIndexAtHeight).
             "SideDraggerIso",
-            "SternTrawlerMk2Iso",
             "CoastalPacketIso",
         };
 
