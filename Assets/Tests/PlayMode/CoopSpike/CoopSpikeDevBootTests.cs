@@ -1,6 +1,8 @@
 #if UNITY_EDITOR
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
+using System.Text;
 using HiddenHarbours.App;
 using HiddenHarbours.Boats;
 using HiddenHarbours.Core;
@@ -65,6 +67,31 @@ namespace HiddenHarbours.Tests.CoopSpike
             Assert.That(Vector2.Distance(Object.FindAnyObjectByType<BoatController>().transform.position,
                 settings.HostStart), Is.LessThan(0.1f));
             TestContext.WriteLine("Authored StPeters core -> real dev start -> EastWater; host listening, owned proxy, helm and rod.");
+            // Opt-in evidence of the actual authored transforms; no camera or pose is changed.
+            string trace = System.Environment.GetEnvironmentVariable("HH_COOP_TEST_TRACE");
+            if (!string.IsNullOrEmpty(trace))
+            {
+                yield return new WaitForSeconds(2);
+                var report = new StringBuilder();
+                var boat = Object.FindAnyObjectByType<BoatController>();
+                var player = Object.FindAnyObjectByType<PlayerWalkController>();
+                var authoredControl = new UnityEditor.SerializedObject(switcher);
+                Assert.That(authoredControl.FindProperty("_boatController").objectReferenceValue, Is.SameAs(boat));
+                Assert.That(authoredControl.FindProperty("_playerWalk").objectReferenceValue, Is.SameAs(player));
+                foreach (var root in new[] { boat.transform, player.transform, Camera.main.transform })
+                foreach (var node in root.GetComponentsInChildren<Transform>(true))
+                {
+                    report.AppendLine($"{node.name} parent={node.parent?.name} world={node.position:F5} local={node.localPosition:F5} scale={node.lossyScale:F5} rotation={node.eulerAngles:F5}");
+                    var renderer = node.GetComponent<Renderer>();
+                    if (renderer != null) report.AppendLine($"  {renderer.GetType().Name} enabled={renderer.enabled} off={renderer.forceRenderingOff} bounds={renderer.bounds} shader={renderer.sharedMaterial?.shader?.name}");
+                }
+                var rider = player.GetComponent<DeckRiderVisual>();
+                var presenter = player.GetComponent<DeckRiderMeshPresenter>();
+                report.AppendLine($"rider pose={rider.Pose} ride={rider.HullDrawnRideMeters} stand={rider.DeckStandRigLocal:F5} body={rider.BodyShownOnRoot} suppressed={rider.SpriteSuppressed}");
+                report.AppendLine($"mesh present={presenter != null} drawing={presenter?.DrawsInsteadOfSprite} reason={presenter?.NotDrawingReason}");
+                Directory.CreateDirectory(trace);
+                File.WriteAllText(Path.Combine(trace, "boot-geometry.txt"), report.ToString());
+            }
         }
 
         [UnityTearDown]
