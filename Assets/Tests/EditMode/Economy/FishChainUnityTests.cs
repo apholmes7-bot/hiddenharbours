@@ -18,6 +18,10 @@ namespace HiddenHarbours.Tests.Economy
         {
             var plant = AssetDatabase.LoadAssetAtPath<FishPlantDef>(Root + "/NineMileCreekFishPlant.asset");
             Assert.That(plant, Is.Not.Null);
+            AssertImportedReferences(plant.Storages, 21, nameof(plant.Storages));
+            AssertImportedReferences(plant.Lines, 4, nameof(plant.Lines));
+            AssertImportedReferences(plant.Outlets, 6, nameof(plant.Outlets));
+            AssertImportedReferences(plant.Runs, 9, nameof(plant.Runs));
             FishChainSpec spec = plant.BuildSpec();
             Assert.That(spec.SecondsPerDay, Is.EqualTo(plant.ClockConfig.SecondsPerDay));
             Assert.That(spec.StartDayOfYear, Is.EqualTo(plant.ClockConfig.StartDayOfYear));
@@ -71,6 +75,32 @@ namespace HiddenHarbours.Tests.Economy
             }
             Assert.That(incoming, Is.EqualTo(3)); Assert.That(offIsland, Is.EqualTo(1));
             CollectionAssert.AreEquivalent(new[] { "region.nine_mile_creek", "region.rice_point", "region.st_peters" }, landings);
+        }
+
+        private static void AssertImportedReferences<T>(T[] references, int expectedCount, string group)
+            where T : ScriptableObject
+        {
+            Assert.That(references, Is.Not.Null, group);
+            Assert.That(references.Length, Is.EqualTo(expectedCount), group);
+            for (int i = 0; i < references.Length; i++)
+            {
+                string context = group + "[" + i + "]";
+                Assert.That(references[i] != null, Is.True, context + " must resolve before BuildSpec");
+                using var serialized = new SerializedObject(references[i]);
+                var identity = serialized.FindProperty("Spec.Id");
+                Assert.That(identity, Is.Not.Null, context + ".Spec.Id");
+                Assert.That(identity.stringValue, Is.Not.Null.And.Not.Empty, context + ".Spec.Id");
+            }
+            var imported = new List<T>();
+            foreach (string guid in AssetDatabase.FindAssets("t:" + typeof(T).Name, new[] { Root }))
+            {
+                string path = AssetDatabase.GUIDToAssetPath(guid);
+                var asset = AssetDatabase.LoadAssetAtPath<T>(path);
+                Assert.That(asset != null, Is.True, path);
+                imported.Add(asset);
+            }
+            Assert.That(imported.Count, Is.EqualTo(expectedCount), group);
+            CollectionAssert.AreEquivalent(imported, references, group + " must reference every authored row exactly once");
         }
 
         private static void CheckId(HashSet<string> ids, string id)

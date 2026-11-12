@@ -97,7 +97,11 @@ first calibrates the counter with a retained allocation, then measures busy
 transfer/processing/demand steps; an unusable counter is a reported skip.
 
 `FishChainUnityTests` loads the actual 41 new Def assets, checks the six outlet
-kinds/counts, stable ids and existing species/vehicle/trip/region references. It also
+kinds/counts, stable ids and existing species/vehicle/trip/region references. Before
+constructing the spec, it checks that each plant reference resolves with an authored
+identity and that each list contains every imported row of its type exactly once.
+The plant stores object references as inline `fileID`/`guid`/`type` mappings, including
+the entries in all four reference arrays. It also
 compares every constructed row field with the corresponding imported Def and checks
 that row objects and calendar arrays are detached. Its
 full-plant test drives the existing `Market` API via a test adapter and proves a
