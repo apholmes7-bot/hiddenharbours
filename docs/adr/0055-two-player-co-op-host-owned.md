@@ -68,13 +68,25 @@ the normal game's save path is never selected. The game continues running while 
 background. Invalid endpoint arguments fail before a network session starts.
 
 An opt-in diagnostic observes each built process's network objects, accepted host time, actual school
-model output at a shared sample time, and screenshots from its unchanged camera. Standalone endpoint
-checks and a compile against the earlier build's assemblies pass. Current-main editor validation and
-the two-process LAN experiment are pending; these preliminary checks do not establish either result.
+model output at a shared sample time, and screenshots from its unchanged camera. Current-main
+validation passes 17 EditMode cases, eight network PlayMode cases and one authored-core boot case,
+with no skips. Two independent Windows players connect through the machine's LAN address; 111 shared
+clock samples agree on 2,775 school records in the hidden-window run. Both players exit cleanly in
+that run. These measurements establish
+network state agreement, not a second physical machine or a usable picture.
+
+Hidden-window captures were black. Visible-window captures show both boats on each screen but also
+pink artifacts, displaced figures and repeated missing-shader errors. The build reports missing foam
+advection, figure pixel target, deck occlusion and silhouette mask shaders. The visual gate remains
+parked for an art lane; no rendering asset, rule or expectation is changed or accepted. The local zip
+is an unaccepted diagnostic artifact, not a verified friend-play build. A firewall permission prompt
+was observed and left untouched; no firewall configuration was changed. The visible run also exits
+with native access-violation status on both players during shutdown. Its last log messages mention
+unreleased compute buffers; causation is unproven, and the clean-exit gate is failed for that run.
 
 This remains a LAN experiment with local catches and inventories, no relay, no shared transactions,
-no synchronized region travel, no reconnect identity and no session persistence. A two-process pass
-on one computer would still not prove installation or latency on a second physical machine.
+no synchronized region travel, no reconnect identity and no session persistence. Two processes
+on one computer do not prove installation or latency on a second physical machine.
 
 ## Proposed transport and authority
 
