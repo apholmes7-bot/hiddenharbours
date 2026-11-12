@@ -145,14 +145,15 @@ namespace HiddenHarbours.Tests.EditMode
         // ---- the game's own hulls, at speeds they really make, on the sea the game really raises --------
 
         [Test]
-        public void ASportSkiffAtHerTopSpeed_OnTheShippedSea_HopsInAStorm_AndNeverInAnOrdinarySea()
+        public void ASevenMetreSkiffHeldAtTenMetresASecond_OnTheShippedSea_HopsInAStorm_AndNeverInAnOrdinarySea()
         {
-            // 7 m, half a metre of draught, 10.3 m/s: the sport skiff flat out.
+            // 7 m, half a metre of draught, held at 10.3 m/s. That is more than twice what the sport skiff
+            // makes in play (4.64 m/s): this pins the law, not a thing the player can do today.
             Run Skiff(int sea) => Drive(10.3f, 7f, 1.2f, 0.5f, sea, HullFlightSettings.Default, 300f);
             Assert.AreEqual(0, Skiff(Breeze).Launches, "A breeze's sea must not throw a 7 m skiff.");
             Assert.AreEqual(0, Skiff(Moderate).Launches, "A moderate sea must not throw a 7 m skiff.");
             Run storm = Skiff(Gale);
-            Assert.Greater(storm.Launches, 0, "Flat out into the shipped storm she must leave the water.");
+            Assert.Greater(storm.Launches, 0, "At 10.3 m/s into the shipped storm she must leave the water.");
             Assert.Less(storm.Launches, 15 * 5, "…in hops, not a pogo: fewer than fifteen a minute.");
             Assert.Less(storm.LongestAir, 1f, "…and each hop is short.");
             Assert.Less(storm.PeakClearance, 1f, "…and low.");
@@ -166,6 +167,34 @@ namespace HiddenHarbours.Tests.EditMode
                 for (int sea = Breeze; sea <= Gale; sea++)
                     Assert.AreEqual(0, Drive(speed, 12.9f, 2.4f, 1.4f, sea, HullFlightSettings.Default, 300f).Launches,
                                     $"12.9 m of work boat flew at {speed} m/s in sea {sea}.");
+        }
+
+        [Test]
+        public void TheFleetAtItsOwnTopSpeeds_OnTheShippedSea_NeverLeavesIt_AndAJetskiSizedHullHops()
+        {
+            // THE FINDING THIS PINS. No hull in the game makes 6 m/s (engine power over forward drag plus
+            // the body's own drag), and the shipped storm is 0.4 m rms. At those speeds on that sea the law
+            // throws none of them, whatever the dials: slow boats on a low sea do not fly. Length, half
+            // beam, draught, top speed, from the Defs.
+            (string name, float l, float hb, float d, float v)[] fleet =
+            {
+                ("sport skiff", 7f, 1.2f, 0.5f, 4.64f), ("bowrider", 5.98f, 1.1f, 0.95f, 5.08f),
+                ("twin skiff", 7f, 1.2f, 0.55f, 5.63f), ("go-fast", 12.36f, 1.24f, 1.45f, 5.65f),
+                ("fast RIB", 7.28f, 1.3f, 0.85f, 5.89f), ("Cape Islander", 12.9f, 2.4f, 1.4f, 4.2f),
+                ("outboard dory", 4.5f, 0.85f, 0.3f, 2.17f),
+            };
+            foreach (var h in fleet)
+                for (int sea = Breeze; sea <= Gale; sea++)
+                    Assert.AreEqual(0, Drive(h.v, h.l, h.hb, h.d, sea, HullFlightSettings.Default, 300f).Launches,
+                                    $"The {h.name} left the water at her own {h.v} m/s in sea {sea}.");
+
+            // A hull the size of a jetski (3.3 m, 0.3 m of draught) at 5.5 m/s is light and short enough.
+            Run jetski = Drive(5.5f, 3.3f, 0.6f, 0.3f, Gale, HullFlightSettings.Default, 300f);
+            Assert.Greater(jetski.Launches, 0, "A jetski-sized hull at 5.5 m/s hops in the shipped storm.");
+            Assert.Less(jetski.Launches, 10 * 5, "…a few times a minute, not a pogo.");
+            Assert.Less(jetski.PeakClearance, 1f, "…and low.");
+            Assert.AreEqual(0, Drive(5.5f, 3.3f, 0.6f, 0.3f, Moderate, HullFlightSettings.Default, 300f).Launches,
+                            "…and never in a moderate sea.");
         }
 
         // ---- the same hull, the same sea: speed decides ---------------------------------------------
