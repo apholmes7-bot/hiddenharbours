@@ -109,6 +109,38 @@ namespace HiddenHarbours.Tests.PlayMode
                 yield return Shoot("11-weighed-and-sold.png", plan.SoldAtSeconds + 1.0, () => plan.CounterPosition);
                 yield return Shoot("12-back-aboard.png", plan.EndSeconds + 2.0, () => hull.transform.position);
             }
+
+            // The rest of the fleet: each other boat at her own string, on her own way up the wharf, and
+            // at her own patch of the counter.
+            int shot = 13;
+            foreach (NpcPotDayDef other in library.Days)
+            {
+                if (other == null || other.Id == DefId || !boats.IsBound(other.Id)) continue;
+                MooredBoat otherHull = null;
+                foreach (MooredBoat m in Object.FindObjectsByType<MooredBoat>())
+                    if (m.Owner != null && m.Owner.Id == other.OwnerId) otherHull = m;
+                Assert.IsNotNull(otherHull, other.OwnerId);
+                string who = other.Id.Substring(other.Id.LastIndexOf('.') + 1);
+                NpcPotDay hers = NpcPotDay.Build(other, GameServices.Environment.WorldSeed, dayIndex, day);
+                int mid = hers.PotCount / 2;
+                yield return Shoot($"{shot++}-{who}-hauling.png", (hers.HaulStart[mid] + hers.HaulEnd[mid]) * 0.5,
+                                   () => otherHull.transform.position);
+
+                NpcPotLanding landing = boats.LandingOf(other.Id);
+                if (landing == null || !landing.HasLanding) continue;
+                double ladder = -1, wharf = -1, counter = -1;
+                Vector2 half = other.LandingRoute[other.LandingRoute.Length / 2];
+                for (double t = landing.StartSeconds; t < landing.SoldAtSeconds && counter < 0; t += 0.25)
+                {
+                    NpcLandingMoment m = landing.MomentAt(t);
+                    if (ladder < 0 && m.OnLadder && m.Crate >= 0) ladder = t + 0.5 * other.LadderSeconds;
+                    if (wharf < 0 && m.Ashore && m.Crate >= 0 && m.Position.y > half.y) wharf = t;
+                    if (landing.AtCounterAt(t) > 0) counter = t;
+                }
+                if (ladder > 0) yield return Shoot($"{shot++}-{who}-up-her-ladder.png", ladder, () => landing.MomentAt(ladder).Position);
+                if (wharf > 0) yield return Shoot($"{shot++}-{who}-along-the-wharf.png", wharf, () => landing.MomentAt(wharf).Position);
+                if (counter > 0) yield return Shoot($"{shot++}-{who}-at-the-counter.png", counter + 0.5, () => landing.CounterPosition);
+            }
         }
 
         private IEnumerator Shoot(string name, double clockSeconds, System.Func<Vector2> focus)
