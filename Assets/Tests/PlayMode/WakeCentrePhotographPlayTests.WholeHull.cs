@@ -32,6 +32,7 @@ namespace HiddenHarbours.Tests.PlayMode
         }
 
         const float WholeHullSeconds = 4f;
+        const int RenderTimingFrames = 30;
 
         [UnityTest, Timeout(600000)]
         public IEnumerator TheCape_AheadAsternAndSliding_PhotographsTheWholeHullsFoam()
@@ -127,6 +128,27 @@ namespace HiddenHarbours.Tests.PlayMode
             Time.timeScale = 0f;
             for (int i = 0; i < 2; i++) yield return null;
             Transform wakeRoot = FindWakeRoot(go.name);
+            // What the frame costs to draw with her foam on the water, both arms the same way: the game's camera
+            // rendered RenderTimingFrames times with the clock stopped, each one waited for by reading a pixel back.
+            double renderMs = 0d;
+            if (_rt != null)
+            {
+                var one = new Texture2D(1, 1, TextureFormat.RGBA32, false);
+                RenderTexture was = RenderTexture.active;
+                for (int i = -4; i < RenderTimingFrames; i++)
+                {
+                    var watch = System.Diagnostics.Stopwatch.StartNew();
+                    _cam.Render();
+                    RenderTexture.active = _rt;
+                    one.ReadPixels(new Rect(0, 0, 1, 1), 0, 0);
+                    if (i >= 0) renderMs += watch.Elapsed.TotalMilliseconds;
+                }
+                RenderTexture.active = was;
+                Object.Destroy(one);
+                renderMs /= RenderTimingFrames;
+            }
+            Debug.Log(string.Format(CultureInfo.InvariantCulture, "[{0}] {1}/{2}/{3}: render {4:0.00} ms, mean of {5}.",
+                                    PlateDir, subject, m.Name, arm, renderMs, RenderTimingFrames));
             if (wakeRoot != null)
             {
                 SavePlate($"{subject}-{m.Name}-{arm}-photo.png",
