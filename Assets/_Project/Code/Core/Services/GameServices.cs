@@ -712,6 +712,12 @@ namespace HiddenHarbours.Core
         public static WaveFetchSettings WaveFetch =>
             Config != null ? Config.WaveFetch : WaveFetchSettings.Default;
 
+        /// <summary>Where a hull churns the water besides her trail (the whole hull makes foam), same
+        /// contract as <see cref="WaveField"/> including the <c>Config != null</c> discipline. Drawn
+        /// only: read by the foam injector, never by a boat.</summary>
+        public static HullFoamSettings HullFoam =>
+            Config != null ? Config.HullFoam : HullFoamSettings.Default;
+
         /// <summary>The BREAKING-WAVE model's tunables (ADR 0040), same contract as
         /// <see cref="WaveField"/> and <see cref="WaveFetch"/> including the <c>Config != null</c>
         /// discipline. Read by the shader bridge (which solves the contour and publishes it) and by the

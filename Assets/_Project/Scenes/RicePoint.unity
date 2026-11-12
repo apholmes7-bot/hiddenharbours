@@ -1047,7 +1047,7 @@ MonoBehaviour:
   _material: {fileID: 2100000, guid: f8b02d3c5e60594ab17c4d9e0f21a3b5, type: 2}
   _sortingOrder: -21
   _heightTexture: {fileID: 2800000, guid: 01590abc852a49e89f547ddc4fa1e0ab, type: 3}
-  _heightMin: -6
+  _heightMin: -10
   _heightMax: 6
   _detailArray256: {fileID: 2729896900585281598, guid: 9eb63aa02acc68540b3b7a835b4d8d47, type: 3}
   _splatA: {fileID: 2800000, guid: fa029db1ad6e4aa3bc1af0117887cd4e, type: 3}
@@ -1060,7 +1060,7 @@ MonoBehaviour:
   _relightLight: {fileID: -6137966094195317750, guid: 0bc404e8514fb09160f9b920f31a5dfd, type: 3}
   _relightDetail: {fileID: -505627373956257286, guid: 0bc404e8514fb09160f9b920f31a5dfd, type: 3}
   _relightRamp: {fileID: 1993451843571538555, guid: 0bc404e8514fb09160f9b920f31a5dfd, type: 3}
-  _floorPaint: -6
+  _floorPaint: -10
   _floorRipple: -2.2
   _floorSand: 0
   _floorMarram: 2.2
@@ -11418,7 +11418,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: HiddenHarbours.Environment::HiddenHarbours.Environment.GameClock
   _config: {fileID: 11400000, guid: b5e714f27a4ccce4f869add9ff981ff8, type: 2}
-  _startHour: 6
 --- !u!1 &385372340
 GameObject:
   m_ObjectHideFlags: 0
@@ -12181,10 +12180,13 @@ MonoBehaviour:
   _heightWorldCenter: {x: 0, y: 0}
   _heightWorldSize: {x: 760, y: 360}
   _heightResolution: 256
-  _heightMin: -6
+  _heightMin: -10
   _heightMax: 6
   _paintedHeightTex: {fileID: 2800000, guid: 01590abc852a49e89f547ddc4fa1e0ab, type: 3}
   _seabedTexture: {fileID: 0}
+  _waterType: {fileID: 0}
+  _waterPlumes: []
+  _waterTypeSeamMeters: 32
   _previewInEditMode: 1
   _previewTideLevel: 0.5
   _weatherPaletteEnabled: 1
