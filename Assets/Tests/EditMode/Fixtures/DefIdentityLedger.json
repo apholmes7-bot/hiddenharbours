@@ -9732,6 +9732,21 @@
       "Type": "HiddenHarbours.World.BeachActivityDef",
       "Guid": "9d8c7b6a5f4e4d3c8b2a190817263544",
       "Id": "beachactivity.swim"
+    },
+    {
+      "Type": "HiddenHarbours.World.BeachActivityDef",
+      "Guid": "c1d7e4a09b3f4f2a8e6d5c4b3a291807",
+      "Id": "beachactivity.supper_on_the_sand"
+    },
+    {
+      "Type": "HiddenHarbours.World.BeachActivityDef",
+      "Guid": "7e2b9c4d1a6f4b3e9d8c0f1e2a3b4c5d",
+      "Id": "beachactivity.evening_fire"
+    },
+    {
+      "Type": "HiddenHarbours.World.BeachActivityDef",
+      "Guid": "3f6a8d2c5b914e7fa1c0b9e8d7f6a5b4",
+      "Id": "beachactivity.fly_a_kite"
     }
   ]
 }

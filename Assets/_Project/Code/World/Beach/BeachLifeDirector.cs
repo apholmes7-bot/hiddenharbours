@@ -27,7 +27,7 @@ namespace HiddenHarbours.World
     /// <see cref="GameServices"/>. It names no feature module and none names it.</para>
     /// </summary>
     [DisallowMultipleComponent]
-    public sealed class BeachLifeDirector : MonoBehaviour, IRoutineDaySource, IBeachSky
+    public sealed partial class BeachLifeDirector : MonoBehaviour, IRoutineDaySource, IBeachSky
     {
         /// <summary>How long a roster of the region's villagers is trusted, in real seconds. Villagers
         /// appear when a region loads; the roster only orders them so no two share a line.</summary>
@@ -106,6 +106,8 @@ namespace HiddenHarbours.World
 
         private void OnDisable()
         {
+            ClearGatherings();
+            UnsubscribeTalk();
             if (ReferenceEquals(VillagerRoutine.DaySource, this)) VillagerRoutine.DaySource = null;
         }
 
@@ -122,6 +124,7 @@ namespace HiddenHarbours.World
             if (library != null && library.Activities != null)
                 foreach (BeachActivityDef def in library.Activities)
                     if (def != null && def.IsRunnable) _activities.Add(def);
+            ClearGatherings();
             _rosterAt = float.NegativeInfinity;
             _version++;
         }
@@ -151,12 +154,13 @@ namespace HiddenHarbours.World
             bool planned = BeachPlanning.TryPlanDay(
                 routine.Id, authored, villager.Lanes, routine.WalkSpeedMetresPerSecond, _activities,
                 routine.RegionId, RankOf(routine), terrain, this, day,
-                out RoutineStop[] stops, out BeachOuting _);
+                out RoutineStop[] stops, out BeachOuting outing);
 
             _env = null;
             _wind = null;
             _fog = null;
             if (!planned) return null;
+            NoteGathering(outing, dayIndex);
 
             return RoutinePlanner.BuildFromStops(routine.Id, stops, villager.Lanes,
                                                  routine.WalkSpeedMetresPerSecond,

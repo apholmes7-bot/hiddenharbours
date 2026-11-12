@@ -894,6 +894,18 @@ The first conditional days (the §2.5 idea) are the people of St Peters using th
   water over the ground would pass `DeepestWadeMetres` before they could be back on dry sand.
 - **An activity can wait on art.** `WaitsOn` (a swim animation, a prop) keeps an authored activity
   in the library but out of the day; clearing the field is the whole of turning it on.
+- **A gathering is one decision for everybody.** A `Gather` activity (a supper on the sand, an
+  evening fire) is on or off for the whole village by one roll of the day, and its place is found
+  once, from the activity's own hours, on a `Gatherings` line: everybody with free time stands in a
+  ring round the same middle, facing it. At most one gathering is on in a day (the first in the
+  library that is on).
+- **The thing in the middle is read from the day's plans, not remembered.** While anybody is there
+  (and for `CentreLingersMinutes` after, for a fire) `BeachLifeDirector` keeps one object at the
+  middle and asks Core's `GroundPropPresentation` seam to draw it: the sprite sorted with the world
+  and, when `CentreIsLit`, a glow that fades in with the dark. World names no Art type.
+- **People talk at a gathering.** `BeachActivityDef.Talk` holds short exchanges; one is had per
+  gathering, chosen by the day from those whose speakers are all standing there, as the same
+  ambient bubbles the two-handers use. It waits while a `ConversationDef` exchange has the floor.
 - **What the sim does not have yet.** No rain (fog and a rough sea stand for a poor day) and no
   temperature (season and hour stand for warmth).
 

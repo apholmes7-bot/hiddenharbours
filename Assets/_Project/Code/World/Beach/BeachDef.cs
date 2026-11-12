@@ -76,6 +76,10 @@ namespace HiddenHarbours.World
                  "least three metres apart.")]
         public BeachTransect[] Shallows = Array.Empty<BeachTransect>();
 
+        [Tooltip("Lines down open sand with room for a ring of people round one place (a supper, a " +
+                 "fire). Keep them well clear of the other lines: a ring is three metres across.")]
+        public BeachTransect[] Gatherings = Array.Empty<BeachTransect>();
+
         [Header("Sampling")]
         [Tooltip("How finely the ground is read along a line or a leg, in metres.")]
         [Min(0.05f)] public float SampleStepMetres = 0.25f;
