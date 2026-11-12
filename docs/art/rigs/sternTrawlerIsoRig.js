@@ -10,7 +10,8 @@
    The hull is the old rig's, number for number: the same offsets table, L 38.0, beam 9.0, deck 3.5, the same
    sheer, the same cell (PX 32, 1344 x 1152, pivot 672,672). What is new is everything the hull layout asks:
    tagged faces (lv / ro / it), three rooms (house: the mess and galley; bridge: the wheelhouse; below: the
-   crew's cabin), two hinged doors as leaves (doorFaces(t)), the cutaway table, four paint schemes, the walk.
+   crew's cabin), two hinged doors as leaves (doorFaces(t)), the cutaway table, five paint schemes (four working
+   boats and 'wrecked', the same ship beached and abandoned), the walk.
 
    Frame: +x starboard, +y bow, +z up, metres; origin amidships at the keel bottom on the centreline.
 
@@ -103,7 +104,28 @@
     return out;
   }
 
-  // ---- colourways: four working boats. The default is the old rig's paint, its ramps taken as written ----
+  // ---- the wreck's paints: she lies beached and abandoned. The faces are every scheme's (spec §5), so the rust
+  //      is in the ramps: a ramp is read by shade, so its dark steps are where the plating turns from the light
+  //      (under the flare, the strake, the rail) and rust is written there; its top step is bare primer; the
+  //      dither breaks each step into its neighbour as blotches. Built by rampFrom, as the other colourways are.
+  const W_RUST  = rampFrom('#8a4a2a',6,{anchor:0.62});                    // scale rust: the cove line's belt, and the weep at the freeing ports and the hawse
+  const W_PAINT = rampFrom('#77827b',7);                                  // what is left of her topsides' paint: chalked grey-green
+  const W_HULL  = [W_RUST[0],W_RUST[1],W_RUST[2],W_PAINT[3],W_PAINT[4],W_PAINT[5],'#a98374'];   // rust in the shade, paint in the light, red-lead primer at the top
+  const W_CREAM = rampFrom('#aaa697',6,{anchor:0.70});                    // the house, faded and unwashed
+  const W_HOUSE = [W_RUST[1],W_RUST[3],W_CREAM[2],W_CREAM[3],W_CREAM[4],W_CREAM[5]];           // rust runs under its eaves and sills
+  const W_GEAR  = rampFrom('#7d4326',6,{anchor:0.62});                    // gantry, gallows, drum, funnel: rusted through their paint
+  const W_WEEDR = rampFrom('#46512f',7,{anchor:0.86,floor:0.50});         // weed on the bottom
+  const W_WEED  = [W_WEEDR[0],W_WEEDR[1],W_WEEDR[2],W_WEEDR[4],W_WEEDR[6],'#8d9471','#b9b59c'];   // weed below, and a pale crusted tide line where the plating stands up to the boot top
+  const W_GLAS  = rampFrom('#5f6b62',5,{floor:0.84,ceil:0.10});           // glass gone blind: grey-green, five steps that barely part, no reflection
+  const W_STEEL = rampFrom('#7a5f4c',5,{anchor:0.70});                    // winch barrels, rails, wires: brown with rust
+  const W_IRON  = rampFrom('#4a3327',4,{anchor:0.80,floor:0.55});         // dark fittings and the ramp's plating: rusted iron
+  const W_DECK  = rampFrom('#62574c',7);                                  // the steel deck, rust-stained
+  const W_WOOD  = rampFrom('#817a70',5,{anchor:0.70});                    // pound boards gone silver
+  const W_NET   = rampFrom('#3c4250',5,{anchor:0.80});                    // the net, bleached out of its navy
+  const W_SAFE  = rampFrom('#a8674e',5,{anchor:0.62});                    // liferafts and totes, sun-faded
+
+  // ---- colourways: four working boats and the wreck. The default is the old rig's paint, its ramps taken as written.
+  //      A scheme may carry mats: { name: { ramp, off, dith } } to repaint a material no slot reaches (the wreck does).
   const SCHEMES = {
     'north-grey':  { name:'North Grey',  hull:'#565c5f', house:'#cdc7b6', cove:'#cdc7b6', gear:'#cf7a35', bottom:'#1d2226',
                      ramps:{ hull:HULL, house:CREAM, cove:CREAM, gear:BUFF, bottom:BOOT },
@@ -114,6 +136,13 @@
                      note:'red oxide topsides, a white cove line, grey gear, a black boot' },
     'harbour-blue':{ name:'Harbour Blue',hull:'#27456b', house:'#e2e3dc', cove:'#e2e3dc', gear:'#c9552f', bottom:'#6e2f25',
                      note:'working blue, a white house and cove line, red lead gear, red oxide below' },
+    'wrecked':     { name:'Wrecked',     hull:'#77827b', house:'#aaa697', cove:'#8a4a2a', gear:'#7d4326', bottom:'#46512f',
+                     ramps:{ hull:W_HULL, house:W_HOUSE, cove:W_RUST, gear:W_GEAR, bottom:W_WEED },
+                     mats:{ hull:{dith:0.45}, boot:{dith:0.50}, cream:{dith:0.35}, cove:{dith:0.45}, buff:{dith:0.40},
+                            blk:{ramp:W_RUST}, glas:{ramp:W_GLAS}, steel:{ramp:W_STEEL,dith:0.30}, iron:{ramp:W_IRON,dith:0.25},
+                            deck:{ramp:W_DECK,dith:0.35}, wood:{ramp:W_WOOD}, net:{ramp:W_NET}, safe:{ramp:W_SAFE,dith:0.25} },
+                     note:'beached and abandoned: chalked grey-green topsides rusting from the rail, the cove line and the freeing ports down, red-lead primer showing, '+
+                          'weed and a pale tide line on the bottom, blind grey-green glass, a faded house, rusted gantry, gallows and winch' },
   };
   const DEFAULT_SCHEME = 'north-grey';
   const SLOTS = ['hull','house','cove','gear','bottom'];
@@ -123,7 +152,7 @@
     const id=o.paint ? 'custom' : (SCHEMES[o.scheme] ? o.scheme : DEFAULT_SCHEME), DF=SCHEMES[DEFAULT_SCHEME];
     const base=o.paint || SCHEMES[id], fixed=base.ramps || {};
     const hex=(k)=>base[k] || DF[k];
-    const key=SLOTS.map(hex).join('|')+(base.ramps?'|fixed':'');
+    const key=SLOTS.map(hex).join('|')+(base.ramps?'|fixed':'')+(base.mats?'|mats:'+id:'');
     if(_pal[key]) return _pal[key];
     const hullR=fixed.hull || rampFrom(hex('hull'),7), houseR=fixed.house || rampFrom(hex('house'),6,{anchor:0.70});
     const coveR=fixed.cove || (hex('cove')===hex('house') ? houseR : rampFrom(hex('cove'),6,{anchor:0.70}));
@@ -137,7 +166,9 @@
                    iron:{ramp:IRON,off:0,dith:0},      blk:{ramp:BOOT,off:-1,dith:0},
                    dark:{ramp:BOOT,off:-2,dith:0},     safe:{ramp:SAFE,off:0,dith:0} };
     const rindex={};
+    if(base.mats) for(const k of Object.keys(base.mats)) if(mats[k]) mats[k]=Object.assign({}, mats[k], base.mats[k]);   // a scheme's own repaints
     [hullR,botR,houseR,coveR,DECKF,WOOD,GLAS,gearR,NET,STEEL,IRON,BOOT,SAFE].forEach(r=>r.forEach((c,i)=>{ if(!rindex[c]) rindex[c]={r,i}; }));
+    if(base.mats) for(const k of Object.keys(mats)) mats[k].ramp.forEach((c,i)=>{ if(!rindex[c]) rindex[c]={ r:mats[k].ramp, i }; });
     const out={ key, id, name:base.name||'Custom', base:{ hull:hex('hull'), house:hex('house'), cove:hex('cove'), gear:hex('gear'), bottom:hex('bottom') },
                 note:base.note||'', ramps:{ hull:hullR, house:houseR, cove:coveR, gear:gearR, bottom:botR }, mats, rindex };
     _pal[key]=out;
@@ -292,6 +323,9 @@
   const HATCH = { y:-5.6, hw:1.25, hl:1.0, h:0.45, maxDeg:95 };          // the fish hold's hatch, hinged on its forward edge
   const ICE   = { y:-2.6, hw:0.55, hl:0.55, h:0.35 };                    // the ice hatch
   const POUND = { y0:-9.7, y1:-7.7, xa:0.65, xb:2.70, h:0.50 };          // two pounds, an aisle between them
+  // the sorting ground: the clear deck between the pounds' forward boards and the hatch's coaming (gap: its margin to
+  // each); the codend spills at the trawl way's mouth, where the aisle between the pounds opens onto it
+  const SORT  = ((g)=>({ hw:2.30, y0:POUND.y1+g, y1:HATCH.y-HATCH.hl-0.06-g, spillY:POUND.y1, sorterX:1.20 }))(0.10);
   const WINCH = { y:0.5, x:1.9, hx:0.95, hy:0.50 };                      // the split trawl winch: a drum either side of the door
   const DRUMG = { y:-11.3, z:4.75, hx:1.90, stand:2.35, rFl:0.78, rFull:0.66, rBare:0.28 };
   const GANT  = { y:-14.4, xf:3.35, xt:2.75, zt:7.90 };
@@ -1617,7 +1651,17 @@
         drum:{ x:0, y:DRUMG.y, z:DRUMG.z, axis:'x', halfLen:DRUMG.hx, flangeR:DRUMG.rFl },
         holdHatch:{ x:0, y:HATCH.y, z:q3(DECK+HATCH.h), halfW:HATCH.hw, halfL:HATCH.hl, hinge:nlV([0,HATCH.y+HATCH.hl+0.04,DECK+HATCH.h]) },
         gantry:GANTRY.map(nlPt), tubs:TUBS.map(nlPt), nav:{ port:nlPt(NAV.port), star:nlPt(NAV.star), stern:nlPt(NAV.stern), mast:nlPt(NAV.mast) },
-        windlass:nlPt({ x:0, y:14.0, z:fdAt(14.0).z+0.48 }), boatDeckLadder:{ x:2.40, y:q3(HYa-0.12), z0:DECK, z1:WZ0 } },
+        windlass:nlPt({ x:0, y:14.0, z:fdAt(14.0).z+0.48 }), boatDeckLadder:{ x:2.40, y:q3(HYa-0.12), z0:DECK, z1:WZ0 },
+        // ---- the trawl's working points, named for the tow, the haul and the hands that sort (gameplay reads these by name;
+        //      the same keys and shapes as the Mk2's). lead is the gantry's hanging block; her warps also turn at the deck
+        //      bollards on the pounds' after corners, which the faces show and no key names.
+        warps:[-1,1].map((s,i)=>({ id:s<0?'warp_port':'warp_stbd', side:s<0?'port':'starboard',
+          winch:{ x:s*WINCH.x, y:WINCH.y, z:q3(DECK+0.74) }, lead:nlPt(GANTRY[i]), door:nlPt(GAL_BLOCK[i]) })),
+        codEnd:{ rampFoot:{ x:0, y:q3(-L/2), z:RZ0 }, rampHead:{ x:0, y:RYT, z:q3(DECK-0.02) }, spill:{ x:0, y:q3(SORT.spillY), z:DECK } },
+        sorting:{ x0:-SORT.hw, x1:SORT.hw, y0:q3(SORT.y0), y1:q3(SORT.y1), z:DECK, totes:[nlPt(TUBS[2]), nlPt(TUBS[3])] },
+        crew:[ { id:'winchman', at:'winch' }, { id:'drum_hand', at:'net_drum' }, { id:'door_hand_port', at:'gallows_port' }, { id:'door_hand_stbd', at:'gallows_stbd' },
+               { id:'sorter_port', x:-SORT.sorterX, y:q3((SORT.y0+SORT.y1)/2), z:DECK }, { id:'sorter_stbd', x:SORT.sorterX, y:q3((SORT.y0+SORT.y1)/2), z:DECK },
+               { id:'hatch_hand', at:'hold_hatch' } ] },
       interact, cleats, washboards:[], _excluded,
       rock:{ frames:ROCK.frames, rollA:ROCK.rollA, pitchA:ROCK.pitchA, heaveA:ROCK.heaveA, period:ROCK.period },
       qa:{ fitCheck:fitCheck(), surfaceFit:{ foredeck:fd.worst, tol:0.02 } },
