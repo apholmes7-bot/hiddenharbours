@@ -5,6 +5,20 @@ rendering remain unresolved**.
 This document records measurements and source traces. It changes no plate,
 expectation, capture fixture, renderer, shader, material, importer or scene.
 
+## Refresh against current main
+
+Refreshed onto `12bc04b19a2efb33e352b4eea58104f7a5599be1` on 2026-11-12.
+The linked installer, culling rules and settled harness are unchanged since the
+investigation base. The two-second unscaled scan, 96 m radius and lack of a
+synchronous visibility refresh before the shutter still describe those sources.
+The measurements below remain historical captures on their stated bases; they
+are not new captures or proof of current-main pixels.
+
+No-editor revalidation checked all 87 saved manifest hashes and recomputed the
+three-launch differences, diagnostic ordering/restoration comparisons and forced
+previous-camera culling comparisons. The reported measurements and unresolved
+residuals are unchanged. No editor, capture or new lease was used for this refresh.
+
 ## Original evidence, preserved and remeasured
 
 The saved comparison used base `3e7188a426c00dde0b18f94ab9512ea1a2bc0c21` and
@@ -116,7 +130,8 @@ then reproduce the south-sand residue with paired controls. Keep clock pinning,
 all original assertions and raw comparisons. Any proposed visibility-settle fix
 needs its own scoped review; this investigation publishes documentation only.
 
-Both diagnostic editors were closed and their leases returned with all launched
-processes gone and the shared save unchanged. The final tracked diff contains
-this document only; no Assets, ProjectSettings, gameplay tuning, save schema or
-pixel expectation changed.
+Both historical diagnostic editors were closed and their leases returned with all
+launched processes gone and the shared save unchanged. Those are the original
+launch records, not editor execution in this refresh. Relative to the refreshed
+main, the PR contains this document only; no Assets, ProjectSettings, gameplay
+tuning, save schema or pixel expectation changed.
