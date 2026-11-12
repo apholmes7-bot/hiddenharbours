@@ -33,7 +33,10 @@ namespace HiddenHarbours.Tests.RigBaking
         static readonly (string label, string path, string global)[] Hulls =
         {
             ("lobsterBoat", "docs/art/rigs/lobsterBoatIsoRig.js", "LobsterBoatIso"),
-            ("sideDragger", "docs/art/rigs/sideDraggerIsoRig.js", "SideDraggerIso"),
+            // The working ship of the three. It was the side dragger until she was rebuilt to the hull
+            // layout; this fixture is the golden master of the OLD-layout extraction, so it reads a
+            // ship that still has one.
+            ("coastalPacket", "docs/art/rigs/coastalPacketIsoRig.js", "CoastalPacketIso"),
             ("punt",        "docs/art/rigs/puntIsoRig.js",        "PuntIso"),
         };
 
