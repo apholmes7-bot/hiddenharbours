@@ -20,11 +20,14 @@ namespace HiddenHarbours.Tests.PlayMode
     // look is for the plates.
     public partial class WakeCentrePhotographPlayTests
     {
-        const string FlightHullPath = "Assets/_Project/Data/Boats/DoryOutboard.asset";
+        const string FlightHullPath = "Assets/_Project/Data/Boats/SportSkiff.asset";
+        const string FlightVisualPath = "Assets/_Project/Data/Boats/Visuals/SportSkiffSingle.asset";
+        // The last try is the mechanism alone: the outboard dory held far faster than she goes.
+        const string FlightFallbackHullPath = "Assets/_Project/Data/Boats/DoryOutboard.asset";
         // Each try asks for a harder sea and more speed than the last: a sheltered creek raises less sea
         // than open water does for the same wind.
         static readonly float[] FlightSeas = { 0.8f, 1f, 1f };
-        static readonly float[] FlightSpeeds = { 16f, 16f, 20f };
+        static readonly float[] FlightSpeeds = { 10f, 10f, 16f };
         const float FlightSecondsPerTry = 7f;
         /// <summary>Air under her keel, metres, before the flight plate is taken.</summary>
         const float FlightPlateClearance = 0.35f;
@@ -48,7 +51,7 @@ namespace HiddenHarbours.Tests.PlayMode
         {
             RequireAGraphicsDevice();   // FIRST, before any yield
             BoatHullDef hull = LoadAsset<BoatHullDef>(FlightHullPath);
-            BoatVisualDef visual = LoadAsset<BoatVisualDef>(DoryVisualPath);
+            BoatVisualDef visual = LoadAsset<BoatVisualDef>(FlightVisualPath);
             if (hull == null || visual == null) yield break;
 
             yield return LoadRegion();
@@ -85,6 +88,12 @@ namespace HiddenHarbours.Tests.PlayMode
                     Vector2 wind = GameServices.Environment.Sample().WindVector;
                     Vector2 into = wind.sqrMagnitude > 1e-6f ? -wind.normalized : Vector2.up;
                     float headingDeg = Mathf.Atan2(into.x, into.y) * Mathf.Rad2Deg;
+                    if (i == FlightSeas.Length - 1)
+                    {
+                        hull = LoadAsset<BoatHullDef>(FlightFallbackHullPath);
+                        visual = LoadAsset<BoatVisualDef>(DoryVisualPath);
+                        if (hull == null || visual == null) break;
+                    }
                     Spawned she = Spawn("flight", hull, visual, false, new Leg("try" + i, headingDeg, 0f), anchors[i]);
                     GameObject go = she.Go;
 
@@ -92,7 +101,8 @@ namespace HiddenHarbours.Tests.PlayMode
                     yield return FrameOn(go.transform, run);
 
                     _flightLandings = 0;
-                    float peak = 0f, lowest = 1f, highest = 0f;
+                    float peak = 0f, lowest = 1f, highest = 0f, slowest = float.MaxValue;
+                    bool agroundSeen = false;
                     bool airborneSeen = false;
                     for (float elapsed = 0f; elapsed < FlightSecondsPerTry && !(gotFlight && gotSplash); )
                     {
@@ -103,6 +113,8 @@ namespace HiddenHarbours.Tests.PlayMode
                         airborneSeen |= she.Boat.IsAirborne;
                         peak = Mathf.Max(peak, she.Boat.FlightClearanceMeters);
                         float water = GameServices.FetchEnvelopeAt(go.transform.position);
+                        slowest = Mathf.Min(slowest, she.Rb.linearVelocity.magnitude);
+                        agroundSeen |= she.Boat.IsAground;
                         lowest = Mathf.Min(lowest, water); highest = Mathf.Max(highest, water);
 
                         if (!gotFlight && she.Boat.IsAirborne && she.Boat.FlightClearanceMeters >= FlightPlateClearance)
@@ -128,7 +140,8 @@ namespace HiddenHarbours.Tests.PlayMode
                         "({7:0.0}, {8:0.0}) m/s; airborne seen: {9}; most air {10:0.00} m; flight plate: {11}; splash plate: {12}; "
                         + "fetch at the start {13:0.00}; share of the open sea under her from {14:0.00} to {15:0.00}.",
                         PlateDir, i, anchors[i].x, anchors[i].y, headingDeg, FlightSpeed, FlightSea01, wind.x, wind.y,
-                        airborneSeen, peak, gotFlight, gotSplash, GameServices.FetchAt(anchors[i]).Fraction, lowest, highest));
+                        airborneSeen, peak, gotFlight, gotSplash, GameServices.FetchAt(anchors[i]).Fraction, lowest, highest)
+                        + string.Format(CultureInfo.InvariantCulture, " Hull {0}, {1:0.00} m long, drawing {2:0.00} m; slowest she was read at {3:0.0} m/s; aground seen: {4}; flight switched on: {5}.", hull.Id, hull.LengthMeters, hull.DraughtMeters, slowest, agroundSeen, GameServices.HullFlight.Enabled));
 
                     Time.timeScale = 1f;
                     _spawned.Remove(go);
@@ -145,7 +158,7 @@ namespace HiddenHarbours.Tests.PlayMode
             }
 
             Debug.Log($"[{PlateDir}] flight: {depth.ToString("0.0", CultureInfo.InvariantCulture)} m under her at the " +
-                      "shallowest anchor. The dory is HELD at this speed by the test; she does not make it herself.");
+                      "shallowest anchor. Each hull is HELD at its speed by the test.");
             Assert.IsTrue(gotFlight, "She was never reported airborne with " + FlightPlateClearance +
                                      " m under her keel, so there is no flight to photograph.");
             Assert.IsTrue(gotSplash, "No landing was reported after the flight plate, so there is no splash to photograph.");
