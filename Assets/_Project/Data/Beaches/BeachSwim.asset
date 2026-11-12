@@ -1,0 +1,48 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d885412cd35443658a752ed3d82c526c, type: 3}
+  m_Name: BeachSwim
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.BeachActivityDef
+  Id: beachactivity.swim
+  DisplayName: A swim off the north face
+  Beach: {fileID: 11400000, guid: 60cc5419c7994a05914b444264392ddc, type: 2}
+  Kind: 3
+  Replaces: 3
+  Tag: 3
+  Who: []
+  ChancePerDay: 0.2
+  EarliestHour: 11
+  LatestHour: 19.5
+  InEarlySpring: 0
+  InHighSummer: 1
+  InTheTurn: 0
+  InHardWinter: 0
+  MinWaterLevelMetres: -100
+  MaxWaterLevelMetres: 100
+  MinWindStrength: 0
+  MaxWindStrength: 3.5
+  MaxSeaState01: 0.25
+  MinVisibility01: 0.7
+  GateSampleMinutes: 10
+  ClearanceMetres: 0.35
+  MinDepth01: 0.8
+  MaxDepth01: 1
+  MinDryMetres: 0
+  PersonSpacingMetres: 1.2
+  MinStayMinutes: 40
+  LingerMinutes: 5
+  MinWadeDepthMetres: 0.9
+  MaxWadeDepthMetres: 1.2
+  DeepestWadeMetres: 1.4
+  WadeMinutes: 15
+  WadeWanderMetres: 0.7
+  WaitsOn: a swim and tread animation for villagers; the two clips that exist are for the player figure only

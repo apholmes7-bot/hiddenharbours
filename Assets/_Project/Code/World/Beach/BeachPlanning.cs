@@ -92,6 +92,7 @@ namespace HiddenHarbours.World
         private const int StreamChance = 1;
         private const int StreamDepth = 2;
         private const int StreamRotation = 3;
+        private const int StreamWade = 4;
 
         /// <summary>
         /// Vary <paramref name="authored"/> with at most one beach outing. Returns false (and the day is
@@ -292,7 +293,10 @@ namespace HiddenHarbours.World
                 beachStops.Clear();
                 if (!TryPlaces(activity, beach, approach, head, depth01, rank, beachDay, terrain,
                                keepAbove, departure, metresOut, until, walkSpeed, perHour, beachStops,
-                               out float arrival, out Vector2 last))
+                               out float arrival, out Vector2 last) ||
+                    (activity.Kind == BeachActivityKind.Wade &&
+                     !TryWade(activity, beach, approach, rank, person, terrain, sky, day, waterStep,
+                              arrival, until, walkSpeed, perHour, beachStops)))
                 {
                     if (goesBack) continue;
                     return false;
@@ -356,7 +360,107 @@ namespace HiddenHarbours.World
         private static BeachTransect[] LinesFor(BeachActivityDef activity, BeachDef beach) =>
             activity.Kind == BeachActivityKind.Stroll ? beach.Promenade
             : activity.Kind == BeachActivityKind.Dig ? beach.Flats
+            : activity.Kind == BeachActivityKind.Wade ? beach.Shallows
             : beach.Spots;
+
+        /// <summary>
+        /// The wade: from the dry place <see cref="TryPlaces"/> gave them (the one stop already in
+        /// <paramref name="into"/>), in to the shallows, a few standing places that follow the water's
+        /// edge as the tide moves it, and back up to the dry place for the rest of the stay.
+        ///
+        /// <para>Every place is found for the water AT THE TIME they stand there, and is only taken if
+        /// the water over the ground stays at or under <see cref="BeachActivityDef.DeepestWadeMetres"/>
+        /// from setting off for it until they could be back on the dry sand. False when not even one
+        /// place can be taken: then this is not a wading day.</para>
+        /// </summary>
+        private static bool TryWade(BeachActivityDef activity, BeachDef beach, Vector2[] approach, int rank,
+                                    uint person, ITidalTerrain terrain, IBeachSky sky, in BeachDay day,
+                                    float waterStep, float arrival, float until, float walkSpeed,
+                                    float perHour, List<RoutineStop> into)
+        {
+            if (into.Count != 1 || beach.Shallows == null || beach.Shallows.Length == 0) return false;
+
+            Vector2 dry = into[0].Station.Position;
+            // The same line TryPlaces chose: its id carries the index, but the dry place is on it, so
+            // the nearest line is that line.
+            BeachTransect line = beach.Shallows[0];
+            float nearest = float.MaxValue;
+            for (int i = 0; i < beach.Shallows.Length; i++)
+            {
+                float d = DistanceToSegment(dry, beach.Shallows[i].Top, beach.Shallows[i].Toe);
+                if (d < nearest) { nearest = d; line = beach.Shallows[i]; }
+            }
+
+            float length = Vector2.Distance(line.Top, line.Toe);
+            if (length <= 0f) return false;
+            Vector2 down = (line.Toe - line.Top) / length;
+            var alongShore = new Vector2(-down.y, down.x);
+            float sample = beach.SampleStepMetres;
+            float linger = Mathf.Max(1f, activity.LingerMinutes) / 60f;
+            float deepest = activity.DeepestWadeMetres;
+
+            float setOff = arrival + linger;                       // things down, shoes off
+            float outBy = Mathf.Min(setOff + activity.WadeMinutes / 60f, until - linger);
+            Vector2 last = dry;
+            int places = 0;
+
+            while (into.Count < MaxStrollStops - 1)
+            {
+                float side = (places % 2 == 0 ? -1f : 1f) * activity.WadeWanderMetres;
+                Vector2 top = line.Top + alongShore * side;
+                float want = Mathf.Lerp(activity.MinWadeDepthMetres, activity.MaxWadeDepthMetres,
+                                        RoutineSchedule.Hash01(person, StreamWade, places));
+
+                // Where the ground is `want` under the water at the middle of the time they stand
+                // there. The time depends on the walk and the walk on the place: two rounds settle it.
+                Vector2 place = last;
+                float there = setOff;
+                bool found = false;
+                for (int round = 0; round < 2; round++)
+                {
+                    float level = sky.WaterLevelAt(day.TimeAt(there + linger * 0.5f)) - want;
+                    found = false;
+                    for (float d = 0f; d <= length; d += sample)
+                    {
+                        Vector2 p = top + down * d;
+                        if (terrain.ElevationAt(p) > level) continue;
+                        place = p;
+                        found = true;
+                        break;
+                    }
+                    if (!found) break;
+                    there = setOff + RoutineSchedule.TravelHours(Vector2.Distance(last, place), walkSpeed,
+                                                                 perHour);
+                }
+                if (!found) break;
+                if (there + linger > outBy) break;
+
+                // In over their depth at no moment: on the way in, standing, and on the way back out.
+                float backOut = RoutineSchedule.TravelHours(Vector2.Distance(place, dry), walkSpeed, perHour);
+                float highest = HighestWater(sky, day, setOff, there + linger + backOut, waterStep);
+                if (!IsDryLeg(terrain, last, place, highest - deepest, sample) ||
+                    !IsDryLeg(terrain, place, dry, highest - deepest, sample))
+                    break;
+
+                into.Add(Stop(activity, beach, approach, 0, into.Count, place, line.SeawardHeadingDegrees,
+                              setOff));
+                last = place;
+                setOff = there + linger;
+                places++;
+            }
+
+            if (places == 0) return false;
+            into.Add(Stop(activity, beach, approach, 0, into.Count, dry, line.SeawardHeadingDegrees, setOff));
+            return true;
+        }
+
+        private static float DistanceToSegment(Vector2 p, Vector2 a, Vector2 b)
+        {
+            Vector2 ab = b - a;
+            float len2 = ab.sqrMagnitude;
+            float t = len2 > 0f ? Mathf.Clamp01(Vector2.Dot(p - a, ab) / len2) : 0f;
+            return Vector2.Distance(p, a + ab * t);
+        }
 
         /// <summary>The places of one outing, as stops appended to <paramref name="into"/>.</summary>
         private static bool TryPlaces(BeachActivityDef activity, BeachDef beach, Vector2[] approach,
