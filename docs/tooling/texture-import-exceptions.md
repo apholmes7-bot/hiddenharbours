@@ -4,7 +4,12 @@ This records existing, contract-backed settings for the six PPU differences and
 nine filter differences in the [texture inventory](texture-memory-import-audit.md).
 It changes no importer setting or art policy. The inventory is a historical editor
 snapshot; the metadata and source references below were checked at
-`d9d4b8558aaa77b49b6bad9dbb35345d2059814c`.
+`12bc04b19a2efb33e352b4eea58104f7a5599be1` (refresh, 2026-11-12).
+
+The refreshed main retains all fifteen listed metadata settings and the cited
+producer/consumer contracts. The texture inventory and CSV remain the original
+editor snapshot; their counts and memory totals are historical measurements,
+not a current-main remeasurement. No editor was launched for this refresh.
 
 ## How the default and a kit contract fit together
 
@@ -95,8 +100,10 @@ is numeric input to that geometry, so sprite edge rules do not classify it.
 Read-only checks reconciled all **15 metadata paths** with the inventory CSV's
 exact six PPU and nine filter candidate sets, checked the values stated above and
 the sidecar's scale, and recorded metadata hashes. No importer method, bake, asset
-save or Play API was invoked for this document. All Assets and ProjectSettings
-remain byte-identical to the stated base.
+save or Play API was invoked for this document. The PR changes only its two
+documents relative to the refreshed main; all Assets and ProjectSettings match
+that main. The fifteen metadata paths and cited source contracts were also
+checked for changes since the original exception audit; none changed.
 
 Existing guards include `BoatInteriorPlacementTests.ThePixelGridIsStatedPerHull_AndTheTankerIsNotTheFleet`
 and the sheet slicer's imported-PPU audit; these are references, not newly executed
