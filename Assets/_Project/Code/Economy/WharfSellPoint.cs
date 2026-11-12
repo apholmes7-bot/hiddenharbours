@@ -28,6 +28,20 @@ namespace HiddenHarbours.Economy
         [Tooltip("Inspector hook fired with the ₲ payout on a successful sale (UI can bind this later).")]
         [SerializeField] private UnityEvent<int> _onSold;
 
+        [Tooltip("A buy-only counter's own seller id (seller.snake_case), for a counter with no vendor standing on it, so " +
+                 "a conversation's sell row can name it. Leave empty where vendors stand: their _sellerId already names this " +
+                 "counter.")]
+        [SerializeField] private string _buyOnlySellerId = "";
+        [Tooltip("The delivered pail (owner ruling 2026-11-11): the counter sale reads the container in the player's hands, " +
+                 "never the hold provider. Empty hands sell nothing, and the provider's hold is never touched.")]
+        [SerializeField] private bool _sellsWhatIsCarried;
+
+        /// <summary>This counter's own seller id, or empty where vendors on the same GameObject name it.</summary>
+        public string BuyOnlySellerId => _buyOnlySellerId;
+
+        /// <summary>True when the counter sale reads the carried container rather than the hold provider.</summary>
+        public bool SellsWhatIsCarried => _sellsWhatIsCarried;
+
         private IHold _hold;
         private IWallet _wallet;
 
@@ -46,9 +60,14 @@ namespace HiddenHarbours.Economy
 
         private void Awake()
         {
-            if (_holdProvider != null) _hold = _holdProvider.GetComponent<IHold>();
-            if (_hold == null)
-                Debug.LogWarning("[Wharf] No IHold found on the hold provider.", this);
+            // A counter that sells what is carried never resolves the provider, so no path through it can
+            // reach the boat's hold from the wharf (ADR 0055 §1: no remote inventory pull).
+            if (!_sellsWhatIsCarried)
+            {
+                if (_holdProvider != null) _hold = _holdProvider.GetComponent<IHold>();
+                if (_hold == null)
+                    Debug.LogWarning("[Wharf] No IHold found on the hold provider.", this);
+            }
 
             if (_walletProvider != null) _wallet = _walletProvider.GetComponent<IWallet>();
             if (_wallet == null)
@@ -114,11 +133,17 @@ namespace HiddenHarbours.Economy
         /// <c>SellScreen</c> and returns 0 by design, which is exactly what a sale spoken in a bubble must
         /// not do: the row's whole point is that a sale at a counter is something a person tells you, with
         /// them still standing there. <c>SellScreen</c> is untouched and keeps its own callers.</para>
+        ///
+        /// <para><b>A counter that sells what is carried</b> reads the container in the player's hands instead
+        /// (<see cref="CarriedHold.From"/>, through Core's <c>GameServices.Hands</c>): the delivered pail of the
+        /// 2026-11-11 ruling. Everything sellable in it is bought, the pail stays in her hands empty, and empty
+        /// hands sell nothing.</para>
         /// </summary>
         public int SellOverTheCounter()
         {
             LastUnitsSold = 0;
-            return Sell(_hold, _wallet);
+            IHold hold = _sellsWhatIsCarried ? CarriedHold.From(GameServices.Hands) : _hold;
+            return Sell(hold, _wallet);
         }
     }
 }

@@ -413519,6 +413519,8 @@ MonoBehaviour:
   _onSold:
     m_PersistentCalls:
       m_Calls: []
+  _buyOnlySellerId: seller.nmc_wharf_market
+  _sellsWhatIsCarried: 1
 --- !u!114 &1544789642
 MonoBehaviour:
   m_ObjectHideFlags: 0
