@@ -95,6 +95,7 @@ namespace HiddenHarbours.App
                     float along = ((j / perRow) + 0.5f) / rows - 0.5f;
                     Vector2 at = crate + new Vector2(across * def.CrateInsideMeters.x, along * def.CrateInsideMeters.y);
                     _crates[g][j] = Make($"Crate{g}_{j}", at, layer, order);
+                    _crates[g][j].transform.localScale = new Vector3(def.CatchDrawScale, def.CatchDrawScale, 1f);
                 }
             }
             _inHand = Make("InHand", _rail, layer, order + 1);
@@ -247,7 +248,11 @@ namespace HiddenHarbours.App
                 if (_inHand.enabled) _inHand.enabled = false;
                 return;
             }
-            if (_inHand.sprite != sprite) _inHand.sprite = sprite;
+            if (_inHand.sprite != sprite)
+            {
+                _inHand.sprite = sprite;
+                _inHand.transform.localScale = new Vector3(_def.CatchDrawScale, _def.CatchDrawScale, 1f);
+            }
             _inHand.transform.localPosition = new Vector3(hullLocal.x, hullLocal.y, 0f);
             if (!_inHand.enabled) _inHand.enabled = true;
         }

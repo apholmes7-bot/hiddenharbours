@@ -72,6 +72,7 @@ MonoBehaviour:
   CrateRowLength: 4
   CrateShownCapacity: 16
   ReturnOverTheSideMeters: 0.9
+  CatchDrawScale: 0.4
   CatchSortingOrder: 30
   RopeLengthMeters: 10.5
   FloodBearingDegrees: 270
