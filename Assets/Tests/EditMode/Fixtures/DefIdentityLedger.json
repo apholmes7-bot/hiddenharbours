@@ -1405,6 +1405,11 @@
     },
     {
       "Type": "HiddenHarbours.Boats.BoatDeckDef",
+      "Guid": "90af76a88f41dc5488e82affb1403932",
+      "Id": "deck.jet_ski_iso"
+    },
+    {
+      "Type": "HiddenHarbours.Boats.BoatDeckDef",
       "Guid": "db6855fec8500464b3e2b545a03b77a6",
       "Id": "deck.lobster_boat_iso"
     },
@@ -1617,6 +1622,11 @@
       "Type": "HiddenHarbours.Boats.BoatHullDef",
       "Guid": "fc73bf3521e2bf7438ee0ef40e662d02",
       "Id": "boat.go_fast"
+    },
+    {
+      "Type": "HiddenHarbours.Boats.BoatHullDef",
+      "Guid": "134dac2b64c754a488d44871817f04cd",
+      "Id": "boat.jet_ski"
     },
     {
       "Type": "HiddenHarbours.Boats.BoatHullDef",
@@ -1882,6 +1892,11 @@
       "Type": "HiddenHarbours.Boats.BoatVisualDef",
       "Guid": "c7d1983ca526e044e9493d039572f4a4",
       "Id": "visual.go_fast_iso"
+    },
+    {
+      "Type": "HiddenHarbours.Boats.BoatVisualDef",
+      "Guid": "676ef469bcec2034fb1ae0dcc69bb254",
+      "Id": "visual.jet_ski_iso"
     },
     {
       "Type": "HiddenHarbours.Boats.BoatVisualDef",
@@ -2895,6 +2910,11 @@
     },
     {
       "Type": "HiddenHarbours.Core.HullMeshDef",
+      "Guid": "5250f8352af504b4f918ed78e0a1793a",
+      "Id": "hullmesh.jet_ski_iso"
+    },
+    {
+      "Type": "HiddenHarbours.Core.HullMeshDef",
       "Guid": "a5bfaec1d9b545f4f9df0d533fc0a8eb",
       "Id": "hullmesh.lobster_boat_iso"
     },
@@ -3272,6 +3292,26 @@
       "Type": "HiddenHarbours.Core.HullPaintSchemeDef",
       "Guid": "ad7e82997c7938e4a8517698c4b57299",
       "Id": "paint.go_fast_venom"
+    },
+    {
+      "Type": "HiddenHarbours.Core.HullPaintSchemeDef",
+      "Guid": "c64c20223e790714781a58c21599dc06",
+      "Id": "paint.jet_ski_cranberry"
+    },
+    {
+      "Type": "HiddenHarbours.Core.HullPaintSchemeDef",
+      "Guid": "391b906236676bc4d97318073f14a7af",
+      "Id": "paint.jet_ski_seafoam"
+    },
+    {
+      "Type": "HiddenHarbours.Core.HullPaintSchemeDef",
+      "Guid": "f39ebbceaaf24c542865a6942e2fe57b",
+      "Id": "paint.jet_ski_signal_yellow"
+    },
+    {
+      "Type": "HiddenHarbours.Core.HullPaintSchemeDef",
+      "Guid": "4e1d943628869bd4580c7ba33f0c133f",
+      "Id": "paint.jet_ski_tar_black"
     },
     {
       "Type": "HiddenHarbours.Core.HullPaintSchemeDef",
