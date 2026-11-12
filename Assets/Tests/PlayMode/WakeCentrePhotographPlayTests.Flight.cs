@@ -100,6 +100,10 @@ namespace HiddenHarbours.Tests.PlayMode
                     var run = new Bounds(new Vector3(anchors[i].x, anchors[i].y, 0f), Vector3.one * 30f);
                     yield return FrameOn(go.transform, run);
 
+                    // SetHour stops the game clock, and a stopped clock is a FROZEN sea: nothing comes to meet
+                    // her, and at her own speed she then never leaves it. Let the sea run while she drives.
+                    if (GameServices.Clock != null) GameServices.Clock.TimeScale = 1f;
+                    for (float settle = 0f; settle < 1f; settle += Time.deltaTime) yield return null;
                     _flightLandings = 0;
                     float peak = 0f, lowest = 1f, highest = 0f, slowest = float.MaxValue;
                     bool agroundSeen = false;
@@ -144,6 +148,7 @@ namespace HiddenHarbours.Tests.PlayMode
                         + string.Format(CultureInfo.InvariantCulture, " Hull {0}, {1:0.00} m long, drawing {2:0.00} m; slowest she was read at {3:0.0} m/s; aground seen: {4}; flight switched on: {5}.", hull.Id, hull.LengthMeters, hull.DraughtMeters, slowest, agroundSeen, GameServices.HullFlight.Enabled));
 
                     Time.timeScale = 1f;
+                    if (GameServices.Clock != null) GameServices.Clock.TimeScale = 0f;
                     _spawned.Remove(go);
                     Object.Destroy(go);
                     yield return null;
@@ -168,6 +173,7 @@ namespace HiddenHarbours.Tests.PlayMode
         IEnumerator ShootFlightPlate(Spawned she, string file, string what)
         {
             Time.timeScale = 0f;
+            if (GameServices.Clock != null) GameServices.Clock.TimeScale = 0f;
             Vector3 was = _cam.transform.position;
             float wasOrtho = _cam.orthographicSize;
             Vector3 at = she.Go.transform.position;
@@ -190,6 +196,7 @@ namespace HiddenHarbours.Tests.PlayMode
             _cam.transform.position = was;
             _cam.orthographicSize = wasOrtho;
             Time.timeScale = 1f;
+            if (GameServices.Clock != null) GameServices.Clock.TimeScale = 1f;
         }
     }
 }
