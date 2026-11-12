@@ -18,8 +18,8 @@ MonoBehaviour:
   SourceSidecar: docs/art/rigs/gameplay/sternTrawlerIsoRig.stern_trawler.walk.json
   SourceInteriorRig: docs/art/rigs/sternTrawlerIsoRig.js
   SourceHullRig: docs/art/rigs/sternTrawlerIsoRig.js
-  InteriorRigSha256: 7deb92477d961dbbb9661123b5f06d70e1ac6cc08b88ed8c189ac0955b310b6e
-  HullRigSha256: 7deb92477d961dbbb9661123b5f06d70e1ac6cc08b88ed8c189ac0955b310b6e
+  InteriorRigSha256: afb6d70457268f55fcde43859bb5072c1710a7f8fe701aa5629c1711ef5701d2
+  HullRigSha256: afb6d70457268f55fcde43859bb5072c1710a7f8fe701aa5629c1711ef5701d2
   PixelsPerMetre: 32
   CellPixels: {x: 1344, y: 1152}
   PivotPixels: {x: 672, y: 672}
