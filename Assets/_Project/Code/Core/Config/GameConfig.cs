@@ -2875,6 +2875,30 @@ namespace HiddenHarbours.Core
         [Tooltip("SOUND. How long the scream lasts, seconds.")]
         [Min(0f)] public float HookScreamSeconds;
 
+        [Tooltip("THE BIG ONE, ON THE FIGURE (owner's ask 2026-11-13: 'the player sprite should have an " +
+                 "exclamation for a big fish too'). ONE SWITCH: on = an exclamation mark pops over the " +
+                 "fisher the instant a big one is hooked, and the figure holds its hook-set pose a beat " +
+                 "longer. Off = neither happens (her 'Woah' line is unaffected).")]
+        public bool BigOneReactionEnabled;
+        [Tooltip("EXCLAMATION. How long the mark stays up, seconds (pop-in and fade-out included).")]
+        [Min(0f)] public float BigOneMarkSeconds;
+        [Tooltip("EXCLAMATION. Where the mark's FOOT sits, metres from the figure's feet (x right, y up).")]
+        public Vector2 BigOneMarkOffsetMetres;
+        [Tooltip("EXCLAMATION. How tall the mark is once settled, metres.")]
+        [Min(0f)] public float BigOneMarkHeightMetres;
+        [Tooltip("EXCLAMATION. The pop: it grows from nothing to its overshoot over this many seconds, " +
+                 "then settles to its real size over the same again.")]
+        [Min(0f)] public float BigOneMarkPopSeconds;
+        [Tooltip("EXCLAMATION. The pop's overshoot, as a multiple of the settled size (1 = no overshoot).")]
+        [Min(1f)] public float BigOneMarkPopScale;
+        [Tooltip("EXCLAMATION. How long the mark takes to fade out at the end of its time, seconds.")]
+        [Min(0f)] public float BigOneMarkFadeSeconds;
+        [Tooltip("EXCLAMATION. The mark's colour (its one-pixel outline stays dark).")]
+        public Color BigOneMarkColor;
+        [Tooltip("FIGURE. Extra seconds the fisher holds the hook-set (strike) pose for a big one before " +
+                 "the reel cycle takes over. 0 = the ordinary strike.")]
+        [Min(0f)] public float BigOneStrikeHoldSeconds;
+
         /// <summary>The reference feel — a first pass for the owner's plate, not a measured tuning.</summary>
         public static FishFeelSettings Default => new FishFeelSettings
         {
@@ -2914,6 +2938,15 @@ namespace HiddenHarbours.Core
             HookScreamGain = 0.9f,
             HookScreamPitchScale = 1.6f,
             HookScreamSeconds = 0.8f,
+            BigOneReactionEnabled = true,
+            BigOneMarkSeconds = 1.2f,
+            BigOneMarkOffsetMetres = new Vector2(0f, 1.7f),
+            BigOneMarkHeightMetres = 0.38f,
+            BigOneMarkPopSeconds = 0.09f,
+            BigOneMarkPopScale = 1.4f,
+            BigOneMarkFadeSeconds = 0.25f,
+            BigOneMarkColor = new Color(1f, 0.85f, 0.2f, 1f),
+            BigOneStrikeHoldSeconds = 0.35f,
         };
     }
 

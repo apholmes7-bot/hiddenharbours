@@ -268,6 +268,9 @@ namespace HiddenHarbours.Player
             _animator = GetComponent<PlayerFishingAnimator>();
             _isoSkin = GetComponent<HiddenHarbours.Core.IsoCharacterSprite>();
             _playerSr = GetComponent<SpriteRenderer>();
+            // The exclamation over her head when a big one is hooked rides along with the rod fight, so
+            // no scene or prefab needs editing to get it (GameConfig.FishFeel.BigOneReactionEnabled).
+            if (GetComponent<BigOneReactionPresenter>() == null) gameObject.AddComponent<BigOneReactionPresenter>();
 
             _rodSr = MakeChild("RodOverlay", 0);
             _bobberSr = MakeChild("Bobber", _waterElementOrder);

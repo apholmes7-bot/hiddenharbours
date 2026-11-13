@@ -231,6 +231,7 @@ namespace HiddenHarbours.Player
         private FishingPhase _phase = FishingPhase.Idle;
         private float _poseElapsed;       // seconds in the current pose (drives the frame)
         private float _fightElapsed;      // seconds since a fight phase was entered (strike → reel)
+        private bool _bigOneHooked;       // this hook raised the big-one cue: the strike pose holds longer
         private int _row;                 // current direction row (held when the offset vanishes)
         private int _frame;               // the per-direction frame currently shown (for the rod overlay)
         private FishingPose _pose = FishingPose.None;
@@ -268,12 +269,27 @@ namespace HiddenHarbours.Player
         {
             _row = Directions / 2;   // South — facing the camera until the state says otherwise
             EventBus.Subscribe<FishingStateChanged>(OnFishingStateChanged);
+            EventBus.Subscribe<InnerVoiceCue>(OnInnerVoiceCue);
         }
 
         private void OnDisable()
         {
             EventBus.Unsubscribe<FishingStateChanged>(OnFishingStateChanged);
+            EventBus.Unsubscribe<InnerVoiceCue>(OnInnerVoiceCue);
+            _bigOneHooked = false;
             EndPose();   // disabling mid-fight hands the renderer back (never a stuck frame)
+        }
+
+        /// <summary>True from the big-one cue until that fight ends (the strike pose holds longer). For tests.</summary>
+        public bool BigOneHooked => _bigOneHooked;
+
+        /// <summary>The rod loop named the moment "a big one is on" (Core <see cref="InnerVoiceCues.BigOneHooked"/>,
+        /// raised once at the hook-set, just BEFORE the first fight state). The figure answers by holding
+        /// its hook-set pose <c>GameConfig.FishFeel.BigOneStrikeHoldSeconds</c> longer. Public so tests
+        /// drive the same path the bus does.</summary>
+        public void OnInnerVoiceCue(InnerVoiceCue e)
+        {
+            if (e.CueId == InnerVoiceCues.BigOneHooked) _bigOneHooked = true;
         }
 
         /// <summary>Public so tests can drive the mapping through the same path the bus uses.</summary>
@@ -282,6 +298,9 @@ namespace HiddenHarbours.Player
             bool wasFight = IsFight(_phase);
             _phase = e.State.Phase;
             if (IsFight(_phase) && !wasFight) _fightElapsed = 0f;   // the strike beat starts here
+            // The big-one flag belongs to ONE hook: it arrives before the fight opens and dies when that
+            // fight ends (landed, lost) or the rod goes idle, so the next fish starts ordinary.
+            if ((wasFight && !IsFight(_phase)) || _phase == FishingPhase.Idle) _bigOneHooked = false;
             _castCharge = e.State.CastCharge01;
 
             // Face the line's far end: the fight offset when one is live, else the cast-path far end
@@ -334,6 +353,13 @@ namespace HiddenHarbours.Player
         private void Apply()
         {
             float strikeSeconds = FrameCount(_strikeFrames) / Mathf.Max(0.1f, _strikeFps);
+            if (_bigOneHooked)
+            {
+                // A big one: she rears back and STAYS back a beat (the sheet's last strike frame holds).
+                FishFeelSettings feel = GameServices.Config != null
+                    ? GameServices.Config.FishFeel : FishFeelSettings.Default;
+                strikeSeconds += BigOneReactionMath.StrikeHoldSeconds(in feel);
+            }
             FishingPose pose = PlayerFishingAnimMath.PoseFor(_phase, _fightElapsed, strikeSeconds, IsStationary);
 
             // A pose only counts if its sheet is actually wired — otherwise fall through to None so a

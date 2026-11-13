@@ -431,6 +431,15 @@ MonoBehaviour:
     HookScreamGain: 0.9
     HookScreamPitchScale: 1.6
     HookScreamSeconds: 0.8
+    BigOneReactionEnabled: 1
+    BigOneMarkSeconds: 1.2
+    BigOneMarkOffsetMetres: {x: 0, y: 1.7}
+    BigOneMarkHeightMetres: 0.38
+    BigOneMarkPopSeconds: 0.09
+    BigOneMarkPopScale: 1.4
+    BigOneMarkFadeSeconds: 0.25
+    BigOneMarkColor: {r: 1, g: 0.85, b: 0.2, a: 1}
+    BigOneStrikeHoldSeconds: 0.35
   FishSchools:
     CellSizeMetres: 22
     SlotHours: 2.5
