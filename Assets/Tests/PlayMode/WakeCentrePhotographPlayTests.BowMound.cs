@@ -29,9 +29,13 @@ namespace HiddenHarbours.Tests.PlayMode
 
         /// <summary>The same three plates off St Peters, the harbour the owner knows best.</summary>
         [UnityTest, Timeout(600000)]
-        public IEnumerator TheCape_MakingWayNorth_PhotographsTheMoundAtHerBow_OffStPeters() => BowMound("StPeters", "bow-mound-stpeters");
+        public IEnumerator TheCape_MakingWayNorth_PhotographsTheMoundAtHerBow_OffStPeters() => BowMound("StPeters", "bow-mound-stpeters", 1.5f);
 
-        IEnumerator BowMound(string scene, string subject)
+        /// <summary>And off Rice Point.</summary>
+        [UnityTest, Timeout(600000)]
+        public IEnumerator TheCape_MakingWayNorth_PhotographsTheMoundAtHerBow_OffRicePoint() => BowMound("RicePoint", "bow-mound-ricepoint", 1.5f);
+
+        IEnumerator BowMound(string scene, string subject, float minClearance = 4f)
         {
             RequireAGraphicsDevice();   // FIRST, before any yield
             BoatHullDef hull = LoadAsset<BoatHullDef>(CapeHullPath);
@@ -45,7 +49,7 @@ namespace HiddenHarbours.Tests.PlayMode
             yield return SetHour(ShotHour);
 
             var leg = new Leg("north-000", 0f, 0f);
-            if (!TryLegAnchors(1, out List<Vector2> anchors, out float depth))
+            if (!TryLegAnchors(1, out List<Vector2> anchors, out float depth, minClearance))
             {
                 Assert.Ignore("SKIPPED, NOT VERIFIED: no open water inside " + scene +
                               "'s camera bounds deep enough to drive her.");
@@ -79,7 +83,9 @@ namespace HiddenHarbours.Tests.PlayMode
             Vector2 expectLead = WakeRootMath.ProjectAlongHeading((Vector2)she.Go.transform.position,
                                                                   (Vector2)she.Go.transform.up,
                                                                   she.SternOffset, she.ElevationDeg);
-            Assert.AreEqual(Vector2.Dot(expectLead - new Vector2(root.x, root.y), new Vector2(root.z, root.w)), shape.w, 0.05f,
+            // Her drawn length, stem to stern. The published ends both carry the surface's below-surface
+            // shift, which this test cannot read, so the two lengths agree to a few centimetres, not exactly.
+            Assert.AreEqual(Vector2.Dot(expectLead - expectRoot, (Vector2)she.Go.transform.up), shape.w, 0.25f,
                             "she did not publish her length, so the shader cannot find her leading end");
 
             var was = new List<float>();

@@ -184,7 +184,7 @@ namespace HiddenHarbours.Tests.PlayMode
             for (int i = SceneManager.sceneCount - 1; i >= 0; i--)
             {
                 Scene s = SceneManager.GetSceneAt(i);
-                if (s.IsValid() && s != clean && (s.name == SceneName || (_v24LoadedIntro && s.name == "StPeters")))
+                if (s.IsValid() && s != clean && (s.name == SceneName || (_v24LoadedIntro && (s.name == "StPeters" || s.name == "RicePoint"))))
                     yield return SceneManager.UnloadSceneAsync(s);
             }
         }
@@ -882,7 +882,7 @@ namespace HiddenHarbours.Tests.PlayMode
         /// <para>The legs are no longer strung along +X at <see cref="LegSpacingMetres"/>, which needed
         /// ~280 m of continuous open water in a creek that has not got it. They are chosen independently
         /// and only held APART, so no leg is photographed over another leg's foam.</para></summary>
-        static bool TryLegAnchors(int count, out List<Vector2> starts, out float depth)
+        static bool TryLegAnchors(int count, out List<Vector2> starts, out float depth, float minClearance = 4f)
         {
             starts = new List<Vector2>(); depth = 0f;
             ITidalTerrain terrain = GameServices.TidalTerrain;
@@ -916,7 +916,7 @@ namespace HiddenHarbours.Tests.PlayMode
                         for (float d = 0f; d <= runRadius; d += 10f)
                             shallowest = Mathf.Max(shallowest, terrain.ElevationAt(p + dir * d));
                     }
-                    if (-shallowest > 4f) scored.Add(new Candidate(p, -shallowest));
+                    if (-shallowest > minClearance) scored.Add(new Candidate(p, -shallowest));
                 }
             }
             if (scored.Count == 0) return false;
