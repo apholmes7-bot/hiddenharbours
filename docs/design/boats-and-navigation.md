@@ -904,7 +904,12 @@ The on-foot ⇄ aboard control loop is the `ControlSwitcher` (Player lane); seve
   platform / gate; reach per point, else `GameConfig.BoardingPointReachMetres`); with no points it is
   refused and she is boarded from a wharf or gangway. The dory, the punt, the skiffs and the zodiacs are
   climb-anywhere exactly as before. The working boats' ladder points are data only so far — the ladder
-  art is owed and is drawn at the authored point. The rule is
+  art is owed and is drawn at the authored point. **No hull is dock-only** (owner, 2026-11-13:
+  *"Boardinnf some boats from dock only is too hard maybe all boats need a ladder"*): every hull whose
+  side is over the limit carries at least one boarding point in its deck asset, stern by default — the
+  coastal packet got hers at the transom on that ruling. The one named exception is the tanker, whose
+  pilot ladder is rig work. It stays per-hull data, never a code rule;
+  `BoardingRuleTests.EveryHull_CanBeBoardedFromTheWater` holds it. The rule is
   asked only when the walker's water state is not `Dry`, so the boarding move from a wharf or beach and the
   step ashore are untouched; a hull with no deck Def (the two sloops) is unmeasured and keeps the old
   behaviour. Refused, the popup and the press say **"Find the ladder"** on a hull that has one, and

@@ -155,4 +155,8 @@ MonoBehaviour:
   BoardingFreeboardMetres: 3.21
   RailsBlockTheSide: 1
   ClimbAboardOnlyAtBoardingPoints: 0
-  BoardingPoints: []
+  BoardingPoints:
+  - Id: stern_ladder
+    Kind: 0
+    DeckLocalMeters: {x: 0, y: -29.28}
+    ReachMetres: 0

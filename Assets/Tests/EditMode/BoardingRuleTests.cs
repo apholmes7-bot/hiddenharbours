@@ -418,10 +418,19 @@ namespace HiddenHarbours.Tests.EditMode
         /// Listed so a NEW hull without a deck is a decision somebody made, not an accident.</summary>
         static readonly string[] UnmeasuredHulls = { "boat.sloop_30", "boat.sloop_88" };
 
-        /// <summary>Climb-restricted with NO boarding point: boarded from a wharf or gangway only, on
-        /// purpose (the tanker's pilot ladder is a later slice). Everything else restricted must give a
-        /// swimmer a way up, so nobody is trapped in the water beside their own boat.</summary>
-        static readonly string[] WharfOnlyHulls = { "boat.tanker", "boat.coastal_packet" };
+        /// <summary>Climb-restricted with NO boarding point: boarded from a wharf or gangway only.
+        /// Owner, 2026-11-13: "Boardinnf some boats from dock only is too hard maybe all boats need a
+        /// ladder" — so this list is the EXCEPTIONS to that ruling and is meant to be empty. The tanker
+        /// is the one hull left on it: her wall is 9.26 m and her deck asset holds no place a ladder
+        /// could honestly go (her rig's three ladders are all deck to deck); her pilot ladder is
+        /// art-director's rig work in the tanker boarding plan, slice 2. The coastal packet came OFF
+        /// this list when she got her stern ladder point.</summary>
+        static readonly string[] WharfOnlyHulls = { "boat.tanker" };
+
+        /// <summary>How far outside her walk box a swimmer treads water when a test asks "can this
+        /// point be reached from the water" — the nearest of the stand-offs the cape islander proof
+        /// uses.</summary>
+        const float SwimmerStandOffMetres = 0.5f;
 
         /// <summary>Owner, 2026-11-13: still climb-anywhere.</summary>
         static readonly string[] SmallBoats =
@@ -543,6 +552,103 @@ namespace HiddenHarbours.Tests.EditMode
                     problems.Add($"{hull.Id}: listed wharf-only but she now has a way up — update the table");
             }
             Assert.IsEmpty(problems, string.Join("\n", problems));
+        }
+
+        /// <summary>
+        /// Owner, 2026-11-13: "Boardinnf some boats from dock only is too hard maybe all boats need a
+        /// ladder". No hull may be boardable ONLY from a dock: each one is climb-anywhere, or has at
+        /// least one boarding point a swimmer can actually get to — the water just outside her walk box
+        /// at that point is within the point's reach, and the rule answers AtAPoint there. The one
+        /// exception is named, not skipped: the tanker (see <see cref="WharfOnlyHulls"/>), and she is
+        /// asserted to still BE an exception so the name comes off the list the day she gets a ladder.
+        /// Per-hull data, never a code rule: he said "maybe".
+        /// </summary>
+        [Test]
+        public void EveryHull_CanBeBoardedFromTheWater()
+        {
+            CollectionAssert.AreEqual(new[] { "boat.tanker" }, WharfOnlyHulls,
+                "the tanker is the ONLY hull allowed to be dock-only (her pilot ladder is rig work, tanker " +
+                "boarding plan slice 2). Adding a hull here goes against the owner's 2026-11-13 ruling.");
+
+            var problems = new List<string>();
+            int climbAnywhere = 0, byAPoint = 0, exceptions = 0;
+            foreach (var hull in ShippedHulls())
+            {
+                var deck = DeckOf(hull);
+                if (deck == null) { climbAnywhere++; continue; }   // unmeasured: the rule never restricts her
+
+                // Far from any point she could carry: Anywhere here means she is climb-anywhere.
+                Vector2 farAway = deck.WalkCenter + deck.WalkHalfExtents * 3f + new Vector2(Reach, Reach) * 3f;
+                if (deck.ClimbAccessAt(farAway, Limit, Reach) == BoardingAccess.Anywhere) { climbAnywhere++; continue; }
+
+                bool reachable = false;
+                foreach (var p in deck.BoardingPoints)
+                {
+                    Vector2 water = NearestWaterBeside(deck, p.DeckLocalMeters);
+                    if (deck.ClimbAccessAt(water, Limit, Reach) == BoardingAccess.AtAPoint) { reachable = true; break; }
+                }
+
+                if (WharfOnlyHulls.Contains(hull.Id))
+                {
+                    exceptions++;
+                    if (reachable)
+                        problems.Add($"{hull.Id}: named as the dock-only exception but she now has a way up " +
+                                     "from the water — take her off WharfOnlyHulls");
+                    continue;
+                }
+                if (reachable) { byAPoint++; continue; }
+                problems.Add(deck.BoardingPoints.Length == 0
+                    ? $"{hull.Id}: too tall to climb (top of side {deck.BoardingFreeboardMetres} m) and no boarding " +
+                      "point — she can only be boarded from a dock. Author one point on her deck asset " +
+                      "(stern by default)."
+                    : $"{hull.Id}: has boarding points but none can be reached from the water outside her hull " +
+                      $"(a swimmer {SwimmerStandOffMetres} m off her side is out of reach of all of them)");
+            }
+            Assert.IsEmpty(problems, string.Join("\n", problems));
+            Assert.AreEqual(1, exceptions, "the tanker, and only the tanker");
+            Assert.Greater(climbAnywhere, 0, "the small boats did not load");
+            Assert.Greater(byAPoint, 0, "the laddered boats did not load");
+        }
+
+        /// <summary>The water spot a swimmer would use for a point: straight out through the nearest
+        /// edge of her walk box (the box bounds every deck area, so outside it is never on her deck),
+        /// then <see cref="SwimmerStandOffMetres"/> further. A point already outside the box (a ladder
+        /// hung off the transom) is its own water spot.</summary>
+        static Vector2 NearestWaterBeside(BoatDeckDef deck, Vector2 point)
+        {
+            Vector2 off = point - deck.WalkCenter;
+            float insideX = deck.WalkHalfExtents.x - Mathf.Abs(off.x);
+            float insideY = deck.WalkHalfExtents.y - Mathf.Abs(off.y);
+            if (insideX < 0f || insideY < 0f) return point;
+            if (insideY <= insideX)
+                return point + new Vector2(0f, (off.y < 0f ? -1f : 1f) * (insideY + SwimmerStandOffMetres));
+            return point + new Vector2((off.x < 0f ? -1f : 1f) * (insideX + SwimmerStandOffMetres), 0f);
+        }
+
+        /// <summary>The hull that came off the dock-only list on the 2026-11-13 ruling: a stern ladder
+        /// point at her transom, read from her own aft-deck outline. She is railed, so the same point is
+        /// also where her crew go over the side.</summary>
+        [Test]
+        public void TheCoastalPacket_IsClimbedAndLeft_AtHerSternLadder()
+        {
+            var deck = DeckOf(ShippedHulls().Single(h => h.Id == "boat.coastal_packet"));
+            var ladder = deck.BoardingPoints.Single(p => p.Id == "stern_ladder");
+            Assert.AreEqual(BoardingPointKind.Ladder, ladder.Kind);
+
+            // On her transom: the aftmost edge of her own deck outline, on the centreline.
+            float transomY = deck.WalkCenter.y - deck.WalkHalfExtents.y;
+            Assert.AreEqual(transomY, ladder.DeckLocalMeters.y, 0.01f, "the ladder hangs at her transom");
+            Assert.AreEqual(deck.WalkCenter.x, ladder.DeckLocalMeters.x, 0.01f, "on her centreline");
+
+            Vector2 astern = ladder.DeckLocalMeters + new Vector2(0f, -SwimmerStandOffMetres);
+            Assert.AreEqual(BoardingAccess.AtAPoint, deck.ClimbAccessAt(astern, Limit, Reach));
+            Assert.AreEqual(BoardingAccess.AtAPoint, deck.OverTheSideAccessAt(ladder.DeckLocalMeters, Reach),
+                "railed: her ladder is also her way off");
+
+            Vector2 amidships = deck.WalkCenter + new Vector2(deck.WalkHalfExtents.x + SwimmerStandOffMetres, 0f);
+            Assert.AreEqual(BoardingAccess.FindAPoint, deck.ClimbAccessAt(amidships, Limit, Reach),
+                "her 3 m side is still not climbed away from the ladder");
+            Assert.AreEqual(BoardingAccess.FindAPoint, deck.OverTheSideAccessAt(amidships, Reach));
         }
 
         [Test]
