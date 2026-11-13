@@ -6,7 +6,7 @@ using HiddenHarbours.Core;
 using HiddenHarbours.Economy;
 using HiddenHarbours.Fishing;
 
-namespace HiddenHarbours.Tests.Economy
+namespace HiddenHarbours.Tests.EditMode
 {
     /// <summary>
     /// The hand-shellfish licence and the four catalog rows that go with it, read from the shipped assets.
