@@ -20,6 +20,17 @@ namespace HiddenHarbours.Tests.CoopSpike
     {
         private CoopDevStart _boot;
         private ISaveService _previousSave;
+        private string _previousSceneName;
+        private bool _previousRunInBackground;
+
+        [UnitySetUp]
+        public IEnumerator SetUp()
+        {
+            _previousSave = GameServices.Save;
+            _previousSceneName = SceneManager.GetActiveScene().name;
+            _previousRunInBackground = Application.runInBackground;
+            yield break;
+        }
 
         private sealed class MemorySave : ISaveService
         {
@@ -34,7 +45,6 @@ namespace HiddenHarbours.Tests.CoopSpike
         public IEnumerator AuthoredStartingCoreBootsTheHostAtSeaWithARod()
         {
             Assert.That(Application.productName, Is.EqualTo("My project"), "The trial also boots from the normal product.");
-            _previousSave = GameServices.Save;
             GameServices.Save = new MemorySave();
             // Match the player's AfterSceneLoad hook: create the bootstrap before the
             // first physics tick, not after an extra frame of on-foot simulation.
@@ -123,12 +133,17 @@ namespace HiddenHarbours.Tests.CoopSpike
                 var manager = _boot.Manager;
                 manager.Shutdown();
                 float deadline = Time.realtimeSinceStartup + 5;
-                while (manager != null && manager.IsListening && Time.realtimeSinceStartup < deadline) yield return null;
+                while (manager != null && (manager.IsListening || manager.ShutdownInProgress)
+                    && Time.realtimeSinceStartup < deadline) yield return null;
             }
             if (_boot != null) Object.Destroy(_boot.gameObject);
             ShellRestart.DestroyPersistentCore();
             yield return null;
-            var clean = SceneManager.CreateScene("CoopDevBootCleanup");
+            // Single-mode trial travel unloads the runner's scene. Restore its identity:
+            // NGO excludes InitTestScene... from synchronization; a named cleanup scene
+            // instead gets offered to clients with an empty asset path.
+            var clean = SceneManager.GetSceneByName(_previousSceneName);
+            if (!clean.IsValid() || !clean.isLoaded) clean = SceneManager.CreateScene(_previousSceneName);
             SceneManager.SetActiveScene(clean);
             var water = SceneManager.GetSceneByName("EastWater");
             if (water.IsValid() && water.isLoaded) yield return SceneManager.UnloadSceneAsync(water);
@@ -136,6 +151,7 @@ namespace HiddenHarbours.Tests.CoopSpike
             if (start.IsValid() && start.isLoaded) yield return SceneManager.UnloadSceneAsync(start);
             GameServices.Reset();
             GameServices.Save = _previousSave is Object prior && prior == null ? new MemorySave() : _previousSave;
+            Application.runInBackground = _previousRunInBackground;
         }
     }
 }
