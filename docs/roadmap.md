@@ -330,13 +330,24 @@ automation layer as another P4 "earn it, then automate it" engine (`economy-sim`
 [`design/fish-and-content.md`](design/fish-and-content.md) §3.5(c)). **The full loop is captured in
 [`design/mussel-lease-and-longline.md`](design/mussel-lease-and-longline.md)** (owner drop 2026-08-18:
 *"large sections of buoys with individual ropes"* — PEI longline culture, and the crop's readiness read
-**diegetically** off the float run riding lower). *Capture only — nothing built.* **This M3 slot stands**;
-the one thing that could move it is the open **starter-ruin ruling** (is the *lapsed shellfish lease* the
+**diegetically** off the float run riding lower). *Capture only — nothing built.* **The M3 slot no longer stands: the owner
+re-phased it on 2026-11-13 (ruling note under this paragraph).** Still owed is the **starter-ruin ruling** (is the *lapsed shellfish lease* the
 game's first ownable ruin, or is it the camper lot / Ginny's sheds?) — if the lease wins, a first slice
 (lease + one line + harvest) pulls into **M1** and the coordinator re-scopes. The **advanced rendering pass**
 ([`design/art-and-audio-bible.md`](design/art-and-audio-bible.md) §6.1) — **3D water baked to a 2D surface**,
 **dynamic shadows on the 24-h clock**, **cloud shadows**, and the **parallax underwater / shallow-water preview** —
 deepens the look as the world scales offshore, held to the desktop perf budget (`art-pipeline` + `lead-architect`).
+
+> **Owner ruling 2026-11-13: shellfish is pulled forward.** The owner wrote: *"Lets keep doing work on the village ... i want to add more shellfish harvesting, mussell leases, oysters, scallops ..."*
+> (the village is St Peters, which he confirmed), and answered *"Yes, your leans"* to the seat's leans:
+> 1. **Now:** wild blue mussels and oysters are picked by hand at low water at St Peters, on the clam-dig
+>    pattern (backlog **M3-16a**; the clam dig is M2-32).
+> 2. **Next:** the first mussel lease (backlog **M3-16**). It still needs
+>    [`design/mussel-lease-and-longline.md`](design/mussel-lease-and-longline.md) §8 items 2 to 4 ruled first; all
+>    three are **owed**.
+> 3. **Later:** sea scallops wait for the player trawl loop (the trawl arc out of Rice Point), not the village.
+>
+> The ruling moves nothing else in M3.
 
 **Explicitly deferred.** Ironbound and The Smother (M4 capstones); the freighter/tanker tier and full freight
 empire (M4); the complete 100-fish fill (M4 — M3 fills what the Banks needs); multi-platform port (M4).
