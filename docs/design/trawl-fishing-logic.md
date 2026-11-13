@@ -29,11 +29,11 @@ rather than filtering the survey to the skipper's target list.
 ## Data and handling
 
 `TrawlGearDef` and `TrawlHandlingDef` are serializable **data-only definition schemas**, copied
-by value into the plain logic. They deliberately have no tuned defaults and no authored
-entities. Asset wrappers and content authoring wait for identity-ledger registration: an
-existing draft owns that shared file. This avoids editing it or weakening its test. These
-schemas are not a replacement content registry, nor permission to instantiate hard-coded
-live gear. No new ScriptableObject type or asset is introduced by this change.
+by value into the plain logic. They have no tuned defaults. The follow-up
+[content review](trawl-content-review.md) adds registered ScriptableObject wrappers and three
+inactive prototype entities now that ledger additions are available. The frozen baseline
+stays untouched. These unreferenced assets are unreviewed and gear capture is zero; neither
+the schemas nor their registration grants permission to instantiate live fishing gear.
 
 | Definition | Explicit tuning, with units |
 |---|---|
@@ -160,7 +160,7 @@ schoolsPerSample*(encounters+knots) + encounters²))`. Scratch arrays are alloca
 resolve at the configured caps; results and deck ledgers allocate once per batch. There is
 no per-query array creation in the solver. This is not a zero-allocation or 60-fps claim.
 
-Before activation: author and register one asset per gear/handling entity; review trawl
+Before activation: review the registered prototype gear/handling entities; review trawl
 eligibility, local grounds, seasonal/size selectivity and balance; supply Core ecology and
 track/gear adapters; certify complete surveys and set measured slow-tick budgets; connect
 live occupant reservation/depletion and physical manual transfer; review save migration;
