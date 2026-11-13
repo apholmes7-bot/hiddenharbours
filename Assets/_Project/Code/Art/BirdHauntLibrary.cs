@@ -86,7 +86,7 @@ namespace HiddenHarbours.Art
                  "first; any more are counted (and heard) but not drawn. Raise it freely for a busier sky; " +
                  "it is read once, when the game starts. A roost with more Room than this is drawn short " +
                  "when it is full.")]
-        [Min(0)] public int MaxBirdsDrawn = 32;
+        [Min(0)] public int MaxBirdsDrawn = 40;
 
         /// <summary>The shipped defaults (a fresh instance: the caller may change it).</summary>
         public static GullScheduleTuning Default => new GullScheduleTuning();

@@ -63,4 +63,4 @@ MonoBehaviour:
     SchoolMiddayLevel: 0.7
     SchoolAfternoonLevel: 0.8
     MaxSchoolGullsInView: 8
-    MaxBirdsDrawn: 32
+    MaxBirdsDrawn: 40
