@@ -239,6 +239,7 @@ namespace HiddenHarbours.Player
         private BoatWaveMotion _wave;
         private BoatController _boat;
         private IBoatHullPresenter _hull;
+        private IHullTideRide _tide;
         private bool _boatResolved;
 
         private Vector3 _riderBaseLocalPosition;
@@ -386,6 +387,25 @@ namespace HiddenHarbours.Player
         /// <see cref="Renderer.forceRenderingOff"/> instead, publishes that itself, and this reads
         /// false. False on every frame of the sprite path.</summary>
         public bool SpriteSuppressed { get; private set; }
+
+        /// <summary>
+        /// <b>Where her body is DRAWN, against the gameplay root</b>, in world metres, this frame. Aboard,
+        /// the root stays on the hull's LEVEL deck (no tide, no rock) while the body she is drawn with
+        /// rides the hull's picture: the mesh figure stands under the posed mesh, and the rider sprite
+        /// sits at its ride pose plus the tide. Whatever is drawn IN HER HANDS is posed off the root and
+        /// adds this (<c>CarryHands</c>, the fight's rod and held fish), so it is drawn where her hands
+        /// are drawn. The rod the owner saw floating (2026-11-13) was posed off the root alone.
+        ///
+        /// <para>Stated every <see cref="Apply"/>, never accumulated, and zero whenever she is not
+        /// aboard: ashore her figure, mesh or sprite, stands at the root's own pivot.</para>
+        /// </summary>
+        public Vector2 DrawnBodyOffset { get; private set; }
+
+        /// <summary>The tide's screen rise the rider sprite was drawn with this frame, in metres
+        /// (<see cref="IHullTideRide.ScreenRiseNow"/>): the drop the hull's picture takes at low water,
+        /// applied by <see cref="BoatWaveMotion"/>. 0 while not aboard, on a hull that does not ride the
+        /// tide, and at the level her picture was struck at.</summary>
+        public float TideRiseMeters { get; private set; }
 
         /// <summary>The root's own sprite: the body she is drawn with whenever the rider is not.
         /// Published for the ashore mesh, which hides it by <see cref="Renderer.forceRenderingOff"/>
@@ -808,14 +828,31 @@ namespace HiddenHarbours.Player
             // swing an off-centre deck point SIDEWAYS, and a vertical-only offset cannot follow it —
             // 5.5 px of it at the cape's foredeck in a flat calm. 0 on the sprite path, so that write
             // is byte-identical to what it was.
+            //
+            // (3) THE TIDE. The hull's picture rides it — BoatWaveMotion applies HullTideRide's screen rise
+            //     to her visual, even with the sea's master strength at 0 — and this root does not, so a
+            //     rider drawn without it stood on the deck the hull had at the level her picture was
+            //     struck at: 1.5 m above it at a spring low. It is not part of the ride POSE: the tide is
+            //     where the hull IS drawn, not a cosmetic motion, so no ride strength scales it.
+            //     (Read through UnityEngine.Object, so a destroyed boat's ride reads as no tide, not a throw.)
+            float tide = (_tide as Object) != null ? _tide.ScreenRiseNow() : 0f;
+            TideRiseMeters = tide;
             _riderRenderer.transform.localPosition =
-                _riderBaseLocalPosition + new Vector3(pose.SwayMeters, pose.LiftMeters, 0f);
+                _riderBaseLocalPosition + new Vector3(pose.SwayMeters, pose.LiftMeters + tide, 0f);
             // WORLD rotation, not local: the drawn figure's screen orientation IS the pose and nothing else.
             // A local write would compose the lean onto whatever the player root happens to be carrying, and
             // aboard that root is a child of the hull's ROTATING physics body — which is how the pilot came
             // to lie over further with every degree she turned. See the class doc's ORIENTATION note.
             _riderRenderer.transform.rotation = Quaternion.Euler(0f, 0f, pose.RollDegrees);
             _riding = true;
+
+            // (4) WHERE SHE IS DRAWN, for whatever is in her hands: the mesh figure's feet while it has the
+            //     draw, otherwise the rider sprite's pivot, just written.
+            Transform drawnFeet = suppress && _figure.PresentationRoot != null
+                ? _figure.PresentationRoot
+                : _riderRenderer.transform;
+            Vector3 offset = drawnFeet.position - transform.position;
+            DrawnBodyOffset = new Vector2(offset.x, offset.y);
         }
 
         /// <summary>
@@ -1209,6 +1246,8 @@ namespace HiddenHarbours.Player
             // disagreeing about one fact. Nothing in production branches on it, which is exactly why it
             // has to be right: it is read by plates and guards, and a wrong readout reads as evidence.
             SpriteSuppressed = false;
+            DrawnBodyOffset = Vector2.zero;   // ashore she is drawn at the root's own pivot
+            TideRiseMeters = 0f;
 
             // The body draws again — EXCEPT where the character is INSIDE something. At the helm that is
             // the pre-existing "taking the helm hides you" rule (ControlSwitcher's own drawn-on-root test)
@@ -1338,8 +1377,10 @@ namespace HiddenHarbours.Player
                 _wave = null;
                 _boat = null;
                 _hull = null;
+                _tide = null;
                 return;
             }
+            _tide = _boatRoot.GetComponent<IHullTideRide>();
             _wave = _boatRoot.GetComponent<BoatWaveMotion>();
             _boat = _boatRoot.GetComponent<BoatController>();
             _hull = BoatHullPresenterHost.Resolve(_boatRoot.gameObject);

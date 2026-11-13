@@ -35,7 +35,10 @@ namespace HiddenHarbours.Player
     /// (the species lookup runs only when <c>FishId</c> actually changes), no <c>GetComponent</c>.</para>
     /// </summary>
     [DisallowMultipleComponent]
-    [DefaultExecutionOrder(60)]   // after the animator + y-sort have settled this frame's pose/order
+    // After the animator + y-sort have settled this frame's pose/order, and after DeckRiderVisual (100)
+    // has drawn her body for this frame: the rod is drawn in the hands of the body as DRAWN. Before
+    // CarryHands (102), which reads DrawsRod to hold the carried rod out of the picture.
+    [DefaultExecutionOrder(101)]
     public sealed class RodFightPresenter : MonoBehaviour
     {
         private const int Directions = 8;
@@ -165,6 +168,11 @@ namespace HiddenHarbours.Player
         private PlayerFishingAnimator _animator;
         private HiddenHarbours.Core.IsoCharacterSprite _isoSkin;
         private SpriteRenderer _playerSr;
+        // Where her body is DRAWN against this root (aboard: the deck the hull's picture is at, tide and
+        // rock included). Resolved once, on the first frame she fishes, like CarryHands' wiring: the
+        // builder may add the rider after this component. Null = the root is where she is drawn.
+        private DeckRiderVisual _rider;
+        private bool _riderResolved;
 
         /// <summary>Pose ordinal → index into <c>_rodStates</c>, resolved by rig state NAME once in
         /// <c>Awake</c>/<c>Configure</c> (see <see cref="ResolveRodSwap"/>). −1 = unwired.</summary>
@@ -235,6 +243,10 @@ namespace HiddenHarbours.Player
         /// "which of the three baked sizes is on the line", which nothing else can be asked.
         /// </summary>
         public FishRungVisual Rung => _rung;
+
+        /// <summary>Is the fight drawing its own rod in her hands this frame? While it is, the carried rod
+        /// tool is not drawn (<c>CarryHands</c>), so she holds one rod and not two.</summary>
+        public bool DrawsRod => _rodSr != null && _rodSr.enabled;
 
         private void Awake()
         {
@@ -424,12 +436,17 @@ namespace HiddenHarbours.Player
                 return;
             }
 
+            // TWO ORIGINS. The water's elements (the bobber, the fish, the rings) are placed off the root,
+            // as the cast and the fight publish them. What is IN HER HANDS (the rod, a landed fish) is
+            // placed off the body as it is DRAWN: aboard, the hull's picture rides the tide and the rock
+            // and this root does not, so a rod off the root alone floated above her at low water.
             Vector2 angler = transform.position;
+            Vector2 hands = angler + DrawnBodyOffset();
             Vector2 castAim = new Vector2(_s.CastAimX, _s.CastAimY);
             bool castPath = castAim.sqrMagnitude > 1e-4f;
             RodElements show = RodPresenterMath.ElementsFor(_s.Phase, castPath);
 
-            bool rodDrawn = RenderRod(show, angler, out Vector2 tip);
+            bool rodDrawn = RenderRod(show, hands, out Vector2 tip);
             Vector2 unloadedTip = tip;   // the sheet's own tip, before the fight's load bends it over
 
             // ---- the line's far end (and the element that lives there) ---------------------------
@@ -476,7 +493,7 @@ namespace HiddenHarbours.Player
             bool fishShown = (show & (RodElements.FishShadow | RodElements.FishSurface)) != 0;
             if (!fishShown) _deepRunning01 = 0f;
 
-            if ((show & RodElements.HeldFish) != 0) RenderHeldFish(angler);
+            if ((show & RodElements.HeldFish) != 0) RenderHeldFish(hands);
             else _heldSr.enabled = false;
 
             // The weighted path's line runs straight down to the entry point.
@@ -495,6 +512,19 @@ namespace HiddenHarbours.Player
             else { _line.enabled = false; _line.positionCount = 0; }
 
             if (farValid) _lastFarEnd = far;
+        }
+
+        /// <summary>Where her body is drawn against this root, in world metres
+        /// (<see cref="DeckRiderVisual.DrawnBodyOffset"/>, stated by the rider at order 100, before this
+        /// component's 101). Zero with no rider and zero ashore.</summary>
+        private Vector2 DrawnBodyOffset()
+        {
+            if (!_riderResolved)
+            {
+                _rider = GetComponent<DeckRiderVisual>();
+                _riderResolved = true;
+            }
+            return _rider != null ? _rider.DrawnBodyOffset : Vector2.zero;
         }
 
         // ---- the rod overlay ---------------------------------------------------------------------
