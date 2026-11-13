@@ -308,6 +308,16 @@ namespace HiddenHarbours.Core
                  "exactly as before trim existed; that is the A/B.")]
         public HullTrimSettings HullTrim = HullTrimSettings.Default;
 
+        [Header("Fleet speed (the go-fast stays the fastest boat — owner 2026-11-13)")]
+        [Tooltip("How far under the go-fast's own top speed every other planing hull is held, in m/s. " +
+                 "The owner ruled (2026-11-13) that no planing hull may out-run the go-fast: a hull whose " +
+                 "0.45 x real-world speed would pass her is authored at (the go-fast's still-water top " +
+                 "speed minus this margin) instead. Nothing reads this at run time; a hull's speed is her " +
+                 "own BoatHullDef.EnginePower, and FleetSpeedTableTests holds every hull Def to this cap. " +
+                 "Move it, then re-solve EnginePower on the capped hulls " +
+                 "(docs/design/fleet-speed-and-fuel-audit.md).")]
+        [Min(0f)] public float PlaningTopSpeedMarginUnderGoFastMps = 0.1f;
+
         [Header("Ground tackle (dropping the hook)")]
         [Tooltip("World-wide ANCHORING policy: the dinghy-class rode a hull carries when her own Def " +
                  "does not say (BoatHullDef.RodeMeters = 0), the swing-circle floor, the firm-limit trio " +
