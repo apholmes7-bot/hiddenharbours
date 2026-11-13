@@ -558,6 +558,8 @@ will not pour into a diesel boat — in words, not silently.
 
 ### 9.5 The burn model
 
+> **2026-11-13, the owner's 11-12 ruling: the live meter burns by speed.** The throttle term below is no longer what a tank is charged for a hull with a calibrated fuel speed profile (all 45 fuelled hulls): her throttle is turned into the speed it drives her at and priced on her hull's curve, with the load and sea terms below unchanged on top. Idle and the 0.7 reference cruise cost what this section says. This formula remains the calibration source and the fallback for a hull with no profile. See `fuel-burn-by-speed-logic.md`, "Live wiring".
+
 Canon fixes the shape: **burn = `f(throttle, engineLoad, seaState)`**
 ([`boats-and-navigation.md`](boats-and-navigation.md) §2.6). This is a concrete proposal for that `f`.
 

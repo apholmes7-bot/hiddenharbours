@@ -1,4 +1,6 @@
-# Candidate fuel burn by speed
+# Fuel burn by speed
+
+> **Status, 2026-11-13: LIVE.** The owner ruled on 11-12 that fuel burn rises with speed, with this model. The live meter (`BoatFuelTank`) now reads it; see **Live wiring** at the end. The sections between here and there are the original candidate write-up and are kept as written: where they say the live game keeps its throttle curve, that no caller exists, or that a future integrator must supply the speed, read them as the state before the wiring.
 
 This is isolated logic and new data, based on main `c9c9ef73dee59ee9b6e8c072ea98487992f82c2e`. It does not replace `FuelBurn`, call `BoatFuelTank`, change hull stats, register a service or touch a save. The live game keeps its existing throttle curve. `IFuelBurnBySpeed` is the Core contract; `FuelBurnBySpeed` is an immutable plain class in Boats. Construction may allocate; valid warmed tick calls allocate zero managed bytes.
 
@@ -73,3 +75,26 @@ Fuel ticks use real seconds (`3600` per hour), preserving the existing fuel cloc
 - `ImportedProfiles_ResolveEveryHullAndFactoryReproducesCruise`: Unity-only import/factory validation of the 46 actual Def references. The source compiles headlessly; executing it and Unity's allocation recorder requires CI. No editor lease is granted for this charter.
 
 Native NUnit execution runs the real pure production sources and the file-based fleet cases. It is not a Unity physics, asset-import, player-feel or graphics test. A managed-assembly compilation checks full Core/Boats source and the conditional editor test code. The model remains unregistered and no runtime caller is added.
+
+## Live wiring (2026-11-13, the owner's 11-12 ruling)
+
+`BoatFuelTank` drains by this model. Each fixed step, with the engine turning:
+
+```
+drivenSpeed   = |throttle| * stillWaterTopSpeed(hull)     // FuelSpeedMeter
+litresPerHour = curve(drivenSpeed) * loadTerm * seaTerm   // IFuelBurnBySpeed * FuelBurn.DutySurcharge
+```
+
+**Which speed goes in.** The speed her throttle is driving her at, not the speed over the ground or through the water at that instant. This is the operating-load policy the candidate asked for before integration. The model is a steady operating point: priced on measured speed, an engine flat out against a wharf, a tow or a grounding would be charged as if idling, and a hull coasting with the throttle shut would be charged as if driving. `stillWaterTopSpeed = EnginePower / (ForwardDrag + bodyDamping)` is the balance `BoatController` integrates, read from its own named constants and from the hull Def as it is now. Thrust is linear in throttle and resistance is linear in speed, so half throttle is half speed. Astern is charged on the absolute throttle, as before.
+
+**Which speed it is calibrated at.** A new field on each profile, `FuelSpeedProfileDef.ReferenceCruiseSpeedMps`: the speed at which the hull burns her old cruise rate. It is authored once, as `0.7 x` her still-water top speed on main `ce70abd495` (before the 11-12 speed table), and it is a fixed number. It is deliberately not derived from `EnginePower`. If it were, the two would cancel: a hull given a bigger engine would burn the same litres per hour flat out and simply go further on a tank, which is the opposite of the ruling. With a fixed calibration, a faster hull asks her curve for a higher speed and burns more. The owner can move the number per hull: higher makes her cheaper at every speed, lower makes her thirstier. The rowed dory is 0 (nothing to calibrate).
+
+**What did not change.** Idle (zero throttle, engine turning) costs exactly what it did; no idle rule was added. At her calibrated cruise speed a hull burns her old cruise rate. A full hold and a rough sea add the same surcharges as before, now from `FuelBurn.DutySurcharge`. Fuel is still metered on the fixed step against real seconds, only while the player is at the helm of an engine hull. Tank sizes, prices, `FullThrottleLitresPerHour` and `GameConfig.Fuel` are untouched. The sloops' auxiliaries are calibrated but still not metered (the live meter accepts only `PropulsionType.Engine`).
+
+**A hull with no calibrated profile keeps the throttle curve.** The tank finds a hull's profile by hull id through `Resources/FuelSpeedProfileLibrary` (append-only: a new hull is a new profile asset plus one entry). No entry, no curve, a zero reference speed, or numbers a model cannot be built from all fall back to `FuelBurn.LitresPerHour`, so a new or test hull still meters and the fixed step never throws over a Def value.
+
+**The helm gauge reads the same meter.** `WorkingHullState` carries the tank's metered rate, so litres per hour and hours remaining at the helm are what the tank is actually charging.
+
+**What it does to a tank, flat out.** At the speed she was calibrated for (today's Defs), a displacement hull flat out burns 1.394 x her old flat-out rate and a planing hull 0.946 x (the comparison table above). So today, before the speed table lands, a planing hull flat out goes about 5.7% further than under the throttle meter; this is the approved curve, not a wiring choice, and it is not retuned here. From about 1.11 x her calibrated speed upward a planing hull flat out covers no more ground per tank than she used to, and every hull the speed table moves (1.25 x to 2.27 x) is past that.
+
+Proof: `FuelMeterBySpeedTests` (EditMode) drives the real `BoatFuelTank` over the shipped Defs.

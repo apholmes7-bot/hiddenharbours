@@ -48,6 +48,13 @@ namespace HiddenHarbours.Boats
         public const float HullLinearDamping = 0.2f;
 
         /// <summary>
+        /// The physics body's mass for a hull of <paramref name="massKg"/>: design kilograms over 100,
+        /// never under 1. Named so a reader of her steady speed (the fuel meter) uses the SAME mass the
+        /// body is given, instead of transcribing the 100 and quietly stopping tracking it.
+        /// </summary>
+        public static float BodyMassFor(float massKg) => Mathf.Max(1f, massKg / 100f);
+
+        /// <summary>
         /// Moves the body's built-in damping into the water frame without changing its integrator.
         /// With implicit force-then-damping, adding m*d*current makes v'-current equal the damped
         /// through-water step. Read the live body's damping so a deliberately undamped fixture stays
@@ -275,7 +282,7 @@ namespace HiddenHarbours.Boats
             // Visual-only: interpolation moves the rendered transform, never the simulated body, so
             // helm feel, colliders, mooring and the deck-walk clamp are untouched.
             _rb.interpolation = RigidbodyInterpolation2D.Interpolate;
-            if (_hull != null) _rb.mass = Mathf.Max(1f, _hull.MassKg / 100f);
+            if (_hull != null) _rb.mass = BodyMassFor(_hull.MassKg);
 
             // Seakeeping policy: prefer the shared GameConfig (no magic numbers, rule 6); the serialized
             // field is the fallback (it mirrors the config default) so EditMode/unwired scenes still work.
@@ -562,7 +569,7 @@ namespace HiddenHarbours.Boats
             _trimRestSerial++;
             if (_hull == null) return;
             var rb = _rb != null ? _rb : GetComponent<Rigidbody2D>();
-            if (rb != null) rb.mass = Mathf.Max(1f, _hull.MassKg / 100f);
+            if (rb != null) rb.mass = BodyMassFor(_hull.MassKg);
             // Buying up the ladder changes how big she is, and the swimmer's reach to her rail is
             // measured off that — a 12.9 m cape left wearing a 4.5 m dory's outline would refuse a
             // swimmer holding on to her own quarter.

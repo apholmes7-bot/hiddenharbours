@@ -15,3 +15,4 @@ MonoBehaviour:
   Id: fuelprofile.zodiac_hurricane
   Hull: {fileID: 11400000, guid: cf933ace5f3513f6ec98ba58cd9da62b, type: 2}
   Curve: {fileID: 11400000, guid: 28fef9d8f683504b9696e6ed2fdeb8fa, type: 2}
+  ReferenceCruiseSpeedMps: 4.1253
