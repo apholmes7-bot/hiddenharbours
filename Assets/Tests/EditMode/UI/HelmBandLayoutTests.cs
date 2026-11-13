@@ -415,11 +415,11 @@ namespace HiddenHarbours.Tests.UI.EditMode
                 {
                     var fit = new HelmFit(rig, SounderKind.None, mount, false, false);
                     Assert.IsTrue(HelmHudSuppression.DashIsUp(HelmControlStyle.Lever, in fit), $"{rig} {mount}: the band is up");
-                    Assert.AreEqual(NavClusterPlacement.Hidden, HelmHudSuppression.NavCluster(true, HelmControlStyle.Lever, in fit),
+                    Assert.AreEqual(NavClusterPlacement.Hidden, HelmHudSuppression.NavCluster(floatingReads: true, true, HelmControlStyle.Lever, in fit),
                         $"{rig} {mount}: the band draws this compass, so the HUD's hides");
                 }
                 var bare = new HelmFit(rig, SounderKind.None, CompassMount.None, false, false);
-                Assert.AreEqual(NavClusterPlacement.ClearOfTheDash, HelmHudSuppression.NavCluster(true, HelmControlStyle.Lever, in bare),
+                Assert.AreEqual(NavClusterPlacement.ClearOfTheDash, HelmHudSuppression.NavCluster(floatingReads: true, true, HelmControlStyle.Lever, in bare),
                     $"{rig}: no compass fitted, so the cluster stays: it is the only heading aboard");
             }
 

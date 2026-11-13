@@ -517,6 +517,8 @@ namespace HiddenHarbours.UI
             bool atHelm = helm != null && helm.IsPlayerHelm;
             HelmFootprintArea covered = atHelm ? HelmFootprint.Current : HelmFootprintArea.None;
             NavClusterPlacement placement = HelmHudSuppression.NavCluster(
+                // Owner ruling 2026-11-13: off unless GameConfig turns the floating reads back on.
+                GameServices.HelmOverlay.ShowFloatingNavReads,
                 aboard: true,
                 atHelm ? helm.Style : HelmControlStyle.None,
                 atHelm ? helm.Fit : HelmFit.None,

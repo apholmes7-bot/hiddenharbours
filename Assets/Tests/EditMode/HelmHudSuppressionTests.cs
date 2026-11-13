@@ -30,16 +30,75 @@ namespace HiddenHarbours.Tests.EditMode
                                    SounderKind sounder = SounderKind.Depth)
             => new HelmFit(rig, sounder, compass, false, false);
 
+        // ---- the switch (owner ruling 2026-11-13): off by default, on every hull ----------------------
+
+        [Test]
+        public void TheSwitch_ShipsOff()
+        {
+            Assert.IsFalse(HelmOverlaySettings.Default.ShowFloatingNavReads,
+                           "the code default: the floating heading and wind text is not drawn");
+            var config = UnityEditor.AssetDatabase.LoadAssetAtPath<GameConfig>(
+                "Assets/_Project/Data/Config/GameConfig.asset");
+            Assert.IsNotNull(config, "the shipped GameConfig");
+            Assert.IsFalse(config.HelmOverlay.ShowFloatingNavReads, "and the shipped asset agrees");
+        }
+
+        [Test]
+        public void SwitchOff_TheClusterIsHiddenAtEveryHelm_DashOrNoDash()
+        {
+            bool off = HelmOverlaySettings.Default.ShowFloatingNavReads;
+
+            // No dash: the rowed dory, the tiller, a lever hull with no console, and aboard with no
+            // helm in her hand at all.
+            foreach (HelmControlStyle style in new[] { HelmControlStyle.None, HelmControlStyle.Tiller,
+                                                       HelmControlStyle.Lever })
+                Assert.That(HelmHudSuppression.NavCluster(off, true, style, HelmFit.None),
+                            Is.EqualTo(NavClusterPlacement.Hidden), $"no dash, {style}");
+
+            // A dash, with a compass (which hid it before) and without one (which only moved it).
+            foreach (ConsoleRigKind rig in new[] { ConsoleRigKind.Console, ConsoleRigKind.Sport,
+                                                   ConsoleRigKind.Novi, ConsoleRigKind.Cape })
+                foreach (CompassMount compass in new[] { CompassMount.None, CompassMount.Dome, CompassMount.Flush })
+                    Assert.That(HelmHudSuppression.NavCluster(off, true, HelmControlStyle.Lever, Fit(rig, compass)),
+                                Is.EqualTo(NavClusterPlacement.Hidden), $"{rig} + {compass}");
+
+            // And nothing the helm covers brings it back.
+            HelmFootprintArea covered = HelmFootprintArea.None;
+            Assert.That(HelmHudSuppression.NavCluster(off, true, HelmControlStyle.Tiller, HelmFit.None,
+                                                     in covered, 1280f, 720f),
+                        Is.EqualTo(NavClusterPlacement.Hidden));
+            Assert.That(HelmHudSuppression.NavClusterScreenRect(NavClusterPlacement.Hidden, 1280f, 720f),
+                        Is.EqualTo(default(Rect)), "hidden, it claims no screen");
+        }
+
+        [Test]
+        public void SwitchOn_IsTheOldAnswer_NotAlwaysShown()
+        {
+            // The switch restores the S4.5 rules, it does not force the cluster up: ashore stays
+            // hidden, and a dash compass still hides the duplicate.
+            Assert.That(HelmHudSuppression.NavCluster(true, false, HelmControlStyle.Tiller, HelmFit.None),
+                        Is.EqualTo(NavClusterPlacement.Hidden));
+            Assert.That(HelmHudSuppression.NavCluster(true, true, HelmControlStyle.Tiller, HelmFit.None),
+                        Is.EqualTo(NavClusterPlacement.BottomCentre));
+            Assert.That(HelmHudSuppression.NavCluster(true, true, HelmControlStyle.Lever,
+                                                     Fit(ConsoleRigKind.Console, CompassMount.Dome)),
+                        Is.EqualTo(NavClusterPlacement.Hidden));
+            Assert.That(HelmHudSuppression.NavCluster(true, true, HelmControlStyle.Lever,
+                                                     Fit(ConsoleRigKind.Novi, CompassMount.None)),
+                        Is.EqualTo(NavClusterPlacement.ClearOfTheDash));
+        }
+
+        // Everything below pins the switch ON (floatingReads: true): the rules as they were before the ruling.
         // ---- the two rules -------------------------------------------------------------------------
 
         [Test]
         public void Ashore_TheClusterIsHidden_Unchanged()
         {
-            Assert.That(HelmHudSuppression.NavCluster(false, HelmControlStyle.None, HelmFit.None),
+            Assert.That(HelmHudSuppression.NavCluster(floatingReads: true, false, HelmControlStyle.None, HelmFit.None),
                         Is.EqualTo(NavClusterPlacement.Hidden));
             // Even standing on a dock next to a fitted boat: the cluster is a read about the boat you
             // are ON, and "aboard" is the only thing that decides whether it exists at all (VS-19).
-            Assert.That(HelmHudSuppression.NavCluster(false, HelmControlStyle.Lever,
+            Assert.That(HelmHudSuppression.NavCluster(floatingReads: true, false, HelmControlStyle.Lever,
                                                      Fit(ConsoleRigKind.Novi, CompassMount.Dome)),
                         Is.EqualTo(NavClusterPlacement.Hidden));
         }
@@ -50,12 +109,12 @@ namespace HiddenHarbours.Tests.EditMode
             // THE NEGATIVE CONTROL. A dory or a punt has no dash and therefore no compass, no
             // set-and-drift and no apparent-wind read of any kind: this cluster is the only one it
             // gets. Suppressing at the helm must never reach it.
-            Assert.That(HelmHudSuppression.NavCluster(true, HelmControlStyle.Tiller, HelmFit.None),
+            Assert.That(HelmHudSuppression.NavCluster(floatingReads: true, true, HelmControlStyle.Tiller, HelmFit.None),
                         Is.EqualTo(NavClusterPlacement.BottomCentre));
 
             // And a lever hull with no console renderer is the same case — the fallback lone-lever
             // card is small and corner-parked, so there is nothing to move out from under.
-            Assert.That(HelmHudSuppression.NavCluster(true, HelmControlStyle.Lever, HelmFit.None),
+            Assert.That(HelmHudSuppression.NavCluster(floatingReads: true, true, HelmControlStyle.Lever, HelmFit.None),
                         Is.EqualTo(NavClusterPlacement.BottomCentre));
         }
 
@@ -65,13 +124,13 @@ namespace HiddenHarbours.Tests.EditMode
             foreach (ConsoleRigKind rig in new[] { ConsoleRigKind.Console, ConsoleRigKind.Sport,
                                                    ConsoleRigKind.Novi, ConsoleRigKind.Cape })
             {
-                Assert.That(HelmHudSuppression.NavCluster(true, HelmControlStyle.Lever,
+                Assert.That(HelmHudSuppression.NavCluster(floatingReads: true, true, HelmControlStyle.Lever,
                                                          Fit(rig, CompassMount.Dome)),
                             Is.EqualTo(NavClusterPlacement.Hidden), $"{rig} + dome");
             }
             // The flush Ritchie is a compass too — the RULE is "the dash carries one", not "the dash
             // carries the one mount I happened to think of".
-            Assert.That(HelmHudSuppression.NavCluster(true, HelmControlStyle.Lever,
+            Assert.That(HelmHudSuppression.NavCluster(floatingReads: true, true, HelmControlStyle.Lever,
                                                      Fit(ConsoleRigKind.Novi, CompassMount.Flush)),
                         Is.EqualTo(NavClusterPlacement.Hidden));
         }
@@ -84,7 +143,7 @@ namespace HiddenHarbours.Tests.EditMode
             foreach (ConsoleRigKind rig in new[] { ConsoleRigKind.Console, ConsoleRigKind.Sport,
                                                    ConsoleRigKind.Novi, ConsoleRigKind.Cape })
             {
-                Assert.That(HelmHudSuppression.NavCluster(true, HelmControlStyle.Lever,
+                Assert.That(HelmHudSuppression.NavCluster(floatingReads: true, true, HelmControlStyle.Lever,
                                                          Fit(rig, CompassMount.None)),
                             Is.EqualTo(NavClusterPlacement.ClearOfTheDash), $"{rig}, no compass");
             }
@@ -95,14 +154,14 @@ namespace HiddenHarbours.Tests.EditMode
         {
             // Same rig, opposite answers, decided only by what is fitted — which is what makes a
             // bought, swapped or dev-cycled compass move the HUD with no list to maintain.
-            Assert.That(HelmHudSuppression.NavCluster(true, HelmControlStyle.Lever,
+            Assert.That(HelmHudSuppression.NavCluster(floatingReads: true, true, HelmControlStyle.Lever,
                                                      Fit(ConsoleRigKind.Cape, CompassMount.Dome)),
-                        Is.Not.EqualTo(HelmHudSuppression.NavCluster(true, HelmControlStyle.Lever,
+                        Is.Not.EqualTo(HelmHudSuppression.NavCluster(floatingReads: true, true, HelmControlStyle.Lever,
                                                      Fit(ConsoleRigKind.Cape, CompassMount.None))));
 
             // And the brow's contents are NOT part of it: a sounder is not a compass.
             foreach (SounderKind brow in new[] { SounderKind.None, SounderKind.Depth, SounderKind.Fish })
-                Assert.That(HelmHudSuppression.NavCluster(true, HelmControlStyle.Lever,
+                Assert.That(HelmHudSuppression.NavCluster(floatingReads: true, true, HelmControlStyle.Lever,
                                                 Fit(ConsoleRigKind.Novi, CompassMount.None, brow)),
                             Is.EqualTo(NavClusterPlacement.ClearOfTheDash), $"brow {brow}");
         }
@@ -140,7 +199,7 @@ namespace HiddenHarbours.Tests.EditMode
                             "suppression rule against it before assuming the cluster can be hidden");
 
                 NavClusterPlacement placement =
-                    HelmHudSuppression.NavCluster(true, HelmControlStyle.Lever, fit);
+                    HelmHudSuppression.NavCluster(floatingReads: true, true, HelmControlStyle.Lever, fit);
                 if (fit.Compass == CompassMount.None)
                 {
                     withoutCompass++;
