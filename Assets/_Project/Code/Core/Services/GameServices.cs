@@ -975,6 +975,17 @@ namespace HiddenHarbours.Core
         public static bool ShallowsSubmergedProps =>
             Config != null ? Config.ShallowsSubmergedProps : GameConfig.DefaultShallowsSubmergedProps;
 
+        /// <summary>How many facet ids the Art registry holds back for the players' figures ashore
+        /// (ADR 0056). Same contract as <see cref="HullKeylineFlood"/>, including the
+        /// <c>Config != null</c> discipline; clamped to the inspector's range so a hand-edited asset
+        /// cannot starve the fleet. Falls back to <see cref="GameConfig.DefaultPlayerFigureIdReserve"/>.
+        /// Read ONCE per domain, when the registry builds its pool.
+        /// FLAG lead-architect: new Core contract (the facet-id budget seam).</summary>
+        public static int PlayerFigureIdReserve =>
+            Config != null
+                ? UnityEngine.Mathf.Clamp(Config.PlayerFigureIdReserve, 0, GameConfig.MaxPlayerFigureIdReserve)
+                : GameConfig.DefaultPlayerFigureIdReserve;
+
         public static bool HullMeshReflections => Config != null && Config.HullMeshReflections;
         public static int HullReflectionResolutionDivisor =>
             Config != null && Config.HullReflectionResolutionDivisor == 2 ? 2 : 1;

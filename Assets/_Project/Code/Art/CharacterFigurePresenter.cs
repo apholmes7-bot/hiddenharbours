@@ -757,6 +757,9 @@ namespace HiddenHarbours.Art
             go.layer = sprite.gameObject.layer;
             go.transform.SetParent(sprite.transform, false);
             var figure = go.AddComponent<IsoCharacterFigureRenderer>();
+            // ADR 0056: the cast queues with the fleet for a general id; the player reserve is the
+            // players' alone.
+            figure.IsCastFigure = true;
 
             try
             {

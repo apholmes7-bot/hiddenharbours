@@ -60,6 +60,7 @@ When you add an ADR, add its row here in the same PR.
 | 0053 | Held props are facet meshes on the figure's sockets | **Proposed** (D1–D10 ruled by the owner 2026-10-08; lands with held props PR 2, the bake; the owner approves it in its PR) |
 | 0054 | [Bathymetric wave data](0054-bathymetric-wave-data.md) | **Proposed** (Stage D: W4-6a imported bake; W4-6b runtime consumers) |
 | 0055 | [Goods are carried](0055-goods-are-carried.md) | **Proposed** (manual delivery, persistent goods and phased carrier design; no runtime change) |
+| 0056 | [The facet-id space is a budget: lazy fore blocks and a reserved player figure](0056-facet-id-space-is-a-budget.md) | Accepted (owner ruled "Yes, fix it" on PR 877, 2026-11-12; implemented in its PR; supersedes the PR 877 note) |
 
 **Conventions.** `Proposed` = awaiting the named decider; `Accepted` = ratified (by the owner where
 the ADR says so, otherwise by `lead-architect` on merge); `Implemented` = accepted and the code
