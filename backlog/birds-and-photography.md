@@ -37,8 +37,8 @@ His approval of the plan's leans the same day:
 - **Bird numbers.** "Bird numbers will be high" means many species and many birds to find **across
   the world**. On screen, about **32 birds drawn** in normal play, hard ceiling **48**, gulls capped
   at **16**. The gull-count fix (BP-00) stays.
-- **The photo keeper's home** is at the **Heath pond**, outside the St Peters village (the source of
-  the Heath brook; fresh water for herons and ducks at the door).
+- **The photo keeper's home** is at the **Whelps lookout**, outside the St Peters village (above the seal
+  skerries, where the lookout bench stands; the best view of the roost rocks). Owner, 2026-11-13: "Whelps lookout".
 - **Small defaults:** the tern follows the cormorant as the second diving bird; the keeper lends the
   camera on the first visit; photos are per player in co-op; a photo is saved as a "recipe", not as
   pixels; item rewards ship first and garments follow CW-04.
@@ -106,7 +106,7 @@ says whether the item needs the Unity editor beyond a plate.
 | BP-10: the Photograph page in the notebook | ui-ux, world-content | M | BP-09 | An album page: one little holder slot per species, empty and visible until filled | `PhotoPage_ShowsOneSlotPerKnownSpecies`; owner plate | yes | **yes**: the page and the holder | no |
 | BP-11: the photo record in the save | lead-architect | M | BP-09 | The slot shows your own photo after a reload | `SaveMigration_V17LoadsWithEmptyAlbum`; a save round trip | no | none | **Save yes**: schema 17 to 18 with a migration (read the then-current version first) |
 | BP-12: photo objectives | world-content | S | BP-10 | Notebook tasks such as "photograph a cormorant drying its wings" | the `QuestBoard` tests, with photo flags | no | none | no (existing quest flags) |
-| BP-13: the photo keeper, a new NPC with a new home at the Heath pond | world-content, art-pipeline | L | BP-10 | A new person at a new house away from the village; your photos on the wall | a routine test; owner plate | yes | **yes**: the home, the NPC and the photo wall | no |
+| BP-13: the photo keeper, a new NPC with a new home at the Whelps lookout | world-content, art-pipeline | L | BP-10 | A new person at a new house away from the village; your photos on the wall | a routine test; owner plate | yes | **yes**: the home, the NPC and the photo wall | no |
 | BP-14: rewards as data | economy-sim, world-content | M | BP-13 | A unique item or garment for each species or set | `PhotoRewardContentTests` (each reward is given once) | no | **yes**: one item or garment each | item rewards: no. Clothing waits on CW-04 |
 | BP-15: ducks, then eagles | a Claude art lane | L each | BP-06, BP-07 | Rafts of ducks; one eagle in a tall tree | as BP-03: the kit checker PASS; owner plate | yes | **yes**; the 2026-10-14 brief must be amended first (it has no duck and no eagle) | no |
 | BP-16: the second region's bird list | world-content | M | BP-02, BP-03, BP-04 | Nine Mile Creek has birds St Peters lacks | the region list test; a plate | yes | per species | no |
@@ -147,7 +147,7 @@ own sheet over a small backdrop. It looks like the player's own shot, costs almo
 save stays readable text. Stored pixels and one shared print per species were considered and not
 chosen. Photos are per player in co-op.
 
-**BP-13, the photo keeper.** The home is at the Heath pond, outside the village. The exact spot
+**BP-13, the photo keeper.** The home is at the Whelps lookout, outside the village. The exact spot
 needs a look at the scene in the editor; none was measured. The home needs: one small house unlike
 the village's, a photo wall or album stand inside or on a porch, a hide or blind outside, a tripod
 prop, a path joining the cliff walk, and a door lantern. All authored as prefabs in the St Peters
@@ -183,8 +183,8 @@ and garments follow CW-04.
 - **The camera before the keeper.** BP-09 lands before BP-13, and the keeper is who lends the
   camera. Until BP-13, the camera needs a stand-in way to reach the player's hand.
 - **Objectives before the save.** BP-12 needs only BP-10, but a photo persists only from BP-11.
-- **The Heath pond is small.** The terrain plan gives it as a bog pond of about 4.5 by 3.0 m on the
-  heath. Whether herons and ducks read well on it is for the BP-06 and BP-13 plates.
+- **The Heath pond was the first pick and is not the site.** It is a bog pond of about 4.5 by 3.0 m on the
+  heath; the owner chose the Whelps lookout. Whether the pond suits herons and ducks is for the BP-06 plates.
 - **The save version.** It is 17 today. Other active work may take 18 first; BP-11 reads the
   current version before it bumps.
 

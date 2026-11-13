@@ -53,7 +53,7 @@ restriction in ADR 0029 is revisited through a measured mesh proof, not treated 
 with diving birds (the cormorant, then the tern) and herons, then ducks and eagles; a bird list per
 region; flock and solitary behaviour, habitat and perches; birds hunting the right fish; a camera
 tool; a Photograph page in the notebook with one holder slot per species; and a new photo keeper
-with a new home at the Heath pond, outside the St Peters village, who lends the camera on the first
+with a new home at the Whelps lookout, outside the St Peters village, who lends the camera on the first
 visit, keeps the photos and gives unique items and clothing. Sequenced as
 [BP-00 to BP-16](../backlog/birds-and-photography.md). It sits in M2 under P3. The owner approved the
 plan's leans the same day (*"Ok i go with those leans."*): bird numbers are high **across the
