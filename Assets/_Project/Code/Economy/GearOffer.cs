@@ -31,6 +31,14 @@ namespace HiddenHarbours.Economy
         [Tooltip("Price in ₲. The economy-owned tunable — what the shop charges (no magic number in code).")]
         public int Price = 60;
 
+        [Header("Carrying (containers only)")]
+        [Min(0)]
+        [Tooltip("How many units of catch this holds when it is a carried container (a sack, a basket). " +
+                 "0 = not a container, or a container whose capacity is authored on its own hold " +
+                 "component (the clam pail). Data for the wares book and for gameplay-systems to honour " +
+                 "when the container is built; nothing in Economy enforces it.")]
+        public int CarryCapacityUnits;
+
         [Header("Catalog")]
         [Tooltip("Whether a seller's wares book lists this, on which shelf, and who stocks it. Off by " +
                  "default: nothing appears in any book until this says so.")]
