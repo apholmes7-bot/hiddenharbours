@@ -1,0 +1,71 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9473e2d3acf9475eb83500aeaa47684a, type: 3}
+  m_Name: BoatLampLook
+  m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.BoatLampLook
+  _portSidelight:
+    Color: {r: 1, g: 0.1, b: 0.09, a: 1}
+    Intensity: 1.4
+    HaloRadiusMetres: 0.1875
+    CoreRadiusMetres: 0.0625
+    HaloStrength: 0.22
+    BandSteps: 2
+    CoreWhiten: 0.2
+    EdgeSoftness: 0.4
+  _starboardSidelight:
+    Color: {r: 0.1, g: 1, b: 0.34, a: 1}
+    Intensity: 1.4
+    HaloRadiusMetres: 0.1875
+    CoreRadiusMetres: 0.0625
+    HaloStrength: 0.22
+    BandSteps: 2
+    CoreWhiten: 0.2
+    EdgeSoftness: 0.4
+  _sternLight:
+    Color: {r: 1, g: 0.96, b: 0.88, a: 1}
+    Intensity: 1.35
+    HaloRadiusMetres: 0.25
+    CoreRadiusMetres: 0.0625
+    HaloStrength: 0.2
+    BandSteps: 2
+    CoreWhiten: 0.6
+    EdgeSoftness: 0.45
+  _masthead:
+    Color: {r: 1, g: 0.96, b: 0.88, a: 1}
+    Intensity: 1.6
+    HaloRadiusMetres: 0.3125
+    CoreRadiusMetres: 0.09375
+    HaloStrength: 0.22
+    BandSteps: 3
+    CoreWhiten: 0.6
+    EdgeSoftness: 0.45
+  _anchorLight:
+    Color: {r: 1, g: 0.96, b: 0.88, a: 1}
+    Intensity: 1
+    HaloRadiusMetres: 0.21875
+    CoreRadiusMetres: 0.0625
+    HaloStrength: 0.18
+    BandSteps: 2
+    CoreWhiten: 0.6
+    EdgeSoftness: 0.45
+  _snapToPixelGrid: 1
+  _pixelsPerMetre: 32
+  _spillPoolsTheDeck: 1
+  _spillPaintsWedge: 0
+  _spillIntensity: 0.5
+  _minWallSpillMetres: 0.5
+  _maxWallSpillMetres: 1.6
+  _wallSpillWindowMultiple: 1.4
+  _wallSpillHalfAngleDeg: 45
+  _wallSpillAngularSoftness: 0.85
+  _wallSpillEdgeSoftness: 0.9
+  _spillFootBelowSillPaneHeights: 1
