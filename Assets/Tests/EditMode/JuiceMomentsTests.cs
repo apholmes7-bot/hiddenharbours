@@ -390,6 +390,10 @@ namespace HiddenHarbours.Tests.EditMode
         [Test]
         public void LiftLine_says_what_is_in_her_hand()
         {
+            // With no species-size seam published the line is the original sentence (the sized
+            // line is FishFeelTests). Cleared here so a registry left by another fixture cannot
+            // change which sentence this test reads.
+            GameServices.FishSizes = null;
             Assert.AreEqual("Lifted out a soft-shell clam — it's in your hand.", LiftLine.For(Clam()));
             Assert.AreEqual("Landed an atlantic cod — it's in your hand.", LiftLine.For(Cod()));
             var nameless = new CatchItem("fish.x", "", FishCategory.InshoreGroundfish, 1f, 1, 0.5f);

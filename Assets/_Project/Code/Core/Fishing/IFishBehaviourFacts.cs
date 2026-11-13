@@ -51,4 +51,17 @@ namespace HiddenHarbours.Core
         public bool Jumps(string fishId) => false;
         public float FightJumpPeriodSeconds(string fishId) => 0f;
     }
+
+    /// <summary>
+    /// HOW BIG A SPECIES RUNS, by species id — the Core seam through which a presenter or a line of
+    /// copy can ask a fish's weight range without knowing what a <c>FishSpeciesDef</c> is (rule 4).
+    /// Published by the Fishing module's species registry beside <see cref="IFishBehaviourFacts"/>;
+    /// read by <see cref="LiftLine"/> to give a landed fish her size word.
+    /// FLAG lead-architect: new Core contract (2026-11-13, the big-fish feel).
+    /// </summary>
+    public interface IFishSizeFacts
+    {
+        /// <summary>The species' authored weight range in kg. False (and zeros) for an unknown id.</summary>
+        bool TryWeightRangeKg(string fishId, out float minKg, out float maxKg);
+    }
 }

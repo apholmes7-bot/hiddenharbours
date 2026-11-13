@@ -1061,6 +1061,13 @@ namespace HiddenHarbours.Core
                  "flat calm.")]
         public SeaFishingSettings SeaFishing = SeaFishingSettings.Default;
 
+        [Header("How big she feels (the rod, the line, the camera and the strain voice by fish size)")]
+        [Tooltip("How the SIZE of the hooked fish — her weight within her own species' range — reaches the " +
+                 "player: how deep the rod bows, how the tip pulses to her head-shakes and swings to her " +
+                 "runs, how tight and humming the line is, how hard the hook-set lands, and which fish " +
+                 "count as 'a big one'. Pure feedback: nothing here changes how hard a fish is to land.")]
+        public FishFeelSettings FishFeel = FishFeelSettings.Default;
+
         [Header("Fish schools (ADR 0025 S3 — WHERE the fish are, the thing the finder draws)")]
         [Tooltip("The deterministic school sim: how often a patch of water holds fish, how long they " +
                  "hang about, how big the patch is, how deep they sit, how many show — and how much all " +
@@ -2764,6 +2771,152 @@ namespace HiddenHarbours.Core
             SeaFightFactor = 0.35f,
             SeaBoldness01 = 0.35f,
             SeaBigFishBias01 = 0.5f,
+        };
+    }
+
+    /// <summary>
+    /// HOW BIG SHE FEELS (<see cref="GameConfig.FishFeel"/> — owner's ask 2026-11-13: "rods should bend
+    /// and react to fish, size … woah its something big!!"). The dials behind <see cref="FishFeelMath"/>,
+    /// which the rod presenter, the fight camera and the fishing audio read. "Size" everywhere below is
+    /// the hooked fish's weight as a 0..1 place in HER OWN species' range (a 9 kg cod is big; a 0.9 kg
+    /// mackerel is big too).
+    ///
+    /// <para><b>Feedback, never balance.</b> No dial here is read by the fight's rules.</para>
+    /// </summary>
+    [System.Serializable]
+    public struct FishFeelSettings
+    {
+        [Tooltip("THE BIG ONE. Size (0..1 of her species' range) at or above which a hooked fish is 'a " +
+                 "big one': the hook-set slams harder, the camera kicks harder, the strain voice screams, " +
+                 "she says 'Woah', and the landing line calls it a heavy one. 0.8 = the top fifth.")]
+        [Range(0f, 1f)] public float BigOneThreshold01;
+        [Tooltip("Landing line: below this size she is 'a small one'.")]
+        [Range(0f, 1f)] public float SizeSmallBelow01;
+        [Tooltip("Landing line: from this size she is 'a good one' (below it, 'a fair one').")]
+        [Range(0f, 1f)] public float SizeGoodFrom01;
+        [Tooltip("Landing line: from this size she is 'a real monster' (never below the big-one line).")]
+        [Range(0f, 1f)] public float SizeTrophyFrom01;
+        [Tooltip("Height of her 'Woah' thought above the player, world metres.")]
+        [Min(0f)] public float BigOneBubbleHeightMetres;
+
+        [Tooltip("ROD BEND. How much of the fight's load the SMALLEST fish puts on the rod (her biggest " +
+                 "sister puts all of it). Lower = small fish only nod the tip.")]
+        [Range(0f, 1f)] public float BendSmallScale01;
+        [Tooltip("ROD BEND. How bowed the rod STAYS for the heaviest fish even between her runs, 0..1 of " +
+                 "full load (scaled by size). Higher = a big fish holds the rod down.")]
+        [Range(0f, 1f)] public float BendHeavyFloor01;
+        [Tooltip("ROD BEND. How much of that held bow remains while she is slack (the 'reel now' tell). " +
+                 "Lower = the rod springs up more when she gives.")]
+        [Range(0f, 1f)] public float BendSlackKeep01;
+        [Tooltip("ROD BEND. The rod's maximum lean for the heaviest fish, as a multiple of the presenter's " +
+                 "base lean (1 = size does not deepen the lean).")]
+        [Min(1f)] public float BendHeavyLeanScale;
+        [Tooltip("ROD BEND. The most the rod may rotate in total (lean + pulses + slam), degrees.")]
+        [Range(0f, 90f)] public float MaxTotalLeanDegrees;
+
+        [Tooltip("HEAD-SHAKES. Tip pulses per second for the smallest fish (quick rattle).")]
+        [Min(0f)] public float ShakeHzSmall;
+        [Tooltip("HEAD-SHAKES. Tip pulses per second for the heaviest fish (slow thumps).")]
+        [Min(0f)] public float ShakeHzHeavy;
+        [Tooltip("HEAD-SHAKES. Depth of each tip pulse for the smallest fish, degrees.")]
+        [Min(0f)] public float ShakeDegreesSmall;
+        [Tooltip("HEAD-SHAKES. Depth of each tip pulse for the heaviest fish, degrees.")]
+        [Min(0f)] public float ShakeDegreesHeavy;
+        [Tooltip("HEAD-SHAKES. How sharp each pulse is (1 = a soft nod, higher = a hard jab then rest).")]
+        [Min(1f)] public float ShakeSharpness;
+
+        [Tooltip("RUNS. How far her run drags the point the rod leans toward, world metres, for the " +
+                 "heaviest fish — the tip follows her run direction.")]
+        [Min(0f)] public float RunPullMetres;
+        [Tooltip("RUNS. The fraction of the run pull and the turn kick the SMALLEST fish gets.")]
+        [Range(0f, 1f)] public float RunPullSmall01;
+        [Tooltip("RUNS. How quickly the rod follows a change in her run direction, per second. Higher = " +
+                 "snappier swing.")]
+        [Min(0.1f)] public float RunSwingPerSec;
+        [Tooltip("TURNS. Two run directions whose cosine is below this count as a turn (0.3 = more than " +
+                 "about 70 degrees apart).")]
+        [Range(-1f, 1f)] public float TurnCosine;
+        [Tooltip("TURNS. The tip kick a turn throws for the heaviest fish, degrees.")]
+        [Min(0f)] public float TurnKickDegrees;
+        [Tooltip("TURNS. How long the turn kick takes to settle, seconds.")]
+        [Min(0f)] public float TurnKickSeconds;
+
+        [Tooltip("HOOK-SET. The rod slam the instant she is hooked, for the heaviest ordinary fish, degrees.")]
+        [Min(0f)] public float HookSlamDegrees;
+        [Tooltip("HOOK-SET. The fraction of the slam the SMALLEST fish gets.")]
+        [Range(0f, 1f)] public float HookSlamSmall01;
+        [Tooltip("HOOK-SET. How long the slam takes to spring back, seconds.")]
+        [Min(0f)] public float HookSlamSeconds;
+        [Tooltip("HOOK-SET. A big one slams this many times harder.")]
+        [Min(1f)] public float BigOneSlamScale;
+        [Tooltip("HOOK-SET. Camera kick multiplier for the smallest fish.")]
+        [Min(0f)] public float HookKickSmallScale;
+        [Tooltip("HOOK-SET. Camera kick multiplier for the heaviest fish.")]
+        [Min(0f)] public float HookKickHeavyScale;
+        [Tooltip("HOOK-SET. A big one multiplies the camera kick by this again.")]
+        [Min(1f)] public float BigOneKickScale;
+
+        [Tooltip("LINE. How tight the line stays for the heaviest fish while she is not slack, 0..1.")]
+        [Range(0f, 1f)] public float LineHeavyTautFloor01;
+        [Tooltip("LINE. Extra shudder (0..1 of full) the heaviest fish hums through the line at full effort.")]
+        [Range(0f, 1f)] public float LineHumHeavy01;
+        [Tooltip("LINE. The fraction of that hum left between her runs.")]
+        [Range(0f, 1f)] public float LineHumIdle01;
+        [Tooltip("LINE. How far the heaviest fish lifts the resting line toward white, 0..1 of the " +
+                 "headroom. Keep it low: white still means 'ease off'.")]
+        [Range(0f, 1f)] public float LineWhitenHeavy01;
+
+        [Tooltip("SOUND. Strain-voice gain the heaviest fish keeps humming while she is on and not slack.")]
+        [Range(0f, 1f)] public float StrainHumHeavyGain;
+        [Tooltip("SOUND. How much deeper the strain voice is for the heaviest fish (0.2 = 20% lower).")]
+        [Range(0f, 0.9f)] public float StrainPitchHeavyDrop01;
+        [Tooltip("SOUND. The big one's hook-set scream: extra strain-voice gain at the instant she is hooked.")]
+        [Range(0f, 1f)] public float HookScreamGain;
+        [Tooltip("SOUND. Strain-voice pitch multiplier at the start of the scream (falls back to normal).")]
+        [Min(1f)] public float HookScreamPitchScale;
+        [Tooltip("SOUND. How long the scream lasts, seconds.")]
+        [Min(0f)] public float HookScreamSeconds;
+
+        /// <summary>The reference feel — a first pass for the owner's plate, not a measured tuning.</summary>
+        public static FishFeelSettings Default => new FishFeelSettings
+        {
+            BigOneThreshold01 = 0.8f,
+            SizeSmallBelow01 = 0.25f,
+            SizeGoodFrom01 = 0.55f,
+            SizeTrophyFrom01 = 0.95f,
+            BigOneBubbleHeightMetres = 2.1f,
+            BendSmallScale01 = 0.55f,
+            BendHeavyFloor01 = 0.6f,
+            BendSlackKeep01 = 0.4f,
+            BendHeavyLeanScale = 1.6f,
+            MaxTotalLeanDegrees = 40f,
+            ShakeHzSmall = 7f,
+            ShakeHzHeavy = 2.2f,
+            ShakeDegreesSmall = 1.5f,
+            ShakeDegreesHeavy = 7f,
+            ShakeSharpness = 3f,
+            RunPullMetres = 0.9f,
+            RunPullSmall01 = 0.35f,
+            RunSwingPerSec = 9f,
+            TurnCosine = 0.3f,
+            TurnKickDegrees = 5f,
+            TurnKickSeconds = 0.25f,
+            HookSlamDegrees = 10f,
+            HookSlamSmall01 = 0.35f,
+            HookSlamSeconds = 0.45f,
+            BigOneSlamScale = 1.6f,
+            HookKickSmallScale = 0.7f,
+            HookKickHeavyScale = 1.5f,
+            BigOneKickScale = 1.4f,
+            LineHeavyTautFloor01 = 0.85f,
+            LineHumHeavy01 = 0.35f,
+            LineHumIdle01 = 0.5f,
+            LineWhitenHeavy01 = 0.2f,
+            StrainHumHeavyGain = 0.15f,
+            StrainPitchHeavyDrop01 = 0.18f,
+            HookScreamGain = 0.9f,
+            HookScreamPitchScale = 1.6f,
+            HookScreamSeconds = 0.8f,
         };
     }
 

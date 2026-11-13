@@ -187,6 +187,14 @@ namespace HiddenHarbours.Core
         private static IFishBehaviourFacts _fishBehaviour;
 
         /// <summary>
+        /// HOW BIG A SPECIES RUNS (<see cref="IFishSizeFacts"/>) — published by the Fishing module's
+        /// species registry, read by copy that names a catch's size (<see cref="LiftLine"/>). May be
+        /// null (a bare scene, an EditMode rig): readers then say nothing about size.
+        /// FLAG lead-architect: new Core contract (2026-11-13, the big-fish feel).
+        /// </summary>
+        public static IFishSizeFacts FishSizes { get; set; }
+
+        /// <summary>
         /// What a radar can see (ADR 0025 S5): the NPC vessels and buoys out there right now, published
         /// by whoever is driving them and read by the scope at the helm (<see cref="IRadarContacts"/>).
         ///
@@ -1171,6 +1179,7 @@ namespace HiddenHarbours.Core
             Helm.Reset();                // both faces at once — one arbiter, one grant
             FishSchools = null;          // → EmptyFishSchools.Instance; this property is never null
             FishBehaviour = null;        // → EmptyFishBehaviourFacts.Instance; likewise never null
+            FishSizes = null;            // nullable by contract: no size word without a registry
             RadarContacts = null;        // → EmptyRadarSea.Instance; likewise never null
             BirdPresence = null;         // → EmptyBirdPresence.Instance; likewise never null
             Save = null;

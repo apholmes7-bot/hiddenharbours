@@ -28,5 +28,9 @@ namespace HiddenHarbours.Fishing
         /// <summary>The rare case the cast gate cannot see: the hold filled between the cast and the
         /// landing, so the fish had nowhere to go. Said so the loss is never silent.</summary>
         public const string LandedNoRoom = "The hold's full — nowhere to stow it, so it went back over the side.";
+
+        /// <summary>Her one excited line at the hook-set when the fish is in the top band of her
+        /// species (<c>GameConfig.FishFeel.BigOneThreshold01</c>) — said as an inner-voice thought.</summary>
+        public const string BigOneHooked = "Woah — that's a big one!";
     }
 }

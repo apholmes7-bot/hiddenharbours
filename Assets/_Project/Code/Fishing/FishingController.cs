@@ -665,6 +665,7 @@ namespace HiddenHarbours.Fishing
         private void BeginFight()
         {
             bool tend = FishFightTuning.IsHandGathered(_pendingFish.Category);
+            if (!tend) AnnounceBigOne();
             if (_pendingFish.RodFight != null && !tend)
             {
                 _rodFight = new RodFightSim(_pendingFish.RodFight, _rng);
@@ -877,6 +878,39 @@ namespace HiddenHarbours.Fishing
 
         // ---- helpers ------------------------------------------------------------------------
 
+        /// <summary>How big the hooked fish is FOR HER KIND, 0..1 of her species' authored weight range
+        /// (Core <c>FishingState.Size01</c>) — the read the rod, line, camera and strain voice scale to.
+        /// 0 with nothing on the line. Presentation only: no fight rule reads it.</summary>
+        private float PendingSize01()
+            => _pendingFish != null
+                ? FishFeelMath.Size01(_pendingWeight, _pendingFish.MinWeightKg, _pendingFish.MaxWeightKg)
+                : 0f;
+
+        /// <summary>
+        /// "WOAH — THAT'S A BIG ONE!" (owner's ask 2026-11-13). When the fish just hooked is in the top
+        /// band of her species (<c>GameConfig.FishFeel.BigOneThreshold01</c>), the player says so — ONE
+        /// inner-voice line through the existing ambient-speech channel (no new UI), published once at
+        /// the hook-set. Says nothing about the fight's rules and changes none of them.
+        /// </summary>
+        private void AnnounceBigOne()
+        {
+            FishFeelSettings feel = _config != null ? _config.FishFeel : FishFeelSettings.Default;
+            if (!FishFeelMath.IsBigOne(PendingSize01(), in feel)) return;
+
+            // The fake-null launder InnerVoiceDirector documents: a destroyed Transform must not ride a
+            // struct field past every plain null check downstream.
+            Transform player = GameServices.PlayerTransform;
+            EventBus.Publish(new AmbientSpeechRequested(
+                AmbientSpeechId.Next(),
+                player != null ? player : null,
+                new Vector3(0f, feel.BigOneBubbleHeightMetres, 0f),
+                speakerId: null,
+                speakerName: null,
+                line: FishingStrings.BigOneHooked,
+                voiceId: null,
+                kind: AmbientSpeechKind.InnerVoice));
+        }
+
         private void Emit(FishingPhase phase, float tension, float landing)
         {
             _phase = phase;
@@ -894,7 +928,8 @@ namespace HiddenHarbours.Fishing
                                       castCharge01: CastChargeRead(phase),
                                       castAimX: castAim.x, castAimY: castAim.y,
                                       rigDepthM: RigDepthRead(phase),
-                                      fishRunDirX: runDir.x, fishRunDirY: runDir.y);
+                                      fishRunDirX: runDir.x, fishRunDirY: runDir.y,
+                                      size01: PendingSize01());
             EventBus.Publish(new FishingStateChanged(_state));
         }
 

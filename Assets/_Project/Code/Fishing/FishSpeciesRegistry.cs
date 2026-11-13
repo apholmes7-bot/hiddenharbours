@@ -47,6 +47,7 @@ namespace HiddenHarbours.Fishing
             // may not reference this module (the fight drawer lives in Player) can still ask what a
             // hooked fish does — rule 4's named contract rather than an asmdef reference.
             GameServices.FishBehaviour = Facts;
+            GameServices.FishSizes = SizeFacts;
         }
 
         /// <summary>
@@ -57,8 +58,20 @@ namespace HiddenHarbours.Fishing
         /// </summary>
         public static IFishBehaviourFacts Facts { get; } = new RegistryFacts();
 
-        private sealed class RegistryFacts : IFishBehaviourFacts
+        /// <summary>This registry through the Core <see cref="IFishSizeFacts"/> seam — a species'
+        /// authored weight range, for copy that names a catch's size.</summary>
+        public static IFishSizeFacts SizeFacts => (IFishSizeFacts)Facts;
+
+        private sealed class RegistryFacts : IFishBehaviourFacts, IFishSizeFacts
         {
+            public bool TryWeightRangeKg(string fishId, out float minKg, out float maxKg)
+            {
+                FishSpeciesDef d = Get(fishId);
+                minKg = d != null ? d.MinWeightKg : 0f;
+                maxKg = d != null ? d.MaxWeightKg : 0f;
+                return d != null;
+            }
+
             public bool Jumps(string fishId)
             {
                 FishSpeciesDef d = Get(fishId);
