@@ -756,7 +756,13 @@ namespace HiddenHarbours.Art
             Vector2 heading = _trailFromBow ? -_wakeHeading : _wakeHeading;
             float mag = heading.magnitude;
             heading = mag > 1e-6f ? heading / mag : Vector2.up;
-            FoamInjectionRegistry.PublishWakeLift(root, heading, wavelengthMetres, RadiusMeters, gate01);
+            // Her leading end as she is DRAWN (the same foreshortening the root took), measured along the
+            // heading from the end she trails from, whichever that is.
+            // Laid the way the root is laid (the same below-surface shift), or the two ends disagree by
+            // that shift and the mound stands off her stem.
+            Vector2 lead = HullPointLaid(new Vector2(0f, _trailFromBow ? -_sternOffsetMeters : _sternOffsetMeters));
+            FoamInjectionRegistry.PublishWakeLift(root, heading, wavelengthMetres, RadiusMeters, gate01,
+                                                  Mathf.Max(Vector2.Dot(lead - root, heading), 0f));
         }
     }
 }
