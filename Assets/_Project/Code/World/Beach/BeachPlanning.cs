@@ -64,6 +64,9 @@ namespace HiddenHarbours.World
         /// <summary>The ground height nobody was placed below: the highest water of the stay plus the
         /// activity's clearance.</summary>
         public float KeepAboveMetres;
+
+        /// <summary>A gathering: the one place everybody is round. Meaningless otherwise.</summary>
+        public Vector2 GatherAt;
     }
 
     /// <summary>
@@ -92,6 +95,85 @@ namespace HiddenHarbours.World
         private const int StreamChance = 1;
         private const int StreamDepth = 2;
         private const int StreamRotation = 3;
+        private const int StreamWade = 4;
+        private const int StreamGatherLine = 5;
+
+        /// <summary>How long after its latest hour the ground of a gathering is still kept above the
+        /// water, in hours: the walk off the sand.</summary>
+        public const float GatherLeaveMarginHours = 1f;
+
+        /// <summary>
+        /// The seed of the things about a gathering that are the same for everybody: whether it is on
+        /// today, and how far down the sand.
+        /// </summary>
+        public static uint GatheringSeed(BeachActivityDef activity, in BeachDay day) =>
+            RoutineSchedule.Finalize(RoutineSchedule.Fold(
+                RoutineSchedule.RoutineSeed(day.WorldSeed, activity.Id), day.DayIndex));
+
+        /// <summary>Is this gathering on today, for everybody: its season, and the one roll of the day.</summary>
+        public static bool GatheringIsOn(BeachActivityDef activity, in BeachDay day) =>
+            activity.InSeason(day.Season) &&
+            RoutineSchedule.Hash01(GatheringSeed(activity, day), StreamChance, 0) < activity.ChancePerDay;
+
+        /// <summary>
+        /// Where the gathering of the day is: one place for everybody, so it is found from the hours of
+        /// the activity and not from the stay of any one person. The whole ring is on ground above the
+        /// highest water from the earliest hour until an hour after the latest. False when no line has
+        /// room today.
+        /// </summary>
+        public static bool TryGatheringCentre(BeachActivityDef activity, ITidalTerrain terrain,
+                                              IBeachSky sky, in BeachDay day, out Vector2 centre)
+        {
+            centre = default;
+            if (activity == null || activity.Beach == null || terrain == null || sky == null) return false;
+            BeachTransect[] lines = activity.Beach.Gatherings;
+            if (lines == null || lines.Length == 0) return false;
+
+            float step = Mathf.Max(1f, activity.GateSampleMinutes) / 60f / WaterReadsPerGateSample;
+            float keepAbove = HighestWater(sky, day, activity.EarliestHour,
+                                           Mathf.Min(24f, activity.LatestHour + GatherLeaveMarginHours),
+                                           step) + activity.ClearanceMetres;
+
+            uint seed = GatheringSeed(activity, day);
+            float depth01 = Mathf.Lerp(activity.MinDepth01, activity.MaxDepth01,
+                                       RoutineSchedule.Hash01(seed, StreamDepth, 0));
+            int first = Mathf.Min(lines.Length - 1,
+                                  (int)(RoutineSchedule.Hash01(seed, StreamGatherLine, 0) * lines.Length));
+            int places = Mathf.Max(2, activity.GatherPlaces);
+            float sample = activity.Beach.SampleStepMetres;
+
+            for (int k = 0; k < lines.Length; k++)
+            {
+                BeachTransect line = lines[(first + k) % lines.Length];
+                // The middle keeps the width of the ring back from the wet, so the seaward places are
+                // dry too.
+                if (!TryPlace(line, depth01, activity.GatherRadiusMetres, activity.MinDryMetres, terrain,
+                              keepAbove, sample, out Vector2 at))
+                    continue;
+
+                bool room = terrain.ElevationAt(at) >= keepAbove;
+                for (int p = 0; p < places && room; p++)
+                    room = terrain.ElevationAt(GatherPlace(activity, at, p)) >= keepAbove;
+                if (!room) continue;
+
+                centre = at;
+                return true;
+            }
+            return false;
+        }
+
+        /// <summary>Where the person of this <paramref name="rank"/> is, round <paramref name="centre"/>.</summary>
+        public static Vector2 GatherPlace(BeachActivityDef activity, Vector2 centre, int rank)
+        {
+            int places = Mathf.Max(2, activity.GatherPlaces);
+            int ring = Mathf.Max(0, rank) / places;
+            // Shared out evenly, starting half a place round from the open side.
+            float bearing = activity.GatherOpenBearingDegrees +
+                            ((Mathf.Max(0, rank) % places) + 0.5f + ring * 0.5f) * (360f / places);
+            float radians = bearing * Mathf.Deg2Rad;
+            float radius = activity.GatherRadiusMetres + ring * activity.PersonSpacingMetres;
+            return centre + new Vector2(Mathf.Sin(radians), Mathf.Cos(radians)) * radius;
+        }
 
         /// <summary>
         /// Vary <paramref name="authored"/> with at most one beach outing. Returns false (and the day is
@@ -116,6 +198,19 @@ namespace HiddenHarbours.World
                 walkSpeedMetresPerSecond <= 0f)
                 return false;
 
+            // One gathering a day: the first in the library that is on today. The others are off for
+            // everybody, so two rings never want the same sand and nobody sits at a fire alone while
+            // the village is at supper further along.
+            int gathering = -1;
+            for (int a = 0; a < activities.Count && gathering < 0; a++)
+            {
+                BeachActivityDef activity = activities[a];
+                if (activity != null && activity.IsRunnable && activity.Kind == BeachActivityKind.Gather &&
+                    string.Equals(activity.Beach.RegionId, regionId, System.StringComparison.Ordinal) &&
+                    GatheringIsOn(activity, day))
+                    gathering = a;
+            }
+
             for (int block = 1; block < authored.Length - 1; block++)
             {
                 for (int a = 0; a < activities.Count; a++)
@@ -124,6 +219,7 @@ namespace HiddenHarbours.World
                     if (activity == null || !activity.IsRunnable) continue;
                     if (!string.Equals(activity.Beach.RegionId, regionId, System.StringComparison.Ordinal))
                         continue;
+                    if (activity.Kind == BeachActivityKind.Gather && a != gathering) continue;
                     if (TryOuting(routineId, authored, block, lanes, walkSpeedMetresPerSecond, activity,
                                   rank, terrain, sky, day, out stops, out outing))
                         return true;
@@ -221,7 +317,13 @@ namespace HiddenHarbours.World
             uint person = RoutineSchedule.Finalize(RoutineSchedule.Fold(
                 RoutineSchedule.Fold(RoutineSchedule.RoutineSeed(day.WorldSeed, routineId), activity.Id),
                 day.DayIndex));
-            if (RoutineSchedule.Hash01(person, StreamChance, block) >= activity.ChancePerDay) return false;
+            // A gathering is on or off for everybody at once; anything else is each person deciding.
+            bool together = activity.Kind == BeachActivityKind.Gather;
+            if (together)
+            {
+                if (!GatheringIsOn(activity, day)) return false;
+            }
+            else if (RoutineSchedule.Hash01(person, StreamChance, block) >= activity.ChancePerDay) return false;
 
             BeachDef beach = activity.Beach;
             int node = lanes.IndexOfNode(beach.LaneNodeName);
@@ -274,6 +376,9 @@ namespace HiddenHarbours.World
             float offSand = RoutineSchedule.TravelHours(FarthestReach(activity, beach, head), walkSpeed,
                                                        perHour);
 
+            Vector2 gatherAt = default;
+            if (together && !TryGatheringCentre(activity, terrain, sky, day, out gatherAt)) return false;
+
             // Two passes at most. The first assumes that somebody whose stay was cut short walks back
             // to where their authored day had them. If there is no time for that walk before their next
             // block, the second keeps them on the beach until it (placed for the water of that longer
@@ -291,8 +396,13 @@ namespace HiddenHarbours.World
 
                 beachStops.Clear();
                 if (!TryPlaces(activity, beach, approach, head, depth01, rank, beachDay, terrain,
-                               keepAbove, departure, metresOut, until, walkSpeed, perHour, beachStops,
-                               out float arrival, out Vector2 last))
+                               keepAbove, departure, metresOut, until, walkSpeed, perHour, gatherAt,
+                               beachStops, out float arrival, out Vector2 last) ||
+                    (activity.Kind == BeachActivityKind.Wade &&
+                     // In the water only while the gates hold, even on an evening they stay on the
+                     // sand afterwards because there is no time to walk back.
+                     !TryWade(activity, beach, approach, rank, person, terrain, sky, day, waterStep,
+                              arrival, Mathf.Min(until, leave), walkSpeed, perHour, beachStops)))
                 {
                     if (goesBack) continue;
                     return false;
@@ -335,6 +445,7 @@ namespace HiddenHarbours.World
                     LeaveHour = until,
                     GoesBackFirst = goesBack,
                     KeepAboveMetres = keepAbove,
+                    GatherAt = gatherAt,
                 };
                 return true;
             }
@@ -356,13 +467,115 @@ namespace HiddenHarbours.World
         private static BeachTransect[] LinesFor(BeachActivityDef activity, BeachDef beach) =>
             activity.Kind == BeachActivityKind.Stroll ? beach.Promenade
             : activity.Kind == BeachActivityKind.Dig ? beach.Flats
+            : activity.Kind == BeachActivityKind.Wade ? beach.Shallows
+            : activity.Kind == BeachActivityKind.Gather ? beach.Gatherings
             : beach.Spots;
+
+        /// <summary>
+        /// The wade: from the dry place <see cref="TryPlaces"/> gave them (the one stop already in
+        /// <paramref name="into"/>), in to the shallows, a few standing places that follow the water's
+        /// edge as the tide moves it, and back up to the dry place for the rest of the stay.
+        ///
+        /// <para>Every place is found for the water AT THE TIME they stand there, and is only taken if
+        /// the water over the ground stays at or under <see cref="BeachActivityDef.DeepestWadeMetres"/>
+        /// from setting off for it until they could be back on the dry sand. False when not even one
+        /// place can be taken: then this is not a wading day.</para>
+        /// </summary>
+        private static bool TryWade(BeachActivityDef activity, BeachDef beach, Vector2[] approach, int rank,
+                                    uint person, ITidalTerrain terrain, IBeachSky sky, in BeachDay day,
+                                    float waterStep, float arrival, float until, float walkSpeed,
+                                    float perHour, List<RoutineStop> into)
+        {
+            if (into.Count != 1 || beach.Shallows == null || beach.Shallows.Length == 0) return false;
+
+            Vector2 dry = into[0].Station.Position;
+            // The same line TryPlaces chose: its id carries the index, but the dry place is on it, so
+            // the nearest line is that line.
+            BeachTransect line = beach.Shallows[0];
+            float nearest = float.MaxValue;
+            for (int i = 0; i < beach.Shallows.Length; i++)
+            {
+                float d = DistanceToSegment(dry, beach.Shallows[i].Top, beach.Shallows[i].Toe);
+                if (d < nearest) { nearest = d; line = beach.Shallows[i]; }
+            }
+
+            float length = Vector2.Distance(line.Top, line.Toe);
+            if (length <= 0f) return false;
+            Vector2 down = (line.Toe - line.Top) / length;
+            var alongShore = new Vector2(-down.y, down.x);
+            float sample = beach.SampleStepMetres;
+            float linger = Mathf.Max(1f, activity.LingerMinutes) / 60f;
+            float deepest = activity.DeepestWadeMetres;
+
+            float setOff = arrival + linger;                       // things down, shoes off
+            float outBy = Mathf.Min(setOff + activity.WadeMinutes / 60f, until - linger);
+            Vector2 last = dry;
+            int places = 0;
+
+            while (into.Count < MaxStrollStops - 1)
+            {
+                float side = (places % 2 == 0 ? -1f : 1f) * activity.WadeWanderMetres;
+                Vector2 top = line.Top + alongShore * side;
+                float want = Mathf.Lerp(activity.MinWadeDepthMetres, activity.MaxWadeDepthMetres,
+                                        RoutineSchedule.Hash01(person, StreamWade, places));
+
+                // Where the ground is `want` under the water at the middle of the time they stand
+                // there. The time depends on the walk and the walk on the place: two rounds settle it.
+                Vector2 place = last;
+                float there = setOff;
+                bool found = false;
+                for (int round = 0; round < 2; round++)
+                {
+                    float level = sky.WaterLevelAt(day.TimeAt(there + linger * 0.5f)) - want;
+                    found = false;
+                    for (float d = 0f; d <= length; d += sample)
+                    {
+                        Vector2 p = top + down * d;
+                        if (terrain.ElevationAt(p) > level) continue;
+                        place = p;
+                        found = true;
+                        break;
+                    }
+                    if (!found) break;
+                    there = setOff + RoutineSchedule.TravelHours(Vector2.Distance(last, place), walkSpeed,
+                                                                 perHour);
+                }
+                if (!found) break;
+                if (there + linger > outBy) break;
+
+                // In over their depth at no moment: on the way in, standing, and on the way back out.
+                float backOut = RoutineSchedule.TravelHours(Vector2.Distance(place, dry), walkSpeed, perHour);
+                float highest = HighestWater(sky, day, setOff, there + linger + backOut, waterStep);
+                if (!IsDryLeg(terrain, last, place, highest - deepest, sample) ||
+                    !IsDryLeg(terrain, place, dry, highest - deepest, sample))
+                    break;
+
+                into.Add(Stop(activity, beach, approach, 0, into.Count, place, line.SeawardHeadingDegrees,
+                              setOff));
+                last = place;
+                setOff = there + linger;
+                places++;
+            }
+
+            if (places == 0) return false;
+            into.Add(Stop(activity, beach, approach, 0, into.Count, dry, line.SeawardHeadingDegrees, setOff));
+            return true;
+        }
+
+        private static float DistanceToSegment(Vector2 p, Vector2 a, Vector2 b)
+        {
+            Vector2 ab = b - a;
+            float len2 = ab.sqrMagnitude;
+            float t = len2 > 0f ? Mathf.Clamp01(Vector2.Dot(p - a, ab) / len2) : 0f;
+            return Vector2.Distance(p, a + ab * t);
+        }
 
         /// <summary>The places of one outing, as stops appended to <paramref name="into"/>.</summary>
         private static bool TryPlaces(BeachActivityDef activity, BeachDef beach, Vector2[] approach,
                                       Vector2 head, float depth01, int rank, uint beachDay,
                                       ITidalTerrain terrain, float keepAbove, float departure,
                                       float metresToHead, float until, float walkSpeed, float perHour,
+                                      Vector2 gatherAt,
                                       List<RoutineStop> into, out float arrival, out Vector2 last)
         {
             arrival = departure;
@@ -370,6 +583,26 @@ namespace HiddenHarbours.World
 
             BeachTransect[] lines = LinesFor(activity, beach);
             if (lines == null || lines.Length == 0) return false;
+
+            if (activity.Kind == BeachActivityKind.Gather)
+            {
+                // Their place in the ring, facing the middle. The place was found for the whole
+                // gathering; it must also be dry for THIS stay and the walk to it.
+                Vector2 at = GatherPlace(activity, gatherAt, rank);
+                if (terrain.ElevationAt(at) < keepAbove ||
+                    !IsDryLeg(terrain, head, at, keepAbove, beach.SampleStepMetres))
+                    return false;
+
+                Vector2 inward = gatherAt - at;
+                float facing = Mathf.Atan2(inward.x, inward.y) * Mathf.Rad2Deg;
+                if (facing < 0f) facing += 360f;
+
+                arrival = departure + RoutineSchedule.TravelHours(metresToHead + Vector2.Distance(head, at),
+                                                                  walkSpeed, perHour);
+                into.Add(Stop(activity, beach, approach, rank, into.Count, at, facing, departure));
+                last = at;
+                return true;
+            }
 
             int rotation = Mathf.Min(lines.Length - 1,
                 (int)(RoutineSchedule.Hash01(beachDay, StreamRotation, (int)activity.Kind) * lines.Length));

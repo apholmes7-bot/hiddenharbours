@@ -57,8 +57,11 @@ namespace HiddenHarbours.Tests.PlayMode
         [UnityTest] public IEnumerator GoFast_RealHelm_EightHeadings() => Plate("GoFast");
         [UnityTest] public IEnumerator Bowrider_RealHelm_EightHeadings() => Plate("Bowrider");
         [UnityTest] public IEnumerator ExpressCruiser_RealHelm_EightHeadings() => Plate("ExpressCruiser");
+        /// <summary>The jetski is not in the St Peters roster yet, so this case hands her to the scene's own
+        /// picker first. Everything after that is the scene's: the boarding press, the helm press, the camera.</summary>
+        [UnityTest] public IEnumerator JetSki_RealHelm_EightHeadings_HandedToThePicker() => Plate("JetSki", handToPicker: true);
 
-        IEnumerator Plate(string file)
+        IEnumerator Plate(string file, bool handToPicker = false)
         {
             WharfNightStage.RequireAGraphicsDevice();
 #if UNITY_EDITOR
@@ -73,6 +76,14 @@ namespace HiddenHarbours.Tests.PlayMode
             var player = Object.FindFirstObjectByType<PlayerWalkController>();
             Assert.IsNotNull(picker); Assert.IsNotNull(sw); Assert.IsNotNull(player);
             var hull = AssetDatabase.LoadAssetAtPath<BoatHullDef>("Assets/_Project/Data/Boats/" + file + ".asset");
+            if (handToPicker)
+            {
+                var field = typeof(DevBoatPicker).GetField("_roster",
+                    System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
+                var roster = new List<BoatHullDef>((BoatHullDef[])field.GetValue(picker));
+                if (!roster.Contains(hull)) roster.Add(hull);
+                field.SetValue(picker, roster.ToArray());
+            }
             bool found = false;
             for (int i = 0; i < picker.RosterCount; i++)
             {

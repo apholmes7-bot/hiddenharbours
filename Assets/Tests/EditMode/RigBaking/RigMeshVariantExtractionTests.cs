@@ -117,7 +117,9 @@ namespace HiddenHarbours.Tests.RigBaking
             var scopedSingles = new Dictionary<string, string>
                 { ["goFast"] = "go_fast", ["bowrider"] = "bowrider", ["expressCruiser"] = "express_cruiser",
                   ["expeditionYacht120"] = "expedition_yacht_120", ["yachtTender"] = "yacht_tender",
-                  ["motorYacht84"] = "motor_yacht_84" };
+                  ["motorYacht84"] = "motor_yacht_84", ["jetSki"] = "jet_ski",
+                  ["sternTrawler"] = "stern_trawler", ["sternTrawlerMk2"] = "stern_trawler_mk2",
+                  ["sideDragger"] = "side_dragger", ["sportSkiff"] = "sport_skiff_iso" };
             foreach (FleetHull hull in HullMeshFleet.OneHullPerRig)
             {
                 if (scopedSingles.TryGetValue(hull.Key, out string id))

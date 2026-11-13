@@ -10,44 +10,114 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f8e963cec94c290ca72be0cf932b826b, type: 3}
-  m_Name: SportSkiffIso
+  m_Name: 
   m_EditorClassIdentifier: HiddenHarbours.Boats::HiddenHarbours.Boats.BoatDeckDef
   Id: deck.sport_skiff_iso
-  SourceSidecar: docs/art/rigs/gameplay/sportSkiffIsoRig.gameplay.json
+  SourceSidecar: docs/art/rigs/gameplay/sportSkiffIsoRig.sport_skiff_iso.walk.json
   SourceRig: docs/art/rigs/sportSkiffIsoRig.js
-  DerivedFromRigSha256: 38e794a587c6411ed84c107ca5636ac37f60508b54b364ecba07a66c1b9fe5f4
+  DerivedFromRigSha256: dbf5b5e80c4eb6e0e69426dbc063baa722821595e24028a9049e7ef928b6fa8c
   LoaMeters: 7
   Areas:
-  - Id: cockpit_sole
+  - Id: cockpit
     Kind: 0
     Outline:
-    - {x: 0.725, y: -3.5}
-    - {x: 0.823, y: -2.8}
-    - {x: 0.888, y: -2.1}
-    - {x: 0.925, y: -1.4}
-    - {x: 0.935, y: -0.7}
-    - {x: 0.915, y: 0}
-    - {x: 0.841, y: 0.7}
-    - {x: 0.666, y: 1.4}
-    - {x: 0.43, y: 2.1}
-    - {x: -0.43, y: 2.1}
-    - {x: -0.666, y: 1.4}
-    - {x: -0.841, y: 0.7}
-    - {x: -0.915, y: 0}
-    - {x: -0.935, y: -0.7}
-    - {x: -0.925, y: -1.4}
-    - {x: -0.888, y: -2.1}
-    - {x: -0.823, y: -2.8}
-    - {x: -0.725, y: -3.5}
+    - {x: -0.631, y: -2.715}
+    - {x: 0.631, y: -2.715}
+    - {x: 0.631, y: -2.201}
+    - {x: 0.737, y: -1.25}
+    - {x: -0.737, y: -1.25}
+    - {x: -0.631, y: -2.201}
+    Holes: []
     HeightPlane: {x: 0, y: 0, z: 0.28}
     HeightResidualMax: 0
-    Bounds: {x: -0.935, y: -3.5, z: 0.935, w: 2.1}
+    Bounds: {x: -0.737, y: -2.715, z: 0.737, w: -1.25}
+  - Id: port_side
+    Kind: 0
+    Outline:
+    - {x: -0.655, y: 0.563}
+    - {x: -0.654, y: 0.583}
+    - {x: -0.651, y: 0.603}
+    - {x: -0.647, y: 0.623}
+    - {x: -0.64, y: 0.643}
+    - {x: -0.632, y: 0.663}
+    - {x: -0.621, y: 0.683}
+    - {x: -0.61, y: 0.703}
+    - {x: -0.606, y: 0.723}
+    - {x: -0.602, y: 0.743}
+    - {x: -0.598, y: 0.763}
+    - {x: -0.594, y: 0.783}
+    - {x: -0.592, y: 0.793}
+    - {x: -0.622, y: 0.793}
+    - {x: -0.624, y: 0.783}
+    - {x: -0.628, y: 0.763}
+    - {x: -0.632, y: 0.743}
+    - {x: -0.636, y: 0.723}
+    - {x: -0.64, y: 0.703}
+    - {x: -0.645, y: 0.683}
+    - {x: -0.649, y: 0.663}
+    - {x: -0.651, y: 0.643}
+    - {x: -0.653, y: 0.623}
+    - {x: -0.655, y: 0.603}
+    - {x: -0.658, y: 0.583}
+    - {x: -0.66, y: 0.563}
+    - {x: -0.737, y: -1.25}
+    - {x: -0.654, y: -1.25}
+    Holes: []
+    HeightPlane: {x: 0, y: 0, z: 0.28}
+    HeightResidualMax: 0
+    Bounds: {x: -0.737, y: -1.25, z: -0.592, w: 0.793}
+  - Id: starboard_side
+    Kind: 0
+    Outline:
+    - {x: 0.654, y: -1.25}
+    - {x: 0.737, y: -1.25}
+    - {x: 0.66, y: 0.563}
+    - {x: 0.658, y: 0.583}
+    - {x: 0.655, y: 0.603}
+    - {x: 0.653, y: 0.623}
+    - {x: 0.651, y: 0.643}
+    - {x: 0.649, y: 0.663}
+    - {x: 0.645, y: 0.683}
+    - {x: 0.64, y: 0.703}
+    - {x: 0.636, y: 0.723}
+    - {x: 0.632, y: 0.743}
+    - {x: 0.628, y: 0.763}
+    - {x: 0.624, y: 0.783}
+    - {x: 0.622, y: 0.793}
+    - {x: 0.592, y: 0.793}
+    - {x: 0.594, y: 0.783}
+    - {x: 0.598, y: 0.763}
+    - {x: 0.602, y: 0.743}
+    - {x: 0.606, y: 0.723}
+    - {x: 0.61, y: 0.703}
+    - {x: 0.621, y: 0.683}
+    - {x: 0.632, y: 0.663}
+    - {x: 0.64, y: 0.643}
+    - {x: 0.647, y: 0.623}
+    - {x: 0.651, y: 0.603}
+    - {x: 0.654, y: 0.583}
+    - {x: 0.655, y: 0.563}
+    Holes: []
+    HeightPlane: {x: 0, y: 0, z: 0.28}
+    HeightResidualMax: 0
+    Bounds: {x: 0.592, y: -1.25, z: 0.737, w: 0.793}
+  - Id: bow
+    Kind: 0
+    Outline:
+    - {x: -0.622, y: 0.793}
+    - {x: 0.622, y: 0.793}
+    - {x: 0.29, y: 1.87}
+    - {x: -0.29, y: 1.87}
+    Holes: []
+    HeightPlane: {x: 0, y: 0, z: 0.28}
+    HeightResidualMax: 0
+    Bounds: {x: -0.622, y: 0.793, z: 0.622, w: 1.87}
   Cleats:
   - Id: bow_1
     Type: cleat
     PositionMeters: {x: 0, y: 3.16, z: 1.049}
-  HasHelmStation: 0
-  HelmStationLocalMeters: {x: 0, y: 0, z: 0}
-  HelmStationSource: 
-  WalkCenter: {x: 0, y: -0.70000005}
-  WalkHalfExtents: {x: 0.935, y: 2.8}
+  HasHelmStation: 1
+  HelmStationLocalMeters: {x: 0, y: -0.86, z: 0.87}
+  HelmStationSource: anchors.helm
+  WalkCenter: {x: 0, y: -0.42249995}
+  WalkHalfExtents: {x: 0.737, y: 2.2925}

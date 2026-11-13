@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a2794216af134af8a37690830c8d2064, type: 3}
+  m_Name: SamLandry
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.NpcDef
+  Id: npc.sam_landry
+  DisplayName: Sam Landry
+  Kind: 0
+  Dialogue: {fileID: 11400000, guid: 97d7cc188bb74a9397784484a210a6f7, type: 2}
+  CompletionFlag: met_sam
+  Build: {fileID: 11400000, guid: 38398184b2d13c445b32a0c2009f2662, type: 2}

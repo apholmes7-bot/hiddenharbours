@@ -147,6 +147,19 @@ namespace HiddenHarbours.World
             return lift > 0f ? new Vector2(home.x, home.y + lift) : home;
         }
 
+        /// <summary>The note's box in SCREEN pixels where it actually stands for what the helm covers:
+        /// <see cref="NoteScreenRect(in QuestPanelFit, float, float)"/> lifted by the same rule as
+        /// <see cref="AnchoredPosition(in QuestPanelFit, in HelmFootprintArea, float, float)"/>. This is
+        /// what the note states through <see cref="QuestNoteFootprint"/> for the interaction prompt to
+        /// stand clear of.</summary>
+        public static Rect NoteScreenRect(in QuestPanelFit fit, in HelmFootprintArea covered,
+                                          float screenW, float screenH)
+        {
+            Rect box = NoteScreenRect(in fit, screenW, screenH);
+            box.y += AnchoredPosition(in fit, in covered, screenW, screenH).y - AnchoredPosition(in fit).y;
+            return box;
+        }
+
         /// <summary>The note's box in SCREEN pixels (bottom-left origin) at home in its corner, on a
         /// <paramref name="screenW"/>×<paramref name="screenH"/> screen. Its canvas is one screen pixel
         /// per unit, so the anchored position is already in pixels.</summary>

@@ -54,6 +54,46 @@ MonoBehaviour:
   HaulSeconds: 14
   DeckWorkSeconds: 30
   SetSeconds: 8
+  CatchRegionId: region.st_peters
+  Bait: {fileID: 11400000, guid: b21273961c48421c907782e724b25bab, type: 2}
+  PickSeconds: 2.5
+  BandSeconds: 2
+  StowSeconds: 2
+  ReturnSeconds: 1.5
+  BaitSeconds: 4
+  DeckWalkSeconds: 2.5
+  GradeBreaksMm:
+  - 95
+  - 110
+  BenchLocalMeters: {x: 0.8, y: -1.6}
+  CrateLocalMeters: {x: -0.9, y: -2.2}
+  CrateStepLocalMeters: {x: 0, y: -0.7}
+  CrateInsideMeters: {x: 0.75, y: 0.5}
+  CrateRowLength: 4
+  CrateShownCapacity: 16
+  ReturnOverTheSideMeters: 0.9
+  CatchDrawScale: 0.4
+  CatchSortingOrder: 30
+  LandingRoute:
+  - {x: 133.6, y: 89.2}
+  - {x: 133.6, y: 95.2}
+  - {x: 129.4, y: 98.4}
+  - {x: 129.4, y: 106}
+  - {x: 127.6, y: 115.6}
+  - {x: 92.3, y: 115.6}
+  - {x: 92.3, y: 123.3}
+  StepAshoreLocalMeters: {x: -1.5, y: 0}
+  LandingHelmLocalMeters: {x: 0, y: 1}
+  LandingStartDelaySeconds: 10
+  LandingWalkSpeed: 1.3
+  LadderSeconds: 6
+  CrateLiftSeconds: 3
+  CrateSetDownSeconds: 3
+  SaleSeconds: 20
+  LandingCrateSprite: {fileID: -1362058913294850930, guid: 02809910dce26bf4faaa583e3b9e74d4, type: 3}
+  CrateCarryOffsetMeters: {x: 0, y: 0.3}
+  CounterCrateOffsetMeters: {x: 0, y: 0.5}
+  CounterCrateSpacingMeters: 0.7
   RopeLengthMeters: 10.5
   FloodBearingDegrees: 270
   FullStreamRiseMetersPerHour: 1

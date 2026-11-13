@@ -33,6 +33,11 @@ export const BOATS = [
   { rig: 'goFastIsoRig.js', sym: 'GoFastIso', hull: 'go_fast' },
   { rig: 'bowriderIsoRig.js', sym: 'BowriderIso', hull: 'bowrider' },
   { rig: 'cruiserIsoRig.js', sym: 'CruiserIso', hull: 'express_cruiser' },
+  { rig: 'jetSkiIsoRig.js', sym: 'JetSkiIso', hull: 'jet_ski' },
+  { rig: 'sternTrawlerIsoRig.js', sym: 'SternTrawlerIso', hull: 'stern_trawler' },
+  { rig: 'sternTrawlerMk2IsoRig.js', sym: 'SternTrawlerMk2Iso', hull: 'stern_trawler_mk2' },
+  { rig: 'sideDraggerIsoRig.js', sym: 'SideDraggerIso', hull: 'side_dragger' },
+  { rig: 'sportSkiffIsoRig.js', sym: 'SportSkiffIso', hull: 'sport_skiff_iso' },
 ];
 export const CHARACTER = {
   rig: 'docs/art/rigs/character/rig10/Art/characterIsoRig10.js',

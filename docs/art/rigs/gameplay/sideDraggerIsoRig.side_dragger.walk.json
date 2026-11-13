@@ -1,0 +1,2388 @@
+{
+ "schema": "hidden-harbours/hull-walk@1",
+ "rig": "sideDraggerIsoRig.js",
+ "exportSymbol": "SideDraggerIso",
+ "hull": "side_dragger",
+ "label": "Side Dragger · 25 m",
+ "kind": "ship",
+ "derivedFromRigSha256": "63d491f7fff0610d9d8fb926ee176999015e00c476f6934f5a3e3a70436639e3",
+ "authoring": "Written by the rig: SideDraggerIso.byId('side_dragger').walk(), every number its own (mm), stamped with the rig's LF sha256 and fitted to character rig 10.3 (qa.character) by tools/rig-recipes/hull-walk.mjs. Regenerate with node tools/rig-recipes/hull-walk.mjs --write; never edit by hand.",
+ "units": "metres",
+ "frame": "metres; +x starboard, +y bow, +z up; origin amidships, keel bottom, centreline; polygons counter-clockwise seen from above",
+ "loa_m": 25,
+ "beam_m": 7,
+ "DWL": 1.1,
+ "cockpitZ": 2.05,
+ "cell": {
+  "W": 896,
+  "H": 792,
+  "pivot": {
+   "x": 448,
+   "y": 450
+  },
+  "pxPerM": 32,
+  "defaultElev": 40,
+  "order": [
+   "N",
+   "NE",
+   "E",
+   "SE",
+   "S",
+   "SW",
+   "W",
+   "NW"
+  ]
+ },
+ "tags": {
+  "lv": {
+   "hull": 0,
+   "main_deck": 1,
+   "house": 2,
+   "bridge": 3,
+   "below": 4,
+   "rigging": 5,
+   "foredeck": 6,
+   "top": 7
+  },
+  "ro": {
+   "shell": 0,
+   "wall": 1,
+   "roof": 2,
+   "lining": 3,
+   "part": 4,
+   "floor": 5,
+   "fit": 6,
+   "tall": 7,
+   "trim": 8,
+   "rig": 9
+  },
+  "ghostRoles": [
+   "shell",
+   "wall",
+   "roof",
+   "lining",
+   "part",
+   "tall",
+   "trim"
+  ]
+ },
+ "walk": {
+  "radius": 0.23,
+  "stepTol": 0.34,
+  "rule": "A step is legal when the target point is inside an area polygon and outside its holes, and |area z - player z| < stepTol. Ramps interpolate z along their axis (x or y) between a0 and a1, and hold z0 / z1 beyond them. cut = the cutaway key while standing there; cutHi / cutLo replace it above / below zMid (stairs and ladders). Polygons are player-centre: already inset by radius, so the reader never insets them again.",
+  "spawn": {
+   "x": 0.6,
+   "y": -1.2,
+   "area": "trawl_deck",
+   "note": "on the sorting ground, before the winch"
+  },
+  "areas": [
+   {
+    "id": "aft_deck",
+    "cut": "deck",
+    "z": 2.05,
+    "poly": [
+     [
+      1.621,
+      -11.48
+     ],
+     [
+      2.045,
+      -9.91
+     ],
+     [
+      -2.045,
+      -9.91
+     ],
+     [
+      -1.621,
+      -11.48
+     ]
+    ],
+    "holes": [],
+    "note": "the after deck, from the capstan to the house’s aft wall: the deckhouse door opens onto it, and a side deck runs forward from each of its corners"
+   },
+   {
+    "id": "house_alley_star",
+    "cut": "deck",
+    "z": 2.05,
+    "poly": [
+     [
+      1.96,
+      -10
+     ],
+     [
+      2.021,
+      -10
+     ],
+     [
+      2.155,
+      -9.5
+     ],
+     [
+      2.238,
+      -9
+     ],
+     [
+      2.569,
+      -6.5
+     ],
+     [
+      2.616,
+      -6
+     ],
+     [
+      2.731,
+      -4
+     ],
+     [
+      1.96,
+      -4
+     ]
+    ],
+    "holes": [],
+    "note": "the starboard side deck, between the house and the bulwark: 0.918 m wide at the house’s aft wall, 1.487 m at its front"
+   },
+   {
+    "id": "house_alley_port",
+    "cut": "deck",
+    "z": 2.05,
+    "poly": [
+     [
+      -1.96,
+      -4
+     ],
+     [
+      -2.731,
+      -4
+     ],
+     [
+      -2.616,
+      -6
+     ],
+     [
+      -2.569,
+      -6.5
+     ],
+     [
+      -2.238,
+      -9
+     ],
+     [
+      -2.155,
+      -9.5
+     ],
+     [
+      -2.021,
+      -10
+     ],
+     [
+      -1.96,
+      -10
+     ]
+    ],
+    "holes": [],
+    "note": "the port side deck, the same"
+   },
+   {
+    "id": "trawl_deck",
+    "cut": "deck",
+    "z": 2.05,
+    "poly": [
+     [
+      2.715,
+      -4.29
+     ],
+     [
+      2.781,
+      -3.137
+     ],
+     [
+      2.784,
+      -0.062
+     ],
+     [
+      2.771,
+      0.349
+     ],
+     [
+      2.11,
+      0.351
+     ],
+     [
+      2.001,
+      3.012
+     ],
+     [
+      1.958,
+      3.397
+     ],
+     [
+      1.718,
+      5.049
+     ],
+     [
+      2.378,
+      5.051
+     ],
+     [
+      2.222,
+      6.087
+     ],
+     [
+      2.142,
+      6.421
+     ],
+     [
+      1.874,
+      7.24
+     ],
+     [
+      -1.32,
+      7.24
+     ],
+     [
+      -1.32,
+      6.421
+     ],
+     [
+      -2.143,
+      6.419
+     ],
+     [
+      -2.222,
+      6.087
+     ],
+     [
+      -2.618,
+      3.397
+     ],
+     [
+      -2.661,
+      3.012
+     ],
+     [
+      -2.772,
+      0.322
+     ],
+     [
+      -2.784,
+      -0.062
+     ],
+     [
+      -2.781,
+      -3.137
+     ],
+     [
+      -2.715,
+      -4.29
+     ]
+    ],
+    "holes": [
+     [
+      [
+       -1.86,
+       -4.13
+      ],
+      [
+       1.86,
+       -4.13
+      ],
+      [
+       1.86,
+       -2.67
+      ],
+      [
+       -1.86,
+       -2.67
+      ]
+     ],
+     [
+      [
+       -2.58,
+       -2.43
+      ],
+      [
+       -0.82,
+       -2.43
+      ],
+      [
+       -0.82,
+       0.43
+      ],
+      [
+       -2.58,
+       0.43
+      ]
+     ],
+     [
+      [
+       -1.44,
+       0.46
+      ],
+      [
+       1.44,
+       0.46
+      ],
+      [
+       1.44,
+       6.14
+      ],
+      [
+       -1.44,
+       6.14
+      ]
+     ],
+     [
+      [
+       1.52,
+       5.67
+      ],
+      [
+       2.18,
+       5.67
+      ],
+      [
+       2.18,
+       6.33
+      ],
+      [
+       1.52,
+       6.33
+      ]
+     ],
+     [
+      [
+       2.07,
+       -2.63
+      ],
+      [
+       2.73,
+       -2.63
+      ],
+      [
+       2.73,
+       -1.97
+      ],
+      [
+       2.07,
+       -1.97
+      ]
+     ]
+    ],
+    "note": "the working deck from the house to the break of the fo’c’sle: the winch before the house, the pounds to port, the sorting ground, the two fish hatches with the foremast between them (one hole), the warps’ deck bollards. To starboard its edge steps inboard of the net’s stow; to port, inboard of the fo’c’sle stair. The holes are those, grown by the walker’s radius."
+   },
+   {
+    "id": "fore_stair_port",
+    "cut": "deck",
+    "kind": "stair",
+    "ramp": {
+     "axis": "y",
+     "a0": 6.4,
+     "a1": 7.5,
+     "z0": 2.05,
+     "z1": 3.273
+    },
+    "zMid": 2.661,
+    "cutHi": "deck",
+    "cutLo": "deck",
+    "poly": [
+     [
+      -1.92,
+      6.35
+     ],
+     [
+      -1.78,
+      6.35
+     ],
+     [
+      -1.78,
+      7.76
+     ],
+     [
+      -1.92,
+      7.76
+     ]
+    ],
+    "holes": [],
+    "note": "six treads up the port side of the deck to the fo’c’sle head at the break: the ramp carries the walker. The starboard side has none: the fore gallows stands there."
+   },
+   {
+    "id": "focsle_deck_1c",
+    "cut": "deck",
+    "ramp": {
+     "axis": "y",
+     "a0": 7.73,
+     "a1": 10.41,
+     "z0": 3.254,
+     "z1": 3.771
+    },
+    "poly": [
+     [
+      2.34,
+      7.73
+     ],
+     [
+      2.34,
+      7.879
+     ],
+     [
+      2.335,
+      7.929
+     ],
+     [
+      1.874,
+      9.963
+     ],
+     [
+      1.857,
+      10.013
+     ],
+     [
+      1.63,
+      10.41
+     ],
+     [
+      -1.63,
+      10.41
+     ],
+     [
+      -1.857,
+      10.013
+     ],
+     [
+      -1.874,
+      9.963
+     ],
+     [
+      -2.335,
+      7.929
+     ],
+     [
+      -2.34,
+      7.879
+     ],
+     [
+      -2.34,
+      7.73
+     ]
+    ],
+    "holes": [
+     [
+      [
+       -0.99,
+       9.01
+      ],
+      [
+       0.99,
+       9.01
+      ],
+      [
+       0.99,
+       10.19
+      ],
+      [
+       -0.99,
+       10.19
+      ]
+     ],
+     [
+      [
+       -0.78,
+       9.73
+      ],
+      [
+       0.78,
+       9.73
+      ],
+      [
+       0.78,
+       11.43
+      ],
+      [
+       -0.78,
+       11.43
+      ]
+     ],
+     [
+      [
+       0.49,
+       8.09
+      ],
+      [
+       1.21,
+       8.09
+      ],
+      [
+       1.21,
+       9.11
+      ],
+      [
+       0.49,
+       9.11
+      ]
+     ],
+     [
+      [
+       -0.49,
+       9.11
+      ],
+      [
+       -1.21,
+       9.11
+      ],
+      [
+       -1.21,
+       8.09
+      ],
+      [
+       -0.49,
+       8.09
+      ]
+     ]
+    ],
+    "note": "the fo’c’sle head inside its rails; holes: the windlass and its cables, the bow bollards"
+   },
+   {
+    "id": "focsle_deck_2c",
+    "cut": "deck",
+    "ramp": {
+     "axis": "y",
+     "a0": 10.41,
+     "a1": 12.52,
+     "z0": 3.775,
+     "z1": 4.335
+    },
+    "poly": [
+     [
+      1.63,
+      10.41
+     ],
+     [
+      0.305,
+      12.52
+     ],
+     [
+      -0.305,
+      12.52
+     ],
+     [
+      -1.63,
+      10.41
+     ]
+    ],
+    "holes": [
+     [
+      [
+       -0.78,
+       9.73
+      ],
+      [
+       0.78,
+       9.73
+      ],
+      [
+       0.78,
+       11.43
+      ],
+      [
+       -0.78,
+       11.43
+      ]
+     ]
+    ],
+    "note": "the fo’c’sle head inside its rails; holes: the windlass and its cables, the bow bollards"
+   },
+   {
+    "id": "house_doorway",
+    "cut": "deck",
+    "z": 2.05,
+    "poly": [
+     [
+      -0.27,
+      -9.95
+     ],
+     [
+      0.17,
+      -9.95
+     ],
+     [
+      0.17,
+      -9.27
+     ],
+     [
+      -0.27,
+      -9.27
+     ]
+    ],
+    "holes": [],
+    "door": "house_door",
+    "note": "through the deckhouse door: a wall while the leaf is shut, passable from doorOpen 0.564 (interact house_door). Over a 0.05 m coaming."
+   },
+   {
+    "id": "house_sole",
+    "cut": "house",
+    "z": 2.07,
+    "headroom": 2.37,
+    "poly": [
+     [
+      -0.82,
+      -9.29
+     ],
+     [
+      0.82,
+      -9.29
+     ],
+     [
+      0.82,
+      -8.62
+     ],
+     [
+      1.34,
+      -8.62
+     ],
+     [
+      1.34,
+      -8.13
+     ],
+     [
+      0.5,
+      -8.13
+     ],
+     [
+      0.5,
+      -5.95
+     ],
+     [
+      0.39,
+      -5.95
+     ],
+     [
+      0.39,
+      -5.43
+     ],
+     [
+      -1.34,
+      -5.43
+     ],
+     [
+      -1.34,
+      -5.67
+     ],
+     [
+      -0.41,
+      -5.67
+     ],
+     [
+      -0.41,
+      -8.13
+     ],
+     [
+      -1.34,
+      -8.13
+     ],
+     [
+      -1.34,
+      -8.62
+     ],
+     [
+      -0.82,
+      -8.62
+     ]
+    ],
+    "holes": [],
+    "note": "the mess: from the door forward between the oilskin lockers and the two stairs to the range, the galley’s counter to port, the mess table and its settee to starboard. The stairs’ feet are abaft them, each side."
+   },
+   {
+    "id": "stair_bridge",
+    "cut": "house",
+    "kind": "stair",
+    "ramp": {
+     "axis": "y",
+     "a0": -7.9,
+     "a1": -5.9,
+     "z0": 2.07,
+     "z1": 4.58
+    },
+    "zMid": 3.325,
+    "cutHi": "bridge",
+    "cutLo": "house",
+    "poly": [
+     [
+      -1.17,
+      -8.2
+     ],
+     [
+      -0.87,
+      -8.2
+     ],
+     [
+      -0.87,
+      -5.85
+     ],
+     [
+      -1.17,
+      -5.85
+     ]
+    ],
+    "holes": [],
+    "note": "thirteen treads up to the wheelhouse, to port, climbing forward: the ramp carries the walker; the cut changes at zMid"
+   },
+   {
+    "id": "stair_below",
+    "cut": "house",
+    "kind": "stair",
+    "ramp": {
+     "axis": "y",
+     "a0": -7.9,
+     "a1": -6.1,
+     "z0": 2.07,
+     "z1": 0.3
+    },
+    "zMid": 1.185,
+    "cutHi": "house",
+    "cutLo": "below",
+    "poly": [
+     [
+      1.01,
+      -8.2
+     ],
+     [
+      1.31,
+      -8.2
+     ],
+     [
+      1.31,
+      -5.8
+     ],
+     [
+      1.01,
+      -5.8
+     ]
+    ],
+    "holes": [],
+    "note": "nine treads down to the crew’s cabin, to starboard, descending forward: steep, a ship’s stair; the cut changes at zMid"
+   },
+   {
+    "id": "wheelhouse",
+    "cut": "bridge",
+    "z": 4.58,
+    "headroom": 1.96,
+    "poly": [
+     [
+      -0.41,
+      -7.89
+     ],
+     [
+      1.19,
+      -7.89
+     ],
+     [
+      1.19,
+      -7.53
+     ],
+     [
+      0.79,
+      -7.53
+     ],
+     [
+      0.79,
+      -6.53
+     ],
+     [
+      -0.18,
+      -6.53
+     ],
+     [
+      -0.18,
+      -5.63
+     ],
+     [
+      -1.19,
+      -5.63
+     ],
+     [
+      -1.19,
+      -5.9
+     ],
+     [
+      -0.41,
+      -5.9
+     ]
+    ],
+    "holes": [],
+    "note": "the wheelhouse: abaft the helm chair and the chart table, then forward between the chair and the stair well’s rail to the console; the stair’s head is at its port forward end"
+   },
+   {
+    "id": "wheelhouse_doorway",
+    "cut": "deck",
+    "z": 4.56,
+    "poly": [
+     [
+      0.78,
+      -8.55
+     ],
+     [
+      0.97,
+      -8.55
+     ],
+     [
+      0.97,
+      -7.87
+     ],
+     [
+      0.78,
+      -7.87
+     ]
+    ],
+    "holes": [],
+    "door": "wheelhouse_door",
+    "note": "through the wheelhouse door onto the boat deck: a wall while the leaf is shut, passable from doorOpen 0.705 (interact wheelhouse_door)"
+   },
+   {
+    "id": "boat_deck",
+    "cut": "deck",
+    "z": 4.56,
+    "poly": [
+     [
+      0.71,
+      -9.4
+     ],
+     [
+      1.47,
+      -9.4
+     ],
+     [
+      1.47,
+      -8.46
+     ],
+     [
+      0.71,
+      -8.46
+     ]
+    ],
+    "holes": [],
+    "note": "the boat deck abaft the wheelhouse, to starboard of the funnel, inside its rails. Reached by the wheelhouse door only."
+   },
+   {
+    "id": "below_sole",
+    "cut": "below",
+    "z": 0.3,
+    "headroom": 1.65,
+    "poly": [
+     [
+      0.23,
+      -9.17
+     ],
+     [
+      1.97,
+      -9.17
+     ],
+     [
+      1.97,
+      -8.13
+     ],
+     [
+      0.55,
+      -8.13
+     ],
+     [
+      0.55,
+      -6.1
+     ],
+     [
+      1.97,
+      -6.1
+     ],
+     [
+      1.97,
+      -5.23
+     ],
+     [
+      0.23,
+      -5.23
+     ]
+    ],
+    "holes": [],
+    "note": "the crew’s cabin: the aisle down the berths’ feet, round the stair; the stair’s foot is at its forward end to starboard. 1.65 m under the deck plate: the taller builds wait on duck."
+   }
+  ]
+ },
+ "house": {
+  "door": {
+   "id": "house_door",
+   "kind": "hinge",
+   "face": "aft",
+   "y": -9.6,
+   "x0": -0.5,
+   "x1": 0.4,
+   "z0": 2.1,
+   "z1": 4.05,
+   "sillZ": 2.05,
+   "hinge": {
+    "x": -0.5,
+    "y": -9.615,
+    "z0": 2.1,
+    "z1": 4.05,
+    "side": "port"
+   },
+   "maxDeg": 110,
+   "swings": "aft",
+   "opensTo": "aft",
+   "clearAt": 0.564,
+   "keepClear": [
+    [
+     -0.5,
+     -9.615
+    ],
+    [
+     0.44,
+     -9.615
+    ],
+    [
+     0.413,
+     -9.838
+    ],
+    [
+     0.334,
+     -10.049
+    ],
+    [
+     0.207,
+     -10.235
+    ],
+    [
+     0.039,
+     -10.385
+    ],
+    [
+     -0.159,
+     -10.491
+    ],
+    [
+     -0.377,
+     -10.547
+    ],
+    [
+     -0.602,
+     -10.549
+    ],
+    [
+     -0.821,
+     -10.498
+    ]
+   ],
+   "leaf": "doorFaces(t)",
+   "lv": "house",
+   "ro": "wall",
+   "clear": {
+    "width": 0.9,
+    "height": 2
+   },
+   "note": "the deckhouse door, in its aft wall on the after deck: weather-tight steel, hinged on its port jamb, swinging aft. Shut until opened; E opens it. A 0.05 m coaming under it. keepClear is the swept arc: the leaf’s collider. doorFaces(t) swings both of the ship’s leaves."
+  },
+  "doors": [
+   {
+    "id": "house_door",
+    "kind": "hinge",
+    "face": "aft",
+    "y": -9.6,
+    "x0": -0.5,
+    "x1": 0.4,
+    "z0": 2.1,
+    "z1": 4.05,
+    "sillZ": 2.05,
+    "hinge": {
+     "x": -0.5,
+     "y": -9.615,
+     "z0": 2.1,
+     "z1": 4.05,
+     "side": "port"
+    },
+    "maxDeg": 110,
+    "swings": "aft",
+    "opensTo": "aft",
+    "clearAt": 0.564,
+    "keepClear": [
+     [
+      -0.5,
+      -9.615
+     ],
+     [
+      0.44,
+      -9.615
+     ],
+     [
+      0.413,
+      -9.838
+     ],
+     [
+      0.334,
+      -10.049
+     ],
+     [
+      0.207,
+      -10.235
+     ],
+     [
+      0.039,
+      -10.385
+     ],
+     [
+      -0.159,
+      -10.491
+     ],
+     [
+      -0.377,
+      -10.547
+     ],
+     [
+      -0.602,
+      -10.549
+     ],
+     [
+      -0.821,
+      -10.498
+     ]
+    ],
+    "leaf": "doorFaces(t)",
+    "lv": "house",
+    "ro": "wall",
+    "clear": {
+     "width": 0.9,
+     "height": 2
+    },
+    "note": "the deckhouse door, in its aft wall on the after deck: weather-tight steel, hinged on its port jamb, swinging aft. Shut until opened; E opens it. A 0.05 m coaming under it. keepClear is the swept arc: the leaf’s collider. doorFaces(t) swings both of the ship’s leaves."
+   },
+   {
+    "id": "wheelhouse_door",
+    "kind": "hinge",
+    "face": "aft",
+    "y": -8.2,
+    "x0": 0.55,
+    "x1": 1.2,
+    "z0": 4.61,
+    "z1": 6.45,
+    "sillZ": 4.56,
+    "hinge": {
+     "x": 1.2,
+     "y": -8.215,
+     "z0": 4.61,
+     "z1": 6.45,
+     "side": "starboard"
+    },
+    "maxDeg": 105,
+    "swings": "aft",
+    "opensTo": "aft",
+    "clearAt": 0.705,
+    "keepClear": [
+     [
+      1.2,
+      -8.215
+     ],
+     [
+      0.51,
+      -8.215
+     ],
+     [
+      0.528,
+      -8.372
+     ],
+     [
+      0.581,
+      -8.52
+     ],
+     [
+      0.667,
+      -8.653
+     ],
+     [
+      0.78,
+      -8.762
+     ],
+     [
+      0.915,
+      -8.843
+     ],
+     [
+      1.065,
+      -8.892
+     ],
+     [
+      1.223,
+      -8.905
+     ],
+     [
+      1.379,
+      -8.881
+     ]
+    ],
+    "leaf": "doorFaces(t)",
+    "lv": "bridge",
+    "ro": "wall",
+    "clear": {
+     "width": 0.65,
+     "height": 1.89
+    },
+    "note": "the wheelhouse door, in its aft wall on the boat deck to starboard: hinged on its starboard jamb, swinging aft, clear of the funnel. The boat deck is reached from the wheelhouse by this door; there is no ladder up the house."
+   }
+  ],
+  "rooms": [
+   {
+    "level": "house",
+    "name": "the mess and the galley",
+    "soleZ": 2.07,
+    "ceilingZ": 4.44
+   },
+   {
+    "level": "bridge",
+    "name": "the wheelhouse",
+    "soleZ": 4.58,
+    "ceilingZ": 6.54
+   },
+   {
+    "level": "below",
+    "name": "the crew’s cabin",
+    "soleZ": 0.3,
+    "ceilingZ": 1.95
+   }
+  ],
+  "fitCheck": "qa.fitCheck",
+  "levels": [
+   "house",
+   "bridge",
+   "below"
+  ],
+  "decks": {
+   "main_deck": {
+    "deck": "deck",
+    "kind": "open",
+    "soleZ": 2.05,
+    "ceilZ": null,
+    "open": true
+   },
+   "house": {
+    "deck": "house",
+    "kind": "hard",
+    "soleZ": 2.07,
+    "ceilZ": 4.44
+   },
+   "bridge": {
+    "deck": "bridge",
+    "kind": "hard",
+    "soleZ": 4.58,
+    "ceilZ": 6.54
+   },
+   "below": {
+    "deck": "below",
+    "kind": "hard",
+    "soleZ": 0.3,
+    "ceilZ": 1.95
+   },
+   "foredeck": {
+    "deck": "focsle_head",
+    "kind": "open",
+    "soleZ": 3.273,
+    "ceilZ": null,
+    "open": true
+   },
+   "top": {
+    "deck": "wheelhouse_top",
+    "kind": "open",
+    "soleZ": 6.66,
+    "ceilZ": null,
+    "open": true
+   }
+  }
+ },
+ "anchors": {
+  "helm": {
+   "x": 0.3,
+   "y": -6,
+   "z": 5.09
+  },
+  "wheel": {
+   "x": 0.3,
+   "y": -5.58,
+   "z": 5.37
+  },
+  "pilot": {
+   "x": 0.3,
+   "y": -5.56,
+   "z": 4.58
+  },
+  "berths": [
+   {
+    "id": "berth_aft",
+    "interact": "berth_aft",
+    "kind": "midberth",
+    "topZ": 0.85,
+    "head": "port",
+    "deckheadZ": 1.95,
+    "poly": [
+     [
+      -2.14,
+      -9.35
+     ],
+     [
+      -0.03,
+      -9.35
+     ],
+     [
+      -0.03,
+      -8.61
+     ],
+     [
+      -2.14,
+      -8.61
+     ]
+    ]
+   },
+   {
+    "id": "berth_mid_aft",
+    "interact": "berth_mid_aft",
+    "kind": "midberth",
+    "topZ": 0.85,
+    "head": "port",
+    "deckheadZ": 1.95,
+    "poly": [
+     [
+      -2.14,
+      -8.45
+     ],
+     [
+      -0.03,
+      -8.45
+     ],
+     [
+      -0.03,
+      -7.71
+     ],
+     [
+      -2.14,
+      -7.71
+     ]
+    ]
+   },
+   {
+    "id": "berth_mid_fwd",
+    "interact": "berth_mid_fwd",
+    "kind": "midberth",
+    "topZ": 0.85,
+    "head": "port",
+    "deckheadZ": 1.95,
+    "poly": [
+     [
+      -2.14,
+      -7.55
+     ],
+     [
+      -0.03,
+      -7.55
+     ],
+     [
+      -0.03,
+      -6.81
+     ],
+     [
+      -2.14,
+      -6.81
+     ]
+    ]
+   },
+   {
+    "id": "berth_fwd",
+    "interact": "berth_fwd",
+    "kind": "midberth",
+    "topZ": 0.85,
+    "head": "port",
+    "deckheadZ": 1.95,
+    "poly": [
+     [
+      -2.14,
+      -6.65
+     ],
+     [
+      -0.03,
+      -6.65
+     ],
+     [
+      -0.03,
+      -5.91
+     ],
+     [
+      -2.14,
+      -5.91
+     ]
+    ]
+   }
+  ],
+  "gallows": [
+   {
+    "id": "gallows_fore",
+    "side": "starboard",
+    "block": {
+     "x": 3.325,
+     "y": 6.2,
+     "z": 4.05
+    },
+    "y0": 5.65,
+    "y1": 6.75,
+    "headZ": 4.35
+   },
+   {
+    "id": "gallows_aft",
+    "side": "starboard",
+    "block": {
+     "x": 3.72,
+     "y": -1.6,
+     "z": 4.05
+    },
+    "y0": -2.15,
+    "y1": -1.05,
+    "headZ": 4.35
+   }
+  ],
+  "winch": [
+   {
+    "side": "port",
+    "x": -0.75,
+    "y": -3.4,
+    "z": 2.79
+   },
+   {
+    "side": "starboard",
+    "x": 0.75,
+    "y": -3.4,
+    "z": 2.79
+   }
+  ],
+  "holdHatch": {
+   "x": 0,
+   "y": 1.7,
+   "z": 2.35,
+   "halfW": 1.15,
+   "halfL": 0.95,
+   "hinge": [
+    0,
+    2.69,
+    2.35
+   ]
+  },
+  "holdHatches": [
+   {
+    "id": "hold_hatch",
+    "x": 0,
+    "y": 1.7,
+    "z": 2.35,
+    "halfW": 1.15,
+    "halfL": 0.95,
+    "hinge": [
+     0,
+     2.69,
+     2.35
+    ]
+   },
+   {
+    "id": "hold_hatch_fwd",
+    "x": 0,
+    "y": 4.9,
+    "z": 2.35,
+    "halfW": 1.15,
+    "halfL": 0.95,
+    "hinge": [
+     0,
+     5.89,
+     2.35
+    ]
+   }
+  ],
+  "tubs": [
+   {
+    "x": -1.8,
+    "y": 0.9,
+    "z": 2.05
+   },
+   {
+    "x": 1.6,
+    "y": 0.9,
+    "z": 2.05
+   },
+   {
+    "x": -1.8,
+    "y": -1.8,
+    "z": 2.05
+   },
+   {
+    "x": 1.6,
+    "y": -1.8,
+    "z": 2.05
+   },
+   {
+    "x": -1.8,
+    "y": 6,
+    "z": 2.05
+   }
+  ],
+  "nav": {
+   "port": {
+    "x": -1.66,
+    "y": -6.4,
+    "z": 6.3
+   },
+   "star": {
+    "x": 1.66,
+    "y": -6.4,
+    "z": 6.3
+   },
+   "stern": {
+    "x": 0,
+    "y": -12.35,
+    "z": 3.3
+   },
+   "mast": {
+    "x": 0,
+    "y": 3.16,
+    "z": 11.2
+   }
+  },
+  "windlass": {
+   "x": 0,
+   "y": 9.6,
+   "z": 3.997
+  },
+  "foremast": {
+   "x": 0,
+   "y": 3.3,
+   "z0": 2.05,
+   "z1": 11.2
+  },
+  "derrick": {
+   "heel": {
+    "x": 0,
+    "y": 3.14,
+    "z": 3.3
+   },
+   "head": {
+    "x": 3.25,
+    "y": -0.7,
+    "z": 6.8
+   }
+  },
+  "netStow": {
+   "side": "starboard",
+   "y0": 0.6,
+   "y1": 4.8,
+   "z": 2.05,
+   "width": 0.85
+  },
+  "warps": [
+   {
+    "id": "warp_fore",
+    "side": "starboard",
+    "winch": {
+     "x": -0.75,
+     "y": -3.4,
+     "z": 2.79
+    },
+    "lead": {
+     "x": 1.85,
+     "y": 6,
+     "z": 2.59
+    },
+    "door": {
+     "x": 3.325,
+     "y": 6.2,
+     "z": 4.05
+    },
+    "gallows": "gallows_fore"
+   },
+   {
+    "id": "warp_aft",
+    "side": "starboard",
+    "winch": {
+     "x": 0.75,
+     "y": -3.4,
+     "z": 2.79
+    },
+    "lead": {
+     "x": 2.4,
+     "y": -2.3,
+     "z": 2.59
+    },
+    "door": {
+     "x": 3.72,
+     "y": -1.6,
+     "z": 4.05
+    },
+    "gallows": "gallows_aft"
+   }
+  ],
+  "codEnd": {
+   "rail": {
+    "x": 3.5,
+    "y": -0.7,
+    "z": 2.604
+   },
+   "lift": {
+    "x": 3.25,
+    "y": -0.7,
+    "z": 6.8
+   },
+   "spill": {
+    "x": 0.6,
+    "y": -1.2,
+    "z": 2.05
+   },
+   "side": "starboard",
+   "note": "no ramp: the cod end comes over the working-side rail at rail, lifted on the gilson from the derrick’s head at lift, and is emptied on the deck at spill"
+  },
+  "sorting": {
+   "x0": -0.6,
+   "x1": 1.9,
+   "y0": -2.3,
+   "y1": -0.1,
+   "z": 2.05,
+   "totes": [
+    {
+     "x": -1.8,
+     "y": -1.8,
+     "z": 2.05
+    },
+    {
+     "x": 1.6,
+     "y": -1.8,
+     "z": 2.05
+    }
+   ]
+  },
+  "crew": [
+   {
+    "id": "winchman",
+    "at": "winch"
+   },
+   {
+    "id": "gallows_hand_fore",
+    "at": "gallows_fore"
+   },
+   {
+    "id": "gallows_hand_aft",
+    "at": "gallows_aft"
+   },
+   {
+    "id": "sorter_port",
+    "x": -0.45,
+    "y": -1.75,
+    "z": 2.05
+   },
+   {
+    "id": "sorter_stbd",
+    "x": 1.25,
+    "y": -1.75,
+    "z": 2.05
+   },
+   {
+    "id": "hatch_hand",
+    "at": "hold_hatch"
+   }
+  ]
+ },
+ "interact": [
+  {
+   "id": "helm",
+   "action": "helm",
+   "label": "Helm",
+   "prompt": "Take the wheel",
+   "at": {
+    "x": 0.3,
+    "y": -6,
+    "z": 5.09
+   },
+   "reach": {
+    "x": -0.3,
+    "y": -6,
+    "z": 4.58
+   },
+   "area": "wheelhouse",
+   "note": "seated in the helm chair: anchors.helm is the seat, anchors.wheel the hub, anchors.pilot the feet"
+  },
+  {
+   "id": "house_door",
+   "action": "open_close",
+   "label": "Deckhouse door",
+   "prompt": "Open · shut",
+   "state": "doorOpen",
+   "clearAt": 0.564,
+   "at": {
+    "x": -0.05,
+    "y": -9.6,
+    "z": 3.075
+   },
+   "reach": {
+    "x": -0.05,
+    "y": -10.03,
+    "z": 2.05
+   },
+   "area": "aft_deck"
+  },
+  {
+   "id": "wheelhouse_door",
+   "action": "open_close",
+   "label": "Wheelhouse door",
+   "prompt": "Open · shut",
+   "state": "doorOpen",
+   "clearAt": 0.705,
+   "at": {
+    "x": 0.875,
+    "y": -8.2,
+    "z": 5.53
+   },
+   "reach": {
+    "x": 0.875,
+    "y": -7.69,
+    "z": 4.58
+   },
+   "area": "wheelhouse"
+  },
+  {
+   "id": "berth_aft",
+   "action": "sleep",
+   "label": "Berth",
+   "prompt": "Turn in",
+   "at": {
+    "x": -1.085,
+    "y": -8.98,
+    "z": 0.85
+   },
+   "reach": {
+    "x": 0.32,
+    "y": -8.98,
+    "z": 0.3
+   },
+   "area": "below_sole"
+  },
+  {
+   "id": "berth_mid_aft",
+   "action": "sleep",
+   "label": "Berth",
+   "prompt": "Turn in",
+   "at": {
+    "x": -1.085,
+    "y": -8.08,
+    "z": 0.85
+   },
+   "reach": {
+    "x": 0.32,
+    "y": -8.08,
+    "z": 0.3
+   },
+   "area": "below_sole"
+  },
+  {
+   "id": "berth_mid_fwd",
+   "action": "sleep",
+   "label": "Berth",
+   "prompt": "Turn in",
+   "at": {
+    "x": -1.085,
+    "y": -7.18,
+    "z": 0.85
+   },
+   "reach": {
+    "x": 0.32,
+    "y": -7.18,
+    "z": 0.3
+   },
+   "area": "below_sole"
+  },
+  {
+   "id": "berth_fwd",
+   "action": "sleep",
+   "label": "Berth",
+   "prompt": "Turn in",
+   "at": {
+    "x": -1.085,
+    "y": -6.28,
+    "z": 0.85
+   },
+   "reach": {
+    "x": 0.32,
+    "y": -6.28,
+    "z": 0.3
+   },
+   "area": "below_sole"
+  },
+  {
+   "id": "winch",
+   "action": "haul",
+   "label": "Trawl winch",
+   "prompt": "Haul · veer",
+   "state": "doors",
+   "also": [
+    "winch"
+   ],
+   "at": {
+    "x": 0,
+    "y": -3.4,
+    "z": 2.79
+   },
+   "reach": {
+    "x": 0,
+    "y": -2.53,
+    "z": 2.05
+   },
+   "area": "trawl_deck",
+   "note": "the brake levers are on the winch’s forward side: the winchman stands on the centreline before it, facing aft, the whole deck at his back"
+  },
+  {
+   "id": "net",
+   "action": "shoot_haul",
+   "label": "Trawl net",
+   "prompt": "Shoot · haul the net",
+   "state": "net",
+   "at": {
+    "x": 2.634,
+    "y": 3,
+    "z": 2.55
+   },
+   "reach": {
+    "x": 1.922,
+    "y": 3,
+    "z": 2.05
+   },
+   "area": "trawl_deck",
+   "note": "from the deck inboard of the net’s stow, between the hatches and the working-side bulwark"
+  },
+  {
+   "id": "gallows_fore",
+   "action": "trawl_door",
+   "label": "Fore trawl door",
+   "prompt": "Lower · stow the door",
+   "state": "doors",
+   "at": {
+    "x": 3.325,
+    "y": 6.2,
+    "z": 4.05
+   },
+   "reach": {
+    "x": 2.233,
+    "y": 5.35,
+    "z": 2.05
+   },
+   "area": "trawl_deck",
+   "note": "the door hangs outboard of the rail from the fore gallows; it is worked from the deck just abaft the gallows’ after leg"
+  },
+  {
+   "id": "gallows_aft",
+   "action": "trawl_door",
+   "label": "Aft trawl door",
+   "prompt": "Lower · stow the door",
+   "state": "doors",
+   "at": {
+    "x": 3.72,
+    "y": -1.6,
+    "z": 4.05
+   },
+   "reach": {
+    "x": 2.684,
+    "y": -0.95,
+    "z": 2.05
+   },
+   "area": "trawl_deck",
+   "note": "the door hangs outboard of the rail from the aft gallows; it is worked from the deck just forward of the gallows’ forward leg"
+  },
+  {
+   "id": "hold_hatch",
+   "action": "open_close",
+   "label": "Fish hold",
+   "prompt": "Open · shut the hatches",
+   "state": "hatch",
+   "at": {
+    "x": 0,
+    "y": 1.7,
+    "z": 2.35
+   },
+   "reach": {
+    "x": 0,
+    "y": 0.32,
+    "z": 2.05
+   },
+   "area": "trawl_deck",
+   "note": "the hold’s hatch amidships, worked from its after side; the hold itself is not walked (see _excluded fish_hold). One state lifts both lids."
+  },
+  {
+   "id": "hold_hatch_fwd",
+   "action": "open_close",
+   "label": "Fish hold, forward hatch",
+   "prompt": "Open · shut the hatches",
+   "state": "hatch",
+   "at": {
+    "x": 0,
+    "y": 4.9,
+    "z": 2.35
+   },
+   "reach": {
+    "x": 0,
+    "y": 6.28,
+    "z": 2.05
+   },
+   "area": "trawl_deck",
+   "note": "the forward hatch: the same state"
+  },
+  {
+   "id": "galley",
+   "action": "cook",
+   "label": "Galley range",
+   "prompt": "Put the kettle on",
+   "at": {
+    "x": -0.03,
+    "y": -4.96,
+    "z": 2.97
+   },
+   "reach": {
+    "x": -0.03,
+    "y": -5.46,
+    "z": 2.07
+   },
+   "area": "house_sole"
+  },
+  {
+   "id": "mess_table",
+   "action": "use",
+   "label": "Mess table",
+   "prompt": "Sit in",
+   "at": {
+    "x": 0.9,
+    "y": -5.41,
+    "z": 2.83
+   },
+   "reach": {
+    "x": 0.3,
+    "y": -5.5,
+    "z": 2.07
+   },
+   "area": "house_sole",
+   "waitsOn": [
+    "sit"
+   ]
+  },
+  {
+   "id": "chart_table",
+   "action": "use",
+   "label": "Chart table",
+   "prompt": "Read the chart",
+   "at": {
+    "x": 1.22,
+    "y": -7.03,
+    "z": 5.53
+   },
+   "reach": {
+    "x": 0.74,
+    "y": -7.03,
+    "z": 4.58
+   },
+   "area": "wheelhouse"
+  },
+  {
+   "id": "windlass",
+   "action": "anchor",
+   "label": "Windlass",
+   "prompt": "Let go · weigh",
+   "at": {
+    "x": 0,
+    "y": 9.6,
+    "z": 3.997
+   },
+   "reach": {
+    "x": 0,
+    "y": 8.81,
+    "z": 3.462
+   },
+   "area": "focsle_deck_1c"
+  }
+ ],
+ "cleats": [
+  {
+   "id": "bow_1",
+   "type": "samson_post",
+   "pos": [
+    0,
+    11.7,
+    4.395
+   ]
+  },
+  {
+   "id": "bow_port",
+   "type": "bollard",
+   "pos": [
+    -0.85,
+    8.6,
+    3.765
+   ]
+  },
+  {
+   "id": "bow_star",
+   "type": "bollard",
+   "pos": [
+    0.85,
+    8.6,
+    3.765
+   ]
+  },
+  {
+   "id": "quarter_port",
+   "type": "bollard",
+   "pos": [
+    -1.619,
+    -11.85,
+    2.43
+   ]
+  },
+  {
+   "id": "quarter_star",
+   "type": "bollard",
+   "pos": [
+    1.619,
+    -11.85,
+    2.43
+   ]
+  }
+ ],
+ "washboards": [],
+ "_excluded": [
+  {
+   "id": "wheelhouse_top",
+   "of": "area",
+   "z": 6.66,
+   "reason": "the wheelhouse top: the radar, the searchlight, the horn and the aerial; no way up, not a standing surface."
+  },
+  {
+   "id": "stern_quarters",
+   "of": "area",
+   "reason": "the deck round the stern abaft y -11.48: the capstan and the quarter bollards fill it."
+  },
+  {
+   "id": "boat_deck_port",
+   "of": "area",
+   "z": 4.56,
+   "reason": "the boat deck to port of the funnel and abaft it: the liferaft’s cradle and the mizzen pole fill it; -0.2 m between the funnel and the after rail."
+  },
+  {
+   "id": "boat_deck_wings",
+   "of": "area",
+   "z": 4.56,
+   "reason": "the boat deck beside the wheelhouse: 0.25 m, under the sidelights’ screens."
+  },
+  {
+   "id": "pounds",
+   "of": "area",
+   "z": 2.05,
+   "reason": "the two fish pounds on the port side of the deck (x -2.35 .. -1.05, y -2.2 .. 0.2): pound boards 0.32 m high, the catch in them; the crew sort from the clear deck beside them (anchors.sorting)."
+  },
+  {
+   "id": "net_stow",
+   "of": "area",
+   "z": 2.05,
+   "reason": "the starboard side of the deck under the net, y 0.6 .. 4.8: 0.85 m in from the bulwark. Closed whether the net is aboard or shot (the walk does not change with state net)."
+  },
+  {
+   "id": "focsle_stair_pocket",
+   "of": "area",
+   "z": 2.05,
+   "reason": "the deck outboard of the fo’c’sle stair, to port forward of y 6.4: under the stair’s treads and behind its stringer."
+  },
+  {
+   "id": "fish_hold",
+   "of": "room",
+   "reason": "the fish hold under the working deck (the hatches at y 1.7 and y 4.9): drawn as a dark well with boxes in it under each lid; no room, no way down but its ladder."
+  },
+  {
+   "id": "engine_room",
+   "of": "room",
+   "reason": "the engine room, under the deck abaft the crew’s cabin and under the after deck: not drawn."
+  },
+  {
+   "id": "focsle_store",
+   "of": "room",
+   "reason": "the fo’c’sle under the whaleback, behind the bulkhead at the break: not drawn."
+  },
+  {
+   "id": "seat_helm",
+   "of": "seat",
+   "at": {
+    "x": 0.3,
+    "y": -6,
+    "z": 5.09
+   },
+   "reason": "the helm chair: taken by the helm interact (drive)."
+  },
+  {
+   "id": "mess_settee",
+   "of": "seat",
+   "at": {
+    "x": 1.4,
+    "y": -5.4,
+    "z": 2.52
+   },
+   "waitsOn": [
+    "sit"
+   ],
+   "reason": "the mess’s settee, round the table: sitting at it waits on a sit clip."
+  },
+  {
+   "id": "washboards",
+   "of": "washboards",
+   "reason": "none: she has steel bulwarks to the rail all round the deck and a side deck either side of the house wide enough to walk (areas house_alley_port / _star); nobody walks her rail."
+  },
+  {
+   "id": "working_gear",
+   "of": "cleat",
+   "reason": "the gallows, the winch’s warping heads, the warps’ deck bollards and the capstan are working gear, not tie-offs: mooring lines go to the samson post, the bow bollards and the quarter bollards (cleats[])."
+  }
+ ],
+ "rock": {
+  "frames": 8,
+  "rollA": 2,
+  "pitchA": 1.1,
+  "heaveA": 1,
+  "period": 4.2
+ },
+ "qa": {
+  "fitCheck": {
+   "tol": 0.01,
+   "faces": 548,
+   "vertices": 2286,
+   "outside": 0,
+   "worst": 0,
+   "worstAt": null
+  },
+  "surfaceFit": {
+   "foredeck": 0.019,
+   "tol": 0.02
+  },
+  "character": {
+   "rig": "characterIsoRig10.js",
+   "exportSymbol": "CharacterIso10",
+   "revision": "10.3",
+   "derivedFromRigSha256": "ad563075475740cea1258de68d05c184f2fc136491357bc22988a10d810413f3",
+   "posesDerivedFromRigSha256": "a28e5d92638d3cf1b26bbc49f887b23221acd3a9590bc36fd8b842ac6127c92d",
+   "builds": 30,
+   "crown_m": [
+    1.257,
+    1.8641
+   ],
+   "collision_radius_m": [
+    0.142,
+    0.23
+   ],
+   "board_range_m": [
+    0.06,
+    1
+   ],
+   "boardDown_range_m": [
+    0.06,
+    1.3
+   ],
+   "method": "every frame of each clip for all thirty builds (evalClip + pinsOf), world opts from the walk; hands vs the wheel rim, the lying body vs the berth outline and deckhead, crowns vs headroom, shoulders (2 x collision radius) vs clear widths",
+   "fixtures": [
+    {
+     "id": "helm_seated",
+     "what": "seated at the wheel",
+     "clip": "drive",
+     "world_opts": {
+      "seatZ": 0.51,
+      "wheelZ": 0.79,
+      "wheelY": 0.4
+     },
+     "range": {
+      "seatZ": [
+       0.25,
+       0.7
+      ],
+      "wheelZ": [
+       0.45,
+       0.95
+      ],
+      "wheelY": [
+       0.2,
+       0.45
+      ]
+     },
+     "clamped": false,
+     "wheel": {
+      "hub": [
+       0.3,
+       -5.58,
+       5.37
+      ],
+      "rim_m": 0.19,
+      "rake_deg": -20,
+      "clip_tilt_deg": 28
+     },
+     "worst_grip_miss_m": 0.026,
+     "worst_hub_offset_m": 0,
+     "worst_ikShort_m": 0.047,
+     "note": "every build’s hands land on the rim (within 0.04 m) on every frame, the clip’s wheel on the hub",
+     "builds_ok": 30,
+     "of": 30
+    },
+    {
+     "id": "helm_standing",
+     "what": "standing at the wheel",
+     "clip": "helm_idle",
+     "pivot": [
+      0.3,
+      -5.56,
+      4.58
+     ],
+     "worst_grip_miss_m": 0.632,
+     "worst_hands_to_hub_m": 0.668,
+     "hub_over_floor_m": 0.79,
+     "hub_ahead_of_pilot_m": -0.02,
+     "grip_by_build": {
+      "over_floor_m": [
+       0.784,
+       1.231
+      ],
+      "ahead_m": [
+       0.312,
+       0.482
+      ]
+     },
+     "waitsOn": [
+      "helm_idle.wheelOpts"
+     ],
+     "note": "Why not: helm_idle takes no wheel opts, so each build holds its hands where its own arms put them: 0.784 to 1.231 m over the floor and 0.312 to 0.482 m ahead of its feet. One wheel is within 0.02 m of a few of those grips at most. This wheel is set for drive (seated, 30 of 30), which takes it no higher than 0.95 m over the floor (this hub: 0.79 m), and its seat is 0.42 m behind the hub, so a figure standing at the reach helm_idle holds would stand in the seat. At the rig’s pilot spot (-0.02 m behind the hub) the hands’ midpoint misses the hub by up to 0.668 m. Standing waits on helm_idle taking wheelZ / wheelY (as drive does) and a helm with standing room in front of its seat.",
+     "builds_ok": 0,
+     "of": 30
+    },
+    {
+     "id": "berth_aft",
+     "what": "the mid-cabin berth, asleep",
+     "clip": "sleep",
+     "pivot": [
+      -1.113,
+      -8.98,
+      0.3
+     ],
+     "world_opts": {
+      "bedZ": 0.55
+     },
+     "length_m": 2.11,
+     "deckhead_z": 1.95,
+     "note": "every pin of every frame inside the mattress outline, the body 0.10 m under the deckhead",
+     "builds_ok": 30,
+     "of": 30
+    },
+    {
+     "id": "berth_mid_aft",
+     "what": "the mid-cabin berth, asleep",
+     "clip": "sleep",
+     "pivot": [
+      -1.113,
+      -8.08,
+      0.3
+     ],
+     "world_opts": {
+      "bedZ": 0.55
+     },
+     "length_m": 2.11,
+     "deckhead_z": 1.95,
+     "note": "every pin of every frame inside the mattress outline, the body 0.10 m under the deckhead",
+     "builds_ok": 30,
+     "of": 30
+    },
+    {
+     "id": "berth_mid_fwd",
+     "what": "the mid-cabin berth, asleep",
+     "clip": "sleep",
+     "pivot": [
+      -1.113,
+      -7.18,
+      0.3
+     ],
+     "world_opts": {
+      "bedZ": 0.55
+     },
+     "length_m": 2.11,
+     "deckhead_z": 1.95,
+     "note": "every pin of every frame inside the mattress outline, the body 0.10 m under the deckhead",
+     "builds_ok": 30,
+     "of": 30
+    },
+    {
+     "id": "berth_fwd",
+     "what": "the mid-cabin berth, asleep",
+     "clip": "sleep",
+     "pivot": [
+      -1.113,
+      -6.28,
+      0.3
+     ],
+     "world_opts": {
+      "bedZ": 0.55
+     },
+     "length_m": 2.11,
+     "deckhead_z": 1.95,
+     "note": "every pin of every frame inside the mattress outline, the body 0.10 m under the deckhead",
+     "builds_ok": 30,
+     "of": 30
+    },
+    {
+     "id": "walk_areas",
+     "what": "walk every area (15 of them) at the walker’s radius 0.23 m",
+     "clip": "walk",
+     "note": "each outline is inset by the walker’s radius, the widest 10.3 build’s collision radius or more: every build’s shoulders fit wherever the walker goes. Headroom is the stand fixtures’; steps are the step fixtures’.",
+     "builds_ok": 30,
+     "of": 30
+    },
+    {
+     "id": "stand_house_sole",
+     "what": "stand up on house_sole",
+     "clip": "idle",
+     "headroom_m": 2.37,
+     "headroomMax_m": 2.37,
+     "stands_somewhere": 30,
+     "builds_ok": 30,
+     "of": 30
+    },
+    {
+     "id": "stand_wheelhouse",
+     "what": "stand up on wheelhouse",
+     "clip": "idle",
+     "headroom_m": 1.96,
+     "headroomMax_m": 1.96,
+     "stands_somewhere": 30,
+     "builds_ok": 30,
+     "of": 30
+    },
+    {
+     "id": "stand_below_sole",
+     "what": "stand up on below_sole",
+     "clip": "idle",
+     "headroom_m": 1.65,
+     "headroomMax_m": 1.65,
+     "stands_somewhere": 12,
+     "builds_ok": 12,
+     "of": 30,
+     "fit": [
+      "nan",
+      "packer",
+      "cutter",
+      "boy",
+      "girl",
+      "lightkeeper",
+      "mender",
+      "grocer",
+      "diver",
+      "cafe",
+      "mechanic",
+      "paperboy"
+     ]
+    },
+    {
+     "id": "through_house_door",
+     "what": "through the house_door doorway upright (hinge door, 0.9 x 2 m)",
+     "clip": "walk",
+     "clear_width_m": 0.9,
+     "clear_height_m": 2,
+     "too_wide": 0,
+     "must_duck": 0,
+     "builds_ok": 30,
+     "of": 30
+    },
+    {
+     "id": "through_wheelhouse_door",
+     "what": "through the wheelhouse_door doorway upright (hinge door, 0.65 x 1.89 m)",
+     "clip": "walk",
+     "clear_width_m": 0.65,
+     "clear_height_m": 1.89,
+     "too_wide": 0,
+     "must_duck": 0,
+     "builds_ok": 30,
+     "of": 30
+    },
+    {
+     "id": "climb_fore_stair_port",
+     "what": "fore_stair_port (a stair), walked as its ramp 2.05 → 3.273 m, upright",
+     "clip": "walk",
+     "clear_width_m": 0.6,
+     "headroom_m": null,
+     "ramp": {
+      "axis": "y",
+      "a0": 6.4,
+      "a1": 7.5,
+      "z0": 2.05,
+      "z1": 3.273
+     },
+     "waitsOn": [
+      "stairDown",
+      "stairUp"
+     ],
+     "note": "the ramp carries the root; the feet on the treads wait on stairDown / stairUp",
+     "builds_ok": 30,
+     "of": 30
+    },
+    {
+     "id": "climb_stair_bridge",
+     "what": "stair_bridge (a stair), walked as its ramp 2.07 → 4.58 m, upright",
+     "clip": "walk",
+     "clear_width_m": 0.76,
+     "headroom_m": null,
+     "ramp": {
+      "axis": "y",
+      "a0": -7.9,
+      "a1": -5.9,
+      "z0": 2.07,
+      "z1": 4.58
+     },
+     "waitsOn": [
+      "stairDown",
+      "stairUp"
+     ],
+     "note": "the ramp carries the root; the feet on the treads wait on stairDown / stairUp",
+     "builds_ok": 30,
+     "of": 30
+    },
+    {
+     "id": "climb_stair_below",
+     "what": "stair_below (a stair), walked as its ramp 2.07 → 0.3 m, upright",
+     "clip": "walk",
+     "clear_width_m": 0.76,
+     "headroom_m": null,
+     "ramp": {
+      "axis": "y",
+      "a0": -7.9,
+      "a1": -6.1,
+      "z0": 2.07,
+      "z1": 0.3
+     },
+     "waitsOn": [
+      "stairDown",
+      "stairUp"
+     ],
+     "note": "the ramp carries the root; the feet on the treads wait on stairDown / stairUp",
+     "builds_ok": 30,
+     "of": 30
+    },
+    {
+     "id": "seats",
+     "what": "sit as a passenger (mess_settee)",
+     "clip": null,
+     "waitsOn": [
+      "sit"
+     ],
+     "note": "10.3 has no sit clip: drive is its only seated clip, and its hands hold a wheel",
+     "builds_ok": 0,
+     "of": 30
+    }
+   ],
+   "waitsOn": [
+    "helm_idle.wheelOpts",
+    "sit",
+    "stairDown",
+    "stairUp"
+   ]
+  }
+ }
+}

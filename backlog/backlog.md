@@ -341,11 +341,18 @@ tracks the complete loop, its explicit fit contracts, production integration and
 | M3-15 | Fleet/abstraction perf + save scaling | lead-architect + qa-test | Abstract off-screen fleet; batched shift sim; bigger saves | A multi-boat empire stays cheap; save persists staff/facilities/freight |
 
 ### Epic M3-E — Owner-ratified 2026 additions (aquaculture · advanced rendering)
-> New design captured 2026 (the "St Peters batch"). All **M3-phased** (advanced/late); design in the design docs.
+> New design captured 2026 (the "St Peters batch"). All **M3-phased** (advanced/late); design in the design docs,
+> **except M3-16a and M3-16, re-phased by the owner on 2026-11-13.** He wrote: *"Lets keep doing work on the village ... i want to add more shellfish harvesting, mussell leases, oysters, scallops ..."*
+> (the village is St Peters, which he confirmed), and answered *"Yes, your leans"* to the seat's leans: wild mussels and
+> oysters by hand **now** (M3-16a); the first mussel lease **next** (M3-16), once
+> [`mussel-lease-and-longline.md`](../docs/design/mussel-lease-and-longline.md) §8 items 2 to 4 are ruled (owed);
+> **sea scallops are not in this epic**: they wait for the player trawl loop (the trawl arc out of Rice Point;
+> net/trawl gear is M3-04), not the village.
 
 | ID | Title | Owner | One-liner | Key AC (seed) |
 |---|---|---|---|---|
-| M3-16 | Mussel/oyster aquaculture leasing | economy-sim + world-content | Lease water, set buoys-in-series + grow-ropes, season-grow the crop, harvest at maturity | Lease cost + grow-timer + seasonal yield; **harvested from a lease** (not a wild catch roll); P4 owned-production (`fish-and-content` §3.5c + economy/progression docs) |
+| M3-16a | Wild shellfish by hand at St Peters (blue mussel + oyster) — **NOW (owner ruling 2026-11-13)** | gameplay-systems + world-content | Pick wild blue mussels and oysters by hand at low water at St Peters, on the clam-dig pattern (M2-32) | Split out of M3-16 and pulled forward by the 2026-11-13 ruling; a **wild hand-gather**, not a lease and not a grown crop; low-water gated like the clam dig; species are data (rule 2) |
+| M3-16 | Mussel/oyster aquaculture leasing — **NEXT, after M3-16a (owner ruling 2026-11-13); gated** | economy-sim + world-content | Lease water, set buoys-in-series + grow-ropes, season-grow the crop, harvest at maturity | **Gate:** `mussel-lease-and-longline.md` §8 items 2 to 4 (window + spots, storm damage, season shape) are **owed** and are ruled first. Lease cost + grow-timer + seasonal yield; **harvested from a lease** (not a wild catch roll); P4 owned-production (`fish-and-content` §3.5c + economy/progression docs) |
 | M3-17 | Advanced rendering pass (3D-water→2D bake · dynamic + cloud shadows · parallax-underwater) | art-pipeline + lead-architect | Bake 3D water to the 2D surface; sun-driven dynamic shadows; drifting cloud shadows; shallow-water underwater preview | Holds one-perspective + PPU=32 + desktop budget; baked sculpt-light unchanged; shallow preview telegraphs hazards/forage (`art-and-audio-bible` §6.1) |
 
 #### The realness pass (ADR 0027) — ten techniques taken from Unity's HDRP water, every one pixelized

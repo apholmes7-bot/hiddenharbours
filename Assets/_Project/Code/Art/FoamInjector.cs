@@ -142,6 +142,28 @@ namespace HiddenHarbours.Art
         private bool _registered;
         private bool _primed;
         private Vector2 _previousPosition;
+
+        // ---- the whole hull (HullContactFoam) --------------------------------------------------------
+        // The trail is shed from the end that trails, and the end and side she pushes through the water
+        // foam too. One capsule a frame is all a hull has, so the contact stamps take turns with the
+        // trail's: what a stamp is owed while it waits is carried (seconds for a contact stamp, amount for
+        // the trail), so the foam laid per second does not depend on whose turn it is.
+        private bool _trailFromBow;
+        private bool _hasPose;
+        private Vector2 _poseDrawnStern;
+        private Vector2 _previousStern;
+        private Vector2 _previousHeading = Vector2.up;
+        private Vector2 _trailFrom;
+        private float _trailOwed;
+        private float _trailOwedVigour;
+        private float _leadSeconds;
+        private float _sideSeconds;
+        private int _turn;
+        /// <summary>The longest a waiting stamp is owed for, seconds: a hitch never lands as one slab.</summary>
+        private const float MaxOwedSeconds = 0.25f;
+
+        /// <summary>Whether her trail is being shed from the bow (she is making way astern).</summary>
+        public bool TrailFromBow => _trailFromBow;
         private double _previousGameSeconds;
         private float _hullY;
         private float _surfaceY;
@@ -222,15 +244,33 @@ namespace HiddenHarbours.Art
             if (_wakePoseSource != null && _wakePoseSource.TryGetWakePose(out HullWakePose pose))
             {
                 _wakeHeading = pose.Heading;
+                _hasPose = true;
+                _poseDrawnStern = pose.DrawnStern;
                 Vector2 laid = BelowSurfaceLift(pose.DrawnStern);
                 trueStern = pose.TideRise == 0f
                     ? laid : BelowSurfaceLift(pose.DrawnStern - Vector2.up * pose.TideRise);
                 return laid;
             }
             _wakeHeading = transform.up;
+            _hasPose = false;
             trueStern = FoamBuffer.SternWorld(transform.position, _wakeHeading,
                                               _sternOffsetMeters, _bakeElevationDegrees);
             return trueStern;
+        }
+
+        /// <summary>
+        /// Where foam is laid so the water draws it at a point of her hull: <paramref name="local"/> is in
+        /// her own plan frame (x to starboard, y toward the bow, metres from her centre, which sits one
+        /// stern offset ahead of her transom). Same two steps as her transom: projected the way her art is
+        /// drawn, then the surface's drawing lift inverted (way A).
+        /// </summary>
+        private Vector2 HullPointLaid(Vector2 local)
+        {
+            if (!_hasPose)
+                return HullContactFoam.ToDrawn(transform.position, _wakeHeading, local, _bakeElevationDegrees);
+            Vector2 centre = WakeRootMath.ProjectAlongHeading(_poseDrawnStern, _wakeHeading,
+                                                              _sternOffsetMeters, _bakeElevationDegrees);
+            return BelowSurfaceLift(HullContactFoam.ToDrawn(centre, _wakeHeading, local, _bakeElevationDegrees));
         }
 
         /// <summary>The ground point the water draws at <paramref name="drawn"/>.</summary>
@@ -288,7 +328,7 @@ namespace HiddenHarbours.Art
             // stern wave's root all follow it. `trueStern` is where she actually is, the tide's rise taken
             // back out: what asks about the sea or the ground UNDER her (the depth gate, the sea she rides)
             // reads it, never the drawn point.
-            Vector2 position = SternWorld(out Vector2 trueStern);
+            Vector2 stern = SternWorld(out Vector2 trueStern);
 
             var env = GameServices.Environment;
             IGameClock clock = GameServices.Clock;
@@ -343,17 +383,52 @@ namespace HiddenHarbours.Art
             float rawHeight = _animator.Sample(samplePos, GameServices.FetchAt(trueStern)).Height;
             float surfaceY = ShoreFadeMath.DisplacedHeight(rawHeight, depth, bandMeters, exaggeration);
 
+            // ---- her way through the water, in her own frame ----------------------------------------
+            // Speed THROUGH THE WATER, not over the ground: a boat carried along by the stream is
+            // stationary relative to the water she floats on and leaves no wake in it.
+            // Rendered heave/pitch move the anchor but are not forward drive through water.
+            // A moored visual moves with tide and waves; that movement is not travel.
+            Vector2 heading = _wakeHeading.sqrMagnitude > 1e-8f ? _wakeHeading.normalized : Vector2.up;
+            Vector2 through = Vector2.zero;
+            float yawRate = 0f;
+            if (_primed && dt > 0f && _way != VesselWay.Moored)
+            {
+                Vector2 overGround = _hullBody != null
+                    ? _hullBody.linearVelocity : (stern - _previousStern) / dt;
+                through = overGround - sample.CurrentVector;
+                yawRate = Vector2.SignedAngle(_previousHeading, heading) * Mathf.Deg2Rad / dt;
+            }
+            _previousStern = stern;
+            _previousHeading = heading;
+            float surge = Vector2.Dot(through, heading);
+            float sway = Vector2.Dot(through, new Vector2(heading.y, -heading.x));
+            HullFoamSettings hullFoam = GameServices.HullFoam;
+            float halfLength = _sternOffsetMeters;
+
+            // The trail is shed from the end that TRAILS: the bow, when she makes way astern (the owner,
+            // 2026-11-02: it "looks off when going in reverse"). A swap of ends is a jump of the anchor,
+            // so it starts the trail again exactly as a teleport does.
+            bool fromBow = halfLength > 0f && HullContactFoam.TrailFromBow(surge, _trailFromBow, in hullFoam);
+            bool swappedEnds = _primed && fromBow != _trailFromBow;
+            _trailFromBow = fromBow;
+            Vector2 position = fromBow ? HullPointLaid(new Vector2(0f, halfLength)) : stern;
+
             // A teleport is not way through the water. Re-prime rather than laying one capsule of
             // foam straight across the map (scene load, respawn, a debug warp).
             bool teleported = _primed &&
                               (position - _previousPosition).sqrMagnitude >
                               _teleportMeters * _teleportMeters;
 
-            if (!_primed || teleported || clockSeek || dt <= 0f)
+            if (!_primed || teleported || swappedEnds || clockSeek || dt <= 0f)
             {
                 // First tick after (re)entering the water: seed the history so the hull does not
                 // register a phantom slap from a standing start, and lay nothing this frame.
                 _previousPosition = position;
+                _trailFrom = position;
+                _trailOwed = 0f;
+                _trailOwedVigour = 0f;
+                _leadSeconds = 0f;
+                _sideSeconds = 0f;
                 _surfaceY = surfaceY;
                 _hullY = surfaceY;
                 _previousSurfaceY = surfaceY;
@@ -383,14 +458,11 @@ namespace HiddenHarbours.Art
             _hullY = FoamBuffer.FollowSurface(_previousHullY, surfaceY, _hullResponseSeconds, dt);
 
             // ---- the two motion channels ----------------------------------------------------------
-            // Speed THROUGH THE WATER, not over the ground: a boat carried along by the stream is
-            // stationary relative to the water she floats on and leaves no wake in it.
-            // Rendered heave/pitch move the anchor but are not forward drive through water.
-            // A moored visual moves with tide and waves; that movement is not travel.
-            Vector2 groundVelocity = _way == VesselWay.Moored ? Vector2.zero : _hullBody != null
-                ? _hullBody.linearVelocity : (position - _previousPosition) / dt;
+            // (Her way through the water is taken above, where the trailing end is chosen.)
             float wakeExponent = _way == VesselWay.Moored ? _mooredWakeExponent : _wakeExponent;
-            float horizontalSpeed = (groundVelocity - sample.CurrentVector).magnitude;
+            // A moored hull makes no way of her own, so she has no leading end and no swept side; but the
+            // stream still runs past her, and that is the speed her trail and her wave train are gated on.
+            float horizontalSpeed = _way == VesselWay.Moored ? sample.CurrentVector.magnitude : through.magnitude;
             float verticalRate = FoamBuffer.RelativeHeaveRate(_surfaceY, _hullY,
                                                               _previousSurfaceY, _previousHullY, dt);
 
@@ -423,13 +495,53 @@ namespace HiddenHarbours.Art
                                                      out float share);
             if (share > 0f && rate01 > 1e-6f) amount *= 1f - share * (wake01 / rate01);
 
-            // The capsule from last frame's position to this one — continuous at any frame rate.
-            _pending = new FoamInjection(_previousPosition, position, RadiusMeters,
-                                         Mathf.Clamp01(amount), vigour, in dispersal);
-            // The dispersal can outlive the stamp it was taken from: a gently-working hull whose
-            // amount rounds toward nothing may still have a live edge, and dropping the injection
-            // would drop that too.
-            _hasPending = amount > 1e-5f || dispersal.IsActive;
+            // ---- THE WHOLE HULL (the owner, 2026-11-02) ------------------------------------------
+            // The end she drives into the water and the side she pushes through it foam too. A hull
+            // has one capsule a frame, so on its turn a contact stamp takes the frame and the trail's
+            // amount is owed to the trail's next capsule, which spans both frames: nothing is lost and
+            // nothing is laid twice. With no contact (at rest, or the weights at 0) every frame is the
+            // trail's and this is the capsule the game laid before.
+            float halfBeam = RadiusMeters;
+            HullContactFoam.Stamp lead = HullContactFoam.Lead(surge, halfLength, halfBeam, in hullFoam);
+            HullContactFoam.Stamp side = HullContactFoam.Side(sway, yawRate, halfLength, halfBeam, in hullFoam);
+            _leadSeconds = lead.IsActive ? Mathf.Min(_leadSeconds + dt, MaxOwedSeconds) : 0f;
+            _sideSeconds = side.IsActive ? Mathf.Min(_sideSeconds + dt, MaxOwedSeconds) : 0f;
+            _turn = lead.IsActive || side.IsActive ? (_turn + 1) & 3 : 0;
+            // Turns: trail, one contact stamp, trail, the other. A stamp with nothing to lay hands its
+            // turn to the other, so a hull running dead straight alternates trail and bow.
+            bool contactTurn = (_turn & 1) == 1;
+            bool leadTurn = contactTurn && (lead.IsActive && (_turn == 1 || !side.IsActive));
+            bool sideTurn = contactTurn && !leadTurn && side.IsActive;
+
+            if (leadTurn || sideTurn)
+            {
+                HullContactFoam.Stamp stamp = leadTurn ? lead : side;
+                float seconds = leadTurn ? _leadSeconds : _sideSeconds;
+                if (leadTurn) _leadSeconds = 0f; else _sideSeconds = 0f;
+                float perSecond = Mathf.Max(_depositPerSecond, 0f) * Mathf.Max(_strength, 0f);
+                float stampAmount = stamp.Rate01 * perSecond * seconds;
+                _trailOwed += amount;
+                _trailOwedVigour = Mathf.Max(_trailOwedVigour, vigour);
+                _pending = new FoamInjection(HullPointLaid(stamp.From), HullPointLaid(stamp.To), stamp.Radius,
+                                             Mathf.Clamp01(stampAmount),
+                                             Mathf.Clamp01(stamp.Rate01 * Mathf.Max(_strength, 0f)), in dispersal);
+                _hasPending = stampAmount > 1e-5f || dispersal.IsActive;
+            }
+            else
+            {
+                amount += _trailOwed;
+                vigour = Mathf.Max(vigour, _trailOwedVigour);
+                _trailOwed = 0f;
+                _trailOwedVigour = 0f;
+                // The capsule from the trail's last capsule to here — continuous at any frame rate.
+                _pending = new FoamInjection(_trailFrom, position, RadiusMeters,
+                                             Mathf.Clamp01(amount), vigour, in dispersal);
+                _trailFrom = position;
+                // The dispersal can outlive the stamp it was taken from: a gently-working hull whose
+                // amount rounds toward nothing may still have a live edge, and dropping the injection
+                // would drop that too.
+                _hasPending = amount > 1e-5f || dispersal.IsActive;
+            }
             _pendingFrame = Time.frameCount;
 
             // ---- THE WAKE LIFT (water PR F, register row 27) --------------------------------------
@@ -640,10 +752,17 @@ namespace HiddenHarbours.Art
         {
             // The same forward direction the stern offset is measured along, so the train's axis and
             // its root can never disagree about which way she is pointing.
-            Vector2 heading = _wakeHeading;
+            // Making way astern she trails her wave train off the bow, so the train's "ahead" is her stern.
+            Vector2 heading = _trailFromBow ? -_wakeHeading : _wakeHeading;
             float mag = heading.magnitude;
             heading = mag > 1e-6f ? heading / mag : Vector2.up;
-            FoamInjectionRegistry.PublishWakeLift(root, heading, wavelengthMetres, RadiusMeters, gate01);
+            // Her leading end as she is DRAWN (the same foreshortening the root took), measured along the
+            // heading from the end she trails from, whichever that is.
+            // Laid the way the root is laid (the same below-surface shift), or the two ends disagree by
+            // that shift and the mound stands off her stem.
+            Vector2 lead = HullPointLaid(new Vector2(0f, _trailFromBow ? -_sternOffsetMeters : _sternOffsetMeters));
+            FoamInjectionRegistry.PublishWakeLift(root, heading, wavelengthMetres, RadiusMeters, gate01,
+                                                  Mathf.Max(Vector2.Dot(lead - root, heading), 0f));
         }
     }
 }

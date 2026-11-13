@@ -146,6 +146,9 @@ namespace HiddenHarbours.App.Editor
             // 0.28 → 0.46), so back-to-back with SportSkiff is the only way to feel the reshape; and at
             // 5.19 m/s she keeps the ramp monotonic on the way up to the twin's 5.63.
             "SportSkiffMk2",
+            // 5.50 m/s: the jetski, by speed between the Mk2 and the twin. The smallest hull on the
+            // ramp and the only jet-driven one (her wash is a narrow stream, BoatHullDef.WakeStyle).
+            "JetSki",
             "SportSkiffTwin",
             // 5.65 m/s: the go-fast closes the recreational ramp before the 5.70 m/s FRC.
             "GoFast",

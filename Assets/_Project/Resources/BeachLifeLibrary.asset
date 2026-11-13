@@ -13,7 +13,15 @@ MonoBehaviour:
   m_Name: BeachLifeLibrary
   m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.BeachLifeLibrary
   Activities:
+  - {fileID: 11400000, guid: c1d7e4a09b3f4f2a8e6d5c4b3a291807, type: 2}
+  - {fileID: 11400000, guid: 7e2b9c4d1a6f4b3e9d8c0f1e2a3b4c5d, type: 2}
   - {fileID: 11400000, guid: dd8ba62b370747fc9d304d9bb5b292ee, type: 2}
+  - {fileID: 11400000, guid: b3a1f0c27d5e4c8e9a6b1d2e3f405162, type: 2}
+  - {fileID: 11400000, guid: 5c9e7a1b3d2f4e60a8b7c6d5e4f30211, type: 2}
   - {fileID: 11400000, guid: c679955b8201414590ca6f1df9179463, type: 2}
   - {fileID: 11400000, guid: a79cc944ed404cdca2d7012ff0f40aaa, type: 2}
   - {fileID: 11400000, guid: fa52b85ddbcb48d0a23de6a3534427fb, type: 2}
+  - {fileID: 11400000, guid: 9d8c7b6a5f4e4d3c8b2a190817263544, type: 2}
+  - {fileID: 11400000, guid: 3f6a8d2c5b914e7fa1c0b9e8d7f6a5b4, type: 2}
+  - {fileID: 11400000, guid: dddc586b16e9ac6fb5a68e1259134f87, type: 2}
+  - {fileID: 11400000, guid: 52d6aee6fd7003acf483f1fb016214d1, type: 2}

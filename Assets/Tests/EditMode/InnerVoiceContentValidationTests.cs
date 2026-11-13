@@ -90,6 +90,15 @@ namespace HiddenHarbours.Tests.EditMode
                         $"{path}: '{d.Id}' fires on an interact offer but names no SubjectId, so nothing " +
                         "can ever match it");
                 }
+                else if (d.Trigger == InnerVoiceTrigger.Cue)
+                {
+                    Assert.IsFalse(string.IsNullOrWhiteSpace(d.SubjectId),
+                        $"{path}: '{d.Id}' answers a Core cue but names no cue id in SubjectId, so no " +
+                        "cue can ever match it");
+                    Assert.IsTrue(d.SubjectId.StartsWith("cue."),
+                        $"{path}: '{d.Id}' names cue '{d.SubjectId}' — cue ids are cue.module.snake_case " +
+                        "(Core InnerVoiceCues)");
+                }
                 else
                 {
                     Assert.IsFalse(string.IsNullOrWhiteSpace(d.RegionId),

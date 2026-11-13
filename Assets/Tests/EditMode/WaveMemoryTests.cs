@@ -1,3 +1,4 @@
+using HiddenHarbours.Tests.Support;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -214,10 +215,11 @@ namespace HiddenHarbours.Tests.EditMode
             var wind = new RegionWind { Seed = 4242, Profile = WindProfile.CoddleCove };
             var animator = new WaveFieldAnimator();
             for (int i = 0; i < 1000; i++) animator.Tick(i * 0.1, wind, in field);
-            long before = GC.GetAllocatedBytesForCurrentThread();
+            using var allocation = new ManagedAllocationProbe();
+            allocation.Begin();
             for (int i = 0; i < 10000; i++) animator.Tick(i * 0.1, wind, in field);
-            long bytes = GC.GetAllocatedBytesForCurrentThread() - before;
-            Assert.AreEqual(0, bytes);
+            long allocationEvents = allocation.End();
+            Assert.AreEqual(0, allocationEvents);
         }
     }
 }

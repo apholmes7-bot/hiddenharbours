@@ -582,16 +582,13 @@ namespace HiddenHarbours.Tools.RigBaking
                     ["F"] = "F.concat(doorFaces({doorOpen:0}))",
                 },
 
-                // ---- the cutaway kit's pass-3 tie pair (2026-08-26) ------------------------------
-                // Same posed-leaf rule as the lobster above: pass 3 gave both ships a hinged door
-                // whose leaf lives in doorFaces(opts), composed by their own render() as
-                // `F.concat(doorFaces(opts))`. Bare `F` was correct for their pass-1 rigs and stops
-                // being the drawn boat at pass 3. doorOpen 0 = closed = the fleet default.
-                ["sternTrawlerIsoRig.js"] = new Dictionary<string, string>(StringComparer.Ordinal)
-                {
-                    ["F"] = "F.concat(doorFaces({doorOpen:0}))",
-                },
-
+                // ---- the cutaway kit's pass-3 packet (2026-08-26) ---------------------------------
+                // Same posed-leaf rule as the lobster above: pass 3 gave her a hinged door whose leaf
+                // lives in doorFaces(opts), composed by her own render() as
+                // `F.concat(doorFaces(opts))`. Bare `F` was correct for her pass-1 rig and stops
+                // being the drawn boat at pass 3. doorOpen 0 = closed = the fleet default. (The stern
+                // trawler shared this rule until she moved to the hull layout, whose extraction reads
+                // her published scope and never reaches this table.)
                 ["coastalPacketIsoRig.js"] = new Dictionary<string, string>(StringComparer.Ordinal)
                 {
                     ["F"] = "F.concat(doorFaces({doorOpen:0}))",
@@ -618,16 +615,10 @@ namespace HiddenHarbours.Tools.RigBaking
                 //     tanker               1,932 + 16
                 // Every leaf face carries lv:'house' on all three, so a cutaway takes the door with
                 // the room it closes rather than leaving it hanging over an opened wheelhouse.
-                ["sideDraggerIsoRig.js"] = new Dictionary<string, string>(StringComparer.Ordinal)
-                {
-                    ["F"] = "F.concat(doorFaces({doorOpen:0}))",
-                },
-
-                ["sternTrawlerMk2IsoRig.js"] = new Dictionary<string, string>(StringComparer.Ordinal)
-                {
-                    ["F"] = "F.concat(doorFaces({doorOpen:0}))",
-                },
-
+                // (The stern trawler Mk II was the middle one of the three until she followed the Mk1
+                // to the hull layout, whose extraction reads her published scope and never reaches
+                // this table; her measured line above is kept as the record. The dragger, the first
+                // of the three, followed them and left the table the same way; her line is kept too.)
                 ["tankerIsoRig.js"] = new Dictionary<string, string>(StringComparer.Ordinal)
                 {
                     ["F"] = "F.concat(doorFaces({doorOpen:0}))",
@@ -1600,6 +1591,10 @@ namespace HiddenHarbours.Tools.RigBaking
         /// <summary>Optional JS for the fitting's articulation limits and mounts; null when it does
         /// not steer, tilt, or carry more than one instance.</summary>
         public string MaxSteerCall, MaxTiltCall, LateralMountsCall;
+
+        /// <summary>Optional JS for the axis a steered fitting turns about, as [x,y,z] in rig space;
+        /// null for a fitting that swivels straight up (every outboard).</summary>
+        public string SteerAxisCall;
 
         /// <summary>The rig's backface rule for THIS fitting — see
         /// <see cref="RigMeshData.BackfaceRescueNeedsOptIn"/>.</summary>

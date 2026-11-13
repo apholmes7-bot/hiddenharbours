@@ -187,36 +187,12 @@ namespace HiddenHarbours.Tests.RigBaking
                 $"Whole-cell divergence beyond ADR 0022's measured shader class:\n{report}");
         }
 
-        /// <summary>The hull that motivated the ADR — one heading, to prove the class scales.</summary>
-        [Test]
-        public void UrpPass_SideDragger_ReproducesTheOracle()
-        {
-            RequireAGraphicsDevice();
-
-            RigMeshData data;
-            using (var host = RigScriptHostFactory.Create())
-                data = RigMeshExtractor.ExtractFrom(
-                    host, "docs/art/rigs/sideDraggerIsoRig.js", "SideDraggerIso");
-            var build = RigMeshBuilder.Build(data);
-            try
-            {
-                using var scene = new HullScene(data, build.Mesh);
-                var view = new RigViewOptions(3, data.DefaultElev);
-                scene.SetPose(view);
-                byte[] gpu = scene.Render();
-                byte[] oracle = RigMeshReferenceRasterizer.RenderFromMesh(data, build.Mesh, view);
-                var diff = RigMeshReferenceRasterizer.Compare(oracle, gpu, data.W, data.H);
-                Debug.Log($"[iso-facet-urp] dragger {view.ToJsArgs()}: {diff}");
-
-                Assert.LessOrEqual(diff.LargestDifferingCluster, MaxGpuNoiseCluster,
-                    $"dragger {view.ToJsArgs()}: connected divergence ({diff}) on the 25 m hull.");
-                Assert.Less(diff.PercentDiffering, MaxGpuPercent, $"dragger: {diff}");
-            }
-            finally
-            {
-                Object.DestroyImmediate(build.Mesh);
-            }
-        }
+        // RETIRED: UrpPass_SideDragger_ReproducesTheOracle, a one-heading second-hull case. The side
+        // dragger was rebuilt to the hull layout (a new-layout rig), and this pass draws old-layout
+        // extractions, so she left it. UrpPass_ReproducesTheOracle_AcrossHeadingsAndRock above still
+        // guards the pass, on the lobster boat at four views. The punt was tried in her place and
+        // measured 5.65 % against the limit of under 5 (largest patch 16 against 300); that is an open
+        // finding, not explained, and no limit was moved for it.
 
         // ------------------------------------------------------------------ dither lock
 

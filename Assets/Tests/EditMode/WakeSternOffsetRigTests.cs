@@ -49,6 +49,7 @@ namespace HiddenHarbours.Tests.EditMode
             // This tender's station ends are +/-2.55; L and LOA also include different overhangs.
             ("YachtTenderIsoHullMesh", "yachtTenderIsoRig.js", @"\byT\s*=\s*(-[0-9.]+)"),
             ("BowriderIsoHullMesh",      "bowriderIsoRig.js",      @"\bconst L\s*=\s*([0-9.]+)"),
+            ("JetSkiIsoHullMesh",        "jetSkiIsoRig.js",        @"\bconst L\s*=\s*([0-9.]+)"),
             ("ExpressCruiserIsoHullMesh", "cruiserIsoRig.js",      @"\bconst L\s*=\s*([0-9.]+)"),
             ("GoFastIsoHullMesh",        "goFastIsoRig.js",        @"\bconst L\s*=\s*([0-9.]+)"),
             ("CapeIslanderIsoHullMesh",  "capeIslanderIsoRig.js",  @"\bconst L\s*=\s*([0-9.]+)"),
@@ -184,7 +185,7 @@ namespace HiddenHarbours.Tests.EditMode
             }
 
             TestContext.WriteLine(report.ToString());
-            Assert.AreEqual(42, checkedHulls, "39 fleet hulls plus the expedition yacht, her tender and the motor yacht 84; this table must cover every mesh.");
+            Assert.AreEqual(43, checkedHulls, "39 fleet hulls plus the expedition yacht, her tender, the motor yacht 84 and the jetski; this table must cover every mesh.");
             Assert.IsEmpty(failures.ToString(), "\n" + failures);
         }
 

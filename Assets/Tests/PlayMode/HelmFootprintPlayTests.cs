@@ -51,6 +51,7 @@ namespace HiddenHarbours.Tests.PlayMode
             BoatUiWindows.Reset();
             HelmInstrumentExpansion.Collapse();
             HelmFootprint.Reset();
+            QuestNoteFootprint.Reset();
         }
 
         [TearDown]
@@ -218,15 +219,15 @@ namespace HiddenHarbours.Tests.PlayMode
             Rect stack = DevToast.StackScreenRect(w, h, ToastBaseY + toast.Lift, ToastSpacing, ToastSlots);
             Assert.IsFalse(Meets(in covered, stack), $"{what}: the toast's stack {stack} meets {covered}");
 
-            // The popup: straight up its own column.
-            Vector2 popupHome = InteractPopupLayout.PanelAnchoredPosition();
+            // The popup: clear of what is covered, and off the note that is up beside it.
+            Rect tasks = QuestNoteFootprint.Current;
+            Assert.IsFalse(QuestNoteFootprint.IsNone, $"{what}: the note says where it stands");
             Vector2 popupAt = popup.Panel.anchoredPosition;
-            AssertAt(InteractPopupLayout.PanelAnchoredPosition(in covered, w, h), popupAt,
-                     $"{what}: the popup reads the seam");
-            Assert.AreEqual(popupHome.x, popupAt.x, PlaceTolerance, $"{what}: the popup keeps its column");
-            Rect panel = InteractPopupLayout.PanelScreenRect(w, h);
-            panel.y += (popupAt.y - popupHome.y) * HudBandLayout.ScaleFactor(w, h);
+            AssertAt(InteractPopupLayout.PanelAnchoredPosition(in covered, tasks, w, h), popupAt,
+                     $"{what}: the popup reads both seams");
+            Rect panel = InteractPopupLayout.PanelScreenRect(in covered, tasks, w, h);
             Assert.IsFalse(Meets(in covered, panel), $"{what}: the popup {panel} meets {covered}");
+            Assert.IsFalse(panel.Overlaps(tasks), $"{what}: the popup {panel} is on the note {tasks}");
 
             // The note: straight up out of its corner.
             QuestPanelFit fit = note.Fit;
@@ -245,8 +246,10 @@ namespace HiddenHarbours.Tests.PlayMode
                                                    InteractPopup popup)
         {
             Assert.AreEqual(0f, toast.Lift, $"{what}: the toast stands on its authored base");
-            AssertAt(InteractPopupLayout.PanelAnchoredPosition(), popup.Panel.anchoredPosition,
-                     $"{what}: the popup is home");
+            // "Home" for the popup is its corner less the note that is up in it (QuestNoteFootprint).
+            AssertAt(InteractPopupLayout.PanelAnchoredPosition(HelmFootprintArea.None, QuestNoteFootprint.Current,
+                                                               Screen.width, Screen.height),
+                     popup.Panel.anchoredPosition, $"{what}: the popup is home, off the note");
             AssertAt(QuestPanelLayout.AnchoredPosition(note.Fit), NoteRect(note).anchoredPosition,
                      $"{what}: the note is in its corner");
         }

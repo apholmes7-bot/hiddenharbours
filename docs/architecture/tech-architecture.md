@@ -323,7 +323,7 @@ lists the places and holds the gull's `GullScheduleTuning`.
 sea (storm, visibility, tide) into how many birds it holds, from `(worldSeed, gameTime)` alone.
 `GullRoster` gives each bird slot its place (at the haunt, at the roost, commuting or away) and its
 spot. A bird left behind is where it was when the view comes back. `GullFlock` (Art) ticks the
-roster `ScheduleTicksPerSecond` times a second and binds its pool of `GullConfig.Count` drawn birds
+roster `ScheduleTicksPerSecond` times a second and binds its pool of `MaxBirdsDrawn` drawn birds (the library's tuning, beside `MaxSchoolGullsInView`)
 to the slots nearest the view.
 
 The flock publishes those birds through Core's `IBirdPresence`. `GameServices.BirdPresence` is never

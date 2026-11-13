@@ -10,118 +10,215 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f8e963cec94c290ca72be0cf932b826b, type: 3}
-  m_Name: SideDraggerIso
+  m_Name: 
   m_EditorClassIdentifier: HiddenHarbours.Boats::HiddenHarbours.Boats.BoatDeckDef
   Id: deck.side_dragger_iso
-  SourceSidecar: docs/art/rigs/gameplay/sideDraggerIsoRig.gameplay.json
+  SourceSidecar: docs/art/rigs/gameplay/sideDraggerIsoRig.side_dragger.walk.json
   SourceRig: docs/art/rigs/sideDraggerIsoRig.js
-  DerivedFromRigSha256: 4ca48880a8427fdbc72439d36766cc2f205d9edf6b9b6297a082b12b254650f9
+  DerivedFromRigSha256: 63d491f7fff0610d9d8fb926ee176999015e00c476f6934f5a3e3a70436639e3
   LoaMeters: 25
   Areas:
   - Id: aft_deck
     Kind: 0
     Outline:
-    - {x: 1.89, y: -12.1}
-    - {x: 1.993, y: -11.725}
-    - {x: 2.096, y: -11.35}
-    - {x: 2.198, y: -10.975}
-    - {x: 2.3, y: -10.6}
-    - {x: -2.3, y: -10.6}
-    - {x: -2.198, y: -10.975}
-    - {x: -2.096, y: -11.35}
-    - {x: -1.993, y: -11.725}
-    - {x: -1.89, y: -12.1}
+    - {x: 1.621, y: -11.48}
+    - {x: 2.045, y: -9.91}
+    - {x: -2.045, y: -9.91}
+    - {x: -1.621, y: -11.48}
+    Holes: []
     HeightPlane: {x: 0, y: 0, z: 2.05}
     HeightResidualMax: 0
-    Bounds: {x: -2.3, y: -12.1, z: 2.3, w: -10.6}
-  - Id: house_alley_port
-    Kind: 0
-    Outline:
-    - {x: -2.35, y: -9.48}
-    - {x: -2.35, y: -4.6}
-    - {x: -3.137, y: -4.6}
-    - {x: -3.067, y: -5.82}
-    - {x: -2.939, y: -7.04}
-    - {x: -2.777, y: -8.26}
-    - {x: -2.6, y: -9.48}
-    HeightPlane: {x: 0, y: 0, z: 2.05}
-    HeightResidualMax: 0
-    Bounds: {x: -3.137, y: -9.48, z: -2.35, w: -4.6}
+    Bounds: {x: -2.045, y: -11.48, z: 2.045, w: -9.91}
   - Id: house_alley_star
     Kind: 0
     Outline:
-    - {x: 2.6, y: -9.48}
-    - {x: 2.777, y: -8.26}
-    - {x: 2.939, y: -7.04}
-    - {x: 3.067, y: -5.82}
-    - {x: 3.137, y: -4.6}
-    - {x: 2.35, y: -4.6}
-    - {x: 2.35, y: -9.48}
+    - {x: 1.96, y: -10}
+    - {x: 2.021, y: -10}
+    - {x: 2.155, y: -9.5}
+    - {x: 2.238, y: -9}
+    - {x: 2.569, y: -6.5}
+    - {x: 2.616, y: -6}
+    - {x: 2.731, y: -4}
+    - {x: 1.96, y: -4}
+    Holes: []
     HeightPlane: {x: 0, y: 0, z: 2.05}
     HeightResidualMax: 0
-    Bounds: {x: 2.35, y: -9.48, z: 3.137, w: -4.6}
-  - Id: working_deck
+    Bounds: {x: 1.96, y: -10, z: 2.731, w: -4}
+  - Id: house_alley_port
     Kind: 0
     Outline:
-    - {x: 3.137, y: -4.6}
-    - {x: 3.222, y: -3.088}
-    - {x: 3.223, y: -1.575}
-    - {x: 3.224, y: -0.062}
-    - {x: 3.166, y: 1.45}
-    - {x: 3.103, y: 2.963}
-    - {x: 2.902, y: 4.475}
-    - {x: 2.678, y: 5.988}
-    - {x: 2.229, y: 7.5}
-    - {x: -2.229, y: 7.5}
-    - {x: -2.678, y: 5.988}
-    - {x: -2.902, y: 4.475}
-    - {x: -3.103, y: 2.963}
-    - {x: -3.166, y: 1.45}
-    - {x: -3.224, y: -0.062}
-    - {x: -3.223, y: -1.575}
-    - {x: -3.222, y: -3.088}
-    - {x: -3.137, y: -4.6}
-    HeightPlane: {x: 0, y: 2.5881502e-17, z: 2.05}
+    - {x: -1.96, y: -4}
+    - {x: -2.731, y: -4}
+    - {x: -2.616, y: -6}
+    - {x: -2.569, y: -6.5}
+    - {x: -2.238, y: -9}
+    - {x: -2.155, y: -9.5}
+    - {x: -2.021, y: -10}
+    - {x: -1.96, y: -10}
+    Holes: []
+    HeightPlane: {x: 0, y: 0, z: 2.05}
     HeightResidualMax: 0
-    Bounds: {x: -3.224, y: -4.6, z: 3.224, w: 7.5}
-  - Id: focsle_deck
+    Bounds: {x: -2.731, y: -10, z: -1.96, w: -4}
+  - Id: trawl_deck
     Kind: 0
     Outline:
-    - {x: 2.46, y: 7.915}
-    - {x: 2.263, y: 8.795}
-    - {x: 2.065, y: 9.671}
-    - {x: 1.678, y: 10.537}
-    - {x: 1.145, y: 11.388}
-    - {x: 0.612, y: 12.218}
-    - {x: 0.079, y: 13.021}
-    - {x: -0.079, y: 13.021}
-    - {x: -0.612, y: 12.218}
-    - {x: -1.145, y: 11.388}
-    - {x: -1.678, y: 10.537}
-    - {x: -2.065, y: 9.671}
-    - {x: -2.263, y: 8.795}
-    - {x: -2.46, y: 7.915}
-    HeightPlane: {x: 0, y: 0.23593915, z: 1.380408}
-    HeightResidualMax: 0.044133663
-    Bounds: {x: -2.46, y: 7.915, z: 2.46, w: 13.021}
+    - {x: 2.715, y: -4.29}
+    - {x: 2.781, y: -3.137}
+    - {x: 2.784, y: -0.062}
+    - {x: 2.771, y: 0.349}
+    - {x: 2.11, y: 0.351}
+    - {x: 2.001, y: 3.012}
+    - {x: 1.958, y: 3.397}
+    - {x: 1.718, y: 5.049}
+    - {x: 2.378, y: 5.051}
+    - {x: 2.222, y: 6.087}
+    - {x: 2.142, y: 6.421}
+    - {x: 1.874, y: 7.24}
+    - {x: -1.32, y: 7.24}
+    - {x: -1.32, y: 6.421}
+    - {x: -2.143, y: 6.419}
+    - {x: -2.222, y: 6.087}
+    - {x: -2.618, y: 3.397}
+    - {x: -2.661, y: 3.012}
+    - {x: -2.772, y: 0.322}
+    - {x: -2.784, y: -0.062}
+    - {x: -2.781, y: -3.137}
+    - {x: -2.715, y: -4.29}
+    Holes:
+    - Outline:
+      - {x: -1.86, y: -4.13}
+      - {x: 1.86, y: -4.13}
+      - {x: 1.86, y: -2.67}
+      - {x: -1.86, y: -2.67}
+    - Outline:
+      - {x: -2.58, y: -2.43}
+      - {x: -0.82, y: -2.43}
+      - {x: -0.82, y: 0.43}
+      - {x: -2.58, y: 0.43}
+    - Outline:
+      - {x: -1.44, y: 0.46}
+      - {x: 1.44, y: 0.46}
+      - {x: 1.44, y: 6.14}
+      - {x: -1.44, y: 6.14}
+    - Outline:
+      - {x: 1.52, y: 5.67}
+      - {x: 2.18, y: 5.67}
+      - {x: 2.18, y: 6.33}
+      - {x: 1.52, y: 6.33}
+    - Outline:
+      - {x: 2.07, y: -2.63}
+      - {x: 2.73, y: -2.63}
+      - {x: 2.73, y: -1.97}
+      - {x: 2.07, y: -1.97}
+    HeightPlane: {x: 9.432812e-19, y: -4.5151607e-17, z: 2.05}
+    HeightResidualMax: 0
+    Bounds: {x: -2.784, y: -4.29, z: 2.784, w: 7.24}
+  - Id: focsle_deck_1c
+    Kind: 0
+    Outline:
+    - {x: 2.34, y: 7.73}
+    - {x: 2.34, y: 7.879}
+    - {x: 2.335, y: 7.929}
+    - {x: 1.874, y: 9.963}
+    - {x: 1.857, y: 10.013}
+    - {x: 1.63, y: 10.41}
+    - {x: -1.63, y: 10.41}
+    - {x: -1.857, y: 10.013}
+    - {x: -1.874, y: 9.963}
+    - {x: -2.335, y: 7.929}
+    - {x: -2.34, y: 7.879}
+    - {x: -2.34, y: 7.73}
+    Holes:
+    - Outline:
+      - {x: -0.99, y: 9.01}
+      - {x: 0.99, y: 9.01}
+      - {x: 0.99, y: 10.19}
+      - {x: -0.99, y: 10.19}
+    - Outline:
+      - {x: -0.78, y: 9.73}
+      - {x: 0.78, y: 9.73}
+      - {x: 0.78, y: 11.43}
+      - {x: -0.78, y: 11.43}
+    - Outline:
+      - {x: 0.49, y: 8.09}
+      - {x: 1.21, y: 8.09}
+      - {x: 1.21, y: 9.11}
+      - {x: 0.49, y: 9.11}
+    - Outline:
+      - {x: -0.49, y: 9.11}
+      - {x: -1.21, y: 9.11}
+      - {x: -1.21, y: 8.09}
+      - {x: -0.49, y: 8.09}
+    HeightPlane: {x: 0, y: 0.19291042, z: 1.7628025}
+    HeightResidualMax: 0
+    Bounds: {x: -2.34, y: 7.73, z: 2.34, w: 10.41}
+  - Id: focsle_deck_2c
+    Kind: 0
+    Outline:
+    - {x: 1.63, y: 10.41}
+    - {x: 0.305, y: 12.52}
+    - {x: -0.305, y: 12.52}
+    - {x: -1.63, y: 10.41}
+    Holes:
+    - Outline:
+      - {x: -0.78, y: 9.73}
+      - {x: 0.78, y: 9.73}
+      - {x: 0.78, y: 11.43}
+      - {x: -0.78, y: 11.43}
+    HeightPlane: {x: 0, y: 0.26540273, z: 1.0121576}
+    HeightResidualMax: 0
+    Bounds: {x: -1.63, y: 10.41, z: 1.63, w: 12.52}
+  - Id: house_doorway
+    Kind: 0
+    Outline:
+    - {x: -0.27, y: -9.95}
+    - {x: 0.17, y: -9.95}
+    - {x: 0.17, y: -9.27}
+    - {x: -0.27, y: -9.27}
+    Holes: []
+    HeightPlane: {x: 0, y: 0, z: 2.05}
+    HeightResidualMax: 0
+    Bounds: {x: -0.27, y: -9.95, z: 0.17, w: -9.27}
+  - Id: wheelhouse_doorway
+    Kind: 0
+    Outline:
+    - {x: 0.78, y: -8.55}
+    - {x: 0.97, y: -8.55}
+    - {x: 0.97, y: -7.87}
+    - {x: 0.78, y: -7.87}
+    Holes: []
+    HeightPlane: {x: 0, y: 0, z: 4.56}
+    HeightResidualMax: 0
+    Bounds: {x: 0.78, y: -8.55, z: 0.97, w: -7.87}
+  - Id: boat_deck
+    Kind: 0
+    Outline:
+    - {x: 0.71, y: -9.4}
+    - {x: 1.47, y: -9.4}
+    - {x: 1.47, y: -8.46}
+    - {x: 0.71, y: -8.46}
+    Holes: []
+    HeightPlane: {x: 0, y: 0, z: 4.56}
+    HeightResidualMax: 0
+    Bounds: {x: 0.71, y: -9.4, z: 1.47, w: -8.46}
   Cleats:
   - Id: bow_1
     Type: samson_post
-    PositionMeters: {x: 0, y: 12.161, z: 4.414}
+    PositionMeters: {x: 0, y: 11.7, z: 4.395}
   - Id: bow_port
     Type: bollard
-    PositionMeters: {x: -0.85, y: 8.6, z: 3.885}
+    PositionMeters: {x: -0.85, y: 8.6, z: 3.765}
   - Id: bow_star
     Type: bollard
-    PositionMeters: {x: 0.85, y: 8.6, z: 3.885}
+    PositionMeters: {x: 0.85, y: 8.6, z: 3.765}
   - Id: quarter_port
     Type: bollard
-    PositionMeters: {x: -1.75, y: -11.8, z: 2.15}
+    PositionMeters: {x: -1.619, y: -11.85, z: 2.43}
   - Id: quarter_star
     Type: bollard
-    PositionMeters: {x: 1.75, y: -11.8, z: 2.15}
-  HasHelmStation: 0
-  HelmStationLocalMeters: {x: 0, y: 0, z: 0}
-  HelmStationSource: 
-  WalkCenter: {x: 0, y: 0.46049976}
-  WalkHalfExtents: {x: 3.224, y: 12.5605}
+    PositionMeters: {x: 1.619, y: -11.85, z: 2.43}
+  HasHelmStation: 1
+  HelmStationLocalMeters: {x: 0.3, y: -6, z: 5.09}
+  HelmStationSource: anchors.helm
+  WalkCenter: {x: 0, y: 0.52000046}
+  WalkHalfExtents: {x: 2.784, y: 12}

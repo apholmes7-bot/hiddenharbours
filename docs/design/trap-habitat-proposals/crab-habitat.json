@@ -1,0 +1,15 @@
+{
+  "Id": "trap_habitat.nmc_mud_crab_proposal",
+  "Settings": {
+    "SpeciesId": "fish.nmc_mud_crab_proposal",
+    "RockAffinity01": 0.15,
+    "MudAffinity01": 1,
+    "SandAffinity01": 0.35,
+    "Centre": { "x": 0, "y": 0 },
+    "MigrationVector": { "x": -90, "y": 60 },
+    "RadiusMetres": 160,
+    "OffCentreDensity01": 0.1,
+    "PeriodGameSeconds": 201600,
+    "Phase01": 0.25
+  }
+}

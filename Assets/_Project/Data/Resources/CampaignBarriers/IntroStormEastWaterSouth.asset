@@ -1,0 +1,37 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2da1889194d44fb58f8bb4dfe465f1d1, type: 3}
+  m_Name: IntroStormEastWaterSouth
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.CampaignBarrierDef
+  Id: campaign_barrier.intro_storm_east_water_south
+  Description: The storm that stands along the East Water's south edge until the
+    dory is repaired. It turns a boat back before she reaches the way down to the
+    South Water.
+  RegionId: region.east_water
+  EdgePoint: {x: 0, y: -260}
+  InwardNormal: {x: 0, y: 1}
+  HalfLengthMetres: 0
+  LiftedByFlag: onboarded
+  StartDistanceMetres: 170
+  FullDistanceMetres: 90
+  LimitDistanceMetres: 60
+  PushAcceleration: 1.2
+  LimitStiffness: 2
+  LimitDamping: 2
+  MaxPushAcceleration: 8
+  StormWindSpeed: 22
+  StormVisibility01: 0.2
+  StormSeaState01: 0.9
+  Line: The sky has gone black to the south, and the wind is setting me back. Not
+    that way. Not yet.
+  LineAtStorm01: 0.35
+  LineCooldownSeconds: 60

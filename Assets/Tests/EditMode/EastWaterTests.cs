@@ -212,7 +212,7 @@ namespace HiddenHarbours.Tests.EditMode
             var all = FishAssets();
             var expected = all.Where(f => f.RegionAllowed("region.st_peters") &&
                 (f.DepthBands == FishDepthBand.None || (f.DepthBands & band) != 0)).ToArray();
-            Assert.AreEqual(9, expected.Length, "review the authored species set if it changes");
+            Assert.AreEqual(11, expected.Length, "review the authored species set if it changes");
             foreach (var fish in all)
                 Assert.AreEqual(expected.Contains(fish), fish.RegionAllowed(EastWaterPlan.RegionId),
                     AssetDatabase.GetAssetPath(fish));

@@ -986,7 +986,10 @@ namespace HiddenHarbours.App.Editor
             h.LengthMeters = 7.0f;              // art fact: the 244 px hull cell at PPU 32, less its padding
             h.DraughtMeters = 0.55f; h.MassKg = 1200f;
             h.HoldUnits = 20; h.CrewSlots = 2;  // the workboat's whole point: it brings the catch home
-            h.EnginePower = 1600f;              // → 3.90 m/s (see the ladder note above)
+            // EnginePower is NOT stamped here any more: her top speed is the fleet speed table's (the
+            // owner's 11-12 ruling, 0.45 x real for planing hulls) and the committed asset is its one
+            // authority, held by FleetSpeedTableTests. A number here would silently undo the table on
+            // the next builder run. Tune her speed on the asset, never in this file.
             h.RudderAuthority = 1000f;          // ≈ 600·(12/7): heavy hull, proportionate helm
             h.ForwardDrag = 170f; h.LateralDrag = 450f;   // Lat/Fwd 2.65 — tracks stiff, skids little
             h.WindExposure = 0.45f;             // heavy and low: the wind gets less of a grip than on the punt
@@ -1009,7 +1012,10 @@ namespace HiddenHarbours.App.Editor
             h.Propulsion = PropulsionType.Engine;
             h.LengthMeters = 7.0f; h.DraughtMeters = 0.5f; h.MassKg = 950f;
             h.HoldUnits = 8; h.CrewSlots = 2;
-            h.EnginePower = 1600f;              // the SAME outboard as the console → 4.64 m/s on a lighter hull
+            // EnginePower is NOT stamped here any more: her top speed is the fleet speed table's (the
+            // owner's 11-12 ruling, 0.45 x real for planing hulls) and the committed asset is its one
+            // authority, held by FleetSpeedTableTests. A number here would silently undo the table on
+            // the next builder run. Tune her speed on the asset, never in this file.
             h.RudderAuthority = 850f;           // ≈ 600·(9.5/7)
             h.ForwardDrag = 155f; h.LateralDrag = 400f;   // Lat/Fwd 2.58 — a shade looser in a turn
             h.WindExposure = 0.5f;              // lighter, so the same breeze moves her more
@@ -1029,7 +1035,10 @@ namespace HiddenHarbours.App.Editor
             h.Id = "boat.sport_skiff_twin"; h.DisplayName = "The Sport Skiff (Twin)";
             h.DraughtMeters = 0.55f;            // she sits a little deeper by the stern
             h.MassKg = 1000f;                   // the second engine
-            h.EnginePower = 2000f;              // → 5.63 m/s (NOT 2×; see the ladder note above)
+            // EnginePower is NOT stamped here any more: her top speed is the fleet speed table's (the
+            // owner's 11-12 ruling, 0.45 x real for planing hulls) and the committed asset is its one
+            // authority, held by FleetSpeedTableTests. A number here would silently undo the table on
+            // the next builder run. Tune her speed on the asset, never in this file.
             h.RudderAuthority = 900f;           // ≈ 600·(10/7)
             h.SeakeepingMassFactor = 1.9f; h.SeakeepingLiveliness = 0.7f; h.SeakeepingDamping = 0.35f;
             h.CameraWorldHeightMeters = 19.5f;

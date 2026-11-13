@@ -16,15 +16,29 @@ namespace HiddenHarbours.App.Editor
         [MenuItem("Hidden Harbours/Regions/Rice Point/CREATE Scene")]
         public static void Create()
         {
-            GroundFileIntake.ReadRicePointFolder(GroundFolder);
+            GroundFileIntake.ReadRicePointGround(GroundFolder);
             LandSceneTemplate.Create(LoadPlan());
+            LayWrecks();
         }
 
         [MenuItem("Hidden Harbours/Regions/Rice Point/REFRESH Logic")]
         public static void Refresh()
         {
-            GroundFileIntake.ReadRicePointFolder(GroundFolder);
+            GroundFileIntake.ReadRicePointGround(GroundFolder);
+            // A door the plan gained after CREATE is authored here; the template's refresh only re-wires.
+            RicePointDoors.Ensure(UnityEngine.SceneManagement.SceneManager.GetActiveScene(), LoadPlan());
             LandSceneTemplate.Refresh(LoadPlan());
+            LayWrecks();
+        }
+
+        // The wrecks come from their Defs, after the template has done its part; saved here because the
+        // template saves before it.
+        static void LayWrecks()
+        {
+            var scene = UnityEngine.SceneManagement.SceneManager.GetActiveScene();
+            RicePointWrecks.Ensure(scene, LoadPlan());
+            if (scene.isDirty && !UnityEditor.SceneManagement.EditorSceneManager.SaveScene(scene))
+                throw new System.InvalidOperationException("Rice Point wrecks did not save.");
         }
 
         // Batch entry points own scene selection and report success only after the saved output exists.

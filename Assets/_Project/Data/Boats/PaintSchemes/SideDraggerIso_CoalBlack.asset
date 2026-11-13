@@ -1,0 +1,234 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ee76649f87a8cfd4890261ca9a64ffa3, type: 3}
+  m_Name: SideDraggerIso_CoalBlack
+  m_EditorClassIdentifier: HiddenHarbours.Core::HiddenHarbours.Core.HullPaintSchemeDef
+  Id: paint.side_dragger_coal_black
+  Label: Coal Black
+  Note: black topsides, a red lead cove line, mast, gallows and funnel, a cream house,
+    red oxide below
+  HullMeshId: hullmesh.side_dragger_iso
+  SourceRigPath: docs/art/rigs/sideDraggerIsoRig.js
+  RigPaintId: coal-black
+  Ramps:
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4279369794
+    - serializedVersion: 2
+      rgba: 4279896141
+    - serializedVersion: 2
+      rgba: 4280095574
+    - serializedVersion: 2
+      rgba: 4280228958
+    - serializedVersion: 2
+      rgba: 4280427878
+    - serializedVersion: 2
+      rgba: 4280626797
+    - serializedVersion: 2
+      rgba: 4284904372
+    Offset: 0
+    _hasDitherWeight: 1
+    _ditherWeight: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4280492060
+    - serializedVersion: 2
+      rgba: 4280754975
+    - serializedVersion: 2
+      rgba: 4280952354
+    - serializedVersion: 2
+      rgba: 4281084197
+    - serializedVersion: 2
+      rgba: 4281281576
+    - serializedVersion: 2
+      rgba: 4282531642
+    - serializedVersion: 2
+      rgba: 4286150514
+    Offset: 0
+    _hasDitherWeight: 1
+    _ditherWeight: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4280289638
+    - serializedVersion: 2
+      rgba: 4281017725
+    - serializedVersion: 2
+      rgba: 4281612688
+    - serializedVersion: 2
+      rgba: 4282207393
+    - serializedVersion: 2
+      rgba: 4283722170
+    - serializedVersion: 2
+      rgba: 4286157017
+    Offset: 0
+    _hasDitherWeight: 1
+    _ditherWeight: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4281349690
+    - serializedVersion: 2
+      rgba: 4282008646
+    - serializedVersion: 2
+      rgba: 4282929754
+    - serializedVersion: 2
+      rgba: 4283587684
+    - serializedVersion: 2
+      rgba: 4285166974
+    - serializedVersion: 2
+      rgba: 4285890954
+    - serializedVersion: 2
+      rgba: 4286550940
+    Offset: 0
+    _hasDitherWeight: 1
+    _ditherWeight: 0.22
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4283787622
+    - serializedVersion: 2
+      rgba: 4285827721
+    - serializedVersion: 2
+      rgba: 4287735465
+    - serializedVersion: 2
+      rgba: 4289511879
+    - serializedVersion: 2
+      rgba: 4290893276
+    - serializedVersion: 2
+      rgba: 4291813863
+    Offset: 0
+    _hasDitherWeight: 1
+    _ditherWeight: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4279505166
+    - serializedVersion: 2
+      rgba: 4280162582
+    - serializedVersion: 2
+      rgba: 4280951840
+    - serializedVersion: 2
+      rgba: 4281873195
+    - serializedVersion: 2
+      rgba: 4283450426
+    Offset: -1
+    _hasDitherWeight: 1
+    _ditherWeight: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4279505166
+    - serializedVersion: 2
+      rgba: 4280359703
+    - serializedVersion: 2
+      rgba: 4281477667
+    - serializedVersion: 2
+      rgba: 4282793011
+    Offset: 0
+    _hasDitherWeight: 1
+    _ditherWeight: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4282925370
+    - serializedVersion: 2
+      rgba: 4284899158
+    - serializedVersion: 2
+      rgba: 4287399290
+    - serializedVersion: 2
+      rgba: 4289833887
+    - serializedVersion: 2
+      rgba: 4292005571
+    Offset: 0
+    _hasDitherWeight: 1
+    _ditherWeight: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4280298554
+    - serializedVersion: 2
+      rgba: 4281615962
+    - serializedVersion: 2
+      rgba: 4282407023
+    - serializedVersion: 2
+      rgba: 4282739340
+    - serializedVersion: 2
+      rgba: 4284121765
+    Offset: 0
+    _hasDitherWeight: 1
+    _ditherWeight: 0.3
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4279505166
+    - serializedVersion: 2
+      rgba: 4280162582
+    - serializedVersion: 2
+      rgba: 4280951840
+    - serializedVersion: 2
+      rgba: 4281873195
+    - serializedVersion: 2
+      rgba: 4283450426
+    Offset: -2
+    _hasDitherWeight: 1
+    _ditherWeight: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4279511674
+    - serializedVersion: 2
+      rgba: 4279777958
+    - serializedVersion: 2
+      rgba: 4280308687
+    - serializedVersion: 2
+      rgba: 4281234152
+    - serializedVersion: 2
+      rgba: 4283603699
+    Offset: 0
+    _hasDitherWeight: 1
+    _ditherWeight: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4280289638
+    - serializedVersion: 2
+      rgba: 4281017725
+    - serializedVersion: 2
+      rgba: 4281612688
+    - serializedVersion: 2
+      rgba: 4282207393
+    - serializedVersion: 2
+      rgba: 4283722170
+    - serializedVersion: 2
+      rgba: 4286157017
+    Offset: 0
+    _hasDitherWeight: 1
+    _ditherWeight: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4280359955
+    - serializedVersion: 2
+      rgba: 4281937953
+    - serializedVersion: 2
+      rgba: 4283319091
+    - serializedVersion: 2
+      rgba: 4286211400
+    - serializedVersion: 2
+      rgba: 4288778603
+    Offset: 0
+    _hasDitherWeight: 1
+    _ditherWeight: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4280099862
+    - serializedVersion: 2
+      rgba: 4281021986
+    - serializedVersion: 2
+      rgba: 4281877548
+    - serializedVersion: 2
+      rgba: 4283391551
+    - serializedVersion: 2
+      rgba: 4285234524
+    Offset: 0
+    _hasDitherWeight: 1
+    _ditherWeight: 0.5
