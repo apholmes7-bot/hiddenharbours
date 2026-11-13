@@ -131,12 +131,18 @@ namespace HiddenHarbours.Art
         private Vector4 _causticPlane, _causticSettings;
         private int _hullId;
         // THE DECK-OCCUPANT SPLIT (owner playtest 2026-08-07: sprites showing through closed
-        // cabins). A contiguous BLOCK of registry ids — one per occupancy band — held for this
-        // hull's whole registered life so it is stable across the frames a figure boards and leaves,
-        // plus a fixed array of who is standing where in rig metres. Nobody aboard ⇒ no active slot
-        // ⇒ the facet shader's loop never runs and every pixel carries _hullId, exactly as before
-        // this existed.
+        // cabins). A contiguous BLOCK of registry ids — one per occupancy band — held while ANY deck
+        // slot is claimed (ADR 0056: taken on the first claim, given back on the last release), so it
+        // is stable for as long as anybody stands on her and costs nothing while nobody does; plus a
+        // fixed array of who is standing where in rig metres. Nobody aboard ⇒ no active slot ⇒ the
+        // facet shader's loop never runs and every pixel carries _hullId, exactly as before this
+        // existed.
         private int _foreHullId;
+        // The pool refused her a block at a claim and said so once. Later claims retry QUIETLY (one
+        // cheap ask of the pool, no log) until a block frees — the "a hull refused once never asks
+        // again" finding of the budget note, fixed by construction. Cleared when a block is granted
+        // and when she unregisters.
+        private bool _foreBlockRefused;
         private readonly DeckSlot[] _deckSlots = new DeckSlot[DeckOccupantSlots];
         // Reused every frame — a fresh array per LateUpdate would allocate on every hull in the
         // scene (rule 7). Always sent whole, so a released slot's stale depth cannot survive on the
@@ -426,10 +432,12 @@ namespace HiddenHarbours.Art
         ///
         /// <para><b>What the number costs</b> is the id budget, not the per-pixel loop (which is one
         /// compare per slot behind a single early-out that is false on every hull with nobody
-        /// aboard). Each hull reserves 1 + this many of the 255 ids the facet alpha can carry, so
-        /// twelve leaves <b>19</b> simultaneous mesh hulls against a roadmap whose largest scene is a
-        /// harbour of a dozen. Raise it and that headroom shrinks; lower it and the surplus occupants
-        /// are refused, loudly, and draw un-occluded.</para>
+        /// aboard). A hull holds 1 of the 255 ids the facet alpha can carry, and this many more only
+        /// while somebody stands on her deck (ADR 0056, lazy fore blocks), so the price is paid per
+        /// CREWED hull: 255 / 13 = 19 crewed hulls at once, against any number of empty ones at 1 id
+        /// each. Raise it and that headroom shrinks; lower it and the surplus occupants are refused,
+        /// loudly, and draw un-occluded. Measured counts per region:
+        /// <c>docs/architecture/facet-id-budget.md</c>.</para>
         ///
         /// <para>⚠️ <b>The facet shader holds this same number as a literal</b>
         /// (<c>HH_DECK_OCCUPANT_SLOTS</c>) because HLSL needs a compile-time array bound.
@@ -446,9 +454,10 @@ namespace HiddenHarbours.Art
         /// <para>Band <i>m</i> (a pixel in front of <i>m</i> occupants) is written as
         /// <c>ForeHullId + m - 1</c>, so the sprite that must be hidden behind her wheelhouse discards
         /// across a RANGE of this block (<c>HiddenHarbours/DeckOccludedSprite</c>). The block is
-        /// handed out once at registration and held for life, not per boarding: a figure stepping
-        /// aboard must not be able to change what the boat is drawing with, and a per-frame id would
-        /// make the split a race between two components' execution order.</para>
+        /// handed out at her FIRST deck-slot claim and held until her LAST release (ADR 0056), never
+        /// per frame: while anybody holds a slot it cannot change under them, and a per-frame id would
+        /// make the split a race between two components' execution order. Nobody aboard — nearly
+        /// every hull, nearly always — means no block, and 0 here.</para>
         /// </summary>
         public int ForeHullId => _foreHullId;
 
@@ -853,11 +862,11 @@ namespace HiddenHarbours.Art
             if (_hullId == 0)
             {
                 _hullId = IsoFacetHullRegistry.Register(this);
-                // …and her FORE BLOCK, taken in the same breath so the two live and die together.
-                // The block is what costs the id budget (1 + DeckOccupantSlots per hull, so 19
-                // simultaneous hulls out of 255) — the registry says so itself when they run out,
-                // and hands back 0, which simply means she splits for nobody.
-                _foreHullId = IsoFacetHullRegistry.RegisterForeBlock(DeckOccupantSlots);
+                // Her FORE BLOCK is NOT taken here (ADR 0056): it is taken at her first deck-slot
+                // claim, because the block is what costs the id budget and a boat nobody stands on
+                // has nobody to hide. The one claim that can predate this line is a holder enabled
+                // before her (a moored skipper whose OnEnable ran first): honour it now.
+                if (AnyDeckSlotClaimed()) EnsureForeBlock();
             }
             _poseDirty = true;
         }
@@ -871,14 +880,58 @@ namespace HiddenHarbours.Art
                 IsoFacetHullRegistry.Unregister(this, _hullId);
                 _hullId = 0;
             }
+            ReleaseForeBlock();
+            // A hull going away carries her occupants with her: nothing may keep discarding against
+            // ids that are now free for another boat to be issued.
+            ClearDeckSlots();
+        }
+
+        /// <summary>
+        /// <b>Take her fore block if she has none</b> (ADR 0056). Called on every deck-slot claim —
+        /// including the idempotent re-claim a rider makes every frame — so it costs ONE compare while
+        /// she holds a block, and, after a refusal, one quiet ask of the pool (no log) until a block
+        /// frees. Never takes a block for a hull that is not registered: an unregistered hull would
+        /// have nothing to give it back from.
+        /// </summary>
+        private void EnsureForeBlock()
+        {
+            if (_foreHullId != 0 || _hullId == 0) return;
+            if (_foreBlockRefused && !IsoFacetHullRegistry.CanSpareForeBlock(DeckOccupantSlots)) return;
+            _foreHullId = IsoFacetHullRegistry.RegisterForeBlock(DeckOccupantSlots);
+            _foreBlockRefused = _foreHullId == 0;
+        }
+
+        /// <summary>Give her fore block back, if she holds one: her last deck slot was released, or
+        /// she is unregistering.</summary>
+        private void ReleaseForeBlock()
+        {
             if (_foreHullId != 0)
             {
                 IsoFacetHullRegistry.UnregisterForeBlock(_foreHullId, DeckOccupantSlots);
                 _foreHullId = 0;
             }
-            // A hull going away carries her occupants with her: nothing may keep discarding against
-            // ids that are now free for another boat to be issued.
-            ClearDeckSlots();
+            _foreBlockRefused = false;
+        }
+
+        /// <summary>Does anybody hold a deck slot (claimed, standing or not)? Twelve reference
+        /// compares; asked only at a release and at registration, never per frame.</summary>
+        private bool AnyDeckSlotClaimed()
+        {
+            for (int i = 0; i < DeckOccupantSlots; i++)
+                if (_deckSlots[i].Owner != null) return true;
+            return false;
+        }
+
+        /// <summary>How many deck slots are claimed, standing or not — the number that decides whether
+        /// she holds a fore block. For tests and the budget measurement.</summary>
+        internal int ClaimedDeckSlots
+        {
+            get
+            {
+                int n = 0;
+                for (int i = 0; i < DeckOccupantSlots; i++) if (_deckSlots[i].Owner != null) n++;
+                return n;
+            }
         }
 
         private void OnDestroy() => ReleaseOwned();
@@ -1154,17 +1207,27 @@ namespace HiddenHarbours.Art
         /// <para><b>Idempotent.</b> An owner that already holds a slot gets the same index back
         /// rather than a second one, so a consumer that lost its index (a domain reload, a re-wire)
         /// recovers instead of leaking slots one boarding at a time.</para>
+        ///
+        /// <para><b>The first claim takes her fore block</b> (ADR 0056), and every claim — the
+        /// idempotent re-claim included — retries it if the pool refused her earlier. A refusal is a
+        /// refused BLOCK, not a refused slot: the claimant keeps its slot, its occluder ids read 0 and
+        /// it draws un-occluded, loudly, exactly as a refused slot does.</para>
         /// </summary>
         private int ClaimSlot(object owner)
         {
             if (owner == null) return -1;
             for (int i = 0; i < DeckOccupantSlots; i++)
-                if (ReferenceEquals(_deckSlots[i].Owner, owner)) return i;
+            {
+                if (!ReferenceEquals(_deckSlots[i].Owner, owner)) continue;
+                EnsureForeBlock();
+                return i;
+            }
 
             for (int i = 0; i < DeckOccupantSlots; i++)
             {
                 if (_deckSlots[i].Owner != null) continue;
                 _deckSlots[i] = new DeckSlot { Owner = owner };
+                EnsureForeBlock();
                 return i;
             }
 
@@ -1178,13 +1241,15 @@ namespace HiddenHarbours.Art
         }
 
         /// <summary>Give a slot back. Ignored unless <paramref name="owner"/> is the token it was
-        /// claimed with, so a stale holder cannot evict a live one.</summary>
+        /// claimed with, so a stale holder cannot evict a live one. <b>The last release gives her
+        /// fore block back</b> (ADR 0056): an empty deck costs one id.</summary>
         private void ReleaseSlot(int slot, object owner)
         {
             if (slot < 0 || slot >= DeckOccupantSlots) return;
             if (!ReferenceEquals(_deckSlots[slot].Owner, owner)) return;
             _deckSlots[slot] = default;
             if (slot == _legacySlot && ReferenceEquals(owner, s_LegacyOccupant)) _legacySlot = -1;
+            if (!AnyDeckSlotClaimed()) ReleaseForeBlock();
         }
 
         /// <summary>Publish where this occupant stands. Cheap and idempotent, safe every LateUpdate:
