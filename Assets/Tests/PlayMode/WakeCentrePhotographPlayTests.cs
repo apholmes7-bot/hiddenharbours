@@ -790,7 +790,7 @@ namespace HiddenHarbours.Tests.PlayMode
 #endif
         }
 
-        IEnumerator LoadRegion()
+        IEnumerator LoadRegion(string scene = SceneName)
         {
             // The region logs decor-import complaints that have nothing to do with wake foam.
             LogAssert.ignoreFailingMessages = true;
@@ -801,20 +801,20 @@ namespace HiddenHarbours.Tests.PlayMode
             // single line to diagnose it from. A fixture may fail; it may not hang. The bound is
             // realtime because this class also freezes `Time.timeScale`, and a budget denominated in
             // scaled time is no budget at all.
-            Debug.Log($"[{PlateDir}] loading {SceneName}…");
+            Debug.Log($"[{PlateDir}] loading {scene}…");
             float wall = Time.realtimeSinceStartup;
-            AsyncOperation op = SceneManager.LoadSceneAsync(SceneName, LoadSceneMode.Single);
-            Assert.IsNotNull(op, $"SceneManager refused to start loading '{SceneName}' — it is most " +
+            AsyncOperation op = SceneManager.LoadSceneAsync(scene, LoadSceneMode.Single);
+            Assert.IsNotNull(op, $"SceneManager refused to start loading '{scene}' — it is most " +
                                  "likely not in Build Settings, and there is no region to photograph.");
             while (op != null && !op.isDone)
             {
                 Assert.Less(Time.realtimeSinceStartup - wall, 180f,
-                            $"'{SceneName}' never finished loading: {op.progress:0.00} of the way in " +
+                            $"'{scene}' never finished loading: {op.progress:0.00} of the way in " +
                             $"after 180 s of wall clock. Nothing below this ever ran.");
                 yield return null;
             }
             for (int i = 0; i < 6; i++) yield return null;   // let the self-installing components register
-            Debug.Log($"[{PlateDir}] {SceneName} loaded in {Time.realtimeSinceStartup - wall:0.0} s.");
+            Debug.Log($"[{PlateDir}] {scene} loaded in {Time.realtimeSinceStartup - wall:0.0} s.");
         }
 
         /// <summary>

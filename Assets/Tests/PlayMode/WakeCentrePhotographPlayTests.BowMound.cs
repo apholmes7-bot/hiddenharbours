@@ -25,21 +25,29 @@ namespace HiddenHarbours.Tests.PlayMode
         const float BowMoundTallMetres = 0.5f;
 
         [UnityTest, Timeout(600000)]
-        public IEnumerator TheCape_MakingWayNorth_PhotographsTheMoundAtHerBow()
+        public IEnumerator TheCape_MakingWayNorth_PhotographsTheMoundAtHerBow() => BowMound(SceneName, "bow-mound");
+
+        /// <summary>The same three plates off St Peters, the harbour the owner knows best.</summary>
+        [UnityTest, Timeout(600000)]
+        public IEnumerator TheCape_MakingWayNorth_PhotographsTheMoundAtHerBow_OffStPeters() => BowMound("StPeters", "bow-mound-stpeters");
+
+        IEnumerator BowMound(string scene, string subject)
         {
             RequireAGraphicsDevice();   // FIRST, before any yield
             BoatHullDef hull = LoadAsset<BoatHullDef>(CapeHullPath);
             BoatVisualDef visual = LoadAsset<BoatVisualDef>(CapeVisualPath);
             if (hull == null || visual == null) yield break;
 
-            yield return LoadRegion();
+            // The cleanup unloads St Peters only when this flag says a case loaded it.
+            if (scene != SceneName) _v24LoadedIntro = true;
+            yield return LoadRegion(scene);
+            if (scene != SceneName) GameServices.OpeningCinematicRunning = false;
             yield return SetHour(ShotHour);
 
-            const string subject = "bow-mound";
             var leg = new Leg("north-000", 0f, 0f);
             if (!TryLegAnchors(1, out List<Vector2> anchors, out float depth))
             {
-                Assert.Ignore("SKIPPED, NOT VERIFIED: no open water inside " + SceneName +
+                Assert.Ignore("SKIPPED, NOT VERIFIED: no open water inside " + scene +
                               "'s camera bounds deep enough to drive her.");
                 yield break;
             }
