@@ -494,6 +494,8 @@
         faces.push({v:q,mat:'wood',b:sh,db:-0.2}); faces.push({v:[q[3],q[2],q[1],q[0]],mat:'wood',b:sh,db:-0.2}); }
       prev=[e0,e1];
     }
+    // an oar is a fitting on the hull: every face declares the hull level, as the layout asks of any face this rig hands over
+    faces.forEach((f)=>{ f.lv = LV.hull; });
     return faces;
   }
   function sidePose(opts, side){ const o=(side<0?opts.port:opts.star)||{}; return oarPose(o.state||opts.state||'row', (o.t!==undefined?o.t:opts.t)||0); }
