@@ -248,6 +248,22 @@ namespace HiddenHarbours.Fishing
         /// public for the deck re-bait, so the loaded bait's favours ride into the next set). Null on a miss.</summary>
         public BaitDef ResolveBait(string id) => FindBait(id);
 
+        /// <summary>Read-only saved-id preflight for adapter migration. Only an empty saved id means
+        /// unbaited; unresolved content must never be treated as an unbaited catch input.</summary>
+        public enum SavedBaitResolution { Unbaited, Resolved, MissingCatalog, UnknownId }
+
+        /// <summary>Resolve the exact authored profile without consuming stock, changing the save,
+        /// or rebuilding live traps. Restore callers must preflight every saved bait before mutation.
+        /// The legacy restore path is deliberately unchanged until its callers migrate.</summary>
+        public SavedBaitResolution ResolveSavedBait(string id, out BaitDef bait)
+        {
+            bait = null;
+            if (string.IsNullOrEmpty(id)) return SavedBaitResolution.Unbaited;
+            if (_baitRegistry == null || _baitRegistry.Length == 0) return SavedBaitResolution.MissingCatalog;
+            bait = FindBait(id);
+            return bait != null ? SavedBaitResolution.Resolved : SavedBaitResolution.UnknownId;
+        }
+
         /// <summary>
         /// Haul <paramref name="trap"/> into <paramref name="hold"/> (its deterministic catch), then remove it
         /// from the world + the save. Returns true iff a catch was landed. On a successful haul the trap's DTO
