@@ -194,6 +194,7 @@ namespace HiddenHarbours.Fishing
         {
             InstallSchoolModel();
             EventBus.Subscribe<ControlModeChanged>(OnControlModeChanged);
+            EventBus.Subscribe<InnerVoiceCueSpoken>(OnInnerVoiceCueSpoken);
         }
 
         /// <summary>Public so a test can drive the mode through the same path the bus uses (the
@@ -211,6 +212,7 @@ namespace HiddenHarbours.Fishing
         private void OnDisable()
         {
             EventBus.Unsubscribe<ControlModeChanged>(OnControlModeChanged);
+            EventBus.Unsubscribe<InnerVoiceCueSpoken>(OnInnerVoiceCueSpoken);
 
             // Only clear what we still own — a later producer may already have taken over (the
             // GameServices.CurrentRegionBounds discipline). Assigning null is what turns the accessor back
@@ -894,15 +896,31 @@ namespace HiddenHarbours.Fishing
         /// <summary>One promise per blow (see <see cref="SeaPromise"/>): which weather was last announced.</summary>
         private readonly SeaPromise _seaPromise = new SeaPromise();
 
+        /// <summary>The gear that puts a LINE in the water. The feeding-sea thought belongs to a cast
+        /// line; a fork in the sand in a blow is not a cast and must not raise it.</summary>
+        private const Gear LineGear = Gear.Handline | Gear.Jig | Gear.Longline;
+
         /// <summary>A line has just gone in the water. If the sea is up past the point where it fishes
-        /// better, and this blow has not been announced yet, raise the Core cue her inner voice answers
-        /// ("They'll be feeding in this."). Fishing only says WHEN; the words are a World line asset
-        /// keyed on the cue id, and neither module names the other (rule 4).</summary>
+        /// better, and this blow's line has not been SAID yet, raise the Core cue her inner voice
+        /// answers ("They'll be feeding in this."). Fishing only says WHEN; the words are a World line
+        /// asset keyed on the cue id, and neither module names the other (rule 4).
+        ///
+        /// <para>Raising the cue does not spend the blow. Whoever speaks the line answers with
+        /// <see cref="InnerVoiceCueSpoken"/> (<see cref="OnInnerVoiceCueSpoken"/>); a refused cue gets
+        /// no answer, and the next cast in the same blow asks again.</para></summary>
         private void PromiseAFeedingSea()
         {
+            if ((_gear & LineGear) == 0) return;   // hand-gathering gear: not a cast line
             SeaFishingSettings sea = _config != null ? _config.SeaFishing : SeaFishingSettings.Default;
             if (_seaPromise.OnCast(SeaState01(), in sea))
                 EventBus.Publish(new InnerVoiceCue(InnerVoiceCues.FeedingSea));
+        }
+
+        /// <summary>The feeding-sea line really played: this blow is spent. Public so a test can drive
+        /// it through the same path the bus uses (the <see cref="OnControlModeChanged"/> convention).</summary>
+        public void OnInnerVoiceCueSpoken(InnerVoiceCueSpoken e)
+        {
+            if (e.CueId == InnerVoiceCues.FeedingSea) _seaPromise.Kept();
         }
 
         // ---- helpers ------------------------------------------------------------------------

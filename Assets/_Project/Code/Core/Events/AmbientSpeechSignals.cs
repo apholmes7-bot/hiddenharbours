@@ -185,6 +185,20 @@ namespace HiddenHarbours.Core
         public InnerVoiceCue(string cueId) { CueId = cueId; }
     }
 
+    /// <summary>
+    /// <b>The thought a cue asked for was actually said.</b> Published by whoever answers
+    /// <see cref="InnerVoiceCue"/>, on the same call, only when a line really went out. A cue that was
+    /// refused (a conversation owns the screen, the line is cooling down, nobody wrote one) gets no
+    /// answer, so a publisher that says a thing "once" can tell said from asked and try again later.
+    /// </summary>
+    public readonly struct InnerVoiceCueSpoken
+    {
+        /// <summary>The cue that was answered: one of <see cref="InnerVoiceCues"/>.</summary>
+        public readonly string CueId;
+
+        public InnerVoiceCueSpoken(string cueId) { CueId = cueId; }
+    }
+
     /// <summary>The stable cue ids (<c>cue.module.snake_case</c>). Append-only: a line asset names one in
     /// its <c>SubjectId</c>, so renaming an id silences the line.</summary>
     public static class InnerVoiceCues

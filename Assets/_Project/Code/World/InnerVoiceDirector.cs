@@ -154,14 +154,21 @@ namespace HiddenHarbours.World
         /// <summary>
         /// A gameplay moment asked for her thought (the Core <see cref="InnerVoiceCue"/>). The first
         /// line authored against that cue id speaks, under the same refusals as every other line. The
-        /// publisher decided WHEN; a cue nobody wrote a line for is silence, not an error.
+        /// publisher decided WHEN; a cue nobody wrote a line for is silence, not an error. A line that
+        /// does go out is acknowledged with <see cref="InnerVoiceCueSpoken"/>; a refused one is not.
         /// <para>Public so a fixture can drive it without the bus, like <see cref="SpeakNow"/>.</para>
         /// </summary>
         public bool HearCue(string cueId)
         {
             if (string.IsNullOrEmpty(cueId)) return false;
             for (int i = 0; i < _cueLines.Count; i++)
-                if (_cueLines[i].WantsCue(cueId)) return TrySpeak(_cueLines[i]);
+            {
+                if (!_cueLines[i].WantsCue(cueId)) continue;
+                if (!TrySpeak(_cueLines[i])) return false;
+                // Said, not merely asked: the publisher spends its "once" on this, never on the cue.
+                EventBus.Publish(new InnerVoiceCueSpoken(cueId));
+                return true;
+            }
             return false;
         }
 

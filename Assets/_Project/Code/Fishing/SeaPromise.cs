@@ -20,14 +20,20 @@ namespace HiddenHarbours.Fishing
     /// to the everyday side of the line first. The memory is this object's alone: it is not saved, so a
     /// fresh session in a standing blow says the line once more.</para>
     ///
-    /// <para>A POCO with one bool of state: no clock, no randomness, no allocation. The answer is a pure
-    /// function of the sea samples it was shown, in order (rule 5).</para>
+    /// <para><b>Asked is not said.</b> <see cref="OnCast"/> only says the line is WANTED. The blow is
+    /// spent by <see cref="Kept"/>, which the caller invokes when the line really played. If the line
+    /// was refused (a conversation was up, it was cooling down), the next cast in the same blow asks
+    /// again, so a refusal never leaves a whole blow silent.</para>
+    ///
+    /// <para>A POCO with two bools of state: no clock, no randomness, no allocation. The answer is a
+    /// pure function of the sea samples and acknowledgements it was shown, in order (rule 5).</para>
     /// </summary>
     public sealed class SeaPromise
     {
-        private bool _promised;
+        private bool _promised;   // this blow's line has been SAID
+        private bool _inABlow;    // the last cast was into a sea that helps
 
-        /// <summary>Has this blow already been announced? Cleared when the sea drops back.</summary>
+        /// <summary>Has this blow's line actually been said? Cleared when the sea drops back.</summary>
         public bool Promised => _promised;
 
         /// <summary>Is the sea up enough, and the reward switched on, for a rough sea to fish better?</summary>
@@ -38,21 +44,32 @@ namespace HiddenHarbours.Fishing
             return rewardOn && seaState01 > SeaFightMath.CozySeaCeiling01;
         }
 
-        /// <summary>A line has gone in the water. True exactly once per blow: on the first cast after
-        /// the sea has risen past the line. A cast in everyday weather re-arms it.</summary>
+        /// <summary>A line has gone in the water. True when the promise should be OFFERED: the sea
+        /// helps and this blow's line has not been said yet. It stays true on later casts until
+        /// <see cref="Kept"/> confirms the line played. A cast in everyday weather re-arms it.</summary>
         public bool OnCast(float seaState01, in SeaFishingSettings settings)
         {
-            if (!SeaHelps(seaState01, in settings))
+            _inABlow = SeaHelps(seaState01, in settings);
+            if (!_inABlow)
             {
                 _promised = false;
                 return false;
             }
-            if (_promised) return false;
-            _promised = true;
-            return true;
+            return !_promised;
+        }
+
+        /// <summary>The line was really said. Spends this blow; ignored outside one, so a stray
+        /// acknowledgement in calm weather cannot silence the next blow.</summary>
+        public void Kept()
+        {
+            if (_inABlow) _promised = true;
         }
 
         /// <summary>Forget the current blow (a new game, a fixture).</summary>
-        public void Reset() => _promised = false;
+        public void Reset()
+        {
+            _promised = false;
+            _inABlow = false;
+        }
     }
 }

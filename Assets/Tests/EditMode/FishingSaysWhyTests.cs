@@ -61,7 +61,14 @@ namespace HiddenHarbours.Tests.EditMode
         private readonly List<AmbientSpeechRequested> _spoken = new();
 
         private void OnNotice(DevNotice e) => _said.Add(e.Text);
-        private void OnCue(InnerVoiceCue e) => _cues.Add(e.CueId);
+        /// <summary>Stands in for World's director on the bus: hears every cue, and acknowledges it
+        /// as spoken unless the test says the line was refused.</summary>
+        private bool _lineIsRefused;
+        private void OnCue(InnerVoiceCue e)
+        {
+            _cues.Add(e.CueId);
+            if (!_lineIsRefused) EventBus.Publish(new InnerVoiceCueSpoken(e.CueId));
+        }
         private void OnSpoken(AmbientSpeechRequested e) => _spoken.Add(e);
 
         private int Said(string line)
@@ -77,6 +84,7 @@ namespace HiddenHarbours.Tests.EditMode
             _said.Clear();
             _cues.Clear();
             _spoken.Clear();
+            _lineIsRefused = false;
             ClearBus();
             GameServices.Reset();
             InteractionGate.Reset();
@@ -99,6 +107,7 @@ namespace HiddenHarbours.Tests.EditMode
         {
             EventBus.Clear<DevNotice>();
             EventBus.Clear<InnerVoiceCue>();
+            EventBus.Clear<InnerVoiceCueSpoken>();
             EventBus.Clear<AmbientSpeechRequested>();
             EventBus.Clear<FishingStateChanged>();
             EventBus.Clear<FishCaught>();
@@ -145,12 +154,16 @@ namespace HiddenHarbours.Tests.EditMode
             return lic;
         }
 
-        private FishingController MakeController(FishSpeciesDef[] pool, int seed, LicenseDef[] licences = null)
+        private FishingController MakeController(FishSpeciesDef[] pool, int seed, LicenseDef[] licences = null,
+                                                 Gear gear = Gear.Handline)
         {
             var go = new GameObject("Fisher");
             _spawned.Add(go);
             var c = go.AddComponent<FishingController>();
-            c.Configure(new FakeHold(), pool, Region, Gear.Handline, seed, licences);
+            c.Configure(new FakeHold(), pool, Region, gear, seed, licences);
+            // OnEnable does not run for a plain component in EditMode, so wire the acknowledgement the
+            // way OnEnable does. (Were it to run as well, a second Kept() is a no-op.)
+            EventBus.Subscribe<InnerVoiceCueSpoken>(c.OnInnerVoiceCueSpoken);
             return c;
         }
 
@@ -312,11 +325,33 @@ namespace HiddenHarbours.Tests.EditMode
 
             Assert.IsFalse(promise.OnCast(calm, in s), "everyday weather promises nothing");
             Assert.IsTrue(promise.OnCast(rough, in s), "the first cast of the blow");
+            promise.Kept();
             Assert.IsFalse(promise.OnCast(rough, in s), "the second cast of the same blow is silent");
             Assert.IsFalse(promise.OnCast(1f, in s), "and it building further is still the same blow");
             Assert.IsFalse(promise.OnCast(calm, in s), "it has dropped: nothing to say, but it re-arms");
             Assert.IsTrue(promise.OnCast(rough, in s), "the next blow is announced again");
+            promise.Kept();
             Assert.IsFalse(promise.OnCast(rough, in s));
+        }
+
+        [Test]
+        public void TheSeaPromise_IsSpentOnlyWhenTheLineWasSaid()
+        {
+            SeaFishingSettings s = SeaFishingSettings.Default;
+            float calm = SeaFightMath.CozySeaCeiling01 * 0.5f;
+            const float rough = 0.9f;
+            var promise = new SeaPromise();
+
+            Assert.IsTrue(promise.OnCast(rough, in s));
+            Assert.IsFalse(promise.Promised, "asking is not saying");
+            Assert.IsTrue(promise.OnCast(rough, in s), "refused the first time, so the next cast asks again");
+            promise.Kept();
+            Assert.IsTrue(promise.Promised);
+            Assert.IsFalse(promise.OnCast(rough, in s), "said: this blow is spent");
+
+            Assert.IsFalse(promise.OnCast(calm, in s));
+            promise.Kept();   // a stray acknowledgement in calm weather
+            Assert.IsTrue(promise.OnCast(rough, in s), "cannot silence the next blow");
         }
 
         [Test]
@@ -349,7 +384,12 @@ namespace HiddenHarbours.Tests.EditMode
             var a = new SeaPromise();
             var b = new SeaPromise();
             for (int i = 0; i < seas.Length; i++)
-                Assert.AreEqual(a.OnCast(seas[i], in s), b.OnCast(seas[i], in s), $"sample {i}");
+            {
+                bool wantA = a.OnCast(seas[i], in s);
+                bool wantB = b.OnCast(seas[i], in s);
+                Assert.AreEqual(wantA, wantB, $"sample {i}");
+                if (wantA) { a.Kept(); b.Kept(); }
+            }
         }
 
         [Test]
@@ -378,6 +418,41 @@ namespace HiddenHarbours.Tests.EditMode
             TickUntil(c, FishingPhase.Idle);
             FlickGestures.CastLine(c);
             Assert.AreEqual(2, _cues.Count, "the weather changed, so the next blow is announced");
+        }
+
+        [Test]
+        public void ARefusedLine_DoesNotSpendTheBlow_TheNextCastAsksAgain()
+        {
+            var sea = new FakeSea { Sea01 = 0.9f };
+            GameServices.Environment = sea;
+            var elsewhere = MakeFish("fish.cod", "Cod", bite: null, region: "region.somewhere_else");
+            var c = MakeController(new[] { elsewhere }, seed: 42);
+
+            _lineIsRefused = true;                  // a conversation owns the screen, say
+            FlickGestures.CastLine(c);
+            Assert.AreEqual(1, _cues.Count, "the cue is raised");
+
+            TickUntil(c, FishingPhase.Idle);
+            _lineIsRefused = false;
+            FlickGestures.CastLine(c);
+            Assert.AreEqual(2, _cues.Count, "nobody said it, so the same blow asks again");
+
+            TickUntil(c, FishingPhase.Idle);
+            FlickGestures.CastLine(c);
+            Assert.AreEqual(2, _cues.Count, "now it was said: the blow is spent");
+        }
+
+        [Test]
+        public void HandGatheringGear_InABlow_RaisesNoFeedingCue()
+        {
+            GameServices.Environment = new FakeSea { Sea01 = 0.9f };
+            var clam = MakeFish("fish.clam", "Clam", bite: null, region: "region.somewhere_else");
+            var c = MakeController(new[] { clam }, seed: 42, gear: Gear.ClamFork);
+
+            FlickGestures.CastLine(c);
+
+            Assert.AreEqual(FishingPhase.Waiting, c.Phase, "the gather did reach the wait");
+            Assert.AreEqual(0, _cues.Count, "a fork in the sand is not a cast line: no feeding thought");
         }
 
         [Test]
@@ -417,11 +492,23 @@ namespace HiddenHarbours.Tests.EditMode
             director.LoadLibrary(lib);
             _spoken.Clear();
 
+            var heard = new List<string>();
+            void OnHeard(InnerVoiceCueSpoken e) => heard.Add(e.CueId);
+            EventBus.Subscribe<InnerVoiceCueSpoken>(OnHeard);
+
             Assert.IsFalse(director.HearCue("cue.nobody.wrote_this"), "an unknown cue is silence, not an error");
             Assert.IsFalse(director.HearCue(null));
             Assert.AreEqual(0, _spoken.Count);
 
+            InteractionGate.IsBlocked = true;       // a conversation owns the screen
+            Assert.IsFalse(director.HearCue(InnerVoiceCues.FeedingSea));
+            Assert.AreEqual(0, _spoken.Count, "refused: nothing is said");
+            Assert.AreEqual(0, heard.Count, "and nothing is acknowledged, so the publisher will ask again");
+            InteractionGate.IsBlocked = false;
+
             Assert.IsTrue(director.HearCue(InnerVoiceCues.FeedingSea));
+            Assert.AreEqual(1, heard.Count, "a line that went out is acknowledged, once");
+            Assert.AreEqual(InnerVoiceCues.FeedingSea, heard[0]);
             Assert.AreEqual(1, _spoken.Count, "one cue, one thought");
             Assert.AreEqual("They'll be feeding in this.", _spoken[0].Line);
             Assert.AreEqual(AmbientSpeechKind.InnerVoice, _spoken[0].Kind);
