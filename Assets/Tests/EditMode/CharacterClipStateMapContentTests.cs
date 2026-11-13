@@ -37,7 +37,8 @@ namespace HiddenHarbours.Tests.EditMode
                         Assert.Zero(fenced, file + ": " + key + " may not substitute a different frame");
                     }
                 Assert.AreEqual(16, mapped, file);
-                string[] seated = { "drive_helm_go_fast", "drive_helm_bowrider", "drive_helm_express_cruiser" };
+                string[] seated = { "drive_helm_go_fast", "drive_helm_bowrider", "drive_helm_express_cruiser",
+                                    "astride_helm_jet_ski" };
                 foreach (string state in seated)
                 {
                     Assert.IsTrue(skin.TryGetClip(state, out _), file + ": " + state);
@@ -45,7 +46,7 @@ namespace HiddenHarbours.Tests.EditMode
                 }
                 Assert.AreEqual(27, Array.FindAll(skin.MeshStates, s => Array.IndexOf(seated, s) < 0).Length,
                     file + ": the legacy state set is retained");
-                Assert.AreEqual(30, skin.MeshStates.Length, file);
+                Assert.AreEqual(31, skin.MeshStates.Length, file);
             }
         }
     }
