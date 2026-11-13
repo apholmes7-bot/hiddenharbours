@@ -151,7 +151,7 @@ namespace HiddenHarbours.CoopSpike
                     && !sprite.forceRenderingOff && sprite.sprite != null;
             }
             string[] names = { "HiddenHarbours/DeckOccludedSprite", "Hidden/HiddenHarbours/FoamBufferAdvect",
-                "HiddenHarbours/SilhouetteMask", "Hidden/HiddenHarbours/FigurePixelTarget" };
+                "HiddenHarbours/SilhouetteMask" };
             placement.shaders = Array.ConvertAll(names, name =>
             {
                 var shader = Shader.Find(name);
