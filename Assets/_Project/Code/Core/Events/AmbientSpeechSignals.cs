@@ -206,5 +206,9 @@ namespace HiddenHarbours.Core
         /// <summary>The first cast into a sea that is up enough to fish better (bites sooner, fish
         /// bigger). Raised by the rod loop at most once per blow.</summary>
         public const string FeedingSea = "cue.fishing.feeding_sea";
+
+        /// <summary>The hook has just been set in a fish in the top band of her species
+        /// (<c>GameConfig.FishFeel.BigOneThreshold01</c>). Raised by the rod loop once per such hook.</summary>
+        public const string BigOneHooked = "cue.fishing.big_one_hooked";
     }
 }
