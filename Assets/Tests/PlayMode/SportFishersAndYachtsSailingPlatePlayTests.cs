@@ -105,6 +105,11 @@ namespace HiddenHarbours.Tests.PlayMode
             RepairLedger.MarkRepaired(GameServices.Save?.Current, hull.Id);
             // Start beside her at the scene's dock; only setup places the on-foot skipper.
             Assert.AreEqual(ControlMode.OnFoot, sw.Mode);
+            // Setup boards her dry-shod from the scene's dock. Since 2026-11-13 a hull this tall is
+            // climbed from the WATER only at her ladder (BoardingRuleMath); this test is about the helm,
+            // not that rule (BoardingRuleTests owns it), so the teleport is pinned as the dockside
+            // boarding it stands for instead of inheriting whatever water band the last tick read.
+            sw.ConfigureInTheWater(() => false);
             player.transform.position = boat.transform.position + boat.transform.right;
             bool inReach = sw.WithinBoardReach(), boardable = sw.BoardableNow();
             bool pressed = sw.BeginInteract();

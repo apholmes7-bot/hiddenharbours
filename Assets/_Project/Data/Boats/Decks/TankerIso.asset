@@ -181,3 +181,7 @@ MonoBehaviour:
   HelmStationSource: 
   WalkCenter: {x: 0, y: 0.8104992}
   WalkHalfExtents: {x: 8.326, y: 54.4905}
+  BoardingFreeboardMetres: 9.26
+  RailsBlockTheSide: 1
+  ClimbAboardOnlyAtBoardingPoints: 0
+  BoardingPoints: []
