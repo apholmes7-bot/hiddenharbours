@@ -44,12 +44,12 @@ namespace HiddenHarbours.Tests.EditMode
 
         // ---- the shipped clamp, MEASURED off DoryIso.asset and restated (a def read back against
         // ---- itself would agree with any shape at all) -----------------------------------------------
-        // Re-measured at her redraw (fleet art review). Her bottom was widened from 0.52 m to the
-        // 0.80 m a dory of her length has, and her walk is now the layout's fit rule (a 0.23 m walker
-        // over the bottom boards) rather than a hand-drawn lane. Old values: 22 points, half beam
-        // 0.225, ends −1.8 and +1.8, height plane (0, 0.020075757, 0.10363636).
+        // Re-measured at her redraw (fleet art review). Her walk is written by the layout now, and
+        // the owner ruled it stays the 0.45 m lane (2026-11-13), so the half beam is unchanged; the
+        // ends follow where a walker fits in the redrawn hull. Old values: 22 points, ends −1.8 and
+        // +1.8, height plane (0, 0.020075757, 0.10363636).
         private const int FloorOutlinePoints = 30;
-        private const float FloorHalfBeam = 0.372f;      // at y = −0.125
+        private const float FloorHalfBeam = 0.225f;      // the owner's lane, capped in her rig
         private const float FloorAftEnd = -1.864f;
         private const float FloorStemEnd = 1.614f;
         private const float FloorHalfLength = (FloorStemEnd - FloorAftEnd) * 0.5f;   // 1.739
@@ -100,7 +100,7 @@ namespace HiddenHarbours.Tests.EditMode
         /// the same test her feet get. Re-implementing the point-in-polygon here would prove that two
         /// transcriptions agree, which is not the question.</para>
         ///
-        /// <para><b>The negative control matters.</b> Her floor is 0.74 m wide — much of the hull frame
+        /// <para><b>The negative control matters.</b> Her floor is 0.45 m wide — most of the hull frame
         /// is OUTSIDE it, so "the seat is inside" is only worth asserting alongside a point that is not.
         /// The tuned tiller she used to be steered from is that point: 2.02 m abaft amidships, 0.22 m
         /// astern of her transom end, over open water.</para>
@@ -149,8 +149,8 @@ namespace HiddenHarbours.Tests.EditMode
 
         /// <summary>
         /// ⭐ <b>"her narrow deck" — the walk clamp as this PR found it, and did not touch.</b> One
-        /// polygon, 0.74 m across and 3.48 m long, tapering to a hand's width at the stem. (0.45 m by
-        /// 3.6 m until her redraw widened her bottom; she is still more than four times longer than wide.)
+        /// polygon, 0.45 m across and 3.48 m long, tapering to a hand's width at the stem. (3.6 m long
+        /// until her redraw; the 0.45 m width is the owner's, kept.)
         ///
         /// <para><b>Why restate a shape nobody changed.</b> Two reasons. #806: the arrival deck was once
         /// a WORLD-AXIS SQUARE 6.95× her real deck, and the lesson banked from it is that a standable
@@ -185,7 +185,7 @@ namespace HiddenHarbours.Tests.EditMode
                 "the imported outline is 30 points — 15 rows a side. A different count is a re-import, " +
                 "and every number below was measured against this one.");
 
-            // The measured extents, hull-local: 0.744 m across, 3.478 m along.
+            // The measured extents, hull-local: 0.45 m across, 3.478 m along.
             Assert.AreEqual(-FloorHalfBeam, floor.Bounds.x, Tol, "port edge");
             Assert.AreEqual(FloorAftEnd, floor.Bounds.y, Tol, "the transom end of the floor");
             Assert.AreEqual(FloorHalfBeam, floor.Bounds.z, Tol, "starboard edge");

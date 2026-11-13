@@ -628,13 +628,13 @@
   function walkFits(x, y) { const p = [x, y];
     return wPip(p, FLOOR_POLY) && wPip(p, HIP_POLY) && wEdgeD(p, HIP_POLY) >= WALK.radius - 1e-9; }
   function walk() {
-    const R = WALK.radius, mm = (v) => Math.round(v * 1000), END = 0.02, ROW = 0.25;
+    const R = WALK.radius, mm = (v) => Math.round(v * 1000), END = 0.02, ROW = 0.25; const LANE_HALF = 0.225;   // the owner's narrow lane: 0.45 m across, as before her redraw
     // the widest half-breadth that fits on row y, in millimetres (0 where even the centreline does not)
     const half = (y) => { let h = 0; while (h < 1000 && walkFits((h + 1) / 1000, y)) h++; return walkFits(0, y) ? h / 1000 : 0; };
     // the ends: the last rows, a millimetre at a time, where a strip END either side of the centreline still fits
     let ya = mm(PILOT.y), yb = ya; while (ya > -3000 && half((ya - 1) / 1000) >= END) ya--; while (yb < 3000 && half((yb + 1) / 1000) >= END) yb++;
     const n = Math.ceil((yb - ya) / 1000 / ROW), rows = [];
-    for (let i = 0; i <= n; i++) { const y = (ya + (yb - ya) * i / n) / 1000, yq = q3(y); rows.push([Math.max(END, Math.floor((half(yq) - 0.002) * 1000 + 1e-6) / 1000), yq]); }
+    for (let i = 0; i <= n; i++) { const y = (ya + (yb - ya) * i / n) / 1000, yq = q3(y); rows.push([Math.max(END, Math.min(LANE_HALF, Math.floor((half(yq) - 0.002) * 1000 + 1e-6) / 1000)), yq]); }
     const poly = rows.map((r) => [r[0], r[1]]).concat(rows.slice().reverse().map((r) => [-r[0], r[1]]));
     const widest = Math.max.apply(null, rows.map((r) => r[0]));
     const floor = { id: 'floor', cut: 'deck', z: COCKPIT_Z, poly, holes: [],

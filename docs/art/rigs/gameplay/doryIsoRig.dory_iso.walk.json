@@ -5,7 +5,7 @@
  "hull": "dory_iso",
  "label": "BANKS DORY",
  "kind": "open",
- "derivedFromRigSha256": "9041d84e53eb0de8154a986c9399a41fd28a56e9053836c2507851aecddf64d2",
+ "derivedFromRigSha256": "8d6bdeadee51c265cbdf7c4a6cc5aff58c980eb9785d3c9581ce68e2c4ba2653",
  "authoring": "Written by the rig: DoryIso.byId('dory_iso').walk(), every number its own (mm), stamped with the rig's LF sha256 and fitted to character rig 10.3 (qa.character) by tools/rig-recipes/hull-walk.mjs. Regenerate with node tools/rig-recipes/hull-walk.mjs --write; never edit by hand.",
  "units": "metres",
  "frame": "metres; +x starboard, +y bow, +z up; origin amidships, keel bottom, centreline; polygons counter-clockwise seen from above",
@@ -91,43 +91,43 @@
       -1.616
      ],
      [
-      0.279,
+      0.225,
       -1.367
      ],
      [
-      0.323,
+      0.225,
       -1.119
      ],
      [
-      0.345,
+      0.225,
       -0.87
      ],
      [
-      0.364,
+      0.225,
       -0.622
      ],
      [
-      0.37,
+      0.225,
       -0.373
      ],
      [
-      0.372,
+      0.225,
       -0.125
      ],
      [
-      0.363,
+      0.225,
       0.123
      ],
      [
-      0.346,
+      0.225,
       0.372
      ],
      [
-      0.321,
+      0.225,
       0.62
      ],
      [
-      0.278,
+      0.225,
       0.869
      ],
      [
@@ -155,43 +155,43 @@
       1.117
      ],
      [
-      -0.278,
+      -0.225,
       0.869
      ],
      [
-      -0.321,
+      -0.225,
       0.62
      ],
      [
-      -0.346,
+      -0.225,
       0.372
      ],
      [
-      -0.363,
+      -0.225,
       0.123
      ],
      [
-      -0.372,
+      -0.225,
       -0.125
      ],
      [
-      -0.37,
+      -0.225,
       -0.373
      ],
      [
-      -0.364,
+      -0.225,
       -0.622
      ],
      [
-      -0.345,
+      -0.225,
       -0.87
      ],
      [
-      -0.323,
+      -0.225,
       -1.119
      ],
      [
-      -0.279,
+      -0.225,
       -1.367
      ],
      [
@@ -204,7 +204,7 @@
      ]
     ],
     "holes": [],
-    "note": "the bottom boards, stern knee to bow thwart: 3.478 m long and 0.744 m of centre room at its widest. Whole: the three thwarts cross it 0.21 m over the boards and are stepped over (under stepTol), as the owner ruled on 2026-07-22. z is the boards amidships; they rise 0.085 m to the after end and 0.128 m to the forward end with her rocker."
+    "note": "the bottom boards, stern knee to bow thwart: 3.478 m long and 0.45 m of centre room at its widest. Whole: the three thwarts cross it 0.21 m over the boards and are stepped over (under stepTol), as the owner ruled on 2026-07-22. z is the boards amidships; they rise 0.085 m to the after end and 0.128 m to the forward end with her rocker."
    }
   ]
  },
