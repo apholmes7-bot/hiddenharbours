@@ -19,6 +19,32 @@ namespace HiddenHarbours.Economy
     /// </summary>
     public static class CatchLicensePolicy
     {
+        /// <summary>Explicit decisions for the future Core permission adapter. Missing configuration
+        /// is distinct from an available catalog that intentionally declares no restrictions.</summary>
+        public enum LandingDecision
+        {
+            Ungated,
+            Licensed,
+            MissingCatalog,
+            MissingLicense,
+            InvalidSpecies,
+        }
+
+        /// <summary>Read-only strict policy for adapter migration; does not replace the legacy
+        /// <see cref="MayLand"/> call sites yet. A null catalog is unavailable; an empty catalog is
+        /// available and explicitly ungated. Matching and first-authored-licence precedence are
+        /// identical to <see cref="RequiredLicenseFor"/>.</summary>
+        public static LandingDecision Evaluate(string speciesId, IReadOnlyList<LicenseDef> allLicenses,
+                                               ILicenseService licenses)
+        {
+            if (string.IsNullOrEmpty(speciesId)) return LandingDecision.InvalidSpecies;
+            if (allLicenses == null) return LandingDecision.MissingCatalog;
+            string required = RequiredLicenseFor(speciesId, allLicenses);
+            if (string.IsNullOrEmpty(required)) return LandingDecision.Ungated;
+            return licenses != null && licenses.IsLicensed(required)
+                ? LandingDecision.Licensed : LandingDecision.MissingLicense;
+        }
+
         /// <summary>
         /// True iff <paramref name="speciesId"/> may be landed given the player's <paramref name="licenses"/>
         /// and the authored <paramref name="allLicenses"/>. An ungated species (no licence lists it) is

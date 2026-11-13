@@ -50,6 +50,8 @@ MonoBehaviour:
   WashboardSlowFactor: 0.5
   OverTheSideBodyWidthMetres: 0.7
   SwimBoardReachMetres: 6
+  ClimbAnywhereMaxFreeboardMetres: 1
+  BoardingPointReachMetres: 2
   Seakeeping:
     Enabled: 1
     Strength: 220
@@ -313,6 +315,7 @@ MonoBehaviour:
   ShallowsFloorRefraction: 0.25
   ShallowsSubmergedProps: 1
   HullKeylineFlood: 0
+  PlayerFigureIdReserve: 2
   HullMeshReflections: 0
   HullReflectionResolutionDivisor: 1
   HullReflectionMaxHulls: 64
@@ -432,6 +435,7 @@ MonoBehaviour:
     FrozenRateMultiplier: 0
     IcedRateMultiplier: 0
     UnsellableSpoil: 0.9
+  PlaningTopSpeedMarginUnderGoFastMps: 0.1
   Fuel:
     IdleFraction: 0.08
     ThrottleExponent: 2

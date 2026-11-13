@@ -21,15 +21,27 @@ namespace HiddenHarbours.Art
     ///
     /// <para><b>A figure is not a hull and is not counted as one.</b> <see cref="Count"/> stays the
     /// number of boats; <see cref="FigureCount"/> is kept apart so nothing that budgets off the
-    /// fleet (the fore blocks, the "19 hulls" arithmetic) starts counting people.</para>
+    /// fleet (the fore blocks, the hull arithmetic) starts counting people.</para>
+    ///
+    /// <para><b>The id space is a budget (ADR 0056).</b> A hull holds 1 id while enabled and a
+    /// 12-wide fore block only while something stands on her deck; a cast figure ashore holds 1; the
+    /// top <c>GameConfig.PlayerFigureIdReserve</c> ids below 255 are the players' alone. The measured
+    /// counts per region are in <c>docs/architecture/facet-id-budget.md</c>.</para>
     /// </summary>
     public static class IsoFacetHullRegistry
     {
         static readonly List<IsoFacetHullRenderer> s_Hulls = new List<IsoFacetHullRenderer>();
         static readonly HashSet<int> s_FigureIds = new HashSet<int>();
-        static IsoFacetIdPool s_Pool = new IsoFacetIdPool();
+        // Built on first use, not at class load, so the player reserve is read from the config the
+        // game actually published (GameConfig.PlayerFigureIdReserve) rather than from whatever was
+        // live when the type was first touched. Read ONCE per domain: a reserve that moved under
+        // ids already handed out could put a hull on a player's number.
+        static IsoFacetIdPool s_Pool;
         static Texture2D s_ClearFallback;
         static Texture2D s_GuardFallback;
+
+        static IsoFacetIdPool Pool =>
+            s_Pool ??= new IsoFacetIdPool(HiddenHarbours.Core.GameServices.PlayerFigureIdReserve);
 
         /// <summary>How many hulls are live. Half of the renderer feature's cheap gate.</summary>
         public static int Count => s_Hulls.Count;
@@ -42,7 +54,7 @@ namespace HiddenHarbours.Art
         {
             s_Hulls.Add(hull);
             EnsureFallbackBound();
-            return s_Pool.TakeId();
+            return Pool.TakeId();
         }
 
         /// <summary>
@@ -63,24 +75,30 @@ namespace HiddenHarbours.Art
         /// she wears. Counting her twice would be harmless today and wrong the first time anything
         /// budgeted off it.</para>
         ///
-        /// <para><b>The budget is the real cost of the slot count.</b> One id plus a block of
-        /// <c>count</c> per hull means <c>255 / (count + 1)</c> simultaneous mesh hulls — at the
-        /// shipped twelve slots, <b>19</b>, against a roadmap whose largest scene is a harbour of a
-        /// dozen. Returning 0 rather than collapsing onto a shared block is deliberate: a shared FORE
-        /// block would make one boat's crew discard against another boat's planking, which is a
-        /// wrong picture, where 0 is merely the pre-split one.</para>
+        /// <para><b>The budget is the real cost of the slot count, so the block is LAZY</b> (ADR 0056,
+        /// the owner's ruling on <c>docs/architecture/facet-id-budget.md</c>). A hull
+        /// takes her block on her first deck-slot claim and gives it back on her last release, so a
+        /// boat nobody stands on costs ONE id, not thirteen. Held eagerly, the twelve slots allowed
+        /// <c>255 / 13</c> = 19 simultaneous mesh hulls, and Nine Mile Creek alone wanted more.
+        /// Returning 0 rather than collapsing onto a shared block is deliberate: a shared FORE block
+        /// would make one boat's crew discard against another boat's planking, which is a wrong
+        /// picture, where 0 is merely the pre-split one.</para>
         /// </summary>
-        internal static int RegisterForeBlock(int count) => s_Pool.TakeIdBlock(count);
+        internal static int RegisterForeBlock(int count) => Pool.TakeIdBlock(count);
+
+        /// <summary>Could a fore block be handed out right now? Takes nothing and logs nothing — a
+        /// hull refused once asks this on later claims instead of re-logging the refusal.</summary>
+        internal static bool CanSpareForeBlock(int count) => Pool.CanTakeBlock(count);
 
         internal static void Unregister(IsoFacetHullRenderer hull, int id)
         {
             if (s_Hulls.Remove(hull))
-                s_Pool.FreeId(id);
+                Pool.FreeId(id);
         }
 
         /// <summary>Give a FORE block back. Not paired with the hull list — the hull's own
         /// <see cref="Unregister"/> owns that; this only returns the numbers.</summary>
-        internal static void UnregisterForeBlock(int baseId, int count) => s_Pool.FreeBlock(baseId, count);
+        internal static void UnregisterForeBlock(int baseId, int count) => Pool.FreeBlock(baseId, count);
 
         /// <summary>
         /// <b>One facet id for a figure with no hull under her</b> (ADR 0044, ashore), or <b>0</b>
@@ -95,22 +113,33 @@ namespace HiddenHarbours.Art
         /// at exhaustion where a hull shares id 255: a hull sharing 255 composites over another hull,
         /// a figure sharing it would be re-composed by every surplus hull's overlay.</para>
         /// </summary>
-        internal static int RegisterFigure()
+        internal static int RegisterFigure() => Admit(Pool.TakeFigureId());
+
+        /// <summary>
+        /// <b>One facet id for a PLAYER's figure ashore</b> (ADR 0056) — the player's, or a co-op
+        /// friend's. The same bookkeeping as <see cref="RegisterFigure"/>, but taken from the player
+        /// reserve first, which no hull, fore block or cast figure can ever be handed: so the harbour's
+        /// fleet cannot refuse her. Only past the reserve (more players ashore than
+        /// <c>GameConfig.PlayerFigureIdReserve</c>) does she queue for a general single like anyone
+        /// else, and only then can she be refused (0, logged).
+        /// </summary>
+        internal static int RegisterPlayerFigure() => Admit(Pool.TakePlayerFigureId());
+
+        static int Admit(int id)
         {
-            int id = s_Pool.TakeFigureId();
             if (id == 0) return 0;
             s_FigureIds.Add(id);
             EnsureFallbackBound();
             return id;
         }
 
-        /// <summary>Give a figure's id back. Only an id this registry handed to a figure and has not
-        /// already taken back is freed, so a double release cannot push one id onto the free stack
-        /// twice.</summary>
+        /// <summary>Give a figure's id back, to the stack it came from (a reserved player id to the
+        /// reserve). Only an id this registry handed to a figure and has not already taken back is
+        /// freed, so a double release cannot push one id onto a free stack twice.</summary>
         internal static void UnregisterFigure(int id)
         {
             if (s_FigureIds.Remove(id))
-                s_Pool.FreeId(id);
+                Pool.FreeFigureId(id);
         }
 
         /// <summary>
@@ -120,10 +149,14 @@ namespace HiddenHarbours.Art
         /// </summary>
         internal static IsoFacetIdPool SwapIdPoolForTests(IsoFacetIdPool pool)
         {
-            IsoFacetIdPool old = s_Pool;
+            IsoFacetIdPool old = Pool;
             s_Pool = pool ?? throw new System.ArgumentNullException(nameof(pool));
             return old;
         }
+
+        /// <summary>TEST and MEASUREMENT seam: the live pool, read-only use only (its counters are
+        /// what the budget note's measured run reports).</summary>
+        internal static IsoFacetIdPool PoolForMeasurement => Pool;
 
         /// <summary>
         /// Bind a fully-transparent 1×1 as the global hull-screen texture so an overlay quad that
@@ -181,46 +214,120 @@ namespace HiddenHarbours.Art
     /// <see cref="TakeFigureId"/> pop only the singles stack; <see cref="TakeIdBlock"/> pops only the
     /// block stack. A freed single can therefore never become a block base, and a freed block can
     /// never be handed out as a single.</para>
+    ///
+    /// <para><b>The PLAYER RESERVE (ADR 0056).</b> The top <see cref="PlayerReserve"/> ids below 255
+    /// are held back for the players' own figures ashore (<see cref="TakePlayerFigureId"/>): no hull,
+    /// no fore block and no cast figure can ever be handed one, so a player standing ashore is never
+    /// refused her mesh because the harbour's boats spent the pool. Everything else is handed out
+    /// from <c>1 .. </c><see cref="GeneralTop"/>, and 255 stays the id surplus hulls share. A pool
+    /// built with no reserve (<c>new IsoFacetIdPool()</c>) is the pool as it was before the reserve,
+    /// id for id.</para>
     /// </summary>
     internal sealed class IsoFacetIdPool
     {
+        /// <summary>The top of the 8-bit alpha channel, and the id surplus hulls SHARE at exhaustion.
+        /// Never handed to a figure, never pooled.</summary>
+        internal const int MaxId = 255;
+
         readonly Stack<int> _freeIds = new Stack<int>();
         readonly Stack<int> _freeForeBlocks = new Stack<int>();
+        readonly Stack<int> _freePlayerIds = new Stack<int>();
+        readonly int _playerReserve;
+        readonly int _generalTop;
         int _nextId = 1;
+
+        /// <summary>A pool with no player reserve: every id below 255 is general, exactly the pool
+        /// that shipped before ADR 0056. The guards that exhaust a pool of their own build this.</summary>
+        internal IsoFacetIdPool() : this(0) { }
+
+        /// <summary>
+        /// A pool that holds the top <paramref name="playerFigureReserve"/> ids below 255 back for the
+        /// players' figures. Clamped so at least one general id is left: the reserve can starve the
+        /// fleet, never the arithmetic.
+        /// </summary>
+        internal IsoFacetIdPool(int playerFigureReserve)
+        {
+            _playerReserve = Mathf.Clamp(playerFigureReserve, 0, MaxId - 2);
+            _generalTop = MaxId - 1 - _playerReserve;
+            // Pushed top-down so the LOWEST reserved id pops first: with the default two, the player
+            // is 253 and the friend 254, the same every session.
+            for (int id = MaxId - 1; id > _generalTop; id--) _freePlayerIds.Push(id);
+        }
+
+        /// <summary>How many ids are held back for players' figures.</summary>
+        internal int PlayerReserve => _playerReserve;
+
+        /// <summary>The highest id the general pool (hulls, fore blocks, the cast) can hand out. Ids
+        /// above it, bar 255, are the player reserve.</summary>
+        internal int GeneralTop => _generalTop;
+
+        /// <summary>How many reserved player ids are free right now.</summary>
+        internal int FreePlayerIds => _freePlayerIds.Count;
+
+        /// <summary>The general pool's high-water mark: the highest general id ever handed out
+        /// fresh (0 for a fresh pool). Recycled ids do not raise it.</summary>
+        internal int HighWater => Mathf.Min(_nextId - 1, _generalTop);
+
+        /// <summary>General ids that can still be handed out as SINGLES: never-issued ones plus freed
+        /// singles. Freed blocks are not counted; they are only ever handed out as blocks.</summary>
+        internal int FreeSingles => Mathf.Max(0, _generalTop - (_nextId - 1)) + _freeIds.Count;
+
+        /// <summary>Freed fore blocks waiting to be reused whole.</summary>
+        internal int FreeBlocks => _freeForeBlocks.Count;
+
+        /// <summary>True when <paramref name="id"/> is one of the reserved player ids.</summary>
+        internal bool IsPlayerReserveId(int id) => id > _generalTop && id < MaxId;
 
         /// <summary>A hull's own id. At exhaustion it SHARES 255, as it always has.</summary>
         internal int TakeId()
         {
             if (_freeIds.Count > 0) return _freeIds.Pop();
-            if (_nextId > 255)
+            if (_nextId <= _generalTop) return _nextId++;
+            if (_nextId == _generalTop + 1)
             {
-                // 255 ids — shared between hull ids and their fore blocks — would be a fleet nobody
-                // budgeted for; collapsing onto id 255 degrades overlap separation for the surplus,
-                // nothing worse.
-                Debug.LogWarning("[IsoFacetHullRegistry] Facet hull ids exhausted (255 in use); " +
-                                 "further hulls share id 255 and may composite over one another.");
-                return 255;
+                // The first hull past the general ids holds 255 alone, as the 255th hull always did;
+                // it is the next one that starts sharing it. The reserve is jumped, never touched.
+                _nextId = MaxId + 1;
+                return MaxId;
+            }
+            // 255 ids — shared between hull ids and their fore blocks — would be a fleet nobody
+            // budgeted for; collapsing onto id 255 degrades overlap separation for the surplus,
+            // nothing worse.
+            Debug.LogWarning("[IsoFacetHullRegistry] Facet hull ids exhausted (255 in use); " +
+                             "further hulls share id 255 and may composite over one another.");
+            return MaxId;
+        }
+
+        /// <summary>
+        /// A CAST figure's id ashore, or 0. <b>Never 255 and never shared:</b> 255 is the id hulls
+        /// collapse onto at exhaustion, so a figure holding it would be re-composed by every surplus
+        /// hull's overlay. Refusing costs one figure her mesh (she keeps her sprite); sharing would
+        /// cost a wrong picture. <b>Never a reserved player id either</b>: the cast queues with the
+        /// fleet.
+        /// </summary>
+        internal int TakeFigureId()
+        {
+            if (_freeIds.Count > 0) return _freeIds.Pop();
+            if (_nextId > _generalTop)
+            {
+                Debug.LogWarning(
+                    $"[IsoFacetHullRegistry] Facet ids exhausted ({HighWater} general ids in use, " +
+                    $"{_playerReserve} held for players); this figure gets NO facet id and keeps her " +
+                    "sprite. A figure never shares id 255.");
+                return 0;
             }
             return _nextId++;
         }
 
         /// <summary>
-        /// An ashore figure's id, or 0. <b>Never 255 and never shared:</b> 255 is the id hulls
-        /// collapse onto at exhaustion, so a figure holding it would be re-composed by every surplus
-        /// hull's overlay. Refusing costs one figure her mesh (she keeps her sprite); sharing would
-        /// cost a wrong picture.
+        /// A PLAYER's figure id ashore (ADR 0056): a reserved id while one is free, so no number of
+        /// hulls can refuse her; past the reserve (more players ashore than it was sized for) a general
+        /// single exactly as a cast figure would take one, and 0 when that is gone too. Never 255.
         /// </summary>
-        internal int TakeFigureId()
+        internal int TakePlayerFigureId()
         {
-            if (_freeIds.Count > 0) return _freeIds.Pop();
-            if (_nextId >= 255)
-            {
-                Debug.LogWarning(
-                    $"[IsoFacetHullRegistry] Facet ids exhausted ({_nextId - 1} in use); this figure " +
-                    "gets NO facet id and keeps her sprite. A figure never shares id 255.");
-                return 0;
-            }
-            return _nextId++;
+            if (_freePlayerIds.Count > 0) return _freePlayerIds.Pop();
+            return TakeFigureId();
         }
 
         /// <summary>
@@ -228,19 +335,21 @@ namespace HiddenHarbours.Art
         ///
         /// <para>Freed blocks are reused whole, never split: every block this hands out is the same
         /// size, so a returned one always fits the next request exactly and the pool cannot
-        /// fragment.</para>
+        /// fragment. A block never reaches into the player reserve, nor onto 255: a block holding the
+        /// overflow id would accept every surplus hull's pixels as its own fore band.</para>
         /// </summary>
         internal int TakeIdBlock(int count)
         {
             if (count < 1) return 0;
             if (_freeForeBlocks.Count > 0) return _freeForeBlocks.Pop();
-            if (_nextId + count - 1 > 255)
+            if (_nextId + count - 1 > _generalTop)
             {
                 Debug.LogWarning(
-                    $"[IsoFacetHullRegistry] Facet hull ids exhausted ({_nextId - 1} in use); this " +
-                    $"hull gets NO deck-occupant block ({count} contiguous ids needed). Anything " +
-                    "standing on her deck will draw over her cabins instead of behind them. Each " +
-                    "hull costs 1 + " + count + " ids out of 255.");
+                    $"[IsoFacetHullRegistry] Facet hull ids exhausted ({HighWater} general ids in use, " +
+                    $"{_playerReserve} held for players); this hull gets NO deck-occupant block ({count} " +
+                    "contiguous ids needed). Anything standing on her deck will draw over her cabins " +
+                    "instead of behind them until a block frees; she asks again at her next deck claim. " +
+                    "A hull holds 1 id, and " + count + " more only while somebody stands on her deck.");
                 return 0;
             }
             int baseId = _nextId;
@@ -248,17 +357,31 @@ namespace HiddenHarbours.Art
             return baseId;
         }
 
-        /// <summary>Return a single id. 0 and 255 (the shared overflow id) are never pushed.</summary>
+        /// <summary>Would <see cref="TakeIdBlock"/> succeed right now? Asks, takes nothing and logs
+        /// nothing: what lets a hull refused once retry on every claim without a warning per frame.</summary>
+        internal bool CanTakeBlock(int count)
+            => count >= 1 && (_freeForeBlocks.Count > 0 || _nextId + count - 1 <= _generalTop);
+
+        /// <summary>Return a single id. 0, the reserved player ids and 255 (the shared overflow id)
+        /// are never pushed onto the general singles.</summary>
         internal void FreeId(int id)
         {
-            if (id >= 1 && id < 255)
+            if (id >= 1 && id <= _generalTop)
                 _freeIds.Push(id);
+        }
+
+        /// <summary>Return a figure's id to whichever stack it came from: a reserved id goes back to
+        /// the player reserve, anything else to the general singles.</summary>
+        internal void FreeFigureId(int id)
+        {
+            if (IsPlayerReserveId(id)) _freePlayerIds.Push(id);
+            else FreeId(id);
         }
 
         /// <summary>Return a fore block whole.</summary>
         internal void FreeBlock(int baseId, int count)
         {
-            if (baseId >= 1 && count >= 1 && baseId + count - 1 <= 255)
+            if (baseId >= 1 && count >= 1 && baseId + count - 1 <= _generalTop)
                 _freeForeBlocks.Push(baseId);
         }
     }

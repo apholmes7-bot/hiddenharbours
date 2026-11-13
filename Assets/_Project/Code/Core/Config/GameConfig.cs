@@ -263,6 +263,20 @@ namespace HiddenHarbours.Core
                  "between two berths, so it never joins one boat's water to the next one's.")]
         [Min(0f)] public float SwimBoardReachMetres = 6.0f;
 
+        [Tooltip("The highest freeboard (top of the hull side above the water, metres) a hull may have " +
+                 "and still be climbed anywhere from the water. At or under this she behaves as every " +
+                 "boat did before 2026-11-13 (the dory, the punt, the skiffs). Over it — or railed, or " +
+                 "flagged ladder-only on her deck Def — she is climbed from the water only at one of her " +
+                 "boarding points (BoatDeckDef.BoardingPoints); with none, only from a wharf or gangway. " +
+                 "Going over the side is governed by her rails, not by this number. Owner, 2026-11-13: " +
+                 "'player can easily climb up massive walls which is wrong, should only be ladders'.")]
+        [Min(0f)] public float ClimbAnywhereMaxFreeboardMetres = 1.0f;
+
+        [Tooltip("How close (m) you must be to a hull's ladder, swim platform or rail gate to use it, " +
+                 "when that point does not author its own reach. Measured in the hull's own deck frame, " +
+                 "from the swimmer in the water or from the rider at the rail.")]
+        [Min(0.1f)] public float BoardingPointReachMetres = 2.0f;
+
         [Header("Seakeeping forces (ADR 0018 B3 — the sea pushes the boat)")]
         [Tooltip("World-wide seakeeping FORCE policy (the sea fighting back): the master switch + bite " +
                  "strength, how the bite grows with sea state, how exposure falls off with depth (open water " +
@@ -307,6 +321,16 @@ namespace HiddenHarbours.Core
                  "inherits. Enabled off (or a hull whose Trim* values are all 0) draws her pitch " +
                  "exactly as before trim existed; that is the A/B.")]
         public HullTrimSettings HullTrim = HullTrimSettings.Default;
+
+        [Header("Fleet speed (the go-fast stays the fastest boat — owner 2026-11-13)")]
+        [Tooltip("How far under the go-fast's own top speed every other planing hull is held, in m/s. " +
+                 "The owner ruled (2026-11-13) that no planing hull may out-run the go-fast: a hull whose " +
+                 "0.45 x real-world speed would pass her is authored at (the go-fast's still-water top " +
+                 "speed minus this margin) instead. Nothing reads this at run time; a hull's speed is her " +
+                 "own BoatHullDef.EnginePower, and FleetSpeedTableTests holds every hull Def to this cap. " +
+                 "Move it, then re-solve EnginePower on the capped hulls " +
+                 "(docs/design/fleet-speed-and-fuel-audit.md).")]
+        [Min(0f)] public float PlaningTopSpeedMarginUnderGoFastMps = 0.1f;
 
         [Header("Ground tackle (dropping the hook)")]
         [Tooltip("World-wide ANCHORING policy: the dinghy-class rode a hull carries when her own Def " +
@@ -673,6 +697,23 @@ namespace HiddenHarbours.Core
                  "Baked SPRITE sheets (buildings, trees, props) still carry drawn keylines until their " +
                  "families are naturally redone; that mixed period is accepted (ADR 0031, Half B skipped).")]
         public bool HullKeylineFlood = DefaultHullKeylineFlood;
+
+        /// <summary>The player reserve's ship default (ADR 0056, the owner's ruling on the facet-id budget): two
+        /// facet ids — the player and one co-op friend. A const so a consumer with no config wired
+        /// resolves the SHIPPED reserve, because <c>GameConfig.asset</c> lags the code.</summary>
+        public const int DefaultPlayerFigureIdReserve = 2;
+        /// <summary>The inspector's ceiling for <see cref="PlayerFigureIdReserve"/>: every id reserved is
+        /// one the harbour's boats and the cast can never have.</summary>
+        public const int MaxPlayerFigureIdReserve = 8;
+
+        [Header("Facet ids (ADR 0056 — the id space is a budget)")]
+        [Tooltip("How many of the 255 facet ids are held back for the PLAYERS' figures ashore (the player " +
+                 "and each co-op friend). No boat, truck or villager can ever take one, so a player standing " +
+                 "ashore is never left as her old sprite because the harbour's boats used the ids up. Each one " +
+                 "reserved is one fewer for boats and the cast. Read once, when the first facet id of the " +
+                 "session is handed out: a change applies from the next play session.")]
+        [Range(0, MaxPlayerFigureIdReserve)]
+        public int PlayerFigureIdReserve = DefaultPlayerFigureIdReserve;
 
         public const int DefaultHullReflectionMaxHulls = 64;
         public const int DefaultHullReflectionMaxPackets = 1024;

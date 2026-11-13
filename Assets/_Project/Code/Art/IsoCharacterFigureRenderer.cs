@@ -28,10 +28,12 @@ namespace HiddenHarbours.Art
     /// never moves for her. There is a test that says so.</para>
     ///
     /// <para><b>ASHORE — and only through <see cref="EnterAshore"/> — she takes ONE figure id</b>
-    /// (<see cref="IsoFacetHullRegistry.RegisterFigure"/>). A single, from the singles stack only, so
-    /// it can never be a recycled fore block nor become one; never the shared overflow id 255; and
-    /// REFUSED at exhaustion, in which case <see cref="EnterAshore"/> returns false and the caller
-    /// keeps her sprite. Holding it raises <see cref="IsoFacetHullRegistry.FigureCount"/>, which is
+    /// (<see cref="IsoFacetHullRegistry.RegisterPlayerFigure"/> for a player,
+    /// <see cref="IsoFacetHullRegistry.RegisterFigure"/> for the cast: <see cref="IsCastFigure"/>,
+    /// ADR 0056). A single, never from the fore-block stack, so it can never be a recycled fore block
+    /// nor become one; never the shared overflow id 255. A player's comes from the player reserve no
+    /// hull can take; a cast figure's is REFUSED at exhaustion, in which case
+    /// <see cref="EnterAshore"/> returns false and the caller keeps her sprite. Holding it raises <see cref="IsoFacetHullRegistry.FigureCount"/>, which is
     /// what opens the facet gate with no hull in the frame. With her id she carries what a hull
     /// carries for herself: a frame that stands in for the posed mesh child (the iso rotation and the
     /// mirror scale), the depth bias and shear at her own root, and a cell-sized overlay quad at the
@@ -136,6 +138,20 @@ namespace HiddenHarbours.Art
 
         /// <summary>Her facet id ashore, in [1, 254]; 0 when not ashore.</summary>
         public int FigureId => _figureId;
+
+        /// <summary>
+        /// <b>Whose ashore id she asks for</b> (ADR 0056). A member of the CAST (set by
+        /// <see cref="CharacterFigurePresenter"/>, the only presenter that builds cast figures) queues
+        /// for a general single with the fleet, and can be refused when the harbour has spent the pool.
+        /// Anything else — the player's own presenter, and a co-op friend's — asks the PLAYER RESERVE
+        /// first, which no hull or cast figure can ever be handed, so a player ashore is never refused.
+        ///
+        /// <para>The default is the player's on purpose: the player's presenter lives in the Player
+        /// module and calls only the public <see cref="EnterAshore"/>, whose signature and behaviour
+        /// for it are unchanged; the cast's lives here and says so. Read only at the ask, never per
+        /// frame. Changing it while ashore changes nothing until her next arrival.</para>
+        /// </summary>
+        internal bool IsCastFigure { get; set; }
 
         /// <summary>Her overlay quad ashore — the renderer that competes with sprites — or null.</summary>
         public MeshRenderer AshoreOverlay => _overlayRenderer;
@@ -869,7 +885,10 @@ namespace HiddenHarbours.Art
                 throw new InvalidOperationException(
                     "IsoFacetOverlay shader not found — see the shader compile-guard test.");
 
-            int id = IsoFacetHullRegistry.RegisterFigure();
+            // ADR 0056: a player's figure takes a reserved id the fleet can never spend; the cast
+            // queues with the fleet for a general one.
+            int id = IsCastFigure ? IsoFacetHullRegistry.RegisterFigure()
+                                  : IsoFacetHullRegistry.RegisterPlayerFigure();
             if (id == 0) return false;
 
             _figureId = id;

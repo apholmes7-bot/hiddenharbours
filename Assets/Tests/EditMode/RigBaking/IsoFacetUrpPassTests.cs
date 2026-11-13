@@ -388,9 +388,16 @@ namespace HiddenHarbours.Tests.RigBaking
             Assert.Greater(inked, 200, "harness: the hull must actually have drawn something");
 
             var red = new Color32(255, 0, 0, 255);
+            Assert.AreEqual(0, scene.Hull.ForeHullId,
+                "ADR 0056: a hull nobody has claimed a deck slot on holds NO fore block");
+            // The block comes with the first deck claim (ADR 0056). Claim the cockpit and stand nobody
+            // in it, so ARM 1 discards against the very ids a real occupant gets — with the split OFF.
+            scene.Hull.SetDeckOccupant(new Vector3(0f, -1.6f, 1.35f), true);
+            scene.Hull.SetDeckOccupant(new Vector3(0f, -1.6f, 1.35f), false);
+            scene.Hull.ApplyPose();
             Assert.Greater(scene.Hull.ForeHullId, 0,
-                "harness: a live hull must hold a FORE id, or there is nothing for the figure to " +
-                "discard against");
+                "harness: a hull with a claimed deck slot must hold a FORE id, or there is nothing for " +
+                "the figure to discard against");
             Assert.AreNotEqual(scene.Hull.HullId, scene.Hull.ForeHullId,
                 "her two ids must differ, or the split cannot separate anything");
             float foreId = scene.Hull.ForeHullId / 255f;

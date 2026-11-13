@@ -97,6 +97,10 @@ namespace HiddenHarbours.Tests.RigBaking
                 Assert.That(result.Ok, Is.True, string.Join(";", result.Refusals));
                 var savedDeck = AssetDatabase.LoadAssetAtPath<BoatDeckDef>(DeckSidecarImporter.DeckAssetPath(stem));
                 Assert.That(savedDeck, Is.Not.Null, key);
+                // The boarding block is AUTHORED on the saved asset, not delivered by the walk, and the
+                // importer carries it across exactly like this before it saves. Every imported field is
+                // still compared whole below.
+                deck.CopyAuthoredBoardingRuleFrom(savedDeck);
                 Assert.That(JsonUtility.ToJson(savedDeck), Is.EqualTo(JsonUtility.ToJson(deck)), key + ": complete imported deck, helm and cleats");
                 var savedRoom = AssetDatabase.LoadAssetAtPath<BoatInteriorDef>("Assets/_Project/Data/Boats/Interiors/" + stem + ".asset");
                 if (rig.Walk.House == null) Assert.That(savedRoom, Is.Null, key + ": an open tender has no room");
@@ -110,6 +114,43 @@ namespace HiddenHarbours.Tests.RigBaking
                 Assert.That(mesh.LayoutSchema, Is.EqualTo(HullWalkSidecarReader.Schema));
             }
             finally { Object.DestroyImmediate(deck); Object.DestroyImmediate(room); }
+        }
+
+        [Test]
+        public void AuthoredBoardingRule_IsCarriedOntoAFreshImport_AndNothingElseIs()
+        {
+            var authored = ScriptableObject.CreateInstance<BoatDeckDef>();
+            var fresh = ScriptableObject.CreateInstance<BoatDeckDef>();
+            var untouched = ScriptableObject.CreateInstance<BoatDeckDef>();
+            try
+            {
+                authored.Id = "deck.authored";
+                authored.LoaMeters = 9f;
+                authored.BoardingFreeboardMetres = 1.36f;
+                authored.RailsBlockTheSide = true;
+                authored.ClimbAboardOnlyAtBoardingPoints = true;
+                authored.BoardingPoints = new[] { new BoardingPoint { Id = "stern_ladder",
+                    Kind = BoardingPointKind.Ladder, DeckLocalMeters = new Vector2(0f, -7.75f), ReachMetres = 1.5f } };
+                fresh.Id = untouched.Id = "deck.fresh";
+                fresh.LoaMeters = untouched.LoaMeters = 12f;
+
+                fresh.CopyAuthoredBoardingRuleFrom(authored);
+
+                Assert.That(fresh.BoardingFreeboardMetres, Is.EqualTo(1.36f));
+                Assert.That(fresh.RailsBlockTheSide, Is.True);
+                Assert.That(fresh.ClimbAboardOnlyAtBoardingPoints, Is.True);
+                Assert.That(fresh.BoardingPoints, Is.EqualTo(authored.BoardingPoints));
+                Assert.That(fresh.BoardingPoints, Is.Not.SameAs(authored.BoardingPoints), "a copy, not a shared array");
+
+                // Undo the carry: what is left must be the untouched import, field for field.
+                fresh.CopyAuthoredBoardingRuleFrom(untouched);
+                Assert.That(JsonUtility.ToJson(fresh), Is.EqualTo(JsonUtility.ToJson(untouched)),
+                    "the carry touches the boarding block only");
+            }
+            finally
+            {
+                Object.DestroyImmediate(authored); Object.DestroyImmediate(fresh); Object.DestroyImmediate(untouched);
+            }
         }
 
         [Test]

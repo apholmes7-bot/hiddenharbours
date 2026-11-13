@@ -345,6 +345,41 @@ namespace HiddenHarbours.Tests.Art.EditMode
             Assert.AreEqual(1, figure.transform.childCount, "a refused figure built a frame or an overlay");
         }
 
+        /// <summary>
+        /// <b>ADR 0056 — the owner's old-sprite report.</b> With every fleet id spent and 255 shared, the
+        /// figure a player's presenter builds (the default: not <see cref="IsoCharacterFigureRenderer.IsCastFigure"/>)
+        /// still goes ashore, on a reserved id; when she leaves, the id goes back to the reserve. A
+        /// cast figure at the same moment is refused and never touches the reserve. On main she was
+        /// refused here and fell back to her old sprite.
+        /// </summary>
+        [Test]
+        public void AtExhaustion_ThePlayersFigureGoesAshoreOnAReservedId_ACastFigureIsRefused()
+        {
+            var drained = new IsoFacetIdPool(GameConfig.DefaultPlayerFigureIdReserve);
+            while (drained.TakeId() != IsoFacetIdPool.MaxId) { }
+            UseFreshIdPool(drained);
+            IsoCharacterFigureRenderer figure = MakeFigure(MakeDef());
+            SpriteRenderer sprite = MakeSortSource(0);
+            int figures = IsoFacetHullRegistry.FigureCount;
+
+            Assert.IsFalse(figure.IsCastFigure, "a figure is the player's unless the cast's presenter says otherwise");
+            Assert.IsTrue(figure.EnterAshore(sprite),
+                "the player's figure was refused at a full harbour — she falls back to her old sprite");
+            Assert.IsTrue(drained.IsPlayerReserveId(figure.FigureId), $"she went ashore on {figure.FigureId}, not a reserved id");
+            Assert.AreEqual(figures + 1, IsoFacetHullRegistry.FigureCount);
+
+            figure.LeaveAshore();
+            Assert.AreEqual(figures, IsoFacetHullRegistry.FigureCount);
+            Assert.AreEqual(GameConfig.DefaultPlayerFigureIdReserve, drained.FreePlayerIds,
+                "her reserved id did not go back to the reserve when she left");
+
+            figure.IsCastFigure = true;
+            LogAssert.Expect(LogType.Warning, FigureExhausted);
+            Assert.IsFalse(figure.EnterAshore(sprite), "a cast figure went ashore on a player's reserved id");
+            Assert.IsFalse(figure.IsAshore);
+            Assert.AreEqual(GameConfig.DefaultPlayerFigureIdReserve, drained.FreePlayerIds);
+        }
+
         [Test]
         public void AnAshoreFigureWritesItsOwnIdWithNoForeBlock_OnBothRenderers()
         {

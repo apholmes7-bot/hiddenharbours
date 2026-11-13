@@ -268,8 +268,9 @@ namespace HiddenHarbours.Tests.PlayMode
 
             yield return RunToTerminal(boat, rb);
 
-            Assert.AreEqual(3.9f, rb.linearVelocity.magnitude, 0.15f,
-                "the console is the WORKBOAT: the owner's target is 3.8–4.0 m/s. If this drifts, the " +
+            // Moved by the owner's 11-12 speed ruling (was 3.9): 0.45 x the audit's 36.9 kn.
+            Assert.AreEqual(8.54f, rb.linearVelocity.magnitude, 0.15f,
+                "the console skiff's ruled speed is 8.54 m/s (0.45 x 36.9 kn). If this drifts, the " +
                 "EnginePower/ForwardDrag/MassKg on ConsoleSkiff.asset moved — or BoatController's force " +
                 "model changed under it (see the derivation in GreyboxBuilder's hull-ladder note).");
         }
@@ -282,9 +283,10 @@ namespace HiddenHarbours.Tests.PlayMode
 
             yield return RunToTerminal(boat, rb);
 
-            Assert.AreEqual(4.64f, rb.linearVelocity.magnitude, 0.15f,
-                "the sport skiff's target is ≈4.6 m/s — the SAME engine as the console on a lighter, " +
-                "slipperier hull");
+            // Moved by the owner's 11-12 speed ruling (was 4.64): 0.45 x the audit's 36.9 kn.
+            Assert.AreEqual(8.54f, rb.linearVelocity.magnitude, 0.15f,
+                "the sport skiff's ruled speed is 8.54 m/s (0.45 x 36.9 kn), the same top speed as the " +
+                "console on a lighter, slipperier hull");
         }
 
         [UnityTest]
@@ -295,9 +297,11 @@ namespace HiddenHarbours.Tests.PlayMode
 
             yield return RunToTerminal(boat, rb);
 
-            Assert.AreEqual(5.63f, rb.linearVelocity.magnitude, 0.15f,
-                "the twin's target is ≈5.6 m/s. NOT 2× the single: drag is linear in v here, so doubling " +
-                "thrust would exactly double terminal speed to ~9 m/s. EnginePower is a design-unit " +
+            // Moved by the owner's 11-12 speed ruling (was 5.63): 0.45 x the audit's 36.9 kn. She is no
+            // longer the fastest hull afloat: the three skiffs share one ruled speed and the RIBs, the
+            // bowrider, the express cruiser and the go-fast all run quicker.
+            Assert.AreEqual(8.54f, rb.linearVelocity.magnitude, 0.15f,
+                "the twin's ruled speed is 8.54 m/s (0.45 x 36.9 kn). EnginePower is a design-unit " +
                 "tunable calibrated to a designed speed, not a Newton count.");
         }
 
@@ -548,8 +552,9 @@ namespace HiddenHarbours.Tests.PlayMode
 
                 // Inside the spray sheet's frame, measured rather than solved — BowSprayGrading maps
                 // 1.7 → 6 m/s and a hull past the top clips flat and outruns her own art.
+                // Moved by the owner's 11-12 speed ruling: these five now run 8.5 to 10.1 m/s, past the
+                // sheet's 6 m/s top, so only the floor is held here. The ceiling assertion left.
                 Assert.Greater(measured, 1.7f, $"{file}: below the spray sheet's floor at {measured:0.00} m/s");
-                Assert.LessOrEqual(measured, 6f, $"{file}: past the spray sheet's ceiling at {measured:0.00} m/s");
 
                 Object.Destroy(go);
                 yield return null;

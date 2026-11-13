@@ -888,6 +888,35 @@ The on-foot ⇄ aboard control loop is the `ControlSwitcher` (Player lane); seve
 - **Board from anywhere** within reach of the boat (`WithinBoardReach()` — a pure proximity radius), not only
   at a dock zone (owner playtest). So you can step aboard a boat nudged up to a beach, not just one at the
   wharf. (The damaged-dory repair gate still applies on top, P5.)
+- **Only ladders, and rails stop you jumping in** (owner, 2026-11-13: *"boarding the tanker player can
+  easily climb up massive walls which is wrong, should only be ladders, railings should stop players from
+  jumping in, maybe different on the fishing vessels"*). The rule is Core's pure `BoardingRuleMath`, and
+  every input is data. There are **two verbs with two rules**. **Climbing aboard from the water** is
+  restricted when her `BoatDeckDef.BoardingFreeboardMetres` (the top of her side above the water at the
+  lowest point of the sheer — her lowest gunwale cleat minus her hull mesh's resting draft) is over
+  `GameConfig.ClimbAnywhereMaxFreeboardMetres` (1.0 m), **or** her `BoatDeckDef.RailsBlockTheSide` is set,
+  **or** her `BoatDeckDef.ClimbAboardOnlyAtBoardingPoints` is set (owner, same day: *"Side dragger and
+  stern trawler, cape islander and lobster boats should have stern or side ladders. They would definitely
+  be too tall to climb"* — the dragger and the trawlers are over the limit by measurement; the cape
+  islander and the lobster boats carry the flag). **Going over the side** is restricted by
+  `RailsBlockTheSide` alone (tanker, packet, both yachts): on the fishing hulls you still jump in anywhere.
+  A restricted verb happens only within reach of one of her `BoatDeckDef.BoardingPoints` (ladder /
+  platform / gate; reach per point, else `GameConfig.BoardingPointReachMetres`); with no points it is
+  refused and she is boarded from a wharf or gangway. The dory, the punt, the skiffs and the zodiacs are
+  climb-anywhere exactly as before. The working boats' ladder points are data only so far — the ladder
+  art is owed and is drawn at the authored point. **No hull is dock-only** (owner, 2026-11-13:
+  *"Boardinnf some boats from dock only is too hard maybe all boats need a ladder"*): every hull whose
+  side is over the limit carries at least one boarding point in its deck asset, stern by default — the
+  coastal packet got hers at the transom on that ruling. The one named exception is the tanker, whose
+  pilot ladder is rig work. It stays per-hull data, never a code rule;
+  `BoardingRuleTests.EveryHull_CanBeBoardedFromTheWater` holds it. The rule is
+  asked only when the walker's water state is not `Dry`, so the boarding move from a wharf or beach and the
+  step ashore are untouched; a hull with no deck Def (the two sloops) is unmeasured and keeps the old
+  behaviour. Refused, the popup and the press say **"Find the ladder"** on a hull that has one, and
+  *"Too high to climb — board her from a wharf"* from the water under a hull that has none (the tanker,
+  until her pilot ladder is authored); at a railed edge "Go over the side" is not offered. The four
+  fields are the **authored** block of the otherwise-imported `BoatDeckDef` — the importer never assigns
+  them — and `BoardingRuleTests` holds the per-hull table.
 - **Swim up to a hull and climb aboard** (owner, 2026-09-02). The boarding gate above was never the thing
   stopping you doing this from the water — `WithinBoardReach()` is pure proximity with no swim check — the
   **boat-only soft wall** was: a hull lies in exactly the water a person may not enter, so the rule that

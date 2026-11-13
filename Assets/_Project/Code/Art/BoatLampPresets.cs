@@ -39,6 +39,11 @@ namespace HiddenHarbours.Art
     /// the deterministic flicker <see cref="SceneLight"/> offers is left at zero for the navigation
     /// lights — a wobbling sidelight reads as a fire, not a lamp. The cabin glow takes a whisper of
     /// it, because a lit room with somebody moving about in it is not perfectly still.</para>
+    ///
+    /// <para><b>The NUMBERS are data since 2026-11-13</b> (rule 6): today's look is read from
+    /// <see cref="BoatLampLook"/> (<c>Resources/BoatLampLook.asset</c>), which the owner tunes with no
+    /// code change. This class is the one mapping from that data onto a <see cref="SceneLight"/>.
+    /// Only <see cref="Legacy"/> keeps literals, because a passthrough is a frozen record.</para>
     /// </summary>
     public static class BoatLampPresets
     {
@@ -75,16 +80,10 @@ namespace HiddenHarbours.Art
                 // camera far better than a broad haze would, and a haze is not what a sidelight looks
                 // like anyway.
                 case HullLampKind.PortSidelight:
-                    return new LightPresets.Config(
-                        SceneLight.LightShape.Radial, PortRed,
-                        intensity: 1.4f, range: 0.28f,
-                        edgeSoftness: 0.4f, flickerAmount: 0f, originOffset: Vector2.zero);
+                    return Nav(kind);
 
                 case HullLampKind.StarboardSidelight:
-                    return new LightPresets.Config(
-                        SceneLight.LightShape.Radial, StarboardGrn,
-                        intensity: 1.4f, range: 0.28f,
-                        edgeSoftness: 0.4f, flickerAmount: 0f, originOffset: Vector2.zero);
+                    return Nav(kind);
 
                 // THE STERN LIGHT. White, and the one seen from astern across open water — the one
                 // the player looks AT most, since the boat ahead is the boat you are following in.
@@ -98,10 +97,7 @@ namespace HiddenHarbours.Art
                 // what a stern light looks like anyway. That is the trade the SIDELIGHTS already made
                 // (see above), for the same reason, now applied to the three lamps that had not.
                 case HullLampKind.SternLight:
-                    return new LightPresets.Config(
-                        SceneLight.LightShape.Radial, LampWhite,
-                        intensity: 1.35f, range: 0.40f,
-                        edgeSoftness: 0.45f, flickerAmount: 0f, originOffset: Vector2.zero);
+                    return Nav(kind);
 
                 // THE MASTHEAD. The brightest of the four — mounted highest, and the one that says
                 // "under power" — but still a lamp, not a beam: the SPOTLIGHT is what lights the
@@ -110,10 +106,7 @@ namespace HiddenHarbours.Art
                 // it stays the BIGGEST and BRIGHTEST of the round lamps, which is the only thing
                 // about its size that ever had to be true.
                 case HullLampKind.Masthead:
-                    return new LightPresets.Config(
-                        SceneLight.LightShape.Radial, LampWhite,
-                        intensity: 1.6f, range: 0.50f,
-                        edgeSoftness: 0.45f, flickerAmount: 0f, originOffset: Vector2.zero);
+                    return Nav(kind);
 
                 // THE CABIN GLOW — and this is the one the 2026-09-03 ruling is ABOUT.
                 //
@@ -143,10 +136,14 @@ namespace HiddenHarbours.Art
                 // The disc is not deleted — <see cref="GameServices.BoatLegacyCabinGlow"/> restores
                 // it exactly, as the honest arm of the owner's A/B (see <see cref="Legacy"/>).
                 case HullLampKind.CabinGlow:
+                {
+                    BoatLampLook look = BoatLampLook.Current;
                     return new LightPresets.Config(
                         SceneLight.LightShape.Cone, LightPresets.ColorFor(LightPresets.Kind.WindowGlow),
-                        intensity: 0.5f, range: MinWallSpillMetres,
-                        edgeSoftness: 0.9f, flickerAmount: 0f, originOffset: Vector2.zero);
+                        intensity: look.SpillIntensity, range: look.MinWallSpillMetres,
+                        edgeSoftness: look.WallSpillEdgeSoftness, flickerAmount: 0f,
+                        originOffset: Vector2.zero);
+                }
 
                 // THE RANGE LIGHT. The second masthead a big ship carries, and it is the SAME LAMP:
                 // the rule of the road distinguishes the two by where they are hung and how high, not
@@ -154,7 +151,7 @@ namespace HiddenHarbours.Art
                 // stations — and the kinds are separate only so that one hull's two mastheads cannot
                 // collapse into a single duplicated row.
                 case HullLampKind.RangeLight:
-                    goto case HullLampKind.Masthead;
+                    return Nav(kind);
 
                 // THE ANCHOR LIGHT. One all-round white, and the ONLY navigation light a hull lying
                 // still is allowed to show. Deliberately DIMMER and SMALLER than the masthead it hangs
@@ -170,14 +167,23 @@ namespace HiddenHarbours.Art
                 // these at two in the morning must read as a fleet asleep, which is a job for a
                 // small steady point and never was a job for a pool.
                 case HullLampKind.AnchorLight:
-                    return new LightPresets.Config(
-                        SceneLight.LightShape.Radial, LampWhite,
-                        intensity: 1.0f, range: 0.34f,
-                        edgeSoftness: 0.45f, flickerAmount: 0f, originOffset: Vector2.zero);
+                    return Nav(kind);
 
                 default:
-                    goto case HullLampKind.SternLight;
+                    return Nav(HullLampKind.SternLight);
             }
+        }
+
+        /// <summary>One navigation lamp's data as a <see cref="LightPresets.Config"/>: the bloom's
+        /// Range is the HALO's outer radius, which is the whole size of the lamp on screen. The core,
+        /// bands and pixel snap do not fit a Config; <see cref="Apply"/> writes those.</summary>
+        private static LightPresets.Config Nav(HullLampKind kind)
+        {
+            NavLampLook l = BoatLampLook.Current.For(kind);
+            return new LightPresets.Config(
+                SceneLight.LightShape.Radial, l.Color,
+                intensity: l.Intensity, range: l.HaloRadiusMetres,
+                edgeSoftness: l.EdgeSoftness, flickerAmount: 0f, originOffset: Vector2.zero);
         }
 
         // -------------------------------------------------------------------------------------------
@@ -189,12 +195,12 @@ namespace HiddenHarbours.Art
         /// in it, so a single porthole still washes a little of the plating under it rather than
         /// nothing at all.
         /// </summary>
-        public const float MinWallSpillMetres = 0.50f;
+        public static float MinWallSpillMetres => BoatLampLook.Current.MinWallSpillMetres;
 
         /// <summary>The longest, metres — a backstop rather than a working number, since scaling off a
         /// WINDOW rather than off a wall already keeps every hull in the fleet well inside it. Two
         /// metres is a lit room throwing onto her own deck and no further.</summary>
-        public const float MaxWallSpillMetres = 1.60f;
+        public static float MaxWallSpillMetres => BoatLampLook.Current.MaxWallSpillMetres;
 
         /// <summary>
         /// <b>How far a wall washes, as a multiple of ONE of its windows.</b>
@@ -216,7 +222,7 @@ namespace HiddenHarbours.Art
         /// At 1.4 (with the cone at 45° rather than 55°) the worst heading is 0.43 and the average
         /// 0.26, and the fixture now asserts the WORST rather than the mean.</para>
         /// </summary>
-        public const float WallSpillWindowMultiple = 1.4f;
+        public static float WallSpillWindowMultiple => BoatLampLook.Current.WallSpillWindowMultiple;
 
         /// <summary>
         /// The cone's half-angle, degrees. Wide, because light out of a window does not come out as a
@@ -224,12 +230,12 @@ namespace HiddenHarbours.Art
         /// behind it blocks the other half. Narrow enough that the four walls of a wheelhouse stay
         /// four separate washes rather than merging back into the disc this replaced.
         /// </summary>
-        public const float WallSpillHalfAngleDeg = 45f;
+        public static float WallSpillHalfAngleDeg => BoatLampLook.Current.WallSpillHalfAngleDeg;
 
         /// <summary>How soft the cone's edge is, as a fraction of the half-angle. Nearly all of it:
         /// a hard-edged wedge of light off a boat would read as a searchlight, and she already has
         /// one of those.</summary>
-        public const float WallSpillAngularSoftness = 0.85f;
+        public static float WallSpillAngularSoftness => BoatLampLook.Current.WallSpillAngularSoftness;
 
         /// <summary>
         /// <b>Stamp the WALL SPILL onto a light</b> — the cabin glow's colour and flicker over a cone
@@ -241,6 +247,11 @@ namespace HiddenHarbours.Art
         /// its origin is a wall, the bright thing at that wall is the glass itself (drawn by
         /// <see cref="BoatWindowGlow"/> as a real rectangle), and a round core added on top of it
         /// would put back, at the wall, precisely the blob the ruling took off the roof.</para>
+        ///
+        /// <para><b>It LANDS ON THE DECK rather than being painted over it</b> (2026-11-13): the
+        /// throw becomes the light's <see cref="SceneLight.ReachMetres"/>, so
+        /// <see cref="LampPoolSystem"/> brightens what is under it, and the additive wedge is not
+        /// drawn unless <see cref="BoatLampLook.SpillPaintsWedge"/> asks for it.</para>
         ///
         /// <para>Aim is the CALLER's: a wall's outward direction is a property of the hull's pose and
         /// changes every frame she turns, so it cannot live in a preset. This sets everything that
@@ -257,7 +268,17 @@ namespace HiddenHarbours.Art
             light.ConeHalfAngle = WallSpillHalfAngleDeg;
             light.AngularSoftness = WallSpillAngularSoftness;
             light.CoreBoost = 0f;
-            light.Range = WallSpillThrow(windowWidthMetres);
+            float reach = WallSpillThrow(windowWidthMetres);
+            light.Range = reach;
+
+            // WHERE THE LIGHT GOES (owner, 2026-11-13: "boat lights still look off"). The wedge used
+            // to be PAINTED over the frame, deck, rail and sea alike, which reads as an orange
+            // triangle lying on the picture. Now the wall POOLS: LampPoolSystem multiplies what is
+            // already under the wedge, so the deck itself gets brighter. The painted wedge is a
+            // data switch, off as shipped; with both off the wall throws nothing.
+            BoatLampLook look = BoatLampLook.Current;
+            light.ReachMetres = look.SpillPoolsTheDeck ? reach : 0f;
+            light.DrawsBloom = look.SpillPaintsWedge;
         }
 
         /// <summary>How far a wall with windows this wide washes, metres — the one place the rule
@@ -313,9 +334,21 @@ namespace HiddenHarbours.Art
                         intensity: 0.8f, range: 0.75f,
                         edgeSoftness: 0.5f, flickerAmount: 0f, originOffset: Vector2.zero);
 
-                // The two SIDELIGHTS did not move: they were already bounded by the gap between
-                // them (see the note on PortSidelight), which is a harder constraint than the
-                // ruling's and was already being met. Same object both arms.
+                // The two SIDELIGHTS did not move in the 2026-09-03 ruling; they moved on 2026-11-13
+                // with every other lamp (a hard core and a banded halo). A passthrough is a frozen
+                // record, so the numbers they wore before that are written out here.
+                case HullLampKind.PortSidelight:
+                    return new LightPresets.Config(
+                        SceneLight.LightShape.Radial, PortRed,
+                        intensity: 1.4f, range: 0.28f,
+                        edgeSoftness: 0.4f, flickerAmount: 0f, originOffset: Vector2.zero);
+
+                case HullLampKind.StarboardSidelight:
+                    return new LightPresets.Config(
+                        SceneLight.LightShape.Radial, StarboardGrn,
+                        intensity: 1.4f, range: 0.28f,
+                        edgeSoftness: 0.4f, flickerAmount: 0f, originOffset: Vector2.zero);
+
                 default:
                     return For(kind);
             }
@@ -349,6 +382,28 @@ namespace HiddenHarbours.Art
             LightPresets.Config c = For(kind);
             LightPresets.Stamp(light, c);
             light.Intensity = c.Intensity * Mathf.Max(0f, intensityScale);
+            if (IsNavigationLamp(kind)) ApplyLampLook(light, kind);
+        }
+
+        /// <summary>Is this kind one of the round navigation lamps (the ones drawn as a hard core
+        /// and a banded halo)? The cabin glow is a wall wash and the spotlight is a beam.</summary>
+        public static bool IsNavigationLamp(HullLampKind kind) =>
+            kind != HullLampKind.CabinGlow && kind != HullLampKind.Spotlight;
+
+        /// <summary>
+        /// The part of a navigation lamp's look a <see cref="LightPresets.Config"/> cannot carry:
+        /// the hard core, the halo's strength and bands, the pull toward white and the pixel snap.
+        /// Written AFTER the stamp, which clears them (a stamp is the smooth glow).
+        /// </summary>
+        private static void ApplyLampLook(SceneLight light, HullLampKind kind)
+        {
+            BoatLampLook look = BoatLampLook.Current;
+            NavLampLook l = look.For(kind);
+            light.CoreRadiusMetres = l.SafeCoreRadiusMetres;
+            light.HaloStrength = l.HaloStrength;
+            light.BandSteps = l.BandSteps;
+            light.CoreWhiten = l.CoreWhiten;
+            light.PixelsPerMetre = look.SnapPixelsPerMetre;
         }
     }
 }
