@@ -150,6 +150,9 @@ namespace HiddenHarbours.Tests.RigBaking
             // of this HARNESS and not of the bake — which is the only way to tell those two apart
             // without guessing. She is also the Mk2's sister at the identical cell, so she costs
             // nothing extra to photograph.
+            // Since then she has been rebuilt to the hull layout (same hull, same default render). She
+            // is no longer untouched, but she is still outside CarryUnmodelledDither and still meets
+            // the strict floor, which is what the control is for.
             yield return new Subject("sportSkiff", "shipped v1 sport skiff (CONTROL)",
                                      "docs/art/rigs/sportSkiffIsoRig.js", "SportSkiffIso",
                                      "SportSkiffIso", null);
@@ -311,7 +314,10 @@ namespace HiddenHarbours.Tests.RigBaking
                 string source = System.IO.File.ReadAllText(
                     System.IO.Path.Combine(RigCatalog.RepoRoot, s.ScriptPath));
                 bool declaresDither = source.Contains("dith:");
-                if (s.Key == "expeditionYacht120" || s.Key == "yachtTender" || s.Key == "motorYacht84")
+                // The sport skiff joined these when she was rebuilt to the hull layout: her paints now declare
+                // dith, every one at full scale, and she is still held to the strict floor below.
+                if (s.Key == "expeditionYacht120" || s.Key == "yachtTender" || s.Key == "motorYacht84"
+                    || s.Key == "sportSkiff")
                 {
                     using var host = RigScriptHostFactory.Create();
                     host.Execute(source);
