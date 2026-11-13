@@ -15,3 +15,4 @@ MonoBehaviour:
   Id: fuelprofile.sport_skiff_twin
   Hull: {fileID: 11400000, guid: da9a371fd6378784c8233bf640dd9816, type: 2}
   Curve: {fileID: 11400000, guid: 28fef9d8f683504b9696e6ed2fdeb8fa, type: 2}
+  ReferenceCruiseSpeedMps: 3.9437

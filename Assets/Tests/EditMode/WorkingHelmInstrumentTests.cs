@@ -216,6 +216,55 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         [Test]
+        public void Engine_MeteredBurn_IsShownAsReported_EvenWithNoEnvironment()
+        {
+            const float metered = 3.25f;
+            float estimate = FuelBurn.LitresPerHour(20f, 0.5f, 0.25f, 0f, 0.5f, _fuel);
+            Assert.That(metered, Is.Not.EqualTo(estimate), "the fixture must tell the meter from the estimate");
+            _hull.State.HasMeteredBurn = true; _hull.State.MeteredLitresPerHour = metered; Tick();
+            Assert.That(_reader.Engine.LitresPerHour, Is.EqualTo(metered));
+            Assert.That(_reader.Engine.HasRange, Is.True);
+            Assert.That(_reader.Engine.HoursRemaining, Is.EqualTo(60f / metered));
+
+            // The tank's meter already carries load and sea, so it needs no environment to be read.
+            var noSea = new WorkingHelmReader(_glass, _hull, null, _points);
+            noSea.SetPower(WorkingInstrument.All, true);
+            noSea.Tick(_fit, _fuel);
+            Assert.That(noSea.Engine.Status, Is.EqualTo(InstrumentStatus.Ready));
+            Assert.That(noSea.Engine.LitresPerHour, Is.EqualTo(metered));
+            Assert.That(noSea.Engine.HasRange, Is.True);
+            Assert.That(noSea.Engine.HoursRemaining, Is.EqualTo(60f / metered));
+        }
+
+        [Test]
+        public void Engine_MeteredBurnUnset_KeepsTheThrottleCurveEstimate()
+        {
+            float estimate = FuelBurn.LitresPerHour(20f, 0.5f, 0.25f, 0f, 0.5f, _fuel);
+            // A stale rate with the flag down must be ignored.
+            _hull.State.HasMeteredBurn = false; _hull.State.MeteredLitresPerHour = 3.25f; Tick();
+            Assert.That(_reader.Engine.LitresPerHour, Is.EqualTo(estimate));
+            Assert.That(_reader.Engine.HasRange, Is.True);
+            Assert.That(_reader.Engine.HoursRemaining, Is.EqualTo(60f / estimate));
+        }
+
+        [Test]
+        public void Engine_MeteredBurnNotANumber_FallsBackToTheEstimate()
+        {
+            float estimate = FuelBurn.LitresPerHour(20f, 0.5f, 0.25f, 0f, 0.5f, _fuel);
+            _hull.State.HasMeteredBurn = true; _hull.State.MeteredLitresPerHour = float.NaN; Tick();
+            Assert.That(_reader.Engine.LitresPerHour, Is.EqualTo(estimate));
+            Assert.That(_reader.Engine.HasRange, Is.True);
+            Assert.That(_reader.Engine.HoursRemaining, Is.EqualTo(60f / estimate));
+
+            // With no environment there is no estimate to fall back to: no rate, never a NaN one.
+            var noSea = new WorkingHelmReader(_glass, _hull, null, _points);
+            noSea.SetPower(WorkingInstrument.All, true);
+            noSea.Tick(_fit, _fuel);
+            Assert.That(noSea.Engine.LitresPerHour, Is.Zero);
+            Assert.That(noSea.Engine.HasRange, Is.False);
+        }
+
+        [Test]
         public void Engine_StoppedOrMissingFuelHasNoInventedInfiniteRange()
         {
             _hull.State.EngineTurning = false; Tick();

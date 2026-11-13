@@ -15,3 +15,4 @@ MonoBehaviour:
   Id: fuelprofile.lobster_standard_open_fundy
   Hull: {fileID: 11400000, guid: 3ac67326db791a72f5e10cbbf599351b, type: 2}
   Curve: {fileID: 11400000, guid: 768ba35869965a5a93b485b778a01021, type: 2}
+  ReferenceCruiseSpeedMps: 3.0435

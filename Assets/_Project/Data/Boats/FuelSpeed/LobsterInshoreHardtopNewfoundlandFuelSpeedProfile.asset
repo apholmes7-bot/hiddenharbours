@@ -15,3 +15,4 @@ MonoBehaviour:
   Id: fuelprofile.lobster_inshore_hardtop_newfoundland
   Hull: {fileID: 11400000, guid: 7555b6399837b470c8bdd12806851c97, type: 2}
   Curve: {fileID: 11400000, guid: 768ba35869965a5a93b485b778a01021, type: 2}
+  ReferenceCruiseSpeedMps: 2.7274

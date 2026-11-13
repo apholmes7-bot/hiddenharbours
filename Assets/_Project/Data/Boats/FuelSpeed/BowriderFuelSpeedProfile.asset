@@ -15,3 +15,4 @@ MonoBehaviour:
   Id: fuelprofile.bowrider
   Hull: {fileID: 11400000, guid: f2880bf35640c4a418bcaf2178ff3c97, type: 2}
   Curve: {fileID: 11400000, guid: 28fef9d8f683504b9696e6ed2fdeb8fa, type: 2}
+  ReferenceCruiseSpeedMps: 3.5556
