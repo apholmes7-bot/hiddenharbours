@@ -674,6 +674,23 @@ namespace HiddenHarbours.Core
                  "families are naturally redone; that mixed period is accepted (ADR 0031, Half B skipped).")]
         public bool HullKeylineFlood = DefaultHullKeylineFlood;
 
+        /// <summary>The player reserve's ship default (ADR 0056, the owner's ruling on the facet-id budget): two
+        /// facet ids — the player and one co-op friend. A const so a consumer with no config wired
+        /// resolves the SHIPPED reserve, because <c>GameConfig.asset</c> lags the code.</summary>
+        public const int DefaultPlayerFigureIdReserve = 2;
+        /// <summary>The inspector's ceiling for <see cref="PlayerFigureIdReserve"/>: every id reserved is
+        /// one the harbour's boats and the cast can never have.</summary>
+        public const int MaxPlayerFigureIdReserve = 8;
+
+        [Header("Facet ids (ADR 0056 — the id space is a budget)")]
+        [Tooltip("How many of the 255 facet ids are held back for the PLAYERS' figures ashore (the player " +
+                 "and each co-op friend). No boat, truck or villager can ever take one, so a player standing " +
+                 "ashore is never left as her old sprite because the harbour's boats used the ids up. Each one " +
+                 "reserved is one fewer for boats and the cast. Read once, when the first facet id of the " +
+                 "session is handed out: a change applies from the next play session.")]
+        [Range(0, MaxPlayerFigureIdReserve)]
+        public int PlayerFigureIdReserve = DefaultPlayerFigureIdReserve;
+
         public const int DefaultHullReflectionMaxHulls = 64;
         public const int DefaultHullReflectionMaxPackets = 1024;
         public const int DefaultHullReflectionMaxTriangles = 1000000;
