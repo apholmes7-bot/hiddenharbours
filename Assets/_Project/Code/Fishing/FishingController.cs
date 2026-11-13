@@ -517,6 +517,7 @@ namespace HiddenHarbours.Fishing
             // THE CAST ENTRY (juice charter §4.3, §4.5): the line touches down — the rings and the audio
             // slot key off this one beat.
             EventBus.Publish(new JuiceMomentCue(JuiceMoment.CastEntry, _lastCast.LandingPoint, 0f));
+            PromiseAFeedingSea();
             Emit(FishingPhase.Waiting, 0f, 0f);
         }
 
@@ -575,6 +576,7 @@ namespace HiddenHarbours.Fishing
             {
                 _phaseTimer = _resultDisplay;
                 Debug.Log("[Fishing] Nothing biting here, now.");
+                EventBus.Publish(new DevNotice(FishingStrings.NothingBiting));   // say why the line came back empty
                 Emit(FishingPhase.NoBite, 0f, 0f);
                 return;
             }
@@ -634,7 +636,17 @@ namespace HiddenHarbours.Fishing
                           && strike.PullBackStrikes;
             bool struck = (strike.PressStrikes && strikePressed) || yanked;
 
+            int passesBefore = _biteSim.PassIndex;
             _biteSim.Tick(dt, struck);
+
+            // A pass that ended in a miss says WHY, whether she circles back or is gone for good: a
+            // strike at a tease ("too soon") or a take slept through ("she spat it"). One constant
+            // line per miss, on the pass edge only — nothing is published while the sequence runs.
+            if (_biteSim.PassIndex != passesBefore)
+            {
+                string why = FishingStrings.MissedStrike(_biteSim.LastMiss);
+                if (why != null) EventBus.Publish(new DevNotice(why));
+            }
 
             if (_biteSim.Phase == BitePhase.Hooked)
             {
@@ -735,6 +747,9 @@ namespace HiddenHarbours.Fishing
             {
                 _phaseTimer = _resultDisplay;
                 Debug.Log($"[Fishing] {fish.DisplayName} — you need the licence to land that. (Slipped it back, no harm done.)");
+                // The rule stands; the silence does not. A won fight that pays nothing names the
+                // species and the licence (both from data), so the player knows where to go next.
+                EventBus.Publish(new DevNotice(FishingStrings.LicenceNeeded(fish, _licenses)));
                 Emit(FishingPhase.Snapped, tension, 1f);   // reuse the cozy "it got away" result; nothing added
                 return;
             }
@@ -795,6 +810,7 @@ namespace HiddenHarbours.Fishing
             EndRodFight();
             _phaseTimer = _resultDisplay;
             Debug.Log("[Fishing] The line ran slack — it threw the hook. (No harm done.)");
+            EventBus.Publish(new DevNotice(FishingStrings.ThrewTheHook));
             Emit(FishingPhase.Snapped, 1f, landing);
         }
 
@@ -874,6 +890,20 @@ namespace HiddenHarbours.Fishing
         /// the one place the rod loop asks the world what the weather is doing.</summary>
         private float SeaState01()
             => GameServices.Environment != null ? GameServices.Environment.Sample().SeaState01 : 0f;
+
+        /// <summary>One promise per blow (see <see cref="SeaPromise"/>): which weather was last announced.</summary>
+        private readonly SeaPromise _seaPromise = new SeaPromise();
+
+        /// <summary>A line has just gone in the water. If the sea is up past the point where it fishes
+        /// better, and this blow has not been announced yet, raise the Core cue her inner voice answers
+        /// ("They'll be feeding in this."). Fishing only says WHEN; the words are a World line asset
+        /// keyed on the cue id, and neither module names the other (rule 4).</summary>
+        private void PromiseAFeedingSea()
+        {
+            SeaFishingSettings sea = _config != null ? _config.SeaFishing : SeaFishingSettings.Default;
+            if (_seaPromise.OnCast(SeaState01(), in sea))
+                EventBus.Publish(new InnerVoiceCue(InnerVoiceCues.FeedingSea));
+        }
 
         // ---- helpers ------------------------------------------------------------------------
 
@@ -1120,6 +1150,7 @@ namespace HiddenHarbours.Fishing
             _depthM = 0f;
             _bottomed = false;
             _floorM = DepthDropMath.FloorMeters(columnM, DepthSettings.MaxLineMeters);
+            PromiseAFeedingSea();
             Emit(FishingPhase.Sinking, 0f, 0f);
         }
 

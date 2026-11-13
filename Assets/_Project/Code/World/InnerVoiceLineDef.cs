@@ -17,6 +17,11 @@ namespace HiddenHarbours.World
         /// an authored region. For the things there is nothing to press ON — a hull on the hard with a
         /// price on it, a fallen fence, a light that is out.</summary>
         Proximity = 1,
+
+        /// <summary>A gameplay moment asked for it over Core (<c>InnerVoiceCue</c>): the line
+        /// whose <c>SubjectId</c> is the cue id speaks. The publisher decides WHEN; this asset
+        /// is still the words, the voice and the cooldown.</summary>
+        Cue = 2,
     }
 
     /// <summary>
@@ -68,7 +73,7 @@ namespace HiddenHarbours.World
         [Tooltip("What sets it off.")]
         public InnerVoiceTrigger Trigger = InnerVoiceTrigger.InteractOffered;
 
-        [Tooltip("InteractOffered only: the offered thing's stable id — an IInteractable.Id, an NPC id " +
+        [Tooltip("InteractOffered: the offered thing's stable id — an IInteractable.Id, an NPC id " +
                  "or a transit key, exactly as InteractOfferChanged carries it (e.g. " +
                  "tool.st_peters.rod). Case-sensitive and matched whole.")]
         public string SubjectId = "";
@@ -119,6 +124,13 @@ namespace HiddenHarbours.World
         /// Is <paramref name="playerPosition"/> inside this line's circle, in <paramref name="regionId"/>?
         /// False for a non-proximity line and for a line whose region is not the one loaded.
         /// </summary>
+        /// <summary>Does this line answer the Core cue <paramref name="cueId"/>
+        /// (<c>InnerVoiceCue</c>)? Whole and case-sensitive, like the offer match; nothing is not a cue.</summary>
+        public bool WantsCue(string cueId)
+            => Trigger == InnerVoiceTrigger.Cue
+               && !string.IsNullOrEmpty(SubjectId)
+               && string.Equals(SubjectId, cueId, System.StringComparison.Ordinal);
+
         public bool CoversPoint(Vector2 playerPosition, string regionId)
             => Trigger == InnerVoiceTrigger.Proximity
                && !string.IsNullOrEmpty(RegionId)

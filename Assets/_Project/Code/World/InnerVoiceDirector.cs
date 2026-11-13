@@ -56,6 +56,7 @@ namespace HiddenHarbours.World
         private InnerVoiceLibrary _library;
         private readonly List<InnerVoiceLineDef> _offerLines = new List<InnerVoiceLineDef>();
         private readonly List<InnerVoiceLineDef> _proximityLines = new List<InnerVoiceLineDef>();
+        private readonly List<InnerVoiceLineDef> _cueLines = new List<InnerVoiceLineDef>();
 
         /// <summary>Repeatable lines only: when each last fired, on <see cref="Time.unscaledTime"/>.</summary>
         private readonly Dictionary<string, float> _lastSaid = new Dictionary<string, float>(8);
@@ -76,7 +77,7 @@ namespace HiddenHarbours.World
         private string _tickedIn;
 
         /// <summary>How many lines were loaded. Zero is a working state — no library, no clues.</summary>
-        public int LineCount => _offerLines.Count + _proximityLines.Count;
+        public int LineCount => _offerLines.Count + _proximityLines.Count + _cueLines.Count;
 
         /// <summary>The last line this director actually published, or null. The read surface a test
         /// asserts on without a canvas.</summary>
@@ -104,6 +105,7 @@ namespace HiddenHarbours.World
             _library = library;
             _offerLines.Clear();
             _proximityLines.Clear();
+            _cueLines.Clear();
             _inside.Clear();
             if (library == null || library.Lines == null) return;
 
@@ -115,6 +117,7 @@ namespace HiddenHarbours.World
                 DialogueVoiceCatalog.Register(line.Voice);
 
                 if (line.Trigger == InnerVoiceTrigger.Proximity) _proximityLines.Add(line);
+                else if (line.Trigger == InnerVoiceTrigger.Cue) _cueLines.Add(line);
                 else _offerLines.Add(line);
             }
         }
@@ -123,12 +126,17 @@ namespace HiddenHarbours.World
         {
             if (_subscribed) return;
             EventBus.Subscribe<InteractOfferChanged>(OnOfferChanged);
+            EventBus.Subscribe<InnerVoiceCue>(OnCue);
             _subscribed = true;
         }
 
         private void OnDisable()
         {
-            if (_subscribed) EventBus.Unsubscribe<InteractOfferChanged>(OnOfferChanged);
+            if (_subscribed)
+            {
+                EventBus.Unsubscribe<InteractOfferChanged>(OnOfferChanged);
+                EventBus.Unsubscribe<InnerVoiceCue>(OnCue);
+            }
             _subscribed = false;
         }
 
@@ -139,6 +147,22 @@ namespace HiddenHarbours.World
             if (!offer.Has) return;
             for (int i = 0; i < _offerLines.Count; i++)
                 if (_offerLines[i].WantsOffer(offer.Id)) { TrySpeak(_offerLines[i]); return; }
+        }
+
+        private void OnCue(InnerVoiceCue cue) => HearCue(cue.CueId);
+
+        /// <summary>
+        /// A gameplay moment asked for her thought (the Core <see cref="InnerVoiceCue"/>). The first
+        /// line authored against that cue id speaks, under the same refusals as every other line. The
+        /// publisher decided WHEN; a cue nobody wrote a line for is silence, not an error.
+        /// <para>Public so a fixture can drive it without the bus, like <see cref="SpeakNow"/>.</para>
+        /// </summary>
+        public bool HearCue(string cueId)
+        {
+            if (string.IsNullOrEmpty(cueId)) return false;
+            for (int i = 0; i < _cueLines.Count; i++)
+                if (_cueLines[i].WantsCue(cueId)) return TrySpeak(_cueLines[i]);
+            return false;
         }
 
         private void Update()
@@ -242,6 +266,8 @@ namespace HiddenHarbours.World
                 if (_offerLines[i].Id == lineId) return TrySpeak(_offerLines[i]);
             for (int i = 0; i < _proximityLines.Count; i++)
                 if (_proximityLines[i].Id == lineId) return TrySpeak(_proximityLines[i]);
+            for (int i = 0; i < _cueLines.Count; i++)
+                if (_cueLines[i].Id == lineId) return TrySpeak(_cueLines[i]);
             return false;
         }
 
