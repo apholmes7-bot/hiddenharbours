@@ -137,12 +137,17 @@ namespace HiddenHarbours.Core
                 if (engine.HasFuel)
                 {
                     engine.FuelLitres = hull.FuelLitres;
-                    if (engine.Turning && _environment != null && Finite(sea.SeaState01)
+                    bool metered = hull.HasMeteredBurn && Finite(hull.MeteredLitresPerHour);
+                    if (engine.Turning && (metered || (_environment != null && Finite(sea.SeaState01)
                         && Finite(hull.FullThrottleLitresPerHour) && hull.FullThrottleLitresPerHour > 0f
-                        && Finite(hull.HoldFraction))
+                        && Finite(hull.HoldFraction))))
                     {
-                        engine.LitresPerHour = FuelBurn.LitresPerHour(hull.FullThrottleLitresPerHour,
-                            hull.Drive, hull.HoldFraction, 0f, sea.SeaState01, fuelSettings);
+                        // The tank's own meter when the hull reports one (it already carries load and
+                        // sea); otherwise the throttle-curve estimate this reader has always made.
+                        engine.LitresPerHour = metered
+                            ? hull.MeteredLitresPerHour
+                            : FuelBurn.LitresPerHour(hull.FullThrottleLitresPerHour,
+                                hull.Drive, hull.HoldFraction, 0f, sea.SeaState01, fuelSettings);
                         engine.HasRange = Finite(engine.LitresPerHour) && engine.LitresPerHour > 0f;
                         if (engine.HasRange)
                         {

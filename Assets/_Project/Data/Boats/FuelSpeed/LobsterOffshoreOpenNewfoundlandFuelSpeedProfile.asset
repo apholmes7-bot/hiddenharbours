@@ -15,3 +15,4 @@ MonoBehaviour:
   Id: fuelprofile.lobster_offshore_open_newfoundland
   Hull: {fileID: 11400000, guid: 707d5fddcc8b6419059eb4a8e208d669, type: 2}
   Curve: {fileID: 11400000, guid: 768ba35869965a5a93b485b778a01021, type: 2}
+  ReferenceCruiseSpeedMps: 3.2206

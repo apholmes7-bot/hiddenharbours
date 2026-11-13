@@ -15,3 +15,4 @@ MonoBehaviour:
   Id: fuelprofile.console_skiff
   Hull: {fileID: 11400000, guid: 6dbe891864248f64592244825fe3fa02, type: 2}
   Curve: {fileID: 11400000, guid: 28fef9d8f683504b9696e6ed2fdeb8fa, type: 2}
+  ReferenceCruiseSpeedMps: 2.7317

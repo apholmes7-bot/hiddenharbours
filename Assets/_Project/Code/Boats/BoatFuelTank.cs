@@ -75,6 +75,14 @@ namespace HiddenHarbours.Boats
         private string _verbLabel;
         private string _resolvedId;
 
+        // The speed-curve burn model for the hull she is wearing, built once and rebuilt only when a
+        // number it was built from moves (a hull swap, or the owner tuning in play). Never per tick.
+        private IFuelBurnBySpeed _speedModel;
+        private FuelSpeedMeter.Calibration _speedModelKey;
+        private bool _speedModelResolved;
+        private BoatHullDef _profileHull;
+        private FuelSpeedProfileDef _profile;
+
         // ---- what she is ------------------------------------------------------------------------
 
         /// <summary>The hull this tank belongs to — the serialized override, else the controller's live
@@ -110,6 +118,7 @@ namespace HiddenHarbours.Boats
             _hull = hull;
             _resolvedId = null;
             _verbLabel = null;
+            _speedModelResolved = false;
         }
 
         // ---- IFuelVessel ------------------------------------------------------------------------
@@ -425,24 +434,105 @@ namespace HiddenHarbours.Boats
 
             Prime();
             if (_litres > 0f && EngineIsTurning())
-            {
-                float used = FuelBurn.LitresBurnedOverTick(
-                    Hull.FullThrottleLitresPerHour,
-                    _controller != null ? _controller.Throttle : 0f,
-                    HoldFraction(),
-                    0f,                                   // slip: SlipLoadWeight ships at 0 (§9.5.2)
-                    SeaState01(),
-                    Time.fixedDeltaTime,
-                    GameServices.Fuel);
-
-                if (used > 0f)
-                {
-                    _litres = _litres > used ? _litres - used : 0f;
-                    SyncToSave();
-                }
-            }
+                BurnStep(_controller != null ? _controller.Throttle : 0f, HoldFraction(), SeaState01(),
+                         Time.fixedDeltaTime);
 
             PublishStateIfChanged();
+        }
+
+        /// <summary>
+        /// What her engine drinks at one duty, in litres per REAL hour.
+        ///
+        /// <para><b>She burns by SPEED</b> (the owner's 11-12 ruling;
+        /// <c>docs/design/fuel-burn-by-speed-logic.md</c>). The speed is the one her throttle is
+        /// driving her at: <c>|throttle| x her still-water top speed</c>, read live off her Def. That
+        /// goes into her hull's curve (<see cref="IFuelBurnBySpeed"/>), calibrated at the FIXED
+        /// reference speed on her <see cref="FuelSpeedProfileDef"/>, and the same load and sea
+        /// surcharges as before are applied on top.</para>
+        ///
+        /// <para><b>Why the driven speed and not the speed over the ground.</b> The model is a steady
+        /// operating point. Priced on measured speed, an engine flat out against a wharf, a tow or a
+        /// grounding would be charged as if idling, and a boat coasting with the throttle shut would be
+        /// charged as if driving. The throttle says what the engine is doing; the hull's top speed says
+        /// how fast that is for HER.</para>
+        ///
+        /// <para><b>A hull with no calibrated profile keeps the old throttle curve</b>, exactly, so a
+        /// hull authored tomorrow (or built in a test) still meters.</para>
+        /// </summary>
+        public float LitresPerHourAt(float throttle, float holdFraction, float seaState01)
+        {
+            BoatHullDef h = Hull;
+            if (h == null || !(h.FuelCapacityLitres > 0f)) return 0f;
+
+            FuelSettings cfg = GameServices.Fuel;
+            IFuelBurnBySpeed model = SpeedModel(h, cfg);
+            if (model == null)
+                return FuelBurn.LitresPerHour(h.FullThrottleLitresPerHour, throttle, holdFraction,
+                                              0f,       // slip: SlipLoadWeight ships at 0 (§9.5.2)
+                                              seaState01, cfg);
+
+            return FuelSpeedMeter.LitresPerHour(model, throttle,
+                FuelSpeedMeter.StillWaterTopSpeedMps(h.EnginePower, h.ForwardDrag, h.MassKg),
+                holdFraction, seaState01, cfg);
+        }
+
+        /// <summary>
+        /// Run her engine at one duty for <paramref name="deltaSeconds"/> of real time and take the
+        /// fuel out of the tank. Answers the litres that left. The whole of the live burn: the fixed
+        /// tick calls this and nothing else, so an EditMode test drives the same code the game does.
+        /// No clock, no randomness: the same duties in the same order drain the same litres.
+        /// </summary>
+        public float BurnStep(float throttle, float holdFraction, float seaState01, float deltaSeconds)
+        {
+            if (CapacityLitres <= 0f) return 0f;
+            Prime();
+            if (!(_litres > 0f)) return 0f;
+
+            float used = FuelBurn.LitresBurned(LitresPerHourAt(throttle, holdFraction, seaState01),
+                                               deltaSeconds);
+            if (!(used > 0f)) return 0f;
+
+            if (used > _litres) used = _litres;
+            _litres -= used;
+            SyncToSave();
+            return used;
+        }
+
+        /// <summary>The rate the meter is charging right now, for a gauge. False when no engine is
+        /// being metered (ashore, a rowed or sailed hull, no tank), so a gauge never shows a rate that
+        /// nothing is being charged at.</summary>
+        public bool TryMeteredLitresPerHour(out float litresPerHour)
+        {
+            litresPerHour = 0f;
+            if (CapacityLitres <= 0f || !EngineIsTurning()) return false;
+            litresPerHour = LitresPerHourAt(_controller != null ? _controller.Throttle : 0f,
+                                            HoldFraction(), SeaState01());
+            return true;
+        }
+
+        /// <summary>
+        /// Her speed-curve model, or null to keep the throttle curve. Rebuilt only when one of the
+        /// numbers it is made from changes; a hull or settings the model cannot be built from (the
+        /// owner mid-edit) falls back to the throttle curve instead of throwing on the fixed tick.
+        /// </summary>
+        private IFuelBurnBySpeed SpeedModel(BoatHullDef hull, in FuelSettings cfg)
+        {
+            // The profile is looked up once per hull, not per tick: 46 string compares are cheap, but
+            // this is the fixed step.
+            if (!_speedModelResolved || !ReferenceEquals(hull, _profileHull))
+            {
+                FuelSpeedProfileLibrary library = FuelSpeedProfileLibrary.Shared;
+                _profileHull = hull;
+                _profile = library != null ? library.Find(hull.Id) : null;
+            }
+
+            var key = new FuelSpeedMeter.Calibration(hull, _profile, cfg);
+            if (_speedModelResolved && key.Matches(_speedModelKey)) return _speedModel;
+
+            _speedModelKey = key;
+            _speedModelResolved = true;
+            _speedModel = FuelSpeedMeter.TryCreateModel(key, cfg);
+            return _speedModel;
         }
 
         /// <summary>

@@ -15,6 +15,7 @@ MonoBehaviour:
   Id: visual.dory_iso
   Variant: 1
   HullMesh: {fileID: 11400000, guid: 3a28801b29546ea439d52cf586830271, type: 2}
+  DesignWaterlineMeters: 0
   Deck: {fileID: 11400000, guid: acb8466f7d0024b08aa1544b4b7e8339, type: 2}
   Facings:
   - {fileID: -4090857515788694173, guid: 8556d842d3fbf8d4bb8befd79470e780, type: 3}
@@ -268,7 +269,12 @@ MonoBehaviour:
   MotorFit: 0
   MotorMesh: {fileID: 11400000, guid: ef94ad121c781a84db3911aab73718e0, type: 2}
   MotorMeshFitmentOffsetMeters: {x: 0, y: 0.28, z: 0.055}
+  HelmBarMesh: {fileID: 0}
   MotorRockRollDegrees: 3.4
   MotorRockPitchDegrees: 1.9
   MotorRockHeavePixels: 1.3
   MotorMountLocalMeters: {x: 0, y: -2.35, z: 0.8}
+  PilotStance: 0
+  SeatedHelmState: 
+  SeatedHelmFloorOrigin: {x: 0, y: 0, z: 0}
+  Interior: {fileID: 0}
