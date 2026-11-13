@@ -495,7 +495,7 @@
       prev=[e0,e1];
     }
     // an oar is a fitting on the hull: every face declares the hull level, as the layout asks of any face this rig hands over
-    faces.forEach((f)=>{ f.lv = LV.hull; });
+    faces.forEach((f)=>{ f.lv = 'hull'; });   // the level's NAME: a fitting's faces are checked against geometry().ids by key
     return faces;
   }
   function sidePose(opts, side){ const o=(side<0?opts.port:opts.star)||{}; return oarPose(o.state||opts.state||'row', (o.t!==undefined?o.t:opts.t)||0); }

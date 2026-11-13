@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!43 &-1102862395451280412
+--- !u!43 &-164698982172854126
 Mesh:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -201,7 +201,7 @@ MonoBehaviour:
     ShownRoles: 0
     RoleMasks: 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
   SourceFaceBuilder: DoryIso.byId('dory_iso').faceList({})
-  Mesh: {fileID: -1102862395451280412}
+  Mesh: {fileID: -164698982172854126}
   DriveFaceVertexRanges: []
   DoorLeafClosed: {fileID: 0}
   DoorLeafOpen: {fileID: 0}
@@ -378,7 +378,7 @@ MonoBehaviour:
   RockPitchDegrees: 3
   RockHeavePixels: 1.6
   RestingDraftMeters: 0.11
-  WatertightDeckHeightMeters: 0.06
+  WatertightDeckHeightMeters: 0.09
   WatertightHalfBeamMeters: 0.85
   WakeSternOffsetMeters: 2.25
   Lamps: []
