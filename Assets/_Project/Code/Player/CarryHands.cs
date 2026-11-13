@@ -52,9 +52,11 @@ namespace HiddenHarbours.Player
     /// </summary>
     [DisallowMultipleComponent]
     // Runs AFTER YSortSprite (default 0) has written the body's order for this frame, so the carried
-    // sprite mirrors the order the player ACTUALLY drew at rather than last frame's. Same reason, and the
-    // same number, as DeckRiderVisual.
-    [DefaultExecutionOrder(100)]
+    // sprite mirrors the order the player ACTUALLY drew at rather than last frame's. And after
+    // DeckRiderVisual (100), which states where her body is DRAWN this frame, and RodFightPresenter
+    // (101), which says whether it is drawing its own rod: a carried prop posed before either would be
+    // a frame behind the hand it is in.
+    [DefaultExecutionOrder(102)]
     public sealed class CarryHands : MonoBehaviour, IHandsCarrier, ICatchHands
     {
         [Header("Wiring (auto-resolved off this object if empty)")]
@@ -69,6 +71,21 @@ namespace HiddenHarbours.Player
         [Tooltip("The four-way walk controller — the FALLBACK heading source when the iso skin is absent, " +
                  "matching the fallback the player's own picture uses.")]
         [SerializeField] private PlayerWalkController _walk;
+
+        [Tooltip("The deck rider — where her body is DRAWN against this root (DeckRiderVisual." +
+                 "DrawnBodyOffset). Aboard, the root stays on the hull's level deck while the body rides " +
+                 "the hull's picture (the tide, the rock), so everything in her hands is posed off the root " +
+                 "and then moved by that offset. Absent (no rider wired): the offset is zero, as ashore.")]
+        [SerializeField] private DeckRiderVisual _rider;
+
+        [Tooltip("The fight presenter — while it draws its own rod in her hands (the cast and the " +
+                 "fight, a sprite act under ADR 0053 D5), the carried rod tool is not drawn, so she holds " +
+                 "one rod and not two.")]
+        [SerializeField] private RodFightPresenter _fight;
+
+        [Tooltip("Which carried tool the fight's rod IS (a ToolDef id). While the fight draws its rod, " +
+                 "a carried tool with this id is held out of the picture.")]
+        [SerializeField] private string _fightRodToolId = ToolDef.RodId;
 
         [Header("Where it hangs")]
         [Tooltip("The character rig's HAND-PROP table (imported from the baked sidecar): per prop, per " +
@@ -471,17 +488,22 @@ namespace HiddenHarbours.Player
         private void Pose(ICarriable carried, CarryHandSide hand)
         {
             if (carried == null || carried.Transform == null) return;
+            StateDrawnByTheFight(carried);
 
+            // Both paths are posed off the BODY AS DRAWN: the pin (or the fallback) is measured from her
+            // feet in the picture, and aboard the picture is not at this root (DrawnBodyOffsetLocal). The
+            // offset is added inside each path, not factored out of them: see the warning above.
             if (TryAnchorRow(carried, hand, out CarryAnchorRow row, out int facingRow))
             {
                 carried.Transform.localPosition =
-                    _carryAnchors.PinMeters(row, _character.Gait, facingRow, _character.Frame);
+                    _carryAnchors.PinMeters(row, _character.Gait, facingRow, _character.Frame)
+                    + DrawnBodyOffsetLocal();
                 carried.ShowFacing(row.ItemFacing);
                 RideBodyBand(carried, row.Behind ? -OrdersFor(hand) : OrdersFor(hand));
                 return;
             }
 
-            carried.Transform.localPosition = FallbackOffset(hand);
+            carried.Transform.localPosition = FallbackOffset(hand) + DrawnBodyOffsetLocal();
 
             float heading = DrawnHeadingDegrees;
             carried.ShowFacing(CarryMath.BakedFacingIndex(heading, carried.BakedFacings));
@@ -502,6 +524,42 @@ namespace HiddenHarbours.Player
             => hand == CarryHandSide.Left
                 ? new Vector2(-_hipOffsetMeters.x, _hipOffsetMeters.y)
                 : _hipOffsetMeters;
+
+        /// <summary>
+        /// <b>Where her body is drawn, against this root</b>, in this root's frame. Owner, 2026-11-13:
+        /// <i>"lets fix the rod sprite, removing the old floating rod sprite"</i>. Aboard, the root stays on
+        /// the hull's LEVEL deck while the body she is drawn with rides the hull's picture: the mesh figure
+        /// under the posed mesh, the rider sprite at its ride pose, both down with the tide. A rod pinned
+        /// to the root alone hung where her hand would have been at the tide the picture was struck at,
+        /// about 1.5 m above her at a spring low. The rider states the offset every frame
+        /// (<see cref="DeckRiderVisual.DrawnBodyOffset"/>), so this is a read, never a second model of
+        /// the hull; zero with no rider, and zero ashore. XY only: depth never leaks into a prop.
+        /// </summary>
+        private Vector2 DrawnBodyOffsetLocal()
+            => _rider != null ? (Vector2)transform.InverseTransformVector(_rider.DrawnBodyOffset) : Vector2.zero;
+
+        /// <summary>
+        /// <b>One rod, not two.</b> While the fight draws its own rod in her hands (the cast and the
+        /// fight are a sprite act, ADR 0053 D5), the carried rod tool is held out of the picture; the
+        /// moment the fight stops drawing it, it is drawn again. Stated every frame, never latched, and
+        /// given back by the tool itself when it is put down (<see cref="CarriableTool.OnPlaced"/>) and
+        /// by <see cref="OnDisable"/>.
+        /// </summary>
+        private void StateDrawnByTheFight(ICarriable carried)
+        {
+            if (!(carried is CarriableTool tool)) return;
+            bool drawnByTheFight = _fight != null && _fight.DrawsRod
+                && string.Equals(tool.DefId, _fightRodToolId, System.StringComparison.Ordinal);
+            tool.SetDrawnElsewhere(drawnByTheFight);
+        }
+
+        /// <summary>Whatever the fight was drawing in its place is drawn again: a disabled carrier states
+        /// nothing, so it must not leave a rod it hid hidden.</summary>
+        private void OnDisable()
+        {
+            if (_slots.Right is CarriableTool right) right.SetDrawnElsewhere(false);
+            if (_slots.Left is CarriableTool left) left.SetDrawnElsewhere(false);
+        }
 
         /// <summary>How far out of the body's sorting band this hand's item draws. The left hand takes one
         /// extra step so two things held at once cannot land on the SAME order, where they would sort by
@@ -667,6 +725,8 @@ namespace HiddenHarbours.Player
             if (_bodyRenderer == null) _bodyRenderer = GetComponent<SpriteRenderer>();
             if (_character == null) _character = GetComponent<IsoCharacterSprite>();
             if (_walk == null) _walk = GetComponent<PlayerWalkController>();
+            if (_rider == null) _rider = GetComponent<DeckRiderVisual>();
+            if (_fight == null) _fight = GetComponent<RodFightPresenter>();
         }
     }
 }
