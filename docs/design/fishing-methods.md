@@ -9,7 +9,7 @@
 | 5 | Ice fishing for smelt | Cut a hole in the Lock, jig at night | On foot | M2-47 | Nothing | SECOND |
 | 6 | Nets | Set a gillnet; tow a trawl | Dragger, trawler | M3-04 | The flag only | At M3 |
 | 7 | Dredge | Tow a scallop bed, cull on deck | A specialist mount | Late, no row | The flag only | Nothing owed |
-| 8 | Mussel lease | Grow a lease, haul its lines | Any boat alongside | M3-16 | Design only | Four leans pending the owner's word |
+| 8 | Mussel lease | Grow a lease, haul its lines | Any boat alongside | M3-16, re-phased 2026-11-13: next after wild picking (M3-16a) | Design only | Four leans pending the owner's word |
 
 ## Build order
 
@@ -367,8 +367,10 @@ Method sources: [mussel lease and growing longline](mussel-lease-and-longline.md
 - **Licence:** the lease itself.
 - **NPC fleet:** neighbours' leases.
 - **Automated later:** owned production (P4); staff harvest at M3.
-- **Phase and row:** lean, pending the owner's word: retain M3-16 (`backlog/backlog.md:347`)
-  until the owner rephases the starter-ruin fork (`docs/design/mussel-lease-and-longline.md:267`).
+- **Phase and row:** re-phased by the owner on 2026-11-13 ("Yes, your leans"): wild blue mussels
+  and oysters are picked by hand at St Peters now (backlog M3-16a); the first lease (M3-16) is
+  the next step, once the method doc's section 8 items 2 to 4 are ruled (owed). The starter-ruin
+  fork is still owed and no longer sets the phase.
 - **Next:** the method doc's four owner rulings, with all four leans below. This plan settles
   none of that doc's open rulings.
 
@@ -407,7 +409,7 @@ The linked method docs are unchanged; the angler's kit plans the bait portion.
 |---|---|---|
 | Rod: bait and lure choosing | How does choosing bait and tackle work in the world? (`docs/design/rod-fishing-v2-brainstorm.md:404`) | 2026-10-29: world interactions with ui-ux; no menu. |
 | Rod: "portion" | What did the owner mean by "portion"? (`docs/design/rod-fishing-v2-brainstorm.md:407`) | 2026-10-27: the bait portion, planned by the angler's kit, not this plan. |
-| Mussels 1: starter ruin | Is the lapsed lease the starter ruin? (`docs/design/mussel-lease-and-longline.md:314`) | Retain M3-16 until the owner rephases it. |
+| Mussels 1: starter ruin | Is the lapsed lease the starter ruin? (`docs/design/mussel-lease-and-longline.md:314`) | Still owed. The phase no longer waits on it: the owner re-phased the lease on 2026-11-13 (next after wild picking). |
 | Mussels 2: water and window | What tide window and spots make water leaseable? (`docs/design/mussel-lease-and-longline.md:316`) | Leave leaseable water undecided until the owner names the tide window and spots. |
 | Mussels 3: storm damage | Foul and lose yield, or part and lose the line? (`docs/design/mussel-lease-and-longline.md:319`) | Foul and lose yield; no permanent gear loss. |
 | Mussels 4: season shape | Seasonal calendar or rolling cycle? (`docs/design/mussel-lease-and-longline.md:321-323`) | A rolling cycle, no duration chosen. |

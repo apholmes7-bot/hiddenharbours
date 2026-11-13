@@ -343,6 +343,12 @@ musselbeds**, which are painted ground already (ADR 0028, shipped).
 > earlier (that doc §6). **Nothing is built.** What stays owned *here* is the **content shape** above
 > — a farmed mussel is a **harvested crop, not a `CatchResolver` roll** — and the wild `blue-mussel`
 > row in §4.2 is untouched by any of it.
+>
+> **Re-phased 2026-11-13 (owner ruling; [`../roadmap.md`](../roadmap.md) M3 ruling note).** The "(M3,
+> advanced/late)" in the heading above and "M3 still stands" in this note are superseded: wild blue mussels and
+> oysters are picked by hand at low water at St Peters **now**; the first mussel lease is the **next step**, once
+> [`mussel-lease-and-longline.md`](mussel-lease-and-longline.md) §8 items 2 to 4 are ruled (**owed**); sea
+> scallops wait for the player trawl loop (the trawl arc out of Rice Point).
 
 ---
 

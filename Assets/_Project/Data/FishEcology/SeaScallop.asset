@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 51d5aaf6c73f47f1b2335fa4906c6153, type: 3}
+  m_Name: SeaScallop
+  m_EditorClassIdentifier: HiddenHarbours.Fishing::HiddenHarbours.Fishing.FishEcologyDef
+  Id: "ecology.sea_scallop"
+  SpeciesId: "fish.sea_scallop"
+  ScientificName: "Placopecten magellanicus"
+  LifeStageAndScope: "Post-larval fishable coastal animals; typical reference habitat only. Adults unless the notes explicitly distinguish juveniles."
+  TypicalMinDepthMetres: 15
+  TypicalMaxDepthMetres: 110
+  DepthEvidence: "Authored subtidal reference band for commercial beds on sand and gravel; both endpoints are provisional authoring values."
+  Layer: 3
+  Habitats: 10
+  PreferredVegetation: 0
+  VegetationEvidence: "The cited profile does not establish a species-wide eelgrass or kelp preference; zero means no preference inferred, not avoidance."
+  Grouping: 2
+  DayHabit: 5
+  TideHabit: 1
+  HabitEvidence: "A subtidal filter feeder that is never bared by the tide, so no tide gate is inferred; no daylight presence gate is inferred."
+  BiologyNotes: "Adults lie in dense beds on sand and gravel and can swim short distances by clapping their valves, so they are a loose benthic aggregation, not a cemented bed. Larval dispersal is outside its scope."
+  SourceUrls:
+  - "https://www.fisheries.noaa.gov/species/atlantic-sea-scallop"

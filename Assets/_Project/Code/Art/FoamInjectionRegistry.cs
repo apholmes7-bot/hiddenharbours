@@ -367,7 +367,7 @@ namespace HiddenHarbours.Art
         /// </summary>
         internal static bool PublishWakeLift(Vector2 rootXY, Vector2 heading,
                                              float wavelengthMetres, float halfBeamMetres,
-                                             float gate01)
+                                             float gate01, float lengthMetres = 0f)
         {
             // 🔴 THE CAP IS RATIONED BY WHO IS LIFTING THE MOST WATER, NOT BY WHO ASKED FIRST.
             // Nothing is reserved and nothing is held between frames: the packing is built fresh every
@@ -464,7 +464,7 @@ namespace HiddenHarbours.Art
             }
 
             s_LiftRoot[slot] = new Vector4(rootXY.x, rootXY.y, heading.x, heading.y);
-            s_LiftShape[slot] = new Vector4(gate, lambda, Mathf.Max(halfBeamMetres, 0f), 0f);
+            s_LiftShape[slot] = new Vector4(gate, lambda, Mathf.Max(halfBeamMetres, 0f), Mathf.Max(lengthMetres, 0f));
             PublishLift();
             return true;
         }

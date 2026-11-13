@@ -184,7 +184,7 @@ namespace HiddenHarbours.Tests.PlayMode
             for (int i = SceneManager.sceneCount - 1; i >= 0; i--)
             {
                 Scene s = SceneManager.GetSceneAt(i);
-                if (s.IsValid() && s != clean && (s.name == SceneName || (_v24LoadedIntro && s.name == "StPeters")))
+                if (s.IsValid() && s != clean && (s.name == SceneName || (_v24LoadedIntro && (s.name == "StPeters" || s.name == "RicePoint"))))
                     yield return SceneManager.UnloadSceneAsync(s);
             }
         }
@@ -790,7 +790,7 @@ namespace HiddenHarbours.Tests.PlayMode
 #endif
         }
 
-        IEnumerator LoadRegion()
+        IEnumerator LoadRegion(string scene = SceneName)
         {
             // The region logs decor-import complaints that have nothing to do with wake foam.
             LogAssert.ignoreFailingMessages = true;
@@ -801,20 +801,20 @@ namespace HiddenHarbours.Tests.PlayMode
             // single line to diagnose it from. A fixture may fail; it may not hang. The bound is
             // realtime because this class also freezes `Time.timeScale`, and a budget denominated in
             // scaled time is no budget at all.
-            Debug.Log($"[{PlateDir}] loading {SceneName}…");
+            Debug.Log($"[{PlateDir}] loading {scene}…");
             float wall = Time.realtimeSinceStartup;
-            AsyncOperation op = SceneManager.LoadSceneAsync(SceneName, LoadSceneMode.Single);
-            Assert.IsNotNull(op, $"SceneManager refused to start loading '{SceneName}' — it is most " +
+            AsyncOperation op = SceneManager.LoadSceneAsync(scene, LoadSceneMode.Single);
+            Assert.IsNotNull(op, $"SceneManager refused to start loading '{scene}' — it is most " +
                                  "likely not in Build Settings, and there is no region to photograph.");
             while (op != null && !op.isDone)
             {
                 Assert.Less(Time.realtimeSinceStartup - wall, 180f,
-                            $"'{SceneName}' never finished loading: {op.progress:0.00} of the way in " +
+                            $"'{scene}' never finished loading: {op.progress:0.00} of the way in " +
                             $"after 180 s of wall clock. Nothing below this ever ran.");
                 yield return null;
             }
             for (int i = 0; i < 6; i++) yield return null;   // let the self-installing components register
-            Debug.Log($"[{PlateDir}] {SceneName} loaded in {Time.realtimeSinceStartup - wall:0.0} s.");
+            Debug.Log($"[{PlateDir}] {scene} loaded in {Time.realtimeSinceStartup - wall:0.0} s.");
         }
 
         /// <summary>
@@ -882,7 +882,7 @@ namespace HiddenHarbours.Tests.PlayMode
         /// <para>The legs are no longer strung along +X at <see cref="LegSpacingMetres"/>, which needed
         /// ~280 m of continuous open water in a creek that has not got it. They are chosen independently
         /// and only held APART, so no leg is photographed over another leg's foam.</para></summary>
-        static bool TryLegAnchors(int count, out List<Vector2> starts, out float depth)
+        static bool TryLegAnchors(int count, out List<Vector2> starts, out float depth, float minClearance = 4f)
         {
             starts = new List<Vector2>(); depth = 0f;
             ITidalTerrain terrain = GameServices.TidalTerrain;
@@ -916,7 +916,7 @@ namespace HiddenHarbours.Tests.PlayMode
                         for (float d = 0f; d <= runRadius; d += 10f)
                             shallowest = Mathf.Max(shallowest, terrain.ElevationAt(p + dir * d));
                     }
-                    if (-shallowest > 4f) scored.Add(new Candidate(p, -shallowest));
+                    if (-shallowest > minClearance) scored.Add(new Candidate(p, -shallowest));
                 }
             }
             if (scored.Count == 0) return false;

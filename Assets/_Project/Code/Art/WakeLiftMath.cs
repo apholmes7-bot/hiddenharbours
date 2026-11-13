@@ -191,6 +191,42 @@ namespace HiddenHarbours.Art
         }
 
         /// <summary>
+        /// How far the mound at her leading end reaches, in her churned half-beams, in every direction. Mirrored as <c>HH_WAKE_BOW_HALF_BEAMS</c> in the water shader.
+        /// </summary>
+        public const float BowMoundHalfBeams = 2f;
+
+        /// <summary>
+        /// The water she pushes up at her leading end: one mound, <paramref name="amplitudeMetres"/> tall
+        /// at the end itself, falling to nothing <see cref="BowMoundHalfBeams"/> half-beams away in every
+        /// direction. Drawn only, like the train. Twin: <c>WakeBowHeight</c>.
+        /// </summary>
+        /// <param name="aheadMetres">Metres ahead of her leading end along her heading.</param>
+        /// <param name="lateralMetres">Metres off her track.</param>
+        public static float BowHeight(float aheadMetres, float lateralMetres,
+                                      float amplitudeMetres, float halfBeamMetres)
+        {
+            if (amplitudeMetres <= 0f || halfBeamMetres <= 0f) return 0f;
+            float reach = BowMoundHalfBeams * halfBeamMetres;
+            float away = Mathf.Sqrt(aheadMetres * aheadMetres + lateralMetres * lateralMetres);
+            return amplitudeMetres * FoamBuffer.Profile(0.5f * (reach + away), reach);
+        }
+
+        /// <summary>
+        /// The height of the mound at a point in world metres. <paramref name="rootXY"/> and
+        /// <paramref name="heading"/> are the ones the train uses (her trailing end and the way she is
+        /// making); <paramref name="lengthMetres"/> is how far ahead of that root her leading end is.
+        /// Twin: <c>WakeBowHeightAt</c>.
+        /// </summary>
+        public static float BowHeightAt(Vector2 worldXY, Vector2 rootXY, Vector2 heading, float lengthMetres,
+                                        float amplitudeMetres, float halfBeamMetres)
+        {
+            Vector2 d = worldXY - rootXY;
+            float ahead = d.x * heading.x + d.y * heading.y - lengthMetres;
+            float lateral = d.x * heading.y - d.y * heading.x;
+            return BowHeight(ahead, lateral, amplitudeMetres, halfBeamMetres);
+        }
+
+        /// <summary>
         /// The same height, given a point in WORLD metres and the hull's published root — the frame
         /// change the shader's per-hull loop does, written once so a test can walk the sea in world
         /// coordinates exactly as the vertex stage does.

@@ -7,7 +7,6 @@
         "HiddenHarbours.Environment",
         "HiddenHarbours.Boats",
         "HiddenHarbours.Fishing",
-        "HiddenHarbours.Economy",
         "HiddenHarbours.Player",
         "Unity.RenderPipelines.Universal.2D.Runtime",
         "Unity.InputSystem"

@@ -140,6 +140,21 @@ namespace HiddenHarbours.Player
         {
             ResolveYSort();
             if (_ySort != null) _ySort.enabled = true;
+            SetDrawnElsewhere(false);   // a tool on the ground is drawn: nothing else is drawing it
+        }
+
+        /// <summary>
+        /// <b>Held out of the picture while something else draws this very tool in her hands.</b> The fight
+        /// draws its own rod for the cast and the fight (ADR 0053 D5); the gear rod left drawn at her hip
+        /// beside it was a second, floating rod. The carrier states it every frame and never latches it.
+        /// By <see cref="Renderer.forceRenderingOff"/>, never <c>enabled</c>, so no other writer's enable is
+        /// overwritten; given back on <see cref="OnPlaced"/>.
+        /// </summary>
+        public void SetDrawnElsewhere(bool drawnElsewhere)
+        {
+            ResolveRenderer();
+            if (_renderer != null && _renderer.forceRenderingOff != drawnElsewhere)
+                _renderer.forceRenderingOff = drawnElsewhere;
         }
 
         // ---- IInteractable --------------------------------------------------------------------------
