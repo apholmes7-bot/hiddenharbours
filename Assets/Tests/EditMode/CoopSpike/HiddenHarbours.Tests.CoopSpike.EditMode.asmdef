@@ -1,6 +1,6 @@
 {
   "name": "HiddenHarbours.Tests.CoopSpike.EditMode",
-  "references": ["HiddenHarbours.CoopSpike", "HiddenHarbours.CoopSpike.Editor", "HiddenHarbours.Core", "HiddenHarbours.Boats", "HiddenHarbours.Player", "HiddenHarbours.Environment", "Unity.Netcode.Runtime", "UnityEngine.TestRunner", "UnityEditor.TestRunner"],
+  "references": ["HiddenHarbours.CoopSpike", "HiddenHarbours.CoopSpike.Editor", "HiddenHarbours.Core", "HiddenHarbours.Art", "HiddenHarbours.Boats", "HiddenHarbours.Player", "HiddenHarbours.Environment", "Unity.Netcode.Runtime", "Unity.Collections", "UnityEngine.TestRunner", "UnityEditor.TestRunner"],
   "includePlatforms": ["Editor"],
   "overrideReferences": true,
   "precompiledReferences": ["nunit.framework.dll"],

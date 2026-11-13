@@ -2,7 +2,12 @@ using HiddenHarbours.CoopSpike;
 using HiddenHarbours.CoopSpike.Editor;
 using HiddenHarbours.Core;
 using HiddenHarbours.Environment;
+using HiddenHarbours.Art;
+using HiddenHarbours.Boats;
+using HiddenHarbours.Player;
 using NUnit.Framework;
+using Unity.Collections;
+using Unity.Netcode;
 using Unity.Netcode.Components;
 using UnityEditor;
 using UnityEngine;
@@ -11,6 +16,76 @@ namespace HiddenHarbours.Tests.CoopSpike
 {
     public sealed class CoopSpikePlanTests
     {
+        [Test]
+        public void RemoteSkipperUsesCurrentMeshAndHidesTheOldSheetWithoutGameplay()
+        {
+            var previousConfig = GameServices.Config;
+            var previousHulls = HullMeshPresentation.Service;
+            var previousFigures = CharacterFigurePresentation.Service;
+            var root = new GameObject("RemoteFigureFixture");
+            try
+            {
+                GameServices.Config = AssetDatabase.LoadAssetAtPath<GameConfig>(
+                    "Assets/_Project/Data/Config/GameConfig.asset");
+                HullMeshPresentation.Service = new IsoFacetHullPresentationService();
+                CharacterFigurePresentation.Service = new CharacterFigurePresentationService();
+                var settings = AssetDatabase.LoadAssetAtPath<CoopSpikeSettings>(CoopSpikeAssets.SettingsPath);
+                var state = new CoopBoatState
+                {
+                    HullId = settings.Roster[0].Id,
+                    SkipperHeading = 90f,
+                    SkipperStandRigMetres = new Vector3(0.2f, -0.3f, 0.4f),
+                    SkipperStance = CharacterStance.Balance
+                };
+                var view = root.AddComponent<CoopReplicaView>();
+                view.Configure(settings);
+                // Exercise the actual network payload, including the new deck point and stance.
+                using var writer = new FastBufferWriter(8192, Allocator.Temp);
+                writer.WriteNetworkSerializable(state);
+                using var reader = new FastBufferReader(writer, Allocator.Temp);
+                reader.ReadNetworkSerializable(out CoopBoatState received);
+                Assert.That(received, Is.EqualTo(state));
+                // EditMode runs no component lifecycle: sample the held heading as runtime does.
+                view.Character.SendMessage("Awake");
+                view.Show(received);
+                view.Character.SendMessage("LateUpdate");
+                var figure = view.Figure as CharacterFigurePresenter;
+                Assert.That(figure, Is.Not.Null, "Use the existing cast presenter through Core.");
+                figure.PoseFigure(view, true);
+                Assert.That(figure.DrawsInsteadOfSprite, Is.True, figure.NotDrawingReason);
+                Assert.That(figure.Skin, Is.SameAs(settings.Character.Skin), "The memory-only local player's baked skin and outfit.");
+                Assert.That(figure.Hull, Is.SameAs(view.FigureHull.GetComponent<IsoFacetHullRenderer>()));
+                Assert.That(figure.FigureLocalMetres, Is.EqualTo(state.SkipperStandRigMetres));
+                Assert.That(view.Character.HeadingDegrees, Is.EqualTo(state.SkipperHeading));
+                Assert.That(view.Character.Stance, Is.EqualTo(state.SkipperStance));
+                Assert.That(view.FigureDeckBearingDegrees, Is.EqualTo(DeckRiderFacingMath.DeckBearingFor(
+                    state.SkipperHeading, BoatHullPresenterHost.Resolve(root).DrawnHeadingDegrees())));
+                Assert.That(view.Skipper.GetComponentsInChildren<SpriteRenderer>().Length, Is.EqualTo(1));
+                var oldSheet = view.Skipper.GetComponent<SpriteRenderer>();
+                Assert.That(oldSheet.sprite, Is.Not.Null, "The suppression assertion must cover a real old sheet cell.");
+                Assert.That(oldSheet.forceRenderingOff, Is.True);
+                Assert.That(root.GetComponent<BoatController>(), Is.Null);
+                Assert.That(root.GetComponentInChildren<PlayerWalkController>(), Is.Null);
+                Assert.That(root.GetComponentInChildren<DeckRiderVisual>(), Is.Null);
+                Assert.That(HullMeshPresentation.Service, Is.TypeOf<IsoFacetHullPresentationService>());
+                Assert.That(CharacterFigurePresentation.Service, Is.TypeOf<CharacterFigurePresentationService>());
+
+                var moved = state;
+                moved.SkipperStandRigMetres += Vector3.right;
+                Assert.That(state.Equals(moved), Is.False, "A deck move must publish even when sprite placement stays put.");
+                var changedPose = state;
+                changedPose.SkipperStance = CharacterStance.Oars;
+                Assert.That(state.Equals(changedPose), Is.False, "A pose change must be replicated.");
+            }
+            finally
+            {
+                Object.DestroyImmediate(root);
+                GameServices.Config = previousConfig;
+                HullMeshPresentation.Service = previousHulls;
+                CharacterFigurePresentation.Service = previousFigures;
+            }
+        }
+
         [Test]
         public void DevStartRequiresExactlyOneRoleAndTheIsolatedProduct()
         {
