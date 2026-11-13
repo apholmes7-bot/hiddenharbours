@@ -86,6 +86,23 @@ namespace HiddenHarbours.Boats
         /// <summary>The starboard oar's live pose.</summary>
         public DoryOarMeshPose.Pose StarboardPose { get; private set; } = DoryOarMeshPose.Resting;
 
+        /// <summary>True while the port oar is drawn ROWING — a stroke pose, not trailing, not
+        /// shipped, not stowed under power. The oar splash's gate.</summary>
+        public bool PortStroking { get; private set; }
+
+        /// <summary>True while the starboard oar is drawn rowing.</summary>
+        public bool StarboardStroking { get; private set; }
+
+        /// <summary>The port oar's signed state while it is rowing (+ ahead, − backing), else 0.</summary>
+        public float PortOarState { get; private set; }
+
+        /// <summary>The starboard oar's signed state while it is rowing, else 0.</summary>
+        public float StarboardOarState { get; private set; }
+
+        /// <summary>True when <paramref name="column"/> is one of the stroke cycle's own columns
+        /// rather than the trailing or shipped pose.</summary>
+        public static bool IsStrokeColumn(int column) => column >= 0 && column < DoryOarMath.StrokeColumns;
+
         /// <summary>Wire the layer from the skinner. Idempotent — a re-skin re-points it rather than
         /// stacking a second layer (the component is <see cref="DisallowMultipleComponent"/>).
         ///
@@ -153,12 +170,19 @@ namespace HiddenHarbours.Boats
                     dt, DoryOarMath.StrokeColumns);
             }
 
-            PortPose = PoseFor(ColumnForOar(underPower, portWorking, _portPhase, starWorking,
-                                            _bothIdleSeconds, _restGraceSeconds,
-                                            DoryOarMath.StrokeColumns), _portPhase);
-            StarboardPose = PoseFor(ColumnForOar(underPower, starWorking, _starPhase, portWorking,
-                                                 _bothIdleSeconds, _restGraceSeconds,
-                                                 DoryOarMath.StrokeColumns), _starPhase);
+            int portColumn = ColumnForOar(underPower, portWorking, _portPhase, starWorking,
+                                          _bothIdleSeconds, _restGraceSeconds, DoryOarMath.StrokeColumns);
+            int starColumn = ColumnForOar(underPower, starWorking, _starPhase, portWorking,
+                                          _bothIdleSeconds, _restGraceSeconds, DoryOarMath.StrokeColumns);
+            PortPose = PoseFor(portColumn, _portPhase);
+            StarboardPose = PoseFor(starColumn, _starPhase);
+
+            // What the oar splash reads: the SAME decision the pose was just made from, so a blade
+            // can only splash on a frame it was drawn rowing.
+            PortStroking = IsStrokeColumn(portColumn);
+            StarboardStroking = IsStrokeColumn(starColumn);
+            PortOarState = PortStroking ? portState : 0f;
+            StarboardOarState = StarboardStroking ? starState : 0f;
 
             _port.LocalRotation = DoryOarMeshPose.Rotation(PortSide, PortPose);
             _star.LocalRotation = DoryOarMeshPose.Rotation(StarboardSide, StarboardPose);

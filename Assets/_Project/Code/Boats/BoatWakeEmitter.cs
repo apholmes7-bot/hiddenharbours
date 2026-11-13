@@ -251,8 +251,25 @@ namespace HiddenHarbours.Boats
             host.AddComponent<BoatWakeEmitter>();
         }
 
+        // The live host, so a sibling Boats presenter (the oar splash) can draw with the SAME foam
+        // rafts instead of building a second set. Null outside play and before the host installs.
+        private static BoatWakeEmitter _shared;
+
+        /// <summary>
+        /// The wake's own foam raft sprites, <c>[variant][age rung]</c> — built once by the wake host
+        /// and shared, so foam laid by an oar is the same pixel foam the hull trails. Null when no
+        /// wake host is alive (EditMode, or before the first scene); a caller then draws nothing.
+        /// </summary>
+        internal static Sprite[][] SharedFoamRafts => _shared != null ? _shared._foamSprites : null;
+
+        private void OnDestroy()
+        {
+            if (_shared == this) _shared = null;
+        }
+
         private void Awake()
         {
+            _shared = this;
             _foamSprites = BuildFoamSprites(_trail.FoamAeration, _trail.FoamAgeErosion);
             _lineSprite = BuildLineSprite();
             _waveSprite = BuildWaveSprite(_wave.CrestUndulation);
