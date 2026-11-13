@@ -13,7 +13,7 @@ using UnityEngine.TestTools;
 
 namespace HiddenHarbours.Tests.CoopSpike
 {
-    public sealed partial class CoopSpikeNetworkTests : NetcodeIntegrationTest
+    public sealed partial class CoopSpikeNetworkTests : CoopNetworkTest
     {
         protected override int NumberOfClients => 1;
         private sealed class Clock : IGameClock
@@ -61,7 +61,7 @@ namespace HiddenHarbours.Tests.CoopSpike
                 obj.GetComponent<CoopBoatReplica>().BindClock(_clientClock, 12345);
             yield return null;
         }
-        protected override IEnumerator OnTearDown()
+        protected override IEnumerator OnTrialTearDown()
         {
             if (_localBoat != null) Object.Destroy(_localBoat);
             yield return TearDownDayTwo();

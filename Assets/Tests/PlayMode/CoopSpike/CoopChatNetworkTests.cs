@@ -9,7 +9,7 @@ using UnityEngine.TestTools;
 
 namespace HiddenHarbours.Tests.CoopSpike
 {
-    public sealed class CoopChatNetworkTests : NetcodeIntegrationTest
+    public sealed class CoopChatNetworkTests : CoopNetworkTest
     {
         protected override int NumberOfClients => 1;
         private CoopChatSession _host, _client;
@@ -27,7 +27,7 @@ namespace HiddenHarbours.Tests.CoopSpike
             yield break;
         }
 
-        protected override IEnumerator OnTearDown()
+        protected override IEnumerator OnTrialTearDown()
         {
             _host?.Dispose(); _client?.Dispose();
             yield break;

@@ -119,12 +119,12 @@ namespace HiddenHarbours.CoopSpike
             // The region's ordinary arrival positioning has now finished; apply the trial spawn.
             PrepareLocal(_settings, _boat, _player, switcher, _client);
 
-            // The manager rides this process's persistent service root, never a remote gameplay clone.
-            var core = ((Component)GameServices.Clock).gameObject;
-            var transport = core.AddComponent<UnityTransport>();
+            // The opt-in bootstrap owns the entire session. Destroying it must also
+            // destroy the transport and manager, even when the gameplay core survives.
+            var transport = gameObject.AddComponent<UnityTransport>();
             _options ??= new CoopLaunchOptions(false, "127.0.0.1", _settings.Port);
             transport.SetConnectionData(_options.Address, _options.Port, _client ? null : "0.0.0.0");
-            _manager = core.AddComponent<NetworkManager>();
+            _manager = gameObject.AddComponent<NetworkManager>();
             _manager.NetworkConfig = new NetworkConfig
             {
                 NetworkTransport = transport, PlayerPrefab = _settings.PlayerPrefab,
@@ -219,10 +219,12 @@ namespace HiddenHarbours.CoopSpike
         private void OnDestroy()
         {
             Chat?.Dispose();
+            Ready = false;
             if (_manager != null)
             {
                 _manager.OnClientConnectedCallback -= OnConnected;
                 _manager.OnClientDisconnectCallback -= OnDisconnected;
+                _manager.Shutdown();
             }
         }
     }

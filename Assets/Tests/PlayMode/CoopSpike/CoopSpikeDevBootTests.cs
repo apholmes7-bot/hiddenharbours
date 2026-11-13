@@ -20,6 +20,18 @@ namespace HiddenHarbours.Tests.CoopSpike
     {
         private CoopDevStart _boot;
         private ISaveService _previousSave;
+        private string _previousSceneName;
+        private bool _previousRunInBackground;
+
+        [UnitySetUp]
+        public IEnumerator SetUp()
+        {
+            _previousSave = GameServices.Save;
+            _previousSceneName = SceneManager.GetActiveScene().name;
+            _previousRunInBackground = Application.runInBackground;
+            CoopNetworkTest.AssertNoNetworkManagers();
+            yield break;
+        }
 
         private sealed class MemorySave : ISaveService
         {
@@ -33,39 +45,17 @@ namespace HiddenHarbours.Tests.CoopSpike
         [UnityTest]
         public IEnumerator AuthoredStartingCoreBootsTheHostAtSeaWithARod()
         {
-            Assert.That(Application.productName, Is.EqualTo("My project"), "The trial also boots from the normal product.");
-            _previousSave = GameServices.Save;
-            GameServices.Save = new MemorySave();
-            // Match the player's AfterSceneLoad hook: create the bootstrap before the
-            // first physics tick, not after an extra frame of on-foot simulation.
-            void StartTrial(Scene scene, LoadSceneMode mode)
-            {
-                if (scene.name != "StPeters") return;
-                var bootObject = new GameObject("CoopDevBootFixture");
-                Object.DontDestroyOnLoad(bootObject);
-                _boot = bootObject.AddComponent<CoopDevStart>();
-            }
-            SceneManager.sceneLoaded += StartTrial;
-            try
-            {
-                yield return SceneManager.LoadSceneAsync("Assets/_Project/Scenes/StPeters.unity", LoadSceneMode.Single);
-            }
-            finally { SceneManager.sceneLoaded -= StartTrial; }
-            yield return null;
-            Assert.That(GameServices.Ready, Is.True, "Use the authored core rather than reconstructing one in the test.");
-            var clock = GameServices.Clock;
-            float deadline = Time.realtimeSinceStartup + 60;
-            while (!_boot.Ready && Time.realtimeSinceStartup < deadline) yield return null;
-            Assert.That(_boot.Ready, Is.True, "The real dev-start coroutine must finish.");
+            yield return BootAuthoredHost();
             Assert.That(Object.FindAnyObjectByType<SaveService>(), Is.Null, "No disk writer may survive the trial boot.");
             Assert.That(GameServices.Save.LoadedExistingSave, Is.False);
             Assert.That(Application.runInBackground, Is.True);
             Assert.That(_boot.Manager.GetComponent<Unity.Netcode.Transports.UTP.UnityTransport>()
                 .ConnectionData.ServerListenAddress, Is.EqualTo("0.0.0.0"));
+            Assert.That(_boot.Manager.NetworkConfig.EnableSceneManagement, Is.False);
             Assert.That(SceneManager.GetActiveScene().name, Is.EqualTo("EastWater"));
             Assert.That(GameServices.CurrentRegionId, Is.EqualTo("region.east_water"));
-            Assert.That(GameServices.Clock, Is.SameAs(clock), "The starting core must survive the water-region hop.");
             Assert.That(_boot.Manager.IsHost && _boot.Manager.IsListening, Is.True);
+            float deadline = Time.realtimeSinceStartup + 60;
             while (_boot.Manager.LocalClient.PlayerObject == null && Time.realtimeSinceStartup < deadline) yield return null;
             var playerObject = _boot.Manager.LocalClient.PlayerObject;
             Assert.That(playerObject, Is.Not.Null);
@@ -88,6 +78,39 @@ namespace HiddenHarbours.Tests.CoopSpike
             Assert.That(bootPlayer.GetComponent<CharacterClipPlayer>().IsPlaying, Is.False,
                 "No transient scene-hop clip may keep claiming the skipper at the helm.");
             TestContext.WriteLine("Authored StPeters core -> real dev start -> EastWater; host listening, owned proxy, helm and rod.");
+            yield return TraceBootGeometry(switcher);
+        }
+
+        private IEnumerator BootAuthoredHost()
+        {
+            Assert.That(Application.productName, Is.EqualTo("My project"), "The trial also boots from the normal product.");
+            GameServices.Save = new MemorySave();
+            // Match the player's AfterSceneLoad hook: create the bootstrap before the
+            // first physics tick, not after an extra frame of on-foot simulation.
+            void StartTrial(Scene scene, LoadSceneMode mode)
+            {
+                if (scene.name != "StPeters") return;
+                var bootObject = new GameObject("CoopDevBootFixture");
+                Object.DontDestroyOnLoad(bootObject);
+                _boot = bootObject.AddComponent<CoopDevStart>();
+            }
+            SceneManager.sceneLoaded += StartTrial;
+            try
+            {
+                yield return SceneManager.LoadSceneAsync("Assets/_Project/Scenes/StPeters.unity", LoadSceneMode.Single);
+            }
+            finally { SceneManager.sceneLoaded -= StartTrial; }
+            yield return null;
+            Assert.That(GameServices.Ready, Is.True, "Use the authored core rather than reconstructing one in the test.");
+            var clock = GameServices.Clock;
+            float deadline = Time.realtimeSinceStartup + 60;
+            while (!_boot.Ready && Time.realtimeSinceStartup < deadline) yield return null;
+            Assert.That(_boot.Ready, Is.True, "The real dev-start coroutine must finish.");
+            Assert.That(GameServices.Clock, Is.SameAs(clock), "The starting core must survive the water-region hop.");
+        }
+
+        private static IEnumerator TraceBootGeometry(ControlSwitcher switcher)
+        {
             // Opt-in evidence of the actual authored transforms; no camera or pose is changed.
             string trace = System.Environment.GetEnvironmentVariable("HH_COOP_TEST_TRACE");
             if (!string.IsNullOrEmpty(trace))
@@ -115,6 +138,29 @@ namespace HiddenHarbours.Tests.CoopSpike
             }
         }
 
+        [UnityTest]
+        public IEnumerator TrialTeardownThenPlainSinglePlayerBootLeavesNoNetworkManager()
+        {
+            yield return BootAuthoredHost();
+            Assert.That(_boot.Manager.IsHost && _boot.Manager.IsListening, Is.True);
+            var clock = (Component)GameServices.Clock;
+            Object.Destroy(_boot.gameObject);
+            yield return null;
+            CoopNetworkTest.AssertNoNetworkManagers();
+            Assert.That(clock != null, Is.True, "Destroying the bootstrap must suffice while the core is still alive.");
+            yield return TearDown();
+            Assert.That(SceneManager.GetActiveScene().name, Is.EqualTo(_previousSceneName));
+
+            GameServices.Save = new MemorySave();
+            yield return SceneManager.LoadSceneAsync("Assets/_Project/Scenes/StPeters.unity", LoadSceneMode.Single);
+            Assert.That(CoopDevStart.StartFromArguments(new[] { "HiddenHarbours.exe" }), Is.Null);
+            yield return null;
+            Assert.That(GameServices.Ready, Is.True, "Exercise a real ordinary authored boot.");
+            CoopNetworkTest.AssertNoNetworkManagers();
+            Assert.That(Object.FindObjectsByType<CoopDevStart>(FindObjectsInactive.Include,
+                FindObjectsSortMode.None), Is.Empty);
+        }
+
         [UnityTearDown]
         public IEnumerator TearDown()
         {
@@ -123,12 +169,17 @@ namespace HiddenHarbours.Tests.CoopSpike
                 var manager = _boot.Manager;
                 manager.Shutdown();
                 float deadline = Time.realtimeSinceStartup + 5;
-                while (manager != null && manager.IsListening && Time.realtimeSinceStartup < deadline) yield return null;
+                while (manager != null && (manager.IsListening || manager.ShutdownInProgress)
+                    && Time.realtimeSinceStartup < deadline) yield return null;
             }
             if (_boot != null) Object.Destroy(_boot.gameObject);
             ShellRestart.DestroyPersistentCore();
             yield return null;
-            var clean = SceneManager.CreateScene("CoopDevBootCleanup");
+            // Single-mode trial travel unloads the runner's scene. Restore its identity:
+            // NGO excludes InitTestScene... from synchronization; a named cleanup scene
+            // instead gets offered to clients with an empty asset path.
+            var clean = SceneManager.GetSceneByName(_previousSceneName);
+            if (!clean.IsValid() || !clean.isLoaded) clean = SceneManager.CreateScene(_previousSceneName);
             SceneManager.SetActiveScene(clean);
             var water = SceneManager.GetSceneByName("EastWater");
             if (water.IsValid() && water.isLoaded) yield return SceneManager.UnloadSceneAsync(water);
@@ -136,6 +187,8 @@ namespace HiddenHarbours.Tests.CoopSpike
             if (start.IsValid() && start.isLoaded) yield return SceneManager.UnloadSceneAsync(start);
             GameServices.Reset();
             GameServices.Save = _previousSave is Object prior && prior == null ? new MemorySave() : _previousSave;
+            Application.runInBackground = _previousRunInBackground;
+            CoopNetworkTest.AssertNoNetworkManagers();
         }
     }
 }
