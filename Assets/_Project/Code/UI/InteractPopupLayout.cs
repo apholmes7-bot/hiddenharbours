@@ -109,6 +109,81 @@ namespace HiddenHarbours.UI
             return new Rect(a.x * s, top - PanelHeight * s, PanelWidth * s, PanelHeight * s);
         }
 
+        /// <summary>
+        /// The panel's anchored position kept out of the helm's UI AND off the quest note (TASKS,
+        /// <see cref="QuestNoteFootprint"/>): the owner's "player tips/actions also cover the ui for
+        /// objectives". Exactly <see cref="PanelAnchoredPosition(in HelmFootprintArea, float, float)"/>
+        /// when no note is drawn, and whenever the note does not reach the panel.
+        /// </summary>
+        /// <param name="tasksPx">The note's box in screen pixels (bottom-left origin); zero-sized for
+        /// no note.</param>
+        public static Vector2 PanelAnchoredPosition(in HelmFootprintArea covered, Rect tasksPx,
+                                                    float screenW, float screenH)
+        {
+            if (QuestNoteFootprint.IsEmpty(tasksPx)) return PanelAnchoredPosition(in covered, screenW, screenH);
+            Vector2 home = PanelAnchoredPosition();
+            float s = HudBandLayout.ScaleFactor(screenW, screenH);
+            Vector2 movePx = PlacementOffsetPx(in covered, tasksPx, screenW, screenH);
+            return new Vector2(home.x + movePx.x / s, home.y + movePx.y / s);
+        }
+
+        /// <summary>Where the panel actually lands, in SCREEN pixels, for what the helm covers and
+        /// where the quest note is — <see cref="PanelScreenRect(float, float)"/> moved by the same
+        /// rule <see cref="PanelAnchoredPosition(in HelmFootprintArea, Rect, float, float)"/> applies.</summary>
+        public static Rect PanelScreenRect(in HelmFootprintArea covered, Rect tasksPx,
+                                           float screenW, float screenH)
+        {
+            Rect at = PanelScreenRect(screenW, screenH);
+            Vector2 movePx = PlacementOffsetPx(in covered, tasksPx, screenW, screenH);
+            at.x += movePx.x;
+            at.y += movePx.y;
+            return at;
+        }
+
+        /// <summary>
+        /// How far the panel moves from home, in screen pixels (x negative = left, y positive = up).
+        ///
+        /// <para>First the helm's rule, unchanged. Then, if the panel would come within its own margin
+        /// of the quest note, the SHORTER of two moves — whichever leaves it nearer the lower right:
+        /// <b>up</b>, its column kept, to stand <see cref="MarginY"/> above the note; or <b>beside</b>,
+        /// its row kept, to stand <see cref="MarginX"/> left of it. Beside is only taken when the panel
+        /// still has its <see cref="MarginX"/> from the screen's left edge and does not land on the
+        /// helm's card; up is taken on a tie. Up never comes back down onto the helm: a card standing
+        /// above the note is stepped over as well.</para>
+        /// </summary>
+        public static Vector2 PlacementOffsetPx(in HelmFootprintArea covered, Rect tasksPx,
+                                                float screenW, float screenH)
+        {
+            float s = HudBandLayout.ScaleFactor(screenW, screenH);
+            float gapX = MarginX * s, gapY = MarginY * s;
+
+            Rect at = PanelScreenRect(screenW, screenH);
+            float helmLift = covered.IsNone ? 0f : Mathf.Max(0f, covered.LiftToClear(at, gapY));
+            at.y += helmLift;
+
+            if (QuestNoteFootprint.IsEmpty(tasksPx)) return new Vector2(0f, helmLift);
+
+            bool reaches = at.xMin < tasksPx.xMax + gapX && at.xMax > tasksPx.xMin - gapX
+                        && at.yMin < tasksPx.yMax + gapY && at.yMax > tasksPx.yMin - gapY;
+            if (!reaches) return new Vector2(0f, helmLift);
+
+            // Up: above the note, and above a helm card if one stands there.
+            Rect up = at;
+            up.y = tasksPx.yMax + gapY;
+            if (covered.Overlaps(up)) up.y += Mathf.Max(0f, covered.LiftToClear(up, gapY));
+            float rise = up.y - at.y;
+
+            // Beside: left of the note, on the row the helm's rule already gave it.
+            Rect beside = at;
+            beside.x = tasksPx.xMin - gapX - at.width;
+            float slide = at.x - beside.x;
+            bool besideFits = beside.xMin >= gapX && !covered.Overlaps(beside);
+            bool upFits = up.yMax <= screenH;
+
+            if (besideFits && (slide < rise || !upFits)) return new Vector2(-slide, helmLift);
+            return new Vector2(0f, helmLift + rise);
+        }
+
         /// <summary>The panel's size, as one value for the caller to apply.</summary>
         public static Vector2 PanelSize() => new Vector2(PanelWidth, PanelHeight);
 

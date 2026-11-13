@@ -167,4 +167,44 @@ namespace HiddenHarbours.Core
         /// <summary>Start counting again from 1 (fixtures only).</summary>
         public static void Reset() => _next = 0;
     }
+
+    /// <summary>
+    /// <b>A gameplay moment asks for the player's own thought.</b> The publisher says only WHICH moment
+    /// (a stable cue id from <see cref="InnerVoiceCues"/>); the words, the voice and how often they may
+    /// come back are an inner-voice line asset keyed on that id, read by World's inner-voice director.
+    /// The usual one-way Core handoff: Fishing (or any feature module) never names a World class, and
+    /// a cue with no line authored against it is simply unheard.
+    ///
+    /// <para>Presentation only. Nothing may make a gameplay decision off this signal.</para>
+    /// </summary>
+    public readonly struct InnerVoiceCue
+    {
+        /// <summary>Which moment: one of <see cref="InnerVoiceCues"/>. Matched whole, case-sensitive.</summary>
+        public readonly string CueId;
+
+        public InnerVoiceCue(string cueId) { CueId = cueId; }
+    }
+
+    /// <summary>
+    /// <b>The thought a cue asked for was actually said.</b> Published by whoever answers
+    /// <see cref="InnerVoiceCue"/>, on the same call, only when a line really went out. A cue that was
+    /// refused (a conversation owns the screen, the line is cooling down, nobody wrote one) gets no
+    /// answer, so a publisher that says a thing "once" can tell said from asked and try again later.
+    /// </summary>
+    public readonly struct InnerVoiceCueSpoken
+    {
+        /// <summary>The cue that was answered: one of <see cref="InnerVoiceCues"/>.</summary>
+        public readonly string CueId;
+
+        public InnerVoiceCueSpoken(string cueId) { CueId = cueId; }
+    }
+
+    /// <summary>The stable cue ids (<c>cue.module.snake_case</c>). Append-only: a line asset names one in
+    /// its <c>SubjectId</c>, so renaming an id silences the line.</summary>
+    public static class InnerVoiceCues
+    {
+        /// <summary>The first cast into a sea that is up enough to fish better (bites sooner, fish
+        /// bigger). Raised by the rod loop at most once per blow.</summary>
+        public const string FeedingSea = "cue.fishing.feeding_sea";
+    }
 }
