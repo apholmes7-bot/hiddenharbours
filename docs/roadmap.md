@@ -49,6 +49,18 @@ The first change establishes the art/fit contract; completion requires creation 
 ownership in normal play, with production rendering and safe save migration. The old sprite-layer
 restriction in ADR 0029 is revisited through a measured mesh proof, not treated as a scope deferral.
 
+**Owner-directed addition, 2026-11-13: birds and photography.** More bird species as data, starting
+with diving birds (the cormorant, then the tern) and herons, then ducks and eagles; a bird list per
+region; flock and solitary behaviour, habitat and perches; birds hunting the right fish; a camera
+tool; a Photograph page in the notebook with one holder slot per species; and a new photo keeper
+with a new home at the Whelps lookout, outside the St Peters village, who gifts the camera on the first
+visit, keeps the photos and gives unique items and clothing. Sequenced as
+[BP-00 to BP-16](../backlog/birds-and-photography.md). It sits in M2 under P3. The owner approved the
+plan's leans the same day (*"Ok i go with those leans."*): bird numbers are high **across the
+world**, while about 32 birds are drawn on screen at once (hard ceiling 48, gulls 16); photos are
+kept per player in co-op and saved as "recipe" photos, not pixels; item rewards ship first and
+clothing rewards wait on CW-04. It moves nothing else.
+
 ---
 
 ## 0. Scope reality — read this first (a blunt, kind note to the owner)
