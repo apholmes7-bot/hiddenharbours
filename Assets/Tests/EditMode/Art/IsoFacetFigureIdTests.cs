@@ -5,6 +5,7 @@ using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
 using HiddenHarbours.Art;
+using HiddenHarbours.Core;
 
 namespace HiddenHarbours.Tests.Art.EditMode
 {
@@ -232,6 +233,229 @@ namespace HiddenHarbours.Tests.Art.EditMode
                 if (id != 0) IsoFacetHullRegistry.UnregisterFigure(id);
                 IsoFacetHullRegistry.SwapIdPoolForTests(live);
             }
+        }
+
+        // =================================================================== the player reserve (ADR 0056)
+
+        /// <summary>The owner's default: the player and one co-op friend.</summary>
+        private const int Reserve = GameConfig.DefaultPlayerFigureIdReserve;
+        private const int Overflow = IsoFacetIdPool.MaxId;
+
+        /// <summary>
+        /// A pool with a player reserve of <paramref name="reserve"/>, spent the way a fleet spends it:
+        /// a hull id and her fore block while a block fits, hull ids after that, then the overflow id
+        /// taken once (silently, as the 255th hull always took it) and shared once (loudly). Every id
+        /// the fleet was handed is added to <paramref name="fleet"/>.
+        /// </summary>
+        private static IsoFacetIdPool ExhaustedByTheFleet(int reserve, HashSet<int> fleet)
+        {
+            var pool = new IsoFacetIdPool(reserve);
+            int id;
+            while ((id = pool.TakeId()) != Overflow)
+            {
+                Assert.IsTrue(fleet.Add(id), $"hull id {id} was handed out twice");
+                if (!pool.CanTakeBlock(ForeBlock)) continue;
+                int block = pool.TakeIdBlock(ForeBlock);
+                for (int i = 0; i < ForeBlock; i++)
+                    Assert.IsTrue(fleet.Add(block + i), $"block id {block + i} was handed out twice");
+            }
+            LogAssert.Expect(LogType.Warning, BlockExhausted);
+            Assert.AreEqual(0, pool.TakeIdBlock(ForeBlock), "a block was handed out past exhaustion");
+            LogAssert.Expect(LogType.Warning, HullExhausted);
+            Assert.AreEqual(Overflow, pool.TakeId(), "a hull past exhaustion shares 255, as on main");
+            return pool;
+        }
+
+        [Test]
+        public void TheDefaultReserveIsTwo_ThePlayerAndOneFriend_AtTheTopBelowTheOverflowId()
+        {
+            Assert.AreEqual(2, GameConfig.DefaultPlayerFigureIdReserve,
+                "the owner's ruling (ADR 0056): the reserve holds the player and one co-op friend");
+            var pool = new IsoFacetIdPool(Reserve);
+            Assert.AreEqual(Overflow - 1 - Reserve, pool.GeneralTop);
+            for (int id = pool.GeneralTop + 1; id < Overflow; id++)
+                Assert.IsTrue(pool.IsPlayerReserveId(id), $"{id} is above the general top but not reserved");
+            Assert.IsFalse(pool.IsPlayerReserveId(Overflow), "the shared overflow id is never a player's");
+            Assert.IsFalse(pool.IsPlayerReserveId(pool.GeneralTop));
+
+            Assert.AreEqual(Overflow - 1, new IsoFacetIdPool().GeneralTop,
+                "a pool built with no reserve is main's pool: every id below 255 is the fleet's");
+        }
+
+        [Test]
+        public void TheFleetExhaustingTheSpace_NeverTakesAPlayersId()
+        {
+            var fleet = new HashSet<int>();
+            IsoFacetIdPool pool = ExhaustedByTheFleet(Reserve, fleet);
+            foreach (int id in fleet)
+                Assert.IsFalse(pool.IsPlayerReserveId(id),
+                    $"the fleet was handed {id}, a player's reserved id — at exhaustion her ashore figure " +
+                    "would be refused and she would fall back to her sprite");
+            Assert.AreEqual(pool.GeneralTop, MaxOf(fleet),
+                "the fleet did not spend every general id before sharing 255");
+        }
+
+        [Test]
+        public void AtExhaustion_ACastFigureIsRefused_ThePlayerAndOneFriendAreGranted()
+        {
+            IsoFacetIdPool pool = ExhaustedByTheFleet(Reserve, new HashSet<int>());
+
+            LogAssert.Expect(LogType.Warning, FigureExhausted);
+            Assert.AreEqual(0, pool.TakeFigureId(), "a cast figure took an id the fleet had spent");
+
+            int player = pool.TakePlayerFigureId();
+            int friend = pool.TakePlayerFigureId();
+            Assert.AreEqual(pool.GeneralTop + 1, player, "the player's figure was not granted from the reserve");
+            Assert.AreEqual(pool.GeneralTop + 2, friend, "the friend's figure was not granted from the reserve");
+
+            LogAssert.Expect(LogType.Warning, FigureExhausted);
+            Assert.AreEqual(0, pool.TakePlayerFigureId(),
+                "a THIRD player figure was granted with a two-id reserve and the fleet's ids spent — it can " +
+                "only have been 255, the id surplus hulls share");
+        }
+
+        [Test]
+        public void AFreedPlayerIdGoesBackToTheReserve_NeverToTheFleet()
+        {
+            var pool = new IsoFacetIdPool(Reserve);
+            int player = pool.TakePlayerFigureId();
+            Assert.AreEqual(pool.GeneralTop + 1, player);
+            pool.FreeFigureId(player);
+            pool.FreeId(pool.GeneralTop + 2);   // a hull-path free of a reserved id must be ignored
+
+            var fleet = new HashSet<int>();
+            int id;
+            while ((id = pool.TakeId()) != Overflow) fleet.Add(id);
+            Assert.IsFalse(fleet.Contains(player), "a freed player id was handed to a hull");
+            Assert.IsFalse(fleet.Contains(pool.GeneralTop + 2), "a reserved id freed by the hull path reached a hull");
+
+            Assert.AreEqual(player, pool.TakePlayerFigureId(), "the freed player id did not come back to the reserve");
+            Assert.AreEqual(pool.GeneralTop + 2, pool.TakePlayerFigureId());
+            Assert.AreEqual(0, pool.FreePlayerIds);
+        }
+
+        [Test]
+        public void WithTheReserveSpent_APlayerFigureFallsBackToAGeneralId()
+        {
+            var pool = new IsoFacetIdPool(Reserve);
+            for (int i = 0; i < Reserve; i++) pool.TakePlayerFigureId();
+            Assert.AreEqual(1, pool.TakePlayerFigureId(),
+                "with both reserved ids held, a further player figure must take a general id while one is free");
+            Assert.AreEqual(1, new IsoFacetIdPool(0).TakePlayerFigureId(),
+                "with no reserve a player figure is an ordinary figure, as on main");
+        }
+
+        [Test]
+        public void AtExhaustion_TheRegistryGrantsThePlayerFigure_AndRefusesTheCast()
+        {
+            IsoFacetIdPool live = IsoFacetHullRegistry.SwapIdPoolForTests(ExhaustedByTheFleet(Reserve, new HashSet<int>()));
+            int player = 0;
+            try
+            {
+                int figures = IsoFacetHullRegistry.FigureCount;
+
+                LogAssert.Expect(LogType.Warning, FigureExhausted);
+                Assert.AreEqual(0, IsoFacetHullRegistry.RegisterFigure(), "the registry granted a cast figure at exhaustion");
+                Assert.AreEqual(figures, IsoFacetHullRegistry.FigureCount);
+
+                player = IsoFacetHullRegistry.RegisterPlayerFigure();
+                Assert.AreEqual(Overflow - Reserve, player,
+                    "the registry refused the PLAYER's figure at exhaustion — she falls back to her sprite");
+                Assert.AreEqual(figures + 1, IsoFacetHullRegistry.FigureCount);
+                Assert.IsTrue(IsoFacetHullFeature.FacetSubjectsLive);
+
+                IsoFacetHullRegistry.UnregisterFigure(player);
+                Assert.AreEqual(figures, IsoFacetHullRegistry.FigureCount);
+                player = IsoFacetHullRegistry.RegisterPlayerFigure();
+                Assert.AreEqual(Overflow - Reserve, player, "her id did not come back to the reserve when she left");
+            }
+            finally
+            {
+                if (player != 0) IsoFacetHullRegistry.UnregisterFigure(player);
+                IsoFacetHullRegistry.SwapIdPoolForTests(live);
+            }
+        }
+
+        /// <summary>
+        /// The same promise through real hulls: a harbour of boats, each with somebody on deck (so each
+        /// takes its lazy fore block), registered until the space is spent and 255 is shared. No hull
+        /// holds a player's id, and the player's figure is still granted. The hulls are destroyed
+        /// BEFORE the live pool comes back, so every id goes home to the test's pool.
+        /// </summary>
+        [Test]
+        public void ARealFleetThatExhaustsTheSpace_NeverTakesAPlayersId_AndThePlayerIsStillGranted()
+        {
+            var pool = new IsoFacetIdPool(Reserve);
+            IsoFacetIdPool live = IsoFacetHullRegistry.SwapIdPoolForTests(pool);
+            var spawned = new List<GameObject>();
+            int player = 0;
+            try
+            {
+                var held = new HashSet<int>();
+                int sharing = 0;
+                for (int n = 0; n < Overflow + 1 && sharing < 2; n++)
+                {
+                    var go = new GameObject("ReserveFleetHull" + n);
+                    spawned.Add(go);
+                    var hull = go.AddComponent<IsoFacetHullRenderer>();
+                    hull.DeckOccupants.Claim(new object());
+                    if (hull.HullId == Overflow) { sharing++; continue; }
+                    held.Add(hull.HullId);
+                    if (hull.ForeHullId != 0)
+                        for (int i = hull.ForeHullId; i <= hull.ForeHullIdTop; i++) held.Add(i);
+                }
+                Assert.AreEqual(2, sharing, "the harness never exhausted the space");
+                foreach (int id in held)
+                    Assert.IsFalse(pool.IsPlayerReserveId(id), $"a hull holds {id}, a player's reserved id");
+
+                LogAssert.Expect(LogType.Warning, FigureExhausted);
+                Assert.AreEqual(0, IsoFacetHullRegistry.RegisterFigure(), "a cast figure was granted at exhaustion");
+                player = IsoFacetHullRegistry.RegisterPlayerFigure();
+                Assert.IsTrue(pool.IsPlayerReserveId(player),
+                    $"the player's figure got {player} at exhaustion, not a reserved id");
+            }
+            finally
+            {
+                if (player != 0) IsoFacetHullRegistry.UnregisterFigure(player);
+                foreach (GameObject go in spawned) if (go != null) Object.DestroyImmediate(go);
+                IsoFacetHullRegistry.SwapIdPoolForTests(live);
+            }
+        }
+
+        [Test]
+        public void ThePlayerReserveIsReadFromGameConfig_AndClampedToItsRange()
+        {
+            GameConfig saved = GameServices.Config;
+            var config = ScriptableObject.CreateInstance<GameConfig>();
+            try
+            {
+                GameServices.Config = null;
+                Assert.AreEqual(GameConfig.DefaultPlayerFigureIdReserve, GameServices.PlayerFigureIdReserve,
+                    "with no config the reserve must fall back to the default");
+
+                GameServices.Config = config;
+                Assert.AreEqual(GameConfig.DefaultPlayerFigureIdReserve, GameServices.PlayerFigureIdReserve,
+                    "a fresh GameConfig does not ship the default reserve");
+                config.PlayerFigureIdReserve = 3;
+                Assert.AreEqual(3, GameServices.PlayerFigureIdReserve, "the owner's tuning was not read");
+                config.PlayerFigureIdReserve = 99;
+                Assert.AreEqual(GameConfig.MaxPlayerFigureIdReserve, GameServices.PlayerFigureIdReserve,
+                    "a hand-edited reserve was not clamped — it could starve the fleet");
+                config.PlayerFigureIdReserve = -4;
+                Assert.AreEqual(0, GameServices.PlayerFigureIdReserve);
+            }
+            finally
+            {
+                GameServices.Config = saved;
+                Object.DestroyImmediate(config);
+            }
+        }
+
+        private static int MaxOf(HashSet<int> ids)
+        {
+            int max = 0;
+            foreach (int id in ids) if (id > max) max = id;
+            return max;
         }
 
         /// <summary>

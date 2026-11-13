@@ -39,6 +39,10 @@ namespace HiddenHarbours.Tools.RigBaking
                 if (priorRoom != null) EditorUtility.CopySerialized(priorRoom, room);
                 HullWalkImportResult result = Populate(rig.Walk, rig, hullStem, deck, room);
                 if (!result.Ok) return result;
+                // Save copies EVERY serialized field of the fresh deck over the saved asset, so the
+                // authored boarding block (no sidecar carries it) is carried across first or it is wiped.
+                var priorDeck = AssetDatabase.LoadAssetAtPath<BoatDeckDef>(deckPath);
+                if (priorDeck != null) deck.CopyAuthoredBoardingRuleFrom(priorDeck);
                 var savedDeck = Save(deck, deckPath);
                 var savedRoom = rig.Walk.House != null ? Save(room, roomPath) : null;
                 mesh.LayoutSchema = rig.Walk.Schema;

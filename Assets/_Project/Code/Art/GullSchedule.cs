@@ -57,6 +57,9 @@ namespace HiddenHarbours.Art
         public double SchoolBirds;
         public GullSeasons SchoolSeason;
         public double SchoolMiddayLevel, SchoolAfternoonLevel;
+
+        /// <summary>The most school gulls listed near the view at once, over every school together.</summary>
+        public int MaxSchoolGullsInView;
     }
 
     /// <summary>

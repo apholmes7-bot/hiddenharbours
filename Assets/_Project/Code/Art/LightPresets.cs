@@ -506,6 +506,9 @@ namespace HiddenHarbours.Art
             light.EdgeSoftness = c.EdgeSoftness;
             light.FlickerAmount = c.FlickerAmount;
             light.OriginOffset = c.OriginOffset;
+            // A Config is the SMOOTH glow. A light re-stamped from a lamp look (BoatLampPresets) back
+            // to a plain one must not keep the other look's core, bands or bloom switch.
+            light.ClearLampLook();
         }
     }
 }

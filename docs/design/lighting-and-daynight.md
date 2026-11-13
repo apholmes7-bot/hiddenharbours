@@ -406,6 +406,9 @@ owner's M2/M3 night-lighting vision.
 | Edge softness (radial fade) | SceneLight / BoatSpotlight | 0.6 |
 | Angular softness (cone edge) | SceneLight / BoatSpotlight | 0.45 |
 | Bright core boost | SceneLight | 1 |
+| Lamp look: hard core radius, halo strength, falloff bands, core whiten, pixel snap | SceneLight (all 0 = the smooth glow) | 0 on placed lights; boat lamps take theirs from `BoatLampLook` |
+| Draws bloom (off = pool and shadows only, nothing painted over the frame) | SceneLight | on |
+| **Boat lamp look** (per nav lamp kind: colour, intensity, halo and core radius, halo strength, bands, whiten; the pixel snap; the cabin wall spill: pool on/off, painted wedge on/off, intensity, reach, half-angle, foot drop) | `Resources/BoatLampLook.asset` (`BoatLampLook`, 2026-11-13) | nav lamps: 2-3 px core in a 6-10 px two-or-three-band halo at 32 px/m; cabin spill pools the deck through `LampPoolSystem` and paints no wedge |
 | Night-gate darkness threshold | SceneLight / material | 0.12 |
 | Night-gate fade band | SceneLight / material | 0.35 |
 | Show-when-no-cycle fallback | SceneLight / material | 1 (show) |

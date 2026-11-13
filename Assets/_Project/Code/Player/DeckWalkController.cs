@@ -623,6 +623,70 @@ namespace HiddenHarbours.Player
         }
 
         /// <summary>
+        /// ⭐ <b>She is standing on a deck area, in a room: have her cabin count her as inside it</b>
+        /// (2026-11-13, the fleet audit's R2). True when it entered her; false, changing nothing, when she
+        /// is already inside, out on the rail, or standing in the open.
+        ///
+        /// <para><b>Why the helm needs it.</b> "Inside" was only ever set by walking through a door or
+        /// taking a stair. But the wheel of the cape islander and of all eighteen lobster variants stands
+        /// in the wheelhouse, on the cockpit's own deck area, which runs in under the house at the house
+        /// sole's height. Taking that wheel from the cockpit, or having a hull swapped on under her while
+        /// she steers, puts her in the wheelhouse without the door. <see cref="StandOnTheFloorNearest"/>
+        /// does not catch it: there the deck and the room tie, and the deck keeps a tie. So she stepped
+        /// back from the wheel inside a house that stayed shut around her, until she walked out of the
+        /// door and in again.</para>
+        ///
+        /// <para>Which room is <see cref="RoomStoodIn"/>; the way in is the cabin's own
+        /// <see cref="ICabinFloors.TryEnter"/>, its picture brought in first, as the door does. Nothing
+        /// moves: on a level with a way off it the walk's next tick finds her already on that floor.</para>
+        /// </summary>
+        public bool EnterTheRoomSheStandsIn()
+        {
+            if (_boatRoot == null || _onWashboard) return false;
+            ICabinFloors floors = LiveCabinFloors();
+            if (floors == null || floors.IsInside) return false;
+            int room = RoomStoodIn(floors, _deckLocal, _deckHeight);
+            if (room < 0) return false;
+
+            floors.EnsureCells();
+            if (!floors.TryEnter(room)) return false;
+            _routesSeeded = false;   // the stairs re-read which ends she is standing on, now she is in
+            return true;
+        }
+
+        /// <summary>
+        /// ⭐ <b>WHICH room a hull-frame point on a floor stands in</b>, or −1 for the open deck. A room is
+        /// a level her cabin draws as one (<see cref="ICabinFloors.IsDrawnLevel"/>: usable, and enclosed
+        /// by the hull's own level table, the gate the cutaway asks), whose outline holds the point, and
+        /// whose sole is the floor she is on: within the def's own
+        /// <see cref="BoatInteriorDef.FloorTolerance"/> of <paramref name="floorZMeters"/>. Standing on a
+        /// roof over a room, or on a flybridge above one, is not standing in it.
+        ///
+        /// <para>Of two rooms that both hold her the nearer sole wins and a tie keeps the def's order
+        /// (strictly-less), so the answer is a function of the data. Pure, static, allocation-free: the
+        /// helm census asks this, the walker asks this, and the two cannot disagree.</para>
+        /// </summary>
+        public static int RoomStoodIn(ICabinFloors floors, Vector2 deckLocal, float floorZMeters)
+        {
+            BoatInteriorDef def = floors != null ? floors.Def : null;
+            if (def == null || def.Levels == null) return -1;
+
+            int room = -1;
+            float bestGap = float.PositiveInfinity;
+            for (int i = 0; i < def.Levels.Length; i++)
+            {
+                BoatInteriorLevel level = def.Levels[i];
+                if (level == null || !floors.IsDrawnLevel(i)) continue;
+                float gap = Mathf.Abs(level.SoleZMeters - floorZMeters);
+                if (gap > def.FloorTolerance || gap >= bestGap) continue;
+                if (!DeckAreaMath.Contains(level.Outline, deckLocal)) continue;
+                bestGap = gap;
+                room = i;
+            }
+            return room;
+        }
+
+        /// <summary>
         /// ⭐ <b>WHICH floor is nearest a hull-frame point</b> — the choice <see cref="StandOnTheFloorNearest"/>
         /// makes, and nothing of what it then does. Returns the index of the cabin room that wins, or −1
         /// when the deck does (or nothing can: <paramref name="measured"/> false). Pure + static +

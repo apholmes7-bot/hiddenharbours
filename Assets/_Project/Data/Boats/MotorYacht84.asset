@@ -22,7 +22,7 @@ MonoBehaviour:
   HoldUnits: 300
   CrewSlots: 6
   Propulsion: 1
-  EnginePower: 79930
+  EnginePower: 100321
   RudderAuthority: 52750
   OarPower: 0
   OarLateralOffset: 0

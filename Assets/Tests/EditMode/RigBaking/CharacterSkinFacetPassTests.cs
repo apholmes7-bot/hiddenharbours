@@ -155,6 +155,19 @@ namespace HiddenHarbours.Tests.RigBaking
             Assert.AreEqual(typeof(int), figureDoor.ReturnType,
                 "RegisterFigure no longer hands back an id (0 = refused); re-read the gate.");
 
+            // ADR 0056: the PLAYER's figure door — the same shape, the player reserve behind it. Both
+            // figure doors are internal and called only by IsoCharacterFigureRenderer.EnterAshore.
+            MethodInfo playerDoor = typeof(IsoFacetHullRegistry).GetMethod("RegisterPlayerFigure", AnyStatic);
+            Assert.IsNotNull(playerDoor,
+                "IsoFacetHullRegistry.RegisterPlayerFigure is gone — the player reserve (ADR 0056) has no " +
+                "door, or it moved; re-read the gate.");
+            Assert.IsFalse(playerDoor.IsPublic,
+                "RegisterPlayerFigure became public — any script could open the facet gate, and spend the " +
+                "players' reserve, without EnterAshore's refusals.");
+            Assert.AreEqual(0, playerDoor.GetParameters().Length, "RegisterPlayerFigure's shape changed; re-read the gate.");
+            Assert.AreEqual(typeof(int), playerDoor.ReturnType,
+                "RegisterPlayerFigure no longer hands back an id (0 = refused); re-read the gate.");
+
             // And the other half: nothing in the registry's PUBLIC surface is a way in.
             foreach (MethodInfo m in typeof(IsoFacetHullRegistry)
                          .GetMethods(BindingFlags.Static | BindingFlags.Public | BindingFlags.DeclaredOnly))

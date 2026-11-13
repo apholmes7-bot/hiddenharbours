@@ -390,6 +390,97 @@ namespace HiddenHarbours.Player
             return Boat.position;
         }
 
+        // ---- the boarding rule: only ladders, and rails stop you jumping in (2026-11-13) ---------
+        //
+        // Owner playtest: "boarding the tanker player can easily climb up massive walls which is wrong,
+        // should only be ladders, railings should stop players from jumping in, maybe different on the
+        // fishing vessels". The RULE is Core's BoardingRuleMath and every input is data on the hull's
+        // BoatDeckDef (freeboard, rails, the ladder-only flag, boarding points) or GameConfig (the two limits). This block
+        // only asks it the two questions the switcher has: the swimmer's climb, and the rider's exit.
+        //
+        // ⚠ It is about the WATER side only. A press from a wharf, a beach or a gangway is the boarding
+        // move and the step ashore, which are untouched — so a hull with no ladder is still boarded
+        // where she is berthed. And a hull with no deck Def has not been measured: she keeps the old
+        // climb-anywhere behaviour (absence is data), so nothing strands.
+
+        [Header("Boarding rule (FALLBACKS for GameConfig — ladders and rails)")]
+        [Tooltip("FALLBACK for GameConfig.ClimbAnywhereMaxFreeboardMetres, used only where no config is " +
+                 "wired (bare test rigs). The owner tunes the ASSET.")]
+        [SerializeField] private float _climbAnywhereMaxFreeboard = 1.0f;
+        [Tooltip("FALLBACK for GameConfig.BoardingPointReachMetres, used only where no config is wired.")]
+        [SerializeField] private float _boardingPointReach = 2.0f;
+
+        private float ClimbAnywhereMaxFreeboardMetres => GameServices.Config != null
+            ? GameServices.Config.ClimbAnywhereMaxFreeboardMetres : _climbAnywhereMaxFreeboard;
+
+        private float BoardingPointReachMetres => GameServices.Config != null
+            ? GameServices.Config.BoardingPointReachMetres : _boardingPointReach;
+
+        /// <summary>
+        /// Hand the boarding rule a different answer to "is she in the water?" — a test, a scripted
+        /// journey. Null restores the walker's own published <see cref="OnFootWaterState"/>. The seam
+        /// exists for the reason <see cref="ConfigureDeckFacing"/>'s does: the STATE is injectable,
+        /// never the decision — <see cref="BoardingRuleMath"/> still rules on it.
+        /// </summary>
+        public void ConfigureInTheWater(System.Func<bool> inTheWater) => _inTheWater = inTheWater;
+        private System.Func<bool> _inTheWater;
+
+        /// <summary>Wading or swimming, by the walker's own water band — the same state the swim
+        /// animation and the HUD read, so the rule bites exactly when she is drawn in the water.</summary>
+        private bool PlayerIsInTheWater()
+            => _inTheWater != null
+                ? _inTheWater()
+                : _playerWalk != null && _playerWalk.WaterState != OnFootWaterState.Dry;
+
+        /// <summary>The active hull's deck Def, for the rule's data. Null = unmeasured hull.</summary>
+        private BoatDeckDef BoardingRuleDeck()
+        {
+            if (Boat == null) return null;
+            BoatDeckDef live = BoatDeckAreas.Resolve(Boat.gameObject);
+            if (live != null) return live;
+            var walk = DeckWalk;
+            return walk != null && ReferenceEquals(walk.BoatRoot, Boat) ? walk.Deck : null;
+        }
+
+        /// <summary>
+        /// ⭐ May the on-foot player climb the active hull from where she is? <b>Anywhere</b> whenever she
+        /// is not in the water (the wharf, the beach) or the hull's climb is unrestricted; otherwise the
+        /// rule's verdict for her spot beside the hull, in the hull's own deck frame.
+        /// </summary>
+        public BoardingAccess ClimbAccessFromHere()
+        {
+            if (!PlayerIsInTheWater() || Player == null || Boat == null) return BoardingAccess.Anywhere;
+            BoatDeckDef deck = BoardingRuleDeck();
+            if (deck == null) return BoardingAccess.Anywhere;
+
+            // Height 0: a swimmer is at the waterline, so her place in the hull's frame is the plain
+            // un-projection of her offset from the hull's root.
+            Vector2 beside = DeckAreaMath.WorldToDeck(
+                (Vector2)(Player.position - Boat.position), 0f,
+                DeckWalkController.DrawnHeadingDegreesOf(Boat), DeckWalkController.BakeElevationDegreesOf(Boat));
+            return deck.ClimbAccessAt(beside, ClimbAnywhereMaxFreeboardMetres, BoardingPointReachMetres);
+        }
+
+        /// <summary>⭐ May the rider leave the active hull over the side from where she stands on deck?
+        /// Only her rails restrict it; her height does not.</summary>
+        public BoardingAccess OverTheSideAccessFromHere()
+        {
+            var walk = DeckWalk;
+            BoatDeckDef deck = BoardingRuleDeck();
+            if (walk == null || deck == null) return BoardingAccess.Anywhere;
+            return deck.OverTheSideAccessAt(walk.DeckLocalPosition, BoardingPointReachMetres);
+        }
+
+        /// <summary>The boarding press from the water is allowed here — the gate the three on-foot
+        /// call sites share, so the offer, the press and the instant transition cannot disagree.</summary>
+        private bool ClimbAllowedHere() => BoardingRuleMath.Allows(ClimbAccessFromHere());
+
+        /// <summary>The line a refused climb or exit earns: point at the ladder when she has one, and
+        /// at the wharf when she has none.</summary>
+        private static string BoardingRefusalFor(BoardingAccess access)
+            => access == BoardingAccess.NoPoint ? ControlStrings.NoWayUpFromTheWater
+                                                : ControlStrings.FindTheLadder;
+
         /// <summary>
         /// ⭐ <b>The helm station's world position — the tiller, ON the hull, at the heading she is
         /// actually lying on</b> (2026-09-07).
@@ -699,7 +790,7 @@ namespace HiddenHarbours.Player
         /// <para><b>At the helm</b>: you may always step back onto the deck.</para></summary>
         public bool CanInteract() => Mode switch
         {
-            ControlMode.OnFoot => WithinBoardReach() && BoardableNow(),
+            ControlMode.OnFoot => WithinBoardReach() && BoardableNow() && ClimbAllowedHere(),
             ControlMode.OnDeck => TakesTheHelmOnThisPress() || StepAshoreOnThisPress(),
             _ => true,   // at the helm → step back onto the deck, always allowed
         };
@@ -900,7 +991,7 @@ namespace HiddenHarbours.Player
             switch (Mode)
             {
                 case ControlMode.OnFoot:
-                    if (!(WithinBoardReach() && BoardableNow())) return false;
+                    if (!(WithinBoardReach() && BoardableNow() && ClimbAllowedHere())) return false;
                     BoardDeckFromShore();
                     return true;
 
@@ -973,7 +1064,7 @@ namespace HiddenHarbours.Player
         {
             if (IsBoardingMove) return false;          // a move in flight owns the verb until it lands
 
-            if (Mode == ControlMode.OnFoot && WithinBoardReach() && BoardableNow())
+            if (Mode == ControlMode.OnFoot && WithinBoardReach() && BoardableNow() && ClimbAllowedHere())
             {
                 if (BeginBoardingMove(BoardingMoveKind.Boarding)) return true;
                 if (_moveRefused || HasShoreLanding()) return false;
@@ -1047,6 +1138,10 @@ namespace HiddenHarbours.Player
             // effect of a refused press, not a transition.
             if (Mode == ControlMode.OnFoot && WithinBoardReach() && !BoardableNow())
                 EventBus.Publish(new DevNotice(ControlStrings.BoatNeedsRepairs));
+            // …and the same courtesy for a wall she cannot climb from the water (2026-11-13): the press
+            // earns the sentence that says where to go instead. Same rules as above — last, and false.
+            else if (Mode == ControlMode.OnFoot && WithinBoardReach() && !ClimbAllowedHere())
+                EventBus.Publish(new DevNotice(BoardingRefusalFor(ClimbAccessFromHere())));
 
             return false;
         }
@@ -1252,6 +1347,13 @@ namespace HiddenHarbours.Player
 
             ApplyPlayerFor(ControlMode.OnDeck);
             SnapPlayerToTheHelm();                                   // you step back from the tiller
+            // A wheel that stands in the wheelhouse leaves her standing in the wheelhouse, and she may
+            // have come to it without the door: taken from the cockpit, or a hull swapped on under her
+            // while she steered (the fleet audit's R2, 2026-11-13). Her cabin is told, so the house opens
+            // around her as it does when she walks in. Only here, on the way OFF the wheel: while she
+            // steers the house stays closed (owner, 2026-08-26, re-confirmed 2026-11-13).
+            var deck = DeckWalk;
+            if (deck != null && Player != null && Boat != null) deck.EnterTheRoomSheStandsIn();
             Mode = ControlMode.OnDeck;
             EventBus.Publish(new ControlModeChanged(ControlMode.OnDeck));
         }
@@ -1672,6 +1774,20 @@ namespace HiddenHarbours.Player
             if (walk == null || Boat == null) return false;
             if (BelowDecksOnTheActiveHull()) return false;   // you leave a cabin by its door
 
+            // ⭐ RAILS STOP YOU JUMPING IN (owner, 2026-11-13). On a railed or high-sided hull the rail
+            // is only yours to climb at a ladder, platform or gate. Away from one the press is refused
+            // before the first step — nobody is left balanced on a bulwark six metres up — and it says
+            // where to go when she has somewhere to go. A hull with no point at all stays silent: there
+            // is no ladder to send her to, and the deck of a tanker should not nag on every press.
+            BoardingAccess overTheSide = OverTheSideAccessFromHere();
+            bool mayLeaveHere = BoardingRuleMath.Allows(overTheSide);
+            if (!_onWashboard && !mayLeaveHere)
+            {
+                if (overTheSide == BoardingAccess.FindAPoint)
+                    EventBus.Publish(new DevNotice(ControlStrings.FindTheLadder));
+                return false;
+            }
+
             Vector2 here = walk.DeckLocalPosition;
             if (!walk.TryWashboardStand(Boat, here, WashboardWidthMetres,
                                         out Vector2 stand, out Vector2 outward, out bool _))
@@ -1691,7 +1807,9 @@ namespace HiddenHarbours.Player
             }
 
             _washboardOutward = outward;
-            if (FacingOutboard(outward)) { GoOverTheSide(); return true; }
+            // Already out on the rail but walked along it away from the ladder: the sea is refused, and
+            // the press does what a tie does — brings her back inboard.
+            if (FacingOutboard(outward) && mayLeaveHere) { GoOverTheSide(); return true; }
 
             // Inboard (and every tie): back into the boat, off the rail.
             walk.OnWashboard = false;
@@ -3287,6 +3405,15 @@ namespace HiddenHarbours.Player
                         if (NoLadderAtTheLanding()) label = NoticeNoLadder;
                         at = BoatAnchor(at);
                     }
+                    // In the water under a wall she may not climb here (2026-11-13): the popup points at
+                    // the way up rather than standing silent beside a hull she is touching. Same
+                    // precedent as NoticeNoLadder above — the line names where the press WILL work.
+                    else if (WithinBoardReach() && BoardableNow() && !ClimbAllowedHere())
+                    {
+                        id = ControlStrings.IdFindLadder;
+                        label = BoardingRefusalFor(ClimbAccessFromHere());
+                        at = BoatAnchor(at);
+                    }
                     break;
 
                 case ControlMode.OnDeck:
@@ -3318,7 +3445,19 @@ namespace HiddenHarbours.Player
                     // press does or it is holding a second opinion about what E means.
                     else if (!AFixtureWouldTakeThePress && CanReachTheWashboard(out Vector2 outward))
                     {
-                        if (!_onWashboard)
+                        // The rail is only hers to climb where the boarding rule says so (2026-11-13).
+                        // At a railed edge "Go over the side" is never offered: with a ladder somewhere
+                        // on this hull the popup points at it, and with none it says nothing.
+                        BoardingAccess overTheSide = OverTheSideAccessFromHere();
+                        bool mayLeaveHere = BoardingRuleMath.Allows(overTheSide);
+                        if (!mayLeaveHere && (!_onWashboard || FacingOutboard(outward)))
+                        {
+                            if (overTheSide == BoardingAccess.FindAPoint)
+                            {
+                                id = ControlStrings.IdFindLadder; label = ControlStrings.FindTheLadder;
+                            }
+                        }
+                        else if (!_onWashboard)
                         {
                             id = ControlStrings.IdWashboard; label = ControlStrings.StepOntoWashboard;
                         }
