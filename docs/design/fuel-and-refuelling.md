@@ -709,6 +709,8 @@ running** — about 40% of the 30-minute game day under power, the rest fishing,
 | `boat.coastal_packet` | diesel | **2,000** | 1,250 | 907.1 | 132 min | 17.7 km | 11.0 | 2,800 ₲ |
 | `boat.tanker` | diesel | **9,000** | 4,425 | 3,211.1 | 168 min | 18.4 km | 14.0 | 12,600 ₲ |
 
+> **2026-11-13, the owner's ruling: bigger tanks on the fast hulls.** The Tank column above is no longer what these rows carry: console skiff 144 L, sport skiff 148, sport skiff Mk2 145, sport skiff twin 164, Zodiac FRC 124, Zodiac Hurricane 160, sport fisher convertible 705, sport fisher skybridge 2,068 (and, not in this table, bowrider 157, express cruiser 280, go-fast 208, yacht tender 163, motor yacht 84 1,219). They are sized so a tank lasts flat out what it did before the meter burned by speed. Those rows' Endurance, Range, Days/tank and Fill are superseded; the arithmetic and the per-hull table are in `fuel-burn-by-speed-logic.md`, "The fast hulls' tanks". Every other row is unchanged.
+
 **Bold tanks are canon's** ([`boats-and-navigation.md`](boats-and-navigation.md) §1.1) read as litres
 per §9.1 — unchanged, not re-tuned. The rest are placed by size within the family.
 

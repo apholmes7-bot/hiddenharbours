@@ -30,16 +30,42 @@ namespace HiddenHarbours.Tests.EditMode
 
         /// <summary>The 11-12 speed table's ruled top speeds (m/s) for the thirteen planing hulls it
         /// moves (PR 1168). Held here as the scenario the ruling was made for, so the proof does not
-        /// wait on that PR's assets and does not change when they land.</summary>
+        /// wait on that PR's assets and does not change when they land. The express cruiser, the yacht
+        /// tender and the two Zodiacs are at the 11-13 cap just under the go-fast (9.90), not at the
+        /// strict 0.45 x real figures (10.42 / 10.14) this table first carried.</summary>
         private static readonly (string Id, float TopSpeedMps)[] RuledTopSpeeds =
         {
             ("boat.bowrider", 9.75f), ("boat.console_skiff", 8.54f), ("boat.sport_skiff", 8.54f),
             ("boat.sport_skiff_mk2", 8.54f), ("boat.sport_skiff_twin", 8.54f),
-            ("boat.express_cruiser", 10.42f), ("boat.motor_yacht_84", 6.25f),
+            ("boat.express_cruiser", 9.90f), ("boat.motor_yacht_84", 6.25f),
             ("boat.sport_fisher_convertible", 9.26f), ("boat.sport_fisher_skybridge", 8.80f),
-            ("boat.yacht_tender", 10.14f), ("boat.zodiac_frc", 10.14f),
-            ("boat.zodiac_hurricane", 10.14f), ("boat.go_fast", 10.00f),
+            ("boat.yacht_tender", 9.90f), ("boat.zodiac_frc", 9.90f),
+            ("boat.zodiac_hurricane", 9.90f), ("boat.go_fast", 10.00f),
         };
+
+        /// <summary>
+        /// THE FAST HULLS' TANKS (the owner, 2026-11-13: "bigger tanks on the fast hulls, so flat-out
+        /// minutes per tank stay as today" - yes). One row per hull the speed table makes faster:
+        /// the whole-number <c>EnginePower</c> PR 1168 authors for her (after its go-fast cap), which is
+        /// exactly the speed her tank was sized at, and the tank she carried on main before the meter
+        /// burned by speed. Her flat-out minutes before are that tank over her Def's unchanged
+        /// <c>FullThrottleLitresPerHour</c>. Her tank today is read off her Def.
+        /// </summary>
+        private static readonly (string Id, float SpeedTableEnginePower, float TankLitresBefore)[] FastHullTanks =
+        {
+            ("boat.bowrider", 3070f, 60f), ("boat.console_skiff", 3502f, 45f),
+            ("boat.sport_skiff", 2947f, 60f), ("boat.sport_skiff_mk2", 3374f, 70f),
+            ("boat.sport_skiff_twin", 3033f, 90f), ("boat.express_cruiser", 12870f, 90f),
+            ("boat.motor_yacht_84", 100321f, 900f), ("boat.sport_fisher_convertible", 33151f, 320f),
+            ("boat.sport_fisher_skybridge", 141192f, 900f), ("boat.yacht_tender", 3564f, 55f),
+            ("boat.zodiac_frc", 2970f, 55f), ("boat.zodiac_hurricane", 3712f, 75f),
+            ("boat.go_fast", 12000f, 90f),
+        };
+
+        /// <summary>A tank is a whole number of litres, rounded UP to hold the minutes, so a fast hull
+        /// may run this much longer flat out than she used to and no more. The smallest tank (124 L)
+        /// gains under 1% from the rounding.</summary>
+        private const float TankRoundingAllowance = 1.01f;
 
         /// <summary>The approved planing curve prices full speed, at the speed a hull was calibrated
         /// for, at 0.946 of her old flat-out rate (the design doc's own table). So with her speed
@@ -142,6 +168,14 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.That(rate, Is.GreaterThan(0f), hull.Id);
             return hull.FuelCapacityLitres / rate * FuelBurn.SecondsPerHour *
                    FuelSpeedMeter.DrivenSpeedMps(throttle, TopSpeed(hull));
+        }
+
+        /// <summary>Real minutes a brim-full tank lasts flat out, calm and light, on the live meter.</summary>
+        private double FlatOutMinutes(BoatHullDef hull)
+        {
+            float rate = Tank(hull).LitresPerHourAt(1f, 0f, 0f);
+            Assert.That(rate, Is.GreaterThan(0f), hull.Id);
+            return (double)hull.FuelCapacityLitres / rate * 60d;
         }
 
         /// <summary>The curve's own shape, written out again from the design doc so the wiring is
@@ -349,6 +383,50 @@ namespace HiddenHarbours.Tests.EditMode
                     Is.GreaterThan(shipped.FullThrottleLitresPerHour),
                     $"{id} at {ruled} m/s: flat out she must burn more per hour than her old flat-out rate");
             }
+        }
+
+        [Test]
+        public void EveryFastHull_FlatOut_RunsNoFewerMinutesPerTankThanBeforeTheMeterBurnedBySpeed()
+        {
+            foreach ((string id, float speedTablePower, float tankBefore) in FastHullTanks)
+            {
+                BoatHullDef shipped = ById(id);
+                Assert.IsTrue(IsPlaning(shipped), $"{id} is a fast hull but not on the planing curve");
+                double minutesBefore = (double)tankBefore / shipped.FullThrottleLitresPerHour * 60d;
+
+                // As she ships on this branch, whatever engine her Def carries today.
+                double minutesShipped = FlatOutMinutes(shipped);
+                Assert.That(minutesShipped, Is.GreaterThanOrEqualTo(minutesBefore),
+                    $"{id}: {shipped.FuelCapacityLitres} L lasts {minutesShipped:0.00} min flat out; before " +
+                    $"the meter burned by speed her {tankBefore} L lasted {minutesBefore:0.00}");
+
+                // At the speed table's engine: the speed her tank was sized for.
+                BoatHullDef fast = Object.Instantiate(shipped);
+                _spawned.Add(fast);
+                fast.EnginePower = speedTablePower;
+                double minutesFast = FlatOutMinutes(fast);
+                Assert.That(minutesFast, Is.GreaterThanOrEqualTo(minutesBefore),
+                    $"{id} at the speed table's EnginePower {speedTablePower} ({TopSpeed(fast):0.00} m/s): " +
+                    $"{fast.FuelCapacityLitres} L lasts {minutesFast:0.00} min flat out, under the " +
+                    $"{minutesBefore:0.00} her {tankBefore} L lasted before. Her tank is too small.");
+                Assert.That(minutesFast, Is.LessThanOrEqualTo(minutesBefore * TankRoundingAllowance),
+                    $"{id} at the speed table's EnginePower {speedTablePower}: {minutesFast:0.00} min flat " +
+                    $"out is more than the {minutesBefore:0.00} she had. The ruling keeps her minutes, it " +
+                    "does not add to them: her tank is too big for that engine.");
+                Assert.That(shipped.FuelCapacityLitres, Is.GreaterThan(tankBefore),
+                    $"{id}: the speed table makes her thirstier flat out, so her tank grew");
+            }
+        }
+
+        [Test]
+        public void TheFastHullTankTable_NamesEveryHullTheSpeedTableMoves()
+        {
+            var ruled = new List<string>();
+            foreach (var (id, _) in RuledTopSpeeds) ruled.Add(id);
+            var tanked = new List<string>();
+            foreach (var (id, _, _) in FastHullTanks) tanked.Add(id);
+            CollectionAssert.AreEquivalent(ruled, tanked,
+                "a hull the speed table makes faster has her tank held to her old flat-out minutes");
         }
 
         [Test]
