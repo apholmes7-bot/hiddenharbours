@@ -15,3 +15,4 @@ MonoBehaviour:
   Id: fuelprofile.yacht_tender
   Hull: {fileID: 11400000, guid: 6a44f4cbff9adc846a4810f15313ebc3, type: 2}
   Curve: {fileID: 11400000, guid: 28fef9d8f683504b9696e6ed2fdeb8fa, type: 2}
+  ReferenceCruiseSpeedMps: 3.325

@@ -39,6 +39,11 @@ namespace HiddenHarbours.Core
         public float DraughtMetres;
         public bool HasEngine, EngineTurning, HasFuel;
         public float Drive, FuelLitres, FullThrottleLitresPerHour, HoldFraction;
+        /// <summary>The hull's own fuel meter's rate right now (litres per real hour), when she has
+        /// one to report. Set, the gauge shows THIS and not a second estimate, so the helm and the
+        /// tank can never disagree. Unset, the reader keeps its throttle-curve estimate.</summary>
+        public bool HasMeteredBurn;
+        public float MeteredLitresPerHour;
         public bool HasBilge, HasBattery;
         public float BilgeLitres, BatteryCharge01;
     }

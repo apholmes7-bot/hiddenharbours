@@ -18,6 +18,9 @@ namespace HiddenHarbours.Core
     /// builders from the same fittings table that positions the ladder sprite. When the wharf rig grows
     /// real mount symbols, only the PLACEMENT changes: this interface and everything reading it stay as
     /// they are.</para>
+    ///
+    /// <para>A ladder a HULL carries (climbing her out of the water) is <see cref="BoardingPoint"/>, ruled by
+    /// <see cref="BoardingRuleMath"/>.</para>
     /// </summary>
     public interface IBoardingLadder
     {

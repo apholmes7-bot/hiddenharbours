@@ -185,6 +185,31 @@ namespace HiddenHarbours.Audio
             return m;
         }
 
+        /// <summary>
+        /// The mix with HER SIZE in it (owner's ask 2026-11-13 — "woah its something big"): the plain
+        /// <see cref="MixFor(in FishingState, float, float)"/> mix, then on a hooked fish (any fight
+        /// phase but the hand-gather <see cref="FishingPhase.Tending"/>) the strain voice (a) never
+        /// falls below a hum that grows with her size while she is not slack, (b) sits deeper the
+        /// heavier she is, and (c) for a big one SCREAMS at the hook-set — an extra gain and a raised
+        /// pitch that die away across the scream window. There is no separate drag/reel-scream clip in
+        /// the set, so the scream rides the existing strain voice. Every number is
+        /// <c>GameConfig.FishFeel</c>; <paramref name="secondsSinceHook"/> is the caller's time since
+        /// the fight opened. Pure.
+        /// </summary>
+        public static FishingAudioMix MixFor(in FishingState s, float landingPerSec, float dartSpeed01,
+                                             float secondsSinceHook, in FishFeelSettings feel)
+        {
+            FishingAudioMix m = MixFor(in s, landingPerSec, dartSpeed01);
+            if (!s.IsFightPhase || s.Phase == FishingPhase.Tending) return m;
+
+            float hum = FishFeelMath.StrainHumGain(s.Size01, s.SlackWindowOpen, in feel);
+            float scream = FishFeelMath.HookScreamGain(secondsSinceHook, s.Size01, in feel);
+            m.StrainGain = Mathf.Clamp01(Mathf.Max(m.StrainGain, hum) + scream);
+            m.StrainPitch *= FishFeelMath.StrainPitchScale(s.Size01, in feel)
+                           * FishFeelMath.HookScreamPitchScale(secondsSinceHook, s.Size01, in feel);
+            return m;
+        }
+
         // ---- derivatives from consecutive snapshots (pure, guard-railed) --------------------
 
         /// <summary>Rate Landing01 is RISING (per second) between two snapshots — 0 when flat,

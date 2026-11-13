@@ -10,42 +10,51 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f8e963cec94c290ca72be0cf932b826b, type: 3}
-  m_Name: DoryIso
+  m_Name: 
   m_EditorClassIdentifier: HiddenHarbours.Boats::HiddenHarbours.Boats.BoatDeckDef
   Id: deck.dory_iso
-  SourceSidecar: docs/art/rigs/gameplay/doryIsoRig.gameplay.json
+  SourceSidecar: docs/art/rigs/gameplay/doryIsoRig.dory_iso.walk.json
   SourceRig: docs/art/rigs/doryIsoRig.js
-  DerivedFromRigSha256: bd781b0388476bb99cec7c2a91cde3006982f2460a343e6e8f729f26995a5dfd
+  DerivedFromRigSha256: b981cd79806d211c30661fc51ad0c8a1003d2606aa2bd4cf09569e18c5d305c7
   LoaMeters: 4.5
   Areas:
   - Id: floor
     Kind: 0
     Outline:
-    - {x: -0.068, y: 1.8}
-    - {x: -0.113, y: 1.44}
-    - {x: -0.153, y: 1.08}
-    - {x: -0.183, y: 0.72}
-    - {x: -0.203, y: 0.36}
-    - {x: -0.215, y: 0}
-    - {x: -0.221, y: -0.36}
-    - {x: -0.225, y: -0.72}
-    - {x: -0.225, y: -1.08}
-    - {x: -0.209, y: -1.44}
-    - {x: -0.185, y: -1.8}
-    - {x: 0.185, y: -1.8}
-    - {x: 0.209, y: -1.44}
-    - {x: 0.225, y: -1.08}
-    - {x: 0.225, y: -0.72}
-    - {x: 0.221, y: -0.36}
-    - {x: 0.215, y: 0}
-    - {x: 0.203, y: 0.36}
-    - {x: 0.183, y: 0.72}
-    - {x: 0.153, y: 1.08}
-    - {x: 0.113, y: 1.44}
-    - {x: 0.068, y: 1.8}
-    HeightPlane: {x: 0, y: 0.020075757, z: 0.10363636}
-    HeightResidualMax: 0.08422728
-    Bounds: {x: -0.225, y: -1.8, z: 0.225, w: 1.8}
+    - {x: 0.087, y: -1.864}
+    - {x: 0.22, y: -1.616}
+    - {x: 0.225, y: -1.367}
+    - {x: 0.225, y: -1.119}
+    - {x: 0.225, y: -0.87}
+    - {x: 0.225, y: -0.622}
+    - {x: 0.225, y: -0.373}
+    - {x: 0.225, y: -0.125}
+    - {x: 0.225, y: 0.123}
+    - {x: 0.225, y: 0.372}
+    - {x: 0.225, y: 0.62}
+    - {x: 0.225, y: 0.869}
+    - {x: 0.225, y: 1.117}
+    - {x: 0.139, y: 1.366}
+    - {x: 0.02, y: 1.614}
+    - {x: -0.02, y: 1.614}
+    - {x: -0.139, y: 1.366}
+    - {x: -0.225, y: 1.117}
+    - {x: -0.225, y: 0.869}
+    - {x: -0.225, y: 0.62}
+    - {x: -0.225, y: 0.372}
+    - {x: -0.225, y: 0.123}
+    - {x: -0.225, y: -0.125}
+    - {x: -0.225, y: -0.373}
+    - {x: -0.225, y: -0.622}
+    - {x: -0.225, y: -0.87}
+    - {x: -0.225, y: -1.119}
+    - {x: -0.225, y: -1.367}
+    - {x: -0.22, y: -1.616}
+    - {x: -0.087, y: -1.864}
+    Holes: []
+    HeightPlane: {x: 0, y: 1.6059763e-18, z: 0.09}
+    HeightResidualMax: 0
+    Bounds: {x: -0.225, y: -1.864, z: 0.225, w: 1.614}
   Cleats:
   - Id: bow_1
     Type: ring_bolt
@@ -55,6 +64,10 @@ MonoBehaviour:
     PositionMeters: {x: -0.3, y: -2.16, z: 0.745}
   HasHelmStation: 1
   HelmStationLocalMeters: {x: 0, y: -0.72, z: 0.3056}
-  HelmStationSource: 'STATIONS[id=helm]'
-  WalkCenter: {x: 0, y: 0}
-  WalkHalfExtents: {x: 0.225, y: 1.8}
+  HelmStationSource: anchors.helm
+  WalkCenter: {x: 0, y: -0.125}
+  WalkHalfExtents: {x: 0.225, y: 1.739}
+  BoardingFreeboardMetres: 0.64
+  RailsBlockTheSide: 0
+  ClimbAboardOnlyAtBoardingPoints: 0
+  BoardingPoints: []

@@ -15,3 +15,4 @@ MonoBehaviour:
   Id: fuelprofile.dory
   Hull: {fileID: 11400000, guid: 0a2bd7c6d85101b489fd6647b1aab278, type: 2}
   Curve: {fileID: 11400000, guid: 768ba35869965a5a93b485b778a01021, type: 2}
+  ReferenceCruiseSpeedMps: 0

@@ -15,3 +15,4 @@ MonoBehaviour:
   Id: fuelprofile.tanker
   Hull: {fileID: 11400000, guid: 1852c64f886ae8742bbb6bd2ecb6eb5d, type: 2}
   Curve: {fileID: 11400000, guid: 768ba35869965a5a93b485b778a01021, type: 2}
+  ReferenceCruiseSpeedMps: 1.8235

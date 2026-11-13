@@ -1,4 +1,6 @@
-# Candidate fuel burn by speed
+# Fuel burn by speed
+
+> **Status, 2026-11-13: LIVE.** The owner ruled on 11-12 that fuel burn rises with speed, with this model. The live meter (`BoatFuelTank`) now reads it; see **Live wiring** at the end. The sections between here and there are the original candidate write-up and are kept as written: where they say the live game keeps its throttle curve, that no caller exists, or that a future integrator must supply the speed, read them as the state before the wiring.
 
 This is isolated logic and new data, based on main `c9c9ef73dee59ee9b6e8c072ea98487992f82c2e`. It does not replace `FuelBurn`, call `BoatFuelTank`, change hull stats, register a service or touch a save. The live game keeps its existing throttle curve. `IFuelBurnBySpeed` is the Core contract; `FuelBurnBySpeed` is an immutable plain class in Boats. Construction may allocate; valid warmed tick calls allocate zero managed bytes.
 
@@ -73,3 +75,63 @@ Fuel ticks use real seconds (`3600` per hour), preserving the existing fuel cloc
 - `ImportedProfiles_ResolveEveryHullAndFactoryReproducesCruise`: Unity-only import/factory validation of the 46 actual Def references. The source compiles headlessly; executing it and Unity's allocation recorder requires CI. No editor lease is granted for this charter.
 
 Native NUnit execution runs the real pure production sources and the file-based fleet cases. It is not a Unity physics, asset-import, player-feel or graphics test. A managed-assembly compilation checks full Core/Boats source and the conditional editor test code. The model remains unregistered and no runtime caller is added.
+
+## Live wiring (2026-11-13, the owner's 11-12 ruling)
+
+`BoatFuelTank` drains by this model. Each fixed step, with the engine turning:
+
+```
+drivenSpeed   = |throttle| * stillWaterTopSpeed(hull)     // FuelSpeedMeter
+litresPerHour = curve(drivenSpeed) * loadTerm * seaTerm   // IFuelBurnBySpeed * FuelBurn.DutySurcharge
+```
+
+**Which speed goes in.** The speed her throttle is driving her at, not the speed over the ground or through the water at that instant. This is the operating-load policy the candidate asked for before integration. The model is a steady operating point: priced on measured speed, an engine flat out against a wharf, a tow or a grounding would be charged as if idling, and a hull coasting with the throttle shut would be charged as if driving. `stillWaterTopSpeed = EnginePower / (ForwardDrag + bodyDamping)` is the balance `BoatController` integrates, read from its own named constants and from the hull Def as it is now. Thrust is linear in throttle and resistance is linear in speed, so half throttle is half speed. Astern is charged on the absolute throttle, as before.
+
+**Which speed it is calibrated at.** A new field on each profile, `FuelSpeedProfileDef.ReferenceCruiseSpeedMps`: the speed at which the hull burns her old cruise rate. It is authored once, as `0.7 x` her still-water top speed on main `ce70abd495` (before the 11-12 speed table), and it is a fixed number. It is deliberately not derived from `EnginePower`. If it were, the two would cancel: a hull given a bigger engine would burn the same litres per hour flat out and simply go further on a tank, which is the opposite of the ruling. With a fixed calibration, a faster hull asks her curve for a higher speed and burns more. The owner can move the number per hull: higher makes her cheaper at every speed, lower makes her thirstier. The rowed dory is 0 (nothing to calibrate).
+
+**What did not change.** Idle (zero throttle, engine turning) costs exactly what it did; no idle rule was added. At her calibrated cruise speed a hull burns her old cruise rate. A full hold and a rough sea add the same surcharges as before, now from `FuelBurn.DutySurcharge`. Fuel is still metered on the fixed step against real seconds, only while the player is at the helm of an engine hull. Prices, `FullThrottleLitresPerHour` and `GameConfig.Fuel` are untouched. The sloops' auxiliaries are calibrated but still not metered (the live meter accepts only `PropulsionType.Engine`).
+
+**A hull with no calibrated profile keeps the throttle curve.** The tank finds a hull's profile by hull id through `Resources/FuelSpeedProfileLibrary` (append-only: a new hull is a new profile asset plus one entry). No entry, no curve, a zero reference speed, or numbers a model cannot be built from all fall back to `FuelBurn.LitresPerHour`, so a new or test hull still meters and the fixed step never throws over a Def value.
+
+**The helm gauge reads the same meter.** `WorkingHullState` carries the tank's metered rate, so litres per hour and hours remaining at the helm are what the tank is actually charging.
+
+**What it does to a tank, flat out.** At the speed she was calibrated for (today's Defs), a displacement hull flat out burns 1.394 x her old flat-out rate and a planing hull 0.946 x (the comparison table above). So today, before the speed table lands, a planing hull flat out goes about 5.7% further than under the throttle meter; this is the approved curve, not a wiring choice, and it is not retuned here. From about 1.11 x her calibrated speed upward a planing hull flat out covers no more ground per tank than she used to, and every hull the speed table moves (1.25 x to 2.27 x) is past that.
+
+Proof: `FuelMeterBySpeedTests` (EditMode) drives the real `BoatFuelTank` over the shipped Defs.
+
+## The fast hulls' tanks (2026-11-13, the owner's ruling)
+
+Asked "bigger tanks on the fast hulls, so flat-out minutes per tank stay as today?", the owner answered yes. Data only: `FuelCapacityLitres` on thirteen hull Defs, no code path.
+
+The thirteen are the planing hulls the 11-12 speed table makes faster. At her new speed each burns well over her old flat-out rate `R`, so the tank she had would empty in a third to a half of the time. Each tank is raised so a brim-full tank lasts flat out, calm and light, what it lasted under the throttle meter:
+
+```
+minutes before = old tank / R * 60
+new tank       = old tank * burn(speed table top speed) / R, rounded UP to a whole litre
+```
+
+`burn` is this document's planing curve at her fixed calibration, and the speed is her still-water top speed off the speed table's `EnginePower` **after its go-fast cap** (express cruiser, yacht tender and both Zodiacs at 9.90 m/s, not 10.42 / 10.14).
+
+| Hull | Old tank | New tank | Flat-out burn, old meter | Flat-out burn, new meter at the speed table's speed | Exact tank for equal minutes | Flat-out minutes before | Flat-out minutes on the old tank | Flat-out minutes on the new tank |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| Bowrider | 60 L | **157 L** | 105 L/h | 273.9 L/h at 9.75 m/s | 60 x 273.9 / 105 = 156.5 L | 34.3 | 13.1 | 34.4 |
+| Console skiff | 45 L | **144 L** | 78 L/h | 248.9 L/h at 8.54 m/s | 45 x 248.9 / 78 = 143.6 L | 34.6 | 10.8 | 34.7 |
+| Sport skiff | 60 L | **148 L** | 105 L/h | 257.3 L/h at 8.54 m/s | 60 x 257.3 / 105 = 147.0 L | 34.3 | 14.0 | 34.5 |
+| Sport skiff Mk2 | 70 L | **145 L** | 120 L/h | 247.3 L/h at 8.54 m/s | 70 x 247.3 / 120 = 144.3 L | 35.0 | 17.0 | 35.2 |
+| Sport skiff (twin) | 90 L | **164 L** | 155 L/h | 281.5 L/h at 8.54 m/s | 90 x 281.5 / 155 = 163.5 L | 34.8 | 19.2 | 35.0 |
+| Express cruiser | 90 L | **280 L** | 155 L/h | 482.0 L/h at 9.90 m/s | 90 x 482.0 / 155 = 279.9 L | 34.8 | 11.2 | 34.9 |
+| Motor yacht 84 | 900 L | **1219 L** | 885 L/h | 1197.9 L/h at 6.25 m/s | 900 x 1197.9 / 885 = 1218.2 L | 61.0 | 45.1 | 61.1 |
+| Sport fisher (convertible) | 320 L | **705 L** | 340 L/h | 748.3 L/h at 9.26 m/s | 320 x 748.3 / 340 = 704.3 L | 56.5 | 25.7 | 56.5 |
+| Sport fisher (skybridge) | 900 L | **2068 L** | 885 L/h | 2033.5 L/h at 8.80 m/s | 900 x 2033.5 / 885 = 2068.0 L | 61.0 | 26.6 | 61.0 |
+| Yacht tender | 55 L | **163 L** | 95 L/h | 281.3 L/h at 9.90 m/s | 55 x 281.3 / 95 = 162.8 L | 34.7 | 11.7 | 34.8 |
+| Zodiac FRC | 55 L | **124 L** | 95 L/h | 212.7 L/h at 9.90 m/s | 55 x 212.7 / 95 = 123.1 L | 34.7 | 15.5 | 35.0 |
+| Zodiac Hurricane | 75 L | **160 L** | 130 L/h | 276.4 L/h at 9.90 m/s | 75 x 276.4 / 130 = 159.5 L | 34.6 | 16.3 | 34.7 |
+| Go-fast | 90 L | **208 L** | 155 L/h | 357.2 L/h at 10.00 m/s | 90 x 357.2 / 155 = 207.4 L | 34.8 | 15.1 | 34.9 |
+
+The jetski keeps her 40 L: the speed table does not move her, and at her calibrated speed the planing curve already gives her 84.5 minutes against 80.0. No displacement hull is touched. A working boat flat out still burns 1.394 x her old rate on her old tank (a lobster boat's 85 L lasts 34.8 minutes flat out against 48.6); the ruling was asked and answered about the fast hulls.
+
+What the bigger tanks change besides minutes: a fill costs more in proportion (the go-fast's is 2.3 x), and flat-out range per tank now grows with speed (the go-fast covers about 21 km against 11.8 km). At half throttle and below a fast hull runs far longer on a tank than she did.
+
+**Order of merging.** These tanks are sized for the speed table's speeds, which are not on this branch. Until that table lands, a fast hull has her old engine and a tank over twice the size, and runs 67 to 148 minutes flat out. The speed table merges first.
+
+Proof: `FuelMeterBySpeedTests.EveryFastHull_FlatOut_RunsNoFewerMinutesPerTankThanBeforeTheMeterBurnedBySpeed` reads each Def's tank and holds it at the speed table's `EnginePower`: no fewer minutes than before, and no more than a litre's rounding over.

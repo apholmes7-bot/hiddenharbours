@@ -52,6 +52,7 @@ namespace HiddenHarbours.Tests.RigBaking
         [TestCase("sternTrawlerMk2")]
         [TestCase("sideDragger")]
         [TestCase("sportSkiff")]
+        [TestCase("dory")]
         public void IntakeHull_IsSwitchedAndUsesItsOwnWalk(string key)
         {
             var hull = HullMeshFleet.Get(key);

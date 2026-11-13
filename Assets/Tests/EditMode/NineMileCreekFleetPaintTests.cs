@@ -163,6 +163,7 @@ namespace HiddenHarbours.Tests.EditMode
                 {
                     "hullmesh.cape_islander_iso",
                     "hullmesh.console_iso",
+                    "hullmesh.dory_iso",
                     "hullmesh.lobster_inshore_hardtop_newfoundland_iso",
                     "hullmesh.lobster_inshore_open_northumberland_iso",
                     "hullmesh.lobster_standard_hardtop_northumberland_iso",
@@ -306,10 +307,12 @@ namespace HiddenHarbours.Tests.EditMode
             }
 
             CollectionAssert.AreEqual(
-                new[] { "owner.bernard_celeste" },
+                // Empty since the dory gained her paint axis: Celeste Bernard wears paint.dory_pine_tar,
+                // the default scheme, so her dory looks as it did.
+                new string[0],
                 unpainted.Select(o => o.Id).ToArray(),
-                "The unpainted set has moved. Expected exactly Celeste Bernard, whose dory has a hull " +
-                "mesh but no paint schemes baked for it. Found: [" +
+                "The unpainted set has moved. Expected nobody: every keeper on the register wears " +
+                "paint. Found: [" +
                 string.Join(", ", unpainted.Select(o => o.Id)) + "]. If a hull just gained an axis, " +
                 "paint her keeper and update this list; if an owner joined the register unpainted, " +
                 "say in the PR why.");
@@ -320,13 +323,16 @@ namespace HiddenHarbours.Tests.EditMode
             // POSITIVELY is what keeps that distinction from quietly regressing: if she is ever moved
             // back onto a mesh-less hull, this goes red rather than her simply staying in the list above
             // for a reason nobody re-read.
-            var bernard = unpainted.Single(o => o.Id == "owner.bernard_celeste");
+            var bernard = Owners().Single(o => o.Id == "owner.bernard_celeste");
             Assert.IsNotNull(bernard.Boat.Visual.HullMesh,
                 $"'{bernard.Boat.Visual.Id}' has NO hull mesh — Celeste Bernard is back on a sprite-only " +
                 "hull, which paint can never reach. The fleet is mesh (ADR 0022); put her on a mesh hull.");
-            Assert.IsEmpty(SchemesFor(bernard.Boat.Visual.HullMesh),
-                $"Schemes ARE baked for '{bernard.Boat.Visual.HullMesh.Id}' now, so nothing is blocking " +
-                "Celeste Bernard any more: assign her one and move her out of this list.");
+            // This half flipped when the dory gained her paint axis, as its old message asked: schemes
+            // are baked for her hull, she wears one, and she is out of the list above.
+            Assert.IsNotEmpty(SchemesFor(bernard.Boat.Visual.HullMesh),
+                $"No paint schemes are baked for '{bernard.Boat.Visual.HullMesh.Id}'; the dory's bake was lost.");
+            Assert.IsNotNull(bernard.HullPaint,
+                "Celeste Bernard's dory has schemes baked, yet she wears none.");
 
             // The other direction, and the half that just flipped: Marie Gallant's Cape Islander had
             // a mesh all along and was held out only by a missing paint AXIS. Asserted positively so

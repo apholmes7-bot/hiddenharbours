@@ -24,6 +24,10 @@ namespace HiddenHarbours.Boats
             float litres = hasFuel ? _fuel.Litres : 0f;
             bool engine = hull.Propulsion == PropulsionType.Engine;
             bool hasHold = _hold != null && !(_hold is Object held && held == null) && _hold.CapacityUnits > 0;
+            // The gauge reads the SAME meter the tank drains by, never a second estimate of it.
+            float meteredRate = 0f;
+            bool metered = hasFuel && engine && _fuel is BoatFuelTank tank
+                           && tank.TryMeteredLitresPerHour(out meteredRate);
             state = new WorkingHullState
             {
                 HullId = hull.Id, RegionId = RegionId,
@@ -33,6 +37,7 @@ namespace HiddenHarbours.Boats
                 HasFuel = hasFuel, FuelLitres = litres, Drive = _boat.Throttle,
                 FullThrottleLitresPerHour = hull.FullThrottleLitresPerHour,
                 HoldFraction = hasHold ? Mathf.Clamp01((float)_hold.UsedUnits / _hold.CapacityUnits) : 0f,
+                HasMeteredBurn = metered, MeteredLitresPerHour = meteredRate,
                 // Main has neither simulation. Never manufacture healthy/empty values as readings.
                 HasBilge = false, HasBattery = false
             };

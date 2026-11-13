@@ -497,6 +497,9 @@ namespace HiddenHarbours.Tools.RigBaking
             Reconstructions = new Dictionary<string, IReadOnlyDictionary<string, string>>(
                 StringComparer.OrdinalIgnoreCase)
             {
+                // Since the dory's redraw (#1166) her HULL reads its materials through her published scope and
+                // no longer uses this entry. Her two oar fittings still read `DoryIso.MATS`, which the rig does
+                // not export, so the entry stays for them.
                 ["doryIsoRig.js"] = new Dictionary<string, string>(StringComparer.Ordinal)
                 {
                     ["MATS"] = "{wood:{ramp:RAMP,off:0},iron:{ramp:IRON,off:-2}}",
