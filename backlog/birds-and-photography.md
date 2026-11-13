@@ -39,8 +39,8 @@ His approval of the plan's leans the same day:
   at **16**. The gull-count fix (BP-00) stays.
 - **The photo keeper's home** is at the **Whelps lookout**, outside the St Peters village (above the seal
   skerries, where the lookout bench stands; the best view of the roost rocks). Owner, 2026-11-13: "Whelps lookout".
-- **Small defaults:** the tern follows the cormorant as the second diving bird; the keeper lends the
-  camera on the first visit; photos are per player in co-op; a photo is saved as a "recipe", not as
+- **Small defaults:** the tern follows the cormorant as the second diving bird; the keeper GIFTS the
+  camera on the first visit, it is always on the player and the P key raises it (owner, 2026-11-13); photos are per player in co-op; a photo is saved as a "recipe", not as
   pixels; item rewards ship first and garments follow CW-04.
 
 ## Performance budget
@@ -102,7 +102,7 @@ says whether the item needs the Unity editor beyond a plate.
 | BP-06: habitat preference | world-content places; art-pipeline code | M | BP-02 | Each bird only at the kinds of place it likes; new place kinds: marsh and pond, treeline, sheltered water, rock ledge | `BirdHauntContentTests` extended; a plate | yes | none | no |
 | BP-07: perching on trees and objects | lead-architect (perch kind in Core); world-content places | M | BP-02 | Birds on treetops, pilings, roofs, buoys and boat rails | `Perch_KindMustMatchTheSpecies` | yes | none | **Core yes**; save no |
 | BP-08: hunting, with fish reacting | lead-architect (the signal), gameplay-systems, art-pipeline | M | BP-02, BP-03 | Each bird hunts the fish it eats; the school bolts | `BirdHunt_IsAPureFunctionOfSeedAndTime`; `BirdHunt_OnlyTakesItsDiet`; `BirdHunt_AllocatesNothing`; a plate | plate | none | **Core yes** (the signal gains a species); save no |
-| BP-09: the camera tool and its in-range UI | gameplay-systems, ui-ux | M | BP-02 | A camera in the hand; a viewfinder that names the bird when it is close enough and in frame | `CameraFrame_FindsTheNearestBirdInRange`; owner plate | yes | **yes**: the camera prop and the viewfinder frame | no |
+| BP-09: the camera tool and its in-range UI | gameplay-systems, ui-ux | M | BP-02 | Press P to raise the camera, which is always on you; a viewfinder that names the bird when it is close enough and in frame | `CameraFrame_FindsTheNearestBirdInRange`; owner plate | yes | **yes**: the camera prop and the viewfinder frame | no |
 | BP-10: the Photograph page in the notebook | ui-ux, world-content | M | BP-09 | An album page: one little holder slot per species, empty and visible until filled | `PhotoPage_ShowsOneSlotPerKnownSpecies`; owner plate | yes | **yes**: the page and the holder | no |
 | BP-11: the photo record in the save | lead-architect | M | BP-09 | The slot shows your own photo after a reload | `SaveMigration_V17LoadsWithEmptyAlbum`; a save round trip | no | none | **Save yes**: schema 17 to 18 with a migration (read the then-current version first) |
 | BP-12: photo objectives | world-content | S | BP-10 | Notebook tasks such as "photograph a cormorant drying its wings" | the `QuestBoard` tests, with photo flags | no | none | no (existing quest flags) |
@@ -139,7 +139,7 @@ The Core signal gains a species. Diet is matched against the school's own specie
 Not in scope, as before: a bird stealing from the player, fouling gear, or any bite or catch change.
 
 **BP-09.** A `tool.camera` Def beside the rod and the shovel (`Data/Tools`). It reads
-`IBirdPresence`. The photo keeper lends the camera on the first visit (wired in BP-13).
+`IBirdPresence`. The photo keeper GIFTS the camera on the first visit (wired in BP-13). Owner, 2026-11-13: "They also gift you a camera. Its always on the player and uses P button". So it is never equipped or put down: once owned it is always carried, and a camera input intent (default key P; gamepad binding chosen in the input lane, ADR 0043) raises the viewfinder. Whether it stays a `tool.camera` Def or becomes an owned flag is decided in this item; either way it is data, and it does not take the hand slot from the rod or shovel.
 
 **BP-10 and BP-11, what a slot shows: a recipe photo.** The save keeps species, pose, facing,
 place, day, hour and weather, about 50 bytes a photo. The slot redraws that moment from the bird's
@@ -180,8 +180,8 @@ and garments follow CW-04.
 - **The drawn pool.** BP-00 was dispatched authoring 24 birds drawn. The owner's ruling is about 32
   (ceiling 48, gulls 16). The number is data after BP-00, so it is a value to set, not a code
   change; which PR sets it to 32 is the seat's call.
-- **The camera before the keeper.** BP-09 lands before BP-13, and the keeper is who lends the
-  camera. Until BP-13, the camera needs a stand-in way to reach the player's hand.
+- **The camera before the keeper.** BP-09 lands before BP-13, and the keeper is who gifts the
+  camera. Until BP-13, the camera is granted by a stand-in (a labelled debug or config grant), never by default.
 - **Objectives before the save.** BP-12 needs only BP-10, but a photo persists only from BP-11.
 - **The Heath pond was the first pick and is not the site.** It is a bog pond of about 4.5 by 3.0 m on the
   heath; the owner chose the Whelps lookout. Whether the pond suits herons and ducks is for the BP-06 plates.
