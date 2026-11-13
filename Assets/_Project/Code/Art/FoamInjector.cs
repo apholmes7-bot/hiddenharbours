@@ -296,8 +296,33 @@ namespace HiddenHarbours.Art
             return ShoreFadeMath.DisplacedHeight(height, level - bed, sea.ShoreFadeBandMeters, sea.Exaggeration);
         }
 
+        // In the air she makes no wake; where she lands she lays a patch of foam (owner 2026-11-12).
+        private bool _airborne;
+        private float _landingLeft;
+        private float _landingImpact;
+
+        private bool IsMine(object boat)
+            => boat is Component c && _hullBody != null && c != null && c.gameObject == _hullBody.gameObject;
+
+        private void OnHullLeftWater(HullLeftWater e)
+        {
+            if (IsMine(e.Boat)) _airborne = true;
+        }
+
+        private void OnHullLanded(HullLanded e)
+        {
+            if (!IsMine(e.Boat)) return;
+            _airborne = false;
+            _landingImpact = Mathf.Clamp01(e.Impact01);
+            _landingLeft = Mathf.Max(0f, GameServices.HullFlight.LandingFoamSeconds) * _landingImpact;
+        }
+
         private void OnEnable()
         {
+            EventBus.Subscribe<HullLeftWater>(OnHullLeftWater);
+            EventBus.Subscribe<HullLanded>(OnHullLanded);
+            _airborne = false;
+            _landingLeft = 0f;
             _way = GetComponentInParent<IVesselWay>()?.Way ?? VesselWay.UnderWay;
             _primed = false;
             _hasPending = false;
@@ -308,6 +333,8 @@ namespace HiddenHarbours.Art
 
         private void OnDisable()
         {
+            EventBus.Unsubscribe<HullLeftWater>(OnHullLeftWater);
+            EventBus.Unsubscribe<HullLanded>(OnHullLanded);
             Leave();
             _primed = false;
             _hasPending = false;
@@ -466,6 +493,9 @@ namespace HiddenHarbours.Art
             float verticalRate = FoamBuffer.RelativeHeaveRate(_surfaceY, _hullY,
                                                               _previousSurfaceY, _previousHullY, dt);
 
+            // Over the water she churns none of it: no trail, no slap, no wave train, until she lands.
+            if (_airborne) { horizontalSpeed = 0f; verticalRate = 0f; }
+
             float rate01 = FoamBuffer.Injection01(horizontalSpeed, verticalRate,
                                                   _wakeSpeedKnee, wakeExponent, _wakeWeight,
                                                   _slapRateKnee, _slapExponent, _slapWeight);
@@ -504,6 +534,8 @@ namespace HiddenHarbours.Art
             float halfBeam = RadiusMeters;
             HullContactFoam.Stamp lead = HullContactFoam.Lead(surge, halfLength, halfBeam, in hullFoam);
             HullContactFoam.Stamp side = HullContactFoam.Side(sway, yawRate, halfLength, halfBeam, in hullFoam);
+            // Over the water she drives no end into it and pushes no side through it.
+            if (_airborne) { lead = default; side = default; }
             _leadSeconds = lead.IsActive ? Mathf.Min(_leadSeconds + dt, MaxOwedSeconds) : 0f;
             _sideSeconds = side.IsActive ? Mathf.Min(_sideSeconds + dt, MaxOwedSeconds) : 0f;
             _turn = lead.IsActive || side.IsActive ? (_turn + 1) & 3 : 0;
@@ -513,7 +545,28 @@ namespace HiddenHarbours.Art
             bool leadTurn = contactTurn && (lead.IsActive && (_turn == 1 || !side.IsActive));
             bool sideTurn = contactTurn && !leadTurn && side.IsActive;
 
-            if (leadTurn || sideTurn)
+            if (_landingLeft > 0f)
+            {
+                // The patch she lands in: for a moment the stamp runs her whole length and spreads past
+                // her band, strongest at the slam and fading as it grows. It takes the frame from the
+                // contact stamps, and carries whatever the trail was owed.
+                HullFlightSettings flight = GameServices.HullFlight;
+                float whole = Mathf.Max(flight.LandingFoamSeconds * _landingImpact, 1e-3f);
+                float grown = 1f - Mathf.Clamp01(_landingLeft / whole);
+                Vector2 otherEnd = 2f * (Vector2)transform.position - position;
+                float landingRadius = RadiusMeters * (1f + Mathf.Max(0f, flight.LandingFoamSpread) * _landingImpact * grown);
+                amount = Mathf.Max(amount + _trailOwed, _landingImpact * (1f - grown)
+                                   * Mathf.Max(_depositPerSecond, 0f) * dt * Mathf.Max(_strength, 0f));
+                vigour = Mathf.Max(Mathf.Max(vigour, _trailOwedVigour), _landingImpact);
+                _trailOwed = 0f;
+                _trailOwedVigour = 0f;
+                _landingLeft -= dt;
+                _pending = new FoamInjection(otherEnd, position, landingRadius,
+                                             Mathf.Clamp01(amount), vigour, in dispersal);
+                _trailFrom = position;
+                _hasPending = amount > 1e-5f || dispersal.IsActive;
+            }
+            else if (leadTurn || sideTurn)
             {
                 HullContactFoam.Stamp stamp = leadTurn ? lead : side;
                 float seconds = leadTurn ? _leadSeconds : _sideSeconds;

@@ -39,6 +39,36 @@ namespace HiddenHarbours.Core
         public BoatGrounded(object boat, float severity) { Boat = boat; Severity = severity; }
     }
 
+    /// <summary>Raised on the physics tick a hull's keel has been clear of the water long enough to
+    /// count as a flight. Her wake stops until <see cref="HullLanded"/>.</summary>
+    public readonly struct HullLeftWater
+    {
+        public readonly object Boat;        // boxed reference to the boat (kept engine-light in Core)
+        public readonly UnityEngine.Vector2 At;
+        public HullLeftWater(object boat, UnityEngine.Vector2 at) { Boat = boat; At = at; }
+    }
+
+    /// <summary>Raised on the physics tick a flying hull comes back down.</summary>
+    public readonly struct HullLanded
+    {
+        public readonly object Boat;
+        public readonly UnityEngine.Vector2 At;
+        /// <summary>How hard, 0..1 (0 = she set down softly).</summary>
+        public readonly float Impact01;
+        /// <summary>The speed (m/s) she and the water closed at.</summary>
+        public readonly float ClosingSpeed;
+        /// <summary>Seconds she was in the air.</summary>
+        public readonly float AirSeconds;
+        /// <summary>The most air (m) she had under her keel.</summary>
+        public readonly float PeakClearanceMeters;
+        public HullLanded(object boat, UnityEngine.Vector2 at, float impact01, float closingSpeed, float airSeconds,
+                          float peakClearanceMeters)
+        {
+            Boat = boat; At = at; Impact01 = impact01; ClosingSpeed = closingSpeed;
+            AirSeconds = airSeconds; PeakClearanceMeters = peakClearanceMeters;
+        }
+    }
+
     /// <summary>Raised when a fish is landed into the hold.</summary>
     public readonly struct FishCaught
     {

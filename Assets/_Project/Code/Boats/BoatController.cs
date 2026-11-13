@@ -316,6 +316,67 @@ namespace HiddenHarbours.Boats
         /// </summary>
         public SurfState SurfUnderHull => _surfUnderHull;
 
+        // Whether she is in the water or over it, stepped once per physics tick in ApplySeakeeping.
+        private HullFlightState _flight;
+        private float _flightClearanceMeters;
+
+        /// <summary>True while she is in a counted flight: keel clear of the water (owner 2026-11-12).
+        /// As of her last physics tick, like <see cref="SurfUnderHull"/>.</summary>
+        public bool IsAirborne => _flight.Airborne;
+
+        /// <summary>Metres of air under her keel as of her last physics tick; 0 in the water.</summary>
+        public float FlightClearanceMeters => _flightClearanceMeters;
+
+        // The water's height under her, meaned over points along her length so a wave shorter than
+        // the hull cancels under her, then the flight law. On a landing the slam takes speed off her.
+        private void StepFlight(Vector2 pos, Vector2 fwd, Vector2 throughWater, double sampleTime,
+                                in WaveTrains trains, in WaveSample centre, float gravity)
+        {
+            HullFlightSettings cfg = _config != null ? _config.HullFlight : GameServices.HullFlight;
+            if (!cfg.Enabled || IsAground)
+            {
+                _flight = default;
+                _flightClearanceMeters = 0f;
+                return;
+            }
+            float sum = 0f;
+            WaveFetchSample fetch = GameServices.FetchAt(pos);
+            int middle = HullFlightMath.FootprintPoints / 2;
+            for (int i = 0; i < HullFlightMath.FootprintPoints; i++)
+            {
+                sum += i == middle
+                    ? centre.Height
+                    : WaveMath.Sample(pos + fwd * HullFlightMath.FootprintOffset(i, _hull.LengthMeters),
+                                      sampleTime, in trains, fetch).Height;
+            }
+            float surface = sum / HullFlightMath.FootprintPoints;
+            // The drawn waterline, not the gameplay draught: the law lifts the keel the player sees.
+            float flightDraught = HullPresence.FlightDraughtOf(_hull);
+            HullHeaveResponse heave = HullHeaveResponseMath.Resolve(
+                _hull.LengthMeters, HullPresence.HalfBeamOf(_hull), flightDraught,
+                _hull.SeakeepingDamping, gravity, GameServices.HullWeight);
+            // A hull the weight policy has not measured still has a draught: the wall-sided spring.
+            float omega = heave.IsHonest
+                ? heave.NaturalFrequencyRadPerSec
+                : Mathf.Sqrt(gravity / Mathf.Max(0.05f, flightDraught));
+            float zeta = heave.IsHonest ? heave.DampingRatio : 1f;
+            HullFlightStep step = HullFlightMath.Step(ref _flight, surface, Time.fixedDeltaTime, gravity,
+                omega, zeta, flightDraught, _hull.LengthMeters, throughWater.magnitude, in cfg);
+            _flightClearanceMeters = step.ClearanceMeters;
+            if (step.Event == HullFlightEvent.Launched)
+            {
+                EventBus.Publish(new HullLeftWater(this, pos));
+            }
+            else if (step.Event == HullFlightEvent.Landed)
+            {
+                _rb.linearVelocity *= HullFlightMath.SpeedKept01(step.Impact01, in cfg);
+                EventBus.Publish(new HullLanded(this, pos, step.Impact01, step.ClosingSpeed,
+                                                step.AirSeconds, step.PeakClearanceMeters));
+                if (step.Impact01 > 0f)
+                    EventBus.Publish(new JuiceMomentCue(JuiceMoment.HullSlam, pos, step.Impact01));
+            }
+        }
+
         // --- Trim (owner 2026-09-21: "trim added to the boats depending on speed and deacceleration").
         // The along-keel force this step's DRIVE put on her, and the along-keel part of what her own
         // drag, brace and holds put on her — summed where each force is applied below, in the body's
@@ -997,6 +1058,10 @@ namespace HiddenHarbours.Boats
             }
             // Published travel is baked; a first-frame fallback carries raw phases at the clock.
             WaveSample wave = WaveMath.Sample(pos, published ? 0.0 : now, in trains, GameServices.FetchAt(pos));
+
+            // --- She can leave the water (owner 2026-11-12): the same sea, read under her length. ---
+            StepFlight(pos, fwd, _rb.linearVelocity - env.CurrentVector, published ? 0.0 : now, in trains,
+                       in wave, waveField.Gravity);
 
             // Exposure (PLACE): deeper/further offshore = full sea; the shallow lee = sheltered. Uses the
             // same depth the boat-cross gate reads; open water (no seabed map) = +Inf depth = fully exposed.

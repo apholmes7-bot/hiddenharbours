@@ -318,6 +318,7 @@ namespace HiddenHarbours.App
             EventBus.Subscribe<CarriedAboardChanged>(OnCarriedAboardChanged);
             EventBus.Subscribe<CatchLanded>(OnCatchLanded);        // the feel layer (juice PR 2)
             EventBus.Subscribe<BoatGrounded>(OnBoatGrounded);
+            EventBus.Subscribe<HullLanded>(OnHullLanded);
             EventBus.Subscribe<CabinEntered>(OnCabinEntered);
             EventBus.Subscribe<CabinEntryLandingEntered>(OnEntryLandingEntered);
             EventBus.Subscribe<CabinLeft>(OnCabinLeft);
@@ -332,6 +333,7 @@ namespace HiddenHarbours.App
             EventBus.Unsubscribe<TrapHaulStateChanged>(OnTrapHaulStateChanged);
             EventBus.Unsubscribe<CatchLanded>(OnCatchLanded);
             EventBus.Unsubscribe<BoatGrounded>(OnBoatGrounded);
+            EventBus.Unsubscribe<HullLanded>(OnHullLanded);
             EventBus.Unsubscribe<CabinEntered>(OnCabinEntered);
             EventBus.Unsubscribe<CabinEntryLandingEntered>(OnEntryLandingEntered);
             EventBus.Unsubscribe<CabinLeft>(OnCabinLeft);
@@ -504,6 +506,16 @@ namespace HiddenHarbours.App
         {
             if (!FeelIsLive || FeelMode == ControlMode.OnFoot) return;
             _feel.OnImpact(e.Severity, FeelSettings);
+        }
+
+        /// <summary>A hull came down on the water: the same shake as a grounding, by how hard, and only
+        /// for the boat the camera is on. Public for EditMode tests.</summary>
+        public void OnHullLanded(HullLanded e)
+        {
+            if (!FeelIsLive || FeelMode == ControlMode.OnFoot || e.Impact01 <= 0f) return;
+            if (e.Boat is Component c && Target != null && !Target.IsChildOf(c.transform)
+                && !c.transform.IsChildOf(Target)) return;
+            _feel.OnImpact(e.Impact01, FeelSettings);
         }
 
         /// <summary>Interior: the layer stands off until she comes back out. Public for EditMode tests.</summary>

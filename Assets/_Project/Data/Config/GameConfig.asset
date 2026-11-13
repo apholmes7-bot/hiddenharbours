@@ -543,3 +543,23 @@ MonoBehaviour:
     SideSpeedKnee: 1.2
     SideRadiusHalfBeams: 0.3
     SideReach: 0.7
+  HullFlight:
+    Enabled: 1
+    KeelClearFraction: 0.3
+    MinAirSeconds: 0.15
+    PlaningStiffnessPerFroude: 2
+    MaxPlaningStiffness: 8
+    MinDampingRatio: 1
+    MaxFollowSlope: 0.2
+    FollowRiseBase: 0.5
+    MaxBuryDraughts: 2
+    SlamSpeedKnee: 1.5
+    SlamFullSpeed: 9
+    SpeedShedAtFullSlam: 0.25
+    DrawnClearanceScale: 1
+    NoseUpDegreesPerMetre: 8
+    MaxNoseUpDegrees: 12
+    LandingFoamSeconds: 0.9
+    LandingFoamSpread: 2
+    SlamSplashDrops: 28
+    SlamSplashSeconds: 0.7

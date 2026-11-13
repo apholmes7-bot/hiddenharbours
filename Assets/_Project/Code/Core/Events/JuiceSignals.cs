@@ -18,6 +18,8 @@ namespace HiddenHarbours.Core
         DigStrike = 2,
         /// <summary>The cast line touches down. Strength = 0.</summary>
         CastEntry = 3,
+        /// <summary>A hull that left the water comes down on it. Strength = how hard, 0..1.</summary>
+        HullSlam = 4,
     }
 
     /// <summary>
