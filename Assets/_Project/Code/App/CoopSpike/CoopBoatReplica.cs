@@ -111,6 +111,8 @@ namespace HiddenHarbours.CoopSpike
                 Recipe = _recipe?.Invoke() ?? string.Empty,
                 SkipperLocal = local,
                 SkipperVisualOffset = _localBoat.InverseTransformPoint(drawn) - local,
+                SkipperStandRigMetres = _localRider != null ? _localRider.DeckStandRigLocal : Vector3.zero,
+                SkipperStance = _localCharacter != null ? _localCharacter.Stance : CharacterStance.Free,
                 SkipperHeading = _localCharacter != null ? _localCharacter.HeadingDegrees
                     : _localSkipper != null ? _localSkipper.eulerAngles.z : 0
             };

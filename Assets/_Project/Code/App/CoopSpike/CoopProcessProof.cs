@@ -29,6 +29,8 @@ namespace HiddenHarbours.CoopSpike
         {
             public Vector3 gameplayFoot, drawnFoot, deckStand, remoteFoot, remoteHull, localHull, localVisual;
             public bool meshEnabled, meshPresent, meshDrawing, riderCarried;
+            public bool remoteMeshDrawing, remoteOldSheetVisible;
+            public Vector3 remoteDeckStand;
             public string meshReason, riderName, drawnState, activeClip, waterState;
             public float pictureDatum, tideRise;
             public string[] shaders;
@@ -142,6 +144,11 @@ namespace HiddenHarbours.CoopSpike
             {
                 placement.remoteFoot = view.Skipper.position;
                 placement.remoteHull = view.transform.position;
+                placement.remoteMeshDrawing = view.Figure != null && view.Figure.DrawsInsteadOfSprite;
+                placement.remoteDeckStand = view.FigureStandRigMetres;
+                var sprite = view.Skipper.GetComponent<SpriteRenderer>();
+                placement.remoteOldSheetVisible = sprite != null && sprite.enabled
+                    && !sprite.forceRenderingOff && sprite.sprite != null;
             }
             string[] names = { "HiddenHarbours/DeckOccludedSprite", "Hidden/HiddenHarbours/FoamBufferAdvect",
                 "HiddenHarbours/SilhouetteMask", "Hidden/HiddenHarbours/FigurePixelTarget" };
