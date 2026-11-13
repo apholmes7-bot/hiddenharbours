@@ -308,10 +308,14 @@ MonoBehaviour:
     HeldFramesPerFacing: 2
     HeldMesh: {fileID: 0}
   _species:
+  - SpeciesId: fish.american_oyster
+    Kind: oyster
   - SpeciesId: fish.atlantic_cod
     Kind: cod
   - SpeciesId: fish.atlantic_herring
     Kind: herring
+  - SpeciesId: fish.blue_mussel
+    Kind: mussel
   - SpeciesId: fish.haddock
     Kind: haddock
   - SpeciesId: fish.lobster
@@ -322,6 +326,8 @@ MonoBehaviour:
     Kind: pollock
   - SpeciesId: fish.rock_crab
     Kind: crab
+  - SpeciesId: fish.sea_scallop
+    Kind: scallop
   - SpeciesId: fish.soft_shell_clam
     Kind: clam
   - SpeciesId: fish.striped_bass
