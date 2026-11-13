@@ -554,7 +554,9 @@ namespace HiddenHarbours.Tests.RigBaking
                 if (!measured)
                     drifted.Add($"{hull.Key}: fully interior faces below the measured line total " +
                                 $"{smallerArea:R} m2, against one raster pixel {RasterPixelArea:R} m2");
-                if (hull.Key != "motorYacht84" && hull.Key != "expeditionYacht120" &&
+                // The jetski too: with her handlebars baked as a fitting, a sliver under the column (smaller than
+                // one raster pixel) is her lowest interior vertex, and the area measure rightly skips it.
+                if (hull.Key != "motorYacht84" && hull.Key != "expeditionYacht120" && hull.Key != "jetSki" &&
                     interior > 0 && lowest != previousLowest)
                     drifted.Add($"{hull.Key}: the face-area measurement moved the old line " +
                                 $"{previousLowest:R} to {lowest:R}");

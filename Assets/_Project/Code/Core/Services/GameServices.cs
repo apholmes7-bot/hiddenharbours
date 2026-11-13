@@ -1179,6 +1179,7 @@ namespace HiddenHarbours.Core
             Config = null;
             CatchFactory = null;
             AudioMix = null;
+            LocalWeather.Clear();        // an authored local shade never outlives the services
         }
     }
 }

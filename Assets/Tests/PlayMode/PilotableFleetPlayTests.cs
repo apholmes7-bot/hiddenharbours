@@ -935,8 +935,12 @@ namespace HiddenHarbours.Tests.PlayMode
             Assert.AreEqual(0f, engine.SteerDegrees, 0.01f, "she wakes dead ahead");
 
             boat.SetControl(1f, -1f);                    // hard a-port
-            yield return SpinUntil(() => engine.SteerDegrees <= HardPortDegrees + 0.01f, budget);
-            Assert.AreEqual(HardPortDegrees, engine.SteerDegrees, 0.01f,
+            float settledPort = HardPortDegrees + 0.01f;
+            // The rounded float boundary is 0.0100002288818359375 degrees from -32, just beyond
+            // 0.01f. Derive the delta in double so the assertion admits the wait's boundary exactly.
+            double hardPortTolerance = (double)settledPort - HardPortDegrees;
+            yield return SpinUntil(() => engine.SteerDegrees <= settledPort, budget);
+            Assert.AreEqual(HardPortDegrees, engine.SteerDegrees, hardPortTolerance,
                 "the tiller goes hard over to port off the helm alone, at her own ±32° — not the " +
                 "skiffs' 30");
 
@@ -978,12 +982,16 @@ namespace HiddenHarbours.Tests.PlayMode
                 "she wakes dead ahead, never on a stale hard-over");
 
             boat.SetControl(1f, 1f);                     // hard a-starboard
-            yield return SpinUntil(() => engine.SteerDegrees >= hardStarboard - 0.01f, budget);
+            float settledStarboard = hardStarboard - 0.01f;
+            // As at hard port, float subtraction rounds the wait's boundary. Use its exact double
+            // distance (0.0100002288818359375 degrees at +30) for the assertion as well.
+            double hardStarboardTolerance = (double)hardStarboard - settledStarboard;
+            yield return SpinUntil(() => engine.SteerDegrees >= settledStarboard, budget);
 
             // DECISIVE, not one step past centre. The old assertion (Greater than centre) only needed half a
             // column of travel and was therefore a coin-flip on frame rate; requiring the FULL hard-over means a
             // broken cadence cannot squeak past, and it earns the precondition the drop test needs below.
-            Assert.AreEqual(hardStarboard, engine.SteerDegrees, 0.01f,
+            Assert.AreEqual(hardStarboard, engine.SteerDegrees, hardStarboardTolerance,
                 $"{fullSwivel:0.00}s of swivel ({cadence:0.#} columns/sec) must walk the engine from dead ahead " +
                 "to hard a-starboard");
             Assert.Greater(engine.SteerDegrees, 0f,
