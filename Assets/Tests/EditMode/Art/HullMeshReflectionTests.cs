@@ -309,7 +309,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
             Assert.That(person.Mesh.vertices, Is.EqualTo(saved), "A later camera must not re-skin a pending packet");
         }
 
-        [TestCase("Dory", 800, 1, 0.11f, 0.308f)]
+        [TestCase("Dory", 1192, 1, 0.11f, 0.308f)]
         [TestCase("CapeIslander", 681, 4, 0.53f, 0.72f)]
         [TestCase("LobsterBoat", 784, 5, 0.4f, 0.5f)]
         public void HullMeshReflection_RealHullFirstHitsHideDeckAndRooms(string name, int deck, int wall, float w, float deckZ)
@@ -324,11 +324,12 @@ namespace HiddenHarbours.Tests.Art.EditMode
                 var packet = snapshot.Packets.Take(snapshot.Count).Single(p => p.Source == hull.ReflectionHull);
                 int[] indices = packet.Mesh.triangles;
                 Vector3[] vertices = packet.Mesh.vertices;
-                // Semantic witnesses: doryIsoRig.js thwarts u=.60; Cape cockpit DECK=.72;
+                // Semantic witnesses: doryIsoRig.js thwarts u=.60 (triangle 1192 since her redraw, 800
+                // before; the same forward thwart top at the same height); Cape cockpit DECK=.72;
                 // lobster cockpit DECK=.50. These pinned triangles must retain their source identity.
                 for (int i = 0; i < 3; i++) Assert.That(vertices[indices[deck * 3 + i]].z, Is.EqualTo(deckZ).Within(0.000001));
                 Vector3 deckCenter = Center(vertices, indices, deck);
-                Vector3 expected = name == "Dory" ? new Vector3(0.15791369f, 0.41666667f, 0.308f)
+                Vector3 expected = name == "Dory" ? new Vector3(0.17749852f, 0.41333334f, 0.308f)
                     : name == "CapeIslander" ? new Vector3(-0.39520001f, -6.08426682f, 0.72f)
                     : new Vector3(0.51862637f, -5.84f, 0.5f);
                 Near(deckCenter, expected);

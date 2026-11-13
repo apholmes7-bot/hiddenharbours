@@ -220,9 +220,11 @@ namespace HiddenHarbours.Tests.RigBaking
         [Test]
         public void AStaticHull_RecordsNoVariantProvenance()
         {
-            FleetHull dory = HullMeshFleet.Get("dory");
+            // The punt, since the dory moved to the hull layout and extracts through her published
+            // scope. The punt still takes the static F array.
+            FleetHull punt = HullMeshFleet.Get("punt");
             using IRigScriptHost host = RigScriptHostFactory.Create();
-            var data = RigMeshExtractor.ExtractFrom(host, dory.ScriptPath, dory.GlobalName);
+            var data = RigMeshExtractor.ExtractFrom(host, punt.ScriptPath, punt.GlobalName);
 
             Assert.IsEmpty(data.SourceFaceExpression,
                 "A static-F hull must record an empty face expression. HullMeshDef.SourceFaceBuilder " +

@@ -155,10 +155,11 @@ namespace HiddenHarbours.Tests.PlayMode
                 //     to the array below — ordinal-sorted it goes SECOND, after the cape islander —
                 //     in the same commit as the scene. The count assertion above needs no edit; it
                 //     is derived.
-                Assert.AreEqual(moored.Length - 1, painted.Length,
-                    $"{painted.Length} of {moored.Length} boats at the wharf wear paint. Exactly ONE " +
-                    "is expected to be plain — Celeste Bernard, whose boat has no hull mesh at all, " +
-                    "so paint cannot reach her. Unpainted: [" +
+                // Since the dory gained her paint axis nobody is plain: Celeste Bernard wears the
+                // dory's default scheme, paint.dory_pine_tar.
+                Assert.AreEqual(moored.Length, painted.Length,
+                    $"{painted.Length} of {moored.Length} boats at the wharf wear paint. Every keeper " +
+                    "is expected to. Unpainted: [" +
                     string.Join(", ", moored.Where(m => m.Owner.HullPaint == null)
                                             .Select(m => m.Owner.Id)) + "]");
 
@@ -173,6 +174,7 @@ namespace HiddenHarbours.Tests.PlayMode
                     new[]
                     {
                         "hullmesh.cape_islander_iso",
+                        "hullmesh.dory_iso",
                         "hullmesh.lobster_inshore_hardtop_newfoundland_iso",
                         "hullmesh.lobster_inshore_open_northumberland_iso",
                         "hullmesh.lobster_standard_hardtop_northumberland_iso",
