@@ -49,15 +49,17 @@ namespace HiddenHarbours.Tests.PlayMode
     public sealed class FacetIdBudgetPlayTests
     {
         const string PlateDir = "facet-id-budget";
-        const string EvidenceDir = "Evidence~/nmc-h6/facet-budget";
+        const string EvidenceDir = "Evidence~/facet-id-budget";
         const string StPetersScene = "StPeters";
         const string NineMileCreekScene = "NineMileCreek";
         const string RicePointScene = "RicePoint";
         const string SouthWaterScene = "SouthWater";
+        const string EastWaterScene = "EastWater";
         const string StPetersRegion = "region.st_peters";
         const string NineMileCreekRegion = "region.nine_mile_creek";
         const string RicePointRegion = "region.rice_point";
         const string SouthWaterRegion = "region.south_water";
+        const string EastWaterRegion = "region.east_water";
         const float Noon = 12f;
         /// <summary>Three of the ambient fleet's 0.5 s gate ticks: long enough for a region's late
         /// frees (and late registrations) to land before the census.</summary>
@@ -66,6 +68,8 @@ namespace HiddenHarbours.Tests.PlayMode
         const int DecideFrames = 300;
         /// <summary>The game's closest on-foot view, 5.625 m tall (33.75 m ÷ 6, a crisp step).</summary>
         const float CloseOrthoSize = 2.8125f;
+        /// <summary>The refused-frame plate's height, the stage's own plate height.</summary>
+        const int RefusedFramePlateHeightPx = 900;
         const int ForeBlock = IsoFacetHullRenderer.DeckOccupantSlots;
         const int EagerCostPerHull = 1 + ForeBlock;
         const int OverflowId = 255;
@@ -89,12 +93,21 @@ namespace HiddenHarbours.Tests.PlayMode
         bool _loadedAny;
         bool _introOnEntry;
         string _label;
+        string _route;
         readonly HashSet<GameObject> _residentBefore = new HashSet<GameObject>();
         readonly List<string> _notes = new List<string>();
         readonly List<string> _transitions = new List<string>();
         readonly List<string> _refusals = new List<string>();
+        readonly List<string> _castRefusals = new List<string>();
         readonly List<string> _summary = new List<string>();
+        /// <summary>The busiest frame of each stage, every frame sampled: during an additive load both
+        /// regions hold ids, and no census after the switch sees that.</summary>
+        readonly Dictionary<string, int[]> _peaks = new Dictionary<string, int[]>();
+        readonly List<string> _peakOrder = new List<string>();
         string _lastState;
+        string _stageNow;
+        int _herRefusedAtFrame;
+        bool _platedRefusal;
         DeckRiderMeshPresenter _presenter;
         DeckRiderVisual _rider;
 
@@ -107,6 +120,14 @@ namespace HiddenHarbours.Tests.PlayMode
         {
             public string name, scene, kind;
             public int hull, fore, claims;
+        }
+
+        [System.Serializable]
+        sealed class CastRow
+        {
+            public string key, scene, why;
+            public bool draws, refused;
+            public int figureId;
         }
 
         [System.Serializable]
@@ -129,6 +150,8 @@ namespace HiddenHarbours.Tests.PlayMode
             public SceneRow[] scenes;
             public HullRow[] hullRows;
             public int[] figureIds;
+            public int castRefused;
+            public CastRow[] cast;
         }
 
         [OneTimeSetUp]
@@ -150,14 +173,18 @@ namespace HiddenHarbours.Tests.PlayMode
         {
             _residentBefore.Clear();
             foreach (GameObject go in PersistentRoots()) _residentBefore.Add(go);
-            _notes.Clear(); _transitions.Clear(); _refusals.Clear(); _summary.Clear();
+            _notes.Clear(); _transitions.Clear(); _refusals.Clear(); _castRefusals.Clear(); _summary.Clear();
+            _peaks.Clear(); _peakOrder.Clear();
             _lastState = null; _presenter = null; _rider = null;
+            _stageNow = "load"; _herRefusedAtFrame = 0; _platedRefusal = false;
+            Application.logMessageReceived += OnLog;
             yield return null;
         }
 
         [UnityTearDown]
         public IEnumerator TearDown()
         {
+            Application.logMessageReceived -= OnLog;
             LogAssert.ignoreFailingMessages = false;
             Time.timeScale = 1f;
             if (_stage != null)
@@ -200,6 +227,7 @@ namespace HiddenHarbours.Tests.PlayMode
             WharfNightStage.RequireAGraphicsDevice();
             AssertTheSaveIsRedirected();
             _label = IsTheFix() ? "fix" : "main";
+            _route = "stp-first";
             FreshPoolIfNothingHoldsAnId();
 
             _introOnEntry = GameServices.OpeningCinematicRunning;
@@ -259,6 +287,73 @@ namespace HiddenHarbours.Tests.PlayMode
             Assert.IsEmpty(_refusals,
                 $"[{PlateDir}] {_label}: the pool refused her figure {_refusals.Count} time(s) on the route:\n" +
                 string.Join("\n", _refusals));
+            Assert.IsEmpty(_castRefusals,
+                $"[{PlateDir}] {_label}: villagers were refused a figure id and drawn as their old sprites:\n" +
+                string.Join("\n", _castRefusals.Distinct()));
+        }
+
+        /// <summary>
+        /// The route a save in Nine Mile Creek takes, and then the new game's: Nine Mile Creek COLD, where
+        /// her figure first asks for an id with the whole harbour enabled, → St Peters (her plate) → East
+        /// Water (the opening's sea) → St Peters. Her presenter latches a refusal until her next arrival,
+        /// so a refusal at Nine Mile Creek is still her sprite at St Peters. Asserts, after every census
+        /// and the plate: she draws ashore at St Peters, and the pool never refused her on the route.
+        /// </summary>
+        [UnityTest]
+        public IEnumerator Budget_ASaveThatLoadedNineMileCreekFirst_AtStPetersSheIsTheMesh()
+        {
+            WharfNightStage.RequireAGraphicsDevice();
+            AssertTheSaveIsRedirected();
+            _label = IsTheFix() ? "fix" : "main";
+            _route = "nmc-first";
+            FreshPoolIfNothingHoldsAnId();
+
+            _introOnEntry = GameServices.OpeningCinematicRunning;
+            _loadedAny = true;
+            _stage = new WharfNightStage(NineMileCreekScene, PlateDir);
+            yield return _stage.Load();
+            if (ShellFlow.WorldInputBlocked) ShellFlow.Reset();
+            InteractionGate.Reset();
+            yield return _stage.SetNight(Noon);
+            _notes.Add(SwitchNote());
+
+            yield return WaitForHerDecision("nmc-cold");
+            yield return Watch("nmc-cold", SettleSeconds);
+            Census nmcCold = Count("nmc-cold");
+
+            yield return TravelTo(StPetersRegion, StPetersScene, "nmc-first-to-stp");
+            Count("stp-after-nmc-cold-arrival");
+            yield return WaitForHerDecision("stp-after-nmc-cold");
+            yield return Watch("stp-after-nmc-cold", SettleSeconds);
+            Census stpAfter = Count("stp-after-nmc-cold");
+            yield return PlateHer("stp-after-nmc-cold");
+            yield return PlateTheCast("stp-after-nmc-cold");
+            Time.timeScale = 1f;
+
+            yield return TravelTo(EastWaterRegion, EastWaterScene, "to-east-water");
+            Count("east-water-arrival");
+            yield return Watch("east-water", SettleSeconds);
+            Count("east-water-settled");
+
+            yield return TravelTo(StPetersRegion, StPetersScene, "east-water-to-stp");
+            yield return WaitForHerDecision("stp-after-east-water");
+            yield return Watch("stp-after-east-water", SettleSeconds);
+            Count("stp-after-east-water");
+
+            WriteTheSummary();
+
+            Assert.IsNotNull(nmcCold, "harness: no census at a cold Nine Mile Creek");
+            Assert.IsTrue(stpAfter.herDrawsAshore,
+                $"[{PlateDir}] {_label}: at St Peters after a cold Nine Mile Creek she is NOT drawn as her mesh " +
+                $"figure — '{stpAfter.herReason}' (refused {stpAfter.herRefused}). The old sprite. Pool: next " +
+                stpAfter.poolNextId + ", free singles " + stpAfter.poolFreeSingles + ", free player ids " +
+                stpAfter.poolFreePlayerIds + ".");
+            Assert.IsEmpty(_refusals,
+                $"[{PlateDir}] {_label}: the pool refused her figure {_refusals.Count} time(s) on the route:\n" +
+                string.Join("\n", _refusals));
+            Assert.IsEmpty(_castRefusals,
+                $"[{PlateDir}] {_label}: villagers were refused a figure id and drawn as their old sprites:\n" +
+                string.Join("\n", _castRefusals.Distinct()));
         }
 
         // =============================================================================================
@@ -267,22 +362,46 @@ namespace HiddenHarbours.Tests.PlayMode
 
         IEnumerator TravelTo(string regionId, string sceneName, string stage)
         {
-            var loader = Object.FindFirstObjectByType<HiddenHarbours.World.RegionSceneLoader>();
-            Assert.IsNotNull(loader, $"[{PlateDir}] no RegionSceneLoader: the route must take the game's own travel");
-            Assert.IsTrue(loader.Registry.TryGet(regionId, out var destination), $"no region '{regionId}'");
+            // Each region's loader knows only its neighbours, so ask every live loader, and else take the
+            // committed RegionDef, as a seam or door hands one to Travel.
+            var loaders = Object.FindObjectsByType<HiddenHarbours.World.RegionSceneLoader>(FindObjectsSortMode.None);
+            Assert.IsNotEmpty(loaders, $"[{PlateDir}] no RegionSceneLoader: the route must take the game's own travel");
+            HiddenHarbours.World.RegionSceneLoader loader = loaders[0];
+            HiddenHarbours.World.RegionDef destination = null;
+            foreach (var l in loaders)
+                if (l.Registry.TryGet(regionId, out destination)) { loader = l; break; }
+            if (destination == null) destination = CommittedRegion(regionId);
+            Assert.IsNotNull(destination, $"no region '{regionId}' in any loader or in the committed Defs");
             Assert.IsTrue(loader.Travel(destination), $"[{PlateDir}] the game declined to travel to {regionId}");
             float deadline = Time.realtimeSinceStartup + TravelDeadlineSeconds;
             while (SceneManager.GetActiveScene().name != sceneName && Time.realtimeSinceStartup < deadline)
             {
                 Sample(stage);
+                yield return PlateHerIfRefused(stage);
                 yield return null;
             }
             Assert.AreEqual(sceneName, SceneManager.GetActiveScene().name, $"[{PlateDir}] {sceneName} never became active");
             for (int i = 0; i < 3; i++)
             {
                 Sample(stage);
+                yield return PlateHerIfRefused(stage);
                 yield return null;
             }
+        }
+
+        static HiddenHarbours.World.RegionDef CommittedRegion(string regionId)
+        {
+            foreach (var r in Resources.FindObjectsOfTypeAll<HiddenHarbours.World.RegionDef>())
+                if (r.Id == regionId) return r;
+#if UNITY_EDITOR
+            foreach (string guid in UnityEditor.AssetDatabase.FindAssets("t:RegionDef"))
+            {
+                var r = UnityEditor.AssetDatabase.LoadAssetAtPath<HiddenHarbours.World.RegionDef>(
+                    UnityEditor.AssetDatabase.GUIDToAssetPath(guid));
+                if (r != null && r.Id == regionId) return r;
+            }
+#endif
+            return null;
         }
 
         IEnumerator Watch(string stage, float seconds)
@@ -291,6 +410,7 @@ namespace HiddenHarbours.Tests.PlayMode
             while (Time.realtimeSinceStartup < until)
             {
                 Sample(stage);
+                yield return PlateHerIfRefused(stage);
                 yield return null;
             }
         }
@@ -312,15 +432,132 @@ namespace HiddenHarbours.Tests.PlayMode
         {
             if (_presenter != null) return true;
             Transform her = GameServices.PlayerTransform;
-            if (her == null) return false;
+            if (her == null)
+            {
+                var any = Object.FindFirstObjectByType<DeckRiderMeshPresenter>();
+                if (any == null) return false;
+                _presenter = any;
+                _rider = any.GetComponent<DeckRiderVisual>();
+                return true;
+            }
             _rider = her.GetComponentInChildren<DeckRiderVisual>(true);
             _presenter = _rider != null ? _rider.GetComponent<DeckRiderMeshPresenter>() : null;
             return _presenter != null;
         }
 
         /// <summary>One frame of her: logged only when drawn/refused changes, with the pool beside it.</summary>
+        /// <summary>Every figure refusal, caught where the registry says it, so one that lasts a single
+        /// frame between two samples is still counted, and told apart: hers (her presenter on the stack)
+        /// or a villager's.</summary>
+        void OnLog(string condition, string stackTrace, LogType type)
+        {
+            if (type != LogType.Warning || condition == null || !condition.Contains("this figure gets NO facet id")) return;
+            bool hers = stackTrace != null && stackTrace.Contains("DeckRiderMeshPresenter");
+            ReadPool(out int next, out int top, out int singles, out int blocks, out int reserve, out int freePlayer);
+            string line = $"{_stageNow} f{Time.frameCount} [{SceneManager.GetActiveScene().name}] " +
+                          $"{(hers ? "HER figure" : "a cast figure")} REFUSED: hulls {IsoFacetHullRegistry.Count}, figures " +
+                          $"{IsoFacetHullRegistry.FigureCount}, pool next {next}, free singles {singles}, player ids free {freePlayer}/{reserve}";
+            (hers ? _refusals : _castRefusals).Add(line);
+            if (hers && _herRefusedAtFrame == 0)
+            {
+                _herRefusedAtFrame = Time.frameCount;
+                PlateTheRefusedFrame(_stageNow);
+            }
+            _transitions.Add("LOG " + line);
+            Debug.Log($"[{PlateDir}] {_label} {line}");
+        }
+
+        /// <summary>
+        /// The frame she is refused, photographed from inside the registry's own warning: her refusal can
+        /// last a single frame (refused while the region she leaves still holds every id, re-asked at the
+        /// arrival the next frame), so no sample between frames can see it. The game's main camera renders
+        /// once into a plate target at her position and is put back exactly as it was. Never throws.
+        /// </summary>
+        void PlateTheRefusedFrame(string stage)
+        {
+            if (_platedRefusal) return;
+            _platedRefusal = true;
+            RenderTexture rt = null;
+            Texture2D raw = null, png = null;
+            try
+            {
+                var presenter = _presenter != null ? _presenter : Object.FindFirstObjectByType<DeckRiderMeshPresenter>();
+                Camera cam = Camera.main;
+                if (presenter == null || cam == null)
+                {
+                    _notes.Add($"{stage}: the refused frame had no presenter or main camera to photograph");
+                    return;
+                }
+                Vector3 her = presenter.transform.position;
+                int h = RefusedFramePlateHeightPx, w = Mathf.RoundToInt(h * cam.aspect);
+                rt = new RenderTexture(w, h, 24, RenderTextureFormat.ARGBHalf);
+                rt.Create();
+                RenderTexture oldTarget = cam.targetTexture;
+                Vector3 oldPos = cam.transform.position;
+                float oldSize = cam.orthographicSize;
+                cam.transform.position = new Vector3(her.x, her.y, oldPos.z);
+                cam.orthographicSize = CloseOrthoSize;
+                cam.targetTexture = rt;
+                Behaviour lens = PixelLens(cam);
+                bool lensWas = lens != null && lens.enabled;
+                if (lens != null) lens.enabled = false;
+                cam.Render();
+                if (lens != null) lens.enabled = lensWas;
+                RenderTexture prev = RenderTexture.active;
+                RenderTexture.active = rt;
+                raw = new Texture2D(w, h, TextureFormat.RGBAFloat, false, true);
+                raw.ReadPixels(new Rect(0, 0, w, h), 0, 0);
+                raw.Apply();
+                RenderTexture.active = prev;
+                cam.targetTexture = oldTarget;
+                cam.transform.position = oldPos;
+                cam.orthographicSize = oldSize;
+
+                Color[] px = raw.GetPixels();
+                for (int i = 0; i < px.Length; i++)
+                {
+                    Color c = px[i];
+                    c.r = Mathf.Clamp01(c.r); c.g = Mathf.Clamp01(c.g); c.b = Mathf.Clamp01(c.b); c.a = 1f;
+                    px[i] = c.gamma;   // the project is LINEAR, as WharfNightStage.Capture
+                }
+                png = new Texture2D(w, h, TextureFormat.RGBA32, false);
+                png.SetPixels(px);
+                png.Apply();
+                string dir = Path.Combine(Application.temporaryCachePath, PlateDir);
+                Directory.CreateDirectory(dir);
+                string name = $"{stage}-refused-frame-{_label}.png";
+                File.WriteAllBytes(Path.Combine(dir, name), png.EncodeToPNG());
+                string line = $"PLATE {name}: the frame (f{Time.frameCount}) her figure was refused, her at {(Vector2)her}, " +
+                              $"active {SceneManager.GetActiveScene().name}, camera '{cam.name}' of {cam.gameObject.scene.name}, " +
+                              $"ortho {CloseOrthoSize}; draws ashore {presenter.DrawsAshore}";
+                _summary.Add(line);
+                Debug.Log($"[{PlateDir}] {line}");
+            }
+            catch (System.Exception e)
+            {
+                _notes.Add($"{stage}: the refused-frame plate failed ({e.GetType().Name}: {e.Message})");
+            }
+            finally
+            {
+                if (raw != null) Object.DestroyImmediate(raw);
+                if (png != null) Object.DestroyImmediate(png);
+                if (rt != null) { rt.Release(); Object.DestroyImmediate(rt); }
+            }
+        }
+
+        /// <summary>The first frame she is seen refused, photograph her: that is the old sprite.</summary>
+        IEnumerator PlateHerIfRefused(string stage)
+        {
+            if (_platedRefusal || _herRefusedAtFrame == 0 || !FindHerPresenter() || !_presenter.AshoreRefused) yield break;
+            _platedRefusal = true;
+            yield return PlateHer(stage + "-refused");
+            Time.timeScale = 1f;
+        }
+
         void Sample(string stage)
         {
+            _stageNow = stage;
+            TrackPeak(stage);
             if (!FindHerPresenter()) return;
             string state = $"draws {_presenter.DrawsAshore}, refused {_presenter.AshoreRefused}";
             if (state == _lastState) return;
@@ -333,6 +570,27 @@ namespace HiddenHarbours.Tests.PlayMode
             _transitions.Add(line);
             if (_presenter.AshoreRefused) _refusals.Add(line);
             Debug.Log($"[{PlateDir}] {_label} HER: {line}");
+        }
+
+        /// <summary>This frame's takers, kept when it is the stage's busiest by lazy ids wanted.</summary>
+        void TrackPeak(string stage)
+        {
+            if (HullsField == null) return;
+            int hulls = 0, aboard = 0;
+            foreach (IsoFacetHullRenderer h in (IEnumerable<IsoFacetHullRenderer>)HullsField.GetValue(null))
+            {
+                if (h == null) continue;
+                hulls++;
+                if (ClaimsOn(h) > 0) aboard++;
+            }
+            int figures = IsoFacetHullRegistry.FigureCount;
+            int lazy = hulls + ForeBlock * aboard + figures;
+            bool seen = _peaks.TryGetValue(stage, out int[] p);
+            if (seen && p[4] >= lazy) return;
+            ReadPool(out int next, out _, out int singles, out _, out _, out _);
+            if (!seen) _peakOrder.Add(stage);
+            _peaks[stage] = new[] { hulls, aboard, figures, EagerCostPerHull * hulls + figures, lazy, singles,
+                                    Time.frameCount, next };
         }
 
         // =============================================================================================
@@ -390,6 +648,15 @@ namespace HiddenHarbours.Tests.PlayMode
                 hullRows = rows,
                 figureIds = figureIds,
             };
+            c.cast = CastPresenters().Select(p => new CastRow
+            {
+                key = CastKey(p), scene = p.gameObject.scene.name, draws = p.AshoreFigure != null && p.AshoreFigure.IsAshore,
+                refused = p.AshoreRefused, why = p.NotDrawingReason,
+                figureId = p.AshoreFigure != null ? p.AshoreFigure.FigureId : 0,
+            }).ToArray();
+            c.castRefused = c.cast.Count(r => r.refused);
+            foreach (CastRow r in c.cast.Where(r => r.refused))
+                _castRefusals.Add($"{stage} [{c.activeScene}]: {r.key} ('{r.why}'), pool next {next}, free singles {singles}");
 
             string perScene = string.Join("; ", c.scenes.Select(s => $"{s.scene} {s.hulls}h/{s.aboard}a/{s.blocks}b"));
             string kinds = string.Join(", ", rows.GroupBy(r => r.scene + ":" + r.kind)
@@ -400,7 +667,8 @@ namespace HiddenHarbours.Tests.PlayMode
                           $"held now {c.heldNow}; pool next {next}, top {top}, free singles {singles}, free blocks " +
                           $"{blocks}, player ids free {freePlayer}/{reserve}; HER aboard {herAboard}, draws " +
                           $"{c.herDrawsAshore}, refused {c.herRefused}, id {c.herFigureId} ('{c.herReason}'); " +
-                          $"by scene: {perScene}; by kind: {kinds}";
+                          $"by scene: {perScene}; by kind: {kinds}; CAST refused {c.castRefused} of {c.cast.Length}" +
+                          (c.castRefused > 0 ? " [" + string.Join(", ", c.cast.Where(r => r.refused).Select(r => r.key)) + "]" : "");
             _summary.Add(line);
             Debug.Log($"[{PlateDir}] CENSUS {line}");
 
@@ -453,11 +721,10 @@ namespace HiddenHarbours.Tests.PlayMode
         IEnumerator PlateHer(string stage)
         {
             Transform her = GameServices.PlayerTransform;
+            if (her == null && _presenter != null) her = _presenter.transform;
             Assert.IsNotNull(her, $"[{PlateDir}] no player to photograph at {stage}");
             yield return _stage.FrameOn(her.position);
-            Camera cam = _stage.Camera;
-            cam.orthographicSize = CloseOrthoSize;   // set straight before the shutter: the follow resets zoom
-            byte[] shot = _stage.Capture();
+            byte[] shot = CloseUp(_stage.Camera, _stage.Capture);
             string name = $"{stage}-{_label}.png";
             _stage.SavePlate(name, shot);
             string state = _presenter == null ? "no presenter"
@@ -467,6 +734,55 @@ namespace HiddenHarbours.Tests.PlayMode
                           $"{(GameServices.Clock != null ? GameServices.Clock.HourOfDay.ToString("00.00", CultureInfo.InvariantCulture) : "no clock")} h, ortho {CloseOrthoSize} ({2f * CloseOrthoSize:0.00} m tall); {state}";
             _summary.Add(line);
             Debug.Log($"[{PlateDir}] {line}");
+        }
+
+        /// <summary>The close-up: the game's pixel-perfect lens sizes every frame from its own reference
+        /// resolution and overrides the ortho size a plate asks for, so it is switched off for the one render
+        /// and put back. Zooming IN under a frozen world is safe: the overlay fitted to the wider frame still
+        /// covers this one.</summary>
+        static byte[] CloseUp(Camera cam, System.Func<byte[]> capture)
+        {
+            Behaviour lens = PixelLens(cam);
+            bool lensWas = lens != null && lens.enabled;
+            if (lens != null) lens.enabled = false;
+            cam.orthographicSize = CloseOrthoSize;   // set straight before the shutter: the follow resets zoom
+            try { return capture(); }
+            finally { if (lens != null) lens.enabled = lensWas; }
+        }
+
+        static Behaviour PixelLens(Camera cam)
+        {
+            foreach (Behaviour b in cam.GetComponents<Behaviour>())
+                if (b != null && b.GetType().Name == "PixelPerfectCamera") return b;
+            return null;
+        }
+
+        static IEnumerable<CharacterFigurePresenter> CastPresenters() =>
+            Object.FindObjectsByType<CharacterFigurePresenter>(FindObjectsInactive.Exclude, FindObjectsSortMode.None)
+                .Where(p => p != null && p.Stand is ICharacterFigureAshoreStand)
+                .OrderBy(CastKey, System.StringComparer.Ordinal);
+
+        static string CastKey(CharacterFigurePresenter p) =>
+            p.Stand is ICharacterFigureAshoreStand s && !string.IsNullOrEmpty(s.FigureKey) ? s.FigureKey : p.name;
+
+        /// <summary>Every villager standing ashore in the active region, close up: a refused one is her
+        /// old sprite; a granted one is her mesh.</summary>
+        IEnumerator PlateTheCast(string stage)
+        {
+            Scene active = SceneManager.GetActiveScene();
+            foreach (CharacterFigurePresenter p in CastPresenters().Where(p => p.gameObject.scene == active).ToList())
+            {
+                if (p == null) continue;
+                string key = CastKey(p);
+                yield return _stage.FrameOn(p.transform.position);
+                byte[] shot = CloseUp(_stage.Camera, _stage.Capture);
+                string name = $"{stage}-cast-{key.Replace('.', '_')}-{_label}.png";
+                _stage.SavePlate(name, shot);
+                string line = $"PLATE {name}: {key} at {(Vector2)p.transform.position}; refused {p.AshoreRefused}, figure id " +
+                              $"{(p.AshoreFigure != null ? p.AshoreFigure.FigureId : 0)} ('{p.NotDrawingReason}')";
+                _summary.Add(line);
+                Debug.Log($"[{PlateDir}] {line}");
+            }
         }
 
         // =============================================================================================
@@ -516,14 +832,21 @@ namespace HiddenHarbours.Tests.PlayMode
         void WriteTheSummary()
         {
             var sb = new StringBuilder();
-            sb.AppendLine($"facet-id budget, build '{_label}', {System.DateTime.UtcNow.ToString("O", CultureInfo.InvariantCulture)}");
+            sb.AppendLine($"facet-id budget, build '{_label}', route '{_route}', {System.DateTime.UtcNow.ToString("O", CultureInfo.InvariantCulture)}");
             foreach (string n in _notes) sb.AppendLine("NOTE " + n);
             foreach (string s in _summary) sb.AppendLine(s);
+            sb.AppendLine("PEAK per stage (the busiest frame by lazy ids wanted; every frame sampled):");
+            foreach (string s in _peakOrder)
+            {
+                int[] p = _peaks[s];
+                sb.AppendLine($"  {_label} {s}: f{p[6]} hulls {p[0]} (aboard {p[1]}), figures {p[2]}; WANTED eager " +
+                              $"{p[3]}, lazy {p[4]}; pool next {p[7]}, free singles {p[5]}");
+            }
             sb.AppendLine("HER TRANSITIONS:");
             foreach (string t in _transitions) sb.AppendLine("  " + t);
             Directory.CreateDirectory(EvidenceDir);
-            File.WriteAllText(Path.Combine(EvidenceDir, $"summary-{_label}.txt"), sb.ToString(), new UTF8Encoding(false));
-            Debug.Log($"[{PlateDir}] SUMMARY written to {EvidenceDir}/summary-{_label}.txt\n{sb}");
+            File.WriteAllText(Path.Combine(EvidenceDir, $"summary-{_label}-{_route}.txt"), sb.ToString(), new UTF8Encoding(false));
+            Debug.Log($"[{PlateDir}] SUMMARY written to {EvidenceDir}/summary-{_label}-{_route}.txt\n{sb}");
         }
 
         static Scene PersistentScene()
