@@ -61,6 +61,8 @@ world**, while about 32 birds are drawn on screen at once (hard ceiling 48, gull
 kept per player in co-op and saved as "recipe" photos, not pixels; item rewards ship first and
 clothing rewards wait on CW-04. It moves nothing else.
 
+**Owner-directed addition, 2026-11-13: the campaign in co-op.** The owner ruled that multiplayer is the full game with its campaign, tested with a friend who reports problems. Two players share the host's campaign: one world, one save, one purse, separate hands. Sequenced as CO-01 to CO-12 in `backlog/coop-campaign.md`, under ADR 0057. It runs as a cross-cutting track beside M1 and M2 and serves P1 (one sea read by two), P3 and P4 (a friend is the first crew you ever had). It builds no later-phase system: business, staff and freight stay in M3 and are not networked until their own slice is approved. It does not move M1's gate; where a co-op slice needs a lane that M1 also needs, the seat orders them. Friend builds are zips cut from main. CO-01 to CO-04 may proceed beside M1; reassess at CO-05 after the two-machine checkpoint. Both players start aboard the intro boat at sea, fishing and sailing in together; the intro precedes guest persistence, and until CO-09 the guest rejoins empty-handed.
+
 ---
 
 ## 0. Scope reality — read this first (a blunt, kind note to the owner)
