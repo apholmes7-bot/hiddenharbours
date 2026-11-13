@@ -61,7 +61,7 @@ namespace HiddenHarbours.Tests.CoopSpike
                 obj.GetComponent<CoopBoatReplica>().BindClock(_clientClock, 12345);
             yield return null;
         }
-        protected override IEnumerator OnTearDown()
+        protected override IEnumerator OnTrialTearDown()
         {
             if (_localBoat != null) Object.Destroy(_localBoat);
             yield return TearDownDayTwo();
