@@ -44,6 +44,9 @@ namespace HiddenHarbours.Boats
         public CompassMount DefaultCompass = CompassMount.None;
         public bool DefaultRadar = false;
         public bool DefaultGps = false;
+        [Tooltip("The wind instrument fitted out of the box (None = no wind read at this helm). " +
+                 "Capped by MaxWind below.")]
+        public WindInstrumentGrade DefaultWind = WindInstrumentGrade.None;
 
         [Header("Slot capabilities — what this helm CAN be upgraded to")]
         [Tooltip("This helm's brow can take the colour fish-finder upgrade (else depth sounder only).")]
@@ -56,6 +59,9 @@ namespace HiddenHarbours.Boats
         public bool SupportsRadar = false;
         [Tooltip("This helm has a GPS brow slot (Novi & Cape). Placeholder until the gps rig ships.")]
         public bool SupportsGps = false;
+        [Tooltip("The BEST wind instrument this helm can take: None = no wind instrument fits here, " +
+                 "Dial = the analog apparent-wind dial only, Display = the digital display with true wind.")]
+        public WindInstrumentGrade MaxWind = WindInstrumentGrade.None;
 
         /// <summary>Can this helm mount the given compass form? (None is always allowed.)</summary>
         public bool SupportsCompassMount(CompassMount mount)

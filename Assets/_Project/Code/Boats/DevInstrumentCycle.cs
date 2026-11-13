@@ -404,7 +404,7 @@ namespace HiddenHarbours.Boats
 
             HelmFit fit = BoatEquipment.EffectiveFit(console, ownedScratch);
             if (fit.Sounder == brow) return fit;
-            return new HelmFit(fit.Rig, brow, fit.Compass, fit.Radar, fit.Gps);
+            return new HelmFit(fit.Rig, brow, fit.Compass, fit.Radar, fit.Gps, fit.Wind);
         }
 
         // ---- helpers ------------------------------------------------------------------------------------
