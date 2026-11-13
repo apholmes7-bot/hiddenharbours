@@ -219,7 +219,15 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.AreEqual(1, svc.Live.Count);
             Assert.AreSame(live, svc.Live[0]);
             Assert.AreEqual(1, _save.PlacedTraps.Count);
-            Assert.AreSame(dto, _save.PlacedTraps[0]);
+            // PlacedTrapDto is a value type; preserve every saved field, not boxed identity.
+            var savedDto = _save.PlacedTraps[0];
+            Assert.AreEqual(dto.InstanceId, savedDto.InstanceId);
+            Assert.AreEqual(dto.TrapDefId, savedDto.TrapDefId);
+            Assert.AreEqual(dto.PosX, savedDto.PosX);
+            Assert.AreEqual(dto.PosY, savedDto.PosY);
+            Assert.AreEqual(dto.BaitId, savedDto.BaitId);
+            Assert.AreEqual(dto.PlacementGameTimeSeconds, savedDto.PlacementGameTimeSeconds);
+            Assert.AreEqual(dto.Region, savedDto.Region);
             Assert.AreEqual("bait.herring", dto.BaitId);
             Assert.AreEqual(1, _save.BaitStock.Count);
             Assert.AreEqual(1, _save.BaitStock[0].Count);
