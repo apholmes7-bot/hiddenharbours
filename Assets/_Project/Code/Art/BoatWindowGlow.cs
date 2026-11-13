@@ -124,6 +124,8 @@ namespace HiddenHarbours.Art
         // runs sixty times a second on every lit hull in the region (rule 7: no per-frame allocation).
         private readonly Vector2[] _wallOut = new Vector2[4];
         private readonly Vector3[] _wallAt = new Vector3[4];
+        // Where each wall meets the deck under its lit glass (summed, like _wallAt): the pool's origin.
+        private readonly Vector3[] _wallFoot = new Vector3[4];
         private readonly int[] _wallHits = new int[4];
 
         private bool _lit;
@@ -449,7 +451,11 @@ namespace HiddenHarbours.Art
                 Mathf.Approximately(parent.z, 0f) ? 1f : 1f / parent.z);
 
             int v = 0;
-            for (int w = 0; w < 4; w++) { _wallOut[w] = Vector2.zero; _wallAt[w] = Vector3.zero; _wallHits[w] = 0; }
+            for (int w = 0; w < 4; w++) { _wallOut[w] = Vector2.zero; _wallAt[w] = Vector3.zero; _wallFoot[w] = Vector3.zero; _wallHits[w] = 0; }
+
+            // How far under the glass the pool starts, in pane half-heights: one down to the sill,
+            // then the look's own drop below it (data, BoatLampLook).
+            float footDrop = 1f + 2f * BoatLampLook.Current.SpillFootBelowSillPaneHeights;
 
             for (int i = 0; i < _panes.Length; i++)
             {
@@ -474,6 +480,7 @@ namespace HiddenHarbours.Art
                     int w = (int)p.Wall;
                     _wallOut[w] += new Vector2(nOut.x, nOut.y);
                     _wallAt[w] += c;
+                    _wallFoot[w] += _posed.TransformPoint(p.CentreMetres - p.HalfUpMetres * footDrop);
                     _wallHits[w]++;
                 }
                 else
@@ -543,7 +550,12 @@ namespace HiddenHarbours.Art
                 light.enabled = showing;
                 if (!showing) continue;
 
-                Vector3 at = _wallAt[w] / _wallHits[w];
+                // A wall that POOLS and paints no wedge stands at the FOOT of the wall, because a
+                // pool is light on the deck and the deck is under the glass, not at it. A painted
+                // wedge keeps the old origin at the glass, so that arm is the old picture exactly.
+                BoatLampLook look = BoatLampLook.Current;
+                bool atFoot = look.SpillPoolsTheDeck && !look.SpillPaintsWedge;
+                Vector3 at = (atFoot ? _wallFoot[w] : _wallAt[w]) / _wallHits[w];
                 at.z = transform.position.z;   // the posed z carries depth biases a light has no use for
                 Vector2 dir = _wallOut[w].normalized;
 

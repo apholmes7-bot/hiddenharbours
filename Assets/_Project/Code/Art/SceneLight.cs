@@ -49,6 +49,11 @@ namespace HiddenHarbours.Art
         private static readonly int IdGateFallback   = Shader.PropertyToID("_GateFallback");
         private static readonly int IdLampPos        = Shader.PropertyToID("_LampPos");
         private static readonly int IdThrow          = Shader.PropertyToID("_Throw");
+        private static readonly int IdCoreRadius     = Shader.PropertyToID("_CoreRadius");
+        private static readonly int IdHaloStrength   = Shader.PropertyToID("_HaloStrength");
+        private static readonly int IdBandSteps      = Shader.PropertyToID("_BandSteps");
+        private static readonly int IdCoreWhiten     = Shader.PropertyToID("_CoreWhiten");
+        private static readonly int IdPixelGrid      = Shader.PropertyToID("_PixelGrid");
 
         // ONE shared fallback material for the missing-Resources path, minted at most once across ALL lights
         // (the normal path loads Resources/AdditiveLight.mat). A per-instance material would leak + break the
@@ -86,6 +91,33 @@ namespace HiddenHarbours.Art
 
         [Tooltip("Bright core boost near the lamp so the source reads as a hot point. 0 = no extra core.")]
         [Range(0f, 4f)] [SerializeField] private float _coreBoost = 1f;
+
+        [Header("Lamp look (a hard core and a banded halo; all zero = the smooth glow)")]
+        [Tooltip("Radius of the HARD hot core, metres. Above 0 the light is drawn as a LAMP: a flat hot " +
+                 "disc this big with a faint halo out to Range, instead of one smooth gradient. 0 = the " +
+                 "smooth glow every placed light has always been.")]
+        [Min(0f)] [SerializeField] private float _coreRadiusMetres;
+
+        [Tooltip("How bright the halo is next to the core (core = 1). Only read when the core radius is " +
+                 "above 0. Small = a lamp with a whisper of glow round it.")]
+        [Range(0f, 1f)] [SerializeField] private float _haloStrength;
+
+        [Tooltip("How many flat BANDS the falloff is cut into. 0 = a smooth gradient. 2 or 3 reads as " +
+                 "pixel art; a smooth disc in a pixel frame reads as a floating ball.")]
+        [Range(0, MaxBandSteps)] [SerializeField] private int _bandSteps;
+
+        [Tooltip("How far the core is pulled toward white (0 = the lamp's own colour, 1 = white). A red " +
+                 "sidelight wants little of it or it stops being red.")]
+        [Range(0f, 1f)] [SerializeField] private float _coreWhiten;
+
+        [Tooltip("Art pixels per metre the glow is snapped to, so its bands are built of whole pixels. " +
+                 "0 = no snap (the smooth, resolution-free glow).")]
+        [Min(0f)] [SerializeField] private float _pixelsPerMetre;
+
+        [Tooltip("Does this light draw its own additive glow? OFF = it draws nothing on top of the frame " +
+                 "and only lights the ground through its pool (ReachMetres) and throws its shadows. A " +
+                 "cabin's window spill is one: its light belongs ON the deck, not over it.")]
+        [SerializeField] private bool _drawsBloom = true;
 
         [Header("Night gate (auto-fade with the day/night cycle)")]
         [Tooltip("Frame DARKNESS (0 = bright noon .. 1 = pitch black) at/below which the light is fully OFF, so " +
@@ -238,6 +270,57 @@ namespace HiddenHarbours.Art
         /// </summary>
         public float CoreBoost { get => _coreBoost; set => _coreBoost = Mathf.Clamp(value, 0f, 4f); }
 
+        // ---- the LAMP look (owner, 2026-11-13: "boat lights still look off") ----
+
+        /// <summary>
+        /// Radius of the HARD hot core, metres (0 = the smooth glow). Above zero the shader stops
+        /// drawing one gradient and draws a lamp: a flat hot disc this big, and a faint halo from its
+        /// edge out to <see cref="Range"/>. Mirrored headless by <see cref="LightMath.LampShape"/>.
+        /// </summary>
+        public float CoreRadiusMetres { get => _coreRadiusMetres; set => _coreRadiusMetres = Mathf.Max(0f, value); }
+        /// <summary>Halo brightness next to the core's 1 (only read with a core radius above 0).</summary>
+        public float HaloStrength { get => _haloStrength; set => _haloStrength = Mathf.Clamp01(value); }
+        /// <summary>Flat bands the falloff is cut into (0 = smooth).</summary>
+        public int BandSteps { get => _bandSteps; set => _bandSteps = Mathf.Clamp(value, 0, MaxBandSteps); }
+        /// <summary>How far the core is pulled toward white (0 = the lamp's colour .. 1 = white).</summary>
+        public float CoreWhiten { get => _coreWhiten; set => _coreWhiten = Mathf.Clamp01(value); }
+        /// <summary>Art pixels per metre the glow snaps to (0 = no snap).</summary>
+        public float PixelsPerMetre { get => _pixelsPerMetre; set => _pixelsPerMetre = Mathf.Max(0f, value); }
+        /// <summary>The most bands a falloff may be cut into (past this it is a gradient again).</summary>
+        public const int MaxBandSteps = 8;
+
+        /// <summary>
+        /// Does this light draw its own additive glow? False = nothing is painted over the frame; the
+        /// light still registers, so <see cref="LampPoolSystem"/> pools it (given a
+        /// <see cref="ReachMetres"/>) and <see cref="LampShadowSystem"/> throws its shadows.
+        /// </summary>
+        public bool DrawsBloom
+        {
+            get => _drawsBloom;
+            set { _drawsBloom = value; ApplyQuadEnabled(); }
+        }
+
+        /// <summary>Is the additive quad actually drawing right now? Tests and fixtures.</summary>
+        public bool BloomVisible => _quadRenderer != null && _quadRenderer.enabled;
+
+        /// <summary>Back to the smooth glow: no core, no bands, no snap, bloom drawn. What
+        /// <c>LightPresets.Stamp</c> calls, so a re-stamped light never keeps another look's lamp.</summary>
+        public void ClearLampLook()
+        {
+            _coreRadiusMetres = 0f;
+            _haloStrength = 0f;
+            _bandSteps = 0;
+            _coreWhiten = 0f;
+            _pixelsPerMetre = 0f;
+            DrawsBloom = true;
+        }
+
+        private void ApplyQuadEnabled()
+        {
+            if (_quadRenderer == null) return;
+            _quadRenderer.enabled = _drawsBloom && isActiveAndEnabled && _quadRenderer.sharedMaterial != null;
+        }
+
         // ---- what the lamp-shadow system reads (ADR 0016, lights PR B) ----
 
         /// <summary>Does this lamp throw cast shadows (<see cref="LampShadowSystem"/>)?</summary>
@@ -307,7 +390,7 @@ namespace HiddenHarbours.Art
 
         private void OnEnable()
         {
-            if (_quadRenderer != null) _quadRenderer.enabled = true;
+            ApplyQuadEnabled();
             _timer = 0f;
             Tick();   // correct on the first frame
             PoseQuad();
@@ -458,11 +541,41 @@ namespace HiddenHarbours.Art
             _mpb.SetFloat(IdGateFallback, _gateFallback);
             _mpb.SetVector(IdLampPos, lampPos);
             _mpb.SetFloat(IdThrow, throwQuad);
+
+            // The LAMP look. The core is handed over as a fraction of the throw, which is what the
+            // shader measures distance in; the pixel grid as the size of one art pixel in QUAD space,
+            // per axis, because a cone's quad is not square.
+            float r = Mathf.Max(_range, 0.01f);
+            _mpb.SetFloat(IdCoreRadius, Mathf.Clamp01(_coreRadiusMetres / r));
+            _mpb.SetFloat(IdHaloStrength, _haloStrength);
+            _mpb.SetFloat(IdBandSteps, _bandSteps);
+            _mpb.SetFloat(IdCoreWhiten, _coreWhiten);
+            Vector4 grid = Vector4.zero;
+            if (_pixelsPerMetre > 0f)
+            {
+                // A radial quad's half-extent is the range on both axes; a cone's is half its width
+                // by half its range (see PoseQuad). One art pixel is 1/ppm metres, so in a quad space
+                // of half-extent 1 it is (1/ppm) / halfExtent.
+                float halfX = radial ? r : ConeWorldWidth(r) * 0.5f;
+                float halfY = radial ? r : r * 0.5f;
+                float px = 1f / _pixelsPerMetre;
+                grid = new Vector4(px / Mathf.Max(halfX, 1e-4f), px / Mathf.Max(halfY, 1e-4f), 0f, 0f);
+            }
+            _mpb.SetVector(IdPixelGrid, grid);
             _quadRenderer.SetPropertyBlock(_mpb);
 
             _quadRenderer.sortingOrder = SafeSortingOrder;
             if (_sortingGroup != null) _sortingGroup.sortingOrder = SafeSortingOrder;   // keep the 2D-sort group in sync
-            _quadRenderer.enabled = isActiveAndEnabled && _quadRenderer.sharedMaterial != null;
+            ApplyQuadEnabled();
+        }
+
+        /// <summary>The world width of a cone's quad at its far end — one rule, read by the pose and
+        /// by the pixel grid, so the two cannot disagree about how big the quad is.</summary>
+        private float ConeWorldWidth(float r)
+        {
+            float halfAngle = Mathf.Clamp(_coneHalfAngle, 0f, 180f);
+            float halfWidth = r * Mathf.Tan(Mathf.Min(halfAngle, 89f) * Mathf.Deg2Rad);
+            return Mathf.Clamp(2f * halfWidth, 0.1f, 8f * r);
         }
 
         /// <summary>
@@ -503,9 +616,7 @@ namespace HiddenHarbours.Art
                 // Lamp at the quad bottom-centre: the quad must extend forward (local +Y, = transform.up) from
                 // the origin. Quad spans 2 local-Y; scale Y by r/2 so the world height == r (bottom→top == r).
                 // Centre sits r/2 forward of the lamp.
-                float halfAngle = Mathf.Clamp(_coneHalfAngle, 0f, 180f);
-                float halfWidth = r * Mathf.Tan(Mathf.Min(halfAngle, 89f) * Mathf.Deg2Rad);
-                float worldWidth = Mathf.Clamp(2f * halfWidth, 0.1f, 8f * r);
+                float worldWidth = ConeWorldWidth(r);
                 _quad.localScale = new Vector3(worldWidth * 0.5f, r * 0.5f, 1f);   // local span 2 -> world width/height
                 _quad.position = PinDepthToCamera(origin + (Vector3)((Vector2)(transform.up) * (r * 0.5f)));
             }

@@ -40,6 +40,13 @@ Shader "HiddenHarbours/AdditiveLight"
         _EdgeSoftness       ("Radial edge softness (0..1)", Range(0, 1)) = 0.6
         _CoreBoost          ("Bright core boost", Range(0, 4)) = 1
 
+        [Header(Lamp look. All zero is the smooth glow)]
+        _CoreRadius         ("Hard core radius (fraction of throw, 0 is smooth)", Range(0, 1)) = 0
+        _HaloStrength       ("Halo strength beside the core (0..1)", Range(0, 1)) = 0
+        _BandSteps          ("Falloff bands (0 is smooth)", Float) = 0
+        _CoreWhiten         ("Core pull toward white (0..1)", Range(0, 1)) = 0
+        _PixelGrid          ("One art pixel in quad space (xy, 0 is no snap)", Vector) = (0, 0, 0, 0)
+
         [Header(Night gate)]
         _GateThreshold      ("Gate darkness threshold (0..1)", Range(0, 1)) = 0.12
         _GateSoftness       ("Gate fade band (0..1)", Range(0, 1)) = 0.35
@@ -97,6 +104,11 @@ Shader "HiddenHarbours/AdditiveLight"
                 float  _GateFallback;
                 float4 _LampPos;
                 float  _Throw;
+                float  _CoreRadius;
+                float  _HaloStrength;
+                float  _BandSteps;
+                float  _CoreWhiten;
+                float4 _PixelGrid;
             CBUFFER_END
 
             // --- pure helpers (mirror LightMath; defined BEFORE use) ---
@@ -136,6 +148,13 @@ Shader "HiddenHarbours/AdditiveLight"
                 // for a radial so the halo is a full disc). 'rel' is the point relative to the lamp; the beam
                 // axis is local +y. The component scales the quad so _Throw quad-space units == the world range.
                 float2 q = IN.uv * 2.0 - 1.0;
+
+                // PIXEL SNAP (the lamp look). _PixelGrid is one art pixel in quad space; snapping q to
+                // the centre of its cell makes every band below a run of whole pixels instead of a
+                // curve through them. Zero = no snap, the resolution-free glow.
+                if (_PixelGrid.x > 0.0 && _PixelGrid.y > 0.0)
+                    q = (floor(q / _PixelGrid.xy) + 0.5) * _PixelGrid.xy;
+
                 float2 rel = q - _LampPos.xy;
 
                 // RADIAL falloff: distance from the lamp normalized by the throw (1 at the lamp, 0 at the edge).
@@ -143,6 +162,7 @@ Shader "HiddenHarbours/AdditiveLight"
                 float linearR = saturate(1.0 - dist);
                 float power = lerp(2.0, 0.6, saturate(_EdgeSoftness));   // soft halo vs harder disc
                 float radial = pow(linearR, power);
+                float bands = floor(max(_BandSteps, 0.0));
 
                 // ANGULAR (cone) falloff: angle of 'rel' off the +y axis. halfAng >= 180 => full radial (no cut).
                 float cone;
@@ -160,11 +180,30 @@ Shader "HiddenHarbours/AdditiveLight"
                     cone *= step(0.0, rel.y);   // forward-only: nothing behind the lamp
                 }
 
-                float shape = radial * cone;
+                float shape;
+                float whiten = 0.0;
+                if (_CoreRadius > 0.0)
+                {
+                    // THE LAMP LOOK (mirrors LightMath.LampShape): a flat hot core out to _CoreRadius,
+                    // then a faint halo from the core's edge to the throw, cut into flat bands. A lamp
+                    // is a small hard thing with a little glow round it; one smooth gradient the size
+                    // of the whole quad is a ball of light hanging in the air.
+                    float d = length(rel) / max(_Throw, 1e-4);
+                    float coreMask = step(d, _CoreRadius);
+                    float haloLin = saturate(1.0 - (d - _CoreRadius) / max(1.0 - _CoreRadius, 1e-4));
+                    float halo = bands >= 1.0 ? ceil(haloLin * bands) / bands : haloLin;
+                    shape = max(coreMask, halo * saturate(_HaloStrength)) * cone;
+                    whiten = coreMask * saturate(_CoreWhiten);
+                }
+                else
+                {
+                    if (bands >= 1.0) radial = ceil(radial * bands) / bands;
+                    shape = radial * cone;
 
-                // Bright core: a small extra punch near the lamp so the source reads as a hot point.
-                float core = pow(linearR, 6.0) * _CoreBoost;
-                shape = saturate(shape + core * cone);
+                    // Bright core: a small extra punch near the lamp so the source reads as a hot point.
+                    float core = pow(linearR, 6.0) * _CoreBoost;
+                    shape = saturate(shape + core * cone);
+                }
 
                 float gate = NightGate();
                 float k = max(_Intensity, 0.0) * shape * gate;
@@ -172,7 +211,7 @@ Shader "HiddenHarbours/AdditiveLight"
                 if (k <= 0.0) discard;   // outside the cone / washed out by day -> contribute nothing
 
                 // Premultiplied additive: colour already scaled by k; Blend One One adds it to the frame.
-                float3 rgb = _LightColor.rgb * k;
+                float3 rgb = lerp(_LightColor.rgb, float3(1.0, 1.0, 1.0), whiten) * k;
                 return half4(rgb, k);
             }
             ENDHLSL
