@@ -32,6 +32,12 @@ namespace HiddenHarbours.Boats
         public const string GpsId          = "instrument.gps";
         public const string CompassDomeId  = "instrument.compass_dome";
         public const string CompassFlushId = "instrument.compass_flush";
+        /// <summary>The analog wind dial: apparent wind angle and speed
+        /// (<see cref="WindInstrumentGrade.Dial"/>).</summary>
+        public const string WindDialId     = "instrument.wind_dial";
+        /// <summary>The digital wind display: apparent and true wind
+        /// (<see cref="WindInstrumentGrade.Display"/>). Supersedes <see cref="WindDialId"/>.</summary>
+        public const string WindDisplayId  = "instrument.wind_display";
 
         /// <summary>
         /// The effective fit for a hull: its <paramref name="console"/> default, with any owned upgrade in
@@ -47,6 +53,9 @@ namespace HiddenHarbours.Boats
             var compass = console.DefaultCompass;
             bool radar  = console.DefaultRadar;
             bool gps    = console.DefaultGps;
+            // A default above what the helm can take is an authoring slip, not a fit: cap it here so
+            // the resolved fit can never claim an instrument the console has no place for.
+            var wind    = console.DefaultWind > console.MaxWind ? console.MaxWind : console.DefaultWind;
 
             if (ownedForHull != null && ownedForHull.Count > 0)
             {
@@ -74,9 +83,18 @@ namespace HiddenHarbours.Boats
 
                 if (console.SupportsRadar && ownedForHull.Contains(RadarId)) radar = true;
                 if (console.SupportsGps   && ownedForHull.Contains(GpsId))   gps   = true;
+
+                // Wind, in tier order, and an owned unit only ever RAISES the grade (a helm that ships
+                // the display is not downgraded by a dial in the locker). Each id needs a helm that can
+                // take that grade: the display does nothing where only the dial fits.
+                if (console.MaxWind >= WindInstrumentGrade.Display && ownedForHull.Contains(WindDisplayId))
+                    wind = WindInstrumentGrade.Display;
+                else if (wind < WindInstrumentGrade.Dial && console.MaxWind >= WindInstrumentGrade.Dial
+                         && ownedForHull.Contains(WindDialId))
+                    wind = WindInstrumentGrade.Dial;
             }
 
-            return new HelmFit(console.Rig, sounder, compass, radar, gps);
+            return new HelmFit(console.Rig, sounder, compass, radar, gps, wind);
         }
 
         /// <summary>Convenience for a hull that carries a console pointer.</summary>

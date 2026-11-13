@@ -65,6 +65,30 @@ namespace HiddenHarbours.Core
         /// </summary>
         bool TryReadPosition(out UnityEngine.Vector2 worldPos);
 
+        /// <summary>
+        /// The wind as THIS hull's fitted wind instrument reports it: apparent wind (the boat's own
+        /// velocity included) always, true wind only when the fitted grade measures it
+        /// (<see cref="HelmWindReading.HasTrue"/>). Returns <c>false</c>, with
+        /// <paramref name="reading"/> zeroed, when there is nothing to read: no piloted hull, no
+        /// environment service, or no wind instrument in the fit
+        /// (<see cref="WindInstrumentGrade.None"/>). A consumer then shows nothing.
+        ///
+        /// <para><b>One wind.</b> Implementations answer through <see cref="HelmWind.TryRead"/>, which
+        /// is <see cref="SailDrive.ResolveWind"/> behind the grade gate, so the needle and the sails
+        /// cannot disagree. Recomputed from the deterministic weather, never saved (rule 5).</para>
+        ///
+        /// <para>Implementations read on the same THROTTLED tick as <see cref="TryReadDepth"/>;
+        /// callers may poll this every frame. A <i>default interface method</i> answering "nothing
+        /// fitted" (the <see cref="IEnvironmentService.SeaState01At"/> precedent), so every existing
+        /// implementation keeps compiling and keeps its meaning.</para>
+        /// FLAG lead-architect: additive member on the ADR 0025 S2 helm-instrument seam.
+        /// </summary>
+        bool TryReadWind(out HelmWindReading reading)
+        {
+            reading = default;
+            return false;
+        }
+
         /// <summary>This hull's persisted sounder preferences (set-point, armed, units, night). Falls
         /// back to <see cref="SounderPrefs.FromDefaults"/> for a hull that has never been touched.</summary>
         SounderPrefs SounderPrefs { get; }
