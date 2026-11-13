@@ -36,7 +36,9 @@ namespace HiddenHarbours.UI
     /// <para><b>⚠ The shipped fleet needs both rules.</b> It is tempting to read "all four consoled
     /// hulls carry a compass, so the cluster always hides at a dash" — and it is FALSE against the
     /// authored data. <c>ConsoleSkiffHelm</c>/<c>SportSkiffHelm</c> ship <c>DefaultCompass: Dome</c>;
-    /// <c>NoviHelm</c>/<c>CapeIslanderHelm</c> ship <c>DefaultCompass: None</c> (they support both
+    /// <c>NoviHelm</c>/<c>CapeIslanderHelm</c> shipped <c>DefaultCompass: None</c> when this was written
+    /// and ship <c>Flush</c> since the owner's 2026-11-13 ruling, so the overlap rule now serves any
+    /// console that fits no compass rather than a shipped one. As first written: (they support both
     /// mounts, but a fresh one is fitted with neither). So the two wheelhouses — the newest dashes in
     /// the fleet — are exactly the live case where hiding the cluster would delete the player's only
     /// heading read. Verified against the four <c>.asset</c> files, and pinned in

@@ -358,8 +358,8 @@ namespace HiddenHarbours.Tests.PlayMode
             WharfNightStage.RequireAGraphicsDevice();
             yield return Stage();
             BoatHullDef novi = LoadHull("LobsterBoat");
-            Assert.AreEqual(CompassMount.None, novi.Helm.DefaultCompass,
-                            "premise: the Novi as shipped has no compass, so the HUD's nav cluster stands");
+            Assert.AreEqual(CompassMount.Flush, novi.Helm.DefaultCompass,
+                            "premise: the Novi as shipped carries a flush compass, so the HUD's nav cluster stands down");
             yield return Board(novi);   // as shipped: nothing bought
             DevToast toast = Spawn("DevToast(band plate)").AddComponent<DevToast>();
             QuestPanelPresenter note = Spawn("QuestNote(band plate)").AddComponent<QuestPanelPresenter>();
@@ -375,7 +375,7 @@ namespace HiddenHarbours.Tests.PlayMode
                 yield return Settle(0.25f);
                 yield return Shoot("P3", $"novi_{s.x}x{s.y}_overlays", BandRect(),
                                    "the overlays clear of the band: the dev toast, the interact popup, the quest " +
-                                   "note and the nav cluster (the Novi as shipped has no compass of her own)");
+                                   "note, with the nav cluster stood down (the Novi as shipped has her own flush compass)");
             }
         }
 

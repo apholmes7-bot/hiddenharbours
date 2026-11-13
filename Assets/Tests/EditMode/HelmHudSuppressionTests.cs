@@ -110,24 +110,24 @@ namespace HiddenHarbours.Tests.EditMode
         // ---- the shipped fleet ---------------------------------------------------------------------
 
         [Test]
-        public void TheShippedWheelhouses_ShipWithNoCompass_SoTheClusterMustSurviveThere()
+        public void EveryShippedConsole_ShipsACompass_SoTheClusterStandsDownAtEveryShippedDash()
         {
-            // ⚠ The load-bearing fact behind the whole two-rule design, asserted against the AUTHORED
-            // assets rather than trusted from a handoff. "All four consoled hulls carry a compass, so
-            // the cluster can just hide at any dash" is the obvious simplification and it is FALSE:
-            // the two skiffs default to a dome, the two wheelhouses default to none. Collapse the two
-            // rules into one and the Novi and the Cape — the newest dashes in the fleet — lose their
-            // only heading read.
+            // The fact the rule is derived against, asserted on the AUTHORED assets rather than trusted
+            // from a handoff. Until the owner's 2026-11-13 ruling the two wheelhouses shipped with no
+            // compass, and this test pinned that the cluster had to survive there. They now ship a
+            // flush compass, so every shipped dash carries its own heading read and the cluster hides
+            // at all four. The overlap rule (ClearOfTheDash) is still needed for any console fitted
+            // with no compass, and is proven on its own above
+            // (ADashWithNoCompass_MovesTheClusterInsteadOfHidingIt).
             var expected = new Dictionary<string, CompassMount>
             {
                 { "helm.console_skiff", CompassMount.Dome },
                 { "helm.sport_skiff", CompassMount.Dome },
-                { "helm.novi", CompassMount.None },
-                { "helm.cape_islander", CompassMount.None },
+                { "helm.novi", CompassMount.Flush },
+                { "helm.cape_islander", CompassMount.Flush },
             };
 
             var owned = new List<string>();          // a fresh boat: no purchases layered on
-            int withoutCompass = 0;
             foreach (string path in ShippedHelms)
             {
                 var console = UnityEditor.AssetDatabase.LoadAssetAtPath<HelmConsoleDef>(path);
@@ -136,27 +136,13 @@ namespace HiddenHarbours.Tests.EditMode
 
                 HelmFit fit = BoatEquipment.EffectiveFit(console, owned);
                 Assert.That(fit.Compass, Is.EqualTo(expected[console.Id]),
-                            $"{console.Id}'s authored DefaultCompass moved — re-derive the HUD " +
-                            "suppression rule against it before assuming the cluster can be hidden");
+                            $"{console.Id}'s authored DefaultCompass moved: re-derive the HUD " +
+                            "suppression rule against it before assuming what the cluster does there");
 
-                NavClusterPlacement placement =
-                    HelmHudSuppression.NavCluster(true, HelmControlStyle.Lever, fit);
-                if (fit.Compass == CompassMount.None)
-                {
-                    withoutCompass++;
-                    Assert.That(placement, Is.EqualTo(NavClusterPlacement.ClearOfTheDash),
-                                $"{console.Id} has no compass — its heading read must move, not vanish");
-                }
-                else
-                {
-                    Assert.That(placement, Is.EqualTo(NavClusterPlacement.Hidden), console.Id);
-                }
+                Assert.That(HelmHudSuppression.NavCluster(true, HelmControlStyle.Lever, fit),
+                            Is.EqualTo(NavClusterPlacement.Hidden),
+                            $"{console.Id} carries a compass, so the HUD's duplicate stands down");
             }
-
-            Assert.That(withoutCompass, Is.GreaterThan(0),
-                        "SABOTAGE NOT DETECTED: every shipped helm now fits a compass by default, so " +
-                        "the ClearOfTheDash branch is dead in the shipped fleet and this test no " +
-                        "longer proves the two rules are both needed. Re-derive rather than delete.");
         }
 
         // ---- the shared "is a dash up" predicate ---------------------------------------------------
