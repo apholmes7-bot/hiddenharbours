@@ -165,9 +165,9 @@ namespace HiddenHarbours.Tools.RigBaking
                             defaultSchemeExpr: "defaultScheme"),
 
             // The sport skiff Mk2 — the fleet rig pack's one-hull rig, and the FOURTH line of the
-            // small-craft API verbatim. She is not the sport skiff v1 repainted: v1 carries no paint
-            // axis at all (measured, not assumed — see the no-axis list in this lane's PR), and the
-            // committed hullmesh.sport_skiff_iso is a different hull that keeps her own look.
+            // small-craft API verbatim. She is not the sport skiff v1 repainted: the committed
+            // hullmesh.sport_skiff_iso is a different hull that keeps her own look, and since her
+            // rebuild to the hull layout her own schemes too (the 'paint.sport_skiff_' row below).
             //
             // 'sport_skiff_mk2', not 'skiff': the same reason the console skiff is not 'skiff'. The
             // fleet holds four skiff-shaped rigs and this table is hers alone (13 materials in her
@@ -322,6 +322,10 @@ namespace HiddenHarbours.Tools.RigBaking
                 "paint.yacht_tender_", "yacht_tender"),
             PublishedWalkPaint("motorYacht84", "hullmesh.motor_yacht84_iso", "MotorYacht84Iso",
                 "paint.motor_yacht84_", "motor_yacht_84"),
+            // The sport skiff (v1), rebuilt to the hull layout: gelcoat, stripes and canvas by scheme.
+            // Her ids sit beside the Mk2's ('paint.sport_skiff_mk2_') as the stern trawlers' do.
+            PublishedWalkPaint("sportSkiff", "hullmesh.sport_skiff_iso", "SportSkiffIso",
+                "paint.sport_skiff_", "sport_skiff_iso"),
 
         };
 
@@ -417,12 +421,6 @@ namespace HiddenHarbours.Tools.RigBaking
                     "The dory (T0) — no paint axis. She is the boat he starts in and her bare lapstrake " +
                     "planking is her identity, so an axis for her is a real art question rather than a " +
                     "mechanical one: what does a repainted dory even look like before he can afford paint?",
-
-                ["sportSkiffIsoRig.js"] =
-                    "Sport skiff v1 — no paint axis. ⚠️ Her Mk2 HAS one and is baked; this is not a stale " +
-                    "entry for a retired rig. The two are different hulls by the owner's ruling " +
-                    "(2026-08-13): the committed hullmesh.sport_skiff_iso keeps her id, her mesh and " +
-                    "her two outboard visuals, so painting the Mk2 does not reach her.",
 
                 ["coastalPacketIsoRig.js"] =
                     "Coastal packet (T6) — no paint axis. The first merchant hull, and the tier where a " +

@@ -111,7 +111,7 @@ namespace HiddenHarbours.Tests.RigBaking
 
             // ⚠️ ANTI-VACUITY. Nothing below this line would fail on an empty hull list.
             // The floor falls by one with each hull rebuilt off the old layout (her sidecar retires).
-            Assert.GreaterOrEqual(hulls.Length, 29,
+            Assert.GreaterOrEqual(hulls.Length, 28,
                 $"only {hulls.Length} hull sidecar(s) survived discovery out of {all.Length} files. " +
                 "The fleet is thirty-odd measured hulls; a number this low means the exclusion ate " +
                 "the corpus and every parity assertion below is passing on an empty list.");

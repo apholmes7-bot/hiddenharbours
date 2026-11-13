@@ -67,6 +67,8 @@ namespace HiddenHarbours.Tests.PlayMode
         [UnityTest] public IEnumerator SternTrawler_AtRest() => AtRest("SternTrawler");
         [UnityTest] public IEnumerator SternTrawlerMk2_AtRest() => AtRest("SternTrawlerMk2");
         [UnityTest] public IEnumerator SideDragger_AtRest() => AtRest("SideDragger");
+        [UnityTest] public IEnumerator SportSkiff_AtRest() => AtRest("SportSkiff");
+        [UnityTest] public IEnumerator SportSkiffTwin_AtRest() => AtRest("SportSkiffTwin");
 
         IEnumerator AtRest(string file)
         {

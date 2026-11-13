@@ -6,8 +6,9 @@ work (M2-37..39).
 
 **Switched hulls (`hull-walk@1`).** The recreation boats, and since 2026-11-12 both stern trawlers
 (`sternTrawlerIsoRig.stern_trawler.walk.json`, the first of the working ships, and
-`sternTrawlerMk2IsoRig.stern_trawler_mk2.walk.json`) and the side dragger
-(`sideDraggerIsoRig.side_dragger.walk.json`), use one generated
+`sternTrawlerMk2IsoRig.stern_trawler_mk2.walk.json`), the side dragger
+(`sideDraggerIsoRig.side_dragger.walk.json`) and the sport skiff
+(`sportSkiffIsoRig.sport_skiff_iso.walk.json`), use one generated
 `<rig stem>.<hull id>.walk.json` per hull. `HullWalkSidecarReader` reads it and
 `HullWalkSidecarImporter` creates its deck and, when authored, room Defs; the mesh bake reads the
 same hull through its global's `byId`. `LayoutSchema` and `NoHullReadsBothLayoutsTests` keep this
@@ -74,8 +75,8 @@ error). Never invent a section to fill a gap.
   (art-director charter rule 2). The importer enforces this: a mismatch is a loud refusal
   and that hull keeps the greybox rectangle — it never silently imports polygons cut from a
   different boat.
-  - ⚠️ **Five of the eight SHAs below are CRLF hashes** (cape, packet, lobster,
-    sportSkiff, tanker) — they were derived from working copies with
+  - ⚠️ **Four of the seven SHAs below are CRLF hashes** (cape, packet, lobster,
+    tanker) — they were derived from working copies with
     Windows line endings, and the repo stores the rigs with LF. The importer accepts a match
     on either convention and says so on every run, because a line ending cannot move a
     vertex; every cited line number and constant in those files still reads exactly as
@@ -133,9 +134,8 @@ Every coordinate in these files is **computed from the rig's own math** (station
 stay known:
 
 - lobsterBoat & capeIslander foredeck `DROP = 0.05` (capeIslanderIsoRig.js:198 — verified,
-  previously flagged); sportSkiff foredeck `DROP = 0.07` (sportSkiffIsoRig.js:147) — **not**
-  0.05. The `DROP = 0.045` at sportSkiffIsoRig.js:222 is the bimini canvas skirt, a canvas
-  detail — ignore it. **The console skiff's `DROP = 0.07` trap is RETIRED** (2026-07-25):
+  previously flagged). The sport skiff's `DROP` traps left this folder with her sidecar: her
+  walk is generated from her rig now. **The console skiff's `DROP = 0.07` trap is RETIRED** (2026-07-25):
   her pass-2 rig has no `DROP` at all — the foredeck is flush at the sheer,
   `fz(u) = station(u).kz + station(u).dep − 0.012` (consoleIsoRig.js:272). Her bow cleat `z`
   moved 0.989 → 1.047 in the same pass.
@@ -144,14 +144,13 @@ stay known:
 - coastalPacket, sternTrawlerMk2 and tanker apply `flareExp` inside their deck-width
   functions; sternTrawler (mk1) and sideDragger do not.
 
-## Current set (8 single-hull rigs + the lobster generator's 18)
+## Current set (7 single-hull rigs + the lobster generator's 18)
 
 | hull | LOA | DECK | WASHBOARD | CLEATS |
 |---|---|---|---|---|
 | dory | 4.5 m | bilge floor (3d) | — open boat | stem-head ring bolt + port-quarter ring (modelled, 2026-07-25) |
 | punt | 5.2 m | bilge floor (3d) | — open boat | stem-head ring bolt + port-quarter ring (modelled, 2026-07-25) |
 | console | 7.0 m | cockpit sole | — open skiff | bow cleat |
-| sportSkiff | 7.0 m | cockpit sole | — open skiff | bow cleat |
 | capeIslander | 12.8 m | cockpit + whaleback foredeck (3d) | both sides, 0.42 m (full run to the foredeck; narrows past the house) | bow bitt + 2 stern |
 | lobsterBoat | 12.0 m | cockpit + foredeck (3d) | both sides, 0.44 m (full length) | bow samson + 2 stern |
 | coastalPacket | 60 m | aft deck, house alleys, hold walkways, gaps, foc'sle (3d) | — merchant rails | 2 bow + 2 quarter bollards |
