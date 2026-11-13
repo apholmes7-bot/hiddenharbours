@@ -62,6 +62,8 @@ When you add an ADR, add its row here in the same PR.
 | 0055 | [Goods are carried](0055-goods-are-carried.md) | **Proposed** (manual delivery, persistent goods and phased carrier design; no runtime change) |
 | 0056 | [The facet-id space is a budget: lazy fore blocks and a reserved player figure](0056-facet-id-space-is-a-budget.md) | Accepted (owner ruled "Yes, fix it" on PR 877, 2026-11-12; implemented in its PR; supersedes the PR 877 note) |
 
+| 0057 | [The campaign is playable by two: the host owns the world](0057-campaign-coop-host-world.md) | **Proposed** (campaign direction ruled; contracts and packages await owner and lead-architect review) |
+
 **Conventions.** `Proposed` = awaiting the named decider; `Accepted` = ratified (by the owner where
 the ADR says so, otherwise by `lead-architect` on merge); `Implemented` = accepted and the code
 landed in the same PR; `Superseded` = kept for the record, points at its successor. An ADR whose

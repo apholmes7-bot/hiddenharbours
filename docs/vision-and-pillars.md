@@ -181,6 +181,8 @@ These resolve questions raised while writing the system docs. They are now canon
 
 ## 7. Scope honesty (read this, non-negotiable)
 
+**Owner-directed addition, 2026-11-13:** the full campaign is playable by two in the host's world, with one save and purse, separate hands, and both aboard the intro boat at sea from the opening; [ADR 0057](adr/0057-campaign-coop-host-world.md) proposes the contracts and [CO-01 to CO-12](../backlog/coop-campaign.md) sequence delivery, with solo play unchanged.
+
 This is a **big** vision — easily several years of work if built all at once. The roadmap
 (`roadmap.md`) deliberately sequences it so there is a *fun, shippable game at every stage*,
 starting from a tiny vertical slice (the fishing→sell loop in Coddle Cove). **We build the

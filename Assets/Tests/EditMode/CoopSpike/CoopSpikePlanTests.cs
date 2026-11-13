@@ -91,15 +91,54 @@ namespace HiddenHarbours.Tests.CoopSpike
         }
 
         [Test]
-        public void DevStartRequiresExactlyOneRoleAndTheIsolatedProduct()
+        public void DevStartRequiresExactlyOneRoleInTheNormalProduct()
         {
             string host = CoopDevStart.HostArgument, client = CoopDevStart.ClientArgument;
-            Assert.That(CoopDevStart.ShouldStart(new[] { host }, CoopDevStart.SpikeProduct), Is.True);
-            Assert.That(CoopDevStart.ShouldStart(new[] { client }, CoopDevStart.SpikeProduct), Is.True);
-            Assert.That(CoopDevStart.ShouldStart(new[] { host, client }, CoopDevStart.SpikeProduct), Is.False);
-            Assert.That(CoopDevStart.ShouldStart(new string[0], CoopDevStart.SpikeProduct), Is.False);
-            Assert.That(CoopDevStart.ShouldStart(new[] { host }, "My project"), Is.False);
-            Assert.That(CoopDevStart.ShouldStart(null, CoopDevStart.SpikeProduct), Is.False);
+            Assert.That(PlayerSettings.productName, Is.EqualTo("My project"));
+            Assert.That(PlayerSettings.companyName, Is.EqualTo("DefaultCompany"));
+            Assert.That(CoopDevStart.ShouldStart(new[] { host }), Is.True);
+            Assert.That(CoopDevStart.ShouldStart(new[] { client }), Is.True);
+            Assert.That(CoopDevStart.ShouldStart(new[] { host, client }), Is.False);
+            Assert.That(CoopDevStart.ShouldStart(new string[0]), Is.False);
+            Assert.That(CoopDevStart.ShouldStart(null), Is.False);
+        }
+
+        [Test]
+        public void SoloBootCreatesNoCoopObjectsAndPreservesServicesAndSavePath()
+        {
+            var objects = Object.FindObjectsByType<GameObject>(FindObjectsInactive.Include, FindObjectsSortMode.InstanceID);
+            var save = GameServices.Save;
+            string path = Application.persistentDataPath;
+            bool background = Application.runInBackground;
+            Assert.That(CoopDevStart.StartFromArguments(null), Is.Null);
+            Assert.That(CoopDevStart.StartFromArguments(new string[0]), Is.Null);
+            Assert.That(CoopDevStart.StartFromArguments(new[] { "HiddenHarbours.exe", "-batchmode" }), Is.Null);
+            Assert.That(Object.FindObjectsByType<GameObject>(FindObjectsInactive.Include, FindObjectsSortMode.InstanceID),
+                Is.EqualTo(objects), "The actual boot path must create nothing in solo, including inactive roots.");
+            Assert.That(Object.FindObjectsByType<CoopDevStart>(FindObjectsInactive.Include, FindObjectsSortMode.None), Is.Empty);
+            Assert.That(Object.FindObjectsByType<NetworkManager>(FindObjectsInactive.Include, FindObjectsSortMode.None), Is.Empty);
+            Assert.That(Object.FindObjectsByType<NetworkObject>(FindObjectsInactive.Include, FindObjectsSortMode.None), Is.Empty);
+            Assert.That(GameServices.Save, Is.SameAs(save));
+            Assert.That(Application.persistentDataPath, Is.EqualTo(path));
+            Assert.That(Application.runInBackground, Is.EqualTo(background));
+        }
+
+        [TestCase(false)]
+        [TestCase(true)]
+        public void TrialBuildNameIsScopedAndRestoredEvenOnFailure(bool fail)
+        {
+            string product = PlayerSettings.productName;
+            string company = PlayerSettings.companyName;
+            void Build()
+            {
+                Assert.That(PlayerSettings.productName, Is.EqualTo(CoopDevStart.SpikeProduct));
+                Assert.That(PlayerSettings.companyName, Is.EqualTo(company));
+                if (fail) throw new System.InvalidOperationException("Build failure fixture");
+            }
+            if (fail) Assert.Throws<System.InvalidOperationException>(() => CoopSpikeAssets.WithTrialProduct(Build));
+            else CoopSpikeAssets.WithTrialProduct(Build);
+            Assert.That(PlayerSettings.productName, Is.EqualTo(product));
+            Assert.That(PlayerSettings.companyName, Is.EqualTo(company));
         }
 
         [TestCase(21, true)]

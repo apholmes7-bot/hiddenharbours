@@ -46,7 +46,7 @@ namespace HiddenHarbours.Tests.CoopSpike
         protected override IEnumerator OnServerAndClientsConnected()
         {
 #if UNITY_EDITOR
-            Assert.That(Application.productName, Is.EqualTo(CoopDevStart.SpikeProduct));
+            Assert.That(Application.productName, Is.EqualTo("My project"), "Network fixtures run with the unchanged solo product.");
             // The self-installed disk service keeps its EventBus subscriptions even when
             // GameServices.Save is replaced. Remove it before F publishes ActiveBoatChanged.
             foreach (var save in Object.FindObjectsByType<SaveService>()) Object.DestroyImmediate(save);

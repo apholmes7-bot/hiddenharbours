@@ -33,7 +33,7 @@ namespace HiddenHarbours.Tests.CoopSpike
         [UnityTest]
         public IEnumerator AuthoredStartingCoreBootsTheHostAtSeaWithARod()
         {
-            Assert.That(Application.productName, Is.EqualTo(CoopDevStart.SpikeProduct));
+            Assert.That(Application.productName, Is.EqualTo("My project"), "The trial also boots from the normal product.");
             _previousSave = GameServices.Save;
             GameServices.Save = new MemorySave();
             // Match the player's AfterSceneLoad hook: create the bootstrap before the

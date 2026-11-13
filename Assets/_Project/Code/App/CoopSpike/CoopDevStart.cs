@@ -14,7 +14,7 @@ using UnityEngine.SceneManagement;
 
 namespace HiddenHarbours.CoopSpike
 {
-    /// <summary>Explicit branch-only boot; ordinary play never creates a network session.</summary>
+    /// <summary>Explicit opt-in trial; ordinary play never creates a network session.</summary>
     public sealed class CoopDevStart : MonoBehaviour
     {
         public const string HostArgument = "--coop-spike-host";
@@ -29,9 +29,9 @@ namespace HiddenHarbours.CoopSpike
         public bool Ready { get; private set; }
         public NetworkManager Manager => _manager;
 
-        public static bool ShouldStart(string[] args, string product)
+        public static bool ShouldStart(string[] args)
         {
-            if (product != SpikeProduct || args == null) return false;
+            if (args == null) return false;
             bool host = Array.IndexOf(args, HostArgument) >= 0;
             bool client = Array.IndexOf(args, ClientArgument) >= 0;
             return host != client;
@@ -40,9 +40,15 @@ namespace HiddenHarbours.CoopSpike
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
         private static void Boot()
         {
-            var args = System.Environment.GetCommandLineArgs();
-            if (Application.productName != SpikeProduct || !Array.Exists(args,
-                arg => arg.StartsWith("--coop-spike-", StringComparison.Ordinal))) return;
+            StartFromArguments(System.Environment.GetCommandLineArgs());
+        }
+
+        // This is also the solo regression seam: return before loading any trial assets,
+        // creating any objects or replacing services unless a trial option was supplied.
+        public static CoopDevStart StartFromArguments(string[] args)
+        {
+            if (args == null || !Array.Exists(args,
+                arg => arg != null && arg.StartsWith("--coop-spike-", StringComparison.Ordinal))) return null;
             var settings = Resources.Load<CoopSpikeSettings>(CoopSpikeSettings.ResourcePath);
             string error = null;
             CoopLaunchOptions options = null;
@@ -50,13 +56,14 @@ namespace HiddenHarbours.CoopSpike
             {
                 Debug.LogError("[Coop] Invalid launch: " + (settings == null ? "settings missing" : error));
                 Application.Quit(2);
-                return;
+                return null;
             }
             var root = new GameObject("CoopSpikeDevStart");
             DontDestroyOnLoad(root);
             var boot = root.AddComponent<CoopDevStart>();
             boot._options = options;
             boot._client = options.Client;
+            return boot;
         }
 
         private sealed class SessionSave : ISaveService
@@ -70,10 +77,8 @@ namespace HiddenHarbours.CoopSpike
 
         private void Awake()
         {
-            if (Application.productName != SpikeProduct)
-                throw new InvalidOperationException("The trial requires its isolated product.");
-            // AfterSceneLoad precedes the authored core's Start/load-restore. The isolated
-            // product's disk service has opened, but cannot autosave once removed here.
+            // AfterSceneLoad precedes the authored core's Start/load-restore. The disk
+            // service has opened read-only so far, and cannot autosave once removed here.
             foreach (var save in FindObjectsByType<SaveService>(FindObjectsSortMode.None))
                 DestroyImmediate(save);
             GameServices.Save = new SessionSave();
@@ -233,7 +238,7 @@ namespace HiddenHarbours.CoopSpike
         public static bool TryParse(string[] args, ushort defaultPort, out CoopLaunchOptions options, out string error)
         {
             options = null; error = "Choose exactly one host/client role and a valid IPv4 endpoint.";
-            if (!CoopDevStart.ShouldStart(args, CoopDevStart.SpikeProduct) || defaultPort == 0) return false;
+            if (!CoopDevStart.ShouldStart(args) || defaultPort == 0) return false;
             bool client = Array.IndexOf(args, CoopDevStart.ClientArgument) >= 0;
             string address = "127.0.0.1";
             ushort port = defaultPort;

@@ -18,8 +18,23 @@ namespace HiddenHarbours.CoopSpike.Editor
         public const string SettingsPath = Root + "/Settings.asset";
         public static void BuildWindowsTrial()
         {
-            if (Application.productName != CoopDevStart.SpikeProduct)
-                throw new System.InvalidOperationException("The trial requires the isolated spike product.");
+            WithTrialProduct(BuildWindowsTrialPlayer);
+        }
+
+        // The build carries the trial name; the project and subsequent solo builds retain theirs.
+        public static void WithTrialProduct(System.Action build)
+        {
+            string product = PlayerSettings.productName;
+            try
+            {
+                PlayerSettings.productName = CoopDevStart.SpikeProduct;
+                build();
+            }
+            finally { PlayerSettings.productName = product; }
+        }
+
+        private static void BuildWindowsTrialPlayer()
+        {
             string destination = Path.GetFullPath("Evidence~/gpt-coop/package/HiddenHarboursCoopSpike.exe");
             Directory.CreateDirectory(Path.GetDirectoryName(destination));
             var report = BuildPipeline.BuildPlayer(new BuildPlayerOptions
@@ -36,10 +51,13 @@ namespace HiddenHarbours.CoopSpike.Editor
         }
         public static void BuildWindowsCost()
         {
-            if (Application.productName != CoopDevStart.SpikeProduct)
-                throw new System.InvalidOperationException("The cost build requires the isolated spike product.");
+            WithTrialProduct(BuildWindowsCostPlayer);
+        }
+
+        private static void BuildWindowsCostPlayer()
+        {
             var watch = System.Diagnostics.Stopwatch.StartNew();
-            string destination = Path.GetFullPath("Builds~/TwoBoatsCost/HiddenHarboursCoopSpike.exe");
+            string destination = Path.GetFullPath("Evidence~/gpt-coop/cost/HiddenHarboursCoopSpike.exe");
             Directory.CreateDirectory(Path.GetDirectoryName(destination));
             var report = BuildPipeline.BuildPlayer(new BuildPlayerOptions
             {
@@ -49,7 +67,7 @@ namespace HiddenHarbours.CoopSpike.Editor
                 options = BuildOptions.Development
             });
             watch.Stop();
-            string evidence = Path.GetFullPath("Evidence~/coop-spike");
+            string evidence = Path.GetFullPath("Evidence~/gpt-coop");
             Directory.CreateDirectory(evidence);
             File.WriteAllText(Path.Combine(evidence, "day2-windows-build.txt"),
                 $"result={report.summary.result}\nseconds={watch.Elapsed.TotalSeconds:F3}\nbytes={report.summary.totalSize}\nerrors={report.summary.totalErrors}\nwarnings={report.summary.totalWarnings}\n");
