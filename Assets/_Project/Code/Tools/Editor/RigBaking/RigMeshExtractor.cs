@@ -1596,6 +1596,10 @@ namespace HiddenHarbours.Tools.RigBaking
         /// not steer, tilt, or carry more than one instance.</summary>
         public string MaxSteerCall, MaxTiltCall, LateralMountsCall;
 
+        /// <summary>Optional JS for the axis a steered fitting turns about, as [x,y,z] in rig space;
+        /// null for a fitting that swivels straight up (every outboard).</summary>
+        public string SteerAxisCall;
+
         /// <summary>The rig's backface rule for THIS fitting — see
         /// <see cref="RigMeshData.BackfaceRescueNeedsOptIn"/>.</summary>
         public bool BackfaceRescueNeedsOptIn = true;

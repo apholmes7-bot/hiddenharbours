@@ -102,7 +102,7 @@ namespace HiddenHarbours.Tests.EditMode
         [Test]
         public void NewIdentities_AreUniqueAndRegisteredWithTheirExactGuidAndType()
         {
-            var entries = Array(Member(Json(Fixture + "DefIdentityLedger.json"), "Entries"));
+            var entries = DefIdentityLedger.Load().Entries;
             var defs = Directory.GetFiles("Assets/_Project/Data/SetPieces", "*.asset")
                 .Select(p => (Path: p, Id: Field(File.ReadAllText(p), "Id"))).ToArray();
             foreach (var pin in Kinds)
@@ -110,11 +110,11 @@ namespace HiddenHarbours.Tests.EditMode
                 Assert.That(defs.Count(d => d.Id == pin.Id), Is.EqualTo(1), pin.Id);
                 string guid = GuidFor(DefPath(pin.Key));
                 Assert.That(guid, Does.Match("^[0-9a-f]{32}$"));
-                var entry = entries.Where(e => String(e, "Guid") == guid).ToArray();
+                var entry = entries.Where(e => e.Guid == guid).ToArray();
                 Assert.That(entry.Length, Is.EqualTo(1), pin.Id);
-                Assert.That(String(entry[0], "Id"), Is.EqualTo(pin.Id));
-                Assert.That(String(entry[0], "Type"), Is.EqualTo("HiddenHarbours.Art.SetPieceDef"));
-                Assert.That(entries.Count(e => String(e, "Type") == "HiddenHarbours.Art.SetPieceDef" && String(e, "Id") == pin.Id), Is.EqualTo(1));
+                Assert.That(entry[0].Id, Is.EqualTo(pin.Id));
+                Assert.That(entry[0].Type, Is.EqualTo("HiddenHarbours.Art.SetPieceDef"));
+                Assert.That(entries.Count(e => e.Type == "HiddenHarbours.Art.SetPieceDef" && e.Id == pin.Id), Is.EqualTo(1));
             }
         }
 

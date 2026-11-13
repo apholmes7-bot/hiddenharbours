@@ -189,10 +189,35 @@ namespace HiddenHarbours.Tools.RigBaking
             label: $"skiff outboard, {variant} (remote steer, ±30°)",
             wornBy);
 
+        // THE JETSKI'S HANDLEBARS. Her rig draws them as one part group (handlebarFaces) that turns about
+        // the raked column; her body is baked without them (HullWalkRigExtractor.HelmBarIsAFitting) so
+        // this fitting is the only copy.
+        static FleetProp JetSkiHandlebar() => new FleetProp(
+            key: "jetSkiHandlebar",
+            scriptPath: $"{Rigs}/jetSkiIsoRig.js",
+            globalName: "JetSkiIso",
+            assetPath: $"{PropFolder}/JetSkiHandlebarPropMesh.asset",
+            propId: "hullprop.jet_ski_handlebar",
+            extraction: new RigPropExtraction
+            {
+                // partFaces, not handlebarFaces: the same faces, but carrying the deck level the bake demands.
+                FaceBuilderCall = "byId('jet_ski').partFaces('handlebar',{})" +
+                    // The walk rig tags a level by number; the fitting bake reads it by name.
+                    ".map(function(f){return Object.assign({},f,{lv:'main_deck'});})",
+                PivotCall = "HANDLEBAR.pivot",
+                MaxSteerCall = "HANDLEBAR.lock",
+                SteerAxisCall = "HANDLEBAR.axis",
+                CellPath = "",
+                ExtraSymbols = new[] { "byId", "HANDLEBAR" },
+            },
+            wornBy: new[] { ($"{Visuals}/JetSkiIso.asset", "HelmBar") },
+            label: "jetski handlebars (turn about the raked column)");
+
         public static readonly IReadOnlyList<FleetProp> All = new[]
         {
             Oar(-1, "Port", "OarPort"),
             Oar(+1, "Star", "OarStar"),
+            JetSkiHandlebar(),
 
             // ONE bake, TWO boats — and the second one is a LOAN. The dory's own kicker rig exists
             // (docs/art/rigs/doryMotorRig.js: a little tiller two-stroke, 0.23 m cowl against this

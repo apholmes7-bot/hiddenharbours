@@ -119,7 +119,7 @@
     "HiddenHarbours.Fishing.FishEcologyDef",
     "HiddenHarbours.Tools.GoodsModel.GoodsContainerDef",
     "HiddenHarbours.Tools.GoodsModel.GoodsHandlingDef",
-    "HiddenHarbours.Boats.WorkingHelmFitDef"
+    "HiddenHarbours.Fishing.NpcTrawlDayDef"
   ],
   "Entries": [
     {
@@ -4691,6 +4691,11 @@
       "Type": "HiddenHarbours.Core.HullPropMeshDef",
       "Guid": "7d24bfd4e93adb64e82011b3861e96df",
       "Id": "hullprop.dory_oar_star"
+    },
+    {
+      "Type": "HiddenHarbours.Core.HullPropMeshDef",
+      "Guid": "f01d1903ad2c2184898fcbabe49ce377",
+      "Id": "hullprop.jet_ski_handlebar"
     },
     {
       "Type": "HiddenHarbours.Core.HullPropMeshDef",
@@ -9958,19 +9963,9 @@
       "Id": "npc.rpt_wreck"
     },
     {
-      "Type": "HiddenHarbours.Boats.WorkingHelmFitDef",
-      "Guid": "357cec11f871439da88da76caa072e46",
-      "Id": "helm_fit.dory"
-    },
-    {
-      "Type": "HiddenHarbours.Boats.WorkingHelmFitDef",
-      "Guid": "62768242f52b42fab6fffd3c011f85ec",
-      "Id": "helm_fit.lobster_boat"
-    },
-    {
-      "Type": "HiddenHarbours.Boats.WorkingHelmFitDef",
-      "Guid": "141e7e5c8fba4c8cbdb5422ac3f4074f",
-      "Id": "helm_fit.stern_trawler"
+      "Type": "HiddenHarbours.Fishing.NpcTrawlDayDef",
+      "Guid": "b4da6f77c5404bf1bdd2e74cc7ab5007",
+      "Id": "trawlday.rpt_face"
     }
   ]
 }

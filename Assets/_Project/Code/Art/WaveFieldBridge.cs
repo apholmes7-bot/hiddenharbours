@@ -217,11 +217,13 @@ namespace HiddenHarbours.Art
             _hasLastTime = true;
 
             // Derive once, bake at the clock, then share the identical field with both readers.
-            EnvironmentSample sample = env.Sample();
+            // An authored local storm (Core's LocalWeather) is laid over the wind here, once, so the
+            // sea the player sees and the sea the hull rides stay one field.
+            EnvironmentSample sample = LocalWeather.Shade(env.Sample());
             WaveFieldSettings field = GameServices.WaveField;
             WaveFieldAnimatorSettings smoothing = GameServices.WaveFieldAnimator;
             WaveTrains trains = env is IWaveWindSource history
-                ? _animator.Tick(clock.TotalSeconds, time, history, in field)
+                ? _animator.Tick(clock.TotalSeconds, time, LocalWeather.Shade(history), in field)
                 : _animator.Tick(dt, clock.TotalSeconds, time, sample.WindVector, sample.SeaState01, in field, in smoothing);
             PublishGlobals(Pack(in trains));
             SharedWaveField.Publish(this, in trains);

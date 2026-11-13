@@ -66,6 +66,7 @@ namespace HiddenHarbours.Tests.RigBaking
             "place", "toss", "board_buckets", "board_tray",
             "board_pot", "boardDown_buckets", "boardDown_tray", "boardDown_pot",
             "drive_helm_go_fast", "drive_helm_bowrider", "drive_helm_express_cruiser",
+            "astride_helm_jet_ski",
         };
 
         IRigScriptHost _host, _host9;
@@ -298,7 +299,8 @@ namespace HiddenHarbours.Tests.RigBaking
 
             // The three calibrated aliases are source-replayed frame/pin by frame/pin in
             // SeatedHelmContractTests; they are not new ANIMS names in the immutable rig.
-            string[] calibrated = { "drive_helm_go_fast", "drive_helm_bowrider", "drive_helm_express_cruiser" };
+            string[] calibrated = { "drive_helm_go_fast", "drive_helm_bowrider", "drive_helm_express_cruiser",
+                                    "astride_helm_jet_ski" };
             string[] missing = CharacterSkinAssetBaker.CastMeshStates
                 .Where(s => Array.IndexOf(calibrated, s) < 0 && !states.Contains(s)).ToArray();
             Assert.AreEqual(27, CharacterSkinAssetBaker.CastMeshStates.Count(s => Array.IndexOf(calibrated, s) < 0));

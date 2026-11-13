@@ -1,12 +1,13 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using NUnit.Framework;
 using UnityEditor;
 using UnityEngine;
+using Identity = HiddenHarbours.Tests.EditMode.DefIdentityLedger.Identity;
+using Ledger = HiddenHarbours.Tests.EditMode.DefIdentityLedger.Ledger;
 
 namespace HiddenHarbours.Tests.EditMode
 {
@@ -16,7 +17,6 @@ namespace HiddenHarbours.Tests.EditMode
     public class DefIdentityContractTests
     {
         private const string ContentRoot = "Assets/_Project";
-        private const string LedgerPath = "Assets/Tests/EditMode/Fixtures/DefIdentityLedger.json";
         // Fixtures such as CumberlandRegionTests save disposable proof copies of real Defs (same id, fresh GUID)
         // into a folder or file suffixed with a 32-hex run id, and keep them for inspection by design. They are
         // not committed content, so the identity contract does not count them.
@@ -52,24 +52,9 @@ namespace HiddenHarbours.Tests.EditMode
             "shoreplant.threesquare",
         };
 
-        [Serializable]
-        public class Identity
-        {
-            public string Type;
-            public string Guid;
-            public string Id;
-        }
-
-        [Serializable]
-        public class Ledger
-        {
-            public string[] Types;
-            public Identity[] Entries;
-        }
-
         private static readonly Dictionary<Type, Identity[]> Observed = new Dictionary<Type, Identity[]>();
         private static Ledger _ledger;
-        private static Ledger ReadLedger() => _ledger ??= JsonUtility.FromJson<Ledger>(File.ReadAllText(LedgerPath));
+        private static Ledger ReadLedger() => _ledger ??= DefIdentityLedger.Load();
 
         private static IEnumerable<Type> ConcreteDefTypes() => TypeCache.GetTypesDerivedFrom<ScriptableObject>()
             .Where(type => !type.IsAbstract && type.Name.EndsWith("Def", StringComparison.Ordinal)
@@ -134,7 +119,7 @@ namespace HiddenHarbours.Tests.EditMode
             }
             foreach (var row in observed.Values)
                 Assert.That(recorded.ContainsKey(row.Guid), Is.True,
-                    "Append the new content identity to the ledger; preserve existing records: " + row.Type + " " + row.Id);
+                    "Register the new identity in a GUID addition file; preserve existing records: " + row.Type + " " + row.Id);
         }
 
         [Test]
