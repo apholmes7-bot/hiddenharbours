@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using HiddenHarbours.Core;
 
 namespace HiddenHarbours.Boats
 {
@@ -114,8 +115,10 @@ namespace HiddenHarbours.Boats
     /// (`docs/design/deck-boarding-cleats-and-interact-capture.md` §2) is explicit that the extractor
     /// must carry the polygons straight through with <b>no human copy step</b> — the baked-anchors JSON
     /// became dead code precisely because the runtime read a hand-transcribed constant instead. The
-    /// importer overwrites every field below on each run; anything typed in here is lost, which is the
-    /// point.</para>
+    /// importer overwrites every IMPORTED field below on each run; anything typed into one is lost,
+    /// which is the point. <b>The one exception is the "Boarding rule" block</b> (freeboard, rails,
+    /// boarding points): no sidecar carries those yet, the importer never touches them, and they are
+    /// the owner's to tune.</para>
     ///
     /// <para><b>Absence is data, at two levels</b> (the sidecar contract's own rule). A hull with no
     /// sidecar has no <see cref="BoatVisualDef.Deck"/> at all and keeps the greybox rectangle — she has
@@ -185,6 +188,39 @@ namespace HiddenHarbours.Boats
         public Vector2 WalkCenter = Vector2.zero;
         [Tooltip("Half-extents of that box (m; x = half-beam of the walk area, y = half its length).")]
         public Vector2 WalkHalfExtents = Vector2.zero;
+
+        // ---- the boarding rule (AUTHORED — the one block on this asset a person edits) --------------
+        //
+        // ⚠ Everything above is imported and the importer rewrites it. These three are NOT in any
+        // sidecar yet, the importer never assigns them, and it updates the existing asset in place, so
+        // they survive a re-import. They are the owner's dials for "only ladders, and rails stop you
+        // jumping in" (2026-11-13). If a later slice teaches the sidecars to carry them, the importer
+        // takes them over and this note goes.
+
+        [Header("Boarding rule (AUTHORED — owner-tunable; the importer leaves these alone)")]
+        [Tooltip("How high her deck edge stands above the water, in metres — the wall a swimmer faces. " +
+                 "Seeded from her hull mesh (watertight deck height minus resting draft). Over " +
+                 "GameConfig.ClimbAnywhereMaxFreeboardMetres she can be climbed from the water, and left " +
+                 "over the side, only at a boarding point below.")]
+        [Min(0f)] public float BoardingFreeboardMetres;
+
+        [Tooltip("TRUE = her rails or bulwarks block the side: no climbing aboard from the water and no " +
+                 "going over the side except at a boarding point, however low she is. FALSE = a working " +
+                 "boat you can swing a leg over (the dory, the small fishing boats).")]
+        public bool RailsBlockTheSide;
+
+        [Tooltip("Her ladders, swim platforms and rail gates that reach the water. On a restricted hull " +
+                 "(railed, or over the freeboard limit) these are the ONLY places to climb out of the " +
+                 "water or go over the side. Empty on a restricted hull = wharf or gangway only.")]
+        public BoardingPoint[] BoardingPoints = Array.Empty<BoardingPoint>();
+
+        /// <summary>The boarding rule's verdict for one spot in this hull's deck frame — the swimmer
+        /// beside her or the rider at her rail. Pure pass-through to <see cref="BoardingRuleMath"/> with
+        /// this hull's own data; the two limits come from <c>GameConfig</c>.</summary>
+        public BoardingAccess BoardingAccessAt(Vector2 deckLocal, float climbAnywhereMaxFreeboardMetres,
+                                               float defaultPointReachMetres)
+            => BoardingRuleMath.Evaluate(BoardingFreeboardMetres, RailsBlockTheSide, BoardingPoints, deckLocal,
+                                         climbAnywhereMaxFreeboardMetres, defaultPointReachMetres);
 
         /// <summary>True when at least one <see cref="DeckAreaKind.Deck"/> area is usable — the gate
         /// <c>DeckWalkController</c> takes the polygon path behind. False

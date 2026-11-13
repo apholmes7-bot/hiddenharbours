@@ -888,6 +888,23 @@ The on-foot ⇄ aboard control loop is the `ControlSwitcher` (Player lane); seve
 - **Board from anywhere** within reach of the boat (`WithinBoardReach()` — a pure proximity radius), not only
   at a dock zone (owner playtest). So you can step aboard a boat nudged up to a beach, not just one at the
   wharf. (The damaged-dory repair gate still applies on top, P5.)
+- **Only ladders, and rails stop you jumping in** (owner, 2026-11-13: *"boarding the tanker player can
+  easily climb up massive walls which is wrong, should only be ladders, railings should stop players from
+  jumping in, maybe different on the fishing vessels"*). The rule is Core's pure `BoardingRuleMath`, and
+  every input is data. A hull is **restricted** when her `BoatDeckDef.BoardingFreeboardMetres` is over
+  `GameConfig.ClimbAnywhereMaxFreeboardMetres` (1.0 m) **or** her `BoatDeckDef.RailsBlockTheSide` is set.
+  A restricted hull is climbed **from the water**, and left **over the side**, only within reach of one of
+  her `BoatDeckDef.BoardingPoints` (ladder / platform / gate; reach per point, else
+  `GameConfig.BoardingPointReachMetres`); with no points she refuses both and is boarded from a wharf or
+  gangway. Everything else — the dory, the punt, the skiffs, the cape islander, the inshore and standard
+  lobster boats, the side dragger, the stern trawlers — is climb-anywhere exactly as before. The rule is
+  asked only when the walker's water state is not `Dry`, so the boarding move from a wharf or beach and the
+  step ashore are untouched; a hull with no deck Def (the two sloops) is unmeasured and keeps the old
+  behaviour. Refused, the popup and the press say **"Find the ladder"** on a hull that has one, and
+  *"Too high to climb — board her from a wharf"* from the water under a hull that has none (the tanker,
+  until her pilot ladder is authored); at a railed edge "Go over the side" is not offered. The three
+  fields are the **authored** block of the otherwise-imported `BoatDeckDef` — the importer never assigns
+  them — and `BoardingRuleTests` holds the per-hull table.
 - **Swim up to a hull and climb aboard** (owner, 2026-09-02). The boarding gate above was never the thing
   stopping you doing this from the water — `WithinBoardReach()` is pure proximity with no swim check — the
   **boat-only soft wall** was: a hull lies in exactly the water a person may not enter, so the rule that

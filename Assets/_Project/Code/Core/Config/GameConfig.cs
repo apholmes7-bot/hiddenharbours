@@ -263,6 +263,20 @@ namespace HiddenHarbours.Core
                  "between two berths, so it never joins one boat's water to the next one's.")]
         [Min(0f)] public float SwimBoardReachMetres = 6.0f;
 
+        [Tooltip("The highest freeboard (deck edge above the water, metres) an UNRAILED hull may have and " +
+                 "still be climbed anywhere from the water, and left anywhere over the side. At or under " +
+                 "this she behaves as every boat did before 2026-11-13 (the dory, the small fishing " +
+                 "boats). Over it — or railed, whatever her height — she is boarded from the water and " +
+                 "left over the side only at one of her boarding points (BoatDeckDef.BoardingPoints); " +
+                 "with none, only from a wharf or gangway. Owner, 2026-11-13: 'player can easily climb up " +
+                 "massive walls which is wrong, should only be ladders'.")]
+        [Min(0f)] public float ClimbAnywhereMaxFreeboardMetres = 1.0f;
+
+        [Tooltip("How close (m) you must be to a hull's ladder, swim platform or rail gate to use it, " +
+                 "when that point does not author its own reach. Measured in the hull's own deck frame, " +
+                 "from the swimmer in the water or from the rider at the rail.")]
+        [Min(0.1f)] public float BoardingPointReachMetres = 2.0f;
+
         [Header("Seakeeping forces (ADR 0018 B3 — the sea pushes the boat)")]
         [Tooltip("World-wide seakeeping FORCE policy (the sea fighting back): the master switch + bite " +
                  "strength, how the bite grows with sea state, how exposure falls off with depth (open water " +

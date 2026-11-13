@@ -139,3 +139,6 @@ MonoBehaviour:
   HelmStationSource: ANCHORS.helm
   WalkCenter: {x: 0, y: -0.07999992}
   WalkHalfExtents: {x: 1.826, y: 5.92}
+  BoardingFreeboardMetres: 0
+  RailsBlockTheSide: 0
+  BoardingPoints: []
