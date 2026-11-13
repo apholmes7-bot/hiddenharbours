@@ -88,6 +88,9 @@ namespace HiddenHarbours.UI
         private HelmFootprintArea _placedFor;
         private int _placedW = -1, _placedH = -1;
 
+        // ...and the quest note's box (TASKS, QuestNoteFootprint): the prompt never sits on the note.
+        private Rect _placedTasks;
+
         private void Awake()
         {
             // A popup stood up by hand (a test, a review scene) claims the slot if nothing has yet, so the
@@ -105,6 +108,7 @@ namespace HiddenHarbours.UI
         private void OnEnable()
         {
             EventBus.Subscribe<InteractOfferChanged>(OnOffer);
+            EventBus.Subscribe<QuestNoteFootprintChanged>(OnQuestNoteMoved);
 
             // Catch up with whatever is already standing. The offer channel is edge-triggered, so a popup
             // enabled after the player has walked up to a fixture would otherwise sit blank until they
@@ -113,7 +117,15 @@ namespace HiddenHarbours.UI
             Apply();
         }
 
-        private void OnDisable() => EventBus.Unsubscribe<InteractOfferChanged>(OnOffer);
+        private void OnDisable()
+        {
+            EventBus.Unsubscribe<InteractOfferChanged>(OnOffer);
+            EventBus.Unsubscribe<QuestNoteFootprintChanged>(OnQuestNoteMoved);
+        }
+
+        // Re-placed the moment the note says it moved, not a frame later: the note places itself in
+        // LateUpdate, and a poll here would leave the prompt on it for one drawn frame.
+        private void OnQuestNoteMoved(QuestNoteFootprintChanged e) => Place();
 
         private void OnOffer(InteractOfferChanged e) { _offer = e; Apply(); }
 
@@ -147,11 +159,13 @@ namespace HiddenHarbours.UI
             if (_panel == null) return;
             HelmFootprintArea covered = HelmFootprint.Current;
             int w = HudScreen.Width, h = HudScreen.Height;
-            if (covered == _placedFor && w == _placedW && h == _placedH) return;
+            Rect tasks = QuestNoteFootprint.Current;
+            if (covered == _placedFor && w == _placedW && h == _placedH && tasks == _placedTasks) return;
+            _placedTasks = tasks;
             _placedFor = covered;
             _placedW = w;
             _placedH = h;
-            _panel.anchoredPosition = InteractPopupLayout.PanelAnchoredPosition(in covered, w, h);
+            _panel.anchoredPosition = InteractPopupLayout.PanelAnchoredPosition(in covered, tasks, w, h);
         }
 
         /// <summary>

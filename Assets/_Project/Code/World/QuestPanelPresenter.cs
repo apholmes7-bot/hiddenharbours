@@ -99,7 +99,20 @@ namespace HiddenHarbours.World
             _noteRect.anchoredPosition = QuestPanelLayout.AnchoredPosition(in fit, in covered,
                                                                            _builtScreenW, _builtScreenH);
             _placedFor = covered;
+
+            // Say where the note stands (Core seam), so the interaction prompt keeps off it without
+            // UI and World knowing each other. Only reached on a change; a re-statement is dropped.
+            QuestNoteFootprint.Publish(QuestPanelLayout.NoteScreenRect(in fit, in covered,
+                                                                       _builtScreenW, _builtScreenH));
         }
+
+        private void OnEnable()
+        {
+            if (IsShowing && _noteRect != null) Place();
+        }
+
+        // The canvas hangs off this object, so a disabled or destroyed presenter draws no note.
+        private void OnDisable() => QuestNoteFootprint.Clear();
 
         private void OnDestroy()
         {
@@ -113,6 +126,7 @@ namespace HiddenHarbours.World
             if (!IsShowing)
             {
                 if (_canvas != null) _canvas.gameObject.SetActive(false);
+                QuestNoteFootprint.Clear();
                 return;
             }
 
