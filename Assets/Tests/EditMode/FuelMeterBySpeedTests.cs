@@ -258,6 +258,37 @@ namespace HiddenHarbours.Tests.EditMode
                 "load and sea must not quietly disappear from the speed meter");
         }
 
+        [Test]
+        public void TheSplitOutSurcharge_MatchesTheInlineTerms_MidRangeWithSlip()
+        {
+            // DutySurcharge is a deliberate copy of LitresPerHour's inline load and sea terms. The row
+            // above pins it only at the ends (slip 0, hold and sea 0 or 1); this one sits in the middle
+            // of every axis, so a drift in either copy fails here.
+            const float hold = 0.4f, slip = 0.35f, sea = 0.55f;
+            FuelSettings cfg = GameServices.Fuel;
+            AssertSurchargeMatchesInline(cfg, hold, slip, sea);
+
+            // Slip ships switched off (weight 0), which would hide a drift in the slip term: the same
+            // settings again with slip weighted in, hold weighted so the load stays short of its clamp.
+            FuelSettings slipping = cfg;
+            slipping.HoldLoadWeight = 0.5f;
+            slipping.SlipLoadWeight = 0.5f;
+            slipping.LoadSurcharge = Mathf.Max(cfg.LoadSurcharge, 0.35f);
+            float withSlip = AssertSurchargeMatchesInline(slipping, hold, slip, sea);
+            Assert.That(withSlip, Is.GreaterThan(FuelBurn.DutySurcharge(hold, 0f, sea, slipping)),
+                "a weighted slip must cost something, or this row pins nothing about it");
+        }
+
+        private static float AssertSurchargeMatchesInline(FuelSettings cfg, float hold, float slip, float sea)
+        {
+            float inline = FuelBurn.LitresPerHour(100f, 0.6f, hold, slip, sea, cfg) /
+                           FuelBurn.LitresPerHour(100f, 0.6f, 0f, 0f, 0f, cfg);
+            float split = FuelBurn.DutySurcharge(hold, slip, sea, cfg);
+            Assert.AreEqual(inline, split, inline * 1e-5f,
+                "the split-out surcharge drifted from the throttle curve's own load and sea terms");
+            return split;
+        }
+
         // ---- range --------------------------------------------------------------------------------
 
         [Test]
