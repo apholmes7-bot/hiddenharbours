@@ -126,3 +126,32 @@ Sources were consulted on 2026-11-12. All numbers are paraphrased; MPH conversio
 <a id="source-y"></a>**Y â€” 88 ft cruising sloop (auxiliary).** [88 ft cruising sloop (auxiliary) public specification or firsthand report](https://www.simpsonsuperyachts.com/storage/pdfs/Karibu-334371.pdf). Broker specification of Oyster 885: cruise 8.5 kn, maximum 10 kn. Engine performance comparator. Under sail the designer separately observed 9.5â€“10 kn upwind in 12â€“14 kn true wind: https://www.humphreysdesign.com/news/oyster-885-sea-trials/. Sailing has no single unconditional top speed.
 
 <a id="source-z"></a>**Z â€” Planing RIB/tender.** [Planing RIB/tender public specification or firsthand report](https://yamahaoutboards.com/getmedia/ca04e94f-0c9f-4419-b957-463ed9a7af4b/pb_zod_recpro_650_f150xb_11-13-2018_inf). Engine-maker trial: Zodiac Rec Pro 650/F150, selected efficient planing cruise at 3000 rpm 20.4 mph, top 50.4 mph. Same broad RIB family only; not a Hurricane military load trial.
+
+## Applied 2026-11-13: the ruled speed table
+
+The owner ruled on the four speed decisions on 2026-11-12: planing hulls run at **0.45 x real-world top speed**; the jetski stays **5.5 m/s** and does not fly; the go-fast is **10 m/s**, no flight; fuel burn rises with speed (the PR 1134 model, unchanged). The table is applied as data: each planing hull's `EnginePower` was solved for her ruled speed as `speed x (ForwardDrag + 0.2 x MassKg)`, with mass, drag, rudder and every fuel number left alone. "Planing" means the 14 hulls bound to `fuelcurve.planing`. The other 32 hulls keep the speeds in the table above. `FleetSpeedTableTests` holds every hull Def to her row.
+
+| Hull id | Real top kn | Old top m/s (kn) | Ruled top m/s (kn) | EnginePower old -> new |
+|---|---:|---:|---:|---:|
+| `boat.bowrider` | 42.1 | 5.08 (9.87) | 9.75 (18.95) | 1600 -> 3070 |
+| `boat.console_skiff` | 36.9 | 3.90 (7.59) | 8.54 (16.61) | 1600 -> 3502 |
+| `boat.sport_skiff` | 36.9 | 4.64 (9.01) | 8.54 (16.61) | 1600 -> 2947 |
+| `boat.sport_skiff_mk2` | 36.9 | 5.19 (10.09) | 8.54 (16.61) | 2050 -> 3374 |
+| `boat.sport_skiff_twin` | 36.9 | 5.63 (10.95) | 8.54 (16.61) | 2000 -> 3033 |
+| `boat.express_cruiser` | 45 | 4.60 (8.94) | 10.42 (20.25) | 5980 -> 13543 |
+| `boat.motor_yacht_84` | 27 | 4.98 (9.68) | 6.25 (12.15) | 79930 -> 100321 |
+| `boat.sport_fisher_convertible` | 40 | 5.39 (10.48) | 9.26 (18.00) | 19300 -> 33151 |
+| `boat.sport_fisher_skybridge` | 38 | 4.98 (9.68) | 8.80 (17.10) | 79930 -> 141192 |
+| `boat.yacht_tender` | 43.8 | 4.75 (9.23) | 10.14 (19.71) | 1710 -> 3650 |
+| `boat.zodiac_frc` | 43.8 | 5.70 (11.08) | 10.14 (19.71) | 1710 -> 3042 |
+| `boat.zodiac_hurricane` | 43.8 | 5.89 (11.46) | 10.14 (19.71) | 2210 -> 3802 |
+| `boat.go_fast` | 75.1 | 5.65 (10.98) | 10.00 (19.44), ruled outright | 6780 -> 12000 |
+| `boat.jet_ski` | not in the audit | 5.50 (10.69) | 5.50 (10.69), ruled outright | 715, unchanged |
+
+What strict application leaves open, for the owner:
+
+- The audit gives one real figure per boat family, so the four 7 m skiffs now share one top speed, and so do the two Zodiacs and the yacht tender. The ladder between them is now mass, hold, seakeeping and pickup only.
+- At 0.45 x real, the express cruiser (10.42) and the three RIBs (10.14) are a shade quicker than the go-fast's ruled 10 m/s, and the jetski's ruled 5.5 m/s is the slowest planing hull.
+- The bow spray art is framed for 1.7 to 6 m/s. Above 6 m/s it reads flat out; re-framing it is an art follow-up.
+- The live fuel meter still charges by throttle. A planing hull burns the same litres per hour at full throttle as before and now covers more water on them, until the PR 1134 speed model is wired in with measured cruise speeds.
+- These are still-water speeds off the force model. No editor trial was run.

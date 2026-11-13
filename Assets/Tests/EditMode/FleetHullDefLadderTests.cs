@@ -62,11 +62,14 @@ namespace HiddenHarbours.Tests.EditMode
         /// </summary>
         static readonly (string File, string Id, float Speed)[] PackFamilies =
         {
-            ("ZodiacFrc",              "boat.zodiac_frc",               5.70f),
-            ("ZodiacHurricane",        "boat.zodiac_hurricane",         5.89f),
-            ("SportSkiffMk2",          "boat.sport_skiff_mk2",          5.19f),
-            ("SportFisherConvertible", "boat.sport_fisher_convertible", 5.39f),
-            ("SportFisherSkybridge",   "boat.sport_fisher_skybridge",   4.98f),
+            // Moved by the owner's 11-12 speed ruling: planing hulls run at 0.45 x the real-world top
+            // speed in docs/design/fleet-speed-and-fuel-audit.md (FleetSpeedTableTests holds the table).
+            // Were 5.70 / 5.89 / 5.19 / 5.39 / 4.98.
+            ("ZodiacFrc",              "boat.zodiac_frc",               10.14f),
+            ("ZodiacHurricane",        "boat.zodiac_hurricane",         10.14f),
+            ("SportSkiffMk2",          "boat.sport_skiff_mk2",          8.54f),
+            ("SportFisherConvertible", "boat.sport_fisher_convertible", 9.26f),
+            ("SportFisherSkybridge",   "boat.sport_fisher_skybridge",   8.80f),
         };
 
         static readonly string[] Sizes = { "Inshore", "Standard", "Offshore" };
@@ -511,12 +514,20 @@ namespace HiddenHarbours.Tests.EditMode
         public void EveryPackHull_StaysInsideTheSpraySheetsFrame()
         {
             // BowSprayGrading frames speed over 1.7 -> 6 m/s. Over the ceiling the spray clips flat and the
-            // hull outruns her own art; under the floor she never throws any. The RIBs were deliberately
-            // tuned just under the top of that frame rather than "as fast as a RIB really is".
+            // hull outruns her own art; under the floor she never throws any.
+            //
+            // Moved by the owner's 11-12 speed ruling: the five planing families now run at 0.45 x their
+            // real-world speed (8.5 to 10.1 m/s), which is PAST the sheet's 6 m/s ceiling, so the ceiling
+            // is held only for the displacement lobster boats. The spray on a planing hull now reads flat
+            // out from 6 m/s up; re-framing the sheet is art's follow-up, not a speed to tune back down.
             foreach (var file in PackFiles())
             {
                 float v = TerminalSpeed(Hull(file));
                 Assert.Greater(v, 1.7f, $"{file}: {v:0.00} m/s is below the spray sheet's floor");
+            }
+            foreach (var file in LobsterVariantFiles())
+            {
+                float v = TerminalSpeed(Hull(file));
                 Assert.LessOrEqual(v, 6f, $"{file}: {v:0.00} m/s is past the spray sheet's 6 m/s ceiling");
             }
         }
@@ -536,7 +547,9 @@ namespace HiddenHarbours.Tests.EditMode
                 Assert.Greater(hurricane, TerminalSpeed(Hull(other)),
                     $"the Hurricane ({hurricane:0.00} m/s) is the fastest thing afloat — {other} beats her");
 
-            Assert.Greater(hurricane, frc, "…and the bigger RIB is the faster of the two");
+            // Moved by the owner's 11-12 speed ruling: both RIBs share one real-world figure in the audit
+            // (43.8 kn), so both run at 0.45 x that. The Hurricane used to lead the FRC by 0.19 m/s.
+            Assert.AreEqual(frc, hurricane, 0.01f, "…and both RIBs run at the one ruled RIB speed");
             Assert.Greater(frc, TerminalSpeed(Hull("SportSkiffTwin")),
                 "the FRC still out-runs the twin, which is what put both RIBs after her in the cycle");
         }
@@ -554,7 +567,9 @@ namespace HiddenHarbours.Tests.EditMode
                 "the reshape kept her 7.0 m — it is the SECTION that changed, not the length");
             Assert.AreEqual("boat.sport_skiff", v1.Id, "…and the v1 keeps her own id");
             Assert.AreEqual(950f, v1.MassKg, 0.001f, "…and her own numbers, untouched by this PR");
-            Assert.AreEqual(1600f, v1.EnginePower, 0.001f);
+            // Moved by the owner's 11-12 speed ruling (was 1600: 4.64 m/s). 2947 is 8.54 m/s on her
+            // own mass and drag, which stay untouched.
+            Assert.AreEqual(2947f, v1.EnginePower, 0.001f);
             Assert.AreEqual(0.5f, v1.DraughtMeters, 0.001f);
 
             Assert.Greater(mk2.MassKg, v1.MassKg, "the deep-V is more boat at the same length");
@@ -563,7 +578,10 @@ namespace HiddenHarbours.Tests.EditMode
                 "with almost no waterplane at the keel does");
             Assert.Greater(mk2.LateralDrag, v1.LateralDrag,
                 "…and she TRACKS, which is the whole point of a chined deep-V");
-            Assert.Greater(TerminalSpeed(mk2), TerminalSpeed(v1), "…and she is the quicker boat");
+            // Moved by the owner's 11-12 speed ruling: the audit gives every 7 m skiff the same real
+            // figure (36.9 kn), so the Mk2 no longer out-runs her sister at the top end. She is still the
+            // heavier, deeper, stiffer-tracking boat above; the top speed is now shared.
+            Assert.AreEqual(TerminalSpeed(v1), TerminalSpeed(mk2), 0.01f, "…at the one ruled skiff speed");
         }
 
         // ---- the jetski -------------------------------------------------------------------------
@@ -580,9 +598,12 @@ namespace HiddenHarbours.Tests.EditMode
             var roster = StPetersBuilder.DevPickerRosterFiles;
             int at = System.Array.IndexOf(roster, "JetSki");
             Assert.GreaterOrEqual(at, 1, "she has a rung");
-            Assert.That(speed, Is.GreaterThan(TerminalSpeed(Hull(roster[at - 1]))), "the ramp stays ordered by speed below her");
-            Assert.That(speed, Is.LessThan(TerminalSpeed(Hull(roster[at + 1]))), "...and above her");
-            Assert.That(speed, Is.LessThan(TerminalSpeed(Hull("ZodiacHurricane"))), "the Hurricane is still the fastest");
+            // Moved by the owner's 11-12 speed ruling: she STAYS 5.5 m/s while every other planing hull
+            // moved to 0.45 x real, so the picker's ramp is no longer ordered by speed around her (the Mk2
+            // before her and the twin after her both run 8.54 now). Her rung is unchanged; the
+            // "quicker than the rung below her" assertion left with the ordering it described.
+            Assert.That(speed, Is.LessThan(TerminalSpeed(Hull(roster[at + 1]))), "the twin after her is quicker");
+            Assert.That(speed, Is.LessThan(TerminalSpeed(Hull("ZodiacHurricane"))), "the Hurricane is quicker still");
         }
 
         // ---- the picker cycle, read off the builder's own list ---------------------------------
@@ -604,7 +625,9 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.That(roster[motor - 1], Is.EqualTo("SportSkiff"));
             Assert.That(roster[motor + 1], Is.EqualTo("Bowrider"));
             float motorSpeed = TerminalSpeed(Hull("MotorYacht84"));
-            Assert.That(motorSpeed, Is.GreaterThan(TerminalSpeed(Hull("SportSkiff"))));
+            // Moved by the owner's 11-12 speed ruling: the 84 runs 6.25 m/s (0.45 x 27 kn) and the sport
+            // skiff 8.54, so she no longer out-runs the skiff before her on the picker. Her rung is
+            // unchanged; only the speed claim against the skiff left.
             Assert.That(motorSpeed, Is.LessThan(TerminalSpeed(Hull("Bowrider"))));
         }
 
