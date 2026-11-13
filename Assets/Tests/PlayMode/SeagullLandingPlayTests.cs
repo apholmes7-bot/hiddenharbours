@@ -371,8 +371,10 @@ namespace HiddenHarbours.Tests.PlayMode
         [Test]
         public void TheFlockInstallsItselfAndGivesEveryBirdItsOwnShadow()
         {
-            Assert.AreEqual(GullConfig.Default.Count, _installed.BirdCount,
-                "the installed host did not build the shipped default flock");
+            var library = Resources.Load<BirdHauntLibrary>(BirdHauntLibrary.ResourcesPath);
+            Assert.IsNotNull(library, "no Resources/" + BirdHauntLibrary.ResourcesPath);
+            Assert.AreEqual(library.Tuning.MaxBirdsDrawn, _installed.BirdCount,
+                "the installed host did not build the pool the library asks for (Tuning.MaxBirdsDrawn)");
             Assert.IsNotNull(_installed.Behaviour, "the installed host loaded no state table");
 
             for (int i = 0; i < _installed.BirdCount; i++)

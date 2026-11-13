@@ -322,25 +322,49 @@ namespace HiddenHarbours.Art
 
             NearCount = 0;
             _stored = 0;
+            int unlimited = int.MaxValue;
             for (int p = 0; p < _count; p++)
-            {
-                if (!_places[p].AlwaysOn && !CorridorOf(p).Overlaps(_keepRect)) continue;
-                SlotRange(p, out int first, out int end);
-                for (int slot = first; slot < end; slot++)
-                {
-                    if (!Evaluate(p, slot, false, out GullRosterBird b)) continue;
-                    bool near = b.Where == GullWhere.Commuting
-                        ? _nearRect.Contains(b.X, b.Y) || (IsBound(b.Key) && _keepRect.Contains(b.X, b.Y))
-                        : b.At >= 0 && _placeNear[b.At];
-                    if (!near) continue;
+                if (!_places[p].IsSchool) ListNear(p, false, false, ref unlimited);
 
-                    double dx = b.X - _view.CentreX, dy = b.Y - _view.CentreY;
-                    b.DistanceSq = dx * dx + dy * dy;
-                    Insert(b);
-                }
-            }
+            // The schools share one allowance (the tuning's MaxSchoolGullsInView), in two passes: the
+            // school birds the pool already draws keep their places first, then the rest in the list's
+            // order. So a bird on show is never dropped because another school came into view.
+            int schoolBirdsLeft = Math.Max(0, _tuning.MaxSchoolGullsInView);
+            for (int pass = 0; pass < 2 && schoolBirdsLeft > 0; pass++)
+                for (int p = 0; p < _count && schoolBirdsLeft > 0; p++)
+                    if (_places[p].IsSchool) ListNear(p, true, pass == 0, ref schoolBirdsLeft);
 
             Bind();
+        }
+
+        /// <summary>
+        /// Lists one place's near birds. With <paramref name="limited"/>, only the birds the pool
+        /// already draws (<paramref name="drawn"/>) or only the ones it does not, and no more than
+        /// <paramref name="left"/> of them, which it counts down. A bird over the allowance is not near:
+        /// neither drawn nor counted. Where a bird IS never depends on any of this.
+        /// </summary>
+        private void ListNear(int p, bool limited, bool drawn, ref int left)
+        {
+            if (!_places[p].AlwaysOn && !CorridorOf(p).Overlaps(_keepRect)) return;
+            SlotRange(p, out int first, out int end);
+            for (int slot = first; slot < end; slot++)
+            {
+                if (limited && left <= 0) return;
+                if (!Evaluate(p, slot, false, out GullRosterBird b)) continue;
+                bool near = b.Where == GullWhere.Commuting
+                    ? _nearRect.Contains(b.X, b.Y) || (IsBound(b.Key) && _keepRect.Contains(b.X, b.Y))
+                    : b.At >= 0 && _placeNear[b.At];
+                if (!near) continue;
+                if (limited)
+                {
+                    if (IsBound(b.Key) != drawn) continue;
+                    left--;
+                }
+
+                double dx = b.X - _view.CentreX, dy = b.Y - _view.CentreY;
+                b.DistanceSq = dx * dx + dy * dy;
+                Insert(b);
+            }
         }
 
         /// <summary>

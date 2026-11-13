@@ -35,7 +35,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
                 Places = Region.Places;
             }
 
-            public GullRoster NewRoster() => new GullRoster(Places.Length, GullFlock.MaxNearBirds, GullConfig.Default.Count);
+            public GullRoster NewRoster() => new GullRoster(Places.Length, GullFlock.MaxNearBirds, GullPlaceFiles.PoolSize());
 
             public GullRoster Refresh(GullRoster roster, GullCalendar calendar, GullRect view)
             {
@@ -292,9 +292,151 @@ namespace HiddenHarbours.Tests.Art.EditMode
             GullAssert.None(failures, "the camera is read where birds are placed");
         }
 
+        // ── how many: the library's numbers ─────────────────────────────────────────────────────
+
+        private static int SchoolBirdsListed(GullRoster roster, int authored)
+        {
+            int n = 0;
+            for (int i = 0; i < roster.StoredCount; i++)
+                if (roster.Near[i].Place >= authored) n++;
+            return n;
+        }
+
+        private static HashSet<int> SchoolKeys(GullRoster roster, int authored)
+        {
+            var keys = new HashSet<int>();
+            for (int i = 0; i < roster.StoredCount; i++)
+                if (roster.Near[i].Place >= authored) keys.Add(roster.Near[i].Key);
+            return keys;
+        }
+
+        /// <summary>
+        /// Open water with more schools in view than the allowance covers. The school gulls listed are
+        /// exactly the library's MaxSchoolGullsInView, the same ones on every refresh and on a fresh
+        /// roster; a raised number lists every one of them (nothing in code holds it down), 0 lists
+        /// none, and no bird's place moves with the number.
+        /// </summary>
+        [Test]
+        public void GullRoster_SchoolGullsNeverExceedTheViewCap()
+        {
+            var coast = new Coast();
+            GullTuningSpec t = coast.Tuning;
+            int cap = t.MaxSchoolGullsInView;
+            int perSchool = Math.Max(0, Math.Min(GullRoster.MaxSchoolSlots, (int)Math.Ceiling(t.SchoolBirds * t.SchoolSeason.Max)));
+            Assert.That(cap, Is.GreaterThan(0), "the library allows no school gulls: nothing to hold to a number");
+            Assert.That(perSchool, Is.GreaterThan(0), "a school has no gulls: nothing to hold to a number");
+
+            // Enough schools, side by side inside the view, to go well past the allowance.
+            int authored = coast.Places.Length;
+            int schools = 2 * (cap / perSchool) + 3;
+            double now = GullPlaceFiles.At(3, 9.0);
+            const double left = 108.0, width = 24.0, y = -60.0;
+            GullHauntSpec[] places = coast.Places.Concat(Enumerable.Range(0, schools).Select(i =>
+            {
+                GullHauntSpec school = GullPlaceFiles.School(t, left + width * i / (schools - 1), y, 1.0,
+                                                             now - 1000.0, now + 1000.0);
+                school.IdHash = GullHash.Id("school.test_view_cap_" + i);
+                return school;
+            })).ToArray();
+            GullRect view = GullRect.Box(120.0, y, 14.2, 8.0);
+            GullCalendar nine = GullPlaceFiles.Calendar(3, 9.0, HighSummer);
+
+            GullRoster Fresh() => new GullRoster(places.Length, 4 * GullFlock.MaxNearBirds, GullPlaceFiles.PoolSize());
+            GullRoster Refresh(GullRoster roster, GullTuningSpec tuning)
+            {
+                roster.Refresh(places, authored, places.Length, tuning, GullPlaceFiles.Settings(coast.Region.Bounds),
+                               nine, coast.Weather, view);
+                Assert.That(roster.StoredCount, Is.EqualTo(roster.NearCount), "the near list is too short to count on");
+                return roster;
+            }
+
+            GullTuningSpec open = t;
+            open.MaxSchoolGullsInView = int.MaxValue;
+            GullRoster everyOne = Refresh(Fresh(), open);
+            int all = SchoolBirdsListed(everyOne, authored);
+            Assert.That(all, Is.GreaterThan(cap), "only " + all + " school gulls in view with no allowance: the allowance of " +
+                                                  cap + " is never reached, so this would prove nothing");
+
+            GullRoster held = Refresh(Fresh(), t);
+            Assert.That(SchoolBirdsListed(held, authored), Is.EqualTo(cap), "school gulls in view, against the library's MaxSchoolGullsInView");
+            Assert.That(held.NearCount - cap, Is.EqualTo(everyOne.NearCount - all),
+                        "the allowance changed how many birds of the authored places are near");
+
+            // The same birds on every refresh (the ones drawn keep their places), and on a fresh roster.
+            HashSet<int> first = SchoolKeys(held, authored);
+            for (int i = 0; i < 3; i++)
+                Assert.That(SchoolKeys(Refresh(held, t), authored), Is.EquivalentTo(first), "the school gulls changed on refresh " + (i + 2));
+            Assert.That(SchoolKeys(Refresh(Fresh(), t), authored), Is.EquivalentTo(first), "a fresh roster lists other school gulls");
+
+            // The number is the owner's: raised, every school gull is listed; at 0, none.
+            GullTuningSpec raised = t;
+            raised.MaxSchoolGullsInView = all + 5;
+            Assert.That(SchoolBirdsListed(Refresh(Fresh(), raised), authored), Is.EqualTo(all), "a raised allowance still held birds back");
+            GullTuningSpec one = t;
+            one.MaxSchoolGullsInView = cap + 1;
+            Assert.That(SchoolBirdsListed(Refresh(Fresh(), one), authored), Is.EqualTo(cap + 1), "one more allowed, one more listed");
+            GullTuningSpec none = t;
+            none.MaxSchoolGullsInView = 0;
+            Assert.That(SchoolBirdsListed(Refresh(Fresh(), none), authored), Is.EqualTo(0), "an allowance of 0 still lists school gulls");
+
+            // The allowance only chooses which birds are listed: where each one is does not move.
+            var failures = new List<string>();
+            for (int p = authored; p < places.Length; p++)
+            {
+                held.SlotRange(p, out int lo, out int hi);
+                for (int slot = lo; slot < hi; slot++)
+                {
+                    bool a = held.StateOf(p, slot, out GullRosterBird x);
+                    bool b = everyOne.StateOf(p, slot, out GullRosterBird z);
+                    if (a != b || !x.Equals(z))
+                        failures.Add("school " + (p - authored) + " slot " + slot + ": " + GullPlaceFiles.Describe(x) +
+                                     " with the allowance, " + GullPlaceFiles.Describe(z) + " without");
+                }
+            }
+            GullAssert.None(failures, "the allowance moved a bird");
+        }
+
+        /// <summary>
+        /// The pool is the library's MaxBirdsDrawn and nothing else: whatever number the owner authors
+        /// is the pool, the shipped library gives the number in its file, and the flock config no longer
+        /// holds a count of its own.
+        /// </summary>
+        [Test]
+        public void GullFlock_PoolSizeComesFromTheLibrary()
+        {
+            var library = UnityEngine.ScriptableObject.CreateInstance<BirdHauntLibrary>();
+            try
+            {
+                foreach (int birds in new[] { 0, 1, 16, 32, 300, 5000 })
+                {
+                    library.Tuning.MaxBirdsDrawn = birds;
+                    Assert.That(GullFlock.PoolSize(library), Is.EqualTo(birds), "the pool for a library that draws " + birds);
+                }
+            }
+            finally
+            {
+                UnityEngine.Object.DestroyImmediate(library);
+            }
+
+            var shipped = UnityEngine.Resources.Load<BirdHauntLibrary>(BirdHauntLibrary.ResourcesPath);
+            Assert.IsNotNull(shipped, "no Resources/" + BirdHauntLibrary.ResourcesPath);
+            Assert.That(GullFlock.PoolSize(shipped), Is.EqualTo(GullPlaceFiles.PoolSize()), "the shipped pool is not the number in the library's file");
+            Assert.That(GullFlock.PoolSize(null), Is.EqualTo(new GullScheduleTuning().MaxBirdsDrawn), "with no library, the tuning's own default");
+
+            Assert.IsNull(typeof(GullConfig).GetField("Count"), "GullConfig holds a pool size of its own again");
+            string flock = File.ReadAllText(ArtFolder + "GullFlock.cs");
+            StringAssert.Contains("int n = PoolSize(_library);", flock, "GullFlock.BuildFlock does not size its pool from the library");
+            StringAssert.Contains("_birds = new Bird[n];", flock, "GullFlock.BuildFlock does not allocate the pool at that size");
+        }
+
         [Test]
         public void TheNearestFillThePoolFirst_TheRestAreCounts()
         {
+            // The pool is the library's MaxBirdsDrawn, and the place holds twenty more birds than it draws.
+            int pool = GullPlaceFiles.PoolSize();
+            int birds = pool + 20;
+            Assert.That(pool, Is.GreaterThan(0), "the library draws no gulls at all: nothing to fill");
+            Assert.That(birds, Is.LessThanOrEqualTo(GullRoster.MaxSlotsPerPlace), "more birds than one place can hold");
             var places = new[]
             {
                 new GullHauntSpec
@@ -305,17 +447,17 @@ namespace HiddenHarbours.Tests.Art.EditMode
                     HalfX = 10.0,
                     HalfY = 10.0,
                     RoostIndex = -1,
-                    Capacity = 60,
+                    Capacity = birds,
                 },
             };
-            var roster = new GullRoster(1, 64, 40);
+            var roster = new GullRoster(1, birds + 4, pool);
             roster.Refresh(places, 1, 1, GullPlaceFiles.Tuning(), GullPlaceFiles.Settings(default),
                            GullPlaceFiles.Calendar(3, 12.0, HighSummer),
                            GullTestWeather.Steady(GullSky.Calm.Storm, GullPlaceFiles.LowWater), GullRect.Box(0.0, 0.0, 14.2, 8.0));
 
-            Assert.That(roster.NearCount, Is.EqualTo(60), "every bird is near");
-            Assert.That(roster.StoredCount, Is.EqualTo(60), "every bird is listed");
-            Assert.That(roster.BoundCount, Is.EqualTo(40), "the pool is full");
+            Assert.That(roster.NearCount, Is.EqualTo(birds), "every bird is near");
+            Assert.That(roster.StoredCount, Is.EqualTo(birds), "every bird is listed");
+            Assert.That(roster.BoundCount, Is.EqualTo(pool), "the pool is full");
 
             var failures = new List<string>();
             for (int i = 1; i < roster.StoredCount; i++)
@@ -327,7 +469,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
             for (int i = 0; i < roster.StoredCount; i++)
             {
                 if (roster.Near[i].Where != GullWhere.AtHaunt) failures.Add("near bird " + i + " is " + roster.Near[i].Where);
-                int want = i < 40 ? i : -1;
+                int want = i < pool ? i : -1;
                 if (roster.NearPool[i] != want) failures.Add("near bird " + i + " is drawn by " + roster.NearPool[i] + ", not " + want);
             }
             for (int i = 0; i < roster.PoolKey.Length; i++)

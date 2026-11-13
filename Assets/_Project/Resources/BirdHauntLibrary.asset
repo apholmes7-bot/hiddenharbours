@@ -54,7 +54,7 @@ MonoBehaviour:
     YoungShare: 0.2
     YoungFromProgress: 0.5
     YoungLeaveByEnd: 0.5
-    SchoolBirds: 6
+    SchoolBirds: 2
     SchoolSeason:
     - 0.9
     - 1
@@ -62,3 +62,5 @@ MonoBehaviour:
     - 0.5
     SchoolMiddayLevel: 0.7
     SchoolAfternoonLevel: 0.8
+    MaxSchoolGullsInView: 8
+    MaxBirdsDrawn: 40
