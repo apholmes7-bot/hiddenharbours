@@ -46,9 +46,13 @@ namespace HiddenHarbours.Tests.CoopSpike
                 reader.ReadNetworkSerializable(out CoopBoatState received);
                 Assert.That(received, Is.EqualTo(state));
                 // EditMode runs no component lifecycle: sample the held heading as runtime does.
-                view.Character.SendMessage("Awake");
+                // SendMessage dispatch asserts ShouldRunBehaviour outside PlayMode in this editor.
+                // Invoke the real methods directly; keep every draw/heading/sprite assertion.
+                const System.Reflection.BindingFlags lifecycle = System.Reflection.BindingFlags.Instance
+                    | System.Reflection.BindingFlags.NonPublic;
+                typeof(IsoCharacterSprite).GetMethod("Awake", lifecycle).Invoke(view.Character, null);
                 view.Show(received);
-                view.Character.SendMessage("LateUpdate");
+                typeof(IsoCharacterSprite).GetMethod("LateUpdate", lifecycle).Invoke(view.Character, null);
                 var figure = view.Figure as CharacterFigurePresenter;
                 Assert.That(figure, Is.Not.Null, "Use the existing cast presenter through Core.");
                 figure.PoseFigure(view, true);
