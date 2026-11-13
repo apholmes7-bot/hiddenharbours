@@ -115,7 +115,8 @@ Route 91's band off.
 
 The south edge shows open bay; the west shows open water, plain beach, dune, pasture and wood continuing unbuilt.
 North is farmland and woodland with no road. Solid perimeter bands sit just outside all four extents;
-the east travel triggers sit inside them. There are no west/south/north travel doors and nothing may leave those edges.
+the east travel triggers sit inside them. There are no west or north travel doors and nothing may leave those edges. The south has one: the channel mouth
+to the South Water (`door.rpt_south_water`, below), 24 m inside the edge.
 The camera and height frame end together. There is no invented land or scenic extension beyond them.
 
 Package items the game cannot yet express or this wave deliberately leaves to their owners:
@@ -166,8 +167,13 @@ encode anything below -6 m, so the ground the game sails on is now **the second 
   keel at the lowest tide (0.45 m here; the ground gives 0.5 m) and the way in from open water.
   `RicePointTrawlerBerthTests` holds each trawler's draught against each berth and the whole way in.
 - **The way in is from the south.** The channel reaches the south edge between about x -55 and x -27, where
-  the open water to the south will join. The door to Nine Mile Creek is as shallow as it was: trawlers do not go
+  the open water to the south joins. The door to Nine Mile Creek is as shallow as it was: trawlers do not go
   that way. The east edge is not moved by more than the re-encoding's last digit (0.12 mm).
+- **The channel mouth is the door to the South Water.** `door.rpt_south_water` in `RicePointPlan.asset`: a sea
+  door 14 m by 6 m at (-45, -156), sending the key `rice_point`; a boat from the South Water asks for `south_water`
+  and is laid in the channel at (-46, -146), 10 m inside the door. The scene was created before the door existed, so
+  `RicePointDoors.Ensure` authors it (passage and named arrival) ahead of `REFRESH Logic`, which only re-wires doors
+  a scene already holds. `RegionSeamAuditTests` holds the pair against the South Water's half.
 - **The scene keeps the range as numbers** on its two surfaces; `REFRESH Logic` now carries the plan's range
   and paint floor to them.
 

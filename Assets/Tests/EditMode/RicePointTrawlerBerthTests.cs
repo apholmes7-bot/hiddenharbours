@@ -182,7 +182,9 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.That(outside, Is.GreaterThan(issued.Heights.Length * 0.97), "the dredge is a small part of the region");
             // The places people and boats arrive keep their ground: the player's start on the wharf and every door.
             var plan = Plan();
-            foreach (var door in plan.Doors)
+            // The one door that is the dredge's own purpose lies in it: the channel mouth to the South Water,
+            // whose shore point is the wharf deck that stands over the dredged basin.
+            foreach (var door in plan.Doors.Where(d => d.OwnArrival != RicePointDoors.FromSouthWaterArrivalKey))
                 foreach (var at in new[] { door.Centre, door.Arrival, door.Disembark })
                     Assert.That(works.TargetAt(at.x, at.y), Is.GreaterThan(works.KeepAbove), door.Id + " is clear of every cut");
         }

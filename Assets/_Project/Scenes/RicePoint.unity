@@ -11527,6 +11527,37 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 760, y: 2}
   m_EdgeRadius: 0
+--- !u!1 &470270941
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 470270942}
+  m_Layer: 0
+  m_Name: south_water_shore
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &470270942
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 470270941}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -56, y: -108.4, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1007019259}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &544054999
 GameObject:
   m_ObjectHideFlags: 0
@@ -11892,6 +11923,7 @@ Transform:
   - {fileID: 169257108}
   - {fileID: 1822348974}
   - {fileID: 1380863885}
+  - {fileID: 2111557675}
   m_Father: {fileID: 544055000}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &714458078
@@ -12397,6 +12429,8 @@ Transform:
   - {fileID: 866432083}
   - {fileID: 206165881}
   - {fileID: 385372341}
+  - {fileID: 2102265777}
+  - {fileID: 470270942}
   m_Father: {fileID: 544055000}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1007019260
@@ -12425,6 +12459,9 @@ MonoBehaviour:
   - Key: nmc_route_91
     ArrivalPoint: {fileID: 0}
     DisembarkPoint: {fileID: 385372341}
+  - Key: south_water
+    ArrivalPoint: {fileID: 2102265777}
+    DisembarkPoint: {fileID: 470270942}
   _worldCenter: {x: 0, y: 0}
   _worldSizeMeters: {x: 760, y: 360}
   _alongsideBerth: 0
@@ -13531,6 +13568,7 @@ MonoBehaviour:
   _regions:
   - {fileID: 11400000, guid: 26222517019e45e095fc986a3e54569c, type: 2}
   - {fileID: 11400000, guid: 2dcfcde045cd43fcac4a78cff2cc4bab, type: 2}
+  - {fileID: 11400000, guid: 3b2dfb18a14b410789d38a37c68675fb, type: 2}
   _currentSceneName: RicePoint
 --- !u!4 &1879673129
 Transform:
@@ -13835,6 +13873,133 @@ MonoBehaviour:
   _speaker: 
   _conversationId: 
   _completionFlag: 
+--- !u!1 &2102265776
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2102265777}
+  m_Layer: 0
+  m_Name: south_water
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2102265777
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2102265776}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -46, y: -146, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1007019259}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &2111557674
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2111557675}
+  - component: {fileID: 2111557677}
+  - component: {fileID: 2111557676}
+  m_Layer: 0
+  m_Name: door.rpt_south_water
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2111557675
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2111557674}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -45, y: -156, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 713340019}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2111557676
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2111557674}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a750b7f224204cf0bcf0a9afdc844378, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.RegionPassage
+  _target: {fileID: 11400000, guid: 3b2dfb18a14b410789d38a37c68675fb, type: 2}
+  _loader: {fileID: 1879673128}
+  _arrivalKey: rice_point
+  _reentryCooldownSeconds: 1.5
+  _accessPolicy: {fileID: 0}
+--- !u!61 &2111557677
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2111557674}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
+  m_Offset: {x: 0, y: 0}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0, y: 0}
+    oldSize: {x: 0, y: 0}
+    newSize: {x: 0, y: 0}
+    adaptiveTilingThreshold: 0
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  m_Size: {x: 14, y: 6}
+  m_EdgeRadius: 0
 --- !u!1 &2112610779
 GameObject:
   m_ObjectHideFlags: 0

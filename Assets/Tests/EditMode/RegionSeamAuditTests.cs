@@ -108,7 +108,7 @@ namespace HiddenHarbours.Tests.EditMode
             ["Greywick"] = new[] { "PassageToCoddleCove|Greybox||Sea|True" },
             ["NineMileCreek"] = new[] { "PassageToWestWater|WestWater|nine_mile_creek|Sea|True", "PassageToStPeters|StPeters|bar|Foot|True", "PassageToCoddleCove|Greybox||Sea|True", "PassageToRicePointSea|RicePoint|nmc_sea|Sea|True", "PassageToRicePointStrand|RicePoint|nmc_strand|Foot|True" },
             ["StPeters"] = new[] { "PassageToNineMileCreek|NineMileCreek|bar|Foot|True", "PassageToWestWater|WestWater|st_peters|Sea|True", "PassageToEastWater|EastWater|st_peters|Sea|True" },
-            ["RicePoint"] = new[] { "door.rpt_sea|NineMileCreek|rpt_sea|Sea|True", "door.rpt_route_91|NineMileCreek|rpt_route_91|Road|False", "door.rpt_strand|NineMileCreek|rpt_strand|Foot|True" },
+            ["RicePoint"] = new[] { "door.rpt_sea|NineMileCreek|rpt_sea|Sea|True", "door.rpt_route_91|NineMileCreek|rpt_route_91|Road|False", "door.rpt_strand|NineMileCreek|rpt_strand|Foot|True", "door.rpt_south_water|SouthWater|rice_point|Sea|True" },
             ["Cumberland"] = new[] { "door.cmb_route_91|NineMileCreek|cmb_route_91|Road|True", "door.cmb_north_beach|NineMileCreek|cmb_north_beach|Foot|True", "door.cmb_bay|NineMileCreek|cmb_bay|Sea|True" },
             ["Greybox"] = new[] { "PassageToPortGreywick|||Sea|True" },
             ["SouthWater"] = new[] { "PassageToRicePoint|RicePoint|south_water|Sea|True", "PassageToStPeters|StPeters|south_water|Sea|True", "PassageToEastWater|EastWater|south_water|Sea|True" },
@@ -120,7 +120,7 @@ namespace HiddenHarbours.Tests.EditMode
             ["Greywick"] = Array.Empty<string>(),
             ["NineMileCreek"] = new[] { "bar", "rpt_sea", "rpt_strand" },
             ["StPeters"] = new[] { "east_water", "bar" },
-            ["RicePoint"] = new[] { "nmc_sea", "nmc_strand", "nmc_route_91" },
+            ["RicePoint"] = new[] { "nmc_sea", "nmc_strand", "nmc_route_91", "south_water" },
             ["Cumberland"] = new[] { "nmc_route_91", "nmc_north_beach", "nmc_bay" },
             ["Greybox"] = Array.Empty<string>(),
             ["SouthWater"] = new[] { "rice_point", "st_peters", "east_water" },
@@ -132,7 +132,7 @@ namespace HiddenHarbours.Tests.EditMode
             ["Greywick"] = new[] { "default.boat|7.0|0.0|0.0", "default.foot|2.0|0.0|0.0" },
             ["NineMileCreek"] = new[] { "default.boat|86.2|83.1|0.0", "default.foot|86.2|87.35|0.0", "bar.foot|338.0|-197.7|0.0", "rpt_sea.boat|-366.0|-262.5|0.0", "rpt_sea.foot|-366.0|-190.0|0.0", "rpt_strand.foot|-366.0|-196.0|0.0" },
             ["StPeters"] = new[] { "default.boat|213.0|-0.266548|0.0", "default.foot|211.0|3.633452|0.0", "east_water.boat|316.0|40.0|0.0", "bar.foot|-344.0|0.0|0.0" },
-            ["RicePoint"] = new[] { "default.boat|-53.285|-109.825|0.0", "default.foot|-56.0|-108.4|0.0", "nmc_sea.boat|366.0|-162.5|0.0", "nmc_sea.foot|366.0|-90.0|0.0", "nmc_strand.foot|366.0|-96.0|0.0", "nmc_route_91.foot|366.0|-42.0|0.0" },
+            ["RicePoint"] = new[] { "default.boat|-53.285|-109.825|0.0", "default.foot|-56.0|-108.4|0.0", "nmc_sea.boat|366.0|-162.5|0.0", "nmc_sea.foot|366.0|-90.0|0.0", "nmc_strand.foot|366.0|-96.0|0.0", "nmc_route_91.foot|366.0|-42.0|0.0", "south_water.boat|-46.0|-146.0|0.0", "south_water.foot|-56.0|-108.4|0.0" },
             ["Cumberland"] = new[] { "default.boat|210.25|-128.25|0.0", "default.foot|210.25|-125.25|0.0", "nmc_route_91.foot|-186.0|-266.0|0.0", "nmc_north_beach.foot|67.0|-266.0|0.0", "nmc_bay.boat|240.0|-266.0|0.0", "nmc_bay.foot|45.25|-266.0|0.0" },
             ["Greybox"] = new[] { "default.boat|-2.5|-13.5|0.0", "default.foot|0.0|-10.5|0.0" },
             ["SouthWater"] = new[] { "default.boat|250.0|536.0|0.0", "rice_point.boat|-900.0|536.0|0.0", "st_peters.boat|250.0|536.0|0.0", "east_water.boat|950.0|536.0|0.0" },
@@ -259,14 +259,14 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         [Test]
-        public void NormalStart_OnlyReachesTheDocumentedFiveBuiltScenes()
-            => Assert.That(Graph().ReachableFrom("StPeters"), Is.EqualTo(new[] { "EastWater", "Greybox", "NineMileCreek", "RicePoint", "StPeters" }));
+        public void NormalStart_OnlyReachesTheDocumentedSixBuiltScenes()
+            => Assert.That(Graph().ReachableFrom("StPeters"), Is.EqualTo(new[] { "EastWater", "Greybox", "NineMileCreek", "RicePoint", "SouthWater", "StPeters" }));
 
         [Test]
-        public void MissingNamedArrivals_AreCumberlandsKeysTheShutRicePointRoadAndTheSouthWatersUnansweredDoors()
+        public void MissingNamedArrivals_AreCumberlandsKeysTheShutRicePointRoadAndTheSouthWatersTwoUnansweredDoors()
             => Assert.That(Graph().MissingNamedArrivals(), Is.EqualTo(new[] {
                 "Cumberland/door.cmb_bay", "Cumberland/door.cmb_north_beach", "Cumberland/door.cmb_route_91", "RicePoint/door.rpt_route_91",
-                "SouthWater/PassageToEastWater", "SouthWater/PassageToRicePoint", "SouthWater/PassageToStPeters" }));
+                "SouthWater/PassageToEastWater", "SouthWater/PassageToStPeters" }));
 
         [Test]
         public void UnavailableTargets_AreTwoWestWaterDoorsAndTheUnwiredGreyboxExit()
@@ -274,18 +274,21 @@ namespace HiddenHarbours.Tests.EditMode
                 "Greybox/PassageToPortGreywick", "NineMileCreek/PassageToWestWater", "StPeters/PassageToWestWater" }));
 
         [Test]
-        public void UnpairedLiveEdges_AreCumberlandTheTwoCoveEntriesAndTheSouthWatersThreeDoors()
+        public void UnpairedLiveEdges_AreCumberlandTheTwoCoveEntriesAndTheSouthWatersTwoUnansweredDoors()
             => Assert.That(Graph().UnpairedEdges(), Is.EqualTo(new[] {
                 "Cumberland/door.cmb_bay", "Cumberland/door.cmb_north_beach", "Cumberland/door.cmb_route_91",
                 "Greywick/PassageToCoddleCove", "NineMileCreek/PassageToCoddleCove",
-                "SouthWater/PassageToEastWater", "SouthWater/PassageToRicePoint", "SouthWater/PassageToStPeters" }));
+                "SouthWater/PassageToEastWater", "SouthWater/PassageToStPeters" }));
 
         [Test]
-        public void TheSouthWater_IsNotReachableUntilANeighbourOpensItsHalf()
+        public void TheSouthWater_IsReachedThroughRicePointsChannelMouth_AndNoOtherDoorYet()
         {
-            Assert.That(Graph().ReachableFrom("StPeters"), Does.Not.Contain("SouthWater"));
+            Assert.That(Graph().ReachableFrom("StPeters"), Does.Contain("SouthWater"));
             Assert.That(Graph().ReachableFrom("SouthWater"), Is.EqualTo(new[] {
                 "EastWater", "Greybox", "NineMileCreek", "RicePoint", "SouthWater", "StPeters" }));
+            // Rice Point opened its half; St Peters and the East Water have not, so one door leads in.
+            Assert.That(ReadEdges().Where(e => e.To == "SouthWater").Select(e => e.Id + "|" + e.ArrivalKey + "|" + e.Mode + "|" + e.Enabled),
+                Is.EqualTo(new[] { "RicePoint/door.rpt_south_water|rice_point|Sea|True" }));
         }
 
         [Test]

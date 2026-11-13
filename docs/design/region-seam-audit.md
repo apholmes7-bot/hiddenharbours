@@ -8,8 +8,8 @@ No scene, prefab, asset, input, HUD, price, or save format is changed.
 
 The six requested scenes are all enabled in `EditorBuildSettings.asset`.
 They are not all reachable. Starting at St Peters, the structural passage graph
-reaches St Peters, East Water, Nine Mile Creek, Rice Point, and the external
-Greybox/Coddle Cove scene. It does not reach Cumberland or Greywick. Greybox is a
+reaches St Peters, East Water, Nine Mile Creek, Rice Point, the South Water
+(through Rice Point's channel mouth) and the external Greybox/Coddle Cove scene. It does not reach Cumberland or Greywick. Greybox is a
 dead end. Two existing exits target a missing West Water scene.
 
 This statement is a **structural route result**, conditional on earning a boat
@@ -57,14 +57,14 @@ flowchart LR
     NM -->|legacy cove exit| GB
     ST -.-> WW[WestWater: scene absent]
     NM -.-> WW
-    SW[SouthWater: no incoming route] -->|sea; neighbours hold no south_water arrival yet| RP
-    SW --> ST
-    SW --> EW
+    RP <-->|sea, the channel mouth| SW[SouthWater]
+    SW -->|sea; no south_water arrival there yet| ST
+    SW -->|sea; no south_water arrival there yet| EW
 ```
 
 There are 16 passage components in the requested six scenes, plus Greybox's
 unwired exit: 17 audited records. The South Water adds three more (see
-"The South Water's north seams" below): 20. Referenced prefabs (13 distinct sources,
+"The South Water's north seams" below) and Rice Point's channel mouth one: 21. Referenced prefabs (13 distinct sources,
 including recursive discovery) contain no additional passage, anchor or loader.
 The opening is a separate scripted hop: the built first scene is St Peters;
 its `ArrivalOpening` reads `ArrivalSea.asset`, hops to East Water at `opening`,
@@ -108,10 +108,11 @@ are not authored. East Water and Greywick have no road doors.
 
 The South Water (`region.south_water`, 2400 × 1200 m, north edge y = 600) holds **its own
 halves only**: three sea doors on its north edge and the three named arrivals the neighbours'
-exits will ask for. No neighbour scene was written. Until a neighbour opens its half, no route
-leads INTO the South Water, and its three doors send the key `south_water`, which no neighbour
-resolves yet: they are reported under missing named arrivals and unpaired edges, and a boat
-sent north today would land at the neighbour's default arrival.
+exits ask for. Its doors send the key `south_water`. **Rice Point has opened its half** (the
+channel mouth, below), so one route leads INTO the South Water and its Rice Point door is paired.
+St Peters and the East Water have not: the two doors to them are still reported under missing
+named arrivals and unpaired edges, and a boat sent north through either would land at that
+neighbour's default arrival.
 
 | South Water door | Centre | Band (w × d) | Sends key | Arrival here | Arrival key here | Bed at door |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -126,7 +127,7 @@ Every door is inset 24 m from the edge and every arrival stands 40 m inside its 
 
 | Neighbour | Exit band centre | Band (w × d) | Sends key | Named arrival to add | Arrival point | Notes |
 | --- | --- | --- | --- | --- | --- | --- |
-| Rice Point (760 × 360, south edge y = −180) | (-45, -156) | 14 × 6 | `rice_point` | `south_water` | (-45, -116) | In the dredged channel (x −52 to −38, bed −7 m), inset 24 m from the south edge; the arrival 40 m further up the channel. The channel must run at −7 m at least from y −180 to y −116. |
+| Rice Point (760 × 360, south edge y = −180) | (-45, -156) | 14 × 6 | `rice_point` | `south_water` | (-46, -146) | **Built**: `door.rpt_south_water` in `RicePointPlan.asset`. In the dredged channel (flat bed −7 m from x −59 to −31 at the door), inset 24 m from the south edge. The arrival is on the channel's centre line 10 m inside the door, not 40 m: the 40 m point (-45, -116) lies on the outside trawler berth, so it was withdrawn. The channel runs at −7 m from y −180 up through the basin. On foot (a walker cannot come this way) the key falls to the wharf, (-56, -108.4). |
 | St Peters (760 × 520, south edge y = −260) | (x, -236) | up to 260 × 6 | `st_peters` | `south_water` | (x, -196) | x is St Peters' choice anywhere its south water is at the harbour floor (−4 m) from the edge to the arrival. |
 | East Water (760 × 520, south edge y = −260) | (0, -236) | up to 260 × 6 | `east_water` | `south_water` | (0, -196) | The whole bed is −4 m, so any x clear of the west door serves; the mid-line is proposed. |
 
@@ -140,11 +141,11 @@ west wall, so each neighbour states its band size.
 | StPeters | Yes, start/home | First enabled build scene; scripted opening returns here. |
 | EastWater | Yes, structurally | Scripted opening and StPeters sea passage; a later independent visit requires a usable boat. |
 | NineMileCreek | Yes, tide conditional | Walk the bar from StPeters at low water. Earning/repairing the dory remains the existing progression. |
-| RicePoint | Yes, tide/hull conditional | NMC strand on foot or sea door aboard. Route 91 contributes no route yet. |
+| RicePoint | Yes, tide/hull conditional | NMC strand on foot or sea door aboard; from the South Water by the channel mouth. Route 91 contributes no route yet. |
 | Cumberland | **No** | All three authored edges are outgoing; no reachable scene targets Cumberland. Direct Play/scene selection does not count. |
 | Greywick | **No, legacy** | No incoming target and no RegionDef naming its scene. Its anchor still says `region.port_greywick`, which `SaveMigration` migrates to `region.nine_mile_creek`. |
 | Greybox / Coddle Cove, external | Yes, but a trap | NMC's legacy cove edge enters it; no working outgoing edge. |
-| SouthWater | **No, by design at this step** | Its three doors lead out; no neighbour has an exit to it yet. |
+| SouthWater | Yes, aboard | Rice Point's channel mouth (`door.rpt_south_water`), 7 m deep at every tide. St Peters and the East Water have no exit to it yet. |
 | WestWater, external | **No** | Both scenes and older design text reference it, but this base has only its Def/builder/plan, not the scene file. Build registration cannot substitute for a scene asset. |
 
 All seven existing top-level RegionDefs have blank unlock flags. The passage's

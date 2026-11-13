@@ -25,6 +25,8 @@ namespace HiddenHarbours.App.Editor
         public static void Refresh()
         {
             GroundFileIntake.ReadRicePointGround(GroundFolder);
+            // A door the plan gained after CREATE is authored here; the template's refresh only re-wires.
+            RicePointDoors.Ensure(UnityEngine.SceneManagement.SceneManager.GetActiveScene(), LoadPlan());
             LandSceneTemplate.Refresh(LoadPlan());
             LayWrecks();
         }
