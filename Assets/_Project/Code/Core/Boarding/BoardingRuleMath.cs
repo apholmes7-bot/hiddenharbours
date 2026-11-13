@@ -5,7 +5,7 @@ namespace HiddenHarbours.Core
     /// <summary>What the boarding rule says about one spot on one hull.</summary>
     public enum BoardingAccess
     {
-        /// <summary>A low, unrailed hull: climb aboard or go over the side anywhere along her.</summary>
+        /// <summary>This verb is not restricted on this hull: anywhere along her.</summary>
         Anywhere = 0,
         /// <summary>A restricted hull, and this spot is within reach of one of her boarding points.</summary>
         AtAPoint = 1,
@@ -21,11 +21,16 @@ namespace HiddenHarbours.Core
     /// easily climb up massive walls which is wrong, should only be ladders, railings should stop
     /// players from jumping in, maybe different on the fishing vessels"</i>.
     ///
-    /// <para><b>The rule.</b> A hull is RESTRICTED when her freeboard is over the climb-anywhere limit
-    /// (<c>GameConfig.ClimbAnywhereMaxFreeboardMetres</c>) OR her rails block the side. A restricted hull
-    /// is climbed from the water, and left over the side, only within reach of one of her
-    /// <see cref="BoardingPoint"/>s; with no points she refuses both, and is boarded from a wharf or
-    /// gangway. Every other hull — the dory, the small fishing boats — is climb-anywhere, as before.</para>
+    /// <para><b>Two questions, two rules.</b> <b>Climbing ABOARD from the water</b> is restricted when
+    /// the top of her side is over the climb-anywhere limit
+    /// (<c>GameConfig.ClimbAnywhereMaxFreeboardMetres</c>), OR her rails block the side, OR her data
+    /// says outright that she is climbed only at a boarding point (the owner's ruling of the same day
+    /// on the working boats: <i>"Side dragger and stern trawler, cape islander and lobster boats should
+    /// have stern or side ladders. They would definitely be too tall to climb"</i>). <b>Going OVER THE
+    /// SIDE</b> is restricted by her rails alone: height stops a swimmer getting up, not a deckhand
+    /// jumping down. A restricted verb happens only within reach of one of her
+    /// <see cref="BoardingPoint"/>s; with no points it is refused, and she is boarded from a wharf or
+    /// gangway. Every other hull — the dory, the punt, the skiffs — is climb-anywhere, as before.</para>
     ///
     /// <para><b>Every input is data.</b> Freeboard, the rail flag and the points come from the hull's
     /// deck Def; the limit and the default reach from <c>GameConfig</c>. Nothing here names a hull.
@@ -37,11 +42,14 @@ namespace HiddenHarbours.Core
     /// </summary>
     public static class BoardingRuleMath
     {
-        /// <summary>Is this hull one you cannot simply climb anywhere? Railed, or too high. A freeboard
-        /// exactly AT the limit is still climb-anywhere ("at or under").</summary>
-        public static bool IsRestricted(float freeboardMetres, bool railsBlockTheSide,
-                                        float climbAnywhereMaxFreeboardMetres)
-            => railsBlockTheSide || Safe(freeboardMetres) > Safe(climbAnywhereMaxFreeboardMetres);
+        /// <summary>Is this hull one a swimmer cannot simply climb anywhere? Railed, flagged
+        /// ladder-only in her data, or too high. A freeboard exactly AT the limit is still
+        /// climb-anywhere ("at or under").</summary>
+        public static bool IsClimbRestricted(float freeboardMetres, bool railsBlockTheSide,
+                                             bool climbAboardOnlyAtBoardingPoints,
+                                             float climbAnywhereMaxFreeboardMetres)
+            => railsBlockTheSide || climbAboardOnlyAtBoardingPoints
+               || Safe(freeboardMetres) > Safe(climbAnywhereMaxFreeboardMetres);
 
         /// <summary>The reach of one point: its own when authored (&gt; 0), else the config default.</summary>
         public static float ReachOf(in BoardingPoint point, float defaultReachMetres)
@@ -64,15 +72,32 @@ namespace HiddenHarbours.Core
         }
 
         /// <summary>
-        /// The whole rule for one spot. <paramref name="deckLocal"/> is where the person is in the hull's
-        /// deck frame — the swimmer beside her, or the rider at her rail.
+        /// The climb ABOARD from the water, for one spot. <paramref name="deckLocal"/> is where the
+        /// swimmer is beside her, in the hull's deck frame.
         /// </summary>
-        public static BoardingAccess Evaluate(float freeboardMetres, bool railsBlockTheSide,
-                                              BoardingPoint[] points, Vector2 deckLocal,
-                                              float climbAnywhereMaxFreeboardMetres, float defaultReachMetres)
+        public static BoardingAccess EvaluateClimb(float freeboardMetres, bool railsBlockTheSide,
+                                                   bool climbAboardOnlyAtBoardingPoints,
+                                                   BoardingPoint[] points, Vector2 deckLocal,
+                                                   float climbAnywhereMaxFreeboardMetres,
+                                                   float defaultReachMetres)
         {
-            if (!IsRestricted(freeboardMetres, railsBlockTheSide, climbAnywhereMaxFreeboardMetres))
+            if (!IsClimbRestricted(freeboardMetres, railsBlockTheSide, climbAboardOnlyAtBoardingPoints,
+                                   climbAnywhereMaxFreeboardMetres))
                 return BoardingAccess.Anywhere;
+            return AtHerPoints(points, deckLocal, defaultReachMetres);
+        }
+
+        /// <summary>
+        /// Going OVER THE SIDE, for one spot. Only rails restrict it — a high unrailed working deck is
+        /// still jumped from. <paramref name="deckLocal"/> is where the rider stands at her rail.
+        /// </summary>
+        public static BoardingAccess EvaluateOverTheSide(bool railsBlockTheSide, BoardingPoint[] points,
+                                                         Vector2 deckLocal, float defaultReachMetres)
+            => railsBlockTheSide ? AtHerPoints(points, deckLocal, defaultReachMetres) : BoardingAccess.Anywhere;
+
+        private static BoardingAccess AtHerPoints(BoardingPoint[] points, Vector2 deckLocal,
+                                                  float defaultReachMetres)
+        {
             if (points == null || points.Length == 0) return BoardingAccess.NoPoint;
             return PointWithinReach(points, deckLocal, defaultReachMetres) >= 0
                 ? BoardingAccess.AtAPoint : BoardingAccess.FindAPoint;

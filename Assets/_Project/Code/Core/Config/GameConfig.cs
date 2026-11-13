@@ -263,13 +263,13 @@ namespace HiddenHarbours.Core
                  "between two berths, so it never joins one boat's water to the next one's.")]
         [Min(0f)] public float SwimBoardReachMetres = 6.0f;
 
-        [Tooltip("The highest freeboard (deck edge above the water, metres) an UNRAILED hull may have and " +
-                 "still be climbed anywhere from the water, and left anywhere over the side. At or under " +
-                 "this she behaves as every boat did before 2026-11-13 (the dory, the small fishing " +
-                 "boats). Over it — or railed, whatever her height — she is boarded from the water and " +
-                 "left over the side only at one of her boarding points (BoatDeckDef.BoardingPoints); " +
-                 "with none, only from a wharf or gangway. Owner, 2026-11-13: 'player can easily climb up " +
-                 "massive walls which is wrong, should only be ladders'.")]
+        [Tooltip("The highest freeboard (top of the hull side above the water, metres) a hull may have " +
+                 "and still be climbed anywhere from the water. At or under this she behaves as every " +
+                 "boat did before 2026-11-13 (the dory, the punt, the skiffs). Over it — or railed, or " +
+                 "flagged ladder-only on her deck Def — she is climbed from the water only at one of her " +
+                 "boarding points (BoatDeckDef.BoardingPoints); with none, only from a wharf or gangway. " +
+                 "Going over the side is governed by her rails, not by this number. Owner, 2026-11-13: " +
+                 "'player can easily climb up massive walls which is wrong, should only be ladders'.")]
         [Min(0f)] public float ClimbAnywhereMaxFreeboardMetres = 1.0f;
 
         [Tooltip("How close (m) you must be to a hull's ladder, swim platform or rail gate to use it, " +

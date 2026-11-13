@@ -891,18 +891,25 @@ The on-foot ⇄ aboard control loop is the `ControlSwitcher` (Player lane); seve
 - **Only ladders, and rails stop you jumping in** (owner, 2026-11-13: *"boarding the tanker player can
   easily climb up massive walls which is wrong, should only be ladders, railings should stop players from
   jumping in, maybe different on the fishing vessels"*). The rule is Core's pure `BoardingRuleMath`, and
-  every input is data. A hull is **restricted** when her `BoatDeckDef.BoardingFreeboardMetres` is over
-  `GameConfig.ClimbAnywhereMaxFreeboardMetres` (1.0 m) **or** her `BoatDeckDef.RailsBlockTheSide` is set.
-  A restricted hull is climbed **from the water**, and left **over the side**, only within reach of one of
-  her `BoatDeckDef.BoardingPoints` (ladder / platform / gate; reach per point, else
-  `GameConfig.BoardingPointReachMetres`); with no points she refuses both and is boarded from a wharf or
-  gangway. Everything else — the dory, the punt, the skiffs, the cape islander, the inshore and standard
-  lobster boats, the side dragger, the stern trawlers — is climb-anywhere exactly as before. The rule is
+  every input is data. There are **two verbs with two rules**. **Climbing aboard from the water** is
+  restricted when her `BoatDeckDef.BoardingFreeboardMetres` (the top of her side above the water at the
+  lowest point of the sheer — her lowest gunwale cleat minus her hull mesh's resting draft) is over
+  `GameConfig.ClimbAnywhereMaxFreeboardMetres` (1.0 m), **or** her `BoatDeckDef.RailsBlockTheSide` is set,
+  **or** her `BoatDeckDef.ClimbAboardOnlyAtBoardingPoints` is set (owner, same day: *"Side dragger and
+  stern trawler, cape islander and lobster boats should have stern or side ladders. They would definitely
+  be too tall to climb"* — the dragger and the trawlers are over the limit by measurement; the cape
+  islander and the lobster boats carry the flag). **Going over the side** is restricted by
+  `RailsBlockTheSide` alone (tanker, packet, both yachts): on the fishing hulls you still jump in anywhere.
+  A restricted verb happens only within reach of one of her `BoatDeckDef.BoardingPoints` (ladder /
+  platform / gate; reach per point, else `GameConfig.BoardingPointReachMetres`); with no points it is
+  refused and she is boarded from a wharf or gangway. The dory, the punt, the skiffs and the zodiacs are
+  climb-anywhere exactly as before. The working boats' ladder points are data only so far — the ladder
+  art is owed and is drawn at the authored point. The rule is
   asked only when the walker's water state is not `Dry`, so the boarding move from a wharf or beach and the
   step ashore are untouched; a hull with no deck Def (the two sloops) is unmeasured and keeps the old
   behaviour. Refused, the popup and the press say **"Find the ladder"** on a hull that has one, and
   *"Too high to climb — board her from a wharf"* from the water under a hull that has none (the tanker,
-  until her pilot ladder is authored); at a railed edge "Go over the side" is not offered. The three
+  until her pilot ladder is authored); at a railed edge "Go over the side" is not offered. The four
   fields are the **authored** block of the otherwise-imported `BoatDeckDef` — the importer never assigns
   them — and `BoardingRuleTests` holds the per-hull table.
 - **Swim up to a hull and climb aboard** (owner, 2026-09-02). The boarding gate above was never the thing

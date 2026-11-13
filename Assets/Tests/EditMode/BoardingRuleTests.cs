@@ -20,7 +20,8 @@ namespace HiddenHarbours.Tests.EditMode
     /// <item><b>The wiring</b> — the <see cref="ControlSwitcher"/> actually asks the rule, from the
     /// water only, and a hull nobody has measured keeps the old behaviour.</item>
     /// <item><b>The data</b> — every shipped hull carries the values, the hulls the seat named are
-    /// railed, and the small boats are still climb-anywhere. These are the owner's dials: changing a
+    /// railed, the working boats the owner named are ladder-only to climb, no restricted hull traps a
+    /// swimmer, and the small boats are still climb-anywhere. These are the owner's dials: changing a
     /// hull's rail flag in her deck asset is a deliberate edit, and the table here is what makes it one
     /// (update the row in the same PR).</item>
     /// </list>
@@ -80,11 +81,11 @@ namespace HiddenHarbours.Tests.EditMode
         [Test]
         public void ALowUnrailedHull_IsClimbAnywhere_AsBefore()
         {
-            Assert.IsFalse(BoardingRuleMath.IsRestricted(0f, false, Limit), "the dory");
-            Assert.IsFalse(BoardingRuleMath.IsRestricted(0.95f, false, Limit), "the side dragger");
-            Assert.IsFalse(BoardingRuleMath.IsRestricted(Limit, false, Limit), "AT the limit is still 'at or under'");
+            Assert.IsFalse(BoardingRuleMath.IsClimbRestricted(0f, false, false, Limit), "the dory");
+            Assert.IsFalse(BoardingRuleMath.IsClimbRestricted(0.95f, false, false, Limit), "a console skiff");
+            Assert.IsFalse(BoardingRuleMath.IsClimbRestricted(Limit, false, false, Limit), "AT the limit is still 'at or under'");
 
-            var access = BoardingRuleMath.Evaluate(0.2f, false, null, new Vector2(40f, 40f), Limit, Reach);
+            var access = BoardingRuleMath.EvaluateClimb(0.2f, false, false, null, new Vector2(40f, 40f), Limit, Reach);
             Assert.AreEqual(BoardingAccess.Anywhere, access);
             Assert.IsTrue(BoardingRuleMath.Allows(access));
         }
@@ -92,14 +93,47 @@ namespace HiddenHarbours.Tests.EditMode
         [Test]
         public void AHighHull_IsRestricted_EvenWithNoRail()
         {
-            Assert.IsTrue(BoardingRuleMath.IsRestricted(Limit + 0.01f, false, Limit));
-            Assert.IsTrue(BoardingRuleMath.IsRestricted(6.13f, false, Limit), "the tanker's wall");
+            Assert.IsTrue(BoardingRuleMath.IsClimbRestricted(Limit + 0.01f, false, false, Limit));
+            Assert.IsTrue(BoardingRuleMath.IsClimbRestricted(6.13f, false, false, Limit), "the tanker's wall");
         }
 
         [Test]
         public void ARailedHull_IsRestricted_HoweverLowSheIs()
         {
-            Assert.IsTrue(BoardingRuleMath.IsRestricted(0f, true, Limit), "an offshore lobster boat");
+            Assert.IsTrue(BoardingRuleMath.IsClimbRestricted(0f, true, false, Limit), "a low railed yacht");
+        }
+
+        [Test]
+        public void ALadderOnlyHull_IsClimbRestricted_HoweverLowSheMeasures()
+        {
+            // Owner, 2026-11-13: the cape islander and the lobster boats "would definitely be too tall
+            // to climb". Where the measured gunwale is under the limit, the data flag carries the ruling.
+            Assert.IsTrue(BoardingRuleMath.IsClimbRestricted(0.72f, false, true, Limit));
+            var ladder = new[] { Point(0f, -6f) };
+            Assert.AreEqual(BoardingAccess.AtAPoint,
+                BoardingRuleMath.EvaluateClimb(0.72f, false, true, ladder, new Vector2(0f, -7f), Limit, Reach));
+            Assert.AreEqual(BoardingAccess.FindAPoint,
+                BoardingRuleMath.EvaluateClimb(0.72f, false, true, ladder, new Vector2(2.4f, 0f), Limit, Reach));
+            Assert.AreEqual(BoardingAccess.NoPoint,
+                BoardingRuleMath.EvaluateClimb(0.72f, false, true, null, new Vector2(0f, -7f), Limit, Reach));
+        }
+
+        [Test]
+        public void GoingOverTheSide_IsStoppedByRailsOnly_NeverByHeight()
+        {
+            var ladder = new[] { Point(0f, -6f) };
+            Vector2 amidships = new Vector2(2.4f, 0f);
+            Assert.AreEqual(BoardingAccess.Anywhere,
+                BoardingRuleMath.EvaluateOverTheSide(false, ladder, amidships, Reach),
+                "an unrailed working deck is jumped from anywhere, ladder or no ladder");
+            Assert.AreEqual(BoardingAccess.Anywhere,
+                BoardingRuleMath.EvaluateOverTheSide(false, null, amidships, Reach));
+            Assert.AreEqual(BoardingAccess.FindAPoint,
+                BoardingRuleMath.EvaluateOverTheSide(true, ladder, amidships, Reach), "rails stop you jumping in");
+            Assert.AreEqual(BoardingAccess.AtAPoint,
+                BoardingRuleMath.EvaluateOverTheSide(true, ladder, new Vector2(0f, -5.5f), Reach));
+            Assert.AreEqual(BoardingAccess.NoPoint,
+                BoardingRuleMath.EvaluateOverTheSide(true, null, amidships, Reach));
         }
 
         [Test]
@@ -107,11 +141,11 @@ namespace HiddenHarbours.Tests.EditMode
         {
             var points = new[] { Point(0f, -12.79f) };
 
-            var atTheLadder = BoardingRuleMath.Evaluate(1.95f, true, points, new Vector2(0.4f, -13.5f), Limit, Reach);
+            var atTheLadder = BoardingRuleMath.EvaluateClimb(1.95f, true, false, points, new Vector2(0.4f, -13.5f), Limit, Reach);
             Assert.AreEqual(BoardingAccess.AtAPoint, atTheLadder);
             Assert.IsTrue(BoardingRuleMath.Allows(atTheLadder));
 
-            var amidships = BoardingRuleMath.Evaluate(1.95f, true, points, new Vector2(3.2f, 0f), Limit, Reach);
+            var amidships = BoardingRuleMath.EvaluateClimb(1.95f, true, false, points, new Vector2(3.2f, 0f), Limit, Reach);
             Assert.AreEqual(BoardingAccess.FindAPoint, amidships);
             Assert.IsFalse(BoardingRuleMath.Allows(amidships), "a railed hull refuses the climb away from a ladder");
         }
@@ -123,7 +157,7 @@ namespace HiddenHarbours.Tests.EditMode
             {
                 var points = new[] { Point(2f, 5f, 0f, kind) };
                 Assert.AreEqual(BoardingAccess.AtAPoint,
-                    BoardingRuleMath.Evaluate(0f, true, points, new Vector2(2f, 5f), Limit, Reach), kind.ToString());
+                    BoardingRuleMath.EvaluateClimb(0f, true, false, points, new Vector2(2f, 5f), Limit, Reach), kind.ToString());
             }
         }
 
@@ -132,7 +166,7 @@ namespace HiddenHarbours.Tests.EditMode
         {
             foreach (var points in new[] { null, new BoardingPoint[0] })
             {
-                var access = BoardingRuleMath.Evaluate(6.13f, true, points, Vector2.zero, Limit, Reach);
+                var access = BoardingRuleMath.EvaluateClimb(6.13f, true, false, points, Vector2.zero, Limit, Reach);
                 Assert.AreEqual(BoardingAccess.NoPoint, access);
                 Assert.IsFalse(BoardingRuleMath.Allows(access));
             }
@@ -161,8 +195,8 @@ namespace HiddenHarbours.Tests.EditMode
             for (int i = 0; i < 64; i++)
             {
                 var p = new Vector2(Mathf.Sin(i * 0.7f) * 5f, Mathf.Cos(i * 1.3f) * 8f);
-                var a = BoardingRuleMath.Evaluate(1.4f, i % 2 == 0, points, p, Limit, Reach);
-                var b = BoardingRuleMath.Evaluate(1.4f, i % 2 == 0, points, p, Limit, Reach);
+                var a = BoardingRuleMath.EvaluateClimb(1.4f, i % 2 == 0, false, points, p, Limit, Reach);
+                var b = BoardingRuleMath.EvaluateClimb(1.4f, i % 2 == 0, false, points, p, Limit, Reach);
                 Assert.AreEqual(a, b);
             }
         }
@@ -171,7 +205,7 @@ namespace HiddenHarbours.Tests.EditMode
         public void NotANumber_NeverOpensAWall()
         {
             // A NaN freeboard reads as 0 (low), so only the rail can restrict — and it still does.
-            Assert.IsTrue(BoardingRuleMath.IsRestricted(float.NaN, true, Limit));
+            Assert.IsTrue(BoardingRuleMath.IsClimbRestricted(float.NaN, true, false, Limit));
             Assert.AreEqual(-1, BoardingRuleMath.PointWithinReach(
                 new[] { Point(float.NaN, 0f) }, Vector2.zero, Reach), "a NaN point is in reach of nothing");
         }
@@ -330,6 +364,29 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         [Test]
+        public void ASwimmer_ClimbsALadderOnlyWorkingBoat_OnlyAtHerLadder()
+        {
+            var r = Build(0.72f, railed: false, new[] { Point(0f, 60f) }, inTheWater: true);
+            Assert.IsTrue(r.Switcher.CanInteract(), "low and unrailed: climb-anywhere until the flag is set");
+            r.Deck.ClimbAboardOnlyAtBoardingPoints = true;
+            AssertRefused(r, BoardingAccess.FindAPoint, "ladder-only, and her ladder is 60 m away");
+
+            var atHer = SwimmerInDeckFrame(r);
+            r.Deck.BoardingPoints = new[] { Point(atHer.x, atHer.y) };
+            Assert.AreEqual(BoardingAccess.AtAPoint, r.Switcher.ClimbAccessFromHere());
+            AssertBoards(r, "at her stern ladder");
+        }
+
+        [Test]
+        public void OnDeck_AHighOrLadderOnlyWorkingBoat_IsStillLeftOverTheSideAnywhere()
+        {
+            var r = Build(2.3f, railed: false, new[] { Point(0f, 60f) }, inTheWater: false);
+            r.Deck.ClimbAboardOnlyAtBoardingPoints = true;
+            Assert.AreEqual(BoardingAccess.Anywhere, r.Switcher.OverTheSideAccessFromHere(),
+                "only climbing ABOARD is limited to the ladder on the fishing hulls; jumping in is not");
+        }
+
+        [Test]
         public void OnDeck_TheRailIsOnlyHersToLeaveByAtAPoint()
         {
             // The rider's deck position in a fresh rig is the deck origin; the rule is asked there.
@@ -351,20 +408,39 @@ namespace HiddenHarbours.Tests.EditMode
 
         // ================= 3. the data ===========================================================
 
+        /// <summary>Rails block the side: no climbing aboard AND no going over it except at a point.</summary>
         static readonly string[] RailedHulls =
         {
             "boat.tanker", "boat.coastal_packet", "boat.motor_yacht_84", "boat.expedition_yacht_120",
-            "boat.lobster_offshore_hardtop_fundy", "boat.lobster_offshore_hardtop_newfoundland",
-            "boat.lobster_offshore_hardtop_northumberland", "boat.lobster_offshore_open_fundy",
-            "boat.lobster_offshore_open_newfoundland", "boat.lobster_offshore_open_northumberland",
         };
 
         /// <summary>Hulls with no deck Def at all (never measured): the rule leaves them climb-anywhere.
         /// Listed so a NEW hull without a deck is a decision somebody made, not an accident.</summary>
         static readonly string[] UnmeasuredHulls = { "boat.sloop_30", "boat.sloop_88" };
 
-        /// <summary>Restricted hulls that ship with a water-reaching ladder, platform or gate.</summary>
-        static readonly string[] HullsWithAWayUp = { "boat.motor_yacht_84", "boat.expedition_yacht_120" };
+        /// <summary>Climb-restricted with NO boarding point: boarded from a wharf or gangway only, on
+        /// purpose (the tanker's pilot ladder is a later slice). Everything else restricted must give a
+        /// swimmer a way up, so nobody is trapped in the water beside their own boat.</summary>
+        static readonly string[] WharfOnlyHulls = { "boat.tanker", "boat.coastal_packet" };
+
+        /// <summary>Owner, 2026-11-13: still climb-anywhere.</summary>
+        static readonly string[] SmallBoats =
+        {
+            "boat.dory", "boat.dory_outboard", "boat.punt", "boat.punt_upgraded", "boat.sport_skiff",
+            "boat.sport_skiff_mk2", "boat.sport_skiff_twin", "boat.console_skiff", "boat.zodiac_frc",
+            "boat.zodiac_hurricane",
+        };
+
+        /// <summary>Owner, 2026-11-13: "Side dragger and stern trawler, cape islander and lobster boats
+        /// should have stern or side ladders. They would definitely be too tall to climb".</summary>
+        static bool IsARuledWorkingBoat(string id)
+            => id == "boat.side_dragger" || id == "boat.stern_trawler" || id == "boat.stern_trawler_mk2"
+               || id == "boat.cape_islander" || id.StartsWith("boat.lobster_");
+
+        /// <summary>The boats a campaign player boards from the water in the intro and the early
+        /// quests: these get the full switcher proof at their stern ladder.</summary>
+        static bool IsACapeIslanderOrLobsterBoat(string id)
+            => id == "boat.cape_islander" || id.StartsWith("boat.lobster_");
 
         static List<BoatHullDef> ShippedHulls()
         {
@@ -396,7 +472,8 @@ namespace HiddenHarbours.Tests.EditMode
                                  "decide her rail flag");
 
                 string text = System.IO.File.ReadAllText(AssetDatabase.GetAssetPath(deck));
-                foreach (string field in new[] { "BoardingFreeboardMetres:", "RailsBlockTheSide:", "BoardingPoints:" })
+                foreach (string field in new[] { "BoardingFreeboardMetres:", "RailsBlockTheSide:",
+                                               "ClimbAboardOnlyAtBoardingPoints:", "BoardingPoints:" })
                     if (!text.Contains(field))
                         problems.Add($"{hull.Id}: {deck.name}.asset does not serialize {field} — the value " +
                                      "would be a silent default, not a decision");
@@ -431,22 +508,111 @@ namespace HiddenHarbours.Tests.EditMode
             var railed = ShippedHulls().Where(h => DeckOf(h) != null && DeckOf(h).RailsBlockTheSide)
                                        .Select(h => h.Id).OrderBy(s => s).ToArray();
             CollectionAssert.AreEqual(RailedHulls.OrderBy(s => s).ToArray(), railed,
-                "tanker, packet, both yachts and the six offshore lobster boats are railed; nothing else is. " +
-                "If the owner changed a hull's rail flag, update this table in the same PR.");
+                "tanker, packet and both yachts are railed; no fishing hull is (going over the side stays " +
+                "allowed on them). If the owner changed a hull's rail flag, update this table in the same PR.");
         }
 
         [Test]
-        public void EveryUnrailedHull_IsLowEnoughToClimbAnywhere()
+        public void TheSmallBoats_AreStillClimbAnywhere()
         {
+            var hulls = ShippedHulls();
+            foreach (string id in SmallBoats)
+            {
+                var deck = DeckOf(hulls.Single(h => h.Id == id));
+                Assert.AreEqual(BoardingAccess.Anywhere, deck.ClimbAccessAt(new Vector2(999f, 999f), Limit, Reach),
+                    $"{id} (gunwale {deck.BoardingFreeboardMetres} m) must stay climb-anywhere");
+                Assert.AreEqual(BoardingAccess.Anywhere, deck.OverTheSideAccessAt(new Vector2(999f, 999f), Reach), id);
+            }
+        }
+
+        [Test]
+        public void NoRestrictedHull_TrapsASwimmer_ExceptTheWharfOnlyOnes()
+        {
+            var problems = new List<string>();
             foreach (var hull in ShippedHulls())
             {
                 var deck = DeckOf(hull);
-                if (deck == null || deck.RailsBlockTheSide) continue;
-                Assert.AreEqual(BoardingAccess.Anywhere,
-                    deck.BoardingAccessAt(new Vector2(999f, 999f), Limit, Reach),
-                    $"{hull.Id} (freeboard {deck.BoardingFreeboardMetres} m) is unrailed, so she must stay " +
-                    "climb-anywhere — the dory and the fishing boats behave as they did");
+                if (deck == null) continue;
+                bool restricted = BoardingRuleMath.IsClimbRestricted(deck.BoardingFreeboardMetres,
+                    deck.RailsBlockTheSide, deck.ClimbAboardOnlyAtBoardingPoints, Limit);
+                bool wharfOnly = WharfOnlyHulls.Contains(hull.Id);
+                if (restricted && deck.BoardingPoints.Length == 0 && !wharfOnly)
+                    problems.Add($"{hull.Id}: climb-restricted (gunwale {deck.BoardingFreeboardMetres} m) with no " +
+                                 "boarding point — a swimmer beside her can never get back aboard");
+                if (wharfOnly && (!restricted || deck.BoardingPoints.Length > 0))
+                    problems.Add($"{hull.Id}: listed wharf-only but she now has a way up — update the table");
             }
+            Assert.IsEmpty(problems, string.Join("\n", problems));
+        }
+
+        [Test]
+        public void TheWorkingBoatsTheOwnerNamed_AreLadderOnlyToClimb_ButStillLeftOverTheSide()
+        {
+            int seen = 0;
+            foreach (var hull in ShippedHulls().Where(h => IsARuledWorkingBoat(h.Id)))
+            {
+                seen++;
+                var deck = DeckOf(hull);
+                Assert.IsNotNull(deck, hull.Id);
+                Assert.IsTrue(deck.BoardingPoints.Any(p => p.Kind == BoardingPointKind.Ladder),
+                    $"{hull.Id}: the ruling gives her a stern or side ladder");
+                Vector2 amidships = deck.WalkCenter + new Vector2(deck.WalkHalfExtents.x + 1f, 0f);
+                var ladder = deck.BoardingPoints.First(p => p.Kind == BoardingPointKind.Ladder);
+                bool ladderIsAmidships =
+                    (ladder.DeckLocalMeters - amidships).magnitude <= BoardingRuleMath.ReachOf(ladder, Reach)
+                    || (ladder.DeckLocalMeters - new Vector2(-amidships.x, amidships.y)).magnitude
+                       <= BoardingRuleMath.ReachOf(ladder, Reach);
+                if (!ladderIsAmidships)
+                    Assert.AreEqual(BoardingAccess.FindAPoint, deck.ClimbAccessAt(amidships, Limit, Reach),
+                        $"{hull.Id}: her side is too tall to climb away from the ladder");
+                Assert.AreEqual(BoardingAccess.AtAPoint, deck.ClimbAccessAt(ladder.DeckLocalMeters, Limit, Reach), hull.Id);
+                Assert.AreEqual(BoardingAccess.Anywhere, deck.OverTheSideAccessAt(amidships, Reach),
+                    $"{hull.Id}: going over the side stays allowed on the fishing hulls (open question in the PR)");
+            }
+            Assert.AreEqual(23, seen, "side dragger, two stern trawlers, cape islander, lobster boat, 18 variants");
+        }
+
+        /// <summary>
+        /// ⭐ The proof the intro and the early quests rest on: a swimmer beside the cape islander or any
+        /// lobster boat gets back aboard through the new stern ladder — the REAL deck asset on the
+        /// switcher's own rig, the swimmer just astern of the ladder, the offer live. And away from the
+        /// ladder, in the water at her quarter-length, the same press is refused with "Find the ladder".
+        /// </summary>
+        [Test]
+        public void ASwimmer_BoardsTheCapeIslanderAndEveryLobsterBoat_AtHerSternLadder()
+        {
+            int seen = 0;
+            foreach (var hull in ShippedHulls().Where(h => IsACapeIslanderOrLobsterBoat(h.Id)))
+            {
+                seen++;
+                var real = DeckOf(hull);
+                var r = Build(0f, false, null, inTheWater: true, withDeckDef: false);
+                BoatDeckAreas.Write(r.BoatGo, real);
+                var ladder = real.BoardingPoints.First(p => p.Id == "stern_ladder");
+                float heading = DeckWalkController.DrawnHeadingDegreesOf(r.BoatGo.transform);
+                float elevation = DeckWalkController.BakeElevationDegreesOf(r.BoatGo.transform);
+
+                bool boarded = false;
+                foreach (float astern in new[] { 0.5f, 1.0f, 1.5f })
+                {
+                    Vector2 spot = ladder.DeckLocalMeters + new Vector2(0f, -astern);
+                    r.PlayerGo.transform.position = r.BoatGo.transform.position
+                        + (Vector3)DeckAreaMath.DeckToWorld(spot, 0f, heading, elevation);
+                    Assert.AreEqual(BoardingAccess.AtAPoint, r.Switcher.ClimbAccessFromHere(),
+                        $"{hull.Id}: {astern} m astern of her stern ladder");
+                    if (r.Switcher.WithinBoardReach() && r.Switcher.CanInteract()) { boarded = true; break; }
+                }
+                Assert.IsTrue(boarded, $"{hull.Id}: no spot astern of her ladder offers the climb");
+
+                Vector2 abeam = real.WalkCenter + new Vector2(real.WalkHalfExtents.x + 1f, 0f);
+                r.PlayerGo.transform.position = r.BoatGo.transform.position
+                    + (Vector3)DeckAreaMath.DeckToWorld(abeam, 0f, heading, elevation);
+                Assert.AreEqual(BoardingAccess.FindAPoint, r.Switcher.ClimbAccessFromHere(), $"{hull.Id}: abeam");
+                Assert.IsFalse(r.Switcher.CanInteract(), $"{hull.Id}: her side is too tall to climb");
+
+                TearDown(); SetUp();
+            }
+            Assert.AreEqual(20, seen, "cape islander, lobster boat and the 18 lobster variants");
         }
 
         [Test]
@@ -455,22 +621,26 @@ namespace HiddenHarbours.Tests.EditMode
             var tanker = DeckOf(ShippedHulls().Single(h => h.Id == "boat.tanker"));
             Assert.Greater(tanker.BoardingFreeboardMetres, Limit, "her wall alone restricts her");
             Assert.IsEmpty(tanker.BoardingPoints, "slice 2 authors her pilot ladder; until then, a wharf");
-            Assert.AreEqual(BoardingAccess.NoPoint, tanker.BoardingAccessAt(Vector2.zero, Limit, Reach));
+            Assert.AreEqual(BoardingAccess.NoPoint, tanker.ClimbAccessAt(Vector2.zero, Limit, Reach));
+            Assert.AreEqual(BoardingAccess.NoPoint, tanker.OverTheSideAccessAt(Vector2.zero, Reach));
         }
 
         [Test]
-        public void TheYachts_AreClimbedAtTheirSternLadder_AndNowhereElse()
+        public void TheYachts_AreClimbedAndLeft_AtTheirSternLadder_AndNowhereElse()
         {
-            foreach (string id in HullsWithAWayUp)
+            foreach (string id in new[] { "boat.motor_yacht_84", "boat.expedition_yacht_120" })
             {
                 var deck = DeckOf(ShippedHulls().Single(h => h.Id == id));
                 Assert.IsNotEmpty(deck.BoardingPoints, id);
                 foreach (var p in deck.BoardingPoints)
-                    Assert.AreEqual(BoardingAccess.AtAPoint,
-                        deck.BoardingAccessAt(p.DeckLocalMeters, Limit, Reach), $"{id}/{p.Id}");
-                Assert.AreEqual(BoardingAccess.FindAPoint,
-                    deck.BoardingAccessAt(deck.WalkCenter + new Vector2(deck.WalkHalfExtents.x, 0f), Limit, Reach),
+                {
+                    Assert.AreEqual(BoardingAccess.AtAPoint, deck.ClimbAccessAt(p.DeckLocalMeters, Limit, Reach), $"{id}/{p.Id}");
+                    Assert.AreEqual(BoardingAccess.AtAPoint, deck.OverTheSideAccessAt(p.DeckLocalMeters, Reach), $"{id}/{p.Id}");
+                }
+                Vector2 amidships = deck.WalkCenter + new Vector2(deck.WalkHalfExtents.x, 0f);
+                Assert.AreEqual(BoardingAccess.FindAPoint, deck.ClimbAccessAt(amidships, Limit, Reach),
                     $"{id}: amidships at her rail there is no ladder");
+                Assert.AreEqual(BoardingAccess.FindAPoint, deck.OverTheSideAccessAt(amidships, Reach), id);
             }
         }
     }

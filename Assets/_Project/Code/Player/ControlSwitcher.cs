@@ -395,7 +395,7 @@ namespace HiddenHarbours.Player
         // Owner playtest: "boarding the tanker player can easily climb up massive walls which is wrong,
         // should only be ladders, railings should stop players from jumping in, maybe different on the
         // fishing vessels". The RULE is Core's BoardingRuleMath and every input is data on the hull's
-        // BoatDeckDef (freeboard, rails, boarding points) or GameConfig (the two limits). This block
+        // BoatDeckDef (freeboard, rails, the ladder-only flag, boarding points) or GameConfig (the two limits). This block
         // only asks it the two questions the switcher has: the swimmer's climb, and the rider's exit.
         //
         // ⚠ It is about the WATER side only. A press from a wharf, a beach or a gangway is the boarding
@@ -444,7 +444,7 @@ namespace HiddenHarbours.Player
 
         /// <summary>
         /// ⭐ May the on-foot player climb the active hull from where she is? <b>Anywhere</b> whenever she
-        /// is not in the water (the wharf, the beach) or the hull is low and unrailed; otherwise the
+        /// is not in the water (the wharf, the beach) or the hull's climb is unrestricted; otherwise the
         /// rule's verdict for her spot beside the hull, in the hull's own deck frame.
         /// </summary>
         public BoardingAccess ClimbAccessFromHere()
@@ -458,17 +458,17 @@ namespace HiddenHarbours.Player
             Vector2 beside = DeckAreaMath.WorldToDeck(
                 (Vector2)(Player.position - Boat.position), 0f,
                 DeckWalkController.DrawnHeadingDegreesOf(Boat), DeckWalkController.BakeElevationDegreesOf(Boat));
-            return deck.BoardingAccessAt(beside, ClimbAnywhereMaxFreeboardMetres, BoardingPointReachMetres);
+            return deck.ClimbAccessAt(beside, ClimbAnywhereMaxFreeboardMetres, BoardingPointReachMetres);
         }
 
-        /// <summary>⭐ May the rider leave the active hull over the side from where she stands on deck?</summary>
+        /// <summary>⭐ May the rider leave the active hull over the side from where she stands on deck?
+        /// Only her rails restrict it; her height does not.</summary>
         public BoardingAccess OverTheSideAccessFromHere()
         {
             var walk = DeckWalk;
             BoatDeckDef deck = BoardingRuleDeck();
             if (walk == null || deck == null) return BoardingAccess.Anywhere;
-            return deck.BoardingAccessAt(walk.DeckLocalPosition, ClimbAnywhereMaxFreeboardMetres,
-                                         BoardingPointReachMetres);
+            return deck.OverTheSideAccessAt(walk.DeckLocalPosition, BoardingPointReachMetres);
         }
 
         /// <summary>The boarding press from the water is allowed here — the gate the three on-foot

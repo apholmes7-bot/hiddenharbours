@@ -43,4 +43,5 @@ MonoBehaviour:
   WalkHalfExtents: {x: 0.302, y: 0.03850001}
   BoardingFreeboardMetres: 0
   RailsBlockTheSide: 0
+  ClimbAboardOnlyAtBoardingPoints: 0
   BoardingPoints: []

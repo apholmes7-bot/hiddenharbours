@@ -117,7 +117,7 @@ namespace HiddenHarbours.Boats
     /// became dead code precisely because the runtime read a hand-transcribed constant instead. The
     /// importer overwrites every IMPORTED field below on each run; anything typed into one is lost,
     /// which is the point. <b>The one exception is the "Boarding rule" block</b> (freeboard, rails,
-    /// boarding points): no sidecar carries those yet, the importer never touches them, and they are
+    /// the ladder-only flag, boarding points): no sidecar carries those yet, the importer never touches them, and they are
     /// the owner's to tune.</para>
     ///
     /// <para><b>Absence is data, at two levels</b> (the sidecar contract's own rule). A hull with no
@@ -198,29 +198,44 @@ namespace HiddenHarbours.Boats
         // takes them over and this note goes.
 
         [Header("Boarding rule (AUTHORED — owner-tunable; the importer leaves these alone)")]
-        [Tooltip("How high her deck edge stands above the water, in metres — the wall a swimmer faces. " +
-                 "Seeded from her hull mesh (watertight deck height minus resting draft). Over " +
-                 "GameConfig.ClimbAnywhereMaxFreeboardMetres she can be climbed from the water, and left " +
-                 "over the side, only at a boarding point below.")]
+        [Tooltip("How high the TOP OF HER SIDE (gunwale / bulwark / rail cap) stands above the water at " +
+                 "the lowest point of her sheer, in metres — the wall a swimmer has to get over. Seeded " +
+                 "from her lowest gunwale cleat's height minus her hull mesh's resting draft. Over " +
+                 "GameConfig.ClimbAnywhereMaxFreeboardMetres she is climbed from the water only at a " +
+                 "boarding point below.")]
         [Min(0f)] public float BoardingFreeboardMetres;
 
-        [Tooltip("TRUE = her rails or bulwarks block the side: no climbing aboard from the water and no " +
-                 "going over the side except at a boarding point, however low she is. FALSE = a working " +
-                 "boat you can swing a leg over (the dory, the small fishing boats).")]
+        [Tooltip("TRUE = her rails block the side: no climbing aboard from the water AND no going over " +
+                 "the side except at a boarding point, however low she is. FALSE = you can still go over " +
+                 "her side anywhere (every working boat today).")]
         public bool RailsBlockTheSide;
 
-        [Tooltip("Her ladders, swim platforms and rail gates that reach the water. On a restricted hull " +
-                 "(railed, or over the freeboard limit) these are the ONLY places to climb out of the " +
-                 "water or go over the side. Empty on a restricted hull = wharf or gangway only.")]
+        [Tooltip("TRUE = she is climbed from the water ONLY at a boarding point, whatever her measured " +
+                 "freeboard says (owner, 2026-11-13: the cape islander and the lobster boats 'would " +
+                 "definitely be too tall to climb'). Going over her side is NOT affected — that is " +
+                 "RailsBlockTheSide. FALSE = the freeboard number alone decides.")]
+        public bool ClimbAboardOnlyAtBoardingPoints;
+
+        [Tooltip("Her ladders, swim platforms and rail gates that reach the water. Where climbing " +
+                 "aboard is restricted these are the ONLY places to climb out of the water; where her " +
+                 "rails block the side they are also the only places to go over it. None = wharf or " +
+                 "gangway only.")]
         public BoardingPoint[] BoardingPoints = Array.Empty<BoardingPoint>();
 
-        /// <summary>The boarding rule's verdict for one spot in this hull's deck frame — the swimmer
-        /// beside her or the rider at her rail. Pure pass-through to <see cref="BoardingRuleMath"/> with
-        /// this hull's own data; the two limits come from <c>GameConfig</c>.</summary>
-        public BoardingAccess BoardingAccessAt(Vector2 deckLocal, float climbAnywhereMaxFreeboardMetres,
-                                               float defaultPointReachMetres)
-            => BoardingRuleMath.Evaluate(BoardingFreeboardMetres, RailsBlockTheSide, BoardingPoints, deckLocal,
-                                         climbAnywhereMaxFreeboardMetres, defaultPointReachMetres);
+        /// <summary>May a swimmer climb aboard from this spot beside her (deck frame)? Pure pass-through
+        /// to <see cref="BoardingRuleMath"/> with this hull's own data; the two limits come from
+        /// <c>GameConfig</c>.</summary>
+        public BoardingAccess ClimbAccessAt(Vector2 deckLocal, float climbAnywhereMaxFreeboardMetres,
+                                            float defaultPointReachMetres)
+            => BoardingRuleMath.EvaluateClimb(BoardingFreeboardMetres, RailsBlockTheSide,
+                                              ClimbAboardOnlyAtBoardingPoints, BoardingPoints, deckLocal,
+                                              climbAnywhereMaxFreeboardMetres, defaultPointReachMetres);
+
+        /// <summary>May a rider go over the side from this spot at her rail (deck frame)? Only her
+        /// rails restrict it.</summary>
+        public BoardingAccess OverTheSideAccessAt(Vector2 deckLocal, float defaultPointReachMetres)
+            => BoardingRuleMath.EvaluateOverTheSide(RailsBlockTheSide, BoardingPoints, deckLocal,
+                                                    defaultPointReachMetres);
 
         /// <summary>True when at least one <see cref="DeckAreaKind.Deck"/> area is usable — the gate
         /// <c>DeckWalkController</c> takes the polygon path behind. False
