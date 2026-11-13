@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using HiddenHarbours.Core;
 
@@ -18,6 +19,27 @@ namespace HiddenHarbours.Environment
         private double _flow;
         private int _lastTotalDays = -1;
         private Season _lastSeason;
+        private bool _advancing;
+        private CalendarSettings _forwardCalendar;
+        private CalendarDate _boundaryDate;
+
+        // An accepted span owns these values until all synchronous notifications finish.
+        private readonly struct CalendarSettings
+        {
+            public readonly double DayLength;
+            public readonly int DaysPerSeason, StartDayOfYear, DaysPerWeek, MarketDayIndex;
+
+            public CalendarSettings(GameConfig config, int startDayOfYear)
+            {
+                DayLength = config.SecondsPerDay;
+                DaysPerSeason = config.DaysPerSeason;
+                StartDayOfYear = startDayOfYear;
+                DaysPerWeek = config.DaysPerWeek;
+                MarketDayIndex = config.MarketDayIndex;
+            }
+
+            public CalendarDate AtDay(int day) => GameCalendar.AtDay(day, DaysPerSeason, StartDayOfYear);
+        }
 
         /// <summary>The shared config this clock runs on — read by the composition root to wire
         /// <see cref="GameServices.Config"/> (the clock always has it; no scene re-wiring needed).</summary>
@@ -32,20 +54,34 @@ namespace HiddenHarbours.Environment
         public bool IsPaused { get; set; }
         public float TimeScale { get; set; } = 1f;
 
-        private int TotalDays => _config != null ? (int)(_t / _config.SecondsPerDay) : 0;
+        private int TotalDays => _advancing ? _lastTotalDays
+            : _config != null && TryDay(_t, _config.SecondsPerDay, out int day) ? day : 0;
 
         /// <summary>0-based absolute day since a new game began (the save's dayIndex). See
         /// <see cref="IGameClock.DayIndex"/>.</summary>
         public int DayIndex => TotalDays;
 
-        private CalendarDate Calendar => GameCalendar.AtSeconds(_t, _config);
+        private CalendarDate Calendar => _advancing ? _boundaryDate
+            : _config != null ? GameCalendar.AtDay(TotalDays, _config.DaysPerSeason, _config.StartDayOfYear)
+            : GameCalendar.AtSeconds(_t, null);
         public Season Season => Calendar.Season;
         public int Year => Calendar.Year;
         public int DayOfSeason => Calendar.DayOfSeason;
-        public Weekday Weekday => _config != null ? (Weekday)(TotalDays % _config.DaysPerWeek) : Weekday.Monday;
-        public bool IsMarketDay => _config != null && (int)Weekday == _config.MarketDayIndex;
+        public Weekday Weekday => _advancing ? (Weekday)(_lastTotalDays % _forwardCalendar.DaysPerWeek)
+            : _config != null && _config.DaysPerWeek > 0 ? (Weekday)(TotalDays % _config.DaysPerWeek) : Weekday.Monday;
+        public bool IsMarketDay => _advancing ? (int)Weekday == _forwardCalendar.MarketDayIndex
+            : _config != null && (int)Weekday == _config.MarketDayIndex;
 
-        public float DayFraction => _config != null ? (float)(_t % _config.SecondsPerDay / _config.SecondsPerDay) : 0f;
+        public float DayFraction
+        {
+            get
+            {
+                if (_advancing) return 0f; // Callbacks only run at the canonical midnight.
+                if (_config == null || !TryDay(_t, _config.SecondsPerDay, out int day)) return 0f;
+                double length = _config.SecondsPerDay;
+                return (float)((_t - day * length) / length);
+            }
+        }
         public float HourOfDay => DayFraction * 24f;
 
         private void Awake()
@@ -56,10 +92,7 @@ namespace HiddenHarbours.Environment
                 enabled = false;
                 return;
             }
-            _t = StartSeconds;
-            _flow = _t;
-            _lastTotalDays = TotalDays;
-            _lastSeason = Season;
+            SeekTo(StartSeconds);
         }
 
         /// <summary>
@@ -71,14 +104,17 @@ namespace HiddenHarbours.Environment
         /// </summary>
         public void SeekTo(double totalSeconds)
         {
-            _t = totalSeconds < 0d ? 0d : totalSeconds;
-            _flow = _t;
-            // Keep the rollover guards in step with where we landed (only meaningful once configured).
+            if (_advancing || !Finite(totalSeconds)) return;
+            double target = Math.Max(0d, totalSeconds);
             if (_config != null)
             {
-                _lastTotalDays = TotalDays;
-                _lastSeason = Season;
+                if (!TryCalendar(out var calendar) || !TryDay(target, calendar.DayLength, out int day)) return;
+                _lastTotalDays = day;
+                _lastSeason = calendar.AtDay(day).Season;
             }
+            else if (!TryDay(target, GameConfig.DefaultSecondsPerDay, out _)) return;
+            _t = target;
+            _flow = _t;
         }
 
         /// <summary>
@@ -104,28 +140,8 @@ namespace HiddenHarbours.Environment
         /// </summary>
         public bool FastForwardTo(double totalSeconds)
         {
-            if (_config == null || IsHeld) return false;
-            double dayLength = _config.SecondsPerDay;
-            if (!(dayLength > 0d) || !(totalSeconds > _t)) return false;
-
-            double span = totalSeconds - _t;
-            int lastDay = (int)(totalSeconds / dayLength);
-            for (int day = _lastTotalDays + 1; day <= lastDay; day++)
-            {
-                _t = day * dayLength;
-                _lastTotalDays = day;
-                CalendarDate date = GameCalendar.AtDay(day, _config.DaysPerSeason, _config.StartDayOfYear);
-                EventBus.Publish(new DayStarted(date.DayOfSeason, date.Season, date.Year));
-                if (date.Season != _lastSeason)
-                {
-                    _lastSeason = date.Season;
-                    EventBus.Publish(new SeasonChanged(date.Season, date.Year));
-                }
-            }
-
-            _t = totalSeconds;
-            _flow += span;
-            return true;
+            if (_advancing || IsHeld || !(totalSeconds > _t) || !TryCalendar(out var calendar)) return false;
+            return ForwardSpan(totalSeconds, totalSeconds - _t, calendar);
         }
 
         /// <summary>
@@ -143,22 +159,82 @@ namespace HiddenHarbours.Environment
         /// </summary>
         public void Advance(float wallSeconds)
         {
-            if (_config == null || IsPaused) return;
+            if (_advancing || IsPaused || !Finite(wallSeconds) || wallSeconds < 0f
+                || !Finite(TimeScale) || !TryCalendar(out var calendar)) return;
+            // Preserve the existing float multiplication BEFORE widening to double.
             double step = wallSeconds * Mathf.Max(0f, TimeScale);
-            _flow += step;
-            if (!IsHeld) _t += step;
-
-            int today = TotalDays;
-            if (today != _lastTotalDays)
+            if (IsHeld)
             {
-                _lastTotalDays = today;
-                EventBus.Publish(new DayStarted(DayOfSeason, Season, Year));
-                if (Season != _lastSeason)
-                {
-                    _lastSeason = Season;
-                    EventBus.Publish(new SeasonChanged(Season, Year));
-                }
+                if (Finite(step) && Finite(_flow) && Finite(_flow + step)
+                    && TryDay(_t, calendar.DayLength, out _)) _flow += step;
+                return;
             }
+            ForwardSpan(_t + step, step, calendar);
+        }
+
+        /// <summary>Both entry points converge here after their distinct pause/hold/rate gates.
+        /// Validate the entire request before changing a reading or publishing a boundary.</summary>
+        private bool ForwardSpan(double target, double span, CalendarSettings calendar)
+        {
+            if (!Finite(span) || span < 0d || !Finite(_flow) || !Finite(_flow + span)
+                || !TryDay(_t, calendar.DayLength, out int firstDay)
+                || !TryDay(target, calendar.DayLength, out int lastDay) || target < _t) return false;
+
+            double start = _t, flow = _flow, finalFlow = flow + span;
+            _lastTotalDays = firstDay;
+            _lastSeason = calendar.AtDay(firstDay).Season;
+            _forwardCalendar = calendar;
+            _advancing = true;
+            try
+            {
+                // Widen before incrementing, including the increment after int.MaxValue.
+                for (long day = (long)firstDay + 1; day <= lastDay; day++)
+                {
+                    _t = day * calendar.DayLength;
+                    _flow = flow + (_t - start);
+                    _lastTotalDays = (int)day;
+                    _boundaryDate = calendar.AtDay((int)day);
+                    bool seasonChanged = _boundaryDate.Season != _lastSeason;
+                    _lastSeason = _boundaryDate.Season;
+                    EventBus.Publish(new DayStarted(_boundaryDate.DayOfSeason, _boundaryDate.Season, _boundaryDate.Year));
+                    if (seasonChanged)
+                        EventBus.Publish(new SeasonChanged(_boundaryDate.Season, _boundaryDate.Year));
+                }
+                _t = target;
+                _flow = finalFlow;
+                return true;
+            }
+            finally { _advancing = false; }
+        }
+
+        private static bool Finite(double value) => !double.IsNaN(value) && !double.IsInfinity(value);
+
+        private bool TryCalendar(out CalendarSettings calendar)
+        {
+            calendar = default;
+            if (_config == null || !Finite(_config.SecondsPerDay) || _config.SecondsPerDay <= 0f
+                || _config.DaysPerSeason <= 0 || _config.DaysPerWeek <= 0) return false;
+
+            // Match StartDayOfYear's existing clamping, but reject an overflowing int offset.
+            long offset = (long)(int)_config.StartSeason * _config.DaysPerSeason
+                + Mathf.Clamp(_config.StartDayOfSeason, 1, _config.DaysPerSeason) - 1L;
+            if (offset < int.MinValue || offset > int.MaxValue) return false;
+            calendar = new CalendarSettings(_config, (int)offset);
+            return true;
+        }
+
+        /// <summary>Classify against canonical products B(d)=d*length, not a rounded quotient alone.
+        /// The same classification drives traversal endpoints and every calendar getter.</summary>
+        private static bool TryDay(double seconds, double length, out int result)
+        {
+            result = 0;
+            if (!Finite(seconds) || seconds < 0d || !Finite(length) || length <= 0d
+                || seconds >= ((long)int.MaxValue + 1) * length) return false;
+            long day = (long)(seconds / length);
+            while (seconds < day * length) day--;
+            while (seconds >= (day + 1) * length) day++;
+            result = (int)day;
+            return true;
         }
     }
 }
