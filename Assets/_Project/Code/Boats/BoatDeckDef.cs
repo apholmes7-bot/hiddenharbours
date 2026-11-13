@@ -192,8 +192,9 @@ namespace HiddenHarbours.Boats
         // ---- the boarding rule (AUTHORED — the one block on this asset a person edits) --------------
         //
         // ⚠ Everything above is imported and the importer rewrites it. These three are NOT in any
-        // sidecar yet, the importer never assigns them, and it updates the existing asset in place, so
-        // they survive a re-import. They are the owner's dials for "only ladders, and rails stop you
+        // sidecar yet and no importer assigns them. DeckSidecarImporter updates the existing asset in
+        // place; HullWalkSidecarImporter rebuilds the deck and overwrites the asset, so it carries this
+        // block across with CopyAuthoredBoardingRuleFrom first. Either way they survive a re-import. They are the owner's dials for "only ladders, and rails stop you
         // jumping in" (2026-11-13). If a later slice teaches the sidecars to carry them, the importer
         // takes them over and this note goes.
 
@@ -221,6 +222,21 @@ namespace HiddenHarbours.Boats
                  "rails block the side they are also the only places to go over it. None = wharf or " +
                  "gangway only.")]
         public BoardingPoint[] BoardingPoints = Array.Empty<BoardingPoint>();
+
+        /// <summary>Copies the AUTHORED boarding block — these four fields and nothing else — from
+        /// another deck Def of the same hull. An importer that rebuilds a deck from scratch and then
+        /// overwrites the saved asset (<c>HullWalkSidecarImporter</c>) calls this first, so a re-import
+        /// never wipes what a person typed. A field added to the block above must be added here.</summary>
+        public void CopyAuthoredBoardingRuleFrom(BoatDeckDef authored)
+        {
+            if (authored == null || ReferenceEquals(authored, this)) return;
+            BoardingFreeboardMetres = authored.BoardingFreeboardMetres;
+            RailsBlockTheSide = authored.RailsBlockTheSide;
+            ClimbAboardOnlyAtBoardingPoints = authored.ClimbAboardOnlyAtBoardingPoints;
+            BoardingPoints = authored.BoardingPoints != null
+                ? (BoardingPoint[])authored.BoardingPoints.Clone()
+                : Array.Empty<BoardingPoint>();
+        }
 
         /// <summary>May a swimmer climb aboard from this spot beside her (deck frame)? Pure pass-through
         /// to <see cref="BoardingRuleMath"/> with this hull's own data; the two limits come from

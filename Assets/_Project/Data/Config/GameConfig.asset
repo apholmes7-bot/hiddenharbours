@@ -50,6 +50,8 @@ MonoBehaviour:
   WashboardSlowFactor: 0.5
   OverTheSideBodyWidthMetres: 0.7
   SwimBoardReachMetres: 6
+  ClimbAnywhereMaxFreeboardMetres: 1
+  BoardingPointReachMetres: 2
   Seakeeping:
     Enabled: 1
     Strength: 220

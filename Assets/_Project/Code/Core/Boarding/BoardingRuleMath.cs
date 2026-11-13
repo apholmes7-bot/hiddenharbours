@@ -38,7 +38,8 @@ namespace HiddenHarbours.Core
     /// depend on her heading. Pure and allocation-free: safe to ask every frame for a prompt.</para>
     ///
     /// <para><b>This rule is about the WATER side only.</b> Stepping between a deck and a wharf, a beach
-    /// or a gangway is a different verb and is not asked here.</para>
+    /// or a gangway is a different verb and is not asked here; the wharf-face ladder climb is
+    /// <see cref="IBoardingLadder"/> and <see cref="LadderBoardingMath"/>.</para>
     /// </summary>
     public static class BoardingRuleMath
     {

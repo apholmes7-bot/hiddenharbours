@@ -19,6 +19,7 @@ namespace HiddenHarbours.Core
     /// <b>One place on a hull where a person may climb out of the water, or leave over the side</b>
     /// (owner, 2026-11-13: <i>"should only be ladders, railings should stop players from jumping in"</i>).
     /// Authored per hull as data; <see cref="BoardingRuleMath"/> is the only reader of the rule.
+    /// Not the wharf's fixed ladder: that is <see cref="IBoardingLadder"/> (world-placed, tide-aware).
     ///
     /// <para>The position is in the HULL's own deck frame, in metres — x abeam to starboard, y along the
     /// keel toward the bow — the same frame the walkable deck areas and <see cref="OverTheSideMath"/>
