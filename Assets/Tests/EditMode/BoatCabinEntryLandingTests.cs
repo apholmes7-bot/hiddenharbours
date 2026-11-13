@@ -175,7 +175,7 @@ namespace HiddenHarbours.Tests
             { "LobsterStandardOpenFundyIso", new[] { 0, -1127965760, 1070638039, -2147483648, -1082130432 } },
             { "LobsterStandardOpenNewfoundlandIso", new[] { 0, -1124744576, 1062836634, -2147483648, -1082130432 } },
             { "LobsterStandardOpenNorthumberlandIso", new[] { 0, -1126355200, 1050589266, -2147483648, -1082130432 } },
-            { "SideDraggerIso", new[] { 1, -1119040384, -1063948124, 0, 1065353216 } },
+            { "SideDraggerIso", new[] { 0, -1119040304, -1055611945, 0, -1082130432 } },
             // Re-measured with kit 4 in this PR; both hulls keep the doorway band guard.
             { "SportFisherConvertibleIso", new[] { 0, 1066947052, -1064598241, 1065353216, -2147483648 } },
             { "SportFisherSkybridgeIso", new[] { 0, -1082130432, -1056335462, 0, -1082130432 } },

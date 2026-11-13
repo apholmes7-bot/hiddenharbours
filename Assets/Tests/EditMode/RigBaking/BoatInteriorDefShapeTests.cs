@@ -612,7 +612,7 @@ namespace HiddenHarbours.Tests.RigBaking
                 NormaliseLf(File.ReadAllBytes(Path.Combine(kit, "boatInteriorRig.js"))));
 
             string[] sidecars = Directory.GetFiles(kit, "*.interior.json", SearchOption.AllDirectories);
-            Assert.AreEqual(23, sidecars.Length, "27 kit sidecars minus the two retired sport fishers and both stern trawlers");
+            Assert.AreEqual(22, sidecars.Length, "27 kit sidecars minus the two retired sport fishers, both stern trawlers and the side dragger");
             foreach (string path in sidecars)
             {
                 object root = DeckSidecarJson.Parse(File.ReadAllText(path));
@@ -692,7 +692,7 @@ namespace HiddenHarbours.Tests.RigBaking
                     stamped++;
                 }
             }
-            Assert.AreEqual(23, stamped, "23 remaining sidecars, each with its own rig-stem pin");
+            Assert.AreEqual(22, stamped, "22 remaining sidecars, each with its own rig-stem pin");
             Assert.AreEqual(0, variantKeyed, "the two retired sport fishers carried the variant pins");
         }
 
@@ -752,8 +752,8 @@ namespace HiddenHarbours.Tests.RigBaking
                 Assert.IsTrue(r.Ok, $"{hullStem}: {r.Error}");
                 ids.Add(BoatInteriorHullResolver.DefId(r.HullFileStem));
             }
-            Assert.AreEqual(23, ids.Count);
-            Assert.AreEqual(23, new HashSet<string>(ids).Count, "two hulls resolved to one def id");
+            Assert.AreEqual(22, ids.Count);
+            Assert.AreEqual(22, new HashSet<string>(ids).Count, "two hulls resolved to one def id");
         }
 
         static byte[] NormaliseLf(byte[] bytes)

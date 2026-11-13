@@ -222,10 +222,10 @@ namespace HiddenHarbours.Tests.RigBaking
 
             Assert.AreEqual(26, hulls,
                 "lit hulls measured from the delivered rigs; the sport fishers' records now place their glass");
-            Assert.AreEqual(224, panes,
+            Assert.AreEqual(226, panes,
                 "lit panes across the fleet. If an art drop legitimately moved some glazing, re-run " +
                 "the probe's writer and update this number in the same commit.");
-            Assert.AreEqual(78, bridge,
+            Assert.AreEqual(79, bridge,
                 "bridge panes measured but deliberately left dark — this lane confines an existing " +
                 "glow and lights no new room. Lighting the bridges is a data change and an owner call.");
         }
