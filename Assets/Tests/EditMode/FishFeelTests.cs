@@ -3,6 +3,7 @@ using NUnit.Framework;
 using UnityEngine;
 using HiddenHarbours.Core;
 using HiddenHarbours.Fishing;
+using HiddenHarbours.World;
 
 namespace HiddenHarbours.Tests.EditMode
 {
@@ -22,11 +23,15 @@ namespace HiddenHarbours.Tests.EditMode
         private static FishFeelSettings D => FishFeelSettings.Default;
 
         private readonly List<Object> _spawned = new();
+        /// <summary>Raw thoughts on the ambient channel. With no World director on the bus there must
+        /// be none: Fishing names the moment (<see cref="InnerVoiceCue"/>) and never speaks itself.</summary>
         private readonly List<string> _thoughts = new();
+        private readonly List<string> _cues = new();
         private void OnSpeech(AmbientSpeechRequested e)
         {
             if (e.Kind == AmbientSpeechKind.InnerVoice) _thoughts.Add(e.Line);
         }
+        private void OnCue(InnerVoiceCue e) => _cues.Add(e.CueId);
 
         [SetUp]
         public void SetUp()
@@ -34,16 +39,21 @@ namespace HiddenHarbours.Tests.EditMode
             GameServices.Reset();
             FishSpeciesRegistry.Reset();
             _thoughts.Clear();
+            _cues.Clear();
             EventBus.Clear<AmbientSpeechRequested>();
+            EventBus.Clear<InnerVoiceCue>();
             EventBus.Clear<FishingStateChanged>();
             EventBus.Subscribe<AmbientSpeechRequested>(OnSpeech);
+            EventBus.Subscribe<InnerVoiceCue>(OnCue);
         }
 
         [TearDown]
         public void TearDown()
         {
             EventBus.Unsubscribe<AmbientSpeechRequested>(OnSpeech);
+            EventBus.Unsubscribe<InnerVoiceCue>(OnCue);
             EventBus.Clear<AmbientSpeechRequested>();
+            EventBus.Clear<InnerVoiceCue>();
             EventBus.Clear<FishingStateChanged>();
             foreach (var o in _spawned)
                 if (o != null) Object.DestroyImmediate(o);
@@ -442,6 +452,7 @@ namespace HiddenHarbours.Tests.EditMode
                 c.Configure(new FakeHold(), new[] { cod }, "region.coddle_cove", Gear.Handline, seed);
 
                 _thoughts.Clear();
+                _cues.Clear();
                 FlickGestures.CastLine(c);
                 for (float t = 0f; c.Phase != FishingPhase.Fighting && t < 30f; t += 0.05f)
                     c.Tick(0.05f, false);
@@ -453,11 +464,43 @@ namespace HiddenHarbours.Tests.EditMode
                     $"seed {seed}: the published size is her weight's place in her species' range");
 
                 bool big = FishFeelMath.IsBigOne(s.Size01, D);
-                Assert.AreEqual(big ? 1 : 0, _thoughts.Count,
-                    $"seed {seed}: size {s.Size01:F2} — one 'woah' for a big one, silence otherwise");
-                if (big) Assert.AreEqual(FishingStrings.BigOneHooked, _thoughts[0]);
+                Assert.AreEqual(big ? 1 : 0, _cues.Count,
+                    $"seed {seed}: size {s.Size01:F2} — one 'woah' cue for a big one, silence otherwise");
+                if (big) Assert.AreEqual(InnerVoiceCues.BigOneHooked, _cues[0]);
+                Assert.AreEqual(0, _thoughts.Count,
+                    $"seed {seed}: the rod loop names the moment and never speaks the words itself");
+
+                // The fight going on must not ask again: once per big hook, at the hook-set.
+                for (int i = 0; i < 10 && c.Phase == FishingPhase.Fighting; i++) c.Tick(0.05f, false);
+                Assert.AreEqual(big ? 1 : 0, _cues.Count, $"seed {seed}: the cue is raised once per hook");
             }
             Assert.Greater(fought, 0, "the rig must reach a fight for this test to mean anything");
+        }
+
+        [Test]
+        public void The_cue_id_is_the_stable_one_a_line_asset_names()
+        {
+            // Append-only: the line asset's SubjectId is this string, so renaming it silences the line.
+            Assert.AreEqual("cue.fishing.big_one_hooked", InnerVoiceCues.BigOneHooked);
+            Assert.AreNotEqual(InnerVoiceCues.FeedingSea, InnerVoiceCues.BigOneHooked);
+        }
+
+        [Test]
+        public void TheShippedLibrary_HasALineForTheBigOne()
+        {
+            var lib = Resources.Load<InnerVoiceLibrary>(InnerVoiceLibrary.ResourcesPath);
+            Assert.IsNotNull(lib, "the inner-voice library must load from Resources");
+
+            InnerVoiceLineDef found = null;
+            foreach (InnerVoiceLineDef d in lib.Lines)
+                if (d != null && d.WantsCue(InnerVoiceCues.BigOneHooked)) { found = d; break; }
+
+            Assert.IsNotNull(found,
+                $"no line in the library answers '{InnerVoiceCues.BigOneHooked}', so the rod loop's cue " +
+                "would be raised and never heard");
+            Assert.IsFalse(string.IsNullOrWhiteSpace(found.Line));
+            Assert.IsFalse(found.OnceOnly,
+                "the rod loop says it once per big hook; a once-ever line would go silent after the first big fish");
         }
 
         // ---- the shipped defaults ----------------------------------------------------------------------

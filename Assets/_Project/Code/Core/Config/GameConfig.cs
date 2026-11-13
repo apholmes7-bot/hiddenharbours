@@ -2796,8 +2796,6 @@ namespace HiddenHarbours.Core
         [Range(0f, 1f)] public float SizeGoodFrom01;
         [Tooltip("Landing line: from this size she is 'a real monster' (never below the big-one line).")]
         [Range(0f, 1f)] public float SizeTrophyFrom01;
-        [Tooltip("Height of her 'Woah' thought above the player, world metres.")]
-        [Min(0f)] public float BigOneBubbleHeightMetres;
 
         [Tooltip("ROD BEND. How much of the fight's load the SMALLEST fish puts on the rod (her biggest " +
                  "sister puts all of it). Lower = small fish only nod the tip.")]
@@ -2884,7 +2882,6 @@ namespace HiddenHarbours.Core
             SizeSmallBelow01 = 0.25f,
             SizeGoodFrom01 = 0.55f,
             SizeTrophyFrom01 = 0.95f,
-            BigOneBubbleHeightMetres = 2.1f,
             BendSmallScale01 = 0.55f,
             BendHeavyFloor01 = 0.6f,
             BendSlackKeep01 = 0.4f,

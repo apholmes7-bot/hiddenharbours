@@ -34,10 +34,6 @@ namespace HiddenHarbours.Fishing
         /// landing, so the fish had nowhere to go. Said so the loss is never silent.</summary>
         public const string LandedNoRoom = "The hold's full — nowhere to stow it, so it went back over the side.";
 
-        /// <summary>Her one excited line at the hook-set when the fish is in the top band of her
-        /// species (<c>GameConfig.FishFeel.BigOneThreshold01</c>) — said as an inner-voice thought.</summary>
-        public const string BigOneHooked = "Woah — that's a big one!";
-
         // ---- why she got away ---------------------------------------------------------------------
         // One short line per failure, so the line never comes back empty without a reason. Each names
         // what the PLAYER did (or what the water did), which is the thing they can change next cast.

@@ -399,7 +399,6 @@ MonoBehaviour:
     SizeSmallBelow01: 0.25
     SizeGoodFrom01: 0.55
     SizeTrophyFrom01: 0.95
-    BigOneBubbleHeightMetres: 2.1
     BendSmallScale01: 0.55
     BendHeavyFloor01: 0.6
     BendSlackKeep01: 0.4

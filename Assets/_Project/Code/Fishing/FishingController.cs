@@ -936,27 +936,17 @@ namespace HiddenHarbours.Fishing
 
         /// <summary>
         /// "WOAH — THAT'S A BIG ONE!" (owner's ask 2026-11-13). When the fish just hooked is in the top
-        /// band of her species (<c>GameConfig.FishFeel.BigOneThreshold01</c>), the player says so — ONE
-        /// inner-voice line through the existing ambient-speech channel (no new UI), published once at
-        /// the hook-set. Says nothing about the fight's rules and changes none of them.
+        /// band of her species (<c>GameConfig.FishFeel.BigOneThreshold01</c>), the rod loop raises the
+        /// Core cue her inner voice answers, once at the hook-set. Fishing only says WHEN: the words,
+        /// the voice and how often they may come back are a World line asset keyed on the cue id
+        /// (<see cref="InnerVoiceCues.BigOneHooked"/>), and neither module names the other (rule 4).
+        /// Says nothing about the fight's rules and changes none of them.
         /// </summary>
         private void AnnounceBigOne()
         {
             FishFeelSettings feel = _config != null ? _config.FishFeel : FishFeelSettings.Default;
             if (!FishFeelMath.IsBigOne(PendingSize01(), in feel)) return;
-
-            // The fake-null launder InnerVoiceDirector documents: a destroyed Transform must not ride a
-            // struct field past every plain null check downstream.
-            Transform player = GameServices.PlayerTransform;
-            EventBus.Publish(new AmbientSpeechRequested(
-                AmbientSpeechId.Next(),
-                player != null ? player : null,
-                new Vector3(0f, feel.BigOneBubbleHeightMetres, 0f),
-                speakerId: null,
-                speakerName: null,
-                line: FishingStrings.BigOneHooked,
-                voiceId: null,
-                kind: AmbientSpeechKind.InnerVoice));
+            EventBus.Publish(new InnerVoiceCue(InnerVoiceCues.BigOneHooked));
         }
 
         private void Emit(FishingPhase phase, float tension, float landing)
