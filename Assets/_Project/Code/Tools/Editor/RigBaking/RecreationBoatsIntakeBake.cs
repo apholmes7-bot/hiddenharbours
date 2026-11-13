@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -15,6 +16,11 @@ namespace HiddenHarbours.Tools.RigBaking
     /// geometry, walks and paints still go through their production bakers and importers.</summary>
     public static class RecreationBoatsIntakeBake
     {
+        /// <summary>Optional plan field: which of the hull's visuals this boat wears, by asset
+        /// name. A hull with one visual leaves it out; one hull under two (the sport skiff's single
+        /// and twin outboards) takes one plan row per boat, each naming its own.</summary>
+        const string VisualField = "visual";
+
         public static void Cli()
         {
             try
@@ -54,7 +60,7 @@ namespace HiddenHarbours.Tools.RigBaking
                             source.StartsWith("BoatHullDef.cs initializer / ", StringComparison.Ordinal)) continue;
                         Set(boat, value.Key, proposed["value"]);
                     }
-                    boat.Visual = AssetDatabase.LoadAssetAtPath<BoatVisualDef>(fleet.VisualAssetPaths.Single());
+                    boat.Visual = AssetDatabase.LoadAssetAtPath<BoatVisualDef>(VisualPath(fleet, row, key));
                     if (boat.Visual == null) throw new IOException(key + ": visual missing after bake");
                     if (fresh) AssetDatabase.CreateAsset(boat, boatPath);
                     EditorUtility.SetDirty(boat);
@@ -80,6 +86,15 @@ namespace HiddenHarbours.Tools.RigBaking
                 Debug.LogError("[rec-boats-intake] BAKE_FAILED\n" + error);
                 EditorApplication.Exit(1);
             }
+        }
+
+        static string VisualPath(FleetHull fleet, Dictionary<string, object> row, string key)
+        {
+            if (!row.ContainsKey(VisualField)) return fleet.VisualAssetPaths.Single();
+            string name = HullLayoutJson.Text(row, VisualField);
+            string path = fleet.VisualAssetPaths.SingleOrDefault(p => Path.GetFileNameWithoutExtension(p) == name);
+            if (path == null) throw new ArgumentException(key + ": " + name + " is not one of this hull's visuals");
+            return path;
         }
 
         static void Set(object target, string name, object value)

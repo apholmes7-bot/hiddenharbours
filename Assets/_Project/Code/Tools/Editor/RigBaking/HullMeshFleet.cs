@@ -260,9 +260,14 @@ namespace HiddenHarbours.Tools.RigBaking
 
             // Likewise one hull, two visuals: the twin differs by a second outboard — the SAME
             // fitting instantiated at ±0.34 m, so the twin needed no art and no bake of its own.
-            Sheeted("sportSkiff", "sportSkiffIsoRig.js", "SportSkiffIso", "SportSkiffIso",
-                    "sport_skiff_iso", "sport skiff (~7.0 m, glass — single and twin)",
-                    null, "SportSkiffSingle", "SportSkiffTwin"),
+            // Hull layout (fleet art review, hull 3): her published scope owns her cell and her walk
+            // sidecar answers for her deck. She stays a sheeted hull with her two visuals: the
+            // outboards are fittings on those visuals, which the layout neither reads nor moves.
+            new FleetHull("sportSkiff", $"{Rigs}/sportSkiffIsoRig.js", "SportSkiffIso",
+                $"{Meshes}/SportSkiffIsoHullMesh.asset", "hullmesh.sport_skiff_iso",
+                new[] { $"{Visuals}/SportSkiffSingle.asset", $"{Visuals}/SportSkiffTwin.asset" },
+                Array.Empty<string>(), true, "sport skiff (~7.0 m, glass — single and twin)",
+                extraction: new RigHullExtraction { HullScope = "byId('sport_skiff_iso')" }),
 
             // The biggest hull that wears NO sprite overlay, so she is the one sheeted boat phase 6
             // can actually flip — and therefore the owner's second A/B, after the lobster.
