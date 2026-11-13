@@ -3,6 +3,10 @@ namespace HiddenHarbours.Core
     /// <summary>
     /// The master clock. Everything in the sim derives time from <see cref="TotalSeconds"/>.
     /// Implemented in the Environment module; consumed everywhere through this contract.
+    /// Forward movement visits each canonical midnight in (start, endpoint], publishing DayStarted
+    /// then SeasonChanged if that day turns a season. During the complete pair all calendar/time
+    /// reads describe that midnight; after the call they describe the endpoint. Subscriber failures
+    /// retain EventBus's log-and-continue policy; this is ordered notification, not a transaction.
     /// </summary>
     public interface IGameClock
     {
@@ -11,7 +15,7 @@ namespace HiddenHarbours.Core
 
         Season Season { get; }
         int Year { get; }              // 1-based
-        int DayIndex { get; }          // 0-based absolute day since new game (TotalSeconds / SecondsPerDay)
+        int DayIndex { get; }          // 0-based day d in [d*SecondsPerDay, (d+1)*SecondsPerDay)
         int DayOfSeason { get; }       // 1-based, 1..daysPerSeason
         Weekday Weekday { get; }
         bool IsMarketDay { get; }
@@ -27,7 +31,9 @@ namespace HiddenHarbours.Core
         bool IsHeld { get => false; set { } }
 
         /// <summary>The world's running seconds, equal to TotalSeconds except for spans the hour was held.
-        /// This reading is never saved and equals TotalSeconds again after any SeekTo.</summary>
+        /// This reading is never saved and equals TotalSeconds again after any accepted SeekTo.
+        /// At a crossed midnight B, subscribers read entryFlow + (B - entryTime), preserving any
+        /// existing held gap; completion adds the entire accepted span to entryFlow.</summary>
         double FlowSeconds => TotalSeconds;
 
         /// <summary>
@@ -44,6 +50,8 @@ namespace HiddenHarbours.Core
         /// day/season rollover events for the skipped span (a restore is not a fast-forward — the day is
         /// already where the player left it), matching how the save records <see cref="DayIndex"/> as
         /// derived state rather than a thing to re-fire.</para>
+        /// <para>Non-finite or unrepresentable input is ignored. A nested seek during a forward
+        /// notification is also ignored: the advancing call owns its span until it returns.</para>
         /// </summary>
         void SeekTo(double totalSeconds) { }
 
@@ -60,6 +68,14 @@ namespace HiddenHarbours.Core
         /// not later than now (time never runs backwards through this door: that is <see cref="SeekTo"/>'s)
         /// or when the hour is held (<see cref="IsHeld"/>: whoever holds the hour owns it). A refusal
         /// changes nothing and publishes nothing.</para>
+        /// <para>Missing/invalid calendar configuration, non-finite input/state and unrepresentable
+        /// day/calendar values also refuse without partial movement. Pause does not refuse this
+        /// absolute request, and TimeScale does not rescale it. The entry calendar and chosen span
+        /// stay fixed during dispatch. Flag/rate changes made by handlers apply to the next call;
+        /// handlers must not mutate calendar configuration.</para>
+        /// <para>Nested Advance/SeekTo calls on the advancing clock are no-ops; nested FastForwardTo
+        /// returns false. These calls are not queued. Work requiring the completed span, including
+        /// saves and trades, runs after this method returns, outside the day/season handlers.</para>
         ///
         /// <para><b>Additive &amp; non-breaking</b>, like <see cref="SeekTo"/>: a default interface method
         /// that refuses, so a test fake with no backing store compiles unchanged and a rest taken against
