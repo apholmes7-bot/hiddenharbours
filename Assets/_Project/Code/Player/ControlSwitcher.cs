@@ -1252,6 +1252,13 @@ namespace HiddenHarbours.Player
 
             ApplyPlayerFor(ControlMode.OnDeck);
             SnapPlayerToTheHelm();                                   // you step back from the tiller
+            // A wheel that stands in the wheelhouse leaves her standing in the wheelhouse, and she may
+            // have come to it without the door: taken from the cockpit, or a hull swapped on under her
+            // while she steered (the fleet audit's R2, 2026-11-13). Her cabin is told, so the house opens
+            // around her as it does when she walks in. Only here, on the way OFF the wheel: while she
+            // steers the house stays closed (owner, 2026-08-26, re-confirmed 2026-11-13).
+            var deck = DeckWalk;
+            if (deck != null && Player != null && Boat != null) deck.EnterTheRoomSheStandsIn();
             Mode = ControlMode.OnDeck;
             EventBus.Publish(new ControlModeChanged(ControlMode.OnDeck));
         }

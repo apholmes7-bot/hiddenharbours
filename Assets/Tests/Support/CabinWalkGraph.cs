@@ -880,7 +880,8 @@ namespace HiddenHarbours.Tests.Support
             {
                 int room = DeckWalkController.ChooseTheFloorNearest(Deck, pre, Deck.HelmStationLocalMeters, false,
                                                                     out Vector2 roomSeat, out bool measured,
-                                                                    out _, out int deckArea, out _);
+                                                                    out Vector2 deckSeat, out int deckArea,
+                                                                    out float deckHeight);
                 if (room >= 0)
                 {
                     BoatInteriorLevel level = LevelAt(room);
@@ -888,7 +889,9 @@ namespace HiddenHarbours.Tests.Support
                         ? CabinNode.OnLevel(room, Grid(room).ComponentAt(roomSeat))
                         : CabinNode.Inside(SeatNearestArea(new Vector3(roomSeat.x, roomSeat.y, level.SoleZMeters)));
                 }
-                return measured && deckArea >= 0 ? CabinNode.Deck(deckArea, false) : CabinNode.Nowhere;
+                return measured && deckArea >= 0
+                    ? OnDeckOrInTheRoomSheStandsIn(deckArea, deckSeat, deckHeight, pre, post)
+                    : CabinNode.Nowhere;
             }
             if (!Deck.HasWalkableDeck()) return CabinNode.Nowhere;
             Vector2 named = DeckAreaMath.WorldToDeck(helmLocal, 0f, 0f, elevation);
@@ -896,8 +899,23 @@ namespace HiddenHarbours.Tests.Support
             int first = -1;
             DeckWalkController.SeedDeckLocalPure(relative, heading, elevation, Deck, false, ref first, out _);
             int second = first;
-            DeckWalkController.SeedDeckLocalPure(relative, heading, elevation, Deck, false, ref second, out _);
-            return second >= 0 ? CabinNode.Deck(second, false) : CabinNode.Nowhere;
+            Vector2 seat = DeckWalkController.SeedDeckLocalPure(relative, heading, elevation, Deck, false,
+                                                                ref second, out float height);
+            return second >= 0 ? OnDeckOrInTheRoomSheStandsIn(second, seat, height, pre, post) : CabinNode.Nowhere;
+        }
+
+        /// <summary>
+        /// Leaving the helm on a deck area: she is on that area, outside, unless it stands her in a room
+        /// (<see cref="DeckWalkController.RoomStoodIn"/>), which ControlSwitcher.LeaveHelm has her cabin
+        /// enter (2026-11-13, the fleet audit's R2). Then she is inside: on the level's own floor when it
+        /// is walked as one, else on the same deck area, inside.
+        /// </summary>
+        private CabinNode OnDeckOrInTheRoomSheStandsIn(int area, Vector2 seat, float height, ICabinFloors pre,
+                                                       ICabinFloors post)
+        {
+            int room = DeckWalkController.RoomStoodIn(pre, seat, height);
+            if (room < 0) return CabinNode.Deck(area, false);
+            return Walkable(room, post) ? CabinNode.OnLevel(room, Grid(room).ComponentAt(seat)) : CabinNode.Inside(area);
         }
 
         public string Name(CabinNode n)

@@ -548,6 +548,64 @@ namespace HiddenHarbours.Tests.PlayMode
         }
 
         /// <summary>
+        /// ⭐ <b>2026-11-13, the fleet audit's R2 — swapped on under her AT THE WHEEL, she steps back into
+        /// a wheelhouse that knows she is in it.</b> The dev picker changes hulls only at the helm, so
+        /// this is how a playtest gets a cabin hull: she never walks through the door. The wheel of the
+        /// cape and of every lobster variant stands in the wheelhouse, on the cockpit's own deck area,
+        /// and nothing but a door or a stair ever said "inside"; she let go of the wheel in a house that
+        /// stayed shut around her (<c>EveryHelmStandKnowsTheRoomItIsInTests</c> is the census).
+        ///
+        /// <para>While she steers the house is closed, as ruled (owner, 2026-08-26, re-confirmed
+        /// 2026-11-13). Stepping back, her cabin is entered once, on the wheelhouse level, and the hull the
+        /// swap skinned on draws the cut.</para>
+        /// </summary>
+        [UnityTest]
+        public IEnumerator SwappedOnUnderHerAtTheWheel_SteppingBackStandsHerInsideHerWheelhouse(
+            [Values("CapeIslander", "LobsterInshoreOpenNorthumberland")] string subjectName)
+        {
+            Rig rig = NewDoryRig();
+            BoatHullDef subject = LoadHull(subjectName);
+            if (rig.Boat == null || subject == null) yield break;   // editor-only; LoadCommitted Ignored
+            yield return null;
+
+            yield return Board(rig);
+            ControlSwitcher sw = rig.Switcher;
+
+            // Set and pressed in ONE frame, before the deck walk's next frame writes her back (FromTheHelm).
+            rig.Player.transform.position = sw.HelmWorldPosition;
+            Assert.IsTrue(sw.TakesTheHelmOnThisPress(), "premise: standing on the dory's helm, E takes it");
+            Assert.IsTrue(sw.BeginInteract(), "E at the dory's helm");
+            Assert.AreEqual(ControlMode.Aboard, sw.Mode, "premise: she is steering the dory");
+            yield return null;
+
+            rig.Picker.Show(subject);
+            yield return null;   // the outgoing skin's leftovers go at the end of the swap's frame
+
+            SwappedCabinDoor(rig, subject);
+            BoatInterior cabin = rig.Installer.Interior;
+            BoatCutaway cutaway = rig.Installer.Cutaway;
+            Assert.IsNotNull(cutaway, $"{subject.Id} is a mesh hull, so her cutaway comes with her cabin");
+            Assert.AreEqual(ControlMode.Aboard, sw.Mode, "the swap happened under her at the wheel");
+            Assert.IsFalse(cutaway.RequestedCut.Opens, "while she steers, her house is closed (owner, 2026-08-26)");
+            Assert.IsFalse(HullOf(rig).CutawayShown.Opens, "…and the hull the swap skinned on draws it whole");
+            Assert.AreEqual(0, _entered.Count, "nothing has been entered: she never saw a door");
+
+            // ---- she lets go of the wheel ------------------------------------------------------
+            Assert.IsTrue(sw.BeginInteract(), "E at the wheel steps back from it");
+            Assert.AreEqual(ControlMode.OnDeck, sw.Mode, "she is standing where the wheel left her");
+
+            Assert.IsTrue(cabin.IsInside,
+                          $"{subject.Id}'s wheel stands in her wheelhouse: stepping back from it, she is inside " +
+                          "(before 2026-11-13 the house stayed shut around her until she walked out and in again)");
+            Assert.AreEqual("house_sole", cabin.Def.Levels[cabin.Level].Id, "…on the wheelhouse level, by the def's own id");
+            Assert.AreEqual(1, _entered.Count, "CabinEntered is published, once");
+            Assert.AreEqual(0, _left.Count, "…and nothing was left");
+            Assert.IsTrue(cutaway.RequestedCut.Opens, "off the wheel and inside, her cutaway asks for the cut");
+            yield return null;
+            Assert.IsTrue(HullOf(rig).CutawayShown.Opens, "…and the hull the swap skinned on draws it");
+        }
+
+        /// <summary>
         /// ⭐ <b>Phase B, 2026-09-19, C6 — every door her def names is built, where she can work it.</b>
         /// The Skybridge's skylounge slider was in her def and nothing built it (Phase A, C5). Swapped on
         /// under her, each hull's root carries one <see cref="BoatCabinDoor"/> per door the def names, in
