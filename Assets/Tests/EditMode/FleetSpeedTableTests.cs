@@ -16,6 +16,13 @@ namespace HiddenHarbours.Tests.EditMode
     /// speed; the jetski stays 5.5 m/s; the go-fast is 10 m/s; fuel burn rises with speed (PR 1134's
     /// model, untouched here). Every other hull keeps the speed the audit measured her at.</para>
     ///
+    /// <para><b>The cap.</b> The owner, 2026-11-13: "keep every planing hull just under the go-fast, so
+    /// she stays the fastest boat" - yes. A planing hull whose 0.45 x real speed would pass the go-fast
+    /// runs instead at the go-fast's own Def speed minus
+    /// <see cref="GameConfig.PlaningTopSpeedMarginUnderGoFastMps"/>. The margin is read off the
+    /// GameConfig asset and the go-fast's speed off her own Def, so neither is a number in this file.
+    /// <see cref="TheGoFast_IsStrictlyTheFastestHullInTheFleet"/> holds the outcome by name.</para>
+    ///
     /// <para><b>Where a hull's speed lives.</b> A <see cref="BoatHullDef"/> has no top-speed field. Her top
     /// speed is what <see cref="BoatController"/>'s force model settles at: full thrust against the hull's
     /// own drag plus the body's damping on her mass. So the table is applied as DATA by solving
@@ -33,6 +40,8 @@ namespace HiddenHarbours.Tests.EditMode
     {
         const string DataBoats = "Assets/_Project/Data/Boats";
         const string FuelSpeedFolder = "Assets/_Project/Data/Boats/FuelSpeed";
+        const string ConfigAssetPath = "Assets/_Project/Data/Config/GameConfig.asset";
+        const string GoFastId = "boat.go_fast";
 
         /// <summary>The ruled share of real-world top speed a planing hull runs at.</summary>
         const float PlaningShareOfRealSpeed = 0.45f;
@@ -43,7 +52,7 @@ namespace HiddenHarbours.Tests.EditMode
 
         enum Rule
         {
-            /// <summary>0.45 x the audit's real-world top speed (knots).</summary>
+            /// <summary>0.45 x the audit's real-world top speed (knots), held under the go-fast cap.</summary>
             PlaningShareOfReal,
             /// <summary>A speed the owner ruled outright, in m/s.</summary>
             RuledMetersPerSecond,
@@ -107,14 +116,40 @@ namespace HiddenHarbours.Tests.EditMode
             ("boat.sloop_88",                 Rule.AuditUnchangedKnots, 9.99f),   // auxiliary motoring
         };
 
-        static float RuledSpeedMps((string Id, Rule Rule, float Figure) row)
+        /// <summary>The share-of-real speed before the cap: what strict 0.45 x real would give her.</summary>
+        static float UncappedPlaningSpeedMps(float realTopKnots)
+            => PlaningShareOfRealSpeed * realTopKnots * MetersPerSecondPerKnot;
+
+        static float RuledSpeedMps((string Id, Rule Rule, float Figure) row, float planingCapMps)
         {
             switch (row.Rule)
             {
-                case Rule.PlaningShareOfReal: return PlaningShareOfRealSpeed * row.Figure * MetersPerSecondPerKnot;
+                case Rule.PlaningShareOfReal: return Mathf.Min(UncappedPlaningSpeedMps(row.Figure), planingCapMps);
                 case Rule.RuledMetersPerSecond: return row.Figure;
                 default: return row.Figure * MetersPerSecondPerKnot;
             }
+        }
+
+        static GameConfig Config()
+        {
+            var config = AssetDatabase.LoadAssetAtPath<GameConfig>(ConfigAssetPath);
+            Assert.IsNotNull(config, "premise: the GameConfig asset loads from " + ConfigAssetPath);
+            return config;
+        }
+
+        /// <summary>
+        /// The cap every planing hull but the go-fast is held to: the go-fast's own still-water top
+        /// speed, off her Def, less the GameConfig margin. Both halves are data.
+        /// </summary>
+        static float PlaningCapMps(IEnumerable<BoatHullDef> hulls)
+        {
+            BoatHullDef goFast = hulls.FirstOrDefault(h => h.Id == GoFastId);
+            Assert.IsNotNull(goFast, "premise: the go-fast's Def is on disk; the cap hangs off her speed");
+            float margin = Config().PlaningTopSpeedMarginUnderGoFastMps;
+            Assert.Greater(margin, 0f,
+                "GameConfig.PlaningTopSpeedMarginUnderGoFastMps must be above zero, or a capped hull ties " +
+                "the go-fast instead of running just under her");
+            return StillWaterTopSpeedMps(goFast) - margin;
         }
 
         /// <summary>
@@ -157,7 +192,10 @@ namespace HiddenHarbours.Tests.EditMode
             var failures = new List<string>();
             var seen = new HashSet<string>();
 
-            foreach (BoatHullDef hull in EveryHull())
+            List<BoatHullDef> hulls = EveryHull();
+            float cap = PlaningCapMps(hulls);
+
+            foreach (BoatHullDef hull in hulls)
             {
                 seen.Add(hull.Id);
                 if (!rows.TryGetValue(hull.Id, out var row))
@@ -167,7 +205,7 @@ namespace HiddenHarbours.Tests.EditMode
                     continue;
                 }
 
-                float ruled = RuledSpeedMps(row);
+                float ruled = RuledSpeedMps(row, cap);
                 float actual = StillWaterTopSpeedMps(hull);
                 if (Mathf.Abs(ruled - actual) > ToleranceMps)
                     failures.Add($"{hull.Id}: the table says {ruled:0.000} m/s ({ruled / MetersPerSecondPerKnot:0.00} kn, " +
@@ -179,6 +217,54 @@ namespace HiddenHarbours.Tests.EditMode
             foreach (var row in Table)
                 if (!seen.Contains(row.Id))
                     failures.Add($"{row.Id}: in the table but no hull Def with that id is on disk.");
+
+            CollectionAssert.IsEmpty(failures, string.Join("\n", failures));
+        }
+
+        [Test]
+        public void TheGoFast_IsStrictlyTheFastestHullInTheFleet()
+        {
+            // The owner, 2026-11-13: she stays the fastest boat. Every hull Def on disk, planing or not,
+            // settles strictly below the go-fast's own still-water top speed.
+            List<BoatHullDef> hulls = EveryHull();
+            BoatHullDef goFast = hulls.FirstOrDefault(h => h.Id == GoFastId);
+            Assert.IsNotNull(goFast, "premise: the go-fast's Def is on disk");
+            float hers = StillWaterTopSpeedMps(goFast);
+
+            string[] asFastOrFaster = hulls
+                .Where(h => h.Id != GoFastId && StillWaterTopSpeedMps(h) >= hers)
+                .Select(h => $"{h.Id} settles at {StillWaterTopSpeedMps(h):0.000} m/s")
+                .ToArray();
+            CollectionAssert.IsEmpty(asFastOrFaster,
+                $"the go-fast ({hers:0.000} m/s) is the fastest hull in the fleet, but:\n" +
+                string.Join("\n", asFastOrFaster));
+        }
+
+        [Test]
+        public void NoPlaningHull_ButTheGoFast_ExceedsTheCapJustUnderHer()
+        {
+            // The cap itself, by name: the go-fast's Def speed less the GameConfig margin. Only the hulls
+            // strict 0.45 x real would have put past the cap sit ON it; a hull under it keeps her 0.45 row.
+            List<BoatHullDef> hulls = EveryHull();
+            float cap = PlaningCapMps(hulls);
+            Dictionary<string, (string Id, Rule Rule, float Figure)> rows = Table.ToDictionary(r => r.Id);
+            var failures = new List<string>();
+
+            foreach (BoatHullDef hull in hulls)
+            {
+                if (hull.Id == GoFastId || !rows.TryGetValue(hull.Id, out var row)) continue;
+                if (row.Rule == Rule.AuditUnchangedKnots) continue;
+
+                float actual = StillWaterTopSpeedMps(hull);
+                if (actual > cap + ToleranceMps)
+                    failures.Add($"{hull.Id}: settles at {actual:0.000} m/s, past the {cap:0.000} m/s cap");
+
+                bool strictWouldPassTheCap = row.Rule == Rule.PlaningShareOfReal
+                                             && UncappedPlaningSpeedMps(row.Figure) > cap;
+                if (strictWouldPassTheCap && Mathf.Abs(actual - cap) > ToleranceMps)
+                    failures.Add($"{hull.Id}: 0.45 x real ({UncappedPlaningSpeedMps(row.Figure):0.000} m/s) passes " +
+                                 $"the cap, so she runs AT the cap ({cap:0.000} m/s), not {actual:0.000}");
+            }
 
             CollectionAssert.IsEmpty(failures, string.Join("\n", failures));
         }
@@ -218,11 +304,13 @@ namespace HiddenHarbours.Tests.EditMode
             // reached the number by moving mass or drag instead, which also moves her pickup, her
             // momentum and how the sea handles her.
             Dictionary<string, (string Id, Rule Rule, float Figure)> rows = Table.ToDictionary(r => r.Id);
-            foreach (BoatHullDef hull in EveryHull())
+            List<BoatHullDef> hulls = EveryHull();
+            float cap = PlaningCapMps(hulls);
+            foreach (BoatHullDef hull in hulls)
             {
                 if (!rows.TryGetValue(hull.Id, out var row) || row.Rule == Rule.AuditUnchangedKnots) continue;
                 float resistance = hull.ForwardDrag + hull.MassKg * BoatController.HullLinearDamping;
-                float solved = Mathf.Round(RuledSpeedMps(row) * resistance);
+                float solved = Mathf.Round(RuledSpeedMps(row, cap) * resistance);
                 Assert.AreEqual(solved, hull.EnginePower, 1f,
                     $"{hull.Id}: EnginePower is solved as ruled speed x (ForwardDrag + {BoatController.HullLinearDamping} x MassKg), " +
                     "rounded to a whole unit");

@@ -432,6 +432,7 @@ MonoBehaviour:
     FrozenRateMultiplier: 0
     IcedRateMultiplier: 0
     UnsellableSpoil: 0.9
+  PlaningTopSpeedMarginUnderGoFastMps: 0.1
   Fuel:
     IdleFraction: 0.08
     ThrottleExponent: 2

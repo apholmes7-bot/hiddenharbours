@@ -65,8 +65,10 @@ namespace HiddenHarbours.Tests.EditMode
             // Moved by the owner's 11-12 speed ruling: planing hulls run at 0.45 x the real-world top
             // speed in docs/design/fleet-speed-and-fuel-audit.md (FleetSpeedTableTests holds the table).
             // Were 5.70 / 5.89 / 5.19 / 5.39 / 4.98.
-            ("ZodiacFrc",              "boat.zodiac_frc",               10.14f),
-            ("ZodiacHurricane",        "boat.zodiac_hurricane",         10.14f),
+            // The two RIBs: 0.45 x real is 10.14, past the go-fast's 10. The owner's 11-13 ruling holds
+            // every planing hull just under her (GameConfig.PlaningTopSpeedMarginUnderGoFastMps), so 9.90.
+            ("ZodiacFrc",              "boat.zodiac_frc",               9.90f),
+            ("ZodiacHurricane",        "boat.zodiac_hurricane",         9.90f),
             ("SportSkiffMk2",          "boat.sport_skiff_mk2",          8.54f),
             ("SportFisherConvertible", "boat.sport_fisher_convertible", 9.26f),
             ("SportFisherSkybridge",   "boat.sport_fisher_skybridge",   8.80f),
@@ -548,7 +550,8 @@ namespace HiddenHarbours.Tests.EditMode
                     $"the Hurricane ({hurricane:0.00} m/s) is the fastest thing afloat — {other} beats her");
 
             // Moved by the owner's 11-12 speed ruling: both RIBs share one real-world figure in the audit
-            // (43.8 kn), so both run at 0.45 x that. The Hurricane used to lead the FRC by 0.19 m/s.
+            // (43.8 kn), so both take one speed: since the owner's 11-13 ruling, the cap just under the
+            // go-fast (0.45 x 43.8 kn would pass her). The Hurricane used to lead the FRC by 0.19 m/s.
             Assert.AreEqual(frc, hurricane, 0.01f, "…and both RIBs run at the one ruled RIB speed");
             Assert.Greater(frc, TerminalSpeed(Hull("SportSkiffTwin")),
                 "the FRC still out-runs the twin, which is what put both RIBs after her in the cycle");
