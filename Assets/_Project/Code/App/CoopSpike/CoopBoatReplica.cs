@@ -1,6 +1,5 @@
 using System;
 using HiddenHarbours.Core;
-using HiddenHarbours.Player;
 using Unity.Netcode;
 using Unity.Netcode.Components;
 using UnityEngine;
@@ -20,23 +19,19 @@ namespace HiddenHarbours.CoopSpike
         private IGameClock _clock;
         private int _seed;
         private float _nextSea;
-        private Transform _localBoat, _localSkipper;
-        private IsoCharacterSprite _localCharacter;
-        private DeckRiderVisual _localRider;
-        private Func<string> _hull, _recipe;
-        private CoopReplicaView _view;
+        private Transform _localBoat;
+        private Func<CoopBoatPose> _readLocal;
+        private Action<CoopBoatPose> _showRemote;
         public bool ClockAccepted { get; private set; }
 
         public override void OnNetworkSpawn()
         {
             Sea.OnValueChanged += OnSea;
             Boat.OnValueChanged += OnBoat;
-            var settings = Resources.Load<CoopSpikeSettings>(CoopSpikeSettings.ResourcePath);
-            if (!IsOwner && settings != null)
+            if (!IsOwner)
             {
-                _view = gameObject.AddComponent<CoopReplicaView>();
-                _view.Configure(settings);
-                _view.Show(Boat.Value);
+                _showRemote = CoopBoatPresentation.Service?.CreateRemote(gameObject);
+                _showRemote?.Invoke(Boat.Value.ToPose());
             }
         }
 
@@ -54,9 +49,10 @@ namespace HiddenHarbours.CoopSpike
 
         public void BindLocal(Transform boat, Transform skipper, Func<string> hull, Func<string> recipe)
         {
-            _localBoat = boat; _localSkipper = skipper; _hull = hull; _recipe = recipe;
-            _localCharacter = skipper != null ? skipper.GetComponent<IsoCharacterSprite>() : null;
-            _localRider = skipper != null ? skipper.GetComponent<DeckRiderVisual>() : null;
+            var presentation = CoopBoatPresentation.Service
+                ?? throw new InvalidOperationException("App must install the co-op presentation contract before binding.");
+            _localBoat = boat;
+            _readLocal = presentation.BindLocal(boat, skipper, hull, recipe);
         }
 
         public void PublishBoat(CoopBoatState value)
@@ -70,7 +66,7 @@ namespace HiddenHarbours.CoopSpike
             if (!IsServer && _clock != null) ClockAccepted = next.Apply(_clock, _seed);
         }
 
-        private void OnBoat(CoopBoatState previous, CoopBoatState next) => _view?.Show(next);
+        private void OnBoat(CoopBoatState previous, CoopBoatState next) => _showRemote?.Invoke(next.ToPose());
 
         private void Update()
         {
@@ -92,30 +88,7 @@ namespace HiddenHarbours.CoopSpike
         private void LateUpdate()
         {
             if (!IsSpawned || !IsOwner || _localBoat == null) return;
-            Vector3 foot = _localSkipper != null ? _localSkipper.position : _localBoat.position;
-            Vector3 drawn = foot;
-            if (_localRider != null)
-            {
-                var mesh = _localRider.GetComponent<DeckRiderMeshPresenter>();
-                if (mesh != null && mesh.DrawsInsteadOfSprite && mesh.PresentationRoot != null)
-                    drawn = mesh.PresentationRoot.position;
-                else if (!_localRider.BodyShownOnRoot && _localRider.RiderTransform != null)
-                    drawn = _localRider.RiderTransform.position;
-                // Mesh z belongs to the private hull depth buffer, not a sprite's scene depth.
-                drawn.z = foot.z;
-            }
-            Vector3 local = _localBoat.InverseTransformPoint(foot);
-            var value = new CoopBoatState
-            {
-                HullId = _hull?.Invoke() ?? string.Empty,
-                Recipe = _recipe?.Invoke() ?? string.Empty,
-                SkipperLocal = local,
-                SkipperVisualOffset = _localBoat.InverseTransformPoint(drawn) - local,
-                SkipperStandRigMetres = _localRider != null ? _localRider.DeckStandRigLocal : Vector3.zero,
-                SkipperStance = _localCharacter != null ? _localCharacter.Stance : CharacterStance.Free,
-                SkipperHeading = _localCharacter != null ? _localCharacter.HeadingDegrees
-                    : _localSkipper != null ? _localSkipper.eulerAngles.z : 0
-            };
+            var value = CoopBoatState.FromPose(_readLocal());
             if (!Boat.Value.Equals(value)) Boat.Value = value;
         }
     }

@@ -352,6 +352,14 @@ sprites and poses only stance/gait. No shipped cast caller plays these explicit 
 
 ## 5. Boat & entity architecture (composition)
 
+**Optional co-op presentation boundary (CO-01).** `Core.ICoopBoatPresentation` binds a local
+pose reader and creates a remote pose consumer; `CoopBoatPose` carries only the existing hull,
+recipe and skipper presentation facts. App installs `CoopBoatPresentationBridge` before scene
+load and owns the concrete trial boot, settings and view. The network assembly references Core
+and transport packages only. It maps the pose to the unchanged wire fields and samples after
+the rider's LateUpdate. The seam adds no simulation authority, save data or campaign feature.
+Lead-architect review is required for this new Core contract.
+
 **Character clothing interchange (CW-01, 2026-09-13).** Core now defines the version-1
 `CharacterClothingCatalogue`, `CharacterClothingFitSpec`, `CharacterGarmentSpec` and
 `CharacterAppearanceRecipe` contracts. Identity (`BuildId`, `FitId`, skin/hair/eye keys) is separate

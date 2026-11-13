@@ -18,6 +18,21 @@ namespace HiddenHarbours.CoopSpike
         public Vector3 SkipperStandRigMetres;
         public CharacterStance SkipperStance;
 
+        public CoopBoatPose ToPose() => new CoopBoatPose
+        {
+            HullId = HullId.ToString(), Recipe = Recipe.ToString(), SkipperLocal = SkipperLocal,
+            SkipperVisualOffset = SkipperVisualOffset, SkipperHeading = SkipperHeading,
+            SkipperStandRigMetres = SkipperStandRigMetres, SkipperStance = SkipperStance
+        };
+
+        public static CoopBoatState FromPose(CoopBoatPose pose) => new CoopBoatState
+        {
+            HullId = pose.HullId ?? string.Empty, Recipe = pose.Recipe ?? string.Empty,
+            SkipperLocal = pose.SkipperLocal, SkipperVisualOffset = pose.SkipperVisualOffset,
+            SkipperHeading = pose.SkipperHeading, SkipperStandRigMetres = pose.SkipperStandRigMetres,
+            SkipperStance = pose.SkipperStance
+        };
+
         public void NetworkSerialize<T>(BufferSerializer<T> s) where T : IReaderWriter
         {
             s.SerializeValue(ref HullId); s.SerializeValue(ref Recipe);

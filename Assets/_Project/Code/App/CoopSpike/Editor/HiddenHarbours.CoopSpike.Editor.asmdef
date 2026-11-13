@@ -1,5 +1,5 @@
 {
   "name": "HiddenHarbours.CoopSpike.Editor",
-  "references": ["HiddenHarbours.CoopSpike", "HiddenHarbours.Core", "HiddenHarbours.Boats", "HiddenHarbours.Player", "HiddenHarbours.App.Editor", "Unity.Netcode.Runtime"],
+  "references": ["HiddenHarbours.CoopSpike", "HiddenHarbours.App", "HiddenHarbours.Core", "HiddenHarbours.Boats", "HiddenHarbours.Player", "HiddenHarbours.App.Editor", "Unity.Netcode.Runtime"],
   "includePlatforms": ["Editor"]
 }

@@ -36,10 +36,12 @@ namespace HiddenHarbours.CoopSpike
             _character = skipper.AddComponent<IsoCharacterSprite>();
             _character.Configure(settings.Character);
         }
-        public void Show(CoopBoatState state)
+        public void Show(CoopBoatState state) => Show(state.ToPose());
+
+        public void Show(CoopBoatPose state)
         {
             if (_settings == null) return;
-            string id = state.HullId.ToString();
+            string id = state.HullId;
             if (_hullId != id)
             {
                 var hull = _settings.Hull(id);
