@@ -1,0 +1,61 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d885412cd35443658a752ed3d82c526c, type: 3}
+  m_Name: BeachOysterPick
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.BeachActivityDef
+  Id: beachactivity.oyster_pick
+  DisplayName: Picking oysters on the big low tides
+  Beach: {fileID: 11400000, guid: 60cc5419c7994a05914b444264392ddc, type: 2}
+  Kind: 2
+  Replaces: 3
+  Tag: 3
+  Who: []
+  ChancePerDay: 0.25
+  EarliestHour: 6
+  LatestHour: 21.25
+  InEarlySpring: 1
+  InHighSummer: 1
+  InTheTurn: 1
+  InHardWinter: 0
+  MinWaterLevelMetres: -100
+  MaxWaterLevelMetres: -0.44
+  MinWindStrength: 0
+  MaxWindStrength: 8
+  MaxSeaState01: 0.72
+  MinVisibility01: 0.45
+  GateSampleMinutes: 10
+  ClearanceMetres: 0.2
+  MinDepth01: 0.6
+  MaxDepth01: 0.9
+  MinDryMetres: 10
+  PersonSpacingMetres: 1.2
+  WalkersAbreast: 4
+  MinStayMinutes: 40
+  LingerMinutes: 0
+  MinWadeDepthMetres: 0.08
+  MaxWadeDepthMetres: 0.25
+  DeepestWadeMetres: 0.4
+  WadeMinutes: 25
+  WadeWanderMetres: 0.7
+  GatherRadiusMetres: 1.5
+  GatherPlaces: 6
+  GatherOpenBearingDegrees: 270
+  CentreSprite: {fileID: 0}
+  CentreIsLit: 0
+  GlowColor: {r: 1, g: 0.62, b: 0.28, a: 1}
+  GlowRangeMetres: 5
+  GlowIntensity: 1
+  GlowFlicker01: 0.35
+  GlowHeightMetres: 0.4
+  CentreLingersMinutes: 45
+  Talk: []
+  WaitsOn: 
