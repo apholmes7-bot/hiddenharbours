@@ -326,6 +326,10 @@ namespace HiddenHarbours.Tools.RigBaking
             // Her ids sit beside the Mk2's ('paint.sport_skiff_mk2_') as the stern trawlers' do.
             PublishedWalkPaint("sportSkiff", "hullmesh.sport_skiff_iso", "SportSkiffIso",
                 "paint.sport_skiff_", "sport_skiff_iso"),
+            // The dory, redrawn on the hull layout: topsides, rail and stem, and the inside by scheme.
+            // Her default ('pine-tar') is the oiled wood she has worn since pass 1.
+            PublishedWalkPaint("dory", "hullmesh.dory_iso", "DoryIso",
+                "paint.dory_", "dory_iso"),
 
         };
 
@@ -417,11 +421,6 @@ namespace HiddenHarbours.Tools.RigBaking
         public static readonly IReadOnlyDictionary<string, string> UnpaintedRigs =
             new Dictionary<string, string>(StringComparer.Ordinal)
             {
-                ["doryIsoRig.js"] =
-                    "The dory (T0) — no paint axis. She is the boat he starts in and her bare lapstrake " +
-                    "planking is her identity, so an axis for her is a real art question rather than a " +
-                    "mechanical one: what does a repainted dory even look like before he can afford paint?",
-
                 ["coastalPacketIsoRig.js"] =
                     "Coastal packet (T6) — no paint axis. The first merchant hull, and the tier where a " +
                     "livery starts to mean a COMPANY rather than a keeper — worth an art conversation " +

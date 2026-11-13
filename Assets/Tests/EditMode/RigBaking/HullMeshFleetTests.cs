@@ -28,10 +28,8 @@ namespace HiddenHarbours.Tests.RigBaking
     ///   baked nor explicitly excluded fails, so the answer cannot be "nobody noticed".</item>
     ///   <item><b>Is the wiring honest?</b> A mesh-only hull must have no sprite compass and a
     ///   sheeted one must keep hers — that difference is what the owner's V key reads.</item>
-    ///   <item><b>Is the dory's RECONSTRUCTED material table right?</b> The one place we transcribe
-    ///   what a rig means rather than reading what it exports, and therefore the one place that has
-    ///   to be proved in pixels. See <see cref="DoryReconstructedMaterials_ReproduceHerOwnRenderer"/>
-    ///   and its sabotage.</item>
+    ///   <item><b>(Retired with the dory's redraw, #1166.)</b> The dory's material table was once
+    ///   reconstructed and proved here in pixels; her rig exports it now.</item>
     /// </list>
     /// </summary>
     public class HullMeshFleetTests
@@ -844,76 +842,8 @@ namespace HiddenHarbours.Tests.RigBaking
 
         // ---- 5. the dory's reconstructed material table, proved in pixels ---------------------
 
-        /// <summary>
-        /// <b>The one transcription in the whole pipeline, and therefore the one thing here that could
-        /// be confidently wrong.</b>
-        ///
-        /// <para>The dory predates the <c>MATS</c> convention and selects her ramps inline, so the
-        /// shim REBUILDS her material table from her own <c>RAMP</c>/<c>IRON</c> consts
-        /// (<see cref="RigMeshSymbols.Reconstructions"/>). Reading a rig and declaring what it means
-        /// is precisely how this project has shipped mirrored boats five times, so the claim is
-        /// settled the only way that counts: the truth side of this compare is HER OWN
-        /// <c>render()</c>, which never touches the reconstruction, against a reference rasterisation
-        /// that is nothing but the reconstruction. A wrong ramp or a wrong offset does not shift a
-        /// boundary pixel — it recolours the entire boat.</para>
-        /// </summary>
-        [Test]
-        public void DoryReconstructedMaterials_ReproduceHerOwnRenderer()
-        {
-            FleetHull dory = HullMeshFleet.Get("dory");
-            using IRigScriptHost host = RigScriptHostFactory.Create();
-            RigMeshData data = RigMeshExtractor.ExtractFrom(host, dory.ScriptPath, dory.GlobalName);
-
-            CollectionAssert.Contains(data.ReconstructedSymbols, "MATS",
-                "This test exists because the dory's MATS is reconstructed. If it is now EXPORTED by " +
-                "the rig, that is good news: delete the RigMeshSymbols.Reconstructions entry and this " +
-                "test with it.");
-
-            double worst = WorstFaceDiffPercent(host, data, dory.GlobalName);
-
-            // The bar is the same one RigMeshMenu applies to every hull. What matters is the ORDER OF
-            // MAGNITUDE: a correct table lands in tenths of a percent (residual last-ULP shade steps
-            // at facet boundaries), and the sabotage below shows what a wrong one looks like.
-            Assert.Less(worst, 0.5,
-                $"The dory's reconstructed material table does not reproduce her own renderer " +
-                $"(worst {worst:F4}% of cell pixels differ across 8 headings).");
-        }
-
-        [Test]
-        public void DoryReconstruction_Sabotage_AWrongRampOffsetIsCaught()
-        {
-            FleetHull dory = HullMeshFleet.Get("dory");
-            using IRigScriptHost host = RigScriptHostFactory.Create();
-            RigMeshData data = RigMeshExtractor.ExtractFrom(host, dory.ScriptPath, dory.GlobalName);
-
-            double honest = WorstFaceDiffPercent(host, data, dory.GlobalName);
-
-            // Shift the wood ramp one shade step — the smallest lie the reconstruction could tell.
-            // (Getting `off` wrong is far likelier than getting the ramp wrong: the dory's clamp
-            // bounds are what encode it, and they are easy to misread.)
-            data.Materials[0].Off += 1;
-            double sabotaged = WorstFaceDiffPercent(host, data, dory.GlobalName);
-
-            Assert.Greater(sabotaged, honest * 20.0,
-                $"A one-step error in the reconstructed ramp offset moved the image from {honest:F4}% " +
-                $"to only {sabotaged:F4}%. That means the check above is not actually reading the " +
-                "material table, so it would pass with a wrong one — fix the check, not the number.");
-        }
-
-        /// <summary>Worst whole-cell divergence between the rig's own render and a reference
-        /// rasterisation of the extracted faces, over the 8 cardinal headings.</summary>
-        static double WorstFaceDiffPercent(IRigScriptHost host, RigMeshData data, string global)
-        {
-            double worst = 0;
-            for (int dir = 0; dir < 8; dir++)
-            {
-                var view = new RigViewOptions(dir, data.DefaultElev);
-                byte[] truth = host.EvaluateBytes($"{global}.render({view.ToJsArgs()})");
-                var diff = RigMeshReferenceRasterizer.Compare(
-                    truth, RigMeshReferenceRasterizer.RenderFromFaces(data, view), data.W, data.H);
-                worst = Math.Max(worst, diff.PercentDiffering);
-            }
-            return worst;
-        }
+        // Retired with the dory's redraw (#1166): DoryReconstructedMaterials_ReproduceHerOwnRenderer and
+        // DoryReconstruction_Sabotage_AWrongRampOffsetIsCaught. Her materials are now her own drawn deck,
+        // exported by her rig, not a reconstruction of the old renderer, as the first test asked.
     }
 }

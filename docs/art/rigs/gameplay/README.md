@@ -7,8 +7,9 @@ work (M2-37..39).
 **Switched hulls (`hull-walk@1`).** The recreation boats, and since 2026-11-12 both stern trawlers
 (`sternTrawlerIsoRig.stern_trawler.walk.json`, the first of the working ships, and
 `sternTrawlerMk2IsoRig.stern_trawler_mk2.walk.json`), the side dragger
-(`sideDraggerIsoRig.side_dragger.walk.json`) and the sport skiff
-(`sportSkiffIsoRig.sport_skiff_iso.walk.json`), use one generated
+(`sideDraggerIsoRig.side_dragger.walk.json`), the sport skiff
+(`sportSkiffIsoRig.sport_skiff_iso.walk.json`) and the dory
+(`doryIsoRig.dory_iso.walk.json`), use one generated
 `<rig stem>.<hull id>.walk.json` per hull. `HullWalkSidecarReader` reads it and
 `HullWalkSidecarImporter` creates its deck and, when authored, room Defs; the mesh bake reads the
 same hull through its global's `byId`. `LayoutSchema` and `NoHullReadsBothLayoutsTests` keep this
@@ -75,13 +76,13 @@ error). Never invent a section to fill a gap.
   (art-director charter rule 2). The importer enforces this: a mismatch is a loud refusal
   and that hull keeps the greybox rectangle — it never silently imports polygons cut from a
   different boat.
-  - ⚠️ **Four of the seven SHAs below are CRLF hashes** (cape, packet, lobster,
+  - ⚠️ **Four of the six SHAs below are CRLF hashes** (cape, packet, lobster,
     tanker) — they were derived from working copies with
     Windows line endings, and the repo stores the rigs with LF. The importer accepts a match
     on either convention and says so on every run, because a line ending cannot move a
     vertex; every cited line number and constant in those files still reads exactly as
     written. **art-director: please re-stamp those eight from the committed files** so the
-    check goes back to exact. dory / punt / console already hash exactly.
+    check goes back to exact. punt / console already hash exactly.
   - ⚠️ **That re-stamp is blocked on the IMPORTER, not on the art — measured 2026-08-14, and the
     ask above stands.** It is not a one-file edit: the SHA is recorded in **two** places. Each
     committed deck asset carries its own `DerivedFromRigSha256`
@@ -144,11 +145,10 @@ stay known:
 - coastalPacket, sternTrawlerMk2 and tanker apply `flareExp` inside their deck-width
   functions; sternTrawler (mk1) and sideDragger do not.
 
-## Current set (7 single-hull rigs + the lobster generator's 18)
+## Current set (6 single-hull rigs + the lobster generator's 18)
 
 | hull | LOA | DECK | WASHBOARD | CLEATS |
 |---|---|---|---|---|
-| dory | 4.5 m | bilge floor (3d) | — open boat | stem-head ring bolt + port-quarter ring (modelled, 2026-07-25) |
 | punt | 5.2 m | bilge floor (3d) | — open boat | stem-head ring bolt + port-quarter ring (modelled, 2026-07-25) |
 | console | 7.0 m | cockpit sole | — open skiff | bow cleat |
 | capeIslander | 12.8 m | cockpit + whaleback foredeck (3d) | both sides, 0.42 m (full run to the foredeck; narrows past the house) | bow bitt + 2 stern |
