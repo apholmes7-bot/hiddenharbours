@@ -175,6 +175,64 @@ namespace HiddenHarbours.Tests.EditMode
 
         // ---- tests -----------------------------------------------------------------------------
 
+        [TestCase(null)]
+        [TestCase("")]
+        public void SavedBait_EmptyId_IsExplicitlyUnbaited_EvenWithoutCatalog(string id)
+        {
+            var svc = MakeService();
+            svc.Configure(new[] { _lobsterTrap }, null, svc.transform);
+            Assert.AreEqual(PlacedTrapService.SavedBaitResolution.Unbaited,
+                svc.ResolveSavedBait(id, out var bait));
+            Assert.IsNull(bait);
+        }
+
+        [Test]
+        public void SavedBait_MissingCatalog_AndUnknownId_AreDifferentFailures()
+        {
+            var svc = MakeService();
+            Assert.AreEqual(PlacedTrapService.SavedBaitResolution.UnknownId,
+                svc.ResolveSavedBait("bait.absent", out var unknown));
+            Assert.IsNull(unknown);
+            svc.Configure(new[] { _lobsterTrap }, null, svc.transform);
+            Assert.AreEqual(PlacedTrapService.SavedBaitResolution.MissingCatalog,
+                svc.ResolveSavedBait(_herring.Id, out var missing));
+            Assert.IsNull(missing);
+        }
+
+        [Test]
+        public void SavedBait_Preflight_PreservesProfileLiveTrapSaveAndStock()
+        {
+            var svc = MakeService();
+            _save.BaitStock.Add(new BaitStock(_herring.Id, 2));
+            var live = svc.PlaceTrap(_lobsterTrap, _herring, new Vector2(3f, -4f), "region.coddle_cove");
+            var dto = _save.PlacedTraps[0];
+            for (int i = 0; i < 2; i++)
+            {
+                Assert.AreEqual(PlacedTrapService.SavedBaitResolution.Resolved,
+                    svc.ResolveSavedBait(dto.BaitId, out var bait));
+                Assert.AreSame(_herring, bait);
+                CollectionAssert.AreEqual(new[] { "fish.lobster" }, bait.FavorsSpeciesIds);
+                Assert.AreEqual(PlacedTrapService.SavedBaitResolution.UnknownId,
+                    svc.ResolveSavedBait("BAIT.HERRING", out var wrongCase));
+                Assert.IsNull(wrongCase, "saved ids are exact; do not rewrite or normalize them");
+            }
+            Assert.AreEqual(1, svc.Live.Count);
+            Assert.AreSame(live, svc.Live[0]);
+            Assert.AreEqual(1, _save.PlacedTraps.Count);
+            // PlacedTrapDto is a value type; preserve every saved field, not boxed identity.
+            var savedDto = _save.PlacedTraps[0];
+            Assert.AreEqual(dto.InstanceId, savedDto.InstanceId);
+            Assert.AreEqual(dto.TrapDefId, savedDto.TrapDefId);
+            Assert.AreEqual(dto.PosX, savedDto.PosX);
+            Assert.AreEqual(dto.PosY, savedDto.PosY);
+            Assert.AreEqual(dto.BaitId, savedDto.BaitId);
+            Assert.AreEqual(dto.PlacementGameTimeSeconds, savedDto.PlacementGameTimeSeconds);
+            Assert.AreEqual(dto.Region, savedDto.Region);
+            Assert.AreEqual("bait.herring", dto.BaitId);
+            Assert.AreEqual(1, _save.BaitStock.Count);
+            Assert.AreEqual(1, _save.BaitStock[0].Count);
+        }
+
         [Test]
         public void Registry_ResolvesFishIdsToDefs()
         {

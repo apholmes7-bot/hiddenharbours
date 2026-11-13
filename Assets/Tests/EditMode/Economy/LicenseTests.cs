@@ -81,6 +81,47 @@ namespace HiddenHarbours.Tests.EditMode
             return go.AddComponent<LicenseVendor>();
         }
 
+        [Test]
+        public void StrictLanding_MissingCatalog_IsDistinctFromAvailableEmptyCatalog()
+        {
+            Assert.AreEqual(CatchLicensePolicy.LandingDecision.MissingCatalog,
+                CatchLicensePolicy.Evaluate("fish.atlantic_cod", null, null));
+            Assert.AreEqual(CatchLicensePolicy.LandingDecision.Ungated,
+                CatchLicensePolicy.Evaluate("fish.atlantic_cod", new LicenseDef[0], null));
+            // Compatibility is explicit: existing runtime callers have not migrated in this change.
+            Assert.IsTrue(CatchLicensePolicy.MayLand("fish.atlantic_cod", null, null));
+        }
+
+        [TestCase(null)]
+        [TestCase("")]
+        public void StrictLanding_EmptySpecies_IsInvalid(string speciesId)
+        {
+            Assert.AreEqual(CatchLicensePolicy.LandingDecision.InvalidSpecies,
+                CatchLicensePolicy.Evaluate(speciesId, new LicenseDef[0], null));
+        }
+
+        [Test]
+        public void StrictLanding_PreservesAuthoredMappingWalletAndFirstMatch()
+        {
+            var first = MakeLicense("license.cod", 120, "fish.atlantic_cod");
+            var second = MakeLicense("license.other", 240, "fish.atlantic_cod");
+            var all = new[] { first, second };
+            var wallet = MakeService();
+            wallet.Grant(second.Id);
+            Assert.AreEqual(CatchLicensePolicy.LandingDecision.MissingLicense,
+                CatchLicensePolicy.Evaluate("fish.atlantic_cod", all, wallet));
+            Assert.AreEqual(CatchLicensePolicy.LandingDecision.MissingLicense,
+                CatchLicensePolicy.Evaluate("fish.atlantic_cod", all, null));
+            wallet.Grant(first.Id);
+            Assert.AreEqual(CatchLicensePolicy.LandingDecision.Licensed,
+                CatchLicensePolicy.Evaluate("fish.atlantic_cod", all, wallet));
+            Assert.AreEqual(CatchLicensePolicy.LandingDecision.Ungated,
+                CatchLicensePolicy.Evaluate("fish.soft_shell_clam", all, null));
+            Assert.AreEqual("license.cod", CatchLicensePolicy.RequiredLicenseFor("fish.atlantic_cod", all));
+            Assert.AreEqual(120, first.Price);
+            CollectionAssert.AreEqual(new[] { "fish.atlantic_cod" }, first.PermittedSpeciesIds);
+        }
+
         // ---- the wallet -----------------------------------------------------------------------
 
         [Test]
