@@ -13,7 +13,7 @@ using UnityEngine.TestTools;
 
 namespace HiddenHarbours.Tests.CoopSpike
 {
-    public sealed partial class CoopSpikeNetworkTests : NetcodeIntegrationTest
+    public sealed partial class CoopSpikeNetworkTests : CoopNetworkTest
     {
         protected override int NumberOfClients => 1;
         private sealed class Clock : IGameClock
