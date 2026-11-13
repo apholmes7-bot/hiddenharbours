@@ -56,7 +56,6 @@ namespace HiddenHarbours.Tools.RigBaking
         {
             var wiring = new Dictionary<string, string[]>(StringComparer.Ordinal)
             {
-                ["doryIsoRig"]            = new[] { "DoryIso" },
                 ["puntIsoRig"]            = new[] { "PuntIsoBasic", "PuntIsoUpgraded" },
                 ["consoleIsoRig"]         = new[] { "ConsoleSkiff" },
                 // The RESHAPED 7 m skiff — a second hull, not a rename of the row above. Her sidecar
@@ -82,7 +81,8 @@ namespace HiddenHarbours.Tools.RigBaking
             // is `sportSkiffMk2Iso`, which the loop below cannot produce and the table above names
             // directly, so a reader sees the two hulls are separate wirings rather than one hull
             // renamed. (The v1's row, `sportSkiffIsoRig`, sat beside it until she was rebuilt to the
-            // hull layout: her walk sidecar wires her two visuals now.)
+            // hull layout: her walk sidecar wires her two visuals now. The dory's row, `doryIsoRig`,
+            // headed the table until she was rebuilt the same way.)
             foreach (ZodiacBuild b in ZodiacFleet.All)
                 wiring[b.SidecarStem] = new[] { b.AssetName };
 

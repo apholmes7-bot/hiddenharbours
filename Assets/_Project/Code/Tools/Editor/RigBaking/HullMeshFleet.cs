@@ -244,8 +244,15 @@ namespace HiddenHarbours.Tools.RigBaking
 
             // UNBLOCKED by phase 7: her oars became meshes, so she is the first hull whose sprite
             // overlay crossed over rather than being dropped. The boat he starts in rows continuously.
-            Sheeted("dory", "doryIsoRig.js", "DoryIso", "DoryIso", "dory_iso",
-                    "dory (T0, ~4.3 m — the boat he starts in)", null, "DoryIso"),
+            // Hull layout: her published scope owns her cell and her walk sidecar answers for her
+            // deck. She stays a sheeted hull with her one visual, which both dory Defs wear: the
+            // oars and the loaned outboard are fittings on that visual, which the layout neither
+            // reads nor moves. The scope's default state is the rowing hull, as her mesh always was.
+            new FleetHull("dory", $"{Rigs}/doryIsoRig.js", "DoryIso",
+                $"{Meshes}/DoryIsoHullMesh.asset", "hullmesh.dory_iso",
+                new[] { $"{Visuals}/DoryIso.asset" },
+                Array.Empty<string>(), true, "dory (T0, ~4.3 m — the boat he starts in)",
+                extraction: new RigHullExtraction { HullScope = "byId('dory_iso')" }),
 
             // ONE hull, TWO visuals: basic and upgraded differ by engine, not by planking — and the
             // engine is now a fitting per build (hullprop.punt_motor_basic / _upgraded), which is

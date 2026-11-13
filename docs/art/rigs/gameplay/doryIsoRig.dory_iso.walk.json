@@ -1,0 +1,607 @@
+{
+ "schema": "hidden-harbours/hull-walk@1",
+ "rig": "doryIsoRig.js",
+ "exportSymbol": "DoryIso",
+ "hull": "dory_iso",
+ "label": "BANKS DORY",
+ "kind": "open",
+ "derivedFromRigSha256": "f5ea56142c70b11b3c65757117dfa5543712e318979476272116eb59f826a323",
+ "authoring": "Written by the rig: DoryIso.byId('dory_iso').walk(), every number its own (mm), stamped with the rig's LF sha256 and fitted to character rig 10.3 (qa.character) by tools/rig-recipes/hull-walk.mjs. Regenerate with node tools/rig-recipes/hull-walk.mjs --write; never edit by hand.",
+ "units": "metres",
+ "frame": "metres; +x starboard, +y bow, +z up; origin amidships, keel bottom, centreline; polygons counter-clockwise seen from above",
+ "loa_m": 4.5,
+ "beam_m": 1.5,
+ "bottom_m": 0.8,
+ "DWL": 0.11,
+ "cockpitZ": 0.09,
+ "cell": {
+  "W": 160,
+  "H": 156,
+  "pivot": {
+   "x": 80,
+   "y": 88
+  },
+  "pxPerM": 32,
+  "defaultElev": 40,
+  "order": [
+   "N",
+   "NE",
+   "E",
+   "SE",
+   "S",
+   "SW",
+   "W",
+   "NW"
+  ]
+ },
+ "tags": {
+  "lv": {
+   "hull": 0,
+   "main_deck": 1,
+   "house": 2,
+   "bridge": 3,
+   "below": 4,
+   "rigging": 5,
+   "foredeck": 6,
+   "top": 7
+  },
+  "ro": {
+   "shell": 0,
+   "wall": 1,
+   "roof": 2,
+   "lining": 3,
+   "part": 4,
+   "floor": 5,
+   "fit": 6,
+   "tall": 7,
+   "trim": 8,
+   "rig": 9
+  },
+  "ghostRoles": [
+   "shell",
+   "wall",
+   "roof",
+   "lining",
+   "part",
+   "tall",
+   "trim"
+  ]
+ },
+ "walk": {
+  "radius": 0.23,
+  "stepTol": 0.34,
+  "rule": "A step is legal when the target point is inside an area polygon and outside its holes, and |area z - player z| < stepTol. Ramps interpolate z along their axis (x or y) between a0 and a1, and hold z0 / z1 beyond them. cut = the cutaway key while standing there; cutHi / cutLo replace it above / below zMid (stairs and ladders). Polygons are player-centre: already inset by radius, so the reader never insets them again.",
+  "spawn": {
+   "x": 0,
+   "y": -0.3,
+   "area": "floor"
+  },
+  "areas": [
+   {
+    "id": "floor",
+    "cut": "deck",
+    "z": 0.09,
+    "poly": [
+     [
+      0.087,
+      -1.864
+     ],
+     [
+      0.22,
+      -1.616
+     ],
+     [
+      0.279,
+      -1.367
+     ],
+     [
+      0.323,
+      -1.119
+     ],
+     [
+      0.345,
+      -0.87
+     ],
+     [
+      0.364,
+      -0.622
+     ],
+     [
+      0.37,
+      -0.373
+     ],
+     [
+      0.372,
+      -0.125
+     ],
+     [
+      0.363,
+      0.123
+     ],
+     [
+      0.346,
+      0.372
+     ],
+     [
+      0.321,
+      0.62
+     ],
+     [
+      0.278,
+      0.869
+     ],
+     [
+      0.225,
+      1.117
+     ],
+     [
+      0.139,
+      1.366
+     ],
+     [
+      0.02,
+      1.614
+     ],
+     [
+      -0.02,
+      1.614
+     ],
+     [
+      -0.139,
+      1.366
+     ],
+     [
+      -0.225,
+      1.117
+     ],
+     [
+      -0.278,
+      0.869
+     ],
+     [
+      -0.321,
+      0.62
+     ],
+     [
+      -0.346,
+      0.372
+     ],
+     [
+      -0.363,
+      0.123
+     ],
+     [
+      -0.372,
+      -0.125
+     ],
+     [
+      -0.37,
+      -0.373
+     ],
+     [
+      -0.364,
+      -0.622
+     ],
+     [
+      -0.345,
+      -0.87
+     ],
+     [
+      -0.323,
+      -1.119
+     ],
+     [
+      -0.279,
+      -1.367
+     ],
+     [
+      -0.22,
+      -1.616
+     ],
+     [
+      -0.087,
+      -1.864
+     ]
+    ],
+    "holes": [],
+    "note": "the bottom boards, stern knee to bow thwart: 3.478 m long and 0.744 m of centre room at its widest. Whole: the three thwarts cross it 0.21 m over the boards and are stepped over (under stepTol), as the owner ruled on 2026-07-22. z is the boards amidships; they rise 0.085 m to the after end and 0.128 m to the forward end with her rocker."
+   }
+  ]
+ },
+ "house": null,
+ "anchors": {
+  "helm": {
+   "x": 0,
+   "y": -0.72,
+   "z": 0.3056
+  },
+  "pilot": {
+   "x": 0,
+   "y": -0.3,
+   "z": 0.06
+  },
+  "seats": [
+   {
+    "id": "rowing_thwart",
+    "x": 0,
+    "y": -0.72,
+    "z": 0.3056
+   },
+   {
+    "id": "forward_thwart",
+    "x": 0,
+    "y": 0.45,
+    "z": 0.308
+   },
+   {
+    "id": "bow_thwart",
+    "x": 0,
+    "y": 1.35,
+    "z": 0.386
+   }
+  ],
+  "rowing": [
+   {
+    "id": "aft",
+    "seat": {
+     "x": 0,
+     "y": -0.72,
+     "z": 0.3056
+    },
+    "tholes": [
+     {
+      "x": -0.7139,
+      "y": -0.855,
+      "z": 0.5156
+     },
+     {
+      "x": 0.714,
+      "y": -0.855,
+      "z": 0.5156
+     }
+    ],
+    "note": "the station the oars are baked to: oarlockPt"
+   },
+   {
+    "id": "forward",
+    "seat": {
+     "x": 0,
+     "y": 0.45,
+     "z": 0.308
+    },
+    "tholes": [
+     {
+      "x": -0.7279,
+      "y": 0.315,
+      "z": 0.5112
+     },
+     {
+      "x": 0.728,
+      "y": 0.315,
+      "z": 0.5112
+     }
+    ],
+    "note": "the second pair of tholes: a second rower, or the same oars shifted forward to trim her"
+   }
+  ],
+  "oarStow": [
+   {
+    "id": "port",
+    "lock": {
+     "x": -0.7139,
+     "y": -0.855,
+     "z": 0.5156
+    },
+    "blade": {
+     "x": -0.9142,
+     "y": 0.5702,
+     "z": 0.6923
+    },
+    "handle": {
+     "x": -0.5965,
+     "y": -1.6905,
+     "z": 0.412
+    }
+   },
+   {
+    "id": "star",
+    "lock": {
+     "x": 0.714,
+     "y": -0.855,
+     "z": 0.5156
+    },
+    "blade": {
+     "x": 0.9142,
+     "y": 0.5702,
+     "z": 0.6923
+    },
+    "handle": {
+     "x": 0.5965,
+     "y": -1.6905,
+     "z": 0.412
+    }
+   }
+  ],
+  "tubs": [
+   {
+    "id": "midship",
+    "x": 0,
+    "y": -0.14,
+    "z": 0.06
+   }
+  ],
+  "painter": {
+   "x": 0,
+   "y": 2.0925,
+   "z": 0.8618
+  },
+  "sternEye": {
+   "x": -0.3,
+   "y": -2.16,
+   "z": 0.745
+  },
+  "handline": [
+   {
+    "id": "star",
+    "x": 0.7476,
+    "y": -0.135,
+    "z": 0.472
+   },
+   {
+    "id": "port",
+    "x": -0.7476,
+    "y": -0.135,
+    "z": 0.472
+   }
+  ],
+  "bailer": {
+   "x": 0.2,
+   "y": -1.05,
+   "z": 0.1073
+  },
+  "helmMotor": {
+   "x": 0,
+   "y": -1.665,
+   "z": 0.3584
+  },
+  "pilotMotor": {
+   "x": 0,
+   "y": -1.28,
+   "z": 0.091
+  },
+  "driveMounts": [
+   {
+    "x": 0,
+    "y": -2.34,
+    "z": 0.8
+   }
+  ]
+ },
+ "interact": [
+  {
+   "id": "helm",
+   "action": "enter_helm",
+   "label": "Oars",
+   "prompt": "Take the oars",
+   "at": {
+    "x": 0,
+    "y": -0.72,
+    "z": 0.3056
+   },
+   "reach": {
+    "x": 0,
+    "y": -0.3,
+    "z": 0.09
+   },
+   "area": "floor",
+   "seat": {
+    "x": 0,
+    "y": -0.72,
+    "z": 0.3056
+   },
+   "stand": {
+    "x": 0,
+    "y": -0.3,
+    "z": 0.06
+   },
+   "note": "she is steered from the oars, and the oars are worked from the after thwart, facing aft: the tholes are 0.135 m abaft its centre. Taken from the boards forward of it."
+  },
+  {
+   "id": "seat_forward_thwart",
+   "action": "enter_ride",
+   "label": "Forward thwart",
+   "prompt": "Ride",
+   "at": {
+    "x": 0,
+    "y": 0.45,
+    "z": 0.308
+   },
+   "reach": {
+    "x": 0,
+    "y": 0.09,
+    "z": 0.09
+   },
+   "area": "floor",
+   "waitsOn": [
+    "sit"
+   ]
+  }
+ ],
+ "cleats": [
+  {
+   "id": "bow_1",
+   "type": "ring_bolt",
+   "pos": [
+    0,
+    2.0925,
+    0.8618
+   ],
+   "note": "the iron ring bolt through the breasthook at the stem head: the painter lives on it"
+  },
+  {
+   "id": "stern_port",
+   "type": "ring_bolt",
+   "pos": [
+    -0.3,
+    -2.16,
+    0.745
+   ],
+   "note": "the ring through the port quarter knee: the stern line when she lies alongside"
+  }
+ ],
+ "washboards": [],
+ "_excluded": [
+  {
+   "id": "gunwales",
+   "of": "area",
+   "z": 0.46,
+   "reason": "the gunwales: a 0.087 m rail cap 0.37 m over the boards and 0.35 m over the water. Stepped over to board, not walked. She has no ladder: a swimmer comes aboard over them (ladderOn).",
+   "waitsOn": [
+    "ladderOn"
+   ]
+  },
+  {
+   "id": "bow",
+   "of": "area",
+   "z": 0.09,
+   "reason": "forward of the walk’s end the bottom draws in under the raked stem: no centre point fits. The painter is worked from the bow thwart."
+  },
+  {
+   "id": "rowing_thwart",
+   "of": "seat",
+   "at": {
+    "x": 0,
+    "y": -0.72,
+    "z": 0.3056
+   },
+   "reason": "the after thwart: the rower’s seat (anchors.helm), 0.21 m over the boards. A seat and a step-over, not a standing surface."
+  },
+  {
+   "id": "forward_thwart",
+   "of": "seat",
+   "at": {
+    "x": 0,
+    "y": 0.45,
+    "z": 0.308
+   },
+   "reason": "the forward thwart: the second rowing station and a passenger’s seat. Sitting waits on sit.",
+   "waitsOn": [
+    "sit"
+   ]
+  },
+  {
+   "id": "bow_thwart",
+   "of": "seat",
+   "at": {
+    "x": 0,
+    "y": 1.35,
+    "z": 0.386
+   },
+   "reason": "the short bow thwart: a seat for whoever tends the painter. Sitting waits on sit.",
+   "waitsOn": [
+    "sit"
+   ]
+  },
+  {
+   "id": "stern_bench",
+   "of": "seat",
+   "at": {
+    "x": 0,
+    "y": -1.665,
+    "z": 0.3584
+   },
+   "reason": "the outboard build’s stern bench (state motor), the seated operator’s place (anchors.helmMotor). This walk describes the rowing hull, which is the mesh both dories wear; the bench is not in it.",
+   "waitsOn": [
+    "motorBuildMesh"
+   ]
+  },
+  {
+   "id": "washboards",
+   "of": "washboards",
+   "reason": "an open rowed boat: no side deck. The gunwales are stepped over, not walked (gunwales)."
+  },
+  {
+   "id": "tholes",
+   "of": "cleat",
+   "reason": "the thole pins, a pair a side at each rowing station: they hold the oars, not a mooring line. She lies to her stem ring bolt (bow_1) and her port-quarter ring (stern_port)."
+  }
+ ],
+ "rock": {
+  "frames": 8,
+  "rollA": 5,
+  "pitchA": 3,
+  "heaveA": 1.6,
+  "period": 2.6
+ },
+ "qa": {
+  "fitCheck": {
+   "tol": 0.01,
+   "faces": 0,
+   "outside": 0,
+   "worst": 0,
+   "note": "an open boat: no room faces to check"
+  },
+  "character": {
+   "rig": "characterIsoRig10.js",
+   "exportSymbol": "CharacterIso10",
+   "revision": "10.3",
+   "derivedFromRigSha256": "ad563075475740cea1258de68d05c184f2fc136491357bc22988a10d810413f3",
+   "posesDerivedFromRigSha256": "a28e5d92638d3cf1b26bbc49f887b23221acd3a9590bc36fd8b842ac6127c92d",
+   "builds": 30,
+   "crown_m": [
+    1.257,
+    1.8641
+   ],
+   "collision_radius_m": [
+    0.142,
+    0.23
+   ],
+   "board_range_m": [
+    0.06,
+    1
+   ],
+   "boardDown_range_m": [
+    0.06,
+    1.3
+   ],
+   "method": "every frame of each clip for all thirty builds (evalClip + pinsOf), world opts from the walk; hands vs the wheel rim, the lying body vs the berth outline and deckhead, crowns vs headroom, shoulders (2 x collision radius) vs clear widths",
+   "fixtures": [
+    {
+     "id": "walk_areas",
+     "what": "walk every area (1 of them) at the walker’s radius 0.23 m",
+     "clip": "walk",
+     "note": "each outline is inset by the walker’s radius, the widest 10.3 build’s collision radius or more: every build’s shoulders fit wherever the walker goes. Headroom is the stand fixtures’; steps are the step fixtures’.",
+     "builds_ok": 30,
+     "of": 30
+    },
+    {
+     "id": "aboard_from_the_water",
+     "what": "come aboard from the water (onto gunwales, 0.35 m above the waterline; no ladder)",
+     "clip": null,
+     "waitsOn": [
+      "ladderOn"
+     ],
+     "note": "no ladder on this hull: a swimmer cannot climb back aboard (see _excluded gunwales)",
+     "builds_ok": 0,
+     "of": 30
+    },
+    {
+     "id": "seats",
+     "what": "sit as a passenger (forward_thwart, bow_thwart)",
+     "clip": null,
+     "waitsOn": [
+      "sit"
+     ],
+     "note": "10.3 has no sit clip: drive is its only seated clip, and its hands hold a wheel",
+     "builds_ok": 0,
+     "of": 30
+    }
+   ],
+   "waitsOn": [
+    "ladderOn",
+    "motorBuildMesh",
+    "sit"
+   ]
+  }
+ }
+}

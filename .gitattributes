@@ -353,6 +353,7 @@ docs/art/rigs/gameplay/sternTrawlerIsoRig.stern_trawler.walk.json text eol=lf
 docs/art/rigs/gameplay/sternTrawlerMk2IsoRig.stern_trawler_mk2.walk.json text eol=lf
 docs/art/rigs/gameplay/sideDraggerIsoRig.side_dragger.walk.json text eol=lf
 docs/art/rigs/gameplay/sportSkiffIsoRig.sport_skiff_iso.walk.json text eol=lf
+docs/art/rigs/gameplay/doryIsoRig.dory_iso.walk.json text eol=lf
 tools/rig-recipes/hull-walk.mjs text eol=lf
 tools/rig-recipes/hull-layout-check.mjs text eol=lf
 docs/art/rigs/gameplay/vehicles/modern2500.rig.gameplay.json text eol=lf
