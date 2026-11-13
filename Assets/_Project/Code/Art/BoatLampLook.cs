@@ -93,7 +93,7 @@ namespace HiddenHarbours.Art
 
         [Tooltip("Stern light (white).")]
         [SerializeField] private NavLampLook _sternLight =
-            new NavLampLook(LampWhite, 1.35f, 0.25f, 0.078125f, 0.2f, 2, 0.6f, 0.45f);
+            new NavLampLook(LampWhite, 1.35f, 0.25f, 0.0625f, 0.2f, 2, 0.6f, 0.45f);
 
         [Tooltip("Masthead (white), and the range light, which is the same lamp. The biggest and " +
                  "brightest of the round lamps.")]

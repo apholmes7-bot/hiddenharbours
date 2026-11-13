@@ -34,7 +34,7 @@ MonoBehaviour:
     Color: {r: 1, g: 0.96, b: 0.88, a: 1}
     Intensity: 1.35
     HaloRadiusMetres: 0.25
-    CoreRadiusMetres: 0.078125
+    CoreRadiusMetres: 0.0625
     HaloStrength: 0.2
     BandSteps: 2
     CoreWhiten: 0.6
