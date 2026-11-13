@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a2794216af134af8a37690830c8d2064, type: 3}
+  m_Name: ReneChiasson
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.NpcDef
+  Id: npc.rene_chiasson
+  DisplayName: Rene Chiasson
+  Kind: 0
+  Dialogue: {fileID: 11400000, guid: 44449039f0f847a982794741223a6400, type: 2}
+  CompletionFlag: met_rene
+  Build: {fileID: 11400000, guid: fae300df84b17024b93d2b8f20d77ec5, type: 2}
