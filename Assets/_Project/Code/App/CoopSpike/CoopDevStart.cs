@@ -28,6 +28,7 @@ namespace HiddenHarbours.CoopSpike
         private CoopLaunchOptions _options;
         public bool Ready { get; private set; }
         public NetworkManager Manager => _manager;
+        public CoopChatSession Chat { get; private set; }
 
         public static bool ShouldStart(string[] args)
         {
@@ -140,6 +141,7 @@ namespace HiddenHarbours.CoopSpike
             _manager.OnClientDisconnectCallback += OnDisconnected;
             bool started = _client ? _manager.StartClient() : _manager.StartHost();
             if (!started) throw new InvalidOperationException("The local transport did not start.");
+            Chat = new CoopChatSession(_manager, _settings.Chat, () => Time.realtimeSinceStartupAsDouble);
             Ready = true;
             Debug.Log($"[Coop] {(_client ? "Joining" : "Hosting")} {_options.Address}:{_options.Port} UDP; scene={_settings.Scene}");
             if (!string.IsNullOrEmpty(System.Environment.GetEnvironmentVariable("HH_COOP_PROOF_DIR")))
@@ -216,6 +218,7 @@ namespace HiddenHarbours.CoopSpike
         }
         private void OnDestroy()
         {
+            Chat?.Dispose();
             if (_manager != null)
             {
                 _manager.OnClientConnectedCallback -= OnConnected;

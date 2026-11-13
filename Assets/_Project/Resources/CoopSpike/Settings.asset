@@ -49,3 +49,8 @@ MonoBehaviour:
   PictureDatumElevation: 0
   Scene: EastWater
   Port: 7777
+  Chat:
+    MaxCharacters: 240
+    MaxUtf8Bytes: 960
+    MessagesPerWindow: 4
+    WindowSeconds: 10

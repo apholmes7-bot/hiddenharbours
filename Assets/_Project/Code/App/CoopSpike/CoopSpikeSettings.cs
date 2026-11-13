@@ -20,6 +20,7 @@ namespace HiddenHarbours.CoopSpike
         public float PictureDatumElevation;
         public string Scene = "EastWater";
         public ushort Port = 7777;
+        public CoopChatLimits Chat = new();
         public BoatHullDef Hull(string id)
         {
             if (Roster != null) foreach (var hull in Roster) if (hull != null && hull.Id == id) return hull;
