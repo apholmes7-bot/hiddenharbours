@@ -311,7 +311,7 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         [Test]
-        public void ASwimmer_CannotClimbTheTankersWall_WhichHasNoLadderYet()
+        public void ASwimmer_CannotClimbAShipsWall_ThatCarriesNoLadder()
         {
             var r = Build(6.13f, railed: true, null, inTheWater: true);
             AssertRefused(r, BoardingAccess.NoPoint, "six metres of steel and no ladder");
@@ -420,12 +420,12 @@ namespace HiddenHarbours.Tests.EditMode
 
         /// <summary>Climb-restricted with NO boarding point: boarded from a wharf or gangway only.
         /// Owner, 2026-11-13: "Boardinnf some boats from dock only is too hard maybe all boats need a
-        /// ladder" — so this list is the EXCEPTIONS to that ruling and is meant to be empty. The tanker
-        /// is the one hull left on it: her wall is 9.26 m and her deck asset holds no place a ladder
-        /// could honestly go (her rig's three ladders are all deck to deck); her pilot ladder is
-        /// art-director's rig work in the tanker boarding plan, slice 2. The coastal packet came OFF
-        /// this list when she got her stern ladder point.</summary>
-        static readonly string[] WharfOnlyHulls = { "boat.tanker" };
+        /// ladder" — so this list is the EXCEPTIONS to that ruling and is meant to be empty, and now
+        /// it is. The coastal packet came off it when she got her stern ladder point; the tanker, the
+        /// last hull on it, came off on the 2026-11-14 ruling that gave her two pilot ladder points
+        /// amidships (see <see cref="TheTanker_IsBoardedFromTheWater_AtHerTwoPilotLadders_AndNowhereElse"/>).
+        /// Naming a hull here goes against the owner's ruling.</summary>
+        static readonly string[] WharfOnlyHulls = { };
 
         /// <summary>How far outside her walk box a swimmer treads water when a test asks "can this
         /// point be reached from the water" — the nearest of the stand-offs the cape islander proof
@@ -558,17 +558,16 @@ namespace HiddenHarbours.Tests.EditMode
         /// Owner, 2026-11-13: "Boardinnf some boats from dock only is too hard maybe all boats need a
         /// ladder". No hull may be boardable ONLY from a dock: each one is climb-anywhere, or has at
         /// least one boarding point a swimmer can actually get to — the water just outside her walk box
-        /// at that point is within the point's reach, and the rule answers AtAPoint there. The one
-        /// exception is named, not skipped: the tanker (see <see cref="WharfOnlyHulls"/>), and she is
-        /// asserted to still BE an exception so the name comes off the list the day she gets a ladder.
-        /// Per-hull data, never a code rule: he said "maybe".
+        /// at that point is within the point's reach, and the rule answers AtAPoint there. There is no
+        /// exception left: <see cref="WharfOnlyHulls"/> is asserted empty (the tanker was the last name
+        /// on it, until her pilot ladders). Per-hull data, never a code rule: he said "maybe".
         /// </summary>
         [Test]
         public void EveryHull_CanBeBoardedFromTheWater()
         {
-            CollectionAssert.AreEqual(new[] { "boat.tanker" }, WharfOnlyHulls,
-                "the tanker is the ONLY hull allowed to be dock-only (her pilot ladder is rig work, tanker " +
-                "boarding plan slice 2). Adding a hull here goes against the owner's 2026-11-13 ruling.");
+            Assert.IsEmpty(WharfOnlyHulls,
+                "no hull is dock-only any more (the tanker got her two pilot ladders on 2026-11-14). " +
+                "Adding a hull here goes against the owner's 2026-11-13 ruling.");
 
             var problems = new List<string>();
             int climbAnywhere = 0, byAPoint = 0, exceptions = 0;
@@ -605,7 +604,7 @@ namespace HiddenHarbours.Tests.EditMode
                       $"(a swimmer {SwimmerStandOffMetres} m off her side is out of reach of all of them)");
             }
             Assert.IsEmpty(problems, string.Join("\n", problems));
-            Assert.AreEqual(1, exceptions, "the tanker, and only the tanker");
+            Assert.AreEqual(0, exceptions, "no hull is boarded from a dock only");
             Assert.Greater(climbAnywhere, 0, "the small boats did not load");
             Assert.Greater(byAPoint, 0, "the laddered boats did not load");
         }
@@ -721,14 +720,53 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.AreEqual(20, seen, "cape islander, lobster boat and the 18 lobster variants");
         }
 
+        /// <summary>Seat ruling, 2026-11-14: the tanker is boarded from the water at two pilot ladders
+        /// amidships, one each side, and nowhere else. No stern ladder (a ten metre climb). She is
+        /// railed, so the same two points are where her crew go over the side.</summary>
         [Test]
-        public void TheTanker_HasNoWayUpFromTheWaterYet()
+        public void TheTanker_IsBoardedFromTheWater_AtHerTwoPilotLadders_AndNowhereElse()
         {
             var tanker = DeckOf(ShippedHulls().Single(h => h.Id == "boat.tanker"));
             Assert.Greater(tanker.BoardingFreeboardMetres, Limit, "her wall alone restricts her");
-            Assert.IsEmpty(tanker.BoardingPoints, "slice 2 authors her pilot ladder; until then, a wharf");
-            Assert.AreEqual(BoardingAccess.NoPoint, tanker.ClimbAccessAt(Vector2.zero, Limit, Reach));
-            Assert.AreEqual(BoardingAccess.NoPoint, tanker.OverTheSideAccessAt(Vector2.zero, Reach));
+            CollectionAssert.AreEquivalent(new[] { "pilot_ladder_starboard", "pilot_ladder_port" },
+                tanker.BoardingPoints.Select(p => p.Id).ToArray(), "two pilot ladders and no other way up");
+
+            var starboard = tanker.BoardingPoints.Single(p => p.Id == "pilot_ladder_starboard");
+            var port = tanker.BoardingPoints.Single(p => p.Id == "pilot_ladder_port");
+            Assert.Greater(starboard.DeckLocalMeters.x, 0f, "starboard is +x");
+            Assert.Less(port.DeckLocalMeters.x, 0f, "port is -x");
+            Assert.AreEqual(starboard.DeckLocalMeters.x, -port.DeckLocalMeters.x, 0.01f, "a mirrored pair");
+            Assert.AreEqual(starboard.DeckLocalMeters.y, port.DeckLocalMeters.y, 0.01f, "at the same station");
+
+            foreach (var p in tanker.BoardingPoints)
+            {
+                Assert.AreEqual(BoardingPointKind.Ladder, p.Kind, p.Id);
+                // Amidships, at her side: in the middle third of her length, at or beyond her rail.
+                Vector2 off = p.DeckLocalMeters - tanker.WalkCenter;
+                Assert.Less(Mathf.Abs(off.y), tanker.WalkHalfExtents.y / 3f, $"{p.Id}: amidships");
+                Assert.GreaterOrEqual(Mathf.Abs(off.x), tanker.WalkHalfExtents.x - 0.01f, $"{p.Id}: at her side");
+
+                Vector2 water = NearestWaterBeside(tanker, p.DeckLocalMeters);
+                Assert.AreEqual(BoardingAccess.AtAPoint, tanker.ClimbAccessAt(water, Limit, Reach),
+                    $"{p.Id}: a swimmer at the foot of the ladder climbs it");
+                Assert.AreEqual(BoardingAccess.AtAPoint, tanker.OverTheSideAccessAt(p.DeckLocalMeters, Reach),
+                    $"{p.Id}: her crew go over the side here");
+            }
+
+            // Nowhere else: off her stern, off her bow, and at her side well forward of the ladders.
+            var elsewhere = new[]
+            {
+                tanker.WalkCenter + new Vector2(0f, -(tanker.WalkHalfExtents.y + SwimmerStandOffMetres)),
+                tanker.WalkCenter + new Vector2(0f, tanker.WalkHalfExtents.y + SwimmerStandOffMetres),
+                tanker.WalkCenter + new Vector2(tanker.WalkHalfExtents.x + SwimmerStandOffMetres, tanker.WalkHalfExtents.y * 0.5f),
+                tanker.WalkCenter + new Vector2(-(tanker.WalkHalfExtents.x + SwimmerStandOffMetres), -tanker.WalkHalfExtents.y * 0.5f),
+            };
+            foreach (Vector2 spot in elsewhere)
+            {
+                Assert.AreEqual(BoardingAccess.FindAPoint, tanker.ClimbAccessAt(spot, Limit, Reach),
+                    $"{spot}: no ladder here, the swimmer is sent to find one");
+                Assert.AreEqual(BoardingAccess.FindAPoint, tanker.OverTheSideAccessAt(spot, Reach), $"{spot}");
+            }
         }
 
         [Test]

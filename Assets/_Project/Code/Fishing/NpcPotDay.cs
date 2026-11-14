@@ -51,14 +51,18 @@ namespace HiddenHarbours.Fishing
         public readonly int PotIndex;
         /// <summary>Progress through the stage's current step, 0 to 1.</summary>
         public readonly float Stage01;
+        /// <summary>Clock seconds in the current segment, for presentation of its timed movement.</summary>
+        public readonly double StageSeconds;
 
-        public NpcPotBoatPose(Vector2 position, float headingDegrees, NpcPotBoatStage stage, int potIndex, float stage01)
+        public NpcPotBoatPose(Vector2 position, float headingDegrees, NpcPotBoatStage stage, int potIndex, float stage01,
+                             double stageSeconds = 0d)
         {
             Position = position;
             HeadingDegrees = headingDegrees;
             Stage = stage;
             PotIndex = potIndex;
             Stage01 = stage01;
+            StageSeconds = stageSeconds;
         }
 
         /// <summary>True while she is making way through the water (lamps, wake).</summary>
@@ -314,7 +318,7 @@ namespace HiddenHarbours.Fishing
                 : 1f;
             float heading = Mathf.LerpAngle(s.HeadFrom, s.HeadTo, Mathf.SmoothStep(0f, 1f, turn));
             heading = Mathf.Repeat(heading, 360f);
-            return new NpcPotBoatPose(Vector2.Lerp(s.A, s.B, f), heading, s.Stage, s.Pot, f);
+            return new NpcPotBoatPose(Vector2.Lerp(s.A, s.B, f), heading, s.Stage, s.Pot, f, span);
         }
 
         /// <summary>
