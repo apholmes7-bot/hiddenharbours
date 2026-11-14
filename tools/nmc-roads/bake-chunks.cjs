@@ -104,19 +104,65 @@ const hex = (c) => '#' + c.map((v) => v.toString(16).padStart(2, '0')).join('');
 // ---- the routes, in world metres ----------------------------------------------------------------------------
 // the network's own fields the kit reads; part, from and clip are the network's notes. The corner flares (the owner's
 // Q4, 10-24) follow the routes, so a route's index in the kit, and with it its seed, is the same with or without them
-const KIT_FIELDS = ['id', 'cls', 'w', 'surf', 'bands', 'ends'];
+// The fuel stop's lot (NMC H9, the owner's 11-14) follows them too, its routes overriding their class's group, priority,
+// strength, lift, wear, rag, camber and marks (keys no network route or flare carries, so those routes are unchanged)
+const KIT_FIELDS = ['id', 'cls', 'w', 'surf', 'bands', 'ends', 'group', 'pri', 'str', 'lift', 'wear', 'rag', 'camber', 'marks'];
+// the lot's groups the paint lands on: its asphalt and its flush concrete (not the raised islands or the kerbed walk)
+const FORECOURT_PAINTED = new Set(['fc_asphalt', 'fc_slab']);
+const FORECOURT_MARK0 = 57000;      // the paint's mark ids: past the kit's own (edge 1.., centre 20001.., crosswalk 50000.., stop 56000..)
 function readRoutes(RK) {
   const doc = JSON.parse(fs.readFileSync(NETWORK, 'utf8'));
-  const routes = doc.routes.concat(doc.flares || []).map((r) => {
+  const lot = doc.forecourt ? doc.forecourt.routes : [];
+  const routes = doc.routes.concat(doc.flares || [], lot).map((r, k, all) => {
     const o = {}; for (const k of KIT_FIELDS) if (r[k] !== undefined) o[k] = r[k];
     o.pts = r.pts;
     const C = RK.CLASSES[r.cls]; if (!C) throw new Error(`${r.id}: the kit has no class ${r.cls}`);
     // the kit's reach (prep): the carriage half-width with its wave, the bands, the rag, 4 px
-    const bands = r.bands || C.bands;
-    o.reachMetres = (r.w || C.w) / 2 * (1 + (C.wv || 0)) + bands.reduce((a, b) => a + b.w, 0) + (C.rag || 0) + 4 / PPM;
+    const bands = r.bands || C.bands, rag = r.rag !== undefined ? r.rag : C.rag;
+    o.reachMetres = (r.w || C.w) / 2 * (1 + (C.wv || 0)) + bands.reduce((a, b) => a + b.w, 0) + (rag || 0) + 4 / PPM;
+    if (k >= all.length - lot.length && FORECOURT_PAINTED.has(r.group)) o.painted = true;
     return o;
   });
+  routes.paint = doc.forecourt ? doc.forecourt.paint : null;
   return { doc, routes, sha256: crypto.createHash('sha256').update(fs.readFileSync(NETWORK)).digest('hex') };
+}
+
+// ---- the lot's paint, after the kit's paint ---------------------------------------------------------------------
+// Each line (a polyline w wide) and arrow (a shaft and a head, at its point along its dir) of the forecourt's paint, on
+// the texels the lot's painted routes win. As the kit paints its marks: the colour's palette, band 2 (3 on a few
+// texels), raised 0.06, its own mark id; a share `wear` of the texels left bare, by a hash of the texel's place in the
+// whole grid, so a window paints a line's texel the same as its neighbour does
+const hashG = (x, y, s) => { let h = (Math.imul(x | 0, 374761393) + Math.imul(y | 0, 668265263) + Math.imul(s | 0, 2147483647)) | 0; h = Math.imul(h ^ (h >>> 13), 1274126177); return ((h ^ (h >>> 16)) >>> 0) / 4294967296; };
+function paintForecourt(net, t, P, painted, frame) {
+  const { W, H, role, rid } = net, PA = net.PA, { wx, wy, gx0, gy0 } = frame;
+  let n = 0;
+  const put = (x, y, colour, mark) => {
+    const i = y * W + x; if (role[i] !== 1 || !painted[rid[i]]) return;
+    const gx = gx0 + x, gy = gy0 + y; if (hashG(gx, gy, 7) < P.wear) return;
+    t.pal[i] = PA[P.colours[colour]]; t.band[i] = hashG(gx, gy, 11) < 0.05 ? 3 : 2; t.h[i] += 0.06; t.mark[i] = mark; t.lock[i] = 1; n++;
+  };
+  // the texels of a world box, each with its centre in world metres
+  const box = (x0, y0, x1, y1, f) => {
+    const px0 = Math.max(0, Math.floor((x0 - wx) * PPM)), px1 = Math.min(W - 1, Math.ceil((x1 - wx) * PPM));
+    const py0 = Math.max(0, Math.floor((wy - y1) * PPM)), py1 = Math.min(H - 1, Math.ceil((wy - y0) * PPM));
+    for (let y = py0; y <= py1; y++) for (let x = px0; x <= px1; x++) f(x, y, wx + (x + 0.5) / PPM, wy - (y + 0.5) / PPM);
+  };
+  P.lines.forEach((l, k) => {
+    const hw = l.w / 2, mark = FORECOURT_MARK0 + k;
+    for (let s = 0; s < l.pts.length - 1; s++) {
+      const [ax, ay] = l.pts[s], [bx, by] = l.pts[s + 1];
+      box(Math.min(ax, bx) - hw, Math.min(ay, by) - hw, Math.max(ax, bx) + hw, Math.max(ay, by) + hw, (x, y, mx, my) => { if (segDist(mx, my, ax, ay, bx, by) <= hw) put(x, y, l.colour, mark); });
+    }
+  });
+  const A = P.arrow, L2 = A.length / 2, R = Math.hypot(L2, A.head / 2);
+  P.arrows.forEach((a, k) => {
+    const mark = FORECOURT_MARK0 + P.lines.length + k, dl = Math.hypot(a.dir[0], a.dir[1]), ux = a.dir[0] / dl, uy = a.dir[1] / dl;
+    box(a.at[0] - R, a.at[1] - R, a.at[0] + R, a.at[1] + R, (x, y, mx, my) => {
+      const dx = mx - a.at[0], dy = my - a.at[1], s = dx * ux + dy * uy, c = Math.abs(-dx * uy + dy * ux), neck = L2 - A.headLength;
+      if ((s >= -L2 && s < neck && c <= A.shaft / 2) || (s >= neck && s <= L2 && c <= (A.head / 2) * (L2 - s) / A.headLength)) put(x, y, a.colour, mark);
+    });
+  });
+  return n;
 }
 const segDist = (px, py, ax, ay, bx, by) => {
   const dx = bx - ax, dy = by - ay, L2 = dx * dx + dy * dy || 1e-12;
@@ -223,6 +269,7 @@ function bakeWindow(kit, routes, win, opts) {
   const MATS = K.MATS, defs = Z.filter((k, i) => seen[i] && MATS[k]).map((k) => ({ key: k, step: 1, seed: (MATS[k].seed || 1) + SEED * 13, R: (x, y) => x >= 0 && y >= 0 && x < W && y < H && zone[y * W + x] === zi[k] }));
   const fl = K8.floor(W, H, defs, SEED + 5);
   RK.paint(fl.tile, net);
+  if (routes.paint) paintForecourt(net, fl.tile, routes.paint, routes.map((r) => !!r.painted), { wx, wy, gx0: ax0 * SIZE, gy0: ay0 * SIZE });
   const t = fl.tile, G = TL.gbuf(t, { relief: 1.2 * K.DETAIL, wrap: false });
   RK.patchG(G, net);
   const F = RK.faces(net, t, G), tBuild = Date.now() - t0;

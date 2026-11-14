@@ -1,0 +1,131 @@
+{
+ "schema": "hidden-harbours/nmc-forecourt@1",
+ "what": "The Route 91 fuel stop's lot (NMC H9, the owner's ruling of 11-14: a mix of concrete and asphalt with painted lines for parking and lanes, pump pads). World metres, y north; laid from the fuel stop kit's site plan (docs/art/rigs/fuel-stop/nmcFuelStop.js NETS, key scene = site + (-174, 87)). tools/nmc-roads/network.cjs copies it into the network's forecourt section, expanding the bays into stall lines; tools/nmc-roads/bake-chunks.cjs lays its routes after the network's and paints its lines, bays and arrows onto them. Every route is a kit v4 route: cls is the kit class it inherits from and the keys after it override that class.",
+ "area": "inside NineMileCreekWharfLandSide.ForecourtArea(), except the lot's south edge, which reaches entrySouthOverlap into Wharf Road's carriage (the entry), and the exit, which runs into the stream lane",
+ "entrySouthOverlap": 0.5,
+ "routes": [
+  {
+   "id": "lot.nmc_fuel_ground",
+   "role": "asphalt",
+   "why": "the forecourt's whole ground, under everything else here (its own group, the lowest priority): the strip east of the pads, round the truck bays and under the store, which the kit v3 pad used to pave in concrete and nothing else now does",
+   "cls": "paved", "surf": "asphalt", "group": "fc_ground", "pri": 3, "lift": 0.04, "wear": 0.3, "rag": 0, "camber": 0, "marks": {}, "bands": [], "ends": "flat",
+   "w": 44, "pts": [[-170.7, 116.95], [-119.6, 116.95]]
+  },
+  {
+   "id": "lot.nmc_fuel_lot",
+   "role": "asphalt",
+   "why": "the driving surface: the entry off Wharf Road along the whole frontage, round the pads and the aisle in front of the store",
+   "cls": "paved", "surf": "asphalt", "group": "fc_asphalt", "pri": 5, "lift": 0.04, "wear": 0.22, "rag": 0, "camber": 0, "marks": {}, "bands": [], "ends": "flat",
+   "w": 36.6, "pts": [[-170.6, 112.7], [-121, 112.7]]
+  },
+  {
+   "id": "lot.nmc_fuel_exit",
+   "role": "asphalt",
+   "why": "the kit's semi exit, north-east past the east light onto the stream lane by the stop sign",
+   "cls": "paved", "surf": "asphalt", "group": "fc_asphalt", "pri": 5, "lift": 0.04, "wear": 0.22, "rag": 0, "camber": 0, "marks": { "edge": 1 }, "bands": [], "ends": "flat",
+   "w": 7.5, "pts": [[-127, 123], [-126, 129], [-123, 133.5], [-119, 135.5], [-117, 136.2]]
+  },
+  {
+   "id": "lot.nmc_fuel_service",
+   "role": "asphalt",
+   "why": "the kit's service lane up the store's east side to the air and vacuum, ending at the lot's north edge",
+   "cls": "paved", "surf": "asphalt", "group": "fc_asphalt", "pri": 5, "lift": 0.04, "wear": 0.3, "rag": 0, "camber": 0, "marks": {}, "bands": [], "ends": "flat",
+   "w": 5.5, "pts": [[-140.8, 130.9], [-140.8, 139]]
+  },
+  {
+   "id": "lot.nmc_fuel_truck_bays",
+   "role": "asphalt",
+   "why": "the pickups' bays, north of the aisle between the service lane and the exit",
+   "cls": "paved", "surf": "asphalt", "group": "fc_asphalt", "pri": 5, "lift": 0.04, "wear": 0.22, "rag": 0, "camber": 0, "marks": {}, "bands": [], "ends": "flat",
+   "w": 8, "pts": [[-138.6, 135], [-130.4, 135]]
+  },
+  {
+   "id": "pad.nmc_fuel_canopy",
+   "role": "concrete",
+   "why": "the pump pad under the canopy, the four car lanes and their three islands",
+   "cls": "paved", "surf": "slab", "group": "fc_slab", "pri": 6, "lift": 0.04, "wear": 0.15, "rag": 0, "camber": 0, "marks": {}, "bands": [], "ends": "flat",
+   "w": 17.7, "pts": [[-168, 109.15], [-140, 109.15]]
+  },
+  {
+   "id": "pad.nmc_fuel_semi",
+   "role": "concrete",
+   "why": "the semi lanes' pad under the truck canopy, its islands and the start of the exit",
+   "cls": "paved", "surf": "slab", "group": "fc_slab", "pri": 6, "lift": 0.04, "wear": 0.2, "rag": 0, "camber": 0, "marks": {}, "bands": [], "ends": "flat",
+   "w": 12, "pts": [[-127, 100.3], [-127, 124]]
+  },
+  {
+   "id": "pad.nmc_fuel_tanks",
+   "role": "concrete",
+   "why": "the kit's tank pad: the fill ports between the pump pads",
+   "cls": "paved", "surf": "slab", "group": "fc_slab", "pri": 6, "lift": 0.04, "wear": 0.15, "rag": 0, "camber": 0, "marks": {}, "bands": [], "ends": "flat",
+   "w": 4.6, "pts": [[-136, 101], [-136, 107]]
+  },
+  {
+   "id": "apron.nmc_fuel_door",
+   "role": "concrete",
+   "why": "the concrete apron at the shop door, from the sidewalk out across the head of the store bays",
+   "cls": "paved", "surf": "slab", "group": "fc_slab", "pri": 6, "lift": 0.04, "wear": 0.12, "rag": 0, "camber": 0, "marks": {}, "bands": [], "ends": "flat",
+   "w": 5, "pts": [[-158.5, 128.5], [-151.5, 128.5]]
+  },
+  {
+   "id": "island.nmc_fuel_pump_1", "role": "island", "why": "the raised island under pump machine 1 (the canopy's west island)",
+   "cls": "paved", "surf": "slab", "group": "fc_island", "pri": 7, "lift": 0.2, "wear": 0.1, "rag": 0, "camber": 0, "marks": {}, "bands": [], "ends": "flat",
+   "w": 1.2, "pts": [[-162, 108], [-162, 114]]
+  },
+  {
+   "id": "island.nmc_fuel_pump_2", "role": "island", "why": "the raised island under pump machine 2",
+   "cls": "paved", "surf": "slab", "group": "fc_island", "pri": 7, "lift": 0.2, "wear": 0.1, "rag": 0, "camber": 0, "marks": {}, "bands": [], "ends": "flat",
+   "w": 1.2, "pts": [[-154, 108], [-154, 114]]
+  },
+  {
+   "id": "island.nmc_fuel_pump_3", "role": "island", "why": "the raised island under pump machine 3",
+   "cls": "paved", "surf": "slab", "group": "fc_island", "pri": 7, "lift": 0.2, "wear": 0.1, "rag": 0, "camber": 0, "marks": {}, "bands": [], "ends": "flat",
+   "w": 1.2, "pts": [[-146, 108], [-146, 114]]
+  },
+  {
+   "id": "island.nmc_fuel_semi_w", "role": "island", "why": "the raised island under the semi lane's west pumps",
+   "cls": "paved", "surf": "slab", "group": "fc_island", "pri": 7, "lift": 0.2, "wear": 0.1, "rag": 0, "camber": 0, "marks": {}, "bands": [], "ends": "flat",
+   "w": 1.2, "pts": [[-129.9, 113], [-129.9, 123]]
+  },
+  {
+   "id": "island.nmc_fuel_semi_e", "role": "island", "why": "the raised island under the semi lane's east pumps",
+   "cls": "paved", "surf": "slab", "group": "fc_island", "pri": 7, "lift": 0.2, "wear": 0.1, "rag": 0, "camber": 0, "marks": {}, "bands": [], "ends": "flat",
+   "w": 1.2, "pts": [[-124.1, 113], [-124.1, 123]]
+  },
+  {
+   "id": "walk.nmc_fuel_store", "role": "concrete", "why": "the kit's store sidewalk, kerbed, under the propane, the ice and the bench",
+   "cls": "walk", "surf": "slab", "group": "fc_walk", "pri": 4, "str": 4, "lift": 0.165, "wear": 0.1, "rag": 0, "bands": [{ "role": "kerb", "w": 0.2, "z": 0.18 }], "ends": "flat",
+   "w": 2.1, "pts": [[-166.8, 132.15], [-143.6, 132.15]]
+  }
+ ],
+ "paint": {
+  "colours": { "W": "paintW", "Y": "paintY" },
+  "colourWhy": "the kit's own road paint (roadPathRig4.js PALS): W #d4d6cd, Y #cea53f",
+  "lineWidth": 0.12,
+  "wear": 0.12,
+  "bays": [
+   { "id": "bays.nmc_fuel_store", "colour": "W", "from": [-165.4, 125.9], "n": 8, "each": [2.6, 5.1], "head": false,
+     "why": "the store front's stalls, centred on the kit's eight wheel stops: the quad (1.28 x 2.16 m), the trike and the bikes, or a car" },
+   { "id": "bays.nmc_fuel_trucks", "colour": "W", "from": [-137.8, 131.6], "n": 2, "each": [3.2, 7.2], "head": true,
+     "why": "two pickup bays: wider than the widest pickup (the Dually 3500, 2.72 m over its mirrors) and longer than the longest (the Modern 3500, 7.09 m)" }
+  ],
+  "arrow": { "length": 3.2, "shaft": 0.3, "head": 1.0, "headLength": 1.1 },
+  "arrows": [
+   { "id": "arrow.nmc_fuel_lane_1", "colour": "W", "at": [-166, 103], "dir": [0, 1] },
+   { "id": "arrow.nmc_fuel_lane_2", "colour": "W", "at": [-158, 103], "dir": [0, 1] },
+   { "id": "arrow.nmc_fuel_lane_3", "colour": "W", "at": [-150, 103], "dir": [0, 1] },
+   { "id": "arrow.nmc_fuel_lane_4", "colour": "W", "at": [-142, 103], "dir": [0, 1] },
+   { "id": "arrow.nmc_fuel_semi_lane", "colour": "W", "at": [-127, 105], "dir": [0, 1] },
+   { "id": "arrow.nmc_fuel_aisle_w", "colour": "W", "at": [-163, 121.3], "dir": [1, 0] },
+   { "id": "arrow.nmc_fuel_aisle_mid", "colour": "W", "at": [-147, 121.3], "dir": [1, 0] },
+   { "id": "arrow.nmc_fuel_aisle_e", "colour": "W", "at": [-136.5, 121.3], "dir": [1, 0] },
+   { "id": "arrow.nmc_fuel_exit", "colour": "W", "at": [-124.6, 131.4], "dir": [0.555, 0.832] }
+  ],
+  "lines": [
+   { "id": "line.nmc_fuel_exit_stop", "colour": "W", "w": 0.4, "pts": [[-120.3, 134.85], [-118.74, 131.72]],
+     "why": "the stop bar across the exit's outbound half, at the stop sign" },
+   { "id": "line.nmc_fuel_lot_west", "colour": "W", "pts": [[-170.3, 100.6], [-170.3, 130.7]],
+     "why": "the lot's west edge line, inside the west light" }
+  ]
+ }
+}
