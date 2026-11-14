@@ -223,21 +223,37 @@ is hung on a hull by this file and **never by editing that hull's rig**, so a la
 digest and no baked hull mesh.
 
 **Generated, not authored** — `node tools/rig-recipes/boat-ladders.mjs` writes it, `--check` fails
-if it has drifted, `--plates <dir>` renders before/after previews with no Unity. Each entry authors
-only a hull, a `BoardingPoint` id, a kind and the outward direction of the skin there. Everything
-else is read: `boardingPoint` from `BoardingPoints[id].DeckLocalMeters` in the hull's deck asset
-(the same frame as this folder: +x starboard, +y bow), `zTop` from the hull rig's own
-`loft.sheerZ(y)`, `zWater` from `RestingDraftMeters` in her hull-mesh asset, and `head` / `foot` /
-`grabTop` from `BoatLadder.anchors(spec)`. **So the ladder you see and the point the boarding rule
-tests are one number, stored once, in the Def.** Move the point and `--check` goes red until the
-file is regenerated.
+if it has drifted, `--plates <dir>` renders one before/after preview per hull class with no Unity,
+`--table` prints the hull table. Each entry authors only a hull, a `BoardingPoint` id, a kind and
+the outward direction of the skin there (`[0,-1]` transom, `[1,0]` / `[-1,0]` her side).
+Everything else is read:
 
-- `status: "matches_def"` — the deck Def has this point; the ladder is centred on it.
-- `status: "proposed"` — the Def has **no** such point yet and `proposedPoint` is this file's
-  suggestion for the owner (today: the tanker's two pilot ladders and her stern ladder). `--check`
-  fails the day the Def gains that id, so a proposal cannot outlive the decision.
-- `derivedFromRigSha256` is a map: the ladder rig plus every hull rig a sheer height was read from,
-  all LF digests (CRLF folded), the `tools/rig-recipes` convention.
+- `boardingPoint` from `BoardingPoints[id].DeckLocalMeters` in the hull's deck asset (the same
+  frame as this folder: +x starboard, +y bow).
+- `ladderAt`, the hull skin straight out from that point: the transom (`loft.station(0)`) or her
+  side at the sheer (`loft.halfAtZ`). The generator **refuses** a ladder further from the point
+  than the point's reach (`ReachMetres`, or `GameConfig.BoardingPointReachMetres`), so a swimmer at
+  the foot of the ladder is always inside the rule.
+- `zTop` from `loft.sheerZ`, `zWater` from `RestingDraftMeters` in her hull-mesh asset, and
+  `head` / `foot` / `grabTop` from `BoatLadder.anchors(spec)`.
+
+**So the ladder you see and the point the boarding rule tests are one number, stored once, in the
+Def.** Move the point and `--check` goes red until the file is regenerated.
+
+- `status` is derived. `matches_def`: the deck Def has this point. `proposed`: it does not, and
+  the entry's `proposedPoint` is this file's suggestion for the owner. The day the Def gains the
+  id, the next run flips the entry to `matches_def` and follows the Def's number.
+- `derivedFromRigSha256` is a map: the ladder rig plus every hull rig a side was read from, all
+  LF digests (CRLF folded), the `tools/rig-recipes` convention.
+- Three hull shapes are read: a plain hull global, a hull inside a family global
+  (`SportFisherIso2.CONVERTIBLE`), and one variant of a generator (`variant: {size, style, region}`
+  through `LobsterBoatVariantsIso.loftOf`).
+
+**Who is NOT in it, on purpose.** The bowrider, the express cruiser, the motor yacht 84 and the
+expedition yacht 120 already draw a swim ladder in their own rig (each exports `LADDER`) at the
+same place their Def point sits. The dory, punts, skiffs, zodiacs, jet ski, tender and go-fast are
+climb-anywhere under the rule. The two sloops have no deck Def, so the rule cannot hold a point
+for them yet.
 
 **Not in the game yet.** Nothing imports this file and the fitting has no baked mesh: that is one
 `HullPropFleet` entry per hull (builder `BoatLadder.faces(spec)`, pivot `BoatLadder.pivot(spec)`,
