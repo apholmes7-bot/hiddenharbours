@@ -58,8 +58,8 @@ namespace HiddenHarbours.Tests.PlayMode
             {
                 if (_armed == null)
                 {
-                    bool ci = string.Equals(Environment.GetEnvironmentVariable("GITHUB_ACTIONS"), "true", StringComparison.OrdinalIgnoreCase)
-                              || Environment.GetEnvironmentVariable(OptInVariable) == "1";
+                    bool ci = string.Equals(System.Environment.GetEnvironmentVariable("GITHUB_ACTIONS"), "true", StringComparison.OrdinalIgnoreCase)
+                              || System.Environment.GetEnvironmentVariable(OptInVariable) == "1";
                     _armed = Application.isBatchMode && ci ? 1 : 0;
                 }
                 return _armed == 1;
@@ -70,7 +70,7 @@ namespace HiddenHarbours.Tests.PlayMode
         {
             get
             {
-                string dir = Environment.GetEnvironmentVariable(DirVariable);
+                string dir = System.Environment.GetEnvironmentVariable(DirVariable);
                 return string.IsNullOrEmpty(dir) ? Directory.GetCurrentDirectory() : dir;
             }
         }
@@ -221,7 +221,7 @@ namespace HiddenHarbours.Tests.PlayMode
             {
                 // No native exit here (an unmapped libc, say): fall through to the managed one.
             }
-            var managed = new Thread(() => Environment.Exit(code)) { IsBackground = true };
+            var managed = new Thread(() => System.Environment.Exit(code)) { IsBackground = true };
             managed.Start();
             if (!managed.Join(15000)) System.Diagnostics.Process.GetCurrentProcess().Kill(); // 137, but ended
         }
