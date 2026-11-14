@@ -119,6 +119,16 @@ namespace HiddenHarbours.Core
                 // the day, because sleeping and saving are two things and only one of them needs a disk.
                 bool woke = RestMorning.Bring(clock, config);
 
+                // ---- HOOK(needs): the morning has arrived and nothing has been written yet --------
+                // The needs branch (fatigue, owner 2026-11-14: "bunks on boats sleepable to replenish
+                // fatigue") replenishes here, and ONLY here: after the clock has moved (so a night slept
+                // is a night, whatever the hour you lay down) and before the write below (so the reload
+                // wakes rested, the same morning the player just saw). Gate it on `woke` if a held hour
+                // must not refill anything. Both the bed ashore and the bunk aboard pass through this
+                // line, so neither needs its own call. No needs service exists on main yet, so this is a
+                // comment and not a call (it would not compile).
+                // -----------------------------------------------------------------------------------
+
                 ISaveService save = GameServices.Save;
 
                 outcome = save == null
@@ -153,9 +163,31 @@ namespace HiddenHarbours.Core
         /// public so the whole rule is assertable without a scene.</para>
         /// </summary>
         public static RestAnchor AnchorFor(in RestSaveRequested request, string currentRegionId) =>
-            string.IsNullOrEmpty(currentRegionId)
+            request.WakesAtSpawn || string.IsNullOrEmpty(currentRegionId)
                 ? RestAnchor.None
                 : new RestAnchor(currentRegionId, request.WakePosition, request.WakeLevel);
+
+        /// <summary>
+        /// Put this request's answer to "where do I wake?" into <paramref name="save"/>: the anchor it
+        /// names, or — for a rest that records none (<see cref="RestSaveRequested.WakesAtSpawn"/>, the
+        /// bunk aboard) — NO anchor at all.
+        ///
+        /// <para><b>Why the bunk forgets rather than stamps <see cref="RestAnchor.None"/>.</b>
+        /// <see cref="RestLocker.Stamp"/> refuses an unset anchor on purpose (a bed that could not name
+        /// its region must not erase a good one), so stamping None would leave LAST night's bed in the
+        /// file and the reload would wake the player in a bed they never lay down in. The bunk's rest
+        /// genuinely means "wake at the spawn", which is exactly what <see cref="RestLocker.Forget"/>
+        /// exists to say. Public so the rule is assertable without a write.</para>
+        /// </summary>
+        public static void RecordWake(SaveData save, in RestSaveRequested request, string currentRegionId)
+        {
+            if (request.WakesAtSpawn)
+            {
+                RestLocker.Forget(save);
+                return;
+            }
+            RestLocker.Stamp(save, AnchorFor(request, currentRegionId));
+        }
 
         /// <summary>
         /// Ask the service to write, and read back whether it did.
@@ -176,7 +208,7 @@ namespace HiddenHarbours.Core
             // stamping after it would keep the anchor only until the next save happened to run, and the
             // next save is an autosave on quit, which is the exact moment the player expects this to
             // have worked.
-            RestLocker.Stamp(save.Current, AnchorFor(request, GameServices.CurrentRegionId));
+            RecordWake(save.Current, request, GameServices.CurrentRegionId);
 
             save.Save();
             return save.LoadedExistingSave

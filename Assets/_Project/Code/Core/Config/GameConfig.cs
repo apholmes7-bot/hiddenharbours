@@ -143,6 +143,24 @@ namespace HiddenHarbours.Core
                  "this morning's when you turn in after midnight. 6 = 06:00, the design's wake time. " +
                  "The day rollover (market recovery, snow cover) fires for every midnight slept through.")]
         [Range(0f, 24f)] public float WakeHour = DefaultWakeHour;
+
+        /// <summary>Whether a bunk aboard refuses while she is neither made fast nor holding at anchor,
+        /// when no config is wired. TRUE: the owner's safe default ("it's not safe to turn in out
+        /// here").</summary>
+        public const bool DefaultBunkRequiresMooredOrAnchored = true;
+
+        /// <summary>How close (m) to a bunk's reach point the player must stand, when no config is
+        /// wired.</summary>
+        public const float DefaultBunkReachMetres = 1f;
+
+        [Tooltip("Sleeping aboard (owner 2026-11-14): when ON, a bunk on your boat only lets you turn in " +
+                 "while she is made fast to a cleat, berthed, or holding at anchor. Adrift or under way it " +
+                 "answers \"It's not safe to turn in out here.\" Turn OFF to let the player sleep anywhere.")]
+        public bool BunkRequiresMooredOrAnchored = DefaultBunkRequiresMooredOrAnchored;
+
+        [Tooltip("How close (m) you must stand to a bunk's own reach point, which is already the spot the " +
+                 "rig says you stand on to use it — so this is a forgiving step, not a precise one.")]
+        [Min(0.1f)] public float BunkReachMetres = DefaultBunkReachMetres;
         [Tooltip("Season at elapsed day zero. Its offset uses DaysPerSeason, never a separate day count.")]
         public Season StartSeason = Season.HighSummer;
         [Tooltip("One-based day within the starting season. Changes labels, never simulation seconds.")]
