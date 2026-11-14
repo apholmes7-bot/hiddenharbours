@@ -39,11 +39,14 @@ namespace HiddenHarbours.Fishing
         /// the hull as the tide has it.</summary>
         public readonly bool OnLadder;
 
+        /// <summary>World metres per clock second along this leg; zero during a dwell.</summary>
+        public readonly Vector2 Velocity;
+
         public NpcLandingMoment(NpcLandingStep step, Vector2 position, float headingDegrees, int crate, bool ashore, float step01,
-                                bool onLadder = false)
+                                bool onLadder = false, Vector2 velocity = default)
         {
             Step = step; Position = position; HeadingDegrees = headingDegrees; Crate = crate; Ashore = ashore; Step01 = step01;
-            OnLadder = onLadder;
+            OnLadder = onLadder; Velocity = velocity;
         }
     }
 
@@ -187,7 +190,8 @@ namespace HiddenHarbours.Fishing
             Key k = _keys[lo];
             double span = k.T1 - k.T0;
             float u = span > 1e-9 ? Mathf.Clamp01((float)((totalSeconds - k.T0) / span)) : 1f;
-            return new NpcLandingMoment(k.Step, Vector2.LerpUnclamped(k.A, k.B, u), k.Heading, k.Crate, k.Ashore, u, k.Ladder);
+            Vector2 velocity = span > 0d ? (k.B - k.A) / (float)span : Vector2.zero;
+            return new NpcLandingMoment(k.Step, Vector2.LerpUnclamped(k.A, k.B, u), k.Heading, k.Crate, k.Ashore, u, k.Ladder, velocity);
         }
 
         /// <summary>Animals still in the boat's crate for <paramref name="grade"/> at <paramref name="totalSeconds"/>.</summary>

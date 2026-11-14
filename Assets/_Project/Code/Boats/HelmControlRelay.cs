@@ -63,10 +63,8 @@ namespace HiddenHarbours.Boats
         /// Defaults ON only in the editor / a development build — a SHIPPED build starts false and
         /// S2+'s real equipment gating takes over. Test seam: settable.
         ///
-        /// <para><b>This is the ONE dev predicate in the instrument system.</b>
-        /// <see cref="DevInstrumentCycle"/> reads this flag rather than re-deriving
-        /// <c>isEditor || isDebugBuild</c> for itself, so the key and the fit override can never drift apart
-        /// and a player can never key their way to a free instrument (S3d T2).</para></summary>
+        /// <para><see cref="DevAllInstrumentsEnabled"/> combines this diagnostic flag with the build
+        /// guard and owner switch. Both the keys and the fit read that same gate.</para></summary>
         public bool DevIgnoreEquipmentGating { get; set; }
 
         /// <summary>
@@ -74,10 +72,8 @@ namespace HiddenHarbours.Boats
         /// <see cref="DevInstrumentCycle"/>. Read only while <see cref="DevIgnoreEquipmentGating"/> is on;
         /// in a shipped build nothing consults it.
         ///
-        /// <para><b>Starts at <see cref="SounderKind.Depth"/> — today's picture, unchanged.</b> The S2 dev
-        /// bypass granted exactly the depth sounder, so every consoled hull came up showing it. Starting the
-        /// ring there means the owner's existing F-cycle looks identical until he presses the cycle key,
-        /// which is the "must not regress what already worked" bar.</para>
+        /// <para>Starts at <see cref="SounderKind.Fish"/> for the maximum dev fit. A console that cannot
+        /// take the finder falls back to depth; K still reaches depth and the bare cutout.</para>
         ///
         /// <para><b>It lives here BECAUSE it must survive an F-swap.</b> The dev boat picker re-skins the
         /// ONE persistent boat in place, so this component — and the chosen tier with it — rides through
@@ -88,26 +84,37 @@ namespace HiddenHarbours.Boats
         /// shows the nearest one below it without forgetting the request —
         /// <see cref="DevInstrumentCycle.Reachable"/>.)</para>
         /// </summary>
-        public SounderKind DevBrowStep { get; set; } = SounderKind.Depth;
+        public SounderKind DevBrowStep { get; set; } = SounderKind.Fish;
 
         /// <summary>
         /// DEV-ONLY (ADR 0025 S5): which instruments the PILOT DECK's two stations are showing, as
         /// stepped by <see cref="DevInstrumentCycle.StepPilot"/> (SHIFT+K). Read only while
         /// <see cref="DevIgnoreEquipmentGating"/> is on; in a shipped build nothing consults it.
         ///
-        /// <para><b>Starts at <see cref="DevInstrumentCycle.DevPilotFit.Owned"/> — today's picture,
-        /// exactly.</b> That state does not state the deck at all: it hands the question back to real
-        /// ownership, so a plotter the player BOUGHT stays on the brow and the owner's existing F-cycle
-        /// is unchanged until he presses SHIFT+K. Same "must not regress what already worked" bar
-        /// <see cref="DevBrowStep"/> was held to — and the reason this ring, unlike the brow's, never
-        /// narrows.</para>
+        /// <para>Starts at <see cref="DevInstrumentCycle.DevPilotFit.GpsRadar"/>; each unsupported
+        /// station is dropped. Shift+K still reaches radar, as-owned and GPS separately.</para>
         ///
         /// <para>It lives here for the same reason the brow's step does: the picker re-skins the ONE
         /// persistent boat in place, so the chosen deck rides through every hull change and the owner can
         /// walk the fleet comparing the same instrument across two wheelhouses.</para>
         /// </summary>
         public DevInstrumentCycle.DevPilotFit DevPilotStep { get; set; }
-            = DevInstrumentCycle.DevPilotFit.Owned;
+            = DevInstrumentCycle.DevPilotFit.GpsRadar;
+
+        /// <summary>The one dev gate plus the live owner switch. Release builds cannot enter the
+        /// override, even if a caller sets the diagnostic flag or the config asset is on.</summary>
+        public bool DevAllInstrumentsEnabled
+        {
+            get
+            {
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+                return DevIgnoreEquipmentGating
+                       && (GameServices.Config == null || GameServices.Config.DevAllHelmInstruments);
+#else
+                return false;
+#endif
+            }
+        }
 
         private void Awake()
         {
@@ -301,13 +308,10 @@ namespace HiddenHarbours.Boats
         /// consoled hull, so the owner can F-cycle the fleet and see each dash without shopping. It is
         /// FALSE in a shipped build, where ownership and the console default are the only gates.</para>
         ///
-        /// <para><b>S3d: the dev override is now a CYCLE, not a blanket grant</b>
-        /// (<see cref="DevInstrumentCycle.DevFit"/>). Granting every instrument id at once would HIDE the
-        /// units it was meant to reveal — the fish finder wins the one brow cutout over the depth sounder
-        /// by design — so the override states one brow at a time (<see cref="DevBrowStep"/>) and can
-        /// express FEWER instruments than the hull ships as well as more. Either way this method only ever
-        /// widens a per-read SCRATCH list and narrows a RESOLVED value: nothing on this path can write an
-        /// instrument into the player's save.</para>
+        /// <para>The default dev fit is the most the console can take. The two cycle keys still narrow
+        /// the brow and pilot deck, while compass and wind stay at their supported maximum. Turning off
+        /// GameConfig's dev switch restores the authored and bought fit immediately. Only the per-read
+        /// scratch list and the resolved value change; no ownership is written.</para>
         /// </summary>
         public HelmFit Fit
         {
@@ -318,9 +322,12 @@ namespace HiddenHarbours.Boats
                 if (console == null) return HelmFit.None;
 
                 InstrumentLocker.OwnedFor(GameServices.Save?.Current, HullId, _ownedScratch);
-                return DevIgnoreEquipmentGating
-                    ? DevInstrumentCycle.DevFit(console, _ownedScratch, DevBrowStep, DevPilotStep)
-                    : BoatEquipment.EffectiveFit(console, _ownedScratch);
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+                if (DevAllInstrumentsEnabled)
+                    return DevInstrumentCycle.DevFit(console, _ownedScratch, DevBrowStep, DevPilotStep,
+                                                     allInstruments: true);
+#endif
+                return BoatEquipment.EffectiveFit(console, _ownedScratch);
             }
         }
 
