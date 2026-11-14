@@ -535,6 +535,20 @@ namespace HiddenHarbours.Boats
             var layer = root.GetComponent<DoryOarMeshLayer>();
             if (layer == null) layer = root.AddComponent<DoryOarMeshLayer>();
             layer.Configure(port, star, boat, motor);
+
+            // The oar splash (owner ruling 2026-11-13) rides the same wiring: it reads the poses this
+            // layer draws and the hull driver's projection, so it exists exactly when rowed mesh oars
+            // do and is re-pointed, never stacked, on a re-skin.
+            var driver = root.GetComponent<MeshHullDriver>();
+            var splash = root.GetComponent<DoryOarSplashEmitter>();
+            if (driver == null)
+            {
+                if (splash != null) DestroyComponent(splash);
+                return;
+            }
+            if (splash == null) splash = root.AddComponent<DoryOarSplashEmitter>();
+            splash.Configure(layer, driver, boat, visual.OarPortMesh.PivotLocalMeters,
+                             visual.OarStarMesh.PivotLocalMeters, in visual.OarSplash);
         }
 
         /// <summary>
@@ -611,6 +625,8 @@ namespace HiddenHarbours.Boats
         {
             var layer = root != null ? root.GetComponent<DoryOarMeshLayer>() : null;
             if (layer != null) DestroyComponent(layer);
+            var splash = root != null ? root.GetComponent<DoryOarSplashEmitter>() : null;
+            if (splash != null) DestroyComponent(splash);
             if (child == null) return;
             HullMeshPresentation.Service?.DetachProp(child.gameObject, PortOarChildName);
             HullMeshPresentation.Service?.DetachProp(child.gameObject, StarOarChildName);

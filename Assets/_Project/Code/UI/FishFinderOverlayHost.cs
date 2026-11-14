@@ -221,12 +221,10 @@ namespace HiddenHarbours.UI
             // and the status-strip tap stays the early-on override. See SounderOverlayHost for the
             // rig citations and the known limit.
             bool night = prefs.Night || HelmPanelLight.IsNight();
-            var state = new FishRigState(
-                depth, sounder.PlaceholderWaterTempC, range, prefs.AlarmMetres,
-                prefs.Feet, night, _fishId, prefs.Armed, triggered, blink,
+            FishRigState state = LiveState(
+                depth, range, in prefs, night, _fishId, triggered, blink,
                 FishFinderOverlayLayout.PhaseSeconds(bucket, finder.WaterfallHz), _adjust,
-                finder.PlaceholderSens01, finder.PlaceholderLink, finder.PlaceholderBatt01,
-                finder.PlaceholderVolts);
+                in sounder, in finder);
 
             // The raised card re-targets the ONE native raster's destination rect — the rig is never
             // re-rendered small, so its two font laws (which disagree below ~83% of native when
@@ -257,6 +255,23 @@ namespace HiddenHarbours.UI
         /// bucket, never per frame; both lists are reused, so this allocates nothing in the steady state.
         /// With no fish model registered <see cref="GameServices.FishSchools"/> is the empty sea and this
         /// honestly produces nothing.</summary>
+        /// <summary>
+        /// What the LIVE glass shows, as opposed to the rig as drawn: no battery cell and no volts (the
+        /// boats have no electrical model, so there is nothing true to print; the owner's 2026-11-13
+        /// ruling removed them), and the water temperature only when
+        /// <see cref="DepthSounderSettings.ShowWaterTemp"/> says it is a real reading. Public and static
+        /// so the choice can be proven without a canvas.
+        /// </summary>
+        public static FishRigState LiveState(float depth, float range, in SounderPrefs prefs, bool night,
+                                             bool fishId, bool triggered, bool blink, double phaseSeconds,
+                                             FishRigAdjust adjust, in DepthSounderSettings sounder,
+                                             in FishFinderSettings finder)
+            => new FishRigState(
+                depth, sounder.PlaceholderWaterTempC, range, prefs.AlarmMetres,
+                prefs.Feet, night, fishId, prefs.Armed, triggered, blink, phaseSeconds, adjust,
+                finder.PlaceholderSens01, finder.PlaceholderLink, batt: 0f, volts: 0f,
+                showTemp: sounder.ShowWaterTemp, showPower: false);
+
         private void RefreshMarks(IHelmInstruments instruments, in FishFinderSettings finder)
         {
             _seamMarks.Clear();

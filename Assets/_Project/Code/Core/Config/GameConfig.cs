@@ -506,7 +506,7 @@ namespace HiddenHarbours.Core
         [Header("Fish finder (the sonar upgrade — ADR 0025 S3)")]
         [Tooltip("The colour sonar that replaces the plain depth sounder in the same cutout: the vertical " +
                  "RANGE (metres) a freshly fitted unit starts at, how often the scan repaints, where its " +
-                 "card sits on screen, how fish marks are sized and scattered, and the four PLACEHOLDER " +
+                 "card sits on screen, how fish marks are sized and scattered, and the two PLACEHOLDER " +
                  "status-strip values. The shallow alarm is NOT here: the finder keeps the depth sounder's " +
                  "alarm and reads its settings, so there is only ever one alarm rule.")]
         public FishFinderSettings FishFinder = FishFinderSettings.Default;
@@ -1521,6 +1521,12 @@ namespace HiddenHarbours.Core
                  "the PR that shipped it.")]
         public float PlaceholderWaterTempC;
 
+        [Tooltip("Do the depth sounder and the fish finder print the water temperature? OFF while the " +
+                 "temperature is the constant above, so no glass shows a reading the game does not " +
+                 "simulate (the owner's 2026-11-13 ruling: temperature is shown only when it is real). " +
+                 "Turn it ON only once a real water-temperature model feeds the line.")]
+        public bool ShowWaterTemp;
+
         /// <summary>A 4 Hz sounding, armed at 3 m with ±0.5 m pushers (the rig's own defaults), a 2 Hz
         /// flash, and metres.</summary>
         public static DepthSounderSettings Default => new DepthSounderSettings
@@ -1534,6 +1540,7 @@ namespace HiddenHarbours.Core
             MaxAlarmMetres = 20f,
             AlarmBlinkHz = 2f,
             PlaceholderWaterTempC = 12f,
+            ShowWaterTemp = false,
         };
     }
 
@@ -1556,12 +1563,13 @@ namespace HiddenHarbours.Core
     /// rate and folds the bucket into its change key, so the instrument's cost is data the owner can dial
     /// rather than a frame counter.</para>
     ///
-    /// <para><b>Four fields are ⚠ PLACEHOLDERS</b> (<see cref="PlaceholderSens01"/>,
-    /// <see cref="PlaceholderLink"/>, <see cref="PlaceholderBatt01"/>, <see cref="PlaceholderVolts"/>) —
-    /// the rig's status strip shows a sensitivity, a transducer link, a battery and a supply voltage, and
-    /// the simulation models none of those. Following the shipped precedent
+    /// <para><b>Two fields are ⚠ PLACEHOLDERS</b> (<see cref="PlaceholderSens01"/>,
+    /// <see cref="PlaceholderLink"/>) — the rig's status strip shows a sensitivity and a transducer
+    /// link, and the simulation models neither. Following the shipped precedent
     /// (<see cref="DepthSounderSettings.PlaceholderWaterTempC"/>) they are constants with a tooltip that
-    /// says what they are and why, rather than an invented electrical model (rule 8).</para>
+    /// says what they are and why (rule 8). The strip's battery cell and supply volts were placeholders
+    /// too and are GONE from the live glass (the owner's 2026-11-13 ruling: no boat has an electrical
+    /// model, so there is nothing true to print); the rig can still draw them, the game never asks.</para>
     ///
     /// <para>The alarm, its set-point, units and night backlight are deliberately NOT here: the finder
     /// keeps the depth sounder's shallow alarm unchanged, reading the same
@@ -1630,20 +1638,10 @@ namespace HiddenHarbours.Core
                  "exists; a fitted finder is simply linked. Flagged in the PR that shipped it.")]
         public bool PlaceholderLink;
 
-        [Tooltip("⚠ PLACEHOLDER. Battery fill (0..1) on the status strip. There is NO electrical model on " +
-                 "any boat and this slice does not build one (rule 8). Below 0.2 the rig draws the cell " +
-                 "red, so leave it above that unless you want a permanent low-battery warning. Flagged in " +
-                 "the PR that shipped it.")]
-        [Range(0f, 1f)] public float PlaceholderBatt01;
-
-        [Tooltip("⚠ PLACEHOLDER. Supply volts printed on the status strip. No electrical model exists. " +
-                 "Flagged in the PR that shipped it.")]
-        [Min(0f)] public float PlaceholderVolts;
-
         /// <summary>The rig's own defaults where it has them — 20 m scale (the second of its four RANGE
-        /// steps, <c>fishRig.js:131</c>/<c>:317</c>), fish-ID on (<c>:319</c>), and the four status-strip
-        /// placeholders exactly as <c>fishRig.js:320-321</c> states them (sens 0.75, link on, batt 0.8,
-        /// 4.0 V) — so the shipped glass looks like the art director's preview until real models exist.
+        /// steps, <c>fishRig.js:131</c>/<c>:317</c>), fish-ID on (<c>:319</c>), and the two status-strip
+        /// placeholders exactly as <c>fishRig.js:320-321</c> states them (sens 0.75, link on) — so
+        /// that part of the shipped glass looks like the art director's preview until real models exist.
         /// A 4 Hz scan (measured at ~4.8 ms a repaint, so ~19 ms of every second — and a multiple of
         /// 2× the 2 Hz alarm blink, so the flash costs nothing extra).</summary>
         public static FishFinderSettings Default => new FishFinderSettings
@@ -1659,8 +1657,6 @@ namespace HiddenHarbours.Core
             MaxMarksPerSchool = 8,
             PlaceholderSens01 = 0.75f,
             PlaceholderLink = true,
-            PlaceholderBatt01 = 0.8f,
-            PlaceholderVolts = 4f,
         };
     }
 
