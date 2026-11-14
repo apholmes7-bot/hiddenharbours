@@ -234,8 +234,8 @@ namespace HiddenHarbours.Tests.PlayMode
             boat.SetHull(NewConsoleHull("boat.test_dev", SounderKind.None));
 
             IHelmInstruments glass = GameServices.HelmInstruments;
-            Assert.That(glass.Fit.Sounder, Is.EqualTo(SounderKind.Depth),
-                        "with the dev gate open a bare console shows the sounder");
+            Assert.That(glass.Fit.Sounder, Is.EqualTo(SounderKind.Fish),
+                        "with the dev gate open a capable console starts at the fish finder");
             Assert.IsEmpty(_save.Current.HullInstruments,
                         "…without writing a purchase the player never made");
 

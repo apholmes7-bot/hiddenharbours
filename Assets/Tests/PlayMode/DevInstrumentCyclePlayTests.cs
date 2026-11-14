@@ -145,7 +145,8 @@ namespace HiddenHarbours.Tests.PlayMode
             return h;
         }
 
-        private (GameObject go, BoatController boat, HelmControlRelay relay, DevInstrumentCycle cycle) NewBoat()
+        private (GameObject go, BoatController boat, HelmControlRelay relay, DevInstrumentCycle cycle) NewBoat(
+            bool startAtMaximum = false)
         {
             var go = new GameObject("CycleTestBoat");
             var boat = go.AddComponent<BoatController>();   // Awake self-adds the relay AND the cycle
@@ -157,6 +158,13 @@ namespace HiddenHarbours.Tests.PlayMode
             // (HelmSlot) rather than granted to whichever relay enabled last, so the one boat in
             // this fixture has to be DECLARED hers — which is what the fixture always meant.
             GameServices.Helm.SetPilotedHull(boat);
+            // The cycle/host tests choose their ring origin explicitly. The starting-fit test below
+            // leaves the new maximum defaults intact.
+            if (!startAtMaximum)
+            {
+                go.GetComponent<HelmControlRelay>().DevBrowStep = SounderKind.Depth;
+                go.GetComponent<HelmControlRelay>().DevPilotStep = DevInstrumentCycle.DevPilotFit.Owned;
+            }
             return (go, boat, go.GetComponent<HelmControlRelay>(), go.GetComponent<DevInstrumentCycle>());
         }
 
@@ -197,16 +205,15 @@ namespace HiddenHarbours.Tests.PlayMode
         }
 
         [UnityTest]
-        public IEnumerator TheCycle_StartsWhereS2LeftIt_TheDepthSounder()
+        public IEnumerator TheCycle_StartsAtTheBestSupportedBrow_TheFishFinder()
         {
-            var (_, boat, relay, _) = NewBoat();
+            var (_, boat, relay, _) = NewBoat(startAtMaximum: true);
             yield return null;
             relay.DevIgnoreEquipmentGating = true;
             boat.SetHull(NewConsoleHull("boat.test_start"));
 
-            Assert.That(GameServices.HelmInstruments.Fit.Sounder, Is.EqualTo(SounderKind.Depth),
-                        "F alone must still show what it showed before this slice existed — the S2 dev " +
-                        "bypass granted exactly the depth sounder, so the ring starts there");
+            Assert.That(GameServices.HelmInstruments.Fit.Sounder, Is.EqualTo(SounderKind.Fish),
+                        "the default-on dev switch starts at the best supported brow");
         }
 
         [UnityTest]

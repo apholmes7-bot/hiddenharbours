@@ -592,3 +592,4 @@ MonoBehaviour:
     SideSpeedKnee: 1.2
     SideRadiusHalfBeams: 0.3
     SideReach: 0.7
+  DevAllHelmInstruments: 1

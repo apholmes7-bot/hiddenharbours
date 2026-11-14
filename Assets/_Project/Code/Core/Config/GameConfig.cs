@@ -1165,6 +1165,12 @@ namespace HiddenHarbours.Core
                  "the camera feel and the moment timings. Every field must exist in GameConfig.asset.")]
         public JuiceSettings Juice = JuiceSettings.Default;
 
+        [Header("Dev: all instruments at the helm")]
+        [Tooltip("In the editor and development builds, start each console at its best supported fit. " +
+                 "K and Shift+K still cycle the instruments. Turn off to rehearse the real owned fit. " +
+                 "Ignored in release builds; never buys instruments or changes the save.")]
+        public bool DevAllHelmInstruments = true;
+
         // Convenience
         /// <summary>
         /// THE shared displacement exaggeration (ADR 0023 §(2)) — the accessor every water-riding
