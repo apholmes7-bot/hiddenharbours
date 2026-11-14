@@ -218,6 +218,12 @@ docs/art/rigs/gameplay/sail/**              text eol=lf
 # above; pin the working-tree form so the kit's own checksum file is verifiable anywhere.
 docs/art/rigs/seagullIsoRig.js              text eol=lf
 docs/art/rigs/gameplay/seagullIsoRig.gameplay.json text eol=lf
+# The heron rig (docs/art/rigs/birds/): its sidecar and sheet contract stamp derivedFromRigSha256 over
+# the WORKING-TREE bytes of the rig, as the seagull kit does. Pin the working-tree form.
+docs/art/rigs/heronIsoRig.js                         text eol=lf
+docs/art/rigs/gameplay/heronIsoRig.gameplay.json     text eol=lf
+docs/art/rigs/birds/heron.bird.json                  text eol=lf
+docs/art/rigs/birds/sheets/Heron.contract.json       text eol=lf
 
 # The Modern 3500 truck kit (Codex drop of 2026-09-13) ships SHA256SUMS.txt, and its contract and
 # gameplay sidecar both stamp the rig's LF sha256. DeckSidecarReader.MatchRigHash ACCEPTS the
