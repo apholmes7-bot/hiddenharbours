@@ -924,6 +924,18 @@ namespace HiddenHarbours.Tests.PlayMode
             walk.ConfigureDeckInput(held);
             try
             {
+                // She stands, key released, until the doorway has settled since it last took her. A walk
+                // back begun on the tick after a crossing is a reversal inside the settle, not a walk: on
+                // a room walked on the deck areas nothing holds her at the wall meanwhile, and through the
+                // fleet's narrowest door (the inshore open lobster boat, 0.529 m) she has left the band
+                // one tick before the settle would take her.
+                int settleFrames = Mathf.CeilToInt(door.Door.CrossingSettle / FrameSeconds) + 2;
+                for (int f = 0; f < settleFrames && !door.PassageIsSettled; f++)
+                    yield return null;
+                Assert.IsTrue(door.PassageIsSettled,
+                              $"her doorway settles in {door.Door.CrossingSettle:F3} s while she stands in it " +
+                              $"(waited {settleFrames} frames)");
+
                 DoorwayWalkRead read = readOnHull != null
                     ? new DoorwayWalkRead(walk, door, onLine, outward, key, boat, readOnHull) : null;
                 walk.SnapToDeckLocal(onLine);
