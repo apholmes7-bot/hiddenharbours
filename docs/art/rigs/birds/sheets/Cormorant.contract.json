@@ -1,0 +1,241 @@
+{
+  "sheet": "docs/art/rigs/birds/sheets/Cormorant.png",
+  "rig": "docs/art/rigs/cormorantIsoRig.js",
+  "global": "CormorantIso",
+  "derivedFromRigSha256": "0920596e0339ebdffab2d0c851c9b8551ce7a83da96d525c9aa3dbc6b7ebb91f",
+  "engine": "V8 (Node, docs/art/rigs/birds/tools/build.cjs)",
+  "sheetRgbaSha256": "b18cd0751d2fae5f26d222c5b902af2935fb0378a8d18eba1f7fd3a0c7c84b2e",
+  "cell": {
+    "w": 64,
+    "h": 64
+  },
+  "pivotTopLeft": {
+    "x": 32,
+    "y": 46
+  },
+  "pivotNormalisedBottomLeft": {
+    "x": 0.5,
+    "y": 0.28125
+  },
+  "rows": 8,
+  "columns": 42,
+  "pixelsPerUnit": 32,
+  "requiredMaxTextureSize": 4096,
+  "rigConvention": "Clockwise",
+  "facingsAreCounterClockwise": false,
+  "spriteName": "cormorant_<anim>_<frame>_d<row>",
+  "order": [
+    {
+      "col": 0,
+      "anim": "fly",
+      "frame": 0
+    },
+    {
+      "col": 1,
+      "anim": "fly",
+      "frame": 1
+    },
+    {
+      "col": 2,
+      "anim": "fly",
+      "frame": 2
+    },
+    {
+      "col": 3,
+      "anim": "fly",
+      "frame": 3
+    },
+    {
+      "col": 4,
+      "anim": "fly",
+      "frame": 4
+    },
+    {
+      "col": 5,
+      "anim": "fly",
+      "frame": 5
+    },
+    {
+      "col": 6,
+      "anim": "glide",
+      "frame": 0
+    },
+    {
+      "col": 7,
+      "anim": "glide",
+      "frame": 1
+    },
+    {
+      "col": 8,
+      "anim": "dive",
+      "frame": 0
+    },
+    {
+      "col": 9,
+      "anim": "dive",
+      "frame": 1
+    },
+    {
+      "col": 10,
+      "anim": "dive",
+      "frame": 2
+    },
+    {
+      "col": 11,
+      "anim": "dive",
+      "frame": 3
+    },
+    {
+      "col": 12,
+      "anim": "surface",
+      "frame": 0
+    },
+    {
+      "col": 13,
+      "anim": "surface",
+      "frame": 1
+    },
+    {
+      "col": 14,
+      "anim": "surface",
+      "frame": 2
+    },
+    {
+      "col": 15,
+      "anim": "surface",
+      "frame": 3
+    },
+    {
+      "col": 16,
+      "anim": "splash",
+      "frame": 0
+    },
+    {
+      "col": 17,
+      "anim": "splash",
+      "frame": 1
+    },
+    {
+      "col": 18,
+      "anim": "splash",
+      "frame": 2
+    },
+    {
+      "col": 19,
+      "anim": "splash",
+      "frame": 3
+    },
+    {
+      "col": 20,
+      "anim": "float",
+      "frame": 0
+    },
+    {
+      "col": 21,
+      "anim": "float",
+      "frame": 1
+    },
+    {
+      "col": 22,
+      "anim": "patter",
+      "frame": 0
+    },
+    {
+      "col": 23,
+      "anim": "patter",
+      "frame": 1
+    },
+    {
+      "col": 24,
+      "anim": "patter",
+      "frame": 2
+    },
+    {
+      "col": 25,
+      "anim": "patter",
+      "frame": 3
+    },
+    {
+      "col": 26,
+      "anim": "land",
+      "frame": 0
+    },
+    {
+      "col": 27,
+      "anim": "land",
+      "frame": 1
+    },
+    {
+      "col": 28,
+      "anim": "land",
+      "frame": 2
+    },
+    {
+      "col": 29,
+      "anim": "land",
+      "frame": 3
+    },
+    {
+      "col": 30,
+      "anim": "stand",
+      "frame": 0
+    },
+    {
+      "col": 31,
+      "anim": "stand",
+      "frame": 1
+    },
+    {
+      "col": 32,
+      "anim": "dry",
+      "frame": 0
+    },
+    {
+      "col": 33,
+      "anim": "dry",
+      "frame": 1
+    },
+    {
+      "col": 34,
+      "anim": "dry",
+      "frame": 2
+    },
+    {
+      "col": 35,
+      "anim": "dry",
+      "frame": 3
+    },
+    {
+      "col": 36,
+      "anim": "perch",
+      "frame": 0
+    },
+    {
+      "col": 37,
+      "anim": "perch",
+      "frame": 1
+    },
+    {
+      "col": 38,
+      "anim": "takeoff",
+      "frame": 0
+    },
+    {
+      "col": 39,
+      "anim": "takeoff",
+      "frame": 1
+    },
+    {
+      "col": 40,
+      "anim": "takeoff",
+      "frame": 2
+    },
+    {
+      "col": 41,
+      "anim": "takeoff",
+      "frame": 3
+    }
+  ],
+  "note": "Row r is facing r (dir 0 = bill toward north, +45 deg per row, CLOCKWISE: the herring gull's convention, declared by the rig and not yet measured in-engine). The pivot is a CONTACT POINT: rock or perch top when standing, the water surface when swimming, the point directly below the bird when airborne. Altitude is a screen offset, never a scale.",
+  "wetStates": "dive, surface, splash, float, patter carry waterZ:0 in their own pose and are baked WET."
+}

@@ -230,7 +230,7 @@ MonoBehaviour:
     YankMinSpeedMps: 6
     YankMinMetres: 0.8
     YankStallFraction01: 0.25
-  BaitSpentOnCatchOnly: 0
+  BaitSpentOnCatchOnly: 1
   StormRock:
     Enabled: 1
     StormStartSeaState01: 0.4

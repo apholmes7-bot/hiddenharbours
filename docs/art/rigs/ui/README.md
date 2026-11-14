@@ -2,7 +2,7 @@
 
 Every piece of **in-world UI the boats carry**: the start-of-game watch, the outboard tiller, the
 steering wheel, the single-lever binnacle control, the depth & fish sounders, the radar, the
-chartplotter, the compass, and the four helm dashes that assemble them. **Thirteen parametric rigs**,
+chartplotter, the compass, the wind dial, and the four helm dashes that assemble them. **Fourteen parametric rigs**,
 each with its own interactive preview and README, one folder apiece.
 
 Nothing here is hand-pixeled per frame. Every rig is a **procedural renderer** — you hand it a few
@@ -37,6 +37,7 @@ rule, and every brand wordmark on them is original (not lifted from a real maker
 | Radar | `RadarRig` | `radar/` | live PPI scope, game-placed echo targets, guard zone |
 | Chartplotter | `NavRig` | `chartplotter/` | vector chart, waypoints, routes, tide, AIS traffic |
 | Compass | `CompassRig` | `compass/` | heading; dome bracket or flush Ritchie |
+| Wind Dial | `WindRig` | `wind-dial/` | apparent wind (grade 1 analog) · apparent + true + Beaufort (grade 2 LCD); band piece + raised card |
 
 **Helms** — a full dash that composes the instruments above plus its own hull-specific console art:
 
@@ -145,7 +146,8 @@ ui-rigs/
 ├─ outboard-tiller/        ├─ fish-finder/        ├─ sport-skiff-helm/
 ├─ console-wheel/          ├─ radar/              ├─ novi-helm/
 ├─ lever-rig/              ├─ chartplotter/       └─ cape-islander-helm/
-│                          └─ compass/
+│                          ├─ compass/
+│                          └─ wind-dial/
 ```
 
 Each folder is **standalone**: open its `*.dc.html` in any browser (double-click — no server) and it

@@ -74,7 +74,7 @@ namespace HiddenHarbours.Tests.EditMode
 
         // ---- the two cost curves — the whole question, as arithmetic --------------------------------
 
-        /// <summary>Bait per LANDED fish with the flag OFF (shipped): one bait leaves the box at every
+        /// <summary>Bait per LANDED fish with the flag OFF (legacy): one bait leaves the box at every
         /// bite, so a landed fish carries the cost of every tease, missed strike and lost fight before
         /// it. The reciprocal of the land rate — unbounded as skill falls.</summary>
         private static float BaitPerLandedFish_SpendAtBite(float landRate01)
