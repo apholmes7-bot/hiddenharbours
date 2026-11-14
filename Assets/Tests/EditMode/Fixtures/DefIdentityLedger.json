@@ -9720,6 +9720,91 @@
       "Type": "HiddenHarbours.World.BeachActivityDef",
       "Guid": "9d8c7b6a5f4e4d3c8b2a190817263544",
       "Id": "beachactivity.swim"
+    },
+    {
+      "Type": "HiddenHarbours.Art.SetPieceDef",
+      "Guid": "d16e5487e70da5141bcf8922214d7ba5",
+      "Id": "station.nmc_store"
+    },
+    {
+      "Type": "HiddenHarbours.Art.SetPieceDef",
+      "Guid": "9327c4c4ecaea8a4e9de43a4956e21b5",
+      "Id": "station.nmc_canopy"
+    },
+    {
+      "Type": "HiddenHarbours.Art.SetPieceDef",
+      "Guid": "95cc65a735f43b34e8245debafdecaf0",
+      "Id": "station.nmc_semi_lane"
+    },
+    {
+      "Type": "HiddenHarbours.Art.SetPieceDef",
+      "Guid": "053c3a74111a24f40aa0219d69df8474",
+      "Id": "station.nmc_pylon"
+    },
+    {
+      "Type": "HiddenHarbours.Art.SetPieceDef",
+      "Guid": "28226933009c48541a7538e64eec6b44",
+      "Id": "prop.nmc_ice_box"
+    },
+    {
+      "Type": "HiddenHarbours.Art.SetPieceDef",
+      "Guid": "8268dc89d53cc4e4d90902ecf3f9cec6",
+      "Id": "station.nmc_propane"
+    },
+    {
+      "Type": "HiddenHarbours.Art.SetPieceDef",
+      "Guid": "c0ebd27fec189ce4ea97bd9ab4aa9ace",
+      "Id": "station.nmc_air"
+    },
+    {
+      "Type": "HiddenHarbours.Art.SetPieceDef",
+      "Guid": "543465ec7d8fa8545b91801bdd7b3a22",
+      "Id": "station.nmc_vacuum"
+    },
+    {
+      "Type": "HiddenHarbours.Art.SetPieceDef",
+      "Guid": "953d670fdf4114b479b067ebe64c5ba9",
+      "Id": "prop.nmc_dumpster"
+    },
+    {
+      "Type": "HiddenHarbours.Art.SetPieceDef",
+      "Guid": "954db6f99315a594dab2dacb7dfa2ee5",
+      "Id": "station.nmc_bench"
+    },
+    {
+      "Type": "HiddenHarbours.Art.SetPieceDef",
+      "Guid": "6c4e48100a3934144af5bb366c3937d8",
+      "Id": "station.nmc_firewood"
+    },
+    {
+      "Type": "HiddenHarbours.Art.SetPieceDef",
+      "Guid": "4ab694c74d9d1984fac75409f87e13f6",
+      "Id": "prop.nmc_lamp_pole"
+    },
+    {
+      "Type": "HiddenHarbours.Art.SetPieceDef",
+      "Guid": "4a8805e95daebba4ab64f0419a89a3c4",
+      "Id": "prop.nmc_bar_sign"
+    },
+    {
+      "Type": "HiddenHarbours.Art.SetPieceDef",
+      "Guid": "925b8fe753b952549b7ae0e6855b31ea",
+      "Id": "prop.nmc_stop_sign"
+    },
+    {
+      "Type": "HiddenHarbours.Art.SetPieceDef",
+      "Guid": "cf3d97c09d5983a4693b69589c164861",
+      "Id": "prop.nmc_picnic"
+    },
+    {
+      "Type": "HiddenHarbours.Art.SetPieceDef",
+      "Guid": "9b1fdff31b68f70489390bdc17637f43",
+      "Id": "prop.nmc_wheel_stop"
+    },
+    {
+      "Type": "HiddenHarbours.Art.SetPieceDef",
+      "Guid": "e7a1eae8f1882ee40819b6b5e3294317",
+      "Id": "prop.nmc_bin"
     }
   ]
 }

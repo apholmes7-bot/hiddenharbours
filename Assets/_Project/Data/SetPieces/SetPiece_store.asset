@@ -1,0 +1,162 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 01b51978faec4dbb8e54e23107a97ef5, type: 3}
+  m_Name: SetPiece_store
+  m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.SetPieceDef
+  Id: station.nmc_store
+  DisplayName: The store
+  RigKey: store
+  SceneId: keyscene.nmc_fuel_stop
+  BakedOptionsJson: '{}'
+  Layer: ground
+  Walk: around
+  Mount: ground
+  BoundsMin: {x: -9.1, y: -6.215, z: 0}
+  BoundsMax: {x: 9.1, y: 8.14, z: 5.72}
+  Frames:
+  - Sprite: {fileID: -106780522, guid: 1700b279dc7a450db815f03e23049341, type: 3}
+    RigDir: 0
+    ShowFaces: 0
+    BearingDeg: 0
+    CameraSees: fuel stop piece
+    NativeSize: {x: 597, y: 397}
+    NativePivot: {x: 298, y: 264}
+    Crop: {x: 7, y: 7}
+    Pivot: {x: 291, y: 257}
+  - Sprite: {fileID: -466661881, guid: 1700b279dc7a450db815f03e23049341, type: 3}
+    RigDir: 7
+    ShowFaces: 7
+    BearingDeg: 315
+    CameraSees: fuel stop piece
+    NativeSize: {x: 702, y: 570}
+    NativePivot: {x: 350, y: 342}
+    Crop: {x: 6, y: 7}
+    Pivot: {x: 344, y: 335}
+  - Sprite: {fileID: -2115886783, guid: 1700b279dc7a450db815f03e23049341, type: 3}
+    RigDir: 6
+    ShowFaces: 6
+    BearingDeg: 270
+    CameraSees: fuel stop piece
+    NativeSize: {x: 474, y: 503}
+    NativePivot: {x: 205, y: 308}
+    Crop: {x: 6, y: 6}
+    Pivot: {x: 199, y: 302}
+  - Sprite: {fileID: 1430602577, guid: 1700b279dc7a450db815f03e23049341, type: 3}
+    RigDir: 5
+    ShowFaces: 5
+    BearingDeg: 225
+    CameraSees: fuel stop piece
+    NativeSize: {x: 702, y: 570}
+    NativePivot: {x: 350, y: 342}
+    Crop: {x: 6, y: 7}
+    Pivot: {x: 344, y: 335}
+  - Sprite: {fileID: -1546353095, guid: 1700b279dc7a450db815f03e23049341, type: 3}
+    RigDir: 4
+    ShowFaces: 4
+    BearingDeg: 180
+    CameraSees: fuel stop piece
+    NativeSize: {x: 597, y: 443}
+    NativePivot: {x: 298, y: 275}
+    Crop: {x: 7, y: 7}
+    Pivot: {x: 291, y: 268}
+  - Sprite: {fileID: -409446672, guid: 1700b279dc7a450db815f03e23049341, type: 3}
+    RigDir: 3
+    ShowFaces: 3
+    BearingDeg: 135
+    CameraSees: fuel stop piece
+    NativeSize: {x: 702, y: 570}
+    NativePivot: {x: 350, y: 342}
+    Crop: {x: 6, y: 7}
+    Pivot: {x: 344, y: 335}
+  - Sprite: {fileID: -826450531, guid: 1700b279dc7a450db815f03e23049341, type: 3}
+    RigDir: 2
+    ShowFaces: 2
+    BearingDeg: 90
+    CameraSees: fuel stop piece
+    NativeSize: {x: 474, y: 503}
+    NativePivot: {x: 267, y: 308}
+    Crop: {x: 7, y: 6}
+    Pivot: {x: 260, y: 302}
+  - Sprite: {fileID: 807145102, guid: 1700b279dc7a450db815f03e23049341, type: 3}
+    RigDir: 1
+    ShowFaces: 1
+    BearingDeg: 45
+    CameraSees: fuel stop piece
+    NativeSize: {x: 702, y: 570}
+    NativePivot: {x: 350, y: 342}
+    Crop: {x: 6, y: 7}
+    Pivot: {x: 344, y: 335}
+  CellSize: {x: 688, y: 555}
+  PixelsPerMetre: 32
+  ElevationDeg: 40
+  BakedLit: 0
+  Colliders: []
+  Anchors:
+  - Name: atm
+    Position: {x: 1.7, y: 5.3, z: 1.2}
+  - Name: atm.stand
+    Position: {x: 1.7, y: 4.7, z: 0}
+  - Name: coffee
+    Position: {x: 8.3, y: 2.9, z: 0.95}
+  - Name: coffee.stand
+    Position: {x: 7.6, y: 2.9, z: 0}
+  - Name: cooler
+    Position: {x: -1, y: -4.95, z: 1.2}
+  - Name: cooler.stand
+    Position: {x: -1, y: -4.2, z: 0}
+  - Name: counter
+    Position: {x: -3.2, y: 2.8, z: 1.02}
+  - Name: counter.stand
+    Position: {x: -2.5, y: 2.8, z: 0}
+  - Name: door
+    Position: {x: 0, y: 6, z: 0.15}
+  - Name: door.stand
+    Position: {x: 0, y: 7.6, z: 0}
+  - Name: serviceDoor
+    Position: {x: 7.1, y: -6, z: 0.15}
+  - Name: serviceDoor.stand
+    Position: {x: 7.1, y: -7.4, z: 0}
+  Path: []
+  TideMarks: []
+  Words: []
+  HasLight: 1
+  Light:
+    Emitters:
+    - neon
+    - led
+    - glow
+    When: FuelStop.levels(CoastalPass.light.lampNeed(sky))
+  IsAnimated: 0
+  Animated:
+    Part: 
+    Input: 
+    Steps: 0
+    BakedAtDeg: 0
+    RigDir: 0
+    Headings: []
+  GameplayJson: '{"schema":"hidden-harbours/fuel-stop-piece@1","generatedBy":"FuelStopGameplay
+    1.0.0","key":"store","id":"station.nmc_store","name":"The store","defType":"SetPieceDef","scene":"keyscene.nmc_fuel_stop","units":"metres,
+    model frame rotated by pi from FuelStop plan metres","bounds":{"x":[-9.1,9.1],"y":[-6.215,8.14],"z":[0,5.72]},"layer":"ground","walk":"around","mount":"ground","colliders":[],"facings":[{"dir":0,"showFaces":"0","bearingDeg":0,"cameraSees":"fuel
+    stop piece"},{"dir":1,"showFaces":"1","bearingDeg":45,"cameraSees":"fuel stop
+    piece"},{"dir":2,"showFaces":"2","bearingDeg":90,"cameraSees":"fuel stop piece"},{"dir":3,"showFaces":"3","bearingDeg":135,"cameraSees":"fuel
+    stop piece"},{"dir":4,"showFaces":"4","bearingDeg":180,"cameraSees":"fuel stop
+    piece"},{"dir":5,"showFaces":"5","bearingDeg":225,"cameraSees":"fuel stop piece"},{"dir":6,"showFaces":"6","bearingDeg":270,"cameraSees":"fuel
+    stop piece"},{"dir":7,"showFaces":"7","bearingDeg":315,"cameraSees":"fuel stop
+    piece"}],"cells":[{"dir":0,"w":597,"h":397,"pivot":[298,264]},{"dir":1,"w":702,"h":570,"pivot":[350,342]},{"dir":2,"w":474,"h":503,"pivot":[267,308]},{"dir":3,"w":702,"h":570,"pivot":[350,342]},{"dir":4,"w":597,"h":443,"pivot":[298,275]},{"dir":5,"w":702,"h":570,"pivot":[350,342]},{"dir":6,"w":474,"h":503,"pivot":[205,308]},{"dir":7,"w":702,"h":570,"pivot":[350,342]}],"anchors":{"door":[0,6,0.15],"door.stand":[0,7.6,0],"serviceDoor":[7.1,-6,0.15],"serviceDoor.stand":[7.1,-7.4,0],"counter":[-3.2,2.8,1.02],"counter.stand":[-2.5,2.8,0],"coffee":[8.3,2.9,0.95],"coffee.stand":[7.6,2.9,0],"cooler":[-1,-4.95,1.2],"cooler.stand":[-1,-4.2,0],"atm":[1.7,5.3,1.2],"atm.stand":[1.7,4.7,0]},"options":{},"light":{"emitters":["neon","led","glow"],"when":"FuelStop.levels(CoastalPass.light.lampNeed(sky))"},"notes":"Footprint
+    bounds are not walk blockers: canopy lanes and store doors must remain open.
+    Collision and light placement are verified in the scene phase."}'
+  State: 
+  Variants: []
+  HasVendor: 0
+  Vendor:
+    Seller: 
+    At: {x: 0, y: 0, z: 0}

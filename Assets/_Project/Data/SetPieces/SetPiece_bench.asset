@@ -1,0 +1,142 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 01b51978faec4dbb8e54e23107a97ef5, type: 3}
+  m_Name: SetPiece_bench
+  m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.SetPieceDef
+  Id: station.nmc_bench
+  DisplayName: Bench
+  RigKey: bench
+  SceneId: keyscene.nmc_fuel_stop
+  BakedOptionsJson: '{}'
+  Layer: ground
+  Walk: around
+  Mount: ground
+  BoundsMin: {x: -0.82, y: -0.26, z: 0}
+  BoundsMax: {x: 0.82, y: 0.25, z: 0.88}
+  Frames:
+  - Sprite: {fileID: -1719727920, guid: 8af291a6aad1430cab2da4e9c364b6db, type: 3}
+    RigDir: 0
+    ShowFaces: 0
+    BearingDeg: 0
+    CameraSees: fuel stop piece
+    NativeSize: {x: 67, y: 37}
+    NativePivot: {x: 33, y: 24}
+    Crop: {x: 7, y: 7}
+    Pivot: {x: 26, y: 17}
+  - Sprite: {fileID: -1810624956, guid: 8af291a6aad1430cab2da4e9c364b6db, type: 3}
+    RigDir: 7
+    ShowFaces: 7
+    BearingDeg: 315
+    CameraSees: fuel stop piece
+    NativeSize: {x: 63, y: 59}
+    NativePivot: {x: 31, y: 37}
+    Crop: {x: 7, y: 7}
+    Pivot: {x: 24, y: 30}
+  - Sprite: {fileID: 411324672, guid: 8af291a6aad1430cab2da4e9c364b6db, type: 3}
+    RigDir: 6
+    ShowFaces: 6
+    BearingDeg: 270
+    CameraSees: fuel stop piece
+    NativeSize: {x: 31, y: 68}
+    NativePivot: {x: 15, y: 45}
+    Crop: {x: 7, y: 7}
+    Pivot: {x: 8, y: 38}
+  - Sprite: {fileID: -882359387, guid: 8af291a6aad1430cab2da4e9c364b6db, type: 3}
+    RigDir: 5
+    ShowFaces: 5
+    BearingDeg: 225
+    CameraSees: fuel stop piece
+    NativeSize: {x: 63, y: 66}
+    NativePivot: {x: 31, y: 44}
+    Crop: {x: 7, y: 7}
+    Pivot: {x: 24, y: 37}
+  - Sprite: {fileID: 1780577239, guid: 8af291a6aad1430cab2da4e9c364b6db, type: 3}
+    RigDir: 4
+    ShowFaces: 4
+    BearingDeg: 180
+    CameraSees: fuel stop piece
+    NativeSize: {x: 67, y: 47}
+    NativePivot: {x: 33, y: 33}
+    Crop: {x: 7, y: 6}
+    Pivot: {x: 26, y: 27}
+  - Sprite: {fileID: -234411000, guid: 8af291a6aad1430cab2da4e9c364b6db, type: 3}
+    RigDir: 3
+    ShowFaces: 3
+    BearingDeg: 135
+    CameraSees: fuel stop piece
+    NativeSize: {x: 63, y: 66}
+    NativePivot: {x: 31, y: 44}
+    Crop: {x: 7, y: 7}
+    Pivot: {x: 24, y: 37}
+  - Sprite: {fileID: 1071903813, guid: 8af291a6aad1430cab2da4e9c364b6db, type: 3}
+    RigDir: 2
+    ShowFaces: 2
+    BearingDeg: 90
+    CameraSees: fuel stop piece
+    NativeSize: {x: 31, y: 68}
+    NativePivot: {x: 15, y: 45}
+    Crop: {x: 7, y: 7}
+    Pivot: {x: 8, y: 38}
+  - Sprite: {fileID: -312394152, guid: 8af291a6aad1430cab2da4e9c364b6db, type: 3}
+    RigDir: 1
+    ShowFaces: 1
+    BearingDeg: 45
+    CameraSees: fuel stop piece
+    NativeSize: {x: 63, y: 59}
+    NativePivot: {x: 31, y: 37}
+    Crop: {x: 7, y: 7}
+    Pivot: {x: 24, y: 30}
+  CellSize: {x: 52, y: 53}
+  PixelsPerMetre: 32
+  ElevationDeg: 40
+  BakedLit: 0
+  Colliders:
+  - Type: polygon
+    Blocks: walk
+    Points:
+    - {x: 0.85, y: 0.3}
+    - {x: -0.85, y: 0.3}
+    - {x: -0.85, y: -0.3}
+    - {x: 0.85, y: -0.3}
+  Anchors: []
+  Path: []
+  TideMarks: []
+  Words: []
+  HasLight: 0
+  Light:
+    Emitters: []
+    When: 
+  IsAnimated: 0
+  Animated:
+    Part: 
+    Input: 
+    Steps: 0
+    BakedAtDeg: 0
+    RigDir: 0
+    Headings: []
+  GameplayJson: '{"schema":"hidden-harbours/fuel-stop-piece@1","generatedBy":"FuelStopGameplay
+    1.0.0","key":"bench","id":"station.nmc_bench","name":"Bench","defType":"SetPieceDef","scene":"keyscene.nmc_fuel_stop","units":"metres,
+    model frame rotated by pi from FuelStop plan metres","bounds":{"x":[-0.82,0.82],"y":[-0.26,0.25],"z":[0,0.88]},"layer":"ground","walk":"around","mount":"ground","colliders":[{"type":"polygon","blocks":"walk","pts":[[0.85,0.3],[-0.85,0.3],[-0.85,-0.3],[0.85,-0.3]]}],"facings":[{"dir":0,"showFaces":"0","bearingDeg":0,"cameraSees":"fuel
+    stop piece"},{"dir":1,"showFaces":"1","bearingDeg":45,"cameraSees":"fuel stop
+    piece"},{"dir":2,"showFaces":"2","bearingDeg":90,"cameraSees":"fuel stop piece"},{"dir":3,"showFaces":"3","bearingDeg":135,"cameraSees":"fuel
+    stop piece"},{"dir":4,"showFaces":"4","bearingDeg":180,"cameraSees":"fuel stop
+    piece"},{"dir":5,"showFaces":"5","bearingDeg":225,"cameraSees":"fuel stop piece"},{"dir":6,"showFaces":"6","bearingDeg":270,"cameraSees":"fuel
+    stop piece"},{"dir":7,"showFaces":"7","bearingDeg":315,"cameraSees":"fuel stop
+    piece"}],"cells":[{"dir":0,"w":67,"h":37,"pivot":[33,24]},{"dir":1,"w":63,"h":59,"pivot":[31,37]},{"dir":2,"w":31,"h":68,"pivot":[15,45]},{"dir":3,"w":63,"h":66,"pivot":[31,44]},{"dir":4,"w":67,"h":47,"pivot":[33,33]},{"dir":5,"w":63,"h":66,"pivot":[31,44]},{"dir":6,"w":31,"h":68,"pivot":[15,45]},{"dir":7,"w":63,"h":59,"pivot":[31,37]}],"anchors":{},"options":{},"light":null,"notes":"Footprint
+    bounds are not walk blockers: canopy lanes and store doors must remain open.
+    Collision and light placement are verified in the scene phase."}'
+  State: 
+  Variants: []
+  HasVendor: 0
+  Vendor:
+    Seller: 
+    At: {x: 0, y: 0, z: 0}
