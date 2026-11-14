@@ -1,0 +1,182 @@
+{
+ "derivedFromRigSha256": "1fc476b3a5e8d7ed1099c2680a7db931e0bf91d444ade8cb5a64134b74839e25",
+ "gameplay": {
+  "schema": "hidden-harbours/fuel-stop-piece@1",
+  "generatedBy": "FuelStopGameplay 1.0.0",
+  "key": "stopSign",
+  "id": "prop.nmc_stop_sign",
+  "name": "Stop",
+  "defType": "SetPieceDef",
+  "scene": "keyscene.nmc_fuel_stop",
+  "units": "metres, model frame rotated by pi from FuelStop plan metres",
+  "bounds": {
+   "x": [
+    -0.351074222354289,
+    0.35107422235428903
+   ],
+   "y": [
+    -0.04,
+    0.06
+   ],
+   "z": [
+    0,
+    2.301074222354289
+   ]
+  },
+  "layer": "ground",
+  "walk": "around",
+  "mount": "ground",
+  "colliders": [
+   {
+    "type": "polygon",
+    "blocks": "walk",
+    "pts": [
+     [
+      0.1,
+      0.1
+     ],
+     [
+      -0.1,
+      0.1
+     ],
+     [
+      -0.1,
+      -0.1
+     ],
+     [
+      0.1,
+      -0.1
+     ]
+    ]
+   }
+  ],
+  "facings": [
+   {
+    "dir": 0,
+    "showFaces": "0",
+    "bearingDeg": 0,
+    "cameraSees": "fuel stop piece"
+   },
+   {
+    "dir": 1,
+    "showFaces": "1",
+    "bearingDeg": 45,
+    "cameraSees": "fuel stop piece"
+   },
+   {
+    "dir": 2,
+    "showFaces": "2",
+    "bearingDeg": 90,
+    "cameraSees": "fuel stop piece"
+   },
+   {
+    "dir": 3,
+    "showFaces": "3",
+    "bearingDeg": 135,
+    "cameraSees": "fuel stop piece"
+   },
+   {
+    "dir": 4,
+    "showFaces": "4",
+    "bearingDeg": 180,
+    "cameraSees": "fuel stop piece"
+   },
+   {
+    "dir": 5,
+    "showFaces": "5",
+    "bearingDeg": 225,
+    "cameraSees": "fuel stop piece"
+   },
+   {
+    "dir": 6,
+    "showFaces": "6",
+    "bearingDeg": 270,
+    "cameraSees": "fuel stop piece"
+   },
+   {
+    "dir": 7,
+    "showFaces": "7",
+    "bearingDeg": 315,
+    "cameraSees": "fuel stop piece"
+   }
+  ],
+  "cells": [
+   {
+    "dir": 0,
+    "w": 37,
+    "h": 73,
+    "pivot": [
+     18,
+     64
+    ]
+   },
+   {
+    "dir": 1,
+    "w": 30,
+    "h": 75,
+    "pivot": [
+     16,
+     66
+    ]
+   },
+   {
+    "dir": 2,
+    "w": 18,
+    "h": 75,
+    "pivot": [
+     8,
+     66
+    ]
+   },
+   {
+    "dir": 3,
+    "w": 30,
+    "h": 73,
+    "pivot": [
+     16,
+     64
+    ]
+   },
+   {
+    "dir": 4,
+    "w": 37,
+    "h": 70,
+    "pivot": [
+     18,
+     62
+    ]
+   },
+   {
+    "dir": 5,
+    "w": 30,
+    "h": 73,
+    "pivot": [
+     13,
+     64
+    ]
+   },
+   {
+    "dir": 6,
+    "w": 18,
+    "h": 75,
+    "pivot": [
+     8,
+     66
+    ]
+   },
+   {
+    "dir": 7,
+    "w": 30,
+    "h": 75,
+    "pivot": [
+     13,
+     66
+    ]
+   }
+  ],
+  "anchors": {},
+  "options": {},
+  "light": null,
+  "notes": "Footprint bounds are not walk blockers: canopy lanes and store doors must remain open. Collision and light placement are verified in the scene phase."
+ }
+}

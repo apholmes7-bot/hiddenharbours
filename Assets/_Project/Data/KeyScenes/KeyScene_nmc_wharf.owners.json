@@ -293,68 +293,57 @@
     {
       "id": "prop.nmc_dumpster",
       "owner": "H6",
-      "place": "yard",
-      "waits": "fuelStopRig intake (H9)"
+      "place": "yard"
     },
     {
       "id": "prop.nmc_picnic",
       "owner": "H6",
-      "place": "yard",
-      "waits": "fuelStopRig intake (H9)"
+      "place": "yard"
     },
     {
       "id": "prop.nmc_ice",
       "owner": "H6",
-      "place": "yard",
-      "waits": "fuelStopRig intake (H9)"
+      "place": "yard"
     },
     {
       "id": "prop.nmc_bin",
       "owner": "H6",
-      "place": "yard",
-      "waits": "fuelStopRig intake (H9)"
+      "place": "yard"
     },
     {
       "id": "prop.nmc_picnic_r",
       "owner": "H6",
-      "place": "terrace",
-      "waits": "fuelStopRig intake (H9)"
+      "place": "terrace"
     },
     {
       "id": "prop.nmc_light_court",
       "owner": "H6",
-      "place": "yard",
-      "waits": "fuelStopRig intake (H9)"
+      "place": "yard"
     },
     {
       "id": "prop.nmc_light_lot",
       "owner": "H6",
-      "place": "yard",
-      "waits": "fuelStopRig intake (H9)"
+      "place": "yard"
     },
     {
       "id": "prop.nmc_light_quay_w",
       "owner": "H6",
-      "place": "yard",
-      "waits": "fuelStopRig intake (H9)"
+      "place": "yard"
     },
     {
       "id": "prop.nmc_light_quay_e",
       "owner": "H6",
-      "place": "yard",
-      "waits": "fuelStopRig intake (H9)"
+      "place": "yard"
     },
     {
       "id": "prop.nmc_light_ramp",
       "owner": "H5",
-      "place": "apron and harbour",
-      "waits": "fuelStopRig intake (H9)"
+      "place": "apron and harbour"
     },
     {
       "id": "prop.nmc_light_lot_e",
       "owner": "H6",
-      "place": "yard",
-      "waits": "fuelStopRig intake (H9)"
+      "place": "yard"
     },
     {
       "id": "prop.nmc_traps_court_0_0",

@@ -1,0 +1,357 @@
+{
+ "derivedFromRigSha256": "1fc476b3a5e8d7ed1099c2680a7db931e0bf91d444ade8cb5a64134b74839e25",
+ "gameplay": {
+  "schema": "hidden-harbours/fuel-stop-piece@1",
+  "generatedBy": "FuelStopGameplay 1.0.0",
+  "key": "canopy",
+  "id": "station.nmc_canopy",
+  "name": "The car canopy",
+  "defType": "SetPieceDef",
+  "scene": "keyscene.nmc_fuel_stop",
+  "units": "metres, model frame rotated by pi from FuelStop plan metres",
+  "bounds": {
+   "x": [
+    -12.639999999999999,
+    12.639999999999999
+   ],
+   "y": [
+    -4.035,
+    4.035
+   ],
+   "z": [
+    0,
+    6.159999999999999
+   ]
+  },
+  "layer": "ground",
+  "walk": "around",
+  "mount": "ground",
+  "colliders": [],
+  "facings": [
+   {
+    "dir": 0,
+    "showFaces": "0",
+    "bearingDeg": 0,
+    "cameraSees": "fuel stop piece"
+   },
+   {
+    "dir": 1,
+    "showFaces": "1",
+    "bearingDeg": 45,
+    "cameraSees": "fuel stop piece"
+   },
+   {
+    "dir": 2,
+    "showFaces": "2",
+    "bearingDeg": 90,
+    "cameraSees": "fuel stop piece"
+   },
+   {
+    "dir": 3,
+    "showFaces": "3",
+    "bearingDeg": 135,
+    "cameraSees": "fuel stop piece"
+   },
+   {
+    "dir": 4,
+    "showFaces": "4",
+    "bearingDeg": 180,
+    "cameraSees": "fuel stop piece"
+   },
+   {
+    "dir": 5,
+    "showFaces": "5",
+    "bearingDeg": 225,
+    "cameraSees": "fuel stop piece"
+   },
+   {
+    "dir": 6,
+    "showFaces": "6",
+    "bearingDeg": 270,
+    "cameraSees": "fuel stop piece"
+   },
+   {
+    "dir": 7,
+    "showFaces": "7",
+    "bearingDeg": 315,
+    "cameraSees": "fuel stop piece"
+   }
+  ],
+  "cells": [
+   {
+    "dir": 0,
+    "w": 823,
+    "h": 314,
+    "pivot": [
+     411,
+     239
+    ]
+   },
+   {
+    "dir": 1,
+    "w": 768,
+    "h": 575,
+    "pivot": [
+     383,
+     398
+    ]
+   },
+   {
+    "dir": 2,
+    "w": 273,
+    "h": 601,
+    "pivot": [
+     136,
+     416
+    ]
+   },
+   {
+    "dir": 3,
+    "w": 768,
+    "h": 575,
+    "pivot": [
+     383,
+     398
+    ]
+   },
+   {
+    "dir": 4,
+    "w": 823,
+    "h": 314,
+    "pivot": [
+     411,
+     239
+    ]
+   },
+   {
+    "dir": 5,
+    "w": 768,
+    "h": 575,
+    "pivot": [
+     383,
+     398
+    ]
+   },
+   {
+    "dir": 6,
+    "w": 273,
+    "h": 601,
+    "pivot": [
+     136,
+     416
+    ]
+   },
+   {
+    "dir": 7,
+    "w": 768,
+    "h": 575,
+    "pivot": [
+     383,
+     398
+    ]
+   }
+  ],
+  "anchors": {
+   "nozzle.reg.W.0": [
+    8.33,
+    1.58,
+    0.95
+   ],
+   "nozzle.reg.W.0.stand": [
+    9.01,
+    1.58,
+    0
+   ],
+   "nozzle.sup.W.1": [
+    8.33,
+    1.25,
+    0.95
+   ],
+   "nozzle.sup.W.1.stand": [
+    9.01,
+    1.25,
+    0
+   ],
+   "nozzle.dsl.W.2": [
+    8.33,
+    0.9199999999999999,
+    0.95
+   ],
+   "nozzle.dsl.W.2.stand": [
+    9.01,
+    0.9199999999999999,
+    0
+   ],
+   "nozzle.reg.E.3": [
+    7.67,
+    1.58,
+    0.95
+   ],
+   "nozzle.reg.E.3.stand": [
+    6.99,
+    1.58,
+    0
+   ],
+   "nozzle.sup.E.4": [
+    7.67,
+    1.25,
+    0.95
+   ],
+   "nozzle.sup.E.4.stand": [
+    6.99,
+    1.25,
+    0
+   ],
+   "nozzle.dsl.E.5": [
+    7.67,
+    0.9199999999999999,
+    0.95
+   ],
+   "nozzle.dsl.E.5.stand": [
+    6.99,
+    0.9199999999999999,
+    0
+   ],
+   "nozzle.reg.W.6": [
+    0.33,
+    1.58,
+    0.95
+   ],
+   "nozzle.reg.W.6.stand": [
+    1.01,
+    1.58,
+    0
+   ],
+   "nozzle.sup.W.7": [
+    0.33,
+    1.25,
+    0.95
+   ],
+   "nozzle.sup.W.7.stand": [
+    1.01,
+    1.25,
+    0
+   ],
+   "nozzle.dsl.W.8": [
+    0.33,
+    0.9199999999999999,
+    0.95
+   ],
+   "nozzle.dsl.W.8.stand": [
+    1.01,
+    0.9199999999999999,
+    0
+   ],
+   "nozzle.reg.E.9": [
+    -0.33,
+    1.58,
+    0.95
+   ],
+   "nozzle.reg.E.9.stand": [
+    -1.01,
+    1.58,
+    0
+   ],
+   "nozzle.sup.E.10": [
+    -0.33,
+    1.25,
+    0.95
+   ],
+   "nozzle.sup.E.10.stand": [
+    -1.01,
+    1.25,
+    0
+   ],
+   "nozzle.dsl.E.11": [
+    -0.33,
+    0.9199999999999999,
+    0.95
+   ],
+   "nozzle.dsl.E.11.stand": [
+    -1.01,
+    0.9199999999999999,
+    0
+   ],
+   "nozzle.reg.W.12": [
+    -7.67,
+    1.58,
+    0.95
+   ],
+   "nozzle.reg.W.12.stand": [
+    -6.99,
+    1.58,
+    0
+   ],
+   "nozzle.sup.W.13": [
+    -7.67,
+    1.25,
+    0.95
+   ],
+   "nozzle.sup.W.13.stand": [
+    -6.99,
+    1.25,
+    0
+   ],
+   "nozzle.dsl.W.14": [
+    -7.67,
+    0.9199999999999999,
+    0.95
+   ],
+   "nozzle.dsl.W.14.stand": [
+    -6.99,
+    0.9199999999999999,
+    0
+   ],
+   "nozzle.reg.E.15": [
+    -8.33,
+    1.58,
+    0.95
+   ],
+   "nozzle.reg.E.15.stand": [
+    -9.01,
+    1.58,
+    0
+   ],
+   "nozzle.sup.E.16": [
+    -8.33,
+    1.25,
+    0.95
+   ],
+   "nozzle.sup.E.16.stand": [
+    -9.01,
+    1.25,
+    0
+   ],
+   "nozzle.dsl.E.17": [
+    -8.33,
+    0.9199999999999999,
+    0.95
+   ],
+   "nozzle.dsl.E.17.stand": [
+    -9.01,
+    0.9199999999999999,
+    0
+   ],
+   "nozzle.kero": [
+    7.6,
+    2.55,
+    0.9
+   ],
+   "nozzle.kero.stand": [
+    7,
+    2.55,
+    0
+   ]
+  },
+  "options": {},
+  "light": {
+   "emitters": [
+    "neon",
+    "led",
+    "glow"
+   ],
+   "when": "FuelStop.levels(CoastalPass.light.lampNeed(sky))"
+  },
+  "notes": "Footprint bounds are not walk blockers: canopy lanes and store doors must remain open. Collision and light placement are verified in the scene phase."
+ }
+}

@@ -1,0 +1,57 @@
+<!doctype html><meta charset="utf-8"><title>Fuel stop per-piece bake</title>
+<pre id="status">Baking</pre>
+<script src="../nmc-set-pieces-kit/lib/weatherSky.js"></script>
+<script src="../nmc-set-pieces-kit/lib/coastalPass.js"></script>
+<script src="fuelStopRig.js"></script><script src="fuelStopGameplay.js"></script>
+<script>
+'use strict';
+async function bake() {
+  const today = await (await fetch('/input')).json();
+  const sky = WeatherSky.at(today.bake.sky);
+  const contract = {schema: 'hidden-harbours/fuel-stop-contract@1', importSizeCap: 4096, facings: 8,
+    kitVersion: FuelStopGameplay.VERSION, todaySha256Lf: '', skyJson: JSON.stringify(today.bake.sky),
+    bakedLit: 0, outline: false, pixelsPerMetre: 32, elevationDeg: 40, pieces: []};
+  for (const p of today.pieces) {
+    const frames = [], native = [];
+    let cellW = 0, cellH = 0;
+    for (let cell = 0; cell < 8; cell++) {
+      const dir = (8 - cell) % 8, r = FuelStop.render(p.key, dir, {sky});
+      const c = p.gameplay.cells[dir];
+      if (r.w !== c.w || r.h !== c.h || r.px !== c.pivot[0] || r.py !== c.pivot[1])
+        throw Error(p.key + ': native cell differs from gameplay');
+      let x0 = r.px, x1 = r.px, y0 = r.py, y1 = r.py, opaque = 0, ink = 0;
+      for (let y = 0; y < r.h; y++) for (let x = 0; x < r.w; x++) {
+        const a = r.rgba[(y * r.w + x) * 4 + 3];
+        if (a) { ink++; x0 = Math.min(x0, x); x1 = Math.max(x1, x); y0 = Math.min(y0, y); y1 = Math.max(y1, y); }
+        if (a === 255) opaque++;
+      }
+      if (!ink) throw Error(p.key + ': empty frame');
+      cellW = Math.max(cellW, x1 - x0 + 1); cellH = Math.max(cellH, y1 - y0 + 1);
+      frames.push({cell, rigDir: dir, heading: -1, cropX: x0, cropY: y0, pivotX: r.px-x0, pivotY: r.py-y0,
+        nativeW: r.w, nativeH: r.h, nativePivotX: r.px, nativePivotY: r.py, opaque});
+      native.push(r);
+    }
+    const cols = [8, 4, 2, 1].find(n => n * cellW <= 4096 && 8 / n * cellH <= 4096);
+    if (!cols) throw Error(p.key + ': eight cells of ' + cellW + 'x' + cellH + ' exceed cap 4096');
+    const rows = 8 / cols, canvas = document.createElement('canvas');
+    canvas.width = cellW * cols; canvas.height = cellH * rows;
+    const dst = canvas.getContext('2d');
+    for (let i = 0; i < 8; i++) {
+      const r = native[i], f = frames[i], image = new ImageData(new Uint8ClampedArray(r.rgba), r.w, r.h);
+      const w = Math.min(cellW, r.w - f.cropX), h = Math.min(cellH, r.h - f.cropY);
+      dst.putImageData(image, (i % cols) * cellW - f.cropX, Math.floor(i / cols) * cellH - f.cropY,
+        f.cropX, f.cropY, w, h);
+    }
+    const piece = {key: p.key, id: p.id, sheet: 'SetPiece_' + p.key, cells: 8, headings: 0,
+      cellW, cellH, cols, rows, sheetW: canvas.width, sheetH: canvas.height, frames,
+      optionsJson: JSON.stringify(p.options), variants: []};
+    const response = await fetch('/piece', {method: 'POST', body: JSON.stringify({piece, png: canvas.toDataURL('image/png')})});
+    if (!response.ok) throw Error('Failed to save ' + p.key);
+    contract.pieces.push(piece); document.getElementById('status').textContent = p.key;
+  }
+  await fetch('/done', {method: 'POST', body: JSON.stringify(contract)});
+  document.getElementById('status').textContent = 'DONE';
+}
+bake().catch(async e => { document.getElementById('status').textContent = e.stack;
+  await fetch('/error', {method: 'POST', body: e.stack}); });
+</script>

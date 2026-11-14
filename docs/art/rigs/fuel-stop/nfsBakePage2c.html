@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Nine Mile Creek: the gas bar, redrawn (part 2c): bake a board</title></head>
+<body style="background:#14181c;color:#d8dde0;font:13px Arial, Helvetica, sans-serif;margin:16px">
+<!-- Serve the folder the zip unpacks to with a local server, then open
+     hh-nmc-key-scenes/fuel-stop/nfsBakePage2c.html?p=noon      (p: noon | dusk | night)
+   It builds the whole frame once (2432 x 2208 px: x -12..64, u 0..69 in site metres), renders the sky asked for, and offers the board
+   and its 2 x 2 tiles (1216 x 1104, t_<col>_<row>.png, as the wharf return's boards) as PNG downloads. A sky takes a few minutes. -->
+<div id="s">loading the stage…</div>
+<div id="d" style="margin:8px 0;display:flex;gap:14px;flex-wrap:wrap"></div>
+<canvas id="c" style="display:block;max-width:100%;image-rendering:pixelated"></canvas>
+<script>
+const q = new URLSearchParams(location.search), preset = q.get('p') || 'noon', base = '../../';
+const io = { readFile: (f) => fetch(base + f).then(r => { if (!r.ok) throw new Error('missing ' + f); return r.text(); }), readFileBinary: (f) => fetch(base + f).then(r => { if (!r.ok) throw new Error('missing ' + f); return r.blob(); }) };
+const s = document.getElementById('s'), say = (t) => { s.textContent = t; };
+(async () => {
+  (0, eval)(await io.readFile('hh-nmc-key-scenes/fuel-stop/nfsBake2c.js')); await NfsBake2c.load(io); const t0 = Date.now();
+  const F = NfsBake2c.FRAME, P = await NfsBake2c.build({ x0: F.x0, x1: F.x1, uTop: F.uTop, uBot: F.uBot, yMin: -12, yMax: 112, padBelow: 8 }, (l) => say(l.toLowerCase() + '…'));
+  const R = await NfsBake2c.render(P, preset), c = document.getElementById('c'); c.width = R.w; c.height = R.h;
+  const g = c.getContext('2d'), im = g.createImageData(R.w, R.h); im.data.set(R.rgba); g.putImageData(im, 0, 0);
+  let h = 0x811c9dc5 >>> 0; for (let i = 0; i < R.rgba.length; i++) { h ^= R.rgba[i]; h = Math.imul(h, 16777619) >>> 0; }
+  say('the gas bar, ' + preset + ' · ' + R.w + ' x ' + R.h + ' · FNV-1a ' + h.toString(16) + ' · ' + Math.round((Date.now() - t0) / 1000) + ' s');
+  const d = document.getElementById('d'), link = (name, cv) => { const a = document.createElement('a'); a.download = name; a.href = cv.toDataURL('image/png'); a.textContent = name; a.style.color = '#9fd3c7'; d.appendChild(a); };
+  link('board_' + preset + '.png', c);
+  for (let r = 0; r < 2; r++) for (let k = 0; k < 2; k++) { const t = document.createElement('canvas'); t.width = R.w / 2; t.height = R.h / 2; t.getContext('2d').drawImage(c, k * R.w / 2, r * R.h / 2, R.w / 2, R.h / 2, 0, 0, R.w / 2, R.h / 2); link('t_' + k + '_' + r + '.png', t); }
+})().catch(e => say('error: ' + e.message));
+</script>
+</body></html>

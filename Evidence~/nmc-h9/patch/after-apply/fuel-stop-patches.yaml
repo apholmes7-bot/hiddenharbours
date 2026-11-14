@@ -1,0 +1,18 @@
+# StPetersLayerRefresh: one step's patch to one root. Whole Unity YAML documents.
+step: "13-wharf-land-side"
+root: "NmcWharfLandSide"
+rootGameObject: 308387568
+differences: []
+deletions: []
+edits: []
+additions: []
+
+# StPetersLayerRefresh: one step's patch to one root. Whole Unity YAML documents.
+step: "19-fuel-stop"
+root: "CreekFuel"
+rootGameObject: 1062012223
+addAfter: 2073826116
+differences: []
+deletions: []
+edits: []
+additions: []

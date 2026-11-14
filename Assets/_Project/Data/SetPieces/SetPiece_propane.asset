@@ -1,0 +1,146 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 01b51978faec4dbb8e54e23107a97ef5, type: 3}
+  m_Name: SetPiece_propane
+  m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.SetPieceDef
+  Id: station.nmc_propane
+  DisplayName: Propane exchange
+  RigKey: propane
+  SceneId: keyscene.nmc_fuel_stop
+  BakedOptionsJson: '{}'
+  Layer: ground
+  Walk: around
+  Mount: ground
+  BoundsMin: {x: -0.85, y: -0.45, z: 0}
+  BoundsMax: {x: 0.85, y: 0.47, z: 1.8}
+  Frames:
+  - Sprite: {fileID: 1926774164, guid: 619801690f594bae8ddfce5d2dbe1163, type: 3}
+    RigDir: 0
+    ShowFaces: 0
+    BearingDeg: 0
+    CameraSees: fuel stop piece
+    NativeSize: {x: 69, y: 78}
+    NativePivot: {x: 34, y: 60}
+    Crop: {x: 7, y: 6}
+    Pivot: {x: 27, y: 54}
+  - Sprite: {fileID: 296080177, guid: 619801690f594bae8ddfce5d2dbe1163, type: 3}
+    RigDir: 7
+    ShowFaces: 7
+    BearingDeg: 315
+    CameraSees: fuel stop piece
+    NativeSize: {x: 74, y: 97}
+    NativePivot: {x: 36, y: 70}
+    Crop: {x: 7, y: 7}
+    Pivot: {x: 29, y: 63}
+  - Sprite: {fileID: -1963508684, guid: 619801690f594bae8ddfce5d2dbe1163, type: 3}
+    RigDir: 6
+    ShowFaces: 6
+    BearingDeg: 270
+    CameraSees: fuel stop piece
+    NativeSize: {x: 44, y: 94}
+    NativePivot: {x: 21, y: 68}
+    Crop: {x: 7, y: 6}
+    Pivot: {x: 14, y: 62}
+  - Sprite: {fileID: 1525862968, guid: 619801690f594bae8ddfce5d2dbe1163, type: 3}
+    RigDir: 5
+    ShowFaces: 5
+    BearingDeg: 225
+    CameraSees: fuel stop piece
+    NativeSize: {x: 74, y: 90}
+    NativePivot: {x: 36, y: 63}
+    Crop: {x: 7, y: 6}
+    Pivot: {x: 29, y: 57}
+  - Sprite: {fileID: -202500729, guid: 619801690f594bae8ddfce5d2dbe1163, type: 3}
+    RigDir: 4
+    ShowFaces: 4
+    BearingDeg: 180
+    CameraSees: fuel stop piece
+    NativeSize: {x: 69, y: 71}
+    NativePivot: {x: 34, y: 54}
+    Crop: {x: 7, y: 7}
+    Pivot: {x: 27, y: 47}
+  - Sprite: {fileID: -1147244017, guid: 619801690f594bae8ddfce5d2dbe1163, type: 3}
+    RigDir: 3
+    ShowFaces: 3
+    BearingDeg: 135
+    CameraSees: fuel stop piece
+    NativeSize: {x: 74, y: 90}
+    NativePivot: {x: 36, y: 63}
+    Crop: {x: 6, y: 6}
+    Pivot: {x: 30, y: 57}
+  - Sprite: {fileID: -2083395048, guid: 619801690f594bae8ddfce5d2dbe1163, type: 3}
+    RigDir: 2
+    ShowFaces: 2
+    BearingDeg: 90
+    CameraSees: fuel stop piece
+    NativeSize: {x: 44, y: 94}
+    NativePivot: {x: 22, y: 68}
+    Crop: {x: 7, y: 6}
+    Pivot: {x: 15, y: 62}
+  - Sprite: {fileID: -790981301, guid: 619801690f594bae8ddfce5d2dbe1163, type: 3}
+    RigDir: 1
+    ShowFaces: 1
+    BearingDeg: 45
+    CameraSees: fuel stop piece
+    NativeSize: {x: 74, y: 97}
+    NativePivot: {x: 36, y: 70}
+    Crop: {x: 6, y: 7}
+    Pivot: {x: 30, y: 63}
+  CellSize: {x: 59, y: 82}
+  PixelsPerMetre: 32
+  ElevationDeg: 40
+  BakedLit: 0
+  Colliders:
+  - Type: polygon
+    Blocks: walk
+    Points:
+    - {x: 0.9, y: 0.5}
+    - {x: -0.9, y: 0.5}
+    - {x: -0.9, y: -0.5}
+    - {x: 0.9, y: -0.5}
+  Anchors:
+  - Name: buy_propane
+    Position: {x: 0, y: 0, z: 0}
+  - Name: buy_propane.stand
+    Position: {x: 0, y: 0, z: 0}
+  Path: []
+  TideMarks: []
+  Words: []
+  HasLight: 0
+  Light:
+    Emitters: []
+    When: 
+  IsAnimated: 0
+  Animated:
+    Part: 
+    Input: 
+    Steps: 0
+    BakedAtDeg: 0
+    RigDir: 0
+    Headings: []
+  GameplayJson: '{"schema":"hidden-harbours/fuel-stop-piece@1","generatedBy":"FuelStopGameplay
+    1.0.0","key":"propane","id":"station.nmc_propane","name":"Propane exchange","defType":"SetPieceDef","scene":"keyscene.nmc_fuel_stop","units":"metres,
+    model frame rotated by pi from FuelStop plan metres","bounds":{"x":[-0.85,0.85],"y":[-0.45,0.47],"z":[0,1.8]},"layer":"ground","walk":"around","mount":"ground","colliders":[{"type":"polygon","blocks":"walk","pts":[[0.9,0.5],[-0.9,0.5],[-0.9,-0.5],[0.9,-0.5]]}],"facings":[{"dir":0,"showFaces":"0","bearingDeg":0,"cameraSees":"fuel
+    stop piece"},{"dir":1,"showFaces":"1","bearingDeg":45,"cameraSees":"fuel stop
+    piece"},{"dir":2,"showFaces":"2","bearingDeg":90,"cameraSees":"fuel stop piece"},{"dir":3,"showFaces":"3","bearingDeg":135,"cameraSees":"fuel
+    stop piece"},{"dir":4,"showFaces":"4","bearingDeg":180,"cameraSees":"fuel stop
+    piece"},{"dir":5,"showFaces":"5","bearingDeg":225,"cameraSees":"fuel stop piece"},{"dir":6,"showFaces":"6","bearingDeg":270,"cameraSees":"fuel
+    stop piece"},{"dir":7,"showFaces":"7","bearingDeg":315,"cameraSees":"fuel stop
+    piece"}],"cells":[{"dir":0,"w":69,"h":78,"pivot":[34,60]},{"dir":1,"w":74,"h":97,"pivot":[36,70]},{"dir":2,"w":44,"h":94,"pivot":[22,68]},{"dir":3,"w":74,"h":90,"pivot":[36,63]},{"dir":4,"w":69,"h":71,"pivot":[34,54]},{"dir":5,"w":74,"h":90,"pivot":[36,63]},{"dir":6,"w":44,"h":94,"pivot":[21,68]},{"dir":7,"w":74,"h":97,"pivot":[36,70]}],"anchors":{"buy_propane":[0,0,0],"buy_propane.stand":[0,0,0]},"options":{},"light":null,"notes":"Footprint
+    bounds are not walk blockers: canopy lanes and store doors must remain open.
+    Collision and light placement are verified in the scene phase."}'
+  State: 
+  Variants: []
+  HasVendor: 0
+  Vendor:
+    Seller: 
+    At: {x: 0, y: 0, z: 0}

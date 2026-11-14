@@ -6006,3 +6006,14 @@ MonoBehaviour:
   - gull.nmc_crane
   - gull.nmc_light
   - gull.nmc_arm
+  - prop.nmc_dumpster
+  - prop.nmc_picnic
+  - prop.nmc_ice
+  - prop.nmc_bin
+  - prop.nmc_picnic_r
+  - prop.nmc_light_court
+  - prop.nmc_light_lot
+  - prop.nmc_light_quay_w
+  - prop.nmc_light_quay_e
+  - prop.nmc_light_ramp
+  - prop.nmc_light_lot_e

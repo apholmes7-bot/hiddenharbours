@@ -89,6 +89,7 @@ namespace HiddenHarbours.App.Editor
             yield return (YardRetireStep, s => RemoveChildren(s, "Yards", name => name == "BoatShed", 1, YardRetireStep));
             yield return (YardRetireStep, RetireOldShipyardLot);
             yield return (VendorAnchorsStep, RegisterVendorAnchors);
+            yield return (FuelStopStep, PlaceForecourt);
         }
         public static LayerPatch RetireOldShipyardLot(SceneYaml scene)
         {

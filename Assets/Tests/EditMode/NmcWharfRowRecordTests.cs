@@ -106,7 +106,8 @@ namespace HiddenHarbours.Tests.EditMode
                 Assert.That(byId[id].owner, Is.EqualTo("H6").Or.EqualTo("H5"), id);
                 Assert.That(string.IsNullOrEmpty(byId[id].waits), Is.True, id);
             }
-            CollectionAssert.DoesNotContain(scene.PlacementIds, "prop.nmc_light_ramp");
+            // H9 placed the ramp light (H5's row) with the other ten that waited for the fuel stop kit: the premise moved.
+            CollectionAssert.Contains(scene.PlacementIds, "prop.nmc_light_ramp");
             foreach (string id in new[] { "structure.nmc_harbourmaster", "structure.nmc_fish_market", "structure.nmc_restaurant" })
                 CollectionAssert.Contains(scene.PlacementIds, id);
             Assert.IsTrue(scene.Placed, "This phase must activate its explicit placement subset.");
@@ -151,25 +152,29 @@ namespace HiddenHarbours.Tests.EditMode
         public void TheN1DryRunPlacesExactlyTheEligibleTwentyTwo_WithItsStack()
         {
             Record record = Read();
+            // H9 moved this premise: the ramp light (H5's row) waits no longer and stands once, placed by H9 on the fuel
+            // stop kit under the land side, so the candidate holds H5's twenty-two and the ramp light, each once.
             var expected = record.rows.Where(r => r.owner == "H5" && string.IsNullOrEmpty(r.waits)).Select(r => r.id).ToArray();
-            Assert.That(expected, Has.Length.EqualTo(22));
+            Assert.That(expected, Has.Length.EqualTo(23));
             var owned = new HashSet<string>(record.rows.Where(r => r.owner == "H5").Select(r => r.id));
             var candidate = WaterSideCandidate();
             var actual = candidate.Docs.Where(d => d.ClassId == 1 && owned.Contains(d.Field("m_Name"))).Select(d => d.Field("m_Name")).ToArray();
             CollectionAssert.AreEquivalent(expected, actual);
-            Assert.That(actual.Distinct().Count(), Is.EqualTo(22));
-            CollectionAssert.DoesNotContain(actual, "prop.nmc_light_ramp");
+            Assert.That(actual.Distinct().Count(), Is.EqualTo(23));
+            CollectionAssert.AreEquivalent(expected.Where(id => id != "prop.nmc_light_ramp"),
+                NineMileCreekWharfWaterSide.PlacementRows().Select(p => p.Id), "H5 places its twenty-two; the ramp light is H9's to place");
         }
 
         [Test]
         public void TheH5RowsPlaced_AreExactlyTheEligibleTwentyTwo()
         {
             Record record = Read();
+            // H9 moved this premise: the ramp light (H5's row, placed by H9 on the fuel stop kit) joins the placed set.
             var expected = record.rows.Where(r => r.owner == "H5" && string.IsNullOrEmpty(r.waits)).Select(r => r.id).ToArray();
-            Assert.That(expected, Has.Length.EqualTo(22));
+            Assert.That(expected, Has.Length.EqualTo(23));
             var owned = new HashSet<string>(record.rows.Where(r => r.owner == "H5").Select(r => r.id));
             CollectionAssert.AreEquivalent(expected, Scene().PlacementIds.Where(owned.Contains).ToArray());
-            CollectionAssert.DoesNotContain(Scene().PlacementIds, "prop.nmc_light_ramp");
+            CollectionAssert.Contains(Scene().PlacementIds, "prop.nmc_light_ramp");
         }
 
         [Test]
@@ -359,19 +364,20 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         [Test]
-        public void TheElevenFuelStopRows_WaitForH9_AndRemainOutsideThePlacementSubset()
+        public void TheElevenFuelStopRows_WaitNoLonger_AndJoinThePlacementSubset()
         {
             string[] ids = { "prop.nmc_dumpster", "prop.nmc_picnic", "prop.nmc_ice", "prop.nmc_bin",
                 "prop.nmc_picnic_r", "prop.nmc_light_court", "prop.nmc_light_lot", "prop.nmc_light_quay_w",
                 "prop.nmc_light_quay_e", "prop.nmc_light_ramp", "prop.nmc_light_lot_e" };
             Record record = Read();
             KeySceneDef scene = Scene();
-            CollectionAssert.AreEquivalent(ids, record.rows.Where(r => r.waits == "fuelStopRig intake (H9)").Select(r => r.id).ToArray());
+            // H9 moved this premise: the eleven were placed on the fuel stop kit, so none waits and each is in the subset.
+            CollectionAssert.IsEmpty(record.rows.Where(r => r.waits == "fuelStopRig intake (H9)").Select(r => r.id).ToArray());
             foreach (string id in ids)
             {
                 Assert.AreEqual("fuelStopRig (pass 6)", scene.Pieces.Single(p => p.Id == id).Kit, id);
-                CollectionAssert.DoesNotContain(scene.PlacementIds, id);
-                // seat ruling s8, 11-07, Decision 4 lean a: the ramp light remains H5's waiting row.
+                CollectionAssert.Contains(scene.PlacementIds, id);
+                // seat ruling s8, 11-07, Decision 4 lean a: the ramp light stays H5's row; H9 places it.
                 Assert.AreEqual(id == "prop.nmc_light_ramp" ? "H5" : "H6", record.rows.Single(r => r.id == id).owner, id);
             }
         }
