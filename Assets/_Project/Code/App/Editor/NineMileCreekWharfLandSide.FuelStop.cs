@@ -60,6 +60,44 @@ namespace HiddenHarbours.App.Editor
             return map;
         }
 
+        /// <summary>
+        /// <b>The ground the stop stands on</b>: one rectangle, from the rows that are placed. West to east it spans
+        /// the lot's own lights (the kit lights the lot it paves); south it meets Wharf Road's kerb, the road the
+        /// stop fronts, read from the road network; north it runs under the store to the store's own ground point.
+        /// (Stopping it at the door anchor left grass under the awning, between the walk and the wall: the kit's
+        /// bounds are the awning's, and the wall stands behind them.) ⚠ It is the kit v3 PAD the old station had (<see cref="NineMileCreekRoads.Pads"/>),
+        /// moved: one concrete surface. The kit's own lot (asphalt, five slab pads, the store walk, stall lines) is
+        /// drawn only in the kit's scene source and is in neither the key scene asset nor the road network; laying
+        /// that is the road lane's, and this pad is what keeps the meadow from growing between the pumps until then.
+        /// </summary>
+        public static Rect ForecourtArea()
+        {
+            if (_forecourtArea.HasValue) return _forecourtArea.Value;
+            KeySceneDef scene = FuelStopKeyScene();
+            var poles = scene.Pieces.Where(p => OnFuelStopKit(p) && p.Piece == "lampPole").ToList();
+            KeyScenePiece store = scene.Pieces.Single(p => p.Id == "station.nmc_store");
+            if (poles.Count < 2) throw new Refusal(FuelStopStep + ": the lot has fewer than two lights to span.");
+            float half = (Definition("lampPole").BoundsMax.x - Definition("lampPole").BoundsMin.x) * 0.5f;
+            float west = poles.Min(p => p.At.x) - half, east = poles.Max(p => p.At.x) + half;
+            float north = store.At.y;
+            float south = float.NegativeInfinity;
+            foreach (var road in NineMileCreekRoadNetwork.Load().All(WharfRoadId))
+                for (int i = 1; i < road.Points.Length; i++)
+                {
+                    Vector2 a = road.Points[i - 1], b = road.Points[i];
+                    float lo = Mathf.Min(a.x, b.x), hi = Mathf.Max(a.x, b.x);
+                    if (hi < west || lo > east || Mathf.Approximately(a.x, b.x)) continue;
+                    foreach (float x in new[] { Mathf.Clamp(west, lo, hi), Mathf.Clamp(east, lo, hi) })
+                        south = Mathf.Max(south, Mathf.Lerp(a.y, b.y, (x - a.x) / (b.x - a.x)) + road.HalfWidth);
+                }
+            if (float.IsNegativeInfinity(south) || south >= north) throw new Refusal(FuelStopStep + ": Wharf Road does not pass south of the stop.");
+            _forecourtArea = Rect.MinMaxRect(west, south, east, north);
+            return _forecourtArea.Value;
+        }
+        // Read once per domain: the pad table asks for it per cell.
+        static Rect? _forecourtArea;
+        const string WharfRoadId = "road.nmc_wharf_road";
+
         static KeySceneDef FuelStopKeyScene() => AssetDatabase.LoadAssetAtPath<KeySceneDef>(FuelStopKeyScenePath)
             ?? throw new Refusal("The fuel stop key scene is unavailable.");
 
@@ -274,9 +312,6 @@ namespace HiddenHarbours.App.Editor
         const float StandClearance = 0.3f;
         /// <summary>How far a machine's block reaches past its outermost nozzles, metres.</summary>
         const float MachinePad = 0.25f;
-        /// <summary>How far a glow throws past the lit piece's own footprint, metres.</summary>
-        const float LampSpill = 3f;
-
         /// <summary>
         /// The walls the kit leaves to the scene phase (its README: the exported footprint is a bounding polygon, not a
         /// walk blocker). The store: its box between the door's wall and the service door's wall, both stands outside.
@@ -325,28 +360,62 @@ namespace HiddenHarbours.App.Editor
         }
 
         /// <summary>
-        /// The lit pieces' glows (the kit's light rule: neon, led and glow by the lamp need). One additive
-        /// <see cref="SceneLight"/> each, round, over the piece's top centre (the store's over its door), throwing past
-        /// its footprint by <see cref="LampSpill"/>. The light's own shader gate scales it by the frame's darkness (ADR
-        /// 0016), so the three states (day, dusk, night) come from the sky with no runtime of H9's. Returns the
-        /// transforms to list under the forecourt.
+        /// The lit pieces' lamps, to the project's lamp look (<see cref="LightPresets"/>; the 2026-09-04 ruling: a
+        /// bloom is the size of the lit FITTING, the ground light is the pool <see cref="LampPoolSystem"/> draws from
+        /// the reach). <see cref="NineMileCreekFuelStopPlan.LampRules"/> says what each lit kind is as a lamp; a lit
+        /// kind with no rule (a sign) gets no ground light. Every value is the preset's, stamped as text because the
+        /// patch writes text. The light's own shader gate scales it by the frame's darkness (ADR 0016), so day, dusk
+        /// and night come from the sky with no runtime of H9's. Returns the transforms to list under the forecourt.
         /// </summary>
         static IEnumerable<long> Lamps(KeyScenePiece row, SetPieceDef def, Func<string, long> alloc,
             List<(string name, string text)> wanted, long father)
         {
-            if (!def.HasLight || def.Light.Emitters.Length == 0) yield break;
-            Vector3 top = new Vector3((def.BoundsMin.x + def.BoundsMax.x) * 0.5f, (def.BoundsMin.y + def.BoundsMax.y) * 0.5f, def.BoundsMax.z);
-            if (row.Piece == "store" && def.TryGetAnchor("door", out Vector3 door)) top = new Vector3(door.x, door.y, def.BoundsMax.z);
-            Vector2 at = row.At + SetPieceDef.ToWorld(new Vector2(top.x, top.y), row.Dir);
-            float range = Mathf.Max(def.BoundsMax.x - def.BoundsMin.x, def.BoundsMax.y - def.BoundsMin.y) * 0.5f + LampSpill;
-            string key = row.Id + "/lamp";
-            long go = alloc(key + "/go"), tr = alloc(key + "/tr"), lamp = alloc(key + "/light");
-            wanted.Add((key + "/go", GameObjectYaml(go, "lamp_" + row.Id, new[] { tr, lamp })));
-            wanted.Add((key + "/tr", TransformYaml(tr, go, at, Array.Empty<long>(), father)));
-            wanted.Add((key + "/light", MonoBehaviourYaml(lamp, go,
-                Script("Assets/_Project/Code/Art/SceneLight.cs", "HiddenHarbours.Art", "HiddenHarbours.Art.SceneLight"),
-                new[] { "  _shape: 1", "  _range: " + F(range), "  _castsShadows: 0", "  _lampHeightMeters: " + F(top.z) })));
-            yield return tr;
+            var lit = new List<long>();
+            if (!def.HasLight || def.Light.Emitters.Length == 0) return lit;
+            NineMileCreekFuelStopPlan.LampRule rule = NineMileCreekFuelStopPlan.LampRuleFor(row.Piece);
+            if (rule == null) return lit;
+            var at = new List<Vector2>();
+            if (rule.PerMachine)
+                foreach (var machine in FuelPumps.Where(f => f.Row == row.Id).GroupBy(f => MachineOf(f.Anchor)).Where(g => g.Key >= 0).OrderBy(g => g.Key))
+                {
+                    Vector2 sum = Vector2.zero; int n = 0;
+                    foreach (var f in machine) { Vector3 nozzle = RowAnchor(row, f.Anchor); sum += new Vector2(nozzle.x, nozzle.y); n++; }
+                    at.Add(sum / n);
+                }
+            else if (rule.Anchor != null) { Vector3 a = RowAnchor(row, rule.Anchor); at.Add(new Vector2(a.x, a.y)); }
+            else at.Add(row.At + SetPieceDef.ToWorld(rule.Local, row.Dir));
+            if (at.Count == 0) throw new Refusal(row.Id + ": its lamp rule finds nothing to light.");
+
+            LightPresets.Config look = LightPresets.For(rule.Kind);
+            float height = rule.Height > 0f ? rule.Height : def.BoundsMax.z;
+            bool bloom = rule.FittingWidth > 0f;
+            for (int i = 0; i < at.Count; i++)
+            {
+                // The first lamp keeps the key the row's one glow had, so its documents keep their ids.
+                string key = row.Id + "/lamp" + (i == 0 ? "" : "." + i.ToString(CultureInfo.InvariantCulture));
+                long go = alloc(key + "/go"), tr = alloc(key + "/tr"), lamp = alloc(key + "/light");
+                wanted.Add((key + "/go", GameObjectYaml(go, "lamp_" + row.Id + (i == 0 ? "" : "_" + i.ToString(CultureInfo.InvariantCulture)), new[] { tr, lamp })));
+                wanted.Add((key + "/tr", TransformYaml(tr, go, at[i], Array.Empty<long>(), father)));
+                wanted.Add((key + "/light", MonoBehaviourYaml(lamp, go,
+                    Script("Assets/_Project/Code/Art/SceneLight.cs", "HiddenHarbours.Art", "HiddenHarbours.Art.SceneLight"),
+                    new[]
+                    {
+                        "  _shape: " + (int)look.Shape,
+                        "  _range: " + F(bloom ? LightPresets.BloomForFitting(rule.FittingWidth) : look.Range),
+                        "  _color: {r: " + F(look.Color.r) + ", g: " + F(look.Color.g) + ", b: " + F(look.Color.b) + ", a: " + F(look.Color.a) + "}",
+                        "  _intensity: " + F(look.Intensity),
+                        "  _edgeSoftness: " + F(look.EdgeSoftness),
+                        "  _drawsBloom: " + (bloom ? "1" : "0"),
+                        "  _flickerAmount: " + F(look.FlickerAmount),
+                        "  _castsShadows: 0",
+                        "  _lampHeightMeters: " + F(height),
+                        "  _bloomLiftMetres: " + F(bloom ? height * IsoGround.HeightScale : 0f),
+                        "  _reachMetres: " + F(LightPresets.ReachMetres(rule.Kind)),
+                        "  _originOffset: " + Vec2Yaml(look.OriginOffset),
+                    })));
+                lit.Add(tr);
+            }
+            return lit;
         }
 
         static bool Inside(Vector2[] polygon, Vector2 p)
@@ -407,7 +476,18 @@ namespace HiddenHarbours.App.Editor
         /// </summary>
         public static void ApplyFuelStop(string evidence, bool apply = false)
         {
-            ApplyCounterPatches(evidence, "fuel-stop", "The fuel stop", new Func<SceneYaml, LayerPatch>[] { PlaceRows, PlaceForecourt }, apply);
+            ApplyCounterPatches(evidence, "fuel-stop", "The fuel stop", new Func<SceneYaml, LayerPatch>[]
+            {
+                PlaceRows, PlaceForecourt,
+                // The ground under it (H9 phase C): the forecourt pad moved with the stop, so what kit v3 paints is
+                // painted again, the meadow steps off the pad and the planting on it is retired.
+                NineMileCreekGroundSteps.EssentialRoads,
+                s => NineMileCreekGroundSteps.PadMeadow(s, ForecourtArea(), FuelStopStep),
+                s => NineMileCreekGroundSteps.PadPlanting(s, "CreekHedgerows", ForecourtArea(), FuelStopStep, "on the fuel stop's forecourt"),
+                s => NineMileCreekGroundSteps.PadPlanting(s, "CreekTrees", ForecourtArea(), FuelStopStep, "on the fuel stop's forecourt"),
+                s => NineMileCreekGroundSteps.PadPlanting(s, "CreekUnderstorey", ForecourtArea(), FuelStopStep, "on the fuel stop's forecourt"),
+                s => NineMileCreekGroundSteps.PadPlanting(s, "CreekMarsh", ForecourtArea(), FuelStopStep, "on the fuel stop's forecourt"),
+            }, apply);
             if (apply) RecordFuelStopPlacement();
         }
         public static void FuelStopDryRunFromCommandLine() => ApplyFuelStop("Evidence~/nmc-h9/patch/dry-run");

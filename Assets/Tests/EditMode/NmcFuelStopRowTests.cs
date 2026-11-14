@@ -194,6 +194,30 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.That(ListField(FuelStopPath, "PlacementIds"), Is.SupersetOf(Thirty.Select(r => r.Id)));
         }
 
+        /// <summary>
+        /// The stop's lamps are the project's lamps (the 2026-09-04 ruling): a bloom is the size of the lit FITTING
+        /// and the ground light is the pool. Phase B found each lit piece glowing as one disc 12 to 15 m across,
+        /// because the piece's footprint had been written as the bloom's range and no lamp had a reach.
+        /// </summary>
+        [Test]
+        public void TheFuelStopsLamps_BloomAtTheFitting_AndLightTheGroundByTheirReach()
+        {
+            const float maxBloomMetres = 1.6f;      // LightPresets.MaxBloomRadiusMetres
+            const int poolBudget = 8;               // LampShadowProfile._maxPools: the nearest eight lamps draw a pool
+            var lamps = Regex.Split(File.ReadAllText(ScenePath), @"^--- !u!", RegexOptions.Multiline)
+                             .Where(d => d.Contains("  _reachMetres:") && d.Contains("  _lampHeightMeters:")).ToList();
+            float Field(string doc, string name) => float.Parse(
+                Regex.Match(doc, "^  " + Regex.Escape(name) + @": (\S+)\r?$", RegexOptions.Multiline).Groups[1].Value, CultureInfo.InvariantCulture);
+            Assert.That(lamps.Count, Is.EqualTo(poolBudget), "three lot lights, three islands, the semi lane and the store's door");
+            foreach (string lamp in lamps)
+            {
+                Assert.That(Field(lamp, "_range"), Is.LessThanOrEqualTo(maxBloomMetres), "a bloom wider than any fitting is a disc on the ground");
+                Assert.That(Field(lamp, "_reachMetres"), Is.GreaterThan(0f), "a lamp with no reach lights no ground");
+                Assert.That(Field(lamp, "_castsShadows"), Is.EqualTo(0f));
+            }
+            Assert.That(lamps.Count(l => Field(l, "_drawsBloom") > 0f), Is.EqualTo(3), "only the lot lights have a drawn fitting to bloom at");
+        }
+
         [Test]
         public void TheElevenWaitingWharfRows_ArePlacedOnceEach_AndWaitNoLonger()
         {
