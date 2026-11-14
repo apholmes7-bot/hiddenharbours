@@ -103,7 +103,7 @@ namespace HiddenHarbours.Tests.EditMode
                 Assert.That(building.Field("m_Enabled"), Is.EqualTo("1"), who);
                 Assert.That(Active(go), Is.True, who);
                 // A stale explicit occupant would make the real walk test observe another body.
-                Assert.That(building.FieldRef("_occupant"), Is.AnyOf(0L, _scene.TransformOf(player).FileId), who);
+                Assert.That(building.FieldRef("_occupant"), Is.EqualTo(0L).Or.EqualTo(_scene.TransformOf(player).FileId), who);
                 InteriorFootprint floor = Footprint(building);
                 float thickness = ParseFloat(building.Field("_wallThicknessMetres"));
                 float doorway = ParseFloat(building.Field("_doorwayWidthMetres"));
