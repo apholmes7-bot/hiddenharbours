@@ -49,6 +49,13 @@ The first change establishes the art/fit contract; completion requires creation 
 ownership in normal play, with production rendering and safe save migration. The old sprite-layer
 restriction in ADR 0029 is revisited through a measured mesh proof, not treated as a scope deferral.
 
+**Owner-directed addition, 2026-11-14: character traits and hunger.** Players pick two named traits
+with small, owner-tunable bonuses and no drawbacks (each co-op player has their own; deterministic),
+changeable later by sleeping in your own bed once a season; and a light hunger. Neither was in the
+milestone plan. Traits slice 1 (the `TraitDef` contract, the Core trait service, the save field and
+three traits on existing seams: Speedwalker, Charismatic, Patient Angler) is the first build; the
+creator page, the change-at-bed rule, more traits and hunger follow as their own slices.
+
 **Owner-directed addition, 2026-11-13: birds and photography.** More bird species as data, starting
 with diving birds (the cormorant, then the tern) and herons, then ducks and eagles; a bird list per
 region; flock and solitary behaviour, habitat and perches; birds hunting the right fish; a camera

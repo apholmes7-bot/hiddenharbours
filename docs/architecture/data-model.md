@@ -35,6 +35,7 @@ time without merge conflicts. Every Def has a stable **string `id`** (e.g., `fis
 | `WordsTableDef` | `Data/Words/` | the words a sign, name board or notice shows, by string id (`words.snake_case`); boards bake blank, so renaming a place changes a string, never a pixel | — |
 | `RegionTerrainPlanDef` | `Data/Terrain/StPetersPlan/` | one region's terrain plan: seed, reference line, section feathers and warp, tide frame, bed rules, the lists of its coast, pond, stream, creek, pan, path and biome Defs, and the live walls' chunk cut (`WallToeSpanMetres`: St Peters 1 m; 2 m, the builder's own, elsewhere) | `design/st-peters-terrain-pass-9.md` §8.1 |
 | `CliffWallDef` | `Data/Terrain/StPetersWalls/` | one cliff wall (`wall.stp_NNN`; append-only: a cut piece records `SplitFrom`, a retired or held id keeps its file): status, rock, class, aspect, batter, the wall it follows; per station its brow, toe, drop and toe height, its k on the wall it came from (`Stations`) and where its lines came from (`Kept`, `Measured`, `Interpolated`); optionally `TextureBrow`, the line its texture runs along where a top moved out | the class's own summary |
+| `TraitDef` | `Data/Resources/Traits/` | one character trait (`trait.snake_case`): display name, one-line description, and a list of `TraitModifier`s, each a `TraitStat` (append-only enum: `WalkSpeed` 0, `SellPrice` 1, `BiteWait` 2), a kind (`Multiplier`: the value is a factor; `Additive`: the value is added to the factor) and the value. Additives on one stat sum, then multipliers apply; no drawbacks (the content validation test refuses one). Read only through `ITraitService` (owner-directed 2026-11-14) | `architecture/tech-architecture.md` §3, "Character traits" |
 | `GameConfig` | `Data/Config/` | global tunables: day length, tide constants, season length, economy constants, stamina rates | several |
 
 > `GameConfig` centralises balance numbers so the owner / `economy-sim` can tune feel without
@@ -121,6 +122,14 @@ plain serializable DTOs owned by `SaveService` (`architecture/tech-architecture.
 > healed against shipped content: the builder refuses a stale key out loud at the point of use (the
 > v13 reasoning). What a recipe resolves to, a baked body and its ramps, is recomputed from the
 > shipped tables and never stored.
+
+> **Save schema v18 (character traits, owner-directed 2026-11-14)** — `SaveData` gained ONE field at
+> v18: `PlayerTraits`, the ids of the `TraitDef`s the player picked (two, `GameConfig.TraitPicksPerCharacter`),
+> in pick order. It is written only through `ITraitService.SetPlayerTraits`. **Ids, not numbers**: the
+> bonus is read from the shipped Def every time, so the owner retuning a trait follows into every save.
+> EMPTY is no traits, which is a new game and every save older than v18, so the `v17→v18` step adds the
+> empty list and nothing else. An id no shipped trait claims is ignored by the maths, never healed away.
+> In co-op each player will hold their own list; only the acting player's traits apply to an action.
 
 **Recomputed, never saved:** tide height, wind, weather, sea state, visibility (from
 `worldSeed + gameTime`), dormant NPC positions, authored geometry, **a boat's effective helm fit and

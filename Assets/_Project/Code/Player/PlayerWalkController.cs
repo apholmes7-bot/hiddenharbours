@@ -202,6 +202,16 @@ namespace HiddenHarbours.Player
             return Mathf.Max(walkSpeed, sprintSpeed);
         }
 
+        /// <summary>
+        /// <paramref name="speed"/> (a walk or sprint speed, m/s) with the player's
+        /// <see cref="TraitStat.WalkSpeed"/> factor applied (traits slice 1, Speedwalker), read through the
+        /// Core seam <see cref="GameServices.Traits"/>. With no traits the factor is exactly 1 and the speed
+        /// comes back untouched, so the walk is bit-for-bit what it was. Applied BEFORE <see cref="SpeedFor"/>
+        /// and the wade bands, so the sea still slows a fast walker exactly as much, proportionally.
+        /// </summary>
+        public static float WithWalkTrait(float speed)
+            => TraitMath.Apply(speed, GameServices.Traits.PlayerMultiplier(TraitStat.WalkSpeed));
+
         /// <summary>Facing from the move direction; keeps the current facing when input is ~zero.</summary>
         public static Facing FacingFor(Vector2 moveInput, Facing current)
         {
@@ -505,7 +515,8 @@ namespace HiddenHarbours.Player
             // tide gate is wired there is no water to be in, so the sprint gate sees "dry".
             float depthAtFeet = _tideGatedWalk ? TidalWalkability.DepthNow(_rb.position) : float.NegativeInfinity;
 
-            float speed = SpeedFor(_sprintHeld, _moveSpeed, _sprintSpeed, depthAtFeet, _wadeDepth);
+            float speed = SpeedFor(_sprintHeld, WithWalkTrait(_moveSpeed), WithWalkTrait(_sprintSpeed),
+                                   depthAtFeet, _wadeDepth);
             Vector2 desired = VelocityFor(_moveInput, speed);
 
             // The owner's three-band wade model (St Peters, P1/P5): full speed on dry ground, slowed as you

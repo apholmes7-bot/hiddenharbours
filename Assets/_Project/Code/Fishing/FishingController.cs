@@ -1122,9 +1122,19 @@ namespace HiddenHarbours.Fishing
             float delay = lo + (float)(_rng?.NextDouble() ?? 0.0) * (hi - lo);
 
             SeaFishingSettings s = _config != null ? _config.SeaFishing : SeaFishingSettings.Default;
-            return delay * SeaFightMath.BiteDelayScale(SeaState01(), s.SeaBoldness01)
-                         * CurrentSchoolInfluence().BiteDelayScale;
+            return WithBiteWaitTrait(delay * SeaFightMath.BiteDelayScale(SeaState01(), s.SeaBoldness01)
+                                           * CurrentSchoolInfluence().BiteDelayScale);
         }
+
+        /// <summary>
+        /// <paramref name="delay"/> (seconds to the next bite) with the player's
+        /// <see cref="TraitStat.BiteWait"/> factor applied (traits slice 1, Patient Angler), read through
+        /// the Core seam <see cref="GameServices.Traits"/>. Applied last, after the sea and the school, and it
+        /// never touches the RNG draw, so a seeded rig replays the same bite sequence, only sooner. With no
+        /// traits the factor is exactly 1 and the delay comes back untouched (bit-for-bit the old wait).
+        /// </summary>
+        public static float WithBiteWaitTrait(float delay)
+            => TraitMath.Apply(delay, GameServices.Traits.PlayerMultiplier(TraitStat.BiteWait));
 
         #region Depth drop (Rod Fishing v2 Wave 2 — design §2.1/§2.3; maths in DepthDropMath)
         // The weighted-rig branch: no cast — the rig DROPS (Sinking), the player counts the fall
