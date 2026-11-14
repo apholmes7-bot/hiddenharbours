@@ -299,6 +299,21 @@ namespace HiddenHarbours.Core
         private static ITraitService _traits;
 
         /// <summary>
+        /// The farm plots (farm slice 1): read-only questions about each plot's stage and the work due on it,
+        /// recomputed from the Defs, the world seed and the day (rule 5). Never null: a default
+        /// <see cref="FarmService"/> over the shipped Defs under <c>Resources/Farming/</c> is made on first
+        /// read; a test assigns its own. Cleared by <see cref="Reset"/>.
+        /// FLAG lead-architect: new Core contract (farming).
+        /// </summary>
+        public static IFarmService Farm
+        {
+            get => _farm ??= new FarmService();
+            set => _farm = value;
+        }
+
+        private static IFarmService _farm;
+
+        /// <summary>
         /// The active region's terrain-elevation source — the "height map" the tidal-exposure seam reads
         /// (St Peters falling tide; the future water depth-gradient shader). The <b>world</b> registers
         /// its terrain here when a region scene loads; <b>gameplay</b>/UI resolve elevation through this
@@ -1206,6 +1221,7 @@ namespace HiddenHarbours.Core
             Save = null;
             Appearance = null;           // → a fresh default on next read; drops any open preview
             Traits = null;               // → a fresh default on next read; drops its catalog and cache
+            Farm = null;                 // → a fresh default on next read; drops its catalog and baseline
             TidalTerrain = null;
             StillWater = null;           // → EmptyStillWater.Instance; this property is never null
             PlayerTransform = null;
