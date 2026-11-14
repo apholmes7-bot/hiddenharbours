@@ -208,9 +208,13 @@ namespace HiddenHarbours.Player
         /// Core seam <see cref="GameServices.Traits"/>. With no traits the factor is exactly 1 and the speed
         /// comes back untouched, so the walk is bit-for-bit what it was. Applied BEFORE <see cref="SpeedFor"/>
         /// and the wade bands, so the sea still slows a fast walker exactly as much, proportionally.
+        ///
+        /// <para>Needs slice 1: the factor is now the trait x needs product from
+        /// <see cref="CharacterFactors"/>, so hunger and tiredness slow the walk gently (never below the
+        /// config floor). Fed, rested and trait-less it is still exactly 1.</para>
         /// </summary>
         public static float WithWalkTrait(float speed)
-            => TraitMath.Apply(speed, GameServices.Traits.PlayerMultiplier(TraitStat.WalkSpeed));
+            => CharacterFactors.ApplyPlayer(speed, TraitStat.WalkSpeed);
 
         /// <summary>Facing from the move direction; keeps the current facing when input is ~zero.</summary>
         public static Facing FacingFor(Vector2 moveInput, Facing current)

@@ -299,6 +299,22 @@ namespace HiddenHarbours.Core
         private static ITraitService _traits;
 
         /// <summary>
+        /// Hunger and tiredness (needs slice 1, owner ruling 2026-11-14): the local player's needs over
+        /// <see cref="Save"/> and <see cref="Clock"/>. A seam reads the combined trait x needs factor through
+        /// <see cref="CharacterFactors.Player"/>, never this directly. Never null: a default
+        /// <see cref="NeedsService"/> is made on first read; a test assigns its own. Cleared by
+        /// <see cref="Reset"/>. Fed and rested, every factor is exactly 1.
+        /// FLAG lead-architect: new Core contract (needs).
+        /// </summary>
+        public static INeedsService Needs
+        {
+            get => _needs ??= new NeedsService();
+            set => _needs = value;
+        }
+
+        private static INeedsService _needs;
+
+        /// <summary>
         /// The active region's terrain-elevation source — the "height map" the tidal-exposure seam reads
         /// (St Peters falling tide; the future water depth-gradient shader). The <b>world</b> registers
         /// its terrain here when a region scene loads; <b>gameplay</b>/UI resolve elevation through this
@@ -649,6 +665,14 @@ namespace HiddenHarbours.Core
         /// config. Never below zero.</summary>
         public static int TraitPicksPerCharacter => Config != null
             ? System.Math.Max(0, Config.TraitPicksPerCharacter) : GameConfig.DefaultTraitPicksPerCharacter;
+
+        /// <summary>The hunger and tiredness numbers, with the fallback for an unwired config.</summary>
+        public static NeedsSettings NeedsSettings => Config != null ? Config.Needs : NeedsSettings.Default;
+
+        /// <summary>The needs' slow tick in in-game seconds (never below one game minute), with the
+        /// fallback for an unwired config. The game clock calls <see cref="INeedsService.Tick"/> this often.</summary>
+        public static double NeedsTickGameSeconds
+            => System.Math.Max(1d, NeedsSettings.TickGameMinutes) * SecondsPerDay / (24d * 60d);
 
         public static UnityEngine.Color CreatorBackdropColor => Config != null ? Config.CreatorBackdropColor : NotebookInk.Paper;
         public static float CreatorFigureHeightFraction => Config != null
@@ -1206,6 +1230,7 @@ namespace HiddenHarbours.Core
             Save = null;
             Appearance = null;           // → a fresh default on next read; drops any open preview
             Traits = null;               // → a fresh default on next read; drops its catalog and cache
+            Needs = null;                // → a fresh default on next read; drops its stage baseline
             TidalTerrain = null;
             StillWater = null;           // → EmptyStillWater.Instance; this property is never null
             PlayerTransform = null;

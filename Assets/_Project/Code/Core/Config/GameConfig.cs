@@ -23,6 +23,12 @@ namespace HiddenHarbours.Core
                  "themselves live on each TraitDef under Data/Resources/Traits.")]
         [Min(0)] public int TraitPicksPerCharacter = DefaultTraitPicksPerCharacter;
 
+        [Header("Needs (hunger and tiredness)")]
+        [Tooltip("Hunger and tiredness (owner ruling 2026-11-14). They only slow the walk a little and " +
+                 "shave a little off an in-person sale; they never stop the character and are never shown " +
+                 "as a bar. Rates are per IN-GAME hour. Read through GameServices.NeedsSettings.")]
+        public NeedsSettings Needs = NeedsSettings.Default;
+
         public const float DefaultCreatorFigureHeightFraction = 0.6f;
 
         [Header("Character creator view")]

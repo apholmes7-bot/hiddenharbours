@@ -247,6 +247,9 @@ namespace HiddenHarbours.Core
             {
                 Current.GameTimeSeconds = clock.TotalSeconds;
                 Current.DayIndex = clock.DayIndex;
+                // Needs slice 1: anchor hunger/tiredness at this same instant, so a reload is exact.
+                NeedsMath.Settle(Current.PlayerNeeds, clock.TotalSeconds, GameServices.NeedsSettings,
+                                 GameServices.SecondsPerDay / 24d);
             }
 
             if (GameServices.Environment != null) Current.WorldSeed = GameServices.Environment.WorldSeed;

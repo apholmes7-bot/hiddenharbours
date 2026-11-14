@@ -53,7 +53,9 @@ namespace HiddenHarbours.Tests.EditMode
             {
                 string path = AssetDatabase.GetAssetPath(def);
                 Assert.IsNotNull(def.Modifiers, path);
-                Assert.IsNotEmpty(def.Modifiers, path + ": a trait with no modifier does nothing");
+                int reliefs = def.NeedReliefs != null ? def.NeedReliefs.Length : 0;
+                Assert.IsTrue(def.Modifiers.Length > 0 || reliefs > 0,
+                    path + ": a trait with no modifier and no need relief does nothing");
                 foreach (TraitModifier m in def.Modifiers)
                 {
                     Assert.IsTrue(System.Enum.IsDefined(typeof(TraitStat), m.Stat), path + ": unknown stat " + (int)m.Stat);
@@ -65,6 +67,37 @@ namespace HiddenHarbours.Tests.EditMode
                         $"{path}: {m.Stat} x{alone} is not a bonus (owner ruling 2026-11-14: no drawbacks)");
                 }
             }
+        }
+
+        [Test]
+        public void EveryNeedRelief_EasesAKnownNeed_NeverWorsensIt()
+        {
+            foreach (TraitDef def in LoadAll())
+            {
+                string path = AssetDatabase.GetAssetPath(def);
+                if (def.NeedReliefs == null) continue;
+                foreach (NeedRelief r in def.NeedReliefs)
+                {
+                    Assert.IsTrue(System.Enum.IsDefined(typeof(NeedKind), r.Need), path + ": unknown need " + (int)r.Need);
+                    Assert.That(r.PenaltyScale, Is.GreaterThanOrEqualTo(0f).And.LessThan(1f),
+                        $"{path}: {r.Need} relief {r.PenaltyScale} must ease the penalty (0 cancels, below 1 eases)");
+                }
+            }
+        }
+
+        [Test]
+        public void Hardy_LoadsAndCancelsBothNeedPenalties()
+        {
+            var byId = new Dictionary<string, TraitDef>();
+            foreach (TraitDef def in LoadAll()) byId[def.Id] = def;
+            Assert.IsTrue(byId.TryGetValue("trait.hardy", out TraitDef hardy), "trait.hardy is missing");
+            Assert.AreEqual("Hardy", hardy.DisplayName);
+            Assert.IsEmpty(hardy.Modifiers, "Hardy moves no stat directly");
+            Assert.AreEqual(2, hardy.NeedReliefs.Length, "the hand-authored YAML loaded both reliefs");
+            Assert.AreEqual(NeedKind.Hunger, hardy.NeedReliefs[0].Need);
+            Assert.AreEqual(0f, hardy.NeedReliefs[0].PenaltyScale);
+            Assert.AreEqual(NeedKind.Tiredness, hardy.NeedReliefs[1].Need);
+            Assert.AreEqual(0f, hardy.NeedReliefs[1].PenaltyScale);
         }
 
         [Test]
