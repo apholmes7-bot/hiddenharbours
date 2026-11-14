@@ -85,8 +85,11 @@ namespace HiddenHarbours.Tests.EditMode
         private readonly List<Object> _spawned = new();
         private int _caught;      // FishCaught — "a catch entered a hold"
         private int _landed;      // CatchLanded — "a catch is in her hands"
+        private int _taken;       // CatchTakenFromHand — "the loose catch left her hands"
+        private CatchItem _takenItem;
         private void OnCaught(FishCaught e) => _caught++;
         private void OnLanded(CatchLanded e) => _landed++;
+        private void OnTaken(CatchTakenFromHand e) { _taken++; _takenItem = e.Item; }
 
         private StampClock _clock;
         private SaveData _save;
@@ -94,11 +97,13 @@ namespace HiddenHarbours.Tests.EditMode
         [SetUp]
         public void SetUp()
         {
-            _caught = 0; _landed = 0;
+            _caught = 0; _landed = 0; _taken = 0; _takenItem = default;
             EventBus.Clear<FishCaught>();
             EventBus.Clear<CatchLanded>();
+            EventBus.Clear<CatchTakenFromHand>();
             EventBus.Subscribe<FishCaught>(OnCaught);
             EventBus.Subscribe<CatchLanded>(OnLanded);
+            EventBus.Subscribe<CatchTakenFromHand>(OnTaken);
             GameServices.Reset();
             Interactables.Clear();
             InteractVerb.Reset();
@@ -119,8 +124,10 @@ namespace HiddenHarbours.Tests.EditMode
         {
             EventBus.Unsubscribe<FishCaught>(OnCaught);
             EventBus.Unsubscribe<CatchLanded>(OnLanded);
+            EventBus.Unsubscribe<CatchTakenFromHand>(OnTaken);
             EventBus.Clear<FishCaught>();
             EventBus.Clear<CatchLanded>();
+            EventBus.Clear<CatchTakenFromHand>();
             Interactables.Clear();
             InteractVerb.Reset();
             GameServices.Reset();
@@ -427,6 +434,201 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.IsFalse(hands.TryGiveCatchTo(pail), "a shovel is not a catch");
             Assert.AreEqual(0, pail.UsedUnits);
             Assert.IsTrue(hands.IsCarrying, "and she still has her shovel");
+        }
+
+        // ---- 7. A STATION CAN TAKE THE LOOSE CATCH THROUGH CORE ---------------------------------------
+
+        private static CatchItem PreparedCatch()
+            => new CatchItem("fish.atlantic_cod", "Atlantic cod", FishCategory.InshoreGroundfish,
+                             1.75f, 17, 0.23f, 0.42f,
+                             new FreshnessState(0.19f, 716.5d, StorageMode.Ambient));
+
+        private CarriableBucket CarryPail(CarryHands hands)
+        {
+            var go = new GameObject("CarriedPail");
+            _spawned.Add(go);
+            var pail = go.AddComponent<CarriableBucket>();
+            pail.Configure(20, go.AddComponent<SpriteRenderer>(), "container.test.carried");
+            Assert.AreEqual(CarryRefusal.None, hands.TryPickUp(pail));
+            return pail;
+        }
+
+        [Test]
+        public void Core_take_returns_the_whole_catch_frees_the_slot_and_removes_the_carried_object()
+        {
+            CarryHands hands = ToolInHand.Empty(_spawned);
+            ICatchHands contract = GameServices.CatchHands;
+            CatchItem original = PreparedCatch();
+            Assert.IsTrue(contract.TryPutInHand(original));
+            var carried = (CarriableCatch)hands.Slots.FirstOf(HandLoad.Catch);
+            _clock.TotalSeconds += 1234d;
+
+            Assert.IsTrue(contract.TryTakeFromHand(out CatchItem taken));
+
+            Assert.AreEqual(original, taken, "every field, including the freshness stamp, survives");
+            Assert.IsTrue(carried == null, "the carried object is destroyed in EditMode");
+            Assert.AreEqual(0, hands.GetComponentsInChildren<CarriableCatch>(true).Length);
+            Assert.IsTrue(hands.Slots.IsEmpty);
+            Assert.IsFalse(hands.IsCarrying);
+            Assert.IsNull(hands.Carried);
+            Assert.AreEqual(1, _taken);
+            Assert.AreEqual(original, _takenItem);
+            Assert.AreEqual(0, _caught, "taking is not a hold landing");
+            Assert.AreEqual(1, _landed, "taking must not publish another landing");
+            Assert.IsFalse(contract.TryTakeFromHand(out CatchItem again));
+            Assert.AreEqual(default(CatchItem), again);
+            Assert.AreEqual(1, _taken, "a second take cannot repeat the signal");
+            Assert.IsTrue(contract.TryPutInHand(original), "the freed slot accepts the next catch");
+        }
+
+        [Test]
+        public void Core_take_and_peek_on_empty_hands_are_silent_and_change_nothing()
+        {
+            CarryHands hands = ToolInHand.Empty(_spawned);
+            ICatchHands contract = GameServices.CatchHands;
+
+            Assert.IsFalse(contract.TryPeekHand(out CatchItem peeked));
+            Assert.AreEqual(default(CatchItem), peeked);
+            Assert.IsFalse(contract.TryTakeFromHand(out CatchItem taken));
+            Assert.AreEqual(default(CatchItem), taken);
+            Assert.IsTrue(hands.Slots.IsEmpty);
+            Assert.IsNull(hands.Carried);
+            Assert.IsNull(hands.Slung);
+            Assert.AreEqual(0, hands.transform.childCount);
+            Assert.AreEqual(0, _taken);
+            Assert.AreEqual(0, _caught);
+            Assert.AreEqual(0, _landed);
+        }
+
+        [Test]
+        public void Core_peek_keeps_the_same_item_object_and_slot_until_it_is_taken()
+        {
+            CarryHands hands = ToolInHand.Empty(_spawned);
+            ICatchHands contract = GameServices.CatchHands;
+            CatchItem original = PreparedCatch();
+            Assert.IsTrue(contract.TryPutInHand(original));
+            ICarriable carried = hands.Carried;
+            CarryHandSide side = hands.Slots.SideOf(carried);
+
+            Assert.IsTrue(contract.TryPeekHand(out CatchItem first));
+            Assert.IsTrue(contract.TryPeekHand(out CatchItem second));
+
+            Assert.AreEqual(original, first);
+            Assert.AreEqual(original, second);
+            Assert.AreSame(carried, hands.Carried);
+            Assert.AreEqual(side, hands.Slots.SideOf(carried));
+            Assert.AreEqual(1, hands.Slots.UsedHands);
+            Assert.AreEqual(0, _taken);
+            Assert.AreEqual(0, _caught);
+            Assert.AreEqual(1, _landed);
+            Assert.IsTrue(contract.TryTakeFromHand(out CatchItem taken));
+            Assert.AreEqual(first, taken);
+        }
+
+        [Test]
+        public void A_carried_pail_is_not_a_hand_catch_and_its_contents_are_untouched()
+        {
+            CarryHands hands = ToolInHand.Empty(_spawned);
+            CarriableBucket pail = CarryPail(hands);
+            CatchItem original = PreparedCatch();
+            Assert.IsTrue(pail.TryAdd(original));
+            CarryHandSide side = hands.Slots.SideOf(pail);
+            ICatchHands contract = GameServices.CatchHands;
+
+            Assert.IsFalse(contract.TryPeekHand(out CatchItem peeked));
+            Assert.AreEqual(default(CatchItem), peeked);
+            Assert.IsFalse(contract.TryTakeFromHand(out CatchItem taken));
+            Assert.AreEqual(default(CatchItem), taken);
+            Assert.AreSame(pail, hands.Carried);
+            Assert.AreEqual(side, hands.Slots.SideOf(pail));
+            Assert.AreEqual(hands.transform, pail.transform.parent);
+            Assert.AreEqual(1, hands.Slots.UsedHands);
+            Assert.AreEqual(1, pail.UsedUnits);
+            Assert.AreEqual(original, pail.Items[0]);
+            Assert.AreEqual(0, _taken);
+            Assert.AreEqual(0, _caught);
+            Assert.AreEqual(0, _landed);
+        }
+
+        [TestCase(false)]
+        [TestCase(true)]
+        public void Both_handoff_paths_signal_once_after_cleanup_and_restore_the_slung_tool(bool toHold)
+        {
+            CarryHands hands = ToolInHand.Holding(ToolDef.ShovelId, _spawned);
+            ICarriable tool = hands.Carried;
+            CarriableBucket pail = CarryPail(hands);
+            CatchItem original = PreparedCatch();
+            Assert.IsTrue(GameServices.CatchHands.TryPutInHand(original));
+            Assert.AreSame(tool, hands.Slung);
+            bool observedCleanHands = false;
+            EventBus.Subscribe<CatchTakenFromHand>(_ =>
+            {
+                observedCleanHands = !hands.Slots.Holds(HandLoad.Catch)
+                                     && hands.GetComponentsInChildren<CarriableCatch>(true).Length == 0
+                                     && hands.Slung == null && CarriedItem.IsHeld(hands, tool);
+            });
+
+            if (toHold)
+                Assert.IsTrue(hands.TryGiveCatchTo(pail));
+            else
+            {
+                Assert.IsTrue(GameServices.CatchHands.TryTakeFromHand(out CatchItem taken));
+                Assert.AreEqual(original, taken);
+            }
+
+            Assert.IsTrue(observedCleanHands, "the signal observes completed cleanup and sling recovery");
+            Assert.AreEqual(1, _taken);
+            Assert.AreEqual(original, _takenItem);
+            Assert.AreEqual(toHold ? 1 : 0, _caught, "only a hold handoff publishes FishCaught");
+            Assert.AreEqual(1, _landed);
+            Assert.AreEqual(toHold ? 1 : 0, pail.UsedUnits);
+            if (toHold) Assert.AreEqual(original, pail.Items[0]);
+            Assert.AreEqual(2, hands.Slots.UsedHands, "the pail and the restored tool");
+            Assert.IsFalse(GameServices.CatchHands.TryTakeFromHand(out _));
+            Assert.AreEqual(1, _taken);
+        }
+
+        [Test]
+        public void A_refused_hold_handoff_keeps_the_catch_and_emits_no_taken_signal()
+        {
+            CarryHands hands = ToolInHand.Empty(_spawned);
+            CatchItem original = PreparedCatch();
+            Assert.IsTrue(GameServices.CatchHands.TryPutInHand(original));
+            ICarriable carried = hands.Carried;
+            var full = new FakeHold { Capacity = 0 };
+
+            Assert.IsFalse(hands.TryGiveCatchTo(null));
+            Assert.IsFalse(hands.TryGiveCatchTo(full));
+            Assert.AreSame(carried, hands.Carried);
+            Assert.IsTrue(GameServices.CatchHands.TryPeekHand(out CatchItem peeked));
+            Assert.AreEqual(original, peeked);
+            Assert.AreEqual(0, _taken);
+            Assert.AreEqual(0, _caught);
+        }
+
+        [Test]
+        public void A_hold_landing_observer_cannot_take_the_same_catch_again()
+        {
+            CarryHands hands = ToolInHand.Empty(_spawned);
+            CatchItem original = PreparedCatch();
+            Assert.IsTrue(GameServices.CatchHands.TryPutInHand(original));
+            var hold = new FakeHold();
+            bool sawEmptyHand = false;
+            bool tookAgain = true;
+            EventBus.Subscribe<FishCaught>(e =>
+            {
+                sawEmptyHand = !GameServices.CatchHands.TryPeekHand(out _);
+                tookAgain = GameServices.CatchHands.TryTakeFromHand(out _);
+            });
+
+            Assert.IsTrue(hands.TryGiveCatchTo(hold));
+
+            Assert.IsTrue(sawEmptyHand, "hold listeners see the committed handoff");
+            Assert.IsFalse(tookAgain, "the same catch cannot be taken while its hold landing is announced");
+            Assert.AreEqual(1, hold.UsedUnits);
+            Assert.AreEqual(original, hold.Items[0]);
+            Assert.AreEqual(1, _caught);
+            Assert.AreEqual(1, _taken);
         }
     }
 }

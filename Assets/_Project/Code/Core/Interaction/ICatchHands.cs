@@ -33,6 +33,23 @@ namespace HiddenHarbours.Core
         /// go.</para>
         /// </summary>
         bool TryPutInHand(in CatchItem item);
+
+        /// <summary>
+        /// Take the loose catch from the fisher's hands, preserving the whole item and freeing its
+        /// hand slot(s). Publishes <see cref="CatchTakenFromHand"/> once on success. Returns false with
+        /// a default item and no change when no catch is held.
+        ///
+        /// <para>A pail or other carried hold is not a hand catch: this never takes its contents.
+        /// Carrying only a pail therefore returns false.</para>
+        /// </summary>
+        bool TryTakeFromHand(out CatchItem item);
+
+        /// <summary>
+        /// Read the loose catch without changing the hands or publishing a signal, so a station can
+        /// decide whether to accept it before taking it. Returns false with a default item when none is
+        /// held. A pail or other carried hold is not a hand catch; its contents are never inspected.
+        /// </summary>
+        bool TryPeekHand(out CatchItem item);
     }
 
     /// <summary>
@@ -56,5 +73,17 @@ namespace HiddenHarbours.Core
         public readonly CatchItem Item;
 
         public CatchLanded(in CatchItem item) => Item = item;
+    }
+
+    /// <summary>
+    /// Raised once after a loose catch leaves its hand slot(s) and any slung tool is restored.
+    /// Other things may still be held. Unlike <see cref="FishCaught"/>, this does not
+    /// imply that the catch entered a hold.
+    /// </summary>
+    public readonly struct CatchTakenFromHand
+    {
+        public readonly CatchItem Item;
+
+        public CatchTakenFromHand(in CatchItem item) => Item = item;
     }
 }
