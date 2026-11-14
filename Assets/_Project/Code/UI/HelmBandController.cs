@@ -21,10 +21,27 @@ namespace HiddenHarbours.UI
         /// (<see cref="DepthSounder.ShallowAlarm"/>, <see cref="DepthSounder.BlinkPhase"/>).</summary>
         public readonly bool AlarmLit;
 
+        /// <summary>True when the hull's tank has been read (<see cref="IHelmInstruments.TryReadFuel"/>).
+        /// False draws the unread gauge (<see cref="HelmDashGeometry.FuelUnread01"/>).</summary>
+        public readonly bool HasFuel;
+
+        /// <summary>The tank's fill, 0 (empty) to 1 (full). Every band carries a fuel gauge, so this is
+        /// read on the skiff bands too, where the depth fields stay unread.</summary>
+        public readonly float Fuel01;
+
         public HelmBandGlance(bool hasDepth, float depthMetres, bool feet, bool alarmLit)
+            : this(hasDepth, depthMetres, feet, alarmLit, false, 0f) { }
+
+        public HelmBandGlance(bool hasDepth, float depthMetres, bool feet, bool alarmLit,
+                              bool hasFuel, float fuel01)
         {
             HasDepth = hasDepth; DepthMetres = depthMetres; Feet = feet; AlarmLit = alarmLit;
+            HasFuel = hasFuel; Fuel01 = fuel01;
         }
+
+        /// <summary>This glance with the tank read (or not) laid over it.</summary>
+        public HelmBandGlance WithFuel(bool hasFuel, float fuel01)
+            => new HelmBandGlance(HasDepth, DepthMetres, Feet, AlarmLit, hasFuel, fuel01);
 
         /// <summary>No reading: the plates carry their names only.</summary>
         public static HelmBandGlance None => default;
@@ -85,6 +102,7 @@ namespace HiddenHarbours.UI
         private ConsoleRigKind _shownRig = ConsoleRigKind.None;
         private bool _shownRunning;
         private int _shownTachKey = int.MinValue;          // the drive step the tach shows
+        private int _shownFuelKey = int.MinValue;          // the tank step the fuel needle shows
         private int _shownBrowKey = int.MinValue;          // the fit the chrome was rastered for
         private bool _shownNight;                          // the chrome's panel lights
         private bool _shownAnchorFitted;
@@ -219,6 +237,7 @@ namespace HiddenHarbours.UI
         {
             _shownRig = ConsoleRigKind.None;
             _shownTachKey = int.MinValue;
+            _shownFuelKey = int.MinValue;
             _shownBrowKey = int.MinValue;
             _shownWheelKey = int.MinValue;
             _shownLeverKey = int.MinValue;
@@ -290,7 +309,9 @@ namespace HiddenHarbours.UI
             // ---- change keys (the dash's, piece by piece) ----
             float drive = helm.Drive;
             bool running = true;                        // manned helm = running (S1 precedent)
-            const float fuel01 = 1f;                    // no fuel sim yet: the needle pins at F
+            // The needle is the hull's own tank, on its repaint step (unread = the gauge's full face).
+            float fuel01 = HelmDashGeometry.FuelNeedle01(glance.HasFuel, glance.Fuel01);
+            int fuelKey = HelmDashGeometry.FuelKey(fuel01);
             float rpm01 = running ? Mathf.Clamp01(0.11f + 0.89f * Mathf.Abs(drive)) : 0f;
             int driveKey = LeverRigGeometry.QuantizeKey(drive);
             int wheelKey = WheelRigGeometry.QuantizeKey(_spin.Deg);
@@ -312,7 +333,7 @@ namespace HiddenHarbours.UI
             bool chromeFrame = all || running != _shownRunning || night != _shownNight || browKey != _shownBrowKey;
             bool tachDirty = chromeFrame || driveKey != _shownTachKey;
             bool switchDirty = chromeFrame || anchorFitted != _shownAnchorFitted || anchorDown != _shownAnchorDown;
-            bool fuelDirty = chromeFrame;
+            bool fuelDirty = chromeFrame || fuelKey != _shownFuelKey;
             if (tachDirty || switchDirty || fuelDirty)
             {
                 RenderChrome(in fit, running, drive, rpm01, fuel01, night, anchorFitted, anchorDown);
@@ -331,6 +352,7 @@ namespace HiddenHarbours.UI
                 _shownNight = night;
                 _shownBrowKey = browKey;
                 _shownTachKey = driveKey;
+                _shownFuelKey = fuelKey;
                 _shownAnchorFitted = anchorFitted;
                 _shownAnchorDown = anchorDown;
             }

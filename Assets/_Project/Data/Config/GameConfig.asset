@@ -182,6 +182,7 @@ MonoBehaviour:
     MaxAlarmMetres: 20
     AlarmBlinkHz: 2
     PlaceholderWaterTempC: 12
+    ShowWaterTemp: 0
   FishFinder:
     DefaultRangeMetres: 20
     WaterfallHz: 4
@@ -194,8 +195,6 @@ MonoBehaviour:
     MaxMarksPerSchool: 8
     PlaceholderSens01: 0.75
     PlaceholderLink: 1
-    PlaceholderBatt01: 0.8
-    PlaceholderVolts: 4
   Chartplotter:
     MaxWaypoints: 64
     MaxRouteLegs: 24

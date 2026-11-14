@@ -182,7 +182,7 @@ namespace HiddenHarbours.UI
             // and that is save data, so it is not smuggled in here.)
             bool night = prefs.Night || HelmPanelLight.IsNight();
             var state = new DepthRigState(depth, prefs.Feet, night, prefs.Armed, prefs.AlarmMetres,
-                                          cfg.PlaceholderWaterTempC, blink);
+                                          cfg.PlaceholderWaterTempC, blink, cfg.ShowWaterTemp);
 
             Rect card = HelmBandLayout.RaisedCardRect(DepthRigRender.W, DepthRigRender.H,
                                                       HudScreen.Width, HudScreen.Height,
@@ -225,7 +225,8 @@ namespace HiddenHarbours.UI
             // a digit must not cost a raster (rule 7).
             string depthStr = DepthRigGeometry.FmtDepth(state.Depth, state.Feet);
             string alarmStr = DepthRigGeometry.FmtSet(state.Alarm, state.Feet);
-            string tempStr = DepthRigGeometry.FixedOne(state.TempC);
+            // A hidden temperature line is not on the glass, so it is not in the key (and costs no string).
+            string tempStr = state.ShowTemp ? DepthRigGeometry.FixedOne(state.TempC) : null;
             bool triggered = state.Triggered;
 
             if (_painted && depthStr == _shownDepth && alarmStr == _shownAlarm && tempStr == _shownTemp

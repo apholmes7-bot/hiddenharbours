@@ -89,6 +89,28 @@ namespace HiddenHarbours.Core
             return false;
         }
 
+        /// <summary>
+        /// How full THIS hull's fuel tank is, 0 (empty) to 1 (brim-full): what the dash's fuel gauge
+        /// draws. Returns <c>false</c>, with <paramref name="fraction01"/> zeroed, when there is no
+        /// sender to read: no piloted hull, or a hull that carries no tank (the rowed dory). A consumer
+        /// then shows an unread gauge, never an invented level.
+        ///
+        /// <para><b>One tank.</b> Implementations answer from the hull's own tank state, the same
+        /// litres the burn drains and the pump fills (<see cref="IFuelVessel"/>), so the needle and the
+        /// engine cannot disagree. The level itself is save state the tank owns; this read stores
+        /// nothing.</para>
+        ///
+        /// <para>A cheap read; callers may poll it every frame. A <i>default interface method</i>
+        /// answering "no sender" (the <see cref="TryReadWind"/> precedent), so every existing
+        /// implementation keeps compiling and keeps its meaning.</para>
+        /// FLAG lead-architect: additive member on the ADR 0025 S2 helm-instrument seam.
+        /// </summary>
+        bool TryReadFuel(out float fraction01)
+        {
+            fraction01 = 0f;
+            return false;
+        }
+
         /// <summary>This hull's persisted sounder preferences (set-point, armed, units, night). Falls
         /// back to <see cref="SounderPrefs.FromDefaults"/> for a hull that has never been touched.</summary>
         SounderPrefs SounderPrefs { get; }
