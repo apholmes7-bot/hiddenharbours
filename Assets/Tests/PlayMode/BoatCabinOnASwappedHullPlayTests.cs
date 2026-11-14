@@ -293,7 +293,12 @@ namespace HiddenHarbours.Tests.PlayMode
 
         [UnityTest]
         public IEnumerator SwappedOnUnderHer_EOpensHerDoor_AndHerHouseIsCutOpenOnlyWhileSheIsBelow(
-            [Values("CapeIslander", "LobsterBoat", "SportFisherConvertible", "SportFisherSkybridge", "SternTrawler", "SternTrawlerMk2", "SideDragger", "ExpeditionYacht120", "MotorYacht84")] string subjectName)
+            [Values("CapeIslander", "LobsterBoat", "SportFisherConvertible", "SportFisherSkybridge", "SternTrawler", "SternTrawlerMk2", "SideDragger", "ExpeditionYacht120", "MotorYacht84",
+                    // 2026-11-14, the fleet audit's slice 5: the packet, and one lobster variant of each size
+                    // (all eighteen are in the EditMode cabin census). The express cruiser's door is an entry
+                    // landing with its own case, RecreationSwap_CruiserWalksHerLandingAndStair_...
+                    "CoastalPacket", "LobsterInshoreOpenNorthumberland", "LobsterStandardHardtopNorthumberland",
+                    "LobsterOffshoreOpenNorthumberland")] string subjectName)
         {
             if (DoorWaits.TryGetValue((nameof(SwappedOnUnderHer_EOpensHerDoor_AndHerHouseIsCutOpenOnlyWhileSheIsBelow), subjectName), out string wait))
                 Assert.Ignore(wait);
@@ -555,13 +560,28 @@ namespace HiddenHarbours.Tests.PlayMode
         /// and nothing but a door or a stair ever said "inside"; she let go of the wheel in a house that
         /// stayed shut around her (<c>EveryHelmStandKnowsTheRoomItIsInTests</c> is the census).
         ///
-        /// <para>While she steers the house is closed, as ruled (owner, 2026-08-26, re-confirmed
-        /// 2026-11-13). Stepping back, her cabin is entered once, on the wheelhouse level, and the hull the
-        /// swap skinned on draws the cut.</para>
+        /// <para>While she steers, her wheelhouse is cut open around her though nothing has entered her
+        /// (owner, 2026-11-14: a wheel that stands in a room opens that one room). Stepping back, her
+        /// cabin is entered once, on the wheelhouse level, and the cut stays as it was. With the owner's
+        /// switch off (<c>GameConfig.CutTheHelmRoomAtTheWheel</c>) the house is closed at the wheel, as
+        /// ruled on 2026-08-26, and opens when she steps back.</para>
         /// </summary>
         [UnityTest]
-        public IEnumerator SwappedOnUnderHerAtTheWheel_SteppingBackStandsHerInsideHerWheelhouse(
+        public IEnumerator SwappedOnUnderHerAtTheWheel_HerWheelhouseIsOpen_AndSteppingBackStandsHerInsideIt(
             [Values("CapeIslander", "LobsterInshoreOpenNorthumberland")] string subjectName)
+        {
+            yield return SwappedOnAtTheWheel(subjectName, wheelRoomOpens: true);
+        }
+
+        [UnityTest]
+        public IEnumerator SwappedOnUnderHerAtTheWheel_WithTheOwnersSwitchOff_HerHouseIsClosedUntilSheStepsBack(
+            [Values("CapeIslander", "LobsterInshoreOpenNorthumberland")] string subjectName)
+        {
+            GameServices.Config.CutTheHelmRoomAtTheWheel = false;
+            yield return SwappedOnAtTheWheel(subjectName, wheelRoomOpens: false);
+        }
+
+        private IEnumerator SwappedOnAtTheWheel(string subjectName, bool wheelRoomOpens)
         {
             Rig rig = NewDoryRig();
             BoatHullDef subject = LoadHull(subjectName);
@@ -586,8 +606,26 @@ namespace HiddenHarbours.Tests.PlayMode
             BoatCutaway cutaway = rig.Installer.Cutaway;
             Assert.IsNotNull(cutaway, $"{subject.Id} is a mesh hull, so her cutaway comes with her cabin");
             Assert.AreEqual(ControlMode.Aboard, sw.Mode, "the swap happened under her at the wheel");
-            Assert.IsFalse(cutaway.RequestedCut.Opens, "while she steers, her house is closed (owner, 2026-08-26)");
-            Assert.IsFalse(HullOf(rig).CutawayShown.Opens, "…and the hull the swap skinned on draws it whole");
+            yield return null;   // the cut is said again to the new skin once the outgoing one is gone
+
+            HullMeshDef.Cut wheelhouse = subject.Visual.HullMesh.CutawayForDeck("house_sole");
+            Assert.IsTrue(wheelhouse.Opens, $"premise: {subject.Id}'s mesh keys a cut for her wheelhouse");
+            Assert.AreEqual(wheelhouse.Level, cutaway.HelmRoomCut.Level,
+                            $"{subject.Id}'s wheel stands in her wheelhouse, by her own station and level table");
+            if (wheelRoomOpens)
+            {
+                Assert.AreEqual(wheelhouse.Level, cutaway.RequestedCut.Level,
+                                "while she steers, the room her wheel stands in is cut (owner, 2026-11-14)");
+                Assert.AreEqual(wheelhouse.LiftLevels, cutaway.RequestedCut.LiftLevels, "…that room and no other level");
+                Assert.AreEqual(wheelhouse.Level, HullOf(rig).CutawayShown.Level,
+                                "…and the hull the swap skinned on draws it, though she never saw a door");
+            }
+            else
+            {
+                Assert.IsFalse(cutaway.RequestedCut.Opens, "switch off: while she steers, her house is closed (owner, 2026-08-26)");
+                Assert.IsFalse(HullOf(rig).CutawayShown.Opens, "…and the hull the swap skinned on draws it whole");
+            }
+            Assert.IsFalse(cabin.IsInside, "the cut at the wheel entered nobody");
             Assert.AreEqual(0, _entered.Count, "nothing has been entered: she never saw a door");
 
             // ---- she lets go of the wheel ------------------------------------------------------
@@ -600,9 +638,9 @@ namespace HiddenHarbours.Tests.PlayMode
             Assert.AreEqual("house_sole", cabin.Def.Levels[cabin.Level].Id, "…on the wheelhouse level, by the def's own id");
             Assert.AreEqual(1, _entered.Count, "CabinEntered is published, once");
             Assert.AreEqual(0, _left.Count, "…and nothing was left");
-            Assert.IsTrue(cutaway.RequestedCut.Opens, "off the wheel and inside, her cutaway asks for the cut");
+            Assert.AreEqual(wheelhouse.Level, cutaway.RequestedCut.Level, "off the wheel and inside, her cutaway asks for the wheelhouse cut");
             yield return null;
-            Assert.IsTrue(HullOf(rig).CutawayShown.Opens, "…and the hull the swap skinned on draws it");
+            Assert.AreEqual(wheelhouse.Level, HullOf(rig).CutawayShown.Level, "…and the hull the swap skinned on draws it");
         }
 
         /// <summary>
