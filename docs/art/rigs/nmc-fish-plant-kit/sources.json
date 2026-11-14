@@ -1,0 +1,18 @@
+{
+ "schema": "hidden-harbours/nmc-fish-plant-sources@1",
+ "note": "This kit carries no copy of the light: it loads the set pieces kit’s, in this order, then its own rig. Hashes are SHA-256 over LF line endings.",
+ "load": [
+  {
+   "file": "../nmc-set-pieces-kit/lib/weatherSky.js",
+   "sha256Lf": "38300697d5fe685b4800b2a5252aa3c9f0fbcb08bad40e80f6ce3aee1e9c7062"
+  },
+  {
+   "file": "../nmc-set-pieces-kit/lib/coastalPass.js",
+   "sha256Lf": "041b0bc32040c10a1bafc57da1d3f19e76047285c2b802861cff67caca5b166d"
+  },
+  {
+   "file": "nmcFishPlant.js",
+   "sha256Lf": "a83ae8687592de43902259157195ecc4ff3128f36d850f4844f08623e37f32d9"
+  }
+ ]
+}
