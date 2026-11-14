@@ -422,3 +422,26 @@ drop supersedes it for the bite/hook specifically.)
   resolver must never compute the same quantity two ways.
 - Moving bait-spend from bite-time to catch-time touches the catch path → run the exact-payout
   PlayMode tests; any new landing path still stamps `Freshness.Landed` (#322).
+
+### 10.6 Rod and clam-dig mesh body adoption
+
+`GameConfig.MeshFishingAndDig` defaults on in code and data. The mesh presenter reads the
+existing `PlayerFishingAnimator` pose, clock, cast charge and facing; the sprite performance
+continues underneath so a missing skin, clip, adoption entry or competing animation claim
+immediately restores the sprite. Turning the switch off restores the previous rod performance
+and the unanimated dig. The existing character and ashore mesh switches still apply.
+
+The dig body starts from the existing Core `DigStrike` success cue, for both catch destinations,
+and follows `Resources/ActionTiming/DigTiming`. It changes no catch, input, transport or save
+timing. Held rods, shovels, buckets and catch retain their sprite presenters in this change.
+
+All ten rig 10.3 skins already carry the clips. Their `MeshStates` adoption lists add `hold`,
+`cast`, `bite`, `strike`, `reel`, `land`, `castBack`, `castRelease` and `dig`. These lists are
+authored data: the skin baker preserves them on refresh; no art bake is required. Fresh cast
+skins receive the same adopted states. The exact state-count guard moves from 27 to 36 ordinary
+states, plus the four seated-helm states, to pin this newly adopted set.
+
+`FishingMeshStateTests` checks every phase and all ten committed skins. `FishingMeshPlayTests`
+checks one active body through the rod sequence ashore and aboard, a complete dig, live switch
+changes, missing clips, unusable skins and competing claims. These tests assert renderer state
+without a graphics device; they do not judge pixel appearance.

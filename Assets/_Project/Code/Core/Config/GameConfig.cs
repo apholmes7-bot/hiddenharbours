@@ -1176,6 +1176,12 @@ namespace HiddenHarbours.Core
         /// </summary>
         public float WaveExaggeration => DisplacedWater.WaveExaggeration;
 
+        [Header("Fishing and clam digging body presentation")]
+        [Tooltip("Use the baked mesh body for rod fishing and clam digging when the skin carries " +
+                 "the clip and enables it in MeshStates. Off restores the previous sprite fishing " +
+                 "and unanimated dig. Held tools and catch keep their sprite presenters.")]
+        public bool MeshFishingAndDig = true;
+
         public float SecondsPerHour => SecondsPerDay / 24f;
         public float SecondsPerWeek => SecondsPerDay * DaysPerWeek;
         public float SecondsPerSeason => SecondsPerDay * DaysPerSeason;

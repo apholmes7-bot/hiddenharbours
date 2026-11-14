@@ -6,12 +6,12 @@ using HiddenHarbours.Player;
 namespace HiddenHarbours.Tests.EditMode
 {
     /// <summary>
-    /// <b>The fight on the wharf is the sprite's</b> (the owner's ruling of 2026-10-08 on the held-props
-    /// report, decisions 5 and 6). The fishing animator claims her skin for the fight
+    /// <b>An unidentified animation claim still belongs to the sprite.</b> The fishing animator claims her skin for the fight
     /// (<see cref="IsoCharacterSprite.Suspend"/>, in <c>PlayerFishingAnimator.BeginOwnership</c>) and writes
     /// the fight's cells onto her body sprite: the very renderer her mesh holds off while it stands in for
-    /// her ashore. The mesh has no pose for any of those cells, so a claimed skin hands the draw back to the
-    /// sprite, ashore in the pure rule (<see cref="DeckRiderMeshPresenter.WhyNotShownAshore"/>) and aboard
+    /// her ashore. Only an explicitly supported source may lend its sole claim to the mesh; an
+    /// unidentified claim hands the draw back to the sprite, ashore in the pure rule
+    /// (<see cref="DeckRiderMeshPresenter.WhyNotShownAshore"/>) and aboard
     /// on the presenter's own call, where the rider's child, the mirror of that body, keeps drawing. Each
     /// reason is written out here as a literal and never read back from the code, as in
     /// <c>DeckRiderAshoreHandOverTests</c>. This fixture gives her no skin, so aboard the fence after the

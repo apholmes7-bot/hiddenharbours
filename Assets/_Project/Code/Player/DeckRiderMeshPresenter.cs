@@ -31,7 +31,7 @@ namespace HiddenHarbours.Player
     /// shown on the root (<see cref="DeckRiderVisual.BodyShownOnRoot"/>), is dry, and her current
     /// move is drawable. Explicit supported moves take the clip player's frame and heading; its own
     /// sole skin claim is allowed. Unmapped moves, missing skin states and any other claimant hand
-    /// back to the sprite. Fishing stays a sprite performance until body and rod move together.</para>
+    /// back to the sprite. Fishing reads its sprite animator's pose; held props remain sprites.</para>
     ///
     /// <para><b>⚠ Her body is hidden with <see cref="Renderer.forceRenderingOff"/>, never
     /// <c>enabled</c>.</b> <c>enabled</c> is the rider's stand-down's alone, and the sprite shadow and
@@ -135,6 +135,7 @@ namespace HiddenHarbours.Player
         private SpriteRenderer _hiddenBody;
         private readonly AshoreArrivals _arrivals = new AshoreArrivals();
         private CharacterClipPlayer _clipPlayer;
+        private PlayerFishingAnimator _fishingAnimator;
         private readonly System.Collections.Generic.HashSet<(CharacterSkinDef, string)> _missingMoves = new();
         private const string ClipCannotDrawReason = "the running clip cannot draw as mesh; the sprite owns this move";
         private PlayerWalkController _walk;
@@ -326,10 +327,9 @@ namespace HiddenHarbours.Player
             if (!config.MeshCharacter) { Stop("GameConfig.MeshCharacter is off"); return; }
 
             CharacterSkinDef skin = ResolveSkin(stand);
-            bool clipPose = TryClipPose(skin, stand, out string moveKey, out int moveFrame, out float moveHeading);
-            if (ClipPlaying() && !clipPose) { Stop(ClipCannotDrawReason); return; }
-            // A supported clip admits only its own claim. Fishing, legacy haul and nested claims
-            // retain the sprite until their own mesh performance replaces them.
+            bool clipPose = TryPerformancePose(skin, stand, out string moveKey, out int moveFrame, out float moveHeading);
+            if (PerformancePlaying() && !clipPose) { Stop(ClipCannotDrawReason); return; }
+            // A supported performance admits only its own claim; nested claims retain the sprite.
             if (SkinSuspended(stand) && !clipPose)
             {
                 Stop("her skin is suspended (the fight, the haul, a clip), and the sprite shows what it is made to show");
@@ -427,13 +427,13 @@ namespace HiddenHarbours.Player
 
             SpriteRenderer body = _rider != null ? _rider.BodyRenderer : null;
             CharacterSkinDef skin = ResolveSkin(stand);
-            bool clipPose = TryClipPose(skin, stand, out string moveKey, out int moveFrame, out float moveHeading);
+            bool clipPose = TryPerformancePose(skin, stand, out string moveKey, out int moveFrame, out float moveHeading);
             string notShown = WhyNotShownAshore(
                 riderLive: _rider != null && _rider.isActiveAndEnabled,
                 hasRiderChild: _rider != null && _rider.HasRider,
                 hasBody: body != null,
                 bodyShownOnRoot: _rider != null && _rider.BodyShownOnRoot,
-                clipPlaying: ClipPlaying(),
+                clipPlaying: PerformancePlaying(),
                 water: WaterAtFeet(),
                 skinSuspended: SkinSuspended(stand), clipDrawsAsMesh: clipPose);
             if (notShown != null) { StopAshore(notShown); return; }
@@ -663,6 +663,23 @@ namespace HiddenHarbours.Player
             // A missing component is retried: a caller may add the seam after the presenter seats.
             if (_clipPlayer == null) TryGetComponent(out _clipPlayer);
             return _clipPlayer != null && _clipPlayer.IsPlaying;
+        }
+
+        private bool PerformancePlaying()
+        {
+            if (_fishingAnimator == null) TryGetComponent(out _fishingAnimator);
+            return ClipPlaying() || (_fishingAnimator != null && _fishingAnimator.HasBodyPerformance);
+        }
+
+        private bool TryPerformancePose(CharacterSkinDef skin, ICharacterFigureStand stand,
+                                        out string key, out int frame, out float heading)
+        {
+            if (ClipPlaying()) return TryClipPose(skin, stand, out key, out frame, out heading);
+            key = null; frame = 0; heading = 0f;
+            if (_fishingAnimator == null) TryGetComponent(out _fishingAnimator);
+            return _fishingAnimator != null && stand.FigureCharacter != null &&
+                   stand.FigureCharacter.gameObject == _fishingAnimator.gameObject &&
+                   _fishingAnimator.TryMeshPose(skin, out key, out frame, out heading);
         }
 
         /// <summary>A whole-body move takes the sprite's clock and compass heading verbatim.

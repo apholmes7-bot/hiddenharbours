@@ -28313,6 +28313,15 @@ MonoBehaviour:
   - drive_helm_bowrider
   - drive_helm_express_cruiser
   - astride_helm_jet_ski
+  - hold
+  - cast
+  - bite
+  - strike
+  - reel
+  - land
+  - castBack
+  - castRelease
+  - dig
 --- !u!43 &3467916940228765322
 Mesh:
   m_ObjectHideFlags: 0
