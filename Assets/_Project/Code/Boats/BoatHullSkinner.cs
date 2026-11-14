@@ -466,6 +466,10 @@ namespace HiddenHarbours.Boats
             if (!options.SkipOars && boat != null && oarsGoMesh) WireOarMeshes(root, child, visual, boat, motorLayer);
             else RemoveOarMeshes(root, child);
 
+            // Her helm bar (a jetski's handlebars) installs with no controller too: unmanned, dead ahead.
+            if (visual.HasHelmBarMesh()) WireHelmBar(root, child, visual, boat);
+            else RemoveHelmBar(root, child);
+
             // The hull rides the SAME shared wave field as every sprite hull — the presenter's
             // continuous-rock capability just stops the phase being quantised to frames.
             BoatWaveMotion wave = null;
@@ -531,6 +535,20 @@ namespace HiddenHarbours.Boats
             var layer = root.GetComponent<DoryOarMeshLayer>();
             if (layer == null) layer = root.AddComponent<DoryOarMeshLayer>();
             layer.Configure(port, star, boat, motor);
+
+            // The oar splash (owner ruling 2026-11-13) rides the same wiring: it reads the poses this
+            // layer draws and the hull driver's projection, so it exists exactly when rowed mesh oars
+            // do and is re-pointed, never stacked, on a re-skin.
+            var driver = root.GetComponent<MeshHullDriver>();
+            var splash = root.GetComponent<DoryOarSplashEmitter>();
+            if (driver == null)
+            {
+                if (splash != null) DestroyComponent(splash);
+                return;
+            }
+            if (splash == null) splash = root.AddComponent<DoryOarSplashEmitter>();
+            splash.Configure(layer, driver, boat, visual.OarPortMesh.PivotLocalMeters,
+                             visual.OarStarMesh.PivotLocalMeters, in visual.OarSplash);
         }
 
         /// <summary>
@@ -607,9 +625,39 @@ namespace HiddenHarbours.Boats
         {
             var layer = root != null ? root.GetComponent<DoryOarMeshLayer>() : null;
             if (layer != null) DestroyComponent(layer);
+            var splash = root != null ? root.GetComponent<DoryOarSplashEmitter>() : null;
+            if (splash != null) DestroyComponent(splash);
             if (child == null) return;
             HullMeshPresentation.Service?.DetachProp(child.gameObject, PortOarChildName);
             HullMeshPresentation.Service?.DetachProp(child.gameObject, StarOarChildName);
+        }
+
+        /// <summary>The slot the helm bar fitting hangs in.</summary>
+        public const string HelmBarChildName = "HelmBar";
+
+        private static void WireHelmBar(GameObject root, Transform child, BoatVisualDef visual, BoatController boat)
+        {
+            IHullPropRenderer bar = HullMeshPresentation.Service?.AttachProp(child.gameObject, visual.HelmBarMesh,
+                                                                             HelmBarChildName);
+            if (bar == null)
+            {
+                Debug.LogError($"[BoatHullSkinner] Visual '{visual.Id}' names a helm bar fitting that could " +
+                               "not be attached (the presentation service refused it). She is drawn " +
+                               "without it. Re-bake the fitting and check the def loads.");
+                RemoveHelmBar(root, child);
+                return;
+            }
+            var layer = root.GetComponent<HelmBarMeshLayer>();
+            if (layer == null) layer = root.AddComponent<HelmBarMeshLayer>();
+            layer.Configure(bar, boat, visual.HelmBarMesh.SteerAxisLocal, visual.HelmBarMesh.MaxSteerDegrees);
+        }
+
+        /// <summary>A hull that wears no helm bar must not keep the previous hull's.</summary>
+        private static void RemoveHelmBar(GameObject root, Transform child)
+        {
+            var layer = root != null ? root.GetComponent<HelmBarMeshLayer>() : null;
+            if (layer != null) DestroyComponent(layer);
+            if (child != null) HullMeshPresentation.Service?.DetachProp(child.gameObject, HelmBarChildName);
         }
 
         /// <summary>A hull that wears no mesh outboard must not keep the previous hull's.</summary>
@@ -628,6 +676,7 @@ namespace HiddenHarbours.Boats
         {
             RemoveOarMeshes(root, child);
             RemoveMotorMeshes(root, child);
+            RemoveHelmBar(root, child);
             // A hull leaving the mesh path takes EVERY fitting with her, including any slot this
             // build does not know the name of.
             if (child != null) HullMeshPresentation.Service?.DetachProps(child.gameObject);

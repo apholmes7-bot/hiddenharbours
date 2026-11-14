@@ -17,7 +17,7 @@ namespace HiddenHarbours.Art
     /// game time from the schedule alone (<see cref="GullSchedule"/>: the hour, the season, the wind,
     /// the fog, the tide, the working hours and market day): at its haunt, at its roost, in the air
     /// between the two, or away. The view only chooses WHICH birds are drawn: the ones near it, nearest
-    /// first, bound to a fixed pool of <see cref="GullConfig.Count"/> renderers. Pan away and come back
+    /// first, bound to a fixed pool of <see cref="GullScheduleTuning.MaxBirdsDrawn"/> renderers. Pan away and come back
     /// and the same birds are on the same spots, unless the clock has moved them on.</para>
     ///
     /// <para><b>Materialising.</b> A pool bird takes up its slot already in the state the roster gives:
@@ -110,9 +110,9 @@ namespace HiddenHarbours.Art
         /// <summary>The schedule's shipped knobs, for a library without its own (built once).</summary>
         private static readonly GullScheduleTuning DefaultTuning = GullScheduleTuning.Default;
 
-        [Tooltip("Staging for the flock — the pool, how the birds fly between places, how many sit, and the " +
-                 "day/night look. How many birds use a place, and when, live on its BirdHauntDef and the " +
-                 "library's tuning; the rig's own numbers (frame times, speeds, altitude bands, the landing " +
+        [Tooltip("Staging for the flock — how the birds fly between places, how many sit, and the " +
+                 "day/night look. How many birds use a place, and when, live on its BirdHauntDef; how many " +
+                 "are drawn at once and how many follow the schools live on the library's tuning; the rig's own numbers (frame times, speeds, altitude bands, the landing " +
                  "box) live on the SeagullVisualDef.")]
         [SerializeField] private GullConfig _config = GullConfig.Default;
 
@@ -301,14 +301,26 @@ namespace HiddenHarbours.Art
             else DestroyImmediate(profile);
         }
 
+        /// <summary>
+        /// The pool's size: the library's <see cref="GullScheduleTuning.MaxBirdsDrawn"/>, whatever the
+        /// owner authored (the shipped default with no library). Nothing in code caps it.
+        /// </summary>
+        public static int PoolSize(BirdHauntLibrary library)
+        {
+            GullScheduleTuning knobs = library != null && library.Tuning != null ? library.Tuning : DefaultTuning;
+            return Mathf.Max(0, knobs.MaxBirdsDrawn);
+        }
+
         private void BuildFlock()
         {
-            int n = Mathf.Max(0, _config.Count);
+            // Allocated once, here: the pool does not follow the number while the game runs.
+            int n = PoolSize(_library);
             _birds = new Bird[n];
             _wheel = new SeagullFlockMath.SeagullFlockBird[n];
             _fresh = new int[n];
             _decisions = SeagullFlockMath.Mulberry32.ForFlockSeed(_config.Seed);
-            _roster = new GullRoster(_places.Length, MaxNearBirds, n);
+            // Every pool bird needs a near entry to draw, so a pool above the list's size grows the list.
+            _roster = new GullRoster(_places.Length, Mathf.Max(MaxNearBirds, n), n);
 
             _fly = _behaviour.IndexOf(SeagullStates.Fly);
             _stand = _behaviour.IndexOf(SeagullStates.Stand);

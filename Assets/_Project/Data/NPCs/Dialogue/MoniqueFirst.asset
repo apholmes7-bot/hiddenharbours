@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 88201f4f4f3247558c87e55aa4fb8ac4, type: 3}
+  m_Name: MoniqueFirst
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.DialogueDef
+  Id: dialogue.monique_first
+  FirstLines:
+  - 'Monique Landry. Those are my rows in the west garden, so mind where you put your feet.'
+  - 'Potatoes, turnip, and beans if the wind leaves them alone. It mostly doesn''t.'
+  - 'If you see my two down by the water after supper, send them home. They''ll say I said they could.'
+  RepeatLines:
+  - 'Have you seen Sam? No? Then he''s at the shore.'

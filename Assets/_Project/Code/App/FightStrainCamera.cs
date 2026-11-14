@@ -98,9 +98,17 @@ namespace HiddenHarbours.App
                                 || _lastPhase == FishingPhase.FightSurface
                                 || _lastPhase == FishingPhase.Tending;
 
+                FishFeelSettings feel = GameServices.Config != null
+                    ? GameServices.Config.FishFeel : FishFeelSettings.Default;
                 if (_fighting && !wasFighting)
                     // She's ON. Kick along the line — the rod is being yanked toward her.
-                    Kick(_hookSetKickMetres, new Vector2(s.FishOffsetX, s.FishOffsetY));
+                    // …and harder the bigger she is for her kind (GameConfig.FishFeel): a big one
+                    // announces herself on the first frame.
+                    // A hand-gathered catch (Tending) is not a hooked fish: its beat is unscaled.
+                    Kick(s.Phase == FishingPhase.Tending
+                             ? _hookSetKickMetres
+                             : _hookSetKickMetres * FishFeelMath.HookKickScale(s.Size01, in feel),
+                         new Vector2(s.FishOffsetX, s.FishOffsetY));
                 else if (s.Phase == FishingPhase.Landed)
                     Kick(_landedKickMetres, Vector2.up);        // the lift aboard
                 else if (s.Phase == FishingPhase.Snapped && wasFighting)

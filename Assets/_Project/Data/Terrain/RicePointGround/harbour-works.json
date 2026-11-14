@@ -1,0 +1,38 @@
+{
+  "schema": "hidden-harbours/harbour-works@2",
+  "id": "harbour_works.rice_point",
+  "region": "region.rice_point",
+  "why": "The wharf takes the trawlers. The deepest of them draws 4.3 m and the lowest tide of the year is 2.2 m below the mean, so a bed 7.0 m below the mean leaves 4.8 m of water at that tide: her draught and half a metre under the keel. The ground is the second issue (kept as issued in Issue2Base) with these cuts applied.",
+  "range": [-10, 6],
+  "keepAbove": 2.0,
+  "blend": "Where a cut's side slope meets the old ground the two are rounded together over blendRun metres (measured along the ground, as the slope runs). Without it the slope stops at a crease, and wherever the tide's edge falls on that crease the shore is the stepped outline of the cut: the mud flat east of the basin showed it at spring low.",
+  "cuts": [
+    {
+      "id": "cut.rpt_trawler_basin",
+      "what": "the basin off the wharf face: two trawlers lie in it, one alongside and one outside her",
+      "bed": -7.0,
+      "halfWidth": 11.45,
+      "sideRun": 3,
+      "blendRun": 3,
+      "line": [[-56.32, -134.25], [-34.79, -93.60]]
+    },
+    {
+      "id": "cut.rpt_south_channel",
+      "what": "the way in from the open water to the south, as deep as the basin the whole way to the region's edge",
+      "bed": -7.0,
+      "halfWidth": 14,
+      "sideRun": 3,
+      "blendRun": 3,
+      "line": [[-50, -128], [-46, -150], [-40, -185]]
+    },
+    {
+      "id": "cut.rpt_channel_east_toe",
+      "what": "the toe of the mud flat on the east bank of the way in, taken down below the lowest tide: what the channel left of it was a tongue a hand above that tide, too flat to hold a shoreline",
+      "bed": -3.0,
+      "halfWidth": 3,
+      "sideRun": 3,
+      "blendRun": 3,
+      "line": [[-26, -147.5], [-10, -143]]
+    }
+  ]
+}

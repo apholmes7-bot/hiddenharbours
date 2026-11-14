@@ -188,6 +188,12 @@ namespace HiddenHarbours.Boats
                  "neither: one oar is worse than none.")]
         public HiddenHarbours.Core.HullPropMeshDef OarStarMesh = null;
 
+        [Tooltip("THE OAR SPLASH (owner ruling 2026-11-13): the droplets a rowing blade throws as it " +
+                 "enters the water and the foam it leaves where it works. Drawn only on a hull whose " +
+                 "oars are mesh fittings, only while they are being rowed. Feel dials — safe to tune; " +
+                 "Enabled off rows dry.")]
+        public OarSplashConfig OarSplash = OarSplashConfig.Default;
+
         [Header("Outboard motor (OPTIONAL — the hull's engine, drawn)")]
         [Tooltip("Motor LOWER sheet (leg + plate + skeg + prop), element [heading·MotorColumnCount + col]. " +
                  "Col 0 = full port, the middle col = dead ahead, the last = full starboard. When COMPLETE " +
@@ -242,6 +248,12 @@ namespace HiddenHarbours.Boats
                  "fallback's fitting, not a nudge knob: it is not the place to correct a mis-baked " +
                  "engine, and it must never be used to fix a fitting on the boat it belongs to.")]
         public Vector3 MotorMeshFitmentOffsetMeters = Vector3.zero;
+
+        [Tooltip("The baked HELM BAR as a mesh fitting: the part of the helm the rider turns (a " +
+                 "jetski's handlebars), left out of the hull body so it can turn with the helm. Null " +
+                 "for every hull whose wheel is part of her body mesh. Produced and wired by the " +
+                 "fitting bake.")]
+        public HiddenHarbours.Core.HullPropMeshDef HelmBarMesh = null;
 
         [Header("Motor rock coupling (the motor cells are baked LEVEL — these lean them onto the wave)")]
         [Tooltip("Degrees of lean at the peak of the ROLL (the art rigs' rollA). Console 3.4 (heavier hull, " +
@@ -438,6 +450,9 @@ namespace HiddenHarbours.Boats
         /// so one usable def is the whole requirement either way.</para>
         /// </summary>
         public bool HasMotorMesh() => MotorMesh != null && MotorMesh.IsUsable();
+
+        /// <summary>True when she wears a usable helm bar fitting (see <see cref="HelmBarMesh"/>).</summary>
+        public bool HasHelmBarMesh() => HelmBarMesh != null && HelmBarMesh.IsUsable();
 
         /// <summary>
         /// True when BOTH motor sheets give their full heading×column grid — the gate

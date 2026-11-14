@@ -54,6 +54,16 @@ MonoBehaviour:
     Disembark: {x: 366, y: -42}
     OnFootOnly: 1
     Shut: 1
+  - Id: door.rpt_south_water
+    Target: {fileID: 11400000, guid: 3b2dfb18a14b410789d38a37c68675fb, type: 2}
+    TargetArrival: rice_point
+    OwnArrival: south_water
+    Centre: {x: -45, y: -156}
+    Size: {x: 14, y: 6}
+    Arrival: {x: -46, y: -146}
+    Disembark: {x: -56, y: -108.4}
+    OnFootOnly: 0
+    Shut: 0
   PlayerStart: {x: -56, y: -108.4}
   BoatStart: {x: -53.285, y: -109.825}
   BoatHeading: 28
@@ -69,7 +79,7 @@ MonoBehaviour:
   Backdrop: {r: 0.05, g: 0.1, b: 0.15, a: 1}
   EdgeThickness: 2
   MaxShoreGradient: 4
-  PaintFloor: -6
+  PaintFloor: -10
   HeightBands:
   - -2.2
   - 0

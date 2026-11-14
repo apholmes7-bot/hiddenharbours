@@ -85,6 +85,26 @@ namespace HiddenHarbours.Core
         }
 
         /// <summary>
+        /// The load and sea terms of the model above, multiplied together and nothing else:
+        /// <c>loadTerm x seaTerm</c>, 1 in a glass sea with an empty hold.
+        ///
+        /// <para>Split out so a meter that prices the THROTTLE side differently (the speed curve,
+        /// <see cref="IFuelBurnBySpeed"/>) can still charge the same surcharges for a full hold and a
+        /// rough sea, from this one place, instead of carrying a copy of the arithmetic that would
+        /// drift. <see cref="LitresPerHour"/> keeps its own inline terms so its float results do not
+        /// move by a rounding step.</para>
+        /// </summary>
+        public static float DutySurcharge(float holdFraction, float slip01, float seaState01,
+                                          in FuelSettings cfg)
+        {
+            float engineLoad01 = Clamp01(Clamp01(cfg.HoldLoadWeight) * Clamp01(holdFraction) +
+                                         Clamp01(cfg.SlipLoadWeight) * Clamp01(slip01));
+            float loadTerm = 1f + AtLeastZero(cfg.LoadSurcharge) * engineLoad01;
+            float seaTerm = 1f + AtLeastZero(cfg.SeaSurcharge) * Clamp01(seaState01);
+            return loadTerm * seaTerm;
+        }
+
+        /// <summary>
         /// Litres consumed by holding <paramref name="litresPerHour"/> for
         /// <paramref name="deltaSeconds"/> of REAL, engine-running time.
         ///

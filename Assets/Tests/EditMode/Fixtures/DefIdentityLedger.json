@@ -26,6 +26,9 @@
     "HiddenHarbours.Boats.DeckGearKitDef",
     "HiddenHarbours.Boats.HelmConsoleDef",
     "HiddenHarbours.Boats.NavBuoyDef",
+    "HiddenHarbours.Boats.SailRaceCourseDef",
+    "HiddenHarbours.Boats.SailRaceNpcDef",
+    "HiddenHarbours.Boats.WreckDef",
     "HiddenHarbours.Core.ActionTimingDef",
     "HiddenHarbours.Core.BoatInteriorDef",
     "HiddenHarbours.Core.CarryAnchorTableDef",
@@ -58,6 +61,7 @@
     "HiddenHarbours.Fishing.BiteDef",
     "HiddenHarbours.Fishing.DeckWorkDef",
     "HiddenHarbours.Fishing.FishSpeciesDef",
+    "HiddenHarbours.Fishing.FishingGroundDef",
     "HiddenHarbours.Fishing.LonglineDef",
     "HiddenHarbours.Fishing.NpcPotDayDef",
     "HiddenHarbours.Fishing.RodFightDef",
@@ -74,6 +78,7 @@
     "HiddenHarbours.World.CommonsDef",
     "HiddenHarbours.World.BeachActivityDef",
     "HiddenHarbours.World.BeachDef",
+    "HiddenHarbours.World.BerthDef",
     "HiddenHarbours.World.ConversationDef",
     "HiddenHarbours.World.DialogueDef",
     "HiddenHarbours.World.DialogueVoiceDef",
@@ -113,7 +118,8 @@
     "HiddenHarbours.Art.PlantClumpDef",
     "HiddenHarbours.Fishing.FishEcologyDef",
     "HiddenHarbours.Tools.GoodsModel.GoodsContainerDef",
-    "HiddenHarbours.Tools.GoodsModel.GoodsHandlingDef"
+    "HiddenHarbours.Tools.GoodsModel.GoodsHandlingDef",
+    "HiddenHarbours.Fishing.NpcTrawlDayDef"
   ],
   "Entries": [
     {
@@ -1403,6 +1409,11 @@
     },
     {
       "Type": "HiddenHarbours.Boats.BoatDeckDef",
+      "Guid": "90af76a88f41dc5488e82affb1403932",
+      "Id": "deck.jet_ski_iso"
+    },
+    {
+      "Type": "HiddenHarbours.Boats.BoatDeckDef",
       "Guid": "db6855fec8500464b3e2b545a03b77a6",
       "Id": "deck.lobster_boat_iso"
     },
@@ -1615,6 +1626,11 @@
       "Type": "HiddenHarbours.Boats.BoatHullDef",
       "Guid": "fc73bf3521e2bf7438ee0ef40e662d02",
       "Id": "boat.go_fast"
+    },
+    {
+      "Type": "HiddenHarbours.Boats.BoatHullDef",
+      "Guid": "134dac2b64c754a488d44871817f04cd",
+      "Id": "boat.jet_ski"
     },
     {
       "Type": "HiddenHarbours.Boats.BoatHullDef",
@@ -1880,6 +1896,11 @@
       "Type": "HiddenHarbours.Boats.BoatVisualDef",
       "Guid": "c7d1983ca526e044e9493d039572f4a4",
       "Id": "visual.go_fast_iso"
+    },
+    {
+      "Type": "HiddenHarbours.Boats.BoatVisualDef",
+      "Guid": "676ef469bcec2034fb1ae0dcc69bb254",
+      "Id": "visual.jet_ski_iso"
     },
     {
       "Type": "HiddenHarbours.Boats.BoatVisualDef",
@@ -2503,6 +2524,11 @@
     },
     {
       "Type": "HiddenHarbours.Core.CharacterSkinDef",
+      "Guid": "31d414b2ca56bc343b8af672394f540a",
+      "Id": "charskin.fisher_rig11"
+    },
+    {
+      "Type": "HiddenHarbours.Core.CharacterSkinDef",
       "Guid": "2d5b0f205af4eba4db8585337910cdf8",
       "Id": "charskin.ginny"
     },
@@ -2520,6 +2546,11 @@
       "Type": "HiddenHarbours.Core.CharacterSkinDef",
       "Guid": "33a7705957f0c9d419fa7ce386e04fbc",
       "Id": "charskin.nan"
+    },
+    {
+      "Type": "HiddenHarbours.Core.CharacterSkinDef",
+      "Guid": "2aeb3b6c32dd8c14e8b607c74e3b31c9",
+      "Id": "charskin.nan_rig11"
     },
     {
       "Type": "HiddenHarbours.Core.CharacterSkinDef",
@@ -2880,6 +2911,11 @@
       "Type": "HiddenHarbours.Core.HullMeshDef",
       "Guid": "e71a67d7ceea5da43a23a5f3c0a65a71",
       "Id": "hullmesh.go_fast_iso"
+    },
+    {
+      "Type": "HiddenHarbours.Core.HullMeshDef",
+      "Guid": "5250f8352af504b4f918ed78e0a1793a",
+      "Id": "hullmesh.jet_ski_iso"
     },
     {
       "Type": "HiddenHarbours.Core.HullMeshDef",
@@ -3260,6 +3296,26 @@
       "Type": "HiddenHarbours.Core.HullPaintSchemeDef",
       "Guid": "ad7e82997c7938e4a8517698c4b57299",
       "Id": "paint.go_fast_venom"
+    },
+    {
+      "Type": "HiddenHarbours.Core.HullPaintSchemeDef",
+      "Guid": "c64c20223e790714781a58c21599dc06",
+      "Id": "paint.jet_ski_cranberry"
+    },
+    {
+      "Type": "HiddenHarbours.Core.HullPaintSchemeDef",
+      "Guid": "391b906236676bc4d97318073f14a7af",
+      "Id": "paint.jet_ski_seafoam"
+    },
+    {
+      "Type": "HiddenHarbours.Core.HullPaintSchemeDef",
+      "Guid": "f39ebbceaaf24c542865a6942e2fe57b",
+      "Id": "paint.jet_ski_signal_yellow"
+    },
+    {
+      "Type": "HiddenHarbours.Core.HullPaintSchemeDef",
+      "Guid": "4e1d943628869bd4580c7ba33f0c133f",
+      "Id": "paint.jet_ski_tar_black"
     },
     {
       "Type": "HiddenHarbours.Core.HullPaintSchemeDef",
@@ -4638,6 +4694,11 @@
     },
     {
       "Type": "HiddenHarbours.Core.HullPropMeshDef",
+      "Guid": "f01d1903ad2c2184898fcbabe49ce377",
+      "Id": "hullprop.jet_ski_handlebar"
+    },
+    {
+      "Type": "HiddenHarbours.Core.HullPropMeshDef",
       "Guid": "ef94ad121c781a84db3911aab73718e0",
       "Id": "hullprop.punt_motor_basic"
     },
@@ -5697,14 +5758,39 @@
       "Id": "fish.winter_flounder"
     },
     {
+      "Type": "HiddenHarbours.Fishing.FishingGroundDef",
+      "Guid": "7568f22cc8064b9cb5303ba2a0480f23",
+      "Id": "fishing_ground.south_water_bank"
+    },
+    {
+      "Type": "HiddenHarbours.Fishing.FishingGroundDef",
+      "Guid": "3b54aad9649346d09babc4aaefcd1c6d",
+      "Id": "fishing_ground.south_water_deep_mud"
+    },
+    {
+      "Type": "HiddenHarbours.Fishing.FishingGroundDef",
+      "Guid": "353c8618820046d3be1dca42b5504ba8",
+      "Id": "fishing_ground.south_water_shelf"
+    },
+    {
       "Type": "HiddenHarbours.Fishing.LonglineDef",
       "Guid": "f656103fa23648e9a35afdae940d7093",
       "Id": "longline.groundfish_tub"
     },
     {
       "Type": "HiddenHarbours.Fishing.NpcPotDayDef",
+      "Guid": "5d1c7e4a9b0f43e28a6c1f37d2e80b94",
+      "Id": "potday.nmc_arsenault_leo"
+    },
+    {
+      "Type": "HiddenHarbours.Fishing.NpcPotDayDef",
       "Guid": "ea84cea831934f47895968c596e96c29",
       "Id": "potday.nmc_doiron_yvette"
+    },
+    {
+      "Type": "HiddenHarbours.Fishing.NpcPotDayDef",
+      "Guid": "c3a90f61e7d24b58b1f4a6027c9d5e13",
+      "Id": "potday.nmc_gallant_marie"
     },
     {
       "Type": "HiddenHarbours.Fishing.RodFightDef",
@@ -9048,6 +9134,11 @@
     },
     {
       "Type": "HiddenHarbours.World.RegionDef",
+      "Guid": "3b2dfb18a14b410789d38a37c68675fb",
+      "Id": "region.south_water"
+    },
+    {
+      "Type": "HiddenHarbours.World.RegionDef",
       "Guid": "fe385f1cb59348d1adc3131b7f3d1c9b",
       "Id": "region.st_peters"
     },
@@ -9720,6 +9811,161 @@
       "Type": "HiddenHarbours.World.BeachActivityDef",
       "Guid": "9d8c7b6a5f4e4d3c8b2a190817263544",
       "Id": "beachactivity.swim"
+    },
+    {
+      "Type": "HiddenHarbours.World.BeachActivityDef",
+      "Guid": "c1d7e4a09b3f4f2a8e6d5c4b3a291807",
+      "Id": "beachactivity.supper_on_the_sand"
+    },
+    {
+      "Type": "HiddenHarbours.World.BeachActivityDef",
+      "Guid": "7e2b9c4d1a6f4b3e9d8c0f1e2a3b4c5d",
+      "Id": "beachactivity.evening_fire"
+    },
+    {
+      "Type": "HiddenHarbours.World.BeachActivityDef",
+      "Guid": "3f6a8d2c5b914e7fa1c0b9e8d7f6a5b4",
+      "Id": "beachactivity.fly_a_kite"
+    },
+    {
+      "Type": "HiddenHarbours.Art.SetPieceDef",
+      "Guid": "f7190111aeed4823962a1cb0cff3bc90",
+      "Id": "prop.nmc_bench"
+    },
+    {
+      "Type": "HiddenHarbours.Art.SetPieceDef",
+      "Guid": "593f0aa7c54840e6a42facbe78faa869",
+      "Id": "structure.nmc_town_boardwalk"
+    },
+    {
+      "Type": "HiddenHarbours.Art.SetPieceDef",
+      "Guid": "85c3c8d6b1344defa3bf3e9a2cc67703",
+      "Id": "prop.nmc_boardwalk_lamp"
+    },
+    {
+      "Type": "HiddenHarbours.Art.SetPieceDef",
+      "Guid": "cb6aa24788f64a129f7c77599cc67d6b",
+      "Id": "structure.nmc_the_falls_water"
+    },
+    {
+      "Type": "HiddenHarbours.Art.SetPieceDef",
+      "Guid": "d0abea49cdb34b66875f174e8e18c71b",
+      "Id": "structure.nmc_chandlery"
+    },
+    {
+      "Type": "HiddenHarbours.Art.SetPieceDef",
+      "Guid": "0cfdc6ed69cb40b3a9bb093813b32c49",
+      "Id": "structure.nmc_falls_deck"
+    },
+    {
+      "Type": "HiddenHarbours.Art.SetPieceDef",
+      "Guid": "6cb1308203424743a34afde40a11f3b5",
+      "Id": "prop.nmc_guard_rail"
+    },
+    {
+      "Type": "HiddenHarbours.Art.SetPieceDef",
+      "Guid": "a3ce9ea280624aac9431c43301817057",
+      "Id": "prop.nmc_picnic_table"
+    },
+    {
+      "Type": "HiddenHarbours.Art.SetPieceDef",
+      "Guid": "47c3708dc9ae4a2f93d098b9172f3f5e",
+      "Id": "structure.nmc_river_deck"
+    },
+    {
+      "Type": "HiddenHarbours.Art.SetPieceDef",
+      "Guid": "71152184c4294253bb0c698db1d517d2",
+      "Id": "structure.nmc_river_wall"
+    },
+    {
+      "Type": "HiddenHarbours.Art.SetPieceDef",
+      "Guid": "1c48e3195d314295a78a7b79ffaebf12",
+      "Id": "structure.nmc_route91_bridge"
+    },
+    {
+      "Type": "HiddenHarbours.Art.SetPieceDef",
+      "Guid": "f3731e82dfa049bb80aab28536d6cf8f",
+      "Id": "prop.nmc_sign_board"
+    },
+    {
+      "Type": "HiddenHarbours.Art.SetPieceDef",
+      "Guid": "a937ec00f67b487fb75af7d9cdc88c96",
+      "Id": "structure.nmc_wall_stairs"
+    },
+    {
+      "Type": "HiddenHarbours.World.BerthDef",
+      "Guid": "9e3b35aad7704b25be1bd06cf2c92450",
+      "Id": "berth.rpt_trawler_face"
+    },
+    {
+      "Type": "HiddenHarbours.World.BerthDef",
+      "Guid": "45859f8feba04e0f9036011239f83e31",
+      "Id": "berth.rpt_trawler_outside"
+    },
+    {
+      "Type": "HiddenHarbours.Core.HullPaintSchemeDef",
+      "Guid": "b6dad690c3366964783d11461ccdbb58",
+      "Id": "paint.stern_trawler_bank_green"
+    },
+    {
+      "Type": "HiddenHarbours.Core.HullPaintSchemeDef",
+      "Guid": "bae5877a14776e84e914627ce5889892",
+      "Id": "paint.stern_trawler_harbour_blue"
+    },
+    {
+      "Type": "HiddenHarbours.Core.HullPaintSchemeDef",
+      "Guid": "1970c252730087d4ba660055f5402ae5",
+      "Id": "paint.stern_trawler_north_grey"
+    },
+    {
+      "Type": "HiddenHarbours.Core.HullPaintSchemeDef",
+      "Guid": "16f13d757f9cf964b9681d49d589735f",
+      "Id": "paint.stern_trawler_oxide_red"
+    },
+    {
+      "Type": "HiddenHarbours.Core.HullPaintSchemeDef",
+      "Guid": "553c0fa62e7e3e34da388e37b5d0935d",
+      "Id": "paint.stern_trawler_mk2_atlantic_blue"
+    },
+    {
+      "Type": "HiddenHarbours.Core.HullPaintSchemeDef",
+      "Guid": "c5e32be90b812854dbc95b955ff5b5bb",
+      "Id": "paint.stern_trawler_mk2_slate_grey"
+    },
+    {
+      "Type": "HiddenHarbours.Core.HullPaintSchemeDef",
+      "Guid": "384e47fe0aef0fa43bc982d40c02c6a1",
+      "Id": "paint.stern_trawler_mk2_spruce_green"
+    },
+    {
+      "Type": "HiddenHarbours.Core.HullPaintSchemeDef",
+      "Guid": "7bcdddfaae6329a45aa2cc1188af2e5d",
+      "Id": "paint.stern_trawler_mk2_tar_black"
+    },
+    {
+      "Type": "HiddenHarbours.Core.HullPaintSchemeDef",
+      "Guid": "6f09698abde9336468afc0c8708472e1",
+      "Id": "paint.stern_trawler_wrecked"
+    },
+    {
+      "Type": "HiddenHarbours.Boats.WreckDef",
+      "Guid": "af733760af404813a9a3c0cc81d2c411",
+      "Id": "wreck.rpt_stern_trawler"
+    },
+    {
+      "Type": "HiddenHarbours.World.DialogueDef",
+      "Guid": "2b52cbe6fc9c440ea7c5395d2b8da622",
+      "Id": "dialogue.rpt_wreck"
+    },
+    {
+      "Type": "HiddenHarbours.World.NpcDef",
+      "Guid": "a230a2fa97d941adbac15d45912324e3",
+      "Id": "npc.rpt_wreck"
+    },
+    {
+      "Type": "HiddenHarbours.Fishing.NpcTrawlDayDef",
+      "Guid": "b4da6f77c5404bf1bdd2e74cc7ab5007",
+      "Id": "trawlday.rpt_face"
     },
     {
       "Type": "HiddenHarbours.Art.SetPieceDef",

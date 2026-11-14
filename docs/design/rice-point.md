@@ -115,7 +115,8 @@ Route 91's band off.
 
 The south edge shows open bay; the west shows open water, plain beach, dune, pasture and wood continuing unbuilt.
 North is farmland and woodland with no road. Solid perimeter bands sit just outside all four extents;
-the east travel triggers sit inside them. There are no west/south/north travel doors and nothing may leave those edges.
+the east travel triggers sit inside them. There are no west or north travel doors and nothing may leave those edges. The south has one: the channel mouth
+to the South Water (`door.rpt_south_water`, below), 24 m inside the edge.
 The camera and height frame end together. There is no invented land or scenic extension beyond them.
 
 Package items the game cannot yet express or this wave deliberately leaves to their owners:
@@ -130,6 +131,78 @@ Package items the game cannot yet express or this wave deliberately leaves to th
 - M3: wharf ownership, growth stages, fleet staffing and interiors. No buoy is placed here; whose buoys remains open.
 - NMC's next issue owns `field.nmc_west_farm_south`, `hedge.nmc_y_minus96` and the bluff-column correction.
   Package seam evidence is authoritative for this wave; a comparison to the game's NMC ground follows H2.
+
+## The trawler berths and the harbour works
+
+The owner's ruling of 2026-11-12: Rice Point wharf takes the trawlers. The deepest of them
+(`boat.stern_trawler_mk2`) draws 4.3 m and the lowest tide of the year is 2.2 m below the mean, so a berth needs
+its bed about 7 m below the mean. The second issue of the ground stops at -5.75 m and its raster could not
+encode anything below -6 m, so the ground the game sails on is now **the second issue, dredged**:
+
+- **The issued ground is kept as issued.** The second-issue rasters sit untouched in
+  `RicePointGround/Issue2Base/`; `plan.json` and its hashes still describe them, and the first-issue tests still
+  read them. Where `plan.json` measures the berth face (-2.0 m), the way in (a sill at -2.62 m) and the south
+  edge (-2.9 to -4.3 m, "no change at any stage"), it is describing the base, not the dredged harbour.
+- **The works are data.** `RicePointGround/harbour-works.json` names each cut (a line, a half width, a bed, a
+  batter) and the raster's new range, -10 to +6 m. Two cuts to -7.0 m, the basin off the wharf face and
+  the channel from it to the south edge, and a third to -3.0 m that takes down the toe of the mud flat on the
+  channel's east bank. No cut lowers ground at or above +2.0 m, so the wharf and its wall
+  stand; a cut that would reach a still-water pool is refused.
+- **A cut meets the old ground through a blend, not a crease.** Each cut has a `blendRun` (3 m here): where
+  its side slope reaches the old ground the two are rounded together over that run. Without it the slope stopped
+  at a crease, and at spring low the tide's edge fell on that crease across the mud flat east of the basin, so
+  the shore there was the stepped outline of the cut with broken foam along it. The blend lowers ground only
+  where slope and old ground are within 1 m of each other in height, by at most 0.25 m, and never below a bed.
+- **The toe of the east mud flat is taken down with the channel.** What the channel left of the flat's
+  south-west point was a tongue 0 to 0.2 m above the lowest tide: too flat to hold a shoreline, so the tide's
+  edge there broke into teeth. `cut.rpt_channel_east_toe` lowers it to -3.0 m, below that tide. The flat now ends
+  in a blunt corner whose shore at the lowest tide lies on ground rising at least 0.1 m in a metre (the issued
+  ground there rose as little as 0.01 m in a metre). Above the lowest tide the flat is as issued.
+- **The live rasters are the base with the works applied, and nothing else.**
+  `GroundFileIntake.RicePointDredged` is the one function; the builder refuses to create or refresh the scene
+  unless the committed rasters are exactly its output, and the paint maps are derived from the dredged ground.
+- **The berths are data.** `Data/Berths/RicePointTrawlerFace.asset` (`berth.rpt_trawler_face`, alongside, a
+  metre off the wall) and `RicePointTrawlerOutside.asset` (`berth.rpt_trawler_outside`, the second boat lying
+  outside the first). A `BerthDef` says the length, beam and draught it takes, the water it promises under the
+  keel at the lowest tide (0.45 m here; the ground gives 0.5 m) and the way in from open water.
+  `RicePointTrawlerBerthTests` holds each trawler's draught against each berth and the whole way in.
+- **The way in is from the south.** The channel reaches the south edge between about x -55 and x -27, where
+  the open water to the south joins. The door to Nine Mile Creek is as shallow as it was: trawlers do not go
+  that way. The east edge is not moved by more than the re-encoding's last digit (0.12 mm).
+- **The channel mouth is the door to the South Water.** `door.rpt_south_water` in `RicePointPlan.asset`: a sea
+  door 14 m by 6 m at (-45, -156), sending the key `rice_point`; a boat from the South Water asks for `south_water`
+  and is laid in the channel at (-46, -146), 10 m inside the door. The scene was created before the door existed, so
+  `RicePointDoors.Ensure` authors it (passage and named arrival) ahead of `REFRESH Logic`, which only re-wires doors
+  a scene already holds. `RegionSeamAuditTests` holds the pair against the South Water's half.
+- **The scene keeps the range as numbers** on its two surfaces; `REFRESH Logic` now carries the plan's range
+  and paint floor to them.
+
+Not built: mooring a trawler at these berths in play, a ladder for them, and the south exit itself (its band
+comes from the south water's lane).
+
+## The beached trawler
+
+One wreck lies on the shore west of the wharf: `wreck.rpt_stern_trawler`, a `WreckDef` (one per file, in
+`Data/Wrecks/`). The Def says which hull she is (`boat.stern_trawler`, by reference, so she follows that hull if
+its model changes), where her middle lies, the bearing of her bow, how far over she lies (65 degrees, chosen by
+plate: at less she reads as a boat seen from above), how much of her is solid, and where a person stands to look.
+
+- **She is scenery.** `BeachedWreck` draws her real hull heeled and still. She does not float or ride the tide;
+  the sea comes and goes round her. Nobody can tie up to her. She is solid to walk or sail into.
+- **She is above the low-tide line and below the high one**, along her whole length: the ground under her is
+  between 0.25 m below the mean and 1.9 m above it. She is clear of both trawler berths and the way in.
+- **She shows no lamps.** She answers `VesselWay.Derelict` (a third value, appended), and every hull lamp is dark
+  for a derelict. Without this she burned an anchor light at night like a boat somebody keeps.
+- **Looking at her speaks a line.** A look point off each side reads `npc.rpt_wreck` (three lines the first
+  time, one after). It sets no flag.
+- **The promise is only data.** `RepairableLater` is true and `Promise` says in words what is meant. Nothing
+  reads either: no repair loop, no campaign step, no owner. A test fails the day code reads the field, so the
+  day that is built is a deliberate one.
+- **She shows no damage yet.** The stern trawler rig has no paint axis, so there is no rust or bare plate to
+  give her. The Def has an empty `Paint` slot; a wrecked scheme drops in there as data when the rig gains one.
+
+`RicePointWrecks.Ensure` puts her in the scene from the Def during the builder's create and refresh; a second
+run changes nothing. Guard tests: `RicePointBeachedTrawlerTests`. Plates: `RicePointBeachedTrawlerPlatePlayTests`.
 
 ## Validation and Phase B handoff
 

@@ -13,4 +13,6 @@ MonoBehaviour:
   m_Name: NpcPotDayLibrary
   m_EditorClassIdentifier: HiddenHarbours.Fishing::HiddenHarbours.Fishing.NpcPotDayLibrary
   Days:
+  - {fileID: 11400000, guid: 5d1c7e4a9b0f43e28a6c1f37d2e80b94, type: 2}
   - {fileID: 11400000, guid: ea84cea831934f47895968c596e96c29, type: 2}
+  - {fileID: 11400000, guid: c3a90f61e7d24b58b1f4a6027c9d5e13, type: 2}

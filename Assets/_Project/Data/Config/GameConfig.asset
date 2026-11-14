@@ -50,6 +50,8 @@ MonoBehaviour:
   WashboardSlowFactor: 0.5
   OverTheSideBodyWidthMetres: 0.7
   SwimBoardReachMetres: 6
+  ClimbAnywhereMaxFreeboardMetres: 1
+  BoardingPointReachMetres: 2
   Seakeeping:
     Enabled: 1
     Strength: 220
@@ -180,6 +182,7 @@ MonoBehaviour:
     MaxAlarmMetres: 20
     AlarmBlinkHz: 2
     PlaceholderWaterTempC: 12
+    ShowWaterTemp: 0
   FishFinder:
     DefaultRangeMetres: 20
     WaterfallHz: 4
@@ -192,8 +195,6 @@ MonoBehaviour:
     MaxMarksPerSchool: 8
     PlaceholderSens01: 0.75
     PlaceholderLink: 1
-    PlaceholderBatt01: 0.8
-    PlaceholderVolts: 4
   Chartplotter:
     MaxWaypoints: 64
     MaxRouteLegs: 24
@@ -313,6 +314,7 @@ MonoBehaviour:
   ShallowsFloorRefraction: 0.25
   ShallowsSubmergedProps: 1
   HullKeylineFlood: 0
+  PlayerFigureIdReserve: 2
   HullMeshReflections: 0
   HullReflectionResolutionDivisor: 1
   HullReflectionMaxHulls: 64
@@ -393,6 +395,52 @@ MonoBehaviour:
     SeaFightFactor: 0.35
     SeaBoldness01: 0.35
     SeaBigFishBias01: 0.5
+  FishFeel:
+    BigOneThreshold01: 0.8
+    SizeSmallBelow01: 0.25
+    SizeGoodFrom01: 0.55
+    SizeTrophyFrom01: 0.95
+    BendSmallScale01: 0.55
+    BendHeavyFloor01: 0.6
+    BendSlackKeep01: 0.4
+    BendHeavyLeanScale: 1.6
+    MaxTotalLeanDegrees: 40
+    ShakeHzSmall: 7
+    ShakeHzHeavy: 2.2
+    ShakeDegreesSmall: 1.5
+    ShakeDegreesHeavy: 7
+    ShakeSharpness: 3
+    RunPullMetres: 0.9
+    RunPullSmall01: 0.35
+    RunSwingPerSec: 9
+    TurnCosine: 0.3
+    TurnKickDegrees: 5
+    TurnKickSeconds: 0.25
+    HookSlamDegrees: 10
+    HookSlamSmall01: 0.35
+    HookSlamSeconds: 0.45
+    BigOneSlamScale: 1.6
+    HookKickSmallScale: 0.7
+    HookKickHeavyScale: 1.5
+    BigOneKickScale: 1.4
+    LineHeavyTautFloor01: 0.85
+    LineHumHeavy01: 0.35
+    LineHumIdle01: 0.5
+    LineWhitenHeavy01: 0.2
+    StrainHumHeavyGain: 0.15
+    StrainPitchHeavyDrop01: 0.18
+    HookScreamGain: 0.9
+    HookScreamPitchScale: 1.6
+    HookScreamSeconds: 0.8
+    BigOneReactionEnabled: 1
+    BigOneMarkSeconds: 1.2
+    BigOneMarkOffsetMetres: {x: 0, y: 1.7}
+    BigOneMarkHeightMetres: 0.38
+    BigOneMarkPopSeconds: 0.09
+    BigOneMarkPopScale: 1.4
+    BigOneMarkFadeSeconds: 0.25
+    BigOneMarkColor: {r: 1, g: 0.85, b: 0.2, a: 1}
+    BigOneStrikeHoldSeconds: 0.35
   FishSchools:
     CellSizeMetres: 22
     SlotHours: 2.5
@@ -432,6 +480,7 @@ MonoBehaviour:
     FrozenRateMultiplier: 0
     IcedRateMultiplier: 0
     UnsellableSpoil: 0.9
+  PlaningTopSpeedMarginUnderGoFastMps: 0.1
   Fuel:
     IdleFraction: 0.08
     ThrottleExponent: 2
@@ -533,3 +582,13 @@ MonoBehaviour:
     FrameRate: 60
   CreatorBackdropColor: {r: 0.921, g: 0.886, b: 0.8, a: 1}
   CreatorFigureHeightFraction: 0.6
+  HullFoam:
+    TrailFlipSpeed: 0.15
+    LeadWeight: 0.6
+    LeadSpeedKnee: 3
+    LeadSpanHalfBeams: 0.8
+    LeadRadiusHalfBeams: 0.35
+    SideWeight: 0.8
+    SideSpeedKnee: 1.2
+    SideRadiusHalfBeams: 0.3
+    SideReach: 0.7

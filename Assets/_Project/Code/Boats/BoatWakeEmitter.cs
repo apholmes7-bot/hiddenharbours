@@ -251,8 +251,25 @@ namespace HiddenHarbours.Boats
             host.AddComponent<BoatWakeEmitter>();
         }
 
+        // The live host, so a sibling Boats presenter (the oar splash) can draw with the SAME foam
+        // rafts instead of building a second set. Null outside play and before the host installs.
+        private static BoatWakeEmitter _shared;
+
+        /// <summary>
+        /// The wake's own foam raft sprites, <c>[variant][age rung]</c> — built once by the wake host
+        /// and shared, so foam laid by an oar is the same pixel foam the hull trails. Null when no
+        /// wake host is alive (EditMode, or before the first scene); a caller then draws nothing.
+        /// </summary>
+        internal static Sprite[][] SharedFoamRafts => _shared != null ? _shared._foamSprites : null;
+
+        private void OnDestroy()
+        {
+            if (_shared == this) _shared = null;
+        }
+
         private void Awake()
         {
+            _shared = this;
             _foamSprites = BuildFoamSprites(_trail.FoamAeration, _trail.FoamAgeErosion);
             _lineSprite = BuildLineSprite();
             _waveSprite = BuildWaveSprite(_wave.CrestUndulation);
@@ -1190,11 +1207,14 @@ namespace HiddenHarbours.Boats
             public void Tick(Vector2 current, Vector2 wind, float roughness, float time, float dt,
                              in WakeConfig cfg, Color foamColor, in WakeLineConfig lineCfg, Color lineColor,
                              in WakeGradeConfig grade, in BowSprayGradeConfig spray, Color sprayColor,
-                             in WakeTrailConfig trail, in BowWaveConfig bowWave,
+                             in WakeTrailConfig sharedTrail, in BowWaveConfig bowWave,
                              in WakeWaveConfig wave, Color waveColor, in SeaLift lift,
                              in WakeAgeRamp ramp, in SeaPaletteState palette, in WakeBubbleConfig bubbles,
                              in BowImpactConfig impact, float waterLevel)
             {
+                // The trail this hull lays: a jet-driven hull throws a narrow hard stream, not a churn strip.
+                WakeTrailConfig trail = WakeTrailMath.ForStyle(
+                    in sharedTrail, Boat != null && Boat.Hull != null ? Boat.Hull.WakeStyle : WakeStyle.Propeller);
                 if (Boat == null) return;
 
                 Vector2 pos = Boat.transform.position;

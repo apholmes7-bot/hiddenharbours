@@ -35,7 +35,10 @@ namespace HiddenHarbours.Player
     /// (the species lookup runs only when <c>FishId</c> actually changes), no <c>GetComponent</c>.</para>
     /// </summary>
     [DisallowMultipleComponent]
-    [DefaultExecutionOrder(60)]   // after the animator + y-sort have settled this frame's pose/order
+    // After the animator + y-sort have settled this frame's pose/order, and after DeckRiderVisual (100)
+    // has drawn her body for this frame: the rod is drawn in the hands of the body as DRAWN. Before
+    // CarryHands (102), which reads DrawsRod to hold the carried rod out of the picture.
+    [DefaultExecutionOrder(101)]
     public sealed class RodFightPresenter : MonoBehaviour
     {
         private const int Directions = 8;
@@ -165,6 +168,11 @@ namespace HiddenHarbours.Player
         private PlayerFishingAnimator _animator;
         private HiddenHarbours.Core.IsoCharacterSprite _isoSkin;
         private SpriteRenderer _playerSr;
+        // Where her body is DRAWN against this root (aboard: the deck the hull's picture is at, tide and
+        // rock included). Resolved once, on the first frame she fishes, like CarryHands' wiring: the
+        // builder may add the rider after this component. Null = the root is where she is drawn.
+        private DeckRiderVisual _rider;
+        private bool _riderResolved;
 
         /// <summary>Pose ordinal → index into <c>_rodStates</c>, resolved by rig state NAME once in
         /// <c>Awake</c>/<c>Configure</c> (see <see cref="ResolveRodSwap"/>). −1 = unwired.</summary>
@@ -192,6 +200,21 @@ namespace HiddenHarbours.Player
         private float _slackEdgeClock;    // seconds since SlackWindowOpen turned true (the pop)
         private bool _slackWasOpen;
         private float _shadowTheta;       // the deep shadow's circling angle
+
+        // HOW BIG SHE FEELS (owner's ask 2026-11-13; GameConfig.FishFeel through FishFeelMath). All of
+        // it is derived from the published fight state and this presenter's own fight clock — nothing
+        // is drawn at random, so a fight replays identically (rule 5) — and none of it allocates.
+        private FishFeelSettings _feel = FishFeelSettings.Default;   // re-read once per LateUpdate
+        private float _fightClock;        // seconds since the hook-set (the slam + the head-shake clock)
+        private float _turnClock = float.PositiveInfinity;   // seconds since her last turn (the tip kick)
+        private Vector2 _lastRunDir;      // her last published run direction — a turn is measured off it
+        private Vector2 _runSwing;        // her run direction, eased: where the tip is being dragged
+        private float _shakeSeed01;       // this fight's head-shake phase, from species + weight
+
+        /// <summary>The rod's lean off its unloaded pose this frame, in degrees (signed, toward the
+        /// pull). For tests/plates: it is the answer to "how far over is the rod", which is otherwise
+        /// only a rotation on a child renderer.</summary>
+        public float RodLeanDegrees { get; private set; }
 
         // The hooked jumper (owner's ruling 2026-09-06). Everything here is resolved once per fight and
         // then read; nothing is drawn at random, so a fight replays identically (rule 5).
@@ -236,11 +259,18 @@ namespace HiddenHarbours.Player
         /// </summary>
         public FishRungVisual Rung => _rung;
 
+        /// <summary>Is the fight drawing its own rod in her hands this frame? While it is, the carried rod
+        /// tool is not drawn (<c>CarryHands</c>), so she holds one rod and not two.</summary>
+        public bool DrawsRod => _rodSr != null && _rodSr.enabled;
+
         private void Awake()
         {
             _animator = GetComponent<PlayerFishingAnimator>();
             _isoSkin = GetComponent<HiddenHarbours.Core.IsoCharacterSprite>();
             _playerSr = GetComponent<SpriteRenderer>();
+            // The exclamation over her head when a big one is hooked rides along with the rod fight, so
+            // no scene or prefab needs editing to get it (GameConfig.FishFeel.BigOneReactionEnabled).
+            if (GetComponent<BigOneReactionPresenter>() == null) gameObject.AddComponent<BigOneReactionPresenter>();
 
             _rodSr = MakeChild("RodOverlay", 0);
             _bobberSr = MakeChild("Bobber", _waterElementOrder);
@@ -313,6 +343,29 @@ namespace HiddenHarbours.Player
             FishingState prev = _s;
             FishingState next = e.State;
             _s = next;
+
+            // THE HOOK-SET: the frame a fight opens from anything that was not one. The slam and the
+            // head-shake train are timed from here; her run memory starts clean.
+            if (next.IsFightPhase && !prev.IsFightPhase)
+            {
+                _fightClock = 0f;
+                _turnClock = float.PositiveInfinity;
+                _lastRunDir = Vector2.zero;
+                _runSwing = Vector2.zero;
+                _shakeSeed01 = (FightSeed(next.FishId, next.WeightKg) & 0xFFFF) / 65536f;
+            }
+
+            // HER TURNS: a published run direction that swings far enough off the last one she ran in
+            // kicks the tip (FishFeelMath.IsTurn — the threshold is data). Read off the SAME vector the
+            // lean is scored against, never inferred from her drawn position.
+            if (next.IsFightPhase)
+            {
+                if (FishFeelMath.IsTurn(_lastRunDir.x, _lastRunDir.y,
+                                        next.FishRunDirX, next.FishRunDirY, in _feel))
+                    _turnClock = 0f;
+                if (next.FishRunDirX * next.FishRunDirX + next.FishRunDirY * next.FishRunDirY > 1e-8f)
+                    _lastRunDir = new Vector2(next.FishRunDirX, next.FishRunDirY);
+            }
 
             if (next.Phase != prev.Phase)
             {
@@ -413,6 +466,7 @@ namespace HiddenHarbours.Player
             _bobberClock += dt;
             _slackEdgeClock += dt;
             if (_splashActive) _splashClock += dt;
+            TickFishFeel(dt);
             if (_s.Phase == FishingPhase.FightDeep)
                 _shadowTheta += dt * (2f * Mathf.PI) / Mathf.Max(0.1f, _shadowPeriodSeconds);
 
@@ -424,12 +478,17 @@ namespace HiddenHarbours.Player
                 return;
             }
 
+            // TWO ORIGINS. The water's elements (the bobber, the fish, the rings) are placed off the root,
+            // as the cast and the fight publish them. What is IN HER HANDS (the rod, a landed fish) is
+            // placed off the body as it is DRAWN: aboard, the hull's picture rides the tide and the rock
+            // and this root does not, so a rod off the root alone floated above her at low water.
             Vector2 angler = transform.position;
+            Vector2 hands = angler + DrawnBodyOffset();
             Vector2 castAim = new Vector2(_s.CastAimX, _s.CastAimY);
             bool castPath = castAim.sqrMagnitude > 1e-4f;
             RodElements show = RodPresenterMath.ElementsFor(_s.Phase, castPath);
 
-            bool rodDrawn = RenderRod(show, angler, out Vector2 tip);
+            bool rodDrawn = RenderRod(show, hands, out Vector2 tip);
             Vector2 unloadedTip = tip;   // the sheet's own tip, before the fight's load bends it over
 
             // ---- the line's far end (and the element that lives there) ---------------------------
@@ -476,7 +535,7 @@ namespace HiddenHarbours.Player
             bool fishShown = (show & (RodElements.FishShadow | RodElements.FishSurface)) != 0;
             if (!fishShown) _deepRunning01 = 0f;
 
-            if ((show & RodElements.HeldFish) != 0) RenderHeldFish(angler);
+            if ((show & RodElements.HeldFish) != 0) RenderHeldFish(hands);
             else _heldSr.enabled = false;
 
             // The weighted path's line runs straight down to the entry point.
@@ -489,12 +548,26 @@ namespace HiddenHarbours.Player
             // THE ROD IS THE GAUGE (owner's ruling 2026-07-23 — the fight's HUD bars are gone). Now that
             // the far end is known, haul the rod over toward whatever is pulling on it, by how hard it's
             // loaded. Done here rather than in RenderRod because the pull direction IS the far end.
+            RodLeanDegrees = 0f;
             if (rodDrawn && _s.IsFightPhase) tip = LeanRodUnderLoad(unloadedTip, far);
 
             if ((show & RodElements.Line) != 0 && farValid) RenderLine(tip, far);
             else { _line.enabled = false; _line.positionCount = 0; }
 
             if (farValid) _lastFarEnd = far;
+        }
+
+        /// <summary>Where her body is drawn against this root, in world metres
+        /// (<see cref="DeckRiderVisual.DrawnBodyOffset"/>, stated by the rider at order 100, before this
+        /// component's 101). Zero with no rider and zero ashore.</summary>
+        private Vector2 DrawnBodyOffset()
+        {
+            if (!_riderResolved)
+            {
+                _rider = GetComponent<DeckRiderVisual>();
+                _riderResolved = true;
+            }
+            return _rider != null ? _rider.DrawnBodyOffset : Vector2.zero;
         }
 
         // ---- the rod overlay ---------------------------------------------------------------------
@@ -565,18 +638,70 @@ namespace HiddenHarbours.Player
         /// </summary>
         private Vector2 LeanRodUnderLoad(Vector2 tip, Vector2 far)
         {
-            float load = Mathf.Clamp01(Mathf.Max(_s.RodBend01, _s.Tension01));
+            float baseLoad = FightLoad01();
+            // HER SIZE AND HER MOVEMENT ON THE ROD (owner's ask 2026-11-13, GameConfig.FishFeel). A
+            // hand-gathered catch (Tending) is not a hooked fish and keeps the plain lean.
+            bool hooked = _s.Phase != FishingPhase.Tending;
+            float size = hooked ? _s.Size01 : 0f;
+            float load = hooked
+                ? FishFeelMath.RodLoad01(baseLoad, size, _s.SlackWindowOpen, in _feel) : baseLoad;
+            float maxLean = hooked
+                ? FishFeelMath.MaxLeanDegrees(_loadLeanDegrees, size, in _feel) : _loadLeanDegrees;
+
+            // The sharp, short moves that ride on top of the held bow: her head-shakes (a pulse train
+            // paced and sized by her weight, live only while she is working), the kick of a turn, and
+            // the hook-set slam. All closed-form in this fight's own clocks.
+            float extra = 0f;
+            if (hooked)
+            {
+                float effort = _s.SlackWindowOpen ? 0f : baseLoad;
+                extra = FishFeelMath.TipPulseDegrees(_fightClock, size, effort, _shakeSeed01, in _feel)
+                      + FishFeelMath.TurnKickDegrees(_turnClock, size, in _feel)
+                      + FishFeelMath.HookSlamDegrees(_fightClock, size, in _feel);
+            }
+
             Vector2 shaft = tip - _rodGrip;
             Vector2 pull = far - _rodGrip;
-            if (load <= 1e-3f || _loadLeanDegrees <= 0f
+            // HER RUN DRAGS THE TIP: the point the rod leans toward is carried along her (eased) run
+            // direction, further for a heavier fish — so a run reads on the rod, and a turn swings it.
+            if (hooked) pull += _runSwing * FishFeelMath.RunPullMetres(size, in _feel);
+            if ((load <= 1e-3f && extra <= 1e-3f) || _loadLeanDegrees <= 0f
                 || shaft.sqrMagnitude < 1e-6f || pull.sqrMagnitude < 1e-6f) return tip;
 
             // Lean TOWARD the pull, never past it (a rod bends to the fish, it doesn't overshoot her).
             float toPull = Vector2.SignedAngle(shaft, pull);
-            float lean = Mathf.Clamp(toPull, -_loadLeanDegrees, _loadLeanDegrees) * load;
+            float lean = Mathf.Clamp(toPull, -maxLean, maxLean) * load;
+            if (hooked)
+            {
+                lean += (toPull >= 0f ? 1f : -1f) * extra;
+                lean = Mathf.Clamp(lean, -_feel.MaxTotalLeanDegrees, _feel.MaxTotalLeanDegrees);
+            }
+            RodLeanDegrees = lean;
             var rot = Quaternion.Euler(0f, 0f, lean);              // a WORLD-space delta off the baseline
             _rodSr.transform.rotation = rot * _rodBaseRotation;    // composes with any parent rotation
             return _rodGrip + (Vector2)(rot * shaft);
+        }
+
+        /// <summary>The fight's own load read, 0..1: the WORSE of what she is doing to the rod
+        /// (<c>RodBend01</c>) and what the line is taking (<c>Tension01</c>).</summary>
+        private float FightLoad01() => Mathf.Clamp01(Mathf.Max(_s.RodBend01, _s.Tension01));
+
+        /// <summary>One frame of the big-fish feel's own state: re-read the dials (so the owner can
+        /// tune <c>GameConfig.FishFeel</c> live), advance the fight clocks, and ease the run swing toward
+        /// her published run direction (or back to rest when she is not running). No allocation.</summary>
+        private void TickFishFeel(float dt)
+        {
+            _feel = GameServices.Config != null ? GameServices.Config.FishFeel : FishFeelSettings.Default;
+            if (!_s.IsFightPhase) { _runSwing = Vector2.zero; return; }
+
+            float step = Mathf.Max(0f, dt);
+            _fightClock += step;
+            if (!float.IsPositiveInfinity(_turnClock)) _turnClock += step;
+
+            var run = new Vector2(_s.FishRunDirX, _s.FishRunDirY);
+            float mag = run.magnitude;
+            Vector2 target = mag > 1e-4f ? run / mag : Vector2.zero;
+            _runSwing = Vector2.Lerp(_runSwing, target, 1f - Mathf.Exp(-_feel.RunSwingPerSec * step));
         }
 
         private bool IsBehindRow(int row)
@@ -928,6 +1053,10 @@ namespace HiddenHarbours.Player
 
             float taut = RodPresenterMath.TautFor(_s.Phase, _s.SlackWindowOpen, _s.RodBend01,
                                                   _s.Tension01, _restTaut, _sinkTaut, _fightTautFloor);
+            // HER WEIGHT ON THE LINE (GameConfig.FishFeel): a heavy fish keeps it tight, humming and a
+            // touch brighter. Hooked fish only — a hand-gathered catch (Tending) is untouched.
+            bool hooked = _s.IsFightPhase && _s.Phase != FishingPhase.Tending;
+            if (hooked) taut = FishFeelMath.LineTaut01(taut, _s.Size01, _s.SlackWindowOpen, in _feel);
 
             // The hit-bottom / gone-slack POP: the belly kicks past rest and settles (RodLineMath).
             float sag = _maxSagM;
@@ -939,8 +1068,14 @@ namespace HiddenHarbours.Player
             // Strain: whiten late, shudder near the snap (one visual language with the haul rope).
             bool fight = _s.IsFightPhase;
             float whiten = fight ? RodLineMath.Whiten01(_s.Tension01, _whitenLateBias) : 0f;
-            float shudderAmp = fight
-                ? _shudderAmpM * RodLineMath.StrainShudder01(_s.Tension01, _shudderStart01) : 0f;
+            float shudder01 = fight ? RodLineMath.StrainShudder01(_s.Tension01, _shudderStart01) : 0f;
+            if (hooked)
+            {
+                whiten = FishFeelMath.LineWhiten01(whiten, _s.Size01, in _feel);
+                shudder01 = FishFeelMath.LineShudder01(shudder01, _s.Size01, FightLoad01(),
+                                                       _s.SlackWindowOpen, in _feel);
+            }
+            float shudderAmp = _shudderAmpM * shudder01;
 
             // THE COLOUR AXIS IS THE INSTRUCTION (owner ask 2026-07-24 — readable, but no UI): the line
             // falls dull the moment she gives (REEL) and climbs to bar-white as it loads (EASE OFF). One

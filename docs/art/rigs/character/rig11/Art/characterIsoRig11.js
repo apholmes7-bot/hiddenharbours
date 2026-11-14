@@ -1394,7 +1394,7 @@
   const zcOfBuild=(B,z)=>1.31+((B.D.headZ+(z-B.D.headZ)/B.D.kH)-B.D.eyeZ)/B.D.zs;   /* 10.0: undo the head's scale first */
 
   const API = {
-    rig:'characterIsoRig11', pass:10, revision:'11.0', PX, W, H, pivot:PIVOT, ELEV, order:ORDER, SHADING, DITHER, TOL, INK, INK_ROLES, EYE_WHITE, AIM, R7, BOTTOMS, garmentOf, BEARDS, randomBuild, CAST10, NPCS,
+    rig:'characterIsoRig11', pass:11, revision:'11.0', PX, W, H, pivot:PIVOT, ELEV, order:ORDER, SHADING, DITHER, TOL, INK, INK_ROLES, EYE_WHITE, AIM, R7, BOTTOMS, garmentOf, BEARDS, randomBuild, CAST10, NPCS,
     ANIMS, ANIMS_SHIPPED, SEGMENTS, GROUPS, ANIM_MOUNT, CARRIES, CARRY_ORDER, CARRY_CLIPS, CONTRACT, BUILDS, CAST, READY, SOCKETS, HUMANOID,
     OPTIONS, FIELDS, AGES, SHAPE, SEX, FRAMES, frameOf, HEADS, GARMENTS, HATS, EYE_SHAPES, ROLES, PT_UNDER, FACE_EMPTY, HSTEP, normBuild, buildKey, dimsOf, kOf, zmOf,
     palettes:{ SKINS, HAIRS, OUTFITS, SHIRTS, HATCOLS, APRONS, EYES },

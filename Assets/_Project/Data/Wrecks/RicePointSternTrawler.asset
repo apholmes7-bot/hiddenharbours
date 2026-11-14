@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: da1d8c923aaf4b8587d93fe913fac7fa, type: 3}
+  m_Name: RicePointSternTrawler
+  m_EditorClassIdentifier: HiddenHarbours.Boats::HiddenHarbours.Boats.WreckDef
+  Id: wreck.rpt_stern_trawler
+  RegionId: region.rice_point
+  DisplayName: Wrecked stern trawler
+  Hull: {fileID: 11400000, guid: ed28b14a8679ad344be81d19cf0cfbd0, type: 2}
+  Paint: {fileID: 0}
+  Position: {x: -120, y: -124}
+  HeadingDegrees: 85
+  HeelDegrees: -65
+  SolidFraction: 0.85
+  LookStandOffMeters: 0.8
+  LookNpcId: npc.rpt_wreck
+  RepairableLater: 1
+  Promise: She can be repaired later and worked by the player as part of the campaign. Nothing is built for that yet. There is no repair loop, no campaign step and no owner. Only this flag and the line of text when the player looks at her.

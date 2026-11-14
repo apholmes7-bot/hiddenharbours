@@ -187,6 +187,14 @@ namespace HiddenHarbours.Core
         private static IFishBehaviourFacts _fishBehaviour;
 
         /// <summary>
+        /// HOW BIG A SPECIES RUNS (<see cref="IFishSizeFacts"/>) — published by the Fishing module's
+        /// species registry, read by copy that names a catch's size (<see cref="LiftLine"/>). May be
+        /// null (a bare scene, an EditMode rig): readers then say nothing about size.
+        /// FLAG lead-architect: new Core contract (2026-11-13, the big-fish feel).
+        /// </summary>
+        public static IFishSizeFacts FishSizes { get; set; }
+
+        /// <summary>
         /// What a radar can see (ADR 0025 S5): the NPC vessels and buoys out there right now, published
         /// by whoever is driving them and read by the scope at the helm (<see cref="IRadarContacts"/>).
         ///
@@ -712,6 +720,12 @@ namespace HiddenHarbours.Core
         public static WaveFetchSettings WaveFetch =>
             Config != null ? Config.WaveFetch : WaveFetchSettings.Default;
 
+        /// <summary>Where a hull churns the water besides her trail (the whole hull makes foam), same
+        /// contract as <see cref="WaveField"/> including the <c>Config != null</c> discipline. Drawn
+        /// only: read by the foam injector, never by a boat.</summary>
+        public static HullFoamSettings HullFoam =>
+            Config != null ? Config.HullFoam : HullFoamSettings.Default;
+
         /// <summary>The BREAKING-WAVE model's tunables (ADR 0040), same contract as
         /// <see cref="WaveField"/> and <see cref="WaveFetch"/> including the <c>Config != null</c>
         /// discipline. Read by the shader bridge (which solves the contour and publishes it) and by the
@@ -975,6 +989,17 @@ namespace HiddenHarbours.Core
         public static bool ShallowsSubmergedProps =>
             Config != null ? Config.ShallowsSubmergedProps : GameConfig.DefaultShallowsSubmergedProps;
 
+        /// <summary>How many facet ids the Art registry holds back for the players' figures ashore
+        /// (ADR 0056). Same contract as <see cref="HullKeylineFlood"/>, including the
+        /// <c>Config != null</c> discipline; clamped to the inspector's range so a hand-edited asset
+        /// cannot starve the fleet. Falls back to <see cref="GameConfig.DefaultPlayerFigureIdReserve"/>.
+        /// Read ONCE per domain, when the registry builds its pool.
+        /// FLAG lead-architect: new Core contract (the facet-id budget seam).</summary>
+        public static int PlayerFigureIdReserve =>
+            Config != null
+                ? UnityEngine.Mathf.Clamp(Config.PlayerFigureIdReserve, 0, GameConfig.MaxPlayerFigureIdReserve)
+                : GameConfig.DefaultPlayerFigureIdReserve;
+
         public static bool HullMeshReflections => Config != null && Config.HullMeshReflections;
         public static int HullReflectionResolutionDivisor =>
             Config != null && Config.HullReflectionResolutionDivisor == 2 ? 2 : 1;
@@ -1154,6 +1179,7 @@ namespace HiddenHarbours.Core
             Helm.Reset();                // both faces at once — one arbiter, one grant
             FishSchools = null;          // → EmptyFishSchools.Instance; this property is never null
             FishBehaviour = null;        // → EmptyFishBehaviourFacts.Instance; likewise never null
+            FishSizes = null;            // nullable by contract: no size word without a registry
             RadarContacts = null;        // → EmptyRadarSea.Instance; likewise never null
             BirdPresence = null;         // → EmptyBirdPresence.Instance; likewise never null
             Save = null;
@@ -1173,6 +1199,7 @@ namespace HiddenHarbours.Core
             Config = null;
             CatchFactory = null;
             AudioMix = null;
+            LocalWeather.Clear();        // an authored local shade never outlives the services
         }
     }
 }

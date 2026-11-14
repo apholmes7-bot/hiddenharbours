@@ -41,6 +41,8 @@ namespace HiddenHarbours.Core
     /// fraction, the two foot phases — arrives as a parameter, sourced from
     /// <see cref="LadderBoardingSettings"/> on <c>GameConfig</c>. The <c>Rig*</c> constants below are the
     /// rig's own published defaults, named so a test can pin them, not so callers can skip the config.</para>
+    ///
+    /// <para>Whether a HULL may be climbed from the water at a spot is <see cref="BoardingRuleMath"/>, not this.</para>
     /// </summary>
     public static class LadderBoardingMath
     {

@@ -569,6 +569,25 @@ namespace HiddenHarbours.Art
         /// </summary>
         public const float MaxPoolGain = 8f;
 
+        /// <summary>
+        /// <b>The LAMP look's shape at one point</b> — the headless mirror of the additive shader's
+        /// core-and-halo branch, so the picture can be pinned without a GPU.
+        ///
+        /// <para>Inside <paramref name="coreRadius01"/> (a fraction of the throw) the answer is 1: a
+        /// flat hot core. From the core's edge out to the throw it is the halo: a linear fade cut into
+        /// <paramref name="bandSteps"/> flat bands and scaled by <paramref name="haloStrength"/>. Past
+        /// the throw it is 0. With no bands the halo is the plain linear fade.</para>
+        /// </summary>
+        public static float LampShape(float dist01, float coreRadius01, float haloStrength, int bandSteps)
+        {
+            float d = Mathf.Max(dist01, 0f);
+            float core = Mathf.Clamp01(coreRadius01);
+            if (d <= core) return 1f;
+            float lin = Mathf.Clamp01(1f - (d - core) / Mathf.Max(1f - core, 1e-4f));
+            float halo = bandSteps >= 1 ? Mathf.Ceil(lin * bandSteps) / bandSteps : lin;
+            return halo * Mathf.Clamp01(haloStrength);
+        }
+
         /// <summary>The floor under the night's ambient luminance in <see cref="PoolBaseGain"/>. A tint of
         /// zero is a frame with no cycle running, not an infinitely dark one.</summary>
         public const float MinPoolAmbientLuminance = 0.02f;

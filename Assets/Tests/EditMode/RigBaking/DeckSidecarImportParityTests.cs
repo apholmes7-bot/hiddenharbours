@@ -110,16 +110,19 @@ namespace HiddenHarbours.Tests.RigBaking
                 "the two halves of the partition do not add up to the folder");
 
             // ⚠️ ANTI-VACUITY. Nothing below this line would fail on an empty hull list.
-            Assert.GreaterOrEqual(hulls.Length, 30,
+            // The floor falls by one with each hull rebuilt off the old layout (her sidecar retires).
+            Assert.GreaterOrEqual(hulls.Length, 27,
                 $"only {hulls.Length} hull sidecar(s) survived discovery out of {all.Length} files. " +
                 "The fleet is thirty-odd measured hulls; a number this low means the exclusion ate " +
                 "the corpus and every parity assertion below is passing on an empty list.");
 
-            // Two named anchors, one for each shape a hull comes in. doryIsoRig DECLARES
+            // Two named anchors, one for each shape a hull comes in. puntIsoRig DECLARES
             // hidden-harbours/boat-gameplay-geometry@1; capeIslanderIsoRig declares NO schema at all,
             // as eight of the committed hulls do. A positive "does it say boat?" filter keeps the
             // first and drops the second without a word — which is why the filter is negative.
-            CollectionAssert.Contains(hulls, "doryIsoRig.gameplay.json",
+            // (The declaring anchor was the dory until she was rebuilt to the hull layout and her
+            // sidecar retired; the punt declares the same schema.)
+            CollectionAssert.Contains(hulls, "puntIsoRig.gameplay.json",
                 "the schema-DECLARING anchor hull fell out of discovery");
             CollectionAssert.Contains(hulls, "capeIslanderIsoRig.gameplay.json",
                 "the schema-LESS anchor hull fell out of discovery — a positive schema filter does " +

@@ -104,6 +104,12 @@ namespace HiddenHarbours.Core
                  "skiff outboard, 32 on the punt's). 0 = this fitting does not steer.")]
         public float MaxSteerDegrees;
 
+        [Tooltip("The axis a STEERED fitting turns about, in the fitting's own rig space, through " +
+                 "PivotLocalMeters. Zero (the default, and every outboard's) means straight up: the " +
+                 "clamp swivel. A raked steering column states its own (the jetski's handlebars lean " +
+                 "aft with the column). Written by the fitting bake from the rig; never typed.")]
+        public Vector3 SteerAxisLocal = Vector3.zero;
+
         [Tooltip("Peak tilt, degrees (the rig's MOTOR.tiltMax — the leg swinging aft-and-up out of the " +
                  "water). 0 = this fitting does not tilt.")]
         public float MaxTiltDegrees;

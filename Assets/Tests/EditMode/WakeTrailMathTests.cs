@@ -469,5 +469,54 @@ namespace HiddenHarbours.Tests.EditMode
                 Assert.LessOrEqual(a.Pool[i].BaseSize, cfg.FoamSize * 3f * (1f + cfg.SizeJitter) + 1e-4f);
             }
         }
+
+        // ---- the jet wash: a per-hull wake style ---------------------------------------------------
+
+        [Test]
+        public void APropellerHull_LaysTheSharedTrail_Untouched()
+        {
+            WakeTrailConfig c = WakeTrailConfig.Default;
+            WakeTrailConfig styled = WakeTrailMath.ForStyle(in c, WakeStyle.Propeller);
+            Assert.AreEqual(c, styled, "A propeller hull's trail must be the shared config, field for field.");
+        }
+
+        [Test]
+        public void AJetHull_LaysANarrowerStream_ThrownHarder_ThatLastsLonger()
+        {
+            WakeTrailConfig c = WakeTrailConfig.Default;
+            WakeTrailConfig jet = WakeTrailMath.ForStyle(in c, WakeStyle.Jet);
+            const float wakeHalf = 0.6f;
+            Assert.Less(WakeTrailMath.ChurnHalfWidthFrom(wakeHalf, in jet),
+                        WakeTrailMath.ChurnHalfWidthFrom(wakeHalf, in c), "The jet's stream is narrower than a churn strip.");
+            Assert.Greater(WakeTrailMath.ChurnHalfWidthFrom(wakeHalf, in jet), 0f, "...and is still there.");
+            Assert.AreEqual(1f, jet.CenterChurnFraction, "Every deposit lays the centre lane: the stream is continuous.");
+            Assert.Greater(jet.AsternDriftFraction, c.AsternDriftFraction, "The wash is thrown astern harder.");
+            Assert.LessOrEqual(jet.AsternDriftFraction, 1f, "...and never faster than she is going.");
+            Assert.Greater(jet.ChurnLifetimeScale, c.ChurnLifetimeScale, "The white lasts longer along the lane.");
+        }
+
+        [Test]
+        public void AJetHull_SpendsNoMoreParticlesPerDeposit_AndKeepsTheHullsOwnArms()
+        {
+            WakeTrailConfig c = WakeTrailConfig.Default;
+            WakeTrailConfig jet = WakeTrailMath.ForStyle(in c, WakeStyle.Jet);
+            Assert.AreEqual(WakeTrailMath.ChurnPuffCount(in c), WakeTrailMath.ChurnPuffCount(in jet));
+            Assert.AreEqual(c.MaxDepositsPerTick, jet.MaxDepositsPerTick);
+            Assert.AreEqual(c.DepositSpacingMeters, jet.DepositSpacingMeters);
+            Assert.AreEqual(c.ShoulderHalfWidthFraction, jet.ShoulderHalfWidthFraction, "The V arms are the hull's.");
+            Assert.AreEqual(c.KelvinHalfAngleDeg, jet.KelvinHalfAngleDeg);
+        }
+
+        [Test]
+        public void AnEmitterSerializedBeforeTheJetBlock_StillLaysAJetWash()
+        {
+            WakeTrailConfig old = WakeTrailConfig.Default;
+            old.JetWash = default;   // what an older serialized emitter reads
+            WakeTrailConfig jet = WakeTrailMath.ForStyle(in old, WakeStyle.Jet);
+            WakeTrailConfig fresh = WakeTrailConfig.Default;
+            WakeTrailConfig want = WakeTrailMath.ForStyle(in fresh, WakeStyle.Jet);
+            Assert.AreEqual(want.ChurnHalfWidthFraction, jet.ChurnHalfWidthFraction);
+            Assert.AreEqual(want.AsternDriftFraction, jet.AsternDriftFraction);
+        }
     }
 }

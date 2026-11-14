@@ -268,8 +268,9 @@ namespace HiddenHarbours.Tests.PlayMode
 
             yield return RunToTerminal(boat, rb);
 
-            Assert.AreEqual(3.9f, rb.linearVelocity.magnitude, 0.15f,
-                "the console is the WORKBOAT: the owner's target is 3.8–4.0 m/s. If this drifts, the " +
+            // Moved by the owner's 11-12 speed ruling (was 3.9): 0.45 x the audit's 36.9 kn.
+            Assert.AreEqual(8.54f, rb.linearVelocity.magnitude, 0.15f,
+                "the console skiff's ruled speed is 8.54 m/s (0.45 x 36.9 kn). If this drifts, the " +
                 "EnginePower/ForwardDrag/MassKg on ConsoleSkiff.asset moved — or BoatController's force " +
                 "model changed under it (see the derivation in GreyboxBuilder's hull-ladder note).");
         }
@@ -282,9 +283,10 @@ namespace HiddenHarbours.Tests.PlayMode
 
             yield return RunToTerminal(boat, rb);
 
-            Assert.AreEqual(4.64f, rb.linearVelocity.magnitude, 0.15f,
-                "the sport skiff's target is ≈4.6 m/s — the SAME engine as the console on a lighter, " +
-                "slipperier hull");
+            // Moved by the owner's 11-12 speed ruling (was 4.64): 0.45 x the audit's 36.9 kn.
+            Assert.AreEqual(8.54f, rb.linearVelocity.magnitude, 0.15f,
+                "the sport skiff's ruled speed is 8.54 m/s (0.45 x 36.9 kn), the same top speed as the " +
+                "console on a lighter, slipperier hull");
         }
 
         [UnityTest]
@@ -295,9 +297,11 @@ namespace HiddenHarbours.Tests.PlayMode
 
             yield return RunToTerminal(boat, rb);
 
-            Assert.AreEqual(5.63f, rb.linearVelocity.magnitude, 0.15f,
-                "the twin's target is ≈5.6 m/s. NOT 2× the single: drag is linear in v here, so doubling " +
-                "thrust would exactly double terminal speed to ~9 m/s. EnginePower is a design-unit " +
+            // Moved by the owner's 11-12 speed ruling (was 5.63): 0.45 x the audit's 36.9 kn. She is no
+            // longer the fastest hull afloat: the three skiffs share one ruled speed and the RIBs, the
+            // bowrider, the express cruiser and the go-fast all run quicker.
+            Assert.AreEqual(8.54f, rb.linearVelocity.magnitude, 0.15f,
+                "the twin's ruled speed is 8.54 m/s (0.45 x 36.9 kn). EnginePower is a design-unit " +
                 "tunable calibrated to a designed speed, not a Newton count.");
         }
 
@@ -548,8 +552,9 @@ namespace HiddenHarbours.Tests.PlayMode
 
                 // Inside the spray sheet's frame, measured rather than solved — BowSprayGrading maps
                 // 1.7 → 6 m/s and a hull past the top clips flat and outruns her own art.
+                // Moved by the owner's 11-12 speed ruling: these five now run 8.5 to 10.1 m/s, past the
+                // sheet's 6 m/s top, so only the floor is held here. The ceiling assertion left.
                 Assert.Greater(measured, 1.7f, $"{file}: below the spray sheet's floor at {measured:0.00} m/s");
-                Assert.LessOrEqual(measured, 6f, $"{file}: past the spray sheet's ceiling at {measured:0.00} m/s");
 
                 Object.Destroy(go);
                 yield return null;
@@ -935,8 +940,12 @@ namespace HiddenHarbours.Tests.PlayMode
             Assert.AreEqual(0f, engine.SteerDegrees, 0.01f, "she wakes dead ahead");
 
             boat.SetControl(1f, -1f);                    // hard a-port
-            yield return SpinUntil(() => engine.SteerDegrees <= HardPortDegrees + 0.01f, budget);
-            Assert.AreEqual(HardPortDegrees, engine.SteerDegrees, 0.01f,
+            float settledPort = HardPortDegrees + 0.01f;
+            // The rounded float boundary is 0.0100002288818359375 degrees from -32, just beyond
+            // 0.01f. Derive the delta in double so the assertion admits the wait's boundary exactly.
+            double hardPortTolerance = (double)settledPort - HardPortDegrees;
+            yield return SpinUntil(() => engine.SteerDegrees <= settledPort, budget);
+            Assert.AreEqual(HardPortDegrees, engine.SteerDegrees, hardPortTolerance,
                 "the tiller goes hard over to port off the helm alone, at her own ±32° — not the " +
                 "skiffs' 30");
 
@@ -978,12 +987,16 @@ namespace HiddenHarbours.Tests.PlayMode
                 "she wakes dead ahead, never on a stale hard-over");
 
             boat.SetControl(1f, 1f);                     // hard a-starboard
-            yield return SpinUntil(() => engine.SteerDegrees >= hardStarboard - 0.01f, budget);
+            float settledStarboard = hardStarboard - 0.01f;
+            // As at hard port, float subtraction rounds the wait's boundary. Use its exact double
+            // distance (0.0100002288818359375 degrees at +30) for the assertion as well.
+            double hardStarboardTolerance = (double)hardStarboard - settledStarboard;
+            yield return SpinUntil(() => engine.SteerDegrees >= settledStarboard, budget);
 
             // DECISIVE, not one step past centre. The old assertion (Greater than centre) only needed half a
             // column of travel and was therefore a coin-flip on frame rate; requiring the FULL hard-over means a
             // broken cadence cannot squeak past, and it earns the precondition the drop test needs below.
-            Assert.AreEqual(hardStarboard, engine.SteerDegrees, 0.01f,
+            Assert.AreEqual(hardStarboard, engine.SteerDegrees, hardStarboardTolerance,
                 $"{fullSwivel:0.00}s of swivel ({cadence:0.#} columns/sec) must walk the engine from dead ahead " +
                 "to hard a-starboard");
             Assert.Greater(engine.SteerDegrees, 0f,

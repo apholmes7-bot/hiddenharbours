@@ -1,0 +1,37 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: efd440de666e4f7d92c41d2e50f815d7, type: 3}
+  m_Name: BottomOtterPrototype
+  m_EditorClassIdentifier: HiddenHarbours.Fishing::HiddenHarbours.Fishing.TrawlGearAssetDef
+  DisplayName: BottomOtterPrototype (unreviewed prototype)
+  Spec:
+    Id: trawl_gear.bottom_otter_prototype
+    MinDepthMetres: 10
+    MaxDepthMetres: 100
+    MinWarpDepthRatio: 2
+    MaxWarpDepthRatio: 5
+    MinTowMetresPerGameSecond: 0.5
+    MaxTowMetresPerGameSecond: 2.5
+    MinDoorSpreadMetres: 4
+    MaxDoorSpreadMetres: 12
+    MouthHeightMetres: 3
+    CaptureFraction01: 0
+    HardBottomThreshold01: 0.5
+    DamagePerHardMetre: 0.001
+    SampleGameSeconds: 5
+    MaxTowGameSeconds: 160
+    CodendCapacityIndividuals: 512
+    MaxSamples: 32
+    MaxSchoolsPerSample: 16
+    MaxEncounteredSchools: 32
+    MaxTrackKnots: 64
+  ReviewedForUse: 0

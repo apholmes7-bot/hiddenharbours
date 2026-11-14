@@ -56,19 +56,14 @@ namespace HiddenHarbours.Tools.RigBaking
         {
             var wiring = new Dictionary<string, string[]>(StringComparer.Ordinal)
             {
-                ["doryIsoRig"]            = new[] { "DoryIso" },
                 ["puntIsoRig"]            = new[] { "PuntIsoBasic", "PuntIsoUpgraded" },
                 ["consoleIsoRig"]         = new[] { "ConsoleSkiff" },
-                ["sportSkiffIsoRig"]      = new[] { "SportSkiffSingle", "SportSkiffTwin" },
                 // The RESHAPED 7 m skiff — a second hull, not a rename of the row above. Her sidecar
                 // is named for the HULL (no `Rig` suffix) because that is #541's convention and
                 // because `sportSkiffMk2IsoRig` would collide conceptually with the v1's two visuals.
                 ["sportSkiffMk2Iso"]      = new[] { "SportSkiffMk2Iso" },
                 ["lobsterBoatIsoRig"]     = new[] { "LobsterBoatIso" },
                 ["capeIslanderIsoRig"]    = new[] { "CapeIslanderIso" },
-                ["sideDraggerIsoRig"]     = new[] { "SideDraggerIso" },
-                ["sternTrawlerIsoRig"]    = new[] { "SternTrawlerIso" },
-                ["sternTrawlerMk2IsoRig"] = new[] { "SternTrawlerMk2Iso" },
                 ["coastalPacketIsoRig"]   = new[] { "CoastalPacketIso" },
                 ["tankerIsoRig"]          = new[] { "TankerIso" },
             };
@@ -84,8 +79,10 @@ namespace HiddenHarbours.Tools.RigBaking
             // The same argument, for the two families ADR 0022 phase 8's second half adds. The
             // sport skiff Mk2 is deliberately NOT here: she is one hull per rig and her sidecar stem
             // is `sportSkiffMk2Iso`, which the loop below cannot produce and the table above names
-            // directly — right next to `sportSkiffIsoRig`, so a reader sees the two hulls are
-            // separate wirings rather than one hull renamed.
+            // directly, so a reader sees the two hulls are separate wirings rather than one hull
+            // renamed. (The v1's row, `sportSkiffIsoRig`, sat beside it until she was rebuilt to the
+            // hull layout: her walk sidecar wires her two visuals now. The dory's row, `doryIsoRig`,
+            // headed the table until she was rebuilt the same way.)
             foreach (ZodiacBuild b in ZodiacFleet.All)
                 wiring[b.SidecarStem] = new[] { b.AssetName };
 

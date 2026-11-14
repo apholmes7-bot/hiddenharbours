@@ -24,12 +24,25 @@ namespace HiddenHarbours.Tools.RigBaking
         [Serializable] public sealed class SeatedHelmRow
         {
             public string hull, visual, state, walk, walkSha256;
+            /// <summary>The rig clip this row calibrates. Empty means the cockpit <c>drive</c> clip.</summary>
+            public string clip;
+            /// <summary>For an <c>astride</c> row: the machine's seat, grips and footwells in the figure's frame.</summary>
+            public SaddlePins saddle;
+            public string Clip => string.IsNullOrEmpty(clip) ? "drive" : clip;
+            public bool IsAstride => Clip == "astride";
             public Vector3 floorOrigin, seat, wheel;
             public float seatZ, wheelZ, wheelY;
-            public string OptionsJson => "{\"seatZ\":" + seatZ.ToString("R", CultureInfo.InvariantCulture) +
+            public string OptionsJson => IsAstride
+                ? "{\"saddle\":{\"seat\":" + Triple(saddle.seat) + ",\"gripL\":" + Triple(saddle.gripL) +
+                  ",\"gripR\":" + Triple(saddle.gripR) + ",\"pegL\":" + Triple(saddle.pegL) +
+                  ",\"pegR\":" + Triple(saddle.pegR) + "}}"
+                : "{\"seatZ\":" + seatZ.ToString("R", CultureInfo.InvariantCulture) +
                 ",\"wheelZ\":" + wheelZ.ToString("R", CultureInfo.InvariantCulture) +
                 ",\"wheelY\":" + wheelY.ToString("R", CultureInfo.InvariantCulture) + "}";
         }
+        [Serializable] public sealed class SaddlePins { public Vector3 seat, gripL, gripR, pegL, pegR; }
+        static string Triple(Vector3 v) => "[" + v.x.ToString("R", CultureInfo.InvariantCulture) + "," +
+            v.y.ToString("R", CultureInfo.InvariantCulture) + "," + v.z.ToString("R", CultureInfo.InvariantCulture) + "]";
         [Serializable] public sealed class SeatedHelmContract
         {
             public string schema, rig, poses, rigSha256, posesSha256;
@@ -40,14 +53,14 @@ namespace HiddenHarbours.Tools.RigBaking
         {
             string abs = Path.Combine(RigCatalog.RepoRoot, SeatedHelmContractPath);
             var c = JsonUtility.FromJson<SeatedHelmContract>(File.ReadAllText(abs));
-            if (c == null || c.schema != "hidden-harbours/seated-helm@1" || c.rows == null || c.rows.Length != 3)
-                throw new InvalidOperationException("Invalid three-hull seated helm contract.");
+            if (c == null || c.schema != "hidden-harbours/seated-helm@1" || c.rows == null || c.rows.Length == 0)
+                throw new InvalidOperationException("Invalid seated helm contract.");
             if (CharacterSkinExtractor.LfSha256File(Path.Combine(RigCatalog.RepoRoot, c.rig)) != c.rigSha256 ||
                 CharacterSkinExtractor.LfSha256File(Path.Combine(RigCatalog.RepoRoot, c.poses)) != c.posesSha256)
                 throw new InvalidOperationException("Seated helm source pins are stale.");
             var keys = new HashSet<string>(StringComparer.Ordinal);
             foreach (var row in c.rows)
-                if (string.IsNullOrEmpty(row.state) || !keys.Add(row.state) ||
+                if (string.IsNullOrEmpty(row.state) || !keys.Add(row.state) || (row.IsAstride && row.saddle == null) ||
                     CharacterSkinExtractor.LfSha256File(Path.Combine(RigCatalog.RepoRoot, row.walk)) != row.walkSha256)
                     throw new InvalidOperationException("Seated helm walk pin/state is stale or duplicated.");
             return c;
@@ -61,7 +74,7 @@ namespace HiddenHarbours.Tools.RigBaking
             var states = new List<string>(def.MeshStates ?? Array.Empty<string>());
             foreach (var row in contract.rows)
             {
-                var rc = CharacterSkinExtractor.ReadClip9(host, def.Preset, "drive", bones, out _, row.OptionsJson);
+                var rc = CharacterSkinExtractor.ReadClip9(host, def.Preset, row.Clip, bones, out _, row.OptionsJson);
                 float worst = 0; string at = "";
                 var clip = ToClip(rc, row.state, bones.Length, ref worst, ref at);
                 clip.Face = rc.Face; clip.Tool = rc.Tool; clip.PoseContractSha256 = sha;
@@ -72,7 +85,7 @@ namespace HiddenHarbours.Tools.RigBaking
                 for (int f = 0; f < rc.Frames; f++)
                 {
                     string u = (f / (double)rc.Frames).ToString("R", CultureInfo.InvariantCulture);
-                    string packed = host.EvaluateString("(function(){var C=" + g + ",P=C.pinsOf(C.evalClip('drive'," +
+                    string packed = host.EvaluateString("(function(){var C=" + g + ",P=C.pinsOf(C.evalClip('" + row.Clip + "'," +
                         u + ",globalThis.__hhClip.build," + row.OptionsJson + "));" +
                         "return P.handL.concat(P.handR,P.footL,P.footR).join(',');})()");
                     var v = packed.Split(',').Select(s => float.Parse(s, CultureInfo.InvariantCulture)).ToArray();
@@ -88,6 +101,13 @@ namespace HiddenHarbours.Tools.RigBaking
             }
             def.Clips = clips.ToArray();
             if (enable) def.MeshStates = StatesWithClips(def, states.ToArray());
+        }
+
+        /// <summary>The batch entry: bake, then leave the editor (0 on success), so a lease is not held idle.</summary>
+        public static void BakeSeatedHelmsBatchCli()
+        {
+            try { BakeSeatedHelmsCli(); EditorApplication.Exit(0); }
+            catch (Exception e) { Debug.LogException(e); EditorApplication.Exit(1); }
         }
 
         /// <summary>Add calibrated clips/pins without rebuilding the ten unchanged bind meshes.</summary>
@@ -123,7 +143,7 @@ namespace HiddenHarbours.Tools.RigBaking
             AssetDatabase.SaveAssets();
             string report = Path.Combine(RigCatalog.RepoRoot, "Evidence~", "rig-facts", "production", "seated-bake.json");
             Directory.CreateDirectory(Path.GetDirectoryName(report));
-            File.WriteAllText(report, "{\"skins\":" + skins + ",\"hulls\":" + contract.rows.Length + ",\"clips\":" + skins * 3 + "}");
+            File.WriteAllText(report, "{\"skins\":" + skins + ",\"hulls\":" + contract.rows.Length + ",\"clips\":" + skins * contract.rows.Length + "}");
             Debug.Log("[seated-helm] baked " + skins + " skins, " + contract.rows.Length + " hulls; unchanged bind meshes.");
         }
     }

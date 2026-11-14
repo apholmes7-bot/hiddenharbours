@@ -12,7 +12,7 @@ The milestone order comes from [the roadmap](../../roadmap.md), especially M1 at
 | Bed-following crawlers and sessile shell response | M2 regional ecology/art follow-up, only where actual habitat/support data exists. No free-swimming shellfish. |
 | Shader transmission/refraction path, projected bed shadows and new feeding effects | Water/art owners' rendering roadmap. This charter requests seams; it does not move advanced rendering into M1 or authorize art changes. Existing approximate swimmers remain the baseline. |
 | Offshore schools, nets/trawls and bulk/crew handling | M3 with offshore gear and staff systems. No nets, stock depletion, aquaculture production or automated transport added now. |
-| Mussel/oyster leases and grown crop | Retain M3's existing lease ruling unless separately rephased. A wild sessile field is not a lease implementation. |
+| Mussel/oyster leases and grown crop | Separately rephased by the owner on 2026-11-13: wild hand-picking at St Peters now, the first lease next (`docs/roadmap.md`, M3 ruling note). This charter still adds no lease. A wild sessile field is not a lease implementation. |
 
 The proposed backlog is [proposed-living-fish](../../../backlog/proposed-living-fish.md). These are scoped proposals with owners and acceptance criteria, not edits to the main roadmap or approved commitments. The decision sheet in [09-owner-questions](09-owner-questions.md) records recommended defaults and does not block this run.
 

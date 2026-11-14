@@ -243,7 +243,10 @@ namespace HiddenHarbours.Tests.EditMode
                 Assert.That(first.WorldBounds.size, Is.EqualTo(new Vector2(760, 560)));
                 Assert.That(second.WorldBounds.size, Is.EqualTo(new Vector2(760, 360)));
                 Assert.That(first.RegionId, Is.Not.EqualTo(second.RegionId));
-                Assert.That(first.Arrivals.Length, Is.EqualTo(3)); Assert.That(second.Arrivals.Length, Is.EqualTo(3));
+                Assert.That(first.Arrivals.Length, Is.EqualTo(3));
+                // Rice Point: its three ways in from Nine Mile Creek, and the channel mouth's from the South Water.
+                Assert.That(second.Arrivals.Select(x => x.Key),
+                    Is.EqualTo(new[] { "nmc_sea", "nmc_strand", "nmc_route_91", "south_water" }));
                 foreach (var d in p.Doors.Where(d => d.OnFootOnly))
                     Assert.That(first.Arrivals.Single(x => x.Key == d.OwnArrival).ArrivalPoint, Is.Null, "Walking does not move the boat");
             }

@@ -44,6 +44,7 @@ namespace HiddenHarbours.Boats
     {
         private BoatController _boat;
         private BoatAnchor _anchor;          // her ground tackle, resolved lazily (see Tackle())
+        private BoatFuelTank _tank;          // her fuel tank, resolved lazily (see TryReadFuel)
 
         // Instrument-seam scratch (ADR 0025 S2). The owned-id list is reused, never re-allocated, so
         // resolving the fit costs nothing per frame (rule 7).
@@ -51,6 +52,11 @@ namespace HiddenHarbours.Boats
         private float _depthMetres;
         private bool _depthValid;
         private float _nextDepthReadTime = float.NegativeInfinity;
+
+        // The wind read rides the same throttled glass tick as the sounding, cached until the next one.
+        private HelmWindReading _wind;
+        private bool _windValid;
+        private float _nextWindReadTime = float.NegativeInfinity;
 
         /// <summary>DEV-ONLY (owner addition 2026-08-03): show each F-cycled hull's control with no
         /// purchase/equipment gating, so the owner can feel tiller vs lever across the fleet NOW.
@@ -334,7 +340,7 @@ namespace HiddenHarbours.Boats
             float now = Time.time;
             if (now >= _nextDepthReadTime)
             {
-                _nextDepthReadTime = now + Mathf.Max(0.01f, GameServices.DepthSounder.ReadIntervalSec);
+                _nextDepthReadTime = now + GlassReadIntervalSec();
                 _depthValid = Sound(out _depthMetres);
             }
             metres = _depthMetres;
@@ -354,6 +360,71 @@ namespace HiddenHarbours.Boats
             Vector3 p = boat.transform.position;
             worldPos = new Vector2(p.x, p.y);
             return true;
+        }
+
+        /// <summary>
+        /// The wind as this hull's fitted wind instrument reports it (helm instruments plan, slice 3).
+        /// The SAME three inputs <see cref="BoatController"/> hands the sails (the sim's wind vector,
+        /// the bow, the hull's velocity) through the same Core resolve, behind the fitted grade
+        /// (<see cref="HelmWind.TryRead"/>). Recomputed on the glass's throttled tick
+        /// (<see cref="DepthSounderSettings.ReadIntervalSec"/>, the one "how often does the glass
+        /// read" dial) and cached only until the next; never saved.
+        /// </summary>
+        public bool TryReadWind(out HelmWindReading reading)
+        {
+            float now = Time.time;
+            if (now >= _nextWindReadTime)
+            {
+                _nextWindReadTime = now + GlassReadIntervalSec();
+                _windValid = ReadWind(out _wind);
+            }
+            reading = _wind;
+            return _windValid;
+        }
+
+        /// <summary>
+        /// How full the piloted hull's tank is (helm instruments plan, slice 2): the fraction
+        /// <see cref="BoatFuelTank"/> already states for a gauge, read live. Not throttled, since it is
+        /// one division over a number the tank already holds. False for a hull with no tank, which is a
+        /// gauge with no sender and not an empty one.
+        /// </summary>
+        public bool TryReadFuel(out float fraction01)
+        {
+            fraction01 = 0f;
+            var boat = Boat();
+            if (boat == null || !HasHelm) return false;
+            if (_tank == null && !boat.TryGetComponent(out _tank)) return false;
+            return FuelOf(_tank, out fraction01);
+        }
+
+        /// <summary>The gauge's reading of one tank: its fill fraction, or false (and 0) when there is
+        /// no tank to read. Static and public so the reading is provable without a driven hull.</summary>
+        public static bool FuelOf(BoatFuelTank tank, out float fraction01)
+        {
+            fraction01 = 0f;
+            if (tank == null || !tank.HasTank) return false;
+            fraction01 = tank.Fraction01;
+            return true;
+        }
+
+        // The floor under the glass's read interval: a zeroed or missing config must not turn the
+        // throttled tick into an every-frame read (rule 7). Shared by the sounding and the wind.
+        private const float MinGlassReadIntervalSec = 0.01f;
+
+        private static float GlassReadIntervalSec()
+            => Mathf.Max(MinGlassReadIntervalSec, GameServices.DepthSounder.ReadIntervalSec);
+
+        private bool ReadWind(out HelmWindReading reading)
+        {
+            reading = default;
+            var boat = Boat();
+            if (boat == null || !HasHelm) return false;
+            IEnvironmentService environment = GameServices.Environment;
+            if (environment == null) return false;
+
+            Vector2 bow = boat.transform.up;   // bow direction, as BoatController's own drive reads it
+            return HelmWind.TryRead(Fit.Wind, environment.Sample().WindVector, bow, boat.Velocity,
+                                    out reading);
         }
 
         private bool Sound(out float metres)

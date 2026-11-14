@@ -25,6 +25,18 @@ namespace HiddenHarbours.Core
     }
 
     /// <summary>
+    /// Which wind instrument is fitted at the helm, in tier order (a higher value does everything a lower
+    /// one does, so grades compare with <c>&gt;=</c>). The grade decides WHAT the instrument may report,
+    /// not how it is drawn: <see cref="HelmWind.TryRead"/> is the one gate.
+    /// </summary>
+    public enum WindInstrumentGrade
+    {
+        None    = 0,   // no wind instrument: the helm reads no wind at all
+        Dial    = 1,   // analog wind dial: APPARENT angle and speed only (instrument.wind_dial)
+        Display = 2,   // digital wind display: apparent AND true wind (instrument.wind_display)
+    }
+
+    /// <summary>
     /// Which helm rig draws a hull's dash. Names the runtime RENDERER (the art director's
     /// <c>ConsoleRig</c>/<c>SportRig</c>/<c>NoviRig</c>/<c>CapeRig</c>) — it carries no baked art, because
     /// these instruments are continuous-state (how they render is ADR 0025). <see cref="None"/> = the hull
@@ -54,9 +66,21 @@ namespace HiddenHarbours.Core
         public readonly bool Radar;
         public readonly bool Gps;
 
+        /// <summary>The wind instrument fitted (helm instruments plan, slice 3).
+        /// <see cref="WindInstrumentGrade.None"/> on every fit built without one.</summary>
+        public readonly WindInstrumentGrade Wind;
+
+        /// <summary>A fit with no wind instrument: the shape every caller had before the wind grade
+        /// existed, kept so none of them changes meaning.</summary>
         public HelmFit(ConsoleRigKind rig, SounderKind sounder, CompassMount compass, bool radar, bool gps)
+            : this(rig, sounder, compass, radar, gps, WindInstrumentGrade.None)
         {
-            Rig = rig; Sounder = sounder; Compass = compass; Radar = radar; Gps = gps;
+        }
+
+        public HelmFit(ConsoleRigKind rig, SounderKind sounder, CompassMount compass, bool radar, bool gps,
+                       WindInstrumentGrade wind)
+        {
+            Rig = rig; Sounder = sounder; Compass = compass; Radar = radar; Gps = gps; Wind = wind;
         }
 
         /// <summary>A hull with no console at all (the dory): no renderer, nothing fitted.</summary>

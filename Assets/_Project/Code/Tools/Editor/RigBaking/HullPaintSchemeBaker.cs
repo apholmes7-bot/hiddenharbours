@@ -165,9 +165,9 @@ namespace HiddenHarbours.Tools.RigBaking
                             defaultSchemeExpr: "defaultScheme"),
 
             // The sport skiff Mk2 — the fleet rig pack's one-hull rig, and the FOURTH line of the
-            // small-craft API verbatim. She is not the sport skiff v1 repainted: v1 carries no paint
-            // axis at all (measured, not assumed — see the no-axis list in this lane's PR), and the
-            // committed hullmesh.sport_skiff_iso is a different hull that keeps her own look.
+            // small-craft API verbatim. She is not the sport skiff v1 repainted: the committed
+            // hullmesh.sport_skiff_iso is a different hull that keeps her own look, and since her
+            // rebuild to the hull layout her own schemes too (the 'paint.sport_skiff_' row below).
             //
             // 'sport_skiff_mk2', not 'skiff': the same reason the console skiff is not 'skiff'. The
             // fleet holds four skiff-shaped rigs and this table is hers alone (13 materials in her
@@ -248,9 +248,65 @@ namespace HiddenHarbours.Tools.RigBaking
                 defaultSchemeExpr: "defaultScheme"),
 
             // Published hull-layout paints: scheme-stable groups, exterior only, in mesh palette order.
+            new PaintedHull("jetSki", "hullmesh.jet_ski_iso", "JetSkiIso", "paint.jet_ski_",
+                matsExpr: "schemeIds.slice(0,1).reduce(function(t){" +
+                          "var H={G}.byId('jet_ski'),D=H.matsFor().MATS,M=H.matsFor({0}).MATS," +
+                          "A=H.schemeIds.map(function(s){return H.matsFor(s).MATS;})," +
+                          "F=H.faceList({}).concat(H.doorFaces(0)),u={},g={},r={};" +
+                          "F.forEach(function(f){u[f.mat]=1;});" +
+                          "Object.keys(D).forEach(function(n){if(u[n]){" +
+                          "var k=JSON.stringify(A.map(function(m){return [m[n].off||0,m[n].ramp,m[n].dith==null?1:m[n].dith];}));" +
+                          "g[n]=k;if(!r[k])r[k]=n;}});" +
+                          "F.forEach(function(f){var n=r[g[f.mat]];if(!t[n])t[n]=M[n];});return t;},{})",
+                schemeListExpr: "schemeIds.map(function(id){var s={G}.SCHEMES[id];return [id,s.name||'',s.note||''];})",
+                defaultSchemeExpr: "defaultScheme"),
+
+            // Published hull-layout paints: scheme-stable groups, exterior only, in mesh palette order.
             new PaintedHull("expressCruiser", "hullmesh.express_cruiser_iso", "ExpressCruiserIso", "paint.express_cruiser_",
                 matsExpr: "schemeIds.slice(0,1).reduce(function(t){" +
                           "var H={G}.byId('express_cruiser'),D=H.matsFor().MATS,M=H.matsFor({0}).MATS," +
+                          "A=H.schemeIds.map(function(s){return H.matsFor(s).MATS;})," +
+                          "F=H.faceList({}).concat(H.doorFaces(0)),u={},g={},r={};" +
+                          "F.forEach(function(f){u[f.mat]=1;});" +
+                          "Object.keys(D).forEach(function(n){if(u[n]){" +
+                          "var k=JSON.stringify(A.map(function(m){return [m[n].off||0,m[n].ramp,m[n].dith==null?1:m[n].dith];}));" +
+                          "g[n]=k;if(!r[k])r[k]=n;}});" +
+                          "F.forEach(function(f){var n=r[g[f.mat]];if(!t[n])t[n]=M[n];});return t;},{})",
+                schemeListExpr: "schemeIds.map(function(id){var s={G}.SCHEMES[id];return [id,s.name||'',s.note||''];})",
+                defaultSchemeExpr: "defaultScheme"),
+            // The stern trawler publishes SCHEMES / schemeIds / defaultScheme and no PAINTS record,
+            // so she takes the express cruiser's spelled-out row rather than PublishedWalkPaint.
+            new PaintedHull("sternTrawler", "hullmesh.stern_trawler_iso", "SternTrawlerIso", "paint.stern_trawler_",
+                matsExpr: "schemeIds.slice(0,1).reduce(function(t){" +
+                          "var H={G}.byId('stern_trawler'),D=H.matsFor().MATS,M=H.matsFor({0}).MATS," +
+                          "A=H.schemeIds.map(function(s){return H.matsFor(s).MATS;})," +
+                          "F=H.faceList({}).concat(H.doorFaces(0)),u={},g={},r={};" +
+                          "F.forEach(function(f){u[f.mat]=1;});" +
+                          "Object.keys(D).forEach(function(n){if(u[n]){" +
+                          "var k=JSON.stringify(A.map(function(m){return [m[n].off||0,m[n].ramp,m[n].dith==null?1:m[n].dith];}));" +
+                          "g[n]=k;if(!r[k])r[k]=n;}});" +
+                          "F.forEach(function(f){var n=r[g[f.mat]];if(!t[n])t[n]=M[n];});return t;},{})",
+                schemeListExpr: "schemeIds.map(function(id){var s={G}.SCHEMES[id];return [id,s.name||'',s.note||''];})",
+                defaultSchemeExpr: "defaultScheme"),
+            // The Mk2 publishes the same three names as the Mk1 (SCHEMES / schemeIds / defaultScheme,
+            // no PAINTS record), so she takes the same spelled-out row under her own scope and ids.
+            new PaintedHull("sternTrawlerMk2", "hullmesh.stern_trawler_mk2_iso", "SternTrawlerMk2Iso", "paint.stern_trawler_mk2_",
+                matsExpr: "schemeIds.slice(0,1).reduce(function(t){" +
+                          "var H={G}.byId('stern_trawler_mk2'),D=H.matsFor().MATS,M=H.matsFor({0}).MATS," +
+                          "A=H.schemeIds.map(function(s){return H.matsFor(s).MATS;})," +
+                          "F=H.faceList({}).concat(H.doorFaces(0)),u={},g={},r={};" +
+                          "F.forEach(function(f){u[f.mat]=1;});" +
+                          "Object.keys(D).forEach(function(n){if(u[n]){" +
+                          "var k=JSON.stringify(A.map(function(m){return [m[n].off||0,m[n].ramp,m[n].dith==null?1:m[n].dith];}));" +
+                          "g[n]=k;if(!r[k])r[k]=n;}});" +
+                          "F.forEach(function(f){var n=r[g[f.mat]];if(!t[n])t[n]=M[n];});return t;},{})",
+                schemeListExpr: "schemeIds.map(function(id){var s={G}.SCHEMES[id];return [id,s.name||'',s.note||''];})",
+                defaultSchemeExpr: "defaultScheme"),
+            // The side dragger publishes the same three names as the stern trawlers (SCHEMES / schemeIds /
+            // defaultScheme, no PAINTS record), so she takes the same spelled-out row under her own scope and ids.
+            new PaintedHull("sideDragger", "hullmesh.side_dragger_iso", "SideDraggerIso", "paint.side_dragger_",
+                matsExpr: "schemeIds.slice(0,1).reduce(function(t){" +
+                          "var H={G}.byId('side_dragger'),D=H.matsFor().MATS,M=H.matsFor({0}).MATS," +
                           "A=H.schemeIds.map(function(s){return H.matsFor(s).MATS;})," +
                           "F=H.faceList({}).concat(H.doorFaces(0)),u={},g={},r={};" +
                           "F.forEach(function(f){u[f.mat]=1;});" +
@@ -266,6 +322,14 @@ namespace HiddenHarbours.Tools.RigBaking
                 "paint.yacht_tender_", "yacht_tender"),
             PublishedWalkPaint("motorYacht84", "hullmesh.motor_yacht84_iso", "MotorYacht84Iso",
                 "paint.motor_yacht84_", "motor_yacht_84"),
+            // The sport skiff (v1), rebuilt to the hull layout: gelcoat, stripes and canvas by scheme.
+            // Her ids sit beside the Mk2's ('paint.sport_skiff_mk2_') as the stern trawlers' do.
+            PublishedWalkPaint("sportSkiff", "hullmesh.sport_skiff_iso", "SportSkiffIso",
+                "paint.sport_skiff_", "sport_skiff_iso"),
+            // The dory, redrawn on the hull layout: topsides, rail and stem, and the inside by scheme.
+            // Her default ('pine-tar') is the oiled wood she has worn since pass 1.
+            PublishedWalkPaint("dory", "hullmesh.dory_iso", "DoryIso",
+                "paint.dory_", "dory_iso"),
 
         };
 
@@ -357,28 +421,6 @@ namespace HiddenHarbours.Tools.RigBaking
         public static readonly IReadOnlyDictionary<string, string> UnpaintedRigs =
             new Dictionary<string, string>(StringComparer.Ordinal)
             {
-                ["doryIsoRig.js"] =
-                    "The dory (T0) — no paint axis. She is the boat he starts in and her bare lapstrake " +
-                    "planking is her identity, so an axis for her is a real art question rather than a " +
-                    "mechanical one: what does a repainted dory even look like before he can afford paint?",
-
-                ["sportSkiffIsoRig.js"] =
-                    "Sport skiff v1 — no paint axis. ⚠️ Her Mk2 HAS one and is baked; this is not a stale " +
-                    "entry for a retired rig. The two are different hulls by the owner's ruling " +
-                    "(2026-08-13): the committed hullmesh.sport_skiff_iso keeps her id, her mesh and " +
-                    "her two outboard visuals, so painting the Mk2 does not reach her.",
-
-                ["sideDraggerIsoRig.js"] =
-                    "Side dragger (T4) — no paint axis. The first offshore hull, and the first of the " +
-                    "upper fleet: none of the five rigs the ADR was written for carries one.",
-
-                ["sternTrawlerIsoRig.js"] =
-                    "Stern trawler (T5) — no paint axis.",
-
-                ["sternTrawlerMk2IsoRig.js"] =
-                    "Stern trawler Mk2 (T5) — no paint axis. A separate rig file, so a separate entry: " +
-                    "an axis landing on one of the two would not reach the other.",
-
                 ["coastalPacketIsoRig.js"] =
                     "Coastal packet (T6) — no paint axis. The first merchant hull, and the tier where a " +
                     "livery starts to mean a COMPANY rather than a keeper — worth an art conversation " +

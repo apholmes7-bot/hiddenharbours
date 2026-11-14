@@ -49,6 +49,18 @@ The first change establishes the art/fit contract; completion requires creation 
 ownership in normal play, with production rendering and safe save migration. The old sprite-layer
 restriction in ADR 0029 is revisited through a measured mesh proof, not treated as a scope deferral.
 
+**Owner-directed addition, 2026-11-13: birds and photography.** More bird species as data, starting
+with diving birds (the cormorant, then the tern) and herons, then ducks and eagles; a bird list per
+region; flock and solitary behaviour, habitat and perches; birds hunting the right fish; a camera
+tool; a Photograph page in the notebook with one holder slot per species; and a new photo keeper
+with a new home at the Whelps lookout, outside the St Peters village, who gifts the camera on the first
+visit, keeps the photos and gives unique items and clothing. Sequenced as
+[BP-00 to BP-16](../backlog/birds-and-photography.md). It sits in M2 under P3. The owner approved the
+plan's leans the same day (*"Ok i go with those leans."*): bird numbers are high **across the
+world**, while about 32 birds are drawn on screen at once (hard ceiling 48, gulls 16); photos are
+kept per player in co-op and saved as "recipe" photos, not pixels; item rewards ship first and
+clothing rewards wait on CW-04. It moves nothing else.
+
 ---
 
 ## 0. Scope reality — read this first (a blunt, kind note to the owner)
@@ -330,13 +342,24 @@ automation layer as another P4 "earn it, then automate it" engine (`economy-sim`
 [`design/fish-and-content.md`](design/fish-and-content.md) §3.5(c)). **The full loop is captured in
 [`design/mussel-lease-and-longline.md`](design/mussel-lease-and-longline.md)** (owner drop 2026-08-18:
 *"large sections of buoys with individual ropes"* — PEI longline culture, and the crop's readiness read
-**diegetically** off the float run riding lower). *Capture only — nothing built.* **This M3 slot stands**;
-the one thing that could move it is the open **starter-ruin ruling** (is the *lapsed shellfish lease* the
+**diegetically** off the float run riding lower). *Capture only — nothing built.* **The M3 slot no longer stands: the owner
+re-phased it on 2026-11-13 (ruling note under this paragraph).** Still owed is the **starter-ruin ruling** (is the *lapsed shellfish lease* the
 game's first ownable ruin, or is it the camper lot / Ginny's sheds?) — if the lease wins, a first slice
 (lease + one line + harvest) pulls into **M1** and the coordinator re-scopes. The **advanced rendering pass**
 ([`design/art-and-audio-bible.md`](design/art-and-audio-bible.md) §6.1) — **3D water baked to a 2D surface**,
 **dynamic shadows on the 24-h clock**, **cloud shadows**, and the **parallax underwater / shallow-water preview** —
 deepens the look as the world scales offshore, held to the desktop perf budget (`art-pipeline` + `lead-architect`).
+
+> **Owner ruling 2026-11-13: shellfish is pulled forward.** The owner wrote: *"Lets keep doing work on the village ... i want to add more shellfish harvesting, mussell leases, oysters, scallops ..."*
+> (the village is St Peters, which he confirmed), and answered *"Yes, your leans"* to the seat's leans:
+> 1. **Now:** wild blue mussels and oysters are picked by hand at low water at St Peters, on the clam-dig
+>    pattern (backlog **M3-16a**; the clam dig is M2-32).
+> 2. **Next:** the first mussel lease (backlog **M3-16**). It still needs
+>    [`design/mussel-lease-and-longline.md`](design/mussel-lease-and-longline.md) §8 items 2 to 4 ruled first; all
+>    three are **owed**.
+> 3. **Later:** sea scallops wait for the player trawl loop (the trawl arc out of Rice Point), not the village.
+>
+> The ruling moves nothing else in M3.
 
 **Explicitly deferred.** Ironbound and The Smother (M4 capstones); the freighter/tanker tier and full freight
 empire (M4); the complete 100-fish fill (M4 — M3 fills what the Banks needs); multi-platform port (M4).
