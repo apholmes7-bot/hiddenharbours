@@ -17,6 +17,8 @@ MonoBehaviour:
   SecondsPerDay: 1800
   StartHour: 7.5
   WakeHour: 6
+  BunkRequiresMooredOrAnchored: 1
+  BunkReachMetres: 1
   StartSeason: 1
   StartDayOfSeason: 1
   DaysPerWeek: 7
