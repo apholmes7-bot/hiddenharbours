@@ -73,5 +73,13 @@ namespace HiddenHarbours.Economy
                  "the chosen variant's gameplay sidecar for every dimension it places by, so this one " +
                  "field moves the footprint, the spacing, the clearing and the doorstep together.")]
         public string Variant = "clipper";
+        [Header("Custom identity")]
+        [Tooltip("NpcDef.Id of this till's keeper. Leave empty where no keeper has been authored.")]
+        public string KeeperNpcId = "";
+        [Tooltip("Stable trade/kind for daily custom shares, authored in data.")]
+        public string TradeId = "";
+
+        public HiddenHarbours.Core.TradeCounterparty Counterparty
+            => new HiddenHarbours.Core.TradeCounterparty(KeeperNpcId, Id, TradeId);
     }
 }

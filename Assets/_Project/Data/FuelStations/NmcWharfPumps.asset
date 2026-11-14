@@ -31,3 +31,5 @@ MonoBehaviour:
   - Grade: oil
     Available: 0
     PricePerLitre: 10.5
+  KeeperNpcId:
+  TradeId: trade.fuel
