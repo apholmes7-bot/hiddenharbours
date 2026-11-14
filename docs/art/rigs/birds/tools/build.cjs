@@ -6,7 +6,7 @@
      node docs/art/rigs/birds/tools/build.cjs --plates <dir>   also write the preview plates into <dir>
      node docs/art/rigs/birds/tools/build.cjs --gull-rgba <file>   dump the herring gull's sheet as raw RGBA (the route's control)
 
-   What it makes, per bird in BIRDS:
+   What it makes, per bird (one birds/<name>.bird.json each):
      gameplay/<rig>.gameplay.json      from <Global>.gameplayGeometry(), stamped with derivedFromRigSha256
      birds/sheets/<Name>.png           rows = facings 0..7, columns = sheetOrder(): the layout of the gull's sheet
      birds/sheets/<Name>.contract.json cell, pivot, order, convention, and sha256 of the sheet's RGBA
@@ -19,9 +19,8 @@ const fs = require('fs'), path = require('path'), zlib = require('zlib'), crypto
 
 const RIGS = path.resolve(__dirname, '..', '..');           // docs/art/rigs
 const KIT = path.resolve(__dirname, '..');                  // docs/art/rigs/birds
-const BIRDS = [
-  { name:'Cormorant', rig:'cormorantIsoRig.js', global:'CormorantIso', sprite:'cormorant' },
-];
+// one <name>.bird.json per bird, beside this kit's README: { name, rig, global, sprite, plate }
+const BIRDS = fs.readdirSync(KIT).filter(f=>/.bird.json$/.test(f)).sort().map(f=>JSON.parse(fs.readFileSync(path.join(KIT,f),'utf8')));
 const GULL = { name:'Seagull', rig:'seagullIsoRig.js', global:'SeagullIso', sprite:'gull' };
 
 const args = process.argv.slice(2), WRITE = args.includes('--write');
@@ -119,22 +118,23 @@ function scaleUp(c,k){ const o=Buffer.alloc(c.w*k*c.h*k*4); for(let y=0;y<c.h*k;
 const ROCK=[112,108,100], ROCK2=[96,93,88], SEA=[52,104,122], SEA2=[46,95,113];
 function plates(dir, bird){
   fs.mkdirSync(dir,{recursive:true});
-  const G=load(GULL), C=bird.R, name=bird.b.name.toLowerCase(), out=[];
+  const G=load(GULL), C=bird.R, P=bird.b.plate, name=bird.b.name.toLowerCase(), out=[];
+  const who=(w)=>w==='gull'?G:C;
   const save=(file,c,k)=>{ const s=scaleUp(c,k); fs.writeFileSync(path.join(dir,file),png(s.w,s.h,s.px)); out.push(file); };
-  // 1. beside the gull, at game scale: ashore on rock, afloat, and in the air
+  // 1. beside the gull, at game scale. Each row of the bird's plate spec is drawn on its ground
+  //    (rock, sea or air over sea); ground rows are drawn at both facings of the pair.
+  const n=Math.max(...P.rows.map(r=>r.items.length)), step=Math.round(C.W*0.95), rowH=Math.round(C.H*0.72), width=40+n*step;
   for (const [tag,dirs] of [['side',[2,6]],['quarter',[3,5]],['fore-aft',[0,4]]]){
-    const c=Canvas(560, 300, SEA);
-    rect(c,0,0,560,100,ROCK); for(let x=0;x<560;x+=7) rect(c,x,96+(x*13%5),x+4,100,ROCK2);
-    for(let y=104;y<300;y+=9) for(let x=(y*7)%23;x<560;x+=23) rect(c,x,y,x+6,y+1,SEA2);
-    const rows=[
-      { y:44, d:dirs[0], items:[[G,'stand',0],[G,'perch',0],[C,'stand',0],[C,'stand',1],[C,'perch',0],[C,'dry',0],[C,'dry',2],[C,'takeoff',0],[C,'land',2]] },
-      { y:90, d:dirs[1], items:[[G,'stand',0],[G,'perch',0],[C,'stand',0],[C,'stand',1],[C,'perch',0],[C,'dry',0],[C,'dry',2],[C,'takeoff',0],[C,'land',2]] },
-      { y:150, d:dirs[0], items:[[G,'float',0],[C,'float',0],[C,'float',1],[C,'dive',0],[C,'dive',1],[C,'dive',2],[C,'dive',3],[C,'surface',0],[C,'surface',1],[C,'surface',2]] },
-      { y:196, d:dirs[1], items:[[G,'float',0],[C,'float',0],[C,'float',1],[C,'dive',0],[C,'dive',1],[C,'dive',2],[C,'dive',3],[C,'surface',0],[C,'surface',1],[C,'surface',2]] },
-      { y:268, d:dirs[0], alt:26, items:[[G,'fly',1],[G,'glide',0],[C,'fly',1],[C,'fly',4],[C,'glide',0],[C,'patter',0,0],[C,'patter',1,0],[C,'splash',0,0],[C,'splash',1,0]] },
-    ];
-    for (const r of rows){ const step=Math.floor(540/r.items.length); r.items.forEach((it,i)=>{ const x=30+i*step, alt=it[3]!=null?it[3]:(r.alt||0);
-      if (alt) shadow(c,x,r.y,6); blit(c,it[0],r.d,{anim:it[1],frame:it[2]},x,r.y-alt); }); }
+    const bands=[]; let y=0;
+    for (const r of P.rows){ const lines=r.ground==='air'?1:2, h=lines*rowH+(r.ground==='air'?Math.round((r.alt||26)*1.0)+10:8); bands.push({ r, y0:y, h, lines }); y+=h; }
+    const c=Canvas(width, y, SEA);
+    for (const b of bands){
+      if (b.r.ground==='rock'){ rect(c,0,b.y0,width,b.y0+b.h,ROCK); for(let x=0;x<width;x+=7) rect(c,x,b.y0+b.h-4+(x*13%5),x+4,b.y0+b.h,ROCK2); }
+      else for(let yy=b.y0+4;yy<b.y0+b.h;yy+=9) for(let x=(yy*7)%23;x<width;x+=23) rect(c,x,yy,x+6,yy+1,SEA2);
+      for (let l=0;l<b.lines;l++){ const py=b.y0+b.h-10-(b.lines-1-l)*rowH;
+        b.r.items.forEach((it,i)=>{ const x=Math.round(step*0.6)+i*step, alt=it[3]!=null?it[3]:(b.r.ground==='air'?(b.r.alt||26):0), R=who(it[0]);
+          if (alt) shadow(c,x,py,Math.round(R.W/10)); blit(c,R,dirs[l],{anim:it[1],frame:it[2]},x,py-alt); }); }
+    }
     save(name+'-beside-gull-'+tag+'-x3.png', c, 3);
     if (tag==='side') save(name+'-beside-gull-'+tag+'-x1.png', c, 1);
   }
@@ -142,10 +142,11 @@ function plates(dir, bird){
   const sh=bird.sh, c2=Canvas(sh.w, sh.h, SEA);
   for (let d=0;d<8;d++) sh.order.forEach((o,cI)=>blit(c2,C,d,{anim:o.anim,frame:o.f},cI*C.W+C.pivot.x,d*C.H+C.pivot.y));
   save(name+'-sheet-on-sea-x2.png', c2, 2);
-  // 3. the signature: the spread-wing roost, all eight facings, with a gull for size
-  const c3=Canvas(8*56+70, 76, ROCK); for(let x=0;x<c3.w;x+=7) rect(c3,x,72+(x*13%4),x+4,76,ROCK2);
-  blit(c3,G,2,{anim:'stand',frame:0},30,56); for (let d=0;d<8;d++) blit(c3,C,d,{anim:'dry',frame:0},90+d*56,56);
-  save(name+'-drying-8-facings-x4.png', c3, 4);
+  // 3. the signature pose, all eight facings, with a gull for size
+  const sg=P.signature, sgStep=Math.round(C.W*0.9), sgSea=sg.ground==='sea', c3=Canvas(8*sgStep+70, Math.round(C.H*0.85)+20, sgSea?SEA:ROCK), gy=c3.h-20;
+  if (!sgSea) for(let x=0;x<c3.w;x+=7) rect(c3,x,c3.h-4+(x*13%4),x+4,c3.h,ROCK2);
+  blit(c3,G,2,{anim:sgSea?'float':'stand',frame:0},30,gy); for (let d=0;d<8;d++) blit(c3,C,d,{anim:sg.anim,frame:sg.frame},70+Math.round(sgStep/2)+d*sgStep,gy);
+  save(name+'-'+sg.anim+'-8-facings-x4.png', c3, 4);
   return out;
 }
 
