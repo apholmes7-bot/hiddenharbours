@@ -37,7 +37,10 @@ namespace HiddenHarbours.Tests.PlayMode
         public IEnumerator TearDown()
         {
             LogAssert.ignoreFailingMessages = false;
-            var clean = SceneManager.CreateScene("BathymetryLifetimeCleanup");
+            // NGO's package fixtures run after the project fixtures. Like Unity's
+            // generated runner scene, this has no asset path to synchronize. Keep
+            // the runner prefix so NGO excludes it during client approval.
+            var clean = SceneManager.CreateScene("InitTestScene_BathymetryLifetimeCleanup");
             SceneManager.SetActiveScene(clean);
             for (int i = SceneManager.sceneCount - 1; i >= 0; i--)
             {
