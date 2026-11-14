@@ -68,5 +68,17 @@ namespace HiddenHarbours.Player
                  "holder's to pick by the tier its own data names, so none is chosen here. Written by " +
                  "the held-prop bake; nothing draws them yet.")]
         public HeldPropMeshDef[] HeldMeshes = System.Array.Empty<HeldPropMeshDef>();
+
+        /// <summary>Resolve a held state by its authored variant. Missing states return null so the
+        /// caller can keep its sprite; array order never selects a different tier. A single-state
+        /// tool uses the empty variant recorded by its def.</summary>
+        public HeldPropMeshDef HeldMeshFor(string variant)
+        {
+            if (variant == null || HeldMeshes == null) return null;
+            foreach (HeldPropMeshDef mesh in HeldMeshes)
+                if (mesh != null && string.Equals(mesh.Variant, variant, System.StringComparison.Ordinal))
+                    return mesh;
+            return null;
+        }
     }
 }
