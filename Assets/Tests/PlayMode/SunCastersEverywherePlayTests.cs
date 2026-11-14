@@ -217,6 +217,7 @@ namespace HiddenHarbours.Tests.PlayMode
             var rules = Resources.Load<SunCasterRules>(nameof(SunCasterRules));
             int total = 0, villagers = 0, houses = 0, piers = 0, excluded = 0;
             var rows = new List<string>();
+            List<string> forbiddenCasters = null;
             foreach (var renderer in population)
             {
                 if (renderer == null) continue;
@@ -236,17 +237,54 @@ namespace HiddenHarbours.Tests.PlayMode
                     SunCasterRules.Matches(renderer.name, "*Seabed*") ||
                     SunCasterRules.Matches(renderer.name, "Sea") ||
                     SunCasterRules.Matches(renderer.name, "*Shadow*") || rules.IsExcludedArt(renderer);
-                if (forbidden) excluded++;
+                if (forbidden)
+                {
+                    excluded++;
+                    forbiddenCasters ??= new List<string>();
+                    forbiddenCasters.Add(DescribeForbiddenCaster(renderer, rules));
+                }
                 rows.Add($"{renderer.name}\t{kind}\t{renderer.sortingOrder}\t{renderer.transform.position}");
             }
             Assert.That(total, Is.GreaterThanOrEqualTo(totalFloor), scene + ": total standing-caster floor");
             Assert.That(villagers, Is.GreaterThanOrEqualTo(villagerFloor), scene + ": villager floor");
             Assert.That(houses, Is.GreaterThanOrEqualTo(houseFloor), scene + ": house floor");
             Assert.That(piers, Is.GreaterThanOrEqualTo(pierFloor), scene + ": pier face/deck floor");
-            Assert.That(excluded, Is.Zero, scene + ": water, seabed and shade must have no caster");
+            Assert.That(excluded, Is.Zero, scene + ": water, seabed and shade must have no caster" +
+                (forbiddenCasters == null ? string.Empty : "\nForbidden casters:\n" + string.Join("\n", forbiddenCasters)));
             Directory.CreateDirectory(Output);
             File.WriteAllLines(Path.Combine(Output, "census-" + scene + ".tsv"),
                 new[] { $"before\t{before}\nafter\t{total}\nvillagers\t{villagers}\nhouses\t{houses}\npier\t{piers}", "name\tclass\torder\tposition" }.Concat(rows));
+        }
+
+        static string DescribeForbiddenCaster(SpriteRenderer renderer, SunCasterRules rules)
+        {
+            var predicates = new List<string>();
+            if (renderer.sortingOrder >= SortingBands.SunShadePool)
+                predicates.Add($"sortingOrder >= SortingBands.SunShadePool ({SortingBands.SunShadePool})");
+            foreach (string pattern in new[] { "*Seabed*", "Sea", "*Shadow*" })
+                if (SunCasterRules.Matches(renderer.name, pattern))
+                    predicates.Add($"name matches '{pattern}'");
+            if (rules.IsExcludedArt(renderer))
+            {
+                predicates.Add("rules.IsExcludedArt");
+                if (renderer.GetComponentInParent<Canvas>() != null)
+                    predicates.Add("ancestor Canvas");
+                foreach (string pattern in rules.ExcludedNames ?? Array.Empty<string>())
+                {
+                    if (SunCasterRules.Matches(renderer.name, pattern))
+                        predicates.Add($"excluded name matches '{pattern}'");
+                    if (renderer.sprite != null && SunCasterRules.Matches(renderer.sprite.name, pattern))
+                        predicates.Add($"excluded sprite matches '{pattern}'");
+                }
+            }
+            string hierarchyPath = renderer.name;
+            for (var parent = renderer.transform.parent; parent != null; parent = parent.parent)
+                hierarchyPath = parent.name + "/" + hierarchyPath;
+            string sceneName = renderer.gameObject.scene.name;
+            string spriteName = renderer.sprite != null ? renderer.sprite.name : "<null>";
+            return $"scene='{sceneName}'; path='{hierarchyPath}'; sprite='{spriteName}'; " +
+                $"sortingLayer='{renderer.sortingLayerName}' ({renderer.sortingLayerID}); order={renderer.sortingOrder}; " +
+                $"excludedBy=[{string.Join(", ", predicates)}]; DontDestroyOnLoad={sceneName == "DontDestroyOnLoad"}";
         }
 
         static string ClassOf(SpriteRenderer renderer, SunCasterRules rules)
