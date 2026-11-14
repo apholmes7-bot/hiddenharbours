@@ -258,6 +258,11 @@ namespace HiddenHarbours.Art
             _behaviour = _visual.Behaviour;
             if (_behaviour == null) { enabled = false; return; }
 
+            // Every bird's caster asks "is this cell excluded art?" on each swap, and the first ask for a
+            // cell reads Sprite.name, which allocates. Ask for the whole page here, once, so no tick
+            // ever meets a cell the cache has not seen (rule 7: nothing per tick).
+            SpriteShadow.PrewarmExcludedArt(_visual.Cells);
+
             // No library is no places: an empty sky, except for a fixture's pinned place.
             if (_library == null) _library = Resources.Load<BirdHauntLibrary>(BirdHauntLibrary.ResourcesPath);
             ReadSunHours();

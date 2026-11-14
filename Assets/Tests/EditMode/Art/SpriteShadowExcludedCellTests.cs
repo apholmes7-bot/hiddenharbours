@@ -91,6 +91,39 @@ namespace HiddenHarbours.Tests.Art.EditMode
             AssertStandsDown(shadow, "born on gull_splash_2_d0");
         }
 
+        /// <summary>
+        /// The verdict is cached per Sprite instance: the second ask is served from the cache (renaming the
+        /// sprite after the first ask does not change it, so no name was read again), and a different sprite
+        /// gets its own verdict rather than its neighbour's.
+        /// </summary>
+        [Test]
+        public void ExcludedVerdict_IsCachedPerSprite_AndEachSpriteHasItsOwn()
+        {
+            Sprite splash = Cell("gull_splash_3_d2"), fly = Cell("gull_fly_3_d2");
+            Assert.That(SpriteShadow.HasExcludedArtVerdict(splash), Is.False, "a fresh sprite has no cached verdict");
+
+            Assert.That(SpriteShadow.IsExcludedSprite(splash), Is.True, "first ask: splash is excluded");
+            Assert.That(SpriteShadow.HasExcludedArtVerdict(splash), Is.True, "the first ask caches the verdict");
+            splash.name = "gull_fly_renamed";
+            Assert.That(SpriteShadow.IsExcludedSprite(splash), Is.True,
+                "second ask must come from the cache, not a fresh read of the name");
+
+            Assert.That(SpriteShadow.HasExcludedArtVerdict(fly), Is.False, "the neighbour's ask cached nothing for this sprite");
+            Assert.That(SpriteShadow.IsExcludedSprite(fly), Is.False, "a different sprite gets its own verdict");
+            Assert.That(SpriteShadow.IsExcludedSprite(fly), Is.False, "and keeps it on the second ask");
+        }
+
+        /// <summary>The gull's whole page is settled at prewarm, so no tick meets an uncached cell.</summary>
+        [Test]
+        public void Prewarm_CachesEveryCellOfTheSheet()
+        {
+            var cells = AssetDatabase.LoadAllAssetsAtPath(GullSheet).OfType<Sprite>().ToArray();
+            Assert.That(cells, Is.Not.Empty, "The gull sheet went missing; this test lost its subject.");
+            SpriteShadow.PrewarmExcludedArt(cells);
+            foreach (var cell in cells)
+                Assert.That(SpriteShadow.HasExcludedArtVerdict(cell), Is.True, cell.name + ": not cached by the prewarm");
+        }
+
         [Test]
         public void ShippedGullSheet_EverySplashCellStandsDown_EveryFlyCellCasts()
         {

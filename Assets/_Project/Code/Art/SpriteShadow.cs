@@ -299,7 +299,25 @@ namespace HiddenHarbours.Art
             s_excludedSprites.Clear();
         }
 
-        private static bool IsExcludedSprite(Sprite sprite)
+        /// <summary>
+        /// Settle the excluded-art verdict for every sprite of a sheet up front, off the hot path. The first
+        /// ask for a sprite reads <c>Sprite.name</c> (a managed string per call), so an animated caster that
+        /// meets a cell for the first time mid-tick would allocate; an owner that knows its whole sheet
+        /// (GullFlock) prewarms it once at setup and its ticks then only ever hit the cache.
+        /// </summary>
+        public static void PrewarmExcludedArt(System.Collections.Generic.IReadOnlyList<Sprite> sprites)
+        {
+            if (sprites == null) return;
+            // Make room first, so the bound's clear cannot evict half of the page being prewarmed.
+            if (s_excludedSprites.Count + sprites.Count > ExcludedSpriteCacheBound) s_excludedSprites.Clear();
+            for (int i = 0; i < sprites.Count; i++) IsExcludedSprite(sprites[i]);
+        }
+
+        /// <summary>Whether a verdict for this sprite is already cached (tests prove the cache with it).</summary>
+        internal static bool HasExcludedArtVerdict(Sprite sprite)
+            => sprite != null && s_excludedSprites.ContainsKey(sprite);
+
+        internal static bool IsExcludedSprite(Sprite sprite)
         {
             if (sprite == null) return false;
             if (!s_artRulesLoaded)
