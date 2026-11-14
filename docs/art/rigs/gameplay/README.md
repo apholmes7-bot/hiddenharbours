@@ -213,3 +213,32 @@ visible iron ring bolt at that point on **both** hulls, plus a second port-quart
 moves the tie-point itself (dory `station(1.0)` → `station(0.965)`, punt `station(1.0)` →
 `station(0.962)`). The original judgment text is kept verbatim in both sidecars' `_ruled`
 with the reversal appended — provenance, not deletion. **Owner: re-rule.**
+
+## The boarding ladders — `boatLadderRig.ladders.json` (2026-11-14)
+
+A third kind of sidecar: **where the shared ladder fitting hangs on each hull.** The rig is
+`docs/art/rigs/boatLadderRig.js` (`BoatLadder`): one fitting, two kinds (`rigid`, a stainless stern
+or side ladder for the working boats; `pilot`, a rope-and-rung pilot ladder for a ship's side). It
+is hung on a hull by this file and **never by editing that hull's rig**, so a ladder moves no hull
+digest and no baked hull mesh.
+
+**Generated, not authored** — `node tools/rig-recipes/boat-ladders.mjs` writes it, `--check` fails
+if it has drifted, `--plates <dir>` renders before/after previews with no Unity. Each entry authors
+only a hull, a `BoardingPoint` id, a kind and the outward direction of the skin there. Everything
+else is read: `boardingPoint` from `BoardingPoints[id].DeckLocalMeters` in the hull's deck asset
+(the same frame as this folder: +x starboard, +y bow), `zTop` from the hull rig's own
+`loft.sheerZ(y)`, `zWater` from `RestingDraftMeters` in her hull-mesh asset, and `head` / `foot` /
+`grabTop` from `BoatLadder.anchors(spec)`. **So the ladder you see and the point the boarding rule
+tests are one number, stored once, in the Def.** Move the point and `--check` goes red until the
+file is regenerated.
+
+- `status: "matches_def"` — the deck Def has this point; the ladder is centred on it.
+- `status: "proposed"` — the Def has **no** such point yet and `proposedPoint` is this file's
+  suggestion for the owner (today: the tanker's two pilot ladders and her stern ladder). `--check`
+  fails the day the Def gains that id, so a proposal cannot outlive the decision.
+- `derivedFromRigSha256` is a map: the ladder rig plus every hull rig a sheer height was read from,
+  all LF digests (CRLF folded), the `tools/rig-recipes` convention.
+
+**Not in the game yet.** Nothing imports this file and the fitting has no baked mesh: that is one
+`HullPropFleet` entry per hull (builder `BoatLadder.faces(spec)`, pivot `BoatLadder.pivot(spec)`,
+no shim needed) and an in-editor bake, owed by tools-editor / art-pipeline.

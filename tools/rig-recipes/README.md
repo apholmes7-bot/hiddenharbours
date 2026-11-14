@@ -106,6 +106,7 @@ mismatch throws rather than being compared. `check-slices.mjs` needs none of thi
 | `rod-continuity.mjs` | the rod is ONE rod: every hold ↔ cast ↔ rest seam, measured off the render |
 | `reach-continuity.mjs` | the reach sheets re-render byte for byte, and the two rigs agree about the hand-over |
 | `fisher-rod-mount.mjs` | regenerates (or `--check`s) the rod-mount handoff sidecar from the rigs |
+| `boat-ladders.mjs` | regenerates (or `--check`s) the boarding-ladder sidecar from the ladder rig, the hull rigs and the deck assets; `--plates <dir>` writes before/after previews |
 | `lib/recipe.mjs` | the recipe shape: canonical serialisation, axis expansion, reassembly |
 | `lib/csharp.mjs` | reads the FACTS out of the bakers' own C# — build tables, `const` tunables, `RigCatalog` — and cites them by `path:line` |
 | `lib/rigHost.mjs` | loads a rig and its prerequisite closure; `dirForCell`; the LF-normalised rig hash |

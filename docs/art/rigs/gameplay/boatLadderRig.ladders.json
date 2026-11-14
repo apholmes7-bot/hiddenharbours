@@ -1,0 +1,209 @@
+{
+  "rig": "boatLadderRig.js",
+  "derivedFromRigSha256": {
+    "boatLadderRig.js": "7bcc187991ff6e600084c78be20020da817b1145d4f709905ee539fa28992918",
+    "lobsterBoatIsoRig.js": "98f5cff508232371d2d2cb1ec71d3c93cdfbf2a54e8279d7ced87d5006a75606",
+    "tankerIsoRig.js": "f31207abfd71de080d4ece0c9a4cee423ed6ac82f5fb533c15211fc1c6a97217"
+  },
+  "_pins": "LF sha256 of each source (CRLF folded to LF), the tools/rig-recipes convention: the ladder rig, plus every hull rig a sheer height was read from.",
+  "generator": "node tools/rig-recipes/boat-ladders.mjs (--check fails on drift). Do not hand-edit the derived fields.",
+  "frame": {
+    "units": "m",
+    "origin": "amidships, keel bottom, centreline",
+    "axes": "+x starboard, +y bow, +z up",
+    "heading_independent": true,
+    "note": "boardingPoint is [x, y] in the SAME frame as BoardingPoint.DeckLocalMeters in the deck Def."
+  },
+  "kinds": {
+    "rigid": {
+      "width": 0.4,
+      "standoff": 0.1,
+      "rail": 0.022,
+      "rung": 0.016,
+      "pitch": 0.28,
+      "grab": 0.5,
+      "inboard": 0.22,
+      "submerge": 0.62,
+      "footEvery": 2.4
+    },
+    "pilot": {
+      "width": 0.52,
+      "standoff": 0.07,
+      "rope": 0.02,
+      "stepDepth": 0.115,
+      "stepThick": 0.03,
+      "pitch": 0.33,
+      "rubberSteps": 4,
+      "firstSpreader": 4,
+      "spreaderEvery": 9,
+      "spreaderLength": 1.8,
+      "inboard": 0.45,
+      "tieDrop": 0.35,
+      "submerge": 0.3,
+      "stanchion": 1,
+      "stanchionOut": 0.18
+    }
+  },
+  "LADDERS": [
+    {
+      "hull": "boat.lobster_boat",
+      "id": "stern_ladder",
+      "kind": "rigid",
+      "status": "matches_def",
+      "hullRig": "lobsterBoatIsoRig.js",
+      "hullGlobal": "LobsterBoatIso",
+      "deckAsset": "Assets/_Project/Data/Boats/Decks/LobsterBoatIso.asset",
+      "hullMeshAsset": "Assets/_Project/Data/Boats/HullMeshes/LobsterBoatIsoHullMesh.asset",
+      "outward": [
+        0,
+        -1
+      ],
+      "_note": "Centred on the transom, where the deck Def already puts her stern_ladder point.",
+      "boardingPoint": [
+        0,
+        -6
+      ],
+      "px_per_m": 32,
+      "zTop": 1.19,
+      "zWater": 0.5,
+      "freeboard_m": 0.69,
+      "head": [
+        0,
+        -6.1,
+        1.19
+      ],
+      "foot": [
+        0,
+        -6.1,
+        -0.12
+      ],
+      "grabTop": 1.69,
+      "rungsUnderWater": 2,
+      "faces": 60,
+      "_derivation": "boardingPoint = BoardingPoints['stern_ladder'].DeckLocalMeters in the deck asset; zTop = LobsterBoatIso.loft.sheerZ(y); zWater = RestingDraftMeters in the hull-mesh asset; head, foot, grabTop = BoatLadder.anchors(spec)"
+    },
+    {
+      "hull": "boat.tanker",
+      "id": "pilot_ladder_starboard",
+      "kind": "pilot",
+      "status": "proposed",
+      "hullRig": "tankerIsoRig.js",
+      "hullGlobal": "TankerIso",
+      "deckAsset": "Assets/_Project/Data/Boats/Decks/TankerIso.asset",
+      "hullMeshAsset": "Assets/_Project/Data/Boats/HullMeshes/TankerIsoHullMesh.asset",
+      "outward": [
+        1,
+        0
+      ],
+      "proposedPoint": [
+        8.7,
+        0
+      ],
+      "_note": "PROPOSED, not in the deck Def yet. Amidships in the parallel midbody, where the side is lowest (sheer 9.6 m) and plumb. The owner may move it; the ladder follows the point.",
+      "boardingPoint": [
+        8.7,
+        0
+      ],
+      "px_per_m": 16,
+      "zTop": 9.6,
+      "zWater": 2.47,
+      "freeboard_m": 7.13,
+      "head": [
+        8.77,
+        0,
+        9.6
+      ],
+      "foot": [
+        8.77,
+        0,
+        2.17
+      ],
+      "grabTop": 10.6,
+      "rungsUnderWater": 1,
+      "faces": 170,
+      "_derivation": "boardingPoint = proposedPoint (the deck Def has no such point yet); zTop = TankerIso.loft.sheerZ(y); zWater = RestingDraftMeters in the hull-mesh asset; head, foot, grabTop = BoatLadder.anchors(spec)"
+    },
+    {
+      "hull": "boat.tanker",
+      "id": "pilot_ladder_port",
+      "kind": "pilot",
+      "status": "proposed",
+      "hullRig": "tankerIsoRig.js",
+      "hullGlobal": "TankerIso",
+      "deckAsset": "Assets/_Project/Data/Boats/Decks/TankerIso.asset",
+      "hullMeshAsset": "Assets/_Project/Data/Boats/HullMeshes/TankerIsoHullMesh.asset",
+      "outward": [
+        -1,
+        0
+      ],
+      "proposedPoint": [
+        -8.7,
+        0
+      ],
+      "_note": "PROPOSED, the mirror of the starboard ladder.",
+      "boardingPoint": [
+        -8.7,
+        0
+      ],
+      "px_per_m": 16,
+      "zTop": 9.6,
+      "zWater": 2.47,
+      "freeboard_m": 7.13,
+      "head": [
+        -8.77,
+        0,
+        9.6
+      ],
+      "foot": [
+        -8.77,
+        0,
+        2.17
+      ],
+      "grabTop": 10.6,
+      "rungsUnderWater": 1,
+      "faces": 170,
+      "_derivation": "boardingPoint = proposedPoint (the deck Def has no such point yet); zTop = TankerIso.loft.sheerZ(y); zWater = RestingDraftMeters in the hull-mesh asset; head, foot, grabTop = BoatLadder.anchors(spec)"
+    },
+    {
+      "hull": "boat.tanker",
+      "id": "stern_ladder",
+      "kind": "rigid",
+      "status": "proposed",
+      "hullRig": "tankerIsoRig.js",
+      "hullGlobal": "TankerIso",
+      "deckAsset": "Assets/_Project/Data/Boats/Decks/TankerIso.asset",
+      "hullMeshAsset": "Assets/_Project/Data/Boats/HullMeshes/TankerIsoHullMesh.asset",
+      "outward": [
+        0,
+        -1
+      ],
+      "proposedPoint": [
+        0,
+        -55
+      ],
+      "_note": "PROPOSED. A fixed steel ladder up the flat transom to the poop. Ten metres of climb: the owner may prefer the two pilot ladders alone.",
+      "boardingPoint": [
+        0,
+        -55
+      ],
+      "px_per_m": 16,
+      "zTop": 12.5,
+      "zWater": 2.47,
+      "freeboard_m": 10.03,
+      "head": [
+        0,
+        -55.1,
+        12.5
+      ],
+      "foot": [
+        0,
+        -55.1,
+        1.85
+      ],
+      "grabTop": 13,
+      "rungsUnderWater": 2,
+      "faces": 224,
+      "_derivation": "boardingPoint = proposedPoint (the deck Def has no such point yet); zTop = TankerIso.loft.sheerZ(y); zWater = RestingDraftMeters in the hull-mesh asset; head, foot, grabTop = BoatLadder.anchors(spec)"
+    }
+  ]
+}
