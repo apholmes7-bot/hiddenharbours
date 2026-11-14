@@ -386,3 +386,11 @@ docs/art/rigs/character/rig11/**/*.js                 text eol=lf
 docs/art/rigs/character/rig11/**/*.txt                text eol=lf
 docs/art/rigs/character/rig11/**/*.md                 text eol=lf
 docs/art/rigs/character/rig11/**/*.json               text eol=lf
+
+# The bird rig kit (docs/art/rigs/birds/): each sidecar and sheet contract stamps derivedFromRigSha256
+# over the WORKING-TREE bytes of its rig, and birds/tools/build.cjs refuses a rig with CR in it. Same
+# reasoning as the seagull kit above: pin the working-tree form.
+docs/art/rigs/cormorantIsoRig.js                     text eol=lf
+docs/art/rigs/gameplay/cormorantIsoRig.gameplay.json text eol=lf
+docs/art/rigs/birds/**/*.json                        text eol=lf
+docs/art/rigs/birds/**/*.cjs                         text eol=lf
