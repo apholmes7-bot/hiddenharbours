@@ -39,5 +39,46 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.That(defs, Has.Length.EqualTo(1));
             Assert.That(defs[0], Is.SameAs(AssetDatabase.LoadAssetAtPath<WatchDef>(DigitalPath)));
         }
+
+        [Test]
+        public void NewGameWearsTheAuthoredDigitalWatch_WithoutChangingTheSaveVersion()
+        {
+            SaveData save = SaveMigration.NewGame();
+
+            AssertDigitalWatchIsWorn(save);
+            Assert.That(save.OwnedGear, Is.EqualTo(new[] { "watch.harbour_digital" }));
+            Assert.That(save.SchemaVersion, Is.EqualTo(SaveMigration.CurrentVersion));
+        }
+
+        [TestCase("[\"gear.rod\",\"gear.watch\"]")]
+        [TestCase("[\"gear.rod\"]")]
+        [TestCase("null")]
+        public void PreWatchDefinitionSaveWearsTheAuthoredDigitalWatch_AndKeepsItsGear(string ownedGear)
+        {
+            // This is the existing v17 shape, before watches became data. No wearing field exists.
+            SaveData save = SaveSerialization.FromJson(
+                "{\"SchemaVersion\":17,\"Money\":123,\"OwnedGear\":" + ownedGear + "}");
+            Assert.That(save, Is.Not.Null);
+
+            AssertDigitalWatchIsWorn(save);
+            var expected = ownedGear == "null" ? new[] { "watch.harbour_digital" }
+                : ownedGear.Contains("gear.watch") ? new[] { "gear.rod", "gear.watch", "watch.harbour_digital" }
+                : new[] { "gear.rod", "watch.harbour_digital" };
+            Assert.That(save.OwnedGear, Is.EqualTo(expected));
+            Assert.That(save.SchemaVersion, Is.EqualTo(17));
+            Assert.That(save.Money, Is.EqualTo(123));
+
+            SaveData reloaded = SaveSerialization.FromJson(SaveSerialization.ToJson(save));
+            AssertDigitalWatchIsWorn(reloaded);
+            Assert.That(reloaded.OwnedGear, Is.EqualTo(expected), "A normal save round trip cannot double-grant.");
+        }
+
+        private static void AssertDigitalWatchIsWorn(SaveData save)
+        {
+            WatchDef worn = WatchEquipment.GetWorn(save);
+            Assert.That(worn, Is.SameAs(AssetDatabase.LoadAssetAtPath<WatchDef>(DigitalPath)));
+            Assert.That(worn.Id, Is.EqualTo("watch.harbour_digital"));
+            Assert.That(worn.Face, Is.EqualTo(WatchFaceKind.HarbourDigital));
+        }
     }
 }
