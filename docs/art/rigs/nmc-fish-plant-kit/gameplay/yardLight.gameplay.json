@@ -1,0 +1,215 @@
+{
+ "schema": "hidden-harbours/nmc-set-piece@1",
+ "generatedBy": "NmcFishPlant 1.0.0",
+ "derivedFromRigSha256": "a83ae8687592de43902259157195ecc4ff3128f36d850f4844f08623e37f32d9",
+ "key": "yardLight",
+ "id": "prop.nmc_plant_yard_light",
+ "name": "Yard light",
+ "defType": "SetPieceDef",
+ "scene": null,
+ "units": "metres, the piece’s own frame: +x right, +y the show face, +z up from its ground point (the pivot)",
+ "bounds": {
+  "x": [
+   -0.3,
+   0.3
+  ],
+  "y": [
+   -0.129,
+   1.95
+  ],
+  "z": [
+   0,
+   7.5
+  ]
+ },
+ "layer": "raised",
+ "walk": "solid",
+ "mount": "ground",
+ "colliders": [
+  {
+   "type": "polygon",
+   "blocks": "walk",
+   "pts": [
+    [
+     -0.16,
+     -0.16
+    ],
+    [
+     0.16,
+     -0.16
+    ],
+    [
+     0.16,
+     0.16
+    ],
+    [
+     -0.16,
+     0.16
+    ]
+   ]
+  }
+ ],
+ "facings": [
+  {
+   "dir": 0,
+   "showFaces": "N",
+   "bearingDeg": 0,
+   "cameraSees": "its back"
+  },
+  {
+   "dir": 1,
+   "showFaces": "NW",
+   "bearingDeg": 315,
+   "cameraSees": "its back"
+  },
+  {
+   "dir": 2,
+   "showFaces": "W",
+   "bearingDeg": 270,
+   "cameraSees": "the show face, edge-on or at a diagonal"
+  },
+  {
+   "dir": 3,
+   "showFaces": "SW",
+   "bearingDeg": 225,
+   "cameraSees": "the show face"
+  },
+  {
+   "dir": 4,
+   "showFaces": "S",
+   "bearingDeg": 180,
+   "cameraSees": "the show face"
+  },
+  {
+   "dir": 5,
+   "showFaces": "SE",
+   "bearingDeg": 135,
+   "cameraSees": "the show face"
+  },
+  {
+   "dir": 6,
+   "showFaces": "E",
+   "bearingDeg": 90,
+   "cameraSees": "the show face, edge-on or at a diagonal"
+  },
+  {
+   "dir": 7,
+   "showFaces": "NE",
+   "bearingDeg": 45,
+   "cameraSees": "its back"
+  }
+ ],
+ "cells": [
+  {
+   "dir": 0,
+   "w": 27,
+   "h": 231,
+   "pivot": [
+    13,
+    225
+   ]
+  },
+  {
+   "dir": 1,
+   "w": 63,
+   "h": 222,
+   "pivot": [
+    51,
+    215
+   ]
+  },
+  {
+   "dir": 2,
+   "w": 74,
+   "h": 196,
+   "pivot": [
+    66,
+    189
+   ]
+  },
+  {
+   "dir": 3,
+   "w": 63,
+   "h": 196,
+   "pivot": [
+    51,
+    189
+   ]
+  },
+  {
+   "dir": 4,
+   "w": 27,
+   "h": 196,
+   "pivot": [
+    13,
+    189
+   ]
+  },
+  {
+   "dir": 5,
+   "w": 63,
+   "h": 196,
+   "pivot": [
+    11,
+    189
+   ]
+  },
+  {
+   "dir": 6,
+   "w": 74,
+   "h": 196,
+   "pivot": [
+    8,
+    189
+   ]
+  },
+  {
+   "dir": 7,
+   "w": 63,
+   "h": 222,
+   "pivot": [
+    11,
+    215
+   ]
+  }
+ ],
+ "anchors": {
+  "light": [
+   0,
+   1.58,
+   7.04
+  ],
+  "lights": [
+   {
+    "id": "light.yard",
+    "at": [
+     0,
+     1.58,
+     7.04
+    ],
+    "kind": "yard light, mercury white",
+    "atPx": [
+     13,
+     48.9
+    ]
+   }
+  ],
+  "px": {
+   "light": [
+    13,
+    48.9
+   ]
+  }
+ },
+ "options": {
+  "h": 7.5,
+  "lights": true
+ },
+ "light": {
+  "emitters": [
+   "lamp"
+  ],
+  "when": "o.lit, from the game’s lamp rule (dusk to dawn; the plant while it works)"
+ },
+ "notes": "A utility pole with a single yard lamp on a 1.5 m arm toward local +y. Suggested at the court’s north-east and south-east corners and by the staff parking, arms toward the court."
+}

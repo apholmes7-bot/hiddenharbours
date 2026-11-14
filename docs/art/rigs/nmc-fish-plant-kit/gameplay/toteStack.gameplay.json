@@ -1,0 +1,204 @@
+{
+ "schema": "hidden-harbours/nmc-set-piece@1",
+ "generatedBy": "NmcFishPlant 1.0.0",
+ "derivedFromRigSha256": "a83ae8687592de43902259157195ecc4ff3128f36d850f4844f08623e37f32d9",
+ "key": "toteStack",
+ "id": "prop.nmc_plant_totes",
+ "name": "Fish tubs and boxes",
+ "defType": "SetPieceDef",
+ "scene": null,
+ "units": "metres, the piece’s own frame: +x right, +y the show face, +z up from its ground point (the pivot)",
+ "bounds": {
+  "x": [
+   -1.27,
+   1.27
+  ],
+  "y": [
+   -0.52,
+   0.52
+  ],
+  "z": [
+   0,
+   1.56
+  ]
+ },
+ "layer": "raised",
+ "walk": "solid",
+ "mount": "ground",
+ "colliders": [
+  {
+   "type": "polygon",
+   "blocks": "walk",
+   "pts": [
+    [
+     -1.3,
+     -0.6
+    ],
+    [
+     1.3,
+     -0.6
+    ],
+    [
+     1.3,
+     0.6
+    ],
+    [
+     -1.3,
+     0.6
+    ]
+   ]
+  }
+ ],
+ "facings": [
+  {
+   "dir": 0,
+   "showFaces": "N",
+   "bearingDeg": 0,
+   "cameraSees": "its back"
+  },
+  {
+   "dir": 1,
+   "showFaces": "NW",
+   "bearingDeg": 315,
+   "cameraSees": "its back"
+  },
+  {
+   "dir": 2,
+   "showFaces": "W",
+   "bearingDeg": 270,
+   "cameraSees": "the show face, edge-on or at a diagonal"
+  },
+  {
+   "dir": 3,
+   "showFaces": "SW",
+   "bearingDeg": 225,
+   "cameraSees": "the show face"
+  },
+  {
+   "dir": 4,
+   "showFaces": "S",
+   "bearingDeg": 180,
+   "cameraSees": "the show face"
+  },
+  {
+   "dir": 5,
+   "showFaces": "SE",
+   "bearingDeg": 135,
+   "cameraSees": "the show face"
+  },
+  {
+   "dir": 6,
+   "showFaces": "E",
+   "bearingDeg": 90,
+   "cameraSees": "the show face, edge-on or at a diagonal"
+  },
+  {
+   "dir": 7,
+   "showFaces": "NE",
+   "bearingDeg": 45,
+   "cameraSees": "its back"
+  }
+ ],
+ "cells": [
+  {
+   "dir": 0,
+   "w": 89,
+   "h": 67,
+   "pivot": [
+    44,
+    52
+   ]
+  },
+  {
+   "dir": 1,
+   "w": 89,
+   "h": 77,
+   "pivot": [
+    44,
+    49
+   ]
+  },
+  {
+   "dir": 2,
+   "w": 41,
+   "h": 77,
+   "pivot": [
+    20,
+    49
+   ]
+  },
+  {
+   "dir": 3,
+   "w": 89,
+   "h": 77,
+   "pivot": [
+    44,
+    49
+   ]
+  },
+  {
+   "dir": 4,
+   "w": 89,
+   "h": 67,
+   "pivot": [
+    44,
+    52
+   ]
+  },
+  {
+   "dir": 5,
+   "w": 89,
+   "h": 96,
+   "pivot": [
+    44,
+    68
+   ]
+  },
+  {
+   "dir": 6,
+   "w": 41,
+   "h": 96,
+   "pivot": [
+    20,
+    68
+   ]
+  },
+  {
+   "dir": 7,
+   "w": 89,
+   "h": 96,
+   "pivot": [
+    44,
+    68
+   ]
+  }
+ ],
+ "anchors": {
+  "hand": [
+   0,
+   0.9,
+   0
+  ],
+  "top": [
+   -0.65,
+   0,
+   1.56
+  ],
+  "px": {
+   "hand": [
+    44,
+    70.5
+   ],
+   "top": [
+    64.8,
+    13.8
+   ]
+  }
+ },
+ "options": {
+  "kind": "tubs",
+  "high": 2
+ },
+ "light": null,
+ "notes": "Set dressing only: it holds no stock and shows no fill. o.kind ‘tubs’ (insulated 1.2 x 1.0 m tubs, lidded) or ‘boxes’ (fish boxes on two pallets); o.high 1 to 4."
+}
