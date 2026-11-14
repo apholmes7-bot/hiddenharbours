@@ -1,5 +1,6 @@
 import contextlib
 import io
+import json
 from pathlib import Path
 import tempfile
 import unittest
@@ -16,6 +17,12 @@ def xml(cases, **attributes):
     text = " ".join(f'{k}="{v}"' for k, v in attrs.items())
     return io.BytesIO((f'<test-run {text}><test-suite testcasecount="900">'
                        + "".join(cases) + '</test-suite></test-run>').encode())
+
+
+def assembly_case(assembly, classname="Project.Tests", outcome="Passed"):
+    return (f'<test-suite type="Assembly" name="{assembly}.dll">'
+            f'<test-suite type="TestFixture"><test-case classname="{classname}" result="{outcome}"/>'
+            '</test-suite></test-suite>')
 
 
 class ResultsTests(unittest.TestCase):
@@ -80,6 +87,79 @@ class ResultsTests(unittest.TestCase):
             path.write_bytes(xml(['<test-case result="Passed"/>']).getvalue())
             with contextlib.redirect_stdout(io.StringIO()):
                 self.assertEqual(results.main([str(path)]), 0)
+
+
+class ProjectCoverageTests(unittest.TestCase):
+    def setUp(self):
+        self.coverage = {"minimum_project_cases": 1405, "required_classes": {
+            "HiddenHarbours.Tests.CoopSpike.CoopSpikeDevBootTests": 2,
+            "HiddenHarbours.Tests.CoopSpike.CoopSpikeNetworkTests": 10,
+        }}
+        self.cases = [assembly_case("HiddenHarbours.Tests.PlayMode") for _ in range(1393)]
+        for name, count in self.coverage["required_classes"].items():
+            self.cases.extend([assembly_case("HiddenHarbours.Tests.CoopSpike.PlayMode", name)] * count)
+
+    def problems(self, cases):
+        return results.read_results(xml(cases)).coverage_problems(self.coverage)
+
+    def test_main_plus_all_coop_cases_pass_the_boundary(self):
+        self.assertEqual(self.problems(self.cases), [])
+
+    def test_one_missing_project_case_fails_even_with_all_coop_classes(self):
+        self.assertIn("project cases 1404 below required 1405", self.problems(self.cases[1:]))
+
+    def test_package_cases_cannot_fill_the_project_floor(self):
+        cases = self.cases[1:] + [assembly_case("Unity.Netcode.Runtime.Tests")]
+        self.assertIn("project cases 1404 below required 1405", self.problems(cases))
+
+    def test_every_netcode_assembly_is_rejected_including_skipped_cases(self):
+        for assembly in ("Unity.Netcode.Editor.Tests", "Unity.Netcode.Runtime.Tests", "Unity.Netcode.Future.Tests"):
+            for outcome in ("Passed", "Skipped"):
+                with self.subTest(assembly=assembly, outcome=outcome):
+                    problems = self.problems(self.cases + [assembly_case(assembly, outcome=outcome)])
+                    self.assertEqual(problems, [f"excluded package assembly {assembly} contains 1 cases"])
+
+    def test_no_missing_class_can_hide_behind_a_large_total(self):
+        for name in self.coverage["required_classes"]:
+            cases = [c.replace(name, "Other.Class") for c in self.cases]
+            with self.subTest(name=name):
+                self.assertTrue(any(f"{name}: 0 executed" in p for p in self.problems(cases)))
+
+    def test_skipped_required_cases_do_not_count_as_execution(self):
+        cases = self.cases[:-1] + [self.cases[-1].replace('result="Passed"', 'result="Skipped"')]
+        self.assertTrue(any("9 executed cases below required 10" in p for p in self.problems(cases)))
+
+    def test_class_identity_comes_from_project_assembly_not_case_namespace(self):
+        cases = [c.replace('name="HiddenHarbours.Tests.CoopSpike.PlayMode.dll"',
+                           'name="ThirdParty.Tests.dll"') for c in self.cases]
+        problems = self.problems(cases)
+        self.assertIn("project cases 1393 below required 1405", problems)
+        self.assertEqual(sum("0 executed cases" in p for p in problems), 2)
+
+    def test_missing_assembly_metadata_cannot_claim_project_coverage(self):
+        cases = [c.replace('type="Assembly"', 'type="TestFixture"') for c in self.cases]
+        self.assertIn("project cases 0 below required 1405", self.problems(cases))
+
+    def test_skipped_ordinary_cases_remain_in_the_project_total(self):
+        cases = [c.replace('result="Passed"', 'result="Skipped"') for c in self.cases[:1393]] + self.cases[1393:]
+        summary = results.read_results(xml(cases))
+        self.assertEqual(summary.counts["Skipped"], 1393)
+        self.assertEqual(summary.coverage_problems(self.coverage), [])
+
+    def test_cli_enforces_coverage_and_requires_every_configured_file(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            path = root / "playmode-results.xml"
+            contract = root / "coverage.json"
+            contract.write_text(json.dumps({path.name: self.coverage}), encoding="utf-8")
+            args = ["--project-coverage", str(contract), str(path)]
+            for cases, expected in ((self.cases, 0), (self.cases[1:], 1)):
+                path.write_bytes(xml(cases).getvalue())
+                with contextlib.redirect_stdout(io.StringIO()):
+                    self.assertEqual(results.main(args), expected)
+            contract.write_text(json.dumps({path.name: self.coverage, "editmode-results.xml": self.coverage}), encoding="utf-8")
+            with contextlib.redirect_stdout(io.StringIO()):
+                self.assertEqual(results.main(args), 1)
 
 
 if __name__ == "__main__":
