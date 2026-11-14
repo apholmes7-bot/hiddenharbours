@@ -168,8 +168,15 @@ namespace HiddenHarbours.Tests.PlayMode
                 .Where(b => b.gameObject.scene.name == Region)
                 .OrderBy(b => b.transform.position.x).ThenBy(b => b.transform.position.y).ToArray();
             Assert.That(buildings.Length, Is.GreaterThanOrEqualTo(10), "The enterable-building census may grow, never shrink");
+            BuildingInterior[] stairBuildings = buildings
+                .Where(b => b.GetComponentsInChildren<InteriorStair>(true).Length > 0).ToArray();
+            string stairCensus = $"STAIR BUILDINGS {stairBuildings.Length}: " +
+                string.Join(", ", stairBuildings.Select(b => b.name).OrderBy(name => name));
+            TestContext.WriteLine(stairCensus);
             var gapsSeen = new HashSet<string>();
             var expectedSeen = new HashSet<string>();
+            var climbedBuildings = new HashSet<BuildingInterior>();
+            var expectedStairFailures = new HashSet<BuildingInterior>();
             var failures = new List<string>();
             int visited = 0, climbed = 0, completed = 0;
             foreach (BuildingInterior building in buildings)
@@ -180,9 +187,16 @@ namespace HiddenHarbours.Tests.PlayMode
                 yield return CaptureVisit(VisitBuilding(building, gapsSeen, result), result);
                 _held.Release();
                 visited++;
-                if (result.Climbed) climbed++;
+                if (result.Climbed)
+                {
+                    climbed++;
+                    climbedBuildings.Add(building);
+                }
                 if (result.Completed) completed++;
                 RecordVisit(building.name, result, expectedSeen, failures);
+                if (result.Step == "descent" && result.Failure is AssertionException &&
+                    expectedSeen.Contains(building.name + ": descent"))
+                    expectedStairFailures.Add(building);
                 if (result.Completed)
                     TestContext.WriteLine($"VISITED {building.name}: room on, shell off, floor clear, exit restores shell");
             }
@@ -194,11 +208,17 @@ namespace HiddenHarbours.Tests.PlayMode
                 failures.Add($"Building census: attempted {visited} of {buildings.Length}");
             if (completed + expectedSeen.Count != buildings.Length)
                 failures.Add($"Building census: {completed} complete + {expectedSeen.Count} checked failures != {buildings.Length}");
-            if (climbed < 1)
-                failures.Add("Stair census: no working upper floor completed both directions");
+            if (stairBuildings.Length == 0)
+                failures.Add("Stair census: no placed building has working stairs");
+            // Only a reproduced, declared descent failure can account for an unfinished round trip.
+            // Removing its expected row restores the requirement for that building immediately.
+            foreach (BuildingInterior stairBuilding in stairBuildings)
+                if (!climbedBuildings.Contains(stairBuilding) && !expectedStairFailures.Contains(stairBuilding))
+                    failures.Add($"Stair census: {stairBuilding.name} did not complete both directions");
             TestContext.WriteLine($"CENSUS {visited}; COMPLETED {completed}; CLIMBED {climbed}; CHECKED FAILURES {expectedSeen.Count}; simulated walk cost {_tourSeconds:F2}s (one scene load)");
             Assert.That(failures, Is.Empty, "Building census failures:\n" + string.Join("\n", failures) +
-                "\nChecked expected failures: " + string.Join(", ", expectedSeen.OrderBy(key => key)));
+                "\nChecked expected failures: " + string.Join(", ", expectedSeen.OrderBy(key => key)) +
+                "\n" + stairCensus);
         }
 
         static void RecordVisit(string building, VisitResult result, HashSet<string> expectedSeen, List<string> failures)
