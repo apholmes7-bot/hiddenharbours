@@ -172,6 +172,7 @@ MonoBehaviour:
     MarginY: 16
     GrabRadiusPx: 30
     TillerDragFullDrivePx: 140
+    ShowFloatingNavReads: 0
   DepthSounder:
     ReadIntervalSec: 0.25
     DefaultAlarmMetres: 3

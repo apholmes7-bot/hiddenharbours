@@ -251,7 +251,7 @@ namespace HiddenHarbours.Tests.EditMode
                 };
                 foreach ((HelmControlStyle style, HelmFit fit, NavClusterPlacement want) in cases)
                 {
-                    NavClusterPlacement p = HelmHudSuppression.NavCluster(true, style, in fit, in band, s.x, s.y);
+                    NavClusterPlacement p = HelmHudSuppression.NavCluster(floatingReads: true, true, style, in fit, in band, s.x, s.y);
                     if (p != want) { failures.Add($"{Name(s)} {style}: placed {p}, want {want}"); continue; }
                     Rect placed = NavPlaced(p, in band, s);
                     if (Meets(in band, placed)) failures.Add($"{Name(s)} {p}: on the band ({placed})");
@@ -271,13 +271,13 @@ namespace HiddenHarbours.Tests.EditMode
             {
                 HelmFootprintArea card = TillerCard(cfg, s);
                 Assert.AreEqual(NavClusterPlacement.BottomCentre,
-                                HelmHudSuppression.NavCluster(true, HelmControlStyle.Tiller, HelmFit.None),
+                                HelmHudSuppression.NavCluster(floatingReads: true, true, HelmControlStyle.Tiller, HelmFit.None),
                                 "S4.5 alone leaves it bottom-centre at a tiller…");
                 Assert.IsTrue(Meets(in card, HelmHudSuppression.NavClusterScreenRect(
                                   NavClusterPlacement.BottomCentre, s.x, s.y)),
                               $"{Name(s)}: …where it sits on the tiller's card (the audit l.453)");
 
-                NavClusterPlacement p = HelmHudSuppression.NavCluster(true, HelmControlStyle.Tiller, HelmFit.None,
+                NavClusterPlacement p = HelmHudSuppression.NavCluster(floatingReads: true, true, HelmControlStyle.Tiller, HelmFit.None,
                                                                       in card, s.x, s.y);
                 Assert.AreEqual(NavClusterPlacement.ClearOfTheDash, p, $"{Name(s)}: so it steps beside the card");
                 Assert.AreEqual(0f, HelmHudSuppression.NavClusterLiftRef(p, in card, s.x, s.y),
@@ -339,8 +339,8 @@ namespace HiddenHarbours.Tests.EditMode
                                                            HelmControlStyle.Lever })
                 foreach (HelmFit fit in fits)
                 {
-                    NavClusterPlacement p = HelmHudSuppression.NavCluster(aboard, style, in fit, in none, s.x, s.y);
-                    Assert.AreEqual(HelmHudSuppression.NavCluster(aboard, style, in fit), p,
+                    NavClusterPlacement p = HelmHudSuppression.NavCluster(floatingReads: true, aboard, style, in fit, in none, s.x, s.y);
+                    Assert.AreEqual(HelmHudSuppression.NavCluster(floatingReads: true, aboard, style, in fit), p,
                                     $"{Name(s)} aboard={aboard} {style} {fit.Rig}/{fit.Compass}");
                     Assert.AreEqual(0f, HelmHudSuppression.NavClusterLiftRef(p, in none, s.x, s.y));
                 }

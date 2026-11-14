@@ -184,6 +184,12 @@ important UI in the game (P1).
 > the helm compass, the chartplotter, the apparent-wind read. Those are untouched, and deliberately:
 > an instrument is exactly where the ruling says a number may come from.
 >
+> **Amended 2026-11-13 (owner ruling).** The floating text cluster at the helm (heading, compass
+> tape, set-and-drift, apparent wind) is no longer drawn on any hull: heading and wind come from
+> instruments fitted to the boat, and a boat without them has none. One switch brings the old
+> cluster back: `GameConfig.HelmOverlay.ShowFloatingNavReads` (default off), read through
+> `HelmHudSuppression.NavCluster`.
+>
 > **Why.** Information in this game is earned. A band that hands the player the tide, the sea and
 > their balance for free deletes the reason to read the water, buy the gauge, or keep the book.
 >

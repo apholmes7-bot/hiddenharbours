@@ -1390,6 +1390,13 @@ namespace HiddenHarbours.Core
                  "drive across its FULL range (up = ahead). Smaller = twitchier.")]
         [Min(1f)] public float TillerDragFullDrivePx;
 
+        [Tooltip("The floating heading / compass tape / set-and-drift / apparent-wind text at the bottom of " +
+                 "the screen while piloting a boat. OFF (the default, owner ruling 2026-11-13): never drawn, on " +
+                 "any hull, and a boat's own instruments are where heading and wind come from. ON: the old " +
+                 "behaviour (shown aboard, hidden where the dash carries a compass, moved clear of a dash that " +
+                 "does not).")]
+        public bool ShowFloatingNavReads;
+
         /// <summary>Native-size card CENTRED AT THE BOTTOM (the owner's 2026-08-03 placement
         /// ruling).</summary>
         public static HelmOverlaySettings Default => new HelmOverlaySettings
@@ -1399,6 +1406,7 @@ namespace HiddenHarbours.Core
             MarginY = 16f,
             GrabRadiusPx = 30f,
             TillerDragFullDrivePx = 140f,
+            ShowFloatingNavReads = false,
         };
     }
 
