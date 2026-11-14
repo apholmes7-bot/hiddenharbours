@@ -260,8 +260,86 @@ namespace HiddenHarbours.Art
         }
 
         private bool _castOnWalkingDeck;
-        private bool CasterVisible => _caster != null &&
+        private bool CasterVisible => _caster != null && !_artExcluded &&
             (_caster.enabled || (_castOnWalkingDeck && DeckStance.IsActive));
+
+        // ── excluded art: a cell that must cast nothing ─────────────────────────────────────────────
+        // SunCasterRules says splash, spray, foam, shade and the rest cast no shadow. The installer asks
+        // that ONCE, when it decides to attach, and an owner that attaches its own caster (GullFlock)
+        // never asks at all, so an ANIMATED caster kept casting when its sprite swapped onto an excluded
+        // cell: a gull's splash row threw the spray's silhouette on the water. The caster now asks on
+        // every swap, through the renderer's own sprite-change callback, so it stands down in the same
+        // frame the cell lands and returns the frame it leaves. Only the CELL half of the rule is asked
+        // here: the object half (name, UI canvas) cannot change while a sprite animates, and it stays
+        // the installer's and the audit's.
+        private bool _artExcluded;
+        private Sprite _artCheckedSprite;
+        private bool _artChecked;
+        private UnityEngine.Events.UnityAction<SpriteRenderer> _onSpriteChanged;
+
+        /// <summary>The caster's current sprite is excluded art (<see cref="SunCasterRules.IsExcludedSprite"/>),
+        /// so it draws no silhouette, no ground pool and no lamp shadow until the sprite leaves it.</summary>
+        public bool StandsDownForExcludedArt => _artExcluded;
+
+        /// <summary>Whether either pooled child (the silhouette or the ground-contact pool) is drawing.</summary>
+        public bool IsDrawing => (_shadow != null && _shadow.enabled) || (_pool != null && _pool.enabled);
+
+        private static SunCasterRules s_artRules;
+        private static bool s_artRulesLoaded;
+        // One answer per distinct sprite: Sprite.name allocates, and a walking figure swaps several times a
+        // second. A gull sheet is 384 cells; the bound only keeps runtime-minted sprites from piling up.
+        private const int ExcludedSpriteCacheBound = 4096;
+        private static readonly System.Collections.Generic.Dictionary<Sprite, bool> s_excludedSprites = new();
+
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        private static void ResetExcludedArtCache()
+        {
+            s_artRules = null;
+            s_artRulesLoaded = false;
+            s_excludedSprites.Clear();
+        }
+
+        private static bool IsExcludedSprite(Sprite sprite)
+        {
+            if (sprite == null) return false;
+            if (!s_artRulesLoaded)
+            {
+                s_artRules = Resources.Load<SunCasterRules>(nameof(SunCasterRules));
+                s_artRulesLoaded = true;
+            }
+            if (s_artRules == null) return false;
+            if (s_excludedSprites.TryGetValue(sprite, out bool excluded)) return excluded;
+            if (s_excludedSprites.Count >= ExcludedSpriteCacheBound) s_excludedSprites.Clear();
+            excluded = s_artRules.IsExcludedSprite(sprite);
+            s_excludedSprites.Add(sprite, excluded);
+            return excluded;
+        }
+
+        /// <summary>Re-ask the rule when the sprite moved. One reference compare when it did not.</summary>
+        private void RefreshArtExclusion()
+        {
+            if (_caster == null) _caster = GetComponent<SpriteRenderer>();
+            if (_caster == null) return;
+            Sprite sprite = _caster.sprite;
+            if (_artChecked && sprite == _artCheckedSprite) return;
+            _artChecked = true;
+            _artCheckedSprite = sprite;
+            bool excluded = IsExcludedSprite(sprite);
+            if (excluded == _artExcluded) return;
+            _artExcluded = excluded;
+            if (excluded)
+            {
+                // Off NOW, not at the next tick: the frame the splash lands must not draw its shade.
+                if (_shadow != null) _shadow.enabled = false;
+                if (_pool != null) _pool.enabled = false;
+            }
+            else if (isActiveAndEnabled)
+            {
+                Tick();   // back on in the same frame, at the current sun alpha
+            }
+        }
+
+        private void OnSpriteChanged(SpriteRenderer changed) => RefreshArtExclusion();
 
         /// <summary>
         /// Attach once, optionally keeping the fisher's hidden body as the walking-deck silhouette.
@@ -450,6 +528,19 @@ namespace HiddenHarbours.Art
             _resolvedProfile = _profile != null ? _profile : Resources.Load<DayNightProfile>("DayNightProfile");
             if (_resolvedProfile == null) _resolvedProfile = DayNightProfile.CreateDefault();
             EnsureShadow();
+            // Registered for the component's whole life, not per enable: a caster the installer culls by
+            // distance (disabled) must still know what it is showing when it is switched back on.
+            if (_caster != null)
+            {
+                _onSpriteChanged ??= OnSpriteChanged;
+                _caster.RegisterSpriteChangeCallback(_onSpriteChanged);
+            }
+            RefreshArtExclusion();
+        }
+
+        private void OnDestroy()
+        {
+            if (_caster != null && _onSpriteChanged != null) _caster.UnregisterSpriteChangeCallback(_onSpriteChanged);
         }
 
         private void OnEnable()
@@ -531,6 +622,7 @@ namespace HiddenHarbours.Art
             Sprite sprite = _caster.sprite;
             if (sprite == _lastSprite) return;      // the overwhelmingly common case — one compare, no work
             _lastSprite = sprite;
+            RefreshArtExclusion();                  // belt and braces behind the sprite-change callback
             _shadow.sprite = sprite;
 
             // The PIVOT ANCHOR travels with the cell, so it is re-derived here and not on the throttled tick:
@@ -597,6 +689,7 @@ namespace HiddenHarbours.Art
         private void Tick()
         {
             if (_shadow == null || _caster == null) return;
+            RefreshArtExclusion();
 
             // The silhouette itself is synced in LateUpdate (see SyncSilhouette) so an animating caster
             // cannot lag it; this call still seeds it, which is what makes OnEnable's first tick correct.
