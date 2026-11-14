@@ -184,4 +184,12 @@ MonoBehaviour:
   BoardingFreeboardMetres: 9.26
   RailsBlockTheSide: 1
   ClimbAboardOnlyAtBoardingPoints: 0
-  BoardingPoints: []
+  BoardingPoints:
+  - Id: pilot_ladder_starboard
+    Kind: 0
+    DeckLocalMeters: {x: 8.7, y: 0}
+    ReachMetres: 0
+  - Id: pilot_ladder_port
+    Kind: 0
+    DeckLocalMeters: {x: -8.7, y: 0}
+    ReachMetres: 0
