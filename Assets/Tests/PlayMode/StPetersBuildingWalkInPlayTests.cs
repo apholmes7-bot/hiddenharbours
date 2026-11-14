@@ -28,6 +28,7 @@ namespace HiddenHarbours.Tests.PlayMode
         const string Region = "StPeters";
         const string Cleanup = "StPetersBuildingWalkCleanup";
         const float Arrive = 0.08f;
+        const float StairArrive = 0.005f;
         const float GridMetres = 0.2f;
         const float Clearance = 0.025f;
         const float StallSeconds = 1.5f;
@@ -201,7 +202,7 @@ namespace HiddenHarbours.Tests.PlayMode
                     InteriorStair up = stairs.Single(s => s.FromLevel == 0 && s.ToLevel == 1);
                     InteriorStair down = stairs.Single(s => s.FromLevel == 1 && s.ToLevel == 0);
                     Assert.That(stairs.Length, Is.EqualTo(2), building.name + " has a working pair of stairs");
-                    yield return Follow(PathToStair(building, up), building.name + " foot of stairs");
+                    yield return Follow(PathToStair(building, up), building.name + " foot of stairs", StairArrive);
                     Vector2 footOfStair = _body.position;
                     yield return PressStair(up, building);
                     AssertFloor(building, 1);
@@ -216,10 +217,15 @@ namespace HiddenHarbours.Tests.PlayMode
                     Assert.That(steps, Is.Not.Empty, building.name + " upper landing is not blocked");
                     yield return Walk(steps[0], building.name + " upper floor");
                     AssertFloor(building, 1);
-                    yield return Walk(landing, building.name + " back to stair head", 0.005f);
+                    yield return Walk(landing, building.name + " back to stair head", StairArrive);
+                    // The arrival point can be nearer another upstairs fixture. Walk to a point
+                    // where the ordinary resolver selects the down stair before pressing it.
+                    yield return Follow(PathToStair(building, down), building.name + " head of stairs", StairArrive);
+                    Vector2 headOfStair = _body.position;
                     yield return PressStair(down, building);
                     AssertFloor(building, 0);
-                    Assert.That(Vector2.Distance(_body.position, footOfStair), Is.LessThan(0.02f));
+                    Assert.That(Vector2.Distance(_body.position, headOfStair - Vector2.up * building.UpperLevelY),
+                        Is.LessThan(0.02f), building.name + " descends from the actual stair press position");
                     climbed++;
                     // Plan the return against the live ground-floor furniture too.
                     yield return Follow(PathToDoor(building, further), building.name + " return to doorway");
@@ -343,7 +349,7 @@ namespace HiddenHarbours.Tests.PlayMode
             Assert.That(stair.IsAvailable, Is.True, stair.Id);
             var actor = new InteractActor(_body.position, Vector2.up, InteractContext.OnFoot);
             Assert.That(InteractResolver.TryResolveNow(actor, InteractResolver.DefaultFacingArcDegrees, out IInteractable best), Is.True);
-            Assert.That(best, Is.SameAs(stair), "The ordinary interact press finds this stair");
+            Assert.That(best, Is.SameAs(stair), building.name + ": the ordinary interact press finds " + stair.Id);
             best.Interact(actor);
             float budget = GameServices.StairClimbSeconds * 4f + 1f;
             while (building.IsClimbing && budget > 0f)
@@ -358,7 +364,11 @@ namespace HiddenHarbours.Tests.PlayMode
         }
 
         List<Vector2> PathToStair(BuildingInterior building, InteriorStair stair) =>
-            FindPath(building, at => Vector2.Distance(at, stair.WorldPosition) <= stair.ReachMeters - Arrive * 1.25f);
+            // Reach alone is insufficient: another fixture can be nearer and win the press.
+            // Keep every live candidate in the resolver and fail if no clear route selects this stair.
+            FindPath(building, at => Vector2.Distance(at, stair.WorldPosition) <= stair.ReachMeters - Arrive * 1.25f &&
+                InteractResolver.TryResolveNow(new InteractActor(at, Vector2.up, InteractContext.OnFoot),
+                    InteractResolver.DefaultFacingArcDegrees, out IInteractable best) && ReferenceEquals(best, stair));
 
         List<Vector2> PathToDoor(BuildingInterior building, Vector2 door) =>
             FindPath(building, at => Vector2.Distance(at, door) < GridMetres && Clear(at, door))
@@ -407,13 +417,13 @@ namespace HiddenHarbours.Tests.PlayMode
             return null;
         }
 
-        IEnumerator Follow(List<Vector2> path, string why)
+        IEnumerator Follow(List<Vector2> path, string why, float arrival = Arrive)
         {
             while (path.Count > 0)
             {
                 int next = path.Count - 1;
                 while (next > 0 && !Clear(_body.position, path[next])) next--;
-                yield return Walk(path[next], why);
+                yield return Walk(path[next], why, arrival);
                 path.RemoveRange(0, next + 1);
             }
         }
