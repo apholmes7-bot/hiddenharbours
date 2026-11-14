@@ -1,0 +1,14 @@
+{
+  "name": "Cormorant",
+  "rig": "cormorantIsoRig.js",
+  "global": "CormorantIso",
+  "sprite": "cormorant",
+  "plate": {
+    "rows": [
+      { "ground": "rock", "items": [["gull","stand",0],["gull","perch",0],["bird","stand",0],["bird","stand",1],["bird","perch",0],["bird","dry",0],["bird","dry",2],["bird","takeoff",0],["bird","land",2]] },
+      { "ground": "sea", "items": [["gull","float",0],["bird","float",0],["bird","float",1],["bird","dive",0],["bird","dive",1],["bird","dive",2],["bird","dive",3],["bird","surface",0],["bird","surface",1],["bird","surface",2]] },
+      { "ground": "air", "alt": 26, "items": [["gull","fly",1],["gull","glide",0],["bird","fly",1],["bird","fly",4],["bird","glide",0],["bird","patter",0,0],["bird","patter",1,0],["bird","splash",0,0],["bird","splash",1,0]] }
+    ],
+    "signature": { "anim": "dry", "frame": 0, "ground": "rock" }
+  }
+}
