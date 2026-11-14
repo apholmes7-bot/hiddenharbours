@@ -19,14 +19,14 @@ namespace HiddenHarbours.Tests.CoopSpike
     public sealed class CoopSpikeDevBootTests
     {
         private CoopDevStart _boot;
-        private ISaveService _previousSave;
+        private CoopSaveServiceScope _saveScope;
         private string _previousSceneName;
         private bool _previousRunInBackground;
 
         [UnitySetUp]
         public IEnumerator SetUp()
         {
-            _previousSave = GameServices.Save;
+            _saveScope = new CoopSaveServiceScope();
             _previousSceneName = SceneManager.GetActiveScene().name;
             _previousRunInBackground = Application.runInBackground;
             CoopNetworkTest.AssertNoNetworkManagers();
@@ -150,6 +150,10 @@ namespace HiddenHarbours.Tests.CoopSpike
             Assert.That(clock != null, Is.True, "Destroying the bootstrap must suffice while the core is still alive.");
             yield return TearDown();
             Assert.That(SceneManager.GetActiveScene().name, Is.EqualTo(_previousSceneName));
+            Assert.That(Object.FindAnyObjectByType<SaveService>(), Is.Not.Null,
+                "The next ordinary fixture needs the run's bootstrapped save service.");
+            Assert.That(UnityEngine.InputSystem.InputSystem.actions, Is.Not.Null,
+                "The next ordinary fixture needs the project-wide input actions.");
 
             GameServices.Save = new MemorySave();
             yield return SceneManager.LoadSceneAsync("Assets/_Project/Scenes/StPeters.unity", LoadSceneMode.Single);
@@ -186,7 +190,7 @@ namespace HiddenHarbours.Tests.CoopSpike
             var start = SceneManager.GetSceneByName("StPeters");
             if (start.IsValid() && start.isLoaded) yield return SceneManager.UnloadSceneAsync(start);
             GameServices.Reset();
-            GameServices.Save = _previousSave is Object prior && prior == null ? new MemorySave() : _previousSave;
+            _saveScope?.Restore();
             Application.runInBackground = _previousRunInBackground;
             CoopNetworkTest.AssertNoNetworkManagers();
         }
