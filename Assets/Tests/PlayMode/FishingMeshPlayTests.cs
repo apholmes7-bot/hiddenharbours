@@ -145,6 +145,11 @@ namespace HiddenHarbours.Tests.PlayMode
         internal IEnumerator RunDigMeshSequence()
         {
             Rig rig = NewFishingRig(out var animator);
+            // One frame first. The dig is not a sprite performance: the body sprite it falls back to is
+            // the gait cell IsoCharacterSprite writes in its LateUpdate, and a rig never stepped has no
+            // cell yet (its OnEnable ran before Configure), so a fallback in the build frame reads as
+            // "nobody". Rod beats need no wait because the fishing animator writes its own cell.
+            yield return null;
             PoseMove(rig, false);
             rig.Config.MeshFishingAndDig = false;
             EventBus.Publish(new JuiceMomentCue(JuiceMoment.DigStrike, Vector2.zero, 1f));
