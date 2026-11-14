@@ -402,7 +402,10 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.That(pad.Name, Is.EqualTo(NineMileCreekRoads.StationForecourtName),
                 "the forecourt must be in NineMileCreekRoads.Pads(), or NineMileCreekFields.IsGrassGround " +
                 "will grow the meadow up between the pumps");
-            Assert.That(pad.Area, Is.EqualTo(apron));
+            // NMC H9 moved this pin: the one gas bar is the fuel stop on Wharf Road now, so the pad is the ground THAT
+            // stands on. The old apron above is still the old layout's own arithmetic, and is no longer paved.
+            Assert.That(pad.Area, Is.EqualTo(HiddenHarbours.App.Editor.NineMileCreekWharfLandSide.ForecourtArea()));
+            Assert.That(pad.Area.Overlaps(apron), Is.False, "the pad still paves the old station's apron");
         }
 
         // =============================================================================================
