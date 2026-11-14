@@ -167,6 +167,20 @@ walks the glass on whatever hull is under you — **bare brow → depth sounder 
 consoled hulls × three brow states, no shop, no purchase. Purchasing and shopfronts are a separate,
 deferred piece of work; this is dev *visibility* only.
 
+**Maximum starting fit (helm plan slice 5).** `GameConfig.DevAllHelmInstruments` is on by default
+(Inspector: "Dev: all instruments at the helm"). In the editor and development builds a fresh relay
+starts at fish finder, best supported compass, radar, GPS and best supported wind grade. Skiff consoles
+take the dome compass and wind dial; Novi and Cape take the flush compass and wind display. Skiffs
+still refuse radar and GPS. Wind capability is data only here: no wind face or band layout is added,
+and the authored default wind fit stays empty. Hulls without a console stay bare.
+
+`K` still walks fish finder → bare → depth → fish finder. `Shift+K` walks both pilot stations → radar
+→ as-owned → GPS → both. Stated pilot steps can hide bought or default stations so each can be viewed
+alone; as-owned restores the real pilot deck. Compass and wind stay at their supported maximum.
+Turning the config switch off immediately restores the entire authored and bought fit and disables
+both dev keys. Turning it back on resumes the in-memory ring choices. Release builds compile out the
+override call and compile the combined gate to false, regardless of the asset or diagnostic flag.
+
 **Why a cycle and not "dev owns everything".** The brow is ONE cutout and `EffectiveFit` deliberately lets
 the fish finder WIN it over the depth sounder. Granting every instrument id at once would therefore make
 the plain sounder permanently unreachable — it would hide instruments rather than reveal them. A cycle is
@@ -175,10 +189,11 @@ instruments than the hull ships: the Novi and Cape consoles carry a sounder in t
 so "show me a bare brow" is unreachable by owning less and the resolved fit is clamped instead.
 
 **Nothing it does is a purchase.** The step widens the relay's per-read *scratch* owned-id list and
-narrows the *resolved* `HelmFit`. It never calls `InstrumentLocker`, so no dev convenience can reach the
-player's save (rule 5, and a PlayMode guard asserts `SaveData.HullInstruments` is untouched across a full
-cycle). It is gated on `HelmControlRelay.DevIgnoreEquipmentGating` — the one dev predicate in the system,
-false outside the editor / a development build — so the key is dead in a shipped build.
+narrows the *resolved* `HelmFit`. It never writes through `InstrumentLocker`, so no dev convenience can
+reach the player's save. `DevAllInstrumentsNeverTouchesTheSaveTests` drives the relay and both cycles
+against a disposable save, compares disk bytes and the complete live save, and detects even an
+identical re-save. `DevAllInstrumentsReleaseGuardTests` pins the production compile guards. Keys and
+fit share `HelmControlRelay.DevAllInstrumentsEnabled`, including the owner switch and release guard.
 
 **The chosen tier CARRIES across an `F`-swap** (it lives on the relay, which rides the one persistent
 boat): set the finder once, then walk the fleet comparing the same instrument across four dashes. A
