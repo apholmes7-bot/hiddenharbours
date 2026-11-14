@@ -1467,6 +1467,20 @@ ask, 2026-08-06.) Built as **one rule the player can read off the water**, not a
 
 ---
 
+### 9.12 Cabin doorway reversals
+
+The door's authored crossing settle prevents repeated inside/outside changes while the player
+remains in its measured doorway band. On the first step out of that band, an unambiguous position
+on either side of the wall decides the cabin state immediately, even before the settle expires or
+after the movement key is released. A quick step in and turn back must leave a player standing on
+deck counted outside. The crossing tick retains its band contact so a next-tick reversal also works.
+
+At the wall line itself the settle and held-key rules still apply. Door-open, floor-height, entry
+policy and entry-landing checks remain required. The same hull-local decision uses every door's
+measured width; no additional tuning is needed. `BoatCabinPassageDecisionTests` covers the pure
+decision for the 0.529 m opening and a wide opening, in both directions, and
+`BoatCabinDoorWalkthroughTests` pins its connection to the cabin state.
+
 ## 10. Open questions
 
 1. **Direct boat control vs point-to-move (mobile).** Do we offer **full manual** throttle+helm (best for P1 skill, harder on touch) and an optional **assisted/auto-pilot-to-waypoint** for transits/accessibility — and where exactly does autopilot disengage near danger? Likely both, with autopilot for known-safe transits and manual demanded in tide/weather pinch points. Needs UX prototyping.

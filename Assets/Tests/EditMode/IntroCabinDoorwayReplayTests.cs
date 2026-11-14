@@ -175,7 +175,7 @@ namespace HiddenHarbours.Tests.EditMode
                                : $"walked out at {r.FirstCross:0.000} s against {OpeningSeconds} s");
 
         [Test]
-        public void S6_TheDoorwayNeverCrossesHerByItself_AndNeverTwiceInAFifteenthOfASecond()
+        public void S6_TheDoorwayNeverCrossesHerByItself_AndSettlesWhileSheStaysInTheBand()
         {
             // The held-input runs: a key held one way crosses her at most once, and never twice in 0.15 s.
             Verdict("S6 (held)", TheMatrix.Where(r => !r.R.LeanOnly), r => r.S6,
@@ -248,8 +248,9 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         /// <summary>S6's standing runs on one hull. Standing idle in the doorway for 5 s: no crossing. Dithering
-        /// the key toward and away from it every 1, 2, 4 or 8 ticks: crossings only with the key reversed, never
-        /// two within 0.15 s. And after a real crossing with the key released on its tick: no crossing back.
+        /// the key toward and away from it every 1, 2, 4 or 8 ticks: no two crossings within 0.15 s while
+        /// she stays in the band. Leaving it must resolve her actual side, even before that settle.
+        /// And after a real crossing with the key released on its tick: no crossing back while standing.
         /// Returns how many runs it judged; each red is added to <paramref name="reds"/>.</summary>
         private static int StandAndDither(Hull hull, List<Condition> conditions, float[] rates, List<string> reds)
         {
@@ -286,18 +287,34 @@ namespace HiddenHarbours.Tests.EditMode
                                 Vector2 toward = ScreenOf(hull, rig.Below ? hull.Out : -hull.Out, c.Heading,
                                                           rig.Below).normalized;
                                 var crossings = new List<float>();
+                                bool invalidShortGap = false;
                                 int ticks = Mathf.RoundToInt(IdleSeconds / dt);
                                 for (int i = 0; i < ticks; i++)
                                 {
                                     Vector2 move = dither == 0 ? Vector2.zero
                                                  : (i / dither) % 2 == 0 ? toward : -toward;
                                     bool below = rig.Below;
+                                    bool wasInBand = BoatCabinThreshold.IsInBand(hull.Door, rig.Point);
                                     rig.Step(move, dt);
-                                    if (rig.Below != below) crossings.Add(rig.Time);
+                                    bool leftBand = wasInBand && !BoatCabinThreshold.IsInBand(hull.Door, rig.Point);
+                                    float past = BoatCabinThreshold.PastTheWallLine(hull.Wall, hull.Out, rig.Point);
+                                    bool departedOnAClearSide = leftBand
+                                        && Mathf.Abs(past) > BoatCabinThreshold.OnTheWallLineMetres;
+                                    bool matchesSide = rig.Below == (past < 0f);
+                                    if (departedOnAClearSide && !matchesSide)
+                                        reds.Add($"{hull.Name} {c.Name} {hz:0} Hz, {name}: left the band " +
+                                                 $"at {rig.Time:0.000} s with stale cabin state");
+                                    if (rig.Below != below)
+                                    {
+                                        if (crossings.Count > 0
+                                            && rig.Time - crossings[crossings.Count - 1] < CrossingGapSeconds
+                                            && !(departedOnAClearSide && matchesSide)) invalidShortGap = true;
+                                        crossings.Add(rig.Time);
+                                    }
                                 }
                                 judged++;
                                 float gap = MinGap(crossings);
-                                if (dither == 0 ? crossings.Count > 0 : gap < CrossingGapSeconds)
+                                if (dither == 0 ? crossings.Count > 0 : invalidShortGap)
                                     reds.Add($"{hull.Name} {c.Name} {hz:0} Hz, {name}, " +
                                              (dither == 0 ? "idle" : $"dithered every {dither} ticks") +
                                              $": {crossings.Count} crossings, the closest two {gap:0.000} s apart");

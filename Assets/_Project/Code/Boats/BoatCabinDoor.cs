@@ -120,8 +120,9 @@ namespace HiddenHarbours.Boats
         /// <summary>
         /// <b>Seconds since this doorway last took her</b> — the settle (owner ruling D1, 2026-09-30,
         /// which retired the latch this replaces). A crossing sets it to zero and her walker's own ticks
-        /// run it up; the doorway will not take her again until it reaches the door's
-        /// <see cref="BoatInteriorDoor.CrossingSettleSeconds"/>.
+        /// run it up; within the band the doorway will not take her again until it reaches the door's
+        /// <see cref="BoatInteriorDoor.CrossingSettleSeconds"/>. Leaving the band instead resolves her
+        /// actual side of the wall immediately, so a quick turn back cannot leave her counted inside.
         ///
         /// <para><b>⚠ It lives HERE, on the door, and not on either walker — that is the point.</b> The
         /// sole and the deck are two frames either side of ONE hole in ONE wall: a walker who crosses in
@@ -133,7 +134,7 @@ namespace HiddenHarbours.Boats
         /// one key and held it met a doorway that would not have her. The key now says which way she means
         /// to go (<see cref="BoatCabinThreshold.IsHeldThrough"/>), so standing in the doorway crosses
         /// nobody, and the only strobe left to stop is a key rocked back and forth on the sill — which a
-        /// sixth of a second stops, and a player walking back through on purpose never meets.</para>
+        /// sixth of a second stops while she remains in the doorway.</para>
         ///
         /// <para>Starts SETTLED (infinite): nothing about a freshly wired door says it has just taken
         /// anybody. The arrival opens with her standing in Armand's doorway, and it is her key, not a
@@ -631,10 +632,10 @@ namespace HiddenHarbours.Boats
         ///
         /// <para><b>The gates, in the order they are asked</b> (owner ruling D1, 2026-09-30: <i>"in the
         /// band with the key pointing through, she goes"</i>). The leaf must be standing open and still;
-        /// she must be IN the band, or have stepped out of it this tick; the doorway must have settled since
-        /// it last took her; she must be
+        /// she must be IN the band, or have stepped out of it this tick; she must be
         /// standing on the sill's own floor, when the walker says which floor that is
-        /// (<see cref="TryWalkThroughAt"/>); her key must point through it — out of the room, or into it
+        /// (<see cref="TryWalkThroughAt"/>). Leaving the band resolves her actual side of the wall.
+        /// Otherwise the doorway must have settled and her key must point through it — out of the room, or into it
         /// from the deck (<see cref="BoatCabinThreshold.IsHeldThrough"/>); she must have reached the wall
         /// line from her side (<see cref="BoatCabinThreshold.HasReachedTheWallLine"/>), or stand pressed
         /// against her floor's edge short of it (<see cref="BoatCabinThreshold.IsPressedShort"/>); and going IN she
@@ -705,41 +706,32 @@ namespace HiddenHarbours.Boats
             // The settle runs on her walker's own ticks, whatever else this tick decides.
             _sinceCrossingSeconds += Mathf.Max(0f, deltaSeconds);
 
-            float pastBefore = _pastTheLineBefore;
-            _pastTheLineBefore = float.NaN;
-            if (!IsOpen || IsCueing) return false;
-
-            // In the band, or out of it by this one tick's step: her floor's clamp slides her along the
-            // wall in the same tick she meets it, so a key whose straight line meets the wall line inside
-            // the band can end that tick just past its edge — and whether the doorway took her would hang on
-            // the frame rate (the fleet's lobster boats, a key 42° off: through at 144 Hz, never at 60).
-            // One tick and no more: the record below is kept only while she stands in the band.
-            bool inBand = BoatCabinThreshold.IsInBand(door, hullLocalMetres);
-            if (!inBand && float.IsNaN(pastBefore)) return false;
-            if (!MeasureTheWall()) return false;
-
-            // Where she stands along the axis, kept on every tick she is in the doorway — the settle
-            // included — so the tick it lets her go already knows whether her floor has stopped her.
-            float pastNow = BoatCabinThreshold.PastTheWallLine(_wallPoint, _outward, hullLocalMetres);
-            if (inBand) _pastTheLineBefore = pastNow;
-            if (_sinceCrossingSeconds < door.CrossingSettle) return false;
+            if (!IsOpen || IsCueing || !MeasureTheWall())
+            {
+                _pastTheLineBefore = float.NaN;
+                return false;
+            }
 
             // Standing over the doorway on another floor is not standing in it (the Phase A finding —
             // see ICabinThresholdAtHeight).
             if (floorKnown && !BoatCabinThreshold.IsOnTheSill(door, floorZMetres, _interior.Def.FloorTolerance))
+            {
+                _pastTheLineBefore = float.NaN;
                 return false;
+            }
 
             bool goingIn = WouldEnter;
             if (!goingIn && _entryKind == BoatCabinEntryKind.Landing && _interior.EntryLandingDoor != door)
+            {
+                _pastTheLineBefore = float.NaN;
                 return false;
-            if (!BoatCabinThreshold.IsHeldThrough(door, _outward, goingIn, heldHullLocal)) return false;
-            if (!BoatCabinThreshold.HasReachedTheWallLine(_wallPoint, _outward, goingIn, hullLocalMetres)
-                && !BoatCabinThreshold.IsPressedShort(pastBefore, pastNow, goingIn))
+            }
+            if (!BoatCabinThreshold.ShouldPass(door, _wallPoint, _outward, goingIn, hullLocalMetres,
+                                              heldHullLocal, _sinceCrossingSeconds, ref _pastTheLineBefore))
                 return false;
             if (goingIn && !BoatInteriorEntryPolicy.MayOffer(_interior)) return false;
 
             _sinceCrossingSeconds = 0f;
-            _pastTheLineBefore = float.NaN;
 
             if (!goingIn) return _interior.TryExit();
 
