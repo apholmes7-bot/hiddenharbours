@@ -245,15 +245,15 @@ namespace HiddenHarbours.Tests.PlayMode
                 }
                 rows.Add($"{renderer.name}\t{kind}\t{renderer.sortingOrder}\t{renderer.transform.position}");
             }
+            Directory.CreateDirectory(Output);
+            File.WriteAllLines(Path.Combine(Output, "census-" + scene + ".tsv"),
+                new[] { $"before\t{before}\nafter\t{total}\nvillagers\t{villagers}\nhouses\t{houses}\npier\t{piers}", "name\tclass\torder\tposition" }.Concat(rows));
             Assert.That(total, Is.GreaterThanOrEqualTo(totalFloor), scene + ": total standing-caster floor");
             Assert.That(villagers, Is.GreaterThanOrEqualTo(villagerFloor), scene + ": villager floor");
             Assert.That(houses, Is.GreaterThanOrEqualTo(houseFloor), scene + ": house floor");
             Assert.That(piers, Is.GreaterThanOrEqualTo(pierFloor), scene + ": pier face/deck floor");
             Assert.That(excluded, Is.Zero, scene + ": water, seabed and shade must have no caster" +
                 (forbiddenCasters == null ? string.Empty : "\nForbidden casters:\n" + string.Join("\n", forbiddenCasters)));
-            Directory.CreateDirectory(Output);
-            File.WriteAllLines(Path.Combine(Output, "census-" + scene + ".tsv"),
-                new[] { $"before\t{before}\nafter\t{total}\nvillagers\t{villagers}\nhouses\t{houses}\npier\t{piers}", "name\tclass\torder\tposition" }.Concat(rows));
         }
 
         static string DescribeForbiddenCaster(SpriteRenderer renderer, SunCasterRules rules)
