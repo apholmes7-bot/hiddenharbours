@@ -31,6 +31,8 @@ namespace HiddenHarbours.App.Editor
         public const string FuelStopKeyScenePath = "Assets/_Project/Data/KeyScenes/KeyScene_nmc_fuel_stop.asset";
         public const string RoadStationPath = "Assets/_Project/Data/FuelStations/Route91Station.asset";
         const string FuelStopKitPrefix = "fuelStopRig";
+        /// <summary>The row whose roof goes thin over the player (<see cref="CanopySeeThrough"/>).</summary>
+        public const string CanopyRowId = "station.nmc_canopy";
 
         /// <summary>
         /// The id map (Decision 2, `Evidence~/nmc-h9/id-map.md`): the drawn nozzle (row, anchor) → the fixture id and the
@@ -123,8 +125,9 @@ namespace HiddenHarbours.App.Editor
             return new Vector3(at.x, at.y, local.z);
         }
 
-        /// <summary>A set piece's picture, sorting, placement record and walls, as <see cref="PlaceRows"/> writes its own.</summary>
-        static void SetPieceParts(KeyScenePiece row, SetPieceDef def, Func<string, long> allocate, long pieceGo, ObjRef material,
+        /// <summary>A set piece's picture, sorting, placement record and walls, as <see cref="PlaceRows"/> writes its own.
+        /// Returns the picture's renderer.</summary>
+        static long SetPieceParts(KeyScenePiece row, SetPieceDef def, Func<string, long> allocate, long pieceGo, ObjRef material,
             List<long> comps, List<(string name, string text)> parts)
         {
             int frame = SetPieceDef.FrameForRigDir(row.Dir);
@@ -148,6 +151,70 @@ namespace HiddenHarbours.App.Editor
                 long collider = allocate("walls"); comps.Add(collider);
                 parts.Add((row.Id + "/walls", PolygonColliderYaml(collider, pieceGo, walls)));
             }
+            return renderer;
+        }
+
+        /// <summary>
+        /// <b>The canopy's see-through</b> (the owner's ruling of 11-14: "add see through rule to canopy"), on the
+        /// project's one building cutaway rule, <see cref="BuildingInterior"/>: its shell is the canopy's own picture and
+        /// its room a ghost of the same picture at the forecourt data's alpha, so while the player (or the seat of the
+        /// vehicle they drive, which <c>ControlSwitcher</c> stands them on) is under the roof the roof goes thin, and it
+        /// comes back when they leave. The room is the ground the roof hides on screen: the deck's width, from its south
+        /// edge on the ground to its north edge raised by the roof's height (the Def's bounds, projected by
+        /// <see cref="IsoGround.HeightScale"/>), plus the data's margin all round. No walls, no doorway: a canopy is open
+        /// on every side. Returns the child's transform.
+        /// </summary>
+        static long CanopySeeThrough(KeyScenePiece row, SetPieceDef def, long shell, ObjRef material, Func<string, long> allocate,
+            List<(string name, string text)> wanted, long pieceTr)
+        {
+            NineMileCreekRoadNetwork.Forecourt lot = NineMileCreekRoadNetwork.Load().Forecourt
+                ?? throw new Refusal(FuelStopStep + ": the road network carries no forecourt, so the canopy has no see-through data.");
+            Rect under = CanopyUnder(row, def, lot.CanopyMarginMetres);
+            long go = allocate("seeThrough/go"), tr = allocate("seeThrough/tr"), ghost = allocate("seeThrough/ghost"), rule = allocate("seeThrough/rule");
+            int frame = SetPieceDef.FrameForRigDir(row.Dir);
+            int order = YSortSprite.OrderFor(row.At.y, SortingBands.DecorBase, SortingBands.OrdersPerMetre, SortingBands.DecorFloor, SortingBands.DecorCeiling);
+            string ghostYaml = SpriteRendererYaml(ghost, go, material, SpriteAsset(def.SpriteFor(frame)), order)
+                .Replace("  m_Enabled: 1", "  m_Enabled: 0")
+                .Replace("  m_Color: {r: 1, g: 1, b: 1, a: 1}", "  m_Color: {r: 1, g: 1, b: 1, a: " + F(lot.CanopyGhostAlpha) + "}");
+            if (!ghostYaml.Contains("  m_Enabled: 0") || !ghostYaml.Contains("a: " + F(lot.CanopyGhostAlpha) + "}"))
+                throw new Refusal(FuelStopStep + ": the canopy's ghost renderer did not take its hidden state and alpha.");
+            wanted.Add((row.Id + "/seeThrough/go", GameObjectYaml(go, "seeThrough", new[] { tr, ghost, rule })));
+            wanted.Add((row.Id + "/seeThrough/tr", TransformYaml(tr, go, under.center - row.At, Array.Empty<long>(), pieceTr)));
+            wanted.Add((row.Id + "/seeThrough/ghost", ghostYaml));
+            wanted.Add((row.Id + "/seeThrough/rule", MonoBehaviourYaml(rule, go,
+                Script("Assets/_Project/Code/World/BuildingInterior.cs", "HiddenHarbours.World", "HiddenHarbours.World.BuildingInterior"),
+                new[] { "  _shell: {fileID: " + Id(shell) + "}", "  _room: {fileID: " + Id(ghost) + "}", "  _props: {fileID: 0}",
+                    "  _upperRoom: {fileID: 0}", "  _upperProps: {fileID: 0}", "  _upperWalls: {fileID: 0}", "  _upperLevelY: 0",
+                    "  _occupant: {fileID: 0}", "  _widthMetres: " + F(under.width), "  _lengthMetres: " + F(under.height),
+                    "  _facing: 0", "  _facings: 1", "  _groundDepthScale: 1", "  _wallThicknessMetres: 0",
+                    "  _hysteresisMetres: " + F(lot.CanopyHysteresisMetres), "  _doorwayWidthMetres: 0", "  _doorOnPlusY: 0", "  _doorAcrossMetres: 0" })));
+            return tr;
+        }
+
+        /// <summary>The ground under the canopy's roof on screen, in world metres: the deck's footprint (the Def's bounds
+        /// about the row) stretched north by the roof's height as the camera draws it, and <paramref name="margin"/> all
+        /// round. The rule's room (<see cref="CanopySeeThrough"/>).</summary>
+        public static Rect CanopyUnder()
+        {
+            NineMileCreekRoadNetwork.Forecourt lot = NineMileCreekRoadNetwork.Load().Forecourt
+                ?? throw new Refusal(FuelStopStep + ": the road network carries no forecourt.");
+            KeyScenePiece row = FuelStopKeyScene().Pieces.Single(p => p.Id == CanopyRowId);
+            return CanopyUnder(row, FuelStopDefinition(row), lot.CanopyMarginMetres);
+        }
+
+        /// <summary>A placed fuel stop row's drawn point in world metres (x, y) with its height (z): the tests' read of
+        /// where a pump stands.</summary>
+        public static Vector3 FuelStopRowAnchor(string rowId, string anchor) =>
+            RowAnchor(FuelStopKeyScene().Pieces.Single(p => p.Id == rowId), anchor);
+
+        /// <summary>The canopy rule's ground for the canopy row as the key scene places it (see the overload).</summary>
+        public static Rect CanopyUnder(KeyScenePiece row, SetPieceDef def, float margin)
+        {
+            Vector2 a = row.At + SetPieceDef.ToWorld(new Vector2(def.BoundsMin.x, def.BoundsMin.y), row.Dir);
+            Vector2 b = row.At + SetPieceDef.ToWorld(new Vector2(def.BoundsMax.x, def.BoundsMax.y), row.Dir);
+            float x0 = Mathf.Min(a.x, b.x) - margin, x1 = Mathf.Max(a.x, b.x) + margin;
+            float y0 = Mathf.Min(a.y, b.y) - margin, y1 = Mathf.Max(a.y, b.y) + def.BoundsMax.z * IsoGround.HeightScale + margin;
+            return Rect.MinMaxRect(x0, y0, x1, y1);
         }
 
         /// <summary>
@@ -195,9 +262,15 @@ namespace HiddenHarbours.App.Editor
                         Script("Assets/_Project/Code/World/GullPerch.cs", "HiddenHarbours.World", "HiddenHarbours.World.GullPerch"),
                         new[] { "  _id: " + row.Id, "  _groundPoint: " + Vec2Yaml(row.At), "  _sortY: " + F(row.At.y) })));
                 }
-                else SetPieceParts(row, FuelStopDefinition(row), k => Alloc(row.Id + "/" + k), pieceGo, material, comps, parts);
+                var pieceChildren = new List<long>();
+                if (row.Kind != KeySceneDef.KindGull)
+                {
+                    long shell = SetPieceParts(row, FuelStopDefinition(row), k => Alloc(row.Id + "/" + k), pieceGo, material, comps, parts);
+                    if (row.Id == CanopyRowId)
+                        pieceChildren.Add(CanopySeeThrough(row, FuelStopDefinition(row), shell, material, k => Alloc(row.Id + "/" + k), parts, pieceTr));
+                }
                 wanted.Add((row.Id + "/go", GameObjectYaml(pieceGo, row.Id, comps)));
-                wanted.Add((row.Id + "/tr", TransformYaml(pieceTr, pieceGo, at, Array.Empty<long>(), tr)));
+                wanted.Add((row.Id + "/tr", TransformYaml(pieceTr, pieceGo, at, pieceChildren, tr)));
                 wanted.AddRange(parts); children.Add(pieceTr);
                 if (OnFuelStopKit(row)) children.AddRange(Lamps(row, FuelStopDefinition(row), Alloc, wanted, tr));
             }

@@ -3,6 +3,12 @@
  "what": "The Route 91 fuel stop's lot (NMC H9, the owner's ruling of 11-14: a mix of concrete and asphalt with painted lines for parking and lanes, pump pads). World metres, y north; laid from the fuel stop kit's site plan (docs/art/rigs/fuel-stop/nmcFuelStop.js NETS, key scene = site + (-174, 87)). tools/nmc-roads/network.cjs copies it into the network's forecourt section, expanding the bays into stall lines; tools/nmc-roads/bake-chunks.cjs lays its routes after the network's and paints its lines, bays and arrows onto them. Every route is a kit v4 route: cls is the kit class it inherits from and the keys after it override that class.",
  "area": "inside NineMileCreekWharfLandSide.ForecourtArea(), except the lot's south edge, which reaches entrySouthOverlap into Wharf Road's carriage (the entry), and the exit, which runs into the stream lane",
  "entrySouthOverlap": 0.5,
+ "canopySeeThrough": {
+  "why": "the owner's 11-14 'add see through rule to canopy': while the player, or the vehicle they drive, is under the roof, the roof is drawn at ghostAlpha (BuildingInterior's shell-to-room swap, the room a ghost of the roof); the ground under it is the deck's footprint stretched north by the roof's drawn height, plus marginMetres; leaving takes hysteresisMetres more than arriving",
+  "ghostAlpha": 0.3,
+  "marginMetres": 0.5,
+  "hysteresisMetres": 0.3
+ },
  "routes": [
   {
    "id": "lot.nmc_fuel_ground",
