@@ -94,12 +94,24 @@ def read_results(stream):
         if node.tag == "test-case":
             outcome = node.get("result", "UNKNOWN")
             summary.counts[outcome] += 1
+            # A namespace-wide NUnit SetUpFixture can replace the Assembly node's
+            # type/fullname; Unity retains its assembly filename in name.
             assembly = next((parent.get("name", "") for parent in reversed(stack)
-                             if parent.tag == "test-suite" and parent.get("type") == "Assembly"), "")
+                             if parent.tag == "test-suite" and
+                             (parent.get("type") == "Assembly" or
+                              (parent.get("type") == "SetUpFixture" and
+                               parent.get("name", "").endswith(".dll")))), "")
             assembly = assembly.replace("\\", "/").rsplit("/", 1)[-1].removesuffix(".dll")
             summary.assemblies.setdefault(assembly, Counter())[outcome] += 1
             if assembly.startswith("HiddenHarbours."):
-                summary.project_classes.setdefault(node.get("classname", ""), Counter())[outcome] += 1
+                # Inherited methods name their declaring base class on the case;
+                # the enclosing fixture identifies the class that actually ran.
+                classname = next((parent.get("classname") or parent.get("fullname", "")
+                                  for parent in reversed(stack) if parent.tag == "test-suite" and
+                                  parent.get("type") == "TestFixture" and
+                                  (parent.get("classname") or parent.get("fullname"))),
+                                 node.get("classname", ""))
+                summary.project_classes.setdefault(classname, Counter())[outcome] += 1
             if outcome == "Failed" and len(summary.failures) < MAX_FAILURES:
                 failure = node.find("failure")
                 details = []

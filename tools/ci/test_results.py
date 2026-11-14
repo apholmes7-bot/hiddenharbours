@@ -140,6 +140,22 @@ class ProjectCoverageTests(unittest.TestCase):
         cases = [c.replace('type="Assembly"', 'type="TestFixture"') for c in self.cases]
         self.assertIn("project cases 0 below required 1405", self.problems(cases))
 
+    def test_global_setup_fixture_keeps_its_assembly_identity(self):
+        cases = [c.replace('type="Assembly"', 'type="SetUpFixture" fullname="GlobalSetup"')
+                 for c in self.cases]
+        self.assertEqual(self.problems(cases), [])
+        cases.append(assembly_case("Unity.Netcode.Runtime.Tests").replace(
+            'type="Assembly"', 'type="SetUpFixture" fullname="PackageSetup"'))
+        self.assertEqual(self.problems(cases), ["excluded package assembly Unity.Netcode.Runtime.Tests contains 1 cases"])
+
+    def test_inherited_case_counts_towards_the_executing_fixture(self):
+        cls = "HiddenHarbours.Tests.CoopSpike.CoopSpikeNetworkTests"
+        inherited = self.cases[-1].replace('<test-suite type="TestFixture">',
+                    f'<test-suite type="TestFixture" classname="{cls}" fullname="{cls}">')
+        inherited = inherited.replace(f'<test-case classname="{cls}"',
+                    '<test-case classname="HiddenHarbours.Tests.CoopSpike.CoopNetworkTest"')
+        self.assertEqual(self.problems(self.cases[:-1] + [inherited]), [])
+
     def test_skipped_ordinary_cases_remain_in_the_project_total(self):
         cases = [c.replace('result="Passed"', 'result="Skipped"') for c in self.cases[:1393]] + self.cases[1393:]
         summary = results.read_results(xml(cases))
