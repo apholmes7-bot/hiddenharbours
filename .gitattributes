@@ -243,6 +243,13 @@ docs/art/rigs/modern3500-kit/README.md                text eol=lf
 docs/art/rigs/modern3500-kit/reference/SHA256SUMS.txt text eol=lf
 docs/art/rigs/gameplay/vehicles/modern3500.rig.gameplay.json text eol=lf
 
+# The wind dial rig (docs/art/rigs/ui/wind-dial/) stamps derivedFromRigSha256 in its sidecar over the
+# rig as LF bytes, and Evidence~/wind-dial/check-sidecar.js compares the sidecar byte for byte. Same
+# reasoning as the kits above. Named files: the folder ships no binaries today, but a rule by name
+# cannot catch one tomorrow.
+docs/art/rigs/ui/wind-dial/Art/windRig.js          text eol=lf
+docs/art/rigs/ui/wind-dial/windRig.sidecar.json    text eol=lf
+
 # Shell scripts run under bash, which chokes on CR. The gauntlet in tools/gauntlet is the seat's
 # merge battery; a checkout with autocrlf on would otherwise hand it back with CRLF and it would not start.
 *.sh                    text eol=lf
