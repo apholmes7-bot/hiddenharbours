@@ -188,6 +188,12 @@ namespace HiddenHarbours.Boats
                  "neither: one oar is worse than none.")]
         public HiddenHarbours.Core.HullPropMeshDef OarStarMesh = null;
 
+        [Tooltip("THE OAR SPLASH (owner ruling 2026-11-13): the droplets a rowing blade throws as it " +
+                 "enters the water and the foam it leaves where it works. Drawn only on a hull whose " +
+                 "oars are mesh fittings, only while they are being rowed. Feel dials — safe to tune; " +
+                 "Enabled off rows dry.")]
+        public OarSplashConfig OarSplash = OarSplashConfig.Default;
+
         [Header("Outboard motor (OPTIONAL — the hull's engine, drawn)")]
         [Tooltip("Motor LOWER sheet (leg + plate + skeg + prop), element [heading·MotorColumnCount + col]. " +
                  "Col 0 = full port, the middle col = dead ahead, the last = full starboard. When COMPLETE " +
