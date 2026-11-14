@@ -194,23 +194,23 @@ content-validation test already makes for Def integrity.
 3. **Should the island store ever be the better sale?** A market-day swing that occasionally beats the
    wharf would reward reading the calendar — but it also weakens the crossing's pull. Recommend **no** for
    M1; revisit in M2 when there are more channels.
-4. **When is bait spent — at the bite, or only on a landed fish?** Your §10.2 thought, still tentative and
-   still flagged OFF. **§7 below is the check you asked for**, with the numbers: the recommendation is to
-   flip it **ON**, and there is a middle path costed if you want a miss to keep biting.
+4. **When is bait spent — at the bite, or only on a landed fish?** Resolved for now on 2026-11-13:
+   the shipped asset is **ON**, spending one bait only on a landed catch. The switch remains available
+   for play review. **§7 below records the economy check**; §7.9 gives an explicit dory-day example.
 
 ---
 
 ## 7. The bait-spend flag — the check §10.2 was gated on
 
-> **Added 2026-07-30 by `economy-sim`.** `GameConfig.BaitSpentOnCatchOnly` shipped **OFF** in #341 and
-> has not moved; nothing in this PR changes it. The owner's §10.2 thought — *"perhaps bait is only lost
-> after catching a fish"* — was recorded as **tentative** and flagged to this lane because flipping it
-> changes bait's real cost per fish, which is a pacing dial. This is that check.
+> **Current policy (2026-11-14):** `GameConfig.BaitSpentOnCatchOnly` is **ON** in the shipped asset,
+> following the 2026-11-13 approval for now. Teases, missed strikes, lost fights and unlicensed
+> releases spend no bait; a landed catch spends one. OFF remains the bite-time alternative and the
+> C# / missing-config fallback. Prices and lot sizes are unchanged.
 >
-> Every figure below comes out of `Assets/Tests/EditMode/BaitEconomyPacingTests.cs`, which drives the
-> **real `BiteSequenceSim` over the real `Data/Bites/*.asset`** and reads prices off the real Defs.
-> Re-run it after any bite or bait re-tune and the table regenerates. It is also a **guard**: the pins
-> in it go red when these numbers stop being true.
+> **Historical economy check, added 2026-07-30:** §§7.1–7.8 record the original OFF-to-ON comparison.
+> Its simulation figures came from `BaitEconomyPacingTests`, driving the real `BiteSequenceSim` over
+> the authored BiteDefs. The price and pool caveats below still apply; these tables have not been
+> regenerated for this flag change. §7.9 is an illustrative calculation, not a new simulation run.
 
 ### 7.1 The two modes, as arithmetic
 
@@ -218,8 +218,8 @@ Bait leaves the box once per event; *which* event is the whole question.
 
 | Mode | Bait per **landed** fish |
 |---|---|
-| **OFF** (shipped) — spend at the BITE | `1 ÷ P(land \| bite)` |
-| **ON** (§10.2) — spend at the LANDED catch | `1`, always |
+| **OFF** (legacy alternative) — spend at the BITE | `1 ÷ P(land \| bite)` |
+| **ON** (shipped asset) — spend at the LANDED catch | `1`, always |
 
 `P(land | bite) = P(hook) × P(win the fight) × P(allowed to land it)`. Everything below is the
 consequence of that reciprocal: **OFF multiplies a consumable cost by the player's failure rate.**
@@ -352,7 +352,7 @@ lane's.** Costed here so the option is on the table with a number against it; no
 
 ### 7.7 Recommendation
 
-**Flip `BaitSpentOnCatchOnly` ON.** In order of weight:
+**Original recommendation: flip `BaitSpentOnCatchOnly` ON — now applied for play review.** In order of weight:
 
 1. **The reciprocal is the defect, not the principle.** A cost of `1 ÷ P(land)` is unbounded in
    inexperience — 16.7 baits per haddock, 12.9 per fish on an opening-day blend. The owner deliberately
@@ -380,4 +380,26 @@ the owner's §10.4 diegetic bait-choosing ties one on. Which is exactly why it i
 deciding is free today and expensive after the store, the prices and the tutorial beats are built
 against the wrong number.
 
-**Still the owner's call, in play, as ruled.** This lane's job was the number; the number is 12.9.
+**The 2026-11-13 ruling accepts ON for now, subject to play review.** The earlier 12.9 figure belongs
+to the historical blend above, not a measurement of the current outing.
+
+### 7.9 Enabled policy — an illustrative dory day
+
+The authored dory has **6 hold units** (`Dory.asset`, `HoldUnits`). Capelin is **2₲ per bait**
+(`Capelin.asset`, `Price`); its asset has no lot override, so the existing `BaitDef.LotSize = 10`
+default makes a purchase **20₲ for ten**. These values are unchanged.
+
+Assume a licensed fisher fills that hold with six fish from **eight bite-bearing casts**: a 75%
+land rate chosen for this example, **not telemetry or a probability authored in a Def**. OFF spends
+eight bait (16₲); ON spends six (12₲): **4₲ / 25% less bait cost for the outing**. One unit buys
+**1 → 1.33 bite-bearing casts** on average; a ten-unit lot buys **10 → 13.33** at that rate. The
+landed catch still costs exactly one unit. Casts that attract no fish were already free in both modes.
+More generally, with bite probability `q` per cast and conditional land probability `p`, expected
+casts per bait change from `1/q` to `1/(q*p)`; there is no fixed raw-casts figure in the assets.
+
+**Economy-sim recommendation:** keep bait price and lot/stack size as they are for this switch.
+Cheaper mistakes are the intended P5 change; measure actual outings before compensating with a
+price increase. No price, stack or spawn tuning is included. Configured-stock tests cover both
+modes; existing scene rods with no bait configured still spend none (§7.8). Physical bait selection
+is separate work, so the example describes the configured bait economy rather than claiming a
+new live bait-selection flow.

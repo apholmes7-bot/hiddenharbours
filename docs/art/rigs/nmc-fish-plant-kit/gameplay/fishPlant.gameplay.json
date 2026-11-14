@@ -1,0 +1,1577 @@
+{
+ "schema": "hidden-harbours/nmc-set-piece@1",
+ "generatedBy": "NmcFishPlant 1.0.0",
+ "derivedFromRigSha256": "a83ae8687592de43902259157195ecc4ff3128f36d850f4844f08623e37f32d9",
+ "key": "fishPlant",
+ "id": "structure.nmc_fish_plant",
+ "name": "The fish plant",
+ "defType": "SetPieceDef",
+ "scene": null,
+ "units": "metres, the piece’s own frame: +x right, +y the show face, +z up from its ground point (the pivot)",
+ "bounds": {
+  "x": [
+   -27,
+   24.42
+  ],
+  "y": [
+   -14.5,
+   15.25
+  ],
+  "z": [
+   0,
+   10.56
+  ]
+ },
+ "layer": "raised",
+ "walk": "solid",
+ "mount": "ground",
+ "colliders": [
+  {
+   "type": "polygon",
+   "blocks": "walk",
+   "pts": [
+    [
+     -24,
+     -14
+    ],
+    [
+     24,
+     -14
+    ],
+    [
+     24,
+     14
+    ],
+    [
+     -24,
+     14
+    ]
+   ]
+  }
+ ],
+ "facings": [
+  {
+   "dir": 0,
+   "showFaces": "N",
+   "bearingDeg": 0,
+   "cameraSees": "its back"
+  },
+  {
+   "dir": 1,
+   "showFaces": "NW",
+   "bearingDeg": 315,
+   "cameraSees": "its back"
+  },
+  {
+   "dir": 2,
+   "showFaces": "W",
+   "bearingDeg": 270,
+   "cameraSees": "the show face, edge-on or at a diagonal"
+  },
+  {
+   "dir": 3,
+   "showFaces": "SW",
+   "bearingDeg": 225,
+   "cameraSees": "the show face"
+  },
+  {
+   "dir": 4,
+   "showFaces": "S",
+   "bearingDeg": 180,
+   "cameraSees": "the show face"
+  },
+  {
+   "dir": 5,
+   "showFaces": "SE",
+   "bearingDeg": 135,
+   "cameraSees": "the show face"
+  },
+  {
+   "dir": 6,
+   "showFaces": "E",
+   "bearingDeg": 90,
+   "cameraSees": "the show face, edge-on or at a diagonal"
+  },
+  {
+   "dir": 7,
+   "showFaces": "NE",
+   "bearingDeg": 45,
+   "cameraSees": "its back"
+  }
+ ],
+ "cells": [
+  {
+   "dir": 0,
+   "w": 1653,
+   "h": 704,
+   "pivot": [
+    867,
+    403
+   ]
+  },
+  {
+   "dir": 1,
+   "w": 1766,
+   "h": 1213,
+   "pivot": [
+    882,
+    647
+   ]
+  },
+  {
+   "dir": 2,
+   "w": 960,
+   "h": 1211,
+   "pivot": [
+    492,
+    704
+   ]
+  },
+  {
+   "dir": 3,
+   "w": 1814,
+   "h": 1287,
+   "pivot": [
+    882,
+    722
+   ]
+  },
+  {
+   "dir": 4,
+   "w": 1653,
+   "h": 788,
+   "pivot": [
+    785,
+    471
+   ]
+  },
+  {
+   "dir": 5,
+   "w": 1766,
+   "h": 1272,
+   "pivot": [
+    884,
+    706
+   ]
+  },
+  {
+   "dir": 6,
+   "w": 960,
+   "h": 1211,
+   "pivot": [
+    468,
+    704
+   ]
+  },
+  {
+   "dir": 7,
+   "w": 1814,
+   "h": 1223,
+   "pivot": [
+    931,
+    657
+   ]
+  }
+ ],
+ "anchors": {
+  "door": [
+   -20,
+   15.2,
+   0
+  ],
+  "staffDoor": [
+   9,
+   15.2,
+   0
+  ],
+  "serviceDoor": [
+   19,
+   15.2,
+   0
+  ],
+  "refrigerationDoor": [
+   17,
+   -15.2,
+   0
+  ],
+  "counter": [
+   -14.5,
+   11,
+   0
+  ],
+  "intake1": [
+   -24,
+   0,
+   0
+  ],
+  "intake2": [
+   -24,
+   -8,
+   0
+  ],
+  "outbound": [
+   -24,
+   -12,
+   0
+  ],
+  "truckStop1": [
+   -24.5,
+   0,
+   0
+  ],
+  "truckStop2": [
+   -24.5,
+   -8,
+   0
+  ],
+  "truckAxle1": [
+   -26.5,
+   0,
+   0
+  ],
+  "truckAxle2": [
+   -26.5,
+   -8,
+   0
+  ],
+  "ice": [
+   -25.6,
+   5.2,
+   0
+  ],
+  "weigh": [
+   -16,
+   3,
+   0
+  ],
+  "lights": [
+   {
+    "id": "light.public_door",
+    "at": [
+     -20,
+     14.12,
+     2.42
+    ],
+    "kind": "door lamp",
+    "atPx": [
+     1425,
+     702.1
+    ]
+   },
+   {
+    "id": "light.staff_door",
+    "at": [
+     9,
+     14.12,
+     2.42
+    ],
+    "kind": "door lamp",
+    "atPx": [
+     497,
+     702.1
+    ]
+   },
+   {
+    "id": "light.service_door",
+    "at": [
+     19,
+     14.12,
+     2.52
+    ],
+    "kind": "door lamp",
+    "atPx": [
+     177,
+     699.7
+    ]
+   },
+   {
+    "id": "light.intake1",
+    "at": [
+     -24.15,
+     0,
+     3.86
+    ],
+    "kind": "dock lamp, under the canopy",
+    "atPx": [
+     1557.8,
+     376.4
+    ]
+   },
+   {
+    "id": "light.intake2",
+    "at": [
+     -24.15,
+     -8,
+     3.86
+    ],
+    "kind": "dock lamp, under the canopy",
+    "atPx": [
+     1557.8,
+     211.8
+    ]
+   },
+   {
+    "id": "light.outbound",
+    "at": [
+     -24.15,
+     -12,
+     3.86
+    ],
+    "kind": "dock lamp, under the canopy",
+    "atPx": [
+     1557.8,
+     129.5
+    ]
+   },
+   {
+    "id": "light.gable_flood",
+    "at": [
+     -24.15,
+     -3,
+     7.03
+    ],
+    "kind": "court floodlight at the east peak",
+    "atPx": [
+     1557.8,
+     237
+    ]
+   }
+  ],
+  "words": [
+   {
+    "id": "words.nmc_fish_plant",
+    "text": "",
+    "corners": [
+     [
+      -16.4,
+      14.63,
+      3.96
+     ],
+     [
+      -23.4,
+      14.63,
+      3.96
+     ],
+     [
+      -23.4,
+      14.63,
+      3.36
+     ],
+     [
+      -16.4,
+      14.63,
+      3.36
+     ]
+    ],
+    "note": "the board standing on the lean-to’s eave over the public door; the business has no name yet, blank in pictures",
+    "cornersPx": [
+     [
+      1309.8,
+      674.9
+     ],
+     [
+      1533.8,
+      674.9
+     ],
+     [
+      1533.8,
+      689.6
+     ],
+     [
+      1309.8,
+      689.6
+     ]
+    ]
+   },
+   {
+    "id": "words.nmc_fish_plant_notice",
+    "text": "",
+    "corners": [
+     [
+      -22.1,
+      14.05,
+      2
+     ],
+     [
+      -23.1,
+      14.05,
+      2
+     ],
+     [
+      -23.1,
+      14.05,
+      1.2
+     ],
+     [
+      -22.1,
+      14.05,
+      1.2
+     ]
+    ],
+    "note": "the delivery hours board by the door; the game’s to letter",
+    "cornersPx": [
+     [
+      1492.2,
+      711
+     ],
+     [
+      1524.2,
+      711
+     ],
+     [
+      1524.2,
+      730.6
+     ],
+     [
+      1492.2,
+      730.6
+     ]
+    ]
+   },
+   {
+    "id": "words.nmc_fish_plant_gable",
+    "text": "",
+    "corners": [
+     [
+      -24.07,
+      1.2,
+      5.75
+     ],
+     [
+      -24.07,
+      -7.2,
+      5.75
+     ],
+     [
+      -24.07,
+      -7.2,
+      6.75
+     ],
+     [
+      -24.07,
+      1.2,
+      6.75
+     ]
+    ],
+    "note": "the board on the east gable, toward the gate and Route 91; blank in pictures",
+    "cornersPx": [
+     [
+      1555.2,
+      354.7
+     ],
+     [
+      1555.2,
+      181.9
+     ],
+     [
+      1555.2,
+      157.4
+     ],
+     [
+      1555.2,
+      330.2
+     ]
+    ]
+   }
+  ],
+  "note": "truckStop is the rear bumper (brief u 0.5), truckAxle the rear axle (u 2.5); the truck’s nose points east, local -x",
+  "px": {
+   "door": [
+    1425,
+    783.7
+   ],
+   "staffDoor": [
+    497,
+    783.7
+   ],
+   "serviceDoor": [
+    177,
+    783.7
+   ],
+   "refrigerationDoor": [
+    241,
+    158.3
+   ],
+   "counter": [
+    1249,
+    697.3
+   ],
+   "intake1": [
+    1553,
+    471
+   ],
+   "intake2": [
+    1553,
+    306.4
+   ],
+   "outbound": [
+    1553,
+    224.2
+   ],
+   "truckStop1": [
+    1569,
+    471
+   ],
+   "truckStop2": [
+    1569,
+    306.4
+   ],
+   "truckAxle1": [
+    1633,
+    471
+   ],
+   "truckAxle2": [
+    1633,
+    306.4
+   ],
+   "ice": [
+    1604.2,
+    578
+   ],
+   "weigh": [
+    1297,
+    532.7
+   ]
+  }
+ },
+ "options": {
+  "text": "",
+  "doors": "closed",
+  "lights": true,
+  "cutaway": false
+ },
+ "light": {
+  "emitters": [
+   "lamp",
+   "rooflight",
+   "win"
+  ],
+  "when": "o.lit, from the game’s lamp rule (dusk to dawn; the plant while it works)"
+ },
+ "notes": "Stand it at dir 4 with its pivot on the building’s centre, world (-265, -40): the show face is the south wall. The windows, the roof lights and the lamps glow with o.lit (the lamp rule: dusk to dawn, and while the plant works). The doors on the south wall are drawn shut; a walk-in interior is a later pass (ADR 0036) and o.cutaway is its floor plan, not its art.",
+ "bake": {
+  "facings": [
+   4
+  ],
+  "note": "one facing: the plant never turns, and eight would not fit a 4096 sheet"
+ },
+ "site": {
+  "site": "A",
+  "frame": "u = world x + 241 (east), v = world y + 40 (north), metres",
+  "dir": 4,
+  "pivot": {
+   "brief": [
+    -24,
+    0
+   ],
+   "world": [
+    -265,
+    -40
+   ]
+  },
+  "rule": "brief u = pivot u - local x, brief v = pivot v - local y; world x = u - 241, world y = v - 40",
+  "anchors": {
+   "door": {
+    "local": [
+     -20,
+     15.2,
+     0
+    ],
+    "brief": [
+     -4,
+     -15.2
+    ],
+    "world": [
+     -245,
+     -55.2
+    ],
+    "z": 0
+   },
+   "staffDoor": {
+    "local": [
+     9,
+     15.2,
+     0
+    ],
+    "brief": [
+     -33,
+     -15.2
+    ],
+    "world": [
+     -274,
+     -55.2
+    ],
+    "z": 0
+   },
+   "serviceDoor": {
+    "local": [
+     19,
+     15.2,
+     0
+    ],
+    "brief": [
+     -43,
+     -15.2
+    ],
+    "world": [
+     -284,
+     -55.2
+    ],
+    "z": 0
+   },
+   "refrigerationDoor": {
+    "local": [
+     17,
+     -15.2,
+     0
+    ],
+    "brief": [
+     -41,
+     15.2
+    ],
+    "world": [
+     -282,
+     -24.8
+    ],
+    "z": 0
+   },
+   "counter": {
+    "local": [
+     -14.5,
+     11,
+     0
+    ],
+    "brief": [
+     -9.5,
+     -11
+    ],
+    "world": [
+     -250.5,
+     -51
+    ],
+    "z": 0
+   },
+   "intake1": {
+    "local": [
+     -24,
+     0,
+     0
+    ],
+    "brief": [
+     0,
+     0
+    ],
+    "world": [
+     -241,
+     -40
+    ],
+    "z": 0
+   },
+   "intake2": {
+    "local": [
+     -24,
+     -8,
+     0
+    ],
+    "brief": [
+     0,
+     8
+    ],
+    "world": [
+     -241,
+     -32
+    ],
+    "z": 0
+   },
+   "outbound": {
+    "local": [
+     -24,
+     -12,
+     0
+    ],
+    "brief": [
+     0,
+     12
+    ],
+    "world": [
+     -241,
+     -28
+    ],
+    "z": 0
+   },
+   "truckStop1": {
+    "local": [
+     -24.5,
+     0,
+     0
+    ],
+    "brief": [
+     0.5,
+     0
+    ],
+    "world": [
+     -240.5,
+     -40
+    ],
+    "z": 0
+   },
+   "truckStop2": {
+    "local": [
+     -24.5,
+     -8,
+     0
+    ],
+    "brief": [
+     0.5,
+     8
+    ],
+    "world": [
+     -240.5,
+     -32
+    ],
+    "z": 0
+   },
+   "truckAxle1": {
+    "local": [
+     -26.5,
+     0,
+     0
+    ],
+    "brief": [
+     2.5,
+     0
+    ],
+    "world": [
+     -238.5,
+     -40
+    ],
+    "z": 0
+   },
+   "truckAxle2": {
+    "local": [
+     -26.5,
+     -8,
+     0
+    ],
+    "brief": [
+     2.5,
+     8
+    ],
+    "world": [
+     -238.5,
+     -32
+    ],
+    "z": 0
+   },
+   "ice": {
+    "local": [
+     -25.6,
+     5.2,
+     0
+    ],
+    "brief": [
+     1.6,
+     -5.2
+    ],
+    "world": [
+     -239.4,
+     -45.2
+    ],
+    "z": 0
+   },
+   "weigh": {
+    "local": [
+     -16,
+     3,
+     0
+    ],
+    "brief": [
+     -8,
+     -3
+    ],
+    "world": [
+     -249,
+     -43
+    ],
+    "z": 0
+   },
+   "light.public_door": {
+    "local": [
+     -20,
+     14.12,
+     2.42
+    ],
+    "brief": [
+     -4,
+     -14.12
+    ],
+    "world": [
+     -245,
+     -54.12
+    ],
+    "z": 2.42
+   },
+   "light.staff_door": {
+    "local": [
+     9,
+     14.12,
+     2.42
+    ],
+    "brief": [
+     -33,
+     -14.12
+    ],
+    "world": [
+     -274,
+     -54.12
+    ],
+    "z": 2.42
+   },
+   "light.service_door": {
+    "local": [
+     19,
+     14.12,
+     2.52
+    ],
+    "brief": [
+     -43,
+     -14.12
+    ],
+    "world": [
+     -284,
+     -54.12
+    ],
+    "z": 2.52
+   },
+   "light.intake1": {
+    "local": [
+     -24.15,
+     0,
+     3.86
+    ],
+    "brief": [
+     0.15,
+     0
+    ],
+    "world": [
+     -240.85,
+     -40
+    ],
+    "z": 3.86
+   },
+   "light.intake2": {
+    "local": [
+     -24.15,
+     -8,
+     3.86
+    ],
+    "brief": [
+     0.15,
+     8
+    ],
+    "world": [
+     -240.85,
+     -32
+    ],
+    "z": 3.86
+   },
+   "light.outbound": {
+    "local": [
+     -24.15,
+     -12,
+     3.86
+    ],
+    "brief": [
+     0.15,
+     12
+    ],
+    "world": [
+     -240.85,
+     -28
+    ],
+    "z": 3.86
+   },
+   "light.gable_flood": {
+    "local": [
+     -24.15,
+     -3,
+     7.03
+    ],
+    "brief": [
+     0.15,
+     3
+    ],
+    "world": [
+     -240.85,
+     -37
+    ],
+    "z": 7.03
+   }
+  },
+  "colliders": [
+   [
+    [
+     -241,
+     -26
+    ],
+    [
+     -289,
+     -26
+    ],
+    [
+     -289,
+     -54
+    ],
+    [
+     -241,
+     -54
+    ]
+   ]
+  ]
+ },
+ "programme": {
+  "source": "docs/design/nmc-fish-plant-key-scene-brief.md section 1",
+  "frame": "u = world x + 241 (east), v = world y + 40 (north), metres",
+  "grossM2": 1344,
+  "floors": 1,
+  "zones": [
+   {
+    "key": "services",
+    "name": "Plant services",
+    "u": [
+     -48,
+     -38
+    ],
+    "v": [
+     -14,
+     -8
+    ],
+    "m2": 60,
+    "access": "outside-only service door",
+    "local": {
+     "x": [
+      14,
+      24
+     ],
+     "y": [
+      8,
+      14
+     ]
+    }
+   },
+   {
+    "key": "staffEntrance",
+    "name": "Staff entrance, changing and wash",
+    "u": [
+     -38,
+     -28
+    ],
+    "v": [
+     -14,
+     -8
+    ],
+    "m2": 60,
+    "access": "staff",
+    "local": {
+     "x": [
+      4,
+      14
+     ],
+     "y": [
+      8,
+      14
+     ]
+    }
+   },
+   {
+    "key": "staffRoom",
+    "name": "Staff room",
+    "u": [
+     -28,
+     -18
+    ],
+    "v": [
+     -14,
+     -8
+    ],
+    "m2": 60,
+    "access": "staff",
+    "local": {
+     "x": [
+      -6,
+      4
+     ],
+     "y": [
+      8,
+      14
+     ]
+    }
+   },
+   {
+    "key": "office",
+    "name": "Office",
+    "u": [
+     -18,
+     -8
+    ],
+    "v": [
+     -14,
+     -8
+    ],
+    "m2": 60,
+    "access": "public counter side",
+    "local": {
+     "x": [
+      -16,
+      -6
+     ],
+     "y": [
+      8,
+      14
+     ]
+    }
+   },
+   {
+    "key": "lobby",
+    "name": "Reception / delivery lobby",
+    "u": [
+     -8,
+     0
+    ],
+    "v": [
+     -14,
+     -8
+    ],
+    "m2": 48,
+    "access": "public",
+    "local": {
+     "x": [
+      -24,
+      -16
+     ],
+     "y": [
+      8,
+      14
+     ]
+    }
+   },
+   {
+    "key": "rawChill",
+    "name": "Raw chilled buffer",
+    "u": [
+     -48,
+     -34
+    ],
+    "v": [
+     -8,
+     -2
+    ],
+    "m2": 84,
+    "access": "staff",
+    "local": {
+     "x": [
+      10,
+      24
+     ],
+     "y": [
+      2,
+      8
+     ]
+    }
+   },
+   {
+    "key": "coldStore",
+    "name": "Finished cold store / freezing cell",
+    "u": [
+     -48,
+     -34
+    ],
+    "v": [
+     -2,
+     6
+    ],
+    "m2": 112,
+    "access": "staff",
+    "local": {
+     "x": [
+      10,
+      24
+     ],
+     "y": [
+      -6,
+      2
+     ]
+    }
+   },
+   {
+    "key": "lobster",
+    "name": "Lobster handling cell",
+    "u": [
+     -48,
+     -34
+    ],
+    "v": [
+     6,
+     10
+    ],
+    "m2": 56,
+    "access": "staff",
+    "local": {
+     "x": [
+      10,
+      24
+     ],
+     "y": [
+      -10,
+      -6
+     ]
+    }
+   },
+   {
+    "key": "freshLine",
+    "name": "Preparation / fresh fillet line",
+    "u": [
+     -34,
+     -18
+    ],
+    "v": [
+     -8,
+     0
+    ],
+    "m2": 128,
+    "access": "staff",
+    "local": {
+     "x": [
+      -6,
+      10
+     ],
+     "y": [
+      0,
+      8
+     ]
+    }
+   },
+   {
+    "key": "canning",
+    "name": "Processing / canning line",
+    "u": [
+     -34,
+     -18
+    ],
+    "v": [
+     0,
+     10
+    ],
+    "m2": 160,
+    "access": "staff",
+    "local": {
+     "x": [
+      -6,
+      10
+     ],
+     "y": [
+      -10,
+      0
+     ]
+    }
+   },
+   {
+    "key": "weighGrade",
+    "name": "Weigh and grade",
+    "u": [
+     -18,
+     -6
+    ],
+    "v": [
+     -8,
+     2
+    ],
+    "m2": 120,
+    "access": "delivery strip public, work area staff",
+    "local": {
+     "x": [
+      -18,
+      -6
+     ],
+     "y": [
+      -2,
+      8
+     ]
+    }
+   },
+   {
+    "key": "packing",
+    "name": "Packing",
+    "u": [
+     -18,
+     -6
+    ],
+    "v": [
+     2,
+     10
+    ],
+    "m2": 96,
+    "access": "staff",
+    "local": {
+     "x": [
+      -18,
+      -6
+     ],
+     "y": [
+      -10,
+      -2
+     ]
+    }
+   },
+   {
+    "key": "receivingAisle",
+    "name": "Front receiving aisle",
+    "u": [
+     -6,
+     0
+    ],
+    "v": [
+     -8,
+     -2
+    ],
+    "m2": 36,
+    "access": "public delivery route",
+    "local": {
+     "x": [
+      -24,
+      -18
+     ],
+     "y": [
+      2,
+      8
+     ]
+    }
+   },
+   {
+    "key": "intake1",
+    "name": "Intake I1",
+    "u": [
+     -6,
+     0
+    ],
+    "v": [
+     -2,
+     2
+    ],
+    "m2": 24,
+    "access": "delivery when the truck is stopped",
+    "local": {
+     "x": [
+      -24,
+      -18
+     ],
+     "y": [
+      -2,
+      2
+     ]
+    }
+   },
+   {
+    "key": "returns",
+    "name": "Returns / container wash",
+    "u": [
+     -6,
+     0
+    ],
+    "v": [
+     2,
+     6
+    ],
+    "m2": 24,
+    "access": "staff",
+    "local": {
+     "x": [
+      -24,
+      -18
+     ],
+     "y": [
+      -6,
+      -2
+     ]
+    }
+   },
+   {
+    "key": "intake2",
+    "name": "Intake I2",
+    "u": [
+     -6,
+     0
+    ],
+    "v": [
+     6,
+     10
+    ],
+    "m2": 24,
+    "access": "staff; shared with dispatch at other times",
+    "local": {
+     "x": [
+      -24,
+      -18
+     ],
+     "y": [
+      -10,
+      -6
+     ]
+    }
+   },
+   {
+    "key": "refrigeration",
+    "name": "Refrigeration / plant equipment",
+    "u": [
+     -48,
+     -34
+    ],
+    "v": [
+     10,
+     14
+    ],
+    "m2": 56,
+    "access": "exterior service access only",
+    "local": {
+     "x": [
+      10,
+      24
+     ],
+     "y": [
+      -14,
+      -10
+     ]
+    }
+   },
+   {
+    "key": "dryStore",
+    "name": "Dry store",
+    "u": [
+     -34,
+     -18
+    ],
+    "v": [
+     10,
+     14
+    ],
+    "m2": 64,
+    "access": "staff",
+    "local": {
+     "x": [
+      -6,
+      10
+     ],
+     "y": [
+      -14,
+      -10
+     ]
+    }
+   },
+   {
+    "key": "dispatch",
+    "name": "Finished dispatch staging",
+    "u": [
+     -18,
+     -6
+    ],
+    "v": [
+     10,
+     14
+    ],
+    "m2": 48,
+    "access": "staff",
+    "local": {
+     "x": [
+      -18,
+      -6
+     ],
+     "y": [
+      -14,
+      -10
+     ]
+    }
+   },
+   {
+    "key": "outbound",
+    "name": "Outbound dock",
+    "u": [
+     -6,
+     0
+    ],
+    "v": [
+     10,
+     14
+    ],
+    "m2": 24,
+    "access": "staff",
+    "local": {
+     "x": [
+      -24,
+      -18
+     ],
+     "y": [
+      -14,
+      -10
+     ]
+    }
+   }
+  ],
+  "openings": [
+   {
+    "status": "PROPOSED by the kit from the brief’s named route",
+    "axis": "u",
+    "c": -8,
+    "a": -11.6,
+    "b": -10.4,
+    "id": "lobby-office (the counter)"
+   },
+   {
+    "status": "PROPOSED by the kit from the brief’s named route",
+    "axis": "v",
+    "c": -8,
+    "a": -3.6,
+    "b": -2.4,
+    "id": "lobby-receiving aisle"
+   },
+   {
+    "status": "PROPOSED by the kit from the brief’s named route",
+    "axis": "u",
+    "c": -6,
+    "a": -5.6,
+    "b": -4.4,
+    "id": "receiving aisle-weigh and grade"
+   },
+   {
+    "status": "PROPOSED by the kit from the brief’s named route",
+    "axis": "v",
+    "c": -2,
+    "a": -3.6,
+    "b": -2.4,
+    "id": "receiving aisle-I1"
+   },
+   {
+    "status": "PROPOSED by the kit from the brief’s named route",
+    "axis": "u",
+    "c": -6,
+    "a": -1.5,
+    "b": 1.5,
+    "id": "I1-weigh and grade (the delivery strip)"
+   },
+   {
+    "status": "PROPOSED by the kit from the brief’s named route",
+    "axis": "v",
+    "c": 10,
+    "a": -3,
+    "b": -1.5,
+    "id": "outbound-I2 (the hand-carry aisle)"
+   }
+  ]
+ },
+ "doors": [
+  {
+   "id": "public",
+   "wall": "S",
+   "c": -4,
+   "w": 1.2,
+   "h": 2.2,
+   "kind": "half-glazed",
+   "zone": "lobby",
+   "brief": "public south door (-4,-14)",
+   "local": [
+    -20,
+    14,
+    0
+   ]
+  },
+  {
+   "id": "staff",
+   "wall": "S",
+   "c": -33,
+   "w": 1.1,
+   "h": 2.2,
+   "kind": "steel",
+   "zone": "staffEntrance",
+   "brief": "south threshold (-33,-14)",
+   "local": [
+    9,
+    14,
+    0
+   ]
+  },
+  {
+   "id": "service",
+   "wall": "S",
+   "c": -43,
+   "w": 2,
+   "h": 2.3,
+   "kind": "steel double",
+   "zone": "services",
+   "brief": "outside-only service door",
+   "local": [
+    19,
+    14,
+    0
+   ]
+  },
+  {
+   "id": "intake1",
+   "wall": "E",
+   "c": 0,
+   "w": 4,
+   "h": 3.6,
+   "kind": "roller",
+   "zone": "intake1",
+   "brief": "4 m facade opening centred v 0",
+   "local": [
+    -24,
+    0,
+    0
+   ]
+  },
+  {
+   "id": "intake2",
+   "wall": "E",
+   "c": 8,
+   "w": 4,
+   "h": 3.6,
+   "kind": "roller",
+   "zone": "intake2",
+   "brief": "4 m opening centred v 8",
+   "local": [
+    -24,
+    -8,
+    0
+   ]
+  },
+  {
+   "id": "outbound",
+   "wall": "E",
+   "c": 12,
+   "w": 2.5,
+   "h": 3,
+   "kind": "roller",
+   "zone": "outbound",
+   "brief": "door centred v 12 (its width is this kit’s: 2.5 m)",
+   "local": [
+    -24,
+    -12,
+    0
+   ]
+  },
+  {
+   "id": "refrigeration",
+   "wall": "N",
+   "c": -41,
+   "w": 1.1,
+   "h": 2.2,
+   "kind": "steel",
+   "zone": "refrigeration",
+   "brief": "exterior service access only",
+   "local": [
+    17,
+    -14,
+    0
+   ]
+  }
+ ]
+}

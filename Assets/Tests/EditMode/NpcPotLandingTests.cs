@@ -57,6 +57,28 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         [Test]
+        public void LandingVelocity_IsTheRoutesDerivative_AndZeroWhileSheStands()
+        {
+            NpcPotLanding plan = Build(4242, 2, out _, out _);
+            Assert.IsTrue(plan.HasLanding);
+            double ladder = plan.StartSeconds + 2 * _def.DeckWalkSeconds + _def.CrateLiftSeconds;
+            double climb = ladder + _def.LadderSeconds * 0.5;
+            double walk = ladder + _def.LadderSeconds + 1.0;
+            foreach (double t in new[] { plan.StartSeconds + _def.DeckWalkSeconds * 0.5, climb, walk })
+            {
+                const double sample = 0.125;
+                Vector2 measured = (plan.MomentAt(t + sample).Position - plan.MomentAt(t - sample).Position) / (float)(2 * sample);
+                NpcLandingMoment moment = plan.MomentAt(t);
+                Assert.That((moment.Velocity - measured).magnitude, Is.LessThan(0.001f));
+                Assert.AreEqual(moment.Velocity, plan.MomentAt(t).Velocity, "repeated seeks have no frame history");
+            }
+            Assert.That(plan.MomentAt(walk).Velocity.magnitude, Is.EqualTo(_def.LandingWalkSpeed).Within(0.001f));
+            Assert.AreEqual(Vector2.zero, plan.MomentAt(plan.StartSeconds + _def.DeckWalkSeconds + _def.CrateLiftSeconds * 0.5).Velocity);
+            Assert.AreEqual(Vector2.zero, plan.MomentAt(plan.SoldAtSeconds - _def.SaleSeconds * 0.5).Velocity);
+            Assert.AreEqual(Vector2.zero, plan.MomentAt(plan.EndSeconds).Velocity);
+        }
+
+        [Test]
         public void TheRoute_StartsAtTheTopOfHerLadder_AndEndsAtTheBuyersCounter()
         {
             Assert.IsNull(NpcPotLanding.Problem(_def), NpcPotLanding.Problem(_def));

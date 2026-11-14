@@ -58,6 +58,7 @@ namespace HiddenHarbours.Tests.EditMode
                 Assert.That(pb.Position, Is.EqualTo(pa.Position), $"boat at {t}");
                 Assert.That(pb.HeadingDegrees, Is.EqualTo(pa.HeadingDegrees), $"heading at {t}");
                 Assert.That(pb.Stage, Is.EqualTo(pa.Stage), $"stage at {t}");
+                Assert.That(pb.StageSeconds, Is.EqualTo(pa.StageSeconds), $"stage duration at {t}");
                 for (int i = 0; i < a.PotCount; i++)
                 {
                     NpcPotState sa = NpcPotDay.PotAt(a, ya, i, t), sb = NpcPotDay.PotAt(b, yb, i, t);
@@ -140,6 +141,7 @@ namespace HiddenHarbours.Tests.EditMode
                 if (i > 0) Assert.That(d.GaffStart[i], Is.GreaterThan(d.SetEnd[i - 1]), "one pot at a time");
 
                 Assert.That(d.PoseAt(d.GaffStart[i] + 0.01).Stage, Is.EqualTo(NpcPotBoatStage.Gaffing));
+                Assert.That(d.PoseAt(d.GaffStart[i] + 0.01).StageSeconds, Is.EqualTo(_def.GaffSeconds).Within(1e-6));
                 Assert.That(d.PoseAt(d.HaulStart[i] + 0.01).Stage, Is.EqualTo(NpcPotBoatStage.Hauling));
                 Assert.That(d.PoseAt(d.HaulEnd[i] + 0.01).Stage, Is.EqualTo(NpcPotBoatStage.DeckWork));
                 Assert.That(d.PoseAt(d.SetStart[i] + 0.01).Stage, Is.EqualTo(NpcPotBoatStage.Setting));

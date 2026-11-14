@@ -25,3 +25,4 @@ MonoBehaviour:
   SupportsFlushCompass: 0
   SupportsRadar: 0
   SupportsGps: 0
+  MaxWind: 1

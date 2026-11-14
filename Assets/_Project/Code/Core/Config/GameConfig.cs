@@ -16,6 +16,13 @@ namespace HiddenHarbours.Core
         [Tooltip("Maximum name length after trimming surrounding spaces.")]
         [Min(1)] public int PlayerNameMaxLength = DefaultPlayerNameMaxLength;
 
+        public const int DefaultTraitPicksPerCharacter = 2;
+
+        [Header("Character traits")]
+        [Tooltip("How many named traits a character picks (owner ruling 2026-11-14: two). The bonuses " +
+                 "themselves live on each TraitDef under Data/Resources/Traits.")]
+        [Min(0)] public int TraitPicksPerCharacter = DefaultTraitPicksPerCharacter;
+
         public const float DefaultCreatorFigureHeightFraction = 0.6f;
 
         [Header("Character creator view")]
@@ -548,13 +555,12 @@ namespace HiddenHarbours.Core
                  "dials only decide what counts as the player striking.")]
         public StrikeSettings Strike = StrikeSettings.Default;
 
-        [Header("Bait economy (owner drop §10.2 — a TENTATIVE ruling behind a flag)")]
-        [Tooltip("OFF (default): bait is spent at the BITE — something ate it, landed or not (the " +
-                 "2026-07-25 ruling; today's live behaviour). ON: bait is spent only on a LANDED " +
-                 "catch — the owner's tentative §10.2 reversal ('perhaps bait is only lost after " +
-                 "catching a fish'): teases, missed strikes, lost fights and unlicensed releases " +
-                 "cost time only. ⚠ Flagged to economy-sim — flipping this changes bait's real cost " +
-                 "per fish, which is a pacing dial (§7.4/§7.5).")]
+        [Header("Bait economy (switchable fishing-feel ruling)")]
+        [Tooltip("ON in the shipped GameConfig asset: spend one bait only on a LANDED catch. " +
+                 "Teases, missed strikes, lost fights and unlicensed releases cost time only. " +
+                 "OFF restores spending at the BITE, landed or not; new C# configs still default OFF. " +
+                 "Approved for now on 2026-11-13; keep switchable for play review. Changes bait's " +
+                 "real cost per fish (economy-sim pacing §7); does not change prices or lot sizes.")]
         public bool BaitSpentOnCatchOnly = false;
 
         [Header("Rod fight (Rod Fishing v2 — the deep→surface fight, cove defaults)")]
@@ -1164,6 +1170,12 @@ namespace HiddenHarbours.Core
         [Tooltip("The juice lane's tunables: the post-processing grade's blend curve (PR 1), and later " +
                  "the camera feel and the moment timings. Every field must exist in GameConfig.asset.")]
         public JuiceSettings Juice = JuiceSettings.Default;
+
+        [Header("Dev: all instruments at the helm")]
+        [Tooltip("In the editor and development builds, start each console at its best supported fit. " +
+                 "K and Shift+K still cycle the instruments. Turn off to rehearse the real owned fit. " +
+                 "Ignored in release builds; never buys instruments or changes the save.")]
+        public bool DevAllHelmInstruments = true;
 
         // Convenience
         /// <summary>
