@@ -1,0 +1,19 @@
+{
+  "editmode-results.xml": {
+    "minimum_project_cases": 17952,
+    "required_classes": {
+      "HiddenHarbours.Tests.CoopSpike.CoopBoatPresentationTests": 3,
+      "HiddenHarbours.Tests.CoopSpike.CoopChatInputTests": 8,
+      "HiddenHarbours.Tests.CoopSpike.CoopChatTests": 26,
+      "HiddenHarbours.Tests.CoopSpike.CoopSpikePlanTests": 21
+    }
+  },
+  "playmode-results.xml": {
+    "minimum_project_cases": 1410,
+    "required_classes": {
+      "HiddenHarbours.Tests.CoopSpike.CoopChatNetworkTests": 5,
+      "HiddenHarbours.Tests.CoopSpike.CoopSpikeDevBootTests": 2,
+      "HiddenHarbours.Tests.CoopSpike.CoopSpikeNetworkTests": 10
+    }
+  }
+}
