@@ -39,7 +39,7 @@ namespace HiddenHarbours.Tests.EditMode
 
         [Test]
         // NmcKeyScenes_Exist_AsUnplacedData_WithUniqueIdsAndResolvedRegion: premise moved in H6 PR 2, ruling 12.
-        public void NmcKeyScenes_Exist_AsData_OnlyTheWharfPlaced_WithUniqueIdsAndResolvedRegion()
+        public void NmcKeyScenes_Exist_AsData_OnlyTheWharfAndTheFuelStopPlaced_WithUniqueIdsAndResolvedRegion()
         {
             var regions = LoadAll<RegionDef>();
             var scenes = LoadAll<KeySceneDef>().FindAll(s => s.RegionId == "region.nine_mile_creek");
@@ -50,7 +50,8 @@ namespace HiddenHarbours.Tests.EditMode
                 string path = AssetDatabase.GetAssetPath(scene);
                 RegisterUniqueId(seen, scene.Id, path, nameof(KeySceneDef));
                 Assert.That(regions.Exists(r => r.Id == scene.RegionId), Is.True, scene.Id + " region");
-                Assert.That(scene.Placed, Is.EqualTo(scene.Id == "keyscene.nmc_wharf"), scene.Id);
+                // H9 Phase B moved this premise: the fuel stop's thirty rows are placed beside the wharf's.
+                Assert.That(scene.Placed, Is.EqualTo(scene.Id == "keyscene.nmc_wharf" || scene.Id == "keyscene.nmc_fuel_stop"), scene.Id);
                 Assert.That(scene.Source, Does.Contain("sha256"), scene.Id);
                 foreach (var piece in scene.Pieces)
                 {

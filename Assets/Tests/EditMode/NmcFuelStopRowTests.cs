@@ -12,7 +12,7 @@ namespace HiddenHarbours.Tests.EditMode
     /// NMC H9, one gas bar: the fuel stop's 30 rows, the eleven wharf rows that wait for its kit, the fuel ids the
     /// region has issued, and the guards that bite once the new forecourt is placed. Text reads only (the key scene
     /// assets, the owners record, the scene file and the kit's rig), so every case runs without the editor's
-    /// asset database. A guard whose subject has not landed yet ends in Assert.Ignore with the reason; it is never
+    /// asset database. A guard whose subject had not landed ended in Assert.Ignore with the reason until H9 Phase B landed it; it is never
     /// deleted, and it starts to bite on the commit that lands its subject.
     /// </summary>
     public class NmcFuelStopRowTests
@@ -176,9 +176,7 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.That(pump, Has.Count.EqualTo(1), RoadGasPump);
             var chain = scene.Ancestry(pump[0].GameObject);
             Assert.That(chain, Has.Member(Forecourt), RoadGasPump + " is not under " + Forecourt);
-            if (scene.HasGameObjectNamed(OldForecourt))
-                Assert.Ignore($"H9 Phase B: {OldForecourt} still stands and {RoadGasPump} hangs under it ({string.Join(" < ", chain)}); " +
-                              "this guard bites once the new forecourt carries the pump and the old one is retired by name.");
+            Assert.That(scene.HasGameObjectNamed(OldForecourt), Is.False, OldForecourt + " is retired by name in H9 Phase B");
             Assert.That(chain, Has.No.Member(OldForecourt));
         }
 
@@ -187,9 +185,6 @@ namespace HiddenHarbours.Tests.EditMode
         {
             var scene = SceneText.Load();
             var placed = scene.PlacedIds();
-            var landed = Thirty.Where(r => placed.ContainsKey(r.Id)).Select(r => r.Id).ToList();
-            if (landed.Count == 0)
-                Assert.Ignore("H9 Phase B places the fuel stop's 30 rows; none is in the scene at this commit (the kit's bake comes first).");
             foreach (var row in Thirty)
             {
                 Assert.That(placed.TryGetValue(row.Id, out var objects) ? objects.Count : 0, Is.EqualTo(1), row.Id + " placed once");
@@ -204,9 +199,6 @@ namespace HiddenHarbours.Tests.EditMode
         {
             var scene = SceneText.Load();
             var placed = scene.PlacedIds();
-            var landed = Eleven.Where(r => placed.ContainsKey(r.Id)).Select(r => r.Id).ToList();
-            if (landed.Count == 0)
-                Assert.Ignore("H9 Phase B places the eleven wharf rows that wait for the fuel stop kit; none is in the scene at this commit.");
             string record = File.ReadAllText(RecordPath);
             foreach (var row in Eleven)
             {
@@ -223,9 +215,6 @@ namespace HiddenHarbours.Tests.EditMode
             var defs = Directory.GetFiles(DefFolder, "*.asset")
                 .Select(f => (Id: TopField(f, "Id"), RigKey: TopField(f, "RigKey"), File: f.Replace('\\', '/'))).ToList();
             var asking = Rows(FuelStopPath).Concat(Rows(WharfPath)).Where(r => r.Kit.StartsWith(KitPrefix, StringComparison.Ordinal)).ToList();
-            var baked = asking.Where(r => defs.Any(d => d.RigKey == r.Piece)).ToList();
-            if (baked.Count == 0)
-                Assert.Ignore($"the fuel stop kit's bake has not landed: no SetPieceDef in {DefFolder} carries any of the {asking.Count} rows' ids.");
             foreach (var row in asking)
             {
                 var shared = new Dictionary<string, string> {

@@ -374,6 +374,10 @@ namespace HiddenHarbours.Tests.RigBaking
             var keyScene = AssetDatabase.LoadAssetAtPath<HiddenHarbours.World.KeySceneDef>("Assets/_Project/Data/KeyScenes/KeyScene_nmc_wharf.asset");
             var placed = new HashSet<string>(keyScene.PlacementIds);
             var h5 = keyScene.Pieces.Where(r => eligible.Contains(r.Id) && placed.Contains(r.Id)).ToArray();
+            // H9 Phase B moved this premise: the wharf's rows on the fuel stop kit (H6's ten and H5's ramp light) are placed too.
+            var fuelStop = keyScene.Pieces.Where(r => r.Kit != null && r.Kit.StartsWith("fuelStopRig", StringComparison.Ordinal)).ToArray();
+            Assert.That(fuelStop, Has.Length.EqualTo(11));
+            string[] alsoPlaced = h5.Select(r => r.Id).Union(fuelStop.Select(r => r.Id)).ToArray();
 
             string patched = Path.GetFullPath(Abs("Assets/_Project/Scenes/NineMileCreek.unity"));
             foreach (string scene in Directory.GetFiles(Abs("Assets/_Project/Scenes"), "*.unity", SearchOption.AllDirectories))
@@ -402,9 +406,9 @@ namespace HiddenHarbours.Tests.RigBaking
                 Assert.That(list.Success, Is.True, record);
                 string[] actual = Regex.Matches(list.Value, @"(?m)^  - ([^\r\n]+)").Cast<Match>().Select(m => m.Groups[1].Value).ToArray();
                 // seat ruling s9, 11-07: H5 places by Decision 4; the H6 hundred are a subset, and every other id is eligible H5.
-                Assert.That(actual.Length, Is.EqualTo(wharf ? placements.Length + h5.Length : 0), record);
+                Assert.That(actual.Length, Is.EqualTo(wharf ? placements.Length + alsoPlaced.Length : 0), record);
                 if (wharf) foreach (string id in placements) CollectionAssert.Contains(actual, id, record);
-                CollectionAssert.AreEquivalent(wharf ? h5.Select(r => r.Id).ToArray() : Array.Empty<string>(),
+                CollectionAssert.AreEquivalent(wharf ? alsoPlaced : Array.Empty<string>(),
                     actual.Except(placements).ToArray(), record);
             }
         }
