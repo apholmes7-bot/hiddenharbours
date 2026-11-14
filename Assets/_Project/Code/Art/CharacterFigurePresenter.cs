@@ -372,7 +372,8 @@ namespace HiddenHarbours.Art
             // its reason (DrawnStance reports the SHEETS' coverage, not what the person is doing).
             CharacterStance stance = character.Stance;
             CharacterGait gait = character.Gait;
-            if (!CharacterSkinStateMap.Resolve(skin, stance, gait, out string stateKey, out bool fellBack))
+            if (!CharacterSkinStateMap.Resolve(skin, stance, gait, out string stateKey, out bool fellBack) ||
+                (character.RequireExactFigureState && fellBack))
             {
                 _refusalStance = stance;
                 _refusalGait = gait;
@@ -465,10 +466,30 @@ namespace HiddenHarbours.Art
             if (skin == null) { Stop(Refusal.NoSkin); return; }
             if (!IsUsable(skin)) { _refusalSkin = skin; Stop(Refusal.SkinUnusable); return; }
 
-            // Stance as REQUESTED, exactly as aboard (see there).
+            // An explicit ashore move follows its route's progress. It must keep the sprite if the
+            // requested clip is absent, never disguise a missing ladder pose as an idle mesh.
+            CharacterClip move = CharacterClip.None;
+            float progress = 0f;
+            bool driven = stand is ICharacterFigureAshoreClipStand clipStand &&
+                          clipStand.TryGetFigureClip(out move, out progress);
+            string stateKey;
+            bool fellBack = false;
             CharacterStance stance = character.Stance;
             CharacterGait gait = character.Gait;
-            if (!CharacterSkinStateMap.Resolve(skin, stance, gait, out string stateKey, out bool fellBack))
+            if (driven)
+            {
+                stateKey = CharacterClipStateMap.StateKeyFor(move);
+                if (stateKey == null || !skin.TryGetClip(stateKey, out var moveClip) ||
+                    !moveClip.KeysWellFormed(skin.BoneCount))
+                {
+                    _refusalStance = stance;
+                    _refusalGait = gait;
+                    Stop(Refusal.NoClipForState);
+                    return;
+                }
+            }
+            else if (!CharacterSkinStateMap.Resolve(skin, stance, gait, out stateKey, out fellBack) ||
+                     (character.RequireExactFigureState && fellBack))
             {
                 _refusalStance = stance;
                 _refusalGait = gait;
@@ -527,7 +548,9 @@ namespace HiddenHarbours.Art
             // key moves the loop's phase off her neighbours' (aboard's phase is untouched).
             double clipStart = clip.Loop ? 0d : _ashoreStateStartSeconds;
             int seed = GameServices.Environment != null ? GameServices.Environment.WorldSeed : 0;
-            int frame = CharacterSkinPose.FrameFor(clip, AshorePhaseSeed(seed, _keyHash), now, clipStart);
+            int frame = driven
+                ? Mathf.Clamp(Mathf.FloorToInt(Mathf.Clamp01(progress) * clip.FrameCount), 0, clip.FrameCount - 1)
+                : CharacterSkinPose.FrameFor(clip, AshorePhaseSeed(seed, _keyHash), now, clipStart);
 
             // Her facing: her sprite's own compass heading, through the def's MEASURED azimuth sign. The
             // ashore frame is a hull frame at heading 0, where a deck bearing and a compass heading are the
