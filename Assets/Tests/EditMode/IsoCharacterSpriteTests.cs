@@ -175,18 +175,28 @@ namespace HiddenHarbours.Tests.EditMode
         [Test]
         public void SuspendClaimsAreCounted_SoOverlappingClaimantsCannotUnsuspendEarly()
         {
+            var countProperty = typeof(IsoCharacterSprite).GetProperty(nameof(IsoCharacterSprite.SuspensionCount));
+            Assert.IsNotNull(countProperty, "the claim count is public across assembly boundaries");
+            Assert.IsFalse(countProperty.CanWrite, "only Suspend and Release can change the claim count");
             var go = new GameObject("Character");
             try
             {
                 go.AddComponent<SpriteRenderer>();
                 var iso = go.AddComponent<IsoCharacterSprite>();
 
-                iso.Suspend(); iso.Suspend();
+                Assert.AreEqual(0, iso.SuspensionCount);
+                iso.Suspend();
+                Assert.AreEqual(1, iso.SuspensionCount);
+                iso.Suspend();
+                Assert.AreEqual(2, iso.SuspensionCount);
                 iso.Release();
+                Assert.AreEqual(1, iso.SuspensionCount);
                 Assert.IsTrue(iso.IsSuspended, "one claimant is still holding it");
                 iso.Release();
+                Assert.AreEqual(0, iso.SuspensionCount);
                 Assert.IsFalse(iso.IsSuspended);
                 iso.Release();
+                Assert.AreEqual(0, iso.SuspensionCount);
                 Assert.IsFalse(iso.IsSuspended, "an extra release is harmless, never negative");
             }
             finally { Object.DestroyImmediate(go); }

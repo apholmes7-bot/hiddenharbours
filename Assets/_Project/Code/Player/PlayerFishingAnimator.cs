@@ -37,6 +37,21 @@ namespace HiddenHarbours.Player
     /// </summary>
     public static class PlayerFishingAnimMath
     {
+        public const string DigStateKey = "dig";
+
+        /// <summary>The existing sprite pose's baked skin clip. No independent phase mapping.</summary>
+        public static string StateKeyFor(FishingPose pose) => pose switch
+        {
+            FishingPose.Hold => "hold",
+            FishingPose.CastBack => "castBack",
+            FishingPose.CastRelease => "castRelease",
+            FishingPose.Bite => "bite",
+            FishingPose.Strike => "strike",
+            FishingPose.Reel => "reel",
+            FishingPose.Land => "land",
+            _ => null,
+        };
+
         /// <summary>
         /// The pose for a published phase: <see cref="FishingPhase.WindBack"/> scrubs the castBack
         /// sheet, <see cref="FishingPhase.Cast"/> plays the release once,
@@ -167,7 +182,7 @@ namespace HiddenHarbours.Player
     /// </summary>
     [DisallowMultipleComponent]
     [RequireComponent(typeof(SpriteRenderer))]
-    public sealed class PlayerFishingAnimator : MonoBehaviour
+    public sealed partial class PlayerFishingAnimator : MonoBehaviour
     {
         /// <summary>The bake's direction-row count — the character iso kit contract (8 compass rows).</summary>
         public const int Directions = 8;
@@ -270,12 +285,15 @@ namespace HiddenHarbours.Player
             _row = Directions / 2;   // South — facing the camera until the state says otherwise
             EventBus.Subscribe<FishingStateChanged>(OnFishingStateChanged);
             EventBus.Subscribe<InnerVoiceCue>(OnInnerVoiceCue);
+            EventBus.Subscribe<JuiceMomentCue>(OnDigStrike);
         }
 
         private void OnDisable()
         {
             EventBus.Unsubscribe<FishingStateChanged>(OnFishingStateChanged);
             EventBus.Unsubscribe<InnerVoiceCue>(OnInnerVoiceCue);
+            EventBus.Unsubscribe<JuiceMomentCue>(OnDigStrike);
+            _digElapsed = -1f;
             _bigOneHooked = false;
             EndPose();   // disabling mid-fight hands the renderer back (never a stuck frame)
         }
@@ -319,6 +337,7 @@ namespace HiddenHarbours.Player
 
         private void Update()
         {
+            AdvanceDig(Time.unscaledDeltaTime);
             Vector3 pos = transform.position;
             if (_pose == FishingPose.None && !IsPosed(_phase))
             {

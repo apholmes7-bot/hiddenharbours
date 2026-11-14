@@ -594,3 +594,4 @@ MonoBehaviour:
     SideRadiusHalfBeams: 0.3
     SideReach: 0.7
   DevAllHelmInstruments: 1
+  MeshFishingAndDig: 1
