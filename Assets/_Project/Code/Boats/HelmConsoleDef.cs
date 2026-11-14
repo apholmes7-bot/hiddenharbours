@@ -40,8 +40,7 @@ namespace HiddenHarbours.Boats
         [Header("Default fit — what this hull ships with")]
         [Tooltip("The sounder fitted out of the box (Depth = the basic read; None = bare brow).")]
         public SounderKind DefaultSounder = SounderKind.Depth;
-        [Tooltip("The compass fitted out of the box. Every shipped console fits one (the skiffs a dome, " +
-                 "the wheelhouses a flush), so no helm is left without a heading read.")]
+        [Tooltip("The compass fitted out of the box (usually None until the player buys one).")]
         public CompassMount DefaultCompass = CompassMount.None;
         public bool DefaultRadar = false;
         public bool DefaultGps = false;

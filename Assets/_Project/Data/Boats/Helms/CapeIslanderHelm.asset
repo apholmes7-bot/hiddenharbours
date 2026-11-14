@@ -16,7 +16,7 @@ MonoBehaviour:
   Rig: 4
   Lever: 1
   DefaultSounder: 1
-  DefaultCompass: 2
+  DefaultCompass: 0
   DefaultRadar: 0
   DefaultGps: 0
   SupportsFishFinder: 1
