@@ -16,6 +16,13 @@ namespace HiddenHarbours.Core
         [Tooltip("Maximum name length after trimming surrounding spaces.")]
         [Min(1)] public int PlayerNameMaxLength = DefaultPlayerNameMaxLength;
 
+        public const int DefaultTraitPicksPerCharacter = 2;
+
+        [Header("Character traits")]
+        [Tooltip("How many named traits a character picks (owner ruling 2026-11-14: two). The bonuses " +
+                 "themselves live on each TraitDef under Data/Resources/Traits.")]
+        [Min(0)] public int TraitPicksPerCharacter = DefaultTraitPicksPerCharacter;
+
         public const float DefaultCreatorFigureHeightFraction = 0.6f;
 
         [Header("Character creator view")]
@@ -1175,6 +1182,12 @@ namespace HiddenHarbours.Core
         [Tooltip("The juice lane's tunables: the post-processing grade's blend curve (PR 1), and later " +
                  "the camera feel and the moment timings. Every field must exist in GameConfig.asset.")]
         public JuiceSettings Juice = JuiceSettings.Default;
+
+        [Header("Dev: all instruments at the helm")]
+        [Tooltip("In the editor and development builds, start each console at its best supported fit. " +
+                 "K and Shift+K still cycle the instruments. Turn off to rehearse the real owned fit. " +
+                 "Ignored in release builds; never buys instruments or changes the save.")]
+        public bool DevAllHelmInstruments = true;
 
         // Convenience
         /// <summary>

@@ -509,6 +509,7 @@ MonoBehaviour:
   CutTheHelmRoomAtTheWheel: 1
   StairClimbSeconds: 0.5
   PlayerNameMaxLength: 32
+  TraitPicksPerCharacter: 2
   Juice:
     GradeEnabled: 1
     GradeStrength: 0.35
@@ -593,3 +594,4 @@ MonoBehaviour:
     SideSpeedKnee: 1.2
     SideRadiusHalfBeams: 0.3
     SideReach: 0.7
+  DevAllHelmInstruments: 1

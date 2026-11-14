@@ -57,6 +57,111 @@ namespace HiddenHarbours.Tests.EditMode
 
         private static List<string> Owned(params string[] ids) => new List<string>(ids);
 
+        [Test]
+        public void MaximumFit_UsesExactlyTheSupportedSlots_IncludingEachWindGrade()
+        {
+            foreach (bool fish in new[] { false, true })
+            foreach (bool dome in new[] { false, true })
+            foreach (bool flush in new[] { false, true })
+            foreach (bool radar in new[] { false, true })
+            foreach (bool gps in new[] { false, true })
+            foreach (WindInstrumentGrade wind in new[] { WindInstrumentGrade.None,
+                         WindInstrumentGrade.Dial, WindInstrumentGrade.Display })
+            {
+                var console = Console(SounderKind.None, fish);
+                console.SupportsDomeCompass = dome;
+                console.SupportsFlushCompass = flush;
+                console.SupportsRadar = radar;
+                console.SupportsGps = gps;
+                console.MaxWind = wind;
+                var scratch = Owned();
+                HelmFit fit = DevInstrumentCycle.DevFit(console, scratch, SounderKind.Fish,
+                    DevInstrumentCycle.DevPilotFit.GpsRadar, allInstruments: true);
+
+                Assert.AreEqual(fish ? SounderKind.Fish : SounderKind.Depth, fit.Sounder);
+                Assert.AreEqual(flush ? CompassMount.Flush : dome ? CompassMount.Dome : CompassMount.None,
+                                fit.Compass);
+                Assert.AreEqual(radar, fit.Radar);
+                Assert.AreEqual(gps, fit.Gps);
+                Assert.AreEqual(wind, fit.Wind);
+                Assert.AreEqual(console.Rig, fit.Rig);
+                Assert.AreEqual(flush, scratch.Contains(BoatEquipment.CompassFlushId));
+                Assert.AreEqual(!flush && dome, scratch.Contains(BoatEquipment.CompassDomeId));
+                Assert.AreEqual(wind == WindInstrumentGrade.Display,
+                                scratch.Contains(BoatEquipment.WindDisplayId));
+                Assert.AreEqual(wind == WindInstrumentGrade.Dial,
+                                scratch.Contains(BoatEquipment.WindDialId));
+            }
+        }
+
+        [TestCase("ConsoleSkiffHelm", CompassMount.Dome, false, WindInstrumentGrade.Dial)]
+        [TestCase("SportSkiffHelm", CompassMount.Dome, false, WindInstrumentGrade.Dial)]
+        [TestCase("NoviHelm", CompassMount.Flush, true, WindInstrumentGrade.Display)]
+        [TestCase("CapeIslanderHelm", CompassMount.Flush, true, WindInstrumentGrade.Display)]
+        public void ShippedConsoles_StartAtTheirMaximum_WithoutChangingTheirAuthoredFit(
+            string name, CompassMount compass, bool pilotDeck, WindInstrumentGrade wind)
+        {
+            var console = UnityEditor.AssetDatabase.LoadAssetAtPath<HelmConsoleDef>(
+                "Assets/_Project/Data/Boats/Helms/" + name + ".asset");
+            Assert.IsNotNull(console);
+            HelmFit fit = DevInstrumentCycle.DevFit(console, Owned(), SounderKind.Fish,
+                DevInstrumentCycle.DevPilotFit.GpsRadar, allInstruments: true);
+            Assert.AreEqual(SounderKind.Fish, fit.Sounder);
+            Assert.AreEqual(compass, fit.Compass);
+            Assert.AreEqual(pilotDeck, fit.Radar);
+            Assert.AreEqual(pilotDeck, fit.Gps);
+            Assert.AreEqual(wind, fit.Wind);
+            Assert.AreEqual(WindInstrumentGrade.None, BoatEquipment.EffectiveFit(console, Owned()).Wind,
+                            "wind capability does not ship or grant a wind instrument");
+        }
+
+        [Test]
+        public void MaximumFit_StillStepsDownBothRings_EvenPastBoughtInstruments()
+        {
+            var console = Console(SounderKind.Depth, true, radar: true, gps: true);
+            console.MaxWind = WindInstrumentGrade.Display;
+            var save = SaveMigration.NewGame();
+            InstrumentLocker.Add(save, "boat.test", BoatEquipment.FishFinderId);
+            InstrumentLocker.Add(save, "boat.test", BoatEquipment.RadarId);
+            InstrumentLocker.Add(save, "boat.test", BoatEquipment.GpsId);
+            var scratch = Owned();
+            var brow = SounderKind.Fish;
+            var pilot = DevInstrumentCycle.DevPilotFit.GpsRadar;
+            var expectedBrow = new[] { SounderKind.None, SounderKind.Depth, SounderKind.Fish };
+            var expectedRadar = new[] { true, true, false, true };
+            var expectedGps = new[] { false, true, true, true };
+
+            for (int i = 0; i < expectedBrow.Length; i++)
+            {
+                brow = DevInstrumentCycle.NextBrow(brow, console.SupportsFishFinder);
+                InstrumentLocker.OwnedFor(save, "boat.test", scratch);
+                HelmFit fit = DevInstrumentCycle.DevFit(console, scratch, brow, pilot, allInstruments: true);
+                Assert.AreEqual(expectedBrow[i], fit.Sounder);
+                Assert.IsTrue(fit.Radar);
+                Assert.IsTrue(fit.Gps);
+                Assert.AreEqual(WindInstrumentGrade.Display, fit.Wind);
+            }
+            for (int i = 0; i < expectedRadar.Length; i++)
+            {
+                pilot = DevInstrumentCycle.NextPilot(pilot);
+                InstrumentLocker.OwnedFor(save, "boat.test", scratch);
+                HelmFit fit = DevInstrumentCycle.DevFit(console, scratch, brow, pilot, allInstruments: true);
+                Assert.AreEqual(SounderKind.Fish, fit.Sounder);
+                Assert.AreEqual(expectedRadar[i], fit.Radar);
+                Assert.AreEqual(expectedGps[i], fit.Gps);
+            }
+        }
+
+        [Test]
+        public void MaximumFit_NoConsole_StaysBareAndDoesNotWidenScratch()
+        {
+            var scratch = Owned();
+            HelmFit fit = DevInstrumentCycle.DevFit(null, scratch, SounderKind.Fish,
+                DevInstrumentCycle.DevPilotFit.GpsRadar, allInstruments: true);
+            Assert.AreEqual(HelmFit.None, fit);
+            Assert.IsEmpty(scratch);
+        }
+
         // ---- the ring ---------------------------------------------------------------------------------
 
         [Test]
