@@ -55,7 +55,8 @@ namespace HiddenHarbours.Tests.EditMode
         [TestCase("null")]
         public void PreWatchDefinitionSaveWearsTheAuthoredDigitalWatch_AndKeepsItsGear(string ownedGear)
         {
-            // This is the existing v17 shape, before watches became data. No wearing field exists.
+            // This is the v17 shape, before watches became data. No wearing field exists. Loading
+            // migrates it to the current version (v18 added traits), so the version is not pinned at 17.
             SaveData save = SaveSerialization.FromJson(
                 "{\"SchemaVersion\":17,\"Money\":123,\"OwnedGear\":" + ownedGear + "}");
             Assert.That(save, Is.Not.Null);
@@ -66,7 +67,7 @@ namespace HiddenHarbours.Tests.EditMode
                 : ownedGear.Contains("gear.watch") ? new[] { "gear.rod", "gear.watch" }
                 : new[] { "gear.rod" };
             Assert.That(save.OwnedGear, Is.EqualTo(expected));
-            Assert.That(save.SchemaVersion, Is.EqualTo(17));
+            Assert.That(save.SchemaVersion, Is.EqualTo(SaveMigration.CurrentVersion));
             Assert.That(save.Money, Is.EqualTo(123));
             Assert.That(SaveSerialization.ToJson(save), Is.EqualTo(before));
 
