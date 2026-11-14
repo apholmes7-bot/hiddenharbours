@@ -35,6 +35,7 @@ namespace HiddenHarbours.Tests.CoopSpike
         }
         private Clock _hostClock, _clientClock;
         private GameObject _localBoat;
+        private CoopSaveServiceScope _saveScope;
 
         protected override void OnCreatePlayerPrefab()
         {
@@ -45,6 +46,7 @@ namespace HiddenHarbours.Tests.CoopSpike
         }
         protected override IEnumerator OnServerAndClientsConnected()
         {
+            _saveScope = new CoopSaveServiceScope();
 #if UNITY_EDITOR
             Assert.That(Application.productName, Is.EqualTo("My project"), "Network fixtures run with the unchanged solo product.");
             // The self-installed disk service keeps its EventBus subscriptions even when
@@ -63,9 +65,13 @@ namespace HiddenHarbours.Tests.CoopSpike
         }
         protected override IEnumerator OnTrialTearDown()
         {
-            if (_localBoat != null) Object.Destroy(_localBoat);
-            yield return TearDownDayTwo();
-            yield return null;
+            try
+            {
+                if (_localBoat != null) Object.Destroy(_localBoat);
+                yield return TearDownDayTwo();
+                yield return null;
+            }
+            finally { _saveScope?.Restore(); }
         }
         private CoopBoatReplica Client => m_ClientNetworkManagers[0].LocalClient.PlayerObject.GetComponent<CoopBoatReplica>();
         private CoopBoatReplica ClientAtHost => m_ServerNetworkManager.SpawnManager.SpawnedObjects[
@@ -101,24 +107,22 @@ namespace HiddenHarbours.Tests.CoopSpike
             var picker = _localBoat.AddComponent<DevBoatPicker>();
             picker.Configure(settings.Roster, boat, hold, renderer);
             Client.BindLocal(_localBoat.transform, null, () => boat.Hull.Id, () => string.Empty);
-            var input = new InputTestFixture();
-            input.Setup();
+            var input = new CoopKeyboard();
             try
             {
-                var keyboard = InputSystem.AddDevice<Keyboard>();
+                var keyboard = input.Keyboard;
                 Assert.That(picker.IsAtHelm, Is.True, "The input fixture must be driving its boat.");
                 Assert.That(Keyboard.current, Is.SameAs(keyboard));
-                // Use the SDK's isolated player input runtime, not native editor focus/state.
                 // Queue for the player loop so the real picker Update consumes exactly one edge.
-                input.Press(keyboard.fKey, queueEventOnly: true);
+                input.PressF();
                 yield return null;
                 Assert.That(boat.Hull.Id, Is.EqualTo(settings.Roster[1].Id));
-                input.Release(keyboard.fKey);
+                input.ReleaseF();
                 yield return WaitForConditionOrTimeOut(() => ClientAtHost.Boat.Value.HullId.ToString() == settings.Roster[1].Id);
                 Assert.That(s_GlobalTimeoutHelper.TimedOut, Is.False);
                 Assert.That(ClientAtHost.GetComponent<CoopReplicaView>().DrawnHullId, Is.EqualTo(settings.Roster[1].Id));
             }
-            finally { input.TearDown(); }
+            finally { input.Dispose(); }
         }
     }
 }

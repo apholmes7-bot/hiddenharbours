@@ -15,7 +15,6 @@ using HiddenHarbours.World;
 using NUnit.Framework;
 using UnityEditor;
 using UnityEngine;
-using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 using UnityEngine.TestTools;
 
@@ -172,11 +171,9 @@ namespace HiddenHarbours.Tests.CoopSpike
             var rigs = new[] { MakeLocalRig(settings, false), MakeLocalRig(settings, true) };
             Bind(Host, rigs[0]); Bind(Client, rigs[1]);
             var remotes = new[] { HostAtClient, ClientAtHost };
-            var input = new InputTestFixture();
-            input.Setup();
+            var input = new CoopKeyboard();
             try
             {
-                var keyboard = InputSystem.AddDevice<Keyboard>();
                 for (int player = 0; player < rigs.Length; player++)
                 {
                     for (int other = 0; other < rigs.Length; other++) rigs[other].Picker.enabled = other == player;
@@ -185,10 +182,10 @@ namespace HiddenHarbours.Tests.CoopSpike
                     for (int step = 1; step <= settings.Roster.Length; step++)
                     {
                         string expected = settings.Roster[step % settings.Roster.Length].Id;
-                        input.Press(keyboard.fKey, queueEventOnly: true);
+                        input.PressF();
                         yield return null;
                         Assert.That(rigs[player].Boat.Hull.Id, Is.EqualTo(expected), $"player {player}, F {step}");
-                        input.Release(keyboard.fKey);
+                        input.ReleaseF();
                         yield return WaitForConditionOrTimeOut(() => remotes[player].Boat.Value.HullId.ToString() == expected);
                         Assert.That(s_GlobalTimeoutHelper.TimedOut, Is.False, $"player {player}, replicated {expected}");
                         Assert.That(remotes[player].GetComponent<CoopReplicaView>().DrawnHullId, Is.EqualTo(expected));
@@ -196,7 +193,7 @@ namespace HiddenHarbours.Tests.CoopSpike
                     }
                 }
             }
-            finally { input.TearDown(); }
+            finally { input.Dispose(); }
         }
 
         [UnityTest]
@@ -461,6 +458,13 @@ namespace HiddenHarbours.Tests.CoopSpike
 
         private IEnumerator CaptureHostFrame(GameObject localBoat, GameObject remoteBoat)
         {
+            // All replicated pose/ownership/gameplay assertions have already run.
+            // This helper only exports optional evidence; headless CI cannot render it.
+            if (SystemInfo.graphicsDeviceType == UnityEngine.Rendering.GraphicsDeviceType.Null)
+            {
+                TestContext.WriteLine("Host frame unavailable on a null graphics device; gameplay assertions completed.");
+                yield break;
+            }
             var renderers = localBoat.GetComponentsInChildren<Renderer>().Concat(remoteBoat.GetComponentsInChildren<Renderer>()).ToArray();
             var layers = renderers.Select(renderer => renderer.gameObject.layer).ToArray();
             var cameraObject = new GameObject("SpikeHostEvidenceCamera");
