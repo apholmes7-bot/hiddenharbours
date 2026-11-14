@@ -223,12 +223,14 @@ jobs:
           username: ${{ secrets.UNITY_EMAIL }}
           password: ${{ secrets.UNITY_PASSWORD }}
 
+      # Keep Netcode testables for our helpers, but run no package-owned cases.
+      # Assembly exclusions leave every project assembly eligible in both modes.
       - name: EditMode tests
         id: editmode
         uses: buildalon/unity-action@2d420bea0f47fbe01377601fa3231bcf4de04f3a # v3
         with:
           log-name: editmode-tests
-          args: -batchmode -runTests -testPlatform EditMode -testResults ${{ github.workspace }}/artifacts/editmode-results.xml
+          args: -batchmode -runTests -testPlatform EditMode -assemblyNames "!Unity.Netcode.Editor.Tests;!Unity.Netcode.Runtime.Tests" -testResults ${{ github.workspace }}/artifacts/editmode-results.xml
 
       - name: PlayMode tests
         id: playmode
@@ -237,7 +239,7 @@ jobs:
         uses: buildalon/unity-action@2d420bea0f47fbe01377601fa3231bcf4de04f3a # v3
         with:
           log-name: playmode-tests
-          args: -batchmode -runTests -testPlatform PlayMode -testResults ${{ github.workspace }}/artifacts/playmode-results.xml
+          args: -batchmode -runTests -testPlatform PlayMode -assemblyNames "!Unity.Netcode.Editor.Tests;!Unity.Netcode.Runtime.Tests" -testResults ${{ github.workspace }}/artifacts/playmode-results.xml
 
       - name: Upload test results
         uses: actions/upload-artifact@v4
@@ -255,7 +257,7 @@ jobs:
         shell: bash
         run: |
           set -o pipefail
-          python3 tools/ci/results.py artifacts/editmode-results.xml artifacts/playmode-results.xml | tee -a "$GITHUB_STEP_SUMMARY"
+          python3 tools/ci/results.py --project-coverage tools/ci/project-coverage.json artifacts/editmode-results.xml artifacts/playmode-results.xml | tee -a "$GITHUB_STEP_SUMMARY"
 
       # The other half of "WHO SAVES WHAT" (above "Restore the Unity editor"): a green push to main
       # saves LFS and Library here, at the end of the job, each only when its restore missed the
