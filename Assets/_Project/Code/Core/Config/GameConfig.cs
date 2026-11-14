@@ -16,6 +16,13 @@ namespace HiddenHarbours.Core
         [Tooltip("Maximum name length after trimming surrounding spaces.")]
         [Min(1)] public int PlayerNameMaxLength = DefaultPlayerNameMaxLength;
 
+        public const int DefaultTraitPicksPerCharacter = 2;
+
+        [Header("Character traits")]
+        [Tooltip("How many named traits a character picks (owner ruling 2026-11-14: two). The bonuses " +
+                 "themselves live on each TraitDef under Data/Resources/Traits.")]
+        [Min(0)] public int TraitPicksPerCharacter = DefaultTraitPicksPerCharacter;
+
         public const float DefaultCreatorFigureHeightFraction = 0.6f;
 
         [Header("Character creator view")]
