@@ -212,8 +212,15 @@ namespace HiddenHarbours.Tests.EditMode
         [Test]
         public void EveryRowOnTheKit_HasItsSetPieceDef_OnTheRuledKindId()
         {
+            // Only this kit's own Defs answer its rows. Other kits' set pieces share the folder and may share a generic
+            // RigKey (the Falls' bench is also "bench"), so a Def is read here only when it names the fuel stop's key scene.
+            string sceneId = TopField(FuelStopPath, "Id");
+            Assert.That(sceneId, Is.Not.Null.And.Not.Empty, FuelStopPath + " has no Id");
             var defs = Directory.GetFiles(DefFolder, "*.asset")
+                .Where(f => TopField(f, "SceneId") == sceneId)
                 .Select(f => (Id: TopField(f, "Id"), RigKey: TopField(f, "RigKey"), File: f.Replace('\\', '/'))).ToList();
+            Assert.That(defs.GroupBy(d => d.RigKey).Where(g => g.Count() > 1).Select(g => g.Key), Is.Empty,
+                "two of the fuel stop's Defs share a RigKey");
             var asking = Rows(FuelStopPath).Concat(Rows(WharfPath)).Where(r => r.Kit.StartsWith(KitPrefix, StringComparison.Ordinal)).ToList();
             foreach (var row in asking)
             {
