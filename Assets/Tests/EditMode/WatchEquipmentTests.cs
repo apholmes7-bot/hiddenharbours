@@ -66,7 +66,7 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         [Test]
-        public void StartingGrantIsAdditiveAndIdempotent_AndDoesNotGrantPurchasedWatches()
+        public void StartingWatchIsImplicitlyOwned_WithoutGrantingAnyGear()
         {
             WatchDef starter = Watch("watch.starting_fixture", 1, startsOwned: true);
             WatchDef purchase = Watch("watch.purchased_fixture", 3);
@@ -75,17 +75,61 @@ namespace HiddenHarbours.Tests.EditMode
 
             Assert.That(WatchEquipment.GetWorn(save, catalog), Is.SameAs(starter));
             Assert.That(WatchEquipment.GetWorn(save, catalog), Is.SameAs(starter));
-            Assert.That(save.OwnedGear, Is.EqualTo(new[] { "gear.shovel", "gear.rod", starter.Id }));
+            Assert.That(save.OwnedGear, Is.EqualTo(new[] { "gear.shovel", "gear.rod" }));
         }
 
         [Test]
-        public void MissingOwnedGearListCanReceiveTheStartingWatch()
+        public void MissingOwnedGearListCanWearTheStartingWatch_WithoutInitializingTheList()
         {
             WatchDef starter = Watch("watch.starting_fixture", 1, startsOwned: true);
             var save = new SaveData { OwnedGear = null };
 
             Assert.That(WatchEquipment.GetWorn(save, new[] { starter }), Is.SameAs(starter));
-            Assert.That(save.OwnedGear, Is.EqualTo(new[] { starter.Id }));
+            Assert.That(save.OwnedGear, Is.Null);
+        }
+
+        [Test]
+        public void LoadingAPreWatchSaveAndReadingTheWornWatch_PerformsNoSaveWrite()
+        {
+            WatchDef starter = Watch("watch.starting_fixture", 1, startsOwned: true);
+            WatchDef purchase = Watch("watch.purchased_fixture", 3);
+            var catalog = new[] { purchase, starter };
+            var save = new PriorSave(SaveSerialization.FromJson(
+                "{\"SchemaVersion\":16,\"Money\":20,\"OwnedGear\":[\"gear.shovel\",\"gear.bucket\"]}"));
+            Assert.That(save.Current, Is.Not.Null);
+            List<string> gear = save.Current.OwnedGear;
+            string before = SaveSerialization.ToJson(save.Current);
+            ISaveService previous = GameServices.Save;
+            try
+            {
+                GameServices.Save = save;
+                Assert.That(WatchEquipment.GetWorn(GameServices.Save.Current, catalog), Is.SameAs(starter));
+                Assert.That(WatchEquipment.GetWorn(GameServices.Save.Current, catalog), Is.SameAs(starter));
+                Assert.That(SaveSerialization.ToJson(save.Current), Is.EqualTo(before));
+                Assert.That(save.Current.OwnedGear, Is.SameAs(gear));
+                Assert.That(save.Current.OwnedGear, Is.EqualTo(new[] { "gear.shovel", "gear.bucket" }));
+                Assert.That(save.Writes, Is.Zero);
+                Assert.That(save.Current.PlayerRecipe.IsEmpty, Is.True);
+                Assert.That(save.Current.PlayerName, Is.Null.Or.Empty);
+            }
+            finally
+            {
+                GameServices.Save = previous;
+            }
+        }
+
+        [Test]
+        public void StartingAndExplicitlyOwnedWatchesShareTierAndOrdinalIdOrdering()
+        {
+            WatchDef starter = Watch("watch.a_fixture", 2, startsOwned: true);
+            WatchDef purchased = Watch("watch.z_fixture", 2);
+            var save = new SaveData { OwnedGear = new List<string> { purchased.Id } };
+
+            Assert.That(WatchEquipment.GetWorn(save, new[] { purchased, starter }), Is.SameAs(starter));
+            Assert.That(WatchEquipment.GetWorn(save, new[] { starter, purchased }), Is.SameAs(starter));
+            purchased.Tier = 3;
+            Assert.That(WatchEquipment.GetWorn(save, new[] { starter, purchased }), Is.SameAs(purchased));
+            Assert.That(save.OwnedGear, Is.EqualTo(new[] { purchased.Id }));
         }
 
         [Test]
@@ -109,6 +153,18 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.That(WatchEquipment.GetWorn(save, null), Is.Null);
             Assert.That(WatchEquipment.SelectOwned(save, null), Is.Null);
             Assert.That(save.OwnedGear, Is.Empty);
+        }
+
+        private sealed class PriorSave : ISaveService
+        {
+            public SaveData Current { get; }
+            public bool LoadedExistingSave => true;
+            public int Writes { get; private set; }
+
+            public PriorSave(SaveData current) { Current = current; }
+            public bool GetFlag(string key) => false;
+            public void SetFlag(string key, bool value) { Writes++; }
+            public void Save() { Writes++; }
         }
     }
 }

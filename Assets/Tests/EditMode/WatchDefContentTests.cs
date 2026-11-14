@@ -26,7 +26,7 @@ namespace HiddenHarbours.Tests.EditMode
                 | WatchReadouts.Date | WatchReadouts.Season | WatchReadouts.Year
                 | WatchReadouts.MarketDay | WatchReadouts.NightLight));
             Assert.That(def.Tier, Is.EqualTo(1));
-            Assert.That(def.StartsOwned, Is.True, "Authored starting kit; runtime grant is a separate integration.");
+            Assert.That(def.StartsOwned, Is.True, "Authored starting kit is derived without a save grant.");
             Assert.That(def.LegacyGearId, Is.EqualTo("gear.watch"));
             Assert.That(def.Price, Is.Zero);
             Assert.That(def.SellerId, Is.Null.Or.Empty, "The starting watch has no shop listing.");
@@ -46,7 +46,7 @@ namespace HiddenHarbours.Tests.EditMode
             SaveData save = SaveMigration.NewGame();
 
             AssertDigitalWatchIsWorn(save);
-            Assert.That(save.OwnedGear, Is.EqualTo(new[] { "watch.harbour_digital" }));
+            Assert.That(save.OwnedGear, Is.Empty);
             Assert.That(save.SchemaVersion, Is.EqualTo(SaveMigration.CurrentVersion));
         }
 
@@ -59,18 +59,21 @@ namespace HiddenHarbours.Tests.EditMode
             SaveData save = SaveSerialization.FromJson(
                 "{\"SchemaVersion\":17,\"Money\":123,\"OwnedGear\":" + ownedGear + "}");
             Assert.That(save, Is.Not.Null);
+            string before = SaveSerialization.ToJson(save);
 
             AssertDigitalWatchIsWorn(save);
-            var expected = ownedGear == "null" ? new[] { "watch.harbour_digital" }
-                : ownedGear.Contains("gear.watch") ? new[] { "gear.rod", "gear.watch", "watch.harbour_digital" }
-                : new[] { "gear.rod", "watch.harbour_digital" };
+            var expected = ownedGear == "null" ? new string[0]
+                : ownedGear.Contains("gear.watch") ? new[] { "gear.rod", "gear.watch" }
+                : new[] { "gear.rod" };
             Assert.That(save.OwnedGear, Is.EqualTo(expected));
             Assert.That(save.SchemaVersion, Is.EqualTo(17));
             Assert.That(save.Money, Is.EqualTo(123));
+            Assert.That(SaveSerialization.ToJson(save), Is.EqualTo(before));
 
             SaveData reloaded = SaveSerialization.FromJson(SaveSerialization.ToJson(save));
             AssertDigitalWatchIsWorn(reloaded);
-            Assert.That(reloaded.OwnedGear, Is.EqualTo(expected), "A normal save round trip cannot double-grant.");
+            Assert.That(reloaded.OwnedGear, Is.EqualTo(expected), "Reading the watch cannot add ownership on reload.");
+            Assert.That(SaveSerialization.ToJson(reloaded), Is.EqualTo(before));
         }
 
         private static void AssertDigitalWatchIsWorn(SaveData save)

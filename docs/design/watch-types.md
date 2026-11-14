@@ -11,7 +11,7 @@ draws pixels or changes the existing watch renderer, clock mapper, or repaint ca
 | `Face` | Append-only renderer key; only `HarbourDigital` is implemented |
 | `Readouts` | Time, weekday, date, season, year, market day, and night light capability flags |
 | `Tier` | Higher tiers take precedence among owned watches |
-| `StartsOwned` | Grants this watch as starting equipment on the first live watch repaint |
+| `StartsOwned` | Makes this watch available as starting equipment without a saved ownership entry |
 | `LegacyGearId` | Earlier ownership id for the same watch, preserving `gear.watch` |
 | `Price`, `SellerId` | Cost and stable seller identity; a free starting watch can have no seller |
 
@@ -21,11 +21,12 @@ identity-addition files; the frozen identity ledger stays unchanged. `TryValidat
 authoring rules used by `WatchDefContentTests` and `WatchDefValidationTests`.
 
 The HUD asks Core's `WatchEquipment.GetWorn` for the watch to draw, after its existing hidden
-and held-clock gates. The helper loads the resource catalog once and grants starting watch ids
-into the live save's existing `OwnedGear` list. The grant is additive and idempotent for both new
-games and old saves, preserving all earlier gear and legacy ids. The normal save flow persists
-that list; the presenter does not write a save file. No wearing field, save schema change,
-migration code, shop listing, or additional face is introduced here.
+and held-clock gates. The helper loads the resource catalog once and treats starting watches
+as implicitly owned for both new games and old saves. Selection reads the existing `OwnedGear`
+list without initializing it or adding ids. Continuing a save and repainting the watch preserve
+the complete save snapshot and request no save write. Purchased ownership still comes from
+the existing gear list when the player acts. No wearing field, save schema change, migration
+code, shop listing, or additional face is introduced here.
 
 Selection uses the highest owned `Tier`, with ascending ordinal id order breaking ties
 deterministically, and accepts the authored legacy id as ownership of the same watch. The
