@@ -907,14 +907,16 @@ The on-foot ⇄ aboard control loop is the `ControlSwitcher` (Player lane); seve
   art is owed and is drawn at the authored point. **No hull is dock-only** (owner, 2026-11-13:
   *"Boardinnf some boats from dock only is too hard maybe all boats need a ladder"*): every hull whose
   side is over the limit carries at least one boarding point in its deck asset, stern by default — the
-  coastal packet got hers at the transom on that ruling. The one named exception is the tanker, whose
-  pilot ladder is rig work. It stays per-hull data, never a code rule;
+  coastal packet got hers at the transom on that ruling. The tanker was the last exception and is one no
+  longer (seat ruling, 2026-11-14): she carries two points amidships, `pilot_ladder_starboard` and
+  `pilot_ladder_port`, and no stern ladder (a ten metre climb). No hull is dock-only now. It stays
+  per-hull data, never a code rule;
   `BoardingRuleTests.EveryHull_CanBeBoardedFromTheWater` holds it. The rule is
   asked only when the walker's water state is not `Dry`, so the boarding move from a wharf or beach and the
   step ashore are untouched; a hull with no deck Def (the two sloops) is unmeasured and keeps the old
   behaviour. Refused, the popup and the press say **"Find the ladder"** on a hull that has one, and
-  *"Too high to climb — board her from a wharf"* from the water under a hull that has none (the tanker,
-  until her pilot ladder is authored); at a railed edge "Go over the side" is not offered. The four
+  *"Too high to climb — board her from a wharf"* from the water under a hull that has none (no shipped
+  hull today); at a railed edge "Go over the side" is not offered. The four
   fields are the **authored** block of the otherwise-imported `BoatDeckDef` — the importer never assigns
   them — and `BoardingRuleTests` holds the per-hull table.
 - **Swim up to a hull and climb aboard** (owner, 2026-09-02). The boarding gate above was never the thing
