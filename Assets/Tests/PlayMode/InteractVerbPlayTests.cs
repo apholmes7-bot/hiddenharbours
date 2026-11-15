@@ -355,6 +355,10 @@ namespace HiddenHarbours.Tests.PlayMode
         {
             var near = Candidate("test.near", AshorePos + new Vector3(0.3f, 0f, 0f), reach: 3f);
             var far = Candidate("test.far", AshorePos + new Vector3(2f, 0f, 0f), reach: 3f);
+            // ⚠️ Different words: two rows that read the same collapse into one (InteractChoiceList — an
+            // ATV's two mount sides), and one row is no choice. Both doubles default to "Do the thing".
+            near.VerbLabel = "Open the near one";
+            far.VerbLabel = "Open the far one";
             yield return null;
 
             StandAt(AshorePos);

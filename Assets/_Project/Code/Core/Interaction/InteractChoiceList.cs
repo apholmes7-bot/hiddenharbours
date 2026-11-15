@@ -156,13 +156,25 @@ namespace HiddenHarbours.Core
         {
             Clear();
             if (candidates == null || candidates.Count == 0) return;
-            if (!InteractResolver.TryResolve(candidates, actor, facingArcDegrees, out IInteractable best)) return;
 
             float cosHalfArc = InteractArc.CosHalfArc(facingArcDegrees);
             Vector2 facing = actor.Facing;
             int rowCap = Mathf.Clamp(maxRows, 1, HardCap);
 
-            Default = FreeMateFor(best, candidates, actor, facing, cosHalfArc);
+            // ⚠️ ONE pass over the registry, each candidate asked once: a press is one resolve, as it
+            // always was (a door mid-swing counts its IsAvailable reads; ControlSwitcherTests pins it).
+            // Every qualifier, sorted by the resolver's own ladder, so scratch[0] IS the resolver's
+            // winner — the overflow drops the worst-ranked, never the best.
+            for (int i = 0; i < candidates.Count; i++)
+            {
+                IInteractable c = candidates[i];
+                if (c == null) continue;
+                if (!InteractResolver.Qualifies(c, actor, facing, cosHalfArc, out float sqr)) continue;
+                InsertSorted(c, sqr);
+            }
+            if (_scratchCount == 0) return;
+
+            Default = FreeMateInScratch(_scratch[0]);
 
             if (Default.Priority > maxChoicePriority)
             {
@@ -173,18 +185,10 @@ namespace HiddenHarbours.Core
                 return;
             }
 
-            // Every qualifier on or below the rung, sorted by the resolver's ladder.
-            for (int i = 0; i < candidates.Count; i++)
-            {
-                IInteractable c = candidates[i];
-                if (c == null || c.Priority > maxChoicePriority) continue;
-                if (!InteractResolver.Qualifies(c, actor, facing, cosHalfArc, out float sqr)) continue;
-                InsertSorted(c, sqr);
-            }
-
             for (int i = 0; i < _scratchCount && Count < rowCap; i++)
             {
                 IInteractable c = _scratch[i];
+                if (c.Priority > maxChoicePriority) continue;
                 string group = GroupOf(c);
                 if (group != null)
                 {
@@ -332,7 +336,24 @@ namespace HiddenHarbours.Core
             return _scratch[from];
         }
 
-        /// <summary>The occupied-bunk swap for the single press: <paramref name="best"/> unless it is an
+        /// <summary><see cref="FreeMateFor"/> over the already-qualified, already-sorted scratch, so no
+        /// candidate is asked twice: the first free member of <paramref name="best"/>'s group.</summary>
+        private IInteractable FreeMateInScratch(IInteractable best)
+        {
+            if (!(best is IExclusiveInteractable ex) || !ex.IsOccupied) return best;
+            string group = GroupOf(best);
+            if (group == null) return best;
+            for (int i = 0; i < _scratchCount; i++)
+            {
+                IInteractable c = _scratch[i];
+                if (ReferenceEquals(c, best)) continue;
+                if (!string.Equals(GroupOf(c), group, System.StringComparison.Ordinal)) continue;
+                if (!((IExclusiveInteractable)c).IsOccupied) return c;
+            }
+            return best;
+        }
+
+        /// <summary>The occupied-bunk swap for the single press:<paramref name="best"/> unless it is an
         /// occupied member of a group with a free member in reach, in which case the best free one.</summary>
         private static IInteractable FreeMateFor(IInteractable best, IReadOnlyList<IInteractable> candidates,
                                                  in InteractActor actor, Vector2 facing, float cosHalfArc)
