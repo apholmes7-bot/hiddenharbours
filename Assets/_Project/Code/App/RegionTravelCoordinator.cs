@@ -378,7 +378,7 @@ namespace HiddenHarbours.App
 
         // The region scene whose shared-edge solids have been stood down (its handle), so the scan runs once
         // per scene, not per step. A revisited scene keeps its colliders as they were left: off.
-        int _edgesOpenedInScene;
+        Scene _edgesOpenedInScene;
         readonly List<Collider2D> _solidScratch = new List<Collider2D>();
 
         /// <summary>Stand down the current region scene's solids that wall a SHARED edge (once per scene).
@@ -392,8 +392,8 @@ namespace HiddenHarbours.App
                 if (live[i] != null && string.Equals(live[i].RegionId, here, System.StringComparison.Ordinal)) anchor = live[i];
             if (anchor == null) return;
             Scene scene = anchor.gameObject.scene;
-            if (!scene.IsValid() || scene.handle == _edgesOpenedInScene) return;
-            _edgesOpenedInScene = scene.handle;
+            if (!scene.IsValid() || scene == _edgesOpenedInScene) return;
+            _edgesOpenedInScene = scene;
             int opened = OpenSharedEdges(scene, frame, here, _solidScratch);
             if (opened > 0)
                 Debug.Log($"[RegionTravelCoordinator] {here}: stood down {opened} edge solid(s) on shared edges " +
