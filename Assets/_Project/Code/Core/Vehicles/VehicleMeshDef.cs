@@ -132,6 +132,12 @@ namespace HiddenHarbours.Core
                  "because the suspension's dz(y) interpolates between them by name.")]
         public float FrontAxleY, RearAxleY;
 
+        [Tooltip("Tyre tread width in metres, for the tyre marks she leaves on grass, sand, mud and dirt " +
+                 "(GroundPrintMade). 0 = use GameConfig.GroundPrints.DefaultTireWidthMetres. The marks' gauge " +
+                 "is TrackWidthMeters, so a new machine (a tractor) needs only these two numbers to mark the " +
+                 "ground.")]
+        [Min(0f)] public float TireWidthMeters;
+
         [Tooltip("Peak steer of the INNER front wheel at full lock, degrees (the rig's STEER_MAX).")]
         [Min(0f)] public float MaxInnerSteerDegrees;
 

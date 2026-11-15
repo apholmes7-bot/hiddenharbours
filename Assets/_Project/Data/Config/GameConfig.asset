@@ -618,3 +618,64 @@ MonoBehaviour:
     SideReach: 0.7
   DevAllHelmInstruments: 1
   MeshFishingAndDig: 1
+  GroundPrints:
+    Enabled: 1
+    LifetimeGameHours: 24
+    FadeExponent: 1
+    FadeSteps: 6
+    StrideMetres: 0.75
+    FootLengthMetres: 0.28
+    FootWidthMetres: 0.11
+    FootSideOffsetMetres: 0.09
+    TireSegmentMetres: 0.5
+    DefaultTireWidthMetres: 0.22
+    TreadRepeatMetres: 0.25
+    TeleportMetres: 3
+    MaxPrintsPerUpdate: 8
+    Capacity: 2048
+    HeadingSteps: 16
+    SlowTickRealSeconds: 0.5
+    TideChecksPerTick: 256
+    SortingOrder: -9
+    ShapeTexturePixels: 8
+    Surfaces:
+    - Surface: 1
+      Tint: {r: 0.16, g: 0.24, b: 0.12, a: 0.55}
+      StartStrength: 0.5
+    - Surface: 2
+      Tint: {r: 0.45, g: 0.36, b: 0.24, a: 0.6}
+      StartStrength: 0.8
+    - Surface: 3
+      Tint: {r: 0.16, g: 0.12, b: 0.08, a: 0.7}
+      StartStrength: 1
+    - Surface: 4
+      Tint: {r: 0.24, g: 0.17, b: 0.11, a: 0.6}
+      StartStrength: 0.8
+    - Surface: 5
+      Tint: {r: 0.55, g: 0.62, b: 0.7, a: 0.6}
+      StartStrength: 1
+    Zones:
+    - Zone: grass
+      Surface: 1
+    - Zone: lawn
+      Surface: 1
+    - Zone: sedge
+      Surface: 1
+    - Zone: marram
+      Surface: 2
+    - Zone: sand
+      Surface: 2
+    - Zone: ripple
+      Surface: 2
+    - Zone: foreshore
+      Surface: 2
+    - Zone: silt
+      Surface: 3
+    - Zone: marsh
+      Surface: 3
+    - Zone: mud
+      Surface: 3
+    - Zone: dirt
+      Surface: 4
+    - Zone: path
+      Surface: 4
