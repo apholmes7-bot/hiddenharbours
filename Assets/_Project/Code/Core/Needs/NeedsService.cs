@@ -22,19 +22,21 @@ namespace HiddenHarbours.Core
         private readonly Func<NeedsSettings> _settings;
         private readonly Func<ITraitService> _traits;
         private readonly Func<double> _secondsPerGameHour;
+        private readonly Func<IBodyService> _body;
 
         private readonly NeedStage[] _lastStage = new NeedStage[Kinds.Length];
         private readonly bool[] _stageKnown = new bool[Kinds.Length];
 
         public NeedsService(Func<ISaveService> save = null, Func<IGameClock> clock = null,
                             Func<NeedsSettings> settings = null, Func<ITraitService> traits = null,
-                            Func<double> secondsPerGameHour = null)
+                            Func<double> secondsPerGameHour = null, Func<IBodyService> body = null)
         {
             _save = save ?? (() => GameServices.Save);
             _clock = clock ?? (() => GameServices.Clock);
             _settings = settings ?? (() => GameServices.NeedsSettings);
             _traits = traits ?? (() => GameServices.Traits);
             _secondsPerGameHour = secondsPerGameHour ?? (() => GameServices.SecondsPerDay / 24d);
+            _body = body ?? (() => GameServices.Body);
         }
 
         public float Level(NeedKind need)
@@ -42,7 +44,7 @@ namespace HiddenHarbours.Core
             PlayerNeedsDto needs = Needs();
             if (needs == null) return 0f;
             NeedsSettings settings = _settings();
-            return LevelOf(needs.Get(need), NeedsMath.CurveOf(need, settings));
+            return LevelOf(needs.Get(need), CurveFor(need, settings));
         }
 
         public NeedStage Stage(NeedKind need)
@@ -50,7 +52,7 @@ namespace HiddenHarbours.Core
             PlayerNeedsDto needs = Needs();
             if (needs == null) return NeedStage.None;
             NeedsSettings settings = _settings();
-            NeedCurve curve = NeedsMath.CurveOf(need, settings);
+            NeedCurve curve = CurveFor(need, settings);
             return NeedsMath.StageOf(LevelOf(needs.Get(need), curve), curve);
         }
 
@@ -65,7 +67,7 @@ namespace HiddenHarbours.Core
             for (int k = 0; k < Kinds.Length; k++)
             {
                 NeedKind need = Kinds[k];
-                NeedCurve curve = NeedsMath.CurveOf(need, settings);
+                NeedCurve curve = CurveFor(need, settings);
                 NeedStage stage = NeedsMath.StageOf(LevelOf(needs.Get(need), curve), curve);
                 float penalty = NeedsMath.PenaltyFor(stat, stage, curve);
                 if (penalty > 0f) total += penalty * ReliefFor(need);   // traits only read when it matters
@@ -78,6 +80,8 @@ namespace HiddenHarbours.Core
             if (!(amount > 0f)) return;
             PlayerNeedsDto needs = Needs();
             if (needs == null) return;
+            // Body slice 1: carry the body to now first, so a meal never erases time spent starving.
+            _body()?.Settle();
             NeedStage before = Stage(NeedKind.Hunger);
             NeedStateDto state = needs.Hunger;
             float now = Level(NeedKind.Hunger) - amount;
@@ -159,6 +163,18 @@ namespace HiddenHarbours.Core
             for (int j = 0; j < i; j++)
                 if (string.Equals(ids[i], ids[j], StringComparison.Ordinal)) return true;
             return false;
+        }
+
+        /// <summary>The curve for <paramref name="need"/> as this body feels it: hunger rises by the body's
+        /// <see cref="IBodyService.HungerRateScale"/> (body slice 1: a bigger body empties a meal sooner).
+        /// At a scale of exactly 1 the configured curve is returned untouched.</summary>
+        private NeedCurve CurveFor(NeedKind need, in NeedsSettings settings)
+        {
+            NeedCurve curve = NeedsMath.CurveOf(need, settings);
+            if (need != NeedKind.Hunger) return curve;
+            float scale = _body()?.HungerRateScale ?? TraitMath.Identity;
+            if (scale != TraitMath.Identity && scale > 0f) curve.RisePerGameHour *= scale;
+            return curve;
         }
 
         private float LevelOf(in NeedStateDto state, in NeedCurve curve)

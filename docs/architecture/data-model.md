@@ -150,6 +150,18 @@ plain serializable DTOs owned by `SaveService` (`architecture/tech-architecture.
 > a place in ANOTHER region, or ABOARD a boat, is not applied in the wrong frame but handed to the
 > `SleepPlaceWakeRequested` signal for the travel rig to honour, and the spawn stands until it does.
 
+> **Save schema v21 (the body, owner ask 2026-11-15: frame, weight, metabolism, overeating)** —
+> `SaveData` gained THREE fields: `PlayerBody` (a `PlayerBodyDto`: `Frame` 0..1 and `HeightScale`, chosen
+> once in the creator with `ShapeChosen`; `MassKg` + `MassSinceGameSeconds`; `StomachMeals` +
+> `StomachSinceGameSeconds`), `Messes` (a list of `MessRecordDto`: stable `mess.N` id, region id, position
+> in that region's own frame, game time) and `NextMessSerial` (ids are never reused). Mass and stomach
+> are (value, instant) pairs like a need: the value now is recomputed from the clock by `BodyMath`, and
+> settled at every save write beside the needs. **Negative = unset** on frame, height and mass, which reads
+> as the config default frame, height scale 1 and that body's lean mass: the reference body whose hunger
+> rate and walk speed are exactly the needs slice's, so the `v20→v21` step writes the unset body and an
+> empty mess list and an existing player changes nothing on load. A mess leaves the save only through
+> `IMessRegistry.CleanUp`. Written only through `IBodyService` and `IMessRegistry` (Core/Body).
+
 **Recomputed, never saved:** tide height, wind, weather, sea state, visibility (from
 `worldSeed + gameTime`), dormant NPC positions, authored geometry, **a boat's effective helm fit and
 its depth-sounder reading** (ADR 0030), **which end of a bed the pillow is on** (see below), and

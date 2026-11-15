@@ -29,6 +29,14 @@ namespace HiddenHarbours.Core
                  "as a bar. Rates are per IN-GAME hour. Read through GameServices.NeedsSettings.")]
         public NeedsSettings Needs = NeedsSettings.Default;
 
+        [Header("Body (frame, weight, metabolism, overeating)")]
+        [Tooltip("The player's body (owner ask 2026-11-15). Frame and height set a lean and a max mass; " +
+                 "a bigger body gets hungry sooner (Mifflin-St Jeor), a heavier one walks slower, a taller " +
+                 "one faster; eating past a full stomach makes the player sick. Never shown as a number. " +
+                 "The default frame at height scale 1 and lean mass is exactly today's player. Read " +
+                 "through GameServices.BodySettings.")]
+        public BodySettings Body = BodySettings.Default;
+
         public const float DefaultCreatorFigureHeightFraction = 0.6f;
 
         [Header("Character creator view")]
