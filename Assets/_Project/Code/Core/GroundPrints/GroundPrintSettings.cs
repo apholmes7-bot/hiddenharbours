@@ -167,8 +167,10 @@ namespace HiddenHarbours.Core
             ShapeTexturePixels = 8,
             Surfaces = new[]
             {
-                // Near-black inks of each ground's hue; fresh alpha 0.68..0.80 (Tint.a 0.8 x StartStrength).
-                new GroundPrintSurfaceStyle { Surface = GroundSurface.Grass, Tint = new Color(0.10f, 0.13f, 0.07f, 0.8f), StartStrength = 0.95f },
+                // Near-black inks of each ground's hue; fresh alpha = Tint.a x StartStrength (0.68..0.95).
+                // Grass is the deepest: its painted texture swings +-44% around its mean (mud +-18%), so a
+                // print has to nearly replace the grass under it (a flat dark-green boot) to read at all.
+                new GroundPrintSurfaceStyle { Surface = GroundSurface.Grass, Tint = new Color(0.07f, 0.10f, 0.04f, 1f), StartStrength = 0.95f },
                 new GroundPrintSurfaceStyle { Surface = GroundSurface.Sand,  Tint = new Color(0.30f, 0.24f, 0.16f, 0.8f), StartStrength = 0.85f },
                 new GroundPrintSurfaceStyle { Surface = GroundSurface.Mud,   Tint = new Color(0.09f, 0.07f, 0.05f, 0.8f), StartStrength = 1f },
                 new GroundPrintSurfaceStyle { Surface = GroundSurface.Dirt,  Tint = new Color(0.13f, 0.09f, 0.06f, 0.8f), StartStrength = 0.9f },

@@ -388,13 +388,25 @@ namespace HiddenHarbours.Tests.EditMode
                 Assert.That(s.TryGetStyle(surface, out GroundPrintSurfaceStyle style), NUnit.Framework.Is.True, surface.ToString());
                 string at = $"{surface} on {source}";
                 float fresh = Drop(style, ground, 0d), half = Drop(style, ground, 12d), last = Drop(style, ground, 23.9d);
-                Assert.That(fresh, NUnit.Framework.Is.InRange(0.25f, 0.6f), at + ": a fresh print must read (25..60% darker)");
+                // Ceiling 70%: grass needs ~63% to beat its own texture; past ~70% a print is a black hole.
+                Assert.That(fresh, NUnit.Framework.Is.InRange(0.25f, 0.7f), at + ": a fresh print must read (25..70% darker)");
                 Assert.That(half, NUnit.Framework.Is.LessThan(fresh).And.GreaterThan(last), at + ": 12 h sits between");
                 Assert.That(last, NUnit.Framework.Is.GreaterThan(0f).And.LessThanOrEqualTo(0.08f), at + ": 23.9 h is barely there");
                 Assert.That(Drop(style, ground, 24d), NUnit.Framework.Is.EqualTo(0f).Within(1e-5f), at + ": gone at 24 h");
                 for (double h = 0d; h < 24d; h += 0.5d)
                     Assert.That(Drop(style, ground, h), NUnit.Framework.Is.GreaterThan(0f), $"{at}: lighter than the ground at {h} h");
             }
+        }
+
+        [Test]
+        public void ADeepGrassPrintStaysGreenNotMud()
+        {
+            GroundPrintSettings s = GroundPrintSettings.Default;
+            Assert.That(s.TryGetStyle(GroundSurface.Grass, out GroundPrintSurfaceStyle grass), NUnit.Framework.Is.True);
+            Assert.That(s.TryGetStyle(GroundSurface.Mud, out GroundPrintSurfaceStyle mud), NUnit.Framework.Is.True);
+            Color g = grass.Tint, m = mud.Tint;
+            Assert.That(g.g, NUnit.Framework.Is.GreaterThan(g.r).And.GreaterThan(g.b), "the grass ink is a green, pressed grass");
+            Assert.That(m.r, NUnit.Framework.Is.GreaterThan(m.g).And.GreaterThan(m.b), "the mud ink is a brown");
         }
 
         // ---- the shipped config ---------------------------------------------------------------------
