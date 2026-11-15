@@ -210,5 +210,43 @@ namespace HiddenHarbours.Tests.Art.EditMode
             for (int i = 0; i < n; i++) sum += SeagullStateMachine.DepartureEase((i + 0.5) / n);
             Assert.AreEqual(1.0, sum / n, 1e-9, "the from-rest ease must keep the row's total climb and travel");
         }
+
+        /// <summary>
+        /// ⭐ <b>A take-off at a bird's speed</b> (owner, 2026-11-15: "make bird takeoffs realistic speeds too, the
+        /// take off far too fast compared to a real bird"). The v5 clip's gull was at 7.6 m/s 0.9 s after leaving
+        /// the sand and climbing at 4 m/s. A gull hops off at about 3-5 m/s, climbs at 1-2 m/s and labours for
+        /// several seconds up to a 9-12 m/s cruise. The drawn bird's ground speed and climb are read at 0.5, 1 and
+        /// 2 s after its feet leave (altitude above 2 cm), against those bounds.
+        /// </summary>
+        [Test]
+        public void TheTakeoffRunsAtABirdsSpeed_HalfASecond_OneSecond_TwoSecondsAfterLiftOff()
+        {
+            var b = Behaviour();
+            Assert.IsTrue(b.Departure.Enabled, "the committed def must carry the game's take-off tuning");
+            List<Sample> t = Departure(b, out _);
+            int lift = 1;
+            while (lift < t.Count && t[lift].Alt <= 0.02) lift++;
+            Assert.Less(lift, t.Count - 1, "the bird never left the ground");
+
+            double Ground(int i) => Math.Sqrt((t[i + 1].X - t[i - 1].X) * (t[i + 1].X - t[i - 1].X) +
+                                              (t[i + 1].Y - t[i - 1].Y) * (t[i + 1].Y - t[i - 1].Y)) / (2.0 * FrameMs / 1000.0);
+            double Climb(int i) => (t[i + 1].Alt - t[i - 1].Alt) / (2.0 * FrameMs / 1000.0);
+
+            double atLift = Ground(lift);
+            Debug.Log($"[takeoff] lift-off at frame {lift}: {atLift:F2} m/s ground, {Climb(lift):F2} m/s climb");
+            Assert.That(atLift, Is.InRange(3.0, 5.0), "a gull's feet leave at about 3-5 m/s");
+
+            var bounds = new (double seconds, double maxGround)[] { (0.5, 5.0), (1.0, 6.0), (2.0, 8.0) };
+            foreach (var (seconds, maxGround) in bounds)
+            {
+                int i = lift + (int)Math.Round(seconds * 1000.0 / FrameMs);
+                double g = Ground(i), c = Climb(i);
+                Debug.Log($"[takeoff] {seconds:F1} s after lift-off: {g:F2} m/s ground, {c:F2} m/s climb");
+                Assert.LessOrEqual(g, maxGround, $"{seconds} s after lift-off the gull was already at {g:F2} m/s");
+                Assert.GreaterOrEqual(g, 2.5, $"{seconds} s after lift-off the gull had slowed to {g:F2} m/s");
+                Assert.LessOrEqual(c, 2.0, $"{seconds} s after lift-off the gull climbed at {c:F2} m/s; a shallow climb is 1-2");
+                Assert.GreaterOrEqual(c, 0.0, $"{seconds} s after lift-off the gull was sinking ({c:F2} m/s)");
+            }
+        }
     }
 }
