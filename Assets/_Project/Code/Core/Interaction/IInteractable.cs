@@ -49,6 +49,11 @@ namespace HiddenHarbours.Core
         /// Helm stations are resolved before this candidate ladder.</summary>
         public const int DeckStorage = -10;
 
+        /// <summary>A berth aboard (<c>BoatBunk</c>, 2026-11-14): yields to her doors and every other
+        /// fixture, so a bunk beside a cabin door can never take the press meant for the door; outranks
+        /// a deck container's lid, because standing at a bunk you meant the bunk.</summary>
+        public const int Berth = -5;
+
         /// <summary>A thing bolted to the world that you walk up to and work — the seawater spot, Ginny's
         /// freezer, a shop counter. The default rung.</summary>
         public const int Fixture = 0;
