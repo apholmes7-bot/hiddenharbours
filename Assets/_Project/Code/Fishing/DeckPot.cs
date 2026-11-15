@@ -30,6 +30,9 @@ namespace HiddenHarbours.Fishing
         ReturnedShort = 3,
         /// <summary>Out but a berried hen — back she goes regardless of size.</summary>
         ReturnedBerried = 4,
+        /// <summary>Out but a protected species — documented, then back she goes regardless of size
+        /// (owner ruling 2026-11-15).</summary>
+        ReturnedProtected = 5,
     }
 
     /// <summary>What a banding attempt resolved to.</summary>
@@ -70,8 +73,10 @@ namespace HiddenHarbours.Fishing
             public float SizeMm;
             /// <summary>Deterministic berried flag (egg-carrying hen — always goes back).</summary>
             public bool Berried;
-            /// <summary>The sort verdict, pre-derived (keeper = legal size and not berried).</summary>
+            /// <summary>The sort verdict, pre-derived (keeper = legal size, not berried, not protected).</summary>
             public bool Keeper;
+            /// <summary>A protected species (Core <see cref="CatchKeep"/>): never a keeper, always returned.</summary>
+            public bool Protected;
             /// <summary>Whether a sort rule existed for the species (no rule ⇒ always-keeper).</summary>
             public bool HasRule;
             /// <summary>Greybox silhouette shape (from the rule; lobster default).</summary>
@@ -161,6 +166,11 @@ namespace HiddenHarbours.Fishing
                     a.HasRule = false;
                     a.Keeper = true;
                 }
+
+                // Protected species go back whatever the gauge says (owner ruling 2026-11-15) — the same
+                // shared keep rule every hold and hand asks, so the sort and the hold cannot disagree.
+                a.Protected = !CatchKeep.MayKeep(in item);
+                if (a.Protected) a.Keeper = false;
                 _animals.Add(a);
             }
         }
@@ -242,6 +252,7 @@ namespace HiddenHarbours.Fishing
                 return GrabOutcome.Keeper;
             }
             grabbed.Fate = DeckAnimalFate.Returned;
+            if (grabbed.Protected) return GrabOutcome.ReturnedProtected;
             return grabbed.Berried ? GrabOutcome.ReturnedBerried : GrabOutcome.ReturnedShort;
         }
 

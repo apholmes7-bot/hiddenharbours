@@ -48,6 +48,7 @@ namespace HiddenHarbours.Fishing
             // hooked fish does — rule 4's named contract rather than an asmdef reference.
             GameServices.FishBehaviour = Facts;
             GameServices.FishSizes = SizeFacts;
+            GameServices.FishConservation = ConservationFacts;
         }
 
         /// <summary>
@@ -62,8 +63,18 @@ namespace HiddenHarbours.Fishing
         /// authored weight range, for copy that names a catch's size.</summary>
         public static IFishSizeFacts SizeFacts => (IFishSizeFacts)Facts;
 
-        private sealed class RegistryFacts : IFishBehaviourFacts, IFishSizeFacts
+        /// <summary>This registry through the Core <see cref="IFishConservationFacts"/> seam — whether a
+        /// species is protected (release-only), read by <see cref="CatchKeep"/>.</summary>
+        public static IFishConservationFacts ConservationFacts => (IFishConservationFacts)Facts;
+
+        private sealed class RegistryFacts : IFishBehaviourFacts, IFishSizeFacts, IFishConservationFacts
         {
+            public bool IsProtected(string fishId)
+            {
+                FishSpeciesDef d = Get(fishId);
+                return d != null && d.Protected;
+            }
+
             public bool TryWeightRangeKg(string fishId, out float minKg, out float maxKg)
             {
                 FishSpeciesDef d = Get(fishId);

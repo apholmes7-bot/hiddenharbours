@@ -546,6 +546,13 @@ namespace HiddenHarbours.Fishing
                     StartSplash(animal);
                     EventBus.Publish(new DevNotice("Berried hen — back she goes"));
                     break;
+
+                case GrabOutcome.ReturnedProtected:
+                    // Documented, then released (owner ruling 2026-11-15): the record hears the whole item.
+                    StartSplash(animal);
+                    EventBus.Publish(new CatchReleased(animal.Item));
+                    EventBus.Publish(new DevNotice(FishingStrings.ProtectedReleased(animal.Item.DisplayName, animal.Item.WeightKg)));
+                    break;
             }
             RefreshPotSprite();
             MaybeTeachBait();

@@ -60,6 +60,9 @@ namespace HiddenHarbours.Core
             {
                 HeldCatchDto r = records[i];
                 if (r.Quantity <= 0 || !factory.TryCreate(r.SpeciesId, out CatchItem template)) continue;
+                // A species flagged protected after this save was written goes back in the water: it is
+                // skipped like an unresolvable id (the caller's restored count reports the loss).
+                if (!CatchKeep.MayKeep(r.SpeciesId)) continue;
                 CatchItem item = template.WithFreshness(r.Freshness);
                 for (int q = 0; q < r.Quantity; q++)
                 {

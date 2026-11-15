@@ -622,6 +622,16 @@ Balance dashboards (§6.2) report these coverage percentages so no single condit
    late game or make it a soft, recoverable dip.
 3. **Catch-and-release & minimum sizes:** do regulations/seasons forbid keeping undersized or
    out-of-season fish (Maritime realism, a soft P5 "rules of the sea")? Could tie into reputation.
+   **Protected species: RULED 2026-11-15** ("agreed they can be documented but must be released").
+   `FishSpeciesDef.Protected` (data, off by default; no shipped species is flagged yet, the owner
+   picks). A protected catch is landed and documented exactly as a kept one (same item, same
+   landing cue, `CatchReleased` carries species and weight), then released: the rod's landing
+   (`FishingController` via `CatchReleaseRule`), the deck pot sort (`GrabOutcome.ReturnedProtected`)
+   and the instant trap haul release it. Every hold, pail, freezer, hand and save restore also asks
+   the one Core rule `CatchKeep.MayKeep` (facts published by `FishSpeciesRegistry`), so nothing
+   downstream (hold, sale, cooking) can ever hold one. No persistent species journal exists yet; a
+   future one listens to `CatchReleased` as well as the kept-catch signals. Minimum sizes and
+   seasons stay open.
 4. **Almanac as progression:** is "discover all 100 + trophy records" a first-class collection
    meta-goal with rewards, and where does its UI live (likely [`progression-and-housing.md`](progression-and-housing.md))?
 5. **Legendary cadence:** one-per-save, long real-cooldown, or re-summonable via a costly ritual/bait?

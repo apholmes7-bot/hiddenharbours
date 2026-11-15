@@ -45,6 +45,7 @@ namespace HiddenHarbours.Player
         /// <summary>Adds one unit, FROZEN (settled first — anything entering this box is arrested).</summary>
         public bool TryAdd(CatchItem item)
         {
+            if (!CatchKeep.MayKeep(in item)) return false;   // protected: release-only, never held
             if (_items.Count >= _capacity) return false;
             SpoilContext spoil = SpoilContext.Capture();
             _items.Add(item.WithFreshness(Freshness.WithMode(item.Freshness, spoil.NowGameSeconds,

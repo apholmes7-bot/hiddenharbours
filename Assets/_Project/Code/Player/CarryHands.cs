@@ -226,6 +226,7 @@ namespace HiddenHarbours.Player
         /// </summary>
         public bool TryPutInHand(in CatchItem item)
         {
+            if (!CatchKeep.MayKeep(in item)) return false;    // protected: release-only, never in hand
             if (Slung != null) return false;                  // a sling outstanding means a hand is busy
 
             float lengthMeters = CatchSize.LengthMeters(item);
