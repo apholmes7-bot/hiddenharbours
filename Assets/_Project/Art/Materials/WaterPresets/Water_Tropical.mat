@@ -125,6 +125,7 @@ Material:
     - _SurfRunUpStrength: 1
     - _SurfStrength: 1
     - _SurfSupersedeFringe: 1
+    - _SurfSwellYield: 1
     - _SurfThreshold: 0.42
     - _SurfThresholdSoft: 0.16
     - _SurfaceTexStrength: 0.169
@@ -135,6 +136,7 @@ Material:
     - _SwashMaxEdgeShift: 0.35
     - _SwashSpeed: 0.16
     - _SwellReadSeaStateLo: 0.1
+    - _SwellShoalDepth: 1.5
     - _Turbidity: 0.12
     - _UntileStrength: 1
     - _UseCausticTex: 1

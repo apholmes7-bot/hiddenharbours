@@ -2374,6 +2374,22 @@ namespace HiddenHarbours.Art
         }
 
         /// <summary>
+        /// (owner clip review 2026-11-15: "All pulsing should be with the waves and move perpendicular to the
+        /// shoreline") How much of the offshore swell's light the shader's <c>SwellShoreKeep()</c> leaves at a
+        /// shore pixel. The swell yields by <paramref name="yield"/> (<c>_SurfSwellYield</c>) to the shore-normal
+        /// surf inside the break (<paramref name="surfBreaking01"/>) and over the shoaling band
+        /// (<paramref name="shoalDepth"/>, <c>_SwellShoalDepth</c>, linear in depth to the waterline), whichever
+        /// is further on. Both gates are functions of depth and the break, never of the swell's own phase, so
+        /// nothing left near the beach can slide along it. 1 offshore; the break gate alone at shoalDepth 0.
+        /// Pure; presentation only (rule 5).
+        /// </summary>
+        public static float SwellShoreKeep(float surfBreaking01, float depth, float yield, float shoalDepth)
+        {
+            float shoal = shoalDepth > 0f ? 1f - Mathf.Clamp01(Mathf.Max(depth, 0f) / shoalDepth) : 0f;
+            return 1f - Mathf.Clamp01(yield) * Mathf.Max(Mathf.Clamp01(surfBreaking01), shoal);
+        }
+
+        /// <summary>
         /// (owner judge pass 2026-08-01) The bounded shift the swash applies to the DRAWN water edge — the
         /// shader's <c>edgeSwash</c>. The owner asked for "the swash in and out of the water along with the
         /// tides"; until now the swash moved only the FOAM band, so the water's own edge never budged and

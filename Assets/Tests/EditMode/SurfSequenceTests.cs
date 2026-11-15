@@ -26,8 +26,8 @@ namespace HiddenHarbours.Tests.EditMode
         const string WaterPath = "Assets/_Project/Art/Shaders/HiddenHarboursWater.shader";
         const string AdvectPath = "Assets/_Project/Art/Shaders/HiddenHarboursFoamBufferAdvect.shader";
         const string Dial = "_SurfFringeSequenceStrength";
-        const string BaseWaterHash = "dae4cab80aacdb1f35d1c14216a71aad1906164e2fcd5d83db565e54604fcaea";
-        // Approved b5825e1f; re-approved at W1 Phase D (#932, owner d20) and C2a Phase D (owner, clarity 1) and at water gains B7 (#992, the seat's lean under the standing word of 10-29) and at crest glow L1 (#1004, the owner's ruling of 11-01) and at the foam lattice hash (the open-sea repeat fix, a named moved premise) and at the run-up wash (fix/shore-runup-foam, the owner's shore clip review of 11-15) and at the run-up wash v4 (fix/shore-runup-foam, the owner's v3 clip review of 11-15). UTF-8 without BOM, LF. These are scope guards, not copies of physics.
+        const string BaseWaterHash = "60c35c73d20d8a6414a675f5fbb8ff0bae2e5eae1c1c283bc7efe6f07f1fcf5f";
+        // Approved b5825e1f; re-approved at W1 Phase D (#932, owner d20) and C2a Phase D (owner, clarity 1) and at water gains B7 (#992, the seat's lean under the standing word of 10-29) and at crest glow L1 (#1004, the owner's ruling of 11-01) and at the foam lattice hash (the open-sea repeat fix, a named moved premise) and at the run-up wash (fix/shore-runup-foam, the owner's shore clip review of 11-15) and at the run-up wash v4 (fix/shore-runup-foam, the owner's v3 clip review of 11-15) and at the shore-normal pulse (fix/shore-runup-foam, the owner's v4 clip review of 11-15). UTF-8 without BOM, LF. These are scope guards, not copies of physics.
         const string LegacyDepth =
             "                float foamDepth  = depthC - lerp(BeachSwash(worldXY, depthC, t) * swashSlope * swashGate,  // local, foam-only\n" +
             "                                                 surfRunUpM, boreFoamBlend);   // …and the foam rides the bore's wash too\n";
@@ -121,7 +121,7 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.That(a.RunUpMeters, Is.EqualTo(b.RunUpMeters).Within(.0001f));
             string deposit = Code(Read(AdvectPath));
             foreach (string expression in new[] {
-                "floatphase=SurfBorePhaseDeg(breakLinePt,travelS,fs);",
+                "floatphase=SurfBoreClockPhaseDeg(breakLinePt,travelS,fs);",
                 "floatbore=SurfBorePulse01(phase,_BreakerBore.x)*birth;",
                 "floatfront=breaking*alive*bore;",
                 "foam+=front*depositStrength*SURF_DEPOSIT_RATE*max(_HHSurfDeposit.z,0.0);" })
@@ -167,16 +167,17 @@ namespace HiddenHarbours.Tests.EditMode
             // Re-pinned at the run-up wash (fix/shore-runup-foam): each file gains exactly the four
             // _Wash* keys at the shader defaults (ShoreRunUpWashTests reads them); nothing else moved. Again at v4:
             // three more keys (_WashLeeShare, _WashResidueSoften, _WashLineSlopeCap) and _WashSheetOpacity 0.4 -> 0.2.
+            // Again at the shore-normal pulse: two more keys (_SurfSwellYield 1, _SwellShoalDepth 1.5).
             string[] originalHashes = {
-                "98dc55ad46de5b8d4210219f9e9da9e62d8e74e933dfe89c87c2ed1f5a7a01e9",
-                "d3a1280b48647d4dbf46def91bf17add4e89f2765bba5a67bb9f1831e924f2d8",
-                "7e9b367c6bace31028dff55aad73c5d694e84d50465ec63c6896425ccdea1130",
-                "da5820a7c117d8eb99496119fcdec799da5d48377cca0f510763af024efbfe80",
-                "ada6d60d850ba78fef87c782e924eafd007208f34fedee77bb80be4eff1b7df2",
-                "80a4641e9c80c953f42eb151a96cd2d1f212ecef34f573a9b7d4f6f6dfbdeaac",
-                "cd909d8230a2f64478d04468b96a6a881d0f64fb292eb8a88a7d7e5a1326b30d",
-                "37f0f50d1c259092a157d0185a57c7d326056e55d1b5bbe79a50c39f32058adb",
-                "bf047f257c8bcb5b5f1843ed2aabaea09eb88c87b4e410b88cc40dc25457394c" };
+                "d704c1384c1d92c2923e7aa90ddd5d30574332e46355c38b44d7b3029f1204c1",
+                "c2a5bc499fcb4774b2ff0b0a269a1a6ef41b81171b31afef9a027b8fce17b982",
+                "9a631dbe14302d458c41eaeaa2b39c0cf7d11bbfec2e662acbc6370f488dcd08",
+                "27227f6ddeaee7240af55b5bfeb6a5ed4e9f8df4bc6dda6d13016e8b6e3c3ab8",
+                "a35596e0f2ef124920f6214213104c9bf904b5ce7d57123a8f0c7156cd7d1380",
+                "f36e93375654c4bc78c830a39f92779dbd7910ed760aa78a53c35501351aaf00",
+                "cb9e490341ccea08a32c4918b347d8ad3686463ffccfcb1a58b0c48362e3fa21",
+                "f400bcd2be8ef84b767f889aac8a32ceadb00ad22519e86862a5c5d5adc9ff80",
+                "a62ff1c91c3964b6ab1643046be18479601bd0f39dc7acab47824383d158edcb" };
             Assert.That(files.Length, Is.EqualTo(9));
             for (int i = 0; i < files.Length; i++)
             {
@@ -200,13 +201,15 @@ namespace HiddenHarbours.Tests.EditMode
             // ADR 0040 B2 adds the curl handoff under the lip and barrel and the nearest-crest birth read; the pinned source includes them.
             // Water gains 2 and 3 (#992, ADR 0027 number 7) add the water type, its plumes and the crest glow outside the surf paths; the pinned source includes them.
             // Crest glow L1 (#1004, ADR 0027) lights the thin top on either facing and ships through the water type, outside the surf paths; the pinned source includes it.
+            // The shore-normal pulse (fix/shore-runup-foam, owner clip review 11-15) reads the bore's phase and birth on the refracted bore clock (BoreClockPoint, a static jitter) and the fetch seaward of the pixel; the pinned sources include it.
             MainSource(Read(WaterPath)); // Pins the edge, clip, sheet and both twins to approved main.
-            Assert.That(Hash(Read(AdvectPath)), Is.EqualTo("5c33ae63e18cb7848ae313d9ffcabfc050128c2739d56cf1126ee7520701790a"));
+            Assert.That(Hash(Read(AdvectPath)), Is.EqualTo("7f811ca637f40ee27a73002a7469a386f822a5853da8a414fbba687f0b2cc6cf"));
             Assert.That(Hash(Read("Assets/_Project/Code/Core/Environment/BreakerMath.cs")),
-                Is.EqualTo("69e32d51219de35a79b8f20fc6f5c2da92cec815594a4bfd886efacf66baf61c"));
+                Is.EqualTo("294994086ac8bdb0f1a8de662b7520c58698332fff20f241cb64461ace8007f4"));
             Assert.That(Hash(Read("Assets/_Project/Code/Art/WaterSurface.cs")),
             // Intro at sea PR 2 moves the wind-shape lookup to the hour clock; the pinned source includes it.
-                Is.EqualTo("c4ccd73214cc2e2a08d2ca3272fd12b431dfba61fe01a345c74addf5e85ecab6"));
+            // The shore-normal pulse adds SwellShoreKeep, the CPU twin of the shader's swell yield; the pinned source includes it.
+                Is.EqualTo("4ce8a28d5f527e90193b02823b85b1433cd1ed442f0f9ef21749da369c80da39"));
         }
 
         static void RequireGpu()

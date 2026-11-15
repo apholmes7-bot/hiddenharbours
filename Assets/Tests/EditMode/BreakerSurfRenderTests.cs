@@ -571,7 +571,7 @@ namespace HiddenHarbours.Tests.EditMode
         /// </summary>
         void PublishTheSea(float seaState01)
         {
-            WaveTrains trains = WaveMath.TrainsFrom(ShotWind, seaState01, GameServices.WaveField);
+            WaveTrains trains = SurfSetMoment.AtASet(WaveMath.TrainsFrom(ShotWind, seaState01, GameServices.WaveField));
             WaveFieldBridge.PublishGlobals(WaveFieldBridge.Pack(in trains));
             WaveFieldBridge.PublishFetchGlobals(GameServices.WaveFetch, ShotWind);
             WaveFieldBridge.PublishBreakerGlobals(trains.Dominant, GameServices.WaveFetch,

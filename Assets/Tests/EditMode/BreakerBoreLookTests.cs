@@ -221,6 +221,10 @@ namespace HiddenHarbours.Tests.EditMode
             RequireAGraphicsDevice();
             BuildTheShore();
             AimAtTheSurf(NineMileCreekMainland.SpringLowWater);
+            // A MECHANISM arm, so ONE train: the bore is born full every period. On the refracted clock
+            // (BreakerSettings.BoreRefraction) the whole beach shares one birth, so the eight-train sea can sit
+            // in a set lull across the entire frame for longer than the four moments below span.
+            _singleTrain = true;
             float period = DominantPeriod();
 
             // The cosmetic swash is OFF in every shot here (see Shoot), so the ONLY thing that can move the

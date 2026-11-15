@@ -130,6 +130,7 @@ Shader "Hidden/HiddenHarbours/FoamBufferAdvect"
             float _WaveFetchGrowthPower;
             float4 _WaveFetchParams, _WaveFetchParams2;
             float4 _BreakerDepths, _BreakerOuter, _BreakerParams, _BreakerAnatomy, _BreakerBore;
+            float4 _BreakerRefract;   // the bore clock's refraction (see the water shader's twin)
             float4 _HHSeaLevelWorld;      // x = the drawn sea level (m); WaterSurface publishes it
             float4 _HHSurfDeposit;        // x = strength, y = the drawn wave scale, z = dt (s), w = unused
             TEXTURE2D(_HHSeabedTex); SAMPLER(sampler_HHSeabedTex);
@@ -473,6 +474,35 @@ Shader "Hidden/HiddenHarbours/FoamBufferAdvect"
                 float theta = k * dot(trains[dominant].xy, breakLinePoint * fs) + phis[dominant]
                             + SurfBoreOmega() * max(travelS, 0.0);
                 float deg = theta * 57.29577951;
+                return deg - 360.0 * floor(deg / 360.0);
+            }
+
+            // Twin: BreakerMath.BoreClockPoint - where the bore's clock reads the field: the break-line point
+            // pulled toward the field's origin by the refraction (_BreakerRefract.x). At 1 the phase's position
+            // term is gone: the bore's phase is the field's phase plus the shore-normal travel time, so every
+            // point of a beach is reached together and nothing runs ALONG the shore (a refracted crest lies on
+            // the depth contours). At 0 (unpublished) it is the break-line point, the offshore heading.
+            float2 SurfBoreClockPoint(float2 breakLinePoint)
+            {
+                return breakLinePoint * (1.0 - saturate(_BreakerRefract.x));
+            }
+
+            // Twin: BreakerMath.BorePhaseJitterDegrees - a small STATIC alongshore offset (degrees) so the
+            // refracted wash is not a ruler line. A function of position only: it can never travel.
+            float SurfBoreJitterDeg(float2 breakLinePoint)
+            {
+                float amplitude = max(_BreakerRefract.y, 0.0);
+                float wavelength = _BreakerRefract.z;
+                if (amplitude <= 0.0 || wavelength <= 1e-3) return 0.0;
+                float w = 6.28318530718 / wavelength;
+                return amplitude * sin(breakLinePoint.x * w) * cos(breakLinePoint.y * w);
+            }
+
+            // Twin: BreakerMath.BoreClockPhaseDegrees - the phase the bore, its sheet and its run-up ride.
+            float SurfBoreClockPhaseDeg(float2 breakLinePoint, float travelS, float freqScale)
+            {
+                float deg = SurfBorePhaseDeg(SurfBoreClockPoint(breakLinePoint), travelS, freqScale)
+                          + SurfBoreJitterDeg(breakLinePoint);
                 return deg - 360.0 * floor(deg / 360.0);
             }
 
@@ -823,10 +853,14 @@ Shader "Hidden/HiddenHarbours/FoamBufferAdvect"
                     float outerMax = max(_BreakerOuter.x, max(_BreakerOuter.y, _BreakerOuter.z));
                     if (depth > 0.0 && depth <= outerMax)
                     {
-                        FetchFactors fetchFactors = FetchFactorsFrom(FetchMarch01(worldXY), SwellShelter01(worldXY));
+                        // The water shader's shore fetch, twin: read _BreakerRefract.w metres seaward along the
+                        // shore normal, so the residue is laid where the drawn bore runs.
+                        float2 dir = ShoreDir(worldXY);
+                        float2 fetchXY = (_BreakerRefract.w > 0.0 && dot(dir, dir) > 1e-6)
+                                       ? worldXY - dir * _BreakerRefract.w : worldXY;
+                        FetchFactors fetchFactors = FetchFactorsFrom(FetchMarch01(fetchXY), SwellShelter01(fetchXY));
                         float fetchEnv = FetchFactorAt(fetchFactors, clamp((int)(_WaveFieldParams.w + 0.5), 0, 7));
                         float breaking = SurfBreaking01(depth, fetchEnv);
-                        float2 dir = ShoreDir(worldXY);
                         if (breaking > 0.002 && dot(dir, dir) > 1e-6)
                         {
                             float ageM, travelS;
@@ -836,8 +870,8 @@ Shader "Hidden/HiddenHarbours/FoamBufferAdvect"
                             float2 breakLinePt = worldXY - dir * ageM;
                             float omega = SurfBoreOmega();
                             float periodS = omega > 1e-6 ? 6.2831853 / omega : 0.0;
-                            float phase = SurfBorePhaseDeg(breakLinePt, travelS, fs);
-                            float birth = SurfBoreBirth01(breakLinePt, travelS, phase, periodS, fs, fetchEnv, fetchFactors);
+                            float phase = SurfBoreClockPhaseDeg(breakLinePt, travelS, fs);
+                            float birth = SurfBoreBirth01(SurfBoreClockPoint(breakLinePt), travelS, phase, periodS, fs, fetchEnv, fetchFactors);
                             float bore = SurfBorePulse01(phase, _BreakerBore.x) * birth;
                             // Twin: BreakerMath.SurfAt — Breaking01 * Whitewater01 * Bore01.
                             float front = breaking * alive * bore;

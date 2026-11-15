@@ -419,6 +419,15 @@ Shader "HiddenHarbours/Water"
         // The steepest edge the line measures (m of height per m): a JUMP in the run-up across the sheet (where
         // the bore's blend changes along the shore) is steeper than any real edge, and is not drawn as a line.
         _WashLineSlopeCap  ("Run-up wash: steepest edge slope the leading line is drawn on (m per m)", Range(0.05,4)) = 0.5
+        // Inside the surf zone the swell has BROKEN: what runs up the beach is the bore, refracted to the shore.
+        // The unbroken swell's light (its height, slope and crest shading) yields to it by this much there, so
+        // an oblique offshore crest no longer slides ALONG the wash. 0 = the swell draws through the surf.
+        _SurfSwellYield    ("Surf: how far the swell's light yields to the bore inside the surf zone (0 = none)", Range(0,1)) = 1
+        // The swell refracts before it breaks: over the last metres of depth its crests swing to the shore, so an
+        // offshore heading drawn there slides ALONG the beach (the 2026-11-15 clip: the shallows' caustics and
+        // swell shading ran alongshore at 8-9 m/s). Over this depth band (m) the swell's light yields to the
+        // shore-normal surf by _SurfSwellYield, as it does inside the break. 0 = only the break gate yields.
+        _SwellShoalDepth   ("Surf: depth (m) over which the offshore swell's light yields to the shore-normal surf (0 = off)", Float) = 1.5
         // Owner ruling 2026-08-28: where the sea is actually breaking, the computed whitewater takes the
         // shore fringe's place — the fringe was always the geometric stand-in for it. 0 = keep both
         // (today's look exactly, the passthrough); 1 = physics wins wherever the whitewater is alive.
@@ -1492,6 +1501,10 @@ Shader "HiddenHarbours/Water"
             // full energy), z = Hunt's run-up coefficient, w = the run-up cap (m of level). All-zero = a stale
             // config = the surf exactly as revision 2 shipped it.
             float4 _BreakerBore;
+            // The bore clock's REFRACTION from GameConfig.Breakers (WaveFieldBridge.PublishBreakerGlobals):
+            // x = refraction (1 = crests on the contours), y = static alongshore jitter (deg), z = its
+            // wavelength (m). All-zero = unpublished = the offshore heading, as before.
+            float4 _BreakerRefract;
 
             // SRP-batcher friendly: every per-material property in one CBUFFER (the runtime sets these via a
             // MaterialPropertyBlock; the sim-driven ones change on the slow tick, not per frame).
@@ -1620,6 +1633,7 @@ Shader "HiddenHarbours/Water"
                 float  _SurfBandDither;
                 float  _WashSheetOpacity, _WashLineWidth, _WashLineOpacity, _WashSeawardDepth, _WashPresenceRamp;
                 float  _WashLeeShare, _WashResidueSoften, _WashLineSlopeCap;
+                float  _SurfSwellYield, _SwellShoalDepth;
                 // B1 FRINGE UNIFORM BEGIN
                 float  _SurfFringeSequenceStrength;
                 // B1 FRINGE UNIFORM END
@@ -3215,6 +3229,35 @@ Shader "HiddenHarbours/Water"
                 return deg - 360.0 * floor(deg / 360.0);
             }
 
+            // Twin: BreakerMath.BoreClockPoint - where the bore's clock reads the field: the break-line point
+            // pulled toward the field's origin by the refraction (_BreakerRefract.x). At 1 the phase's position
+            // term is gone: the bore's phase is the field's phase plus the shore-normal travel time, so every
+            // point of a beach is reached together and nothing runs ALONG the shore (a refracted crest lies on
+            // the depth contours). At 0 (unpublished) it is the break-line point, the offshore heading.
+            float2 SurfBoreClockPoint(float2 breakLinePoint)
+            {
+                return breakLinePoint * (1.0 - saturate(_BreakerRefract.x));
+            }
+
+            // Twin: BreakerMath.BorePhaseJitterDegrees - a small STATIC alongshore offset (degrees) so the
+            // refracted wash is not a ruler line. A function of position only: it can never travel.
+            float SurfBoreJitterDeg(float2 breakLinePoint)
+            {
+                float amplitude = max(_BreakerRefract.y, 0.0);
+                float wavelength = _BreakerRefract.z;
+                if (amplitude <= 0.0 || wavelength <= 1e-3) return 0.0;
+                float w = 6.28318530718 / wavelength;
+                return amplitude * sin(breakLinePoint.x * w) * cos(breakLinePoint.y * w);
+            }
+
+            // Twin: BreakerMath.BoreClockPhaseDegrees - the phase the bore, its sheet and its run-up ride.
+            float SurfBoreClockPhaseDeg(float2 breakLinePoint, float travelS, float freqScale)
+            {
+                float deg = SurfBorePhaseDeg(SurfBoreClockPoint(breakLinePoint), travelS, freqScale)
+                          + SurfBoreJitterDeg(breakLinePoint);
+                return deg - 360.0 * floor(deg / 360.0);
+            }
+
             // Twin: BreakerMath.BorePulse01 — a SMOOTH periodic hump peaking at the front (90 degrees),
             // ((1 + sin theta)/2)^sharpness. sharpness <= 0 returns exactly 1: no pulse, the steady state.
             float SurfBorePulse01(float phaseDeg, float sharpness)
@@ -3650,6 +3693,17 @@ Shader "HiddenHarbours/Water"
             // 1 at/above the "full" threshold and (1 - _SwashCalmGate) at/below the glassy one, so
             // _SwashCalmGate = 0 is "identical at every sea-state" (the pre-fix behaviour).
             // Twin: HiddenHarbours.Art.WaterSurface.SwashSeaStateGate.
+            // How much of the offshore swell's light survives at a shore pixel: it yields (by _SurfSwellYield) to
+            // the shore-normal surf inside the break (surfBreaking01) and over the shoaling band (_SwellShoalDepth,
+            // linear in depth to the waterline), whichever is further on. Both gates are functions of depth and
+            // the break, never of the swell's own phase, so what is left near the beach cannot slide along it.
+            // 1 offshore; exactly the break gate alone when _SwellShoalDepth is 0. Twin: WaterSurface.SwellShoreKeep.
+            float SwellShoreKeep(float surfBreaking01, float depthM)
+            {
+                float shoal = _SwellShoalDepth > 0.0 ? 1.0 - saturate(max(depthM, 0.0) / _SwellShoalDepth) : 0.0;
+                return 1.0 - saturate(_SurfSwellYield) * max(saturate(surfBreaking01), shoal);
+            }
+
             float SwashSeaStateGate()
             {
                 float lo = saturate(_SwellReadSeaStateLo);
@@ -5016,6 +5070,10 @@ Shader "HiddenHarbours/Water"
                 float waveFetch01 = FetchMarch01(worldXY);
                 FetchFactors waveFetchFactors = FetchFactorsFrom(waveFetch01, SwellShelter01(worldXY));
                 float waveFetchEnv = FetchFactorAt(waveFetchFactors, clamp((int)(_WaveFieldParams.w + 0.5), 0, 7));
+                // The SHORE's fetch: what the surf, the wash and the drawn edge read. It is this pixel's own
+                // envelope until the surf block below moves it to the probe point a bore was born near.
+                FetchFactors surfFetchFactors = waveFetchFactors;
+                float surfFetchEnv = waveFetchEnv;
 
                 // ---- layer 2 surface (computed first; warps the coords every other layer reads) -------------
                 // ADR 0027 #9: the octaves' shoal depth — ONE guarded, STILL (unwarped) seabed read. The
@@ -5169,11 +5227,25 @@ Shader "HiddenHarbours/Water"
                     // otherwise modelled; this is where it enters, and BreakerMath.MetersSinceBreakAlong
                     // takes the heading as a parameter so the C# reference can be handed the same one.
                     surfDir = ShoreDir(surfEvalXY);
-                    surfBreaking = SurfBreaking01(surfEvalDepth, waveFetchEnv);
+                    // A bore carries the energy it was born with, and the beach it runs onto does not take it
+                    // back. So the surf reads the wind-fetch envelope _BreakerRefract.w metres SEAWARD of here
+                    // along the shore normal (BreakerSettings.BoreFetchProbeMeters). Read on the sand, a near-
+                    // alongshore wind put a thin lee strip on the beach wherever the fetch march clipped it,
+                    // and the drawn edge notched along that strip's ragged border (owner clip review
+                    // 2026-11-15, "remove any jaggedness"). A headland's lee is wider than the probe and
+                    // stays. 0 (unpublished) = the pixel's own envelope, as before.
+                    float surfFetchProbeM = max(_BreakerRefract.w, 0.0);
+                    if (surfFetchProbeM > 0.0 && dot(surfDir, surfDir) > 1e-6)
+                    {
+                        float2 fetchProbeXY = surfEvalXY - surfDir * surfFetchProbeM;
+                        surfFetchFactors = FetchFactorsFrom(FetchMarch01(fetchProbeXY), SwellShelter01(fetchProbeXY));
+                        surfFetchEnv = FetchFactorAt(surfFetchFactors, clamp((int)(_WaveFieldParams.w + 0.5), 0, 7));
+                    }
+                    surfBreaking = SurfBreaking01(surfEvalDepth, surfFetchEnv);
                     if (surfBreaking > 0.002 && dot(surfDir, surfDir) > 1e-6)
                     {
                         float travelS = 0.0;
-                        SurfMarch(surfEvalXY, surfDir, waveFetchEnv, ageM, travelS);
+                        SurfMarch(surfEvalXY, surfDir, surfFetchEnv, ageM, travelS);
                         // The whitewater: the shipped local-speed law, blending toward the travel-time law
                         // as the run-up dial comes up (a wash that could never reach the sand is not a
                         // run-up; at 0 the sheet is today's exactly - see SurfWhitewaterByTravel01).
@@ -5201,16 +5273,16 @@ Shader "HiddenHarbours/Water"
                             float2 breakLinePt = surfEvalXY - surfDir * ageM;
                             float omega = SurfBoreOmega();
                             float periodS = omega > 1e-6 ? 6.2831853 / omega : 0.0;
-                            float borePhase = SurfBorePhaseDeg(breakLinePt, travelS, surfFreqScale);
-                            float birth = SurfBoreBirth01(breakLinePt, travelS, borePhase, periodS,
-                                                          surfFreqScale, waveFetchEnv, waveFetchFactors);
+                            float borePhase = SurfBoreClockPhaseDeg(breakLinePt, travelS, surfFreqScale);
+                            float birth = SurfBoreBirth01(SurfBoreClockPoint(breakLinePt), travelS, borePhase, periodS,
+                                                          surfFreqScale, surfFetchEnv, surfFetchFactors);
                             surfBore = SurfBorePulse01(borePhase, _BreakerBore.x) * birth;
                             surfSheet = SurfBoreSheet01(borePhase, periodS) * birth;
 
                             // The wash's reach: Hunt's law on the height the bore was BORN with (the
                             // depth-limited height at the break line, not the local one, which is 0 at the
                             // very edge where the reach matters), what is left of it, and its pulse.
-                            float breakDepth = BreakerDepthAtEnv(_BreakerDepths.xyz, _BreakerDepths.w, waveFetchEnv);
+                            float breakDepth = BreakerDepthAtEnv(_BreakerDepths.xyz, _BreakerDepths.w, surfFetchEnv);
                             float standingAtBreak = max(_BreakerAnatomy.y, 0.0) * max(breakDepth, 0.0);
                             surfRunUpM = SurfRunUpMeters(standingAtBreak, surfAlive, surfXi, surfBore) * boreEdge;
 
@@ -5322,7 +5394,7 @@ Shader "HiddenHarbours/Water"
                 // the fade at the lee's reading (FringeLeeOpen01, FringeLeeReading). The fringe below takes the
                 // same factor, so the edge and the foam on it run up and back together. Open water and light wind
                 // keep the factor at exactly 1 (the select's else arm): their edge is unchanged to the bit.
-                float leeOpen  = FringeLeeOpen01(waveFetchEnv);
+                float leeOpen  = FringeLeeOpen01(surfFetchEnv);
                 float leeSea   = FringeLeeReading(saturate(_Chop), _WaveFetchFringe.y, leeOpen);
                 float leeSwash = leeSea < saturate(_Chop)
                                ? SwashSeaStateGateAt(leeSea) / max(SwashSeaStateGate(), 1e-3) : 1.0;
@@ -5372,7 +5444,7 @@ Shader "HiddenHarbours/Water"
                 // Twin: WaterSurface.BoreEdgeBlend / WaterSurface.DrawnEdgeShift, pinned by
                 // WaterDrawnEdgeOnePieceTests (CI has no GPU; the law is arithmetic, so it is testable).
                 float boreEdgeBlend = (depth > -surfBeachReach)
-                    ? saturate(SurfBreaking01(SURF_EDGE_REF_DEPTH, waveFetchEnv)
+                    ? saturate(SurfBreaking01(SURF_EDGE_REF_DEPTH, surfFetchEnv)
                                * saturate(_SurfStrength) * saturate(_SurfRunUpStrength))
                     : 0.0;                                  // the surf block's own reach gate (l.4613)
                 edgeSwash = lerp(edgeSwash, boreEdgeShift, boreEdgeBlend);
@@ -5473,6 +5545,17 @@ Shader "HiddenHarbours/Water"
                 float waveFreqScale = max(_OceanSwellScale, 1e-4) / WAVE_LEGACY_SCALE_REF;
                 WaveFieldSample(Pixelize(worldXY), waveFreqScale, waveFetchFactors,
                                 waveHeight, waveSlope, waveCrest, wavePrimCos);
+                // THE SURF ZONE SHOWS THE BORE, NOT THE SWELL (owner clip review 2026-11-15: "All pulsing should
+                // be with the waves and move perpendicular to the shoreline"). The swell trains keep their
+                // offshore heading, so their crests cross a beach obliquely and their light slid ALONG the wash
+                // at c / sin(angle) - measured 8-12 m/s on the St Peters clip. Shoreward of the break line
+                // that swell has broken and the bore (refracted, shore-normal) is what is there, so its light
+                // yields by the break gate, itself a function of depth and so constant along the shore.
+                // col.rgb ONLY: the hull's sample (WaveMath, the vertex stage) is untouched (rule 5).
+                float swellKeep = SwellShoreKeep(surfBreaking, depth);
+                waveHeight *= swellKeep;
+                waveSlope *= swellKeep;
+                waveCrest *= swellKeep;
 
             #if defined(_USE_SEABEDTEX)
                 // ---- SEABED ABSORPTION (col.rgb ONLY; ADR 0027 #7 — SUPERSEDES the Arc C see-through) --------
@@ -5955,6 +6038,10 @@ Shader "HiddenHarbours/Water"
                                         chy1, cslopeT, ccrestT, cprimT);
                         WaveFieldSample(Pixelize(worldXY - float2(0.0, ce)), waveFreqScale, waveFetchFactors,
                                         chy0, cslopeT, ccrestT, cprimT);
+                        // The taps read the SAME yielded field as the centre (waveHeight carries swellKeep):
+                        // a raw tap around a yielded centre is a false curvature, and a raw field in the
+                        // shallows focuses the oblique offshore crests into light that runs along the beach.
+                        chx1 *= swellKeep; chx0 *= swellKeep; chy1 *= swellKeep; chy0 *= swellKeep;
                         caustic = HHCausticPattern(caustic, waveHeight, chx1, chx0, chy1, chy0,
                             ce, _CausticCurvatureGain, _CausticCurvatureBlend, _WaveFieldParams.z);
                     }
