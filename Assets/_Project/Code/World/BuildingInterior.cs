@@ -573,6 +573,23 @@ namespace HiddenHarbours.World
         IsoCharacterSprite _climbSkin;
         bool _climbClaimedMoveAxis;
 
+        /// <summary>The occupant's body while the climb has taken it out of the physics argument, and
+        /// the body type it had before — restored by <see cref="CancelClimb"/>, which every exit from a
+        /// climb comes through. Null when no climb is holding a body.</summary>
+        Rigidbody2D _climbBody;
+        RigidbodyType2D _climbBodyWas;
+
+        /// <summary>How many times the landing is pushed out of the deepest obstacle it stands in before
+        /// the search stops. Structural, not a balance value: one pass clears a single piece of
+        /// furniture, the rest cover a landing wedged between two, and the cap only exists so a landing
+        /// boxed in on every side cannot loop.</summary>
+        const int LandingResolvePasses = 4;
+
+        static readonly System.Collections.Generic.List<Collider2D> s_landingOverlaps =
+            new System.Collections.Generic.List<Collider2D>();
+        static readonly System.Collections.Generic.List<Collider2D> s_landingOwn =
+            new System.Collections.Generic.List<Collider2D>();
+
         /// <summary>How far the occupant may be from where the climb last put them before the climb
         /// concludes something else owns the body. Generous enough that a physics settle or a float
         /// wobble is not a hand-off, tight enough that any deliberate move — a spawn, a region hop, a dev
@@ -609,13 +626,25 @@ namespace HiddenHarbours.World
             if (seconds <= 0f)
             {
                 // The instant swap, kept as an owner setting. Still a MOVE — the storeys are a storey
-                // apart whether or not the walk between them is drawn.
+                // apart whether or not the walk between them is drawn — and still a LANDING, so a chair
+                // standing on the arrival point cannot trap the player in it.
                 WriteOccupant(occupant, head);
+                ResolveLanding(occupant, occupant.GetComponent<Rigidbody2D>());
                 return;
             }
 
             _climb = new StairTraversal(foot, head, seconds);
             _climbSkin = occupant.GetComponent<IsoCharacterSprite>();   // resolved once, not per frame
+
+            // ⭐ FURNITURE CAN NEVER CANCEL OR DEFLECT A CLIMB (owner rule, 2026-11-14). The storey swaps
+            // BEFORE the walk (TryGoToLevel), so the destination floor's furniture colliders are already
+            // solid while the body is carried through them. A DYNAMIC body that the climb writes into a
+            // chair is depenetrated by the next physics step, the ownership test in TickClimb reads that
+            // push as "somebody else moved the fisher" and the climb is abandoned partway (sageCottage:
+            // the descent stopped ~1.6 m short). So for the length of the walk the body is KINEMATIC —
+            // the solver does not push a kinematic body out of static colliders — and its own type is put
+            // back by CancelClimb on every exit: arrival, interruption, or this house being disabled.
+            HoldBody(occupant.GetComponent<Rigidbody2D>());
 
             // The move keys would otherwise fight the path — and, worse, would look like another owner
             // taking the body and abandon the climb halfway up. Only claimed if it is going spare, and
@@ -663,6 +692,10 @@ namespace HiddenHarbours.World
 
             if (!_climb.IsDone) return true;
 
+            // Arrived — and if the landing itself is inside a piece of furniture, stand them at the
+            // nearest clear point rather than leaving the solver to fling (or wedge) them once the body
+            // is dynamic again.
+            ResolveLanding(occupant, _climbBody);
             CancelClimb();
             return false;   // arrived: this frame's threshold test runs, and answers about the new storey
         }
@@ -701,7 +734,99 @@ namespace HiddenHarbours.World
                 _climbClaimedMoveAxis = false;
             }
 
+            ReleaseBody();
             _climb = null;
+        }
+
+        /// <summary>Take the body out of the physics argument for the walk. Only a DYNAMIC body is
+        /// touched: a kinematic one is already not pushed by static colliders, and a static one is not a
+        /// walker. Velocity is zeroed so a kinematic body cannot drift along the last walking step.</summary>
+        void HoldBody(Rigidbody2D body)
+        {
+            ReleaseBody();
+            if (body == null || body.bodyType != RigidbodyType2D.Dynamic) return;
+
+            _climbBodyWas = body.bodyType;
+            body.bodyType = RigidbodyType2D.Kinematic;
+            body.linearVelocity = Vector2.zero;
+            body.angularVelocity = 0f;
+            _climbBody = body;
+        }
+
+        /// <summary>Give the body its own type back. Restored only if it is still the kinematic the
+        /// climb made it — if something else re-typed the body mid-climb (a boarding, a cutscene), that
+        /// owner's choice stands. Explicit <c>!= null</c>: a body destroyed mid-climb is fake-null.</summary>
+        void ReleaseBody()
+        {
+            Rigidbody2D body = _climbBody;
+            _climbBody = null;
+            if (body == null || body.bodyType != RigidbodyType2D.Kinematic) return;
+
+            body.bodyType = _climbBodyWas;
+            body.linearVelocity = Vector2.zero;
+            body.angularVelocity = 0f;
+        }
+
+        /// <summary>
+        /// <b>A landing is never inside furniture.</b> If the body's colliders overlap anything solid at
+        /// the arrival point, push it out along the minimum separation of the DEEPEST overlap, and repeat
+        /// up to <see cref="LandingResolvePasses"/> times. The minimum separation is the nearest clear
+        /// point to that obstacle, so a single chair resolves to the closest spot beside it; the result
+        /// is a function of the colliders standing there and nothing else, so the same landing in the
+        /// same house always resolves to the same point.
+        ///
+        /// <para>Only what the body would actually collide with counts: triggers are skipped and the
+        /// layer collision matrix is honoured. A body-less occupant (an EditMode transform) has nothing
+        /// to collide and is left exactly where the climb put it.</para>
+        /// </summary>
+        void ResolveLanding(Transform occupant, Rigidbody2D body)
+        {
+            if (body == null || !body.simulated) return;
+
+            // The climb wrote the TRANSFORM; put the body there too so the query asks about the landing
+            // and not about wherever the last physics step left it.
+            body.position = occupant.position;
+
+            body.GetAttachedColliders(s_landingOwn);
+            if (s_landingOwn.Count == 0) return;
+
+            var filter = new ContactFilter2D { useTriggers = false };
+            filter.SetLayerMask(Physics2D.GetLayerCollisionMask(body.gameObject.layer));
+            float skin = Physics2D.defaultContactOffset;
+
+            for (int pass = 0; pass < LandingResolvePasses; pass++)
+            {
+                body.Overlap(filter, s_landingOverlaps);
+
+                Vector2 push = Vector2.zero;
+                float deepest = 0f;
+                for (int i = 0; i < s_landingOverlaps.Count; i++)
+                {
+                    Collider2D other = s_landingOverlaps[i];
+                    if (other == null || other.isTrigger || other.attachedRigidbody == body) continue;
+
+                    for (int j = 0; j < s_landingOwn.Count; j++)
+                    {
+                        Collider2D own = s_landingOwn[j];
+                        if (own == null || own.isTrigger || !own.enabled) continue;
+
+                        // other.Distance(own): pointA on the obstacle, pointB on the body, and moving the
+                        // body by (pointA - pointB) separates the two when they overlap.
+                        ColliderDistance2D d = other.Distance(own);
+                        if (!d.isValid || !d.isOverlapped || -d.distance <= deepest) continue;
+                        deepest = -d.distance;
+                        push = d.pointA - d.pointB;
+                    }
+                }
+
+                if (deepest <= 0f || push.sqrMagnitude <= 0f) break;
+
+                body.position += push + push.normalized * skin;
+            }
+
+            s_landingOverlaps.Clear();
+            s_landingOwn.Clear();
+            WriteOccupant(occupant, body.position);
         }
 
         /// <summary>Put the occupant somewhere and remember doing it — the memory is what lets
@@ -710,6 +835,9 @@ namespace HiddenHarbours.World
         void WriteOccupant(Transform occupant, Vector2 position)
         {
             occupant.position = new Vector3(position.x, position.y, occupant.position.z);
+            // A held body follows the write directly, so the physics world and the transform never
+            // disagree about where the fisher is while the climb owns them.
+            if (_climbBody != null) _climbBody.position = position;
             _climbWrote = position;
         }
 

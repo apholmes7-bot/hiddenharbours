@@ -234,10 +234,55 @@ jobs:
         id: playmode
         # Run even if EditMode failed, so a single CI run reports both suites.
         if: success() || failure()
+        # THE HANG (2026-11-14). PlayMode sometimes goes silent mid-suite and rode the job's 150-minute cap
+        # to "cancelled" with no results and no test named: 21 attempts on 11-12..14 hit that cap (run
+        # 43623934300 attempt 1 stopped logging at 19:29:30 and sat silent 58 min), at several different
+        # tests, each at a test boundary where the next scene unload or load never came. UTF's [Timeout] cannot fire there,
+        # because it is checked on the main thread and the main thread is what is stuck. Two guards:
+        #  1. PlayModeHangWatchdog (Assets/Tests/PlayMode) watches from a background thread: past 600 s on
+        #     one test or gap ([Timeout] + 120 s where a test declares more; limits in TestHangWatch), it
+        #     writes `HANG: <test> has run N s` to the log and $HH_TEST_WATCHDOG_DIR/playmode-hang.txt and
+        #     ends the editor with exit code 124. A hang costs ~10 minutes and names its test.
+        #  2. This step timeout is the backstop for a stall the watchdog cannot see (before the first test
+        #     or after the last). 129 green PlayMode phases on 11-12..14 took 75.6-84.6 min (p50 81.1); 100
+        #     is 18% over the slowest. Twice the slowest would be past the job's own cap, so it is not used.
+        #     If green runs climb toward 100, raise it with the measurement, as the job cap's note does.
+        timeout-minutes: 100
+        env:
+          HH_TEST_WATCHDOG_DIR: ${{ github.workspace }}/artifacts
         uses: buildalon/unity-action@2d420bea0f47fbe01377601fa3231bcf4de04f3a # v3
         with:
           log-name: playmode-tests
           args: -batchmode -runTests -testPlatform PlayMode -testResults ${{ github.workspace }}/artifacts/playmode-results.xml
+
+      # Names the test a hung or crashed PlayMode run was in, so the red job says it without anyone reading
+      # a 1.2-million-line log. Reads the watchdog's two files (above) and, as a fallback, the last
+      # `[HangWatchdog] START` line of the Unity log. A reporter: always exits 0.
+      - name: Name the last PlayMode test
+        if: always() && steps.playmode.outcome != 'skipped'
+        shell: bash
+        env:
+          PLAYMODE: ${{ steps.playmode.outcome }}
+        run: |
+          dir=artifacts
+          last=""
+          [ -f "$dir/playmode-current-test.txt" ] && last=$(tail -n 1 "$dir/playmode-current-test.txt")
+          if [ -z "$last" ]; then
+            log=$(ls -t Builds/Logs/playmode-tests-*.log 2>/dev/null | head -n 1)
+            [ -n "$log" ] && last=$(grep -a '\[HangWatchdog\] START' "$log" | tail -n 1)
+          fi
+          [ -n "$last" ] || last="(no test had started: the watchdog never armed, or the editor died before the first test)"
+          echo "PlayMode step: $PLAYMODE"
+          echo "Last PlayMode test event: $last"
+          if [ -f "$dir/playmode-hang.txt" ]; then
+            verdict=$(head -n 1 "$dir/playmode-hang.txt")
+            echo "::error title=PlayMode HANG - the watchdog ended the editor::$verdict"
+            cat "$dir/playmode-hang.txt"
+            { echo "## PlayMode HANG"; echo; echo "\`$verdict\`"; } >> "$GITHUB_STEP_SUMMARY"
+          elif [ "$PLAYMODE" != "success" ]; then
+            echo "::error title=PlayMode did not finish cleanly - last test event::$last"
+            { echo "## PlayMode did not finish cleanly"; echo; echo "Last test event: \`$last\`"; } >> "$GITHUB_STEP_SUMMARY"
+          fi
 
       - name: Upload test results
         uses: actions/upload-artifact@v4
