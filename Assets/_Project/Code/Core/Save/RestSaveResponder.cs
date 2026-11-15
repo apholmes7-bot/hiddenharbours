@@ -177,13 +177,45 @@ namespace HiddenHarbours.Core
         /// exists to say. Public so the rule is assertable without a write.</para>
         /// </summary>
         public static void RecordWake(SaveData save, in RestSaveRequested request, string currentRegionId)
+            => RecordWake(save, request, currentRegionId, ClockSeconds(GameServices.Clock));
+
+        /// <summary>
+        /// <see cref="RecordWake(SaveData, in RestSaveRequested, string)"/> with the wake instant given:
+        /// the whole <see cref="SleepPlace"/> (anchor, bed id, wake time, and the boat's pose for a bunk
+        /// aboard) is stamped as one, or the place is forgotten for a <see cref="RestSaveRequested.WakesAtSpawn"/>
+        /// rest. Owner ruling 2026-11-15: "a sleep is a save" — the save records where and when.
+        /// </summary>
+        public static void RecordWake(SaveData save, in RestSaveRequested request, string currentRegionId,
+                                      double wokeAtSeconds)
         {
             if (request.WakesAtSpawn)
             {
                 RestLocker.Forget(save);
                 return;
             }
-            RestLocker.Stamp(save, AnchorFor(request, currentRegionId));
+            RestLocker.StampPlace(save, PlaceFor(request, currentRegionId, wokeAtSeconds));
+        }
+
+        /// <summary>
+        /// The full place this request names: <see cref="AnchorFor"/>'s anchor plus the bed id, the wake
+        /// instant and, aboard, the boat's pose in the same region. <see cref="SleepPlace.None"/> exactly
+        /// when the anchor is (no region reported, or a rest that wakes at the spawn). Pure.
+        /// </summary>
+        public static SleepPlace PlaceFor(in RestSaveRequested request, string currentRegionId, double wokeAtSeconds)
+        {
+            RestAnchor anchor = AnchorFor(request, currentRegionId);
+            if (!anchor.IsSet) return SleepPlace.None;
+            return new SleepPlace(anchor, request.BedId, wokeAtSeconds, request.Aboard, request.BoatHullId,
+                                  anchor.Region, request.BoatPosition, request.BoatRotationDegrees);
+        }
+
+        /// <summary>The clock's reading, or 0 with no living clock. Explicit Unity null check: a destroyed
+        /// clock behind the interface is not C#-null.</summary>
+        internal static double ClockSeconds(IGameClock clock)
+        {
+            if (clock == null) return 0d;
+            if (clock is UnityEngine.Object unityObject && unityObject == null) return 0d;
+            return clock.TotalSeconds;
         }
 
         /// <summary>

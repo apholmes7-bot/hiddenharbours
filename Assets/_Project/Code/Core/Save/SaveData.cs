@@ -298,6 +298,41 @@ namespace HiddenHarbours.Core
         /// ground.</para></summary>
         public int RestLevel;
 
+        // ---- the rest of the sleep place (owner ruling 2026-11-15, added in v20) ------------------
+        // "Reloading restarts the day where you last slept. A sleep is a save." The four fields above say
+        // WHERE the player stood; these say which bed it was, when they woke, and, for a bunk aboard, where
+        // the boat lay. Flat scalars on the same precedent, read and written only through RestLocker as one
+        // SleepPlace. All positions are in the named region's own scene frame (see SleepPlace).
+
+        /// <summary>The stable fixture id of the bed or bunk last slept in. Empty for an unnamed bed and
+        /// for every save written before v20. Added in v20.</summary>
+        public string RestBedId = "";
+
+        /// <summary>The game time the last sleep ended (<see cref="IGameClock.TotalSeconds"/>). Meaningless
+        /// unless <see cref="RestRegion"/> is set. Added in v20.</summary>
+        public double RestWokeAtSeconds;
+
+        /// <summary>True when the last sleep was in a bunk aboard a boat. Added in v20; false is the honest
+        /// default for every older save (a pre-v20 bunk rest recorded no place at all).</summary>
+        public bool RestAboard;
+
+        /// <summary>The hull id of the boat slept aboard. Meaningful only when <see cref="RestAboard"/>.
+        /// Added in v20.</summary>
+        public string RestBoatHullId = "";
+
+        /// <summary>The region the boat lay in. Meaningful only when <see cref="RestAboard"/>. Added in
+        /// v20.</summary>
+        public string RestBoatRegion = "";
+
+        /// <summary>The boat root's X in <see cref="RestBoatRegion"/>'s frame. Added in v20.</summary>
+        public float RestBoatPosX;
+
+        /// <summary>The boat root's Y in <see cref="RestBoatRegion"/>'s frame. Added in v20.</summary>
+        public float RestBoatPosY;
+
+        /// <summary>The boat root's rotation about Z in degrees, as its transform held it. Added in v20.</summary>
+        public float RestBoatRotation;
+
         /// <summary>
         /// <b>The player's own build</b> (character PR 2b, ADR 0051, added in v15): a
         /// <see cref="CharacterRecipe"/> of rig keys the builder resolves against shipped tables. EMPTY
