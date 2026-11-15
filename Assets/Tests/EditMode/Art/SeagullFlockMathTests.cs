@@ -337,6 +337,76 @@ namespace HiddenHarbours.Tests.Art.EditMode
             }
         }
 
+        /// <summary>
+        /// ⭐ <b>The swoop is eased, and sinks no faster than a glide</b> (owner, 2026-11-15: "the seagull swoops and
+        /// dives appear too fast compared to the gliding seagulls, adjust the speed so its less jarring"). The rig's
+        /// V-shaped swoop started and ended at the bare cruise height while every other moment carried the 0.6 m
+        /// breathe (a step of up to 0.6 m in one frame, 35 m/s on the v5 clip's table) and reversed at its bottom in
+        /// one frame. With the committed def the swooper's height must change by no more than the tuned sink plus the
+        /// breathe's own rate in any 60 fps frame, and its vertical speed must change smoothly (no V, no step).
+        /// The rig's own swoop stays reachable (sink 0) and is the one the parity tests compare.
+        /// </summary>
+        [Test]
+        public void TheSwoopIsEased_AndSinksNoFasterThanTheTunedRate()
+        {
+            var tuning = Tuning();
+            Assert.Greater(tuning.SwoopMaxSinkMetresPerSecond, 0.0, "the committed def must ease the swoop");
+            Assert.LessOrEqual(tuning.SwoopMaxSinkMetresPerSecond, 4.0, "the swoop's sink should sit near a glide's speed");
+            var birds = new SeagullFlockMath.SeagullFlockBird[3];
+            const double frame = 1000.0 / 60.0;
+            double breatheRate = SeagullFlockMath.BreatheMetres * SeagullFlockMath.BreatheRadPerSecond;
+            double bound = (tuning.SwoopMaxSinkMetresPerSecond + breatheRate) * frame / 1000.0 + 1e-9;
+            double prevZ = double.NaN, prevV = double.NaN, worstStep = 0.0, worstDv = 0.0;
+            int swoopFrames = 0;
+            for (int f = 0; f < 60 * 300; f++)
+            {
+                SeagullFlockMath.Flock(birds.Length, 100000.0 + f * frame, 7, 0.0, tuning, birds);
+                double z = birds[0].Z;
+                if (birds[0].Anim == SeagullFlockMath.SeagullFlockAnim.Swoop) swoopFrames++;
+                if (!double.IsNaN(prevZ))
+                {
+                    double v = (z - prevZ) / (frame / 1000.0);
+                    worstStep = Math.Max(worstStep, Math.Abs(z - prevZ));
+                    if (!double.IsNaN(prevV)) worstDv = Math.Max(worstDv, Math.Abs(v - prevV));
+                    prevV = v;
+                }
+                prevZ = z;
+            }
+            Debug.Log($"[swoop] {swoopFrames} swoop frames in 300 s; worst height step {worstStep * 60.0:F2} m/s, " +
+                      $"worst change in vertical speed {worstDv:F3} m/s per frame");
+            Assert.Greater(swoopFrames, 60, "premise: bird 0 swoops in five minutes");
+            Assert.LessOrEqual(worstStep, bound, $"the swooper moved {worstStep * 60.0:F2} m/s vertically in one frame");
+            Assert.Less(worstDv, 0.25, "the swooper's vertical speed changed by a step (a V or a pop)");
+        }
+
+        /// <summary>
+        /// <b>A landed bird is drawn slightly smaller</b> (owner, 2026-11-15: "make landed birds slightly smaller as
+        /// they are further from camera than a flying one"). The committed ground scale sits in the asked 85-90 %
+        /// band, the law is 1 in the air, the ground scale on the surface, and smooth (no frame steps more than a
+        /// smoothstep's share) through a take-off's climb and a landing's descent.
+        /// </summary>
+        [Test]
+        public void ALandedBirdIsDrawnSlightlySmaller_AndTheSizeEasesThroughTakeOffAndLanding()
+        {
+            var def = Def();
+            Assert.That(def.GroundScale, Is.InRange(0.85f, 0.9f), "the owner asked for about 85-90 %");
+            Assert.Greater(def.GroundScaleBlendMetres, 0f, "the size must ease, not switch");
+            float g = def.GroundScale, m = def.GroundScaleBlendMetres;
+            Assert.AreEqual(g, SeagullVisualDef.ScaleAtAltitude(0f, g, m), 1e-6f, "on the surface: the ground scale");
+            Assert.AreEqual(1f, SeagullVisualDef.ScaleAtAltitude(m, g, m), 1e-6f, "at the blend height: full size");
+            Assert.AreEqual(1f, SeagullVisualDef.ScaleAtAltitude(12f, g, m), 1e-6f, "in the air: full size");
+            // A take-off's 1.5 m/s climb at 60 fps: never a step beyond the smoothstep's steepest share.
+            float prev = SeagullVisualDef.ScaleAtAltitude(0f, g, m), worst = 0f;
+            for (int f = 1; f <= 120; f++)
+            {
+                float s = SeagullVisualDef.ScaleAtAltitude(f * 1.5f / 60f, g, m);
+                Assert.GreaterOrEqual(s, prev - 1e-7f, "the bird only grows as it climbs");
+                worst = Mathf.Max(worst, s - prev);
+                prev = s;
+            }
+            Assert.LessOrEqual(worst, (1f - g) * 1.5f * (1.5f / 60f) / m + 1e-5f, "a frame of the climb stepped the size");
+        }
+
         // =========================================================================================
         //  3. the float ROCK, capped by construction
         // =========================================================================================

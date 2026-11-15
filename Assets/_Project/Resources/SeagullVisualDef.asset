@@ -694,5 +694,10 @@ MonoBehaviour:
   _departureTurnDegreesPerSecond: 40
   _departureJoinSeconds: 4
   _departureLevelOffMetres: 1.5
+  _flockSwoopMaxSinkMetresPerSecond: 2.5
+  _flockSwoopDuty: 0.4
+  _flockSwoopDepth01: 0.6
+  _groundScale: 0.88
+  _groundScaleBlendMetres: 1.2
   _diveCatchProbability: 0.35
   _shoalAttractWeight01: 0.5

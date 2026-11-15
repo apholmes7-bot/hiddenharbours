@@ -1524,6 +1524,14 @@ namespace HiddenHarbours.Art
             b.Node.SetPositionAndRotation(
                 new Vector3(pivot.x, pivot.y + lift, 0f),
                 Mathf.Abs(roll) < 1e-4f ? Quaternion.identity : Quaternion.Euler(0f, 0f, roll));
+            // ...with ONE exception the owner asked for (2026-11-15: "make landed birds slightly smaller as they are
+            // further from camera than a flying one"): near the surface the bird is drawn at the def's ground scale,
+            // eased up to full size over the first metre or so of altitude, so a take-off grows and a landing shrinks
+            // smoothly. The shadow is a child at localScale 1, so it scales with the silhouette it is cast from.
+            float drawScale = SeagullVisualDef.ScaleAtAltitude((float)b.Sim.AltitudeMetres, _visual.GroundScale,
+                                                               _visual.GroundScaleBlendMetres);
+            if (Mathf.Abs(b.Node.localScale.x - drawScale) > 1e-5f)
+                b.Node.localScale = new Vector3(drawScale, drawScale, 1f);
             b.Shadow.FootOffset = lift;
 
             // Sky or world? Above the wheel's own floor the bird is sky and draws over everything;
