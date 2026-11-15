@@ -181,10 +181,9 @@ namespace HiddenHarbours.Tests.EditMode
             Verdict("S6 (held)", TheMatrix.Where(r => !r.R.LeanOnly), r => r.S6,
                     r => $"{r.Crossings} crossings, the closest two {r.MinGap:0.000} s apart");
 
-            var reds = new List<string>();
+            var reds = new List<(string Hull, string Kind, string Detail)>();
             int judged = StandAndDither(TheCape, Conditions(), Rates, reds);
-            string report = $"S6 (idle and dithered): {reds.Count} of {judged} runs red." +
-                            (reds.Count > 0 ? "\n  " + string.Join("\n  ", reds.Take(16)) : "");
+            string report = StandingReport("S6 (idle and dithered)", judged, reds);
             Report(report);
             Assert.IsEmpty(reds, report);
         }
@@ -221,13 +220,12 @@ namespace HiddenHarbours.Tests.EditMode
             Verdict("S6 (held) on the fleet", TheFleetsWalks.Where(r => !r.R.LeanOnly), r => r.S6,
                     r => $"{r.Crossings} crossings, the closest two {r.MinGap:0.000} s apart");
 
-            var reds = new List<string>();
+            var reds = new List<(string Hull, string Kind, string Detail)>();
             int judged = 0;
             foreach (Hull hull in TheFleet.Where(h => h.Sole != null))
                 judged += StandAndDither(hull, FleetConditions(), FleetRates, reds);
             Assert.Greater(judged, 0, "S6 on the fleet: no run is judged, so this bar is asleep");
-            string report = $"S6 (idle and dithered) on the fleet: {reds.Count} of {judged} runs red." +
-                            (reds.Count > 0 ? "\n  " + string.Join("\n  ", reds.Take(16)) : "");
+            string report = StandingReport("S6 (idle and dithered) on the fleet", judged, reds);
             Report(report);
             Assert.IsEmpty(reds, report);
         }
@@ -252,7 +250,8 @@ namespace HiddenHarbours.Tests.EditMode
         /// she stays in the band. Leaving it must resolve her actual side, even before that settle.
         /// And after a real crossing with the key released on its tick: no crossing back while standing.
         /// Returns how many runs it judged; each red is added to <paramref name="reds"/>.</summary>
-        private static int StandAndDither(Hull hull, List<Condition> conditions, float[] rates, List<string> reds)
+        private static int StandAndDither(Hull hull, List<Condition> conditions, float[] rates,
+                                         List<(string Hull, string Kind, string Detail)> reds)
         {
             int judged = 0;
             var starts = new List<(string name, Action<IDoorwayRig> setup)>
@@ -297,13 +296,14 @@ namespace HiddenHarbours.Tests.EditMode
                                     bool wasInBand = BoatCabinThreshold.IsInBand(hull.Door, rig.Point);
                                     rig.Step(move, dt);
                                     bool leftBand = wasInBand && !BoatCabinThreshold.IsInBand(hull.Door, rig.Point);
-                                    float past = BoatCabinThreshold.PastTheWallLine(hull.Wall, hull.Out, rig.Point);
+                                    float past = BoatCabinThreshold.PastTheWallLine(hull.EntryWall, hull.EntryOut, rig.Point);
                                     bool departedOnAClearSide = leftBand
                                         && Mathf.Abs(past) > BoatCabinThreshold.OnTheWallLineMetres;
                                     bool matchesSide = rig.Below == (past < 0f);
                                     if (departedOnAClearSide && !matchesSide)
-                                        reds.Add($"{hull.Name} {c.Name} {hz:0} Hz, {name}: left the band " +
-                                                 $"at {rig.Time:0.000} s with stale cabin state");
+                                        reds.Add((hull.Name, "stale",
+                                                  $"{hull.Name} {c.Name} {hz:0} Hz, {name}: left the band " +
+                                                  $"at {rig.Time:0.000} s with stale cabin state"));
                                     if (rig.Below != below)
                                     {
                                         if (crossings.Count > 0
@@ -315,9 +315,9 @@ namespace HiddenHarbours.Tests.EditMode
                                 judged++;
                                 float gap = MinGap(crossings);
                                 if (dither == 0 ? crossings.Count > 0 : invalidShortGap)
-                                    reds.Add($"{hull.Name} {c.Name} {hz:0} Hz, {name}, " +
+                                    reds.Add((hull.Name, "crossings", $"{hull.Name} {c.Name} {hz:0} Hz, {name}, " +
                                              (dither == 0 ? "idle" : $"dithered every {dither} ticks") +
-                                             $": {crossings.Count} crossings, the closest two {gap:0.000} s apart");
+                                              $": {crossings.Count} crossings, the closest two {gap:0.000} s apart"));
                             }
 
                         foreach (Route r in Routes(hull).Where(r => r.Name == "deck_1.5" || r.Name.StartsWith("lane")))
@@ -341,11 +341,27 @@ namespace HiddenHarbours.Tests.EditMode
                             }
                             judged++;
                             if (after > 0)
-                                reds.Add($"{hull.Name} {c.Name} {hz:0} Hz, released after crossing on {r.Name}: " +
-                                         $"{after} crossings back, standing still");
+                                reds.Add((hull.Name, "crossings",
+                                          $"{hull.Name} {c.Name} {hz:0} Hz, released after crossing on {r.Name}: " +
+                                          $"{after} crossings back, standing still"));
                         }
                     }
             return judged;
+        }
+
+        private static string StandingReport(string bar, int judged,
+                                             List<(string Hull, string Kind, string Detail)> reds)
+        {
+            var report = new StringBuilder($"{bar}: {reds.Count} of {judged} runs red.");
+            if (reds.Count == 0) return report.ToString();
+            report.Append($"\n  By kind: stale={reds.Count(r => r.Kind == "stale")}, " +
+                          $"crossings={reds.Count(r => r.Kind == "crossings")}");
+            foreach (var hull in reds.GroupBy(r => r.Hull).OrderBy(g => g.Key, StringComparer.Ordinal))
+                report.Append($"\n  {hull.Key}: {hull.Count()} red; stale={hull.Count(r => r.Kind == "stale")}, " +
+                              $"crossings={hull.Count(r => r.Kind == "crossings")}");
+            report.Append("\n  First 16 failures:\n  ");
+            report.Append(string.Join("\n  ", reds.Take(16).Select(r => r.Detail)));
+            return report.ToString();
         }
 
         // =====================================================================================
@@ -917,6 +933,10 @@ namespace HiddenHarbours.Tests.EditMode
             /// <summary>That edge's nearest point to the threshold.</summary>
             public Vector2 Wall;
 
+            /// <summary>The production entry line, including an authored landing when present.</summary>
+            public Vector2 EntryWall;
+            public Vector2 EntryOut;
+
             /// <summary>The routes left out because their start is not on this hull's floors.</summary>
             public readonly List<string> Skipped = new List<string>();
 
@@ -1203,7 +1223,20 @@ namespace HiddenHarbours.Tests.EditMode
                 Ccw = BoatInteriorInstaller.ExteriorAzimuthCounterClockwise(visual),
             };
             using (NewRig(hull, new Condition { Name = "probe" })) { }   // reads her room and the walk speeds
-            if (hull.Sole != null) hull.Measure();
+            if (hull.Sole != null)
+            {
+                hull.Measure();
+                Assert.IsTrue(BoatCabinThreshold.TryEntryLine(hull.Interior, hull.Door, out var kind, out _,
+                                                            out hull.EntryWall, out hull.EntryOut),
+                              $"{hull.Name}: a hull with a sole must resolve its production entry line");
+                if (kind == BoatCabinEntryKind.RoomEdge)
+                {
+                    Assert.That(Vector2.Distance(hull.EntryWall, hull.Wall), Is.LessThanOrEqualTo(1e-4f),
+                                $"{hull.Name}: the room-edge entry wall differs from the measured wall");
+                    Assert.That(Vector2.Distance(hull.EntryOut, hull.Out), Is.LessThanOrEqualTo(1e-4f),
+                                $"{hull.Name}: the room-edge entry axis differs from the measured axis");
+                }
+            }
             return hull;
         }
 
