@@ -451,33 +451,122 @@ namespace HiddenHarbours.Tests.EditMode
         // =====================================================================================
 
         [Test]
-        public void TheCapeIslander_GrowsOneBunk_AtHerSleepAnchor()
+        public void TheCapeIslander_GrowsABunkPerBerth_EachAtItsOwnSleepAnchor()
         {
             var interior = AssetDatabase.LoadAssetAtPath<BoatInteriorDef>(CapeInteriorPath);
             Assert.IsNotNull(interior, CapeInteriorPath);
             BoatInteriorAnchor[] sleeps = interior.Anchors.Where(a => a != null && a.Action == BoatBunk.SleepAction).ToArray();
-            Assert.AreEqual(1, sleeps.Length, "premise: the cape islander's rig names one berth");
+            Assert.AreEqual(2, sleeps.Length, "premise: the cape islander's V-berth sleeps two singles (2026-11-15)");
 
+            BoatInteriorInstaller installer = BuildInstallerFor(interior, "CapeBunkInstaller");
+            Assert.AreEqual(sleeps.Length, installer.Bunks.Count, "one bunk per sleep anchor, and only those");
+            for (int i = 0; i < sleeps.Length; i++)
+            {
+                BoatBunk bunk = installer.Bunks[i];
+                Assert.AreEqual(sleeps[i].ReachPoint, bunk.ReachPoint, "at the anchor's own reach point");
+                Assert.AreSame(installer.Interior, bunk.Cabin, "in her own cabin");
+                StringAssert.EndsWith("." + sleeps[i].Id, bunk.Id);
+                Assert.IsNotNull(bunk.GetComponent<HullLocalAnchor>(), "hung off the hull frame as her doors are");
+            }
+            StringAssert.EndsWith(".bunk", installer.Bunks[0].Id, "the original berth keeps its id, and comes first");
+        }
+
+        /// <summary>
+        /// <b>Two sleepers, two beds</b> (owner ruling 2026-11-15). Every committed kit hull that sleeps
+        /// grows at least two bunks through the one installer path, each a distinct interactable with
+        /// its own id, and a sleeper standing at either one's reach is offered THAT bunk: by the
+        /// resolver's own ranking it beats every other bunk aboard, so two players turning in at once
+        /// each get their own.
+        /// </summary>
+        [Test]
+        public void EveryKitHullThatSleeps_GrowsTwoBunks_AndASleeperAtEachIsOfferedHisOwn()
+        {
+            var defs = AssetDatabase.FindAssets("t:BoatInteriorDef", new[] { "Assets/_Project/Data/Boats/Interiors" })
+                .Select(AssetDatabase.GUIDToAssetPath).Select(AssetDatabase.LoadAssetAtPath<BoatInteriorDef>)
+                .Where(d => d != null && (d.SourceSidecar ?? "").StartsWith(KitSidecarFolder, System.StringComparison.Ordinal))
+                .Where(d => d.Anchors != null && d.Anchors.Any(a => a != null && a.Action == BoatBunk.SleepAction))
+                .OrderBy(d => d.Id, System.StringComparer.Ordinal)
+                .ToArray();
+            Assert.GreaterOrEqual(defs.Length, 22, "premise: the 22 kit hulls all sleep");
+
+            var faults = new List<string>();
+            foreach (BoatInteriorDef def in defs)
+            {
+                BoatInteriorInstaller installer = BuildInstallerFor(def, "Installer." + def.Id);
+                if (installer == null) { faults.Add($"{def.Id}: no committed hull wears it"); continue; }
+                IReadOnlyList<BoatBunk> bunks = installer.Bunks;
+                if (bunks.Count < 2) { faults.Add($"{def.Id}: {bunks.Count} bunk(s)"); continue; }
+                if (bunks.Select(b => b.Id).Distinct(System.StringComparer.Ordinal).Count() != bunks.Count)
+                    faults.Add($"{def.Id}: two bunks share an id");
+
+                // Every compass point she can be drawn at: the anchors are re-posed through their own
+                // Configure (the installer's call, with the installer's own handedness and elevation), so
+                // where each bunk stands is the product's projection, never one re-typed here.
+                Transform root = installer.transform;
+                BoatVisualDef visual = root.GetComponent<BoatController>().Hull.Visual;
+                bool ccw = BoatInteriorInstaller.ExteriorAzimuthCounterClockwise(visual);
+                float elevation = BoatInteriorInstaller.BakeElevationDegrees(visual);
+                for (int step = 0; step < CompassPoints; step++)
+                {
+                    float heading = step * (360f / CompassPoints);
+                    root.rotation = Quaternion.Euler(0f, 0f, -heading);   // bow = (sin h, cos h): heading h
+                    foreach (BoatBunk bunk in bunks)
+                    {
+                        HullLocalAnchor anchor = bunk.GetComponent<HullLocalAnchor>();
+                        anchor.Configure(root, anchor.RigLocalMetres, ccw, elevation);
+                        if (bunk.WorldPosition == (Vector2)root.position)
+                            faults.Add($"{def.Id} @ {heading}°: '{bunk.Id}' sits on the hull pivot (the anchor did not project)");
+                    }
+
+                    foreach (BoatBunk mine in bunks)
+                    {
+                        Vector2 at = mine.WorldPosition;
+                        foreach (BoatBunk other in bunks)
+                        {
+                            if (ReferenceEquals(mine, other)) continue;
+                            bool mineWins = InteractResolver.Beats(mine, mine.Priority, (mine.WorldPosition - at).sqrMagnitude,
+                                                                   other, other.Priority, (other.WorldPosition - at).sqrMagnitude);
+                            if (!mineWins)
+                                faults.Add($"{def.Id} @ {heading}°: a sleeper at '{mine.Id}' would be offered '{other.Id}'");
+                        }
+                    }
+                }
+            }
+            Assert.IsEmpty(faults, string.Join("\n", faults));
+        }
+
+        const string KitSidecarFolder = "docs/art/rigs/boat-interiors-kit/";
+
+        /// <summary>The eight headings a sprite hull's art is drawn at; a mesh hull's are a subset of the
+        /// continuum, so these are a fair sample of both.</summary>
+        const int CompassPoints = 8;
+
+        /// <summary>The committed hull that wears <paramref name="interior"/>, with her cabin built by the
+        /// real installer; null when no hull wears it.</summary>
+        BoatInteriorInstaller BuildInstallerFor(BoatInteriorDef interior, string name)
+        {
             BoatHullDef hull = AssetDatabase.FindAssets("t:BoatHullDef", new[] { "Assets/_Project/Data/Boats" })
                 .Select(AssetDatabase.GUIDToAssetPath).Select(AssetDatabase.LoadAssetAtPath<BoatHullDef>)
                 .FirstOrDefault(h => h != null && h.Visual != null && h.Visual.Interior == interior);
-            Assert.IsNotNull(hull, "a committed hull wears the cape islander's interior");
+            if (hull == null) return null;
 
-            var root = new GameObject("CapeBunkInstaller");
+            var root = new GameObject(name);
             _spawned.Add(root);
             var boat = root.AddComponent<BoatController>();
             boat.SetHull(hull);
             boat.enabled = false;
+            // ⚠ A COMPASS, or every bunk stands on the pivot. In play the skinner publishes her hull
+            // presenter before anything is read off it; this fixture has no skinner, and HullLocalAnchor
+            // with no presenter projects nothing (offset zero), so all her bunks would share the root's
+            // position and the resolver's id tie-break would hand every sleeper the first one. The
+            // plainest presenter there is: an unskinned DirectionalBoatSprite (no facings = continuous
+            // heading off the root), which BoatHullPresenterHost.Resolve wraps exactly as it does a
+            // scene-serialised rig the skinner has not touched yet.
+            root.AddComponent<DirectionalBoatSprite>();
             var installer = root.AddComponent<BoatInteriorInstaller>();
             installer.Build();
-
-            Assert.IsTrue(installer.Built);
-            Assert.AreEqual(1, installer.Bunks.Count, "one bunk per sleep anchor, and only those");
-            BoatBunk bunk = installer.Bunks[0];
-            Assert.AreEqual(sleeps[0].ReachPoint, bunk.ReachPoint, "at the anchor's own reach point");
-            Assert.AreSame(installer.Interior, bunk.Cabin, "in her own cabin");
-            StringAssert.EndsWith("." + sleeps[0].Id, bunk.Id);
-            Assert.IsNotNull(bunk.GetComponent<HullLocalAnchor>(), "hung off the hull frame as her doors are");
+            Assert.IsTrue(installer.Built, $"{interior.Id}: the installer built her cabin");
+            return installer;
         }
 
         // =====================================================================================
