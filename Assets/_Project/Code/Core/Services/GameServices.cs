@@ -330,6 +330,21 @@ namespace HiddenHarbours.Core
         private static IFarmService _farm;
 
         /// <summary>
+        /// Eating (first food slice): use up one unit of a food from the supply locker or the hands and lower
+        /// hunger through <see cref="Needs"/> by the food's <see cref="FoodDef.HungerRelief"/>. Never null: a
+        /// default <see cref="FoodEater"/> over the shipped Defs under <c>Resources/Food/</c> is made on first
+        /// read; a test assigns its own. Cleared by <see cref="Reset"/>.
+        /// FLAG lead-architect: new Core contract (food).
+        /// </summary>
+        public static FoodEater Food
+        {
+            get => _food ??= new FoodEater();
+            set => _food = value;
+        }
+
+        private static FoodEater _food;
+
+        /// <summary>
         /// The web of ties between people (relationships slice 1, owner ruling 2026-11-14): the seam a feature
         /// module records "something happened between these two" through and asks a pair's stage from, so the
         /// crew system, the cannery, the shops, talk and routines never reference each other (rule 4). Never
@@ -1264,6 +1279,7 @@ namespace HiddenHarbours.Core
             Traits = null;               // → a fresh default on next read; drops its catalog and cache
             Needs = null;                // → a fresh default on next read; drops its stage baseline
             Farm = null;                 // → a fresh default on next read; drops its catalog and baseline
+            Food = null;                 // → a fresh default on next read; drops its loaded food book
             Relationships = null;        // → a fresh default on next read; reseeds from the shipped ties
             TidalTerrain = null;
             StillWater = null;           // → EmptyStillWater.Instance; this property is never null
