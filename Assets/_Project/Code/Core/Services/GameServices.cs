@@ -315,6 +315,21 @@ namespace HiddenHarbours.Core
         private static INeedsService _needs;
 
         /// <summary>
+        /// The farm plots (farm slice 1): read-only questions about each plot's stage and the work due on it,
+        /// recomputed from the Defs, the world seed and the day (rule 5). Never null: a default
+        /// <see cref="FarmService"/> over the shipped Defs under <c>Resources/Farming/</c> is made on first
+        /// read; a test assigns its own. Cleared by <see cref="Reset"/>.
+        /// FLAG lead-architect: new Core contract (farming).
+        /// </summary>
+        public static IFarmService Farm
+        {
+            get => _farm ??= new FarmService();
+            set => _farm = value;
+        }
+
+        private static IFarmService _farm;
+
+        /// <summary>
         /// The web of ties between people (relationships slice 1, owner ruling 2026-11-14): the seam a feature
         /// module records "something happened between these two" through and asks a pair's stage from, so the
         /// crew system, the cannery, the shops, talk and routines never reference each other (rule 4). Never
@@ -1248,6 +1263,7 @@ namespace HiddenHarbours.Core
             Appearance = null;           // → a fresh default on next read; drops any open preview
             Traits = null;               // → a fresh default on next read; drops its catalog and cache
             Needs = null;                // → a fresh default on next read; drops its stage baseline
+            Farm = null;                 // → a fresh default on next read; drops its catalog and baseline
             Relationships = null;        // → a fresh default on next read; reseeds from the shipped ties
             TidalTerrain = null;
             StillWater = null;           // → EmptyStillWater.Instance; this property is never null
