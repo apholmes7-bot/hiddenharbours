@@ -124,6 +124,37 @@ namespace HiddenHarbours.Tests.Art.EditMode
             }
         }
 
+        /// <summary>The water's cone gate is the plain ramp (its shader is hash-pinned by SurfSequenceTests), so the
+        /// band reaches it folded into the published (threshold, softness): the shader's own smoothstep on that pair
+        /// must be the banded C# gate, noon dark included, and no band must pass the pair through untouched.</summary>
+        [Test]
+        public void TheWatersPublishedRamp_CarriesTheBand()
+        {
+            foreach (var lamp in Lamps)
+            {
+                Vector2 plain = LightMath.BandedGateRamp(lamp.Threshold, lamp.Softness);
+                Assert.AreEqual(new Vector2(lamp.Threshold, lamp.Softness), plain, $"no band, lamp {lamp}");
+            }
+            LightMath.SetLampBand(_profile.LampsOffDarkness, _profile.LampsOnDarkness);
+            for (float lum = 0f; lum <= 1f; lum += 0.05f)
+                foreach (var lamp in Lamps)
+                {
+                    Vector2 ramp = LightMath.BandedGateRamp(lamp.Threshold, lamp.Softness);
+                    float lo = Mathf.Clamp01(ramp.x), hi = Mathf.Clamp01(ramp.x + Mathf.Max(ramp.y, 1e-4f));
+                    float t = Mathf.Clamp01((Mathf.Clamp01(1f - lum) - lo) / (hi - lo));
+                    float shader = t * t * (3f - 2f * t);
+                    Assert.AreEqual(LightMath.NightGate(lum, lamp.Threshold, lamp.Softness), shader, 1e-4f, $"lum {lum}, lamp {lamp}");
+                }
+            foreach (var lamp in Lamps)
+            {
+                Vector2 ramp = LightMath.BandedGateRamp(lamp.Threshold, lamp.Softness);
+                Vector2 twice = LightMath.BandedGateRamp(ramp.x, ramp.y);
+                Assert.AreEqual(ramp.x, twice.x, 1e-6f, "idempotent threshold");
+                Assert.AreEqual(ramp.y, twice.y, 1e-5f, "idempotent softness");
+                Assert.GreaterOrEqual(ramp.x, _profile.LampsOffDarkness, "noon stays dark on the water");
+            }
+        }
+
         [Test]
         public void TheBand_IsTheProfilesData()
         {

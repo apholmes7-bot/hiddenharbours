@@ -1263,10 +1263,6 @@ Shader "HiddenHarbours/Water"
             // in which case the reflection falls back to the material's _ReflectionColor. Also a GLOBAL (outside
             // the per-material CBUFFER) — both the day/night overlay shader and this one read the same value.
             float4 _DayNightTint;
-            #ifndef HH_LAMP_GATE_DECLARED
-            #define HH_LAMP_GATE_DECLARED
-            float4 _HHLampGate;   // the shared lamp band (x off-darkness, y on-darkness); global, set by DayNightController
-            #endif
             // The sun's height: 1 at noon, 0 at the horizon, <=0 at night (ADR 0013). The sun streak fades out as
             // the sun sets (no glitter under a set sun). 0 when the cycle is not running -> handled by the fallback.
             float  _SunElevation;
@@ -4553,10 +4549,7 @@ Shader "HiddenHarbours/Water"
                     // Rec.601 luma inline (PaletteLuma is defined later in the file; HLSL needs define-before-use).
                     float tintLum = max(0.0, dot(_DayNightTint.rgb, float3(0.299, 0.587, 0.114)));
                     float darkness = saturate(1.0 - tintLum);
-                    // The SHARED lamp band (_HHLampGate, LightMath.NightGate's offDarkness/onDarkness): off by day.
-                    float gateLo = max(saturate(threshold), saturate(_HHLampGate.x));
-                    float gateHi = max(saturate(threshold + max(softness, 1e-4)), saturate(_HHLampGate.y));
-                    gate = smoothstep(gateLo, max(gateHi, gateLo + 1e-4), darkness);
+                    gate = smoothstep(saturate(threshold), saturate(threshold + max(softness, 1e-4)), darkness);
                 }
                 else
                 {

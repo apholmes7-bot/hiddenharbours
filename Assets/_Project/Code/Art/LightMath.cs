@@ -88,6 +88,24 @@ namespace HiddenHarbours.Art
         }
 
         /// <summary>
+        /// A light's gate ramp with the published lamp band folded in, as the (threshold, softness) pair a shader
+        /// that does NOT read <c>_HHLampGate</c> itself is handed: the water's cone gate (HiddenHarboursWater is
+        /// hash-pinned by SurfSequenceTests, so its gate stays the plain ramp and the band arrives in the data).
+        /// The shader's <c>smoothstep(t, t + max(s, 1e-4), darkness)</c> on the result is
+        /// <see cref="NightGate(float, float, float)"/>. Idempotent (a shader that also applies the band gets the
+        /// same ramp); no band published returns the inputs untouched.
+        /// </summary>
+        public static Vector2 BandedGateRamp(float threshold, float softness)
+        {
+            if (LampOffDarkness <= 0f && LampOnDarkness <= 0f)
+                return new Vector2(threshold, softness);
+            float lo = Mathf.Max(Mathf.Clamp01(threshold), LampOffDarkness);
+            float hi = Mathf.Max(Mathf.Clamp01(threshold + Mathf.Max(softness, 1e-4f)), LampOnDarkness);
+            hi = Mathf.Max(hi, lo + 1e-4f);
+            return new Vector2(lo, hi - lo);
+        }
+
+        /// <summary>
         /// The night-gate WITH the cycle-off fallback baked in: when the tint is unset/near-black (no cycle —
         /// EditMode, a bare art scene, the demo before Play), the day/night system isn't darkening anything,
         /// so a literal gate would be ambiguous. We then return <paramref name="fallbackWhenNoCycle"/> (default
