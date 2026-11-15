@@ -377,6 +377,38 @@ because one run's road is another's front step. ⭐ And the leg out of a pull-of
 before it merges: aiming it at the road's nearest point parks the machine PERPENDICULAR to the road, with
 her 6.7 m length lying across the carriageway and her tail a metre from the centre-line.
 
+### 2.9 ⭐ A DAY THAT LEAVES THE REGION — cross-region routines, slice 1 (owner ask 2026-11-15)
+
+The owner asked that villagers cross scenes for work, fishing and recreation, and that St Peters people
+cross the bar to Nine Mile Creek to run errands, only while the bar is open, at an honest pace. Slice 1
+is the logic and one example; no scene changed.
+
+- **A block names its region** (`RoutineEntry.RegionId`, empty = the routine's own, so every existing
+  asset keeps its meaning). A block whose region differs from the one before it is a **crossing**.
+- **A day of the week can differ** (`RoutineDef.WeeklyDays`): on that weekday its blocks replace the
+  ordinary day. It must start and end in the routine's own region, so midnight is never a seam. Its
+  departures may move up to `DayJitterMinutes` from week to week, seeded from `(worldSeed, npc id, day)`
+  and clamped with the person's own jitter so the day can never reorder.
+- **A crossing is data** (`RegionCrossingDef`, `crossing.snake_case`, `Data/Regions/Crossings`): a near
+  station and a path to the edge passage in the FROM region's frame, and a path from the passage to a far
+  station in the TO region's frame. Its time is its length at the block's carrier speed
+  (`CrossingSpeedMetresPerSecond`, 0 = their walk). The walker is in the FROM region until the seam and
+  in the TO region after it, so **at every instant they are in exactly one region**.
+- **The resolver** (`RoutineLegs` / `RoutineItinerary`) is a pure function of (routine, game time, seed,
+  gate). A crossing asks `GameServices.CrossingGate` (Core `ICrossingGate`, always open until the
+  tide-window slice) and waits at the near end while it is shut; a crossing pushes any later departure
+  that falls before its arrival; one day of carry covers a crossing past midnight.
+- **Presence**: `VillagerRoutine` asks the resolver only for a routine that ever leaves its region (every
+  other villager runs exactly the code it did). While the resolver puts them elsewhere they are hidden and
+  cannot be talked to; on a crossing in this region they are placed on the crossing path.
+- **The example**: Junior Poirier's Wednesday — over the St Peters bar on the quad (5.5 m/s) at 08:30 to
+  the Nine Mile Creek landing, fuel and the week's order, back over at 11:30, a late dinner, then the
+  afternoon tide as any day. The bar as the game draws it is about 315 m from the bar head to the Nine Mile
+  Creek landing: three game hours on foot at his 1.35 m/s, under one on the quad.
+- **Not yet**: the real bar window off the tide (a gate implementation), Nine Mile Creek's station table
+  and lanes (so he is computed there but not drawn), the quad and cart as drawn carriers with real
+  capacity, the supply arithmetic, and tide-aware departure hours.
+
 ---
 
 ## 3. The handcrafted core cast

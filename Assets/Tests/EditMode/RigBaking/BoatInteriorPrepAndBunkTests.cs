@@ -264,5 +264,114 @@ namespace HiddenHarbours.Tests.RigBaking
                 }
             Assert.IsEmpty(faults, string.Join("\n", faults));
         }
+
+        // ---- two sleepers, two beds (owner ruling 2026-11-15) ----------------------------------------
+
+        /// <summary>
+        /// Every kit hull that sleeps anyone sleeps two, in two separate places: at least two sleep
+        /// anchors with distinct ids, no two heads (pillow ends) nearer than
+        /// <see cref="BoatInteriorAnchor.BunkMinSeparationMetres"/>, and no two reach points on one level
+        /// nearer than that either, so the resolver's nearest-wins rule always tells them apart. The walk
+        /// hulls are held by their own rigs (<see cref="OwedByTheRigWalk"/>).
+        /// </summary>
+        [Test]
+        public void EveryKitHullThatSleepsSleepsTwoInSeparatePlaces()
+        {
+            float min = BoatInteriorAnchor.BunkMinSeparationMetres;
+            var faults = new List<string>();
+            foreach (BoatInteriorDef def in CommittedDefs())
+            {
+                if (Owed(def)) continue;
+                BoatInteriorAnchor[] sleeps = Anchors(def, BoatInteriorAnchor.ActionSleep).ToArray();
+                if (sleeps.Length == 0) continue;
+                if (sleeps.Length < 2)
+                    faults.Add($"{def.Id}: sleeps one only ('{sleeps[0].Id}'); every hull that sleeps sleeps two");
+                if (sleeps.Select(a => a.Id).Distinct(StringComparer.Ordinal).Count() != sleeps.Length)
+                    faults.Add($"{def.Id}: two sleep anchors share an id");
+                for (int i = 0; i < sleeps.Length; i++)
+                    for (int j = i + 1; j < sleeps.Length; j++)
+                    {
+                        BoatInteriorAnchor a = sleeps[i], b = sleeps[j];
+                        float heads = Vector3.Distance(a.PillowEnd, b.PillowEnd);
+                        if (heads < min)
+                            faults.Add($"{def.Id}: '{a.Id}' and '{b.Id}' put two heads {heads:0.000} m apart (< {min})");
+                        bool oneLevel = Mathf.Abs(a.ReachPoint.z - b.ReachPoint.z) <= def.FloorTolerance;
+                        float reaches = Vector2.Distance(a.ReachPoint, b.ReachPoint);
+                        if (oneLevel && reaches < min)
+                            faults.Add($"{def.Id}: '{a.Id}' and '{b.Id}' reach points are {reaches:0.000} m apart " +
+                                       $"on one level (< {min})");
+                        if (a.MattressCentre == b.MattressCentre)
+                            faults.Add($"{def.Id}: '{a.Id}' and '{b.Id}' are one mattress");
+                    }
+            }
+            Assert.IsEmpty(faults, string.Join("\n", faults));
+        }
+
+        /// <summary>Every kit bunk's mattress middle lies over its own level's walkable outline: the
+        /// bed is inside the hull, never hung off the side.</summary>
+        [Test]
+        public void EveryKitBunksMattressLiesInsideItsLevel()
+        {
+            var faults = new List<string>();
+            foreach (BoatInteriorDef def in CommittedDefs())
+            {
+                if (Owed(def)) continue;
+                foreach (BoatInteriorAnchor a in Anchors(def, BoatInteriorAnchor.ActionSleep))
+                {
+                    BoatInteriorLevel level = def.Level(a.BunkLevel);
+                    if (level == null || !Inside(level.Outline, a.MattressCentre))
+                        faults.Add($"{def.Id}: '{a.Id}' mattress {a.MattressCentre} is outside level '{a.BunkLevel}'");
+                }
+            }
+            Assert.IsEmpty(faults, string.Join("\n", faults));
+        }
+
+        /// <summary>
+        /// Each kit def's sleep anchors are its sidecar's, point for point. The builder carries the
+        /// sidecar straight into the def; this holds the two together for a sleep anchor added to both
+        /// at once, until the next <c>BoatInteriorDefBuilder.BuildAllCli</c> re-bake makes it moot.
+        /// </summary>
+        [Test]
+        public void EveryKitDefsSleepAnchorsAreItsSidecars()
+        {
+            string root = System.IO.Directory.GetParent(Application.dataPath)!.FullName;
+            const float tol = 1e-4f;
+            var faults = new List<string>();
+            foreach (BoatInteriorDef def in CommittedDefs())
+            {
+                if (Owed(def) || string.IsNullOrEmpty(def.SourceSidecar)) continue;
+                string path = System.IO.Path.Combine(root, def.SourceSidecar);
+                if (!System.IO.File.Exists(path)) { faults.Add($"{def.Id}: sidecar {def.SourceSidecar} missing"); continue; }
+                object json = DeckSidecarJson.Parse(System.IO.File.ReadAllText(path));
+                var fromSidecar = new Dictionary<string, object>(StringComparer.Ordinal);
+                foreach (object e in DeckSidecarJson.AsArray(DeckSidecarJson.Member(json, "INTERACT")) ?? new List<object>())
+                    if (DeckSidecarJson.String(DeckSidecarJson.Member(e, "action")) == BoatInteriorAnchor.ActionSleep)
+                        fromSidecar[DeckSidecarJson.String(DeckSidecarJson.Member(e, "id")) ?? ""] = e;
+
+                BoatInteriorAnchor[] sleeps = Anchors(def, BoatInteriorAnchor.ActionSleep).ToArray();
+                if (sleeps.Length != fromSidecar.Count)
+                    faults.Add($"{def.Id}: {sleeps.Length} sleep anchors baked, {fromSidecar.Count} in {def.SourceSidecar}");
+                foreach (BoatInteriorAnchor a in sleeps)
+                {
+                    if (!fromSidecar.TryGetValue(a.Id, out object e)) { faults.Add($"{def.Id}: '{a.Id}' is not in its sidecar"); continue; }
+                    object bunk = DeckSidecarJson.Member(e, "bunk");
+                    void Same(string what, Vector3 baked, object raw)
+                    {
+                        List<object> p = DeckSidecarJson.AsArray(raw);
+                        var v = p == null || p.Count < 3 ? new Vector3(float.NaN, float.NaN, float.NaN)
+                            : new Vector3(DeckSidecarJson.Float(p[0]), DeckSidecarJson.Float(p[1]), DeckSidecarJson.Float(p[2]));
+                        if (!(Vector3.Distance(baked, v) <= tol))
+                            faults.Add($"{def.Id}: '{a.Id}' {what} baked {baked}, sidecar {v}");
+                    }
+                    Same("reach", a.ReachPoint, DeckSidecarJson.Member(e, "reach_point"));
+                    Same("mattress", a.MattressCentre, DeckSidecarJson.Member(bunk, "mattress_centre"));
+                    Same("pillow", a.PillowEnd, DeckSidecarJson.Member(bunk, "pillow_end"));
+                    if (DeckSidecarJson.String(DeckSidecarJson.Member(bunk, "level")) != a.BunkLevel ||
+                        DeckSidecarJson.String(DeckSidecarJson.Member(bunk, "obstruction")) != a.BunkObstruction)
+                        faults.Add($"{def.Id}: '{a.Id}' berth level/obstruction differ from the sidecar");
+                }
+            }
+            Assert.IsEmpty(faults, string.Join("\n", faults));
+        }
     }
 }

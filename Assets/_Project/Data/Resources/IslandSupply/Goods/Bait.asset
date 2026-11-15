@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7cc9a5a206604027aa490bb3643e5f41, type: 3}
+  m_Name: Bait
+  m_EditorClassIdentifier: HiddenHarbours.Core::HiddenHarbours.Core.IslandGoodDef
+  Id: islandgood.bait
+  DisplayName: Bait top-up
+  Source: 0
+  Unit: kg
+  DailyUnits: 10
+  DailyMassKg: 10
+  DailyVolumeLitres: 12
+  PlayerAllowanceFraction: 0.25
+  WinterMultiplier: 1
+  Container: pail or tote
+  Basis: Capelin and herring top-up; bulk lobster bait comes by sea. Island supply plan 2026-11-15 table (h).

@@ -81,6 +81,10 @@ The dev fishing rig carries NMC's seven existing species for art and gear wiring
 and Cumberland's `SpawnFishIds` remain CMB4's. A cast here currently has no eligible species, so Phase B
 must assert that result and report the positive-catch acceptance gap by name. No fish def is changed.
 
+> **R1 (2026-11-15) moved species eligibility earlier.** Mackerel, striped bass, winter flounder, rainbow
+> smelt, cunner, green crab and the surf clam now list `region.cumberland` (see `fish-and-content.md` §4.9). The
+> Phase B cast test now asserts the cast is answered (a bite or a no-bite). `SpawnFishIds` stay with CMB4.
+
 ## Door contract for the later NMC wave
 
 All three outgoing targets are NMC's existing def. A missing target produces no passage; loader lists

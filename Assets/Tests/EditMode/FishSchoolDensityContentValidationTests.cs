@@ -121,7 +121,9 @@ namespace HiddenHarbours.Tests.EditMode
             var jumpers = new HashSet<string> { "fish.striped_bass", "fish.mackerel", "fish.atlantic_herring" };
             var neverJump = new HashSet<string>
             {
-                "fish.atlantic_cod", "fish.haddock", "fish.pollock", "fish.winter_flounder"
+                "fish.atlantic_cod", "fish.haddock", "fish.pollock", "fish.winter_flounder",
+                // R1 (2026-11-15): the current-region rod species. None of them clears the water.
+                "fish.rainbow_smelt", "fish.atlantic_tomcod", "fish.cunner"
             };
 
             var seen = new HashSet<string>();

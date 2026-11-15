@@ -927,6 +927,41 @@
       ],
       "counter": "stove_counter",
       "_note": "mechanism: prep station (cut/prepare raw food; it is then cooked at the stove) · house level · the free forward quarter of stove_counter, beside the rings · authored 2026-11-14 from the counter box; boatInteriorRig.js does not emit it yet"
+    },
+    {
+      "id": "bunk_starboard",
+      "action": "sleep",
+      "reach_point": [
+        2.5,
+        -27.85,
+        2.2
+      ],
+      "visible_facings": [
+        "N",
+        "NE",
+        "E",
+        "SE",
+        "S",
+        "SW",
+        "W",
+        "NW"
+      ],
+      "_note": "mechanism: BoatBunk (sleep, rest + save) · below-deck level · the drawn sibling bunk made sleepable (owner ruling 2026-11-15: no shared bed)",
+      "bunk": {
+        "level": "below_sole",
+        "obstruction": "bunk_stbd",
+        "mattress_centre": [
+          2.5,
+          -26.65,
+          2.7
+        ],
+        "pillow_end": [
+          2.5,
+          -27.7,
+          2.7
+        ],
+        "pillow_source": "art: boatInteriorRig drawBunk puts the pillow at the end farther from the middle of the below deck (aft, aft, y0)"
+      }
     }
   ],
   "mechanism_map": {

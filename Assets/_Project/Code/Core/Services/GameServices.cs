@@ -385,6 +385,21 @@ namespace HiddenHarbours.Core
         private static IFarmService _farm;
 
         /// <summary>
+        /// Eating (first food slice): use up one unit of a food from the supply locker or the hands and lower
+        /// hunger through <see cref="Needs"/> by the food's <see cref="FoodDef.HungerRelief"/>. Never null: a
+        /// default <see cref="FoodEater"/> over the shipped Defs under <c>Resources/Food/</c> is made on first
+        /// read; a test assigns its own. Cleared by <see cref="Reset"/>.
+        /// FLAG lead-architect: new Core contract (food).
+        /// </summary>
+        public static FoodEater Food
+        {
+            get => _food ??= new FoodEater();
+            set => _food = value;
+        }
+
+        private static FoodEater _food;
+
+        /// <summary>
         /// The web of ties between people (relationships slice 1, owner ruling 2026-11-14): the seam a feature
         /// module records "something happened between these two" through and asks a pair's stage from, so the
         /// crew system, the cannery, the shops, talk and routines never reference each other (rule 4). Never
@@ -400,6 +415,59 @@ namespace HiddenHarbours.Core
         }
 
         private static IRelationshipService _relationships;
+
+        /// <summary>
+        /// Who is aboard which boat, in which role (crew slice R2): players and hired hands alike. Boarding
+        /// enforces the hull's crew slots; <see cref="ICrewRoster.CanSail"/> answers the night and trip
+        /// rules through <see cref="VoyageLimits"/>. Never null: a default <see cref="CrewRoster"/> over
+        /// <see cref="Voyages"/>, the shipped roles and <see cref="CrewPolicy"/> is made on first read; a
+        /// test assigns its own. Cleared by <see cref="Reset"/>. In memory only: not saved yet.
+        /// FLAG lead-architect: new Core contract (crew).
+        /// </summary>
+        public static ICrewRoster Crew
+        {
+            get => _crew ??= new CrewRoster();
+            set => _crew = value;
+        }
+
+        private static ICrewRoster _crew;
+
+        /// <summary>
+        /// The voyage records by hull id (crew slice R2), each joined to its hull's crew slots and bunks.
+        /// The Boats module registers one (<c>BoatVoyageCatalog</c>). <b>Never null</b>: absent a
+        /// registration it reads <see cref="EmptyVoyageCatalog"/>, under which every hull is unknown and the
+        /// roster refuses with <see cref="VoyageRefusal.UnknownHull"/> rather than guessing. Cleared by
+        /// <see cref="Reset"/>.
+        /// FLAG lead-architect: new Core contract (crew).
+        /// </summary>
+        public static IVoyageCatalog Voyages
+        {
+            get
+            {
+                IVoyageCatalog catalog = _voyages;
+                // The FishSchools fake-null discipline: a registrant may be a UnityEngine.Object.
+                if (catalog is UnityEngine.Object producer && producer == null) return EmptyVoyageCatalog.Instance;
+                return catalog != null ? catalog : EmptyVoyageCatalog.Instance;
+            }
+            set => _voyages = value;
+        }
+
+        private static IVoyageCatalog _voyages;
+
+        /// <summary>
+        /// Whether a gated crossing (the St Peters bar at low water) can be set out on at a given game hour:
+        /// the seam a cross-region NPC routine asks before it leaves one region for the next (owner ask
+        /// 2026-11-15). Never null: <see cref="AlwaysOpenCrossingGate.Instance"/> until a real gate is
+        /// assigned (the tide-window slice); a test assigns its own. Cleared by <see cref="Reset"/>.
+        /// FLAG lead-architect: new Core contract (cross-region routines).
+        /// </summary>
+        public static ICrossingGate CrossingGate
+        {
+            get => _crossingGate ?? AlwaysOpenCrossingGate.Instance;
+            set => _crossingGate = value;
+        }
+
+        private static ICrossingGate _crossingGate;
 
         /// <summary>
         /// The active region's terrain-elevation source — the "height map" the tidal-exposure seam reads
@@ -761,6 +829,9 @@ namespace HiddenHarbours.Core
 
         /// <summary>The strength and cardio numbers (body slice 2), with the fallback for an unwired config.</summary>
         public static StrengthSettings StrengthSettings => Config != null ? Config.Strength : StrengthSettings.Default;
+
+        /// <summary>The crew and trip-limit rules (crew slice R2), with the fallback for an unwired config.</summary>
+        public static CrewPolicy CrewPolicy => Config != null ? Config.Crew : CrewPolicy.Default;
 
         /// <summary>The needs' slow tick in in-game seconds (never below one game minute), with the
         /// fallback for an unwired config. The game clock calls <see cref="INeedsService.Tick"/> this often.</summary>
@@ -1330,7 +1401,11 @@ namespace HiddenHarbours.Core
             PlayerStrength = null;       // → the body, or the neutral reading
             CarriedLoad = null;          // → NoCarriedLoad.Instance (nothing carried)
             Farm = null;                 // → a fresh default on next read; drops its catalog and baseline
+            Food = null;                 // → a fresh default on next read; drops its loaded food book
             Relationships = null;        // → a fresh default on next read; reseeds from the shipped ties
+            Crew = null;                 // → a fresh, empty roster on next read
+            Voyages = null;              // → EmptyVoyageCatalog.Instance; this property is never null
+            CrossingGate = null;         // → AlwaysOpenCrossingGate.Instance; this property is never null
             TidalTerrain = null;
             StillWater = null;           // → EmptyStillWater.Instance; this property is never null
             PlayerTransform = null;

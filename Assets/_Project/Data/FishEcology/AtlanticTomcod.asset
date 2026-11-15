@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 51d5aaf6c73f47f1b2335fa4906c6153, type: 3}
+  m_Name: AtlanticTomcod
+  m_EditorClassIdentifier: HiddenHarbours.Fishing::HiddenHarbours.Fishing.FishEcologyDef
+  Id: "ecology.atlantic_tomcod"
+  SpeciesId: "fish.atlantic_tomcod"
+  ScientificName: "Microgadus tomcod"
+  LifeStageAndScope: "Post-larval fishable coastal animals; typical reference habitat only. Adults unless the notes explicitly distinguish juveniles."
+  TypicalMinDepthMetres: 0
+  TypicalMaxDepthMetres: 6
+  DepthEvidence: "Authored shallow estuarine reference band; tomcod live in brackish creeks and shallow coastal water and spawn in winter at the head of the tide."
+  Layer: 2
+  Habitats: 38
+  PreferredVegetation: 0
+  VegetationEvidence: "The cited profile does not establish a species-wide eelgrass or kelp preference; zero means no preference inferred, not avoidance."
+  Grouping: 2
+  DayHabit: 1
+  TideHabit: 1
+  HabitEvidence: "Daily activity varies with season and locality. No hard daylight or tide exclusion is inferred from this reference."
+  BiologyNotes: "Small bottom-associated cod of estuaries; loose aggregations gather for the winter spawning run. No synchronized swimming shoal is implied."
+  SourceUrls:
+  - "https://www.fishbase.se/summary/Microgadus-tomcod.html"
