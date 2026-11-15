@@ -138,6 +138,48 @@ namespace HiddenHarbours.Tests.EditMode
             finally { Object.DestroyImmediate(player.gameObject); Object.DestroyImmediate(boat.gameObject); }
         }
 
+        /// <summary>The land template's closing solid for one side of a centred rectangle: flush outside the
+        /// edge, <paramref name="thickness"/> deep, the full length of the side (LandSceneTemplate.AddClosedEdges).</summary>
+        static Rect ClosingSolid(Rect r, RegionEdge edge, float thickness) => edge switch
+        {
+            RegionEdge.East => new Rect(r.xMax, r.yMin, thickness, r.height),
+            RegionEdge.West => new Rect(r.xMin - thickness, r.yMin, thickness, r.height),
+            RegionEdge.North => new Rect(r.xMin, r.yMax, r.width, thickness),
+            _ => new Rect(r.xMin, r.yMin - thickness, r.width, thickness),
+        };
+
+        [Test]
+        public void ASolidFlushBeyondASharedEdge_StandsDown_AndOneBeyondABoundaryHolds()
+        {
+            WorldFrame f = TwoSideBySide(out RegionFrame west, out RegionFrame east);
+            const float thick = 2f;
+            Assert.That(f.HasNeighbourAlong(west.RegionId, RegionEdge.East), Is.True);
+            Assert.That(f.HasNeighbourAlong(east.RegionId, RegionEdge.West), Is.True);
+            foreach (RegionEdge e in new[] { RegionEdge.West, RegionEdge.North, RegionEdge.South })
+                Assert.That(f.HasNeighbourAlong(west.RegionId, e), Is.False, $"west's {e} faces nothing");
+
+            // The wall that held the walker 0.35 m and the dory 2 m short of the seam: it must go.
+            Assert.That(f.StandsDownOnSharedEdge(west.RegionId, ClosingSolid(west.LocalRect, RegionEdge.East, thick)), Is.True);
+            Assert.That(f.StandsDownOnSharedEdge(east.RegionId, ClosingSolid(east.LocalRect, RegionEdge.West, thick)), Is.True,
+                "and the neighbour's wall on the same seam, or the way back is shut");
+            // A world boundary keeps its wall.
+            foreach (RegionEdge e in new[] { RegionEdge.West, RegionEdge.North, RegionEdge.South })
+                Assert.That(f.StandsDownOnSharedEdge(west.RegionId, ClosingSolid(west.LocalRect, e, thick)), Is.False,
+                    $"west's {e} wall holds");
+        }
+
+        [Test]
+        public void ASolidThatReachesInsideTheRegion_NeverStandsDown()
+        {
+            WorldFrame f = TwoSideBySide(out RegionFrame west, out _);
+            Rect r = west.LocalRect;
+            // A quay that straddles the shared edge, and a rock just inside it: scenery, not a closing wall.
+            Assert.That(f.StandsDownOnSharedEdge(west.RegionId, new Rect(r.xMax - 3f, 0f, 6f, 2f)), Is.False);
+            Assert.That(f.StandsDownOnSharedEdge(west.RegionId, new Rect(r.xMax - 1f, 0f, 0.9f, 0.9f)), Is.False);
+            Assert.That(f.StandsDownOnSharedEdge("region.unknown", ClosingSolid(r, RegionEdge.East, 2f)), Is.False,
+                "a region off the map keeps every wall");
+        }
+
         [Test]
         public void ABoatCrossing_ShiftsHerAndHerCrewOnce_KeepingHeading()
         {
@@ -257,6 +299,40 @@ namespace HiddenHarbours.Tests.EditMode
             float creekBarWorldY = -200f + nmc.WorldOrigin.y;
             float stpBarWorldY = 0f + stp.WorldOrigin.y;
             Assert.That(creekBarWorldY, Is.EqualTo(stpBarWorldY).Within(0.01f), "no sideways jump crossing the bar");
+        }
+
+        /// <summary>
+        /// The four PlayMode reds on the first push (walker held at x 379.65, dory at 378.00, 0.35 m and 2 m
+        /// inside Rice Point's east edge; dory 1.9 m inside its south edge) were Rice Point's closing solids.
+        /// On the shipped map the east and south walls stand on seams and must stand down; west and north face
+        /// nothing and must hold. Cumberland's south wall sits on the creek's north beach seam.
+        /// </summary>
+        [Test]
+        public void ThePlayableRegionsClosingWalls_OpenOnTheirSeams_AndHoldOnTheirBoundaries()
+        {
+            WorldFrame f = Built();
+            void Expect(string id, RegionEdge edge, bool opens)
+            {
+                Assert.That(f.TryGet(id, out RegionFrame r), Is.True, id);
+                Rect rect = r.LocalRect;
+                const float thick = 2f;
+                Rect wall = edge switch
+                {
+                    RegionEdge.East => new Rect(rect.xMax, rect.yMin, thick, rect.height),
+                    RegionEdge.West => new Rect(rect.xMin - thick, rect.yMin, thick, rect.height),
+                    RegionEdge.North => new Rect(rect.xMin, rect.yMax, rect.width, thick),
+                    _ => new Rect(rect.xMin, rect.yMin - thick, rect.width, thick),
+                };
+                Assert.That(f.StandsDownOnSharedEdge(id, wall), Is.EqualTo(opens), $"{id} {edge} wall opens: {opens}");
+            }
+            Expect(Rp, RegionEdge.East, true);    // the creek: strand and sea door
+            Expect(Rp, RegionEdge.South, true);   // the South Water: the channel mouth
+            Expect(Rp, RegionEdge.West, false);
+            Expect(Rp, RegionEdge.North, false);
+            Expect(Cmb, RegionEdge.South, true);  // the creek's north beach
+            Expect(Cmb, RegionEdge.West, false);
+            Expect(Cmb, RegionEdge.East, false);
+            Expect(Cmb, RegionEdge.North, false);
         }
 
         [Test]

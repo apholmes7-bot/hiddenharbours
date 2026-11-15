@@ -253,6 +253,54 @@ namespace HiddenHarbours.Core
             return false;
         }
 
+        /// <summary>True when some other region shares a stretch of <paramref name="regionId"/>'s
+        /// <paramref name="edge"/> (a seam of positive length). An edge with no neighbour is a world boundary.</summary>
+        public bool HasNeighbourAlong(string regionId, RegionEdge edge)
+        {
+            if (!TryGet(regionId, out RegionFrame self)) return false;
+            for (int i = 0; i < _regions.Count; i++)
+            {
+                if (string.Equals(_regions[i].RegionId, self.RegionId, StringComparison.Ordinal)) continue;
+                if (TryGetSeam(self, _regions[i], out RegionSeam seam) && seam.EdgeOfA == edge) return true;
+            }
+            return false;
+        }
+
+        /// <summary>How far (m) a solid's near face may reach back INSIDE a region's rectangle and still count
+        /// as lying beyond the edge. A geometric epsilon (physics bounds are float AABBs of shapes authored
+        /// flush with the edge), not a tunable.</summary>
+        public const float EdgeSolidToleranceMetres = 0.05f;
+
+        /// <summary>The edge a solid lies WHOLLY beyond, in the region's local frame: its whole AABB
+        /// <paramref name="solidLocal"/> is outside <paramref name="localRect"/> past that side. A corner
+        /// solid beyond two sides answers the first of East, West, North, South. False for anything that
+        /// reaches into the rectangle. PURE.</summary>
+        public static bool TryGetEdgeBeyond(Rect localRect, Rect solidLocal, out RegionEdge edge)
+        {
+            const float tol = EdgeSolidToleranceMetres;
+            if (solidLocal.xMin >= localRect.xMax - tol) { edge = RegionEdge.East; return true; }
+            if (solidLocal.xMax <= localRect.xMin + tol) { edge = RegionEdge.West; return true; }
+            if (solidLocal.yMin >= localRect.yMax - tol) { edge = RegionEdge.North; return true; }
+            if (solidLocal.yMax <= localRect.yMin + tol) { edge = RegionEdge.South; return true; }
+            edge = default;
+            return false;
+        }
+
+        /// <summary>
+        /// ⭐ <b>Must this scene solid stand down?</b> (owner ruling 2026-11-15: "the whole wall is a door").
+        /// A region scene closes its rectangle with solids laid just outside each edge (the land template's
+        /// <c>ClosedEdges</c>). Beyond an edge that HAS a neighbour, that space is the neighbour's, and a
+        /// solid there stops every walker and hull short of the seam, so the crossing can never fire. True
+        /// for a solid wholly beyond an edge with a neighbour; false inside the rectangle, and false beyond
+        /// a world boundary, which keeps its wall. Where an edge is only partly shared the frame's own
+        /// Boundary hold keeps the unshared stretch. PURE.
+        /// </summary>
+        public bool StandsDownOnSharedEdge(string regionId, Rect solidLocal)
+        {
+            if (!TryGet(regionId, out RegionFrame self)) return false;
+            return TryGetEdgeBeyond(self.LocalRect, solidLocal, out RegionEdge edge) && HasNeighbourAlong(regionId, edge);
+        }
+
         /// <summary>
         /// ⭐ <b>The crossing rule, for one mover at <paramref name="local"/> in region
         /// <paramref name="fromId"/>.</b> Inside the rectangle, or less than <paramref name="hysteresisMetres"/>

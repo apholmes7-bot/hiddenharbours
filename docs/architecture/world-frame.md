@@ -82,6 +82,15 @@ walker when on foot, the boat when aboard or on deck. `Resolve(region, localPosi
   velocity are all unchanged; the camera is shifted by the same amount.
 - **Boundary** past an edge that faces nothing: the mover is held at the edge.
 
+**The closing walls open on seams.** The land template (`LandSceneTemplate.AddClosedEdges`) closes every
+region with a solid laid flush outside each edge (`ClosedEdges`, Rice Point and Cumberland). Left on, the
+east and south walls held Rice Point's walker 0.35 m (his foot radius) and the dory 2 m (half her hull)
+inside the edge, so no crossing, which fires past the edge plus the hysteresis, could ever happen. Once per
+region scene the coordinator stands down every static, non-trigger collider that lies wholly beyond an edge
+that has a neighbour (`WorldFrame.StandsDownOnSharedEdge`, `RegionTravelCoordinator.OpenSharedEdges`).
+A boundary edge keeps its wall; where an edge is only partly shared, the Boundary hold above keeps the
+unshared stretch. Nothing in a scene file changes, and a region off the map keeps every wall.
+
 **No bounce, no jump.** The arrival is at the same world point, which is already at least the hysteresis
 inside the neighbour; going back needs a genuine move of twice that. Nothing is displaced to stop a re-fire.
 

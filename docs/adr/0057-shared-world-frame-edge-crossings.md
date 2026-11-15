@@ -37,7 +37,9 @@ overrode the way in (D8).
    mover each physics step and, once it is `RegionCrossingHysteresisMetres` (GameConfig, 1 m) past a shared
    edge, travels to the neighbour and translates the mover by `from.WorldOrigin - to.WorldOrigin`. Position
    along the edge, heading and velocity are unchanged. Re-triggering is stopped by that hysteresis band,
-   never by moving anyone.
+   never by moving anyone. A scene's own closing walls must not stand in the way: once per region scene
+   the coordinator disables every static solid lying wholly beyond a SHARED edge
+   (`WorldFrame.StandsDownOnSharedEdge`); boundary edges keep theirs.
 3. **Keyed bands stand down** in listed regions (`RegionPassage.StandsDownForWorldFrame`). Two exceptions:
    no frame at all (fixtures, unlisted regions) and the arrival opening, whose scripted sea leg keeps its
    authored door until it is re-cut.

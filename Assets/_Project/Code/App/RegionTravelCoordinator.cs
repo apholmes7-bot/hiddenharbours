@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using HiddenHarbours.Core;
@@ -361,6 +362,7 @@ namespace HiddenHarbours.App
             WorldFrame frame = GameServices.WorldFrame;
             string here = GameServices.CurrentRegionId;
             if (frame == null || !frame.Contains(here)) return; // no frame, or a region off the map
+            OpenSharedEdgesOnce(frame, here);                   // before anyone can reach a seam
             if (!TryGetMover(out Transform mover, out bool boatIsMover)) return;
 
             CrossingDecision d = frame.Resolve(here, mover.position, GameServices.RegionCrossingHysteresisMetres);
@@ -372,6 +374,65 @@ namespace HiddenHarbours.App
             Rect r = f.LocalRect;
             Vector2 p = mover.position;
             HoldAtEdge(mover, new Vector2(Mathf.Clamp(p.x, r.xMin, r.xMax), Mathf.Clamp(p.y, r.yMin, r.yMax)), d.Edge);
+        }
+
+        // The region scene whose shared-edge solids have been stood down (its handle), so the scan runs once
+        // per scene, not per step. A revisited scene keeps its colliders as they were left: off.
+        int _edgesOpenedInScene;
+        readonly List<Collider2D> _solidScratch = new List<Collider2D>();
+
+        /// <summary>Stand down the current region scene's solids that wall a SHARED edge (once per scene).
+        /// Found through the live anchor that reports <paramref name="here"/>, so a region played direct and
+        /// one travelled into are treated alike.</summary>
+        void OpenSharedEdgesOnce(WorldFrame frame, string here)
+        {
+            RegionAnchor anchor = null;
+            IReadOnlyList<RegionAnchor> live = RegionAnchor.Live;
+            for (int i = 0; i < live.Count && anchor == null; i++)
+                if (live[i] != null && string.Equals(live[i].RegionId, here, System.StringComparison.Ordinal)) anchor = live[i];
+            if (anchor == null) return;
+            Scene scene = anchor.gameObject.scene;
+            if (!scene.IsValid() || scene.handle == _edgesOpenedInScene) return;
+            _edgesOpenedInScene = scene.handle;
+            int opened = OpenSharedEdges(scene, frame, here, _solidScratch);
+            if (opened > 0)
+                Debug.Log($"[RegionTravelCoordinator] {here}: stood down {opened} edge solid(s) on shared edges " +
+                          "(the whole wall is a door; world boundaries keep theirs).");
+        }
+
+        /// <summary>
+        /// ⭐ <b>THE WHOLE WALL IS A DOOR, physically</b> (owner ruling 2026-11-15; ADR 0057). Disable every
+        /// static, non-trigger collider in <paramref name="scene"/> that lies wholly beyond an edge of
+        /// <paramref name="regionId"/> that has a neighbour (<see cref="WorldFrame.StandsDownOnSharedEdge"/>).
+        /// The land template closes each region with a solid laid flush outside every edge
+        /// (<c>ClosedEdges</c>); left on, it held a walker 0.35 m (his foot radius) and a dory 2 m (half her
+        /// hull) short of the seam, so the crossing, which fires past the edge plus the hysteresis, never
+        /// could. A boundary edge keeps its solid. Moving bodies and triggers are never touched. Returns
+        /// how many were disabled.
+        /// </summary>
+        public static int OpenSharedEdges(Scene scene, WorldFrame frame, string regionId,
+                                          List<Collider2D> scratch)
+        {
+            if (frame == null || !scene.IsValid() || !scene.isLoaded || !frame.Contains(regionId)) return 0;
+            scratch ??= new List<Collider2D>();
+            int opened = 0;
+            foreach (GameObject root in scene.GetRootGameObjects())
+            {
+                root.GetComponentsInChildren(false, scratch);
+                foreach (Collider2D c in scratch)
+                {
+                    if (c == null || !c.enabled || c.isTrigger) continue;
+                    Rigidbody2D body = c.attachedRigidbody;
+                    if (body != null && body.bodyType != RigidbodyType2D.Static) continue;
+                    Bounds b = c.bounds;
+                    var solid = Rect.MinMaxRect(b.min.x, b.min.y, b.max.x, b.max.y);
+                    if (!frame.StandsDownOnSharedEdge(regionId, solid)) continue;
+                    c.enabled = false;
+                    opened++;
+                }
+            }
+            scratch.Clear();
+            return opened;
         }
 
         /// <summary>Who is moving through the world: the walker on foot, or the boat with him aboard.
