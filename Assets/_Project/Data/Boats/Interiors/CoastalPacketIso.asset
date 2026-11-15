@@ -247,6 +247,10 @@ MonoBehaviour:
     - E
     - W
     - NW
+    BunkLevel: 
+    BunkObstruction: 
+    MattressCentre: {x: 0, y: 0, z: 0}
+    PillowEnd: {x: 0, y: 0, z: 0}
   - Id: stove
     Action: cook
     ReachPoint: {x: -2.53, y: -27, z: 5}
@@ -256,6 +260,10 @@ MonoBehaviour:
     - SW
     - W
     - NW
+    BunkLevel: 
+    BunkObstruction: 
+    MattressCentre: {x: 0, y: 0, z: 0}
+    PillowEnd: {x: 0, y: 0, z: 0}
   - Id: locker
     Action: storage
     ReachPoint: {x: 2.53, y: -26.95, z: 5}
@@ -265,9 +273,13 @@ MonoBehaviour:
     - E
     - SE
     - S
+    BunkLevel: 
+    BunkObstruction: 
+    MattressCentre: {x: 0, y: 0, z: 0}
+    PillowEnd: {x: 0, y: 0, z: 0}
   - Id: bunk
     Action: sleep
-    ReachPoint: {x: -2.5, y: -28.2, z: 2.2}
+    ReachPoint: {x: -2.5, y: -27.85, z: 2.2}
     VisibleFacings:
     - N
     - NE
@@ -277,6 +289,23 @@ MonoBehaviour:
     - SW
     - W
     - NW
+    BunkLevel: below_sole
+    BunkObstruction: bunk
+    MattressCentre: {x: -2.5, y: -26.65, z: 2.7}
+    PillowEnd: {x: -2.5, y: -27.7, z: 2.7}
+  - Id: prep
+    Action: prep
+    ReachPoint: {x: -2.53, y: -26.7, z: 5}
+    VisibleFacings:
+    - N
+    - S
+    - SW
+    - W
+    - NW
+    BunkLevel: 
+    BunkObstruction: 
+    MattressCentre: {x: 0, y: 0, z: 0}
+    PillowEnd: {x: 0, y: 0, z: 0}
   Routes:
   - Id: house_to_bridge
     FromLevel: house_sole

@@ -154,6 +154,14 @@ namespace HiddenHarbours.Tests.PlayMode
             Vector3 lens = camera.transform.position;
             float size = camera.orthographicSize;
             Color ambient = RenderSettings.ambientLight;
+            // The shipped catalog, whatever its size: pick the allowance in catalog order.
+            var picked = new System.Collections.Generic.List<string>();
+            for (int i = 0; i < creator.TraitPicks.Required; i++)
+            {
+                Assert.IsFalse(creator.Commit(), "confirm must wait for the trait picks");
+                Assert.IsTrue(creator.ToggleTrait(creator.TraitPicks.Offered[i]), creator.Refusal);
+                picked.Add(creator.TraitPicks.Offered[i]);
+            }
             Assert.IsTrue(creator.Commit(), creator.Refusal);
             Assert.AreEqual(lens, camera.transform.position);
             Assert.AreEqual(size, camera.orthographicSize);
@@ -169,6 +177,7 @@ namespace HiddenHarbours.Tests.PlayMode
             Assert.AreEqual("tan", persisted.PlayerRecipe.Skin);
             Assert.AreEqual("outfit.harbour_teal", persisted.WornOutfitId);
             Assert.AreEqual("Skipper", persisted.PlayerName);
+            CollectionAssert.AreEqual(picked, persisted.PlayerTraits);
             Assert.AreEqual(0, _lines);
 
             // Continue an unfinished introduction through the real shell and the same owned fixture file.
@@ -178,6 +187,7 @@ namespace HiddenHarbours.Tests.PlayMode
             Assert.AreEqual("char_build.ginny", creator.Recipe.BuildId);
             Assert.AreEqual("outfit.harbour_teal", creator.OutfitId);
             Assert.AreEqual("Skipper", creator.Name);
+            CollectionAssert.AreEqual(picked, creator.TraitPicks.Picked);
             creator.Cancel();
             Assert.AreEqual("Skipper", GameServices.Save.Current.PlayerName);
             yield return FinishArrival();

@@ -67,9 +67,20 @@ namespace HiddenHarbours.Art
         }
 
         public bool IsExcludedArt(SpriteRenderer renderer)
+            => renderer == null || IsExcludedObject(renderer) || IsExcludedSprite(renderer.sprite);
+
+        /// <summary>The half of <see cref="IsExcludedArt"/> that belongs to the OBJECT: a UI canvas
+        /// ancestor or an excluded object name. Neither changes while a sprite animates.</summary>
+        public bool IsExcludedObject(SpriteRenderer renderer)
             => renderer == null || renderer.GetComponentInParent<Canvas>() != null ||
-                MatchesAny(renderer.name, ExcludedNames) ||
-                (renderer.sprite != null && MatchesAny(renderer.sprite.name, ExcludedNames));
+                MatchesAny(renderer.name, ExcludedNames);
+
+        /// <summary>The half of <see cref="IsExcludedArt"/> that belongs to the CELL being drawn. An
+        /// animated caster crosses it whenever its sprite swaps (a gull's splash row), so
+        /// <see cref="SpriteShadow"/> asks this on every swap. Reads <c>sprite.name</c>, which allocates:
+        /// callers on a hot path cache the answer per sprite.</summary>
+        public bool IsExcludedSprite(Sprite sprite)
+            => sprite != null && MatchesAny(sprite.name, ExcludedNames);
 
         public SunCasterClassRule ClassFor(SpriteRenderer renderer)
         {
