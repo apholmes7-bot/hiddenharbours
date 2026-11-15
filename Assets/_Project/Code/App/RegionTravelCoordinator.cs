@@ -497,20 +497,18 @@ namespace HiddenHarbours.App
         /// <summary>
         /// ⭐ <b>Warm the neighbour the mover is heading for</b> (PR 1223, the first-entry freeze): within
         /// <see cref="GameServices.RegionPreloadDistanceMetres"/> of a shared edge, start reading the
-        /// neighbour's scene in the background (<see cref="RegionSceneLoader.Preload"/>) so the crossing
-        /// only switches it on. A region already loaded (visited) asks nothing. The loader bounds the hold
-        /// itself (<see cref="GameServices.RegionPreloadHoldSeconds"/>), so a preload never waits for good
-        /// on a crossing that does not come.
+        /// neighbour's scene in the background and park it (<see cref="RegionSceneLoader.Preload"/>), so the
+        /// crossing only re-activates it. A region already loaded (visited) asks nothing.
         /// </summary>
         void WarmNeighbour(WorldFrame frame, string here, Vector2 moverLocal)
         {
-            if (_loader != null && _loader.HeldSceneName != null) return;
+            if (_loader != null && _loader.PreloadingSceneName != null) return;
             // The pure question first, so a rig with no loader never searches for one per step.
             if (_map == null || !frame.TryGetApproachingNeighbour(here, moverLocal,
                     GameServices.RegionPreloadDistanceMetres, out RegionFrame next)) return;
             RegionSceneLoader loader = Loader;
             if (loader != null && _map.TryGet(next.RegionId, out RegionDef target))
-                loader.Preload(target, GameServices.RegionPreloadHoldSeconds);
+                loader.Preload(target);
         }
 
         bool BeginCrossing(string here, CrossingDecision d, bool boatIsMover)

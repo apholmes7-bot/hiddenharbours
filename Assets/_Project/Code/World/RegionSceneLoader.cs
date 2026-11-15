@@ -70,24 +70,15 @@ namespace HiddenHarbours.World
             if (!RegionTravel.ShouldLoad(SceneManager.GetActiveScene().name, to))
                 return false;
 
-            // ⭐ PRELOADED (PR 1223): the scene is already read in, held one step short of switching on.
-            // The hop only lets it switch on; the completion handler laid down by Preload makes it active.
-            if (_held != null && string.Equals(_held.SceneName, to.SceneName, System.StringComparison.Ordinal))
+            // ⭐ PRELOAD STILL ON ITS WAY IN (PR 1223): the crossing came before the warm-up finished. Do not
+            // start a second copy; the preload's completion makes it the active scene instead of parking it.
+            if (_preloading != null && string.Equals(_preloading.SceneName, to.SceneName, System.StringComparison.Ordinal))
             {
-                _held.TravelRequested = true;
-                _held.Op.allowSceneActivation = true;
-                return true;
-            }
-            // A preload of some OTHER region would block this load (Unity runs nothing behind a held
-            // scene): let it finish out of sight first, then travel.
-            if (_held != null)
-            {
-                _travelAfterRelease = to;
-                Release();
+                _preloading.TravelRequested = true;
                 return true;
             }
 
-            // Already loaded (re-visit) → re-activate it, don't load a duplicate.
+            // Already loaded (re-visit, or warmed by Preload) → re-activate it, don't load a duplicate.
             var existing = SceneManager.GetSceneByName(to.SceneName);
             if (existing.IsValid() && existing.isLoaded)
             {
@@ -136,40 +127,39 @@ namespace HiddenHarbours.World
 
         // ---- preload (PR 1223: the first-entry freeze) -------------------------------------------------
 
-        /// <summary>A neighbour's scene read in ahead of the hop and held one step short of switching on.</summary>
-        sealed class HeldLoad
+        /// <summary>A neighbour's scene on its way in ahead of the hop.</summary>
+        sealed class PreloadingScene
         {
             public string SceneName;
-            public AsyncOperation Op;
-            public float Since;            // unscaled time the hold began
-            public float HoldSeconds;      // how long it may wait for the hop
-            public bool TravelRequested;   // the hop asked for it: make it active when it lands
+            public bool TravelRequested;   // the hop came first: make it active when it lands, don't park it
         }
 
-        HeldLoad _held;
-        RegionDef _travelAfterRelease;
+        PreloadingScene _preloading;
         readonly HashSet<string> _unloadable = new HashSet<string>();
 
-        /// <summary>The scene being held for a hop, or null.</summary>
-        public string HeldSceneName => _held?.SceneName;
+        /// <summary>The scene a preload is still bringing in, or null.</summary>
+        public string PreloadingSceneName => _preloading?.SceneName;
 
         /// <summary>
-        /// ⭐ <b>Start reading a neighbour in before the hop</b> (PR 1223). Loads <paramref name="to"/>'s scene
-        /// additively and asynchronously but holds it short of activation
-        /// (<c>allowSceneActivation = false</c>), so the crossing has only to switch it on. No-op (false)
-        /// when it is the active scene, already loaded, already held, not in the build profile, or another
-        /// scene is being held or loaded.
+        /// ⭐ <b>Warm a neighbour before the hop</b> (PR 1223). Loads <paramref name="to"/>'s scene additively
+        /// and asynchronously, and when it lands PARKS it: its roots are put to sleep before it ever renders
+        /// and the region the player is in re-announces itself (<see cref="ParkReleased"/>). The crossing then
+        /// finds it loaded and only re-activates it, the same cheap toggle as a return to a region already
+        /// visited. No-op (false) when it is the active scene, already loaded or on its way in, not in the
+        /// build profile, or another preload is still running.
         ///
-        /// <para>⚠ <b>A held scene blocks every other scene load and unload</b> until it is let go — that is
-        /// Unity's rule, not ours. So the hold is bounded: <see cref="Travel"/> elsewhere lets it go first,
-        /// the loader's own tick lets it go after <paramref name="holdSeconds"/>, and so does this loader
-        /// being disabled. A scene let go without a hop is switched on, its roots put straight back to sleep
-        /// and the region the player is in re-woken (<see cref="ParkReleased"/>), so it is kept warm, exactly
-        /// as a region already visited is.</para>
+        /// <para>⚠ <b>Why it is not held short of activation.</b> The first cut held the load at
+        /// <c>allowSceneActivation = false</c> so the hop had only to "switch it on". Measured (PR 1223 fix
+        /// pass), switching on IS the cost: integrating the scene and running every component's Awake and
+        /// OnEnable took 2.4 s of a 2.5 s hop frame in Nine Mile Creek, and a held load does that work on the
+        /// release frame, i.e. on the seam. A held load also blocks every other scene load and unload until
+        /// it is released. Letting it activate on arrival and parking it moves that whole frame off the seam
+        /// to the moment the mover comes within <c>GameConfig.RegionPreloadDistanceMetres</c> of it, and
+        /// blocks nothing.</para>
         /// </summary>
-        public bool Preload(RegionDef to, float holdSeconds)
+        public bool Preload(RegionDef to)
         {
-            if (to == null || string.IsNullOrEmpty(to.SceneName) || _held != null || _travelAfterRelease != null) return false;
+            if (to == null || string.IsNullOrEmpty(to.SceneName) || _preloading != null) return false;
             if (!RegionTravel.ShouldLoad(SceneManager.GetActiveScene().name, to)) return false;
             Scene existing = SceneManager.GetSceneByName(to.SceneName);
             if (existing.IsValid()) return false;   // loaded (a visited region) or already on its way in
@@ -182,45 +172,22 @@ namespace HiddenHarbours.World
 
             AsyncOperation op = SceneManager.LoadSceneAsync(to.SceneName, LoadSceneMode.Additive);
             if (op == null) { _unloadable.Add(to.SceneName); return false; }
-            op.allowSceneActivation = false;
-            var held = new HeldLoad { SceneName = to.SceneName, Op = op, Since = Time.unscaledTime,
-                                      HoldSeconds = Mathf.Max(0f, holdSeconds) };
-            _held = held;
-            op.completed += _ => OnHeldLanded(held);
+            var preloading = new PreloadingScene { SceneName = to.SceneName };
+            _preloading = preloading;
+            op.completed += _ => OnPreloadLanded(preloading);
             return true;
         }
 
-        /// <summary>The hold is the loader's own to bound — not its caller's — so a preload is let go on
-        /// time even if whatever asked for it has been switched off (a fixture's teardown, a shell exit).</summary>
-        void Update()
+        void OnPreloadLanded(PreloadingScene preloading)
         {
-            if (_held == null || _held.TravelRequested) return;
-            if (Time.unscaledTime - _held.Since >= _held.HoldSeconds) Release();
-        }
-
-        void Release()
-        {
-            if (_held == null || _held.TravelRequested) return;
-            _held.Op.allowSceneActivation = true;   // it lands as a parked region (OnHeldLanded)
-        }
-
-        void OnHeldLanded(HeldLoad held)
-        {
-            if (ReferenceEquals(_held, held)) _held = null;
-            Scene scene = SceneManager.GetSceneByName(held.SceneName);
-            if (held.TravelRequested)
+            if (ReferenceEquals(_preloading, preloading)) _preloading = null;
+            Scene scene = SceneManager.GetSceneByName(preloading.SceneName);
+            if (preloading.TravelRequested)
             {
                 if (scene.IsValid() && scene.isLoaded) SceneManager.SetActiveScene(scene);
-                _currentSceneName = held.SceneName;
+                _currentSceneName = preloading.SceneName;
             }
             else ParkReleased(scene);
-
-            if (_travelAfterRelease != null)
-            {
-                RegionDef next = _travelAfterRelease;
-                _travelAfterRelease = null;
-                Travel(next);
-            }
         }
 
         /// <summary>
@@ -240,7 +207,5 @@ namespace HiddenHarbours.World
                 if (go.activeSelf) { go.SetActive(false); awake.Add(go); }
             foreach (GameObject go in awake) go.SetActive(true);
         }
-
-        void OnDisable() => Release();
     }
 }

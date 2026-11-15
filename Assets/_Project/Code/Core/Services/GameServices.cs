@@ -689,12 +689,6 @@ namespace HiddenHarbours.Core
             UnityEngine.Mathf.Max(0f, Config != null ? Config.RegionPreloadDistanceMetres
                                                      : GameConfig.DefaultRegionPreloadDistanceMetres);
 
-        /// <summary>How long (real seconds) a preloaded neighbour may wait un-activated for the hop before
-        /// it is let go. Same <c>Config != null</c> contract.</summary>
-        public static float RegionPreloadHoldSeconds =>
-            UnityEngine.Mathf.Max(0f, Config != null ? Config.RegionPreloadHoldSeconds
-                                                     : GameConfig.DefaultRegionPreloadHoldSeconds);
-
         /// <summary>
         /// TRUE while the ARRIVAL OPENING is running — from the moment <c>ArrivalOpening</c> leaves
         /// <c>Dormant</c> until it hands the player the boat, and false again the instant it is torn
