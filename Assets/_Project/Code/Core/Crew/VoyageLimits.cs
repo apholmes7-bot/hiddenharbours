@@ -11,11 +11,13 @@ namespace HiddenHarbours.Core
     /// <para><b>The rules</b> (audit §2.2, owner ruling 2026-11-15):</para>
     /// <list type="bullet">
     /// <item>By day, at most <c>BoatHullDef.CrewSlots</c> aboard.</item>
-    /// <item>Any night aboard needs a bunk. Players never share one. Hired hands have one each unless
-    /// <see cref="CrewPolicy.HiredHandsShareBunks"/> is ON (open question Q3, shipped OFF).</item>
+    /// <item>Any night aboard needs a bunk. Players never share one. Hired hands share the bunks left
+    /// over in watches while <see cref="CrewPolicy.HiredHandsShareBunks"/> is ON (owner ruling
+    /// 2026-11-15, shipped ON); with it OFF each hand needs a bunk.</item>
     /// <item>At least the record's minimum for the trip kind, and somebody who can take the helm.</item>
-    /// <item>No longer than the hull honestly goes; a month only with a hired skipper aboard while
-    /// <see cref="CrewPolicy.MonthTripsNeedHiredSkipper"/> is ON (open question Q5).</item>
+    /// <item>No longer than the hull honestly goes. A month needs a hired skipper aboard only while
+    /// <see cref="CrewPolicy.MonthTripsNeedHiredSkipper"/> is ON (owner ruling 2026-11-15: shipped OFF,
+    /// a solo player may sail a month with resupply).</item>
     /// <item>Planned work must be fitted to the hull, with its head count and its required roles.</item>
     /// <item>Stores, water, ice and fuel only when the caller tracks them (null = not checked).</item>
     /// </list>
@@ -31,10 +33,13 @@ namespace HiddenHarbours.Core
             if (spec == null) return VoyageVerdict.No(VoyageRefusal.UnknownHull, "", 0, 0);
             roles ??= StaffRoleBook.Empty;
             int dayMax = spec.DayMax;
-            int nightMax = spec.OvernightMax(policy);
+            int count = crew != null ? crew.Count : 0;
+            int players = 0;
+            for (int i = 0; i < count; i++) if (crew[i].Kind == CrewMemberKind.Player) players++;
+            // The overnight most for THIS crew's players (they never share a bunk).
+            int nightMax = spec.OvernightMax(policy, players);
             VoyageVerdict No(VoyageRefusal r, string detail = "") => VoyageVerdict.No(r, detail, dayMax, nightMax);
 
-            int count = crew != null ? crew.Count : 0;
             if (count == 0) return No(VoyageRefusal.NoCrew);
 
             // Members: ids present, nobody twice, every role real. Checked in a sorted order so the
@@ -57,8 +62,6 @@ namespace HiddenHarbours.Core
             {
                 if (spec.Bunks <= 0) return No(VoyageRefusal.NoBunks);
                 if (plan.Trip > spec.LongestTrip) return No(VoyageRefusal.TripLongerThanHullAllows);
-                int players = 0;
-                foreach (var m in sorted) if (m.Kind == CrewMemberKind.Player) players++;
                 int hands = count - players;
                 if (players > spec.Bunks) return No(VoyageRefusal.PlayersOutnumberBunks);
                 int free = spec.Bunks - players;

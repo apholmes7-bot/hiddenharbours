@@ -59,13 +59,21 @@ namespace HiddenHarbours.Core
         /// <summary>The most aboard by day: the crew slots.</summary>
         public int DayMax => CrewSlots;
 
-        /// <summary>The most aboard overnight under <paramref name="policy"/>: a bunk each, never more
-        /// than the crew slots. With hand bunk-sharing ON, hands may double up in the bunks left after
-        /// the players (who never share), so the most is every bunk shared.</summary>
-        public int OvernightMax(in CrewPolicy policy)
+        /// <summary>The most aboard overnight under <paramref name="policy"/> with no player aboard (an
+        /// all-hired crew): every bunk shared when hand bunk-sharing is ON, a bunk each when OFF, never more
+        /// than the crew slots.</summary>
+        public int OvernightMax(in CrewPolicy policy) => OvernightMax(policy, 0);
+
+        /// <summary>The most aboard overnight with <paramref name="players"/> players among them. Players
+        /// never share (owner ruling 2026-11-15), so they take a bunk each; with hand bunk-sharing ON each
+        /// bunk left over sleeps <see cref="CrewPolicy.HandsPerSharedBunk"/> hands:
+        /// players + per × (bunks − players), capped at the crew slots. With sharing OFF it is the bunks.</summary>
+        public int OvernightMax(in CrewPolicy policy, int players)
         {
-            int sleepers = policy.HiredHandsShareBunks ? Bunks * Math.Max(1, policy.HandsPerSharedBunk) : Bunks;
-            return Math.Min(CrewSlots, sleepers);
+            int own = Math.Min(Math.Max(0, players), Bunks);
+            int free = Bunks - own;
+            int handPlaces = policy.HiredHandsShareBunks ? free * Math.Max(1, policy.HandsPerSharedBunk) : free;
+            return Math.Min(CrewSlots, own + handPlaces);
         }
 
         /// <summary>The longest trip she can make now: <see cref="LongestTrip"/>, or a day trip when she

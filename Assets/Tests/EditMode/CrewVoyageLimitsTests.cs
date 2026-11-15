@@ -88,34 +88,46 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         [Test]
-        public void HiredHandsSharing_IsOffByDefault_AndDoublesTheHandPlacesWhenOn()
+        public void HiredHandsSharing_IsOnByDefault_AndEachSettingCountsHandPlacesItsWay()
         {
-            Assert.That(CrewPolicy.Default.HiredHandsShareBunks, Is.False, "audit Q3 is open: shipped OFF");
+            Assert.That(CrewPolicy.Default.HiredHandsShareBunks, Is.True, "owner ruling 2026-11-15: hands share in watches");
             var spec = Spec(5, 2);
             CrewMember[] crew = { P("a"), H("b"), H("c") };
-            var off = Check(spec, TripKind.Overnight, CrewPolicy.Default, null, default, crew);
-            Assert.That(off.Reason, Is.EqualTo(VoyageRefusal.CrewOutnumberBunks));
-            Assert.That(off.OvernightMax, Is.EqualTo(2));
 
             var share = CrewPolicy.Default;
             share.HiredHandsShareBunks = true;
             var on = Check(spec, TripKind.Overnight, share, null, default, crew);
             Assert.That(on.Allowed, Is.True, on.ToString());
-            Assert.That(on.OvernightMax, Is.EqualTo(4));
+            Assert.That(on.OvernightMax, Is.EqualTo(3), "players + 2 x (bunks - players) = 1 + 2 x 1");
+            Assert.That(Check(spec, TripKind.Overnight, share, null, default, P("a"), H("b"), H("c"), H("d")).Reason,
+                Is.EqualTo(VoyageRefusal.CrewOutnumberBunks));
+
+            var off = CrewPolicy.Default;
+            off.HiredHandsShareBunks = false;
+            var refused = Check(spec, TripKind.Overnight, off, null, default, crew);
+            Assert.That(refused.Reason, Is.EqualTo(VoyageRefusal.CrewOutnumberBunks));
+            Assert.That(refused.OvernightMax, Is.EqualTo(2));
         }
 
         [Test]
-        public void OvernightMax_NeverExceedsBunksWithSharingOff_NorCrewSlotsEver()
+        public void OvernightMax_FollowsTheFormula_AndNeverExceedsTheCrewSlots()
         {
+            var off = CrewPolicy.Default;
+            off.HiredHandsShareBunks = false;
+            var share = CrewPolicy.Default;
+            share.HiredHandsShareBunks = true;
             for (int slots = 0; slots <= 10; slots++)
                 for (int bunks = 0; bunks <= 10; bunks++)
-                {
-                    var spec = Spec(slots, bunks);
-                    Assert.That(spec.OvernightMax(CrewPolicy.Default), Is.LessThanOrEqualTo(bunks));
-                    var share = CrewPolicy.Default;
-                    share.HiredHandsShareBunks = true;
-                    Assert.That(spec.OvernightMax(share), Is.LessThanOrEqualTo(slots));
-                }
+                    for (int players = 0; players <= 3; players++)
+                    {
+                        var spec = Spec(slots, bunks);
+                        Assert.That(spec.OvernightMax(off, players), Is.EqualTo(System.Math.Min(slots, bunks)));
+                        int own = System.Math.Min(players, bunks);
+                        Assert.That(spec.OvernightMax(share, players),
+                            Is.EqualTo(System.Math.Min(slots, own + share.HandsPerSharedBunk * (bunks - own))));
+                        Assert.That(spec.OvernightMax(share, players), Is.LessThanOrEqualTo(slots));
+                        Assert.That(spec.OvernightMax(share, players), Is.LessThanOrEqualTo(bunks * share.HandsPerSharedBunk));
+                    }
         }
 
         [Test]
@@ -163,16 +175,18 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         [Test]
-        public void MonthTrip_NeedsAHiredSkipper_WhileThePolicySaysSo()
+        public void MonthTrip_IsOpenToASoloPlayerByDefault_AndNeedsAHiredSkipperOnlyWhenSwitchedOn()
         {
             var spec = Spec(6, 6, TripKind.Month);
-            Assert.That(Check(spec, TripKind.Month, CrewPolicy.Default, null, default, P("a")).Reason,
+            Assert.That(CrewPolicy.Default.MonthTripsNeedHiredSkipper, Is.False, "owner ruling 2026-11-15: solo with resupply");
+            Assert.That(Check(spec, TripKind.Month, CrewPolicy.Default, null, default, P("a")).Allowed, Is.True);
+
+            var strict = CrewPolicy.Default;
+            strict.MonthTripsNeedHiredSkipper = true;
+            Assert.That(Check(spec, TripKind.Month, strict, null, default, P("a")).Reason,
                 Is.EqualTo(VoyageRefusal.MonthNeedsHiredSkipper));
-            Assert.That(Check(spec, TripKind.Month, CrewPolicy.Default, null, default, P("a", Deckhand), H("s", Skipper)).Allowed,
+            Assert.That(Check(spec, TripKind.Month, strict, null, default, P("a", Deckhand), H("s", Skipper)).Allowed,
                 Is.True);
-            var relaxed = CrewPolicy.Default;
-            relaxed.MonthTripsNeedHiredSkipper = false;
-            Assert.That(Check(spec, TripKind.Month, relaxed, null, default, P("a")).Allowed, Is.True);
         }
 
         [Test]
@@ -326,7 +340,9 @@ namespace HiddenHarbours.Tests.EditMode
         [Test]
         public void Roster_CanSail_AppliesTheNightRules()
         {
-            var roster = Roster();
+            var noShare = CrewPolicy.Default;
+            noShare.HiredHandsShareBunks = false;
+            var roster = Roster(noShare);
             roster.TryBoard("b1", "boat.small", P("a"));
             roster.TryBoard("b1", "boat.small", H("h"));
             Assert.That(roster.CanSail("b1", new VoyagePlan(TripKind.Day)).Allowed, Is.True);
@@ -352,7 +368,8 @@ namespace HiddenHarbours.Tests.EditMode
                 Assert.That(GameServices.Voyages, Is.SameAs(EmptyVoyageCatalog.Instance));
                 Assert.That(GameServices.Crew.TryBoard("b1", "boat.dory", P("a")).Reason, Is.EqualTo(VoyageRefusal.UnknownHull),
                     "with no catalog registered every hull is unknown, never guessed");
-                Assert.That(GameServices.CrewPolicy.HiredHandsShareBunks, Is.False);
+                Assert.That(GameServices.CrewPolicy.HiredHandsShareBunks, Is.True);
+                Assert.That(GameServices.CrewPolicy.MonthTripsNeedHiredSkipper, Is.False);
             }
             finally
             {

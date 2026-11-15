@@ -31,7 +31,7 @@ namespace HiddenHarbours.Core
 
         [Header("Crew and trip limits")]
         [Tooltip("Crew slice R2: how many nights each trip kind plans for, whether hired hands may share a " +
-                 "bunk in two watches (OPEN question, shipped OFF) and whether month trips need a hired " +
+                 "bunk in two watches (owner ruling: yes, shipped ON) and whether month trips need a hired " +
                  "skipper. Players never share a bunk (owner ruling 2026-11-15). Read through " +
                  "GameServices.CrewPolicy. The per-hull numbers live on each BoatVoyageDef.")]
         public CrewPolicy Crew = CrewPolicy.Default;

@@ -9,17 +9,17 @@ namespace HiddenHarbours.Core
     /// falls back to <see cref="Default"/>.
     ///
     /// <para><b>Settled:</b> players never share a bunk (owner ruling 2026-11-15) — that is not a knob.
-    /// <b>Open (audit Q3):</b> whether hired hands may share a bunk in two watches ("hot-bunking").
-    /// Shipped OFF, so until the owner rules, everyone aboard overnight needs a bunk of their own.
-    /// <b>Open (audit Q5):</b> whether month trips are only for boats run by a hired skipper. Shipped ON,
-    /// the audit's recommendation (a month is 15 real hours at 1800 s per day).</para>
+    /// <b>Ruled (audit Q3, owner 2026-11-15):</b> hired hands MAY share a bunk in two watches
+    /// ("hot-bunking"): shipped ON. <b>Ruled (audit Q5, owner 2026-11-15):</b> a solo player may sail
+    /// for days, weeks or months with resupply, so month trips do NOT need a hired skipper: shipped OFF.
+    /// Both stay switches so the owner can tune them.</para>
     /// </summary>
     [Serializable]
     public struct CrewPolicy
     {
-        [Tooltip("OPEN QUESTION (audit Q3). May hired hands share a bunk in two watches? OFF: every hand " +
-                 "needs a bunk of their own overnight. ON: each bunk left after the players have theirs " +
-                 "sleeps 'Hands Per Shared Bunk' hands. Players never share either way (owner ruling 2026-11-15).")]
+        [Tooltip("May hired hands share a bunk in two watches? Owner ruling 2026-11-15: YES (shipped ON). " +
+                 "ON: each bunk left after the players have theirs sleeps 'Hands Per Shared Bunk' hands. " +
+                 "OFF: every hand needs a bunk of their own overnight. Players never share either way.")]
         public bool HiredHandsShareBunks;
 
         [Tooltip("With hand bunk-sharing ON: how many hired hands one bunk sleeps (two watches = 2).")]
@@ -35,19 +35,20 @@ namespace HiddenHarbours.Core
         [Tooltip("How many nights a MONTH trip plans for.")]
         [Min(1)] public int MonthNights;
 
-        [Tooltip("OPEN QUESTION (audit Q5). Month trips only with a hired skipper aboard (resolved " +
-                 "off-screen later)? ON is the audit's recommendation: a month is 15 real hours of play.")]
+        [Tooltip("Month trips only with a hired skipper aboard? Owner ruling 2026-11-15: NO (shipped OFF), " +
+                 "a solo player may sail days, weeks or months with resupply. ON would require a hired " +
+                 "hand who can helm aboard for any month trip.")]
         public bool MonthTripsNeedHiredSkipper;
 
         /// <summary>The shipped starting numbers (audit §2.2; the owner tunes them).</summary>
         public static CrewPolicy Default => new CrewPolicy
         {
-            HiredHandsShareBunks = false,   // audit Q3 is open: not allowed until the owner rules
+            HiredHandsShareBunks = true,    // owner ruling 2026-11-15 (audit Q3): hands share in watches
             HandsPerSharedBunk = 2,         // two watches
             OvernightNights = 3,            // audit §2.1: "2-4 nights" column, a one-to-three-night trip
             WeekNights = 10,                // audit §2.1: draggers 6-10 days, offshore lobster 8
             MonthNights = 30,
-            MonthTripsNeedHiredSkipper = true,
+            MonthTripsNeedHiredSkipper = false, // owner ruling 2026-11-15 (audit Q5): solo with resupply
         };
 
         /// <summary>The nights a trip kind plans for: 0 for a day trip.</summary>

@@ -78,6 +78,7 @@ namespace HiddenHarbours.Core
             if (!catalog.TryGet(hullId, out var spec) || spec == null)
                 return VoyageVerdict.No(VoyageRefusal.UnknownHull, hullId ?? "", 0, 0);
             CrewPolicy policy = _policy();
+            // The hull's overnight ceiling (an all-hired crew); CanSail reports the figure for this crew's players.
             int dayMax = spec.DayMax, nightMax = spec.OvernightMax(policy);
             VoyageVerdict No(VoyageRefusal r, string detail) => VoyageVerdict.No(r, detail, dayMax, nightMax);
 

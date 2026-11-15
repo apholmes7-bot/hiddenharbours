@@ -89,17 +89,26 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         [Test]
-        public void OvernightMax_NeverExceedsTheBunks_UnderTheShippedPolicy()
+        public void OvernightMax_IsBoundedByTheBunks_UnderTheShippedPolicy_AndWithSharingOff()
         {
             var shipped = AssetDatabase.LoadAssetAtPath<GameConfig>(ConfigPath);
             Assert.That(shipped, Is.Not.Null, ConfigPath);
-            Assert.That(shipped.Crew.HiredHandsShareBunks, Is.False, "audit Q3 is open: hand bunk-sharing ships OFF");
-            Assert.That(shipped.Crew.MonthTripsNeedHiredSkipper, Is.True);
+            Assert.That(shipped.Crew.HiredHandsShareBunks, Is.True, "owner ruling 2026-11-15: hands share in watches");
+            Assert.That(shipped.Crew.MonthTripsNeedHiredSkipper, Is.False, "owner ruling 2026-11-15: solo with resupply");
+            var off = shipped.Crew;
+            off.HiredHandsShareBunks = false;
+            int per = System.Math.Max(1, shipped.Crew.HandsPerSharedBunk);
             foreach (var (hull, _, spec) in Joined())
             {
                 Assert.That(spec.Bunks, Is.EqualTo(HullBunks.Of(hull)), hull.Id);
-                Assert.That(spec.OvernightMax(shipped.Crew), Is.LessThanOrEqualTo(spec.Bunks), hull.Id);
+                // Shipped (sharing ON), one player aboard: players + per x (bunks - players), capped at slots.
+                int own = System.Math.Min(1, spec.Bunks);
+                Assert.That(spec.OvernightMax(shipped.Crew, 1),
+                    Is.EqualTo(System.Math.Min(spec.DayMax, own + per * (spec.Bunks - own))), hull.Id);
+                Assert.That(spec.OvernightMax(shipped.Crew), Is.LessThanOrEqualTo(spec.Bunks * per), hull.Id);
                 Assert.That(spec.OvernightMax(shipped.Crew), Is.LessThanOrEqualTo(spec.DayMax), hull.Id);
+                // Sharing OFF: never more than one sleeper a bunk.
+                Assert.That(spec.OvernightMax(off), Is.LessThanOrEqualTo(spec.Bunks), hull.Id);
             }
         }
 
@@ -130,7 +139,8 @@ namespace HiddenHarbours.Tests.EditMode
             foreach (var (hull, _, spec) in Joined())
             {
                 var crew = new[] { CrewMember.Player("p1", "role.skipper") };
-                for (var trip = TripKind.Day; trip <= TripKind.Week; trip++)
+                // Month too: a solo player may sail a month with resupply (owner ruling 2026-11-15).
+                for (var trip = TripKind.Day; trip <= TripKind.Month; trip++)
                 {
                     var v = VoyageLimits.Check(spec, crew, new VoyagePlan(trip), roles, CrewPolicy.Default);
                     Assert.That(v.Allowed, Is.EqualTo(trip <= spec.LongestTripNow), hull.Id + " " + trip + ": " + v);
