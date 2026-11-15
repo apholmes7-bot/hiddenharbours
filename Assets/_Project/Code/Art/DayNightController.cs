@@ -49,6 +49,9 @@ namespace HiddenHarbours.Art
         private static readonly int IdSunDir         = Shader.PropertyToID("_SunDir");
         private static readonly int IdSunElevation   = Shader.PropertyToID("_SunElevation");
         private static readonly int IdShadowStrength = Shader.PropertyToID("_ShadowStrength");
+        // The shared lamp band (x = darkness at/below which every gated lamp is off, y = darkness from which
+        // it may be full; z/w unused). Every HLSL copy of the night gate reads it; 0 = no band (the old gate).
+        private static readonly int IdLampGate = Shader.PropertyToID("_HHLampGate");
 
         private const string ProfileResourcePath = "DayNightProfile"; // Resources/DayNightProfile.asset (optional)
         private const string OverlayMaterialPath = "DayNight";        // Resources/DayNight.mat (the multiply overlay)
@@ -128,6 +131,14 @@ namespace HiddenHarbours.Art
             Tick();   // push once immediately so the first frame is correct, not a stale default
         }
 
+        // Leave no lamp band behind: an EditMode test or a bare art scene after this controller sees the old
+        // gate exactly (the band is a process-wide static on the C# side and a global on the GPU side).
+        private void OnDisable()
+        {
+            LightMath.SetLampBand(0f, 0f);
+            Shader.SetGlobalVector(IdLampGate, Vector4.zero);
+        }
+
         private void Update()
         {
             _timer -= Time.deltaTime;
@@ -193,6 +204,14 @@ namespace HiddenHarbours.Art
             Shader.SetGlobalVector(IdSunDir, new Vector4(sunDir.x, sunDir.y, 0f, 0f));
             Shader.SetGlobalFloat(IdSunElevation, elevation);
             Shader.SetGlobalFloat(IdShadowStrength, shadowStrength);
+
+            // The shared lamp band (owner 11-14: "Lamps should not glow at noon"): the C# gate and every
+            // shader copy of it hold every lamp off below LampsOffDarkness and full no earlier than
+            // LampsOnDarkness.
+            float lampsOff = _profile != null ? _profile.LampsOffDarkness : DayNightProfile.DefaultLampsOffDarkness;
+            float lampsOn  = _profile != null ? _profile.LampsOnDarkness : DayNightProfile.DefaultLampsOnDarkness;
+            LightMath.SetLampBand(lampsOff, lampsOn);
+            Shader.SetGlobalVector(IdLampGate, new Vector4(lampsOff, lampsOn, 0f, 0f));
 
             // --- colour the overlay (belt-and-braces: the material reads the global, but we also push the
             //     colour via a property block so it is correct even on the shared default material) ---

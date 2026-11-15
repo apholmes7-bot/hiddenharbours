@@ -335,7 +335,11 @@ namespace HiddenHarbours.Tests.EditMode
                     if (doc.ClassId == 1001) pending.Enqueue(GuidOf(doc.Field("m_SourcePrefab")));
                 }
             }
-            Assert.That(seen.Count, Is.EqualTo(13), "Audit every referenced prefab, including nested sources.");
+            // 5, down from 13: NMC H9 retired the old Route 91 forecourt with every document under it, and with it
+            // the eight station kit prefab sources only that forecourt instanced (sign, store, store interior, canopy,
+            // island, road dispenser, two fill ports). The new forecourt is written as scene rows, not prefab
+            // instances. What remains: the nav buoy, the dock dispenser and the three bridge and culvert prefabs.
+            Assert.That(seen.Count, Is.EqualTo(5), "Audit every referenced prefab, including nested sources.");
         }
 
         [Test]

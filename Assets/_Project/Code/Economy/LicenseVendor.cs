@@ -100,7 +100,7 @@ namespace HiddenHarbours.Economy
             }
 
             licenses?.Grant(license.Id);
-            EventBus.Publish(new LicensePurchased(license.Id, license.Price));
+            EventBus.Publish(new LicensePurchased(license.Id, license.Price, SellerDirectory.Resolve(_sellerId)));
             LastPurchaseSucceeded = true;
             Debug.Log($"[LicenseVendor] Bought {license.DisplayName} ({license.Id}) for ₲{license.Price}.");
             _onPurchased?.Invoke(license.Price);

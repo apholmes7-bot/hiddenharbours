@@ -314,13 +314,22 @@ float SpriteLightLampShape(float2 lampXY, float2 beamDir, float2 pointXY,
 // LightMath.NightGate / NightGateWithFallback: how much an additive light shows right now, 0 (full
 // daylight, so it cannot wash the scene out) .. 1 (deep dark). A near-black/unset tint means the cycle
 // is not running at all (EditMode, a bare art scene) -> show the light, so tuning is possible.
+// The SHARED lamp band (LightMath.NightGate's offDarkness/onDarkness; owner 11-14 "Lamps should not glow at
+// noon"): x = frame darkness at/below which every gated light is off, y = darkness from which it may be
+// full. Published by DayNightController; unset (0, 0) is the old gate exactly.
+#ifndef HH_LAMP_GATE_DECLARED
+#define HH_LAMP_GATE_DECLARED
+float4 _HHLampGate;
+#endif
+
 float SpriteLightNightGate(float3 tint, float threshold, float softness, float fallbackWhenNoCycle)
 {
     if (tint.r + tint.g + tint.b <= 1e-3) return saturate(fallbackWhenNoCycle);
     float lum = max(0.0, 0.299 * tint.r + 0.587 * tint.g + 0.114 * tint.b);
     float darkness = saturate(1.0 - lum);
-    float lo = saturate(threshold);
-    float hi = saturate(threshold + max(softness, 1e-4));
+    float lo = max(saturate(threshold), saturate(_HHLampGate.x));
+    float hi = max(saturate(threshold + max(softness, 1e-4)), saturate(_HHLampGate.y));
+    hi = max(hi, lo + 1e-4);
     return SpriteLightSmoothStep01(lo, hi, darkness);
 }
 

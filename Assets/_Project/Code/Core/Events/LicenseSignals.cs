@@ -10,13 +10,24 @@ namespace HiddenHarbours.Core
     /// owned by lead-architect this wave, so the St Peters economy signals are added additively here
     /// (coordination.md §1 — "keep it additive: new interface/event"). Same EventBus, separate file.</para>
     /// </summary>
-    public readonly struct LicensePurchased
+    public readonly struct LicensePurchased : ICustomSignal
     {
         public readonly string LicenseId;
         public readonly int PricePaid;   // ₲
+        /// <summary>Data-authored keeper, vendor and trade; legacy/default signals report unknown.</summary>
+        public TradeCounterparty Counterparty { get; }
+        public string MerchantId => Counterparty.MerchantId;
+        public string VendorId => Counterparty.VendorId;
+        public string TradeId => Counterparty.TradeId;
+        public decimal CustomUnits => 1m;
+
         public LicensePurchased(string licenseId, int pricePaid)
+            : this(licenseId, pricePaid, default) { }
+
+        public LicensePurchased(string licenseId, int pricePaid, TradeCounterparty counterparty)
         {
             LicenseId = licenseId; PricePaid = pricePaid;
+            Counterparty = counterparty;
         }
     }
 
@@ -26,13 +37,24 @@ namespace HiddenHarbours.Core
     /// the boat marked repaired; gameplay-systems listens to make the now-usable hull boardable, and
     /// ui-ux for a toast — neither references Economy. Keyed by stable hull id (e.g. "boat.dory").
     /// </summary>
-    public readonly struct BoatRepaired
+    public readonly struct BoatRepaired : ICustomSignal
     {
         public readonly string BoatId;
         public readonly int PricePaid;   // ₲
+        /// <summary>Data-authored keeper, vendor and trade; legacy/default signals report unknown.</summary>
+        public TradeCounterparty Counterparty { get; }
+        public string MerchantId => Counterparty.MerchantId;
+        public string VendorId => Counterparty.VendorId;
+        public string TradeId => Counterparty.TradeId;
+        public decimal CustomUnits => 1m;
+
         public BoatRepaired(string boatId, int pricePaid)
+            : this(boatId, pricePaid, default) { }
+
+        public BoatRepaired(string boatId, int pricePaid, TradeCounterparty counterparty)
         {
             BoatId = boatId; PricePaid = pricePaid;
+            Counterparty = counterparty;
         }
     }
 
@@ -42,13 +64,24 @@ namespace HiddenHarbours.Core
     /// to enable the gear's capability (map the id to a Gear flag), and ui-ux for a toast — neither
     /// references Economy. Keyed by stable gear id (e.g. "gear.rod").
     /// </summary>
-    public readonly struct GearPurchased
+    public readonly struct GearPurchased : ICustomSignal
     {
         public readonly string GearId;
         public readonly int PricePaid;   // ₲
+        /// <summary>Data-authored keeper, vendor and trade; legacy/default signals report unknown.</summary>
+        public TradeCounterparty Counterparty { get; }
+        public string MerchantId => Counterparty.MerchantId;
+        public string VendorId => Counterparty.VendorId;
+        public string TradeId => Counterparty.TradeId;
+        public decimal CustomUnits => 1m;
+
         public GearPurchased(string gearId, int pricePaid)
+            : this(gearId, pricePaid, default) { }
+
+        public GearPurchased(string gearId, int pricePaid, TradeCounterparty counterparty)
         {
             GearId = gearId; PricePaid = pricePaid;
+            Counterparty = counterparty;
         }
     }
 }

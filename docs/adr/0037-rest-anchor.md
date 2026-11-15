@@ -98,3 +98,15 @@ one authored player bed is in the start region.
   region gets a warning rather than a wake.
 - **Open:** waking should eventually move the clock to morning and play the sleep animation. Neither
   belongs to the save system; both belong on `PlayerWokeAt`.
+
+## Note 2026-11-14 — a bunk aboard keeps no anchor
+
+The owner ruled that bunks on boats are sleepable ("I also want bunks on boats sleepable to replenish
+fatigue"). A bunk is reached on a cabin sole, and the save stores no boat position, so an anchor stamped
+there would reload the player in open water. `RestSaveRequested` therefore gains one append-only field,
+`WakesAtSpawn` (false by default, so every bed ashore is unchanged). `BoatBunk` passes true, and
+`RestSaveResponder.RecordWake` then **forgets** the anchor (`RestLocker.Forget`) rather than stamping
+`RestAnchor.None`. `Stamp` refuses an unset anchor, so stamping None would leave last night's bed in the
+file, and the reload would wake the player in a bed they never lay down in. The morning, `DayStarted`,
+the screen cover and the save are otherwise exactly the bed's. No `SaveData` field and no migration.
+When boat positions are saved, a bunk can name a real wake spot, and this field is how it opts back in.

@@ -47,11 +47,25 @@ namespace HiddenHarbours.Core
     }
 
     /// <summary>Raised when a hold's catch is sold at market.</summary>
-    public readonly struct CatchSold
+    public readonly struct CatchSold : ICustomSignal
     {
         public readonly int TotalPaid;   // ₲
         public readonly int Count;
-        public CatchSold(int totalPaid, int count) { TotalPaid = totalPaid; Count = count; }
+        /// <summary>Data-authored keeper, vendor and trade; legacy/default signals report unknown.</summary>
+        public TradeCounterparty Counterparty { get; }
+        public string MerchantId => Counterparty.MerchantId;
+        public string VendorId => Counterparty.VendorId;
+        public string TradeId => Counterparty.TradeId;
+        public decimal CustomUnits => Count;
+
+        public CatchSold(int totalPaid, int count)
+            : this(totalPaid, count, default) { }
+
+        public CatchSold(int totalPaid, int count, TradeCounterparty counterparty)
+        {
+            TotalPaid = totalPaid; Count = count;
+            Counterparty = counterparty;
+        }
     }
 
     /// <summary>
@@ -80,13 +94,24 @@ namespace HiddenHarbours.Core
     /// active boat — so Economy never references the Boats module (cross-module talk via Core/EventBus).
     /// Keyed by stable boat id (e.g. "boat.punt"), matching <c>BoatHullDef.Id</c>.
     /// </summary>
-    public readonly struct BoatPurchased
+    public readonly struct BoatPurchased : ICustomSignal
     {
         public readonly string BoatId;
         public readonly int PricePaid;   // ₲
+        /// <summary>Data-authored keeper, vendor and trade; legacy/default signals report unknown.</summary>
+        public TradeCounterparty Counterparty { get; }
+        public string MerchantId => Counterparty.MerchantId;
+        public string VendorId => Counterparty.VendorId;
+        public string TradeId => Counterparty.TradeId;
+        public decimal CustomUnits => 1m;
+
         public BoatPurchased(string boatId, int pricePaid)
+            : this(boatId, pricePaid, default) { }
+
+        public BoatPurchased(string boatId, int pricePaid, TradeCounterparty counterparty)
         {
             BoatId = boatId; PricePaid = pricePaid;
+            Counterparty = counterparty;
         }
     }
 
@@ -451,14 +476,80 @@ namespace HiddenHarbours.Core
         /// </summary>
         public readonly int WakeLevel;
 
+        /// <summary>
+        /// <b>This rest records NO wake spot: a reload wakes at the authored spawn</b> — appended
+        /// 2026-11-14 for the bunk aboard a boat (ADR 0037, dated note).
+        ///
+        /// <para><b>Why a bunk cannot leave an anchor.</b> The save stores no boat position, so a spot on
+        /// a cabin sole is a spot in open water the moment the file is reloaded. And the anchor already in
+        /// the file (last night's bed ashore) is no better: it would wake the player in a bed they did not
+        /// sleep in. So the responder FORGETS the anchor for a rest like this, and the reload wakes where
+        /// a fresh game does, never in the sea.</para>
+        ///
+        /// <para><b>Named for the exception, so the default is the old behaviour.</b> A readonly struct's
+        /// <c>default</c> carries <c>false</c> in every bool, so a field that read "keeps the anchor" would
+        /// silently forget it for any request built without a constructor. False here is the bed ashore,
+        /// exactly as it was.</para>
+        /// </summary>
+        public readonly bool WakesAtSpawn;
+
         /// <summary>The full request: where you are turning in, where you will wake, and on which
         /// storey.</summary>
         public RestSaveRequested(string place, UnityEngine.Vector2 wakePosition, int wakeLevel)
+            : this(place, wakePosition, wakeLevel, false) { }
+
+        /// <summary>The full request plus whether it records a wake spot at all — see
+        /// <see cref="WakesAtSpawn"/>. A bunk aboard passes <c>true</c>; every bed ashore takes the
+        /// three-argument shape and keeps its anchor.</summary>
+        public RestSaveRequested(string place, UnityEngine.Vector2 wakePosition, int wakeLevel,
+                                 bool wakesAtSpawn)
+            : this(place, wakePosition, wakeLevel, wakesAtSpawn, "", false, "", UnityEngine.Vector2.zero, 0f) { }
+
+        /// <summary>
+        /// A bed ashore that names itself (<paramref name="bedId"/>, its stable fixture id), so the save
+        /// can record WHICH bed (owner ruling 2026-11-15, save v20).
+        /// </summary>
+        public RestSaveRequested(string place, UnityEngine.Vector2 wakePosition, int wakeLevel, string bedId)
+            : this(place, wakePosition, wakeLevel, false, bedId, false, "", UnityEngine.Vector2.zero, 0f) { }
+
+        /// <summary>
+        /// The full request, aboard or ashore. A bunk passes <paramref name="aboard"/> true with the boat's
+        /// hull id and its root's pose in the current region's frame, so the save records where she lay
+        /// (<see cref="SleepPlace"/>). <paramref name="wakesAtSpawn"/> keeps its old meaning: forget the
+        /// place entirely.
+        /// </summary>
+        public RestSaveRequested(string place, UnityEngine.Vector2 wakePosition, int wakeLevel,
+                                 bool wakesAtSpawn, string bedId, bool aboard, string boatHullId,
+                                 UnityEngine.Vector2 boatPosition, float boatRotationDegrees)
         {
             Place = place ?? "";
             WakePosition = wakePosition;
             WakeLevel = wakeLevel;
+            WakesAtSpawn = wakesAtSpawn;
+            BedId = bedId ?? "";
+            Aboard = aboard;
+            BoatHullId = aboard ? boatHullId ?? "" : "";
+            BoatPosition = aboard ? boatPosition : UnityEngine.Vector2.zero;
+            BoatRotationDegrees = aboard ? boatRotationDegrees : 0f;
         }
+
+        /// <summary>The bed's or bunk's stable fixture id; empty when the caller did not name it.
+        /// Appended 2026-11-15 (save v20).</summary>
+        public readonly string BedId;
+
+        /// <summary>True for a bunk aboard a boat: <see cref="BoatHullId"/>, <see cref="BoatPosition"/>
+        /// and <see cref="BoatRotationDegrees"/> then say where she lay. Appended 2026-11-15; false (a
+        /// bed ashore) is the default, so every older caller keeps its meaning.</summary>
+        public readonly bool Aboard;
+
+        /// <summary>The hull id of the boat slept aboard. Empty ashore.</summary>
+        public readonly string BoatHullId;
+
+        /// <summary>The boat root's position in the current region's frame. Zero ashore.</summary>
+        public readonly UnityEngine.Vector2 BoatPosition;
+
+        /// <summary>The boat root's rotation about Z, degrees, as its transform held it. Zero ashore.</summary>
+        public readonly float BoatRotationDegrees;
 
         /// <summary>
         /// A request that names no wake spot — the shape this signal had before there was one.
@@ -470,6 +561,29 @@ namespace HiddenHarbours.Core
         /// always did and leaves the anchor alone.</para>
         /// </summary>
         public RestSaveRequested(string place) : this(place, UnityEngine.Vector2.zero, 0) { }
+    }
+
+    /// <summary>
+    /// <b>The player last slept in a region other than the one the game booted into</b> (owner ruling
+    /// 2026-11-15: "Reloading restarts the day where you last slept"). Published once by
+    /// <see cref="RestWakeRestorer"/> on load, in place of moving the player, carrying the whole
+    /// <see cref="SleepPlace"/>. It is the REQUEST seam for the travel rig: whoever owns region loading
+    /// answers it by loading <see cref="SleepPlace.Anchor"/>'s region and then placing the player (and,
+    /// aboard, the boat) from the place. Until a subscriber exists the request goes unanswered and the
+    /// player wakes at the booted region's spawn with the save untouched, which is exactly the behaviour
+    /// before this signal existed.
+    /// </summary>
+    public readonly struct SleepPlaceWakeRequested
+    {
+        public readonly SleepPlace Place;
+        /// <summary>Why the restorer could not apply the place itself: the region differs, or the place
+        /// is aboard a boat it cannot position.</summary>
+        public readonly bool OtherRegion;
+        public SleepPlaceWakeRequested(in SleepPlace place, bool otherRegion)
+        {
+            Place = place;
+            OtherRegion = otherRegion;
+        }
     }
 
     /// <summary>

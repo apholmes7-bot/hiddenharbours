@@ -1,0 +1,149 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 01b51978faec4dbb8e54e23107a97ef5, type: 3}
+  m_Name: SetPiece_pylon
+  m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.SetPieceDef
+  Id: station.nmc_pylon
+  DisplayName: The price sign
+  RigKey: pylon
+  SceneId: keyscene.nmc_fuel_stop
+  BakedOptionsJson: '{}'
+  Layer: ground
+  Walk: around
+  Mount: ground
+  BoundsMin: {x: -2, y: -0.7, z: 0}
+  BoundsMax: {x: 2, y: 0.7, z: 7.62}
+  Frames:
+  - Sprite: {fileID: 1916109925, guid: 3a2a504b7e9445d6be150d4afb8c2566, type: 3}
+    RigDir: 0
+    ShowFaces: 0
+    BearingDeg: 0
+    CameraSees: fuel stop piece
+    NativeSize: {x: 142, y: 223}
+    NativePivot: {x: 70, y: 200}
+    Crop: {x: 6, y: 6}
+    Pivot: {x: 64, y: 194}
+  - Sprite: {fileID: -769250665, guid: 3a2a504b7e9445d6be150d4afb8c2566, type: 3}
+    RigDir: 7
+    ShowFaces: 7
+    BearingDeg: 315
+    CameraSees: fuel stop piece
+    NativeSize: {x: 137, y: 273}
+    NativePivot: {x: 68, y: 225}
+    Crop: {x: 7, y: 6}
+    Pivot: {x: 61, y: 219}
+  - Sprite: {fileID: -1360435734, guid: 3a2a504b7e9445d6be150d4afb8c2566, type: 3}
+    RigDir: 6
+    ShowFaces: 6
+    BearingDeg: 270
+    CameraSees: fuel stop piece
+    NativeSize: {x: 59, y: 280}
+    NativePivot: {x: 29, y: 231}
+    Crop: {x: 7, y: 6}
+    Pivot: {x: 22, y: 225}
+  - Sprite: {fileID: -172058425, guid: 3a2a504b7e9445d6be150d4afb8c2566, type: 3}
+    RigDir: 5
+    ShowFaces: 5
+    BearingDeg: 225
+    CameraSees: fuel stop piece
+    NativeSize: {x: 137, y: 273}
+    NativePivot: {x: 68, y: 225}
+    Crop: {x: 7, y: 6}
+    Pivot: {x: 61, y: 219}
+  - Sprite: {fileID: 1210766039, guid: 3a2a504b7e9445d6be150d4afb8c2566, type: 3}
+    RigDir: 4
+    ShowFaces: 4
+    BearingDeg: 180
+    CameraSees: fuel stop piece
+    NativeSize: {x: 142, y: 223}
+    NativePivot: {x: 70, y: 200}
+    Crop: {x: 6, y: 6}
+    Pivot: {x: 64, y: 194}
+  - Sprite: {fileID: 1024582522, guid: 3a2a504b7e9445d6be150d4afb8c2566, type: 3}
+    RigDir: 3
+    ShowFaces: 3
+    BearingDeg: 135
+    CameraSees: fuel stop piece
+    NativeSize: {x: 137, y: 273}
+    NativePivot: {x: 68, y: 225}
+    Crop: {x: 7, y: 6}
+    Pivot: {x: 61, y: 219}
+  - Sprite: {fileID: 1610854023, guid: 3a2a504b7e9445d6be150d4afb8c2566, type: 3}
+    RigDir: 2
+    ShowFaces: 2
+    BearingDeg: 90
+    CameraSees: fuel stop piece
+    NativeSize: {x: 59, y: 280}
+    NativePivot: {x: 29, y: 231}
+    Crop: {x: 7, y: 6}
+    Pivot: {x: 22, y: 225}
+  - Sprite: {fileID: -1797834224, guid: 3a2a504b7e9445d6be150d4afb8c2566, type: 3}
+    RigDir: 1
+    ShowFaces: 1
+    BearingDeg: 45
+    CameraSees: fuel stop piece
+    NativeSize: {x: 137, y: 273}
+    NativePivot: {x: 68, y: 225}
+    Crop: {x: 7, y: 6}
+    Pivot: {x: 61, y: 219}
+  CellSize: {x: 128, y: 266}
+  PixelsPerMetre: 32
+  ElevationDeg: 40
+  BakedLit: 0
+  Colliders:
+  - Type: polygon
+    Blocks: walk
+    Points:
+    - {x: 2, y: 0.7}
+    - {x: -2, y: 0.7}
+    - {x: -2, y: -0.7}
+    - {x: 2, y: -0.7}
+  Anchors:
+  - Name: prices_read
+    Position: {x: 0, y: 0, z: 0}
+  - Name: prices_read.stand
+    Position: {x: 0, y: 0, z: 0}
+  Path: []
+  TideMarks: []
+  Words: []
+  HasLight: 1
+  Light:
+    Emitters:
+    - neon
+    - led
+    - glow
+    When: FuelStop.levels(CoastalPass.light.lampNeed(sky))
+  IsAnimated: 0
+  Animated:
+    Part: 
+    Input: 
+    Steps: 0
+    BakedAtDeg: 0
+    RigDir: 0
+    Headings: []
+  GameplayJson: '{"schema":"hidden-harbours/fuel-stop-piece@1","generatedBy":"FuelStopGameplay
+    1.0.0","key":"pylon","id":"station.nmc_pylon","name":"The price sign","defType":"SetPieceDef","scene":"keyscene.nmc_fuel_stop","units":"metres,
+    model frame rotated by pi from FuelStop plan metres","bounds":{"x":[-2,2],"y":[-0.7,0.7],"z":[0,7.62]},"layer":"ground","walk":"around","mount":"ground","colliders":[{"type":"polygon","blocks":"walk","pts":[[2,0.7],[-2,0.7],[-2,-0.7],[2,-0.7]]}],"facings":[{"dir":0,"showFaces":"0","bearingDeg":0,"cameraSees":"fuel
+    stop piece"},{"dir":1,"showFaces":"1","bearingDeg":45,"cameraSees":"fuel stop
+    piece"},{"dir":2,"showFaces":"2","bearingDeg":90,"cameraSees":"fuel stop piece"},{"dir":3,"showFaces":"3","bearingDeg":135,"cameraSees":"fuel
+    stop piece"},{"dir":4,"showFaces":"4","bearingDeg":180,"cameraSees":"fuel stop
+    piece"},{"dir":5,"showFaces":"5","bearingDeg":225,"cameraSees":"fuel stop piece"},{"dir":6,"showFaces":"6","bearingDeg":270,"cameraSees":"fuel
+    stop piece"},{"dir":7,"showFaces":"7","bearingDeg":315,"cameraSees":"fuel stop
+    piece"}],"cells":[{"dir":0,"w":142,"h":223,"pivot":[70,200]},{"dir":1,"w":137,"h":273,"pivot":[68,225]},{"dir":2,"w":59,"h":280,"pivot":[29,231]},{"dir":3,"w":137,"h":273,"pivot":[68,225]},{"dir":4,"w":142,"h":223,"pivot":[70,200]},{"dir":5,"w":137,"h":273,"pivot":[68,225]},{"dir":6,"w":59,"h":280,"pivot":[29,231]},{"dir":7,"w":137,"h":273,"pivot":[68,225]}],"anchors":{"prices_read":[0,0,0],"prices_read.stand":[0,0,0]},"options":{},"light":{"emitters":["neon","led","glow"],"when":"FuelStop.levels(CoastalPass.light.lampNeed(sky))"},"notes":"Footprint
+    bounds are not walk blockers: canopy lanes and store doors must remain open.
+    Collision and light placement are verified in the scene phase."}'
+  State: 
+  Variants: []
+  HasVendor: 0
+  Vendor:
+    Seller: 
+    At: {x: 0, y: 0, z: 0}
