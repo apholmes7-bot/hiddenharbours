@@ -28,6 +28,12 @@ MonoBehaviour:
   DaysPerWeek: 7
   DaysPerSeason: 28
   MarketDayIndex: 4
+  InteractChooserEnabled: 1
+  InteractChooserMaxPriority: 0
+  InteractChooserMaxRows: 6
+  HeavyWorkNeeds:
+    RefusedAtTiredness: 2
+    RefusedAtHunger: 2
   TidalPeriodHours: 12.4206
   LunarMonthDays: 28
   NeapAmplitudeFraction: 0.45

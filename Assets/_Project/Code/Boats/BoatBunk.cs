@@ -46,7 +46,7 @@ namespace HiddenHarbours.Boats
     /// two speakers of the same Core signal.</para>
     /// </summary>
     [DisallowMultipleComponent]
-    public sealed class BoatBunk : MonoBehaviour, IInteractable
+    public sealed class BoatBunk : MonoBehaviour, IInteractable, IExclusiveInteractable
     {
         /// <summary>The rig's verb for a berth (<see cref="BoatInteriorAnchor.Action"/>). The one string
         /// the installer and this agree on.</summary>
@@ -139,6 +139,14 @@ namespace HiddenHarbours.Boats
 
         /// <inheritdoc/>
         public string VerbLabel => Verb;
+
+        /// <summary>A berth is somewhere to sleep: any free one in reach will do (owner ask 2026-11-15),
+        /// so a taken bunk beside a free one is passed over for it.</summary>
+        public string ExclusiveGroup => InteractExclusiveGroups.Rest;
+
+        /// <summary>Somebody is in it: the rest seam's claim on this bunk's id, which is the bed id its
+        /// rest request carries (<see cref="RequestFor"/>).</summary>
+        public bool IsOccupied => RestQuorum.IsOccupied(_id);
 
         /// <summary>Wire this bunk. Public so the installer never reaches a field, and so a test stands
         /// one up with no scene.</summary>

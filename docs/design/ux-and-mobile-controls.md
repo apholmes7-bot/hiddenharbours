@@ -82,6 +82,23 @@ are available.
     default.
 - **Interact:** the context Action Button, or simply walk into / tap an interactable (NPC, door,
   trap, shop). A subtle highlight shows the current interactable.
+- **The interaction chooser (owner ask 2026-11-15, built).** Pressing interact where **two or more**
+  options are in reach puts up a small list in the popup's corner, styled like the popup (chalk lines
+  on faint strips, the key number, the verb). With one option the press acts at once, as before. The
+  player picks with W/S or the arrows plus E or Enter, with the number keys 1–9, or with the mouse
+  (hover selects, click picks); Esc puts it down. The order is the interact ladder: priority, then
+  nearness, then id. Only things on the fixture rung or below become rows; a held, carried or
+  tool-target thing keeps the single press. **Bunks and beds:** an occupied one is greyed ("Sleep
+  (taken)") and can't be picked. A free one in reach stands in for it, both in the list and on a single
+  press, for any number of bunks; this is one row per "somewhere to sleep". Tunables live in
+  `GameConfig` → *Interaction chooser*: on/off, the highest rung that joins, and the row cap.
+  Code: `Core/Interaction/InteractChoiceList` (the rule), `InteractChooser` (the open list),
+  `UI/InteractChooserView` (the drawing), and `Core/Input/ChooserIntents` (the hands, ADR 0043).
+- **Refusals for needs (helper, 2026-11-15).** An action can opt in to be refused when the player is too
+  tired and/or too hungry (`INeedsGated`, `NeedsGate`). She then says "I'm too tired.", "I'm too
+  hungry." or "I'm too tired and too hungry." as inner-voice lines (data assets keyed on
+  `cue.needs.*`). **No action opts in yet**: the needs ruling says a need never *stops* the character,
+  so the owner decides which actions take a bar. `GameConfig.HeavyWorkNeeds` is that bar's default.
 - **No combat controls** — there is no combat (anti-pillar). Frees the whole scheme for traversal &
   work verbs.
 
