@@ -84,6 +84,10 @@ namespace HiddenHarbours.Core
             // could record where you slept but not wake you there would be the half-built version of the
             // feature that is hardest to notice is half-built.
             RestWakeRestorer.Install();
+
+            // Cleanliness slice 1: the work, the pot haul and the sea already announce themselves on the
+            // bus; this turns them into dirt. Same lifetime as the two above.
+            CleanlinessResponder.Install();
         }
 
         private void OnDestroy()
@@ -92,6 +96,7 @@ namespace HiddenHarbours.Core
             EventBus.Unsubscribe<ActiveBoatChanged>(OnActiveBoatChanged);
             RestSaveResponder.Uninstall();
             RestWakeRestorer.Uninstall();
+            CleanlinessResponder.Uninstall();
 
             if (ReferenceEquals(GameServices.Save, this)) GameServices.Save = null;
             if (_instance == this) _instance = null;
@@ -250,6 +255,8 @@ namespace HiddenHarbours.Core
                 // Needs slice 1: anchor hunger/tiredness at this same instant, so a reload is exact.
                 NeedsMath.Settle(Current.PlayerNeeds, clock.TotalSeconds, GameServices.NeedsSettings,
                                  GameServices.SecondsPerDay / 24d);
+                // Cleanliness slice 1: the same for the dirt (its stretch and stretch start are kept).
+                GameServices.Cleanliness.Settle();
             }
 
             if (GameServices.Environment != null) Current.WorldSeed = GameServices.Environment.WorldSeed;

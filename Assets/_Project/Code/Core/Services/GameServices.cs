@@ -315,6 +315,21 @@ namespace HiddenHarbours.Core
         private static INeedsService _needs;
 
         /// <summary>
+        /// Cleanliness, the third need (cleanliness slice 1, owner ask 2026-11-15): the local player's dirt
+        /// over <see cref="Save"/>, <see cref="Clock"/> and the shipped wash stations under
+        /// <c>Resources/WashStations/</c>. Never null: a default <see cref="CleanlinessService"/> is made on
+        /// first read; a test assigns its own. Cleared by <see cref="Reset"/>. Clean, nothing changes.
+        /// FLAG lead-architect: new Core contract (cleanliness).
+        /// </summary>
+        public static ICleanlinessService Cleanliness
+        {
+            get => _cleanliness ??= new CleanlinessService();
+            set => _cleanliness = value;
+        }
+
+        private static ICleanlinessService _cleanliness;
+
+        /// <summary>
         /// The farm plots (farm slice 1): read-only questions about each plot's stage and the work due on it,
         /// recomputed from the Defs, the world seed and the day (rule 5). Never null: a default
         /// <see cref="FarmService"/> over the shipped Defs under <c>Resources/Farming/</c> is made on first
@@ -700,6 +715,11 @@ namespace HiddenHarbours.Core
 
         /// <summary>The hunger and tiredness numbers, with the fallback for an unwired config.</summary>
         public static NeedsSettings NeedsSettings => Config != null ? Config.Needs : NeedsSettings.Default;
+
+        /// <summary>The cleanliness numbers, with the fallback for an unwired config (or a config asset
+        /// written before the block existed, which deserializes it with no source rows).</summary>
+        public static CleanlinessSettings CleanlinessSettings
+            => Config != null && Config.Cleanliness.Sources != null ? Config.Cleanliness : CleanlinessSettings.Default;
 
         /// <summary>The needs' slow tick in in-game seconds (never below one game minute), with the
         /// fallback for an unwired config. The game clock calls <see cref="INeedsService.Tick"/> this often.</summary>
@@ -1263,6 +1283,7 @@ namespace HiddenHarbours.Core
             Appearance = null;           // → a fresh default on next read; drops any open preview
             Traits = null;               // → a fresh default on next read; drops its catalog and cache
             Needs = null;                // → a fresh default on next read; drops its stage baseline
+            Cleanliness = null;          // → a fresh default on next read; drops its station catalog
             Farm = null;                 // → a fresh default on next read; drops its catalog and baseline
             Relationships = null;        // → a fresh default on next read; reseeds from the shipped ties
             TidalTerrain = null;

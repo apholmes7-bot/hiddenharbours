@@ -29,6 +29,14 @@ namespace HiddenHarbours.Core
                  "as a bar. Rates are per IN-GAME hour. Read through GameServices.NeedsSettings.")]
         public NeedsSettings Needs = NeedsSettings.Default;
 
+        [Header("Cleanliness (the third need)")]
+        [Tooltip("Dirt (owner ask 2026-11-15): rises slowly with game time and faster with dirty work, the " +
+                 "gym and the sea; washing at a station clears it, each station only to its own ceiling (sea " +
+                 "< sink < shower). Stinky is the curve's StrongAt: villagers notice. Never shown as a bar. " +
+                 "The wash rates and ceilings live on the WashStationDef assets. Read through " +
+                 "GameServices.CleanlinessSettings.")]
+        public CleanlinessSettings Cleanliness = CleanlinessSettings.Default;
+
         public const float DefaultCreatorFigureHeightFraction = 0.6f;
 
         [Header("Character creator view")]

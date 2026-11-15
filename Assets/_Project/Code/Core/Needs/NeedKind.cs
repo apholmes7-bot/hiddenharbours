@@ -20,6 +20,12 @@ namespace HiddenHarbours.Core
 
         /// <summary>Tiredness. Relieved by a night's sleep (<see cref="INeedsService.Sleep"/>).</summary>
         Tiredness = 1,
+
+        /// <summary>Dirtiness, the third need (cleanliness slice 1, owner ask 2026-11-15): 0 clean, 1 filthy.
+        /// Its level is <see cref="ICleanlinessService.Dirt"/> (work, the sea and washing move it, not just
+        /// the clock); its curve is <see cref="CleanlinessSettings.Curve"/>. Mild reads grubby, Strong reads
+        /// STINKY (villagers notice, <see cref="NeedsNotice"/>). Relieved by washing, never by eating.</summary>
+        Dirtiness = 2,
     }
 
     /// <summary>
