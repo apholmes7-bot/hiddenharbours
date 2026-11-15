@@ -124,7 +124,9 @@ namespace HiddenHarbours.Player
             transform.position = new Vector3(bedPosition.x, bedPosition.y, _restorePosition.z);
 
             float elapsed = 0f;
-            while (elapsed < _beatSeconds && _running)
+            // Held past the beat for as long as the player is choosing or asleep (owner ruling 2026-11-15:
+            // the player picks the hours and the night runs fast): the pose is the sleep, so it lasts it.
+            while ((elapsed < _beatSeconds || SleepFlow.HoldsTheWorld) && _running)
             {
                 elapsed += Time.deltaTime;
                 yield return null;

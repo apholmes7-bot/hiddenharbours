@@ -203,6 +203,39 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.Greater(sat, slept, "sitting takes the edge off; only the bunk takes it all");
         }
 
+        /// <summary>
+        /// Composes with the chosen-duration sleep (PR 1226): for any length, a stretch seated never ends
+        /// more rested than the same stretch asleep through <see cref="NeedsService.SleepSince"/>, even with
+        /// the sitting dial mis-set far above the sleep rate. The floor is the "sitting ceiling below sleep"
+        /// for a FULL night; this is the same promise hour for hour, for a short nap.
+        /// </summary>
+        [Test]
+        public void AnHourSeatedNeverBeatsAnHourAsleep([Values(0.5d, 1d, 2d, 4d, 8d)] double hours,
+                                                       [Values(0f, 1f)] float misSetSitRate)
+        {
+            KitchenSettings kitchen = KitchenSettings.Default;
+            if (misSetSitRate > 0f) kitchen.SitRecoveryPerGameHour = misSetSitRate;
+            var saveSit = new FakeSaveService();
+            var saveSleep = new FakeSaveService();
+            var clockSit = new MovingClock { T = 1000d };
+            var clockSleep = new MovingClock { T = 1000d };
+            saveSit.Current.PlayerNeeds.Tiredness = new NeedStateDto(0.95f, 1000d);
+            saveSleep.Current.PlayerNeeds.Tiredness = new NeedStateDto(0.95f, 1000d);
+            var sitter = new NeedsService(() => saveSit, () => clockSit, () => NeedsSettings.Default, () => null,
+                                          () => PerHour, () => kitchen);
+            var sleeper = new NeedsService(() => saveSleep, () => clockSleep, () => NeedsSettings.Default, () => null,
+                                           () => PerHour, () => kitchen);
+
+            clockSit.T = clockSleep.T = 1000d + hours * PerHour;
+            sitter.RestSeated(1000d);
+            sleeper.SleepSince(1000d);
+
+            Assert.Greater(sitter.Level(NeedKind.Tiredness), sleeper.Level(NeedKind.Tiredness),
+                           $"{hours} h seated must leave you more tired than {hours} h asleep");
+            Assert.LessOrEqual(kitchen.SitRecoveryBeside(NeedsSettings.Default.SleepReliefPerGameHour),
+                               NeedsSettings.Default.SleepReliefPerGameHour * KitchenSettings.SitRateMaxShareOfSleep + 1e-7f);
+        }
+
         [Test]
         public void TheSeatSessionSitsBanksAndStands()
         {

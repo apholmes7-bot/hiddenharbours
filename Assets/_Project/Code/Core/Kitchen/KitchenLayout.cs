@@ -140,14 +140,18 @@ namespace HiddenHarbours.Core
     public static class SeatedRest
     {
         /// <summary>The tiredness after <paramref name="hours"/> seated from <paramref name="level"/>.</summary>
-        public static float LevelAfter(float level, double hours, float risePerGameHour, in KitchenSettings settings)
+        /// <param name="sleepReliefPerGameHour">The chosen-duration sleep's relief per hour; the sitting rate
+        /// is held under its share of it (<see cref="KitchenSettings.SitRecoveryBeside"/>), so an hour seated
+        /// never beats an hour asleep. 0 = no sleep rate to compare against.</param>
+        public static float LevelAfter(float level, double hours, float risePerGameHour, in KitchenSettings settings,
+                                       float sleepReliefPerGameHour = 0f)
         {
             float l = level < 0f ? 0f : level > 1f ? 1f : level;
             if (!(hours > 0d)) return l;
             float floor = settings.SitRestFloorInForce;
             if (l > floor)
             {
-                double down = l - settings.SitRecoveryInForce * hours;
+                double down = l - settings.SitRecoveryBeside(sleepReliefPerGameHour) * hours;
                 return down <= floor ? floor : (float)down;
             }
             if (!(risePerGameHour > 0f)) return l;

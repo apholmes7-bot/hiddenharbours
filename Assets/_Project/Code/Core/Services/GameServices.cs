@@ -1278,6 +1278,7 @@ namespace HiddenHarbours.Core
         /// <summary>Clear references (scene teardown / tests).</summary>
         public static void Reset()
         {
+            SleepFlow.Reset();   // nobody in bed, no chooser: the next session presents its own
             Clock = null;
             Environment = null;
             Wallet = null;

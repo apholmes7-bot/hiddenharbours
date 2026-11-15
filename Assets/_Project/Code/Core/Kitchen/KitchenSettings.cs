@@ -26,8 +26,18 @@ namespace HiddenHarbours.Core
         public const float DefaultDiningReliefMultiplier = 1.5f;
         /// <summary>The shipped sitting rest floor (tiredness level; a night's sleep reaches 0).</summary>
         public const float DefaultSitRestFloor = 0.35f;
-        /// <summary>The shipped sitting recovery rate (tiredness per in-game hour).</summary>
-        public const float DefaultSitRecoveryPerGameHour = 0.25f;
+        /// <summary>The shipped sitting recovery rate (tiredness per in-game hour): half of what an hour of
+        /// sleep takes away at the shipped <see cref="NeedsSettings.SleepReliefPerGameHour"/> (1/8).</summary>
+        public const float DefaultSitRecoveryPerGameHour = 0.0625f;
+
+        /// <summary>
+        /// A RULE, not a dial (owner 2026-11-15: sitting "does not match sleeping"): an hour seated never
+        /// takes away more than this share of what an hour ASLEEP takes away
+        /// (<see cref="NeedsSettings.SleepReliefPerGameHour"/>). Under the chosen-duration sleep (PR 1226) a
+        /// short sleep relieves per hour, so without this a fast sitting rate would beat a short nap hour for
+        /// hour. <see cref="SitRecoveryPerGameHour"/> is held under it whatever it is set to.
+        /// </summary>
+        public const float SitRateMaxShareOfSleep = 0.5f;
 
         [Tooltip("How close (m, plan) a seat's sitting point must be to a table top's CENTRE or a counter's " +
                  "prep station, on the same floor, to be a DINING seat. Eating there gives the dining boost. " +
@@ -50,7 +60,9 @@ namespace HiddenHarbours.Core
                  "(owner 2026-11-15). 0.35 = sitting takes the edge off but you still want your bunk.")]
         [Range(0.01f, 1f)] public float SitRestFloor;
 
-        [Tooltip("How fast sitting brings tiredness down toward the floor, per IN-GAME hour seated.")]
+        [Tooltip("How fast sitting brings tiredness down toward the floor, per IN-GAME hour seated. Held at " +
+                 "or under half of Needs > Sleep Relief Per Game Hour, so an hour seated never rests you as " +
+                 "much as an hour asleep.")]
         [Min(0f)] public float SitRecoveryPerGameHour;
 
         /// <summary>The shipped starting numbers (guesses for the owner to tune by feel).</summary>
@@ -97,5 +109,17 @@ namespace HiddenHarbours.Core
 
         /// <summary>The sitting recovery rate in force (an unset rate reads as the default).</summary>
         public float SitRecoveryInForce => SitRecoveryPerGameHour > 0f ? SitRecoveryPerGameHour : DefaultSitRecoveryPerGameHour;
+
+        /// <summary>The sitting recovery rate in force beside a sleep that relieves
+        /// <paramref name="sleepReliefPerGameHour"/> per hour: held at or under
+        /// <see cref="SitRateMaxShareOfSleep"/> of it. A non-positive sleep relief is the pre-ruling rule
+        /// (any sleep rests you fully), which no sitting rate can beat, so the rate stands.</summary>
+        public float SitRecoveryBeside(float sleepReliefPerGameHour)
+        {
+            float rate = SitRecoveryInForce;
+            if (!(sleepReliefPerGameHour > 0f)) return rate;
+            float cap = sleepReliefPerGameHour * SitRateMaxShareOfSleep;
+            return rate <= cap ? rate : cap;
+        }
     }
 }

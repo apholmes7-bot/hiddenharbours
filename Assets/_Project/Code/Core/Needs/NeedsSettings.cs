@@ -61,6 +61,12 @@ namespace HiddenHarbours.Core
                  "slow tick that will raise the speech bubble). The speed and price never wait for it.")]
         [Min(1f)] public float TickGameMinutes;
 
+        [Tooltip("How much tiredness one IN-GAME hour of sleep takes away (0..1 scale). 1/8 = 0.125 means " +
+                 "eight hours rests you fully from worn right out, and four hours takes half of it. " +
+                 "Tiredness does not rise while you sleep; hunger does, on the clock as always. " +
+                 "0 is read as the old rule: any night's sleep rests you fully.")]
+        [Min(0f)] public float SleepReliefPerGameHour;
+
         /// <summary>The shipped starting numbers (guesses for the owner to tune by feel).</summary>
         public static NeedsSettings Default => new NeedsSettings
         {
@@ -87,6 +93,7 @@ namespace HiddenHarbours.Core
             WalkFloor = 0.85f,
             SellFloor = 0.92f,
             TickGameMinutes = 5f,
+            SleepReliefPerGameHour = 1f / 8f,   // a full eight-hour sleep rests you from worn right out
         };
     }
 }
