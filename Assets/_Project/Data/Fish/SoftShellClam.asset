@@ -24,13 +24,13 @@ MonoBehaviour:
   Sprite: {fileID: -8350118145691459604, guid: bae98caad6f379308446110bc6a39b4f, type: 3}
   RegionIds:
   - region.st_peters
-  - region.east_water
   AllowedGear: 64
   Seasons: 15
   MinTide: -10
   MaxTide: 0
   StartHour: 6
   EndHour: 20
+  DepthBands: 3
   MinWeightKg: 0.05
   MaxWeightKg: 0.2
   BaseValue: 2
