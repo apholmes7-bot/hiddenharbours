@@ -537,6 +537,13 @@ MonoBehaviour:
     SellFloor: 0.92
     TickGameMinutes: 5
     SleepReliefPerGameHour: 0.125
+  Crew:
+    HiredHandsShareBunks: 1
+    HandsPerSharedBunk: 2
+    OvernightNights: 3
+    WeekNights: 10
+    MonthNights: 30
+    MonthTripsNeedHiredSkipper: 0
   Juice:
     GradeEnabled: 1
     GradeStrength: 0.35

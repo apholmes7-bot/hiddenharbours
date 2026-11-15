@@ -29,6 +29,13 @@ namespace HiddenHarbours.Core
                  "as a bar. Rates are per IN-GAME hour. Read through GameServices.NeedsSettings.")]
         public NeedsSettings Needs = NeedsSettings.Default;
 
+        [Header("Crew and trip limits")]
+        [Tooltip("Crew slice R2: how many nights each trip kind plans for, whether hired hands may share a " +
+                 "bunk in two watches (owner ruling: yes, shipped ON) and whether month trips need a hired " +
+                 "skipper. Players never share a bunk (owner ruling 2026-11-15). Read through " +
+                 "GameServices.CrewPolicy. The per-hull numbers live on each BoatVoyageDef.")]
+        public CrewPolicy Crew = CrewPolicy.Default;
+
         public const float DefaultCreatorFigureHeightFraction = 0.6f;
 
         [Header("Character creator view")]
