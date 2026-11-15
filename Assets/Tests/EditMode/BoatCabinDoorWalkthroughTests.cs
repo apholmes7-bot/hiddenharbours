@@ -62,7 +62,7 @@ namespace HiddenHarbours.Tests.EditMode
         /// <summary>One of her walker's ticks.</summary>
         private const float Tick = 1f / 60f;
 
-        /// <summary>The owner's S6 (2026-09-30): no two crossings within this long.</summary>
+        /// <summary>S6's minimum gap while still in the doorway; leaving it resolves the actual side.</summary>
         private const float NoTwoCrossingsWithinSeconds = 0.15f;
 
         private readonly List<Object> _spawned = new();
@@ -434,9 +434,9 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         [Test]
-        public void TheDoorwayTakesHerBackOnlyOnceItHasSettled_AndThenOnTheTickItHas()
+        public void StillOnTheSill_TheDoorwayTakesHerBackOnlyOnceItHasSettled_AndThenOnTheTickItHas()
         {
-            // The owner's S6 (2026-09-30): no two crossings within 0.15 s, and crossing back needs the key
+            // S6 while still on the sill: no two crossings within 0.15 s, and crossing back needs the key
             // reversed. The settle is the door's own (BoatInteriorDoor.CrossingSettle), counted on her
             // walker's ticks, and it replaces the old "get a clear width away first".
             Rig rig = NewRig();
@@ -458,6 +458,53 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.GreaterOrEqual(since, settle - 1e-5f, "never before the door's own settle");
             Assert.IsFalse(rig.Interior.IsInside, "she has turned back out");
             Assert.IsFalse(rig.Door.PassageIsSettled, "and that crossing starts the settle afresh");
+        }
+
+        [TestCase(0.529f, 0.05f)]
+        [TestCase(0.529f, 0.10f)]
+        [TestCase(0.529f, 0.15f)]
+        [TestCase(0.529f, 0.20f)]
+        [TestCase(1.6f, 0.05f)]
+        [TestCase(1.6f, 0.10f)]
+        [TestCase(1.6f, 0.15f)]
+        [TestCase(1.6f, 0.20f)]
+        public void TurnBackOffTheBand_TheCabinExitsEvenBeforeTheSettle(float width, float seconds)
+        {
+            Rig rig = NewRig();
+            rig.Def.Door.ClearWidthMeters = width;
+            Open(rig);
+            WalkIn(rig);
+            Vector2 outside = Doorway + Out * width;
+            Assert.IsTrue(rig.Door.TryWalkThrough(outside, Out, seconds));
+            Assert.IsFalse(rig.Interior.IsInside, "actual departure ends the cabin state immediately");
+            Assert.IsFalse(rig.Door.TryWalkThrough(outside, Vector2.zero, rig.Def.Door.CrossingSettle));
+            Assert.IsFalse(rig.Interior.IsInside, "waiting outside cannot restore stale cabin state");
+        }
+
+        [TestCase(0.529f)]
+        [TestCase(0.74f)]
+        [TestCase(1.6f)]
+        public void AnOpenWideEnoughDoorNeverTurnsHerBackWithoutAKey(float width)
+        {
+            Rig rig = NewRig();
+            rig.Def.Door.ClearWidthMeters = width;
+            Open(rig);
+            WalkIn(rig);
+
+            Vector2 outside = Doorway + Out * width;
+            Assert.IsFalse(rig.Door.TryWalkThrough(outside, Vector2.zero, Tick));
+            Assert.IsTrue(rig.Interior.IsInside, "an idle walker sample cannot undo entry");
+            Assert.IsFalse(rig.Door.TryWalkThrough(outside, Vector2.zero, rig.Def.Door.CrossingSettle));
+            Assert.IsTrue(rig.Interior.IsInside);
+
+            Vector2 beside = Doorway + Vector2.right *
+                             (BoatCabinThreshold.BandRadiusMetres(rig.Def.Door) + 1f);
+            Assert.IsFalse(rig.Door.TryWalkThrough(OnTheLine, Vector2.zero, Tick));
+            Assert.IsFalse(rig.Door.TryWalkThrough(beside, Vector2.zero, rig.Def.Door.CrossingSettle));
+            Assert.IsTrue(rig.Interior.IsInside, "moving beside the door cannot spend her intended exit");
+            Assert.IsTrue(rig.Door.TryWalkThrough(OnTheLine, Out, Tick), "her held key walks out freely");
+            Assert.IsFalse(rig.Interior.IsInside);
+            Assert.IsTrue(rig.Door.IsOpen);
         }
 
         [Test]

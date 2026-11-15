@@ -72,12 +72,13 @@ namespace HiddenHarbours.Economy
                     "stands on that seller's counter. Either the seller id is not wired onto this " +
                     "counter's vendors yet (the region scene may predate the builder that wires it), or " +
                     "the sell row belongs on a different person.");
-                EventBus.Publish(new CounterSellReported(request.SellerId, 0, 0));
+                EventBus.Publish(new CounterSellReported(request.SellerId, 0, 0, SellerDirectory.Resolve(request.SellerId)));
                 return;
             }
 
             int paid = counter.SellOverTheCounter();
-            EventBus.Publish(new CounterSellReported(request.SellerId, paid, counter.LastUnitsSold));
+            EventBus.Publish(new CounterSellReported(request.SellerId, paid, counter.LastUnitsSold,
+                SellerDirectory.Resolve(request.SellerId)));
         }
 
         /// <summary>

@@ -35,8 +35,9 @@ namespace HiddenHarbours.Boats
     /// on the line, with the key pointing through (<see cref="IsHeldThrough"/>), she goes; within one
     /// clear width, a key held within <see cref="BoatInteriorDoor.PullConeDegrees"/> of the axis is
     /// carried onto the opening (<see cref="Steer"/>). What keeps a rocked key from strobing the cabin
-    /// is now the door's settle (<see cref="BoatInteriorDoor.CrossingSettleSeconds"/>), which a player
-    /// walking back through on purpose never meets.</para>
+    /// is now the door's settle (<see cref="BoatInteriorDoor.CrossingSettleSeconds"/>). Leaving the band
+    /// with the key held through resolves the crossing from the player's actual side of the wall,
+    /// even during that settle. An idle sample never crosses her.</para>
     ///
     /// <para><b>⭐ Hull-local, and therefore frame-free.</b> Every quantity here is in the rig's own
     /// metres (+x starboard, +y bow) — the frame <see cref="HullLocalAnchor"/>'s own tooltip names as the
@@ -269,6 +270,40 @@ namespace HiddenHarbours.Boats
             if (float.IsNaN(pastBefore)) return false;
             return goingIn ? pastNow >= pastBefore - PressedShortMetres
                            : pastNow <= pastBefore + PressedShortMetres;
+        }
+
+        /// <summary>
+        /// Decide a passage from the current position, keeping the last in-band position for the next
+        /// tick. NaN means no previous doorway contact. The caller supplies the time since its last
+        /// successful crossing and enforces the open-door, floor and entry-policy gates.
+        /// While in the band, the settle and held key prevent strobing on the sill. On the first tick
+        /// outside it, an unambiguous side of the wall is authoritative when the key points through,
+        /// including a turn back before the settle ends. Idle samples and keys pointing away never
+        /// cross her. On the wall itself, the usual crossing rules still apply.
+        /// Keep this contact after a crossing too: the very next step may leave a narrow band.
+        /// </summary>
+        public static bool ShouldPass(BoatInteriorDoor door, Vector2 onLine, Vector2 outward,
+                                      bool goingIn, Vector2 hullLocal, Vector2 heldHullLocal,
+                                      float sinceCrossingSeconds, ref float pastTheLineBefore)
+        {
+            float pastBefore = pastTheLineBefore;
+            pastTheLineBefore = float.NaN;
+            if (!HasBand(door)) return false;
+            bool inBand = IsInBand(door, hullLocal);
+            if (!inBand && float.IsNaN(pastBefore)) return false;
+
+            float pastNow = PastTheWallLine(onLine, outward, hullLocal);
+            if (inBand) pastTheLineBefore = pastNow;
+
+            // Leaving a disc is not itself walking through a door: a lateral step or a walker's
+            // idle sample after a handoff must not undo the entry or spend the next intended exit.
+            if (!IsHeldThrough(door, outward, goingIn, heldHullLocal)) return false;
+            if (!inBand && Mathf.Abs(pastNow) > OnTheWallLineMetres)
+                return goingIn ? pastNow < 0f : pastNow > 0f;
+
+            if (sinceCrossingSeconds < door.CrossingSettle) return false;
+            return HasReachedTheWallLine(onLine, outward, goingIn, hullLocal)
+                   || IsPressedShort(pastBefore, pastNow, goingIn);
         }
 
         /// <summary>

@@ -13,8 +13,8 @@ namespace HiddenHarbours.Tests.EditMode
     /// sleepable to replenish fatigue"). Pins the press rule (<see cref="BoatBunk.Judge"/>): your boat,
     /// below at the berth, no deck work mid-cycle (#193), and — while
     /// <see cref="GameConfig.BunkRequiresMooredOrAnchored"/> is on — made fast, berthed or at anchor. And
-    /// pins the save half: a bunk's rest records NO wake spot, so a reload never wakes the player in the
-    /// sea, while a bed ashore keeps its anchor exactly as before (ADR 0037, note 2026-11-14).
+    /// pins the save half: a bunk's rest records the whole sleep place aboard (save v20), and a reload
+    /// still never wakes the player in the sea, while a bed ashore keeps its anchor exactly as before.
     ///
     /// <para>And pins the sleep need: a bunk's night relieves tiredness by the same rule, through the same
     /// <see cref="INeedsService.Sleep"/> line, as a bed's (owner ruling 2026-11-14).</para>
@@ -161,7 +161,9 @@ namespace HiddenHarbours.Tests.EditMode
             _bunk.Interact(new InteractActor(new Vector2(0.4f, 1.1f), Vector2.up, InteractContext.OnDeck));
 
             Assert.AreEqual(1, _requests.Count, "one press, one rest");
-            Assert.IsTrue(_requests[0].WakesAtSpawn, "a bunk records no wake spot: the save has no boat position");
+            Assert.IsTrue(_requests[0].Aboard, "a bunk's rest says it is aboard (save v20)");
+            Assert.IsFalse(_requests[0].WakesAtSpawn, "and no longer forgets the place: it records it");
+            Assert.AreEqual(_bunk.Id, _requests[0].BedId, "the bunk names itself");
             Assert.AreEqual(BoatBunk.PlaceName, _requests[0].Place);
             Assert.AreEqual(CuddyLevel, _requests[0].WakeLevel);
             Assert.AreEqual(0, _notices.Count, "no refusal line on a rest");
@@ -267,25 +269,68 @@ namespace HiddenHarbours.Tests.EditMode
         // =====================================================================================
 
         [Test]
-        public void ABunksRest_ForgetsTheAnchor_SoAReloadWakesAtTheSpawn()
+        public void ABunksRest_RecordsTheWholePlaceAboard_AndTheReloadStillWakesAtTheSpawn()
         {
             var save = new FakeSave();
             GameServices.Save = save;
             GameServices.CurrentRegionId = Region;
             RestLocker.Stamp(save.Current, new RestAnchor(Region, new Vector2(3f, 4f), 1));   // last night's bed
 
-            GameSaved outcome = RestSaveResponder.Fulfil(
-                new RestSaveRequested(BoatBunk.PlaceName, new Vector2(40f, -12f), CuddyLevel, wakesAtSpawn: true));
+            var request = new RestSaveRequested(BoatBunk.PlaceName, new Vector2(40f, -12f), CuddyLevel,
+                                                wakesAtSpawn: false, bedId: "fixture.boat.bunk", aboard: true,
+                                                boatHullId: "boat.cape_islander",
+                                                boatPosition: new Vector2(39f, -13f), boatRotationDegrees: 90f);
+            GameSaved outcome = RestSaveResponder.Fulfil(request);
 
             Assert.IsTrue(outcome.Ok, "the day is kept");
             Assert.AreEqual(1, save.Saves);
-            Assert.IsFalse(RestLocker.Anchor(save.Current).IsSet,
-                           "no anchor: the boat's position is not saved, so a spot aboard is a spot in the sea");
-            Assert.IsFalse(RestSaveResponder.AnchorFor(
-                               new RestSaveRequested("", Vector2.one, 0, true), Region).IsSet,
-                           "…and the anchor such a request names is None, whatever region is live");
+            SleepPlace place = RestLocker.Place(save.Current);
+            Assert.IsTrue(place.IsSet, "v20: the bunk's place is recorded, not forgotten");
+            Assert.IsTrue(place.Aboard);
+            Assert.AreEqual(Region, place.Anchor.Region);
+            Assert.AreEqual(new Vector2(40f, -12f), place.Anchor.Position, "the player's own feet on the sole");
+            Assert.AreEqual(CuddyLevel, place.Anchor.Level);
+            Assert.AreEqual("fixture.boat.bunk", place.BedId);
+            Assert.AreEqual("boat.cape_islander", place.BoatHullId);
+            Assert.AreEqual(Region, place.BoatRegion, "she lay in the region the player slept in");
+            Assert.AreEqual(new Vector2(39f, -13f), place.BoatPosition);
+            Assert.AreEqual(90f, place.BoatRotationDegrees);
+
+            // …and the reload does not put the player on a cabin sole whose boat is somewhere else.
+            Assert.IsFalse(RestWakeRestorer.Wake().IsSet,
+                           "an aboard place is declined on load until the boat can be put back: spawn stands");
         }
 
+        [Test]
+        public void TheBunksOwnRequest_CarriesTheBoatsPose()
+        {
+            _boat.transform.position = new Vector3(12f, -7f, 0f);
+            _boat.transform.rotation = Quaternion.Euler(0f, 0f, 45f);
+
+            RestSaveRequested request = _bunk.RequestFor(new Vector2(12.4f, -6.1f), CuddyLevel);
+
+            Assert.IsTrue(request.Aboard);
+            Assert.AreEqual(_bunk.Id, request.BedId);
+            Assert.AreEqual(new Vector2(12f, -7f), request.BoatPosition);
+            Assert.AreEqual(45f, request.BoatRotationDegrees, 1e-3f);
+            Assert.AreEqual(new Vector2(12.4f, -6.1f), request.WakePosition);
+        }
+
+        [Test]
+        public void TheOldForgetfulRequest_StillForgetsThePlace()
+        {
+            var save = new FakeSave();
+            GameServices.Save = save;
+            GameServices.CurrentRegionId = Region;
+            RestLocker.Stamp(save.Current, new RestAnchor(Region, new Vector2(3f, 4f), 1));
+
+            RestSaveResponder.Fulfil(
+                new RestSaveRequested(BoatBunk.PlaceName, new Vector2(40f, -12f), CuddyLevel, wakesAtSpawn: true));
+
+            Assert.IsFalse(RestLocker.Anchor(save.Current).IsSet, "WakesAtSpawn keeps its meaning: forget");
+            Assert.IsFalse(RestSaveResponder.AnchorFor(
+                               new RestSaveRequested("", Vector2.one, 0, true), Region).IsSet);
+        }
         [Test]
         public void ABedsRest_StillStampsItsAnchor_ExactlyAsBefore()
         {

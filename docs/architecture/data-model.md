@@ -141,6 +141,20 @@ plain serializable DTOs owned by `SaveService` (`architecture/tech-architecture.
 > empty list and nothing else. An id no shipped trait claims is ignored by the maths, never healed away.
 > In co-op each player will hold their own list; only the acting player's traits apply to an action.
 
+> **Save schema v20 (the whole sleep place, owner ruling 2026-11-15: "Reloading restarts the day where
+> you last slept. A sleep is a save.")** — `SaveData` gained EIGHT append-only scalars beside the v13
+> anchor: `RestBedId` (the bed or bunk's stable fixture id), `RestWokeAtSeconds` (the game time the
+> sleep ended), and, for a bunk aboard, `RestAboard`, `RestBoatHullId`, `RestBoatRegion`,
+> `RestBoatPosX`, `RestBoatPosY`, `RestBoatRotation` (the boat root's pose as its transform held it).
+> Read and written only through `RestLocker.Place` / `RestLocker.StampPlace`, as one `SleepPlace`
+> (Core/Save/SleepPlace.cs); `RestLocker.Forget` clears all twelve. **Every position is in its named
+> region's own scene frame**, so a shared world frame (a per-region offset) maps it with no new field.
+> The `v19→v20` step reinterprets nothing: a v13..v19 bed anchor still wakes the player in that bed, a
+> save with no anchor still wakes at the default spawn, and the new fields take honest empties (no bed
+> id, woke-at 0 = unknown, not aboard). On load `RestWakeRestorer` applies a same-region place ashore;
+> a place in ANOTHER region, or ABOARD a boat, is not applied in the wrong frame but handed to the
+> `SleepPlaceWakeRequested` signal for the travel rig to honour, and the spawn stands until it does.
+
 **Recomputed, never saved:** tide height, wind, weather, sea state, visibility (from
 `worldSeed + gameTime`), dormant NPC positions, authored geometry, **a boat's effective helm fit and
 its depth-sounder reading** (ADR 0030), **which end of a bed the pillow is on** (see below), and
