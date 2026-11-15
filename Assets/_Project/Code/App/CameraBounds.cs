@@ -1,7 +1,20 @@
+using HiddenHarbours.Core;
 using UnityEngine;
 
 namespace HiddenHarbours.App
 {
+    /// <summary>The sides of a region's rectangle the camera may follow the mover past: the seams (ADR
+    /// 0057). Every other side keeps the clamp.</summary>
+    [System.Flags]
+    public enum CameraOpenEdges
+    {
+        None = 0,
+        West = 1,
+        East = 2,
+        South = 4,
+        North = 8,
+    }
+
     /// <summary>
     /// The camera's world rectangle and the clamp that keeps the view inside it — the bounds rig
     /// <see cref="CameraFollow"/>'s own comment said did not exist yet (scene-sizing §6 item 4).
@@ -66,20 +79,61 @@ namespace HiddenHarbours.App
         /// </summary>
         public static Vector2 Clamp(Vector2 desired, in CameraBounds bounds,
                                     float halfWidthMeters, float halfHeightMeters)
+            => Clamp(desired, in bounds, halfWidthMeters, halfHeightMeters, CameraOpenEdges.None);
+
+        /// <summary>
+        /// <see cref="Clamp(Vector2, in CameraBounds, float, float)"/> with some sides left OPEN: a side
+        /// in <paramref name="open"/> is a SEAM (ADR 0057, the region has a neighbour there), and the view
+        /// follows the mover across it in world space instead of stopping at it. A closed side clamps
+        /// exactly as before, so <see cref="CameraOpenEdges.None"/> is the old clamp, bit for bit.
+        ///
+        /// <para>⚠ Why the seam must not clamp (PR 1223 play look). The crossing fires a hysteresis band
+        /// PAST the edge, so a clamped view parked a half-view short of the seam: the walker was 24 m off
+        /// the camera's centre (off-screen) before the hop, and the hop itself jumped the view 40 m, from
+        /// one region's clamp to the other's. Open, the camera never stops at the seam, and on the far
+        /// side it is next to the neighbour's matching open side, so nothing clamps it there either.</para>
+        /// </summary>
+        public static Vector2 Clamp(Vector2 desired, in CameraBounds bounds,
+                                    float halfWidthMeters, float halfHeightMeters, CameraOpenEdges open)
         {
             if (!bounds.IsBounded) return desired;
             return new Vector2(
-                ClampAxis(desired.x, bounds.Center.x, bounds.SizeMeters.x, halfWidthMeters),
-                ClampAxis(desired.y, bounds.Center.y, bounds.SizeMeters.y, halfHeightMeters));
+                ClampAxis(desired.x, bounds.Center.x, bounds.SizeMeters.x, halfWidthMeters,
+                          (open & CameraOpenEdges.West) != 0, (open & CameraOpenEdges.East) != 0),
+                ClampAxis(desired.y, bounds.Center.y, bounds.SizeMeters.y, halfHeightMeters,
+                          (open & CameraOpenEdges.South) != 0, (open & CameraOpenEdges.North) != 0));
         }
 
-        /// <summary>One axis of <see cref="Clamp"/>. Half-extent ≥ half the world size ⇒ centre.</summary>
-        private static float ClampAxis(float desired, float center, float worldSize, float halfExtent)
+        /// <summary>One axis of <see cref="Clamp"/>. Both sides closed: half-extent ≥ half the world size ⇒
+        /// centre, as it always was. An open side drops only its own limit; the other still holds.</summary>
+        private static float ClampAxis(float desired, float center, float worldSize, float halfExtent,
+                                       bool openLow, bool openHigh)
         {
             float half = Mathf.Max(0f, halfExtent);
             float halfWorld = worldSize * 0.5f;
+            float lo = center - halfWorld + half, hi = center + halfWorld - half;
+            if (openLow && openHigh) return desired;
+            if (openLow) return Mathf.Min(desired, hi);
+            if (openHigh) return Mathf.Max(desired, lo);
             if (half >= halfWorld) return center;          // the view is wider than the world: centre it
-            return Mathf.Clamp(desired, center - halfWorld + half, center + halfWorld - half);
+            return Mathf.Clamp(desired, lo, hi);
+        }
+
+        /// <summary>
+        /// The sides of <paramref name="regionId"/> that are SEAMS in <paramref name="frame"/>: a
+        /// neighbour shares a stretch of that edge (<see cref="WorldFrame.HasNeighbourAlong"/>). No frame,
+        /// or a region off the map, opens nothing, so every rig without a world frame keeps the old clamp.
+        /// PURE.
+        /// </summary>
+        public static CameraOpenEdges SeamEdges(WorldFrame frame, string regionId)
+        {
+            if (frame == null || !frame.Contains(regionId)) return CameraOpenEdges.None;
+            CameraOpenEdges open = CameraOpenEdges.None;
+            if (frame.HasNeighbourAlong(regionId, RegionEdge.West)) open |= CameraOpenEdges.West;
+            if (frame.HasNeighbourAlong(regionId, RegionEdge.East)) open |= CameraOpenEdges.East;
+            if (frame.HasNeighbourAlong(regionId, RegionEdge.South)) open |= CameraOpenEdges.South;
+            if (frame.HasNeighbourAlong(regionId, RegionEdge.North)) open |= CameraOpenEdges.North;
+            return open;
         }
     }
 }

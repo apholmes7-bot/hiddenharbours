@@ -683,6 +683,18 @@ namespace HiddenHarbours.Core
             UnityEngine.Mathf.Max(0f, Config != null ? Config.RegionCrossingHysteresisMetres
                                                      : GameConfig.DefaultRegionCrossingHysteresisMetres);
 
+        /// <summary>How near (m) a shared edge a mover must come before the neighbour's scene starts
+        /// loading in the background (PR 1223). 0 = no preload. Same <c>Config != null</c> contract.</summary>
+        public static float RegionPreloadDistanceMetres =>
+            UnityEngine.Mathf.Max(0f, Config != null ? Config.RegionPreloadDistanceMetres
+                                                     : GameConfig.DefaultRegionPreloadDistanceMetres);
+
+        /// <summary>How long (real seconds) a preloaded neighbour may wait un-activated for the hop before
+        /// it is let go. Same <c>Config != null</c> contract.</summary>
+        public static float RegionPreloadHoldSeconds =>
+            UnityEngine.Mathf.Max(0f, Config != null ? Config.RegionPreloadHoldSeconds
+                                                     : GameConfig.DefaultRegionPreloadHoldSeconds);
+
         /// <summary>
         /// TRUE while the ARRIVAL OPENING is running — from the moment <c>ArrivalOpening</c> leaves
         /// <c>Dormant</c> until it hands the player the boat, and false again the instant it is torn

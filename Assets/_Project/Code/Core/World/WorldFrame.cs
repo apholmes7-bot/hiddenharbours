@@ -302,6 +302,44 @@ namespace HiddenHarbours.Core
         }
 
         /// <summary>
+        /// ⭐ <b>Which neighbour should be warming up?</b> (PR 1223, the first-entry freeze). The neighbour
+        /// across the NEAREST edge of <paramref name="fromId"/> that lies within
+        /// <paramref name="withinMetres"/> of <paramref name="local"/> and has a neighbour opposite the
+        /// mover's place along it; false when no such edge is that close, or for a distance of 0 or less
+        /// (preloading off). The point probed is the mover's own position carried just across the edge, so
+        /// a partly shared edge answers only along its shared stretch. PURE; the crossing itself is still
+        /// <see cref="Resolve"/>'s to decide.
+        /// </summary>
+        public bool TryGetApproachingNeighbour(string fromId, Vector2 local, float withinMetres, out RegionFrame neighbour)
+        {
+            neighbour = default;
+            if (!(withinMetres > 0f) || !TryGet(fromId, out RegionFrame from)) return false;
+            Rect r = from.LocalRect;
+            Vector2 along = new Vector2(Mathf.Clamp(local.x, r.xMin, r.xMax), Mathf.Clamp(local.y, r.yMin, r.yMax));
+            const float across = 2f * ContactToleranceMetres;   // just over the line, inside the neighbour
+
+            float best = float.MaxValue;
+            bool found = false;
+            RegionFrame pick = default;
+            Probe(from, r.xMax - local.x, new Vector2(r.xMax + across, along.y), withinMetres, ref best, ref pick, ref found);
+            Probe(from, local.x - r.xMin, new Vector2(r.xMin - across, along.y), withinMetres, ref best, ref pick, ref found);
+            Probe(from, r.yMax - local.y, new Vector2(along.x, r.yMax + across), withinMetres, ref best, ref pick, ref found);
+            Probe(from, local.y - r.yMin, new Vector2(along.x, r.yMin - across), withinMetres, ref best, ref pick, ref found);
+            neighbour = pick;
+            return found;
+        }
+
+        void Probe(RegionFrame from, float distance, Vector2 probeLocal, float withinMetres,
+                   ref float best, ref RegionFrame pick, ref bool found)
+        {
+            if (distance > withinMetres || distance >= best) return;
+            if (!TryFindRegionAt(from.ToWorld(probeLocal), from.RegionId, out RegionFrame n)) return;
+            best = distance;
+            pick = n;
+            found = true;
+        }
+
+        /// <summary>
         /// ⭐ <b>The crossing rule, for one mover at <paramref name="local"/> in region
         /// <paramref name="fromId"/>.</b> Inside the rectangle, or less than <paramref name="hysteresisMetres"/>
         /// past an edge: <see cref="CrossingKind.Stay"/>. Further past an edge: if the world point lies in a

@@ -1241,6 +1241,22 @@ namespace HiddenHarbours.Core
                  "through before the new scene appears.")]
         [Min(0f)] public float RegionCrossingHysteresisMetres = DefaultRegionCrossingHysteresisMetres;
 
+        /// <summary>Shipped preload distance (m), also the fallback for a rig with no GameConfig.</summary>
+        public const float DefaultRegionPreloadDistanceMetres = 40f;
+        /// <summary>Shipped preload hold (s), also the fallback for a rig with no GameConfig.</summary>
+        public const float DefaultRegionPreloadHoldSeconds = 20f;
+
+        [Tooltip("How near (m) a shared edge the player or boat must come before the neighbouring region's " +
+                 "scene starts loading in the background, so the crossing only has to switch it on instead " +
+                 "of loading it. Bigger = more warning, and more time spent holding a scene that may not be " +
+                 "used. 0 = no preload (the scene loads when the crossing fires, as before).")]
+        [Min(0f)] public float RegionPreloadDistanceMetres = DefaultRegionPreloadDistanceMetres;
+
+        [Tooltip("How long (real seconds) a preloaded neighbour waits, loaded but not switched on, for the " +
+                 "crossing. Past it the scene is switched on out of sight and kept ready, so a player who " +
+                 "lingers by a seam never holds the loader up for good.")]
+        [Min(0f)] public float RegionPreloadHoldSeconds = DefaultRegionPreloadHoldSeconds;
+
         public float SecondsPerHour => SecondsPerDay / 24f;
         public float SecondsPerWeek => SecondsPerDay * DaysPerWeek;
         public float SecondsPerSeason => SecondsPerDay * DaysPerSeason;

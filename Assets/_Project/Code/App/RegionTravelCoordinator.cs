@@ -181,6 +181,15 @@ namespace HiddenHarbours.App
             return alongside;
         }
 
+        /// <summary>
+        /// Is this activation the region opening under her (read the scene-laid berth), rather than a hop
+        /// from another region? Only the first activation comes from somewhere with no anchor (the shell).
+        /// <paramref name="leftAnchor"/> MUST be read before the region being left is deactivated:
+        /// deactivating it unlists its anchor, which is the defect this guards. PURE.
+        /// </summary>
+        public static bool ShouldRememberBoatBerth(RegionAnchor arrived, Transform boat, RegionAnchor leftAnchor) =>
+            arrived != null && boat != null && leftAnchor == null;
+
         /// <summary>True unless <paramref name="arrivalKey"/> names a way in that sets no BOAT point — a
         /// walk-in, which leaves the boat where she was. PURE over the anchor's table.</summary>
         public static bool ArrivalMovesBoat(RegionAnchor anchor, string arrivalKey) =>
@@ -298,7 +307,12 @@ namespace HiddenHarbours.App
             // activation is the boat still standing where the region's scene laid her — one moment, and
             // it is the only chance anything has to read the berth, because she carries PersistentObject
             // and Awake has already promoted her out of the scene for good.
-            if (anchor != null && _boat != null && RegionAnchor.ForScene(previous) == null)
+            //
+            // ⚠ Asked of `leftAnchor`, read ABOVE while the region we left was still live. Asking
+            // `RegionAnchor.ForScene(previous)` here is always null: SetSceneRootsActive(previous, false)
+            // has already run, and RegionAnchor.OnDisable unlists the anchor, so every hop read as a first
+            // activation and the berth could be re-read from wherever she happened to be.
+            if (ShouldRememberBoatBerth(anchor, _boat, leftAnchor))
                 anchor.RememberBoatBerth(_boat, next.name);
             // A key the region does not answer to is a MIS-WIRE, not a style: the player lands at the
             // default and everything looks fine, which is exactly how a passage pointed at a renamed
@@ -373,7 +387,11 @@ namespace HiddenHarbours.App
             if (!TryGetMover(out Transform mover, out bool boatIsMover)) return;
 
             CrossingDecision d = frame.Resolve(here, mover.position, GameServices.RegionCrossingHysteresisMetres);
-            if (d.Kind == CrossingKind.Stay) return;
+            if (d.Kind == CrossingKind.Stay)
+            {
+                WarmNeighbour(frame, here, mover.position);
+                return;
+            }
             if (d.Kind == CrossingKind.Cross && BeginCrossing(here, d, boatIsMover)) return;
 
             // A world boundary, or a neighbour whose scene would not load: hold the mover on the edge.
@@ -465,10 +483,40 @@ namespace HiddenHarbours.App
             return mover != null && mover.gameObject.activeInHierarchy;
         }
 
+        RegionSceneLoader _loader;
+
+        RegionSceneLoader Loader
+        {
+            get
+            {
+                if (_loader == null) _loader = Object.FindAnyObjectByType<RegionSceneLoader>();
+                return _loader;
+            }
+        }
+
+        /// <summary>
+        /// ⭐ <b>Warm the neighbour the mover is heading for</b> (PR 1223, the first-entry freeze): within
+        /// <see cref="GameServices.RegionPreloadDistanceMetres"/> of a shared edge, start reading the
+        /// neighbour's scene in the background (<see cref="RegionSceneLoader.Preload"/>) so the crossing
+        /// only switches it on. A region already loaded (visited) asks nothing. The loader bounds the hold
+        /// itself (<see cref="GameServices.RegionPreloadHoldSeconds"/>), so a preload never waits for good
+        /// on a crossing that does not come.
+        /// </summary>
+        void WarmNeighbour(WorldFrame frame, string here, Vector2 moverLocal)
+        {
+            if (_loader != null && _loader.HeldSceneName != null) return;
+            // The pure question first, so a rig with no loader never searches for one per step.
+            if (_map == null || !frame.TryGetApproachingNeighbour(here, moverLocal,
+                    GameServices.RegionPreloadDistanceMetres, out RegionFrame next)) return;
+            RegionSceneLoader loader = Loader;
+            if (loader != null && _map.TryGet(next.RegionId, out RegionDef target))
+                loader.Preload(target, GameServices.RegionPreloadHoldSeconds);
+        }
+
         bool BeginCrossing(string here, CrossingDecision d, bool boatIsMover)
         {
             if (_map == null || !_map.TryGet(d.To.RegionId, out RegionDef target)) return false;
-            var loader = Object.FindAnyObjectByType<RegionSceneLoader>();
+            var loader = Loader;
             if (loader == null) return false;
 
             _pending = new PendingCrossing { From = here, To = d.To.RegionId, Shift = d.LocalShift, BoatCame = boatIsMover };
@@ -517,18 +565,18 @@ namespace HiddenHarbours.App
             _boatRegionId = BoatRegionAfter(_boatRegionId, crossing.From, crossing.To, crossing.BoatCame);
             UpdateBoatPresence(anchor.RegionId);
 
-            // The camera is carried by the same translation, so the hop never reads as a pan.
+            // The camera is carried by the same translation, follow state and all, so the hop never reads
+            // as a pan or a jump: its world position is continuous across the seam (CameraFollow also
+            // leaves seam edges unclamped, so neither region's bounds pull it back).
             var follow = Object.FindFirstObjectByType<CameraFollow>();
-            if (follow != null)
-            {
-                follow.transform.position += new Vector3(crossing.Shift.x, crossing.Shift.y, 0f);
-                follow.TickFollow(0f);
-            }
+            if (follow != null) follow.CarryAcross(crossing.Shift);
 
             if (_switcher != null)
             {
                 _switcher.SetDock(anchor.DockZone, anchor.DisembarkPoint);
-                _switcher.ReassertControlMode();
+                // A boat crossing carried him on his seat: keep it (the rider pop, PR 1223). A foot
+                // crossing re-asserts exactly as before.
+                _switcher.ReassertControlMode(keepSeat: crossing.BoatCame);
             }
         }
 

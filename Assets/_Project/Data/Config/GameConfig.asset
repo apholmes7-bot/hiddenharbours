@@ -619,3 +619,5 @@ MonoBehaviour:
   DevAllHelmInstruments: 1
   MeshFishingAndDig: 1
   RegionCrossingHysteresisMetres: 1
+  RegionPreloadDistanceMetres: 40
+  RegionPreloadHoldSeconds: 20

@@ -2769,8 +2769,22 @@ namespace HiddenHarbours.Player
         /// cheap and keeps the camera framing correct on return (boat framing aboard, on-foot framing
         /// ashore). Null-safe throughout.
         /// </summary>
-        public void ReassertControlMode()
+        public void ReassertControlMode() => ReassertControlMode(keepSeat: false);
+
+        /// <summary>
+        /// <see cref="ReassertControlMode()"/>, told whether the hop CARRIED the fisher with his boat.
+        ///
+        /// <para>⚠ PR 1223 (the rider pop): a world-frame crossing moves the boat by a pure translation and
+        /// the fisher, parented under her, rides along on the very spot he was sitting. Re-seating him there
+        /// anyway put him on the raw helm SNAP (dory: 0.41 m aft of the thwart the boarding sat him on),
+        /// because the station correction only fires when the snap misses its floor. So a crossing that kept
+        /// him aboard passes <paramref name="keepSeat"/> and he stays where he sat; a hop that placed player
+        /// and boat independently (a door, a legacy arrival) still re-seats him, exactly as before.</para>
+        /// </summary>
+        public void ReassertControlMode(bool keepSeat)
         {
+            bool reseat = ShouldReseatOnReassert(keepSeat, Player != null && Boat != null && Player.IsChildOf(Boat));
+
             // A region hop repositions player and boat independently, which is exactly the ground an
             // in-flight arc is interpolating over. Call it off first (keeping the mode it had not yet
             // left) and let the re-assert below settle the fisher properly.
@@ -2798,7 +2812,7 @@ namespace HiddenHarbours.Player
                 // The hop repositions player and boat independently, so re-seat the pilot ON the helm —
                 // the same re-seating the OnDeck branch below has always done, and now load-bearing
                 // because the figure at the helm is DRAWN rather than hidden.
-                SnapPlayerToTheHelm();
+                if (reseat) SnapPlayerToTheHelm();
                 if (_boatController != null) _boatController.enabled = true;
                 if (_boatInput != null) _boatInput.enabled = true;
 
@@ -2824,7 +2838,7 @@ namespace HiddenHarbours.Player
                 ApplyPlayerFor(ControlMode.OnDeck);
                 // The hop may have teleported the player to the region's disembark spot — re-seat them
                 // on the deck (the coordinator repositions player + boat independently).
-                SnapPlayerToTheBoardSpot();
+                if (reseat) SnapPlayerToTheBoardSpot();
                 EventBus.Publish(new ControlModeChanged(ControlMode.OnDeck));
             }
             else
@@ -3040,6 +3054,10 @@ namespace HiddenHarbours.Player
         /// because only the snap draws her ON the spot: the dory's station is her thwart, 0.2164 m above her
         /// sole, and stood on it her pilot was drawn 0.166 m below his seat (<c>DoryAboardPlayTests</c>,
         /// Phase C run). A hull with no station takes the snap it always took, bit for bit.</para></summary>
+        /// <summary>Does a control re-assert re-seat the fisher on his boat? Always, unless the hop carried him
+        /// aboard her (<paramref name="keepSeat"/>) AND he is in fact riding her (parented under her). PURE.</summary>
+        public static bool ShouldReseatOnReassert(bool keepSeat, bool playerRidesBoat) => !(keepSeat && playerRidesBoat);
+
         private void SnapPlayerToTheHelm()
         {
             SnapPlayerToDeck(HelmBoatRelativeOffset());

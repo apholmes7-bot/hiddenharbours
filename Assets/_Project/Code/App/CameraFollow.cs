@@ -777,7 +777,8 @@ namespace HiddenHarbours.App
             if (!TryGetHalfExtents(out float halfWidth, out float halfHeight)) return;
 
             Vector3 p = transform.position;
-            Vector2 clamped = CameraBounds.Clamp(new Vector2(p.x, p.y), in bounds, halfWidth, halfHeight);
+            Vector2 clamped = CameraBounds.Clamp(new Vector2(p.x, p.y), in bounds, halfWidth, halfHeight,
+                                                 CurrentSeamEdges());
             if (clamped.x != p.x || clamped.y != p.y)
             {
                 transform.position = new Vector3(clamped.x, clamped.y, p.z);   // depth is never touched
@@ -790,6 +791,46 @@ namespace HiddenHarbours.App
                 // filter, not part of it, and _shakeApplied is exactly zero when none is live.
                 _smoothPos = transform.position - _shakeApplied;
             }
+        }
+
+        // The active region's seams, looked up once per (frame, region) pair rather than per LateUpdate:
+        // the layout is data and never changes in play, so a region id is a complete cache key.
+        private WorldFrame _seamFrame;
+        private string _seamRegionId;
+        private CameraOpenEdges _seamEdges;
+
+        /// <summary>
+        /// The sides of the active region the view follows the mover past (ADR 0057): those with a
+        /// neighbour in the published world frame. None while no frame is published, so a rig without
+        /// one keeps the whole clamp. No allocation (rule 7).
+        /// </summary>
+        public CameraOpenEdges CurrentSeamEdges()
+        {
+            WorldFrame frame = GameServices.WorldFrame;
+            string region = GameServices.CurrentRegionId;
+            if (!ReferenceEquals(frame, _seamFrame) || !string.Equals(region, _seamRegionId, System.StringComparison.Ordinal))
+            {
+                _seamFrame = frame;
+                _seamRegionId = region;
+                _seamEdges = CameraBounds.SeamEdges(frame, region);
+            }
+            return _seamEdges;
+        }
+
+        /// <summary>
+        /// ⭐ <b>Carry the view across a world-frame crossing</b> (ADR 0057): the mover was moved into the
+        /// neighbour's local frame by <paramref name="localShift"/>, so the camera and every piece of its
+        /// follow state move by the same translation. The world point the camera looks at is unchanged
+        /// and the follow carries on as if nothing happened: no re-seed, no velocity spike from the
+        /// target's 400 m local jump, no one-frame zero speed under the pull-back.
+        /// </summary>
+        public void CarryAcross(Vector2 localShift)
+        {
+            var d = new Vector3(localShift.x, localShift.y, 0f);
+            transform.position += d;
+            _smoothPos += d;
+            _lastAppliedPos += d;
+            _lastTargetPos += d;
         }
 
         /// <summary>
