@@ -1,0 +1,57 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e08d388b6adc4b9fb12e153843e42333, type: 3}
+  m_Name: VoyageCapeIslander
+  m_EditorClassIdentifier: HiddenHarbours.Core::HiddenHarbours.Core.BoatVoyageDef
+  Id: voyage.cape_islander
+  HullId: boat.cape_islander
+  LongestTrip: 1
+  MinCrewDay: 1
+  MinCrewOvernight: 1
+  MinCrewWeek: 1
+  MinCrewMonth: 1
+  Work:
+  - WorkId: work.lobster_pots
+    MinCrew: 1
+    RequiredRoleIds:
+    - role.skipper
+  - WorkId: work.crab_pots
+    MinCrew: 1
+    RequiredRoleIds:
+    - role.skipper
+  - WorkId: work.rod_and_jig
+    MinCrew: 1
+    RequiredRoleIds:
+    - role.skipper
+  - WorkId: work.tub_longline
+    MinCrew: 1
+    RequiredRoleIds:
+    - role.skipper
+  - WorkId: work.bluefin_rod
+    MinCrew: 2
+    RequiredRoleIds:
+    - role.skipper
+    - role.mate
+  - WorkId: work.swordfish_harpoon
+    MinCrew: 3
+    RequiredRoleIds:
+    - role.skipper
+    - role.striker
+    - role.lookout
+  - WorkId: work.scallop_drag
+    MinCrew: 3
+    RequiredRoleIds:
+    - role.skipper
+    - role.deckhand
+    - role.shucker
+  RealWorldCrew: "40-45 ft Cape Islander: lobster captain + 1-2 helpers; bluefin rod 2-3; swordfish harpoon 3-4 (captain, striker, mast lookout), historically up to about 7 days to Georges [S2]."
+  LimitedBy: the third hand has no berth until the cuddy gets one; fuel about 3 game days
