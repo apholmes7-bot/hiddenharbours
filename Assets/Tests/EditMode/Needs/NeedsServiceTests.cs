@@ -375,6 +375,58 @@ namespace HiddenHarbours.Tests.EditMode
             }
         }
 
+        // ---- the shipped config: needs never cut a sale price (owner ruling 2026-11-14) ----------------
+        // The mechanism stays (Penalties_AddAcrossNeeds / Penalties_StackWithTraitBonuses prove it with the
+        // test's own non-zero numbers); these pin the SHIPPED numbers to no sell penalty at all.
+
+        [Test]
+        public void TheShippedDefaults_HungerAndTiredness_LeaveTheSalePriceUnchanged()
+        {
+            _settings = NeedsSettings.Default;
+            foreach (NeedCurve c in new[] { _settings.Hunger, _settings.Tiredness })
+            {
+                Assert.AreEqual(0f, c.MildSellPenalty, "shipped: no first-stage sell penalty");
+                Assert.AreEqual(0f, c.StrongSellPenalty, "shipped: no second-stage sell penalty");
+            }
+
+            SetNeeds(1f, 1f);   // hungry and worn right out
+            NeedsService service = Service();
+            Assert.AreEqual(Bits(1f), Bits(service.PlayerMultiplier(TraitStat.SellPrice)),
+                "hunger and tiredness leave the sale price unchanged");
+            Assert.Less(service.PlayerMultiplier(TraitStat.WalkSpeed), 1f, "the walk still slows");
+        }
+
+        [Test]
+        public void TheShippedDefaults_Charismatic_StillRaisesTheSale_WhenHungryAndTired()
+        {
+            _settings = NeedsSettings.Default;
+            TraitService traits = TraitFixtures.Install(_save, _fx.SliceOne(), "trait.charismatic");
+            SetNeeds(1f, 1f);
+            GameServices.Needs = Service(traits);
+
+            Assert.AreEqual(1.05f, CharacterFactors.Player(TraitStat.SellPrice), 1e-6f);
+            Assert.AreEqual(1.05f, SellService.SellerPriceLevel(null), 1e-6f, "the in-person till seam");
+        }
+
+        [Test]
+        public void TheConfigAsset_ShipsNoNeedsSellPenalty()
+        {
+            string path = System.IO.Path.Combine(Application.dataPath, "_Project/Data/Config/GameConfig.asset");
+            Assert.IsTrue(System.IO.File.Exists(path), "missing GameConfig.asset");
+            string yaml = System.IO.File.ReadAllText(path);
+            var matches = System.Text.RegularExpressions.Regex.Matches(
+                yaml, @"^\s*(?:Mild|Strong)SellPenalty:\s*(\S+)\s*$",
+                System.Text.RegularExpressions.RegexOptions.Multiline);
+            Assert.AreEqual(4, matches.Count, "Hunger and Tiredness each list both sell-penalty keys");
+            foreach (System.Text.RegularExpressions.Match m in matches)
+            {
+                Assert.IsTrue(float.TryParse(m.Groups[1].Value, System.Globalization.NumberStyles.Float,
+                                             System.Globalization.CultureInfo.InvariantCulture, out float v),
+                    $"not a number: '{m.Groups[1].Value}'");
+                Assert.AreEqual(0f, v, "the shipped asset must not let needs cut a sale price");
+            }
+        }
+
         private sealed class NeedsClock : IGameClock
         {
             public double T;

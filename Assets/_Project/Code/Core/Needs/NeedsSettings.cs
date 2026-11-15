@@ -29,7 +29,8 @@ namespace HiddenHarbours.Core
                  "walk floor: hunger slows, it never stops (owner ruling 2026-11-14).")]
         [Range(0f, 1f)] public float StrongWalkPenalty;
 
-        [Tooltip("Price taken off an in-person sale in the first stage (0.02 = 2 % less).")]
+        [Tooltip("Price taken off an in-person sale in the first stage (0.02 = 2 % less). Shipped at 0: the " +
+                 "owner ruled (2026-11-14) that hunger and tiredness never cut a sale price; the knob stays.")]
         [Range(0f, 1f)] public float MildSellPenalty;
 
         [Tooltip("Price taken off an in-person sale in the second stage.")]
@@ -70,8 +71,8 @@ namespace HiddenHarbours.Core
                 StrongAt = 0.75f,             // hungry ~12 game hours after a full meal
                 MildWalkPenalty = 0.04f,
                 StrongWalkPenalty = 0.10f,
-                MildSellPenalty = 0.02f,
-                StrongSellPenalty = 0.04f,
+                MildSellPenalty = 0f,         // owner 2026-11-14: needs never cut a sale price
+                StrongSellPenalty = 0f,
             },
             Tiredness = new NeedCurve
             {
@@ -80,8 +81,8 @@ namespace HiddenHarbours.Core
                 StrongAt = 0.9f,              // worn out ~16.2 game hours after waking (-> ~22:10)
                 MildWalkPenalty = 0.04f,
                 StrongWalkPenalty = 0.08f,
-                MildSellPenalty = 0.02f,
-                StrongSellPenalty = 0.04f,
+                MildSellPenalty = 0f,         // owner 2026-11-14: needs never cut a sale price
+                StrongSellPenalty = 0f,
             },
             WalkFloor = 0.85f,
             SellFloor = 0.92f,
