@@ -1090,6 +1090,9 @@ namespace HiddenHarbours.Player
             BoatDeckDef deck = LiveDeck();
             // THE ONE READ PER FRAME (ADR 0043 §2); the gates are applied inside the source.
             Vector2 input = DeckInputSource.Read().Move;
+            // Traits slice 1 missed the deck: the same trait x needs factor the shore walk reads
+            // (CharacterFactors), once per frame, exactly 1 when fed, rested and trait-less.
+            float moveSpeed = CharacterFactors.ApplyPlayer(_moveSpeed, TraitStat.WalkSpeed);
 
             Vector2 relative, stanceCenter, stanceHalfExtents;
             bool floorKnown;   // does _deckHeight name the floor she stands on? (the door's sill gate)
@@ -1112,7 +1115,7 @@ namespace HiddenHarbours.Player
             if (_onWashboard && TryDeckBox(_boatRoot, out Vector2 railCentre, out Vector2 railHalf))
             {
                 relative = (Vector2)transform.position - boatPos;
-                relative = StepOnDeck(relative, input, _moveSpeed * WashboardSlowFactor, Time.deltaTime,
+                relative = StepOnDeck(relative, input, moveSpeed * WashboardSlowFactor, Time.deltaTime,
                                       drawnHeading, railCentre, railHalf);
                 _deckLocal = WorldToDeckFrame(relative, drawnHeading);
                 _deckArea = -1;
@@ -1127,7 +1130,7 @@ namespace HiddenHarbours.Player
                 if (!_walkedInside)
                     _deckLocal = landing.ClampToEntryLanding(_deckLocal, landing.EntryLandingArrivalPoint);
                 _deckLocal = landing.ClampToEntryLanding(
-                    StepInHullFrame(_deckLocal, input, _moveSpeed, Time.deltaTime, drawnHeading, elevation), _deckLocal);
+                    StepInHullFrame(_deckLocal, input, moveSpeed, Time.deltaTime, drawnHeading, elevation), _deckLocal);
                 held = HeldInHullFrame(input, drawnHeading, elevation);
                 _deckHeight = entrySurface.HeightMetres;
                 _deckArea = -1;
@@ -1146,7 +1149,7 @@ namespace HiddenHarbours.Player
                 // the same floor-known door question as the deck — only the clamp is the level's.
                 float elevation = BakeElevationDegrees();
                 if (!_walkedInside) _deckLocal = SeatOnLevel(level, _deckLocal);   // she just came in
-                _deckLocal = StepOnInteriorLevel(_deckLocal, input, _moveSpeed, Time.deltaTime,
+                _deckLocal = StepOnInteriorLevel(_deckLocal, input, moveSpeed, Time.deltaTime,
                                                  drawnHeading, elevation, level);
                 held = HeldInHullFrame(input, drawnHeading, elevation);
                 _deckHeight = level.SoleZMeters;
@@ -1173,7 +1176,7 @@ namespace HiddenHarbours.Player
                                                   ref _deckArea, out _deckHeight);
                     _walkedInside = false;
                 }
-                _deckLocal = StepOnDeckPolygon(_deckLocal, input, _moveSpeed, Time.deltaTime,
+                _deckLocal = StepOnDeckPolygon(_deckLocal, input, moveSpeed, Time.deltaTime,
                                                drawnHeading, elevation, deck, ref _deckArea, out _deckHeight);
                 held = HeldInHullFrame(input, drawnHeading, elevation);
                 relative = DeckAreaMath.DeckToWorld(_deckLocal, _deckHeight, drawnHeading, elevation);
@@ -1186,7 +1189,7 @@ namespace HiddenHarbours.Player
                 // THE GREYBOX FALLBACK, unchanged: an unmeasured hull keeps the world-axis step and the
                 // un-foreshortened rectangle it has always had. No data, no better answer.
                 relative = (Vector2)transform.position - boatPos;
-                relative = StepOnDeck(relative, input, _moveSpeed, Time.deltaTime,
+                relative = StepOnDeck(relative, input, moveSpeed, Time.deltaTime,
                                       drawnHeading, _deckCenter, _deckHalfExtents);
                 _deckLocal = WorldToDeckFrame(relative, drawnHeading);
                 held = WorldToDeckFrame(Vector2.ClampMagnitude(input, 1f), drawnHeading);   // its world-axis step
