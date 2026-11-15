@@ -31,8 +31,9 @@ namespace HiddenHarbours.Boats
     ///
     /// <para><b>What the press does.</b> It publishes <see cref="RestSaveRequested"/> with
     /// <see cref="RestSaveRequested.WakesAtSpawn"/> set, and stops. <c>RestSaveResponder</c> brings the
-    /// morning (and with it <see cref="DayStarted"/>), forgets the rest anchor, and writes the save — the
-    /// bed's beat in every respect but the anchor. The save holds no boat position, so a wake spot on a
+    /// morning (and with it <see cref="DayStarted"/>), relieves the sleep need through
+    /// <see cref="INeedsService.Sleep"/> (the very line a bed's rest runs, gated on the morning coming),
+    /// forgets the rest anchor, and writes the save — the bed's beat in every respect but the anchor. The save holds no boat position, so a wake spot on a
     /// cabin sole would reload the player in open water (ADR 0037, dated note 2026-11-14).</para>
     ///
     /// <para><b>No sleeping pose yet.</b> <see cref="SleepBeatRequested"/> is NOT published: the rig

@@ -16,8 +16,12 @@ namespace HiddenHarbours.Tests.EditMode
     /// pins the save half: a bunk's rest records NO wake spot, so a reload never wakes the player in the
     /// sea, while a bed ashore keeps its anchor exactly as before (ADR 0037, note 2026-11-14).
     ///
+    /// <para>And pins the sleep need: a bunk's night relieves tiredness by the same rule, through the same
+    /// <see cref="INeedsService.Sleep"/> line, as a bed's (owner ruling 2026-11-14).</para>
+    ///
     /// <para>Hand-built cabin for the rule (two soles, the cape islander's heights), the committed cape
-    /// islander for the installer. No clock, no disk: the save is a stand-in that never writes.</para>
+    /// islander for the installer. No disk: the save is a stand-in that never writes, and only the
+    /// sleep-need tests set a clock (one that moves when a rest asks it to).</para>
     /// </summary>
     public class BoatBunkTests
     {
@@ -39,6 +43,32 @@ namespace HiddenHarbours.Tests.EditMode
             public void Save() { Saves++; LoadedExistingSave = true; }
         }
 
+        /// <summary>A clock that DOES move when a rest asks it to (the interface's default refuses), so the
+        /// rest brings a morning and the night's sleep is owed. No day rollovers: none are under test.</summary>
+        sealed class ForwardingClock : IGameClock
+        {
+            public double T;
+            public double TotalSeconds => T;
+            public GameTime Now => new GameTime(T);
+            public Season Season => Season.HighSummer;
+            public int Year => 1;
+            public int DayIndex => 0;
+            public int DayOfSeason => 1;
+            public Weekday Weekday => Weekday.Monday;
+            public bool IsMarketDay => false;
+            public float HourOfDay => 0f;
+            public float DayFraction => 0f;
+            public bool IsPaused { get; set; }
+            public float TimeScale { get; set; } = 1f;
+            public bool Held;
+            public bool FastForwardTo(double totalSeconds)
+            {
+                if (Held || totalSeconds <= T) return false;
+                T = totalSeconds;
+                return true;
+            }
+        }
+
         readonly List<Object> _spawned = new List<Object>();
         readonly List<RestSaveRequested> _requests = new List<RestSaveRequested>();
         readonly List<DevNotice> _notices = new List<DevNotice>();
@@ -49,6 +79,8 @@ namespace HiddenHarbours.Tests.EditMode
         GameConfig _previousConfig;
         ISaveService _previousSave;
         string _previousRegion;
+        INeedsService _previousNeeds;
+        bool _responderWasInstalled;
         GameConfig _config;
 
         BoatController _boat;
@@ -62,6 +94,8 @@ namespace HiddenHarbours.Tests.EditMode
             _previousConfig = GameServices.Config;
             _previousSave = GameServices.Save;
             _previousRegion = GameServices.CurrentRegionId;
+            _previousNeeds = GameServices.Needs;
+            _responderWasInstalled = RestSaveResponder.Installed;
 
             _config = ScriptableObject.CreateInstance<GameConfig>();
             _spawned.Add(_config);
@@ -91,6 +125,8 @@ namespace HiddenHarbours.Tests.EditMode
             GameServices.Config = _previousConfig;
             GameServices.Save = _previousSave;
             GameServices.CurrentRegionId = _previousRegion;
+            GameServices.Needs = _previousNeeds;
+            if (!_responderWasInstalled) RestSaveResponder.Uninstall();
 
             // The installer test's cutaway subscribes in Configure, and its OnDestroy never runs in
             // EditMode: clear the channels it joined or the next press of TryEnter (this fixture's, or
@@ -268,6 +304,101 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.AreEqual(Region, anchor.Region);
             Assert.AreEqual(new Vector2(3f, 4f), anchor.Position);
             Assert.AreEqual(1, anchor.Level);
+        }
+
+        // =====================================================================================
+        //  the sleep need (owner ruling 2026-11-14: sleeping is what fixes tiredness)
+        // =====================================================================================
+
+        [Test]
+        public void PressingTheBunk_BringsTheMorning_AndRelievesTheSleepNeed()
+        {
+            ForwardingClock clock = TiredAtNight(out FakeSave save, out NeedsService needs);
+            Assert.AreEqual(NeedStage.Strong, needs.Stage(NeedKind.Tiredness), "premise: worn out at bedtime");
+            RestSaveResponder.Install();
+
+            MakeHersAndSecure();
+            Assert.IsTrue(_cabin.TryEnter(CuddyLevel));
+            double before = clock.T;
+            _bunk.Interact(new InteractActor(new Vector2(0.4f, 1.1f), Vector2.up, InteractContext.OnDeck));
+
+            Assert.AreEqual(1, _requests.Count, "one press, one rest");
+            Assert.Greater(clock.T, before, "the bunk brought the morning");
+            Assert.AreEqual(1, save.Saves, "and kept the day");
+            Assert.AreEqual(0f, needs.Level(NeedKind.Tiredness), "a night in the bunk is a night slept");
+            Assert.AreEqual(NeedStage.None, needs.Stage(NeedKind.Tiredness));
+            Assert.AreEqual(clock.T, save.Current.PlayerNeeds.Tiredness.SinceGameSeconds,
+                            "rested as of the morning it woke to, so the reload wakes rested");
+        }
+
+        [Test]
+        public void ABunksNight_RelievesTheSleepNeed_ExactlyAsABedsDoes()
+        {
+            NeedStateDto bunkTired, bunkHungry, bedTired, bedHungry;
+
+            TiredAtNight(out FakeSave bunkSave, out _);
+            RestSaveResponder.Fulfil(
+                new RestSaveRequested(BoatBunk.PlaceName, new Vector2(40f, -12f), CuddyLevel, wakesAtSpawn: true));
+            bunkTired = bunkSave.Current.PlayerNeeds.Tiredness;
+            bunkHungry = bunkSave.Current.PlayerNeeds.Hunger;
+
+            TiredAtNight(out FakeSave bedSave, out _);
+            RestSaveResponder.Fulfil(new RestSaveRequested("your bed", new Vector2(3f, 4f), 1));
+            bedTired = bedSave.Current.PlayerNeeds.Tiredness;
+            bedHungry = bedSave.Current.PlayerNeeds.Hunger;
+
+            Assert.AreEqual(bedTired.Level, bunkTired.Level, "the same rest, the same relief");
+            Assert.AreEqual(bedTired.SinceGameSeconds, bunkTired.SinceGameSeconds, "rested from the same morning");
+            Assert.AreEqual(0f, bunkTired.Level);
+            Assert.AreEqual(bedHungry.Level, bunkHungry.Level, "hunger is the clock's either way, never the bed's");
+            Assert.AreEqual(bedHungry.SinceGameSeconds, bunkHungry.SinceGameSeconds);
+        }
+
+        [Test]
+        public void ABunkWithNoMorning_LeavesTheSleepNeed_AsABedWithNoMorningDoes()
+        {
+            ForwardingClock clock = TiredAtNight(out FakeSave save, out NeedsService needs);
+            clock.Held = true;   // the hour is held: a rest that saves and does not sleep
+            float tired = needs.Level(NeedKind.Tiredness);
+
+            RestSaveResponder.Fulfil(
+                new RestSaveRequested(BoatBunk.PlaceName, Vector2.zero, CuddyLevel, wakesAtSpawn: true));
+
+            Assert.AreEqual(1, save.Saves, "the day is still kept");
+            Assert.AreEqual(tired, needs.Level(NeedKind.Tiredness), "no night slept, no relief: the bed's own gate");
+        }
+
+        /// <summary>Ten at night on day 0, worn out, with the real <see cref="NeedsService"/> on the live
+        /// services reading this save and this clock. Every number is the test's own, so the owner retuning
+        /// <see cref="GameConfig.Needs"/> never breaks it; the day length is the fixture config's.</summary>
+        ForwardingClock TiredAtNight(out FakeSave save, out NeedsService needs)
+        {
+            double perDay = _config.SecondsPerDay;
+            var clock = new ForwardingClock { T = perDay * (22d / 24d) };
+            var fakeSave = new FakeSave();
+            fakeSave.Current.PlayerNeeds = new PlayerNeedsDto
+            {
+                Hunger = new NeedStateDto(0.2f, clock.T),
+                Tiredness = new NeedStateDto(0.95f, clock.T),
+            };
+            var settings = new NeedsSettings
+            {
+                Hunger = new NeedCurve { RisePerGameHour = 0.02f, MildAt = 0.4f, StrongAt = 0.8f },
+                Tiredness = new NeedCurve { RisePerGameHour = 0.05f, MildAt = 0.5f, StrongAt = 0.9f },
+                WalkFloor = 0.8f,
+                SellFloor = 0.9f,
+                TickGameMinutes = 5f,
+            };
+            var service = new NeedsService(() => fakeSave, () => clock, () => settings,
+                                           () => new TraitService(() => fakeSave, () => new TraitDef[0]),
+                                           () => perDay / 24d);
+
+            GameServices.Clock = clock;
+            GameServices.Save = fakeSave;
+            GameServices.Needs = service;
+            save = fakeSave;
+            needs = service;
+            return clock;
         }
 
         // =====================================================================================

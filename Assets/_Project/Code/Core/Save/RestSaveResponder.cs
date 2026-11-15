@@ -118,17 +118,13 @@ namespace HiddenHarbours.Core
                 // on the morning the player just saw. It comes whether or not anything here can keep
                 // the day, because sleeping and saving are two things and only one of them needs a disk.
                 bool woke = RestMorning.Bring(clock, config);
+                // The sleep need is relieved here, and ONLY here: after the clock has moved (so a night
+                // slept is a night, whatever the hour you lay down) and before the write below (so the
+                // reload wakes rested, the same morning the player just saw). Gated on `woke`: a held
+                // hour saves the day but sleeps no night. Both the bed ashore and the bunk aboard
+                // (owner 2026-11-14: "bunks on boats sleepable to replenish fatigue") arrive here as the
+                // same RestSaveRequested, so neither has its own call and the rule cannot drift apart.
                 if (woke) GameServices.Needs.Sleep();   // needs slice 1: a night slept is a night rested
-
-                // ---- HOOK(needs): the morning has arrived and nothing has been written yet --------
-                // The needs branch (fatigue, owner 2026-11-14: "bunks on boats sleepable to replenish
-                // fatigue") replenishes here, and ONLY here: after the clock has moved (so a night slept
-                // is a night, whatever the hour you lay down) and before the write below (so the reload
-                // wakes rested, the same morning the player just saw). Gate it on `woke` if a held hour
-                // must not refill anything. Both the bed ashore and the bunk aboard pass through this
-                // line, so neither needs its own call. No needs service exists on main yet, so this is a
-                // comment and not a call (it would not compile).
-                // -----------------------------------------------------------------------------------
 
                 ISaveService save = GameServices.Save;
 
