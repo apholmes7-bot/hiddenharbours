@@ -146,6 +146,10 @@ namespace HiddenHarbours.Core
                 return;
             }
             if (!WritesAllowed) return;
+            // Mid-sleep, nothing is written (owner ruling 2026-11-15, "a sleep is a save"): an autosave on
+            // quit or on a flag would keep a night half slept, and the reload must restart the day where the
+            // player last woke. SleepFlow wakes (phase back to awake) BEFORE it asks for its own write.
+            if (SleepFlow.InProgress) return;
 
             if (Current == null) Current = SaveMigration.NewGame();
             SnapshotLiveState();

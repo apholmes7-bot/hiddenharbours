@@ -165,6 +165,36 @@ namespace HiddenHarbours.Core
                  "The day rollover (market recovery, snow cover) fires for every midnight slept through.")]
         [Range(0f, 24f)] public float WakeHour = DefaultWakeHour;
 
+        /// <summary>The shortest sleep the chooser offers, when no config is wired (owner ruling
+        /// 2026-11-15: "Player chooses sleep duration").</summary>
+        public const float DefaultSleepMinHours = 1f;
+
+        /// <summary>The longest sleep, when no config is wired: the ruling's own cap ("Maximum 8 hours
+        /// sleep before auto waking"). <see cref="SleepPlan.RulingMaxHours"/> holds the field to it.</summary>
+        public const float DefaultSleepMaxHours = 8f;
+
+        /// <summary>How far one press of the chooser moves the hours, when no config is wired.</summary>
+        public const float DefaultSleepStepHours = 1f;
+
+        /// <summary>How many in-game hours pass per real second while asleep, when no config is wired:
+        /// a full eight-hour night goes by in eight seconds.</summary>
+        public const float DefaultSleepGameHoursPerRealSecond = 1f;
+
+        [Tooltip("The shortest sleep you can choose, in in-game hours.")]
+        [Range(0.25f, 8f)] public float SleepMinHours = DefaultSleepMinHours;
+
+        [Tooltip("The longest sleep you can choose, in in-game hours. You wake on your own when it is up. " +
+                 "Never more than 8: the owner's ruling caps a sleep at eight hours, whatever this says.")]
+        [Range(0.25f, 8f)] public float SleepMaxHours = DefaultSleepMaxHours;
+
+        [Tooltip("How many hours one press left or right changes the chosen sleep by.")]
+        [Range(0.25f, 4f)] public float SleepStepHours = DefaultSleepStepHours;
+
+        [Tooltip("How fast time runs while you sleep: in-game hours per real second. 1 = an eight-hour " +
+                 "night goes by in eight seconds. The world is exactly what it would be had the same " +
+                 "hours passed at the normal pace; only the wait changes. You can wake early with a press.")]
+        [Min(0.05f)] public float SleepGameHoursPerRealSecond = DefaultSleepGameHoursPerRealSecond;
+
         /// <summary>Whether a bunk aboard refuses while she is neither made fast nor holding at anchor,
         /// when no config is wired. TRUE: the owner's safe default ("it's not safe to turn in out
         /// here").</summary>

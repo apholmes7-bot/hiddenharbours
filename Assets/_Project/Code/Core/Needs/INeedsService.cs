@@ -42,6 +42,16 @@ namespace HiddenHarbours.Core
         /// already counted against it on the clock. Announces a stage change at once. No save does nothing.</summary>
         void Sleep();
 
+        /// <summary>
+        /// A sleep that began at <paramref name="bedtimeSeconds"/> and ends NOW (owner ruling 2026-11-15:
+        /// the player chooses how long, and can wake early). Tiredness falls by
+        /// <see cref="NeedsSettings.SleepReliefPerGameHour"/> for each in-game hour actually slept, from
+        /// its level at bedtime (it does not rise while asleep), and is stamped at the waking. Hunger is
+        /// untouched, as for <see cref="Sleep"/>. A bedtime at or after now relieves nothing.
+        /// The default (an implementation that predates the ruling) is the whole-night <see cref="Sleep"/>.
+        /// </summary>
+        void SleepSince(double bedtimeSeconds) => Sleep();
+
         /// <summary>The slow tick (driven by the game clock, never per frame): anchors a fresh game's needs
         /// to the clock the first time it runs, and publishes <see cref="NeedStageChanged"/> for each need
         /// whose stage moved since the last look. The first look after a start only records the stage.</summary>
