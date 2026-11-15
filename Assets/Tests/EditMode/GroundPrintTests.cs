@@ -299,6 +299,104 @@ namespace HiddenHarbours.Tests.EditMode
             }
         }
 
+        // ---- the look: a print is a depression ------------------------------------------------------
+        //
+        // The renderer draws Sprites/Default (premultiplied alpha over) into the project's LINEAR
+        // framebuffer: out = ground*(1 - a) + ink*a in linear light. These tests run that blend on the
+        // ground colours the PR 1222 play look measured (sRGB, before the mood grade) and hold the
+        // shipped data to "fresh reads, the last hour is barely there, never lighter".
+
+        private static readonly (GroundSurface surface, Color32 ground, string source)[] ReferenceGrounds =
+        {
+            (GroundSurface.Grass, new Color32(64, 83, 51, 255),    "measured under the trail, playlook 1222 Grass-0-bare-close"),
+            (GroundSurface.Mud,   new Color32(91, 83, 70, 255),    "median of playlook 1222 Mud-0-bare-close"),
+            (GroundSurface.Dirt,  new Color32(140, 113, 84, 255),  "the path in playlook 1222 Grass-0-bare-close"),
+            (GroundSurface.Sand,  new Color32(209, 189, 148, 255), "pale beach sand (no capture: St Peters had no reachable sand)"),
+            (GroundSurface.Snow,  new Color32(230, 235, 242, 255), "snow (no capture)"),
+        };
+
+        /// <summary>The on-screen blend, returned as sRGB luma (Rec. 709 weights on encoded values).</summary>
+        private static float CompositeLuma(Color32 groundSrgb, Color ink)
+        {
+            Color g = groundSrgb;
+            float Out(float gs, float i) => Mathf.LinearToGammaSpace(Mathf.GammaToLinearSpace(gs) * (1f - ink.a) + i * ink.a);
+            return 0.2126f * Out(g.r, ink.r) + 0.7152f * Out(g.g, ink.g) + 0.0722f * Out(g.b, ink.b);
+        }
+
+        private static float Luma(Color32 c) { Color g = c; return 0.2126f * g.r + 0.7152f * g.g + 0.0722f * g.b; }
+
+        /// <summary>The luma a print of <paramref name="ageHours"/> takes off its ground, as a share (0.3 = 30% darker).</summary>
+        private static float Drop(GroundPrintSurfaceStyle style, Color32 ground, double ageHours)
+        {
+            GroundPrintSettings s = GroundPrintSettings.Default;
+            double now = ageHours * SecondsPerDay / 24d;
+            float strength = GroundPrintMath.StyledStrength(0d, now, Lifetime, s.FadeExponent, s.FadeSteps, style.StartStrength);
+            Color ink = GroundPrintMath.InkColour(style.Tint, strength, linearColourSpace: true);
+            return 1f - CompositeLuma(ground, ink) / Luma(ground);
+        }
+
+        [Test]
+        public void InkIsTheSrgbTintLinearisedForALinearProject()
+        {
+            var tint = new Color(0.10f, 0.13f, 0.07f, 0.8f);
+            Color lin = GroundPrintMath.InkColour(tint, 0.5f, linearColourSpace: true);
+            Assert.That(lin.r, NUnit.Framework.Is.EqualTo(tint.linear.r).Within(1e-6f));
+            Assert.That(lin.g, NUnit.Framework.Is.EqualTo(tint.linear.g).Within(1e-6f));
+            Assert.That(lin.b, NUnit.Framework.Is.EqualTo(tint.linear.b).Within(1e-6f));
+            Assert.That(lin.a, NUnit.Framework.Is.EqualTo(0.4f).Within(1e-6f), "alpha is coverage: never gamma-converted");
+
+            Color gamma = GroundPrintMath.InkColour(tint, 0.5f, linearColourSpace: false);
+            Assert.That(gamma.r, NUnit.Framework.Is.EqualTo(tint.r));
+            Assert.That(gamma.a, NUnit.Framework.Is.EqualTo(0.4f).Within(1e-6f));
+            Assert.That(GroundPrintMath.InkColour(tint, 0f, true).a, NUnit.Framework.Is.EqualTo(0f));
+        }
+
+        [Test]
+        public void TheRawTintWasWhyGrassPrintsLightened()
+        {
+            // The pre-fix data and path: grass tint 0.16/0.24/0.12 a 0.55, strength 0.5, written RAW.
+            Color32 grass = ReferenceGrounds[0].ground;
+            var raw = new Color(0.16f, 0.24f, 0.12f, 0.55f * 0.5f);
+            Assert.That(CompositeLuma(grass, raw), NUnit.Framework.Is.GreaterThan(Luma(grass)),
+                "the blend model must reproduce the play look's lightening, or it proves nothing about the fix");
+            Color fixedInk = GroundPrintMath.InkColour(new Color(0.16f, 0.24f, 0.12f, 0.55f), 0.5f, true);
+            Assert.That(CompositeLuma(grass, fixedInk), NUnit.Framework.Is.LessThan(Luma(grass)));
+        }
+
+        [Test]
+        public void TheFadeStrengthIsExactAtTheFourAges()
+        {
+            GroundPrintSettings s = GroundPrintSettings.Default;
+            foreach (GroundPrintSurfaceStyle style in s.Surfaces)
+            {
+                float At(double hours) => GroundPrintMath.StyledStrength(0d, hours * SecondsPerDay / 24d, Lifetime,
+                                                                         s.FadeExponent, s.FadeSteps, style.StartStrength);
+                Assert.That(At(0d), NUnit.Framework.Is.EqualTo(style.StartStrength).Within(1e-6f), style.Surface + " fresh");
+                Assert.That(At(12d), NUnit.Framework.Is.EqualTo(style.StartStrength * 0.5f).Within(1e-6f), style.Surface + " 12 h");
+                Assert.That(At(23.9d), NUnit.Framework.Is.EqualTo(style.StartStrength / s.FadeSteps).Within(1e-6f), style.Surface + " 23.9 h");
+                Assert.That(At(24d), NUnit.Framework.Is.EqualTo(0f), style.Surface + " 24 h");
+                Assert.That(GroundPrintMath.InkColour(style.Tint, At(24d), true).a, NUnit.Framework.Is.EqualTo(0f));
+            }
+        }
+
+        [Test]
+        public void AFreshPrintReadsAsADepressionAndTheLastHourIsBarelyThere()
+        {
+            GroundPrintSettings s = GroundPrintSettings.Default;
+            foreach (var (surface, ground, source) in ReferenceGrounds)
+            {
+                Assert.That(s.TryGetStyle(surface, out GroundPrintSurfaceStyle style), NUnit.Framework.Is.True, surface.ToString());
+                string at = $"{surface} on {source}";
+                float fresh = Drop(style, ground, 0d), half = Drop(style, ground, 12d), last = Drop(style, ground, 23.9d);
+                Assert.That(fresh, NUnit.Framework.Is.InRange(0.25f, 0.6f), at + ": a fresh print must read (25..60% darker)");
+                Assert.That(half, NUnit.Framework.Is.LessThan(fresh).And.GreaterThan(last), at + ": 12 h sits between");
+                Assert.That(last, NUnit.Framework.Is.GreaterThan(0f).And.LessThanOrEqualTo(0.08f), at + ": 23.9 h is barely there");
+                Assert.That(Drop(style, ground, 24d), NUnit.Framework.Is.EqualTo(0f).Within(1e-5f), at + ": gone at 24 h");
+                for (double h = 0d; h < 24d; h += 0.5d)
+                    Assert.That(Drop(style, ground, h), NUnit.Framework.Is.GreaterThan(0f), $"{at}: lighter than the ground at {h} h");
+            }
+        }
+
         // ---- the shipped config ---------------------------------------------------------------------
 
         private const string ConfigAssetPath = "Assets/_Project/Data/Config/GameConfig.asset";
@@ -328,6 +426,12 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.That(shipped.FootLengthMetres, NUnit.Framework.Is.EqualTo(code.FootLengthMetres));
             Assert.That(shipped.TireSegmentMetres, NUnit.Framework.Is.EqualTo(code.TireSegmentMetres));
             Assert.That(shipped.Surfaces.Length, NUnit.Framework.Is.EqualTo(code.Surfaces.Length));
+            for (int i = 0; i < code.Surfaces.Length; i++)
+            {
+                Assert.That(shipped.Surfaces[i].Surface, NUnit.Framework.Is.EqualTo(code.Surfaces[i].Surface));
+                Assert.That(shipped.Surfaces[i].Tint, NUnit.Framework.Is.EqualTo(code.Surfaces[i].Tint), code.Surfaces[i].Surface + " tint");
+                Assert.That(shipped.Surfaces[i].StartStrength, NUnit.Framework.Is.EqualTo(code.Surfaces[i].StartStrength), code.Surfaces[i].Surface + " strength");
+            }
             Assert.That(shipped.Zones.Length, NUnit.Framework.Is.EqualTo(code.Zones.Length));
             for (int i = 0; i < code.Zones.Length; i++)
             {

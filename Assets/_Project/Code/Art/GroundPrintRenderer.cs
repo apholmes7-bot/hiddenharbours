@@ -41,6 +41,7 @@ namespace HiddenHarbours.Art
         private bool _dirty;
         private float _nextSlowTick;
         private float _shapeHalfTexel;
+        private bool _linearColourSpace;
 
         /// <summary>The live host, or null until the first print is kept.</summary>
         public static GroundPrintRenderer Instance => s_instance;
@@ -113,6 +114,7 @@ namespace HiddenHarbours.Art
 
             _texture = GroundPrintShapes.BuildTexture(s.ShapeTexturePixels);
             _shapeHalfTexel = 0.5f / _texture.width;
+            _linearColourSpace = QualitySettings.activeColorSpace == ColorSpace.Linear;
             _material = new Material(shader) { name = "GroundPrints", hideFlags = HideFlags.DontSave, mainTexture = _texture };
 
             gameObject.AddComponent<MeshFilter>().sharedMesh = _mesh;
@@ -176,15 +178,19 @@ namespace HiddenHarbours.Art
                 int v = q * 4;
                 if (q >= written) { Collapse(v); continue; }
                 ref GroundPrint p = ref ring[q];
-                float strength = p.Alive
-                    ? GroundPrintMath.Banded(GroundPrintMath.Strength(p.MadeAt, now, lifetime, s.FadeExponent), s.FadeSteps)
-                    : 0f;
-                if (strength <= 0f || !s.TryGetStyle(p.Surface, out GroundPrintSurfaceStyle style))
+                if (!p.Alive || !s.TryGetStyle(p.Surface, out GroundPrintSurfaceStyle style))
                 {
                     Collapse(v);
                     continue;
                 }
-                WriteQuad(v, p, strength * style.StartStrength, style.Tint, pixel, s);
+                float strength = GroundPrintMath.StyledStrength(p.MadeAt, now, lifetime, s.FadeExponent,
+                                                                s.FadeSteps, style.StartStrength);
+                if (strength <= 0f)
+                {
+                    Collapse(v);
+                    continue;
+                }
+                WriteQuad(v, p, strength, style.Tint, pixel, s);
             }
             _mesh.SetVertices(_vertices);
             _mesh.SetColors(_colours);
@@ -209,7 +215,8 @@ namespace HiddenHarbours.Art
             _vertices[v + 2] = c + along + across;
             _vertices[v + 3] = c - along + across;
 
-            var colour = (Color32)new Color(tint.r, tint.g, tint.b, tint.a * strength);
+            // The tint is sRGB data; a raw mesh's vertex colour is not converted for a linear project.
+            var colour = (Color32)GroundPrintMath.InkColour(tint, strength, _linearColourSpace);
             for (int k = 0; k < 4; k++) _colours[v + k] = colour;
 
             float u0, u1, v1;

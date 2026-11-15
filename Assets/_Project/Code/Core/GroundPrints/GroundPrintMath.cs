@@ -49,6 +49,34 @@ namespace HiddenHarbours.Core
             return Mathf.Min(1f, Mathf.Ceil(strength * steps) / steps);
         }
 
+        /// <summary>
+        /// The ink alpha share of a print: the banded fade times the surface's fresh strength. Exactly
+        /// <paramref name="startStrength"/> when fresh, half of it at half the lifetime (6 steps),
+        /// a sixth of it in the last step, 0 at the lifetime.
+        /// </summary>
+        public static float StyledStrength(double madeAt, double now, double lifetimeSeconds, float exponent,
+                                           int steps, float startStrength)
+            => Banded(Strength(madeAt, now, lifetimeSeconds, exponent), steps) * Mathf.Clamp01(startStrength);
+
+        /// <summary>
+        /// <b>The vertex colour a print is drawn with.</b> The tint is authored in sRGB (the colour
+        /// picker's numbers), but the project renders in LINEAR colour space and a raw mesh's vertex
+        /// colours reach the shader unconverted (unlike a SpriteRenderer's colour). Written raw, a dark
+        /// sRGB tint such as grass 0.16/0.24/0.12 is read as linear, which is a mid tone LIGHTER than
+        /// the grass, and every print lightened the ground it should have pressed down (play look on
+        /// PR 1222: grass +16.7%). So the rgb is linearised here; alpha is coverage and stays linear.
+        /// The blend is then ground*(1 - a) + ink*a in linear light: a print darkens its ground by
+        /// about a*(1 - inkLuminance/groundLuminance), which is why the shipped inks are near-black
+        /// shades of their ground and the strength lives in alpha.
+        /// </summary>
+        public static Color InkColour(Color tint, float strength, bool linearColourSpace)
+        {
+            float a = Mathf.Clamp01(tint.a * Mathf.Clamp01(strength));
+            if (!linearColourSpace) return new Color(tint.r, tint.g, tint.b, a);
+            return new Color(Mathf.GammaToLinearSpace(tint.r), Mathf.GammaToLinearSpace(tint.g),
+                             Mathf.GammaToLinearSpace(tint.b), a);
+        }
+
         /// <summary>Snap a unit heading to one of <paramref name="steps"/> evenly spaced directions.</summary>
         public static Vector2 SnapHeading(Vector2 heading, int steps)
         {

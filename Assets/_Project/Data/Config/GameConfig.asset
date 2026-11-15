@@ -640,20 +640,20 @@ MonoBehaviour:
     ShapeTexturePixels: 8
     Surfaces:
     - Surface: 1
-      Tint: {r: 0.16, g: 0.24, b: 0.12, a: 0.55}
-      StartStrength: 0.5
+      Tint: {r: 0.1, g: 0.13, b: 0.07, a: 0.8}
+      StartStrength: 0.95
     - Surface: 2
-      Tint: {r: 0.45, g: 0.36, b: 0.24, a: 0.6}
-      StartStrength: 0.8
+      Tint: {r: 0.3, g: 0.24, b: 0.16, a: 0.8}
+      StartStrength: 0.85
     - Surface: 3
-      Tint: {r: 0.16, g: 0.12, b: 0.08, a: 0.7}
+      Tint: {r: 0.09, g: 0.07, b: 0.05, a: 0.8}
       StartStrength: 1
     - Surface: 4
-      Tint: {r: 0.24, g: 0.17, b: 0.11, a: 0.6}
-      StartStrength: 0.8
+      Tint: {r: 0.13, g: 0.09, b: 0.06, a: 0.8}
+      StartStrength: 0.9
     - Surface: 5
-      Tint: {r: 0.55, g: 0.62, b: 0.7, a: 0.6}
-      StartStrength: 1
+      Tint: {r: 0.36, g: 0.42, b: 0.52, a: 0.8}
+      StartStrength: 0.85
     Zones:
     - Zone: grass
       Surface: 1

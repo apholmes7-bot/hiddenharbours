@@ -32,11 +32,15 @@ namespace HiddenHarbours.Core
     {
         public GroundSurface Surface;
 
-        [Tooltip("The print's colour on this ground (a darker shade of the ground, from the palette). " +
-                 "Alpha is the darkest a fresh print can be; StartStrength scales it.")]
+        [Tooltip("The print's ink on this ground, in sRGB as the colour picker shows it (the renderer " +
+                 "converts it for the linear project). Keep it a NEAR-BLACK shade of the ground's hue: a " +
+                 "print is a depression, it darkens the ground by about alpha x (1 - ink brightness / " +
+                 "ground brightness), so an ink as light as the ground does nothing and a lighter one " +
+                 "lightens. Alpha is the darkest a fresh print can be; StartStrength scales it.")]
         public Color Tint;
 
-        [Tooltip("How strong a FRESH print is on this ground, 0..1 (mud deep, grass faint).")]
+        [Tooltip("How strong a FRESH print is on this ground, 0..1 (mud deep, grass a little less). " +
+                 "Ink alpha = Tint.a x this x the fade step.")]
         [Range(0f, 1f)] public float StartStrength;
     }
 
@@ -163,11 +167,12 @@ namespace HiddenHarbours.Core
             ShapeTexturePixels = 8,
             Surfaces = new[]
             {
-                new GroundPrintSurfaceStyle { Surface = GroundSurface.Grass, Tint = new Color(0.16f, 0.24f, 0.12f, 0.55f), StartStrength = 0.5f },
-                new GroundPrintSurfaceStyle { Surface = GroundSurface.Sand,  Tint = new Color(0.45f, 0.36f, 0.24f, 0.6f),  StartStrength = 0.8f },
-                new GroundPrintSurfaceStyle { Surface = GroundSurface.Mud,   Tint = new Color(0.16f, 0.12f, 0.08f, 0.7f),  StartStrength = 1f },
-                new GroundPrintSurfaceStyle { Surface = GroundSurface.Dirt,  Tint = new Color(0.24f, 0.17f, 0.11f, 0.6f),  StartStrength = 0.8f },
-                new GroundPrintSurfaceStyle { Surface = GroundSurface.Snow,  Tint = new Color(0.55f, 0.62f, 0.7f, 0.6f),   StartStrength = 1f },
+                // Near-black inks of each ground's hue; fresh alpha 0.68..0.80 (Tint.a 0.8 x StartStrength).
+                new GroundPrintSurfaceStyle { Surface = GroundSurface.Grass, Tint = new Color(0.10f, 0.13f, 0.07f, 0.8f), StartStrength = 0.95f },
+                new GroundPrintSurfaceStyle { Surface = GroundSurface.Sand,  Tint = new Color(0.30f, 0.24f, 0.16f, 0.8f), StartStrength = 0.85f },
+                new GroundPrintSurfaceStyle { Surface = GroundSurface.Mud,   Tint = new Color(0.09f, 0.07f, 0.05f, 0.8f), StartStrength = 1f },
+                new GroundPrintSurfaceStyle { Surface = GroundSurface.Dirt,  Tint = new Color(0.13f, 0.09f, 0.06f, 0.8f), StartStrength = 0.9f },
+                new GroundPrintSurfaceStyle { Surface = GroundSurface.Snow,  Tint = new Color(0.36f, 0.42f, 0.52f, 0.8f), StartStrength = 0.85f },
             },
             Zones = new[]
             {
