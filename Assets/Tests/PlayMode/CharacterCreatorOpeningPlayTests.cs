@@ -42,17 +42,30 @@ namespace HiddenHarbours.Tests.PlayMode
         [UnityTearDown]
         public IEnumerator TearDown()
         {
+            Mark("teardown begins");
             EventBus.Unsubscribe<ArrivalCompleted>(OnLine);
             ShellPause.Resume();
             ShellRestart.DestroyPersistentCore();
             yield return null;
+            Mark("teardown: the persistent core is gone");
             var empty = SceneManager.GetSceneByName("AfterCreatorOpening");
             if (!empty.IsValid() || !empty.isLoaded) empty = SceneManager.CreateScene("AfterCreatorOpening");
             SceneManager.SetActiveScene(empty);
+            Mark("teardown: the empty scene is active");
+            // A stuck unload is recorded and failed AFTER the rest of the cleanup, so one stuck scene
+            // cannot also leave this fixture's services and save path on the next fixture.
+            string stuck = null;
             foreach (string name in new[] { "EastWater", "StPeters" })
             {
                 var scene = SceneManager.GetSceneByName(name);
-                if (scene.IsValid() && scene.isLoaded) yield return SceneManager.UnloadSceneAsync(scene);
+                if (!scene.IsValid() || !scene.isLoaded) continue;
+                Mark("teardown: unloading " + name);
+                AsyncOperation unload = SceneManager.UnloadSceneAsync(scene);
+                double end = Time.realtimeSinceStartupAsDouble + SceneStepSeconds;
+                while (unload != null && !unload.isDone && Time.realtimeSinceStartupAsDouble < end) yield return null;
+                if (unload != null && !unload.isDone)
+                    stuck = (stuck == null ? "" : stuck + "; ") + $"{name} did not unload within {SceneStepSeconds:0} s";
+                Mark("teardown: done with " + name);
             }
             GameServices.Reset();
             ShellFlow.Reset();
@@ -62,14 +75,34 @@ namespace HiddenHarbours.Tests.PlayMode
                 _saveService.Open(_previousPath);
                 GameServices.Save = _saveService;
             }
+            Mark("teardown ends");
+            Assert.IsNull(stuck, stuck);
         }
+
+        /// <summary>How long one scene load or unload may take before the fixture fails by name instead
+        /// of waiting on it for ever (a teardown has no test timeout of its own). The real steps take
+        /// about two seconds on the CI runner.</summary>
+        const double SceneStepSeconds = 120d;
+
+        /// <summary>One line in the job log per fixture step. The log names only failing cases, so a run
+        /// that stops dead in this fixture (run 43577940434 went silent between the first case stepping
+        /// ashore and the next case loading its scene) otherwise cannot say which step it stopped in.</summary>
+        static void Mark(string step) => Debug.Log("[CreatorOpeningFixture] " + step);
 
         IEnumerator Boot(bool newGame)
         {
             if (!newGame) _saveService.Open(_path);
             ShellRestart.DestroyPersistentCore();
             yield return null;
-            yield return SceneManager.LoadSceneAsync("StPeters", LoadSceneMode.Single);
+            Mark("boot: loading StPeters");
+            AsyncOperation load = SceneManager.LoadSceneAsync("StPeters", LoadSceneMode.Single);
+            double loadEnd = Time.realtimeSinceStartupAsDouble + SceneStepSeconds;
+            while (load != null && !load.isDone)
+            {
+                Assert.Less(Time.realtimeSinceStartupAsDouble, loadEnd, $"StPeters did not load within {SceneStepSeconds:0} s");
+                yield return null;
+            }
+            Mark("boot: StPeters is loaded");
             yield return null;
             yield return null;
             Assert.IsTrue(ShellFlow.AtTitle);

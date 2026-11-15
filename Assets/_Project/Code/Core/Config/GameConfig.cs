@@ -1161,6 +1161,18 @@ namespace HiddenHarbours.Core
                  "proposal 3), so the two poses are never on screen together to disagree.")]
         [Range(0f, 1f)] public float InteriorRockScale = DefaultInteriorRockScale;
 
+        /// <summary>The ruled default for <see cref="CutTheHelmRoomAtTheWheel"/> (2026-11-14), read by
+        /// the boat cutaway when no config is wired.</summary>
+        public const bool DefaultCutTheHelmRoomAtTheWheel = true;
+
+        [Header("Boat cutaway at the wheel (owner ruling 2026-11-14)")]
+        [Tooltip("ON (the default): while you steer a boat whose wheel stands inside an enclosed room, " +
+                 "that one room is cut open so you see the skipper and the instruments. No other level " +
+                 "opens, and a wheel on an open deck or a flybridge cuts nothing. OFF: the house stays " +
+                 "closed at every wheel, as it was before 2026-11-14. Walking inside a cabin cuts it " +
+                 "open either way. Picture only: nothing about handling or the save changes.")]
+        public bool CutTheHelmRoomAtTheWheel = DefaultCutTheHelmRoomAtTheWheel;
+
         [Header("Interior stairs (ADR 0036 — the climb between storeys)")]
         [Tooltip("How long the player takes to walk up (or down) one storey, in seconds. The storey " +
                  "above is drawn at its true height, so the two floors are a real distance apart and " +
@@ -1193,6 +1205,12 @@ namespace HiddenHarbours.Core
         /// drawn on, including while the owner is tuning this value in Play.
         /// </summary>
         public float WaveExaggeration => DisplacedWater.WaveExaggeration;
+
+        [Header("Fishing and clam digging body presentation")]
+        [Tooltip("Use the baked mesh body for rod fishing and clam digging when the skin carries " +
+                 "the clip and enables it in MeshStates. Off restores the previous sprite fishing " +
+                 "and unanimated dig. Held tools and catch keep their sprite presenters.")]
+        public bool MeshFishingAndDig = true;
 
         public float SecondsPerHour => SecondsPerDay / 24f;
         public float SecondsPerWeek => SecondsPerDay * DaysPerWeek;

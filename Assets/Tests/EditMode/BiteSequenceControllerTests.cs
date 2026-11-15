@@ -41,11 +41,29 @@ namespace HiddenHarbours.Tests.EditMode
         {
             public bool Accept = true;
             public int Landed;
+            private CatchItem _item;
+            private bool _hasItem;
+
             public bool TryPutInHand(in CatchItem item)
             {
-                if (!Accept) return false;
+                if (!Accept || _hasItem) return false;
+                _item = item;
+                _hasItem = true;
                 Landed++;
                 return true;
+            }
+
+            public bool TryTakeFromHand(out CatchItem item)
+            {
+                if (!TryPeekHand(out item)) return false;
+                _hasItem = false;
+                return true;
+            }
+
+            public bool TryPeekHand(out CatchItem item)
+            {
+                item = _hasItem ? _item : default;
+                return _hasItem;
             }
         }
 
