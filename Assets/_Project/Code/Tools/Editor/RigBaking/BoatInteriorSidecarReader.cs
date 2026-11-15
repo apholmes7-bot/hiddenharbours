@@ -825,15 +825,17 @@ namespace HiddenHarbours.Tools.RigBaking
                     read.Errors.Add($"INTERACT '{id}': reach_point absent or not an [x, y, z].");
                     continue;
                 }
-                read.Anchors.Add(new BoatInteriorAnchor
+                var anchor = new BoatInteriorAnchor
                 {
                     Id = id,
-                    Action = DeckSidecarJson.String(DeckSidecarJson.Member(e, "action")) ?? "",
+                    Action = NormaliseAction(DeckSidecarJson.String(DeckSidecarJson.Member(e, "action")) ?? ""),
                     ReachPoint = new Vector3(DeckSidecarJson.Float(rp[0], 0f),
                                              DeckSidecarJson.Float(rp[1], 0f),
                                              DeckSidecarJson.Float(rp[2], 0f)),
                     VisibleFacings = ReadStrings(DeckSidecarJson.Member(e, "visible_facings")),
-                });
+                };
+                ReadBunk(e, anchor, read);
+                read.Anchors.Add(anchor);
             }
 
             // Ids are append-only, so a duplicate inside one file is a generator fault, not a merge.
@@ -842,6 +844,68 @@ namespace HiddenHarbours.Tools.RigBaking
                 if (!seen.Add(read.Anchors[i].Id))
                     read.Errors.Add($"INTERACT '{read.Anchors[i].Id}' appears twice — anchor ids are " +
                                     "append-only and must be unique within a hull.");
+        }
+
+        /// <summary>
+        /// One verb per fixture kind, whatever the sidecar called it: a galley IS a cooktop, so an
+        /// anchor whose action reads <c>galley</c> bakes as <see cref="BoatInteriorAnchor.ActionCook"/>
+        /// and runtime can treat the kit's <c>stove</c> and the trawlers' <c>galley</c> alike. Ids are
+        /// never touched (append-only); only the verb is normalised.
+        /// </summary>
+        internal static string NormaliseAction(string action)
+        {
+            string a = (action ?? "").Trim();
+            return string.Equals(a, "galley", StringComparison.OrdinalIgnoreCase) ? BoatInteriorAnchor.ActionCook : a;
+        }
+
+        /// <summary>
+        /// An INTERACT entry's optional <c>bunk</c> block — where the mattress is and which end the
+        /// pillow is on, in the hull frame:
+        /// <c>{"level": "cuddy_sole", "obstruction": "v_berth", "mattress_centre": [x, y, z],
+        /// "pillow_end": [x, y, z]}</c>. Absent leaves the anchor's bunk fields at "not given". A block
+        /// that is present but incomplete is refused: a half-stated bed is a pose built on a guess.
+        /// </summary>
+        static void ReadBunk(object entry, BoatInteriorAnchor anchor, BoatInteriorRead read)
+        {
+            object bunk = DeckSidecarJson.Member(entry, "bunk");
+            if (bunk == null)
+            {
+                if (anchor.Action == BoatInteriorAnchor.ActionSleep)
+                    read.Notes.Add($"INTERACT '{anchor.Id}' sleeps but gives no bunk block — nothing says " +
+                                   "where its mattress is or which end the pillow is on.");
+                return;
+            }
+
+            string level = DeckSidecarJson.String(DeckSidecarJson.Member(bunk, "level")) ?? "";
+            if (string.IsNullOrWhiteSpace(level) ||
+                !TryPoint(DeckSidecarJson.Member(bunk, "mattress_centre"), out Vector3 centre) ||
+                !TryPoint(DeckSidecarJson.Member(bunk, "pillow_end"), out Vector3 pillow))
+            {
+                read.Errors.Add($"INTERACT '{anchor.Id}': bunk block needs a level, a mattress_centre " +
+                                "[x, y, z] and a pillow_end [x, y, z].");
+                return;
+            }
+            if ((pillow - centre).sqrMagnitude < 1e-6f)
+            {
+                read.Errors.Add($"INTERACT '{anchor.Id}': bunk pillow_end is the mattress_centre, so it " +
+                                "says no end at all.");
+                return;
+            }
+            anchor.BunkLevel = level.Trim();
+            anchor.BunkObstruction = (DeckSidecarJson.String(DeckSidecarJson.Member(bunk, "obstruction")) ?? "").Trim();
+            anchor.MattressCentre = centre;
+            anchor.PillowEnd = pillow;
+        }
+
+        static bool TryPoint(object raw, out Vector3 point)
+        {
+            point = Vector3.zero;
+            var arr = DeckSidecarJson.AsArray(raw);
+            if (arr == null || arr.Count < 3) return false;
+            if (!DeckSidecarJson.TryDouble(arr[0], out double x) || !DeckSidecarJson.TryDouble(arr[1], out double y) ||
+                !DeckSidecarJson.TryDouble(arr[2], out double z)) return false;
+            point = new Vector3((float)x, (float)y, (float)z);
+            return true;
         }
 
         /// <summary>
@@ -866,6 +930,15 @@ namespace HiddenHarbours.Tools.RigBaking
                 if (!string.IsNullOrEmpty(r.ToLevel) && !levels.Contains(r.ToLevel))
                     read.Notes.Add($"route '{r.Id}' ends at '{r.ToLevel}', which is not a level of this " +
                                    "interior — expected to be one of the hull's exterior decks.");
+            }
+
+            // A bunk is furniture INSIDE the interior, so unlike a route end its level must be ours.
+            for (int i = 0; i < read.Anchors.Count; i++)
+            {
+                BoatInteriorAnchor a = read.Anchors[i];
+                if (a.HasBunkGeometry && !levels.Contains(a.BunkLevel))
+                    read.Errors.Add($"INTERACT '{a.Id}': bunk level '{a.BunkLevel}' is not a WALKABLE " +
+                                    "level of this interior.");
             }
         }
 
