@@ -24,3 +24,5 @@ MonoBehaviour:
   ResidentMove: 0
   ResidentMovesTo: 
   ListedForSale: 1
+  KeeperNpcId:
+  TradeId: trade.housing

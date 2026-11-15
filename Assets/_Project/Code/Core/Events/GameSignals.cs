@@ -47,11 +47,25 @@ namespace HiddenHarbours.Core
     }
 
     /// <summary>Raised when a hold's catch is sold at market.</summary>
-    public readonly struct CatchSold
+    public readonly struct CatchSold : ICustomSignal
     {
         public readonly int TotalPaid;   // ₲
         public readonly int Count;
-        public CatchSold(int totalPaid, int count) { TotalPaid = totalPaid; Count = count; }
+        /// <summary>Data-authored keeper, vendor and trade; legacy/default signals report unknown.</summary>
+        public TradeCounterparty Counterparty { get; }
+        public string MerchantId => Counterparty.MerchantId;
+        public string VendorId => Counterparty.VendorId;
+        public string TradeId => Counterparty.TradeId;
+        public decimal CustomUnits => Count;
+
+        public CatchSold(int totalPaid, int count)
+            : this(totalPaid, count, default) { }
+
+        public CatchSold(int totalPaid, int count, TradeCounterparty counterparty)
+        {
+            TotalPaid = totalPaid; Count = count;
+            Counterparty = counterparty;
+        }
     }
 
     /// <summary>
@@ -80,13 +94,24 @@ namespace HiddenHarbours.Core
     /// active boat — so Economy never references the Boats module (cross-module talk via Core/EventBus).
     /// Keyed by stable boat id (e.g. "boat.punt"), matching <c>BoatHullDef.Id</c>.
     /// </summary>
-    public readonly struct BoatPurchased
+    public readonly struct BoatPurchased : ICustomSignal
     {
         public readonly string BoatId;
         public readonly int PricePaid;   // ₲
+        /// <summary>Data-authored keeper, vendor and trade; legacy/default signals report unknown.</summary>
+        public TradeCounterparty Counterparty { get; }
+        public string MerchantId => Counterparty.MerchantId;
+        public string VendorId => Counterparty.VendorId;
+        public string TradeId => Counterparty.TradeId;
+        public decimal CustomUnits => 1m;
+
         public BoatPurchased(string boatId, int pricePaid)
+            : this(boatId, pricePaid, default) { }
+
+        public BoatPurchased(string boatId, int pricePaid, TradeCounterparty counterparty)
         {
             BoatId = boatId; PricePaid = pricePaid;
+            Counterparty = counterparty;
         }
     }
 
