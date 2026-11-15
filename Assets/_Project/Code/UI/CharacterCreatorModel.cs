@@ -10,6 +10,8 @@ namespace HiddenHarbours.UI
         private readonly CharacterBuilderDef _builder;
         private readonly CharacterWardrobeDef _wardrobe;
         private readonly IPlayerAppearance _appearance;
+        private readonly ITraitService _traits;
+        private readonly List<TraitDef> _traitDefs = new List<TraitDef>();
         private readonly CharacterRecipe _openingRecipe;
         private readonly string _openingOutfit;
         private readonly string _openingName;
@@ -29,7 +31,7 @@ namespace HiddenHarbours.UI
         public const int KeyboardKeyCount = 40;
 
         public CharacterCreatorModel(CharacterBuilderDef builder, CharacterWardrobeDef wardrobe,
-            IPlayerAppearance appearance = null)
+            IPlayerAppearance appearance = null, ITraitService traits = null)
         {
             _builder = builder;
             _wardrobe = wardrobe;
@@ -40,6 +42,15 @@ namespace HiddenHarbours.UI
             _recipe = _openingRecipe.Clone();
             _outfit = _openingOutfit;
             _name = _openingName;
+            _traits = traits ?? GameServices.Traits;
+            var offered = new List<string>();
+            IReadOnlyList<TraitDef> catalog = _traits?.All;
+            if (catalog != null)
+                foreach (TraitDef def in catalog)
+                    if (def != null && !string.IsNullOrEmpty(def.Id) && !offered.Contains(def.Id))
+                    { offered.Add(def.Id); _traitDefs.Add(def); }
+            // A character from before traits holds none; the picker simply starts empty.
+            TraitPicks = new TraitPickModel(offered, GameServices.TraitPicksPerCharacter, _traits?.PlayerTraitIds);
             if (builder != null && builder.Builds != null)
                 foreach (CharacterBuildDef build in builder.Builds)
                 {
@@ -75,10 +86,18 @@ namespace HiddenHarbours.UI
         public int KeyboardIndex { get; private set; }
         public int OutfitRow => _colourFields.Count + 1;
         public int NameRow => OutfitRow + 1;
-        public int ResetRow => NameRow + 1;
+        /// <summary>The first trait row; one row per offered trait follows, in catalog order.</summary>
+        public int TraitRow => NameRow + 1;
+        public int TraitRowCount => _traitDefs.Count;
+        public int ResetRow => TraitRow + TraitRowCount;
         public int CancelRow => ResetRow + 1;
         public int ConfirmRow => CancelRow + 1;
         public int RowCount => ConfirmRow + 1;
+        public TraitPickModel TraitPicks { get; }
+        public bool IsTraitRow(int row) => row >= TraitRow && row < ResetRow;
+        public TraitDef TraitAt(int row) => IsTraitRow(row) ? _traitDefs[row - TraitRow] : null;
+        public string TraitDescription(int row) => TraitAt(row)?.Description ?? string.Empty;
+        public bool IsTraitPicked(int row) => IsTraitRow(row) && TraitPicks.IsPicked(_traitDefs[row - TraitRow].Id);
         public int ColourSlotCount => CharacterBuilder.TryBuild(_builder, _recipe,
             CharacterAudience.Player, out CharacterLook look, out _) ? look.Colours.Length : 0;
 
@@ -168,10 +187,23 @@ namespace HiddenHarbours.UI
             return true;
         }
 
+        /// <summary>Pick or let go the trait with <paramref name="id"/>. Preview only: nothing is
+        /// written until <see cref="Commit"/>.</summary>
+        public bool ToggleTrait(string id)
+        {
+            if (!IsOpen) return false;
+            if (!TraitPicks.Toggle(id, out string refusal)) return Refuse(refusal);
+            Refusal = null;
+            Notify();
+            return true;
+        }
+
         public bool Commit()
         {
             if (!IsOpen || _bodies.Count == 0) return false;
             string why = PlayerName.Check(_name);
+            if (why != null) return Refuse(why);
+            why = TraitPicks.Why;
             if (why != null) return Refuse(why);
             ISaveService save = GameServices.Save;
             if (save?.Current == null) return Refuse(CharacterCreatorStrings.NoSave);
@@ -181,6 +213,8 @@ namespace HiddenHarbours.UI
                 if (!_appearance.Commit(_recipe, out why)) return Refuse(why);
                 OutfitLocker.Wear(_outfit);
                 PlayerName.Set(_name, out _);
+                // Unchanged picks (a character from before traits keeping none) write nothing.
+                TraitPicks.WriteTo(_traits, out _);
             }
             IsOpen = false;
             NameEditing = false;
@@ -195,6 +229,7 @@ namespace HiddenHarbours.UI
             if (!PreviewRecipe(_openingRecipe)) return;
             SelectOutfit(_openingOutfit);
             _name = _openingName;
+            TraitPicks.Reset();
             NameEditing = false;
             Notify();
         }
@@ -250,6 +285,7 @@ namespace HiddenHarbours.UI
             if (NameEditing) { PressKey(KeyboardIndex); return; }
             if (FocusRow <= OutfitRow) Adjust(1);
             else if (FocusRow == NameRow) { NameEditing = true; Notify(); }
+            else if (IsTraitRow(FocusRow)) ToggleTrait(TraitAt(FocusRow).Id);
             else if (FocusRow == ResetRow) Reset();
             else if (FocusRow == CancelRow) Cancel();
             else if (FocusRow == ConfirmRow) Commit();
@@ -334,10 +370,29 @@ namespace HiddenHarbours.UI
                     : string.IsNullOrEmpty(_outfit) ? CharacterCreatorStrings.AsBaked : _outfit);
             }
             if (row == NameRow) return CharacterCreatorStrings.Name + (string.IsNullOrWhiteSpace(_name) ? CharacterCreatorStrings.Optional : _name);
+            if (IsTraitRow(row)) return TraitName(_traitDefs[row - TraitRow]);
             if (row == ResetRow) return CharacterCreatorStrings.Reset;
             if (row == CancelRow) return CharacterCreatorStrings.Cancel;
-            return CharacterCreatorStrings.Confirm;
+            string owed = TraitPicks.Why;
+            return owed == null ? CharacterCreatorStrings.Confirm : CharacterCreatorStrings.Confirm + " (" + owed + ")";
         }
+
+        /// <summary>The picked traits by name, for the ready page.</summary>
+        public string TraitSummary()
+        {
+            if (TraitPicks.Picked.Count == 0) return CharacterCreatorStrings.Traits + CharacterCreatorStrings.NoTraits;
+            var names = new string[TraitPicks.Picked.Count];
+            for (int i = 0; i < names.Length; i++)
+            {
+                string id = TraitPicks.Picked[i];
+                TraitDef def = null;
+                foreach (TraitDef candidate in _traitDefs) if (candidate.Id == id) { def = candidate; break; }
+                names[i] = def != null ? TraitName(def) : id;
+            }
+            return CharacterCreatorStrings.Traits + string.Join(", ", names);
+        }
+
+        private static string TraitName(TraitDef def) => string.IsNullOrWhiteSpace(def.DisplayName) ? def.Id : def.DisplayName;
 
         private bool Refuse(string reason) { Refusal = reason; Notify(); return false; }
         private void Notify() => Changed?.Invoke();
@@ -372,5 +427,16 @@ namespace HiddenHarbours.UI
         public const string UnknownOutfit = "That starter outfit is not in the wardrobe.";
         public const string NoSave = "No game is loaded, so there is nowhere to keep these choices.";
         public static readonly string[] KeyActions = { "Space", "Back", "A/a", "Done" };
+        public const string Traits = "Traits: ";
+        public const string NoTraits = "none yet";
+        public const string UnknownTrait = "That trait is not on offer.";
+        public const string NoTraitService = "Traits are unavailable, so there is nowhere to keep them.";
+        public static string TraitsOwed(int remaining, int required) => remaining == required
+            ? $"Pick {required} {Plural(required)} to continue."
+            : $"Pick {remaining} more {Plural(remaining)} to continue.";
+        public static string TraitsFull(int required) =>
+            $"You already have {required} {Plural(required)}. Unpick one to choose this one.";
+        public static string TraitsPicked(int picked, int required) => $"{picked} of {required} picked.";
+        private static string Plural(int count) => count == 1 ? "trait" : "traits";
     }
 }

@@ -161,6 +161,10 @@ MonoBehaviour:
     - E
     - W
     - NW
+    BunkLevel: 
+    BunkObstruction: 
+    MattressCentre: {x: 0, y: 0, z: 0}
+    PillowEnd: {x: 0, y: 0, z: 0}
   - Id: stove
     Action: cook
     ReachPoint: {x: -0.38, y: 1.15, z: 0.72}
@@ -170,6 +174,10 @@ MonoBehaviour:
     - SW
     - W
     - NW
+    BunkLevel: 
+    BunkObstruction: 
+    MattressCentre: {x: 0, y: 0, z: 0}
+    PillowEnd: {x: 0, y: 0, z: 0}
   - Id: locker
     Action: storage
     ReachPoint: {x: 0.38, y: 1.09, z: 0.72}
@@ -179,6 +187,10 @@ MonoBehaviour:
     - E
     - SE
     - S
+    BunkLevel: 
+    BunkObstruction: 
+    MattressCentre: {x: 0, y: 0, z: 0}
+    PillowEnd: {x: 0, y: 0, z: 0}
   - Id: bunk
     Action: sleep
     ReachPoint: {x: 0, y: 2.9, z: 0.3}
@@ -191,6 +203,23 @@ MonoBehaviour:
     - SW
     - W
     - NW
+    BunkLevel: cuddy_sole
+    BunkObstruction: v_berth
+    MattressCentre: {x: 0, y: 4.35, z: 0.75}
+    PillowEnd: {x: 0, y: 3.4, z: 0.75}
+  - Id: prep
+    Action: prep
+    ReachPoint: {x: -0.38, y: 1.365, z: 0.72}
+    VisibleFacings:
+    - N
+    - S
+    - SW
+    - W
+    - NW
+    BunkLevel: 
+    BunkObstruction: 
+    MattressCentre: {x: 0, y: 0, z: 0}
+    PillowEnd: {x: 0, y: 0, z: 0}
   Routes:
   - Id: cuddy_companionway
     FromLevel: house_sole
