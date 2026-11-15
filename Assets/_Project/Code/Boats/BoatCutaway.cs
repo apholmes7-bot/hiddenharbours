@@ -4,15 +4,19 @@ using UnityEngine;
 namespace HiddenHarbours.Boats
 {
     /// <summary>
-    /// <b>Cuts this hull's house open while the occupant is below, and closes it the instant she is
-    /// not</b> — the owner's cutaway ruling of 2026-08-26, wired to the two facts that already say
-    /// where she is.
+    /// <b>Cuts this hull's house open while the occupant is below, and at her wheel when the wheel
+    /// stands in a room</b> — the owner's cutaway ruling of 2026-08-26 as the 2026-11-14 ruling
+    /// changed it, wired to the two facts that already say where she is.
     ///
     /// <para><b>The ruling, and the whole of this component's logic:</b> in a boat interior the view
-    /// shows the boat EXTERIOR with a wall/roof CUTAWAY revealing the interior. <i>At the helm →
-    /// exterior only. Player out on deck → exterior only.</i> So the cut is live for exactly one
-    /// state — somebody is below on THIS hull and is not steering her — and every other state is the
-    /// shipped whole-boat picture.</para>
+    /// shows the boat EXTERIOR with a wall/roof CUTAWAY revealing the interior. <i>Player out on deck
+    /// → exterior only.</i> Below on THIS hull and not steering her: the level she is on is cut.
+    /// <i>At the helm</i> (2026-11-14, replacing "at the helm → exterior only"): when her helm station
+    /// stands inside an enclosed room, that ONE room is cut so the skipper and the instruments show,
+    /// whether or not she came to the wheel through a door; no other level opens. A wheel on an open
+    /// deck or a flybridge cuts nothing, and so does a hull whose art names no helm station. Which
+    /// room is <see cref="BoatHelmRoom"/>, off the hull's own data. One owner switch,
+    /// <c>GameConfig.CutTheHelmRoomAtTheWheel</c>, gives the closed house at the wheel back.</para>
     ///
     /// <para><b>It invents no third source of truth.</b> "Is she below, and on which level" is
     /// <c>CabinSignals</c>, published by <see cref="BoatInterior"/> on its three real transitions.
@@ -47,6 +51,18 @@ namespace HiddenHarbours.Boats
         private Transform _boatRoot;
         private object _hullToken;
 
+        /// <summary>The cut that opens the room her wheel stands in: worked out once, at
+        /// <see cref="Configure"/>, from data that does not change under a built cabin. None when the
+        /// wheel stands in the open or her art names no station.</summary>
+        private HullMeshDef.Cut _helmRoomCut;
+
+        /// <summary>How many more frames to look for the hull's renderer afresh and say the cut
+        /// again. A hull swap builds this cabin BEFORE the new skin is on, and the outgoing skin's
+        /// leftovers go at the end of that frame; a cut that must stand from the first frame at the
+        /// wheel is said again once the renderer that will draw it exists.</summary>
+        private int _sayAgainFrames;
+        private const int SayAgainFramesAfterAHullChange = 2;
+
         private IHullCutaway _renderer;
         private int _belowLevel = NotBelow;
         private string _landingDeckId;
@@ -57,8 +73,8 @@ namespace HiddenHarbours.Boats
         public HullMeshDef.Cut RequestedCut { get; private set; }
 
         /// <summary>True while the occupant is below on this hull, whatever the helm says. Separate
-        /// from <see cref="RequestedLevelTag"/> on purpose: "she is below but at the wheel" is a real
-        /// state with a closed house, and one field cannot say both.</summary>
+        /// from <see cref="RequestedCut"/> on purpose: "she is below but at the wheel" is a real
+        /// state whose cut is the wheel's room and not hers, and one field cannot say both.</summary>
         public bool OccupantIsBelow => _belowLevel != NotBelow || _landingDeckId != null;
 
         /// <summary>
@@ -66,16 +82,31 @@ namespace HiddenHarbours.Boats
         /// <c>ControlSwitcher</c> declares to <see cref="HelmSlot.SetPilotedHull"/> — this boat's
         /// <see cref="BoatController"/> — held rather than re-resolved, because a token re-derived
         /// later is a token that can drift off the one the declaration used.
+        ///
+        /// <para><paramref name="deck"/> is the hull's imported deck def, for the helm station it
+        /// carries: handed in from the hull's own data rather than read off the root, because a hull
+        /// swap builds this cabin before the new skin has written the new deck there. Null, or a deck
+        /// with no measured station, is a hull whose house stays whole at the wheel.</para>
         /// </summary>
-        public void Configure(BoatInterior cabin, HullMeshDef mesh, Transform boatRoot, object hullToken)
+        public void Configure(BoatInterior cabin, HullMeshDef mesh, Transform boatRoot, object hullToken,
+                              BoatDeckDef deck = null)
         {
             _cabin = cabin;
             _mesh = mesh;
             _boatRoot = boatRoot != null ? boatRoot : transform;
             _hullToken = hullToken;
+            _helmRoomCut = deck != null && deck.HasHelmStation
+                ? BoatHelmRoom.CutAt(cabin != null ? cabin.Def : null, mesh, deck.HelmStationLocalMeters)
+                : HullMeshDef.Cut.None;
+            _renderer = null;
             Subscribe();
             Reassert();
         }
+
+        /// <summary>The cut that opens the room this hull's wheel stands in, whatever the switch and
+        /// whoever is steering: None for a wheel in the open or a hull with no measured station. Read
+        /// by tests and by anyone asking why a house did or did not open at the wheel.</summary>
+        public HullMeshDef.Cut HelmRoomCut => _helmRoomCut;
 
         private void OnEnable()
         {
@@ -97,6 +128,7 @@ namespace HiddenHarbours.Boats
             EventBus.Subscribe<CabinEntryLandingEntered>(OnEntryLandingEntered);
             EventBus.Subscribe<CabinLeft>(OnCabinLeft);
             EventBus.Subscribe<ControlModeChanged>(OnControlModeChanged);
+            EventBus.Subscribe<ActiveBoatChanged>(OnActiveBoatChanged);
             _subscribed = true;
         }
 
@@ -107,6 +139,7 @@ namespace HiddenHarbours.Boats
             EventBus.Unsubscribe<CabinEntryLandingEntered>(OnEntryLandingEntered);
             EventBus.Unsubscribe<CabinLeft>(OnCabinLeft);
             EventBus.Unsubscribe<ControlModeChanged>(OnControlModeChanged);
+            EventBus.Unsubscribe<ActiveBoatChanged>(OnActiveBoatChanged);
             _subscribed = false;
         }
 
@@ -142,11 +175,26 @@ namespace HiddenHarbours.Boats
         }
 
         // Taking or giving up a wheel changes nothing about where she is standing, so the cabin
-        // publishes nothing — but it changes whether the house should be open, which is why this is
-        // a second input and not a derivation of the first.
-        private void OnControlModeChanged(ControlModeChanged e)
+        // publishes nothing — but it changes which cut the house should show (hers below, or the
+        // wheel's room), which is why this is a second input and not a derivation of the first.
+        private void OnControlModeChanged(ControlModeChanged e) => Reassert();
+
+        // A hull swapped on under her at the wheel: SetHull rebuilt this cabin before the new skin
+        // went on, so the cut said at Configure went to a renderer that was about to be replaced or
+        // re-configured (which resets its cut). The swap's last word is this signal; say it again now,
+        // and for the frames it takes the outgoing skin to be gone.
+        private void OnActiveBoatChanged(ActiveBoatChanged e)
         {
-            if (!OccupantIsBelow) return;   // nothing to open or close
+            _renderer = null;
+            _sayAgainFrames = SayAgainFramesAfterAHullChange;
+            Reassert();
+        }
+
+        private void LateUpdate()
+        {
+            if (_sayAgainFrames <= 0) return;
+            _sayAgainFrames--;
+            _renderer = null;
             Reassert();
         }
 
@@ -159,6 +207,10 @@ namespace HiddenHarbours.Boats
         /// </summary>
         private void Reassert()
         {
+            // A cutaway destroyed without its OnDestroy (an EditMode fixture) can still be on the bus;
+            // it has no hull to speak for.
+            if (this == null) return;
+
             HullMeshDef.Cut cut = WantedCut();
             RequestedCut = cut;
 
@@ -170,22 +222,35 @@ namespace HiddenHarbours.Boats
         /// <summary>
         /// The cut the ruling asks for — the level, and the lid its ceiling record names (the
         /// coordinator ruling of 2026-08-27, one hop). None — the whole exterior — is the answer to
-        /// every question except one, and each of the ways it can be None is a deliberate refusal
-        /// rather than a gap: nobody below; she is at THIS wheel; the def has no such level; the rig
-        /// declared that level OPEN (cutting one would be cutting the sky); this hull was baked
-        /// before the cutaway kit.
+        /// every question except two, and each of the ways it can be None is a deliberate refusal
+        /// rather than a gap: nobody below and nobody at this wheel; she is at THIS wheel and it
+        /// stands in the open, or her art names no station, or the owner's switch is off; the def has
+        /// no such level; the rig declared that level OPEN (cutting one would be cutting the sky);
+        /// this hull was baked before the cutaway kit.
+        ///
+        /// <para>At the wheel the answer is the wheel's room and nothing else, even when the cabin
+        /// counts her on another level: one room opens there, never two.</para>
         /// </summary>
         private HullMeshDef.Cut WantedCut()
         {
-            if (!OccupantIsBelow) return HullMeshDef.Cut.None;
-            if (PlayerIsAtThisHelm()) return HullMeshDef.Cut.None;
             if (_mesh == null) return HullMeshDef.Cut.None;
+            if (PlayerIsAtThisHelm())
+                return HelmRoomOpensAtTheWheel ? _helmRoomCut : HullMeshDef.Cut.None;
+            if (!OccupantIsBelow) return HullMeshDef.Cut.None;
 
             string deckId = _landingDeckId ?? DeckIdOf(_belowLevel);
             return string.IsNullOrEmpty(deckId)
                 ? HullMeshDef.Cut.None
                 : _mesh.CutawayForDeck(deckId);
         }
+
+        /// <summary>The owner's switch (2026-11-14): on, a wheel that stands in a room opens that room;
+        /// off, the house is whole at every wheel, as it was ruled on 2026-08-26. Read on each
+        /// re-assert, so a change shows the next time the helm changes hands.</summary>
+        private static bool HelmRoomOpensAtTheWheel =>
+            GameServices.Config != null
+                ? GameServices.Config.CutTheHelmRoomAtTheWheel
+                : GameConfig.DefaultCutTheHelmRoomAtTheWheel;
 
         /// <summary>The def's own id for a level index — <c>house_sole</c>, <c>cuddy_sole</c>. The
         /// def is the level authority; nothing here reads a sheet row or a rig name.</summary>

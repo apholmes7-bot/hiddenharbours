@@ -506,6 +506,7 @@ MonoBehaviour:
     AboardStopsCloser: 2
     AboardStopsWider: 2
   InteriorRockScale: 0.45
+  CutTheHelmRoomAtTheWheel: 1
   StairClimbSeconds: 0.5
   PlayerNameMaxLength: 32
   TraitPicksPerCharacter: 2

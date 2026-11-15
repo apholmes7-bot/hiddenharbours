@@ -208,7 +208,7 @@ namespace HiddenHarbours.Boats
             if (visual.HasHullMesh())
             {
                 Cutaway = gameObject.AddComponent<BoatCutaway>();
-                Cutaway.Configure(Interior, visual.HullMesh, transform, controller);
+                Cutaway.Configure(Interior, visual.HullMesh, transform, controller, visual.Deck);
             }
 
             // --- the doors ----------------------------------------------------------------------
