@@ -50,7 +50,6 @@ namespace HiddenHarbours.Tests.PlayMode
         // Checked failures, not skips: a repaired step MUST fail this census until its row is removed.
         static readonly Dictionary<string, string> ExpectedFailures = new Dictionary<string, string>
         {
-            { "sageCottage: descent", "2026-11-14: selected down stair changes floor but misses its landing (CI 43618004286)" },
         };
 
         sealed class VisitResult
