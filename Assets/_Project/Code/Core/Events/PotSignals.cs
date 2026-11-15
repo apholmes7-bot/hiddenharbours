@@ -12,7 +12,7 @@ namespace HiddenHarbours.Core
     /// signals are added additively beside <c>GameSignals.cs</c>, same EventBus, separate file
     /// (coordination.md §1 — "keep it additive").</para>
     /// </summary>
-    public readonly struct PotPurchased
+    public readonly struct PotPurchased : ICustomSignal
     {
         /// <summary>Stable TrapDef id of the pot kind bought (e.g. "trap.lobster").</summary>
         public readonly string TrapDefId;
@@ -21,9 +21,20 @@ namespace HiddenHarbours.Core
         /// <summary>Total pots of this kind OWNED after the purchase (deployed + aboard + spare).</summary>
         public readonly int OwnedCount;
 
+        /// <summary>Data-authored keeper, vendor and trade; legacy/default signals report unknown.</summary>
+        public TradeCounterparty Counterparty { get; }
+        public string MerchantId => Counterparty.MerchantId;
+        public string VendorId => Counterparty.VendorId;
+        public string TradeId => Counterparty.TradeId;
+        public decimal CustomUnits => 1m;
+
         public PotPurchased(string trapDefId, int pricePaid, int ownedCount)
+            : this(trapDefId, pricePaid, ownedCount, default) { }
+
+        public PotPurchased(string trapDefId, int pricePaid, int ownedCount, TradeCounterparty counterparty)
         {
             TrapDefId = trapDefId; PricePaid = pricePaid; OwnedCount = ownedCount;
+            Counterparty = counterparty;
         }
     }
 }

@@ -10,7 +10,7 @@ namespace HiddenHarbours.Core
     /// <para>Lives beside <c>PotSignals</c>/<c>LicenseSignals</c>: economy-owned signals are added
     /// additively in their own Core/Events file, same EventBus (coordination.md §1 — "keep it additive").</para>
     /// </summary>
-    public readonly struct SupplyPurchased
+    public readonly struct SupplyPurchased : ICustomSignal
     {
         /// <summary>Stable SupplyDef id of the supply bought (e.g. "supply.ice").</summary>
         public readonly string SupplyId;
@@ -19,9 +19,20 @@ namespace HiddenHarbours.Core
         /// <summary>Total of this supply OWNED after the purchase.</summary>
         public readonly int OwnedCount;
 
+        /// <summary>Data-authored keeper, vendor and trade; legacy/default signals report unknown.</summary>
+        public TradeCounterparty Counterparty { get; }
+        public string MerchantId => Counterparty.MerchantId;
+        public string VendorId => Counterparty.VendorId;
+        public string TradeId => Counterparty.TradeId;
+        public decimal CustomUnits => 1m;
+
         public SupplyPurchased(string supplyId, int pricePaid, int ownedCount)
+            : this(supplyId, pricePaid, ownedCount, default) { }
+
+        public SupplyPurchased(string supplyId, int pricePaid, int ownedCount, TradeCounterparty counterparty)
         {
             SupplyId = supplyId; PricePaid = pricePaid; OwnedCount = ownedCount;
+            Counterparty = counterparty;
         }
     }
 
@@ -31,7 +42,7 @@ namespace HiddenHarbours.Core
     /// stock (<see cref="SaveData.BaitStock"/> via <see cref="TackleBox"/>). Keyed by the stable
     /// <b>BaitDef</b> id (e.g. "bait.capelin").
     /// </summary>
-    public readonly struct BaitPurchased
+    public readonly struct BaitPurchased : ICustomSignal
     {
         /// <summary>Stable BaitDef id of the bait bought (e.g. "bait.capelin").</summary>
         public readonly string BaitId;
@@ -42,9 +53,20 @@ namespace HiddenHarbours.Core
         /// <summary>Total of this bait OWNED after the purchase.</summary>
         public readonly int OwnedCount;
 
+        /// <summary>Data-authored keeper, vendor and trade; legacy/default signals report unknown.</summary>
+        public TradeCounterparty Counterparty { get; }
+        public string MerchantId => Counterparty.MerchantId;
+        public string VendorId => Counterparty.VendorId;
+        public string TradeId => Counterparty.TradeId;
+        public decimal CustomUnits => CountBought;
+
         public BaitPurchased(string baitId, int pricePaid, int countBought, int ownedCount)
+            : this(baitId, pricePaid, countBought, ownedCount, default) { }
+
+        public BaitPurchased(string baitId, int pricePaid, int countBought, int ownedCount, TradeCounterparty counterparty)
         {
             BaitId = baitId; PricePaid = pricePaid; CountBought = countBought; OwnedCount = ownedCount;
+            Counterparty = counterparty;
         }
     }
 
@@ -54,7 +76,7 @@ namespace HiddenHarbours.Core
     /// fitment (<see cref="SaveData.HullInstruments"/> via <see cref="InstrumentLocker"/>). Carries BOTH
     /// ids because an instrument is bolted into one boat: "you bought a sounder" is only half the news.
     /// </summary>
-    public readonly struct InstrumentPurchased
+    public readonly struct InstrumentPurchased : ICustomSignal
     {
         /// <summary>Stable instrument id bought (e.g. "instrument.depth_sounder").</summary>
         public readonly string InstrumentId;
@@ -63,9 +85,20 @@ namespace HiddenHarbours.Core
         /// <summary>₲ paid.</summary>
         public readonly int PricePaid;
 
+        /// <summary>Data-authored keeper, vendor and trade; legacy/default signals report unknown.</summary>
+        public TradeCounterparty Counterparty { get; }
+        public string MerchantId => Counterparty.MerchantId;
+        public string VendorId => Counterparty.VendorId;
+        public string TradeId => Counterparty.TradeId;
+        public decimal CustomUnits => 1m;
+
         public InstrumentPurchased(string instrumentId, string hullId, int pricePaid)
+            : this(instrumentId, hullId, pricePaid, default) { }
+
+        public InstrumentPurchased(string instrumentId, string hullId, int pricePaid, TradeCounterparty counterparty)
         {
             InstrumentId = instrumentId; HullId = hullId; PricePaid = pricePaid;
+            Counterparty = counterparty;
         }
     }
 
@@ -103,7 +136,7 @@ namespace HiddenHarbours.Core
     /// site and which fuel are both load-bearing, since the island's whole fuel design is that the same
     /// litre costs differently in different places.</para>
     /// </summary>
-    public readonly struct FuelPurchased
+    public readonly struct FuelPurchased : ICustomSignal
     {
         /// <summary>Stable FuelStationDef id of the site sold at (e.g. "station.route_91").</summary>
         public readonly string StationId;
@@ -114,9 +147,20 @@ namespace HiddenHarbours.Core
         /// <summary>₲ paid.</summary>
         public readonly int PricePaid;
 
+        /// <summary>Data-authored keeper, vendor and trade; legacy/default signals report unknown.</summary>
+        public TradeCounterparty Counterparty { get; }
+        public string MerchantId => Counterparty.MerchantId;
+        public string VendorId => Counterparty.VendorId;
+        public string TradeId => Counterparty.TradeId;
+        public decimal CustomUnits => CustomLedger.FuelUnits(Litres);
+
         public FuelPurchased(string stationId, string grade, float litres, int pricePaid)
+            : this(stationId, grade, litres, pricePaid, default) { }
+
+        public FuelPurchased(string stationId, string grade, float litres, int pricePaid, TradeCounterparty counterparty)
         {
             StationId = stationId; Grade = grade; Litres = litres; PricePaid = pricePaid;
+            Counterparty = counterparty;
         }
     }
 
@@ -211,9 +255,19 @@ namespace HiddenHarbours.Core
         /// <summary>True when the counter actually took something.</summary>
         public bool SoldAnything => UnitsSold > 0;
 
+        /// <summary>Summary identity only. CustomLedger counts CatchSold, never this reply too.</summary>
+        public TradeCounterparty Counterparty { get; }
+        public string MerchantId => Counterparty.MerchantId;
+        public string VendorId => Counterparty.VendorId;
+        public string TradeId => Counterparty.TradeId;
+
         public CounterSellReported(string sellerId, int payout, int unitsSold)
+            : this(sellerId, payout, unitsSold, default) { }
+
+        public CounterSellReported(string sellerId, int payout, int unitsSold, TradeCounterparty counterparty)
         {
             SellerId = sellerId ?? ""; Payout = payout; UnitsSold = unitsSold;
+            Counterparty = counterparty;
         }
     }
 
