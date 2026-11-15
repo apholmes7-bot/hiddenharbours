@@ -228,6 +228,22 @@ MonoBehaviour:
     BunkObstruction: 
     MattressCentre: {x: 0, y: 0, z: 0}
     PillowEnd: {x: 0, y: 0, z: 0}
+  - Id: bunk_bench
+    Action: sleep
+    ReachPoint: {x: 1.53, y: 4.19, z: 0.55}
+    VisibleFacings:
+    - N
+    - NE
+    - E
+    - SE
+    - S
+    - SW
+    - W
+    - NW
+    BunkLevel: house_sole
+    BunkObstruction: bench
+    MattressCentre: {x: 1.375, y: 3.285, z: 0.99}
+    PillowEnd: {x: 1.375, y: 2.72, z: 0.99}
   Routes:
   - Id: cuddy_companionway
     FromLevel: house_sole
