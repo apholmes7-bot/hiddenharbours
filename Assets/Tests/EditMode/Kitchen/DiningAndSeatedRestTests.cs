@@ -184,7 +184,20 @@ namespace HiddenHarbours.Tests.EditMode
             oneGo.RestSeated(0d);
 
             Assert.AreEqual(oneGo.Level(NeedKind.Tiredness), stepped.Level(NeedKind.Tiredness), 1e-5f);
-            Assert.GreaterOrEqual(stepped.Level(NeedKind.Tiredness), KitchenSettings.Default.SitRestFloorInForce - 1e-6f);
+
+            // The closed form, by hand from the shipped numbers (floor 0.35; below it tiredness rises at 1/18
+            // an hour, above it sitting takes 1/16 an hour = half the 1/8 sleep relief), so a fault common
+            // to both paths cannot pass as "equal".
+            float floor = KitchenSettings.Default.SitRestFloorInForce;
+            float expected = start > floor
+                ? Mathf.Max(floor, start - 3f * KitchenSettings.Default.SitRecoveryBeside(NeedsSettings.Default.SleepReliefPerGameHour))
+                : Mathf.Min(floor, start + 3f * NeedsSettings.Default.Tiredness.RisePerGameHour);
+            Assert.AreEqual(expected, stepped.Level(NeedKind.Tiredness), 1e-5f);
+
+            // Sitting moves tiredness TOWARD the floor and never across it: from above it stays at or above,
+            // from below (rested already) it rises at the need's own rate and stays at or below.
+            if (start > floor) Assert.GreaterOrEqual(stepped.Level(NeedKind.Tiredness), floor - 1e-6f);
+            else Assert.LessOrEqual(stepped.Level(NeedKind.Tiredness), floor + 1e-6f);
         }
 
         [Test]
