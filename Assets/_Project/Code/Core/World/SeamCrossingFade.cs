@@ -245,7 +245,7 @@ namespace HiddenHarbours.Core
         public static bool TryApproach(Rect region, Rect body, Vector2 velocity, float minSpeed,
                                        float landingInsetMetres, out SeamApproach approach)
         {
-            approach = default;
+            SeamApproach best = default;   // a local function may not touch an out parameter (CS1628)
             float bestTime = float.MaxValue;
             float speedFloor = Mathf.Max(minSpeed, 1e-6f);
             float inset = Mathf.Max(0f, landingInsetMetres);
@@ -258,6 +258,7 @@ namespace HiddenHarbours.Core
                      new Vector2(c.x, region.yMax + inset + ProbeBeyondMetres));
             Consider(RegionEdge.South, Vector2.down, -velocity.y, body.yMin - region.yMin, body.yMax - (region.yMin - inset),
                      new Vector2(c.x, region.yMin - inset - ProbeBeyondMetres));
+            approach = best;
             return bestTime < float.MaxValue;
 
             void Consider(RegionEdge edge, Vector2 outward, float outSpeed, float gap, float carry, Vector2 probe)
@@ -266,7 +267,7 @@ namespace HiddenHarbours.Core
                 float time = Mathf.Max(0f, gap) / outSpeed;
                 if (time >= bestTime) return;
                 bestTime = time;
-                approach = new SeamApproach(edge, gap, Mathf.Max(0f, carry), outward, probe, outSpeed);
+                best = new SeamApproach(edge, gap, Mathf.Max(0f, carry), outward, probe, outSpeed);
             }
         }
     }

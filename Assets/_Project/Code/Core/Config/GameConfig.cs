@@ -1275,6 +1275,7 @@ namespace HiddenHarbours.Core
         [Min(0f)] public float RegionSeamMaxBlackSeconds = DefaultRegionSeamMaxBlackSeconds;
         [Tooltip("How far (m) from the edge of the screen a walker's leading edge is when the fade starts. The " +
                  "screen is black as he reaches the edge, whatever his speed (a mover too fast to cover it in the quickest " +
+                 "fade starts further out, by that much). 0.45 m is the quickest fade at a 3 m/s walk. Bigger = gentler.")]
         [Min(0f)] public float RegionSeamFootFadeDistanceMetres = DefaultRegionSeamFootFadeDistanceMetres;
         [Tooltip("The same fade distance (m) for a boat, measured from her bow.")]
         [Min(0f)] public float RegionSeamBoatFadeDistanceMetres = DefaultRegionSeamBoatFadeDistanceMetres;
@@ -1287,6 +1288,7 @@ namespace HiddenHarbours.Core
         [Tooltip("The slowest (m/s) a mover can head out of a region and still drive a seam fade. Below it the " +
                  "mover is standing at the edge, and the fade clears.")]
         [Min(0f)] public float RegionSeamMinApproachSpeed = DefaultRegionSeamMinApproachSpeed;
+
         public float SecondsPerHour => SecondsPerDay / 24f;
         public float SecondsPerWeek => SecondsPerDay * DaysPerWeek;
         public float SecondsPerSeason => SecondsPerDay * DaysPerSeason;
