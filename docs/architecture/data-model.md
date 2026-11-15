@@ -150,6 +150,19 @@ plain serializable DTOs owned by `SaveService` (`architecture/tech-architecture.
 > a place in ANOTHER region, or ABOARD a boat, is not applied in the wrong frame but handed to the
 > `SleepPlaceWakeRequested` signal for the travel rig to honour, and the spawn stands until it does.
 
+> **The chosen sleep (no schema step; owner ruling 2026-11-15: "Player chooses sleep duration. Time
+> moves fast … cancel with a button. Maximum 8 hours")** — the save gains nothing: the wake instant is
+> already `gameTime`, and `SleepPlace.WokeAtSeconds` records it. The flow is `SleepFlow` (Core/Save):
+> lie down → choose → asleep (the clock is fast-forwarded with `IGameClock.FastForwardTo` at
+> `GameConfig.SleepGameHoursPerRealSecond`) → wake on its own at the chosen instant or early on a
+> press, and EVERY wake writes the save. Tunables: `GameConfig.SleepMinHours`, `SleepMaxHours` (held
+> under `SleepPlan.RulingMaxHours` = 8), `SleepStepHours`, `SleepGameHoursPerRealSecond`;
+> `NeedsSettings.SleepReliefPerGameHour` (tiredness falls this much per hour actually slept, from its
+> bedtime level, stamped at the wake; hunger keeps its own stamp and rises on the clock). **Mid-sleep
+> the save service refuses every write**, so a quit or an autosave during a sleep keeps the last
+> completed sleep. `RestQuorum` (Core/Save) is the multiplayer seam: one of one today, one sleeper per
+> bed id.
+
 **Recomputed, never saved:** tide height, wind, weather, sea state, visibility (from
 `worldSeed + gameTime`), dormant NPC positions, authored geometry, **a boat's effective helm fit and
 its depth-sounder reading** (ADR 0030), **which end of a bed the pillow is on** (see below), and
