@@ -138,6 +138,23 @@ namespace HiddenHarbours.Tests.EditMode
             finally { Object.DestroyImmediate(player.gameObject); Object.DestroyImmediate(boat.gameObject); }
         }
 
+        [Test]
+        public void TheBoatsRegion_FollowsHerOnlyWhenSheCame_AndAnUnknownOneIsTheRegionLeft()
+        {
+            const string west = "region.west", east = "region.east";
+            Assert.That(RegionTravelCoordinator.BoatRegionAfter("", west, east, boatCame: true), Is.EqualTo(east),
+                "she came: she is in the region arrived in");
+            Assert.That(RegionTravelCoordinator.BoatRegionAfter(west, east, west, boatCame: true), Is.EqualTo(west));
+            Assert.That(RegionTravelCoordinator.BoatRegionAfter(west, west, east, boatCame: false), Is.EqualTo(west),
+                "a walk out leaves her where she was");
+            Assert.That(RegionTravelCoordinator.BoatRegionAfter(west, east, west, boatCame: false), Is.EqualTo(west),
+                "and a walk home finds her there");
+            Assert.That(RegionTravelCoordinator.BoatRegionAfter("", west, east, boatCame: false), Is.EqualTo(west),
+                "an unknown region was shown as 'here': walked away from, she is in the region left (played direct)");
+            Assert.That(RegionTravelCoordinator.BoatRegionAfter("", null, east, boatCame: false), Is.EqualTo(""),
+                "from the shell no region is left behind: still unknown");
+        }
+
         /// <summary>The land template's closing solid for one side of a centred rectangle: flush outside the
         /// edge, <paramref name="thickness"/> deep, the full length of the side (LandSceneTemplate.AddClosedEdges).</summary>
         static Rect ClosingSolid(Rect r, RegionEdge edge, float thickness) => edge switch

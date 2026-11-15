@@ -273,7 +273,11 @@ namespace HiddenHarbours.App
 
             if (crossing == null) ArrivalOpening.CaptureSeaCrossing(previous, next, arrivalKey);
 
-            SetSceneRootsActive(previous, false);   // the region we left (persistents already DDOL'd out)
+            // The region being left, read while its anchor is still live (deactivating its roots unlists it).
+            RegionAnchor leftAnchor = RegionAnchor.ForScene(previous);
+            string leftRegionId = leftAnchor != null ? leftAnchor.RegionId : null;
+
+            SetSceneRootsActive(previous, false);  // the region we left (persistents already DDOL'd out)
             SetSceneRootsActive(next, true);
             SilenceRegionCamera(next);              // the persistent core's camera/listener are the live ones
             BindHoldProxies(next);
@@ -313,8 +317,11 @@ namespace HiddenHarbours.App
                 _alongsideAt = _boat.position;
                 _alongsideHalfBeam = LiveHalfBeam(_boat, anchor.AlongsideHalfBeamMetres);
             }
-            if (anchor != null && boatMoves) _boatRegionId = anchor.RegionId;
-            if (anchor != null) UpdateBoatPresence(anchor.RegionId);
+            if (anchor != null)
+            {
+                _boatRegionId = BoatRegionAfter(_boatRegionId, leftRegionId, anchor.RegionId, boatMoves);
+                UpdateBoatPresence(anchor.RegionId);
+            }
 
             // The boat was just teleported to the arrival point — bring it to rest there so a residual
             // velocity from the previous region doesn't carry it off the mark once the controller re-enables.
@@ -507,7 +514,7 @@ namespace HiddenHarbours.App
                 if (mooring != null && mooring.State == MooringState.HeldByPlayer) mooring.Root(_player.position);
             }
             ApplyCrossing(_player, _boat, crossing.Shift, crossing.BoatCame);
-            if (crossing.BoatCame) _boatRegionId = crossing.To;
+            _boatRegionId = BoatRegionAfter(_boatRegionId, crossing.From, crossing.To, crossing.BoatCame);
             UpdateBoatPresence(anchor.RegionId);
 
             // The camera is carried by the same translation, so the hop never reads as a pan.
@@ -523,6 +530,24 @@ namespace HiddenHarbours.App
                 _switcher.SetDock(anchor.DockZone, anchor.DisembarkPoint);
                 _switcher.ReassertControlMode();
             }
+        }
+
+        /// <summary>
+        /// The region the boat is in after a hop from <paramref name="from"/> to <paramref name="to"/>. PURE.
+        /// She came: <paramref name="to"/>. She was left and her region was known: unchanged. She was left
+        /// and her region was NOT yet known: <paramref name="from"/>, because "unknown" is exactly the state
+        /// <see cref="UpdateBoatPresence"/> shows as "here", so she was standing in the region being left.
+        ///
+        /// <para>⚠ The defect this closes: a region played direct (or any rig whose first arrival the
+        /// coordinator never saw, because the core came up after the region's scene was already active)
+        /// never set her region, so a walk out left it empty and she stayed SHOWN in the neighbour at her
+        /// old local coordinates, floating in the wrong place (RicePointCrossingPlayTests, the strand).</para>
+        /// </summary>
+        public static string BoatRegionAfter(string boatRegionId, string from, string to, bool boatCame)
+        {
+            if (boatCame) return to ?? "";
+            if (!string.IsNullOrEmpty(boatRegionId)) return boatRegionId;
+            return from ?? "";
         }
 
         void ShowBoat(bool present)
