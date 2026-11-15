@@ -315,6 +315,23 @@ namespace HiddenHarbours.Core
         private static INeedsService _needs;
 
         /// <summary>
+        /// The web of ties between people (relationships slice 1, owner ruling 2026-11-14): the seam a feature
+        /// module records "something happened between these two" through and asks a pair's stage from, so the
+        /// crew system, the cannery, the shops, talk and routines never reference each other (rule 4). Never
+        /// null: a default <see cref="RelationshipService"/> over the shipped <see cref="RelationshipTieDef"/>s
+        /// and <see cref="RelationshipConfig"/> is made on first read; a test assigns its own. Cleared by
+        /// <see cref="Reset"/>. In memory only until relationships slice 2 adds it to the save.
+        /// FLAG lead-architect: new Core contract (relationships).
+        /// </summary>
+        public static IRelationshipService Relationships
+        {
+            get => _relationships ??= new RelationshipService();
+            set => _relationships = value;
+        }
+
+        private static IRelationshipService _relationships;
+
+        /// <summary>
         /// The active region's terrain-elevation source — the "height map" the tidal-exposure seam reads
         /// (St Peters falling tide; the future water depth-gradient shader). The <b>world</b> registers
         /// its terrain here when a region scene loads; <b>gameplay</b>/UI resolve elevation through this
@@ -1231,6 +1248,7 @@ namespace HiddenHarbours.Core
             Appearance = null;           // → a fresh default on next read; drops any open preview
             Traits = null;               // → a fresh default on next read; drops its catalog and cache
             Needs = null;                // → a fresh default on next read; drops its stage baseline
+            Relationships = null;        // → a fresh default on next read; reseeds from the shipped ties
             TidalTerrain = null;
             StillWater = null;           // → EmptyStillWater.Instance; this property is never null
             PlayerTransform = null;
