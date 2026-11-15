@@ -91,8 +91,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
         [Test]
         public void TheCommittedBake_ParsesWithoutProblems_AndIsTheNetworksBake()
         {
-            if (!File.Exists(CommittedBake))
-                Assert.Ignore("no road floor bake is committed yet (NMC H4 Phase B commits it).");
+            Assert.IsTrue(File.Exists(CommittedBake), "The committed road-floor manifest is required.");
             RoadFloorManifest m = RoadFloorManifest.Parse(File.ReadAllText(CommittedBake));
             CollectionAssert.IsEmpty(m.Problems(), "the committed bake would be refused by the streamer");
             string sha;
