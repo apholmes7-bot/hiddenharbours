@@ -92,9 +92,20 @@ namespace HiddenHarbours.Tests.EditMode
             GameServices.Save = _previousSave;
             GameServices.CurrentRegionId = _previousRegion;
 
+            // The installer test's cutaway subscribes in Configure, and its OnDestroy never runs in
+            // EditMode: clear the channels it joined or the next press of TryEnter (this fixture's, or
+            // the next fixture's) publishes into a destroyed hull. Same discipline as
+            // EveryInteriorHullReachesItsDoorFromItsStandTests.Dismantle, plus the landing channel.
+            EventBus.Clear<CabinEntered>();
+            EventBus.Clear<CabinEntryLandingEntered>();
+            EventBus.Clear<CabinLeft>();
+            EventBus.Clear<ControlModeChanged>();
+            Interactables.Clear();
+
             for (int i = 0; i < _spawned.Count; i++)
                 if (_spawned[i] != null) Object.DestroyImmediate(_spawned[i]);
             _spawned.Clear();
+            BoatInteriorCells.Reset();
         }
 
         // =====================================================================================
