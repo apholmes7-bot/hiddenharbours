@@ -38,33 +38,33 @@ to `Week Nights`, shipped 10), **Month** (`Month Nights`, shipped 30). All in `G
 
 "Overnight max" is with you (one player) aboard and hands sharing in watches (the shipped setting):
 1 + 2 x (bunks - 1), capped at the crew slots. The figure in brackets is with sharing turned OFF (one
-sleeper a bunk). "Bunks" is the count now, then after the second-berth PR 1228 lands; the limits update by
-themselves. "Longest trip now" is what the rules allow today with a solo skipper; "Record" is the hull's
-honest longest trip before bunks are counted.
+sleeper a bunk). "Bunks" is the hull's sleep anchors on main today, the second berths of PR 1228 included;
+the limits follow the bunk count by themselves. "Longest trip now" is what the rules allow today with a
+solo skipper; "Record" is the hull's honest longest trip before bunks are counted.
 
-| Hull | Min crew | Day max (crew slots) | Bunks now / after 1228 | Overnight max now [sharing off] | Overnight max after 1228 | Longest trip now | Record | Work fitted (min crew: roles) |
-|---|---|---|---|---|---|---|---|---|
-| Dory, dory outboard | 1 | 1 | 0 / 0 | 0 | 0 | Day | Day | rod and jig, tub longline (1) |
-| Punt, punt upgraded | 1 | 1 | 0 / 0 | 0 | 0 | Day | Day | rod and jig, lobster pots, crab pots (1) |
-| Console skiff | 1 | 2 | 0 / 0 | 0 | 0 | Day | Day | rod and jig, lobster pots, crab pots (1) |
-| Sport skiffs (3), bowrider | 1 | 2 | 0 / 0 | 0 | 0 | Day | Day | rod and jig (1) |
-| Yacht tender, Zodiac FRC, Zodiac Hurricane, jet ski | 1 | 2 | 0 / 0 | 0 | 0 | Day | Day | none |
-| Lobster inshore 8.6 m (6 variants) | 1 | 2 | 1 / 2 | 1 [1] | 2 | Overnight | Overnight | lobster pots, crab pots, rod and jig (1) |
-| Lobster 12 m (6 variants) and the Lobster Boat | 1 | 3 | 1 / 2 | 1 [1] | 3 | Overnight | Overnight | lobster pots, crab pots, rod and jig, tub longline (1) |
-| Cape Islander 12.9 m | 1 | 3 | 1 / 2 | 1 [1] | 3 | Overnight | Overnight | as the 12 m, plus bluefin rod (2: skipper, mate), swordfish harpoon (3: skipper, striker, lookout), scallop drag (3: skipper, deckhand, shucker) |
-| Lobster offshore 14.6 m (6 variants) | 1 | 4 | 1 / 2 | 1 [1] | 3 | Week | Week | as the 12 m, plus swordfish harpoon (3) |
-| Express cruiser | 1 | 2 | 2 / 2 | 2 [2] | 2 | Overnight | Overnight | rod and jig (1) |
-| Go-fast | 1 | 2 | 0 / 0 (her cuddy has no usable level) | 0 | 0 | Day | Day | none |
-| Sport fisher convertible 16.2 m | 1 | 4 | 3 / 3 | 4 [3] | 4 | Overnight | Overnight | rod and jig (1), bluefin rod (2: skipper, mate) |
-| Sport fisher skybridge 27.4 m | 1 | 6 | 4 / 4 | 6 [4] | 6 | Week | Week | rod and jig (1), bluefin rod (2) |
-| Motor yacht 84 | 1 | 6 | 6 / 6 (the audit finds 5 reachable) | 6 [6] | 6 | Month | Month | none |
-| Expedition yacht 120 | 1 | 8 | 8 / 8 | 8 [8] | 8 | Month | Month | none |
-| Side dragger 25 m | 1 | 5 | 4 / 4 | 5 [4] | 5 | Week | Week | otter trawl (2: skipper, winchman), scallop drag (3: skipper, winchman, shucker) |
-| Stern trawler, Mk II 38 m | 1 | 8 | 4 / 4 | 7 [4] | 7 | Week | Week | otter trawl (3: skipper, winchman, gallows hand) |
-| Coastal packet 60 m | 1 | 10 | 1 / 2 | 1 [1] | 3 | Month | Month | cargo (2: skipper, deckhand) |
-| Tanker 110 m | 1 | 14 | 1 / 3 | 1 [1] | 5 | Month | Month | cargo (2: skipper, engineer) |
-| Sloop 30 | 1 | 2 | 0 / 0 (no interior def yet) | 0 | 0 | Day | Week | rod and jig (1) |
-| Sloop 88 | 1 | 6 | 0 / 0 (no interior def yet) | 0 | 0 | Day | Month | none |
+| Hull | Min crew | Day max (crew slots) | Bunks | Overnight max [sharing off] | Longest trip now | Record | Work fitted (min crew: roles) |
+|---|---|---|---|---|---|---|---|
+| Dory, dory outboard | 1 | 1 | 0 | 0 | Day | Day | rod and jig, tub longline (1) |
+| Punt, punt upgraded | 1 | 1 | 0 | 0 | Day | Day | rod and jig, lobster pots, crab pots (1) |
+| Console skiff | 1 | 2 | 0 | 0 | Day | Day | rod and jig, lobster pots, crab pots (1) |
+| Sport skiffs (3), bowrider | 1 | 2 | 0 | 0 | Day | Day | rod and jig (1) |
+| Yacht tender, Zodiac FRC, Zodiac Hurricane, jet ski | 1 | 2 | 0 | 0 | Day | Day | none |
+| Lobster inshore 8.6 m (6 variants) | 1 | 2 | 2 | 2 [2] | Overnight | Overnight | lobster pots, crab pots, rod and jig (1) |
+| Lobster 12 m (6 variants) and the Lobster Boat | 1 | 3 | 2 | 3 [2] | Overnight | Overnight | lobster pots, crab pots, rod and jig, tub longline (1) |
+| Cape Islander 12.9 m | 1 | 3 | 2 | 3 [2] | Overnight | Overnight | as the 12 m, plus bluefin rod (2: skipper, mate), swordfish harpoon (3: skipper, striker, lookout), scallop drag (3: skipper, deckhand, shucker) |
+| Lobster offshore 14.6 m (6 variants) | 1 | 4 | 2 | 3 [2] | Week | Week | as the 12 m, plus swordfish harpoon (3) |
+| Express cruiser | 1 | 2 | 2 | 2 [2] | Overnight | Overnight | rod and jig (1) |
+| Go-fast | 1 | 2 | 0 (her cuddy has no usable level) | 0 | Day | Day | none |
+| Sport fisher convertible 16.2 m | 1 | 4 | 3 | 4 [3] | Overnight | Overnight | rod and jig (1), bluefin rod (2: skipper, mate) |
+| Sport fisher skybridge 27.4 m | 1 | 6 | 4 | 6 [4] | Week | Week | rod and jig (1), bluefin rod (2) |
+| Motor yacht 84 | 1 | 6 | 6 (the audit finds 5 reachable) | 6 [6] | Month | Month | none |
+| Expedition yacht 120 | 1 | 8 | 8 | 8 [8] | Month | Month | none |
+| Side dragger 25 m | 1 | 5 | 4 | 5 [4] | Week | Week | otter trawl (2: skipper, winchman), scallop drag (3: skipper, winchman, shucker) |
+| Stern trawler, Mk II 38 m | 1 | 8 | 4 | 7 [4] | Week | Week | otter trawl (3: skipper, winchman, gallows hand) |
+| Coastal packet 60 m | 1 | 10 | 2 | 3 [2] | Month | Month | cargo (2: skipper, deckhand) |
+| Tanker 110 m | 1 | 14 | 3 | 5 [3] | Month | Month | cargo (2: skipper, engineer) |
+| Sloop 30 | 1 | 2 | 0 (no interior def yet) | 0 | Day | Week | rod and jig (1) |
+| Sloop 88 | 1 | 6 | 0 (no interior def yet) | 0 | Day | Month | none |
 
 An all-hired crew (no player aboard, a hired skipper running the boat) can sleep 2 x bunks, capped at
 the crew slots. With two players aboard each takes a bunk of their own first.

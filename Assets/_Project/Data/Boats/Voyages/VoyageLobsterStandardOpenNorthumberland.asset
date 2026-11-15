@@ -37,4 +37,4 @@ MonoBehaviour:
     RequiredRoleIds:
     - role.skipper
   RealWorldCrew: "40-45 ft lobster boat: captain + 1-2 helpers by day; 3-4 for 2-4 nights of longline, gillnet or snow crab."
-  LimitedBy: the third hand has no berth; fuel about 3 game days
+  LimitedBy: two bunks for three slots, so the third hand sleeps in watches; fuel about 3 game days

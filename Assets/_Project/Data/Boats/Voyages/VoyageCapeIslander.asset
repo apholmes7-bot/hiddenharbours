@@ -54,4 +54,4 @@ MonoBehaviour:
     - role.deckhand
     - role.shucker
   RealWorldCrew: "40-45 ft Cape Islander: lobster captain + 1-2 helpers; bluefin rod 2-3; swordfish harpoon 3-4 (captain, striker, mast lookout), historically up to about 7 days to Georges [S2]."
-  LimitedBy: the third hand has no berth until the cuddy gets one; fuel about 3 game days
+  LimitedBy: two bunks for three slots, so the third hand sleeps in watches; fuel about 3 game days
