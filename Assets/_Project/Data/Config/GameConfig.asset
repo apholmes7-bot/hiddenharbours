@@ -618,5 +618,11 @@ MonoBehaviour:
     SideReach: 0.7
   DevAllHelmInstruments: 1
   MeshFishingAndDig: 1
-  RegionCrossingHysteresisMetres: 1
+  RegionCrossingHysteresisMetres: 0.25
   RegionPreloadDistanceMetres: 40
+  RegionSeamFadeOutSeconds: 0.15
+  RegionSeamFadeInSeconds: 0.2
+  RegionSeamMaxBlackSeconds: 1.5
+  RegionSeamFootLeadMetres: 0.5
+  RegionSeamBoatLeadMetres: 1
+  RegionSeamMinApproachSpeed: 0.1

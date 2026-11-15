@@ -1231,14 +1231,14 @@ namespace HiddenHarbours.Core
         public bool MeshFishingAndDig = true;
 
         /// <summary>Shipped crossing hysteresis (m), also the fallback for a rig with no GameConfig.</summary>
-        public const float DefaultRegionCrossingHysteresisMetres = 1f;
+        public const float DefaultRegionCrossingHysteresisMetres = 0.25f;
 
         [Header("Region crossings (ADR 0057: the whole wall is a door)")]
         [Tooltip("How far (m) past a region's edge the player or boat must go before the crossing into the " +
                  "neighbour fires. They arrive at the SAME world point, so this is also how far they must " +
                  "come back to cross again: it stops a mover on the seam bouncing between scenes without " +
                  "ever moving them. Small: it is a stretch of the old scene's empty margin you travel " +
-                 "through before the new scene appears.")]
+                 "through before the new scene appears. It is crossed under the seam fade, so it is never seen.")]
         [Min(0f)] public float RegionCrossingHysteresisMetres = DefaultRegionCrossingHysteresisMetres;
 
         /// <summary>Shipped preload distance (m), also the fallback for a rig with no GameConfig.</summary>
@@ -1250,6 +1250,35 @@ namespace HiddenHarbours.Core
                  "the seam, and more neighbours are kept loaded. 0 = no preload (the scene loads when the " +
                  "crossing fires, as before).")]
         [Min(0f)] public float RegionPreloadDistanceMetres = DefaultRegionPreloadDistanceMetres;
+
+        /// <summary>Shipped seam-fade timings (s) and lead distances (m), also the fallbacks for a rig with
+        /// no GameConfig (owner ruling on PR 1223: "a momentary fade out and screen change").</summary>
+        public const float DefaultRegionSeamFadeOutSeconds = 0.15f;
+        public const float DefaultRegionSeamFadeInSeconds = 0.2f;
+        public const float DefaultRegionSeamMaxBlackSeconds = 1.5f;
+        public const float DefaultRegionSeamFootLeadMetres = 0.5f;
+        public const float DefaultRegionSeamBoatLeadMetres = 1f;
+        public const float DefaultRegionSeamMinApproachSpeed = 0.1f;
+
+        [Tooltip("How long (s) the screen takes to fade to black as the player or boat reaches a seam. The " +
+                 "camera stops at every region edge, so the mover runs up to the edge of the screen, the " +
+                 "screen fades, the region changes underneath, and it fades back in.")]
+        [Min(0f)] public float RegionSeamFadeOutSeconds = DefaultRegionSeamFadeOutSeconds;
+        [Tooltip("How long (s) the screen takes to clear again on the far side of a seam.")]
+        [Min(0f)] public float RegionSeamFadeInSeconds = DefaultRegionSeamFadeInSeconds;
+        [Tooltip("The longest (s) the screen stays black waiting for the mover to reach the crossing point. " +
+                 "Past it the fade gives up and clears (the mover stopped at the edge).")]
+        [Min(0f)] public float RegionSeamMaxBlackSeconds = DefaultRegionSeamMaxBlackSeconds;
+        [Tooltip("How far (m) before the crossing point a walker's fade starts, on top of the distance he " +
+                 "covers during the fade-out. Bigger = more of him is still on screen as it starts, and the " +
+                 "screen stays black a moment longer.")]
+        [Min(0f)] public float RegionSeamFootLeadMetres = DefaultRegionSeamFootLeadMetres;
+        [Tooltip("The same lead (m) for a boat. Boats are long: a bigger lead starts the fade while more of " +
+                 "the hull is still inside the frame, at the price of a longer black at rowing speed.")]
+        [Min(0f)] public float RegionSeamBoatLeadMetres = DefaultRegionSeamBoatLeadMetres;
+        [Tooltip("The slowest (m/s) a mover can head out of a region and still start a seam fade. Below it " +
+                 "the mover is standing at the edge, and the fade does not start (or clears if it had).")]
+        [Min(0f)] public float RegionSeamMinApproachSpeed = DefaultRegionSeamMinApproachSpeed;
 
         public float SecondsPerHour => SecondsPerDay / 24f;
         public float SecondsPerWeek => SecondsPerDay * DaysPerWeek;

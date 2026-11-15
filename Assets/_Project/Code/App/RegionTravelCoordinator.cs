@@ -42,7 +42,26 @@ namespace HiddenHarbours.App
             EnsureWorldFrame();
         }
 
-        private void OnDisable() => SceneManager.activeSceneChanged -= OnActiveSceneChanged;
+        private void OnDisable()
+        {
+            SceneManager.activeSceneChanged -= OnActiveSceneChanged;
+            // A rig switched off mid-fade must never leave the screen black: drop the fade and clear the cover.
+            _seamFade.Reset();
+            GameServices.SeamCoverAlpha = 0f;
+        }
+
+        /// <summary>
+        /// Step the seam fade and hand its alpha to the one screen fade (<see cref="GameServices.SeamCoverAlpha"/>).
+        /// Scaled time, so a paused world pauses the fade with the mover. The arrival frame is not stepped
+        /// (it renders black), and the fade drops the step after it, which carries the hop frame's cost.
+        /// </summary>
+        private void Update()
+        {
+            _seamFade.Configure(GameServices.RegionSeamFadeOutSeconds, GameServices.RegionSeamFadeInSeconds,
+                                GameServices.RegionSeamMaxBlackSeconds);
+            if (Time.frameCount != _seamArrivedFrame) _seamFade.Tick(Time.deltaTime);
+            GameServices.SeamCoverAlpha = _seamFade.Alpha;
+        }
 
         /// <summary>
         /// Take the player registration back — <b>on DESTROY, deliberately not on disable</b>, which is
@@ -279,6 +298,7 @@ namespace HiddenHarbours.App
             // A world-frame crossing in flight (ADR 0057) is taken once too, whatever happens next.
             PendingCrossing crossing = _pending;
             _pending = null;
+            if (crossing != null && _seamFade.Arrived()) _seamArrivedFrame = Time.frameCount;   // clears from here
 
             if (crossing == null) ArrivalOpening.CaptureSeaCrossing(previous, next, arrivalKey);
 
@@ -365,6 +385,20 @@ namespace HiddenHarbours.App
         /// <summary>True while a crossing has been started and its scene has not yet become active.</summary>
         public bool CrossingInFlight => _pending != null;
 
+        // The momentary fade over every seam crossing (owner ruling on PR 1223). Pure; stepped in Update.
+        readonly SeamCrossingFade _seamFade = new SeamCrossingFade();
+        int _seamArrivedFrame = -1;
+        // The mover's last physics position, for its velocity (the fade's look-ahead). Reset on a hop.
+        Transform _lastMover;
+        Vector2 _lastMoverPos;
+        bool _hasLastMoverPos;
+
+        /// <summary>Where the seam fade is (read-only, for probes and tests).</summary>
+        public SeamFadePhase SeamFadePhase => _seamFade.Phase;
+
+        /// <summary>How black the seam fade has the screen (0 clear .. 1 black).</summary>
+        public float SeamFadeAlpha => _seamFade.Alpha;
+
         /// <summary>The region the player's boat was last left in ("" until the first arrival).</summary>
         public string BoatRegionId => _boatRegionId;
 
@@ -378,21 +412,38 @@ namespace HiddenHarbours.App
         private void FixedUpdate()
         {
             if (_pending != null) return;                       // one crossing at a time
-            if (GameServices.OpeningCinematicRunning) return;   // the opening sails its own authored door
+            if (GameServices.OpeningCinematicRunning) { _seamFade.Cancel(); return; }   // it sails its own door
             EnsureWorldFrame();
             WorldFrame frame = GameServices.WorldFrame;
             string here = GameServices.CurrentRegionId;
             if (frame == null || !frame.Contains(here)) return; // no frame, or a region off the map
             OpenSharedEdgesOnce(frame, here);                   // before anyone can reach a seam
-            if (!TryGetMover(out Transform mover, out bool boatIsMover)) return;
+            if (!TryGetMover(out Transform mover, out bool boatIsMover))
+            {
+                _hasLastMoverPos = false;
+                _seamFade.Cancel();
+                return;
+            }
+            Vector2 velocity = MoverVelocity(mover);
 
             CrossingDecision d = frame.Resolve(here, mover.position, GameServices.RegionCrossingHysteresisMetres);
             if (d.Kind == CrossingKind.Stay)
             {
                 WarmNeighbour(frame, here, mover.position);
+                SteerSeamFade(frame, here, mover.position, velocity, boatIsMover);
                 return;
             }
-            if (d.Kind == CrossingKind.Cross && BeginCrossing(here, d, boatIsMover)) return;
+            if (d.Kind == CrossingKind.Cross)
+            {
+                // ⭐ The hop is made only under a black screen (owner ruling on PR 1223). A mover that got
+                // past the band without the look-ahead starting a fade (a teleport, a shove) starts one now;
+                // it keeps moving meanwhile, and the hop waits for the black.
+                if (!_seamFade.IsCovering) _seamFade.Begin();
+                if (!_seamFade.ReadyToHop) return;
+                _seamFade.Hopped();
+                if (BeginCrossing(here, d, boatIsMover)) return;
+            }
+            _seamFade.Cancel();
 
             // A world boundary, or a neighbour whose scene would not load: hold the mover on the edge.
             frame.TryGet(here, out RegionFrame f);
@@ -483,6 +534,47 @@ namespace HiddenHarbours.App
             return mover != null && mover.gameObject.activeInHierarchy;
         }
 
+        /// <summary>
+        /// The mover's velocity from its physics position one step ago (m/s). Zero on the first step after a
+        /// hop or a change of mover, which only delays a look-ahead by one step. The body's position, not
+        /// the transform's, so render interpolation never reads as speed.
+        /// </summary>
+        Vector2 MoverVelocity(Transform mover)
+        {
+            var body = mover.GetComponent<Rigidbody2D>();
+            Vector2 p = body != null ? body.position : (Vector2)mover.position;
+            float dt = Time.fixedDeltaTime;
+            Vector2 v = _hasLastMoverPos && mover == _lastMover && dt > 0f ? (p - _lastMoverPos) / dt : Vector2.zero;
+            _lastMover = mover;
+            _lastMoverPos = p;
+            _hasLastMoverPos = true;
+            return v;
+        }
+
+        /// <summary>
+        /// ⭐ <b>Start the fade as the mover runs up to the edge</b> (owner ruling on PR 1223). The camera stops
+        /// at the region edge, so the mover is on screen right up to it; the crossing point lies the
+        /// hysteresis band beyond it. Looking ahead by the distance covered during the fade-out plus a lead
+        /// for the mover's size (<see cref="SeamCrossingFade.TryLookAhead"/>), the fade starts while the mover
+        /// is still inside the frame and is black by the time it gets there. A mover that turns away or
+        /// stops at the edge clears the fade again.
+        /// </summary>
+        void SteerSeamFade(WorldFrame frame, string here, Vector2 position, Vector2 velocity, bool boatIsMover)
+        {
+            float lead = boatIsMover ? GameServices.RegionSeamBoatLeadMetres : GameServices.RegionSeamFootLeadMetres;
+            bool heading = SeamCrossingFade.TryLookAhead(position, velocity, GameServices.RegionSeamFadeOutSeconds,
+                               lead, GameServices.RegionSeamMinApproachSpeed, out Vector2 ahead)
+                           && frame.Resolve(here, ahead, GameServices.RegionCrossingHysteresisMetres).Kind == CrossingKind.Cross;
+            if (heading)
+            {
+                if (!_seamFade.IsCovering) _seamFade.Begin();
+            }
+            else if (_seamFade.IsCovering)
+            {
+                _seamFade.Cancel();
+            }
+        }
+
         RegionSceneLoader _loader;
 
         RegionSceneLoader Loader
@@ -560,12 +652,13 @@ namespace HiddenHarbours.App
                 if (mooring != null && mooring.State == MooringState.HeldByPlayer) mooring.Root(_player.position);
             }
             ApplyCrossing(_player, _boat, crossing.Shift, crossing.BoatCame);
+            _hasLastMoverPos = false;   // the 400 m local jump is not speed
             _boatRegionId = BoatRegionAfter(_boatRegionId, crossing.From, crossing.To, crossing.BoatCame);
             UpdateBoatPresence(anchor.RegionId);
 
-            // The camera is carried by the same translation, follow state and all, so the hop never reads
-            // as a pan or a jump: its world position is continuous across the seam (CameraFollow also
-            // leaves seam edges unclamped, so neither region's bounds pull it back).
+            // The camera is carried by the same translation, follow state and all, and settled into the new
+            // region's clamp while the seam fade holds the screen black: the first clear frame shows the view
+            // already stopped at the near edge, with the mover just inside it (owner ruling on PR 1223).
             var follow = Object.FindFirstObjectByType<CameraFollow>();
             if (follow != null) follow.CarryAcross(crossing.Shift);
 

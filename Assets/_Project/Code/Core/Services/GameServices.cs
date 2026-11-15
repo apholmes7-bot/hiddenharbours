@@ -689,6 +689,26 @@ namespace HiddenHarbours.Core
             UnityEngine.Mathf.Max(0f, Config != null ? Config.RegionPreloadDistanceMetres
                                                      : GameConfig.DefaultRegionPreloadDistanceMetres);
 
+        /// <summary>The seam fade's timings (s), lead distances (m) and least approach speed (m/s), owner
+        /// ruling on PR 1223. Same <c>Config != null</c> contract as the other tunables.</summary>
+        public static float RegionSeamFadeOutSeconds => SeamTunable(c => c.RegionSeamFadeOutSeconds, GameConfig.DefaultRegionSeamFadeOutSeconds);
+        public static float RegionSeamFadeInSeconds => SeamTunable(c => c.RegionSeamFadeInSeconds, GameConfig.DefaultRegionSeamFadeInSeconds);
+        public static float RegionSeamMaxBlackSeconds => SeamTunable(c => c.RegionSeamMaxBlackSeconds, GameConfig.DefaultRegionSeamMaxBlackSeconds);
+        public static float RegionSeamFootLeadMetres => SeamTunable(c => c.RegionSeamFootLeadMetres, GameConfig.DefaultRegionSeamFootLeadMetres);
+        public static float RegionSeamBoatLeadMetres => SeamTunable(c => c.RegionSeamBoatLeadMetres, GameConfig.DefaultRegionSeamBoatLeadMetres);
+        public static float RegionSeamMinApproachSpeed => SeamTunable(c => c.RegionSeamMinApproachSpeed, GameConfig.DefaultRegionSeamMinApproachSpeed);
+
+        static float SeamTunable(System.Func<GameConfig, float> read, float fallback) =>
+            UnityEngine.Mathf.Max(0f, Config != null ? read(Config) : fallback);
+
+        /// <summary>
+        /// How black the screen is for a seam crossing RIGHT NOW (0 clear .. 1 black): written by the travel
+        /// rig's seam fade (App), read by the one screen fade (UI), so the crossing reuses the existing cover
+        /// without either module referencing the other (rule 4). A plain float, polled per frame: no event,
+        /// no allocation. 0 whenever no seam crossing is under way.
+        /// </summary>
+        public static float SeamCoverAlpha { get; set; }
+
         /// <summary>
         /// TRUE while the ARRIVAL OPENING is running — from the moment <c>ArrivalOpening</c> leaves
         /// <c>Dormant</c> until it hands the player the boat, and false again the instant it is torn
@@ -1307,6 +1327,7 @@ namespace HiddenHarbours.Core
             SwellClimates.Clear();
             PendingArrivalKey = null;
             CurrentRegionBounds = default;
+            SeamCoverAlpha = 0f;          // no crossing outlives its rig: the cover is clear
             WorldFrame = null;           // no frame: legacy keyed passages, as every fixture expects
             Whereabouts = null;
             OpeningCinematicRunning = false;   // a torn-down opening never leaves the intro grade on
