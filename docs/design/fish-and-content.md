@@ -451,6 +451,20 @@ and clam digging (ClamFork, on foot at St Peters).
 | South Water (20-72 m) | cod, haddock, pollock, mackerel (on the grounds) | none | none |
 | Coddle Cove (greybox, ≈6 m) | cod, pollock, mackerel, striped bass, winter flounder | lobster, rock crab | none |
 
+**Lobster seasons by port (owner ruling 2026-11-15).** Lobster is not open all year: each region (a
+port's waters) has its own open window, authored as one `FishingSeasonDef` per species + region in
+`Data/FishingSeasons` (`season.lobster_<region>`; open season + day and close season + day, both
+inclusive; an open day after the close day wraps the year end). The read is a pure function of
+(species, region, calendar day) in `FishingSeasonMath`, recomputed at the haul and never saved. The
+`deckwork.pot` ruleset references the seasons beside its legal-size rules, and the deck sort applies
+them at pot-aboard for the region the pot was SET in: out of season a legal lobster is still caught but
+goes back over the side (`GrabOutcome.ReturnedOutOfSeason`, a toast says why), never kept or sold. A
+species/region with no entry is open all year. NPC pot days are not gated yet. First-pass windows
+(owner-tunable, game year = 4 seasons x 28 days): St Peters, Coddle Cove and East Water Early Spring 15
+to High Summer 21 (open on the first morning); Rice Point High Summer 15 to The Turn 21; West Water High
+Summer 22 to The Turn 28; Cumberland The Turn 1 to Hard Winter 7; South Water The Turn 8 to Hard Winter
+14; Nine Mile Creek Hard Winter 8 to Early Spring 21 (wraps). Some port is open every day of the year.
+
 Herring is listed at St Peters, East Water, Nine Mile Creek, Rice Point, South Water and Coddle Cove but
 is Net-only, so no playable method takes it yet. The scallop (Rice Point) waits for the dredge.
 
