@@ -115,6 +115,35 @@ namespace HiddenHarbours.Core
             Announce(NeedKind.Tiredness, before);
         }
 
+        public void SleepSince(double bedtimeSeconds)
+        {
+            PlayerNeedsDto needs = Needs();
+            if (needs == null) return;
+            IGameClock clock = _clock();
+            if (clock == null) return;
+            double now = clock.TotalSeconds;
+            if (!(now > bedtimeSeconds)) return;   // no time slept (and NaN), no relief
+
+            NeedsSettings settings = _settings();
+            NeedStage before = Stage(NeedKind.Tiredness);
+            float relief = settings.SleepReliefPerGameHour;
+            float after = 0f;
+            if (relief > 0f)
+            {
+                // Read at BEDTIME: tiredness does not rise while you sleep, it falls.
+                NeedCurve curve = NeedsMath.CurveOf(NeedKind.Tiredness, settings);
+                double perHour = _secondsPerGameHour();
+                float atBedtime = NeedsMath.LevelAt(needs.Tiredness, curve, bedtimeSeconds, perHour);
+                double hoursSlept = perHour > 0d ? (now - bedtimeSeconds) / perHour : 0d;
+                double left = atBedtime - hoursSlept * relief;
+                after = left > 0d ? (float)left : 0f;
+            }
+            // relief <= 0 is the pre-ruling rule (any sleep rests you fully), so an unwired number never
+            // turns sleeping into doing nothing.
+            needs.Tiredness = new NeedStateDto(after, now);
+            Announce(NeedKind.Tiredness, before);
+        }
+
         public void Tick()
         {
             PlayerNeedsDto needs = Needs();
