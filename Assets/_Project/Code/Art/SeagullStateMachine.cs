@@ -60,6 +60,12 @@ namespace HiddenHarbours.Art
         /// (ground metres, altitude, and the heading it flies on). See
         /// <see cref="SeagullStateMachine.Step"/>.</summary>
         public double FreeX, FreeY, FreeAltitudeMetres, FreeHeading;
+        /// <summary>True once the departing bird's take-off row has chained into the next airborne row: that
+        /// row's speed and climb are then eased in from the take-off's exit velocity (see
+        /// <see cref="SeagullStateMachine.HandoverWeight"/>), so the hand-over is not a step in speed.</summary>
+        public bool DepartureHandover;
+        /// <summary>The take-off state the hand-over eases out of (valid while <see cref="DepartureHandover"/>).</summary>
+        public int DepartureHandoverFrom;
     }
 
     /// <summary>
@@ -205,6 +211,7 @@ namespace HiddenHarbours.Art
             {
                 bird.RejoinMilliseconds = 0.0;
                 bird.Departing = false;
+                bird.DepartureHandover = false;
                 bird.FlockBound = true;
                 AdoptWheel(ref bird, behaviour, flockSample, wheelX, wheelY);
                 return;
@@ -310,16 +317,31 @@ namespace HiddenHarbours.Art
             // step's midpoint so the sum is the row's exact climb and travel), and no band floor lifts it -
             // the fly band's 6 m floor applied the instant take-off chained into fly was a 3.5 m screen jump.
             // The departure cross-fade (StepDeparture) carries it up to the wheel instead.
-            double ease = 1.0;
+            //
+            // When the take-off chains into the next airborne row, the bird is moving at the take-off's EXIT
+            // velocity (DepartureEase(1) x the row's speed and climb). The next row's speed and climb are eased
+            // in from there over one take-off duration (HandoverWeight), so speed and climb rate are continuous
+            // across the chain: the clip showed the ground speed doubling and the climb stopping in one frame.
+            double midMs = bird.StateMilliseconds - 0.5 * dtSeconds * 1000.0;   // this step's midpoint
+            double speed = row.SpeedMetresPerSecond, climb = row.ClimbMetresPerSecond;
             if (bird.Departing && behaviour.LeavesSurface(s))
             {
                 double duration = row.DurationMilliseconds;
-                double midMs = bird.StateMilliseconds - 0.5 * dtSeconds * 1000.0;   // this step's midpoint
-                ease = duration > 0.0 ? DepartureEase(midMs / duration) : 1.0;
+                double ease = duration > 0.0 ? DepartureEase(midMs / duration) : 1.0;
+                speed *= ease;
+                climb *= ease;
+            }
+            else if (bird.Departing && bird.DepartureHandover)
+            {
+                var from = behaviour.Row(bird.DepartureHandoverFrom);
+                double w = HandoverWeight(midMs, from.DurationMilliseconds);
+                double exit = DepartureEase(1.0);
+                speed = from.SpeedMetresPerSecond * exit + (speed - from.SpeedMetresPerSecond * exit) * w;
+                climb = from.ClimbMetresPerSecond * exit + (climb - from.ClimbMetresPerSecond * exit) * w;
             }
 
-            if (row.ClimbMetresPerSecond != 0.0)
-                bird.AltitudeMetres += row.ClimbMetresPerSecond * ease * dtSeconds;
+            if (climb != 0.0)
+                bird.AltitudeMetres += climb * dtSeconds;
             if (bird.AltitudeMetres < floorMetres && !bird.Departing) bird.AltitudeMetres = floorMetres;
             if (bird.AltitudeMetres > ceilMetres) bird.AltitudeMetres = ceilMetres;
 
@@ -339,12 +361,25 @@ namespace HiddenHarbours.Art
                 return;
             }
 
-            if (row.SpeedMetresPerSecond > 0.0)
+            if (speed > 0.0)
             {
-                bird.X += Math.Sin(bird.Heading) * row.SpeedMetresPerSecond * ease * dtSeconds;
-                bird.Y += Math.Cos(bird.Heading) * row.SpeedMetresPerSecond * ease * dtSeconds;
+                bird.X += Math.Sin(bird.Heading) * speed * dtSeconds;
+                bird.Y += Math.Cos(bird.Heading) * speed * dtSeconds;
             }
             bird.Dir = SeagullFlockMath.DirOf(bird.Heading);
+        }
+
+        /// <summary>
+        /// How far the row after a take-off has eased from the take-off's exit velocity to its own speed and
+        /// climb, 0..1, at <paramref name="stateMilliseconds"/> into that row: linear over one take-off
+        /// duration (<paramref name="takeoffMilliseconds"/>), so the bird keeps roughly the acceleration it
+        /// took off with instead of meeting the cruise speed as a step.
+        /// </summary>
+        public static double HandoverWeight(double stateMilliseconds, double takeoffMilliseconds)
+        {
+            if (takeoffMilliseconds <= 0.0) return 1.0;
+            double w = stateMilliseconds / takeoffMilliseconds;
+            return w <= 0.0 ? 0.0 : (w >= 1.0 ? 1.0 : w);
         }
 
         /// <summary>
@@ -472,6 +507,7 @@ namespace HiddenHarbours.Art
             bird.FlockBound = false;
             bird.RejoinMilliseconds = 0.0;
             bird.Departing = false;   // the descent plan starts from where the bird is DRAWN
+            bird.DepartureHandover = false;
             bird.IntentState = arrivalState;
 
             double runIn = ApproachRunMetres(behaviour, arrivalState);
@@ -568,6 +604,12 @@ namespace HiddenHarbours.Art
         public static void Enter(ref SeagullSimBird bird, int state, SeagullBehaviour behaviour)
         {
             bool wasSurface = behaviour.SurfaceOf(bird.State) != SeagullSurface.None;
+            int previous = bird.State;
+            // The take-off chaining into the next airborne row: ease that row in from the take-off's exit velocity.
+            bird.DepartureHandover = bird.Departing && behaviour.LeavesSurface(previous) &&
+                                     !behaviour.LeavesSurface(state) &&
+                                     behaviour.SurfaceOf(state) == SeagullSurface.None;
+            bird.DepartureHandoverFrom = bird.DepartureHandover ? previous : 0;
 
             bird.State = state;
             bird.StateMilliseconds = 0.0;
@@ -584,6 +626,7 @@ namespace HiddenHarbours.Art
                 bird.FlockBound = false;
                 bird.RejoinMilliseconds = 0.0;
                 bird.Departing = false;
+                bird.DepartureHandover = false;
             }
             else
             {

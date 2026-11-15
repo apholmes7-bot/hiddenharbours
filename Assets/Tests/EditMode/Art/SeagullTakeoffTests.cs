@@ -37,7 +37,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
             -8.0, 9.0, 9.0, 2.5, 3, SeagullFlockMath.SeagullFlockAnim.Glide, 1, 1.0);
         const double CentreX = 0.0, CentreY = 0.0;
 
-        struct Sample { public double X, Y, Alt, Heading; public int Dir; public string State; }
+        struct Sample { public double X, Y, Alt, Heading, FreeX, FreeY, FreeAlt; public int Dir; public string State; }
 
         /// <summary>A gull standing at (3, -2) facing east, told to go, stepped until it is on the wheel.</summary>
         static List<Sample> Departure(SeagullBehaviour b, out SeagullSimBird start)
@@ -59,7 +59,8 @@ namespace HiddenHarbours.Tests.Art.EditMode
         }
 
         static Sample Snap(SeagullBehaviour b, in SeagullSimBird s) => new Sample
-        { X = s.X, Y = s.Y, Alt = s.AltitudeMetres, Heading = s.Heading, Dir = s.Dir, State = b.IdOf(s.State) };
+        { X = s.X, Y = s.Y, Alt = s.AltitudeMetres, Heading = s.Heading, Dir = s.Dir, State = b.IdOf(s.State),
+          FreeX = s.FreeX, FreeY = s.FreeY, FreeAlt = s.FreeAltitudeMetres };
 
         static double ScreenStep(Sample a, Sample c)
         {
@@ -104,6 +105,37 @@ namespace HiddenHarbours.Tests.Art.EditMode
         /// fastest row speed (the from-rest ease peaks at 2x its mean) plus the departure blend's steepest
         /// rate (1.5 / ramp) times every distance it closes.
         /// </summary>
+        /// <summary>
+        /// The bird's own path keeps its velocity across the take-off -> fly chain. The take-off ends at its
+        /// exit velocity (twice the row's mean) and the fly row's speed and climb ease in from there, so the
+        /// change in velocity over the chain frame is of the same order as the take-off's own per-frame
+        /// acceleration - not the step from the exit velocity to the cruise speed the clip showed (ground speed
+        /// doubling, climb stopping, in one frame).
+        /// </summary>
+        [Test]
+        public void TheHandoverIntoFlyKeepsTheVelocity()
+        {
+            var b = Behaviour();
+            List<Sample> t = Departure(b, out _);
+            int k = 1;
+            while (k < t.Count && t[k].State == SeagullStates.Takeoff) k++;
+            Assert.Less(k + 1, t.Count, "the departure never chained out of the take-off");
+
+            double[] V(int i) => new[] { (t[i].FreeX - t[i - 1].FreeX) / FrameMs, (t[i].FreeY - t[i - 1].FreeY) / FrameMs,
+                                         (t[i].FreeAlt - t[i - 1].FreeAlt) / FrameMs };
+            double Dv(int i) { double[] a = V(i - 1), c = V(i); return Math.Sqrt((c[0] - a[0]) * (c[0] - a[0]) +
+                                       (c[1] - a[1]) * (c[1] - a[1]) + (c[2] - a[2]) * (c[2] - a[2])); }
+
+            double accel = 0.0;   // the take-off's own largest per-frame change in velocity
+            for (int i = 3; i < k; i++) accel = Math.Max(accel, Dv(i));
+            Assert.Greater(accel, 0.0, "the take-off never accelerated");
+            for (int i = k; i <= k + 1; i++)
+                Assert.LessOrEqual(Dv(i), 3.0 * accel,
+                    $"frame {i} ({t[i - 1].State} -> {t[i].State}) changed the bird's velocity by " +
+                    $"{Dv(i) * 1000.0:F3} m/s in one frame; the take-off itself accelerates by at most " +
+                    $"{accel * 1000.0:F3} m/s per frame");
+        }
+
         [Test]
         public void NoFrameOfTheDepartureJumps()
         {
