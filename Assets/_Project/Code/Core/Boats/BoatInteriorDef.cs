@@ -208,6 +208,41 @@ namespace HiddenHarbours.Core
 
         [Tooltip("The facings this reads from — the kit's own 8-facing names. Empty means every facing.")]
         public string[] VisibleFacings = Array.Empty<string>();
+
+        // ---- appended 2026-11-14: prep stations and bunk geometry (all optional) ----------------
+
+        /// <summary>The verb a cooktop carries. The trawlers' single <c>galley</c> anchor and the kit's
+        /// <c>stove</c> both bake as this, so runtime finds a cooktop by its action, never by its id.</summary>
+        public const string ActionCook = "cook";
+
+        /// <summary>The verb a prep station carries: raw food is cut/prepared here, then cooked at an
+        /// <see cref="ActionCook"/> anchor (owner ruling 2026-11-14: two steps).</summary>
+        public const string ActionPrep = "prep";
+
+        /// <summary>The verb a bunk carries.</summary>
+        public const string ActionSleep = "sleep";
+
+        /// <summary>How far (m, hull frame, same level) a prep station may stand from the cooktop it
+        /// serves: the stations share one counter, so this is a whole small galley at most.</summary>
+        public const float PrepToCookMaxMetres = 1.5f;
+
+        [Tooltip("For a bunk: the interior level its mattress is on. EMPTY means no bunk geometry was " +
+                 "given, and the two points below mean nothing.")]
+        public string BunkLevel = "";
+
+        [Tooltip("For a bunk: the obstruction (on BunkLevel) its mattress was measured from.")]
+        public string BunkObstruction = "";
+
+        [Tooltip("For a bunk: the centre of the mattress top, hull-local metres (z = mattress top).")]
+        public Vector3 MattressCentre = Vector3.zero;
+
+        [Tooltip("For a bunk: the middle of the mattress's head edge, hull-local metres. The pillow is " +
+                 "on this end; MattressCentre → PillowEnd is the way the sleeper's head points.")]
+        public Vector3 PillowEnd = Vector3.zero;
+
+        /// <summary>True when the sidecar gave where this bunk's mattress is and which end the pillow
+        /// is on.</summary>
+        public bool HasBunkGeometry => !string.IsNullOrEmpty(BunkLevel);
     }
 
     /// <summary>

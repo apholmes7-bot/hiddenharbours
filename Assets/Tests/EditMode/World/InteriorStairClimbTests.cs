@@ -477,6 +477,61 @@ namespace HiddenHarbours.Tests.World.EditMode
         }
 
         [Test]
+        public void AClimbHoldsADynamicBodyKinematic_AndGivesItBackOnArrival()
+        {
+            BuildingInterior interior = StandTwoStorey(out _);
+            Transform occupant = WalkInside(interior);
+            var body = occupant.gameObject.AddComponent<Rigidbody2D>();
+            body.bodyType = RigidbodyType2D.Dynamic;
+            body.gravityScale = 0f;
+
+            interior.TryGoToLevel(InteriorLevelLayout.UpperLevel);
+            Assert.AreEqual(RigidbodyType2D.Kinematic, body.bodyType,
+                "⭐ furniture can never cancel a climb: for the walk the physics solver cannot push the " +
+                "body, so a chair on the path cannot shove it off the climb's own track");
+
+            Assert.IsTrue(interior.AdvanceClimb(0.1f));
+            Assert.AreEqual(RigidbodyType2D.Kinematic, body.bodyType, "and it stays held mid-climb");
+
+            Assert.IsFalse(interior.AdvanceClimb(GameServices.StairClimbSeconds), "the climb finishes");
+            Assert.AreEqual(RigidbodyType2D.Dynamic, body.bodyType, "the body's own type comes back");
+            Assert.AreEqual(Vector2.zero, body.linearVelocity, "with no velocity left over");
+        }
+
+        [Test]
+        public void AnInterruptedClimbGivesTheBodyBackToo()
+        {
+            BuildingInterior interior = StandTwoStorey(out _);
+            Transform occupant = WalkInside(interior);
+            var body = occupant.gameObject.AddComponent<Rigidbody2D>();
+            body.bodyType = RigidbodyType2D.Dynamic;
+            body.gravityScale = 0f;
+
+            interior.TryGoToLevel(InteriorLevelLayout.UpperLevel);
+            Assert.IsTrue(interior.IsClimbing, "precondition: mid-climb");
+
+            occupant.position = interior.transform.position + new Vector3(0f, -40f, 0f);
+            Tick(interior);
+
+            Assert.IsFalse(interior.IsClimbing, "a teleport ends the climb");
+            Assert.AreEqual(RigidbodyType2D.Dynamic, body.bodyType, "and restores the body it was holding");
+        }
+
+        [Test]
+        public void AClimbNeverChangesABodyThatWasAlreadyKinematic()
+        {
+            BuildingInterior interior = StandTwoStorey(out _);
+            Transform occupant = WalkInside(interior);
+            var body = occupant.gameObject.AddComponent<Rigidbody2D>();
+            body.bodyType = RigidbodyType2D.Kinematic;
+
+            interior.TryGoToLevel(InteriorLevelLayout.UpperLevel);
+            Assert.IsFalse(interior.AdvanceClimb(GameServices.StairClimbSeconds));
+            Assert.AreEqual(RigidbodyType2D.Kinematic, body.bodyType,
+                "restore is exact: a body that came in kinematic leaves kinematic");
+        }
+
+        [Test]
         public void SABOTAGE_AStoreyStoodAtTheGroundFloorsOwnYIsRefusedOutLoud()
         {
             // The defect as a scene: a storey above configured with no lift. It is what ADR 0036 shipped,

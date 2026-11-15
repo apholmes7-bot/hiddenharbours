@@ -13,7 +13,7 @@ namespace HiddenHarbours.UI
     public sealed class CharacterCreatorPanel : MonoBehaviour
     {
         private const int Scale = DialogueBubbleKit.ArtScale;
-        private const int PageCount = 5;
+        private const int PageCount = 6;
         private const float Width = 1920f, Height = 1080f;
         private const float Margin = NotebookKit.CellHeight * Scale;
         private const float StripHeight = NotebookKit.Pitch * Scale * 9;
@@ -22,13 +22,21 @@ namespace HiddenHarbours.UI
         private const float GroupTop = NotebookKit.Pitch * Scale * 8 + NotebookKit.Edge * Scale * 8;
         private const float SelectorTop = RowHeight + NotebookKit.Edge * Scale * 4;
         private const float SelectorPitch = NotebookKit.Pitch * Scale * 2;
+        // A trait card: the name line, then up to two wrapped lines of its plain description.
+        private const float TraitLineHeight = NotebookKit.CellHeight * Scale;
+        private const float TraitRowHeight = RowHeight + TraitLineHeight * 2f;
+        private const float TraitPitch = TraitRowHeight + NotebookKit.Edge * Scale * 2;
+        private const float TraitGroupWidth = SelectorWidth + NotebookKit.CellWidth * Scale * 8;
         [SerializeField] private bool _nameGridGamepadOnly = true;
         private static readonly int FigureTexture = Shader.PropertyToID("_HHFigureScreenTex");
         private static readonly int FigureMap = Shader.PropertyToID("_HHFigurePixelMap");
         private CharacterCreatorModel _model;
         private GameObject _root;
         private RectTransform _book, _keyboardRoot, _rotateLeft, _rotateRight, _animationButton, _randomize;
-        private RectTransform _youGroup, _clothesGroup, _nameGroup, _readyGroup, _actions, _nameDone;
+        private RectTransform _youGroup, _clothesGroup, _nameGroup, _traitGroup, _readyGroup, _actions, _nameDone;
+        private Image[] _traitChecks;
+        private Text[] _traitDescriptions;
+        private Text _traitStatus;
         private RectTransform[] _tabs, _rows, _keyRects;
         private Image[] _tabImages, _rowImages, _keyImages;
         private Image[] _swatches;
@@ -84,11 +92,13 @@ namespace HiddenHarbours.UI
         public Rect FigureScreenRect => _figureScreenRect;
         public string ViewMode => _fallback ? "Figure texture, point scaled" : "Creator camera, isolated UI layer";
         public string ViewReason => _viewReason;
-        private int Page => PageFor(_model.FocusRow, _model.OutfitRow);
-        internal static int PageFor(int row, int outfitRow) => row == 0 ? 0 : row < outfitRow ? 1
-            : row == outfitRow ? 2 : row == outfitRow + 1 ? 3 : 4;
+        private const int TraitPage = 4, ReadyPage = 5;
+        private int Page => PageFor(_model.FocusRow, _model.OutfitRow, _model.ResetRow);
+        // Rows past the name and before Reset are the trait cards (one per offered trait).
+        internal static int PageFor(int row, int outfitRow, int resetRow) => row == 0 ? 0 : row < outfitRow ? 1
+            : row == outfitRow ? 2 : row == outfitRow + 1 ? 3 : row < resetRow ? TraitPage : ReadyPage;
         private int FirstRow(int page) => page == 0 ? 0 : page == 1 ? 1 : page == 2 ? _model.OutfitRow
-            : page == 3 ? _model.NameRow : _model.ResetRow;
+            : page == 3 ? _model.NameRow : page == TraitPage && _model.TraitRowCount > 0 ? _model.TraitRow : _model.ResetRow;
 
         public bool Open(CharacterCreatorModel model)
         {
@@ -548,15 +558,24 @@ namespace HiddenHarbours.UI
             _youGroup.gameObject.SetActive(appearance);
             _clothesGroup.gameObject.SetActive(appearance);
             _nameGroup.gameObject.SetActive(Page == 3);
-            _readyGroup.gameObject.SetActive(Page == 4);
+            _traitGroup.gameObject.SetActive(Page == TraitPage);
+            _readyGroup.gameObject.SetActive(Page == ReadyPage);
             for (int i = 0; i < _tabs.Length; i++) _tabImages[i].color = i == Page ? NotebookInk.Gold : NotebookInk.Paper;
             for (int i = 0; i < _rows.Length; i++)
             {
-                bool show = i <= _model.OutfitRow ? appearance : i == _model.NameRow ? Page == 3 : Page == 4;
+                bool show = i <= _model.OutfitRow ? appearance : i == _model.NameRow ? Page == 3
+                    : _model.IsTraitRow(i) ? Page == TraitPage : Page == ReadyPage;
                 _rows[i].gameObject.SetActive(show);
                 if (!show) continue;
                 _rowLabels[i].text = RowCopy(i);
                 _rowImages[i].color = i == _model.FocusRow ? NotebookInk.Gold : NotebookInk.Paper;
+                if (i == _model.ConfirmRow)
+                    _rowLabels[i].color = _model.TraitPicks.IsComplete ? NotebookInk.Ink : NotebookInk.InkFaint;
+                if (_traitChecks[i] != null)
+                {
+                    _traitChecks[i].color = _model.IsTraitPicked(i) ? NotebookInk.InkStrong : NotebookInk.Paper;
+                    _traitDescriptions[i].text = _model.TraitDescription(i);
+                }
                 if (_swatches[i] != null)
                 {
                     CharacterRamp ramp = RampFor(i);
@@ -564,7 +583,11 @@ namespace HiddenHarbours.UI
                     if (ramp != null && ramp.IsUsable) _swatches[i].color = ramp.Shades[ramp.Shades.Length / 2];
                 }
             }
-            if (Page == 4) _summary.text = _model.RowLabel(0) + "\n" + _model.RowLabel(_model.OutfitRow) + "\n" + _model.RowLabel(_model.NameRow);
+            if (Page == ReadyPage) _summary.text = _model.RowLabel(0) + "\n" + _model.RowLabel(_model.OutfitRow) + "\n"
+                + _model.RowLabel(_model.NameRow) + "\n" + _model.TraitSummary();
+            if (Page == TraitPage)
+                _traitStatus.text = _model.TraitPicks.Why ?? CharacterCreatorStrings.TraitsPicked(
+                    _model.TraitPicks.Picked.Count, _model.TraitPicks.Required);
             bool grid = _model.NameEditing && (!_nameGridGamepadOnly || _lastInputGamepad);
             _keyboardRoot.gameObject.SetActive(grid);
             _nameDone.gameObject.SetActive(_model.NameEditing);
@@ -576,7 +599,8 @@ namespace HiddenHarbours.UI
             _nameInstructions.text = grid ? CharacterCreatorViewStrings.PadNameInstructions : CharacterCreatorViewStrings.TypedNameInstructions;
             for (int i = 0; i < _keyLabels.Length; i++)
             { _keyLabels[i].text = _model.KeyLabel(i); _keyImages[i].color = i == _model.KeyboardIndex ? NotebookInk.Gold : NotebookInk.Paper; }
-            _hint.text = _model.Refusal ?? (_model.NameEditing ? (grid ? CharacterCreatorViewStrings.NameHint : CharacterCreatorViewStrings.TypedNameHint) : CharacterCreatorViewStrings.Hint);
+            _hint.text = _model.Refusal ?? (_model.NameEditing ? (grid ? CharacterCreatorViewStrings.NameHint : CharacterCreatorViewStrings.TypedNameHint)
+                : Page == TraitPage ? CharacterCreatorViewStrings.TraitHint : CharacterCreatorViewStrings.Hint);
             _hint.color = _model.Refusal != null ? NotebookInk.InkStrong : NotebookInk.Ink;
         }
 
@@ -666,6 +690,11 @@ namespace HiddenHarbours.UI
             _youGroup = Group("You", CharacterCreatorViewStrings.You, Margin*4f, GroupTop, SelectorWidth, SelectorPitch*5f);
             _clothesGroup = Group("Clothes", CharacterCreatorViewStrings.Clothes, Width-Margin*4f-SelectorWidth, GroupTop, SelectorWidth, SelectorPitch*7f);
             _nameGroup = Group("NameEntry", CharacterCreatorViewStrings.YourName, Width-Margin-SelectorWidth-120f, GroupTop, SelectorWidth+120f, SelectorPitch*5f);
+            int traitCards = Mathf.Max(1, _model.TraitRowCount);
+            _traitGroup = Group("TraitChoices", CharacterCreatorViewStrings.PickTraits(_model.TraitPicks.Required), Margin*4f, GroupTop,
+                TraitGroupWidth, SelectorTop + traitCards*TraitPitch + RowHeight);
+            _traitStatus=Label(_traitGroup,"TraitStatus","",0f,SelectorTop+traitCards*TraitPitch,TraitGroupWidth,RowHeight);
+            _traitStatus.color = NotebookInk.InkStrong;
             _readyGroup = Group("ReadyChoices", CharacterCreatorViewStrings.Ready, Margin*4f, GroupTop, SelectorWidth, SelectorPitch*7f);
             _summary=Label(_readyGroup,"Summary","",0f,SelectorTop,SelectorWidth,SelectorPitch*2f);
             _summary.horizontalOverflow = HorizontalWrapMode.Wrap;
@@ -674,6 +703,7 @@ namespace HiddenHarbours.UI
             _nameInstructions.horizontalOverflow = HorizontalWrapMode.Wrap;
             _rows=new RectTransform[_model.RowCount]; _rowImages=new Image[_rows.Length]; _rowLabels=new Text[_rows.Length];
             _swatches=new Image[_rows.Length];
+            _traitChecks=new Image[_rows.Length]; _traitDescriptions=new Text[_rows.Length];
             var focusOrder = new List<int>(_rows.Length);
             for (int group=0;group<2;group++)
                 for (int slot=0;slot<=5;slot++)
@@ -690,9 +720,11 @@ namespace HiddenHarbours.UI
                     parent=clothes?_clothesGroup:_youGroup; top=SelectorTop+index*SelectorPitch;
                 }
                 else if (i == _model.NameRow) { parent=_nameGroup; top=SelectorTop; width+=120f; }
+                else if (_model.IsTraitRow(i)) { parent=_traitGroup; top=SelectorTop+(i-_model.TraitRow)*TraitPitch; width=TraitGroupWidth; }
                 else { parent=_readyGroup; top=SelectorPitch*3f+(i-_model.ResetRow)*SelectorPitch; }
                 _rows[i]=Button(parent,"Choice"+i,"",0f,top,width);
                 _rowImages[i]=_rows[i].GetComponent<Image>(); _rowLabels[i]=_rows[i].GetComponentInChildren<Text>();
+                if (_model.IsTraitRow(i)) BuildTraitCard(i, width);
                 if (i <= _model.OutfitRow)
                 {
                     float lane=NotebookKit.CellWidth*Scale*2f;
@@ -722,6 +754,26 @@ namespace HiddenHarbours.UI
             { _keyRects[i]=Button(_keyboardRoot,"Key"+i,"",(i%CharacterCreatorModel.KeyboardColumns)*keyWidth,(i/CharacterCreatorModel.KeyboardColumns)*RowHeight,keyWidth-NotebookKit.Edge*Scale);
                 _keyImages[i]=_keyRects[i].GetComponent<Image>(); _keyLabels[i]=_keyRects[i].GetComponentInChildren<Text>(); }
         }
+        // A trait card: an ink box (filled when picked), the plain name, and its one-line description.
+        private void BuildTraitCard(int row,float width)
+        {
+            RectTransform card=_rows[row];
+            card.sizeDelta=new Vector2(width,TraitRowHeight);
+            float edge=NotebookKit.Edge*Scale, box=RowHeight-edge*4f;
+            RectTransform frame=Image(card,"PickFrame",NotebookInk.InkStrong);
+            Place(frame,edge*2f,edge*2f,box,box);
+            RectTransform fill=Image(frame,"Picked",NotebookInk.Paper);
+            Place(fill,edge,edge,box-edge*2f,box-edge*2f);
+            _traitChecks[row]=fill.GetComponent<Image>();
+            float text=box+edge*6f;
+            Place(_rowLabels[row].rectTransform,text,0f,width-text-edge,RowHeight);
+            _rowLabels[row].color=NotebookInk.InkStrong;
+            Text description=Label(card,"Description","",text,RowHeight,width-text-edge*2f,TraitLineHeight*2f);
+            description.horizontalOverflow=HorizontalWrapMode.Wrap;
+            description.alignment=TextAnchor.UpperLeft;
+            _traitDescriptions[row]=description;
+        }
+
         private RectTransform Mark(Transform parent,string name,Sprite sprite,float lane)
         {
             RectTransform rect=Image(parent,name,Color.white);
@@ -764,7 +816,7 @@ namespace HiddenHarbours.UI
 
     internal static class CharacterCreatorViewStrings
     {
-        public static readonly string[] Tabs={"BODY","COLOURS","OUTFIT","NAME","READY"};
+        public static readonly string[] Tabs={"BODY","COLOURS","OUTFIT","NAME","TRAITS","READY"};
         public static readonly string[] Animations={"Idle","Walk"};
         public const string Hint="Arrows/stick: turn   Space/Y: pose   R/X: randomize\nUp/down: select   A/D or d-pad: change   Tab/shoulders: step   Enter/A: choose   Esc/B: leave";
         public const string NameHint="D-pad/stick: pick a key   A: type   Start/Done: finish   B: back";
@@ -774,6 +826,8 @@ namespace HiddenHarbours.UI
         public const string You="YOU", Clothes="CLOTHES", YourName="YOUR NAME (OPTIONAL)", Ready="READY";
         public const string Pose="Pose: ", Wear="Wear: ", Done="Done";
         public const string Randomize="Randomize";
+        public const string TraitHint="Up/down: select   Enter/A or click: pick or unpick   Tab/shoulders: step   Esc/B: leave";
+        public static string PickTraits(int required) => required == 1 ? "PICK 1 TRAIT" : "PICK " + required + " TRAITS";
         public static string FieldName(string field) => field == "skin" ? "Skin" : field == "hair" ? "Hair"
             : field == "eyes" ? "Eyes" : field == "shirt" ? "Shirt" : field == "outfit" ? "Outfit"
             : field == "hatCol" ? "Hat" : field == "apronCol" ? "Apron" : field;

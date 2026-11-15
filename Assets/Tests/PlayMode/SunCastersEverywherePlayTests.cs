@@ -236,7 +236,7 @@ namespace HiddenHarbours.Tests.PlayMode
                 bool forbidden = renderer.sortingOrder >= SortingBands.SunShadePool ||
                     SunCasterRules.Matches(renderer.name, "*Seabed*") ||
                     SunCasterRules.Matches(renderer.name, "Sea") ||
-                    SunCasterRules.Matches(renderer.name, "*Shadow*") || rules.IsExcludedArt(renderer);
+                    SunCasterRules.Matches(renderer.name, "*Shadow*") || CastsExcludedArt(renderer, shadow, rules);
                 if (forbidden)
                 {
                     excluded++;
@@ -254,6 +254,21 @@ namespace HiddenHarbours.Tests.PlayMode
             Assert.That(piers, Is.GreaterThanOrEqualTo(pierFloor), scene + ": pier face/deck floor");
             Assert.That(excluded, Is.Zero, scene + ": water, seabed and shade must have no caster" +
                 (forbiddenCasters == null ? string.Empty : "\nForbidden casters:\n" + string.Join("\n", forbiddenCasters)));
+        }
+
+        /// <summary>
+        /// Excluded art must cast nothing. An excluded OBJECT (name, UI canvas) holds no caster at all, as
+        /// it always had to. An excluded CELL is a frame an animated caster passes through (a gull's
+        /// splash row): the bird keeps its caster for the frames either side, and on the excluded cell the
+        /// caster must have stood down and be drawing nothing, sun silhouette, ground pool or lamp shadow.
+        /// Read off what the caster is actually drawing, so a caster that only claims to stand down fails.
+        /// </summary>
+        static bool CastsExcludedArt(SpriteRenderer renderer, SpriteShadow shadow, SunCasterRules rules)
+        {
+            if (!rules.IsExcludedArt(renderer)) return false;
+            if (shadow == null) return false;
+            if (rules.IsExcludedObject(renderer)) return true;
+            return !shadow.StandsDownForExcludedArt || shadow.IsDrawing || shadow.TryGetLampShadowCaster(out _);
         }
 
         static string DescribeForbiddenCaster(SpriteRenderer renderer, SunCasterRules rules)
@@ -276,6 +291,10 @@ namespace HiddenHarbours.Tests.PlayMode
                     if (renderer.sprite != null && SunCasterRules.Matches(renderer.sprite.name, pattern))
                         predicates.Add($"excluded sprite matches '{pattern}'");
                 }
+                var caster = renderer.GetComponent<SpriteShadow>();
+                if (caster != null)
+                    predicates.Add($"standsDown={caster.StandsDownForExcludedArt}; drawing={caster.IsDrawing}; " +
+                        $"lampCaster={caster.TryGetLampShadowCaster(out _)}");
             }
             string hierarchyPath = renderer.name;
             for (var parent = renderer.transform.parent; parent != null; parent = parent.parent)
@@ -517,7 +536,7 @@ namespace HiddenHarbours.Tests.PlayMode
             var visible = Renderers().Where(r => r.enabled && r.gameObject.activeInHierarchy && frame.Intersects(r.bounds));
             var rules = Resources.Load<SunCasterRules>(nameof(SunCasterRules));
             foreach (var renderer in visible)
-                Assert.That(renderer.GetComponent<SpriteShadow>() != null && rules.IsExcludedArt(renderer), Is.False,
+                Assert.That(CastsExcludedArt(renderer, renderer.GetComponent<SpriteShadow>(), rules), Is.False,
                     name + ": excluded water, seabed, shade, lamp glow, UI, fish or effects must not cast: " + renderer.name);
             if (name.StartsWith("stp-", StringComparison.Ordinal) || name.StartsWith("cape-", StringComparison.Ordinal) ||
                 name == "nmc-quay-1700" || name == "cumberland-1700")
