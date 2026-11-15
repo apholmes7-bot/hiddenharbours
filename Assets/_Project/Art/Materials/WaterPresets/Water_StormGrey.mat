@@ -162,6 +162,8 @@ Material:
     - _WakeFoamThreshold: 0.12
     - _WakeFoamWhiteHold: 0.12
     - _WashLeeShare: 1
+    - _WashLeftFoamOpacity: 0.6
+    - _WashLeftFoamSeconds: 2
     - _WashLineOpacity: 0.85
     - _WashLineSlopeCap: 0.5
     - _WashLineWidth: 0.1

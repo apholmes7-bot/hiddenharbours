@@ -3,6 +3,9 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using NUnit.Framework;
+using UnityEngine;
+using HiddenHarbours.Art;
+using HiddenHarbours.Core;
 
 namespace HiddenHarbours.Tests.Art.EditMode
 {
@@ -43,6 +46,9 @@ namespace HiddenHarbours.Tests.Art.EditMode
             ("_WashLeeShare", "1"),
             ("_WashResidueSoften", "0.125"),
             ("_WashLineSlopeCap", "0.5"),
+            // v6 (the owner's v5 clip review, "the return/pull is jarring"): the foam a wave leaves on the sand.
+            ("_WashLeftFoamSeconds", "2"),
+            ("_WashLeftFoamOpacity", "0.6"),
         };
 
         static string Src() => File.ReadAllText(ShaderPath, Encoding.UTF8).Replace("\r\n", "\n");
@@ -75,6 +81,143 @@ namespace HiddenHarbours.Tests.Art.EditMode
             Assert.AreEqual(1, Regex.Matches(src,
                     @"float  _WashLeeShare, _WashResidueSoften, _WashLineSlopeCap;").Count,
                 "the three v4 wash uniforms must be declared once");
+            Assert.AreEqual(1, Regex.Matches(src, @"float  _WashLeftFoamSeconds, _WashLeftFoamOpacity;").Count,
+                "the two v6 left-foam uniforms must be declared once");
+        }
+
+        // ---- v6: the snap-back (owner clip review 2026-11-15: "it snaps back to the ocean instantaneiously as the
+        // new wave approaches shore ... the return/pull is jarring"; "remove any jaggedness") -------------------
+
+        const float G = 9.81f;
+
+        static WaveTrains GroupTrains()
+        {
+            // The CurlingBreakerTests group sea: a 30 m swell beating with a 21 m train, so its crests are born unequal.
+            var swell = new WaveTrain(Vector2.up, 30f, 0.3f, 0f, G);
+            var group = new WaveTrain(Vector2.up, 21f, 0.27f, 0f, G);
+            var silent = new WaveTrain(Vector2.up, 30f, 0f, 0f, G);
+            return new WaveTrains(swell, group, silent, silent, 2, 2.6f);
+        }
+
+        static float WorstStep(bool drawn, out int jumps) => WorstStep(drawn, out jumps, out _);
+
+        static float WorstStep(bool drawn, out int jumps, out float runInDiff)
+        {
+            WaveTrains trains = GroupTrains();
+            WaveTrain swell = trains.Dominant;
+            BreakerSettings s = BreakerSettings.Default;
+            float period = BreakerMath.PeriodSeconds(in swell);
+            var breakLine = new Vector2(0f, -4f);
+            const float travel = 1.5f;
+            const int PerPeriod = 600;                    // 0.007 s at this period: finer than a 60 fps frame
+            float worst = 0f, last = float.NaN;
+            jumps = 0;
+            runInDiff = 0f;
+            for (int i = 0; i <= 8 * PerPeriod; i++)
+            {
+                double t = 100d + period * i / (double)PerPeriod;
+                float phase = BreakerMath.BorePhaseDegrees(in swell, breakLine, travel, 1f, t);
+                float since = BreakerMath.BoreBirthEnergy01(in trains, breakLine, travel, phase, period,
+                                                            WaveFetchSample.Open, s.BoreSetStrength, 1f, t);
+                float birth = since;
+                if (drawn)
+                {
+                    float previous = BreakerMath.BoreBirthEnergy01(in trains, breakLine, travel + period, phase, period,
+                                                                   WaveFetchSample.Open, s.BoreSetStrength, 1f, t);
+                    float sinceS = BreakerMath.SecondsSinceTheCrest(phase, period);
+                    birth = WaterSurface.DrawnPulseBirth01(since, previous, sinceS, period);
+                    if (sinceS >= period * 0.5f) runInDiff = Mathf.Max(runInDiff, Mathf.Abs(birth - since));
+                }
+                float bore = BreakerMath.BorePulse01(phase, s.BorePulseSharpness) * birth;
+                if (!float.IsNaN(last))
+                {
+                    float step = Mathf.Abs(bore - last);
+                    worst = Mathf.Max(worst, step);
+                    if (step >= 0.05f) jumps++;
+                }
+                last = bore;
+            }
+            return worst;
+        }
+
+        [Test]
+        public void TheBorePulse_KeepsTheRunInsReachThroughTheFront_SoTheEdgeNeverJumps()
+        {
+            // The run-up is the pulse times its crest's birth. The shipped birth (seconds SINCE the last crest)
+            // changed owner AT the front, where the pulse is 1: in a lull the run-up and the drawn edge jumped from
+            // the run-in's reach to the small new crest's in one frame (the snap-back, and the notch racing along
+            // the waterline where that front crossed it). The drawn birth keeps the run-in exactly and drains from
+            // its reach, easing to the new crest's by half a period, where the pulse is 0.
+            float shipped = WorstStep(false, out int shippedJumps);
+            float fixedStep = WorstStep(true, out int fixedJumps, out float runInDiff);
+            Debug.Log($"[left-foam] bore step per 1/600 period: since-crest {shipped:F3} ({shippedJumps} jumps), " +
+                      $"drawn {fixedStep:F3} ({fixedJumps} jumps), run-in difference {runInDiff:F6}");
+            Assert.GreaterOrEqual(shippedJumps, 3, "premise: the since-crest pulse jumps at the group's unequal fronts");
+            Assert.AreEqual(0, fixedJumps, "the drawn pulse must be continuous in time");
+            Assert.Less(fixedStep, 0.03f, "the drawn pulse must move only as fast as its own shape");
+            Assert.AreEqual(0f, runInDiff, 0f, "the run-in (\"the in is great\") must be exactly the shipped one");
+            Assert.AreEqual(BreakerMath.BorePulse01(90f, 2.6f), 1f, 1e-5f, "premise: the pulse peaks at the front");
+            // The blend itself: the previous birth at the front, the new one from half a period on.
+            Assert.AreEqual(0.9f, WaterSurface.DrawnPulseBirth01(0.4f, 0.9f, 0f, 8f), 1e-6f);
+            Assert.AreEqual(0.4f, WaterSurface.DrawnPulseBirth01(0.4f, 0.9f, 4f, 8f), 1e-6f);
+            Assert.AreEqual(0.4f, WaterSurface.DrawnPulseBirth01(0.4f, 0.9f, 7f, 8f), 1e-6f);
+            Assert.AreEqual(0.65f, WaterSurface.DrawnPulseBirth01(0.4f, 0.9f, 2f, 8f), 1e-6f);
+        }
+
+        [Test]
+        public void TheShader_DrainsFromTheRunInsReach_AndAgesTheSheetOnTheLastCrest()
+        {
+            string src = Src();
+            int fn = IndexOf(src, "float SurfDrawnBoreBirth01(float sinceCrestBirth, float previousBirth, float phaseDeg, float periodS)");
+            int sheet = IndexOf(src, "float sheetBirth = SurfBoreBirth01(SurfBoreClockPoint(breakLinePt), travelS, borePhase, periodS,");
+            int prev = IndexOf(src, "float previousBirth = SurfBoreBirth01(SurfBoreClockPoint(breakLinePt), travelS + periodS, borePhase,");
+            int drawn = IndexOf(src, "float birth = SurfDrawnBoreBirth01(sheetBirth, previousBirth, borePhase, periodS);");
+            int pulse = IndexOf(src, "surfBore = SurfBorePulse01(borePhase, _BreakerBore.x) * birth;");
+            int sheetUse = IndexOf(src, "surfSheet = SurfBoreSheet01(borePhase, periodS) * sheetBirth;");
+            Assert.That(fn < sheet && sheet < prev && prev < drawn && drawn < pulse && pulse < sheetUse);
+            string body = src.Substring(fn, src.IndexOf("\n            }", fn, System.StringComparison.Ordinal) - fn);
+            StringAssert.Contains("if (halfS <= 1e-4 || sinceS >= halfS) return sinceCrestBirth;", body,
+                "the twin of WaterSurface.DrawnPulseBirth01 keeps the run-in unread");
+            StringAssert.Contains("return lerp(previousBirth, sinceCrestBirth, u * u * (3.0 - 2.0 * u));", body);
+            StringAssert.Contains("leftFoamReachM = SurfRunUpMeters(standingAtBreak, surfAlive, surfXi, previousBirth) * boreEdge;", src,
+                "the foam left on the sand is the reach the edge got at the last front");
+        }
+
+        [Test]
+        public void TheFoamAWaveLeaves_StaysWhereItReached_AndFadesInPlace()
+        {
+            // The C# twin of the shader's leftFoamOnly + its fade (WaterSurface.LeftFoamDrawn / LeftFoamFade01).
+            const float Cap = 0.35f, Blend = 1f, Secs = 2f, Op = 0.6f;
+            const float reach = 0.3f;                    // the last crest got 0.3 m of level up the beach
+            // Behind the draining edge, inside the reach: left foam.
+            Assert.IsTrue(WaterSurface.LeftFoamDrawn(-0.2f, 0f, 0.05f, reach, Blend, Cap, Secs, Op));
+            // Still under the live edge: water, not left foam.
+            Assert.IsFalse(WaterSurface.LeftFoamDrawn(-0.02f, 0f, 0.05f, reach, Blend, Cap, Secs, Op));
+            // Beyond where the crest ever reached: dry sand.
+            Assert.IsFalse(WaterSurface.LeftFoamDrawn(-0.32f, 0f, 0.05f, reach, Blend, Cap, Secs, Op));
+            // Either dial at 0, or a bore that does not own the edge: none.
+            Assert.IsFalse(WaterSurface.LeftFoamDrawn(-0.2f, 0f, 0.05f, reach, Blend, Cap, 0f, Op));
+            Assert.IsFalse(WaterSurface.LeftFoamDrawn(-0.2f, 0f, 0.05f, reach, Blend, Cap, Secs, 0f));
+            Assert.IsFalse(WaterSurface.LeftFoamDrawn(-0.2f, 0f, 0.05f, reach, 0f, Cap, Secs, Op));
+
+            // The fade: 1 as its crest passes, then down smoothly, never a step (60 fps frames over 3 periods).
+            Assert.AreEqual(1f, WaterSurface.LeftFoamFade01(0f, Secs), 1e-6f);
+            float prev = 1f, worst = 0f;
+            for (int f = 1; f <= 60 * 15; f++)
+            {
+                float v = WaterSurface.LeftFoamFade01(f / 60f, Secs);
+                Assert.LessOrEqual(v, prev, "the left foam only ever thins");
+                worst = Mathf.Max(worst, prev - v);
+                prev = v;
+            }
+            Assert.Less(worst, 1f / 60f / Secs + 1e-4f, "no frame takes more than its share of the fade");
+            Assert.AreEqual(0f, WaterSurface.LeftFoamFade01(1f, 0f), "0 seconds = no left foam");
+
+            string src = Src();
+            StringAssert.Contains("float leftFade = exp(-max(leftFoamAgeS, 0.0) / max(_WashLeftFoamSeconds, 1e-3));", src);
+            StringAssert.Contains("leftFoamAgeS = SurfSecondsSinceCrest(borePhase, periodS);", src,
+                "the left foam ages on the since-crest clock: pure time, no history buffer");
+            StringAssert.Contains("if (!leftFoamOnly) clip(depth + edgeSwash + 1e-4);", src);
         }
 
         [Test]
@@ -118,7 +261,12 @@ namespace HiddenHarbours.Tests.Art.EditMode
             Assert.That(clip < gate && gate < lead && lead < line,
                 "the wash must read the SAME edgeSwash the clip draws, after it: the leading line is then " +
                 "attached to the drawn edge by construction, a hard step on whole pixels with no dither");
-
+            // v6: the line's screen gradient is taken BEFORE the clip. Taken after a discard only some lanes of a 2x2
+            // quad run (the left foam keeps its lanes), it came back undefined where a left-foam pixel shared the quad
+            // with the edge's first wet row: the line drew on even rows only, a 2-px stair (v6f1 clip scan, 11-15).
+            int grad = IndexOf(src, "float washGradM  = length(float2(ddx(washEdgeQ), ddy(washEdgeQ)))");
+            Assert.That(edgeQ < grad && grad < clip, "the edge's derivative is taken before anything is discarded");
+            Assert.AreEqual(1, Regex.Matches(src, @"ddx\(washEdgeQ\)").Count);
         }
 
         [Test]

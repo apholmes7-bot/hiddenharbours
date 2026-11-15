@@ -2474,6 +2474,48 @@ namespace HiddenHarbours.Art
         }
 
         /// <summary>
+        /// (owner clip review 2026-11-15, "the in is great, the return/pull is jarring") <b>The birth the DRAWN
+        /// pulse is scaled by</b> — the shader's <c>SurfDrawnBoreBirth01</c>. The since-crest birth
+        /// (<see cref="BreakerMath.BoreBirthEnergy01"/>) changes owner AT the front, where the pulse is 1, so in a
+        /// lull the edge jumped from the run-in's reach to the small new crest's in one frame. The run-in (from half
+        /// a period behind the last front up to the next) keeps <paramref name="sinceCrestBirth"/> exactly; behind a
+        /// front the drain starts from <paramref name="previousBirth"/> (the crest one period earlier, the one the
+        /// run-in was scaled by) and eases to the new crest's by half a period, where the pulse is 0. Pure time.
+        /// </summary>
+        public static float DrawnPulseBirth01(float sinceCrestBirth, float previousBirth, float secondsSinceCrest,
+                                              float periodSeconds)
+        {
+            float half = Mathf.Max(periodSeconds, 0f) * 0.5f;
+            if (half <= 1e-4f || secondsSinceCrest >= half) return sinceCrestBirth;
+            float u = Mathf.Max(secondsSinceCrest, 0f) / half;
+            return Mathf.Lerp(previousBirth, sinceCrestBirth, u * u * (3f - 2f * u));
+        }
+
+        /// <summary>
+        /// (owner clip review 2026-11-15, "the return/pull is jarring") <b>The foam a wave leaves</b> — the
+        /// shader's <c>leftFoamOnly</c>: a pixel the last crest's run-up reached (<paramref name="leftReachMeters"/>,
+        /// the drawn-edge law at that crest's peak) but the live edge (<paramref name="liveRunUpMeters"/>) has drained
+        /// from. It keeps that crest's foam, fading in place, instead of the edge's foam riding back to the sea.
+        /// Off when either dial is 0 or the bore does not own the edge. Pure function of time: no history.
+        /// </summary>
+        public static bool LeftFoamDrawn(float depth, float cosmeticShift, float liveRunUpMeters,
+                                         float leftReachMeters, float blend01, float maxShift,
+                                         float leftFoamSeconds, float leftFoamOpacity)
+        {
+            if (leftFoamOpacity <= 0.001f || leftFoamSeconds <= 0.001f || blend01 <= 0f || leftReachMeters <= 0f)
+                return false;
+            bool drained = depth + DrawnEdgeShift(cosmeticShift, liveRunUpMeters, blend01, maxShift) < 0f;
+            return drained && depth + DrawnEdgeShift(cosmeticShift, leftReachMeters, blend01, maxShift) >= 0f;
+        }
+
+        /// <summary>
+        /// The left foam's fade — the shader's <c>exp(-secondsSinceCrest / _WashLeftFoamSeconds)</c>: 1 as its crest
+        /// passes, falling smoothly (never a step) toward 0 over a few seconds. 0 seconds = none.
+        /// </summary>
+        public static float LeftFoamFade01(float secondsSinceCrest, float fadeSeconds)
+            => fadeSeconds <= 0.001f ? 0f : Mathf.Exp(-Mathf.Max(secondsSinceCrest, 0f) / Mathf.Max(fadeSeconds, 1e-3f));
+
+        /// <summary>
         /// (owner judge pass 2026-08-01) The FLOOR under the local seabed slope the shore cosmetics scale by —
         /// the shader's <c>max(shoreSlopeRaw, _ShoreSlopeFloor)</c>.
         ///

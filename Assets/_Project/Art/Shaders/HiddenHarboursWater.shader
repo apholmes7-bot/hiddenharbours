@@ -414,6 +414,11 @@ Shader "HiddenHarbours/Water"
         // The wash's look on the stretch of the SAME beach the bore does not break on (a lee), in a sea that
         // breaks somewhere: 1 = one shore language (line + see-through sheet) all along it, 0 = the fringe there.
         _WashLeeShare      ("Run-up wash: its look on the beach beside the bore, in a breaking sea (0 = fringe there)", Range(0,1)) = 1
+        // The foam a wave LEAVES on the sand (owner clip review 2026-11-15, "the return/pull is jarring"): where the
+        // bore's run-up reached and the edge has since drawn back, its foam stays put and thins, breaks up and fades
+        // over this many seconds since the crest passed, instead of riding the edge back to the sea. 0 = none.
+        _WashLeftFoamSeconds ("Run-up wash: seconds the foam left on the sand takes to fade (0 = none)", Range(0,10)) = 2
+        _WashLeftFoamOpacity ("Run-up wash: opacity of the foam left on the sand", Range(0,1)) = 0.6
         // The bore's residue is read through a tent this wide (m), so the foam buffer's cells never draw a stair.
         _WashResidueSoften ("Run-up wash: residue read softening width (m; ~ the foam buffer's cell)", Range(0,0.5)) = 0.125
         // The steepest edge the line measures (m of height per m): a JUMP in the run-up across the sheet (where
@@ -1633,6 +1638,7 @@ Shader "HiddenHarbours/Water"
                 float  _SurfBandDither;
                 float  _WashSheetOpacity, _WashLineWidth, _WashLineOpacity, _WashSeawardDepth, _WashPresenceRamp;
                 float  _WashLeeShare, _WashResidueSoften, _WashLineSlopeCap;
+                float  _WashLeftFoamSeconds, _WashLeftFoamOpacity;
                 float  _SurfSwellYield, _SwellShoalDepth;
                 // B1 FRINGE UNIFORM BEGIN
                 float  _SurfFringeSequenceStrength;
@@ -3432,6 +3438,24 @@ Shader "HiddenHarbours/Water"
             // buys it nothing. The drawn edge is this shader’s alone; its reference depth lives here.
             #define SURF_EDGE_REF_DEPTH 0.02
 
+            // Twin: WaterSurface.DrawnPulseBirth01 - the birth the DRAWN pulse (the run-up, the drawn edge, the
+            // face) is scaled by. The since-crest read (SurfBoreBirth01) changes owner AT the front, where the
+            // pulse peaks at 1: the run-in up to a front is scaled by the crest before it, the drain after it by
+            // the new one, so in a lull the edge jumped from the last set wave's reach to the small new one's in
+            // one frame - the snap-back, and where that front crossed the waterline a notch racing along the
+            // shore (owner clip review 2026-11-15: "remove any jaggedness"; "the in is great, the return/pull is
+            // jarring"). The run-in is kept exactly (ahead of half a period, the since-crest birth, unread). Behind
+            // the front the drain starts from the reach the run-in got (previousBirth, the crest one period
+            // earlier) and eases to the new crest's birth by half a period, where the pulse is 0. Pure time.
+            float SurfDrawnBoreBirth01(float sinceCrestBirth, float previousBirth, float phaseDeg, float periodS)
+            {
+                float halfS = max(periodS, 0.0) * 0.5;
+                float sinceS = SurfSecondsSinceCrest(phaseDeg, periodS);
+                if (halfS <= 1e-4 || sinceS >= halfS) return sinceCrestBirth;
+                float u = sinceS / halfS;
+                return lerp(previousBirth, sinceCrestBirth, u * u * (3.0 - 2.0 * u));
+            }
+
             // Posterize the surf like every other band here, dithering the step edges off the same
             // world-locked Bayer cell the foam edge and the ripple bands use. Smooth surf reads as
             // airbrushed 3D; hard steps read as banding; dithered steps read as pixel art.
@@ -5202,6 +5226,9 @@ Shader "HiddenHarbours/Water"
                 // reach in metres of level, and the breaking face's slope for the light. All three stay at
                 // their zeros — no pulse read, no reach, no face — unless their look dials are up.
                 float surfBore = 1.0, surfSheet = 1.0, surfRunUpM = 0.0, anatomyAge = 0.0;
+                // The foam a wave leaves on the sand: the reach its crest got (metres of level, the run-up at the
+                // pulse's peak) and the seconds since that crest passed. No crest read here = nothing left.
+                float leftFoamReachM = 0.0, leftFoamAgeS = 0.0;
                 float2 surfFrontSlope = float2(0.0, 0.0);
                 // ADR 0040 rev 3: with the run-up dial up, the BEACH BAND - the metres of level the wash can
                 // reach above the still-water line - is evaluated too, or the drawn edge could never move
@@ -5274,10 +5301,17 @@ Shader "HiddenHarbours/Water"
                             float omega = SurfBoreOmega();
                             float periodS = omega > 1e-6 ? 6.2831853 / omega : 0.0;
                             float borePhase = SurfBoreClockPhaseDeg(breakLinePt, travelS, surfFreqScale);
-                            float birth = SurfBoreBirth01(SurfBoreClockPoint(breakLinePt), travelS, borePhase, periodS,
-                                                          surfFreqScale, surfFetchEnv, surfFetchFactors);
+                            // The SHEET is born at its front and ages behind it: it is the last crest's
+                            // (sheetBirth). The PULSE - the run-up, the drawn edge, the face - keeps the reach
+                            // its run-in got through the front (previousBirth, one period back) and eases to
+                            // the new crest's by half a period, where the pulse is 0: it never jumps.
+                            float sheetBirth = SurfBoreBirth01(SurfBoreClockPoint(breakLinePt), travelS, borePhase, periodS,
+                                                               surfFreqScale, surfFetchEnv, surfFetchFactors);
+                            float previousBirth = SurfBoreBirth01(SurfBoreClockPoint(breakLinePt), travelS + periodS, borePhase,
+                                                                  periodS, surfFreqScale, surfFetchEnv, surfFetchFactors);
+                            float birth = SurfDrawnBoreBirth01(sheetBirth, previousBirth, borePhase, periodS);
                             surfBore = SurfBorePulse01(borePhase, _BreakerBore.x) * birth;
-                            surfSheet = SurfBoreSheet01(borePhase, periodS) * birth;
+                            surfSheet = SurfBoreSheet01(borePhase, periodS) * sheetBirth;
 
                             // The wash's reach: Hunt's law on the height the bore was BORN with (the
                             // depth-limited height at the break line, not the local one, which is 0 at the
@@ -5285,6 +5319,10 @@ Shader "HiddenHarbours/Water"
                             float breakDepth = BreakerDepthAtEnv(_BreakerDepths.xyz, _BreakerDepths.w, surfFetchEnv);
                             float standingAtBreak = max(_BreakerAnatomy.y, 0.0) * max(breakDepth, 0.0);
                             surfRunUpM = SurfRunUpMeters(standingAtBreak, surfAlive, surfXi, surfBore) * boreEdge;
+                            // The reach the edge got at the LAST front (its pulse at 1, scaled by the run-in's
+                            // birth) and how long ago that front passed: the foam it left stays there and fades.
+                            leftFoamReachM = SurfRunUpMeters(standingAtBreak, surfAlive, surfXi, previousBirth) * boreEdge;
+                            leftFoamAgeS = SurfSecondsSinceCrest(borePhase, periodS);
 
                             // The breaking FACE: the bore's own height profile, differentiated along the
                             // travel direction, as a slope the relief light and the sun's shade can see.
@@ -5447,8 +5485,26 @@ Shader "HiddenHarbours/Water"
                     ? saturate(SurfBreaking01(SURF_EDGE_REF_DEPTH, surfFetchEnv)
                                * saturate(_SurfStrength) * saturate(_SurfRunUpStrength))
                     : 0.0;                                  // the surf block's own reach gate (l.4613)
+                float cosmeticEdgeSwash = edgeSwash;
                 edgeSwash = lerp(edgeSwash, boreEdgeShift, boreEdgeBlend);
-                clip(depth + edgeSwash + 1e-4);
+                // THE FOAM A WAVE LEAVES (owner clip review 2026-11-15): sand the last crest's run-up reached and the
+                // edge has drawn back from keeps that crest's foam, which fades in place (below) while the edge drains
+                // at the pulse's own pace. Its reach is the drawn edge's law at that crest's peak (a shore quantity,
+                // so the left foam is one piece behind the edge). Twin: WaterSurface.LeftFoamDrawn.
+                float leftFoamQ = -1.0;
+                if (_WashLeftFoamOpacity > 0.001 && _WashLeftFoamSeconds > 0.001 && boreEdgeBlend > 0.0 && leftFoamReachM > 0.0)
+                    leftFoamQ = depth + lerp(cosmeticEdgeSwash, clamp(leftFoamReachM, -saturate(_SwashMaxEdgeShift),
+                                                                      saturate(_SwashMaxEdgeShift)), boreEdgeBlend);
+                bool leftFoamOnly = (depth + edgeSwash < 0.0) && (leftFoamQ >= 0.0);
+                // The line's width is measured on the DRAWN edge's own screen gradient (below). The derivative is
+                // taken HERE, before anything is discarded and outside any branch: taken after a discard that only
+                // some lanes of a 2x2 quad run, it came back undefined wherever a left-foam pixel shared the quad
+                // with the edge's first wet row, and the line lost that row - the waterline drew on even rows
+                // only, a 2-px stair (v6f1 clip scan, 2026-11-15).
+                float washEdgeQ  = depth + edgeSwash;
+                float washGradM  = length(float2(ddx(washEdgeQ), ddy(washEdgeQ)))
+                                 / max(length(ddx(worldXY)) + length(ddy(worldXY)), 1e-6) * 2.0;
+                if (!leftFoamOnly) clip(depth + edgeSwash + 1e-4);   // a left-foam pixel has leftFoamQ >= 0
 
                 // ---- THE RUN-UP WASH (owner clip review 2026-11-15) -------------------------------------
                 // On the sand the bore's run-up drew the whitewater as an OPAQUE posterized sheet: its low
@@ -5471,17 +5527,30 @@ Shader "HiddenHarbours/Water"
                                     ? saturate(_SurfStrength) * saturate(_SurfRunUpStrength) * saturate(_WashLeeShare) : 0.0;
                 float washPresence = max(smoothstep(0.0, max(_WashPresenceRamp, 1e-3), boreEdgeBlend), washSeaBreaks);
                 float washOnSand = washPresence * (1.0 - smoothstep(0.0, max(_WashSeawardDepth, 1e-3), depth));
-                // The line's width is measured on the DRAWN edge's own screen gradient, so it is the same few
-                // metres of contour on a flat as on a slope. Through the floored swashSlope a flat (the 8-bit
-                // height runs) put metres of sand inside the "line" and drew it as a solid white wedge.
-                float washEdgeQ  = depth + edgeSwash;
-                float washGradM  = length(float2(ddx(washEdgeQ), ddy(washEdgeQ)))
-                                 / max(length(ddx(worldXY)) + length(ddy(worldXY)), 1e-6) * 2.0;
+                // The line's width is measured on the DRAWN edge's own screen gradient (washGradM, taken above
+                // the clip), so it is the same few metres of contour on a flat as on a slope. Through the floored
+                // swashSlope a flat (the 8-bit height runs) put metres of sand inside the "line" and drew it as a
+                // solid white wedge.
                 // Capped at the steepest real edge: where the bore's blend changes along the shore the run-up
                 // JUMPS across the sheet, its screen gradient is huge, and uncapped every such seam drew a 1-px
                 // line racing along the shore inside the sheet.
                 float washLeadM  = washEdgeQ / clamp(washGradM, 1e-4, max(_WashLineSlopeCap, 1e-4));
                 float washLine   = washOnSand * step(washLeadM, max(_WashLineWidth, 0.0)) * saturate(_WashLineOpacity);
+                // The left foam: the run-up sheet's own metaball language (the evolving churn against a threshold
+                // lifted by how fresh it is), held still on the sand, so it thins and breaks into patches as it
+                // fades over _WashLeftFoamSeconds since its crest passed. Nothing travels; nothing rewinds.
+                // Twin: WaterSurface.LeftFoamFade01.
+                float leftFoamA = 0.0;
+                if (leftFoamOnly)
+                {
+                    washLine = 0.0;                             // the line belongs to the drawn edge alone
+                    float leftFade = exp(-max(leftFoamAgeS, 0.0) / max(_WashLeftFoamSeconds, 1e-3));
+                    float leftChurn = EvolvingField(worldXY, float2(0.0, 0.0), max(_SurfNoiseScale, 1e-3), _SurfEvolveSpeed, t);
+                    float leftThr = saturate(_SurfThreshold);
+                    float leftSoft = max(_SurfThresholdSoft, 1e-3);
+                    leftFoamA = smoothstep(leftThr - leftSoft, leftThr + leftSoft, saturate(leftChurn + leftFade * 0.75))
+                              * leftFade * washPresence * saturate(_WashLeftFoamOpacity);
+                }
 
                 float dt = saturate((depth - _ShallowDepth) / max(_DeepDepth - _ShallowDepth, 1e-3));
                 // Posterize the depth ramp into N bands for the pixel read (0 bands = smooth).
@@ -6355,6 +6424,11 @@ Shader "HiddenHarbours/Water"
                 // THE WASH'S LEADING LINE: the one foam stroke on the run-up's edge, in the fringe's colour.
                 col.rgb = lerp(col.rgb, _FoamColor.rgb, washLine);
                 col.a   = max(col.a, washLine);
+                if (leftFoamOnly)
+                {
+                    col.rgb = _SurfColor.rgb;
+                    col.a   = leftFoamA * _SurfColor.a;
+                }
 
                 // Whitecaps out on open water when it's rough (wind-driven). WIND-STREAKED + swell-coupled:
                 // the speckle is sampled on a coord COMPRESSED perpendicular to the wind, so features
@@ -6738,6 +6812,7 @@ Shader "HiddenHarbours/Water"
                                          float3(DN_COMP_MIN_CHANNEL, DN_COMP_MIN_CHANNEL, DN_COMP_MIN_CHANNEL))
                     : lightContent;
 
+                if (leftFoamOnly) col.a = leftFoamA * _SurfColor.a;
                 return col;
             }
         ENDHLSL
