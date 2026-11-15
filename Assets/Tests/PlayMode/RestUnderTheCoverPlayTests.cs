@@ -75,6 +75,8 @@ namespace HiddenHarbours.Tests.PlayMode
             _previousRegion = GameServices.CurrentRegionId;
             _responderWasInstalled = RestSaveResponder.Installed;
             _config = ScriptableObject.CreateInstance<GameConfig>();
+            SleepFlow.Reset();   // no chooser: these rests are the instant night (a booted core may have left one)
+
         }
 
         [TearDown]

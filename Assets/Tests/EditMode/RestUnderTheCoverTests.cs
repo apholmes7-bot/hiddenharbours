@@ -253,11 +253,28 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         [Test]
-        public void Two_rests_raise_two_covers_and_each_is_let_go_before_the_next()
+        public void Two_rests_raise_two_covers_each_let_go_before_the_next_and_a_day_starts_only_across_midnight()
         {
             GameClock clock = RealClockAt(22);
 
             Rest();
+            Assert.AreEqual(At(1, _config.WakeHour), clock.TotalSeconds, Exact, "the first rest reaches the morning");
+            Rest();
+
+            CollectionAssert.AreEqual(
+                new[] { Dark, Day, Written, Light, Told, Dark, Written, Light, Told }, _log,
+                "the second rest, begun at the wake hour, crosses no midnight and starts no day");
+            Assert.AreEqual(At(1, _config.WakeHour + SleepPlan.MaxHours(_config)), clock.TotalSeconds, Exact,
+                "and sleeps no longer than the longest sleep");
+        }
+
+        [Test]
+        public void Two_nights_raise_two_covers_and_start_one_day_each()
+        {
+            GameClock clock = RealClockAt(22);
+
+            Rest();
+            clock.SeekTo(At(1, 22));
             Rest();
 
             CollectionAssert.AreEqual(
