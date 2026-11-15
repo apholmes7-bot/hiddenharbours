@@ -44,9 +44,9 @@ namespace HiddenHarbours.Tests.EditMode
                     Assert.IsTrue(skin.TryGetClip(state, out _), file + ": " + state);
                     Assert.IsTrue(skin.DrawsAsMesh(state), file + ": " + state + " switch");
                 }
-                Assert.AreEqual(27, Array.FindAll(skin.MeshStates, s => Array.IndexOf(seated, s) < 0).Length,
-                    file + ": the legacy state set is retained");
-                Assert.AreEqual(31, skin.MeshStates.Length, file);
+                Assert.AreEqual(36, Array.FindAll(skin.MeshStates, s => Array.IndexOf(seated, s) < 0).Length,
+                    file + ": the 27 existing states plus eight rod clips and dig");
+                Assert.AreEqual(40, skin.MeshStates.Length, file);
             }
         }
     }
