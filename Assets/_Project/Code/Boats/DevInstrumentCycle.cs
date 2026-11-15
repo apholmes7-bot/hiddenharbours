@@ -25,9 +25,9 @@ namespace HiddenHarbours.Boats
     /// <see cref="InstrumentLocker"/>, so no dev convenience can ever reach the player's save and
     /// permanently fit an instrument they never bought (rule 5: the fit is recomputed, never stored).</para>
     ///
-    /// <para><b>Inert in a shipped build.</b> There is ONE dev predicate in this system and the relay owns
-    /// it: <see cref="HelmControlRelay.DevIgnoreEquipmentGating"/>, which is false outside the editor and a
-    /// development build. This component reads that flag rather than re-deriving it, so the two can never
+    /// <para><b>Inert in a shipped build.</b> The relay owns the combined dev gate and config switch:
+    /// <see cref="HelmControlRelay.DevAllInstrumentsEnabled"/>, which compiles to false outside the editor
+    /// and a development build. This component reads that gate rather than re-deriving it, so the two can never
     /// drift apart and a player can never key their way to a free fish finder. The component is mounted
     /// unconditionally (the <see cref="MastheadTelltale"/>/<see cref="HelmControlRelay"/> precedent —
     /// self-installed from <see cref="BoatController"/>'s Awake so every already-built scene grows it with
@@ -79,8 +79,8 @@ namespace HiddenHarbours.Boats
         private void Update()
         {
             if (_relay == null) _relay = GetComponent<HelmControlRelay>();
-            // T2: ONE dev predicate, owned by the relay. False in a shipped build ⇒ the key is dead.
-            if (_relay == null || !_relay.DevIgnoreEquipmentGating) return;
+            // The relay owns the build guard and config switch. False ⇒ the key is dead.
+            if (_relay == null || !_relay.DevAllInstrumentsEnabled) return;
             // Only at the helm, and only on the boat the player is actually piloting — the picker's own
             // gate. A second boat in the scene (a rotation rig, a test harness) never eats the keypress.
             if (_boat == null || !_boat.isActiveAndEnabled) return;
@@ -111,7 +111,7 @@ namespace HiddenHarbours.Boats
         public void Step()
         {
             if (_relay == null) _relay = GetComponent<HelmControlRelay>();
-            if (_relay == null) return;
+            if (_relay == null || !_relay.DevAllInstrumentsEnabled) return;
 
             HelmConsoleDef console = Console();
             if (console == null)
@@ -157,7 +157,7 @@ namespace HiddenHarbours.Boats
         public void StepPilot()
         {
             if (_relay == null) _relay = GetComponent<HelmControlRelay>();
-            if (_relay == null) return;
+            if (_relay == null || !_relay.DevAllInstrumentsEnabled) return;
 
             HelmConsoleDef console = Console();
             if (console == null)
@@ -381,6 +381,13 @@ namespace HiddenHarbours.Boats
         /// </summary>
         public static HelmFit DevFit(HelmConsoleDef console, List<string> ownedScratch,
                                      SounderKind step, DevPilotFit pilotStep)
+            => DevFit(console, ownedScratch, step, pilotStep, allInstruments: false);
+
+        /// <summary>Maximum dev fit through the existing scratch-list resolver. The two rings can
+        /// still narrow their stations; compass and wind use the best slots the console supports.
+        /// Never pass a save-owned collection here: the relay refills its scratch list every read.</summary>
+        public static HelmFit DevFit(HelmConsoleDef console, List<string> ownedScratch,
+                                     SounderKind step, DevPilotFit pilotStep, bool allInstruments)
         {
             if (console == null) return HelmFit.None;
 
@@ -396,6 +403,15 @@ namespace HiddenHarbours.Boats
             DevPilotFit deck = ReachablePilot(pilotStep, console);
             if (ownedScratch != null)
             {
+                if (allInstruments)
+                {
+                    string compass = console.SupportsFlushCompass ? BoatEquipment.CompassFlushId
+                                   : console.SupportsDomeCompass ? BoatEquipment.CompassDomeId : null;
+                    string wind = console.MaxWind >= WindInstrumentGrade.Display ? BoatEquipment.WindDisplayId
+                                : console.MaxWind >= WindInstrumentGrade.Dial ? BoatEquipment.WindDialId : null;
+                    if (compass != null && !ownedScratch.Contains(compass)) ownedScratch.Add(compass);
+                    if (wind != null && !ownedScratch.Contains(wind)) ownedScratch.Add(wind);
+                }
                 if (HasRadar(deck) && !ownedScratch.Contains(BoatEquipment.RadarId))
                     ownedScratch.Add(BoatEquipment.RadarId);
                 if (HasGps(deck) && !ownedScratch.Contains(BoatEquipment.GpsId))
@@ -403,6 +419,10 @@ namespace HiddenHarbours.Boats
             }
 
             HelmFit fit = BoatEquipment.EffectiveFit(console, ownedScratch);
+            // A stated dev deck can show one station alone even when both were bought or authored.
+            // Owned deliberately hands both stations back to the real fit, as it always has.
+            if (allInstruments && pilotStep != DevPilotFit.Owned)
+                return new HelmFit(fit.Rig, brow, fit.Compass, HasRadar(deck), HasGps(deck), fit.Wind);
             if (fit.Sounder == brow) return fit;
             return new HelmFit(fit.Rig, brow, fit.Compass, fit.Radar, fit.Gps, fit.Wind);
         }

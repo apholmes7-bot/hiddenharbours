@@ -132,6 +132,10 @@ namespace HiddenHarbours.Core
         /// <summary>The gait currently playing (after the def's art-availability ladder). For tests / tooling.</summary>
         public CharacterGait Gait => _gait;
 
+        /// <summary>A route-driven character must keep its sprite when the mesh lacks the requested
+        /// state, instead of substituting a different gait. Other characters retain the usual fallback.</summary>
+        public bool RequireExactFigureState { get; set; }
+
         /// <summary>
         /// The SMOOTHED speed (m/s) this skin is animating to — the same value
         /// <see cref="IsoCharacterMath.GaitFor"/> is asked with, after the damping in

@@ -34,6 +34,19 @@ namespace HiddenHarbours.Economy
     /// </summary>
     public static class SellService
     {
+        /// <summary>
+        /// The price level THIS seller gets at <paramref name="market"/>: the outlet's
+        /// <see cref="Market.PriceLevel"/> (1 with no market) times the player's
+        /// <see cref="TraitStat.SellPrice"/> factor (traits slice 1, Charismatic), read through the Core seam
+        /// <see cref="GameServices.Traits"/>. The quote, the till and <see cref="Market.NextUnitPrice"/> all
+        /// read this one value, so the screen still shows exactly the coin paid. With no traits the factor
+        /// is exactly 1 and the level comes back untouched (bit-for-bit the old price). Only the acting
+        /// player's trait applies; nothing stacks across players.
+        /// </summary>
+        public static float SellerPriceLevel(Market market)
+            => TraitMath.Apply(market != null ? market.PriceLevel : 1f,
+                               GameServices.Traits.PlayerMultiplier(TraitStat.SellPrice));
+
         /// <summary>How many of <paramref name="speciesId"/> are in the hold (sellable or not).</summary>
         public static int CountOf(IHold hold, string speciesId)
         {
@@ -83,7 +96,7 @@ namespace HiddenHarbours.Economy
             float supply = 0f, demand = 1f;
             bool marketRead = false;
             // The outlet's price level is per-MARKET, not per-category, so it is read once (§7.5).
-            float priceLevel = market != null ? market.PriceLevel : 1f;
+            float priceLevel = SellerPriceLevel(market);
 
             int total = 0;
             int taken = 0;
@@ -121,7 +134,7 @@ namespace HiddenHarbours.Economy
             var keep = new List<CatchItem>(items.Count);
             float supply = 0f, demand = 1f;
             bool marketRead = false;
-            float priceLevel = market != null ? market.PriceLevel : 1f;   // per-outlet, not per-category
+            float priceLevel = SellerPriceLevel(market);   // per-outlet, not per-category
             FishCategory soldCategory = default;   // read off the first sold unit (one species = one category)
 
             int total = 0;
@@ -172,7 +185,7 @@ namespace HiddenHarbours.Economy
             var keep = new List<CatchItem>(hold.Items.Count);
             int grandTotal = 0;
             int soldCount = 0;
-            float priceLevel = market != null ? market.PriceLevel : 1f;   // per-outlet, not per-category
+            float priceLevel = SellerPriceLevel(market);   // per-outlet, not per-category
             var items = hold.Items;
             for (int i = 0; i < items.Count; i++)
             {

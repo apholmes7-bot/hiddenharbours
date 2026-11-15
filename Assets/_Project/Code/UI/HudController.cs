@@ -386,6 +386,9 @@ namespace HiddenHarbours.UI
             // the next repaint by resetting the minute cache (UpdateWatchWindow).
             if (!BoatUiWindows.IsShown(BoatUiWindowId.Watch) || clock.IsHeld) return;
 
+            WatchDef watch = WatchEquipment.GetWorn(GameServices.Save?.Current);
+            if (watch == null || watch.Face != WatchFaceKind.HarbourDigital) return;
+
             var state = new WatchRigState(WatchFaceState.FromClock(clock),
                                           _watchUse24, light: false, showSeconds: _watchShowSeconds);
 

@@ -332,6 +332,42 @@ that seam (rule 4). It calls for the birds near the view, panned to the bird, qu
 and more often for feeding birds; its knobs are the director's `GullCallTuning`. The always-on gull
 bed is gone. Nothing is saved: the schedule is recomputed from seed and time.
 
+### NPC relationships (owner-directed 2026-11-14, slice 1)
+
+Villagers have ties with each other that the player's actions shape. Core owns the contract:
+`IRelationshipService` (reached as `GameServices.Relationships`, never null) answers `Stage(a, b)`,
+takes `Record(RelationshipEvent)` and, once a day, `ApplyDay()`, which publishes one
+`RelationshipStageChanged` per pair that crossed a stage. Behind it, `RelationshipGraph` is a pure POCO:
+symmetric pair strengths seeded from the `RelationshipTieDef`s, moved only by recorded events priced
+through the config's rule table (units summed per pair and kind, capped per day, applied kinds in
+ascending order), so the same seeds and events give the same graph in any recording order (rule 5,
+no dice). The event kinds cover the owner's three examples ahead of the systems that will raise
+them: `WorkedTogether` (crew on one boat, M3), `SharedEmployerRestored` (the cannery, M3-30),
+`CustomGiven` / `CustomDiverted` (the player's custom with a merchant, as a tie with
+`RelationshipGraph.PlayerId`, and the passed-over merchant cooling), plus `Introduced`. **No visible
+score, ever**: stages are noticed through talk, routines and opportunities. Slice 1 is in memory only
+and nothing records events yet; slice 2 saves `Snapshot()` / `Restore()` and wires `ApplyDay` to
+`DayStarted`.
+
+### Character traits (owner-directed 2026-11-14)
+
+A character picks two named traits (`GameConfig.TraitPicksPerCharacter`); each is a `TraitDef`
+under `Data/Resources/Traits/` carrying small bonuses on existing seams, with no drawbacks. Core
+owns the contract: `ITraitService` (reached as `GameServices.Traits`, never null) answers
+`PlayerMultiplier(TraitStat)` for the local player from `SaveData.PlayerTraits`, and
+`MultiplierFor(stat, ids)` for any character's list (co-op: each player has their own; only the
+acting player's traits apply). `TraitMath` is the pure rule: additives on one stat sum, then
+multipliers apply, floored at zero, combined in ordinal id order so the result is the same in every
+pick order (rule 5: a fixed number from the save, no roll). With no traits every factor is the
+literal 1 and `TraitMath.Apply` returns its input untouched, so a trait-less character is
+bit-for-bit the old game. Feature modules read only their own stat: `PlayerWalkController`
+(`WalkSpeed`, before the wade bands), `SellService.SellerPriceLevel` (`SellPrice`, shared by the
+quote, the till and `Market.NextUnitPrice`, so the screen still shows the coin paid) and
+`FishingController` (`BiteWait`, after the sea and school scales, never touching the RNG draw).
+The service caches per-stat factors against a copy of the saved id list, so the walk's per-tick
+read allocates nothing and a swapped save is picked up without an event. `PlayerTraitsChanged` is
+published when the picks change.
+
 ### Explicit mesh character moves
 
 `CharacterClipStateMap` in Core maps an explicit `CharacterClip` and carry key to an authored

@@ -1,0 +1,531 @@
+{
+ "schema": "hidden-harbours/nmc-set-piece@1",
+ "generatedBy": "NmcFishPlant 1.0.0",
+ "derivedFromRigSha256": "a83ae8687592de43902259157195ecc4ff3128f36d850f4844f08623e37f32d9",
+ "key": "plantDock",
+ "id": "structure.nmc_fish_plant_dock",
+ "name": "The loading dock apron",
+ "defType": "SetPieceDef",
+ "scene": null,
+ "units": "metres, the piece’s own frame: +x right, +y the show face, +z up from its ground point (the pivot)",
+ "bounds": {
+  "x": [
+   -9,
+   0.02
+  ],
+  "y": [
+   -14.5,
+   4.06
+  ],
+  "z": [
+   0,
+   0.2
+  ]
+ },
+ "layer": "floor",
+ "walk": "on",
+ "mount": "ground",
+ "colliders": [],
+ "facings": [
+  {
+   "dir": 0,
+   "showFaces": "N",
+   "bearingDeg": 0,
+   "cameraSees": "its back"
+  },
+  {
+   "dir": 1,
+   "showFaces": "NW",
+   "bearingDeg": 315,
+   "cameraSees": "its back"
+  },
+  {
+   "dir": 2,
+   "showFaces": "W",
+   "bearingDeg": 270,
+   "cameraSees": "the show face, edge-on or at a diagonal"
+  },
+  {
+   "dir": 3,
+   "showFaces": "SW",
+   "bearingDeg": 225,
+   "cameraSees": "the show face"
+  },
+  {
+   "dir": 4,
+   "showFaces": "S",
+   "bearingDeg": 180,
+   "cameraSees": "the show face"
+  },
+  {
+   "dir": 5,
+   "showFaces": "SE",
+   "bearingDeg": 135,
+   "cameraSees": "the show face"
+  },
+  {
+   "dir": 6,
+   "showFaces": "E",
+   "bearingDeg": 90,
+   "cameraSees": "the show face, edge-on or at a diagonal"
+  },
+  {
+   "dir": 7,
+   "showFaces": "NE",
+   "bearingDeg": 45,
+   "cameraSees": "its back"
+  }
+ ],
+ "cells": [
+  {
+   "dir": 0,
+   "w": 296,
+   "h": 390,
+   "pivot": [
+    291,
+    88
+   ]
+  },
+  {
+   "dir": 1,
+   "w": 630,
+   "h": 408,
+   "pivot": [
+    298,
+    62
+   ]
+  },
+  {
+   "dir": 2,
+   "w": 601,
+   "h": 194,
+   "pivot": [
+    133,
+    5
+   ]
+  },
+  {
+   "dir": 3,
+   "w": 630,
+   "h": 408,
+   "pivot": [
+    94,
+    215
+   ]
+  },
+  {
+   "dir": 4,
+   "w": 296,
+   "h": 389,
+   "pivot": [
+    4,
+    302
+   ]
+  },
+  {
+   "dir": 5,
+   "w": 630,
+   "h": 408,
+   "pivot": [
+    332,
+    346
+   ]
+  },
+  {
+   "dir": 6,
+   "w": 601,
+   "h": 193,
+   "pivot": [
+    467,
+    189
+   ]
+  },
+  {
+   "dir": 7,
+   "w": 630,
+   "h": 408,
+   "pivot": [
+    535,
+    193
+   ]
+  }
+ ],
+ "anchors": {
+  "apron": [
+   -4.5,
+   -5.25,
+   0.03
+  ],
+  "truckStop1": [
+   -0.5,
+   0,
+   0
+  ],
+  "truckAxle1": [
+   -2.5,
+   0,
+   0
+  ],
+  "truckNose1": [
+   -8.5,
+   0,
+   0
+  ],
+  "truckStop2": [
+   -0.5,
+   -8,
+   0
+  ],
+  "truckAxle2": [
+   -2.5,
+   -8,
+   0
+  ],
+  "truckNose2": [
+   -8.5,
+   -8,
+   0
+  ],
+  "plate1": [
+   -0.3,
+   0,
+   0.05
+  ],
+  "plate2": [
+   -0.3,
+   -8,
+   0.05
+  ],
+  "outboundThreshold": [
+   0,
+   -12,
+   0
+  ],
+  "spotter": [
+   -3.6,
+   5,
+   0
+  ],
+  "note": "truckStop the rear bumper, truckAxle the rear axle, truckNose the front: the truck stands nose east (local -x). One truck in the court at a time; I2 serves intake and dispatch at different hours.",
+  "px": {
+   "apron": [
+    148,
+    193.3
+   ],
+   "truckStop1": [
+    20,
+    302
+   ],
+   "truckAxle1": [
+    84,
+    302
+   ],
+   "truckNose1": [
+    276,
+    302
+   ],
+   "truckStop2": [
+    20,
+    137.4
+   ],
+   "truckAxle2": [
+    84,
+    137.4
+   ],
+   "truckNose2": [
+    276,
+    137.4
+   ],
+   "plate1": [
+    13.6,
+    300.8
+   ],
+   "plate2": [
+    13.6,
+    136.2
+   ],
+   "outboundThreshold": [
+    4,
+    55.2
+   ],
+   "spotter": [
+    119.2,
+    404.8
+   ]
+  }
+ },
+ "options": {
+  "plate": 0.03,
+  "guides": true,
+  "lines": true
+ },
+ "light": null,
+ "notes": "Lay it at dir 4 with its pivot on I1’s threshold, world (-241, -40), flush to the plant’s east wall. The yellow keep-clear line is the brief’s work apron, u [0.5, 3.0], v [-4, 14]: closed to walking while a truck moves.",
+ "bake": {
+  "facings": [
+   4
+  ],
+  "note": "paired with the plant’s east face"
+ },
+ "site": {
+  "site": "A",
+  "frame": "u = world x + 241 (east), v = world y + 40 (north), metres",
+  "dir": 4,
+  "pivot": {
+   "brief": [
+    0,
+    0
+   ],
+   "world": [
+    -241,
+    -40
+   ]
+  },
+  "rule": "brief u = pivot u - local x, brief v = pivot v - local y; world x = u - 241, world y = v - 40",
+  "anchors": {
+   "apron": {
+    "local": [
+     -4.5,
+     -5.25,
+     0.03
+    ],
+    "brief": [
+     4.5,
+     5.25
+    ],
+    "world": [
+     -236.5,
+     -34.75
+    ],
+    "z": 0.03
+   },
+   "truckStop1": {
+    "local": [
+     -0.5,
+     0,
+     0
+    ],
+    "brief": [
+     0.5,
+     0
+    ],
+    "world": [
+     -240.5,
+     -40
+    ],
+    "z": 0
+   },
+   "truckAxle1": {
+    "local": [
+     -2.5,
+     0,
+     0
+    ],
+    "brief": [
+     2.5,
+     0
+    ],
+    "world": [
+     -238.5,
+     -40
+    ],
+    "z": 0
+   },
+   "truckNose1": {
+    "local": [
+     -8.5,
+     0,
+     0
+    ],
+    "brief": [
+     8.5,
+     0
+    ],
+    "world": [
+     -232.5,
+     -40
+    ],
+    "z": 0
+   },
+   "truckStop2": {
+    "local": [
+     -0.5,
+     -8,
+     0
+    ],
+    "brief": [
+     0.5,
+     8
+    ],
+    "world": [
+     -240.5,
+     -32
+    ],
+    "z": 0
+   },
+   "truckAxle2": {
+    "local": [
+     -2.5,
+     -8,
+     0
+    ],
+    "brief": [
+     2.5,
+     8
+    ],
+    "world": [
+     -238.5,
+     -32
+    ],
+    "z": 0
+   },
+   "truckNose2": {
+    "local": [
+     -8.5,
+     -8,
+     0
+    ],
+    "brief": [
+     8.5,
+     8
+    ],
+    "world": [
+     -232.5,
+     -32
+    ],
+    "z": 0
+   },
+   "plate1": {
+    "local": [
+     -0.3,
+     0,
+     0.05
+    ],
+    "brief": [
+     0.3,
+     0
+    ],
+    "world": [
+     -240.7,
+     -40
+    ],
+    "z": 0.05
+   },
+   "plate2": {
+    "local": [
+     -0.3,
+     -8,
+     0.05
+    ],
+    "brief": [
+     0.3,
+     8
+    ],
+    "world": [
+     -240.7,
+     -32
+    ],
+    "z": 0.05
+   },
+   "outboundThreshold": {
+    "local": [
+     0,
+     -12,
+     0
+    ],
+    "brief": [
+     0,
+     12
+    ],
+    "world": [
+     -241,
+     -28
+    ],
+    "z": 0
+   },
+   "spotter": {
+    "local": [
+     -3.6,
+     5,
+     0
+    ],
+    "brief": [
+     3.6,
+     -5
+    ],
+    "world": [
+     -237.4,
+     -45
+    ],
+    "z": 0
+   }
+  },
+  "colliders": []
+ },
+ "bays": [
+  {
+   "id": "I1",
+   "standing": {
+    "u": [
+     0.5,
+     8.5
+    ],
+    "v": [
+     -1.25,
+     1.25
+    ]
+   },
+   "rearBumper": [
+    0.5,
+    0
+   ],
+   "rearAxle": [
+    2.5,
+    0
+   ],
+   "heading": "east (+u)"
+  },
+  {
+   "id": "I2",
+   "standing": {
+    "u": [
+     0.5,
+     8.5
+    ],
+    "v": [
+     6.75,
+     9.25
+    ]
+   },
+   "rearBumper": [
+    0.5,
+    8
+   ],
+   "rearAxle": [
+    2.5,
+    8
+   ],
+   "heading": "east (+u)"
+  }
+ ],
+ "workApron": {
+  "u": [
+   0.5,
+   3
+  ],
+  "v": [
+   -4,
+   14
+  ]
+ },
+ "truck": {
+  "length": 8,
+  "width": 2.5,
+  "rearOverhang": 2,
+  "note": "the court study’s ASSUMED planning truck, not a Def"
+ },
+ "plate": {
+  "height": 0.03,
+  "status": "OPEN: the brief leaves the deck height and liftgate to the chosen truck"
+ }
+}

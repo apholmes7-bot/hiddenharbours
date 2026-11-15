@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using NUnit.Framework;
 using UnityEngine;
+using UnityEditor;
 using HiddenHarbours.Core;
 using HiddenHarbours.Economy;
 using HiddenHarbours.Fishing;
@@ -12,8 +13,8 @@ namespace HiddenHarbours.Tests.EditMode
     /// integration contracts: an opted-in species runs teases → the true take on the wire phases
     /// (BiteNibble / Bite), striking a tease never hooks, striking the take starts the fight,
     /// exhausted passes end in NoBite, a species WITHOUT a BiteDef auto-hooks bit-for-bit as
-    /// shipped — and the TENTATIVE bait-spend flag: OFF spends at the bite (today), ON spends only
-    /// on the landed catch.
+    /// shipped — and the switchable bait rule: OFF spends at the bite, ON (the live asset) spends
+    /// only on the landed catch.
     /// </summary>
     public class BiteSequenceControllerTests
     {
@@ -34,6 +35,18 @@ namespace HiddenHarbours.Tests.EditMode
             public bool GetFlag(string key) => false;
             public void SetFlag(string key, bool value) { }
             public void Save() { }
+        }
+
+        private sealed class FakeHands : ICatchHands
+        {
+            public bool Accept = true;
+            public int Landed;
+            public bool TryPutInHand(in CatchItem item)
+            {
+                if (!Accept) return false;
+                Landed++;
+                return true;
+            }
         }
 
         private readonly List<Object> _spawned = new();
@@ -89,12 +102,12 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         private FishingController MakeController(IHold hold, FishSpeciesDef fish, int seed,
-                                                 GameConfig config = null)
+                                                 GameConfig config = null, LicenseDef[] licenses = null)
         {
             var go = new GameObject("Fisher");
             _spawned.Add(go);
             var c = go.AddComponent<FishingController>();
-            c.Configure(hold, new[] { fish }, "region.coddle_cove", Gear.Handline, seed, null, config);
+            c.Configure(hold, new[] { fish }, "region.coddle_cove", Gear.Handline, seed, licenses, config);
             return c;
         }
 
@@ -171,27 +184,25 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.IsFalse(sawNibble, "a species without a BiteDef never plays the nibble game");
         }
 
-        // ---- the TENTATIVE bait-spend flag (§10.2 — economy-sim flagged) ---------------------------
+        // ---- bait-spend policy: both modes remain supported ---------------------------------------
 
-        private (FishingController c, SaveData save) BaitedRig(bool spendOnCatchOnly, int seed)
+        private (FishingController c, SaveData save) BaitedRig(bool spendOnCatchOnly, int seed,
+            int stock = 1, FishSpeciesDef fish = null, IHold hold = null, LicenseDef[] licenses = null)
         {
             var save = SaveMigration.NewGame();
-            TackleBox.AddBait(save, "bait.herring", 1);
+            TackleBox.AddBait(save, "bait.herring", stock);
             GameServices.Save = new FakeSaveService(save);
 
             var bait = ScriptableObject.CreateInstance<BaitDef>();
             bait.Id = "bait.herring";
             _spawned.Add(bait);
 
-            GameConfig config = null;
-            if (spendOnCatchOnly)
-            {
-                config = ScriptableObject.CreateInstance<GameConfig>();
-                config.BaitSpentOnCatchOnly = true;
-                _spawned.Add(config);
-            }
+            var config = ScriptableObject.CreateInstance<GameConfig>();
+            config.BaitSpentOnCatchOnly = spendOnCatchOnly;
+            _spawned.Add(config);
 
-            var c = MakeController(new FakeHold(), MakeFish(MakeBite(0, 2f, 1f, 3)), seed, config);
+            var c = MakeController(hold ?? new FakeHold(), fish ?? MakeFish(MakeBite(0, 2f, 1f, 3)),
+                seed, config, licenses);
             c.SetBait(bait);
             return (c, save);
         }
@@ -204,11 +215,11 @@ namespace HiddenHarbours.Tests.EditMode
             TickUntil(c, FishingPhase.Bite);
 
             Assert.AreEqual(0, TackleBox.BaitCount(save, "bait.herring"),
-                "today's behaviour: something ate it — the bait is gone at the bite");
+                "OFF preserves bite-time spending even when the fish is not landed");
         }
 
         [Test]
-        public void FlagOn_BaitSurvivesTeasesAndMisses_SpendsOnlyOnTheLandedCatch()
+        public void FlagOn_LastBaitSurvivesTheBite_SpendsOnlyOnTheLandedCatch()
         {
             var (c, save) = BaitedRig(spendOnCatchOnly: true, seed: 42);
             FlickGestures.CastLine(c);
@@ -228,7 +239,205 @@ namespace HiddenHarbours.Tests.EditMode
             }
             Assert.AreEqual(FishingPhase.Landed, c.Phase, "the paced fight lands");
             Assert.AreEqual(0, TackleBox.BaitCount(save, "bait.herring"),
-                "…and NOW the bait is gone — 'perhaps bait is only lost after catching a fish'");
+                "the landed catch spends the last bait");
+        }
+
+        [Test]
+        public void ShippedConfig_EnablesCatchOnly_WhileNewConfigsKeepTheOffFallback()
+        {
+            var shipped = AssetDatabase.LoadAssetAtPath<GameConfig>("Assets/_Project/Data/Config/GameConfig.asset");
+            Assert.IsNotNull(shipped);
+            Assert.IsTrue(shipped.BaitSpentOnCatchOnly, "the authored live policy is ON");
+            var fresh = ScriptableObject.CreateInstance<GameConfig>();
+            _spawned.Add(fresh);
+            Assert.IsFalse(fresh.BaitSpentOnCatchOnly, "the C# compatibility default stays OFF");
+        }
+
+        private FishSpeciesDef FishForFight(bool rodFight, bool biteSequence = true)
+        {
+            var fish = MakeFish(biteSequence ? MakeBite(1, 2f, 1f, 3) : null);
+            if (rodFight)
+            {
+                var fight = ScriptableObject.CreateInstance<RodFightDef>();
+                _spawned.Add(fight);
+                fight.Strength = 0.5f;
+                fight.StaminaCadence = new StaminaCadence { RunSeconds = 1.6f, SlackSeconds = 1.2f, Jitter01 = 0.3f };
+                fight.tensionRisePerSec = 0.65f;
+                fight.tensionFallPerSec = 0.7f;
+                fight.landingFillPerSec = 0.32f;
+                fight.runTensionPressure = 0.3f;
+                fight.lineGiveBackPerSec = 0f; // plumbing fixture; give-back is covered by RodFightSimTests
+                fish.RodFight = fight;
+            }
+            return fish;
+        }
+
+        private static void Hook(FishingController c, bool rodFight, bool autoHook = false)
+        {
+            FlickGestures.CastLine(c);
+            TickUntil(c, FishingPhase.Bite);
+            if (autoHook) TickUntil(c, rodFight ? FishingPhase.FightDeep : FishingPhase.Fighting);
+            else c.Tick(0.05f, true);
+            Assert.AreEqual(rodFight ? FishingPhase.FightDeep : FishingPhase.Fighting, c.Phase);
+        }
+
+        private static void FinishFight(FishingController c, bool win)
+        {
+            for (float t = 0f; t < 180f &&
+                (c.Phase == FishingPhase.Fighting || c.Phase == FishingPhase.FightDeep ||
+                 c.Phase == FishingPhase.FightSurface); t += 0.02f)
+            {
+                bool reel = !win || (c.State.Tension01 < 0.5f &&
+                    (c.Phase == FishingPhase.Fighting || c.State.SlackWindowOpen));
+                c.Tick(0.02f, reel);
+            }
+        }
+
+        [TestCase(false, false)]
+        [TestCase(false, true)]
+        [TestCase(true, false)]
+        [TestCase(true, true)]
+        public void MissedSequence_ChargesOnlyInOffMode(bool catchOnly, bool strikeTease)
+        {
+            var hold = new FakeHold();
+            var fish = MakeFish(MakeBite(1, 0.4f, 1f, 2));
+            var (c, save) = BaitedRig(catchOnly, 42, stock: 3, fish: fish, hold: hold);
+            FlickGestures.CastLine(c);
+            TickUntil(c, FishingPhase.BiteNibble);
+            if (strikeTease) c.Tick(0.05f, true);
+            TickUntil(c, FishingPhase.NoBite);
+            Assert.AreEqual(catchOnly ? 3 : 2, TackleBox.BaitCount(save, "bait.herring"),
+                "returning passes must not charge again; ON makes both early and late misses free");
+            Assert.AreEqual(0, hold.UsedUnits);
+            TickUntil(c, FishingPhase.Idle);
+            Assert.AreEqual(catchOnly ? 3 : 2, TackleBox.BaitCount(save, "bait.herring"));
+        }
+
+        [Test]
+        public void LostFight_ChargesOnlyInOffMode([Values] bool catchOnly, [Values] bool rodFight)
+        {
+            var hold = new FakeHold();
+            var (c, save) = BaitedRig(catchOnly, 42, stock: 3, fish: FishForFight(rodFight), hold: hold);
+            Hook(c, rodFight);
+            FinishFight(c, win: false);
+            Assert.AreEqual(FishingPhase.Snapped, c.Phase);
+            Assert.AreEqual(0, hold.UsedUnits);
+            Assert.AreEqual(catchOnly ? 3 : 2, TackleBox.BaitCount(save, "bait.herring"));
+            TickUntil(c, FishingPhase.Idle);
+            Assert.AreEqual(catchOnly ? 3 : 2, TackleBox.BaitCount(save, "bait.herring"));
+        }
+
+        [Test]
+        public void LandedCatch_SpendsExactlyOne_AcrossFightAndDestinationPaths(
+            [Values] bool catchOnly, [Values] bool rodFight, [Values] bool biteSequence,
+            [Values("hand", "boat", "full-hands")] string destination)
+        {
+            var hold = new FakeHold();
+            var hands = new FakeHands { Accept = destination != "full-hands" };
+            GameServices.CatchHands = hands;
+            var (c, save) = BaitedRig(catchOnly, 42, stock: 3,
+                fish: FishForFight(rodFight, biteSequence), hold: hold);
+            if (destination == "boat") c.OnControlModeChanged(new ControlModeChanged(ControlMode.OnDeck));
+            int caught = 0;
+            EventBus.Subscribe<FishCaught>(_ => caught++);
+            Hook(c, rodFight, autoHook: !biteSequence);
+            Assert.AreEqual(catchOnly ? 3 : 2, TackleBox.BaitCount(save, "bait.herring"));
+            FinishFight(c, win: true);
+            Assert.AreEqual(FishingPhase.Landed, c.Phase);
+            Assert.AreEqual(2, TackleBox.BaitCount(save, "bait.herring"),
+                "spare stock exposes a double charge; landing cannot be free either");
+            Assert.AreEqual(destination == "hand" ? 1 : 0, hands.Landed);
+            Assert.AreEqual(destination == "hand" ? 0 : 1, hold.UsedUnits);
+            Assert.AreEqual(destination == "hand" ? 0 : 1, caught);
+            TickUntil(c, FishingPhase.Idle);
+            c.Tick(1f, false);
+            Assert.AreEqual(2, TackleBox.BaitCount(save, "bait.herring"), "result/reset must not charge again");
+        }
+
+        [TestCase(false)]
+        [TestCase(true)]
+        public void UnlicensedRelease_ChargesOnlyInOffMode(bool catchOnly)
+        {
+            var hold = new FakeHold();
+            var fish = FishForFight(rodFight: false);
+            var licence = ScriptableObject.CreateInstance<LicenseDef>();
+            _spawned.Add(licence);
+            licence.Id = "license.cod";
+            licence.PermittedSpeciesIds = new[] { fish.Id };
+            var (c, save) = BaitedRig(catchOnly, 42, stock: 3, fish: fish, hold: hold,
+                licenses: new[] { licence });
+            Hook(c, rodFight: false);
+            FinishFight(c, win: true);
+            Assert.AreEqual(FishingPhase.Snapped, c.Phase, "a won fight without its licence is released");
+            Assert.AreEqual(0, hold.UsedUnits);
+            Assert.AreEqual(catchOnly ? 3 : 2, TackleBox.BaitCount(save, "bait.herring"));
+        }
+
+        [TestCase(false, false)]
+        [TestCase(false, true)]
+        [TestCase(true, false)]
+        [TestCase(true, true)]
+        public void EmptyBaitStock_StillRequiresTackle_AndNeverInventsBait(bool catchOnly, bool lure)
+        {
+            var hold = new FakeHold();
+            var (c, save) = BaitedRig(catchOnly, 42, stock: 0, fish: FishForFight(false), hold: hold);
+            if (lure)
+            {
+                var tackle = ScriptableObject.CreateInstance<TackleDef>();
+                _spawned.Add(tackle);
+                tackle.Lure = LureTag.Spoon;
+                tackle.JigStyle = JigStyle.None;
+                c.SetTackle(tackle);
+            }
+            Assert.AreEqual(lure, c.HasSomethingOnTheHook);
+            if (lure)
+            {
+                Hook(c, rodFight: false);
+                FinishFight(c, win: true);
+                Assert.AreEqual(FishingPhase.Landed, c.Phase);
+                Assert.AreEqual(1, hold.UsedUnits);
+            }
+            else
+            {
+                FlickGestures.CastLine(c);
+                Assert.AreEqual(FishingPhase.Idle, c.Phase, "an empty configured hook still refuses a cast");
+                Assert.AreEqual(0, hold.UsedUnits);
+            }
+            Assert.AreEqual(0, TackleBox.BaitCount(save, "bait.herring"));
+        }
+
+        [TestCase(false)]
+        [TestCase(true)]
+        public void NothingBiting_SpendsNothingInEitherMode(bool catchOnly)
+        {
+            var fish = FishForFight(false);
+            fish.RegionIds = new[] { "region.elsewhere" };
+            var (c, save) = BaitedRig(catchOnly, 42, stock: 3, fish: fish);
+            FlickGestures.CastLine(c);
+            TickUntil(c, FishingPhase.NoBite);
+            Assert.AreEqual(3, TackleBox.BaitCount(save, "bait.herring"));
+        }
+
+        [TestCase(false)]
+        [TestCase(true)]
+        public void MissThenLand_AndRecast_SpendsExactlyOnePerCatch(bool catchOnly)
+        {
+            var hold = new FakeHold();
+            var (c, save) = BaitedRig(catchOnly, 42, stock: 3, fish: FishForFight(false), hold: hold);
+            for (int landed = 1; landed <= 2; landed++)
+            {
+                FlickGestures.CastLine(c);
+                TickUntil(c, FishingPhase.BiteNibble);
+                c.Tick(0.05f, true); // miss the tease; this same fish returns
+                TickUntil(c, FishingPhase.Bite);
+                c.Tick(0.05f, true);
+                Assert.AreEqual(FishingPhase.Fighting, c.Phase);
+                FinishFight(c, win: true);
+                Assert.AreEqual(FishingPhase.Landed, c.Phase);
+                Assert.AreEqual(landed, hold.UsedUnits);
+                Assert.AreEqual(3 - landed, TackleBox.BaitCount(save, "bait.herring"));
+                TickUntil(c, FishingPhase.Idle);
+            }
         }
     }
 }

@@ -283,6 +283,39 @@ namespace HiddenHarbours.Core
         private static IPlayerAppearance _appearance;
 
         /// <summary>
+        /// The character traits (traits slice 1, owner ruling 2026-11-14): the seam a feature module asks
+        /// for its own stat's combined factor through, so the walk, the till and the rod never reference
+        /// each other (rule 4). Never null: a default <see cref="TraitService"/> over <see cref="Save"/>
+        /// and the shipped <see cref="TraitDef"/>s is made on first read; a test assigns its own. Cleared
+        /// by <see cref="Reset"/>. With no traits on the save every factor is exactly 1.
+        /// FLAG lead-architect: new Core contract (traits).
+        /// </summary>
+        public static ITraitService Traits
+        {
+            get => _traits ??= new TraitService();
+            set => _traits = value;
+        }
+
+        private static ITraitService _traits;
+
+        /// <summary>
+        /// The web of ties between people (relationships slice 1, owner ruling 2026-11-14): the seam a feature
+        /// module records "something happened between these two" through and asks a pair's stage from, so the
+        /// crew system, the cannery, the shops, talk and routines never reference each other (rule 4). Never
+        /// null: a default <see cref="RelationshipService"/> over the shipped <see cref="RelationshipTieDef"/>s
+        /// and <see cref="RelationshipConfig"/> is made on first read; a test assigns its own. Cleared by
+        /// <see cref="Reset"/>. In memory only until relationships slice 2 adds it to the save.
+        /// FLAG lead-architect: new Core contract (relationships).
+        /// </summary>
+        public static IRelationshipService Relationships
+        {
+            get => _relationships ??= new RelationshipService();
+            set => _relationships = value;
+        }
+
+        private static IRelationshipService _relationships;
+
+        /// <summary>
         /// The active region's terrain-elevation source — the "height map" the tidal-exposure seam reads
         /// (St Peters falling tide; the future water depth-gradient shader). The <b>world</b> registers
         /// its terrain here when a region scene loads; <b>gameplay</b>/UI resolve elevation through this
@@ -628,6 +661,11 @@ namespace HiddenHarbours.Core
         /// <summary>The name limit, including the fallback for an unwired config.</summary>
         public static int PlayerNameMaxLength => Config != null
             ? System.Math.Max(1, Config.PlayerNameMaxLength) : GameConfig.DefaultPlayerNameMaxLength;
+
+        /// <summary>How many traits a character picks (the owner's two), with the fallback for an unwired
+        /// config. Never below zero.</summary>
+        public static int TraitPicksPerCharacter => Config != null
+            ? System.Math.Max(0, Config.TraitPicksPerCharacter) : GameConfig.DefaultTraitPicksPerCharacter;
 
         public static UnityEngine.Color CreatorBackdropColor => Config != null ? Config.CreatorBackdropColor : NotebookInk.Paper;
         public static float CreatorFigureHeightFraction => Config != null
@@ -1184,6 +1222,8 @@ namespace HiddenHarbours.Core
             BirdPresence = null;         // → EmptyBirdPresence.Instance; likewise never null
             Save = null;
             Appearance = null;           // → a fresh default on next read; drops any open preview
+            Traits = null;               // → a fresh default on next read; drops its catalog and cache
+            Relationships = null;        // → a fresh default on next read; reseeds from the shipped ties
             TidalTerrain = null;
             StillWater = null;           // → EmptyStillWater.Instance; this property is never null
             PlayerTransform = null;

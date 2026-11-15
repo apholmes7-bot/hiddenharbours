@@ -81,13 +81,14 @@ Method sources: [rod fishing v2](rod-fishing-v2-brainstorm.md) and
   when she runs; land her. To jig, work the lure up and down at the depth the fish hold.
 - **Skill:** reading the bite, timing the strike, the fight's rhythm, lure choice for the species,
   depth (stop the drop in midwater), tide and hour.
-- **Teeth:** an ordinary failure loses the catch, the bait and the time; a bad enough sea may cost
+- **Teeth:** an ordinary failure loses the catch and time; a bad enough sea may cost
   terminal tackle. The old absolute never-lose-gear bullet at
   `docs/design/rod-fishing-v2-brainstorm.md:279` is superseded by the owner's amendment of 2026-07-25,
   `docs/design/rod-fishing-v2-brainstorm.md:282-297`: gear loss is permitted in a blow. **Bait and
-  tackle consumption and restocking are NOT BUILT today (the rod consumes neither) and stay deferred
-  to the brainstorm's section 8.** These are the planned costs; current ordinary failure loses the
-  fish and time without consuming bait or tackle.
+  tackle selection in the world and terminal-tackle loss remain deferred to the brainstorm's
+  section 8.** Configured rod bait spends one unit on a landed catch with the shipped
+  `BaitSpentOnCatchOnly` flag ON; teases, missed strikes, lost fights and unlicensed releases spend
+  none. OFF restores spending at the bite. Unconfigured rods still spend no bait; tackle is not consumed.
 - **Gear and boat:** the rod, five pieces of tackle, bait (capelin, herring). Ashore or any boat.
 - **Grounds and time:** anywhere with water, inside each species' windows.
 - **Catch:** cod, haddock, pollock, mackerel, winter flounder and striped bass on main.
@@ -99,7 +100,7 @@ Method sources: [rod fishing v2](rod-fishing-v2-brainstorm.md) and
 - **Next:** both owner items are ruled: world interactions with ui-ux, no menu, for bait and lure
   choosing (the owner, 2026-10-29; `docs/design/rod-fishing-v2-brainstorm.md:404`); "portion" is the
   bait portion (the owner, 2026-10-27 14:15:47Z; `docs/design/rod-fishing-v2-brainstorm.md:407`),
-  planned by the angler's kit, not this plan. Consumables remain deferred as above.
+  planned by the angler's kit, not this plan. Physical supplies remain deferred as above.
 
 **On main:** the rod fishes as Handline (`Code/Fishing/FishingController.cs:41`). The bite
 (`Code/Fishing/BiteSequenceSim.cs:57`), fight (`Code/Fishing/RodFightSim.cs:25`), jig
@@ -107,8 +108,9 @@ Method sources: [rod fishing v2](rod-fishing-v2-brainstorm.md) and
 (`Code/Fishing/FishSchoolMath.cs:43`) are built, with five tackle assets in `Data/Tackle/` and
 `gear.rod` (`Data/Tools/Rod.asset:17`). `license.cod` costs 120 and permits only `fish.atlantic_cod`
 (`Data/Resources/Catalog/Licenses/CodLicense.asset:15-20`); species-based landing enforcement
-(`Code/Economy/CatchLicensePolicy.cs:29`) gates cod on every gear. The rod consumes neither bait
-nor tackle; the rough-weather terminal-tackle cost is not built.
+(`Code/Economy/CatchLicensePolicy.cs:29`) gates cod on every gear. Bait timing is the switchable
+catch-only rule above; scene rods without bait configured still spend none. The rough-weather
+terminal-tackle cost is not built.
 
 ## 3. Traps and pots
 

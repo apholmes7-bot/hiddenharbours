@@ -582,7 +582,7 @@
       "action": "sleep",
       "reach_point": [
         0,
-        4.903,
+        5.293,
         0.088
       ],
       "visible_facings": [
@@ -595,14 +595,48 @@
         "W",
         "NW"
       ],
-      "_note": "mechanism: InteriorBed (rest + save) · cuddy level · footprint + obstructions in the hull gameplay sidecar"
+      "_note": "mechanism: InteriorBed (rest + save) · cuddy level · footprint + obstructions in the hull gameplay sidecar",
+      "bunk": {
+        "level": "cuddy_sole",
+        "obstruction": "v_berth",
+        "mattress_centre": [
+          0,
+          5.822,
+          0.508
+        ],
+        "pillow_end": [
+          0,
+          5.403,
+          0.508
+        ],
+        "pillow_source": "art: boatInteriorRig V-BERTH draws two pillows aft (the wide end), y0+0.06..y0+0.34"
+      }
+    },
+    {
+      "id": "prep",
+      "action": "prep",
+      "reach_point": [
+        -0.409,
+        1.962,
+        0.55
+      ],
+      "visible_facings": [
+        "N",
+        "S",
+        "SW",
+        "W",
+        "NW"
+      ],
+      "counter": "stove_counter",
+      "_note": "mechanism: prep station (cut/prepare raw food; it is then cooked at the stove) · house level · the free forward quarter of stove_counter, beside the rings · authored 2026-11-14 from the counter box; boatInteriorRig.js does not emit it yet"
     }
   ],
   "mechanism_map": {
     "helm": "existing helm (enter_helm)",
     "bunk": "InteriorBed (sleep, rest + save)",
     "locker": "InteriorWardrobe (storage)",
-    "stove": "camper stove pattern (cook)"
+    "stove": "camper stove pattern (cook)",
+    "prep": "prep station (prep, then cook at the stove)"
   },
   "_interact_scope": "INTERACT is object interactables only. Stair routes are declared in STAIRS (each carries its own mechanism: InteriorStair) and are deliberately absent here — see README, Corrections.",
   "variant": {

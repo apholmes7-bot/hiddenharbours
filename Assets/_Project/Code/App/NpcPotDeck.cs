@@ -28,6 +28,7 @@ namespace HiddenHarbours.App
         private readonly NpcPotDayDef _def;
         private readonly MooredBoat _hull;
         private readonly IsoCharacterSprite _skipper;
+        private readonly bool _requiredExactFigureState;
         private readonly BoatDeckDef _deck;
         private readonly GameObject _root;
         private readonly SpriteRenderer _inHand;
@@ -62,6 +63,11 @@ namespace HiddenHarbours.App
             _def = def;
             _hull = hull;
             _skipper = skipper;
+            if (_skipper != null)
+            {
+                _requiredExactFigureState = _skipper.RequireExactFigureState;
+                _skipper.RequireExactFigureState = true;
+            }
             _deck = hull.Visual != null ? hull.Visual.Deck : null;
 
             Vector3 helm = MooredBoat.StandPointOf(_deck);
@@ -106,6 +112,11 @@ namespace HiddenHarbours.App
         {
             if (_root != null) Object.Destroy(_root);
             if (_hull != null) StandAt(_helm);
+            if (_skipper != null)
+            {
+                _skipper.HoldSpeed(0f);
+                _skipper.RequireExactFigureState = _requiredExactFigureState;
+            }
         }
 
         /// <summary>Draws the deck at <paramref name="now"/>.</summary>
@@ -113,6 +124,7 @@ namespace HiddenHarbours.App
                          NpcPotLanding landing = null)
         {
             Vector2 stand = _helm;
+            Vector2 velocity = Vector2.zero;
             float facing = 0f;            // degrees off the bow the hand faces
             Sprite carried = null;
             Vector2 carriedAt = default;
@@ -124,6 +136,8 @@ namespace HiddenHarbours.App
             {
                 case NpcPotBoatStage.Gaffing:
                     stand = Vector2.Lerp(_helm, _rail, Mathf.Clamp01(pose.Stage01 / ToTheRailShare));
+                    velocity = WalkVelocity(_helm, _rail, pose.Stage01 / ToTheRailShare,
+                                            pose.StageSeconds * ToTheRailShare);
                     facing = StarboardDegrees;
                     break;
 
@@ -135,7 +149,11 @@ namespace HiddenHarbours.App
 
                 case NpcPotBoatStage.Shifting:
                     if (today != null && pot >= 0 && pot < today.PotCount && now < today.GaffStart[pot])
+                    {
                         stand = Vector2.Lerp(_rail, _helm, Mathf.Clamp01(pose.Stage01 / ToTheHelmShare));   // on to the next pot
+                        velocity = WalkVelocity(_rail, _helm, pose.Stage01 / ToTheHelmShare,
+                                                pose.StageSeconds * ToTheHelmShare);
+                    }
                     else { stand = _rail; facing = StarboardDegrees; }                                     // easing to the mark, pot aboard
                     break;
 
@@ -144,6 +162,7 @@ namespace HiddenHarbours.App
                     {
                         double since = now - today.SetEnd[today.PotCount - 1];
                         stand = Vector2.Lerp(_rail, _helm, Mathf.Clamp01((float)(since / _def.DeckWalkSeconds)));
+                        velocity = WalkVelocity(_rail, _helm, (float)(since / _def.DeckWalkSeconds), _def.DeckWalkSeconds);
                     }
                     break;
 
@@ -164,6 +183,7 @@ namespace HiddenHarbours.App
                     {
                         case NpcDeckStep.Picking:
                             stand = Vector2.Lerp(cameFrom, _rail, Mathf.Clamp01(moment.Step01 / WalkShare));
+                            velocity = WalkVelocity(cameFrom, _rail, moment.Step01 / WalkShare, _def.PickSeconds * WalkShare);
                             if (moment.Step01 >= WalkShare)
                             {
                                 carried = animals[moment.Animal].Sprite;
@@ -174,6 +194,7 @@ namespace HiddenHarbours.App
 
                         case NpcDeckStep.Banding:
                             stand = Vector2.Lerp(_rail, _bench, Mathf.Clamp01(moment.Step01 / WalkShare));
+                            velocity = WalkVelocity(_rail, _bench, moment.Step01 / WalkShare, _def.BandSeconds * WalkShare);
                             carried = animals[moment.Animal].Sprite;
                             carriedAt = stand;
                             break;
@@ -182,6 +203,7 @@ namespace HiddenHarbours.App
                         {
                             Vector2 crate = CrateDeckMeters(animals[moment.Animal].Grade);
                             stand = Vector2.Lerp(_bench, crate, moment.Step01);
+                            velocity = WalkVelocity(_bench, crate, moment.Step01, _def.StowSeconds);
                             facing = NpcPotDay.Bearing(_bench, crate, StarboardDegrees);
                             carried = animals[moment.Animal].Sprite;
                             carriedAt = stand;
@@ -199,6 +221,7 @@ namespace HiddenHarbours.App
 
                         case NpcDeckStep.Baiting:
                             stand = Vector2.Lerp(cameFrom, _rail, Mathf.Clamp01(moment.Step01 / ToTheHelmShare));
+                            velocity = WalkVelocity(cameFrom, _rail, moment.Step01 / ToTheHelmShare, _def.BaitSeconds * ToTheHelmShare);
                             break;
                     }
                     break;
@@ -210,10 +233,13 @@ namespace HiddenHarbours.App
             if (landing != null && landing.HasLanding && now >= landing.StartSeconds && now < landing.EndSeconds)
             {
                 NpcLandingMoment at = landing.MomentAt(now);
+                velocity = Vector2.zero;
                 if (!at.Ashore)
                 {
                     stand = ToDeck(at.Position);
                     facing = at.HeadingDegrees - pose.HeadingDegrees;
+                    velocity = new Vector2(Vector2.Dot(at.Velocity, NpcPotDay.Starboard(_def.BerthHeadingDegrees)),
+                                           Vector2.Dot(at.Velocity, NpcPotDay.Along(_def.BerthHeadingDegrees)));
                     if (at.Crate >= 0 && at.Step == NpcLandingStep.Carrying)
                     {
                         carried = _def.LandingCrateSprite;
@@ -224,6 +250,8 @@ namespace HiddenHarbours.App
 
             Step = step;
             StandAt(stand);
+            if (velocity.sqrMagnitude > 0f) facing = NpcPotDay.Bearing(Vector2.zero, velocity, facing);
+            if (_skipper != null) _skipper.HoldSpeed(velocity.magnitude);
             Face(pose.HeadingDegrees + facing);
             Carry(carried, carriedAt);
             if (_wasReturning && !returning) Splash();
@@ -232,6 +260,11 @@ namespace HiddenHarbours.App
         }
 
         // ---- the hand ---------------------------------------------------------------------------------
+
+        // Derivative of the existing clamped interpolation, in deck metres per clock second. No frame
+        // history: loading mid-step and seeking the same instant produce the same gait and facing.
+        private static Vector2 WalkVelocity(Vector2 from, Vector2 to, float progress, double seconds)
+            => seconds > 0d && progress >= 0f && progress < 1f ? (to - from) / (float)seconds : Vector2.zero;
 
         /// <summary>A world point as hull-local metres on a boat lying at the Def's berth.</summary>
         private Vector2 ToDeck(Vector2 world)

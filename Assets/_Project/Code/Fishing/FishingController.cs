@@ -583,11 +583,9 @@ namespace HiddenHarbours.Fishing
                 return;
             }
 
-            // Something ate it — the bait is gone whether or not this fish is landed (owner's ruling
-            // 2026-07-25). Spent HERE rather than at the cast so water nothing looked at costs nothing.
-            // ⚠ TENTATIVE §10.2 reversal behind a flag: with BaitSpentOnCatchOnly the spend moves to
-            // the LANDED catch instead ("perhaps bait is only lost after catching a fish") — teases,
-            // missed strikes and lost fights then cost time only. Defaults OFF = today's behaviour.
+            // OFF preserves bite-time spending, once for the whole sequence. The shipped config is
+            // ON: teases, misses and lost fights cost time only; spend after the licence gate at landing.
+            // A missing config keeps the legacy OFF behaviour. No fish resolved means no spend in either mode.
             if (!(_config != null && _config.BaitSpentOnCatchOnly)) SpendBait();
 
             _pendingFish = fish;
@@ -707,7 +705,7 @@ namespace HiddenHarbours.Fishing
         /// <summary>One tick of the v2 deep→surface fight: read the lean (live in both phases — she runs
         /// from the hookup and the rod answers to it), advance the sim (which
         /// integrates <see cref="RodFightMath"/>'s rates), and publish through the SAME cozy results the
-        /// legacy fight uses — a snap is "threw the hook", catch + bait time, never gear (§7). The
+        /// legacy fight uses — a snap is "threw the hook", losing the catch and time, never gear (§7). The
         /// published phase follows the sim's landing progress, so the FightDeep→FightSurface crossing
         /// emits the moment she breaks the surface.</summary>
         private void TickRodFight(float dt, bool actionHeld, Vector2 pointerWorld, bool pointerValid)
@@ -757,9 +755,8 @@ namespace HiddenHarbours.Fishing
                 return;
             }
 
-            // The TENTATIVE §10.2 bait economy: under the flag, bait is spent only NOW — the fish is
-            // truly caught (an unlicensed release above spends nothing; neither did her teases or a
-            // lost fight). Flag off (the default) = the spend already happened at the bite.
+            // ON (the shipped asset) spends once here, before either hand/hold destination. Unlicensed
+            // releases above, teases and lost fights spend nothing. OFF already spent at the bite.
             if (_config != null && _config.BaitSpentOnCatchOnly) SpendBait();
 
             // Stamp the freshness clock at landing (M1 §7.3): the moment it leaves the water it is on
@@ -1125,9 +1122,19 @@ namespace HiddenHarbours.Fishing
             float delay = lo + (float)(_rng?.NextDouble() ?? 0.0) * (hi - lo);
 
             SeaFishingSettings s = _config != null ? _config.SeaFishing : SeaFishingSettings.Default;
-            return delay * SeaFightMath.BiteDelayScale(SeaState01(), s.SeaBoldness01)
-                         * CurrentSchoolInfluence().BiteDelayScale;
+            return WithBiteWaitTrait(delay * SeaFightMath.BiteDelayScale(SeaState01(), s.SeaBoldness01)
+                                           * CurrentSchoolInfluence().BiteDelayScale);
         }
+
+        /// <summary>
+        /// <paramref name="delay"/> (seconds to the next bite) with the player's
+        /// <see cref="TraitStat.BiteWait"/> factor applied (traits slice 1, Patient Angler), read through
+        /// the Core seam <see cref="GameServices.Traits"/>. Applied last, after the sea and the school, and it
+        /// never touches the RNG draw, so a seeded rig replays the same bite sequence, only sooner. With no
+        /// traits the factor is exactly 1 and the delay comes back untouched (bit-for-bit the old wait).
+        /// </summary>
+        public static float WithBiteWaitTrait(float delay)
+            => TraitMath.Apply(delay, GameServices.Traits.PlayerMultiplier(TraitStat.BiteWait));
 
         #region Depth drop (Rod Fishing v2 Wave 2 — design §2.1/§2.3; maths in DepthDropMath)
         // The weighted-rig branch: no cast — the rig DROPS (Sinking), the player counts the fall
@@ -1427,10 +1434,9 @@ namespace HiddenHarbours.Fishing
             || (_bait != null && TackleBox.HasBait(GameServices.Save?.Current, _bait.Id));
 
         /// <summary>
-        /// Spend one bait. WHEN it is called is the economy ruling: at the BITE by default (a cast
-        /// nothing looked at costs nothing; bait is gone once something has eaten it — owner 2026-07-25),
-        /// or at the LANDED CATCH under <c>GameConfig.BaitSpentOnCatchOnly</c> (the TENTATIVE §10.2
-        /// reversal: "perhaps bait is only lost after catching a fish"). Silent no-op on a bare lure.
+        /// Spend one bait: at the LANDED CATCH with the shipped <c>GameConfig.BaitSpentOnCatchOnly</c>
+        /// enabled, or at the BITE with the flag OFF (also the missing-config fallback). A cast with
+        /// no bite costs nothing in either mode. Silent no-op on a bare lure or an unconfigured rig.
         /// </summary>
         private void SpendBait()
         {

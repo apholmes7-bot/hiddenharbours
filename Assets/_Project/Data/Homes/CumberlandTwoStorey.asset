@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 45ad37597f9642ce885ebf99f168fbc7, type: 3}
+  m_Name: CumberlandTwoStorey
+  m_EditorClassIdentifier: HiddenHarbours.Economy::HiddenHarbours.Economy.HomeDef
+  Id: home.cumberland_two_storey
+  DisplayName: The two-storey house
+  Flavor: 'A tall house in the village with room to spare.'
+  Acquisition: 0
+  Price: 7500
+  Variant:
+  RegionId: region.cumberland
+  BuildingKey: structure.cmb_house_4
+  ResidentNpcIds: []
+  ResidentMove: 0
+  ResidentMovesTo: 
+  ListedForSale: 1

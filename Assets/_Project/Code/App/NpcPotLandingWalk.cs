@@ -14,7 +14,7 @@ namespace HiddenHarbours.App
     /// feet on the shared decor band (<see cref="SortingBands"/>), like everything else that stands on the
     /// wharf.</para>
     /// </summary>
-    public sealed class NpcPotLandingWalk
+    public sealed class NpcPotLandingWalk : ICharacterFigureAshoreClipStand
     {
         private readonly NpcPotDayDef _def;
         private readonly SpriteRenderer _aboard;
@@ -26,6 +26,21 @@ namespace HiddenHarbours.App
         private readonly SpriteRenderer _inHands;
         private readonly SpriteRenderer[] _atCounter;
         private bool _aboardHidden;
+        private bool _onLadder;
+        private float _ladderProgress;
+
+        public IsoCharacterSprite FigureCharacter => _iso;
+        public Transform FigureHull => null;
+        public Vector3 FigureStandRigMetres => Vector3.zero;
+        public float FigureDeckBearingDegrees => 0f;
+        public string FigureKey => _def.OwnerId;
+
+        public bool TryGetFigureClip(out CharacterClip clip, out float progress)
+        {
+            clip = CharacterClip.LadderDown;
+            progress = _ladderProgress;
+            return _onLadder;
+        }
 
         /// <summary>True while the figure on the wharf is the one drawn.</summary>
         public bool IsAshore => _body.enabled;
@@ -57,7 +72,10 @@ namespace HiddenHarbours.App
             _body = figure.AddComponent<SpriteRenderer>();
             _iso = figure.AddComponent<IsoCharacterSprite>();
             if (skipper != null) _iso.Configure(skipper);
+            _iso.HoldSpeed(0f);
+            _iso.RequireExactFigureState = true;
             _body.enabled = false;
+            CharacterFigurePresentation.Service?.Attach(figure, this);
 
             var hands = new GameObject("CrateInHands");
             hands.transform.SetParent(_figure, worldPositionStays: false);
@@ -99,6 +117,10 @@ namespace HiddenHarbours.App
             NpcLandingMoment moment = landingNow ? landing.MomentAt(now) : default;
             Step = moment.Step;
             bool ashore = landingNow && moment.Ashore;
+            _onLadder = ashore && moment.OnLadder;
+            // The existing ladder clip is shared in both directions, as on the player's ladder.
+            _ladderProgress = moment.Step01;
+            _iso.HoldSpeed(ashore ? moment.Velocity.magnitude : 0f);
 
             if (ashore)
             {

@@ -18,7 +18,7 @@ namespace HiddenHarbours.Tests.PlayMode
     /// she lies at her berth with her gear soaking, goes out, lies to each pot with it at her starboard rail,
     /// and the buoy, rope and pot are where the clock says, whenever the game is loaded.
     /// </summary>
-    public class NpcPotBoatsPlayTests
+    public partial class NpcPotBoatsPlayTests
     {
         const string DefPath = "Assets/_Project/Data/Traps/NmcDoironYvettePotDay.asset";
         const string OwnersFolder = "Assets/_Project/Data/Boats/Owners";

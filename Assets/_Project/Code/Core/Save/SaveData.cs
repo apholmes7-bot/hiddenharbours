@@ -335,6 +335,19 @@ namespace HiddenHarbours.Core
         /// FLAG lead-architect: additive save member (clam flats, catch-honesty).
         /// </summary>
         public List<SpentClamHoleDto> SpentClamHoles = new();
+
+        /// <summary>
+        /// <b>The player's traits</b> (traits slice 1, owner ruling 2026-11-14, added in v18): the ids of the
+        /// <see cref="TraitDef"/>s the player picked, in pick order. EMPTY means no traits, which is both
+        /// the new-game state and the honest answer for every save written before traits existed. Written
+        /// only through <see cref="ITraitService.SetPlayerTraits"/>.
+        ///
+        /// <para><b>Ids, not numbers</b>, for the <see cref="WornOutfitId"/> reason: a save names a choice
+        /// and never a bonus, so a number the owner retunes follows into every save. An id no shipped trait
+        /// claims is ignored by the maths, never a crash.</para>
+        /// FLAG lead-architect: save schema v18 (traits).
+        /// </summary>
+        public List<string> PlayerTraits = new();
     }
 
     /// <summary>

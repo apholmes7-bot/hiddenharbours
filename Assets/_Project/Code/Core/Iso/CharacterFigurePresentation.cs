@@ -72,6 +72,16 @@ namespace HiddenHarbours.Core
     }
 
     /// <summary>
+    /// An ashore move paced by its route, rather than the figure's animation clock. The caller owns
+    /// progress and heading; an unavailable clip leaves the existing sprite drawing the character.
+    /// Stands without this optional seam keep their ordinary stance and gait presentation.
+    /// </summary>
+    public interface ICharacterFigureAshoreClipStand : ICharacterFigureAshoreStand
+    {
+        bool TryGetFigureClip(out CharacterClip clip, out float progress);
+    }
+
+    /// <summary>
     /// <b>The seam a mesh figure takes the draw through</b> (was the Player's <c>IDeckRiderFigure</c>). The
     /// owner of the sprite knows that something ELSE may be drawing the character this frame; it does not
     /// know what, and it must not — the sprite path is the one that has to stay byte-identical, so it

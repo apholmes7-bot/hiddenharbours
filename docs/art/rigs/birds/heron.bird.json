@@ -1,0 +1,14 @@
+{
+  "name": "Heron",
+  "rig": "heronIsoRig.js",
+  "global": "HeronIso",
+  "sprite": "heron",
+  "plate": {
+    "rows": [
+      { "ground": "sea", "items": [["gull","float",0],["bird","stand",0],["bird","stand",1],["bird","stalk",0],["bird","stalk",2],["bird","poise",0],["bird","strike",1],["bird","strike",2],["bird","strike",3]] },
+      { "ground": "rock", "items": [["gull","stand",0],["bird","roost",0],["bird","roost",1],["bird","takeoff",0],["bird","takeoff",1,0],["bird","takeoff",2,0],["bird","land",1,0],["bird","land",2,0],["bird","land",3]] },
+      { "ground": "air", "alt": 40, "items": [["gull","fly",1],["gull","glide",0],["bird","fly",0],["bird","fly",1],["bird","fly",3],["bird","fly",4],["bird","glide",0]] }
+    ],
+    "signature": { "anim": "stand", "frame": 0, "ground": "sea" }
+  }
+}
