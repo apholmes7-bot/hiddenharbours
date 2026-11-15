@@ -265,11 +265,14 @@ namespace HiddenHarbours.App.Editor
             };
         }
 
-        /// <summary>The pads kit v3 still paints: the winch apron and the buyers' parking (the wharf's) and the
-        /// station's forecourt (the gas bar's). The truck park and the laydown are lots on kit v4's network.</summary>
+        /// <summary>The pads kit v3 still paints: the winch apron and the buyers' parking (the wharf's). The truck park
+        /// and the laydown are lots on kit v4's network, and the station's forecourt is the fuel stop's lot on it (the
+        /// network's forecourt section, NMC H9, the owner's 11-14): its pad stays in <see cref="NineMileCreekRoads.Pads"/>
+        /// only to keep the meadow off the lot.</summary>
         public static IReadOnlyList<NineMileCreekRoads.Pad> KeptV3Pads() =>
             NineMileCreekRoads.Pads().Where(p => p.Name != NineMileCreekRoads.TruckParkName &&
-                                                 p.Name != NineMileCreekRoads.LaydownName).ToList();
+                                                 p.Name != NineMileCreekRoads.LaydownName &&
+                                                 p.Name != NineMileCreekRoads.StationForecourtName).ToList();
 
         /// <summary>What step 06 and the road painter paint in kit v3: <see cref="KeptV3Ways"/> and
         /// <see cref="KeptV3Pads"/> under the dry-ground rule. None of it crosses water, so no deck is exempted.</summary>

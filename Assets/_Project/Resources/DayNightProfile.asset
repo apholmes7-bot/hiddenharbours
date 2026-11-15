@@ -134,3 +134,5 @@ MonoBehaviour:
   _overcastFadesShadow: 0.85
   _moonlightTint: {r: 0.62, g: 0.7, b: 0.9, a: 1}
   _moonlightLiftMax: 0.45
+  _lampsOffDarkness: 0.4
+  _lampsOnDarkness: 0.6

@@ -91,6 +91,10 @@ Shader "HiddenHarbours/AdditiveLight"
 
             // Global published by DayNightController (read-only here): the whole-frame multiply tint.
             float4 _DayNightTint;
+            #ifndef HH_LAMP_GATE_DECLARED
+            #define HH_LAMP_GATE_DECLARED
+            float4 _HHLampGate;   // the shared lamp band (x off-darkness, y on-darkness); global
+            #endif
 
             CBUFFER_START(UnityPerMaterial)
                 float4 _LightColor;
@@ -126,8 +130,11 @@ Shader "HiddenHarbours/AdditiveLight"
                 // "Cycle active" when the tint is meaningfully non-black (the controller is darkening the frame).
                 float cycleActive = step(0.02, lum);
                 float darkness = saturate(1.0 - lum);
-                float lo = saturate(_GateThreshold);
-                float hi = saturate(_GateThreshold + max(_GateSoftness, 1e-4));
+                // The SHARED lamp band (LightMath.NightGate's offDarkness/onDarkness, published by
+                // DayNightController as _HHLampGate; unset 0,0 = the old gate): off by day whatever the threshold.
+                float lo = max(saturate(_GateThreshold), saturate(_HHLampGate.x));
+                float hi = max(saturate(_GateThreshold + max(_GateSoftness, 1e-4)), saturate(_HHLampGate.y));
+                hi = max(hi, lo + 1e-4);
                 float gated = smoothstep(lo, hi, darkness);
                 // No cycle => fall back to _GateFallback (default 1 = show).
                 return lerp(saturate(_GateFallback), gated, cycleActive);

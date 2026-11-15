@@ -47,6 +47,10 @@ namespace HiddenHarbours.App.Editor
             public string On, OnPart;
             public List<string> For;
 
+            /// <summary>A forecourt route's role (asphalt, concrete, island), kit group and lift; null and 0 on a road.</summary>
+            public string Role, Group;
+            public float Lift;
+
             public float HalfWidth => Width * 0.5f;
 
             /// <summary>One of the plan's nineteen roads (or a piece of one), not a lot's own drive.</summary>
@@ -100,6 +104,46 @@ namespace HiddenHarbours.App.Editor
             public Vector2 At;
         }
 
+        /// <summary>The fuel stop's lot: its asphalt, concrete pads, raised islands and kerbed walk as kit v4 routes
+        /// (<see cref="Route.Role"/> asphalt, concrete or island), and the paint the bake lays on them.</summary>
+        public sealed class Forecourt
+        {
+            public List<Route> Routes = new List<Route>();
+            public List<ForecourtLine> Lines = new List<ForecourtLine>();
+            public List<ForecourtBays> Bays = new List<ForecourtBays>();
+            public List<ForecourtArrow> Arrows = new List<ForecourtArrow>();
+            /// <summary>How far the lot's south edge reaches into Wharf Road's carriage: the entry.</summary>
+            public float EntrySouthOverlap;
+            public float LineWidth, ArrowLength, ArrowHeadWidth;
+            /// <summary>The canopy's see-through: the roof's alpha while the player is under it, the margin round the
+            /// ground it hides and the extra distance leaving takes (<c>NineMileCreekWharfLandSide.CanopySeeThrough</c>).</summary>
+            public float CanopyGhostAlpha = 1f, CanopyMarginMetres, CanopyHysteresisMetres;
+        }
+
+        /// <summary>A painted line: a stall line of a row of bays (<see cref="Of"/> the row's id), or one of its own.</summary>
+        public sealed class ForecourtLine
+        {
+            public string Id, Of, Colour;
+            public float Width;
+            public Vector2[] Points;
+        }
+
+        /// <summary>A row of <see cref="Count"/> bays, each <see cref="Size"/> (across, deep), from the row's south-west
+        /// corner.</summary>
+        public sealed class ForecourtBays
+        {
+            public string Id;
+            public Vector2 From, Size;
+            public int Count;
+            public Rect Bay(int k) => new Rect(From.x + k * Size.x, From.y, Size.x, Size.y);
+        }
+
+        public sealed class ForecourtArrow
+        {
+            public string Id, Colour;
+            public Vector2 At, Dir;
+        }
+
         public sealed class Network
         {
             public string Schema;
@@ -113,6 +157,11 @@ namespace HiddenHarbours.App.Editor
             public List<string> Held = new List<string>();
             public List<Clearance> Clearances = new List<Clearance>();
             public int Fords;
+
+            /// <summary>The fuel stop's lot (NMC H9, the owner's ruling of 11-14), from tools/nmc-roads/forecourt.json:
+            /// its own section, laid by the bake after the routes and flares and never read as a road; null when the
+            /// file carries none.</summary>
+            public Forecourt Forecourt;
             public string WestEdgeRoute;
             public Vector2 WestEdgeAt;
 
@@ -171,6 +220,54 @@ namespace HiddenHarbours.App.Editor
                 foreach (object g in MiniJson.List(o, "gates") ?? new List<object>()) c.Gates.Add(Point(MiniJson.List(g, "x")));
                 if (MiniJson.Has(o, "pts")) c.Line = Points(MiniJson.List(o, "pts"));
                 net.Clearances.Add(c);
+            }
+
+            var lot = MiniJson.Dict(json, "forecourt");
+            if (lot != null)
+            {
+                var see = MiniJson.Dict(lot, "canopySeeThrough");
+                var fc = new Forecourt
+                {
+                    EntrySouthOverlap = MiniJson.Float(lot, "entrySouthOverlap"),
+                    CanopyGhostAlpha = MiniJson.Float(see, "ghostAlpha", 1f),
+                    CanopyMarginMetres = MiniJson.Float(see, "marginMetres"),
+                    CanopyHysteresisMetres = MiniJson.Float(see, "hysteresisMetres"),
+                };
+                foreach (object o in MiniJson.List(lot, "routes"))
+                {
+                    Route r = RouteOf(o);
+                    r.Role = MiniJson.String(o, "role");
+                    r.Group = MiniJson.String(o, "group");
+                    r.Lift = MiniJson.Float(o, "lift");
+                    fc.Routes.Add(r);
+                }
+                var paint = MiniJson.Dict(lot, "paint");
+                fc.LineWidth = MiniJson.Float(paint, "lineWidth");
+                foreach (object o in MiniJson.List(paint, "lines"))
+                    fc.Lines.Add(new ForecourtLine
+                    {
+                        Id = MiniJson.String(o, "id"), Of = MiniJson.String(o, "of"), Colour = MiniJson.String(o, "colour"),
+                        Width = MiniJson.Float(o, "w"), Points = Points(MiniJson.List(o, "pts")),
+                    });
+                foreach (object o in MiniJson.List(paint, "bays"))
+                {
+                    var each = MiniJson.List(o, "each");
+                    fc.Bays.Add(new ForecourtBays
+                    {
+                        Id = MiniJson.String(o, "id"), From = Point(MiniJson.List(o, "from")), Count = MiniJson.Int(o, "n"),
+                        Size = new Vector2((float)(double)each[0], (float)(double)each[1]),
+                    });
+                }
+                var arrow = MiniJson.Dict(paint, "arrow");
+                fc.ArrowLength = MiniJson.Float(arrow, "length");
+                fc.ArrowHeadWidth = MiniJson.Float(arrow, "head");
+                foreach (object o in MiniJson.List(paint, "arrows"))
+                    fc.Arrows.Add(new ForecourtArrow
+                    {
+                        Id = MiniJson.String(o, "id"), Colour = MiniJson.String(o, "colour"),
+                        At = Point(MiniJson.List(o, "at")), Dir = Point(MiniJson.List(o, "dir")).normalized,
+                    });
+                net.Forecourt = fc;
             }
 
             foreach (object o in MiniJson.List(json, "held")) net.Held.Add(MiniJson.String(o, "id"));

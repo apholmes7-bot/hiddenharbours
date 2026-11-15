@@ -26,7 +26,10 @@ namespace HiddenHarbours.App.Editor
         public static KeyScenePiece[] PlacementRows()
         {
             var owned = JsonUtility.FromJson<Ownership>(File.ReadAllText(NineMileCreekWharfLandSide.RecordPath)).rows;
-            var eligible = owned.Where(r => r.owner == "H5" && string.IsNullOrEmpty(r.waits)).ToArray();
+            // A row on the fuel stop kit is placed by H9 under the land side (NineMileCreekWharfLandSide.FuelStopWharfRows),
+            // the ramp light among them, so H5 never places it a second time.
+            var fuelStop = new HashSet<string>(NineMileCreekWharfLandSide.FuelStopWharfRows().Select(p => p.Id));
+            var eligible = owned.Where(r => r.owner == "H5" && string.IsNullOrEmpty(r.waits) && !fuelStop.Contains(r.id)).ToArray();
             var ids = new HashSet<string>(eligible.Select(r => r.id));
             var rows = Scene().Pieces.Where(p => ids.Contains(p.Id)).ToArray();
             if (rows.Length != eligible.Length)

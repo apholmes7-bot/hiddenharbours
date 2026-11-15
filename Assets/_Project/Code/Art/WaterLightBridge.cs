@@ -212,8 +212,10 @@ namespace HiddenHarbours.Art
             ColorArray[slot] = new Vector4(s.Color.r, s.Color.g, s.Color.b, s.Color.a);
             ParamsArray[slot] = new Vector4(Mathf.Max(0f, s.Intensity), Mathf.Max(0.01f, s.Range),
                                             s.CosHalfAngle, s.CosInnerAngle);
-            Params2Array[slot] = new Vector4(Mathf.Clamp01(s.EdgeSoftness), Mathf.Clamp01(s.GateThreshold),
-                                             Mathf.Clamp01(s.GateSoftness), Mathf.Clamp01(s.GateFallback));
+            // The shared lamp band rides in the ramp (the water shader is hash-pinned; see LightMath.BandedGateRamp).
+            Vector2 ramp = LightMath.BandedGateRamp(s.GateThreshold, s.GateSoftness);
+            Params2Array[slot] = new Vector4(Mathf.Clamp01(s.EdgeSoftness), Mathf.Clamp01(ramp.x),
+                                             Mathf.Clamp01(ramp.y), Mathf.Clamp01(s.GateFallback));
         }
 
         /// <summary>

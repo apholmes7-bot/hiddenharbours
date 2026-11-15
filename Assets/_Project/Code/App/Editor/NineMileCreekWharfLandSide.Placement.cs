@@ -51,6 +51,7 @@ namespace HiddenHarbours.App.Editor
                 r.id != "harbour.yard" && r.id != "boat.nmc_damaged_dory").Select(r => r.id));
             KeyScenePiece[] rows = KeyScene().Pieces.Where(p => ids.Contains(p.Id)).ToArray();
             if (rows.Length != ids.Count) throw new Refusal("The H6 placement subset names an absent row.");
+            rows = rows.Where(p => !p.Kit.StartsWith("fuelStopRig", StringComparison.Ordinal)).ToArray();
             return rows;
         }
         static SetPieceDef Definition(string key) => AssetDatabase.LoadAssetAtPath<SetPieceDef>(
@@ -142,7 +143,8 @@ namespace HiddenHarbours.App.Editor
             var material = new EditorKeySceneAssets().SpriteMaterial;
             var buildings = NmcWharfBuildingBakeMenu.Load();
             var ground = NineMileCreekGround.Load();
-            foreach (KeyScenePiece row in PlacementRows())
+            // The eleven rows that waited for the fuel stop kit (H9) are placed here too, so a re-run keeps them.
+            foreach (KeyScenePiece row in PlacementRows().Concat(FuelStopWharfRows()))
             {
                 // The existing drivable Dually occupies this row; PlaceBuyerTruck reads the same bay.
                 if (row.Id == BuyerTruckRowId) continue;
@@ -200,6 +202,17 @@ namespace HiddenHarbours.App.Editor
                         SetPieceDef def = Definition(row.Piece);
                         if (def.Id != row.Id && !(row.Id == "structure.nmc_harbourmaster" && def.Id == "structure.nmc_wharf_office"))
                             throw new Refusal(row.Id + ": its Def identity is not the ruled identity.");
+                        sprite = SpriteAsset(def.SpriteFor(SetPieceDef.FrameForRigDir(row.Dir)));
+                        walls = WallsOf(def.Colliders, SetPieceDef.FrameForRigDir(row.Dir), row.Id);
+                        long source = Allocate(ids, RootName, row.Id + "/source"); comps.Add(source);
+                        parts.Add((row.Id + "/source", MonoBehaviourYaml(source, pieceGo,
+                            Script("Assets/_Project/Code/Art/SetPiecePlacement.cs", "HiddenHarbours.Art", "HiddenHarbours.Art.SetPiecePlacement"),
+                            new[] { "  _def: " + Asset("Assets/_Project/Data/SetPieces/SetPiece_" + row.Piece + ".asset").Yaml,
+                                "  _definitionId: " + def.Id, "  _placementId: " + row.Id, "  _rigDir: " + row.Dir })));
+                    }
+                    else if (OnFuelStopKit(row))
+                    {
+                        SetPieceDef def = FuelStopDefinition(row);
                         sprite = SpriteAsset(def.SpriteFor(SetPieceDef.FrameForRigDir(row.Dir)));
                         walls = WallsOf(def.Colliders, SetPieceDef.FrameForRigDir(row.Dir), row.Id);
                         long source = Allocate(ids, RootName, row.Id + "/source"); comps.Add(source);
@@ -420,7 +433,7 @@ namespace HiddenHarbours.App.Editor
         public static void RecordPlacement()
         {
             string text = File.ReadAllText(KeyScenePath);
-            string[] ids = PlacementRows().Select(p => p.Id).ToArray();
+            string[] ids = PlacementRows().Concat(FuelStopWharfRows()).Select(p => p.Id).ToArray();
             if (SceneYaml.Parse(File.ReadAllText(NineMileCreekLayerRefresh.ScenePath)).Docs.Any(d =>
                 d.ClassId == 1 && d.Field("m_Name") == NineMileCreekWharfYard.RootName))
                 ids = ids.Concat(new[] { NineMileCreekWharfYard.RowId, NineMileCreekWharfYard.DamagedDoryRowId }).ToArray();

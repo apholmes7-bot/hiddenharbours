@@ -197,7 +197,11 @@ namespace HiddenHarbours.Tests.EditMode
                 var data = KeySceneImport.ReadAsset(File.ReadAllText(file), file);
                 Assert.AreEqual("keyscene.nmc_" + suffixes[i], Field(data,"Id").Scalar);
                 Assert.AreEqual("region.nine_mile_creek",Field(data,"RegionId").Scalar);
-                Assert.AreEqual(suffixes[i] == "wharf" ? "1" : "0", Field(data,"Placed").Scalar);
+                // Two scenes are placed in the region scene: the wharf, and (NMC H9) the fuel stop, whose
+                // placement step marks its own asset placed when its rows are written under CreekFuel.
+                // The other ten still wait, and stay "0" until their own placement step lands.
+                bool placed = suffixes[i] == "wharf" || suffixes[i] == "fuel_stop";
+                Assert.AreEqual(placed ? "1" : "0", Field(data,"Placed").Scalar, suffixes[i]);
                 StringAssert.Contains("HH-nmc-key-scenes-one-scene-reissue-3-2026-10-07", Field(data,"Source").Scalar);
                 var pieces = Field(data,"Pieces").Items;
                 Assert.AreEqual(source[i].ToString(),Option(pieces[0],"nmc.scene.sourceRows"));

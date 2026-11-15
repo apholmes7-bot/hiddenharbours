@@ -357,10 +357,11 @@ namespace HiddenHarbours.App.Editor
                 "as the park for the same reason: it is the same kind of thing, and the two never " +
                 "contend for a cell (their nearest edges are 5.3 m apart)"),
 
-            new Pad(StationForecourtName, ApronSurface, NineMileCreekStation.Route91ApronArea(), RankApron,
-                "⭐ the Route 91 forecourt — concrete, because that is what the station kit's own sidecar " +
-                "says its island stands on. Only the DRIVING half is paved (the storefront's front face " +
-                "out to the road edge): paving under a building is pointless. ⚠ It does a second job " +
+            // NMC H9: the one gas bar moved to the fuel stop on Wharf Road, and its pad moved with it. The old
+            // station's apron at the Route 91 junction is no longer paved: nothing stands on it.
+            new Pad(StationForecourtName, ApronSurface, NineMileCreekWharfLandSide.ForecourtArea(), RankApron,
+                "⭐ the gas bar's forecourt — concrete from Wharf Road's kerb to under the store, across " +
+                "the span of the lot's own lights. ⚠ It does a second job " +
                 "besides looking right — NineMileCreekFields.IsGrassGround steps off any pad, so the " +
                 "meadow stops at the concrete instead of growing up between the pumps"),
         };
