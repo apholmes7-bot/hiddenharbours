@@ -385,12 +385,13 @@ namespace HiddenHarbours.Tests.PlayMode
         }
 
         /// <summary>
-        /// The other half of the ruling, and the one that cannot be read off the cape: a passenger below
-        /// gets the cut BECAUSE she is not at the wheel. Declare her piloting this hull and the cutaway
-        /// must close the house again without anybody moving.
+        /// The other half of the ruling: a passenger below gets HER level's cut because she is not at the
+        /// wheel. Declare her piloting this hull and, without anybody moving, the cut becomes the wheel's:
+        /// the one room the helm station stands in (owner, 2026-11-14), or nothing with the owner's switch
+        /// off (the 2026-08-26 ruling, "at the helm, exterior only").
         /// </summary>
         [UnityTest]
-        public IEnumerator IfThePassengerTookThisWheel_TheHouseCloses_ThoughSheIsStillBelow()
+        public IEnumerator IfThePassengerTookThisWheel_TheCutIsTheWheelsRoom_AndTheOwnersSwitchClosesTheHouse()
         {
             ArrivalOpening opening = Build();
             Assert.IsTrue(opening.TryBegin());
@@ -403,9 +404,31 @@ namespace HiddenHarbours.Tests.PlayMode
             yield return null;
 
             Assert.IsTrue(opening.IsBelowDecks, "declaring a helm must not move her out of the cabin");
-            Assert.IsFalse(opening.CabinCutaway.RequestedCut.Opens,
-                "the house is still cut open for somebody who is steering her — the occupancy law (#642) " +
-                "says at the helm is exterior only");
+            HullMeshDef.Cut wheelRoom = opening.CabinCutaway.HelmRoomCut;
+            HullMeshDef.Cut asked = opening.CabinCutaway.RequestedCut;
+            Assert.AreEqual(wheelRoom.Opens, asked.Opens,
+                "at the wheel the house shows the wheel's room and nothing else: open exactly when her helm " +
+                "station stands in a room");
+            Assert.AreEqual(wheelRoom.Level, asked.Level, "the wheel's room, whatever level the cabin counts her on");
+            Assert.AreEqual(wheelRoom.LiftLevels, asked.LiftLevels, "and no other level with it");
+
+            // The owner's switch, read each time the helm changes hands: off gives the closed house back.
+            GameConfig before = GameServices.Config;
+            GameConfig off = before != null ? UnityEngine.Object.Instantiate(before) : ScriptableObject.CreateInstance<GameConfig>();
+            off.CutTheHelmRoomAtTheWheel = false;
+            GameServices.Config = off;
+            try
+            {
+                EventBus.Publish(new ControlModeChanged(ControlMode.Aboard));
+                Assert.IsFalse(opening.CabinCutaway.RequestedCut.Opens,
+                    "switch off: the house is still cut open for somebody who is steering her (the occupancy " +
+                    "law, #642: at the helm is exterior only)");
+            }
+            finally
+            {
+                GameServices.Config = before;
+                UnityEngine.Object.Destroy(off);
+            }
 
             GameServices.Helm.SetPilotedHull(null);
             EventBus.Publish(new ControlModeChanged(ControlMode.OnDeck));

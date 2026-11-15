@@ -288,6 +288,8 @@ namespace HiddenHarbours.Player
             CatchItem item = held.Item;
             if (!hold.TryAdd(item)) return false;
 
+            RemoveCatchFromHand(held);
+
             // ⚠️ THIS is where FishCaught belongs on the in-hand path, and it is easy to leave out — the
             // catch source no longer publishes it (it did not put anything in a hold), so if this line is
             // missing, nothing does. The event means "a catch entered a hold": the hold-fill renderers
@@ -296,12 +298,38 @@ namespace HiddenHarbours.Player
             // every one of them.
             EventBus.Publish(new FishCaught(item));
 
-            held.Take();
+            return true;
+        }
+
+        /// <inheritdoc/>
+        public bool TryTakeFromHand(out CatchItem item)
+        {
+            item = default;
+            if (_slots.FirstOf(HandLoad.Catch) is not CarriableCatch held || !held.HasItem) return false;
+
+            item = RemoveCatchFromHand(held);
+            return true;
+        }
+
+        /// <inheritdoc/>
+        public bool TryPeekHand(out CatchItem item)
+        {
+            item = default;
+            if (_slots.FirstOf(HandLoad.Catch) is not CarriableCatch held || !held.HasItem) return false;
+
+            item = held.Item;
+            return true;
+        }
+
+        // One cleanup path for a container handoff and a station taking the loose catch.
+        private CatchItem RemoveCatchFromHand(CarriableCatch held)
+        {
+            CatchItem item = held.Take();
             Forget(held);
             DestroyCatch(held);
-
             TakeBackSlung();
-            return true;
+            EventBus.Publish(new CatchTakenFromHand(item));
+            return item;
         }
 
         /// <summary>

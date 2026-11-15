@@ -1,0 +1,73 @@
+# StPetersLayerRefresh: one step's patch to one root. Whole Unity YAML documents.
+step: "13-wharf-land-side"
+root: "NmcWharfLandSide"
+rootGameObject: 308387568
+differences: []
+deletions: []
+edits: []
+additions: []
+
+# StPetersLayerRefresh: one step's patch to one root. Whole Unity YAML documents.
+step: "19-fuel-stop"
+root: "CreekFuel"
+rootGameObject: 1062012223
+addAfter: 2073826116
+differences: []
+deletions: []
+edits: []
+additions: []
+
+# StPetersLayerRefresh: one step's patch to one root. Whole Unity YAML documents.
+step: "06-essential-roads-g3"
+root: "NineMileCreekRoads"
+rootGameObject: 1447758930
+differences:
+- "NineMileCreekRoads: G3 paving kept in kit v3 (1810 cells (concrete 10, gravel 1800); 160 trimmed by the water)"
+deletions: []
+edits: []
+additions: []
+
+# StPetersLayerRefresh: one step's patch to one root. Whole Unity YAML documents.
+step: "19-fuel-stop"
+root: "CreekFields"
+rootGameObject: 1461262240
+differences: []
+deletions: []
+edits: []
+additions: []
+
+# StPetersLayerRefresh: one step's patch to one root. Whole Unity YAML documents.
+step: "19-fuel-stop"
+root: "CreekHedgerows"
+rootGameObject: 1448325098
+differences: []
+deletions: []
+edits: []
+additions: []
+
+# StPetersLayerRefresh: one step's patch to one root. Whole Unity YAML documents.
+step: "19-fuel-stop"
+root: "CreekTrees"
+rootGameObject: 155961041
+differences: []
+deletions: []
+edits: []
+additions: []
+
+# StPetersLayerRefresh: one step's patch to one root. Whole Unity YAML documents.
+step: "19-fuel-stop"
+root: "CreekUnderstorey"
+rootGameObject: 827272198
+differences: []
+deletions: []
+edits: []
+additions: []
+
+# StPetersLayerRefresh: one step's patch to one root. Whole Unity YAML documents.
+step: "19-fuel-stop"
+root: "CreekMarsh"
+rootGameObject: 1727414074
+differences: []
+deletions: []
+edits: []
+additions: []

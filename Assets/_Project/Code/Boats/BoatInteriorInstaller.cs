@@ -87,6 +87,15 @@ namespace HiddenHarbours.Boats
 
         private readonly List<BoatCabinDoor> _additionalDoors = new List<BoatCabinDoor>();
 
+        /// <summary>A bunk's node prefix: <c>BoatBunk.&lt;anchor id&gt;</c>.</summary>
+        public const string BunkChildName = "BoatBunk";
+
+        /// <summary>The bunks it built, one per <c>sleep</c> anchor in the def's order — empty on a hull
+        /// whose rig names none. Read by tests.</summary>
+        public IReadOnlyList<BoatBunk> Bunks => _bunks;
+
+        private readonly List<BoatBunk> _bunks = new List<BoatBunk>();
+
         /// <summary>The cutaway it built, or null on a hull with no mesh to cut. Read by tests.</summary>
         public BoatCutaway Cutaway { get; private set; }
 
@@ -208,7 +217,7 @@ namespace HiddenHarbours.Boats
             if (visual.HasHullMesh())
             {
                 Cutaway = gameObject.AddComponent<BoatCutaway>();
-                Cutaway.Configure(Interior, visual.HullMesh, transform, controller);
+                Cutaway.Configure(Interior, visual.HullMesh, transform, controller, visual.Deck);
             }
 
             // --- the doors ----------------------------------------------------------------------
@@ -221,13 +230,46 @@ namespace HiddenHarbours.Boats
                 Door = BuildDoor(DoorChildName, def, def.Door, -1, exteriorCcw, elevation);
 
             BoatInteriorDoor[] extras = def.AdditionalDoors;
-            if (extras == null) return;
-            for (int i = 0; i < extras.Length; i++)
+            if (extras != null)
             {
-                BoatInteriorDoor extra = extras[i];
-                if (extra == null) continue;
-                _additionalDoors.Add(BuildDoor($"{DoorChildName}.{DoorId(extra, i)}", def, extra, i,
-                                               exteriorCcw, elevation));
+                for (int i = 0; i < extras.Length; i++)
+                {
+                    BoatInteriorDoor extra = extras[i];
+                    if (extra == null) continue;
+                    _additionalDoors.Add(BuildDoor($"{DoorChildName}.{DoorId(extra, i)}", def, extra, i,
+                                                   exteriorCcw, elevation));
+                }
+            }
+
+            // --- the bunks (owner 2026-11-14: "bunks on boats sleepable") ------------------------
+            BuildBunks(def, controller, exteriorCcw, elevation);
+        }
+
+        /// <summary>
+        /// One <see cref="BoatBunk"/> per <see cref="BoatBunk.SleepAction"/> anchor the def carries, each
+        /// on its own child anchored at the anchor's reach point in the hull frame — the same projection
+        /// her doors hang off, so the berth is where the art puts it at every heading. No sleep anchor,
+        /// no bunk: absence is data. Public-by-effect only through <see cref="Bunks"/>.
+        /// </summary>
+        private void BuildBunks(BoatInteriorDef def, BoatController controller, bool exteriorCcw, float elevation)
+        {
+            BoatInteriorAnchor[] anchors = def.Anchors;
+            if (anchors == null) return;
+            for (int i = 0; i < anchors.Length; i++)
+            {
+                BoatInteriorAnchor a = anchors[i];
+                if (a == null || !string.Equals(a.Action, BoatBunk.SleepAction, System.StringComparison.Ordinal))
+                    continue;
+
+                string anchorId = !string.IsNullOrEmpty(a.Id) ? a.Id : $"sleep_{i}";
+                var bunkGo = new GameObject($"{BunkChildName}.{anchorId}");
+                bunkGo.transform.SetParent(transform, false);
+                var bunkAnchor = bunkGo.AddComponent<HullLocalAnchor>();
+                bunkAnchor.Configure(transform, a.ReachPoint, exteriorCcw, elevation);
+
+                var bunk = bunkGo.AddComponent<BoatBunk>();
+                bunk.Configure(Interior, controller, $"fixture.boat.{def.Id}.{anchorId}", a.ReachPoint);
+                _bunks.Add(bunk);
             }
         }
 
@@ -293,12 +335,15 @@ namespace HiddenHarbours.Boats
             if (Door != null) DestroyImmediate(Door.gameObject);
             for (int i = 0; i < _additionalDoors.Count; i++)
                 if (_additionalDoors[i] != null) DestroyImmediate(_additionalDoors[i].gameObject);
+            for (int i = 0; i < _bunks.Count; i++)
+                if (_bunks[i] != null) DestroyImmediate(_bunks[i].gameObject);
             if (_room != null) DestroyImmediate(_room);
             if (Cutaway != null) DestroyImmediate(Cutaway);
             if (Interior != null) DestroyImmediate(Interior);
 
             Door = null;
             _additionalDoors.Clear();
+            _bunks.Clear();
             _room = null;
             Cutaway = null;
             Interior = null;

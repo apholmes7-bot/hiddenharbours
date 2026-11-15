@@ -17,6 +17,8 @@ MonoBehaviour:
   SecondsPerDay: 1800
   StartHour: 7.5
   WakeHour: 6
+  BunkRequiresMooredOrAnchored: 1
+  BunkReachMetres: 1
   StartSeason: 1
   StartDayOfSeason: 1
   DaysPerWeek: 7
@@ -506,6 +508,7 @@ MonoBehaviour:
     AboardStopsCloser: 2
     AboardStopsWider: 2
   InteriorRockScale: 0.45
+  CutTheHelmRoomAtTheWheel: 1
   StairClimbSeconds: 0.5
   PlayerNameMaxLength: 32
   TraitPicksPerCharacter: 2
@@ -614,3 +617,4 @@ MonoBehaviour:
     SideRadiusHalfBeams: 0.3
     SideReach: 0.7
   DevAllHelmInstruments: 1
+  MeshFishingAndDig: 1

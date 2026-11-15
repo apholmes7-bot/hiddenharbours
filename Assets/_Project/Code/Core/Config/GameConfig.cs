@@ -149,6 +149,24 @@ namespace HiddenHarbours.Core
                  "this morning's when you turn in after midnight. 6 = 06:00, the design's wake time. " +
                  "The day rollover (market recovery, snow cover) fires for every midnight slept through.")]
         [Range(0f, 24f)] public float WakeHour = DefaultWakeHour;
+
+        /// <summary>Whether a bunk aboard refuses while she is neither made fast nor holding at anchor,
+        /// when no config is wired. TRUE: the owner's safe default ("it's not safe to turn in out
+        /// here").</summary>
+        public const bool DefaultBunkRequiresMooredOrAnchored = true;
+
+        /// <summary>How close (m) to a bunk's reach point the player must stand, when no config is
+        /// wired.</summary>
+        public const float DefaultBunkReachMetres = 1f;
+
+        [Tooltip("Sleeping aboard (owner 2026-11-14): when ON, a bunk on your boat only lets you turn in " +
+                 "while she is made fast to a cleat, berthed, or holding at anchor. Adrift or under way it " +
+                 "answers \"It's not safe to turn in out here.\" Turn OFF to let the player sleep anywhere.")]
+        public bool BunkRequiresMooredOrAnchored = DefaultBunkRequiresMooredOrAnchored;
+
+        [Tooltip("How close (m) you must stand to a bunk's own reach point, which is already the spot the " +
+                 "rig says you stand on to use it — so this is a forgiving step, not a precise one.")]
+        [Min(0.1f)] public float BunkReachMetres = DefaultBunkReachMetres;
         [Tooltip("Season at elapsed day zero. Its offset uses DaysPerSeason, never a separate day count.")]
         public Season StartSeason = Season.HighSummer;
         [Tooltip("One-based day within the starting season. Changes labels, never simulation seconds.")]
@@ -1161,6 +1179,18 @@ namespace HiddenHarbours.Core
                  "proposal 3), so the two poses are never on screen together to disagree.")]
         [Range(0f, 1f)] public float InteriorRockScale = DefaultInteriorRockScale;
 
+        /// <summary>The ruled default for <see cref="CutTheHelmRoomAtTheWheel"/> (2026-11-14), read by
+        /// the boat cutaway when no config is wired.</summary>
+        public const bool DefaultCutTheHelmRoomAtTheWheel = true;
+
+        [Header("Boat cutaway at the wheel (owner ruling 2026-11-14)")]
+        [Tooltip("ON (the default): while you steer a boat whose wheel stands inside an enclosed room, " +
+                 "that one room is cut open so you see the skipper and the instruments. No other level " +
+                 "opens, and a wheel on an open deck or a flybridge cuts nothing. OFF: the house stays " +
+                 "closed at every wheel, as it was before 2026-11-14. Walking inside a cabin cuts it " +
+                 "open either way. Picture only: nothing about handling or the save changes.")]
+        public bool CutTheHelmRoomAtTheWheel = DefaultCutTheHelmRoomAtTheWheel;
+
         [Header("Interior stairs (ADR 0036 — the climb between storeys)")]
         [Tooltip("How long the player takes to walk up (or down) one storey, in seconds. The storey " +
                  "above is drawn at its true height, so the two floors are a real distance apart and " +
@@ -1193,6 +1223,12 @@ namespace HiddenHarbours.Core
         /// drawn on, including while the owner is tuning this value in Play.
         /// </summary>
         public float WaveExaggeration => DisplacedWater.WaveExaggeration;
+
+        [Header("Fishing and clam digging body presentation")]
+        [Tooltip("Use the baked mesh body for rod fishing and clam digging when the skin carries " +
+                 "the clip and enables it in MeshStates. Off restores the previous sprite fishing " +
+                 "and unanimated dig. Held tools and catch keep their sprite presenters.")]
+        public bool MeshFishingAndDig = true;
 
         public float SecondsPerHour => SecondsPerDay / 24f;
         public float SecondsPerWeek => SecondsPerDay * DaysPerWeek;

@@ -64,7 +64,7 @@ flowchart LR
 
 There are 16 passage components in the requested six scenes, plus Greybox's
 unwired exit: 17 audited records. The South Water adds three more (see
-"The South Water's north seams" below) and Rice Point's channel mouth one: 21. Referenced prefabs (13 distinct sources,
+"The South Water's north seams" below) and Rice Point's channel mouth one: 21. Referenced prefabs (5 distinct sources since the Nine Mile Creek fuel stop retired the old forecourt's eight,
 including recursive discovery) contain no additional passage, anchor or loader.
 The opening is a separate scripted hop: the built first scene is St Peters;
 its `ArrivalOpening` reads `ArrivalSea.asset`, hops to East Water at `opening`,
