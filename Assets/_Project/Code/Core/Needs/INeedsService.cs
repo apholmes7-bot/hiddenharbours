@@ -1,0 +1,44 @@
+namespace HiddenHarbours.Core
+{
+    /// <summary>
+    /// <b>Hunger and tiredness, as a seam</b> (needs slice 1, owner ruling 2026-11-14). The local
+    /// player's two needs, worked out from the save and the game clock. A feature module reads its stat's
+    /// combined factor through <see cref="CharacterFactors.Player"/> (traits x needs, in one place) and
+    /// never learns which need or trait moved it (rule 4).
+    ///
+    /// <para><b>What a need may touch</b> (the ruling): the walk speed and the price of an in-person sale,
+    /// later a villager's reply. Never a stop, a faint, damage or death; never a bar, meter, number or HUD
+    /// element. A trait's <see cref="NeedRelief"/> can cancel or ease a need's penalty.</para>
+    ///
+    /// <para><b>Deterministic.</b> The level at any instant is a pure function of the saved
+    /// (level, instant) pair and the clock (<see cref="NeedsMath.LevelAt"/>). No roll, no frame step.</para>
+    /// </summary>
+    public interface INeedsService
+    {
+        /// <summary>The local player's level of <paramref name="need"/> now, 0..1 (0 with no save).</summary>
+        float Level(NeedKind need);
+
+        /// <summary>The local player's stage of <paramref name="need"/> now.</summary>
+        NeedStage Stage(NeedKind need);
+
+        /// <summary>The needs' share of the local player's factor for <paramref name="stat"/>, with the
+        /// player's trait reliefs applied and the config floor honoured. Exactly 1 when fed and rested, and
+        /// for every stat other than walk speed and sell price. Allocation-free (the walk reads it every
+        /// physics tick).</summary>
+        float PlayerMultiplier(TraitStat stat);
+
+        /// <summary>Eat: lower hunger by <paramref name="amount"/> (0..1 of a full meal), from its level
+        /// now. Writes the save's live data (no disk write: eating is not a save point) and announces a
+        /// stage change at once. A non-positive amount or no save does nothing.</summary>
+        void Eat(float amount);
+
+        /// <summary>A night's sleep: tiredness back to rested from now. Hunger is untouched; the hours slept
+        /// already counted against it on the clock. Announces a stage change at once. No save does nothing.</summary>
+        void Sleep();
+
+        /// <summary>The slow tick (driven by the game clock, never per frame): anchors a fresh game's needs
+        /// to the clock the first time it runs, and publishes <see cref="NeedStageChanged"/> for each need
+        /// whose stage moved since the last look. The first look after a start only records the stage.</summary>
+        void Tick();
+    }
+}

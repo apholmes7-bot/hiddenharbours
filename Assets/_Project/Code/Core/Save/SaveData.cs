@@ -348,6 +348,16 @@ namespace HiddenHarbours.Core
         /// FLAG lead-architect: save schema v18 (traits).
         /// </summary>
         public List<string> PlayerTraits = new();
+
+        /// <summary>
+        /// <b>The player's hunger and tiredness</b> (needs slice 1, owner ruling 2026-11-14, added in v19):
+        /// per need, the level at one instant and that instant on the game clock. The level now is worked
+        /// out from the clock (<see cref="NeedsMath.LevelAt"/>), never stored as a ticking number. A new game
+        /// starts fed and rested and unanchored (the first slow tick anchors it); an older save is migrated
+        /// to fed and rested at its own saved time. Written only through <see cref="INeedsService"/>.
+        /// FLAG lead-architect: save schema v19 (needs).
+        /// </summary>
+        public PlayerNeedsDto PlayerNeeds = new();
     }
 
     /// <summary>
