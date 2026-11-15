@@ -388,7 +388,7 @@ namespace HiddenHarbours.App
         // The momentary fade over every seam crossing (owner ruling on PR 1223). Pure; stepped in Update.
         readonly SeamCrossingFade _seamFade = new SeamCrossingFade();
         int _seamArrivedFrame = -1;
-        // The mover's last physics position, for its velocity (the fade's look-ahead). Reset on a hop.
+        // The mover's last physics position, for its velocity (which seam it heads for). Reset on a hop.
         Transform _lastMover;
         Vector2 _lastMoverPos;
         bool _hasLastMoverPos;
@@ -426,22 +426,30 @@ namespace HiddenHarbours.App
             }
             Vector2 velocity = MoverVelocity(mover);
 
-            CrossingDecision d = frame.Resolve(here, mover.position, GameServices.RegionCrossingHysteresisMetres);
-            if (d.Kind == CrossingKind.Stay)
+            float band = GameServices.RegionCrossingHysteresisMetres;
+            CrossingDecision d = frame.Resolve(here, mover.position, band);
+            if (d.Kind != CrossingKind.Boundary && !(d.Kind == CrossingKind.Cross && _seamFade.GaveUp))
             {
-                WarmNeighbour(frame, here, mover.position);
-                SteerSeamFade(frame, here, mover.position, velocity, boatIsMover);
-                return;
-            }
-            if (d.Kind == CrossingKind.Cross)
-            {
-                // ⭐ The hop is made only under a black screen (owner ruling on PR 1223). A mover that got
-                // past the band without the look-ahead starting a fade (a teleport, a shove) starts one now;
-                // it keeps moving meanwhile, and the hop waits for the black.
-                if (!_seamFade.IsCovering) _seamFade.Begin();
+                // ⭐ The hop is made only under a black screen (owner ruling on PR 1223), and the black follows
+                // how near the mover's leading edge is to the edge of the screen (SteerSeamFade). A mover
+                // already past the band (a teleport, a shove) is a full-black approach with nothing to carry.
+                float carry = 0f;
+                Vector2 outward = Vector2.zero;
+                if (d.Kind == CrossingKind.Stay)
+                {
+                    WarmNeighbour(frame, here, mover.position);
+                    if (!SteerSeamFade(frame, here, mover, velocity, boatIsMover, band, out d, out carry, out outward))
+                        return;
+                }
+                else _seamFade.Approach(1f);
                 if (!_seamFade.ReadyToHop) return;
                 _seamFade.Hopped();
+                // Carried on across under the black, so the first clear frame shows all of it inside the new
+                // screen: its trailing edge lands the band inside the neighbour.
+                if (carry > 0f) CarryOn(mover, boatIsMover, outward * carry);
+                _hasLastMoverPos = false;
                 if (BeginCrossing(here, d, boatIsMover)) return;
+                if (carry > 0f) CarryOn(mover, boatIsMover, -outward * carry);   // nothing to cross into: undo
             }
             _seamFade.Cancel();
 
@@ -536,7 +544,7 @@ namespace HiddenHarbours.App
 
         /// <summary>
         /// The mover's velocity from its physics position one step ago (m/s). Zero on the first step after a
-        /// hop or a change of mover, which only delays a look-ahead by one step. The body's position, not
+        /// hop or a change of mover, which only delays the fade by one step. The body's position, not
         /// the transform's, so render interpolation never reads as speed.
         /// </summary>
         Vector2 MoverVelocity(Transform mover)
@@ -552,27 +560,77 @@ namespace HiddenHarbours.App
         }
 
         /// <summary>
-        /// ⭐ <b>Start the fade as the mover runs up to the edge</b> (owner ruling on PR 1223). The camera stops
-        /// at the region edge, so the mover is on screen right up to it; the crossing point lies the
-        /// hysteresis band beyond it. Looking ahead by the distance covered during the fade-out plus a lead
-        /// for the mover's size (<see cref="SeamCrossingFade.TryLookAhead"/>), the fade starts while the mover
-        /// is still inside the frame and is black by the time it gets there. A mover that turns away or
-        /// stops at the edge clears the fade again.
+        /// ⭐ <b>Fade by distance as the mover runs up to the edge</b> (owner ruling on PR 1223). The camera stops
+        /// at the region edge, so the mover's leading edge (a walker's body, a boat's bow) meets the edge of the
+        /// screen exactly when it meets the edge of the region. The screen is driven toward
+        /// <see cref="SeamCrossingFade.ApproachAlpha"/> of that gap, so it is black as the leading edge arrives,
+        /// at any speed, and nothing is cut by the screen edge while it is still clear. Standing, turning back
+        /// or heading for a world boundary clears it. Returns true, with the crossing to make and how far to
+        /// carry the mover on across, while it heads for a seam.
         /// </summary>
-        void SteerSeamFade(WorldFrame frame, string here, Vector2 position, Vector2 velocity, bool boatIsMover)
+        bool SteerSeamFade(WorldFrame frame, string here, Transform mover, Vector2 velocity, bool boatIsMover,
+                           float band, out CrossingDecision crossing, out float carry, out Vector2 outward)
         {
-            float lead = boatIsMover ? GameServices.RegionSeamBoatLeadMetres : GameServices.RegionSeamFootLeadMetres;
-            bool heading = SeamCrossingFade.TryLookAhead(position, velocity, GameServices.RegionSeamFadeOutSeconds,
-                               lead, GameServices.RegionSeamMinApproachSpeed, out Vector2 ahead)
-                           && frame.Resolve(here, ahead, GameServices.RegionCrossingHysteresisMetres).Kind == CrossingKind.Cross;
-            if (heading)
+            crossing = CrossingDecision.Stay;
+            carry = 0f;
+            outward = Vector2.zero;
+            float margin = boatIsMover ? GameServices.RegionSeamBoatDrawnMarginMetres : GameServices.RegionSeamFootDrawnMarginMetres;
+            float fadeDistance = boatIsMover ? GameServices.RegionSeamBoatFadeDistanceMetres : GameServices.RegionSeamFootFadeDistanceMetres;
+            frame.TryGet(here, out RegionFrame f);
+            if (!SeamCrossingFade.TryApproach(f.LocalRect, MoverExtent(mover, margin), velocity,
+                    GameServices.RegionSeamMinApproachSpeed, band, out SeamApproach a))
             {
-                if (!_seamFade.IsCovering) _seamFade.Begin();
+                _seamFade.NoApproach();
+                return false;
             }
-            else if (_seamFade.IsCovering)
+            CrossingDecision ahead = frame.Resolve(here, a.Probe, 0f);
+            if (ahead.Kind != CrossingKind.Cross)
             {
-                _seamFade.Cancel();
+                _seamFade.NoApproach();   // a world boundary ahead: no fade, the edge holds the mover
+                return false;
             }
+            _seamFade.Approach(SeamCrossingFade.ApproachAlpha(a.GapMetres,
+                SeamCrossingFade.FadeDistanceFor(fadeDistance, a.OutSpeed, GameServices.RegionSeamFadeOutSeconds)));
+            crossing = ahead;
+            carry = a.CarryMetres;
+            outward = a.Outward;
+            return true;
+        }
+
+        readonly List<Collider2D> _extentScratch = new List<Collider2D>();
+
+        /// <summary>The mover's local extent: the solid colliders on its own body, grown by the drawn
+        /// <paramref name="margin"/> (a hull's bow and oars, a figure's arms reach past them). A mover with no
+        /// collider is its position. No allocation per step (rule 7).</summary>
+        Rect MoverExtent(Transform mover, float margin)
+        {
+            Vector2 p = mover.position;
+            var body = mover.GetComponent<Rigidbody2D>();
+            bool any = false;
+            Bounds b = default;
+            if (body != null)
+            {
+                body.GetAttachedColliders(_extentScratch);
+                foreach (Collider2D c in _extentScratch)
+                {
+                    if (c == null || !c.enabled || c.isTrigger) continue;
+                    if (!any) { b = c.bounds; any = true; }
+                    else b.Encapsulate(c.bounds);
+                }
+                _extentScratch.Clear();
+            }
+            Rect r = any ? Rect.MinMaxRect(b.min.x, b.min.y, b.max.x, b.max.y) : new Rect(p, Vector2.zero);
+            float m = Mathf.Max(0f, margin);
+            return Rect.MinMaxRect(r.xMin - m, r.yMin - m, r.xMax + m, r.yMax + m);
+        }
+
+        /// <summary>Move the mover (and, for a boat, a rider she does not already carry) by
+        /// <paramref name="offset"/>, body and transform together; velocity untouched.</summary>
+        void CarryOn(Transform mover, bool boatIsMover, Vector2 offset)
+        {
+            var d = new Vector3(offset.x, offset.y, 0f);
+            Shift(mover, d);
+            if (boatIsMover && _player != null && !_player.IsChildOf(mover)) Shift(_player, d);
         }
 
         RegionSceneLoader _loader;

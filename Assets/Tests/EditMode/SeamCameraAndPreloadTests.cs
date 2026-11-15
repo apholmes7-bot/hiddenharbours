@@ -13,8 +13,8 @@ namespace HiddenHarbours.Tests.EditMode
     /// re-berth the boat".
     /// <list type="bullet">
     /// <item>the camera clamp, CLOSED on seam sides as on every other (<see cref="CameraBounds.Clamp"/>);</item>
-    /// <item>when the seam fade starts (<see cref="SeamCrossingFade.TryLookAhead"/>,
-    /// <see cref="SeamCrossingFade.FadeStartInsetMetres"/>) and its sequence (<see cref="SeamCrossingFade"/>);</item>
+    /// <item>how dark the seam fade is for how near the mover's leading edge is to the edge (<see cref="SeamCrossingFade.TryApproach"/>,
+    /// <see cref="SeamCrossingFade.ApproachAlpha"/>, <see cref="SeamCrossingFade.FadeDistanceFor"/>) and its sequence (<see cref="SeamCrossingFade"/>);</item>
     /// <item>which neighbour to preload (<see cref="WorldFrame.TryGetApproachingNeighbour"/>);</item>
     /// <item>the berth guard (<see cref="RegionTravelCoordinator.ShouldRememberBoatBerth"/>), and the
     /// registry fact that made the old guard dead;</item>
@@ -26,6 +26,13 @@ namespace HiddenHarbours.Tests.EditMode
     /// the play look: "half of a screen of void reads broken". The view now stops at every region edge,
     /// seams included, and a momentary fade covers the hop; the open-edge clamp and its tests are gone, and
     /// the tests below pin the closed clamp and the fade instead.</para>
+    ///
+    /// <para><b>Why the fade law changed in the third pass.</b> A fixed-time fade started by a look-ahead was measured
+    /// on the play look: a rowed dory had a third of her hull cut by the screen edge while the screen was still
+    /// clear, then the black was held up to 0.95 s for her to get across. The darkness now follows the leading
+    /// edge's gap to the edge, so it is black as the bow arrives at any speed; the hop is made at once, carrying
+    /// the mover on so its trailing edge lands the band inside the neighbour. The look-ahead tests are gone; the
+    /// tests below run slow and fast boats, a walker, a turn back and a stop up to the seam.</para>
     /// </summary>
     public sealed class SeamCameraAndPreloadTests
     {
@@ -96,56 +103,220 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.That(cam.y + HalfH, Is.LessThanOrEqualTo(region.yMax + Eps), $"{when}: top edge");
         }
 
-        // ---- when the seam fade starts (the trigger margin) -----------------------------------------
+        // ---- where the mover is against the seam (gap, carry, probe) ---------------------------------
 
         const float FadeOut = 0.15f, FadeIn = 0.2f, MaxBlack = 1.5f, Band = 0.25f, MinSpeed = 0.1f;
+        const float FootFade = 0.45f, BoatFade = 1.5f, Dt = 0.02f;
+        const string West = "region.west";
 
-        static bool WouldStart(WorldFrame f, Vector2 pos, Vector2 vel, float lead) =>
-            SeamCrossingFade.TryLookAhead(pos, vel, FadeOut, lead, MinSpeed, out Vector2 ahead)
-            && f.Resolve("region.west", ahead, Band).Kind == CrossingKind.Cross;
-
-        [Test]
-        public void FadeStartInset_IsTheLookAheadLessTheBand()
+        static Rect WestRect(WorldFrame f)
         {
-            Assert.That(SeamCrossingFade.FadeStartInsetMetres(3f, FadeOut, 0.5f, Band), Is.EqualTo(0.7f).Within(Eps),
-                "a walker at 3 m/s: 0.45 m of fade-out travel + 0.5 m lead - 0.25 m band");
-            Assert.That(SeamCrossingFade.FadeStartInsetMetres(1.4f, FadeOut, 1f, Band), Is.EqualTo(0.96f).Within(Eps),
-                "a dory rowed at 1.4 m/s with a 1 m lead");
-            Assert.That(SeamCrossingFade.FadeStartInsetMetres(0f, FadeOut, 0f, Band), Is.EqualTo(-Band).Within(Eps),
-                "no look-ahead: the old trigger, a band past the edge (off screen)");
+            f.TryGet(West, out RegionFrame w);
+            return w.LocalRect;   // x -50..50, y -30..30; its east side is the seam
         }
 
         [Test]
-        public void LookAhead_StartsTheFadeAtTheInset_InsideTheEdge_NotPastIt()
-        {
-            // west's east edge is local x = 50. Heading east at 3 m/s with a 0.5 m lead the fade must start
-            // with the mover 0.7 m INSIDE the edge (on screen: the view stops at x = 50), not before.
-            WorldFrame f = TwoSideBySide();
-            var v = new Vector2(3f, 0f);
-            float inset = SeamCrossingFade.FadeStartInsetMetres(3f, FadeOut, 0.5f, Band);
-            Assert.That(WouldStart(f, new Vector2(50f - inset + 0.01f, 0f), v, 0.5f), Is.True, "just inside the inset: starts");
-            Assert.That(WouldStart(f, new Vector2(50f - inset - 0.01f, 0f), v, 0.5f), Is.False, "just short of it: not yet");
-            Assert.That(50f - inset, Is.LessThan(50f), "the start point is inside the region, so inside the clamped view");
-        }
-
-        [Test]
-        public void LookAhead_StandingStill_OrHeadingAway_OrAtAWorldBoundary_StartsNothing()
+        public void Approach_ReadsTheLeadingEdgesGap_TheCarry_AndAProbeInTheNeighbour()
         {
             WorldFrame f = TwoSideBySide();
-            Assert.That(WouldStart(f, new Vector2(49.9f, 0f), Vector2.zero, 0.5f), Is.False, "standing at the seam");
-            Assert.That(WouldStart(f, new Vector2(49.9f, 0f), new Vector2(0.05f, 0f), 0.5f), Is.False, "creeping below the least speed");
-            Assert.That(WouldStart(f, new Vector2(49.9f, 0f), new Vector2(-3f, 0f), 0.5f), Is.False, "heading back in");
-            Assert.That(WouldStart(f, new Vector2(-49.9f, 0f), new Vector2(-3f, 0f), 0.5f), Is.False, "the west side is the world's edge");
-            Assert.That(SeamCrossingFade.TryLookAhead(new Vector2(1f, 2f), Vector2.zero, FadeOut, 1f, MinSpeed, out Vector2 a), Is.False);
-            Assert.That(a, Is.EqualTo(new Vector2(1f, 2f)), "no look-ahead leaves the position");
+            var body = Rect.MinMaxRect(45f, -1f, 49f, 1f);   // a 4 m hull, bow at x = 49
+            Assert.That(SeamCrossingFade.TryApproach(WestRect(f), body, new Vector2(2f, 0.5f), MinSpeed, Band,
+                out SeamApproach a), Is.True);
+            Assert.That(a.Edge, Is.EqualTo(RegionEdge.East), "the edge it reaches first, not the one it drifts toward");
+            Assert.That(a.GapMetres, Is.EqualTo(1f).Within(Eps), "from the BOW to the edge, not from the centre");
+            Assert.That(a.CarryMetres, Is.EqualTo(5.25f).Within(Eps), "the stern lands the band past the edge");
+            Assert.That(a.Outward, Is.EqualTo(Vector2.right));
+            Assert.That(a.OutSpeed, Is.EqualTo(2f).Within(Eps));
+            CrossingDecision ahead = f.Resolve(West, a.Probe, 0f);
+            Assert.That(ahead.Kind, Is.EqualTo(CrossingKind.Cross), "the probe stands in the neighbour");
+            Assert.That(ahead.To.RegionId, Is.EqualTo("region.east"));
+
+            // Near the top, heading mostly north: the north edge is reached first, and it is the world's edge.
+            var high = Rect.MinMaxRect(10f, 28f, 12f, 29.5f);
+            Assert.That(SeamCrossingFade.TryApproach(WestRect(f), high, new Vector2(2f, 1f), MinSpeed, Band, out a), Is.True);
+            Assert.That(a.Edge, Is.EqualTo(RegionEdge.North));
+            Assert.That(f.Resolve(West, a.Probe, 0f).Kind, Is.Not.EqualTo(CrossingKind.Cross), "no seam there: no fade");
         }
 
         [Test]
-        public void LookAhead_TheLeadRunsAlongTheHeading_WhateverTheSpeed()
+        public void Approach_StandingStill_Creeping_OrHeadingForTheWorldsEdge_IsNoSeam()
         {
-            Assert.That(SeamCrossingFade.TryLookAhead(Vector2.zero, new Vector2(0f, 2f), FadeOut, 1f, MinSpeed, out Vector2 a), Is.True);
-            Assert.That(a.x, Is.EqualTo(0f).Within(Eps));
-            Assert.That(a.y, Is.EqualTo(2f * FadeOut + 1f).Within(Eps), "0.3 m of fade-out travel + the 1 m lead, northward");
+            WorldFrame f = TwoSideBySide();
+            var body = Rect.MinMaxRect(48f, -0.5f, 49.5f, 0.5f);
+            Assert.That(SeamCrossingFade.TryApproach(WestRect(f), body, Vector2.zero, MinSpeed, Band, out _), Is.False,
+                "standing at the seam");
+            Assert.That(SeamCrossingFade.TryApproach(WestRect(f), body, new Vector2(0.05f, 0f), MinSpeed, Band, out _), Is.False,
+                "creeping below the least speed");
+            Assert.That(SeamCrossingFade.TryApproach(WestRect(f), body, new Vector2(-3f, 0f), MinSpeed, Band, out SeamApproach a),
+                Is.True, "heading back in reads the WEST edge ...");
+            Assert.That(a.Edge, Is.EqualTo(RegionEdge.West));
+            Assert.That(f.Resolve(West, a.Probe, 0f).Kind, Is.Not.EqualTo(CrossingKind.Cross), "... which is the world's edge: no fade");
+        }
+
+        [Test]
+        public void ApproachAlpha_IsClearAtTheFadeDistance_BlackAtTheEdge_LinearBetween()
+        {
+            Assert.That(SeamCrossingFade.ApproachAlpha(BoatFade, BoatFade), Is.EqualTo(0f).Within(Eps));
+            Assert.That(SeamCrossingFade.ApproachAlpha(BoatFade * 2f, BoatFade), Is.EqualTo(0f).Within(Eps));
+            Assert.That(SeamCrossingFade.ApproachAlpha(BoatFade * 0.5f, BoatFade), Is.EqualTo(0.5f).Within(Eps));
+            Assert.That(SeamCrossingFade.ApproachAlpha(0f, BoatFade), Is.EqualTo(1f).Within(Eps));
+            Assert.That(SeamCrossingFade.ApproachAlpha(-0.3f, BoatFade), Is.EqualTo(1f).Within(Eps), "past the edge: black");
+            Assert.That(SeamCrossingFade.ApproachAlpha(0.01f, 0f), Is.EqualTo(0f), "a zero distance is a step at the edge");
+            Assert.That(SeamCrossingFade.ApproachAlpha(0f, 0f), Is.EqualTo(1f));
+            Assert.That(SeamCrossingFade.FadeDistanceFor(BoatFade, 1.06f, FadeOut), Is.EqualTo(BoatFade).Within(Eps),
+                "rowing: the tuned distance");
+            Assert.That(SeamCrossingFade.FadeDistanceFor(BoatFade, 15f, FadeOut), Is.EqualTo(2.25f).Within(Eps),
+                "too fast to cover it in the quickest fade: starts that much further out");
+        }
+
+        // ---- the distance-driven fade, run up to the seam step by step ------------------------------
+
+        struct Run
+        {
+            public float GapAtBlack;        // the leading edge's gap when the screen went black (≤ 0: at/past)
+            public float LeastGapWhileClear;// the smallest gap seen while the screen was not yet black
+            public float FadeSeconds;       // from the first darkened step to the black one
+            public float BlackBeforeHop;    // black held before the hop could be made (the hop is at once)
+            public float TrailingAfterCarry;// the trailing edge after the carry (local x)
+            public CrossingDecision Crossing;
+        }
+
+        // A mover of the given length heading due east along y = 0 at a steady speed, from well short of the
+        // fade distance, the way the coordinator steps it: approach, tick, hop at black, move on.
+        static Run RunToTheSeam(float speed, float length, float fadeDistance)
+        {
+            WorldFrame f = TwoSideBySide();
+            Rect region = WestRect(f);
+            SeamCrossingFade fade = NewFade();
+            float bow = region.xMax - SeamCrossingFade.FadeDistanceFor(fadeDistance, speed, FadeOut) - 1f;
+            var run = new Run { LeastGapWhileClear = float.MaxValue, FadeSeconds = -1f };
+            float darkenedAt = -1f;
+            for (int i = 0; i < 100000; i++)
+            {
+                var body = Rect.MinMaxRect(bow - length, -0.5f, bow, 0.5f);
+                Assert.That(SeamCrossingFade.TryApproach(region, body, new Vector2(speed, 0f), MinSpeed, Band,
+                    out SeamApproach a), Is.True, "heading out through the seam");
+                Assert.That(f.Resolve(West, a.Probe, 0f).Kind, Is.EqualTo(CrossingKind.Cross));
+                fade.Approach(SeamCrossingFade.ApproachAlpha(a.GapMetres,
+                    SeamCrossingFade.FadeDistanceFor(fadeDistance, a.OutSpeed, FadeOut)));
+                fade.Tick(Dt);
+                if (fade.Alpha > 0f && darkenedAt < 0f) darkenedAt = i * Dt;
+                if (fade.ReadyToHop)
+                {
+                    run.GapAtBlack = a.GapMetres;
+                    run.FadeSeconds = i * Dt - darkenedAt;
+                    run.BlackBeforeHop = 0f;              // the coordinator hops on the step it reads black
+                    Assert.That(fade.Hopped(), Is.True);
+                    run.TrailingAfterCarry = body.xMin + a.CarryMetres;
+                    run.Crossing = f.Resolve(West, new Vector2(body.center.x + a.CarryMetres, 0f), Band);
+                    return run;
+                }
+                run.LeastGapWhileClear = Mathf.Min(run.LeastGapWhileClear, a.GapMetres);
+                bow += speed * Dt;
+            }
+            Assert.Fail("never went black");
+            return run;
+        }
+
+        [Test]
+        public void SlowBoat_IsBlackAsHerBowReachesTheEdge_NothingCutBefore_NoWaitingInTheBlack()
+        {
+            Run r = RunToTheSeam(1.06f, 5f, BoatFade);   // the measured rowing speed, a 5 m drawn dory
+            Assert.That(r.LeastGapWhileClear, Is.GreaterThan(0f), "while the screen is not black her bow is short of the edge");
+            Assert.That(r.GapAtBlack, Is.LessThanOrEqualTo(0f + Eps).And.GreaterThan(-1.06f * Dt - Eps),
+                "black on the step her bow reaches the edge");
+            Assert.That(r.FadeSeconds, Is.EqualTo(BoatFade / 1.06f).Within(2f * Dt), "the fade lasts as long as the last 1.5 m");
+            Assert.That(r.BlackBeforeHop, Is.LessThan(0.3f), "the hop is made at once: no black held for her to get across");
+            Assert.That(r.Crossing.Kind, Is.EqualTo(CrossingKind.Cross), "carried across, she is past the band");
+            Assert.That(r.TrailingAfterCarry, Is.EqualTo(50f + Band).Within(Eps), "her stern lands the band inside the neighbour");
+            TwoSideBySide().TryGet("region.east", out RegionFrame e);
+            Assert.That(r.TrailingAfterCarry + r.Crossing.LocalShift.x, Is.EqualTo(e.LocalRect.xMin + Band).Within(Eps),
+                "so the first clear frame on the far side shows all of her");
+        }
+
+        [Test]
+        public void FastBoat_IsBlackAsHerBowReachesTheEdge_TooFastForTheDistance_StartsFurtherOut()
+        {
+            Run r = RunToTheSeam(5f, 5f, BoatFade);
+            Assert.That(r.LeastGapWhileClear, Is.GreaterThan(0f));
+            Assert.That(r.GapAtBlack, Is.LessThanOrEqualTo(Eps).And.GreaterThan(-5f * Dt - Eps));
+            Assert.That(r.FadeSeconds, Is.GreaterThanOrEqualTo(FadeOut - Eps), "never quicker than the quickest fade");
+
+            Run jet = RunToTheSeam(15f, 3f, BoatFade);   // past what 1.5 m can fade over in 0.15 s
+            Assert.That(jet.LeastGapWhileClear, Is.GreaterThan(0f), "still nothing cut while clear");
+            Assert.That(jet.GapAtBlack, Is.GreaterThan(-2f * 15f * Dt - Eps), "black within a step or so of the edge");
+            Assert.That(jet.FadeSeconds, Is.EqualTo(FadeOut).Within(2f * Dt), "the quickest fade, started 2.25 m out");
+        }
+
+        [Test]
+        public void OnFoot_AtAWalk_TheFadeTakesNoLongerThanTheTimedFadeDid()
+        {
+            Run r = RunToTheSeam(3f, 0.6f, FootFade);   // a walker at 3 m/s, figure + margin 0.6 m across
+            Assert.That(r.LeastGapWhileClear, Is.GreaterThan(0f));
+            Assert.That(r.GapAtBlack, Is.LessThanOrEqualTo(Eps).And.GreaterThan(-3f * Dt - Eps));
+            Assert.That(r.FadeSeconds, Is.LessThanOrEqualTo(FadeOut + Dt + Eps), "0.15 s, as measured on the timed fade");
+            Assert.That(r.BlackBeforeHop, Is.LessThanOrEqualTo(0f), "and no black held before the hop");
+            Assert.That(r.TrailingAfterCarry, Is.EqualTo(50f + Band).Within(Eps));
+        }
+
+        [Test]
+        public void TurningBackMidFade_ClearsSmoothlyFromWhereItGot_AndHeadingOutAgainResumes()
+        {
+            WorldFrame f = TwoSideBySide();
+            Rect region = WestRect(f);
+            SeamCrossingFade fade = NewFade();
+            float gap = BoatFade * 0.5f;                  // half way through the boat's fade distance
+            for (int i = 0; i < 200; i++) { fade.Approach(SeamCrossingFade.ApproachAlpha(gap, BoatFade)); fade.Tick(Dt); }
+            Assert.That(fade.Alpha, Is.EqualTo(0.5f).Within(Eps), "held half black while she holds there");
+            Assert.That(fade.Phase, Is.EqualTo(SeamFadePhase.Out));
+
+            // She turns round: heading west, the seam is behind her and the edge ahead is the world's.
+            var body = Rect.MinMaxRect(region.xMax - gap - 5f, -0.5f, region.xMax - gap, 0.5f);
+            Assert.That(SeamCrossingFade.TryApproach(region, body, new Vector2(-1.06f, 0f), MinSpeed, Band, out SeamApproach a)
+                && f.Resolve(West, a.Probe, 0f).Kind == CrossingKind.Cross, Is.False, "premise: no seam ahead now");
+            fade.NoApproach();
+            fade.Tick(Dt);
+            Assert.That(fade.Alpha, Is.EqualTo(0.5f - Dt / FadeIn).Within(Eps), "clearing at the fade-in rate, no jump");
+            Assert.That(fade.Phase, Is.EqualTo(SeamFadePhase.In));
+            fade.Approach(SeamCrossingFade.ApproachAlpha(gap, BoatFade));
+            fade.Tick(Dt);
+            Assert.That(fade.Alpha, Is.EqualTo(0.5f).Within(Eps), "heading out again picks up from where it was");
+            fade.NoApproach();
+            for (int i = 0; i < 20; i++) fade.Tick(Dt);
+            Assert.That(fade.Phase, Is.EqualTo(SeamFadePhase.Idle));
+            Assert.That(fade.Alpha, Is.EqualTo(0f), "always ends clear");
+        }
+
+        [Test]
+        public void StationaryAtTheFadeDistance_OrStoppedInsideIt_TheScreenIsOrBecomesClear()
+        {
+            WorldFrame f = TwoSideBySide();
+            Rect region = WestRect(f);
+            var atDistance = Rect.MinMaxRect(region.xMax - BoatFade - 5f, -0.5f, region.xMax - BoatFade, 0.5f);
+            Assert.That(SeamCrossingFade.TryApproach(region, atDistance, Vector2.zero, MinSpeed, Band, out _), Is.False,
+                "standing: no approach");
+            SeamCrossingFade fade = NewFade();
+            for (int i = 0; i < 100; i++) { fade.NoApproach(); fade.Tick(Dt); }
+            Assert.That(fade.Phase, Is.EqualTo(SeamFadePhase.Idle));
+            Assert.That(fade.Alpha, Is.EqualTo(0f));
+
+            // Moving, but exactly at the fade distance: still clear.
+            Assert.That(SeamCrossingFade.TryApproach(region, atDistance, new Vector2(1.06f, 0f), MinSpeed, Band,
+                out SeamApproach a), Is.True);
+            fade.Approach(SeamCrossingFade.ApproachAlpha(a.GapMetres, BoatFade));
+            fade.Tick(Dt);
+            Assert.That(fade.Alpha, Is.EqualTo(0f), "at the fade distance the screen is still clear");
+            Assert.That(fade.Phase, Is.EqualTo(SeamFadePhase.Idle));
+
+            // Stopped part way in: it clears, at the fade-in rate, and stays clear.
+            for (int i = 0; i < 200; i++) { fade.Approach(SeamCrossingFade.ApproachAlpha(BoatFade * 0.6f, BoatFade)); fade.Tick(Dt); }
+            Assert.That(fade.Alpha, Is.EqualTo(0.4f).Within(Eps));
+            fade.NoApproach();
+            fade.Tick(Dt);
+            Assert.That(fade.Alpha, Is.EqualTo(0.4f - Dt / FadeIn).Within(Eps));
+            for (int i = 0; i < 100; i++) { fade.NoApproach(); fade.Tick(Dt); }
+            Assert.That(fade.Alpha, Is.EqualTo(0f));
+            Assert.That(fade.Phase, Is.EqualTo(SeamFadePhase.Idle));
         }
 
         // ---- the fade sequence (pure state machine) -------------------------------------------------
@@ -158,28 +329,23 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         [Test]
-        public void Fade_FullSequence_OutBlackHopArriveIn_ThenIdle()
+        public void Fade_FullSequence_BlackHopArriveIn_ThenIdle()
         {
             SeamCrossingFade fade = NewFade();
             Assert.That(fade.Phase, Is.EqualTo(SeamFadePhase.Idle));
-            Assert.That(fade.Alpha, Is.EqualTo(0f));
             Assert.That(fade.Hopped(), Is.False, "no hop before the black");
 
-            Assert.That(fade.Begin(), Is.True);
+            fade.Approach(1f);                                                  // e.g. teleported past the band
             fade.Tick(FadeOut * 0.5f);
             Assert.That(fade.Phase, Is.EqualTo(SeamFadePhase.Out));
-            Assert.That(fade.Alpha, Is.EqualTo(0.5f).Within(Eps), "half-way out, half black");
-            Assert.That(fade.ReadyToHop, Is.False);
+            Assert.That(fade.Alpha, Is.EqualTo(0.5f).Within(Eps), "never quicker than the quickest fade");
             fade.Tick(FadeOut * 0.5f + Eps);
-            Assert.That(fade.Phase, Is.EqualTo(SeamFadePhase.Black));
-            Assert.That(fade.Alpha, Is.EqualTo(1f));
             Assert.That(fade.ReadyToHop, Is.True, "black: the hop may be made");
 
             Assert.That(fade.Hopped(), Is.True);
             fade.Tick(10f);
             Assert.That(fade.Phase, Is.EqualTo(SeamFadePhase.Arriving), "held black, however long the scene takes");
             Assert.That(fade.Alpha, Is.EqualTo(1f));
-            Assert.That(fade.Begin(), Is.False, "no new fade while arriving");
 
             Assert.That(fade.Arrived(), Is.True);
             fade.Tick(0.333f);                                                  // the hop frame's delta
@@ -193,33 +359,41 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         [Test]
-        public void Fade_CancelledMidRamp_ClearsFromWhereItGot_AndCanTurnRoundAgain()
+        public void Fade_AHopThatCannotBeMade_ClearsAndIgnoresTheApproachUntilItIsLostOnce()
         {
             SeamCrossingFade fade = NewFade();
-            fade.Begin();
-            fade.Tick(FadeOut * 0.4f);
-            Assert.That(fade.Cancel(), Is.True, "the mover turned away");
-            Assert.That(fade.Alpha, Is.EqualTo(0.4f).Within(Eps), "no jump on the turn");
-            fade.Tick(FadeIn * 0.1f);
-            Assert.That(fade.Alpha, Is.EqualTo(0.3f).Within(Eps), "clearing at the fade-in rate, no dropped step");
-            Assert.That(fade.Begin(), Is.True, "heading out again turns the clear round");
-            fade.Tick(FadeOut * 0.1f);
-            Assert.That(fade.Alpha, Is.EqualTo(0.4f).Within(Eps), "from where it was, not from black or clear");
+            fade.Approach(1f);
+            fade.Tick(FadeOut + Eps);
+            Assert.That(fade.Hopped(), Is.True);
+            Assert.That(fade.Cancel(), Is.True, "nothing to cross into: clear from black");
+            Assert.That(fade.GaveUp, Is.True);
+            fade.Approach(1f);                                                  // still pushing at the edge
+            fade.Tick(FadeIn * 0.5f);
+            Assert.That(fade.Alpha, Is.EqualTo(0.5f).Within(Eps), "clearing, not fading back to black");
+            Assert.That(fade.Cancel(), Is.True, "a second give-up keeps it given up");
+            Assert.That(fade.GaveUp, Is.True);
+            fade.NoApproach();                                                  // let go once
+            Assert.That(fade.GaveUp, Is.False);
+            fade.Approach(1f);
+            fade.Tick(Dt);
+            Assert.That(fade.Alpha, Is.GreaterThan(0.5f), "a fresh approach fades again");
         }
 
         [Test]
         public void Fade_BlackTooLong_GivesUpAndClears()
         {
             SeamCrossingFade fade = NewFade();
-            fade.Begin();
+            fade.Approach(1f);
             fade.Tick(FadeOut + Eps);
             Assert.That(fade.ReadyToHop, Is.True);
             fade.Tick(MaxBlack * 0.9f);
             Assert.That(fade.Phase, Is.EqualTo(SeamFadePhase.Black), "still waiting within the limit");
             fade.Tick(MaxBlack * 0.2f);
-            Assert.That(fade.Phase, Is.EqualTo(SeamFadePhase.In), "past the limit: the mover stopped, clear");
+            Assert.That(fade.Phase, Is.EqualTo(SeamFadePhase.In), "past the limit: clear");
             Assert.That(fade.TimedOut, Is.True);
+            Assert.That(fade.GaveUp, Is.True);
             Assert.That(fade.ReadyToHop, Is.False, "and no hop once it has given up");
+            fade.Approach(1f);
             fade.Tick(FadeIn + Eps);
             Assert.That(fade.Alpha, Is.EqualTo(0f));
         }
@@ -230,16 +404,17 @@ namespace HiddenHarbours.Tests.EditMode
             SeamCrossingFade fade = NewFade();
             Assert.That(fade.Arrived(), Is.False, "nothing to arrive from");
             Assert.That(fade.Cancel(), Is.False, "nothing to cancel");
-            fade.Begin();
-            Assert.That(fade.Begin(), Is.False, "one fade at a time");
+            fade.Approach(0.5f);
+            fade.Tick(Dt);
+            Assert.That(fade.Hopped(), Is.False, "not black yet");
             Assert.That(fade.Arrived(), Is.False, "not hopped yet");
+            fade.Approach(1f);
             fade.Tick(FadeOut + Eps);
             fade.Hopped();
-            Assert.That(fade.Cancel(), Is.True, "a hop that could not be made clears from black");
-            Assert.That(fade.Phase, Is.EqualTo(SeamFadePhase.In));
             fade.Reset();
             Assert.That(fade.Phase, Is.EqualTo(SeamFadePhase.Idle));
             Assert.That(fade.Alpha, Is.EqualTo(0f));
+            Assert.That(fade.GaveUp, Is.False);
         }
 
         [Test]
@@ -247,8 +422,9 @@ namespace HiddenHarbours.Tests.EditMode
         {
             var fade = new SeamCrossingFade();
             fade.Configure(0f, 0f, 0f);
-            fade.Begin();
-            Assert.That(fade.ReadyToHop, Is.True, "a zero fade-out is black at once");
+            fade.Approach(1f);
+            fade.Tick(0.016f);
+            Assert.That(fade.ReadyToHop, Is.True, "a zero quickest fade follows the target at once");
             fade.Hopped();
             fade.Arrived();
             fade.Tick(0.016f);                                                  // the dropped step
@@ -256,9 +432,11 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.That(fade.Phase, Is.EqualTo(SeamFadePhase.Idle));
             Assert.That(fade.Alpha, Is.EqualTo(0f));
             fade.Configure(-1f, -1f, -1f);
-            Assert.That(fade.Begin(), Is.True, "negative timings read as zero");
-            Assert.That(fade.ReadyToHop, Is.True);
+            fade.Approach(1f);
+            fade.Tick(0f);
+            Assert.That(fade.ReadyToHop, Is.True, "negative timings read as zero");
         }
+
         // ---- preload decision -----------------------------------------------------------------------
 
         [Test]

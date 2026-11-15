@@ -7,34 +7,63 @@ namespace HiddenHarbours.Core
     {
         /// <summary>No crossing near: the cover is clear.</summary>
         Idle,
-        /// <summary>The mover is about to cross: the screen is going black.</summary>
+        /// <summary>The mover is closing on a seam: the cover follows how near its leading edge is.</summary>
         Out,
-        /// <summary>Black, waiting for the mover to reach the crossing point (bounded by the max black).</summary>
+        /// <summary>Black: the mover's leading edge has reached the edge of the screen. The hop may be made.</summary>
         Black,
         /// <summary>The hop has been made and the new region is becoming live: held black.</summary>
         Arriving,
-        /// <summary>Arrived (or given up): the screen is clearing.</summary>
+        /// <summary>Arrived, stopped, turned back or given up: the screen is clearing.</summary>
         In,
     }
 
+    /// <summary>The seam a mover is closing on, as <see cref="SeamCrossingFade.TryApproach"/> reads it from the
+    /// region's rectangle and the mover's extent. PURE data.</summary>
+    public readonly struct SeamApproach
+    {
+        /// <summary>The edge of the region the mover is heading out through.</summary>
+        public readonly RegionEdge Edge;
+        /// <summary>How far (m) the mover's LEADING edge still is from the region's edge (≤ 0: at or past it).</summary>
+        public readonly float GapMetres;
+        /// <summary>How far (m) to carry the mover on across the seam so its TRAILING edge lands the given
+        /// inset inside the neighbour (≥ 0).</summary>
+        public readonly float CarryMetres;
+        /// <summary>The outward unit direction of <see cref="Edge"/>.</summary>
+        public readonly Vector2 Outward;
+        /// <summary>A point just past <see cref="Edge"/>, level with the mover, to ask the world frame what is there.</summary>
+        public readonly Vector2 Probe;
+        /// <summary>How fast (m/s) the mover is heading out through <see cref="Edge"/>.</summary>
+        public readonly float OutSpeed;
+
+        public SeamApproach(RegionEdge edge, float gap, float carry, Vector2 outward, Vector2 probe, float outSpeed)
+        {
+            Edge = edge; GapMetres = gap; CarryMetres = carry; Outward = outward; Probe = probe; OutSpeed = outSpeed;
+        }
+    }
+
     /// <summary>
-    /// ⭐ <b>The momentary fade over a world-frame crossing</b> (owner ruling on PR 1223, ADR 0057): "the
-    /// camera should stop as the player runs towards the edge then crosses at the edge with a momentary
-    /// fade out and screen change". A PURE state machine, stepped by its owner with a delta time, so the
-    /// whole sequence is provable headless; the travel rig drives it and publishes <see cref="Alpha"/> to
-    /// the one screen fade through <see cref="GameServices.SeamCoverAlpha"/>.
+    /// ⭐ <b>The fade over a world-frame crossing, driven by distance</b> (owner ruling on PR 1223, ADR 0057:
+    /// "the camera should stop as the player runs towards the edge then crosses at the edge with a
+    /// momentary fade out and screen change"). A PURE state machine, stepped by its owner, so the whole
+    /// sequence is provable headless; the travel rig drives it and publishes <see cref="Alpha"/> to the one
+    /// screen fade through <see cref="GameServices.SeamCoverAlpha"/>.
     ///
-    /// <para><b>The sequence.</b> <see cref="Begin"/> (the mover is about to cross) → <see cref="SeamFadePhase.Out"/>
-    /// ramps to black over the fade-out → <see cref="SeamFadePhase.Black"/> waits, at most the max black, for
-    /// the hop to be allowed (<see cref="ReadyToHop"/>) → <see cref="Hopped"/> → <see cref="SeamFadePhase.Arriving"/>
-    /// holds black while the scene changes → <see cref="Arrived"/> → <see cref="SeamFadePhase.In"/> clears over
-    /// the fade-in → <see cref="SeamFadePhase.Idle"/>. <see cref="Cancel"/> (the mover turned away or stopped,
-    /// or the hop failed) clears from wherever the ramp had got to.</para>
+    /// <para><b>Why distance, not a timer.</b> The camera stops at the region edge, so a mover's leading edge
+    /// (a walker's body, a boat's bow) meets the edge of the SCREEN exactly when it meets the edge of the
+    /// region. A fixed-time fade started by a look-ahead cannot hit that moment at every speed: at rowing
+    /// speed a third of the dory was cut by the screen edge while the screen was still clear, and then the
+    /// black was held almost a second waiting for her to get across. Here the target darkness is
+    /// <see cref="ApproachAlpha"/> of the leading edge's gap to the edge, so at any speed the screen is black
+    /// exactly as the leading edge arrives, and the hop is made at once, under that black.</para>
     ///
-    /// <para><b>The skipped step.</b> The hop's frame is the expensive one (the neighbour's roots switching
-    /// on), so the step AFTER <see cref="Arrived"/> carries that whole frame's delta. Fed to the fade-in, it
-    /// would clear the screen in one frame and the fade-in would never be seen; it is dropped, and the
-    /// fade-in starts counting on the first ordinary frame.</para>
+    /// <para><b>The steps.</b> Each physics step the owner reports <see cref="Approach"/> (heading out, with a
+    /// target) or <see cref="NoApproach"/> (standing, turned back, no seam). <see cref="Tick"/> moves the alpha
+    /// toward the target: up no faster than the quickest fade-out allows (a mover teleported next to a seam
+    /// still gets a fade, not a cut), down at the fade-in rate (stopping or turning back clears smoothly from
+    /// wherever it had got to). At full black <see cref="ReadyToHop"/>; <see cref="Hopped"/> holds black while
+    /// the scene changes; <see cref="Arrived"/> clears, dropping the next step's delta, which carries the hop
+    /// frame's whole cost and would otherwise clear the screen in one frame. <see cref="Cancel"/> (no mover,
+    /// the hop could not be made) clears and ignores the approach until it is lost once.</para>
     ///
     /// <para>Nothing here reads a clock or the world: the delta is the caller's (scaled time, so a paused
     /// game pauses the fade with the mover), and the sim clock never stops for it.</para>
@@ -45,6 +74,9 @@ namespace HiddenHarbours.Core
         float _inSeconds = GameConfig.DefaultRegionSeamFadeInSeconds;
         float _maxBlackSeconds = GameConfig.DefaultRegionSeamMaxBlackSeconds;
         float _blackElapsed;
+        float _target;
+        bool _approaching;
+        bool _latched;          // given up on this approach: ignore it until the mover stops approaching
         bool _skipNextStep;
 
         /// <summary>Where the sequence is.</summary>
@@ -59,10 +91,12 @@ namespace HiddenHarbours.Core
         /// <summary>The screen is fully black and nothing has hopped yet: the crossing may be made now.</summary>
         public bool ReadyToHop => Phase == SeamFadePhase.Black;
 
-        /// <summary>A fade is going black or holding black (the hop has not been made).</summary>
-        public bool IsCovering => Phase == SeamFadePhase.Out || Phase == SeamFadePhase.Black;
+        /// <summary>The approach in hand was given up (<see cref="Cancel"/>) and is ignored until the mover
+        /// stops approaching once (<see cref="NoApproach"/>).</summary>
+        public bool GaveUp => _latched;
 
-        /// <summary>Set the timings (s). Negative values read as zero (an instant ramp).</summary>
+        /// <summary>Set the timings (s): the QUICKEST a fade may go black, the fade-in, and the longest black
+        /// held without a hop. Negative values read as zero (instant).</summary>
         public void Configure(float outSeconds, float inSeconds, float maxBlackSeconds)
         {
             _outSeconds = Mathf.Max(0f, outSeconds);
@@ -70,18 +104,20 @@ namespace HiddenHarbours.Core
             _maxBlackSeconds = Mathf.Max(0f, maxBlackSeconds);
         }
 
-        /// <summary>Start going black, from the current alpha (a clearing fade turns round without a flash).
-        /// Only from <see cref="SeamFadePhase.Idle"/> or <see cref="SeamFadePhase.In"/>; returns whether it
-        /// started.</summary>
-        public bool Begin()
+        /// <summary>The mover is heading out through a seam; <paramref name="target"/> is how black the screen
+        /// should be for where it is (<see cref="ApproachAlpha"/>, clamped to 0..1).</summary>
+        public void Approach(float target)
         {
-            if (Phase != SeamFadePhase.Idle && Phase != SeamFadePhase.In) return false;
-            Phase = SeamFadePhase.Out;
-            TimedOut = false;
-            _skipNextStep = false;
-            _blackElapsed = 0f;
-            if (_outSeconds <= 0f) GoBlack();
-            return true;
+            _approaching = true;
+            _target = Mathf.Clamp01(target);
+        }
+
+        /// <summary>No seam ahead (standing still, turned back, nothing there): the fade clears.</summary>
+        public void NoApproach()
+        {
+            _approaching = false;
+            _target = 0f;
+            _latched = false;
         }
 
         /// <summary>The crossing has been made under the black: hold it while the scene changes. Only from
@@ -94,25 +130,30 @@ namespace HiddenHarbours.Core
             return true;
         }
 
-        /// <summary>The new region is live: clear, dropping the next step's delta (the hop frame's).
-        /// Only from <see cref="SeamFadePhase.Arriving"/>; returns whether it took.</summary>
+        /// <summary>The new region is live: clear, dropping the next step's delta (the hop frame's). The
+        /// approach that led here is spent. Only from <see cref="SeamFadePhase.Arriving"/>.</summary>
         public bool Arrived()
         {
             if (Phase != SeamFadePhase.Arriving) return false;
             Phase = SeamFadePhase.In;
             Alpha = 1f;
+            _approaching = false;
+            _target = 0f;
             _skipNextStep = true;
             return true;
         }
 
-        /// <summary>Give up (the mover turned away or stopped, or the hop could not be made): clear from the
-        /// current alpha. From <see cref="SeamFadePhase.Out"/>, <see cref="SeamFadePhase.Black"/> or
-        /// <see cref="SeamFadePhase.Arriving"/>; returns whether it took.</summary>
+        /// <summary>Give up (no mover, the hop could not be made): clear from the current alpha, and ignore
+        /// the approach until it is lost once. Returns whether there was anything to give up.</summary>
         public bool Cancel()
         {
-            if (!IsCovering && Phase != SeamFadePhase.Arriving) return false;
-            Phase = SeamFadePhase.In;
+            bool covering = Alpha > 0f || Phase == SeamFadePhase.Arriving;
+            _latched = _latched || _approaching;
+            _approaching = false;
+            _target = 0f;
             _skipNextStep = false;
+            if (!covering) return false;
+            Phase = SeamFadePhase.In;
             if (_inSeconds <= 0f) Clear();
             return true;
         }
@@ -123,6 +164,9 @@ namespace HiddenHarbours.Core
             Phase = SeamFadePhase.Idle;
             Alpha = 0f;
             TimedOut = false;
+            _approaching = false;
+            _latched = false;
+            _target = 0f;
             _skipNextStep = false;
             _blackElapsed = 0f;
         }
@@ -131,36 +175,32 @@ namespace HiddenHarbours.Core
         public void Tick(float dt)
         {
             dt = Mathf.Max(0f, dt);
-            switch (Phase)
-            {
-                case SeamFadePhase.Out:
-                    Alpha = _outSeconds <= 0f ? 1f : Mathf.Min(1f, Alpha + dt / _outSeconds);
-                    if (Alpha >= 1f) GoBlack();
-                    break;
-                case SeamFadePhase.Black:
-                    _blackElapsed += dt;
-                    if (_blackElapsed > _maxBlackSeconds)
-                    {
-                        Cancel();
-                        TimedOut = true;
-                    }
-                    break;
-                case SeamFadePhase.Arriving:
-                    Alpha = 1f;
-                    break;
-                case SeamFadePhase.In:
-                    if (_skipNextStep) { _skipNextStep = false; break; }
-                    Alpha = _inSeconds <= 0f ? 0f : Mathf.Max(0f, Alpha - dt / _inSeconds);
-                    if (Alpha <= 0f) Clear();
-                    break;
-            }
-        }
+            if (Phase == SeamFadePhase.Arriving) { Alpha = 1f; return; }
+            if (_skipNextStep) { _skipNextStep = false; return; }
 
-        void GoBlack()
-        {
-            Alpha = 1f;
-            Phase = SeamFadePhase.Black;
-            _blackElapsed = 0f;
+            if (Phase == SeamFadePhase.Black)
+            {
+                _blackElapsed += dt;
+                if (_blackElapsed > _maxBlackSeconds)
+                {
+                    Cancel();
+                    TimedOut = true;
+                    return;
+                }
+            }
+
+            float target = _approaching && !_latched ? _target : 0f;
+            if (Alpha < target)
+                Alpha = _outSeconds <= 0f ? target : Mathf.Min(target, Alpha + dt / _outSeconds);
+            else if (Alpha > target)
+                Alpha = _inSeconds <= 0f ? target : Mathf.Max(target, Alpha - dt / _inSeconds);
+
+            if (Alpha >= 1f)
+            {
+                if (Phase != SeamFadePhase.Black) { Phase = SeamFadePhase.Black; _blackElapsed = 0f; TimedOut = false; }
+            }
+            else if (Alpha <= 0f) Clear();
+            else Phase = Alpha < target || (Alpha == target && target > 0f) ? SeamFadePhase.Out : SeamFadePhase.In;
         }
 
         void Clear()
@@ -169,38 +209,65 @@ namespace HiddenHarbours.Core
             Phase = SeamFadePhase.Idle;
         }
 
+        /// <summary>How far (m) past the landing inset <see cref="SeamApproach.Probe"/> sits, so a world-frame
+        /// lookup there (with no hysteresis) lands unambiguously inside the neighbour. Geometry, not a tunable.</summary>
+        public const float ProbeBeyondMetres = 0.05f;
+
         /// <summary>
-        /// Where a mover will be, for the purpose of starting the fade: its position, plus the distance it
-        /// covers during the fade-out, plus a <paramref name="leadMetres"/> margin along its heading for its
-        /// size (a boat is long). False, with <paramref name="ahead"/> = the position, when it is slower than
-        /// <paramref name="minSpeed"/>: a mover standing at the edge starts nothing. PURE.
-        ///
-        /// <para>The rig asks the world frame whether <paramref name="ahead"/> would cross. If it would, the
-        /// fade starts now, while the mover is still short of the crossing point by
-        /// <c>speed × fadeOut + lead</c>, so the screen is black by the time it gets there.</para>
+        /// How black the screen should be for a leading edge <paramref name="gapMetres"/> short of the region's
+        /// edge: clear at <paramref name="fadeDistanceMetres"/> or further, black at the edge, linear between.
+        /// A zero fade distance is a step at the edge. PURE.
         /// </summary>
-        public static bool TryLookAhead(Vector2 position, Vector2 velocity, float fadeOutSeconds,
-                                        float leadMetres, float minSpeed, out Vector2 ahead)
+        public static float ApproachAlpha(float gapMetres, float fadeDistanceMetres)
         {
-            float speed = velocity.magnitude;
-            if (speed <= 0f || speed < minSpeed)
-            {
-                ahead = position;
-                return false;
-            }
-            ahead = position + velocity * Mathf.Max(0f, fadeOutSeconds) + velocity / speed * Mathf.Max(0f, leadMetres);
-            return true;
+            if (fadeDistanceMetres <= 0f) return gapMetres <= 0f ? 1f : 0f;
+            return Mathf.Clamp01(1f - gapMetres / fadeDistanceMetres);
         }
 
         /// <summary>
-        /// How far INSIDE the region's edge a mover heading straight out at <paramref name="speed"/> is
-        /// when its fade starts: the look-ahead (<c>speed × fadeOut + lead</c>) less the hysteresis band it
-        /// must still pass beyond the edge. Positive = its centre is still on screen (the camera stops at
-        /// the edge). PURE; the number the PR's measurements are checked against.
+        /// The fade distance to use for a mover heading out at <paramref name="outSpeed"/>: the tuned
+        /// <paramref name="fadeDistanceMetres"/>, or the distance it covers in the quickest fade
+        /// (<paramref name="quickestFadeSeconds"/>) if that is further. So the target darkness never rises faster
+        /// than the cover may follow it, and a fast mover is black as its leading edge arrives, not after. PURE.
         /// </summary>
-        public static float FadeStartInsetMetres(float speed, float fadeOutSeconds, float leadMetres,
-                                                 float hysteresisMetres)
-            => Mathf.Max(0f, speed) * Mathf.Max(0f, fadeOutSeconds) + Mathf.Max(0f, leadMetres)
-               - Mathf.Max(0f, hysteresisMetres);
+        public static float FadeDistanceFor(float fadeDistanceMetres, float outSpeed, float quickestFadeSeconds) =>
+            Mathf.Max(Mathf.Max(0f, fadeDistanceMetres), Mathf.Max(0f, outSpeed) * Mathf.Max(0f, quickestFadeSeconds));
+
+        /// <summary>
+        /// The seam a mover is closing on, read from the region's local rectangle <paramref name="region"/>, the
+        /// mover's extent <paramref name="body"/> (its local bounds, plus the drawn margin the caller adds) and
+        /// its velocity. Of the edges it is heading out through faster than <paramref name="minSpeed"/>, the one
+        /// its leading edge will reach first. The gap is from the leading edge to that region edge; the carry is
+        /// how far the mover must go on so its trailing edge lands <paramref name="landingInsetMetres"/> inside
+        /// the neighbour (the hop puts it there, under the black, so the first clear frame shows all of it
+        /// inside the new screen). False when it is heading out through no edge. PURE.
+        /// </summary>
+        public static bool TryApproach(Rect region, Rect body, Vector2 velocity, float minSpeed,
+                                       float landingInsetMetres, out SeamApproach approach)
+        {
+            approach = default;
+            float bestTime = float.MaxValue;
+            float speedFloor = Mathf.Max(minSpeed, 1e-6f);
+            float inset = Mathf.Max(0f, landingInsetMetres);
+            Vector2 c = body.center;
+            Consider(RegionEdge.East, Vector2.right, velocity.x, region.xMax - body.xMax, region.xMax + inset - body.xMin,
+                     new Vector2(region.xMax + inset + ProbeBeyondMetres, c.y));
+            Consider(RegionEdge.West, Vector2.left, -velocity.x, body.xMin - region.xMin, body.xMax - (region.xMin - inset),
+                     new Vector2(region.xMin - inset - ProbeBeyondMetres, c.y));
+            Consider(RegionEdge.North, Vector2.up, velocity.y, region.yMax - body.yMax, region.yMax + inset - body.yMin,
+                     new Vector2(c.x, region.yMax + inset + ProbeBeyondMetres));
+            Consider(RegionEdge.South, Vector2.down, -velocity.y, body.yMin - region.yMin, body.yMax - (region.yMin - inset),
+                     new Vector2(c.x, region.yMin - inset - ProbeBeyondMetres));
+            return bestTime < float.MaxValue;
+
+            void Consider(RegionEdge edge, Vector2 outward, float outSpeed, float gap, float carry, Vector2 probe)
+            {
+                if (outSpeed < speedFloor) return;
+                float time = Mathf.Max(0f, gap) / outSpeed;
+                if (time >= bestTime) return;
+                bestTime = time;
+                approach = new SeamApproach(edge, gap, Mathf.Max(0f, carry), outward, probe, outSpeed);
+            }
+        }
     }
 }

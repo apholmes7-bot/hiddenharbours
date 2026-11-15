@@ -623,6 +623,8 @@ MonoBehaviour:
   RegionSeamFadeOutSeconds: 0.15
   RegionSeamFadeInSeconds: 0.2
   RegionSeamMaxBlackSeconds: 1.5
-  RegionSeamFootLeadMetres: 0.5
-  RegionSeamBoatLeadMetres: 1
+  RegionSeamFootFadeDistanceMetres: 0.45
+  RegionSeamBoatFadeDistanceMetres: 1.5
+  RegionSeamFootDrawnMarginMetres: 0.1
+  RegionSeamBoatDrawnMarginMetres: 0.3
   RegionSeamMinApproachSpeed: 0.1

@@ -1235,10 +1235,11 @@ namespace HiddenHarbours.Core
 
         [Header("Region crossings (ADR 0057: the whole wall is a door)")]
         [Tooltip("How far (m) past a region's edge the player or boat must go before the crossing into the " +
-                 "neighbour fires. They arrive at the SAME world point, so this is also how far they must " +
+                 "neighbour fires, and so also how far they must " +
                  "come back to cross again: it stops a mover on the seam bouncing between scenes without " +
                  "ever moving them. Small: it is a stretch of the old scene's empty margin you travel " +
-                 "through before the new scene appears. It is crossed under the seam fade, so it is never seen.")]
+                 "through before the new scene appears. It is also how far inside the new region the mover's trailing edge " +
+                 "lands when the hop carries it across, under the seam fade.")]
         [Min(0f)] public float RegionCrossingHysteresisMetres = DefaultRegionCrossingHysteresisMetres;
 
         /// <summary>Shipped preload distance (m), also the fallback for a rig with no GameConfig.</summary>
@@ -1251,35 +1252,41 @@ namespace HiddenHarbours.Core
                  "crossing fires, as before).")]
         [Min(0f)] public float RegionPreloadDistanceMetres = DefaultRegionPreloadDistanceMetres;
 
-        /// <summary>Shipped seam-fade timings (s) and lead distances (m), also the fallbacks for a rig with
-        /// no GameConfig (owner ruling on PR 1223: "a momentary fade out and screen change").</summary>
+        /// <summary>Shipped seam-fade timings (s) and distances (m), also the fallbacks for a rig with no
+        /// GameConfig (owner ruling on PR 1223: "a momentary fade out and screen change").</summary>
         public const float DefaultRegionSeamFadeOutSeconds = 0.15f;
         public const float DefaultRegionSeamFadeInSeconds = 0.2f;
         public const float DefaultRegionSeamMaxBlackSeconds = 1.5f;
-        public const float DefaultRegionSeamFootLeadMetres = 0.5f;
-        public const float DefaultRegionSeamBoatLeadMetres = 1f;
+        public const float DefaultRegionSeamFootFadeDistanceMetres = 0.45f;
+        public const float DefaultRegionSeamBoatFadeDistanceMetres = 1.5f;
+        public const float DefaultRegionSeamFootDrawnMarginMetres = 0.1f;
+        public const float DefaultRegionSeamBoatDrawnMarginMetres = 0.3f;
         public const float DefaultRegionSeamMinApproachSpeed = 0.1f;
 
-        [Tooltip("How long (s) the screen takes to fade to black as the player or boat reaches a seam. The " +
-                 "camera stops at every region edge, so the mover runs up to the edge of the screen, the " +
-                 "screen fades, the region changes underneath, and it fades back in.")]
+        [Tooltip("The QUICKEST (s) the screen may go black at a seam. The fade follows how near the mover's " +
+                 "leading edge is to the edge of the screen; this only stops a very fast (or teleported) mover " +
+                 "getting a cut instead of a fade.")]
         [Min(0f)] public float RegionSeamFadeOutSeconds = DefaultRegionSeamFadeOutSeconds;
-        [Tooltip("How long (s) the screen takes to clear again on the far side of a seam.")]
+        [Tooltip("How long (s) the screen takes to clear again: on the far side of a seam, or when the mover " +
+                 "stops or turns back before it.")]
         [Min(0f)] public float RegionSeamFadeInSeconds = DefaultRegionSeamFadeInSeconds;
-        [Tooltip("The longest (s) the screen stays black waiting for the mover to reach the crossing point. " +
-                 "Past it the fade gives up and clears (the mover stopped at the edge).")]
+        [Tooltip("The longest (s) the screen may stay black without the crossing being made. Past it the fade " +
+                 "gives up and clears.")]
         [Min(0f)] public float RegionSeamMaxBlackSeconds = DefaultRegionSeamMaxBlackSeconds;
-        [Tooltip("How far (m) before the crossing point a walker's fade starts, on top of the distance he " +
-                 "covers during the fade-out. Bigger = more of him is still on screen as it starts, and the " +
-                 "screen stays black a moment longer.")]
-        [Min(0f)] public float RegionSeamFootLeadMetres = DefaultRegionSeamFootLeadMetres;
-        [Tooltip("The same lead (m) for a boat. Boats are long: a bigger lead starts the fade while more of " +
-                 "the hull is still inside the frame, at the price of a longer black at rowing speed.")]
-        [Min(0f)] public float RegionSeamBoatLeadMetres = DefaultRegionSeamBoatLeadMetres;
-        [Tooltip("The slowest (m/s) a mover can head out of a region and still start a seam fade. Below it " +
-                 "the mover is standing at the edge, and the fade does not start (or clears if it had).")]
+        [Tooltip("How far (m) from the edge of the screen a walker's leading edge is when the fade starts. The " +
+                 "screen is black as he reaches the edge, whatever his speed (a mover too fast to cover it in the quickest " +
+        [Min(0f)] public float RegionSeamFootFadeDistanceMetres = DefaultRegionSeamFootFadeDistanceMetres;
+        [Tooltip("The same fade distance (m) for a boat, measured from her bow.")]
+        [Min(0f)] public float RegionSeamBoatFadeDistanceMetres = DefaultRegionSeamBoatFadeDistanceMetres;
+        [Tooltip("How far (m) a walker's drawn figure reaches beyond his collider, added to his extent so the " +
+                 "screen is black before any of the drawing meets the screen edge.")]
+        [Min(0f)] public float RegionSeamFootDrawnMarginMetres = DefaultRegionSeamFootDrawnMarginMetres;
+        [Tooltip("How far (m) a boat's drawn hull reaches beyond her collider (bow, stern, oars), for the same " +
+                 "purpose.")]
+        [Min(0f)] public float RegionSeamBoatDrawnMarginMetres = DefaultRegionSeamBoatDrawnMarginMetres;
+        [Tooltip("The slowest (m/s) a mover can head out of a region and still drive a seam fade. Below it the " +
+                 "mover is standing at the edge, and the fade clears.")]
         [Min(0f)] public float RegionSeamMinApproachSpeed = DefaultRegionSeamMinApproachSpeed;
-
         public float SecondsPerHour => SecondsPerDay / 24f;
         public float SecondsPerWeek => SecondsPerDay * DaysPerWeek;
         public float SecondsPerSeason => SecondsPerDay * DaysPerSeason;

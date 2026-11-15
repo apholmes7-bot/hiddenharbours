@@ -689,13 +689,15 @@ namespace HiddenHarbours.Core
             UnityEngine.Mathf.Max(0f, Config != null ? Config.RegionPreloadDistanceMetres
                                                      : GameConfig.DefaultRegionPreloadDistanceMetres);
 
-        /// <summary>The seam fade's timings (s), lead distances (m) and least approach speed (m/s), owner
+        /// <summary>The seam fade's timings (s), fade distances and drawn margins (m) and least approach speed (m/s), owner
         /// ruling on PR 1223. Same <c>Config != null</c> contract as the other tunables.</summary>
         public static float RegionSeamFadeOutSeconds => SeamTunable(c => c.RegionSeamFadeOutSeconds, GameConfig.DefaultRegionSeamFadeOutSeconds);
         public static float RegionSeamFadeInSeconds => SeamTunable(c => c.RegionSeamFadeInSeconds, GameConfig.DefaultRegionSeamFadeInSeconds);
         public static float RegionSeamMaxBlackSeconds => SeamTunable(c => c.RegionSeamMaxBlackSeconds, GameConfig.DefaultRegionSeamMaxBlackSeconds);
-        public static float RegionSeamFootLeadMetres => SeamTunable(c => c.RegionSeamFootLeadMetres, GameConfig.DefaultRegionSeamFootLeadMetres);
-        public static float RegionSeamBoatLeadMetres => SeamTunable(c => c.RegionSeamBoatLeadMetres, GameConfig.DefaultRegionSeamBoatLeadMetres);
+        public static float RegionSeamFootFadeDistanceMetres => SeamTunable(c => c.RegionSeamFootFadeDistanceMetres, GameConfig.DefaultRegionSeamFootFadeDistanceMetres);
+        public static float RegionSeamFootDrawnMarginMetres => SeamTunable(c => c.RegionSeamFootDrawnMarginMetres, GameConfig.DefaultRegionSeamFootDrawnMarginMetres);
+        public static float RegionSeamBoatFadeDistanceMetres => SeamTunable(c => c.RegionSeamBoatFadeDistanceMetres, GameConfig.DefaultRegionSeamBoatFadeDistanceMetres);
+        public static float RegionSeamBoatDrawnMarginMetres => SeamTunable(c => c.RegionSeamBoatDrawnMarginMetres, GameConfig.DefaultRegionSeamBoatDrawnMarginMetres);
         public static float RegionSeamMinApproachSpeed => SeamTunable(c => c.RegionSeamMinApproachSpeed, GameConfig.DefaultRegionSeamMinApproachSpeed);
 
         static float SeamTunable(System.Func<GameConfig, float> read, float fallback) =>
