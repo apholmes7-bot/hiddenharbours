@@ -892,6 +892,15 @@ namespace HiddenHarbours.Art
             b.Sim.IntentState = -1;
             b.Sim.FlockBound = false;
             b.Sim.RejoinMilliseconds = 1.0;   // any positive value arms the ramp
+            // A take-off's cross-fade restarts with the ramp: re-seed its own path at where the bird is DRAWN,
+            // or the restarted blend would jump back to the path it had drifted off.
+            if (b.Sim.Departing)
+            {
+                b.Sim.FreeX = b.Sim.X;
+                b.Sim.FreeY = b.Sim.Y;
+                b.Sim.FreeAltitudeMetres = b.Sim.AltitudeMetres;
+                b.Sim.FreeHeading = b.Sim.Heading;
+            }
         }
 
         /// <summary>
