@@ -128,7 +128,13 @@ namespace HiddenHarbours.Tests.EditMode
             var svc = Service();
             SetDirt(0.9f);
             svc.BeginWash(_sink);
-            _clock.T += 5d * Hour;
+            // Stand at the sink for its WHOLE counted wash (the guard window), far longer than the 0.7 h its
+            // rate needs to bring 0.9 down to the ceiling's 0.2. Past the window the wash is no longer counted
+            // and passive dirt runs again (StretchPastItsWindow_... pins that), so reading later would measure
+            // the passive rate, not the ceiling.
+            double window = _settings.MaxStretchGameMinutes / 60d * Hour;
+            Assert.Greater(window, (0.9d - 0.2d) / _sink.CleanRatePerGameHour * Hour, "the window outlasts the scrub");
+            _clock.T += window;
             Assert.AreEqual(0.2f, svc.Dirt, Eps, "the sink cannot get you fully clean");
             svc.BeginWash(_shower);
             _clock.T += 0.5d * Hour;

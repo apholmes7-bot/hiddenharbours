@@ -4,7 +4,8 @@ using UnityEngine;
 namespace HiddenHarbours.Core
 {
     /// <summary>
-    /// <b>The two needs</b> (needs slice 1, owner ruling 2026-11-14: "traits, hunger and add sleep").
+    /// <b>The needs</b> (needs slice 1, owner ruling 2026-11-14: "traits, hunger and add sleep"; Dirtiness
+    /// added by cleanliness slice 1).
     /// Each is a 0..1 value that rises with GAME time: 0 is fed / rested, 1 is as hungry / as worn out as
     /// a character gets. A need may only slow the walk and shave the price of an in-person sale (later,
     /// colour a villager's reply). It never stops, faints, hurts or kills, and it is never drawn as a bar,
