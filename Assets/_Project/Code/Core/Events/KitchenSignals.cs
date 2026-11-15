@@ -33,6 +33,22 @@ namespace HiddenHarbours.Core
         }
     }
 
+    /// <summary>A sold boat's stores were emptied (<see cref="KitchenStores.ClearOutBoat"/>): the food
+    /// lots, each with its own freshness clock, handed to the player, and the unmelted ice bags returned to
+    /// the supply locker.</summary>
+    public readonly struct KitchenBoatClearedOut
+    {
+        public readonly string OwnedBoatId;
+        public readonly System.Collections.Generic.IReadOnlyList<KitchenStackDto> Lots;
+        public readonly int IceUnitsReturned;
+
+        public KitchenBoatClearedOut(string ownedBoatId, System.Collections.Generic.IReadOnlyList<KitchenStackDto> lots,
+                                     int iceUnitsReturned)
+        {
+            OwnedBoatId = ownedBoatId; Lots = lots; IceUnitsReturned = iceUnitsReturned;
+        }
+    }
+
     /// <summary>A cooler was packed with ice (<see cref="KitchenStores.PackIceFromLocker"/>).</summary>
     public readonly struct KitchenIcePacked
     {

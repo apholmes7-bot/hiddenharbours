@@ -46,7 +46,9 @@ namespace HiddenHarbours.Core
 
     /// <summary>
     /// <b>What is in one food store, as saved</b> (kitchens slice 1, save v21). Keyed by a stable storage
-    /// KEY that says where it stands (for a boat: <c>fixture.boat.&lt;interior id&gt;.&lt;anchor id&gt;</c>;
+    /// KEY that says where it stands (for a boat:
+    /// <c>fixture.boat.&lt;owned boat id&gt;/&lt;interior id&gt;.&lt;anchor id&gt;</c>, see
+    /// <see cref="BoatInteriorKitchen.StoreKey(string, string, string)"/>, so each boat of a hull has its own;
     /// a building names its own), with the store's def id beside it. The contents are SAVED; the cold is
     /// not ticked but stamped: a cooler stores the instant its ice runs out, so the ice left at any moment
     /// is a pure function of that instant and the clock, and a sleep straight past it lands on the same

@@ -14,11 +14,36 @@ namespace HiddenHarbours.Core
         /// <summary>The prefix every fixture aboard carries; the store and seat keys share the bunk's shape.</summary>
         public const string FixtureKeyPrefix = "fixture.boat.";
 
-        /// <summary>The storage KEY (and fixture id) of a food store, seat or bunk anchor aboard this
-        /// interior: <c>fixture.boat.&lt;interior id&gt;.&lt;anchor id&gt;</c>, the bunk's id shape. Two boats of
-        /// the same hull share it today (one boat per hull is all main can own).</summary>
+        /// <summary>The FIXTURE id of a food store, seat or bunk anchor aboard this interior:
+        /// <c>fixture.boat.&lt;interior id&gt;.&lt;anchor id&gt;</c>, the bunk's id shape. It names the piece in
+        /// the hull's LAYOUT, the same on every boat of the hull; what a store HOLDS is saved under
+        /// <see cref="StoreKey(string, BoatInteriorDef, BoatInteriorAnchor)"/>, which names the boat.</summary>
         public static string FixtureKey(BoatInteriorDef def, BoatInteriorAnchor anchor)
             => def == null || anchor == null ? "" : FixtureKeyPrefix + def.Id + "." + anchor.Id;
+
+        /// <summary>
+        /// The storage KEY of a food store aboard ONE owned boat:
+        /// <c>fixture.boat.&lt;owned boat id&gt;/&lt;interior id&gt;.&lt;anchor id&gt;</c>. The owned-boat id
+        /// (<see cref="OwnedBoatId"/>) is what keeps two boats of one hull apart, and what keeps a store's
+        /// contents with its boat across a hull swap. Empty when any part is missing or the owned-boat id is
+        /// not valid, so nothing is ever saved under a key that two boats could share.
+        /// </summary>
+        public static string StoreKey(string ownedBoatId, BoatInteriorDef def, BoatInteriorAnchor anchor)
+            => def == null || anchor == null ? "" : StoreKey(ownedBoatId, def.Id, anchor.Id);
+
+        /// <summary>The storage key from its parts (see the def overload).</summary>
+        public static string StoreKey(string ownedBoatId, string interiorId, string anchorId)
+        {
+            if (!OwnedBoatId.IsValid(ownedBoatId) || string.IsNullOrEmpty(interiorId) || string.IsNullOrEmpty(anchorId))
+                return "";
+            return StoresOfBoatPrefix(ownedBoatId) + interiorId + "." + anchorId;
+        }
+
+        /// <summary>The prefix every store key aboard <paramref name="ownedBoatId"/> starts with (ending in
+        /// <see cref="OwnedBoatId.KeySeparator"/>, so <c>boat.x</c> never matches <c>boat.x#2</c>'s stores).
+        /// Empty for an invalid id.</summary>
+        public static string StoresOfBoatPrefix(string ownedBoatId)
+            => OwnedBoatId.IsValid(ownedBoatId) ? FixtureKeyPrefix + ownedBoatId + OwnedBoatId.KeySeparator : "";
 
         /// <summary>The kind of piece an anchor is, or false for an anchor that is not part of a kitchen.</summary>
         public static bool TryKind(BoatInteriorAnchor anchor, out KitchenPieceKind kind)

@@ -167,8 +167,9 @@ plain serializable DTOs owned by `SaveService` (`architecture/tech-architecture.
 > `KitchenStores`, a list of `KitchenStorageStateDto` (Core/Kitchen/KitchenStoresDto.cs). Each row is
 > one pantry, cooler or fridge:
 >
-> - `Key`: where it stands. Aboard this is `fixture.boat.<interior id>.<anchor id>`, the bunk's id
->   shape. A building names its own key.
+> - `Key`: where it stands. Aboard this is `fixture.boat.<owned boat id>/<interior id>.<anchor id>`
+>   (`BoatInteriorKitchen.StoreKey`): it names the BOAT, not the hull, so two boats of one hull keep
+>   two coolers and a store's contents stay with her across a hull swap. A building names its own key.
 > - `StorageDefId`: the `KitchenStorageDef` it is.
 > - `IceRunsOutAtGameSeconds`: a cooler's melt instant, or −1 when no ice is packed.
 > - `IceOutAnnounced`.
@@ -192,7 +193,18 @@ plain serializable DTOs owned by `SaveService` (`architecture/tech-architecture.
 > - `FoodPerishability` (`IFoodPerishability`): defaults to nothing spoiling. The food slice's
 >   `FoodDef` resolver is assigned here.
 >
-> **Caveat:** two boats of the same hull share a key, because main owns one boat per hull.
+> **The owned-boat id** (`OwnedBoatId`, Core/Boats): main's fleet keys an owned boat by its hull id
+> (`OwnedBoats`, `ActiveHullId`, fuel, instruments) and owns at most one per hull, so the first boat of a
+> hull has the owned-boat id = its hull id. A fleet that owns a second mints `<hull id>#2`, `#3`, … (the
+> lowest free number; `OwnedBoatId.Mint`) and records it with the boat. An owned-boat id never contains
+> `/`, so a boat's stores are found by the prefix `fixture.boat.<owned boat id>/`.
+>
+> **Sale rule** (`KitchenStores.ClearOutBoat`): selling a boat never silently deletes her food. Each of
+> her stores is settled to the sale instant and emptied: the food lots, each with its own freshness
+> clock, are handed back to the sale flow for the player, the whole unmelted ice bags go back to the
+> supply locker (a bag already melting stays), and `KitchenBoatClearedOut` announces both; only then are
+> her store rows removed. A hull SWAP moves nothing. Main has no sale flow yet; the one that lands calls
+> this before dropping the boat from the fleet.
 
 **Recomputed, never saved:** tide height, wind, weather, sea state, visibility (from
 `worldSeed + gameTime`), dormant NPC positions, authored geometry, **a boat's effective helm fit and

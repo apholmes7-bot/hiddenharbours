@@ -12,7 +12,9 @@ namespace HiddenHarbours.Tests.EditMode
     /// </summary>
     public class SaveMigrationV21Tests
     {
-        const string Key = "fixture.boat.interior.cape_islander_iso.cooler";
+        /// <summary>A store aboard ONE owned boat (BoatStoreKeyTests pins the shape).</summary>
+        static readonly string Key = BoatInteriorKitchen.StoreKey(OwnedBoatId.FirstOf("boat.cape_islander"),
+                                                                  "interior.cape_islander_iso", "cooler");
 
         [Test]
         public void TheSchemaIsAtLeast21()

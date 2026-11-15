@@ -126,6 +126,61 @@ namespace HiddenHarbours.Core
             }
         }
 
+        /// <summary>
+        /// <b>The boat is sold: her food comes ashore with you</b> (the sale rule). Every store aboard
+        /// <paramref name="ownedBoatId"/> (keys under <see cref="BoatInteriorKitchen.StoresOfBoatPrefix"/>) is
+        /// settled to now and emptied: each lot, with its own freshness clock as it stood at the sale, is
+        /// appended to <paramref name="handedBack"/> for the sale flow to give the player; the whole bags of
+        /// ice still unmelted in a cooler go back to the supply locker it was packed from. Only then are the
+        /// boat's store rows removed. Raises <see cref="KitchenBoatClearedOut"/> with the lots, so nothing
+        /// leaves the save unannounced. A store whose def can no longer be found is left on the save
+        /// untouched (it cannot be settled honestly). Returns how many items were handed back.
+        ///
+        /// <para>A hull SWAP calls nothing: each boat's stores stay under her own owned-boat id, and are there
+        /// again when she is the active boat. Main has no sale flow yet; whoever writes it calls this (through
+        /// Core) before dropping the boat from the fleet.</para>
+        /// </summary>
+        public static int ClearOutBoat(SaveData save, string ownedBoatId, in KitchenContext ctx,
+                                       Func<string, KitchenStorageDef> find, List<KitchenStackDto> handedBack)
+        {
+            string prefix = BoatInteriorKitchen.StoresOfBoatPrefix(ownedBoatId);
+            List<KitchenStorageStateDto> all = save?.KitchenStores;
+            if (all == null || find == null || prefix.Length == 0) return 0;
+            var lots = new List<KitchenStackDto>();
+            int items = 0, iceBack = 0;
+            for (int i = all.Count - 1; i >= 0; i--)
+            {
+                KitchenStorageStateDto store = all[i];
+                if (store?.Key == null || !store.Key.StartsWith(prefix, StringComparison.Ordinal)) continue;
+                KitchenStorageDef def = find(store.StorageDefId);
+                if (def == null) continue;
+                KitchenStorageModel.Settle(store, def, ctx);
+                if (store.Stacks != null)
+                    for (int k = 0; k < store.Stacks.Count; k++)
+                    {
+                        if (store.Stacks[k].Count <= 0) continue;
+                        lots.Add(store.Stacks[k]);
+                        items += store.Stacks[k].Count;
+                    }
+                if (def.Kind == KitchenStorageKind.Cooler)
+                {
+                    // WHOLE bags only: a bag already melting is water in the bottom of her cooler.
+                    double unit = KitchenStorageModel.IceUnitSeconds(def, ctx);
+                    int ice = unit > 0d ? (int)Math.Floor(KitchenStorageModel.IceSecondsLeft(store, ctx) / unit + 1e-9) : 0;
+                    if (ice > 0 && !string.IsNullOrEmpty(def.IceSupplyId))
+                    {
+                        SupplyLocker.Add(save, def.IceSupplyId, ice);
+                        iceBack += ice;
+                    }
+                }
+                all.RemoveAt(i);
+            }
+            if (lots.Count == 0 && iceBack == 0) return 0;
+            handedBack?.AddRange(lots);
+            EventBus.Publish(new KitchenBoatClearedOut(ownedBoatId, lots, iceBack));
+            return items;
+        }
+
         /// <summary>The slow tick over the live services (the game clock calls this).</summary>
         public static void Tick()
         {

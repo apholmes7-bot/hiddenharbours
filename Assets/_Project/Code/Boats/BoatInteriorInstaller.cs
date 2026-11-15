@@ -249,7 +249,10 @@ namespace HiddenHarbours.Boats
             // food store needs a carried-food inventory to put things in and take them out (the food slice,
             // draft PR 1227), and a seat needs a sit pose in Player that calls SeatSession. When those land,
             // build them here the way BuildBunks does: one child per anchor, a HullLocalAnchor at its reach
-            // point, keyed BoatInteriorKitchen.FixtureKey(def, anchor). The stores, rules, save and signals
+            // point, with the fixture id BoatInteriorKitchen.FixtureKey(def, anchor) and a food store's
+            // contents under BoatInteriorKitchen.StoreKey(<her owned-boat id>, def, anchor) — the id of THIS
+            // boat (OwnedBoatId.FirstOf(hull id) today; a fleet that owns two of a hull mints and records
+            // its own), never the hull's, so two of one hull keep two coolers. The stores, rules, save and signals
             // are already in Core (KitchenStores, DiningRules, SeatSession, KitchenSignals).
         }
 
