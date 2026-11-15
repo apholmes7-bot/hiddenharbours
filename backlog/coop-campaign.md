@@ -1,6 +1,6 @@
 # Campaign co-op — CO-01 to CO-12
 
-Owner-directed, 2026-11-13. [ADR 0057](../docs/adr/0057-campaign-coop-host-world.md)
+Owner-directed, 2026-11-13. [ADR 0058](../docs/adr/0058-campaign-coop-host-world.md)
 is Proposed; the product direction is two friends playing the full campaign over
 the internet in the host's world. One save, purse, fleet and licence set; separate
 hands and characters. Crew the one earned dory first. Both join aboard the intro
@@ -17,7 +17,7 @@ marks the minimum sequence for playing the campaign together from the intro.
 
 | # | Slice | After it, the two players can... | Size | Role | Editor | Core / save | Proof |
 |---|---|---|---|---|---|---|---|
-| CO-01 ★ | **Land the branch on main**, off by default. Fix the product name, drop the "0055" draft, approve the packages. ADR 0057 and the roadmap line ride with it. | ...do exactly what the zip does today, but from a build of current main (jet ski, new hulls, lamps, fixes). | M | lead-architect | Yes, one import and test run | Core no, save no | Solo CI green and unchanged. The trial's 18 edit and 9 network tests pass on main. A solo build's product name and save path are unchanged. |
+| CO-01 ★ | **Land the branch on main**, off by default. Fix the product name, drop the "0055" draft, approve the packages. ADR 0058 and the roadmap line ride with it. | ...do exactly what the zip does today, but from a build of current main (jet ski, new hulls, lamps, fixes). | M | lead-architect | Yes, one import and test run | Core no, save no | Solo CI green and unchanged. The trial's 18 edit and 9 network tests pass on main. A solo build's product name and save path are unchanged. |
 | CO-02 ★ | **Fix the crash on close.** Likely cause, read from code and not yet proven: the only runs that exit cleanly shut the network down before quitting (`CoopProcessProof.cs:103`); an ordinary window close never does (`CoopDevStart.cs` has no shutdown on quit). Also fix the wake-pose error storm (78,550 errors after a hull change, `FoamInjector` / `MeshHullDriver.TryGetWakePose`). | ...close the game without a crash report. | S | gameplay-systems | Yes, two-process close proof | No | Ten ordinary closes each side, host first and guest first, all exit code 0. If the crash also shows in a solo build, it is not a co-op bug and goes to the art lane. |
 | CO-03 ★ | **Host and Join from the title menu, and a way in from another house.** Host picks New Game or Continue on their real save. Guest types an address or a code. The guest's computer gets a save that cannot write. | ...start a session without command lines, on the host's real campaign file, from two houses. | M | ui-ux + lead-architect | Yes | Core yes (session contract, read-only save facade). Save no. | Tests: third player refused, wrong build refused, guest quit writes no file. A real two-house join. Relay needs the owner's Unity account link (owner step). |
 | CO-04 ★ | **The full clock.** Send the hour hold and flow as well as the time, including joining aboard the intro boat at sea. Guest menus stop pausing anyone. | ...join the intro boat at sea and see the same sea and held hour. | S | gameplay-systems | No (CI) | Core yes, additive | Tests: join during a hold, stale packet, wrong seed, midnight crossed once. |

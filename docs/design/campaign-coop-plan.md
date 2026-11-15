@@ -1,7 +1,7 @@
 # Playing the campaign together
 
 > **Historical audit, superseded in scope and sequence on 2026-11-13.**
-> [ADR 0057](../adr/0057-campaign-coop-host-world.md) and
+> [ADR 0058](../adr/0058-campaign-coop-host-world.md) and
 > [CO-01 to CO-12](../../backlog/coop-campaign.md) now govern delivery: internet
 > joining, shared licences, each player moving their body and steered boat,
 > both aboard the intro boat at sea from the opening, and intro before the save

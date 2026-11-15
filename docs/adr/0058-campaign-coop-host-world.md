@@ -1,4 +1,4 @@
-# ADR 0057: The campaign is playable by two: the host owns the world
+# ADR 0058: The campaign is playable by two: the host owns the world
 
 **Status: Proposed.** Decision owners: product owner and lead-architect.
 Date: 2026-11-13.
