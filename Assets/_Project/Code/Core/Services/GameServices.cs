@@ -347,6 +347,21 @@ namespace HiddenHarbours.Core
         private static IRelationshipService _relationships;
 
         /// <summary>
+        /// Whether a gated crossing (the St Peters bar at low water) can be set out on at a given game hour:
+        /// the seam a cross-region NPC routine asks before it leaves one region for the next (owner ask
+        /// 2026-11-15). Never null: <see cref="AlwaysOpenCrossingGate.Instance"/> until a real gate is
+        /// assigned (the tide-window slice); a test assigns its own. Cleared by <see cref="Reset"/>.
+        /// FLAG lead-architect: new Core contract (cross-region routines).
+        /// </summary>
+        public static ICrossingGate CrossingGate
+        {
+            get => _crossingGate ?? AlwaysOpenCrossingGate.Instance;
+            set => _crossingGate = value;
+        }
+
+        private static ICrossingGate _crossingGate;
+
+        /// <summary>
         /// The active region's terrain-elevation source — the "height map" the tidal-exposure seam reads
         /// (St Peters falling tide; the future water depth-gradient shader). The <b>world</b> registers
         /// its terrain here when a region scene loads; <b>gameplay</b>/UI resolve elevation through this
@@ -1265,6 +1280,7 @@ namespace HiddenHarbours.Core
             Needs = null;                // → a fresh default on next read; drops its stage baseline
             Farm = null;                 // → a fresh default on next read; drops its catalog and baseline
             Relationships = null;        // → a fresh default on next read; reseeds from the shipped ties
+            CrossingGate = null;         // → AlwaysOpenCrossingGate.Instance; this property is never null
             TidalTerrain = null;
             StillWater = null;           // → EmptyStillWater.Instance; this property is never null
             PlayerTransform = null;
