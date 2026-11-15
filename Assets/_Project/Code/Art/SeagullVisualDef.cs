@@ -208,6 +208,8 @@ namespace HiddenHarbours.Art
         public IReadOnlyList<StateEntry> States => _states;
         public IReadOnlyList<EdgeEntry> Transitions => _transitions;
         public int CellCount => _cells.Count;
+        /// <summary>The whole page, in [row * Columns + column] order; null entries are holes.</summary>
+        public IReadOnlyList<Sprite> Cells => _cells;
 
         // ── cells ───────────────────────────────────────────────────────────────────────────────
 

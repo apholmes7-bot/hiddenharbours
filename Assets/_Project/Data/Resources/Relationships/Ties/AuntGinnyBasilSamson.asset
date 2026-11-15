@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c5347ae90a3cd78eef9aedda5231f0b3, type: 3}
+  m_Name: AuntGinnyBasilSamson
+  m_EditorClassIdentifier: HiddenHarbours.Core::HiddenHarbours.Core.RelationshipTieDef
+  Id: tie.aunt_ginny__basil_samson
+  NpcA: npc.aunt_ginny
+  NpcB: npc.basil_samson
+  StartingStrength: 40
+  Note: Neighbours on the village road for years; he still brings her the first mackerel of the season.

@@ -22,7 +22,8 @@ tracks the complete loop, its explicit fit contracts, production integration and
 
 **Owner-directed additions (2026-11-14): character traits and hunger.** Traits slice 1 (`TraitDef`,
 `ITraitService`, save v18, Speedwalker / Charismatic / Patient Angler on existing seams) is the first
-build; the creator traits page, change-at-bed, more traits and hunger are later slices (`roadmap.md` §0.5).
+build; the creator traits page (a TRAITS step: pick exactly the allowance, read from the catalog) follows it;
+change-at-bed, more traits and hunger are later slices (`roadmap.md` §0.5).
 
 - **Pull the top unblocked item for your role.** Items are roughly ordered within a milestone; an item is
   workable once its noted dependencies are Done. Prefer earlier milestones — **honor milestone order** (the
