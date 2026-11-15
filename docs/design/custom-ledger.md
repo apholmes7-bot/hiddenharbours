@@ -1,20 +1,27 @@
 # Till identities and daily custom
 
-Every catalog purchase signal now carries a `TradeCounterparty`: `MerchantId` is the
+The eleven purchase and sale signals in this slice carry a `TradeCounterparty`: `MerchantId` is the
 keeper's stable NPC id, `VendorId` identifies the seller definition, and `TradeId` is
 the seller's authored kind. The old constructors and original payload fields remain
 available. Missing fields, including a default struct, report `unknown`.
 
 `SellerDef` assets under `Data/Resources/Sellers` describe the six existing catalog
-and fish-buying counters. Vendors resolve their existing seller id through those
-assets; a multi-seller listing never chooses the first seller as the counterparty.
+and fish-buying counters plus the two authored vehicle sellers. Vendors resolve their
+existing seller id through those assets; a multi-seller listing never chooses the
+first seller as the counterparty.
 Keepers were copied from the existing NPC → dialogue → seller-pointer links.
 This identity directory does not own stock, pricing, or the purchase flow.
 
 Fuel stations and homes already have their own definitions. Those definitions now
 have `KeeperNpcId` and `TradeId`; their existing definition id is the vendor id.
-No keeper has been assigned to either fuel station or the home till. Empty keeper
-data remains empty and becomes `unknown` in a signal.
+No keeper has been assigned to either fuel station, any of the eight home tills,
+or either vehicle seller. Empty keeper data remains empty and becomes `unknown`
+in a signal.
+
+The vehicle offers remain unlisted as authored. Their separate `VehiclePurchased`
+and `VehicleRepaired` signals retain their existing contracts and are not yet
+`ICustomSignal` transactions; the identity directory does not activate their counters
+or add them to the daily ledger.
 
 `CustomLedger` is a pure, session-only Core object. Its caller supplies the absolute
 game day (`IGameClock.DayIndex`) and each completed `ICustomSignal` to `Record`.
@@ -44,7 +51,8 @@ from being counted twice. `FeeFronted` is a grant and contributes no custom.
 
 The append-only `CatchSold` payload and ledger support are present. Its two publishers
 in `SellService` still use the legacy constructor and therefore report `unknown`.
-That file belongs to open PR 1208 and was left untouched under the lane ownership rule.
+The needs pricing changes from main are preserved unchanged. Wiring the actual counter
+through both entrypoints and their callers remains separate follow-up work.
 
 The remaining integration is to carry the actual counter's data-authored identity into
 both `SellSpecies` and `SellAll`, including instant buyer and sell-screen callers.

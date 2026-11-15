@@ -118,6 +118,7 @@ namespace HiddenHarbours.Core
                 // on the morning the player just saw. It comes whether or not anything here can keep
                 // the day, because sleeping and saving are two things and only one of them needs a disk.
                 bool woke = RestMorning.Bring(clock, config);
+                if (woke) GameServices.Needs.Sleep();   // needs slice 1: a night slept is a night rested
 
                 ISaveService save = GameServices.Save;
 

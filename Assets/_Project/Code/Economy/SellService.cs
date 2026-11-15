@@ -42,10 +42,13 @@ namespace HiddenHarbours.Economy
         /// read this one value, so the screen still shows exactly the coin paid. With no traits the factor
         /// is exactly 1 and the level comes back untouched (bit-for-bit the old price). Only the acting
         /// player's trait applies; nothing stacks across players.
+        ///
+        /// <para>Needs slice 1: the factor is the trait x needs product from <see cref="CharacterFactors"/>,
+        /// so selling in person while hungry or worn out fetches a little less (never below the config
+        /// floor). This is the in-person till only; fed, rested and trait-less it is still exactly 1.</para>
         /// </summary>
         public static float SellerPriceLevel(Market market)
-            => TraitMath.Apply(market != null ? market.PriceLevel : 1f,
-                               GameServices.Traits.PlayerMultiplier(TraitStat.SellPrice));
+            => CharacterFactors.ApplyPlayer(market != null ? market.PriceLevel : 1f, TraitStat.SellPrice);
 
         /// <summary>How many of <paramref name="speciesId"/> are in the hold (sellable or not).</summary>
         public static int CountOf(IHold hold, string speciesId)

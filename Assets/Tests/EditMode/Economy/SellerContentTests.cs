@@ -13,7 +13,7 @@ namespace HiddenHarbours.Tests.Economy
         public void EveryCatalogAndConversationSeller_HasUniqueDataAndValidKeeper()
         {
             var sellers = Resources.LoadAll<SellerDef>(SellerDirectory.ResourceFolder);
-            Assert.AreEqual(6, sellers.Length, "six existing counters receive identities; no invented tills");
+            Assert.AreEqual(8, sellers.Length, "six existing counters and two authored vehicle sellers receive identities");
             var byId = new Dictionary<string, SellerDef>();
             foreach (var seller in sellers)
             {
@@ -46,6 +46,13 @@ namespace HiddenHarbours.Tests.Economy
                 if (!string.IsNullOrEmpty(seller.KeeperNpcId))
                     Assert.IsTrue(npcIds.Contains(seller.KeeperNpcId), "keeper must resolve: " + seller.Id);
 
+            foreach (string sellerId in new[] { "seller.nmc_vehicle_dealer", "seller.nmc_industrial_yard" })
+            {
+                Assert.IsTrue(byId.ContainsKey(sellerId), "authored vehicle seller missing: " + sellerId);
+                Assert.AreEqual("", byId[sellerId].KeeperNpcId, "vehicle keepers have not been authored");
+                Assert.AreEqual("trade.vehicles", byId[sellerId].TradeId);
+            }
+
             foreach (string guid in AssetDatabase.FindAssets("t:ScriptableObject", new[] { CatalogSource.CatalogFolderPath }))
             {
                 var listing = AssetDatabase.LoadMainAssetAtPath(AssetDatabase.GUIDToAssetPath(guid)) as ICatalogListing;
@@ -61,7 +68,7 @@ namespace HiddenHarbours.Tests.Economy
             foreach (string type in new[] { "FuelStationDef", "HomeDef" })
             {
                 var assets = AssetDatabase.FindAssets("t:" + type, new[] { "Assets/_Project/Data" });
-                Assert.AreEqual(type == "FuelStationDef" ? 2 : 1, assets.Length);
+                Assert.AreEqual(type == "FuelStationDef" ? 2 : 8, assets.Length);
                 foreach (string guid in assets)
                 {
                     var asset = new SerializedObject(AssetDatabase.LoadMainAssetAtPath(AssetDatabase.GUIDToAssetPath(guid)));

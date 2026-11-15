@@ -73,6 +73,7 @@ namespace HiddenHarbours.Economy
                  "the chosen variant's gameplay sidecar for every dimension it places by, so this one " +
                  "field moves the footprint, the spacing, the clearing and the doorstep together.")]
         public string Variant = "clipper";
+
         [Header("Custom identity")]
         [Tooltip("NpcDef.Id of this till's keeper. Leave empty where no keeper has been authored.")]
         public string KeeperNpcId = "";
@@ -81,5 +82,59 @@ namespace HiddenHarbours.Economy
 
         public HiddenHarbours.Core.TradeCounterparty Counterparty
             => new HiddenHarbours.Core.TradeCounterparty(KeeperNpcId, Id, TradeId);
+
+        // ---- for-sale houses (home buying, slice 1) ---------------------------------------------
+        // Append-only. Every field below defaults to "not a resident house", so the camper asset,
+        // written before these existed, loads with the same meaning it always had.
+
+        /// <summary>What happens to the people who live in a house when the player buys it.
+        /// Append-only: the int is what the asset stores.</summary>
+        public enum ResidentMoveMode
+        {
+            /// <summary>Nobody lives here (the camper, an empty house). Nothing moves.</summary>
+            None = 0,
+
+            /// <summary>The residents stay in the game and move to <see cref="ResidentMovesTo"/> in the
+            /// same region (the owner's ruling: residents move, they are never removed).</summary>
+            Rehouse = 1,
+
+            /// <summary>The residents leave the region for <see cref="ResidentMovesTo"/> elsewhere.
+            /// Declared for later; nothing uses it yet.</summary>
+            MoveAway = 2,
+        }
+
+        [Header("Where it stands (resident houses)")]
+        [Tooltip("The region this home is in (\"region.st_peters\" etc). Empty on the camper, which " +
+                 "predates the field and is placed by its own lot builder.")]
+        public string RegionId = "";
+
+        [Tooltip("The building this home IS: a StPetersVillage site key (\"redSaltbox\") in St Peters, " +
+                 "the key-scene or ground-plan structure id (\"structure.cmb_house_4\") elsewhere. Empty " +
+                 "on the camper.")]
+        public string BuildingKey = "";
+
+        [Header("Who lives there now")]
+        [Tooltip("NpcDef ids of the people living here before the player buys it. Empty for an empty " +
+                 "house. They stay in the game and move; see Resident Move.")]
+        public string[] ResidentNpcIds = new string[0];
+
+        [Tooltip("What happens to the residents on purchase. None when nobody lives here.")]
+        public ResidentMoveMode ResidentMove = ResidentMoveMode.None;
+
+        [Tooltip("Where the residents go: the station (\"station.st_peters.home_post_office\") or " +
+                 "building id they sleep at once the house is sold. Required when there are residents.")]
+        public string ResidentMovesTo = "";
+
+        [Header("Market")]
+        [Tooltip("On the market. Lets the owner pull a home off sale without deleting its id (ids are " +
+                 "append-only). True by default, so the camper stays for sale.")]
+        public bool ListedForSale = true;
+
+        // HOOK (slice 2): a HomeDoor / for-sale sign on the red saltbox reads this def's Price and
+        //   grants HomeDeeds as the camper's door does; nothing here buys anything yet.
+        // HOOK (slice 3): the routine layer swaps a resident's night station to ResidentMovesTo once
+        //   HomeDeeds.IsOwned(Id); "station.st_peters.home_post_office" does not exist yet.
+        // HOOK (later): NMC, Cumberland and Rice Point houses need placed key scenes / drawn houses and
+        //   interiors before a door can sell them (plan Q6 on whether ListedForSale waits for that).
     }
 }

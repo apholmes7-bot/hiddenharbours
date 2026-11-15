@@ -31,5 +31,9 @@ namespace HiddenHarbours.Core
 
         [Tooltip("The bonuses this trait gives. Each names one stat; several modifiers may share a stat.")]
         public TraitModifier[] Modifiers = new TraitModifier[0];
+
+        [Tooltip("Needs this trait eases (needs slice 1): each scales one need's slow-down and price " +
+                 "penalty, 0 cancels it, 0.5 halves it. The need itself still rises; it just costs less.")]
+        public NeedRelief[] NeedReliefs = new NeedRelief[0];
     }
 }
