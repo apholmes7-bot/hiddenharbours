@@ -243,6 +243,14 @@ namespace HiddenHarbours.Boats
 
             // --- the bunks (owner 2026-11-14: "bunks on boats sleepable") ------------------------
             BuildBunks(def, controller, exteriorCcw, elevation);
+
+            // ⚠ SEAM(kitchen pieces, kitchens slice 1): the def now carries food_storage, sit and table
+            // anchors (BoatInteriorKitchen.Pieces reads them). No interactable is built for them yet. A
+            // food store needs a carried-food inventory to put things in and take them out (the food slice,
+            // draft PR 1227), and a seat needs a sit pose in Player that calls SeatSession. When those land,
+            // build them here the way BuildBunks does: one child per anchor, a HullLocalAnchor at its reach
+            // point, keyed BoatInteriorKitchen.FixtureKey(def, anchor). The stores, rules, save and signals
+            // are already in Core (KitchenStores, DiningRules, SeatSession, KitchenSignals).
         }
 
         /// <summary>

@@ -150,6 +150,37 @@ plain serializable DTOs owned by `SaveService` (`architecture/tech-architecture.
 > a place in ANOTHER region, or ABOARD a boat, is not applied in the wrong frame but handed to the
 > `SleepPlaceWakeRequested` signal for the travel rig to honour, and the spawn stands until it does.
 
+> **Save schema v21 (the food stores, kitchens slice 1, owner ask 2026-11-15)**: `SaveData` gained
+> `KitchenStores`, a list of `KitchenStorageStateDto` (Core/Kitchen/KitchenStoresDto.cs). Each row is
+> one pantry, cooler or fridge:
+>
+> - `Key`: where it stands. Aboard this is `fixture.boat.<interior id>.<anchor id>`, the bunk's id
+>   shape. A building names its own key.
+> - `StorageDefId`: the `KitchenStorageDef` it is.
+> - `IceRunsOutAtGameSeconds`: a cooler's melt instant, or −1 when no ice is packed.
+> - `IceOutAnnounced`.
+> - `Powered`: a fridge's power at the last settle.
+> - `Stacks`: lots of `KitchenStackDto`, each an item id, a count and the lot's freshness clock (the
+>   `HeldCatchDto` shape).
+>
+> The cold is **stamped, not ticked**. The ice left is a pure function of the melt instant and the
+> clock. A fridge's power change is banked at the slow tick. So settling once across a sleep lands
+> where stepping does (rule 5). Read and written through `KitchenStores` and `KitchenStorageModel`.
+> The `v20→v21` step adds an empty list, so no food is invented and no ice packed. The unconditional
+> repair drops null or keyless rows and empty lots.
+>
+> The content side is `KitchenStorageDef`, one asset per store under `Resources/Kitchen/Storage`
+> (`kitchen_storage.pantry_locker`, `.pantry`, `.cooler`, `.fridge`). It holds the kind, the
+> capacity, the cold mode and the ice dials. The tunables are `GameConfig.Kitchen` (`KitchenSettings`).
+>
+> There are two named Core seams with honest defaults, on `GameServices`:
+>
+> - `KitchenPower` (`IKitchenPower`): defaults to every fridge powered.
+> - `FoodPerishability` (`IFoodPerishability`): defaults to nothing spoiling. The food slice's
+>   `FoodDef` resolver is assigned here.
+>
+> **Caveat:** two boats of the same hull share a key, because main owns one boat per hull.
+
 **Recomputed, never saved:** tide height, wind, weather, sea state, visibility (from
 `worldSeed + gameTime`), dormant NPC positions, authored geometry, **a boat's effective helm fit and
 its depth-sounder reading** (ADR 0030), **which end of a bed the pillow is on** (see below), and

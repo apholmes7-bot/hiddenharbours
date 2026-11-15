@@ -32,6 +32,18 @@ namespace HiddenHarbours.Core
         /// stage change at once. A non-positive amount or no save does nothing.</summary>
         void Eat(float amount);
 
+        /// <summary>Eat in a posture (kitchens slice 1): the meal's relief times the posture's multiplier
+        /// (<see cref="DiningRules"/>: 1 standing, more seated, most at a table or counter), then as
+        /// <see cref="Eat(float)"/>. Raises <see cref="PlayerDined"/> when seated.</summary>
+        void Eat(float amount, EatingPosture posture);
+
+        /// <summary>Bank a seated stretch (kitchens slice 1): tiredness from
+        /// <paramref name="seatedSinceGameSeconds"/> to now follows <see cref="SeatedRest"/> instead of the
+        /// clock's rise, so it drifts toward the sitting floor and stops there, always short of what a
+        /// night's sleep gives. A stretch before the last sleep or bank counts only from it. No save does
+        /// nothing.</summary>
+        void RestSeated(double seatedSinceGameSeconds);
+
         /// <summary>A night's sleep: tiredness back to rested from now. Hunger is untouched; the hours slept
         /// already counted against it on the clock. Announces a stage change at once. No save does nothing.</summary>
         void Sleep();

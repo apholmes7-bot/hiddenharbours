@@ -532,6 +532,13 @@ MonoBehaviour:
     WalkFloor: 0.85
     SellFloor: 0.92
     TickGameMinutes: 5
+  Kitchen:
+    DiningSeatReachMetres: 1.25
+    PieceReachMetres: 1
+    SeatedReliefMultiplier: 1.1
+    DiningReliefMultiplier: 1.5
+    SitRestFloor: 0.35
+    SitRecoveryPerGameHour: 0.25
   Juice:
     GradeEnabled: 1
     GradeStrength: 0.35

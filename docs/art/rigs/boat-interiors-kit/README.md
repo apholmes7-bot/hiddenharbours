@@ -167,3 +167,40 @@ untouched. Existing ids keep their meaning; the new ids are append-only.
 mesh re-bake): a centreline leeboard and a split quilt on the cape and lobster V-berths, a thin cushion,
 pillow and folded blanket on the variants' bench, and emitting these anchors (with the prep and bunk
 blocks above) so the next regeneration keeps them.
+
+## Kitchen pieces (hand-authored 2026-11-15)
+
+Owner ask: boats need food storage (a fridge, a cooler that needs ice, a pantry) that works with the
+prep and cook stations, and the player can sit and dine for a bigger food boost; sitting eases
+tiredness, but never as far as sleep does. Every kit hull with a prep and cook station now has its
+food stores and a seat. Like the blocks above, they were added to the 22 sidecars by hand and mirrored
+into the baked defs. `EveryKitDefsKitchenAnchorsAreItsSidecars` holds the two together. The renderer
+and its SHA are untouched, and every new id is append-only.
+
+- **`food_storage` INTERACT anchor** with `kitchen_storage: "<KitchenStorageDef id>"`. Small hulls get
+  `pantry_locker` (`kitchen_storage.pantry_locker`) and `cooler` (`kitchen_storage.cooler`). The two
+  galley hulls (Coastal Packet, Tanker) get `pantry` (`kitchen_storage.pantry`) and `fridge`
+  (`kitchen_storage.fridge`). The pantry or locker is the cupboard under the `stove_counter`, at the
+  end away from the rings. The fridge continues the galley run forward of the counter. A cooler sits on
+  the sole beside the helm seat (Cape Islander, 12 m Lobster Boat) or under the starboard settee bench
+  (the 18 variants).
+- **`sit` anchor with a `seat` block**: `level`, `obstruction` (the drawn box sat on) and `sit_point`
+  (where the hips rest, hull frame, z = the seat top). On the Cape Islander it is the helm seat (cushion
+  top = sole + 0.62). Everywhere else it is the bench (top = sole + bench height). On the variants it
+  is the starboard bench's aft third.
+- **`table` anchor with a `table` block** (`level`, `obstruction`, `top_centre`, z = sole + 0.78) on
+  the Packet (`table_port`) and Tanker. A table is never pressed. It makes the seat beside it a
+  **dining seat**. So does a prep counter, because a small boat eats at the counter it cooked on.
+- **Which hulls dine** at the shipped 1.25 m reach (seat sit point to table top centre or prep reach,
+  same floor): Cape Islander, Packet, 12 m Lobster, Tanker, all six inshore variants and standard
+  Fundy (hardtop and open). The offshore variants and standard Newfoundland and Northumberland have a
+  seat to rest on, but their bench is 1.4 to 2.1 m from the counter, so nothing to eat at. That is
+  pinned by `WhichHullsDineIsPinned`.
+- **Placement rules** (checked by `BoatInteriorKitchenTests`): each reach is on its level's sole, clear
+  of every obstruction, at least 0.15 m from every other reach on its floor, outside door keep-clear
+  zones, and away from the threshold. Each sit point is inside its seat box, and each table top inside
+  its table.
+
+**Art owed:** no cooler or fridge is drawn on any hull, and the counter is drawn as a closed cabinet
+with no cupboard door. The renderer should draw a cooler box, a galley fridge and a counter door, and
+emit these anchors and blocks, so the next regeneration keeps them.

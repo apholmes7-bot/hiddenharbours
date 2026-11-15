@@ -173,6 +173,10 @@ MonoBehaviour:
     BunkObstruction: 
     MattressCentre: {x: 0, y: 0, z: 0}
     PillowEnd: {x: 0, y: 0, z: 0}
+    KitchenStorageId: 
+    FurnitureLevel: 
+    FurnitureObstruction: 
+    FurniturePoint: {x: 0, y: 0, z: 0}
   - Id: stove
     Action: cook
     ReachPoint: {x: -0.26, y: 2.281, z: 0.5}
@@ -186,6 +190,10 @@ MonoBehaviour:
     BunkObstruction: 
     MattressCentre: {x: 0, y: 0, z: 0}
     PillowEnd: {x: 0, y: 0, z: 0}
+    KitchenStorageId: 
+    FurnitureLevel: 
+    FurnitureObstruction: 
+    FurniturePoint: {x: 0, y: 0, z: 0}
   - Id: locker
     Action: storage
     ReachPoint: {x: 0.129, y: 2.107, z: 0.5}
@@ -199,6 +207,10 @@ MonoBehaviour:
     BunkObstruction: 
     MattressCentre: {x: 0, y: 0, z: 0}
     PillowEnd: {x: 0, y: 0, z: 0}
+    KitchenStorageId: 
+    FurnitureLevel: 
+    FurnitureObstruction: 
+    FurniturePoint: {x: 0, y: 0, z: 0}
   - Id: bunk
     Action: sleep
     ReachPoint: {x: 0, y: 3.95, z: 0.08}
@@ -215,6 +227,10 @@ MonoBehaviour:
     BunkObstruction: v_berth
     MattressCentre: {x: 0, y: 4.504, z: 0.5}
     PillowEnd: {x: 0, y: 4.06, z: 0.5}
+    KitchenStorageId: 
+    FurnitureLevel: 
+    FurnitureObstruction: 
+    FurniturePoint: {x: 0, y: 0, z: 0}
   - Id: prep
     Action: prep
     ReachPoint: {x: -0.31, y: 2.46, z: 0.5}
@@ -228,6 +244,10 @@ MonoBehaviour:
     BunkObstruction: 
     MattressCentre: {x: 0, y: 0, z: 0}
     PillowEnd: {x: 0, y: 0, z: 0}
+    KitchenStorageId: 
+    FurnitureLevel: 
+    FurnitureObstruction: 
+    FurniturePoint: {x: 0, y: 0, z: 0}
   - Id: bunk_bench
     Action: sleep
     ReachPoint: {x: 0.9, y: 3.73, z: 0.5}
@@ -244,6 +264,70 @@ MonoBehaviour:
     BunkObstruction: bench
     MattressCentre: {x: 0.855, y: 2.975, z: 0.94}
     PillowEnd: {x: 0.855, y: 2.56, z: 0.94}
+    KitchenStorageId: 
+    FurnitureLevel: 
+    FurnitureObstruction: 
+    FurniturePoint: {x: 0, y: 0, z: 0}
+  - Id: seat
+    Action: sit
+    ReachPoint: {x: 0.37, y: 2.81, z: 0.5}
+    VisibleFacings:
+    - N
+    - NE
+    - E
+    - SE
+    - S
+    - SW
+    - W
+    - NW
+    BunkLevel: 
+    BunkObstruction: 
+    MattressCentre: {x: 0, y: 0, z: 0}
+    PillowEnd: {x: 0, y: 0, z: 0}
+    KitchenStorageId: 
+    FurnitureLevel: house_sole
+    FurnitureObstruction: bench
+    FurniturePoint: {x: 0.855, y: 2.809, z: 0.94}
+  - Id: pantry_locker
+    Action: food_storage
+    ReachPoint: {x: -0.27, y: 2.04, z: 0.5}
+    VisibleFacings:
+    - N
+    - NE
+    - E
+    - SE
+    - S
+    - SW
+    - W
+    - NW
+    BunkLevel: 
+    BunkObstruction: 
+    MattressCentre: {x: 0, y: 0, z: 0}
+    PillowEnd: {x: 0, y: 0, z: 0}
+    KitchenStorageId: kitchen_storage.pantry_locker
+    FurnitureLevel: 
+    FurnitureObstruction: 
+    FurniturePoint: {x: 0, y: 0, z: 0}
+  - Id: cooler
+    Action: food_storage
+    ReachPoint: {x: 0.52, y: 2.97, z: 0.5}
+    VisibleFacings:
+    - N
+    - NE
+    - E
+    - SE
+    - S
+    - SW
+    - W
+    - NW
+    BunkLevel: 
+    BunkObstruction: 
+    MattressCentre: {x: 0, y: 0, z: 0}
+    PillowEnd: {x: 0, y: 0, z: 0}
+    KitchenStorageId: kitchen_storage.cooler
+    FurnitureLevel: 
+    FurnitureObstruction: 
+    FurniturePoint: {x: 0, y: 0, z: 0}
   Routes:
   - Id: cuddy_companionway
     FromLevel: house_sole

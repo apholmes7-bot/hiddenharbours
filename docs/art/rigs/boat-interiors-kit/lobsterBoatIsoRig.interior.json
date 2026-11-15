@@ -660,6 +660,78 @@
         ],
         "pillow_source": "art: boatInteriorRig V-BERTH draws two pillows aft (the wide end) at x = +/-pw; this single takes the starboard one"
       }
+    },
+    {
+      "id": "seat",
+      "action": "sit",
+      "reach_point": [
+        -0.35,
+        0.85,
+        0.5
+      ],
+      "visible_facings": [
+        "N",
+        "NE",
+        "E",
+        "SE",
+        "S",
+        "SW",
+        "W",
+        "NW"
+      ],
+      "_note": "mechanism: seat (sit: rest short of a bed; the meal boost when by a table or counter) · house level · on the drawn bench · authored 2026-11-15 (kitchens slice 1); boatInteriorRig.js does not emit it yet",
+      "seat": {
+        "level": "house_sole",
+        "obstruction": "bench",
+        "sit_point": [
+          -0.96,
+          0.85,
+          0.96
+        ],
+        "sit_source": "the middle of the bench: bench top = sole + bench.h (boatInteriorRig.js: the bench box sole..top with its cushion slab at top)"
+      }
+    },
+    {
+      "id": "pantry_locker",
+      "action": "food_storage",
+      "reach_point": [
+        -0.48,
+        1.27,
+        0.5
+      ],
+      "visible_facings": [
+        "N",
+        "NE",
+        "E",
+        "SE",
+        "S",
+        "SW",
+        "W",
+        "NW"
+      ],
+      "_note": "mechanism: food store (pantry_locker) · house level · the cupboard under the stove_counter, at the end away from the rings · authored 2026-11-15 (kitchens slice 1); the counter is drawn as a closed cabinet, its door is art owed",
+      "kitchen_storage": "kitchen_storage.pantry_locker"
+    },
+    {
+      "id": "cooler",
+      "action": "food_storage",
+      "reach_point": [
+        0.5,
+        2.2,
+        0.5
+      ],
+      "visible_facings": [
+        "N",
+        "NE",
+        "E",
+        "SE",
+        "S",
+        "SW",
+        "W",
+        "NW"
+      ],
+      "_note": "mechanism: food store (cooler: cold only while it holds ice) · house level · on the starboard sole forward of the locker, beside the helm seat · authored 2026-11-15 (kitchens slice 1); no cooler is drawn yet, art owed",
+      "kitchen_storage": "kitchen_storage.cooler"
     }
   ],
   "mechanism_map": {
@@ -667,7 +739,10 @@
     "bunk": "InteriorBed (sleep, rest + save)",
     "locker": "InteriorWardrobe (storage)",
     "stove": "camper stove pattern (cook)",
-    "prep": "prep station (prep, then cook at the stove)"
+    "prep": "prep station (prep, then cook at the stove)",
+    "seat": "seat (sit: rest short of a bed, the meal boost at a table or counter)",
+    "pantry_locker": "food store (pantry_locker)",
+    "cooler": "food store (cooler)"
   },
   "_interact_scope": "INTERACT is object interactables only. Stair routes are declared in STAIRS (each carries its own mechanism: InteriorStair) and are deliberately absent here — see README, Corrections.",
   "_excluded": {

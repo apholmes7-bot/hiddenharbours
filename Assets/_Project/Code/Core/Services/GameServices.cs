@@ -701,6 +701,36 @@ namespace HiddenHarbours.Core
         /// <summary>The hunger and tiredness numbers, with the fallback for an unwired config.</summary>
         public static NeedsSettings NeedsSettings => Config != null ? Config.Needs : NeedsSettings.Default;
 
+        /// <summary>The kitchen numbers (kitchens slice 1), with the fallback for an unwired config.</summary>
+        public static KitchenSettings KitchenSettings => Config != null ? Config.Kitchen : KitchenSettings.Default;
+
+        /// <summary>
+        /// Whether a fridge has power (kitchens slice 1). Never null: <see cref="AlwaysOnKitchenPower"/>
+        /// until a power model answers (⚠ SEAM: main has none). Cleared by <see cref="Reset"/>.
+        /// FLAG lead-architect: new Core contract (kitchens).
+        /// </summary>
+        public static IKitchenPower KitchenPower
+        {
+            get => _kitchenPower ?? AlwaysOnKitchenPower.Instance;
+            set => _kitchenPower = value;
+        }
+
+        private static IKitchenPower _kitchenPower;
+
+        /// <summary>
+        /// How fast a stored item spoils, by id (kitchens slice 1). Never null:
+        /// <see cref="NothingSpoilsPerishability"/> until the food Defs land (⚠ SEAM: draft PR 1227) and
+        /// assign a resolver. Cleared by <see cref="Reset"/>.
+        /// FLAG lead-architect: new Core contract (kitchens).
+        /// </summary>
+        public static IFoodPerishability FoodPerishability
+        {
+            get => _foodPerishability ?? NothingSpoilsPerishability.Instance;
+            set => _foodPerishability = value;
+        }
+
+        private static IFoodPerishability _foodPerishability;
+
         /// <summary>The needs' slow tick in in-game seconds (never below one game minute), with the
         /// fallback for an unwired config. The game clock calls <see cref="INeedsService.Tick"/> this often.</summary>
         public static double NeedsTickGameSeconds
@@ -1263,6 +1293,9 @@ namespace HiddenHarbours.Core
             Appearance = null;           // → a fresh default on next read; drops any open preview
             Traits = null;               // → a fresh default on next read; drops its catalog and cache
             Needs = null;                // → a fresh default on next read; drops its stage baseline
+            KitchenPower = null;         // → AlwaysOnKitchenPower.Instance; this property is never null
+            FoodPerishability = null;    // → NothingSpoilsPerishability.Instance; likewise never null
+            KitchenStorageCatalog.Clear();
             Farm = null;                 // → a fresh default on next read; drops its catalog and baseline
             Relationships = null;        // → a fresh default on next read; reseeds from the shipped ties
             TidalTerrain = null;
