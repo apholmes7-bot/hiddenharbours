@@ -26,8 +26,8 @@ namespace HiddenHarbours.Tests.EditMode
         const string WaterPath = "Assets/_Project/Art/Shaders/HiddenHarboursWater.shader";
         const string AdvectPath = "Assets/_Project/Art/Shaders/HiddenHarboursFoamBufferAdvect.shader";
         const string Dial = "_SurfFringeSequenceStrength";
-        const string BaseWaterHash = "7face1122f6ee2e24ac07ab9c67b81df4a4c81575c6e195651d81e4ee53f7df6";
-        // Approved b5825e1f; re-approved at W1 Phase D (#932, owner d20) and C2a Phase D (owner, clarity 1) and at water gains B7 (#992, the seat's lean under the standing word of 10-29) and at crest glow L1 (#1004, the owner's ruling of 11-01) and at the foam lattice hash (the open-sea repeat fix, a named moved premise) and at the run-up wash (fix/shore-runup-foam, the owner's shore clip review of 11-15). UTF-8 without BOM, LF. These are scope guards, not copies of physics.
+        const string BaseWaterHash = "dae4cab80aacdb1f35d1c14216a71aad1906164e2fcd5d83db565e54604fcaea";
+        // Approved b5825e1f; re-approved at W1 Phase D (#932, owner d20) and C2a Phase D (owner, clarity 1) and at water gains B7 (#992, the seat's lean under the standing word of 10-29) and at crest glow L1 (#1004, the owner's ruling of 11-01) and at the foam lattice hash (the open-sea repeat fix, a named moved premise) and at the run-up wash (fix/shore-runup-foam, the owner's shore clip review of 11-15) and at the run-up wash v4 (fix/shore-runup-foam, the owner's v3 clip review of 11-15). UTF-8 without BOM, LF. These are scope guards, not copies of physics.
         const string LegacyDepth =
             "                float foamDepth  = depthC - lerp(BeachSwash(worldXY, depthC, t) * swashSlope * swashGate,  // local, foam-only\n" +
             "                                                 surfRunUpM, boreFoamBlend);   // …and the foam rides the bore's wash too\n";
@@ -165,17 +165,18 @@ namespace HiddenHarbours.Tests.EditMode
             var files = new[] { "Assets/_Project/Art/Materials/Water.mat" }.Concat(
                 Directory.GetFiles("Assets/_Project/Art/Materials/WaterPresets", "*.mat").OrderBy(p => p, StringComparer.Ordinal)).ToArray();
             // Re-pinned at the run-up wash (fix/shore-runup-foam): each file gains exactly the four
-            // _Wash* keys at the shader defaults (ShoreRunUpWashTests reads them); nothing else moved.
+            // _Wash* keys at the shader defaults (ShoreRunUpWashTests reads them); nothing else moved. Again at v4:
+            // three more keys (_WashLeeShare, _WashResidueSoften, _WashLineSlopeCap) and _WashSheetOpacity 0.4 -> 0.2.
             string[] originalHashes = {
-                "589f23214abcd5b385c366e429d2e23417426d4e9c8c316fdfe39b0f1dfbb488",
-                "44c7d2efda7ea3f5f6f054bd188f4647d1a234dc4a364550d443e24c359aa152",
-                "b7041903bc1cb386f6786bdbbf6d2f0e38701ba6d96b00293fdc6e1ffab36324",
-                "231f19049888d5ebc129e577268a33c580f0d89867ff7ed75a87a9dbb72960fc",
-                "c0fe5d6d3f49ef054205c07df337e69f963f4a2e95c1486eaa4b0847a9bc4692",
-                "efbba716bf3a634b8bda203b03fac2253b84a9c40fadad08fa3679f7df3ec225",
-                "90c5f9ab1b97217c5403cd5b4602fb3710f4753808e2e6176b577cea1c7fff39",
-                "5380eecca2a702cb94b341c4dbb4acf5079e45a436d6d45223950b2f155ba01d",
-                "0d0e28a59508d11e107426d5464dd681f0e7267dae34fda5bca72c00bd887db2" };
+                "98dc55ad46de5b8d4210219f9e9da9e62d8e74e933dfe89c87c2ed1f5a7a01e9",
+                "d3a1280b48647d4dbf46def91bf17add4e89f2765bba5a67bb9f1831e924f2d8",
+                "7e9b367c6bace31028dff55aad73c5d694e84d50465ec63c6896425ccdea1130",
+                "da5820a7c117d8eb99496119fcdec799da5d48377cca0f510763af024efbfe80",
+                "ada6d60d850ba78fef87c782e924eafd007208f34fedee77bb80be4eff1b7df2",
+                "80a4641e9c80c953f42eb151a96cd2d1f212ecef34f573a9b7d4f6f6dfbdeaac",
+                "cd909d8230a2f64478d04468b96a6a881d0f64fb292eb8a88a7d7e5a1326b30d",
+                "37f0f50d1c259092a157d0185a57c7d326056e55d1b5bbe79a50c39f32058adb",
+                "bf047f257c8bcb5b5f1843ed2aabaea09eb88c87b4e410b88cc40dc25457394c" };
             Assert.That(files.Length, Is.EqualTo(9));
             for (int i = 0; i < files.Length; i++)
             {

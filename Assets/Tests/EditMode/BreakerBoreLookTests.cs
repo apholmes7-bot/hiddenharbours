@@ -640,6 +640,9 @@ namespace HiddenHarbours.Tests.EditMode
             // line only in the red shot would be scored as cover. The LOOK shots keep the shipped wash.
             block.SetFloat("_WashSheetOpacity", d.Surf.HasValue ? 1f : ShippedFloat("_WashSheetOpacity"));
             block.SetFloat("_WashLineOpacity", d.Surf.HasValue ? 0f : ShippedFloat("_WashLineOpacity"));
+            // v4: the wash's look on the lee of a breaking beach is off on the measurement arms too, so the
+            // wash is present only where the bore's run-up draws the edge, as the arms were scored.
+            block.SetFloat("_WashLeeShare", d.Surf.HasValue ? 0f : ShippedFloat("_WashLeeShare"));
             block.SetFloat("_SurfThreshold", d.SolidSheet ? 0f : ShippedFloat("_SurfThreshold"));
             block.SetFloat("_SurfThresholdSoft", d.SolidSheet ? 0.001f : ShippedFloat("_SurfThresholdSoft"));
             block.SetFloat("_SwellFaceShade", d.FaceShade >= 0f ? d.FaceShade : ShippedFloat("_SwellFaceShade"));

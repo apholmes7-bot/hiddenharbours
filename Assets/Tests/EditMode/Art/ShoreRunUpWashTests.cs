@@ -34,11 +34,15 @@ namespace HiddenHarbours.Tests.Art.EditMode
 
         static readonly (string key, string value)[] Dials =
         {
-            ("_WashSheetOpacity", "0.4"),
+            ("_WashSheetOpacity", "0.2"),
             ("_WashLineWidth", "0.1"),
             ("_WashLineOpacity", "0.85"),
             ("_WashSeawardDepth", "0.8"),
             ("_WashPresenceRamp", "0.1"),
+            // v4 (the owner's v3 clip review): the lee's slab and the residue's stair.
+            ("_WashLeeShare", "1"),
+            ("_WashResidueSoften", "0.125"),
+            ("_WashLineSlopeCap", "0.5"),
         };
 
         static string Src() => File.ReadAllText(ShaderPath, Encoding.UTF8).Replace("\r\n", "\n");
@@ -68,6 +72,9 @@ namespace HiddenHarbours.Tests.Art.EditMode
             Assert.AreEqual(1, Regex.Matches(src,
                 @"float  _WashSheetOpacity, _WashLineWidth, _WashLineOpacity, _WashSeawardDepth, _WashPresenceRamp;").Count,
                 "the five wash uniforms must be declared once, beside the surf's");
+            Assert.AreEqual(1, Regex.Matches(src,
+                    @"float  _WashLeeShare, _WashResidueSoften, _WashLineSlopeCap;").Count,
+                "the three v4 wash uniforms must be declared once");
         }
 
         [Test]
@@ -93,16 +100,25 @@ namespace HiddenHarbours.Tests.Art.EditMode
             string src = Src();
             int clip = IndexOf(src, "clip(depth + edgeSwash + 1e-4);");
             int presence = IndexOf(src,
-                "float washPresence = smoothstep(0.0, max(_WashPresenceRamp, 1e-3), boreEdgeBlend);");
+                "float washPresence = max(smoothstep(0.0, max(_WashPresenceRamp, 1e-3), boreEdgeBlend), washSeaBreaks);");
+            // v4: on the lee of the SAME beach, in a sea that breaks, the wash keeps its look (_WashLeeShare):
+            // where boreEdgeBlend fell to 0 along the shore the fringe came back as a detached opaque slab.
+            int lee = IndexOf(src, "* saturate(_WashLeeShare) : 0.0;");
             int gate = IndexOf(src,
                 "float washOnSand = washPresence * (1.0 - smoothstep(0.0, max(_WashSeawardDepth, 1e-3), depth));");
-            Assert.Less(presence, gate);
-            int lead = IndexOf(src, "float washLeadM  = (depth + edgeSwash) / max(swashSlope, 1e-3);");
+            Assert.That(lee < presence && presence < gate);
+            // v4: the line's width is measured on the drawn edge's own screen gradient, not through the floored
+            // swashSlope, which on a flat put metres of sand inside the line (the white wedge).
+            int edgeQ = IndexOf(src, "float washEdgeQ  = depth + edgeSwash;");
+            // ...capped at the steepest real edge, so a JUMP in the run-up across the sheet draws no seam line.
+            int lead = IndexOf(src, "float washLeadM  = washEdgeQ / clamp(washGradM, 1e-4, max(_WashLineSlopeCap, 1e-4));");
+            Assert.Less(edgeQ, lead);
             int line = IndexOf(src,
                 "float washLine   = washOnSand * step(washLeadM, max(_WashLineWidth, 0.0)) * saturate(_WashLineOpacity);");
             Assert.That(clip < gate && gate < lead && lead < line,
                 "the wash must read the SAME edgeSwash the clip draws, after it: the leading line is then " +
                 "attached to the drawn edge by construction, a hard step on whole pixels with no dither");
+
         }
 
         [Test]
@@ -122,7 +138,8 @@ namespace HiddenHarbours.Tests.Art.EditMode
         public void TheWashSheet_HasNoBayerChecker_AndTheWashOpacity()
         {
             string src = Src();
-            StringAssert.Contains("float cover = SurfBandValue(surfCover, washOnSand > 0.001 ? 0.5 : bay) * strength", src);
+            // v4: inside the wash the sheet is smooth (no hard bands racing along the shore as a patch).
+            StringAssert.Contains("float cover = lerp(SurfBandValue(surfCover, washOnSand > 0.001 ? 0.5 : bay), saturate(surfCover),", src);
             StringAssert.Contains("* lerp(1.0, saturate(_WashSheetOpacity), saturate(washOnSand));", src);
             int lip = IndexOf(src, "col.a   = max(col.a, lip * _SurfLipColor.a);");
             int washLine = IndexOf(src, "col.rgb = lerp(col.rgb, _FoamColor.rgb, washLine);");
@@ -133,11 +150,15 @@ namespace HiddenHarbours.Tests.Art.EditMode
         public void TheResidue_IsReadSmooth_OnTheWashOnly()
         {
             string src = Src();
-            int fnAt = IndexOf(src, "float WashResidueCoverage(float2 worldXY)");
+            int fnAt = IndexOf(src, "float WashResidueCoverage(float2 worldXY, out float freshness)");
             string body = src.Substring(fnAt, src.IndexOf("\n            }", fnAt, System.StringComparison.Ordinal) - fnAt);
-            StringAssert.Contains("SAMPLE_TEXTURE2D_LOD(_HHFoamBufferTex, sampler_LinearClamp, uv, 0)", body,
-                "a LINEAR tap is what turns the buffer's 1/8 m cells into a smooth outline drawn at whole pixels");
-            StringAssert.Contains("BandValue01(cover, _WakeFoamBands, 0.0, 0.5)", body, "hard bands, no Bayer");
+            StringAssert.Contains("float o = 0.5 * max(_WashResidueSoften, 0.0) * _HHFoamBufferWorld.w;", body);
+            Assert.AreEqual(4, Regex.Matches(body,
+                    @"SAMPLE_TEXTURE2D_LOD\(_HHFoamBufferTex, sampler_LinearClamp, uv \+ float2\([ -]o, +[ -]o\), 0\)\.rg").Count,
+                "a 4-tap LINEAR tent over coverage AND freshness is what turns the buffer's 1/8 m cells into a " +
+                "smooth outline: a point-read of either drew the 4-px stair");
+            StringAssert.Contains("freshness = tent.y;", body, "the wash's colour age is read through the same tent");
+            StringAssert.DoesNotContain("BandValue01", body, "no hard bands on the wash: they drew a racing patch");
             StringAssert.Contains("saturate(_WashSheetOpacity)", body, "the residue wears the wash's opacity");
 
             // Open water keeps the lattice: the wake's own read is still the buffer's point sampler.
@@ -145,10 +166,12 @@ namespace HiddenHarbours.Tests.Art.EditMode
             string wake = src.Substring(wakeAt, src.IndexOf("\n            }", wakeAt, System.StringComparison.Ordinal) - wakeAt);
             StringAssert.Contains("SAMPLE_TEXTURE2D(_HHFoamBufferTex, sampler_HHFoamBufferTex, uv)", wake);
 
-            int call = IndexOf(src, "float wakeFoam = WakeFoamCoverage(worldXY, bay, wakeFresh);");
             int zone = IndexOf(src, "float washZone = saturate(washOnSand);");
-            int swap = IndexOf(src, "wakeFoam = lerp(wakeFoam, WashResidueCoverage(worldXY), washZone);");
-            Assert.That(call < zone && zone < swap, "the residue swap rides the wake read, gated to the wash");
+            int call = IndexOf(src, "float wakeFoam = WakeFoamCoverage(worldXY, washZone > 0.001 ? 0.5 : bay, wakeFresh);");
+            int swap = IndexOf(src, "wakeFoam  = lerp(wakeFoam, WashResidueCoverage(worldXY, washFresh), washZone);");
+            int fresh = IndexOf(src, "wakeFresh = lerp(wakeFresh, washFresh, washZone);");
+            Assert.That(zone < call && call < swap && swap < fresh,
+                "the residue swap rides the wake read, gated to the wash, with no Bayer in the hand-off band");
         }
 
         // ---- the arithmetic the no-checker claim rests on (twin of SurfBandValue / BandValue01) ----------

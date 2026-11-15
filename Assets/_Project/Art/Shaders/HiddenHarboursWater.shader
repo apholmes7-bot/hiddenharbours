@@ -406,11 +406,19 @@ Shader "HiddenHarbours/Water"
         // edge onto the sand, the wash is a thin, see-through sheet with ONE foam line on its leading
         // edge, not the opaque posterized whitewater sheet with the fringe stranded ahead of it.
         // On such a shore the fringe yields to the wash and the bore's residue is read smooth (no lattice).
-        _WashSheetOpacity  ("Run-up wash: whitewater opacity on the sand (1 = opaque sheet)", Range(0,1)) = 0.4
+        _WashSheetOpacity  ("Run-up wash: whitewater opacity on the sand (1 = opaque sheet)", Range(0,1)) = 0.2
         _WashLineWidth     ("Run-up wash: leading foam line width (m of contour)", Range(0,0.5)) = 0.1
         _WashLineOpacity   ("Run-up wash: leading foam line opacity (0 = no line)", Range(0,1)) = 0.85
         _WashSeawardDepth  ("Run-up wash: depth (m) seaward of the still line where the wash hands back to the surf", Range(0.01,2)) = 0.8
         _WashPresenceRamp  ("Run-up wash: bore edge blend over which the wash takes the shore from the fringe", Range(0.001,1)) = 0.1
+        // The wash's look on the stretch of the SAME beach the bore does not break on (a lee), in a sea that
+        // breaks somewhere: 1 = one shore language (line + see-through sheet) all along it, 0 = the fringe there.
+        _WashLeeShare      ("Run-up wash: its look on the beach beside the bore, in a breaking sea (0 = fringe there)", Range(0,1)) = 1
+        // The bore's residue is read through a tent this wide (m), so the foam buffer's cells never draw a stair.
+        _WashResidueSoften ("Run-up wash: residue read softening width (m; ~ the foam buffer's cell)", Range(0,0.5)) = 0.125
+        // The steepest edge the line measures (m of height per m): a JUMP in the run-up across the sheet (where
+        // the bore's blend changes along the shore) is steeper than any real edge, and is not drawn as a line.
+        _WashLineSlopeCap  ("Run-up wash: steepest edge slope the leading line is drawn on (m per m)", Range(0.05,4)) = 0.5
         // Owner ruling 2026-08-28: where the sea is actually breaking, the computed whitewater takes the
         // shore fringe's place — the fringe was always the geometric stand-in for it. 0 = keep both
         // (today's look exactly, the passthrough); 1 = physics wins wherever the whitewater is alive.
@@ -1611,6 +1619,7 @@ Shader "HiddenHarbours/Water"
                 float  _SurfBands;
                 float  _SurfBandDither;
                 float  _WashSheetOpacity, _WashLineWidth, _WashLineOpacity, _WashSeawardDepth, _WashPresenceRamp;
+                float  _WashLeeShare, _WashResidueSoften, _WashLineSlopeCap;
                 // B1 FRINGE UNIFORM BEGIN
                 float  _SurfFringeSequenceStrength;
                 // B1 FRINGE UNIFORM END
@@ -3924,16 +3933,27 @@ Shader "HiddenHarbours/Water"
             // point read left on the beach), hard-banded with no Bayer (no checker), and at the wash's
             // own opacity, so the bore's left-behind foam is a see-through mat, not an opaque sheet.
             // Open-water wakes keep WakeFoamCoverage's lattice look untouched.
-            float WashResidueCoverage(float2 worldXY)
+            // v4 (the owner's v3 clip review): the buffer's CONTENT is cell-blocky (the bore deposits whole
+            // cells), so a linear tap of it, hard-banded, still drew the cells as a coarse stair on the sheet's
+            // seaward side. Four linear taps on a tent _WashResidueSoften wide round the cells off, and the
+            // coverage stays SMOOTH (no bands, no Bayer): the residue thins where it lies as the buffer decays.
+            // The FRESHNESS (g, which picks the aged colour) comes through the same tent: read through the
+            // open-water point tap it painted the cells back on as a stair of whiter and older tones.
+            float WashResidueCoverage(float2 worldXY, out float freshness)
             {
+                freshness = 0.0;
                 if (_WakeFoamStrength <= 0.001 || _HHFoamBufferWorld.z <= 0.0) return 0.0;
                 float2 uv = (worldXY - _HHFoamBufferWorld.xy) * _HHFoamBufferWorld.w;
                 if (any(uv < 0.0) || any(uv > 1.0)) return 0.0;
-                float stored = SAMPLE_TEXTURE2D_LOD(_HHFoamBufferTex, sampler_LinearClamp, uv, 0).r;
+                float o = 0.5 * max(_WashResidueSoften, 0.0) * _HHFoamBufferWorld.w;
+                float2 tent = 0.25 * (SAMPLE_TEXTURE2D_LOD(_HHFoamBufferTex, sampler_LinearClamp, uv + float2( o,  o), 0).rg
+                                    + SAMPLE_TEXTURE2D_LOD(_HHFoamBufferTex, sampler_LinearClamp, uv + float2(-o,  o), 0).rg
+                                    + SAMPLE_TEXTURE2D_LOD(_HHFoamBufferTex, sampler_LinearClamp, uv + float2( o, -o), 0).rg
+                                    + SAMPLE_TEXTURE2D_LOD(_HHFoamBufferTex, sampler_LinearClamp, uv + float2(-o, -o), 0).rg);
+                float stored = tent.x;
+                freshness = tent.y;
                 float thr  = saturate(_WakeFoamThreshold);
                 float cover = smoothstep(thr, min(thr + max(_WakeFoamSoftness, 1e-3), 1.0), stored);
-                if (_WakeFoamBands >= 2.0)
-                    cover = BandValue01(cover, _WakeFoamBands, 0.0, 0.5);
                 return saturate(cover * _WakeFoamStrength * saturate(_WashSheetOpacity));
             }
 
@@ -5370,9 +5390,25 @@ Shader "HiddenHarbours/Water"
                 // washPresence: the wash owns this shore outright once the bore's edge blend clears a small
                 // ramp, so a beach the bore only partly breaks on (blend ~0.3) gets the whole wash, not a
                 // 70 % fringe whose own displacement disagrees with the edge (the notches, the sliver).
-                float washPresence = smoothstep(0.0, max(_WashPresenceRamp, 1e-3), boreEdgeBlend);
+                // v4 (the owner's v3 clip review): the bore's break gate ends ABRUPTLY along the shore where
+                // a lee begins (the fetch envelope crosses the break solve within a few pixels), and past it
+                // the fringe came back as an opaque slab with the cosmetic swash's ragged edge, standing apart
+                // from the wash beside it. In a sea that breaks, the beach beside the bore wears the wash's
+                // language too (_WashLeeShare), so the shore is one line and one see-through sheet throughout.
+                float washSeaBreaks = (_BreakerOuter.w > 0.5 && depth > -surfBeachReach)
+                                    ? saturate(_SurfStrength) * saturate(_SurfRunUpStrength) * saturate(_WashLeeShare) : 0.0;
+                float washPresence = max(smoothstep(0.0, max(_WashPresenceRamp, 1e-3), boreEdgeBlend), washSeaBreaks);
                 float washOnSand = washPresence * (1.0 - smoothstep(0.0, max(_WashSeawardDepth, 1e-3), depth));
-                float washLeadM  = (depth + edgeSwash) / max(swashSlope, 1e-3);
+                // The line's width is measured on the DRAWN edge's own screen gradient, so it is the same few
+                // metres of contour on a flat as on a slope. Through the floored swashSlope a flat (the 8-bit
+                // height runs) put metres of sand inside the "line" and drew it as a solid white wedge.
+                float washEdgeQ  = depth + edgeSwash;
+                float washGradM  = length(float2(ddx(washEdgeQ), ddy(washEdgeQ)))
+                                 / max(length(ddx(worldXY)) + length(ddy(worldXY)), 1e-6) * 2.0;
+                // Capped at the steepest real edge: where the bore's blend changes along the shore the run-up
+                // JUMPS across the sheet, its screen gradient is huge, and uncapped every such seam drew a 1-px
+                // line racing along the shore inside the sheet.
+                float washLeadM  = washEdgeQ / clamp(washGradM, 1e-4, max(_WashLineSlopeCap, 1e-4));
                 float washLine   = washOnSand * step(washLeadM, max(_WashLineWidth, 0.0)) * saturate(_WashLineOpacity);
 
                 float dt = saturate((depth - _ShallowDepth) / max(_DeepDepth - _ShallowDepth, 1e-3));
@@ -6213,7 +6249,10 @@ Shader "HiddenHarbours/Water"
 
                     // THE WHITEWATER: the sheet, pocket-boosted where it is young and violent.
                     // On the run-up wash: hard bands (no Bayer checker) at the wash's own opacity.
-                    float cover = SurfBandValue(surfCover, washOnSand > 0.001 ? 0.5 : bay) * strength
+                    // v4: inside the wash the sheet is SMOOTH, not hard bands either - the bands drew each bore's
+                    // aging sheet as a hard-edged patch racing along the shore; smooth, it thins where it lies.
+                    float cover = lerp(SurfBandValue(surfCover, washOnSand > 0.001 ? 0.5 : bay), saturate(surfCover),
+                                       saturate(washOnSand)) * strength
                                 * lerp(1.0, saturate(_WashSheetOpacity), saturate(washOnSand));
                     float3 surfFoam = FoamAgedColor(surfAge01, _SurfColor.rgb, _SurfAgeStrength, col.rgb);
                     col.rgb = lerp(col.rgb, surfFoam, cover * _SurfColor.a);
@@ -6470,13 +6509,19 @@ Shader "HiddenHarbours/Water"
                 // (ADR 0027 #7) untouched. _WakeFoamStrength = 0 makes WakeFoamCoverage return 0 on its
                 // first line, so the shipped look is byte-identical until the owner dials it in.
                 float wakeFresh;
-                float wakeFoam = WakeFoamCoverage(worldXY, bay, wakeFresh);
                 // Where the bore's wash owns the shore, its residue takes the wash's read (above). Asked
                 // through the wash's own shore quantity, not the fragment's break gate: on the sand that
                 // gate reads 0, and the residue left there came back as the opaque point-read lattice.
                 float washZone = saturate(washOnSand);
+                // v4: across the hand-off the open-water read is taken WITHOUT its Bayer, so the blend of the
+                // two reads never shows a checker (the owner's "screen door" band in the wash).
+                float wakeFoam = WakeFoamCoverage(worldXY, washZone > 0.001 ? 0.5 : bay, wakeFresh);
                 if (washZone > 0.001)
-                    wakeFoam = lerp(wakeFoam, WashResidueCoverage(worldXY), washZone);
+                {
+                    float washFresh;
+                    wakeFoam  = lerp(wakeFoam, WashResidueCoverage(worldXY, washFresh), washZone);
+                    wakeFresh = lerp(wakeFresh, washFresh, washZone);
+                }
                 if (wakeFoam > 0.001)
                 {
                     // AGED (owner ask 2026-08-27): white only where the hull is working the water right
