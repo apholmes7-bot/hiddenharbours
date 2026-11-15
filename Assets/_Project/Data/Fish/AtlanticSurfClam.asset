@@ -1,0 +1,40 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6000b72d0329cc04ebb9f483ec968d7f, type: 3}
+  m_Name: AtlanticSurfClam
+  m_EditorClassIdentifier: HiddenHarbours.Fishing::HiddenHarbours.Fishing.FishSpeciesDef
+  Id: fish.atlantic_surf_clam
+  DisplayName: Atlantic Surf Clam
+  Category: 1
+  Rarity: 0
+  Flavor: 'The bar clam: a big smooth clam of the clean sand, bared only on the biggest low tides of summer. GEAR NOTE: hand-gather only, on the ClamFork tag the clam uses. BALANCE NOTE: placeholder value, weight and elasticity set beside its neighbours - flagged for economy-sim to tune.'
+  RegionIds:
+  - region.st_peters
+  - region.cumberland
+  AllowedGear: 64
+  Seasons: 6
+  MinTide: -10
+  MaxTide: -0.44
+  StartHour: 6
+  EndHour: 20
+  DepthBands: 3
+  BehaviorFlags: 0
+  FavoredLures: 0
+  MinWeightKg: 0.2
+  MaxWeightKg: 0.5
+  BaseValue: 3
+  SpoilPerDay: 0.3
+  SupplyElasticity: 0.45
+  SpawnWeight: 0.8
+  Sprite: {fileID: -8350118145691459604, guid: bae98caad6f379308446110bc6a39b4f, type: 3}
+  Bite: {fileID: 0}
+  RodFight: {fileID: 0}

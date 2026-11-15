@@ -20,15 +20,17 @@ MonoBehaviour:
   RegionIds:
   - region.coddle_cove
   - region.st_peters
+  - region.east_water
   - region.nine_mile_creek
   - region.south_water
+  - region.rice_point
   AllowedGear: 4
   Seasons: 5
   MinTide: -10
   MaxTide: 10
   StartHour: 0
   EndHour: 24
-  DepthBands: 8
+  DepthBands: 12
   BehaviorFlags: 2
   FavoredLures: 0
   MinSchoolMarks: 12

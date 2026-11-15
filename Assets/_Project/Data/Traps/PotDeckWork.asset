@@ -67,3 +67,21 @@ MonoBehaviour:
     CrawlFps: 8
     RearSprite: {fileID: -4082586718090169636, guid: 13f0c02469227bcb81a79ccca9f8941e, type: 3}
     DefendSprite: {fileID: 8224166611285054158, guid: 13f0c02469227bcb81a79ccca9f8941e, type: 3}
+  - SpeciesId: fish.green_crab
+    MinKeepSizeMm: 36
+    SizeMinMm: 35
+    SizeMaxMm: 90
+    CanBeBerried: 0
+    BerriedChance01: 0
+    Shape: 1
+    AnimalSprite: {fileID: 1523059436520814979, guid: 13f0c02469227bcb81a79ccca9f8941e, type: 3}
+    CrawlFrames:
+    - {fileID: 1523059436520814979, guid: 13f0c02469227bcb81a79ccca9f8941e, type: 3}
+    - {fileID: 6296961827655795346, guid: 13f0c02469227bcb81a79ccca9f8941e, type: 3}
+    - {fileID: 885980829398931710, guid: 13f0c02469227bcb81a79ccca9f8941e, type: 3}
+    - {fileID: 3246202016240231304, guid: 13f0c02469227bcb81a79ccca9f8941e, type: 3}
+    - {fileID: -2435556665039615672, guid: 13f0c02469227bcb81a79ccca9f8941e, type: 3}
+    - {fileID: -8200094991845692985, guid: 13f0c02469227bcb81a79ccca9f8941e, type: 3}
+    CrawlFps: 8
+    RearSprite: {fileID: -4082586718090169636, guid: 13f0c02469227bcb81a79ccca9f8941e, type: 3}
+    DefendSprite: {fileID: 8224166611285054158, guid: 13f0c02469227bcb81a79ccca9f8941e, type: 3}
