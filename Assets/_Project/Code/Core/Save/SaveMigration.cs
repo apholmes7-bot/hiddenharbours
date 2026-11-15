@@ -13,7 +13,7 @@ namespace HiddenHarbours.Core
     public static class SaveMigration
     {
         /// <summary>The schema version this build writes. Bump when you add a field + a migration step.</summary>
-        public const int CurrentVersion = 19;
+        public const int CurrentVersion = 20;
 
         /// <summary>
         /// The region id Port Greywick was saved under before it was renamed Nine Mile Creek, and the id
@@ -348,6 +348,21 @@ namespace HiddenHarbours.Core
                 data.SchemaVersion = 19;
             }
 
+            // v19 -> v20: THE REST OF THE SLEEP PLACE (owner ruling 2026-11-15: "a sleep is a save"). Which
+            // bed, when the sleep ended, and for a bunk aboard the boat's own pose. Nothing existing is
+            // reinterpreted: a v13..v19 bed anchor stays exactly where it was and still wakes the player
+            // there, and a save with no anchor still wakes at the authored spawn. The new fields take their
+            // honest empties: no bed id (unknown), woke-at 0 (unknown, never invented from the autosave's
+            // clock, which may be hours after the sleep), and not aboard (a pre-v20 bunk recorded nothing).
+            if (data.SchemaVersion < 20)
+            {
+                data.RestBedId ??= "";
+                data.RestBoatHullId ??= "";
+                data.RestBoatRegion ??= "";
+                data.RestAboard = false;
+                data.SchemaVersion = 20;
+            }
+
             // ---- future steps go here, each guarded by `if (data.SchemaVersion < N)` and bumping to N.
 
             // Defensive null-repair (a hand-edited or partial JSON can omit reference-typed fields).
@@ -375,6 +390,9 @@ namespace HiddenHarbours.Core
             data.ActiveHullId ??= "";
             data.WornOutfitId ??= "";
             data.RestRegion ??= "";
+            data.RestBedId ??= "";
+            data.RestBoatHullId ??= "";
+            data.RestBoatRegion ??= "";
             data.PlayerRecipe ??= new CharacterRecipe();
             data.PlayerRecipe.Heal();    // a field JsonUtility left null reads as "the preset's own"
             data.PlayerName ??= "";
