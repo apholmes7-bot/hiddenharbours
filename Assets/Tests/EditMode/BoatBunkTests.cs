@@ -499,16 +499,36 @@ namespace HiddenHarbours.Tests.EditMode
                 if (bunks.Select(b => b.Id).Distinct(System.StringComparer.Ordinal).Count() != bunks.Count)
                     faults.Add($"{def.Id}: two bunks share an id");
 
-                foreach (BoatBunk mine in bunks)
+                // Every compass point she can be drawn at: the anchors are re-posed through their own
+                // Configure (the installer's call, with the installer's own handedness and elevation), so
+                // where each bunk stands is the product's projection, never one re-typed here.
+                Transform root = installer.transform;
+                BoatVisualDef visual = root.GetComponent<BoatController>().Hull.Visual;
+                bool ccw = BoatInteriorInstaller.ExteriorAzimuthCounterClockwise(visual);
+                float elevation = BoatInteriorInstaller.BakeElevationDegrees(visual);
+                for (int step = 0; step < CompassPoints; step++)
                 {
-                    Vector2 at = mine.WorldPosition;
-                    foreach (BoatBunk other in bunks)
+                    float heading = step * (360f / CompassPoints);
+                    root.rotation = Quaternion.Euler(0f, 0f, -heading);   // bow = (sin h, cos h): heading h
+                    foreach (BoatBunk bunk in bunks)
                     {
-                        if (ReferenceEquals(mine, other)) continue;
-                        bool mineWins = InteractResolver.Beats(mine, mine.Priority, (mine.WorldPosition - at).sqrMagnitude,
-                                                               other, other.Priority, (other.WorldPosition - at).sqrMagnitude);
-                        if (!mineWins)
-                            faults.Add($"{def.Id}: a sleeper at '{mine.Id}' would be offered '{other.Id}'");
+                        HullLocalAnchor anchor = bunk.GetComponent<HullLocalAnchor>();
+                        anchor.Configure(root, anchor.RigLocalMetres, ccw, elevation);
+                        if (bunk.WorldPosition == (Vector2)root.position)
+                            faults.Add($"{def.Id} @ {heading}°: '{bunk.Id}' sits on the hull pivot (the anchor did not project)");
+                    }
+
+                    foreach (BoatBunk mine in bunks)
+                    {
+                        Vector2 at = mine.WorldPosition;
+                        foreach (BoatBunk other in bunks)
+                        {
+                            if (ReferenceEquals(mine, other)) continue;
+                            bool mineWins = InteractResolver.Beats(mine, mine.Priority, (mine.WorldPosition - at).sqrMagnitude,
+                                                                   other, other.Priority, (other.WorldPosition - at).sqrMagnitude);
+                            if (!mineWins)
+                                faults.Add($"{def.Id} @ {heading}°: a sleeper at '{mine.Id}' would be offered '{other.Id}'");
+                        }
                     }
                 }
             }
@@ -516,6 +536,10 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         const string KitSidecarFolder = "docs/art/rigs/boat-interiors-kit/";
+
+        /// <summary>The eight headings a sprite hull's art is drawn at; a mesh hull's are a subset of the
+        /// continuum, so these are a fair sample of both.</summary>
+        const int CompassPoints = 8;
 
         /// <summary>The committed hull that wears <paramref name="interior"/>, with her cabin built by the
         /// real installer; null when no hull wears it.</summary>
@@ -531,6 +555,14 @@ namespace HiddenHarbours.Tests.EditMode
             var boat = root.AddComponent<BoatController>();
             boat.SetHull(hull);
             boat.enabled = false;
+            // ⚠ A COMPASS, or every bunk stands on the pivot. In play the skinner publishes her hull
+            // presenter before anything is read off it; this fixture has no skinner, and HullLocalAnchor
+            // with no presenter projects nothing (offset zero), so all her bunks would share the root's
+            // position and the resolver's id tie-break would hand every sleeper the first one. The
+            // plainest presenter there is: an unskinned DirectionalBoatSprite (no facings = continuous
+            // heading off the root), which BoatHullPresenterHost.Resolve wraps exactly as it does a
+            // scene-serialised rig the skinner has not touched yet.
+            root.AddComponent<DirectionalBoatSprite>();
             var installer = root.AddComponent<BoatInteriorInstaller>();
             installer.Build();
             Assert.IsTrue(installer.Built, $"{interior.Id}: the installer built her cabin");
