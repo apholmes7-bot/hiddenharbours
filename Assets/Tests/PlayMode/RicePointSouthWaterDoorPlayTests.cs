@@ -15,6 +15,13 @@ using Object = UnityEngine.Object;
 namespace HiddenHarbours.Tests.PlayMode
 {
     /// <summary>
+    /// REWRITTEN DELIBERATELY for ADR 0057 (owner ruling 2026-11-15, "the whole wall is a door", "doors do not
+    /// teleport"): Rice Point's south edge is a seam with the South Water, so the row out and the row home
+    /// cross that edge itself, publish no key, and land the boat at the SAME WORLD POINT she crossed at
+    /// (her position the moment the scene changed plus <c>from.WorldOrigin - to.WorldOrigin</c>). Neither the
+    /// South Water's way-in point nor Rice Point's berth is consulted any more (D8).
+    ///
+    /// <para>Before:</para>
     /// Out by the channel mouth to the South Water and home again, rowed as a player rows it, through
     /// the game's own passages, loaders and travel coordinator. Rice Point is played direct. Each leg
     /// reads the key its passage published the moment before the coordinator takes it, and asserts
@@ -46,7 +53,7 @@ namespace HiddenHarbours.Tests.PlayMode
 
         RegionTravelCoordinator _coordinator;
         string _key;
-        Vector3 _boatAt;
+        Vector3 _boatAt, _boatBefore;
 
         [UnityTest, Timeout(600000)]
         public IEnumerator TheChannelMouth_RowsTheDoryToTheSouthWaterAndHome_ArrivingByKey()
@@ -64,27 +71,23 @@ namespace HiddenHarbours.Tests.PlayMode
             yield return Afloat("the dory at the channel mouth");
             yield return Plate("leaving-by-the-channel-mouth", new Vector2(door.Centre.x, (door.Arrival.y + door.Centre.y) * .5f), MouthViewHalfHeight);
 
-            yield return Cross("Rice Point to the South Water, rowed south out of the channel mouth", RicePointDoors.ToSouthWaterArrivalKey,
+            Vector2 toSouth = Plan.Region.WorldOrigin - door.Target.WorldOrigin;
+            yield return Cross("Rice Point to the South Water, rowed south out of the channel mouth", null,
                 new Vector2(door.Centre.x, -Plan.WorldSize.y / 2f - AimPastSeamMetres), SouthWaterPlan.SceneName, door.Target.Id);
             Oars.enabled = false;   // the arrival hands the helm back to the hardware read; the strokes stay scripted
             Assert.That(Switcher.Mode, Is.EqualTo(ControlMode.Aboard), "she arrives with her oarsman");
-            Landed("the South Water's " + RicePointDoors.ToSouthWaterArrivalKey, _boatAt, SouthWaterPlan.FromRicePointArrivalPos);
-            yield return Afloat("the dory at the South Water's way in");
-            yield return Plate("arrived-in-the-south-water", SouthWaterPlan.FromRicePointArrivalPos, ArrivalViewHalfHeight);
+            Landed("the South Water, same world point", _boatAt, (Vector2)_boatBefore + toSouth);
+            yield return Afloat("the dory where she crossed");
+            yield return Plate("arrived-in-the-south-water", Boat.transform.position, ArrivalViewHalfHeight);
 
             yield return new WaitForSecondsRealtime(ReArmSeconds);
-            LayAt(SouthWaterPlan.FromRicePointArrivalPos, HeadNorth);
-            Vector2 north = SouthWaterPlan.ToRicePointPassagePos;
-            yield return Cross("the South Water to Rice Point, rowed north into the channel mouth", RicePointDoors.FromSouthWaterArrivalKey,
-                new Vector2(north.x, north.y + AimPastSeamMetres), RegionScene.name, Plan.Region.Id);
+            LayAt(Boat.transform.position, HeadNorth);
+            float seamInSouth = door.Target.WorldCenter.y + door.Target.WorldSizeMeters.y / 2f;
+            yield return Cross("the South Water to Rice Point, rowed north back across the seam", null,
+                new Vector2(Boat.transform.position.x, seamInSouth + AimPastSeamMetres), RegionScene.name, Plan.Region.Id);
             Oars.enabled = false;
             Assert.That(Switcher.Mode, Is.EqualTo(ControlMode.Aboard), "and comes home with him");
-            if (home.HasAuthoredBoatBerth)
-            {
-                TestContext.WriteLine("Rice Point's scene laid her, so her berth answers her way home (played direct)");
-                Landed("her berth at Rice Point", _boatAt, home.AuthoredBoatBerthPosition);
-            }
-            else Landed("Rice Point's " + RicePointDoors.FromSouthWaterArrivalKey, _boatAt, door.Arrival);
+            Landed("Rice Point, same world point", _boatAt, (Vector2)_boatBefore - toSouth);
             yield return Afloat("the dory home at Rice Point");
             yield return Plate("home-at-rice-point", Boat.transform.position, ArrivalViewHalfHeight);
         }
@@ -98,7 +101,11 @@ namespace HiddenHarbours.Tests.PlayMode
             _coordinator.enabled = true;
         }
 
-        void PeekKey(Scene previous, Scene next) => _key = GameServices.PendingArrivalKey;
+        void PeekKey(Scene previous, Scene next)
+        {
+            _key = GameServices.PendingArrivalKey;
+            _boatBefore = Boat.transform.position;
+        }
 
         IEnumerator Cross(string leg, string key, Vector2 aim, string toScene, string toRegion)
         {
@@ -117,7 +124,7 @@ namespace HiddenHarbours.Tests.PlayMode
                 Oars.DriveOars(0, 0, true);
                 _boatAt = Boat.transform.position;
             }
-            Assert.That(_key, Is.EqualTo(key), $"{leg}: the passage asks for its way in by key");
+            Assert.That(_key, Is.EqualTo(key), $"{leg}: an edge crossing publishes no way-in key");
             Assert.That(Object.FindObjectsByType<GameRoot>().Length, Is.EqualTo(1), $"{leg}: one persistent core");
             TestContext.WriteLine($"{leg}: across in {Time.unscaledTime - start:0.0} s, laid at {_boatAt}");
         }

@@ -658,6 +658,32 @@ namespace HiddenHarbours.Core
         public static UnityEngine.Rect CurrentRegionBounds { get; set; }
 
         /// <summary>
+        /// ⭐ <b>The shared world frame</b> (ADR 0057): where every built region sits in one world, so a
+        /// crossing anywhere along a shared edge lands at the same world point. Built from data
+        /// (<c>WorldMap</c> + each <c>RegionDef.WorldOrigin</c>) by the persistent travel rig.
+        ///
+        /// <para>OPTIONAL and NOT part of <see cref="Ready"/>: <b>null means no frame</b>, and every
+        /// consumer then behaves exactly as before it existed (keyed passages, fixed arrivals) — which is
+        /// what every fixture with made-up region ids still gets even when a frame is live, because only
+        /// regions IN the frame are governed by it.</para>
+        /// FLAG lead-architect: new Core contract.
+        /// </summary>
+        public static WorldFrame WorldFrame { get; set; }
+
+        /// <summary>
+        /// Where the player and the player's boat are (region + local pose) — see
+        /// <see cref="IWorldWhereabouts"/>. The persistent travel rig registers itself; the save reads it.
+        /// OPTIONAL: null when no rig is up. FLAG lead-architect: new Core contract (ADR 0057).
+        /// </summary>
+        public static IWorldWhereabouts Whereabouts { get; set; }
+
+        /// <summary>How far (m) past a region's edge a mover must go before the crossing fires — the
+        /// anti-bounce band (ADR 0057). Same <c>Config != null</c> contract as the other tunables.</summary>
+        public static float RegionCrossingHysteresisMetres =>
+            UnityEngine.Mathf.Max(0f, Config != null ? Config.RegionCrossingHysteresisMetres
+                                                     : GameConfig.DefaultRegionCrossingHysteresisMetres);
+
+        /// <summary>
         /// TRUE while the ARRIVAL OPENING is running — from the moment <c>ArrivalOpening</c> leaves
         /// <c>Dormant</c> until it hands the player the boat, and false again the instant it is torn
         /// down. The <b>App</b> opening is the writer; the <b>Art</b> mood-grade director is the reader,
@@ -1275,6 +1301,8 @@ namespace HiddenHarbours.Core
             SwellClimates.Clear();
             PendingArrivalKey = null;
             CurrentRegionBounds = default;
+            WorldFrame = null;           // no frame: legacy keyed passages, as every fixture expects
+            Whereabouts = null;
             OpeningCinematicRunning = false;   // a torn-down opening never leaves the intro grade on
             WorldUnitsPerRenderedPixel = 0f;   // 0 = no camera has reported; every snap inert
             Config = null;

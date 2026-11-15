@@ -618,3 +618,4 @@ MonoBehaviour:
     SideReach: 0.7
   DevAllHelmInstruments: 1
   MeshFishingAndDig: 1
+  RegionCrossingHysteresisMetres: 1

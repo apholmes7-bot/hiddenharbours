@@ -158,6 +158,10 @@ namespace HiddenHarbours.Tests.PlayMode
             // ⭐ The whole point of the seam, driven rather than reasoned about. Walk in over the bar and
             // the fisher must be standing on the bar when the scene settles — not on a wharf deck 400 m
             // away that they never walked to.
+            // ⭐ REWRITTEN DELIBERATELY (owner ruling 2026-11-15, "doors do not teleport"; ADR 0057, D1):
+            // the boat they did not bring is not moved at all — not even to the region's own berth.
+            var leftAt = new Vector3(-212f, 37f, 0f);
+            _boat.transform.position = leftAt;
             MakePassage(BarKey).Activate();
             yield return null;
 
@@ -166,9 +170,9 @@ namespace HiddenHarbours.Tests.PlayMode
             AssertAt(BarLanding, _player.transform.position,
                 "the arrival key crossed the seam: passage → GameServices → coordinator → the named " +
                 "arrival. A fisher on the wharf here means the key was published, dropped, or never read");
-            AssertAt(WharfBerth, _boat.transform.position,
-                "and the boat they did not bring stays at the region's own berth — the two points fall " +
-                "back independently, or walking in drags your boat across the region after you");
+            AssertAt(leftAt, _boat.transform.position,
+                "and the boat they did not bring stays exactly where she was left — a walk-in that " +
+                "moved her would carry the player's only boat across the world for free");
         }
 
         [UnityTest]

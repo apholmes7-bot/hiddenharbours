@@ -3,6 +3,7 @@ using UnityEngine.SceneManagement;
 using HiddenHarbours.Core;
 using HiddenHarbours.Boats;
 using HiddenHarbours.Player;
+using HiddenHarbours.World;
 
 namespace HiddenHarbours.App
 {
@@ -21,7 +22,7 @@ namespace HiddenHarbours.App
     /// dock re-point is a pure static helper (<see cref="ApplyArrival"/>) so it's unit-testable without
     /// scene loading; the toggling/camera glue is play-mode only.
     /// </summary>
-    public sealed class RegionTravelCoordinator : MonoBehaviour
+    public sealed class RegionTravelCoordinator : MonoBehaviour, IWorldWhereabouts
     {
         [Tooltip("The persistent player (repositioned to a region's disembark point on arrival).")]
         [SerializeField] private Transform _player;
@@ -36,6 +37,8 @@ namespace HiddenHarbours.App
         {
             SceneManager.activeSceneChanged += OnActiveSceneChanged;
             PublishPlayer();
+            GameServices.Whereabouts = this;
+            EnsureWorldFrame();
         }
 
         private void OnDisable() => SceneManager.activeSceneChanged -= OnActiveSceneChanged;
@@ -68,6 +71,7 @@ namespace HiddenHarbours.App
         private void OnDestroy()
         {
             if (GameServices.PlayerTransform == _player) GameServices.PlayerTransform = null;
+            if (ReferenceEquals(GameServices.Whereabouts, this)) GameServices.Whereabouts = null;
         }
 
         /// <summary>
@@ -131,6 +135,13 @@ namespace HiddenHarbours.App
             if (anchor == null) return false;
             bool alongside = false;
 
+            // ⭐ A FOOT ARRIVAL NEVER MOVES THE BOAT (owner ruling 2026-11-15: "doors do not teleport";
+            // fault D1). A named way in that authors no boat point is a walk-in: the boat was not brought,
+            // so she stays exactly where she was left, in the region she was left in. Before this, the
+            // empty point fell back to the region's default berth and the one persistent boat was carried
+            // across the world with the walker — 930 m from St Peters to the creek wharf, free.
+            if (!ArrivalMovesBoat(anchor, arrivalKey)) boat = null;
+
             Transform arrivalPoint = anchor.ArrivalPointFor(arrivalKey);
             Transform landingPoint = anchor.DisembarkPointFor(arrivalKey);
 
@@ -167,6 +178,39 @@ namespace HiddenHarbours.App
                 switcher.ReassertControlMode();   // re-enable the active boat/foot controller after the toggle
             }
             return alongside;
+        }
+
+        /// <summary>True unless <paramref name="arrivalKey"/> names a way in that sets no BOAT point — a
+        /// walk-in, which leaves the boat where she was. PURE over the anchor's table.</summary>
+        public static bool ArrivalMovesBoat(RegionAnchor anchor, string arrivalKey) =>
+            anchor == null ||
+            !(RegionAnchor.TryFindArrival(anchor.Arrivals, arrivalKey, out NamedArrival named) &&
+              named.ArrivalPoint == null);
+
+        /// <summary>
+        /// ⭐ <b>A WORLD-FRAME CROSSING</b> (ADR 0057): carry whoever crossed into the neighbour's local
+        /// frame by a pure translation, <paramref name="localShift"/> = <c>from.Origin − to.Origin</c>. The
+        /// world point is unchanged, so the distance across the seam is exactly the distance travelled —
+        /// no landing point, no inset, no clearance jump — and heading and velocity are untouched (nothing
+        /// here rotates or stops anything).
+        ///
+        /// <para>The boat moves only when she came (<paramref name="boatCame"/>: the player was aboard). A
+        /// foot crossing leaves her where she lies, in the region she was left in. The player moves either
+        /// way, unless he is parented under the boat (aboard), in which case moving her carried him.</para>
+        /// PURE over the transforms, so EditMode asserts it.
+        /// </summary>
+        public static void ApplyCrossing(Transform player, Transform boat, Vector2 localShift, bool boatCame)
+        {
+            var shift = new Vector3(localShift.x, localShift.y, 0f);
+            if (boatCame && boat != null) Shift(boat, shift);
+            if (player != null && !(boatCame && boat != null && player.IsChildOf(boat))) Shift(player, shift);
+        }
+
+        static void Shift(Transform t, Vector3 shift)
+        {
+            t.position += shift;
+            var body = t.GetComponent<Rigidbody2D>();
+            if (body != null) body.position = t.position;   // velocity is NOT touched: speed carries across
         }
 
         /// <summary>How far she may move from where she was laid alongside and still be re-laid when her
@@ -222,7 +266,11 @@ namespace HiddenHarbours.App
             // arrivals, so a key can never survive its own crossing and steer the next one.
             string arrivalKey = GameServices.ConsumePendingArrivalKey();
 
-            ArrivalOpening.CaptureSeaCrossing(previous, next, arrivalKey);
+            // A world-frame crossing in flight (ADR 0057) is taken once too, whatever happens next.
+            PendingCrossing crossing = _pending;
+            _pending = null;
+
+            if (crossing == null) ArrivalOpening.CaptureSeaCrossing(previous, next, arrivalKey);
 
             SetSceneRootsActive(previous, false);   // the region we left (persistents already DDOL'd out)
             SetSceneRootsActive(next, true);
@@ -230,6 +278,14 @@ namespace HiddenHarbours.App
             BindHoldProxies(next);
 
             var anchor = RegionAnchor.ForScene(next);
+
+            if (crossing != null && anchor != null &&
+                string.Equals(anchor.RegionId, crossing.To, System.StringComparison.Ordinal))
+            {
+                ArriveAcrossTheSeam(anchor, crossing);
+                return;
+            }
+
             bool passengerArrived = ArrivalOpening.ReceiveSeaJourney(next, arrivalKey, anchor);
 
             // ⭐ DID SHE SAIL IN, or is this the region opening under her? A hop comes FROM a region; the
@@ -246,6 +302,9 @@ namespace HiddenHarbours.App
                 Debug.LogWarning($"[RegionTravelCoordinator] Passage asked for arrival '{arrivalKey}' in " +
                                  $"'{anchor.RegionId}', which authors no such way in — landing at the " +
                                  "region's default instead.", anchor);
+            // A walk-in leaves the boat where she was (D1): she stays in her own region, out of sight here.
+            bool boatMoves = passengerArrived || ArrivalMovesBoat(anchor, arrivalKey);
+            if (boatMoves) ShowBoat(true);   // she is placed here, so she must be live to be placed
             _alongside = ApplyArrival(passengerArrived ? null : _player, _boat,
                 passengerArrived ? null : _switcher, anchor, arrivalKey) ? anchor : null;
             if (_alongside != null)
@@ -253,14 +312,188 @@ namespace HiddenHarbours.App
                 _alongsideAt = _boat.position;
                 _alongsideHalfBeam = LiveHalfBeam(_boat, anchor.AlongsideHalfBeamMetres);
             }
+            if (anchor != null && boatMoves) _boatRegionId = anchor.RegionId;
+            if (anchor != null) UpdateBoatPresence(anchor.RegionId);
 
             // The boat was just teleported to the arrival point — bring it to rest there so a residual
             // velocity from the previous region doesn't carry it off the mark once the controller re-enables.
-            if (_boat != null)
+            if (_boat != null && boatMoves)
             {
                 var boatController = _boat.GetComponent<BoatController>();
                 if (boatController != null) boatController.Stop();
             }
+        }
+
+        // ---- the world frame (ADR 0057): the whole wall is a door ------------------------------------
+
+        /// <summary>A crossing begun at an edge and not yet arrived: where to, by how much, and whether the
+        /// boat came.</summary>
+        sealed class PendingCrossing
+        {
+            public string From, To;
+            public Vector2 Shift;
+            public bool BoatCame;
+        }
+
+        PendingCrossing _pending;
+        WorldMap _map;
+        // The ONE region the player's boat is in. Empty = not yet known (a rig before its first arrival).
+        string _boatRegionId = "";
+
+        /// <summary>True while a crossing has been started and its scene has not yet become active.</summary>
+        public bool CrossingInFlight => _pending != null;
+
+        /// <summary>The region the player's boat was last left in ("" until the first arrival).</summary>
+        public string BoatRegionId => _boatRegionId;
+
+        /// <summary>Make sure the shared frame is published (built from the shipped map, data only).</summary>
+        void EnsureWorldFrame()
+        {
+            if (_map == null) _map = WorldMap.LoadShipped();
+            if (GameServices.WorldFrame == null && _map != null) GameServices.WorldFrame = _map.BuildFrame();
+        }
+
+        private void FixedUpdate()
+        {
+            if (_pending != null) return;                       // one crossing at a time
+            if (GameServices.OpeningCinematicRunning) return;   // the opening sails its own authored door
+            EnsureWorldFrame();
+            WorldFrame frame = GameServices.WorldFrame;
+            string here = GameServices.CurrentRegionId;
+            if (frame == null || !frame.Contains(here)) return; // no frame, or a region off the map
+            if (!TryGetMover(out Transform mover, out bool boatIsMover)) return;
+
+            CrossingDecision d = frame.Resolve(here, mover.position, GameServices.RegionCrossingHysteresisMetres);
+            if (d.Kind == CrossingKind.Stay) return;
+            if (d.Kind == CrossingKind.Cross && BeginCrossing(here, d, boatIsMover)) return;
+
+            // A world boundary, or a neighbour whose scene would not load: hold the mover on the edge.
+            frame.TryGet(here, out RegionFrame f);
+            Rect r = f.LocalRect;
+            Vector2 p = mover.position;
+            HoldAtEdge(mover, new Vector2(Mathf.Clamp(p.x, r.xMin, r.xMax), Mathf.Clamp(p.y, r.yMin, r.yMax)), d.Edge);
+        }
+
+        /// <summary>Who is moving through the world: the walker on foot, or the boat with him aboard.
+        /// Driving is not handled here (a vehicle crossing is its own seam, not built).</summary>
+        bool TryGetMover(out Transform mover, out bool boatIsMover)
+        {
+            mover = null;
+            boatIsMover = false;
+            if (_switcher == null) return false;
+            switch (_switcher.Mode)
+            {
+                case ControlMode.OnFoot:
+                    mover = _player;
+                    break;
+                case ControlMode.Aboard:
+                case ControlMode.OnDeck:
+                    mover = _boat;
+                    boatIsMover = true;
+                    break;
+                default:
+                    return false;
+            }
+            return mover != null && mover.gameObject.activeInHierarchy;
+        }
+
+        bool BeginCrossing(string here, CrossingDecision d, bool boatIsMover)
+        {
+            if (_map == null || !_map.TryGet(d.To.RegionId, out RegionDef target)) return false;
+            var loader = Object.FindAnyObjectByType<RegionSceneLoader>();
+            if (loader == null) return false;
+
+            _pending = new PendingCrossing { From = here, To = d.To.RegionId, Shift = d.LocalShift, BoatCame = boatIsMover };
+            GameServices.PendingArrivalKey = null;   // an edge crossing names no way in: it is the way in
+            if (loader.Travel(target)) return true;  // (a re-visited region arrives inside this call)
+            _pending = null;
+            return false;
+        }
+
+        /// <summary>Hold a mover on the region's edge: put it back on the nearest inside point and take
+        /// away only the part of its velocity that points out of the world.</summary>
+        static void HoldAtEdge(Transform mover, Vector2 inside, RegionEdge edge)
+        {
+            Vector2 outward = edge switch
+            {
+                RegionEdge.West => Vector2.left,
+                RegionEdge.East => Vector2.right,
+                RegionEdge.South => Vector2.down,
+                _ => Vector2.up,
+            };
+            var body = mover.GetComponent<Rigidbody2D>();
+            if (body != null)
+            {
+                body.position = inside;
+                Vector2 v = body.linearVelocity;
+                float o = Vector2.Dot(v, outward);
+                if (o > 0f) body.linearVelocity = v - outward * o;
+            }
+            mover.position = new Vector3(inside.x, inside.y, mover.position.z);
+        }
+
+        /// <summary>The arrival half of a world-frame crossing: same world point, same heading, same speed;
+        /// the boat only if she came; the dock re-pointed and control re-asserted as on any arrival.</summary>
+        void ArriveAcrossTheSeam(RegionAnchor anchor, PendingCrossing crossing)
+        {
+            _alongside = null;
+            // Walking out of the region with her line in hand: the line is made fast where he let go of
+            // it (still in the old frame, before the shift), so she is not left tethered to someone who
+            // is no longer in her world.
+            if (!crossing.BoatCame && _boat != null && _player != null)
+            {
+                var mooring = _boat.GetComponent<BoatMooring>();
+                if (mooring != null && mooring.State == MooringState.HeldByPlayer) mooring.Root(_player.position);
+            }
+            ApplyCrossing(_player, _boat, crossing.Shift, crossing.BoatCame);
+            if (crossing.BoatCame) _boatRegionId = crossing.To;
+            UpdateBoatPresence(anchor.RegionId);
+
+            // The camera is carried by the same translation, so the hop never reads as a pan.
+            var follow = Object.FindFirstObjectByType<CameraFollow>();
+            if (follow != null)
+            {
+                follow.transform.position += new Vector3(crossing.Shift.x, crossing.Shift.y, 0f);
+                follow.TickFollow(0f);
+            }
+
+            if (_switcher != null)
+            {
+                _switcher.SetDock(anchor.DockZone, anchor.DisembarkPoint);
+                _switcher.ReassertControlMode();
+            }
+        }
+
+        void ShowBoat(bool present)
+        {
+            if (_boat != null && _boat.gameObject.activeSelf != present) _boat.gameObject.SetActive(present);
+        }
+
+        /// <summary>The boat is present only in her own region (or while her region is not yet known).</summary>
+        void UpdateBoatPresence(string currentRegionId) =>
+            ShowBoat(string.IsNullOrEmpty(_boatRegionId) ||
+                     string.Equals(_boatRegionId, currentRegionId, System.StringComparison.Ordinal));
+
+        // ---- IWorldWhereabouts ------------------------------------------------------------------
+
+        Whereabouts IWorldWhereabouts.Player => _player != null
+            ? new Whereabouts(GameServices.CurrentRegionId, _player.position, _player.eulerAngles.z)
+            : default;
+
+        Whereabouts IWorldWhereabouts.Boat => _boat != null
+            ? new Whereabouts(_boatRegionId, _boat.position, _boat.eulerAngles.z)
+            : default;
+
+        public void RestoreBoat(Whereabouts boat)
+        {
+            if (_boat == null || !boat.IsKnown) return;
+            _alongside = null;
+            _boatRegionId = boat.RegionId;
+            _boat.SetPositionAndRotation(new Vector3(boat.X, boat.Y, _boat.position.z),
+                                         Quaternion.Euler(0f, 0f, boat.HeadingDegrees));
+            var body = _boat.GetComponent<Rigidbody2D>();
+            if (body != null) { body.position = _boat.position; body.rotation = boat.HeadingDegrees; }
+            UpdateBoatPresence(GameServices.CurrentRegionId);
         }
 
         private static void SetSceneRootsActive(Scene scene, bool active)

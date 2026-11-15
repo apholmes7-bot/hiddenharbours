@@ -1230,6 +1230,17 @@ namespace HiddenHarbours.Core
                  "and unanimated dig. Held tools and catch keep their sprite presenters.")]
         public bool MeshFishingAndDig = true;
 
+        /// <summary>Shipped crossing hysteresis (m), also the fallback for a rig with no GameConfig.</summary>
+        public const float DefaultRegionCrossingHysteresisMetres = 1f;
+
+        [Header("Region crossings (ADR 0057: the whole wall is a door)")]
+        [Tooltip("How far (m) past a region's edge the player or boat must go before the crossing into the " +
+                 "neighbour fires. They arrive at the SAME world point, so this is also how far they must " +
+                 "come back to cross again: it stops a mover on the seam bouncing between scenes without " +
+                 "ever moving them. Small: it is a stretch of the old scene's empty margin you travel " +
+                 "through before the new scene appears.")]
+        [Min(0f)] public float RegionCrossingHysteresisMetres = DefaultRegionCrossingHysteresisMetres;
+
         public float SecondsPerHour => SecondsPerDay / 24f;
         public float SecondsPerWeek => SecondsPerDay * DaysPerWeek;
         public float SecondsPerSeason => SecondsPerDay * DaysPerSeason;
