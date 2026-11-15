@@ -253,6 +253,9 @@ namespace HiddenHarbours.Core
                 BodyMath.Settle(Current.PlayerBody, Current.PlayerNeeds, clock.TotalSeconds,
                                 GameServices.NeedsSettings, GameServices.BodySettings,
                                 GameServices.SecondsPerDay / 24d);
+                // Body slice 2: fitness levels carried to the same instant (a seek then rebases them exactly).
+                StrengthMath.SettleFitness(Current.PlayerBody, clock.TotalSeconds, GameServices.StrengthSettings,
+                                           GameServices.SecondsPerDay);
             }
 
             if (GameServices.Environment != null) Current.WorldSeed = GameServices.Environment.WorldSeed;

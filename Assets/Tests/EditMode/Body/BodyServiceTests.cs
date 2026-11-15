@@ -481,6 +481,7 @@ namespace HiddenHarbours.Tests.EditMode
             public NeedStage Stage(NeedKind need) => NeedStage.Strong;
             public float PlayerMultiplier(TraitStat stat) => stat == TraitStat.WalkSpeed ? _walk : 1f;
             public void Eat(float amount) { }
+            public float Spend(float amount) => 0f;
             public void Sleep() { }
             public void Tick() { }
         }
@@ -503,6 +504,7 @@ namespace HiddenHarbours.Tests.EditMode
             public bool ChooseShape(float frame, float heightScale) => false;
             public MealOutcome Eat(float meals, Vector2 position, string regionId) => MealOutcome.Nothing;
             public void Settle() { }
+            public double ReportActivity(ActivityDef activity, float units) => 0d;
         }
 
         private sealed class BodyClock : IGameClock

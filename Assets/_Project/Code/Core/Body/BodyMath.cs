@@ -291,6 +291,13 @@ namespace HiddenHarbours.Core
             if (body == null || now < 0d) return;
             if (body.MassSinceGameSeconds >= 0d) body.MassSinceGameSeconds = now;
             if (body.StomachSinceGameSeconds >= 0d) body.StomachSinceGameSeconds = now;
+            // Body slice 2: fitness levels and the grace still running hold too.
+            for (int i = 0; i < StrengthMath.Kinds.Length; i++)
+            {
+                FitnessStateDto state = body.Get(StrengthMath.Kinds[i]);
+                FitnessMath.Rebase(ref state, now);
+                body.Set(StrengthMath.Kinds[i], state);
+            }
         }
 
         // ---- helpers -------------------------------------------------------------------------------

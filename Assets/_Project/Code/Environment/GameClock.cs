@@ -60,7 +60,11 @@ namespace HiddenHarbours.Environment
             _flow = _t;
             _lastTotalDays = TotalDays;
             _lastSeason = Season;
+            // Body slice 2: the work the game announces (fights, hauls, deck work, driving) counts as effort.
+            ActivitySignalListener.Install();
         }
+
+        private void OnDestroy() => ActivitySignalListener.Uninstall();
 
         /// <summary>
         /// Seek the master clock to an absolute game-time (<see cref="IGameClock.SeekTo"/>): how a loaded

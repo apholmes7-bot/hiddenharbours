@@ -73,5 +73,37 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.AreEqual(777d, back.Messes[0].GameSeconds);
             Assert.AreEqual(3, back.NextMessSerial);
         }
+
+        [Test]
+        public void Version20Json_LoadsUntrained_AndFitnessSurvivesRoundTrip()
+        {
+            SaveData old = SaveSerialization.FromJson("{\"SchemaVersion\":20,\"GameTimeSeconds\":5000.0}");
+            foreach (FitnessKind kind in StrengthMath.Kinds)
+            {
+                FitnessStateDto f = old.PlayerBody.Get(kind);
+                Assert.AreEqual(0f, f.Level, kind.ToString());
+                Assert.AreEqual(0f, f.Peak, kind.ToString());
+                Assert.Less(f.SinceGameSeconds, 0d, "body slice 2 rides the same v21 migration: untrained");
+            }
+
+            SaveData save = SaveMigration.NewGame();
+            save.PlayerBody.Grip = new FitnessStateDto
+            {
+                Level = 0.25f, Peak = 0.5f, SinceGameSeconds = 1200.5d, MaintainedAtGameSeconds = 1000d, PendingDose = 3.5f,
+            };
+            save.PlayerBody.Cardio = new FitnessStateDto
+            {
+                Level = 0.75f, Peak = 0.75f, SinceGameSeconds = 99d, MaintainedAtGameSeconds = -1d, PendingDose = 0f,
+            };
+            SaveData back = SaveMigration.Migrate(SaveSerialization.FromJson(SaveSerialization.ToJson(save)));
+            Assert.AreEqual(0.25f, back.PlayerBody.Grip.Level);
+            Assert.AreEqual(0.5f, back.PlayerBody.Grip.Peak);
+            Assert.AreEqual(1200.5d, back.PlayerBody.Grip.SinceGameSeconds);
+            Assert.AreEqual(1000d, back.PlayerBody.Grip.MaintainedAtGameSeconds);
+            Assert.AreEqual(3.5f, back.PlayerBody.Grip.PendingDose);
+            Assert.AreEqual(0.75f, back.PlayerBody.Cardio.Level);
+            Assert.AreEqual(-1d, back.PlayerBody.Cardio.MaintainedAtGameSeconds);
+            Assert.AreEqual(0f, back.PlayerBody.Back.Level, "untouched kinds stay untrained");
+        }
     }
 }

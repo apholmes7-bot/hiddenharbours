@@ -344,6 +344,32 @@ namespace HiddenHarbours.Core
         private static IMessRegistry _messes;
 
         /// <summary>
+        /// The player's strength and cardio, read-only (body slice 2): rod, pull and leg strength, carry
+        /// capacity. The default is the <see cref="Body"/> itself when it offers them, else a neutral reading
+        /// (every multiplier exactly 1). A future Fishing or Boats reader takes it from here. Cleared by
+        /// <see cref="Reset"/>. FLAG lead-architect: new Core contract (strength).
+        /// </summary>
+        public static IPlayerStrength PlayerStrength
+        {
+            get => _playerStrength ?? Body as IPlayerStrength ?? NeutralStrength.Instance;
+            set => _playerStrength = value;
+        }
+
+        private static IPlayerStrength _playerStrength;
+
+        /// <summary>
+        /// What the player carries, by weight (body slice 2). Never null: nothing carried by default; the hands
+        /// module installs a real one when hand loads have weights. Cleared by <see cref="Reset"/>.
+        /// </summary>
+        public static ICarriedLoad CarriedLoad
+        {
+            get => _carriedLoad ?? NoCarriedLoad.Instance;
+            set => _carriedLoad = value;
+        }
+
+        private static ICarriedLoad _carriedLoad;
+
+        /// <summary>
         /// The farm plots (farm slice 1): read-only questions about each plot's stage and the work due on it,
         /// recomputed from the Defs, the world seed and the day (rule 5). Never null: a default
         /// <see cref="FarmService"/> over the shipped Defs under <c>Resources/Farming/</c> is made on first
@@ -732,6 +758,9 @@ namespace HiddenHarbours.Core
 
         /// <summary>The body numbers (body slice 1), with the fallback for an unwired config.</summary>
         public static BodySettings BodySettings => Config != null ? Config.Body : BodySettings.Default;
+
+        /// <summary>The strength and cardio numbers (body slice 2), with the fallback for an unwired config.</summary>
+        public static StrengthSettings StrengthSettings => Config != null ? Config.Strength : StrengthSettings.Default;
 
         /// <summary>The needs' slow tick in in-game seconds (never below one game minute), with the
         /// fallback for an unwired config. The game clock calls <see cref="INeedsService.Tick"/> this often.</summary>
@@ -1297,6 +1326,8 @@ namespace HiddenHarbours.Core
             Needs = null;                // → a fresh default on next read; drops its stage baseline
             Body = null;                 // → a fresh default on next read
             Messes = null;               // → a fresh default on next read
+            PlayerStrength = null;       // → the body, or the neutral reading
+            CarriedLoad = null;          // → NoCarriedLoad.Instance (nothing carried)
             Farm = null;                 // → a fresh default on next read; drops its catalog and baseline
             Relationships = null;        // → a fresh default on next read; reseeds from the shipped ties
             TidalTerrain = null;

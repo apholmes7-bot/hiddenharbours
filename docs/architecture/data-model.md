@@ -161,6 +161,15 @@ plain serializable DTOs owned by `SaveService` (`architecture/tech-architecture.
 > rate and walk speed are exactly the needs slice's, so the `v20→v21` step writes the unset body and an
 > empty mess list and an existing player changes nothing on load. A mess leaves the save only through
 > `IMessRegistry.CleanUp`. Written only through `IBodyService` and `IMessRegistry` (Core/Body).
+> **Body slice 2 rides the same v21** (strength and cardio, owner asks 2026-11-15): `PlayerBodyDto` also
+> holds four `FitnessStateDto`s, `Grip`, `Back`, `Legs` and `Cardio`, each a (level, instant) pair plus the
+> remembered `Peak` (muscle memory, never fades), `MaintainedAtGameSeconds` (the grace runs from it) and
+> `PendingDose`. Untrained (level 0, instants negative) is the default and today's player exactly. Levels
+> are read off the clock by `FitnessMath`, settled at save writes and rebased on a seek, like the mass.
+> Effort is content: `ActivityDef` (`activity.*`, Resources/Activities: kcal above rest per minute or rep,
+> training per fitness kind, equipment, an optional game signal) and `GymEquipmentDef`
+> (`gym_equipment.*`, Resources/GymEquipment), one asset each with ledger entries. Work and the gym both
+> report through `IBodyService.ReportActivity`, which raises hunger through `INeedsService.Spend`.
 
 **Recomputed, never saved:** tide height, wind, weather, sea state, visibility (from
 `worldSeed + gameTime`), dormant NPC positions, authored geometry, **a boat's effective helm fit and

@@ -48,8 +48,9 @@ namespace HiddenHarbours.Core
         /// <summary>How full the stomach is now, in meals.</summary>
         float StomachMeals { get; }
 
-        /// <summary>The body's share of the player's factor for <paramref name="stat"/>: the walk factor for
-        /// <see cref="TraitStat.WalkSpeed"/>, exactly 1 for every other stat and for the default body.
+        /// <summary>The body's share of the player's factor for <paramref name="stat"/>: for
+        /// <see cref="TraitStat.WalkSpeed"/> the build's walk x the carried load's x cardio's (slice 2), exactly 1
+        /// for every other stat and for the default, untrained, empty-handed body.
         /// Allocation-free (the walk reads it every physics tick).</summary>
         float PlayerMultiplier(TraitStat stat);
 
@@ -73,6 +74,15 @@ namespace HiddenHarbours.Core
 
         /// <summary>Carry mass, stomach and hunger to now and re-anchor them there (values unchanged).</summary>
         void Settle();
+
+        /// <summary>
+        /// <b>The one door for effort</b> (body slice 2): work and the gym both report here. Costs the kcal of
+        /// <paramref name="units"/> of <paramref name="activity"/> for this body (<see cref="StrengthMath.ActivityKcal"/>),
+        /// raises hunger by that (<see cref="INeedsService.Spend"/>; what does not fit burns mass, never below
+        /// the floor), trains the fitness kinds it names, and publishes <see cref="ActivityReported"/>.
+        /// Returns the kcal spent. No save, no def or a non-positive amount does nothing and returns 0.
+        /// </summary>
+        double ReportActivity(ActivityDef activity, float units);
     }
 
     /// <summary>What a meal did.</summary>

@@ -32,6 +32,12 @@ namespace HiddenHarbours.Core
         /// stage change at once. A non-positive amount or no save does nothing.</summary>
         void Eat(float amount);
 
+        /// <summary>Spend energy (body slice 2): raise hunger by <paramref name="amount"/> (meals' worth) from
+        /// its level now, never past full hunger, and return the part that did not fit (the body burns that
+        /// from mass). The one way work and exercise make the player hungrier; announces a stage change at
+        /// once. A non-positive amount or no save does nothing and returns 0.</summary>
+        float Spend(float amount);
+
         /// <summary>A night's sleep: tiredness back to rested from now. Hunger is untouched; the hours slept
         /// already counted against it on the clock. Announces a stage change at once. No save does nothing.</summary>
         void Sleep();

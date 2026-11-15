@@ -12,7 +12,7 @@ namespace HiddenHarbours.Core
     /// values now are read off the clock on demand (<see cref="BodyMath"/>), so the walk's per-tick read,
     /// a meal and a save can never disagree, and a skipped night is one straight-line catch-up.</para>
     /// </summary>
-    public sealed class BodyService : IBodyService
+    public sealed class BodyService : IBodyService, IPlayerStrength
     {
         private readonly Func<ISaveService> _save;
         private readonly Func<IGameClock> _clock;
@@ -21,11 +21,14 @@ namespace HiddenHarbours.Core
         private readonly Func<INeedsService> _needs;
         private readonly Func<IMessRegistry> _messes;
         private readonly Func<double> _secondsPerGameHour;
+        private readonly Func<StrengthSettings> _strength;
+        private readonly Func<ICarriedLoad> _load;
 
         public BodyService(Func<ISaveService> save = null, Func<IGameClock> clock = null,
                            Func<BodySettings> settings = null, Func<NeedsSettings> needsSettings = null,
                            Func<INeedsService> needs = null, Func<IMessRegistry> messes = null,
-                           Func<double> secondsPerGameHour = null)
+                           Func<double> secondsPerGameHour = null, Func<StrengthSettings> strength = null,
+                           Func<ICarriedLoad> load = null)
         {
             _save = save ?? (() => GameServices.Save);
             _clock = clock ?? (() => GameServices.Clock);
@@ -34,7 +37,95 @@ namespace HiddenHarbours.Core
             _needs = needs ?? (() => GameServices.Needs);
             _messes = messes ?? (() => GameServices.Messes);
             _secondsPerGameHour = secondsPerGameHour ?? (() => GameServices.SecondsPerDay / 24d);
+            _strength = strength ?? (() => GameServices.StrengthSettings);
+            _load = load ?? (() => GameServices.CarriedLoad);
         }
+
+        // ---- slice 2: strength, cardio (IPlayerStrength) ----------------------------------------------
+
+        public float RodStrength => Strength(FitnessKind.Grip);
+
+        public float PullStrength => Strength(FitnessKind.Back);
+
+        public float LegStrength => Strength(FitnessKind.Legs);
+
+        public float CarryCapacityKg
+        {
+            get
+            {
+                StrengthSettings st = _strength();
+                return StrengthMath.CarryCapacityKg(Strength(FitnessKind.Legs), Strength(FitnessKind.Back), st);
+            }
+        }
+
+        public float CardioLevel => FitnessLevel(FitnessKind.Cardio);
+
+        public float FitnessLevel(FitnessKind kind)
+        {
+            PlayerBodyDto b = Body();
+            if (b == null) return 0f;
+            StrengthSettings st = _strength();
+            return FitnessMath.LevelAt(b.Get(kind), StrengthMath.CurveFor(kind, st), Now(0d), SecondsPerGameDay());
+        }
+
+        private float Strength(FitnessKind kind)
+        {
+            BodySettings s = _settings();
+            StrengthSettings st = _strength();
+            PlayerBodyDto b = Body();
+            float level = b == null ? 0f
+                : FitnessMath.LevelAt(b.Get(kind), StrengthMath.CurveFor(kind, st), Now(0d), SecondsPerGameDay());
+            return StrengthMath.StrengthFactor(MassNow(b, s), BodyMath.FrameOf(b, s), level, s, st);
+        }
+
+        public double ReportActivity(ActivityDef activity, float units)
+        {
+            if (activity == null || !(units > 0f)) return 0d;
+            SaveData data = _save()?.Current;
+            if (data == null) return 0d;
+            PlayerBodyDto b = data.PlayerBody ??= new PlayerBodyDto();
+            Settle();
+
+            BodySettings s = _settings();
+            StrengthSettings st = _strength();
+            double now = Now(0d);
+            double perDay = SecondsPerGameDay();
+            float cardio = FitnessMath.LevelAt(b.Cardio, st.Cardio, now, perDay);
+            double kcal = StrengthMath.ActivityKcal(activity, units, MassNow(b, s), cardio, s, st);
+
+            float hunger = 0f;
+            if (kcal > 0d)
+            {
+                double kcalPerPoint = BodyMath.KcalPerHungerUnit(_needsSettings().Hunger.RisePerGameHour, s);
+                hunger = kcalPerPoint > 0d ? (float)(kcal / kcalPerPoint) : 0f;
+                float over = _needs()?.Spend(hunger) ?? 0f;
+                if (over > 0f && s.KcalPerKgOfMass > 0f)
+                {
+                    // Past full hunger the body pays from its own mass, never below the frame's floor.
+                    float frame = BodyMath.FrameOf(b, s), height = BodyMath.HeightScaleOf(b, s);
+                    double anchor = BodyMath.AnchorMassKg(b, s);
+                    double floor = BodyMath.FloorMassKg(frame, height, s);
+                    double mass = anchor <= floor ? anchor : Math.Max(floor, anchor - over * kcalPerPoint / s.KcalPerKgOfMass);
+                    if (mass != anchor) b.MassKg = mass;
+                    b.MassSinceGameSeconds = now;
+                }
+            }
+
+            for (int i = 0; i < StrengthMath.Kinds.Length; i++)
+            {
+                FitnessKind kind = StrengthMath.Kinds[i];
+                float dose = activity.Training.Of(kind) * units;
+                if (!(dose > 0f)) continue;
+                FitnessStateDto state = b.Get(kind);
+                FitnessMath.Train(ref state, dose, now, StrengthMath.CurveFor(kind, st), st.MemoryRegainFactor, perDay);
+                b.Set(kind, state);
+            }
+
+            EventBus.Publish(new ActivityReported(activity.Id ?? "", units, kcal, hunger));
+            return kcal;
+        }
+
+        private double SecondsPerGameDay() => _secondsPerGameHour() * 24d;
 
         public float Frame { get { BodySettings s = _settings(); return BodyMath.FrameOf(Body(), s); } }
 
@@ -93,7 +184,26 @@ namespace HiddenHarbours.Core
             PlayerBodyDto b = Body();
             if (b == null) return TraitMath.Identity;
             BodySettings s = _settings();
-            return BodyMath.WalkFactor(MassNow(b, s), BodyMath.FrameOf(b, s), BodyMath.HeightScaleOf(b, s), s);
+            double mass = MassNow(b, s);
+            float frame = BodyMath.FrameOf(b, s);
+            float walk = BodyMath.WalkFactor(mass, frame, BodyMath.HeightScaleOf(b, s), s);
+
+            // Slice 2: a load slows by how it sits against what this body carries; cardio adds a little.
+            // Each factor is the literal 1 empty-handed and untrained, so the product is today's walk.
+            StrengthSettings st = _strength();
+            double now = Now(0d), perDay = SecondsPerGameDay();
+            float load = _load()?.CarriedKg ?? 0f;
+            if (load > 0f)
+            {
+                float legs = StrengthMath.StrengthFactor(mass, frame,
+                    FitnessMath.LevelAt(b.Legs, st.Strength, now, perDay), s, st);
+                float back = StrengthMath.StrengthFactor(mass, frame,
+                    FitnessMath.LevelAt(b.Back, st.Strength, now, perDay), s, st);
+                walk *= StrengthMath.CarryWalkFactor(load, StrengthMath.CarryCapacityKg(legs, back, st), st);
+            }
+            float cardio = FitnessMath.LevelAt(b.Cardio, st.Cardio, now, perDay);
+            if (cardio > 0f) walk *= StrengthMath.CardioWalkFactor(cardio, st);
+            return walk;
         }
 
         public bool ChooseShape(float frame, float heightScale)

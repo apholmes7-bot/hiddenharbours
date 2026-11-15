@@ -89,6 +89,22 @@ namespace HiddenHarbours.Core
             Announce(NeedKind.Hunger, before);
         }
 
+        public float Spend(float amount)
+        {
+            if (!(amount > 0f)) return 0f;
+            PlayerNeedsDto needs = Needs();
+            if (needs == null) return 0f;
+            // Carry the body to now first, as a meal does: time already spent starving stays spent.
+            _body()?.Settle();
+            NeedStage before = Stage(NeedKind.Hunger);
+            NeedStateDto state = needs.Hunger;
+            float level = Level(NeedKind.Hunger) + amount;
+            float over = level > 1f ? level - 1f : 0f;
+            needs.Hunger = new NeedStateDto(level < 1f ? level : 1f, NowOr(state.SinceGameSeconds));
+            Announce(NeedKind.Hunger, before);
+            return over;
+        }
+
         public void Sleep()
         {
             PlayerNeedsDto needs = Needs();

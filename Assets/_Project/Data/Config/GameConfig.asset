@@ -555,6 +555,28 @@ MonoBehaviour:
     WalkFloor: 0.75
     StomachCapacityMeals: 1.5
     StomachEmptiesPerGameHour: 0.25
+  Strength:
+    Strength:
+      GainPerDose: 0.0005
+      DecayPerGameDay: 0.01
+      GraceGameDays: 3
+      MaintainDose: 15
+    Cardio:
+      GainPerDose: 0.0007
+      DecayPerGameDay: 0.02
+      GraceGameDays: 2
+      MaintainDose: 20
+    MemoryRegainFactor: 4
+    MassExponent: 0.6666667
+    SmallFrameTrainableGain: 0.6
+    LargeFrameTrainableGain: 0.9
+    ReferenceCarryCapacityKg: 30
+    CarrySlowAtCapacity: 0.4
+    CarryWalkFloor: 0.6
+    CardioSpeedGainMax: 0.06
+    CardioMovementSavingMax: 0.25
+    ReportWorkFromSignals: 1
+    MaxSignalWindowGameMinutes: 240
   Juice:
     GradeEnabled: 1
     GradeStrength: 0.35

@@ -37,6 +37,13 @@ namespace HiddenHarbours.Core
                  "through GameServices.BodySettings.")]
         public BodySettings Body = BodySettings.Default;
 
+        [Tooltip("Body slice 2 (owner ask 2026-11-15): strength and cardio. Training grows grip, back, legs " +
+                 "and cardio slowly; keeping them up is cheap; muscle memory regains a lost level faster. " +
+                 "Strength and mass set what the player can carry and how much a load slows the walk; cardio " +
+                 "makes moving a little faster and cheaper. Untrained and empty-handed is exactly today's " +
+                 "player. Read through GameServices.StrengthSettings.")]
+        public StrengthSettings Strength = StrengthSettings.Default;
+
         public const float DefaultCreatorFigureHeightFraction = 0.6f;
 
         [Header("Character creator view")]

@@ -44,7 +44,42 @@ namespace HiddenHarbours.Core
         /// <summary>The game clock the stomach fullness was true at, or negative (empty, unanchored).</summary>
         public double StomachSinceGameSeconds = Unset;
 
+        // ---- body slice 2: fitness (same save v21) --------------------------------------------------
+
+        /// <summary>Grip and arms (the rod).</summary>
+        public FitnessStateDto Grip = FitnessStateDto.Untrained;
+
+        /// <summary>Back and pull (hauling).</summary>
+        public FitnessStateDto Back = FitnessStateDto.Untrained;
+
+        /// <summary>Legs (carrying, lifting).</summary>
+        public FitnessStateDto Legs = FitnessStateDto.Untrained;
+
+        /// <summary>Heart and lungs (moving).</summary>
+        public FitnessStateDto Cardio = FitnessStateDto.Untrained;
+
         public PlayerBodyDto Clone() => (PlayerBodyDto)MemberwiseClone();
+
+        /// <summary>The saved state of <paramref name="kind"/>.</summary>
+        public FitnessStateDto Get(FitnessKind kind) => kind switch
+        {
+            FitnessKind.Grip => Grip,
+            FitnessKind.Back => Back,
+            FitnessKind.Legs => Legs,
+            _ => Cardio,
+        };
+
+        /// <summary>Replace the saved state of <paramref name="kind"/>.</summary>
+        public void Set(FitnessKind kind, in FitnessStateDto state)
+        {
+            switch (kind)
+            {
+                case FitnessKind.Grip: Grip = state; break;
+                case FitnessKind.Back: Back = state; break;
+                case FitnessKind.Legs: Legs = state; break;
+                default: Cardio = state; break;
+            }
+        }
     }
 
     /// <summary>
