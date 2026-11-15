@@ -158,8 +158,9 @@ namespace HiddenHarbours.Tests.PlayMode
 
             Assert.AreSame(subject, boat.Hull, "the picker put the cape islander under her");
             Assert.IsTrue(installer.Built, "the swap grew her cabin");
-            Assert.AreEqual(1, installer.Bunks.Count, "…and the one bunk her rig names");
+            Assert.AreEqual(2, installer.Bunks.Count, "…and the two singles of her V-berth (2026-11-15)");
             BoatBunk bunk = installer.Bunks[0];
+            StringAssert.EndsWith(".bunk", bunk.Id, "the original berth keeps its id, and comes first");
             BoatInterior cabin = installer.Interior;
             Assert.IsFalse(bunk.IsAvailable, "on deck, outside her cabin, the bunk is not offered");
 

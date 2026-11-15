@@ -1122,6 +1122,76 @@
       ],
       "counter": "stove_counter",
       "_note": "mechanism: prep station (cut/prepare raw food; it is then cooked at the stove) · house level · the free forward quarter of stove_counter, beside the rings · authored 2026-11-14 from the counter box; boatInteriorRig.js does not emit it yet"
+    },
+    {
+      "id": "bunk_starboard",
+      "action": "sleep",
+      "reach_point": [
+        5.35,
+        -46.6,
+        9
+      ],
+      "visible_facings": [
+        "N",
+        "NE",
+        "E",
+        "SE",
+        "S",
+        "SW",
+        "W",
+        "NW"
+      ],
+      "_note": "mechanism: BoatBunk (sleep, rest + save) · below-deck level · the drawn sibling bunk made sleepable (owner ruling 2026-11-15: no shared bed)",
+      "bunk": {
+        "level": "below_sole",
+        "obstruction": "bunk_stbd",
+        "mattress_centre": [
+          5.35,
+          -45.3,
+          9.5
+        ],
+        "pillow_end": [
+          5.35,
+          -46.4,
+          9.5
+        ],
+        "pillow_source": "art: boatInteriorRig drawBunk puts the pillow at the end farther from the middle of the below deck (aft, aft, y0)"
+      }
+    },
+    {
+      "id": "bunk_forward",
+      "action": "sleep",
+      "reach_point": [
+        -5.35,
+        -41.2,
+        9
+      ],
+      "visible_facings": [
+        "N",
+        "NE",
+        "E",
+        "SE",
+        "S",
+        "SW",
+        "W",
+        "NW"
+      ],
+      "_note": "mechanism: BoatBunk (sleep, rest + save) · below-deck level · the drawn sibling bunk made sleepable (owner ruling 2026-11-15: no shared bed)",
+      "bunk": {
+        "level": "below_sole",
+        "obstruction": "bunk_port",
+        "mattress_centre": [
+          -5.35,
+          -42.5,
+          9.5
+        ],
+        "pillow_end": [
+          -5.35,
+          -41.4,
+          9.5
+        ],
+        "pillow_source": "art: boatInteriorRig drawBunk puts the pillow at the end farther from the middle of the below deck (fwd, fwd, y1)"
+      }
     }
   ],
   "mechanism_map": {

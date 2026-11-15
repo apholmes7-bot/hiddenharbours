@@ -577,7 +577,7 @@
       "id": "bunk",
       "action": "sleep",
       "reach_point": [
-        0,
+        -0.3,
         3.81,
         0.24
       ],
@@ -591,21 +591,21 @@
         "W",
         "NW"
       ],
-      "_note": "mechanism: InteriorBed (rest + save) · cuddy level · footprint + obstructions in the hull gameplay sidecar",
+      "_note": "mechanism: BoatBunk (sleep, rest + save) · cuddy level · one of TWO singles: the V-berth sleeps two side by side, one per drawn pillow (owner ruling 2026-11-15: no shared bed)",
       "bunk": {
         "level": "cuddy_sole",
         "obstruction": "v_berth",
         "mattress_centre": [
-          0,
+          -0.195,
           4.6,
           0.69
         ],
         "pillow_end": [
-          0,
+          -0.237,
           4.02,
           0.69
         ],
-        "pillow_source": "art: boatInteriorRig V-BERTH draws two pillows aft (the wide end), y0+0.06..y0+0.34"
+        "pillow_source": "art: boatInteriorRig V-BERTH draws two pillows aft (the wide end) at x = +/-pw; this single takes the port one"
       }
     },
     {
@@ -625,6 +625,41 @@
       ],
       "counter": "stove_counter",
       "_note": "mechanism: prep station (cut/prepare raw food; it is then cooked at the stove) · house level · the free forward quarter of stove_counter, beside the rings · authored 2026-11-14 from the counter box; boatInteriorRig.js does not emit it yet"
+    },
+    {
+      "id": "bunk_starboard",
+      "action": "sleep",
+      "reach_point": [
+        0.3,
+        3.81,
+        0.24
+      ],
+      "visible_facings": [
+        "N",
+        "NE",
+        "E",
+        "SE",
+        "S",
+        "SW",
+        "W",
+        "NW"
+      ],
+      "_note": "mechanism: BoatBunk (sleep, rest + save) · cuddy level · one of TWO singles: the V-berth sleeps two side by side, one per drawn pillow (owner ruling 2026-11-15: no shared bed)",
+      "bunk": {
+        "level": "cuddy_sole",
+        "obstruction": "v_berth",
+        "mattress_centre": [
+          0.195,
+          4.6,
+          0.69
+        ],
+        "pillow_end": [
+          0.237,
+          4.02,
+          0.69
+        ],
+        "pillow_source": "art: boatInteriorRig V-BERTH draws two pillows aft (the wide end) at x = +/-pw; this single takes the starboard one"
+      }
     }
   ],
   "mechanism_map": {

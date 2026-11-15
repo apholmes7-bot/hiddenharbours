@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7cc9a5a206604027aa490bb3643e5f41, type: 3}
+  m_Name: MedicineMisc
+  m_EditorClassIdentifier: HiddenHarbours.Core::HiddenHarbours.Core.IslandGoodDef
+  Id: islandgood.medicine_misc
+  DisplayName: Medicine and miscellaneous
+  Source: 0
+  Unit: kg
+  DailyUnits: 2
+  DailyMassKg: 2
+  DailyVolumeLitres: 5
+  PlayerAllowanceFraction: 0
+  WinterMultiplier: 1
+  Container: bag
+  Basis: Island supply plan 2026-11-15 table (h).

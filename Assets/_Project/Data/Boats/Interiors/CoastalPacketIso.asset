@@ -306,6 +306,22 @@ MonoBehaviour:
     BunkObstruction: 
     MattressCentre: {x: 0, y: 0, z: 0}
     PillowEnd: {x: 0, y: 0, z: 0}
+  - Id: bunk_starboard
+    Action: sleep
+    ReachPoint: {x: 2.5, y: -27.85, z: 2.2}
+    VisibleFacings:
+    - N
+    - NE
+    - E
+    - SE
+    - S
+    - SW
+    - W
+    - NW
+    BunkLevel: below_sole
+    BunkObstruction: bunk_stbd
+    MattressCentre: {x: 2.5, y: -26.65, z: 2.7}
+    PillowEnd: {x: 2.5, y: -27.7, z: 2.7}
   Routes:
   - Id: house_to_bridge
     FromLevel: house_sole

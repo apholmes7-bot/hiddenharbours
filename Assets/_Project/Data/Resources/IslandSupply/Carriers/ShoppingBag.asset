@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: da9aa7321c154579803d42c84214ff3f, type: 3}
+  m_Name: ShoppingBag
+  m_EditorClassIdentifier: HiddenHarbours.Core::HiddenHarbours.Core.CarrierDef
+  Id: carrier.shopping_bag
+  DisplayName: Shopping bag
+  Kind: 0
+  CapacityKg: 8
+  RatedKg: 8
+  CapacityLitres: 20
+  TareKg: 0.1
+  Basis: One hand carries 8 kg (GoodsHandlingDef hand limit); a 20 L reusable bag. Island supply plan 2026-11-15 table (i).
