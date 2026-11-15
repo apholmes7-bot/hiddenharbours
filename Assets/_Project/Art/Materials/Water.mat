@@ -262,6 +262,11 @@ Material:
     - _WakeFoamStrength: 0.85
     - _WakeFoamThreshold: 0.12
     - _WakeFoamWhiteHold: 0.12
+    - _WashLineOpacity: 0.85
+    - _WashLineWidth: 0.1
+    - _WashPresenceRamp: 0.1
+    - _WashSeawardDepth: 0.8
+    - _WashSheetOpacity: 0.4
     - _WaterLevel: 0
     - _WhitecapCollapseRate: 1.5
     - _WhitecapFormSharpness: 0.5

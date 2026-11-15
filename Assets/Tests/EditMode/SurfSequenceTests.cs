@@ -26,8 +26,8 @@ namespace HiddenHarbours.Tests.EditMode
         const string WaterPath = "Assets/_Project/Art/Shaders/HiddenHarboursWater.shader";
         const string AdvectPath = "Assets/_Project/Art/Shaders/HiddenHarboursFoamBufferAdvect.shader";
         const string Dial = "_SurfFringeSequenceStrength";
-        const string BaseWaterHash = "e243b20ba89e9c00d2ca87ca7df0c1e13f9cac3d23f38b53d9f6a2a8b0a6c451";
-        // Approved b5825e1f; re-approved at W1 Phase D (#932, owner d20) and C2a Phase D (owner, clarity 1) and at water gains B7 (#992, the seat's lean under the standing word of 10-29) and at crest glow L1 (#1004, the owner's ruling of 11-01) and at the foam lattice hash (the open-sea repeat fix, a named moved premise). UTF-8 without BOM, LF. These are scope guards, not copies of physics.
+        const string BaseWaterHash = "7face1122f6ee2e24ac07ab9c67b81df4a4c81575c6e195651d81e4ee53f7df6";
+        // Approved b5825e1f; re-approved at W1 Phase D (#932, owner d20) and C2a Phase D (owner, clarity 1) and at water gains B7 (#992, the seat's lean under the standing word of 10-29) and at crest glow L1 (#1004, the owner's ruling of 11-01) and at the foam lattice hash (the open-sea repeat fix, a named moved premise) and at the run-up wash (fix/shore-runup-foam, the owner's shore clip review of 11-15). UTF-8 without BOM, LF. These are scope guards, not copies of physics.
         const string LegacyDepth =
             "                float foamDepth  = depthC - lerp(BeachSwash(worldXY, depthC, t) * swashSlope * swashGate,  // local, foam-only\n" +
             "                                                 surfRunUpM, boreFoamBlend);   // …and the foam rides the bore's wash too\n";
@@ -164,16 +164,18 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.That(Code(Section(src, "UNIFORM")), Is.EqualTo("float_SurfFringeSequenceStrength;"));
             var files = new[] { "Assets/_Project/Art/Materials/Water.mat" }.Concat(
                 Directory.GetFiles("Assets/_Project/Art/Materials/WaterPresets", "*.mat").OrderBy(p => p, StringComparer.Ordinal)).ToArray();
+            // Re-pinned at the run-up wash (fix/shore-runup-foam): each file gains exactly the four
+            // _Wash* keys at the shader defaults (ShoreRunUpWashTests reads them); nothing else moved.
             string[] originalHashes = {
-                "74b4ed98a5c1fbe01c0a31f1f141bf2cb64f88bfb7b5d2af8858f2d718aa0827",
-                "46ff1a8bb7fe875d2f639f9ec123f11f74c1db3845222d2cd03b1802e788f7f4",
-                "ee83ebce68046314ad6adf9b2dcbaa52ab1c60380cec5354cd46075c89d2a600",
-                "305d6e0e2dfbfca1d456a5187f3a6e87bc55b5b3eb3afb41d25801304bb5ba27",
-                "8e68a0f9d164553f3ce4c71e272e5cdad8e7a821fb98966f7fb2bec0ef868127",
-                "2f6bf26ee760ff4c056dcb9f30d6690ba671520ae24aa0f2565aff49d73b094b",
-                "beb40b2652b8f5bb7d8b2ced8702b08325f932839ab660fbb6719cb2cb6323a9",
-                "2aa37d8b73b9bbed9fb6f2f222c516d4cb36ec9b84b9349fa4a21819ff54a50c",
-                "feb04726462ea48dd09b4cf9dde70eb6da7060f5de6fbcfa40258cce4ac50392" };
+                "589f23214abcd5b385c366e429d2e23417426d4e9c8c316fdfe39b0f1dfbb488",
+                "44c7d2efda7ea3f5f6f054bd188f4647d1a234dc4a364550d443e24c359aa152",
+                "b7041903bc1cb386f6786bdbbf6d2f0e38701ba6d96b00293fdc6e1ffab36324",
+                "231f19049888d5ebc129e577268a33c580f0d89867ff7ed75a87a9dbb72960fc",
+                "c0fe5d6d3f49ef054205c07df337e69f963f4a2e95c1486eaa4b0847a9bc4692",
+                "efbba716bf3a634b8bda203b03fac2253b84a9c40fadad08fa3679f7df3ec225",
+                "90c5f9ab1b97217c5403cd5b4602fb3710f4753808e2e6176b577cea1c7fff39",
+                "5380eecca2a702cb94b341c4dbb4acf5079e45a436d6d45223950b2f155ba01d",
+                "0d0e28a59508d11e107426d5464dd681f0e7267dae34fda5bca72c00bd887db2" };
             Assert.That(files.Length, Is.EqualTo(9));
             for (int i = 0; i < files.Length; i++)
             {

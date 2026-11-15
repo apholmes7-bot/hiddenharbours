@@ -634,6 +634,12 @@ namespace HiddenHarbours.Tests.EditMode
             // alive * beat as a NUMBER, so they shoot at boost 1 and smooth bands.
             block.SetFloat("_SurfCrestBoost", d.Unsaturated ? 1f : ShippedFloat("_SurfCrestBoost"));
             block.SetFloat("_SurfBands", d.Unsaturated ? 0f : ShippedFloat("_SurfBands"));
+            // The run-up wash (fix/shore-runup-foam) at its passthrough on the measurement arms, like the
+            // age walk above: sheet opacity 1 passes the cover through, and line opacity 0 keeps the fringe
+            // as the edge. The surf-off base shot has no wash, so a wash that hid the fringe or drew its
+            // line only in the red shot would be scored as cover. The LOOK shots keep the shipped wash.
+            block.SetFloat("_WashSheetOpacity", d.Surf.HasValue ? 1f : ShippedFloat("_WashSheetOpacity"));
+            block.SetFloat("_WashLineOpacity", d.Surf.HasValue ? 0f : ShippedFloat("_WashLineOpacity"));
             block.SetFloat("_SurfThreshold", d.SolidSheet ? 0f : ShippedFloat("_SurfThreshold"));
             block.SetFloat("_SurfThresholdSoft", d.SolidSheet ? 0.001f : ShippedFloat("_SurfThresholdSoft"));
             block.SetFloat("_SwellFaceShade", d.FaceShade >= 0f ? d.FaceShade : ShippedFloat("_SwellFaceShade"));
