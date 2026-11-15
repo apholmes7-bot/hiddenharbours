@@ -475,10 +475,36 @@ namespace HiddenHarbours.Tests.EditMode
             Open(rig);
             WalkIn(rig);
             Vector2 outside = Doorway + Out * width;
-            Assert.IsTrue(rig.Door.TryWalkThrough(outside, Vector2.zero, seconds));
+            Assert.IsTrue(rig.Door.TryWalkThrough(outside, Out, seconds));
             Assert.IsFalse(rig.Interior.IsInside, "actual departure ends the cabin state immediately");
             Assert.IsFalse(rig.Door.TryWalkThrough(outside, Vector2.zero, rig.Def.Door.CrossingSettle));
             Assert.IsFalse(rig.Interior.IsInside, "waiting outside cannot restore stale cabin state");
+        }
+
+        [TestCase(0.529f)]
+        [TestCase(0.74f)]
+        [TestCase(1.6f)]
+        public void AnOpenWideEnoughDoorNeverTurnsHerBackWithoutAKey(float width)
+        {
+            Rig rig = NewRig();
+            rig.Def.Door.ClearWidthMeters = width;
+            Open(rig);
+            WalkIn(rig);
+
+            Vector2 outside = Doorway + Out * width;
+            Assert.IsFalse(rig.Door.TryWalkThrough(outside, Vector2.zero, Tick));
+            Assert.IsTrue(rig.Interior.IsInside, "an idle walker sample cannot undo entry");
+            Assert.IsFalse(rig.Door.TryWalkThrough(outside, Vector2.zero, rig.Def.Door.CrossingSettle));
+            Assert.IsTrue(rig.Interior.IsInside);
+
+            Vector2 beside = Doorway + Vector2.right *
+                             (BoatCabinThreshold.BandRadiusMetres(rig.Def.Door) + 1f);
+            Assert.IsFalse(rig.Door.TryWalkThrough(OnTheLine, Vector2.zero, Tick));
+            Assert.IsFalse(rig.Door.TryWalkThrough(beside, Vector2.zero, rig.Def.Door.CrossingSettle));
+            Assert.IsTrue(rig.Interior.IsInside, "moving beside the door cannot spend her intended exit");
+            Assert.IsTrue(rig.Door.TryWalkThrough(OnTheLine, Out, Tick), "her held key walks out freely");
+            Assert.IsFalse(rig.Interior.IsInside);
+            Assert.IsTrue(rig.Door.IsOpen);
         }
 
         [Test]

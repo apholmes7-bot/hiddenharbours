@@ -55,16 +55,52 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.AreEqual(1, walk.Crossings);
         }
 
+        [TestCase(0.529f, false)]
+        [TestCase(0.529f, true)]
+        [TestCase(0.74f, false)]
+        [TestCase(0.74f, true)]
+        [TestCase(1.6f, false)]
+        [TestCase(1.6f, true)]
+        public void WideEnoughDoor_IdleDepartureDoesNotConsumeTheNextHeldCrossing(float width, bool startInside)
+        {
+            var walk = new Passage(width, startInside);
+            Vector2 through = startInside ? Passage.Out : -Passage.Out;
+            Assert.IsTrue(walk.At(Passage.Wall, through, 0f));
+
+            // A lateral position outside the disc is still beside the door, not another crossing.
+            Vector2 beside = BoatCabinThreshold.PointOf(walk.Door)
+                             + Vector2.right * (BoatCabinThreshold.BandRadiusMetres(walk.Door) + 1f);
+            Assert.IsFalse(walk.At(beside, Vector2.zero, walk.Door.CrossingSettle));
+            Assert.AreEqual(!startInside, walk.Inside);
+            Assert.IsTrue(walk.At(Passage.Wall, -through, walk.Door.CrossingSettle + 0.01f));
+            Assert.AreEqual(startInside, walk.Inside);
+            Assert.AreEqual(2, walk.Crossings);
+        }
+
         [TestCase(0.529f)]
+        [TestCase(0.74f)]
         [TestCase(1.6f)]
-        public void NextTickDeparture_WithReleasedKeyStillResolves(float width)
+        public void WideEnoughDoor_AnIdleWalkerSampleNeverUndoesTheEntry(float width)
         {
             var walk = new Passage(width);
             Assert.IsTrue(walk.At(Passage.Wall, -Passage.Out, 0f));
-            Assert.IsTrue(walk.At(walk.ClearPoint(false), Vector2.zero, 0.05f),
-                "the crossing tick must retain its doorway contact");
-            Assert.IsFalse(walk.Inside);
-            Assert.AreEqual(2, walk.Crossings);
+            Assert.IsFalse(walk.At(walk.ClearPoint(false), Vector2.zero, 0.05f));
+            Assert.IsTrue(walk.Inside);
+            Assert.IsFalse(walk.At(walk.ClearPoint(false), Vector2.zero, walk.Door.CrossingSettle));
+            Assert.IsTrue(walk.Inside);
+            Assert.AreEqual(1, walk.Crossings);
+        }
+
+        [TestCase(0.529f)]
+        [TestCase(1.6f)]
+        public void NextTickDeparture_WithKeyStillPointingInDoesNotTurnHerBack(float width)
+        {
+            var walk = new Passage(width);
+            Assert.IsTrue(walk.At(Passage.Wall, -Passage.Out, 0f));
+            Assert.IsFalse(walk.At(walk.ClearPoint(false), -Passage.Out, 0.05f),
+                "retained doorway contact cannot turn her back against the key she holds");
+            Assert.IsTrue(walk.Inside);
+            Assert.AreEqual(1, walk.Crossings);
         }
 
         [Test]

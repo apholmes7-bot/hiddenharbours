@@ -122,7 +122,8 @@ namespace HiddenHarbours.Boats
         /// which retired the latch this replaces). A crossing sets it to zero and her walker's own ticks
         /// run it up; within the band the doorway will not take her again until it reaches the door's
         /// <see cref="BoatInteriorDoor.CrossingSettleSeconds"/>. Leaving the band instead resolves her
-        /// actual side of the wall immediately, so a quick turn back cannot leave her counted inside.
+        /// actual side of the wall immediately when her key points through, so a quick turn back
+        /// cannot leave her counted inside and an idle sample cannot undo her entry.
         ///
         /// <para><b>⚠ It lives HERE, on the door, and not on either walker — that is the point.</b> The
         /// sole and the deck are two frames either side of ONE hole in ONE wall: a walker who crosses in
@@ -634,9 +635,9 @@ namespace HiddenHarbours.Boats
         /// band with the key pointing through, she goes"</i>). The leaf must be standing open and still;
         /// she must be IN the band, or have stepped out of it this tick; she must be
         /// standing on the sill's own floor, when the walker says which floor that is
-        /// (<see cref="TryWalkThroughAt"/>). Leaving the band resolves her actual side of the wall.
-        /// Otherwise the doorway must have settled and her key must point through it — out of the room, or into it
-        /// from the deck (<see cref="BoatCabinThreshold.IsHeldThrough"/>); she must have reached the wall
+        /// (<see cref="TryWalkThroughAt"/>); her key must point through it — out of the room, or into it
+        /// from the deck (<see cref="BoatCabinThreshold.IsHeldThrough"/>). Leaving the band then resolves
+        /// her actual side of the wall. Otherwise the doorway must have settled and she must have reached the wall
         /// line from her side (<see cref="BoatCabinThreshold.HasReachedTheWallLine"/>), or stand pressed
         /// against her floor's edge short of it (<see cref="BoatCabinThreshold.IsPressedShort"/>); and going IN she
         /// must be allowed in at all. <b>Coming OUT is never gated on the entry policy</b> — a cabin that

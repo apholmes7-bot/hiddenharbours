@@ -1470,10 +1470,12 @@ ask, 2026-08-06.) Built as **one rule the player can read off the water**, not a
 ### 9.12 Cabin doorway reversals
 
 The door's authored crossing settle prevents repeated inside/outside changes while the player
-remains in its measured doorway band. On the first step out of that band, an unambiguous position
-on either side of the wall decides the cabin state immediately, even before the settle expires or
-after the movement key is released. A quick step in and turn back must leave a player standing on
-deck counted outside. The crossing tick retains its band contact so a next-tick reversal also works.
+remains in its measured doorway band. On the first step out of that band, with the key held through
+the door, an unambiguous position on either side of the wall decides the cabin state immediately,
+even before the settle expires. A quick step in and turn back must leave a player standing on deck
+counted outside. The crossing tick retains its band contact so a next-tick reversal also works.
+An idle sample or a key pointing away cannot cross her, inside or outside the band: leaving the
+doorway's disc alone does not undo an entry or consume the next intended crossing.
 
 At the wall line itself the settle and held-key rules still apply. Door-open, floor-height, entry
 policy and entry-landing checks remain required. The same hull-local decision uses every door's
