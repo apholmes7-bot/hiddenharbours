@@ -43,3 +43,93 @@ MonoBehaviour:
     Why: in, one side of the doorway lane
   WalkSpeedMetresPerSecond: 1.35
   ScheduleJitterMinutes: 7
+  WeeklyDays:
+  - Weekday: 2
+    Why: "Wednesday is his run to Nine Mile Creek on the quad: over the bar in the
+      morning for fuel and the week's order, back for a late dinner, then the
+      afternoon tide as any day"
+    DayJitterMinutes: 10
+    Entries:
+    - StartHour: 6
+      StationId: station.st_peters.sage_dooryard
+      Activity: 0
+      Why: out early, as any day
+      Uninterruptible: 0
+      RegionId:
+      CrossingCarrierId:
+      CrossingSpeedMetresPerSecond: 0
+    - StartHour: 6.5
+      StationId: station.st_peters.flats_head
+      Activity: 2
+      Why: west on the painted dirt to the bar head, where the quad waits
+      Uninterruptible: 0
+      RegionId:
+      CrossingCarrierId:
+      CrossingSpeedMetresPerSecond: 0
+    - StartHour: 8.5
+      StationId: station.nine_mile_creek.bar_landing
+      Activity: 2
+      Why: "over the bar on the quad to the Nine Mile Creek landing (about 315 m of
+        sand; on foot that is three game hours, on the quad well under one)"
+      Uninterruptible: 1
+      RegionId: region.nine_mile_creek
+      CrossingCarrierId: vehicle.utility_quad
+      CrossingSpeedMetresPerSecond: 5.5
+    - StartHour: 10
+      StationId: station.nine_mile_creek.fuel_stop
+      Activity: 2
+      Why: fuel for the quad and the week's order for the house
+      Uninterruptible: 0
+      RegionId: region.nine_mile_creek
+      CrossingCarrierId:
+      CrossingSpeedMetresPerSecond: 0
+    - StartHour: 11
+      StationId: station.nine_mile_creek.bar_landing
+      Activity: 2
+      Why: back down to the landing, loaded
+      Uninterruptible: 0
+      RegionId: region.nine_mile_creek
+      CrossingCarrierId:
+      CrossingSpeedMetresPerSecond: 0
+    - StartHour: 11.5
+      StationId: station.st_peters.flats_head
+      Activity: 2
+      Why: back over the bar on the quad to the bar head
+      Uninterruptible: 1
+      RegionId: region.st_peters
+      CrossingCarrierId: vehicle.utility_quad
+      CrossingSpeedMetresPerSecond: 5.5
+    - StartHour: 13
+      StationId: station.st_peters.store_customer_b
+      Activity: 2
+      Why: in for a late dinner, the middle slot at the counter
+      Uninterruptible: 0
+      RegionId:
+      CrossingCarrierId:
+      CrossingSpeedMetresPerSecond: 0
+    - StartHour: 14.5
+      StationId: station.st_peters.flats_head
+      Activity: 1
+      Why: back out west for the afternoon tide, as any day
+      Uninterruptible: 0
+      RegionId:
+      CrossingCarrierId:
+      CrossingSpeedMetresPerSecond: 0
+    - StartHour: 19
+      StationId: station.st_peters.green_d
+      Activity: 3
+      Why: in off the flats to the green
+      Uninterruptible: 0
+      RegionId:
+      CrossingCarrierId:
+      CrossingSpeedMetresPerSecond: 0
+    - StartHour: 21
+      StationId: station.st_peters.home_sage_a
+      Activity: 0
+      Why: in, one side of the doorway lane
+      Uninterruptible: 0
+      RegionId:
+      CrossingCarrierId:
+      CrossingSpeedMetresPerSecond: 0
+  Crossings:
+  - {fileID: 11400000, guid: c6d397e892f24e9ba1e0e83720c9b3d2, type: 2}
