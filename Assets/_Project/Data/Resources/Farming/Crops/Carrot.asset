@@ -1,0 +1,37 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 516127e532e5475a9a3509881fbfde0c, type: 3}
+  m_Name: Carrot
+  m_EditorClassIdentifier: HiddenHarbours.Core::HiddenHarbours.Core.CropDef
+  Id: crop.carrot
+  DisplayName: Carrots
+  PlantFrom:
+    Season: 0
+    Day: 8
+  PlantTo:
+    Season: 0
+    Day: 28
+  HarvestFrom:
+    Season: 1
+    Day: 15
+  HarvestTo:
+    Season: 3
+    Day: 7
+  DaysToMature: 35
+  TillLeadDays: 2
+  TendEveryDays: 5
+  HarvestSpreadDays: 6
+  SproutAt: 0.2
+  GrowingAt: 0.45
+  CellVariation: 0.1
+  YieldPerCell: 6
+  ProduceId: produce.carrot

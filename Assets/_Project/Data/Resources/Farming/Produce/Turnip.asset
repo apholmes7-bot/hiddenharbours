@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 16cb8678f4c544dab04f565e5bc70555, type: 3}
+  m_Name: Turnip
+  m_EditorClassIdentifier: HiddenHarbours.Core::HiddenHarbours.Core.ProduceDef
+  Id: produce.turnip
+  DisplayName: Turnip
+  BaseValue: 3
+  EatenRaw: 1
+  RawHungerRelief: 0.06
+  PreppedHungerRelief: 0.25
