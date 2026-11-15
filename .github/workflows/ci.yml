@@ -242,7 +242,10 @@ jobs:
         #  1. PlayModeHangWatchdog (Assets/Tests/PlayMode) watches from a background thread: past 600 s on
         #     one test or gap ([Timeout] + 120 s where a test declares more; limits in TestHangWatch), it
         #     writes `HANG: <test> has run N s` to the log and $HH_TEST_WATCHDOG_DIR/playmode-hang.txt and
-        #     ends the editor with exit code 124. A hang costs ~10 minutes and names its test.
+        #     ends the editor with exit code 124. A hang costs ~10 minutes and names its test. The verdict
+        #     also says whether the main thread had STOPPED or was still TURNING frames (MainThreadPulse);
+        #     when stopped, it SIGABRTs the main thread so the crash handler logs its native stack, and the
+        #     exit code may then be the crash handler's. playmode-hang.txt is the signal, not the code.
         #  2. This step timeout is the backstop for a stall the watchdog cannot see (before the first test
         #     or after the last). 129 green PlayMode phases on 11-12..14 took 75.6-84.6 min (p50 81.1); 100
         #     is 18% over the slowest. Twice the slowest would be past the job's own cap, so it is not used.
