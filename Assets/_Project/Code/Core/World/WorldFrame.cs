@@ -310,7 +310,17 @@ namespace HiddenHarbours.Core
         /// a partly shared edge answers only along its shared stretch. PURE; the crossing itself is still
         /// <see cref="Resolve"/>'s to decide.
         /// </summary>
-        public bool TryGetApproachingNeighbour(string fromId, Vector2 local, float withinMetres, out RegionFrame neighbour)
+        public bool TryGetApproachingNeighbour(string fromId, Vector2 local, float withinMetres, out RegionFrame neighbour) =>
+            TryGetApproachingNeighbour(fromId, local, Vector2.zero, float.NegativeInfinity, withinMetres, out neighbour);
+
+        /// <summary>
+        /// As above, but only across an edge the mover is HEADING for: its velocity's component out through
+        /// that edge must be at least <paramref name="minOutSpeed"/> (m/s). A mover standing, or moving along or
+        /// away from a nearby seam, warms nothing, so a whole neighbour scene is not loaded and kept for a
+        /// player idling near one (rule 7). Pass <see cref="float.NegativeInfinity"/> to ignore the heading.
+        /// </summary>
+        public bool TryGetApproachingNeighbour(string fromId, Vector2 local, Vector2 velocity, float minOutSpeed,
+                                               float withinMetres, out RegionFrame neighbour)
         {
             neighbour = default;
             if (!(withinMetres > 0f) || !TryGet(fromId, out RegionFrame from)) return false;
@@ -321,10 +331,14 @@ namespace HiddenHarbours.Core
             float best = float.MaxValue;
             bool found = false;
             RegionFrame pick = default;
-            Probe(from, r.xMax - local.x, new Vector2(r.xMax + across, along.y), withinMetres, ref best, ref pick, ref found);
-            Probe(from, local.x - r.xMin, new Vector2(r.xMin - across, along.y), withinMetres, ref best, ref pick, ref found);
-            Probe(from, r.yMax - local.y, new Vector2(along.x, r.yMax + across), withinMetres, ref best, ref pick, ref found);
-            Probe(from, local.y - r.yMin, new Vector2(along.x, r.yMin - across), withinMetres, ref best, ref pick, ref found);
+            if (velocity.x >= minOutSpeed)
+                Probe(from, r.xMax - local.x, new Vector2(r.xMax + across, along.y), withinMetres, ref best, ref pick, ref found);
+            if (-velocity.x >= minOutSpeed)
+                Probe(from, local.x - r.xMin, new Vector2(r.xMin - across, along.y), withinMetres, ref best, ref pick, ref found);
+            if (velocity.y >= minOutSpeed)
+                Probe(from, r.yMax - local.y, new Vector2(along.x, r.yMax + across), withinMetres, ref best, ref pick, ref found);
+            if (-velocity.y >= minOutSpeed)
+                Probe(from, local.y - r.yMin, new Vector2(along.x, r.yMin - across), withinMetres, ref best, ref pick, ref found);
             neighbour = pick;
             return found;
         }

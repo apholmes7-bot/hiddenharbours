@@ -15,7 +15,7 @@ namespace HiddenHarbours.Tests.EditMode
     /// <item>the camera clamp, CLOSED on seam sides as on every other (<see cref="CameraBounds.Clamp"/>);</item>
     /// <item>how dark the seam fade is for how near the mover's leading edge is to the edge (<see cref="SeamCrossingFade.TryApproach"/>,
     /// <see cref="SeamCrossingFade.ApproachAlpha"/>, <see cref="SeamCrossingFade.FadeDistanceFor"/>) and its sequence (<see cref="SeamCrossingFade"/>);</item>
-    /// <item>which neighbour to preload (<see cref="WorldFrame.TryGetApproachingNeighbour"/>);</item>
+    /// <item>which neighbour to preload (<c>WorldFrame.TryGetApproachingNeighbour</c>, gated on the heading);</item>
     /// <item>the berth guard (<see cref="RegionTravelCoordinator.ShouldRememberBoatBerth"/>), and the
     /// registry fact that made the old guard dead;</item>
     /// <item>the re-seat rule on a hop (<c>ControlSwitcher.ShouldReseatOnReassert</c>).</item>
@@ -450,6 +450,28 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.That(f.TryGetApproachingNeighbour("region.west", new Vector2(51f, 0f), 40f, out n), Is.True,
                 "inside the hysteresis band past the edge still warms it");
             Assert.That(n.RegionId, Is.EqualTo("region.east"));
+        }
+
+        [Test]
+        public void ApproachingNeighbour_WithAHeading_OnlyAMoverHeadingForTheSeamWarmsIt()
+        {
+            // CI on PR 1223: a player standing at a spawn within the preload distance of a seam loaded the whole
+            // neighbour scene. Warming now needs the mover to be heading out through that edge.
+            WorldFrame f = TwoSideBySide();
+            var near = new Vector2(30f, 0f);   // 20 m from the seam
+            Assert.That(f.TryGetApproachingNeighbour("region.west", near, new Vector2(1f, 0f), MinSpeed, 40f,
+                out RegionFrame n), Is.True, "heading east for it");
+            Assert.That(n.RegionId, Is.EqualTo("region.east"));
+            Assert.That(f.TryGetApproachingNeighbour("region.west", near, Vector2.zero, MinSpeed, 40f, out _), Is.False,
+                "standing");
+            Assert.That(f.TryGetApproachingNeighbour("region.west", near, new Vector2(0.05f, 0f), MinSpeed, 40f, out _), Is.False,
+                "creeping below the least speed");
+            Assert.That(f.TryGetApproachingNeighbour("region.west", near, new Vector2(-1f, 0f), MinSpeed, 40f, out _), Is.False,
+                "heading away");
+            Assert.That(f.TryGetApproachingNeighbour("region.west", near, new Vector2(0f, 2f), MinSpeed, 40f, out _), Is.False,
+                "running along it");
+            Assert.That(f.TryGetApproachingNeighbour("region.west", near, 40f, out _), Is.True,
+                "the heading-free overload is unchanged");
         }
 
         [Test]

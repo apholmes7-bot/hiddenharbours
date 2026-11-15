@@ -437,7 +437,7 @@ namespace HiddenHarbours.App
                 Vector2 outward = Vector2.zero;
                 if (d.Kind == CrossingKind.Stay)
                 {
-                    WarmNeighbour(frame, here, mover.position);
+                    WarmNeighbour(frame, here, mover.position, velocity);
                     if (!SteerSeamFade(frame, here, mover, velocity, boatIsMover, band, out d, out carry, out outward))
                         return;
                 }
@@ -648,13 +648,20 @@ namespace HiddenHarbours.App
         /// ⭐ <b>Warm the neighbour the mover is heading for</b> (PR 1223, the first-entry freeze): within
         /// <see cref="GameServices.RegionPreloadDistanceMetres"/> of a shared edge, start reading the
         /// neighbour's scene in the background and park it (<see cref="RegionSceneLoader.Preload"/>), so the
-        /// crossing only re-activates it. A region already loaded (visited) asks nothing.
+        /// crossing only re-activates it. A region already loaded (visited) asks nothing, and so does a mover
+        /// standing near a seam or moving along or away from it: only HEADING for the edge (faster than the
+        /// seam fade's least approach speed) warms it, so an idle player does not hold a whole second scene.
         /// </summary>
-        void WarmNeighbour(WorldFrame frame, string here, Vector2 moverLocal)
+        // A least speed of zero would let a standing mover (velocity exactly zero) count as heading out. Not a
+        // tunable: it only keeps "standing" meaning standing when the tuned least speed is 0.
+        const float MinHeadingSpeed = 1e-3f;
+
+        void WarmNeighbour(WorldFrame frame, string here, Vector2 moverLocal, Vector2 velocity)
         {
             if (_loader != null && _loader.PreloadingSceneName != null) return;
             // The pure question first, so a rig with no loader never searches for one per step.
-            if (_map == null || !frame.TryGetApproachingNeighbour(here, moverLocal,
+            if (_map == null || !frame.TryGetApproachingNeighbour(here, moverLocal, velocity,
+                    Mathf.Max(GameServices.RegionSeamMinApproachSpeed, MinHeadingSpeed),
                     GameServices.RegionPreloadDistanceMetres, out RegionFrame next)) return;
             RegionSceneLoader loader = Loader;
             if (loader != null && _map.TryGet(next.RegionId, out RegionDef target))
