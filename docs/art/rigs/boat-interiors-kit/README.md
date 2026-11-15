@@ -120,3 +120,27 @@ loft-publishing branch (`hullRigSha256.capeIslanderIsoRig` =
 both branches. **Do not adopt `hull-rigs/capeIslanderIsoRig.js` from this kit** — it is our branch
 and would revert #247. The rig merge (repo as base, door + published loft re-applied on top) is
 pending an owner call; it produces a third sha that has to land in the repo, not just here.
+
+## Prep stations and bunk geometry (hand-authored 2026-11-14)
+
+Owner rulings: bunks aboard are sleepable, and a boat kitchenette cooks raw food in TWO steps, prepared
+at a prep station first, then cooked on the cooktop. `boatInteriorRig.js` does not emit either yet, so
+both were added to the 22 sidecars here by hand, from each sidecar's own boxes (the renderer and its
+SHA are untouched, so every `derivedFromRigSha256` still holds). Teach the renderer the same rules
+before the next regeneration, or it will drop them.
+
+- **`prep` INTERACT anchor** (action `prep`, append-only id) beside every `stove`/`cook` anchor, on
+  `stove_counter` (named in its `counter` field). The renderer draws the rings at 30% along the counter
+  and leaves the forward part free, so the station's reach point stands in the same aisle as the stove's,
+  abreast 75% along the counter. On the two inshore Northumberland variants the helm seat closes that
+  aisle and the station slides aft along the counter to the stove reach. Facings copy the stove's.
+- **`bunk` block on every `sleep` anchor**: `level`, `obstruction` (the berth box it was derived
+  from), `mattress_centre` (centre of the box top, hull frame, z = sole + box height) and `pillow_end`
+  (the middle of the head edge of that top), with `pillow_source`. Every pillow end comes from the art:
+  the V-berth draws its pillows aft at the wide end, and a below-deck bunk puts its pillow at the end
+  farther from the middle of the below deck.
+- **Reach points moved** so each cook, prep and sleep reach stands on its level's sole, clear of every
+  obstruction. The bunk reach used to be generated 0.5 m outside the berth's foot, which put it off the
+  sole on every hull except the cape. Four lobster-variant stove reaches (inshore Newfoundland and
+  standard Fundy, hardtop and open) stood inside the helm seat. Ids did not change. Helm and locker
+  reaches were not touched, though some of them still stand off the sole or inside the helm seat.
