@@ -68,9 +68,9 @@ namespace HiddenHarbours.Tests.EditMode
             var pulse = new MainThreadPulse();
             pulse.Tick(T0, 1, 1f);
             pulse.SceneEvent("loaded StPeters (Single)", "StPeters*", T0.AddSeconds(-4));
-            pulse.SceneEvent(null, "StPeters*, StPeters (loading)", T0);
+            pulse.SceneEvent(null, "StPeters*, StPeters (not loaded: loading or unloading)", T0);
             Assert.That(pulse.Describe(T0.AddSeconds(1)), Does.EndWith(
-                " Loaded scenes: StPeters*, StPeters (loading). Last scene event: loaded StPeters (Single) at 2026-11-15T17:47:47Z."));
+                " Loaded scenes: StPeters*, StPeters (not loaded: loading or unloading). Last scene event: loaded StPeters (Single) at 2026-11-15T17:47:47Z."));
         }
     }
 }
