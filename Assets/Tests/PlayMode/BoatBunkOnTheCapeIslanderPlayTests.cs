@@ -57,7 +57,9 @@ namespace HiddenHarbours.Tests.PlayMode
         [SetUp]
         public void SetUp()
         {
+            SleepFlow.Reset();   // no chooser: these rests are the instant night (a booted core may have left one)
             Interactables.Clear();
+
             InteractVerb.Reset();
             InteractOffer.Reset();
             InteractionGate.Reset();

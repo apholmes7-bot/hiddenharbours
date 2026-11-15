@@ -17,6 +17,10 @@ MonoBehaviour:
   SecondsPerDay: 1800
   StartHour: 7.5
   WakeHour: 6
+  SleepMinHours: 1
+  SleepMaxHours: 8
+  SleepStepHours: 1
+  SleepGameHoursPerRealSecond: 1
   BunkRequiresMooredOrAnchored: 1
   BunkReachMetres: 1
   StartSeason: 1
@@ -532,6 +536,7 @@ MonoBehaviour:
     WalkFloor: 0.85
     SellFloor: 0.92
     TickGameMinutes: 5
+    SleepReliefPerGameHour: 0.125
   Juice:
     GradeEnabled: 1
     GradeStrength: 0.35

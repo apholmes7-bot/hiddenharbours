@@ -90,7 +90,16 @@ namespace HiddenHarbours.Core
             Installed = false;
         }
 
-        static void OnRestRequested(RestSaveRequested request) => Fulfil(request);
+        /// <summary>
+        /// With a chooser present the player picks how long to sleep (<see cref="SleepFlow"/>, owner ruling
+        /// 2026-11-15); without one (a test rig, a scene with no chooser) the rest is the instant night,
+        /// which sleeps the same default length and leaves the same world behind.
+        /// </summary>
+        static void OnRestRequested(RestSaveRequested request)
+        {
+            if (SleepFlow.ChooserPresent) SleepFlow.Begin(request);
+            else Fulfil(request);
+        }
 
         /// <summary>
         /// Do the write and report it. Public so a test can drive the whole contract as a pure call,
@@ -117,20 +126,21 @@ namespace HiddenHarbours.Core
                 // The morning comes FIRST: the write below snapshots the clock, and a reload must wake
                 // on the morning the player just saw. It comes whether or not anything here can keep
                 // the day, because sleeping and saving are two things and only one of them needs a disk.
-                bool woke = RestMorning.Bring(clock, config);
+                // Owner ruling 2026-11-15: never more than eight hours. Turned in at night this is the
+                // morning, exactly as before; turned in at noon it is eight hours on (SleepPlan).
+                double bedtime = ClockSeconds(clock);
+                bool woke = SleepPlan.SleepDefault(clock, config);
                 // The sleep need is relieved here, and ONLY here: after the clock has moved (so a night
                 // slept is a night, whatever the hour you lay down) and before the write below (so the
                 // reload wakes rested, the same morning the player just saw). Gated on `woke`: a held
                 // hour saves the day but sleeps no night. Both the bed ashore and the bunk aboard
                 // (owner 2026-11-14: "bunks on boats sleepable to replenish fatigue") arrive here as the
                 // same RestSaveRequested, so neither has its own call and the rule cannot drift apart.
-                if (woke) GameServices.Needs.Sleep();   // needs slice 1: a night slept is a night rested
+                // Relief in proportion to the hours actually slept (owner ruling 2026-11-15).
+                if (woke) GameServices.Needs.SleepSince(bedtime);
 
-                ISaveService save = GameServices.Save;
-
-                outcome = save == null
-                    ? new GameSaved(false, NoServiceText)
-                    : Write(save, request, woke);
+                bool morning = woke && ClockSeconds(clock) == RestMorning.WakeSeconds(bedtime, config);
+                outcome = Keep(request, woke, morning ? WokeText : SleepFlow.RestedText);
             }
             finally
             {
@@ -231,7 +241,21 @@ namespace HiddenHarbours.Core
         /// <c>Save</c>) and this PR is not the place for it — the failure it hides is "the player pressed
         /// rest while at the title", which they cannot do from inside a bedroom.</para>
         /// </summary>
-        static GameSaved Write(ISaveService save, in RestSaveRequested request, bool woke)
+        /// <summary>
+        /// Stamp the place and write, or say there is nowhere to keep the day. <paramref name="wokeText"/>
+        /// is the line for a sleep that moved the clock; one that did not is <see cref="SavedText"/>.
+        /// Shared by the instant night (<see cref="Fulfil"/>) and the chosen one (<see cref="SleepFlow.Wake"/>)
+        /// so the write cannot drift between them. Publishes nothing: the caller does.
+        /// </summary>
+        internal static GameSaved Keep(in RestSaveRequested request, bool woke, string wokeText)
+        {
+            ISaveService save = GameServices.Save;
+            return save == null
+                ? new GameSaved(false, NoServiceText)
+                : Write(save, request, woke ? wokeText : SavedText);
+        }
+
+        static GameSaved Write(ISaveService save, in RestSaveRequested request, string keptText)
         {
             // Where you slept goes in BEFORE the write, because the write is what makes it durable —
             // stamping after it would keep the anchor only until the next save happened to run, and the
@@ -241,7 +265,7 @@ namespace HiddenHarbours.Core
 
             save.Save();
             return save.LoadedExistingSave
-                ? new GameSaved(true, woke ? WokeText : SavedText)
+                ? new GameSaved(true, keptText)
                 : new GameSaved(false, NoServiceText);
         }
     }

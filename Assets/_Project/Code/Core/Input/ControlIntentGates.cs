@@ -26,7 +26,9 @@ namespace HiddenHarbours.Core
     public static class ControlIntentGates
     {
         /// <summary>Is the shell holding the world? Everything reads as <c>None</c> while it is.</summary>
-        public static bool WorldStopped => ShellFlow.WorldInputBlocked;
+        /// <remarks>Lying down to sleep holds it too (owner ruling 2026-11-15): from the chooser to the
+        /// wake, the fisher is in bed and the keys are the chooser's (<see cref="SleepFlow.HoldsTheWorld"/>).</remarks>
+        public static bool WorldStopped => ShellFlow.WorldInputBlocked || SleepFlow.HoldsTheWorld;
 
         /// <summary>Does a UI own the move axis this frame? The move reads as zero while it does.</summary>
         public static bool MoveClaimed => MoveActionClaim.IsClaimed;
