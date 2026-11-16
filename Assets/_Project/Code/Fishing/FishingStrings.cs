@@ -95,5 +95,21 @@ namespace HiddenHarbours.Fishing
             }
             return LicenceNeeded(fish.DisplayName, licenceName);
         }
+
+        // ---- protected species (owner ruling 2026-11-15: documented, then released) ---------------
+
+        /// <summary>Said when the name of a released protected catch is missing.</summary>
+        public const string ProtectedReleasedUnnamed = "That one's protected — noted, and back she goes.";
+
+        /// <summary>"Atlantic Wolffish, 4.2 kg — protected, so noted and back she goes." Built once at the
+        /// moment the fish is released, never per frame. The weight is said when there is one.</summary>
+        public static string ProtectedReleased(string speciesName, float weightKg)
+        {
+            if (string.IsNullOrWhiteSpace(speciesName)) return ProtectedReleasedUnnamed;
+            if (!(weightKg > 0f)) return speciesName + " — protected, so noted and back she goes.";
+            return speciesName + ", "
+                   + weightKg.ToString("0.0", System.Globalization.CultureInfo.InvariantCulture)
+                   + " kg — protected, so noted and back she goes.";
+        }
     }
 }

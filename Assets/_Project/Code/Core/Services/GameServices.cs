@@ -195,6 +195,15 @@ namespace HiddenHarbours.Core
         public static IFishSizeFacts FishSizes { get; set; }
 
         /// <summary>
+        /// WHICH SPECIES ARE PROTECTED (<see cref="IFishConservationFacts"/>) — published by the Fishing
+        /// module's species registry, read through <see cref="CatchKeep"/> by every hold, pail, freezer,
+        /// hand and save restore so a protected catch is never kept. May be null (a bare scene, an
+        /// EditMode rig): <see cref="CatchKeep"/> then refuses nothing.
+        /// FLAG lead-architect: new Core contract (2026-11-15, protected species are release-only).
+        /// </summary>
+        public static IFishConservationFacts FishConservation { get; set; }
+
+        /// <summary>
         /// WHETHER AN ITEM MAY BE GIVEN (<see cref="IGiftableFacts"/>) — published by the Fishing module's
         /// species registry off <c>FishSpeciesDef.Giftable</c>, read by the world layer's gift act. May be
         /// null: the giver then uses its default for the kind of thing held (a loose catch is giftable).
@@ -1418,6 +1427,7 @@ namespace HiddenHarbours.Core
             FishSchools = null;          // → EmptyFishSchools.Instance; this property is never null
             FishBehaviour = null;        // → EmptyFishBehaviourFacts.Instance; likewise never null
             FishSizes = null;            // nullable by contract: no size word without a registry
+            FishConservation = null;     // nullable by contract: nothing refused without a registry
             GiftableFacts = null;        // nullable by contract: the giver falls back to its kind default
             RadarContacts = null;        // → EmptyRadarSea.Instance; likewise never null
             BirdPresence = null;         // → EmptyBirdPresence.Instance; likewise never null

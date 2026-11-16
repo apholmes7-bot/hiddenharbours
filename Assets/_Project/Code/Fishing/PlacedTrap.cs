@@ -204,11 +204,17 @@ namespace HiddenHarbours.Fishing
             int count = ResolveCatches(now, in ctx, _haulScratch);
             if (count == 0) { Debug.Log("[PlacedTrap] Hauled it up empty — nothing in the pot."); return false; }
 
+            // Protected animals are documented and released, never stowed (owner ruling 2026-11-15), so
+            // they take no room: the room check counts only what may be kept (the shared Core rule).
+            int keepable = 0;
+            for (int i = 0; i < count; i++)
+                if (!CatchReleaseRule.MustReleaseById(_haulScratch[i].SpeciesId, GameServices.FishConservation)) keepable++;
+
             // All-or-nothing room check (one animal = one hold unit, the IHold convention everywhere).
             int freeUnits = hold != null ? hold.CapacityUnits - hold.UsedUnits : 0;
-            if (freeUnits < count)
+            if (freeUnits < keepable)
             {
-                Debug.Log($"[PlacedTrap] {count} in the pot but no room for them all " +
+                Debug.Log($"[PlacedTrap] {keepable} in the pot but no room for them all " +
                           $"({freeUnits} free) — make room and haul her again.");
                 return false;   // don't mark hauled — nothing taken; the trap stays down, try again with room
             }
@@ -218,6 +224,11 @@ namespace HiddenHarbours.Fishing
                 // Stamp the freshness clock at the haul (M1 §7.3): the resolver is pure and clock-free,
                 // so the catch goes on the clock HERE — the instant it comes out of the water.
                 CatchItem catchItem = _haulScratch[i].WithFreshness(Freshness.Landed(now));
+                if (CatchReleaseRule.MustReleaseById(catchItem.SpeciesId, GameServices.FishConservation))
+                {
+                    EventBus.Publish(new CatchReleased(catchItem));   // documented, then back she goes
+                    continue;
+                }
                 if (!hold.TryAdd(catchItem))
                 {
                     // Can't happen under the 1-unit convention the pre-check assumes; honest if it ever does.

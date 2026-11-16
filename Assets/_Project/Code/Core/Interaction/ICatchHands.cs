@@ -23,7 +23,8 @@ namespace HiddenHarbours.Core
         /// <summary>
         /// Put a landed catch in the fisher's hands. Returns false when it could not go there — hands
         /// already full of something that is not a tool — and the caller must then fall back to its own
-        /// hold rather than dropping the catch on the floor.
+        /// hold rather than dropping the catch on the floor. Also false for a catch that may not be kept
+        /// (<see cref="CatchKeep"/>: a protected species is release-only, and the hold refuses it too).
         ///
         /// <para><b>The tool it displaces is not lost.</b> An implementor holding a TOOL when a catch
         /// lands slings it (you tuck the shovel under your arm to lift the clam out) and takes it back the
