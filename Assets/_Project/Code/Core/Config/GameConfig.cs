@@ -1282,6 +1282,15 @@ namespace HiddenHarbours.Core
                  "and unanimated dig. Held tools and catch keep their sprite presenters.")]
         public bool MeshFishingAndDig = true;
 
+        [Header("Effort (too tired / too hungry)")]
+        [Tooltip("Owner ask 2026-11-15: 'when a player is too tired to do an action they will say im too " +
+                 "tired or im too hungry or both'. Which work may be refused (shipped: heavy work only), the " +
+                 "need levels that refuse (tiredness is the main gate; hunger alone only at the very top), " +
+                 "the three lines the player says, and how much sitting rests (a quarter of sleep, never " +
+                 "below a floor only sleep clears). Work already under way is never interrupted. Read " +
+                 "through EffortGate.Settings.")]
+        public EffortSettings Effort = EffortSettings.Default;
+
         public float SecondsPerHour => SecondsPerDay / 24f;
         public float SecondsPerWeek => SecondsPerDay * DaysPerWeek;
         public float SecondsPerSeason => SecondsPerDay * DaysPerSeason;

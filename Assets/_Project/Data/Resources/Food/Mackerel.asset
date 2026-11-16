@@ -18,3 +18,4 @@ MonoBehaviour:
   HungerRelief: 0
   PreppedId: food.mackerel_cleaned
   CookedId: food.grilled_mackerel
+  EnergyKcal: 0

@@ -675,3 +675,17 @@ MonoBehaviour:
     SideReach: 0.7
   DevAllHelmInstruments: 1
   MeshFishingAndDig: 1
+  Effort:
+    RefuseLight: 0
+    RefuseModerate: 0
+    RefuseHeavy: 1
+    TiredRefuseAt: 0.9
+    HungryRefuseAt: 0.97
+    HungryAlsoSaidAt: 0.75
+    TiredLine: I'm too tired.
+    HungryLine: I'm too hungry.
+    BothLine: I'm too tired and too hungry.
+    LineCooldownSeconds: 4
+    BubbleHeightMetres: 2.1
+    SitReliefShareOfSleep: 0.25
+    SitRestFloor: 0.4

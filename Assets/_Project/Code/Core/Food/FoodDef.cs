@@ -46,5 +46,18 @@ namespace HiddenHarbours.Core
         [Tooltip("What the cooktop makes of it: a cooktop recipe's output id (`food.pan_fried_cod`). Required " +
                  "when it is not edible raw; empty when it is never cooked.")]
         public string CookedId;
+
+        /// <summary>The food's energy for the body, kcal per unit eaten (food follow-up, owner ask
+        /// 2026-11-15: "larger ones need more frequent or more calories ... players can overeat").
+        /// <see cref="HungerRelief"/> is how much one unit FILLS you (hunger and the stomach); this is what it
+        /// FEEDS the body, and only the part past what hunger was short of is stored as mass
+        /// (<see cref="IBodyService.Eat(float, float, Vector2, string)"/>). 0, the default and what an asset
+        /// written before this field reads, means "unstated": the body takes the relief's own energy, exactly
+        /// the body slice's meal.</summary>
+        [Tooltip("Food energy of ONE unit, kcal (owner-tunable first pass). What it feeds the body: the part " +
+                 "past what hunger was short of is stored as mass. HungerRelief is how much it fills; this is " +
+                 "how rich it is. 0 = unstated: the body takes the relief's own energy (a full meal of " +
+                 "relief 1 is the reference body's daily need over the hours a meal lasts).")]
+        [Min(0f)] public float EnergyKcal;
     }
 }
