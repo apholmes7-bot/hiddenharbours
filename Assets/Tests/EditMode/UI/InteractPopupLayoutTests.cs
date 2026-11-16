@@ -170,5 +170,51 @@ namespace HiddenHarbours.Tests.UI.EditMode
             Assert.IsFalse(fit.Contains("\n"));
         }
 
+        // =====================================================================================
+        //  THE BUBBLE'S DRESS (owner ruling: the notebook and chat-bubble language)
+        // =====================================================================================
+
+        [Test]
+        public void ItIsAOneLineSpeechBubble_OnTheKitsGrid()
+        {
+            int kit = HiddenHarbours.Core.DialogueBubbleKit.ArtScale;
+            Assert.AreEqual(kit, InteractPopupLayout.Kit);
+            Assert.AreEqual(HiddenHarbours.Core.DialogueBubbleKit.PanelHeightFor(1) * kit,
+                InteractPopupLayout.PanelHeight, 1e-4f, "a one-line speech bubble's height");
+            Assert.AreEqual(HiddenHarbours.Core.HarbourType.GlyphHeight * kit, InteractPopupLayout.FontSize,
+                "the face at a whole multiple of its baked size");
+            Assert.AreEqual(HiddenHarbours.Core.DialogueBubbleKit.PanelInsetL * kit, InteractPopupLayout.TextPadX, 1e-4f);
+            Assert.AreEqual(HiddenHarbours.Core.DialogueBubbleKit.PanelInsetT * kit, InteractPopupLayout.TextPadY, 1e-4f);
+            Assert.AreEqual(0f, InteractPopupLayout.PanelWidth % kit, 1e-4f);
+            Assert.AreEqual(-1, InteractPopupLayout.Ellipsis.IndexOf('…'), "the face has no ellipsis glyph");
+        }
+
+        [Test]
+        public void TheBubbleWidensToItsWords_WithSlack_OnWholeKitPixels()
+        {
+            string longest = new string('w', InteractPopupLayout.MaxCharacters);
+            float words = InteractPopupLayout.EstimateTextUnits(longest);
+            float width = InteractPopupLayout.BubbleWidth(words);
+            Assert.AreEqual(InteractPopupLayout.MaxBubbleWidth, width, 1e-4f);
+            Assert.GreaterOrEqual(width - 2f * InteractPopupLayout.TextPadX - words, InteractPopupLayout.Kit,
+                "at least a kit pixel spare after the longest label");
+            Assert.AreEqual(InteractPopupLayout.PanelWidth, InteractPopupLayout.BubbleWidth(0f), 1e-4f,
+                "a short label keeps the placed width");
+            foreach (float w in new[] { 1f, 100f, 271f, 333f })
+                Assert.AreEqual(0f, InteractPopupLayout.BubbleWidth(w) % InteractPopupLayout.Kit, 1e-4f);
+            Assert.Less(InteractPopupLayout.MaxBubbleWidth, InteractPopupLayout.RefW * 0.4f, "still a corner note");
+        }
+
+        [Test]
+        public void ACornerIsSnappedToAWholeScreenPixel()
+        {
+            foreach (float s in new[] { 1f, 1.5f, 2f, 2.25f })
+            foreach (float u in new[] { -704f, -123.4f, 0f, 917f, 964.333f })
+            {
+                float px = InteractPopupLayout.SnapToScreen(u, s) * s;
+                Assert.AreEqual(Mathf.Round(px), px, 1e-3f, $"{u} at {s}x");
+                Assert.LessOrEqual(Mathf.Abs(InteractPopupLayout.SnapToScreen(u, s) - u), 0.5f / s + 1e-4f);
+            }
+        }
     }
 }

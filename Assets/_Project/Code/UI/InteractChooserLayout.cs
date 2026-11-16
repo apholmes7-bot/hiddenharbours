@@ -47,6 +47,17 @@ namespace HiddenHarbours.UI
         /// holds the hand.</summary>
         public const float TextX = DialogueBubbleKit.OptionTextX * Kit;
 
+        /// <summary>
+        /// Where a row's line of type starts, down from the row's top: the kit's label origin
+        /// (<see cref="DialogueBubbleKit.OptionTextY"/>, from the bubble's top) less the bubble's top inset
+        /// (<see cref="DialogueBubbleKit.OptionInsetT"/>), so the words are set UPPER-left a whole number
+        /// of kit pixels into their row, as the speech bubble's body is, never centred. Centring the
+        /// face's 10-px line in a 13-px row puts it 1.5 kit pixels down. That is half a kit pixel off the
+        /// grid, a quarter pixel at 1080p's 1.5x, and the likely source of the broken glyphs in the
+        /// 2026-11-15 look.
+        /// </summary>
+        public const float TextDrop = (DialogueBubbleKit.OptionTextY - DialogueBubbleKit.OptionInsetT) * Kit;
+
         /// <summary>The hand's centre, from the panel's left edge: halfway into the gutter, as the bubble.</summary>
         public const float CursorX = DialogueBubbleKit.OptionTextX * Kit * 0.5f;
 
@@ -71,7 +82,11 @@ namespace HiddenHarbours.UI
         public const float MinPanelWidth = InteractPopupLayout.PanelWidth;
 
         /// <summary>The widest panel: the kit's widest line of words plus the gutter and right inset.</summary>
-        public const float MaxPanelWidth = TextX + MaxRowCharacters * AdvanceUnits + InsetRight;
+        public const float MaxPanelWidth = TextX + MaxRowCharacters * AdvanceUnits + Slack + InsetRight;
+
+        /// <summary>Spare width after the longest row (the popup's slack, so both say it once): the
+        /// 2026-11-15 look measured the pump verb at 450 of 450 units.</summary>
+        public const float Slack = InteractPopupLayout.SlackKitPixels * Kit;
 
         /// <summary>The drawn width of <paramref name="text"/> in the face, reference units.</summary>
         public static float EstimateTextUnits(string text)
@@ -84,15 +99,20 @@ namespace HiddenHarbours.UI
         /// </summary>
         public static float PanelWidth(float longestTextUnits)
         {
-            float raw = Mathf.Clamp(TextX + longestTextUnits + InsetRight, MinPanelWidth, MaxPanelWidth);
+            float raw = Mathf.Clamp(TextX + longestTextUnits + Slack + InsetRight, MinPanelWidth, MaxPanelWidth);
             return Mathf.Ceil(raw / Kit - 0.001f) * Kit;
         }
 
         /// <summary>The panel's height for <paramref name="count"/> rows.</summary>
         public static float PanelHeight(int count) => InsetTop + Mathf.Max(0, count) * RowHeight + InsetBottom;
 
-        /// <summary>The words' box inside a panel of <paramref name="panelWidth"/>.</summary>
-        public static Vector2 TextSize(float panelWidth) => new Vector2(panelWidth - TextX - InsetRight, RowHeight);
+        /// <summary>The words' box inside a panel of <paramref name="panelWidth"/>: from
+        /// <see cref="TextDrop"/> to the row's foot.</summary>
+        public static Vector2 TextSize(float panelWidth)
+            => new Vector2(panelWidth - TextX - InsetRight, RowHeight - TextDrop);
+
+        /// <summary>Row <paramref name="index"/>'s words' anchored position inside the panel (top-left pivot).</summary>
+        public static Vector2 TextAnchoredPosition(int index) => new Vector2(TextX, RowTop(index) - TextDrop);
 
         /// <summary>Row <paramref name="index"/>'s top, from the panel's top (y down, so negative).</summary>
         public static float RowTop(int index) => -(InsetTop + index * RowHeight);
@@ -223,6 +243,6 @@ namespace HiddenHarbours.UI
 
         /// <summary>The cut mark for a row past the kit's widest line. Three full stops, not "…": the
         /// face (<see cref="HarbourType"/>) has no ellipsis glyph, and a missing glyph draws nothing.</summary>
-        public const string Cut = "...";
+        public const string Cut = InteractPopupLayout.Ellipsis;
     }
 }

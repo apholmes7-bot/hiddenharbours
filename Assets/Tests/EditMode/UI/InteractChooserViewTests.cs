@@ -122,6 +122,13 @@ namespace HiddenHarbours.Tests.UI.EditMode
                 "the face at a whole multiple of its baked size, never resampled");
             Assert.AreEqual(DialogueBubbleKit.OptionTextX * DialogueBubbleKit.ArtScale, InteractChooserLayout.TextX);
             Assert.AreEqual((DialogueBubbleKit.PanelInsetL - 1) * DialogueBubbleKit.ArtScale, InteractChooserLayout.PillInset);
+            Assert.AreEqual(0f, InteractChooserLayout.TextDrop % InteractChooserLayout.Kit, 0.001f,
+                "the words start a whole number of kit pixels into the row, never centred onto a half pixel");
+            Assert.Greater(InteractChooserLayout.TextDrop, 0f);
+            Assert.AreEqual(InteractChooserLayout.RowTop(2) - InteractChooserLayout.TextDrop,
+                InteractChooserLayout.TextAnchoredPosition(2).y, 0.001f);
+            Assert.AreEqual(7f, InteractPopupLayout.SnapToScreen(4.4f, 1.5f) * 1.5f, 0.001f,
+                "a corner lands on a whole screen pixel at 1080p's 1.5x");
             foreach (float w in new[] { 0f, 41f, 300f, 437f, 5000f })
                 Assert.AreEqual(0f, InteractChooserLayout.PanelWidth(w) % InteractChooserLayout.Kit, 0.001f,
                     "the panel is whole kit pixels wide, so its 9-slice ring lands on the grid");
@@ -149,7 +156,8 @@ namespace HiddenHarbours.Tests.UI.EditMode
             float width = InteractChooserLayout.PanelWidth(InteractChooserLayout.EstimateTextUnits(row));
             Assert.Greater(width, InteractPopupLayout.PanelWidth, "wider than the popup's strip");
             Assert.GreaterOrEqual(InteractChooserLayout.TextSize(width).x,
-                InteractChooserLayout.EstimateTextUnits(row), "the words' box holds the words");
+                InteractChooserLayout.EstimateTextUnits(row) + InteractChooserLayout.Kit,
+                "the words' box holds the words with at least a kit pixel spare (the look measured 450 of 450)");
             Assert.AreEqual(InteractChooserLayout.MinPanelWidth, InteractChooserLayout.PanelWidth(40f),
                 "short words keep the popup's width");
             Assert.AreEqual(InteractChooserLayout.MaxPanelWidth, InteractChooserLayout.PanelWidth(5000f),

@@ -154,7 +154,12 @@ namespace HiddenHarbours.UI
                 Vector2 popup = InteractPopupLayout.PanelAnchoredPosition(HelmFootprint.Current,
                                                                           QuestNoteFootprint.Current, w, h);
                 _panel.sizeDelta = new Vector2(_width, InteractChooserLayout.PanelHeight(_paintedCount));
-                _panel.anchoredPosition = InteractChooserLayout.PanelAnchoredPosition(popup, _paintedCount, _width);
+                // The panel's top-left corner, where the rows' words are measured from, on a whole SCREEN
+                // pixel (the speech bubble's own rule), so the face starts on the grid.
+                Vector2 at = InteractChooserLayout.PanelAnchoredPosition(popup, _paintedCount, _width);
+                float s = HudBandLayout.ScaleFactor(w, h);
+                _panel.anchoredPosition = new Vector2(InteractPopupLayout.SnapToScreen(at.x, s),
+                                                      InteractPopupLayout.SnapToScreen(at.y, s));
 
                 Vector2 textSize = InteractChooserLayout.TextSize(_width);
                 for (int i = 0; i < _labels.Length; i++)
@@ -250,13 +255,15 @@ namespace HiddenHarbours.UI
                 go.transform.SetParent(_panel, false);
                 RectTransform rt = go.GetComponent<RectTransform>();
                 TopLeft(rt, new Vector2(0f, 1f));
-                rt.anchoredPosition = new Vector2(InteractChooserLayout.TextX, InteractChooserLayout.RowTop(i));
+                rt.anchoredPosition = InteractChooserLayout.TextAnchoredPosition(i);
                 rt.sizeDelta = InteractChooserLayout.TextSize(_width);
 
                 Text label = go.GetComponent<Text>();
                 label.font = face;
                 label.fontSize = InteractChooserLayout.FontSize;
-                label.alignment = TextAnchor.MiddleLeft;
+                // UPPER-left a whole number of kit pixels into the row, as the speech bubble's body is set;
+                // never middle-aligned (see InteractChooserLayout.TextDrop).
+                label.alignment = TextAnchor.UpperLeft;
                 label.horizontalOverflow = HorizontalWrapMode.Overflow;
                 label.verticalOverflow = VerticalWrapMode.Overflow;
                 label.supportRichText = false;
