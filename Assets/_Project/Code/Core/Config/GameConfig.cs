@@ -1331,11 +1331,115 @@ namespace HiddenHarbours.Core
                  "and unanimated dig. Held tools and catch keep their sprite presenters.")]
         public bool MeshFishingAndDig = true;
 
+        /// <summary>Shipped crossing hysteresis (m), also the fallback for a rig with no GameConfig.</summary>
+        public const float DefaultRegionCrossingHysteresisMetres = 0.25f;
+
+        [Header("Region crossings (ADR 0057: the whole wall is a door)")]
+        [Tooltip("How far (m) past a region's edge the player or boat must go before the crossing into the " +
+                 "neighbour fires, and so also how far they must " +
+                 "come back to cross again: it stops a mover on the seam bouncing between scenes without " +
+                 "ever moving them. Small: it is a stretch of the old scene's empty margin you travel " +
+                 "through before the new scene appears.")]
+        [Min(0f)] public float RegionCrossingHysteresisMetres = DefaultRegionCrossingHysteresisMetres;
+
+        /// <summary>Shipped preload distance (m), also the fallback for a rig with no GameConfig.</summary>
+        public const float DefaultRegionPreloadDistanceMetres = 40f;
+
+        [Tooltip("How near (m) a shared edge the player or boat must come before the neighbouring region's " +
+                 "scene is loaded in the background and parked out of sight, so the crossing only has to " +
+                 "switch it on instead of loading it. Bigger = the load's one heavy frame lands further from " +
+                 "the seam, and more neighbours are kept loaded. 0 = no preload (the scene loads when the " +
+                 "crossing fires, as before).")]
+        [Min(0f)] public float RegionPreloadDistanceMetres = DefaultRegionPreloadDistanceMetres;
+
+        /// <summary>Shipped preload heading gate, release delay and teleport cap, also the fallbacks for a rig
+        /// with no GameConfig (PR 1223, the warm-neighbour fix).</summary>
+        public const float DefaultRegionPreloadMinHeadingSpeed = 0.5f;
+        public const float DefaultRegionPreloadHeadingSeconds = 0.25f;
+        public const float DefaultRegionPreloadReleaseSeconds = 15f;
+        public const float DefaultRegionMoverMaxPlausibleSpeed = 40f;
+
+        [Tooltip("The slowest (m/s) the player or boat must be heading for a shared edge before its neighbour is " +
+                 "loaded in the background. Above the settling jitter of a mover standing still, so only a real " +
+                 "approach warms a neighbour.")]
+        [Min(0f)] public float RegionPreloadMinHeadingSpeed = DefaultRegionPreloadMinHeadingSpeed;
+        [Tooltip("How long (s) the mover must keep heading for the same neighbour before it is loaded, so one odd " +
+                 "physics step never loads a whole region.")]
+        [Min(0f)] public float RegionPreloadHeadingSeconds = DefaultRegionPreloadHeadingSeconds;
+        [Tooltip("How long (s) after the approach ends (the mover turned away, stopped or left the preload " +
+                 "distance) a neighbour loaded ahead of a crossing that never came is unloaded again. A region " +
+                 "the player has been in is never unloaded by this.")]
+        [Min(0f)] public float RegionPreloadReleaseSeconds = DefaultRegionPreloadReleaseSeconds;
+        [Tooltip("The fastest (m/s) the player or boat can really move. A step faster than this is a teleport " +
+                 "(a test staging, a placement on arrival), not speed, and counts as standing still for the seam " +
+                 "fade and the preload.")]
+        [Min(0f)] public float RegionMoverMaxPlausibleSpeed = DefaultRegionMoverMaxPlausibleSpeed;
+
+        /// <summary>Shipped seam-fade timings (s) and distances (m), also the fallbacks for a rig with no
+        /// GameConfig (owner ruling on PR 1223: "a momentary fade out and screen change").</summary>
+        public const float DefaultRegionSeamFadeOutSeconds = 0.15f;
+        public const float DefaultRegionSeamFadeInSeconds = 0.2f;
+        public const float DefaultRegionSeamMaxBlackSeconds = 1.5f;
+        public const float DefaultRegionSeamFootFadeDistanceMetres = 0.45f;
+        public const float DefaultRegionSeamBoatFadeDistanceMetres = 1.5f;
+        public const float DefaultRegionSeamFootDrawnMarginMetres = 0.1f;
+        public const float DefaultRegionSeamBoatDrawnMarginMetres = 0.3f;
+        public const float DefaultRegionSeamMinApproachSpeed = 0.1f;
+
+        [Tooltip("The QUICKEST (s) the screen may go black at a seam. The fade follows how near the mover's " +
+                 "leading edge is to the edge of the screen; this only stops a very fast (or teleported) mover " +
+                 "getting a cut instead of a fade.")]
+        [Min(0f)] public float RegionSeamFadeOutSeconds = DefaultRegionSeamFadeOutSeconds;
+        [Tooltip("How long (s) the screen takes to clear again: on the far side of a seam, or when the mover " +
+                 "stops or turns back before it.")]
+        [Min(0f)] public float RegionSeamFadeInSeconds = DefaultRegionSeamFadeInSeconds;
+        [Tooltip("The longest (s) the screen may stay black without the crossing being made. Past it the fade " +
+                 "gives up and clears.")]
+        [Min(0f)] public float RegionSeamMaxBlackSeconds = DefaultRegionSeamMaxBlackSeconds;
+        [Tooltip("How far (m) from the edge of the screen a walker's leading edge is when the fade starts. The " +
+                 "screen is black as he reaches the edge, whatever his speed (a mover too fast to cover it in the quickest " +
+                 "fade starts further out, by that much). 0.45 m is the quickest fade at a 3 m/s walk. Bigger = gentler.")]
+        [Min(0f)] public float RegionSeamFootFadeDistanceMetres = DefaultRegionSeamFootFadeDistanceMetres;
+        [Tooltip("The same fade distance (m) for a boat, measured from her bow.")]
+        [Min(0f)] public float RegionSeamBoatFadeDistanceMetres = DefaultRegionSeamBoatFadeDistanceMetres;
+        [Tooltip("How far (m) a walker's drawn figure reaches beyond his collider, added to his extent so the " +
+                 "screen is black before any of the drawing meets the screen edge.")]
+        [Min(0f)] public float RegionSeamFootDrawnMarginMetres = DefaultRegionSeamFootDrawnMarginMetres;
+        [Tooltip("How far (m) a boat's drawn hull reaches beyond her collider (bow, stern, oars), for the same " +
+                 "purpose.")]
+        [Min(0f)] public float RegionSeamBoatDrawnMarginMetres = DefaultRegionSeamBoatDrawnMarginMetres;
+        [Tooltip("The slowest (m/s) a mover can head out of a region and still drive a seam fade. Below it the " +
+                 "mover is standing at the edge, and the fade clears.")]
+        [Min(0f)] public float RegionSeamMinApproachSpeed = DefaultRegionSeamMinApproachSpeed;
+
+        /// <summary>Shipped seam re-arm distances, PR 1223 play look: an arrived mover does not fade at the edge it
+        /// came in by until it is this far inside it.</summary>
+        public const float DefaultRegionSeamRearmMoverLengths = 1.5f;
+        public const float DefaultRegionSeamRearmMinMetres = 0.5f;
+
+        [Tooltip("After a crossing, how far inside the edge the mover came in by (in her own lengths: a dory " +
+                 "about 5 m, a walker under 1 m) she must come before that edge fades again. A boat idling or " +
+                 "drifting just past a seam is never under a part-black screen.")]
+        [Min(0f)] public float RegionSeamRearmMoverLengths = DefaultRegionSeamRearmMoverLengths;
+        [Tooltip("The least re-arm distance (m) whatever the mover's length.")]
+        [Min(0f)] public float RegionSeamRearmMinMetres = DefaultRegionSeamRearmMinMetres;
+
+        /// <summary>Shipped return allowance, PR 1223 second play look: how far back out past the edge it came in
+        /// by an arrived mover may be carried (a current, a wind) before that is a crossing back.</summary>
+        public const float DefaultRegionSeamReturnMoverLengths = 0.5f;
+
+        [Tooltip("After a crossing, how far back out past the edge she came in by (in her own lengths) a drift, " +
+                 "a current or a wind may carry her before she crosses back. Stops a boat that stops rowing " +
+                 "just past a seam being carried straight back over it. A real turn back crosses once past it, " +
+                 "under a full fade.")]
+        [Min(0f)] public float RegionSeamReturnMoverLengths = DefaultRegionSeamReturnMoverLengths;
+
         [Header("Ground prints (footprints and tyre marks)")]
         [Tooltip("Footprints and tyre marks on grass, sand, mud and dirt (owner ask 2026-11-15: \"the print " +
                  "lasts 24/h with a gradual fade\"). Lifetime is in IN-GAME hours; sizes are real metres; which " +
                  "ground takes a print is the Zones list. Read through GroundPrintSettings.Current.")]
         public GroundPrintSettings GroundPrints = GroundPrintSettings.Default;
+
         [Header("Effort (too tired / too hungry)")]
         [Tooltip("Owner ask 2026-11-15: 'when a player is too tired to do an action they will say im too " +
                  "tired or im too hungry or both'. Which work may be refused (shipped: heavy work only), the " +

@@ -813,6 +813,70 @@ namespace HiddenHarbours.Core
         public static UnityEngine.Rect CurrentRegionBounds { get; set; }
 
         /// <summary>
+        /// ⭐ <b>The shared world frame</b> (ADR 0057): where every built region sits in one world, so a
+        /// crossing anywhere along a shared edge lands at the same world point. Built from data
+        /// (<c>WorldMap</c> + each <c>RegionDef.WorldOrigin</c>) by the persistent travel rig.
+        ///
+        /// <para>OPTIONAL and NOT part of <see cref="Ready"/>: <b>null means no frame</b>, and every
+        /// consumer then behaves exactly as before it existed (keyed passages, fixed arrivals) — which is
+        /// what every fixture with made-up region ids still gets even when a frame is live, because only
+        /// regions IN the frame are governed by it.</para>
+        /// FLAG lead-architect: new Core contract.
+        /// </summary>
+        public static WorldFrame WorldFrame { get; set; }
+
+        /// <summary>
+        /// Where the player and the player's boat are (region + local pose) — see
+        /// <see cref="IWorldWhereabouts"/>. The persistent travel rig registers itself; the save reads it.
+        /// OPTIONAL: null when no rig is up. FLAG lead-architect: new Core contract (ADR 0057).
+        /// </summary>
+        public static IWorldWhereabouts Whereabouts { get; set; }
+
+        /// <summary>How far (m) past a region's edge a mover must go before the crossing fires — the
+        /// anti-bounce band (ADR 0057). Same <c>Config != null</c> contract as the other tunables.</summary>
+        public static float RegionCrossingHysteresisMetres =>
+            UnityEngine.Mathf.Max(0f, Config != null ? Config.RegionCrossingHysteresisMetres
+                                                     : GameConfig.DefaultRegionCrossingHysteresisMetres);
+
+        /// <summary>How near (m) a shared edge a mover must come before the neighbour's scene starts
+        /// loading in the background (PR 1223). 0 = no preload. Same <c>Config != null</c> contract.</summary>
+        public static float RegionPreloadDistanceMetres =>
+            UnityEngine.Mathf.Max(0f, Config != null ? Config.RegionPreloadDistanceMetres
+                                                     : GameConfig.DefaultRegionPreloadDistanceMetres);
+
+        /// <summary>The seam fade's timings (s), fade distances and drawn margins (m) and least approach speed (m/s), owner
+        /// ruling on PR 1223. Same <c>Config != null</c> contract as the other tunables.</summary>
+        public static float RegionSeamFadeOutSeconds => SeamTunable(c => c.RegionSeamFadeOutSeconds, GameConfig.DefaultRegionSeamFadeOutSeconds);
+        public static float RegionSeamFadeInSeconds => SeamTunable(c => c.RegionSeamFadeInSeconds, GameConfig.DefaultRegionSeamFadeInSeconds);
+        public static float RegionSeamMaxBlackSeconds => SeamTunable(c => c.RegionSeamMaxBlackSeconds, GameConfig.DefaultRegionSeamMaxBlackSeconds);
+        public static float RegionSeamFootFadeDistanceMetres => SeamTunable(c => c.RegionSeamFootFadeDistanceMetres, GameConfig.DefaultRegionSeamFootFadeDistanceMetres);
+        public static float RegionSeamFootDrawnMarginMetres => SeamTunable(c => c.RegionSeamFootDrawnMarginMetres, GameConfig.DefaultRegionSeamFootDrawnMarginMetres);
+        public static float RegionSeamBoatFadeDistanceMetres => SeamTunable(c => c.RegionSeamBoatFadeDistanceMetres, GameConfig.DefaultRegionSeamBoatFadeDistanceMetres);
+        public static float RegionSeamBoatDrawnMarginMetres => SeamTunable(c => c.RegionSeamBoatDrawnMarginMetres, GameConfig.DefaultRegionSeamBoatDrawnMarginMetres);
+        public static float RegionSeamMinApproachSpeed => SeamTunable(c => c.RegionSeamMinApproachSpeed, GameConfig.DefaultRegionSeamMinApproachSpeed);
+        public static float RegionSeamRearmMoverLengths => SeamTunable(c => c.RegionSeamRearmMoverLengths, GameConfig.DefaultRegionSeamRearmMoverLengths);
+        public static float RegionSeamRearmMinMetres => SeamTunable(c => c.RegionSeamRearmMinMetres, GameConfig.DefaultRegionSeamRearmMinMetres);
+        public static float RegionSeamReturnMoverLengths => SeamTunable(c => c.RegionSeamReturnMoverLengths, GameConfig.DefaultRegionSeamReturnMoverLengths);
+
+        /// <summary>The preload's heading gate (m/s, s), release delay (s) and the teleport cap (m/s) on a
+        /// mover's speed, PR 1223. Same <c>Config != null</c> contract.</summary>
+        public static float RegionPreloadMinHeadingSpeed => SeamTunable(c => c.RegionPreloadMinHeadingSpeed, GameConfig.DefaultRegionPreloadMinHeadingSpeed);
+        public static float RegionPreloadHeadingSeconds => SeamTunable(c => c.RegionPreloadHeadingSeconds, GameConfig.DefaultRegionPreloadHeadingSeconds);
+        public static float RegionPreloadReleaseSeconds => SeamTunable(c => c.RegionPreloadReleaseSeconds, GameConfig.DefaultRegionPreloadReleaseSeconds);
+        public static float RegionMoverMaxPlausibleSpeed => SeamTunable(c => c.RegionMoverMaxPlausibleSpeed, GameConfig.DefaultRegionMoverMaxPlausibleSpeed);
+
+        static float SeamTunable(System.Func<GameConfig, float> read, float fallback) =>
+            UnityEngine.Mathf.Max(0f, Config != null ? read(Config) : fallback);
+
+        /// <summary>
+        /// How black the screen is for a seam crossing RIGHT NOW (0 clear .. 1 black): written by the travel
+        /// rig's seam fade (App), read by the one screen fade (UI), so the crossing reuses the existing cover
+        /// without either module referencing the other (rule 4). A plain float, polled per frame: no event,
+        /// no allocation. 0 whenever no seam crossing is under way.
+        /// </summary>
+        public static float SeamCoverAlpha { get; set; }
+
+        /// <summary>
         /// TRUE while the ARRIVAL OPENING is running — from the moment <c>ArrivalOpening</c> leaves
         /// <c>Dormant</c> until it hands the player the boat, and false again the instant it is torn
         /// down. The <b>App</b> opening is the writer; the <b>Art</b> mood-grade director is the reader,
@@ -1489,6 +1553,9 @@ namespace HiddenHarbours.Core
             SwellClimates.Clear();
             PendingArrivalKey = null;
             CurrentRegionBounds = default;
+            SeamCoverAlpha = 0f;          // no crossing outlives its rig: the cover is clear
+            WorldFrame = null;           // no frame: legacy keyed passages, as every fixture expects
+            Whereabouts = null;
             OpeningCinematicRunning = false;   // a torn-down opening never leaves the intro grade on
             WorldUnitsPerRenderedPixel = 0f;   // 0 = no camera has reported; every snap inert
             Config = null;

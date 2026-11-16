@@ -46,6 +46,14 @@ namespace HiddenHarbours.World
                  "stretched over it (scene-sizing §6.1).")]
         public float SeabedPixelsPerMetre = 2f;
 
+        [Header("World frame (ADR 0057) — where this region sits among its neighbours")]
+        [Tooltip("WORLD-frame position of this region's LOCAL origin, in metres. The scene keeps building " +
+                 "around its own (0, 0) — WorldCenter and every scene coordinate stay local — and this " +
+                 "offset says where that local frame sits in the one shared world, so neighbours meet edge " +
+                 "to edge and a crossing anywhere along a shared edge lands at the same world point. Read " +
+                 "only for regions listed in the WorldMap asset. The table is docs/architecture/world-frame.md.")]
+        public Vector2 WorldOrigin = Vector2.zero;
+
         [Header("Harbour & tide (flavour / tunables)")]
         [Tooltip("A deep, dredged harbour stays workable across the tide — it never strands you (P5).")]
         public bool IsDeepHarbour = false;
@@ -80,6 +88,12 @@ namespace HiddenHarbours.World
 
         /// <summary>True if entering requires an unlock flag to be set.</summary>
         public bool RequiresUnlock => !string.IsNullOrEmpty(UnlockFlag);
+
+        /// <summary>This region placed in the shared world frame: <see cref="WorldOrigin"/> plus its local
+        /// rectangle (<see cref="WorldCenter"/> ± <see cref="WorldSizeMeters"/> / 2).</summary>
+        public HiddenHarbours.Core.RegionFrame Frame => new HiddenHarbours.Core.RegionFrame(
+            Id, WorldOrigin,
+            new Rect(WorldCenter - WorldSizeMeters * 0.5f, WorldSizeMeters));
 
         // ---- extent, derived ---------------------------------------------------------------------
 
