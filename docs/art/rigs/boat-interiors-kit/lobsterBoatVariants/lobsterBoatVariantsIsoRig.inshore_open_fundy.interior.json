@@ -720,8 +720,8 @@
       "id": "cooler",
       "action": "food_storage",
       "reach_point": [
-        0.27,
-        2.07,
+        0.3,
+        2.58,
         0.44
       ],
       "visible_facings": [
@@ -734,7 +734,7 @@
         "W",
         "NW"
       ],
-      "_note": "mechanism: food store (cooler: cold only while it holds ice) · house level · under the starboard settee bench (a closed box), reached from the aisle · authored 2026-11-15 (kitchens slice 1); no cooler is drawn yet, art owed",
+      "_note": "mechanism: food store (cooler: cold only while it holds ice) · house level · under the aft end of the starboard settee bench (a closed box), reached from aft of the helm console; moved 2026-11-16 clear of bunk_bench's reach (main gave the bench a night bunk) · authored 2026-11-15 (kitchens slice 1); no cooler is drawn yet, art owed",
       "kitchen_storage": "kitchen_storage.cooler"
     }
   ],

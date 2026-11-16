@@ -310,7 +310,7 @@ MonoBehaviour:
     FurniturePoint: {x: 0, y: 0, z: 0}
   - Id: cooler
     Action: food_storage
-    ReachPoint: {x: 0.27, y: 2.07, z: 0.44}
+    ReachPoint: {x: 0.3, y: 2.58, z: 0.44}
     VisibleFacings:
     - N
     - NE
