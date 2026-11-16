@@ -132,7 +132,40 @@ namespace HiddenHarbours.Tests.World.EditMode
             var many = blocks[2].Rows.Select(r => r.Text).ToArray();
 
             Assert.That(one, Is.EqualTo(new[] { "Wolffish", "Let go: 1", "Day 2, 12:00" }));
-            Assert.That(many, Is.EqualTo(new[] { "Porbeagle", "Let go: 3", "First: day 2, 12:00", "Last: day 4, 06:00" }));
+            Assert.That(many, Is.EqualTo(new[] { "Porbeagle", "Let go: 3", "First d2 12:00", "Last d4 06:00" }));
+        }
+
+        [Test]
+        public void EveryTimeLineFitsTheNarrowestPageWholeUpToAThreeDigitDay()
+        {
+            // The widest reading: day 999 at 23:59, a count of four digits. Measured against the kit's
+            // narrowest text lane, so the day and its clock can never wrap onto separate lines.
+            double late = Day * 998d + Day * 0.9999d;
+            var released = new[]
+            {
+                Entry("fish.wolffish", "Wolffish", 1, late, late),
+                Entry("fish.porbeagle", "Porbeagle", 9999, late, late),
+            };
+
+            var blocks = NotebookContent.ReleasedBlocks(released, NotebookKit.MinCols, Day);
+
+            Assert.That(NotebookContent.DayNumber(late, Day), Is.EqualTo(999), "the arm reaches three digits");
+            foreach (NotebookBlock block in blocks.Skip(1))
+            {
+                foreach (NotebookRow row in block.Rows.Skip(1))
+                    Assert.That(row.Text.Length, Is.LessThanOrEqualTo(NotebookKit.MinCols), row.Text);
+            }
+            Assert.That(blocks[1].Rows.Count, Is.EqualTo(3), "name, count, one day line: nothing wrapped");
+            Assert.That(blocks[2].Rows.Count, Is.EqualTo(4), "name, count, first, last: nothing wrapped");
+        }
+
+        [Test]
+        public void AnExactMinuteIsNeverReadAsTheMinuteBefore()
+        {
+            // 13088.75 s on an 1800 s day is day 8, 488.75 s in: exactly 06:31:00, which a bare floor
+            // of the float product reads as 06:30.
+            Assert.That(NotebookContent.DayNumber(13088.75d, Day), Is.EqualTo(8));
+            Assert.That(NotebookContent.ClockText(13088.75d, Day), Is.EqualTo("06:31"));
         }
 
         [Test]

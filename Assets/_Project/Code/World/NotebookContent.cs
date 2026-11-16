@@ -77,10 +77,12 @@ namespace HiddenHarbours.World
         public const string ReleasedIntroBody = "Protected fish I caught, wrote down and put back.";
 
         /// <summary>One species' lines. <c>{0}</c> is a count; <c>{0}</c>/<c>{1}</c> in the times are the
-        /// day number and the clock.</summary>
+        /// day number and the clock. Each time line fits the narrowest page
+        /// (<see cref="NotebookKit.MinCols"/>) whole for a day up to three digits, so the day and its
+        /// clock never wrap apart.</summary>
         public const string ReleasedCountFormat = "Let go: {0}";
-        public const string ReleasedFirstFormat = "First: day {0}, {1}";
-        public const string ReleasedLastFormat = "Last: day {0}, {1}";
+        public const string ReleasedFirstFormat = "First d{0} {1}";
+        public const string ReleasedLastFormat = "Last d{0} {1}";
         public const string ReleasedOnlyFormat = "Day {0}, {1}";
 
         /// <summary>Source-id prefix for a species' block, so the presenter's selection can name it.</summary>
@@ -90,6 +92,8 @@ namespace HiddenHarbours.World
         private const int MinutesPerHour = 60;
         private const int HoursPerDay = 24;
         private const int MinutesPerDay = MinutesPerHour * HoursPerDay;
+        private const int SecondsPerMinute = 60;
+        private const int ClockSecondsPerDay = MinutesPerDay * SecondsPerMinute;
 
         /// <summary>
         /// Build the whole tab set.
@@ -289,13 +293,17 @@ namespace HiddenHarbours.World
             return (int)System.Math.Floor(s / day) + 1;
         }
 
-        /// <summary>The clock within that day, "HH:MM", truncated to the minute.</summary>
+        /// <summary>The clock within that day, "HH:MM". The reading is rounded to the nearest clock
+        /// second first, then truncated to the minute, so float error just under a minute (06:30:59.999
+        /// for an exact 06:31) cannot show the minute before. Pure and deterministic.</summary>
         public static string ClockText(double gameSeconds, float secondsPerDay)
         {
             double day = SafeDay(secondsPerDay);
             double s = gameSeconds > 0d ? gameSeconds : 0d;
             double into = s - System.Math.Floor(s / day) * day;
-            int minute = (int)System.Math.Floor(into / day * MinutesPerDay);
+            double clockSecond = System.Math.Round(into / day * ClockSecondsPerDay,
+                                                   System.MidpointRounding.AwayFromZero);
+            int minute = (int)(clockSecond / SecondsPerMinute);
             if (minute >= MinutesPerDay) minute = MinutesPerDay - 1;
             return (minute / MinutesPerHour).ToString("00", Invariant) + ":"
                  + (minute % MinutesPerHour).ToString("00", Invariant);
