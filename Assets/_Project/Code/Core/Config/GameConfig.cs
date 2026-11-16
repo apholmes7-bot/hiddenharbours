@@ -1418,6 +1418,22 @@ namespace HiddenHarbours.Core
         [Tooltip("The least re-arm distance (m) whatever the mover's length.")]
         [Min(0f)] public float RegionSeamRearmMinMetres = DefaultRegionSeamRearmMinMetres;
 
+        /// <summary>Shipped return allowance, PR 1223 second play look: how far back out past the edge it came in
+        /// by an arrived mover may be carried (a current, a wind) before that is a crossing back.</summary>
+        public const float DefaultRegionSeamReturnMoverLengths = 0.5f;
+
+        [Tooltip("After a crossing, how far back out past the edge she came in by (in her own lengths) a drift, " +
+                 "a current or a wind may carry her before she crosses back. Stops a boat that stops rowing " +
+                 "just past a seam being carried straight back over it. A real turn back crosses once past it, " +
+                 "under a full fade.")]
+        [Min(0f)] public float RegionSeamReturnMoverLengths = DefaultRegionSeamReturnMoverLengths;
+
+        [Header("Ground prints (footprints and tyre marks)")]
+        [Tooltip("Footprints and tyre marks on grass, sand, mud and dirt (owner ask 2026-11-15: \"the print " +
+                 "lasts 24/h with a gradual fade\"). Lifetime is in IN-GAME hours; sizes are real metres; which " +
+                 "ground takes a print is the Zones list. Read through GroundPrintSettings.Current.")]
+        public GroundPrintSettings GroundPrints = GroundPrintSettings.Default;
+
         [Header("Effort (too tired / too hungry)")]
         [Tooltip("Owner ask 2026-11-15: 'when a player is too tired to do an action they will say im too " +
                  "tired or im too hungry or both'. Which work may be refused (shipped: heavy work only), the " +

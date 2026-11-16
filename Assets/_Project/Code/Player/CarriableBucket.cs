@@ -88,6 +88,7 @@ namespace HiddenHarbours.Player
         /// <inheritdoc/>
         public bool TryAdd(CatchItem item)
         {
+            if (!CatchKeep.MayKeep(in item)) return false;   // protected: release-only, never held
             if (_items.Count >= CapacityUnits) return false;
             _items.Add(item);
             return true;
