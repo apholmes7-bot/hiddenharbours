@@ -46,15 +46,22 @@ namespace HiddenHarbours.Core
     /// <para><b>A catch is counted once, whichever way it came up.</b> Three events say a catch was made,
     /// and one of them also fires for a catch already counted:
     /// <list type="bullet">
-    ///   <item><see cref="CatchLanded"/>: a fresh catch came into her hand (rod on foot, the clam dig).
-    ///   Counted, and remembered as "in hand".</item>
+    ///   <item><see cref="CatchLanded"/>: a fresh catch came into the player's hand (rod on foot, the
+    ///   clam dig). Counted, and remembered as "in hand".</item>
     ///   <item><see cref="FishCaught"/>: a catch entered a hold. Straight from the water (rod at sea, a
-    ///   trap or pot haul, a banded lobster, a clam into the pail) it is counted; when it is the hand
-    ///   catch being stowed (the same item: <c>CarryHands</c> moves it, never re-stamps it) it matches the
-    ///   remembered hand catch and is NOT counted again.</item>
+    ///   trap or pot haul, a banded lobster, a clam into the pail) it is counted. When it is the hand
+    ///   catch being stowed it is NOT counted again: see the handoff below.</item>
     ///   <item><see cref="CatchReleased"/>: a protected catch documented and put back. Counted as caught,
     ///   and as released.</item>
     /// </list></para>
+    ///
+    /// <para><b>The stow handoff.</b> Every way a catch leaves the hand (stowed, eaten, gifted) raises
+    /// <see cref="CatchTakenFromHand"/>, and a stow then raises <see cref="FishCaught"/> for the same item
+    /// in the same call (<c>CarryHands.TryGiveCatchTo</c>: hold add, hand cleared, then the event). So a
+    /// take forgets the remembered hand catch at once and arms a one-shot handoff stamped with the
+    /// current tick (the frame); only a <see cref="FishCaught"/> for the same species and weight on that
+    /// SAME tick spends it. A catch eaten or given away therefore leaves nothing behind that could
+    /// swallow a later, separate catch.</para>
     ///
     /// <para><b>Bound to one game.</b> Each record carries the session it was made in (the live
     /// <c>SaveData</c> object, which a load or a new game replaces). A record or a read for a different
@@ -66,14 +73,18 @@ namespace HiddenHarbours.Core
     /// </summary>
     public sealed class CatchRecordLog
     {
-        /// <summary>How many hand catches are remembered while waiting to be stowed. Hands hold two at
-        /// most; the slack covers a catch that left the hand some other way (sold, given, dropped) and so
-        /// will never be stowed. Oldest is forgotten first.</summary>
+        /// <summary>How many hand catches are remembered while still in hand. Hands hold two at most;
+        /// every take forgets its own, so this bound only matters if a take were ever missed. Oldest is
+        /// forgotten first.</summary>
         public const int MaxPendingHandCatches = 8;
 
         private readonly List<CaughtSpeciesEntry> _entries = new List<CaughtSpeciesEntry>();
         private readonly List<CatchItem> _inHand = new List<CatchItem>(MaxPendingHandCatches);
         private object _session;
+
+        private bool _handoffArmed;
+        private CatchItem _handoff;
+        private long _handoffTick;
 
         /// <summary>Rows in first-caught order. Live: read it, do not keep it.</summary>
         public IReadOnlyList<CaughtSpeciesEntry> Entries => _entries;
@@ -91,16 +102,32 @@ namespace HiddenHarbours.Core
             _inHand.Add(item);
         }
 
-        /// <summary>A catch entered a hold. Counted unless it is a remembered hand catch being stowed.</summary>
-        public void RecordEnteredHold(in CatchItem item, object session = null)
+        /// <summary>A catch left the player's hand, any way (stowed, eaten, gifted). The remembered hand
+        /// catch is forgotten; a one-shot handoff is armed for a stow's <see cref="FishCaught"/> on the same
+        /// <paramref name="tick"/>. A take of something never counted in hand arms nothing.</summary>
+        public void RecordTakenFromHand(in CatchItem item, long tick, object session = null)
         {
             BindTo(session);
+            _handoffArmed = false;
             for (int i = 0; i < _inHand.Count; i++)
             {
                 if (!SameCatch(_inHand[i], item)) continue;
                 _inHand.RemoveAt(i);
+                _handoff = item;
+                _handoffTick = tick;
+                _handoffArmed = true;
                 return;
             }
+        }
+
+        /// <summary>A catch entered a hold on <paramref name="tick"/>. Counted unless it is the catch the
+        /// hand gave up on that same tick (the stow).</summary>
+        public void RecordEnteredHold(in CatchItem item, long tick, object session = null)
+        {
+            BindTo(session);
+            bool stow = _handoffArmed && _handoffTick == tick && SameCatch(_handoff, item);
+            _handoffArmed = false;
+            if (stow) return;
             Count(in item, released: false);
         }
 
@@ -137,6 +164,7 @@ namespace HiddenHarbours.Core
         {
             _entries.Clear();
             _inHand.Clear();
+            _handoffArmed = false;
             _session = null;
         }
 
@@ -173,13 +201,15 @@ namespace HiddenHarbours.Core
             if (ReferenceEquals(session, _session)) return;
             _entries.Clear();
             _inHand.Clear();
+            _handoffArmed = false;
             _session = session;
         }
     }
 
     /// <summary>
     /// <b>THE RUNNING GAME'S catch record</b>: one <see cref="CatchRecordLog"/>, fed by
-    /// <see cref="CatchLanded"/>, <see cref="FishCaught"/> and <see cref="CatchReleased"/> through the
+    /// <see cref="CatchLanded"/>, <see cref="FishCaught"/>, <see cref="CatchReleased"/> and
+    /// <see cref="CatchTakenFromHand"/> through the
     /// <see cref="EventBus"/>, so no catch path has to know it exists and it never references the Fishing
     /// module (rule 4). Each catch is bound to the live save object.
     ///
@@ -217,6 +247,7 @@ namespace HiddenHarbours.Core
             EventBus.Subscribe<CatchLanded>(OnLanded);
             EventBus.Subscribe<FishCaught>(OnCaught);
             EventBus.Subscribe<CatchReleased>(OnReleased);
+            EventBus.Subscribe<CatchTakenFromHand>(OnTaken);
         }
 
         /// <summary>Stop listening. Idempotent. The record itself is kept.</summary>
@@ -234,11 +265,18 @@ namespace HiddenHarbours.Core
             EventBus.Unsubscribe<CatchLanded>(OnLanded);
             EventBus.Unsubscribe<FishCaught>(OnCaught);
             EventBus.Unsubscribe<CatchReleased>(OnReleased);
+            EventBus.Unsubscribe<CatchTakenFromHand>(OnTaken);
         }
 
         private static void OnLanded(CatchLanded e) => Log.RecordLandedInHand(e.Item, CurrentSession());
-        private static void OnCaught(FishCaught e) => Log.RecordEnteredHold(e.Item, CurrentSession());
+        private static void OnCaught(FishCaught e) => Log.RecordEnteredHold(e.Item, Tick(), CurrentSession());
         private static void OnReleased(CatchReleased e) => Log.RecordReleased(e.Item, CurrentSession());
+        private static void OnTaken(CatchTakenFromHand e) => Log.RecordTakenFromHand(e.Item, Tick(), CurrentSession());
+
+        /// <summary>The handoff's tick: the frame. A stow raises its take and its hold entry in one call,
+        /// so both land on one frame; an eat or a gift is never followed by a separate identical catch
+        /// entering a hold within that same frame.</summary>
+        private static long Tick() => Time.frameCount;
 
         private static object CurrentSession() => GameServices.Save?.Current;
     }

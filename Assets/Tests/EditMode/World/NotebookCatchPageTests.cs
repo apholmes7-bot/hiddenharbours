@@ -139,6 +139,38 @@ namespace HiddenHarbours.Tests.World.EditMode
             Assert.That(blocks[0].Rows.Count, Is.EqualTo(4), "name, caught, best, let go: nothing wrapped");
         }
 
+        [TestCase(0.02f, "Best: 20 g")]       // the smallest shellfish in the data
+        [TestCase(0.04f, "Best: 40 g")]       // a rainbow smelt: was "Best: 0.0 kg"
+        [TestCase(0.999f, "Best: 999 g")]
+        [TestCase(0.9996f, "Best: 1.0 kg")]   // rounds up to a kilogram: reads as one, never "1000 g"
+        [TestCase(1.0f, "Best: 1.0 kg")]
+        [TestCase(7.5f, "Best: 7.5 kg")]
+        [TestCase(1234.56f, "Best: 1234.6 kg")]
+        [TestCase(0.0001f, "Best: 1 g")]      // a positive weight never reads as nothing
+        public void TheRecordReadsInGramsUnderAKilogramAndKilogramsFromOneUp(float kg, string expected)
+        {
+            string text = NotebookContent.RecordText(kg);
+            Assert.That(text, Is.EqualTo(expected));
+            Assert.That(text.Length, Is.LessThanOrEqualTo(NotebookKit.MinCols), "fits the narrowest page");
+        }
+
+        [Test]
+        public void ASmallRecordShowsGramsOnThePageAndAnUnknownWeightShowsNoLine()
+        {
+            var caught = new[]
+            {
+                Entry("fish.rainbow_smelt", "Rainbow Smelt", 1, 0, 0.04f),
+                Entry("fish.blue_mussel", "Blue Mussel", 1, 0, 0f),
+            };
+
+            var blocks = NotebookContent.CatchBlocks(caught, NotebookKit.MinCols);
+
+            Assert.That(blocks[0].Rows.Select(r => r.Text).ToArray(),
+                        Is.EqualTo(new[] { "Rainbow Smelt", "Caught: 1", "Best: 40 g" }));
+            Assert.That(blocks[1].Rows.Select(r => r.Text).ToArray(),
+                        Is.EqualTo(new[] { "Blue Mussel", "Caught: 1" }), "never \"0\"");
+        }
+
         // ---- the binding --------------------------------------------------------------------------------
 
         [Test]

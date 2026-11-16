@@ -73,13 +73,19 @@ namespace HiddenHarbours.World
         public const string TabCaught = "tab.caught";
         public const string LabelCaught = "CATCH";
 
-        /// <summary>One species' lines under its name: how many caught, the record weight in kg (the
-        /// size a catch carries, one decimal as the landing line shows it), and how many were protected
-        /// and put back (only when any were). Each fits the narrowest page
+        /// <summary>One species' lines under its name: how many caught, the record weight (the size a
+        /// catch carries: whole grams under a kilogram, kilograms to one decimal from one up), and how
+        /// many were protected and put back (only when any were). Each fits the narrowest page
         /// (<see cref="NotebookKit.MinCols"/>) whole for four-digit counts and weights.</summary>
         public const string CaughtCountFormat = "Caught: {0}";
-        public const string CaughtRecordFormat = "Best: {0:0.0} kg";
+        public const string CaughtRecordKgFormat = "Best: {0:0.0} kg";
+        public const string CaughtRecordGramsFormat = "Best: {0} g";
         public const string CaughtReleasedFormat = "Let go: {0}";
+
+        /// <summary>Grams in a kilogram, and tenths in a kilogram: the two roundings the record line
+        /// uses. Units, not tunables.</summary>
+        private const int GramsPerKg = 1000;
+        private const int TenthsPerKg = 10;
 
         /// <summary>Source-id prefix for a species' block, so the presenter's selection can name it.</summary>
         public const string CaughtSourcePrefix = "caught.";
@@ -248,11 +254,8 @@ namespace HiddenHarbours.World
                 if (string.IsNullOrEmpty(e.SpeciesId) || e.Count <= 0) continue;
 
                 string head = string.IsNullOrEmpty(e.DisplayName) ? e.SpeciesId : e.DisplayName;
-                var body = new List<string>
-                {
-                    string.Format(Invariant, CaughtCountFormat, e.Count),
-                    string.Format(Invariant, CaughtRecordFormat, e.RecordWeightKg),
-                };
+                var body = new List<string> { string.Format(Invariant, CaughtCountFormat, e.Count) };
+                if (e.RecordWeightKg > 0f) body.Add(RecordText(e.RecordWeightKg));   // unknown: no line, never "0"
                 if (e.ReleasedCount > 0)
                     body.Add(string.Format(Invariant, CaughtReleasedFormat, e.ReleasedCount));
 
@@ -260,6 +263,26 @@ namespace HiddenHarbours.World
             }
 
             return blocks;
+        }
+
+        /// <summary>
+        /// The record line for a positive weight. Under a kilogram it is whole grams, rounded half away
+        /// from zero and never below 1 g ("Best: 40 g"); a weight that rounds to 1000 g reads as a
+        /// kilogram. From a kilogram up it is kilograms rounded to the tenth the same way
+        /// ("Best: 7.5 kg"). Rounded in doubles from the stored float, so it is the same on every machine.
+        /// </summary>
+        public static string RecordText(float kg)
+        {
+            double weight = kg;
+            double grams = System.Math.Round(weight * GramsPerKg, System.MidpointRounding.AwayFromZero);
+            if (grams < GramsPerKg)
+            {
+                long g = grams < 1d ? 1L : (long)grams;
+                return string.Format(Invariant, CaughtRecordGramsFormat, g);
+            }
+
+            double tenths = System.Math.Round(weight * TenthsPerKg, System.MidpointRounding.AwayFromZero);
+            return string.Format(Invariant, CaughtRecordKgFormat, tenths / TenthsPerKg);
         }
 
         private static readonly System.Globalization.CultureInfo Invariant =

@@ -11,6 +11,7 @@ namespace HiddenHarbours.Tests.World.EditMode
     {
         const string Cod = "fish.atlantic_cod";
         const string Wolffish = "fish.atlantic_wolffish";
+        const string Smelt = "fish.rainbow_smelt";
 
         static CatchItem Catch(string id, float kg, string name = "Cod")
             => new CatchItem(id, name, FishCategory.InshoreGroundfish, kg, 0, 0f);
@@ -35,10 +36,10 @@ namespace HiddenHarbours.Tests.World.EditMode
         public void EachSpeciesIsOneRowCountedWithItsHeaviestWeight()
         {
             var log = new CatchRecordLog();
-            log.RecordEnteredHold(Catch(Cod, 3.2f));
-            log.RecordEnteredHold(Catch(Wolffish, 4f, "Wolffish"));
-            log.RecordEnteredHold(Catch(Cod, 7.5f));
-            log.RecordEnteredHold(Catch(Cod, 5.1f));
+            log.RecordEnteredHold(Catch(Cod, 3.2f), 1);
+            log.RecordEnteredHold(Catch(Wolffish, 4f, "Wolffish"), 2);
+            log.RecordEnteredHold(Catch(Cod, 7.5f), 3);
+            log.RecordEnteredHold(Catch(Cod, 5.1f), 4);
 
             Assert.That(log.SpeciesCount, Is.EqualTo(2));
             Assert.That(log.Entries[0].SpeciesId, Is.EqualTo(Cod), "first-caught order, nothing sorts");
@@ -55,12 +56,14 @@ namespace HiddenHarbours.Tests.World.EditMode
             CatchItem cod = Catch(Cod, 2.4f);
 
             log.RecordLandedInHand(cod);
-            log.RecordEnteredHold(cod);   // the same item, moved from her hand into the pail
+            // The stow: the hand gives it up and the hold takes it, in one call on one tick.
+            log.RecordTakenFromHand(cod, 5);
+            log.RecordEnteredHold(cod, 5);
 
             Assert.That(log.Entries[0].Count, Is.EqualTo(1));
 
-            log.RecordEnteredHold(Catch(Cod, 2.4f));   // a second fish of the same weight, straight to the hold
-            Assert.That(log.Entries[0].Count, Is.EqualTo(2), "the hand match is spent, not reused");
+            log.RecordEnteredHold(Catch(Cod, 2.4f), 5);   // a second fish of the same weight, same tick
+            Assert.That(log.Entries[0].Count, Is.EqualTo(2), "the handoff is spent, not reused");
         }
 
         [Test]
@@ -72,14 +75,44 @@ namespace HiddenHarbours.Tests.World.EditMode
         }
 
         [Test]
+        public void AHandCatchEatenOrGivenNeverSwallowsALaterIdenticalCatch()
+        {
+            // The reproduced case: a 0.04 kg smelt to the hand, taken from the hand (eaten), then a
+            // separate 0.04 kg smelt straight into a hold. That second smelt is a catch.
+            var log = new CatchRecordLog();
+            CatchItem first = Catch(Smelt, 0.04f, "Rainbow Smelt");
+
+            log.RecordLandedInHand(first);
+            log.RecordTakenFromHand(first, 10);   // eaten: nothing enters a hold on this tick
+
+            log.RecordEnteredHold(Catch(Smelt, 0.04f, "Rainbow Smelt"), 11);
+
+            Assert.That(log.Entries[0].Count, Is.EqualTo(2));
+        }
+
+        [Test]
+        public void ATakeOfSomethingNeverCountedInHandArmsNothing()
+        {
+            var log = new CatchRecordLog();
+            CatchItem cod = Catch(Cod, 2.4f);
+
+            log.RecordTakenFromHand(cod, 3);   // e.g. a catch put in the hand from a hold, then stowed
+            log.RecordEnteredHold(cod, 3);
+
+            Assert.That(log.Entries[0].Count, Is.EqualTo(1), "never counted in hand, so the hold counts it");
+        }
+
+        [Test]
         public void TheHandMemoryIsBounded()
         {
             var log = new CatchRecordLog();
             for (int i = 0; i < CatchRecordLog.MaxPendingHandCatches + 1; i++)
                 log.RecordLandedInHand(Catch(Cod, 1f + i));
 
-            // The oldest was forgotten, so stowing it now counts it as a fresh catch.
-            log.RecordEnteredHold(Catch(Cod, 1f));
+            // The oldest was forgotten, so stowing it now arms no handoff and counts it as fresh.
+            CatchItem oldest = Catch(Cod, 1f);
+            log.RecordTakenFromHand(oldest, 7);
+            log.RecordEnteredHold(oldest, 7);
             Assert.That(log.Entries[0].Count, Is.EqualTo(CatchRecordLog.MaxPendingHandCatches + 2));
         }
 
@@ -99,7 +132,7 @@ namespace HiddenHarbours.Tests.World.EditMode
         public void ACatchWithNoSpeciesIsNotFiled()
         {
             var log = new CatchRecordLog();
-            log.RecordEnteredHold(Catch("", 1f));
+            log.RecordEnteredHold(Catch("", 1f), 1);
             log.RecordLandedInHand(Catch(null, 1f));
             log.RecordReleased(Catch(null, 1f));
             Assert.That(log.SpeciesCount, Is.EqualTo(0));
@@ -111,21 +144,23 @@ namespace HiddenHarbours.Tests.World.EditMode
             var log = new CatchRecordLog();
             object gameA = new object(), gameB = new object();
 
-            log.RecordEnteredHold(Catch(Cod, 1f), gameA);
+            log.RecordEnteredHold(Catch(Cod, 1f), 1, gameA);
             Assert.That(log.EntriesFor(gameA).Count, Is.EqualTo(1));
             Assert.That(log.EntriesFor(gameB), Is.Empty, "another save never shows this one's catches");
             Assert.That(log.EntriesFor(gameA), Is.Empty, "and the stale record is gone, not hidden");
         }
 
         [Test]
-        public void TheRunningRecordIsFedByTheThreeEvents()
+        public void TheRunningRecordIsFedByTheEvents()
         {
             CatchRecords.Install();
             CatchRecords.Install();   // idempotent: a second install must not double-count
 
+            // All on one EditMode frame, as a stow is on one game frame.
             CatchItem inHand = Catch(Cod, 3f);
             EventBus.Publish(new CatchLanded(inHand));
-            EventBus.Publish(new FishCaught(inHand));                 // stowed: not a second catch
+            EventBus.Publish(new CatchTakenFromHand(inHand));          // the stow: hand cleared...
+            EventBus.Publish(new FishCaught(inHand));                  // ...hold entered: not a second catch
             EventBus.Publish(new FishCaught(Catch(Cod, 8f)));          // straight into a hold
             EventBus.Publish(new CatchReleased(Catch(Wolffish, 5f, "Wolffish")));
 
@@ -145,6 +180,7 @@ namespace HiddenHarbours.Tests.World.EditMode
             EventBus.Publish(new FishCaught(Catch(Cod, 1f)));
             EventBus.Publish(new CatchLanded(Catch(Cod, 2f)));
             EventBus.Publish(new CatchReleased(Catch(Wolffish, 3f)));
+            EventBus.Publish(new CatchTakenFromHand(Catch(Cod, 2f)));
 
             Assert.That(CatchRecords.Current(), Is.Empty);
             Assert.That(CatchRecords.IsInstalled, Is.False);
