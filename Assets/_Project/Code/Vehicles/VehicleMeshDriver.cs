@@ -99,7 +99,25 @@ namespace HiddenHarbours.Vehicles
             PosePixelGrid();
             PoseFlotation();
             PoseWheels();
+            TrackTirePrints();
         }
+
+        /// <summary>Her tyre marks (GroundPrintMade): one pair per segment, laid from the REAR axle, its
+        /// gauge and tyre width read off her mesh def. The print layer decides whether the ground takes
+        /// them; a parked machine lays nothing because she has not moved.</summary>
+        private readonly TirePrintTrail _tirePrints = new TirePrintTrail();
+
+        private void TrackTirePrints()
+        {
+            Vector2 up = transform.up;
+            Vector2 axle = (Vector2)transform.position + up * _def.RearAxleY;
+            float tire = _def.TireWidthMeters > 0f
+                ? _def.TireWidthMeters
+                : GroundPrintSettings.Current.DefaultTireWidthMetres;
+            _tirePrints.Track(axle, _def.TrackWidthMeters, tire);
+        }
+
+        private void OnDisable() => _tirePrints.Reset();
 
         /// <summary>
         /// ⭐ <b>Put the machine's PICTURE back on the pixel grid</b> (owner playtest 2026-08-23 —

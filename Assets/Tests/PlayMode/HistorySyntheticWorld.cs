@@ -78,6 +78,7 @@ namespace HiddenHarbours.Tests.PlayMode
             if(_origin.IsValid() && _origin.isLoaded) Assert.IsTrue(SceneManager.SetActiveScene(_origin));
             if(_world.IsValid() && _world.isLoaded)
             {
+                yield return HiddenHarbours.Tests.Support.SceneSettle.Frames();
                 var unload=SceneManager.UnloadSceneAsync(_world);
                 float start=Time.realtimeSinceStartup;
                 while(!unload.isDone && Time.realtimeSinceStartup-start<5) yield return new WaitForSecondsRealtime(.025f);

@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e08d388b6adc4b9fb12e153843e42333, type: 3}
+  m_Name: VoyageSideDragger
+  m_EditorClassIdentifier: HiddenHarbours.Core::HiddenHarbours.Core.BoatVoyageDef
+  Id: voyage.side_dragger
+  HullId: boat.side_dragger
+  LongestTrip: 2
+  MinCrewDay: 1
+  MinCrewOvernight: 1
+  MinCrewWeek: 1
+  MinCrewMonth: 1
+  Work:
+  - WorkId: work.otter_trawl
+    MinCrew: 2
+    RequiredRoleIds:
+    - role.skipper
+    - role.winchman
+  - WorkId: work.scallop_drag
+    MinCrew: 3
+    RequiredRoleIds:
+    - role.skipper
+    - role.winchman
+    - role.shucker
+  RealWorldCrew: "Eastern-rig side trawler: 5-8 crew on 6-10 day trips."
+  LimitedBy: "4 bunks against 5 slots; fuel 320 L, about 4.4 game days"

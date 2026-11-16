@@ -88,24 +88,7 @@ namespace HiddenHarbours.Core
             for (int i = 0; i < candidates.Count; i++)
             {
                 IInteractable c = candidates[i];
-                if (c == null) continue;
-
-                // 1) Context — is the actor even somewhere this can be worked from?
-                if ((c.Contexts & actor.Context) == 0) continue;
-
-                // 2) The candidate's own gate.
-                if (!c.IsAvailable) continue;
-
-                // 3) Reach, horizontally. A negative reach is treated as zero rather than as an error:
-                //    an un-tuned registrant should be unreachable, never universally reachable.
-                Vector2 delta = c.WorldPosition - actor.Position;
-                float sqr = delta.sqrMagnitude;
-                float reach = Mathf.Max(0f, c.ReachMeters);
-                if (sqr > reach * reach) continue;
-
-                // 4) The forward arc, for candidates that ask for it — InteractArc.Contains, which is the
-                //    same rule WorldInteractor's conversation filter runs, stated once.
-                if (c.RequiresFacing && !InteractArc.Contains(delta, facing, cosHalfArc)) continue;
+                if (!Qualifies(c, actor, facing, cosHalfArc, out float sqr)) continue;
 
                 if (best == null || Beats(c, c.Priority, sqr, best, bestPriority, bestSqr))
                 {
@@ -116,6 +99,37 @@ namespace HiddenHarbours.Core
             }
 
             return best != null;
+        }
+
+        /// <summary>
+        /// The four filters, stated once: context, the candidate's own gate, reach, and the arc. Shared
+        /// by <see cref="TryResolve"/> and <see cref="InteractChoiceList"/>, so the chooser can never offer
+        /// a thing the single press would have refused to consider. <paramref name="sqr"/> is the squared
+        /// horizontal distance (valid only when this returns true).
+        /// </summary>
+        public static bool Qualifies(IInteractable c, in InteractActor actor, Vector2 facing, float cosHalfArc,
+                                     out float sqr)
+        {
+            sqr = 0f;
+            if (c == null) return false;
+
+            // 1) Context — is the actor even somewhere this can be worked from?
+            if ((c.Contexts & actor.Context) == 0) return false;
+
+            // 2) The candidate's own gate.
+            if (!c.IsAvailable) return false;
+
+            // 3) Reach, horizontally. A negative reach is treated as zero rather than as an error:
+            //    an un-tuned registrant should be unreachable, never universally reachable.
+            Vector2 delta = c.WorldPosition - actor.Position;
+            sqr = delta.sqrMagnitude;
+            float reach = Mathf.Max(0f, c.ReachMeters);
+            if (sqr > reach * reach) return false;
+
+            // 4) The forward arc, for candidates that ask for it — InteractArc.Contains, which is the
+            //    same rule WorldInteractor's conversation filter runs, stated once.
+            if (c.RequiresFacing && !InteractArc.Contains(delta, facing, cosHalfArc)) return false;
+            return true;
         }
 
         /// <summary>The <c>Now</c> twin of <see cref="TryResolve"/>, over the live

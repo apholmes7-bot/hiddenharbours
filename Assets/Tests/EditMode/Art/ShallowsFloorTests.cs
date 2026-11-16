@@ -284,9 +284,27 @@ namespace HiddenHarbours.Tests.Art.EditMode
                     foreach (string input in new[] { "worldXY", "waveFetchFactors", "waveFreqScale" })
                         Assert.AreEqual(1, Count(water, @"(?<![A-Za-z0-9_.])" + input + @"(?:\.[xyzw]+)?\s*[-+*/]?=(?!=)"),
                             input + " is set once");
+                    // One later write each is allowed, and only the shore yield (owner clip review 2026-11-15:
+                    // the surf zone shows the bore, not the oblique swell): `x *= swellKeep;` right after the
+                    // sample and before the floor, so the floor bends by the surface the swell draws. It is no
+                    // part of the floor's switch: with _SurfSwellYield 0 SwellShoreKeep is exactly 1.0 and the
+                    // multiply moves no bit (ShoreSurfPhaseTests pins the yield). wavePrimCos is never written.
+                    string squashed = Squash(water);
+                    int sampleAt = squashed.IndexOf("waveHeight,waveSlope,waveCrest,wavePrimCos);", System.StringComparison.Ordinal);
+                    int floorAt = squashed.IndexOf(FloorCall, System.StringComparison.Ordinal);
                     foreach (string output in new[] { "waveHeight", "waveSlope", "waveCrest", "wavePrimCos" })
-                        Assert.AreEqual(0, Count(water, @"(?<![A-Za-z0-9_.])" + output + @"(?:\.[xyzw]+)?\s*[-+*/]?=(?!=)"),
-                            output + " is written by the sample alone");
+                    {
+                        bool yielded = output != "wavePrimCos";
+                        Assert.AreEqual(yielded ? 1 : 0,
+                            Count(water, @"(?<![A-Za-z0-9_.])" + output + @"(?:\.[xyzw]+)?\s*[-+*/]?=(?!=)"),
+                            output + " is written by the sample alone" + (yielded ? ", and the shore yield" : ""));
+                        if (!yielded) continue;
+                        string yield = output + "*=swellKeep;";
+                        Assert.AreEqual(1, Count(squashed, Regex.Escape(yield)), output + ": the one later write is the yield");
+                        int at = squashed.IndexOf(yield, System.StringComparison.Ordinal);
+                        Assert.That(at > sampleAt && at < floorAt, output + ": the yield sits after the sample, before the floor");
+                    }
+                    StringAssert.Contains("floatswellKeep=SwellShoreKeep(surfBreaking,depth);", squashed);
                     break;
                 case "props":
                     // W4-4c ships ON in the asset since the project lead accepted its plates (10-20). The code's

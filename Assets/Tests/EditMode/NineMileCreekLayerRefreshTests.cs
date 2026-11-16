@@ -41,13 +41,15 @@ namespace HiddenHarbours.Tests.EditMode
             foreach (Doc doc in source.Docs.Where(d => !owned.Contains(d.FileId)))
                 Assert.AreEqual(doc.Text, after.Require(doc.FileId, "protected document").Text, "&" + doc.FileId);
             var trees = source.SubtreeOf(source.RootNamed("CreekTrees").FileId);
-            Assert.AreEqual(263, source.Docs.Count(d => trees.Contains(d.FileId) &&
+            Assert.AreEqual(217, source.Docs.Count(d => trees.Contains(d.FileId) &&
                 (d.Field("m_EditorClassIdentifier") ?? "").EndsWith(".TreeTrunkAnchor", StringComparison.Ordinal)),
                 "the planting's 298 trunk anchors less the 35 tree pieces NMC H4's step 12 clears (33 on a v4 carriageway, " +
-                "1 in a hedge clearance, 1 in a ruled route's swept body; seven documents each)");
-            Assert.AreEqual(527, source.Docs.Count(d =>
+                "1 in a hedge clearance, 1 in a ruled route's swept body; seven documents each), less the 46 trees retired " +
+                "11-15 for standing below the sand line (RegionTreePlacementContentTests)");
+            Assert.AreEqual(481, source.Docs.Count(d =>
                 (d.Field("m_EditorClassIdentifier") ?? "").EndsWith(".SpriteShadow", StringComparison.Ordinal)),
-                "the 562 sprite shadows less the 35 that step 12's cleared tree pieces carry, one each");
+                "the 562 sprite shadows less the 35 that step 12's cleared tree pieces carry, one each, less the 46 that " +
+                "the trees retired 11-15 below the sand line carried");
         }
 
         [Test]

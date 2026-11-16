@@ -18,16 +18,15 @@ using Object = UnityEngine.Object;
 namespace HiddenHarbours.Tests.PlayMode
 {
     /// <summary>
-    /// ⭐ <b>TO NINE MILE CREEK AND BACK: WALKED OVER THE STRAND, ROWED AND SAILED THROUGH THE SEA DOOR</b> (NR1a).
-    /// Rice Point played direct, then each crossing driven as a player drives it, both ways, through the game's own
-    /// passages, the creek's loader and the travel coordinator. Each leg reads the key its passage published, the
-    /// moment before the coordinator takes it, and asserts where that way in put the walker or laid the boat; each
-    /// prints its frame times from the band to <see cref="SettleFrames"/> frames after the arrival.
-    ///
-    /// <para>One rule of playing direct answers the boat's way back: Rice Point's scene laid her, so its anchor
-    /// remembered her berth when it first opened, and her berth beats any way in (<c>RegionTravelCoordinator.
-    /// ApplyArrival</c>, ruled 2026-09-08). A game that boots at St Peters records no berth here, and lays
-    /// her at Rice Point's own sea way in.</para>
+    /// ⭐ <b>TO NINE MILE CREEK AND BACK: WALKED OVER THE STRAND, ROWED AND SAILED ACROSS THE SEAM</b> (NR1a;
+    /// REWRITTEN DELIBERATELY for ADR 0057, owner ruling 2026-11-15: "the whole wall is a door", "doors do not
+    /// teleport"). Each crossing is now the region's EDGE itself, not a keyed band: no key is published, and the
+    /// walker or boat lands at the SAME WORLD POINT on the other side, i.e. her position the moment the scene
+    /// changed plus <c>from.WorldOrigin - to.WorldOrigin</c>. A walk over the strand leaves the boat exactly where
+    /// she was (and hidden, because she is in another region); a sail carries her across and brings her back.
+    /// Rice Point played direct, then each crossing driven as a player drives it, both ways, through the travel
+    /// coordinator's edge crossing and the creek's loader. Each leg prints its frame times from the crossing to
+    /// <see cref="SettleFrames"/> frames after the arrival.
     ///
     /// <para>The sloop sails on a glass sea, 12 kn of wind from the north, so both legs are beam reaches. She is
     /// laid at each way in with the polar's way on, because a sloop at rest has no steerage to turn by.</para>
@@ -40,6 +39,7 @@ namespace HiddenHarbours.Tests.PlayMode
         /// <summary>How near its way in's point a walker lands or a boat lies, after the frame or two of way she
         /// carries before the test sees the arrival.</summary>
         const float LandedWithinMetres = 1f;
+        const string NoKey = null;
         /// <summary>Past a passage's 1.5 s re-entry guard, which it stamps again when its scene's roots come back on.</summary>
         const float ReArmSeconds = 2f;
         const int SettleFrames = 30;
@@ -55,6 +55,9 @@ namespace HiddenHarbours.Tests.PlayMode
         RegionTravelCoordinator _coordinator;
         string _key;
         Vector3 _walkerAt, _boatAt;
+        /// <summary>Where the walker and the boat stood the moment the scene changed, before the shift.</summary>
+        Vector3 _walkerBefore, _boatBefore;
+        bool _crossed;
 
         [UnityTest, Timeout(300000)]
         public IEnumerator TheStrand_WalksToTheCreekAndBack_LandingByKey()
@@ -63,16 +66,23 @@ namespace HiddenHarbours.Tests.PlayMode
             WatchTheKey();
             LandDoor strand = Plan.Doors.Single(d => d.OwnArrival == Doors.StrandDoorArrivalKey);
             StageStrand();
-            yield return Cross("Rice Point to the creek, walked east over the strand", Doors.StrandArrivalKey,
+            Vector3 boatLeft = Boat.transform.position;
+            yield return Cross("Rice Point to the creek, walked east over the strand", NoKey,
                 () => WalkInput.Walk(Vector2.right), () => WalkInput.Release(), CreekScene, strand.Target.Id);
             Assert.That(Switcher.Mode, Is.EqualTo(ControlMode.OnFoot), "the walker arrives on foot");
-            Landed("the creek's " + Doors.StrandArrivalKey, _walkerAt, NineMileCreekMainland.RicePointStrandLandingPos);
+            Vector2 toCreek = Plan.Region.WorldOrigin - strand.Target.WorldOrigin;
+            Landed("the creek, same world point", _walkerAt, (Vector2)_walkerBefore + toCreek);
+            Assert.That(Vector2.Distance(Boat.transform.position, boatLeft), Is.LessThan(0.01f),
+                "a walk never moves the boat: she stays where she was left at Rice Point");
+            Assert.That(Boat.gameObject.activeSelf, Is.False, "and she is not shown in the creek, she is at Rice Point");
 
             yield return new WaitForSecondsRealtime(ReArmSeconds);
-            yield return Cross("the creek to Rice Point, walked west over the strand", Doors.StrandDoorArrivalKey,
+            yield return Cross("the creek to Rice Point, walked west over the strand", NoKey,
                 () => WalkInput.Walk(Vector2.left), () => WalkInput.Release(), RegionScene.name, Plan.Region.Id);
             Assert.That(Switcher.Mode, Is.EqualTo(ControlMode.OnFoot), "and comes home on foot");
-            Landed("Rice Point's " + Doors.StrandDoorArrivalKey, _walkerAt, strand.Disembark);
+            Landed("Rice Point, same world point", _walkerAt, (Vector2)_walkerBefore - toCreek);
+            Assert.That(Boat.gameObject.activeSelf, Is.True, "home again, the boat is shown where she was left");
+            Assert.That(Vector2.Distance(Boat.transform.position, boatLeft), Is.LessThan(0.01f), "untouched");
         }
 
         [UnityTest, Timeout(300000)]
@@ -83,15 +93,15 @@ namespace HiddenHarbours.Tests.PlayMode
             LandDoor sea = Plan.Doors.Single(d => d.OwnArrival == Doors.SeaDoorArrivalKey);
             yield return BoardAtStart();
             LayAt(sea.Arrival, HeadEast, 0f);
-            yield return Cross("Rice Point to the creek, rowed east through the sea door", Doors.SeaArrivalKey,
+            yield return Cross("Rice Point to the creek, rowed east across the seam", NoKey,
                 () => StrokeToward(PastTheSeam(sea, true)), () => Oars.DriveOars(0, 0, true), CreekScene, sea.Target.Id);
             Oars.enabled = false;   // the arrival hands the helm back to the hardware read; the strokes stay scripted
             Assert.That(Switcher.Mode, Is.EqualTo(ControlMode.Aboard), "she arrives with her oarsman");
-            Landed("the creek's " + Doors.SeaArrivalKey, _boatAt, NineMileCreekMainland.RicePointSeaArrivalPos);
-            yield return Afloat("the dory at the creek's way in");
+            Landed("the creek, same world point", _boatAt, (Vector2)_boatBefore + ToCreek(sea));
+            yield return Afloat("the dory where she crossed");
 
             yield return new WaitForSecondsRealtime(ReArmSeconds);
-            yield return Cross("the creek to Rice Point, rowed west through the sea door", Doors.SeaDoorArrivalKey,
+            yield return Cross("the creek to Rice Point, rowed west across the seam", NoKey,
                 () => StrokeToward(PastTheSeam(sea, false)), () => Oars.DriveOars(0, 0, true), RegionScene.name, Plan.Region.Id);
             Oars.enabled = false;
             Assert.That(Switcher.Mode, Is.EqualTo(ControlMode.Aboard), "and comes home with him");
@@ -115,15 +125,15 @@ namespace HiddenHarbours.Tests.PlayMode
             Assert.That(reachKn, Is.GreaterThan(0f), "premise: the polar drives her on a beam reach");
 
             LayAt(sea.Arrival, HeadEast, reachKn);
-            yield return Cross("Rice Point to the creek, sailed east through the sea door", Doors.SeaArrivalKey,
+            yield return Cross("Rice Point to the creek, sailed east across the seam", NoKey,
                 () => Helm(CourseEast), () => Oars.DriveSailHelm(0f), CreekScene, sea.Target.Id);
             Oars.enabled = false;
-            Landed("the creek's " + Doors.SeaArrivalKey, _boatAt, NineMileCreekMainland.RicePointSeaArrivalPos);
-            yield return Afloat("the sloop at the creek's way in");
+            Landed("the creek, same world point", _boatAt, (Vector2)_boatBefore + ToCreek(sea));
+            yield return Afloat("the sloop where she crossed");
 
             yield return new WaitForSecondsRealtime(ReArmSeconds);
             LayAt(NineMileCreekMainland.RicePointSeaArrivalPos, HeadWest, reachKn);
-            yield return Cross("the creek to Rice Point, sailed west through the sea door", Doors.SeaDoorArrivalKey,
+            yield return Cross("the creek to Rice Point, sailed west across the seam", NoKey,
                 () => Helm(CourseWest), () => Oars.DriveSailHelm(0f), RegionScene.name, Plan.Region.Id);
             Oars.enabled = false;
             Assert.That(Switcher.Mode, Is.EqualTo(ControlMode.Aboard), "she comes home with her helmsman");
@@ -143,13 +153,22 @@ namespace HiddenHarbours.Tests.PlayMode
             _coordinator.enabled = true;
         }
 
-        void PeekKey(Scene previous, Scene next) => _key = GameServices.PendingArrivalKey;
+        void PeekKey(Scene previous, Scene next)
+        {
+            _key = GameServices.PendingArrivalKey;
+            _walkerBefore = Walk.transform.position;
+            _boatBefore = Boat.transform.position;
+            _crossed = true;
+        }
+
+        Vector2 ToCreek(LandDoor sea) => Plan.Region.WorldOrigin - sea.Target.WorldOrigin;
 
         /// <summary>Drive until the crossing lands (the active scene and the current region are the far side's),
         /// then stop and keep the frames to <see cref="SettleFrames"/> after.</summary>
         IEnumerator Cross(string leg, string key, Action drive, Action stop, string toScene, string toRegion)
         {
             _key = null;
+            _crossed = false;
             var frames = new List<float>();
             float start = Time.unscaledTime;
             bool fired = false, there = false;
@@ -160,7 +179,7 @@ namespace HiddenHarbours.Tests.PlayMode
                     $"the boat at {Boat.transform.position}");
                 if (!there) drive();
                 yield return null;
-                fired |= !string.IsNullOrEmpty(GameServices.PendingArrivalKey) || _key != null;
+                fired |= _crossed;
                 if (fired) frames.Add(Time.unscaledDeltaTime * 1000f);
                 if (there) { settled++; continue; }
                 there = SceneManager.GetActiveScene().name == toScene && GameServices.CurrentRegionId == toRegion;
@@ -169,12 +188,12 @@ namespace HiddenHarbours.Tests.PlayMode
                 _walkerAt = Walk.transform.position;
                 _boatAt = Boat.transform.position;
             }
-            Assert.That(_key, Is.EqualTo(key), $"{leg}: the passage asks for its way in by key");
+            Assert.That(_key, Is.EqualTo(key), $"{leg}: an edge crossing publishes no way-in key");
             Assert.That(Object.FindObjectsByType<GameRoot>().Length, Is.EqualTo(1), $"{leg}: one persistent core");
-            Assert.That(frames, Is.Not.Empty, $"{leg}: frames were kept from the band on");
+            Assert.That(frames, Is.Not.Empty, $"{leg}: frames were kept from the crossing on");
             frames.Sort();
             float p95 = frames[Mathf.Max(0, Mathf.CeilToInt(frames.Count * .95f) - 1)];
-            string line = $"{leg}: {frames.Count} frames from the band to {SettleFrames} after the arrival, " +
+            string line = $"{leg}: {frames.Count} frames from the crossing to {SettleFrames} after the arrival, " +
                           $"p95 {p95:0.0} ms, worst {frames[frames.Count - 1]:0.0} ms";
             TestContext.WriteLine(line);
             Debug.Log("[RicePointCrossing] " + line);
@@ -209,18 +228,10 @@ namespace HiddenHarbours.Tests.PlayMode
             Assert.That(Boat.IsAground, Is.False, $"{what} floats");
         }
 
-        /// <summary>Home again: her berth, where Rice Point's scene laid her (playing direct), else its sea way in.</summary>
-        void LaidBack(LandDoor sea)
-        {
-            RegionAnchor anchor = RegionAnchor.ForScene(RegionScene);
-            Assert.That(anchor, Is.Not.Null, "Rice Point's anchor");
-            if (anchor.HasAuthoredBoatBerth)
-            {
-                TestContext.WriteLine("Rice Point's scene laid her, so her berth answers her way home (played direct)");
-                Landed("her berth at Rice Point", _boatAt, anchor.AuthoredBoatBerthPosition);
-            }
-            else Landed("Rice Point's " + Doors.SeaDoorArrivalKey, _boatAt, sea.Arrival);
-        }
+        /// <summary>Home again at the same world point she left the creek from: no berth snap, no way-in point
+        /// (the authored berth answered the old keyed door, D8; an edge crossing never consults it).</summary>
+        void LaidBack(LandDoor sea) =>
+            Landed("Rice Point, same world point", _boatAt, (Vector2)_boatBefore - ToCreek(sea));
 
         static void Landed(string where, Vector3 at, Vector2 point)
         {
@@ -249,7 +260,7 @@ namespace HiddenHarbours.Tests.PlayMode
             Scene creek = SceneManager.GetSceneByName(CreekScene);
             if (!creek.IsValid() || !creek.isLoaded) yield break;
             if (_coordinator != null) _coordinator.enabled = false;   // the test is over: no arrival in the scene the unload leaves
-            yield return SceneManager.UnloadSceneAsync(creek);
+            yield return HiddenHarbours.Tests.Support.SceneSettle.Unload(creek);
         }
     }
 }

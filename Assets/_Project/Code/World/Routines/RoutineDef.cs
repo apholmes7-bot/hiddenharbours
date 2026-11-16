@@ -1,3 +1,4 @@
+using HiddenHarbours.Core;
 using UnityEngine;
 
 namespace HiddenHarbours.World
@@ -45,10 +46,53 @@ namespace HiddenHarbours.World
                  "mid-stride would read as broken rather than polite.")]
         public bool Uninterruptible;
 
+        [Tooltip("Which region this block's station is in (region.snake_case). LEAVE EMPTY for the " +
+                 "routine's own region, which is what every block authored before cross-region routines " +
+                 "means. A block whose region differs from the block before it is a CROSSING: at its hour " +
+                 "they set out over one of the routine's Crossings and arrive at that crossing's far station, " +
+                 "which must be this block's station.")]
+        public string RegionId;
+
+        [Tooltip("CROSSING blocks only: what carries them over (an id, e.g. vehicle.utility_quad), or " +
+                 "empty for on foot. A label for presentation; the time is set by the speed below.")]
+        public string CrossingCarrierId;
+
+        [Tooltip("CROSSING blocks only: metres per second over the crossing. 0 = their own walk speed. " +
+                 "A quad is honestly faster than a walker; a laden cart is honestly slower.")]
+        [Min(0f)] public float CrossingSpeedMetresPerSecond;
+
         /// <summary>True when a conversation may stop this block — the default, because the field
         /// records the EXCEPTION. A routine authored before this existed deserializes to false here and
         /// is therefore interruptible, which is what it always was.</summary>
         public bool Interruptible => !Uninterruptible;
+    }
+
+    /// <summary>
+    /// <b>One day of the week that differs from the ordinary one</b>: the weekly errand, the market run.
+    /// On a matching day these blocks are lived INSTEAD of <see cref="RoutineDef.Entries"/>; every other
+    /// day is exactly the ordinary day it always was.
+    ///
+    /// <para>The weekday is the clock's own (<c>DayIndex % GameConfig.DaysPerWeek</c>, as
+    /// <c>GameClock.Weekday</c> computes it), so "Wednesday" means the same thing here as on the HUD.
+    /// Its first and last blocks must be in the routine's own region, so the day starts and ends where
+    /// the ordinary days do and midnight is never a seam.</para>
+    /// </summary>
+    [System.Serializable]
+    public struct RoutineWeeklyDay
+    {
+        [Tooltip("Which day of the week this replaces the ordinary day on.")]
+        public Weekday Weekday;
+
+        [Tooltip("One line on WHY, for the owner reading the table. Authoring note only.")]
+        public string Why;
+
+        [Tooltip("How many GAME minutes, ±, this day's departures may move from one week to the next, " +
+                 "seeded from (worldSeed, day, npc id): nobody leaves at the same minute every week. " +
+                 "Clamped with the person's own jitter so it can never reorder the day.")]
+        [Min(0f)] public float DayJitterMinutes;
+
+        [Tooltip("The blocks of this day, as Entries: ascending StartHour, the last wraps midnight.")]
+        public RoutineEntry[] Entries;
     }
 
     /// <summary>
@@ -115,8 +159,47 @@ namespace HiddenHarbours.World
 
         /// <summary>Metres per second this person moves while catching up after a conversation — their
         /// walk, hurried. Not a stored field: one number times another, so the two can never drift.</summary>
+        [Header("Other days and other regions (owner ask 2026-11-15)")]
+        [Tooltip("Days of the week that differ from the one above, e.g. a weekly errand to Nine Mile " +
+                 "Creek. Empty: every day is the day above, exactly as before.")]
+        public RoutineWeeklyDay[] WeeklyDays = System.Array.Empty<RoutineWeeklyDay>();
+
+        [Tooltip("The crossings this person uses when a block names another region. Each region change in " +
+                 "any of their days must be joined by one of these (RoutineCrossRegionContentTests).")]
+        public RegionCrossingDef[] Crossings = System.Array.Empty<RegionCrossingDef>();
+
         public float CatchUpSpeedMetresPerSecond =>
             WalkSpeedMetresPerSecond * Mathf.Max(1f, CatchUpSpeedMultiplier);
+
+        /// <summary>The region <paramref name="entry"/> is in: its own <see cref="RoutineEntry.RegionId"/>,
+        /// or this routine's when that is empty.</summary>
+        public string RegionOf(in RoutineEntry entry) =>
+            string.IsNullOrEmpty(entry.RegionId) ? RegionId : entry.RegionId;
+
+        /// <summary>
+        /// True when any day of this routine leaves its own region. A routine that never does is resolved
+        /// by exactly the code it always was; this is the switch that keeps every existing villager on it.
+        /// </summary>
+        public bool SpansRegions
+        {
+            get
+            {
+                if (SpansRegionsIn(Entries)) return true;
+                if (WeeklyDays == null) return false;
+                for (int i = 0; i < WeeklyDays.Length; i++)
+                    if (SpansRegionsIn(WeeklyDays[i].Entries)) return true;
+                return false;
+            }
+        }
+
+        /// <summary>True when any of <paramref name="entries"/> names a region other than this routine's.</summary>
+        public bool SpansRegionsIn(RoutineEntry[] entries)
+        {
+            if (entries == null) return false;
+            for (int i = 0; i < entries.Length; i++)
+                if (RegionOf(entries[i]) != RegionId) return true;
+            return false;
+        }
 
         /// <summary>True when this table can actually be walked: two blocks or more, and an NPC to walk
         /// them. Everything downstream is null-tolerant, so a half-authored routine is a reported

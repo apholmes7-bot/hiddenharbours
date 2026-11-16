@@ -79,9 +79,22 @@ namespace HiddenHarbours.Core
 
         public HelmFit(ConsoleRigKind rig, SounderKind sounder, CompassMount compass, bool radar, bool gps,
                        WindInstrumentGrade wind)
+            : this(rig, sounder, compass, radar, gps, wind, false)
         {
-            Rig = rig; Sounder = sounder; Compass = compass; Radar = radar; Gps = gps; Wind = wind;
         }
+
+        /// <summary>The full fit, Loran included. The shorter shapes above leave the Loran off, so no
+        /// caller written before it changes meaning.</summary>
+        public HelmFit(ConsoleRigKind rig, SounderKind sounder, CompassMount compass, bool radar, bool gps,
+                       WindInstrumentGrade wind, bool loran)
+        {
+            Rig = rig; Sounder = sounder; Compass = compass; Radar = radar; Gps = gps; Wind = wind; Loran = loran;
+        }
+
+        /// <summary>A Loran-C receiver is fitted (instrument.loran): two time differences and the
+        /// numbers it remembers, read through <see cref="LoranReceiver"/>. False on every fit built
+        /// without one.</summary>
+        public readonly bool Loran;
 
         /// <summary>A hull with no console at all (the dory): no renderer, nothing fitted.</summary>
         public static HelmFit None => new HelmFit(ConsoleRigKind.None, SounderKind.None, CompassMount.None, false, false);

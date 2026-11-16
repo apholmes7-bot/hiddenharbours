@@ -835,6 +835,7 @@ namespace HiddenHarbours.Tools.RigBaking
                     VisibleFacings = ReadStrings(DeckSidecarJson.Member(e, "visible_facings")),
                 };
                 ReadBunk(e, anchor, read);
+                ReadKitchen(e, anchor, read);
                 read.Anchors.Add(anchor);
             }
 
@@ -897,6 +898,40 @@ namespace HiddenHarbours.Tools.RigBaking
             anchor.PillowEnd = pillow;
         }
 
+        /// <summary>
+        /// An INTERACT entry's optional kitchen blocks (kitchens slice 1): <c>"kitchen_storage": "&lt;def id&gt;"</c>
+        /// on a <c>food_storage</c> anchor, and a furniture block on a seat or a table —
+        /// <c>"seat": {"level", "obstruction", "sit_point": [x, y, z]}</c> or
+        /// <c>"table": {"level", "obstruction", "top_centre": [x, y, z]}</c>. A food store with no def id,
+        /// or a furniture block that is present but incomplete, is refused.
+        /// </summary>
+        static void ReadKitchen(object entry, BoatInteriorAnchor anchor, BoatInteriorRead read)
+        {
+            string storage = (DeckSidecarJson.String(DeckSidecarJson.Member(entry, "kitchen_storage")) ?? "").Trim();
+            if (storage.Length > 0) anchor.KitchenStorageId = storage;
+            else if (anchor.Action == BoatInteriorAnchor.ActionFoodStorage)
+                read.Errors.Add($"INTERACT '{anchor.Id}' is a food store but names no kitchen_storage def.");
+
+            ReadFurniture(entry, anchor, read, "seat", "sit_point");
+            ReadFurniture(entry, anchor, read, "table", "top_centre");
+        }
+
+        static void ReadFurniture(object entry, BoatInteriorAnchor anchor, BoatInteriorRead read,
+                                  string block, string pointKey)
+        {
+            object f = DeckSidecarJson.Member(entry, block);
+            if (f == null) return;
+            string level = DeckSidecarJson.String(DeckSidecarJson.Member(f, "level")) ?? "";
+            if (string.IsNullOrWhiteSpace(level) || !TryPoint(DeckSidecarJson.Member(f, pointKey), out Vector3 point))
+            {
+                read.Errors.Add($"INTERACT '{anchor.Id}': {block} block needs a level and a {pointKey} [x, y, z].");
+                return;
+            }
+            anchor.FurnitureLevel = level.Trim();
+            anchor.FurnitureObstruction = (DeckSidecarJson.String(DeckSidecarJson.Member(f, "obstruction")) ?? "").Trim();
+            anchor.FurniturePoint = point;
+        }
+
         static bool TryPoint(object raw, out Vector3 point)
         {
             point = Vector3.zero;
@@ -939,6 +974,10 @@ namespace HiddenHarbours.Tools.RigBaking
                 if (a.HasBunkGeometry && !levels.Contains(a.BunkLevel))
                     read.Errors.Add($"INTERACT '{a.Id}': bunk level '{a.BunkLevel}' is not a WALKABLE " +
                                     "level of this interior.");
+                // Likewise a seat or a table (kitchens slice 1): furniture inside, so its level is ours.
+                if (a.HasFurnitureGeometry && !levels.Contains(a.FurnitureLevel))
+                    read.Errors.Add($"INTERACT '{a.Id}': furniture level '{a.FurnitureLevel}' is not a " +
+                                    "WALKABLE level of this interior.");
             }
         }
 

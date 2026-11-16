@@ -231,7 +231,7 @@ namespace HiddenHarbours.Tests.PlayMode
             {
                 Scene s = SceneManager.GetSceneAt(i);
                 if (s.IsValid() && s.isLoaded && s.name == NineMileCreekScene && SceneManager.sceneCount > 1)
-                    yield return SceneManager.UnloadSceneAsync(s);
+                    yield return HiddenHarbours.Tests.Support.SceneSettle.Unload(s);
             }
 
             if (!_loadedAny) yield break;

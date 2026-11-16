@@ -60,6 +60,7 @@ namespace HiddenHarbours.Tests.PlayMode
                 var scene = SceneManager.GetSceneByName(name);
                 if (!scene.IsValid() || !scene.isLoaded) continue;
                 Mark("teardown: unloading " + name);
+                yield return HiddenHarbours.Tests.Support.SceneSettle.Frames();
                 AsyncOperation unload = SceneManager.UnloadSceneAsync(scene);
                 double end = Time.realtimeSinceStartupAsDouble + SceneStepSeconds;
                 while (unload != null && !unload.isDone && Time.realtimeSinceStartupAsDouble < end) yield return null;
@@ -95,7 +96,8 @@ namespace HiddenHarbours.Tests.PlayMode
             ShellRestart.DestroyPersistentCore();
             yield return null;
             Mark("boot: loading StPeters");
-            AsyncOperation load = SceneManager.LoadSceneAsync("StPeters", LoadSceneMode.Single);
+            yield return HiddenHarbours.Tests.Support.SceneSettle.Frames();
+            AsyncOperation load = HiddenHarbours.Tests.Support.SceneSettle.StartLoad("StPeters", LoadSceneMode.Single);
             double loadEnd = Time.realtimeSinceStartupAsDouble + SceneStepSeconds;
             while (load != null && !load.isDone)
             {
@@ -255,7 +257,7 @@ namespace HiddenHarbours.Tests.PlayMode
         {
             ShellRestart.DestroyPersistentCore();
             yield return null;
-            yield return SceneManager.LoadSceneAsync("StPeters", LoadSceneMode.Single);
+            yield return HiddenHarbours.Tests.Support.SceneSettle.Load("StPeters", LoadSceneMode.Single);
             yield return null;
             yield return null;
             // A prior save has already received the base's four one-time grants. Keep this fixture's

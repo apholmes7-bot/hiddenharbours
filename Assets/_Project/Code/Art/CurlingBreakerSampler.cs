@@ -151,7 +151,9 @@ namespace HiddenHarbours.Art
                 out float metersSinceBreak, out float travel);
             Vector2 breakLine = BreakerMath.BreakLinePoint(worldPos, surf.ShorewardDirection, metersSinceBreak);
             WaveFetchSample birthFetch = fetch.HasSwell ? fetch : (WaveFetchSample)factor;
-            return BreakerMath.NearestBoreBirthEnergy01(in inputs.Trains, breakLine, travel, surf.BorePhaseDegrees,
+            // Read where SurfAt's clock reads (the refracted point), so the event's bore is the surf's bore.
+            return BreakerMath.NearestBoreBirthEnergy01(in inputs.Trains,
+                BreakerMath.BoreClockPoint(breakLine, in inputs.Breakers), travel, surf.BorePhaseDegrees,
                 BreakerMath.PeriodSeconds(in dominant), birthFetch, inputs.Breakers.BoreSetStrength, inputs.FreqScale,
                 inputs.TimeSeconds);
         }

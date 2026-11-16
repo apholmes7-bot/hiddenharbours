@@ -191,8 +191,7 @@ namespace HiddenHarbours.Tests.PlayMode
             if(previousEnvironment!=null)GameServices.Environment=previousEnvironment;
             if(previousWallet!=null)GameServices.Wallet=previousWallet;
             if(republishedSave)GameServices.Save=previousSave;republishedSave=false;previousSave=null;
-            foreach(var go in spawned)if(go!=null)Object.Destroy(go);spawned.Clear();
-            foreach(var asset in assets)if(asset!=null)Object.Destroy(asset);assets.Clear();
+            yield return HiddenHarbours.Tests.Support.SceneSettle.DestroyAndSettle(spawned.Cast<Object>().Concat(assets.Cast<Object>()).ToArray());spawned.Clear();assets.Clear();
             Time.timeScale=1;
             if(stage!=null)yield return stage.TearDown();stage=null;
         }

@@ -246,8 +246,9 @@ namespace HiddenHarbours.Tests.EditMode
             ids.AddRange(CatalogSource.For<LicenseDef>(LeBlancs).Select(o => o.Id));
 
             CollectionAssert.AreEquivalent(
-                new[] { "gear.rod", "bait.capelin", "supply.ice", "instrument.depth_sounder", "license.clam" },
-                ids, "her book on day one is the counter #356 built, item for item");
+                new[] { "gear.rod", "bait.capelin", "supply.ice", "instrument.depth_sounder", "license.clam",
+                        "supply.bread", "supply.tinned_beans", "supply.oatcakes" },
+                ids, "her book on day one is the counter #356 built plus the first food staples, item for item");
         }
 
         [Test]

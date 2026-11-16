@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 51d5aaf6c73f47f1b2335fa4906c6153, type: 3}
+  m_Name: GreenCrab
+  m_EditorClassIdentifier: HiddenHarbours.Fishing::HiddenHarbours.Fishing.FishEcologyDef
+  Id: "ecology.green_crab"
+  SpeciesId: "fish.green_crab"
+  ScientificName: "Carcinus maenas"
+  LifeStageAndScope: "Post-larval fishable coastal animals; typical reference habitat only. Adults unless the notes explicitly distinguish juveniles."
+  TypicalMinDepthMetres: 0
+  TypicalMaxDepthMetres: 10
+  DepthEvidence: "Authored intertidal and shallow-subtidal reference band for the introduced shore crab; occurrences deeper than this are outside the local reference."
+  Layer: 3
+  Habitats: 62
+  PreferredVegetation: 0
+  VegetationEvidence: "The cited profile does not establish a species-wide eelgrass or kelp preference; zero means no preference inferred, not avoidance."
+  Grouping: 3
+  DayHabit: 1
+  TideHabit: 1
+  HabitEvidence: "Active by day and night; no hard daylight or tide exclusion is inferred from this reference."
+  BiologyNotes: "Introduced, invasive benthic shore crab on sand, mud, gravel and rock. Solitary describes independent movement, not a claim that crabs never aggregate."
+  SourceUrls:
+  - "https://www.sealifebase.se/summary/Carcinus-maenas.html"

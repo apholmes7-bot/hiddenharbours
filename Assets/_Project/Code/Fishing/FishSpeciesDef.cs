@@ -173,6 +173,17 @@ namespace HiddenHarbours.Fishing
         [Tooltip("Relative likelihood among matching fish (rarer = lower).")]
         public float SpawnWeight = 1f;
 
+        [Header("Conservation (owner ruling 2026-11-15: documented, then released)")]
+        [Tooltip("Protected species: it can be hooked, landed and documented, but it is always released. " +
+                 "It never enters a hold, pail, freezer, hand, the market or a recipe. Off by default.")]
+        public bool Protected = false;
+
+        [Header("Gifting (append-only, 2026-11-15)")]
+        [Tooltip("May a catch of this species be GIVEN to a person (NPC gifting)? On by default: a catch is " +
+                 "a gift. Turn it off for a species that must never leave the hand that way (a quest " +
+                 "fish). Read through Core's IGiftableFacts, never by the world layer directly.")]
+        public bool Giftable = true;
+
         // --- gating helpers (used by CatchResolver and testable on their own) ---
         public bool RegionAllowed(string regionId)
         {

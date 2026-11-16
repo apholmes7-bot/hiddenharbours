@@ -103,8 +103,29 @@ namespace HiddenHarbours.World
         public static bool ShouldFire(bool consumed, float now, float lastActivateTime, float cooldownSeconds)
             => !consumed && (now - lastActivateTime) >= cooldownSeconds;
 
+        /// <summary>
+        /// ⭐ <b>THE WHOLE WALL IS A DOOR</b> (owner ruling 2026-11-15; ADR 0057). While the shared world
+        /// frame governs the region this passage stands in, its trigger band does NOTHING: the crossing is
+        /// the region's edge itself, handled by the persistent travel rig, which lands the mover at the same
+        /// world point on the other side. A keyed band stood 24 m inside the edge and landed on one fixed
+        /// point 40 m beyond the far door — the 70–90 m jump, the sideways jumps of up to 260 m, and the
+        /// walk that carried the boat — so in a framed region it must not fire at all.
+        ///
+        /// <para>That includes a band whose target is NOT in the frame (Nine Mile Creek's legacy hop to the
+        /// Coddle Cove greybox, which had no way back): it is a dead end out of the world and is refused.</para>
+        ///
+        /// <para>Two exceptions keep the old behaviour: no frame at all (every fixture that never loads
+        /// one, and a region not on the map), and the arrival opening, whose scripted sea leg is still
+        /// sailed through its authored door. An explicit <see cref="Activate"/> call is not a trigger and is
+        /// unaffected. PURE, so EditMode asserts it.</para>
+        /// </summary>
+        public static bool StandsDownForWorldFrame(WorldFrame frame, string currentRegionId, bool openingRunning)
+            => frame != null && !openingRunning && frame.Contains(currentRegionId);
+
         private void OnTriggerEnter2D(Collider2D other)
         {
+            if (StandsDownForWorldFrame(GameServices.WorldFrame, GameServices.CurrentRegionId,
+                                        GameServices.OpeningCinematicRunning)) return;
             // Guarded: only a GENUINE re-entry (after leaving) outside the cooldown takes the passage.
             if (ShouldFire(_consumed, Time.unscaledTime, _lastActivateTime, _reentryCooldownSeconds))
                 Activate();

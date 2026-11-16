@@ -26,8 +26,8 @@ namespace HiddenHarbours.Tests.EditMode
         const string WaterPath = "Assets/_Project/Art/Shaders/HiddenHarboursWater.shader";
         const string AdvectPath = "Assets/_Project/Art/Shaders/HiddenHarboursFoamBufferAdvect.shader";
         const string Dial = "_SurfFringeSequenceStrength";
-        const string BaseWaterHash = "e243b20ba89e9c00d2ca87ca7df0c1e13f9cac3d23f38b53d9f6a2a8b0a6c451";
-        // Approved b5825e1f; re-approved at W1 Phase D (#932, owner d20) and C2a Phase D (owner, clarity 1) and at water gains B7 (#992, the seat's lean under the standing word of 10-29) and at crest glow L1 (#1004, the owner's ruling of 11-01) and at the foam lattice hash (the open-sea repeat fix, a named moved premise). UTF-8 without BOM, LF. These are scope guards, not copies of physics.
+        const string BaseWaterHash = "e2b910c07f5f8ceb5ad7600d88a59e76bc500d0ca90bc896eb5c664b933616c3";
+        // Approved b5825e1f; re-approved at W1 Phase D (#932, owner d20) and C2a Phase D (owner, clarity 1) and at water gains B7 (#992, the seat's lean under the standing word of 10-29) and at crest glow L1 (#1004, the owner's ruling of 11-01) and at the foam lattice hash (the open-sea repeat fix, a named moved premise) and at the run-up wash (fix/shore-runup-foam, the owner's shore clip review of 11-15) and at the run-up wash v4 (fix/shore-runup-foam, the owner's v3 clip review of 11-15) and at the shore-normal pulse (fix/shore-runup-foam, the owner's v4 clip review of 11-15) and at the wash v7 (fix/shore-runup-foam, the PR 1225 editor look of 11-15) and at the wash v8 (the f07a839 editor look of 11-15) and at the wash v9 (the 7e16896 editor look of 11-15). UTF-8 without BOM, LF. These are scope guards, not copies of physics.
         const string LegacyDepth =
             "                float foamDepth  = depthC - lerp(BeachSwash(worldXY, depthC, t) * swashSlope * swashGate,  // local, foam-only\n" +
             "                                                 surfRunUpM, boreFoamBlend);   // …and the foam rides the bore's wash too\n";
@@ -121,7 +121,7 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.That(a.RunUpMeters, Is.EqualTo(b.RunUpMeters).Within(.0001f));
             string deposit = Code(Read(AdvectPath));
             foreach (string expression in new[] {
-                "floatphase=SurfBorePhaseDeg(breakLinePt,travelS,fs);",
+                "floatphase=SurfBoreClockPhaseDeg(breakLinePt,travelS,fs);",
                 "floatbore=SurfBorePulse01(phase,_BreakerBore.x)*birth;",
                 "floatfront=breaking*alive*bore;",
                 "foam+=front*depositStrength*SURF_DEPOSIT_RATE*max(_HHSurfDeposit.z,0.0);" })
@@ -164,16 +164,24 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.That(Code(Section(src, "UNIFORM")), Is.EqualTo("float_SurfFringeSequenceStrength;"));
             var files = new[] { "Assets/_Project/Art/Materials/Water.mat" }.Concat(
                 Directory.GetFiles("Assets/_Project/Art/Materials/WaterPresets", "*.mat").OrderBy(p => p, StringComparer.Ordinal)).ToArray();
+            // Re-pinned at the run-up wash (fix/shore-runup-foam): each file gains exactly the four
+            // _Wash* keys at the shader defaults (ShoreRunUpWashTests reads them); nothing else moved. Again at v4:
+            // three more keys (_WashLeeShare, _WashResidueSoften, _WashLineSlopeCap) and _WashSheetOpacity 0.4 -> 0.2.
+            // Again at the shore-normal pulse: two more keys (_SurfSwellYield 1, _SwellShoalDepth 1.5).
+            // Again at the snap-back fix (owner v5 clip review 11-15): two more keys (_WashLeftFoamOpacity 0.6, _WashLeftFoamSeconds 2).
+            // Again at the wash v7 (the PR 1225 editor look 11-15): _WashLineSlopeCap leaves with the screen-gradient line; two keys join (_WashAnatomyFade 0.05, _WashMaxCover 0.6).
+            // Again at the wash v8 (the f07a839 editor look 11-15): two keys join (_WashSurfLift 0, _WashSurfReach 10).
+            // Again at the wash v9 (the 7e16896 editor look 11-15): three keys join (_WashGroundScale 1.5, _WashSurfDetail 3, _WashSurfSmooth 1.5).
             string[] originalHashes = {
-                "74b4ed98a5c1fbe01c0a31f1f141bf2cb64f88bfb7b5d2af8858f2d718aa0827",
-                "46ff1a8bb7fe875d2f639f9ec123f11f74c1db3845222d2cd03b1802e788f7f4",
-                "ee83ebce68046314ad6adf9b2dcbaa52ab1c60380cec5354cd46075c89d2a600",
-                "305d6e0e2dfbfca1d456a5187f3a6e87bc55b5b3eb3afb41d25801304bb5ba27",
-                "8e68a0f9d164553f3ce4c71e272e5cdad8e7a821fb98966f7fb2bec0ef868127",
-                "2f6bf26ee760ff4c056dcb9f30d6690ba671520ae24aa0f2565aff49d73b094b",
-                "beb40b2652b8f5bb7d8b2ced8702b08325f932839ab660fbb6719cb2cb6323a9",
-                "2aa37d8b73b9bbed9fb6f2f222c516d4cb36ec9b84b9349fa4a21819ff54a50c",
-                "feb04726462ea48dd09b4cf9dde70eb6da7060f5de6fbcfa40258cce4ac50392" };
+                "5dd039cd8a55c67e318e045fccebc8fee692051cc85e8aedc54b6cb51a222308",
+                "ac4483c482ea5eb691b8c27eb4e14e15c6859c89577f7625060edaa6aa18a02e",
+                "39c178b1a846e124e371240b2626f2632979b821b56d77f1efeea520b37d9133",
+                "7b99b0cdd901c7b6ed250b9706c1df838e9ea42d92d27a6284aeb6bc5c934fc5",
+                "128bbd72d5a9239308a2e8faa1058702eba4accd984b34ba5af617219466a50c",
+                "9d725267a945bb41485f1006f04637fded71477b9fe426111f3dee0444151db0",
+                "bcb666a283cdc1636ef072814d1f862e2290f570e69a1d6e2a7ef8ddd4ba0226",
+                "6e5db5c75dca1fbc78d0bc1e5096763e0a5fce6c2f631aa92a013718e99d42bb",
+                "8c19476dc3284362fc6fee40e08b27acc9c59bc280b068bf1254f8d9b26e9b44" };
             Assert.That(files.Length, Is.EqualTo(9));
             for (int i = 0; i < files.Length; i++)
             {
@@ -197,13 +205,24 @@ namespace HiddenHarbours.Tests.EditMode
             // ADR 0040 B2 adds the curl handoff under the lip and barrel and the nearest-crest birth read; the pinned source includes them.
             // Water gains 2 and 3 (#992, ADR 0027 number 7) add the water type, its plumes and the crest glow outside the surf paths; the pinned source includes them.
             // Crest glow L1 (#1004, ADR 0027) lights the thin top on either facing and ships through the water type, outside the surf paths; the pinned source includes it.
+            // The shore-normal pulse (fix/shore-runup-foam, owner clip review 11-15) reads the bore's phase and birth on the refracted bore clock (BoreClockPoint, a static jitter) and the fetch seaward of the pixel; the pinned sources include it.
+            // The snap-back fix (fix/shore-runup-foam, owner v5 clip review 11-15) keeps the bore's run-in exactly and drains the DRAWN pulse from the reach the run-in got, easing to the new crest's birth by half a period (SurfDrawnBoreBirth01, twin WaterSurface.DrawnPulseBirth01; BreakerMath and SurfAt unchanged) so the run-up no longer jumps at a lull's front, and leaves the last crest's foam on the sand to fade in place (WaterSurface.LeftFoamDrawn / LeftFoamFade01); the pinned sources include it.
+            // The wash v10 copies TWIN A (its new GroundFrame) verbatim into the advect pass, which never calls it, so the bore it deposits is unchanged; the pinned sources include it.
+            // The wash v9 (fix/shore-runup-foam, the 7e16896 editor look 11-15) breaks the shore lip with a finer churn, boxes the break gate along the shore, reads the bore's deposited foam smooth beside a beach and steps the beach projection back onto the still line (_WashSurfDetail, _WashSurfSmooth, _WashGroundScale); the pinned source includes it.
+            // The wash v8 (fix/shore-runup-foam, the f07a839 editor look 11-15) projects the beach's surf read from the warped point, so one shore normal reads one bore, and draws the surf beside a beach as churn thresholded against the break gate, smooth and capped like the wash (_WashSurfReach, _WashSurfLift); the pinned source includes it.
+            // The wash v7 (fix/shore-runup-foam, the PR 1225 editor look 11-15) measures the leading line on the ground up the shore normal instead of the screen gradient (no ddx/ddy in the wash), hands the breaker's lip and barrel to the wash above the still line, and caps what the surf's layers hide of the sand (_WashMaxCover); the pinned source includes it.
             MainSource(Read(WaterPath)); // Pins the edge, clip, sheet and both twins to approved main.
-            Assert.That(Hash(Read(AdvectPath)), Is.EqualTo("5c33ae63e18cb7848ae313d9ffcabfc050128c2739d56cf1126ee7520701790a"));
+            Assert.That(Hash(Read(AdvectPath)), Is.EqualTo("d0919e5c81d5c634848c6ac1e99d985ce3e293e55c5263af127daeedb7fd6014"));
             Assert.That(Hash(Read("Assets/_Project/Code/Core/Environment/BreakerMath.cs")),
-                Is.EqualTo("69e32d51219de35a79b8f20fc6f5c2da92cec815594a4bfd886efacf66baf61c"));
+                Is.EqualTo("294994086ac8bdb0f1a8de662b7520c58698332fff20f241cb64461ace8007f4"));
             Assert.That(Hash(Read("Assets/_Project/Code/Art/WaterSurface.cs")),
             // Intro at sea PR 2 moves the wind-shape lookup to the hour clock; the pinned source includes it.
-                Is.EqualTo("c4ccd73214cc2e2a08d2ca3272fd12b431dfba61fe01a345c74addf5e85ecab6"));
+            // The shore-normal pulse adds SwellShoreKeep, the CPU twin of the shader's swell yield; the pinned source includes it.
+            // The snap-back fix adds DrawnPulseBirth01, LeftFoamDrawn and LeftFoamFade01, the CPU twins of the shader's drawn pulse birth and left foam; the pinned source includes them.
+            // The wash v7 adds WashLineDrawn, WashBeachShare01 and WashCapScale, the CPU twins of the shader's ground-measured line, the anatomy's hand-over on the sand and the wash's cover cap; the pinned source includes them.
+            // The wash v8 adds BeachSurfEvalPoint, ShoreSurfShare01, ShoreSurfCover01 and OpenSurfCover01, the CPU twins of the shader's beach projection and its shore surf; the pinned source includes them.
+            // The wash v9 adds BeachSurfEvalPointRefined, AlongShoreGateDepth and ShoreLip01, the CPU twins of the shader's correcting step onto the still line, the break gate's along-shore box and the lip broken by the churn; the pinned source includes them.
+                Is.EqualTo("58d3d8c057bbc7c563b02560d5fe0453eb0b393dff86dd86b790bb31560fb4eb"));
         }
 
         static void RequireGpu()

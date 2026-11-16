@@ -314,14 +314,22 @@ MonoBehaviour:
     Kind: cod
   - SpeciesId: fish.atlantic_herring
     Kind: herring
+  - SpeciesId: fish.atlantic_surf_clam
+    Kind: clam
+  - SpeciesId: fish.atlantic_tomcod
+    Kind: cod
   - SpeciesId: fish.blue_mussel
     Kind: mussel
+  - SpeciesId: fish.green_crab
+    Kind: crab
   - SpeciesId: fish.haddock
     Kind: haddock
   - SpeciesId: fish.lobster
     Kind: lobster
   - SpeciesId: fish.mackerel
     Kind: mackerel
+  - SpeciesId: fish.northern_quahog
+    Kind: clam
   - SpeciesId: fish.pollock
     Kind: pollock
   - SpeciesId: fish.rock_crab

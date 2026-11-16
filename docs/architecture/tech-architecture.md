@@ -386,6 +386,20 @@ at 100 before choosing the single visible drawer. Its five order-100 peers retai
 The cast and fresh-bake lists enable the same 27 states; the cast presenter still refuses claimed
 sprites and poses only stance/gait. No shipped cast caller plays these explicit moves yet.
 
+### Region crossings: one world frame (ADR 0057, owner ruling 2026-11-15)
+
+Regions are still separate scenes loaded additively, but each `RegionDef` now carries a `WorldOrigin`,
+and the `Resources/WorldMap` asset lists the regions that form one world. The pure Core `WorldFrame`
+(published on `GameServices.WorldFrame`) turns that into seams and boundaries. The persistent
+`RegionTravelCoordinator` checks the mover (walker on foot, boat aboard) each physics step: past a shared
+edge by `GameConfig.RegionCrossingHysteresisMetres` it travels to the neighbour and translates the mover
+by `from.WorldOrigin - to.WorldOrigin` (same world point, same heading, same speed); past an edge facing
+nothing it holds the mover at the edge. Keyed `RegionPassage` bands stand down in listed regions (the
+arrival opening keeps its authored door). A foot crossing never moves the boat: she stays in her region
+(`BoatRegionId`) and is hidden until the player returns. Core's `Whereabouts` / `IWorldWhereabouts`
+(on `GameServices.Whereabouts`) report where the player and the boat are, for save and sleep. Layout
+table and rules: [`world-frame.md`](world-frame.md).
+
 ## 5. Boat & entity architecture (composition)
 
 **Character clothing interchange (CW-01, 2026-09-13).** Core now defines the version-1

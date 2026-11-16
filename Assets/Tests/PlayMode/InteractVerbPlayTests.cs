@@ -331,8 +331,15 @@ namespace HiddenHarbours.Tests.PlayMode
         }
 
         [UnityTest]
-        public IEnumerator ExactlyOneCandidateActs_EvenWithSeveralInReach()
+        public IEnumerator ExactlyOneCandidateActs_EvenWithSeveralInReach_WithTheChooserOff()
         {
+            // The owner's 2026-11-15 chooser puts a list up where several things are in reach; with its
+            // switch off (GameConfig.InteractChooserEnabled) the press is exactly the M2-39 single press.
+            var config = ScriptableObject.CreateInstance<GameConfig>();
+            config.InteractChooserEnabled = false;
+            _spawned.Add(config);
+            GameServices.Config = config;
+
             var near = Candidate("test.near", AshorePos + new Vector3(0.3f, 0f, 0f), reach: 3f);
             var far = Candidate("test.far", AshorePos + new Vector3(2f, 0f, 0f), reach: 3f);
             yield return null;
@@ -341,6 +348,31 @@ namespace HiddenHarbours.Tests.PlayMode
             Assert.IsTrue(HiddenHarbours.Tests.Support.TimedBoarding.BeginInteract(_switcher));
             Assert.AreEqual(1, near.Calls, "the nearest one");
             Assert.AreEqual(0, far.Calls, "and only it — 'exactly one candidate' is the acceptance criterion");
+        }
+
+        [UnityTest]
+        public IEnumerator SeveralInReach_ThePressPutsTheChooserUp_AndActsOnNothingYet()
+        {
+            var near = Candidate("test.near", AshorePos + new Vector3(0.3f, 0f, 0f), reach: 3f);
+            var far = Candidate("test.far", AshorePos + new Vector3(2f, 0f, 0f), reach: 3f);
+            // ⚠️ Different words: two rows that read the same collapse into one (InteractChoiceList — an
+            // ATV's two mount sides), and one row is no choice. Both doubles default to "Do the thing".
+            near.VerbLabel = "Open the near one";
+            far.VerbLabel = "Open the far one";
+            yield return null;
+
+            StandAt(AshorePos);
+            Assert.IsTrue(HiddenHarbours.Tests.Support.TimedBoarding.BeginInteract(_switcher), "the press is spent");
+            Assert.IsTrue(InteractChooser.IsOpen, "two things in reach: the list is up (owner ask 2026-11-15)");
+            Assert.AreEqual(0, near.Calls + far.Calls, "and nothing has been done until a row is picked");
+            Assert.AreSame(near, InteractChooser.Rows[InteractChooser.Rows.Selected].Candidate,
+                "the list starts on the nearest, so E then E does what one E used to");
+
+            yield return null;   // the opening frame has passed
+            Assert.IsTrue(InteractChooser.Confirm());
+            Assert.AreEqual(1, near.Calls);
+            Assert.AreEqual(0, far.Calls);
+            Assert.IsFalse(InteractChooser.IsOpen);
         }
 
         [UnityTest]

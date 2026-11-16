@@ -13,7 +13,7 @@ namespace HiddenHarbours.Core
     public static class SaveMigration
     {
         /// <summary>The schema version this build writes. Bump when you add a field + a migration step.</summary>
-        public const int CurrentVersion = 20;
+        public const int CurrentVersion = 23;
 
         /// <summary>
         /// The region id Port Greywick was saved under before it was renamed Nine Mile Creek, and the id
@@ -363,6 +363,33 @@ namespace HiddenHarbours.Core
                 data.SchemaVersion = 20;
             }
 
+            // v20 -> v21: THE BODY (owner ask 2026-11-15: frame, weight, metabolism, overeating). An older
+            // game gets the unset body, which reads as the default frame and height at its lean mass: the
+            // reference body, so the player keeps exactly today's hunger rate and walk speed. No messes yet.
+            if (data.SchemaVersion < 21)
+            {
+                data.PlayerBody = new PlayerBodyDto();
+                data.Messes ??= new System.Collections.Generic.List<MessRecordDto>();
+                data.NextMessSerial = 0;
+                data.SchemaVersion = 21;
+            }
+
+            // v21 -> v22: CLEANLINESS, the third need (owner ask 2026-11-15). An older game starts clean,
+            // idle and anchored at its own saved time, so nothing changes until the player gets dirty.
+            if (data.SchemaVersion < 22)
+            {
+                data.PlayerCleanliness = PlayerCleanlinessDto.CleanAt(data.GameTimeSeconds);
+                data.SchemaVersion = 22;
+            }
+
+            // v22 -> v23: THE FOOD STORES (kitchens slice 1, owner ask 2026-11-15). An older game had no
+            // pantry, cooler or fridge, so it starts with every store empty: no food invented, no ice packed.
+            if (data.SchemaVersion < 23)
+            {
+                data.KitchenStores = new System.Collections.Generic.List<KitchenStorageStateDto>();
+                data.SchemaVersion = 23;
+            }
+
             // ---- future steps go here, each guarded by `if (data.SchemaVersion < N)` and bumping to N.
 
             // Defensive null-repair (a hand-edited or partial JSON can omit reference-typed fields).
@@ -399,6 +426,12 @@ namespace HiddenHarbours.Core
             data.SpentClamHoles ??= new System.Collections.Generic.List<SpentClamHoleDto>();
             data.PlayerTraits ??= new System.Collections.Generic.List<string>();
             data.PlayerNeeds ??= new PlayerNeedsDto();
+            data.PlayerBody ??= new PlayerBodyDto();
+            data.Messes ??= new System.Collections.Generic.List<MessRecordDto>();
+            data.PlayerCleanliness ??= new PlayerCleanlinessDto();
+            data.PlayerCleanliness.WashStationId ??= "";
+            data.KitchenStores ??= new System.Collections.Generic.List<KitchenStorageStateDto>();
+            HealKitchenStores(data.KitchenStores);
             // Same defensive spirit as the null-repair above, for the one field where a zero is not a
             // value but a crash: a hand-edited JSON, or a row written by a build between the field landing
             // and this heal, would otherwise divide by it. Idempotent — after the v9 step there is nothing
@@ -457,6 +490,25 @@ namespace HiddenHarbours.Core
         /// save never depends on a <c>ScriptableObject</c> being wired first — and so this is testable
         /// with no scene.</para>
         /// </summary>
+        /// <summary>
+        /// Null-repair the food stores (kitchens slice 1): drop a null row or one with no key (it can
+        /// never be found again), give a missing stack list or def id their empties, and drop a stack with
+        /// no item or no count. A stack whose count is real is never touched: food is not invented or
+        /// thrown away by a load. Idempotent.
+        /// </summary>
+        private static void HealKitchenStores(System.Collections.Generic.List<KitchenStorageStateDto> stores)
+        {
+            for (int i = stores.Count - 1; i >= 0; i--)
+            {
+                KitchenStorageStateDto s = stores[i];
+                if (s == null || string.IsNullOrEmpty(s.Key)) { stores.RemoveAt(i); continue; }
+                s.StorageDefId ??= "";
+                s.Stacks ??= new System.Collections.Generic.List<KitchenStackDto>();
+                for (int k = s.Stacks.Count - 1; k >= 0; k--)
+                    if (string.IsNullOrEmpty(s.Stacks[k].ItemId) || s.Stacks[k].Count <= 0) s.Stacks.RemoveAt(k);
+            }
+        }
+
         /// <summary>
         /// DROP a rest anchor that cannot be a position — a NaN or infinite coordinate, or a storey below
         /// the ground — by clearing the region, which is the field that means "there is an anchor at

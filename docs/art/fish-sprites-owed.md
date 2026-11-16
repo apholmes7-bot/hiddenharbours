@@ -1,0 +1,34 @@
+# Fish sprites owed (R1, 2026-11-15)
+
+Slice R1 added six current-region species as data. None has its own art yet. This is the brief for
+art-pipeline. Each row says what stands in for the missing art today.
+
+## How a species without art is drawn today
+
+- **Catch icon / Def sprite** (`FishSpeciesDef.Sprite`): optional, and no validator requires it. Where a
+  stand-in was declared, the Def points at a neighbour's sprite, and the Flavor text does not claim it is
+  the real one.
+- **Swimming school** (`Resources/FishSwimSpriteLibrary.asset`): a species with no row falls back to the
+  `cod` swim kind (the library's fallback), at the cod's length.
+- **Carried / held catch mesh** (`Data/Art/CatchItemLibrary.asset`): rows follow
+  `CatchItemLibraryBuilder.KindFor`. A species with no matching kind uses the library's `_fallbackKind`
+  (`cod`).
+
+## Owed
+
+| Species (id) | Stand-in today | Real size | Colours | Marks that tell it apart |
+|---|---|---|---|---|
+| Rainbow smelt (`fish.rainbow_smelt`) | Swim and carry: cod fallback. Icon: none. | 15-22 cm, 20-100 g. Slender, about a fifth of the cod sprite's length. | Translucent olive-green back; a bright silver band down the flank; silvery-white belly; pinkish, purple and blue iridescence on the sides. | Long thin body, large mouth with visible teeth, small adipose fin, deeply forked tail. Should read as a "little silver pencil". |
+| Atlantic tomcod (`fish.atlantic_tomcod`) | Swim: cod fallback. Carry: `cod` kind (via "cod" in the id). Icon: none. | 15-30 cm, 50-300 g. A small cod shape, about a third of the cod sprite. | Olive-brown to greenish back, mottled darker; yellowish-olive sides; pale belly. | Like a cod in miniature: three dorsal fins, two anal fins, a chin barbel. Rounded tail (cod's is square). The long, thread-like pelvic fin rays are the tell. |
+| Cunner (`fish.cunner`) | Swim and carry: cod fallback. Icon: none. | 10-25 cm, 100-600 g. Deep, compact body. | Mottled brown, rust, olive or blue-grey, matching the weed; darker blotches; paler belly. | A wrasse: one long continuous spiny dorsal fin, thick lips, small mouth, pointed snout, rounded tail. Stocky, not torpedo-shaped. |
+| Green crab (`fish.green_crab`) | Icon and pot-deck animal: the rock crab's sprites, declared as a placeholder (`Data/Fish/GreenCrab.asset`, `Data/Traps/PotDeckWork.asset`). Carry: `crab` kind. | Carapace 4-9 cm across, 20-100 g. Smaller than the rock crab. | Dark green to olive on top, often with yellow mottling; underside green, yellow or orange-red in older males. | Carapace wider than long, with **five sharp teeth on each side** of the eyes and three bumps between the eyes. Hind legs pointed (not paddles). Must not read as the rock crab, which is rounder, pinker and freckled. |
+| Northern quahog (`fish.northern_quahog`) | Icon: the soft-shell clam's sprite, declared as a placeholder. Carry: `clam` kind. | Shell 6-12 cm, 100-300 g. Thick and heavy. | Dull grey-white to tan outside, with fine concentric growth rings; purple patch inside the shell edge. | Hard, rounded, chunky shell that closes tight (the soft-shell gapes). No neck sticking out. |
+| Atlantic surf clam (`fish.atlantic_surf_clam`) | Icon: the soft-shell clam's sprite, declared as a placeholder. Carry: `clam` kind. | Shell 10-20 cm, 200-500 g. The biggest clam on the coast. | Smooth yellowish-white to tan shell; thin brown skin (periostracum) at the edges. | Large, smooth, triangular-oval shell, thicker at the hinge. Clearly bigger than both other clams. |
+
+## Also owed
+
+- A pot-deck animal sheet for the green crab (still, six crawl frames, rear and defend poses), to replace
+  the rock crab's stand-in on the deck.
+- Swim-kind rows in `FishSwimSpriteLibrary` for smelt, tomcod and cunner once their swim art exists, so
+  they stop borrowing the cod's length.
+- Catch-item mesh kinds for smelt and cunner (run `CatchItemLibraryBuilder` after adding them).
