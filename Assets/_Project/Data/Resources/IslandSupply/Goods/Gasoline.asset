@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7cc9a5a206604027aa490bb3643e5f41, type: 3}
+  m_Name: Gasoline
+  m_EditorClassIdentifier: HiddenHarbours.Core::HiddenHarbours.Core.IslandGoodDef
+  Id: islandgood.gasoline
+  DisplayName: Gasoline
+  Source: 0
+  Unit: L
+  DailyUnits: 20
+  DailyMassKg: 17
+  DailyVolumeLitres: 24
+  PlayerAllowanceFraction: 0
+  WinterMultiplier: 1
+  Container: one 20 L jerry can (fuelstore.gas_jerry_s20)
+  Basis: 'Four small engines (quads, dory outboards, small engines). Mass is the full can. Island supply plan 2026-11-15 table (h).'

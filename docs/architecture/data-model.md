@@ -23,8 +23,10 @@ time without merge conflicts. Every Def has a stable **string `id`** (e.g., `fis
 | `ScheduleDef` | `Data/NPCs/Schedules/` | conditional 24h schedule blocks (time + tide/weather/season/weekday/story conditions) | `design/npcs-and-routines.md` |
 | `CommodityDef` | `Data/Commodities/` | id, category, base price, demand curve, elasticity, perishability/spoilage | `design/economy-and-business.md` |
 | `RecipeDef` | `Data/Resources/Recipes/` | **Shipped (cooking slice, 2026-11-14):** one recipe (`recipe.snake_case`): `Station` (open string id: `station.prep`, `station.cooktop`; later `station.salt_house` etc.), one input (`InputKind`: a `fish.*` species, a `FishCategory`, or an earlier recipe's output id), `OutputId` (`food.snake_case`), `WorkSeconds`, `HungerRelief` (0..1 of a meal, cooktop outputs only). Two-step cooking (owner ruling): prep takes raw catch, the cooktop takes a prep output. Looked up through the pure `RecipeBook` (species beats category, ties by lowest id). **Planned:** several inputs with quantities and a value multiplier for the facility recipes (salt cod, smoked, canned, oil, meal, packs), added append-only | `design/economy-and-business.md` §9.1 |
+| `FoodDef` | `Data/Resources/Food/` | **Shipped (first food slice, 2026-11-15):** one edible thing (`food.snake_case`) describing an item by `ItemId` (`supply.*` shop food in the supply locker, `produce.*`, `fish.*`, or a `food.*` recipe output): `EdibleRaw`, `HungerRelief` (0..1 of a meal, eating one unit as it is; 0 when not edible raw), `PreppedId`/`CookedId` (recipe output ids; required cooked form when not edible raw). Produce foods must agree with their `ProduceDef` raw figures. Eaten through Core `FoodEater` (`GameServices.Food`), which publishes `AteFood`/`EatRefused` (reason code, no text) | — |
 | `FacilityDef` | `Data/Commodities/Facilities/` | processing/storage buildings: throughput, capacity, staff slots, cost | `design/economy-and-business.md` |
-| `StaffRoleDef` | `Data/Staff/` | role (deckhand, skipper, processor, hauler, seller, manager), wage band, skills, AI routine template | `design/economy-and-business.md` |
+| `StaffRoleDef` (Core) | `Data/Resources/Staff/` | **Shipped (crew slice R2, 2026-11-15):** one role aboard a boat (`role.snake_case`): `DisplayName`, `Summary`, `TaskIds` (`task.snake_case`: what the holder does; `task.helm` is the one the voyage calculator reads) and `WorkIds` (`work.snake_case`: the fisheries or cargo it is the specialist for). Twelve roles: skipper, mate, engineer, deckhand, cook, sternman, winchman, gallows hand, hatch hand, shucker, striker, lookout. Loaded through the pure `StaffRoleBook` (`FromResources`). Players and hired hands hold the same roles. **Planned (M3-05/06):** wage band, skills, AI routine template, and the shore roles (processor, hauler, seller, manager), appended | `design/crew-roles-and-trip-limits.md`; `design/economy-and-business.md` §5.1 |
+| `BoatVoyageDef` (Core) | `Data/Boats/Voyages/` | **Shipped (crew slice R2):** one per hull (`voyage.<hull>`), naming its hull by `HullId`: `LongestTrip` (`TripKind` Day/Overnight/Week/Month, before bunks), `MinCrewDay/Overnight/Week/Month`, and `Work[]` (`VoyageWorkRequirement`: `WorkId`, `MinCrew`, `RequiredRoleIds`), plus two notes for the owner (`RealWorldCrew`, `LimitedBy`). It authors **no maximum**: the day limit is `BoatHullDef.CrewSlots` and the overnight limit is the hull interior's `sleep` anchors read through `BunkCount.Of`, so a new berth (as PR 1228's second berths did) moves every limit without editing a record. Joined to its hull by the Boats `BoatVoyageCatalog` into a plain `VoyageSpec` that the pure `VoyageLimits.Check` and the in-memory `ICrewRoster` (`GameServices.Crew`, not saved yet) read. Policy knobs (hand bunk-sharing, shipped ON by owner ruling 2026-11-15; nights per trip kind; month needs a hired skipper, shipped OFF by the same ruling) are the `GameConfig.Crew` block | `design/crew-roles-and-trip-limits.md` |
 | `BuyerDef` / `ContractDef` | `Data/Commodities/Buyers/` | market buyers, standing contracts, reputation requirements | `design/economy-and-business.md` |
 | `LicenseDef` | `Data/Licenses/` | id, display name, fee (₲), permitted species/gear (St Peters opening — the minimal money-only licence; eligibility tower is later) | `design/progression-and-housing.md` §2.2 |
 | `ShipwrightOffer` | `Data/Shipwright/` | a boat offered for sale: boat id, price, `StartsDamaged` + `RepairCost` (the damaged-dory buy+repair) | `design/economy-and-business.md` |
@@ -39,6 +41,11 @@ time without merge conflicts. Every Def has a stable **string `id`** (e.g., `fis
 | `CropDef` | `Data/Resources/Farming/Crops/` | one crop (`crop.snake_case`): sowing and harvest windows as season + day (never wrapping the year), days to mature, till lead, tend interval, harvest spread, stage thresholds, per-cell visual wobble, yield per cell, the `produce.*` item it yields. A plot's stage is a pure function of (plot, crop, world seed, day) through `FarmMath`; nothing is saved | `design/npcs-and-routines.md` |
 | `FarmPlotDef` | `Data/Resources/Farming/Plots/` | one farm plot (`plot.snake_case`; the id also seeds its sowing days): region, area (empty + `AreaIsPlaceholder` until placed), cells, crop rotation by year (empty entry = rest year), tender NPC ids (`TendersArePlaceholder` while uncast), player access (`TendersOnly` 0, `OpenToHelp` 1, `SideJobByApproval` 2, `ForPurchase` 3; append-only) with approver and price | `design/npcs-and-routines.md` |
 | `ProduceDef` | `Data/Resources/Farming/Produce/` | one farm produce item (`produce.snake_case`): display name, base value (₲), eaten raw?, raw hunger relief and the prepped relief it must stay under (shares of one meal, the recipe scale). Storage, eating and recipes join later | — |
+| `IslandGoodDef` | `Data/Resources/IslandSupply/Goods/` | one good St Peters uses and does not make (`islandgood.snake_case`): source (`MainlandOverBar` 0, `BySea` 1, `Island` 2; append-only), unit label, daily island use in that unit, daily carried mass (kg) and volume (L) packaging included, player allowance as a share of island use, winter factor, real container, basis. Summed by the Core `SupplyPlanMath`; nothing consumes or stocks it yet | `design/island-supply.md` |
+| `CarrierDef` | `Data/Resources/IslandSupply/Carriers/` | one carrier (`carrier.snake_case`): kind (`Carried` 0, `Pulled` 1, `VehicleRack` 2, `Trailer` 3, `VehicleBed` 4, `LoaderAttachment` 5, `Container` 6, `Pallet` 7; append-only), practical load kg, maker's rating kg (≥ practical), volume L, tare kg, basis. A load fits only when both mass and volume do | `design/island-supply.md` |
+| `SupplyRoleDef` | `Data/Resources/IslandSupply/Roles/` | one supply run (`supplyrole.snake_case`): crew NpcDef ids (+ placeholder flag), people crossing, carrier ids (repeat for two), trip mode (`SameWindowRoundTrip` 0, `StayOver` 1, `MainlandOnly` 2; append-only), cadence days (0 = as needed), market day?, sand and road speed (m per real second), gut wade limit (m), town loading time (game h) | `design/island-supply.md` |
+| `BulkMaterialDef` | `Data/Resources/IslandSupply/Bulk/` | one loose material for a bucket or tub (`bulk.snake_case`): bulk density kg/L. A fill is min(volume × density, mass limit) | `design/island-supply.md` |
+| `IslandSupplyConfig` | `Data/Resources/IslandSupply/` | the one St Peters supply route config (no id): the island region whose tide gates the bar, bar length, crest and gut-bed elevations (pinned equal to `StPetersBuilder`), gut position and width, island path and mainland road legs, the run day's start and end hours, the store buffer days, the search step. The windows come from the region's tide through `TideModel`, never a copy | `design/island-supply.md` |
 | `RelationshipTieDef` | `Data/Resources/Relationships/Ties/` | one starting tie between two villagers (`tie.<a>__<b>`, the `npc.` prefixes dropped, `NpcA` sorting before `NpcB` so a pair is authored once): the two `NpcDef` ids, a hidden `StartingStrength` and a writer's note. Villagers with no tie start strangers to all. Read only through `IRelationshipService`; never shown to the player as a number, bar or hearts (owner ruling 2026-11-14) | `architecture/tech-architecture.md` §3, "NPC relationships" |
 | `RelationshipConfig` | `Data/Resources/Relationships/` | the one relationship config: strength bounds and stage edges (`Rival`, `Strained`, `Stranger`, `Acquaintance`, `Friend`, `Close`; no romance stage) and the rule table, one `RelationshipRule` per `RelationshipEventKind` (points per unit, a per-pair daily cap, whether it may make rivals) | `architecture/tech-architecture.md` §3, "NPC relationships" |
 | `GameConfig` | `Data/Config/` | global tunables: day length, tide constants, season length, economy constants, stamina rates | several |
@@ -84,6 +91,12 @@ plain serializable DTOs owned by `SaveService` (`architecture/tech-architecture.
 | `BusinessState` | owned facilities, staff roster (roleId, skill, morale, wage, assignment), production queues, logistics routes | facility/staff instance id |
 | `WorldState` | region reveal/fog, quest & story flags, NPC relationship scores | regionId / npcId / flagId |
 | `WorldClock` | `worldSeed`, `gameTime`, season/year | — |
+
+> **Crew roster (crew slice R2, 2026-11-15): NOT saved yet.** `ICrewRoster` (`GameServices.Crew`) holds
+> who is aboard which boat (a caller-chosen boat key, the hull id) and in which role (`CrewMember`:
+> member id, `Player` or `HiredHand`, role id), in memory only. A later save bump owns persisting it;
+> when it does, the record is the boat key, the hull id and the member list, and nothing the calculator
+> derives (day max, overnight max, bunks) is stored: those are recomputed from the Defs.
 
 > **Save schema v8 (helm instruments, ADR 0030)** — `SaveData` gained two append-only lists at v8:
 > `HullInstruments[]` (flat `(hullId, instrumentId)` rows — the first PER-HULL ownership record; an
@@ -162,6 +175,27 @@ plain serializable DTOs owned by `SaveService` (`architecture/tech-architecture.
 > the save service refuses every write**, so a quit or an autosave during a sleep keeps the last
 > completed sleep. `RestQuorum` (Core/Save) is the multiplayer seam: one of one today, one sleeper per
 > bed id.
+
+> **Save schema v21 (the body, owner ask 2026-11-15: frame, weight, metabolism, overeating)** —
+> `SaveData` gained THREE fields: `PlayerBody` (a `PlayerBodyDto`: `Frame` 0..1 and `HeightScale`, chosen
+> once in the creator with `ShapeChosen`; `MassKg` + `MassSinceGameSeconds`; `StomachMeals` +
+> `StomachSinceGameSeconds`), `Messes` (a list of `MessRecordDto`: stable `mess.N` id, region id, position
+> in that region's own frame, game time) and `NextMessSerial` (ids are never reused). Mass and stomach
+> are (value, instant) pairs like a need: the value now is recomputed from the clock by `BodyMath`, and
+> settled at every save write beside the needs. **Negative = unset** on frame, height and mass, which reads
+> as the config default frame, height scale 1 and that body's lean mass: the reference body whose hunger
+> rate and walk speed are exactly the needs slice's, so the `v20→v21` step writes the unset body and an
+> empty mess list and an existing player changes nothing on load. A mess leaves the save only through
+> `IMessRegistry.CleanUp`. Written only through `IBodyService` and `IMessRegistry` (Core/Body).
+> **Body slice 2 rides the same v21** (strength and cardio, owner asks 2026-11-15): `PlayerBodyDto` also
+> holds four `FitnessStateDto`s, `Grip`, `Back`, `Legs` and `Cardio`, each a (level, instant) pair plus the
+> remembered `Peak` (muscle memory, never fades), `MaintainedAtGameSeconds` (the grace runs from it) and
+> `PendingDose`. Untrained (level 0, instants negative) is the default and today's player exactly. Levels
+> are read off the clock by `FitnessMath`, settled at save writes and rebased on a seek, like the mass.
+> Effort is content: `ActivityDef` (`activity.*`, Resources/Activities: kcal above rest per minute or rep,
+> training per fitness kind, equipment, an optional game signal) and `GymEquipmentDef`
+> (`gym_equipment.*`, Resources/GymEquipment), one asset each with ledger entries. Work and the gym both
+> report through `IBodyService.ReportActivity`, which raises hunger through `INeedsService.Spend`.
 
 **Recomputed, never saved:** tide height, wind, weather, sea state, visibility (from
 `worldSeed + gameTime`), dormant NPC positions, authored geometry, **a boat's effective helm fit and

@@ -263017,9 +263017,10 @@ MonoBehaviour:
     BroadPool: 0b0000000c0000001100000012000000
   _material: {fileID: 2100000, guid: b2c3d4e5f6071829304a5b6c7d8e9f01, type: 2}
   _chunkWidthMetres: 16
-  _rowOrderSteps: 4
+  _rowOrderSteps: 1
   _windBoundsMargin: 1
   _previewInEditor: 1
+  _thinning: {fileID: 11400000, guid: 8a5d21dc63de47a7960f602a80be5037, type: 2}
 --- !u!4 &1461262242
 Transform:
   m_ObjectHideFlags: 0

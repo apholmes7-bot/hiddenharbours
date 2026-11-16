@@ -1,0 +1,40 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e08d388b6adc4b9fb12e153843e42333, type: 3}
+  m_Name: VoyageLobsterStandardOpenNorthumberland
+  m_EditorClassIdentifier: HiddenHarbours.Core::HiddenHarbours.Core.BoatVoyageDef
+  Id: voyage.lobster_standard_open_northumberland
+  HullId: boat.lobster_standard_open_northumberland
+  LongestTrip: 1
+  MinCrewDay: 1
+  MinCrewOvernight: 1
+  MinCrewWeek: 1
+  MinCrewMonth: 1
+  Work:
+  - WorkId: work.lobster_pots
+    MinCrew: 1
+    RequiredRoleIds:
+    - role.skipper
+  - WorkId: work.crab_pots
+    MinCrew: 1
+    RequiredRoleIds:
+    - role.skipper
+  - WorkId: work.rod_and_jig
+    MinCrew: 1
+    RequiredRoleIds:
+    - role.skipper
+  - WorkId: work.tub_longline
+    MinCrew: 1
+    RequiredRoleIds:
+    - role.skipper
+  RealWorldCrew: "40-45 ft lobster boat: captain + 1-2 helpers by day; 3-4 for 2-4 nights of longline, gillnet or snow crab."
+  LimitedBy: two bunks for three slots, so the third hand sleeps in watches; fuel about 3 game days
