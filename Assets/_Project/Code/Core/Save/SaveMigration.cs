@@ -13,7 +13,7 @@ namespace HiddenHarbours.Core
     public static class SaveMigration
     {
         /// <summary>The schema version this build writes. Bump when you add a field + a migration step.</summary>
-        public const int CurrentVersion = 21;
+        public const int CurrentVersion = 22;
 
         /// <summary>
         /// The region id Port Greywick was saved under before it was renamed Nine Mile Creek, and the id
@@ -363,12 +363,23 @@ namespace HiddenHarbours.Core
                 data.SchemaVersion = 20;
             }
 
-            // v20 -> v21: CLEANLINESS, the third need (owner ask 2026-11-15). An older game starts clean,
-            // idle and anchored at its own saved time, so nothing changes until the player gets dirty.
+            // v20 -> v21: THE BODY (owner ask 2026-11-15: frame, weight, metabolism, overeating). An older
+            // game gets the unset body, which reads as the default frame and height at its lean mass: the
+            // reference body, so the player keeps exactly today's hunger rate and walk speed. No messes yet.
             if (data.SchemaVersion < 21)
             {
-                data.PlayerCleanliness = PlayerCleanlinessDto.CleanAt(data.GameTimeSeconds);
+                data.PlayerBody = new PlayerBodyDto();
+                data.Messes ??= new System.Collections.Generic.List<MessRecordDto>();
+                data.NextMessSerial = 0;
                 data.SchemaVersion = 21;
+            }
+
+            // v21 -> v22: CLEANLINESS, the third need (owner ask 2026-11-15). An older game starts clean,
+            // idle and anchored at its own saved time, so nothing changes until the player gets dirty.
+            if (data.SchemaVersion < 22)
+            {
+                data.PlayerCleanliness = PlayerCleanlinessDto.CleanAt(data.GameTimeSeconds);
+                data.SchemaVersion = 22;
             }
 
             // ---- future steps go here, each guarded by `if (data.SchemaVersion < N)` and bumping to N.
@@ -407,6 +418,8 @@ namespace HiddenHarbours.Core
             data.SpentClamHoles ??= new System.Collections.Generic.List<SpentClamHoleDto>();
             data.PlayerTraits ??= new System.Collections.Generic.List<string>();
             data.PlayerNeeds ??= new PlayerNeedsDto();
+            data.PlayerBody ??= new PlayerBodyDto();
+            data.Messes ??= new System.Collections.Generic.List<MessRecordDto>();
             data.PlayerCleanliness ??= new PlayerCleanlinessDto();
             data.PlayerCleanliness.WashStationId ??= "";
             // Same defensive spirit as the null-repair above, for the one field where a zero is not a

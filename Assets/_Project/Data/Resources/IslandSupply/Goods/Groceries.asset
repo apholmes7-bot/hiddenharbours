@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7cc9a5a206604027aa490bb3643e5f41, type: 3}
+  m_Name: Groceries
+  m_EditorClassIdentifier: HiddenHarbours.Core::HiddenHarbours.Core.IslandGoodDef
+  Id: islandgood.groceries
+  DisplayName: Groceries and dry goods
+  Source: 0
+  Unit: kg
+  DailyUnits: 18
+  DailyMassKg: 18
+  DailyVolumeLitres: 40
+  PlayerAllowanceFraction: 0.25
+  WinterMultiplier: 1
+  Container: bags and totes
+  Basis: 'About 1 kg per person per day imported for 18 residents (flour, sugar, tea, canned, dairy); fish and potatoes come from the island. Island supply plan 2026-11-15 table (h).'

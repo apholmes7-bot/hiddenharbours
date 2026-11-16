@@ -1,0 +1,46 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e08d388b6adc4b9fb12e153843e42333, type: 3}
+  m_Name: VoyageLobsterOffshoreOpenNewfoundland
+  m_EditorClassIdentifier: HiddenHarbours.Core::HiddenHarbours.Core.BoatVoyageDef
+  Id: voyage.lobster_offshore_open_newfoundland
+  HullId: boat.lobster_offshore_open_newfoundland
+  LongestTrip: 2
+  MinCrewDay: 1
+  MinCrewOvernight: 1
+  MinCrewWeek: 1
+  MinCrewMonth: 1
+  Work:
+  - WorkId: work.lobster_pots
+    MinCrew: 1
+    RequiredRoleIds:
+    - role.skipper
+  - WorkId: work.crab_pots
+    MinCrew: 1
+    RequiredRoleIds:
+    - role.skipper
+  - WorkId: work.rod_and_jig
+    MinCrew: 1
+    RequiredRoleIds:
+    - role.skipper
+  - WorkId: work.tub_longline
+    MinCrew: 1
+    RequiredRoleIds:
+    - role.skipper
+  - WorkId: work.swordfish_harpoon
+    MinCrew: 3
+    RequiredRoleIds:
+    - role.skipper
+    - role.striker
+    - role.lookout
+  RealWorldCrew: "45-50 ft offshore lobster boat / swordfish longliner: 3-4 by day, 3-5 for a few nights, 5-10 day pelagic longline trips."
+  LimitedBy: bunks; stores; hold 126 HU

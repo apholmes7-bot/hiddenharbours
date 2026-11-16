@@ -111,6 +111,65 @@ namespace HiddenHarbours.Tests.EditMode
                                                      string.Join("\n", again.Where(p => !p.IsEmpty).Select(p => p.Summary())));
         }
 
+        // ---- 2b: a listed SupplyShop missing from its counter is added, once ------------------------------
+
+        [Test]
+        public void StPeters_AMissingSupplyShop_IsAddedAsACopyOfTheCountersShop_AndOnlyOnce()
+        {
+            string committed = File.ReadAllText(StPetersPath);
+            var t = new LayerRefreshSceneText(committed);
+            List<Listing> catalog = Listings();
+            string supplyClass = ClassIdOf(typeof(SupplyShop));
+            long counter = t.RootGameObject("GeneralStoreCounter");
+            List<long> supplyShops = t.Order.Where(id => t.ClassOf(id) == 114 && t.Field(id, "m_EditorClassIdentifier") == supplyClass &&
+                                                         t.Ref(id, "m_GameObject") == counter).ToList();
+            string iceGuid = catalog.Single(l => l.Id == "supply.ice").Guid;
+            long ice = supplyShops.Single(id => t.Text(id).Contains(iceGuid));
+            var foodGuids = new[] { "supply.bread", "supply.oatcakes", "supply.tinned_beans" }
+                .Select(f => catalog.Single(l => l.Id == f).Guid).ToList();
+            List<long> foods = supplyShops.Where(id => foodGuids.Any(g => t.Text(id).Contains(g))).ToList();
+            Assert.AreEqual(3, foods.Count, $"the committed StPeters.unity's GeneralStoreCounter holds {foods.Count} of the three food shops. {Fix}");
+            foreach (long f in foods)
+                Assert.AreEqual(t.Field(ice, "_walletProvider"), t.Field(f, "_walletProvider"), $"the food shop &{f} does not pay into the ice shop's wallet");
+
+            // The three food shops taken back out by the test's hand: the step adds them back, byte for byte.
+            string bare = WithoutComponents(committed, counter, foods);
+            List<LayerPatch> patches = StoreWiringPatch.Plan(bare, StoreWiringPatch.StPeters, Assets);
+            List<Op> ops = patches.SelectMany(p => p.Ops).ToList();
+            Assert.IsEmpty(ops.Where(o => o.Kind == OpKind.Delete).Select(o => o.Name).ToList(), "the store patch deletes");
+            CollectionAssert.AreEquivalent(foods, ops.Where(o => o.Kind == OpKind.Add).Select(o => o.FileId).ToList(),
+                                           "the store patch does not add the three food shops under the ids it gave them");
+            CollectionAssert.AreEqual(new[] { counter }, ops.Where(o => o.Kind == OpKind.Edit).Select(o => o.FileId).ToList(),
+                                      "the store patch edits something other than the counter's component list");
+            string once = StoreWiringPatch.ApplyAll(bare, patches);
+            Assert.IsTrue(once == committed, $"the food shops, added back by the step, are not the committed scene: {FirstDifference(committed, once)}. {Fix}");
+            Assert.IsTrue(StoreWiringPatch.Plan(once, StoreWiringPatch.StPeters, Assets).All(p => p.IsEmpty),
+                          "planned again on its own output, the step still adds");
+
+            // With no SupplyShop on the counter to copy, the step adds nothing and refuses.
+            Assert.Throws<Refusal>(() => StoreWiringPatch.Plan(WithoutComponents(committed, counter, supplyShops), StoreWiringPatch.StPeters, Assets),
+                                   "the step added a SupplyShop to a counter holding none to copy");
+        }
+
+        /// <summary>The scene without the given components of one GameObject: their documents and their entries
+        /// in its component list, by the test's hand.</summary>
+        static string WithoutComponents(string committed, long go, IEnumerable<long> components)
+        {
+            var gone = new HashSet<long>(components);
+            var entries = new HashSet<string>(gone.Select(c => "  - component: {fileID: " + c.ToString(CultureInfo.InvariantCulture) + "}"));
+            var sb = new StringBuilder(committed.Length);
+            long doc = 0;
+            foreach (string line in committed.Substring(0, committed.Length - 1).Split('\n'))
+            {
+                Match m = HeaderRx.Match(line);
+                if (m.Success) doc = long.Parse(m.Groups[2].Value, CultureInfo.InvariantCulture);
+                if (gone.Contains(doc)) continue;
+                if (doc == go && entries.Contains(line)) continue;
+                sb.Append(line).Append('\n');
+            }
+            return sb.ToString();
+        }
+
         // ---- 3: an id changed on purpose ------------------------------------------------------------------
 
         [Test]

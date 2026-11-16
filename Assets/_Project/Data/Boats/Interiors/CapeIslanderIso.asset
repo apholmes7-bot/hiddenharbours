@@ -193,7 +193,7 @@ MonoBehaviour:
     PillowEnd: {x: 0, y: 0, z: 0}
   - Id: bunk
     Action: sleep
-    ReachPoint: {x: 0, y: 2.9, z: 0.3}
+    ReachPoint: {x: -0.314, y: 2.9, z: 0.3}
     VisibleFacings:
     - N
     - NE
@@ -205,8 +205,8 @@ MonoBehaviour:
     - NW
     BunkLevel: cuddy_sole
     BunkObstruction: v_berth
-    MattressCentre: {x: 0, y: 4.35, z: 0.75}
-    PillowEnd: {x: 0, y: 3.4, z: 0.75}
+    MattressCentre: {x: -0.314, y: 4.35, z: 0.75}
+    PillowEnd: {x: -0.393, y: 3.4, z: 0.75}
   - Id: prep
     Action: prep
     ReachPoint: {x: -0.38, y: 1.365, z: 0.72}
@@ -220,6 +220,22 @@ MonoBehaviour:
     BunkObstruction: 
     MattressCentre: {x: 0, y: 0, z: 0}
     PillowEnd: {x: 0, y: 0, z: 0}
+  - Id: bunk_starboard
+    Action: sleep
+    ReachPoint: {x: 0.314, y: 2.9, z: 0.3}
+    VisibleFacings:
+    - N
+    - NE
+    - E
+    - SE
+    - S
+    - SW
+    - W
+    - NW
+    BunkLevel: cuddy_sole
+    BunkObstruction: v_berth
+    MattressCentre: {x: 0.314, y: 4.35, z: 0.75}
+    PillowEnd: {x: 0.393, y: 3.4, z: 0.75}
   Routes:
   - Id: cuddy_companionway
     FromLevel: house_sole

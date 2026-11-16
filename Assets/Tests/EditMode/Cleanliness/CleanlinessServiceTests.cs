@@ -86,7 +86,7 @@ namespace HiddenHarbours.Tests.EditMode
         private NeedsService NeedsOver(ICleanlinessService clean)
             => new NeedsService(() => _save, () => _clock, Needs,
                                 () => new TraitService(() => _save, () => new TraitDef[0]), () => Hour,
-                                () => clean, () => _settings);
+                                cleanliness: () => clean, cleanlinessSettings: () => _settings);
 
         private void SetDirt(float dirt) => _save.Current.PlayerCleanliness = new PlayerCleanlinessDto
         {

@@ -212,7 +212,10 @@ namespace HiddenHarbours.Tests.EditMode
             var all = FishAssets();
             var expected = all.Where(f => f.RegionAllowed("region.st_peters") &&
                 (f.DepthBands == FishDepthBand.None || (f.DepthBands & band) != 0)).ToArray();
-            Assert.AreEqual(11, expected.Length, "review the authored species set if it changes");
+            // R1 (2026-11-15): 11 -> 9. Out: haddock and pollock (deep-water fish, off the St Peters
+            // table), and the hand-gathered clam, mussel and oyster (East Water has no flats; their bands
+            // now say tide-line). In: herring (spring and fall), green crab, rainbow smelt.
+            Assert.AreEqual(9, expected.Length, "review the authored species set if it changes");
             foreach (var fish in all)
                 Assert.AreEqual(expected.Contains(fish), fish.RegionAllowed(EastWaterPlan.RegionId),
                     AssetDatabase.GetAssetPath(fish));

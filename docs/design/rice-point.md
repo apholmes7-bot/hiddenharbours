@@ -16,6 +16,10 @@ only today's two rasters are ground. Future stages, roads, coast faces and key s
 760 × 360 metres and 2 texels per metre. It shares the existing bay tide: mean 0, amplitude 2.2 m, phase 1 hour.
 Its wind profile uses the same asset as NMC. Fish eligibility and `SpawnFishIds` remain RPT4's.
 
+> **R1 (2026-11-15) moved species eligibility earlier.** Cod, pollock, mackerel, herring (net), lobster,
+> rock crab, green crab and cunner now list `region.rice_point` (see `fish-and-content.md` §4.9). `SpawnFishIds`,
+> habitat, clam flats, surf, rip and streaks stay with RPT4.
+
 `GroundFileIntake.RicePoint.cs` adds a strict profile for `hidden-harbours/rpt-ground-plan@1`,
 `terrain_plan.rpt`, second issue. It validates identity, frame, tide, resolution, greyscale bit depth and
 both decoded pixel hashes before a builder can write. The St Peters schema check is unchanged.
@@ -274,8 +278,9 @@ the copy, then checks position and object identity. Teardown deletes both dispos
 
 `RicePointPlayablePlayTests` adds:
 
-- `DirectPlay_OneCore_WalkStrand_RowPoint_CastHasNoEligibleSpecies`: actual walk intents, gated rowing around
-  the point and a full cast to NoBite. The fish roster still excludes this region.
+- `DirectPlay_OneCore_WalkStrand_RowPoint_CastIsAnswered` (renamed by R1): actual walk intents, gated rowing
+  around the point and a full cast that must be answered (a bite or a no-bite). Since R1 the dev core's roster
+  includes rod species that list this region.
 - `RoadRefusesDriving_AndArrivalKeepsThePersistentCore`: a test truck seat enters the driving mode, the road
   refuses activation, and a subsequent additive arrival keeps the actual persistent rig while discarding DEV CORE.
   Destination activation happens from sceneLoaded, before Start, matching travel's ordering. NMC is never loaded.

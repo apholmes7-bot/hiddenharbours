@@ -3,7 +3,7 @@ using System;
 namespace HiddenHarbours.Core
 {
     /// <summary>
-    /// <b>The local player's cleanliness, as saved</b> (cleanliness slice 1, save schema v21). Like a need
+    /// <b>The local player's cleanliness, as saved</b> (cleanliness slice 1, save schema v22). Like a need
     /// (<see cref="NeedStateDto"/>): the DIRT at one instant and that instant on the game clock, plus what
     /// the player was doing from then on (a stretch of dirty work, or washing at a station) and when that
     /// stretch began. The dirt NOW is worked out from the clock (<see cref="CleanlinessMath.DirtAt"/>),

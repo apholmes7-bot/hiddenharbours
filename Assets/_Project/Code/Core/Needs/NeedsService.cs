@@ -23,6 +23,7 @@ namespace HiddenHarbours.Core
         private readonly Func<NeedsSettings> _settings;
         private readonly Func<ITraitService> _traits;
         private readonly Func<double> _secondsPerGameHour;
+        private readonly Func<IBodyService> _body;
         private readonly Func<ICleanlinessService> _cleanliness;
         private readonly Func<CleanlinessSettings> _cleanlinessSettings;
 
@@ -31,7 +32,7 @@ namespace HiddenHarbours.Core
 
         public NeedsService(Func<ISaveService> save = null, Func<IGameClock> clock = null,
                             Func<NeedsSettings> settings = null, Func<ITraitService> traits = null,
-                            Func<double> secondsPerGameHour = null,
+                            Func<double> secondsPerGameHour = null, Func<IBodyService> body = null,
                             Func<ICleanlinessService> cleanliness = null,
                             Func<CleanlinessSettings> cleanlinessSettings = null)
         {
@@ -42,6 +43,7 @@ namespace HiddenHarbours.Core
             _settings = settings ?? (() => GameServices.NeedsSettings);
             _traits = traits ?? (() => GameServices.Traits);
             _secondsPerGameHour = secondsPerGameHour ?? (() => GameServices.SecondsPerDay / 24d);
+            _body = body ?? (() => GameServices.Body);
         }
 
         public float Level(NeedKind need)
@@ -62,7 +64,8 @@ namespace HiddenHarbours.Core
         }
 
         /// <summary>The level of <paramref name="need"/> now and its curve. Hunger and tiredness are read off
-        /// their saved line; dirtiness is the cleanliness service's (cleanliness slice 1).</summary>
+        /// their saved line, on the curve as this body feels it (<see cref="CurveFor"/>, body slice 1);
+        /// dirtiness is the cleanliness service's (cleanliness slice 1).</summary>
         private float LevelNow(NeedKind need, PlayerNeedsDto needs, in NeedsSettings settings, out NeedCurve curve)
         {
             if (need == NeedKind.Dirtiness)
@@ -71,7 +74,7 @@ namespace HiddenHarbours.Core
                 ICleanlinessService cleanliness = _cleanliness();
                 return cleanliness != null ? cleanliness.Dirt : 0f;
             }
-            curve = NeedsMath.CurveOf(need, settings);
+            curve = CurveFor(need, settings);
             return LevelOf(needs.Get(need), curve);
         }
 
@@ -99,11 +102,29 @@ namespace HiddenHarbours.Core
             if (!(amount > 0f)) return;
             PlayerNeedsDto needs = Needs();
             if (needs == null) return;
+            // Body slice 1: carry the body to now first, so a meal never erases time spent starving.
+            _body()?.Settle();
             NeedStage before = Stage(NeedKind.Hunger);
             NeedStateDto state = needs.Hunger;
             float now = Level(NeedKind.Hunger) - amount;
             needs.Hunger = new NeedStateDto(now > 0f ? now : 0f, NowOr(state.SinceGameSeconds));
             Announce(NeedKind.Hunger, before);
+        }
+
+        public float Spend(float amount)
+        {
+            if (!(amount > 0f)) return 0f;
+            PlayerNeedsDto needs = Needs();
+            if (needs == null) return 0f;
+            // Carry the body to now first, as a meal does: time already spent starving stays spent.
+            _body()?.Settle();
+            NeedStage before = Stage(NeedKind.Hunger);
+            NeedStateDto state = needs.Hunger;
+            float level = Level(NeedKind.Hunger) + amount;
+            float over = level > 1f ? level - 1f : 0f;
+            needs.Hunger = new NeedStateDto(level < 1f ? level : 1f, NowOr(state.SinceGameSeconds));
+            Announce(NeedKind.Hunger, before);
+            return over;
         }
 
         public void Sleep()
@@ -211,6 +232,18 @@ namespace HiddenHarbours.Core
             for (int j = 0; j < i; j++)
                 if (string.Equals(ids[i], ids[j], StringComparison.Ordinal)) return true;
             return false;
+        }
+
+        /// <summary>The curve for <paramref name="need"/> as this body feels it: hunger rises by the body's
+        /// <see cref="IBodyService.HungerRateScale"/> (body slice 1: a bigger body empties a meal sooner).
+        /// At a scale of exactly 1 the configured curve is returned untouched.</summary>
+        private NeedCurve CurveFor(NeedKind need, in NeedsSettings settings)
+        {
+            NeedCurve curve = NeedsMath.CurveOf(need, settings);
+            if (need != NeedKind.Hunger) return curve;
+            float scale = _body()?.HungerRateScale ?? TraitMath.Identity;
+            if (scale != TraitMath.Identity && scale > 0f) curve.RisePerGameHour *= scale;
+            return curve;
         }
 
         private float LevelOf(in NeedStateDto state, in NeedCurve curve)

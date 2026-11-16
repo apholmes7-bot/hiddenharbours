@@ -537,6 +537,58 @@ MonoBehaviour:
     SellFloor: 0.92
     TickGameMinutes: 5
     SleepReliefPerGameHour: 0.125
+  Body:
+    ReferenceHeightMetres: 1.75
+    MinHeightScale: 0.92
+    MaxHeightScale: 1.08
+    DefaultFrame: 0.5
+    SmallFrameLeanBmi: 20
+    LargeFrameLeanBmi: 24
+    SmallFrameMaxBmi: 30
+    LargeFrameMaxBmi: 40
+    SmallFrameFloorBmi: 17
+    LargeFrameFloorBmi: 20
+    MetabolicAgeYears: 30
+    MetabolicSexConstantKcal: -78
+    ActivityFactor: 1.7
+    KcalPerKgOfMass: 1540
+    SurplusStoredFraction: 0.75
+    MaxGainKgPerMeal: 1
+    StarvingLossKgPerGameDay: 1.5
+    HeightStrideExponent: 1
+    SlowPerExtraLeanMass: 0.35
+    WalkFloor: 0.75
+    StomachCapacityMeals: 1.5
+    StomachEmptiesPerGameHour: 0.25
+  Strength:
+    Strength:
+      GainPerDose: 0.0005
+      DecayPerGameDay: 0.01
+      GraceGameDays: 3
+      MaintainDose: 15
+    Cardio:
+      GainPerDose: 0.0007
+      DecayPerGameDay: 0.02
+      GraceGameDays: 2
+      MaintainDose: 20
+    MemoryRegainFactor: 4
+    MassExponent: 0.6666667
+    SmallFrameTrainableGain: 0.6
+    LargeFrameTrainableGain: 0.9
+    ReferenceCarryCapacityKg: 30
+    CarrySlowAtCapacity: 0.4
+    CarryWalkFloor: 0.6
+    CardioSpeedGainMax: 0.06
+    CardioMovementSavingMax: 0.25
+    ReportWorkFromSignals: 1
+    MaxSignalWindowGameMinutes: 240
+  Crew:
+    HiredHandsShareBunks: 1
+    HandsPerSharedBunk: 2
+    OvernightNights: 3
+    WeekNights: 10
+    MonthNights: 30
+    MonthTripsNeedHiredSkipper: 0
   Cleanliness:
     Curve:
       RisePerGameHour: 0.020833334
