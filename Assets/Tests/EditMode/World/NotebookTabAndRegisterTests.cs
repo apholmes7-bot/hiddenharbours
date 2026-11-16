@@ -108,6 +108,39 @@ namespace HiddenHarbours.Tests.World.EditMode
         }
 
         [Test]
+        public void TheCatchTabTakesTheSameOnState()
+        {
+            var host = new GameObject("[NotebookCatchTabTest]");
+            NotebookPresenter p = host.AddComponent<NotebookPresenter>();
+            try
+            {
+                p.WireContent(() => new List<QuestDef>(),
+                              () => new List<KnowledgePageDef>(),
+                              () => new List<NotebookNote>(),
+                              new InMemoryFlagStore(),
+                              () => new List<CaughtSpeciesEntry>
+                              {
+                                  new CaughtSpeciesEntry("fish.atlantic_cod", "Atlantic Cod", 2, 0, 9.4f),
+                              });
+                p.Open();
+
+                int catchTab = -1;
+                for (int i = 0; i < p.Tabs.Count; i++)
+                    if (p.Tabs[i].Kind == NotebookPageKind.Caught) catchTab = i;
+                Assert.GreaterOrEqual(catchTab, 0, "a book with a catch carries the CATCH stub");
+
+                p.SelectTab(catchTab);
+                Assert.AreEqual(catchTab, p.TabIndex);
+                AssertOnlySelectedIsOn(host, p);
+            }
+            finally
+            {
+                p.Close();
+                Object.DestroyImmediate(host);
+            }
+        }
+
+        [Test]
         public void TheLandingLineFitsItsOwnLeaf()
         {
             var host = new GameObject("[NotebookRegisterTest]");
