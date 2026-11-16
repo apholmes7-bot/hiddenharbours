@@ -39,9 +39,19 @@ namespace HiddenHarbours.Tests.Support
     /// more than that so a second-level cascade (an OnDestroy whose victim's OnDestroy destroys again) also
     /// drains. One yield, which several fixtures used, only covers the first case.</para>
     ///
-    /// <para>What this cannot do: it cannot see an async load the GAME started (a region streaming in
-    /// additively through the region loader) and is still running. A destroy, deferred or immediate, during
-    /// such a load can still deadlock in the editor.</para>
+    /// <para><b>Settling is not enough on its own (2026-11-16, second slice).</b> The first CI run with the
+    /// settle hung again in <c>StPetersEastDoorPlayTests.TheIslandAnswersTheKeyABoatComesHomeWith</c>, in a
+    /// load issued through <see cref="Load"/> after the settle, with the same two stacks. Nothing the test
+    /// destroyed was pending: the destroy was queued by GAME code still running on the persistent
+    /// (DontDestroyOnLoad) hosts while the preload thread was reading the scene file, which takes a few
+    /// hundred milliseconds of frames. So a test-issued load now also HOLDS the main thread, inside the
+    /// frame that issues it, until the preload thread has finished reading
+    /// (<see cref="StartLoad"/>): no PostLateUpdate, so no delayed destroy, can run while
+    /// <c>LoadSceneOperation::Perform</c> is on the preload thread. The hold is bounded
+    /// (<see cref="HoldSeconds"/>) and falls back to the plain async load.</para>
+    ///
+    /// <para>What this cannot do: it cannot hold a load the GAME starts (a region streaming in additively
+    /// through the region loader). A destroy during such a load can still deadlock in the editor.</para>
     /// </summary>
     public static class SceneSettle
     {
@@ -108,14 +118,76 @@ namespace HiddenHarbours.Tests.Support
         public static IEnumerator Load(string scene, LoadSceneMode mode)
         {
             for (int i = 0; i < DrainFrames; i++) yield return null;
-            yield return SceneManager.LoadSceneAsync(scene, mode);
+            yield return StartLoad(scene, mode);
         }
 
         /// <summary>Settle, then <see cref="EditorSceneManager.LoadSceneAsyncInPlayMode"/> and wait.</summary>
         public static IEnumerator LoadInPlayMode(string path, LoadSceneParameters parameters)
         {
             for (int i = 0; i < DrainFrames; i++) yield return null;
-            yield return EditorSceneManager.LoadSceneAsyncInPlayMode(path, parameters);
+            yield return StartLoadInPlayMode(path, parameters);
+        }
+
+        /// <summary>Longest the main thread is held waiting for the preload thread to finish reading a
+        /// scene. A region's read is a few hundred milliseconds on CI (the job log's "Deserialize" line);
+        /// this is far past that and far short of the hang watchdog's frozen-thread verdict.</summary>
+        public const float HoldSeconds = 10f;
+
+        /// <summary>The <c>progress</c> an async load reports once its threaded read is done and it waits
+        /// for activation (documented engine behaviour with <c>allowSceneActivation</c> false).</summary>
+        public const float ReadDoneProgress = 0.9f;
+
+        /// <summary>Holds that may run out before the rest of the run stops holding. One can run out
+        /// honestly (the load was queued behind another scene operation that needs frames to finish);
+        /// several mean the hold is not doing what it is for on this editor, and later loads go plain async
+        /// rather than paying the bound again.</summary>
+        public const int MaxHoldTimeouts = 3;
+
+        /// <summary>How many loads were held to the end of their read, and how many ran out the bound;
+        /// read by the contract test and printed in the warning.</summary>
+        public static int HeldLoads { get; private set; }
+        public static int HoldTimeouts { get; private set; }
+
+        /// <summary>
+        /// <see cref="SceneManager.LoadSceneAsync(string, LoadSceneMode)"/>, with the main thread held in this
+        /// frame until the preload thread has finished reading the scene (see the class notes). Returns the
+        /// operation, already allowed to activate, for the caller to wait on; null when the engine refused
+        /// the load, exactly as <c>LoadSceneAsync</c> does. Call it from test code, never from a physics
+        /// callback or <c>OnDestroy</c>.
+        /// </summary>
+        public static AsyncOperation StartLoad(string scene, LoadSceneMode mode)
+        {
+            return HoldUntilRead(SceneManager.LoadSceneAsync(scene, mode));
+        }
+
+        /// <summary><see cref="StartLoad"/> for <see cref="EditorSceneManager.LoadSceneAsyncInPlayMode"/>.</summary>
+        public static AsyncOperation StartLoadInPlayMode(string path, LoadSceneParameters parameters)
+        {
+            return HoldUntilRead(EditorSceneManager.LoadSceneAsyncInPlayMode(path, parameters));
+        }
+
+        static AsyncOperation HoldUntilRead(AsyncOperation op)
+        {
+            if (op == null || HoldTimeouts >= MaxHoldTimeouts || op.isDone) return op;
+            // Holding activation back is what makes progress stop at ReadDoneProgress once the read is done,
+            // so "read done" is observable; it is released before the caller ever sees the operation.
+            op.allowSceneActivation = false;
+            var clock = System.Diagnostics.Stopwatch.StartNew();
+            while (op.progress < ReadDoneProgress && clock.Elapsed.TotalSeconds < HoldSeconds)
+                System.Threading.Thread.Sleep(1);
+            if (op.progress >= ReadDoneProgress)
+            {
+                HeldLoads++;
+            }
+            else
+            {
+                HoldTimeouts++;
+                Debug.LogWarning("[SceneSettle] a scene load's threaded read did not finish within " + HoldSeconds +
+                                 " s while the main thread was held (progress " + op.progress.ToString("0.00") +
+                                 "); after " + MaxHoldTimeouts + " of these, later loads in this run are not held");
+            }
+            op.allowSceneActivation = true;
+            return op;
         }
 
         /// <summary>Settle, then <see cref="SceneManager.UnloadSceneAsync(Scene)"/> and wait, as
