@@ -103,7 +103,7 @@ namespace HiddenHarbours.Economy
             int owned = SupplyLocker.Add(save, supply.Id, 1);
             if (ReferenceEquals(save, GameServices.Save?.Current)) GameServices.Save?.Save();
 
-            EventBus.Publish(new SupplyPurchased(supply.Id, supply.Price, owned));
+            EventBus.Publish(new SupplyPurchased(supply.Id, supply.Price, owned, SellerDirectory.Resolve(_sellerId)));
             LastPurchaseSucceeded = true;
             Debug.Log($"[SupplyShop] Bought {supply.DisplayName} ({supply.Id}) for ₲{supply.Price} — {owned} owned.");
             _onPurchased?.Invoke(supply.Price);

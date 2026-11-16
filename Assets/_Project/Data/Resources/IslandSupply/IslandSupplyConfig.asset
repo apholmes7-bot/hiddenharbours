@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c72fc20994714713bedc54d3baaaaee4, type: 3}
+  m_Name: IslandSupplyConfig
+  m_EditorClassIdentifier: HiddenHarbours.Core::HiddenHarbours.Core.IslandSupplyConfig
+  IslandRegionId: region.st_peters
+  BarLengthMetres: 611
+  BarCrestElevationMetres: 0.88
+  GutBedElevationMetres: -0.6
+  GutCentreFromIslandMetres: 189
+  GutWidthMetres: 30
+  IslandPathMetres: 52
+  MainlandRoadMetres: 372
+  RunDayStartHour: 6
+  RunDayEndHour: 20
+  BufferDays: 4
+  SearchStepGameMinutes: 1

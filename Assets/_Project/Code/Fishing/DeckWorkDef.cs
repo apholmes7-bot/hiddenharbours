@@ -118,6 +118,18 @@ namespace HiddenHarbours.Fishing
                  "TrapDefs that use this ruleset can catch.")]
         public SpeciesDeckRule[] SpeciesRules = System.Array.Empty<SpeciesDeckRule>();
 
+        [Header("Open seasons by port (the honest fishery's calendar — data, not code)")]
+        [Tooltip("Per-region open seasons for the species this pot lands (one FishingSeasonDef asset per " +
+                 "species + region). Out of season where the pot was SET, a would-be keeper goes back over " +
+                 "the side. A species/region with no entry here is open all year.")]
+        public FishingSeasonDef[] Seasons = System.Array.Empty<FishingSeasonDef>();
+
+        /// <summary>Whether <paramref name="speciesId"/> may be kept in <paramref name="regionId"/> on
+        /// <paramref name="date"/> under this ruleset's <see cref="Seasons"/> (pure; see
+        /// <see cref="FishingSeasonMath"/>).</summary>
+        public bool IsInSeason(string speciesId, string regionId, in SeasonDate date)
+            => FishingSeasonMath.IsOpen(Seasons, speciesId, regionId, in date);
+
         /// <summary>Find the sort rule for a species id (ordinal-ignore-case, the id convention).
         /// Returns false when the species has no rule — the caller treats it as an always-keeper.</summary>
         public bool TryGetRule(string speciesId, out SpeciesDeckRule rule)

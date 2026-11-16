@@ -226,6 +226,12 @@ namespace HiddenHarbours.Core
         /// serves: the stations share one counter, so this is a whole small galley at most.</summary>
         public const float PrepToCookMaxMetres = 1.5f;
 
+        /// <summary>How close (m, hull frame) two sleeping places aboard one hull may come: one
+        /// shoulder width. Two sleepers' heads (pillow ends) are never nearer than this, and two bunk
+        /// reach points on one level are never nearer either, so the nearest-wins press always tells
+        /// the two berths apart (owner ruling 2026-11-15: two players never share one bed).</summary>
+        public const float BunkMinSeparationMetres = 0.45f;
+
         [Tooltip("For a bunk: the interior level its mattress is on. EMPTY means no bunk geometry was " +
                  "given, and the two points below mean nothing.")]
         public string BunkLevel = "";

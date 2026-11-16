@@ -29,6 +29,28 @@ namespace HiddenHarbours.Core
                  "as a bar. Rates are per IN-GAME hour. Read through GameServices.NeedsSettings.")]
         public NeedsSettings Needs = NeedsSettings.Default;
 
+        [Header("Body (frame, weight, metabolism, overeating)")]
+        [Tooltip("The player's body (owner ask 2026-11-15). Frame and height set a lean and a max mass; " +
+                 "a bigger body gets hungry sooner (Mifflin-St Jeor), a heavier one walks slower, a taller " +
+                 "one faster; eating past a full stomach makes the player sick. Never shown as a number. " +
+                 "The default frame at height scale 1 and lean mass is exactly today's player. Read " +
+                 "through GameServices.BodySettings.")]
+        public BodySettings Body = BodySettings.Default;
+
+        [Tooltip("Body slice 2 (owner ask 2026-11-15): strength and cardio. Training grows grip, back, legs " +
+                 "and cardio slowly; keeping them up is cheap; muscle memory regains a lost level faster. " +
+                 "Strength and mass set what the player can carry and how much a load slows the walk; cardio " +
+                 "makes moving a little faster and cheaper. Untrained and empty-handed is exactly today's " +
+                 "player. Read through GameServices.StrengthSettings.")]
+        public StrengthSettings Strength = StrengthSettings.Default;
+
+        [Header("Crew and trip limits")]
+        [Tooltip("Crew slice R2: how many nights each trip kind plans for, whether hired hands may share a " +
+                 "bunk in two watches (owner ruling: yes, shipped ON) and whether month trips need a hired " +
+                 "skipper. Players never share a bunk (owner ruling 2026-11-15). Read through " +
+                 "GameServices.CrewPolicy. The per-hull numbers live on each BoatVoyageDef.")]
+        public CrewPolicy Crew = CrewPolicy.Default;
+
         public const float DefaultCreatorFigureHeightFraction = 0.6f;
 
         [Header("Character creator view")]
@@ -149,6 +171,36 @@ namespace HiddenHarbours.Core
                  "this morning's when you turn in after midnight. 6 = 06:00, the design's wake time. " +
                  "The day rollover (market recovery, snow cover) fires for every midnight slept through.")]
         [Range(0f, 24f)] public float WakeHour = DefaultWakeHour;
+
+        /// <summary>The shortest sleep the chooser offers, when no config is wired (owner ruling
+        /// 2026-11-15: "Player chooses sleep duration").</summary>
+        public const float DefaultSleepMinHours = 1f;
+
+        /// <summary>The longest sleep, when no config is wired: the ruling's own cap ("Maximum 8 hours
+        /// sleep before auto waking"). <see cref="SleepPlan.RulingMaxHours"/> holds the field to it.</summary>
+        public const float DefaultSleepMaxHours = 8f;
+
+        /// <summary>How far one press of the chooser moves the hours, when no config is wired.</summary>
+        public const float DefaultSleepStepHours = 1f;
+
+        /// <summary>How many in-game hours pass per real second while asleep, when no config is wired:
+        /// a full eight-hour night goes by in eight seconds.</summary>
+        public const float DefaultSleepGameHoursPerRealSecond = 1f;
+
+        [Tooltip("The shortest sleep you can choose, in in-game hours.")]
+        [Range(0.25f, 8f)] public float SleepMinHours = DefaultSleepMinHours;
+
+        [Tooltip("The longest sleep you can choose, in in-game hours. You wake on your own when it is up. " +
+                 "Never more than 8: the owner's ruling caps a sleep at eight hours, whatever this says.")]
+        [Range(0.25f, 8f)] public float SleepMaxHours = DefaultSleepMaxHours;
+
+        [Tooltip("How many hours one press left or right changes the chosen sleep by.")]
+        [Range(0.25f, 4f)] public float SleepStepHours = DefaultSleepStepHours;
+
+        [Tooltip("How fast time runs while you sleep: in-game hours per real second. 1 = an eight-hour " +
+                 "night goes by in eight seconds. The world is exactly what it would be had the same " +
+                 "hours passed at the normal pace; only the wait changes. You can wake early with a press.")]
+        [Min(0.05f)] public float SleepGameHoursPerRealSecond = DefaultSleepGameHoursPerRealSecond;
 
         /// <summary>Whether a bunk aboard refuses while she is neither made fast nor holding at anchor,
         /// when no config is wired. TRUE: the owner's safe default ("it's not safe to turn in out

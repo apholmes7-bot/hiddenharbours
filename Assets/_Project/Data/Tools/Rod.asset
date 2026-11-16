@@ -16,6 +16,7 @@ MonoBehaviour:
   DisplayName: Rod
   GearId: gear.rod
   Flavor: A cane rod. You cannot cast one you are not holding.
+  Stowage: 1
   HandPropKey: rodTrail
   HeldMeshes:
   - {fileID: 11400000, guid: e9cfe427da07811429bac3875d8f46b8, type: 2}

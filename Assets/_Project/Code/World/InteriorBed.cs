@@ -234,7 +234,7 @@ namespace HiddenHarbours.World
             }
 
             // The SAVE half, unchanged from #574/#580 — same signal, same fields, same order.
-            EventBus.Publish(new RestSaveRequested(_placeName, wakePosition, Level));
+            EventBus.Publish(new RestSaveRequested(_placeName, wakePosition, Level, _id));   // v20: names the bed
 
             // The PRESENTATION half, additive: where the MATTRESS is, which the save signal deliberately
             // does not carry (it carries the wake spot, which is the player's feet — the opposite

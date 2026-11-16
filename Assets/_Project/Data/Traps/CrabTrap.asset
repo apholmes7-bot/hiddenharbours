@@ -30,6 +30,7 @@ MonoBehaviour:
   CapacityUnits: 3
   AllowedCatchFishIds:
   - fish.rock_crab
+  - fish.green_crab
   RequiredBaitId: bait.fish_scrap
   StackStepMeters: 0.3
   StackSlew:

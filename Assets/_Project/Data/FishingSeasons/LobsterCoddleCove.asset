@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 39866a7a22ed42998e263664ba8adf2a, type: 3}
+  m_Name: LobsterCoddleCove
+  m_EditorClassIdentifier: HiddenHarbours.Fishing::HiddenHarbours.Fishing.FishingSeasonDef
+  Id: season.lobster_coddle_cove
+  DisplayName: Lobster season, Coddle Cove
+  SpeciesId: fish.lobster
+  RegionId: region.coddle_cove
+  OpenSeason: 0
+  OpenDayOfSeason: 15
+  CloseSeason: 1
+  CloseDayOfSeason: 21

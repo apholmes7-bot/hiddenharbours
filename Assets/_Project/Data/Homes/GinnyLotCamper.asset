@@ -19,3 +19,5 @@ MonoBehaviour:
   Acquisition: 0
   Price: 900
   Variant: clipper
+  KeeperNpcId:
+  TradeId: trade.housing

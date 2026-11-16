@@ -25,3 +25,5 @@ MonoBehaviour:
   ResidentMove: 1
   ResidentMovesTo: station.st_peters.home_post_office
   ListedForSale: 1
+  KeeperNpcId:
+  TradeId: trade.housing

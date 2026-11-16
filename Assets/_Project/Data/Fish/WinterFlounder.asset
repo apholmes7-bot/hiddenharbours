@@ -22,6 +22,7 @@ MonoBehaviour:
   - region.st_peters
   - region.east_water
   - region.nine_mile_creek
+  - region.cumberland
   AllowedGear: 3
   Seasons: 5
   MinTide: -10

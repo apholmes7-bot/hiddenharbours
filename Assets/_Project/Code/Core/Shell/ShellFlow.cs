@@ -146,6 +146,8 @@ namespace HiddenHarbours.Core
         {
             var save = GameServices.Save;
             if (save != null) save.Save();      // still Playing here, so the write is allowed
+                                                // (refused mid-sleep: the last completed sleep stands)
+            SleepFlow.Abandon();                // up out of any bed, with no write and no relief
 
             ShellPause.Resume();                // hand the clock back before the core carrying it goes away
             EventBus.Publish(new ReturnToTitleRequested());
@@ -159,6 +161,7 @@ namespace HiddenHarbours.Core
         {
             Phase = ShellPhase.Playing;
             ShellPause.Reset();
+            SleepFlow.Reset();
         }
     }
 }
