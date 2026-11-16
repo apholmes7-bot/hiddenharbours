@@ -32,6 +32,18 @@ namespace HiddenHarbours.Tests.PlayMode
             Assert.That(SceneSettle.DrainFrames, Is.GreaterThanOrEqualTo(2));
         }
 
+        [Test]
+        public void TheLoadHold_IsBoundedWellInsideTheHangWatchdog()
+        {
+            // The hold blocks the main thread inside one frame; past the watchdog's frozen-thread verdict it
+            // would be reported as the very hang it prevents. And it stops holding after a few timeouts, so
+            // a hold that cannot work on some editor costs a bounded amount of time per run.
+            Assert.That(SceneSettle.HoldSeconds * 3f, Is.LessThan(MainThreadPulse.FrozenAfterSeconds));
+            Assert.That(SceneSettle.MaxHoldTimeouts, Is.InRange(1, 5));
+            // allowSceneActivation=false stops an async load's progress at 0.9 once its threaded read is done.
+            Assert.That(SceneSettle.ReadDoneProgress, Is.EqualTo(0.9f));
+        }
+
         [UnityTest]
         public IEnumerator DestroyAndSettle_LeavesEveryObjectUnityNull()
         {

@@ -97,7 +97,7 @@ namespace HiddenHarbours.Tests.PlayMode
             yield return null;
             Mark("boot: loading StPeters");
             yield return HiddenHarbours.Tests.Support.SceneSettle.Frames();
-            AsyncOperation load = SceneManager.LoadSceneAsync("StPeters", LoadSceneMode.Single);
+            AsyncOperation load = HiddenHarbours.Tests.Support.SceneSettle.StartLoad("StPeters", LoadSceneMode.Single);
             double loadEnd = Time.realtimeSinceStartupAsDouble + SceneStepSeconds;
             while (load != null && !load.isDone)
             {

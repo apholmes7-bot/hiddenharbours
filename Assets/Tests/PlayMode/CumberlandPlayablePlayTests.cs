@@ -123,7 +123,7 @@ namespace HiddenHarbours.Tests.PlayMode
             {
                 Step("load-destination/begin");
                 yield return HiddenHarbours.Tests.Support.SceneSettle.Frames();
-                var load = SceneManager.LoadSceneAsync(Plan.Region.SceneName, LoadSceneMode.Additive);
+                var load = HiddenHarbours.Tests.Support.SceneSettle.StartLoad(Plan.Region.SceneName, LoadSceneMode.Additive);
                 while (!load.isDone) yield return null;
                 Step("load-destination/done");
             }
