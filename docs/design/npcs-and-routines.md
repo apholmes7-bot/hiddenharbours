@@ -830,6 +830,39 @@ Keep it tight: **two tracks, a handful of inputs, concrete unlocks, gentle decay
 to build a relationship sim; build a relationship *layer* that makes the living coast feel like it
 knows you.
 
+### 5.4 As built: gifts, slice 1 (owner ask 2026-11-15)
+
+"Some items can be gifted to npcs and npcs have preferences." What shipped, and what did not:
+
+- **What can be given.** The loose catch in your hand (a fish by the gill, a handful of clams). It is
+  giftable unless its species says otherwise (`FishSpeciesDef.Giftable`, default on), read through
+  Core's `IGiftableFacts` so the world layer never names Fishing. Tools and pails are never offered: the
+  act only peeks the hand's loose catch (`ICatchHands.TryPeekHand`). Food is not a hand item on main
+  yet, so it has no flag; when it is, it answers through the same seam.
+- **How it is offered.** Facing a villager you have MET (her completion flag is set) with a giftable
+  catch in hand, the popup says **Give — Aunt Ginny** instead of Talk, and E gives. Her opening
+  conversation is never skipped by a fish in your hand. Put the catch away to talk. When the
+  interaction chooser lands, this one branch in `WorldInteractor.BeginInteract` becomes two rows
+  (Talk, Give); `Give()` is already the whole act.
+- **Tastes are data** on the villager's `NpcDef.Gifts`: loved / liked / disliked by item id and by
+  item tag (`catch`, and the fish category in snake case: `shellfish`, `inshore_groundfish`,
+  `pelagic` ...). An id beats a tag; on a tie between tags the warmer wins. Nothing authored = she takes
+  anything politely. The pure rule is `GiftRule`.
+- **One gift per person per game day** (`GiftConfig.GiftsPerNpcPerDay`). A second gift that day is
+  declined kindly and the catch stays in your hand. **Runtime only, not saved**: reload on the same
+  day and she will take one more. Persisting it needs a save field, deferred while v22/v23 are in
+  flight.
+- **She says how she took it**, one line in her bubble, never a number or a heart: her own words for
+  that reaction if she has them, else the shared lines on `GiftConfig`, picked by the game day.
+- **What it moves.** An accepted gift records a relationship event, player to her
+  (`GiftLoved +8`, `GiftLiked +4`, `GiftNeutral +2`, `GiftDisliked -3`, never rivalry; the owner's rows
+  on the relationship config), applied at the next `ApplyDay` like every other event (nothing calls `ApplyDay` yet, and the graph is
+not saved: relationships slice 2), and publishes
+  `GiftGiven` (npc, item, reaction, day) on the EventBus for anything else that wants the moment.
+- **First tastes authored:** Aunt Ginny loves cod (Ned's chowder), likes shellfish, dislikes green
+  crab. Junior Poirier loves striped bass, likes pelagics, dislikes soft-shell clams (he digs them all
+  day). Basil Samson loves haddock, likes inshore groundfish, dislikes cunner and tomcod (bait).
+
 ---
 
 ## 6. Dialogue approach (high level)
