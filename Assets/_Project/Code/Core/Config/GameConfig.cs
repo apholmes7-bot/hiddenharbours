@@ -29,6 +29,21 @@ namespace HiddenHarbours.Core
                  "as a bar. Rates are per IN-GAME hour. Read through GameServices.NeedsSettings.")]
         public NeedsSettings Needs = NeedsSettings.Default;
 
+        [Header("Body (frame, weight, metabolism, overeating)")]
+        [Tooltip("The player's body (owner ask 2026-11-15). Frame and height set a lean and a max mass; " +
+                 "a bigger body gets hungry sooner (Mifflin-St Jeor), a heavier one walks slower, a taller " +
+                 "one faster; eating past a full stomach makes the player sick. Never shown as a number. " +
+                 "The default frame at height scale 1 and lean mass is exactly today's player. Read " +
+                 "through GameServices.BodySettings.")]
+        public BodySettings Body = BodySettings.Default;
+
+        [Tooltip("Body slice 2 (owner ask 2026-11-15): strength and cardio. Training grows grip, back, legs " +
+                 "and cardio slowly; keeping them up is cheap; muscle memory regains a lost level faster. " +
+                 "Strength and mass set what the player can carry and how much a load slows the walk; cardio " +
+                 "makes moving a little faster and cheaper. Untrained and empty-handed is exactly today's " +
+                 "player. Read through GameServices.StrengthSettings.")]
+        public StrengthSettings Strength = StrengthSettings.Default;
+
         [Header("Crew and trip limits")]
         [Tooltip("Crew slice R2: how many nights each trip kind plans for, whether hired hands may share a " +
                  "bunk in two watches (owner ruling: yes, shipped ON) and whether month trips need a hired " +

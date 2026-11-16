@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3f7457b538c841f88cef50d3a44af4fe, type: 3}
+  m_Name: BarbellSquat
+  m_EditorClassIdentifier: HiddenHarbours.Core::HiddenHarbours.Core.ActivityDef
+  Id: activity.barbell_squat
+  DisplayName: Barbell squat
+  Kind: 2
+  Unit: 1
+  KcalPerUnitAboveRest: 0.6
+  Training:
+    Grip: 0
+    Back: 0.4
+    Legs: 1.5
+    Cardio: 0
+  EquipmentIds:
+  - gym_equipment.squat_rack
+  Signal: 0
