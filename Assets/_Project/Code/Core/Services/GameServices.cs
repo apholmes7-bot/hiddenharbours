@@ -204,6 +204,14 @@ namespace HiddenHarbours.Core
         public static IFishConservationFacts FishConservation { get; set; }
 
         /// <summary>
+        /// WHETHER AN ITEM MAY BE GIVEN (<see cref="IGiftableFacts"/>) — published by the Fishing module's
+        /// species registry off <c>FishSpeciesDef.Giftable</c>, read by the world layer's gift act. May be
+        /// null: the giver then uses its default for the kind of thing held (a loose catch is giftable).
+        /// FLAG lead-architect: new Core contract (2026-11-15, NPC gifting).
+        /// </summary>
+        public static IGiftableFacts GiftableFacts { get; set; }
+
+        /// <summary>
         /// What a radar can see (ADR 0025 S5): the NPC vessels and buoys out there right now, published
         /// by whoever is driving them and read by the scope at the helm (<see cref="IRadarContacts"/>).
         ///
@@ -377,6 +385,21 @@ namespace HiddenHarbours.Core
         }
 
         private static ICarriedLoad _carriedLoad;
+
+        /// <summary>
+        /// Cleanliness, the third need (cleanliness slice 1, owner ask 2026-11-15): the local player's dirt
+        /// over <see cref="Save"/>, <see cref="Clock"/> and the shipped wash stations under
+        /// <c>Resources/WashStations/</c>. Never null: a default <see cref="CleanlinessService"/> is made on
+        /// first read; a test assigns its own. Cleared by <see cref="Reset"/>. Clean, nothing changes.
+        /// FLAG lead-architect: new Core contract (cleanliness).
+        /// </summary>
+        public static ICleanlinessService Cleanliness
+        {
+            get => _cleanliness ??= new CleanlinessService();
+            set => _cleanliness = value;
+        }
+
+        private static ICleanlinessService _cleanliness;
 
         /// <summary>
         /// The farm plots (farm slice 1): read-only questions about each plot's stage and the work due on it,
@@ -841,6 +864,11 @@ namespace HiddenHarbours.Core
 
         /// <summary>The crew and trip-limit rules (crew slice R2), with the fallback for an unwired config.</summary>
         public static CrewPolicy CrewPolicy => Config != null ? Config.Crew : CrewPolicy.Default;
+
+        /// <summary>The cleanliness numbers, with the fallback for an unwired config (or a config asset
+        /// written before the block existed, which deserializes it with no source rows).</summary>
+        public static CleanlinessSettings CleanlinessSettings
+            => Config != null && Config.Cleanliness.Sources != null ? Config.Cleanliness : CleanlinessSettings.Default;
 
         /// <summary>The needs' slow tick in in-game seconds (never below one game minute), with the
         /// fallback for an unwired config. The game clock calls <see cref="INeedsService.Tick"/> this often.</summary>
@@ -1400,6 +1428,7 @@ namespace HiddenHarbours.Core
             FishBehaviour = null;        // → EmptyFishBehaviourFacts.Instance; likewise never null
             FishSizes = null;            // nullable by contract: no size word without a registry
             FishConservation = null;     // nullable by contract: nothing refused without a registry
+            GiftableFacts = null;        // nullable by contract: the giver falls back to its kind default
             RadarContacts = null;        // → EmptyRadarSea.Instance; likewise never null
             BirdPresence = null;         // → EmptyBirdPresence.Instance; likewise never null
             Save = null;
@@ -1410,6 +1439,7 @@ namespace HiddenHarbours.Core
             Messes = null;               // → a fresh default on next read
             PlayerStrength = null;       // → the body, or the neutral reading
             CarriedLoad = null;          // → NoCarriedLoad.Instance (nothing carried)
+            Cleanliness = null;          // → a fresh default on next read; drops its station catalog
             Farm = null;                 // → a fresh default on next read; drops its catalog and baseline
             Food = null;                 // → a fresh default on next read; drops its loaded food book
             Relationships = null;        // → a fresh default on next read; reseeds from the shipped ties

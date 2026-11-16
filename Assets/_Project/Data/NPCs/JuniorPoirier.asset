@@ -18,3 +18,23 @@ MonoBehaviour:
   Dialogue: {fileID: 11400000, guid: d934f8a10c2d4958b420922c70a394e3, type: 2}
   CompletionFlag: met_junior
   Build: {fileID: 11400000, guid: 0b7b08407b6e3e248a7565666848676e, type: 2}
+  Gifts:
+    LovedItemIds:
+    - fish.striped_bass
+    LikedItemIds: []
+    DislikedItemIds:
+    - fish.soft_shell_clam
+    LovedTags: []
+    LikedTags:
+    - pelagic
+    DislikedTags: []
+    Lines:
+      Loved:
+      - 'A striper! Now that''s a fish. I might tell the fellas I caught it myself.'
+      Liked:
+      - 'Hey, that''s not a clam. Thanks. Makes a change.'
+      Neutral: []
+      Disliked:
+      - 'A clam. For me. I''ve had my hands in clams since before the tide turned. Thanks, I guess.'
+      NotGiftable: []
+      AlreadyGiftedToday: []

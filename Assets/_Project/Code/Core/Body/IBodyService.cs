@@ -72,6 +72,17 @@ namespace HiddenHarbours.Core
         /// </summary>
         MealOutcome Eat(float meals, Vector2 position, string regionId);
 
+        /// <summary>
+        /// <b>A meal that states its energy</b> (food follow-up): <paramref name="meals"/> fills hunger and the
+        /// stomach exactly as <see cref="Eat(float, Vector2, string)"/> does (and overeats the same way), while
+        /// the mass gain comes from <paramref name="energyKcal"/>: the part of that energy past what hunger was
+        /// short of is stored. A non-positive <paramref name="energyKcal"/> is "unstated" and is the plain meal.
+        /// The one door eating food uses (<see cref="FoodEater"/>), so hunger is relieved once.
+        /// The default (an implementation that predates the field) is the plain meal.
+        /// </summary>
+        MealOutcome Eat(float meals, float energyKcal, Vector2 position, string regionId)
+            => Eat(meals, position, regionId);
+
         /// <summary>Carry mass, stomach and hunger to now and re-anchor them there (values unchanged).</summary>
         void Settle();
 

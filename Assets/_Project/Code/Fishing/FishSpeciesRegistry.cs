@@ -49,6 +49,7 @@ namespace HiddenHarbours.Fishing
             GameServices.FishBehaviour = Facts;
             GameServices.FishSizes = SizeFacts;
             GameServices.FishConservation = ConservationFacts;
+            GameServices.GiftableFacts = GiftFacts;
         }
 
         /// <summary>
@@ -67,12 +68,24 @@ namespace HiddenHarbours.Fishing
         /// species is protected (release-only), read by <see cref="CatchKeep"/>.</summary>
         public static IFishConservationFacts ConservationFacts => (IFishConservationFacts)Facts;
 
-        private sealed class RegistryFacts : IFishBehaviourFacts, IFishSizeFacts, IFishConservationFacts
+        /// <summary>This registry through the Core <see cref="IGiftableFacts"/> seam — whether a catch of a
+        /// species may be given to a person (<see cref="FishSpeciesDef.Giftable"/>), for the gift act.</summary>
+        public static IGiftableFacts GiftFacts => (IGiftableFacts)Facts;
+
+        private sealed class RegistryFacts : IFishBehaviourFacts, IFishSizeFacts, IFishConservationFacts,
+                                             IGiftableFacts
         {
             public bool IsProtected(string fishId)
             {
                 FishSpeciesDef d = Get(fishId);
                 return d != null && d.Protected;
+            }
+
+            public bool TryIsGiftable(string itemId, out bool giftable)
+            {
+                FishSpeciesDef d = Get(itemId);
+                giftable = d != null && d.Giftable;
+                return d != null;
             }
 
             public bool TryWeightRangeKg(string fishId, out float minKg, out float maxKg)

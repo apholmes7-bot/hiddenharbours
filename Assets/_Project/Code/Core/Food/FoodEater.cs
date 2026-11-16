@@ -1,10 +1,15 @@
 using System;
+using UnityEngine;
 
 namespace HiddenHarbours.Core
 {
     /// <summary>
     /// <b>Eat</b> (first food slice): use up one unit of a food and lower hunger by exactly its
-    /// <see cref="FoodDef.HungerRelief"/> through <see cref="INeedsService.Eat"/>, which clamps at fed.
+    /// <see cref="FoodDef.HungerRelief"/>, which clamps at fed. Since the food follow-up the bite goes
+    /// through the body (<see cref="IBodyService.Eat(float, float, Vector2, string)"/>): the stomach fills,
+    /// so eating too much at once is sick, and the food's <see cref="FoodDef.EnergyKcal"/> past what hunger
+    /// was short of becomes mass. The body relieves hunger through <see cref="INeedsService.Eat"/> itself;
+    /// the eater calls the needs directly only when there is no body.
     /// Two sources: the counted supply locker (shop food, <see cref="SupplyLocker"/>) and the loose catch in
     /// the hands (<see cref="ICatchHands"/>).
     ///
@@ -30,15 +35,35 @@ namespace HiddenHarbours.Core
         private readonly Func<INeedsService> _needs;
         private readonly Func<ISaveService> _save;
         private readonly Func<ICatchHands> _hands;
+        private readonly Func<IBodyService> _body;
+        private readonly Func<Vector2> _position;
+        private readonly Func<string> _regionId;
         private FoodBook _shipped;
 
+        /// <param name="body">The one door a bite goes through (food follow-up): the body relieves hunger
+        /// by the relief, fills the stomach (overeating is real), and stores the food's energy past what
+        /// hunger was short of. Only when there is no body does the bite fall back to
+        /// <paramref name="needs"/> alone. Never both, so hunger is relieved once.</param>
+        /// <param name="position">Where the player stands, for the mess an overfull stomach leaves.</param>
+        /// <param name="regionId">The region the player is in, for that mess.</param>
         public FoodEater(Func<FoodBook> book = null, Func<INeedsService> needs = null,
-                         Func<ISaveService> save = null, Func<ICatchHands> hands = null)
+                         Func<ISaveService> save = null, Func<ICatchHands> hands = null,
+                         Func<IBodyService> body = null, Func<Vector2> position = null,
+                         Func<string> regionId = null)
         {
             _book = book ?? (() => _shipped ??= FoodBook.FromResources());
             _needs = needs ?? (() => GameServices.Needs);
             _save = save ?? (() => GameServices.Save);
             _hands = hands ?? (() => GameServices.CatchHands);
+            _body = body ?? (() => GameServices.Body);
+            _position = position ?? (() => PlayerPosition());
+            _regionId = regionId ?? (() => GameServices.CurrentRegionId);
+        }
+
+        private static Vector2 PlayerPosition()
+        {
+            Transform player = GameServices.PlayerTransform;
+            return player != null ? (Vector2)player.position : Vector2.zero;
         }
 
         /// <summary>Would this item be eaten as it is? Changes nothing and publishes nothing.</summary>
@@ -80,7 +105,12 @@ namespace HiddenHarbours.Core
 
         private EatRefusal Ate(FoodDef food, string itemId)
         {
-            _needs()?.Eat(food.HungerRelief);
+            // ONE path (food follow-up): the body relieves hunger itself (INeedsService.Eat inside), so a
+            // bite through the body never also calls the needs. An overfull stomach brings it back up: the
+            // unit is still used, the body publishes Vomited and leaves the mess.
+            IBodyService body = _body();
+            if (body != null) body.Eat(food.HungerRelief, food.EnergyKcal, _position(), _regionId());
+            else _needs()?.Eat(food.HungerRelief);
             EventBus.Publish(new AteFood(food.Id, itemId, food.HungerRelief));
             return EatRefusal.None;
         }

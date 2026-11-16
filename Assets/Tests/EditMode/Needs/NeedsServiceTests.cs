@@ -417,7 +417,10 @@ namespace HiddenHarbours.Tests.EditMode
             var matches = System.Text.RegularExpressions.Regex.Matches(
                 yaml, @"^\s*(?:Mild|Strong)SellPenalty:\s*(\S+)\s*$",
                 System.Text.RegularExpressions.RegexOptions.Multiline);
-            Assert.AreEqual(4, matches.Count, "Hunger and Tiredness each list both sell-penalty keys");
+            // One curve per need (Hunger and Tiredness in Needs, Dirtiness in Cleanliness.Curve), each listing
+            // both keys: the count follows the needs that exist, so a new need's curve is checked too.
+            int needs = System.Enum.GetValues(typeof(NeedKind)).Length;
+            Assert.AreEqual(2 * needs, matches.Count, "every need's curve lists both sell-penalty keys");
             foreach (System.Text.RegularExpressions.Match m in matches)
             {
                 Assert.IsTrue(float.TryParse(m.Groups[1].Value, System.Globalization.NumberStyles.Float,

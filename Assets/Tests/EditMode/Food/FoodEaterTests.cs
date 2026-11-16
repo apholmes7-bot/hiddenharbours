@@ -71,7 +71,16 @@ namespace HiddenHarbours.Tests.EditMode
             return def;
         }
 
-        private FoodEater Eater() => new FoodEater(() => _book, () => _needs, () => _save, () => _hands);
+        // Since the food follow-up a bite goes through the body (which relieves hunger through the same
+        // needs), so the eater is given a real body over the same save, clock and needs.
+        private FoodEater Eater()
+        {
+            var messes = new MessRegistry(() => _save);
+            var body = new BodyService(() => _save, () => _clock, () => BodySettings.Default,
+                                       () => NeedsSettings.Default, () => _needs, () => messes, () => Hour);
+            return new FoodEater(() => _book, () => _needs, () => _save, () => _hands, () => body,
+                                 () => Vector2.zero, () => "region.test");
+        }
 
         private void SetHunger(float level)
             => _save.Current.PlayerNeeds = new PlayerNeedsDto

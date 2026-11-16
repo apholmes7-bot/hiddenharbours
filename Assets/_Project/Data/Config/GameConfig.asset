@@ -28,6 +28,12 @@ MonoBehaviour:
   DaysPerWeek: 7
   DaysPerSeason: 28
   MarketDayIndex: 4
+  InteractChooserEnabled: 1
+  InteractChooserMaxPriority: 0
+  InteractChooserMaxRows: 6
+  HeavyWorkNeeds:
+    RefusedAtTiredness: 2
+    RefusedAtHunger: 2
   TidalPeriodHours: 12.4206
   LunarMonthDays: 28
   NeapAmplitudeFraction: 0.45
@@ -589,6 +595,40 @@ MonoBehaviour:
     WeekNights: 10
     MonthNights: 30
     MonthTripsNeedHiredSkipper: 0
+  Cleanliness:
+    Curve:
+      RisePerGameHour: 0.020833334
+      MildAt: 0.5
+      StrongAt: 0.75
+      MildWalkPenalty: 0
+      StrongWalkPenalty: 0
+      MildSellPenalty: 0
+      StrongSellPenalty: 0
+    Sources:
+    - Kind: 1
+      RisePerGameHour: 0.08
+      PerAction: 0
+    - Kind: 2
+      RisePerGameHour: 0.1
+      PerAction: 0.015
+    - Kind: 3
+      RisePerGameHour: 0.12
+      PerAction: 0.01
+    - Kind: 4
+      RisePerGameHour: 0.15
+      PerAction: 0.01
+    - Kind: 5
+      RisePerGameHour: 0.12
+      PerAction: 0
+    - Kind: 6
+      RisePerGameHour: 0.2
+      PerAction: 0
+    - Kind: 7
+      RisePerGameHour: 0.15
+      PerAction: 0
+    MaxStretchGameMinutes: 240
+    WadeCountsAsSea: 0
+    SeaStationId: washstation.sea
   Juice:
     GradeEnabled: 1
     GradeStrength: 0.35
@@ -675,3 +715,17 @@ MonoBehaviour:
     SideReach: 0.7
   DevAllHelmInstruments: 1
   MeshFishingAndDig: 1
+  Effort:
+    RefuseLight: 0
+    RefuseModerate: 0
+    RefuseHeavy: 1
+    TiredRefuseAt: 0.9
+    HungryRefuseAt: 0.97
+    HungryAlsoSaidAt: 0.75
+    TiredLine: I'm too tired.
+    HungryLine: I'm too hungry.
+    BothLine: I'm too tired and too hungry.
+    LineCooldownSeconds: 4
+    BubbleHeightMetres: 2.1
+    SitReliefShareOfSleep: 0.25
+    SitRestFloor: 0.4

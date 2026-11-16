@@ -414,6 +414,16 @@ namespace HiddenHarbours.Core
         /// <summary>The last mess id serial handed out (<c>mess.N</c>), so an id is never reused, even after
         /// its mess is cleaned up. Added in v21; 0 = none yet.</summary>
         public int NextMessSerial;
+
+        /// <summary>
+        /// <b>The player's cleanliness</b> (cleanliness slice 1, owner ask 2026-11-15, added in v22): the dirt
+        /// at one instant, that instant, and the stretch of work or the wash going on since. The dirt now is
+        /// worked out from the clock (<see cref="CleanlinessMath.DirtAt"/>). A new game starts clean and
+        /// unanchored; an older save is migrated to clean at its own saved time. Written only through
+        /// <see cref="ICleanlinessService"/>.
+        /// FLAG lead-architect: save schema v22 (cleanliness).
+        /// </summary>
+        public PlayerCleanlinessDto PlayerCleanliness = new();
     }
 
     /// <summary>
