@@ -738,7 +738,12 @@ namespace HiddenHarbours.App
                 if (s.IsValid() && !s.isLoaded) continue;   // still loading: parked when it lands, released then
                 _warmScenes.RemoveAt(i);
                 if (!s.IsValid() || s == active) continue;
-                SceneManager.UnloadSceneAsync(s);
+                AsyncOperation unload = SceneManager.UnloadSceneAsync(s);
+                // Counted while in flight (editor only; the call is compiled out of players), so a region load
+                // issued behind it is not held for its threaded read: that load waits on this unload, which needs
+                // main-thread frames to finish (SceneLoadHold). Keep the unload OUT of the call's argument: a
+                // [Conditional] call drops its argument expressions with it.
+                SceneLoadHold.Track(unload);
             }
         }
 
