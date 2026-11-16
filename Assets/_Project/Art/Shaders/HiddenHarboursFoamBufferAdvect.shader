@@ -193,6 +193,22 @@ Shader "Hidden/HiddenHarbours/FoamBufferAdvect"
             #endif
             }
 
+            // The run-up wash's GROUND FRAME (v9): the same central difference over ±h metres, as the uphill
+            // direction (xy) and the slope (z). Read wider than ShoreDir so a mound smaller than h does not turn
+            // the shore normal round (the wash's beach projection and its line tap read it).
+            float3 GroundFrame(float2 worldXY, float h)
+            {
+            #if defined(_USE_HEIGHTTEX)
+                h = max(h, 1e-3);
+                float ex = SeabedElevation(worldXY + float2(h, 0)) - SeabedElevation(worldXY - float2(h, 0));
+                float ey = SeabedElevation(worldXY + float2(0, h)) - SeabedElevation(worldXY - float2(0, h));
+                float g = length(float2(ex, ey));
+                return g > 1e-5 ? float3(ex / g, ey / g, g / (2.0 * h)) : float3(0, 0, 0);
+            #else
+                return float3(0, 0, 0);
+            #endif
+            }
+
             // ==== TWIN A (end) ====
             // ==== TWIN B (begin): the fetch march, the breaker contour, the surf march and the bore, VERBATIM in HiddenHarboursFoamBufferAdvect.shader ====
             // ⚠️ WAVE_MAX_TRAINS is ONE HALF OF A SEAM. Its C# counterparts are

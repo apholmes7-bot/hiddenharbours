@@ -435,7 +435,7 @@ Shader "HiddenHarbours/Water"
         // How far the bore's energy lifts the shore surf's churn over its threshold (1 = the open breaker's lift, a
         // solid sheet at the crest; 0 = the churn alone decides, so water shows between its patches).
         _WashSurfLift      ("Shore surf: lift of the bore's energy over the churn threshold (1 = the open breaker's)", Range(0,1)) = 0
-        // v9 (the editor look of 7e16896): the shore surf's churn is read this many times finer than the open
+        // v9 (the fix3 editor look): the shore surf's churn is read this many times finer than the open
         // breaker's (_SurfNoiseScale), so it breaks into foam lace, not metre-wide blobs with lattice-straight edges.
         _WashSurfDetail    ("Shore surf: churn detail over the open breaker's (1 = the same scale)", Range(1,8)) = 3
         // The break gate beside a beach reads the depth averaged over this many metres ALONG the shore: the 8-bit
@@ -5286,7 +5286,7 @@ Shader "HiddenHarbours/Water"
                 float surfEvalDepth = depth;
                 if (_SurfStrength > 0.001 && _BreakerOuter.w > 0.5 && depth > -surfBeachReach)
                 {
-                    // v9 (the editor look of 7e16896, the line torn round the gravel mounds): the wash's ground
+                    // v9 (the fix3 editor look, the line torn round the gravel mounds): the wash's ground
                     // frame is read over ±_WashGroundScale. Read over ShoreDir's ±0.4 m, a mound turned the normal
                     // round (up its own flank), so the pixels about it projected to scattered waterline points and
                     // read different bores: hatched shards and a torn line at peak.
@@ -5340,7 +5340,7 @@ Shader "HiddenHarbours/Water"
                         float shoreTapDepth = _WaterLevel - SeabedElevation(surfEvalXY + surfDir * _WashSurfReach);
                         surfShore = saturate(-shoreTapDepth / max(surfBeachReach, 1e-3));
                     }
-                    // v9 (the editor look of 7e16896, the band's ~20 px square steps): the break gate's contour IS a
+                    // v9 (the fix3 editor look, the band's ~20 px square steps): the break gate's contour IS a
                     // depth contour of the 8-bit painted height, which holds one code for ~3 texels (1.5 m, 144 px at
                     // 96 px/m) along this shore and then steps 0.047 m; at the shore's slope one code is ~0.2 m of
                     // contour, so the gate stood in squares one texel run long. In the shore zone the gate reads the
@@ -5513,7 +5513,7 @@ Shader "HiddenHarbours/Water"
                         // above the run-up's reach (a bar with water behind it reads 0 and keeps the open look),
                         // the band is the churn thresholded against the break gate, its energy's lift at
                         // _WashSurfLift: broken patches with water between them, thinning as the bore ages.
-                        // v9 (the editor look of 7e16896): the slab at peak was the LIP, not the sheet - the lip band
+                        // v9 (the fix3 editor look): the slab at peak was the LIP, not the sheet - the lip band
                         // drew 1 across 1.5-2 m (the debug view's lip channel), smooth since v8 and capped at 0.6, so a
                         // flat pale sheet; the lip now breaks on the same churn (surfShoreBreak). And the churn is read
                         // _WashSurfDetail times finer: at the open breaker's scale its blobs were metres wide with
@@ -6829,7 +6829,7 @@ Shader "HiddenHarbours/Water"
                 // Where the bore's wash owns the shore, its residue takes the wash's read (above). Asked
                 // through the wash's own shore quantity, not the fragment's break gate: on the sand that
                 // gate reads 0, and the residue left there came back as the opaque point-read lattice.
-                // v9 (the editor look of 7e16896, the band's ~20 px seaward steps): the steps were THIS layer, not
+                // v9 (the fix3 editor look, the band's ~20 px seaward steps): the steps were THIS layer, not
                 // the surf - the debug view of the colour before it has a smooth band edge, the colour after it
                 // the stair. The bore deposits whole buffer cells, and seaward of the wash the open-water point
                 // read drew them as squares at the band's foot. The shore surf's zone (v8's shoreSurf, the same

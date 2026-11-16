@@ -26,7 +26,7 @@ namespace HiddenHarbours.Tests.EditMode
         const string WaterPath = "Assets/_Project/Art/Shaders/HiddenHarboursWater.shader";
         const string AdvectPath = "Assets/_Project/Art/Shaders/HiddenHarboursFoamBufferAdvect.shader";
         const string Dial = "_SurfFringeSequenceStrength";
-        const string BaseWaterHash = "341af5b10603bf6f0198c6e1de863f4813953d688872af6e0a3e98f00e94bdd8";
+        const string BaseWaterHash = "e2b910c07f5f8ceb5ad7600d88a59e76bc500d0ca90bc896eb5c664b933616c3";
         // Approved b5825e1f; re-approved at W1 Phase D (#932, owner d20) and C2a Phase D (owner, clarity 1) and at water gains B7 (#992, the seat's lean under the standing word of 10-29) and at crest glow L1 (#1004, the owner's ruling of 11-01) and at the foam lattice hash (the open-sea repeat fix, a named moved premise) and at the run-up wash (fix/shore-runup-foam, the owner's shore clip review of 11-15) and at the run-up wash v4 (fix/shore-runup-foam, the owner's v3 clip review of 11-15) and at the shore-normal pulse (fix/shore-runup-foam, the owner's v4 clip review of 11-15) and at the wash v7 (fix/shore-runup-foam, the PR 1225 editor look of 11-15) and at the wash v8 (the f07a839 editor look of 11-15) and at the wash v9 (the 7e16896 editor look of 11-15). UTF-8 without BOM, LF. These are scope guards, not copies of physics.
         const string LegacyDepth =
             "                float foamDepth  = depthC - lerp(BeachSwash(worldXY, depthC, t) * swashSlope * swashGate,  // local, foam-only\n" +
@@ -207,11 +207,12 @@ namespace HiddenHarbours.Tests.EditMode
             // Crest glow L1 (#1004, ADR 0027) lights the thin top on either facing and ships through the water type, outside the surf paths; the pinned source includes it.
             // The shore-normal pulse (fix/shore-runup-foam, owner clip review 11-15) reads the bore's phase and birth on the refracted bore clock (BoreClockPoint, a static jitter) and the fetch seaward of the pixel; the pinned sources include it.
             // The snap-back fix (fix/shore-runup-foam, owner v5 clip review 11-15) keeps the bore's run-in exactly and drains the DRAWN pulse from the reach the run-in got, easing to the new crest's birth by half a period (SurfDrawnBoreBirth01, twin WaterSurface.DrawnPulseBirth01; BreakerMath and SurfAt unchanged) so the run-up no longer jumps at a lull's front, and leaves the last crest's foam on the sand to fade in place (WaterSurface.LeftFoamDrawn / LeftFoamFade01); the pinned sources include it.
+            // The wash v10 copies TWIN A (its new GroundFrame) verbatim into the advect pass, which never calls it, so the bore it deposits is unchanged; the pinned sources include it.
             // The wash v9 (fix/shore-runup-foam, the 7e16896 editor look 11-15) breaks the shore lip with a finer churn, boxes the break gate along the shore, reads the bore's deposited foam smooth beside a beach and steps the beach projection back onto the still line (_WashSurfDetail, _WashSurfSmooth, _WashGroundScale); the pinned source includes it.
             // The wash v8 (fix/shore-runup-foam, the f07a839 editor look 11-15) projects the beach's surf read from the warped point, so one shore normal reads one bore, and draws the surf beside a beach as churn thresholded against the break gate, smooth and capped like the wash (_WashSurfReach, _WashSurfLift); the pinned source includes it.
             // The wash v7 (fix/shore-runup-foam, the PR 1225 editor look 11-15) measures the leading line on the ground up the shore normal instead of the screen gradient (no ddx/ddy in the wash), hands the breaker's lip and barrel to the wash above the still line, and caps what the surf's layers hide of the sand (_WashMaxCover); the pinned source includes it.
             MainSource(Read(WaterPath)); // Pins the edge, clip, sheet and both twins to approved main.
-            Assert.That(Hash(Read(AdvectPath)), Is.EqualTo("7f811ca637f40ee27a73002a7469a386f822a5853da8a414fbba687f0b2cc6cf"));
+            Assert.That(Hash(Read(AdvectPath)), Is.EqualTo("d0919e5c81d5c634848c6ac1e99d985ce3e293e55c5263af127daeedb7fd6014"));
             Assert.That(Hash(Read("Assets/_Project/Code/Core/Environment/BreakerMath.cs")),
                 Is.EqualTo("294994086ac8bdb0f1a8de662b7520c58698332fff20f241cb64461ace8007f4"));
             Assert.That(Hash(Read("Assets/_Project/Code/Art/WaterSurface.cs")),
