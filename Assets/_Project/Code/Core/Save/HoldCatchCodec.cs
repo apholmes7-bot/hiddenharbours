@@ -5,8 +5,12 @@ namespace HiddenHarbours.Core
     /// <summary>
     /// Encodes a hold's live catch into <see cref="HeldCatchDto"/> records and decodes them back
     /// (M1 §7.3 — freshness survives a save EXACTLY). One codec shared by every persisting container
-    /// (boat hold, clam pail, freezer) so the shape can't drift between them. Pure list-in/list-out —
-    /// EditMode-testable with no scene, no services.
+    /// (boat hold, clam pail, freezer) so the shape can't drift between them. <see cref="Capture"/> and
+    /// the facts-taking <see cref="Restore(IReadOnlyList{HeldCatchDto}, ICatchItemFactory, IFishConservationFacts, List{CatchItem}, List{CatchItem})"/>
+    /// are pure list-in/list-out, EditMode-testable with no scene and no services. The short
+    /// <see cref="Restore(IReadOnlyList{HeldCatchDto}, ICatchItemFactory, List{CatchItem})"/> reads the
+    /// registered <see cref="GameServices.FishConservation"/> and publishes <see cref="CatchReleased"/>
+    /// for each protected unit it drops.
     /// </summary>
     public static class HoldCatchCodec
     {
@@ -46,11 +50,31 @@ namespace HiddenHarbours.Core
         /// freshness stamped on unchanged — spoil is a pure function of (state, now), so the restored
         /// read equals the pre-save read to the bit. A record whose species no longer resolves (or a
         /// null factory) is SKIPPED, never a crash — the count of restored units is returned so the
-        /// caller can log honest losses.
+        /// caller can log honest losses. Protected units are dropped too and reported as releases
+        /// (see the facts-taking overload); this wrapper reads the registered facts and publishes one
+        /// <see cref="CatchReleased"/> per dropped unit.
         /// </summary>
         public static int Restore(IReadOnlyList<HeldCatchDto> records, ICatchItemFactory factory,
                                   List<CatchItem> into)
         {
+            var released = new List<CatchItem>();   // load-time only, never per frame
+            int restored = Restore(records, factory, GameServices.FishConservation, into, released);
+            PublishReleased(released);
+            return restored;
+        }
+
+        /// <summary>
+        /// The pure restore. As the short overload, but the protected-species facts are handed in: a
+        /// species flagged protected after the save was written goes back in the water (owner ruling
+        /// 2026-11-15). Each such unit is left out of <paramref name="into"/> and, when
+        /// <paramref name="released"/> is given, appended there (cleared first) so the caller reports it
+        /// as a release, never as an unresolved id. Null facts drop nothing. Returns the units restored.
+        /// </summary>
+        public static int Restore(IReadOnlyList<HeldCatchDto> records, ICatchItemFactory factory,
+                                  IFishConservationFacts facts, List<CatchItem> into,
+                                  List<CatchItem> released = null)
+        {
+            released?.Clear();
             if (into == null) return 0;
             into.Clear();
             if (records == null || factory == null) return 0;
@@ -60,17 +84,23 @@ namespace HiddenHarbours.Core
             {
                 HeldCatchDto r = records[i];
                 if (r.Quantity <= 0 || !factory.TryCreate(r.SpeciesId, out CatchItem template)) continue;
-                // A species flagged protected after this save was written goes back in the water: it is
-                // skipped like an unresolvable id (the caller's restored count reports the loss).
-                if (!CatchKeep.MayKeep(r.SpeciesId)) continue;
                 CatchItem item = template.WithFreshness(r.Freshness);
+                bool keep = CatchKeep.MayKeep(r.SpeciesId, facts);
                 for (int q = 0; q < r.Quantity; q++)
                 {
-                    into.Add(item);
-                    restored++;
+                    if (keep) { into.Add(item); restored++; }
+                    else released?.Add(item);
                 }
             }
             return restored;
+        }
+
+        /// <summary>Publish one <see cref="CatchReleased"/> per unit a restore let go. Null-safe.</summary>
+        public static void PublishReleased(IReadOnlyList<CatchItem> released)
+        {
+            if (released == null) return;
+            for (int i = 0; i < released.Count; i++)
+                EventBus.Publish(new CatchReleased(released[i]));
         }
 
         private static bool SameRun(in HeldCatchDto run, in CatchItem it)

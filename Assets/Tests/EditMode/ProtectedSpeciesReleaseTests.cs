@@ -79,6 +79,7 @@ namespace HiddenHarbours.Tests.EditMode
         public void SetUp()
         {
             GameServices.Reset();
+            FishSpeciesRegistry.Reset();
             _caught.Clear(); _released.Clear(); _landingCues.Clear(); _inHand = 0;
             EventBus.Clear<FishCaught>();
             EventBus.Clear<CatchReleased>();
@@ -104,6 +105,7 @@ namespace HiddenHarbours.Tests.EditMode
             EventBus.Clear<JuiceMomentCue>();
             EventBus.Clear<FishingStateChanged>();
             GameServices.Reset();
+            FishSpeciesRegistry.Reset();
             foreach (var o in _spawned) if (o != null) Object.DestroyImmediate(o);
             _spawned.Clear();
         }
@@ -309,6 +311,34 @@ namespace HiddenHarbours.Tests.EditMode
 
             Assert.AreEqual(1, restored, "a species flagged after the save goes back in the water");
             Assert.AreEqual(OpenId, into[0].SpeciesId);
+            Assert.AreEqual(2, _released.Count, "each dropped unit is reported as a release, not a lost id");
+            Assert.AreEqual(ProtectedId, _released[0].SpeciesId);
+        }
+
+        [Test]
+        public void Save_restore_pure_overload_reports_protected_units_as_released()
+        {
+            // No registered service: the facts are handed in, and nothing is published.
+            var records = new List<HeldCatchDto>
+            {
+                new HeldCatchDto { SpeciesId = ProtectedId, Quantity = 3 },
+                new HeldCatchDto { SpeciesId = OpenId, Quantity = 2 },
+            };
+            var into = new List<CatchItem>();
+            var released = new List<CatchItem> { Item(OpenId, 9f) };   // stale entry: cleared first
+
+            int restored = HoldCatchCodec.Restore(records, new FakeFactory(), new FakeConservation(ProtectedId),
+                                                  into, released);
+
+            Assert.AreEqual(2, restored);
+            Assert.AreEqual(2, into.Count);
+            Assert.AreEqual(3, released.Count, "every protected unit comes back as a release");
+            foreach (CatchItem r in released) Assert.AreEqual(ProtectedId, r.SpeciesId);
+            Assert.AreEqual(0, _released.Count, "the pure overload publishes nothing");
+
+            int all = HoldCatchCodec.Restore(records, new FakeFactory(), null, into, released);
+            Assert.AreEqual(5, all, "null facts drop nothing");
+            Assert.AreEqual(0, released.Count);
         }
 
         // ---- the pot on the deck (the existing short/berried return path, extended) ----------------
@@ -400,6 +430,38 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.AreEqual(0, noRoom);
             Assert.AreEqual(1, hold.UsedUnits);
             Assert.AreEqual(OpenId, hold.Items[0].SpeciesId);
+        }
+
+        [Test]
+        public void DeckPot_auto_resolve_hands_back_the_protected_animal_as_released()
+        {
+            ProtectInRegistry();
+            DeckPot pot = MakePot(Item(ProtectedId, 0.9f), Item(OpenId, 0.9f));
+            var hold = new FakeHold();
+            var released = new List<CatchItem>();
+
+            pot.AutoResolve(hold, null, released, out int kept, out int returned, out _);
+
+            Assert.AreEqual(1, kept);
+            Assert.AreEqual(1, returned);
+            Assert.AreEqual(1, released.Count, "the automatic sort reports the release, like the hand grab");
+            Assert.AreEqual(ProtectedId, released[0].SpeciesId);
+        }
+
+        [Test]
+        public void Pot_sort_reads_the_Def_flag_when_the_service_is_missing()
+        {
+            // The registry knows the Def is protected, but no Core facts are registered.
+            FishSpeciesRegistry.Register(MakeFish(ProtectedId, true));
+            GameServices.FishConservation = null;
+
+            Assert.IsTrue(CatchReleaseRule.MustRelease(ProtectedId, null));
+            Assert.IsFalse(CatchReleaseRule.MustRelease(OpenId, null), "an unknown id with no facts is kept");
+
+            DeckPot pot = MakePot(Item(ProtectedId, 0.9f), Item(OpenId, 0.9f));
+            Assert.IsTrue(pot.Animals[0].Protected, "a missing service never makes a protected animal a keeper");
+            Assert.IsFalse(pot.Animals[0].Keeper);
+            Assert.IsTrue(pot.Animals[1].Keeper);
         }
 
         // ---- content: existing assets keep their meaning --------------------------------------------

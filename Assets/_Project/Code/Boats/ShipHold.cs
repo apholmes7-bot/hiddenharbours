@@ -50,10 +50,16 @@ namespace HiddenHarbours.Boats
             ISaveService save = GameServices.Save;
             if (save == null || save.Current == null) return;
             var restored = new List<CatchItem>();
-            int units = HoldCatchCodec.Restore(save.Current.BoatHoldCatch, GameServices.CatchFactory, restored);
+            var released = new List<CatchItem>();
+            int units = HoldCatchCodec.Restore(save.Current.BoatHoldCatch, GameServices.CatchFactory,
+                                               GameServices.FishConservation, restored, released);
             ReplaceAll(restored);   // capacity-exempt: the hold was legal when saved
+            HoldCatchCodec.PublishReleased(released);
+            if (released.Count > 0)
+                Debug.Log($"[ShipHold] Released {released.Count} protected catch on load — that species " +
+                          "is release-only now, so it went back over the side.", this);
             int saved = CountUnits(save.Current.BoatHoldCatch);
-            if (units < saved)
+            if (units + released.Count < saved)
                 Debug.LogWarning($"[ShipHold] Restored {units}/{saved} held catch — some species ids " +
                                  "no longer resolve (skipped, never a crash).", this);
         }

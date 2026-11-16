@@ -191,9 +191,9 @@ namespace HiddenHarbours.Fishing
                 }
 
                 // Protected species go back whatever the gauge or the season says (owner ruling
-                // 2026-11-15) — the same shared keep rule every hold and hand asks, so the sort and the
-                // hold cannot disagree.
-                a.Protected = !CatchKeep.MayKeep(in item);
+                // 2026-11-15). The species Def's own flag is read too, so a missing Core service cannot
+                // turn a protected animal into a keeper; the holds ask the same shared facts.
+                a.Protected = CatchReleaseRule.MustRelease(item.SpeciesId, GameServices.FishConservation);
                 if (a.Protected) a.Keeper = false;
                 _animals.Add(a);
             }
@@ -323,6 +323,16 @@ namespace HiddenHarbours.Fishing
         /// <paramref name="noRoom"/> so the one toast can say so — never silent.
         /// </summary>
         public void AutoResolve(IHold hold, List<CatchItem> landed, out int kept, out int returned, out int noRoom)
+            => AutoResolve(hold, landed, null, out kept, out returned, out noRoom);
+
+        /// <summary>
+        /// As <see cref="AutoResolve(IHold, List{CatchItem}, out int, out int, out int)"/>, and each
+        /// protected animal sorted back is also appended to <paramref name="released"/> so the caller
+        /// publishes <see cref="CatchReleased"/> for it, exactly as the hand grab does. Protected animals
+        /// still count in <paramref name="returned"/>.
+        /// </summary>
+        public void AutoResolve(IHold hold, List<CatchItem> landed, List<CatchItem> released,
+                                out int kept, out int returned, out int noRoom)
         {
             kept = 0; returned = 0; noRoom = 0;
             for (int i = 0; i < _animals.Count; i++)
@@ -334,6 +344,7 @@ namespace HiddenHarbours.Fishing
                 {
                     a.Fate = DeckAnimalFate.Returned;
                     returned++;
+                    if (a.Protected) released?.Add(a.Item);
                     continue;
                 }
                 CatchItem stamped = Stamped(a.Item);   // same stamp-at-stow as TryBandNext

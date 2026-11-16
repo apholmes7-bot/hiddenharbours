@@ -15,5 +15,14 @@ namespace HiddenHarbours.Fishing
         /// <summary>True when this landed fish must be documented and released, never kept.</summary>
         public static bool MustRelease(FishSpeciesDef fish, IFishConservationFacts facts)
             => fish != null && (fish.Protected || !CatchKeep.MayKeep(fish.Id, facts));
+
+        /// <summary>
+        /// The same verdict for a resolved catch known only by id (the pot and trap sorts): the species
+        /// Def is looked up in <see cref="FishSpeciesRegistry"/> so its own flag holds even with no Core
+        /// facts registered, and the facts are asked as well. An unknown id with no facts is kept.
+        /// </summary>
+        public static bool MustRelease(string speciesId, IFishConservationFacts facts)
+            => !string.IsNullOrEmpty(speciesId)
+               && (MustRelease(FishSpeciesRegistry.Get(speciesId), facts) || !CatchKeep.MayKeep(speciesId, facts));
     }
 }

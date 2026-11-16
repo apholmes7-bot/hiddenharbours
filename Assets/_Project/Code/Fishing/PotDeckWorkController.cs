@@ -350,9 +350,12 @@ namespace HiddenHarbours.Fishing
             if (_pot == null) return;
 
             var landed = new List<CatchItem>(_pot.Animals.Count);   // event-time alloc, never per frame
-            _pot.AutoResolve(_hold, landed, out int kept, out int returned, out int noRoom);
+            var released = new List<CatchItem>();                     // event-time alloc, never per frame
+            _pot.AutoResolve(_hold, landed, released, out int kept, out int returned, out int noRoom);
             for (int i = 0; i < landed.Count; i++)
                 EventBus.Publish(new FishCaught(landed[i]));
+            for (int i = 0; i < released.Count; i++)
+                EventBus.Publish(new CatchReleased(released[i]));   // documented, then back, as the hand grab
 
             string summary = noRoom > 0
                 ? $"Squared away the pot — {kept} stowed, {returned} went back, {noRoom} no room"
