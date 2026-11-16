@@ -1532,7 +1532,9 @@ namespace HiddenHarbours.Art
                                                                _visual.GroundScaleBlendMetres);
             if (Mathf.Abs(b.Node.localScale.x - drawScale) > 1e-5f)
                 b.Node.localScale = new Vector3(drawScale, drawScale, 1f);
-            b.Shadow.FootOffset = lift;
+            // The foot offset is in the scaled bird's OWN units, so the world lift is divided by the scale the node
+            // actually carries: the anchor comes back down by exactly the lift and stays on the pivot at every size.
+            b.Shadow.FootOffset = SeagullVisualDef.ShadowFootOffset(lift, b.Node.localScale.y);
 
             // Sky or world? Above the wheel's own floor the bird is sky and draws over everything;
             // below it, it is among the harbour and sorts by its pivot like anything else standing there.

@@ -240,6 +240,20 @@ namespace HiddenHarbours.Art
             return Mathf.Min(1f, g + (1f - g) * (x * x * (3f - 2f * x)));
         }
 
+        /// <summary>
+        /// The shadow's foot offset for a bird lifted <paramref name="liftWorld"/> world units up the screen and drawn
+        /// at <paramref name="drawScale"/>. <see cref="SpriteShadow.FootOffset"/> is in the CASTER's local units (the
+        /// anchor is <c>TransformPoint(0, -FootOffset)</c>), and the caster is the scaled bird itself, so the world lift
+        /// is divided back out by the scale: the anchor lands exactly on the pivot at every size. Passing the world
+        /// lift straight through left the anchor <c>lift x (1 - scale)</c> above the pivot (2.8 cm at the top of
+        /// <c>land</c>). A degenerate scale passes the lift through.
+        /// </summary>
+        public static float ShadowFootOffset(float liftWorld, float drawScale)
+        {
+            float s = Mathf.Abs(drawScale);
+            return s > 1e-5f ? liftWorld / s : liftWorld;
+        }
+
         public int Directions => _directions;
         public int Columns => _columns;
         public int CellWidth => _cellWidth;

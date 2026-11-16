@@ -407,6 +407,42 @@ namespace HiddenHarbours.Tests.Art.EditMode
             Assert.LessOrEqual(worst, (1f - g) * 1.5f * (1.5f / 60f) / m + 1e-5f, "a frame of the climb stepped the size");
         }
 
+        /// <summary>
+        /// <b>The ground size never moves the shadow.</b> The bird's node is lifted <c>altitude x cos 40</c> and
+        /// scaled by the ground-size law; its shadow is anchored at <c>TransformPoint(0, -FootOffset)</c> on that same
+        /// scaled node. Swept through the whole blend (and past it), on a real transform posed exactly as the
+        /// presenter poses it, the anchor must sit on the pivot: its offset from the pivot is zero at every scale.
+        /// </summary>
+        [Test]
+        public void TheShadowFootStaysOnThePivotAtEveryGroundScale()
+        {
+            var def = Def();
+            float g = def.GroundScale, m = def.GroundScaleBlendMetres;
+            var pivot = new Vector2(3.25f, -7.5f);
+            var go = new GameObject("GullShadowFootProbe");
+            try
+            {
+                Transform node = go.transform;
+                float worst = 0f, smallest = 1f;
+                for (int i = 0; i <= 200; i++)
+                {
+                    float alt = i * (m * 1.5f) / 200f;   // 0 .. 1.5 x the blend height
+                    float lift = alt * HiddenHarbours.Core.IsoGround.HeightScale;
+                    float s = SeagullVisualDef.ScaleAtAltitude(alt, g, m);
+                    smallest = Mathf.Min(smallest, s);
+                    node.SetPositionAndRotation(new Vector3(pivot.x, pivot.y + lift, 0f), Quaternion.identity);
+                    node.localScale = new Vector3(s, s, 1f);
+                    float foot = SeagullVisualDef.ShadowFootOffset(lift, node.localScale.y);
+                    Vector3 anchor = node.TransformPoint(new Vector3(0f, -foot, 0f));
+                    worst = Mathf.Max(worst, Vector2.Distance(new Vector2(anchor.x, anchor.y), pivot));
+                }
+                Assert.AreEqual(g, smallest, 1e-6f, "premise: the sweep reached the ground scale");
+                Assert.Less(worst, 1e-5f,
+                            "the shadow's anchor left the pivot by " + worst + " m somewhere in the ground-size blend");
+            }
+            finally { UnityEngine.Object.DestroyImmediate(go); }
+        }
+
         // =========================================================================================
         //  3. the float ROCK, capped by construction
         // =========================================================================================
