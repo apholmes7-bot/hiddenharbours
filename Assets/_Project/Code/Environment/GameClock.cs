@@ -80,6 +80,7 @@ namespace HiddenHarbours.Environment
             // A seek is a restore, not time passing: hunger and tiredness hold (needs slice 1).
             NeedsMath.Rebase(GameServices.Save?.Current?.PlayerNeeds, _t);
             BodyMath.Rebase(GameServices.Save?.Current?.PlayerBody, _t);   // body slice 1: mass and stomach hold too
+            CleanlinessMath.Rebase(GameServices.Save?.Current?.PlayerCleanliness, _t);   // and the dirt
             _needsTickAccum = 0d;
             // Keep the rollover guards in step with where we landed (only meaningful once configured).
             if (_config != null)
