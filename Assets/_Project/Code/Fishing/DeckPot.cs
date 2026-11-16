@@ -30,6 +30,8 @@ namespace HiddenHarbours.Fishing
         ReturnedShort = 3,
         /// <summary>Out but a berried hen — back she goes regardless of size.</summary>
         ReturnedBerried = 4,
+        /// <summary>Out and legal-sized, but the species is out of season where the pot was set — back it goes.</summary>
+        ReturnedOutOfSeason = 5,
     }
 
     /// <summary>What a banding attempt resolved to.</summary>
@@ -72,6 +74,9 @@ namespace HiddenHarbours.Fishing
             public bool Berried;
             /// <summary>The sort verdict, pre-derived (keeper = legal size and not berried).</summary>
             public bool Keeper;
+            /// <summary>Legal size and not berried, but out of season where the pot was set (so not a
+            /// keeper). Derived once at pot-aboard from the haul date; never saved.</summary>
+            public bool OutOfSeason;
             /// <summary>Whether a sort rule existed for the species (no rule ⇒ always-keeper).</summary>
             public bool HasRule;
             /// <summary>Greybox silhouette shape (from the rule; lobster default).</summary>
@@ -123,6 +128,16 @@ namespace HiddenHarbours.Fishing
         /// the same animals (the EditMode-pinned guarantee).</summary>
         public DeckPot(TrapDef trap, DeckWorkDef def, string instanceId, double placementGameTimeSeconds,
                        int worldSeed, IReadOnlyList<CatchItem> catchItems)
+            : this(trap, def, instanceId, placementGameTimeSeconds, worldSeed, catchItems, null, default)
+        {
+        }
+
+        /// <summary>As the placement-facts constructor, plus the season check: a would-be keeper whose
+        /// species is out of season in <paramref name="regionId"/> (where the pot was set) on
+        /// <paramref name="haulDate"/> is sorted back instead (<see cref="DeckWorkDef.Seasons"/>). An
+        /// unknown date or a species/region with no season entry changes nothing.</summary>
+        public DeckPot(TrapDef trap, DeckWorkDef def, string instanceId, double placementGameTimeSeconds,
+                       int worldSeed, IReadOnlyList<CatchItem> catchItems, string regionId, SeasonDate haulDate)
         {
             Trap = trap;
             Def = def;
@@ -160,6 +175,14 @@ namespace HiddenHarbours.Fishing
                     // Def; content validation requires rules for the shipped traps' species).
                     a.HasRule = false;
                     a.Keeper = true;
+                }
+
+                // The season is a legal rule too: a would-be keeper out of season where the pot was set
+                // goes back. Shorts and berried hens keep their own reason.
+                if (a.Keeper && def != null && !def.IsInSeason(item.SpeciesId, regionId, in haulDate))
+                {
+                    a.Keeper = false;
+                    a.OutOfSeason = true;
                 }
                 _animals.Add(a);
             }
@@ -242,6 +265,7 @@ namespace HiddenHarbours.Fishing
                 return GrabOutcome.Keeper;
             }
             grabbed.Fate = DeckAnimalFate.Returned;
+            if (grabbed.OutOfSeason) return GrabOutcome.ReturnedOutOfSeason;
             return grabbed.Berried ? GrabOutcome.ReturnedBerried : GrabOutcome.ReturnedShort;
         }
 

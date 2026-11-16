@@ -121,7 +121,7 @@ namespace HiddenHarbours.Economy
             InstrumentLocker.Add(save, hullId, offer.Id);
             if (ReferenceEquals(save, GameServices.Save?.Current)) GameServices.Save?.Save();
 
-            EventBus.Publish(new InstrumentPurchased(offer.Id, hullId, offer.Price));
+            EventBus.Publish(new InstrumentPurchased(offer.Id, hullId, offer.Price, SellerDirectory.Resolve(_sellerId)));
             LastPurchaseSucceeded = true;
             Debug.Log($"[InstrumentShop] Fitted {offer.DisplayName} ({offer.Id}) to {hullId} for ₲{offer.Price}.");
             _onPurchased?.Invoke(offer.Price);

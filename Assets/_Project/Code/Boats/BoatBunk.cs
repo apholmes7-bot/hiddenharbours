@@ -29,12 +29,12 @@ namespace HiddenHarbours.Boats
     ///   (<see cref="NotSecuredText"/>).</item>
     /// </list>
     ///
-    /// <para><b>What the press does.</b> It publishes <see cref="RestSaveRequested"/> with
-    /// <see cref="RestSaveRequested.WakesAtSpawn"/> set, and stops. <c>RestSaveResponder</c> brings the
-    /// morning (and with it <see cref="DayStarted"/>), relieves the sleep need through
-    /// <see cref="INeedsService.Sleep"/> (the very line a bed's rest runs, gated on the morning coming),
-    /// forgets the rest anchor, and writes the save — the bed's beat in every respect but the anchor. The save holds no boat position, so a wake spot on a
-    /// cabin sole would reload the player in open water (ADR 0037, dated note 2026-11-14).</para>
+    /// <para><b>What the press does.</b> It publishes <see cref="RestSaveRequested"/> marked
+    /// <see cref="RestSaveRequested.Aboard"/>, carrying the boat's hull id and pose (<see cref="RequestFor"/>),
+    /// and stops. <c>RestSaveResponder</c> runs the same rest a bed does and records the whole
+    /// <see cref="SleepPlace"/> (save v20, owner ruling 2026-11-15). A reload still wakes at the spawn for
+    /// now: a wake spot on a cabin sole is open water until the boat is put back where she lay, and
+    /// <c>RestWakeRestorer</c> declines an aboard place out loud until something does.</para>
     ///
     /// <para><b>No sleeping pose yet.</b> <see cref="SleepBeatRequested"/> is NOT published: the rig
     /// gives a bunk only the spot you stand on, not a mattress centre or a pillow end, and the presenter
@@ -46,7 +46,7 @@ namespace HiddenHarbours.Boats
     /// two speakers of the same Core signal.</para>
     /// </summary>
     [DisallowMultipleComponent]
-    public sealed class BoatBunk : MonoBehaviour, IInteractable
+    public sealed class BoatBunk : MonoBehaviour, IInteractable, IExclusiveInteractable
     {
         /// <summary>The rig's verb for a berth (<see cref="BoatInteriorAnchor.Action"/>). The one string
         /// the installer and this agree on.</summary>
@@ -140,6 +140,14 @@ namespace HiddenHarbours.Boats
         /// <inheritdoc/>
         public string VerbLabel => Verb;
 
+        /// <summary>A berth is somewhere to sleep: any free one in reach will do (owner ask 2026-11-15),
+        /// so a taken bunk beside a free one is passed over for it.</summary>
+        public string ExclusiveGroup => InteractExclusiveGroups.Rest;
+
+        /// <summary>Somebody is in it: the rest seam's claim on this bunk's id, which is the bed id its
+        /// rest request carries (<see cref="RequestFor"/>).</summary>
+        public bool IsOccupied => RestQuorum.IsOccupied(_id);
+
         /// <summary>Wire this bunk. Public so the installer never reaches a field, and so a test stands
         /// one up with no scene.</summary>
         public void Configure(BoatInterior cabin, BoatController boat, string id, Vector3 reachPoint)
@@ -169,14 +177,37 @@ namespace HiddenHarbours.Boats
                 return refusal;
             }
 
-            // The SAVE half only, and with no wake spot: see the class remarks. The position and level
-            // are still filled honestly (the player's feet, the cabin's level) for any listener that
-            // wants them; the responder records neither because WakesAtSpawn says so.
+            // The SAVE half: the player's feet, the cabin's level, this bunk and the boat's pose. Since
+            // v20 the responder records the whole place; a reload still wakes at the spawn until waking
+            // aboard is honoured (RestWakeRestorer declines an aboard place out loud).
             int level = _cabin != null ? _cabin.Level : 0;
-            EventBus.Publish(new RestSaveRequested(PlaceName, wakePosition, level, wakesAtSpawn: true));
+            EventBus.Publish(RequestFor(wakePosition, level));
             return Refusal.None;
         }
 
+        /// <summary>
+        /// The rest request this bunk raises (owner ruling 2026-11-15, save v20): the player's feet and the
+        /// cabin's storey as before, plus this bunk's id and WHERE THE BOAT LIES, so the save records the
+        /// whole sleep place (<see cref="SleepPlace"/>): her hull id and her root's position and Z rotation
+        /// in the current region's frame. A bunk with no boat wired names no pose and still says it is
+        /// aboard. Public so a test reads the request without the bus.
+        /// </summary>
+        public RestSaveRequested RequestFor(Vector2 wakePosition, int level)
+        {
+            string hullId = "";
+            Vector2 boatAt = Vector2.zero;
+            float boatRotation = 0f;
+            if (_boat != null)
+            {
+                hullId = _boat.Hull != null ? _boat.Hull.Id : "";
+                Transform root = _boat.transform;
+                boatAt = root.position;
+                boatRotation = root.eulerAngles.z;
+            }
+            return new RestSaveRequested(PlaceName, wakePosition, level, wakesAtSpawn: false, bedId: _id,
+                                         aboard: true, boatHullId: hullId, boatPosition: boatAt,
+                                         boatRotationDegrees: boatRotation);
+        }
         /// <summary>The rule, in its fixed order. Public and side-effect free.</summary>
         public Refusal Judge(InteractContext context)
         {

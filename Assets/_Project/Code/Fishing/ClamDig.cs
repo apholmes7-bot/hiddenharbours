@@ -281,6 +281,12 @@ namespace HiddenHarbours.Fishing
                 }
             }
 
+            // TOO TIRED / TOO HUNGRY (owner ask 2026-11-15): digging is heavy work, so it asks the one Core
+            // gate last, after every "can this dig land?" gate, so a flooded flat or a missing shovel still
+            // says its own sentence. A refusal spends nothing (the hole keeps its clam) and the player says
+            // the line herself; one press is one dig, so no dig under way is ever cut short.
+            if (!EffortGate.TryBegin(EffortClass.Heavy, EffortGate.ClamDigId)) return false;
+
             // A recreated hole at the same game instant yields the same weight. Use the authored id,
             // never the registry's process-local fallback, and pick up services installed after Awake.
             if (_rngSeed == 0) ResetCatchRandom();

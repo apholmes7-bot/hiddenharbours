@@ -100,7 +100,7 @@ namespace HiddenHarbours.Economy
                 if (ReferenceEquals(save, GameServices.Save?.Current)) GameServices.Save?.Save();
             }
 
-            EventBus.Publish(new GearPurchased(offer.Id, offer.Price));
+            EventBus.Publish(new GearPurchased(offer.Id, offer.Price, SellerDirectory.Resolve(_sellerId)));
             LastPurchaseSucceeded = true;
             Debug.Log($"[GearShop] Bought {offer.DisplayName} ({offer.Id}) for ₲{offer.Price}.");
             _onPurchased?.Invoke(offer.Price);

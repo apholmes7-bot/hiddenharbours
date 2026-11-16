@@ -105,7 +105,7 @@ namespace HiddenHarbours.Economy
                 return false;
             }
 
-            EventBus.Publish(new BoatPurchased(offer.BoatId, offer.Price));
+            EventBus.Publish(new BoatPurchased(offer.BoatId, offer.Price, SellerDirectory.Resolve(_sellerId)));
 
             // A boat bought in usable condition is repaired the moment it's owned; a damaged boat stays
             // unusable until TryRepair pays for it. Mark on the live save (no-op headless / no save).
@@ -166,7 +166,7 @@ namespace HiddenHarbours.Economy
 
             RepairLedger.MarkRepaired(save, offer.BoatId);
             if (ReferenceEquals(save, GameServices.Save?.Current)) GameServices.Save?.Save();
-            EventBus.Publish(new BoatRepaired(offer.BoatId, offer.RepairCost));
+            EventBus.Publish(new BoatRepaired(offer.BoatId, offer.RepairCost, SellerDirectory.Resolve(_sellerId)));
             LastRepairSucceeded = true;
             Debug.Log($"[Shipwright] Repaired {offer.DisplayName} ({offer.BoatId}) for ₲{offer.RepairCost} — she's ready to sail.");
             _onRepaired?.Invoke(offer.RepairCost);

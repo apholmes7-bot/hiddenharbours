@@ -125,6 +125,7 @@ ships as a preloaded asset). **One map per control mode**, two control schemes: 
 | | Steer | Value/Axis | `1DAxis`: **+ = A ∨ ←** (LEFT is +1, the rig's own sense, ADR 0035 §5), − = D ∨ → | as above |
 | | Brake | Button | Space | as above |
 | **Hud** (H2, 2026-10-17) | HideAll | Button | M | `BoatUiWindowInput` → `BoatUiWindows.ToggleHideAll`, in every control mode ✅ H2 |
+| **Chooser** (2026-11-15) | Pick1 … Pick9 | Button | 1 … 9 (bound nowhere else in the asset) | `DeviceChooserIntentSource` → `ChooserInput` → `InteractChooserView`: picks a row of the interaction chooser. The list's up/down, confirm, cancel and mouse read the existing UI/Navigate, UI/Submit or Walk/Deck Interact, UI/Cancel, UI/Point and UI/Click; no shipped key changes meaning |
 | **UI** | Navigate, Submit, Cancel, Point, Click, RightClick, MiddleClick, ScrollWheel | as Unity's UI map | the template's KeyboardMouse bindings, carried over verbatim | the `EventSystem` (`SellScreen` builds one with no explicit asset, so the module falls back to THIS map's `UI`); the tiered `Zoom` intent joins it in PR 2 |
 
 **The `Hud` map (H2, 2026-10-17).** M, the hide-all of the helm's UI, was the last key the HUD read off

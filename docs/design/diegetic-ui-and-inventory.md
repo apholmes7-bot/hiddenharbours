@@ -255,6 +255,27 @@ Capacity is expressed through **containers**, and containers are the heart of th
   *things*, arranged in their grid, not a text inventory. This is the diegetic promise applied to
   possessions (art direction in [`art-and-audio-bible.md`](art-and-audio-bible.md)).
 
+#### 4.2.1 Rods go in a rod rack or a rod locker, nowhere else (owner ask, 2026-11-15)
+
+> *"rods also need storage on boats, only fitting in a rod rack or appropriate locker, these should be
+> added to helms, houses, on shore etc, they can be purchased as gear like other gear"*
+
+- **One rule, in data.** `Core.StowageRule.Check(item class, container accepts, used, capacity)` is the
+  only acceptance check. The item's class is `ToolDef.Stowage` (the rod is `Rod`, everything else is
+  `General`); the container's flags and capacity are on its Def (`StowageDef.Accepts`, `.Capacity`).
+  Every container that predates the rule (holds, pails, coolers, the freezer) takes `General` only, so a
+  rod can never go in one, and their behaviour for everything else is unchanged (the catch-into-hold
+  path asks the same rule). A gear locker that also takes rods is a new `StowageDef` with
+  `General | Rods`, not code.
+- **The rack.** `stowage.rod_rack` (Rods only, 4 rods, owner-tunable) and its shop offer
+  `gear.rod_rack` (25, owner-tunable, bought through `GearShop.TryBuy` like the rod). `StowageRack` is
+  the fixture: E with a rod in hand stows it (it outranks set-down, the `ToolTarget` rung); E empty-
+  handed takes one out. A refusal (full, not a rod) moves nothing: the rod stays in the hand.
+- **Not yet:** rack contents are session-local like a tool set on the ground (§4.3); no rack is placed
+  on any hull, house or shore spot yet (each needs rig/scene work); the offer is not listed in any
+  wares book yet (a listing must be stocked by a committed vendor in a scene). Owning a rack is
+  presence-owned (one per save) until placed-object persistence lands.
+
 ### 4.3 Placing and carrying containers in the world
 
 Containers are **things in the world**, not abstract slots:
@@ -289,7 +310,7 @@ a visible object in the world:
 | Rung | Container / transport | "I can now…" |
 |---|---|---|
 | **Bucket** | A ~20-fish pail | …carry a hold of clams to market by hand (the first fish container) |
-| **Tool rack** | Holds shovels / tools | …keep and swap tools without carrying them all on my body |
+| **Tool rack** | Holds shovels / tools (first rung: the rod rack, §4.2.1) | …keep and swap tools without carrying them all on my body |
 | **Bag / backpack** | Body-worn container | …carry more small items and my wallet at once |
 | **Cart** | Wheeled transport | …move far more than two hands and a bucket over land |
 | **Boat storage (the hold)** | The vessel's hold | …carry a *voyage's* worth — the largest container, and the whole point of a boat |

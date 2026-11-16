@@ -74,12 +74,16 @@ namespace HiddenHarbours.Core
         /// </summary>
         public static RestAnchor Wake()
         {
-            RestAnchor anchor = RestLocker.Anchor();
+            SleepPlace place = RestLocker.Place();
+            RestAnchor anchor = place.Anchor;
             if (!anchor.IsSet) return RestAnchor.None;      // never rested — the authored spawn stands
 
             string here = GameServices.CurrentRegionId;
             if (!anchor.IsIn(here))
             {
+                // The request seam (owner ruling 2026-11-15): whoever owns region loading answers this by
+                // taking the player to the region they slept in. Unanswered today; see the class remarks.
+                EventBus.Publish(new SleepPlaceWakeRequested(place, otherRegion: true));
                 // LOUD, and deliberately not an error: the save is fine, the feature is simply not built
                 // out this far yet. Silence here is the one outcome that would be a bug — the player
                 // would wake at the spawn with no way to tell that from "the anchor was never written".
@@ -91,6 +95,19 @@ namespace HiddenHarbours.Core
                 return RestAnchor.None;
             }
 
+            // ABOARD: the position is a spot on a cabin sole, and the boat is not where she lay until
+            // something puts her there. Applying it here would wake the player in open water, so the place
+            // is handed to the seam instead and the region's spawn stands, as it did for a bunk's rest
+            // before v20. The save keeps the place for the step that can honour it.
+            if (place.Aboard)
+            {
+                Debug.LogWarning(
+                    $"[RestWakeRestorer] You last slept aboard ({place}). Waking aboard needs the boat " +
+                    "placed and the player boarded, which nothing does on load yet; waking at the spawn. " +
+                    "The place is kept.");
+                EventBus.Publish(new SleepPlaceWakeRequested(place, otherRegion: false));
+                return RestAnchor.None;
+            }
             // ⚠ The accessor has already laundered Unity's fake-null into a REAL null, so a plain
             // != null is right here and a ?. would NOT be — see GameServices.PlayerTransform.
             Transform player = GameServices.PlayerTransform;
