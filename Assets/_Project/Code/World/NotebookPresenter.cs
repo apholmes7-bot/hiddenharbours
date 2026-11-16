@@ -131,7 +131,7 @@ namespace HiddenHarbours.World
         private Func<IReadOnlyList<QuestDef>> _quests;
         private Func<IReadOnlyList<KnowledgePageDef>> _knowledge;
         private Func<IReadOnlyList<NotebookNote>> _notes;
-        private Func<IReadOnlyList<ReleasedCatchEntry>> _released;
+        private Func<IReadOnlyList<CaughtSpeciesEntry>> _caught;
         private IFlagStore _flags;
 
         // ---- the purse (the 2026-08-22 diegetic ruling) ---------------------------------------------
@@ -269,13 +269,13 @@ namespace HiddenHarbours.World
                                 Func<IReadOnlyList<KnowledgePageDef>> knowledge,
                                 Func<IReadOnlyList<NotebookNote>> notes,
                                 IFlagStore flags,
-                                Func<IReadOnlyList<ReleasedCatchEntry>> released = null)
+                                Func<IReadOnlyList<CaughtSpeciesEntry>> caught = null)
         {
             _quests = quests;
             _knowledge = knowledge;
             _notes = notes;
             _flags = flags;
-            _released = released;
+            _caught = caught;
 
             // Wired EXPLICITLY, so the runtime defaults stand down — including when an argument is null.
             // A test that wants an empty book must be able to say so, and "you passed nothing" and "you
@@ -348,7 +348,7 @@ namespace HiddenHarbours.World
             _quests = NotebookContentSource.Quests;
             _knowledge = NotebookContentSource.Knowledge;
             _notes = NotebookContentSource.Notes;
-            _released = NotebookContentSource.Released;
+            _caught = NotebookContentSource.Caught;
             _flags = NotebookContentSource.Flags();
         }
 
@@ -468,8 +468,7 @@ namespace HiddenHarbours.World
             _tabs.Clear();
             var built = NotebookContent.Build(
                 _quests?.Invoke(), _knowledge?.Invoke(), _notes?.Invoke(), _flags, Fit.Cols,
-                droppedTabs: null, released: _released?.Invoke(),
-                secondsPerDay: NotebookContentSource.SecondsPerDay());
+                droppedTabs: null, caught: _caught?.Invoke());
             _tabs.AddRange(built);
 
             if (_tabs.Count == 0)

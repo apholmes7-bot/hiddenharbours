@@ -12,9 +12,9 @@ namespace HiddenHarbours.World
         Knowledge,
         Notes,
 
-        /// <summary>The protected fish she documented and put back. Present only once there is one,
-        /// so its stub is data like the knowledge run's.</summary>
-        Released,
+        /// <summary>Every species she has caught: how many, and the record. Present only once there is
+        /// one, so its stub is data like the knowledge run's.</summary>
+        Caught,
     }
 
     /// <summary>One stub off the fore-edge.</summary>
@@ -67,33 +67,22 @@ namespace HiddenHarbours.World
         public const string LabelDone = "DONE";
         public const string LabelNotes = "MINE";
 
-        /// <summary>The released page's stub. Keyed like the others; lettered within
-        /// <see cref="NotebookKit.ChipChars"/> so the chip never clips it.</summary>
-        public const string TabReleased = "tab.released";
-        public const string LabelReleased = "FREED";
+        /// <summary>The catch page's stub. Keyed like the others; lettered within
+        /// <see cref="NotebookKit.ChipChars"/> (5) so the chip never clips it, which is why it reads
+        /// CATCH and not CAUGHT.</summary>
+        public const string TabCaught = "tab.caught";
+        public const string LabelCaught = "CATCH";
 
-        /// <summary>The released page's opening section: what the page is, in her book's voice.</summary>
-        public const string ReleasedIntroHead = "Let go";
-        public const string ReleasedIntroBody = "Protected fish I caught, wrote down and put back.";
-
-        /// <summary>One species' lines. <c>{0}</c> is a count; <c>{0}</c>/<c>{1}</c> in the times are the
-        /// day number and the clock. Each time line fits the narrowest page
-        /// (<see cref="NotebookKit.MinCols"/>) whole for a day up to three digits, so the day and its
-        /// clock never wrap apart.</summary>
-        public const string ReleasedCountFormat = "Let go: {0}";
-        public const string ReleasedFirstFormat = "First d{0} {1}";
-        public const string ReleasedLastFormat = "Last d{0} {1}";
-        public const string ReleasedOnlyFormat = "Day {0}, {1}";
+        /// <summary>One species' lines under its name: how many caught, the record weight in kg (the
+        /// size a catch carries, one decimal as the landing line shows it), and how many were protected
+        /// and put back (only when any were). Each fits the narrowest page
+        /// (<see cref="NotebookKit.MinCols"/>) whole for four-digit counts and weights.</summary>
+        public const string CaughtCountFormat = "Caught: {0}";
+        public const string CaughtRecordFormat = "Best: {0:0.0} kg";
+        public const string CaughtReleasedFormat = "Let go: {0}";
 
         /// <summary>Source-id prefix for a species' block, so the presenter's selection can name it.</summary>
-        public const string ReleasedSourcePrefix = "released.";
-        public const string ReleasedIntroSourceId = "released.intro";
-
-        private const int MinutesPerHour = 60;
-        private const int HoursPerDay = 24;
-        private const int MinutesPerDay = MinutesPerHour * HoursPerDay;
-        private const int SecondsPerMinute = 60;
-        private const int ClockSecondsPerDay = MinutesPerDay * SecondsPerMinute;
+        public const string CaughtSourcePrefix = "caught.";
 
         /// <summary>
         /// Build the whole tab set.
@@ -111,8 +100,7 @@ namespace HiddenHarbours.World
             IFlagStore flags,
             int cols,
             List<string> droppedTabs = null,
-            IReadOnlyList<ReleasedCatchEntry> released = null,
-            float secondsPerDay = GameConfig.DefaultSecondsPerDay)
+            IReadOnlyList<CaughtSpeciesEntry> caught = null)
         {
             var tabs = new List<NotebookTab>
             {
@@ -124,12 +112,11 @@ namespace HiddenHarbours.World
 
             foreach (var tab in KnowledgeTabs(knowledge, cols)) tabs.Add(tab);
 
-            // The released page joins the fore-edge the first time she lets one go, and sits beside
-            // My Notes: it is her own record, not a shipped page. Not Knowledge, so the trim below
-            // never drops it.
-            if (released != null && released.Count > 0)
-                tabs.Add(new NotebookTab(TabReleased, LabelReleased, NotebookPageKind.Released,
-                                         ReleasedBlocks(released, cols, secondsPerDay)));
+            // The catch page joins the fore-edge with her first catch and sits beside My Notes: it is her
+            // own record, not a shipped page. Not Knowledge, so the trim below never drops it.
+            if (caught != null && caught.Count > 0)
+                tabs.Add(new NotebookTab(TabCaught, LabelCaught, NotebookPageKind.Caught,
+                                         CatchBlocks(caught, cols)));
 
             tabs.Add(new NotebookTab(TabNotes, LabelNotes, NotebookPageKind.Notes, NoteBlocks(notes, cols)));
 
@@ -245,76 +232,35 @@ namespace HiddenHarbours.World
         }
 
         /// <summary>
-        /// The released page: an opening section, then one section per species in the order she first
-        /// let each go (the record's order, so nothing here sorts). Each is the knowledge page's own
-        /// drawing (<see cref="NotebookLayout.Section"/>): the name on the wide lane, then how many and
-        /// when. A single release names its one day; more name the first and the last.
-        /// Empty or null in, the opening section alone out.
+        /// The catch page: one section per species in the order she first caught each (the record's
+        /// order, so nothing here sorts). Each is the knowledge page's own drawing
+        /// (<see cref="NotebookLayout.Section"/>): the name on the wide lane, then how many, the record
+        /// weight, and how many went back when any were protected. Null or empty in, nothing out.
         /// </summary>
-        public static List<NotebookBlock> ReleasedBlocks(IReadOnlyList<ReleasedCatchEntry> released, int cols,
-                                                         float secondsPerDay)
+        public static List<NotebookBlock> CatchBlocks(IReadOnlyList<CaughtSpeciesEntry> caught, int cols)
         {
-            var blocks = new List<NotebookBlock>
-            {
-                NotebookLayout.Section(ReleasedIntroHead, new[] { ReleasedIntroBody }, cols, ReleasedIntroSourceId),
-            };
-            if (released == null) return blocks;
+            var blocks = new List<NotebookBlock>();
+            if (caught == null) return blocks;
 
-            for (int i = 0; i < released.Count; i++)
+            for (int i = 0; i < caught.Count; i++)
             {
-                ReleasedCatchEntry e = released[i];
+                CaughtSpeciesEntry e = caught[i];
                 if (string.IsNullOrEmpty(e.SpeciesId) || e.Count <= 0) continue;
 
                 string head = string.IsNullOrEmpty(e.DisplayName) ? e.SpeciesId : e.DisplayName;
-                var body = new List<string> { string.Format(Invariant, ReleasedCountFormat, e.Count) };
-
-                if (e.Count == 1)
+                var body = new List<string>
                 {
-                    body.Add(When(ReleasedOnlyFormat, e.FirstSeconds, secondsPerDay));
-                }
-                else
-                {
-                    body.Add(When(ReleasedFirstFormat, e.FirstSeconds, secondsPerDay));
-                    body.Add(When(ReleasedLastFormat, e.LastSeconds, secondsPerDay));
-                }
+                    string.Format(Invariant, CaughtCountFormat, e.Count),
+                    string.Format(Invariant, CaughtRecordFormat, e.RecordWeightKg),
+                };
+                if (e.ReleasedCount > 0)
+                    body.Add(string.Format(Invariant, CaughtReleasedFormat, e.ReleasedCount));
 
-                blocks.Add(NotebookLayout.Section(head, body, cols, ReleasedSourcePrefix + e.SpeciesId));
+                blocks.Add(NotebookLayout.Section(head, body, cols, CaughtSourcePrefix + e.SpeciesId));
             }
 
             return blocks;
         }
-
-        /// <summary>The 1-based day since a new game for a master-clock reading. A non-positive day
-        /// length falls back to the shipped default rather than dividing by it.</summary>
-        public static int DayNumber(double gameSeconds, float secondsPerDay)
-        {
-            double day = SafeDay(secondsPerDay);
-            double s = gameSeconds > 0d ? gameSeconds : 0d;
-            return (int)System.Math.Floor(s / day) + 1;
-        }
-
-        /// <summary>The clock within that day, "HH:MM". The reading is rounded to the nearest clock
-        /// second first, then truncated to the minute, so float error just under a minute (06:30:59.999
-        /// for an exact 06:31) cannot show the minute before. Pure and deterministic.</summary>
-        public static string ClockText(double gameSeconds, float secondsPerDay)
-        {
-            double day = SafeDay(secondsPerDay);
-            double s = gameSeconds > 0d ? gameSeconds : 0d;
-            double into = s - System.Math.Floor(s / day) * day;
-            double clockSecond = System.Math.Round(into / day * ClockSecondsPerDay,
-                                                   System.MidpointRounding.AwayFromZero);
-            int minute = (int)(clockSecond / SecondsPerMinute);
-            if (minute >= MinutesPerDay) minute = MinutesPerDay - 1;
-            return (minute / MinutesPerHour).ToString("00", Invariant) + ":"
-                 + (minute % MinutesPerHour).ToString("00", Invariant);
-        }
-
-        private static string When(string format, double gameSeconds, float secondsPerDay)
-            => string.Format(Invariant, format, DayNumber(gameSeconds, secondsPerDay),
-                             ClockText(gameSeconds, secondsPerDay));
-
-        private static double SafeDay(float secondsPerDay)
-            => secondsPerDay > 0f ? secondsPerDay : GameConfig.DefaultSecondsPerDay;
 
         private static readonly System.Globalization.CultureInfo Invariant =
             System.Globalization.CultureInfo.InvariantCulture;
