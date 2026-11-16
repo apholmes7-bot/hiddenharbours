@@ -246,6 +246,8 @@ Material:
     - _WashResidueSoften: 0.125
     - _WashSeawardDepth: 0.8
     - _WashSheetOpacity: 0.2
+    - _WashSurfLift: 0
+    - _WashSurfReach: 10
     - _WaterLevel: 0
     - _WhitecapCollapseRate: 1.5
     - _WhitecapFormSharpness: 0.4

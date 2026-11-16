@@ -52,6 +52,9 @@ namespace HiddenHarbours.Tests.Art.EditMode
             // v6 (the owner's v5 clip review, "the return/pull is jarring"): the foam a wave leaves on the sand.
             ("_WashLeftFoamSeconds", "2"),
             ("_WashLeftFoamOpacity", "0.6"),
+            // v8 (the editor look of f07a839): the shore surf seaward of the wash, thresholded in the wash's language.
+            ("_WashSurfReach", "10"),
+            ("_WashSurfLift", "0"),
         };
 
         static string Src() => File.ReadAllText(ShaderPath, Encoding.UTF8).Replace("\r\n", "\n");
@@ -87,6 +90,8 @@ namespace HiddenHarbours.Tests.Art.EditMode
             StringAssert.DoesNotContain("_WashLineSlopeCap", src, "the slope cap left with the screen-gradient line");
             Assert.AreEqual(1, Regex.Matches(src, @"float  _WashLeftFoamSeconds, _WashLeftFoamOpacity;").Count,
                 "the two v6 left-foam uniforms must be declared once");
+            Assert.AreEqual(1, Regex.Matches(src, @"float  _WashSurfReach, _WashSurfLift;").Count,
+                "the two v8 shore-surf uniforms must be declared once");
         }
 
         // ---- v6: the snap-back (owner clip review 2026-11-15: "it snaps back to the ocean instantaneiously as the
@@ -257,9 +262,11 @@ namespace HiddenHarbours.Tests.Art.EditMode
             int edgeQ = IndexOf(src, "float washEdgeQ  = depth + edgeSwash;");
             // v7 (the editor look of 11-15): the line is a per-pixel test on the GROUND one line-width up the shore
             // normal, with the run-up held, so it is _WashLineWidth metres of ground on a flat or a slope alike.
-            int open = IndexOf(src, "if (washOnSand > 0.001 && washEdgeQ >= -1e-4 && dot(surfDir, surfDir) > 1e-6)");
+            // v8: up the LOCAL shore normal (groundDir), not the waterline point's: on the sand the line's tap was
+            // aimed by a point that moves with the warp, so its ground step wandered at peak (the shredded line).
+            int open = IndexOf(src, "if (washOnSand > 0.001 && washEdgeQ >= -1e-4 && dot(groundDir, groundDir) > 1e-6)");
             int land = IndexOf(src,
-                "float washLandDepth = _WaterLevel - SeabedElevation(worldXY + warp + surfDir * max(_WashLineWidth, 0.0));");
+                "float washLandDepth = _WaterLevel - SeabedElevation(worldXY + warp + groundDir * max(_WashLineWidth, 0.0));");
             int past = IndexOf(src, "if (washLandDepth + edgeSwash < 0.0)");
             int line = IndexOf(src, "washLine = washOnSand * saturate(_WashLineOpacity);");
             Assert.That(edgeQ < clip && clip < gate && gate < open && open < land && land < past && past < line,
@@ -373,11 +380,13 @@ namespace HiddenHarbours.Tests.Art.EditMode
             int barrelYield = IndexOf(src, "surfBarrel *= 1.0 - washBeach;");
             int lipYield = IndexOf(src, "surfLip    *= 1.0 - washBeach;");
             int under = IndexOf(src, "float3 washUnder = col.rgb;");
-            int barrel = IndexOf(src, "float barrel = SurfBandValue(saturate(surfBarrel * saturate(_SurfBarrelShade)), bay) * strength;");
-            int lip = IndexOf(src, "float lip = SurfBandValue(saturate(surfLip), bay) * strength;");
+            int barrel = IndexOf(src,
+                "float barrel = lerp(SurfBandValue(barrelV, washThin > 0.001 ? 0.5 : bay), barrelV, washThin) * strength;");
+            int lip = IndexOf(src,
+                "float lip = lerp(SurfBandValue(saturate(surfLip), washThin > 0.001 ? 0.5 : bay), saturate(surfLip), washThin)");
             int heaviest = IndexOf(src,
                 "float washHeaviest = max(cover * _SurfColor.a, max(lip * _SurfLipColor.a, barrel * _SurfBarrelColor.a));");
-            int cap = IndexOf(src, "col.rgb = lerp(washUnder, col.rgb, lerp(1.0, washCapScale, washBeach));");
+            int cap = IndexOf(src, "col.rgb = lerp(washUnder, col.rgb, lerp(1.0, washCapScale, max(washBeach, shoreSurf)));");
             int washLine = IndexOf(src, "col.rgb = lerp(col.rgb, _FoamColor.rgb, washLine);");
             Assert.That(beach < barrelYield && barrelYield < lipYield && lipYield < under && under < barrel &&
                         barrel < lip && lip < heaviest && heaviest < cap && cap < washLine,
@@ -405,11 +414,105 @@ namespace HiddenHarbours.Tests.Art.EditMode
         {
             string src = Src();
             // v4: inside the wash the sheet is smooth (no hard bands racing along the shore as a patch).
-            StringAssert.Contains("float cover = lerp(SurfBandValue(surfCover, washOnSand > 0.001 ? 0.5 : bay), saturate(surfCover),", src);
+            StringAssert.Contains(
+                "float cover = lerp(SurfBandValue(surfCoverDrawn, washThin > 0.001 ? 0.5 : bay), saturate(surfCoverDrawn),", src);
             StringAssert.Contains("* lerp(1.0, saturate(_WashSheetOpacity), saturate(washOnSand));", src);
             int lip = IndexOf(src, "col.a   = max(col.a, lip * _SurfLipColor.a);");
             int washLine = IndexOf(src, "col.rgb = lerp(col.rgb, _FoamColor.rgb, washLine);");
             Assert.Greater(washLine, lip, "the leading line is laid over the surf, last");
+        }
+
+        // ---- v8: the shore surf's slab and the line at peak (the editor look of f07a839, 11-15) -------------------
+
+        [Test]
+        public void OnTheSand_EveryPixelOfOneShoreNormal_ReadsTheSurfAtTheSameWaterlinePoint()
+        {
+            // v7 projected from worldXY but by the depth read at worldXY + warp, so the read point scattered by the
+            // warp's normal component and the bore's march, phase and run-up varied down one normal: the reach line's
+            // test held a run-up that was not its neighbour's, and it shredded at peak. Projected from the warped point
+            // by the tide depth read THERE, a planar beach puts every pixel of a normal on one waterline point.
+            const float Water = 0.29f;
+            var n = new Vector2(0.16f, 0.99f).normalized;
+            var t = new Vector2(n.y, -n.x);
+            var rng = new System.Random(1225);
+            foreach (float slope in new[] { 0.15f, 0.3f, 0.6f })
+            {
+                const float c0 = 3f;                                  // the still line, metres along n
+                float Elevation(Vector2 p) => Water + slope * (Vector2.Dot(p, n) - c0);
+                for (int a = 0; a < 20; a++)
+                {
+                    Vector2 foot = t * (a * 0.37f);
+                    float? first = null;
+                    float oldMin = float.MaxValue, oldMax = float.MinValue;
+                    for (int k = 0; k <= 40; k++)
+                    {
+                        Vector2 p = foot + n * (c0 + 0.3f * k / 40f);      // up the beach, past the still line
+                        var warp = new Vector2((float)rng.NextDouble() - 0.5f, (float)rng.NextDouble() - 0.5f) * 0.6f;
+                        float tideDepth = Water - Elevation(p + warp);
+                        Vector2 e = WaterSurface.BeachSurfEvalPoint(p, warp, n, tideDepth, slope);
+                        float along = Vector2.Dot(e, n);
+                        Assert.AreEqual(c0, along, 1e-4f, $"slope {slope}: the read point lies on the still line");
+                        first ??= along;
+                        Assert.AreEqual(first.Value, along, 1e-4f, "one normal, one read point");
+                        float old = Vector2.Dot(p + n * (tideDepth / slope), n);   // v7: origin worldXY, warped depth
+                        oldMin = Mathf.Min(oldMin, old); oldMax = Mathf.Max(oldMax, old);
+                    }
+                    Assert.Greater(oldMax - oldMin, 0.05f, "premise: the v7 point scattered with the warp");
+                }
+            }
+        }
+
+        [Test]
+        public void TheShoreSurf_IsOnlyBesideABeach_AndShowsWaterWhereTheOpenBandWasASlab()
+        {
+            const float Reach = 0.35f;
+            Assert.AreEqual(0f, WaterSurface.ShoreSurfShare01(0.5f, Reach), "open water or a bar with water behind: open look");
+            Assert.AreEqual(0f, WaterSurface.ShoreSurfShare01(0f, Reach));
+            Assert.AreEqual(1f, WaterSurface.ShoreSurfShare01(-Reach, Reach), 1e-6f, "ground above the run-up: the shore look");
+            Assert.AreEqual(1f, WaterSurface.ShoreSurfShare01(-3f, Reach), 1e-6f);
+            float prev = 0f;
+            for (int i = 0; i <= 100; i++)
+            {
+                float v = WaterSurface.ShoreSurfShare01(0.2f - 0.6f * i / 100f, Reach);
+                Assert.GreaterOrEqual(v, prev, "the hand-over only grows as the tap dries"); prev = v;
+            }
+
+            // The slab: at the crest (density = the crest boost, 1.6) the open band is 1 for EVERY churn, so no water
+            // shows through it; the shore band, energy's lift at 0, is the churn thresholded: water between patches.
+            const float Thr = 0.42f, Soft = 0.16f, Density = 1.6f;
+            int openFull = 0, shoreClear = 0, shoreSolid = 0;
+            for (int i = 0; i <= 100; i++)
+            {
+                float churn = i / 100f;
+                if (WaterSurface.OpenSurfCover01(churn, Density, 1f, Thr, Soft) >= 1f - 1e-6f) openFull++;
+                float s = WaterSurface.ShoreSurfCover01(churn, Density, 1f, 0f, Thr, Soft);
+                if (s <= 1e-6f) shoreClear++;
+                if (s >= 1f - 1e-6f) shoreSolid++;
+                Assert.AreEqual(0f, WaterSurface.ShoreSurfCover01(churn, Density, 0f, 0f, Thr, Soft), "no break, no surf");
+            }
+            Assert.AreEqual(101, openFull, "premise: the open band at the crest is a slab");
+            Assert.Greater(shoreClear, 20, "the shore band shows water through it");
+            Assert.Greater(shoreSolid, 20, "and keeps broken patches of foam");
+            // Lift 1 gives the open breaker's field back (gated inside the threshold rather than after it).
+            Assert.AreEqual(1f, WaterSurface.ShoreSurfCover01(0f, Density, 1f, 1f, Thr, Soft), 1e-6f);
+        }
+
+        [Test]
+        public void TheShader_DrawsTheShoreSurf_OnlyBesideABeach_InTheWashLanguage()
+        {
+            string src = Src();
+            int pocket = IndexOf(src, "surfCover = saturate(surfCover * lerp(1.0, max(_SurfPocketBoost, 1.0), pocket));");
+            int gate = IndexOf(src, "if (_WashSurfReach > 0.0)");
+            int tap = IndexOf(src, "float shoreTapDepth = _WaterLevel - SeabedElevation(surfEvalXY + surfDir * _WashSurfReach);");
+            int share = IndexOf(src, "surfShore = saturate(-shoreTapDepth / max(surfBeachReach, 1e-3));");
+            int thin = IndexOf(src, "float washThin = max(saturate(washOnSand), shoreSurf);");
+            int drawn = IndexOf(src, "float surfCoverDrawn = lerp(surfCover, surfCoverShore, shoreSurf);");
+            Assert.That(pocket < gate && gate < tap && tap < share && share < thin && thin < drawn);
+            Assert.AreEqual(1, Regex.Matches(src, @"\bsurfShore = ").Count, "the share is set only inside its gate");
+            StringAssert.Contains("float shoreSurf = surfShore * saturate(washPresence);", src);
+            // The beach projection starts at the warped point and reads the tide depth there (twin BeachSurfEvalPoint).
+            StringAssert.Contains(
+                "surfEvalXY = worldXY + warp + groundDir * ((_WaterLevel - elevation) / max(swashSlope, 1e-3));", src);
         }
 
         [Test]

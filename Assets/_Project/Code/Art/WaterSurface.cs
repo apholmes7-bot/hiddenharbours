@@ -2520,7 +2520,8 @@ namespace HiddenHarbours.Art
         /// <c>washLine</c> test: a pixel inside the drawn edge (<paramref name="depthHere"/> + the held run-up
         /// <paramref name="drawnShift"/> &gt;= 0, the clip's own epsilon) whose ground one line-width SHOREWARD up the
         /// normal (<paramref name="depthLineWidthShoreward"/>) is already past the edge. A per-pixel law: no screen
-        /// derivative, so no 2x2 quad can decide it for four pixels (the 2-px stair it replaced).
+        /// derivative, so no 2x2 quad can decide it for four pixels (the 2-px stair it replaced). v8: "up the normal"
+        /// is the ground's own gradient at the pixel, and the run-up is the same at both reads (BeachSurfEvalPoint).
         /// </summary>
         public static bool WashLineDrawn(float depthHere, float depthLineWidthShoreward, float drawnShift)
             => depthHere + drawnShift >= -1e-4f && depthLineWidthShoreward + drawnShift < 0f;
@@ -2542,6 +2543,50 @@ namespace HiddenHarbours.Art
         {
             float cap = Mathf.Clamp01(maxCover);
             return heaviestWeight > cap ? cap / Mathf.Max(heaviestWeight, 1e-4f) : 1f;
+        }
+
+        /// <summary>
+        /// (the editor look of f07a839) <b>Where a beach pixel reads the surf</b> — the shader's <c>surfEvalXY</c> for
+        /// depth &lt;= 0: from the point the depth was read at (<paramref name="worldXY"/> + <paramref name="warp"/>),
+        /// down the ground's uphill <paramref name="groundDir"/> by the tide depth read there over the floored slope.
+        /// On a beach steeper than the floor every pixel of one shore normal lands on the same point of the still line,
+        /// whatever the chop warp, so the run-up it reads is one shore quantity along the normal. (v7 started from
+        /// <paramref name="worldXY"/> with the warped depth, so the warp's normal component moved the point.)
+        /// </summary>
+        public static Vector2 BeachSurfEvalPoint(Vector2 worldXY, Vector2 warp, Vector2 groundDir,
+                                                 float tideDepthAtWarped, float swashSlope)
+            => worldXY + warp + groundDir * (tideDepthAtWarped / Mathf.Max(swashSlope, 1e-3f));
+
+        /// <summary>
+        /// The share of the breaker that is SHORE surf — the shader's <c>surfShore</c>: 0 while the ground
+        /// <c>_WashSurfReach</c> metres shoreward is under water (<paramref name="tapDepth"/> &gt;= 0: a bar with water
+        /// behind it, open water; the open breaker's look), rising to 1 as that ground stands the run-up's whole reach
+        /// (<paramref name="beachReach"/>, metres of level) above the water.
+        /// </summary>
+        public static float ShoreSurfShare01(float tapDepth, float beachReach)
+            => Mathf.Clamp01(-tapDepth / Mathf.Max(beachReach, 1e-3f));
+
+        /// <summary>
+        /// The shore surf's cover — the shader's <c>surfCoverShore</c>: the churn, lifted by the bore's
+        /// <paramref name="density"/> at <paramref name="lift"/> of the open breaker's 0.75, gated by the break
+        /// (<paramref name="gate"/> = saturate(breaking * density)) INSIDE the soft threshold, so the band breaks into
+        /// patches with water between them and its edges follow the churn, not the depth contour.
+        /// </summary>
+        public static float ShoreSurfCover01(float churn, float density, float gate, float lift, float threshold, float soft)
+        {
+            float field = Mathf.Clamp01(churn + density * 0.75f * Mathf.Clamp01(lift)) * Mathf.Clamp01(gate);
+            return HlslSmoothStep(threshold - soft, threshold + soft, field);
+        }
+
+        /// <summary>The open breaker's cover law (the shader's <c>surfCover</c> before the pocket boost), for comparison.</summary>
+        public static float OpenSurfCover01(float churn, float density, float breaking, float threshold, float soft)
+            => HlslSmoothStep(threshold - soft, threshold + soft, Mathf.Clamp01(churn + density * 0.75f))
+             * Mathf.Clamp01(breaking * density);
+
+        static float HlslSmoothStep(float a, float b, float x)
+        {
+            float t = Mathf.Clamp01((x - a) / (b - a));
+            return t * t * (3f - 2f * t);
         }
 
         /// <summary>
