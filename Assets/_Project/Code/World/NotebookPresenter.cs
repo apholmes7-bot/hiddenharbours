@@ -821,14 +821,16 @@ namespace HiddenHarbours.World
         }
 
         /// <summary>The "on" stub's ink, drawn over the card in the rig's order: an ink line down the
-        /// end nearest the page and along the top, and a paper-lit row under the top line.</summary>
+        /// end nearest the page and along the top, and a paper-lit row under the top line. Its outer
+        /// end takes the gold band, the one warm accent the shared palette keeps for the selected stub.</summary>
         private void DrawTabOn(RectTransform chip)
         {
             int w = NotebookKit.TabChipWidth, h = NotebookKit.TabHeight;
+            AddPiece(chip, "TabOnGold", null, w - NotebookKit.TabPull, 0, NotebookKit.TabPull, h, GoldInk);
             AddPiece(chip, "TabOnEdge", null, 0, 0, NotebookKit.Edge, h, InkStrong);
             AddPiece(chip, "TabOnTop", null, 0, 0, w, NotebookKit.Edge, InkStrong);
             AddPiece(chip, "TabOnLit", null, NotebookKit.Edge, NotebookKit.Edge,
-                     w - 2 * NotebookKit.Edge, NotebookKit.Edge, PaperInk);
+                     w - NotebookKit.Edge - NotebookKit.TabPull, NotebookKit.Edge, PaperInk);
         }
 
         private void DrawPageMarks(int x, int y, int pageW, int pageH)
