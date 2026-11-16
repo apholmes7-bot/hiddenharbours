@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using HiddenHarbours.Core;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
@@ -50,8 +51,10 @@ namespace HiddenHarbours.Tests.Support
     /// <c>LoadSceneOperation::Perform</c> is on the preload thread. The hold is bounded
     /// (<see cref="HoldSeconds"/>) and falls back to the plain async load.</para>
     ///
-    /// <para>What this cannot do: it cannot hold a load the GAME starts (a region streaming in additively
-    /// through the region loader). A destroy during such a load can still deadlock in the editor.</para>
+    /// <para><b>Third slice (2026-11-16).</b> The hold now lives in Core (<see cref="SceneLoadHold"/>) and the
+    /// region loader applies it, editor-only, to the loads the GAME starts (a crossing, a passage, a preload),
+    /// which this helper cannot see. Every load and unload here is tracked there too, so a load queued behind
+    /// another operation is left plain async instead of running out the bound.</para>
     /// </summary>
     public static class SceneSettle
     {
@@ -128,25 +131,25 @@ namespace HiddenHarbours.Tests.Support
             yield return StartLoadInPlayMode(path, parameters);
         }
 
+        // The hold itself is the shared Core guard (third slice, 2026-11-16), so test loads and the loads the
+        // game starts through the region loader count against one budget and see each other in flight.
+
         /// <summary>Longest the main thread is held waiting for the preload thread to finish reading a
-        /// scene. A region's read is a few hundred milliseconds on CI (the job log's "Deserialize" line);
-        /// this is far past that and far short of the hang watchdog's frozen-thread verdict.</summary>
-        public const float HoldSeconds = 10f;
+        /// scene (<see cref="SceneLoadHold.CapSeconds"/>).</summary>
+        public const float HoldSeconds = SceneLoadHold.CapSeconds;
 
-        /// <summary>The <c>progress</c> an async load reports once its threaded read is done and it waits
-        /// for activation (documented engine behaviour with <c>allowSceneActivation</c> false).</summary>
-        public const float ReadDoneProgress = 0.9f;
+        /// <summary>The <c>progress</c> an async load reports once its threaded read is done
+        /// (<see cref="SceneLoadHold.ReadDoneProgress"/>).</summary>
+        public const float ReadDoneProgress = SceneLoadHold.ReadDoneProgress;
 
-        /// <summary>Holds that may run out before the rest of the run stops holding. One can run out
-        /// honestly (the load was queued behind another scene operation that needs frames to finish);
-        /// several mean the hold is not doing what it is for on this editor, and later loads go plain async
-        /// rather than paying the bound again.</summary>
-        public const int MaxHoldTimeouts = 3;
+        /// <summary>Holds that may run out before the rest of the run stops holding
+        /// (<see cref="SceneLoadHold.MaxTimeouts"/>).</summary>
+        public const int MaxHoldTimeouts = SceneLoadHold.MaxTimeouts;
 
-        /// <summary>How many loads were held to the end of their read, and how many ran out the bound;
-        /// read by the contract test and printed in the warning.</summary>
-        public static int HeldLoads { get; private set; }
-        public static int HoldTimeouts { get; private set; }
+        /// <summary>How many loads were held to the end of their read, and how many ran out the bound, game
+        /// and test loads together.</summary>
+        public static int HeldLoads => SceneLoadHold.HeldLoads;
+        public static int HoldTimeouts => SceneLoadHold.Timeouts;
 
         /// <summary>
         /// <see cref="SceneManager.LoadSceneAsync(string, LoadSceneMode)"/>, with the main thread held in this
@@ -168,26 +171,7 @@ namespace HiddenHarbours.Tests.Support
 
         static AsyncOperation HoldUntilRead(AsyncOperation op)
         {
-            if (op == null || HoldTimeouts >= MaxHoldTimeouts || op.isDone) return op;
-            // Holding activation back is what makes progress stop at ReadDoneProgress once the read is done,
-            // so "read done" is observable; it is released before the caller ever sees the operation.
-            op.allowSceneActivation = false;
-            var clock = System.Diagnostics.Stopwatch.StartNew();
-            while (op.progress < ReadDoneProgress && clock.Elapsed.TotalSeconds < HoldSeconds)
-                System.Threading.Thread.Sleep(1);
-            if (op.progress >= ReadDoneProgress)
-            {
-                HeldLoads++;
-            }
-            else
-            {
-                HoldTimeouts++;
-                Debug.LogWarning("[SceneSettle] a scene load's threaded read did not finish within " + HoldSeconds +
-                                 " s while the main thread was held (progress " + op.progress.ToString("0.00") +
-                                 "); after " + MaxHoldTimeouts + " of these, later loads in this run are not held");
-            }
-            op.allowSceneActivation = true;
-            return op;
+            return SceneLoadHold.HoldUntilRead(op);
         }
 
         /// <summary>Settle, then <see cref="SceneManager.UnloadSceneAsync(Scene)"/> and wait, as
@@ -199,14 +183,18 @@ namespace HiddenHarbours.Tests.Support
             bool wasLoaded = scene.IsValid() && scene.isLoaded;
             for (int i = 0; i < DrainFrames; i++) yield return null;
             if (wasLoaded && !scene.isLoaded) yield break;
-            yield return SceneManager.UnloadSceneAsync(scene);
+            AsyncOperation op = SceneManager.UnloadSceneAsync(scene);
+            SceneLoadHold.Track(op);   // a game load issued behind it is then not held (it would wait on this)
+            yield return op;
         }
 
         /// <summary>Settle, then <see cref="SceneManager.UnloadSceneAsync(string)"/> and wait.</summary>
         public static IEnumerator Unload(string scene)
         {
             for (int i = 0; i < DrainFrames; i++) yield return null;
-            yield return SceneManager.UnloadSceneAsync(scene);
+            AsyncOperation op = SceneManager.UnloadSceneAsync(scene);
+            SceneLoadHold.Track(op);
+            yield return op;
         }
 
         static bool AnyAlive(List<Object> objects)
