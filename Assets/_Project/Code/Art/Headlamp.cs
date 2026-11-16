@@ -11,7 +11,8 @@ namespace HiddenHarbours.Art
     /// <para><b>Why a headlamp and not a torch in her hand.</b> The owner asked for <i>"a spotlight"</i>.
     /// A hand torch would cost a hand — and the TOOL CONTINUITY LAW (owner playtest, 2026-08-23) says what
     /// she is holding does not silently change underneath her, so a torch would have to be taken out and
-    /// put away, and would fight the rod and the catch for the same slot. A headlamp costs no slot. Its small housing and lens are drawn at the live mesh head point.</para>
+    /// put away, and would fight the rod and the catch for the same slot. A headlamp costs no slot. Its small housing and lens are drawn at the live mesh head point while
+    /// the beam is lit, and not at all while it is off (<see cref="FittingShows"/>).</para>
     ///
     /// <para><b>It lights the world, not just a patch of ground</b> — which is the whole reason it is a
     /// <see cref="SceneLight"/> and not a sprite:
@@ -209,10 +210,9 @@ namespace HiddenHarbours.Art
             if (drawn && _hasHeadPoint && _fitting == null) BuildFitting();
             if (_fitting != null)
             {
-                _fitting.enabled = drawn && _live;
+                _fitting.enabled = FittingShows(drawn, _live, _on);
                 _fitting.transform.position = new Vector3(point.x, point.y, _carrier.position.z);
                 _fitting.transform.rotation = Quaternion.identity;
-                _fitting.color = _on ? Color.white : new Color(.55f, .55f, .55f, 1f);
                 if (drawn && liveFigure.AshoreOverlay != null)
                 {
                     _fitting.sortingLayerID = liveFigure.AshoreOverlay.sortingLayerID;
@@ -221,6 +221,14 @@ namespace HiddenHarbours.Art
                 }
             }
         }
+
+        /// <summary>
+        /// <b>Is her lamp's housing drawn?</b> Only while the beam is switched ON, she is on her feet and
+        /// a mesh head is drawn to wear it. She carries no lamp until she switches it (#1014): an unlit
+        /// housing drawn at the head point is a dark 5 × 3 block across her face, which is what a daylight
+        /// look showed, so off means no housing at all.
+        /// </summary>
+        public static bool FittingShows(bool headDrawn, bool live, bool on) => headDrawn && live && on;
 
         private Vector3 SnapDrawnHead(Vector3 world)
         {
@@ -290,6 +298,7 @@ namespace HiddenHarbours.Art
         private void ApplyBeamState()
         {
             if (Light != null) Light.enabled = _live && _on;
+            if (_fitting != null && !(_live && _on)) _fitting.enabled = false;
         }
 
         /// <summary>

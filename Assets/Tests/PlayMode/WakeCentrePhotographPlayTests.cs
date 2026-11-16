@@ -804,7 +804,7 @@ namespace HiddenHarbours.Tests.PlayMode
             Debug.Log($"[{PlateDir}] loading {scene}…");
             float wall = Time.realtimeSinceStartup;
             yield return HiddenHarbours.Tests.Support.SceneSettle.Frames();
-            AsyncOperation op = SceneManager.LoadSceneAsync(scene, LoadSceneMode.Single);
+            AsyncOperation op = HiddenHarbours.Tests.Support.SceneSettle.StartLoad(scene, LoadSceneMode.Single);
             Assert.IsNotNull(op, $"SceneManager refused to start loading '{scene}' — it is most " +
                                  "likely not in Build Settings, and there is no region to photograph.");
             while (op != null && !op.isDone)

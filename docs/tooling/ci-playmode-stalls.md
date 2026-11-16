@@ -89,3 +89,30 @@ is 3. One yield is not enough.
 **Not covered.** A scene the game itself streams in (the region loader's additive load) is invisible to
 the helper; destroying sprites while it runs can still deadlock in the editor. Players are not affected:
 the asset-change notifier exists only in the editor.
+
+### Second slice: the settle is necessary, not sufficient (2026-11-16)
+
+The first main run with the settle (run 43834512753, attempt 1, job 133187728920) hung in
+`StPetersEastDoorPlayTests.TheIslandAnswersTheKeyABoatComesHomeWith` with the same two stacks. That
+test does no region travel. It loads St Peters through `SceneSettle.Load` after the settle; the main
+thread stopped in the first second of the test, in the frames of that load. The previous teardown
+destroyed its roots with `DestroyImmediate`, so the test left nothing queued. The pending destroy came
+from **game code**: something on the persistent `DontDestroyOnLoad` hosts (presenters installed by
+`RuntimeInitializeOnLoadMethod`, which live for the whole run) destroyed a sprite hierarchy while the
+preload thread was still reading the scene file. That read takes a few hundred milliseconds of frames.
+The native stack cannot name the script.
+
+**The law, extended.** A test-issued load also holds the main thread, inside the frame that issues it,
+until the threaded read is done. `SceneSettle.StartLoad` / `StartLoadInPlayMode` issue the load with
+`allowSceneActivation = false`, sleep until `progress` reaches 0.9 (the read is done), then allow
+activation and hand the operation back. While the main thread is held, no PostLateUpdate can run, so no
+delayed destroy can meet `LoadSceneOperation::Perform`. `Load` / `LoadInPlayMode` use it, and the four
+fixtures that keep their own `AsyncOperation` call `StartLoad` directly. The hold is bounded at
+`HoldSeconds` (10 s). After `MaxHoldTimeouts` (3) timeouts the run stops holding, so a hold that does not
+work on some editor costs at most 30 s per run, not a hang.
+
+**Still not covered.** Loads the game starts itself: `RegionSceneLoader.Travel` (a passage, an arrival,
+a crossing), which about 20 PlayMode files drive. The proposed fix is the same hold inside
+`RegionSceneLoader.Travel`, under `#if UNITY_EDITOR` only. The risks: an editor-only hitch of one read
+(about 200 ms) per crossing; a bounded freeze (up to `HoldSeconds`) if the load is queued behind another
+scene operation; and a gameplay file changes. It is not in this change.

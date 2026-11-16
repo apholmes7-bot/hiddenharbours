@@ -793,6 +793,31 @@ namespace HiddenHarbours.App
         }
 
         /// <summary>
+        /// ⭐ <b>Carry the view across a world-frame crossing</b> (ADR 0057), under the seam fade: the mover
+        /// was moved into the neighbour's local frame by <paramref name="localShift"/>, so the camera and
+        /// every piece of its follow state move by the same translation (no re-seed, no velocity spike from
+        /// the target's 400 m local jump), and then the view is SETTLED into the new region's clamp at once.
+        ///
+        /// <para>Why it settles here (owner ruling on PR 1223: "the camera should stop as the player runs
+        /// towards the edge"). The view is clamped at every region edge, seams included, so before the hop
+        /// it stood a half-view inside the region being left, which is a half-view OUTSIDE the region
+        /// arrived in. Left to the follow, it would glide that half-view back in after the fade cleared,
+        /// a visible pan. Clamped now, while the screen is black, the first clear frame is already where
+        /// the follow would rest: the mover just inside the near edge, the view stopped at it. The filter
+        /// and the teleport tripwire take the settled position, so the next LateUpdate sees no jump.</para>
+        /// </summary>
+        public void CarryAcross(Vector2 localShift)
+        {
+            var d = new Vector3(localShift.x, localShift.y, 0f);
+            transform.position += d;
+            _smoothPos += d;
+            _lastAppliedPos += d;
+            _lastTargetPos += d;
+            ApplyBounds();                          // the arrived region's bounds are already published
+            _lastAppliedPos = transform.position;   // the tripwire takes the settled view, not a teleport
+        }
+
+        /// <summary>
         /// <b>How much world ONE RENDERED SCREEN PIXEL covers right now</b> — the grid
         /// <see cref="PixelGrid"/> rounds onto, and what this camera publishes to
         /// <see cref="GameServices.WorldUnitsPerRenderedPixel"/> for the mesh vehicles that cannot
