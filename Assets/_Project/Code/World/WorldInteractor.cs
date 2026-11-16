@@ -97,6 +97,7 @@ namespace HiddenHarbours.World
         // interpolates, and the offer is stated every frame there is a candidate, so building it per frame
         // would be one allocation a frame for as long as you stand in front of a neighbour (rule 7).
         private Interactable _labelledFor;
+        private bool _labelIsGift;
         private string _label;
 
         // Who is currently talking, and their day — looked up ONCE when the conversation opens rather
@@ -196,7 +197,13 @@ namespace HiddenHarbours.World
             // key started a conversation with the other would be worse than no popup at all.
             Interactable target = FindNearest();
             if (target == null) return false;
-            Begin(target);
+
+            // ⭐ A GIFT, when a giftable catch is in hand and she is somebody you have met (gifting slice 1).
+            // The same answer the offer showed (OffersGift), so the popup's "Give" and the press agree.
+            // ⚑ When the interaction chooser lands, this is the one branch it splits into two rows — Talk
+            // and Give — instead of the hand deciding; Give() is already the whole act.
+            if (OffersGift(target, out CatchItem held)) Give(target, in held);
+            else Begin(target);
             return true;
         }
 
@@ -376,6 +383,22 @@ namespace HiddenHarbours.World
                 : WorldStrings.Conversation(it.ConversationId, metBefore);
             if (text == null || text.Length == 0) return;
 
+            NpcDef npc = it.Npc;
+            string flag = it.CompletionFlag;
+            Speak(it, text,
+                  it.HasNpcData ? DialogueOptionPicker.RowsFor(npc.Dialogue.Options) : null,
+                  it.HasNpcData ? npc.Dialogue.Id : it.ConversationId,
+                  () => { if (!string.IsNullOrEmpty(flag)) _flags.Set(flag, true); });
+        }
+
+        /// <summary>
+        /// Play lines in the speaker's bubble and hold her for them — the one path a conversation and a
+        /// gift's answer share, so both stop her, anchor at her head, fill at her cadence and release her
+        /// the same way.
+        /// </summary>
+        private void Speak(Interactable it, string[] text, IReadOnlyList<DialogueOption> options,
+                           string dialogueId, System.Action onDone)
+        {
             var lines = new List<DialogueLine>(text.Length);
             for (int i = 0; i < text.Length; i++)
                 lines.Add(new DialogueLine(it.Speaker, text[i]));
@@ -390,8 +413,8 @@ namespace HiddenHarbours.World
                 it.BubbleAnchorTransform,
                 it.BubbleAnchorOffset,
                 DialogueVoiceDef.VoiceOf(npc != null ? npc.Voice : null),
-                it.HasNpcData ? DialogueOptionPicker.RowsFor(npc.Dialogue.Options) : null,
-                it.HasNpcData ? npc.Dialogue.Id : it.ConversationId,
+                options,
+                dialogueId,
                 npc != null ? npc.Id : null);
 
             // ⭐ SHE STOPS TO TALK — if she can. The interruptibility is authored per routine block, so
@@ -401,12 +424,83 @@ namespace HiddenHarbours.World
             _speakerRoutine = it.GetComponent<VillagerRoutine>();
             if (_speakerRoutine != null) _speakerRoutine.TryHoldForConversation(ResolvePlayer());
 
-            string flag = it.CompletionFlag;
             _presenter.Play(request, () =>
             {
-                if (!string.IsNullOrEmpty(flag)) _flags.Set(flag, true);
+                onDone?.Invoke();
                 ReleaseSpeaker();
             });
+        }
+
+        // ---- gifts (gifting slice 1, owner ask 2026-11-15) -------------------------------------
+
+        /// <summary>
+        /// Does facing <paramref name="target"/> offer a GIFT rather than a talk? True when she is a person
+        /// (an <see cref="NpcDef"/> you Talk to, with an id), you have MET her (her completion flag is set,
+        /// or she has none — her opening conversation is never skipped by a fish in your hand), and the
+        /// loose catch in your hand is giftable (<see cref="GiftItem.IsGiftable"/>, the species' own flag).
+        ///
+        /// <para>Allocation-free and read every frame there is a target (rule 7): a peek at the hands
+        /// through Core (<see cref="ICatchHands.TryPeekHand"/>), a flag read and a facts lookup. A tool or
+        /// a pail in hand is never a gift: the peek sees only a loose catch.</para>
+        /// </summary>
+        private bool OffersGift(Interactable target, out CatchItem held)
+        {
+            held = default;
+            if (target == null) return false;
+            NpcDef npc = target.Npc;
+            if (npc == null || npc.Kind != InteractKind.Talk || string.IsNullOrEmpty(npc.Id)) return false;
+
+            ICatchHands hands = GameServices.CatchHands;
+            if (hands == null || !hands.TryPeekHand(out held)) return false;
+
+            if (!string.IsNullOrEmpty(npc.CompletionFlag) && (_flags == null || !_flags.Get(npc.CompletionFlag)))
+                return false;
+
+            return GiftItem.IsGiftable(in held, GameServices.GiftableFacts);
+        }
+
+        /// <summary>
+        /// <b>Give her what is in your hand.</b> The pure rule decides (<see cref="GiftRule.Evaluate"/>);
+        /// this only moves things. On an accepted gift the catch leaves the hand through Core
+        /// (<see cref="ICatchHands.TryTakeFromHand"/>), today's gift is counted (<see cref="GiftLedger"/>),
+        /// the relationship event is recorded (<see cref="IRelationshipService"/>; applied at the next
+        /// <c>ApplyDay</c>, whose points are the owner's rows on the relationship config) and
+        /// <see cref="GiftGiven"/> is published. A refusal or a declined-today moves nothing. Either way
+        /// she SAYS how she took it, in a line from data: her own words for that reaction, else the shared
+        /// ones on <see cref="GiftConfig"/>. No number is shown, ever.
+        /// </summary>
+        private void Give(Interactable it, in CatchItem held)
+        {
+            if (_presenter == null) return;
+            NpcDef npc = it.Npc;
+            if (npc == null) return;
+
+            GiftConfig config = GiftConfig.Load();
+            int perDay = config != null ? config.GiftsPerNpcPerDay : GiftConfig.DefaultGiftsPerNpcPerDay;
+            IGameClock clock = GameServices.Clock;
+            int day = clock != null ? clock.DayIndex : 0;
+
+            GiftItem item = GiftItem.FromCatch(in held, GameServices.GiftableFacts);
+            GiftReaction reaction = GiftRule.Evaluate(npc.Gifts, in item,
+                                                      GiftLedger.Shared.GiftsToday(npc.Id, day), perDay);
+
+            if (GiftRule.IsAccepted(reaction))
+            {
+                // The hand gives it up or nothing happened: a catch that would not leave the hand is not a
+                // gift, and she must not thank you for something you are still holding.
+                ICatchHands hands = GameServices.CatchHands;
+                if (hands == null || !hands.TryTakeFromHand(out CatchItem _)) return;
+
+                GiftLedger.Shared.Count(npc.Id, day);
+                if (GiftRule.TryRelationshipKind(reaction, out RelationshipEventKind kind))
+                    GameServices.Relationships.Record(new RelationshipEvent(kind, RelationshipGraph.PlayerId, npc.Id));
+                EventBus.Publish(new GiftGiven(npc.Id, item.Id, reaction, day));
+            }
+
+            string line = GiftRule.Line(reaction, npc.Gifts != null ? npc.Gifts.Lines : null,
+                                        config != null ? config.Lines : null, day, item.DisplayName);
+            if (string.IsNullOrEmpty(line)) return;
+            Speak(it, new[] { line }, null, null, null);
         }
 
         /// <summary>Let whoever was talking get back to their day. Called from the presenter's single
@@ -482,8 +576,8 @@ namespace HiddenHarbours.World
             Transform player = ResolvePlayer();
             float distSq = player != null ? ((Vector2)player.position - at).sqrMagnitude : 0f;
 
-            InteractOffer.Set(InteractOfferSource.Conversation, OfferIdFor(target), OfferLabelFor(target),
-                              at, distSq);
+            InteractOffer.Set(InteractOfferSource.Conversation, OfferIdFor(target),
+                              OfferLabelFor(target, OffersGift(target, out _)), at, distSq);
         }
 
         /// <summary>
@@ -494,12 +588,14 @@ namespace HiddenHarbours.World
         /// interactable, and the reference changing is the only way the answer can. Same shape as the
         /// carriables' label pair, for the same rule-7 reason.</para>
         /// </summary>
-        private string OfferLabelFor(Interactable target)
+        private string OfferLabelFor(Interactable target, bool gift)
         {
-            if (!ReferenceEquals(target, _labelledFor))
+            if (!ReferenceEquals(target, _labelledFor) || gift != _labelIsGift)
             {
                 _labelledFor = target;
-                _label = WorldStrings.OfferLabel(target.Kind, target.Speaker);
+                _labelIsGift = gift;
+                _label = gift ? WorldStrings.GiftOfferLabel(target.Speaker)
+                              : WorldStrings.OfferLabel(target.Kind, target.Speaker);
             }
             return _label;
         }

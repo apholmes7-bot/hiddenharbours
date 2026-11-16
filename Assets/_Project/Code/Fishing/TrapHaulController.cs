@@ -293,6 +293,11 @@ namespace HiddenHarbours.Fishing
                 EventBus.Publish(new DevNotice(NoticeNoPot));
                 return false;
             }
+            // TOO TIRED / TOO HUNGRY (owner ask 2026-11-15): hauling a pot is heavy work, so the START asks
+            // the one Core gate (after "is there a pot?", which keeps its own sentence). A refusal leaves the
+            // pot down and says the line through the player's own bubble; a haul already under way never
+            // asks again, so it is never cut short.
+            if (!EffortGate.TryBegin(EffortClass.Heavy, EffortGate.TrapHaulId)) return false;
 
             _hauling = best;
             _line01 = 0f;

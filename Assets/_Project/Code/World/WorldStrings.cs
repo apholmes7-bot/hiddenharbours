@@ -74,6 +74,15 @@ namespace HiddenHarbours.World
         /// <summary>The popup's verb for a thing you read — a letter, a logbook.</summary>
         public const string ReadVerb = "Read";
 
+        /// <summary>The popup's verb when a giftable catch is in hand and you face a person you have met
+        /// (gifting slice 1). ⚑ OWNER TASTE — one const, one edit.</summary>
+        public const string GiveVerb = "Give";
+
+        /// <summary>"Give — Aunt Ginny": the gift offer, same shape as <see cref="OfferLabel"/>. Allocates,
+        /// so <c>WorldInteractor</c> caches it per speaker exactly as it caches the talk line.</summary>
+        public static string GiftOfferLabel(string who)
+            => string.IsNullOrEmpty(who) ? GiveVerb : GiveVerb + LabelSeparator + who;
+
         /// <summary>What sits between the verb and who/what it is about.</summary>
         public const string LabelSeparator = " — ";
 

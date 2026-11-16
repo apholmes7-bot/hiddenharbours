@@ -18,3 +18,4 @@ MonoBehaviour:
   HungerRelief: 0.06
   PreppedId: 
   CookedId: 
+  EnergyKcal: 35
