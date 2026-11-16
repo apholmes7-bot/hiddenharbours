@@ -20,17 +20,29 @@ namespace HiddenHarbours.Core
     /// <para>Its own Core/Events file beside <c>HomeSignals.cs</c>, for the reason that file gives:
     /// <c>GameSignals.cs</c> is lead-architect's, so new signals land additively beside it.</para>
     /// </summary>
-    public readonly struct VehiclePurchased
+    public readonly struct VehiclePurchased : ICustomSignal
     {
         public readonly string OfferId;
         public readonly string VehicleId;
         public readonly string SellerId;
         public readonly int PricePaid;   // ₲
         public readonly bool StartsDamaged;
+        public TradeCounterparty Counterparty { get; }
+        public string MerchantId => Counterparty.MerchantId;
+        public string VendorId => Counterparty.VendorId;
+        public string TradeId => Counterparty.TradeId;
+        public decimal CustomUnits => 1m;
+
         public VehiclePurchased(string offerId, string vehicleId, string sellerId, int pricePaid, bool startsDamaged)
+            : this(offerId, vehicleId, sellerId, pricePaid, startsDamaged,
+                   new TradeCounterparty(null, sellerId, null)) { }
+
+        public VehiclePurchased(string offerId, string vehicleId, string sellerId, int pricePaid, bool startsDamaged,
+                                TradeCounterparty counterparty)
         {
             OfferId = offerId; VehicleId = vehicleId; SellerId = sellerId;
             PricePaid = pricePaid; StartsDamaged = startsDamaged;
+            Counterparty = counterparty;
         }
     }
 
@@ -40,15 +52,26 @@ namespace HiddenHarbours.Core
     /// The boat side's <see cref="BoatRepaired"/> is the precedent; same keys as
     /// <see cref="VehiclePurchased"/>.
     /// </summary>
-    public readonly struct VehicleRepaired
+    public readonly struct VehicleRepaired : ICustomSignal
     {
         public readonly string OfferId;
         public readonly string VehicleId;
         public readonly string SellerId;
         public readonly int PricePaid;   // ₲
+        public TradeCounterparty Counterparty { get; }
+        public string MerchantId => Counterparty.MerchantId;
+        public string VendorId => Counterparty.VendorId;
+        public string TradeId => Counterparty.TradeId;
+        public decimal CustomUnits => 1m;
+
         public VehicleRepaired(string offerId, string vehicleId, string sellerId, int pricePaid)
+            : this(offerId, vehicleId, sellerId, pricePaid, new TradeCounterparty(null, sellerId, null)) { }
+
+        public VehicleRepaired(string offerId, string vehicleId, string sellerId, int pricePaid,
+                               TradeCounterparty counterparty)
         {
             OfferId = offerId; VehicleId = vehicleId; SellerId = sellerId; PricePaid = pricePaid;
+            Counterparty = counterparty;
         }
     }
 }
