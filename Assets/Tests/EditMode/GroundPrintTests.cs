@@ -306,14 +306,26 @@ namespace HiddenHarbours.Tests.EditMode
         // ground colours the PR 1222 play look measured (sRGB, before the mood grade) and hold the
         // shipped data to "fresh reads, the last hour is barely there, never lighter".
 
-        private static readonly (GroundSurface surface, Color32 ground, string source)[] ReferenceGrounds =
+        // Each ground with the band its FRESH print must land in (share darker). Grass is pressed blades,
+        // not a hole: visible (15%) but never more than 25% below the grass (the editor look of 71fa0dc
+        // at ~55-60% read as a solid black-olive block). The crisp stamps (mud and the rest) read at 25-60%.
+        private static readonly (GroundSurface surface, Color32 ground, float min, float max, string source)[] ReferenceGrounds =
         {
-            (GroundSurface.Grass, new Color32(64, 83, 51, 255),    "measured under the trail, playlook 1222 Grass-0-bare-close"),
-            (GroundSurface.Mud,   new Color32(91, 83, 70, 255),    "median of playlook 1222 Mud-0-bare-close"),
-            (GroundSurface.Dirt,  new Color32(140, 113, 84, 255),  "the path in playlook 1222 Grass-0-bare-close"),
-            (GroundSurface.Sand,  new Color32(209, 189, 148, 255), "pale beach sand (no capture: St Peters had no reachable sand)"),
-            (GroundSurface.Snow,  new Color32(230, 235, 242, 255), "snow (no capture)"),
+            (GroundSurface.Grass, new Color32(64, 83, 51, 255),    0.15f, 0.25f, "measured under the trail, playlook 1222 Grass-0-bare-close"),
+            (GroundSurface.Grass, new Color32(71, 88, 59, 255),    0.15f, 0.25f, "the trail baseline of the 71fa0dc editor look (fix2)"),
+            (GroundSurface.Mud,   new Color32(91, 83, 70, 255),    0.25f, 0.6f,  "median of playlook 1222 Mud-0-bare-close"),
+            (GroundSurface.Dirt,  new Color32(140, 113, 84, 255),  0.25f, 0.6f,  "the path in playlook 1222 Grass-0-bare-close"),
+            (GroundSurface.Sand,  new Color32(209, 189, 148, 255), 0.25f, 0.6f,  "pale beach sand (no capture: St Peters had no reachable sand)"),
+            (GroundSurface.Snow,  new Color32(230, 235, 242, 255), 0.25f, 0.6f,  "snow (no capture)"),
         };
+
+        /// <summary>The on-screen blend as an sRGB colour.</summary>
+        private static Color Composite(Color32 groundSrgb, Color ink)
+        {
+            Color g = groundSrgb;
+            float Out(float gs, float i) => Mathf.LinearToGammaSpace(Mathf.GammaToLinearSpace(gs) * (1f - ink.a) + i * ink.a);
+            return new Color(Out(g.r, ink.r), Out(g.g, ink.g), Out(g.b, ink.b), 1f);
+        }
 
         /// <summary>The on-screen blend, returned as sRGB luma (Rec. 709 weights on encoded values).</summary>
         private static float CompositeLuma(Color32 groundSrgb, Color ink)
@@ -383,13 +395,12 @@ namespace HiddenHarbours.Tests.EditMode
         public void AFreshPrintReadsAsADepressionAndTheLastHourIsBarelyThere()
         {
             GroundPrintSettings s = GroundPrintSettings.Default;
-            foreach (var (surface, ground, source) in ReferenceGrounds)
+            foreach (var (surface, ground, min, max, source) in ReferenceGrounds)
             {
                 Assert.That(s.TryGetStyle(surface, out GroundPrintSurfaceStyle style), NUnit.Framework.Is.True, surface.ToString());
                 string at = $"{surface} on {source}";
                 float fresh = Drop(style, ground, 0d), half = Drop(style, ground, 12d), last = Drop(style, ground, 23.9d);
-                // Ceiling 70%: grass needs ~63% to beat its own texture; past ~70% a print is a black hole.
-                Assert.That(fresh, NUnit.Framework.Is.InRange(0.25f, 0.7f), at + ": a fresh print must read (25..70% darker)");
+                Assert.That(fresh, NUnit.Framework.Is.InRange(min, max), $"{at}: a fresh print must land {min:P0}..{max:P0} darker");
                 Assert.That(half, NUnit.Framework.Is.LessThan(fresh).And.GreaterThan(last), at + ": 12 h sits between");
                 Assert.That(last, NUnit.Framework.Is.GreaterThan(0f).And.LessThanOrEqualTo(0.08f), at + ": 23.9 h is barely there");
                 Assert.That(Drop(style, ground, 24d), NUnit.Framework.Is.EqualTo(0f).Within(1e-5f), at + ": gone at 24 h");
@@ -399,14 +410,77 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         [Test]
-        public void ADeepGrassPrintStaysGreenNotMud()
+        public void AGrassPrintStaysGreenNotMud()
         {
             GroundPrintSettings s = GroundPrintSettings.Default;
             Assert.That(s.TryGetStyle(GroundSurface.Grass, out GroundPrintSurfaceStyle grass), NUnit.Framework.Is.True);
             Assert.That(s.TryGetStyle(GroundSurface.Mud, out GroundPrintSurfaceStyle mud), NUnit.Framework.Is.True);
             Color g = grass.Tint, m = mud.Tint;
-            Assert.That(g.g, NUnit.Framework.Is.GreaterThan(g.r).And.GreaterThan(g.b), "the grass ink is a green, pressed grass");
+            Assert.That(g.g, NUnit.Framework.Is.GreaterThanOrEqualTo(g.r).And.GreaterThan(g.b), "the grass ink is a green, pressed grass");
             Assert.That(m.r, NUnit.Framework.Is.GreaterThan(m.g).And.GreaterThan(m.b), "the mud ink is a brown");
+        }
+
+        [Test]
+        public void APressedGrassPrintShiftsTowardYellowNotBlack()
+        {
+            GroundPrintSettings s = GroundPrintSettings.Default;
+            Assert.That(s.TryGetStyle(GroundSurface.Grass, out GroundPrintSurfaceStyle grass), NUnit.Framework.Is.True);
+            foreach (var (surface, ground, _, _, source) in ReferenceGrounds)
+            {
+                if (surface != GroundSurface.Grass) continue;
+                Color g = ground;
+                Color c = Composite(ground, GroundPrintMath.InkColour(grass.Tint, grass.StartStrength, true));
+                Assert.That(c.r / c.g, NUnit.Framework.Is.GreaterThan(g.r / g.g), source + ": red rises against green (yellower)");
+                Assert.That(c.b / c.g, NUnit.Framework.Is.LessThan(g.b / g.g), source + ": blue falls against green (yellower)");
+            }
+        }
+
+        [Test]
+        public void TheBlendModelMatchesTheEditorLookOf71fa0dc()
+        {
+            // The 71fa0dc grass ink (0.07, 0.10, 0.04) at alpha 0.95 over the measured trail baseline
+            // (71, 88, 59) drew a print whose editor mean was (24, 31, 17) (fix2 A-luminance-normalised).
+            Color c = Composite(new Color32(71, 88, 59, 255), GroundPrintMath.InkColour(new Color(0.07f, 0.10f, 0.04f, 1f), 0.95f, true));
+            Assert.That(c.r * 255f, NUnit.Framework.Is.EqualTo(24f).Within(4f));
+            Assert.That(c.g * 255f, NUnit.Framework.Is.EqualTo(31f).Within(4f));
+            Assert.That(c.b * 255f, NUnit.Framework.Is.EqualTo(17f).Within(4f));
+        }
+
+        [Test]
+        public void GrassPrintsAreBrokenAndMudStaysACrispStamp()
+        {
+            GroundPrintSettings s = GroundPrintSettings.Default;
+            int size = GroundPrintShapes.EvenSize(s.ShapeTexturePixels);
+            bool[] crisp = GroundPrintShapes.Mask(size);
+            int crispInk = 0;
+            foreach (bool b in crisp) if (b) crispInk++;
+
+            bool[] atlas = GroundPrintShapes.Atlas(size, s.Surfaces, out int width);
+            Assert.That(width, NUnit.Framework.Is.EqualTo(size * s.Surfaces.Length));
+            for (int c = 0; c < s.Surfaces.Length; c++)
+            {
+                GroundPrintSurfaceStyle style = s.Surfaces[c];
+                int ink = 0, lost = 0;
+                for (int y = 0; y < size; y++)
+                    for (int x = 0; x < size; x++)
+                    {
+                        bool a = atlas[y * width + c * size + x], m = crisp[y * size + x];
+                        Assert.That(!a || m, NUnit.Framework.Is.True, $"{style.Surface}: breakup only removes ink");
+                        if (a) ink++;
+                        if (m && !a) lost++;
+                    }
+                if (style.EdgeBreakup <= 0f && style.InteriorBreakup <= 0f)
+                    Assert.That(lost, NUnit.Framework.Is.EqualTo(0), $"{style.Surface} keeps the crisp stamp");
+                else
+                {
+                    Assert.That(lost, NUnit.Framework.Is.GreaterThan(0), $"{style.Surface} is broken up");
+                    Assert.That(ink, NUnit.Framework.Is.GreaterThanOrEqualTo(crispInk / 2), $"{style.Surface} still reads as a print");
+                }
+            }
+            Assert.That(s.TryGetStyle(GroundSurface.Mud, out GroundPrintSurfaceStyle mud), NUnit.Framework.Is.True);
+            Assert.That(mud.EdgeBreakup, NUnit.Framework.Is.EqualTo(0f));
+            Assert.That(mud.InteriorBreakup, NUnit.Framework.Is.EqualTo(0f));
+            Assert.That(GroundPrintShapes.Atlas(size, s.Surfaces, out _), NUnit.Framework.Is.EqualTo(atlas), "deterministic");
         }
 
         // ---- the shipped config ---------------------------------------------------------------------
@@ -443,6 +517,8 @@ namespace HiddenHarbours.Tests.EditMode
                 Assert.That(shipped.Surfaces[i].Surface, NUnit.Framework.Is.EqualTo(code.Surfaces[i].Surface));
                 Assert.That(shipped.Surfaces[i].Tint, NUnit.Framework.Is.EqualTo(code.Surfaces[i].Tint), code.Surfaces[i].Surface + " tint");
                 Assert.That(shipped.Surfaces[i].StartStrength, NUnit.Framework.Is.EqualTo(code.Surfaces[i].StartStrength), code.Surfaces[i].Surface + " strength");
+                Assert.That(shipped.Surfaces[i].EdgeBreakup, NUnit.Framework.Is.EqualTo(code.Surfaces[i].EdgeBreakup), code.Surfaces[i].Surface + " edge breakup");
+                Assert.That(shipped.Surfaces[i].InteriorBreakup, NUnit.Framework.Is.EqualTo(code.Surfaces[i].InteriorBreakup), code.Surfaces[i].Surface + " interior breakup");
             }
             Assert.That(shipped.Zones.Length, NUnit.Framework.Is.EqualTo(code.Zones.Length));
             for (int i = 0; i < code.Zones.Length; i++)

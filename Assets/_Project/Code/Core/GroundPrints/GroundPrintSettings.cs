@@ -42,6 +42,14 @@ namespace HiddenHarbours.Core
         [Tooltip("How strong a FRESH print is on this ground, 0..1 (mud deep, grass a little less). " +
                  "Ink alpha = Tint.a x this x the fade step.")]
         [Range(0f, 1f)] public float StartStrength;
+
+        [Tooltip("Share of the print's OUTLINE pixels left out, 0..1, in a fixed scatter: 0 = a crisp stamp " +
+                 "(mud), about 0.3 = a broken edge where blades spring back (grass).")]
+        [Range(0f, 1f)] public float EdgeBreakup;
+
+        [Tooltip("Share of the print's INSIDE pixels left out, 0..1: blades poking through a pressed patch. " +
+                 "0 = a solid print.")]
+        [Range(0f, 1f)] public float InteriorBreakup;
     }
 
     /// <summary>One terrain zone (a TerrainPlan ground name such as <c>sand</c>) and the print surface
@@ -167,10 +175,10 @@ namespace HiddenHarbours.Core
             ShapeTexturePixels = 8,
             Surfaces = new[]
             {
-                // Near-black inks of each ground's hue; fresh alpha = Tint.a x StartStrength (0.68..0.95).
-                // Grass is the deepest: its painted texture swings +-44% around its mean (mud +-18%), so a
-                // print has to nearly replace the grass under it (a flat dark-green boot) to read at all.
-                new GroundPrintSurfaceStyle { Surface = GroundSurface.Grass, Tint = new Color(0.07f, 0.10f, 0.04f, 1f), StartStrength = 0.95f },
+                // Near-black inks of each ground's hue (fresh alpha = Tint.a x StartStrength), crisp stamps;
+                // except grass, which is PRESSED BLADES, not a hole: a yellower olive at alpha 0.7 (about 20%
+                // darker than the grass, hue pulled toward yellow) with a broken edge and gaps inside.
+                new GroundPrintSurfaceStyle { Surface = GroundSurface.Grass, Tint = new Color(0.22f, 0.23f, 0.08f, 1f), StartStrength = 0.7f, EdgeBreakup = 0.3f, InteriorBreakup = 0.15f },
                 new GroundPrintSurfaceStyle { Surface = GroundSurface.Sand,  Tint = new Color(0.30f, 0.24f, 0.16f, 0.8f), StartStrength = 0.85f },
                 new GroundPrintSurfaceStyle { Surface = GroundSurface.Mud,   Tint = new Color(0.09f, 0.07f, 0.05f, 0.8f), StartStrength = 1f },
                 new GroundPrintSurfaceStyle { Surface = GroundSurface.Dirt,  Tint = new Color(0.13f, 0.09f, 0.06f, 0.8f), StartStrength = 0.9f },
@@ -214,11 +222,17 @@ namespace HiddenHarbours.Core
 
         /// <summary>The style for <paramref name="surface"/>; false when it has none (draw nothing).</summary>
         public bool TryGetStyle(GroundSurface surface, out GroundPrintSurfaceStyle style)
+            => TryGetStyle(surface, out style, out _);
+
+        /// <summary>The style for <paramref name="surface"/> and its index in <see cref="Surfaces"/> (the
+        /// column of the print atlas that holds its mask); false when it has none.</summary>
+        public bool TryGetStyle(GroundSurface surface, out GroundPrintSurfaceStyle style, out int index)
         {
             if (surface != GroundSurface.None && Surfaces != null)
                 for (int i = 0; i < Surfaces.Length; i++)
-                    if (Surfaces[i].Surface == surface) { style = Surfaces[i]; return true; }
+                    if (Surfaces[i].Surface == surface) { style = Surfaces[i]; index = i; return true; }
             style = default;
+            index = -1;
             return false;
         }
     }

@@ -42,6 +42,7 @@ namespace HiddenHarbours.Art
         private float _nextSlowTick;
         private float _shapeHalfTexel;
         private bool _linearColourSpace;
+        private int _atlasColumns = 1;
 
         /// <summary>The live host, or null until the first print is kept.</summary>
         public static GroundPrintRenderer Instance => s_instance;
@@ -112,7 +113,10 @@ namespace HiddenHarbours.Art
             _mesh.SetUVs(0, _uvs);
             _mesh.SetIndices(indices, MeshTopology.Triangles, 0, false);
 
-            _texture = GroundPrintShapes.BuildTexture(s.ShapeTexturePixels);
+            // One atlas column per ground style (its breakup baked in), read once here: an edit to a
+            // style's breakup shows on the next host (region change or play), its colour at once.
+            _texture = GroundPrintShapes.BuildTexture(s.ShapeTexturePixels, s.Surfaces);
+            _atlasColumns = s.Surfaces != null && s.Surfaces.Length > 0 ? s.Surfaces.Length : 1;
             _shapeHalfTexel = 0.5f / _texture.width;
             _linearColourSpace = QualitySettings.activeColorSpace == ColorSpace.Linear;
             _material = new Material(shader) { name = "GroundPrints", hideFlags = HideFlags.DontSave, mainTexture = _texture };
@@ -178,7 +182,7 @@ namespace HiddenHarbours.Art
                 int v = q * 4;
                 if (q >= written) { Collapse(v); continue; }
                 ref GroundPrint p = ref ring[q];
-                if (!p.Alive || !s.TryGetStyle(p.Surface, out GroundPrintSurfaceStyle style))
+                if (!p.Alive || !s.TryGetStyle(p.Surface, out GroundPrintSurfaceStyle style, out int column))
                 {
                     Collapse(v);
                     continue;
@@ -190,7 +194,7 @@ namespace HiddenHarbours.Art
                     Collapse(v);
                     continue;
                 }
-                WriteQuad(v, p, strength, style.Tint, pixel, s);
+                WriteQuad(v, p, strength, style.Tint, Mathf.Min(column, _atlasColumns - 1), pixel, s);
             }
             _mesh.SetVertices(_vertices);
             _mesh.SetColors(_colours);
@@ -203,7 +207,7 @@ namespace HiddenHarbours.Art
             for (int k = 0; k < 4; k++) { _vertices[v + k] = Vector3.zero; _colours[v + k] = default; }
         }
 
-        private void WriteQuad(int v, in GroundPrint p, float strength, Color tint, float pixel, in GroundPrintSettings s)
+        private void WriteQuad(int v, in GroundPrint p, float strength, Color tint, int column, float pixel, in GroundPrintSettings s)
         {
             Vector2 f = GroundPrintMath.SnapHeading(p.Heading, s.HeadingSteps);
             Vector2 r = new Vector2(f.y, -f.x);
@@ -219,15 +223,17 @@ namespace HiddenHarbours.Art
             var colour = (Color32)GroundPrintMath.InkColour(tint, strength, _linearColourSpace);
             for (int k = 0; k < 4; k++) _colours[v + k] = colour;
 
+            // This ground's atlas column: boot in its left half, tread in its right half.
+            float colW = 1f / _atlasColumns, colU = column * colW;
             float u0, u1, v1;
             if (p.Kind == GroundPrintKind.TirePair)
             {
-                u0 = 0.5f + _shapeHalfTexel; u1 = 1f - _shapeHalfTexel;
+                u0 = colU + colW * 0.5f + _shapeHalfTexel; u1 = colU + colW - _shapeHalfTexel;
                 v1 = s.TreadRepeatMetres > 0f ? p.LengthMetres / s.TreadRepeatMetres : 1f;
             }
             else
             {
-                u0 = _shapeHalfTexel; u1 = 0.5f - _shapeHalfTexel; v1 = 1f;
+                u0 = colU + _shapeHalfTexel; u1 = colU + colW * 0.5f - _shapeHalfTexel; v1 = 1f;
                 if (p.Kind == GroundPrintKind.FootLeft) { float t = u0; u0 = u1; u1 = t; }   // mirror the left boot
             }
             _uvs[v] = new Vector2(u0, 0f);
