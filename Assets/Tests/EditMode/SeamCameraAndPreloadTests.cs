@@ -38,7 +38,14 @@ namespace HiddenHarbours.Tests.EditMode
     /// on under the black so its trailing edge landed the band inside the neighbour (the run tests pinned that):
     /// a dory jumped 5.2 m forward in one frame, a walker 1.1 m. The owner's ruling is that a crossing KEEPS
     /// position, so the carry is gone and the run tests now pin the pivot crossing from where it stands; the
-    /// arrival latch, the camera hold and the render-time overlay fit are pinned at the end.</para>
+    /// arrival latch and the render-time overlay fit are pinned at the end.</para>
+    ///
+    /// <para><b>Why the switch moved to the pivot in the sixth pass</b> (second play look at 0f40c43eb6). Switched as
+    /// the leading edge met the seam, the unmoved pivot arrived up to 2.1 m outside the new region: a drift back
+    /// crossed again, and the clamped view showed only a sliver of the hull. The fade now runs on until the pivot is
+    /// at the seam, so the mover lands inside; the run tests pin that. The camera hold of the fifth pass is gone:
+    /// the lurch it answered was the probe rendering a larger picture than the batchmode screen it was clamped
+    /// for, and does not occur with the two the same size.</para>
     /// </summary>
     public sealed class SeamCameraAndPreloadTests
     {
@@ -180,7 +187,9 @@ namespace HiddenHarbours.Tests.EditMode
         struct Run
         {
             public float GapAtBlack;        // the leading edge's gap when the screen went black (≤ 0: at/past)
-            public float LeastGapWhileClear;// the smallest gap seen while the screen was not yet black
+            public float PivotGapAtBlack;   // the PIVOT's gap when the screen went black (≤ 0: at/past the seam)
+            public float LeastGapWhileClear;// the smallest leading-edge gap seen while the cover was still fully off
+            public float LeastGapUnderHalf; // the smallest leading-edge gap seen while the cover was under half
             public float FadeSeconds;       // from the first darkened step to the black one
             public float BlackBeforeHop;    // black held before the hop could be made (the hop is at once)
             public float PivotAtHop;        // where the mover's pivot stood when the hop was made (local x)
@@ -195,7 +204,7 @@ namespace HiddenHarbours.Tests.EditMode
             Rect region = WestRect(f);
             SeamCrossingFade fade = NewFade();
             float bow = region.xMax - SeamCrossingFade.FadeDistanceFor(fadeDistance, speed, FadeOut) - 1f;
-            var run = new Run { LeastGapWhileClear = float.MaxValue, FadeSeconds = -1f };
+            var run = new Run { LeastGapWhileClear = float.MaxValue, LeastGapUnderHalf = float.MaxValue, FadeSeconds = -1f };
             float darkenedAt = -1f;
             for (int i = 0; i < 100000; i++)
             {
@@ -203,13 +212,16 @@ namespace HiddenHarbours.Tests.EditMode
                 Assert.That(SeamCrossingFade.TryApproach(region, body, new Vector2(speed, 0f), MinSpeed, Band,
                     out SeamApproach a), Is.True, "heading out through the seam");
                 Assert.That(f.Resolve(West, a.Probe, 0f).Kind, Is.EqualTo(CrossingKind.Cross));
-                fade.Approach(SeamCrossingFade.ApproachAlpha(a.GapMetres,
+                // As the coordinator drives it: by the PIVOT's distance, black when the pivot is at the seam.
+                float pivotGap = SeamArrivalLatch.DepthInside(region, body.center, a.Edge);
+                fade.Approach(SeamCrossingFade.PivotApproachAlpha(a.GapMetres, pivotGap,
                     SeamCrossingFade.FadeDistanceFor(fadeDistance, a.OutSpeed, FadeOut)));
                 fade.Tick(Dt);
                 if (fade.Alpha > 0f && darkenedAt < 0f) darkenedAt = i * Dt;
                 if (fade.ReadyToHop)
                 {
                     run.GapAtBlack = a.GapMetres;
+                    run.PivotGapAtBlack = pivotGap;
                     run.FadeSeconds = i * Dt - darkenedAt;
                     run.BlackBeforeHop = 0f;              // the coordinator hops on the step it reads black
                     Assert.That(fade.Hopped(), Is.True);
@@ -219,7 +231,8 @@ namespace HiddenHarbours.Tests.EditMode
                     run.Crossing = f.Resolve(West, a.Probe, 0f);
                     return run;
                 }
-                run.LeastGapWhileClear = Mathf.Min(run.LeastGapWhileClear, a.GapMetres);
+                if (fade.Alpha <= 0f) run.LeastGapWhileClear = Mathf.Min(run.LeastGapWhileClear, a.GapMetres);
+                if (fade.Alpha < 0.5f) run.LeastGapUnderHalf = Mathf.Min(run.LeastGapUnderHalf, a.GapMetres);
                 bow += speed * Dt;
             }
             Assert.Fail("never went black");
@@ -227,45 +240,67 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         [Test]
-        public void SlowBoat_IsBlackAsHerBowReachesTheEdge_NothingCutBefore_NoWaitingInTheBlack()
+        public void SlowBoat_IsBlackAsHerPivotReachesTheSeam_AndArrivesInsideTheNewRegion()
         {
+            // PR 1223 second play look: switched as her BOW met the seam, her pivot arrived 2.1 m outside the new
+            // rect (B, a bounce back) and the clamped view showed a sliver of her (C). She now switches as her
+            // PIVOT crosses: black by then, position kept, and she arrives inside by definition.
             Run r = RunToTheSeam(1.06f, 5f, BoatFade);   // the measured rowing speed, a 5 m drawn dory
-            Assert.That(r.LeastGapWhileClear, Is.GreaterThan(0f), "while the screen is not black her bow is short of the edge");
-            Assert.That(r.GapAtBlack, Is.LessThanOrEqualTo(0f + Eps).And.GreaterThan(-1.06f * Dt - Eps),
-                "black on the step her bow reaches the edge");
-            Assert.That(r.FadeSeconds, Is.EqualTo(BoatFade / 1.06f).Within(2f * Dt), "the fade lasts as long as the last 1.5 m");
+            Assert.That(r.LeastGapWhileClear, Is.GreaterThan(0f), "the fade starts with her bow still short of the edge");
+            Assert.That(r.PivotGapAtBlack, Is.LessThanOrEqualTo(Eps).And.GreaterThan(-1.06f * Dt - Eps),
+                "black on the step her pivot reaches the seam");
+            Assert.That(r.FadeSeconds, Is.EqualTo((BoatFade + 2.5f) / 1.06f).Within(2f * Dt),
+                "the fade lasts from bow 1.5 m short to pivot at the seam");
             Assert.That(r.BlackBeforeHop, Is.LessThan(0.3f), "the hop is made at once: no black held for her to get across");
-            Assert.That(r.Crossing.Kind, Is.EqualTo(CrossingKind.Cross), "the crossing read ahead of her bow");
-            TwoSideBySide().TryGet("region.east", out RegionFrame e);
-            float arrived = r.PivotAtHop + r.Crossing.LocalShift.x;
-            Assert.That(arrived, Is.LessThan(e.LocalRect.xMin),
-                "she KEEPS position: her pivot, short of the seam, arrives just outside the edge she came in by");
-            Assert.That(e.LocalRect.xMin - arrived, Is.LessThanOrEqualTo(2.5f + Eps), "by no more than half her length");
+            Assert.That(r.Crossing.Kind, Is.EqualTo(CrossingKind.Cross));
+            WorldFrame f = TwoSideBySide();
+            f.TryGet("region.east", out RegionFrame e);
+            var arrived = new Vector2(r.PivotAtHop + r.Crossing.LocalShift.x, 0f);
+            Assert.That(arrived.x, Is.GreaterThanOrEqualTo(e.LocalRect.xMin - Eps),
+                "she KEEPS position and her pivot is already inside the edge she came in by");
+            Assert.That(f.Resolve("region.east", arrived, Band).Kind, Is.EqualTo(CrossingKind.Stay),
+                "the crossing rule alone keeps her there: no bounce back");
         }
 
         [Test]
-        public void FastBoat_IsBlackAsHerBowReachesTheEdge_TooFastForTheDistance_StartsFurtherOut()
+        public void FastBoat_IsBlackAsHerPivotReachesTheSeam_TooFastForTheDistance_StartsFurtherOut()
         {
             Run r = RunToTheSeam(5f, 5f, BoatFade);
             Assert.That(r.LeastGapWhileClear, Is.GreaterThan(0f));
-            Assert.That(r.GapAtBlack, Is.LessThanOrEqualTo(Eps).And.GreaterThan(-5f * Dt - Eps));
+            Assert.That(r.PivotGapAtBlack, Is.LessThanOrEqualTo(Eps).And.GreaterThan(-5f * Dt - Eps));
             Assert.That(r.FadeSeconds, Is.GreaterThanOrEqualTo(FadeOut - Eps), "never quicker than the quickest fade");
 
             Run jet = RunToTheSeam(15f, 3f, BoatFade);   // past what 1.5 m can fade over in 0.15 s
             Assert.That(jet.LeastGapWhileClear, Is.GreaterThan(0f), "still nothing cut while clear");
-            Assert.That(jet.GapAtBlack, Is.GreaterThan(-2f * 15f * Dt - Eps), "black within a step or so of the edge");
-            Assert.That(jet.FadeSeconds, Is.EqualTo(FadeOut).Within(2f * Dt), "the quickest fade, started 2.25 m out");
+            Assert.That(jet.PivotGapAtBlack, Is.GreaterThan(-2f * 15f * Dt - Eps), "black within a step or so of the seam");
+            Assert.That(jet.FadeSeconds, Is.EqualTo((2.25f + 1.5f) / 15f).Within(2f * Dt),
+                "started 2.25 m out (the quickest fade's distance) and run on half her length");
         }
 
         [Test]
-        public void OnFoot_AtAWalk_TheFadeTakesNoLongerThanTheTimedFadeDid()
+        public void OnFoot_AtAWalk_BlackAsHeReachesTheSeam_NothingCutBeforeHalfCover()
         {
             Run r = RunToTheSeam(3f, 0.6f, FootFade);   // a walker at 3 m/s, figure + margin 0.6 m across
             Assert.That(r.LeastGapWhileClear, Is.GreaterThan(0f));
-            Assert.That(r.GapAtBlack, Is.LessThanOrEqualTo(Eps).And.GreaterThan(-3f * Dt - Eps));
-            Assert.That(r.FadeSeconds, Is.LessThanOrEqualTo(FadeOut + Dt + Eps), "0.15 s, as measured on the timed fade");
+            Assert.That(r.LeastGapUnderHalf, Is.GreaterThan(0f), "his half width is under the fade distance: not cut while visible");
+            Assert.That(r.PivotGapAtBlack, Is.LessThanOrEqualTo(Eps).And.GreaterThan(-3f * Dt - Eps));
+            Assert.That(r.FadeSeconds, Is.EqualTo((FootFade + 0.3f) / 3f).Within(2f * Dt), "a quarter second at a walk");
             Assert.That(r.BlackBeforeHop, Is.LessThanOrEqualTo(0f), "and no black held before the hop");
-            Assert.That(r.PivotAtHop, Is.LessThan(50f), "he crosses from where he stands, short of the seam");
+            Assert.That(r.PivotAtHop, Is.GreaterThanOrEqualTo(50f - Eps), "he crosses where he stands: at the seam");
+        }
+
+        [Test]
+        public void PivotApproachAlpha_StartsWhereTheLeadingEdgeFadeDid_BlackAtThePivot()
+        {
+            // a 5 m hull: pivot 2.5 m behind the bow
+            Assert.That(SeamCrossingFade.PivotApproachAlpha(BoatFade, BoatFade + 2.5f, BoatFade), Is.EqualTo(0f).Within(Eps),
+                "clear with the bow at the fade distance, as before");
+            Assert.That(SeamCrossingFade.PivotApproachAlpha(0f, 2.5f, BoatFade), Is.LessThan(1f), "bow at the edge: not yet black");
+            Assert.That(SeamCrossingFade.PivotApproachAlpha(-2.5f, 0f, BoatFade), Is.EqualTo(1f).Within(Eps), "pivot at the seam: black");
+            Assert.That(SeamCrossingFade.PivotApproachAlpha(-1.25f + BoatFade * 0.5f, 1.25f + BoatFade * 0.5f, BoatFade),
+                Is.EqualTo(0.5f).Within(Eps), "linear between");
+            Assert.That(SeamCrossingFade.PivotApproachAlpha(0.4f, 0.4f, BoatFade),
+                Is.EqualTo(SeamCrossingFade.ApproachAlpha(0.4f, BoatFade)).Within(Eps), "a point mover: the old law");
         }
 
         [Test]
@@ -617,29 +652,43 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         [Test]
-        public void KeepPosition_TheArrivalsOverhang_IsStaying_AndOnlyATrueTurnBackCrossesAgain()
+        public void KeepPosition_ACurrentCarryingHerBack_IsHeldForHalfHerLength_OnlyATrueTurnBackCrossesAgain()
         {
-            // Fix 1. The dory crossed with her pivot short of the seam (the screen is black as her BOW meets the
-            // edge), and nothing moves her now, so she arrives just outside the edge she came in by. Read by the
-            // crossing rule alone that is "past the edge, cross back"; the arrival latch holds it.
+            // PR 1223 second play look (noon west rows 4228-4313): she arrived, stopped rowing, and a current
+            // carried her back toward the seam at 0.35 m/s; the 0.25 m band alone cannot hold that, and two fades
+            // came in 3 s. She now arrives inside the new region (pivot switch), and the latch holds the edge she
+            // came in by for the band plus half her length (RegionSeamReturnMoverLengths) before a drift back
+            // reads as a turn back.
             WorldFrame f = TwoSideBySide();
             Run r = RunToTheSeam(1.06f, 5f, BoatFade);
             Rect east = EastRect(f);
             var arrived = new Vector2(r.PivotAtHop + r.Crossing.LocalShift.x, 0f);
-            CrossingDecision back = f.Resolve(East, arrived, Band);
-            Assert.That(back.Kind, Is.EqualTo(CrossingKind.Cross), "premise: the rule alone would send her straight back");
+            Assert.That(f.Resolve(East, arrived, Band).Kind, Is.EqualTo(CrossingKind.Stay), "she arrives inside");
+            var drifted = new Vector2(east.xMin - 0.4f, 0f);   // 0.4 m back, as measured
+            CrossingDecision back = f.Resolve(East, drifted, Band);
+            Assert.That(back.Kind, Is.EqualTo(CrossingKind.Cross), "premise: the band alone sends a 0.4 m drift back across");
             Assert.That(back.Edge, Is.EqualTo(RegionEdge.West));
 
+            const float length = 5f;
+            float returnAllowance = length * GameConfig.DefaultRegionSeamReturnMoverLengths;
             var latch = new SeamArrivalLatch();
             Assert.That(SeamArrivalLatch.Opposite(r.Crossing.Edge), Is.EqualTo(RegionEdge.West), "out by east, in by west");
-            latch.Arm(east, arrived, SeamArrivalLatch.Opposite(r.Crossing.Edge), 8f, Band);
+            latch.Arm(east, arrived, SeamArrivalLatch.Opposite(r.Crossing.Edge), 8f, Band, returnAllowance);
+            Assert.That(latch.AllowanceMetres, Is.EqualTo(returnAllowance + Band).Within(Eps), "inside: the return allowance + band");
             Assert.That(latch.Step(east, arrived), Is.True);
             Assert.That(latch.HoldsBack(east, arrived, back.Edge), Is.True, "where she arrived is staying");
-            Assert.That(latch.HoldsBack(east, arrived + new Vector2(-Band * 0.5f, 0f), back.Edge), Is.True,
-                "and so is a little drift back within the band");
-            Assert.That(latch.HoldsBack(east, arrived + new Vector2(-Band - 0.1f, 0f), back.Edge), Is.False,
-                "a true turn back past her own arrival crosses again");
-            Assert.That(latch.HoldsBack(east, arrived, RegionEdge.North), Is.False, "only the edge she came in by");
+            Assert.That(latch.HoldsBack(east, drifted, back.Edge), Is.True, "and so is the current's 0.4 m drift back");
+            Assert.That(latch.HoldsBack(east, new Vector2(east.xMin - returnAllowance - Band + 0.01f, 0f), back.Edge), Is.True,
+                "held to half her length past the seam");
+            Assert.That(latch.HoldsBack(east, new Vector2(east.xMin - returnAllowance - Band - 0.1f, 0f), back.Edge), Is.False,
+                "a true turn back past that crosses again");
+            Assert.That(latch.HoldsBack(east, drifted, RegionEdge.North), Is.False, "only the edge she came in by");
+
+            // The four-argument Arm (no return allowance) keeps the old allowance: overhang + band.
+            latch.Arm(east, new Vector2(east.xMin - 1f, 0f), RegionEdge.West, 8f, Band);
+            Assert.That(latch.AllowanceMetres, Is.EqualTo(1f + Band).Within(Eps));
+            latch.Arm(east, new Vector2(east.xMin - 4f, 0f), RegionEdge.West, 8f, Band, returnAllowance);
+            Assert.That(latch.AllowanceMetres, Is.EqualTo(4f + Band).Within(Eps), "an overhang past the allowance is still staying");
 
             // A walker 0.44 m out, as measured: held the same way.
             var walker = new Vector2(east.xMin - 0.44f, 3f);
@@ -690,52 +739,6 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.That(latch.Step(east, new Vector2(pivot, 0f)), Is.False, "and coming back out does not re-latch it");
             Assert.That(SeamCrossingFade.TryApproach(east, body, drift, MinSpeed, Band, latch.Latched, latch.Edge, out _),
                 Is.True, "re-armed, heading for that seam fades as any approach does");
-        }
-
-        [Test]
-        public void TheView_IsHeldWhereTheCrossingSettledIt_UntilTheCoverIsClear()
-        {
-            // Fix 2: camera x -365.0 -> -369.8 -> -365.0 on consecutive frames while the cover cleared.
-            Assert.That(CameraFollow.SeamHoldsView(true, 0.6f), Is.True);
-            Assert.That(CameraFollow.SeamHoldsView(true, 0f), Is.False, "clear: let go");
-            Assert.That(CameraFollow.SeamHoldsView(false, 1f), Is.False, "no crossing: never held");
-
-            var go = new GameObject("c1223-cam");
-            var target = new GameObject("c1223-target");
-            try
-            {
-                Camera cam = go.AddComponent<Camera>();
-                cam.orthographic = true;
-                CameraFollow follow = go.AddComponent<CameraFollow>();
-                follow.Target = target.transform;
-                target.transform.position = new Vector3(377f, 0f, 0f);
-                go.transform.position = new Vector3(365f, 0f, -10f);
-                follow.FollowStep(Dt, 0f);
-                Assert.That(follow.HeldForSeam, Is.False);
-
-                var shift = new Vector2(-760f, -100f);
-                follow.CarryAcross(shift);
-                target.transform.position += new Vector3(shift.x, shift.y, 0f);
-                Assert.That(follow.HeldForSeam, Is.True, "the crossing holds the view it settled");
-                Vector3 settled = go.transform.position;
-                foreach (float cover in new[] { 1f, 1f, 0.9f, 0.5f, 0.1f })
-                {
-                    target.transform.position += new Vector3(0.02f, 0f, 0f);   // the mover goes on
-                    follow.FollowStep(Dt, cover);
-                    Assert.That(go.transform.position, Is.EqualTo(settled), $"under a {cover} cover the view does not move");
-                }
-                follow.FollowStep(Dt, 0f);
-                Assert.That(follow.HeldForSeam, Is.False, "clear: the follow takes over");
-                Assert.That(go.transform.position, Is.Not.EqualTo(settled), "and follows from where it was held");
-                float x = go.transform.position.x, gap = target.transform.position.x - settled.x;
-                Assert.That((x - settled.x) / gap, Is.GreaterThan(0f).And.LessThan(0.5f),
-                    "eased toward the mover from the held view, not a jump");
-            }
-            finally
-            {
-                Object.DestroyImmediate(go);
-                Object.DestroyImmediate(target);
-            }
         }
 
         [Test]

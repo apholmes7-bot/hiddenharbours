@@ -454,8 +454,9 @@ namespace HiddenHarbours.App
 
             float band = GameServices.RegionCrossingHysteresisMetres;
             CrossingDecision d = frame.Resolve(here, mover.position, band);
-            // ⭐ A crossing keeps position: the mover arrived where it was when the screen went black, its pivot
-            // short of the seam, so just OUTSIDE the edge it came in by. That overhang is staying, not crossing back.
+            // ⭐ A crossing keeps position: the mover arrived where it was when the screen went black, its pivot at
+            // the seam, so just INSIDE the edge it came in by. A drift back over that edge (a current, the wind) of
+            // up to its return allowance is staying, not crossing back (SeamArrivalLatch).
             if (_arrivalLatch.Latched && frame.TryGet(here, out RegionFrame arrived)
                 && _arrivalLatch.Step(arrived.LocalRect, mover.position)
                 && d.Kind == CrossingKind.Cross
@@ -467,7 +468,7 @@ namespace HiddenHarbours.App
             if (d.Kind != CrossingKind.Boundary && !(d.Kind == CrossingKind.Cross && _seamFade.GaveUp))
             {
                 // ⭐ The hop is made only under a black screen (owner ruling on PR 1223), and the black follows
-                // how near the mover's leading edge is to the edge of the screen (SteerSeamFade). A mover
+                // how near the mover is to the seam (SteerSeamFade). A mover
                 // already past the band (a teleport, a shove, a turn back over its own arrival) is a full-black
                 // approach.
                 if (d.Kind == CrossingKind.Stay)
@@ -478,7 +479,7 @@ namespace HiddenHarbours.App
                 if (!_seamFade.ReadyToHop) return;
                 _seamFade.Hopped();
                 // ⭐ Nothing moves the mover under the black (owner ruling: a crossing KEEPS position). It crosses
-                // from exactly where it stands; the arrival latch reads its overhang on the far side as staying.
+                // from exactly where it stands, its pivot at the seam, so it lands inside the region it enters.
                 _hasLastMoverPos = false;
                 if (BeginCrossing(here, d, boatIsMover)) return;
             }
@@ -600,9 +601,12 @@ namespace HiddenHarbours.App
         /// <summary>
         /// ⭐ <b>Fade by distance as the mover runs up to the edge</b> (owner ruling on PR 1223). The camera stops
         /// at the region edge, so the mover's leading edge (a walker's body, a boat's bow) meets the edge of the
-        /// screen exactly when it meets the edge of the region. The screen is driven toward
-        /// <see cref="SeamCrossingFade.ApproachAlpha"/> of that gap, so it is black as the leading edge arrives,
-        /// at any speed, and nothing is cut by the screen edge while it is still clear. Standing, turning back
+        /// screen exactly when it meets the edge of the region. The fade starts there, the leading edge the fade
+        /// distance short, and runs on until the mover's PIVOT is at the seam
+        /// (<see cref="SeamCrossingFade.PivotApproachAlpha"/>), so the unmoved hop lands it inside the region it
+        /// enters (PR 1223 second play look: switched at the bow, a dory arrived 2.1 m outside and bounced back).
+        /// Nothing is cut while the screen is fully clear; a hull longer than twice the fade distance shows its bow
+        /// cut by the screen edge only under a part-black cover. Standing, turning back
         /// or heading for a world boundary clears it, and so does the edge a crossing just came in by until the
         /// mover is well inside it (<see cref="SeamArrivalLatch"/>: a boat idling just past a seam is never
         /// under a part-black screen). Returns true, with the crossing to make, while it heads for a seam.
@@ -627,7 +631,9 @@ namespace HiddenHarbours.App
                 _seamFade.NoApproach();   // a world boundary ahead: no fade, the edge holds the mover
                 return false;
             }
-            _seamFade.Approach(SeamCrossingFade.ApproachAlpha(a.GapMetres,
+            // Black as the PIVOT reaches the seam, so it crosses (unmoved) into the inside of the region entered.
+            float pivotGap = SeamArrivalLatch.DepthInside(f.LocalRect, mover.position, a.Edge);
+            _seamFade.Approach(SeamCrossingFade.PivotApproachAlpha(a.GapMetres, pivotGap,
                 SeamCrossingFade.FadeDistanceFor(fadeDistance, a.OutSpeed, GameServices.RegionSeamFadeOutSeconds)));
             crossing = ahead;
             return true;
@@ -820,10 +826,12 @@ namespace HiddenHarbours.App
             WorldFrame frame = GameServices.WorldFrame;
             if (mover == null || frame == null || !frame.TryGet(crossing.To, out RegionFrame arrived)) return;
             Rect extent = MoverExtent(mover, SeamDrawnMargin(crossing.BoatCame));   // its size only: never stale
-            float rearm = SeamArrivalLatch.RearmDistance(Mathf.Max(extent.width, extent.height),
+            float length = Mathf.Max(extent.width, extent.height);
+            float rearm = SeamArrivalLatch.RearmDistance(length,
                 GameServices.RegionSeamRearmMoverLengths, GameServices.RegionSeamRearmMinMetres);
+            float returnAllowance = length * GameServices.RegionSeamReturnMoverLengths;
             _arrivalLatch.Arm(arrived.LocalRect, mover.position, SeamArrivalLatch.Opposite(crossing.Edge), rearm,
-                GameServices.RegionCrossingHysteresisMetres);
+                GameServices.RegionCrossingHysteresisMetres, returnAllowance);
         }
 
         /// <summary>

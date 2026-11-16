@@ -235,6 +235,17 @@ namespace HiddenHarbours.Core
             Mathf.Max(Mathf.Max(0f, fadeDistanceMetres), Mathf.Max(0f, outSpeed) * Mathf.Max(0f, quickestFadeSeconds));
 
         /// <summary>
+        /// ⭐ <b>Black as the PIVOT reaches the seam</b> (PR 1223 second play look). The fade still starts where it
+        /// always did, with the leading edge <paramref name="fadeDistanceMetres"/> short of the edge, but it runs on
+        /// until the mover's pivot (<paramref name="pivotGapMetres"/> short of the edge) is at the seam, so the
+        /// hop, made at black, puts the pivot INSIDE the region entered without moving it: no forward jump, no
+        /// arrival outside the new region, and the band then reads it as staying. The lead (pivot to leading edge)
+        /// is <paramref name="pivotGapMetres"/> − <paramref name="leadingGapMetres"/>. PURE.
+        /// </summary>
+        public static float PivotApproachAlpha(float leadingGapMetres, float pivotGapMetres, float fadeDistanceMetres) =>
+            ApproachAlpha(pivotGapMetres, Mathf.Max(0f, fadeDistanceMetres) + Mathf.Max(0f, pivotGapMetres - leadingGapMetres));
+
+        /// <summary>
         /// The seam a mover is closing on, read from the region's local rectangle <paramref name="region"/>, the
         /// mover's extent <paramref name="body"/> (its local bounds, plus the drawn margin the caller adds) and
         /// its velocity. Of the edges it is heading out through faster than <paramref name="minSpeed"/>, the one
@@ -367,13 +378,15 @@ namespace HiddenHarbours.Core
     }
 
     /// <summary>
-    /// ⭐ <b>A crossing keeps position</b> (owner ruling on PR 1223; play look at 62f3ef70f0). The hop is made the
-    /// moment the screen is black, which is when the mover's LEADING edge meets the edge of the screen: its pivot is
-    /// still short of the seam (a dory 2.3 m, a walker 0.4 m). Kept where it is, it arrives that far OUTSIDE the
-    /// region it entered, which the crossing rule alone reads as "past the edge, cross back". The latch holds the
-    /// arrival edge for it: back out past that edge by no more than it arrived (plus the band) is still staying,
-    /// and the edge does not fade again until the mover is <c>RearmMetres</c> inside it, a distance that scales
-    /// with the mover's length, so a boat idling just inside a sea seam is never under a part-black screen. PURE.
+    /// ⭐ <b>A crossing keeps position</b> (owner ruling on PR 1223). The hop is made the moment the screen is black,
+    /// which is when the mover's PIVOT reaches the seam (<see cref="SeamCrossingFade.PivotApproachAlpha"/>), so it
+    /// arrives, unmoved, just inside the region it entered. The band alone then reads a drift back of 0.25 m as a
+    /// crossing back, and a current or wind carrying a dory that stopped rowing does more than that (second play
+    /// look: 0.4 m back at 0.35 m/s, two fades in 3 s). The latch holds the arrival edge: back out past it by no
+    /// more than the return allowance (a share of the mover's length) or its arrival overhang, whichever is larger,
+    /// plus the band, is still staying; and the edge does not fade again until the mover is <c>RearmMetres</c>
+    /// inside it, a distance that scales with the mover's length, so a boat idling just inside a sea seam is never
+    /// under a part-black screen. PURE.
     /// </summary>
     public sealed class SeamArrivalLatch
     {
@@ -415,12 +428,20 @@ namespace HiddenHarbours.Core
 
         /// <summary>Latch an arrival at <paramref name="arrivedAt"/> (the arrived region's local frame) through
         /// <paramref name="edge"/>.</summary>
-        public void Arm(Rect region, Vector2 arrivedAt, RegionEdge edge, float rearmMetres, float bandMetres)
+        public void Arm(Rect region, Vector2 arrivedAt, RegionEdge edge, float rearmMetres, float bandMetres) =>
+            Arm(region, arrivedAt, edge, rearmMetres, bandMetres, 0f);
+
+        /// <summary>As above, also letting a drift, a current or a wind carry the mover up to
+        /// <paramref name="returnMetres"/> back out past the edge before that is a crossing back (PR 1223 second play
+        /// look: a dory that stopped rowing just past a seam was carried back over it by a 0.35 m/s current).</summary>
+        public void Arm(Rect region, Vector2 arrivedAt, RegionEdge edge, float rearmMetres, float bandMetres,
+                        float returnMetres)
         {
             Latched = true;
             Edge = edge;
             RearmMetres = Mathf.Max(0f, rearmMetres);
-            AllowanceMetres = Mathf.Max(0f, -DepthInside(region, arrivedAt, edge)) + Mathf.Max(0f, bandMetres);
+            AllowanceMetres = Mathf.Max(Mathf.Max(0f, -DepthInside(region, arrivedAt, edge)), Mathf.Max(0f, returnMetres))
+                              + Mathf.Max(0f, bandMetres);
         }
 
         /// <summary>One physics step at <paramref name="p"/>: re-arms the edge once the mover is
