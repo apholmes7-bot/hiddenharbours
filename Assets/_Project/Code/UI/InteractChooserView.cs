@@ -15,9 +15,11 @@ namespace HiddenHarbours.UI
     /// <see cref="InteractChooserLayout"/>. This builds the strips once, feeds the intents, and repaints
     /// when <see cref="InteractChooser.Revision"/> moves.</para>
     ///
-    /// <para><b>The popup's look, stacked</b>: each row is the popup's own strip and chalk line, in its
-    /// corner. No bars, no numbers but the key you press. The selected row's strip is a touch stronger;
-    /// a row that cannot be picked is faint chalk with its reason ("Sleep (taken)").</para>
+    /// <para><b>The popup's look, stacked</b>: each row is the popup's strip and chalk line, in its
+    /// corner, as wide as the longest row needs (<see cref="InteractChooserLayout.ListWidth"/>). Every
+    /// strip is the shell's near-opaque frame ink; the selected row is inverted — chalk strip, ink words —
+    /// with a warm leading bar (<see cref="InteractChooserStyle"/>); a row that cannot be picked is faint
+    /// chalk with its reason ("Sleep (taken)").</para>
     ///
     /// <para><b>Rule 7.</b> Rows are built ONCE (<see cref="InteractChoiceList.HardCap"/> of them) and
     /// reused. Row words are written only when the list opens; a selection change writes colours; a quiet
@@ -52,6 +54,8 @@ namespace HiddenHarbours.UI
         private readonly RectTransform[] _rows = new RectTransform[InteractChoiceList.HardCap];
         private readonly Image[] _strips = new Image[InteractChoiceList.HardCap];
         private readonly Text[] _labels = new Text[InteractChoiceList.HardCap];
+        private readonly Image[] _markers = new Image[InteractChoiceList.HardCap];
+        private float _width = InteractPopupLayout.PanelWidth;
         private readonly string[] _painted = new string[InteractChoiceList.HardCap];
 
         private readonly AxisLatch _latch = new AxisLatch();
@@ -96,7 +100,7 @@ namespace HiddenHarbours.UI
                 Rect bottom = InteractPopupLayout.PanelScreenRect(HelmFootprint.Current, QuestNoteFootprint.Current,
                                                                   w, h);
                 hitRow = InteractChooserLayout.HitRow(intents.Point, bottom, InteractChooser.Rows.Count,
-                                                      HudBandLayout.ScaleFactor(w, h));
+                                                      HudBandLayout.ScaleFactor(w, h), _width);
                 moved = _hasLastPoint && intents.Point != _lastPoint;
             }
             _lastPoint = intents.Point;
@@ -128,12 +132,10 @@ namespace HiddenHarbours.UI
                 int w = HudScreen.Width, h = HudScreen.Height;
                 Vector2 bottom = InteractPopupLayout.PanelAnchoredPosition(HelmFootprint.Current,
                                                                            QuestNoteFootprint.Current, w, h);
-                for (int i = 0; i < _rows.Length; i++)
+                // Words first, so the list can be sized to the longest of them.
+                float longest = 0f;
+                for (int i = 0; i < _paintedCount; i++)
                 {
-                    bool used = i < _paintedCount;
-                    if (_rows[i].gameObject.activeSelf != used) _rows[i].gameObject.SetActive(used);
-                    if (!used) continue;
-                    _rows[i].anchoredPosition = InteractChooserLayout.RowAnchoredPosition(bottom, i, _paintedCount);
                     InteractChoice c = rows[i];
                     string text = InteractChooserLayout.RowText(i, c.Label, c.Block);
                     if (!string.Equals(text, _painted[i], System.StringComparison.Ordinal))
@@ -141,6 +143,23 @@ namespace HiddenHarbours.UI
                         _painted[i] = text;
                         _labels[i].text = text;
                     }
+                    // The measured width where a font can measure; the per-character estimate as a floor
+                    // (and the whole answer headless), so the list is never narrower than its words.
+                    float measured = _labels[i].preferredWidth;
+                    longest = Mathf.Max(longest, Mathf.Max(measured, InteractChooserLayout.EstimateTextUnits(text)));
+                }
+                _width = InteractChooserLayout.ListWidth(longest);
+                Vector2 rowSize = new Vector2(_width, InteractChooserLayout.RowHeight);
+                Vector2 textSize = InteractChooserLayout.TextSize(_width);
+
+                for (int i = 0; i < _rows.Length; i++)
+                {
+                    bool used = i < _paintedCount;
+                    if (_rows[i].gameObject.activeSelf != used) _rows[i].gameObject.SetActive(used);
+                    if (!used) continue;
+                    _rows[i].sizeDelta = rowSize;
+                    _labels[i].rectTransform.sizeDelta = textSize;
+                    _rows[i].anchoredPosition = InteractChooserLayout.RowAnchoredPosition(bottom, i, _paintedCount, _width);
                 }
                 _host.gameObject.SetActive(true);
                 _shownOpen = true;
@@ -150,8 +169,9 @@ namespace HiddenHarbours.UI
             {
                 InteractChoice c = rows[i];
                 bool selected = i == rows.Selected;
-                _strips[i].color = selected ? SelectedInk : PanelInk;
-                _labels[i].color = c.Enabled ? PaperUi.Chalk : PaperUi.ChalkFaint;
+                _strips[i].color = InteractChooserStyle.StripFor(selected);
+                _labels[i].color = InteractChooserStyle.WordsFor(selected, c.Enabled);
+                if (_markers[i].enabled != selected) _markers[i].enabled = selected;
             }
         }
 
@@ -187,7 +207,7 @@ namespace HiddenHarbours.UI
                 _rows[i] = rt;
 
                 Image strip = go.GetComponent<Image>();
-                strip.color = PanelInk;
+                strip.color = InteractChooserStyle.RowInk;
                 // The pointer is hit-tested against the layout's own rects, never by a raycaster, so no
                 // graphic here can eat a click meant for anything else.
                 strip.raycastTarget = false;
@@ -203,19 +223,40 @@ namespace HiddenHarbours.UI
                 label.verticalOverflow = VerticalWrapMode.Truncate;
                 label.raycastTarget = false;
                 _labels[i] = label;
+
+                // The selected row's leading bar: full height, inside the type's inset, shown on one row.
+                var markGo = new GameObject("Marker", typeof(RectTransform), typeof(Image));
+                markGo.transform.SetParent(rt, false);
+                RectTransform mrt = markGo.GetComponent<RectTransform>();
+                mrt.anchorMin = new Vector2(0f, 0f);
+                mrt.anchorMax = new Vector2(0f, 1f);
+                mrt.pivot = new Vector2(0f, 0.5f);
+                mrt.anchoredPosition = Vector2.zero;
+                mrt.sizeDelta = new Vector2(InteractChooserLayout.MarkerWidth, 0f);
+                Image mark = markGo.GetComponent<Image>();
+                mark.color = InteractChooserStyle.Marker;
+                mark.raycastTarget = false;
+                mark.enabled = false;
+                _markers[i] = mark;
             }
 
             _host.gameObject.SetActive(false);
         }
 
-        /// <summary>The popup's own strip tint, so a row and the popup are one material.</summary>
-        private static readonly Color PanelInk = new Color(0.043f, 0.063f, 0.086f, 0.72f);
-
-        /// <summary>The selected row: the same ink, a shade stronger and warmer. A change of weight, not a
-        /// new colour, which is how the shell's menus mark the live line.</summary>
-        private static readonly Color SelectedInk = new Color(0.18f, 0.2f, 0.22f, 0.9f);
-
         // ---- test seam --------------------------------------------------------------------------
+
+        /// <summary>The list's drawn width, reference units (meaningful while showing).</summary>
+        public float ShownWidth => _width;
+
+        /// <summary>Drawn row <paramref name="index"/>'s strip colour, words colour and whether its marker
+        /// is up — the look, as numbers.</summary>
+        public void ShownLook(int index, out Color strip, out Color words, out bool marker)
+        {
+            bool ok = _shownOpen && index >= 0 && index < _paintedCount;
+            strip = ok ? _strips[index].color : default;
+            words = ok ? _labels[index].color : default;
+            marker = ok && _markers[index].enabled;
+        }
 
         /// <summary>True while the list is drawn.</summary>
         public bool IsShowing => _shownOpen;

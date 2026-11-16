@@ -114,8 +114,63 @@ namespace HiddenHarbours.Tests.UI.EditMode
             Assert.AreEqual("2  Sell (not now)", InteractChooserLayout.RowText(1, "Sell", InteractChoiceBlock.Unavailable));
             Assert.LessOrEqual(
                 InteractChooserLayout.RowText(8, new string('x', 80), InteractChoiceBlock.Occupied).Length,
-                InteractPopupLayout.MaxCharacters, "one line, cut like the popup's");
+                InteractChooserLayout.MaxRowCharacters, "one line, cut only past the list's own cap");
         }
+
+        [Test]
+        public void ALongVerb_IsNotCut_TheListWidensToIt()
+        {
+            // The 2026-11-15 editor look at the Route 91 pumps: row 1 read "Fill up with two-stroke ...".
+            string row = InteractChooserLayout.RowText(0, "Fill up with two-stroke mix", InteractChoiceBlock.None);
+            Assert.AreEqual("1  Fill up with two-stroke mix", row, "whole, no ellipsis");
+
+            float width = InteractChooserLayout.ListWidth(InteractChooserLayout.EstimateTextUnits(row));
+            Assert.Greater(width, InteractPopupLayout.PanelWidth, "wider than the popup's strip");
+            Assert.GreaterOrEqual(InteractChooserLayout.TextSize(width).x,
+                InteractChooserLayout.EstimateTextUnits(row), "the type's box holds the words");
+            Assert.AreEqual(InteractPopupLayout.PanelWidth, InteractChooserLayout.ListWidth(40f),
+                "short words keep the popup's width");
+            Assert.AreEqual(InteractChooserLayout.MaxListWidth, InteractChooserLayout.ListWidth(5000f),
+                "and the list never becomes a banner");
+            Assert.LessOrEqual(InteractChooserLayout.EstimateTextUnits(new string('x', InteractChooserLayout.MaxRowCharacters)),
+                InteractChooserLayout.TextSize(InteractChooserLayout.MaxListWidth).x,
+                "the longest row the cap allows fits the widest list");
+        }
+
+        [Test]
+        public void AWiderList_GrowsLeft_KeepsThePopupsRightEdge_AndThePointerFollows()
+        {
+            Vector2 home = InteractPopupLayout.PanelAnchoredPosition();
+            const float width = 420f;
+            Vector2 bottom = InteractChooserLayout.RowAnchoredPosition(home, 1, 2, width);
+            Assert.AreEqual(home.x + InteractPopupLayout.PanelWidth, bottom.x + width, 0.001f, "same right edge");
+            Assert.AreEqual(home.y, bottom.y, 0.001f, "same row");
+
+            var bottomPx = new Rect(900f, 20f, 300f, 44f);
+            Rect wide = InteractChooserLayout.RowScreenRect(bottomPx, 1, 2, 1f, width);
+            Assert.AreEqual(bottomPx.xMax, wide.xMax, 0.001f);
+            Assert.AreEqual(width, wide.width, 0.001f);
+            Assert.AreEqual(1, InteractChooserLayout.HitRow(new Vector2(800f, 40f), bottomPx, 2, 1f, width),
+                "a point left of the popup's strip but on the wider row hits it");
+            Assert.AreEqual(-1, InteractChooserLayout.HitRow(new Vector2(800f, 40f), bottomPx, 2, 1f),
+                "and misses at the popup's width");
+        }
+
+        [Test]
+        public void TheSelectedRow_IsInverted_AndMarked_NotAShadeOff()
+        {
+            // The editor look measured the old selected strip 2-4 luminance units off the rest.
+            Color plain = InteractChooserStyle.StripFor(false), picked = InteractChooserStyle.StripFor(true);
+            Assert.GreaterOrEqual(plain.a, 0.9f, "every row is near-opaque: the ground does not show through");
+            Assert.GreaterOrEqual(picked.a, 0.9f);
+            Assert.Greater(Luma(picked) - Luma(plain), 0.6f, "the selected strip is the inverse, not a shade");
+            Assert.Greater(Luma(picked) - Luma(InteractChooserStyle.WordsFor(true, true)), 0.6f,
+                "its words are ink on chalk");
+            Assert.Greater(Luma(InteractChooserStyle.WordsFor(false, true)) - Luma(plain), 0.6f,
+                "and the other rows' words are chalk on ink");
+        }
+
+        private static float Luma(Color c) => 0.2126f * c.r + 0.7152f * c.g + 0.0722f * c.b;
 
         [Test]
         public void ThePointer_HitsTheRowItIsOn_AndTheSeamsHitNothing()
@@ -237,6 +292,24 @@ namespace HiddenHarbours.Tests.UI.EditMode
                 Assert.AreEqual(3, view.ShownCount);
                 Assert.AreEqual("1  Open the door", view.ShownRow(0));
                 Assert.AreEqual("3  Sit", view.ShownRow(2));
+
+                view.ShownLook(0, out Color strip0, out Color words0, out bool mark0);
+                view.ShownLook(1, out Color strip1, out _, out bool mark1);
+                Assert.AreEqual(InteractChooserStyle.StripFor(true), strip0, "the list opens on row 1, drawn selected");
+                Assert.AreEqual(InteractChooserStyle.WordsFor(true, true), words0);
+                Assert.IsTrue(mark0, "with the marker");
+                Assert.AreEqual(InteractChooserStyle.StripFor(false), strip1);
+                Assert.IsFalse(mark1, "one marker only");
+
+                InteractChooser.Step(1);
+                view.Tick();
+                view.ShownLook(0, out strip0, out _, out mark0);
+                view.ShownLook(1, out strip1, out _, out mark1);
+                Assert.AreEqual(InteractChooserStyle.StripFor(false), strip0, "a step moves the look with it");
+                Assert.IsFalse(mark0);
+                Assert.AreEqual(InteractChooserStyle.StripFor(true), strip1);
+                Assert.IsTrue(mark1);
+                Assert.GreaterOrEqual(view.ShownWidth, InteractPopupLayout.PanelWidth);
 
                 held.PressNumber(3);
                 view.Tick();

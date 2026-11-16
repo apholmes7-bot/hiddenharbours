@@ -83,8 +83,11 @@ are available.
 - **Interact:** the context Action Button, or simply walk into / tap an interactable (NPC, door,
   trap, shop). A subtle highlight shows the current interactable.
 - **The interaction chooser (owner ask 2026-11-15, built).** Pressing interact where **two or more**
-  options are in reach puts up a small list in the popup's corner, styled like the popup (chalk lines
-  on faint strips, the key number, the verb). With one option the press acts at once, as before. The
+  options are in reach puts up a small list in the popup's corner, in the shell's ink and chalk: every
+  row is a near-opaque ink strip with the key number and the verb; the selected row is inverted (a chalk
+  strip with ink words) and has a warm bar at its leading edge. The list is as wide as its longest row
+  needs, from the popup's width up to a cap, and grows leftward; only past the cap is a row cut. Rows
+  that read exactly the same collapse into the nearer one. With one option the press acts at once, as before. The
   player picks with W/S or the arrows plus E or Enter, with the number keys 1–9, or with the mouse
   (hover selects, click picks); Esc puts it down. The order is the interact ladder: priority, then
   nearness, then id. Only things on the fixture rung or below become rows; a held, carried or
