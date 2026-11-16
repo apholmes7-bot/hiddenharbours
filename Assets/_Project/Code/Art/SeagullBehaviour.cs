@@ -166,6 +166,39 @@ namespace HiddenHarbours.Art
     }
 
     /// <summary>
+    /// <b>How a gull gets off the ground</b> (owner, 2026-11-15: "make bird takeoffs realistic speeds too, the take
+    /// off far too fast compared to a real bird"). The game's own tunables, kept beside the sidecar's table in
+    /// <see cref="SeagullVisualDef"/> (the sidecar rows are the rig's, pinned to it by the parity tests): a hop into
+    /// the air at <see cref="LiftOffSpeedMetresPerSecond"/>, a shallow climb at <see cref="ClimbMetresPerSecond"/>,
+    /// <see cref="AccelerateSeconds"/> of laboured flapping up to the fly row's cruise, the bird turning onto its wheel
+    /// at <see cref="TurnDegreesPerSecond"/>, and only then a <see cref="JoinSeconds"/> cross-fade onto the wheel.
+    /// <para><b>All zero (<c>default</c>) = the rig's original take-off</b>, which is what a table built straight
+    /// from the sidecar gets, so the rig parity tests keep reading the rig.</para>
+    /// </summary>
+    public readonly struct SeagullDepartureRules
+    {
+        public readonly double LiftOffSpeedMetresPerSecond;
+        public readonly double ClimbMetresPerSecond;
+        public readonly double AccelerateSeconds;
+        public readonly double TurnDegreesPerSecond;
+        public readonly double JoinSeconds;
+        /// <summary>Metres below the wheel's altitude over which the climb levels off (no kink at the top).</summary>
+        public readonly double LevelOffMetres;
+
+        public SeagullDepartureRules(double liftOffSpeedMetresPerSecond, double climbMetresPerSecond,
+                                     double accelerateSeconds, double turnDegreesPerSecond, double joinSeconds,
+                                     double levelOffMetres)
+        {
+            LiftOffSpeedMetresPerSecond = liftOffSpeedMetresPerSecond; ClimbMetresPerSecond = climbMetresPerSecond;
+            AccelerateSeconds = accelerateSeconds; TurnDegreesPerSecond = turnDegreesPerSecond;
+            JoinSeconds = joinSeconds; LevelOffMetres = levelOffMetres;
+        }
+
+        /// <summary>True when these rules drive the departure (a positive lift-off speed); false = the rig's.</summary>
+        public bool Enabled => LiftOffSpeedMetresPerSecond > 0.0;
+    }
+
+    /// <summary>
     /// <b>THE STATE TABLE, IMMUTABLE AND ENGINE-LIGHT.</b>
     ///
     /// <para>Thirteen states and twenty-six legal edges, exactly as
@@ -200,6 +233,8 @@ namespace HiddenHarbours.Art
         public readonly SeagullLandRules Land;
         public readonly SeagullWaterRules Water;
         public readonly SeagullFlockRules Flock;
+        /// <summary>The game's take-off tuning; <c>default</c> = the rig's take-off.</summary>
+        public readonly SeagullDepartureRules Departure;
 
         /// <summary>States, in <see cref="SeagullStates.Order"/>.</summary>
         public int StateCount => _rows.Length;
@@ -214,7 +249,7 @@ namespace HiddenHarbours.Art
         /// </summary>
         public SeagullBehaviour(IReadOnlyList<SeagullStateRow> rows, IReadOnlyList<SeagullEdge> edges,
                                 in SeagullLandRules land, in SeagullWaterRules water,
-                                in SeagullFlockRules flock)
+                                in SeagullFlockRules flock, in SeagullDepartureRules departure = default)
         {
             if (rows == null) throw new ArgumentNullException(nameof(rows));
             if (edges == null) throw new ArgumentNullException(nameof(edges));
@@ -276,7 +311,7 @@ namespace HiddenHarbours.Art
                                        _surface[_next[i]] != SeagullSurface.None;
             }
 
-            Land = land; Water = water; Flock = flock;
+            Land = land; Water = water; Flock = flock; Departure = departure;
         }
 
         /// <summary>Which surface a state rests the bird on. Hard-coded on purpose: it is a fact about

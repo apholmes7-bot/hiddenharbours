@@ -153,6 +153,25 @@ namespace HiddenHarbours.Art
         [SerializeField, Tooltip("The sidecar's flee.regroup_s — also the ramp a bird takes to rejoin the wheel after a takeoff")]
         private float _flockRegroupSeconds = 8f;
 
+        [Header("TAKE-OFF (the game's own tuning, beside the rig's table; all 0 = the rig's take-off)")]
+        [SerializeField, Min(0f), Tooltip(
+            "Owner 2026-11-15: \"the take off far too fast compared to a real bird\". Ground speed, m/s, the bird " +
+            "has reached when its feet leave: it gathers it in a short hop over the first half of the take-off row. " +
+            "Real gulls lift off at about 3-5 m/s.")]
+        private float _departureLiftOffSpeedMetresPerSecond = 3.5f;
+        [SerializeField, Min(0f), Tooltip("The shallow climb out after lift-off, m/s (real gulls: about 1-2 m/s).")]
+        private float _departureClimbMetresPerSecond = 1.5f;
+        [SerializeField, Min(0f), Tooltip(
+            "Seconds of laboured flapping from the lift-off speed up to the fly row's cruise speed (eased in and out).")]
+        private float _departureAccelerateSeconds = 4f;
+        [SerializeField, Min(0f), Tooltip("How fast the climbing bird turns onto its wheel, degrees per second.")]
+        private float _departureTurnDegreesPerSecond = 40f;
+        [SerializeField, Min(0f), Tooltip(
+            "Seconds of the cross-fade onto the wheel, which starts only once the bird is up to cruise speed.")]
+        private float _departureJoinSeconds = 4f;
+        [SerializeField, Min(0f), Tooltip("Metres below the wheel's height over which the climb levels off.")]
+        private float _departureLevelOffMetres = 1.5f;
+
         [Header("GULL -> FISH (the drop's dive yield, and its one wireable attractor)")]
         [SerializeField, Range(0f, 1f), Tooltip(
             "The drop's WATER dive yield, README: p 0.35 (herring / mackerel). How often a strike onto " +
@@ -299,7 +318,10 @@ namespace HiddenHarbours.Art
                                           _flockSwoopEveryMinSeconds, _flockSwoopEveryMaxSeconds,
                                           _flockSpacingMetres, _flockAttractRadiusMetres,
                                           _flockFleeRadiusMetres, _flockSettleAfterSeconds,
-                                          _flockRegroupSeconds));
+                                          _flockRegroupSeconds),
+                    new SeagullDepartureRules(_departureLiftOffSpeedMetresPerSecond, _departureClimbMetresPerSecond,
+                                              _departureAccelerateSeconds, _departureTurnDegreesPerSecond,
+                                              _departureJoinSeconds, _departureLevelOffMetres));
                 return _behaviour;
             }
         }
