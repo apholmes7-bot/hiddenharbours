@@ -25,6 +25,12 @@ namespace HiddenHarbours.Core
     /// <see cref="TryEatFromHand"/> or <see cref="TryEatFromStock"/> through <see cref="GameServices.Food"/>.
     /// </para>
     ///
+    /// <para><b>Posture</b> (kitchens slice 1): a meal eaten seated, or at a table or counter, is worth more
+    /// (<see cref="DiningRules"/>). The food's own relief still goes through the body exactly as standing
+    /// (stomach and energy unchanged, so sitting never makes overeating likelier); only the seat's BONUS
+    /// is then taken off hunger through <see cref="INeedsService.Eat"/>, and <see cref="PlayerDined"/>
+    /// says so. Standing is today's bite exactly. A meal that came back up earns no bonus.</para>
+    ///
     /// <para>Deterministic: no roll, no clock read of its own; the same save, hands and Defs give the same
     /// result (rule 5). Every seam is injectable for tests and defaults to its <see cref="GameServices"/>
     /// accessor, read at each call.</para>
@@ -38,6 +44,7 @@ namespace HiddenHarbours.Core
         private readonly Func<IBodyService> _body;
         private readonly Func<Vector2> _position;
         private readonly Func<string> _regionId;
+        private readonly Func<KitchenSettings> _kitchen;
         private FoodBook _shipped;
 
         /// <param name="body">The one door a bite goes through (food follow-up): the body relieves hunger
@@ -46,10 +53,11 @@ namespace HiddenHarbours.Core
         /// <paramref name="needs"/> alone. Never both, so hunger is relieved once.</param>
         /// <param name="position">Where the player stands, for the mess an overfull stomach leaves.</param>
         /// <param name="regionId">The region the player is in, for that mess.</param>
+        /// <param name="kitchen">The dining multipliers (kitchens slice 1).</param>
         public FoodEater(Func<FoodBook> book = null, Func<INeedsService> needs = null,
                          Func<ISaveService> save = null, Func<ICatchHands> hands = null,
                          Func<IBodyService> body = null, Func<Vector2> position = null,
-                         Func<string> regionId = null)
+                         Func<string> regionId = null, Func<KitchenSettings> kitchen = null)
         {
             _book = book ?? (() => _shipped ??= FoodBook.FromResources());
             _needs = needs ?? (() => GameServices.Needs);
@@ -58,6 +66,7 @@ namespace HiddenHarbours.Core
             _body = body ?? (() => GameServices.Body);
             _position = position ?? (() => PlayerPosition());
             _regionId = regionId ?? (() => GameServices.CurrentRegionId);
+            _kitchen = kitchen ?? (() => GameServices.KitchenSettings);
         }
 
         private static Vector2 PlayerPosition()
@@ -76,8 +85,13 @@ namespace HiddenHarbours.Core
             return food.EdibleRaw ? EatRefusal.None : EatRefusal.NotEdibleRaw;
         }
 
-        /// <summary>Eat one <paramref name="itemId"/> from the supply locker (a loaf bought at the store).</summary>
-        public EatRefusal TryEatFromStock(string itemId)
+        /// <summary>Eat one <paramref name="itemId"/> from the supply locker (a loaf bought at the store),
+        /// standing.</summary>
+        public EatRefusal TryEatFromStock(string itemId) => TryEatFromStock(itemId, EatingPosture.Standing);
+
+        /// <summary>Eat one <paramref name="itemId"/> from the supply locker in a posture (kitchens slice 1:
+        /// a <see cref="SeatSession"/>'s <see cref="SeatSession.Posture"/>).</summary>
+        public EatRefusal TryEatFromStock(string itemId, EatingPosture posture)
         {
             SaveData save = _save()?.Current;
             if (!SupplyLocker.Has(save, itemId)) return Refuse(itemId, EatRefusal.NothingToEat);
@@ -86,11 +100,14 @@ namespace HiddenHarbours.Core
             if (refusal != EatRefusal.None) return Refuse(itemId, refusal);
 
             if (!SupplyLocker.TrySpend(save, itemId)) return Refuse(itemId, EatRefusal.NothingToEat);
-            return Ate(food, itemId);
+            return Ate(food, itemId, posture);
         }
 
-        /// <summary>Eat the loose catch in the hands (a pail's contents are never touched).</summary>
-        public EatRefusal TryEatFromHand()
+        /// <summary>Eat the loose catch in the hands (a pail's contents are never touched), standing.</summary>
+        public EatRefusal TryEatFromHand() => TryEatFromHand(EatingPosture.Standing);
+
+        /// <summary>Eat the loose catch in the hands in a posture (kitchens slice 1).</summary>
+        public EatRefusal TryEatFromHand(EatingPosture posture)
         {
             ICatchHands hands = _hands();
             if (hands == null || !hands.TryPeekHand(out CatchItem held))
@@ -100,18 +117,29 @@ namespace HiddenHarbours.Core
             if (refusal != EatRefusal.None) return Refuse(held.SpeciesId, refusal);
 
             if (!hands.TryTakeFromHand(out _)) return Refuse(held.SpeciesId, EatRefusal.NothingToEat);
-            return Ate(food, held.SpeciesId);
+            return Ate(food, held.SpeciesId, posture);
         }
 
-        private EatRefusal Ate(FoodDef food, string itemId)
+        private EatRefusal Ate(FoodDef food, string itemId, EatingPosture posture)
         {
             // ONE path (food follow-up): the body relieves hunger itself (INeedsService.Eat inside), so a
             // bite through the body never also calls the needs. An overfull stomach brings it back up: the
             // unit is still used, the body publishes Vomited and leaves the mess.
             IBodyService body = _body();
-            if (body != null) body.Eat(food.HungerRelief, food.EnergyKcal, _position(), _regionId());
+            bool keptDown = true;
+            if (body != null)
+                keptDown = body.Eat(food.HungerRelief, food.EnergyKcal, _position(), _regionId()) != MealOutcome.Vomited;
             else _needs()?.Eat(food.HungerRelief);
             EventBus.Publish(new AteFood(food.Id, itemId, food.HungerRelief));
+
+            // Kitchens slice 1: the seat's bonus, on hunger only (never the stomach or the energy).
+            if (posture != EatingPosture.Standing && keptDown)
+            {
+                float relief = DiningRules.Relief(food.HungerRelief, posture, _kitchen());
+                float bonus = relief - food.HungerRelief;
+                if (bonus > 0f) _needs()?.Eat(bonus);
+                EventBus.Publish(new PlayerDined(posture, food.HungerRelief, relief));
+            }
             return EatRefusal.None;
         }
 

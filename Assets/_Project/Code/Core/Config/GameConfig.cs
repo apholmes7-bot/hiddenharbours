@@ -59,6 +59,12 @@ namespace HiddenHarbours.Core
                  "GameServices.CleanlinessSettings.")]
         public CleanlinessSettings Cleanliness = CleanlinessSettings.Default;
 
+        [Header("Kitchens (dining and seated rest)")]
+        [Tooltip("Kitchens (owner ask 2026-11-15): the food boost of eating seated or at a table, and how " +
+                 "far sitting can rest you (never as far as a bed). Shared by galleys aboard, homes, shops " +
+                 "and player-built kitchens. Read through GameServices.KitchenSettings.")]
+        public KitchenSettings Kitchen = KitchenSettings.Default;
+
         public const float DefaultCreatorFigureHeightFraction = 0.6f;
 
         [Header("Character creator view")]

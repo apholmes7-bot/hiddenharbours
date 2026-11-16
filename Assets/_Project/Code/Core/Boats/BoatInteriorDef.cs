@@ -249,6 +249,43 @@ namespace HiddenHarbours.Core
         /// <summary>True when the sidecar gave where this bunk's mattress is and which end the pillow
         /// is on.</summary>
         public bool HasBunkGeometry => !string.IsNullOrEmpty(BunkLevel);
+
+        // ---- appended 2026-11-15: kitchen pieces — food stores, seats, tables (all optional) ----------
+
+        /// <summary>The verb a seat carries: the player sits here (rest short of a bed, and the meal boost
+        /// when it is by a table or counter — owner ask 2026-11-15).</summary>
+        public const string ActionSit = "sit";
+
+        /// <summary>The verb a table carries. Nobody presses a table; it is here so a seat beside it reads
+        /// as a DINING seat (<see cref="KitchenLayout.IsDiningSeat"/>).</summary>
+        public const string ActionTable = "table";
+
+        /// <summary>The verb a food store carries (pantry, cooler, fridge); <see cref="KitchenStorageId"/>
+        /// names which.</summary>
+        public const string ActionFoodStorage = "food_storage";
+
+        /// <summary>How close (m, hull frame, same level) two kitchen reach points (prep, cook, store,
+        /// seat) may come. Tighter than a bunk's: the kit's prep and cooktop reaches already stand 0.18 m
+        /// apart on the small hulls, along one counter, and the nearest-wins press still tells them apart.</summary>
+        public const float KitchenAnchorMinSeparationMetres = 0.15f;
+
+        [Tooltip("For a food store: the KitchenStorageDef id it is ('kitchen_storage.cooler'). Empty otherwise.")]
+        public string KitchenStorageId = "";
+
+        [Tooltip("For a seat or a table: the interior level the furniture stands on. EMPTY means no " +
+                 "furniture geometry was given, and the two fields below mean nothing.")]
+        public string FurnitureLevel = "";
+
+        [Tooltip("For a seat or a table: the drawn obstruction (on FurnitureLevel) it is — the helm seat, " +
+                 "the bench, the table.")]
+        public string FurnitureObstruction = "";
+
+        [Tooltip("For a seat: where the sitter's hips rest, hull-local metres (z = the cushion or bench " +
+                 "top). For a table: the centre of the table top (z = the top).")]
+        public Vector3 FurniturePoint = Vector3.zero;
+
+        /// <summary>True when the sidecar gave the furniture this seat or table is drawn as.</summary>
+        public bool HasFurnitureGeometry => !string.IsNullOrEmpty(FurnitureLevel);
     }
 
     /// <summary>

@@ -26,6 +26,7 @@ namespace HiddenHarbours.Core
         private readonly Func<IBodyService> _body;
         private readonly Func<ICleanlinessService> _cleanliness;
         private readonly Func<CleanlinessSettings> _cleanlinessSettings;
+        private readonly Func<KitchenSettings> _kitchen;
 
         private readonly NeedStage[] _lastStage = new NeedStage[Kinds.Length];
         private readonly bool[] _stageKnown = new bool[Kinds.Length];
@@ -34,7 +35,8 @@ namespace HiddenHarbours.Core
                             Func<NeedsSettings> settings = null, Func<ITraitService> traits = null,
                             Func<double> secondsPerGameHour = null, Func<IBodyService> body = null,
                             Func<ICleanlinessService> cleanliness = null,
-                            Func<CleanlinessSettings> cleanlinessSettings = null)
+                            Func<CleanlinessSettings> cleanlinessSettings = null,
+                            Func<KitchenSettings> kitchen = null)
         {
             _cleanliness = cleanliness ?? (() => GameServices.Cleanliness);
             _cleanlinessSettings = cleanlinessSettings ?? (() => GameServices.CleanlinessSettings);
@@ -44,6 +46,7 @@ namespace HiddenHarbours.Core
             _traits = traits ?? (() => GameServices.Traits);
             _secondsPerGameHour = secondsPerGameHour ?? (() => GameServices.SecondsPerDay / 24d);
             _body = body ?? (() => GameServices.Body);
+            _kitchen = kitchen ?? (() => GameServices.KitchenSettings);
         }
 
         public float Level(NeedKind need)
@@ -125,6 +128,30 @@ namespace HiddenHarbours.Core
             needs.Hunger = new NeedStateDto(level < 1f ? level : 1f, NowOr(state.SinceGameSeconds));
             Announce(NeedKind.Hunger, before);
             return over;
+        }
+
+        public void RestSeated(double seatedSinceGameSeconds)
+        {
+            PlayerNeedsDto needs = Needs();
+            IGameClock clock = _clock();
+            if (needs == null || clock == null) return;
+            double now = clock.TotalSeconds;
+            NeedStateDto state = needs.Tiredness;
+            double from = seatedSinceGameSeconds;
+            if (state.IsStamped && state.SinceGameSeconds > from) from = state.SinceGameSeconds;
+            if (!(now > from)) return;
+
+            NeedStage before = Stage(NeedKind.Tiredness);
+            NeedsSettings settings = _settings();
+            NeedCurve curve = CurveFor(NeedKind.Tiredness, settings);
+            double perHour = _secondsPerGameHour();
+            if (!(perHour > 0d)) return;
+            float atSit = NeedsMath.LevelAt(state, curve, from, perHour);
+            // Held under the chosen-duration sleep's rate: an hour seated never beats an hour asleep.
+            float after = SeatedRest.LevelAfter(atSit, (now - from) / perHour, curve.RisePerGameHour, _kitchen(),
+                                                settings.SleepReliefPerGameHour);
+            needs.Tiredness = new NeedStateDto(after, now);
+            Announce(NeedKind.Tiredness, before);
         }
 
         public void Sleep()

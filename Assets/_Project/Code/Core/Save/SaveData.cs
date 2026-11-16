@@ -424,6 +424,16 @@ namespace HiddenHarbours.Core
         /// FLAG lead-architect: save schema v22 (cleanliness).
         /// </summary>
         public PlayerCleanlinessDto PlayerCleanliness = new();
+
+        /// <summary>
+        /// The food stores (kitchens slice 1): a galley's pantry, cooler and fridge aboard, and later a
+        /// home's, a shop's or a player-built kitchen's, each keyed by where it stands
+        /// (<see cref="KitchenStorageStateDto.Key"/>). Contents and freshness clocks are saved; a cooler's
+        /// cold is one saved instant (when its ice runs out), never a ticking number. Written only through
+        /// <see cref="KitchenStores"/>. Added in v23; every older save starts with none.
+        /// FLAG lead-architect: save schema v23 (kitchens).
+        /// </summary>
+        public List<KitchenStorageStateDto> KitchenStores = new();
     }
 
     /// <summary>
