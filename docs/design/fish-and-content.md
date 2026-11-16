@@ -431,6 +431,76 @@ These are gated, named, memorable. Weight 0 until `unlockCondition` met; long co
 | `the-drownded-bride` / The Drownded Bride | DL, SM | **Lowest spring low, deep fog**, out where the flats meet the channel. Night. | Handline/DipNet; bait = none — comes to a lantern (`RequiresInstruments`) | 60–110 / 1–4 | 1,200 | `Legendary, Cryptid, FogOnly, NightOnly, RequiresInstruments`. A pale, trailing eel-thing that follows a light across the bared seabed. Don't follow it back. |
 | `the-smother-lantern` / The Smother Lantern | SM | **Inside the permanent fog bank only**, navigating by instrument. Any deep slack. | Jigging; `RequiresInstruments` (sounder + compass), bait = `capelin` (Pref) | 30–70 / 0.5–3 | 1,600 | `Legendary, Cryptid, FogOnly, RequiresInstruments, Abyssal`. A deep fish that glows faintly, like a drowned lamp. The Smother's only reliable landmark — and it moves. |
 
+### 4.9 What ships today: the current regions (R1, 2026-11-15)
+
+The tables above are the design catalogue. This is what `Assets/_Project/Data/Fish` actually holds for the
+regions that have a scene, after slice R1 (the vessel/roles audit of 2026-11-15, §8). Ids are the shipped
+`fish.snake_case` ids. Depth uses the `FishDepthBand` zones (Tidepool ≤0.6 m, Shallows ≤3, Inshore ≤10,
+Midwater ≤30, Deep ≤90, from `GameConfig.DepthDrop`). Values are placeholders flagged for economy-sim.
+
+**Playable methods today:** the rod (Handline, Jig), lobster and crab pots (`trap.lobster`, `trap.crab`),
+and clam digging (ClamFork, on foot at St Peters).
+
+| Region (deepest water) | Rod | Pots | Dig / hand |
+|---|---|---|---|
+| St Peters (≈6 m) | cod, mackerel (summer, autumn), striped bass (summer, autumn, moving water), winter flounder, rainbow smelt (winter to spring) | lobster, rock crab, green crab (summer, autumn) | soft-shell clam; quahog and surf clam are data-ready (holes not placed yet) |
+| East Water (≈6 m) | cod, mackerel, striped bass, winter flounder, rainbow smelt | lobster, rock crab, green crab | none (no flats) |
+| Nine Mile Creek (≈8 m) | cod, mackerel, striped bass, winter flounder, rainbow smelt, Atlantic tomcod (autumn, winter) | green crab | quahog data-ready (holes not placed) |
+| Rice Point (≈8-12 m) | cod, pollock, mackerel, cunner (summer, autumn, by day) | lobster, rock crab, green crab | none |
+| Cumberland (≈8 m) | mackerel, striped bass, winter flounder, rainbow smelt, cunner | green crab | surf clam data-ready (holes not placed) |
+| South Water (20-72 m) | cod, haddock, pollock, mackerel (on the grounds) | none | none |
+| Coddle Cove (greybox, ≈6 m) | cod, pollock, mackerel, striped bass, winter flounder | lobster, rock crab | none |
+
+**Lobster seasons by port (owner ruling 2026-11-15).** Lobster is not open all year: each region (a
+port's waters) has its own open window, authored as one `FishingSeasonDef` per species + region in
+`Data/FishingSeasons` (`season.lobster_<region>`; open season + day and close season + day, both
+inclusive; an open day after the close day wraps the year end). The read is a pure function of
+(species, region, calendar day) in `FishingSeasonMath`, recomputed at the haul and never saved. The
+`deckwork.pot` ruleset references the seasons beside its legal-size rules, and the deck sort applies
+them at pot-aboard for the region the pot was SET in: out of season a legal lobster is still caught but
+goes back over the side (`GrabOutcome.ReturnedOutOfSeason`, a toast says why), never kept or sold. A
+species/region with no entry is open all year. NPC pot days are not gated yet. First-pass windows
+(owner-tunable, game year = 4 seasons x 28 days): St Peters, Coddle Cove and East Water Early Spring 15
+to High Summer 21 (open on the first morning); Rice Point High Summer 15 to The Turn 21; West Water High
+Summer 22 to The Turn 28; Cumberland The Turn 1 to Hard Winter 7; South Water The Turn 8 to Hard Winter
+14; Nine Mile Creek Hard Winter 8 to Early Spring 21 (wraps). Some port is open every day of the year.
+
+Herring is listed at St Peters, East Water, Nine Mile Creek, Rice Point, South Water and Coddle Cove but
+is Net-only, so no playable method takes it yet. The scallop (Rice Point) waits for the dredge.
+
+**R1 corrections to existing species** (ids unchanged):
+- Haddock: off St Peters, East Water, Nine Mile Creek and Coddle Cove; South Water only. Bands Midwater+Deep.
+- Pollock: off St Peters, Nine Mile Creek and East Water; on Rice Point. Bands Inshore+Midwater+Deep
+  (juvenile "harbour" pollock come inshore; adults sit deeper).
+- Cod: on Rice Point. Bands Shallows+Inshore+Midwater+Deep. Cod stays at St Peters: the starter loop,
+  the cod licence and the supply chain stand on it, and young cod use shallow eelgrass and harbours. The
+  Shallows band keeps it in the harbour at low water (a 1.8 m column), where the school model gates by band.
+- Mackerel: summer and autumn only (it was all year); on Rice Point and Cumberland.
+- Striped bass and winter flounder: on Cumberland.
+- Herring: bands Inshore+Midwater; on East Water and Rice Point.
+- Soft-shell clam, blue mussel, American oyster: off East Water (open bay, no flats); bands Tidepool+Shallows.
+- Lobster and rock crab: on Rice Point (the ledge). **The lobster season is unchanged (all year)**: owner
+  question 15 is still open.
+
+**Added in R1** (each with an ecology record under `Data/FishEcology`): `fish.rainbow_smelt`,
+`fish.atlantic_tomcod`, `fish.cunner` (rod); `fish.green_crab` (crab pot); `fish.northern_quahog`,
+`fish.atlantic_surf_clam` (dig). Their own sprites are owed: `docs/art/fish-sprites-owed.md`.
+
+**Waiting on a method** (not authored): gaspereau (spring dip net or trap net, Nine Mile Creek), American
+eel (autumn eel trap or fyke net, Nine Mile Creek and St Peters), lumpfish (spring roe gillnet, Rice Point
+ledge; a hook catch is incidental, not a fishery), bluefin tuna (East Water, Cumberland charter: tended
+rod and harpoon).
+
+**Wiring still owed (not data):** the rod's species pool is serialized into the scenes. The persistent
+dory pool (`StPetersBuilder`, `RegionFish`) and the Rice Point and Cumberland dev cores (`DevFish` on their
+plans) do not yet hold smelt, tomcod or cunner, so those three need adding there plus a scene rebuild
+before they bite in play. Quahog and surf clam need dig holes placed (St Peters builder, Nine Mile Creek,
+Cumberland). Existing species newly listed in a region (cod, pollock and mackerel at Rice Point; mackerel,
+bass and flounder at Cumberland) are already in those pools and need no rebuild.
+
+The checks: `RegionCatchRealismTests` (every fishable region has a catchable species in every season; no
+species' bands lie wholly outside a region it lists).
+
 ---
 
 ## 5. Allocation table (all 100 species)

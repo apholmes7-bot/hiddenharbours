@@ -1,0 +1,46 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6000b72d0329cc04ebb9f483ec968d7f, type: 3}
+  m_Name: RainbowSmelt
+  m_EditorClassIdentifier: HiddenHarbours.Fishing::HiddenHarbours.Fishing.FishSpeciesDef
+  Id: fish.rainbow_smelt
+  DisplayName: Rainbow Smelt
+  Category: 2
+  Rarity: 0
+  Flavor: 'A finger-long silver fish that smells of cut cucumber. Comes into the bays and creek mouths with the cold and is jigged through the ice or off the wharf. BALANCE NOTE: placeholder value, weight and elasticity set beside its neighbours - flagged for economy-sim to tune.'
+  RegionIds:
+  - region.st_peters
+  - region.east_water
+  - region.nine_mile_creek
+  - region.cumberland
+  AllowedGear: 33
+  Seasons: 13
+  MinTide: -10
+  MaxTide: 10
+  StartHour: 0
+  EndHour: 24
+  DepthBands: 6
+  BehaviorFlags: 0
+  FavoredLures: 0
+  MinSchoolMarks: 4
+  MaxSchoolMarks: 12
+  ShoalSpreadMetres: 1.5
+  SchoolsPerSquareKilometre: 1200.0
+  MinWeightKg: 0.02
+  MaxWeightKg: 0.1
+  BaseValue: 3
+  SpoilPerDay: 1.0
+  SupplyElasticity: 0.5
+  SpawnWeight: 1.0
+  Sprite: {fileID: 0}
+  Bite: {fileID: 0}
+  RodFight: {fileID: 0}

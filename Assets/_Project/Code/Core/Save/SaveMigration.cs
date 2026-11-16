@@ -13,7 +13,7 @@ namespace HiddenHarbours.Core
     public static class SaveMigration
     {
         /// <summary>The schema version this build writes. Bump when you add a field + a migration step.</summary>
-        public const int CurrentVersion = 20;
+        public const int CurrentVersion = 21;
 
         /// <summary>
         /// The region id Port Greywick was saved under before it was renamed Nine Mile Creek, and the id
@@ -363,6 +363,17 @@ namespace HiddenHarbours.Core
                 data.SchemaVersion = 20;
             }
 
+            // v20 -> v21: THE BODY (owner ask 2026-11-15: frame, weight, metabolism, overeating). An older
+            // game gets the unset body, which reads as the default frame and height at its lean mass: the
+            // reference body, so the player keeps exactly today's hunger rate and walk speed. No messes yet.
+            if (data.SchemaVersion < 21)
+            {
+                data.PlayerBody = new PlayerBodyDto();
+                data.Messes ??= new System.Collections.Generic.List<MessRecordDto>();
+                data.NextMessSerial = 0;
+                data.SchemaVersion = 21;
+            }
+
             // ---- future steps go here, each guarded by `if (data.SchemaVersion < N)` and bumping to N.
 
             // Defensive null-repair (a hand-edited or partial JSON can omit reference-typed fields).
@@ -399,6 +410,8 @@ namespace HiddenHarbours.Core
             data.SpentClamHoles ??= new System.Collections.Generic.List<SpentClamHoleDto>();
             data.PlayerTraits ??= new System.Collections.Generic.List<string>();
             data.PlayerNeeds ??= new PlayerNeedsDto();
+            data.PlayerBody ??= new PlayerBodyDto();
+            data.Messes ??= new System.Collections.Generic.List<MessRecordDto>();
             // Same defensive spirit as the null-repair above, for the one field where a zero is not a
             // value but a crash: a hand-edited JSON, or a row written by a build between the field landing
             // and this heal, would otherwise divide by it. Idempotent — after the v9 step there is nothing

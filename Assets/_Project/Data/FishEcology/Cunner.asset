@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 51d5aaf6c73f47f1b2335fa4906c6153, type: 3}
+  m_Name: Cunner
+  m_EditorClassIdentifier: HiddenHarbours.Fishing::HiddenHarbours.Fishing.FishEcologyDef
+  Id: "ecology.cunner"
+  SpeciesId: "fish.cunner"
+  ScientificName: "Tautogolabrus adspersus"
+  LifeStageAndScope: "Post-larval fishable coastal animals; typical reference habitat only. Adults unless the notes explicitly distinguish juveniles."
+  TypicalMinDepthMetres: 0
+  TypicalMaxDepthMetres: 20
+  DepthEvidence: "Authored rocky inshore reference band around ledges, wrecks and pilings; not an exhaustive distribution limit."
+  Layer: 2
+  Habitats: 24
+  PreferredVegetation: 0
+  VegetationEvidence: "The cited profile does not establish a species-wide eelgrass or kelp preference; zero means no preference inferred, not avoidance."
+  Grouping: 2
+  DayHabit: 3
+  TideHabit: 1
+  HabitEvidence: "Feeds by day and shelters in the rock at night; overwinters torpid in the rock, which is why no winter season is authored."
+  BiologyNotes: "Structure-bound wrasse; loose aggregations around one ledge or wreck rather than a travelling school."
+  SourceUrls:
+  - "https://www.fishbase.se/summary/Tautogolabrus-adspersus.html"
