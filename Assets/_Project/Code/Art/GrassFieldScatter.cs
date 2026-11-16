@@ -118,6 +118,10 @@ namespace HiddenHarbours.Art
         const int SaltRoll = 197;
         const int SaltMirror = 211;
 
+        /// <summary>The keep roll's salt (2026-11-15, <see cref="GrassThinning"/>). NEW, not shipped with the
+        /// object pass, so adding it re-rolls nothing that already draws.</summary>
+        const int SaltKeep = 223;
+
         /// <summary>How far the seed moves a salt. A large odd stride so two seeds one apart do not share
         /// a single salt between them; seed 0 leaves every salt exactly where it shipped.</summary>
         const int SeedStride = 7919;
@@ -182,6 +186,12 @@ namespace HiddenHarbours.Art
         /// exactly like an unmirrored one while doubling the silhouettes the eye has to tell apart.</summary>
         public static bool Mirrored(in GrassFieldLayout layout, int ix, int iy, int slot) =>
             Hash01(ix, iy * 13 + slot, Salt(SaltMirror, layout.Seed)) < 0.5f;
+
+        /// <summary>The site's keep roll, 0..1 — what <see cref="GrassThinning"/> compares against a
+        /// region's keep fraction. Its own salt, so it is independent of the variant, shape and mirror
+        /// rolls: thinning takes an even share of every blade shape rather than culling the tall ones.</summary>
+        public static float KeepRoll(in GrassFieldLayout layout, int ix, int iy, int slot) =>
+            Hash01(ix * 11 + slot, iy, Salt(SaltKeep, layout.Seed));
 
         /// <summary>
         /// The tuft's tint — the straw the field baked for this ground, with the site's own brightness

@@ -152,6 +152,7 @@ namespace HiddenHarbours.Fishing
         private const string NoticeNipTeach = "Nipped! A fuller hold is a safer grab";
         private const string NoticeNip = "Nipped — she's still in the pot";
         private const string NoticeKeeperTeach = "A keeper — HOLD over it to band the claws";
+        private const string NoticeOutOfSeason = "Out of season here — back she goes";
         private const string NoticeBaitTeach = "Pot's empty — HOLD over her to bait";
         private const string NoticePotBaited = "Pot baited — T sets her";
         private const string NoticeNoBait = "No bait aboard";
@@ -304,8 +305,11 @@ namespace HiddenHarbours.Fishing
             if (_pot != null || trap == null || trap.Trap == null || trap.Trap.DeckWork == null) return false;
             if (catchItems == null || catchItems.Count == 0) return false;
 
+            // The season is read at the haul (today's date where the pot was SET) — recomputed, never saved.
+            SeasonDate haulDate = SeasonDate.From(GameServices.Clock, GameServices.DaysPerSeason);
             _pot = new DeckPot(trap.Trap, trap.Trap.DeckWork, trap.InstanceId,
-                               trap.PlacementGameTimeSeconds, trap.WorldSeed, catchItems);
+                               trap.PlacementGameTimeSeconds, trap.WorldSeed, catchItems,
+                               trap.RegionId, haulDate);
             _holdSeconds = 0f;
             _recoilLeft = 0f;
             _holdVerb = DeckVerb.None;
@@ -545,6 +549,11 @@ namespace HiddenHarbours.Fishing
                 case GrabOutcome.ReturnedBerried:
                     StartSplash(animal);
                     EventBus.Publish(new DevNotice("Berried hen — back she goes"));
+                    break;
+
+                case GrabOutcome.ReturnedOutOfSeason:
+                    StartSplash(animal);
+                    EventBus.Publish(new DevNotice(NoticeOutOfSeason));
                     break;
 
                 case GrabOutcome.ReturnedProtected:

@@ -56,6 +56,11 @@ namespace HiddenHarbours.Player
         [TextArea(2, 4)]
         public string Flavor;
 
+        [Tooltip("What kind of thing this is when it is put away (Core.StowageRule). Rod = only a rod rack " +
+                 "or a locker flagged for rods takes it, never a fish hold, cooler or crate. General = no " +
+                 "storage rule of its own. Append-only int values.")]
+        public StowageClass Stowage = StowageClass.General;
+
         [Tooltip("Which of the character rig's HAND-PROP rows holds this tool — 'rodTrail' for the rod; " +
                  "Core.CarryPropKeys names all seven. EMPTY is legal and is the honest answer for the " +
                  "SHOVEL: the rig bakes no spade row, so the carrier keeps its own single offset for it. " +

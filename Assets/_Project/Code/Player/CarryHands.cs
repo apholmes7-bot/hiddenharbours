@@ -284,7 +284,10 @@ namespace HiddenHarbours.Player
         {
             if (hold == null) return false;
             if (_slots.FirstOf(HandLoad.Catch) is not CarriableCatch held || !held.HasItem) return false;
-            if (hold.UsedUnits >= hold.CapacityUnits) return false;
+            // The one storage rule (Core.StowageRule): a catch is General and every hold takes General, so
+            // this is the old "full is full" check, asked where the rod rack asks it.
+            if (StowageRule.Check(StowageClass.General, StowageRule.ExistingContainer,
+                                  hold.UsedUnits, hold.CapacityUnits) != StowRefusal.None) return false;
 
             CatchItem item = held.Item;
             if (!hold.TryAdd(item)) return false;
@@ -462,6 +465,29 @@ namespace HiddenHarbours.Player
             thing.OnPlaced();
             TakeBackSlung();
             return CarryRefusal.None;
+        }
+
+        /// <summary>
+        /// Hand one carried thing to a fixture that keeps it (a rod rack's slot) instead of setting it on
+        /// the ground. The caller has already asked <see cref="StowageRule.Check"/>; this only moves it.
+        /// Returns false, and NOTHING changes, when it is not in her hands or there is no holder — the
+        /// thing stays where it legally was.
+        ///
+        /// <para>No ground check, unlike <see cref="TryPlace(ICarriable)"/>: it is not going on the
+        /// ground. Re-parented, never rebuilt, so the object that comes back out is the one that went in.
+        /// </para>
+        /// </summary>
+        public bool TryStowInto(ICarriable thing, Transform holder)
+        {
+            if (holder == null || thing == null || thing.Transform == null) return false;
+            if (_slots.SideOf(thing) == CarryHandSide.None) return false;
+
+            Forget(thing);
+            thing.Transform.SetParent(holder, worldPositionStays: false);
+            thing.Transform.localPosition = Vector3.zero;
+            thing.OnPlaced();
+            TakeBackSlung();
+            return true;
         }
 
         private void LateUpdate()

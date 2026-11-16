@@ -352,6 +352,40 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         [Test]
+        public void DeckPot_closed_season_and_protection_both_hold()
+        {
+            // Both legal rules at once: an unflagged species out of season still goes back as out of
+            // season; a protected one goes back as protected, whatever the season says.
+            ProtectInRegistry();
+            DeckPot seed = MakePot();
+            DeckWorkDef def = seed.Def;
+            const string port = "region.test_port";
+            def.Seasons = new[] { ClosedSeason(ProtectedId, port), ClosedSeason(OpenId, port) };
+            var pot = new DeckPot(seed.Trap, def, "trap.test#2", 1000.0, 4242,
+                                  new[] { Item(ProtectedId, 0.9f), Item(OpenId, 0.9f) }, port,
+                                  new SeasonDate(Season.HardWinter, 3, GameConfig.DefaultDaysPerSeason));
+
+            Assert.IsTrue(pot.Animals[0].Protected);
+            Assert.IsFalse(pot.Animals[0].Keeper);
+            Assert.IsTrue(pot.Animals[1].OutOfSeason, "the season rule still applies to an unflagged species");
+            Assert.IsFalse(pot.Animals[1].Keeper);
+            Assert.AreEqual(GrabOutcome.ReturnedProtected, pot.TryGrabNext(1f, out _));
+            Assert.AreEqual(GrabOutcome.ReturnedOutOfSeason, pot.TryGrabNext(1f, out _));
+        }
+
+        private FishingSeasonDef ClosedSeason(string speciesId, string region)
+        {
+            var s = ScriptableObject.CreateInstance<FishingSeasonDef>();
+            s.Id = "season.test_" + speciesId;
+            s.SpeciesId = speciesId;
+            s.RegionId = region;
+            s.OpenSeason = Season.EarlySpring; s.OpenDayOfSeason = 15;
+            s.CloseSeason = Season.HighSummer; s.CloseDayOfSeason = 21;
+            _spawned.Add(s);
+            return s;
+        }
+
+        [Test]
         public void DeckPot_auto_resolve_never_stows_a_protected_animal()
         {
             ProtectInRegistry();

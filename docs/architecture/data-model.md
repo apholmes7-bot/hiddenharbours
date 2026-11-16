@@ -176,6 +176,27 @@ plain serializable DTOs owned by `SaveService` (`architecture/tech-architecture.
 > completed sleep. `RestQuorum` (Core/Save) is the multiplayer seam: one of one today, one sleeper per
 > bed id.
 
+> **Save schema v21 (the body, owner ask 2026-11-15: frame, weight, metabolism, overeating)** —
+> `SaveData` gained THREE fields: `PlayerBody` (a `PlayerBodyDto`: `Frame` 0..1 and `HeightScale`, chosen
+> once in the creator with `ShapeChosen`; `MassKg` + `MassSinceGameSeconds`; `StomachMeals` +
+> `StomachSinceGameSeconds`), `Messes` (a list of `MessRecordDto`: stable `mess.N` id, region id, position
+> in that region's own frame, game time) and `NextMessSerial` (ids are never reused). Mass and stomach
+> are (value, instant) pairs like a need: the value now is recomputed from the clock by `BodyMath`, and
+> settled at every save write beside the needs. **Negative = unset** on frame, height and mass, which reads
+> as the config default frame, height scale 1 and that body's lean mass: the reference body whose hunger
+> rate and walk speed are exactly the needs slice's, so the `v20→v21` step writes the unset body and an
+> empty mess list and an existing player changes nothing on load. A mess leaves the save only through
+> `IMessRegistry.CleanUp`. Written only through `IBodyService` and `IMessRegistry` (Core/Body).
+> **Body slice 2 rides the same v21** (strength and cardio, owner asks 2026-11-15): `PlayerBodyDto` also
+> holds four `FitnessStateDto`s, `Grip`, `Back`, `Legs` and `Cardio`, each a (level, instant) pair plus the
+> remembered `Peak` (muscle memory, never fades), `MaintainedAtGameSeconds` (the grace runs from it) and
+> `PendingDose`. Untrained (level 0, instants negative) is the default and today's player exactly. Levels
+> are read off the clock by `FitnessMath`, settled at save writes and rebased on a seek, like the mass.
+> Effort is content: `ActivityDef` (`activity.*`, Resources/Activities: kcal above rest per minute or rep,
+> training per fitness kind, equipment, an optional game signal) and `GymEquipmentDef`
+> (`gym_equipment.*`, Resources/GymEquipment), one asset each with ledger entries. Work and the gym both
+> report through `IBodyService.ReportActivity`, which raises hunger through `INeedsService.Spend`.
+
 **Recomputed, never saved:** tide height, wind, weather, sea state, visibility (from
 `worldSeed + gameTime`), dormant NPC positions, authored geometry, **a boat's effective helm fit and
 its depth-sounder reading** (ADR 0030), **which end of a bed the pillow is on** (see below), and
