@@ -38,6 +38,21 @@ namespace HiddenHarbours.Core
 
         /// <summary>The player introduced two people ("Have you met ...?"). <c>Units</c> = 1.</summary>
         Introduced = 4,
+
+        /// <summary>The player gave a person something they LOVE (gifting slice 1, 2026-11-15). A is
+        /// <see cref="RelationshipGraph.PlayerId"/>, B the person; <c>Units</c> = 1 per gift. Raised by the
+        /// world layer's gift act, one of the four gift kinds by <see cref="GiftReaction"/>.</summary>
+        GiftLoved = 5,
+
+        /// <summary>The player gave a person something they like. As <see cref="GiftLoved"/>.</summary>
+        GiftLiked = 6,
+
+        /// <summary>The player gave a person something they took politely. As <see cref="GiftLoved"/>.</summary>
+        GiftNeutral = 7,
+
+        /// <summary>The player gave a person something they dislike. As <see cref="GiftLoved"/>; its rule
+        /// is negative.</summary>
+        GiftDisliked = 8,
     }
 
     /// <summary>

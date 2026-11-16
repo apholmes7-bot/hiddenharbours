@@ -1185,8 +1185,14 @@ namespace HiddenHarbours.Player
         /// so the enum stays append-only when that changes; today a candidate declaring it can never be
         /// reached and should not expect to be.</para>
         /// </summary>
+        /// <remarks>
+        /// <b>The player's press goes through <see cref="InteractVerb.TryPress"/></b> (owner ask
+        /// 2026-11-15): with one thing in reach it is exactly <see cref="InteractVerb.TryPerform"/>; with
+        /// two or more pickable actions it opens the interaction chooser, which then owns the key until a
+        /// pick or a cancel. Either way the press is spent here, so the precedence above is unchanged.
+        /// </remarks>
         private bool TryInteractCandidate()
-            => _interactVerb && InteractVerb.TryPerform(ActorNow(), _interactArcDegrees);
+            => _interactVerb && InteractVerb.TryPress(ActorNow(), _interactArcDegrees);
 
         /// <summary>
         /// The actor, as Core sees it: where the player is standing, which way they face, and which of the

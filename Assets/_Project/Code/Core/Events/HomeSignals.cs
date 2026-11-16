@@ -15,13 +15,27 @@ namespace HiddenHarbours.Core
     /// <see cref="LicensePurchased"/>'s file gives: that file is lead-architect's, so new signals land
     /// additively beside it. Same EventBus, separate file.</para>
     /// </summary>
-    public readonly struct HomePurchased
+    public readonly struct HomePurchased : ICustomSignal
     {
         public readonly string HomeId;
         public readonly int PricePaid;   // ₲ — 0 for a starter home
+        /// <summary>Data-authored keeper, vendor and trade; legacy/default signals report unknown.</summary>
+        public TradeCounterparty Counterparty { get; }
+        public string MerchantId => Counterparty.MerchantId;
+        public string VendorId => Counterparty.VendorId;
+        public string TradeId => Counterparty.TradeId;
+        public decimal CustomUnits => IsPurchase ? 1m : 0m;
+
+        public bool IsPurchase { get; }
+
         public HomePurchased(string homeId, int pricePaid)
+            : this(homeId, pricePaid, default) { }
+
+        public HomePurchased(string homeId, int pricePaid, TradeCounterparty counterparty, bool isPurchase = true)
         {
             HomeId = homeId; PricePaid = pricePaid;
+            Counterparty = counterparty;
+            IsPurchase = isPurchase;
         }
     }
 }

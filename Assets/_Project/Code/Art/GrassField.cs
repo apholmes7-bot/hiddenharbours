@@ -185,6 +185,16 @@ namespace HiddenHarbours.Art
         [SerializeField] private bool _previewInEditor = true;
 
         // =====================================================================================
+        // THE THINNING (owner, 2026-11-15: "remove most of the old grass sprites")
+        // =====================================================================================
+
+        [Header("Thinning (which baked tufts are actually drawn)")]
+        [Tooltip("OPTIONAL. When set, only tufts sheltered by a tree or shrub in this scene — and only a " +
+                 "share of those, and none on low ground — are drawn. The field bytes are untouched; clear " +
+                 "this to draw the whole baked meadow again.")]
+        [SerializeField] private GrassThinningDef _thinning;
+
+        // =====================================================================================
         // runtime state (none of it serialized)
         // =====================================================================================
 
@@ -205,6 +215,13 @@ namespace HiddenHarbours.Art
 
         int _builtTufts;
         int _builtVertices;
+
+        /// <summary>Anchors the last build thinned against; -1 when it did not thin. <see cref="Start"/>
+        /// compares against it to catch vegetation that was not yet standing when the meadow first grew.</summary>
+        int _anchorsUsed = -1;
+
+        /// <summary>The thinning rule this field draws through, or null for the whole baked meadow.</summary>
+        public GrassThinningDef Thinning => _thinning;
 
         /// <summary>Chunk renderers currently standing. The draw-call number, and what the measurement
         /// harness reports against the old renderer-per-tuft count.</summary>
@@ -383,7 +400,14 @@ namespace HiddenHarbours.Art
         /// runs to be identical tuft for tuft, because "deterministic" that is only true on the machine that
         /// baked it is not determinism.</para>
         /// </summary>
-        public List<Blade> DeriveBlades()
+        public List<Blade> DeriveBlades() => DeriveBlades(null, null);
+
+        /// <summary>
+        /// Grow the meadow through a thinning rule: the same tufts as <see cref="DeriveBlades()"/>, minus
+        /// every one <see cref="GrassThinning.Keeps"/> rejects. A null <paramref name="rule"/> is the whole
+        /// baked meadow; a rule with a null or empty <paramref name="anchors"/> keeps nothing.
+        /// </summary>
+        public List<Blade> DeriveBlades(GrassThinningDef rule, VegetationAnchorIndex anchors)
         {
             var blades = new List<Blade>();
             if (_cellsX <= 0 || _cellsY <= 0 || _slots <= 0) return blades;
@@ -398,6 +422,7 @@ namespace HiddenHarbours.Art
 
             byte[] straw = GrassFieldCodec.Decode(_strawPayload);
             var layout = Layout;
+            ITidalTerrain ground = rule != null ? rule.Ground : null;
 
             // ⚠ COLUMN-MAJOR, matching the order the region's pass walks its grid in. Nothing about the
             // picture depends on it — but a derived meadow and a freshly scattered one then line up index
@@ -418,6 +443,11 @@ namespace HiddenHarbours.Art
                     if (pool == null || pool.Length == 0) continue;
 
                     Vector2 p = GrassFieldScatter.SlotPosition(layout, ix, iy, s);
+                    if (rule != null && !GrassThinning.Keeps(
+                            p, GrassFieldScatter.KeepRoll(layout, ix, iy, s), rule.KeepFraction,
+                            anchors, ground, rule.MinElevationMetres))
+                        continue;
+
                     float shape = GrassFieldScatter.ShapeRoll(layout, ix, iy, s);
                     int roll = GrassFieldScatter.VariantRoll(layout, ix, iy, s);
 
@@ -535,6 +565,40 @@ namespace HiddenHarbours.Art
         void OnDestroy() => Clear();
 
         /// <summary>
+        /// A thinned meadow depends on the trees and shrubs standing in its scene. Every object of a loading
+        /// scene exists before any of them is enabled, so <see cref="OnEnable"/> normally sees them all —
+        /// but should one arrive later (a prefab spawned on Awake), the count differs here and the meadow
+        /// regrows once. One scene search, at load only (rule 7).
+        /// </summary>
+        void Start()
+        {
+            if (!Application.isPlaying || _thinning == null) return;
+            if (GatherAnchors().Count != _anchorsUsed) Rebuild();
+        }
+
+        /// <summary>
+        /// The trees and shrubs this field's thinning rule names, as they stand in THIS field's scene — an
+        /// additively loaded neighbour's woods must not shelter this region's grass. Enabled renderers on
+        /// active objects only: a hidden tree shelters nothing.
+        /// </summary>
+        public VegetationAnchorIndex GatherAnchors()
+        {
+            var anchors = new List<VegetationAnchor>();
+            if (_thinning == null) return new VegetationAnchorIndex(anchors);
+
+            var scene = gameObject.scene;
+            var renderers = FindObjectsByType<SpriteRenderer>();
+            for (int i = 0; i < renderers.Length; i++)
+            {
+                var r = renderers[i];
+                if (r == null || !r.enabled || r.gameObject.scene != scene) continue;
+                if (_thinning.TryRadiusFor(r.sharedMaterial, out float radius))
+                    anchors.Add(new VegetationAnchor(r.transform.position, radius));
+            }
+            return new VegetationAnchorIndex(anchors);
+        }
+
+        /// <summary>
         /// ⚠ <b>No object creation in here.</b> Unity forbids <c>DestroyImmediate</c> during
         /// <c>OnValidate</c>, and rebuilding means destroying the old chunks — so the clamp happens now and
         /// the regrow is deferred one editor tick, where it is legal. The same idiom
@@ -573,8 +637,11 @@ namespace HiddenHarbours.Art
                     "so the meadow will not line up with the ground the pass gated it against. Reset this " +
                     "object's rotation and scale.", this);
 
+            VegetationAnchorIndex anchors = _thinning != null ? GatherAnchors() : null;
+            _anchorsUsed = anchors != null ? anchors.Count : -1;
+
             List<Blade> blades;
-            try { blades = DeriveBlades(); }
+            try { blades = DeriveBlades(_thinning, anchors); }
             catch (Exception e)
             {
                 // A corrupt or stale field must name itself, not silently draw a bald island.

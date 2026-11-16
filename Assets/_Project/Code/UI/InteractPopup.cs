@@ -24,10 +24,13 @@ namespace HiddenHarbours.UI
     /// the press does, and would eventually disagree with the press itself. This class subscribes, trims,
     /// and toggles.</para>
     ///
-    /// <para><b>Paper, in the shell's own hand.</b> Built in code from <see cref="PaperUi"/>'s kit and
-    /// palette with the shipped face — no prefab, no new font, no art ask. It is a chalk line on a faint
-    /// strip, which is the same sensibility as a menu line, because it is the same voice speaking
-    /// quietly.</para>
+    /// <para><b>A one-line speech bubble</b> (owner ruling: the action UI wears "the same design
+    /// language as our notebook and chat bubbles"): the bubble kit's cream panel with its ink ring and
+    /// chamfered corners (<see cref="BubbleKitLink"/>, the bubble's own sprite), the game's one face
+    /// (<see cref="HarbourType"/>) in notebook ink, every measure a whole number of kit pixels — the
+    /// same dress as <see cref="InteractChooserView"/>. The PLACED rect (<see cref="Panel"/>) is the
+    /// frame the helm and the quest note step around; the drawn bubble hangs off its right edge and
+    /// widens leftward for a long label.</para>
     ///
     /// <para><b>Two things suppress it beyond "no offer".</b> A modal that is up
     /// (<see cref="InteractionGate"/>, and the shell holding the world) and the two views where the boat's
@@ -74,6 +77,8 @@ namespace HiddenHarbours.UI
 
         private GameObject _canvasGo;
         private RectTransform _panel;
+        private RectTransform _bubble;
+        private Image _bubbleImage;
         private Text _label;
 
         // What is currently offered, and what is currently DRAWN. Two facts, because the drawn state is a
@@ -166,6 +171,7 @@ namespace HiddenHarbours.UI
             _placedW = w;
             _placedH = h;
             _panel.anchoredPosition = InteractPopupLayout.PanelAnchoredPosition(in covered, tasks, w, h);
+            FitBubble();
         }
 
         /// <summary>
@@ -187,6 +193,7 @@ namespace HiddenHarbours.UI
                 {
                     _painted = text;
                     _label.text = text;
+                    FitBubble();
                 }
             }
 
@@ -236,11 +243,20 @@ namespace HiddenHarbours.UI
             RectTransform host = PaperUi.MakeScreen(transform, "InteractPopup_Canvas",
                                                     InteractPopupLayout.SortingOrder);
             _canvasGo = host.parent.gameObject;
+            // A kit pixel is Kit reference units, so a 9-slice border of N kit pixels must draw N x Kit:
+            // the reference PPU is the sprites' PPU times the art scale (the bubble's canvas rule). The
+            // scaler owns that number and writes it to the canvas, so it is set there.
+            float refPpu = DialogueBubbleKit.PixelsPerUnit * DialogueBubbleKit.ArtScale;
+            CanvasScaler scaler = _canvasGo.GetComponent<CanvasScaler>();
+            if (scaler != null) scaler.referencePixelsPerUnit = refPpu;
+            Canvas canvas = _canvasGo.GetComponent<Canvas>();
+            if (canvas != null) canvas.referencePixelsPerUnit = refPpu;
 
-            // No GraphicRaycaster work to do: the popup is a note, not a control. PaperUi.MakeScreen adds
-            // one for the pages that need it; leaving it on an inactive panel costs nothing, and every
-            // graphic below sets raycastTarget = false so it can never eat a click meant for the world.
-            var go = new GameObject("Panel", typeof(RectTransform), typeof(Image));
+            // The PLACED rect: exactly where the layout says, at the placed size — the frame the helm and
+            // the quest note are stepped around. It draws nothing itself.
+            // No GraphicRaycaster work to do: the popup is a note, not a control; every graphic below sets
+            // raycastTarget = false so it can never eat a click meant for the world.
+            var go = new GameObject("Panel", typeof(RectTransform));
             go.transform.SetParent(host, false);
             _panel = go.GetComponent<RectTransform>();
             _panel.anchorMin = new Vector2(0f, 1f);
@@ -249,33 +265,74 @@ namespace HiddenHarbours.UI
             _panel.anchoredPosition = InteractPopupLayout.PanelAnchoredPosition();
             _panel.sizeDelta = InteractPopupLayout.PanelSize();
 
-            var strip = go.GetComponent<Image>();
-            strip.color = PanelInk;
-            strip.raycastTarget = false;
+            // The DRAWN bubble: a one-line speech bubble hung off the frame's right edge, as wide as its
+            // words, in the bubble's own panel sprite (BubbleKitLink — a reference, not a copy).
+            BubbleKitLink kit = BubbleKitLink.Shipped;
+            Sprite panelArt = kit != null ? kit.Panel : null;
+            var bubbleGo = new GameObject("Bubble", typeof(RectTransform), typeof(Image));
+            bubbleGo.transform.SetParent(_panel, false);
+            _bubble = bubbleGo.GetComponent<RectTransform>();
+            _bubble.anchorMin = new Vector2(1f, 1f);
+            _bubble.anchorMax = new Vector2(1f, 1f);
+            _bubble.pivot = new Vector2(1f, 1f);
+            _bubble.sizeDelta = InteractPopupLayout.PanelSize();
+            _bubbleImage = bubbleGo.GetComponent<Image>();
+            _bubbleImage.sprite = panelArt;
+            _bubbleImage.type = panelArt != null && panelArt.border != Vector4.zero ? Image.Type.Sliced : Image.Type.Simple;
+            _bubbleImage.color = InteractChooserStyle.PanelTint(panelArt != null);
+            _bubbleImage.raycastTarget = false;
 
-            _label = PaperUi.MakeText(_panel, "", InteractPopupLayout.FontSize, TextAnchor.MiddleLeft,
-                                      InteractPopupLayout.TextAnchoredPosition().x,
-                                      InteractPopupLayout.TextAnchoredPosition().y,
-                                      InteractPopupLayout.TextSize().x,
-                                      InteractPopupLayout.TextSize().y,
-                                      PaperUi.Chalk);
+            var labelGo = new GameObject("Label", typeof(RectTransform), typeof(Text));
+            labelGo.transform.SetParent(_bubble, false);
+            RectTransform lrt = labelGo.GetComponent<RectTransform>();
+            lrt.anchorMin = new Vector2(0f, 1f);
+            lrt.anchorMax = new Vector2(0f, 1f);
+            lrt.pivot = new Vector2(0f, 1f);
+            lrt.anchoredPosition = InteractPopupLayout.TextAnchoredPosition();
+            lrt.sizeDelta = InteractPopupLayout.TextSize();
+            _label = labelGo.GetComponent<Text>();
+            Font face = Resources.Load<Font>(HarbourType.ResourceKey);
+            _label.font = face != null ? face : PaperUi.DefaultFont();
+            _label.fontSize = InteractPopupLayout.FontSize;
+            // UPPER-left, as the speech bubble's body: the line's top sits a whole number of kit pixels
+            // into the bubble. Middle alignment would centre a 10-px line in an 8-px box — half a kit
+            // pixel off the grid, which is where broken glyphs come from.
+            _label.alignment = TextAnchor.UpperLeft;
+            _label.supportRichText = false;
+            _label.color = InteractChooserStyle.Words;
+            _label.raycastTarget = false;
             // One line, cut rather than wrapped — the layout rule has already trimmed the string, and this
             // is what stops a face-metric surprise turning it into two lines anyway.
             _label.horizontalOverflow = HorizontalWrapMode.Overflow;
-            _label.verticalOverflow = VerticalWrapMode.Truncate;
+            _label.verticalOverflow = VerticalWrapMode.Overflow;
 
             _panel.gameObject.SetActive(false);
         }
 
         /// <summary>
-        /// The strip behind the words — the shell's own menu-line tint, a touch stronger.
-        ///
-        /// <para>Deliberately not a solid panel: the ruling asks for a small popup in the paper language,
-        /// and <see cref="PaperUi"/>'s whole sensibility is "text with a faint strip behind it", never
-        /// chrome. This is dark enough that chalk reads over a bright noon harbour and thin enough that the
-        /// world is still there behind it.</para>
+        /// Size the drawn bubble to its words and put its top-left corner — where the words start — on a
+        /// whole screen pixel. Called when the words change and when the panel is re-placed; never per
+        /// quiet frame.
         /// </summary>
-        private static readonly Color PanelInk = new Color(0.043f, 0.063f, 0.086f, 0.72f);
+        private void FitBubble()
+        {
+            if (_bubble == null) return;
+            string text = _label.text;
+            float width = InteractPopupLayout.BubbleWidth(
+                Mathf.Max(_label.preferredWidth, InteractPopupLayout.EstimateTextUnits(text)));
+            _label.rectTransform.sizeDelta = new Vector2(width - 2f * InteractPopupLayout.TextPadX,
+                                                         InteractPopupLayout.TextSize().y);
+
+            // Right edge first (the chooser snaps the same edge the same way), then the left from it.
+            float s = HudBandLayout.ScaleFactor(HudScreen.Width, HudScreen.Height);
+            Vector2 frame = _panel.anchoredPosition;
+            float right = frame.x + InteractPopupLayout.PanelWidth;
+            Vector2 span = InteractPopupLayout.SnapSpan(right - width, width, s);
+            float top = frame.y;
+            _bubble.sizeDelta = new Vector2(span.y, InteractPopupLayout.PanelHeight);
+            _bubble.anchoredPosition = new Vector2(span.x + span.y - right,
+                                                   InteractPopupLayout.SnapToScreen(top, s) - top);
+        }
 
         // ---- test / tooling seam ----------------------------------------------------------------
 
@@ -300,6 +357,15 @@ namespace HiddenHarbours.UI
         /// <summary>The panel's rect, for a layout test that wants to check where it actually landed
         /// rather than only what <see cref="InteractPopupLayout"/> says it should.</summary>
         public RectTransform Panel => _panel;
+
+        /// <summary>The drawn bubble inside <see cref="Panel"/> (its size follows the words).</summary>
+        public RectTransform Bubble => _bubble;
+
+        /// <summary>The sprite the bubble wears (the bubble kit's panel, or null when unlinked).</summary>
+        public Sprite BubbleArt => _bubbleImage != null ? _bubbleImage.sprite : null;
+
+        /// <summary>The face the line is set in.</summary>
+        public Font ShownFace => _label != null ? _label.font : null;
 
         /// <summary>The canvas this popup built, so a test can tear the whole thing down in one
         /// call.</summary>

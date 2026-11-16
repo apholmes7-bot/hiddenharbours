@@ -148,7 +148,7 @@ namespace HiddenHarbours.Economy
                 if (_home.Acquisition == HomeDef.Mode.StarterHome)
                 {
                     HomeDeeds.Grant(_home.Id);
-                    EventBus.Publish(new HomePurchased(_home.Id, 0));
+                    EventBus.Publish(new HomePurchased(_home.Id, 0, _home.Counterparty, isPurchase: false));
                     EventBus.Publish(new DevNotice($"{_home.DisplayName} is yours."));
                     return LastOutcome = Outcome.Bought;
                 }
@@ -168,7 +168,7 @@ namespace HiddenHarbours.Economy
                 }
 
                 HomeDeeds.Grant(_home.Id);
-                EventBus.Publish(new HomePurchased(_home.Id, _home.Price));
+                EventBus.Publish(new HomePurchased(_home.Id, _home.Price, _home.Counterparty));
                 EventBus.Publish(new DevNotice(
                     $"{_home.DisplayName} is yours — ₲{_home.Price}. Somewhere of your own at last."));
                 return LastOutcome = Outcome.Bought;

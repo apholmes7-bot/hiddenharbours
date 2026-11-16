@@ -48,6 +48,7 @@ namespace HiddenHarbours.Fishing
             // hooked fish does — rule 4's named contract rather than an asmdef reference.
             GameServices.FishBehaviour = Facts;
             GameServices.FishSizes = SizeFacts;
+            GameServices.GiftableFacts = GiftFacts;
         }
 
         /// <summary>
@@ -62,8 +63,19 @@ namespace HiddenHarbours.Fishing
         /// authored weight range, for copy that names a catch's size.</summary>
         public static IFishSizeFacts SizeFacts => (IFishSizeFacts)Facts;
 
-        private sealed class RegistryFacts : IFishBehaviourFacts, IFishSizeFacts
+        /// <summary>This registry through the Core <see cref="IGiftableFacts"/> seam — whether a catch of a
+        /// species may be given to a person (<see cref="FishSpeciesDef.Giftable"/>), for the gift act.</summary>
+        public static IGiftableFacts GiftFacts => (IGiftableFacts)Facts;
+
+        private sealed class RegistryFacts : IFishBehaviourFacts, IFishSizeFacts, IGiftableFacts
         {
+            public bool TryIsGiftable(string itemId, out bool giftable)
+            {
+                FishSpeciesDef d = Get(itemId);
+                giftable = d != null && d.Giftable;
+                return d != null;
+            }
+
             public bool TryWeightRangeKg(string fishId, out float minKg, out float maxKg)
             {
                 FishSpeciesDef d = Get(fishId);

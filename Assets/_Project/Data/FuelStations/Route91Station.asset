@@ -33,3 +33,5 @@ MonoBehaviour:
   - Grade: stove_oil
     Available: 1
     PricePerLitre: 1.2
+  KeeperNpcId:
+  TradeId: trade.fuel

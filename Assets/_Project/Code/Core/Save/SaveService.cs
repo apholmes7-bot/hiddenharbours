@@ -84,6 +84,10 @@ namespace HiddenHarbours.Core
             // could record where you slept but not wake you there would be the half-built version of the
             // feature that is hardest to notice is half-built.
             RestWakeRestorer.Install();
+
+            // Cleanliness slice 1: the work, the pot haul and the sea already announce themselves on the
+            // bus; this turns them into dirt. Same lifetime as the two above.
+            CleanlinessResponder.Install();
         }
 
         private void OnDestroy()
@@ -92,6 +96,7 @@ namespace HiddenHarbours.Core
             EventBus.Unsubscribe<ActiveBoatChanged>(OnActiveBoatChanged);
             RestSaveResponder.Uninstall();
             RestWakeRestorer.Uninstall();
+            CleanlinessResponder.Uninstall();
 
             if (ReferenceEquals(GameServices.Save, this)) GameServices.Save = null;
             if (_instance == this) _instance = null;
@@ -146,6 +151,10 @@ namespace HiddenHarbours.Core
                 return;
             }
             if (!WritesAllowed) return;
+            // Mid-sleep, nothing is written (owner ruling 2026-11-15, "a sleep is a save"): an autosave on
+            // quit or on a flag would keep a night half slept, and the reload must restart the day where the
+            // player last woke. SleepFlow wakes (phase back to awake) BEFORE it asks for its own write.
+            if (SleepFlow.InProgress) return;
 
             if (Current == null) Current = SaveMigration.NewGame();
             SnapshotLiveState();
@@ -247,9 +256,17 @@ namespace HiddenHarbours.Core
             {
                 Current.GameTimeSeconds = clock.TotalSeconds;
                 Current.DayIndex = clock.DayIndex;
-                // Needs slice 1: anchor hunger/tiredness at this same instant, so a reload is exact.
-                NeedsMath.Settle(Current.PlayerNeeds, clock.TotalSeconds, GameServices.NeedsSettings,
-                                 GameServices.SecondsPerDay / 24d);
+                // Needs slice 1: anchor hunger/tiredness at this same instant, so a reload is exact. Body
+                // slice 1: the body's mass and stomach too, and hunger at the body's own rate (exactly the
+                // configured rate for the default body, so this is the needs slice's settle bit for bit).
+                BodyMath.Settle(Current.PlayerBody, Current.PlayerNeeds, clock.TotalSeconds,
+                                GameServices.NeedsSettings, GameServices.BodySettings,
+                                GameServices.SecondsPerDay / 24d);
+                // Body slice 2: fitness levels carried to the same instant (a seek then rebases them exactly).
+                StrengthMath.SettleFitness(Current.PlayerBody, clock.TotalSeconds, GameServices.StrengthSettings,
+                                           GameServices.SecondsPerDay);
+                // Cleanliness slice 1: the same for the dirt (its stretch and stretch start are kept).
+                GameServices.Cleanliness.Settle();
             }
 
             if (GameServices.Environment != null) Current.WorldSeed = GameServices.Environment.WorldSeed;

@@ -24,8 +24,10 @@ MonoBehaviour:
   - region.east_water
   - region.nine_mile_creek
   - region.south_water
+  - region.rice_point
+  - region.cumberland
   AllowedGear: 1
-  Seasons: 15
+  Seasons: 6
   MinTide: -10
   MaxTide: 10
   StartHour: 0

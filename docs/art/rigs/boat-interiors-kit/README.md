@@ -144,3 +144,26 @@ before the next regeneration, or it will drop them.
   sole on every hull except the cape. Four lobster-variant stove reaches (inshore Newfoundland and
   standard Fundy, hardtop and open) stood inside the helm seat. Ids did not change. Helm and locker
   reaches were not touched, though some of them still stand off the sole or inside the helm seat.
+
+## Second berths (hand-authored 2026-11-15)
+
+Owner ruling: in co-op the night passes only when every player is in a bunk, and two players must never
+have to share one bed. Every kit hull that sleeps now has at least two separate sleep anchors. Like the
+prep and bunk data above, they were added to the sidecars by hand (and to the baked defs, point for
+point; `EveryKitDefsSleepAnchorsAreItsSidecars` holds the two together). The renderer and its SHA are
+untouched. Existing ids keep their meaning; the new ids are append-only.
+
+- **Cape Islander, 12 m Lobster Boat:** the V-berth sleeps two singles side by side, heads aft, one per
+  drawn pillow. `bunk` is now the port single (its reach, mattress and pillow moved off the centreline);
+  `bunk_starboard` is the starboard single. Mattress x = half the drawn berth half-width at mid-length,
+  pillow x = the drawn pillow (`pw`), both evaluated from the renderer's loft.
+- **The 18 lobster variants:** `bunk_bench`, a settee berth on the starboard wheelhouse bench (`bench`
+  box, head aft against the locker). The cuddy V-berth stays one person's bed.
+- **Coastal Packet:** `bunk_starboard` on the drawn `bunk_stbd`. **Tanker:** `bunk_starboard` on
+  `bunk_stbd` and `bunk_forward` on the drawn forward port bunk (`bunk_port`). Reaches mirror the port
+  bunk's: 0.15 / 0.2 m past the head end.
+
+**Owed to the renderer** (one `boatInteriorRig.js` edit, so a re-stamp of every sidecar and def, and a
+mesh re-bake): a centreline leeboard and a split quilt on the cape and lobster V-berths, a thin cushion,
+pillow and folded blanket on the variants' bench, and emitting these anchors (with the prep and bunk
+blocks above) so the next regeneration keeps them.

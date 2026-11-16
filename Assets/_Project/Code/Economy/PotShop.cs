@@ -102,7 +102,7 @@ namespace HiddenHarbours.Economy
             int owned = PotLocker.AddOwned(save, offer.TrapDefId, 1);
             if (ReferenceEquals(save, GameServices.Save?.Current)) GameServices.Save?.Save();
 
-            EventBus.Publish(new PotPurchased(offer.TrapDefId, offer.Price, owned));
+            EventBus.Publish(new PotPurchased(offer.TrapDefId, offer.Price, owned, SellerDirectory.Resolve(_sellerId)));
             LastPurchaseSucceeded = true;
             Debug.Log($"[PotShop] Bought a {offer.DisplayName} ({offer.TrapDefId}) for ₲{offer.Price} — {owned} owned.");
             _onPurchased?.Invoke(offer.Price);

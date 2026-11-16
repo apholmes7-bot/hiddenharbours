@@ -1057,6 +1057,194 @@
                     "isPartOfComposite": false
                 }
             ]
+        },
+        {
+            "name": "Chooser",
+            "id": "4d4aa97c-a393-49d1-964b-84fd45ecd459",
+            "actions": [
+                {
+                    "name": "Pick1",
+                    "type": "Button",
+                    "id": "9d17489a-4bf0-402f-bfb4-976b9adbbc20",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Pick2",
+                    "type": "Button",
+                    "id": "b9e3e6d5-8c86-45bb-bb54-abe4cfdd84d7",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Pick3",
+                    "type": "Button",
+                    "id": "51a90daa-38b7-4023-a91f-f68028cb0f2a",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Pick4",
+                    "type": "Button",
+                    "id": "72abcfee-fa82-48c0-a90f-a36d868012fe",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Pick5",
+                    "type": "Button",
+                    "id": "fe230c1f-2757-4bb6-bff2-86d6402d16c4",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Pick6",
+                    "type": "Button",
+                    "id": "1e6eff5e-e86e-46aa-b753-305d22f546dc",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Pick7",
+                    "type": "Button",
+                    "id": "6440ecdf-2224-4317-bc90-85aa8af35a37",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Pick8",
+                    "type": "Button",
+                    "id": "1285a64f-192a-47d9-b9a2-19f9aa653296",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Pick9",
+                    "type": "Button",
+                    "id": "57972f7e-7b0a-4fec-85f9-c65a8e631c26",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "d6f49fdd-42e1-483b-903d-c365d44ef6b7",
+                    "path": "<Keyboard>/1",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "KeyboardMouse",
+                    "action": "Pick1",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "7cd1790a-cdd8-48d6-a7bb-e546ba79b25e",
+                    "path": "<Keyboard>/2",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "KeyboardMouse",
+                    "action": "Pick2",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "a98d4be2-a8a3-4ac5-9364-dd889f9bc7c0",
+                    "path": "<Keyboard>/3",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "KeyboardMouse",
+                    "action": "Pick3",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "c5f20b43-8727-42de-918e-aecb0f91458f",
+                    "path": "<Keyboard>/4",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "KeyboardMouse",
+                    "action": "Pick4",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "3798d004-ea71-41d3-b2fc-b02dcbca2c05",
+                    "path": "<Keyboard>/5",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "KeyboardMouse",
+                    "action": "Pick5",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "64ea326c-f670-473a-8c43-f318fe8acc31",
+                    "path": "<Keyboard>/6",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "KeyboardMouse",
+                    "action": "Pick6",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "1190388c-4c0b-4d3d-b106-f05d48a4a279",
+                    "path": "<Keyboard>/7",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "KeyboardMouse",
+                    "action": "Pick7",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "7b2b883a-4817-4535-acb0-ba53da8f73b5",
+                    "path": "<Keyboard>/8",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "KeyboardMouse",
+                    "action": "Pick8",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "e0065c43-ec4f-4ed2-83d9-26b7bf87a2e9",
+                    "path": "<Keyboard>/9",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "KeyboardMouse",
+                    "action": "Pick9",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
         }
     ],
     "controlSchemes": [

@@ -377,6 +377,38 @@ because one run's road is another's front step. ⭐ And the leg out of a pull-of
 before it merges: aiming it at the road's nearest point parks the machine PERPENDICULAR to the road, with
 her 6.7 m length lying across the carriageway and her tail a metre from the centre-line.
 
+### 2.9 ⭐ A DAY THAT LEAVES THE REGION — cross-region routines, slice 1 (owner ask 2026-11-15)
+
+The owner asked that villagers cross scenes for work, fishing and recreation, and that St Peters people
+cross the bar to Nine Mile Creek to run errands, only while the bar is open, at an honest pace. Slice 1
+is the logic and one example; no scene changed.
+
+- **A block names its region** (`RoutineEntry.RegionId`, empty = the routine's own, so every existing
+  asset keeps its meaning). A block whose region differs from the one before it is a **crossing**.
+- **A day of the week can differ** (`RoutineDef.WeeklyDays`): on that weekday its blocks replace the
+  ordinary day. It must start and end in the routine's own region, so midnight is never a seam. Its
+  departures may move up to `DayJitterMinutes` from week to week, seeded from `(worldSeed, npc id, day)`
+  and clamped with the person's own jitter so the day can never reorder.
+- **A crossing is data** (`RegionCrossingDef`, `crossing.snake_case`, `Data/Regions/Crossings`): a near
+  station and a path to the edge passage in the FROM region's frame, and a path from the passage to a far
+  station in the TO region's frame. Its time is its length at the block's carrier speed
+  (`CrossingSpeedMetresPerSecond`, 0 = their walk). The walker is in the FROM region until the seam and
+  in the TO region after it, so **at every instant they are in exactly one region**.
+- **The resolver** (`RoutineLegs` / `RoutineItinerary`) is a pure function of (routine, game time, seed,
+  gate). A crossing asks `GameServices.CrossingGate` (Core `ICrossingGate`, always open until the
+  tide-window slice) and waits at the near end while it is shut; a crossing pushes any later departure
+  that falls before its arrival; one day of carry covers a crossing past midnight.
+- **Presence**: `VillagerRoutine` asks the resolver only for a routine that ever leaves its region (every
+  other villager runs exactly the code it did). While the resolver puts them elsewhere they are hidden and
+  cannot be talked to; on a crossing in this region they are placed on the crossing path.
+- **The example**: Junior Poirier's Wednesday — over the St Peters bar on the quad (5.5 m/s) at 08:30 to
+  the Nine Mile Creek landing, fuel and the week's order, back over at 11:30, a late dinner, then the
+  afternoon tide as any day. The bar as the game draws it is about 315 m from the bar head to the Nine Mile
+  Creek landing: three game hours on foot at his 1.35 m/s, under one on the quad.
+- **Not yet**: the real bar window off the tide (a gate implementation), Nine Mile Creek's station table
+  and lanes (so he is computed there but not drawn), the quad and cart as drawn carriers with real
+  capacity, the supply arithmetic, and tide-aware departure hours.
+
 ---
 
 ## 3. The handcrafted core cast
@@ -797,6 +829,39 @@ Two linked tracks, kept deliberately modest in scope and tied to pillars (no spr
 Keep it tight: **two tracks, a handful of inputs, concrete unlocks, gentle decay.** Resist the urge
 to build a relationship sim; build a relationship *layer* that makes the living coast feel like it
 knows you.
+
+### 5.4 As built: gifts, slice 1 (owner ask 2026-11-15)
+
+"Some items can be gifted to npcs and npcs have preferences." What shipped, and what did not:
+
+- **What can be given.** The loose catch in your hand (a fish by the gill, a handful of clams). It is
+  giftable unless its species says otherwise (`FishSpeciesDef.Giftable`, default on), read through
+  Core's `IGiftableFacts` so the world layer never names Fishing. Tools and pails are never offered: the
+  act only peeks the hand's loose catch (`ICatchHands.TryPeekHand`). Food is not a hand item on main
+  yet, so it has no flag; when it is, it answers through the same seam.
+- **How it is offered.** Facing a villager you have MET (her completion flag is set) with a giftable
+  catch in hand, the popup says **Give — Aunt Ginny** instead of Talk, and E gives. Her opening
+  conversation is never skipped by a fish in your hand. Put the catch away to talk. When the
+  interaction chooser lands, this one branch in `WorldInteractor.BeginInteract` becomes two rows
+  (Talk, Give); `Give()` is already the whole act.
+- **Tastes are data** on the villager's `NpcDef.Gifts`: loved / liked / disliked by item id and by
+  item tag (`catch`, and the fish category in snake case: `shellfish`, `inshore_groundfish`,
+  `pelagic` ...). An id beats a tag; on a tie between tags the warmer wins. Nothing authored = she takes
+  anything politely. The pure rule is `GiftRule`.
+- **One gift per person per game day** (`GiftConfig.GiftsPerNpcPerDay`). A second gift that day is
+  declined kindly and the catch stays in your hand. **Runtime only, not saved**: reload on the same
+  day and she will take one more. Persisting it needs a save field, deferred while v22/v23 are in
+  flight.
+- **She says how she took it**, one line in her bubble, never a number or a heart: her own words for
+  that reaction if she has them, else the shared lines on `GiftConfig`, picked by the game day.
+- **What it moves.** An accepted gift records a relationship event, player to her
+  (`GiftLoved +8`, `GiftLiked +4`, `GiftNeutral +2`, `GiftDisliked -3`, never rivalry; the owner's rows
+  on the relationship config), applied at the next `ApplyDay` like every other event (nothing calls `ApplyDay` yet, and the graph is
+not saved: relationships slice 2), and publishes
+  `GiftGiven` (npc, item, reaction, day) on the EventBus for anything else that wants the moment.
+- **First tastes authored:** Aunt Ginny loves cod (Ned's chowder), likes shellfish, dislikes green
+  crab. Junior Poirier loves striped bass, likes pelagics, dislikes soft-shell clams (he digs them all
+  day). Basil Samson loves haddock, likes inshore groundfish, dislikes cunner and tomcod (bait).
 
 ---
 

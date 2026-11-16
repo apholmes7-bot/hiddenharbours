@@ -21,7 +21,9 @@ namespace HiddenHarbours.Tests.PlayMode
     /// 2026-11-14). The real chain on the real hull: a dory root, boarded on the shipped switcher, the
     /// cape islander swapped on under her (the path a purchase and the dev picker both take), her
     /// installer grows the bunk her rig names, and a press below at the berth runs the same rest the bed
-    /// ashore runs — the clock at the wake hour, one <see cref="DayStarted"/>, one save.
+    /// ashore runs. Since the owner's 2026-11-15 ruling the press offers a length and the confirmed night
+    /// runs fast (<see cref="SleepFlow"/>): she wakes the chosen hours on, one <see cref="DayStarted"/>
+    /// for the midnight crossed, one save at the wake recording the bunk aboard.
     ///
     /// <para><b>What it does NOT walk.</b> Getting down to the cuddy is the cabin walk, which
     /// <see cref="BoatCabinOnASwappedHullPlayTests"/> owns; this enters her cabin on the bunk's level
@@ -35,6 +37,8 @@ namespace HiddenHarbours.Tests.PlayMode
         private const string BoatsFolder = "Assets/_Project/Data/Boats";
         private const string DoryName = "Dory";
         private const string SubjectName = "CapeIslander";
+        private const string RegionId = "region.test_bunk_harbour";
+        private const double Exact = 1e-9;
 
         sealed class FakeSave : ISaveService
         {
@@ -51,13 +55,16 @@ namespace HiddenHarbours.Tests.PlayMode
         private readonly List<GameSaved> _saved = new();
         private ISaveService _saveBefore;
         private IGameClock _clockBefore;
+        private string _regionBefore;
         private bool _responderWasInstalled;
         private GameConfig _config;
 
         [SetUp]
         public void SetUp()
         {
+            SleepFlow.Reset();   // a booted core may have left a sleep or a chooser; the test presents its own
             Interactables.Clear();
+
             InteractVerb.Reset();
             InteractOffer.Reset();
             InteractionGate.Reset();
@@ -72,6 +79,7 @@ namespace HiddenHarbours.Tests.PlayMode
 
             _saveBefore = GameServices.Save;
             _clockBefore = GameServices.Clock;
+            _regionBefore = GameServices.CurrentRegionId;
             GameServices.Save = null;
             _responderWasInstalled = RestSaveResponder.Installed;
 
@@ -88,6 +96,7 @@ namespace HiddenHarbours.Tests.PlayMode
         {
             EventBus.Unsubscribe<DayStarted>(_days.Add);
             EventBus.Unsubscribe<GameSaved>(_saved.Add);
+            SleepFlow.Reset();
             if (!_responderWasInstalled) RestSaveResponder.Uninstall();
             Interactables.Clear();
             InteractVerb.Reset();
@@ -96,6 +105,7 @@ namespace HiddenHarbours.Tests.PlayMode
             GameServices.Config = null;
             GameServices.Save = _saveBefore;
             GameServices.Clock = _clockBefore;
+            GameServices.CurrentRegionId = _regionBefore;
 
             for (int i = 0; i < _spawned.Count; i++)
                 if (_spawned[i] != null) UnityEngine.Object.Destroy(_spawned[i]);
@@ -104,7 +114,7 @@ namespace HiddenHarbours.Tests.PlayMode
         }
 
         [UnityTest]
-        public IEnumerator BelowAtHerBunk_APressBringsTheWakeHour_OneDayStarted_AndOneSave()
+        public IEnumerator BelowAtHerBunk_APressOffersTheNight_ConfirmedItRunsFastToTheChosenHour_OneDayStarted_AndOneSaveAtTheWake()
         {
             BoatHullDef dory = LoadHull(DoryName);
             BoatHullDef subject = LoadHull(SubjectName);
@@ -148,8 +158,9 @@ namespace HiddenHarbours.Tests.PlayMode
 
             Assert.AreSame(subject, boat.Hull, "the picker put the cape islander under her");
             Assert.IsTrue(installer.Built, "the swap grew her cabin");
-            Assert.AreEqual(1, installer.Bunks.Count, "…and the one bunk her rig names");
+            Assert.AreEqual(2, installer.Bunks.Count, "…and the two singles of her V-berth (2026-11-15)");
             BoatBunk bunk = installer.Bunks[0];
+            StringAssert.EndsWith(".bunk", bunk.Id, "the original berth keeps its id, and comes first");
             BoatInterior cabin = installer.Interior;
             Assert.IsFalse(bunk.IsAvailable, "on deck, outside her cabin, the bunk is not offered");
 
@@ -158,8 +169,19 @@ namespace HiddenHarbours.Tests.PlayMode
             GameServices.Save = save;
             GameClock clock = NewClock();
             GameServices.Clock = clock;
+            GameServices.CurrentRegionId = RegionId;
             RestSaveResponder.Install();
-            double before = clock.TotalSeconds;
+            SleepFlow.ChooserPresent = true;   // the chooser a real session presents (owner ruling 2026-11-15)
+
+            // Turned in the longest sleep before the wake hour, on the day after the start, so the offer
+            // "until the morning" is exactly the longest sleep and crosses one midnight.
+            float longest = SleepPlan.MaxHours(_config);
+            double hour = SleepPlan.SecondsPerGameHour(_config.SecondsPerDay);
+            double bedHour = _config.WakeHour - longest;
+            if (bedHour < 0d) bedHour += 24d;
+            double bedtime = _config.SecondsPerDay + bedHour * hour;
+            clock.SeekTo(bedtime);
+            double expectedWake = bedtime + longest * hour;
 
             // ---- below at the berth, and the press, in one frame ----------------------------------
             int level = cabin.LevelIndexAtHeight(bunk.ReachPoint.z);
@@ -168,13 +190,47 @@ namespace HiddenHarbours.Tests.PlayMode
             Assert.AreEqual(ControlMode.OnDeck, sw.Mode, "a cabin sole is walked on deck");
             bunk.Interact(new InteractActor(bunk.WorldPosition, Vector2.up, InteractContext.OnDeck));
 
-            Assert.AreEqual(_config.WakeHour, clock.HourOfDay, 1e-3f, "she wakes at the wake hour");
-            Assert.Greater(clock.TotalSeconds, before, "the clock moved forward, never back");
+            // ---- the press offers a length; nothing moves while she chooses -----------------------
+            Assert.AreEqual(SleepPhase.Choosing, SleepFlow.Phase, "the press lies her down and offers a length");
+            Assert.AreEqual(longest, SleepFlow.Hours, 1e-4f, "the first offer is until the morning");
+            Assert.AreEqual(bedtime, clock.TotalSeconds, Exact, "no time passes while she chooses");
+            Assert.AreEqual(0, save.Saves, "and nothing is saved before she sleeps");
+            SleepFlow.Adjust(+1);
+            Assert.AreEqual(longest, SleepFlow.Hours, 1e-4f, "never longer than the longest sleep");
+            SleepFlow.Adjust(-1);
+            Assert.AreEqual(longest - SleepPlan.StepHours(_config), SleepFlow.Hours, 1e-4f, "a step shorter");
+            SleepFlow.Adjust(+1);
+            Assert.AreEqual(longest, SleepFlow.Hours, 1e-4f, "and a step back");
+
+            // ---- confirmed, the night runs fast, a frame at a time --------------------------------
+            SleepFlow.Confirm();
+            Assert.AreEqual(SleepPhase.Asleep, SleepFlow.Phase, "confirming falls asleep");
+            Assert.AreEqual(expectedWake, SleepFlow.WakeSeconds, Exact, "to wake the chosen hours on");
+
+            float frame = Time.fixedDeltaTime;
+            int frames = Mathf.CeilToInt(longest / (SleepPlan.GameHoursPerRealSecond(_config) * frame)) + 2;
+            SleepFlow.Tick(frame);
+            Assert.IsTrue(SleepFlow.InProgress, "one frame does not sleep the whole night: time runs fast, not in a jump");
+            Assert.Greater(clock.TotalSeconds, bedtime, "the clock moved forward, never back");
+            Assert.Less(clock.TotalSeconds, expectedWake);
+            Assert.AreEqual(0, save.Saves, "no save while asleep");
+            for (int i = 0; i < frames && SleepFlow.InProgress; i++) SleepFlow.Tick(frame);
+
+            // ---- she wakes on her own at the chosen hour, and the wake is the save ----------------
+            Assert.AreEqual(SleepPhase.Awake, SleepFlow.Phase, "she wakes on her own when the hours are up");
+            Assert.AreEqual(expectedWake, clock.TotalSeconds, Exact, "at the bedtime plus the hours chosen");
+            Assert.AreEqual(_config.WakeHour, clock.HourOfDay, 1e-3f, "which is the wake hour");
             Assert.AreEqual(1, _days.Count, "one midnight slept through, one DayStarted");
-            Assert.AreEqual(1, save.Saves, "one save");
+            Assert.AreEqual(1, save.Saves, "one save, at the wake");
             Assert.AreEqual(1, _saved.Count);
             Assert.IsTrue(_saved[0].Ok, "and the day is kept");
-            Assert.IsFalse(RestLocker.Anchor(save.Current).IsSet, "no wake spot aboard: a reload wakes at the spawn");
+            Assert.AreEqual(SleepFlow.RestedText, _saved[0].Reason, "a whole sleep, not a cancelled one");
+
+            SleepPlace place = RestLocker.Place(save.Current);
+            Assert.IsTrue(place.Aboard, "the save records that she slept aboard");
+            Assert.AreEqual(bunk.Id, place.BedId, "in this bunk");
+            Assert.AreEqual(expectedWake, place.WokeAtSeconds, Exact, "and when she woke");
+            Assert.IsFalse(RestQuorum.IsOccupied(bunk.Id), "and she is out of the bunk again");
         }
 
         // ---- rig -----------------------------------------------------------------------------

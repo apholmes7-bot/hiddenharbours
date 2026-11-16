@@ -16,9 +16,18 @@ namespace HiddenHarbours.Core
     /// </summary>
     public static class CharacterFactors
     {
-        /// <summary>The local player's combined factor for <paramref name="stat"/>.</summary>
+        /// <summary>
+        /// The local player's combined factor for <paramref name="stat"/>: <c>traits x (needs x body)</c>.
+        /// Body slice 1 adds the body's walk factor (height and mass) beside the needs; the worn pair is never
+        /// below <see cref="NeedsMath.MinimumFloor"/> (hunger slows, it never stops). With the default body
+        /// its factor is the literal 1, so this is bit for bit the needs slice's product.
+        /// </summary>
         public static float Player(TraitStat stat)
-            => GameServices.Traits.PlayerMultiplier(stat) * GameServices.Needs.PlayerMultiplier(stat);
+        {
+            float worn = GameServices.Needs.PlayerMultiplier(stat) * GameServices.Body.PlayerMultiplier(stat);
+            if (worn < NeedsMath.MinimumFloor) worn = NeedsMath.MinimumFloor;
+            return GameServices.Traits.PlayerMultiplier(stat) * worn;
+        }
 
         /// <summary><paramref name="value"/> scaled by the local player's combined factor for
         /// <paramref name="stat"/>; untouched when that factor is exactly 1.</summary>
