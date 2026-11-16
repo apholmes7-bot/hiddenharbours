@@ -111,8 +111,8 @@ namespace HiddenHarbours.Tests.PlayMode
             if (_destRegion != null) Object.DestroyImmediate(_destRegion);
 
             if (_origin.IsValid() && _origin.isLoaded) SceneManager.SetActiveScene(_origin);
-            if (_dest.IsValid() && _dest.isLoaded) yield return SceneManager.UnloadSceneAsync(_dest);
-            if (_source.IsValid() && _source.isLoaded) yield return SceneManager.UnloadSceneAsync(_source);
+            if (_dest.IsValid() && _dest.isLoaded) yield return HiddenHarbours.Tests.Support.SceneSettle.Unload(_dest);
+            if (_source.IsValid() && _source.isLoaded) yield return HiddenHarbours.Tests.Support.SceneSettle.Unload(_source);
 
             GameServices.Reset();
         }

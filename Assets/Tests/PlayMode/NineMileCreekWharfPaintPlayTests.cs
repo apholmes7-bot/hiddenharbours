@@ -67,7 +67,7 @@ namespace HiddenHarbours.Tests.PlayMode
             {
                 var s = SceneManager.GetSceneAt(i);
                 if (s.IsValid() && s != clean && s.name == SceneName)
-                    yield return SceneManager.UnloadSceneAsync(s);
+                    yield return HiddenHarbours.Tests.Support.SceneSettle.Unload(s);
             }
         }
 
@@ -89,7 +89,7 @@ namespace HiddenHarbours.Tests.PlayMode
             // it is not this fixture's to fix and must not decide its result.
             LogAssert.ignoreFailingMessages = true;
 
-            yield return SceneManager.LoadSceneAsync(SceneName, LoadSceneMode.Single);
+            yield return HiddenHarbours.Tests.Support.SceneSettle.Load(SceneName, LoadSceneMode.Single);
             for (int i = 0; i < 8; i++) yield return null;      // let the hulls skin and pose
 
             var moored = Object.FindObjectsByType<MooredBoat>(FindObjectsSortMode.None)

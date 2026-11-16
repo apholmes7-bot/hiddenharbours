@@ -92,7 +92,7 @@ namespace HiddenHarbours.Tests.PlayMode
                 var save = new MemorySave();
                 save.SetFlag(ArrivalOpening.ArrivedFlagKey, true);
                 GameServices.Save = save;
-                yield return SceneManager.LoadSceneAsync("StPeters", LoadSceneMode.Single);
+                yield return HiddenHarbours.Tests.Support.SceneSettle.Load("StPeters", LoadSceneMode.Single);
                 yield return null;
                 yield return null;
                 ShellFlow.ContinueGame();

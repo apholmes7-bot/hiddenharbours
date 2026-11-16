@@ -45,7 +45,7 @@ namespace HiddenHarbours.Tests.PlayMode
                     var save = new MemorySave();
                     save.SetFlag(ArrivalOpening.ArrivedFlagKey, true);
                     GameServices.Save = save;
-                    yield return SceneManager.LoadSceneAsync(region, LoadSceneMode.Single);
+                    yield return HiddenHarbours.Tests.Support.SceneSettle.Load(region, LoadSceneMode.Single);
                     yield return null;
                     yield return null;
                     ShellFlow.ContinueGame();
@@ -85,12 +85,12 @@ namespace HiddenHarbours.Tests.PlayMode
                 var helmSave = new MemorySave();
                 helmSave.SetFlag(ArrivalOpening.ArrivedFlagKey, true);
                 GameServices.Save = helmSave;
-                yield return SceneManager.LoadSceneAsync("StPeters", LoadSceneMode.Single);
+                yield return HiddenHarbours.Tests.Support.SceneSettle.Load("StPeters", LoadSceneMode.Single);
                 yield return null;
                 yield return null;
                 ShellFlow.ContinueGame();
                 yield return null;
-                yield return SceneManager.LoadSceneAsync(EastWaterPlan.SceneName, LoadSceneMode.Single);
+                yield return HiddenHarbours.Tests.Support.SceneSettle.Load(EastWaterPlan.SceneName, LoadSceneMode.Single);
                 yield return null;
                 yield return null;
                 var hulls = AssetDatabase.FindAssets("t:BoatHullDef").Select(AssetDatabase.GUIDToAssetPath)

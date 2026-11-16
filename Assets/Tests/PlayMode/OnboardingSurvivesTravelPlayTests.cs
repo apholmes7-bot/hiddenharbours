@@ -100,8 +100,8 @@ namespace HiddenHarbours.Tests.PlayMode
             if (_boat != null) Object.DestroyImmediate(_boat);
 
             if (_origin.IsValid() && _origin.isLoaded) SceneManager.SetActiveScene(_origin);
-            if (_away.IsValid() && _away.isLoaded) yield return SceneManager.UnloadSceneAsync(_away);
-            if (_home.IsValid() && _home.isLoaded) yield return SceneManager.UnloadSceneAsync(_home);
+            if (_away.IsValid() && _away.isLoaded) yield return HiddenHarbours.Tests.Support.SceneSettle.Unload(_away);
+            if (_home.IsValid() && _home.isLoaded) yield return HiddenHarbours.Tests.Support.SceneSettle.Unload(_home);
             GameServices.Reset();
         }
 

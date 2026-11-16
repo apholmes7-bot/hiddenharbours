@@ -111,7 +111,7 @@ namespace HiddenHarbours.Tests.PlayMode
             _spawned.Clear();
             if (_popupHost != null) { Object.Destroy(_popupHost); _popupHost = null; }
 
-            if (_scene.IsValid() && _scene.isLoaded) yield return SceneManager.UnloadSceneAsync(_scene);
+            if (_scene.IsValid() && _scene.isLoaded) yield return HiddenHarbours.Tests.Support.SceneSettle.Unload(_scene);
         }
 
         GameObject Spawn(string name)

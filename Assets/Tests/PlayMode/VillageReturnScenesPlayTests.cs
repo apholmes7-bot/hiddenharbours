@@ -111,7 +111,7 @@ namespace HiddenHarbours.Tests.PlayMode
             {
                 Scene s = SceneManager.GetSceneAt(i);
                 if (s.IsValid() && s != clean && s.name == _loaded)
-                    yield return SceneManager.UnloadSceneAsync(s);
+                    yield return HiddenHarbours.Tests.Support.SceneSettle.Unload(s);
             }
 
             foreach (GameObject go in PersistentRoots())
@@ -127,7 +127,7 @@ namespace HiddenHarbours.Tests.PlayMode
             // A region logs unrelated decor complaints; a stray one must not fail a claim about its houses.
             LogAssert.ignoreFailingMessages = true;
             _loaded = sceneName;
-            yield return SceneManager.LoadSceneAsync(sceneName, LoadSceneMode.Single);
+            yield return HiddenHarbours.Tests.Support.SceneSettle.Load(sceneName, LoadSceneMode.Single);
             for (int i = 0; i < 4; i++) yield return null;
             LogAssert.ignoreFailingMessages = false;
         }

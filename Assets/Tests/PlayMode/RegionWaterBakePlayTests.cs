@@ -158,8 +158,8 @@ namespace HiddenHarbours.Tests.PlayMode
             if (_origin.IsValid() && _origin.isLoaded) SceneManager.SetActiveScene(_origin);
             // ⚠ PUT THE WORLD BACK. A PlayMode run shares one player loop: a resident region hands every
             // test that follows a tide and a seabed it never asked for, and reds a different file.
-            if (_creek.IsValid() && _creek.isLoaded) yield return SceneManager.UnloadSceneAsync(_creek);
-            if (_harbour.IsValid() && _harbour.isLoaded) yield return SceneManager.UnloadSceneAsync(_harbour);
+            if (_creek.IsValid() && _creek.isLoaded) yield return HiddenHarbours.Tests.Support.SceneSettle.Unload(_creek);
+            if (_harbour.IsValid() && _harbour.isLoaded) yield return HiddenHarbours.Tests.Support.SceneSettle.Unload(_harbour);
 
             GameServices.Reset();
         }

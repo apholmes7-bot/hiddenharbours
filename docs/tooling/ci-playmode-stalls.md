@@ -65,3 +65,27 @@ Keep this separate from a speculative product fix. On a CI-only diagnostic branc
 
 No such reproduction, watchdog, callback or new CI rerun was performed in this audit.
 The original job timeout remains 150 minutes.
+
+## Fixture law: no deferred destroy pending when a scene load or unload starts (2026-11-16)
+
+**The law.** A PlayMode fixture never starts `SceneManager.LoadSceneAsync`, `UnloadSceneAsync` or
+`EditorSceneManager.LoadSceneAsyncInPlayMode` while an `Object.Destroy` it (or an earlier test) queued
+has not run yet. Every such call in `Assets/Tests/PlayMode` goes through
+`HiddenHarbours.Tests.Support.SceneSettle` (`Load`, `Unload`, `LoadInPlayMode`, or `Frames()` before a
+call whose `AsyncOperation` the fixture keeps), and teardown destroys use `SceneSettle.DestroyAndSettle`
+(or `DestroyNow` for test-spawned objects, never from a physics callback or `OnDestroy`).
+`SceneSettlePlayTests` pins the contract.
+
+**Why.** A silent CI hang, seen four times, is an editor-only lock-order deadlock inside the engine
+(native stacks in the hang log of CI job 133069600016):
+
+- main: `PostLateUpdate DelayedCallManager::Update > DelayedDestroyCallback > SpriteRenderer::MainThreadCleanup > AssetChangedNotifier::UnsubscribeFromAll > PersistentManager::GetPathName` (waits for the PersistentManager lock).
+- `Loading.Preload`: `LoadSceneOperation::Perform > PersistentManager::LoadFileCompletelyThreaded > CheckInstanceIDsLoaded` (holds that lock, waits for the object lock).
+
+A destroy queued in frame N runs in frame N's PostLateUpdate pass, or N+1's if it was queued after the
+pass or by an `OnDestroy` cascade; so two `yield return null` is the floor and `SceneSettle.DrainFrames`
+is 3. One yield is not enough.
+
+**Not covered.** A scene the game itself streams in (the region loader's additive load) is invisible to
+the helper; destroying sprites while it runs can still deadlock in the editor. Players are not affected:
+the asset-change notifier exists only in the editor.

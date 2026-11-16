@@ -159,7 +159,7 @@ namespace HiddenHarbours.Tests.PlayMode
             EventBus.Clear<GameLoaded>();
 
             if (_origin.IsValid() && _origin.isLoaded) SceneManager.SetActiveScene(_origin);
-            if (_scene.IsValid() && _scene.isLoaded) yield return SceneManager.UnloadSceneAsync(_scene);
+            if (_scene.IsValid() && _scene.isLoaded) yield return HiddenHarbours.Tests.Support.SceneSettle.Unload(_scene);
 
             GameServices.Reset();
         }
