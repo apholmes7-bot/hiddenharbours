@@ -159,6 +159,10 @@ MonoBehaviour:
     WhitewaterStepMeters: 2
     BorePulseSharpness: 2.6
     BoreSetStrength: 1
+    BoreRefraction: 1
+    BorePhaseJitterDegrees: 12
+    BorePhaseJitterMeters: 64
+    BoreFetchProbeMeters: 3
     RunUpCoefficient: 1
     RunUpCapMeters: 0.35
   SurfSprayIntensityOffset: 0
