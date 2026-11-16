@@ -85,3 +85,12 @@ MonoBehaviour:
     CrawlFps: 8
     RearSprite: {fileID: -4082586718090169636, guid: 13f0c02469227bcb81a79ccca9f8941e, type: 3}
     DefendSprite: {fileID: 8224166611285054158, guid: 13f0c02469227bcb81a79ccca9f8941e, type: 3}
+  Seasons:
+  - {fileID: 11400000, guid: bfa82f8edf5b4b9cb1150174c585f9bb, type: 2}
+  - {fileID: 11400000, guid: 0e3b43cc7a4c4f26a986c2a88cab8bab, type: 2}
+  - {fileID: 11400000, guid: c790009acf694f16b44cff5f1f735349, type: 2}
+  - {fileID: 11400000, guid: 943f4a85b79c4678a4b52c0aa5148acb, type: 2}
+  - {fileID: 11400000, guid: b04452f8c41741288ae7ce928ed9de3b, type: 2}
+  - {fileID: 11400000, guid: 15dd0dfc122d4819a80a762b1c2eb019, type: 2}
+  - {fileID: 11400000, guid: 8897f135ae8d4e1b9c0159afe15fa016, type: 2}
+  - {fileID: 11400000, guid: 04f3135ec0c24c7c90bf1e990f887f0b, type: 2}
