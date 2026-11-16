@@ -38,6 +38,13 @@ namespace HiddenHarbours.Core
         /// once. A non-positive amount or no save does nothing and returns 0.</summary>
         float Spend(float amount);
 
+        /// <summary>Bank a seated stretch (kitchens slice 1): tiredness from
+        /// <paramref name="seatedSinceGameSeconds"/> to now follows <see cref="SeatedRest"/> instead of the
+        /// clock's rise, so it drifts toward the sitting floor and stops there, always short of what a
+        /// night's sleep gives. A stretch before the last sleep or bank counts only from it. No save does
+        /// nothing. The default (an implementation that predates kitchens) banks nothing.</summary>
+        void RestSeated(double seatedSinceGameSeconds) { }
+
         /// <summary>A night's sleep: tiredness back to rested from now. Hunger is untouched; the hours slept
         /// already counted against it on the clock. Announces a stage change at once. No save does nothing.</summary>
         void Sleep();

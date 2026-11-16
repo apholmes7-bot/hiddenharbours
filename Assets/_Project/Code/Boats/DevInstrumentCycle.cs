@@ -411,6 +411,8 @@ namespace HiddenHarbours.Boats
                                 : console.MaxWind >= WindInstrumentGrade.Dial ? BoatEquipment.WindDialId : null;
                     if (compass != null && !ownedScratch.Contains(compass)) ownedScratch.Add(compass);
                     if (wind != null && !ownedScratch.Contains(wind)) ownedScratch.Add(wind);
+                    if (console.SupportsLoran && !ownedScratch.Contains(BoatEquipment.LoranId))
+                        ownedScratch.Add(BoatEquipment.LoranId);
                 }
                 if (HasRadar(deck) && !ownedScratch.Contains(BoatEquipment.RadarId))
                     ownedScratch.Add(BoatEquipment.RadarId);
@@ -422,9 +424,9 @@ namespace HiddenHarbours.Boats
             // A stated dev deck can show one station alone even when both were bought or authored.
             // Owned deliberately hands both stations back to the real fit, as it always has.
             if (allInstruments && pilotStep != DevPilotFit.Owned)
-                return new HelmFit(fit.Rig, brow, fit.Compass, HasRadar(deck), HasGps(deck), fit.Wind);
+                return new HelmFit(fit.Rig, brow, fit.Compass, HasRadar(deck), HasGps(deck), fit.Wind, fit.Loran);
             if (fit.Sounder == brow) return fit;
-            return new HelmFit(fit.Rig, brow, fit.Compass, fit.Radar, fit.Gps, fit.Wind);
+            return new HelmFit(fit.Rig, brow, fit.Compass, fit.Radar, fit.Gps, fit.Wind, fit.Loran);
         }
 
         // ---- helpers ------------------------------------------------------------------------------------

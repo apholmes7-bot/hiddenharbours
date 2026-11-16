@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 64274d8d2751ce0409e579861ce2e63a, type: 3}
+  m_Name: LoranOffer
+  m_EditorClassIdentifier: HiddenHarbours.Economy::HiddenHarbours.Economy.InstrumentOffer
+  Id: instrument.loran
+  DisplayName: Loran-C Receiver
+  Flavor: 'A grey box with two rows of green numbers and a lamp that blinks when it
+    does not trust them. It listens for the shore chains and tells you where you are
+    as two time differences - write them down at a good ground and they will bring
+    you back to the same water. Wants a wheelhouse to mount in.'
+  Price: 380

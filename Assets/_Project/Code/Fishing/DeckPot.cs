@@ -32,6 +32,9 @@ namespace HiddenHarbours.Fishing
         ReturnedBerried = 4,
         /// <summary>Out and legal-sized, but the species is out of season where the pot was set — back it goes.</summary>
         ReturnedOutOfSeason = 5,
+        /// <summary>Out but a protected species — documented, then back she goes regardless of size
+        /// or season (owner ruling 2026-11-15).</summary>
+        ReturnedProtected = 6,
     }
 
     /// <summary>What a banding attempt resolved to.</summary>
@@ -72,11 +75,13 @@ namespace HiddenHarbours.Fishing
             public float SizeMm;
             /// <summary>Deterministic berried flag (egg-carrying hen — always goes back).</summary>
             public bool Berried;
-            /// <summary>The sort verdict, pre-derived (keeper = legal size and not berried).</summary>
+            /// <summary>The sort verdict, pre-derived (keeper = legal size, not berried, not protected).</summary>
             public bool Keeper;
             /// <summary>Legal size and not berried, but out of season where the pot was set (so not a
             /// keeper). Derived once at pot-aboard from the haul date; never saved.</summary>
             public bool OutOfSeason;
+            /// <summary>A protected species (Core <see cref="CatchKeep"/>): never a keeper, always returned.</summary>
+            public bool Protected;
             /// <summary>Whether a sort rule existed for the species (no rule ⇒ always-keeper).</summary>
             public bool HasRule;
             /// <summary>Greybox silhouette shape (from the rule; lobster default).</summary>
@@ -184,6 +189,12 @@ namespace HiddenHarbours.Fishing
                     a.Keeper = false;
                     a.OutOfSeason = true;
                 }
+
+                // Protected species go back whatever the gauge or the season says (owner ruling
+                // 2026-11-15). The species Def's own flag is read too, so a missing Core service cannot
+                // turn a protected animal into a keeper; the holds ask the same shared facts.
+                a.Protected = CatchReleaseRule.MustReleaseById(item.SpeciesId, GameServices.FishConservation);
+                if (a.Protected) a.Keeper = false;
                 _animals.Add(a);
             }
         }
@@ -265,6 +276,7 @@ namespace HiddenHarbours.Fishing
                 return GrabOutcome.Keeper;
             }
             grabbed.Fate = DeckAnimalFate.Returned;
+            if (grabbed.Protected) return GrabOutcome.ReturnedProtected;
             if (grabbed.OutOfSeason) return GrabOutcome.ReturnedOutOfSeason;
             return grabbed.Berried ? GrabOutcome.ReturnedBerried : GrabOutcome.ReturnedShort;
         }
@@ -311,6 +323,16 @@ namespace HiddenHarbours.Fishing
         /// <paramref name="noRoom"/> so the one toast can say so — never silent.
         /// </summary>
         public void AutoResolve(IHold hold, List<CatchItem> landed, out int kept, out int returned, out int noRoom)
+            => AutoResolve(hold, landed, null, out kept, out returned, out noRoom);
+
+        /// <summary>
+        /// As <see cref="AutoResolve(IHold, List{CatchItem}, out int, out int, out int)"/>, and each
+        /// protected animal sorted back is also appended to <paramref name="released"/> so the caller
+        /// publishes <see cref="CatchReleased"/> for it, exactly as the hand grab does. Protected animals
+        /// still count in <paramref name="returned"/>.
+        /// </summary>
+        public void AutoResolve(IHold hold, List<CatchItem> landed, List<CatchItem> released,
+                                out int kept, out int returned, out int noRoom)
         {
             kept = 0; returned = 0; noRoom = 0;
             for (int i = 0; i < _animals.Count; i++)
@@ -322,6 +344,7 @@ namespace HiddenHarbours.Fishing
                 {
                     a.Fate = DeckAnimalFate.Returned;
                     returned++;
+                    if (a.Protected) released?.Add(a.Item);
                     continue;
                 }
                 CatchItem stamped = Stamped(a.Item);   // same stamp-at-stow as TryBandNext

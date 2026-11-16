@@ -537,6 +537,7 @@ When stability fully fails (sustained broachRisk → knockdown → capsize) or t
 | **Compass** | Reliable heading even with no landmarks (fog/night). | Basic fog/night nav; baseline for The Smother. |
 | **Depth sounder** | Live **under-keel clearance** + shoaling alarm. | **Grounding warning** (§3.1) — read the bottom before you hit it. |
 | **Radar** | Detects **terrain & other boats through fog** (a sweep overlay). | **Collisions in fog** (§3.4); makes **The Smother** navigable (canon: navigate by instrument). Huge P5→P2 payoff. |
+| **Loran-C receiver** | Two **time differences** and a blink lamp; stored "numbers" with bearing/distance to them. Repeatable, not exact. ([`loran-navigation.md`](loran-navigation.md)) | Finding a ground again in fog before GPS; the 1982 wheelhouse's position fix. Feeds a later autopilot. |
 | **GPS / chartplotter** | Your **position + course-over-ground** on a chart even blind; waypoints/routes. | Confident navigation in zero visibility; supports the Smother and long Shipping-Lane runs; enables **route automation** for crewed/fleet boats (P4). |
 | **Marine radio** | Live **weather warnings at sea** ([`time-tides-weather.md`](time-tides-weather.md) §4.7) **and** the **tow call** (§3.7). | Early storm warning offshore; the paid rescue net. |
 | **Barometer (boat-mounted)** | On-boat pressure trend. | Early weather telegraph without returning to the cottage instrument. |

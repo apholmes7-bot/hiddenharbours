@@ -111,8 +111,8 @@ namespace HiddenHarbours.Tests.PlayMode
             if (_boatGo != null) Object.DestroyImmediate(_boatGo);
             if (_waterDef != null) Object.DestroyImmediate(_waterDef);
             if (_origin.IsValid() && _origin.isLoaded) SceneManager.SetActiveScene(_origin);
-            if (_water.IsValid() && _water.isLoaded) yield return SceneManager.UnloadSceneAsync(_water);
-            if (_north.IsValid() && _north.isLoaded) yield return SceneManager.UnloadSceneAsync(_north);
+            if (_water.IsValid() && _water.isLoaded) yield return HiddenHarbours.Tests.Support.SceneSettle.Unload(_water);
+            if (_north.IsValid() && _north.isLoaded) yield return HiddenHarbours.Tests.Support.SceneSettle.Unload(_north);
             GameServices.Reset();
         }
 

@@ -350,7 +350,7 @@ namespace HiddenHarbours.Tests.PlayMode
             RequireAGraphicsDevice();
             LogAssert.ignoreFailingMessages=true;
             _v24LoadedIntro=true;
-            yield return SceneManager.LoadSceneAsync("StPeters",LoadSceneMode.Single);
+            yield return HiddenHarbours.Tests.Support.SceneSettle.Load("StPeters",LoadSceneMode.Single);
             for(int i=0;i<8;i++) yield return null;
             yield return SetHour(6f);
             Time.timeScale=1f;

@@ -103,7 +103,7 @@ namespace HiddenHarbours.Tests.PlayMode
                 SceneManager.SetActiveScene(scene);
             }
             SceneManager.sceneLoaded += Activate;
-            try { yield return SceneManager.LoadSceneAsync(Plan.Region.SceneName, LoadSceneMode.Additive); }
+            try { yield return HiddenHarbours.Tests.Support.SceneSettle.Load(Plan.Region.SceneName, LoadSceneMode.Additive); }
             finally { SceneManager.sceneLoaded -= Activate; }
         }
 
@@ -203,10 +203,9 @@ namespace HiddenHarbours.Tests.PlayMode
             WalkInput?.Release();
             if (Oars != null) Oars.DriveOars(0, 0, true);
             if (_origin.IsValid() && _origin.isLoaded) SceneManager.SetActiveScene(_origin);
-            if (RegionScene.IsValid() && RegionScene.isLoaded) yield return SceneManager.UnloadSceneAsync(RegionScene);
-            if (_standIn.IsValid() && _standIn.isLoaded) yield return SceneManager.UnloadSceneAsync(_standIn);
-            foreach (var root in PersistentRoots()) if (!_resident.Contains(root)) Object.Destroy(root);
-            yield return null;
+            if (RegionScene.IsValid() && RegionScene.isLoaded) yield return HiddenHarbours.Tests.Support.SceneSettle.Unload(RegionScene);
+            if (_standIn.IsValid() && _standIn.isLoaded) yield return HiddenHarbours.Tests.Support.SceneSettle.Unload(_standIn);
+            yield return HiddenHarbours.Tests.Support.SceneSettle.DestroyAndSettle(PersistentRoots().Where(root => !_resident.Contains(root)).ToArray());
             GameServices.Reset();
             GameServices.Save = _save;
             ShellFlow.Reset();
@@ -300,7 +299,7 @@ namespace HiddenHarbours.Tests.PlayMode
             var clock = GameServices.Clock;
             var player = Walk;
             LeaveForAStandIn();
-            yield return SceneManager.UnloadSceneAsync(RegionScene);
+            yield return HiddenHarbours.Tests.Support.SceneSettle.Unload(RegionScene);
             Assert.That(GameServices.Ready, Is.True);
             yield return LoadDestination();
             yield return null; yield return null;

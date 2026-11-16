@@ -44,7 +44,7 @@ namespace HiddenHarbours.Tests.PlayMode
         public IEnumerator TearDown()
         {
             GameServices.Environment = _oldSea; GameServices.TidalTerrain = _oldTerrain;
-            if (_scene.IsValid()) yield return SceneManager.UnloadSceneAsync(_scene);
+            if (_scene.IsValid()) yield return HiddenHarbours.Tests.Support.SceneSettle.Unload(_scene);
             if (_hull != null) Object.Destroy(_hull);
         }
 

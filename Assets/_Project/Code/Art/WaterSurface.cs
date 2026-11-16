@@ -2374,6 +2374,22 @@ namespace HiddenHarbours.Art
         }
 
         /// <summary>
+        /// (owner clip review 2026-11-15: "All pulsing should be with the waves and move perpendicular to the
+        /// shoreline") How much of the offshore swell's light the shader's <c>SwellShoreKeep()</c> leaves at a
+        /// shore pixel. The swell yields by <paramref name="yield"/> (<c>_SurfSwellYield</c>) to the shore-normal
+        /// surf inside the break (<paramref name="surfBreaking01"/>) and over the shoaling band
+        /// (<paramref name="shoalDepth"/>, <c>_SwellShoalDepth</c>, linear in depth to the waterline), whichever
+        /// is further on. Both gates are functions of depth and the break, never of the swell's own phase, so
+        /// nothing left near the beach can slide along it. 1 offshore; the break gate alone at shoalDepth 0.
+        /// Pure; presentation only (rule 5).
+        /// </summary>
+        public static float SwellShoreKeep(float surfBreaking01, float depth, float yield, float shoalDepth)
+        {
+            float shoal = shoalDepth > 0f ? 1f - Mathf.Clamp01(Mathf.Max(depth, 0f) / shoalDepth) : 0f;
+            return 1f - Mathf.Clamp01(yield) * Mathf.Max(Mathf.Clamp01(surfBreaking01), shoal);
+        }
+
+        /// <summary>
         /// (owner judge pass 2026-08-01) The bounded shift the swash applies to the DRAWN water edge — the
         /// shader's <c>edgeSwash</c>. The owner asked for "the swash in and out of the water along with the
         /// tides"; until now the swash moved only the FOAM band, so the water's own edge never budged and
@@ -2455,6 +2471,164 @@ namespace HiddenHarbours.Art
             float cap = Mathf.Max(Mathf.Clamp01(maxShift), 0f);
             float bore = Mathf.Clamp(runUpMeters, -cap, cap);
             return Mathf.Lerp(Mathf.Clamp(cosmeticShift, -cap, cap), bore, Mathf.Clamp01(blend01));
+        }
+
+        /// <summary>
+        /// (owner clip review 2026-11-15, "the in is great, the return/pull is jarring") <b>The birth the DRAWN
+        /// pulse is scaled by</b> — the shader's <c>SurfDrawnBoreBirth01</c>. The since-crest birth
+        /// (<see cref="BreakerMath.BoreBirthEnergy01"/>) changes owner AT the front, where the pulse is 1, so in a
+        /// lull the edge jumped from the run-in's reach to the small new crest's in one frame. The run-in (from half
+        /// a period behind the last front up to the next) keeps <paramref name="sinceCrestBirth"/> exactly; behind a
+        /// front the drain starts from <paramref name="previousBirth"/> (the crest one period earlier, the one the
+        /// run-in was scaled by) and eases to the new crest's by half a period, where the pulse is 0. Pure time.
+        /// </summary>
+        public static float DrawnPulseBirth01(float sinceCrestBirth, float previousBirth, float secondsSinceCrest,
+                                              float periodSeconds)
+        {
+            float half = Mathf.Max(periodSeconds, 0f) * 0.5f;
+            if (half <= 1e-4f || secondsSinceCrest >= half) return sinceCrestBirth;
+            float u = Mathf.Max(secondsSinceCrest, 0f) / half;
+            return Mathf.Lerp(previousBirth, sinceCrestBirth, u * u * (3f - 2f * u));
+        }
+
+        /// <summary>
+        /// (owner clip review 2026-11-15, "the return/pull is jarring") <b>The foam a wave leaves</b> — the
+        /// shader's <c>leftFoamOnly</c>: a pixel the last crest's run-up reached (<paramref name="leftReachMeters"/>,
+        /// the drawn-edge law at that crest's peak) but the live edge (<paramref name="liveRunUpMeters"/>) has drained
+        /// from. It keeps that crest's foam, fading in place, instead of the edge's foam riding back to the sea.
+        /// Off when either dial is 0 or the bore does not own the edge. Pure function of time: no history.
+        /// </summary>
+        public static bool LeftFoamDrawn(float depth, float cosmeticShift, float liveRunUpMeters,
+                                         float leftReachMeters, float blend01, float maxShift,
+                                         float leftFoamSeconds, float leftFoamOpacity)
+        {
+            if (leftFoamOpacity <= 0.001f || leftFoamSeconds <= 0.001f || blend01 <= 0f || leftReachMeters <= 0f)
+                return false;
+            bool drained = depth + DrawnEdgeShift(cosmeticShift, liveRunUpMeters, blend01, maxShift) < 0f;
+            return drained && depth + DrawnEdgeShift(cosmeticShift, leftReachMeters, blend01, maxShift) >= 0f;
+        }
+
+        /// <summary>
+        /// The left foam's fade — the shader's <c>exp(-secondsSinceCrest / _WashLeftFoamSeconds)</c>: 1 as its crest
+        /// passes, falling smoothly (never a step) toward 0 over a few seconds. 0 seconds = none.
+        /// </summary>
+        public static float LeftFoamFade01(float secondsSinceCrest, float fadeSeconds)
+            => fadeSeconds <= 0.001f ? 0f : Mathf.Exp(-Mathf.Max(secondsSinceCrest, 0f) / Mathf.Max(fadeSeconds, 1e-3f));
+
+        /// <summary>
+        /// (the editor look of 2026-11-15) <b>The wash's leading line, measured on the ground</b> — the shader's
+        /// <c>washLine</c> test: a pixel inside the drawn edge (<paramref name="depthHere"/> + the held run-up
+        /// <paramref name="drawnShift"/> &gt;= 0, the clip's own epsilon) whose ground one line-width SHOREWARD up the
+        /// normal (<paramref name="depthLineWidthShoreward"/>) is already past the edge. A per-pixel law: no screen
+        /// derivative, so no 2x2 quad can decide it for four pixels (the 2-px stair it replaced). v8: "up the normal"
+        /// is the ground's own gradient at the pixel, and the run-up is the same at both reads (BeachSurfEvalPoint).
+        /// </summary>
+        public static bool WashLineDrawn(float depthHere, float depthLineWidthShoreward, float drawnShift)
+            => depthHere + drawnShift >= -1e-4f && depthLineWidthShoreward + drawnShift < 0f;
+
+        /// <summary>
+        /// The share of a wash pixel that is BEACH, not water — the shader's <c>washBeach</c>: 0 at and below the
+        /// still line (the breaker's lip and barrel draw untouched in the water), rising to the wash's presence by
+        /// <paramref name="anatomyFade"/> metres of level above it, where the lip and barrel have given way.
+        /// </summary>
+        public static float WashBeachShare01(float depth, float washPresence, float anatomyFade)
+            => Mathf.Clamp01(washPresence) * Mathf.Clamp01(-depth / Mathf.Max(anatomyFade, 1e-3f));
+
+        /// <summary>
+        /// The wash's cover cap — the shader's <c>washCapScale</c>: the factor that brings the heaviest surf layer's
+        /// weight on the sand down to <paramref name="maxCover"/> (1 when it is already under), so the ground always
+        /// keeps at least 1 - maxCover of its own colour.
+        /// </summary>
+        public static float WashCapScale(float heaviestWeight, float maxCover)
+        {
+            float cap = Mathf.Clamp01(maxCover);
+            return heaviestWeight > cap ? cap / Mathf.Max(heaviestWeight, 1e-4f) : 1f;
+        }
+
+        /// <summary>
+        /// (the editor look of f07a839) <b>Where a beach pixel reads the surf</b> — the shader's <c>surfEvalXY</c> for
+        /// depth &lt;= 0: from the point the depth was read at (<paramref name="worldXY"/> + <paramref name="warp"/>),
+        /// down the ground's uphill <paramref name="groundDir"/> by the tide depth read there over the floored slope.
+        /// On a beach steeper than the floor every pixel of one shore normal lands on the same point of the still line,
+        /// whatever the chop warp, so the run-up it reads is one shore quantity along the normal. (v7 started from
+        /// <paramref name="worldXY"/> with the warped depth, so the warp's normal component moved the point.)
+        /// v9: the direction and slope are the ground frame's over ±_WashGroundScale, and the shader then takes ONE
+        /// correcting step (<see cref="BeachSurfEvalPointRefined"/>) so a gravel mound's pixels, sent past the still
+        /// line by their bump, come back onto it.
+        /// </summary>
+        public static Vector2 BeachSurfEvalPoint(Vector2 worldXY, Vector2 warp, Vector2 groundDir,
+                                                 float tideDepthAtWarped, float swashSlope)
+            => worldXY + warp + groundDir * (tideDepthAtWarped / Mathf.Max(swashSlope, 1e-3f));
+
+        /// <summary>
+        /// (v9, the editor look of 7e16896, the line torn round the gravel mounds) <see cref="BeachSurfEvalPoint"/>
+        /// plus the shader's one Newton step along the same normal: the tide depth read where the first step landed
+        /// (<paramref name="tideDepthAt"/>, metres; &lt; 0 = still dry) moves the point on by that depth over the slope.
+        /// On a planar beach the first step already lands on the still line and this one is 0.
+        /// </summary>
+        public static Vector2 BeachSurfEvalPointRefined(Vector2 worldXY, Vector2 warp, Vector2 groundDir,
+                                                        float tideDepthAtWarped, float swashSlope,
+                                                        System.Func<Vector2, float> tideDepthAt)
+        {
+            Vector2 p = BeachSurfEvalPoint(worldXY, warp, groundDir, tideDepthAtWarped, swashSlope);
+            return p + groundDir * (tideDepthAt(p) / Mathf.Max(swashSlope, 1e-3f));
+        }
+
+        /// <summary>
+        /// The share of the breaker that is SHORE surf — the shader's <c>surfShore</c>: 0 while the ground
+        /// <c>_WashSurfReach</c> metres shoreward is under water (<paramref name="tapDepth"/> &gt;= 0: a bar with water
+        /// behind it, open water; the open breaker's look), rising to 1 as that ground stands the run-up's whole reach
+        /// (<paramref name="beachReach"/>, metres of level) above the water.
+        /// </summary>
+        public static float ShoreSurfShare01(float tapDepth, float beachReach)
+            => Mathf.Clamp01(-tapDepth / Mathf.Max(beachReach, 1e-3f));
+
+        /// <summary>
+        /// The shore surf's cover — the shader's <c>surfCoverShore</c>: the churn, lifted by the bore's
+        /// <paramref name="density"/> at <paramref name="lift"/> of the open breaker's 0.75, gated by the break
+        /// (<paramref name="gate"/> = saturate(breaking * density)) INSIDE the soft threshold, so the band breaks into
+        /// patches with water between them and its edges follow the churn, not the depth contour.
+        /// </summary>
+        public static float ShoreSurfCover01(float churn, float density, float gate, float lift, float threshold, float soft)
+        {
+            float field = Mathf.Clamp01(churn + density * 0.75f * Mathf.Clamp01(lift)) * Mathf.Clamp01(gate);
+            return HlslSmoothStep(threshold - soft, threshold + soft, field);
+        }
+
+        /// <summary>The open breaker's cover law (the shader's <c>surfCover</c> before the pocket boost), for comparison.</summary>
+        public static float OpenSurfCover01(float churn, float density, float breaking, float threshold, float soft)
+            => HlslSmoothStep(threshold - soft, threshold + soft, Mathf.Clamp01(churn + density * 0.75f))
+             * Mathf.Clamp01(breaking * density);
+
+        /// <summary>
+        /// (v9, the editor look of 7e16896) <b>The depth the break gate reads beside a beach</b>: the shader's
+        /// <c>surfGateDepth</c>. On the 8-bit height map the shore runs in flat plateaus about 1.5 m long, so the gate's
+        /// depth contour stepped about 20 px seaward at each one. Beside a beach (<paramref name="shoreShare"/>) the
+        /// depth is the mean of the pixel's read and two reads <c>_WashSurfSmooth / 3</c> metres either side ALONG the
+        /// shore, which spans a plateau and ramps the step. Out at sea (share 0) the gate reads its own depth as before.
+        /// Wet water stays wet (floor 1e-3, the shader's): a tap on the next plateau up, above the still line, must not
+        /// read a wet pixel as dry ground, the gate's 0, which cut thin unbroken lenses into the band.
+        /// Only called for a wet pixel (centreDepth &gt; 0), as the shader's branch is.
+        /// </summary>
+        public static float AlongShoreGateDepth(float centreDepth, float plusDepth, float minusDepth, float shoreShare)
+        {
+            float box = (centreDepth + plusDepth + minusDepth) / 3f;
+            return Mathf.Max(Mathf.Lerp(centreDepth, box, Mathf.Clamp01(shoreShare)), 1e-3f);
+        }
+
+        /// <summary>
+        /// (v9) <b>The lip beside a beach breaks with the churn</b>, the shader's <c>lip * lerp(1, surfShoreBreak,
+        /// shoreSurf)</c>. The slab at peak was the lip band: 1 across 1.5-2 m, drawn smooth since v8. Beside a beach
+        /// (<paramref name="shoreSurf"/>) it is multiplied by the thresholded fine churn
+        /// (<paramref name="shoreBreak"/>), so water shows through it; out at sea it is the open breaker's lip.
+        /// </summary>
+        public static float ShoreLip01(float lip, float shoreBreak, float shoreSurf)
+            => Mathf.Clamp01(lip) * Mathf.Lerp(1f, Mathf.Clamp01(shoreBreak), Mathf.Clamp01(shoreSurf));
+
+        static float HlslSmoothStep(float a, float b, float x)
+        {
+            float t = Mathf.Clamp01((x - a) / (b - a));
+            return t * t * (3f - 2f * t);
         }
 
         /// <summary>

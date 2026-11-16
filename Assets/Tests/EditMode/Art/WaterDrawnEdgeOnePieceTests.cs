@@ -393,10 +393,14 @@ namespace HiddenHarbours.Tests.Art.EditMode
                 "depth descends from, and what makes the dry side bit-identical across this fix.");
 
             int reachGates = Regex.Matches(src, Regex.Escape("depth > -surfBeachReach")).Count;
-            Assert.AreEqual(2, reachGates,
-                $"Expected the wash's reach predicate twice (the surf block, and the edge blend that rides " +
-                $"along with it) — found {reachGates}. Without the second the edge blend outlives the block " +
-                "that feeds it, and the dry side stops being bit-identical.");
+            // Three since the run-up wash v4: the wash's lee share (washSeaBreaks) rides the same reach, so
+            // beyond it the wash is 0 and the dry side stays bit-identical.
+            Assert.AreEqual(3, reachGates,
+                $"Expected the wash's reach predicate three times (the surf block, the edge blend that rides " +
+                $"along with it, and the run-up wash's lee share) — found {reachGates}. Without the second the " +
+                "edge blend outlives the block that feeds it, and the dry side stops being bit-identical.");
+            StringAssert.Contains("float washSeaBreaks = (_BreakerOuter.w > 0.5 && depth > -surfBeachReach)", src,
+                "the run-up wash's lee share must be gated by the same reach as the surf block");
 
             // The FENCE: foam families A/B/C are not this change's business. The foam fringe keeps reading
             // the fragment-depth blend it has always read — only its NAME changed, boreEdgeBlend →

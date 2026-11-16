@@ -249,7 +249,7 @@ namespace HiddenHarbours.Tests.PlayMode
             Scene creek = SceneManager.GetSceneByName(CreekScene);
             if (!creek.IsValid() || !creek.isLoaded) yield break;
             if (_coordinator != null) _coordinator.enabled = false;   // the test is over: no arrival in the scene the unload leaves
-            yield return SceneManager.UnloadSceneAsync(creek);
+            yield return HiddenHarbours.Tests.Support.SceneSettle.Unload(creek);
         }
     }
 }

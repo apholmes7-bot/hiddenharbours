@@ -68,7 +68,7 @@ namespace HiddenHarbours.Tests.PlayMode
             foreach (string name in new[] { EastWaterPlan.SceneName, "StPeters" })
             {
                 var scene = SceneManager.GetSceneByName(name);
-                if (scene.IsValid() && scene.isLoaded) yield return SceneManager.UnloadSceneAsync(scene);
+                if (scene.IsValid() && scene.isLoaded) yield return HiddenHarbours.Tests.Support.SceneSettle.Unload(scene);
             }
             GameServices.Reset();
             ShellFlow.Reset();
@@ -79,7 +79,7 @@ namespace HiddenHarbours.Tests.PlayMode
         {
             ShellRestart.DestroyPersistentCore();
             yield return null;
-            yield return SceneManager.LoadSceneAsync("StPeters", LoadSceneMode.Single);
+            yield return HiddenHarbours.Tests.Support.SceneSettle.Load("StPeters", LoadSceneMode.Single);
             yield return null;
             yield return null;
             Assert.IsTrue(ShellFlow.AtTitle);

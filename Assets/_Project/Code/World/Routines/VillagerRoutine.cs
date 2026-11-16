@@ -216,6 +216,8 @@ namespace HiddenHarbours.World
             if (_renderer == null) _renderer = GetComponent<SpriteRenderer>();
         }
 
+        private readonly FootPrintTrail _footPrints = new FootPrintTrail();
+
         void OnEnable()
         {
             // Re-plan on every enable rather than caching across one: a region that unloads and comes back
@@ -233,6 +235,7 @@ namespace HiddenHarbours.World
             // overlay is per-conversation state and the conversation is over the moment she is gone.
             _hold.Cancel();
             _talkingTo = null;
+            _footPrints.Reset();
 
             // Hand the facing back, so a villager who is disabled mid-stand does not come back pinned to a
             // stance nobody asked for (IsoCharacterSprite keeps the held direction, which is what we want).
@@ -281,6 +284,12 @@ namespace HiddenHarbours.World
             // The position. Z is left alone — the Y-sort owns the draw order and nothing here is 3D.
             Vector3 p = transform.position;
             transform.position = new Vector3(drawn.x, drawn.y, p.z);
+
+            // Boot prints (GroundPrintMade) only while she is OUTDOORS by the clock (or held in a talk
+            // outdoors); indoors or away she lays none and her trail restarts at the door.
+            RoutineShelter printShelter = _hold.IsActive ? _hold.Shelter : pose.Shelter;
+            if (printShelter == RoutineShelter.Outdoors) _footPrints.Track(drawn);
+            else _footPrints.Reset();
 
             ApplyFacing(pose);
 

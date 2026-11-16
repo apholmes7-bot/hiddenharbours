@@ -18,3 +18,4 @@ MonoBehaviour:
   HungerRelief: 0
   PreppedId: food.cod_fillet
   CookedId: food.pan_fried_cod
+  EnergyKcal: 0

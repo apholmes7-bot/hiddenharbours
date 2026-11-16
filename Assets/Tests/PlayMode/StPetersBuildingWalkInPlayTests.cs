@@ -123,7 +123,7 @@ namespace HiddenHarbours.Tests.PlayMode
                 if (!clean.IsValid()) clean = SceneManager.CreateScene(Cleanup);
                 SceneManager.SetActiveScene(clean);
                 Scene region = SceneManager.GetSceneByName(Region);
-                if (region.IsValid() && region.isLoaded) yield return SceneManager.UnloadSceneAsync(region);
+                if (region.IsValid() && region.isLoaded) yield return HiddenHarbours.Tests.Support.SceneSettle.Unload(region);
             }
             foreach (GameObject root in PersistentRoots())
                 if (root != null && !_residentBefore.Contains(root)) Object.DestroyImmediate(root);
@@ -145,7 +145,7 @@ namespace HiddenHarbours.Tests.PlayMode
             // diagnostics are tolerated. All diagnostics during the actual visits remain failures.
             LogAssert.ignoreFailingMessages = true;
             _loaded = true;
-            yield return SceneManager.LoadSceneAsync(Region, LoadSceneMode.Single);
+            yield return HiddenHarbours.Tests.Support.SceneSettle.Load(Region, LoadSceneMode.Single);
             for (int frame = 0; frame < 4; frame++) yield return null;
             LogAssert.ignoreFailingMessages = false;
             ShellFlow.ContinueGame();

@@ -204,7 +204,7 @@ namespace HiddenHarbours.Tests.PlayMode
             Scene water = SceneManager.GetSceneByName(SouthWaterPlan.SceneName);
             if (!water.IsValid() || !water.isLoaded) yield break;
             if (_coordinator != null) _coordinator.enabled = false;   // the test is over: no arrival in the scene the unload leaves
-            yield return SceneManager.UnloadSceneAsync(water);
+            yield return HiddenHarbours.Tests.Support.SceneSettle.Unload(water);
         }
     }
 }

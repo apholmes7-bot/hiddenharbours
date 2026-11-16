@@ -135,6 +135,10 @@ namespace HiddenHarbours.Art
         /// <summary>(pulse sharpness, set strength, run-up coefficient, run-up cap) — the bore's dials,
         /// ADR 0040 revision 3. Read by the water shader's <c>SurfBore*</c> twins.</summary>
         private static readonly int IdBreakerBore = Shader.PropertyToID("_BreakerBore");
+        /// <summary>(refraction, jitter degrees, jitter metres, 0) — the bore clock's refraction
+        /// (BreakerMath.BoreClockPoint / BorePhaseJitterDegrees). Read by the water shader's and the foam
+        /// buffer's <c>SurfBoreClock*</c> twins. All-zero = the offshore heading, as before.</summary>
+        private static readonly int IdBreakerRefract = Shader.PropertyToID("_BreakerRefract");
 
         private const double TwoPi = Math.PI * 2.0;
 
@@ -384,6 +388,16 @@ namespace HiddenHarbours.Art
                 Mathf.Clamp01(breakers.BoreSetStrength),
                 Mathf.Max(0f, breakers.RunUpCoefficient),
                 Mathf.Max(0f, breakers.RunUpCapMeters)));
+
+            // The bore clock's REFRACTION: the crest turned to the shore before it runs in, and its small
+            // static alongshore offset. Physics constants from GameConfig, so the hull's shove (BreakerMath.
+            // SurfAt) and the drawn wash ride the same clock. w = how far seaward the drawn wash reads the
+            // fetch envelope (BreakerSettings.BoreFetchProbeMeters; 0 = at the pixel).
+            Shader.SetGlobalVector(IdBreakerRefract, new Vector4(
+                Mathf.Clamp01(breakers.BoreRefraction),
+                Mathf.Max(0f, breakers.BorePhaseJitterDegrees),
+                Mathf.Max(0f, breakers.BorePhaseJitterMeters),
+                Mathf.Max(0f, breakers.BoreFetchProbeMeters)));
         }
 
         /// <summary>The breaker model SILENT — nothing breaks anywhere — so a stopped play session or a
