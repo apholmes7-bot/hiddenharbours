@@ -202,6 +202,20 @@ namespace HiddenHarbours.Art
         /// (w = 1): what the facet shader's head snap reads.</summary>
         public Vector4 HeadSnapPoint { get; private set; }
 
+        /// <summary>The head bone's local frame for things worn on the head (+y forward out of the face,
+        /// +z up through the crown, measured on the fisher rig): <see cref="HeadMidLocal"/> plus an offset
+        /// gives a point on the head in that frame, and these place it in the figure's frame from the same
+        /// pose <see cref="HeadSnapPoint"/> was taken from. Valid while <see cref="HeadSnapPoint"/>'s w is 1.</summary>
+        public Vector3 HeadMidLocal => _def != null ? _def.HeadMid : Vector3.zero;
+
+        /// <summary>A head-local point (see <see cref="HeadMidLocal"/>) in the figure's frame.</summary>
+        public Vector3 HeadLocalToFigure(Vector3 headLocal) =>
+            _def != null && _world != null ? _world[_def.LookHeadBone].MultiplyPoint3x4(headLocal) : Vector3.zero;
+
+        /// <summary>A head-local direction in the figure's frame (look turns included).</summary>
+        public Vector3 HeadDirectionToFigure(Vector3 headLocal) =>
+            _def != null && _world != null ? _world[_def.LookHeadBone].MultiplyVector(headLocal) : Vector3.zero;
+
         /// <summary>True while this figure is inked by the rig's own rules
         /// (<see cref="GameConfig.MeshFigureKeyline"/> on and a def that <see cref="CharacterSkinDef.HasInk"/>).</summary>
         public bool InkLive => _inkApplied;

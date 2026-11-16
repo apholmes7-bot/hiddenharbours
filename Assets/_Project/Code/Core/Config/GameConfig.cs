@@ -868,6 +868,28 @@ namespace HiddenHarbours.Core
         [Tooltip("Restore the walker's automatic lantern while on foot. The headlamp still answers L.")]
         public bool WalkerAutoLantern = DefaultWalkerAutoLantern;
 
+        /// <summary>How long L is held, seconds, before the worn headlamp goes back into his pocket.
+        /// A shorter press switches the beam.</summary>
+        public const float DefaultWalkerHeadlampHoldSeconds = 0.4f;
+        [Tooltip("Hold L this long (seconds) to take the headlamp off into the pocket. A tap switches the beam; " +
+                 "a press with the lamp in the pocket puts it on, lit.")]
+        [Min(0.05f)] public float WalkerHeadlampHoldSeconds = DefaultWalkerHeadlampHoldSeconds;
+
+        /// <summary>Where the headlamp's lens sits on his head, metres from the rig's head mid point
+        /// (<c>CharacterSkinDef.HeadMid</c>): forward out of the face, then up. The light's glow and
+        /// cone both start here, and the drawn lens is pinned to it.</summary>
+        public const float DefaultWalkerHeadlampLensForwardMetres = 0.01f;
+        public const float DefaultWalkerHeadlampLensUpMetres = 0.10f;
+        [Tooltip("Headlamp lens, metres FORWARD of the head mid point (out of the face).")]
+        public float WalkerHeadlampLensForwardMetres = DefaultWalkerHeadlampLensForwardMetres;
+        [Tooltip("Headlamp lens, metres UP from the head mid point (the forehead, above the eyes).")]
+        public float WalkerHeadlampLensUpMetres = DefaultWalkerHeadlampLensUpMetres;
+        /// <summary>How far behind the lens the strap crosses the back of his head, metres. Seen from
+        /// behind, the strap is drawn there (the lens itself is hidden by his head).</summary>
+        public const float DefaultWalkerHeadlampStrapBackMetres = 0.18f;
+        [Tooltip("Headlamp strap, metres BEHIND the lens where it crosses the back of the head (drawn when he faces away).")]
+        [Min(0f)] public float WalkerHeadlampStrapBackMetres = DefaultWalkerHeadlampStrapBackMetres;
+
         [Tooltip("Restore YESTERDAY'S boat glows for an A/B (owner's ruling, 2026-09-03)? OFF is the " +
                  "shipped look: a lit wheelhouse is drawn as its own WINDOWS, with a wash of spill " +
                  "leaving each glazed wall, and the navigation lamps are blooms the size of their own " +
