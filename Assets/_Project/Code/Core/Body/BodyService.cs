@@ -226,6 +226,9 @@ namespace HiddenHarbours.Core
         }
 
         public MealOutcome Eat(float meals, Vector2 position, string regionId)
+            => Eat(meals, 0f, position, regionId);
+
+        public MealOutcome Eat(float meals, float energyKcal, Vector2 position, string regionId)
         {
             if (!(meals > 0f)) return MealOutcome.Nothing;
             SaveData data = _save()?.Current;
@@ -250,7 +253,10 @@ namespace HiddenHarbours.Core
             needs?.Eat(meals);
 
             double kcalPerMeal = BodyMath.KcalPerHungerUnit(_needsSettings().Hunger.RisePerGameHour, s);
-            double gain = BodyMath.MealGainKg(meals, hungerBefore, kcalPerMeal, s);
+            // A food that states its energy stores the part past what hunger was short of; unstated (0) is
+            // the plain meal, whose energy is its relief.
+            float energyMeals = energyKcal > 0f && kcalPerMeal > 0d ? (float)(energyKcal / kcalPerMeal) : meals;
+            double gain = BodyMath.MealGainKg(energyMeals, hungerBefore, kcalPerMeal, s);
             if (gain > 0d)
             {
                 float frame = BodyMath.FrameOf(b, s), height = BodyMath.HeightScaleOf(b, s);
