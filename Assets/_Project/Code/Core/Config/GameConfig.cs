@@ -1325,6 +1325,11 @@ namespace HiddenHarbours.Core
                  "and unanimated dig. Held tools and catch keep their sprite presenters.")]
         public bool MeshFishingAndDig = true;
 
+        [Header("Ground prints (footprints and tyre marks)")]
+        [Tooltip("Footprints and tyre marks on grass, sand, mud and dirt (owner ask 2026-11-15: \"the print " +
+                 "lasts 24/h with a gradual fade\"). Lifetime is in IN-GAME hours; sizes are real metres; which " +
+                 "ground takes a print is the Zones list. Read through GroundPrintSettings.Current.")]
+        public GroundPrintSettings GroundPrints = GroundPrintSettings.Default;
         [Header("Effort (too tired / too hungry)")]
         [Tooltip("Owner ask 2026-11-15: 'when a player is too tired to do an action they will say im too " +
                  "tired or im too hungry or both'. Which work may be refused (shipped: heavy work only), the " +

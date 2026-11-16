@@ -499,7 +499,16 @@ namespace HiddenHarbours.Player
                 column = 0; // idle frame when still
             }
             ApplyFrame(_facing, column);
+
+            // Boot prints (GroundPrintMade): spaced by distance walked, so standing still lays none; the
+            // print layer decides whether this ground takes them (grass/sand/mud/dirt, never decks or water).
+            _footPrints.Track(_rb != null ? _rb.position : (Vector2)transform.position);
         }
+
+        private readonly FootPrintTrail _footPrints = new FootPrintTrail();
+
+        // Re-enabled after a boat or a vehicle: start a fresh trail rather than one stride from the old one.
+        private void OnDisable() => _footPrints.Reset();
 
         // The cached "am I alongside a boat?" probe (see Awake). Null until Awake runs, which is exactly
         // the pure function's "no boats in this world" case — so an unawakened rig behaves as before.

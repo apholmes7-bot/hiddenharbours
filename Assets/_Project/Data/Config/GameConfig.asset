@@ -715,6 +715,97 @@ MonoBehaviour:
     SideReach: 0.7
   DevAllHelmInstruments: 1
   MeshFishingAndDig: 1
+  GroundPrints:
+    Enabled: 1
+    LifetimeGameHours: 24
+    FadeExponent: 1
+    FadeSteps: 6
+    StrideMetres: 0.75
+    FootLengthMetres: 0.28
+    FootWidthMetres: 0.11
+    FootSideOffsetMetres: 0.09
+    TireSegmentMetres: 0.5
+    DefaultTireWidthMetres: 0.22
+    TreadRepeatMetres: 0.25
+    TeleportMetres: 3
+    MaxPrintsPerUpdate: 8
+    Capacity: 2048
+    HeadingSteps: 16
+    SlowTickRealSeconds: 0.5
+    TideChecksPerTick: 256
+    SortingOrder: -9
+    ShapeTexturePixels: 8
+    Surfaces:
+    - Surface: 1
+      Tint: {r: 0.2, g: 0.22, b: 0.04, a: 1}
+      StartStrength: 0.87
+      EdgeBreakup: 0.15
+      InteriorBreakup: 0.2
+      TireTint: {r: 0.22, g: 0.23, b: 0.08, a: 1}
+      TireStartStrength: 0.7
+      TireEdgeBreakup: 0.3
+      TireInteriorBreakup: 0.15
+    - Surface: 2
+      Tint: {r: 0.3, g: 0.24, b: 0.16, a: 0.8}
+      StartStrength: 0.85
+      EdgeBreakup: 0
+      InteriorBreakup: 0
+      TireTint: {r: 0.3, g: 0.24, b: 0.16, a: 0.8}
+      TireStartStrength: 0.85
+      TireEdgeBreakup: 0
+      TireInteriorBreakup: 0
+    - Surface: 3
+      Tint: {r: 0.09, g: 0.07, b: 0.05, a: 0.8}
+      StartStrength: 1
+      EdgeBreakup: 0
+      InteriorBreakup: 0
+      TireTint: {r: 0.09, g: 0.07, b: 0.05, a: 0.8}
+      TireStartStrength: 1
+      TireEdgeBreakup: 0
+      TireInteriorBreakup: 0
+    - Surface: 4
+      Tint: {r: 0.13, g: 0.09, b: 0.06, a: 0.8}
+      StartStrength: 0.9
+      EdgeBreakup: 0
+      InteriorBreakup: 0
+      TireTint: {r: 0.13, g: 0.09, b: 0.06, a: 0.8}
+      TireStartStrength: 0.9
+      TireEdgeBreakup: 0
+      TireInteriorBreakup: 0
+    - Surface: 5
+      Tint: {r: 0.36, g: 0.42, b: 0.52, a: 0.8}
+      StartStrength: 0.85
+      EdgeBreakup: 0
+      InteriorBreakup: 0
+      TireTint: {r: 0.36, g: 0.42, b: 0.52, a: 0.8}
+      TireStartStrength: 0.85
+      TireEdgeBreakup: 0
+      TireInteriorBreakup: 0
+    Zones:
+    - Zone: grass
+      Surface: 1
+    - Zone: lawn
+      Surface: 1
+    - Zone: sedge
+      Surface: 1
+    - Zone: marram
+      Surface: 2
+    - Zone: sand
+      Surface: 2
+    - Zone: ripple
+      Surface: 2
+    - Zone: foreshore
+      Surface: 2
+    - Zone: silt
+      Surface: 3
+    - Zone: marsh
+      Surface: 3
+    - Zone: mud
+      Surface: 3
+    - Zone: dirt
+      Surface: 4
+    - Zone: path
+      Surface: 4
   Effort:
     RefuseLight: 0
     RefuseModerate: 0
