@@ -455,8 +455,9 @@ namespace HiddenHarbours.Tests.EditMode
             FishSpeciesRegistry.Register(MakeFish(ProtectedId, true));
             GameServices.FishConservation = null;
 
-            Assert.IsTrue(CatchReleaseRule.MustRelease(ProtectedId, null));
-            Assert.IsFalse(CatchReleaseRule.MustRelease(OpenId, null), "an unknown id with no facts is kept");
+            Assert.IsTrue(CatchReleaseRule.MustReleaseById(ProtectedId, null));
+            Assert.IsFalse(CatchReleaseRule.MustReleaseById(OpenId, null), "an unknown id with no facts is kept");
+            Assert.IsFalse(CatchReleaseRule.MustReleaseById(null, null), "a null id is kept");
 
             DeckPot pot = MakePot(Item(ProtectedId, 0.9f), Item(OpenId, 0.9f));
             Assert.IsTrue(pot.Animals[0].Protected, "a missing service never makes a protected animal a keeper");

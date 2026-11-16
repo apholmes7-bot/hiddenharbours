@@ -208,7 +208,7 @@ namespace HiddenHarbours.Fishing
             // they take no room: the room check counts only what may be kept (the shared Core rule).
             int keepable = 0;
             for (int i = 0; i < count; i++)
-                if (!CatchReleaseRule.MustRelease(_haulScratch[i].SpeciesId, GameServices.FishConservation)) keepable++;
+                if (!CatchReleaseRule.MustReleaseById(_haulScratch[i].SpeciesId, GameServices.FishConservation)) keepable++;
 
             // All-or-nothing room check (one animal = one hold unit, the IHold convention everywhere).
             int freeUnits = hold != null ? hold.CapacityUnits - hold.UsedUnits : 0;
@@ -224,7 +224,7 @@ namespace HiddenHarbours.Fishing
                 // Stamp the freshness clock at the haul (M1 §7.3): the resolver is pure and clock-free,
                 // so the catch goes on the clock HERE — the instant it comes out of the water.
                 CatchItem catchItem = _haulScratch[i].WithFreshness(Freshness.Landed(now));
-                if (CatchReleaseRule.MustRelease(catchItem.SpeciesId, GameServices.FishConservation))
+                if (CatchReleaseRule.MustReleaseById(catchItem.SpeciesId, GameServices.FishConservation))
                 {
                     EventBus.Publish(new CatchReleased(catchItem));   // documented, then back she goes
                     continue;

@@ -193,7 +193,7 @@ namespace HiddenHarbours.Fishing
                 // Protected species go back whatever the gauge or the season says (owner ruling
                 // 2026-11-15). The species Def's own flag is read too, so a missing Core service cannot
                 // turn a protected animal into a keeper; the holds ask the same shared facts.
-                a.Protected = CatchReleaseRule.MustRelease(item.SpeciesId, GameServices.FishConservation);
+                a.Protected = CatchReleaseRule.MustReleaseById(item.SpeciesId, GameServices.FishConservation);
                 if (a.Protected) a.Keeper = false;
                 _animals.Add(a);
             }
