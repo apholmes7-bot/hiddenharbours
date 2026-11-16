@@ -87,7 +87,7 @@ namespace HiddenHarbours.Core
             FadeSeconds = 0.5f,
             SwayMetres = 0.04f,
             SwayCyclesPerSecond = 0.75f,
-            HeadOffsetMetres = new Vector2(0f, 1.6f),
+            HeadOffsetMetres = new Vector2(0f, 1.3f),   // the top of his hair (play look 2026-11-16)
             SpreadMetres = 0.18f,
             LineHeightMetres = 11f / 32f,
             Color = new Color(0.72f, 0.82f, 0.46f, 0.85f),   // a pale, faintly sickly green

@@ -863,7 +863,7 @@ MonoBehaviour:
     FadeSeconds: 0.5
     SwayMetres: 0.04
     SwayCyclesPerSecond: 0.75
-    HeadOffsetMetres: {x: 0, y: 1.6}
+    HeadOffsetMetres: {x: 0, y: 1.3}
     SpreadMetres: 0.18
     LineHeightMetres: 0.34375
     Color: {r: 0.72, g: 0.82, b: 0.46, a: 0.85}
