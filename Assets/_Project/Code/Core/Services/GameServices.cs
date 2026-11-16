@@ -822,6 +822,8 @@ namespace HiddenHarbours.Core
         public static float RegionSeamBoatFadeDistanceMetres => SeamTunable(c => c.RegionSeamBoatFadeDistanceMetres, GameConfig.DefaultRegionSeamBoatFadeDistanceMetres);
         public static float RegionSeamBoatDrawnMarginMetres => SeamTunable(c => c.RegionSeamBoatDrawnMarginMetres, GameConfig.DefaultRegionSeamBoatDrawnMarginMetres);
         public static float RegionSeamMinApproachSpeed => SeamTunable(c => c.RegionSeamMinApproachSpeed, GameConfig.DefaultRegionSeamMinApproachSpeed);
+        public static float RegionSeamRearmMoverLengths => SeamTunable(c => c.RegionSeamRearmMoverLengths, GameConfig.DefaultRegionSeamRearmMoverLengths);
+        public static float RegionSeamRearmMinMetres => SeamTunable(c => c.RegionSeamRearmMinMetres, GameConfig.DefaultRegionSeamRearmMinMetres);
 
         /// <summary>The preload's heading gate (m/s, s), release delay (s) and the teleport cap (m/s) on a
         /// mover's speed, PR 1223. Same <c>Config != null</c> contract.</summary>

@@ -25,8 +25,9 @@ namespace HiddenHarbours.Core
         public readonly RegionEdge Edge;
         /// <summary>How far (m) the mover's LEADING edge still is from the region's edge (≤ 0: at or past it).</summary>
         public readonly float GapMetres;
-        /// <summary>How far (m) to carry the mover on across the seam so its TRAILING edge lands the given
-        /// inset inside the neighbour (≥ 0).</summary>
+        /// <summary>How far (m) the mover would have to go on across the seam for its TRAILING edge to land the
+        /// given inset inside the neighbour (≥ 0). Read only: the hop no longer carries the mover (a crossing
+        /// KEEPS position, PR 1223 play look), so it arrives this far short of fully inside.</summary>
         public readonly float CarryMetres;
         /// <summary>The outward unit direction of <see cref="Edge"/>.</summary>
         public readonly Vector2 Outward;
@@ -238,12 +239,20 @@ namespace HiddenHarbours.Core
         /// mover's extent <paramref name="body"/> (its local bounds, plus the drawn margin the caller adds) and
         /// its velocity. Of the edges it is heading out through faster than <paramref name="minSpeed"/>, the one
         /// its leading edge will reach first. The gap is from the leading edge to that region edge; the carry is
-        /// how far the mover must go on so its trailing edge lands <paramref name="landingInsetMetres"/> inside
-        /// the neighbour (the hop puts it there, under the black, so the first clear frame shows all of it
-        /// inside the new screen). False when it is heading out through no edge. PURE.
+        /// how far the mover would have to go on for its trailing edge to land <paramref name="landingInsetMetres"/>
+        /// inside the neighbour (read only: the hop keeps position). False when it is heading out through no
+        /// edge. PURE.
         /// </summary>
         public static bool TryApproach(Rect region, Rect body, Vector2 velocity, float minSpeed,
-                                       float landingInsetMetres, out SeamApproach approach)
+                                       float landingInsetMetres, out SeamApproach approach) =>
+            TryApproach(region, body, velocity, minSpeed, landingInsetMetres, false, default, out approach);
+
+        /// <summary>As above, leaving out <paramref name="skip"/> when <paramref name="skipEdge"/> is set: the edge
+        /// the mover has just come in through, which does not fade again until it is re-armed
+        /// (<see cref="SeamArrivalLatch"/>). PURE.</summary>
+        public static bool TryApproach(Rect region, Rect body, Vector2 velocity, float minSpeed,
+                                       float landingInsetMetres, bool skipEdge, RegionEdge skip,
+                                       out SeamApproach approach)
         {
             SeamApproach best = default;   // a local function may not touch an out parameter (CS1628)
             float bestTime = float.MaxValue;
@@ -263,6 +272,7 @@ namespace HiddenHarbours.Core
 
             void Consider(RegionEdge edge, Vector2 outward, float outSpeed, float gap, float carry, Vector2 probe)
             {
+                if (skipEdge && edge == skip) return;
                 if (outSpeed < speedFloor) return;
                 float time = Mathf.Max(0f, gap) / outSpeed;
                 if (time >= bestTime) return;
@@ -354,5 +364,79 @@ namespace HiddenHarbours.Core
             Interrupt();
             _idleFor = 0f;
         }
+    }
+
+    /// <summary>
+    /// ⭐ <b>A crossing keeps position</b> (owner ruling on PR 1223; play look at 62f3ef70f0). The hop is made the
+    /// moment the screen is black, which is when the mover's LEADING edge meets the edge of the screen: its pivot is
+    /// still short of the seam (a dory 2.3 m, a walker 0.4 m). Kept where it is, it arrives that far OUTSIDE the
+    /// region it entered, which the crossing rule alone reads as "past the edge, cross back". The latch holds the
+    /// arrival edge for it: back out past that edge by no more than it arrived (plus the band) is still staying,
+    /// and the edge does not fade again until the mover is <c>RearmMetres</c> inside it, a distance that scales
+    /// with the mover's length, so a boat idling just inside a sea seam is never under a part-black screen. PURE.
+    /// </summary>
+    public sealed class SeamArrivalLatch
+    {
+        /// <summary>True from an arrival until the mover is far enough inside the arrival edge.</summary>
+        public bool Latched { get; private set; }
+
+        /// <summary>The edge of the arrived region the mover came in through.</summary>
+        public RegionEdge Edge { get; private set; }
+
+        /// <summary>How far (m) back out past <see cref="Edge"/> still reads as staying.</summary>
+        public float AllowanceMetres { get; private set; }
+
+        /// <summary>How far (m) inside <see cref="Edge"/> the mover must come before it fades again.</summary>
+        public float RearmMetres { get; private set; }
+
+        /// <summary>The edge of the neighbour a mover crossing out through <paramref name="departed"/> comes in by.</summary>
+        public static RegionEdge Opposite(RegionEdge departed) => departed switch
+        {
+            RegionEdge.East => RegionEdge.West,
+            RegionEdge.West => RegionEdge.East,
+            RegionEdge.North => RegionEdge.South,
+            _ => RegionEdge.North,
+        };
+
+        /// <summary>How far (m) <paramref name="p"/> is inside <paramref name="region"/> from its
+        /// <paramref name="edge"/> (negative: outside it).</summary>
+        public static float DepthInside(Rect region, Vector2 p, RegionEdge edge) => edge switch
+        {
+            RegionEdge.West => p.x - region.xMin,
+            RegionEdge.East => region.xMax - p.x,
+            RegionEdge.South => p.y - region.yMin,
+            _ => region.yMax - p.y,
+        };
+
+        /// <summary>The re-arm distance (m) for a mover <paramref name="moverLengthMetres"/> long: that many
+        /// <paramref name="lengths"/> of it, never less than <paramref name="minMetres"/>.</summary>
+        public static float RearmDistance(float moverLengthMetres, float lengths, float minMetres) =>
+            Mathf.Max(Mathf.Max(0f, minMetres), Mathf.Max(0f, moverLengthMetres) * Mathf.Max(0f, lengths));
+
+        /// <summary>Latch an arrival at <paramref name="arrivedAt"/> (the arrived region's local frame) through
+        /// <paramref name="edge"/>.</summary>
+        public void Arm(Rect region, Vector2 arrivedAt, RegionEdge edge, float rearmMetres, float bandMetres)
+        {
+            Latched = true;
+            Edge = edge;
+            RearmMetres = Mathf.Max(0f, rearmMetres);
+            AllowanceMetres = Mathf.Max(0f, -DepthInside(region, arrivedAt, edge)) + Mathf.Max(0f, bandMetres);
+        }
+
+        /// <summary>One physics step at <paramref name="p"/>: re-arms the edge once the mover is
+        /// <see cref="RearmMetres"/> inside it. True while still latched.</summary>
+        public bool Step(Rect region, Vector2 p)
+        {
+            if (Latched && DepthInside(region, p, Edge) >= RearmMetres) Latched = false;
+            return Latched;
+        }
+
+        /// <summary>True when a crossing out through <paramref name="crossingEdge"/> at <paramref name="p"/> is only
+        /// the arrival's own overhang, and must read as staying.</summary>
+        public bool HoldsBack(Rect region, Vector2 p, RegionEdge crossingEdge) =>
+            Latched && crossingEdge == Edge && -DepthInside(region, p, Edge) <= AllowanceMetres;
+
+        /// <summary>No arrival latched (any arrival that was not a seam crossing).</summary>
+        public void Release() => Latched = false;
     }
 }

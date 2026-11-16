@@ -1364,6 +1364,18 @@ namespace HiddenHarbours.Core
                  "mover is standing at the edge, and the fade clears.")]
         [Min(0f)] public float RegionSeamMinApproachSpeed = DefaultRegionSeamMinApproachSpeed;
 
+        /// <summary>Shipped seam re-arm distances, PR 1223 play look: an arrived mover does not fade at the edge it
+        /// came in by until it is this far inside it.</summary>
+        public const float DefaultRegionSeamRearmMoverLengths = 1.5f;
+        public const float DefaultRegionSeamRearmMinMetres = 0.5f;
+
+        [Tooltip("After a crossing, how far inside the edge the mover came in by (in her own lengths: a dory " +
+                 "about 5 m, a walker under 1 m) she must come before that edge fades again. A boat idling or " +
+                 "drifting just past a seam is never under a part-black screen.")]
+        [Min(0f)] public float RegionSeamRearmMoverLengths = DefaultRegionSeamRearmMoverLengths;
+        [Tooltip("The least re-arm distance (m) whatever the mover's length.")]
+        [Min(0f)] public float RegionSeamRearmMinMetres = DefaultRegionSeamRearmMinMetres;
+
         public float SecondsPerHour => SecondsPerDay / 24f;
         public float SecondsPerWeek => SecondsPerDay * DaysPerWeek;
         public float SecondsPerSeason => SecondsPerDay * DaysPerSeason;

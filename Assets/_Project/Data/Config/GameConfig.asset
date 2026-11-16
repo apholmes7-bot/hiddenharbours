@@ -689,3 +689,5 @@ MonoBehaviour:
   RegionSeamFootDrawnMarginMetres: 0.1
   RegionSeamBoatDrawnMarginMetres: 0.3
   RegionSeamMinApproachSpeed: 0.1
+  RegionSeamRearmMoverLengths: 1.5
+  RegionSeamRearmMinMetres: 0.5

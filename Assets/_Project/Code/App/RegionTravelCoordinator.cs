@@ -307,12 +307,13 @@ namespace HiddenHarbours.App
             _pending = null;
             if (crossing != null && _seamFade.Arrived()) _seamArrivedFrame = Time.frameCount;   // clears from here
 
-            // Every arrival places the mover (a door, a passage, a crossing's carry): that jump is not speed, and
+            // Every arrival places the mover (a door, a passage, a crossing's shift): that jump is not speed, and
             // the heading toward a neighbour is counted afresh in the new region. A warmed neighbour the player
             // has now entered is a visited region, toggled like any other, never released as a warm one.
             _hasLastMoverPos = false;
             _warmGate.Reset();
             _warmScenes.Remove(next.name);
+            _arrivalLatch.Release();   // a seam arrival latches its own edge again, below (ArriveAcrossTheSeam)
 
             if (crossing == null) ArrivalOpening.CaptureSeaCrossing(previous, next, arrivalKey);
 
@@ -389,6 +390,8 @@ namespace HiddenHarbours.App
             public string From, To;
             public Vector2 Shift;
             public bool BoatCame;
+            // The edge of the region being LEFT the mover crossed out through.
+            public RegionEdge Edge;
         }
 
         PendingCrossing _pending;
@@ -409,6 +412,11 @@ namespace HiddenHarbours.App
         // When to warm a neighbour and when to let it go, and the scenes warmed and not yet entered (PR 1223).
         readonly NeighbourWarmGate _warmGate = new NeighbourWarmGate();
         readonly List<string> _warmScenes = new List<string>();
+        // The edge a seam crossing came in by, held until the mover is well inside it (PR 1223 play look).
+        readonly SeamArrivalLatch _arrivalLatch = new SeamArrivalLatch();
+
+        /// <summary>True while a seam arrival's edge is latched (read-only, for probes and tests).</summary>
+        public bool SeamArrivalLatched => _arrivalLatch.Latched;
 
         /// <summary>Where the seam fade is (read-only, for probes and tests).</summary>
         public SeamFadePhase SeamFadePhase => _seamFade.Phase;
@@ -446,6 +454,13 @@ namespace HiddenHarbours.App
 
             float band = GameServices.RegionCrossingHysteresisMetres;
             CrossingDecision d = frame.Resolve(here, mover.position, band);
+            // ⭐ A crossing keeps position: the mover arrived where it was when the screen went black, its pivot
+            // short of the seam, so just OUTSIDE the edge it came in by. That overhang is staying, not crossing back.
+            if (_arrivalLatch.Latched && frame.TryGet(here, out RegionFrame arrived)
+                && _arrivalLatch.Step(arrived.LocalRect, mover.position)
+                && d.Kind == CrossingKind.Cross
+                && _arrivalLatch.HoldsBack(arrived.LocalRect, mover.position, d.Edge))
+                d = CrossingDecision.Stay;
             // Inside the region the mover may be heading for a neighbour; past an edge it is crossing or held.
             if (d.Kind == CrossingKind.Stay) WarmNeighbour(frame, here, mover.position, velocity);
             else TendWarmNeighbour(null, null);
@@ -453,23 +468,19 @@ namespace HiddenHarbours.App
             {
                 // ⭐ The hop is made only under a black screen (owner ruling on PR 1223), and the black follows
                 // how near the mover's leading edge is to the edge of the screen (SteerSeamFade). A mover
-                // already past the band (a teleport, a shove) is a full-black approach with nothing to carry.
-                float carry = 0f;
-                Vector2 outward = Vector2.zero;
+                // already past the band (a teleport, a shove, a turn back over its own arrival) is a full-black
+                // approach.
                 if (d.Kind == CrossingKind.Stay)
                 {
-                    if (!SteerSeamFade(frame, here, mover, velocity, boatIsMover, band, out d, out carry, out outward))
-                        return;
+                    if (!SteerSeamFade(frame, here, mover, velocity, boatIsMover, band, out d)) return;
                 }
                 else _seamFade.Approach(1f);
                 if (!_seamFade.ReadyToHop) return;
                 _seamFade.Hopped();
-                // Carried on across under the black, so the first clear frame shows all of it inside the new
-                // screen: its trailing edge lands the band inside the neighbour.
-                if (carry > 0f) CarryOn(mover, boatIsMover, outward * carry);
+                // ⭐ Nothing moves the mover under the black (owner ruling: a crossing KEEPS position). It crosses
+                // from exactly where it stands; the arrival latch reads its overhang on the far side as staying.
                 _hasLastMoverPos = false;
                 if (BeginCrossing(here, d, boatIsMover)) return;
-                if (carry > 0f) CarryOn(mover, boatIsMover, -outward * carry);   // nothing to cross into: undo
             }
             _seamFade.Cancel();
 
@@ -592,20 +603,20 @@ namespace HiddenHarbours.App
         /// screen exactly when it meets the edge of the region. The screen is driven toward
         /// <see cref="SeamCrossingFade.ApproachAlpha"/> of that gap, so it is black as the leading edge arrives,
         /// at any speed, and nothing is cut by the screen edge while it is still clear. Standing, turning back
-        /// or heading for a world boundary clears it. Returns true, with the crossing to make and how far to
-        /// carry the mover on across, while it heads for a seam.
+        /// or heading for a world boundary clears it, and so does the edge a crossing just came in by until the
+        /// mover is well inside it (<see cref="SeamArrivalLatch"/>: a boat idling just past a seam is never
+        /// under a part-black screen). Returns true, with the crossing to make, while it heads for a seam.
         /// </summary>
         bool SteerSeamFade(WorldFrame frame, string here, Transform mover, Vector2 velocity, bool boatIsMover,
-                           float band, out CrossingDecision crossing, out float carry, out Vector2 outward)
+                           float band, out CrossingDecision crossing)
         {
             crossing = CrossingDecision.Stay;
-            carry = 0f;
-            outward = Vector2.zero;
-            float margin = boatIsMover ? GameServices.RegionSeamBoatDrawnMarginMetres : GameServices.RegionSeamFootDrawnMarginMetres;
+            float margin = SeamDrawnMargin(boatIsMover);
             float fadeDistance = boatIsMover ? GameServices.RegionSeamBoatFadeDistanceMetres : GameServices.RegionSeamFootFadeDistanceMetres;
             frame.TryGet(here, out RegionFrame f);
             if (!SeamCrossingFade.TryApproach(f.LocalRect, MoverExtent(mover, margin), velocity,
-                    GameServices.RegionSeamMinApproachSpeed, band, out SeamApproach a))
+                    GameServices.RegionSeamMinApproachSpeed, band,
+                    _arrivalLatch.Latched, _arrivalLatch.Edge, out SeamApproach a))
             {
                 _seamFade.NoApproach();
                 return false;
@@ -619,10 +630,11 @@ namespace HiddenHarbours.App
             _seamFade.Approach(SeamCrossingFade.ApproachAlpha(a.GapMetres,
                 SeamCrossingFade.FadeDistanceFor(fadeDistance, a.OutSpeed, GameServices.RegionSeamFadeOutSeconds)));
             crossing = ahead;
-            carry = a.CarryMetres;
-            outward = a.Outward;
             return true;
         }
+
+        static float SeamDrawnMargin(bool boatIsMover) =>
+            boatIsMover ? GameServices.RegionSeamBoatDrawnMarginMetres : GameServices.RegionSeamFootDrawnMarginMetres;
 
         readonly List<Collider2D> _extentScratch = new List<Collider2D>();
 
@@ -649,15 +661,6 @@ namespace HiddenHarbours.App
             Rect r = any ? Rect.MinMaxRect(b.min.x, b.min.y, b.max.x, b.max.y) : new Rect(p, Vector2.zero);
             float m = Mathf.Max(0f, margin);
             return Rect.MinMaxRect(r.xMin - m, r.yMin - m, r.xMax + m, r.yMax + m);
-        }
-
-        /// <summary>Move the mover (and, for a boat, a rider she does not already carry) by
-        /// <paramref name="offset"/>, body and transform together; velocity untouched.</summary>
-        void CarryOn(Transform mover, bool boatIsMover, Vector2 offset)
-        {
-            var d = new Vector3(offset.x, offset.y, 0f);
-            Shift(mover, d);
-            if (boatIsMover && _player != null && !_player.IsChildOf(mover)) Shift(_player, d);
         }
 
         RegionSceneLoader _loader;
@@ -739,7 +742,10 @@ namespace HiddenHarbours.App
             var loader = Loader;
             if (loader == null) return false;
 
-            _pending = new PendingCrossing { From = here, To = d.To.RegionId, Shift = d.LocalShift, BoatCame = boatIsMover };
+            _pending = new PendingCrossing
+            {
+                From = here, To = d.To.RegionId, Shift = d.LocalShift, BoatCame = boatIsMover, Edge = d.Edge,
+            };
             GameServices.PendingArrivalKey = null;   // an edge crossing names no way in: it is the way in
             if (loader.Travel(target)) return true;  // (a re-visited region arrives inside this call)
             _pending = null;
@@ -783,6 +789,7 @@ namespace HiddenHarbours.App
             }
             ApplyCrossing(_player, _boat, crossing.Shift, crossing.BoatCame);
             _hasLastMoverPos = false;   // the 400 m local jump is not speed
+            LatchArrival(crossing);
             _boatRegionId = BoatRegionAfter(_boatRegionId, crossing.From, crossing.To, crossing.BoatCame);
             UpdateBoatPresence(anchor.RegionId);
 
@@ -799,6 +806,24 @@ namespace HiddenHarbours.App
                 // crossing re-asserts exactly as before.
                 _switcher.ReassertControlMode(keepSeat: crossing.BoatCame);
             }
+        }
+
+        /// <summary>
+        /// Latch the edge a seam crossing came in by (<see cref="SeamArrivalLatch"/>): the mover kept its position,
+        /// so it may stand just outside that edge, and that edge does not fade again until the mover is
+        /// <see cref="SeamArrivalLatch.RearmDistance"/> inside it, in its own lengths (a dory far more than a
+        /// walker; <see cref="GameServices.RegionSeamRearmMoverLengths"/>, <see cref="GameServices.RegionSeamRearmMinMetres"/>).
+        /// </summary>
+        void LatchArrival(PendingCrossing crossing)
+        {
+            Transform mover = crossing.BoatCame ? _boat : _player;
+            WorldFrame frame = GameServices.WorldFrame;
+            if (mover == null || frame == null || !frame.TryGet(crossing.To, out RegionFrame arrived)) return;
+            Rect extent = MoverExtent(mover, SeamDrawnMargin(crossing.BoatCame));   // its size only: never stale
+            float rearm = SeamArrivalLatch.RearmDistance(Mathf.Max(extent.width, extent.height),
+                GameServices.RegionSeamRearmMoverLengths, GameServices.RegionSeamRearmMinMetres);
+            _arrivalLatch.Arm(arrived.LocalRect, mover.position, SeamArrivalLatch.Opposite(crossing.Edge), rearm,
+                GameServices.RegionCrossingHysteresisMetres);
         }
 
         /// <summary>

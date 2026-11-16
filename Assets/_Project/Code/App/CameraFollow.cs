@@ -699,8 +699,43 @@ namespace HiddenHarbours.App
 
         private void LateUpdate()
         {
-            FollowTarget(Time.deltaTime);
+            FollowStep(Time.deltaTime, GameServices.SeamCoverAlpha);
             TickFrame(Time.timeAsDouble, Time.unscaledDeltaTime, _targetSpeedMps);
+        }
+
+        // Set by CarryAcross: the view stays where the crossing settled it while the seam cover clears.
+        private bool _seamHold;
+
+        /// <summary>True while the view is held still after a seam crossing (for probes and tests).</summary>
+        public bool HeldForSeam => _seamHold;
+
+        /// <summary>
+        /// ⭐ Whether the view is held after a seam crossing (PR 1223 play look: the camera lurched 4.8 m in and
+        /// back on consecutive frames while the cover cleared). CarryAcross has already put the view where the
+        /// follow would rest; anything the follow does while the cover is still clearing can only be a lurch
+        /// seen through it. Held while any cover is up, let go the frame it is clear. PURE.
+        /// </summary>
+        public static bool SeamHoldsView(bool held, float coverAlpha) => held && coverAlpha > 0f;
+
+        /// <summary>
+        /// The follow half of a frame: <see cref="FollowTarget"/>, unless the view is held for a seam crossing,
+        /// when the target is only tracked (so the first free frame reads no jump as speed) and the view stays.
+        /// Public with explicit cover alpha so EditMode tests drive it.
+        /// </summary>
+        public void FollowStep(float dt, float seamCoverAlpha)
+        {
+            if (!SeamHoldsView(_seamHold, seamCoverAlpha))
+            {
+                _seamHold = false;
+                FollowTarget(dt);
+                return;
+            }
+            if (Target != null)
+            {
+                _lastTargetPos = Target.position;
+                _hasLast = true;
+            }
+            _targetSpeedMps = 0f;
         }
 
         /// <summary>
@@ -815,6 +850,7 @@ namespace HiddenHarbours.App
             _lastTargetPos += d;
             ApplyBounds();                          // the arrived region's bounds are already published
             _lastAppliedPos = transform.position;   // the tripwire takes the settled view, not a teleport
+            _seamHold = true;                       // and it stays there until the cover is clear (FollowStep)
         }
 
         /// <summary>
