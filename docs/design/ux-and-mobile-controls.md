@@ -83,10 +83,15 @@ are available.
 - **Interact:** the context Action Button, or simply walk into / tap an interactable (NPC, door,
   trap, shop). A subtle highlight shows the current interactable.
 - **The interaction chooser (owner ask 2026-11-15, built).** Pressing interact where **two or more**
-  options are in reach puts up a small list in the popup's corner, in the shell's ink and chalk: every
-  row is a near-opaque ink strip with the key number and the verb; the selected row is inverted (a chalk
-  strip with ink words) and has a warm bar at its leading edge. The list is as wide as its longest row
-  needs, from the popup's width up to a cap, and grows leftward; only past the cap is a row cut. Rows
+  options are in reach puts up a small list in the popup's corner, drawn as the speech bubble's option
+  list (owner ruling: the notebook and chat-bubble design language). It is one cream bubble panel with
+  the ink ring and chamfered corners. Rows show the key number and the verb in the game's one face, in
+  notebook ink. The selected row has the bubble's gold pill behind it, the pointing hand beside it, and
+  the strongest ink. All measures are the bubble kit's, on the same 1280x720 grid. The panel and pill
+  sprites are the bubble's own, reached through `Core/Art/BubbleKitLink`. There is no tail, because the
+  list sits in a screen corner. The panel is as wide as its longest row, from the popup's width up to the
+  kit's widest line (34 characters). It grows up and left from the popup's corner, and only past the cap
+  is a row cut ("..."). Rows
   that read exactly the same collapse into the nearer one. With one option the press acts at once, as before. The
   player picks with W/S or the arrows plus E or Enter, with the number keys 1–9, or with the mouse
   (hover selects, click picks); Esc puts it down. The order is the interact ladder: priority, then

@@ -87,23 +87,44 @@ namespace HiddenHarbours.Tests.UI.EditMode
         // =====================================================================================
 
         [Test]
-        public void TheBottomRow_StandsWhereThePopupStands_AndTheRestClimbAboveIt()
+        public void ThePanel_StandsOnThePopupsCorner_AndGrowsUpward()
         {
             Vector2 home = InteractPopupLayout.PanelAnchoredPosition();
-            Assert.AreEqual(home, InteractChooserLayout.RowAnchoredPosition(home, 2, 3), "the last row is the popup's place");
-            Vector2 top = InteractChooserLayout.RowAnchoredPosition(home, 0, 3);
-            Assert.AreEqual(home.x, top.x, "one column");
-            Assert.AreEqual(home.y + 2 * InteractChooserLayout.RowPitch, top.y, 0.001f,
-                "row 0 is two pitches higher (y grows down, so less negative)");
-            Assert.Less(-top.y, InteractPopupLayout.RefH, "and still on the screen");
+            float width = InteractChooserLayout.MinPanelWidth;
+            Vector2 panel = InteractChooserLayout.PanelAnchoredPosition(home, 3, width);
+            Assert.AreEqual(home.x, panel.x, 0.001f, "at the popup's width, the popup's left edge");
+            float panelBottom = panel.y - InteractChooserLayout.PanelHeight(3);
+            Assert.AreEqual(home.y - InteractPopupLayout.PanelHeight, panelBottom, 0.001f, "the popup's bottom edge");
+            Assert.AreEqual(InteractChooserLayout.InsetTop + 3 * InteractChooserLayout.RowHeight
+                            + InteractChooserLayout.InsetBottom, InteractChooserLayout.PanelHeight(3), 0.001f);
+            Assert.Less(-panel.y, InteractPopupLayout.RefH, "and on the screen");
         }
 
         [Test]
         public void EvenAFullList_StaysOnTheScreen()
         {
             Vector2 home = InteractPopupLayout.PanelAnchoredPosition();
-            Vector2 top = InteractChooserLayout.RowAnchoredPosition(home, 0, InteractChoiceList.HardCap);
-            Assert.LessOrEqual(top.y, 0f, "the top row's top edge is inside the host");
+            Vector2 top = InteractChooserLayout.PanelAnchoredPosition(home, InteractChoiceList.HardCap,
+                                                                      InteractChooserLayout.MaxPanelWidth);
+            Assert.LessOrEqual(top.y, 0f, "the panel's top edge is inside the host");
+            Assert.GreaterOrEqual(top.x, 0f, "and its left edge");
+        }
+
+        [Test]
+        public void EveryMeasure_IsTheBubbleKitsOwn_OnItsGrid()
+        {
+            // The same reference canvas as the bubble, so a kit pixel is ArtScale units in both.
+            Assert.AreEqual(DialogueBubbleKit.ArtScale, InteractChooserLayout.Kit);
+            Assert.AreEqual(HudBandLayout.RefW, PaperUi.ReferenceResolution.x);
+            Assert.AreEqual(HudBandLayout.RefH, PaperUi.ReferenceResolution.y);
+            Assert.AreEqual(DialogueBubbleKit.OptionRowHeight * DialogueBubbleKit.ArtScale, InteractChooserLayout.RowHeight);
+            Assert.AreEqual(HarbourType.GlyphHeight * DialogueBubbleKit.ArtScale, InteractChooserLayout.FontSize,
+                "the face at a whole multiple of its baked size, never resampled");
+            Assert.AreEqual(DialogueBubbleKit.OptionTextX * DialogueBubbleKit.ArtScale, InteractChooserLayout.TextX);
+            Assert.AreEqual((DialogueBubbleKit.PanelInsetL - 1) * DialogueBubbleKit.ArtScale, InteractChooserLayout.PillInset);
+            foreach (float w in new[] { 0f, 41f, 300f, 437f, 5000f })
+                Assert.AreEqual(0f, InteractChooserLayout.PanelWidth(w) % InteractChooserLayout.Kit, 0.001f,
+                    "the panel is whole kit pixels wide, so its 9-slice ring lands on the grid");
         }
 
         [Test]
@@ -112,77 +133,114 @@ namespace HiddenHarbours.Tests.UI.EditMode
             Assert.AreEqual("1  Open the door", InteractChooserLayout.RowText(0, "Open the door", InteractChoiceBlock.None));
             Assert.AreEqual("3  Sleep (taken)", InteractChooserLayout.RowText(2, "Sleep", InteractChoiceBlock.Occupied));
             Assert.AreEqual("2  Sell (not now)", InteractChooserLayout.RowText(1, "Sell", InteractChoiceBlock.Unavailable));
-            Assert.LessOrEqual(
-                InteractChooserLayout.RowText(8, new string('x', 80), InteractChoiceBlock.Occupied).Length,
-                InteractChooserLayout.MaxRowCharacters, "one line, cut only past the list's own cap");
+            string cut = InteractChooserLayout.RowText(8, new string('x', 80), InteractChoiceBlock.Occupied);
+            Assert.AreEqual(InteractChooserLayout.MaxRowCharacters, cut.Length, "one line, cut at the kit's widest line");
+            StringAssert.EndsWith(InteractChooserStrings.Cut, cut);
+            Assert.AreEqual(-1, cut.IndexOf('…'), "no ellipsis glyph: the face has none");
         }
 
         [Test]
-        public void ALongVerb_IsNotCut_TheListWidensToIt()
+        public void ALongVerb_IsNotCut_ThePanelWidensToIt()
         {
             // The 2026-11-15 editor look at the Route 91 pumps: row 1 read "Fill up with two-stroke ...".
             string row = InteractChooserLayout.RowText(0, "Fill up with two-stroke mix", InteractChoiceBlock.None);
-            Assert.AreEqual("1  Fill up with two-stroke mix", row, "whole, no ellipsis");
+            Assert.AreEqual("1  Fill up with two-stroke mix", row, "whole, no cut");
 
-            float width = InteractChooserLayout.ListWidth(InteractChooserLayout.EstimateTextUnits(row));
+            float width = InteractChooserLayout.PanelWidth(InteractChooserLayout.EstimateTextUnits(row));
             Assert.Greater(width, InteractPopupLayout.PanelWidth, "wider than the popup's strip");
             Assert.GreaterOrEqual(InteractChooserLayout.TextSize(width).x,
-                InteractChooserLayout.EstimateTextUnits(row), "the type's box holds the words");
-            Assert.AreEqual(InteractPopupLayout.PanelWidth, InteractChooserLayout.ListWidth(40f),
+                InteractChooserLayout.EstimateTextUnits(row), "the words' box holds the words");
+            Assert.AreEqual(InteractChooserLayout.MinPanelWidth, InteractChooserLayout.PanelWidth(40f),
                 "short words keep the popup's width");
-            Assert.AreEqual(InteractChooserLayout.MaxListWidth, InteractChooserLayout.ListWidth(5000f),
+            Assert.AreEqual(InteractChooserLayout.MaxPanelWidth, InteractChooserLayout.PanelWidth(5000f),
                 "and the list never becomes a banner");
             Assert.LessOrEqual(InteractChooserLayout.EstimateTextUnits(new string('x', InteractChooserLayout.MaxRowCharacters)),
-                InteractChooserLayout.TextSize(InteractChooserLayout.MaxListWidth).x,
-                "the longest row the cap allows fits the widest list");
+                InteractChooserLayout.TextSize(InteractChooserLayout.MaxPanelWidth).x,
+                "the longest row the cap allows fits the widest panel");
         }
 
         [Test]
-        public void AWiderList_GrowsLeft_KeepsThePopupsRightEdge_AndThePointerFollows()
+        public void AWiderPanel_GrowsLeft_KeepsThePopupsRightEdge_AndThePointerFollows()
         {
             Vector2 home = InteractPopupLayout.PanelAnchoredPosition();
             const float width = 420f;
-            Vector2 bottom = InteractChooserLayout.RowAnchoredPosition(home, 1, 2, width);
-            Assert.AreEqual(home.x + InteractPopupLayout.PanelWidth, bottom.x + width, 0.001f, "same right edge");
-            Assert.AreEqual(home.y, bottom.y, 0.001f, "same row");
+            Vector2 panel = InteractChooserLayout.PanelAnchoredPosition(home, 2, width);
+            Assert.AreEqual(home.x + InteractPopupLayout.PanelWidth, panel.x + width, 0.001f, "same right edge");
 
-            var bottomPx = new Rect(900f, 20f, 300f, 44f);
-            Rect wide = InteractChooserLayout.RowScreenRect(bottomPx, 1, 2, 1f, width);
-            Assert.AreEqual(bottomPx.xMax, wide.xMax, 0.001f);
-            Assert.AreEqual(width, wide.width, 0.001f);
-            Assert.AreEqual(1, InteractChooserLayout.HitRow(new Vector2(800f, 40f), bottomPx, 2, 1f, width),
+            var popupPx = new Rect(900f, 20f, 300f, 44f);
+            Rect bottom = InteractChooserLayout.RowScreenRect(popupPx, 1, 2, 1f, width);
+            Assert.AreEqual(popupPx.xMax, bottom.xMax, 0.001f);
+            Assert.AreEqual(width, bottom.width, 0.001f);
+            float y = 20f + InteractChooserLayout.InsetBottom + 1f;
+            Assert.AreEqual(1, InteractChooserLayout.HitRow(new Vector2(800f, y), popupPx, 2, 1f, width),
                 "a point left of the popup's strip but on the wider row hits it");
-            Assert.AreEqual(-1, InteractChooserLayout.HitRow(new Vector2(800f, 40f), bottomPx, 2, 1f),
-                "and misses at the popup's width");
+            Assert.AreEqual(-1, InteractChooserLayout.HitRow(new Vector2(800f, y), popupPx, 2, 1f,
+                InteractChooserLayout.MinPanelWidth), "and misses at the popup's width");
         }
 
         [Test]
-        public void TheSelectedRow_IsInverted_AndMarked_NotAShadeOff()
+        public void ThePointer_HitsTheRowItIsOn_TheRowsMeet_AndTheInsetsHitNothing()
         {
-            // The editor look measured the old selected strip 2-4 luminance units off the rest.
-            Color plain = InteractChooserStyle.StripFor(false), picked = InteractChooserStyle.StripFor(true);
-            Assert.GreaterOrEqual(plain.a, 0.9f, "every row is near-opaque: the ground does not show through");
-            Assert.GreaterOrEqual(picked.a, 0.9f);
-            Assert.Greater(Luma(picked) - Luma(plain), 0.6f, "the selected strip is the inverse, not a shade");
-            Assert.Greater(Luma(picked) - Luma(InteractChooserStyle.WordsFor(true, true)), 0.6f,
-                "its words are ink on chalk");
-            Assert.Greater(Luma(InteractChooserStyle.WordsFor(false, true)) - Luma(plain), 0.6f,
-                "and the other rows' words are chalk on ink");
+            var popupPx = new Rect(900f, 20f, 300f, 44f);
+            const float scale = 2f, width = 300f;
+            float b = 20f + InteractChooserLayout.InsetBottom * scale, row = InteractChooserLayout.RowHeight * scale;
+            Assert.AreEqual(2, InteractChooserLayout.HitRow(new Vector2(1000f, b + 1f), popupPx, 3, scale, width), "the bottom row");
+            Assert.AreEqual(1, InteractChooserLayout.HitRow(new Vector2(1000f, b + row), popupPx, 3, scale, width),
+                "the rows meet: the seam belongs to the row above, never to nothing");
+            Assert.AreEqual(0, InteractChooserLayout.HitRow(new Vector2(1000f, b + 2.5f * row), popupPx, 3, scale, width), "the top row");
+            Assert.AreEqual(-1, InteractChooserLayout.HitRow(new Vector2(1000f, 21f), popupPx, 3, scale, width),
+                "the panel's bottom inset is no row");
+            Assert.AreEqual(-1, InteractChooserLayout.HitRow(new Vector2(100f, b + 1f), popupPx, 3, scale, width), "off the list");
+        }
+
+        [Test]
+        public void TheSelectedRow_IsTheBubblesGoldPill_AndItsWordsAreTheHeaviestInk()
+        {
+            // The kit's own colours: the panel paper, the pill gold, the words notebook ink.
+            Assert.AreEqual(NotebookInk.Paper, InteractChooserStyle.PanelTint(false));
+            Assert.AreEqual(NotebookInk.Gold, InteractChooserStyle.PillTint(false));
+            Assert.AreEqual(Color.white, InteractChooserStyle.PanelTint(true), "the linked art carries its own colour");
+            Assert.AreEqual(Color.white, InteractChooserStyle.PillTint(true));
+
+            Color paper = NotebookInk.Paper, gold = NotebookInk.Gold;
+            Assert.Greater(Distance(gold, paper), 0.25f, "the pill is a shape in another colour, not a shade of the panel");
+
+            Color picked = InteractChooserStyle.WordsFor(true, true), plain = InteractChooserStyle.WordsFor(false, true);
+            Assert.AreEqual(1f, picked.a, "the selected words are full strength");
+            Assert.LessOrEqual(Luma(picked), Luma(plain),
+                "and at least as heavy as any other row's (the 2026-11-15 look: dark words read thin on the bar)");
+            Assert.Greater(Luma(gold) - Luma(picked), 0.5f, "dark ink on the gold");
+            Assert.Greater(Luma(paper) - Luma(plain), 0.6f, "dark ink on the paper");
+            Assert.Less(InteractChooserStyle.WordsFor(false, false).a, plain.a, "a greyed row is faint ink");
         }
 
         private static float Luma(Color c) => 0.2126f * c.r + 0.7152f * c.g + 0.0722f * c.b;
 
+        private static float Distance(Color a, Color b)
+            => Mathf.Sqrt((a.r - b.r) * (a.r - b.r) + (a.g - b.g) * (a.g - b.g) + (a.b - b.b) * (a.b - b.b));
+
         [Test]
-        public void ThePointer_HitsTheRowItIsOn_AndTheSeamsHitNothing()
+        public void TheLink_PointsAtTheBubblesOwnSprites_NotCopies()
         {
-            var bottom = new Rect(900f, 20f, 300f, 44f);
-            const float scale = 1f;
-            Assert.AreEqual(2, InteractChooserLayout.HitRow(new Vector2(1000f, 40f), bottom, 3, scale), "the bottom row");
-            float topY = 20f + 2 * InteractChooserLayout.RowPitch + 10f;
-            Assert.AreEqual(0, InteractChooserLayout.HitRow(new Vector2(1000f, topY), bottom, 3, scale), "the top row");
-            float seam = 20f + 44f + InteractChooserLayout.RowGap * 0.5f;
-            Assert.AreEqual(-1, InteractChooserLayout.HitRow(new Vector2(1000f, seam), bottom, 3, scale), "the gap");
-            Assert.AreEqual(-1, InteractChooserLayout.HitRow(new Vector2(100f, 40f), bottom, 3, scale), "off the list");
+            BubbleKitLink.ForgetCache();
+            BubbleKitLink link = BubbleKitLink.Shipped;
+            Assert.IsNotNull(link, "Resources/" + BubbleKitLink.ResourceKey);
+            Assert.IsNotNull(link.Panel);
+            Assert.IsNotNull(link.Gold);
+            Assert.IsNotNull(link.Cursor);
+            Assert.AreEqual(DialogueBubbleKit.PiecePanel, link.Panel.name);
+            Assert.AreEqual(DialogueBubbleKit.PieceGold, link.Gold.name);
+            Assert.AreEqual(DialogueBubbleKit.ShippedCursor, link.Cursor.name, "the owner's shipped hand");
+            Assert.AreNotEqual(Vector4.zero, link.Panel.border, "the panel is the kit's 9-slice");
+            Assert.AreNotEqual(Vector4.zero, link.Gold.border, "and so is the pill");
+#if UNITY_EDITOR
+            StringAssert.StartsWith("Assets/_Project/Art/UI/DialogueBubble/",
+                UnityEditor.AssetDatabase.GetAssetPath(link.Panel), "the bubble's own file, not a copy");
+            StringAssert.StartsWith("Assets/_Project/Art/UI/DialogueBubble/",
+                UnityEditor.AssetDatabase.GetAssetPath(link.Gold));
+            StringAssert.StartsWith("Assets/_Project/Art/UI/DialogueBubble/",
+                UnityEditor.AssetDatabase.GetAssetPath(link.Cursor));
+#endif
         }
 
         // =====================================================================================
@@ -293,23 +351,29 @@ namespace HiddenHarbours.Tests.UI.EditMode
                 Assert.AreEqual("1  Open the door", view.ShownRow(0));
                 Assert.AreEqual("3  Sit", view.ShownRow(2));
 
-                view.ShownLook(0, out Color strip0, out Color words0, out bool mark0);
-                view.ShownLook(1, out Color strip1, out _, out bool mark1);
-                Assert.AreEqual(InteractChooserStyle.StripFor(true), strip0, "the list opens on row 1, drawn selected");
-                Assert.AreEqual(InteractChooserStyle.WordsFor(true, true), words0);
-                Assert.IsTrue(mark0, "with the marker");
-                Assert.AreEqual(InteractChooserStyle.StripFor(false), strip1);
-                Assert.IsFalse(mark1, "one marker only");
+                // The bubble's own pieces, linked; the game's one face.
+                Assert.IsTrue(view.HasKitArt, "the panel, the pill and the hand are the kit's");
+                BubbleKitLink link = BubbleKitLink.Shipped;
+                view.ShownArt(out Sprite panelArt, out Sprite pillArt, out Sprite handArt);
+                Assert.AreSame(link.Panel, panelArt, "the same sprite object the bubble wears, not a copy");
+                Assert.AreSame(link.Gold, pillArt);
+                Assert.AreSame(link.Cursor, handArt);
+                Assert.AreSame(Resources.Load<Font>(HarbourType.ResourceKey), view.ShownFace, "the face");
+
+                view.ShownSelection(out int pillRow, out int handRow);
+                Assert.AreEqual(0, pillRow, "the list opens on row 1: the gold pill behind it");
+                Assert.AreEqual(0, handRow, "and the hand beside it");
+                Assert.AreEqual(InteractChooserStyle.SelectedWords, view.ShownWords(0), "in the strongest ink");
+                Assert.AreEqual(InteractChooserStyle.Words, view.ShownWords(1));
 
                 InteractChooser.Step(1);
                 view.Tick();
-                view.ShownLook(0, out strip0, out _, out mark0);
-                view.ShownLook(1, out strip1, out _, out mark1);
-                Assert.AreEqual(InteractChooserStyle.StripFor(false), strip0, "a step moves the look with it");
-                Assert.IsFalse(mark0);
-                Assert.AreEqual(InteractChooserStyle.StripFor(true), strip1);
-                Assert.IsTrue(mark1);
-                Assert.GreaterOrEqual(view.ShownWidth, InteractPopupLayout.PanelWidth);
+                view.ShownSelection(out pillRow, out handRow);
+                Assert.AreEqual(1, pillRow, "a step moves the pill with it");
+                Assert.AreEqual(1, handRow, "and the hand");
+                Assert.AreEqual(InteractChooserStyle.Words, view.ShownWords(0));
+                Assert.AreEqual(InteractChooserStyle.SelectedWords, view.ShownWords(1));
+                Assert.GreaterOrEqual(view.ShownWidth, InteractChooserLayout.MinPanelWidth);
 
                 held.PressNumber(3);
                 view.Tick();

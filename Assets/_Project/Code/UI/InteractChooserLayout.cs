@@ -4,130 +4,135 @@ using HiddenHarbours.Core;
 namespace HiddenHarbours.UI
 {
     /// <summary>
-    /// <b>Where the interaction chooser's rows sit, how wide they are, what they say, and which one the
+    /// <b>Where the interaction chooser sits, how big it is, what each row says, and which row the
     /// pointer is on</b> — pure maths and strings, asserted headless (the <see cref="InteractPopupLayout"/>
     /// rule: a cloud agent can prove numbers, not pixels).
     ///
-    /// <para><b>It is the popup, stacked.</b> Each row is the popup's strip — same height, type size and
-    /// inset — and the BOTTOM row stands where the popup itself would stand (helm footprint and quest note
-    /// already stepped around, <see cref="InteractPopupLayout.PanelAnchoredPosition(in HelmFootprintArea, Rect, float, float)"/>).
-    /// The rest climb above it, row 0 at the top. The popup is suppressed while the list is up (the list
-    /// holds <see cref="InteractionGate"/>), so the list takes its corner rather than joining it.</para>
+    /// <para><b>It is the speech bubble's option list</b> (owner ruling: "the same design language as our
+    /// notebook and chat bubbles, so its cohesive with the game"). Every measure is the bubble kit's own,
+    /// in kit pixels, times <see cref="DialogueBubbleKit.ArtScale"/> — the HUD's reference canvas is the
+    /// same 1280x720 the bubble is drawn on, so one kit pixel here is one kit pixel there, and the two
+    /// lists cannot drift apart: rows <see cref="DialogueBubbleKit.OptionRowHeight"/> tall, the words at
+    /// <see cref="DialogueBubbleKit.OptionTextX"/>, the panel's top/bottom/right insets, the pill's inset
+    /// (<c>PanelInsetL − 1</c>, as <c>DialoguePresenter</c> places it) and the hand halfway into the
+    /// text gutter. The face is <see cref="HarbourType"/>, monospace, so a row's width is its length.</para>
+    ///
+    /// <para><b>Placement is the popup's.</b> The panel's bottom-right corner is the popup's
+    /// (<see cref="InteractPopupLayout.PanelAnchoredPosition(in HelmFootprintArea, Rect, float, float)"/>,
+    /// helm footprint and quest note already stepped around); the panel grows up and LEFT from it. The
+    /// popup is suppressed while the list is up (the list holds <see cref="InteractionGate"/>), so the list
+    /// takes its corner rather than joining it.</para>
     ///
     /// <para><b>Width follows the words</b> (2026-11-15 editor look: "Fill up with two-stroke mix" was cut
-    /// at the popup's width). The list is as wide as its longest row needs — never narrower than the popup,
-    /// never wider than <see cref="MaxListWidth"/> — and grows LEFTWARD from the popup's right edge, which
-    /// is the edge that hugs the screen. Only past that cap is a row cut, with the popup's ellipsis.</para>
+    /// at the popup's width), never narrower than the popup, never wider than the kit's widest line
+    /// (<see cref="DialogueBubbleKit.MaxCols"/>). Only past that is a row cut.</para>
     ///
     /// <para>Reference units, top-left convention, as the popup: x right, y DOWN (negative).</para>
     /// </summary>
     public static class InteractChooserLayout
     {
-        /// <summary>One row's height: the popup's.</summary>
-        public const float RowHeight = InteractPopupLayout.PanelHeight;
+        /// <summary>Reference units per kit pixel: the bubble's own art scale, on the same reference
+        /// canvas (<see cref="HudBandLayout.RefW"/> x <see cref="HudBandLayout.RefH"/>).</summary>
+        public const int Kit = DialogueBubbleKit.ArtScale;
 
-        /// <summary>The air between two rows, reference units. A hair, so the rows read as one list and
-        /// each strip is still its own target for a click.</summary>
-        public const float RowGap = 4f;
+        /// <summary>One row: the bubble's option row.</summary>
+        public const float RowHeight = DialogueBubbleKit.OptionRowHeight * Kit;
 
-        /// <summary>The distance from one row's top to the next one's.</summary>
-        public const float RowPitch = RowHeight + RowGap;
+        /// <summary>The panel's padding above the first row and below the last, and right of the words.</summary>
+        public const float InsetTop = DialogueBubbleKit.OptionInsetT * Kit;
+        public const float InsetBottom = DialogueBubbleKit.OptionInsetB * Kit;
+        public const float InsetRight = DialogueBubbleKit.OptionInsetR * Kit;
 
-        /// <summary>The widest the list grows, reference units: room for <see cref="MaxRowCharacters"/>
-        /// at the popup's type size, and still a corner note (a bit over a quarter of the 1920 reference
-        /// width), not a banner.</summary>
-        public const float MaxListWidth = 520f;
+        /// <summary>Where the words start, from the panel's left edge: the kit's text origin, whose gutter
+        /// holds the hand.</summary>
+        public const float TextX = DialogueBubbleKit.OptionTextX * Kit;
 
-        /// <summary>The selected row's leading marker bar, reference units wide (inside the type's inset,
-        /// so it never pushes the words).</summary>
-        public const float MarkerWidth = 6f;
+        /// <summary>The hand's centre, from the panel's left edge: halfway into the gutter, as the bubble.</summary>
+        public const float CursorX = DialogueBubbleKit.OptionTextX * Kit * 0.5f;
 
-        /// <summary>The longest row drawn, number and reason included. Derived as the popup's own cap is:
-        /// <see cref="MaxListWidth"/> minus both insets is 492 units, at a shade under
-        /// <see cref="CharUnits"/> per character, with a character in hand.</summary>
-        public const int MaxRowCharacters = 48;
+        /// <summary>The gold pill's inset from each side of the panel (the bubble's <c>PanelInsetL − 1</c>).</summary>
+        public const float PillInset = (DialogueBubbleKit.PanelInsetL - 1) * Kit;
 
-        /// <summary>The popup's own per-character estimate at its type size (see
-        /// <see cref="InteractPopupLayout.MaxCharacters"/>). A floor under the measured width, so a list
-        /// is never sized narrower than its words even where no font can be measured (headless).</summary>
-        public const float CharUnits = 10f;
+        /// <summary>The face's size: <see cref="HarbourType.GlyphHeight"/> x the art scale draws the baked
+        /// glyphs one kit pixel per glyph pixel (the derivation <c>BubbleFace.FontSize</c> documents).</summary>
+        public const int FontSize = HarbourType.GlyphHeight * Kit;
 
-        /// <summary>The estimated drawn width of <paramref name="text"/>, reference units.</summary>
+        /// <summary>One character's advance, reference units — monospace by construction.</summary>
+        public const float AdvanceUnits = HarbourType.Advance * Kit;
+
+        /// <summary>The fallback hand's side, kit pixels, when the kit's art is not linked (a square of
+        /// ink in the gutter — the same job, no new art).</summary>
+        public const int FallbackCursorKitPixels = 4;
+
+        /// <summary>The longest row drawn, number and reason included: the kit's widest line.</summary>
+        public const int MaxRowCharacters = DialogueBubbleKit.MaxCols;
+
+        /// <summary>The narrowest panel: the popup's width, so a short list still fills its corner.</summary>
+        public const float MinPanelWidth = InteractPopupLayout.PanelWidth;
+
+        /// <summary>The widest panel: the kit's widest line of words plus the gutter and right inset.</summary>
+        public const float MaxPanelWidth = TextX + MaxRowCharacters * AdvanceUnits + InsetRight;
+
+        /// <summary>The drawn width of <paramref name="text"/> in the face, reference units.</summary>
         public static float EstimateTextUnits(string text)
-            => string.IsNullOrEmpty(text) ? 0f : text.Length * CharUnits;
+            => string.IsNullOrEmpty(text) ? 0f : text.Length * AdvanceUnits;
 
         /// <summary>
-        /// The list's width for its longest row's drawn width (reference units): the words plus both
-        /// insets, rounded up, clamped to [<see cref="InteractPopupLayout.PanelWidth"/>,
-        /// <see cref="MaxListWidth"/>].
+        /// The panel's width for its longest row's drawn width (reference units): gutter + words + right
+        /// inset, rounded UP to whole kit pixels (so the 9-slice lands on the grid), clamped to
+        /// [<see cref="MinPanelWidth"/>, <see cref="MaxPanelWidth"/>].
         /// </summary>
-        public static float ListWidth(float longestTextUnits)
-            => Mathf.Clamp(Mathf.Ceil(longestTextUnits + 2f * InteractPopupLayout.TextPadX),
-                           InteractPopupLayout.PanelWidth, MaxListWidth);
+        public static float PanelWidth(float longestTextUnits)
+        {
+            float raw = Mathf.Clamp(TextX + longestTextUnits + InsetRight, MinPanelWidth, MaxPanelWidth);
+            return Mathf.Ceil(raw / Kit - 0.001f) * Kit;
+        }
 
-        /// <summary>The type's box inside a row of <paramref name="width"/>.</summary>
-        public static Vector2 TextSize(float width)
-            => new Vector2(width - 2f * InteractPopupLayout.TextPadX,
-                           InteractPopupLayout.PanelHeight - 2f * InteractPopupLayout.TextPadY);
+        /// <summary>The panel's height for <paramref name="count"/> rows.</summary>
+        public static float PanelHeight(int count) => InsetTop + Mathf.Max(0, count) * RowHeight + InsetBottom;
 
-        /// <summary>
-        /// Row <paramref name="index"/>'s anchored position (top-left pivot) in a list of
-        /// <paramref name="count"/>, given where the bottom row stands at the popup's width. Row 0 is the
-        /// top one.
-        /// </summary>
-        public static Vector2 RowAnchoredPosition(Vector2 bottomRow, int index, int count)
-            => RowAnchoredPosition(bottomRow, index, count, InteractPopupLayout.PanelWidth);
+        /// <summary>The words' box inside a panel of <paramref name="panelWidth"/>.</summary>
+        public static Vector2 TextSize(float panelWidth) => new Vector2(panelWidth - TextX - InsetRight, RowHeight);
+
+        /// <summary>Row <paramref name="index"/>'s top, from the panel's top (y down, so negative).</summary>
+        public static float RowTop(int index) => -(InsetTop + index * RowHeight);
 
         /// <summary>
-        /// As <see cref="RowAnchoredPosition(Vector2, int, int)"/> for a list <paramref name="width"/>
-        /// wide: the right edge stays the popup's, the list grows left, and never past the screen's
-        /// <see cref="InteractPopupLayout.MarginX"/>.
+        /// The panel's anchored position (top-left pivot), given where the popup would stand: its bottom-right
+        /// corner on the popup's, never left of the screen's <see cref="InteractPopupLayout.MarginX"/>.
         /// </summary>
-        public static Vector2 RowAnchoredPosition(Vector2 bottomRow, int index, int count, float width)
-            => new Vector2(LeftEdge(bottomRow.x, width), bottomRow.y + (count - 1 - index) * RowPitch);
+        public static Vector2 PanelAnchoredPosition(Vector2 popup, int count, float panelWidth)
+            => new Vector2(LeftEdge(popup.x, panelWidth),
+                           popup.y - InteractPopupLayout.PanelHeight + PanelHeight(count));
 
         private static float LeftEdge(float popupLeft, float width)
             => Mathf.Max(InteractPopupLayout.MarginX, popupLeft + InteractPopupLayout.PanelWidth - width);
 
         /// <summary>
-        /// Row <paramref name="index"/> in SCREEN pixels (bottom-left origin, y up), given the bottom
-        /// row's screen rect at the popup's width and the canvas scale.
+        /// Row <paramref name="index"/> in SCREEN pixels (bottom-left origin, y up), given the popup's screen
+        /// rect and the canvas scale: the full width of the panel, one row tall — the same rule as the drawn
+        /// rows, and contiguous, so the pointer is always on one row or off the list.
         /// </summary>
-        public static Rect RowScreenRect(Rect bottomRowPx, int index, int count, float scale)
-            => RowScreenRect(bottomRowPx, index, count, scale, InteractPopupLayout.PanelWidth);
-
-        /// <summary>As <see cref="RowScreenRect(Rect, int, int, float)"/> for a list
-        /// <paramref name="width"/> reference units wide — the same rule as the drawn rows.</summary>
-        public static Rect RowScreenRect(Rect bottomRowPx, int index, int count, float scale, float width)
+        public static Rect RowScreenRect(Rect popupPx, int index, int count, float scale, float panelWidth)
         {
-            Rect r = bottomRowPx;
             float s = scale > 0f ? scale : 1f;
-            r.x = LeftEdge(bottomRowPx.x / s, width) * s;
-            r.width = width * s;
-            r.y += (count - 1 - index) * RowPitch * s;
-            return r;
+            return new Rect(LeftEdge(popupPx.x / s, panelWidth) * s,
+                            popupPx.y + (InsetBottom + (count - 1 - index) * RowHeight) * s,
+                            panelWidth * s, RowHeight * s);
         }
 
-        /// <summary>
-        /// Which row the pointer is on, or -1: the pure half of "hover selects, click picks". The gaps
-        /// between rows belong to no row, so a click in the seam does nothing rather than guessing.
-        /// </summary>
-        public static int HitRow(Vector2 pointPx, Rect bottomRowPx, int count, float scale)
-            => HitRow(pointPx, bottomRowPx, count, scale, InteractPopupLayout.PanelWidth);
-
-        /// <summary>As <see cref="HitRow(Vector2, Rect, int, float)"/> for a list <paramref name="width"/>
-        /// wide.</summary>
-        public static int HitRow(Vector2 pointPx, Rect bottomRowPx, int count, float scale, float width)
+        /// <summary>Which row the pointer is on, or -1 (off the rows: the panel's insets and outside).</summary>
+        public static int HitRow(Vector2 pointPx, Rect popupPx, int count, float scale, float panelWidth)
         {
             for (int i = 0; i < count; i++)
-                if (RowScreenRect(bottomRowPx, i, count, scale, width).Contains(pointPx)) return i;
+                if (RowScreenRect(popupPx, i, count, scale, panelWidth).Contains(pointPx)) return i;
             return -1;
         }
 
         /// <summary>
         /// The words on a row: its number key, the thing's own verb, and — for a row that cannot be
-        /// picked — why, in a word. Built only when the list opens (never per frame), on one line, and cut
-        /// with the popup's ellipsis only past <see cref="MaxRowCharacters"/>.
+        /// picked — why, in a word. Built only when the list opens (never per frame), on one line, cut with
+        /// <see cref="InteractChooserStrings.Cut"/> only past <see cref="MaxRowCharacters"/>.
         /// </summary>
         public static string RowText(int index, string label, InteractChoiceBlock block)
         {
@@ -140,14 +145,14 @@ namespace HiddenHarbours.UI
             return FitRow(text);
         }
 
-        /// <summary>One line, at most <see cref="MaxRowCharacters"/> glyphs including the ellipsis.</summary>
+        /// <summary>One line, at most <see cref="MaxRowCharacters"/> glyphs including the cut mark.</summary>
         public static string FitRow(string text)
         {
             if (string.IsNullOrEmpty(text)) return "";
             if (text.IndexOf('\n') >= 0 || text.IndexOf('\r') >= 0) text = text.Replace('\n', ' ').Replace('\r', ' ');
             if (text.Length <= MaxRowCharacters) return text;
-            string ellipsis = InteractPopupLayout.Ellipsis;
-            return text.Substring(0, Mathf.Max(0, MaxRowCharacters - ellipsis.Length)) + ellipsis;
+            string cut = InteractChooserStrings.Cut;
+            return text.Substring(0, Mathf.Max(0, MaxRowCharacters - cut.Length)) + cut;
         }
 
         /// <summary>The one word for why a row is greyed, or null for a pickable row.</summary>
@@ -163,36 +168,37 @@ namespace HiddenHarbours.UI
     }
 
     /// <summary>
-    /// <b>The chooser's look</b> — every colour it paints, from the shell's own palette
-    /// (<see cref="PaperUi"/>), so the list is the game's ink and chalk and nothing new.
+    /// <b>The chooser's ink</b> — every colour it paints, from the notebook's palette
+    /// (<see cref="NotebookInk"/>, which IS the bubble kit's palette), and nothing new.
     ///
-    /// <para><b>Selection is unmistakable</b> (2026-11-15 editor look: the old selected strip was 2-4
-    /// luminance units off the rest, with the ground showing through). Every row is the shell's near-
-    /// opaque frame ink, so nothing behind the list reads through it; the selected row is INVERTED —
-    /// a chalk strip with frame-ink words — and carries a warm leading bar, the shell's one accent.</para>
+    /// <para><b>Selection is the bubble's</b>: the kit's gold pill behind the row and its pointing hand
+    /// beside it — shapes, not a shade. The selected words are the STRONGEST ink on the panel (the 2026-11-15
+    /// look found dark words reading thin on a light bar; here they are the heaviest ink there is), the
+    /// other rows plain ink, a row that cannot be picked faint ink with its reason.</para>
+    ///
+    /// <para><b>Tints.</b> With the kit's art linked (<see cref="BubbleKitLink"/>) the sprites carry their
+    /// own colour and are drawn untinted, as the bubble draws them; without it, the panel is paper and the
+    /// pill is gold — the bubble's own unbaked fallback.</para>
     /// </summary>
     public static class InteractChooserStyle
     {
-        /// <summary>An unselected row's strip: the shell's frame ink, near-opaque.</summary>
-        public static Color RowInk => PaperUi.FrameInk;
+        /// <summary>The panel's tint.</summary>
+        public static Color PanelTint(bool hasArt) => hasArt ? Color.white : NotebookInk.Paper;
 
-        /// <summary>The selected row's strip: chalk, the inverse of every other row.</summary>
-        public static Color SelectedRowInk => PaperUi.Chalk;
+        /// <summary>The selected-row pill's tint.</summary>
+        public static Color PillTint(bool hasArt) => hasArt ? Color.white : NotebookInk.Gold;
+
+        /// <summary>The hand's tint (the fallback square is strong ink).</summary>
+        public static Color CursorTint(bool hasArt) => hasArt ? Color.white : NotebookInk.InkStrong;
 
         /// <summary>A pickable row's words.</summary>
-        public static Color Words => PaperUi.Chalk;
+        public static Color Words => NotebookInk.Ink;
 
         /// <summary>A greyed row's words.</summary>
-        public static Color WordsGreyed => PaperUi.ChalkFaint;
+        public static Color WordsGreyed => NotebookInk.InkFaint;
 
-        /// <summary>The selected row's words: frame ink on the chalk strip.</summary>
-        public static Color SelectedWords => new Color(PaperUi.FrameInk.r, PaperUi.FrameInk.g, PaperUi.FrameInk.b, 1f);
-
-        /// <summary>The selected row's leading bar: the shell's warm accent.</summary>
-        public static Color Marker => PaperUi.WarnInk;
-
-        /// <summary>The strip for a row.</summary>
-        public static Color StripFor(bool selected) => selected ? SelectedRowInk : RowInk;
+        /// <summary>The selected row's words: the strongest ink, on the gold.</summary>
+        public static Color SelectedWords => NotebookInk.InkStrong;
 
         /// <summary>The words' colour for a row.</summary>
         public static Color WordsFor(bool selected, bool enabled)
@@ -200,8 +206,9 @@ namespace HiddenHarbours.UI
     }
 
     /// <summary>
-    /// The chooser's own words — the reason tags on a greyed row. One place, so localisation finds them
-    /// together; the row's main words are each thing's own <see cref="IInteractable.VerbLabel"/>.
+    /// The chooser's own words — the reason tags on a greyed row and the cut mark. One place, so
+    /// localisation finds them together; the row's main words are each thing's own
+    /// <see cref="IInteractable.VerbLabel"/>.
     /// </summary>
     public static class InteractChooserStrings
     {
@@ -213,5 +220,9 @@ namespace HiddenHarbours.UI
 
         public const string ReasonOpen = "(";
         public const string ReasonClose = ")";
+
+        /// <summary>The cut mark for a row past the kit's widest line. Three full stops, not "…": the
+        /// face (<see cref="HarbourType"/>) has no ellipsis glyph, and a missing glyph draws nothing.</summary>
+        public const string Cut = "...";
     }
 }

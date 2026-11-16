@@ -11,20 +11,22 @@ namespace HiddenHarbours.UI
     ///
     /// <para><b>It decides nothing.</b> The rows, their order, which are greyed and which is selected all
     /// live in Core (<see cref="InteractChooser"/>, <see cref="InteractChoiceList"/>); the hands are
-    /// applied by <see cref="InteractChooserControls"/>; where the rows sit and what they say is
-    /// <see cref="InteractChooserLayout"/>. This builds the strips once, feeds the intents, and repaints
+    /// applied by <see cref="InteractChooserControls"/>; where things sit and what the rows say is
+    /// <see cref="InteractChooserLayout"/>. This builds the pieces once, feeds the intents, and repaints
     /// when <see cref="InteractChooser.Revision"/> moves.</para>
     ///
-    /// <para><b>The popup's look, stacked</b>: each row is the popup's strip and chalk line, in its
-    /// corner, as wide as the longest row needs (<see cref="InteractChooserLayout.ListWidth"/>). Every
-    /// strip is the shell's near-opaque frame ink; the selected row is inverted — chalk strip, ink words —
-    /// with a warm leading bar (<see cref="InteractChooserStyle"/>); a row that cannot be picked is faint
-    /// chalk with its reason ("Sleep (taken)").</para>
+    /// <para><b>The speech bubble's option list</b> (owner ruling: "the same design language as our
+    /// notebook and chat bubbles"): one cream bubble panel with its ink ring and chamfered corners, the
+    /// rows in the game's one face (<see cref="HarbourType"/>) in notebook ink, and the selected row
+    /// carried by the kit's gold pill and pointing hand — the same three sprites the conversation bubble
+    /// draws with, reached through <see cref="BubbleKitLink"/> (references, never copies). No tail: the
+    /// list stands in the popup's screen corner, away from the player and the thing, and a tail would point
+    /// at nothing.</para>
     ///
-    /// <para><b>Rule 7.</b> Rows are built ONCE (<see cref="InteractChoiceList.HardCap"/> of them) and
-    /// reused. Row words are written only when the list opens; a selection change writes colours; a quiet
-    /// frame reads one int and one intents struct, and computes the pointer's row with a handful of rect
-    /// compares. Nothing allocates per frame.</para>
+    /// <para><b>Rule 7.</b> Pieces are built ONCE (<see cref="InteractChoiceList.HardCap"/> rows) and
+    /// reused. Row words are written only when the list opens; a selection change moves the pill and the
+    /// hand and writes colours; a quiet frame reads one int and one intents struct, and computes the
+    /// pointer's row with a handful of rect compares. Nothing allocates per frame.</para>
     ///
     /// <para>Self-installing like <see cref="InteractPopup"/>, for the same reason: the press it serves is
     /// built at runtime, so a scene that needed a builder re-run to show the list would be a scene where
@@ -50,12 +52,13 @@ namespace HiddenHarbours.UI
         [SerializeField] private bool _persistAcrossScenes = true;
 
         private GameObject _canvasGo;
-        private RectTransform _host;
-        private readonly RectTransform[] _rows = new RectTransform[InteractChoiceList.HardCap];
-        private readonly Image[] _strips = new Image[InteractChoiceList.HardCap];
+        private RectTransform _panel;
+        private Image _panelImage;
+        private Image _pill;
+        private Image _cursor;
+        private bool _hasPanelArt, _hasPillArt, _hasCursorArt;
         private readonly Text[] _labels = new Text[InteractChoiceList.HardCap];
-        private readonly Image[] _markers = new Image[InteractChoiceList.HardCap];
-        private float _width = InteractPopupLayout.PanelWidth;
+        private float _width = InteractChooserLayout.MinPanelWidth;
         private readonly string[] _painted = new string[InteractChoiceList.HardCap];
 
         private readonly AxisLatch _latch = new AxisLatch();
@@ -64,6 +67,7 @@ namespace HiddenHarbours.UI
         private bool _shownOpen;
         private int _paintedRevision = -1;
         private int _paintedCount;
+        private int _paintedSelected = -1;
         private Vector2 _lastPoint;
         private bool _hasLastPoint;
 
@@ -97,9 +101,9 @@ namespace HiddenHarbours.UI
             if (InteractChooser.IsOpen)
             {
                 int w = HudScreen.Width, h = HudScreen.Height;
-                Rect bottom = InteractPopupLayout.PanelScreenRect(HelmFootprint.Current, QuestNoteFootprint.Current,
-                                                                  w, h);
-                hitRow = InteractChooserLayout.HitRow(intents.Point, bottom, InteractChooser.Rows.Count,
+                Rect popup = InteractPopupLayout.PanelScreenRect(HelmFootprint.Current, QuestNoteFootprint.Current,
+                                                                 w, h);
+                hitRow = InteractChooserLayout.HitRow(intents.Point, popup, InteractChooser.Rows.Count,
                                                       HudBandLayout.ScaleFactor(w, h), _width);
                 moved = _hasLastPoint && intents.Point != _lastPoint;
             }
@@ -112,14 +116,14 @@ namespace HiddenHarbours.UI
 
         private void Repaint()
         {
-            if (_host == null) return;
+            if (_panel == null) return;
             bool open = InteractChooser.IsOpen;
             if (open == _shownOpen && InteractChooser.Revision == _paintedRevision) return;
             _paintedRevision = InteractChooser.Revision;
 
             if (!open)
             {
-                if (_shownOpen) _host.gameObject.SetActive(false);
+                if (_shownOpen) _panel.gameObject.SetActive(false);
                 _shownOpen = false;
                 return;
             }
@@ -128,11 +132,7 @@ namespace HiddenHarbours.UI
             if (!_shownOpen)
             {
                 // The list just went up: words and places, once for the life of this list (it is frozen).
-                _paintedCount = Mathf.Min(rows.Count, _rows.Length);
-                int w = HudScreen.Width, h = HudScreen.Height;
-                Vector2 bottom = InteractPopupLayout.PanelAnchoredPosition(HelmFootprint.Current,
-                                                                           QuestNoteFootprint.Current, w, h);
-                // Words first, so the list can be sized to the longest of them.
+                _paintedCount = Mathf.Min(rows.Count, _labels.Length);
                 float longest = 0f;
                 for (int i = 0; i < _paintedCount; i++)
                 {
@@ -143,120 +143,204 @@ namespace HiddenHarbours.UI
                         _painted[i] = text;
                         _labels[i].text = text;
                     }
-                    // The measured width where a font can measure; the per-character estimate as a floor
-                    // (and the whole answer headless), so the list is never narrower than its words.
-                    float measured = _labels[i].preferredWidth;
-                    longest = Mathf.Max(longest, Mathf.Max(measured, InteractChooserLayout.EstimateTextUnits(text)));
+                    // The face is monospace, so its width is its length; the measured width is a floor for
+                    // the built-in fallback font, which is not.
+                    longest = Mathf.Max(longest, Mathf.Max(_labels[i].preferredWidth,
+                                                           InteractChooserLayout.EstimateTextUnits(text)));
                 }
-                _width = InteractChooserLayout.ListWidth(longest);
-                Vector2 rowSize = new Vector2(_width, InteractChooserLayout.RowHeight);
-                Vector2 textSize = InteractChooserLayout.TextSize(_width);
+                _width = InteractChooserLayout.PanelWidth(longest);
 
-                for (int i = 0; i < _rows.Length; i++)
+                int w = HudScreen.Width, h = HudScreen.Height;
+                Vector2 popup = InteractPopupLayout.PanelAnchoredPosition(HelmFootprint.Current,
+                                                                          QuestNoteFootprint.Current, w, h);
+                _panel.sizeDelta = new Vector2(_width, InteractChooserLayout.PanelHeight(_paintedCount));
+                _panel.anchoredPosition = InteractChooserLayout.PanelAnchoredPosition(popup, _paintedCount, _width);
+
+                Vector2 textSize = InteractChooserLayout.TextSize(_width);
+                for (int i = 0; i < _labels.Length; i++)
                 {
                     bool used = i < _paintedCount;
-                    if (_rows[i].gameObject.activeSelf != used) _rows[i].gameObject.SetActive(used);
-                    if (!used) continue;
-                    _rows[i].sizeDelta = rowSize;
-                    _labels[i].rectTransform.sizeDelta = textSize;
-                    _rows[i].anchoredPosition = InteractChooserLayout.RowAnchoredPosition(bottom, i, _paintedCount, _width);
+                    GameObject row = _labels[i].gameObject;
+                    if (row.activeSelf != used) row.SetActive(used);
+                    if (used) _labels[i].rectTransform.sizeDelta = textSize;
                 }
-                _host.gameObject.SetActive(true);
+                _paintedSelected = -1;
+                _panel.gameObject.SetActive(true);
                 _shownOpen = true;
             }
 
             for (int i = 0; i < _paintedCount; i++)
+                _labels[i].color = InteractChooserStyle.WordsFor(i == rows.Selected, rows[i].Enabled);
+
+            int selected = rows.Selected;
+            if (selected != _paintedSelected)
             {
-                InteractChoice c = rows[i];
-                bool selected = i == rows.Selected;
-                _strips[i].color = InteractChooserStyle.StripFor(selected);
-                _labels[i].color = InteractChooserStyle.WordsFor(selected, c.Enabled);
-                if (_markers[i].enabled != selected) _markers[i].enabled = selected;
+                _paintedSelected = selected;
+                bool valid = selected >= 0 && selected < _paintedCount;
+                if (_pill.enabled != valid) _pill.enabled = valid;
+                if (_cursor.enabled != valid) _cursor.enabled = valid;
+                if (valid)
+                {
+                    float top = InteractChooserLayout.RowTop(selected);
+                    // Both hang off the SAME row maths the words use, so the marks cannot drift from the row.
+                    // x is the left inset: on a stretched rect with a left pivot, anchoredPosition.x IS
+                    // offsetMin.x, so 0 here would slide the pill out of the panel's ring.
+                    _pill.rectTransform.anchoredPosition = new Vector2(InteractChooserLayout.PillInset, top);
+                    _cursor.rectTransform.anchoredPosition =
+                        new Vector2(InteractChooserLayout.CursorX, top - InteractChooserLayout.RowHeight * 0.5f);
+                }
             }
         }
 
         // Awake builds in play; an EditMode test's AddComponent gets no Awake, so the first Tick does.
         private void EnsureBuilt()
         {
-            if (_host == null) Build();
+            if (_panel == null) Build();
         }
 
         private void Build()
         {
+            BubbleKitLink kit = BubbleKitLink.Shipped;
+            Sprite panelArt = kit != null ? kit.Panel : null;
+            Sprite pillArt = kit != null ? kit.Gold : null;
+            Sprite cursorArt = kit != null ? kit.Cursor : null;
+            _hasPanelArt = panelArt != null;
+            _hasPillArt = pillArt != null;
+            _hasCursorArt = cursorArt != null;
+
             RectTransform screen = PaperUi.MakeScreen(transform, "InteractChooser_Canvas",
                                                       InteractPopupLayout.SortingOrder);
             _canvasGo = screen.parent.gameObject;
+            // A kit pixel is ArtScale reference units, so a 9-slice border of N kit pixels must draw N x
+            // ArtScale units: the canvas's reference PPU is the sprites' PPU times the art scale (the
+            // bubble's own canvas rule). The scaler owns that number and writes it to the canvas each
+            // frame, so it is set on the scaler.
+            float refPpu = DialogueBubbleKit.PixelsPerUnit * DialogueBubbleKit.ArtScale;
+            CanvasScaler scaler = _canvasGo.GetComponent<CanvasScaler>();
+            if (scaler != null) scaler.referencePixelsPerUnit = refPpu;
+            Canvas canvas = _canvasGo.GetComponent<Canvas>();
+            if (canvas != null) canvas.referencePixelsPerUnit = refPpu;
 
-            var hostGo = new GameObject("Rows", typeof(RectTransform));
-            hostGo.transform.SetParent(screen, false);
-            _host = hostGo.GetComponent<RectTransform>();
-            _host.anchorMin = Vector2.zero;
-            _host.anchorMax = Vector2.one;
-            _host.offsetMin = Vector2.zero;
-            _host.offsetMax = Vector2.zero;
+            var panelGo = new GameObject("Panel", typeof(RectTransform), typeof(Image));
+            panelGo.transform.SetParent(screen, false);
+            _panel = panelGo.GetComponent<RectTransform>();
+            TopLeft(_panel, new Vector2(0f, 1f));
+            _panel.sizeDelta = new Vector2(_width, InteractChooserLayout.PanelHeight(1));
+            _panelImage = panelGo.GetComponent<Image>();
+            Dress(_panelImage, panelArt, InteractChooserStyle.PanelTint(_hasPanelArt));
 
-            for (int i = 0; i < _rows.Length; i++)
+            // The pill first, so the words draw over it; stretched across the panel inside the kit's inset.
+            var pillGo = new GameObject("Pill", typeof(RectTransform), typeof(Image));
+            pillGo.transform.SetParent(_panel, false);
+            RectTransform prt = pillGo.GetComponent<RectTransform>();
+            prt.anchorMin = new Vector2(0f, 1f);
+            prt.anchorMax = new Vector2(1f, 1f);
+            prt.pivot = new Vector2(0f, 1f);
+            prt.offsetMin = new Vector2(InteractChooserLayout.PillInset, -InteractChooserLayout.RowHeight);
+            prt.offsetMax = new Vector2(-InteractChooserLayout.PillInset, 0f);
+            _pill = pillGo.GetComponent<Image>();
+            Dress(_pill, pillArt, InteractChooserStyle.PillTint(_hasPillArt));
+            _pill.enabled = false;
+
+            Font face = Resources.Load<Font>(HarbourType.ResourceKey);
+            if (face == null) face = PaperUi.DefaultFont();
+            for (int i = 0; i < _labels.Length; i++)
             {
-                var go = new GameObject("Row" + (i + 1), typeof(RectTransform), typeof(Image));
-                go.transform.SetParent(_host, false);
+                var go = new GameObject("Row" + (i + 1), typeof(RectTransform), typeof(Text));
+                go.transform.SetParent(_panel, false);
                 RectTransform rt = go.GetComponent<RectTransform>();
-                rt.anchorMin = new Vector2(0f, 1f);
-                rt.anchorMax = new Vector2(0f, 1f);
-                rt.pivot = new Vector2(0f, 1f);
-                rt.sizeDelta = InteractPopupLayout.PanelSize();
-                _rows[i] = rt;
+                TopLeft(rt, new Vector2(0f, 1f));
+                rt.anchoredPosition = new Vector2(InteractChooserLayout.TextX, InteractChooserLayout.RowTop(i));
+                rt.sizeDelta = InteractChooserLayout.TextSize(_width);
 
-                Image strip = go.GetComponent<Image>();
-                strip.color = InteractChooserStyle.RowInk;
+                Text label = go.GetComponent<Text>();
+                label.font = face;
+                label.fontSize = InteractChooserLayout.FontSize;
+                label.alignment = TextAnchor.MiddleLeft;
+                label.horizontalOverflow = HorizontalWrapMode.Overflow;
+                label.verticalOverflow = VerticalWrapMode.Overflow;
+                label.supportRichText = false;
+                label.color = InteractChooserStyle.Words;
                 // The pointer is hit-tested against the layout's own rects, never by a raycaster, so no
                 // graphic here can eat a click meant for anything else.
-                strip.raycastTarget = false;
-                _strips[i] = strip;
-
-                Text label = PaperUi.MakeText(rt, "", InteractPopupLayout.FontSize, TextAnchor.MiddleLeft,
-                                              InteractPopupLayout.TextAnchoredPosition().x,
-                                              InteractPopupLayout.TextAnchoredPosition().y,
-                                              InteractPopupLayout.TextSize().x,
-                                              InteractPopupLayout.TextSize().y,
-                                              PaperUi.Chalk);
-                label.horizontalOverflow = HorizontalWrapMode.Overflow;
-                label.verticalOverflow = VerticalWrapMode.Truncate;
                 label.raycastTarget = false;
                 _labels[i] = label;
-
-                // The selected row's leading bar: full height, inside the type's inset, shown on one row.
-                var markGo = new GameObject("Marker", typeof(RectTransform), typeof(Image));
-                markGo.transform.SetParent(rt, false);
-                RectTransform mrt = markGo.GetComponent<RectTransform>();
-                mrt.anchorMin = new Vector2(0f, 0f);
-                mrt.anchorMax = new Vector2(0f, 1f);
-                mrt.pivot = new Vector2(0f, 0.5f);
-                mrt.anchoredPosition = Vector2.zero;
-                mrt.sizeDelta = new Vector2(InteractChooserLayout.MarkerWidth, 0f);
-                Image mark = markGo.GetComponent<Image>();
-                mark.color = InteractChooserStyle.Marker;
-                mark.raycastTarget = false;
-                mark.enabled = false;
-                _markers[i] = mark;
+                go.SetActive(false);
             }
 
-            _host.gameObject.SetActive(false);
+            // The hand last, over everything, centred in the gutter.
+            var cursorGo = new GameObject("Cursor", typeof(RectTransform), typeof(Image));
+            cursorGo.transform.SetParent(_panel, false);
+            RectTransform crt = cursorGo.GetComponent<RectTransform>();
+            TopLeft(crt, new Vector2(0.5f, 0.5f));
+            crt.sizeDelta = _hasCursorArt
+                ? cursorArt.rect.size * InteractChooserLayout.Kit
+                : Vector2.one * (InteractChooserLayout.FallbackCursorKitPixels * InteractChooserLayout.Kit);
+            _cursor = cursorGo.GetComponent<Image>();
+            _cursor.sprite = cursorArt;
+            _cursor.type = Image.Type.Simple;
+            _cursor.color = InteractChooserStyle.CursorTint(_hasCursorArt);
+            _cursor.raycastTarget = false;
+            _cursor.enabled = false;
+
+            _panel.gameObject.SetActive(false);
+        }
+
+        private static void TopLeft(RectTransform rt, Vector2 pivot)
+        {
+            rt.anchorMin = new Vector2(0f, 1f);
+            rt.anchorMax = new Vector2(0f, 1f);
+            rt.pivot = pivot;
+        }
+
+        // The bubble's rule (DialoguePresenter.SetSprite): sliced only when the sprite carries a border.
+        private static void Dress(Image image, Sprite art, Color tint)
+        {
+            image.sprite = art;
+            image.type = art != null && art.border != Vector4.zero ? Image.Type.Sliced : Image.Type.Simple;
+            image.color = tint;
+            image.raycastTarget = false;
         }
 
         // ---- test seam --------------------------------------------------------------------------
 
-        /// <summary>The list's drawn width, reference units (meaningful while showing).</summary>
+        /// <summary>The panel's drawn width, reference units (meaningful while showing).</summary>
         public float ShownWidth => _width;
 
-        /// <summary>Drawn row <paramref name="index"/>'s strip colour, words colour and whether its marker
-        /// is up — the look, as numbers.</summary>
-        public void ShownLook(int index, out Color strip, out Color words, out bool marker)
+        /// <summary>True when all three of the kit's pieces were linked (the panel, the pill, the hand).</summary>
+        public bool HasKitArt => _hasPanelArt && _hasPillArt && _hasCursorArt;
+
+        /// <summary>The sprites the panel, the pill and the hand wear (null where unlinked).</summary>
+        public void ShownArt(out Sprite panel, out Sprite pill, out Sprite cursor)
         {
-            bool ok = _shownOpen && index >= 0 && index < _paintedCount;
-            strip = ok ? _strips[index].color : default;
-            words = ok ? _labels[index].color : default;
-            marker = ok && _markers[index].enabled;
+            panel = _panelImage != null ? _panelImage.sprite : null;
+            pill = _pill != null ? _pill.sprite : null;
+            cursor = _cursor != null ? _cursor.sprite : null;
         }
+
+        /// <summary>Which drawn row the pill and the hand sit on (-1 when hidden), from their placed
+        /// positions — the look, as numbers.</summary>
+        public void ShownSelection(out int pillRow, out int cursorRow)
+        {
+            pillRow = _shownOpen && _pill.enabled ? RowAt(_pill.rectTransform.anchoredPosition.y) : -1;
+            cursorRow = _shownOpen && _cursor.enabled
+                ? RowAt(_cursor.rectTransform.anchoredPosition.y + InteractChooserLayout.RowHeight * 0.5f)
+                : -1;
+        }
+
+        private int RowAt(float top)
+        {
+            for (int i = 0; i < _paintedCount; i++)
+                if (Mathf.Abs(InteractChooserLayout.RowTop(i) - top) < 0.01f) return i;
+            return -1;
+        }
+
+        /// <summary>Drawn row <paramref name="index"/>'s words colour.</summary>
+        public Color ShownWords(int index)
+            => _shownOpen && index >= 0 && index < _paintedCount ? _labels[index].color : default;
+
+        /// <summary>The face the rows are set in.</summary>
+        public Font ShownFace => _labels[0] != null ? _labels[0].font : null;
 
         /// <summary>True while the list is drawn.</summary>
         public bool IsShowing => _shownOpen;
