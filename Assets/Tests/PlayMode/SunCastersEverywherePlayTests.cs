@@ -147,7 +147,7 @@ namespace HiddenHarbours.Tests.PlayMode
             for (int i = SceneManager.sceneCount - 1; i >= 0; i--)
             {
                 var scene = SceneManager.GetSceneAt(i);
-                if (scene != clean && scene.isLoaded) yield return SceneManager.UnloadSceneAsync(scene);
+                if (scene != clean && scene.isLoaded) yield return HiddenHarbours.Tests.Support.SceneSettle.Unload(scene);
             }
             if (_clockOnEntry != null && !(_clockOnEntry is Object clockObject && clockObject == null))
             {
@@ -187,7 +187,7 @@ namespace HiddenHarbours.Tests.PlayMode
             _host.SetCasting(false);
             LogAssert.ignoreFailingMessages = true; // Existing region import/decor diagnostics are unrelated.
             Time.timeScale = 1f;
-            yield return SceneManager.LoadSceneAsync(scene, LoadSceneMode.Single);
+            yield return HiddenHarbours.Tests.Support.SceneSettle.Load(scene, LoadSceneMode.Single);
             for (int i = 0; i < 12; i++) yield return null;
             if (GameServices.Config == null && config != null) GameServices.Config = config;
             if (GameServices.Clock == null && clock != null) GameServices.Clock = clock;

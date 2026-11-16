@@ -317,7 +317,7 @@ namespace HiddenHarbours.Tests.PlayMode
 
             Scene additiveDestination = SceneManager.GetSceneByName(NineMileCreekScene);
             if (additiveDestination.IsValid() && additiveDestination.isLoaded)
-                yield return SceneManager.UnloadSceneAsync(additiveDestination);
+                yield return HiddenHarbours.Tests.Support.SceneSettle.Unload(additiveDestination);
 
             foreach (GameObject go in PersistentRoots())
                 if (go != null && !_residentBefore.Contains(go)) Object.DestroyImmediate(go);

@@ -197,7 +197,7 @@ namespace HiddenHarbours.Tests.PlayMode
             foreach (string name in new[] { NineMileCreekScene, RicePointScene, SouthWaterScene, StPetersScene })
             {
                 Scene s = SceneManager.GetSceneByName(name);
-                if (s.IsValid() && s.isLoaded) yield return SceneManager.UnloadSceneAsync(s);
+                if (s.IsValid() && s.isLoaded) yield return HiddenHarbours.Tests.Support.SceneSettle.Unload(s);
             }
             foreach (GameObject go in PersistentRoots())
                 if (go != null && !_residentBefore.Contains(go)) Object.DestroyImmediate(go);

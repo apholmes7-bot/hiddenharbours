@@ -165,7 +165,7 @@ namespace HiddenHarbours.Tests.PlayMode
             GameServices.PlayerTransform = null;
             GameServices.Save = null;
 
-            if (_scene.IsValid() && _scene.isLoaded) yield return SceneManager.UnloadSceneAsync(_scene);
+            if (_scene.IsValid() && _scene.isLoaded) yield return HiddenHarbours.Tests.Support.SceneSettle.Unload(_scene);
         }
 
         // =============================================================================

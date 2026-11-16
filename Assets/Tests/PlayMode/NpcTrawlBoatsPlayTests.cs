@@ -112,7 +112,7 @@ namespace HiddenHarbours.Tests.PlayMode
             foreach (string name in new[] { HarbourScene, GroundScene })
             {
                 Scene scene = SceneManager.GetSceneByName(name);
-                if (scene.IsValid() && scene.isLoaded) yield return SceneManager.UnloadSceneAsync(scene);
+                if (scene.IsValid() && scene.isLoaded) yield return HiddenHarbours.Tests.Support.SceneSettle.Unload(scene);
             }
             foreach (var o in _spawned)
                 if (o != null) Object.Destroy(o);
@@ -134,7 +134,7 @@ namespace HiddenHarbours.Tests.PlayMode
 
         static IEnumerator Unload(string scene)
         {
-            yield return SceneManager.UnloadSceneAsync(SceneManager.GetSceneByName(scene));
+            yield return HiddenHarbours.Tests.Support.SceneSettle.Unload(SceneManager.GetSceneByName(scene));
         }
 
         Transform Hull => _boats.HullOf(_def.Id);

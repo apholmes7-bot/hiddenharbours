@@ -45,7 +45,7 @@ namespace HiddenHarbours.Tests.PlayMode
             else
 #endif
             {
-                yield return SceneManager.LoadSceneAsync("NineMileCreek", LoadSceneMode.Single);
+                yield return HiddenHarbours.Tests.Support.SceneSettle.Load("NineMileCreek", LoadSceneMode.Single);
                 Loaded = SceneManager.GetSceneByName("NineMileCreek");
             }
             for (int i = 0; i < 8; i++) yield return null;
@@ -99,7 +99,7 @@ namespace HiddenHarbours.Tests.PlayMode
             LogAssert.ignoreFailingMessages = oldIgnore;
             var empty = SceneManager.CreateScene("BerthProofCleanup");
             SceneManager.SetActiveScene(empty);
-            if (Loaded.IsValid() && Loaded.isLoaded) yield return SceneManager.UnloadSceneAsync(Loaded);
+            if (Loaded.IsValid() && Loaded.isLoaded) yield return HiddenHarbours.Tests.Support.SceneSettle.Unload(Loaded);
         }
     }
 }

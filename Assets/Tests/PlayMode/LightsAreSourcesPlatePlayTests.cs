@@ -106,7 +106,7 @@ namespace HiddenHarbours.Tests.PlayMode
             {
                 Scene s = SceneManager.GetSceneAt(i);
                 if (s.IsValid() && s != clean && s.name == SceneName)
-                    yield return SceneManager.UnloadSceneAsync(s);
+                    yield return HiddenHarbours.Tests.Support.SceneSettle.Unload(s);
             }
         }
 
@@ -396,7 +396,7 @@ namespace HiddenHarbours.Tests.PlayMode
         {
             // The region logs decor-import complaints that have nothing to do with lights.
             LogAssert.ignoreFailingMessages = true;
-            yield return SceneManager.LoadSceneAsync(SceneName, LoadSceneMode.Single);
+            yield return HiddenHarbours.Tests.Support.SceneSettle.Load(SceneName, LoadSceneMode.Single);
             for (int i = 0; i < 6; i++) yield return null;   // let the self-installing components register
         }
 
