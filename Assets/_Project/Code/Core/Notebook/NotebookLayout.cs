@@ -282,6 +282,65 @@ namespace HiddenHarbours.Core
             return lines;
         }
 
+        /// <summary>What the head's weight readout letters after its digits.</summary>
+        public const string WeightUnit = " kg";
+
+        /// <summary>The cut a line takes when it is shortened to fit: three stops.</summary>
+        public const string FitMark = "...";
+
+        /// <summary>
+        /// The cells the LEFT head gives the register line: the head's width in cells, less the weight
+        /// readout's room (its final digits, the unit and one cell of air) when a weight is lettered.
+        /// The reserve is taken from the weight the readout LANDS on, so the line does not shift while
+        /// it counts up.
+        /// </summary>
+        public static int RegisterCols(int headWidthPx, int weightTenths)
+        {
+            int cells = (headWidthPx + NotebookKit.Slack) / NotebookKit.CellWidth;
+            if (weightTenths > 0)
+            {
+                int digits = 1;
+                for (int v = weightTenths; v >= 10; v /= 10) digits++;
+                if (digits < 2) digits = 2;                       // "0.3": one digit ahead of the point
+                cells -= digits + 1 + WeightUnit.Length + 1;      // digits, the point, the unit, air
+            }
+            return cells < 0 ? 0 : cells;
+        }
+
+        /// <summary>
+        /// Fit ONE line into <paramref name="cols"/> cells, for a strip with room for one line only (the
+        /// leaf's head, where the register sits above the first rule and cannot wrap onto it).
+        ///
+        /// <para>A line that fits is returned whole. One that does not first drops its trailing
+        /// " — clause" (the lift line's size word or "it's in your hand"), ending the sentence with a
+        /// stop; one that still does not fit is cut at the last whole word and marked
+        /// <see cref="FitMark"/>. A word longer than the room is hard-cut. Never wider than
+        /// <paramref name="cols"/>.</para>
+        /// </summary>
+        public static string FitLine(string text, int cols)
+        {
+            if (string.IsNullOrEmpty(text) || cols <= 0) return "";
+            if (text.Length <= cols) return text;
+
+            const string clause = " — ";
+            for (int at = text.LastIndexOf(clause, StringComparison.Ordinal); at > 0;
+                 at = text.LastIndexOf(clause, at - 1, StringComparison.Ordinal))
+            {
+                string lead = text.Substring(0, at).TrimEnd();
+                if (lead.Length > 0 && lead.Length + 1 <= cols) return lead + ".";
+            }
+
+            int room = cols - FitMark.Length;
+            if (room <= 0) return text.Substring(0, cols);
+
+            int cut = room;
+            for (int k = room; k > 0; k--)
+            {
+                if (text[k] == ' ') { cut = k; break; }
+            }
+            return text.Substring(0, cut).TrimEnd() + FitMark;
+        }
+
         /// <summary>
         /// Build a quest's block: title (wide lane), optional context line (wide lane), then one boxed
         /// row per step with wrapped continuations indented under the box.
