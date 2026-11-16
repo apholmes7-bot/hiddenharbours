@@ -3,7 +3,6 @@ using System.IO;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using HiddenHarbours.Core;
-using HiddenHarbours.Tests.Support;
 using NUnit.Framework;
 using UnityEngine;
 
@@ -76,17 +75,14 @@ namespace HiddenHarbours.Tests.World.EditMode
             Assert.That(SceneLoadHold.CapSeconds, Is.GreaterThan(0f));
             Assert.That(SceneLoadHold.MaxTimeouts, Is.InRange(1, 5));
             Assert.That(SceneLoadHold.CapSeconds * SceneLoadHold.MaxTimeouts,
-                        Is.LessThan(MainThreadPulse.FrozenAfterSeconds));
+                        Is.LessThan(HangWatchdogFrozenAfterSeconds));
             Assert.That(SceneLoadHold.ReadDoneProgress, Is.EqualTo(0.9f));
         }
 
-        [Test]
-        public void TheTestHelperUsesTheSameHold()
-        {
-            Assert.That(SceneSettle.HoldSeconds, Is.EqualTo(SceneLoadHold.CapSeconds));
-            Assert.That(SceneSettle.MaxHoldTimeouts, Is.EqualTo(SceneLoadHold.MaxTimeouts));
-            Assert.That(SceneSettle.ReadDoneProgress, Is.EqualTo(SceneLoadHold.ReadDoneProgress));
-        }
+        /// <summary>The PlayMode hang watchdog's frozen-thread verdict (Tests.Support MainThreadPulse
+        /// .FrozenAfterSeconds). This assembly does not reference Tests.Support; SceneSettlePlayTests pins the
+        /// same bound against the real constant through SceneSettle, which forwards to SceneLoadHold.</summary>
+        private const float HangWatchdogFrozenAfterSeconds = 60f;
 
         [Test]
         public void TrackingIsCompiledOutOfPlayers()
