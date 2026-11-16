@@ -1252,6 +1252,29 @@ namespace HiddenHarbours.Core
                  "crossing fires, as before).")]
         [Min(0f)] public float RegionPreloadDistanceMetres = DefaultRegionPreloadDistanceMetres;
 
+        /// <summary>Shipped preload heading gate, release delay and teleport cap, also the fallbacks for a rig
+        /// with no GameConfig (PR 1223, the warm-neighbour fix).</summary>
+        public const float DefaultRegionPreloadMinHeadingSpeed = 0.5f;
+        public const float DefaultRegionPreloadHeadingSeconds = 0.25f;
+        public const float DefaultRegionPreloadReleaseSeconds = 15f;
+        public const float DefaultRegionMoverMaxPlausibleSpeed = 40f;
+
+        [Tooltip("The slowest (m/s) the player or boat must be heading for a shared edge before its neighbour is " +
+                 "loaded in the background. Above the settling jitter of a mover standing still, so only a real " +
+                 "approach warms a neighbour.")]
+        [Min(0f)] public float RegionPreloadMinHeadingSpeed = DefaultRegionPreloadMinHeadingSpeed;
+        [Tooltip("How long (s) the mover must keep heading for the same neighbour before it is loaded, so one odd " +
+                 "physics step never loads a whole region.")]
+        [Min(0f)] public float RegionPreloadHeadingSeconds = DefaultRegionPreloadHeadingSeconds;
+        [Tooltip("How long (s) after the approach ends (the mover turned away, stopped or left the preload " +
+                 "distance) a neighbour loaded ahead of a crossing that never came is unloaded again. A region " +
+                 "the player has been in is never unloaded by this.")]
+        [Min(0f)] public float RegionPreloadReleaseSeconds = DefaultRegionPreloadReleaseSeconds;
+        [Tooltip("The fastest (m/s) the player or boat can really move. A step faster than this is a teleport " +
+                 "(a test staging, a placement on arrival), not speed, and counts as standing still for the seam " +
+                 "fade and the preload.")]
+        [Min(0f)] public float RegionMoverMaxPlausibleSpeed = DefaultRegionMoverMaxPlausibleSpeed;
+
         /// <summary>Shipped seam-fade timings (s) and distances (m), also the fallbacks for a rig with no
         /// GameConfig (owner ruling on PR 1223: "a momentary fade out and screen change").</summary>
         public const float DefaultRegionSeamFadeOutSeconds = 0.15f;

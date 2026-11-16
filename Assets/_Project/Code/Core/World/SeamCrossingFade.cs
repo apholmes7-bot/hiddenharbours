@@ -270,5 +270,89 @@ namespace HiddenHarbours.Core
                 best = new SeamApproach(edge, gap, Mathf.Max(0f, carry), outward, probe, outSpeed);
             }
         }
+
+        /// <summary>
+        /// A mover's velocity from one physics step (m/s), or zero when the step is no motion at all: a non-positive
+        /// step, or a jump faster than <paramref name="maxSpeed"/> (a teleport: a test staging the walker, an
+        /// arrival placing the boat), reported in <paramref name="jumped"/>. A teleport is not speed: read as speed
+        /// it made a walker staged beside the Rice Point strand door "head" east at 21 km/s and loaded the creek
+        /// (PR 1223). <paramref name="maxSpeed"/> of 0 or less keeps every step.
+        /// </summary>
+        public static Vector2 PlausibleVelocity(Vector2 from, Vector2 to, float dt, float maxSpeed, out bool jumped)
+        {
+            jumped = false;
+            if (!(dt > 0f)) return Vector2.zero;
+            Vector2 v = (to - from) / dt;
+            if (maxSpeed > 0f && v.sqrMagnitude > maxSpeed * maxSpeed)
+            {
+                jumped = true;
+                return Vector2.zero;
+            }
+            return v;
+        }
+    }
+
+    /// <summary>
+    /// ⭐ <b>When to warm a neighbour, and when to let it go</b> (PR 1223). Pure and stepped once per physics step
+    /// with the neighbour the mover is heading for (null for none). A neighbour is warmed only after the mover has
+    /// kept heading for that SAME one for <c>headingSeconds</c>, so one odd step never loads a region; and a warm
+    /// neighbour is released once no neighbour has been headed for during <c>releaseSeconds</c>.
+    /// </summary>
+    public sealed class NeighbourWarmGate
+    {
+        string _heading;
+        float _headingFor;
+        float _idleFor;
+
+        /// <summary>The neighbour the mover has been heading for, or null.</summary>
+        public string Heading => _heading;
+
+        /// <summary>How long (s) the mover has kept heading for <see cref="Heading"/>.</summary>
+        public float HeadingSeconds => _headingFor;
+
+        /// <summary>How long (s) the mover has headed for no neighbour at all.</summary>
+        public float IdleSeconds => _idleFor;
+
+        /// <summary>
+        /// One physics step: <paramref name="heading"/> is the neighbour the mover heads for now (null or empty for
+        /// none). True when it has been the same one for at least <paramref name="headingSeconds"/>, i.e. warm it.
+        /// </summary>
+        public bool Step(string heading, float dt, float headingSeconds)
+        {
+            dt = Mathf.Max(0f, dt);
+            if (string.IsNullOrEmpty(heading))
+            {
+                _heading = null;
+                _headingFor = 0f;
+                _idleFor += dt;
+                return false;
+            }
+            _idleFor = 0f;
+            if (!string.Equals(heading, _heading, System.StringComparison.Ordinal))
+            {
+                _heading = heading;
+                _headingFor = 0f;   // the first step of a heading only starts the count
+                return headingSeconds <= 0f;
+            }
+            _headingFor += dt;
+            return _headingFor >= headingSeconds;
+        }
+
+        /// <summary>True once no neighbour has been headed for during <paramref name="releaseSeconds"/>.</summary>
+        public bool ApproachEnded(float releaseSeconds) => _heading == null && _idleFor >= releaseSeconds;
+
+        /// <summary>Forget the heading (a teleport, a change of mover): the count starts again.</summary>
+        public void Interrupt()
+        {
+            _heading = null;
+            _headingFor = 0f;
+        }
+
+        /// <summary>Back to nothing headed for and nothing idle.</summary>
+        public void Reset()
+        {
+            Interrupt();
+            _idleFor = 0f;
+        }
     }
 }

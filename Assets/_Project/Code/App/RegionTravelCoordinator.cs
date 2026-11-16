@@ -92,7 +92,14 @@ namespace HiddenHarbours.App
         {
             if (GameServices.PlayerTransform == _player) GameServices.PlayerTransform = null;
             if (ReferenceEquals(GameServices.Whereabouts, this)) GameServices.Whereabouts = null;
+            // A neighbour this core warmed and never crossed into dies with it (PR 1223): left parked, it outlived
+            // the core that loaded it and read as "loaded" to everything after (the next test's whole session).
+            if (!_quitting) ReleaseWarmNeighbours();
         }
+
+        bool _quitting;
+
+        private void OnApplicationQuit() => _quitting = true;   // the engine unloads everything itself
 
         /// <summary>
         /// Publish the persistent player on the Core relay (<see cref="GameServices.PlayerTransform"/>),
@@ -300,6 +307,13 @@ namespace HiddenHarbours.App
             _pending = null;
             if (crossing != null && _seamFade.Arrived()) _seamArrivedFrame = Time.frameCount;   // clears from here
 
+            // Every arrival places the mover (a door, a passage, a crossing's carry): that jump is not speed, and
+            // the heading toward a neighbour is counted afresh in the new region. A warmed neighbour the player
+            // has now entered is a visited region, toggled like any other, never released as a warm one.
+            _hasLastMoverPos = false;
+            _warmGate.Reset();
+            _warmScenes.Remove(next.name);
+
             if (crossing == null) ArrivalOpening.CaptureSeaCrossing(previous, next, arrivalKey);
 
             // The region being left, read while its anchor is still live (deactivating its roots unlists it).
@@ -392,6 +406,9 @@ namespace HiddenHarbours.App
         Transform _lastMover;
         Vector2 _lastMoverPos;
         bool _hasLastMoverPos;
+        // When to warm a neighbour and when to let it go, and the scenes warmed and not yet entered (PR 1223).
+        readonly NeighbourWarmGate _warmGate = new NeighbourWarmGate();
+        readonly List<string> _warmScenes = new List<string>();
 
         /// <summary>Where the seam fade is (read-only, for probes and tests).</summary>
         public SeamFadePhase SeamFadePhase => _seamFade.Phase;
@@ -422,12 +439,16 @@ namespace HiddenHarbours.App
             {
                 _hasLastMoverPos = false;
                 _seamFade.Cancel();
+                TendWarmNeighbour(null, null);   // no one walking or sailing heads for a neighbour
                 return;
             }
             Vector2 velocity = MoverVelocity(mover);
 
             float band = GameServices.RegionCrossingHysteresisMetres;
             CrossingDecision d = frame.Resolve(here, mover.position, band);
+            // Inside the region the mover may be heading for a neighbour; past an edge it is crossing or held.
+            if (d.Kind == CrossingKind.Stay) WarmNeighbour(frame, here, mover.position, velocity);
+            else TendWarmNeighbour(null, null);
             if (d.Kind != CrossingKind.Boundary && !(d.Kind == CrossingKind.Cross && _seamFade.GaveUp))
             {
                 // ⭐ The hop is made only under a black screen (owner ruling on PR 1223), and the black follows
@@ -437,7 +458,6 @@ namespace HiddenHarbours.App
                 Vector2 outward = Vector2.zero;
                 if (d.Kind == CrossingKind.Stay)
                 {
-                    WarmNeighbour(frame, here, mover.position, velocity);
                     if (!SteerSeamFade(frame, here, mover, velocity, boatIsMover, band, out d, out carry, out outward))
                         return;
                 }
@@ -551,8 +571,15 @@ namespace HiddenHarbours.App
         {
             var body = mover.GetComponent<Rigidbody2D>();
             Vector2 p = body != null ? body.position : (Vector2)mover.position;
-            float dt = Time.fixedDeltaTime;
-            Vector2 v = _hasLastMoverPos && mover == _lastMover && dt > 0f ? (p - _lastMoverPos) / dt : Vector2.zero;
+            Vector2 v = Vector2.zero;
+            if (_hasLastMoverPos && mover == _lastMover)
+            {
+                // A jump faster than anything moves is a teleport (a staging, a placement), not a heading.
+                v = SeamCrossingFade.PlausibleVelocity(_lastMoverPos, p, Time.fixedDeltaTime,
+                        GameServices.RegionMoverMaxPlausibleSpeed, out bool jumped);
+                if (jumped) _warmGate.Interrupt();
+            }
+            else _warmGate.Interrupt();   // a new mover's heading is counted from its own first steps
             _lastMover = mover;
             _lastMoverPos = p;
             _hasLastMoverPos = true;
@@ -649,8 +676,11 @@ namespace HiddenHarbours.App
         /// <see cref="GameServices.RegionPreloadDistanceMetres"/> of a shared edge, start reading the
         /// neighbour's scene in the background and park it (<see cref="RegionSceneLoader.Preload"/>), so the
         /// crossing only re-activates it. A region already loaded (visited) asks nothing, and so does a mover
-        /// standing near a seam or moving along or away from it: only HEADING for the edge (faster than the
-        /// seam fade's least approach speed) warms it, so an idle player does not hold a whole second scene.
+        /// standing near a seam or moving along or away from it: only HEADING for the edge (faster than
+        /// <see cref="GameServices.RegionPreloadMinHeadingSpeed"/>, held for
+        /// <see cref="GameServices.RegionPreloadHeadingSeconds"/>, a teleport never counting as speed) warms it,
+        /// and a warmed neighbour never entered is let go when the approach ends, so an idle player does not hold
+        /// a whole second scene.
         /// </summary>
         // A least speed of zero would let a standing mover (velocity exactly zero) count as heading out. Not a
         // tunable: it only keeps "standing" meaning standing when the tuned least speed is 0.
@@ -658,14 +688,49 @@ namespace HiddenHarbours.App
 
         void WarmNeighbour(WorldFrame frame, string here, Vector2 moverLocal, Vector2 velocity)
         {
-            if (_loader != null && _loader.PreloadingSceneName != null) return;
             // The pure question first, so a rig with no loader never searches for one per step.
-            if (_map == null || !frame.TryGetApproachingNeighbour(here, moverLocal, velocity,
-                    Mathf.Max(GameServices.RegionSeamMinApproachSpeed, MinHeadingSpeed),
-                    GameServices.RegionPreloadDistanceMetres, out RegionFrame next)) return;
+            RegionDef target = null;
+            bool heading = _map != null && frame.TryGetApproachingNeighbour(here, moverLocal, velocity,
+                    Mathf.Max(GameServices.RegionPreloadMinHeadingSpeed, MinHeadingSpeed),
+                    GameServices.RegionPreloadDistanceMetres, out RegionFrame next)
+                && _map.TryGet(next.RegionId, out target) && target != null;
+            TendWarmNeighbour(heading ? target.Id : null, heading ? target : null);
+        }
+
+        /// <summary>
+        /// One physics step of the warm-up (PR 1223): <paramref name="headingFor"/> is the neighbour the mover is
+        /// heading for now (null for none). Its scene is preloaded once the heading has held for
+        /// <see cref="GameServices.RegionPreloadHeadingSeconds"/>, and every neighbour warmed and never entered
+        /// is unloaded once no neighbour has been headed for during <see cref="GameServices.RegionPreloadReleaseSeconds"/>.
+        /// </summary>
+        void TendWarmNeighbour(string headingFor, RegionDef target)
+        {
+            bool warm = _warmGate.Step(headingFor, Time.fixedDeltaTime, GameServices.RegionPreloadHeadingSeconds);
+            if (_warmScenes.Count > 0 && _warmGate.ApproachEnded(GameServices.RegionPreloadReleaseSeconds))
+                ReleaseWarmNeighbours();
+            if (!warm || target == null) return;
+            if (_loader != null && _loader.PreloadingSceneName != null) return;
             RegionSceneLoader loader = Loader;
-            if (loader != null && _map.TryGet(next.RegionId, out RegionDef target))
-                loader.Preload(target);
+            if (loader != null && loader.Preload(target) && !_warmScenes.Contains(target.SceneName))
+                _warmScenes.Add(target.SceneName);
+        }
+
+        /// <summary>
+        /// Unload every neighbour this core warmed and the player never entered (PR 1223: the approach ended, or
+        /// the core is going). One still on its way in is left to land and park, and is let go on a later step;
+        /// one that is gone, or that became the active scene, is simply forgotten.
+        /// </summary>
+        void ReleaseWarmNeighbours()
+        {
+            Scene active = SceneManager.GetActiveScene();
+            for (int i = _warmScenes.Count - 1; i >= 0; --i)
+            {
+                Scene s = SceneManager.GetSceneByName(_warmScenes[i]);
+                if (s.IsValid() && !s.isLoaded) continue;   // still loading: parked when it lands, released then
+                _warmScenes.RemoveAt(i);
+                if (!s.IsValid() || s == active) continue;
+                SceneManager.UnloadSceneAsync(s);
+            }
         }
 
         bool BeginCrossing(string here, CrossingDecision d, bool boatIsMover)

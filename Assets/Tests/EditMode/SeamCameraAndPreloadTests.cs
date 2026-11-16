@@ -474,6 +474,85 @@ namespace HiddenHarbours.Tests.EditMode
                 "the heading-free overload is unchanged");
         }
 
+        const float PhysicsStep = 0.02f;   // the project's fixed step
+
+        [Test]
+        public void ATeleportBesideTheSeam_IsNotAHeading_AndWarmsNothing()
+        {
+            // The proven cause of the PR 1223 reds (run 43769153746): RicePointPlayablePlayTests.StageStrand puts the
+            // walker straight from the spawn (-56, -108.4) on the strand door's mark (366, -96), 14 m inside the
+            // seam with Nine Mile Creek. Read as one step's speed that jump "headed" east at ~21 km/s, and the
+            // next step preloaded the creek. A jump faster than anything moves is a teleport: zero, and flagged.
+            WorldFrame f = TwoSideBySide();
+            var spawn = new Vector2(-372f, 0f);
+            var staged = new Vector2(36f, 0f);   // 14 m from the seam, as on the strand
+            float cap = GameConfig.DefaultRegionMoverMaxPlausibleSpeed;
+            float least = GameConfig.DefaultRegionPreloadMinHeadingSpeed;
+
+            Vector2 raw = (staged - spawn) / PhysicsStep;
+            Assert.That(f.TryGetApproachingNeighbour("region.west", staged, raw, least, 40f, out _), Is.True,
+                "read as speed, the teleport warms the neighbour (the bug)");
+
+            Vector2 v = SeamCrossingFade.PlausibleVelocity(spawn, staged, PhysicsStep, cap, out bool jumped);
+            Assert.That(jumped, Is.True);
+            Assert.That(v, Is.EqualTo(Vector2.zero));
+            Assert.That(f.TryGetApproachingNeighbour("region.west", staged, v, least, 40f, out _), Is.False,
+                "a teleport is standing still");
+
+            // Real motion passes untouched: a walk, and a boat at the cap.
+            Vector2 walk = SeamCrossingFade.PlausibleVelocity(staged, staged + new Vector2(0.04f, 0f), PhysicsStep, cap, out jumped);
+            Assert.That(jumped, Is.False);
+            Assert.That(walk.x, Is.EqualTo(2f).Within(1e-4f));
+            SeamCrossingFade.PlausibleVelocity(staged, staged + new Vector2(cap * PhysicsStep * 0.99f, 0f), PhysicsStep, cap, out jumped);
+            Assert.That(jumped, Is.False, "just under the cap is speed");
+            Assert.That(SeamCrossingFade.PlausibleVelocity(spawn, staged, 0f, cap, out jumped), Is.EqualTo(Vector2.zero));
+            Assert.That(jumped, Is.False, "no step is no motion, not a teleport");
+            Assert.That(SeamCrossingFade.PlausibleVelocity(spawn, staged, PhysicsStep, 0f, out jumped), Is.EqualTo(raw),
+                "a cap of 0 keeps every step");
+        }
+
+        [Test]
+        public void WarmGate_OnlyAHeadingThatHolds_Warms()
+        {
+            var gate = new NeighbourWarmGate();
+            float hold = GameConfig.DefaultRegionPreloadHeadingSeconds;
+            int steps = Mathf.CeilToInt(hold / PhysicsStep);
+
+            Assert.That(gate.Step("region.east", PhysicsStep, hold), Is.False, "one step never warms");
+            for (int i = 1; i < steps; ++i)
+                Assert.That(gate.Step("region.east", PhysicsStep, hold), Is.False, "step " + i);
+            Assert.That(gate.Step("region.east", PhysicsStep, hold), Is.True, "held for the heading time");
+
+            gate.Step("region.south", PhysicsStep, hold);
+            Assert.That(gate.HeadingSeconds, Is.EqualTo(0f), "another neighbour starts the count again");
+            gate.Step("region.south", PhysicsStep, hold);
+            gate.Interrupt();
+            Assert.That(gate.Step("region.south", PhysicsStep, hold), Is.False, "a teleport starts it again too");
+            gate.Step(null, PhysicsStep, hold);
+            Assert.That(gate.Step("region.south", PhysicsStep, hold), Is.False, "so does one step of no heading");
+
+            Assert.That(new NeighbourWarmGate().Step("region.east", PhysicsStep, 0f), Is.True, "a hold of 0 warms at once");
+        }
+
+        [Test]
+        public void WarmGate_TheApproachEnds_OnlyAfterTheReleaseTimeWithNoHeading()
+        {
+            var gate = new NeighbourWarmGate();
+            float release = GameConfig.DefaultRegionPreloadReleaseSeconds;
+            int steps = Mathf.RoundToInt(release / PhysicsStep);
+
+            gate.Step("region.east", PhysicsStep, 0f);
+            Assert.That(gate.ApproachEnded(release), Is.False, "heading for it");
+            for (int i = 0; i < steps - 5; ++i) gate.Step(null, PhysicsStep, 0f);
+            Assert.That(gate.ApproachEnded(release), Is.False, "not yet");
+            gate.Step("region.east", PhysicsStep, 0f);
+            Assert.That(gate.IdleSeconds, Is.EqualTo(0f), "turning back for it restarts the wait");
+            for (int i = 0; i < steps + 5; ++i) gate.Step(null, PhysicsStep, 0f);
+            Assert.That(gate.ApproachEnded(release), Is.True);
+            gate.Reset();
+            Assert.That(gate.ApproachEnded(release), Is.False, "an arrival starts from nothing");
+        }
+
         [Test]
         public void ApproachingNeighbour_ZeroOrNegativeDistance_TurnsPreloadingOff()
         {

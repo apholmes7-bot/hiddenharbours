@@ -620,6 +620,10 @@ MonoBehaviour:
   MeshFishingAndDig: 1
   RegionCrossingHysteresisMetres: 0.25
   RegionPreloadDistanceMetres: 40
+  RegionPreloadMinHeadingSpeed: 0.5
+  RegionPreloadHeadingSeconds: 0.25
+  RegionPreloadReleaseSeconds: 15
+  RegionMoverMaxPlausibleSpeed: 40
   RegionSeamFadeOutSeconds: 0.15
   RegionSeamFadeInSeconds: 0.2
   RegionSeamMaxBlackSeconds: 1.5

@@ -700,6 +700,13 @@ namespace HiddenHarbours.Core
         public static float RegionSeamBoatDrawnMarginMetres => SeamTunable(c => c.RegionSeamBoatDrawnMarginMetres, GameConfig.DefaultRegionSeamBoatDrawnMarginMetres);
         public static float RegionSeamMinApproachSpeed => SeamTunable(c => c.RegionSeamMinApproachSpeed, GameConfig.DefaultRegionSeamMinApproachSpeed);
 
+        /// <summary>The preload's heading gate (m/s, s), release delay (s) and the teleport cap (m/s) on a
+        /// mover's speed, PR 1223. Same <c>Config != null</c> contract.</summary>
+        public static float RegionPreloadMinHeadingSpeed => SeamTunable(c => c.RegionPreloadMinHeadingSpeed, GameConfig.DefaultRegionPreloadMinHeadingSpeed);
+        public static float RegionPreloadHeadingSeconds => SeamTunable(c => c.RegionPreloadHeadingSeconds, GameConfig.DefaultRegionPreloadHeadingSeconds);
+        public static float RegionPreloadReleaseSeconds => SeamTunable(c => c.RegionPreloadReleaseSeconds, GameConfig.DefaultRegionPreloadReleaseSeconds);
+        public static float RegionMoverMaxPlausibleSpeed => SeamTunable(c => c.RegionMoverMaxPlausibleSpeed, GameConfig.DefaultRegionMoverMaxPlausibleSpeed);
+
         static float SeamTunable(System.Func<GameConfig, float> read, float fallback) =>
             UnityEngine.Mathf.Max(0f, Config != null ? read(Config) : fallback);
 
