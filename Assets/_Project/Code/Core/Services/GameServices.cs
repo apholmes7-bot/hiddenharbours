@@ -195,6 +195,14 @@ namespace HiddenHarbours.Core
         public static IFishSizeFacts FishSizes { get; set; }
 
         /// <summary>
+        /// WHETHER AN ITEM MAY BE GIVEN (<see cref="IGiftableFacts"/>) — published by the Fishing module's
+        /// species registry off <c>FishSpeciesDef.Giftable</c>, read by the world layer's gift act. May be
+        /// null: the giver then uses its default for the kind of thing held (a loose catch is giftable).
+        /// FLAG lead-architect: new Core contract (2026-11-15, NPC gifting).
+        /// </summary>
+        public static IGiftableFacts GiftableFacts { get; set; }
+
+        /// <summary>
         /// What a radar can see (ADR 0025 S5): the NPC vessels and buoys out there right now, published
         /// by whoever is driving them and read by the scope at the helm (<see cref="IRadarContacts"/>).
         ///
@@ -315,6 +323,76 @@ namespace HiddenHarbours.Core
         private static INeedsService _needs;
 
         /// <summary>
+        /// The player's body (body slice 1, owner ask 2026-11-15): frame, height, mass, stomach, over
+        /// <see cref="Save"/> and <see cref="Clock"/>. A seam reads its walk factor through
+        /// <see cref="CharacterFactors.Player"/>, and the needs read its hunger scale; nothing else needs it.
+        /// Never null: a default <see cref="BodyService"/> is made on first read; a test assigns its own.
+        /// Cleared by <see cref="Reset"/>. The default body changes nothing (every factor exactly 1).
+        /// FLAG lead-architect: new Core contract (body).
+        /// </summary>
+        public static IBodyService Body
+        {
+            get => _body ??= new BodyService();
+            set => _body = value;
+        }
+
+        private static IBodyService _body;
+
+        /// <summary>
+        /// The messes left in the world (body slice 1), over <see cref="Save"/>. Never null: a default
+        /// <see cref="MessRegistry"/> is made on first read; a test assigns its own. Cleared by
+        /// <see cref="Reset"/>.
+        /// </summary>
+        public static IMessRegistry Messes
+        {
+            get => _messes ??= new MessRegistry();
+            set => _messes = value;
+        }
+
+        private static IMessRegistry _messes;
+
+        /// <summary>
+        /// The player's strength and cardio, read-only (body slice 2): rod, pull and leg strength, carry
+        /// capacity. The default is the <see cref="Body"/> itself when it offers them, else a neutral reading
+        /// (every multiplier exactly 1). A future Fishing or Boats reader takes it from here. Cleared by
+        /// <see cref="Reset"/>. FLAG lead-architect: new Core contract (strength).
+        /// </summary>
+        public static IPlayerStrength PlayerStrength
+        {
+            get => _playerStrength ?? Body as IPlayerStrength ?? NeutralStrength.Instance;
+            set => _playerStrength = value;
+        }
+
+        private static IPlayerStrength _playerStrength;
+
+        /// <summary>
+        /// What the player carries, by weight (body slice 2). Never null: nothing carried by default; the hands
+        /// module installs a real one when hand loads have weights. Cleared by <see cref="Reset"/>.
+        /// </summary>
+        public static ICarriedLoad CarriedLoad
+        {
+            get => _carriedLoad ?? NoCarriedLoad.Instance;
+            set => _carriedLoad = value;
+        }
+
+        private static ICarriedLoad _carriedLoad;
+
+        /// <summary>
+        /// Cleanliness, the third need (cleanliness slice 1, owner ask 2026-11-15): the local player's dirt
+        /// over <see cref="Save"/>, <see cref="Clock"/> and the shipped wash stations under
+        /// <c>Resources/WashStations/</c>. Never null: a default <see cref="CleanlinessService"/> is made on
+        /// first read; a test assigns its own. Cleared by <see cref="Reset"/>. Clean, nothing changes.
+        /// FLAG lead-architect: new Core contract (cleanliness).
+        /// </summary>
+        public static ICleanlinessService Cleanliness
+        {
+            get => _cleanliness ??= new CleanlinessService();
+            set => _cleanliness = value;
+        }
+
+        private static ICleanlinessService _cleanliness;
+
+        /// <summary>
         /// The farm plots (farm slice 1): read-only questions about each plot's stage and the work due on it,
         /// recomputed from the Defs, the world seed and the day (rule 5). Never null: a default
         /// <see cref="FarmService"/> over the shipped Defs under <c>Resources/Farming/</c> is made on first
@@ -328,6 +406,21 @@ namespace HiddenHarbours.Core
         }
 
         private static IFarmService _farm;
+
+        /// <summary>
+        /// Eating (first food slice): use up one unit of a food from the supply locker or the hands and lower
+        /// hunger through <see cref="Needs"/> by the food's <see cref="FoodDef.HungerRelief"/>. Never null: a
+        /// default <see cref="FoodEater"/> over the shipped Defs under <c>Resources/Food/</c> is made on first
+        /// read; a test assigns its own. Cleared by <see cref="Reset"/>.
+        /// FLAG lead-architect: new Core contract (food).
+        /// </summary>
+        public static FoodEater Food
+        {
+            get => _food ??= new FoodEater();
+            set => _food = value;
+        }
+
+        private static FoodEater _food;
 
         /// <summary>
         /// The web of ties between people (relationships slice 1, owner ruling 2026-11-14): the seam a feature
@@ -345,6 +438,44 @@ namespace HiddenHarbours.Core
         }
 
         private static IRelationshipService _relationships;
+
+        /// <summary>
+        /// Who is aboard which boat, in which role (crew slice R2): players and hired hands alike. Boarding
+        /// enforces the hull's crew slots; <see cref="ICrewRoster.CanSail"/> answers the night and trip
+        /// rules through <see cref="VoyageLimits"/>. Never null: a default <see cref="CrewRoster"/> over
+        /// <see cref="Voyages"/>, the shipped roles and <see cref="CrewPolicy"/> is made on first read; a
+        /// test assigns its own. Cleared by <see cref="Reset"/>. In memory only: not saved yet.
+        /// FLAG lead-architect: new Core contract (crew).
+        /// </summary>
+        public static ICrewRoster Crew
+        {
+            get => _crew ??= new CrewRoster();
+            set => _crew = value;
+        }
+
+        private static ICrewRoster _crew;
+
+        /// <summary>
+        /// The voyage records by hull id (crew slice R2), each joined to its hull's crew slots and bunks.
+        /// The Boats module registers one (<c>BoatVoyageCatalog</c>). <b>Never null</b>: absent a
+        /// registration it reads <see cref="EmptyVoyageCatalog"/>, under which every hull is unknown and the
+        /// roster refuses with <see cref="VoyageRefusal.UnknownHull"/> rather than guessing. Cleared by
+        /// <see cref="Reset"/>.
+        /// FLAG lead-architect: new Core contract (crew).
+        /// </summary>
+        public static IVoyageCatalog Voyages
+        {
+            get
+            {
+                IVoyageCatalog catalog = _voyages;
+                // The FishSchools fake-null discipline: a registrant may be a UnityEngine.Object.
+                if (catalog is UnityEngine.Object producer && producer == null) return EmptyVoyageCatalog.Instance;
+                return catalog != null ? catalog : EmptyVoyageCatalog.Instance;
+            }
+            set => _voyages = value;
+        }
+
+        private static IVoyageCatalog _voyages;
 
         /// <summary>
         /// Whether a gated crossing (the St Peters bar at low water) can be set out on at a given game hour:
@@ -715,6 +846,20 @@ namespace HiddenHarbours.Core
 
         /// <summary>The hunger and tiredness numbers, with the fallback for an unwired config.</summary>
         public static NeedsSettings NeedsSettings => Config != null ? Config.Needs : NeedsSettings.Default;
+
+        /// <summary>The body numbers (body slice 1), with the fallback for an unwired config.</summary>
+        public static BodySettings BodySettings => Config != null ? Config.Body : BodySettings.Default;
+
+        /// <summary>The strength and cardio numbers (body slice 2), with the fallback for an unwired config.</summary>
+        public static StrengthSettings StrengthSettings => Config != null ? Config.Strength : StrengthSettings.Default;
+
+        /// <summary>The crew and trip-limit rules (crew slice R2), with the fallback for an unwired config.</summary>
+        public static CrewPolicy CrewPolicy => Config != null ? Config.Crew : CrewPolicy.Default;
+
+        /// <summary>The cleanliness numbers, with the fallback for an unwired config (or a config asset
+        /// written before the block existed, which deserializes it with no source rows).</summary>
+        public static CleanlinessSettings CleanlinessSettings
+            => Config != null && Config.Cleanliness.Sources != null ? Config.Cleanliness : CleanlinessSettings.Default;
 
         /// <summary>The kitchen numbers (kitchens slice 1), with the fallback for an unwired config.</summary>
         public static KitchenSettings KitchenSettings => Config != null ? Config.Kitchen : KitchenSettings.Default;
@@ -1303,17 +1448,26 @@ namespace HiddenHarbours.Core
             FishSchools = null;          // → EmptyFishSchools.Instance; this property is never null
             FishBehaviour = null;        // → EmptyFishBehaviourFacts.Instance; likewise never null
             FishSizes = null;            // nullable by contract: no size word without a registry
+            GiftableFacts = null;        // nullable by contract: the giver falls back to its kind default
             RadarContacts = null;        // → EmptyRadarSea.Instance; likewise never null
             BirdPresence = null;         // → EmptyBirdPresence.Instance; likewise never null
             Save = null;
             Appearance = null;           // → a fresh default on next read; drops any open preview
             Traits = null;               // → a fresh default on next read; drops its catalog and cache
             Needs = null;                // → a fresh default on next read; drops its stage baseline
-            KitchenPower = null;         // → AlwaysOnKitchenPower.Instance; this property is never null
+            Body = null;                 // → a fresh default on next read
+            Messes = null;               // → a fresh default on next read
+            PlayerStrength = null;       // → the body, or the neutral reading
+            CarriedLoad = null;          // → NoCarriedLoad.Instance (nothing carried)
+            Cleanliness = null;          // → a fresh default on next read; drops its station catalog
+            KitchenPower = null;        // → AlwaysOnKitchenPower.Instance; this property is never null
             FoodPerishability = null;    // → NothingSpoilsPerishability.Instance; likewise never null
             KitchenStorageCatalog.Clear();
             Farm = null;                 // → a fresh default on next read; drops its catalog and baseline
+            Food = null;                 // → a fresh default on next read; drops its loaded food book
             Relationships = null;        // → a fresh default on next read; reseeds from the shipped ties
+            Crew = null;                 // → a fresh, empty roster on next read
+            Voyages = null;              // → EmptyVoyageCatalog.Instance; this property is never null
             CrossingGate = null;         // → AlwaysOpenCrossingGate.Instance; this property is never null
             TidalTerrain = null;
             StillWater = null;           // → EmptyStillWater.Instance; this property is never null

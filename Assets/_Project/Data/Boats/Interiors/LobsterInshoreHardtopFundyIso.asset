@@ -250,7 +250,7 @@ MonoBehaviour:
     FurniturePoint: {x: 0, y: 0, z: 0}
   - Id: bunk_bench
     Action: sleep
-    ReachPoint: {x: 0.29, y: 2.65, z: 0.44}
+    ReachPoint: {x: 0.3, y: 2.02, z: 0.44}
     VisibleFacings:
     - N
     - NE

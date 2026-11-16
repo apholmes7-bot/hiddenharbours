@@ -76,7 +76,7 @@ namespace HiddenHarbours.Tests.EditMode
 
         static NeedsService Service(FakeSaveService save, MovingClock clock)
             => new NeedsService(() => save, () => clock, () => NeedsSettings.Default, () => null, () => PerHour,
-                                () => KitchenSettings.Default);
+                                body: () => null, cleanliness: () => null, kitchen: () => KitchenSettings.Default);
 
         // ---- the rules ------------------------------------------------------------------------------
 
@@ -138,7 +138,20 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.AreEqual(0.1f + rise, SeatedRest.LevelAfter(0.1f, 1d, rise, s), 1e-6f, "below it, you tire as normal");
         }
 
-        // ---- through the needs service --------------------------------------------------------------
+        // ---- through the eater and the needs service --------------------------------------------------------------
+
+        // Main's one eating door is FoodEater (food feeds the body): a posture rides on it, never a
+        // parallel eat on the needs.
+        static FoodDef Bread(float relief)
+        {
+            var def = ScriptableObject.CreateInstance<FoodDef>();
+            def.Id = "food.test_bread"; def.ItemId = "supply.test_bread"; def.EdibleRaw = true; def.HungerRelief = relief;
+            return def;
+        }
+
+        static FoodEater Eater(FakeSaveService save, NeedsService needs, FoodDef food, IBodyService body)
+            => new FoodEater(() => new FoodBook(new[] { food }), () => needs, () => save, () => null, () => body,
+                             () => Vector2.zero, () => "region.test", () => KitchenSettings.Default);
 
         [Test]
         public void EatingAtATableTakesTheDiningBoostOffHunger_AndSaysSo()
@@ -147,20 +160,62 @@ namespace HiddenHarbours.Tests.EditMode
             var clock = new MovingClock { T = 500d };
             save.Current.PlayerNeeds.Hunger = new NeedStateDto(0.8f, 500d);
             NeedsService needs = Service(save, clock);
+            FoodDef bread = Bread(0.2f);
+            try
+            {
+                FoodEater eater = Eater(save, needs, bread, null);
+                SupplyLocker.Add(save.Current, bread.ItemId, 2);
 
-            needs.Eat(0.2f, EatingPosture.AtTable);
-            float relief = 0.2f * KitchenSettings.Default.DiningReliefInForce;
-            Assert.AreEqual(0.8f - relief, needs.Level(NeedKind.Hunger), 1e-5f);
-            Assert.AreEqual(1, _dined.Count);
-            Assert.AreEqual(EatingPosture.AtTable, _dined[0].Posture);
-            Assert.AreEqual(relief, _dined[0].Relief, 1e-6f);
+                Assert.AreEqual(EatRefusal.None, eater.TryEatFromStock(bread.ItemId, EatingPosture.AtTable));
+                float relief = 0.2f * KitchenSettings.Default.DiningReliefInForce;
+                Assert.AreEqual(0.8f - relief, needs.Level(NeedKind.Hunger), 1e-5f);
+                Assert.AreEqual(1, _dined.Count);
+                Assert.AreEqual(EatingPosture.AtTable, _dined[0].Posture);
+                Assert.AreEqual(0.2f, _dined[0].BaseRelief, 1e-6f);
+                Assert.AreEqual(relief, _dined[0].Relief, 1e-6f);
 
-            save.Current.PlayerNeeds.Hunger = new NeedStateDto(0.8f, 500d);
-            needs.Eat(0.2f, EatingPosture.Standing);
-            Assert.AreEqual(0.6f, needs.Level(NeedKind.Hunger), 1e-5f, "standing, the meal's own worth");
-            Assert.AreEqual(1, _dined.Count, "eating on your feet is not dining");
+                save.Current.PlayerNeeds.Hunger = new NeedStateDto(0.8f, 500d);
+                Assert.AreEqual(EatRefusal.None, eater.TryEatFromStock(bread.ItemId));
+                Assert.AreEqual(0.6f, needs.Level(NeedKind.Hunger), 1e-5f, "standing, the meal's own worth");
+                Assert.AreEqual(1, _dined.Count, "eating on your feet is not dining");
+            }
+            finally { Object.DestroyImmediate(bread); }
         }
 
+        [Test]
+        public void ThroughTheBody_TheSeatsBonusIsHungerOnly_TheStomachFillsAsStanding()
+        {
+            var seatedSave = new FakeSaveService();
+            var standingSave = new FakeSaveService();
+            var clock = new MovingClock { T = 500d };
+            seatedSave.Current.PlayerNeeds.Hunger = new NeedStateDto(0.8f, 500d);
+            standingSave.Current.PlayerNeeds.Hunger = new NeedStateDto(0.8f, 500d);
+            FoodDef bread = Bread(0.2f);
+            try
+            {
+                float Eat(FakeSaveService save, EatingPosture posture, out float stomach)
+                {
+                    NeedsService needs = null;
+                    var messes = new MessRegistry(() => save);
+                    var body = new BodyService(() => save, () => clock, () => BodySettings.Default,
+                                               () => NeedsSettings.Default, () => needs, () => messes, () => PerHour);
+                    needs = new NeedsService(() => save, () => clock, () => NeedsSettings.Default, () => null,
+                                             () => PerHour, body: () => body, cleanliness: () => null,
+                                             kitchen: () => KitchenSettings.Default);
+                    SupplyLocker.Add(save.Current, bread.ItemId, 1);
+                    Assert.AreEqual(EatRefusal.None, Eater(save, needs, bread, body).TryEatFromStock(bread.ItemId, posture));
+                    stomach = save.Current.PlayerBody.StomachMeals;
+                    return needs.Level(NeedKind.Hunger);
+                }
+
+                float seated = Eat(seatedSave, EatingPosture.Seated, out float seatedStomach);
+                float standing = Eat(standingSave, EatingPosture.Standing, out float standingStomach);
+                Assert.AreEqual(0.8f - 0.2f * KitchenSettings.Default.SeatedReliefInForce, seated, 1e-5f);
+                Assert.AreEqual(0.6f, standing, 1e-5f);
+                Assert.AreEqual(standingStomach, seatedStomach, 1e-6f, "sitting never makes overeating likelier");
+            }
+            finally { Object.DestroyImmediate(bread); }
+        }
         [Test]
         public void SeatedRestSteppedEqualsSeatedRestInOneGo([Values(0.8f, 0.1f)] float start)
         {
@@ -235,9 +290,9 @@ namespace HiddenHarbours.Tests.EditMode
             saveSit.Current.PlayerNeeds.Tiredness = new NeedStateDto(0.95f, 1000d);
             saveSleep.Current.PlayerNeeds.Tiredness = new NeedStateDto(0.95f, 1000d);
             var sitter = new NeedsService(() => saveSit, () => clockSit, () => NeedsSettings.Default, () => null,
-                                          () => PerHour, () => kitchen);
+                                          () => PerHour, body: () => null, cleanliness: () => null, kitchen: () => kitchen);
             var sleeper = new NeedsService(() => saveSleep, () => clockSleep, () => NeedsSettings.Default, () => null,
-                                           () => PerHour, () => kitchen);
+                                           () => PerHour, body: () => null, cleanliness: () => null, kitchen: () => kitchen);
 
             clockSit.T = clockSleep.T = 1000d + hours * PerHour;
             sitter.RestSeated(1000d);

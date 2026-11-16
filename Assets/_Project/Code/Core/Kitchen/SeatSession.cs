@@ -5,7 +5,7 @@ namespace HiddenHarbours.Core
     /// player sits. <see cref="Sit"/> remembers when and where and says so on the bus; <see cref="Bank"/>
     /// hands the seated stretch to <see cref="INeedsService.RestSeated"/> (the slow tick may call it so a
     /// read mid-sit is honest); <see cref="Stand"/> banks and says so. While seated,
-    /// <see cref="Posture"/> is what a meal eaten now is worth (<see cref="INeedsService.Eat(float, EatingPosture)"/>).
+    /// <see cref="Posture"/> is what a meal eaten now is worth (<see cref="FoodEater.TryEatFromStock(string, EatingPosture)"/>).
     ///
     /// <para><b>⚠ SEAM(sit pose):</b> nothing on main holds the player still in a pose, so no boat or
     /// building seat interactable is shipped in this slice. The Player module's sit pose calls

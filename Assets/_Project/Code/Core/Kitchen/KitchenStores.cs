@@ -5,7 +5,7 @@ using UnityEngine;
 namespace HiddenHarbours.Core
 {
     /// <summary>
-    /// <b>The food stores on the save</b> (kitchens slice 1, save v21): find or open a store by its key,
+    /// <b>The food stores on the save</b> (kitchens slice 1, save v23): find or open a store by its key,
     /// put food in, take it out, pack ice from the supply locker, and the slow tick that notices ice running
     /// out and a fridge's power changing. Every change settles through <see cref="KitchenStorageModel"/>
     /// and says so on the <see cref="EventBus"/>. Location-agnostic: a boat, a home, a shop or a

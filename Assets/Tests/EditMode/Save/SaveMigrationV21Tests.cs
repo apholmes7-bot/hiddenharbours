@@ -1,105 +1,109 @@
-using System.Collections.Generic;
-using NUnit.Framework;
 using HiddenHarbours.Core;
+using NUnit.Framework;
 
 namespace HiddenHarbours.Tests.EditMode
 {
-    /// <summary>
-    /// v20 -> v21: THE FOOD STORES (kitchens slice 1, owner ask 2026-11-15). Pins the three obligations of a
-    /// schema bump: an older save survives and starts with every store empty (no food invented, no ice
-    /// packed), a missing or damaged list is repaired, and a store with food and ice in it comes back from
-    /// the real JSON exactly, so its freshness reads the same after a reload as before it (rule 5).
-    /// </summary>
+    /// <summary>Save schema v21: the body and the messes (body slice 1). An older save loads as the default
+    /// body at its lean mass (today's player exactly) with no messes.</summary>
     public class SaveMigrationV21Tests
     {
-        /// <summary>A store aboard ONE owned boat (BoatStoreKeyTests pins the shape).</summary>
-        static readonly string Key = BoatInteriorKitchen.StoreKey(OwnedBoatId.FirstOf("boat.cape_islander"),
-                                                                  "interior.cape_islander_iso", "cooler");
-
         [Test]
-        public void TheSchemaIsAtLeast21()
+        public void CurrentVersion_IsAtLeastTwentyOne_BecauseTheBodyShipped()
         {
             Assert.GreaterOrEqual(SaveMigration.CurrentVersion, 21);
         }
 
         [Test]
-        public void AV20Save_StartsWithEveryStoreEmpty()
+        public void Version20Json_WithoutABody_LoadsTheDefaultBody_AndKeepsTheRest()
         {
-            SaveData save = SaveSerialization.FromJson("{\"SchemaVersion\":20,\"GameTimeSeconds\":4321.0}");
+            SaveData save = SaveSerialization.FromJson(
+                "{\"SchemaVersion\":20,\"GameTimeSeconds\":5000.0,\"PlayerName\":\"Skipper\"," +
+                "\"PlayerNeeds\":{\"Hunger\":{\"Level\":0.25,\"SinceGameSeconds\":4000.0}}}");
             Assert.AreEqual(SaveMigration.CurrentVersion, save.SchemaVersion);
-            Assert.IsNotNull(save.KitchenStores);
-            Assert.AreEqual(0, save.KitchenStores.Count);
-            Assert.AreEqual(4321d, save.GameTimeSeconds, "nothing else moved");
+            Assert.IsNotNull(save.PlayerBody);
+            Assert.AreEqual(PlayerBodyDto.Unset, save.PlayerBody.Frame, "unset frame = the config default");
+            Assert.AreEqual(PlayerBodyDto.Unset, save.PlayerBody.HeightScale);
+            Assert.AreEqual((double)PlayerBodyDto.Unset, save.PlayerBody.MassKg, 0d, "unset mass = lean");
+            Assert.IsFalse(save.PlayerBody.ShapeChosen);
+            Assert.IsNotNull(save.Messes);
+            Assert.AreEqual(0, save.Messes.Count);
+            Assert.AreEqual(0, save.NextMessSerial);
+            Assert.AreEqual("Skipper", save.PlayerName, "nothing else is touched");
+            Assert.AreEqual(0.25f, save.PlayerNeeds.Hunger.Level);
+            Assert.AreEqual(4000d, save.PlayerNeeds.Hunger.SinceGameSeconds);
         }
 
         [Test]
-        public void AV20ObjectWithANullList_IsRepaired()
+        public void Version20Object_WithNullBody_IsMigrated()
         {
-            SaveData save = SaveMigration.Migrate(new SaveData { SchemaVersion = 20, KitchenStores = null });
+            var old = new SaveData { SchemaVersion = 20, PlayerBody = null, Messes = null, PlayerName = "Skipper" };
+            SaveData save = SaveMigration.Migrate(old);
             Assert.AreEqual(SaveMigration.CurrentVersion, save.SchemaVersion);
-            Assert.IsNotNull(save.KitchenStores);
+            Assert.IsNotNull(save.PlayerBody);
+            Assert.IsNotNull(save.Messes);
+            Assert.AreEqual(1f, BodyMath.HungerRateScale(save.PlayerBody, BodySettings.Default));
+            Assert.AreEqual(1f, BodyMath.WalkFactor(BodyMath.AnchorMassKg(save.PlayerBody, BodySettings.Default),
+                                                    BodyMath.FrameOf(save.PlayerBody, BodySettings.Default),
+                                                    BodyMath.HeightScaleOf(save.PlayerBody, BodySettings.Default),
+                                                    BodySettings.Default));
         }
 
         [Test]
-        public void DamagedRowsAreHealed_AndGoodOnesKept()
+        public void Version21_BodyAndMessesSurviveRoundTrip_AndMigrationKeepsThem()
         {
             SaveData save = SaveMigration.NewGame();
-            save.KitchenStores = new List<KitchenStorageStateDto>
+            save.PlayerBody = new PlayerBodyDto
             {
-                null,
-                new KitchenStorageStateDto { Key = "", StorageDefId = "kitchen_storage.cooler" },
-                new KitchenStorageStateDto
-                {
-                    Key = Key, StorageDefId = null, Stacks = new List<KitchenStackDto>
-                    {
-                        new KitchenStackDto("food.a", 0, Freshness.Landed(0d)),
-                        new KitchenStackDto("", 2, Freshness.Landed(0d)),
-                        new KitchenStackDto("food.b", 3, Freshness.Landed(0d)),
-                    },
-                },
-                new KitchenStorageStateDto { Key = "fixture.boat.x.pantry", Stacks = null },
+                Frame = 0.75f, HeightScale = 1.04f, ShapeChosen = true, MassKg = 81.5d,
+                MassSinceGameSeconds = 9000.5d, StomachMeals = 0.5f, StomachSinceGameSeconds = 8999d,
             };
-
-            SaveMigration.Migrate(save);
-            Assert.AreEqual(2, save.KitchenStores.Count, "a null row and a keyless row are dropped");
-            KitchenStorageStateDto kept = save.KitchenStores[0];
-            Assert.AreEqual(Key, kept.Key);
-            Assert.AreEqual("", kept.StorageDefId);
-            Assert.AreEqual(1, kept.Stacks.Count, "an empty lot and an unnamed lot are dropped");
-            Assert.AreEqual("food.b", kept.Stacks[0].ItemId);
-            Assert.IsNotNull(save.KitchenStores[1].Stacks);
-        }
-
-        [Test]
-        public void AStoreWithFoodAndIce_SurvivesTheRealJson_AndReadsTheSameAfter()
-        {
-            SaveData save = SaveMigration.NewGame();
-            var store = new KitchenStorageStateDto
-            {
-                Key = Key,
-                StorageDefId = "kitchen_storage.cooler",
-                IceRunsOutAtGameSeconds = 98765.25d,
-                IceOutAnnounced = false,
-                Powered = true,
-                Stacks = new List<KitchenStackDto>
-                {
-                    new KitchenStackDto("food.chowder", 3, new FreshnessState(0.125f, 90000.5d, StorageMode.Iced)),
-                },
-            };
-            save.KitchenStores.Add(store);
+            save.Messes.Add(new MessRecordDto("mess.3", "region.nmc", new UnityEngine.Vector2(1.5f, -2f), 777d));
+            save.NextMessSerial = 3;
 
             SaveData back = SaveMigration.Migrate(SaveSerialization.FromJson(SaveSerialization.ToJson(save)));
-            KitchenStorageStateDto read = KitchenStores.Find(back, Key);
-            Assert.IsNotNull(read);
-            Assert.AreEqual("kitchen_storage.cooler", read.StorageDefId);
-            Assert.AreEqual(98765.25d, read.IceRunsOutAtGameSeconds);
-            Assert.IsTrue(read.Powered);
-            Assert.AreEqual(1, read.Stacks.Count);
-            Assert.AreEqual("food.chowder", read.Stacks[0].ItemId);
-            Assert.AreEqual(3, read.Stacks[0].Count);
-            Assert.AreEqual(0.125f, read.Stacks[0].SpoilAccrued);
-            Assert.AreEqual(90000.5d, read.Stacks[0].LastSettleGameSeconds);
-            Assert.AreEqual(StorageMode.Iced, read.Stacks[0].Freshness.Mode);
+            Assert.AreEqual(0.75f, back.PlayerBody.Frame);
+            Assert.AreEqual(1.04f, back.PlayerBody.HeightScale);
+            Assert.IsTrue(back.PlayerBody.ShapeChosen);
+            Assert.AreEqual(81.5d, back.PlayerBody.MassKg, "idempotent: a current body is not reset");
+            Assert.AreEqual(9000.5d, back.PlayerBody.MassSinceGameSeconds);
+            Assert.AreEqual(0.5f, back.PlayerBody.StomachMeals);
+            Assert.AreEqual(1, back.Messes.Count);
+            Assert.AreEqual("mess.3", back.Messes[0].Id);
+            Assert.AreEqual("region.nmc", back.Messes[0].RegionId);
+            Assert.AreEqual(777d, back.Messes[0].GameSeconds);
+            Assert.AreEqual(3, back.NextMessSerial);
+        }
+
+        [Test]
+        public void Version20Json_LoadsUntrained_AndFitnessSurvivesRoundTrip()
+        {
+            SaveData old = SaveSerialization.FromJson("{\"SchemaVersion\":20,\"GameTimeSeconds\":5000.0}");
+            foreach (FitnessKind kind in StrengthMath.Kinds)
+            {
+                FitnessStateDto f = old.PlayerBody.Get(kind);
+                Assert.AreEqual(0f, f.Level, kind.ToString());
+                Assert.AreEqual(0f, f.Peak, kind.ToString());
+                Assert.Less(f.SinceGameSeconds, 0d, "body slice 2 rides the same v21 migration: untrained");
+            }
+
+            SaveData save = SaveMigration.NewGame();
+            save.PlayerBody.Grip = new FitnessStateDto
+            {
+                Level = 0.25f, Peak = 0.5f, SinceGameSeconds = 1200.5d, MaintainedAtGameSeconds = 1000d, PendingDose = 3.5f,
+            };
+            save.PlayerBody.Cardio = new FitnessStateDto
+            {
+                Level = 0.75f, Peak = 0.75f, SinceGameSeconds = 99d, MaintainedAtGameSeconds = -1d, PendingDose = 0f,
+            };
+            SaveData back = SaveMigration.Migrate(SaveSerialization.FromJson(SaveSerialization.ToJson(save)));
+            Assert.AreEqual(0.25f, back.PlayerBody.Grip.Level);
+            Assert.AreEqual(0.5f, back.PlayerBody.Grip.Peak);
+            Assert.AreEqual(1200.5d, back.PlayerBody.Grip.SinceGameSeconds);
+            Assert.AreEqual(1000d, back.PlayerBody.Grip.MaintainedAtGameSeconds);
+            Assert.AreEqual(3.5f, back.PlayerBody.Grip.PendingDose);
+            Assert.AreEqual(0.75f, back.PlayerBody.Cardio.Level);
+            Assert.AreEqual(-1d, back.PlayerBody.Cardio.MaintainedAtGameSeconds);
+            Assert.AreEqual(0f, back.PlayerBody.Back.Level, "untouched kinds stay untrained");
         }
     }
 }

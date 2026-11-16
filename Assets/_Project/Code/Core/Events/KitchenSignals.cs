@@ -97,7 +97,7 @@ namespace HiddenHarbours.Core
         public PlayerStood(string seatId, double seatedGameSeconds) { SeatId = seatId; SeatedGameSeconds = seatedGameSeconds; }
     }
 
-    /// <summary>The player ate sitting down (<see cref="INeedsService.Eat(float, EatingPosture)"/>).</summary>
+    /// <summary>The player ate sitting down (<see cref="FoodEater.TryEatFromStock(string, EatingPosture)"/>).</summary>
     public readonly struct PlayerDined
     {
         public readonly EatingPosture Posture;

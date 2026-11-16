@@ -45,6 +45,25 @@ namespace HiddenHarbours.Core
         public static string StoresOfBoatPrefix(string ownedBoatId)
             => OwnedBoatId.IsValid(ownedBoatId) ? FixtureKeyPrefix + ownedBoatId + OwnedBoatId.KeySeparator : "";
 
+        /// <summary>The anchor-id prefix that marks a toilet among <c>sit</c> anchors.</summary>
+        public const string ToiletAnchorPrefix = "toilet";
+
+        /// <summary>The anchor id a small boat's single toilet carries ("the head").</summary>
+        public const string HeadAnchorId = "head";
+
+        /// <summary>
+        /// Is this <c>sit</c> anchor a toilet? Main names the toilet's verb <c>sit</c>
+        /// (<see cref="WashStationDef.ActionSit"/>) and tells it apart by its wash station; an anchor carries
+        /// no station id yet, so the shipped naming is the rule until it does: <c>head</c> or
+        /// <c>toilet_*</c>. A toilet is never a dining seat (no meal bonus, no seated rest).
+        /// </summary>
+        public static bool IsToiletSeat(BoatInteriorAnchor anchor)
+        {
+            if (anchor == null || anchor.Action != BoatInteriorAnchor.ActionSit) return false;
+            string id = anchor.Id ?? "";
+            return id == HeadAnchorId || id.StartsWith(ToiletAnchorPrefix, StringComparison.Ordinal);
+        }
+
         /// <summary>The kind of piece an anchor is, or false for an anchor that is not part of a kitchen.</summary>
         public static bool TryKind(BoatInteriorAnchor anchor, out KitchenPieceKind kind)
         {
@@ -55,7 +74,9 @@ namespace HiddenHarbours.Core
                 case BoatInteriorAnchor.ActionPrep: kind = KitchenPieceKind.Prep; return true;
                 case BoatInteriorAnchor.ActionCook: kind = KitchenPieceKind.Cook; return true;
                 case BoatInteriorAnchor.ActionFoodStorage: kind = KitchenPieceKind.Storage; return true;
-                case BoatInteriorAnchor.ActionSit: kind = KitchenPieceKind.Seat; return true;
+                case BoatInteriorAnchor.ActionSit:
+                    if (IsToiletSeat(anchor)) return false;
+                    kind = KitchenPieceKind.Seat; return true;
                 case BoatInteriorAnchor.ActionTable: kind = KitchenPieceKind.Table; return true;
                 default: return false;
             }

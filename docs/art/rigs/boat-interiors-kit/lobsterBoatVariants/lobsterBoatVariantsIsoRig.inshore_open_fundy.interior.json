@@ -634,8 +634,8 @@
       "id": "bunk_bench",
       "action": "sleep",
       "reach_point": [
-        0.29,
-        2.65,
+        0.3,
+        2.02,
         0.44
       ],
       "visible_facings": [

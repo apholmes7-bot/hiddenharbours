@@ -395,12 +395,43 @@ namespace HiddenHarbours.Core
         public PlayerNeedsDto PlayerNeeds = new();
 
         /// <summary>
+        /// <b>The player's body</b> (body slice 1, owner ask 2026-11-15, added in v21): the frame and height
+        /// the creator chose, the mass at one instant and the stomach at one instant. Values now are worked
+        /// out from the clock (<see cref="BodyMath"/>). Unset (negative) shape and mass read as the default
+        /// body at its lean mass, which is today's player exactly; a new game and every older save start
+        /// there. Written only through <see cref="IBodyService"/>.
+        /// FLAG lead-architect: save schema v21 (body).
+        /// </summary>
+        public PlayerBodyDto PlayerBody = new();
+
+        /// <summary>
+        /// <b>Messes left in the world</b> (body slice 1, added in v21), oldest first: where the player was
+        /// sick. Removed only by <see cref="IMessRegistry.CleanUp"/>. Written only through
+        /// <see cref="IMessRegistry"/>.
+        /// </summary>
+        public List<MessRecordDto> Messes = new();
+
+        /// <summary>The last mess id serial handed out (<c>mess.N</c>), so an id is never reused, even after
+        /// its mess is cleaned up. Added in v21; 0 = none yet.</summary>
+        public int NextMessSerial;
+
+        /// <summary>
+        /// <b>The player's cleanliness</b> (cleanliness slice 1, owner ask 2026-11-15, added in v22): the dirt
+        /// at one instant, that instant, and the stretch of work or the wash going on since. The dirt now is
+        /// worked out from the clock (<see cref="CleanlinessMath.DirtAt"/>). A new game starts clean and
+        /// unanchored; an older save is migrated to clean at its own saved time. Written only through
+        /// <see cref="ICleanlinessService"/>.
+        /// FLAG lead-architect: save schema v22 (cleanliness).
+        /// </summary>
+        public PlayerCleanlinessDto PlayerCleanliness = new();
+
+        /// <summary>
         /// The food stores (kitchens slice 1): a galley's pantry, cooler and fridge aboard, and later a
         /// home's, a shop's or a player-built kitchen's, each keyed by where it stands
         /// (<see cref="KitchenStorageStateDto.Key"/>). Contents and freshness clocks are saved; a cooler's
         /// cold is one saved instant (when its ice runs out), never a ticking number. Written only through
-        /// <see cref="KitchenStores"/>. Added in v21; every older save starts with none.
-        /// FLAG lead-architect: save schema v21 (kitchens).
+        /// <see cref="KitchenStores"/>. Added in v23; every older save starts with none.
+        /// FLAG lead-architect: save schema v23 (kitchens).
         /// </summary>
         public List<KitchenStorageStateDto> KitchenStores = new();
     }

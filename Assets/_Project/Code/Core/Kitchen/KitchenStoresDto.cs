@@ -45,7 +45,7 @@ namespace HiddenHarbours.Core
     }
 
     /// <summary>
-    /// <b>What is in one food store, as saved</b> (kitchens slice 1, save v21). Keyed by a stable storage
+    /// <b>What is in one food store, as saved</b> (kitchens slice 1, save v23). Keyed by a stable storage
     /// KEY that says where it stands (for a boat:
     /// <c>fixture.boat.&lt;owned boat id&gt;/&lt;interior id&gt;.&lt;anchor id&gt;</c>, see
     /// <see cref="BoatInteriorKitchen.StoreKey(string, string, string)"/>, so each boat of a hull has its own;

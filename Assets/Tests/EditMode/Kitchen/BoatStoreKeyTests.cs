@@ -162,5 +162,19 @@ namespace HiddenHarbours.Tests.EditMode
             foreach (KitchenStackDto s in lots) n += s.Count;
             return n;
         }
+
+        [Test]
+        public void AToiletOnTheSitVerb_IsNeverADiningSeat()
+        {
+            // Main names the toilet's verb "sit" (WashStationDef.ActionSit); a toilet must not dine.
+            var toilet = new BoatInteriorAnchor { Id = "toilet_master_bath", Action = BoatInteriorAnchor.ActionSit };
+            var head = new BoatInteriorAnchor { Id = "head", Action = BoatInteriorAnchor.ActionSit };
+            var settee = new BoatInteriorAnchor { Id = "sit_settee", Action = BoatInteriorAnchor.ActionSit };
+            Assert.AreEqual(WashStationDef.ActionSit, BoatInteriorAnchor.ActionSit, "one verb for both");
+            Assert.IsFalse(BoatInteriorKitchen.TryKind(toilet, out _));
+            Assert.IsFalse(BoatInteriorKitchen.TryKind(head, out _));
+            Assert.IsTrue(BoatInteriorKitchen.TryKind(settee, out KitchenPieceKind kind));
+            Assert.AreEqual(KitchenPieceKind.Seat, kind);
+        }
     }
 }

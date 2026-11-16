@@ -41,3 +41,19 @@ MonoBehaviour:
     PointsPerUnit: 12
     CapPerPairPerDay: 12
     CanMakeRival: 0
+  - Kind: 5
+    PointsPerUnit: 8
+    CapPerPairPerDay: 8
+    CanMakeRival: 0
+  - Kind: 6
+    PointsPerUnit: 4
+    CapPerPairPerDay: 4
+    CanMakeRival: 0
+  - Kind: 7
+    PointsPerUnit: 2
+    CapPerPairPerDay: 2
+    CanMakeRival: 0
+  - Kind: 8
+    PointsPerUnit: -3
+    CapPerPairPerDay: 3
+    CanMakeRival: 0
