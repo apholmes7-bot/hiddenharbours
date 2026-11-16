@@ -2516,6 +2516,35 @@ namespace HiddenHarbours.Art
             => fadeSeconds <= 0.001f ? 0f : Mathf.Exp(-Mathf.Max(secondsSinceCrest, 0f) / Mathf.Max(fadeSeconds, 1e-3f));
 
         /// <summary>
+        /// (the editor look of 2026-11-15) <b>The wash's leading line, measured on the ground</b> — the shader's
+        /// <c>washLine</c> test: a pixel inside the drawn edge (<paramref name="depthHere"/> + the held run-up
+        /// <paramref name="drawnShift"/> &gt;= 0, the clip's own epsilon) whose ground one line-width SHOREWARD up the
+        /// normal (<paramref name="depthLineWidthShoreward"/>) is already past the edge. A per-pixel law: no screen
+        /// derivative, so no 2x2 quad can decide it for four pixels (the 2-px stair it replaced).
+        /// </summary>
+        public static bool WashLineDrawn(float depthHere, float depthLineWidthShoreward, float drawnShift)
+            => depthHere + drawnShift >= -1e-4f && depthLineWidthShoreward + drawnShift < 0f;
+
+        /// <summary>
+        /// The share of a wash pixel that is BEACH, not water — the shader's <c>washBeach</c>: 0 at and below the
+        /// still line (the breaker's lip and barrel draw untouched in the water), rising to the wash's presence by
+        /// <paramref name="anatomyFade"/> metres of level above it, where the lip and barrel have given way.
+        /// </summary>
+        public static float WashBeachShare01(float depth, float washPresence, float anatomyFade)
+            => Mathf.Clamp01(washPresence) * Mathf.Clamp01(-depth / Mathf.Max(anatomyFade, 1e-3f));
+
+        /// <summary>
+        /// The wash's cover cap — the shader's <c>washCapScale</c>: the factor that brings the heaviest surf layer's
+        /// weight on the sand down to <paramref name="maxCover"/> (1 when it is already under), so the ground always
+        /// keeps at least 1 - maxCover of its own colour.
+        /// </summary>
+        public static float WashCapScale(float heaviestWeight, float maxCover)
+        {
+            float cap = Mathf.Clamp01(maxCover);
+            return heaviestWeight > cap ? cap / Mathf.Max(heaviestWeight, 1e-4f) : 1f;
+        }
+
+        /// <summary>
         /// (owner judge pass 2026-08-01) The FLOOR under the local seabed slope the shore cosmetics scale by —
         /// the shader's <c>max(shoreSlopeRaw, _ShoreSlopeFloor)</c>.
         ///

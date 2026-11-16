@@ -45,7 +45,10 @@ namespace HiddenHarbours.Tests.Art.EditMode
             // v4 (the owner's v3 clip review): the lee's slab and the residue's stair.
             ("_WashLeeShare", "1"),
             ("_WashResidueSoften", "0.125"),
-            ("_WashLineSlopeCap", "0.5"),
+            // v7 (the editor look of 11-15): the lip and barrel give way on the sand; the cap on what the wash hides.
+            // (_WashLineSlopeCap left with the screen-gradient line it capped.)
+            ("_WashAnatomyFade", "0.05"),
+            ("_WashMaxCover", "0.6"),
             // v6 (the owner's v5 clip review, "the return/pull is jarring"): the foam a wave leaves on the sand.
             ("_WashLeftFoamSeconds", "2"),
             ("_WashLeftFoamOpacity", "0.6"),
@@ -79,8 +82,9 @@ namespace HiddenHarbours.Tests.Art.EditMode
                 @"float  _WashSheetOpacity, _WashLineWidth, _WashLineOpacity, _WashSeawardDepth, _WashPresenceRamp;").Count,
                 "the five wash uniforms must be declared once, beside the surf's");
             Assert.AreEqual(1, Regex.Matches(src,
-                    @"float  _WashLeeShare, _WashResidueSoften, _WashLineSlopeCap;").Count,
-                "the three v4 wash uniforms must be declared once");
+                    @"float  _WashLeeShare, _WashResidueSoften, _WashAnatomyFade, _WashMaxCover;").Count,
+                "the v4 and v7 wash uniforms must be declared once");
+            StringAssert.DoesNotContain("_WashLineSlopeCap", src, "the slope cap left with the screen-gradient line");
             Assert.AreEqual(1, Regex.Matches(src, @"float  _WashLeftFoamSeconds, _WashLeftFoamOpacity;").Count,
                 "the two v6 left-foam uniforms must be declared once");
         }
@@ -250,23 +254,137 @@ namespace HiddenHarbours.Tests.Art.EditMode
             int gate = IndexOf(src,
                 "float washOnSand = washPresence * (1.0 - smoothstep(0.0, max(_WashSeawardDepth, 1e-3), depth));");
             Assert.That(lee < presence && presence < gate);
-            // v4: the line's width is measured on the drawn edge's own screen gradient, not through the floored
-            // swashSlope, which on a flat put metres of sand inside the line (the white wedge).
             int edgeQ = IndexOf(src, "float washEdgeQ  = depth + edgeSwash;");
-            // ...capped at the steepest real edge, so a JUMP in the run-up across the sheet draws no seam line.
-            int lead = IndexOf(src, "float washLeadM  = washEdgeQ / clamp(washGradM, 1e-4, max(_WashLineSlopeCap, 1e-4));");
-            Assert.Less(edgeQ, lead);
-            int line = IndexOf(src,
-                "float washLine   = washOnSand * step(washLeadM, max(_WashLineWidth, 0.0)) * saturate(_WashLineOpacity);");
-            Assert.That(clip < gate && gate < lead && lead < line,
+            // v7 (the editor look of 11-15): the line is a per-pixel test on the GROUND one line-width up the shore
+            // normal, with the run-up held, so it is _WashLineWidth metres of ground on a flat or a slope alike.
+            int open = IndexOf(src, "if (washOnSand > 0.001 && washEdgeQ >= -1e-4 && dot(surfDir, surfDir) > 1e-6)");
+            int land = IndexOf(src,
+                "float washLandDepth = _WaterLevel - SeabedElevation(worldXY + warp + surfDir * max(_WashLineWidth, 0.0));");
+            int past = IndexOf(src, "if (washLandDepth + edgeSwash < 0.0)");
+            int line = IndexOf(src, "washLine = washOnSand * saturate(_WashLineOpacity);");
+            Assert.That(edgeQ < clip && clip < gate && gate < open && open < land && land < past && past < line,
                 "the wash must read the SAME edgeSwash the clip draws, after it: the leading line is then " +
                 "attached to the drawn edge by construction, a hard step on whole pixels with no dither");
-            // v6: the line's screen gradient is taken BEFORE the clip. Taken after a discard only some lanes of a 2x2
-            // quad run (the left foam keeps its lanes), it came back undefined where a left-foam pixel shared the quad
-            // with the edge's first wet row: the line drew on even rows only, a 2-px stair (v6f1 clip scan, 11-15).
-            int grad = IndexOf(src, "float washGradM  = length(float2(ddx(washEdgeQ), ddy(washEdgeQ)))");
-            Assert.That(edgeQ < grad && grad < clip, "the edge's derivative is taken before anything is discarded");
-            Assert.AreEqual(1, Regex.Matches(src, @"ddx\(washEdgeQ\)").Count);
+            // v4-v6 divided washEdgeQ by its SCREEN gradient. ddx/ddy are taken per 2x2 quad, so one value decided the
+            // line for four pixels: where the edge's quad held left-foam or drained lanes the line skipped the edge's
+            // first wet row, and the waterline drew on even rows only (the 2-px stair: 97-98 % of the drain frames'
+            // columns on the PR 1225 editor look). The wash reads no screen derivative now; the only ones left in the
+            // shader are the shallows floor's explicit texture gradients.
+            StringAssert.DoesNotContain("washGradM", src);
+            StringAssert.DoesNotContain("ddx(washEdgeQ)", src);
+            Assert.AreEqual(1, Regex.Matches(src, @"\bddx\(").Count, "only the floor's ddx(worldXY)");
+            Assert.AreEqual(1, Regex.Matches(src, @"\bddy\(").Count, "only the floor's ddy(worldXY)");
+            Assert.AreEqual(0, Regex.Matches(src, @"\bfwidth\(").Count);
+        }
+
+        // ---- v7: the stair, the slab and the cap (the PR 1225 editor look, 11-15) --------------------------------
+
+        const float PxPerM = 96f;                        // the look's framing: ortho 5.625 at 1080 rows
+        const float CodeM = 12f / 255f;                  // NMC's 8-bit height: -6..6 m over 255 codes
+        const float TexelM = 0.5f;                       // NMC's height map: 2 texels a metre, bilinear
+
+        // An 8-bit, bilinear beach rising shoreward at `slope` (x = metres up the shore normal).
+        static float Elev(float x, float slope, float e0)
+        {
+            float u = x / TexelM;
+            int i = Mathf.FloorToInt(u);
+            float Code(int k) => Mathf.Round((e0 + slope * k * TexelM + 6f) / CodeM);
+            return -6f + Mathf.Lerp(Code(i), Code(i + 1), u - i) * CodeM;
+        }
+
+        [Test]
+        public void TheLeadingLine_StartsOnTheEdgesFirstWetRow_AtEveryParity_AndIsItsWidthOfGround()
+        {
+            const float Water = 0.29f, RunUp = 0.35f, Width = 0.1f;
+            int[] firstParity = new int[2];
+            foreach (float slope in new[] { 0.05f, 0.1f, 0.165f, 0.3f, 0.5f })
+            {
+                float e0 = Water + RunUp - slope * 2f;       // the drawn edge 2 m up the frame
+                for (int k = 0; k < 64; k++)                 // slide the beach under the pixel grid by 1/32 px
+                {
+                    float offset = k / (32f * PxPerM);
+                    int firstWet = -1, firstLine = -1, lastLine = -1, lines = 0;
+                    // Rows run from the land (row 0) down to the sea, as on the screen.
+                    for (int row = 0; row < 400; row++)
+                    {
+                        float x = (400 - row) / PxPerM + offset;
+                        float depth = Water - Elev(x, slope, e0);
+                        float landward = Water - Elev(x + Width, slope, e0);
+                        bool wet = depth + RunUp >= -1e-4f;
+                        bool line = WaterSurface.WashLineDrawn(depth, landward, RunUp);
+                        if (wet && firstWet < 0) firstWet = row;
+                        if (line)
+                        {
+                            Assert.IsTrue(wet, "the line is only ever drawn on the wash");
+                            if (firstLine < 0) firstLine = row;
+                            Assert.IsTrue(lastLine < 0 || lastLine == row - 1, $"slope {slope}: the line is one piece");
+                            lastLine = row; lines++;
+                        }
+                    }
+                    Assert.GreaterOrEqual(firstWet, 0, "premise: the edge is in frame");
+                    Assert.AreEqual(firstWet, firstLine, $"slope {slope}, offset {k}: the line starts on the first wet row");
+                    Assert.That(lines, Is.InRange(Mathf.FloorToInt(Width * PxPerM), Mathf.CeilToInt(Width * PxPerM)),
+                        $"slope {slope}: {Width} m of ground is {Width * PxPerM:F1} px at the look's framing");
+                    firstParity[firstLine & 1]++;
+                }
+            }
+            Debug.Log($"[wash line] first line row even {firstParity[0]}, odd {firstParity[1]}");
+            Assert.Greater(firstParity[0], 0);
+            Assert.Greater(firstParity[1], 0, "the edge resolves at 1 px: it lands on odd rows as readily as even ones");
+        }
+
+        [Test]
+        public void OnTheSand_TheLipAndBarrelGiveWay_AndTheCapKeepsTheGroundShowing()
+        {
+            // The slab: every beach pixel reads the surf at its waterline point, so on a plunging shore the whole run-up
+            // wore the waterline's lip at its top band. The anatomy is untouched in the water and gone a few cm of level up.
+            const float Fade = 0.05f;
+            Assert.AreEqual(0f, WaterSurface.WashBeachShare01(0.3f, 1f, Fade), "seaward: the breaker draws as it did");
+            Assert.AreEqual(0f, WaterSurface.WashBeachShare01(0f, 1f, Fade), "at the still line: as it did");
+            Assert.AreEqual(0.5f, WaterSurface.WashBeachShare01(-0.025f, 1f, Fade), 1e-6f);
+            Assert.AreEqual(1f, WaterSurface.WashBeachShare01(-0.05f, 1f, Fade), 1e-6f);
+            Assert.AreEqual(1f, WaterSurface.WashBeachShare01(-0.35f, 1f, Fade), 1e-6f);
+            Assert.AreEqual(0f, WaterSurface.WashBeachShare01(-0.2f, 0f, Fade), "no wash, no hand-over");
+            float prev = 0f;
+            for (int i = 0; i <= 100; i++)
+            {
+                float v = WaterSurface.WashBeachShare01(-0.4f * i / 100f, 1f, Fade);
+                Assert.GreaterOrEqual(v, prev, "the hand-over only grows up the beach"); prev = v;
+            }
+
+            // The cap: whatever the heaviest surf layer weighs on the sand, what it hides of the ground is <= the cap,
+            // and a layer already under the cap passes untouched (the sheet's 0.2 and the left foam's 0.6 are unchanged).
+            foreach (float cap in new[] { 0f, 0.3f, 0.6f, 1f })
+                for (int i = 0; i <= 100; i++)
+                {
+                    float w = i / 100f;
+                    float scale = WaterSurface.WashCapScale(w, cap);
+                    Assert.LessOrEqual(w * scale, cap + 1e-6f, $"cap {cap}, weight {w}");
+                    if (w <= cap) Assert.AreEqual(1f, scale, 0f, $"cap {cap}, weight {w}: under the cap, untouched");
+                }
+            Assert.AreEqual(1f, WaterSurface.WashCapScale(0.2f, 0.6f), "the shipped sheet (0.2) is under the shipped cap");
+        }
+
+        [Test]
+        public void TheShader_HandsTheAnatomyToTheWash_ThenCapsIt_BeforeTheLine()
+        {
+            string src = Src();
+            int beach = IndexOf(src, "float washBeach = saturate(washPresence) * saturate(-depth / max(_WashAnatomyFade, 1e-3));");
+            int barrelYield = IndexOf(src, "surfBarrel *= 1.0 - washBeach;");
+            int lipYield = IndexOf(src, "surfLip    *= 1.0 - washBeach;");
+            int under = IndexOf(src, "float3 washUnder = col.rgb;");
+            int barrel = IndexOf(src, "float barrel = SurfBandValue(saturate(surfBarrel * saturate(_SurfBarrelShade)), bay) * strength;");
+            int lip = IndexOf(src, "float lip = SurfBandValue(saturate(surfLip), bay) * strength;");
+            int heaviest = IndexOf(src,
+                "float washHeaviest = max(cover * _SurfColor.a, max(lip * _SurfLipColor.a, barrel * _SurfBarrelColor.a));");
+            int cap = IndexOf(src, "col.rgb = lerp(washUnder, col.rgb, lerp(1.0, washCapScale, washBeach));");
+            int washLine = IndexOf(src, "col.rgb = lerp(col.rgb, _FoamColor.rgb, washLine);");
+            Assert.That(beach < barrelYield && barrelYield < lipYield && lipYield < under && under < barrel &&
+                        barrel < lip && lip < heaviest && heaviest < cap && cap < washLine,
+                "the anatomy yields before it is banded, the cap follows every surf layer, and the line is laid last");
+            StringAssert.Contains("? saturate(_WashMaxCover) / max(washHeaviest, 1e-4) : 1.0;", src);
+            StringAssert.Contains("* leftFade * washPresence * min(saturate(_WashLeftFoamOpacity), saturate(_WashMaxCover));", src,
+                "the foam left on the sand wears the same cap");
         }
 
         [Test]

@@ -407,7 +407,7 @@ Shader "HiddenHarbours/Water"
         // edge, not the opaque posterized whitewater sheet with the fringe stranded ahead of it.
         // On such a shore the fringe yields to the wash and the bore's residue is read smooth (no lattice).
         _WashSheetOpacity  ("Run-up wash: whitewater opacity on the sand (1 = opaque sheet)", Range(0,1)) = 0.2
-        _WashLineWidth     ("Run-up wash: leading foam line width (m of contour)", Range(0,0.5)) = 0.1
+        _WashLineWidth     ("Run-up wash: leading foam line width (m of ground up the shore normal)", Range(0,0.5)) = 0.1
         _WashLineOpacity   ("Run-up wash: leading foam line opacity (0 = no line)", Range(0,1)) = 0.85
         _WashSeawardDepth  ("Run-up wash: depth (m) seaward of the still line where the wash hands back to the surf", Range(0.01,2)) = 0.8
         _WashPresenceRamp  ("Run-up wash: bore edge blend over which the wash takes the shore from the fringe", Range(0.001,1)) = 0.1
@@ -421,9 +421,12 @@ Shader "HiddenHarbours/Water"
         _WashLeftFoamOpacity ("Run-up wash: opacity of the foam left on the sand", Range(0,1)) = 0.6
         // The bore's residue is read through a tent this wide (m), so the foam buffer's cells never draw a stair.
         _WashResidueSoften ("Run-up wash: residue read softening width (m; ~ the foam buffer's cell)", Range(0,0.5)) = 0.125
-        // The steepest edge the line measures (m of height per m): a JUMP in the run-up across the sheet (where
-        // the bore's blend changes along the shore) is steeper than any real edge, and is not drawn as a line.
-        _WashLineSlopeCap  ("Run-up wash: steepest edge slope the leading line is drawn on (m per m)", Range(0.05,4)) = 0.5
+        // v7 (the editor look of 11-15): the breaker's lip and barrel are a crest over WATER; above the still line
+        // they give way to the wash over this many metres of level, so the run-up never wears the lip as a slab.
+        _WashAnatomyFade   ("Run-up wash: metres of level above the still line over which the lip and barrel give way", Range(0.001,0.5)) = 0.05
+        // The most of the sand the surf's layers may hide together (the leading line aside), so the ground always
+        // reads through the wash, peak or not. Also bounds the foam left on the sand. 1 = no cap.
+        _WashMaxCover      ("Run-up wash: most of the sand its foam may hide, the line aside (1 = no cap)", Range(0,1)) = 0.6
         // Inside the surf zone the swell has BROKEN: what runs up the beach is the bore, refracted to the shore.
         // The unbroken swell's light (its height, slope and crest shading) yields to it by this much there, so
         // an oblique offshore crest no longer slides ALONG the wash. 0 = the swell draws through the surf.
@@ -1637,7 +1640,7 @@ Shader "HiddenHarbours/Water"
                 float  _SurfBands;
                 float  _SurfBandDither;
                 float  _WashSheetOpacity, _WashLineWidth, _WashLineOpacity, _WashSeawardDepth, _WashPresenceRamp;
-                float  _WashLeeShare, _WashResidueSoften, _WashLineSlopeCap;
+                float  _WashLeeShare, _WashResidueSoften, _WashAnatomyFade, _WashMaxCover;
                 float  _WashLeftFoamSeconds, _WashLeftFoamOpacity;
                 float  _SurfSwellYield, _SwellShoalDepth;
                 // B1 FRINGE UNIFORM BEGIN
@@ -5496,14 +5499,8 @@ Shader "HiddenHarbours/Water"
                     leftFoamQ = depth + lerp(cosmeticEdgeSwash, clamp(leftFoamReachM, -saturate(_SwashMaxEdgeShift),
                                                                       saturate(_SwashMaxEdgeShift)), boreEdgeBlend);
                 bool leftFoamOnly = (depth + edgeSwash < 0.0) && (leftFoamQ >= 0.0);
-                // The line's width is measured on the DRAWN edge's own screen gradient (below). The derivative is
-                // taken HERE, before anything is discarded and outside any branch: taken after a discard that only
-                // some lanes of a 2x2 quad run, it came back undefined wherever a left-foam pixel shared the quad
-                // with the edge's first wet row, and the line lost that row - the waterline drew on even rows
-                // only, a 2-px stair (v6f1 clip scan, 2026-11-15).
+                // washEdgeQ: how far inside the DRAWN edge this pixel stands, in metres of level (>= 0 = wet).
                 float washEdgeQ  = depth + edgeSwash;
-                float washGradM  = length(float2(ddx(washEdgeQ), ddy(washEdgeQ)))
-                                 / max(length(ddx(worldXY)) + length(ddy(worldXY)), 1e-6) * 2.0;
                 if (!leftFoamOnly) clip(depth + edgeSwash + 1e-4);   // a left-foam pixel has leftFoamQ >= 0
 
                 // ---- THE RUN-UP WASH (owner clip review 2026-11-15) -------------------------------------
@@ -5512,9 +5509,8 @@ Shader "HiddenHarbours/Water"
                 // white, and the fringe, gated on the fragment's own break read, came back as a white
                 // sliver stranded past dry-looking water. Here the wash is ONE shore quantity, read off
                 // boreEdgeBlend (the edge's own constant-along-the-normal blend), so the sheet, the line
-                // and the fringe's hand-back all agree with the drawn edge. washLeadM is how far back from
-                // the drawn edge this pixel stands, in metres of contour (the swash's own idiom); the line
-                // is a hard step on it, so its edges land on whole pixels with no dither.
+                // and the fringe's hand-back all agree with the drawn edge. The line is a hard per-pixel test
+                // on the ground (below), so its edges land on whole pixels with no dither.
                 // washPresence: the wash owns this shore outright once the bore's edge blend clears a small
                 // ramp, so a beach the bore only partly breaks on (blend ~0.3) gets the whole wash, not a
                 // 70 % fringe whose own displacement disagrees with the edge (the notches, the sliver).
@@ -5527,15 +5523,24 @@ Shader "HiddenHarbours/Water"
                                     ? saturate(_SurfStrength) * saturate(_SurfRunUpStrength) * saturate(_WashLeeShare) : 0.0;
                 float washPresence = max(smoothstep(0.0, max(_WashPresenceRamp, 1e-3), boreEdgeBlend), washSeaBreaks);
                 float washOnSand = washPresence * (1.0 - smoothstep(0.0, max(_WashSeawardDepth, 1e-3), depth));
-                // The line's width is measured on the DRAWN edge's own screen gradient (washGradM, taken above
-                // the clip), so it is the same few metres of contour on a flat as on a slope. Through the floored
-                // swashSlope a flat (the 8-bit height runs) put metres of sand inside the "line" and drew it as a
-                // solid white wedge.
-                // Capped at the steepest real edge: where the bore's blend changes along the shore the run-up
-                // JUMPS across the sheet, its screen gradient is huge, and uncapped every such seam drew a 1-px
-                // line racing along the shore inside the sheet.
-                float washLeadM  = washEdgeQ / clamp(washGradM, 1e-4, max(_WashLineSlopeCap, 1e-4));
-                float washLine   = washOnSand * step(washLeadM, max(_WashLineWidth, 0.0)) * saturate(_WashLineOpacity);
+                // THE LINE IS MEASURED ON THE GROUND, PER PIXEL (v7, the editor look of 11-15): a wet pixel is on
+                // the line when the drawn edge lies within _WashLineWidth metres of ground SHOREWARD of it, i.e.
+                // the seabed one line-width up the shore normal is above the same drawn level. The run-up is held
+                // (a shore quantity), so only the ground decides, and the width is that many metres on a flat
+                // or a slope alike. v4-v6 divided washEdgeQ by its SCREEN gradient (ddx/ddy). Those are taken per
+                // 2x2 quad, so one quad-wide value decided the line for four pixels: where the edge's quad also
+                // held left-foam or drained lanes its gradient read ~0, the line skipped the edge's first wet
+                // row and the waterline drew on even rows only after odd columns (the 2-px stair, 97-98 % of
+                // columns in the drain frames); the seaward side stepped quad by quad (the 1-px racing rows).
+                // No screen derivative is read by the wash any more. Twin: WaterSurface.WashLineDrawn.
+                float washLine = 0.0;
+                if (washOnSand > 0.001 && washEdgeQ >= -1e-4 && dot(surfDir, surfDir) > 1e-6)
+                {
+                    // On the tide alone, like the surf it rides (a pond has no run-up; the depth composes once).
+                    float washLandDepth = _WaterLevel - SeabedElevation(worldXY + warp + surfDir * max(_WashLineWidth, 0.0));
+                    if (washLandDepth + edgeSwash < 0.0)
+                        washLine = washOnSand * saturate(_WashLineOpacity);
+                }
                 // The left foam: the run-up sheet's own metaball language (the evolving churn against a threshold
                 // lifted by how fresh it is), held still on the sand, so it thins and breaks into patches as it
                 // fades over _WashLeftFoamSeconds since its crest passed. Nothing travels; nothing rewinds.
@@ -5549,7 +5554,7 @@ Shader "HiddenHarbours/Water"
                     float leftThr = saturate(_SurfThreshold);
                     float leftSoft = max(_SurfThresholdSoft, 1e-3);
                     leftFoamA = smoothstep(leftThr - leftSoft, leftThr + leftSoft, saturate(leftChurn + leftFade * 0.75))
-                              * leftFade * washPresence * saturate(_WashLeftFoamOpacity);
+                              * leftFade * washPresence * min(saturate(_WashLeftFoamOpacity), saturate(_WashMaxCover));
                 }
 
                 float dt = saturate((depth - _ShallowDepth) / max(_DeepDepth - _ShallowDepth, 1e-3));
@@ -6396,6 +6401,19 @@ Shader "HiddenHarbours/Water"
                     // ends on the water the barrel has shaded, the lip on the whitewater it is thrown over.
                     float surfAge01 = saturate(1.0 - surfAlive);
 
+                    // THE BREAKER'S ANATOMY STAYS IN THE WATER (v7, the editor look of 11-15). A beach pixel reads
+                    // the surf at its own WATERLINE point (the surf block), so every pixel of the wash inherited
+                    // the waterline's lip and barrel. On a steep plunging shore (the NMC gravel) the lip band
+                    // reaches the waterline, so the whole run-up wore the lip at its top band: an opaque white
+                    // slab 3-4 m deep, its sparse dots the 4x4 Bayer cells of SurfBandValue one band down (16 px
+                    // apart at 96 px/m). The lip and the barrel are a crest pitching over water; the sand gets
+                    // the wash. They give way over _WashAnatomyFade metres of level above the still line.
+                    // Twin: WaterSurface.WashBeachShare01.
+                    float washBeach = saturate(washPresence) * saturate(-depth / max(_WashAnatomyFade, 1e-3));
+                    surfBarrel *= 1.0 - washBeach;
+                    surfLip    *= 1.0 - washBeach;
+                    float3 washUnder = col.rgb;   // the ground as the wash finds it, for the cap below
+
                     // THE BARREL FIRST, under everything: it is a hollow in the water, so it shades the
                     // sea itself before any foam is laid on top. Drawn as a colour rather than a
                     // brightness scale so it stays inside the ADR 0015 water grade like every other
@@ -6420,6 +6438,15 @@ Shader "HiddenHarbours/Water"
                     float3 lipFoam = FoamAgedColor(0.0, _SurfLipColor.rgb, _SurfAgeStrength, col.rgb);
                     col.rgb = lerp(col.rgb, lipFoam, lip * _SurfLipColor.a);
                     col.a   = max(col.a, lip * _SurfLipColor.a);
+
+                    // THE CAP: on the sand the surf's layers together never hide more than _WashMaxCover of the
+                    // ground, whatever the sheet, the pocket boost or a stray band reads at a peak. The heaviest
+                    // layer's weight is scaled down to the cap (the line, laid next, is the wash's one stroke
+                    // and is not capped). Twin: WaterSurface.WashCapScale.
+                    float washHeaviest = max(cover * _SurfColor.a, max(lip * _SurfLipColor.a, barrel * _SurfBarrelColor.a));
+                    float washCapScale = washHeaviest > saturate(_WashMaxCover)
+                                       ? saturate(_WashMaxCover) / max(washHeaviest, 1e-4) : 1.0;
+                    col.rgb = lerp(washUnder, col.rgb, lerp(1.0, washCapScale, washBeach));
                 }
                 // THE WASH'S LEADING LINE: the one foam stroke on the run-up's edge, in the fringe's colour.
                 col.rgb = lerp(col.rgb, _FoamColor.rgb, washLine);
