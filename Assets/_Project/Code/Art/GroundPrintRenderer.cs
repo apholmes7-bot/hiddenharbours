@@ -188,13 +188,13 @@ namespace HiddenHarbours.Art
                     continue;
                 }
                 float strength = GroundPrintMath.StyledStrength(p.MadeAt, now, lifetime, s.FadeExponent,
-                                                                s.FadeSteps, style.StartStrength);
+                                                                s.FadeSteps, style.StartStrengthFor(p.Kind));
                 if (strength <= 0f)
                 {
                     Collapse(v);
                     continue;
                 }
-                WriteQuad(v, p, strength, style.Tint, Mathf.Min(column, _atlasColumns - 1), pixel, s);
+                WriteQuad(v, p, strength, style.TintFor(p.Kind), Mathf.Min(column, _atlasColumns - 1), pixel, s);
             }
             _mesh.SetVertices(_vertices);
             _mesh.SetColors(_colours);

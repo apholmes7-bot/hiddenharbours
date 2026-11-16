@@ -44,9 +44,17 @@ namespace HiddenHarbours.Art
         /// The tread wraps top to bottom (it repeats along the mark), the boot does not.
         /// </summary>
         public static bool[] Mask(int size, float edgeBreakup, float interiorBreakup, int seed)
+            => Mask(size, edgeBreakup, interiorBreakup, edgeBreakup, interiorBreakup, seed);
+
+        /// <summary>
+        /// The same with the boot half and the tread half broken by their own amounts. The boot's HEEL
+        /// (<see cref="IsHeel"/>) is never broken: at 8 cells a broken heel leaves a detached speck and
+        /// the print stops reading as a boot (editor look of 7c48fcb).
+        /// </summary>
+        public static bool[] Mask(int size, float bootEdge, float bootInterior, float treadEdge, float treadInterior, int seed)
         {
             bool[] crisp = Mask(size);
-            if (edgeBreakup <= 0f && interiorBreakup <= 0f) return crisp;
+            if (bootEdge <= 0f && bootInterior <= 0f && treadEdge <= 0f && treadInterior <= 0f) return crisp;
             size = EvenSize(size);
             int half = size / 2;
             var mask = (bool[])crisp.Clone();
@@ -56,13 +64,21 @@ namespace HiddenHarbours.Art
                 int i = y * size + x;
                 if (!crisp[i]) continue;
                 bool tread = x >= half;
+                if (!tread && IsHeel(size, y)) continue;
                 int x0 = tread ? half : 0;
                 bool edge = !Ink(crisp, size, x0, half, x - 1, y, tread) || !Ink(crisp, size, x0, half, x + 1, y, tread)
                          || !Ink(crisp, size, x0, half, x, y - 1, tread) || !Ink(crisp, size, x0, half, x, y + 1, tread);
-                if (Hash01(x, y, seed) < (edge ? edgeBreakup : interiorBreakup)) mask[i] = false;
+                float cut = tread ? (edge ? treadEdge : treadInterior) : (edge ? bootEdge : bootInterior);
+                if (Hash01(x, y, seed) < cut) mask[i] = false;
             }
             return mask;
         }
+
+        /// <summary>Is row <paramref name="y"/> of a <paramref name="size"/> mask in the boot's heel block?</summary>
+        public static bool IsHeel(int size, int y) => (y + 0.5f) / EvenSize(size) < HeelTop;
+
+        // The boot's proportions (fractions of its length, heel at 0): the placeholder art's shape.
+        private const float HeelTop = 0.3f, ArchTop = 0.42f, BallTop = 0.85f;
 
         private static bool Ink(bool[] m, int size, int x0, int half, int x, int y, bool wrapY)
         {
@@ -100,7 +116,8 @@ namespace HiddenHarbours.Art
             for (int c = 0; c < columns; c++)
             {
                 bool[] m = styles != null && styles.Length > 0
-                    ? Mask(size, styles[c].EdgeBreakup, styles[c].InteriorBreakup, c)
+                    ? Mask(size, styles[c].EdgeBreakup, styles[c].InteriorBreakup,
+                           styles[c].TireEdgeBreakup, styles[c].TireInteriorBreakup, c)
                     : Mask(size);
                 for (int y = 0; y < size; y++)
                     for (int x = 0; x < size; x++)
@@ -113,9 +130,9 @@ namespace HiddenHarbours.Art
         private static bool BootInk(float u, float v)
         {
             float c = Mathf.Abs(u - 0.5f) * 2f;         // 0 centre .. 1 edge
-            if (v < 0.3f) return c < 0.75f;             // heel
-            if (v < 0.42f) return false;                 // arch gap between heel and sole
-            if (v < 0.85f) return c < 0.95f;            // ball of the foot
+            if (v < HeelTop) return c < 0.75f;          // heel
+            if (v < ArchTop) return false;               // arch gap between heel and sole
+            if (v < BallTop) return c < 0.95f;          // ball of the foot
             return c < 0.6f;                             // toe
         }
 

@@ -306,13 +306,16 @@ namespace HiddenHarbours.Tests.EditMode
         // ground colours the PR 1222 play look measured (sRGB, before the mood grade) and hold the
         // shipped data to "fresh reads, the last hour is barely there, never lighter".
 
-        // Each ground with the band its FRESH print must land in (share darker). Grass is pressed blades,
-        // not a hole: visible (15%) but never more than 25% below the grass (the editor look of 71fa0dc
-        // at ~55-60% read as a solid black-olive block). The crisp stamps (mud and the rest) read at 25-60%.
+        // Each ground with the band its FRESH boot print must land in (share darker). Two measures:
+        //  - crisp stamps (mud and the rest): PER INKED PIXEL, 25-60%;
+        //  - grass (pressed blades, broken print): the FOOTPRINT MEAN, as the editor look measures it
+        //    (FootprintDrop below): 17-23%. 7c48fcb was -10.1% (hunted for at game scale) and 71fa0dc
+        //    -50.7% (a solid black-olive hole); the target is ~19% on the measured grass (68, 81, 53).
         private static readonly (GroundSurface surface, Color32 ground, float min, float max, string source)[] ReferenceGrounds =
         {
-            (GroundSurface.Grass, new Color32(64, 83, 51, 255),    0.15f, 0.25f, "measured under the trail, playlook 1222 Grass-0-bare-close"),
-            (GroundSurface.Grass, new Color32(71, 88, 59, 255),    0.15f, 0.25f, "the trail baseline of the 71fa0dc editor look (fix2)"),
+            (GroundSurface.Grass, new Color32(68, 81, 53, 255),    0.17f, 0.23f, "the footprint baseline of the 7c48fcb editor look (fix3)"),
+            (GroundSurface.Grass, new Color32(64, 83, 51, 255),    0.17f, 0.23f, "measured under the trail, playlook 1222 Grass-0-bare-close"),
+            (GroundSurface.Grass, new Color32(71, 88, 59, 255),    0.17f, 0.23f, "the trail baseline of the 71fa0dc editor look (fix2)"),
             (GroundSurface.Mud,   new Color32(91, 83, 70, 255),    0.25f, 0.6f,  "median of playlook 1222 Mud-0-bare-close"),
             (GroundSurface.Dirt,  new Color32(140, 113, 84, 255),  0.25f, 0.6f,  "the path in playlook 1222 Grass-0-bare-close"),
             (GroundSurface.Sand,  new Color32(209, 189, 148, 255), 0.25f, 0.6f,  "pale beach sand (no capture: St Peters had no reachable sand)"),
@@ -338,14 +341,41 @@ namespace HiddenHarbours.Tests.EditMode
         private static float Luma(Color32 c) { Color g = c; return 0.2126f * g.r + 0.7152f * g.g + 0.0722f * g.b; }
 
         /// <summary>The luma a print of <paramref name="ageHours"/> takes off its ground, as a share (0.3 = 30% darker).</summary>
-        private static float Drop(GroundPrintSurfaceStyle style, Color32 ground, double ageHours)
+        private static float Drop(GroundPrintSurfaceStyle style, Color32 ground, double ageHours,
+                                  GroundPrintKind kind = GroundPrintKind.FootRight)
         {
             GroundPrintSettings s = GroundPrintSettings.Default;
             double now = ageHours * SecondsPerDay / 24d;
-            float strength = GroundPrintMath.StyledStrength(0d, now, Lifetime, s.FadeExponent, s.FadeSteps, style.StartStrength);
-            Color ink = GroundPrintMath.InkColour(style.Tint, strength, linearColourSpace: true);
+            float strength = GroundPrintMath.StyledStrength(0d, now, Lifetime, s.FadeExponent, s.FadeSteps, style.StartStrengthFor(kind));
+            Color ink = GroundPrintMath.InkColour(style.TintFor(kind), strength, linearColourSpace: true);
             return 1f - CompositeLuma(ground, ink) / Luma(ground);
         }
+
+        // The share of the editor's boot FOOTPRINT that a crisp boot inks: footprint-mean drop over
+        // (kept-cell share x per-inked-pixel drop), measured 0.800 on 71fa0dc (crisp, -50.7%) and 0.776
+        // on 7c48fcb (73% of boot cells kept, -10.1%). The rest of the footprint is grass between cells.
+        private const float BootFootprintInkShare = 0.78f;
+
+        /// <summary>Share of the crisp boot's cells this style's breakup keeps.</summary>
+        private static float KeptBootShare(GroundPrintSurfaceStyle style)
+        {
+            int size = GroundPrintShapes.EvenSize(GroundPrintSettings.Default.ShapeTexturePixels), half = size / 2;
+            bool[] crisp = GroundPrintShapes.Mask(size);
+            bool[] broken = GroundPrintShapes.Mask(size, style.EdgeBreakup, style.InteriorBreakup,
+                                                   style.TireEdgeBreakup, style.TireInteriorBreakup, 0);
+            int all = 0, kept = 0;
+            for (int y = 0; y < size; y++)
+                for (int x = 0; x < half; x++)
+                {
+                    if (crisp[y * size + x]) all++;
+                    if (broken[y * size + x]) kept++;
+                }
+            return (float)kept / all;
+        }
+
+        /// <summary>The boot print's drop averaged over its whole footprint (what the editor look measures).</summary>
+        private static float FootprintDrop(GroundPrintSurfaceStyle style, Color32 ground, double ageHours)
+            => BootFootprintInkShare * KeptBootShare(style) * Drop(style, ground, ageHours);
 
         [Test]
         public void InkIsTheSrgbTintLinearisedForALinearProject()
@@ -380,14 +410,17 @@ namespace HiddenHarbours.Tests.EditMode
         {
             GroundPrintSettings s = GroundPrintSettings.Default;
             foreach (GroundPrintSurfaceStyle style in s.Surfaces)
+            foreach (GroundPrintKind kind in new[] { GroundPrintKind.FootRight, GroundPrintKind.TirePair })
             {
+                float start = style.StartStrengthFor(kind);
+                string at = $"{style.Surface} {kind}";
                 float At(double hours) => GroundPrintMath.StyledStrength(0d, hours * SecondsPerDay / 24d, Lifetime,
-                                                                         s.FadeExponent, s.FadeSteps, style.StartStrength);
-                Assert.That(At(0d), NUnit.Framework.Is.EqualTo(style.StartStrength).Within(1e-6f), style.Surface + " fresh");
-                Assert.That(At(12d), NUnit.Framework.Is.EqualTo(style.StartStrength * 0.5f).Within(1e-6f), style.Surface + " 12 h");
-                Assert.That(At(23.9d), NUnit.Framework.Is.EqualTo(style.StartStrength / s.FadeSteps).Within(1e-6f), style.Surface + " 23.9 h");
-                Assert.That(At(24d), NUnit.Framework.Is.EqualTo(0f), style.Surface + " 24 h");
-                Assert.That(GroundPrintMath.InkColour(style.Tint, At(24d), true).a, NUnit.Framework.Is.EqualTo(0f));
+                                                                         s.FadeExponent, s.FadeSteps, start);
+                Assert.That(At(0d), NUnit.Framework.Is.EqualTo(start).Within(1e-6f), at + " fresh");
+                Assert.That(At(12d), NUnit.Framework.Is.EqualTo(start * 0.5f).Within(1e-6f), at + " 12 h");
+                Assert.That(At(23.9d), NUnit.Framework.Is.EqualTo(start / s.FadeSteps).Within(1e-6f), at + " 23.9 h");
+                Assert.That(At(24d), NUnit.Framework.Is.EqualTo(0f), at + " 24 h");
+                Assert.That(GroundPrintMath.InkColour(style.TintFor(kind), At(24d), true).a, NUnit.Framework.Is.EqualTo(0f));
             }
         }
 
@@ -400,7 +433,17 @@ namespace HiddenHarbours.Tests.EditMode
                 Assert.That(s.TryGetStyle(surface, out GroundPrintSurfaceStyle style), NUnit.Framework.Is.True, surface.ToString());
                 string at = $"{surface} on {source}";
                 float fresh = Drop(style, ground, 0d), half = Drop(style, ground, 12d), last = Drop(style, ground, 23.9d);
-                Assert.That(fresh, NUnit.Framework.Is.InRange(min, max), $"{at}: a fresh print must land {min:P0}..{max:P0} darker");
+                if (surface == GroundSurface.Grass)
+                {
+                    // Grass: the band is the FOOTPRINT MEAN; the inked pixel itself stays short of a hole.
+                    float footprint = FootprintDrop(style, ground, 0d);
+                    Assert.That(footprint, NUnit.Framework.Is.InRange(min, max),
+                                $"{at}: a fresh boot's FOOTPRINT MEAN must land {min:P0}..{max:P0} darker");
+                    Assert.That(fresh, NUnit.Framework.Is.LessThanOrEqualTo(0.32f),
+                                $"{at}: an inked grass pixel never goes toward black (per pixel {fresh:P1})");
+                }
+                else
+                    Assert.That(fresh, NUnit.Framework.Is.InRange(min, max), $"{at}: a fresh print must land {min:P0}..{max:P0} darker per inked pixel");
                 Assert.That(half, NUnit.Framework.Is.LessThan(fresh).And.GreaterThan(last), at + ": 12 h sits between");
                 Assert.That(last, NUnit.Framework.Is.GreaterThan(0f).And.LessThanOrEqualTo(0.08f), at + ": 23.9 h is barely there");
                 Assert.That(Drop(style, ground, 24d), NUnit.Framework.Is.EqualTo(0f).Within(1e-5f), at + ": gone at 24 h");
@@ -436,6 +479,28 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         [Test]
+        public void GrassTyresKeepTheir7c48fcbLookApartFromTheBoot()
+        {
+            // The editor look of 7c48fcb read grass tyre marks well (~-18%): their own fields keep that
+            // look while the boot is raised. Band is PER INKED PIXEL (the tread mask is unchanged).
+            GroundPrintSettings s = GroundPrintSettings.Default;
+            Assert.That(s.TryGetStyle(GroundSurface.Grass, out GroundPrintSurfaceStyle grass), NUnit.Framework.Is.True);
+            Assert.That(grass.TireTint, NUnit.Framework.Is.EqualTo(new Color(0.22f, 0.23f, 0.08f, 1f)));
+            Assert.That(grass.TireStartStrength, NUnit.Framework.Is.EqualTo(0.7f));
+            Assert.That(grass.TireEdgeBreakup, NUnit.Framework.Is.EqualTo(0.3f));
+            Assert.That(grass.TireInteriorBreakup, NUnit.Framework.Is.EqualTo(0.15f));
+            Assert.That(grass.TintFor(GroundPrintKind.TirePair), NUnit.Framework.Is.EqualTo(grass.TireTint));
+            Assert.That(grass.StartStrengthFor(GroundPrintKind.FootLeft), NUnit.Framework.Is.EqualTo(grass.StartStrength));
+            foreach (var (surface, ground, _, _, source) in ReferenceGrounds)
+            {
+                if (surface != GroundSurface.Grass) continue;
+                float tyre = Drop(grass, ground, 0d, GroundPrintKind.TirePair);
+                Assert.That(tyre, NUnit.Framework.Is.InRange(0.15f, 0.25f), source + ": a fresh tyre mark per inked pixel");
+                Assert.That(Drop(grass, ground, 24d, GroundPrintKind.TirePair), NUnit.Framework.Is.EqualTo(0f).Within(1e-5f), source + ": tyre gone at 24 h");
+            }
+        }
+
+        [Test]
         public void TheBlendModelMatchesTheEditorLookOf71fa0dc()
         {
             // The 71fa0dc grass ink (0.07, 0.10, 0.04) at alpha 0.95 over the measured trail baseline
@@ -460,7 +525,7 @@ namespace HiddenHarbours.Tests.EditMode
             for (int c = 0; c < s.Surfaces.Length; c++)
             {
                 GroundPrintSurfaceStyle style = s.Surfaces[c];
-                int ink = 0, lost = 0;
+                int ink = 0, lost = 0, bootCrisp = 0, bootKept = 0;
                 for (int y = 0; y < size; y++)
                     for (int x = 0; x < size; x++)
                     {
@@ -468,14 +533,25 @@ namespace HiddenHarbours.Tests.EditMode
                         Assert.That(!a || m, NUnit.Framework.Is.True, $"{style.Surface}: breakup only removes ink");
                         if (a) ink++;
                         if (m && !a) lost++;
+                        if (x >= size / 2 || !m) continue;
+                        bootCrisp++;
+                        if (a) bootKept++;
+                        // The heel is never broken: a broken 4-cell heel was a detached speck (7c48fcb look).
+                        if (GroundPrintShapes.IsHeel(size, y))
+                            Assert.That(a, NUnit.Framework.Is.True, $"{style.Surface}: heel cell ({x},{y}) kept");
                     }
-                if (style.EdgeBreakup <= 0f && style.InteriorBreakup <= 0f)
+                bool crispStyle = style.EdgeBreakup <= 0f && style.InteriorBreakup <= 0f
+                               && style.TireEdgeBreakup <= 0f && style.TireInteriorBreakup <= 0f;
+                if (crispStyle)
                     Assert.That(lost, NUnit.Framework.Is.EqualTo(0), $"{style.Surface} keeps the crisp stamp");
                 else
                 {
                     Assert.That(lost, NUnit.Framework.Is.GreaterThan(0), $"{style.Surface} is broken up");
                     Assert.That(ink, NUnit.Framework.Is.GreaterThanOrEqualTo(crispInk / 2), $"{style.Surface} still reads as a print");
                 }
+                // The sole outline survives: the boot keeps at least 85% of its cells (grass 20 of 22).
+                Assert.That(bootKept, NUnit.Framework.Is.GreaterThanOrEqualTo((int)System.Math.Ceiling(bootCrisp * 0.85)),
+                            $"{style.Surface}: the boot keeps its shape ({bootKept}/{bootCrisp})");
             }
             Assert.That(s.TryGetStyle(GroundSurface.Mud, out GroundPrintSurfaceStyle mud), NUnit.Framework.Is.True);
             Assert.That(mud.EdgeBreakup, NUnit.Framework.Is.EqualTo(0f));
@@ -519,6 +595,10 @@ namespace HiddenHarbours.Tests.EditMode
                 Assert.That(shipped.Surfaces[i].StartStrength, NUnit.Framework.Is.EqualTo(code.Surfaces[i].StartStrength), code.Surfaces[i].Surface + " strength");
                 Assert.That(shipped.Surfaces[i].EdgeBreakup, NUnit.Framework.Is.EqualTo(code.Surfaces[i].EdgeBreakup), code.Surfaces[i].Surface + " edge breakup");
                 Assert.That(shipped.Surfaces[i].InteriorBreakup, NUnit.Framework.Is.EqualTo(code.Surfaces[i].InteriorBreakup), code.Surfaces[i].Surface + " interior breakup");
+                Assert.That(shipped.Surfaces[i].TireTint, NUnit.Framework.Is.EqualTo(code.Surfaces[i].TireTint), code.Surfaces[i].Surface + " tyre tint");
+                Assert.That(shipped.Surfaces[i].TireStartStrength, NUnit.Framework.Is.EqualTo(code.Surfaces[i].TireStartStrength), code.Surfaces[i].Surface + " tyre strength");
+                Assert.That(shipped.Surfaces[i].TireEdgeBreakup, NUnit.Framework.Is.EqualTo(code.Surfaces[i].TireEdgeBreakup), code.Surfaces[i].Surface + " tyre edge breakup");
+                Assert.That(shipped.Surfaces[i].TireInteriorBreakup, NUnit.Framework.Is.EqualTo(code.Surfaces[i].TireInteriorBreakup), code.Surfaces[i].Surface + " tyre interior breakup");
             }
             Assert.That(shipped.Zones.Length, NUnit.Framework.Is.EqualTo(code.Zones.Length));
             for (int i = 0; i < code.Zones.Length; i++)

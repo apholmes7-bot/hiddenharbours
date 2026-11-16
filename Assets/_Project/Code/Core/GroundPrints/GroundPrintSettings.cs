@@ -43,13 +43,33 @@ namespace HiddenHarbours.Core
                  "Ink alpha = Tint.a x this x the fade step.")]
         [Range(0f, 1f)] public float StartStrength;
 
-        [Tooltip("Share of the print's OUTLINE pixels left out, 0..1, in a fixed scatter: 0 = a crisp stamp " +
-                 "(mud), about 0.3 = a broken edge where blades spring back (grass).")]
+        [Tooltip("Share of a BOOT print's outline pixels left out, 0..1, in a fixed scatter: 0 = a crisp stamp " +
+                 "(mud). The heel is never broken, so a boot keeps its shape.")]
         [Range(0f, 1f)] public float EdgeBreakup;
 
-        [Tooltip("Share of the print's INSIDE pixels left out, 0..1: blades poking through a pressed patch. " +
+        [Tooltip("Share of a BOOT print's inside pixels left out, 0..1: blades poking through a pressed patch. " +
                  "0 = a solid print.")]
         [Range(0f, 1f)] public float InteriorBreakup;
+
+        [Header("Tyre marks")]
+        [Tooltip("The TYRE mark's ink on this ground (sRGB, same rules as Tint). Separate from the boot so a " +
+                 "boot can be pressed deeper than a tread without changing the tread.")]
+        public Color TireTint;
+
+        [Tooltip("How strong a FRESH tyre mark is on this ground, 0..1 (ink alpha = TireTint.a x this x the fade step).")]
+        [Range(0f, 1f)] public float TireStartStrength;
+
+        [Tooltip("Share of a tyre mark's outline pixels left out, 0..1 (0 = crisp).")]
+        [Range(0f, 1f)] public float TireEdgeBreakup;
+
+        [Tooltip("Share of a tyre mark's inside pixels left out, 0..1 (0 = solid).")]
+        [Range(0f, 1f)] public float TireInteriorBreakup;
+
+        /// <summary>The ink of a print of <paramref name="kind"/>: the boot's or the tyre's.</summary>
+        public Color TintFor(GroundPrintKind kind) => kind == GroundPrintKind.TirePair ? TireTint : Tint;
+
+        /// <summary>The fresh strength of a print of <paramref name="kind"/>.</summary>
+        public float StartStrengthFor(GroundPrintKind kind) => kind == GroundPrintKind.TirePair ? TireStartStrength : StartStrength;
     }
 
     /// <summary>One terrain zone (a TerrainPlan ground name such as <c>sand</c>) and the print surface
@@ -175,14 +195,20 @@ namespace HiddenHarbours.Core
             ShapeTexturePixels = 8,
             Surfaces = new[]
             {
-                // Near-black inks of each ground's hue (fresh alpha = Tint.a x StartStrength), crisp stamps;
-                // except grass, which is PRESSED BLADES, not a hole: a yellower olive at alpha 0.7 (about 20%
-                // darker than the grass, hue pulled toward yellow) with a broken edge and gaps inside.
-                new GroundPrintSurfaceStyle { Surface = GroundSurface.Grass, Tint = new Color(0.22f, 0.23f, 0.08f, 1f), StartStrength = 0.7f, EdgeBreakup = 0.3f, InteriorBreakup = 0.15f },
-                new GroundPrintSurfaceStyle { Surface = GroundSurface.Sand,  Tint = new Color(0.30f, 0.24f, 0.16f, 0.8f), StartStrength = 0.85f },
-                new GroundPrintSurfaceStyle { Surface = GroundSurface.Mud,   Tint = new Color(0.09f, 0.07f, 0.05f, 0.8f), StartStrength = 1f },
-                new GroundPrintSurfaceStyle { Surface = GroundSurface.Dirt,  Tint = new Color(0.13f, 0.09f, 0.06f, 0.8f), StartStrength = 0.9f },
-                new GroundPrintSurfaceStyle { Surface = GroundSurface.Snow,  Tint = new Color(0.36f, 0.42f, 0.52f, 0.8f), StartStrength = 0.85f },
+                // Near-black inks of each ground's hue (fresh alpha = Tint.a x StartStrength), crisp stamps,
+                // boot and tyre alike; except grass, which is PRESSED BLADES, not a hole: a saturated
+                // yellow-olive. The boot at alpha 0.87 with a light breakup (heel kept) lands ~19% darker
+                // over its footprint; the tyre keeps the 7c48fcb look (alpha 0.7, broken tread, ~18%).
+                new GroundPrintSurfaceStyle
+                {
+                    Surface = GroundSurface.Grass,
+                    Tint = new Color(0.20f, 0.22f, 0.04f, 1f), StartStrength = 0.87f, EdgeBreakup = 0.15f, InteriorBreakup = 0.2f,
+                    TireTint = new Color(0.22f, 0.23f, 0.08f, 1f), TireStartStrength = 0.7f, TireEdgeBreakup = 0.3f, TireInteriorBreakup = 0.15f,
+                },
+                new GroundPrintSurfaceStyle { Surface = GroundSurface.Sand,  Tint = new Color(0.30f, 0.24f, 0.16f, 0.8f), StartStrength = 0.85f, TireTint = new Color(0.30f, 0.24f, 0.16f, 0.8f), TireStartStrength = 0.85f },
+                new GroundPrintSurfaceStyle { Surface = GroundSurface.Mud,   Tint = new Color(0.09f, 0.07f, 0.05f, 0.8f), StartStrength = 1f,    TireTint = new Color(0.09f, 0.07f, 0.05f, 0.8f), TireStartStrength = 1f },
+                new GroundPrintSurfaceStyle { Surface = GroundSurface.Dirt,  Tint = new Color(0.13f, 0.09f, 0.06f, 0.8f), StartStrength = 0.9f,  TireTint = new Color(0.13f, 0.09f, 0.06f, 0.8f), TireStartStrength = 0.9f },
+                new GroundPrintSurfaceStyle { Surface = GroundSurface.Snow,  Tint = new Color(0.36f, 0.42f, 0.52f, 0.8f), StartStrength = 0.85f, TireTint = new Color(0.36f, 0.42f, 0.52f, 0.8f), TireStartStrength = 0.85f },
             },
             Zones = new[]
             {
