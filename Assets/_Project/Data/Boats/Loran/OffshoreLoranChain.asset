@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2434ba5787784870a3a686efecccbbb1, type: 3}
+  m_Name: OffshoreLoranChain
+  m_EditorClassIdentifier:
+  Id: loran_chain.offshore
+  DisplayName: Offshore Chain
+  GroupRepetitionInterval: 9360
+  Master: {x: 28000, y: -2000}
+  Secondaries:
+  - Letter: Y
+    Position: {x: 10000, y: -34000}
+    CodingDelayMicroseconds: 15000
+  - Letter: Z
+    Position: {x: 48000, y: -30000}
+    CodingDelayMicroseconds: 31000
+  RangeMetres: 50000
+  RepeatableErrorMicroseconds: 0.15
+  DriftErrorMicroseconds: 0.05
+  ErrorCellMetres: 800
+  DriftBucketHours: 6
+  FringeErrorGain: 3
