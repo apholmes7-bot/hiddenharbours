@@ -96,6 +96,16 @@ namespace HiddenHarbours.World
             return notes;
         }
 
+        /// <summary>
+        /// The protected fish she documented and put back this game, in first-release order: Core's
+        /// <see cref="ReleasedCatches"/> record, fed by <see cref="CatchReleased"/> through the bus, so
+        /// the book never names the Fishing module (rule 4). In-session only until the record is saved.
+        /// </summary>
+        public static IReadOnlyList<ReleasedCatchEntry> Released() => ReleasedCatches.Current();
+
+        /// <summary>The length of a game day, for lettering a release's day and clock.</summary>
+        public static float SecondsPerDay() => GameServices.SecondsPerDay;
+
         /// <summary>The flags a quest step is read against — the save-backed store, the same one
         /// <c>WorldInteractor</c> and <c>OnboardingDirector</c> use, so the book and the world cannot
         /// disagree about what has been done.</summary>
