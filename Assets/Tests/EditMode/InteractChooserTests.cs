@@ -67,6 +67,7 @@ namespace HiddenHarbours.Tests.EditMode
             public NeedStage Stage(NeedKind need) => need == NeedKind.Tiredness ? Tired : Hungry;
             public float PlayerMultiplier(TraitStat stat) => 1f;
             public void Eat(float amount) { }
+            public float Spend(float amount) => 0f;
             public void Sleep() { }
             public void Tick() { }
         }
