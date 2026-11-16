@@ -134,17 +134,18 @@ namespace HiddenHarbours.Tests.EditMode
         const int StandNeighbours = 3; const float StandRadius = 10f;
         /// <summary>A thicket shrub stands from this far inside a wood's rim to this far outside it.</summary>
         const float ThicketInside = 6f, ThicketOutside = 7f;
-        /// <summary>The north wood lot as the 11-15 editor look framed it at (-80, 180): 29 trees before the sand-line
-        /// retirement, 12 after, 29 again replanted up-bank. The floor is the ratchet's, with room for a later nudge.</summary>
-        static readonly Rect NorthWoodFrame = Rect.MinMaxRect(-98.75f, 165.94f, -61.25f, 194.06f);
-        const int NorthWoodFrameTreesAtLeast = 25;
+        /// <summary>The plan's north wood lot (its <c>at</c> and <c>r</c> are read from the plan).</summary>
+        const string NorthWoodLot = "woodlot.nmc_north";
+        /// <summary>The trees the north wood lot keeps: it held 57 before the 11-15 sand-line retirement and holds 57
+        /// pulled back onto the green (11-16). The floor is the ratchet's, with room for a later nudge.</summary>
+        const int NorthWoodTreesAtLeast = 50;
 
         /// <summary>
         /// The owner, 11-15: "Have some areas quite dense and some seen as planted in more lived in areas with more
         /// central focused trees." Every plant under <c>CreekPlanting</c> stands on dry ground above the sand line,
         /// clear of every road, hedge clearance, lot, door apron and campground piece, spaced from every other plant;
         /// a yard tree stands by a house or along a lane; a stand tree stands inside a wood lot among other trees; a
-        /// thicket shrub stands at a wood's rim. The north wood lot the sand-line retirement thinned is whole again.
+        /// thicket shrub stands at a wood's rim.
         /// </summary>
         [Test]
         public void TheReplantingStandsWhereTheRulesSay()
@@ -210,13 +211,38 @@ namespace HiddenHarbours.Tests.EditMode
                     else if (rim < -ThicketInside || rim > ThicketOutside) Off($"a thicket shrub {rim:F1} m from a wood's rim");
                 }
             }
-            int frame = all.Count(p => p.Tree && NorthWoodFrame.Contains(p.At));
             TestContext.WriteLine($"[TreePlacement] replanting: {planted.Count(p => p.Tree)} trees, {planted.Count(p => !p.Tree)} shrubs; " +
-                                  $"north wood frame {frame} trees; {offenders.Count} off the rules.");
+                                  $"{offenders.Count} off the rules.");
             Assert.IsEmpty(offenders, $"{offenders.Count} replanted trees or shrubs break the rules:\n  " + string.Join("\n  ", offenders.Take(25)));
-            Assert.That(frame, Is.GreaterThanOrEqualTo(NorthWoodFrameTreesAtLeast),
-                "the north wood lot at (-80, 180) is thin again: the 11-15 editor look counted 29 trees in this frame before " +
-                "the sand-line retirement, and the replanting stood it back up on the dry bank");
+        }
+
+        /// <summary>
+        /// The owner, 11-16: "North yard pulled back." Every live tree inside the plan's north wood lot, whichever
+        /// root it hangs under, stands on the green: at or above the region's own grass line (the splat surface's
+        /// <c>_floorGrass</c>), never on the dune band between the sand line and the grass. The wood keeps its trees.
+        /// </summary>
+        [Test]
+        public void TheNorthWoodStandsOnTheGreen()
+        {
+            SceneYaml scene = SceneYaml.Parse(File.ReadAllText($"{ScenesFolder}/{NineMileCreekScene}.unity"));
+            var ground = Ground.Of(scene, NineMileCreekScene) as PaintedGround;
+            Assert.IsNotNull(ground, "Nine Mile Creek's ground is not a painted splat surface");
+            string grassField = scene.Docs.First(d => d.IsScript(SplatClass)).Field("_floorGrass");
+            Assert.IsNotNull(grassField, "the splat surface names no _floorGrass");
+            float grass = ParseFloat(grassField);
+            Assert.That(grass, Is.GreaterThan(ground.Floor), "the grass line is not above the sand line");
+            var lot = PlanOption("nmc.plan.lots").Get("wood_lots").Items.Single(w => w.Get("id").Text == NorthWoodLot);
+            var at = new Vector2(lot.Get("at").Items[0].Float("at"), lot.Get("at").Items[1].Float("at"));
+            float r = lot.Get("r").Float("r");
+
+            List<Plant> trees = Plants(scene).Where(p => p.Tree && Vector2.Distance(p.At, at) <= r).ToList();
+            var offenders = trees.Where(p => ground.ElevationAt(p.At) < grass)
+                .Select(p => $"{p.Path} at ({p.At.x:F1}, {p.At.y:F1}): ground {ground.ElevationAt(p.At):F2} m, under the {grass} m grass line")
+                .ToList();
+            TestContext.WriteLine($"[TreePlacement] north wood: {trees.Count} trees, {offenders.Count} on the dune band.");
+            Assert.IsEmpty(offenders, $"{offenders.Count} north wood trees stand on the dune band:\n  " + string.Join("\n  ", offenders.Take(25)));
+            Assert.That(trees.Count, Is.GreaterThanOrEqualTo(NorthWoodTreesAtLeast),
+                $"the north wood lot holds {trees.Count} trees: pulled back onto the green, it keeps the 57 it held");
         }
 
         /// <summary>No two live trees stand closer than this: two trunks inside one crown read as one tree drawn twice.</summary>
