@@ -31,6 +31,9 @@ MonoBehaviour:
   InteractChooserEnabled: 1
   InteractChooserMaxPriority: 0
   InteractChooserMaxRows: 6
+  InteractChooserPushThreshold: 0.5
+  InteractChooserRepeatDelaySeconds: 0.4
+  InteractChooserRepeatIntervalSeconds: 0.12
   HeavyWorkNeeds:
     RefusedAtTiredness: 2
     RefusedAtHunger: 2
