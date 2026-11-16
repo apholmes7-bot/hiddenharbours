@@ -33,6 +33,8 @@ namespace HiddenHarbours.App.Editor
         const string FuelStopKitPrefix = "fuelStopRig";
         /// <summary>The row whose roof goes thin over the player (<see cref="CanopySeeThrough"/>).</summary>
         public const string CanopyRowId = "station.nmc_canopy";
+        /// <summary>The canopy ghost's own child under the see-through (<see cref="CanopySeeThrough"/>).</summary>
+        public const string CanopyGhostName = "ghost";
 
         /// <summary>
         /// The id map (Decision 2, `Evidence~/nmc-h9/id-map.md`): the drawn nozzle (row, anchor) → the fixture id and the
@@ -162,30 +164,39 @@ namespace HiddenHarbours.App.Editor
         /// comes back when they leave. The room is the ground the roof hides on screen: the deck's width, from its south
         /// edge on the ground to its north edge raised by the roof's height (the Def's bounds, projected by
         /// <see cref="IsoGround.HeightScale"/>), plus the data's margin all round. No walls, no doorway: a canopy is open
-        /// on every side. Returns the child's transform.
+        /// on every side. The rule names the scene's review player as its occupant (<see cref="ReviewOccupant"/>), and
+        /// the ghost stands on its own child at the piece's origin so it covers exactly the roof it replaces. Returns
+        /// the child's transform.
         /// </summary>
         static long CanopySeeThrough(KeyScenePiece row, SetPieceDef def, long shell, ObjRef material, Func<string, long> allocate,
-            List<(string name, string text)> wanted, long pieceTr)
+            List<(string name, string text)> wanted, long pieceTr, long occupant)
         {
             NineMileCreekRoadNetwork.Forecourt lot = NineMileCreekRoadNetwork.Load().Forecourt
                 ?? throw new Refusal(FuelStopStep + ": the road network carries no forecourt, so the canopy has no see-through data.");
             Rect under = CanopyUnder(row, def, lot.CanopyMarginMetres);
             long go = allocate("seeThrough/go"), tr = allocate("seeThrough/tr"), ghost = allocate("seeThrough/ghost"), rule = allocate("seeThrough/rule");
+            // The ghost stands on its OWN child, back at the piece's origin. The rule's transform sits at the centre of the
+            // ground the roof hides (its footprint is centred on it), which is north of the piece's pivot by half the
+            // roof's drawn height; a ghost on the rule's own object drew the same picture that far north of the roof it
+            // replaces, so the roof went and a faint second canopy appeared above it, still over the player.
+            long ghostGo = allocate("seeThrough/ghostGo"), ghostTr = allocate("seeThrough/ghostTr");
             int frame = SetPieceDef.FrameForRigDir(row.Dir);
             int order = YSortSprite.OrderFor(row.At.y, SortingBands.DecorBase, SortingBands.OrdersPerMetre, SortingBands.DecorFloor, SortingBands.DecorCeiling);
-            string ghostYaml = SpriteRendererYaml(ghost, go, material, SpriteAsset(def.SpriteFor(frame)), order)
+            string ghostYaml = SpriteRendererYaml(ghost, ghostGo, material, SpriteAsset(def.SpriteFor(frame)), order)
                 .Replace("  m_Enabled: 1", "  m_Enabled: 0")
                 .Replace("  m_Color: {r: 1, g: 1, b: 1, a: 1}", "  m_Color: {r: 1, g: 1, b: 1, a: " + F(lot.CanopyGhostAlpha) + "}");
             if (!ghostYaml.Contains("  m_Enabled: 0") || !ghostYaml.Contains("a: " + F(lot.CanopyGhostAlpha) + "}"))
                 throw new Refusal(FuelStopStep + ": the canopy's ghost renderer did not take its hidden state and alpha.");
-            wanted.Add((row.Id + "/seeThrough/go", GameObjectYaml(go, "seeThrough", new[] { tr, ghost, rule })));
-            wanted.Add((row.Id + "/seeThrough/tr", TransformYaml(tr, go, under.center - row.At, Array.Empty<long>(), pieceTr)));
+            wanted.Add((row.Id + "/seeThrough/go", GameObjectYaml(go, "seeThrough", new[] { tr, rule })));
+            wanted.Add((row.Id + "/seeThrough/tr", TransformYaml(tr, go, under.center - row.At, new[] { ghostTr }, pieceTr)));
+            wanted.Add((row.Id + "/seeThrough/ghostGo", GameObjectYaml(ghostGo, CanopyGhostName, new[] { ghostTr, ghost })));
+            wanted.Add((row.Id + "/seeThrough/ghostTr", TransformYaml(ghostTr, ghostGo, row.At - under.center, Array.Empty<long>(), tr)));
             wanted.Add((row.Id + "/seeThrough/ghost", ghostYaml));
             wanted.Add((row.Id + "/seeThrough/rule", MonoBehaviourYaml(rule, go,
                 Script("Assets/_Project/Code/World/BuildingInterior.cs", "HiddenHarbours.World", "HiddenHarbours.World.BuildingInterior"),
                 new[] { "  _shell: {fileID: " + Id(shell) + "}", "  _room: {fileID: " + Id(ghost) + "}", "  _props: {fileID: 0}",
                     "  _upperRoom: {fileID: 0}", "  _upperProps: {fileID: 0}", "  _upperWalls: {fileID: 0}", "  _upperLevelY: 0",
-                    "  _occupant: {fileID: 0}", "  _widthMetres: " + F(under.width), "  _lengthMetres: " + F(under.height),
+                    "  _occupant: {fileID: " + Id(occupant) + "}", "  _widthMetres: " + F(under.width), "  _lengthMetres: " + F(under.height),
                     "  _facing: 0", "  _facings: 1", "  _groundDepthScale: 1", "  _wallThicknessMetres: 0",
                     "  _hysteresisMetres: " + F(lot.CanopyHysteresisMetres), "  _doorwayWidthMetres: 0", "  _doorOnPlusY: 0", "  _doorAcrossMetres: 0" })));
             return tr;
@@ -215,6 +226,24 @@ namespace HiddenHarbours.App.Editor
             float x0 = Mathf.Min(a.x, b.x) - margin, x1 = Mathf.Max(a.x, b.x) + margin;
             float y0 = Mathf.Min(a.y, b.y) - margin, y1 = Mathf.Max(a.y, b.y) + def.BoundsMax.z * IsoGround.HeightScale + margin;
             return Rect.MinMaxRect(x0, y0, x1, y1);
+        }
+
+        /// <summary>The name of the scene's own review player, the one transform the canopy rule can name.</summary>
+        public const string ReviewPlayerName = "Player";
+
+        /// <summary>
+        /// The canopy rule's occupant: the transform of the scene's review player (the dev core's <c>Player</c>), or 0
+        /// when the scene carries none. This is the convention every serialized <see cref="BuildingInterior"/> in St
+        /// Peters follows and the one <c>NineMileCreekBuilder</c> states for the creek's rooms: the serialized reference
+        /// wins while that player is alive (Nine Mile Creek played on its own), and on a live arrival the dev core is
+        /// destroyed, the reference goes fake-null, and the rule falls through to <c>GameServices.PlayerTransform</c>.
+        /// Naming none left the roof solid over the review player, because nothing publishes him to Core.
+        /// </summary>
+        public static long ReviewOccupant(SceneYaml scene)
+        {
+            var players = scene.Docs.Where(d => d.ClassId == 1 && !d.Stripped && d.Field("m_Name") == ReviewPlayerName).ToList();
+            if (players.Count > 1) throw new Refusal(FuelStopStep + ": the scene carries " + players.Count + " objects named " + ReviewPlayerName + ", so the canopy cannot tell which one to watch.");
+            return players.Count == 0 ? 0 : scene.TransformOf(players[0]).FileId;
         }
 
         /// <summary>
@@ -267,7 +296,8 @@ namespace HiddenHarbours.App.Editor
                 {
                     long shell = SetPieceParts(row, FuelStopDefinition(row), k => Alloc(row.Id + "/" + k), pieceGo, material, comps, parts);
                     if (row.Id == CanopyRowId)
-                        pieceChildren.Add(CanopySeeThrough(row, FuelStopDefinition(row), shell, material, k => Alloc(row.Id + "/" + k), parts, pieceTr));
+                        pieceChildren.Add(CanopySeeThrough(row, FuelStopDefinition(row), shell, material, k => Alloc(row.Id + "/" + k), parts, pieceTr,
+                            ReviewOccupant(scene)));
                 }
                 wanted.Add((row.Id + "/go", GameObjectYaml(pieceGo, row.Id, comps)));
                 wanted.Add((row.Id + "/tr", TransformYaml(pieceTr, pieceGo, at, pieceChildren, tr)));
