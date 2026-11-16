@@ -80,6 +80,48 @@ namespace HiddenHarbours.Tests.Art.EditMode
         private static void PutHerIn(ControlMode mode) =>
             InteractActorProbe.Set(InteractActor.For(Vector2.zero, Vector2.up, mode));
 
+        // ---- the housing on her head ----------------------------------------------------------------
+
+        /// <summary>
+        /// <b>No lamp on her face while it is off.</b> The unlit housing (a dark 5 x 3 sprite) used to be
+        /// drawn at her mesh head point whenever she was on her feet, so every daylight look showed a black
+        /// block across the player's face. She carries none until she switches it: the housing is drawn
+        /// only while the beam is lit, she is live on foot and a mesh head is drawn to wear it.
+        /// </summary>
+        [Test]
+        public void TheLampHousing_IsDrawnOnlyWhileTheBeamIsLit()
+        {
+            Assert.IsFalse(Headlamp.FittingShows(headDrawn: true, live: true, on: false), "off: no housing on her face");
+            Assert.IsTrue(Headlamp.FittingShows(headDrawn: true, live: true, on: true), "lit: the beam's housing shows");
+            Assert.IsFalse(Headlamp.FittingShows(headDrawn: false, live: true, on: true), "no drawn head: nothing to wear it");
+            Assert.IsFalse(Headlamp.FittingShows(headDrawn: true, live: false, on: true), "at a wheel: the lamp stands down");
+            Assert.IsFalse(Headlamp.FittingShows(headDrawn: false, live: false, on: false));
+        }
+
+        /// <summary>Switching the beam off (or standing it down) hides a housing that is already built on the
+        /// same call, not one LateUpdate later.</summary>
+        [Test]
+        public void SwitchingTheBeamOff_HidesTheHousingAtOnce()
+        {
+            Headlamp lamp = LitHeadlamp(Vector2.zero, Vector2.up);
+            var housing = new GameObject("HeadlampFitting").AddComponent<SpriteRenderer>();
+            _spawned.Add(housing.gameObject);
+            housing.transform.SetParent(lamp.transform, false);
+            var field = typeof(Headlamp).GetField("_fitting",
+                System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
+            Assert.IsNotNull(field, "Headlamp keeps its housing in _fitting");
+            field.SetValue(lamp, housing);
+
+            housing.enabled = true;
+            lamp.SetOn(false);
+            Assert.IsFalse(housing.enabled, "off: the housing goes with the beam");
+
+            lamp.SetOn(true);
+            housing.enabled = true;
+            lamp.SetLive(false);
+            Assert.IsFalse(housing.enabled, "stood down: the housing goes too");
+        }
+
         // ---- the switch ---------------------------------------------------------------------------
 
         /// <summary>
