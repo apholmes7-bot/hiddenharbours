@@ -105,7 +105,7 @@ namespace HiddenHarbours.World
                 return false;
             }
 
-            var op = SceneManager.LoadSceneAsync(to.SceneName, LoadSceneMode.Additive);
+            var op = StartAdditiveLoad(to.SceneName);
             if (op == null)
             {
                 // Belt and braces — the check above should have taken this, but a null op is still a
@@ -123,6 +123,29 @@ namespace HiddenHarbours.World
                 _currentSceneName = loaded;
             };
             return true;
+        }
+
+        /// <summary>
+        /// The one place this loader asks the engine for a scene: an additive async load. In the EDITOR only, the
+        /// main thread is then held inside this frame until the load's threaded file read is done
+        /// (<see cref="SceneLoadHold.HoldUntilRead(AsyncOperation)"/>, bounded by
+        /// <see cref="SceneLoadHold.CapSeconds"/>), because a delayed Destroy of a sprite on the persistent hosts
+        /// during that read can deadlock the editor (an engine lock-order bug in the editor-only asset-change
+        /// notifier). Player builds compile the hold out and behave exactly as before.
+        ///
+        /// <para>What changes in the editor: the read, which used to overlap a few hundred milliseconds of normal
+        /// frames, now happens inside this one frame, so that frame is longer and the scene activates (and
+        /// <c>completed</c> fires) after fewer frames. The ORDER is unchanged: the load still activates on a
+        /// later frame, never inside this call, so callers see the same sequence of events, and the seam fade
+        /// is held black (<c>Arriving</c>) across a crossing's load and does not step on the long frame.</para>
+        /// </summary>
+        static AsyncOperation StartAdditiveLoad(string sceneName)
+        {
+            AsyncOperation op = SceneManager.LoadSceneAsync(sceneName, LoadSceneMode.Additive);
+#if UNITY_EDITOR
+            op = SceneLoadHold.HoldUntilRead(op);
+#endif
+            return op;
         }
 
         // ---- preload (PR 1223: the first-entry freeze) -------------------------------------------------
@@ -170,7 +193,7 @@ namespace HiddenHarbours.World
                 return false;
             }
 
-            AsyncOperation op = SceneManager.LoadSceneAsync(to.SceneName, LoadSceneMode.Additive);
+            AsyncOperation op = StartAdditiveLoad(to.SceneName);
             if (op == null) { _unloadable.Add(to.SceneName); return false; }
             var preloading = new PreloadingScene { SceneName = to.SceneName };
             _preloading = preloading;

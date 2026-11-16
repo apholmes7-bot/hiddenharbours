@@ -11,6 +11,10 @@ namespace HiddenHarbours.World
         Done,
         Knowledge,
         Notes,
+
+        /// <summary>Every species she has caught: how many, and the record. Present only once there is
+        /// one, so its stub is data like the knowledge run's.</summary>
+        Caught,
     }
 
     /// <summary>One stub off the fore-edge.</summary>
@@ -63,6 +67,29 @@ namespace HiddenHarbours.World
         public const string LabelDone = "DONE";
         public const string LabelNotes = "MINE";
 
+        /// <summary>The catch page's stub. Keyed like the others; lettered within
+        /// <see cref="NotebookKit.ChipChars"/> (5) so the chip never clips it, which is why it reads
+        /// CATCH and not CAUGHT.</summary>
+        public const string TabCaught = "tab.caught";
+        public const string LabelCaught = "CATCH";
+
+        /// <summary>One species' lines under its name: how many caught, the record weight (the size a
+        /// catch carries: whole grams under a kilogram, kilograms to one decimal from one up), and how
+        /// many were protected and put back (only when any were). Each fits the narrowest page
+        /// (<see cref="NotebookKit.MinCols"/>) whole for four-digit counts and weights.</summary>
+        public const string CaughtCountFormat = "Caught: {0}";
+        public const string CaughtRecordKgFormat = "Best: {0:0.0} kg";
+        public const string CaughtRecordGramsFormat = "Best: {0} g";
+        public const string CaughtReleasedFormat = "Let go: {0}";
+
+        /// <summary>Grams in a kilogram, and tenths in a kilogram: the two roundings the record line
+        /// uses. Units, not tunables.</summary>
+        private const int GramsPerKg = 1000;
+        private const int TenthsPerKg = 10;
+
+        /// <summary>Source-id prefix for a species' block, so the presenter's selection can name it.</summary>
+        public const string CaughtSourcePrefix = "caught.";
+
         /// <summary>
         /// Build the whole tab set.
         ///
@@ -78,7 +105,8 @@ namespace HiddenHarbours.World
             IReadOnlyList<NotebookNote> notes,
             IFlagStore flags,
             int cols,
-            List<string> droppedTabs = null)
+            List<string> droppedTabs = null,
+            IReadOnlyList<CaughtSpeciesEntry> caught = null)
         {
             var tabs = new List<NotebookTab>
             {
@@ -89,6 +117,12 @@ namespace HiddenHarbours.World
             };
 
             foreach (var tab in KnowledgeTabs(knowledge, cols)) tabs.Add(tab);
+
+            // The catch page joins the fore-edge with her first catch and sits beside My Notes: it is her
+            // own record, not a shipped page. Not Knowledge, so the trim below never drops it.
+            if (caught != null && caught.Count > 0)
+                tabs.Add(new NotebookTab(TabCaught, LabelCaught, NotebookPageKind.Caught,
+                                         CatchBlocks(caught, cols)));
 
             tabs.Add(new NotebookTab(TabNotes, LabelNotes, NotebookPageKind.Notes, NoteBlocks(notes, cols)));
 
@@ -202,6 +236,57 @@ namespace HiddenHarbours.World
             blocks.Add(NotebookLayout.NewNote());
             return blocks;
         }
+
+        /// <summary>
+        /// The catch page: one section per species in the order she first caught each (the record's
+        /// order, so nothing here sorts). Each is the knowledge page's own drawing
+        /// (<see cref="NotebookLayout.Section"/>): the name on the wide lane, then how many, the record
+        /// weight, and how many went back when any were protected. Null or empty in, nothing out.
+        /// </summary>
+        public static List<NotebookBlock> CatchBlocks(IReadOnlyList<CaughtSpeciesEntry> caught, int cols)
+        {
+            var blocks = new List<NotebookBlock>();
+            if (caught == null) return blocks;
+
+            for (int i = 0; i < caught.Count; i++)
+            {
+                CaughtSpeciesEntry e = caught[i];
+                if (string.IsNullOrEmpty(e.SpeciesId) || e.Count <= 0) continue;
+
+                string head = string.IsNullOrEmpty(e.DisplayName) ? e.SpeciesId : e.DisplayName;
+                var body = new List<string> { string.Format(Invariant, CaughtCountFormat, e.Count) };
+                if (e.RecordWeightKg > 0f) body.Add(RecordText(e.RecordWeightKg));   // unknown: no line, never "0"
+                if (e.ReleasedCount > 0)
+                    body.Add(string.Format(Invariant, CaughtReleasedFormat, e.ReleasedCount));
+
+                blocks.Add(NotebookLayout.Section(head, body, cols, CaughtSourcePrefix + e.SpeciesId));
+            }
+
+            return blocks;
+        }
+
+        /// <summary>
+        /// The record line for a positive weight. Under a kilogram it is whole grams, rounded half away
+        /// from zero and never below 1 g ("Best: 40 g"); a weight that rounds to 1000 g reads as a
+        /// kilogram. From a kilogram up it is kilograms rounded to the tenth the same way
+        /// ("Best: 7.5 kg"). Rounded in doubles from the stored float, so it is the same on every machine.
+        /// </summary>
+        public static string RecordText(float kg)
+        {
+            double weight = kg;
+            double grams = System.Math.Round(weight * GramsPerKg, System.MidpointRounding.AwayFromZero);
+            if (grams < GramsPerKg)
+            {
+                long g = grams < 1d ? 1L : (long)grams;
+                return string.Format(Invariant, CaughtRecordGramsFormat, g);
+            }
+
+            double tenths = System.Math.Round(weight * TenthsPerKg, System.MidpointRounding.AwayFromZero);
+            return string.Format(Invariant, CaughtRecordKgFormat, tenths / TenthsPerKg);
+        }
+
+        private static readonly System.Globalization.CultureInfo Invariant =
+            System.Globalization.CultureInfo.InvariantCulture;
     }
 
     /// <summary>

@@ -444,6 +444,9 @@ namespace HiddenHarbours.Player
         {
             _rb = GetComponent<Rigidbody2D>();
             _renderer = GetComponent<SpriteRenderer>();
+            // The stink lines over his head while he is dirty ride along with the player, so no scene or
+            // prefab needs editing to get them (GameConfig.StinkLines.Enabled).
+            if (GetComponent<StinkLinesPresenter>() == null) gameObject.AddComponent<StinkLinesPresenter>();
             // Hand the picture over to the 8-direction iso skin when one is installed (see the field's note).
             // HasArt reads only serialized data, so this is safe whichever component's Awake runs first.
             var isoSkin = GetComponent<HiddenHarbours.Core.IsoCharacterSprite>();
