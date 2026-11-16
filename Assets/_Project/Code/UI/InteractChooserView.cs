@@ -61,7 +61,7 @@ namespace HiddenHarbours.UI
         private float _width = InteractChooserLayout.MinPanelWidth;
         private readonly string[] _painted = new string[InteractChoiceList.HardCap];
 
-        private readonly AxisLatch _latch = new AxisLatch();
+        private readonly ChooserAxisRepeat _axis = new ChooserAxisRepeat();
         private IControlIntentSource<ChooserIntents> _source;
 
         private bool _shownOpen;
@@ -86,11 +86,15 @@ namespace HiddenHarbours.UI
         /// <summary>Swap the intent source (a test's held source). Null returns to the device's.</summary>
         public void ConfigureChooserInput(IControlIntentSource<ChooserIntents> source) => _source = source;
 
-        private void Update() => Tick();
+        private void Update() => Tick(Time.unscaledDeltaTime);
 
-        /// <summary>One frame: read the hands, apply them, repaint if anything moved. Public so an
-        /// EditMode test can drive the real view without a player loop.</summary>
-        public void Tick()
+        /// <summary>One frame with no time passing. Public so an EditMode test can drive the real view
+        /// without a player loop.</summary>
+        public void Tick() => Tick(0f);
+
+        /// <summary>One frame: read the hands, apply them, repaint if anything moved.
+        /// <paramref name="deltaTime"/> (unscaled seconds) only paces a held pad push running on.</summary>
+        public void Tick(float deltaTime)
         {
             EnsureBuilt();
             IControlIntentSource<ChooserIntents> source = _source ?? ChooserInput.Device;
@@ -110,7 +114,11 @@ namespace HiddenHarbours.UI
             _lastPoint = intents.Point;
             _hasLastPoint = true;
 
-            InteractChooserControls.Apply(intents, _latch, hitRow, moved);
+            // A held push runs on only while the pad is the hand on the list (ADR 0043 PR 2): the keyboard
+            // keeps one row per press. The device source reports the navigating control's device before it
+            // returns, so this is this frame's device, read from Core, never from a device.
+            bool repeat = ActiveControlDevice.Current == ControlDevice.Gamepad;
+            InteractChooserControls.Apply(intents, _axis, ChooserAxisTuning.Current, deltaTime, repeat, hitRow, moved);
             Repaint();
         }
 
