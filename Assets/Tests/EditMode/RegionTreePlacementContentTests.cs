@@ -114,12 +114,260 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         // =============================================================================================================
+        //  THE REPLANTING (11-15) — wild ground dense, lived-in ground deliberate
+        // =============================================================================================================
+
+        const string PlanAsset = "Assets/_Project/Data/KeyScenes/KeyScene_nmc_wharf.asset";
+        const string PlantingRoot = "CreekPlanting";
+
+        /// <summary>A new plant stands this far above the sand line: the planter's bank floor (2.2 m) less the slack
+        /// this test allows, never the sand line itself.</summary>
+        const float ReplantGroundMargin = 0.5f;
+        const float ReplantTreeRoadClear = 2.0f, ReplantShrubRoadClear = 1.0f;
+        const float ReplantTreeGap = 2.9f, ReplantShrubGap = 1.2f, ReplantMixedGap = 1.7f;
+        const float ReplantTreeLotSetback = 2.5f, ReplantShrubLotSetback = 0.8f, ReplantCampSetback = 2.5f;
+        /// <summary>A door's apron: half its width either side of the door's centre line, this deep out from the wall.</summary>
+        const float DoorApronHalfWidth = 3f, DoorApronDepth = 9f;
+        /// <summary>A yard tree stands within this of a house's lot, or this close to a road's edge (a lane row).</summary>
+        const float YardTreeHouseReach = 16f, YardTreeLaneReach = 8f;
+        /// <summary>A stand tree has at least this many trees within this radius: a stand, never a lone tree.</summary>
+        const int StandNeighbours = 3; const float StandRadius = 10f;
+        /// <summary>A thicket shrub stands from this far inside a wood's rim to this far outside it.</summary>
+        const float ThicketInside = 6f, ThicketOutside = 7f;
+        /// <summary>The plan's north wood lot (its <c>at</c> and <c>r</c> are read from the plan).</summary>
+        const string NorthWoodLot = "woodlot.nmc_north";
+        /// <summary>The trees the north wood lot keeps: it held 57 before the 11-15 sand-line retirement and holds 57
+        /// pulled back onto the green (11-16). The floor is the ratchet's, with room for a later nudge.</summary>
+        const int NorthWoodTreesAtLeast = 50;
+
+        /// <summary>
+        /// The owner, 11-15: "Have some areas quite dense and some seen as planted in more lived in areas with more
+        /// central focused trees." Every plant under <c>CreekPlanting</c> stands on dry ground above the sand line,
+        /// clear of every road, hedge clearance, lot, door apron and campground piece, spaced from every other plant;
+        /// a yard tree stands by a house or along a lane; a stand tree stands inside a wood lot among other trees; a
+        /// thicket shrub stands at a wood's rim.
+        /// </summary>
+        [Test]
+        public void TheReplantingStandsWhereTheRulesSay()
+        {
+            SceneYaml scene = SceneYaml.Parse(File.ReadAllText($"{ScenesFolder}/{NineMileCreekScene}.unity"));
+            List<Plant> all = Plants(scene);
+            List<Plant> planted = all.Where(p => p.Path.StartsWith(PlantingRoot + "/", StringComparison.Ordinal)).ToList();
+            Assert.That(planted.Count(p => p.Tree), Is.GreaterThan(50), $"the replanting's trees under {PlantingRoot} were not found");
+            Assert.That(planted.Count(p => !p.Tree), Is.GreaterThan(50), $"the replanting's shrubs under {PlantingRoot} were not found");
+
+            var ground = Ground.Of(scene, NineMileCreekScene) as PaintedGround;
+            Assert.IsNotNull(ground, "Nine Mile Creek's ground is not a painted splat surface");
+            var net = NineMileCreekRoadNetwork.Load();
+            var lots = PlanOption("nmc.plan.lots");
+            var buildingLots = new[] { "town", "working", "south_shore_houses", "waterfront" }
+                .SelectMany(g => lots.Get(g)?.Items ?? new List<KeySceneImport.Json>()).Where(HasSize).ToList();
+            var houseLots = new[] { "town", "south_shore_houses", "waterfront" }
+                .SelectMany(g => lots.Get(g)?.Items ?? new List<KeySceneImport.Json>()).Where(HasSize).ToList();
+            Assert.That(buildingLots.Count, Is.GreaterThan(20), "the plan's building lots were not found");
+            var camp = lots.Get("campground");
+            var campBoxes = camp.Get("pitches").Items.Concat(camp.Get("buildings").Items).Where(HasSize).Select(BoxOf).ToList();
+            var woods = lots.Get("wood_lots").Items
+                .Select(w => (at: new Vector2(w.Get("at").Items[0].Float("wood.at"), w.Get("at").Items[1].Float("wood.at")), r: w.Get("r").Float("wood.r")))
+                .ToList();
+            Assert.That(woods.Count, Is.GreaterThanOrEqualTo(4), "the plan's wood lots were not found");
+
+            var offenders = new List<string>();
+            foreach (Plant p in planted)
+            {
+                void Off(string why) => offenders.Add($"{p.Path} at ({p.At.x:F1}, {p.At.y:F1}): {why}");
+                float e = ground.ElevationAt(p.At);
+                if (e < ground.Floor + ReplantGroundMargin) Off($"ground {e:F2} m, under {ground.Floor + ReplantGroundMargin:F1} m");
+                string road = NineMileCreekRoadClearings.Why(net, p.At, hedged: p.Tree);
+                if (road != null) Off(road);
+                float edge = RoadEdge(net, p.At);
+                if (edge < (p.Tree ? ReplantTreeRoadClear : ReplantShrubRoadClear)) Off($"{edge:F2} m from a road's edge");
+                foreach (Plant q in all)
+                {
+                    if (q == p) continue;
+                    float d = Vector2.Distance(p.At, q.At);
+                    float gap = p.Tree && q.Tree ? ReplantTreeGap : !p.Tree && !q.Tree ? ReplantShrubGap : ReplantMixedGap;
+                    if (d < gap) Off($"{d:F2} m from {q.Path}");
+                }
+                foreach (var lot in buildingLots)
+                {
+                    string id = lot.Get("id").Str("lot.id");
+                    if (Distance(BoxOf(lot), p.At) < (p.Tree ? ReplantTreeLotSetback : ReplantShrubLotSetback)) Off($"against {id}'s walls");
+                    if (InDoorApron(lot, p.At)) Off($"in {id}'s door apron");
+                }
+                if (campBoxes.Any(b => Distance(b, p.At) < ReplantCampSetback)) Off("on a campground pitch or building");
+                if (p.Path.Contains("/Yards/") && p.Tree &&
+                    !(houseLots.Any(l => Distance(BoxOf(l), p.At) <= YardTreeHouseReach) || edge <= YardTreeLaneReach))
+                    Off("a yard tree by no house and no lane");
+                if (p.Path.Contains("/Stands/"))
+                {
+                    float rim = woods.Min(w => Vector2.Distance(p.At, w.at) - w.r);
+                    if (p.Tree)
+                    {
+                        if (rim > 0f) Off($"a stand tree {rim:F1} m outside every wood lot");
+                        int n = all.Count(q => q.Tree && q != p && Vector2.Distance(q.At, p.At) < StandRadius);
+                        if (n < StandNeighbours) Off($"a stand tree with {n} trees within {StandRadius} m");
+                    }
+                    else if (rim < -ThicketInside || rim > ThicketOutside) Off($"a thicket shrub {rim:F1} m from a wood's rim");
+                }
+            }
+            TestContext.WriteLine($"[TreePlacement] replanting: {planted.Count(p => p.Tree)} trees, {planted.Count(p => !p.Tree)} shrubs; " +
+                                  $"{offenders.Count} off the rules.");
+            Assert.IsEmpty(offenders, $"{offenders.Count} replanted trees or shrubs break the rules:\n  " + string.Join("\n  ", offenders.Take(25)));
+        }
+
+        /// <summary>
+        /// The owner, 11-16: "North yard pulled back." Every live tree inside the plan's north wood lot, whichever
+        /// root it hangs under, stands on the green: at or above the region's own grass line (the splat surface's
+        /// <c>_floorGrass</c>), never on the dune band between the sand line and the grass. The wood keeps its trees.
+        /// </summary>
+        [Test]
+        public void TheNorthWoodStandsOnTheGreen()
+        {
+            SceneYaml scene = SceneYaml.Parse(File.ReadAllText($"{ScenesFolder}/{NineMileCreekScene}.unity"));
+            var ground = Ground.Of(scene, NineMileCreekScene) as PaintedGround;
+            Assert.IsNotNull(ground, "Nine Mile Creek's ground is not a painted splat surface");
+            string grassField = scene.Docs.First(d => d.IsScript(SplatClass)).Field("_floorGrass");
+            Assert.IsNotNull(grassField, "the splat surface names no _floorGrass");
+            float grass = ParseFloat(grassField);
+            Assert.That(grass, Is.GreaterThan(ground.Floor), "the grass line is not above the sand line");
+            var lot = PlanOption("nmc.plan.lots").Get("wood_lots").Items.Single(w => w.Get("id").Text == NorthWoodLot);
+            var at = new Vector2(lot.Get("at").Items[0].Float("at"), lot.Get("at").Items[1].Float("at"));
+            float r = lot.Get("r").Float("r");
+
+            List<Plant> trees = Plants(scene).Where(p => p.Tree && Vector2.Distance(p.At, at) <= r).ToList();
+            var offenders = trees.Where(p => ground.ElevationAt(p.At) < grass)
+                .Select(p => $"{p.Path} at ({p.At.x:F1}, {p.At.y:F1}): ground {ground.ElevationAt(p.At):F2} m, under the {grass} m grass line")
+                .ToList();
+            TestContext.WriteLine($"[TreePlacement] north wood: {trees.Count} trees, {offenders.Count} on the dune band.");
+            Assert.IsEmpty(offenders, $"{offenders.Count} north wood trees stand on the dune band:\n  " + string.Join("\n  ", offenders.Take(25)));
+            Assert.That(trees.Count, Is.GreaterThanOrEqualTo(NorthWoodTreesAtLeast),
+                $"the north wood lot holds {trees.Count} trees: pulled back onto the green, it keeps the 57 it held");
+        }
+
+        /// <summary>No two live trees stand closer than this: two trunks inside one crown read as one tree drawn twice.</summary>
+        const float TreeMinimumGap = 2.0f;
+
+        /// <summary>The pairs closer than <see cref="TreeMinimumGap"/> a region holds today, a ratchet that may only
+        /// fall. St Peters' fourteen are in IslandWoods (the closest 0.67 m, two red spruce at (127.9, -40.6)); this
+        /// pass moves none of them.</summary>
+        static readonly Dictionary<string, int> KnownClosePairs = new Dictionary<string, int> { ["StPeters"] = 14 };
+
+        [TestCaseSource(nameof(RegionScenes))]
+        public void NoTwoTreesStandInsideOneCrown(string region)
+        {
+            List<Plant> trees = Plants(SceneYaml.Parse(File.ReadAllText($"{ScenesFolder}/{region}.unity"))).Where(p => p.Tree).ToList();
+            var close = new List<string>();
+            for (int i = 0; i < trees.Count; i++)
+                for (int j = i + 1; j < trees.Count; j++)
+                {
+                    float d = Vector2.Distance(trees[i].At, trees[j].At);
+                    if (d < TreeMinimumGap) close.Add($"{d:F2} m: {trees[i].Path} and {trees[j].Path} at ({trees[i].At.x:F1}, {trees[i].At.y:F1})");
+                }
+            int allowed = KnownClosePairs.TryGetValue(region, out int k) ? k : 0;
+            TestContext.WriteLine($"[TreePlacement] {region}: {close.Count} tree pairs under {TreeMinimumGap} m (allowed {allowed})\n  " +
+                                  string.Join("\n  ", close));
+            Assert.That(close.Count, Is.LessThanOrEqualTo(allowed),
+                $"{region}: {close.Count} tree pairs stand under {TreeMinimumGap} m apart, {allowed} known:\n  " + string.Join("\n  ", close.Take(25)));
+        }
+
+        /// <summary>The scripts that mark a way in or a building's interior.</summary>
+        static readonly string[] DoorClasses =
+        {
+            "HiddenHarbours.World.BuildingInterior", "HiddenHarbours.Economy.HomeDoor", "HiddenHarbours.World.DoorPortal",
+            "HiddenHarbours.World.InteriorDoor", "HiddenHarbours.World.RegionDoor",
+        };
+        const float DoorClear = 4f;
+
+        [TestCaseSource(nameof(RegionScenes))]
+        public void NoTreeOrShrubStandsInADoorway(string region)
+        {
+            SceneYaml scene = SceneYaml.Parse(File.ReadAllText($"{ScenesFolder}/{region}.unity"));
+            var doors = new List<(Vector2 at, string what)>();
+            foreach (Doc d in scene.Docs)
+            {
+                string cls = DoorClasses.FirstOrDefault(d.IsScript);
+                if (cls == null) continue;
+                Doc go = scene.Get(d.FieldRef("m_GameObject"));
+                if (go == null || !LiveInHierarchy(scene, go)) continue;
+                doors.Add((WorldPivot(scene, go), $"{go.Field("m_Name")} ({cls.Substring(cls.LastIndexOf('.') + 1)})"));
+            }
+            var offenders = new List<string>();
+            foreach (Plant p in Plants(scene))
+                foreach (var door in doors)
+                    if (Vector2.Distance(p.At, door.at) < DoorClear)
+                        offenders.Add($"{p.Path} {Vector2.Distance(p.At, door.at):F2} m from {door.what}");
+            TestContext.WriteLine($"[TreePlacement] {region}: {doors.Count} doors, {offenders.Count} plants within {DoorClear} m of one.");
+            Assert.IsEmpty(offenders, $"{region}: plants stand in a doorway:\n  " + string.Join("\n  ", offenders.Take(25)));
+        }
+
+        static KeySceneImport.Json PlanOption(string key)
+        {
+            var top = KeySceneImport.ReadAsset(File.ReadAllText(PlanAsset), PlanAsset);
+            foreach (var row in top.Single(f => f.Key == "Pieces").Value.Items)
+                foreach (var o in row.Get("Options")?.Items ?? new List<KeySceneImport.YamlNode>())
+                    if (o.Get("Key")?.Scalar == key)
+                        return KeySceneImport.Json.Parse(o.Get("Value").Scalar, key);
+            Assert.Fail($"{PlanAsset} holds no {key} option");
+            return null;
+        }
+
+        static bool HasSize(KeySceneImport.Json o) => o.Get("size") is { Kind: KeySceneImport.Json.Of.Array } s && s.Items.Count == 2;
+
+        /// <summary>A lot's box about its <c>at</c>: its size along x, turned when it faces east or west.</summary>
+        static Rect BoxOf(KeySceneImport.Json o)
+        {
+            string id = o.Get("id")?.Text ?? "a lot";
+            var at = o.Get("at").Items; var size = o.Get("size").Items;
+            bool turned = o.Get("faces") is { Kind: KeySceneImport.Json.Of.String } f && (f.Text == "E" || f.Text == "W");
+            float w = size[turned ? 1 : 0].Float(id + ".size"), h = size[turned ? 0 : 1].Float(id + ".size");
+            float x = at[0].Float(id + ".at"), y = at[1].Float(id + ".at");
+            return Rect.MinMaxRect(x - w / 2f, y - h / 2f, x + w / 2f, y + h / 2f);
+        }
+
+        static float Distance(Rect r, Vector2 p) =>
+            new Vector2(Mathf.Max(r.xMin - p.x, 0f, p.x - r.xMax), Mathf.Max(r.yMin - p.y, 0f, p.y - r.yMax)).magnitude;
+
+        /// <summary>Is <paramref name="p"/> in the strip in front of the lot's door, the way the lot faces?</summary>
+        static bool InDoorApron(KeySceneImport.Json lot, Vector2 p)
+        {
+            if (!(lot.Get("faces") is { Kind: KeySceneImport.Json.Of.String } f)) return false;
+            Rect box = BoxOf(lot);
+            Vector2 d = p - box.center;
+            float along, outward, half;
+            switch (f.Text)
+            {
+                case "N": along = d.x; outward = d.y; half = box.height / 2f; break;
+                case "S": along = d.x; outward = -d.y; half = box.height / 2f; break;
+                case "E": along = d.y; outward = d.x; half = box.width / 2f; break;
+                case "W": along = d.y; outward = -d.x; half = box.width / 2f; break;
+                default: return false;
+            }
+            return Mathf.Abs(along) <= DoorApronHalfWidth && outward >= half && outward <= half + DoorApronDepth;
+        }
+
+        /// <summary>How far <paramref name="p"/> stands from the nearest road's or corner flare's edge (negative on it).</summary>
+        static float RoadEdge(NineMileCreekRoadNetwork.Network net, Vector2 p)
+        {
+            float best = float.MaxValue;
+            foreach (var r in net.Routes.Concat(net.Flares))
+            {
+                float d = r.Points.Length == 1 ? Vector2.Distance(p, r.Points[0]) : float.MaxValue;
+                for (int i = 0; i + 1 < r.Points.Length; i++) d = Mathf.Min(d, NineMileCreekRoadNetwork.PointToSegment(p, r.Points[i], r.Points[i + 1]));
+                best = Mathf.Min(best, d - r.HalfWidth);
+            }
+            return best;
+        }
+
+        // =============================================================================================================
         //  PLANTS
         // =============================================================================================================
 
         sealed class Plant
         {
             public string Name; public long FileId; public Vector2 At; public bool Tree;
+            /// <summary>The GameObject's hierarchy path, root first (<c>CreekPlanting/Stands/RedMaple_1</c>).</summary>
+            public string Path;
         }
 
         static List<Plant> Plants(SceneYaml scene)
@@ -134,9 +382,24 @@ namespace HiddenHarbours.Tests.EditMode
                 if (mat != tree && mat != shrub) continue;
                 Doc go = scene.Get(sr.FieldRef("m_GameObject"));
                 if (go == null || go.ClassId != GameObjectClass || !LiveInHierarchy(scene, go)) continue;
-                list.Add(new Plant { Name = go.Field("m_Name"), FileId = go.FileId, At = WorldPivot(scene, go), Tree = mat == tree });
+                list.Add(new Plant { Name = go.Field("m_Name"), FileId = go.FileId, At = WorldPivot(scene, go), Tree = mat == tree,
+                                     Path = PathOf(scene, go) });
             }
             return list;
+        }
+
+        static string PathOf(SceneYaml scene, Doc go)
+        {
+            var names = new List<string>();
+            Doc tr = scene.TransformOf(go);
+            while (tr != null)
+            {
+                names.Add(scene.Get(tr.FieldRef("m_GameObject"))?.Field("m_Name") ?? "?");
+                long father = tr.FieldRef("m_Father");
+                tr = father == 0 ? null : scene.Get(father);
+            }
+            names.Reverse();
+            return string.Join("/", names);
         }
 
         static string FirstMaterialGuid(Doc sr)
@@ -224,6 +487,9 @@ namespace HiddenHarbours.Tests.EditMode
             readonly float _min, _max, _floor;
             readonly ushort[] _codes; readonly int _w, _h;
             readonly byte[] _path; readonly int _pw, _ph;
+
+            /// <summary>The sand line: the height below which the ground shader paints bare sand.</summary>
+            public float Floor => _floor;
 
             public PaintedGround(Doc splat, string region)
             {
