@@ -38,12 +38,19 @@ namespace HiddenHarbours.Tests.World.EditMode
         }
 
         [Test]
-        public void WithoutRoomForTheLeadTheLineIsCutAtAWordAndMarked()
+        public void WithoutRoomForTheLeadTheLineKeepsTheWordsThatNameTheCatch()
         {
             string line = "Landed a 9.4 kg atlantic cod — a heavy one.";
-            string fit = NotebookLayout.FitLine(line, 20);
-            Assert.AreEqual("Landed a 9.4 kg...", fit);
-            Assert.LessOrEqual(fit.Length, 20);
+            Assert.AreEqual("Atlantic cod.", NotebookLayout.FitLine(line, 14), "the 1280x720 head beside a weight");
+            Assert.AreEqual("9.4 kg atlantic cod.", NotebookLayout.FitLine(line, 20));
+            Assert.AreEqual("Cod.", NotebookLayout.FitLine(line, 5));
+        }
+
+        [Test]
+        public void WhenNotEvenTheLastWordFitsTheLineIsCutAndMarked()
+        {
+            Assert.AreEqual("Landed...", NotebookLayout.FitLine("Landed a flounderwithaverylongname.", 9));
+            Assert.AreEqual("Lan", NotebookLayout.FitLine("Landed a 9.4 kg atlantic cod.", 3));
         }
 
         [Test]
@@ -121,7 +128,9 @@ namespace HiddenHarbours.Tests.World.EditMode
                 Assert.LessOrEqual(p.RegisterShown.Length * NotebookKit.CellWidth - NotebookKit.Slack,
                                    head - ("12.3" + NotebookLayout.WeightUnit).Length * NotebookKit.CellWidth,
                                    "the lettered line and the weight readout share the head without overlap");
-                StringAssert.StartsWith("Landed", p.RegisterShown);
+                Assert.Greater(p.RegisterShown.Length, 1, "the head still says what was landed");
+                StringAssert.Contains(p.RegisterShown.TrimEnd('.').Substring(1), p.RegisterLine,
+                                      "what is lettered is words from the kept line, not new copy");
                 Assert.AreNotEqual(p.RegisterLine, p.RegisterShown, "the kept line is unchanged; only its lettering is fitted");
             }
             finally

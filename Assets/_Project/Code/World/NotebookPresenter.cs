@@ -958,8 +958,10 @@ namespace HiddenHarbours.World
         public string RegisterShown =>
             NotebookLayout.FitLine(_registerLine, NotebookLayout.RegisterCols(_leftHeadW, RegisterWeightTenths));
 
+        // A lettered readout always takes its room, even reading "0.0 kg" (hence the floor of one tenth).
         private int RegisterWeightTenths =>
-            _weight.Value > 0 || _weight.Running ? Mathf.Max(_weight.Value, _weightTargetTenths) : 0;
+            _weightLabel != null || _weight.Value > 0 || _weight.Running
+                ? Mathf.Max(1, Mathf.Max(_weight.Value, _weightTargetTenths)) : 0;
 
         private void RepaintRegister()
         {

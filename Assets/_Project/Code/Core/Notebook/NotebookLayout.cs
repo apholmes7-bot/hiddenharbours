@@ -313,9 +313,10 @@ namespace HiddenHarbours.Core
         ///
         /// <para>A line that fits is returned whole. One that does not first drops its trailing
         /// " — clause" (the lift line's size word or "it's in your hand"), ending the sentence with a
-        /// stop; one that still does not fit is cut at the last whole word and marked
-        /// <see cref="FitMark"/>. A word longer than the room is hard-cut. Never wider than
-        /// <paramref name="cols"/>.</para>
+        /// stop; one that still does not fit keeps the longest whole-word TAIL of what is left, capitalised
+        /// and stopped ("Atlantic cod."), because the end of the sentence is where it names the catch.
+        /// When not even the last word fits, the line is hard-cut and marked <see cref="FitMark"/>.
+        /// Never wider than <paramref name="cols"/>.</para>
         /// </summary>
         public static string FitLine(string text, int cols)
         {
@@ -330,15 +331,29 @@ namespace HiddenHarbours.Core
                 if (lead.Length > 0 && lead.Length + 1 <= cols) return lead + ".";
             }
 
+            // Still too long: keep the lead's TAIL, whole words, where the sentence names the thing — a
+            // register reads "Atlantic cod." beside its weight, not "Landed a..." beside it.
+            string body = text;
+            int dash = text.IndexOf(clause, StringComparison.Ordinal);
+            if (dash > 0) body = text.Substring(0, dash);
+            body = body.TrimEnd().TrimEnd('.');
+            int start = -1;
+            for (int k = body.Length - 1; k > 0; k--)
+            {
+                if (body[k] != ' ') continue;
+                if (body.Length - (k + 1) + 1 > cols) break;     // the words after this space, and a stop
+                start = k + 1;
+            }
+            if (start > 0)
+            {
+                string tail = body.Substring(start);
+                return char.ToUpperInvariant(tail[0]) + tail.Substring(1) + ".";
+            }
+
+            // Not even the last word fits: cut it at the room and mark the cut.
             int room = cols - FitMark.Length;
             if (room <= 0) return text.Substring(0, cols);
-
-            int cut = room;
-            for (int k = room; k > 0; k--)
-            {
-                if (text[k] == ' ') { cut = k; break; }
-            }
-            return text.Substring(0, cut).TrimEnd() + FitMark;
+            return text.Substring(0, room).TrimEnd() + FitMark;
         }
 
         /// <summary>
