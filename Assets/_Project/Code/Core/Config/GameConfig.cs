@@ -1471,6 +1471,13 @@ namespace HiddenHarbours.Core
                  "through EffortGate.Settings.")]
         public EffortSettings Effort = EffortSettings.Default;
 
+        [Header("Stink lines (cleanliness, the look)")]
+        [Tooltip("Cleanliness slice 2 (owner ask 2026-11-15): small wavy lines rise from the player's head " +
+                 "while he is dirty, more of them as he gets dirtier, gone once he washes. A gentle joke: " +
+                 "they change nothing but the picture. Derived from the saved dirt, never saved. Read " +
+                 "through StinkLinesSettings.Current.")]
+        public StinkLinesSettings StinkLines = StinkLinesSettings.Default;
+
         public float SecondsPerHour => SecondsPerDay / 24f;
         public float SecondsPerWeek => SecondsPerDay * DaysPerWeek;
         public float SecondsPerSeason => SecondsPerDay * DaysPerSeason;
