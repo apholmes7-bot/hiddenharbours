@@ -199,6 +199,19 @@ namespace HiddenHarbours.Art
     }
 
     /// <summary>
+    /// <b>The eased swoop</b> (owner, 2026-11-15: "the seagull swoops and dives appear too fast compared to the
+    /// gliding seagulls"). The game's own tuning beside the rig's FLOCK block; see
+    /// <see cref="SeagullFlockMath.SeagullFlockTuning.SwoopMaxSinkMetresPerSecond"/>. <c>default</c> (all zero) =
+    /// the rig's V-shaped swoop, which is what a table built straight from the sidecar gets.
+    /// </summary>
+    public readonly struct SeagullSwoopRules
+    {
+        public readonly double MaxSinkMetresPerSecond, Duty, Depth01;
+        public SeagullSwoopRules(double maxSinkMetresPerSecond, double duty, double depth01)
+        { MaxSinkMetresPerSecond = maxSinkMetresPerSecond; Duty = duty; Depth01 = depth01; }
+    }
+
+    /// <summary>
     /// <b>THE STATE TABLE, IMMUTABLE AND ENGINE-LIGHT.</b>
     ///
     /// <para>Thirteen states and twenty-six legal edges, exactly as
@@ -235,6 +248,8 @@ namespace HiddenHarbours.Art
         public readonly SeagullFlockRules Flock;
         /// <summary>The game's take-off tuning; <c>default</c> = the rig's take-off.</summary>
         public readonly SeagullDepartureRules Departure;
+        /// <summary>The game's eased swoop; <c>default</c> = the rig's swoop.</summary>
+        public readonly SeagullSwoopRules Swoop;
 
         /// <summary>States, in <see cref="SeagullStates.Order"/>.</summary>
         public int StateCount => _rows.Length;
@@ -249,7 +264,8 @@ namespace HiddenHarbours.Art
         /// </summary>
         public SeagullBehaviour(IReadOnlyList<SeagullStateRow> rows, IReadOnlyList<SeagullEdge> edges,
                                 in SeagullLandRules land, in SeagullWaterRules water,
-                                in SeagullFlockRules flock, in SeagullDepartureRules departure = default)
+                                in SeagullFlockRules flock, in SeagullDepartureRules departure = default,
+                                in SeagullSwoopRules swoop = default)
         {
             if (rows == null) throw new ArgumentNullException(nameof(rows));
             if (edges == null) throw new ArgumentNullException(nameof(edges));
@@ -311,7 +327,7 @@ namespace HiddenHarbours.Art
                                        _surface[_next[i]] != SeagullSurface.None;
             }
 
-            Land = land; Water = water; Flock = flock; Departure = departure;
+            Land = land; Water = water; Flock = flock; Departure = departure; Swoop = swoop;
         }
 
         /// <summary>Which surface a state rests the bird on. Hard-coded on purpose: it is a fact about
@@ -416,7 +432,8 @@ namespace HiddenHarbours.Art
                     Flock.GlideDuty,
                     _rows[fly].Frames, _rows[fly].FrameMilliseconds,
                     _rows[glide].Frames, _rows[glide].FrameMilliseconds,
-                    _rows[swoop].Frames, _rows[swoop].FrameMilliseconds);
+                    _rows[swoop].Frames, _rows[swoop].FrameMilliseconds,
+                    Swoop.MaxSinkMetresPerSecond, Swoop.Duty, Swoop.Depth01);
             }
         }
 

@@ -172,6 +172,27 @@ namespace HiddenHarbours.Art
         [SerializeField, Min(0f), Tooltip("Metres below the wheel's height over which the climb levels off.")]
         private float _departureLevelOffMetres = 1.5f;
 
+        [Header("SWOOP (the game's own tuning, beside the rig's FLOCK block; sink 0 = the rig's V-shaped swoop)")]
+        [SerializeField, Min(0f), Tooltip(
+            "Owner 2026-11-15: \"the seagull swoops and dives appear too fast compared to the gliding seagulls\". " +
+            "The swoop's steepest sink, m/s: its dip is eased in and out (a cosine laid under the cruise breathe) and " +
+            "capped so it never sinks faster than this. 0 = the rig's original swoop.")]
+        private float _flockSwoopMaxSinkMetresPerSecond = 2.5f;
+        [SerializeField, Range(0.05f, 0.95f), Tooltip("The eased swoop's share of each swoop interval (the rig's is 0.28).")]
+        private float _flockSwoopDuty = 0.4f;
+        [SerializeField, Range(0f, 1f), Tooltip("The eased swoop's dip as a fraction of the cruise height, before the sink cap (the rig's is 0.75).")]
+        private float _flockSwoopDepth01 = 0.6f;
+
+        [Header("GROUND SIZE (owner 2026-11-15: a landed bird is further from the camera than a flying one)")]
+        [SerializeField, Range(0.5f, 1f), Tooltip(
+            "Owner 2026-11-15: \"make landed birds slightly smaller as they are further from camera than a flying " +
+            "one\". The drawn scale of a bird on the ground or the water; 1 = the same size as in the air.")]
+        private float _groundScale = 0.88f;
+        [SerializeField, Min(0f), Tooltip(
+            "Metres of altitude over which the scale eases from the ground size up to full size (smoothstep), so " +
+            "a take-off grows and a landing shrinks with no step. 0 = a hard switch at the surface.")]
+        private float _groundScaleBlendMetres = 1.2f;
+
         [Header("GULL -> FISH (the drop's dive yield, and its one wireable attractor)")]
         [SerializeField, Range(0f, 1f), Tooltip(
             "The drop's WATER dive yield, README: p 0.35 (herring / mackerel). How often a strike onto " +
@@ -198,6 +219,40 @@ namespace HiddenHarbours.Art
 
         /// <summary>The drop's `shoal_surface` attractor weight — see the field tooltip.</summary>
         public float ShoalAttractWeight01 => _shoalAttractWeight01;
+
+        /// <summary>The drawn scale of a landed bird; see the field tooltip.</summary>
+        public float GroundScale => _groundScale;
+
+        /// <summary>Metres of altitude over which the ground scale eases to full size.</summary>
+        public float GroundScaleBlendMetres => _groundScaleBlendMetres;
+
+        /// <summary>
+        /// The drawn scale at <paramref name="altitudeMetres"/>: <paramref name="groundScale"/> on the surface, 1 at
+        /// and above <paramref name="blendMetres"/>, smoothstep between (value and rate continuous through a take-off
+        /// and a landing). Pure, so a test reads the same law the presenter draws.
+        /// </summary>
+        public static float ScaleAtAltitude(float altitudeMetres, float groundScale, float blendMetres)
+        {
+            float g = Mathf.Clamp(groundScale, 0.01f, 1f);
+            if (blendMetres <= 0f) return altitudeMetres > 0f ? 1f : g;
+            float x = Mathf.Clamp01(altitudeMetres / blendMetres);
+            if (x >= 1f) return 1f;                          // exactly world scale once airborne
+            return Mathf.Min(1f, g + (1f - g) * (x * x * (3f - 2f * x)));
+        }
+
+        /// <summary>
+        /// The shadow's foot offset for a bird lifted <paramref name="liftWorld"/> world units up the screen and drawn
+        /// at <paramref name="drawScale"/>. <see cref="SpriteShadow.FootOffset"/> is in the CASTER's local units (the
+        /// anchor is <c>TransformPoint(0, -FootOffset)</c>), and the caster is the scaled bird itself, so the world lift
+        /// is divided back out by the scale: the anchor lands exactly on the pivot at every size. Passing the world
+        /// lift straight through left the anchor <c>lift x (1 - scale)</c> above the pivot (2.8 cm at the top of
+        /// <c>land</c>). A degenerate scale passes the lift through.
+        /// </summary>
+        public static float ShadowFootOffset(float liftWorld, float drawScale)
+        {
+            float s = Mathf.Abs(drawScale);
+            return s > 1e-5f ? liftWorld / s : liftWorld;
+        }
 
         public int Directions => _directions;
         public int Columns => _columns;
@@ -321,7 +376,8 @@ namespace HiddenHarbours.Art
                                           _flockRegroupSeconds),
                     new SeagullDepartureRules(_departureLiftOffSpeedMetresPerSecond, _departureClimbMetresPerSecond,
                                               _departureAccelerateSeconds, _departureTurnDegreesPerSecond,
-                                              _departureJoinSeconds, _departureLevelOffMetres));
+                                              _departureJoinSeconds, _departureLevelOffMetres),
+                    new SeagullSwoopRules(_flockSwoopMaxSinkMetresPerSecond, _flockSwoopDuty, _flockSwoopDepth01));
                 return _behaviour;
             }
         }
