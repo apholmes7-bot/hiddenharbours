@@ -435,6 +435,16 @@ Shader "HiddenHarbours/Water"
         // How far the bore's energy lifts the shore surf's churn over its threshold (1 = the open breaker's lift, a
         // solid sheet at the crest; 0 = the churn alone decides, so water shows between its patches).
         _WashSurfLift      ("Shore surf: lift of the bore's energy over the churn threshold (1 = the open breaker's)", Range(0,1)) = 0
+        // v9 (the editor look of 7e16896): the shore surf's churn is read this many times finer than the open
+        // breaker's (_SurfNoiseScale), so it breaks into foam lace, not metre-wide blobs with lattice-straight edges.
+        _WashSurfDetail    ("Shore surf: churn detail over the open breaker's (1 = the same scale)", Range(1,8)) = 3
+        // The break gate beside a beach reads the depth averaged over this many metres ALONG the shore: the 8-bit
+        // painted height holds one code for ~3 texels along a shore and steps 0.047 m, so its break contour stood in
+        // square steps (one texel run, ~20 px of rise at 96 px/m). Averaged over a run, the contour is smooth. 0 = off.
+        _WashSurfSmooth    ("Shore surf: metres along the shore the break gate's depth is averaged over (0 = off)", Range(0,4)) = 1.5
+        // The wash's ground frame (the beach projection's normal and slope, and the line's tap) is read over this many
+        // metres either side, so a gravel mound smaller than that no longer turns the shore normal round.
+        _WashGroundScale   ("Run-up wash: metres either side the ground's normal and slope are read over", Range(0.1,4)) = 1.5
         // Inside the surf zone the swell has BROKEN: what runs up the beach is the bore, refracted to the shore.
         // The unbroken swell's light (its height, slope and crest shading) yields to it by this much there, so
         // an oblique offshore crest no longer slides ALONG the wash. 0 = the swell draws through the surf.
@@ -1650,6 +1660,7 @@ Shader "HiddenHarbours/Water"
                 float  _WashSheetOpacity, _WashLineWidth, _WashLineOpacity, _WashSeawardDepth, _WashPresenceRamp;
                 float  _WashLeeShare, _WashResidueSoften, _WashAnatomyFade, _WashMaxCover;
                 float  _WashSurfReach, _WashSurfLift;
+                float  _WashSurfDetail, _WashSurfSmooth, _WashGroundScale;
                 float  _WashLeftFoamSeconds, _WashLeftFoamOpacity;
                 float  _SurfSwellYield, _SwellShoalDepth;
                 // B1 FRINGE UNIFORM BEGIN
@@ -2779,6 +2790,22 @@ Shader "HiddenHarbours/Water"
                 return length(float2(ex, ey)) / (2.0 * h);
             #else
                 return 0.0;                                   // no height map => no shore, nothing to scale
+            #endif
+            }
+
+            // The run-up wash's GROUND FRAME (v9): the same central difference over ±h metres, as the uphill
+            // direction (xy) and the slope (z). Read wider than ShoreDir so a mound smaller than h does not turn
+            // the shore normal round (the wash's beach projection and its line tap read it).
+            float3 GroundFrame(float2 worldXY, float h)
+            {
+            #if defined(_USE_HEIGHTTEX)
+                h = max(h, 1e-3);
+                float ex = SeabedElevation(worldXY + float2(h, 0)) - SeabedElevation(worldXY - float2(h, 0));
+                float ey = SeabedElevation(worldXY + float2(0, h)) - SeabedElevation(worldXY - float2(0, h));
+                float g = length(float2(ex, ey));
+                return g > 1e-5 ? float3(ex / g, ey / g, g / (2.0 * h)) : float3(0, 0, 0);
+            #else
+                return float3(0, 0, 0);
             #endif
             }
 
@@ -5237,7 +5264,7 @@ Shader "HiddenHarbours/Water"
                 // v8: the ground's own uphill direction at THIS pixel (the wash line's tap reads it), and the shore
                 // surf's share and cover (the breaker's band beside a beach; 0 = the open breaker's look).
                 float2 groundDir = float2(0.0, 0.0);
-                float surfShore = 0.0, surfCoverShore = 0.0;
+                float surfShore = 0.0, surfCoverShore = 0.0, surfShoreBreak = 1.0;
                 // The BORE (ADR 0040 rev 3): its pulse here (1 = a crest's front is passing), the wash's
                 // reach in metres of level, and the breaking face's slope for the light. All three stay at
                 // their zeros — no pulse read, no reach, no face — unless their look dials are up.
@@ -5259,6 +5286,12 @@ Shader "HiddenHarbours/Water"
                 float surfEvalDepth = depth;
                 if (_SurfStrength > 0.001 && _BreakerOuter.w > 0.5 && depth > -surfBeachReach)
                 {
+                    // v9 (the editor look of 7e16896, the line torn round the gravel mounds): the wash's ground
+                    // frame is read over ±_WashGroundScale. Read over ShoreDir's ±0.4 m, a mound turned the normal
+                    // round (up its own flank), so the pixels about it projected to scattered waterline points and
+                    // read different bores: hatched shards and a torn line at peak.
+                    float3 groundFrame = GroundFrame(worldXY, _WashGroundScale);
+                    groundDir = groundFrame.xy;
                     if (depth <= 0.0)
                     {
                         // v8 (the editor look of f07a839): projected from the point the depth was READ at
@@ -5268,8 +5301,14 @@ Shader "HiddenHarbours/Water"
                         // xi), the run-up was no longer one shore quantity, and the drawn edge tore at peak. Now
                         // every pixel of a normal lands on the same point of the still line wherever the beach
                         // is steeper than the floor (twin: WaterSurface.BeachSurfEvalPoint).
-                        groundDir = ShoreDir(worldXY);
-                        surfEvalXY = worldXY + warp + groundDir * ((_WaterLevel - elevation) / max(swashSlope, 1e-3));
+                        float groundSlope = max(groundFrame.z, saturate(_ShoreSlopeFloor));
+                        surfEvalXY = worldXY + warp + groundDir * ((_WaterLevel - elevation) / max(groundSlope, 1e-3));
+                        // v9: ONE correcting step onto the still line (a Newton step along the same normal). A mound's
+                        // pixels stand above the beach's plane, so the first step sent them past the still line by
+                        // their bump over the slope, onto water whose bore is at another phase: the line tore round
+                        // the mounds. The ground read where the first step landed puts them back on the line their
+                        // neighbours read; on a planar beach the step is 0 and nothing moves.
+                        surfEvalXY += groundDir * ((_WaterLevel - SeabedElevation(surfEvalXY)) / max(groundSlope, 1e-3));
                         surfEvalDepth = 0.02;                       // BreakerMath.MinDepthMeters
                     }
                     // A shoaling wave REFRACTS toward shore-normal, which is why surf runs in parallel to
@@ -5278,7 +5317,6 @@ Shader "HiddenHarbours/Water"
                     // otherwise modelled; this is where it enters, and BreakerMath.MetersSinceBreakAlong
                     // takes the heading as a parameter so the C# reference can be handed the same one.
                     surfDir = ShoreDir(surfEvalXY);
-                    if (depth > 0.0) groundDir = surfDir;           // in the water the surf is read here
                     // A bore carries the energy it was born with, and the beach it runs onto does not take it
                     // back. So the surf reads the wind-fetch envelope _BreakerRefract.w metres SEAWARD of here
                     // along the shore normal (BreakerSettings.BoreFetchProbeMeters). Read on the sand, a near-
@@ -5293,7 +5331,38 @@ Shader "HiddenHarbours/Water"
                         surfFetchFactors = FetchFactorsFrom(FetchMarch01(fetchProbeXY), SwellShelter01(fetchProbeXY));
                         surfFetchEnv = FetchFactorAt(surfFetchFactors, clamp((int)(_WaveFieldParams.w + 0.5), 0, 7));
                     }
-                    surfBreaking = SurfBreaking01(surfEvalDepth, surfFetchEnv);
+                    // THE SHORE ZONE (v8; v9 reads it before the gate): where the ground _WashSurfReach metres
+                    // shoreward stands above the run-up's reach, the surf beside it is the shore surf (below). A bar
+                    // with water behind it, and the open sea, read 0 here and keep the open breaker's look, bit for bit.
+                    // Twin: WaterSurface.ShoreSurfShare01.
+                    if (_WashSurfReach > 0.0 && dot(surfDir, surfDir) > 1e-6)
+                    {
+                        float shoreTapDepth = _WaterLevel - SeabedElevation(surfEvalXY + surfDir * _WashSurfReach);
+                        surfShore = saturate(-shoreTapDepth / max(surfBeachReach, 1e-3));
+                    }
+                    // v9 (the editor look of 7e16896, the band's ~20 px square steps): the break gate's contour IS a
+                    // depth contour of the 8-bit painted height, which holds one code for ~3 texels (1.5 m, 144 px at
+                    // 96 px/m) along this shore and then steps 0.047 m; at the shore's slope one code is ~0.2 m of
+                    // contour, so the gate stood in squares one texel run long. In the shore zone the gate reads the
+                    // depth averaged over _WashSurfSmooth metres ALONG the shore (a box over one code run), which
+                    // takes the steps out and leaves the shore's own shape. "Along" is read off the ground's frame
+                    // (_WashGroundScale), not the pixel's ShoreDir: at a plateau's corner the pixel gradient turns
+                    // up to 90 degrees, and a box read across the shore there cut thin unbroken lenses into the band.
+                    // Twin: WaterSurface.AlongShoreGateDepth.
+                    float surfGateDepth = surfEvalDepth;
+                    if (surfShore > 0.0 && depth > 0.0 && _WashSurfSmooth > 0.0)
+                    {
+                        float2 alongAxis = dot(groundDir, groundDir) > 1e-6 ? groundDir : surfDir;
+                        float2 alongShore = float2(-alongAxis.y, alongAxis.x) * (_WashSurfSmooth / 3.0);
+                        // The box moves the pixel's own depth by the GROUND's along-shore mean, so the wave's height
+                        // in that depth is kept; and wet water stays wet: a tap on the next plateau up must not
+                        // read the pixel as dry ground (SurfBreaking01's depth <= 0), which cut unbroken lenses.
+                        float boxDepth = surfEvalDepth
+                                       + ((elevation - SeabedElevation(worldXY + warp + alongShore))
+                                          + (elevation - SeabedElevation(worldXY + warp - alongShore))) / 3.0;
+                        surfGateDepth = max(lerp(surfEvalDepth, boxDepth, surfShore), 1e-3);
+                    }
+                    surfBreaking = SurfBreaking01(surfGateDepth, surfFetchEnv);
                     if (surfBreaking > 0.002 && dot(surfDir, surfDir) > 1e-6)
                     {
                         float travelS = 0.0;
@@ -5444,13 +5513,20 @@ Shader "HiddenHarbours/Water"
                         // above the run-up's reach (a bar with water behind it reads 0 and keeps the open look),
                         // the band is the churn thresholded against the break gate, its energy's lift at
                         // _WashSurfLift: broken patches with water between them, thinning as the bore ages.
+                        // v9 (the editor look of 7e16896): the slab at peak was the LIP, not the sheet - the lip band
+                        // drew 1 across 1.5-2 m (the debug view's lip channel), smooth since v8 and capped at 0.6, so a
+                        // flat pale sheet; the lip now breaks on the same churn (surfShoreBreak). And the churn is read
+                        // _WashSurfDetail times finer: at the open breaker's scale its blobs were metres wide with
+                        // lattice-straight edges, drawn as brown and grey patches and a straight seam in the swash.
                         // Twins: WaterSurface.ShoreSurfShare01 / ShoreSurfCover01.
-                        if (_WashSurfReach > 0.0)
+                        if (surfShore > 0.0)
                         {
-                            float shoreTapDepth = _WaterLevel - SeabedElevation(surfEvalXY + surfDir * _WashSurfReach);
-                            surfShore = saturate(-shoreTapDepth / max(surfBeachReach, 1e-3));
+                            float churnShore = EvolvingField(worldXY, surfDrift,
+                                                             max(_SurfNoiseScale, 1e-3) * max(_WashSurfDetail, 1.0),
+                                                             _SurfEvolveSpeed, t);
+                            surfShoreBreak = smoothstep(thr - soft, thr + soft, churnShore);
                             surfCoverShore = smoothstep(thr - soft, thr + soft,
-                                                        saturate(churn + density * 0.75 * saturate(_WashSurfLift))
+                                                        saturate(churnShore + density * 0.75 * saturate(_WashSurfLift))
                                                         * saturate(surfBreaking * density));
                         }
                     }
@@ -6486,7 +6562,7 @@ Shader "HiddenHarbours/Water"
                     // THE LIP LAST, over the hollow it is throwing across — the brightest thing in the
                     // surf, and the thing that reads as the wave pitching forward.
                     float lip = lerp(SurfBandValue(saturate(surfLip), washThin > 0.001 ? 0.5 : bay), saturate(surfLip), washThin)
-                              * strength;
+                              * strength * lerp(1.0, surfShoreBreak, shoreSurf);
                     float3 lipFoam = FoamAgedColor(0.0, _SurfLipColor.rgb, _SurfAgeStrength, col.rgb);
                     col.rgb = lerp(col.rgb, lipFoam, lip * _SurfLipColor.a);
                     col.a   = max(col.a, lip * _SurfLipColor.a);
@@ -6753,7 +6829,13 @@ Shader "HiddenHarbours/Water"
                 // Where the bore's wash owns the shore, its residue takes the wash's read (above). Asked
                 // through the wash's own shore quantity, not the fragment's break gate: on the sand that
                 // gate reads 0, and the residue left there came back as the opaque point-read lattice.
-                float washZone = saturate(washOnSand);
+                // v9 (the editor look of 7e16896, the band's ~20 px seaward steps): the steps were THIS layer, not
+                // the surf - the debug view of the colour before it has a smooth band edge, the colour after it
+                // the stair. The bore deposits whole buffer cells, and seaward of the wash the open-water point
+                // read drew them as squares at the band's foot. The shore surf's zone (v8's shoreSurf, the same
+                // share the band itself is drawn by) now takes the residue's smooth read too; open water and a
+                // bar with water behind it (share 0) keep the point read, bit for bit.
+                float washZone = max(saturate(washOnSand), surfShore * saturate(washPresence));
                 // v4: across the hand-off the open-water read is taken WITHOUT its Bayer, so the blend of the
                 // two reads never shows a checker (the owner's "screen door" band in the wash).
                 float wakeFoam = WakeFoamCoverage(worldXY, washZone > 0.001 ? 0.5 : bay, wakeFresh);

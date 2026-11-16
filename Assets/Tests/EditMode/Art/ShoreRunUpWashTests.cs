@@ -55,6 +55,11 @@ namespace HiddenHarbours.Tests.Art.EditMode
             // v8 (the editor look of f07a839): the shore surf seaward of the wash, thresholded in the wash's language.
             ("_WashSurfReach", "10"),
             ("_WashSurfLift", "0"),
+            // v9 (the editor look of 7e16896): the shore churn's detail, the break gate's along-shore box, the ground's
+            // read scale.
+            ("_WashSurfDetail", "3"),
+            ("_WashSurfSmooth", "1.5"),
+            ("_WashGroundScale", "1.5"),
         };
 
         static string Src() => File.ReadAllText(ShaderPath, Encoding.UTF8).Replace("\r\n", "\n");
@@ -92,6 +97,8 @@ namespace HiddenHarbours.Tests.Art.EditMode
                 "the two v6 left-foam uniforms must be declared once");
             Assert.AreEqual(1, Regex.Matches(src, @"float  _WashSurfReach, _WashSurfLift;").Count,
                 "the two v8 shore-surf uniforms must be declared once");
+            Assert.AreEqual(1, Regex.Matches(src, @"float  _WashSurfDetail, _WashSurfSmooth, _WashGroundScale;").Count,
+                "the three v9 shore-surf uniforms must be declared once");
         }
 
         // ---- v6: the snap-back (owner clip review 2026-11-15: "it snaps back to the ocean instantaneiously as the
@@ -501,18 +508,105 @@ namespace HiddenHarbours.Tests.Art.EditMode
         public void TheShader_DrawsTheShoreSurf_OnlyBesideABeach_InTheWashLanguage()
         {
             string src = Src();
-            int pocket = IndexOf(src, "surfCover = saturate(surfCover * lerp(1.0, max(_SurfPocketBoost, 1.0), pocket));");
-            int gate = IndexOf(src, "if (_WashSurfReach > 0.0)");
+            // v9: the share is read BEFORE the break gate, which reads the along-shore box beside a beach.
+            int gate = IndexOf(src, "if (_WashSurfReach > 0.0 && dot(surfDir, surfDir) > 1e-6)");
             int tap = IndexOf(src, "float shoreTapDepth = _WaterLevel - SeabedElevation(surfEvalXY + surfDir * _WashSurfReach);");
             int share = IndexOf(src, "surfShore = saturate(-shoreTapDepth / max(surfBeachReach, 1e-3));");
+            int box = IndexOf(src, "surfGateDepth = lerp(surfEvalDepth, boxDepth, surfShore);");
+            int breaking = IndexOf(src, "surfBreaking = SurfBreaking01(surfGateDepth, surfFetchEnv);");
+            int pocket = IndexOf(src, "surfCover = saturate(surfCover * lerp(1.0, max(_SurfPocketBoost, 1.0), pocket));");
+            int fine = IndexOf(src, "max(_SurfNoiseScale, 1e-3) * max(_WashSurfDetail, 1.0),");
+            int brk = IndexOf(src, "surfShoreBreak = smoothstep(thr - soft, thr + soft, churnShore);");
             int thin = IndexOf(src, "float washThin = max(saturate(washOnSand), shoreSurf);");
             int drawn = IndexOf(src, "float surfCoverDrawn = lerp(surfCover, surfCoverShore, shoreSurf);");
-            Assert.That(pocket < gate && gate < tap && tap < share && share < thin && thin < drawn);
-            Assert.AreEqual(1, Regex.Matches(src, @"\bsurfShore = ").Count, "the share is set only inside its gate");
+            int lip = IndexOf(src, "* strength * lerp(1.0, surfShoreBreak, shoreSurf);");
+            Assert.That(gate < tap && tap < share && share < box && box < breaking && breaking < pocket
+                        && pocket < fine && fine < brk && brk < thin && thin < drawn && drawn < lip);
+            Assert.AreEqual(1, Regex.Matches(src, @"(?m)^ *surfShore = ").Count, "the share is set only inside its gate");
+            Assert.AreEqual(1, Regex.Matches(src, @"\bsurfBreaking = SurfBreaking01\(").Count, "one break gate");
             StringAssert.Contains("float shoreSurf = surfShore * saturate(washPresence);", src);
-            // The beach projection starts at the warped point and reads the tide depth there (twin BeachSurfEvalPoint).
+            // The beach projection starts at the warped point and reads the tide depth there (twin BeachSurfEvalPoint),
+            // down the ground's frame read over _WashGroundScale metres (v9), not the pixel's own slope.
             StringAssert.Contains(
-                "surfEvalXY = worldXY + warp + groundDir * ((_WaterLevel - elevation) / max(swashSlope, 1e-3));", src);
+                "surfEvalXY = worldXY + warp + groundDir * ((_WaterLevel - elevation) / max(groundSlope, 1e-3));", src);
+            StringAssert.Contains("float3 groundFrame = GroundFrame(worldXY, _WashGroundScale);", src);
+            // ...and one correcting step onto the still line, so a mound's pixels land where their neighbours read.
+            StringAssert.Contains(
+                "surfEvalXY += groundDir * ((_WaterLevel - SeabedElevation(surfEvalXY)) / max(groundSlope, 1e-3));", src);
+        }
+
+        // ---- v9: the slab, the seaward steps and the brown patches (the editor look of 7e16896, 11-15) ----------
+
+        [Test]
+        public void BesideABeach_TheGateDepth_RampsAcrossAPlateauStep_AndOutAtSeaItIsUnchanged()
+        {
+            // An 8-bit plateau shore: depth steps by one code (0.047 m) every 1.5 m along the shore. The gate read at
+            // each pixel's own depth jumps at each step; the along-shore box over 1.5 m spreads it over the box.
+            const float Code = 0.047f, Run = 1.5f, Half = 1.5f / 3f;
+            float Depth(float s) => 0.4f + Code * Mathf.Floor(s / Run);
+            float worstRaw = 0f, worstBox = 0f;
+            for (int i = 1; i < 600; i++)
+            {
+                float s0 = (i - 1) * 0.01f, s1 = i * 0.01f;
+                float r0 = Depth(s0), r1 = Depth(s1);
+                float b0 = WaterSurface.AlongShoreGateDepth(r0, Depth(s0 + Half), Depth(s0 - Half), 1f);
+                float b1 = WaterSurface.AlongShoreGateDepth(r1, Depth(s1 + Half), Depth(s1 - Half), 1f);
+                worstRaw = Mathf.Max(worstRaw, Mathf.Abs(r1 - r0));
+                worstBox = Mathf.Max(worstBox, Mathf.Abs(b1 - b0));
+                Assert.AreEqual(r0, WaterSurface.AlongShoreGateDepth(r0, Depth(s0 + Half), Depth(s0 - Half), 0f), 1e-6f,
+                    "out at sea the gate reads its own depth");
+            }
+            Assert.AreEqual(Code, worstRaw, 1e-4f, "premise: the raw gate jumps a whole code");
+            Assert.LessOrEqual(worstBox, Code / 3f + 1e-4f, "the box splits each jump in three, a third of a plateau apart");
+            // Wet water beside a plateau that stands above the still line stays wet (the lenses of the first v9 look).
+            Assert.Greater(WaterSurface.AlongShoreGateDepth(0.02f, -0.03f, -0.03f, 1f), 0f, "a dry tap never dries a wet pixel");
+        }
+
+        [Test]
+        public void OnAMound_TheCorrectingStep_PutsItsPixelsBackOnTheStillLine()
+        {
+            // A planar beach with a gravel mound (0.25 m high, 0.8 m across) standing on it 0.6 m up from the still line.
+            // The first step projects by the pixel's own height, so the mound's pixels land past the still line by
+            // their bump over the slope (the shards round the mounds); one Newton step on the ground brings them back.
+            // (A mound standing ON the still line defeats one step - the step lands on the mound - which is why
+            // a few small notches remain at the two mounds that sit at the waterline in the nmc2 frames.)
+            const float Water = 0.25f, Slope = 0.3f, C0 = 3f;
+            var n = new Vector2(0f, 1f);
+            var mound = new Vector2(0f, C0 + 0.6f);
+            float Elevation(Vector2 p) => Water + Slope * (Vector2.Dot(p, n) - C0)
+                                        + 0.25f * Mathf.Exp(-(p - mound).sqrMagnitude / (0.4f * 0.4f));
+            float TideDepth(Vector2 p) => Water - Elevation(p);
+            float worstFirst = 0f, worstRefined = 0f;
+            for (int k = 0; k <= 40; k++)
+            {
+                Vector2 p = mound + new Vector2(0.6f * (k - 20) / 20f, 0.1f);       // across the mound, just up the beach
+                Vector2 first = WaterSurface.BeachSurfEvalPoint(p, Vector2.zero, n, TideDepth(p), Slope);
+                Vector2 refined = WaterSurface.BeachSurfEvalPointRefined(p, Vector2.zero, n, TideDepth(p), Slope, TideDepth);
+                worstFirst = Mathf.Max(worstFirst, Mathf.Abs(TideDepth(first)));
+                worstRefined = Mathf.Max(worstRefined, Mathf.Abs(TideDepth(refined)));
+            }
+            Assert.Greater(worstFirst, 0.1f, "premise: the first step leaves the mound's pixels off the still line");
+            Assert.Less(worstRefined, worstFirst * 0.25f, "the correcting step brings them back onto it");
+            // On a planar beach the correcting step is 0.
+            float Plane(Vector2 p) => Water - (Water + Slope * (Vector2.Dot(p, n) - C0));
+            Vector2 q = new Vector2(1.3f, C0 + 0.2f);
+            Assert.AreEqual(WaterSurface.BeachSurfEvalPoint(q, Vector2.zero, n, Plane(q), Slope).y,
+                            WaterSurface.BeachSurfEvalPointRefined(q, Vector2.zero, n, Plane(q), Slope, Plane).y, 1e-5f);
+        }
+
+        [Test]
+        public void BesideABeach_TheLipBreaksWithTheChurn_AndOutAtSeaItIsTheOpenLip()
+        {
+            const float Thr = 0.42f, Soft = 0.16f;
+            int clear = 0;
+            for (int i = 0; i <= 100; i++)
+            {
+                float brk = Mathf.Clamp01((i / 100f - (Thr - Soft)) / (2f * Soft));
+                brk = brk * brk * (3f - 2f * brk);
+                Assert.AreEqual(1f, WaterSurface.ShoreLip01(1f, brk, 0f), 1e-6f, "out at sea: the open lip");
+                if (WaterSurface.ShoreLip01(1f, brk, 1f) <= 1e-6f) clear++;
+            }
+            Assert.Greater(clear, 20, "a full lip beside a beach shows water where the churn is low: no slab");
         }
 
         [Test]
@@ -535,7 +629,8 @@ namespace HiddenHarbours.Tests.Art.EditMode
             string wake = src.Substring(wakeAt, src.IndexOf("\n            }", wakeAt, System.StringComparison.Ordinal) - wakeAt);
             StringAssert.Contains("SAMPLE_TEXTURE2D(_HHFoamBufferTex, sampler_HHFoamBufferTex, uv)", wake);
 
-            int zone = IndexOf(src, "float washZone = saturate(washOnSand);");
+            // v9: and on the shore surf's zone, where the bore's deposited cells drew the band's seaward stair.
+            int zone = IndexOf(src, "float washZone = max(saturate(washOnSand), surfShore * saturate(washPresence));");
             int call = IndexOf(src, "float wakeFoam = WakeFoamCoverage(worldXY, washZone > 0.001 ? 0.5 : bay, wakeFresh);");
             int swap = IndexOf(src, "wakeFoam  = lerp(wakeFoam, WashResidueCoverage(worldXY, washFresh), washZone);");
             int fresh = IndexOf(src, "wakeFresh = lerp(wakeFresh, washFresh, washZone);");

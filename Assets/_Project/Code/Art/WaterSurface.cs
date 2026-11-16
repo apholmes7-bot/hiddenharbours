@@ -2552,10 +2552,27 @@ namespace HiddenHarbours.Art
         /// On a beach steeper than the floor every pixel of one shore normal lands on the same point of the still line,
         /// whatever the chop warp, so the run-up it reads is one shore quantity along the normal. (v7 started from
         /// <paramref name="worldXY"/> with the warped depth, so the warp's normal component moved the point.)
+        /// v9: the direction and slope are the ground frame's over ±_WashGroundScale, and the shader then takes ONE
+        /// correcting step (<see cref="BeachSurfEvalPointRefined"/>) so a gravel mound's pixels, sent past the still
+        /// line by their bump, come back onto it.
         /// </summary>
         public static Vector2 BeachSurfEvalPoint(Vector2 worldXY, Vector2 warp, Vector2 groundDir,
                                                  float tideDepthAtWarped, float swashSlope)
             => worldXY + warp + groundDir * (tideDepthAtWarped / Mathf.Max(swashSlope, 1e-3f));
+
+        /// <summary>
+        /// (v9, the editor look of 7e16896, the line torn round the gravel mounds) <see cref="BeachSurfEvalPoint"/>
+        /// plus the shader's one Newton step along the same normal: the tide depth read where the first step landed
+        /// (<paramref name="tideDepthAt"/>, metres; &lt; 0 = still dry) moves the point on by that depth over the slope.
+        /// On a planar beach the first step already lands on the still line and this one is 0.
+        /// </summary>
+        public static Vector2 BeachSurfEvalPointRefined(Vector2 worldXY, Vector2 warp, Vector2 groundDir,
+                                                        float tideDepthAtWarped, float swashSlope,
+                                                        System.Func<Vector2, float> tideDepthAt)
+        {
+            Vector2 p = BeachSurfEvalPoint(worldXY, warp, groundDir, tideDepthAtWarped, swashSlope);
+            return p + groundDir * (tideDepthAt(p) / Mathf.Max(swashSlope, 1e-3f));
+        }
 
         /// <summary>
         /// The share of the breaker that is SHORE surf — the shader's <c>surfShore</c>: 0 while the ground
@@ -2582,6 +2599,31 @@ namespace HiddenHarbours.Art
         public static float OpenSurfCover01(float churn, float density, float breaking, float threshold, float soft)
             => HlslSmoothStep(threshold - soft, threshold + soft, Mathf.Clamp01(churn + density * 0.75f))
              * Mathf.Clamp01(breaking * density);
+
+        /// <summary>
+        /// (v9, the editor look of 7e16896) <b>The depth the break gate reads beside a beach</b>: the shader's
+        /// <c>surfGateDepth</c>. On the 8-bit height map the shore runs in flat plateaus about 1.5 m long, so the gate's
+        /// depth contour stepped about 20 px seaward at each one. Beside a beach (<paramref name="shoreShare"/>) the
+        /// depth is the mean of the pixel's read and two reads <c>_WashSurfSmooth / 3</c> metres either side ALONG the
+        /// shore, which spans a plateau and ramps the step. Out at sea (share 0) the gate reads its own depth as before.
+        /// Wet water stays wet (floor 1e-3, the shader's): a tap on the next plateau up, above the still line, must not
+        /// read a wet pixel as dry ground, the gate's 0, which cut thin unbroken lenses into the band.
+        /// Only called for a wet pixel (centreDepth &gt; 0), as the shader's branch is.
+        /// </summary>
+        public static float AlongShoreGateDepth(float centreDepth, float plusDepth, float minusDepth, float shoreShare)
+        {
+            float box = (centreDepth + plusDepth + minusDepth) / 3f;
+            return Mathf.Max(Mathf.Lerp(centreDepth, box, Mathf.Clamp01(shoreShare)), 1e-3f);
+        }
+
+        /// <summary>
+        /// (v9) <b>The lip beside a beach breaks with the churn</b>, the shader's <c>lip * lerp(1, surfShoreBreak,
+        /// shoreSurf)</c>. The slab at peak was the lip band: 1 across 1.5-2 m, drawn smooth since v8. Beside a beach
+        /// (<paramref name="shoreSurf"/>) it is multiplied by the thresholded fine churn
+        /// (<paramref name="shoreBreak"/>), so water shows through it; out at sea it is the open breaker's lip.
+        /// </summary>
+        public static float ShoreLip01(float lip, float shoreBreak, float shoreSurf)
+            => Mathf.Clamp01(lip) * Mathf.Lerp(1f, Mathf.Clamp01(shoreBreak), Mathf.Clamp01(shoreSurf));
 
         static float HlslSmoothStep(float a, float b, float x)
         {

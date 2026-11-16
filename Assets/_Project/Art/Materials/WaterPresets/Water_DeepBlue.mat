@@ -162,6 +162,7 @@ Material:
     - _WakeFoamThreshold: 0.12
     - _WakeFoamWhiteHold: 0.12
     - _WashAnatomyFade: 0.05
+    - _WashGroundScale: 1.5
     - _WashLeeShare: 1
     - _WashLeftFoamOpacity: 0.6
     - _WashLeftFoamSeconds: 2
@@ -172,8 +173,10 @@ Material:
     - _WashResidueSoften: 0.125
     - _WashSeawardDepth: 0.8
     - _WashSheetOpacity: 0.2
+    - _WashSurfDetail: 3
     - _WashSurfLift: 0
     - _WashSurfReach: 10
+    - _WashSurfSmooth: 1.5
     - _WaterLevel: 0
     - _WhitecapTexScale: 0.0625
     - _WhitecapTexStrength: 0
