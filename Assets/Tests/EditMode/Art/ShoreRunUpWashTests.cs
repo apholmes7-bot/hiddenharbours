@@ -512,7 +512,8 @@ namespace HiddenHarbours.Tests.Art.EditMode
             int gate = IndexOf(src, "if (_WashSurfReach > 0.0 && dot(surfDir, surfDir) > 1e-6)");
             int tap = IndexOf(src, "float shoreTapDepth = _WaterLevel - SeabedElevation(surfEvalXY + surfDir * _WashSurfReach);");
             int share = IndexOf(src, "surfShore = saturate(-shoreTapDepth / max(surfBeachReach, 1e-3));");
-            int box = IndexOf(src, "surfGateDepth = lerp(surfEvalDepth, boxDepth, surfShore);");
+            // The box is floored at 1e-3 so a tap on a dry plateau never dries a wet pixel (twin AlongShoreGateDepth).
+            int box = IndexOf(src, "surfGateDepth = max(lerp(surfEvalDepth, boxDepth, surfShore), 1e-3);");
             int breaking = IndexOf(src, "surfBreaking = SurfBreaking01(surfGateDepth, surfFetchEnv);");
             int pocket = IndexOf(src, "surfCover = saturate(surfCover * lerp(1.0, max(_SurfPocketBoost, 1.0), pocket));");
             int fine = IndexOf(src, "max(_SurfNoiseScale, 1e-3) * max(_WashSurfDetail, 1.0),");
