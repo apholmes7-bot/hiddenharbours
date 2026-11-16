@@ -342,7 +342,7 @@ namespace HiddenHarbours.Core
             {
                 if (body[k] != ' ') continue;
                 if (body.Length - (k + 1) + 1 > cols) break;     // the words after this space, and a stop
-                start = k + 1;
+                if (!FollowsANumber(body, k)) start = k + 1;    // never "Kg winter flounder."
             }
             if (start > 0)
             {
@@ -354,6 +354,15 @@ namespace HiddenHarbours.Core
             int room = cols - FitMark.Length;
             if (room <= 0) return text.Substring(0, cols);
             return text.Substring(0, room).TrimEnd() + FitMark;
+        }
+
+        /// <summary>Whether the word ending just before the space at <paramref name="space"/> holds a
+        /// digit — a tail starting there would open on the number's unit.</summary>
+        private static bool FollowsANumber(string s, int space)
+        {
+            for (int k = space - 1; k >= 0 && s[k] != ' '; k--)
+                if (char.IsDigit(s[k])) return true;
+            return false;
         }
 
         /// <summary>

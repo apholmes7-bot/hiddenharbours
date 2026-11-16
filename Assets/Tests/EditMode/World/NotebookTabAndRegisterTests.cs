@@ -44,6 +44,9 @@ namespace HiddenHarbours.Tests.World.EditMode
             Assert.AreEqual("Atlantic cod.", NotebookLayout.FitLine(line, 14), "the 1280x720 head beside a weight");
             Assert.AreEqual("9.4 kg atlantic cod.", NotebookLayout.FitLine(line, 20));
             Assert.AreEqual("Cod.", NotebookLayout.FitLine(line, 5));
+            Assert.AreEqual("Winter flounder.",
+                NotebookLayout.FitLine("Landed a 0.4 kg winter flounder — a small one.", 21),
+                "a tail never opens on a number's unit");
         }
 
         [Test]
