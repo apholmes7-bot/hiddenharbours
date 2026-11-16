@@ -92,9 +92,10 @@ are available.
   list sits in a screen corner. The panel is as wide as its longest row, from the popup's width up to the
   kit's widest line (34 characters). It grows up and left from the popup's corner, and only past the cap
   is a row cut ("..."). The single-action popup wears the same dress: a one-line speech bubble
-  (18 kit px tall) in the same corner, widening left for a long label (28 characters, cut with "...").
-  Both snap their top-left corner to a whole screen pixel and set their type upper-left, a whole number
-  of kit pixels in, as the speech bubble's body is set. Rows
+  (18 kit px tall) in the same corner, sized to its label like the speech bubble (from the kit's
+  narrowest panel up to 28 characters, cut with "..."), its right edge fixed. Both snap to whole screen
+  pixels right edge first, so they end on one column, and set their type upper-left, a whole number of
+  kit pixels in, as the speech bubble's body is set. Rows
   that read exactly the same collapse into the nearer one. With one option the press acts at once, as before. The
   player picks with W/S or the arrows plus E or Enter, with the number keys 1–9, or with the mouse
   (hover selects, click picks); Esc puts it down. The order is the interact ladder: priority, then

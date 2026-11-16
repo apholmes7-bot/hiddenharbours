@@ -153,13 +153,14 @@ namespace HiddenHarbours.UI
                 int w = HudScreen.Width, h = HudScreen.Height;
                 Vector2 popup = InteractPopupLayout.PanelAnchoredPosition(HelmFootprint.Current,
                                                                           QuestNoteFootprint.Current, w, h);
-                _panel.sizeDelta = new Vector2(_width, InteractChooserLayout.PanelHeight(_paintedCount));
-                // The panel's top-left corner, where the rows' words are measured from, on a whole SCREEN
-                // pixel (the speech bubble's own rule), so the face starts on the grid.
+                // On whole SCREEN pixels (the speech bubble's own rule), so the face starts on the grid:
+                // the right edge first, exactly as the popup snaps it, so the two end on one column; then
+                // the left from it, and the top.
                 Vector2 at = InteractChooserLayout.PanelAnchoredPosition(popup, _paintedCount, _width);
                 float s = HudBandLayout.ScaleFactor(w, h);
-                _panel.anchoredPosition = new Vector2(InteractPopupLayout.SnapToScreen(at.x, s),
-                                                      InteractPopupLayout.SnapToScreen(at.y, s));
+                Vector2 span = InteractPopupLayout.SnapSpan(at.x, _width, s);
+                _panel.sizeDelta = new Vector2(span.y, InteractChooserLayout.PanelHeight(_paintedCount));
+                _panel.anchoredPosition = new Vector2(span.x, InteractPopupLayout.SnapToScreen(at.y, s));
 
                 Vector2 textSize = InteractChooserLayout.TextSize(_width);
                 for (int i = 0; i < _labels.Length; i++)

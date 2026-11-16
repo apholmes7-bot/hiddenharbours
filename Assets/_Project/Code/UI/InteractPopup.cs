@@ -320,15 +320,17 @@ namespace HiddenHarbours.UI
             string text = _label.text;
             float width = InteractPopupLayout.BubbleWidth(
                 Mathf.Max(_label.preferredWidth, InteractPopupLayout.EstimateTextUnits(text)));
-            _bubble.sizeDelta = new Vector2(width, InteractPopupLayout.PanelHeight);
             _label.rectTransform.sizeDelta = new Vector2(width - 2f * InteractPopupLayout.TextPadX,
                                                          InteractPopupLayout.TextSize().y);
 
+            // Right edge first (the chooser snaps the same edge the same way), then the left from it.
             float s = HudBandLayout.ScaleFactor(HudScreen.Width, HudScreen.Height);
             Vector2 frame = _panel.anchoredPosition;
-            float left = frame.x + InteractPopupLayout.PanelWidth - width;
+            float right = frame.x + InteractPopupLayout.PanelWidth;
+            Vector2 span = InteractPopupLayout.SnapSpan(right - width, width, s);
             float top = frame.y;
-            _bubble.anchoredPosition = new Vector2(InteractPopupLayout.SnapToScreen(left, s) - left,
+            _bubble.sizeDelta = new Vector2(span.y, InteractPopupLayout.PanelHeight);
+            _bubble.anchoredPosition = new Vector2(span.x + span.y - right,
                                                    InteractPopupLayout.SnapToScreen(top, s) - top);
         }
 

@@ -198,11 +198,35 @@ namespace HiddenHarbours.Tests.UI.EditMode
             Assert.AreEqual(InteractPopupLayout.MaxBubbleWidth, width, 1e-4f);
             Assert.GreaterOrEqual(width - 2f * InteractPopupLayout.TextPadX - words, InteractPopupLayout.Kit,
                 "at least a kit pixel spare after the longest label");
-            Assert.AreEqual(InteractPopupLayout.PanelWidth, InteractPopupLayout.BubbleWidth(0f), 1e-4f,
-                "a short label keeps the placed width");
+            Assert.AreEqual(HiddenHarbours.Core.DialogueBubbleKit.PanelWidthFor(HiddenHarbours.Core.DialogueBubbleKit.MinCols)
+                            * InteractPopupLayout.Kit, InteractPopupLayout.BubbleWidth(0f), 1e-4f,
+                "a short label is the speech bubble's narrowest panel (fix-4 look: \"Climb in\" sat in a mostly empty bubble)");
+            float climbIn = InteractPopupLayout.BubbleWidth(InteractPopupLayout.EstimateTextUnits("Climb in"));
+            Assert.Less(climbIn, InteractPopupLayout.PanelWidth, "it shrinks to its words");
+            Assert.GreaterOrEqual(climbIn - 2f * InteractPopupLayout.TextPadX,
+                InteractPopupLayout.EstimateTextUnits("Climb in"), "and still holds them");
             foreach (float w in new[] { 1f, 100f, 271f, 333f })
                 Assert.AreEqual(0f, InteractPopupLayout.BubbleWidth(w) % InteractPopupLayout.Kit, 1e-4f);
             Assert.Less(InteractPopupLayout.MaxBubbleWidth, InteractPopupLayout.RefW * 0.4f, "still a corner note");
+        }
+
+        [Test]
+        public void EverySpanInTheCorner_EndsOnOneSnappedRightEdge()
+        {
+            // Fix-4 look: short popup 1897, long popup 1895, chooser 1895 — three right edges for one corner.
+            float right = InteractPopupLayout.PanelAnchoredPosition().x + InteractPopupLayout.PanelWidth;
+            foreach (float s in new[] { 1f, 1.5f, 2f, 1.0667f })
+            {
+                float edge = InteractPopupLayout.SnapToScreen(right, s);
+                foreach (float width in new[] { 147f, 201f, 456f, 522f, 582f })
+                {
+                    Vector2 span = InteractPopupLayout.SnapSpan(right - width, width, s);
+                    Assert.AreEqual(edge, span.x + span.y, 1e-3f, $"width {width} at {s}x: one right edge");
+                    float leftPx = span.x * s;
+                    Assert.AreEqual(Mathf.Round(leftPx), leftPx, 1e-3f, "and the words start on a whole pixel");
+                    Assert.LessOrEqual(Mathf.Abs(span.y - width), 1f / s + 1e-3f, "the width moves by under a pixel");
+                }
+            }
         }
 
         [Test]

@@ -48,15 +48,17 @@ namespace HiddenHarbours.UI
         public const float TextX = DialogueBubbleKit.OptionTextX * Kit;
 
         /// <summary>
-        /// Where a row's line of type starts, down from the row's top: the kit's label origin
-        /// (<see cref="DialogueBubbleKit.OptionTextY"/>, from the bubble's top) less the bubble's top inset
-        /// (<see cref="DialogueBubbleKit.OptionInsetT"/>), so the words are set UPPER-left a whole number
-        /// of kit pixels into their row, as the speech bubble's body is, never centred. Centring the
-        /// face's 10-px line in a 13-px row puts it 1.5 kit pixels down. That is half a kit pixel off the
-        /// grid, a quarter pixel at 1080p's 1.5x, and the likely source of the broken glyphs in the
-        /// 2026-11-15 look.
+        /// Where a row's line of type starts, down from the row's top: the face's 8-px glyph cell (cap
+        /// height plus descender) centred in the 13-px row, the odd kit pixel going BELOW, so the words are
+        /// set UPPER-left a whole number of kit pixels in (3), as the speech bubble's body is, never
+        /// middle-aligned. Middle alignment centres the face's 10-px LINE (leading included), which puts the
+        /// glyphs 1.5 kit pixels down: half a kit pixel off the grid, a quarter pixel at 1080p's 1.5x, and
+        /// the broken glyphs of the 2026-11-15 look. The kit's label origin
+        /// (<see cref="DialogueBubbleKit.OptionTextY"/> = 4 px into the row) measured 2-3 screen px low in
+        /// the gold with descenders through its foot (fix-4 look), hence the centred cell.
         /// </summary>
-        public const float TextDrop = (DialogueBubbleKit.OptionTextY - DialogueBubbleKit.OptionInsetT) * Kit;
+        public const float TextDrop =
+            (DialogueBubbleKit.OptionRowHeight - DialogueBubbleKit.GlyphHeight + 1) / 2 * Kit;
 
         /// <summary>The hand's centre, from the panel's left edge: halfway into the gutter, as the bubble.</summary>
         public const float CursorX = DialogueBubbleKit.OptionTextX * Kit * 0.5f;

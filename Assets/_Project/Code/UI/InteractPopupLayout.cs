@@ -99,15 +99,37 @@ namespace HiddenHarbours.UI
         public static float EstimateTextUnits(string text)
             => string.IsNullOrEmpty(text) ? 0f : text.Length * AdvanceUnits;
 
+        /// <summary>The narrowest the drawn bubble gets: the speech bubble's own narrowest panel
+        /// (<c>DialogueBubbleKit.PanelWidthFor(MinCols)</c>), so "Climb in" is a small bubble, not a
+        /// mostly empty one.</summary>
+        public const float MinBubbleWidth =
+            (DialogueBubbleKit.PanelInsetL + DialogueBubbleKit.MinCols * DialogueBubbleKit.CellWidth - 1
+             + DialogueBubbleKit.PanelInsetR) * Kit;
+
         /// <summary>
         /// The drawn bubble's width for a label <paramref name="textUnits"/> wide: insets + words + slack,
         /// rounded up to whole kit pixels (so the 9-slice lands on the grid), in
-        /// [<see cref="PanelWidth"/>, <see cref="MaxBubbleWidth"/>].
+        /// [<see cref="MinBubbleWidth"/>, <see cref="MaxBubbleWidth"/>]. It sizes to its words, as the
+        /// speech bubble does; the PLACED rect stays <see cref="PanelWidth"/> wide.
         /// </summary>
         public static float BubbleWidth(float textUnits)
         {
-            float raw = Mathf.Clamp(TextPadX * 2f + textUnits + SlackKitPixels * Kit, PanelWidth, MaxBubbleWidth);
+            float raw = Mathf.Clamp(TextPadX * 2f + textUnits + SlackKitPixels * Kit, MinBubbleWidth, MaxBubbleWidth);
             return Mathf.Ceil(raw / Kit - 0.001f) * Kit;
+        }
+
+        /// <summary>
+        /// A horizontal span (<paramref name="left"/>, <paramref name="width"/>, reference units from the
+        /// host's left) put on whole screen pixels RIGHT EDGE FIRST: the right edge is snapped, the left is
+        /// derived from it and snapped too, and the width is what lies between. Every surface in the corner
+        /// snaps the same right edge the same way, so the popup and the chooser end on one pixel column,
+        /// and the words still start on a whole pixel. Returns (left, width).
+        /// </summary>
+        public static Vector2 SnapSpan(float left, float width, float scale)
+        {
+            float right = SnapToScreen(left + width, scale);
+            float l = SnapToScreen(right - width, scale);
+            return new Vector2(l, right - l);
         }
 
         /// <summary>
