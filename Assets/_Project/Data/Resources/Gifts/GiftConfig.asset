@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2a8164c9d5b343aebb71a6db888f82ac, type: 3}
+  m_Name: GiftConfig
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.GiftConfig
+  GiftsPerNpcPerDay: 1
+  Lines:
+    Loved:
+    - 'Oh, for me? You shouldn''t have. I won''t forget this.'
+    - 'Now that is a kindness. You''ve made my whole day.'
+    Liked:
+    - 'That''s good of you. Thank you.'
+    - 'Well now, I''ll put that to good use. Thank you.'
+    Neutral:
+    - 'Thank you kindly.'
+    - 'That''s thoughtful of you. Thank you.'
+    Disliked:
+    - 'Oh. Well. It''s the thought that counts, isn''t it.'
+    - 'Ah. Thank you, I suppose. I''ll find a use for it.'
+    NotGiftable:
+    - 'Oh, I couldn''t take that from you. You''ll be needing it.'
+    AlreadyGiftedToday:
+    - 'You''ve been too good to me already today. Keep that one for yourself.'

@@ -195,6 +195,14 @@ namespace HiddenHarbours.Core
         public static IFishSizeFacts FishSizes { get; set; }
 
         /// <summary>
+        /// WHETHER AN ITEM MAY BE GIVEN (<see cref="IGiftableFacts"/>) — published by the Fishing module's
+        /// species registry off <c>FishSpeciesDef.Giftable</c>, read by the world layer's gift act. May be
+        /// null: the giver then uses its default for the kind of thing held (a loose catch is giftable).
+        /// FLAG lead-architect: new Core contract (2026-11-15, NPC gifting).
+        /// </summary>
+        public static IGiftableFacts GiftableFacts { get; set; }
+
+        /// <summary>
         /// What a radar can see (ADR 0025 S5): the NPC vessels and buoys out there right now, published
         /// by whoever is driving them and read by the scope at the helm (<see cref="IRadarContacts"/>).
         ///
@@ -1390,6 +1398,7 @@ namespace HiddenHarbours.Core
             FishSchools = null;          // → EmptyFishSchools.Instance; this property is never null
             FishBehaviour = null;        // → EmptyFishBehaviourFacts.Instance; likewise never null
             FishSizes = null;            // nullable by contract: no size word without a registry
+            GiftableFacts = null;        // nullable by contract: the giver falls back to its kind default
             RadarContacts = null;        // → EmptyRadarSea.Instance; likewise never null
             BirdPresence = null;         // → EmptyBirdPresence.Instance; likewise never null
             Save = null;

@@ -18,3 +18,24 @@ MonoBehaviour:
   Dialogue: {fileID: 11400000, guid: ce56c54704d547acb17284794d02613a, type: 2}
   CompletionFlag: met_basil
   Build: {fileID: 11400000, guid: e2f8f5fbb3760dc4ba2f13d192d64a46, type: 2}
+  Gifts:
+    LovedItemIds:
+    - fish.haddock
+    LikedItemIds: []
+    DislikedItemIds:
+    - fish.cunner
+    - fish.atlantic_tomcod
+    LovedTags: []
+    LikedTags:
+    - inshore_groundfish
+    DislikedTags: []
+    Lines:
+      Loved:
+      - 'Haddock. Forty-one years and I never tired of it. You''ve a good eye.'
+      Liked:
+      - 'A proper fish from off the bottom. That''s kindly meant, and kindly taken.'
+      Neutral: []
+      Disliked:
+      - 'We used those for bait, when I was going out. Still, it''s the thought.'
+      NotGiftable: []
+      AlreadyGiftedToday: []
