@@ -60,5 +60,17 @@ namespace HiddenHarbours.Core
             => worldStopped || keysCaptured ? HudIntents.None : raw;
 
         public static HudIntents Apply(in HudIntents raw) => Apply(raw, WorldStopped, HelmKeyCapture.IsCapturing);
+
+        /// <summary>
+        /// The interaction chooser's gates (2026-11-15). A stopped world takes everything (a list left up
+        /// under the pause menu waits, it is not driven through it), and so does a text field that owns
+        /// the keys. The move claim does NOT apply: the chooser is the claimant, and steering on the axis
+        /// is exactly what it raised the claim for.
+        /// </summary>
+        public static ChooserIntents Apply(in ChooserIntents raw, bool worldStopped, bool keysCaptured)
+            => worldStopped || keysCaptured ? ChooserIntents.None : raw;
+
+        public static ChooserIntents Apply(in ChooserIntents raw)
+            => Apply(raw, WorldStopped, HelmKeyCapture.IsCapturing);
     }
 }

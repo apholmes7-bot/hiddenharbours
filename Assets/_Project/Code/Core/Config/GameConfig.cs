@@ -230,6 +230,41 @@ namespace HiddenHarbours.Core
         [Tooltip("Which weekday is Market Day at Nine Mile Creek (0 = Monday).")]
         public int MarketDayIndex = 4; // Friday
 
+        /// <summary>The chooser's switch when no config is wired: ON (owner ask 2026-11-15).</summary>
+        public const bool DefaultInteractChooserEnabled = true;
+
+        /// <summary>The highest candidate rung that becomes a chooser row when no config is wired: the
+        /// fixture rung (<see cref="InteractPriority.Fixture"/>).</summary>
+        public const int DefaultInteractChooserMaxPriority = InteractPriority.Fixture;
+
+        /// <summary>The most rows the chooser shows when no config is wired.</summary>
+        public const int DefaultInteractChooserMaxRows = 6;
+
+        /// <summary>The heavy-work needs bar when no config is wired: refused only when worn out or hungry
+        /// (the Strong stage of each).</summary>
+        public static readonly NeedsRequirement DefaultHeavyWorkNeeds =
+            new NeedsRequirement(NeedStage.Strong, NeedStage.Strong);
+
+        [Header("Interaction chooser (owner 2026-11-15)")]
+        [Tooltip("When ON, pressing interact where two or more actions are in reach opens a small list to " +
+                 "pick from (arrows/W-S + E or Enter, number keys, or the mouse). OFF: the press acts on the " +
+                 "nearest, most specific thing, as before.")]
+        public bool InteractChooserEnabled = DefaultInteractChooserEnabled;
+
+        [Tooltip("The highest interaction rung that joins the list. 0 = fixtures and below (beds, doors, " +
+                 "lids, counters). Things in your hands (20), at your feet (10) and tool targets (30) keep " +
+                 "acting at once, because what you hold is what you meant.")]
+        public int InteractChooserMaxPriority = DefaultInteractChooserMaxPriority;
+
+        [Tooltip("The most rows the list shows (at most 9, one per number key).")]
+        [Range(2, InteractChoiceList.HardCap)] public int InteractChooserMaxRows = DefaultInteractChooserMaxRows;
+
+        [Tooltip("The bar for heavy work, for an action that opts in: refused at this tiredness / hunger " +
+                 "stage or worse, and the player says \"I'm too tired\" / \"I'm too hungry\" / both. None = " +
+                 "never refused for that need. No action opts in yet (the needs ruling: a need never stops " +
+                 "the character); this is the dial for when one does.")]
+        public NeedsRequirement HeavyWorkNeeds = DefaultHeavyWorkNeeds;
+
         [Header("Tide")]
         [Tooltip("Principal lunar semidiurnal period in hours (~12.42 = two highs per tidal day).")]
         public float TidalPeriodHours = 12.4206f;

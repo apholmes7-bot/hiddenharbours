@@ -210,5 +210,15 @@ namespace HiddenHarbours.Core
         /// <summary>The hook has just been set in a fish in the top band of her species
         /// (<c>GameConfig.FishFeel.BigOneThreshold01</c>). Raised by the rod loop once per such hook.</summary>
         public const string BigOneHooked = "cue.fishing.big_one_hooked";
+
+        /// <summary>An action was refused because she is too tired (<see cref="NeedsGate"/>).</summary>
+        public const string TooTired = "cue.needs.too_tired";
+
+        /// <summary>An action was refused because she is too hungry (<see cref="NeedsGate"/>).</summary>
+        public const string TooHungry = "cue.needs.too_hungry";
+
+        /// <summary>An action was refused because she is both (<see cref="NeedsGate"/>): one combined
+        /// line, never two bubbles.</summary>
+        public const string TooTiredAndHungry = "cue.needs.too_tired_and_hungry";
     }
 }
