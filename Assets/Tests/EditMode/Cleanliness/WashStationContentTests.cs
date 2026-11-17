@@ -109,6 +109,26 @@ namespace HiddenHarbours.Tests.EditMode
                 Assert.AreEqual(d.Sources[i].PerAction, shipped.Sources[i].PerAction, 1e-6f);
             }
             Assert.AreEqual(d.SeaStationId, shipped.SeaStationId);
+            Assert.AreEqual(d.SoapSupplyId, shipped.SoapSupplyId);
+            Assert.AreEqual(d.WashesPerSoapBar, shipped.WashesPerSoapBar);
+            Assert.AreEqual(d.UnsoapedCeiling, shipped.UnsoapedCeiling, 1e-6f);
+            Assert.AreEqual(d.NoSoapLine, shipped.NoSoapLine);
+        }
+
+        [Test]
+        public void TheSoapCap_SitsBetweenTheSinkAndTheShower_SoOnlyTheShowerAndBathNeedSoap()
+        {
+            CleanlinessSettings d = CleanlinessSettings.Default;
+            WashStationDef sea = Only(WashStationKind.Sea), sink = Only(WashStationKind.Sink);
+            WashStationDef shower = Only(WashStationKind.Shower), bath = Only(WashStationKind.Bath);
+            Assert.IsTrue(d.SoapRuleOn, "the shipped rule names a soap");
+            Assert.Greater(d.UnsoapedCeiling, sink.Ceiling, "without soap a shower still beats the sink");
+            Assert.Less(d.UnsoapedCeiling, 1f, "without soap nobody reaches fully clean");
+            Assert.IsTrue(CleanlinessMath.SoapMatters(shower, d), "the shower needs soap for the last of it");
+            Assert.IsTrue(CleanlinessMath.SoapMatters(bath, d), "so does the bath");
+            Assert.IsFalse(CleanlinessMath.SoapMatters(sink, d), "the sink keeps its own lower cap");
+            Assert.IsFalse(CleanlinessMath.SoapMatters(sea, d), "the sea is unchanged");
+            Assert.IsFalse(string.IsNullOrWhiteSpace(d.NoSoapLine), "the player is told why he stopped short");
         }
     }
 }

@@ -84,6 +84,7 @@ the reason recorded in the guard.
 | `bait.shucked_clam` | 3 | leblancs | offer (seller **added**) |
 | `bait.fish_scrap` | 1 | leblancs | offer (seller **added**) |
 | `supply.ice` / `bread` / `tinned_beans` / `oatcakes` | 6 / 4 / 3 / 2 | leblancs | shelf |
+| `supply.soap_bar` | 3 | leblancs (8 showers or baths a bar; see `docs/world/washrooms-plan.md` §1a) | shelf |
 | `instrument.depth_sounder` | 140 | leblancs | shelf |
 | `instrument.fish_finder` | 480 | leblancs (same dash cutout as the sounder) | offer (seller **added**) |
 | `instrument.gps` (chartplotter) | 650 | nmc_chandlery (wants a wheelhouse boat) | offer (seller **added**) |

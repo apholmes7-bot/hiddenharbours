@@ -21,11 +21,24 @@ namespace HiddenHarbours.Core
         /// <summary>The station's <see cref="WashStationDef.Id"/>.</summary>
         public readonly string StationId;
 
+        /// <summary>True when this wash uses soap (owner ask 2026-11-17): the hook for a lather or froth look
+        /// and a scrubbing sound. Same value on the "began" and the "ended" edge of one wash.</summary>
+        public readonly bool Soaped;
+
+        /// <summary>True when soap would have taken this wash further and the player had none (a shower or a
+        /// bath without soap stops short of fully clean). Never true together with <see cref="Soaped"/>.</summary>
+        public readonly bool SoapMissing;
+
         public PlayerWashChanged(bool washing, WashStationKind kind, string stationId)
+            : this(washing, kind, stationId, false, false) { }
+
+        public PlayerWashChanged(bool washing, WashStationKind kind, string stationId, bool soaped, bool soapMissing)
         {
             Washing = washing;
             Kind = kind;
             StationId = stationId ?? "";
+            Soaped = soaped;
+            SoapMissing = soapMissing && !soaped;
         }
     }
 }

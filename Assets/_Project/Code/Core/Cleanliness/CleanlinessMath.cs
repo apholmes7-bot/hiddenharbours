@@ -46,6 +46,36 @@ namespace HiddenHarbours.Core
             return new WashPull(station.CleanRatePerGameHour, 1f - Clamp01(station.Ceiling), station.PullsBothWays);
         }
 
+        /// <summary>The pull of <paramref name="station"/> washing only up to <paramref name="ceiling"/> (0..1,
+        /// see <see cref="CeilingOf"/>); the do-nothing pull for null, a toilet, or a zero rate.</summary>
+        public static WashPull PullOf(WashStationDef station, float ceiling)
+        {
+            if (station == null || !station.Washes) return default;
+            return new WashPull(station.CleanRatePerGameHour, 1f - Clamp01(ceiling), station.PullsBothWays);
+        }
+
+        /// <summary>
+        /// <b>Does soap change how clean <paramref name="station"/> can get the player?</b> (owner ask
+        /// 2026-11-17: soap is needed to reach 100 %.) Only with the soap rule on, at a station that washes, is
+        /// not the sea (salt water, never soaped), and whose own ceiling is above
+        /// <see cref="CleanlinessSettings.UnsoapedCeiling"/>: a shower or a bath, never the sink.
+        /// </summary>
+        public static bool SoapMatters(WashStationDef station, in CleanlinessSettings settings)
+        {
+            if (!settings.SoapRuleOn || station == null || !station.Washes) return false;
+            if (station.PullsBothWays || station.Kind == WashStationKind.Sea) return false;
+            return Clamp01(station.Ceiling) > Clamp01(settings.UnsoapedCeiling);
+        }
+
+        /// <summary>How clean (0..1) <paramref name="station"/> can get the player, soaped or not: its own
+        /// ceiling, or the unsoaped cap when soap matters there and this wash has none. 0 for null.</summary>
+        public static float CeilingOf(WashStationDef station, in CleanlinessSettings settings, bool soaped)
+        {
+            if (station == null) return 0f;
+            if (soaped || !SoapMatters(station, settings)) return Clamp01(station.Ceiling);
+            return Clamp01(settings.UnsoapedCeiling);
+        }
+
         /// <summary><paramref name="dirt"/> raised by <paramref name="amount"/>, clamped to 0..1.</summary>
         public static float Rise(float dirt, double amount)
         {
@@ -71,6 +101,12 @@ namespace HiddenHarbours.Core
         /// <paramref name="gameHours"/> at <paramref name="station"/>.</summary>
         public static float AfterWash(float dirt, WashStationDef station, double gameHours)
             => Approach(dirt, PullOf(station), gameHours);
+
+        /// <summary>The same, under the soap rule: <paramref name="dirt"/> after <paramref name="gameHours"/> at
+        /// <paramref name="station"/>, with or without soap.</summary>
+        public static float AfterWash(float dirt, WashStationDef station, in CleanlinessSettings settings,
+                                      bool soaped, double gameHours)
+            => Approach(dirt, PullOf(station, CeilingOf(station, settings, soaped)), gameHours);
 
         /// <summary>The extra dirt per game hour a stretch of <paramref name="kind"/> adds (first matching
         /// row; 0 for none or no row).</summary>

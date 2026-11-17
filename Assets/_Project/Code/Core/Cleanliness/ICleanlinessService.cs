@@ -28,6 +28,23 @@ namespace HiddenHarbours.Core
         /// <summary>The station being washed at, or null.</summary>
         WashStationDef WashingAt { get; }
 
+        /// <summary>True while the wash going on uses soap (decided, and the soap used, when it began).</summary>
+        bool WashSoaped { get; }
+
+        /// <summary>True when the player has soap for at least one more wash (false with the soap rule off).</summary>
+        bool HasSoap { get; }
+
+        /// <summary>True when soap changes how clean <paramref name="station"/> can get the player (a shower
+        /// or a bath; never the sink or the sea; never with the soap rule off).</summary>
+        bool SoapMatters(WashStationDef station);
+
+        /// <summary>
+        /// How clean (0..1) washing at <paramref name="station"/> can get the player: for the wash going on
+        /// there, what it was begun with; otherwise what a wash begun now would reach, with the soap held now.
+        /// A station's own ceiling, or <see cref="CleanlinessSettings.UnsoapedCeiling"/> without soap.
+        /// </summary>
+        float CeilingFor(WashStationDef station);
+
         /// <summary>A stretch of <paramref name="kind"/> begins now (replaces any wash or other stretch).
         /// Re-beginning the same kind changes nothing. No save does nothing.</summary>
         void BeginActivity(DirtActivity kind);
@@ -39,7 +56,9 @@ namespace HiddenHarbours.Core
         void ReportAction(DirtActivity kind);
 
         /// <summary>Start washing at <paramref name="station"/> now, wherever it stands (a station is a kind
-        /// plus an anchor). A toilet or a null station does nothing. Publishes <see cref="PlayerWashChanged"/>.</summary>
+        /// plus an anchor). A toilet or a null station does nothing. Where soap matters and the player has
+        /// some, one wash of soap is used and the wash can reach the station's own ceiling; without, it stops
+        /// at the unsoaped cap. Publishes <see cref="PlayerWashChanged"/> (with its soap flags).</summary>
         void BeginWash(WashStationDef station);
 
         /// <summary>Stop washing now (no-op when not washing). Publishes <see cref="PlayerWashChanged"/>.</summary>

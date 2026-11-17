@@ -1498,13 +1498,15 @@ namespace HiddenHarbours.App.Editor
             var rodOffer    = AssetDatabase.LoadAssetAtPath<GearOffer>(DataGear + "/Rod.asset");
             var clamLicence = AssetDatabase.LoadAssetAtPath<LicenseDef>(DataLicenses + "/ClamLicense.asset");
             var iceSupply   = AssetDatabase.LoadAssetAtPath<SupplyDef>(DataSupplies + "/Ice.asset");
-            // The three foods Marguerite stocks beside the ice (the first food slice): one SupplyShop each,
-            // as StoreWiringPatch.StPeters lists them.
+            // The everyday goods Marguerite stocks beside the ice (the three foods of the first food slice, then
+            // the bar of soap the shower and bath need to get fully clean): one SupplyShop each, as
+            // StoreWiringPatch.StPeters lists them.
             var foodSupplies = new[]
             {
                 AssetDatabase.LoadAssetAtPath<SupplyDef>(DataSupplies + "/Bread.asset"),
                 AssetDatabase.LoadAssetAtPath<SupplyDef>(DataSupplies + "/Oatcakes.asset"),
                 AssetDatabase.LoadAssetAtPath<SupplyDef>(DataSupplies + "/TinnedBeans.asset"),
+                AssetDatabase.LoadAssetAtPath<SupplyDef>(DataSupplies + "/SoapBar.asset"),
             };
             var capelinBait = AssetDatabase.LoadAssetAtPath<BaitDef>(DataBait + "/Capelin.asset");
             // The chandlery half of the same counter (ADR 0025 S2): the depth sounder, fitted to the boat
@@ -2120,7 +2122,7 @@ namespace HiddenHarbours.App.Editor
                 Debug.LogWarning(
                     "[StPetersBuilder] The general store's counter is missing stock — rod=" +
                     $"{(rodOffer != null)}, clam licence={(clamLicence != null)}, ice={(iceSupply != null)}, " +
-                    $"foods={foodSupplies.Count(f => f != null)}/3, " +
+                    $"foods={foodSupplies.Count(f => f != null)}/{foodSupplies.Length}, " +
                     $"capelin={(capelinBait != null)}, depth sounder={(depthSounder != null)}. Those rows " +
                     "won't appear on the buy screen. Re-run after the Data assets import rather than " +
                     "shipping a counter with an empty shelf.");

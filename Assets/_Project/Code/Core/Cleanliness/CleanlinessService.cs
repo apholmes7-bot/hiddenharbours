@@ -25,6 +25,13 @@ namespace HiddenHarbours.Core
         private readonly Func<double> _secondsPerGameHour;
         private WashStationDef[] _catalog;
 
+        // Which wash used soap: the station id and the stretch start it began at. Session-only on purpose: a
+        // wash never survives a load (CleanlinessMath.Rebase ends it), and the soap it used is already spent
+        // in the saved supply locker, so nothing about a soaped wash needs saving. Matching the stretch start
+        // too means a flag left from an earlier wash can never soap a later one.
+        private string _soapedStationId;
+        private double _soapedSince = NeedStateDto.Unstamped;
+
         public CleanlinessService(Func<ISaveService> save = null, Func<IGameClock> clock = null,
                                   Func<CleanlinessSettings> settings = null, Func<WashStationDef[]> catalog = null,
                                   Func<double> secondsPerGameHour = null)
@@ -66,6 +73,31 @@ namespace HiddenHarbours.Core
             }
         }
 
+        public bool WashSoaped
+        {
+            get
+            {
+                PlayerCleanlinessDto state = State();
+                return state != null && IsSoaped(state);
+            }
+        }
+
+        public bool HasSoap => SoapStock.Has(_save()?.Current, _settings());
+
+        public bool SoapMatters(WashStationDef station) => CleanlinessMath.SoapMatters(station, _settings());
+
+        public float CeilingFor(WashStationDef station)
+        {
+            if (station == null) return 0f;
+            CleanlinessSettings s = _settings();
+            PlayerCleanlinessDto state = State();
+            bool soaped = state != null && state.IsWashing &&
+                          string.Equals(state.WashStationId, station.Id, StringComparison.Ordinal)
+                ? IsSoaped(state)
+                : SoapStock.Has(_save()?.Current, s);
+            return CleanlinessMath.CeilingOf(station, s, soaped);
+        }
+
         public void BeginActivity(DirtActivity kind)
         {
             if (kind == DirtActivity.None) return;
@@ -73,11 +105,13 @@ namespace HiddenHarbours.Core
             if (state == null) return;
             if (!state.IsWashing && state.ActivityKind == kind && state.StretchSinceGameSeconds >= 0d) return;
             WashStationDef was = state.IsWashing ? FindStation(state.WashStationId) : null;
+            bool wasSoaped = IsSoaped(state);
             double now = SettleNow(state);
             state.WashStationId = "";
             state.Activity = (int)kind;
             state.StretchSinceGameSeconds = now;
-            if (was != null) EventBus.Publish(new PlayerWashChanged(false, was.Kind, was.Id));
+            ForgetSoap();
+            if (was != null) EventBus.Publish(new PlayerWashChanged(false, was.Kind, was.Id, wasSoaped, false));
         }
 
         public void EndActivity(DirtActivity kind)
@@ -106,12 +140,21 @@ namespace HiddenHarbours.Core
             if (state == null) return;
             if (string.Equals(state.WashStationId, station.Id, StringComparison.Ordinal)) return;
             WashStationDef was = state.IsWashing ? FindStation(state.WashStationId) : null;
-            double now = SettleNow(state);
+            bool wasSoaped = IsSoaped(state);
+            double now = SettleNow(state);   // the old wash settles at its own soap before the new one starts
             state.Activity = 0;
             state.WashStationId = station.Id ?? "";
             state.StretchSinceGameSeconds = now;
-            if (was != null) EventBus.Publish(new PlayerWashChanged(false, was.Kind, was.Id));
-            EventBus.Publish(new PlayerWashChanged(true, station.Kind, station.Id));
+
+            // Soap: only where it changes the ceiling, one wash's worth, taken as the wash begins.
+            CleanlinessSettings s = _settings();
+            bool matters = CleanlinessMath.SoapMatters(station, s);
+            bool soaped = matters && SoapStock.TryUseWash(_save()?.Current, s);
+            if (soaped) { _soapedStationId = state.WashStationId; _soapedSince = now; }
+            else ForgetSoap();
+
+            if (was != null) EventBus.Publish(new PlayerWashChanged(false, was.Kind, was.Id, wasSoaped, false));
+            EventBus.Publish(new PlayerWashChanged(true, station.Kind, station.Id, soaped, matters && !soaped));
         }
 
         public void EndWash()
@@ -119,11 +162,13 @@ namespace HiddenHarbours.Core
             PlayerCleanlinessDto state = State();
             if (state == null || !state.IsWashing) return;
             WashStationDef was = FindStation(state.WashStationId);
+            bool wasSoaped = IsSoaped(state);
             SettleNow(state);
             string id = state.WashStationId;
             state.WashStationId = "";
             state.StretchSinceGameSeconds = NeedStateDto.Unstamped;
-            EventBus.Publish(new PlayerWashChanged(false, was != null ? was.Kind : WashStationKind.Sink, id));
+            ForgetSoap();
+            EventBus.Publish(new PlayerWashChanged(false, was != null ? was.Kind : WashStationKind.Sink, id, wasSoaped, false));
         }
 
         public WashStationDef FindStation(string id)
@@ -158,13 +203,15 @@ namespace HiddenHarbours.Core
             if (!CleanlinessMath.StretchExpired(state, s, now, sph)) return;
             // Past the guard window the stretch adds nothing, so closing it changes no level.
             WashStationDef was = state.IsWashing ? FindStation(state.WashStationId) : null;
+            bool wasSoaped = IsSoaped(state);
             CleanlinessMath.Settle(state, s, PullOf(state), now, sph);
             string id = state.WashStationId;
             state.Activity = 0;
             state.WashStationId = "";
             state.StretchSinceGameSeconds = NeedStateDto.Unstamped;
+            ForgetSoap();
             if (!string.IsNullOrEmpty(id))
-                EventBus.Publish(new PlayerWashChanged(false, was != null ? was.Kind : WashStationKind.Sink, id));
+                EventBus.Publish(new PlayerWashChanged(false, was != null ? was.Kind : WashStationKind.Sink, id, wasSoaped, false));
         }
 
         /// <summary>Settle at the clock now (anchoring a fresh state there) and return that instant.</summary>
@@ -179,8 +226,25 @@ namespace HiddenHarbours.Core
             return now;
         }
 
+        /// <summary>The pull of the wash going on: its station, up to the ceiling its soap allows.</summary>
         private WashPull PullOf(PlayerCleanlinessDto state)
-            => state.IsWashing ? CleanlinessMath.PullOf(FindStation(state.WashStationId)) : default;
+        {
+            if (!state.IsWashing) return default;
+            WashStationDef station = FindStation(state.WashStationId);
+            return CleanlinessMath.PullOf(station, CleanlinessMath.CeilingOf(station, _settings(), IsSoaped(state)));
+        }
+
+        /// <summary>True when the wash going on in <paramref name="state"/> is the one that used soap.</summary>
+        private bool IsSoaped(PlayerCleanlinessDto state)
+            => state.IsWashing && _soapedStationId != null &&
+               string.Equals(state.WashStationId, _soapedStationId, StringComparison.Ordinal) &&
+               state.StretchSinceGameSeconds == _soapedSince;
+
+        private void ForgetSoap()
+        {
+            _soapedStationId = null;
+            _soapedSince = NeedStateDto.Unstamped;
+        }
 
         private double NowOr(double fallback)
         {
