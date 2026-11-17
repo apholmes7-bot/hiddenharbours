@@ -1,6 +1,8 @@
 using System;
+using System.Collections.Generic;
 using HiddenHarbours.Core;
 using NUnit.Framework;
+using UnityEngine;
 
 namespace HiddenHarbours.Tests.EditMode
 {
@@ -12,6 +14,7 @@ namespace HiddenHarbours.Tests.EditMode
         private CleanlinessService _clean;
         private NeedsSettings _settings;
         private CleanlinessSettings _dirt;
+        private readonly List<UnityEngine.Object> _made = new List<UnityEngine.Object>();
         private const double Hour = 600d;
 
         [SetUp]
@@ -98,6 +101,127 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.DoesNotThrow(() => _needs.Exert(0.2f));
             Assert.DoesNotThrow(() => _clean.ReportActivity(DirtActivity.Gym, 1d));
             Assert.AreEqual(0, _save.Writes);
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            foreach (UnityEngine.Object obj in _made) UnityEngine.Object.DestroyImmediate(obj);
+            _made.Clear();
+        }
+
+        private T Make<T>() where T : ScriptableObject
+        { T obj = ScriptableObject.CreateInstance<T>(); _made.Add(obj); return obj; }
+
+        private BodyService Body() => new BodyService(() => _save, () => _clock,
+            () => BodySettings.Default, () => _settings, () => _needs, () => null,
+            () => Hour, () => StrengthSettings.Default, () => null);
+
+        private WorkoutDef Plan()
+        {
+            var plan = Make<WorkoutDef>();
+            plan.Id = "workout.integration";
+            plan.Equipment = Make<GymEquipmentDef>(); plan.Equipment.Id = "gym_equipment.integration";
+            plan.Exercise = Make<ActivityDef>(); plan.Exercise.Id = "activity.integration";
+            plan.Exercise.Kind = ActivityKind.Exercise; plan.Exercise.Unit = ActivityUnit.Repetition;
+            plan.Exercise.KcalPerUnitAboveRest = 20f;
+            plan.Exercise.Training = new TrainingDoses { Grip = 1f, Back = 1f, Legs = 1f, Cardio = 1f };
+            plan.Exercise.EquipmentIds = new[] { plan.Equipment.Id };
+            plan.Equipment.ExerciseIds = new[] { plan.Exercise.Id };
+            plan.DurationGameMinutes = 10f; plan.Units = 30f; plan.DailyTrainingUnits = 30f;
+            plan.MinimumPace = 0.5f; plan.TirednessPerGameHour = 0.12f;
+            return plan;
+        }
+
+        private WorkoutService Workout(IBodyService body) => new WorkoutService(_needs, _clean,
+            BodySettings.Default, _settings, StrengthSettings.Default, Hour, body);
+
+        [Test]
+        public void Workout_TrainsAllSavedAnchors_AndRecreatingServicesPreservesPlayerBenefits()
+        {
+            BodyService body = Body(); WorkoutDef plan = Plan(); WorkoutService workout = Workout(body);
+            float rod = body.RodStrength, pull = body.PullStrength, carry = body.CarryCapacityKg;
+            Assert.AreEqual(WorkoutStartResult.Started, workout.TryStart(plan, "rack", 0d));
+            _clock.T = workout.EndsAtGameSeconds;
+            Assert.IsTrue(workout.Tick(_clock.T));
+            PlayerBodyDto saved = _save.Current.PlayerBody.Clone();
+            foreach (FitnessKind kind in StrengthMath.Kinds)
+            {
+                Assert.Greater(saved.Get(kind).Level, 0f);
+                Assert.AreEqual(_clock.T, saved.Get(kind).SinceGameSeconds);
+            }
+            _save.Current.PlayerBody = saved.Clone();
+            BodyService reloaded = Body(); WorkoutService fresh = Workout(reloaded);
+            foreach (FitnessKind kind in StrengthMath.Kinds)
+                Assert.AreEqual(body.FitnessLevel(kind), reloaded.FitnessLevel(kind));
+            Assert.Greater(reloaded.RodStrength, rod);
+            Assert.Greater(reloaded.PullStrength, pull);
+            Assert.Greater(reloaded.CarryCapacityKg, carry);
+            Assert.Greater(reloaded.PlayerMultiplier(TraitStat.WalkSpeed), 1f);
+            Assert.AreEqual(0d, fresh.DailyCredit.CreditedUnits(plan.Exercise.Id, _clock.T));
+            Assert.IsFalse(fresh.IsActive);
+            Assert.AreEqual(0, _save.Writes);
+        }
+
+        [TestCase(false)]
+        [TestCase(true)]
+        public void HungryWorkout_PaysOverflowFromMass_EvenPastCap_AndStopsAtFloor(bool pastCap)
+        {
+            BodyService body = Body(); WorkoutDef plan = Plan(); WorkoutService workout = Workout(body);
+            if (pastCap)
+            {
+                Assert.AreEqual(WorkoutStartResult.Started, workout.TryStart(plan, "rack", 0d));
+                _clock.T = workout.EndsAtGameSeconds; workout.Tick(_clock.T);
+            }
+            _save.Current.PlayerNeeds.Hunger = new NeedStateDto(1f, _clock.T);
+            _save.Current.PlayerBody.MassKg = body.FloorMassKg + 0.01d;
+            _save.Current.PlayerBody.MassSinceGameSeconds = _clock.T;
+            var reports = new List<ActivityReported>();
+            Action<ActivityReported> listener = e => reports.Add(e);
+            EventBus.Subscribe(listener);
+            try
+            {
+                Assert.AreEqual(WorkoutStartResult.Started, workout.TryStart(plan, "rack", _clock.T),
+                    "Full hunger slows a set but never refuses it.");
+                Assert.AreEqual(_clock.T + 100d / (1f - _settings.Hunger.StrongWalkPenalty),
+                    workout.EndsAtGameSeconds, 1e-9d);
+                // Report at the same body clock to isolate effort overflow from passive starvation.
+                Assert.IsTrue(workout.Tick(workout.EndsAtGameSeconds));
+                Assert.AreEqual(body.FloorMassKg, body.MassKg, 1e-9d);
+                Assert.AreEqual(1f, _needs.Level(NeedKind.Hunger));
+                Assert.AreEqual(pastCap ? 0d : 30d, workout.LastReceipt.Value.CreditedUnits);
+                Assert.AreEqual(1, reports.Count);
+                Assert.AreEqual(plan.Exercise.Id, reports[0].ActivityId);
+                Assert.AreEqual(30f, reports[0].Units);
+                Assert.Greater(reports[0].Kcal, 0d);
+                Assert.AreEqual(reports[0].HungerAdded, workout.LastReceipt.Value.Hunger);
+                Assert.AreEqual(0, _save.Writes);
+            }
+            finally { EventBus.Unsubscribe(listener); }
+        }
+
+        [TestCase(true)]
+        [TestCase(false)]
+        public void BodyEffort_UsesCurrentCardio_AlsoWhenTrainingIsDisabled(bool train)
+        {
+            BodyService body = Body(); WorkoutDef plan = Plan();
+            // Current balance discounts Movement only, not Exercise. Both share this one effort path.
+            plan.Exercise.Kind = ActivityKind.Movement;
+            _save.Current.PlayerBody = new PlayerBodyDto
+            {
+                Cardio = new FitnessStateDto { Level = 0.8f, Peak = 0.8f, SinceGameSeconds = 0d,
+                    MaintainedAtGameSeconds = 0d },
+            };
+            FitnessStateDto before = _save.Current.PlayerBody.Cardio;
+            double expected = StrengthMath.ActivityKcal(plan.Exercise, 30f, body.MassKg, body.CardioLevel,
+                BodySettings.Default, StrengthSettings.Default);
+            double untrained = StrengthMath.ActivityKcal(plan.Exercise, 30f, body.MassKg, 0f,
+                BodySettings.Default, StrengthSettings.Default);
+            Assert.Less(expected, untrained);
+            IBodyService effort = body;
+            Assert.AreEqual(expected, effort.ReportActivity(plan.Exercise, 30f, train));
+            if (train) Assert.Greater(body.CardioLevel, before.Level);
+            else Assert.AreEqual(before, _save.Current.PlayerBody.Cardio);
         }
 
         private sealed class MemorySave : ISaveService

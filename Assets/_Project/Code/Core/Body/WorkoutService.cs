@@ -23,15 +23,15 @@ namespace HiddenHarbours.Core
 
     /// <summary>
     /// One player's workout session. A future adapter calls Tick on the game-time slow tick and cancels
-    /// before other activities. No scene wiring, global service, wall clock, random source or saved gains.
+    /// before other activities. Effort and saved gains go through the injected body service.
     /// Recreate on load; all timestamps on one instance must be nondecreasing.
     /// </summary>
     public sealed class WorkoutService
     {
         private readonly INeedsService _needs;
         private readonly ICleanlinessService _cleanliness;
+        private readonly IBodyService _bodyService;
         private readonly BodySettings _body;
-        private readonly StrengthSettings _strength;
         private readonly double _hour, _kcalPerHungerUnit;
         private double _lastTime;
         private Session _session;
@@ -39,22 +39,24 @@ namespace HiddenHarbours.Core
         private sealed class Session
         {
             public string Id, Equipment, Exercise;
-            public double Start, End, Units, Hunger, TirednessPerHour;
+            public double Start, End, Units, TirednessPerHour;
             public float Limit;
-            public TrainingDoses Training;
+            public ActivityDef Activity;
         }
 
-        public WorkoutRuntimeStore Fitness { get; }
+        public WorkoutRuntimeStore DailyCredit { get; }
         public bool IsActive => _session != null;
         public string EquipmentInstanceId => _session?.Equipment ?? "";
         public double EndsAtGameSeconds => _session?.End ?? -1d;
         public WorkoutReceipt? LastReceipt { get; private set; }
 
         public WorkoutService(INeedsService needs, ICleanlinessService cleanliness, BodySettings body,
-                              NeedsSettings needsSettings, StrengthSettings strength, double secondsPerGameHour)
+                              NeedsSettings needsSettings, StrengthSettings strength, double secondsPerGameHour,
+                              IBodyService bodyService)
         {
             _needs = needs ?? throw new ArgumentNullException(nameof(needs));
             _cleanliness = cleanliness ?? throw new ArgumentNullException(nameof(cleanliness));
+            _bodyService = bodyService ?? throw new ArgumentNullException(nameof(bodyService));
             if (!WorkoutDef.Positive(secondsPerGameHour) || !WorkoutDef.Positive(secondsPerGameHour * 24d))
                 throw new ArgumentOutOfRangeException(nameof(secondsPerGameHour));
             _kcalPerHungerUnit = BodyMath.KcalPerHungerUnit(needsSettings.Hunger.RisePerGameHour, body);
@@ -62,23 +64,26 @@ namespace HiddenHarbours.Core
             ValidateCurve(strength.Strength);
             ValidateCurve(strength.Cardio);
             if (!WorkoutDef.Positive(strength.MemoryRegainFactor)) throw new ArgumentException("Invalid memory factor.");
-            _body = body; _strength = strength; _hour = secondsPerGameHour;
-            Fitness = new WorkoutRuntimeStore(strength, secondsPerGameHour * 24d);
+            _body = body; _hour = secondsPerGameHour;
+            DailyCredit = new WorkoutRuntimeStore(secondsPerGameHour * 24d);
         }
 
-        public WorkoutStartResult TryStart(WorkoutDef plan, string equipmentInstanceId, double now, double massKg)
+        public WorkoutStartResult TryStart(WorkoutDef plan, string equipmentInstanceId, double now)
         {
             Observe(now);
             if (IsActive) return WorkoutStartResult.AlreadyActive;
             if (plan == null || plan.ValidationError() != null) return WorkoutStartResult.InvalidPlan;
             if (string.IsNullOrWhiteSpace(equipmentInstanceId)) return WorkoutStartResult.InvalidEquipment;
+            double massKg = _bodyService.MassKg;
             if (!WorkoutDef.Positive(massKg)) return WorkoutStartResult.InvalidBody;
             double pace = _needs.PlayerMultiplier(TraitStat.WalkSpeed);
             if (!WorkoutDef.Nonnegative(pace)) pace = plan.MinimumPace;
             pace = Math.Max(plan.MinimumPace, Math.Min(1d, pace));
             double end = now + plan.DurationGameMinutes / 60d * _hour / pace;
-            double hunger = StrengthMath.ActivityKcal(plan.Exercise, plan.Units, massKg, 0f, _body, _strength) /
-                            _kcalPerHungerUnit;
+            // Only an overflow guard. Actual energy uses the body's current mass and cardio at settlement.
+            double reference = StrengthMath.ReferenceLeanKg(_body);
+            double hunger = (double)plan.Exercise.KcalPerUnitAboveRest * plan.Units *
+                            (reference > 0d ? massKg / reference : 1d) / _kcalPerHungerUnit;
             double fatigue = (end - now) / _hour * plan.TirednessPerGameHour;
             if (!WorkoutDef.Nonnegative(end) || !(end > now) || !FitsFloat(hunger) || !FitsFloat(fatigue))
                 return WorkoutStartResult.InvalidPlan;
@@ -88,9 +93,9 @@ namespace HiddenHarbours.Core
             _session = new Session
             {
                 Id = plan.Id, Equipment = equipmentInstanceId, Exercise = plan.Exercise.Id,
-                Start = now, End = end, Units = plan.Units, Hunger = hunger,
+                Start = now, End = end, Units = plan.Units,
                 TirednessPerHour = plan.TirednessPerGameHour, Limit = plan.DailyTrainingUnits,
-                Training = plan.Exercise.Training,
+                Activity = plan.Exercise,
             };
             return WorkoutStartResult.Started;
         }
@@ -120,13 +125,16 @@ namespace HiddenHarbours.Core
             double hours = (at - session.Start) / _hour;
             double fraction = completed ? 1d : (at - session.Start) / (session.End - session.Start);
             double units = session.Units * fraction;
-            float hunger = (float)(session.Hunger * fraction);
             float tiredness = (float)(hours * session.TirednessPerHour);
-            double credit = Fitness.Record(session.Exercise, units, session.Limit, session.Training, at);
+            double credit = DailyCredit.Record(session.Exercise, units, session.Limit, at);
+            double kcal = 0d;
+            // Pay uncredited work first, before this set can improve the body's cardio.
+            if (units > credit) kcal += _bodyService.ReportActivity(session.Activity, (float)(units - credit), train: false);
+            if (credit > 0d) kcal += _bodyService.ReportActivity(session.Activity, (float)credit);
+            float hunger = (float)(kcal / _kcalPerHungerUnit);
             LastReceipt = new WorkoutReceipt(session.Id, session.Equipment, session.Exercise, completed,
                                             at, hours, units, credit, hunger, tiredness);
             if (!(hours > 0d)) return;
-            _needs.Spend(hunger);
             _needs.Exert(tiredness);
             _cleanliness.ReportActivity(DirtActivity.Gym, hours);
         }

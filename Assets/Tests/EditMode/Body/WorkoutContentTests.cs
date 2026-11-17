@@ -13,13 +13,31 @@ namespace HiddenHarbours.Tests.EditMode
         public void ShippedPlans_CoverEveryExerciseExactlyOnce_WithStableIdsAndReciprocalLinks()
         {
             WorkoutDef[] plans = Resources.LoadAll<WorkoutDef>("Workouts");
-            Assert.AreEqual(9, plans.Length, "The first gym offering contains exactly nine exercise plans.");
+            Assert.IsNotEmpty(plans, "At least one valid workout must ship.");
             var ids = new HashSet<string>(StringComparer.Ordinal);
             var exercises = new HashSet<string>(StringComparer.Ordinal);
             var equipment = new HashSet<string>(StringComparer.Ordinal);
             var expected = new HashSet<string>(StringComparer.Ordinal);
             foreach (ActivityDef exercise in ActivityCatalog.Activities)
-                if (exercise.Kind == ActivityKind.Exercise) expected.Add(exercise.Id);
+                if (exercise.Kind == ActivityKind.Exercise)
+                    Assert.IsTrue(expected.Add(exercise.Id), "Duplicate exercise id " + exercise.Id);
+            var expectedEquipment = new HashSet<string>(StringComparer.Ordinal);
+            Assert.IsNotEmpty(ActivityCatalog.Equipment, "At least one equipment kind must ship.");
+            foreach (GymEquipmentDef kind in ActivityCatalog.Equipment)
+            {
+                Assert.IsNotNull(kind);
+                Assert.IsTrue(Regex.IsMatch(kind.Id, "^gym_equipment\\.[a-z0-9]+(?:_[a-z0-9]+)*$"), kind.name);
+                Assert.IsTrue(expectedEquipment.Add(kind.Id), "Duplicate equipment id " + kind.Id);
+                Assert.IsNotEmpty(kind.ExerciseIds, kind.Id);
+                CollectionAssert.AllItemsAreUnique(kind.ExerciseIds, kind.Id);
+                foreach (string exerciseId in kind.ExerciseIds)
+                {
+                    ActivityDef exercise = ActivityCatalog.Find(exerciseId);
+                    Assert.IsNotNull(exercise, kind.Id + " references missing exercise " + exerciseId);
+                    Assert.AreEqual(ActivityKind.Exercise, exercise.Kind, exerciseId);
+                    CollectionAssert.Contains(exercise.EquipmentIds, kind.Id, exerciseId);
+                }
+            }
             foreach (WorkoutDef plan in plans)
             {
                 Assert.IsNull(plan.ValidationError(), plan.name);
@@ -32,7 +50,7 @@ namespace HiddenHarbours.Tests.EditMode
                 Assert.GreaterOrEqual(plan.DailyTrainingUnits, plan.Units, plan.Id);
             }
             CollectionAssert.AreEquivalent(expected, exercises);
-            Assert.AreEqual(7, equipment.Count, "Each of the seven equipment kinds has a workout.");
+            CollectionAssert.AreEquivalent(expectedEquipment, equipment, "Every equipment kind has a workout.");
         }
 
         [Test]
