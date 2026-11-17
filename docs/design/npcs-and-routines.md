@@ -863,6 +863,28 @@ not saved: relationships slice 2), and publishes
   crab. Junior Poirier loves striped bass, likes pelagics, dislikes soft-shell clams (he digs them all
   day). Basil Samson loves haddock, likes inshore groundfish, dislikes cunner and tomcod (bait).
 
+### 5.5 As built: gifts, slice 2 (the whole cast)
+
+- **Every person has tastes.** All 27 people on `Data/NPCs` (everyone you Talk to; Ned's letter and the
+  Rice Point wreck are Read things and take nothing) now love something, dislike something, and like a
+  category or two. Each says all four tastes (loved, liked, neutral, disliked) in their own words; the
+  shared lines on `GiftConfig` remain the fallback for a villager added later and for the refusal and
+  declined-today answers nobody has overridden. A few tastes are written to rub against each other:
+  Rene loves mackerel and Dougie, who shares his gable and tins pelagics all day, does not; the oyster
+  man does not want oysters and the shopkeeper loves them; Sam and Rose like any catch at all.
+- **The daily limit is unchanged and still not saved.** It is per person, per game day (the clock's day
+  index), from `GiftConfig.GiftsPerNpcPerDay`. The save has no field it could ride in honestly (the only
+  open bag is the onboarding flags, which would grow by a key per person per day), so it stays runtime
+  only. **The save step it needs:** one `List<NpcGiftDayDto>` on `SaveData` (`NpcId`, `DayIndex`,
+  `Count`; only today's entries are written, so it never grows past the cast), captured from and restored
+  into `GiftLedger.Shared` through a small Core seam the save service calls, under a schema bump with an
+  empty-list default for older saves.
+- **Still owed:** Talk and Give as two rows in the interaction chooser (today a giftable catch in hand
+  makes the press a Give; the chooser's NPC rows wait on the owner's open question of whether talk joins
+  the list, and on the NPC becoming a chooser candidate without double-acting on one press); food and
+  other hand items as gifts once food is a hand item; a gift limit saved with the game (above); the
+  relationship graph applied and saved (relationships slice 2).
+
 ---
 
 ## 6. Dialogue approach (high level)

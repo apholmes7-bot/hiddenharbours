@@ -339,9 +339,11 @@ namespace HiddenHarbours.Tests.EditMode
             // with every document under it, and with it the eight station kit prefab sources only that forecourt
             // instanced (sign, store, store interior, canopy, island, road dispenser, two fill ports); the new
             // forecourt is written as scene rows, not prefab instances. That left the nav buoy, the dock dispenser
-            // and the three bridge and culvert prefabs. The NMC building shells add the community hall and the fish
-            // plant: seamless interiors (a BuildingInterior, sprites, YSort, wall colliders, and on the plant the
-            // outside kit's set-piece placements), no nested prefab and no travel component.
+            // and the three bridge and culvert prefabs. The first two wash stations (washrooms plan section 3) add
+            // the washstand and the wharf shower: a sprite, a collider and a WashStationPoint, no travel component.
+            // The NMC building shells add the community hall and the fish plant: seamless interiors (a
+            // BuildingInterior, sprites, YSort, wall colliders, and on the plant the outside kit's set-piece
+            // placements), no nested prefab and no travel component.
             Assert.That(seen.Select(g => paths[g].Replace('\\', '/')).OrderBy(p => p, StringComparer.Ordinal), Is.EqualTo(new[] {
                 "Assets/_Project/Prefabs/Bridges/CampBrookBridge.prefab",
                 "Assets/_Project/Prefabs/Bridges/CampPondCulvert.prefab",
@@ -350,6 +352,8 @@ namespace HiddenHarbours.Tests.EditMode
                 "Assets/_Project/Prefabs/Buildings/NineMileCreek/NmcFishPlant.prefab",
                 "Assets/_Project/Prefabs/Decor/NavBuoy.prefab",
                 "Assets/_Project/Prefabs/GasStation/dispenser_sDock.prefab",
+                "Assets/_Project/Prefabs/Washrooms/WashStand.prefab",
+                "Assets/_Project/Prefabs/Washrooms/WharfShower.prefab",
             }), "Audit every referenced prefab, including nested sources.");
         }
 

@@ -432,6 +432,34 @@ namespace HiddenHarbours.Core
         private static FoodEater _food;
 
         /// <summary>
+        /// Cooking (kitchens and microwaves slice): the one <see cref="RecipeRunner"/> every kitchen station
+        /// (a galley, a house kitchen, a microwave) runs recipes through; the output goes into the supply
+        /// locker, where <see cref="Food"/> eats it. Never null: a default over the shipped recipes and foods
+        /// is made on first read; a test assigns its own. The runner in this slot is subscribed to
+        /// <see cref="GameLoaded"/> and drops every cook job on a load or new game (jobs are session-only and
+        /// must never deliver into a different save); replacing it unsubscribes the old one. Cleared by
+        /// <see cref="Reset"/>.
+        /// FLAG lead-architect: new Core contract (cooking).
+        /// </summary>
+        public static RecipeRunner Cooking
+        {
+            get
+            {
+                if (_cooking == null) Cooking = new RecipeRunner();
+                return _cooking;
+            }
+            set
+            {
+                if (ReferenceEquals(_cooking, value)) return;
+                if (_cooking != null) EventBus.Unsubscribe(_cooking.GameLoadedHandler);
+                _cooking = value;
+                if (_cooking != null) EventBus.Subscribe(_cooking.GameLoadedHandler);
+            }
+        }
+
+        private static RecipeRunner _cooking;
+
+        /// <summary>
         /// The web of ties between people (relationships slice 1, owner ruling 2026-11-14): the seam a feature
         /// module records "something happened between these two" through and asks a pair's stage from, so the
         /// crew system, the cannery, the shops, talk and routines never reference each other (rule 4). Never
@@ -1292,6 +1320,11 @@ namespace HiddenHarbours.Core
         public static HelmWheelSettings HelmWheel =>
             Config != null ? Config.HelmWheel : HelmWheelSettings.Default;
 
+        /// <summary>The autopilot's heading-hold tunables (gains, helm limits, hand-back limits). Same
+        /// contract as <see cref="WaveField"/>, including the <c>Config != null</c> discipline.</summary>
+        public static HelmAutopilotSettings HelmAutopilot =>
+            Config != null ? Config.HelmAutopilot : HelmAutopilotSettings.Default;
+
         /// <summary>The masthead pennant's tunables (VS-19) — the boat's own wind instrument. Same
         /// contract as <see cref="WaveField"/>, including the <c>Config != null</c> discipline (never
         /// <c>?.</c>/<c>??</c> on a <c>UnityEngine.Object</c>). Falls back to
@@ -1538,6 +1571,7 @@ namespace HiddenHarbours.Core
             FoodPerishability = null;    // → NothingSpoilsPerishability.Instance; likewise never null
             KitchenStorageCatalog.Clear();
             Farm = null;                 // → a fresh default on next read; drops its catalog and baseline
+            Cooking = null;              // drops every session-only cook job
             Food = null;                 // → a fresh default on next read; drops its loaded food book
             Relationships = null;        // → a fresh default on next read; reseeds from the shipped ties
             Crew = null;                 // → a fresh, empty roster on next read

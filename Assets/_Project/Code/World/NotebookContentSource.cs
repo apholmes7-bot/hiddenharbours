@@ -99,7 +99,7 @@ namespace HiddenHarbours.World
         /// <summary>
         /// Every species she has caught this game, in first-caught order, with counts and the record
         /// weight: Core's <see cref="CatchRecords"/>, fed over the bus, so the book never names the
-        /// Fishing module (rule 4). In-session only until the record is saved.
+        /// Fishing module (rule 4). Saved with the game since v24 (<see cref="SaveData.CaughtSpecies"/>).
         /// </summary>
         public static IReadOnlyList<CaughtSpeciesEntry> Caught() => CatchRecords.Current();
 

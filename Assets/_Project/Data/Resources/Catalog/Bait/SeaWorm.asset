@@ -19,3 +19,9 @@ MonoBehaviour:
   FavorsSpeciesIds:
   - fish.haddock
   - fish.atlantic_cod
+  Catalog:
+    Listed: 0
+    Section: 5
+    Sellers:
+    - seller.leblancs
+    SortOrder: 34

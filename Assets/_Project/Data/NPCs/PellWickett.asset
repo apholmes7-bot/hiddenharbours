@@ -19,3 +19,24 @@ MonoBehaviour:
   CompletionFlag: 
   Voice: {fileID: 0}
   Build: {fileID: 11400000, guid: f8abb8c53db6f8d4ca175d593cf7d839, type: 2}
+  Gifts:
+    LovedItemIds:
+    - fish.haddock
+    LikedItemIds: []
+    DislikedItemIds:
+    - fish.mackerel
+    LovedTags: []
+    LikedTags:
+    - inshore_groundfish
+    DislikedTags: []
+    Lines:
+      Loved:
+      - 'Haddock. Steady, plain, and the best there is. Thank you.'
+      Liked:
+      - 'That''s a good fish. Thank you.'
+      Neutral:
+      - 'Thank you.'
+      Disliked:
+      - 'Mackerel''s a bit much for me. Thank you anyway.'
+      NotGiftable: []
+      AlreadyGiftedToday: []
