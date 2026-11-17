@@ -457,8 +457,9 @@ namespace HiddenHarbours.Core
         public List<CookJobDto> CookJobs = new();
 
         /// <summary>
-        /// <b>The Loran numbers each hull's receiver remembers</b>, as time differences. Added in v24 as data
-        /// only: the Loran instrument host writes and restores it. Older saves start with none.
+        /// <b>The Loran numbers each hull's receiver remembers</b>, as time differences. Added in v24; read and
+        /// written per hull by a <c>LoranWaypointStore</c> bound to this save (<c>LoranWaypointSave</c>).
+        /// Older saves start with none.
         /// </summary>
         public List<LoranWaypointDto> HullLoranWaypoints = new();
     }
