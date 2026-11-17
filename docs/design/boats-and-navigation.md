@@ -1491,9 +1491,13 @@ recommended hulls** (P4: earn it, then automate it). Slice 1 holds a heading; it
 route.
 
 - **Who has one:** a hull whose `BoatHullDef.AutopilotOffered` is true and that has a rudder (an engine
-  helm or a sail plan). Off by default, and off on every shipped hull until the owner names which
-  hulls are "recommended" (the rig edit lists suggest 12 m and up). The purchase step is a later
-  slice. The flag says **offered**, not fitted: once the purchase exists, a helm has the autopilot when
+  helm or a sail plan). The owner ruled (2026-11-16): *available on anything without an outboard,
+  an expensive upgrade.* So it is offered on every inboard, sterndrive (bowrider, express cruiser,
+  go-fast), jet (the jet ski) and sailing hull, and on no outboard hull (punts, skiffs, Zodiacs, the
+  outboard dory, the yacht tender) and not on the rowed dory (no rudder). No hull field names the
+  drive, so each hull's rig source decides it; `HeadingHoldAutopilotTests` holds the fleet to the
+  rule. The purchase, a high-priced upgrade sold at the NMC boat and gear wholesaler, is slice 2
+  (with the save step). The flag says **offered**, not fitted: once the purchase exists, a helm has the autopilot when
   her Def offers it AND the save says it was bought for that boat.
 - **The switch:** at the helm, `Helm/Autopilot` (P, or Y on a pad) holds the heading she is on
   (`BoatController.ToggleAutopilot`). Engaging is refused under the same rules that end a hold.

@@ -295,6 +295,50 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.IsTrue(BoatController.AutopilotFitted(Hull(PropulsionType.Engine, true)));
         }
 
+        /// <summary>
+        /// The OUTBOARD hulls of the shipped fleet. The owner's ruling (2026-11-16): the autopilot is
+        /// offered on anything without an outboard. No hull field names the drive, so the drive is read
+        /// from each hull's rig source (docs/art/rigs: the punts, skiffs, zodiacs, outboard dory and the
+        /// tender hang an outboard; the bowrider, express cruiser and go-fast are sterndrives; the jet
+        /// ski is a jet pump; everything else is an inboard or a sailing hull). A new hull fails the
+        /// rule below until it is classified here or flagged.
+        /// </summary>
+        private static readonly string[] OutboardHullIds =
+        {
+            "boat.dory_outboard", "boat.punt", "boat.punt_upgraded", "boat.console_skiff",
+            "boat.sport_skiff", "boat.sport_skiff_mk2", "boat.sport_skiff_twin",
+            "boat.zodiac_frc", "boat.zodiac_hurricane", "boat.yacht_tender",
+        };
+
+        [Test]
+        public void EveryHelmHullWithoutAnOutboard_OffersIt_AndNoOutboardHullDoes()
+        {
+            var hulls = UnityEditor.AssetDatabase.FindAssets("t:BoatHullDef", new[] { "Assets/_Project/Data/Boats" })
+                .Select(g => UnityEditor.AssetDatabase.LoadAssetAtPath<BoatHullDef>(UnityEditor.AssetDatabase.GUIDToAssetPath(g)))
+                .Where(h => h != null).OrderBy(h => h.Id).ToList();
+            Assert.GreaterOrEqual(hulls.Count, 40, "the fleet's hull Defs did not load: wrong folder?");
+
+            var ids = hulls.Select(h => h.Id).ToList();
+            foreach (string id in OutboardHullIds)
+                CollectionAssert.Contains(ids, id, $"{id} is listed as an outboard hull but no Def has that id.");
+
+            foreach (BoatHullDef h in hulls)
+            {
+                bool outboard = OutboardHullIds.Contains(h.Id);
+                bool helmHull = h.Propulsion != PropulsionType.Oars;   // the rowed dory has no rudder
+                Assert.AreEqual(helmHull && !outboard, h.AutopilotOffered,
+                    $"{h.Id}: offered on every helm hull without an outboard, never on an outboard or rowed one " +
+                    $"(outboard {outboard}, propulsion {h.Propulsion}).");
+                if (h.AutopilotOffered)
+                    Assert.IsTrue(BoatController.AutopilotFitted(h),
+                        $"{h.Id} offers the autopilot but has no rudder it can hold on (engine helm or usable sail plan).");
+
+                // The drawn engine agrees: a helm hull whose art hangs an outboard must be on the list.
+                if (helmHull && h.Visual != null && (h.Visual.HasMotor() || h.Visual.HasMotorMesh()))
+                    Assert.IsTrue(outboard, $"{h.Id} draws an outboard but is not classified as one.");
+            }
+        }
+
         [Test]
         public void AHullWithoutTheFlag_TheSwitchDoesNothing_AndHerHelmIsUntouched()
         {

@@ -207,10 +207,11 @@ namespace HiddenHarbours.Boats
         [Header("Autopilot (heading hold — GameConfig.HelmAutopilot)")]
         [Tooltip("Is an AUTOPILOT OFFERED for her helm? At the helm, the autopilot press (Helm/Autopilot, " +
                  "P or the pad's Y) then holds the heading she is on, on her own rudder, until a steer " +
-                 "input, leaving the helm, going aground, a knock, or losing way hands it back. OFF by " +
-                 "default: the owner's ruling (2026-11-15) makes it a purchased tool offered on " +
-                 "recommended hulls, and which hulls those are is his call. A hull asset whose YAML omits " +
-                 "this key reads false, which is the safe direction.")]
+                 "input, leaving the helm, going aground, a knock, or losing way hands it back. The owner's " +
+                 "ruling (2026-11-16): offered on every helm hull WITHOUT AN OUTBOARD (inboards, " +
+                 "sterndrives, the jet ski, the sailing hulls), never on an outboard hull or the rowed " +
+                 "dory; an expensive upgrade. HeadingHoldAutopilotTests holds the fleet to that rule. " +
+                 "OFF by default: a hull asset whose YAML omits this key reads false.")]
         // OFFERED, not FITTED. Today an offered hull's helm has the autopilot outright
         // (BoatController.AutopilotFitted). Once the purchase step exists, "fitted" becomes offered by
         // this Def AND bought for this boat in the save; this flag stays the Def's half only.
