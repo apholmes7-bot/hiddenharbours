@@ -10,7 +10,8 @@ namespace HiddenHarbours.Core
     /// cut/prepared at <see cref="RecipeStations.Prep"/>, then cooked at <see cref="RecipeStations.Cooktop"/>.
     /// So a prep recipe takes a raw catch (<see cref="RecipeInputKind.Species"/> or
     /// <see cref="RecipeInputKind.Category"/>) and a cooktop recipe takes a prep output
-    /// (<see cref="RecipeInputKind.Intermediate"/>); the content validation test refuses anything else.</para>
+    /// (<see cref="RecipeInputKind.Intermediate"/>); a microwave recipe takes a stock item
+    /// (<see cref="RecipeInputKind.Item"/>); the content validation test refuses anything else.</para>
     ///
     /// <para><b>Reuse.</b> This is the single-input slice of the planned production recipe
     /// (<c>design/economy-and-business.md</c> §9.1: inputs → facility → time → outputs). <see cref="Station"/>
@@ -34,7 +35,7 @@ namespace HiddenHarbours.Core
         public RecipeInputKind InputKind;
 
         [Tooltip("Species: the `fish.*` id. Intermediate: the output id of the recipe that feeds this one. " +
-                 "Unused for Category.")]
+                 "Item: a stock item id (a food item id or a supply id). Unused for Category.")]
         public string InputId;
 
         [Tooltip("Category: the fish category taken. Unused otherwise.")]

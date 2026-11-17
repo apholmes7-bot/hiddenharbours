@@ -18,3 +18,24 @@ MonoBehaviour:
   Dialogue: {fileID: 11400000, guid: 44449039f0f847a982794741223a6400, type: 2}
   CompletionFlag: met_rene
   Build: {fileID: 11400000, guid: fae300df84b17024b93d2b8f20d77ec5, type: 2}
+  Gifts:
+    LovedItemIds:
+    - fish.mackerel
+    LikedItemIds: []
+    DislikedItemIds:
+    - fish.american_oyster
+    LovedTags: []
+    LikedTags:
+    - pelagic
+    DislikedTags: []
+    Lines:
+      Loved:
+      - 'Mackerel, fresh. On a hot pan with nothing else. Don''t tell Dougie, he''ll smell it anyway.'
+      Liked:
+      - 'Now that''s a fish that sits right in the hand. Thank you.'
+      Neutral:
+      - 'Merci. That''s good of you.'
+      Disliked:
+      - 'An oyster. For the oyster man. You''re having me on. ...No? Well. Merci.'
+      NotGiftable: []
+      AlreadyGiftedToday: []

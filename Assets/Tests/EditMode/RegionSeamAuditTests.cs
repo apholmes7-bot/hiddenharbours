@@ -335,11 +335,21 @@ namespace HiddenHarbours.Tests.EditMode
                     if (doc.ClassId == 1001) pending.Enqueue(GuidOf(doc.Field("m_SourcePrefab")));
                 }
             }
-            // 5, down from 13: NMC H9 retired the old Route 91 forecourt with every document under it, and with it
-            // the eight station kit prefab sources only that forecourt instanced (sign, store, store interior, canopy,
-            // island, road dispenser, two fill ports). The new forecourt is written as scene rows, not prefab
-            // instances. What remains: the nav buoy, the dock dispenser and the three bridge and culvert prefabs.
-            Assert.That(seen.Count, Is.EqualTo(5), "Audit every referenced prefab, including nested sources.");
+            // Named, not counted, so a new source shows up here by name. NMC H9 retired the old Route 91 forecourt
+            // with every document under it, and with it the eight station kit prefab sources only that forecourt
+            // instanced (sign, store, store interior, canopy, island, road dispenser, two fill ports); the new
+            // forecourt is written as scene rows, not prefab instances. That left the nav buoy, the dock dispenser
+            // and the three bridge and culvert prefabs. The first two wash stations (washrooms plan section 3) add
+            // the washstand and the wharf shower: a sprite, a collider and a WashStationPoint, no travel component.
+            Assert.That(seen.Select(g => paths[g].Replace('\\', '/')).OrderBy(p => p, StringComparer.Ordinal), Is.EqualTo(new[] {
+                "Assets/_Project/Prefabs/Bridges/CampBrookBridge.prefab",
+                "Assets/_Project/Prefabs/Bridges/CampPondCulvert.prefab",
+                "Assets/_Project/Prefabs/Bridges/Route91RiverBridge.prefab",
+                "Assets/_Project/Prefabs/Decor/NavBuoy.prefab",
+                "Assets/_Project/Prefabs/GasStation/dispenser_sDock.prefab",
+                "Assets/_Project/Prefabs/Washrooms/WashStand.prefab",
+                "Assets/_Project/Prefabs/Washrooms/WharfShower.prefab",
+            }), "Audit every referenced prefab, including nested sources.");
         }
 
         [Test]

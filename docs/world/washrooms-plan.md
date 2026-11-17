@@ -67,6 +67,21 @@ walking off or pressing again calls `EndWash()`.
 | Main Street shops, the plaza | NMC | toilet and sink in each shop's back room |
 | The campground | NMC | a shower block (toilets, sinks, showers) |
 
+**Placed so far (the first two, `feat/wash-stations-placed`).** A placed station is a prefab carrying
+`World/Washrooms/WashStationPoint` (an `IInteractable`: press to wash, press again or walk off to stop,
+it stops itself at the Def's floor `1 - Ceiling`). The rows live in
+`App/Editor/WashStationPlacement.cs`, which builds the prefabs and stands them by a named text patch
+(step `wash-stations-01`; re-plans empty), never by opening and re-saving the scene.
+
+| Station | Where | Def | Prefab |
+|---|---|---|---|
+| Washstand | St Peters, Ginny's cottage, the player's room upstairs (model 0.45, 3.55 on level 1) | `washstation.sink` | `Prefabs/Washrooms/WashStand.prefab` |
+| Wharf shower | Nine Mile Creek, the wharf's land side (90.2, 108.2), under the new root `NmcWashStations` | `washstation.shower` | `Prefabs/Washrooms/WharfShower.prefab` |
+
+Both wear placeholder art (the catch kit's empty pail; the shower's post and head are tinted greybox
+`Square.png`) until basin and shower art exists. `StPetersGinnyPlot` re-stands the washstand on a
+rebuild. Add a station by adding a `Sites` row and re-running the step.
+
 ## 4. Outdoor areas: outhouses
 
 An outhouse is `washroom.outhouse`: one toilet seat behind a door that opens (the seamless-interiors

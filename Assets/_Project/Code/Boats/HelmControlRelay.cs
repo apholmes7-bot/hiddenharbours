@@ -557,6 +557,8 @@ namespace HiddenHarbours.Boats
         {
             var boat = Boat();
             if (boat == null || !HasHelm) return;
+            // A hand on the wheel takes the helm back from the autopilot (the steer keys' rule).
+            boat.DisengageAutopilot(AutopilotDisengage.SteerInput);
             _steerDrag = true;
             boat.SetControl(boat.Throttle, Mathf.Clamp(steer, -1f, 1f));
         }
