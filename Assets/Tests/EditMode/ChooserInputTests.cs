@@ -35,6 +35,12 @@ namespace HiddenHarbours.Tests.EditMode
             return a;
         }
 
+        // What binding resolution does, without the action's runtime state: does any non-composite binding
+        // of the action match this control's path.
+        private static bool Binds(InputAction action, InputControl control)
+            => action.bindings.Any(b => !b.isComposite && !string.IsNullOrEmpty(b.path) &&
+                                        InputControlPath.Matches(b.path, control));
+
         [Test]
         public void TheNumberKeys_PickTheRows_OneToNine_AndAreBoundNowhereElse()
         {
@@ -72,6 +78,58 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.IsTrue(new DeviceChooserIntentSource().IsBound, "the device source finds what it needs");
         }
 
+        /// <summary>
+        /// ADR 0043 PR 2, the chooser's pad rows: the stick and the d-pad move the highlight through
+        /// <c>Chooser/PadNavigate</c> (data, in the Gamepad scheme), and the pad's south and east buttons
+        /// confirm and cancel through UI/Submit and UI/Cancel's usage bindings, which the pad's layout tags
+        /// Submit and Cancel. UI/Navigate, the keyboard's up/down and the EventSystem's, is untouched.
+        /// Proved on a virtual pad by path matching, no hand on a real one needed.
+        /// </summary>
+        [Test]
+        public void APad_MovesConfirmsAndCancels_ThroughTheAsset()
+        {
+            InputAction padNav = ActionOf(InputBindings.ChooserMap, DeviceChooserIntentSource.PadNavigateAction);
+            Assert.AreEqual(InputActionType.Value, padNav.type,
+                "a Value action, idle inside the stick's dead zone, so a resting stick never claims the list");
+            Assert.AreEqual("Vector2", padNav.expectedControlType);
+            CollectionAssert.AreEquivalent(new[] { "<Gamepad>/dpad", "<Gamepad>/leftStick" },
+                padNav.bindings.Select(b => b.path).ToArray(), "the stick and the d-pad, and nothing else");
+            Assert.IsTrue(padNav.bindings.All(b => (b.groups ?? "").Split(';').Contains(InputBindings.GamepadScheme)),
+                "in the pad's scheme");
+
+            InputAction keysNav = ActionOf(InputBindings.UiMap, DeviceChooserIntentSource.NavigateAction);
+            Assert.IsFalse(keysNav.bindings.Any(b => (b.path ?? "").StartsWith("<Gamepad>")),
+                "UI/Navigate stays the keyboard's: the pad slice adds no row to the EventSystem's action");
+
+            Gamepad pad = InputSystem.AddDevice<Gamepad>();
+            try
+            {
+                Assert.IsTrue(Binds(padNav, pad.leftStick), "the stick steers the list");
+                Assert.IsTrue(Binds(padNav, pad.dpad), "and the d-pad");
+                Assert.IsTrue(Binds(ActionOf(InputBindings.UiMap, DeviceChooserIntentSource.SubmitAction), pad.buttonSouth),
+                    "south confirms");
+                Assert.IsTrue(Binds(ActionOf(InputBindings.UiMap, DeviceChooserIntentSource.CancelAction), pad.buttonEast),
+                    "east cancels");
+                Assert.IsFalse(Binds(ActionOf(InputBindings.UiMap, DeviceChooserIntentSource.SubmitAction), pad.buttonEast),
+                    "and east is not also a confirm");
+                Assert.AreEqual(ControlDevice.Gamepad, InputBindings.DeviceOf(pad.leftStick),
+                    "a push on the stick reports the pad, which is what lets a held push run on");
+            }
+            finally
+            {
+                InputSystem.RemoveDevice(pad);
+            }
+        }
+
+        [Test]
+        public void TheKeysAndThePad_AreJoined_ByWhicheverIsPushedFurther()
+        {
+            Assert.AreEqual(1f, DeviceChooserIntentSource.Strongest(1f, 0f), "a key with the pad at rest reads as before");
+            Assert.AreEqual(-1f, DeviceChooserIntentSource.Strongest(-1f, 0.3f), "and wins over a half-pushed stick");
+            Assert.AreEqual(-0.8f, DeviceChooserIntentSource.Strongest(0f, -0.8f), "the stick alone steers");
+            Assert.AreEqual(1f, DeviceChooserIntentSource.Strongest(1f, -1f), "a tie goes to the keys");
+            Assert.AreEqual(0f, DeviceChooserIntentSource.Strongest(0f, 0f));
+        }
         [Test]
         public void TheMap_CarriesThePresses_AndTheGatesStopThem()
         {

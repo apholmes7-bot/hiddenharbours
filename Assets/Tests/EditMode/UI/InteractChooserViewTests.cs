@@ -337,6 +337,162 @@ namespace HiddenHarbours.Tests.UI.EditMode
         }
 
         // =====================================================================================
+        //  THE PAD (ADR 0043 PR 2, the chooser's rows): a held push runs on, the keyboard does not
+        // =====================================================================================
+
+        private static readonly ChooserAxisTuning Tuning = new ChooserAxisTuning(0.5f, 0.5f, 0.25f); // binary fractions: the clock sums exactly
+
+        [Test]
+        public void AHeldPush_StepsOnce_ThenRunsOnAfterTheDelay_AtTheInterval_OnlyWhenRepeatIsAllowed()
+        {
+            var keys = new ChooserAxisRepeat();
+            Assert.AreEqual(-1, keys.Step(-1f, 0f, false, Tuning), "a push steps at once");
+            for (int i = 0; i < 20; i++)
+                Assert.AreEqual(0, keys.Step(-1f, 0.1f, false, Tuning), "the keyboard's held key never runs on");
+            Assert.AreEqual(0, keys.Step(0f, 0.1f, false, Tuning));
+            Assert.AreEqual(1, keys.Step(1f, 0.1f, false, Tuning), "released, the next press steps");
+
+            var pad = new ChooserAxisRepeat();
+            Assert.AreEqual(-1, pad.Step(-1f, 0f, true, Tuning), "the stick's push steps at once");
+            Assert.AreEqual(0, pad.Step(-1f, 0.25f, true, Tuning), "before the delay: still");
+            Assert.AreEqual(0, pad.Step(-1f, 0.125f, true, Tuning));
+            Assert.AreEqual(-1, pad.Step(-1f, 0.125f, true, Tuning), "at the delay: runs on");
+            Assert.AreEqual(0, pad.Step(-1f, 0.125f, true, Tuning));
+            Assert.AreEqual(-1, pad.Step(-1f, 0.125f, true, Tuning), "then every interval");
+            Assert.AreEqual(-1, pad.Step(-0.8f, 5f, true, Tuning), "a long hitch steps once ...");
+            Assert.AreEqual(0, pad.Step(-0.8f, 0f, true, Tuning), "... never a burst");
+            Assert.AreEqual(0, pad.Step(-0.2f, 0.1f, true, Tuning), "back inside the dead zone: nothing");
+            Assert.IsFalse(pad.IsLatched, "and the latch lets go");
+            Assert.AreEqual(1, pad.Step(0.6f, 0f, true, Tuning), "a fresh push the other way steps that way");
+        }
+
+        [Test]
+        public void TheDeadZone_IsTheConfigs_AndDriftNeverSteps()
+        {
+            var pad = new ChooserAxisRepeat();
+            for (int i = 0; i < 30; i++)
+                Assert.AreEqual(0, pad.Step(0.45f, 0.1f, true, Tuning), "drift under the threshold is no push");
+            var tight = new ChooserAxisTuning(0.3f, 0.4f, 0.1f);
+            Assert.AreEqual(1, pad.Step(0.45f, 0f, true, tight), "the same tilt counts once the threshold is lower");
+
+            ChooserAxisTuning shipped = ChooserAxisTuning.Default;
+            Assert.AreEqual(AxisLatch.Threshold, shipped.Threshold,
+                "the default threshold is the keyboard latch's, so W/S and the arrows step exactly as before");
+            Assert.AreEqual(GameConfig.DefaultInteractChooserRepeatDelaySeconds, shipped.RepeatDelay);
+            Assert.AreEqual(GameConfig.DefaultInteractChooserRepeatIntervalSeconds, shipped.RepeatInterval);
+            Assert.Greater(shipped.RepeatDelay, shipped.RepeatInterval,
+                "the first run-on waits longer than the ones after it, so one deliberate push is one row");
+        }
+
+        [Test]
+        public void APushHeldThroughTheOpen_NeverRunsOn_UntilItComesBack()
+        {
+            var pad = new ChooserAxisRepeat();
+            pad.Absorb(-1f, Tuning);
+            Assert.IsTrue(pad.IsLatched);
+            for (int i = 0; i < 20; i++)
+                Assert.AreEqual(0, pad.Step(-1f, 0.1f, true, Tuning), "the held push from before the list stays dead");
+            Assert.AreEqual(0, pad.Step(0f, 0.1f, true, Tuning));
+            Assert.AreEqual(-1, pad.Step(-1f, 0f, true, Tuning), "a fresh push counts");
+        }
+
+        [Test]
+        public void ThePad_HoldsDown_RunsThroughTheRows_AndWraps_ThenConfirmDoesTheRow()
+        {
+            OpenAndAdvance();
+            var axis = new ChooserAxisRepeat();
+            Assert.AreEqual(InteractChooserControls.Outcome.Stepped,
+                InteractChooserControls.Apply(Intents(nav: -1f), axis, Tuning, 0f, true, -1, false));
+            Assert.AreEqual(1, InteractChooser.Rows.Selected, "the push");
+            Assert.AreEqual(InteractChooserControls.Outcome.Nothing,
+                InteractChooserControls.Apply(Intents(nav: -1f), axis, Tuning, 0.25f, true, -1, false));
+            Assert.AreEqual(InteractChooserControls.Outcome.Stepped,
+                InteractChooserControls.Apply(Intents(nav: -1f), axis, Tuning, 0.25f, true, -1, false));
+            Assert.AreEqual(2, InteractChooser.Rows.Selected, "held to the delay");
+            InteractChooserControls.Apply(Intents(nav: -1f), axis, Tuning, 0.25f, true, -1, false);
+            Assert.AreEqual(0, InteractChooser.Rows.Selected, "down off the bottom wraps to the top");
+
+            InteractChooserControls.Apply(Intents(), axis, Tuning, 0.1f, true, -1, false);
+            InteractChooserControls.Apply(Intents(nav: 1f), axis, Tuning, 0f, true, -1, false);
+            Assert.AreEqual(2, InteractChooser.Rows.Selected, "up off the top wraps to the bottom");
+
+            Assert.AreEqual(InteractChooserControls.Outcome.Confirmed,
+                InteractChooserControls.Apply(Intents(confirm: true, nav: 1f), axis, Tuning, 1f, true, -1, false),
+                "confirm outranks a held push in the same frame");
+            Assert.AreEqual(1, _bench.Calls);
+            Assert.IsFalse(InteractChooser.IsOpen);
+        }
+
+        [Test]
+        public void ThePad_Cancel_PutsTheListDown_DoingNothing()
+        {
+            OpenAndAdvance();
+            var axis = new ChooserAxisRepeat();
+            Assert.AreEqual(InteractChooserControls.Outcome.Cancelled,
+                InteractChooserControls.Apply(Intents(cancel: true, confirm: true, nav: -1f), axis, Tuning, 1f, true,
+                                              -1, false),
+                "cancel outranks confirm and a held push");
+            Assert.IsFalse(InteractChooser.IsOpen);
+            Assert.AreEqual(0, _door.Calls + _lid.Calls + _bench.Calls);
+        }
+
+        [Test]
+        public void TheKeyboard_ThroughTheNewPath_StillMovesOneRowPerPress()
+        {
+            OpenAndAdvance();
+            var axis = new ChooserAxisRepeat();
+            InteractChooserControls.Apply(Intents(nav: -1f), axis, ChooserAxisTuning.Default, 0f, false, -1, false);
+            for (int i = 0; i < 30; i++)
+                Assert.AreEqual(InteractChooserControls.Outcome.Nothing,
+                    InteractChooserControls.Apply(Intents(nav: -1f), axis, ChooserAxisTuning.Default, 0.1f, false, -1, false),
+                    "a held arrow does not run on");
+            Assert.AreEqual(1, InteractChooser.Rows.Selected);
+        }
+
+        [Test]
+        public void TheView_RunsOnForThePad_AndNotForTheKeyboard()
+        {
+            var go = new GameObject("ChooserViewPadTest");
+            var view = go.AddComponent<InteractChooserView>();
+            var held = new HeldChooserIntents();
+            view.ConfigureChooserInput(held);
+            ChooserAxisTuning t = ChooserAxisTuning.Default;
+            try
+            {
+                ActiveControlDevice.Reset();
+                OpenAndAdvance();
+                held.Push(-1f);
+                view.Tick(0f);
+                view.Tick(t.RepeatDelay);
+                Assert.AreEqual(1, InteractChooser.Rows.Selected, "on the keyboard a held key moves one row");
+
+                held.Release();
+                view.Tick(0f);
+                ActiveControlDevice.Report(ControlDevice.Gamepad);
+                held.Push(-1f);
+                view.Tick(0f);
+                Assert.AreEqual(2, InteractChooser.Rows.Selected, "the pad's push");
+                view.Tick(t.RepeatDelay);
+                Assert.AreEqual(0, InteractChooser.Rows.Selected, "held, it runs on and wraps");
+                view.ShownSelection(out int pillRow, out int handRow);
+                Assert.AreEqual(0, pillRow, "the gold pill follows");
+                Assert.AreEqual(0, handRow, "and the hand");
+
+                held.PressCancel();
+                view.Tick(0f);
+                held.Release();
+                Assert.IsFalse(view.IsShowing, "the pad's cancel puts it down");
+                Assert.AreEqual(0, _door.Calls + _lid.Calls + _bench.Calls);
+            }
+            finally
+            {
+                ActiveControlDevice.Reset();
+                Object.DestroyImmediate(view.CanvasObject);
+                Object.DestroyImmediate(go);
+            }
+        }
+
+        // =====================================================================================
         //  THE REAL VIEW, DRIVEN
         // =====================================================================================
 

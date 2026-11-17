@@ -8,7 +8,7 @@ namespace HiddenHarbours.Core
     /// up (ADR 0043: intents in Core, bindings as data).
     ///
     /// <para><see cref="Navigate"/> is the vertical axis, +1 = up the list (the view latches it, one row
-    /// per push). <see cref="Pick"/> is a number key that went down this frame, 1..9, or 0. The rest are
+    /// per push; with the pad in hand a held push runs on after a delay, timings in GameConfig). <see cref="Pick"/> is a number key that went down this frame, 1..9, or 0. The rest are
     /// edges, true on the frame the control went down, except <see cref="Point"/> (screen pixels, bottom-
     /// left origin), which is where the pointer is.</para>
     /// </summary>

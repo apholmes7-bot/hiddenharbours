@@ -126,6 +126,7 @@ ships as a preloaded asset). **One map per control mode**, two control schemes: 
 | | Brake | Button | Space | as above |
 | **Hud** (H2, 2026-10-17) | HideAll | Button | M | `BoatUiWindowInput` → `BoatUiWindows.ToggleHideAll`, in every control mode ✅ H2 |
 | **Chooser** (2026-11-15) | Pick1 … Pick9 | Button | 1 … 9 (bound nowhere else in the asset) | `DeviceChooserIntentSource` → `ChooserInput` → `InteractChooserView`: picks a row of the interaction chooser. The list's up/down, confirm, cancel and mouse read the existing UI/Navigate, UI/Submit or Walk/Deck Interact, UI/Cancel, UI/Point and UI/Click; no shipped key changes meaning |
+| | PadNavigate (2026-11-16, PR 2 chooser slice) | Value/Vector2 | (none; **Gamepad**: `<Gamepad>/leftStick`, `<Gamepad>/dpad`) | `DeviceChooserIntentSource`, joined with UI/Navigate by `Strongest` (whichever axis is pushed further, the keys on a tie) |
 | **UI** | Navigate, Submit, Cancel, Point, Click, RightClick, MiddleClick, ScrollWheel | as Unity's UI map | the template's KeyboardMouse bindings, carried over verbatim | the `EventSystem` (`SellScreen` builds one with no explicit asset, so the module falls back to THIS map's `UI`); the tiered `Zoom` intent joins it in PR 2 |
 
 **The `Hud` map (H2, 2026-10-17).** M, the hide-all of the helm's UI, was the last key the HUD read off
@@ -142,6 +143,23 @@ it from there; `BoatUiWindowInput.ConfigureHudInput` hands the reader a scripted
 Gamepad scheme is still empty): hold View hides all (ruled), and a tap of View raises the next fitted
 instrument in the band's order, then none (the Planner's proposal, under the owner's feel gate on PR 2).
 The burn-down after H2: 42 files → 40.
+
+**PR 2, the chooser's slice (2026-11-16).** The first rows of the Gamepad scheme, and only these:
+the left stick and the d-pad move the interaction chooser's highlight (`Chooser/PadNavigate`); the pad's
+south and east buttons confirm and cancel through UI/Submit and UI/Cancel's existing `*/{Submit}` /
+`*/{Cancel}` usage bindings (no new row). The stick is its own Value action rather than more rows on
+UI/Navigate for two reasons: UI/Navigate is a pass-through action the EventSystem also reads, so a stick
+there would steer every uGUI screen (not this slice); and a pass-through action reports every raw change,
+so a resting stick's jitter would mask a held key and claim the pad was in hand. A held stick or d-pad
+runs on (`GameConfig.InteractChooserRepeatDelaySeconds`, then every `…RepeatIntervalSeconds`), past
+`…PushThreshold`; the run-on is allowed only while `ActiveControlDevice.Current` is the pad, and the
+device is reported only for an axis actually pushed, so W/S and the arrows still move one row per press.
+`TheGamepadSchemeIsPresentButEmpty_UntilPr2FillsIt` became
+`TheGamepadScheme_BindsOnlyTheChoosersNavigate_UntilTheRestOfPr2Lands`. Still owed by PR 2, under the
+owner's feel gate: the walk/deck/helm/drive/hide-all rows and the pad's interact press (so a pad alone
+cannot yet OPEN the chooser), the affordance glyph and HUD hints, `UiIntents`, the settings sheet, and
+explicit pad rows for Submit/Cancel once a scheme binding mask is ever applied (a mask on KeyboardMouse
+would hide the usage rows from the pad).
 
 **Why Digital (`mode=1`) and not the default DigitalNormalized.** The old read summed the keys and left
 a diagonal at (±1, ±1) for `PlayerWalkController.VelocityFor` to clamp. Mode 1 is that sum. (After the

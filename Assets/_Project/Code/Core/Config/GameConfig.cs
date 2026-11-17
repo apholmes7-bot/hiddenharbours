@@ -261,7 +261,8 @@ namespace HiddenHarbours.Core
 
         [Header("Interaction chooser (owner 2026-11-15)")]
         [Tooltip("When ON, pressing interact where two or more actions are in reach opens a small list to " +
-                 "pick from (arrows/W-S + E or Enter, number keys, or the mouse). OFF: the press acts on the " +
+                 "pick from (arrows/W-S + E or Enter, number keys, the mouse, or a pad's stick/d-pad + " +
+                 "south to confirm, east to cancel). OFF: the press acts on the " +
                  "nearest, most specific thing, as before.")]
         public bool InteractChooserEnabled = DefaultInteractChooserEnabled;
 
@@ -272,6 +273,29 @@ namespace HiddenHarbours.Core
 
         [Tooltip("The most rows the list shows (at most 9, one per number key).")]
         [Range(2, InteractChoiceList.HardCap)] public int InteractChooserMaxRows = DefaultInteractChooserMaxRows;
+
+        /// <summary>How far the list's up/down axis must travel to count as a push when no config is
+        /// wired. 0.5 is the latch the keyboard has always used, so W/S and the arrows are unchanged.</summary>
+        public const float DefaultInteractChooserPushThreshold = 0.5f;
+
+        /// <summary>How long a held stick or d-pad waits before the highlight starts running on, when no
+        /// config is wired.</summary>
+        public const float DefaultInteractChooserRepeatDelaySeconds = 0.4f;
+
+        /// <summary>The gap between steps once the highlight is running on, when no config is wired.</summary>
+        public const float DefaultInteractChooserRepeatIntervalSeconds = 0.12f;
+
+        [Tooltip("How far the up/down axis must travel to move the highlight, and fall back before the next " +
+                 "push counts (0..1 of full tilt). Sits on top of the stick's own dead zone, so drift never " +
+                 "steps a row. Keys are always full tilt.")]
+        [Range(0.2f, 0.9f)] public float InteractChooserPushThreshold = DefaultInteractChooserPushThreshold;
+
+        [Tooltip("Gamepad only: seconds a held stick or d-pad waits before the highlight runs on, one row " +
+                 "at a time. The keyboard keeps one row per press.")]
+        [Range(0.1f, 1.5f)] public float InteractChooserRepeatDelaySeconds = DefaultInteractChooserRepeatDelaySeconds;
+
+        [Tooltip("Gamepad only: seconds between rows once a held stick or d-pad is running on.")]
+        [Range(0.05f, 0.5f)] public float InteractChooserRepeatIntervalSeconds = DefaultInteractChooserRepeatIntervalSeconds;
 
         [Tooltip("The bar for heavy work, for an action that opts in: refused at this tiredness / hunger " +
                  "stage or worse, and the player says \"I'm too tired\" / \"I'm too hungry\" / both. None = " +
@@ -1470,6 +1494,13 @@ namespace HiddenHarbours.Core
                  "below a floor only sleep clears). Work already under way is never interrupted. Read " +
                  "through EffortGate.Settings.")]
         public EffortSettings Effort = EffortSettings.Default;
+
+        [Header("Stink lines (cleanliness, the look)")]
+        [Tooltip("Cleanliness slice 2 (owner ask 2026-11-15): small wavy lines rise from the player's head " +
+                 "while he is dirty, more of them as he gets dirtier, gone once he washes. A gentle joke: " +
+                 "they change nothing but the picture. Derived from the saved dirt, never saved. Read " +
+                 "through StinkLinesSettings.Current.")]
+        public StinkLinesSettings StinkLines = StinkLinesSettings.Default;
 
         public float SecondsPerHour => SecondsPerDay / 24f;
         public float SecondsPerWeek => SecondsPerDay * DaysPerWeek;

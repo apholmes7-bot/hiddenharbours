@@ -115,18 +115,27 @@ namespace HiddenHarbours.Tests.EditMode
                 "It was never read by anything and it is deleted by ADR 0043 §7; there is ONE bindings asset.");
         }
 
+        /// <summary>
+        /// The pad's pin (ADR 0043 PR 2). PR 0 declared the Gamepad scheme empty; PR 2 fills it a slice at a
+        /// time, and the first slice is the interaction chooser's: the left stick and the d-pad on
+        /// Chooser/PadNavigate. Every other pad row (walk, deck, helm, drive, the hide-all, the interact press) is
+        /// still owed and owner-gated on feel, so anything else in the scheme reds this until its slice
+        /// lands and adds its row here.
+        /// </summary>
         [Test]
-        public void TheGamepadSchemeIsPresentButEmpty_UntilPr2FillsIt()
+        public void TheGamepadScheme_BindsOnlyTheChoosersNavigate_UntilTheRestOfPr2Lands()
         {
             InputActionAsset asset = Asset();
-            InputBinding[] pad = asset.actionMaps
-                .SelectMany(m => m.bindings)
-                .Where(b => (b.groups ?? "").Split(';').Contains(InputBindings.GamepadScheme))
+            string[] pad = asset.actionMaps
+                .SelectMany(m => m.bindings.Select(b => (map: m.name, binding: b)))
+                .Where(x => (x.binding.groups ?? "").Split(';').Contains(InputBindings.GamepadScheme))
+                .Select(x => x.map + "/" + x.binding.action + "=" + x.binding.path)
+                .OrderBy(s => s, StringComparer.Ordinal)
                 .ToArray();
-            Assert.AreEqual(0, pad.Length,
-                "PR 0 declares the Gamepad scheme and binds NOTHING to it — the pad table is the input lane's " +
-                "PR 2 and is owner-gated (the feel ruling). When PR 2 lands, this test becomes the pad's " +
-                $"pin. Found: {string.Join(", ", pad.Select(b => b.action + "=" + b.path))}");
+            CollectionAssert.AreEqual(
+                new[] { "Chooser/PadNavigate=<Gamepad>/dpad", "Chooser/PadNavigate=<Gamepad>/leftStick" }, pad,
+                "the pad's rows so far are the chooser's up/down only (ADR 0043 PR 2, chooser slice). Found: " +
+                string.Join(", ", pad));
         }
 
         /// <summary>

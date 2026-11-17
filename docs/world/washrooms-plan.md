@@ -113,8 +113,16 @@ own lines; when it is not `Warm`, hide the friendly or bonus options. Becoming s
 own `NeedStageChanged(Dirtiness, ..., Strong)` signal: hang a bark, a step back, flies or stink lines
 on it. Washing is `PlayerWashChanged` (on and off).
 
-Art and audio this needs (none made yet): stink lines or a few flies around a stinky character (a
-small looping particle or sprite overlay, pooled); a damp, darker hair and skin tint for a short while
+**Stink lines (slice 2, built):** `Player/StinkLines.cs` (`StinkLinesPresenter`, added to the player by
+`PlayerWalkController`) draws a few small wavy lines rising from his head once dirt reaches
+`GameConfig.StinkLines.StartAtDirt` (shipped 0.5, grubby): 1 line there, 2 at stinky (0.75), 3 from
+about 0.83. They fade as he washes, ride the body's Y-sorted band (a wall in front hides them with
+him), follow the deck rider aboard, and hide at a helm, in a cab and below decks. Derived from the
+saved dirt, never saved. The line is a placeholder squiggle drawn in code; a baked sprite can replace
+it.
+
+Art and audio this still needs (none made yet): a baked stink-line sprite or a few flies around a
+stinky character (a small looping particle or sprite overlay, pooled); a damp, darker hair and skin tint for a short while
 after washing or swimming; a wash pose (hands at a basin) and a shower stance; the toilet sit pose
 (the galley's seat pose should serve); water-running loops for sink, shower and bath; a door creak and
 latch for the outhouse; a villager "phew" bark.
