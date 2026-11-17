@@ -1,0 +1,134 @@
+# Fish plant: intake, grades and line work
+
+Status: isolated M1 logic foundation; no scene wiring or live economy change.
+Serves P3 (a working coast) and P4 (deliver by hand, learn work, later hire).
+
+## What main already supplies
+
+Audit base: `32dfdecdf3c36167598b97401bc8cfda336583b9`.
+
+| Concern | Existing files and reuse |
+|---|---|
+| Selling | `Assets/_Project/Code/Economy/SellService.cs` quotes and sells individual catch through Core `IHold` / `IWallet`, preserves refused fish, registers category supply and raises `CatchSold`. `CarriedHold.cs`, `CounterSellDesk.cs` and `WharfSellPoint.cs` provide physical delivery precedents. Reuse these contracts in a future adapter; do not call both selling paths for the same receipt. |
+| Market | `Economy/Market.cs`, `MarketMath.cs` and `SellPricing.cs` provide category supply/demand, outlet price levels, marginal glut pricing and daily settlement. A plant's provisional price per kg is a separate buying contract, not a replacement for per-fish market prices. Future market reporting must register the accepted fish once, not once per tick or again on dispatch. |
+| Catch and size | `Core/Economy/CatchItem.cs` retains species, individual weight, value and freshness state without referencing Fishing. `Fishing/FishSpeciesDef.cs` authors min/max weight, base value and spoil rate. Weight is size evidence here; length and legal-size grading are not invented. Keep one fish per delivered receipt; never average different sizes into an anonymous lot. |
+| Freshness | `Core/Economy/Freshness.cs` computes spoil from explicit game time, species rate, storage mode and policy; `Core/Economy/SpoilContext.cs` applies the live refusal gate. A future adapter must settle expiring ice protection and reject unsellable fish before converting remaining freshness to integer ppm for intake. This component accepts the already evaluated freshness, never reads a global clock. |
+| Production | `Economy/SupplyChain/FishPlantDef.cs`, `FishLineDef.cs`, `FishChainSpec.cs`, `FishChainModel.cs` and `FishLotStore.cs` already implement an isolated NPC chain with bounded stores, yields, workers and hand receipts. Its 41 unplaced assets and `FishChainUnityTests` remain unchanged. It does not carry freshness or grade settlement; do not discard provenance to feed graded lots into it. `Core/Economy/IFishChainWork.cs` supplies the reusable `FishProduct` identity and future physical hand/carrier seams. |
+| Staff | `Core/Crew/StaffRoleDef.cs`, `StaffRoleBook.cs`, `ICrewRoster.cs` and `CrewPolicy.cs` describe boat roles and task membership. They are not plant jobs, wages, hiring or shift schedules. Reuse the Core task-contract approach later rather than declaring a boat skipper to be a fillet worker. |
+| Cannery beat | `App/Editor/StPetersCannery.cs` documents and places the derelict island cannery; `Core/Relationships/RelationshipEvent.cs` reserves the restored-employer event. `docs/roadmap.md` M3 and `docs/design/npcs-and-routines.md` reserve enterprise/restoration. This is the long-arc introduction, not an existing playable factory job. The operating town plant and the derelict island cannery have distinct identities. |
+
+Code paths above abbreviate `Assets/_Project/Code/` after the first row.
+See also [the supply-chain design](fish-plant-supply-chain.md) and
+[its implementation notes](fish-plant-logic.md). This narrow component adds grading,
+not a second fleet, warehouse or market simulation.
+
+## Player path and the 21 zones
+
+The route follows the shell proposed in PR 1276, whose files are untouched.
+Enter reception, speak at the office counter, carry a catch/container along the
+receiving aisle to intake I1, and hand it over at the delivery edge. Staff weigh
+each fish and evaluate freshness. The quote names species, weight, grade and
+payment; refused fish stay with the player. Acceptance consumes the physical
+delivery receipt exactly once and produces the settlement and a graded lot.
+The player receives payment before leaving. Nothing pulls fish from a distant
+boat, pocket, store or truck.
+
+M1 below means the intended first intake interaction, not an interaction shipped
+by this PR. All 21 floor zones are design assignments; no art is accepted here.
+
+| Shell zone | Job | Phase |
+|---|---|---|
+| Reception | Explain today's accepted species and intake terms | M1 intake |
+| Office | Counter quote and payment; later records and hiring | M1 counter; records/hiring later |
+| ReceivingAisle | Walk the carried load to I1 without entering production | M1 intake |
+| IntakeI1 | Hand-delivered small catches and empty-container return | M1 intake |
+| DeliveryEdge | Supported handover between visitor and receiving worker | M1 intake |
+| WeighAndGrade | Weigh, inspect freshness, accept/refuse and issue receipt | M1 intake |
+| RawChilledBuffer | Finite raw storage; preserve fish identities and cold history | Later |
+| FilletLine | Hand-load graded fish, cut over game time, retain product and waste | M1 logic primitive only; staffed scene later |
+| CanningLine | Separate recipe, packaging inputs and heat process | Later |
+| Packing | Pack and label physical products by grade and provenance | Later |
+| DispatchStaging | Hold supported outbound packages until hand collection | Later |
+| FinishedColdStore | Finite cold storage with actual refrigeration policy | Later |
+| LobsterCell | Live/cooked shellfish handling, separate acceptance and welfare | Later |
+| Refrigeration | Power, plant cooling and breakdown consequences | Later |
+| DryStore | Packaging materials and shelf-stable finished cans | Later |
+| ReturnsWash | Return and wash empty totes; never consume the player's bucket | Later |
+| IntakeI2 | Bulk receiving from actual arriving carriers | Later |
+| OutboundDock | Load dispatch carriers by hand and acknowledge departure | Later |
+| PlantServices | Supported utilities, maintenance and physical waste removal | Later |
+| StaffEntranceWash | Job access, changing and hygiene | Later |
+| StaffRoom | Breaks and shift routines | Later |
+
+Later, the player can apply at the counter, wash in, learn a line by doing its
+hand tasks, and only then employ workers. Whether the player can take paid shifts
+is an owner question, not an enabled job system. No employee, shift or wage is
+created by the M1 component.
+
+## Data and runtime contract
+
+New data types: `FishGradeDef` (`fishgrade.*`), `FishIntakeDef`
+(`fishintake.*`), and `GradedFishLineDef` (`gradedfishline.*`). Each entity is
+one nonvisual asset. Grades author minimum freshness ppm and integer currency
+units per kg. The intake references grade assets in strictly descending order,
+accepted species ids and maximum individual delivery grams. No grade threshold,
+species, price, capacity, duration or yield is hard-coded in logic.
+
+The sample accepts only `fish.atlantic_cod`. Its prime/standard/low grades start
+at 850000/500000/150000 remaining-freshness ppm, paying 12/8/3 currency units per
+kg. These are provisional isolated test content, not approved prices or a licence
+to buy spoiled fish. The live refusal gate can be stricter. Round the total
+down once per fish (`grams * price / 1000`), allowing a sub-unit payment of zero;
+do not impose a hidden minimum price. Weight and freshness endpoints are exact.
+Equal thresholds, duplicate grade/species ids, ascending prices and malformed
+data are refused at construction. Runtime specs detach from editable Def arrays.
+
+`FishPlantIntake.TryAccept` accepts an explicit completed-hand-delivery receipt,
+not an inventory search. It refuses duplicates, invalid/nonpositive/over-capacity
+mass, unknown species, invalid freshness and fish below all bands. Refusal creates
+no lot or payment and does not burn a receipt id. Acceptance returns a graded
+single-fish lot retaining source receipt, species, exact grams, freshness, grade,
+delivery time and settlement amount. It calculates money; it does not mutate a
+wallet, hold or market. One intake instance owns its session's receipt registry.
+The caller must never fabricate a new receipt for the same fish.
+
+`GradedFishLine` is a single explicitly loaded work slot. It consumes a graded
+lot once, including across two line instances. Its separate Def authors species,
+product, capacity, yield, process seconds and slow-tick seconds. It produces at
+the first absolute slow-tick boundary at or after load time plus process duration.
+Polling more often cannot accelerate it; sparse polling reaches the same result.
+Time reversal is refused. Seed has no influence because this transform has no
+randomness. Recipe data is snapshotted at setup, not read every frame.
+
+Completion keeps output in the slot until an explicit collection call. A full
+slot refuses new input. Product grams are floored from source grams times yield
+ppm, and the exact complement is retained as byproduct grams; source grade and
+identity survive. This is production inside the slot, not a storage or transport
+operation. Collection is a logic acknowledgement only; a future scene adapter
+must prove completed hand work, reach, support and capacity before calling it.
+No clock event moves goods between zones. No live adapter exists in this PR.
+
+## Built, designed only, and persistence boundary
+
+Built: grade/price and recipe Defs, detached validated specs, receipt-based intake
+settlement, a single graded processing slot, logic tests and content validators.
+The sample line makes cod fresh fillet with 450000 ppm yield, 60 game seconds
+duration, a 5-second slow tick and a 20000-gram individual capacity. Values are
+proposal data and no asset is loaded by a runtime bootstrap or Resources loader.
+
+Designed only: the visitor/counter interaction, all hand work and visible storage,
+wallet and supply registration, refrigerated queues, bulk delivery, dispatch,
+packaging, waste handling, plant employment and ownership. Existing NPC-chain
+assets remain a separate proposal until a grade-preserving bridge is designed.
+
+No save fields or migrations are added (save v24 / PR 1277 stays separate).
+Live integration would need persistent accepted receipt ids and settlement status
+atomically with catch removal and wallet credit; unique catch-to-lot provenance;
+raw/product/waste locations and quantities; freshness/protection history; line
+input identity, recipe identity/version, load/completion times and collected state.
+Hiring would additionally need job assignments, shifts, wages and permissions.
+Do not install this session-only model in normal play before those decisions.
+
+Open owner questions: approve per-grade prices and freshness bands; choose the
+accepted species (shellfish need separate handling); decide whether a player can
+work a paid line shift and the unlock/wage. No question blocks this isolated core.
