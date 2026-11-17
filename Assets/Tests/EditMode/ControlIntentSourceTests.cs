@@ -118,12 +118,13 @@ namespace HiddenHarbours.Tests.EditMode
         /// <summary>
         /// The pad's pin (ADR 0043 PR 2). PR 0 declared the Gamepad scheme empty; PR 2 fills it a slice at a
         /// time, and the first slice is the interaction chooser's: the left stick and the d-pad on
-        /// Chooser/PadNavigate. Every other pad row (walk, deck, helm, drive, the hide-all, the interact press) is
+        /// Chooser/PadNavigate. The autopilot's switch (Helm/Autopilot, Y) joined it with the autopilot's
+        /// slice 1 (2026-11-16). Every other pad row (walk, deck, helm, drive, the hide-all, the interact press) is
         /// still owed and owner-gated on feel, so anything else in the scheme reds this until its slice
         /// lands and adds its row here.
         /// </summary>
         [Test]
-        public void TheGamepadScheme_BindsOnlyTheChoosersNavigate_UntilTheRestOfPr2Lands()
+        public void TheGamepadScheme_BindsOnlyTheChoosersNavigateAndTheAutopilot_UntilTheRestOfPr2Lands()
         {
             InputActionAsset asset = Asset();
             string[] pad = asset.actionMaps
@@ -133,8 +134,10 @@ namespace HiddenHarbours.Tests.EditMode
                 .OrderBy(s => s, StringComparer.Ordinal)
                 .ToArray();
             CollectionAssert.AreEqual(
-                new[] { "Chooser/PadNavigate=<Gamepad>/dpad", "Chooser/PadNavigate=<Gamepad>/leftStick" }, pad,
-                "the pad's rows so far are the chooser's up/down only (ADR 0043 PR 2, chooser slice). Found: " +
+                new[] { "Chooser/PadNavigate=<Gamepad>/dpad", "Chooser/PadNavigate=<Gamepad>/leftStick",
+                        "Helm/Autopilot=<Gamepad>/buttonNorth" }, pad,
+                "the pad's rows so far are the chooser's up/down (ADR 0043 PR 2, chooser slice) and the " +
+                "autopilot's switch. Found: " +
                 string.Join(", ", pad));
         }
 

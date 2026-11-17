@@ -834,20 +834,20 @@ knows you.
 
 "Some items can be gifted to npcs and npcs have preferences." What shipped, and what did not:
 
-- **What can be given.** The loose catch in your hand (a fish by the gill, a handful of clams). It is
-  giftable unless its species says otherwise (`FishSpeciesDef.Giftable`, default on), read through
-  Core's `IGiftableFacts` so the world layer never names Fishing. Tools and pails are never offered: the
-  act only peeks the hand's loose catch (`ICatchHands.TryPeekHand`). Food is not a hand item on main
+- **What can be given.** Catch he has: a fish by the gill, a handful of clams, and since 5.7 the same
+  catch in his pails and his storage. It is giftable unless its species says otherwise
+  (`FishSpeciesDef.Giftable`, default on), read through Core's `IGiftableFacts` so the world layer never
+  names Fishing. Tools and pails themselves are never offered. Food is not an item he holds on main
   yet, so it has no flag; when it is, it answers through the same seam.
-- **How it is offered.** Facing a villager you have MET (her completion flag is set) with a giftable
-  catch in hand, the press opens the interaction chooser with two rows: **Talk** first and selected,
-  and **Give &lt;item&gt;** beneath it ("Give Atlantic Cod"). Confirming the default talks and the catch
-  stays in his hand; only picking the Give row gives. With nothing giftable in hand there is no list
-  and the press talks at once. A bare press never gives. The popup always names Talk. Her opening
-  conversation is never skipped by a fish in your hand. Talk as a row in the list is built this way
-  pending the owner's confirmation. The faced villager is handed to the chooser as one thing
-  (`ConversationChoice`) through `InteractChooser.OpenUnregistered`, whose confirm re-checks reach,
-  facing and availability but not registration; the Give row re-reads the hand at the confirm.
+- **How it is offered.** Facing a villager you have MET (her completion flag is set) with something
+  giftable, the press opens the interaction chooser: **Talk** first and selected, and a **Give
+  &lt;item&gt;** row per item type beneath it ("Give Atlantic Cod (3)"; 5.7). Confirming the default
+  talks and nothing moves; only picking a Give row gives. With nothing giftable there is no list and the
+  press talks at once. A bare press never gives. The popup always names Talk. Her opening conversation
+  is never skipped by a fish in your hand. Talk in the list is the owner's call (confirmed 2026-11-17).
+  The faced villager is handed to the chooser as one thing (`ConversationChoice`) through
+  `InteractChooser.OpenUnregistered`, whose confirm re-checks reach, facing and availability but not
+  registration; a Give row re-reads what he has at the confirm.
 - **The chooser switch.** With `GameConfig.InteractChooserEnabled` off, gifting is unreachable by
   design: there is no list to pick Give from, and a bare press never gives, so the press only talks.
 - **Tastes are data** on the villager's `NpcDef.Gifts`: loved / liked / disliked by item id and by
@@ -878,16 +878,49 @@ not saved: relationships slice 2), and publishes
   declined-today answers nobody has overridden. A few tastes are written to rub against each other:
   Rene loves mackerel and Dougie, who shares his gable and tins pelagics all day, does not; the oyster
   man does not want oysters and the shopkeeper loves them; Sam and Rose like any catch at all.
-- **The daily limit is unchanged and still not saved.** It is per person, per game day (the clock's day
-  index), from `GiftConfig.GiftsPerNpcPerDay`. The save has no field it could ride in honestly (the only
-  open bag is the onboarding flags, which would grow by a key per person per day), so it stays runtime
-  only. **The save step it needs:** one `List<NpcGiftDayDto>` on `SaveData` (`NpcId`, `DayIndex`,
-  `Count`; only today's entries are written, so it never grows past the cast), captured from and restored
-  into `GiftLedger.Shared` through a small Core seam the save service calls, under a schema bump with an
-  empty-list default for older saves.
-- **Still owed:** the owner's confirmation that Talk belongs in the list beside Give (built that way,
-  see 5.4); food and other hand items as gifts once food is a hand item; a gift limit saved with the game (above); the
+- **The daily limit** is per person, per game day (the clock's day index), from
+  `GiftConfig.GiftsPerNpcPerDay`. **Saved since v24** (5.6).
+- **Still owed:** food and other items as gifts once they are items he can hold (the Give rows read
+  catch only); the pail and deck-tray pictures refreshing the moment a gift leaves them (5.7); the
   relationship graph applied and saved (relationships slice 2).
+
+### 5.6 As built: gift days saved (v24 rows wired)
+
+- `GiftLedger` binds to the live save object (`GameServices.Save.Current`), the catch record's pattern:
+  binding loads `SaveData.NpcGiftDays` (the latest day's rows; a duplicate keeps the larger count, a row
+  with no person or no count is skipped), and every accepted gift writes its person's row back. Only the
+  current day's rows are kept: the first look on a new day drops the old ones, so the list never grows
+  past the cast. A new game or another loaded save is a new object, so the ledger starts from its rows.
+- Reloading on the same game day now remembers who has had their gift. A v23 save loads with no gift
+  history. Nothing else is saved for gifts: the relationship event a gift records goes to the
+  relationship service, whose graph is not saved yet (relationships slice 2).
+
+### 5.7 As built: give from anywhere he keeps things (owner rule 2026-11-17)
+
+The owner's rule: Give only shows what the player has, whether in his hands, in his backpack or in his
+storage containers; with several of the same type it gives one of that type, unless he picks the action
+again.
+
+- **Where it looks** (`GiftInventory`, all through Core): his hands (the loose catch, then a pail he has
+  picked up), then what he carries on his person (the belt pail, `GameServices.PlayerHold`; there is no
+  backpack in the game yet, and when there is it answers here), then his storage containers
+  (`PlayerStorage`, a new Core list: the persistent boat hold, registered by the travel coordinator, and
+  Ginny's freezer, which registers itself). Region scenes' dev boats are not his and are not listed.
+- **One row per item type.** Talk first and selected, then "Give Atlantic Cod" per giftable type, with a
+  count when he has more than one anywhere: "Give Atlantic Cod (3)". Types are listed in the order first
+  met on that walk, so what is in his hand comes first. The chooser's row cap
+  (`GameConfig.InteractChooserMaxRows`, 6 by default) bounds the list: Talk plus five types; any further
+  types are not shown until there is room.
+- **One per pick.** A Give pick gives exactly one: from his hands first, then what he carries, then
+  storage. Picking Give again gives another, under the same daily limit (one per person per day by
+  default, so a second pick that day is declined kindly and nothing moves). Nothing giftable anywhere =
+  no list; the press talks.
+- **Taking one out of a container** uses the Core rebuild (`IHold` has no partial remove, the
+  `SellService` / `CatchDisposal` pattern). A container whose capacity could not take the rest back (a
+  belt pail whose gear is gone) is skipped, so a gift never loses catch.
+- **Known gap:** the pail and deck-tray pictures listen for a catch, a sale or a dump, not a gift, so they
+  show the old contents until the next of those. Fixing it is a one-line subscription in each presenter
+  (Art and Boats lanes).
 
 ---
 

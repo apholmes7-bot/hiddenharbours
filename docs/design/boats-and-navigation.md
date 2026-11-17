@@ -1484,6 +1484,41 @@ measured width; no additional tuning is needed. `BoatCabinPassageDecisionTests` 
 decision for the 0.529 m opening and a wide opening, in both directions, and
 `BoatCabinDoorWalkthroughTests` pins its connection to the cabin state.
 
+### 9.13 Autopilot, slice 1: heading hold (2026-11-16)
+
+The owner ruled (2026-11-15) that set-a-course becomes an **autopilot, a purchased tool offered on
+recommended hulls** (P4: earn it, then automate it). Slice 1 holds a heading; it does not follow a
+route.
+
+- **Who has one:** a hull whose `BoatHullDef.AutopilotOffered` is true and that has a rudder (an engine
+  helm or a sail plan). The owner ruled (2026-11-16): *available on anything without an outboard,
+  an expensive upgrade.* So it is offered on every inboard, sterndrive (bowrider, express cruiser,
+  go-fast), jet (the jet ski) and sailing hull, and on no outboard hull (punts, skiffs, Zodiacs, the
+  outboard dory, the yacht tender) and not on the rowed dory (no rudder). No hull field names the
+  drive, so each hull's rig source decides it; `HeadingHoldAutopilotTests` holds the fleet to the
+  rule. The purchase, a high-priced upgrade sold at the NMC boat and gear wholesaler, is slice 2
+  (with the save step). The flag says **offered**, not fitted: once the purchase exists, a helm has the autopilot when
+  her Def offers it AND the save says it was bought for that boat.
+- **The switch:** at the helm, `Helm/Autopilot` (P, or Y on a pad) holds the heading she is on
+  (`BoatController.ToggleAutopilot`). Engaging is refused under the same rules that end a hold.
+- **The controller:** `HeadingHoldAutopilot`, a PID on the wrapped heading error with a yaw-rate
+  damping term and a clamped integral, writing the same helm (−1..1) a steer key writes, on the fixed
+  step before the drive reads it. The hull's own way-scaled rudder does the turning: no new physics.
+  Tuning: `GameConfig.HelmAutopilot`.
+- **It hands the helm back on:** a steer key or stick past `SteerOverrideThreshold`, a grab of the
+  wheel, the switch again, leaving the helm (or any `Stop`), a hull swap, going aground, a knock
+  harder than `CollisionMinImpactMetresPerSecond`, or way ahead below `MinWayMetresPerSecond`
+  (astern counts as below).
+- **What the player sees:** the dash wheel, which mirrors the helm, turns by itself while it holds.
+  There is no lamp or text yet: the helm band has no generic switch lamp to reuse.
+- **The signal:** each engage and each hand-back publishes the Core `AutopilotStateChanged`
+  (`Engaged`, and the Core `AutopilotDisengage` reason, append-only), so a lamp, a click or a chime
+  can answer it without reading the boat's controller. A refused press publishes nothing.
+- **Saved:** never. A loaded game starts with it off.
+- **Owed by slice 2 (route following):** the hold must survive leaving the helm, the unmanned tick
+  and region crossings (`RegionTravelCoordinator` calls `Stop()` at every crossing), so its state
+  must live outside a manned `BoatController`. Saving a route is a later save step.
+
 ## 10. Open questions
 
 1. **Direct boat control vs point-to-move (mobile).** Do we offer **full manual** throttle+helm (best for P1 skill, harder on touch) and an optional **assisted/auto-pilot-to-waypoint** for transits/accessibility — and where exactly does autopilot disengage near danger? Likely both, with autopilot for known-safe transits and manual demanded in tide/weather pinch points. Needs UX prototyping.

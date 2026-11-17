@@ -77,10 +77,13 @@ namespace HiddenHarbours.Tests.World.EditMode
         {
             int head = 176;   // the left head at the closest tier (31 cols): 35 cells
             Assert.AreEqual(35, NotebookLayout.RegisterCols(head, 0), "no weight lettered: the whole head");
-            Assert.AreEqual(35 - "9.4 kg".Length - 1, NotebookLayout.RegisterCols(head, 94));
-            Assert.AreEqual(35 - "0.3 kg".Length - 1, NotebookLayout.RegisterCols(head, 3));
-            Assert.AreEqual(35 - "12.3 kg".Length - 1, NotebookLayout.RegisterCols(head, 123));
-            Assert.AreEqual(0, NotebookLayout.RegisterCols(4, 123), "never negative");
+            // The reserve is taken in whole grams and measured as the readout letters it.
+            Assert.AreEqual(35 - "9.4 kg".Length - 1, NotebookLayout.RegisterCols(head, 9400));
+            Assert.AreEqual(35 - "300 g".Length - 1, NotebookLayout.RegisterCols(head, 300));
+            Assert.AreEqual(35 - "40 g".Length - 1, NotebookLayout.RegisterCols(head, 40), "a smelt's grams");
+            Assert.AreEqual(35 - "1.0 kg".Length - 1, NotebookLayout.RegisterCols(head, 1000));
+            Assert.AreEqual(35 - "12.3 kg".Length - 1, NotebookLayout.RegisterCols(head, 12300));
+            Assert.AreEqual(0, NotebookLayout.RegisterCols(4, 12300), "never negative");
         }
 
         // ---- the built book ---------------------------------------------------------------------------
@@ -162,7 +165,7 @@ namespace HiddenHarbours.Tests.World.EditMode
 
                 Assert.Greater(p.RegisterLine.Length, cells, "the test's line really is too long for the head");
                 Assert.LessOrEqual(p.RegisterShown.Length * NotebookKit.CellWidth - NotebookKit.Slack,
-                                   head - ("12.3" + NotebookLayout.WeightUnit).Length * NotebookKit.CellWidth,
+                                   head - "12.3 kg".Length * NotebookKit.CellWidth,
                                    "the lettered line and the weight readout share the head without overlap");
                 Assert.Greater(p.RegisterShown.Length, 1, "the head still says what was landed");
                 StringAssert.Contains(p.RegisterShown.TrimEnd('.').Substring(1), p.RegisterLine,

@@ -52,18 +52,34 @@ namespace HiddenHarbours.Art
         }
 
         /// <summary>
-        /// The leading end's foam: a bar across her at the end she is driving into the water.
+        /// The leading end's foam. Astern it is a bar across her transom, which is square. Ahead it is her
+        /// BOW WAVE: one arm per flank, laid along her waterline from the stem aft to where that waterline
+        /// is <see cref="HullFoamSettings.LeadSpanHalfBeams"/> wide, so the foam parts round a point and
+        /// follows her shape (the owner, 2026-11-16: "the bow foam looks irregular its sqaure" — a bar
+        /// across the stem, half hidden by her hull, left a square slab ahead of her). The injector lays
+        /// one capsule a frame, so it asks for the two arms in turn (<paramref name="starboardArm"/>).
         /// </summary>
-        public static Stamp Lead(float surge, float halfLength, float halfBeam, in HullFoamSettings s)
+        public static Stamp Lead(float surge, float halfLength, float halfBeam, in HullFoamSettings s,
+                                 bool starboardArm)
         {
             if (s.LeadWeight <= 0f || halfLength <= 0f || halfBeam <= 0f || surge == 0f) return default;
             HullFoamSettings d = HullFoamSettings.Default;
             float rate = Mathf.Clamp01(FoamBuffer.Shape01(Mathf.Abs(surge), Or(s.LeadSpeedKnee, d.LeadSpeedKnee), 1f)
                                        * s.LeadWeight);
-            float y = surge > 0f ? halfLength : -halfLength;
+            float radius = halfBeam * Or(s.LeadRadiusHalfBeams, d.LeadRadiusHalfBeams);
             float span = halfBeam * Or(s.LeadSpanHalfBeams, d.LeadSpanHalfBeams);
-            return new Stamp(new Vector2(-span, y), new Vector2(span, y),
-                             halfBeam * Or(s.LeadRadiusHalfBeams, d.LeadRadiusHalfBeams), rate);
+            if (surge < 0f)
+                return new Stamp(new Vector2(-span, -halfLength), new Vector2(span, -halfLength), radius, rate);
+
+            float side = starboardArm ? 1f : -1f;
+            float taperLength = 2f * halfLength * Mathf.Clamp01(Or(s.ContactBowTaper, d.ContactBowTaper));
+            float stem = halfBeam * Mathf.Clamp01(Or(s.ContactStemHalfBeams, d.ContactStemHalfBeams));
+            float reach = Mathf.Clamp(span, stem, halfBeam);
+            // How far aft of the stem her waterline (narrowing straight from the half-beam to the stem, the
+            // same law the foam transport parts round) is `reach` wide.
+            float aft = halfBeam > stem ? taperLength * (reach - stem) / (halfBeam - stem) : 0f;
+            return new Stamp(new Vector2(side * stem, halfLength), new Vector2(side * reach, halfLength - aft),
+                             radius, rate);
         }
 
         /// <summary>

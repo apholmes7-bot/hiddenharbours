@@ -638,16 +638,27 @@ namespace HiddenHarbours.Tests.EditMode
         {
             var book = StandABook();
             book.OnMoment(new JuiceMomentCue(JuiceMoment.Landing, Vector2.zero, 1.23f));
-            Assert.AreEqual(12, book.WeightTenths, "shut: nothing to animate, the tenths land at once (1.23 kg -> 12)");
+            Assert.AreEqual(1230, book.WeightGrams, "shut: nothing to animate, the grams land at once (1.23 kg -> 1230)");
+            Assert.AreEqual("1.2 kg", book.WeightReadout);
 
             book.Open();
             book.OnMoment(new JuiceMomentCue(JuiceMoment.Landing, Vector2.zero, 1.23f));
-            Assert.AreEqual(0, book.WeightTenths, "open: the count-up starts from zero");
+            Assert.AreEqual(0, book.WeightGrams, "open: the count-up starts from zero");
             book.TickMoments(0.3f);
-            Assert.Greater(book.WeightTenths, 0);
-            Assert.Less(book.WeightTenths, 12, "halfway: not there yet — the pop must land on a new number");
+            Assert.Greater(book.WeightGrams, 0);
+            Assert.Less(book.WeightGrams, 1230, "halfway: not there yet — the pop must land on a new number");
             book.TickMoments(0.35f);
-            Assert.AreEqual(12, book.WeightTenths, "landed at WeightCountUpSeconds");
+            Assert.AreEqual(1230, book.WeightGrams, "landed at WeightCountUpSeconds");
+            Assert.AreEqual("1.2 kg", book.WeightReadout);
+        }
+
+        [Test]
+        public void A_catch_under_a_tenth_of_a_kilo_reads_in_grams_never_zero_kilos()
+        {
+            var book = StandABook();
+            book.OnMoment(new JuiceMomentCue(JuiceMoment.Landing, Vector2.zero, 0.04f));
+            Assert.AreEqual(40, book.WeightGrams);
+            Assert.AreEqual("40 g", book.WeightReadout, "a smelt is forty grams, not 0.0 kg");
         }
 
         [Test]
@@ -657,10 +668,10 @@ namespace HiddenHarbours.Tests.EditMode
             book.Open();
             book.OnMoment(new JuiceMomentCue(JuiceMoment.Landing, Vector2.zero, 0.5f));
             book.TickMoments(1f);
-            Assert.AreEqual(5, book.WeightTenths);
+            Assert.AreEqual(500, book.WeightGrams);
             book.OnMoment(new JuiceMomentCue(JuiceMoment.CastEntry, Vector2.zero, 0f));
             book.OnMoment(new JuiceMomentCue(JuiceMoment.Sale, Vector2.zero, 48f));
-            Assert.AreEqual(5, book.WeightTenths, "only a landing or a dig strike carries a weight");
+            Assert.AreEqual(500, book.WeightGrams, "only a landing or a dig strike carries a weight");
         }
 
         [Test]

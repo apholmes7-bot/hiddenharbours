@@ -434,6 +434,35 @@ namespace HiddenHarbours.Core
         /// FLAG lead-architect: save schema v23 (kitchens).
         /// </summary>
         public List<KitchenStorageStateDto> KitchenStores = new();
+
+        /// <summary>
+        /// <b>The catch record</b> (the Notebook's catch page): one row per species caught, in first-caught
+        /// order, with the count, the released count and the record weight. Written only through
+        /// <see cref="CatchRecordLog"/>. Added in v24; every older save starts with none (catches made
+        /// before v24 were never recorded, so nothing is invented).
+        /// FLAG lead-architect: save schema v24 (catch record, gift days, cook jobs, Loran numbers).
+        /// </summary>
+        public List<CaughtSpeciesDto> CaughtSpecies = new();
+
+        /// <summary>
+        /// <b>Gifts accepted today, per person</b> (the gifting daily limit). Only today's rows are kept.
+        /// Added in v24 as data only: the gifting lane captures and restores it. Older saves start empty.
+        /// </summary>
+        public List<NpcGiftDayDto> NpcGiftDays = new();
+
+        /// <summary>
+        /// <b>Cook jobs running on placed stations</b> (kitchens and microwaves). Added in v24; a row is
+        /// written when a job starts, removed when it finishes, and restored on load by
+        /// <see cref="CookJobSave"/>. Older saves start with nothing cooking.
+        /// </summary>
+        public List<CookJobDto> CookJobs = new();
+
+        /// <summary>
+        /// <b>The Loran numbers each hull's receiver remembers</b>, as time differences. Added in v24; read and
+        /// written per hull by a <c>LoranWaypointStore</c> bound to this save (<c>LoranWaypointSave</c>).
+        /// Older saves start with none.
+        /// </summary>
+        public List<LoranWaypointDto> HullLoranWaypoints = new();
     }
 
     /// <summary>

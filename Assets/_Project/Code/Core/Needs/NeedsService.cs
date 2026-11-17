@@ -130,6 +130,17 @@ namespace HiddenHarbours.Core
             return over;
         }
 
+        public void Exert(float amount)
+        {
+            if (!(amount > 0f) || float.IsInfinity(amount)) return;
+            PlayerNeedsDto needs = Needs();
+            if (needs == null) return;
+            NeedStage before = Stage(NeedKind.Tiredness);
+            double level = (double)Level(NeedKind.Tiredness) + amount;
+            needs.Tiredness = new NeedStateDto((float)Math.Min(1d, level), NowOr(needs.Tiredness.SinceGameSeconds));
+            Announce(NeedKind.Tiredness, before);
+        }
+
         public void RestSeated(double seatedSinceGameSeconds)
         {
             PlayerNeedsDto needs = Needs();

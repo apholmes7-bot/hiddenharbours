@@ -532,10 +532,13 @@ namespace HiddenHarbours.World
             int perDay = config != null ? config.GiftsPerNpcPerDay : GiftConfig.DefaultGiftsPerNpcPerDay;
             IGameClock clock = GameServices.Clock;
             int day = clock != null ? clock.DayIndex : 0;
+            // The live save is the ledger's session: today's gifts load from it and are written back to it
+            // (v24 NpcGiftDays), so a reload on the same day remembers who has had theirs.
+            SaveData session = GameServices.Save?.Current;
 
             GiftItem item = GiftItem.FromCatch(in held, GameServices.GiftableFacts);
             GiftReaction reaction = GiftRule.Evaluate(npc.Gifts, in item,
-                                                      GiftLedger.Shared.GiftsToday(npc.Id, day), perDay);
+                                                      GiftLedger.Shared.GiftsToday(npc.Id, day, session), perDay);
 
             if (GiftRule.IsAccepted(reaction))
             {
@@ -544,7 +547,7 @@ namespace HiddenHarbours.World
                 ICatchHands hands = GameServices.CatchHands;
                 if (hands == null || !hands.TryTakeFromHand(out CatchItem _)) return;
 
-                GiftLedger.Shared.Count(npc.Id, day);
+                GiftLedger.Shared.Count(npc.Id, day, session);
                 if (GiftRule.TryRelationshipKind(reaction, out RelationshipEventKind kind))
                     GameServices.Relationships.Record(new RelationshipEvent(kind, RelationshipGraph.PlayerId, npc.Id));
                 EventBus.Publish(new GiftGiven(npc.Id, item.Id, reaction, day));

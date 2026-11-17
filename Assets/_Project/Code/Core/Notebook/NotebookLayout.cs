@@ -282,28 +282,19 @@ namespace HiddenHarbours.Core
             return lines;
         }
 
-        /// <summary>What the head's weight readout letters after its digits.</summary>
-        public const string WeightUnit = " kg";
-
         /// <summary>The cut a line takes when it is shortened to fit: three stops.</summary>
         public const string FitMark = "...";
 
         /// <summary>
         /// The cells the LEFT head gives the register line: the head's width in cells, less the weight
-        /// readout's room (its final digits, the unit and one cell of air) when a weight is lettered.
-        /// The reserve is taken from the weight the readout LANDS on, so the line does not shift while
-        /// it counts up.
+        /// readout's room (its reading as <see cref="WeightFormat"/> letters it, "40 g" or "12.3 kg", and
+        /// one cell of air) when a weight is lettered. The reserve is taken from the weight the readout
+        /// LANDS on, in whole grams, so the line does not shift while it counts up.
         /// </summary>
-        public static int RegisterCols(int headWidthPx, int weightTenths)
+        public static int RegisterCols(int headWidthPx, int weightGrams)
         {
             int cells = (headWidthPx + NotebookKit.Slack) / NotebookKit.CellWidth;
-            if (weightTenths > 0)
-            {
-                int digits = 1;
-                for (int v = weightTenths; v >= 10; v /= 10) digits++;
-                if (digits < 2) digits = 2;                       // "0.3": one digit ahead of the point
-                cells -= digits + 1 + WeightUnit.Length + 1;      // digits, the point, the unit, air
-            }
+            if (weightGrams > 0) cells -= WeightFormat.Chars(weightGrams) + 1;   // the reading, then air
             return cells < 0 ? 0 : cells;
         }
 

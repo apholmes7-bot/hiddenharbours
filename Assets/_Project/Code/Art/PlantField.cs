@@ -25,6 +25,10 @@ namespace HiddenHarbours.Art
         // The clump law the recipe scatter grows under (PlantClumpLaw). Taken from the Definition at
         // Rebuild; none, or strength 0, is the scatter exactly as it shipped. Authored sites never read it.
         [NonSerialized] public PlantClumpDef Clump;
+        // Where plants sort against a hull (PlantHullSorting); taken from the Definition at Rebuild.
+        [Min(0)] public float GroundCoverMaxHeightM = 0.5f;
+        public string[] LyingHabitats = { "fringe", "mid" };
+        [Min(0)] public float HullPictureRiseM = 6f;
 
         public int PlantCount => _sites.Count;
         public int ChunkCount => _chunks.Count;
@@ -118,6 +122,8 @@ namespace HiddenHarbours.Art
                 SubmergedOrder = Definition.SubmergedOrder; Recipes = Definition.Recipes;
                 Species = Definition.Species; Material = Definition.Material;
                 Clump = Definition.Clump;
+                GroundCoverMaxHeightM = Definition.GroundCoverMaxHeightM;
+                LyingHabitats = Definition.LyingHabitats; HullPictureRiseM = Definition.HullPictureRiseM;
             }
             _ground = GroundSource as IPlantFieldGround;
             if (_ground == null) throw new InvalidOperationException("Plant field needs IPlantFieldGround");
@@ -224,8 +230,11 @@ namespace HiddenHarbours.Art
             int tide = s.Def.TideLadder.Length == 0 ? 0 : ShorePlantTideMath.StateFor(over, s.Def.TideLadder);
             _cells.TryGetValue((s.Def.Code, s.Stage, _season, s.Variant, tide), out var cell);
             bool under = s.Def.TideLadder.Length != 0 && ShorePlantTideMath.IsSubmerged(over, cell != null ? cell.HeightM : s.Def.StandingHeightM);
-            int order = under ? SubmergedOrder : YSortSprite.OrderFor(s.Y, SortingBands.DecorBase,
-                SortingBands.OrdersPerMetre, SortingBands.DecorFloor, SortingBands.DecorCeiling);
+            // Under every hull if it lies flat; under a hull it stands behind (PlantHullSorting).
+            bool flat = PlantHullSorting.LiesFlat(s.Def, GroundCoverMaxHeightM, LyingHabitats);
+            bool behind = !under && !flat &&
+                PlantHullSorting.BehindAHull(new Vector2(s.X, s.Y), HullPresences.Active, HullPictureRiseM);
+            int order = PlantHullSorting.OrderFor(s.Y, under, SubmergedOrder, flat, behind);
             bool changed = s.Cell != cell || s.Order != order;
             s.CastsSun = CanCastSun(cell, over);
             s.Cell = cell; s.Tide = tide; s.Order = order; return changed;
@@ -251,6 +260,9 @@ namespace HiddenHarbours.Art
         }
         void BuildChunk((int, int, int, int) key, List<Site> sites)
         {
+            // Growth under the hulls shares ONE order, so within its chunk it is drawn far rows first and
+            // the nearer row covers the one behind it, as the band's Y-sort would have.
+            if (sites[0].Order == SortingBands.UnderHulls) sites.Sort((a, b) => b.Y.CompareTo(a.Y));
             var first = sites[0]; var page = first.Def.Pages[first.Cell.Page];
             if (Material == null || page.Albedo == null || page.Normal == null || page.Light == null || page.Detail == null)
                 throw new InvalidOperationException("Plant bake maps are incomplete");

@@ -238,6 +238,8 @@ namespace HiddenHarbours.Tests.PlayMode
             yield return null;
             Assert.AreEqual(ControlMode.OnDeck, _switcher.Mode,
                 "she swam up to a hull and climbed aboard — the owner's sentence, end to end");
+            Assert.AreEqual(OnFootWaterState.Dry, _walk.WaterState,
+                "and the swim ended when the player climbed out: aboard he is dry, so the sea rinse stops");
         }
 
         /// <summary>

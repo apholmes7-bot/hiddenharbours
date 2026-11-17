@@ -25,11 +25,11 @@ logbook's.
 | Receiver data | `LoranReceiverDef`, `StandardLoranReceiver.asset` | the chains it tracks, readout step, blink/no-fix limits, memory size, solver settings |
 | Maths | `LoranMath` | position to TD, TD pair to position (Newton), geometry, deterministic error |
 | Read model | `LoranReceiver.Read` → `LoranReading`; `LoranReceiver.Steer` → `LoranSteer` | pure, allocation-free |
-| The numbers | `LoranWaypointStore`, `LoranWaypoint` | runtime only (§6) |
-| Purchase | `LoranOffer.asset` (`instrument.loran`, an `InstrumentOffer`) | bolted into one hull, bought through `InstrumentShop` like the sounder; **not listed in any seller's book yet** |
+| The numbers | `LoranWaypointStore`, `LoranWaypoint`, `LoranWaypointSave` | saved per hull in v24 (§6) |
+| Purchase | `LoranOffer.asset` (`instrument.loran`, an `InstrumentOffer`) | bolted into one hull, bought through `InstrumentShop` like the sounder; **listed at the St Peters general store (`seller.leblancs`), on the Gear shelf beside the sounder**, with its own `InstrumentShop` on `GeneralStoreCounter` (written by `StoreWiringPatch`). The fitment is recorded in the save's `InstrumentLocker` (`SaveData.HullInstruments`), which already persists, so owning it survives a reload with no save version step |
 | Helm slot | `HelmConsoleDef.SupportsLoran` / `DefaultLoran`, `HelmFit.Loran` | resolved by `BoatEquipment.EffectiveFit`; **only `helm.cape_islander` (the 1982 wheelhouse) has room** |
 
-Not built: the instrument view (§7), a seller, saving the numbers (§6), the world-frame mapping
+Not built: the instrument view (§7), the instrument host that opens a hull's store (§6), the world-frame mapping
 from a region's scene frame (§3).
 
 ## 3. Chain layout
@@ -87,15 +87,24 @@ ground, as a real one did — not on the chart's idea of it. It should refuse to
 `LoranSignal.Blink` / `NoSignal`. Nothing here blocks a GPS autopilot either: it would read the
 plotter's position through the same shape.
 
-## 6. Saving the numbers — owed
+## 6. Saving the numbers
 
-**Waypoints do not survive a reload yet.** `LoranWaypointStore` is runtime-only by instruction
-(save v22/v23 are in flight). When they persist they need one append-only per-hull list on
-`SaveData`, e.g. `HullLoranWaypoints: List<LoranWaypointDto>` with plain fields `HullId`,
-`Number` (int), `ChainId` (string), `SecondaryA`, `SecondaryB` (int), `TdA`, `TdB` (double), read
-and written through a locker the way `InstrumentLocker` keeps per-hull instrument rows, and a
-version step that starts it empty. Store TDs, never positions: a retune of the chain data must
-not move a skipper's ground.
+**Saved per hull since v24.** `SaveData.HullLoranWaypoints` (`LoranWaypointDto`: `HullId`,
+`Number`, `ChainId`, `SecondaryA`, `SecondaryB`, `TdA`, `TdB`) holds every hull's numbers; the v24
+step starts an older game with none, and the every-load repair drops a row that is not a usable
+waypoint (no hull, slot 0, both readings on one secondary, a non-finite TD).
+
+A `LoranWaypointStore` opened with `new LoranWaypointStore(capacity, save, hullId)` (or
+`BindTo(save, hullId)`) loads that hull's rows with their slot numbers, and every save, entry or
+removal rewrites that hull's rows through `LoranWaypointSave`, the way the catch record writes its
+rows on each catch. Other hulls' rows are never touched. A load keeps every valid saved row even
+past the receiver's memory size (the set then stays full) and skips a repeated slot number. Store
+TDs, never positions: a retune of the chain data must not move a skipper's ground.
+
+**Owed: the instrument host.** Nothing on main opens a store for a hull yet: there is no Loran
+instrument host or keypad (§7), so the player has no way to store a number in play. The host, when
+built, opens one store per fitted hull on the live save (`capacity` from
+`LoranReceiverDef.MaxStoredWaypoints`) and rebinds it on `GameLoaded`.
 
 ## 7. Art and rig work owed
 
@@ -110,4 +119,6 @@ There is no generic readout widget on the dash, so nothing is drawn yet. Owed:
 3. **The renderer** (ui-ux), reading `LoranReading` + `LoranSteer` only; it never computes a fix.
 4. **The instrument host** (Boats/App): read `Fit.Loran`, map the hull position through the world
    frame, call `LoranReceiver.Read` on the instrument tick, own one `LoranWaypointStore` per hull.
-5. A seller (economy-sim / world-content): the coast-tech is the natural vendor.
+5. ~~A seller~~ done: Marguerite's counter at St Peters sells it (the only counter with an instrument
+   seam today). A Nine Mile Creek chandlery or a coast-tech counter is the more natural home later;
+   moving it there is a listing change plus an `InstrumentShop` on that counter (a scene step).

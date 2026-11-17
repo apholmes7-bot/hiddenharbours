@@ -38,6 +38,11 @@ namespace HiddenHarbours.Core
         /// <summary>One action of <paramref name="kind"/> (a fish landed): its one-off dirt, at once.</summary>
         void ReportAction(DirtActivity kind);
 
+        /// <summary>Bank a bounded activity duration at the clock now, using only its hourly dirt rate.
+        /// Does not open/replace a stretch or add a per-action bump. Do not also count this duration
+        /// through BeginActivity. Non-finite/non-positive hours do nothing. Older implementations bank nothing.</summary>
+        void ReportActivity(DirtActivity kind, double gameHours) { }
+
         /// <summary>Start washing at <paramref name="station"/> now, wherever it stands (a station is a kind
         /// plus an anchor). A toilet or a null station does nothing. Publishes <see cref="PlayerWashChanged"/>.</summary>
         void BeginWash(WashStationDef station);

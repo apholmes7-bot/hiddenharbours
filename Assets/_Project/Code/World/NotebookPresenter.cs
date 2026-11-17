@@ -154,8 +154,8 @@ namespace HiddenHarbours.World
         private Text _registerLabel;                      // the left head, left: the lift line
         private Text _weightLabel;                        // the left head, right: the weight readout
         private string _registerLine = "";                // the last landing's line (stands until the next)
-        private readonly CountUp _weight = new CountUp(); // tenths of a kg
-        private int _weightTargetTenths;                  // where the readout lands (the register's reserve)
+        private readonly CountUp _weight = new CountUp(); // whole grams (WeightFormat reads them as g or kg)
+        private int _weightTargetGrams;                   // where the readout lands (the register's reserve)
         private bool _weightAnimating;
         private readonly CountUp _purse = new CountUp();  // the balance after a sale
         private readonly StringBuilder _sb = new StringBuilder(32);   // pre-sized; ONE small string per tick
@@ -938,8 +938,12 @@ namespace HiddenHarbours.World
         /// <summary>The last landing's line in the register — what the left head letters (tests, proofs).</summary>
         public string RegisterLine => _registerLine;
 
-        /// <summary>The weight readout right now, in tenths of a kg (tests: the count-up, and where it landed).</summary>
-        public int WeightTenths => _weight.Value;
+        /// <summary>The weight readout right now, in whole grams (tests: the count-up, and where it landed).
+        /// It is lettered by <see cref="WeightFormat.WriteGrams"/>: grams under a kilogram, else kg to one decimal.</summary>
+        public int WeightGrams => _weight.Value;
+
+        /// <summary>The weight readout's text right now ("40 g", "1.2 kg") — what the left head letters.</summary>
+        public string WeightReadout => WeightText();
 
         /// <summary>The balance the purse letters right now: the true balance, or — for the length of a sale's
         /// coins and count-up — the balance she SEES climbing toward it.</summary>
@@ -963,12 +967,12 @@ namespace HiddenHarbours.World
         /// <summary>The register line as the head letters it: fitted to the cells the head has beside the
         /// weight readout, so it never runs across the gutter onto the facing leaf.</summary>
         public string RegisterShown =>
-            NotebookLayout.FitLine(_registerLine, NotebookLayout.RegisterCols(_leftHeadW, RegisterWeightTenths));
+            NotebookLayout.FitLine(_registerLine, NotebookLayout.RegisterCols(_leftHeadW, RegisterWeightGrams));
 
-        // A lettered readout always takes its room, even reading "0.0 kg" (hence the floor of one tenth).
-        private int RegisterWeightTenths =>
+        // A lettered readout always takes its room, even reading "0 g" (hence the floor of one gram).
+        private int RegisterWeightGrams =>
             _weightLabel != null || _weight.Value > 0 || _weight.Running
-                ? Mathf.Max(1, Mathf.Max(_weight.Value, _weightTargetTenths)) : 0;
+                ? Mathf.Max(1, Mathf.Max(_weight.Value, _weightTargetGrams)) : 0;
 
         private void RepaintRegister()
         {
@@ -984,17 +988,18 @@ namespace HiddenHarbours.World
         public void OnMoment(JuiceMomentCue e)
         {
             if (e.Kind != JuiceMoment.Landing && e.Kind != JuiceMoment.DigStrike) return;
-            int tenths = Mathf.RoundToInt(Mathf.Max(0f, e.Strength) * 10f);
-            _weightTargetTenths = tenths;
+            // Whole grams, not tenths of a kg: a 40 g smelt is 0 tenths, which read "0.0 kg" (or nothing).
+            int grams = WeightFormat.Grams(e.Strength);
+            _weightTargetGrams = grams;
             JuiceSettings j = Juice;
             if (!IsOpen || !j.MomentsEnabled || j.WeightCountUpSeconds <= 0f)
             {
-                _weight.Set(tenths);
+                _weight.Set(grams);
                 _weightAnimating = false;
                 if (IsOpen) { EnsureRegisterLabels(); RepaintWeight(1f); RepaintRegister(); }
                 return;
             }
-            _weight.Start(0, tenths, j.WeightCountUpSeconds);
+            _weight.Start(0, grams, j.WeightCountUpSeconds);
             EnsureRegisterLabels();
             _weightAnimating = true;
             RepaintWeight(1f);
@@ -1118,9 +1123,7 @@ namespace HiddenHarbours.World
 
         private string WeightText()
         {
-            _sb.Clear();
-            _weight.WriteTo(_sb, 1);
-            _sb.Append(NotebookLayout.WeightUnit);
+            WeightFormat.WriteGrams(_sb, _weight.Value);
             return _sb.ToString();
         }
 

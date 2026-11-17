@@ -102,14 +102,14 @@ namespace HiddenHarbours.Fishing
         public const string ProtectedReleasedUnnamed = "That one's protected — noted, and back she goes.";
 
         /// <summary>"Atlantic Wolffish, 4.2 kg — protected, so noted and back she goes." Built once at the
-        /// moment the fish is released, never per frame. The weight is said when there is one.</summary>
+        /// moment the fish is released, never per frame. The weight is said when there is one, by the shared
+        /// rule (grams under a kilogram: "Rainbow Smelt, 40 g — …").</summary>
         public static string ProtectedReleased(string speciesName, float weightKg)
         {
             if (string.IsNullOrWhiteSpace(speciesName)) return ProtectedReleasedUnnamed;
             if (!(weightKg > 0f)) return speciesName + " — protected, so noted and back she goes.";
-            return speciesName + ", "
-                   + weightKg.ToString("0.0", System.Globalization.CultureInfo.InvariantCulture)
-                   + " kg — protected, so noted and back she goes.";
+            return speciesName + ", " + HiddenHarbours.Core.WeightFormat.Text(weightKg)
+                   + " — protected, so noted and back she goes.";
         }
     }
 }
