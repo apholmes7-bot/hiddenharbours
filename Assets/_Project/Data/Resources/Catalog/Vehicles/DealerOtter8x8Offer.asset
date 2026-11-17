@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3c10121a6a2b43ad9048ca51452958bf, type: 3}
+  m_Name: DealerOtter8x8Offer
+  m_EditorClassIdentifier: HiddenHarbours.Economy::HiddenHarbours.Economy.VehicleOffer
+  Id: vehicleoffer.nmc_dealer_otter_8x8
+  VehicleId: vehicle.otter_8x8
+  DisplayName: Otter 8x8
+  Flavor:
+  SellerId: seller.nmc_vehicle_dealer
+  Price: 2500
+  StartsDamaged: 0
+  RepairCost: 0
+  Catalog:
+    Listed: 0
+    Section: 3
+    Sellers:
+    - seller.nmc_vehicle_dealer
+    SortOrder: 35

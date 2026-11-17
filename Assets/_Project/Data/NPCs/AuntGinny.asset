@@ -33,7 +33,8 @@ MonoBehaviour:
       - 'A cod! Ned used to come up the path with one just like that. Chowder tonight, and you''re staying for it.'
       Liked:
       - 'Oh, that''s lovely, dear. That''ll go in the pot with a bit of salt pork.'
-      Neutral: []
+      Neutral:
+      - 'Thank you, dear. Everything finds its way into the pot in this house sooner or later.'
       Disliked:
       - 'A green crab? Those devils are eating the flats bare. Well, that''s one less of them, I suppose.'
       NotGiftable: []

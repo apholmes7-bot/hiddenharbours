@@ -18,3 +18,24 @@ MonoBehaviour:
   Dialogue: {fileID: 11400000, guid: b5c784172de2481d9bbe80ec15475fc5, type: 2}
   CompletionFlag: met_lucie
   Build: {fileID: 11400000, guid: 27942a077c1371c49a30beb2f4b405a7, type: 2}
+  Gifts:
+    LovedItemIds:
+    - fish.american_oyster
+    LikedItemIds: []
+    DislikedItemIds:
+    - fish.cunner
+    LovedTags: []
+    LikedTags:
+    - shellfish
+    DislikedTags: []
+    Lines:
+      Loved:
+      - 'An oyster! There might be a pearl in it. If there is, it''s mine. I''m the one you gave it to.'
+      Liked:
+      - 'Thank you! I''m going to show Sam and not let him hold it.'
+      Neutral:
+      - 'Thank you. Mama says say thank you, so, thank you.'
+      Disliked:
+      - 'Ew. It''s all slimy. ...Thank you. Mama would want me to say it.'
+      NotGiftable: []
+      AlreadyGiftedToday: []

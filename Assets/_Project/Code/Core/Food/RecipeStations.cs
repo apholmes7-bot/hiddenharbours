@@ -14,5 +14,9 @@ namespace HiddenHarbours.Core
 
         /// <summary>The kitchenette's cooktop: a prepared cut in, a cooked dish out.</summary>
         public const string Cooktop = "station.cooktop";
+
+        /// <summary>The microwave's work: a microwavable item in, a heated dish out (owner ask 2026-11-15:
+        /// "microwaves can only reheat cooked or microwavable items"). A stove may list it too.</summary>
+        public const string Microwave = "station.microwave";
     }
 }

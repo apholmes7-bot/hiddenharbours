@@ -18,3 +18,24 @@ MonoBehaviour:
   Dialogue: {fileID: 11400000, guid: 934823c73607483992214ae6b3ef6e98, type: 2}
   CompletionFlag: met_theresa
   Build: {fileID: 11400000, guid: 5e5ff01b97c0c9b4b9c85f3f2e8a6415, type: 2}
+  Gifts:
+    LovedItemIds:
+    - fish.haddock
+    LikedItemIds: []
+    DislikedItemIds: []
+    LovedTags: []
+    LikedTags:
+    - inshore_groundfish
+    DislikedTags:
+    - pelagic
+    Lines:
+      Loved:
+      - 'Haddock! I''ll smoke it, finnan haddie for Sunday. Mind you wipe your boots on the way out.'
+      Liked:
+      - 'That''s a nice clean fish. Thank you.'
+      Neutral:
+      - 'Thank you. Leave it on the step and I''ll see to it.'
+      Disliked:
+      - 'I pack that kind all day. I''d sooner not see it at home, but thank you all the same.'
+      NotGiftable: []
+      AlreadyGiftedToday: []
