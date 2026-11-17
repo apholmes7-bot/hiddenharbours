@@ -701,7 +701,7 @@ namespace HiddenHarbours.Art
             // can never fall between texels, and on its own advance so it cannot outrun itself. The
             // gain divides by it, so the frames a parcel spends under the sweeping edge SUM to the
             // envelope rather than to a multiple of it.
-            float edgeWidth = FoamBuffer.EdgeWidth(slope * speed, dt);
+            float edgeWidth = FoamBuffer.EdgeWidth(FoamBuffer.EdgeSlope(_spreadKelvinFraction, r0, wMax) * speed, dt);
             float gain = FoamBuffer.EdgeGain(depositRate, r0, wMax, _spreadKelvinFraction, dt,
                                              edgeWidth);
             if (gain <= 0f) { share = 0f; return default; }

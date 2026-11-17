@@ -232,13 +232,16 @@ namespace HiddenHarbours.Tests.EditMode
             public float DrawnHalfWidth;    // outermost cell whose accumulated coverage draws
             public float EdgeAmountAtRim;   // per-frame value the edge writes at that outermost cell
             public float[] DrawnAtAge;      // the same, sampled at Ages — the widening, age by age
+            public double[] Laid;           // undecayed foam laid on the parcel, per lateral cell
         }
 
         /// <summary>The ages the drawn band is measured at. The owner's complaint is about how the
         /// trail changes WITH DISTANCE ASTERN, so one number at one age cannot answer it.</summary>
         static readonly float[] Ages = { 0.25f, 0.5f, 1f, 1.5f, 2f, 3f, 6f };
 
-        enum Arm { Shipped, AreaPreserving, NaiveSkirt }
+        // EdgeFromRim: the law before 2026-11-16 — the edge started AT the band's half-width and laid
+        // the whole envelope there, leaving the band's fade unfilled (the owner's two stern lines).
+        enum Arm { Shipped, AreaPreserving, NaiveSkirt, EdgeFromRim }
 
         /// <summary>
         /// One parcel of sea, walked through its life under a hull passing at a steady speed. The
@@ -253,7 +256,8 @@ namespace HiddenHarbours.Tests.EditMode
         {
             int nd = Mathf.RoundToInt(lateralMetres / FoamBuffer.CellSize);
             var coverage = new double[nd];
-            var lay = new Lay { Bins = new double[binCount], DrawnAtAge = new float[Ages.Length] };
+            var lay = new Lay { Bins = new double[binCount], DrawnAtAge = new float[Ages.Length],
+                                Laid = new double[nd] };
 
             float DrawnEdge()
             {
@@ -265,10 +269,18 @@ namespace HiddenHarbours.Tests.EditMode
             float slope = FoamBuffer.SpreadSlope(kelvin);
             float wMax = arm == Arm.Shipped ? r0 : r0 * envelopeRatio;
             float reach = slope > 0f && wMax > r0 ? (wMax - r0) / slope : 0f;
-            float share = arm == Arm.AreaPreserving ? FoamBuffer.DispersingShare(r0, wMax) : 0f;
-            float edgeWidth = FoamBuffer.EdgeWidth(slope * speed, dt);
+            bool disperses = arm == Arm.AreaPreserving || arm == Arm.EdgeFromRim;
+            float share = disperses ? FoamBuffer.DispersingShare(r0, wMax) : 0f;
+            float edgeWidth = arm == Arm.AreaPreserving
+                ? FoamBuffer.EdgeWidth(FoamBuffer.EdgeSlope(kelvin, r0, wMax) * speed, dt)
+                : FoamBuffer.EdgeWidth(slope * speed, dt);
             float gain = arm == Arm.AreaPreserving
-                ? FoamBuffer.EdgeGain(rate, r0, wMax, kelvin, dt, edgeWidth) : 0f;
+                ? FoamBuffer.EdgeGain(rate, r0, wMax, kelvin, dt, edgeWidth)
+                : arm == Arm.EdgeFromRim
+                    // the old gain: the whole envelope over the annulus from r0, at the band's slope
+                    ? share * rate * FoamBuffer.StampAreaIntegral * r0 * r0
+                      / FoamBuffer.EnvelopeIntegral(r0, wMax) * slope * dt / edgeWidth
+                    : 0f;
             float decay = FoamBuffer.DecayFactor(6f, dt);   // IsoFacetHullFeature._foamHalfLifeSeconds
 
             int leadSteps = Mathf.CeilToInt(r0 / Mathf.Max(speed, 1e-3f) / dt) + 1;
@@ -291,21 +303,26 @@ namespace HiddenHarbours.Tests.EditMode
                     if (age >= 0f && reach > 0f && astern <= reach)
                     {
                         float u = astern / reach;
-                        float edge = Mathf.Lerp(r0, wMax, u);
                         if (arm == Arm.AreaPreserving)
                         {
-                            float bump = FoamBuffer.EdgeBump(d, edge, edgeWidth);
+                            float bump = FoamBuffer.EdgeBump(d, FoamBuffer.EdgePosition(u, r0, wMax), edgeWidth);
+                            deposit += gain * FoamBuffer.LaidEnvelope(d, r0, wMax) * bump;
+                        }
+                        else if (arm == Arm.EdgeFromRim)
+                        {
+                            float bump = FoamBuffer.EdgeBump(d, Mathf.Lerp(r0, wMax, u), edgeWidth);
                             deposit += gain * FoamBuffer.EnvelopeShape(d, r0, wMax) * bump;
                         }
                         else if (arm == Arm.NaiveSkirt)
                         {
                             // 🔴 THE SABOTAGE ARM: widen the stamp and keep the amount — the thing
                             // PR 11a measured multiplying the foam (9356 -> 13052 drawn integral).
-                            deposit += rate * dt * FoamBuffer.Profile(d, edge);
+                            deposit += rate * dt * FoamBuffer.Profile(d, Mathf.Lerp(r0, wMax, u));
                         }
                     }
 
                     coverage[i] = Math.Min(1.0, coverage[i] * decay + deposit);
+                    lay.Laid[i] += deposit;
                     binSum += deposit;
                 }
                 int bin = Mathf.Clamp(Mathf.FloorToInt(Mathf.Max(age, 0f)), 0, binCount - 1);
@@ -320,7 +337,7 @@ namespace HiddenHarbours.Tests.EditMode
             // The per-frame value the edge writes where the band's VISIBLE rim is. Not the smallest
             // value it ever writes — that is the taper running out past the rim, where nothing draws
             // and nothing is owed. This one is the number the 8-bit buffer has to be able to hold.
-            lay.EdgeAmountAtRim = gain * FoamBuffer.EnvelopeShape(lay.DrawnHalfWidth, r0, wMax);
+            lay.EdgeAmountAtRim = gain * FoamBuffer.LaidEnvelope(lay.DrawnHalfWidth, r0, wMax);
             return lay;
         }
 
@@ -360,6 +377,48 @@ namespace HiddenHarbours.Tests.EditMode
                 "does, the two arms have converged and this guard proves nothing.");
             Assert.Greater(naiveRatio / areaRatio, 2.0,
                 "The honest and sabotage arms must stay separated by the mechanism, not by a bar.");
+        }
+
+        /// <summary>The deepest DIP in a lateral profile, out to <paramref name="outTo"/> metres: the
+        /// least, over every cell, of its foam over the most foam laid anywhere further out. 1 for a
+        /// profile that only ever falls away from her track; near 0 for a dark strip with foam beyond.</summary>
+        static double DeepestDip(double[] laid, float outTo)
+        {
+            int n = Mathf.Min(laid.Length, Mathf.CeilToInt(outTo / FoamBuffer.CellSize));
+            double dip = 1.0, beyond = 0.0;
+            for (int i = n - 1; i >= 0; i--)
+            {
+                if (beyond > 1e-9) dip = Math.Min(dip, laid[i] / beyond);
+                beyond = Math.Max(beyond, laid[i]);
+            }
+            return dip;
+        }
+
+        /// <summary>
+        /// 🔴 <b>NO SEAM AT HER TRANSOM CORNERS</b> (the owner, 2026-11-16: "in foam there still seems
+        /// to be the two lines that persist, they do not look natural, behind the stern"). The band's
+        /// own stamp fades from half its radius to its radius, and the edge used to start AT that
+        /// radius, so a strip either side of her track was filled by neither: two dark lines from
+        /// her transom corners. Across her wake the foam laid must only ever fall away from her
+        /// track, and the old law must fail the same statement in the same run.
+        /// </summary>
+        [Test]
+        public void AcrossTheWake_TheFoamOnlyFallsAwayFromHerTrack_NoDarkLineAtHerTransomCorners(
+            [Values(3f, 8f, 14f)] float knots)
+        {
+            float speed = knots * 0.514444f;
+            Lay area = Walk(Arm.AreaPreserving, CapeHalfBeam, Envelope, Kelvin, speed, DepositRate, Dt);
+            Lay before = Walk(Arm.EdgeFromRim, CapeHalfBeam, Envelope, Kelvin, speed, DepositRate, Dt);
+            float outTo = 0.8f * CapeHalfBeam * Envelope;
+            double dip = DeepestDip(area.Laid, outTo), dipBefore = DeepestDip(before.Laid, outTo);
+            TestContext.WriteLine($"{knots:0} kn: deepest dip {dip:0.000} (the old law {dipBefore:0.000}); " +
+                                  $"laid {area.Total:0.0000} (old {before.Total:0.0000})");
+            Assert.Greater(dip, 0.97, "a dark strip runs along her wake: some cell holds less foam than " +
+                                      "water further from her track");
+            Assert.Less(dipBefore, 0.5, "DEAD CONTROL: the old law's strip at her transom corners is gone " +
+                                        "from the harness, so this guard proves nothing");
+            Assert.AreEqual(1.0, area.Total / before.Total, 0.03,
+                "the seam is closed by moving foam, never by adding it: both laws lay the same total");
         }
 
         /// <summary>
@@ -434,7 +493,7 @@ namespace HiddenHarbours.Tests.EditMode
         {
             const float r0 = CapeHalfBeam;
             float wMax = r0 * Envelope;
-            float slope = FoamBuffer.SpreadSlope(Kelvin);
+            float slope = FoamBuffer.EdgeSlope(Kelvin, r0, wMax);
             float edgeWidth = FoamBuffer.EdgeWidth(slope * EightKnots, Dt);
             float gain = FoamBuffer.EdgeGain(DepositRate, r0, wMax, Kelvin, Dt, edgeWidth);
             float step = slope * EightKnots * Dt;      // how far the edge moves in a frame
@@ -444,15 +503,16 @@ namespace HiddenHarbours.Tests.EditMode
             // already cancelled out — two independent routes to one number.
             float amplitude = FoamBuffer.DispersingShare(r0, wMax)
                             * FoamBuffer.ShippedFoamPerMetre(DepositRate, r0, EightKnots)
-                            / FoamBuffer.EnvelopeIntegral(r0, wMax);
+                            / FoamBuffer.LaidEnvelopeIntegral(r0, wMax);
 
-            foreach (float d in new[] { r0 + 0.4f, r0 + 1.2f, r0 + 2.4f })
+            // Inside the band's fade too (0.8 r0), where the edge now starts.
+            foreach (float d in new[] { 0.8f * r0, r0 + 0.4f, r0 + 1.2f, r0 + 2.4f })
             {
                 double sum = 0;
-                for (float e = r0 - edgeWidth; e <= wMax + edgeWidth; e += step)
-                    sum += gain * FoamBuffer.EnvelopeShape(d, r0, wMax)
+                for (float e = FoamBuffer.EdgeStart(r0); e <= wMax + edgeWidth; e += step)
+                    sum += gain * FoamBuffer.LaidEnvelope(d, r0, wMax)
                          * FoamBuffer.EdgeBump(d, e, edgeWidth);
-                double want = amplitude * FoamBuffer.EnvelopeShape(d, r0, wMax);
+                double want = amplitude * FoamBuffer.LaidEnvelope(d, r0, wMax);
                 Assert.AreEqual(want, sum, want * 0.02,
                     $"The edge's single pass at d={d:0.0} did not integrate to the envelope.");
             }
@@ -505,7 +565,7 @@ namespace HiddenHarbours.Tests.EditMode
             float wMax = r0 * Envelope;
             float slope = FoamBuffer.SpreadSlope(Kelvin);
             float reach = (wMax - r0) / slope;
-            float edgeWidth = FoamBuffer.EdgeWidth(slope * EightKnots, Dt);
+            float edgeWidth = FoamBuffer.EdgeWidth(FoamBuffer.EdgeSlope(Kelvin, r0, wMax) * EightKnots, Dt);
             float gain = FoamBuffer.EdgeGain(DepositRate, r0, wMax, Kelvin, Dt, edgeWidth);
 
             double Ring(bool asternOnly)
@@ -533,8 +593,8 @@ namespace HiddenHarbours.Tests.EditMode
                             bestD = Mathf.Sqrt(astern * astern + d * d);   // the projection CLAMPS
                             bestU = 0f;
                         }
-                        float edge = Mathf.Lerp(r0, wMax, bestU);
-                        frame += gain * FoamBuffer.EnvelopeShape(bestD, r0, wMax)
+                        float edge = FoamBuffer.EdgePosition(bestU, r0, wMax);
+                        frame += gain * FoamBuffer.LaidEnvelope(bestD, r0, wMax)
                                * FoamBuffer.EdgeBump(bestD, edge, edgeWidth);
                     }
                     total += 2.0 * frame * FoamBuffer.CellSize;

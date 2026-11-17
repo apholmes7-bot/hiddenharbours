@@ -25,5 +25,16 @@ namespace HiddenHarbours.Core
     {
         /// <summary>Her outline in WORLD metres, as she lies this instant.</summary>
         HullFootprint Footprint { get; }
+
+        /// <summary>
+        /// How her PICTURE squashes that outline up and down the screen: the factor her art's bake
+        /// elevation foreshortens a north-south metre by (<see cref="WakeRootMath.ForeshortenY"/>), 1 for a
+        /// plan-view picture. The outline itself stays in plan metres (a swimmer, a ladder and a walk all
+        /// meet her there); anything DRAWN against her waterline, such as foam parting round her hull,
+        /// squashes the outline's north-south extent by this, or it reaches past her stem and her
+        /// transom whenever she heads up or down the screen. Defaults to 1, so an implementer that draws
+        /// no foreshortened picture need not declare it.
+        /// </summary>
+        float PictureForeshortenY => 1f;
     }
 }

@@ -311,7 +311,8 @@ namespace HiddenHarbours.Art
 
         private static bool SameContact(in FoamTransportContacts.Shape a, in FoamTransportContacts.Shape b) =>
             a.Center.Equals(b.Center) && a.Axis.Equals(b.Axis) && a.HalfSize.Equals(b.HalfSize) &&
-            a.MinLevel==b.MinLevel && a.MaxLevel==b.MaxLevel && a.Circle==b.Circle && a.Key==b.Key;
+            a.MinLevel==b.MinLevel && a.MaxLevel==b.MaxLevel && a.Circle==b.Circle && a.Key==b.Key &&
+            a.ForeshortenY==b.ForeshortenY && a.BowTaper==b.BowTaper && a.StemHalf==b.StemHalf;
 
         private void RefreshSupports(Vector2 origin,FoamTransportMap.Reader bed,FoamTransportMap.Reader still,
             bool reuse,int dx,int dy)
