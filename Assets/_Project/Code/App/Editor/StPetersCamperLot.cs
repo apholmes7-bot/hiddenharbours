@@ -245,9 +245,32 @@ namespace HiddenHarbours.App.Editor
         /// lot), y across it.</summary>
         public static readonly Vector2 ShedSize = new Vector2(2.4f, 1.8f);
 
-        /// <summary>Where the shed stands: off the camper's TAIL, so it never meets the drawbar
-        /// whichever way <see cref="NoseDirection"/> resolves. West of the camper today.</summary>
-        public static Vector2 ShedPos => LotPos - NoseDirection * ShedTailMetres;
+        /// <summary>Where the shed stands: off the TAIL of the camper as it is DRAWN
+        /// (<see cref="DrawnNoseDirection"/>), so it never meets the drawbar. West of the camper.</summary>
+        public static Vector2 ShedPos => LotPos - DrawnNoseDirection * ShedTailMetres;
+
+        /// <summary>
+        /// <b>Which way the camper the player SEES points.</b> The body frame is right-handed (+x the
+        /// curb, where the door is; +y the hitch; +z up), so once the curb faces <see cref="Approach"/>
+        /// the hitch is fixed: the curb turned a quarter counter-clockwise. With the cottage due south
+        /// that is east, which is what <see cref="DoorFacing"/> draws.
+        ///
+        /// <para>⚠️ <see cref="NoseDirection"/> no longer agrees. It picks the roomier end, and since
+        /// the sheds moved the lean-to side wins (8.59 m clear at the drawbar tip, against 7.02 m toward
+        /// the woodshed), so it comes out WEST while the sprite still points east. A camper cannot point
+        /// west with its door to the south. Reconciling the two moves the parked camper, which is a
+        /// StPeters change for its own PR; until then the room and the shed follow what is drawn.</para>
+        /// </summary>
+        public static Vector2 DrawnNoseDirection
+        {
+            get
+            {
+                Vector2 curb = Approach - LotPos;
+                if (curb.sqrMagnitude < 1e-6f) return Vector2.right;
+                curb.Normalize();
+                return new Vector2(-curb.y, curb.x);
+            }
+        }
 
         /// <summary>The any-facing circle the shed reserves, the same promise the plot's sheds make.</summary>
         public static float ShedFootprintRadiusMetres => ShedSize.magnitude * 0.5f;

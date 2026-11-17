@@ -60,7 +60,7 @@ the cell at every facing, with the door open and every deployable fitted.
 | `camperIsoRig.js` → `globalThis.CamperIso` | The rig: loft, stations, fit-out, bake, anchors, and the sidecar generator. Self-contained — no deps, no `isoSolid.js`. |
 | `camperIsoRig.bantam.gameplay.json` | Gameplay sidecar for the 16 ft. |
 | `camperIsoRig.clipper.gameplay.json` | Gameplay sidecar for the 26 ft. |
-| `camperInteriorRig.js` → `globalThis.CamperInterior` | The Clipper's ROOM: liner, ceiling, cutaway, fit-out, walkable levels, interactables. Needs `camperIsoRig.js` loaded first and throws without it. Not in `RigCatalog` yet; the bake is the next slice. |
+| `camperInteriorRig.js` → `globalThis.CamperInterior` | The Clipper's ROOM: liner, ceiling, cutaway, fit-out, walkable levels, interactables. Needs `camperIsoRig.js` loaded first and throws without it. In `RigCatalog` as `camperInterior` (prerequisite `camper`); not baked. |
 | `camperInteriorRig.clipper.interior.json` | The room's sidecar, written by `node tools/rig-recipes/camper-interior.mjs` (`--check` fails on drift, `--plates <dir>` draws the eight cut facings and the plan). |
 
 Both shell sidecars are stamped `derivedFromRigSha256: b7a48e2f…7549`, hashed from **the exact
@@ -81,9 +81,21 @@ door. `sidecar().FIT` publishes the aisle, door and fixture numbers; `sidecar().
 mapping and the ground reserved for the lot's small shed. `render(dir)` is cut by default: ceiling culled,
 near walls and tall fixtures sectioned to a 0.60 m sill.
 
+The stores are the camper's own, gated by its deed (`home.ginny_lot_camper`):
+`kitchen_storage.camper_fridge`, `kitchen_storage.camper_pantry`, the catch hold `freezer.camper_freezer`,
+`stowage.camper_rod_rack` and `stowage.camper_gear_locker`. Their Defs arrive with the storage PR; until
+then the sidecar carries the ids as strings.
+
+**Not baked.** The room is registered (`RigCatalog` key `camperInterior`, prerequisite `camper`), but no
+dwelling-room mesh path exists yet: `VehicleMeshAssetBaker` bakes wheeled road vehicles, and the
+level-gated cutaway (ADR 0041/0048) belongs to `HullMeshDef` and the hull renderer. A room in a parked
+building has no mesh Def, no bake and no cutaway component. Choosing that seam is the next step.
+
 ⚠️ `LAYOUT.clipper` in `camperIsoRig.js` (the dark volumes seen through the open door, and the shell
-sidecar's obstructions) still describes the older plan. The room supersedes it; it is retired or
-regenerated with the bake rather than edited here, because editing the shell moves its stamp.
+sidecar's obstructions) still describes the older plan. The room supersedes it. It is retired with the
+shell's mesh bake rather than now: editing the shell moves its sha, which stamps both shell sidecars and
+the four committed camper sprite recipes, so the sheets would be rebaked once for a look the mesh then
+replaces.
 
 ## Load order
 
