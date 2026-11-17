@@ -100,6 +100,15 @@ Polling more often cannot accelerate it; sparse polling reaches the same result.
 Time reversal is refused. Seed has no influence because this transform has no
 randomness. Recipe data is snapshotted at setup, not read every frame.
 
+Durations and timestamps are **clock seconds** on `IGameClock.TotalSeconds`,
+the same convention as `Core/Food/RecipeDef.WorkSeconds`. The historical
+`ProcessGameSeconds` and `ReadyAtGameSeconds` names do not mean seconds on an
+86400-second day. With `GameConfig.SecondsPerDay = 1800`, a 60-clock-second
+process lasts `60 / 1800 * 24 * 60 = 48` game minutes; a 5-clock-second slow tick
+spans 4 game minutes. At normal speed while unpaused, 60 clock seconds take
+60 real seconds; pause and time scale govern clock advancement. Completion can
+wait until the next slow-tick boundary after that duration.
+
 Completion keeps output in the slot until an explicit collection call. A full
 slot refuses new input. Product grams are floored from source grams times yield
 ppm, and the exact complement is retained as byproduct grams; source grade and
@@ -112,8 +121,8 @@ No clock event moves goods between zones. No live adapter exists in this PR.
 
 Built: grade/price and recipe Defs, detached validated specs, receipt-based intake
 settlement, a single graded processing slot, logic tests and content validators.
-The sample line makes cod fresh fillet with 450000 ppm yield, 60 game seconds
-duration, a 5-second slow tick and a 20000-gram individual capacity. Values are
+The sample line makes cod fresh fillet with 450000 ppm yield, 60 clock seconds
+duration, a 5-clock-second slow tick and a 20000-gram individual capacity. Values are
 proposal data and no asset is loaded by a runtime bootstrap or Resources loader.
 
 Designed only: the visitor/counter interaction, all hand work and visible storage,
