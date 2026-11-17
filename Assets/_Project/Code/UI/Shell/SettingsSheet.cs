@@ -8,8 +8,9 @@ using HiddenHarbours.Core;
 namespace HiddenHarbours.UI
 {
     /// <summary>
-    /// The settings sheet (M1 §7.8): four independent faders and fullscreen/windowed. Nothing else — no
-    /// graphics presets, no key rebinding; those are explicitly not M1.
+    /// The settings sheet (M1 §7.8): four independent faders, fullscreen/windowed, and how the TASKS
+    /// note stands (shown / chip / hidden, 2026-11-16). Nothing else — no graphics presets, no key
+    /// rebinding; those are explicitly not M1.
     ///
     /// <para><b>It moves the sound under your hand.</b> A fader writes straight through
     /// <see cref="IAudioMix"/> to the live director, because that is the only way a volume can be judged;
@@ -35,14 +36,17 @@ namespace HiddenHarbours.UI
         private const float MarginX   = 110f;
         private const float TitleY    = -132f;
         private const float RuleY     = -196f;
-        private const float FirstRowY = -244f;
+        // Seven rows (four faders, the window, the tasks note, back) inside the 720 reference height, the
+        // hint below them: the step was 62 for six rows and closed up to 58 for the seventh.
+        private const float FirstRowY = -232f;
         private const float RowW      = 700f;
         private const float RowH      = 52f;
-        private const float RowStep   = 62f;
-        private const float HintY     = -664f;
+        private const float RowStep   = 58f;
+        private const float HintY     = -676f;
 
         private Action _onClose;
         private Text _displayValue;
+        private Text _tasksNoteValue;
 
         /// <summary>
         /// Put the sheet up. <paramref name="onClose"/> is what to do when it is put away — the page that
@@ -155,6 +159,10 @@ namespace HiddenHarbours.UI
             rows.Add(PaperUi.MakeValueRow(host, "Display", ShellStrings.DisplayLabel,
                                           ShellStrings.DisplayMode(GameSettings.Fullscreen),
                                           MarginX, y, RowW, RowH, ToggleDisplay, out _displayValue));
+            y -= RowStep;
+            rows.Add(PaperUi.MakeValueRow(host, "TasksNote", ShellStrings.TasksNoteLabel,
+                                          ShellStrings.TasksNoteModeWord(TasksNoteFold.Mode),
+                                          MarginX, y, RowW, RowH, CycleTasksNote, out _tasksNoteValue));
             y -= RowStep + 16f;
 
             rows.Add(PaperUi.MakeMenuItem(host, "Back", ShellStrings.Back,
@@ -174,6 +182,16 @@ namespace HiddenHarbours.UI
             GameSettings.Fullscreen = !GameSettings.Fullscreen;
             if (_displayValue != null)
                 _displayValue.text = ShellStrings.DisplayMode(GameSettings.Fullscreen);
+        }
+
+        /// <summary>Shown, chip, hidden, and round again — the same cycle as T / the pad's west button,
+        /// applied and remembered at once (<see cref="TasksNoteFold"/>), and the row says which it now is.
+        /// The one place a mouse-only player can put the note away entirely, and bring it back.</summary>
+        private void CycleTasksNote()
+        {
+            TasksNoteFold.Cycle();
+            if (_tasksNoteValue != null)
+                _tasksNoteValue.text = ShellStrings.TasksNoteModeWord(TasksNoteFold.Mode);
         }
     }
 }

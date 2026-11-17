@@ -297,6 +297,20 @@ namespace HiddenHarbours.Core
         [Tooltip("Gamepad only: seconds between rows once a held stick or d-pad is running on.")]
         [Range(0.05f, 0.5f)] public float InteractChooserRepeatIntervalSeconds = DefaultInteractChooserRepeatIntervalSeconds;
 
+        /// <summary>How long the folded TASKS chip signals a new or finished task, when no config is
+        /// wired (owner ask 2026-11-16).</summary>
+        public const float DefaultTasksChipSignalSeconds = 2.4f;
+
+        /// <summary>How long each on/off beat of that signal lasts, when no config is wired.</summary>
+        public const float DefaultTasksChipBlinkSeconds = 0.3f;
+
+        [Tooltip("Folded TASKS note: seconds its chip flashes gold when a task is added or finished. The " +
+                 "note never re-opens itself; this is the whole of the nudge.")]
+        [Range(0.5f, 8f)] public float TasksChipSignalSeconds = DefaultTasksChipSignalSeconds;
+
+        [Tooltip("Folded TASKS note: seconds per on/off beat of the chip's flash.")]
+        [Range(0.1f, 1f)] public float TasksChipBlinkSeconds = DefaultTasksChipBlinkSeconds;
+
         [Tooltip("The bar for heavy work, for an action that opts in: refused at this tiredness / hunger " +
                  "stage or worse, and the player says \"I'm too tired\" / \"I'm too hungry\" / both. None = " +
                  "never refused for that need. No action opts in yet (the needs ruling: a need never stops " +

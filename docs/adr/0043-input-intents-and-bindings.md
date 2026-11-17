@@ -77,7 +77,7 @@ Player/Input/InputBindings.cs       the asset (InputSystem.actions — project-w
 Player/Input/DeviceWalkIntentSource.cs   Walk map → WalkIntents, gated; static Map(...) is pure
 Player/Input/DeviceDeckIntentSource.cs   Deck map → DeckIntents, gated; static Map(...) is pure
 
-Core/Input/HudIntents.cs            HudIntents { HideAll }, HeldHudIntents, and HudInput (the device
+Core/Input/HudIntents.cs            HudIntents { HideAll, ToggleTasks, Click, Point }, HeldHudIntents, and HudInput (the device
                                     source's slot: its reader is in UI, which cannot reference Player) — H2
 Player/Input/DeviceHudIntentSource.cs    Hud map → HudIntents, gated; static Map(...) is pure; installs itself
 ```
@@ -125,6 +125,7 @@ ships as a preloaded asset). **One map per control mode**, two control schemes: 
 | | Steer | Value/Axis | `1DAxis`: **+ = A ∨ ←** (LEFT is +1, the rig's own sense, ADR 0035 §5), − = D ∨ → | as above |
 | | Brake | Button | Space | as above |
 | **Hud** (H2, 2026-10-17) | HideAll | Button | M | `BoatUiWindowInput` → `BoatUiWindows.ToggleHideAll`, in every control mode ✅ H2 |
+| | ToggleTasks (2026-11-16) | Button | T (bound nowhere else in the asset; polled raw only by the `BoatRotationTestRig` dev rig, which no scene or prefab holds); **Gamepad**: `<Gamepad>/buttonWest` (X: free in the world, where A hauls and confirms, B cancels and is neutral, Y is PR 1270's autopilot at the helm, the shoulders zoom, Start is the shell, View is PR 2's hide-all; read raw only by the character creator, which holds `InteractionGate`) | `BoatUiWindowInput` (the Hud map's one reader) → Core `TasksNoteFold.TryChoose` → `TasksNoteFold.SetMode`: the press cycles the note shown → chip → hidden → shown. A click, read off UI/Point and UI/Click into `HudIntents` and hit-tested against the box the note states (`TasksNoteFold.ClickTarget`), only folds the open note's head to the chip or opens the chip; it never hides, and hidden states no box. Deaf while `InteractionGate` is held. The mode is a setting (`GameSettings.TasksNoteModeKey`, also the settings sheet's "Tasks note" row), never the save |
 | **Chooser** (2026-11-15) | Pick1 … Pick9 | Button | 1 … 9 (bound nowhere else in the asset) | `DeviceChooserIntentSource` → `ChooserInput` → `InteractChooserView`: picks a row of the interaction chooser. The list's up/down, confirm, cancel and mouse read the existing UI/Navigate, UI/Submit or Walk/Deck Interact, UI/Cancel, UI/Point and UI/Click; no shipped key changes meaning |
 | | PadNavigate (2026-11-16, PR 2 chooser slice) | Value/Vector2 | (none; **Gamepad**: `<Gamepad>/leftStick`, `<Gamepad>/dpad`) | `DeviceChooserIntentSource`, joined with UI/Navigate by `Strongest` (whichever axis is pushed further, the keys on a tie) |
 | **UI** | Navigate, Submit, Cancel, Point, Click, RightClick, MiddleClick, ScrollWheel | as Unity's UI map | the template's KeyboardMouse bindings, carried over verbatim | the `EventSystem` (`SellScreen` builds one with no explicit asset, so the module falls back to THIS map's `UI`); the tiered `Zoom` intent joins it in PR 2 |
@@ -155,7 +156,9 @@ runs on (`GameConfig.InteractChooserRepeatDelaySeconds`, then every `…RepeatIn
 `…PushThreshold`; the run-on is allowed only while `ActiveControlDevice.Current` is the pad, and the
 device is reported only for an axis actually pushed, so W/S and the arrows still move one row per press.
 `TheGamepadSchemeIsPresentButEmpty_UntilPr2FillsIt` became
-`TheGamepadScheme_BindsOnlyTheChoosersNavigate_UntilTheRestOfPr2Lands`. Still owed by PR 2, under the
+`TheGamepadScheme_BindsOnlyTheChoosersNavigate_UntilTheRestOfPr2Lands`, and with the TASKS fold's row
+(2026-11-16, the pad's west button on `Hud/ToggleTasks`)
+`TheGamepadScheme_BindsOnlyTheChoosersNavigateAndTheTasksFold_UntilTheRestOfPr2Lands`. Still owed by PR 2, under the
 owner's feel gate: the walk/deck/helm/drive/hide-all rows and the pad's interact press (so a pad alone
 cannot yet OPEN the chooser), the affordance glyph and HUD hints, `UiIntents`, the settings sheet, and
 explicit pad rows for Submit/Cancel once a scheme binding mask is ever applied (a mask on KeyboardMouse

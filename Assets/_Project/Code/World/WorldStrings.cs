@@ -151,5 +151,11 @@ namespace HiddenHarbours.World
         public const string OnboardRepairDory= "She's yours but broken — pay the shipwright to REPAIR her.";
         public const string OnboardSailHome  = "Seaworthy at last — sail your dory home to Coddle Cove.";
         public const string OnboardDone      = "You earned her, plank and rope. Fair winds, skipper!";
+
+        // ---- the TASKS note's fold (owner ask 2026-11-16) ----
+        // The marks on the note's head (fold it down) and on its folded chip (open it again). One
+        // character each: the head and the chip are a glance, not a sentence.
+        public const string TasksFoldMark   = "-";
+        public const string TasksUnfoldMark = "+";
     }
 }
