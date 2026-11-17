@@ -24,15 +24,66 @@ namespace HiddenHarbours.Tests.EditMode
 
         private CharacterSkinDef _def;
         private GameObject _root;
+        private BoatVisualDef _visual;
 
         [TearDown]
         public void TearDown()
         {
             if (_def != null) Object.DestroyImmediate(_def);
             if (_root != null) Object.DestroyImmediate(_root);
+            if (_visual != null) Object.DestroyImmediate(_visual);
             _def = null;
             _root = null;
+            _visual = null;
         }
+
+        // ---------------------------------------------------------------- which way the pilot faces (data)
+
+        [Test]
+        public void ARowedHullsPilot_FacesTheStern_AndASteeredOne_FacesTheBow()
+        {
+            _visual = ScriptableObject.CreateInstance<BoatVisualDef>();
+            Assert.AreEqual(BoatVisualDef.DefaultOarsPilotDeckBearingDegrees, _visual.OarsPilotDeckBearingDegrees,
+                            "a fresh visual needs no edit for its rower to face aft");
+            Assert.AreEqual(180f, BoatVisualDef.DefaultOarsPilotDeckBearingDegrees, "a rower sits facing the stern");
+            Assert.AreEqual(0f, BoatVisualDef.HelmPilotDeckBearingDegrees, "a helm faces the bow");
+
+            _visual.PilotStance = PilotStanceChoice.Oars;
+            Assert.AreEqual(180f, _visual.PilotDeckBearingDegrees());
+            Assert.IsFalse(RowingFigure.FacesBow(_visual.PilotDeckBearingDegrees()));
+
+            _visual.PilotStance = PilotStanceChoice.Helm;
+            Assert.AreEqual(0f, _visual.PilotDeckBearingDegrees(), "the helm facing is unchanged");
+            _visual.PilotStance = PilotStanceChoice.None;
+            Assert.AreEqual(0f, _visual.PilotDeckBearingDegrees());
+
+            // The value is the asset's: an owner who wants his rower facing forward sets it there.
+            _visual.PilotStance = PilotStanceChoice.Oars;
+            _visual.OarsPilotDeckBearingDegrees = 0f;
+            Assert.AreEqual(0f, _visual.PilotDeckBearingDegrees());
+            Assert.IsTrue(RowingFigure.FacesBow(_visual.PilotDeckBearingDegrees()));
+        }
+
+        [Test]
+        public void TheDorysRower_FacesAft_AndHerTholesAreAbaftHisThwart()
+        {
+            var dory = UnityEditor.AssetDatabase.LoadAssetAtPath<BoatVisualDef>("Assets/_Project/Data/Boats/Visuals/DoryIso.asset");
+            Assert.IsNotNull(dory, "harness: the dory's visual asset");
+            Assert.AreEqual(CharacterStance.Oars, dory.PilotStanceFor(), "the dory is rowed");
+            Assert.AreEqual(180f, dory.PilotDeckBearingDegrees(), "and her rower faces the stern");
+
+            // Facing aft is what makes the hands meet the handles: the oarlock is ABAFT the rowing thwart,
+            // so the handles work aft of him, where an aft-facing figure reaches. Facing the bow, every
+            // handle position is behind his back.
+            Assert.IsNotNull(dory.OarPortMesh, "harness: the dory's mesh oar");
+            var walk = JsonUtility.FromJson<DoryWalk>(File.ReadAllText(Path.Combine(
+                Application.dataPath, "..", "docs/art/rigs/gameplay/doryIsoRig.dory_iso.walk.json")));
+            Assert.Less(dory.OarPortMesh.PivotLocalMeters.y, walk.anchors.helm.y,
+                        "the tholes must sit abaft the rower's seat (the hull's +y is forward)");
+        }
+
+        [Serializable] private class DoryWalk { public DoryAnchors anchors; }
+        [Serializable] private class DoryAnchors { public Vector3 helm; }
 
         // ---------------------------------------------------------------- the oar's own geometry
 
@@ -270,6 +321,25 @@ namespace HiddenHarbours.Tests.EditMode
             // The catch is hands-in: the frame nearest the rig's hands-in share.
             stroke.Phase = 0f;
             Assert.IsTrue(RowingFigure.TryResolve(_def, CharacterStance.Oars, stroke, 0f, out key, out frame));
+            Assert.AreEqual(Mathf.RoundToInt(RowingFigure.RigHandsInShare * RowFrames), frame);
+        }
+
+        [Test]
+        public void AtTheOarsFacingAft_TheDefault_HeReachesAtTheCatch_AndPullsInToTheRelease()
+        {
+            _def = Skin(meshed: new[] { RowingFigure.RowStrokeKey, RowingFigure.OarsRowKey, "idle_oars" });
+            var stroke = new ScriptedStroke { Stroking = true };
+            float aft = BoatVisualDef.DefaultOarsPilotDeckBearingDegrees;
+
+            // The catch is hands-out, leaning forward toward the stern: frame 0.
+            stroke.Phase = 0f;
+            Assert.IsTrue(RowingFigure.TryResolve(_def, CharacterStance.Oars, stroke, aft, out string key, out int frame));
+            Assert.AreEqual(RowingFigure.RowStrokeKey, key);
+            Assert.AreEqual(0, frame);
+
+            // The drive pulls the hands in and lays him back: at the release, the hands-in frame.
+            stroke.Phase = OarStrokeMath.ReleasePhase;
+            Assert.IsTrue(RowingFigure.TryResolve(_def, CharacterStance.Oars, stroke, aft, out key, out frame));
             Assert.AreEqual(Mathf.RoundToInt(RowingFigure.RigHandsInShare * RowFrames), frame);
         }
 
