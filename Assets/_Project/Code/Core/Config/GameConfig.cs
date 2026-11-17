@@ -689,6 +689,13 @@ namespace HiddenHarbours.Core
                  "owner-tunable, no code (rule 6).")]
         public HelmWheelSettings HelmWheel = HelmWheelSettings.Default;
 
+        [Header("Helm autopilot (heading hold — only on hulls whose Def says HasAutopilot)")]
+        [Tooltip("How the autopilot holds a heading on the rudder the hull already has: the three " +
+                 "gains, how much helm it may use and how fast it may wind the wheel, and the limits " +
+                 "that hand the helm back (too little way, a knock, a steer input). Owner-tunable, no " +
+                 "code (rule 6).")]
+        public HelmAutopilotSettings HelmAutopilot = HelmAutopilotSettings.Default;
+
         [Header("Helm footprint (the camera answers a full-width helm band — ADR 0050)")]
         [Tooltip("How the camera answers a helm band that spans the whole width of the screen: the " +
                  "share of the band's height the boat's place on screen rises by (0.5 = half, the " +
@@ -1763,6 +1770,71 @@ namespace HiddenHarbours.Core
             SelfCentre = 0f,
             RimGrabPadPx = 8f,
             SteerEaseSeconds = 0.25f,
+        };
+    }
+
+    /// <summary>
+    /// Owner tuning for the <b>autopilot's heading hold</b> (<see cref="GameConfig.HelmAutopilot"/>).
+    /// A plain PID on the heading error that writes the helm the player would have written; the
+    /// hull's own rudder authority (which scales with way) does the turning, so there is no new
+    /// physics. Run on the fixed physics step; transient, never saved (it is off after a load).
+    ///
+    /// <para>Sign: heading is the body's rotation in degrees, counter-clockwise positive; a positive
+    /// helm turns the bow to starboard (clockwise), so a heading left of the target (positive error)
+    /// asks for positive helm.</para>
+    /// </summary>
+    [System.Serializable]
+    public struct HelmAutopilotSettings
+    {
+        [Tooltip("Proportional gain: helm (−1..1) per degree off the held heading. 0.04 = the most " +
+                 "helm it may use (MaxHelm) at 15° off.")]
+        [Min(0f)] public float HeadingGainPerDegree;
+
+        [Tooltip("Damping gain: helm per degree/second the bow is swinging. Checks the swing before " +
+                 "she overshoots. 0 = no damping term.")]
+        [Min(0f)] public float YawRateGainPerDegreePerSecond;
+
+        [Tooltip("Integral gain: helm added per degree-second of error, which is what takes out a " +
+                 "steady offset (a beam wind, a sea on the quarter). 0 = no integral term.")]
+        [Min(0f)] public float IntegralGainPerDegreeSecond;
+
+        [Tooltip("The most helm the integral term may carry, either way (anti-windup).")]
+        [Min(0f)] public float IntegralLimitHelm;
+
+        [Tooltip("The most helm the autopilot may use, either way (0..1). A real autopilot holds a " +
+                 "course with small corrections and never puts the wheel hard over.")]
+        [Range(0f, 1f)] public float MaxHelm;
+
+        [Tooltip("How fast the autopilot may wind the helm, in helm units per second (2 = centre to " +
+                 "full lock in half a second). 0 = no limit.")]
+        [Min(0f)] public float HelmSlewPerSecond;
+
+        [Tooltip("The least way through the water (m/s, ahead) the autopilot will steer with. Below " +
+                 "it the rudder has little bite and the autopilot hands the helm back (and will not " +
+                 "engage). Going astern counts as below it.")]
+        [Min(0f)] public float MinWayMetresPerSecond;
+
+        [Tooltip("How hard a steer input must be (0..1 of full lock) to take the helm back from the " +
+                 "autopilot. Keeps a resting stick's jitter from switching it off.")]
+        [Range(0f, 1f)] public float SteerOverrideThreshold;
+
+        [Tooltip("How hard a knock must be (relative speed, m/s) to switch the autopilot off. A hull " +
+                 "resting against a fender or a quay is not a collision.")]
+        [Min(0f)] public float CollisionMinImpactMetresPerSecond;
+
+        /// <summary>The shipped tuning. Checked in a simulated step loop against a 40x spread of yaw
+        /// inertia (<c>HeadingHoldAutopilotTests</c>); feel is the owner's to set.</summary>
+        public static HelmAutopilotSettings Default => new HelmAutopilotSettings
+        {
+            HeadingGainPerDegree = 0.04f,
+            YawRateGainPerDegreePerSecond = 0.03f,
+            IntegralGainPerDegreeSecond = 0.004f,
+            IntegralLimitHelm = 0.3f,
+            MaxHelm = 0.6f,
+            HelmSlewPerSecond = 2f,
+            MinWayMetresPerSecond = 0.5f,
+            SteerOverrideThreshold = 0.2f,
+            CollisionMinImpactMetresPerSecond = 0.5f,
         };
     }
 

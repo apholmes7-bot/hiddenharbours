@@ -121,6 +121,7 @@ ships as a preloaded asset). **One map per control mode**, two control schemes: 
 | | Searchlight | Button | L | `BoatSpotlight` (PR 1) |
 | | InstrumentCycle | Button | K (Shift steps the pilot deck) | `DevInstrumentCycle` (PR 1) |
 | | Interact | Button | E | `ControlSwitcher` (PR 1) |
+| | Autopilot (2026-11-16) | Button | P (bound nowhere else in the asset) | `DeviceAutopilotIntentSource` → Core `AutopilotInput` → `DevBoatInput.ReadAutopilotSwitch` → `BoatController.ToggleAutopilot`. Its own small struct (`AutopilotIntents { Toggle }`, the HUD's gates) until `HelmIntents` lands in PR 1 and absorbs it ✅ |
 | **Drive** | Throttle | Value/Axis | `1DAxis(whichSideWins=0)`: − = S ∨ ↓, + = W ∨ ↑ | `KeyboardDriveInputSource` (PR 1 re-homes it; byte-identical) |
 | | Steer | Value/Axis | `1DAxis`: **+ = A ∨ ←** (LEFT is +1, the rig's own sense, ADR 0035 §5), − = D ∨ → | as above |
 | | Brake | Button | Space | as above |

@@ -182,6 +182,21 @@ namespace HiddenHarbours.Boats
         /// </summary>
         public float Throttle => _throttle;
 
+        // --- Autopilot (heading hold): transient, never saved, so a load starts with it off. ----
+        private readonly HeadingHoldAutopilot _autopilot = new HeadingHoldAutopilot();
+        private bool _knockSinceLastStep;   // a hard enough collision since the last physics step
+
+        /// <summary>Is the autopilot holding her heading? While it is, it writes <see cref="Steer"/>
+        /// from the fixed step and the helm's key read passes that value through untouched.</summary>
+        public bool AutopilotEngaged => _autopilot.Engaged;
+
+        /// <summary>The heading the autopilot is holding (degrees, counter-clockwise; meaningful while
+        /// <see cref="AutopilotEngaged"/>).</summary>
+        public float AutopilotTargetHeadingDegrees => _autopilot.TargetHeadingDegrees;
+
+        /// <summary>Why the autopilot last let go or refused to engage.</summary>
+        public AutopilotDisengage AutopilotLastDisengage => _autopilot.LastDisengage;
+
         /// <summary>Port-oar stroke state (-1 back-water .. +1 forward), for the per-oar row rig animation.</summary>
         public float LeftOar => _leftOar;
         /// <summary>Starboard-oar stroke state (-1 back-water .. +1 forward), for the per-oar row rig animation.</summary>
@@ -363,6 +378,83 @@ namespace HiddenHarbours.Boats
         }
 
         /// <summary>
+        /// Does this hull's helm carry an autopilot it can steer with? Her Def's
+        /// <see cref="BoatHullDef.HasAutopilot"/>, and a rudder to steer on (an engine helm or a sail
+        /// plan; oars have no rudder). Pure + static.
+        /// </summary>
+        public static bool AutopilotFitted(BoatHullDef hull)
+            => hull != null && hull.HasAutopilot && (hull.HasSailPlan || UsesEngineHelm(hull.Propulsion));
+
+        /// <summary>
+        /// The autopilot switch: hold the heading she is on, or hand the helm back. Called by the helm's
+        /// input read (<see cref="DevBoatInput"/>) on the <c>Helm/Autopilot</c> press. Engaging is
+        /// refused, silently, under the rules that would hand it straight back (see
+        /// <see cref="HeadingHoldAutopilot.HandBackReason"/>); the reason is in
+        /// <see cref="AutopilotLastDisengage"/>.
+        /// </summary>
+        public bool ToggleAutopilot()
+        {
+            if (_autopilot.Engaged)
+            {
+                _autopilot.Disengage(AutopilotDisengage.Toggled);
+                return false;
+            }
+            return _autopilot.TryEngage(ReadAutopilotSensors(collided: false), _steer, AutopilotPolicy());
+        }
+
+        /// <summary>Hand the helm back from the autopilot (a no-op while it is off). The helm's steer
+        /// read calls it on a real steer input; the wheel's drag calls it on a grab.</summary>
+        public void DisengageAutopilot(AutopilotDisengage reason) => _autopilot.Disengage(reason);
+
+        /// <summary>The autopilot tuning this hull runs (her wired GameConfig, else the shared one).</summary>
+        public HelmAutopilotSettings AutopilotSettings => AutopilotPolicy();
+
+        private HelmAutopilotSettings AutopilotPolicy()
+            => _config != null ? _config.HelmAutopilot : GameServices.HelmAutopilot;
+
+        // What the autopilot reads this instant. "Manned" is this component's own enabled flag — the
+        // "helm is manned" read the oar/motor/probe layers already rely on (ControlSwitcher disables it
+        // when the helm is left). The way is forward speed through the moving water, the rudder's own
+        // WAY term (ApplyEngineDrive).
+        private AutopilotSensors ReadAutopilotSensors(bool collided)
+        {
+            Rigidbody2D rb = _rb != null ? _rb : GetComponent<Rigidbody2D>();
+            float heading = rb != null ? rb.rotation : transform.eulerAngles.z;
+            float yawRate = rb != null ? rb.angularVelocity : 0f;
+            Vector2 vel = rb != null ? rb.linearVelocity : Vector2.zero;
+            Vector2 current = GameServices.Environment != null
+                ? GameServices.Environment.Sample().CurrentVector
+                : Vector2.zero;
+            float way = Vector2.Dot(vel - current, (Vector2)transform.up);
+            return new AutopilotSensors(AutopilotFitted(_hull), isActiveAndEnabled, IsAground, collided,
+                                        heading, yawRate, way);
+        }
+
+        // One fixed step of the autopilot, run from the manned physics pass BEFORE the drive reads the
+        // helm, so the rudder this step answers is the autopilot's. Writes _steer only while it holds.
+        private void TickAutopilot(Vector2 fwd, Vector2 vel, EnvironmentSample env)
+        {
+            bool knock = _knockSinceLastStep;
+            _knockSinceLastStep = false;
+            if (!_autopilot.Engaged) return;
+
+            float way = Vector2.Dot(vel - env.CurrentVector, fwd);
+            var sensors = new AutopilotSensors(AutopilotFitted(_hull), isActiveAndEnabled, IsAground, knock,
+                                               _rb.rotation, _rb.angularVelocity, way);
+            if (_autopilot.Tick(in sensors, Time.fixedDeltaTime, AutopilotPolicy(), out float helm))
+                _steer = Mathf.Clamp(helm, -1f, 1f);
+        }
+
+        // A knock ends the hold; a fender touch or a hull resting on a quay does not (the impact floor).
+        // Only flagged here; the fixed step reads and clears it.
+        private void OnCollisionEnter2D(Collision2D collision)
+        {
+            if (!_autopilot.Engaged) return;
+            if (HeadingHoldAutopilot.IsHazardousImpact(collision.relativeVelocity.magnitude, AutopilotPolicy()))
+                _knockSinceLastStep = true;
+        }
+
+        /// <summary>
         /// Trim the sheets by hand — 0 eased, 1 hardened. Takes the boat OFF auto-trim: once a player
         /// has pulled a sheet, the boat holds their trim until they change it or hand it back with
         /// <see cref="SetAutoTrim"/>. A sheet is a HELD axis, so this is a set and not an edge.
@@ -531,6 +623,8 @@ namespace HiddenHarbours.Boats
         /// on her own lag instead of snapping level in one frame.</param>
         public void Stop(bool levelAtOnce)
         {
+            // A stop (teleport, mooring, arrival, the helm let go) ends any autopilot hold with the way.
+            _autopilot.Disengage(AutopilotDisengage.LeftHelm);
             _throttle = 0f; _steer = 0f;
             _leftOar = 0f; _rightOar = 0f; _brace = false;
             // Resolve the body lazily so Stop() works even before Awake has run (EditMode / on-arrival
@@ -562,6 +656,8 @@ namespace HiddenHarbours.Boats
         /// </summary>
         public void SetHull(BoatHullDef hull)
         {
+            // A different hull is a different helm: the old one's autopilot does not carry over.
+            if (!ReferenceEquals(hull, _hull)) _autopilot.Disengage(AutopilotDisengage.HullChanged);
             _hull = hull;
             // A new hull (a swap, a load) starts level: her trim is recomputed from her own data on the
             // next physics tick, never carried over from the last hull's.
@@ -615,7 +711,12 @@ namespace HiddenHarbours.Boats
         // The helm is left (this component is disabled while she drifts unmanned): the trim her drive
         // asked for goes with the hand on the throttle, so the drawer eases her back to level even
         // where no drift tick runs. TickUnmannedDrift republishes it from her next drift tick.
-        private void OnDisable() => _trimTargetDegrees = 0f;
+        // Leaving the helm hands the autopilot's helm back too: it is a helmsman's tool, not a drift mode.
+        private void OnDisable()
+        {
+            _trimTargetDegrees = 0f;
+            _autopilot.Disengage(AutopilotDisengage.LeftHelm);
+        }
 
         /// <summary>
         /// One physics tick of the sea working an <b>unmanned</b> hull — the "leave the helm to haul /
@@ -678,6 +779,11 @@ namespace HiddenHarbours.Boats
 
             Vector2 fwd = transform.up;            // bow direction (top-down view)
             Vector2 vel = _rb.linearVelocity;
+
+            // --- Autopilot (heading hold): sets the helm before the drive reads it. The unmanned drift
+            // tick means nobody is at the wheel, which hands the helm back. ---
+            if (unmanned) _autopilot.Disengage(AutopilotDisengage.LeftHelm);
+            else TickAutopilot(fwd, vel, env);
 
             // --- Propulsion (data-driven, ADR 0003): oars (Dory), an engine helm (Punt), or SAIL. ---
             // Always driven — drive authority is NOT gated on grounding (the helm never cuts out).

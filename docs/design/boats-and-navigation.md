@@ -1484,6 +1484,30 @@ measured width; no additional tuning is needed. `BoatCabinPassageDecisionTests` 
 decision for the 0.529 m opening and a wide opening, in both directions, and
 `BoatCabinDoorWalkthroughTests` pins its connection to the cabin state.
 
+### 9.13 Autopilot, slice 1: heading hold (2026-11-16)
+
+The owner ruled (2026-11-15) that set-a-course becomes an **autopilot, a purchased tool offered on
+recommended hulls** (P4: earn it, then automate it). Slice 1 holds a heading; it does not follow a
+route.
+
+- **Who has one:** a hull whose `BoatHullDef.HasAutopilot` is true and that has a rudder (an engine
+  helm or a sail plan). Off by default, and off on every shipped hull until the owner names which
+  hulls are "recommended" (the rig edit lists suggest 12 m and up). The purchase step is a later
+  slice.
+- **The switch:** at the helm, `Helm/Autopilot` (P) holds the heading she is on
+  (`BoatController.ToggleAutopilot`). Engaging is refused under the same rules that end a hold.
+- **The controller:** `HeadingHoldAutopilot`, a PID on the wrapped heading error with a yaw-rate
+  damping term and a clamped integral, writing the same helm (−1..1) a steer key writes, on the fixed
+  step before the drive reads it. The hull's own way-scaled rudder does the turning: no new physics.
+  Tuning: `GameConfig.HelmAutopilot`.
+- **It hands the helm back on:** a steer key or stick past `SteerOverrideThreshold`, a grab of the
+  wheel, the switch again, leaving the helm (or any `Stop`), a hull swap, going aground, a knock
+  harder than `CollisionMinImpactMetresPerSecond`, or way ahead below `MinWayMetresPerSecond`
+  (astern counts as below).
+- **What the player sees:** the dash wheel, which mirrors the helm, turns by itself while it holds.
+  There is no lamp or text yet: the helm band has no generic switch lamp to reuse.
+- **Saved:** never. A loaded game starts with it off.
+
 ## 10. Open questions
 
 1. **Direct boat control vs point-to-move (mobile).** Do we offer **full manual** throttle+helm (best for P1 skill, harder on touch) and an optional **assisted/auto-pilot-to-waypoint** for transits/accessibility — and where exactly does autopilot disengage near danger? Likely both, with autopilot for known-safe transits and manual demanded in tide/weather pinch points. Needs UX prototyping.
