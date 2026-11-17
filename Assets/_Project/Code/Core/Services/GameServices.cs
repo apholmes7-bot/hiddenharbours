@@ -1583,6 +1583,7 @@ namespace HiddenHarbours.Core
             Hands = null;
             CatchHands = null;
             PlayerHold = null;
+            PlayerStorage.Clear();       // no container outlives the services that listed it
             CurrentRegionId = null;
             SwellClimates.Clear();
             PendingArrivalKey = null;

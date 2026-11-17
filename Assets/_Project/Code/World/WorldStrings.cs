@@ -74,18 +74,26 @@ namespace HiddenHarbours.World
         /// <summary>The popup's verb for a thing you read — a letter, a logbook.</summary>
         public const string ReadVerb = "Read";
 
-        /// <summary>The chooser row's verb when a giftable catch is in hand and you face a person you have
-        /// met (gifting slice 1). ⚑ OWNER TASTE — one const, one edit.</summary>
+        /// <summary>The chooser row's verb when he has something giftable and faces a person he has met
+        /// (gifting). ⚑ OWNER TASTE — one const, one edit.</summary>
         public const string GiveVerb = "Give";
 
         /// <summary>"Give Atlantic Cod": the chooser's gift row, beneath "Talk" (see
-        /// <see cref="ConversationChoice"/>). Names the thing in his hand, never the person — the list stands
-        /// in front of her already. Allocates; built once per press, never per frame.</summary>
+        /// <see cref="ConversationChoice"/>). Names the thing, never the person — the list stands in front of
+        /// her already. Allocates; built once per press, never per frame.</summary>
         public static string GiveRowLabel(string item)
             => string.IsNullOrEmpty(item) ? GiveVerb : GiveVerb + GiveRowSeparator + item;
 
+        /// <summary>"Give Atlantic Cod (3)": the gift row for a type he has more than one of, anywhere he
+        /// keeps things. One of them goes per pick. A count of one or less shows no count.</summary>
+        public static string GiveRowLabel(string item, int count)
+            => count > 1 ? string.Format(GiveRowCountFormat, GiveRowLabel(item), count) : GiveRowLabel(item);
+
         /// <summary>What sits between "Give" and the thing given on the chooser row.</summary>
         public const string GiveRowSeparator = " ";
+
+        /// <summary>How a gift row shows how many he has: {0} is the row, {1} the count. ⚑ OWNER TASTE.</summary>
+        public const string GiveRowCountFormat = "{0} ({1})";
 
         /// <summary>What sits between the verb and who/what it is about.</summary>
         public const string LabelSeparator = " — ";

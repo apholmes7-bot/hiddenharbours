@@ -103,6 +103,9 @@ namespace HiddenHarbours.World
         private ConversationChoice _choice;
         private readonly InteractChoiceList _rows = new InteractChoiceList();
 
+        // What he could give, wherever he keeps it: read on a press and again at the Give confirm (rule 7).
+        private readonly GiftInventory _gifts = new GiftInventory();
+
         // Who is currently talking, and their day — looked up ONCE when the conversation opens rather
         // than per frame (rule 7). Null for an interactable with no routine (a letter, a logbook, an
         // islander who simply waits where they were placed), which is a perfectly good speaker who
@@ -203,28 +206,33 @@ namespace HiddenHarbours.World
             Interactable target = FindNearest();
             if (target == null) return false;
 
-            // ⭐ TALK OR GIVE, when a giftable catch is in hand and she is somebody you have met (gifting
-            // slice 1): the chooser goes up with "Talk" (the default) and "Give <item>" as two rows, and
-            // the press itself never gives. With nothing giftable in hand it is a conversation, at once.
-            if (OffersGift(target, out CatchItem held) && TryOfferTalkOrGive(target, in held)) return true;
+            // ⭐ TALK OR GIVE, when he has something giftable anywhere (hands, what he carries, his storage)
+            // and she is somebody he has met: the chooser goes up with "Talk" (the default) and one
+            // "Give <item>" row per item type, and the press itself never gives. With nothing giftable it is
+            // a conversation, at once.
+            if (MayGiftTo(target) && TryOfferTalkOrGive(target)) return true;
             Begin(target);
             return true;
         }
 
         /// <summary>
-        /// <b>Talk, or give?</b> With a giftable catch in his hand, a press on somebody he has met puts up
-        /// the chooser with two rows — "Talk" first and selected, "Give &lt;item&gt;" beneath — so the
-        /// press itself never gives: a confirm on the default talks, exactly as a press with empty hands
-        /// does. False when the list could not go up (the chooser switched off in config, or a modal took
-        /// the key), and the caller then just talks.
+        /// <b>Talk, or give?</b> With something giftable anywhere he keeps things, a press on somebody he
+        /// has met puts up the chooser: "Talk" first and selected, then one "Give &lt;item&gt;" row per item
+        /// type, with a count when he has more than one ("Give Atlantic Cod (3)"). The press itself never
+        /// gives: a confirm on the default talks, exactly as a press with nothing to give does. False when
+        /// there is nothing giftable or the list could not go up (the chooser switched off in config, or a
+        /// modal took the key), and the caller then just talks.
         /// </summary>
-        private bool TryOfferTalkOrGive(Interactable target, in CatchItem held)
+        private bool TryOfferTalkOrGive(Interactable target)
         {
             if (!ChooserEnabled()) return false;
-            if (_choice == null) _choice = new ConversationChoice(TalkFromChoice, GiveFromChoice);
+            GatherGifts();
+            if (_gifts.KindCount == 0) return false;
 
-            GiftItem item = GiftItem.FromCatch(in held, GameServices.GiftableFacts);
-            _choice.Bind(target, WorldStrings.GiveRowLabel(item.DisplayName), _radius * DisengageSlack);
+            if (_choice == null) _choice = new ConversationChoice(TalkFromChoice, GiveFromChoice);
+            _choice.Bind(target, _radius * DisengageSlack);
+            for (int k = 0; k < _gifts.KindCount; k++)
+                _choice.AddGive(_gifts.KindId(k), WorldStrings.GiveRowLabel(_gifts.KindName(k), _gifts.CountOf(k)));
 
             GameConfig config = GameServices.Config;
             int maxRows = config != null ? config.InteractChooserMaxRows : GameConfig.DefaultInteractChooserMaxRows;
@@ -251,14 +259,22 @@ namespace HiddenHarbours.World
             return new InteractActor(at, Vector2.zero, InteractContext.OnFoot);
         }
 
-        // The chooser's two rows, confirmed. Talk is the ordinary conversation; Give re-reads the hand at
-        // the confirm, so a catch that left it while the list was up is never "given".
+        // The chooser's rows, confirmed. Talk is the ordinary conversation. A Give row re-reads what he has
+        // at the confirm, so a thing that went elsewhere while the list was up is never "given", and gives
+        // exactly ONE of its type (hands first, then what he carries, then storage). Picking Give again
+        // offers the next one, under the same daily limit.
         private void TalkFromChoice(Interactable target) => Begin(target);
 
-        private void GiveFromChoice(Interactable target)
+        private void GiveFromChoice(Interactable target, string itemId)
         {
-            if (OffersGift(target, out CatchItem held)) Give(target, in held);
+            if (!MayGiftTo(target)) return;
+            GatherGifts();
+            if (_gifts.TryPeekOne(itemId, out CatchItem one)) Give(target, in one);
         }
+
+        private void GatherGifts()
+            => _gifts.Gather(GameServices.CatchHands, GameServices.Hands, GameServices.PlayerHold,
+                             GameServices.GiftableFacts);
 
         /// <summary>
         /// Tell the M2-39 interact verb that this press is already spoken for
@@ -487,35 +503,24 @@ namespace HiddenHarbours.World
         // ---- gifts (gifting slice 1, owner ask 2026-11-15) -------------------------------------
 
         /// <summary>
-        /// Does facing <paramref name="target"/> offer a GIFT row beside the talk? True when she is a person
-        /// (an <see cref="NpcDef"/> you Talk to, with an id), you have MET her (her completion flag is set,
-        /// or she has none — her opening conversation is never skipped by a fish in your hand), and the
-        /// loose catch in your hand is giftable (<see cref="GiftItem.IsGiftable"/>, the species' own flag).
-        ///
-        /// <para>Allocation-free and read every frame there is a target (rule 7): a peek at the hands
-        /// through Core (<see cref="ICatchHands.TryPeekHand"/>), a flag read and a facts lookup. A tool or
-        /// a pail in hand is never a gift: the peek sees only a loose catch.</para>
+        /// May <paramref name="target"/> be offered gifts at all? True when she is a person (an
+        /// <see cref="NpcDef"/> you Talk to, with an id) and you have MET her (her completion flag is set, or
+        /// she has none — her opening conversation is never skipped by a fish in your hand). WHAT can be
+        /// given is <see cref="GiftInventory"/>'s answer, read on the press. Allocation-free.
         /// </summary>
-        private bool OffersGift(Interactable target, out CatchItem held)
+        private bool MayGiftTo(Interactable target)
         {
-            held = default;
             if (target == null) return false;
             NpcDef npc = target.Npc;
             if (npc == null || npc.Kind != InteractKind.Talk || string.IsNullOrEmpty(npc.Id)) return false;
-
-            ICatchHands hands = GameServices.CatchHands;
-            if (hands == null || !hands.TryPeekHand(out held)) return false;
-
-            if (!string.IsNullOrEmpty(npc.CompletionFlag) && (_flags == null || !_flags.Get(npc.CompletionFlag)))
-                return false;
-
-            return GiftItem.IsGiftable(in held, GameServices.GiftableFacts);
+            return string.IsNullOrEmpty(npc.CompletionFlag) || (_flags != null && _flags.Get(npc.CompletionFlag));
         }
 
         /// <summary>
-        /// <b>Give her what is in your hand.</b> The pure rule decides (<see cref="GiftRule.Evaluate"/>);
-        /// this only moves things. On an accepted gift the catch leaves the hand through Core
-        /// (<see cref="ICatchHands.TryTakeFromHand"/>), today's gift is counted (<see cref="GiftLedger"/>),
+        /// <b>Give her ONE of <paramref name="held"/>'s type.</b> The pure rule decides
+        /// (<see cref="GiftRule.Evaluate"/>); this only moves things. On an accepted gift exactly one leaves
+        /// wherever it is found first, hands, then what he carries, then storage
+        /// (<see cref="GiftInventory.TryTakeOne"/>, through Core), today's gift is counted (<see cref="GiftLedger"/>),
         /// the relationship event is recorded (<see cref="IRelationshipService"/>; applied at the next
         /// <c>ApplyDay</c>, whose points are the owner's rows on the relationship config) and
         /// <see cref="GiftGiven"/> is published. A refusal or a declined-today moves nothing. Either way
@@ -524,7 +529,6 @@ namespace HiddenHarbours.World
         /// </summary>
         private void Give(Interactable it, in CatchItem held)
         {
-            if (_presenter == null) return;
             NpcDef npc = it.Npc;
             if (npc == null) return;
 
@@ -542,10 +546,9 @@ namespace HiddenHarbours.World
 
             if (GiftRule.IsAccepted(reaction))
             {
-                // The hand gives it up or nothing happened: a catch that would not leave the hand is not a
-                // gift, and she must not thank you for something you are still holding.
-                ICatchHands hands = GameServices.CatchHands;
-                if (hands == null || !hands.TryTakeFromHand(out CatchItem _)) return;
+                // One leaves him or nothing happened: a thing that would not leave its place is not a gift,
+                // and she must not thank him for something he still has. Exactly one per pick.
+                if (!_gifts.TryTakeOne(item.Id, out CatchItem _)) return;
 
                 GiftLedger.Shared.Count(npc.Id, day, session);
                 if (GiftRule.TryRelationshipKind(reaction, out RelationshipEventKind kind))
@@ -555,7 +558,8 @@ namespace HiddenHarbours.World
 
             string line = GiftRule.Line(reaction, npc.Gifts != null ? npc.Gifts.Lines : null,
                                         config != null ? config.Lines : null, day, item.DisplayName);
-            if (string.IsNullOrEmpty(line)) return;
+            // No bubble in a bare rig: the gift itself still happened, only the words go unsaid.
+            if (_presenter == null || string.IsNullOrEmpty(line)) return;
             Speak(it, new[] { line }, null, null, null);
         }
 
