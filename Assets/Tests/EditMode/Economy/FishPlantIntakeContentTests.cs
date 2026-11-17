@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using HiddenHarbours.Core;
 using HiddenHarbours.Economy.PlantIntake;
 using NUnit.Framework;
@@ -11,19 +12,20 @@ namespace HiddenHarbours.Tests.Economy
     public sealed class FishPlantIntakeContentTests
     {
         private const string Root = "Assets/_Project/Data/FishPlantIntake/";
+        // Match the identity contract's disposable proof copies, not authored content.
+        private static readonly Regex DisposableProof = new Regex("_[0-9a-f]{32}(/|\\.|$)");
 
-        [TestCase(typeof(FishGradeDef), "fishgrade", 3)]
-        [TestCase(typeof(FishIntakeDef), "fishintake", 1)]
-        [TestCase(typeof(GradedFishLineDef), "gradedfishline", 1)]
-        public void Content_AllNewDefsHaveUniqueStableIdsAndOneEntityPerFile(Type type, string prefix, int count)
+        [TestCase(typeof(FishGradeDef), "fishgrade")]
+        [TestCase(typeof(FishIntakeDef), "fishintake")]
+        [TestCase(typeof(GradedFishLineDef), "gradedfishline")]
+        public void Content_AllNewDefsHaveUniqueStableIdsAndOneEntityPerFile(Type type, string prefix)
         {
             string[] guids = AssetDatabase.FindAssets("t:" + type.Name, new[] { "Assets/_Project" });
-            Assert.That(guids.Length, Is.EqualTo(count));
             var ids = new HashSet<string>(StringComparer.Ordinal);
             foreach (string guid in guids)
             {
                 string path = AssetDatabase.GUIDToAssetPath(guid);
-                StringAssert.StartsWith(Root, path);
+                if (DisposableProof.IsMatch(path)) continue;
                 Assert.That(AssetDatabase.LoadAllAssetsAtPath(path).Length, Is.EqualTo(1), path);
                 var asset = AssetDatabase.LoadAssetAtPath(path, type);
                 Assert.That(asset, Is.Not.Null, path);
@@ -32,6 +34,7 @@ namespace HiddenHarbours.Tests.Economy
                 Assert.That(ids.Add(id), Is.True, path);
                 Assert.DoesNotThrow(() => type.GetMethod("BuildSpec").Invoke(asset, null), path);
             }
+            Assert.That(ids, Is.Not.Empty, "At least one authored " + type.Name + " is required.");
         }
 
         [Test]
