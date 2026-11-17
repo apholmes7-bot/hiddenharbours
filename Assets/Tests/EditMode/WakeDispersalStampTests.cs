@@ -552,14 +552,15 @@ namespace HiddenHarbours.Tests.EditMode
         /// every texel forward of the transom lands on node 0 and the <c>u = 0</c> ring closes into a
         /// full circle around her, laying a second time on water she has not reached yet.
         ///
-        /// <para>Both arms shot here, exactly as the shader computes them: the gate-off arm lays
-        /// <b>1.65×</b> what the edge is entitled to, which is +30 % of the whole stamp and straight
-        /// through the conservation this term exists to hold. (The TAIL needs no such gate: the
+        /// <para>Both arms shot here, exactly as the shader computes them. While the edge started at her
+        /// rim the gate-off arm laid <b>1.65×</b> what the edge is entitled to; since it starts at half her
+        /// half-beam (2026-11-16) that ring lies inside her core stamp and lays almost nothing, so the
+        /// gate is now belt and braces. (The TAIL needs no such gate: the
         /// envelope is exactly 0 at its own outer edge, so the ring past the oldest node lays
         /// nothing — which is a property of the family, not a special case.)</para>
         /// </summary>
         [Test]
-        public void TheEdgeIsLaidAstern_AnUngatedRingClosesRoundHerAndOverLays()
+        public void TheEdgeIsLaidAstern_AndTheClampedRingRoundHerLiesInsideHerStamp()
         {
             const float r0 = CapeHalfBeam;
             float wMax = r0 * Envelope;
@@ -613,9 +614,11 @@ namespace HiddenHarbours.Tests.EditMode
 
             Assert.AreEqual(1.0, gated / entitled, 0.03,
                 "The gated edge must lay exactly the dispersing share of the shipped foam.");
-            Assert.Greater(ungated / gated, 1.3,
-                "DEAD CONTROL: an ungated ring is supposed to close round her bow and over-lay. If " +
-                "it no longer does, this comparison has stopped testing the clamp.");
+            // Since the edge starts at half her half-beam (2026-11-16, the two lines astern), the ring the
+            // clamp closes round her at u = 0 lies inside her core stamp, where the edge lays nothing; the
+            // gate is kept in the shader for any law whose rim starts outside it.
+            Assert.AreEqual(1.0, ungated / gated, 0.05,
+                "The u = 0 ring sits inside the core stamp, so even ungated it must lay (almost) nothing more.");
         }
 
         /// <summary>

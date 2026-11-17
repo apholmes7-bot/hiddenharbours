@@ -58,6 +58,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
             Assert.IsTrue(PlantHullSorting.LiesFlat(Species(2.75f, "fringe"), GroundCover, Lying), "sugar kelp, left by the tide");
             Assert.IsFalse(PlantHullSorting.LiesFlat(Species(1.8125f, "lowmarsh"), GroundCover, Lying), "cordgrass stands");
             Assert.IsFalse(PlantHullSorting.LiesFlat(Species(3.4f, "edge"), GroundCover, Lying), "sumac stands");
+            Assert.IsFalse(PlantHullSorting.LiesFlat(Species(0f, ""), GroundCover, Lying), "no measured height: it stands, as before");
             Assert.IsFalse(PlantHullSorting.LiesFlat(null, GroundCover, Lying));
         }
 

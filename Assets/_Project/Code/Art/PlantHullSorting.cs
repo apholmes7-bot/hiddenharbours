@@ -22,12 +22,13 @@ namespace HiddenHarbours.Art
     public static class PlantHullSorting
     {
         /// <summary>Whether this species lies on the ground rather than standing: no taller than
-        /// <paramref name="groundCoverMaxHeightM"/>, or growing in one of the intertidal
+        /// <paramref name="groundCoverMaxHeightM"/> (and measured at all), or growing in one of the intertidal
         /// <paramref name="lyingHabitats"/> (weed that lies flat on the rocks when the tide leaves it).</summary>
         public static bool LiesFlat(PlantSpeciesDef species, float groundCoverMaxHeightM, string[] lyingHabitats)
         {
             if (species == null) return false;
-            if (species.StandingHeightM <= groundCoverMaxHeightM) return true;
+            // A species with no measured height (0) is not taken for ground cover: it stands, as before.
+            if (species.StandingHeightM > 0f && species.StandingHeightM <= groundCoverMaxHeightM) return true;
             if (lyingHabitats == null || string.IsNullOrEmpty(species.Habitat)) return false;
             for (int i = 0; i < lyingHabitats.Length; i++)
                 if (string.Equals(lyingHabitats[i], species.Habitat, StringComparison.Ordinal)) return true;
