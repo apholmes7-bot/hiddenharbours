@@ -45,7 +45,7 @@ namespace HiddenHarbours.Core
     }
 
     /// <summary>
-    /// <b>Something cooking on a placed station</b> (save v24, data only until the kitchens lane wires it):
+    /// <b>Something cooking on a placed station</b> (save v24, written and restored by <see cref="CookJobSave"/> for the <see cref="RecipeRunner"/>):
     /// one row per running job. The input was taken when the work began; the output is the recipe's own and
     /// arrives at <see cref="ReadyAtGameSeconds"/>. Ids only, so a retuned recipe follows into every save.
     /// </summary>
