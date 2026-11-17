@@ -106,7 +106,7 @@ namespace HiddenHarbours.Tests
             Assert.IsNotNull(s, $"{what}: no sprite");
             string path = PathOf(s);
             StringAssert.StartsWith(FishIso, path, $"{what}: must be the new iso fish art, got '{path}'");
-            StringAssert.StartsWith(stem + "_", Path.GetFileNameWithoutExtension(path),
+            Assert.AreEqual(stem, Path.GetFileNameWithoutExtension(path),
                 $"{what}: wrong sheet (species or size) '{path}'");
         }
 
