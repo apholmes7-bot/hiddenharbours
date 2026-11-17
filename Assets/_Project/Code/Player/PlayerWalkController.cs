@@ -511,7 +511,33 @@ namespace HiddenHarbours.Player
         private readonly FootPrintTrail _footPrints = new FootPrintTrail();
 
         // Re-enabled after a boat or a vehicle: start a fresh trail rather than one stride from the old one.
-        private void OnDisable() => _footPrints.Reset();
+        private void OnDisable()
+        {
+            _footPrints.Reset();
+            LeaveTheWater();
+        }
+
+        /// <summary>
+        /// The player has stopped being ON FOOT (the switcher hands him to the deck, the helm, a vehicle,
+        /// or the boarding move): whatever band he was in, he is out of the water now, so a Wade or Swim
+        /// ends here with one <see cref="OnFootWaterStateChanged"/> back to Dry.
+        ///
+        /// <para>Without it the last band was simply left standing. The band is published on transitions
+        /// only and this controller stops ticking while he is aboard, so climbing out of a swim onto a
+        /// deck never said "dry": the sea rinse kept washing him (the cleanliness responder ends the wash
+        /// on that edge), and the swim splashes and pose kept their Swim too. Back on foot, the next tick
+        /// publishes whatever water he steps into, from Dry, as a fresh edge.</para>
+        ///
+        /// <para>Called from <c>OnDisable</c>; public so an EditMode test can drive it (a disable in edit
+        /// mode runs no callbacks). Idempotent: already dry, or never placed, publishes nothing.</para>
+        /// </summary>
+        public void LeaveTheWater()
+        {
+            if (!_waterStateInit || _waterState == OnFootWaterState.Dry) return;
+            OnFootWaterState prev = _waterState;
+            _waterState = OnFootWaterState.Dry;
+            EventBus.Publish(new OnFootWaterStateChanged(OnFootWaterState.Dry, prev, false, 0f));
+        }
 
         // The cached "am I alongside a boat?" probe (see Awake). Null until Awake runs, which is exactly
         // the pure function's "no boats in this world" case — so an unawakened rig behaves as before.

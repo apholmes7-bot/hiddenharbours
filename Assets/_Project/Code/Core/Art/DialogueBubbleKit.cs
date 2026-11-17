@@ -116,6 +116,25 @@ namespace HiddenHarbours.Core
         /// <c>padX × 2 + (chars × 5 − 1)</c>.</summary>
         public static int ChipWidthFor(int chars) => ChipPadX * 2 + (chars * CellWidth - 1);
 
+        /// <summary>
+        /// How far the name's TEXT BOX stops short of the chip's right edge, px — one less than
+        /// <see cref="ChipPadX"/>.
+        ///
+        /// <para>⚠️ <b>The chip is measured in INK, the text is laid out in ADVANCES.</b>
+        /// <see cref="ChipWidthFor"/> drops the last cell's trailing gap column (<c>chars × 5 − 1</c>),
+        /// which is right for the gold tile. But the text engine lays a label out in whole advances,
+        /// <c>chars × 5</c>; inset the text box by the full pad on both sides and it is one column too
+        /// narrow, the last letter wraps onto a second line the chip's height clips, and "Basil" reads
+        /// "Basi". The missing column is the last glyph's blank gap, so it lives inside the right pad:
+        /// the ink still sits exactly <see cref="ChipPadX"/> from the edge.</para>
+        /// </summary>
+        public const int ChipTextInsetR = ChipPadX - 1;
+
+        /// <summary>The name's text box for <paramref name="chars"/> characters, px: whole advances,
+        /// <c>chars × 5</c> — what <see cref="ChipWidthFor"/> leaves inside <see cref="ChipPadX"/> on
+        /// the left and <see cref="ChipTextInsetR"/> on the right.</summary>
+        public static int ChipTextWidthFor(int chars) => chars * CellWidth;
+
         // ---- the continue marker -------------------------------------------------------------
 
         /// <summary>The marker's drawn size, px. It appears only when the fill completes.</summary>
