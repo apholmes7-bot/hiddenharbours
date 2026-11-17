@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cd0e7032aadd4d0390d9afb84c2000ce, type: 3}
+  m_Name: Microwave
+  m_EditorClassIdentifier: HiddenHarbours.Core::HiddenHarbours.Core.CookingStationDef
+  Id: cooking_station.microwave
+  DisplayName: Microwave
+  Kind: 2
+  AcceptedStations:
+  - station.microwave
+  CookTimeMultiplier: 0.25
+  MicrowavableOnly: 1
+  ReachMeters: 1
+  VerbLabel: Use the microwave
+  StartedLine: '{0} in the microwave.'
+  ReadyLine: 'Ding. {0}''s hot.'
+  NothingLine: 'Nothing here for the microwave.'
+  BusyLine: 'It''s already going.'
+  NotMicrowavableLine: 'Can''t microwave that. Not raw food.'
+  NeedsPrepLine: 'Can''t microwave that. Not raw food.'
