@@ -435,14 +435,26 @@ namespace HiddenHarbours.Core
         /// Cooking (kitchens and microwaves slice): the one <see cref="RecipeRunner"/> every kitchen station
         /// (a galley, a house kitchen, a microwave) runs recipes through; the output goes into the supply
         /// locker, where <see cref="Food"/> eats it. Never null: a default over the shipped recipes and foods
-        /// is made on first read; a test assigns its own. Cleared by <see cref="Reset"/>, which drops every
-        /// cook job (they are session-only, never saved).
+        /// is made on first read; a test assigns its own. The runner in this slot is subscribed to
+        /// <see cref="GameLoaded"/> and drops every cook job on a load or new game (jobs are session-only and
+        /// must never deliver into a different save); replacing it unsubscribes the old one. Cleared by
+        /// <see cref="Reset"/>.
         /// FLAG lead-architect: new Core contract (cooking).
         /// </summary>
         public static RecipeRunner Cooking
         {
-            get => _cooking ??= new RecipeRunner();
-            set => _cooking = value;
+            get
+            {
+                if (_cooking == null) Cooking = new RecipeRunner();
+                return _cooking;
+            }
+            set
+            {
+                if (ReferenceEquals(_cooking, value)) return;
+                if (_cooking != null) EventBus.Unsubscribe(_cooking.GameLoadedHandler);
+                _cooking = value;
+                if (_cooking != null) EventBus.Subscribe(_cooking.GameLoadedHandler);
+            }
         }
 
         private static RecipeRunner _cooking;

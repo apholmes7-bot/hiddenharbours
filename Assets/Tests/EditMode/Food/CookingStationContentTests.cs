@@ -161,6 +161,134 @@ namespace HiddenHarbours.Tests.EditMode
             }
         }
 
+        // ---- placement: every placed station keys its own cook job ---------------------------------------
+
+        private const string ProjectRoot = "Assets/_Project";
+        private const string FixtureScript = "Assets/_Project/Code/Player/CookingStationFixture.cs";
+
+        /// <summary>The kitchen prefabs' guids mapped to the id each ships with.</summary>
+        private static Dictionary<string, string> PrefabDefaults()
+        {
+            var defaults = new Dictionary<string, string>();
+            foreach (string guid in AssetDatabase.FindAssets("t:Prefab", new[] { PrefabFolder.TrimEnd('/') }))
+            {
+                var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(AssetDatabase.GUIDToAssetPath(guid));
+                CookingStationFixture fixture = prefab != null ? prefab.GetComponent<CookingStationFixture>() : null;
+                if (fixture != null) defaults[guid] = fixture.Id;
+            }
+            return defaults;
+        }
+
+        [Test]
+        public void EveryPlacedStation_HasItsOwnId_NeverAPrefabDefault()
+        {
+            string fixtureGuid = AssetDatabase.AssetPathToGUID(FixtureScript);
+            Assert.IsFalse(string.IsNullOrEmpty(fixtureGuid), "fixture script missing at " + FixtureScript);
+            Dictionary<string, string> defaults = PrefabDefaults();
+            Assert.AreEqual(3, defaults.Count, "the three kitchen prefabs");
+            var refused = new HashSet<string>(defaults.Values) { CookingStationFixture.UnplacedId };
+
+            var seen = new Dictionary<string, string>();
+            var files = new List<string>();
+            foreach (string guid in AssetDatabase.FindAssets("t:Scene t:Prefab", new[] { ProjectRoot }))
+            {
+                string path = AssetDatabase.GUIDToAssetPath(guid);
+                if (path.StartsWith(PrefabFolder)) continue;   // the prefabs themselves are the defaults
+                if (path.EndsWith(".unity") || path.EndsWith(".prefab")) files.Add(path);
+            }
+            files.Sort(System.StringComparer.Ordinal);
+
+            foreach (string path in files)
+            {
+                string yaml = System.IO.File.ReadAllText(path);
+                foreach (string id in PlacedStationIds(yaml, fixtureGuid, defaults))
+                {
+                    Assert.IsFalse(refused.Contains(id),
+                        path + ": a placed kitchen station keeps the id " + id + "; give it its own (owner + fixture, " +
+                        "e.g. fixture.leblanc_house.stove), or every copy shares one cook job");
+                    Assert.IsFalse(seen.TryGetValue(id, out string other),
+                        path + ": station id " + id + " is already placed in " + other);
+                    seen[id] = path;
+                }
+            }
+        }
+
+        [Test]
+        public void PlacedStationIds_ReadsDirectFixtures_AndPrefabInstanceOverrides()
+        {
+            const string fixtureGuid = "aaaa";
+            var defaults = new Dictionary<string, string> { ["bbbb"] = "fixture.kitchen.stove" };
+            string yaml =
+                "%YAML 1.1\n" +
+                "--- !u!114 &1\nMonoBehaviour:\n  m_Script: {fileID: 11500000, guid: aaaa, type: 3}\n  _id: fixture.house_a.microwave\n" +
+                "--- !u!114 &2 stripped\nMonoBehaviour:\n  m_Script: {fileID: 11500000, guid: aaaa, type: 3}\n" +
+                "--- !u!114 &3\nMonoBehaviour:\n  m_Script: {fileID: 11500000, guid: cccc, type: 3}\n  _id: fixture.other.thing\n" +
+                "--- !u!1001 &4\nPrefabInstance:\n  m_Modification:\n    m_Modifications:\n" +
+                "    - target: {fileID: 3, guid: bbbb, type: 3}\n      propertyPath: _id\n      value: fixture.house_b.stove\n" +
+                "      objectReference: {fileID: 0}\n  m_SourcePrefab: {fileID: 100100000, guid: bbbb, type: 3}\n" +
+                "--- !u!1001 &5\nPrefabInstance:\n  m_Modification:\n    m_Modifications:\n" +
+                "    - target: {fileID: 3, guid: bbbb, type: 3}\n      propertyPath: m_Name\n      value: Stove\n" +
+                "  m_SourcePrefab: {fileID: 100100000, guid: bbbb, type: 3}\n" +
+                "--- !u!1001 &6\nPrefabInstance:\n  m_SourcePrefab: {fileID: 100100000, guid: dddd, type: 3}\n";
+
+            List<string> ids = PlacedStationIds(yaml, fixtureGuid, defaults);
+
+            CollectionAssert.AreEqual(new[] { "fixture.house_a.microwave", "fixture.house_b.stove", "fixture.kitchen.stove" }, ids,
+                "a direct fixture, an overridden instance, and an instance keeping its prefab default (refused by the scan)");
+        }
+
+        /// <summary>
+        /// Every kitchen station id placed in one scene or prefab file: a fixture component written into the
+        /// file (its <c>_id</c>), and every instance of a kitchen prefab (its <c>_id</c> override, or the
+        /// prefab's default when it has none). Stripped blocks are skipped: they are the instance's own view.
+        /// </summary>
+        private static List<string> PlacedStationIds(string yaml, string fixtureGuid, IReadOnlyDictionary<string, string> prefabDefaults)
+        {
+            var ids = new List<string>();
+            if (string.IsNullOrEmpty(yaml)) return ids;
+            bool mentionsAny = yaml.Contains(fixtureGuid);
+            foreach (string guid in prefabDefaults.Keys) mentionsAny |= yaml.Contains(guid);
+            if (!mentionsAny) return ids;
+
+            string[] docs = yaml.Replace("\r\n", "\n").Split(new[] { "\n--- " }, System.StringSplitOptions.None);
+            foreach (string doc in docs)
+            {
+                int eol = doc.IndexOf('\n');
+                if (eol < 0) continue;
+                string header = doc.Substring(0, eol);
+                if (header.EndsWith(" stripped")) continue;
+                string[] lines = doc.Substring(eol + 1).Split('\n');
+                if (lines.Length == 0) continue;
+
+                if (lines[0].StartsWith("MonoBehaviour:"))
+                {
+                    if (!doc.Contains("m_Script: {fileID: 11500000, guid: " + fixtureGuid + ",")) continue;
+                    string id = CookingStationFixture.UnplacedId;
+                    foreach (string line in lines)
+                        if (line.StartsWith("  _id:")) id = Unquote(line.Substring("  _id:".Length));
+                    ids.Add(id);
+                }
+                else if (lines[0].StartsWith("PrefabInstance:"))
+                {
+                    Match source = Regex.Match(doc, @"m_SourcePrefab: \{fileID: \d+, guid: ([0-9a-f]+),");
+                    if (!source.Success || !prefabDefaults.TryGetValue(source.Groups[1].Value, out string id)) continue;
+                    for (int i = 0; i + 1 < lines.Length; i++)
+                        if (lines[i].Trim() == "propertyPath: _id" && lines[i + 1].TrimStart().StartsWith("value:"))
+                            id = Unquote(lines[i + 1].TrimStart().Substring("value:".Length));
+                    ids.Add(id);
+                }
+            }
+            return ids;
+        }
+
+        private static string Unquote(string value)
+        {
+            value = value.Trim();
+            if (value.Length >= 2 && (value[0] == '"' || value[0] == '\'') && value[value.Length - 1] == value[0])
+                value = value.Substring(1, value.Length - 2);
+            return value;
+        }
+
         private sealed class OneHand : ICatchHands
         {
             public CatchItem? Held;

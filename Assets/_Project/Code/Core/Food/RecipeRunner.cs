@@ -57,9 +57,16 @@ namespace HiddenHarbours.Core
     /// when the work starts (it is on the stove), and the output arrives when <see cref="TryFinish"/> is
     /// asked at or after the ready time.</para>
     ///
-    /// <para><b>Session-only.</b> Jobs live in memory and are never saved (no save version change): a game
-    /// saved and quit mid-cook loses what was on the station. A later save step would add one row per job
-    /// (station key, recipe id, ready time) to <see cref="SaveData"/>.</para>
+    /// <para><b>Session-only, and dropped on every load.</b> Jobs live in memory and are never saved (no save
+    /// version change). A load or a new game raises <see cref="GameLoaded"/>; <see cref="GameServices.Cooking"/>
+    /// subscribes its runner's <see cref="GameLoadedHandler"/> to it, so every job is forgotten then and a
+    /// job started before a load can never deliver into the loaded save (which would duplicate food across
+    /// saves). The input taken for a dropped job is lost with the session it was taken in. A later save step
+    /// would add one row per job (station key, recipe id, ready time) to <see cref="SaveData"/>.</para>
+    ///
+    /// <para><b>Job keys.</b> A job is keyed by the placed station's interactable id, so every placed
+    /// station needs its own id, built from its owner (scene or boat instance) plus the fixture id; two
+    /// stations sharing an id would share one job.</para>
     ///
     /// <para><b>Deterministic</b> (rule 5): no roll; the time is read from the injected clock, defaulting to
     /// <see cref="IGameClock.TotalSeconds"/>. Diegetic only: it publishes <see cref="FoodCookStarted"/>,
@@ -195,8 +202,9 @@ namespace HiddenHarbours.Core
 
         /// <summary>
         /// If the placed station's food is done, put one output in the supply locker, publish
-        /// <see cref="FoodCooked"/> and free the station. False (and nothing changes) when nothing is on it
-        /// or it is not done yet.
+        /// <see cref="FoodCooked"/> and free the station. False (and nothing changes) when nothing is on it,
+        /// it is not done yet, or there is no save to put the food in. A job whose recipe names no output is
+        /// dropped without a <see cref="FoodCooked"/>.
         /// </summary>
         public bool TryFinish(string stationKey, out CookJob finished)
         {
@@ -204,15 +212,27 @@ namespace HiddenHarbours.Core
             if (string.IsNullOrEmpty(stationKey) || !_jobs.TryGetValue(stationKey, out CookJob job)) return false;
             if (_now() < job.ReadyAt) return false;
 
+            // No save to put it in (pre-boot, mid-load): keep the job and deliver later; never announce food
+            // that went nowhere.
+            SaveData save = _save()?.Current;
+            if (save == null) return false;
+
             _jobs.Remove(stationKey);
-            SupplyLocker.Add(_save()?.Current, job.Recipe.OutputId, 1);
+            if (job.Recipe == null || string.IsNullOrEmpty(job.Recipe.OutputId)) return false;
+            SupplyLocker.Add(save, job.Recipe.OutputId, 1);
             EventBus.Publish(new FoodCooked(job.StationId, stationKey, job.Recipe.Id, job.Recipe.OutputId));
             finished = job;
             return true;
         }
 
-        /// <summary>Forget every job (a new session; fixtures).</summary>
+        /// <summary>Forget every job (a load, a new game, fixtures).</summary>
         public void Clear() => _jobs.Clear();
+
+        private Action<GameLoaded> _gameLoadedHandler;
+
+        /// <summary>The handler <see cref="GameServices.Cooking"/> subscribes to <see cref="GameLoaded"/>: it
+        /// clears every job. One cached delegate, so the same instance unsubscribes cleanly.</summary>
+        public Action<GameLoaded> GameLoadedHandler => _gameLoadedHandler ??= _ => Clear();
 
         private static CookRefusal Refuse(CookingStationDef station, string stationKey, CookRefusal reason)
         {

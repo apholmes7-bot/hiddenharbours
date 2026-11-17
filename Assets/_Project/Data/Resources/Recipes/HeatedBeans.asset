@@ -15,7 +15,7 @@ MonoBehaviour:
   Id: recipe.heated_beans
   DisplayName: Hot Beans
   Station: station.microwave
-  InputKind: 2
+  InputKind: 3
   InputId: supply.tinned_beans
   InputCategory: 0
   OutputId: food.hot_beans

@@ -49,7 +49,7 @@ namespace HiddenHarbours.Tests.EditMode
             {
                 Recipe("recipe.t_fillet", RecipeStations.Prep, RecipeInputKind.Species, "fish.t_cod", "food.t_fillet", 20f, 0f),
                 Recipe("recipe.t_fried", RecipeStations.Cooktop, RecipeInputKind.Intermediate, "food.t_fillet", "food.t_fried", 40f, 0.6f),
-                Recipe("recipe.t_hot_beans", RecipeStations.Microwave, RecipeInputKind.Intermediate, "supply.t_beans", "food.t_hot_beans", 120f, 0.4f),
+                Recipe("recipe.t_hot_beans", RecipeStations.Microwave, RecipeInputKind.Item, "supply.t_beans", "food.t_hot_beans", 120f, 0.4f),
             });
             _foods = new FoodBook(new[]
             {
@@ -331,6 +331,60 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.IsNotNull(first);
             GameServices.Reset();
             Assert.AreNotSame(first, GameServices.Cooking);
+        }
+
+        // ---- loads and missing saves -------------------------------------------------------------------
+
+        [Test]
+        public void ALoad_DropsEveryJob_SoNothingDeliversIntoTheLoadedSave()
+        {
+            SupplyLocker.Add(_save.Current, "supply.t_beans", 1);
+            RecipeRunner runner = Runner();
+            GameServices.Cooking = runner;
+            Assert.AreEqual(CookRefusal.None, runner.TryStart(_microwave, Key));
+
+            EventBus.Publish(default(GameLoaded));   // a load or a new game
+
+            Assert.AreEqual(0, runner.ActiveCount, "the job belonged to the session before the load");
+            _now += 1000d;
+            Assert.IsFalse(runner.TryFinish(Key, out _));
+            Assert.AreEqual(0, Count("food.t_hot_beans"), "no food duplicated into the loaded save");
+            Assert.IsEmpty(_cooked);
+        }
+
+        [Test]
+        public void AReplacedRunner_NoLongerListensForLoads()
+        {
+            SupplyLocker.Add(_save.Current, "supply.t_beans", 1);
+            RecipeRunner old = Runner();
+            GameServices.Cooking = old;
+            GameServices.Cooking = Runner();
+            Assert.AreEqual(CookRefusal.None, old.TryStart(_microwave, Key));
+
+            EventBus.Publish(default(GameLoaded));
+
+            Assert.AreEqual(1, old.ActiveCount, "only the runner in the slot is cleared by a load");
+            GameServices.Cooking = null;
+        }
+
+        [Test]
+        public void NoSave_AtTheReadyTime_KeepsTheJob_AndAnnouncesNothing()
+        {
+            SupplyLocker.Add(_save.Current, "supply.t_beans", 1);
+            TraitFixtures.MemorySave live = _save;
+            RecipeRunner runner = Runner();
+            Assert.AreEqual(CookRefusal.None, runner.TryStart(_microwave, Key));
+            _now += 30d;
+
+            _save = null;
+            Assert.IsFalse(runner.TryFinish(Key, out _), "no save to put the food in");
+            Assert.IsEmpty(_cooked, "no FoodCooked for food that went nowhere");
+            Assert.IsTrue(runner.IsCooking(Key, out _), "the job waits for a save");
+
+            _save = live;
+            Assert.IsTrue(runner.TryFinish(Key, out _));
+            Assert.AreEqual(1, Count("food.t_hot_beans"));
+            Assert.AreEqual(1, _cooked.Count);
         }
 
         // ---- doubles -----------------------------------------------------------------------------------

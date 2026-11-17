@@ -19,6 +19,12 @@ namespace HiddenHarbours.Player
     /// with the ready time (one comparison, no allocation) and, when it is done, the food goes into the supply
     /// locker. A station whose scene unloads mid-cook finishes when it is next enabled.</para>
     ///
+    /// <para><b>Placing one.</b> The cook job is keyed by <see cref="Id"/>, and the three prefabs ship fixed
+    /// ids (<c>fixture.kitchen.stove</c> and so on), so every placed instance must override <c>_id</c> with
+    /// its own, built from its owner (the scene, or the boat instance) plus the fixture:
+    /// <c>fixture.leblanc_house.stove</c>. <c>CookingStationContentTests</c> refuses a placed station that
+    /// keeps a prefab default, and any id used twice.</para>
+    ///
     /// <para>Placeholder look: the prefab carries no sprite yet; the art lane adds one. Not placed in any
     /// scene by this slice.</para>
     /// </summary>
@@ -28,10 +34,15 @@ namespace HiddenHarbours.Player
         [Tooltip("The station kind: what it runs, how fast, what it refuses, and what it says.")]
         [SerializeField] private CookingStationDef _def;
 
-        [Tooltip("Stable id, unique among live interactables (fixture.<place>.<station>, e.g. " +
-                 "fixture.leblanc_house.stove). It also keys this station's cook job, so two stoves cook " +
-                 "separately.")]
-        [SerializeField] private string _id = "fixture.kitchen.station";
+        /// <summary>The id a fixture added by hand carries until it is given its own.</summary>
+        public const string UnplacedId = "fixture.kitchen.station";
+
+        [Tooltip("Stable id, unique among live interactables. It also keys this station's cook job, so it " +
+                 "MUST be unique per placed station: build it from the owner (scene or boat instance) plus the " +
+                 "fixture, e.g. fixture.leblanc_house.stove. A placed copy that keeps its prefab's id (or " +
+                 "fixture.kitchen.station) would share a cook job with every other copy; the content test " +
+                 "refuses it.")]
+        [SerializeField] private string _id = UnplacedId;
 
         [Tooltip("Require the player to face the station. Off: standing in reach is enough.")]
         [SerializeField] private bool _requiresFacing;
