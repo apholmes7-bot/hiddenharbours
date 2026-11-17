@@ -31,12 +31,31 @@ namespace HiddenHarbours.UI
         /// <param name="pointerMoved">Whether the pointer moved this frame: a still mouse resting on a row
         /// must not drag the selection back every time the keys move it.</param>
         public static Outcome Apply(in ChooserIntents intents, AxisLatch latch, int hitRow, bool pointerMoved)
+            => Apply(intents, latch, null, default, 0f, false, hitRow, pointerMoved);
+
+        /// <summary>
+        /// The same frame, with a held push that may run on (ADR 0043 PR 2: a pad's stick or d-pad held on
+        /// the list). <paramref name="allowRepeat"/> false is the latch exactly, so the keyboard's one row
+        /// per press is unchanged.
+        /// </summary>
+        /// <param name="axis">The view's own repeat on the vertical axis.</param>
+        /// <param name="tuning">The threshold and repeat timings (<see cref="ChooserAxisTuning.Current"/>).</param>
+        /// <param name="deltaTime">Unscaled seconds since the last frame.</param>
+        /// <param name="allowRepeat">Whether a held push may run on (the view: the pad is the active device).</param>
+        public static Outcome Apply(in ChooserIntents intents, ChooserAxisRepeat axis, in ChooserAxisTuning tuning,
+                                    float deltaTime, bool allowRepeat, int hitRow, bool pointerMoved)
+            => Apply(intents, null, axis, tuning, deltaTime, allowRepeat, hitRow, pointerMoved);
+
+        private static Outcome Apply(in ChooserIntents intents, AxisLatch latch, ChooserAxisRepeat axis,
+                                     in ChooserAxisTuning tuning, float deltaTime, bool allowRepeat,
+                                     int hitRow, bool pointerMoved)
         {
             if (!InteractChooser.IsOpen || InteractChooser.OpenedThisFrame)
             {
                 // Closed, or the press that opened it is still down: take the axis without acting, so a
                 // push held through the open is not counted as a fresh one.
                 latch?.Absorb(intents.Navigate);
+                axis?.Absorb(intents.Navigate, tuning);
                 return Outcome.Nothing;
             }
 
@@ -55,7 +74,9 @@ namespace HiddenHarbours.UI
             if (intents.Confirm)
                 return InteractChooser.Confirm() ? Outcome.Confirmed : Outcome.Refused;
 
-            int step = latch != null ? latch.Step(intents.Navigate) : 0;
+            int step = latch != null ? latch.Step(intents.Navigate)
+                     : axis != null ? axis.Step(intents.Navigate, deltaTime, allowRepeat, tuning)
+                     : 0;
             // +1 on the axis is UP the screen, and row 0 is the top row.
             if (step != 0) return InteractChooser.Step(-step) ? Outcome.Stepped : Outcome.Nothing;
 

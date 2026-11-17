@@ -96,6 +96,13 @@ namespace HiddenHarbours.World
             return notes;
         }
 
+        /// <summary>
+        /// Every species she has caught this game, in first-caught order, with counts and the record
+        /// weight: Core's <see cref="CatchRecords"/>, fed over the bus, so the book never names the
+        /// Fishing module (rule 4). In-session only until the record is saved.
+        /// </summary>
+        public static IReadOnlyList<CaughtSpeciesEntry> Caught() => CatchRecords.Current();
+
         /// <summary>The flags a quest step is read against — the save-backed store, the same one
         /// <c>WorldInteractor</c> and <c>OnboardingDirector</c> use, so the book and the world cannot
         /// disagree about what has been done.</summary>
