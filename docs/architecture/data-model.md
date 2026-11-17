@@ -252,6 +252,29 @@ plain serializable DTOs owned by `SaveService` (`architecture/tech-architecture.
 > her store rows removed. A hull SWAP moves nothing. Main has no sale flow yet; the one that lands calls
 > this before dropping the boat from the fleet.
 
+> **Save schema v24 (owner: "Save v24 yes", 2026-11-16)**: `SaveData` gained four append-only lists
+> (rows in Core/Save/SaveRowsV24.cs). The `v23→v24` step gives each an empty list (an older game never
+> recorded any of them, so nothing is invented); the unconditional repair drops rows that can never be
+> found or used again (`HealV24Rows`).
+>
+> - `CaughtSpecies` (`CaughtSpeciesDto`: `SpeciesId`, `DisplayName`, `Count`, `ReleasedCount`,
+>   `RecordWeightKg`): the Notebook's catch record, one row per species in first-caught order. **Wired.**
+>   `CatchRecordLog` loads it when it binds to the live save and writes each counted catch's row back
+>   (`CatchRecordSave`). The hand catch and the stow handoff are not saved. A second row for a species is
+>   dropped by the repair; released is held inside 0..count; an unreadable record weight reads 0 (unknown).
+> - `NpcGiftDays` (`NpcGiftDayDto`: `NpcId`, `DayIndex`, `Count`): the gifting daily limit, today's rows
+>   only. **Data only**: the gifting lane captures and restores `GiftLedger.Shared` through it.
+> - `CookJobs` (`CookJobDto`: `StationKey`, `StationId`, `RecipeId`, `ReadyAtGameSeconds`): what is cooking
+>   on a placed station. **Data only**: the kitchens lane writes and restores `RecipeRunner` jobs.
+> - `HullLoranWaypoints` (`LoranWaypointDto`: `HullId`, `Number`, `ChainId`, `SecondaryA`, `SecondaryB`,
+>   `TdA`, `TdB`): each hull's Loran numbers, as time differences, never positions. **Data only**: the
+>   Loran instrument host fills a `LoranWaypointStore` from it (`ToWaypoint` / `From`).
+>
+> **Considered and not added at v24:** the autopilot purchase rides the existing per-hull
+> `HullInstruments` (`InstrumentLocker.Add/Owns` with an instrument id), the way the Loran receiver and
+> the sounder do; cleanliness and washing already ride `PlayerCleanliness` (v22), and the wash stations
+> store nothing of their own.
+
 **Recomputed, never saved:** tide height, wind, weather, sea state, visibility (from
 `worldSeed + gameTime`), dormant NPC positions, authored geometry, **a boat's effective helm fit and
 its depth-sounder reading** (ADR 0030), **which end of a bed the pillow is on** (see below), and
