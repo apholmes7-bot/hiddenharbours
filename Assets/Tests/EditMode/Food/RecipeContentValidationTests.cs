@@ -85,6 +85,13 @@ namespace HiddenHarbours.Tests.EditMode
                     Assert.AreEqual(RecipeInputKind.Intermediate, def.InputKind,
                         path + ": the cooktop takes prepped food only (owner ruling 2026-11-14)");
                 }
+                else if (def.Station == RecipeStations.Microwave)
+                {
+                    // Microwave recipes take an item by id (a tin, a cooked dish), never a raw catch; that the
+                    // item is microwavable is CookingStationContentTests' check.
+                    Assert.AreEqual(RecipeInputKind.Intermediate, def.InputKind,
+                        path + ": the microwave never takes a raw catch (owner 2026-11-15)");
+                }
             }
         }
 
@@ -112,8 +119,8 @@ namespace HiddenHarbours.Tests.EditMode
             {
                 string path = AssetDatabase.GetAssetPath(def);
                 Assert.That(def.HungerRelief, Is.InRange(0f, 1f), path + ": relief is a share of one meal");
-                if (def.Station == RecipeStations.Cooktop)
-                    Assert.Greater(def.HungerRelief, 0f, path + ": a cooked dish feeds you");
+                if (def.Station == RecipeStations.Cooktop || def.Station == RecipeStations.Microwave)
+                    Assert.Greater(def.HungerRelief, 0f, path + ": a cooked or heated dish feeds you");
                 else
                     Assert.AreEqual(0f, def.HungerRelief, path + ": only cooked outputs feed you");
             }
@@ -131,6 +138,7 @@ namespace HiddenHarbours.Tests.EditMode
             AssertOne(byId, "recipe.pan_fried_cod", RecipeStations.Cooktop, RecipeInputKind.Intermediate, "food.cod_fillet", "food.pan_fried_cod", 40f, 0.6f);
             AssertOne(byId, "recipe.pan_fried_fish", RecipeStations.Cooktop, RecipeInputKind.Intermediate, "food.white_fish_fillet", "food.pan_fried_fish", 40f, 0.5f);
             AssertOne(byId, "recipe.grilled_mackerel", RecipeStations.Cooktop, RecipeInputKind.Intermediate, "food.mackerel_cleaned", "food.grilled_mackerel", 35f, 0.45f);
+            AssertOne(byId, "recipe.heated_beans", RecipeStations.Microwave, RecipeInputKind.Intermediate, "supply.tinned_beans", "food.hot_beans", 120f, 0.4f);
             Assert.AreEqual(FishCategory.InshoreGroundfish, byId["recipe.groundfish_fillet"].InputCategory);
         }
 

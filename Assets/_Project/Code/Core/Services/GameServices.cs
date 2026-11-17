@@ -432,6 +432,22 @@ namespace HiddenHarbours.Core
         private static FoodEater _food;
 
         /// <summary>
+        /// Cooking (kitchens and microwaves slice): the one <see cref="RecipeRunner"/> every kitchen station
+        /// (a galley, a house kitchen, a microwave) runs recipes through; the output goes into the supply
+        /// locker, where <see cref="Food"/> eats it. Never null: a default over the shipped recipes and foods
+        /// is made on first read; a test assigns its own. Cleared by <see cref="Reset"/>, which drops every
+        /// cook job (they are session-only, never saved).
+        /// FLAG lead-architect: new Core contract (cooking).
+        /// </summary>
+        public static RecipeRunner Cooking
+        {
+            get => _cooking ??= new RecipeRunner();
+            set => _cooking = value;
+        }
+
+        private static RecipeRunner _cooking;
+
+        /// <summary>
         /// The web of ties between people (relationships slice 1, owner ruling 2026-11-14): the seam a feature
         /// module records "something happened between these two" through and asks a pair's stage from, so the
         /// crew system, the cannery, the shops, talk and routines never reference each other (rule 4). Never
@@ -1538,6 +1554,7 @@ namespace HiddenHarbours.Core
             FoodPerishability = null;    // → NothingSpoilsPerishability.Instance; likewise never null
             KitchenStorageCatalog.Clear();
             Farm = null;                 // → a fresh default on next read; drops its catalog and baseline
+            Cooking = null;              // drops every session-only cook job
             Food = null;                 // → a fresh default on next read; drops its loaded food book
             Relationships = null;        // → a fresh default on next read; reseeds from the shipped ties
             Crew = null;                 // → a fresh, empty roster on next read
