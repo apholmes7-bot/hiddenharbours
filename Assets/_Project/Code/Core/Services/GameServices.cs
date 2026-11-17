@@ -1320,6 +1320,11 @@ namespace HiddenHarbours.Core
         public static HelmWheelSettings HelmWheel =>
             Config != null ? Config.HelmWheel : HelmWheelSettings.Default;
 
+        /// <summary>The autopilot's heading-hold tunables (gains, helm limits, hand-back limits). Same
+        /// contract as <see cref="WaveField"/>, including the <c>Config != null</c> discipline.</summary>
+        public static HelmAutopilotSettings HelmAutopilot =>
+            Config != null ? Config.HelmAutopilot : HelmAutopilotSettings.Default;
+
         /// <summary>The masthead pennant's tunables (VS-19) — the boat's own wind instrument. Same
         /// contract as <see cref="WaveField"/>, including the <c>Config != null</c> discipline (never
         /// <c>?.</c>/<c>??</c> on a <c>UnityEngine.Object</c>). Falls back to

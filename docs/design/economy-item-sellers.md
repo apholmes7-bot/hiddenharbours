@@ -87,7 +87,7 @@ the reason recorded in the guard.
 | `instrument.depth_sounder` | 140 | leblancs | shelf |
 | `instrument.fish_finder` | 480 | leblancs (same dash cutout as the sounder) | offer (seller **added**) |
 | `instrument.gps` (chartplotter) | 650 | nmc_chandlery (wants a wheelhouse boat) | offer (seller **added**) |
-| `instrument.loran` | 380 | none here | exempt: a separate change is adding its seller |
+| `instrument.loran` | 380 | leblancs (placeholder until the NMC boat/gear wholesaler stands; wants a wheelhouse boat) | shelf |
 | `license.clam` | 15 | leblancs | shelf |
 | `license.cod` | 120 | nmc_harbourmaster | shelf |
 

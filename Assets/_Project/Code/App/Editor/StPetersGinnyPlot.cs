@@ -416,6 +416,10 @@ namespace HiddenHarbours.App.Editor
                         Debug.LogWarning(
                             $"[StPetersGinnyPlot] {CottageKey} has no baked room, so Ginny's door does not " +
                             "open. The owner ruled this cottage enterable — re-bake the interior kit.");
+                    else
+                        // The washstand in the player's room (washrooms plan section 3): the same row the
+                        // scene's text patch placed, so a rebuild keeps it.
+                        WashStationPlacement.StandInterior(go, RootName);
 
                     // The cosy night read. ⚠ The greybox standee this replaces carried THREE night
                     // pieces; only two survive the move to a kit building. CottageDayNight is a SPRITE

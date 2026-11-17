@@ -134,7 +134,11 @@ namespace HiddenHarbours.Art
             for(int i=0;i<hulls.Count;i++)
             {
                 HullFootprint hull=hulls[i].Footprint;
-                var shape=HullShape(hull,hull.Center,hulls[i].PictureForeshortenY,in settings);
+                // The foam parts round her PICTURE, which rides the tide up and down the screen from her
+                // plan outline. Her plan centre alone left a hull-shaped wake in the foam where she would
+                // lie at the baked tide: a faint second boat above her at low water.
+                Vector2 center=ShownCenter(hull.Center,hulls[i].PictureRise);
+                var shape=HullShape(hull,center,hulls[i].PictureForeshortenY,in settings);
                 if(!shape.Valid) { fault=FoamTransport.Fault.Contacts; return false; }
                 if(!Relevant(shape,window)) continue;
                 if(count==into.Length) { count++; fault=FoamTransport.Fault.Capacity; return false; }
@@ -166,6 +170,18 @@ namespace HiddenHarbours.Art
             float taper=Mathf.Clamp01(settings.ContactBowTaper>0 ? settings.ContactBowTaper : d.ContactBowTaper);
             float stem=Mathf.Clamp01(settings.ContactStemHalfBeams>0 ? settings.ContactStemHalfBeams : d.ContactStemHalfBeams);
             return Shape.Hull(center,hull.BowDirection,hull.HalfLength,hull.HalfBeam,squash,taper,stem,0);
+        }
+
+        /// <summary>Where a hull's foam contact belongs: her plan centre carried up-screen by her picture's
+        /// tide rise, snapped to whole foam cells — the field cannot draw finer, and a still hull's
+        /// contact then stays identical frame to frame while the tide creeps instead of rebuilding the
+        /// mask every frame. A non-finite rise is treated as none, so a bad reading cannot poison the
+        /// field.</summary>
+        internal static Vector2 ShownCenter(Vector2 planCenter, float pictureRise)
+        {
+            if (!FoamTransport.Finite(pictureRise)) return planCenter;
+            float cell=FoamBuffer.CellSize;
+            return new Vector2(planCenter.x, planCenter.y+Mathf.Round(pictureRise/cell)*cell);
         }
 
         private static bool Relevant(in Shape shape, Rect window)

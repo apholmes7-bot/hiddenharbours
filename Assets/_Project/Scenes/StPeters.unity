@@ -55754,6 +55754,7 @@ Transform:
   - {fileID: 1522954627}
   - {fileID: 1250860795}
   - {fileID: 1424524824}
+  - {fileID: 674199292}
   m_Father: {fileID: 356182232}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &983856081
@@ -74444,6 +74445,7 @@ GameObject:
   - component: {fileID: 1809999676}
   - component: {fileID: 518165546}
   - component: {fileID: 2071340022}
+  - component: {fileID: 1859650600}
   m_Layer: 0
   m_Name: GeneralStoreCounter
   m_TagString: Untagged
@@ -74730,6 +74732,24 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: HiddenHarbours.Economy::HiddenHarbours.Economy.SupplyShop
   _supply: {fileID: 11400000, guid: 42dda1f1cebe42e7866efb4f86743cc9, type: 2}
+  _sellerId: seller.leblancs
+  _walletProvider: {fileID: 1773492499}
+  _onPurchased:
+    m_PersistentCalls:
+      m_Calls: []
+--- !u!114 &1859650600
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1384401473}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2b9d0eb07b9fa3045a203d5654276a6d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: HiddenHarbours.Economy::HiddenHarbours.Economy.InstrumentShop
+  _offer: {fileID: 11400000, guid: fb1f3e3bcf5342b4bc3e953fa54db0a6, type: 2}
   _sellerId: seller.leblancs
   _walletProvider: {fileID: 1773492499}
   _onPurchased:
@@ -161582,6 +161602,72 @@ MonoBehaviour:
   m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.PlantField
   Definition: {fileID: 11400000, guid: 76ec0c0cea6a58718a98a31e7da15d81, type: 2}
   GroundSource: {fileID: 910510003}
+--- !u!1001 &1634993502
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 977942616}
+    m_Modifications:
+    - target: {fileID: 839404730520791078, guid: 069317a148180ae4f894cf79cb417d39, type: 3}
+      propertyPath: _id
+      value: fixture.st_peters.ginny_cottage.washstand
+      objectReference: {fileID: 0}
+    - target: {fileID: 2012394428601004863, guid: 069317a148180ae4f894cf79cb417d39, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 3.550003
+      objectReference: {fileID: 0}
+    - target: {fileID: 2012394428601004863, guid: 069317a148180ae4f894cf79cb417d39, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 2.0873985
+      objectReference: {fileID: 0}
+    - target: {fileID: 2012394428601004863, guid: 069317a148180ae4f894cf79cb417d39, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2012394428601004863, guid: 069317a148180ae4f894cf79cb417d39, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2012394428601004863, guid: 069317a148180ae4f894cf79cb417d39, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2012394428601004863, guid: 069317a148180ae4f894cf79cb417d39, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2012394428601004863, guid: 069317a148180ae4f894cf79cb417d39, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2012394428601004863, guid: 069317a148180ae4f894cf79cb417d39, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2012394428601004863, guid: 069317a148180ae4f894cf79cb417d39, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2012394428601004863, guid: 069317a148180ae4f894cf79cb417d39, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6503050993931259974, guid: 069317a148180ae4f894cf79cb417d39, type: 3}
+      propertyPath: m_Name
+      value: WashStand
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 069317a148180ae4f894cf79cb417d39, type: 3}
+--- !u!4 &674199292 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 2012394428601004863, guid: 069317a148180ae4f894cf79cb417d39, type: 3}
+  m_PrefabInstance: {fileID: 1634993502}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

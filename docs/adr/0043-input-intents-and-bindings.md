@@ -121,6 +121,7 @@ ships as a preloaded asset). **One map per control mode**, two control schemes: 
 | | Searchlight | Button | L | `BoatSpotlight` (PR 1) |
 | | InstrumentCycle | Button | K (Shift steps the pilot deck) | `DevInstrumentCycle` (PR 1) |
 | | Interact | Button | E | `ControlSwitcher` (PR 1) |
+| | Autopilot (2026-11-16) | Button | P (bound nowhere else in the asset); **Gamepad**: `<Gamepad>/buttonNorth` (Y: free at the helm, where A hauls, B is neutral, the d-pad steps detents and moves the chooser, the left stick steers and moves the chooser, the shoulders zoom, Start is the shell) | `DeviceAutopilotIntentSource` → Core `AutopilotInput` → `DevBoatInput.ReadAutopilotSwitch` → `BoatController.ToggleAutopilot`. Its own small struct (`AutopilotIntents { Toggle }`, the HUD's gates) until `HelmIntents` lands in PR 1 and absorbs it ✅ |
 | **Drive** | Throttle | Value/Axis | `1DAxis(whichSideWins=0)`: − = S ∨ ↓, + = W ∨ ↑ | `KeyboardDriveInputSource` (PR 1 re-homes it; byte-identical) |
 | | Steer | Value/Axis | `1DAxis`: **+ = A ∨ ←** (LEFT is +1, the rig's own sense, ADR 0035 §5), − = D ∨ → | as above |
 | | Brake | Button | Space | as above |
@@ -160,6 +161,11 @@ owner's feel gate: the walk/deck/helm/drive/hide-all rows and the pad's interact
 cannot yet OPEN the chooser), the affordance glyph and HUD hints, `UiIntents`, the settings sheet, and
 explicit pad rows for Submit/Cancel once a scheme binding mask is ever applied (a mask on KeyboardMouse
 would hide the usage rows from the pad).
+
+**The autopilot's pad row (2026-11-16, lead-architect review of the autopilot slice 1).** One more row,
+outside the owner-gated helm rows because it is a single press with no feel to tune: `Helm/Autopilot` on
+`<Gamepad>/buttonNorth` (Y). The pin became
+`TheGamepadScheme_BindsOnlyTheChoosersNavigateAndTheAutopilot_UntilTheRestOfPr2Lands`.
 
 **Why Digital (`mode=1`) and not the default DigitalNormalized.** The old read summed the keys and left
 a diagonal at (±1, ±1) for `PlayerWalkController.VelocityFor` to clamp. Mode 1 is that sum. (After the

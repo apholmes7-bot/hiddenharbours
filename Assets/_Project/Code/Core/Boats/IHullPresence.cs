@@ -36,5 +36,15 @@ namespace HiddenHarbours.Core
         /// no foreshortened picture need not declare it.
         /// </summary>
         float PictureForeshortenY => 1f;
+
+        /// <summary>
+        /// How far up-screen her PICTURE is drawn from that outline this instant (world units, positive
+        /// on the flood, negative on the ebb) — the tide ride, <see cref="IHullTideRide.ScreenRiseNow"/>,
+        /// or 0 for a hull nothing carries. The outline stays where her plan is (a swimmer, a ladder and
+        /// a walk all meet her there); anything DRAWN against her — foam parting round her hull — adds
+        /// this, or it draws her where she would lie at the baked tide while she lies lower or higher.
+        /// Defaults to 0, so an implementer that draws no tide ride need not declare it.
+        /// </summary>
+        float PictureRise => 0f;
     }
 }
