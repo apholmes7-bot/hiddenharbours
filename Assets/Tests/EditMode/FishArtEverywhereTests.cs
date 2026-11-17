@@ -85,7 +85,12 @@ namespace HiddenHarbours.Tests
         }
 
         static Sprite IconFor(IconLibrary lib, string id)
-            => lib.Entries?.FirstOrDefault(e => e != null && e.Id == id)?.Icon;
+        {
+            if (lib.Entries == null) return null;
+            foreach (IconLibrary.Entry e in lib.Entries)
+                if (e.Id == id) return e.Icon;
+            return null;
+        }
 
         static string PathOf(Object o) => o != null ? AssetDatabase.GetAssetPath(o) : null;
 
