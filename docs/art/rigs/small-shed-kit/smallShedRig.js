@@ -81,12 +81,12 @@
       note: 'open shelving along the north wall: four bays, three shelves, one gear slot per bay per shelf' },
   ];
 
-  // What the stores hold. DATA: the capacities live here and in the proposed Defs; the save rows are
+  // What the stores hold. DATA: the capacities live here and in the stowage Defs (PR 1307, not on main yet); the save rows are
   // the storage-with-memory lane's (save v25), not this rig's.
   const STORE = {
-    rod_rack: { stowage: 'stowage.shed_rod_rack', status: 'proposed id, no Def yet (storage-with-memory lane)',
+    rod_rack: { stowage: 'stowage.shed_rod_rack', status: 'Def in PR 1307 (storage-with-memory lane), not on main yet',
       accepts: 'Rods', capacity: 8, pitch: 0.12, rodTop: 2.10, minRod: 2.10 },
-    gear_shelf: { stowage: 'stowage.shed_gear_shelf', status: 'proposed id, no Def yet (storage-with-memory lane)',
+    gear_shelf: { stowage: 'stowage.shed_gear_locker', status: 'Def in PR 1307 (storage-with-memory lane), not on main yet',
       accepts: 'General', capacity: 12, bays: 4, shelves: [0.30, 0.85, 1.40], board: 0.02, upright: 0.03 },
   };
 
@@ -643,7 +643,7 @@
         memory: 'What sits in each slot is saved by the storage-with-memory lane (save v25), keyed by the rack; this rig only places the slots.',
       },
       mechanism_map: { door: 'plank door, inside (step_out)', door_outside: 'plank door, outside (enter)',
-        rod_rack: 'StowageRack (stowage.shed_rod_rack, proposed): 8 rods', gear_shelf: 'StowageRack (stowage.shed_gear_shelf, proposed): 12 pieces of gear' },
+        rod_rack: 'StowageRack (stowage.shed_rod_rack): 8 rods', gear_shelf: 'StowageRack (stowage.shed_gear_locker): 12 pieces of gear' },
       FIT: fit(opts),
       LOT: lot(opts),
       walker: Object.assign({ source: 'foot = CircleCollider2D radius 0.35 m (PersistentCoreBuilder, QuayEdgePlan.WalkerFootRadiusMetres); reach rules after the boat-interior kit' }, WALKER),

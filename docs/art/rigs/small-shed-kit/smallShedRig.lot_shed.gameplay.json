@@ -3,7 +3,7 @@
   "exportSymbol": "SmallShed",
   "rig": "smallShedRig.js",
   "variant": "lot_shed",
-  "derivedFromRigSha256": "fa4cff67444c02af13da4dc661b4c4d847e6b11af1ec6f9cd77f62ab22ced795",
+  "derivedFromRigSha256": "6fd6e9fc02b6bbe5ae9a843d823ba26d366a1277cd8512680c583d800595ad96",
   "generatedBy": "SmallShed.sidecar({variant:\"lot_shed\"}) via node tools/rig-recipes/small-shed.mjs (--check fails on drift)",
   "frame": {
     "units": "metres",
@@ -380,7 +380,7 @@
       ],
       "_note": "mechanism: rod stowage (StowageRack, a StowageDef that accepts Rods)",
       "stowage": "stowage.shed_rod_rack",
-      "stowage_status": "proposed id, no Def yet (storage-with-memory lane)",
+      "stowage_status": "Def in PR 1307 (storage-with-memory lane), not on main yet",
       "accepts": "Rods",
       "capacity": 8
     },
@@ -409,8 +409,8 @@
         "NW"
       ],
       "_note": "mechanism: gear stowage (StowageRack, a StowageDef that accepts General)",
-      "stowage": "stowage.shed_gear_shelf",
-      "stowage_status": "proposed id, no Def yet (storage-with-memory lane)",
+      "stowage": "stowage.shed_gear_locker",
+      "stowage_status": "Def in PR 1307 (storage-with-memory lane), not on main yet",
       "accepts": "General",
       "capacity": 12
     }
@@ -419,7 +419,7 @@
     "rod_rack": {
       "fixture": "rod_rack",
       "stowage": "stowage.shed_rod_rack",
-      "status": "proposed id, no Def yet (storage-with-memory lane)",
+      "status": "Def in PR 1307 (storage-with-memory lane), not on main yet",
       "accepts": "Rods",
       "capacity": 8,
       "slot_pitch_m": 0.12,
@@ -532,8 +532,8 @@
     },
     "gear_shelf": {
       "fixture": "gear_shelf",
-      "stowage": "stowage.shed_gear_shelf",
-      "status": "proposed id, no Def yet (storage-with-memory lane)",
+      "stowage": "stowage.shed_gear_locker",
+      "status": "Def in PR 1307 (storage-with-memory lane), not on main yet",
       "accepts": "General",
       "capacity": 12,
       "bays": 4,
@@ -694,8 +694,8 @@
   "mechanism_map": {
     "door": "plank door, inside (step_out)",
     "door_outside": "plank door, outside (enter)",
-    "rod_rack": "StowageRack (stowage.shed_rod_rack, proposed): 8 rods",
-    "gear_shelf": "StowageRack (stowage.shed_gear_shelf, proposed): 12 pieces of gear"
+    "rod_rack": "StowageRack (stowage.shed_rod_rack): 8 rods",
+    "gear_shelf": "StowageRack (stowage.shed_gear_locker): 12 pieces of gear"
   },
   "FIT": {
     "walls_m": [

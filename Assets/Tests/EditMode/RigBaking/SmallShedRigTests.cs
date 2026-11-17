@@ -262,7 +262,7 @@ namespace HiddenHarbours.Tests.RigBaking
             Assert.AreEqual(RodsWanted, (int)N(host, $"{Global}.slots({V}).rods.length"), "one placed slot per rod");
             Assert.AreEqual(GearWanted, (int)N(host, $"{Global}.slots({V}).gear.length"), "one placed slot per piece of gear");
             Assert.AreEqual("stowage.shed_rod_rack", I("rod_rack", "stowage"));
-            Assert.AreEqual("stowage.shed_gear_shelf", I("gear_shelf", "stowage"));
+            Assert.AreEqual("stowage.shed_gear_locker", I("gear_shelf", "stowage"));
 
             // what each takes uses the game's own flags, and the rod rack takes what the existing rod rack takes
             var rodAccepts = (StowageAccepts)Enum.Parse(typeof(StowageAccepts), I("rod_rack", "accepts"));
@@ -272,11 +272,11 @@ namespace HiddenHarbours.Tests.RigBaking
             Assert.AreEqual(rack.Accepts, rodAccepts, "the shed's rod rack must take what the rod rack Def takes");
             Assert.AreEqual(StowageAccepts.General, gearAccepts, "the gear shelf takes general gear, not rods");
 
-            // the proposed Defs: once the storage lane authors them, they must agree with the rig
+            // the stowage Defs (PR 1307): once they are on main, they must agree with the rig
             var defs = AssetDatabase.FindAssets("t:StowageDef")
                 .Select(g => AssetDatabase.LoadAssetAtPath<StowageDef>(AssetDatabase.GUIDToAssetPath(g)))
                 .Where(d => d != null).ToList();
-            foreach (var (id, cap, acc) in new[] { ("stowage.shed_rod_rack", RodsWanted, rodAccepts), ("stowage.shed_gear_shelf", GearWanted, gearAccepts) })
+            foreach (var (id, cap, acc) in new[] { ("stowage.shed_rod_rack", RodsWanted, rodAccepts), ("stowage.shed_gear_locker", GearWanted, gearAccepts) })
             {
                 StowageDef d = defs.FirstOrDefault(x => x.Id == id);
                 if (d == null) continue;   // not authored yet: the rig carries the number until it is
