@@ -23,6 +23,12 @@ namespace HiddenHarbours.Core
 
         /// <summary>What is in it, in the order it went in.</summary>
         public List<StoredItemDto> Items = new List<StoredItemDto>();
+
+        /// <summary>The CATCH in it, for a container that is a catch hold (the camper's freezer): the same
+        /// run-length freshness records Ginny's freezer keeps in <see cref="SaveData.FreezerCatch"/>, written
+        /// and read through <see cref="HoldCatchCodec"/>, so a fish keeps its exact clock across a save.
+        /// Empty for a rack or a locker.</summary>
+        public List<HeldCatchDto> Catch = new List<HeldCatchDto>();
     }
 
     /// <summary>

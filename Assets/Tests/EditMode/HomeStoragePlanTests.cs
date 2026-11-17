@@ -46,6 +46,14 @@ namespace HiddenHarbours.Tests.EditMode
 
         static Dictionary<string, StowageDef> Stowage() => DefsIn<StowageDef>(StowageFolder, d => d.Id);
         static Dictionary<string, KitchenStorageDef> Kitchen() => DefsIn<KitchenStorageDef>(KitchenFolder, d => d.Id);
+        static Dictionary<string, FreezerDef> Freezers() => DefsIn<FreezerDef>(StowageFolder, d => d.Id);
+
+        /// <summary>The deed a row's Def names, whichever kind of Def it is.</summary>
+        static string DeedOf(Row row, Dictionary<string, StowageDef> s, Dictionary<string, FreezerDef> f,
+                             Dictionary<string, KitchenStorageDef> k)
+            => HomeStoragePlan.IsStowage(row.Kind) ? s[row.DefId].DeedHomeId
+             : HomeStoragePlan.IsCatchFreezer(row.Kind) ? f[row.DefId].DeedHomeId
+             : k[row.DefId].DeedHomeId;
 
         // ---- ids --------------------------------------------------------------------------------------
 
@@ -56,12 +64,14 @@ namespace HiddenHarbours.Tests.EditMode
             var seen = new HashSet<string> { StorageIds.BoatHold, StorageIds.GinnyFreezer };
             Assert.IsTrue(pattern.IsMatch(StorageIds.BoatHold));
             Assert.IsTrue(pattern.IsMatch(StorageIds.GinnyFreezer));
+            Assert.IsTrue(pattern.IsMatch(StorageIds.CamperFreezer));
             foreach (Row row in HomeStoragePlan.Rows)
             {
                 Assert.IsTrue(pattern.IsMatch(row.StorageId), $"'{row.StorageId}' is not storage.snake_case");
                 Assert.IsTrue(StorageIds.IsStorageId(row.StorageId));
                 Assert.IsTrue(seen.Add(row.StorageId), $"'{row.StorageId}' is used twice");
             }
+            Assert.IsTrue(seen.Contains(StorageIds.CamperFreezer), "the camper's freezer row is its fixed code id");
         }
 
         [Test]
@@ -82,7 +92,7 @@ namespace HiddenHarbours.Tests.EditMode
                     Match m = lineId.Match(line);
                     if (!m.Success) continue;
                     string id = m.Groups[1].Value;
-                    if (id == StorageIds.BoatHold || id == StorageIds.GinnyFreezer)
+                    if (id == StorageIds.BoatHold || id == StorageIds.GinnyFreezer || id == StorageIds.CamperFreezer)
                         faults.Add($"{path}: '{id}' is a fixed code id, never authored on a rack");
                     else if (where.TryGetValue(id, out string first))
                         faults.Add($"'{id}' is placed in both {first} and {path}");
@@ -100,6 +110,7 @@ namespace HiddenHarbours.Tests.EditMode
         {
             Dictionary<string, StowageDef> stowage = Stowage();
             Dictionary<string, KitchenStorageDef> kitchen = Kitchen();
+            Dictionary<string, FreezerDef> freezers = Freezers();
             foreach (Row row in HomeStoragePlan.Rows)
             {
                 if (HomeStoragePlan.IsStowage(row.Kind))
@@ -108,12 +119,18 @@ namespace HiddenHarbours.Tests.EditMode
                     StowageAccepts want = row.Kind == Kind.RodRack ? StowageAccepts.Rods : StowageAccepts.General;
                     Assert.AreEqual(want, def.Accepts, $"{row.DefId}: a {row.Kind} takes {want}");
                 }
+                else if (HomeStoragePlan.IsCatchFreezer(row.Kind))
+                {
+                    Assert.IsTrue(freezers.ContainsKey(row.DefId), $"{row.StorageId}: no FreezerDef '{row.DefId}'");
+                    Assert.AreEqual(StorageIds.CamperFreezer, row.StorageId, "the catch freezer answers its fixed id");
+                    Assert.IsFalse(kitchen.ContainsKey("kitchen_storage.camper_freezer"),
+                                   "the camper's freezer is a catch hold, never also a food store");
+                }
                 else
                 {
                     Assert.IsTrue(kitchen.TryGetValue(row.DefId, out KitchenStorageDef def), $"{row.StorageId}: no KitchenStorageDef '{row.DefId}'");
                     if (row.Kind == Kind.Pantry) Assert.AreEqual(KitchenStorageKind.Pantry, def.Kind);
                     else Assert.AreEqual(KitchenStorageKind.Fridge, def.Kind, $"{row.DefId}: a powered cold store");
-                    if (row.Kind == Kind.Freezer) Assert.AreEqual(StorageMode.Frozen, def.ColdMode, "a freezer freezes");
                 }
             }
         }
@@ -129,7 +146,8 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.AreEqual(10, s["stowage.camper_gear_locker"].Capacity);
             Assert.AreEqual(8, s["stowage.shed_rod_rack"].Capacity);
             Assert.AreEqual(12, s["stowage.shed_gear_locker"].Capacity);
-            Assert.AreEqual(40, k["kitchen_storage.camper_freezer"].CapacityItems);
+            Dictionary<string, FreezerDef> f = Freezers();
+            Assert.AreEqual(40, f["freezer.camper_freezer"].CapacityUnits);
             Assert.AreEqual(16, k["kitchen_storage.camper_fridge"].CapacityItems);
             Assert.AreEqual(8, k["kitchen_storage.camper_pantry"].CapacityItems);
 
@@ -140,7 +158,7 @@ namespace HiddenHarbours.Tests.EditMode
             try
             {
                 int ginnys = go.AddComponent<GinnyFreezer>().CapacityUnits;
-                Assert.Greater(k["kitchen_storage.camper_freezer"].CapacityItems, ginnys, "bigger than Ginny's freezer");
+                Assert.Greater(f["freezer.camper_freezer"].CapacityUnits, ginnys, "bigger than Ginny's freezer");
             }
             finally { Object.DestroyImmediate(go); }
         }
@@ -150,9 +168,10 @@ namespace HiddenHarbours.Tests.EditMode
         {
             Dictionary<string, StowageDef> s = Stowage();
             Dictionary<string, KitchenStorageDef> k = Kitchen();
+            Dictionary<string, FreezerDef> f = Freezers();
             foreach (Row row in HomeStoragePlan.Rows)
             {
-                string deed = HomeStoragePlan.IsStowage(row.Kind) ? s[row.DefId].DeedHomeId : k[row.DefId].DeedHomeId;
+                string deed = DeedOf(row, s, f, k);
                 string want = row.BuildingKey == "ginny_cottage" ? "" : HomeStoragePlan.CamperDeedHomeId;
                 Assert.AreEqual(want, deed ?? "", $"{row.DefId} ({row.BuildingKey})");
             }

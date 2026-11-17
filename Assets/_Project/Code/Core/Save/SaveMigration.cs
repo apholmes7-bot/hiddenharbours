@@ -541,8 +541,9 @@ namespace HiddenHarbours.Core
         /// <summary>
         /// Null-repair the v25 storage rows. A container with no key is dropped (nothing could find it again);
         /// a second row for a key already kept is folded into the first, so no item is lost and the key stays
-        /// one row. An item with no kind, or a counted lot of zero or fewer, is dropped; a container left with
-        /// nothing in it is dropped. Kept rows are never changed. Idempotent.
+        /// one row. An item with no kind, or a counted lot of zero or fewer, is dropped, and so is a catch record
+        /// with no species or no quantity; a container left with nothing in it is dropped. Kept rows are never
+        /// changed. Idempotent.
         /// </summary>
         private static void HealStoredContainers(System.Collections.Generic.List<StoredContainerDto> containers)
         {
@@ -567,16 +568,19 @@ namespace HiddenHarbours.Core
                     }
                     item.InstanceId ??= "";
                 }
+                c.Catch ??= new System.Collections.Generic.List<HeldCatchDto>();
+                c.Catch.RemoveAll(r => string.IsNullOrEmpty(r.SpeciesId) || r.Quantity <= 0);
                 if (kept.TryGetValue(c.Key, out StoredContainerDto first))
                 {
                     first.Items.AddRange(c.Items);
+                    first.Catch.AddRange(c.Catch);
                     containers.RemoveAt(i--);
                     continue;
                 }
                 kept.Add(c.Key, c);
             }
             for (int i = containers.Count - 1; i >= 0; i--)
-                if (containers[i].Items.Count == 0) containers.RemoveAt(i);
+                if (StoredContainers.IsEmpty(containers[i])) containers.RemoveAt(i);
         }
 
         /// <summary>

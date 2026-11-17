@@ -146,11 +146,11 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         [Test]
-        public void TheCampersFreezerTakesNothing_UntilTheCamperIsHis()
+        public void AGatedFoodStoreTakesNothing_UntilTheCamperIsHis()
         {
             SaveData save = SaveMigration.NewGame();
             KitchenStorageDef freezer = Freezer(CamperDeed);
-            const string Key = "storage.stpeters.camper_freezer";
+            const string Key = "storage.stpeters.camper_fridge";
 
             Assert.AreEqual(0, KitchenStores.Store(save, Key, freezer, At(0d), Food, 3, Freshness.Landed(0d)));
             Assert.IsNull(KitchenStores.Find(save, Key), "a refused store opens no row");

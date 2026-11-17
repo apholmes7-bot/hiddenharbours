@@ -143,7 +143,36 @@ namespace HiddenHarbours.Core
             return taken;
         }
 
+        // ---- catch (a container that is a catch hold) -----------------------------------------------------
+
+        /// <summary>The catch records kept under <paramref name="key"/>, or null when there are none.</summary>
+        public static IReadOnlyList<HeldCatchDto> CatchIn(SaveData save, string key) => Find(save, key)?.Catch;
+
+        /// <summary>
+        /// Write <paramref name="items"/> as the whole catch under <paramref name="key"/> (the
+        /// <see cref="HoldCatchCodec"/> snapshot a hold takes on every change, the ShipHold pattern). Empty
+        /// items clear it, and a container left with nothing in it leaves no row. Capacity is the hold's own.
+        /// </summary>
+        public static void WriteCatch(SaveData save, string key, string containerDefId, IReadOnlyList<CatchItem> items)
+        {
+            if (save == null || string.IsNullOrEmpty(key)) return;
+            if (items == null || items.Count == 0)
+            {
+                StoredContainerDto found = Find(save, key);
+                if (found == null) return;
+                found.Catch?.Clear();
+                DropIfEmpty(save, found);
+                return;
+            }
+            StoredContainerDto c = Open(save, key, containerDefId);
+            HoldCatchCodec.Capture(items, c.Catch);
+        }
+
         // ---- helpers --------------------------------------------------------------------------------------
+
+        /// <summary>True when a container row holds nothing at all: no item rows and no catch.</summary>
+        public static bool IsEmpty(StoredContainerDto c)
+            => c == null || ((c.Items == null || c.Items.Count == 0) && (c.Catch == null || c.Catch.Count == 0));
 
         private static StoredContainerDto Open(SaveData save, string key, string containerDefId)
         {
@@ -158,6 +187,7 @@ namespace HiddenHarbours.Core
                 c.ContainerDefId = containerDefId;   // a rebuilt fixture keeps what was in it
             }
             c.Items ??= new List<StoredItemDto>();
+            c.Catch ??= new List<HeldCatchDto>();
             return c;
         }
 
@@ -179,13 +209,13 @@ namespace HiddenHarbours.Core
                 StoredContainerDto c = all[k];
                 int i;
                 while ((i = IndexOfInstance(c, instanceId)) >= 0) c.Items.RemoveAt(i);
-                if (c != null && c.Items != null && c.Items.Count == 0) all.RemoveAt(k);
+                if (c != null && c.Items != null && IsEmpty(c)) all.RemoveAt(k);
             }
         }
 
         private static void DropIfEmpty(SaveData save, StoredContainerDto c)
         {
-            if (c?.Items == null || c.Items.Count > 0) return;
+            if (c == null || !IsEmpty(c)) return;
             save?.StoredContainers?.Remove(c);
         }
     }

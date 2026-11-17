@@ -44,9 +44,13 @@ namespace HiddenHarbours.App.Editor
             Pantry = 4,
         }
 
-        /// <summary>A rack or locker (<c>StowageDef</c>, Data/Stowage) or a food store
-        /// (<c>KitchenStorageDef</c>, Data/Resources/Kitchen/Storage).</summary>
+        /// <summary>A rack or locker (<c>StowageDef</c>, Data/Stowage).</summary>
         public static bool IsStowage(Kind kind) => kind == Kind.RodRack || kind == Kind.GearLocker;
+
+        /// <summary>A catch freezer (<c>FreezerDef</c>, Data/Stowage; the <c>CamperFreezer</c> component, whose
+        /// storage id is the fixed <c>StorageIds.CamperFreezer</c>). Everything else is a food store
+        /// (<c>KitchenStorageDef</c>, Data/Resources/Kitchen/Storage).</summary>
+        public static bool IsCatchFreezer(Kind kind) => kind == Kind.Freezer;
 
         /// <summary>Planning footprint in metres, as placed: <c>x</c> across the room, <c>y</c> along it. A rod
         /// rack is a shallow board of uprights against a wall; a locker is a tall cabinet.</summary>
@@ -64,7 +68,7 @@ namespace HiddenHarbours.App.Editor
         public readonly struct Row
         {
             public readonly string StorageId;   // the save key, storage.*
-            public readonly string DefId;       // stowage.* or kitchen_storage.*
+            public readonly string DefId;       // stowage.*, freezer.* or kitchen_storage.*
             public readonly Kind Kind;
             public readonly string BuildingKey; // snake_case
             public readonly string RoomKey;     // the room sheet the level draws, or null
@@ -101,7 +105,7 @@ namespace HiddenHarbours.App.Editor
                     "ginny_lot_camper", null, null, 0, false, Vector2.zero),
             new Row("storage.stpeters.camper_gear_locker", "stowage.camper_gear_locker", Kind.GearLocker,
                     "ginny_lot_camper", null, null, 0, false, Vector2.zero),
-            new Row("storage.stpeters.camper_freezer", "kitchen_storage.camper_freezer", Kind.Freezer,
+            new Row(HiddenHarbours.Core.StorageIds.CamperFreezer, "freezer.camper_freezer", Kind.Freezer,
                     "ginny_lot_camper", null, null, 0, false, Vector2.zero),
             new Row("storage.stpeters.camper_fridge", "kitchen_storage.camper_fridge", Kind.Fridge,
                     "ginny_lot_camper", null, null, 0, false, Vector2.zero),

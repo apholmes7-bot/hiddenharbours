@@ -278,7 +278,7 @@ plain serializable DTOs owned by `SaveService` (`architecture/tech-architecture.
 
 > **Save schema v25 (storage with memory, owner 2026-11-17: "give them storage with memory at ginnys,
 > but give them more storage with the camper and small shed")**: `SaveData` gained one append-only list,
-> `StoredContainers` (`StoredContainerDto`: `Key`, `ContainerDefId`, `Items`; each `StoredItemDto`:
+> `StoredContainers` (`StoredContainerDto`: `Key`, `ContainerDefId`, `Items`, `Catch`; each `StoredItemDto`:
 > `ItemId`, `InstanceId`, `Count`, `IsInstance`, `Units`; rows in Core/Save/SaveRowsV25.cs). One row per
 > non-empty container, keyed by its stable `storage.snake_case` id (`StorageIds`; the same id the
 > container lists under in Core `PlayerStorage`). A world object (a rod) is an instance row naming the
@@ -287,9 +287,14 @@ plain serializable DTOs owned by `SaveService` (`architecture/tech-architecture.
 > an emptied container leaves no row, and capacity is the caller's Def, never saved. Read and written
 > through `StoredContainers`. The `v24→v25` step adds an empty list (nothing invented); the unconditional
 > repair (`HealStoredContainers`) drops keyless containers and unusable items, folds a repeated key into
-> the first, and drops empty rows. **Food is not here**: the camper's freezer, fridge and pantry are
-> `KitchenStorageDef`s whose state rides the v23 `KitchenStores` rows under their `storage.*` key.
-> Gated stores name a deed (`DeedHomeId`, on `StowageDef` and `KitchenStorageDef`); `StorageAccess`
+> the first, and drops empty rows. A container that is a catch hold keeps its catch in the row's `Catch`
+> list (`HeldCatchDto`, the same records Ginny's freezer keeps in `FreezerCatch`, via `HoldCatchCodec`):
+> the camper's chest freezer (`CamperFreezer`, `FreezerDef` `freezer.camper_freezer`, 40 units, fixed id
+> `storage.stpeters.camper_freezer`) takes landed catch frozen, as Ginny's does; the repair drops catch
+> records with no species or quantity and folds them with the rest. **Food is not here**: the camper's
+> fridge and pantry are `KitchenStorageDef`s whose state rides the v23 `KitchenStores` rows under their
+> `storage.*` key. Gated stores name a deed (`DeedHomeId`, on `StowageDef`, `FreezerDef` and
+> `KitchenStorageDef`); `StorageAccess`
 > keeps them shut until `HomeDeeds` says the home is his. The plan of ids, Defs and Ginny's placements is
 > `App/Editor/HomeStoragePlan.cs`.
 

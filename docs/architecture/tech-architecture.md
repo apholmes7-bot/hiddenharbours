@@ -416,7 +416,7 @@ without naming a class. Contracts, all additive:
 - **Order is deterministic**: priority (boat hold 10, home freezer 20, fixtures 50, an unnamed hold 100),
   then ordinal id; only exact ties keep listing order. That order is the Give rows' order and the container
   a gift comes from.
-- `IHoldRemove.TryRemoveAt(index)` (on `ShipHold`, `GinnyFreezer`, `ClamBucket`): the gift take removes the
+- `IHoldRemove.TryRemoveAt(index)` (on `ShipHold`, `GinnyFreezer`, `CamperFreezer`, `ClamBucket`): the gift take removes the
   one item and touches nothing else; a hold without it is still emptied and refilled.
 - **The save is the source of truth.** The contents live in `SaveData.StoredContainers` (and food in v23
   `KitchenStores`) under the container's id; the scene object is a view that binds to its record by id on
