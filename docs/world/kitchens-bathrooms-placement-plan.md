@@ -153,11 +153,9 @@ stands one with an interior, it applies these rules and adds the rows.
 | Cumberland | Store and gas bar, hall, church, houses 1 to 5, route houses 1 and 2, south and north farmhouses and barns, resort lodge, resort cottages 1 to 4, marina office, marina shed, clubhouse, float bar, float stage (24) |
 | Rice Point | Strand, cove, brook and marsh houses · wharf house · point house · back-shore camp · farmhouse and barn · stage-3 staff houses 1 and 2 · skipper house · the old store, head shed, stage-2 bait shed, stage-3 cold store, winch house (17) |
 
-**Greywick and Greybox** are left alone. Greywick's house shells (`GreywickHouseRed`, `GreywickHouseTeal`,
-`GeneralStore`, `HarbourmasterOffice`, `ShipwrightShed`) have no builder and look like a legacy copy of
-NMC. Greybox's wharf and shipwright are logic objects, not buildings. EastWater and SouthWater are water
-scenes. Both Greywick and Greybox are still in the build settings. Whether Greywick gets rooms is the
-owner's call, not a placement lane's.
+**Greywick and Greybox are out of scope by owner ruling** (2026-11-16: "Greywick was a greybox. Its not
+used or part of the game."). Neither gets kitchens or bathrooms, and their shells are not counted above.
+EastWater and SouthWater are water scenes with no buildings.
 
 ### 1.5 No kitchen or bathroom (stood)
 
@@ -226,7 +224,8 @@ toilet, shower, bath) are on main. What *can* stand alone is built: the row tabl
   `Prefab` path from a `Kind → prefab` map in the placement file. R1 also adds the shop and NMC rows once
   their editor looks give coordinates; rows for open-air sites (outhouses) carry world metres and a root
   name, as #1273's open-air `Site` does.
-- `Assets/Tests/EditMode/World/InteriorFixturePlacementTests.cs`
+- `Assets/Tests/EditMode/InteriorFixturePlacementTests.cs` (beside `RoomFixturePlanTests`, in the
+  EditMode assembly that references App.Editor and Art; the `World` test assembly does not)
 
 **Types:**
 - `InteriorFixturePlacement.PrefabFacts`: #1273's, but generalised. It finds the root `MonoBehaviour` that
