@@ -743,6 +743,37 @@ MonoBehaviour:
     SideReach: 0.7
     ContactBowTaper: 0.35
     ContactStemHalfBeams: 0.12
+  HullWaves:
+    Enabled: 1
+    RetirePaintedCrests: 1
+    KelvinHalfAngleDegrees: 19.47
+    MinWavelengthMetres: 0.6
+    MaxWavelengthMetres: 30
+    PacketWavelengths: 1.2
+    SpreadMetres: 4
+    MinSpeed: 0.3
+    HeightPerMetreLength: 0.012
+    FroudeKnee: 0.4
+    MaxHeightMetres: 0.6
+    BowShare: 0.7
+    LifetimeSecondsPerMetreLength: 0.8
+    MinLifetimeSeconds: 4
+    MaxLifetimeSeconds: 30
+    DecayShare: 0.45
+    SourcesPerHull: 28
+    BowSourceShare: 0.35
+    MaxSources: 64
+    SpacingWavelengths: 0.3
+    SourceGain: 1
+    DrawnLift: 1.5
+    FaceLight: 6
+    CrestLight: 0.3
+    TroughDark: 0.12
+    CrestFoamOnsetMetres: 0.12
+    CrestFoamRampMetres: 0.15
+    CrestFoam: 0.55
+    RideScale: 1
+    RippleLifetimeSeconds: 2.5
   DevAllHelmInstruments: 1
   MeshFishingAndDig: 1
   RegionCrossingHysteresisMetres: 0.25

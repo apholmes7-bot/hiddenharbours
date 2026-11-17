@@ -150,6 +150,13 @@ namespace HiddenHarbours.Art
         // the trail), so the foam laid per second does not depend on whose turn it is.
         private bool _trailFromBow;
         private bool _hasPose;
+
+        // ---- the waves she makes (HullWaves) -------------------------------------------------------
+        // Two chains of wave sources: one laid at the end she trails from (her stern, making way
+        // ahead), one at the end she drives into the water. Each keeps only where and when it last
+        // looked; the sources themselves live in the shared field on the Core seam.
+        private HullWaveChain _waveTrail;
+        private HullWaveChain _waveLead;
         private Vector2 _poseDrawnStern;
         private Vector2 _previousStern;
         private Vector2 _previousHeading = Vector2.up;
@@ -450,6 +457,8 @@ namespace HiddenHarbours.Art
                 // the sea is being held still deliberately, and the wake must hold with it. So the
                 // slot keeps what it already has whenever the only reason we are here is dt.
                 if (dt > 0f) PublishWakeLift(position, 0f, 0f);
+                _waveTrail.Reset();
+                _waveLead.Reset();
                 return;
             }
 
@@ -554,6 +563,11 @@ namespace HiddenHarbours.Art
             // the stern wave train is the DRAWN consequence of numbers this method already holds, and
             // it is published for the water shader's vertex stage alone.
             PublishWakeLift(position, WakeLiftMath.TransverseWavelength(horizontalSpeed), wake01);
+
+            // ---- THE WAVES SHE MAKES (the owner, 2026-11-17: "real waves from boats, from the stern, i
+            // also think the bow would cause wake waves") ------------------------------------------------
+            // Moored she makes no way of her own, so she lays nothing.
+            LayHullWaves(position, _way == VesselWay.Moored ? 0f : through.magnitude, now);
 
             _previousPosition = position;
         }
@@ -730,8 +744,34 @@ namespace HiddenHarbours.Art
             // that are actually making way, so joining the water reserves nothing (see PublishWakeLift).
         }
 
+        /// <summary>
+        /// Lay this frame's wave sources: one chain at the end she trails from, one at the end she
+        /// drives into the water. Sized and timed by her length (twice her stern offset) and her speed
+        /// through the water; owned by the object her body sits on (her controller's), so her own drawn
+        /// ride never rises on them.
+        /// </summary>
+        private void LayHullWaves(Vector2 trailing, float speed, double now)
+        {
+            HullWaveField field = HullWaves.Field;
+            HullWaveSettings s = GameServices.HullWaves;
+            if (field == null || !s.Enabled) return;
+            float halfLength = _sternOffsetMeters;
+            float length = halfLength > 0f ? 2f * halfLength : 4f * RadiusMeters;
+            int owner = HullWaves.OwnerOf(_hullBody != null ? (Object)_hullBody.gameObject : gameObject);
+            int budget = Mathf.Max(2, s.SourcesPerHull);
+            int leadBudget = Mathf.Clamp(Mathf.RoundToInt(budget * Mathf.Clamp01(s.BowSourceShare)), 0, budget - 1);
+            _waveTrail.Step(field, trailing, now, speed, length, 1f, budget - leadBudget, owner, in s);
+            if (leadBudget > 0 && halfLength > 0f && s.BowShare > 0f)
+            {
+                Vector2 leading = HullPointLaid(new Vector2(0f, _trailFromBow ? -halfLength : halfLength));
+                _waveLead.Step(field, leading, now, speed, length, s.BowShare, leadBudget, owner, in s);
+            }
+        }
+
         private void Leave()
         {
+            _waveTrail.Reset();
+            _waveLead.Reset();
             if (!_registered) return;
             FoamInjectionRegistry.Unregister(this);
             _registered = false;

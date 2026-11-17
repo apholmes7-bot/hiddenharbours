@@ -1468,6 +1468,28 @@ Shader "HiddenHarbours/Water"
             float4 _HHWakeLiftRoot[HH_WAKE_LIFT_MAX];
             float4 _HHWakeLiftShape[HH_WAKE_LIFT_MAX];
 
+            // ---- REAL WAVES FROM HULLS — globals, published by HullWaveBridge (Core HullWaveField) ---------
+            // Every hull making way lays wave sources at her stern and her bow; each is a ring of crests
+            // spreading from where it was laid. Aged on the CPU in double, so only small numbers arrive:
+            //   _HHHullWaveA[i]    : xy = where it was laid (world m), z = its height now (m),
+            //                        w = its band's radius now (m)
+            //   _HHHullWaveB[i]    : x = k (2pi/wavelength), y = its crests' phase now (rad, [0, 2pi)),
+            //                        z = 1 / band width (1/m), w = reach (m): past it the ring draws nothing
+            //   _HHHullWaveParams  : x = live count, y = drawn lift per metre, z = 1 / spread metres,
+            //                        w = 1 while hull waves are on (0 = OFF: the older wake train draws)
+            //   _HHHullWaveShade   : x = face light, y = crest light /m, z = trough dark /m, w = crest foam
+            //   _HHHullWaveFoam    : x = crest foam onset (m), y = crest foam ramp (m)
+            // UNSET reads all-zero: count 0, OFF, nothing drawn and nothing read.
+            // HH_HULL_WAVE_MAX is a COMPILE-TIME bound pinned to HullWaveField.ShaderCapacity by
+            // HullWaveMathTests; the loops run [loop] and break at the live count, never [unroll] over it.
+            #define HH_HULL_WAVE_MAX 64
+            #define HH_HULL_WAVE_PACKET_REACH 3.0     // HullWaveMath.PacketReach
+            float4 _HHHullWaveA[HH_HULL_WAVE_MAX];
+            float4 _HHHullWaveB[HH_HULL_WAVE_MAX];
+            float4 _HHHullWaveParams;
+            float4 _HHHullWaveShade;
+            float4 _HHHullWaveFoam;
+
             // ---- WIND FETCH (ADR 0027 #1) — globals, published by WaveFieldBridge.PublishFetchGlobals ------
             // How far the wind has blown over open water before it reaches this pixel. Lee shores go calm,
             // exposed shores build.
@@ -2746,6 +2768,55 @@ Shader "HiddenHarbours/Water"
                              - WakeBowHeightAt(worldXY - ey, root.xy, root.zw, shape.w, tall, shape.z);
                 }
                 return total / (2.0 * HH_WAKE_BOW_SLOPE_STEP);
+            }
+
+            // ---- REAL WAVES FROM HULLS (HullWaveMath) --------------------------------------------------
+            // One source's height at distance r from where it was laid, and its radial slope:
+            //     h = amp * exp(-x^2) * spread * cos(k*r - phase),  x = (r - front) / width,
+            //     spread = 1 / sqrt(1 + r / R)
+            // Twin: HullWaveMath.SourceHeight / SourceSlope (HullWaveMathTests reads this text).
+            void HullWaveSourceHeight(float r, float amp, float front, float k, float phase,
+                                      float invWidth, float invSpread, out float h, out float dhdr)
+            {
+                h = 0.0;
+                dhdr = 0.0;
+                float x = (r - front) * invWidth;
+                if (x <= -HH_HULL_WAVE_PACKET_REACH || x >= HH_HULL_WAVE_PACKET_REACH) return;
+                float env = exp(-x * x);
+                float spread = 1.0 / sqrt(1.0 + r * invSpread);
+                float ph = k * r - phase;
+                float c = cos(ph);
+                float sn = sin(ph);
+                h = amp * env * spread * c;
+                float dEnv = -2.0 * x * invWidth * env;
+                float dSpread = -0.5 * invSpread * spread * spread * spread;
+                dhdr = amp * (dEnv * spread * c + env * dSpread * c - env * spread * k * sn);
+            }
+
+            // Every live source summed at a point: height (m) and slope (dh/dx, dh/dy). Exactly 0 while
+            // OFF or with no sources, before any slot is read.
+            void HullWaveSample(float2 worldXY, out float height, out float2 slope)
+            {
+                height = 0.0;
+                slope = 0.0;
+                if (_HHHullWaveParams.w < 0.5 || _HHHullWaveParams.x < 0.5) return;
+                int count = (int)_HHHullWaveParams.x;
+                float invSpread = _HHHullWaveParams.z;
+                [loop]
+                for (int i = 0; i < HH_HULL_WAVE_MAX; i++)
+                {
+                    if (i >= count) break;
+                    float4 a = _HHHullWaveA[i];
+                    float4 b = _HHHullWaveB[i];
+                    float2 d = worldXY - a.xy;
+                    float r2 = dot(d, d);
+                    if (r2 >= b.w * b.w) continue;
+                    float r = sqrt(r2);
+                    float h, dhdr;
+                    HullWaveSourceHeight(r, a.z, a.w, b.x, b.y, b.z, invSpread, h, dhdr);
+                    height += h;
+                    slope += d * (dhdr / max(r, 1e-4));
+                }
             }
 
 
@@ -6007,6 +6078,30 @@ Shader "HiddenHarbours/Water"
                     }
                 }
 
+                // ---- REAL WAVES FROM HULLS: light, crests, a little foam (col.rgb ONLY) -------------------
+                // The rings hulls lay (HullWaveBridge). Their faces take the light the way the mound's do
+                // (same facing, same 0.15 add ceiling), crests brighten and troughs darken by their height,
+                // and a tall enough crest carries a little foam. Fades at the shore with the lift. Skipped
+                // whole while hull waves are off or none are on the water.
+                if (_HHHullWaveParams.w > 0.5 && _HHHullWaveParams.x > 0.5)
+                {
+                    float hullWaveH;
+                    float2 hullWaveSlope;
+                    HullWaveSample(Pixelize(worldXY), hullWaveH, hullWaveSlope);
+                    float hullWaveShore = ShoreFade01(depth, _ShoreFadeBand);
+                    if (hullWaveShore > 0.0 && (hullWaveH != 0.0 || hullWaveSlope.x != 0.0 || hullWaveSlope.y != 0.0))
+                    {
+                        float2 hwSunXY = dot(_SunDir.xy, _SunDir.xy) > 1e-6 ? _SunDir.xy : _LightDir.xy;
+                        float2 hwLd = normalize(hwSunXY + float2(1e-4, 0));
+                        float hwFace = clamp(-dot(hullWaveSlope, hwLd) * _HHHullWaveShade.x, -1.0, 1.0) * 0.15;
+                        float hwCrest = max(hullWaveH, 0.0) * _HHHullWaveShade.y
+                                      - max(-hullWaveH, 0.0) * _HHHullWaveShade.z;
+                        col.rgb += (hwFace + clamp(hwCrest, -0.15, 0.15)) * hullWaveShore;
+                        float hwFoam = saturate((hullWaveH - _HHHullWaveFoam.x) / max(_HHHullWaveFoam.y, 1e-3));
+                        col.rgb = lerp(col.rgb, _FoamColor.rgb, hwFoam * _HHHullWaveShade.w * hullWaveShore);
+                    }
+                }
+
                 // ---- SUN SIDE (register row 11: "the light needs to affect the environment") ------------
                 // The frame was multiplied orange and the SEA had no side to turn to the sun. This adds the
                 // one thing that a multiply cannot: a SPLIT. On the shared facing above, the sunward face
@@ -7104,7 +7199,19 @@ Shader "HiddenHarbours/Water"
                 //     is in DRAWN metres, which is what makes an elevation plate readable.
                 //   * DOES carry `fade`, so the train dies at the walkable waterline exactly as the swell
                 //     does. Anything else would tear the coast that ShoreFade01 exists to keep whole.
+                // While real hull waves are on (HullWaveBridge), they ARE the wake: the older hull-frame
+                // train, which stood still on her like drawn lines, steps aside. Off, it draws as before.
+                if (_HHHullWaveParams.w < 0.5)
                 lift += WakeLiftHeight(ground) * fade;
+                // REAL WAVES FROM HULLS: the rings every hull has laid, lifting the same height the swell
+                // does, faded at the shore with it, so they run out where the sea runs out.
+                if (_HHHullWaveParams.w > 0.5 && _HHHullWaveParams.x > 0.5)
+                {
+                    float hullWave;
+                    float2 hullWaveSlope;
+                    HullWaveSample(ground, hullWave, hullWaveSlope);
+                    lift += hullWave * _HHHullWaveParams.y * fade;
+                }
 
                 ws.y += lift;
                 ws.z += (ground.y - _HeightWorldMin.y) * _WaterIsoDepth.x - lift * _WaterIsoDepth.y;

@@ -548,14 +548,22 @@ namespace HiddenHarbours.Boats
                 // The crest stream draws the WAKE WAVE when it is enabled and the flat white crest LINES
                 // when it is not — chosen ONCE here, so a rig never writes a sprite reference per frame.
                 Sprite crest = _wave.Enabled && _waveSprite != null ? _waveSprite : _lineSprite;
-                _rigs.Add(new WakeRig(boat, _poolPerBoat, _linePoolPerBoat, _dropletPoolPerBoat,
-                                      _wave.TransomCrest ? _transomPoolPerBoat : 0,
+                // While the water draws real hull waves (HullWaveSettings), the painted crests and the
+                // painted stern roll are not built: they were drawn lines standing in for those waves.
+                bool painted = !PaintedCrestsRetired(GameServices.HullWaves);
+                _rigs.Add(new WakeRig(boat, _poolPerBoat, painted ? _linePoolPerBoat : 0, _dropletPoolPerBoat,
+                                      painted && _wave.TransomCrest ? _transomPoolPerBoat : 0,
                                       _bubbles.Enabled ? _bubblePoolPerBoat : 0, _foamSprites,
                                       crest, _bubbleSprites, _tierSprites, _spraySprites, transform,
                                       _sortingLayer, _sortingOrder, _lineSortingOrder, _plumeSortingOrder,
                                       _spraySortingOrder, _bubbleSortingOrder));
             }
         }
+
+        /// <summary>True when the water's real hull waves replace the painted crest and stern-roll
+        /// sprites: hull waves on, and the owner's retire switch on.</summary>
+        public static bool PaintedCrestsRetired(in HullWaveSettings hullWaves) =>
+            hullWaves.Enabled && hullWaves.RetirePaintedCrests;
 
         private bool HasRigFor(BoatController boat)
         {

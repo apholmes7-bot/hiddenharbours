@@ -527,6 +527,12 @@ namespace HiddenHarbours.Core
                  "she pushes through it foam too. Drawn only: no boat feels it. Weights at 0 = the trail alone.")]
         public HullFoamSettings HullFoam = HullFoamSettings.Default;
 
+        [Tooltip("REAL WAVES FROM HULLS: a hull making way lays wave sources at her stern and her bow; each "+
+                 "sends a ring of waves out across the water, and together they make the V-shaped wake with "+
+                 "transverse waves behind her, sized by her length and speed. The water draws them (lift, "+
+                 "light, crest foam) and other hulls' drawn ride bobs on them. Drawn only: no force.")]
+        public HullWaveSettings HullWaves = HullWaveSettings.Default;
+
         [Tooltip("BREAKING WAVES (ADR 0040): where the sea gives out and how — the breaker index γ, " +
                  "the Iribarren thresholds that separate a spilling crumble from a plunging barrel, and " +
                  "the whitewater decay. Ships at the TEXTBOOK PHYSICS (γ = 0.78, Battjes' 0.5/3.3/5.0), " +
