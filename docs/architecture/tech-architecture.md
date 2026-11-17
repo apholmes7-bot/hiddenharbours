@@ -420,8 +420,10 @@ without naming a class. Contracts, all additive:
   one item and touches nothing else; a hold without it is still emptied and refilled.
 - **The save is the source of truth.** The contents live in `SaveData.StoredContainers` (and food in v23
   `KitchenStores`) under the container's id; the scene object is a view that binds to its record by id on
-  enable (a changed save), on start and on `GameLoaded`, not only on the load edge. `GameServices.Reset`
-  still clears the list; whatever outlives a Reset registers again.
+  enable (a changed save), on start and on `GameLoaded`, not only on the load edge. A catch hold binds only
+  once `GameServices.CatchFactory` exists (a restore without it rebuilds nothing); until then it stays
+  unbound and refuses every change, so an empty view can never be written over the saved catch.
+  `GameServices.Reset` still clears the list; whatever outlives a Reset registers again.
 
 ## 5. Boat & entity architecture (composition)
 

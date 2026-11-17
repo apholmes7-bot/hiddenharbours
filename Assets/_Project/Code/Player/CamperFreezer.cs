@@ -58,8 +58,10 @@ namespace HiddenHarbours.Player
         /// <summary>The Def's capacity (0 with no Def).</summary>
         public int CapacityUnits => _def != null ? _def.CapacityUnits : 0;
 
-        /// <summary>What is in it (frozen), counted whether or not it is open.</summary>
-        public int UsedUnits => _items.Count;
+        /// <summary>What is in it (frozen) as a reader sees it: the same count as <see cref="Items"/>, so 0
+        /// while it is not his. The catch itself is kept (in memory and in the save) and counts again the
+        /// moment the deed is his.</summary>
+        public int UsedUnits => IsOpen ? _items.Count : 0;
 
         /// <summary>What a reader sees: the catch when open, nothing while it is not his.</summary>
         public IReadOnlyList<CatchItem> Items => IsOpen ? _items : (IReadOnlyList<CatchItem>)NoItems;
@@ -67,7 +69,7 @@ namespace HiddenHarbours.Player
         /// <summary>Put one catch in, frozen. False when closed, full, or a protected species.</summary>
         public bool TryAdd(CatchItem item)
         {
-            if (!IsOpen || !CatchKeep.MayKeep(in item) || _items.Count >= CapacityUnits) return false;
+            if (!IsOpen || !IsBound() || !CatchKeep.MayKeep(in item) || _items.Count >= CapacityUnits) return false;
             SpoilContext spoil = SpoilContext.Capture();
             _items.Add(item.WithFreshness(Freshness.WithMode(item.Freshness, spoil.NowGameSeconds,
                                                              item.SpoilPerDay, spoil.SecondsPerDay,
@@ -79,7 +81,7 @@ namespace HiddenHarbours.Player
         /// <summary>Empty it. Refused while it is not his, so nothing is ever lost through a closed door.</summary>
         public void Clear()
         {
-            if (!IsOpen) return;
+            if (!IsOpen || !IsBound()) return;
             _items.Clear();
             SyncToSave();
         }
@@ -87,7 +89,7 @@ namespace HiddenHarbours.Player
         /// <summary>Take out the one item at <paramref name="index"/> and nothing else (IHoldRemove).</summary>
         public bool TryRemoveAt(int index)
         {
-            if (!IsOpen || index < 0 || index >= _items.Count) return false;
+            if (!IsOpen || !IsBound() || index < 0 || index >= _items.Count) return false;
             _items.RemoveAt(index);
             SyncToSave();
             return true;
@@ -101,13 +103,36 @@ namespace HiddenHarbours.Player
         }
 
         /// <summary>Read its catch back from the save it has not read yet (or <paramref name="force"/>).
-        /// Public for EditMode, where <c>OnEnable</c> does not fire.</summary>
+        /// Public for EditMode, where <c>OnEnable</c> does not fire.
+        ///
+        /// <para>⚠️ With no <see cref="GameServices.CatchFactory"/> yet, a restore can rebuild nothing, so it does
+        /// NOT count as read: the in-memory view is emptied, the save row is left exactly as it is, and the
+        /// freezer stays unbound (every change refused, see <see cref="IsBound"/>) until a later bind finds a
+        /// factory. Binding there would let the next change write the empty view over the saved catch.</para></summary>
         public void BindToSave(bool force = false)
         {
             SaveData data = GameServices.Save?.Current;
             if (data == null || (!force && ReferenceEquals(data, _boundTo))) return;
+            ICatchItemFactory factory = GameServices.CatchFactory;
+            if (factory == null)
+            {
+                _items.Clear();   // a view of an older save must not show; the row itself is untouched
+                _boundTo = null;
+                return;
+            }
             _boundTo = data;
-            HoldCatchCodec.Restore(StoredContainers.CatchIn(data, StorageId), GameServices.CatchFactory, _items);
+            HoldCatchCodec.Restore(StoredContainers.CatchIn(data, StorageId), factory, _items);
+        }
+
+        /// <summary>True when a change may be written: there is no save to guard, or the current save has
+        /// been read (binding now if it can). False means the saved row has not been read yet, so a change
+        /// would overwrite catch it cannot see.</summary>
+        public bool IsBound()
+        {
+            SaveData data = GameServices.Save?.Current;
+            if (data == null) return true;
+            if (!ReferenceEquals(data, _boundTo)) BindToSave();
+            return ReferenceEquals(data, _boundTo);
         }
 
         private void SyncToSave()

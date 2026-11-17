@@ -134,6 +134,8 @@ namespace HiddenHarbours.Player
             _hands = carrier as CarryHands;
             ResolveYSort();
             if (_ySort != null) _ySort.enabled = false;
+            // In his hands = in no container: the save row goes on ANY lift, not only a rack's TryTake.
+            StowageRack.ForgetStored(this);
         }
 
         /// <summary>Back on the ground at its final position: hand Y-sorting back, which is what re-sorts

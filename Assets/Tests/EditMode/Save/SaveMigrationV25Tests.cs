@@ -136,5 +136,125 @@ namespace HiddenHarbours.Tests.EditMode
             SaveMigration.Migrate(save);
             Assert.AreEqual(2, save.StoredContainers[0].Items.Count, "idempotent");
         }
+
+        [Test]
+        public void OneObjectOnePlace_ARepeatedInstanceKeepsOnlyItsFirstOccurrence()
+        {
+            SaveData save = SaveMigration.NewGame();
+            save.StoredContainers = new List<StoredContainerDto>
+            {
+                new StoredContainerDto
+                {
+                    Key = Rack,
+                    Items =
+                    {
+                        new StoredItemDto { ItemId = "tool.rod", InstanceId = "tool.st_peters.rod" },
+                        new StoredItemDto { ItemId = "tool.rod", InstanceId = "tool.st_peters.rod" },   // twice in one
+                        new StoredItemDto { ItemId = "tool.rod", InstanceId = "rod.two" },
+                    },
+                },
+                new StoredContainerDto
+                {
+                    Key = Locker,
+                    Items =
+                    {
+                        new StoredItemDto { ItemId = "tool.rod", InstanceId = "rod.two" },              // in two containers
+                        new StoredItemDto { ItemId = "supply.bait", Count = 3 },
+                        new StoredItemDto { ItemId = "supply.bait", Count = 2 },                        // counted lots never dedupe
+                    },
+                },
+                new StoredContainerDto
+                {
+                    Key = "storage.other",
+                    Items = { new StoredItemDto { ItemId = "tool.shovel", InstanceId = "tool.st_peters.rod" } },
+                },
+            };
+
+            SaveMigration.Migrate(save);
+
+            Assert.AreEqual(2, save.StoredContainers.Count, "a container left with only repeats is dropped");
+            StoredContainerDto rack = StoredContainers.Find(save, Rack);
+            Assert.AreEqual(2, rack.Items.Count);
+            Assert.AreEqual("tool.st_peters.rod", rack.Items[0].InstanceId, "the first occurrence is kept");
+            Assert.AreEqual("rod.two", rack.Items[1].InstanceId);
+            StoredContainerDto locker = StoredContainers.Find(save, Locker);
+            Assert.AreEqual(2, locker.Items.Count, "the rod that is already in the rack goes; both bait lots stay");
+            Assert.IsFalse(locker.Items[0].IsInstance);
+            Assert.AreEqual(5, locker.Items[0].Count + locker.Items[1].Count);
+            Assert.IsNull(StoredContainers.Find(save, "storage.other"));
+            Assert.AreEqual(Rack, StoredContainers.ContainerOf(save, "rod.two"));
+
+            string before = Rows(save);
+            SaveMigration.Migrate(save);
+            Assert.AreEqual(before, Rows(save), "a second heal changes nothing");
+        }
+
+        static string Rows(SaveData save)
+        {
+            var sb = new System.Text.StringBuilder();
+            foreach (StoredContainerDto c in save.StoredContainers)
+            {
+                sb.Append(c.Key).Append('|').Append(c.ContainerDefId).Append(':');
+                foreach (StoredItemDto i in c.Items) sb.Append(i.ItemId).Append('/').Append(i.InstanceId).Append('x').Append(i.Count).Append(',');
+                sb.Append(';');
+            }
+            return sb.ToString();
+        }
+
+        [Test]
+        public void AV24SaveWithItsOwnRowsFilledIn_KeepsThemAllThroughTheStep()
+        {
+            SaveData save = SaveSerialization.FromJson(
+                "{\"SchemaVersion\":24,\"GameTimeSeconds\":4321.0," +
+                "\"CaughtSpecies\":[{\"SpeciesId\":\"fish.atlantic_cod\",\"DisplayName\":\"Atlantic cod\"," +
+                    "\"Count\":3,\"ReleasedCount\":1,\"RecordWeightKg\":4.5}]," +
+                "\"NpcGiftDays\":[{\"NpcId\":\"npc.ginny\",\"DayIndex\":2,\"Count\":1}]," +
+                "\"CookJobs\":[{\"StationKey\":\"stove.ginny\",\"StationId\":\"station.stove\"," +
+                    "\"RecipeId\":\"recipe.fish_cakes\",\"ReadyAtGameSeconds\":900.0}]," +
+                "\"HullLoranWaypoints\":[{\"HullId\":\"boat.dory\",\"Number\":1,\"ChainId\":\"loran.9960\"," +
+                    "\"SecondaryA\":0,\"SecondaryB\":1,\"TdA\":13250.5,\"TdB\":27980.25}]," +
+                "\"FreezerCatch\":[{\"SpeciesId\":\"fish.atlantic_cod\",\"Quantity\":2,\"SpoilAccrued\":0.25," +
+                    "\"LastSettleGameSeconds\":50.0,\"Mode\":2}]}");
+
+            Assert.AreEqual(SaveMigration.CurrentVersion, save.SchemaVersion);
+
+            Assert.AreEqual(1, save.CaughtSpecies.Count);
+            CaughtSpeciesDto caught = save.CaughtSpecies[0];
+            Assert.AreEqual("fish.atlantic_cod", caught.SpeciesId);
+            Assert.AreEqual("Atlantic cod", caught.DisplayName);
+            Assert.AreEqual(3, caught.Count);
+            Assert.AreEqual(1, caught.ReleasedCount);
+            Assert.AreEqual(4.5f, caught.RecordWeightKg);
+
+            Assert.AreEqual(1, save.NpcGiftDays.Count);
+            Assert.AreEqual("npc.ginny", save.NpcGiftDays[0].NpcId);
+
+            Assert.AreEqual(1, save.CookJobs.Count);
+            CookJobDto job = save.CookJobs[0];
+            Assert.AreEqual("stove.ginny", job.StationKey);
+            Assert.AreEqual("station.stove", job.StationId);
+            Assert.AreEqual("recipe.fish_cakes", job.RecipeId);
+            Assert.AreEqual(900d, job.ReadyAtGameSeconds);
+
+            Assert.AreEqual(1, save.HullLoranWaypoints.Count);
+            LoranWaypointDto w = save.HullLoranWaypoints[0];
+            Assert.AreEqual("boat.dory", w.HullId);
+            Assert.AreEqual(1, w.Number);
+            Assert.AreEqual("loran.9960", w.ChainId);
+            Assert.AreEqual(0, w.SecondaryA);
+            Assert.AreEqual(1, w.SecondaryB);
+            Assert.AreEqual(13250.5d, w.TdA);
+            Assert.AreEqual(27980.25d, w.TdB);
+
+            Assert.AreEqual(1, save.FreezerCatch.Count);
+            HeldCatchDto r = save.FreezerCatch[0];
+            Assert.AreEqual("fish.atlantic_cod", r.SpeciesId);
+            Assert.AreEqual(2, r.Quantity);
+            Assert.AreEqual(0.25f, r.SpoilAccrued);
+            Assert.AreEqual(50d, r.LastSettleGameSeconds);
+            Assert.AreEqual(2, r.Mode);
+
+            Assert.AreEqual(0, save.StoredContainers.Count, "nothing is invented in the v25 rows");
+        }
     }
 }

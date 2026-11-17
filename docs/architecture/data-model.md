@@ -287,7 +287,8 @@ plain serializable DTOs owned by `SaveService` (`architecture/tech-architecture.
 > an emptied container leaves no row, and capacity is the caller's Def, never saved. Read and written
 > through `StoredContainers`. The `v24→v25` step adds an empty list (nothing invented); the unconditional
 > repair (`HealStoredContainers`) drops keyless containers and unusable items, folds a repeated key into
-> the first, and drops empty rows. A container that is a catch hold keeps its catch in the row's `Catch`
+> the first, keeps only the FIRST occurrence of an instance id that repeats (in two containers or twice in
+> one), and drops empty rows. A tool in someone's hands is in no container: any lift removes its row. A container that is a catch hold keeps its catch in the row's `Catch`
 > list (`HeldCatchDto`, the same records Ginny's freezer keeps in `FreezerCatch`, via `HoldCatchCodec`):
 > the camper's chest freezer (`CamperFreezer`, `FreezerDef` `freezer.camper_freezer`, 40 units, fixed id
 > `storage.stpeters.camper_freezer`) takes landed catch frozen, as Ginny's does; the repair drops catch

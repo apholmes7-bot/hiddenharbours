@@ -201,6 +201,59 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.AreEqual(1, rack.UsedSlots);
         }
 
+        [Test]
+        public void ARackThatIsSwitchedOff_IsNotWhereAWakingToolGoes()
+        {
+            StowageRack rack = MakeRack(RackId, capacity: 1);
+            StoredContainers.TryStoreInstance(_save.Current, RackId, "stowage.test_rack", ToolDef.RodId, RodId, 1);
+            CarriableTool rod = MakeTool(RodId);
+
+            rack.enabled = false;
+            Assert.IsFalse(StowageRack.ReturnIfStored(rod), "a disabled rack takes nothing");
+            Assert.IsFalse(rack.Holds(rod));
+            rack.enabled = true;
+
+            rack.gameObject.SetActive(false);   // its region root toggled away by a crossing
+            Assert.IsFalse(StowageRack.ReturnIfStored(rod), "nor does one under an inactive root");
+            Assert.IsFalse(rack.Holds(rod));
+            Assert.IsTrue(rod.gameObject.activeSelf, "the rod stays in the world it woke in");
+            Assert.AreEqual(RackId, StoredContainers.ContainerOf(_save.Current, RodId), "and its row is kept");
+
+            rack.gameObject.SetActive(true);
+            Assert.IsTrue(StowageRack.ReturnIfStored(rod), "switched back on, it goes in");
+            Assert.IsTrue(rack.Holds(rod));
+        }
+
+        // ---- any lift ----------------------------------------------------------------------------------------
+
+        [Test]
+        public void AnyLift_TakesTheToolOffItsSaveRow()
+        {
+            // The save lists the rod in a rack whose scene is not loaded, while the rod itself lies in the world.
+            StoredContainers.TryStoreInstance(_save.Current, RackId, "stowage.test_rack", ToolDef.RodId, RodId, 2);
+            CarriableTool rod = MakeTool(RodId);
+
+            CarryHands hands = ToolInHand.Empty(_spawned);
+            Assert.AreEqual(CarryRefusal.None, hands.TryPickUp(rod), "picked up by a press, not a rack's TryTake");
+
+            Assert.IsNull(StoredContainers.ContainerOf(_save.Current, RodId), "in hand is in no container");
+            Assert.IsNull(StoredContainers.Find(_save.Current, RackId), "and the emptied row is gone");
+        }
+
+        [Test]
+        public void ALiftOfAToolWithNoRow_ChangesNothingElse()
+        {
+            StoredContainers.TryStoreInstance(_save.Current, RackId, "stowage.test_rack", ToolDef.RodId,
+                                              "tool.st_peters.spare_rod", 2);
+            CarriableTool rod = MakeTool(RodId);
+
+            CarryHands hands = ToolInHand.Empty(_spawned);
+            Assert.AreEqual(CarryRefusal.None, hands.TryPickUp(rod));
+
+            Assert.AreEqual(RackId, StoredContainers.ContainerOf(_save.Current, "tool.st_peters.spare_rod"),
+                            "another tool's row is not touched");
+        }
+
         // ---- the deed --------------------------------------------------------------------------------------
 
         [Test]

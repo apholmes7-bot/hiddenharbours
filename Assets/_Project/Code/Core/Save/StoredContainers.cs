@@ -102,6 +102,15 @@ namespace HiddenHarbours.Core
             return true;
         }
 
+        /// <summary>Take world object <paramref name="instanceId"/> out of whichever container holds it (every
+        /// one, should a damaged save list it twice). True iff it was anywhere.</summary>
+        public static bool ForgetInstance(SaveData save, string instanceId)
+        {
+            if (ContainerOf(save, instanceId) == null) return false;
+            RemoveInstanceEverywhere(save, instanceId);
+            return true;
+        }
+
         /// <summary>
         /// Put up to <paramref name="count"/> of a counted kind in the container, never past
         /// <paramref name="capacity"/>. Returns how many went in (0 for a bad argument or a full container).

@@ -542,12 +542,14 @@ namespace HiddenHarbours.Core
         /// Null-repair the v25 storage rows. A container with no key is dropped (nothing could find it again);
         /// a second row for a key already kept is folded into the first, so no item is lost and the key stays
         /// one row. An item with no kind, or a counted lot of zero or fewer, is dropped, and so is a catch record
-        /// with no species or no quantity; a container left with nothing in it is dropped. Kept rows are never
-        /// changed. Idempotent.
+        /// with no species or no quantity; a container left with nothing in it is dropped. One object, one
+        /// place: an instance id that repeats (in two containers, or twice in one) keeps its FIRST occurrence in
+        /// list order and every later one is dropped. Kept rows are never changed. Idempotent.
         /// </summary>
         private static void HealStoredContainers(System.Collections.Generic.List<StoredContainerDto> containers)
         {
             var kept = new System.Collections.Generic.Dictionary<string, StoredContainerDto>(System.StringComparer.Ordinal);
+            var instances = new System.Collections.Generic.HashSet<string>(System.StringComparer.Ordinal);
             for (int i = 0; i < containers.Count; i++)
             {
                 StoredContainerDto c = containers[i];
@@ -558,12 +560,13 @@ namespace HiddenHarbours.Core
                 }
                 c.ContainerDefId ??= "";
                 c.Items ??= new System.Collections.Generic.List<StoredItemDto>();
-                for (int k = c.Items.Count - 1; k >= 0; k--)
+                for (int k = 0; k < c.Items.Count; k++)   // forward: the first occurrence is the one kept
                 {
                     StoredItemDto item = c.Items[k];
-                    if (item == null || string.IsNullOrEmpty(item.ItemId) || (!item.IsInstance && item.Count <= 0))
+                    if (item == null || string.IsNullOrEmpty(item.ItemId) || (!item.IsInstance && item.Count <= 0)
+                        || (item.IsInstance && !instances.Add(item.InstanceId)))
                     {
-                        c.Items.RemoveAt(k);
+                        c.Items.RemoveAt(k--);
                         continue;
                     }
                     item.InstanceId ??= "";

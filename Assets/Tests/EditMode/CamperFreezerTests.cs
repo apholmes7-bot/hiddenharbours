@@ -225,10 +225,70 @@ namespace HiddenHarbours.Tests.EditMode
 
             _save.SetFlag(HomeDeeds.KeyFor(CamperDeed), false);
             Assert.AreEqual(0, freezer.Items.Count, "a reader sees nothing in a freezer that is not his");
+            Assert.AreEqual(0, freezer.UsedUnits, "and the count agrees with what is shown");
             Assert.IsFalse(freezer.TryRemoveAt(0));
             freezer.Clear();
-            Assert.AreEqual(1, freezer.UsedUnits, "and nothing is emptied through a closed door");
-            Assert.AreEqual(1, Units(StoredContainers.CatchIn(_save.Current, StorageIds.CamperFreezer)));
+            Assert.AreEqual(1, Units(StoredContainers.CatchIn(_save.Current, StorageIds.CamperFreezer)),
+                            "nothing is emptied through a closed door");
+
+            GrantDeed();
+            Assert.AreEqual(1, freezer.UsedUnits, "his again: the catch was kept all along");
+            Assert.AreEqual(CodId, freezer.Items[0].SpeciesId);
+        }
+
+        // ---- no catch factory yet ----------------------------------------------------------------------------
+
+        [Test]
+        public void ABindWithNoCatchFactory_LeavesTheSavedRowIntact_AndBindsLater()
+        {
+            GrantDeed();
+            CamperFreezer freezer = MakeFreezer();
+            Assert.IsTrue(freezer.TryAdd(Cod()));
+            Assert.IsTrue(freezer.TryAdd(Haddock()));
+
+            // A load lands before the factory is registered.
+            _save.Current = SaveSerialization.FromJson(SaveSerialization.ToJson(_save.Current));
+            GameServices.CatchFactory = null;
+            freezer.BindToSave(force: true);
+
+            Assert.IsFalse(freezer.IsBound(), "a restore that could rebuild nothing is not a read");
+            Assert.AreEqual(0, freezer.UsedUnits);
+            Assert.IsFalse(freezer.TryAdd(Cod()), "a change now would write over catch it cannot see");
+            Assert.IsFalse(freezer.TryRemoveAt(0));
+            freezer.Clear();
+            Assert.AreEqual(2, Units(StoredContainers.CatchIn(_save.Current, StorageIds.CamperFreezer)),
+                            "the saved row is exactly as it was");
+
+            GameServices.CatchFactory = new FakeFactory();
+            freezer.BindToSave();
+            Assert.IsTrue(freezer.IsBound());
+            Assert.AreEqual(2, freezer.UsedUnits, "the later bind brings it all back");
+            Assert.AreEqual(CodId, freezer.Items[0].SpeciesId);
+            Assert.AreEqual(HaddockId, freezer.Items[1].SpeciesId);
+        }
+
+        [Test]
+        public void GinnysFreezer_AlsoWaitsForTheCatchFactory_BeforeItBinds()
+        {
+            var go = new GameObject("GinnyFreezer");
+            _made.Add(go);
+            var ginny = go.AddComponent<GinnyFreezer>();
+            ginny.BindToSave();
+            Assert.IsTrue(ginny.TryAdd(Cod()));
+            Assert.IsTrue(ginny.TryAdd(Haddock()));
+
+            _save.Current = SaveSerialization.FromJson(SaveSerialization.ToJson(_save.Current));
+            GameServices.CatchFactory = null;
+            ginny.BindToSave(force: true);
+
+            Assert.IsFalse(ginny.IsBound());
+            Assert.IsFalse(ginny.TryAdd(Cod()));
+            ginny.Clear();
+            Assert.AreEqual(2, Units(_save.Current.FreezerCatch), "Ginny's saved catch is not overwritten");
+
+            GameServices.CatchFactory = new FakeFactory();
+            ginny.BindToSave();
+            Assert.AreEqual(2, ginny.UsedUnits);
         }
 
         // ---- one of his containers: the Give rows -----------------------------------------------------------
@@ -273,6 +333,10 @@ namespace HiddenHarbours.Tests.EditMode
             var gifts = new GiftInventory();
             gifts.Gather(null, null, null, null);
             Assert.IsFalse(gifts.TryTakeOne(CodId, out _));
+            Assert.AreEqual(0, freezer.UsedUnits, "closed: it reads empty");
+            Assert.AreEqual(1, Units(StoredContainers.CatchIn(_save.Current, StorageIds.CamperFreezer)),
+                            "and the gift took nothing from the save");
+            GrantDeed();
             Assert.AreEqual(1, freezer.UsedUnits);
         }
     }

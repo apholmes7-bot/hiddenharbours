@@ -261,9 +261,24 @@ namespace HiddenHarbours.Player
             SaveData data = GameServices.Save?.Current;
             string key = StoredContainers.ContainerOf(data, tool.Id);
             if (key == null || !(PlayerStorage.Find(key) is StowageRack rack)) return false;
+            // A rack listed but switched off (its region root toggled away by a crossing) is not a place a
+            // tool can go: hidden under an inactive root, it would vanish from the world it woke in.
+            if (!rack.enabled || !rack.gameObject.activeInHierarchy) return false;
             if (rack.Holds(tool) || InAnyRack(tool)) return false;
             rack.Hold(tool);
             return true;
+        }
+
+        /// <summary>
+        /// The tool is in someone's hands, so it is in no container any more: its save row goes, whichever
+        /// container held it and however it was lifted (a rack's <see cref="TryTake"/>, a press on the tool,
+        /// any other path through <see cref="CarryHands.TryPickUp"/>). Called from
+        /// <see cref="CarriableTool.OnLifted"/>. True iff a row was removed.
+        /// </summary>
+        public static bool ForgetStored(CarriableTool tool)
+        {
+            if (tool == null || !tool.HasAuthoredId) return false;
+            return StoredContainers.ForgetInstance(GameServices.Save?.Current, tool.Id);
         }
 
         private void Remember(CarriableTool tool)

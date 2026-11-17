@@ -103,6 +103,60 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.IsEmpty(faults, string.Join("\n", faults));
         }
 
+        [Test]
+        public void NoTwoPlacedToolsShareAnAuthoredId()
+        {
+            // The save remembers a stowed tool by its authored _id (the rack binds back to THE rod with that id),
+            // so two placed tools under one id would both answer one save row. Every CarriableTool component in a
+            // scene or prefab (its script guid; stripped prefab-instance stubs carry no fields and are skipped) is
+            // streamed block by block; an empty id is per-instance and never remembered, so it is not counted. A
+            // prefab's own id counts as one placement (every instance of it would carry that id).
+            const string CarriableToolGuid = "aceb7d90ce7a4064b6a93401c5449217";
+            var toolId = new Regex(@"^  _id:\s*(\S*)\s*$");
+            var where = new Dictionary<string, string>();
+            var faults = new List<string>();
+            string root = Path.Combine(Application.dataPath, "_Project");
+            foreach (string path in Directory.EnumerateFiles(root, "*.*", SearchOption.AllDirectories))
+            {
+                if (!path.EndsWith(".unity") && !path.EndsWith(".prefab")) continue;
+                bool inBlock = false, isTool = false;
+                string id = null;
+                foreach (string line in File.ReadLines(path))
+                {
+                    if (line.StartsWith("--- ", System.StringComparison.Ordinal))
+                    {
+                        Claim(path, isTool ? id : null, where, faults);
+                        inBlock = line.StartsWith("--- !u!114 &", System.StringComparison.Ordinal) &&
+                                  !line.EndsWith(" stripped", System.StringComparison.Ordinal);
+                        isTool = false;
+                        id = null;
+                        continue;
+                    }
+                    if (!inBlock) continue;
+                    if (line.StartsWith("  m_Script:", System.StringComparison.Ordinal))
+                        isTool = line.IndexOf(CarriableToolGuid, System.StringComparison.Ordinal) >= 0;
+                    else if (line.StartsWith("  _id:", System.StringComparison.Ordinal))
+                    {
+                        Match m = toolId.Match(line);
+                        if (m.Success) id = m.Groups[1].Value;
+                    }
+                }
+                Claim(path, isTool ? id : null, where, faults);
+            }
+            Assert.IsEmpty(faults, string.Join("\n", faults));
+            Assert.IsTrue(where.ContainsKey("tool.st_peters.rod"),
+                          "the scan finds the placed rod (a scan that finds nothing proves nothing)");
+        }
+
+        static void Claim(string path, string id, Dictionary<string, string> where, List<string> faults)
+        {
+            if (string.IsNullOrEmpty(id)) return;
+            if (where.TryGetValue(id, out string first))
+                faults.Add($"tool id '{id}' is placed in both {first} and {path}");
+            else
+                where[id] = path;
+        }
+
         // ---- defs and capacities ----------------------------------------------------------------------
 
         [Test]
