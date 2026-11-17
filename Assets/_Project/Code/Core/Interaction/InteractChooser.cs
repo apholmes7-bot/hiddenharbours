@@ -43,6 +43,7 @@ namespace HiddenHarbours.Core
         private static bool _heldGate;
         private static bool _heldMove;
         private static bool _heldCancel;
+        private static bool _owned;
 
         /// <summary>True while the list is up.</summary>
         public static bool IsOpen { get; private set; }
@@ -83,8 +84,22 @@ namespace HiddenHarbours.Core
         /// already open, or when a modal already holds the key.
         /// </summary>
         public static bool Open(InteractChoiceList built, in InteractActor actor, float facingArcDegrees)
+            => OpenRowsFrom(built, actor, facingArcDegrees, owned: false);
+
+        /// <summary>
+        /// Put up rows its owner built for one thing that is NOT in <see cref="Interactables"/> (a villager,
+        /// found by the conversation driver: <see cref="InteractChoiceList.BuildActionsOf"/>). The same
+        /// refusals and holds as <see cref="Open"/>; a confirm re-checks the thing's context, availability,
+        /// reach and facing live, but not its registration, which it never had.
+        /// </summary>
+        public static bool OpenOwned(InteractChoiceList built, in InteractActor actor, float facingArcDegrees)
+            => OpenRowsFrom(built, actor, facingArcDegrees, owned: true);
+
+        private static bool OpenRowsFrom(InteractChoiceList built, in InteractActor actor, float facingArcDegrees,
+                                         bool owned)
         {
             if (IsOpen || built == null || !built.IsChoice || InteractionGate.IsBlocked) return false;
+            _owned = owned;
             OpenRows.CopyFrom(built);
             _actor = actor;
             _arc = facingArcDegrees;
@@ -146,9 +161,10 @@ namespace HiddenHarbours.Core
 
             InteractActor actor = InteractActorProbe.Has ? InteractActorProbe.Current : _actor;
             float arc = _arc;
+            bool owned = _owned;
             Close();
 
-            if (!StillWorkable(choice, actor, arc)) return true;   // it went away under the cursor
+            if (!StillWorkable(choice, actor, arc, owned)) return true;   // it went away under the cursor
             InteractVerb.Perform(choice.Candidate, choice.Action, actor);
             return true;
         }
@@ -169,13 +185,13 @@ namespace HiddenHarbours.Core
             _frameClock = UnityFrame;
         }
 
-        private static bool StillWorkable(in InteractChoice choice, in InteractActor actor, float arc)
+        private static bool StillWorkable(in InteractChoice choice, in InteractActor actor, float arc, bool owned)
         {
             IInteractable c = choice.Candidate;
-            bool registered = false;
+            bool registered = owned;
             var live = Interactables.Active;
-            for (int i = 0; i < live.Count; i++)
-                if (ReferenceEquals(live[i], c)) { registered = true; break; }
+            for (int i = 0; i < live.Count && !registered; i++)
+                if (ReferenceEquals(live[i], c)) registered = true;
             if (!registered) return false;
             if (c is IExclusiveInteractable ex && ex.IsOccupied) return false;
             return InteractResolver.Qualifies(c, actor, actor.Facing, InteractArc.CosHalfArc(arc), out _);
@@ -191,6 +207,7 @@ namespace HiddenHarbours.Core
             _heldGate = false;
             _heldMove = false;
             _heldCancel = false;
+            _owned = false;
             OpenRows.Clear();
             Announce();
         }

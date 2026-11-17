@@ -97,8 +97,11 @@ namespace HiddenHarbours.World
         // interpolates, and the offer is stated every frame there is a candidate, so building it per frame
         // would be one allocation a frame for as long as you stand in front of a neighbour (rule 7).
         private Interactable _labelledFor;
-        private bool _labelIsGift;
         private string _label;
+
+        // The talk/give chooser's one thing and its rows, reused for every press (rule 7).
+        private ConversationChoice _choice;
+        private readonly InteractChoiceList _rows = new InteractChoiceList();
 
         // Who is currently talking, and their day — looked up ONCE when the conversation opens rather
         // than per frame (rule 7). Null for an interactable with no routine (a letter, a logbook, an
@@ -116,7 +119,9 @@ namespace HiddenHarbours.World
         private void Update()
         {
             var kb = Keyboard.current;
-            bool interact = kb != null && kb.eKey.wasPressedThisFrame;
+            // The press that just confirmed the talk/give chooser (whose view runs earlier in the frame) is
+            // still "pressed this frame": it must not also advance the conversation that confirm opened.
+            bool interact = kb != null && kb.eKey.wasPressedThisFrame && !InteractChooser.ClosedThisFrame;
 
             // While a conversation is up, the key advances it (and nothing is offered — the bubble IS the
             // surface, and a popup beside it would be naming the press the bubble has already taken).
@@ -198,13 +203,59 @@ namespace HiddenHarbours.World
             Interactable target = FindNearest();
             if (target == null) return false;
 
-            // ⭐ A GIFT, when a giftable catch is in hand and she is somebody you have met (gifting slice 1).
-            // The same answer the offer showed (OffersGift), so the popup's "Give" and the press agree.
-            // ⚑ When the interaction chooser lands, this is the one branch it splits into two rows — Talk
-            // and Give — instead of the hand deciding; Give() is already the whole act.
-            if (OffersGift(target, out CatchItem held)) Give(target, in held);
-            else Begin(target);
+            // ⭐ TALK OR GIVE, when a giftable catch is in hand and she is somebody you have met (gifting
+            // slice 1): the chooser goes up with "Talk" (the default) and "Give <item>" as two rows, and
+            // the press itself never gives. With nothing giftable in hand it is a conversation, at once.
+            if (OffersGift(target, out CatchItem held) && TryOfferTalkOrGive(target, in held)) return true;
+            Begin(target);
             return true;
+        }
+
+        /// <summary>
+        /// <b>Talk, or give?</b> With a giftable catch in his hand, a press on somebody he has met puts up
+        /// the chooser with two rows — "Talk" first and selected, "Give &lt;item&gt;" beneath — so the
+        /// press itself never gives: a confirm on the default talks, exactly as a press with empty hands
+        /// does. False when the list could not go up (the chooser switched off in config, or a modal took
+        /// the key), and the caller then just talks.
+        /// </summary>
+        private bool TryOfferTalkOrGive(Interactable target, in CatchItem held)
+        {
+            if (!ChooserEnabled()) return false;
+            if (_choice == null) _choice = new ConversationChoice(TalkFromChoice, GiveFromChoice);
+
+            GiftItem item = GiftItem.FromCatch(in held, GameServices.GiftableFacts);
+            _choice.Bind(target, WorldStrings.GiveRowLabel(item.DisplayName), _radius * DisengageSlack);
+
+            GameConfig config = GameServices.Config;
+            int maxRows = config != null ? config.InteractChooserMaxRows : GameConfig.DefaultInteractChooserMaxRows;
+            _rows.BuildActionsOf(_choice, maxRows);
+            return InteractChooser.OpenOwned(_rows, CurrentActor(), _facingArcDegrees);
+        }
+
+        private static bool ChooserEnabled()
+        {
+            GameConfig config = GameServices.Config;
+            return config != null ? config.InteractChooserEnabled : GameConfig.DefaultInteractChooserEnabled;
+        }
+
+        /// <summary>Who is pressing, for the chooser's live re-check: the Player lane's published actor
+        /// where there is one, else the resolved player's position with facing unknown (which the arc
+        /// passes, as <see cref="FindNearest"/> does).</summary>
+        private InteractActor CurrentActor()
+        {
+            if (InteractActorProbe.Has) return InteractActorProbe.Current;
+            Transform player = ResolvePlayer();
+            Vector2 at = player != null ? (Vector2)player.position : Vector2.zero;
+            return new InteractActor(at, Vector2.zero, InteractContext.OnFoot);
+        }
+
+        // The chooser's two rows, confirmed. Talk is the ordinary conversation; Give re-reads the hand at
+        // the confirm, so a catch that left it while the list was up is never "given".
+        private void TalkFromChoice(Interactable target) => Begin(target);
+
+        private void GiveFromChoice(Interactable target)
+        {
+            if (OffersGift(target, out CatchItem held)) Give(target, in held);
         }
 
         /// <summary>
@@ -434,7 +485,7 @@ namespace HiddenHarbours.World
         // ---- gifts (gifting slice 1, owner ask 2026-11-15) -------------------------------------
 
         /// <summary>
-        /// Does facing <paramref name="target"/> offer a GIFT rather than a talk? True when she is a person
+        /// Does facing <paramref name="target"/> offer a GIFT row beside the talk? True when she is a person
         /// (an <see cref="NpcDef"/> you Talk to, with an id), you have MET her (her completion flag is set,
         /// or she has none — her opening conversation is never skipped by a fish in your hand), and the
         /// loose catch in your hand is giftable (<see cref="GiftItem.IsGiftable"/>, the species' own flag).
@@ -576,8 +627,10 @@ namespace HiddenHarbours.World
             Transform player = ResolvePlayer();
             float distSq = player != null ? ((Vector2)player.position - at).sqrMagnitude : 0f;
 
+            // Always the talk line: it is what the press does first. With a giftable catch in hand the press
+            // opens the chooser on "Talk", and "Give <item>" waits beneath it there.
             InteractOffer.Set(InteractOfferSource.Conversation, OfferIdFor(target),
-                              OfferLabelFor(target, OffersGift(target, out _)), at, distSq);
+                              OfferLabelFor(target), at, distSq);
         }
 
         /// <summary>
@@ -588,14 +641,12 @@ namespace HiddenHarbours.World
         /// interactable, and the reference changing is the only way the answer can. Same shape as the
         /// carriables' label pair, for the same rule-7 reason.</para>
         /// </summary>
-        private string OfferLabelFor(Interactable target, bool gift)
+        private string OfferLabelFor(Interactable target)
         {
-            if (!ReferenceEquals(target, _labelledFor) || gift != _labelIsGift)
+            if (!ReferenceEquals(target, _labelledFor))
             {
                 _labelledFor = target;
-                _labelIsGift = gift;
-                _label = gift ? WorldStrings.GiftOfferLabel(target.Speaker)
-                              : WorldStrings.OfferLabel(target.Kind, target.Speaker);
+                _label = WorldStrings.OfferLabel(target.Kind, target.Speaker);
             }
             return _label;
         }
