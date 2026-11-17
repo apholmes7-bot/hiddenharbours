@@ -18,3 +18,24 @@ MonoBehaviour:
   Dialogue: {fileID: 11400000, guid: 3bfec5cbc2ec47529de7375f4a5f8e2e, type: 2}
   CompletionFlag: met_monique
   Build: {fileID: 11400000, guid: 510dcc541b277c1488956f57098b2547, type: 2}
+  Gifts:
+    LovedItemIds:
+    - fish.atlantic_herring
+    LikedItemIds: []
+    DislikedItemIds:
+    - fish.rock_crab
+    LovedTags: []
+    LikedTags:
+    - pelagic
+    DislikedTags: []
+    Lines:
+      Loved:
+      - 'Herring! Salt herring and potatoes, my mother''s supper. Out of my own rows, too. Thank you.'
+      Liked:
+      - 'That''ll feed the four of us. Thank you, truly.'
+      Neutral:
+      - 'Thank you. It''ll go in the pot with the turnip.'
+      Disliked:
+      - 'A crab. Sam will want to keep it in a bucket and name it. Thank you, I think.'
+      NotGiftable: []
+      AlreadyGiftedToday: []

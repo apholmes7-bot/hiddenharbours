@@ -72,5 +72,16 @@ namespace HiddenHarbours.Core
 
         public static ChooserIntents Apply(in ChooserIntents raw)
             => Apply(raw, WorldStopped, HelmKeyCapture.IsCapturing);
+
+        /// <summary>
+        /// The autopilot switch's gates (the HUD's two). A stopped world takes the press (the pause menu
+        /// does not flick helm switches), and so does a text field that owns the keys: a "P" typed in a
+        /// waypoint name is a letter, not the autopilot.
+        /// </summary>
+        public static AutopilotIntents Apply(in AutopilotIntents raw, bool worldStopped, bool keysCaptured)
+            => worldStopped || keysCaptured ? AutopilotIntents.None : raw;
+
+        public static AutopilotIntents Apply(in AutopilotIntents raw)
+            => Apply(raw, WorldStopped, HelmKeyCapture.IsCapturing);
     }
 }

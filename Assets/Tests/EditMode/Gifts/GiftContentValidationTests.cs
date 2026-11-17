@@ -9,7 +9,7 @@ using UnityEditor;
 namespace HiddenHarbours.Tests.EditMode
 {
     /// <summary>
-    /// Content validation for the gift data (gifting slice 1). The config and the three villagers' tastes
+    /// Content validation for the gift data (gifting slices 1 and 2). The config and the cast's tastes
     /// were hand-authored as YAML, so every check reads what Unity LOADS: a bad indent fails silently to the
     /// field default, and only the loaded object tells.
     /// </summary>
@@ -116,8 +116,144 @@ namespace HiddenHarbours.Tests.EditMode
         [Test]
         public void AVillagerWithNoTastes_TakesAGiftPolitely()
         {
-            NpcDef rose = Npc("npc.rose_macisaac");
-            Assert.AreEqual(GiftReaction.Neutral, GiftRule.Preference(rose.Gifts, Catch("fish.atlantic_cod", FishCategory.InshoreGroundfish)));
+            // Every shipped villager has tastes since gifting slice 2, so the "nothing authored" answer is
+            // pinned on a fresh NpcDef: what a newly added villager does before anyone writes her tastes.
+            NpcDef fresh = UnityEngine.ScriptableObject.CreateInstance<NpcDef>();
+            try
+            {
+                Assert.IsTrue(fresh.Gifts == null || fresh.Gifts.IsEmpty);
+                Assert.AreEqual(GiftReaction.Neutral, GiftRule.Preference(fresh.Gifts, Catch("fish.atlantic_cod", FishCategory.InshoreGroundfish)));
+            }
+            finally { UnityEngine.Object.DestroyImmediate(fresh); }
+        }
+
+        // ---- gifting slice 2: the whole cast has tastes and its own words -----------------------
+
+        private static Dictionary<string, FishCategory> FishCategories()
+        {
+            var map = new Dictionary<string, FishCategory>(StringComparer.Ordinal);
+            foreach (FishSpeciesDef fish in LoadAll<FishSpeciesDef>()) map[fish.Id] = fish.Category;
+            return map;
+        }
+
+        private static List<NpcDef> People()
+        {
+            var people = new List<NpcDef>();
+            foreach (NpcDef npc in LoadAll<NpcDef>())
+                if (npc.Kind == InteractKind.Talk && !string.IsNullOrEmpty(npc.Id)) people.Add(npc);
+            return people;
+        }
+
+        private static bool Any(string[] a) => a != null && a.Length > 0;
+
+        [Test]
+        public void EveryPersonInTheCast_HasSomethingTheyLove_AndSomethingTheyDislike()
+        {
+            List<NpcDef> people = People();
+            Assert.GreaterOrEqual(people.Count, 27, "the shipped cast of people");
+            foreach (NpcDef npc in people)
+            {
+                NpcGiftPreferences p = npc.Gifts;
+                Assert.IsNotNull(p, npc.Id + ": no gift tastes");
+                Assert.IsTrue(Any(p.LovedItemIds) || Any(p.LovedTags), npc.Id + ": loves nothing");
+                Assert.IsTrue(Any(p.DislikedItemIds) || Any(p.DislikedTags), npc.Id + ": dislikes nothing");
+            }
+        }
+
+        [Test]
+        public void EveryPersonInTheCast_AnswersTheFourTastesInTheirOwnWords_AndNoTwoAlike()
+        {
+            GiftReaction[] tastes = { GiftReaction.Loved, GiftReaction.Liked, GiftReaction.Neutral, GiftReaction.Disliked };
+            foreach (NpcDef npc in People())
+            {
+                GiftLineSet own = npc.Gifts != null ? npc.Gifts.Lines : null;
+                Assert.IsNotNull(own, npc.Id + ": no lines");
+                var said = new HashSet<string>(StringComparer.Ordinal);
+                foreach (GiftReaction r in tastes)
+                {
+                    // No shared fallback here: each of the four must be the person's own.
+                    string line = GiftRule.Line(r, own, null, 0, "Atlantic Cod");
+                    Assert.IsFalse(string.IsNullOrWhiteSpace(line), $"{npc.Id}: no own line for {r}");
+                    Assert.IsTrue(said.Add(line), $"{npc.Id}: says the same thing for {r} as for another taste");
+                }
+            }
+        }
+
+        [Test]
+        public void EveryPersonsListedFish_ResolveToTheirTaste_WithTheSpeciesRealCategory()
+        {
+            // Each listed id is walked through the rule with the category the species really ships with, so
+            // a tag on the same person cannot quietly win (an id beats a tag, and nothing is listed twice).
+            Dictionary<string, FishCategory> category = FishCategories();
+            foreach (NpcDef npc in People())
+            {
+                NpcGiftPreferences p = npc.Gifts;
+                if (p == null) continue;
+                foreach (string id in p.LovedItemIds ?? Array.Empty<string>())
+                    Assert.AreEqual(GiftReaction.Loved, GiftRule.Preference(p, Catch(id, category[id])), $"{npc.Id}: {id}");
+                foreach (string id in p.LikedItemIds ?? Array.Empty<string>())
+                    Assert.AreEqual(GiftReaction.Liked, GiftRule.Preference(p, Catch(id, category[id])), $"{npc.Id}: {id}");
+                foreach (string id in p.DislikedItemIds ?? Array.Empty<string>())
+                    Assert.AreEqual(GiftReaction.Disliked, GiftRule.Preference(p, Catch(id, category[id])), $"{npc.Id}: {id}");
+            }
+        }
+
+        [Test]
+        public void SliceTwoTastes_LoadAsAuthored()
+        {
+            Dictionary<string, FishCategory> category = FishCategories();
+            GiftReaction Taste(string npc, string fish) => GiftRule.Preference(Npc(npc).Gifts, Catch(fish, category[fish]));
+
+            // Rose takes anything gladly (the catch tag), but an id she dislikes beats it.
+            Assert.AreEqual(GiftReaction.Loved, Taste("npc.rose_macisaac", "fish.lobster"));
+            Assert.AreEqual(GiftReaction.Liked, Taste("npc.rose_macisaac", "fish.atlantic_cod"));
+            Assert.AreEqual(GiftReaction.Disliked, Taste("npc.rose_macisaac", "fish.green_crab"));
+
+            // Rene and Dougie share a gable and disagree about mackerel.
+            Assert.AreEqual(GiftReaction.Loved, Taste("npc.rene_chiasson", "fish.mackerel"));
+            Assert.AreEqual(GiftReaction.Disliked, Taste("npc.dougie_macneil", "fish.mackerel"));
+
+            // The oyster man does not want oysters; the shopkeeper loves them.
+            Assert.AreEqual(GiftReaction.Disliked, Taste("npc.rene_chiasson", "fish.american_oyster"));
+            Assert.AreEqual(GiftReaction.Loved, Taste("npc.marguerite_leblanc", "fish.american_oyster"));
+
+            // A person with no taste for a fish or its category takes it politely.
+            Assert.AreEqual(GiftReaction.Neutral, Taste("npc.angus_gillis", "fish.mackerel"));
+        }
+
+        [Test]
+        public void TheShippedDailyLimit_DeclinesTheSecondGiftToday_AndOpensAgainTomorrow()
+        {
+            List<GiftConfig> configs = LoadAll<GiftConfig>();
+            Assert.AreEqual(1, configs.Count);
+            int perDay = configs[0].GiftsPerNpcPerDay;
+            Assert.Greater(perDay, 0);
+            NpcDef ginny = Npc("npc.aunt_ginny");
+            GiftItem cod = Catch("fish.atlantic_cod", FishCategory.InshoreGroundfish);
+            var ledger = new GiftLedger();
+
+            const int day = 12;
+            for (int i = 0; i < perDay; i++)
+            {
+                Assert.AreEqual(GiftReaction.Loved, GiftRule.Evaluate(ginny.Gifts, in cod, ledger.GiftsToday(ginny.Id, day), perDay));
+                ledger.Count(ginny.Id, day);
+            }
+            Assert.AreEqual(GiftReaction.AlreadyGiftedToday,
+                GiftRule.Evaluate(ginny.Gifts, in cod, ledger.GiftsToday(ginny.Id, day), perDay));
+
+            NpcDef basil = Npc("npc.basil_samson");
+            GiftItem haddock = Catch("fish.haddock", FishCategory.InshoreGroundfish);
+            Assert.AreEqual(GiftReaction.Loved,
+                GiftRule.Evaluate(basil.Gifts, in haddock, ledger.GiftsToday(basil.Id, day), perDay),
+                "the limit is per person");
+
+            Assert.AreEqual(GiftReaction.Loved,
+                GiftRule.Evaluate(ginny.Gifts, in cod, ledger.GiftsToday(ginny.Id, day + 1), perDay),
+                "the next game day she takes one again");
+
+            // Her own declined-today words are said, not the shared ones.
+            string line = GiftRule.Line(GiftReaction.AlreadyGiftedToday, ginny.Gifts.Lines, configs[0].Lines, day, "Atlantic Cod");
+            StringAssert.Contains("One is plenty for one day", line);
         }
 
         [Test]

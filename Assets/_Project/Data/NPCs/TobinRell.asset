@@ -19,3 +19,24 @@ MonoBehaviour:
   CompletionFlag: 
   Voice: {fileID: 0}
   Build: {fileID: 11400000, guid: f3657961f354440449d7042493e9c2f4, type: 2}
+  Gifts:
+    LovedItemIds:
+    - fish.atlantic_cod
+    LikedItemIds: []
+    DislikedItemIds:
+    - fish.atlantic_tomcod
+    LovedTags: []
+    LikedTags:
+    - catch
+    DislikedTags: []
+    Lines:
+      Loved:
+      - 'A cod! That takes my mind off that putt. Thank you.'
+      Liked:
+      - 'Well, that''s a nice thing. Thank you.'
+      Neutral:
+      - 'Thank you.'
+      Disliked:
+      - 'Bit small, isn''t it? Like my putt. Thank you, though.'
+      NotGiftable: []
+      AlreadyGiftedToday: []

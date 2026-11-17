@@ -132,6 +132,12 @@ namespace HiddenHarbours.Core
         /// <summary>The chip is the tab column plus the 9 px it stands proud of the fore-edge.</summary>
         public const int TabChipWidth = TabCol + 9;
 
+        /// <summary>How far the SELECTED stub is pulled out past the others (the kit's "on — pulled
+        /// out, inked edge, lit top row"). The presenter's reading of that state, not a contract
+        /// number: the rig marks "on" with ink only, and on the page the ink alone was too fine to
+        /// tell the open tab at a glance.</summary>
+        public const int TabPull = 3;
+
         /// <summary>A chip letters at most this many characters — CLIPPED, never shrunk, so a longer
         /// label loses its tail rather than its legibility. The kit's published number: content
         /// validation holds authored labels to it and the presenter clips at it, and both read it from

@@ -19,3 +19,9 @@ MonoBehaviour:
     holds the marks you put on it - the wreck, the fuel float, the spot that fished.
     Wants a wheelhouse: the skiffs have nowhere to mount it.'
   Price: 650
+  Catalog:
+    Listed: 0
+    Section: 5
+    Sellers:
+    - seller.nmc_chandlery
+    SortOrder: 42

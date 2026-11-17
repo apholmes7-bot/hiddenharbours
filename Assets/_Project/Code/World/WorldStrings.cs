@@ -151,5 +151,17 @@ namespace HiddenHarbours.World
         public const string OnboardRepairDory= "She's yours but broken — pay the shipwright to REPAIR her.";
         public const string OnboardSailHome  = "Seaworthy at last — sail your dory home to Coddle Cove.";
         public const string OnboardDone      = "You earned her, plank and rope. Fair winds, skipper!";
+
+        // ---- wash stations (washrooms plan: the first placed basins and showers) --------------------
+        // The popup offers (present tense, never the key) and the short lines a wash starts and ends with.
+        public const string WashAtBasin     = "Wash up at the basin";
+        public const string WashBeginBasin  = "He splashes his face and scrubs his hands.";
+        public const string WashDoneBasin   = "As clean as a basin gets him.";
+        public const string WashAtShower    = "Rinse off under the shower";
+        public const string WashBeginShower = "Cold water off the wharf hose. Bracing.";
+        public const string WashDoneShower  = "Rinsed clean.";
+        public const string WashStop        = "Stop washing";
+        public const string WashStopped     = "He leaves off washing.";
+        public const string WashWalkedOff   = "He walks off, still dripping.";
     }
 }

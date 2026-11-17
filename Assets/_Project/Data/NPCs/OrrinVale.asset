@@ -19,3 +19,24 @@ MonoBehaviour:
   CompletionFlag: 
   Voice: {fileID: 0}
   Build: {fileID: 11400000, guid: ba433ba5d1da4d24786b586e1a54285c, type: 2}
+  Gifts:
+    LovedItemIds:
+    - fish.rainbow_smelt
+    LikedItemIds: []
+    DislikedItemIds: []
+    LovedTags: []
+    LikedTags:
+    - pelagic
+    DislikedTags:
+    - shellfish
+    Lines:
+      Loved:
+      - 'Smelts! My father fried smelts every spring. Thank you.'
+      Liked:
+      - 'That''ll make the walk home lighter. Thank you.'
+      Neutral:
+      - 'Thank you, kindly.'
+      Disliked:
+      - 'Shellfish don''t sit well with me. Still, it''s kind of you.'
+      NotGiftable: []
+      AlreadyGiftedToday: []

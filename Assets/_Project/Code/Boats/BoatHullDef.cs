@@ -204,6 +204,19 @@ namespace HiddenHarbours.Boats
                  "is ADR 0025.")]
         public HelmConsoleDef Helm;
 
+        [Header("Autopilot (heading hold — GameConfig.HelmAutopilot)")]
+        [Tooltip("Is an AUTOPILOT OFFERED for her helm? At the helm, the autopilot press (Helm/Autopilot, " +
+                 "P or the pad's Y) then holds the heading she is on, on her own rudder, until a steer " +
+                 "input, leaving the helm, going aground, a knock, or losing way hands it back. The owner's " +
+                 "ruling (2026-11-16): offered on every helm hull WITHOUT AN OUTBOARD (inboards, " +
+                 "sterndrives, the jet ski, the sailing hulls), never on an outboard hull or the rowed " +
+                 "dory; an expensive upgrade. HeadingHoldAutopilotTests holds the fleet to that rule. " +
+                 "OFF by default: a hull asset whose YAML omits this key reads false.")]
+        // OFFERED, not FITTED. Today an offered hull's helm has the autopilot outright
+        // (BoatController.AutopilotFitted). Once the purchase step exists, "fitted" becomes offered by
+        // this Def AND bought for this boat in the save; this flag stays the Def's half only.
+        public bool AutopilotOffered = false;
+
         [Header("Helm throttle detents (0 = use the GameConfig default)")]
         [Tooltip("Per-hull override for the notched throttle's AHEAD detent count (ADR 0025 S1 — a " +
                  "small outboard may want coarser travel than a binnacle lever). 0 = the shared " +

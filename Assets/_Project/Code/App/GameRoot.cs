@@ -72,7 +72,7 @@ namespace HiddenHarbours.App
                 Debug.LogError("[GameRoot] Services not wired — assign a GameClock and an " +
                                "EnvironmentService in the Inspector.", this);
             else
-                Debug.Log("[GameRoot] Hidden Harbours services online. Fair winds.");
+                Debug.Log("[GameRoot] Services online. Fair winds.");
         }
 
         private void Start()
