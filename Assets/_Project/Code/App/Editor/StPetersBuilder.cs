@@ -1511,6 +1511,8 @@ namespace HiddenHarbours.App.Editor
             // you came in on. Same null-tolerance — an unimported Def leaves the row off with a warning.
             var depthSounder = AssetDatabase.LoadAssetAtPath<InstrumentOffer>(
                 DataInstruments + "/DepthSounderOffer.asset");
+            var loranReceiver = AssetDatabase.LoadAssetAtPath<InstrumentOffer>(
+                DataInstruments + "/LoranOffer.asset");
 
             // --- PERSISTENT CORE (THE FIX) --------------------------------------------------------------
             // St Peters is the START scene, so it stands up the SAME persistent rig the cove builds — a
@@ -2071,6 +2073,14 @@ namespace HiddenHarbours.App.Editor
             SetRef(sounderShop, "_offer", depthSounder);
             SetRef(sounderShop, "_walletProvider", storeWallet);
             SetString(sounderShop, "_sellerId", StoreSellerId);
+
+            // The LORAN-C receiver beside it, on the same counter and wallet: a wheelhouse instrument, so
+            // only a helm with room for it lights it (BoatEquipment.EffectiveFit), and the buy screen names
+            // the hull it will go on.
+            var loranShop = storeCounter.AddComponent<InstrumentShop>();
+            SetRef(loranShop, "_offer", loranReceiver);
+            SetRef(loranShop, "_walletProvider", storeWallet);
+            SetString(loranShop, "_sellerId", StoreSellerId);
 
             // The clam licence — the FIRST licence of the game, and the one Ginny fronts the fee for. The
             // player still buys it themselves at this counter (§7.5: the transaction stays theirs).

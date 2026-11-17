@@ -94,7 +94,7 @@ namespace HiddenHarbours.App.Editor
             }
         }
 
-        /// <summary>St Peters: the general store counter's eight vendors, all Marguerite's.</summary>
+        /// <summary>St Peters: the general store counter's nine vendors, all Marguerite's.</summary>
         public static readonly Region StPeters = new Region("StPeters", StPetersLayerRefresh.ScenePath, new[]
         {
             new Seller("GeneralStoreCounter", typeof(GearShop), "gear.rod", StPetersBuilder.StoreSellerId),
@@ -104,6 +104,7 @@ namespace HiddenHarbours.App.Editor
             new Seller("GeneralStoreCounter", typeof(SupplyShop), "supply.oatcakes", StPetersBuilder.StoreSellerId),
             new Seller("GeneralStoreCounter", typeof(SupplyShop), "supply.tinned_beans", StPetersBuilder.StoreSellerId),
             new Seller("GeneralStoreCounter", typeof(InstrumentShop), "instrument.depth_sounder", StPetersBuilder.StoreSellerId),
+            new Seller("GeneralStoreCounter", typeof(InstrumentShop), "instrument.loran", StPetersBuilder.StoreSellerId),
             new Seller("GeneralStoreCounter", typeof(LicenseVendor), "license.clam", StPetersBuilder.StoreSellerId),
         });
 
@@ -181,9 +182,9 @@ namespace HiddenHarbours.App.Editor
                 Doc go = scene.RootNamed(root.Key);
                 var patch = new LayerPatch(StepOf(region, root.Key), root.Key, go.FileId);
                 List<Doc> comps = scene.ComponentsOf(go);
-                HashSet<string> added = AddMissingSupplyShops(patch, scene, go, comps, root.ToList(), region, assets);
+                HashSet<(Type, string)> added = AddMissingCopies(patch, scene, go, comps, root.ToList(), region, assets);
                 foreach (Seller s in root)
-                    if (!(s.Kind == typeof(SupplyShop) && added.Contains(s.Wares))) Wire(patch, comps, s, assets, claimed);
+                    if (!added.Contains((s.Kind, s.Wares))) Wire(patch, comps, s, assets, claimed);
                 patches.Add(patch.Seal(scene));
             }
             patches.Add(Book(scene, region, assets).Seal(scene));
@@ -262,67 +263,77 @@ namespace HiddenHarbours.App.Editor
             patch.Note($"{s.Root}'s {s.Kind.Name}", $"sells {s.Wares} as {s.SellerId}");
         }
 
+        /// <summary>The vendor classes the step may ADD as a copy of one the counter already holds, in the order
+        /// their new documents are written. Each is a plain wares + seller id + wallet + empty purchase event
+        /// component, so a copy differs from its template by its wares and its id alone.</summary>
+        static readonly Type[] CopyableKinds = { typeof(SupplyShop), typeof(InstrumentShop) };
+
         /// <summary>
-        /// The one vendor the step may ADD: a <see cref="SupplyShop"/> the wiring lists on a counter that already
-        /// holds at least one SupplyShop. The new shop is a copy of the counter's first SupplyShop (same script,
-        /// same GameObject, same <c>_walletProvider</c>, same empty purchase event), stocking the listed supply and
-        /// selling as the row's id, written where Unity serialises <c>_sellerId</c>; it is listed last among the
-        /// counter's components and its document follows the counter's own. Any other missing vendor is left to
-        /// <see cref="Wire"/>, which refuses it. Returns the wares of the shops added; a shop the counter already
-        /// stocks is never added, so a second plan adds nothing.
+        /// The vendors the step may ADD: a <see cref="SupplyShop"/> or an <see cref="InstrumentShop"/> the wiring
+        /// lists on a counter that already holds at least one of that class. The new vendor is a copy of the
+        /// counter's first of its class (same script, same GameObject, same <c>_walletProvider</c>, same empty
+        /// purchase event), stocking the listed wares and selling as the row's id, written where Unity serialises
+        /// <c>_sellerId</c>; it is listed last among the counter's components and its document follows the
+        /// counter's own. Any other missing vendor is left to <see cref="Wire"/>, which refuses it. Returns the
+        /// (class, wares) of the vendors added; one the counter already stocks is never added, so a second plan
+        /// adds nothing.
         /// </summary>
-        static HashSet<string> AddMissingSupplyShops(LayerPatch patch, SceneYaml scene, Doc go, List<Doc> comps,
-                                                     List<Seller> rows, Region region, IStoreWiringAssets assets)
+        static HashSet<(Type, string)> AddMissingCopies(LayerPatch patch, SceneYaml scene, Doc go, List<Doc> comps,
+                                                        List<Seller> rows, Region region, IStoreWiringAssets assets)
         {
-            var added = new HashSet<string>(StringComparer.Ordinal);
-            Type kind = typeof(SupplyShop);
-            List<Seller> mine = rows.Where(s => s.Kind == kind).ToList();
-            if (mine.Count == 0) return added;
-            List<Doc> shops = comps.Where(c => c.IsScript(kind.FullName)).ToList();
-            if (shops.Count == 0) return added;     // nothing to copy the wallet from: Wire refuses the missing one
-
-            FieldInfo wares = WaresField(kind);
-            var stocked = new HashSet<string>(shops.Select(c => ObjRef.Parse(c.Field(wares.Name)).Guid ?? ""), StringComparer.Ordinal);
-            var missing = new List<(Seller Row, string Guid)>();
-            foreach (Seller s in mine)
-            {
-                string guid = assets.WaresGuid(wares.FieldType, s.Wares);
-                if (stocked.Contains(guid)) continue;
-                if (s.SellerId == null || !PlainId.IsMatch(s.SellerId))
-                    throw new Refusal($"{patch.Step}: {s} would sell as '{s.SellerId}', which is not a seller id (type.snake_case).");
-                if (missing.Any(m => m.Guid == guid))
-                    throw new Refusal($"{patch.Step}: two rows of the wiring name {s}.");
-                missing.Add((s, guid));
-            }
-            if (missing.Count == 0) return added;
-
-            Doc template = shops[0];
-            List<string> body = template.Lines.Skip(1).ToList();
-            body.RemoveAll(l => l.StartsWith($"  {SellerIdField}:", StringComparison.Ordinal));
-            int waresAt = body.FindIndex(l => l.StartsWith($"  {wares.Name}: ", StringComparison.Ordinal));
-            if (waresAt < 0 || waresAt + 1 >= body.Count || !body[waresAt + 1].StartsWith($"  {WalletField}:", StringComparison.Ordinal))
-                throw new Refusal($"{patch.Step}: {NameOf(go)}'s SupplyShop (&{template.FileId}) does not hold its {WalletField} right " +
-                                  $"after its {wares.Name}; the step copies no shop it cannot read.");
-            if (!body.Contains("      m_Calls: []"))
-                throw new Refusal($"{patch.Step}: {NameOf(go)}'s SupplyShop (&{template.FileId}) has purchase calls wired; the step " +
-                                  "copies only a shop with an empty purchase event.");
-            ObjRef held = ObjRef.Parse(body[waresAt].Substring($"  {wares.Name}: ".Length));
-
-            var ids = new IdAllocator(scene);
+            var added = new HashSet<(Type, string)>();
+            IdAllocator ids = null;
             var entries = new List<string>();
-            foreach ((Seller s, string guid) in missing)
+            foreach (Type kind in CopyableKinds)
             {
-                long id = ids.Next($"{region.Name}/{s.Root}/{kind.Name}/{s.Wares}");
-                string at = id.ToString(CultureInfo.InvariantCulture);
-                var lines = new List<string> { $"--- !u!114 &{at}" };
-                lines.AddRange(body);
-                lines[waresAt + 1] = $"  {wares.Name}: " + new ObjRef(held.FileId, guid, held.Type).Yaml;
-                lines.Insert(waresAt + 2, $"  {SellerIdField}: {s.SellerId}");
-                patch.Add(string.Join("\n", lines), $"{s} (&{at}), a copy of &{template.FileId} stocking {s.Wares}");
-                entries.Add($"  - component: {{fileID: {at}}}");
-                patch.Note($"{s.Root}'s {kind.Name}", $"added, sells {s.Wares} as {s.SellerId}");
-                added.Add(s.Wares);
+                List<Seller> mine = rows.Where(s => s.Kind == kind).ToList();
+                if (mine.Count == 0) continue;
+                List<Doc> shops = comps.Where(c => c.IsScript(kind.FullName)).ToList();
+                if (shops.Count == 0) continue;     // nothing to copy the wallet from: Wire refuses the missing one
+
+                FieldInfo wares = WaresField(kind);
+                var stocked = new HashSet<string>(shops.Select(c => ObjRef.Parse(c.Field(wares.Name)).Guid ?? ""), StringComparer.Ordinal);
+                var missing = new List<(Seller Row, string Guid)>();
+                foreach (Seller s in mine)
+                {
+                    string guid = assets.WaresGuid(wares.FieldType, s.Wares);
+                    if (stocked.Contains(guid)) continue;
+                    if (s.SellerId == null || !PlainId.IsMatch(s.SellerId))
+                        throw new Refusal($"{patch.Step}: {s} would sell as '{s.SellerId}', which is not a seller id (type.snake_case).");
+                    if (missing.Any(m => m.Guid == guid))
+                        throw new Refusal($"{patch.Step}: two rows of the wiring name {s}.");
+                    missing.Add((s, guid));
+                }
+                if (missing.Count == 0) continue;
+
+                Doc template = shops[0];
+                List<string> body = template.Lines.Skip(1).ToList();
+                body.RemoveAll(l => l.StartsWith($"  {SellerIdField}:", StringComparison.Ordinal));
+                int waresAt = body.FindIndex(l => l.StartsWith($"  {wares.Name}: ", StringComparison.Ordinal));
+                if (waresAt < 0 || waresAt + 1 >= body.Count || !body[waresAt + 1].StartsWith($"  {WalletField}:", StringComparison.Ordinal))
+                    throw new Refusal($"{patch.Step}: {NameOf(go)}'s {kind.Name} (&{template.FileId}) does not hold its {WalletField} right " +
+                                      $"after its {wares.Name}; the step copies no shop it cannot read.");
+                if (!body.Contains("      m_Calls: []"))
+                    throw new Refusal($"{patch.Step}: {NameOf(go)}'s {kind.Name} (&{template.FileId}) has purchase calls wired; the step " +
+                                      "copies only a shop with an empty purchase event.");
+                ObjRef held = ObjRef.Parse(body[waresAt].Substring($"  {wares.Name}: ".Length));
+
+                ids ??= new IdAllocator(scene);
+                foreach ((Seller s, string guid) in missing)
+                {
+                    long id = ids.Next($"{region.Name}/{s.Root}/{kind.Name}/{s.Wares}");
+                    string at = id.ToString(CultureInfo.InvariantCulture);
+                    var lines = new List<string> { $"--- !u!114 &{at}" };
+                    lines.AddRange(body);
+                    lines[waresAt + 1] = $"  {wares.Name}: " + new ObjRef(held.FileId, guid, held.Type).Yaml;
+                    lines.Insert(waresAt + 2, $"  {SellerIdField}: {s.SellerId}");
+                    patch.Add(string.Join("\n", lines), $"{s} (&{at}), a copy of &{template.FileId} stocking {s.Wares}");
+                    entries.Add($"  - component: {{fileID: {at}}}");
+                    patch.Note($"{s.Root}'s {kind.Name}", $"added, sells {s.Wares} as {s.SellerId}");
+                    added.Add((kind, s.Wares));
+                }
             }
+            if (entries.Count == 0) return added;
 
             var goLines = go.Lines.ToList();
             int head = goLines.IndexOf("  m_Component:");
@@ -330,7 +341,7 @@ namespace HiddenHarbours.App.Editor
             int end = head + 1;
             while (end < goLines.Count && goLines[end].StartsWith("  - component: ", StringComparison.Ordinal)) end++;
             goLines.InsertRange(end, entries);
-            patch.Edit(go, string.Join("\n", goLines), $"{NameOf(go)} (&{go.FileId}): lists its {entries.Count} new SupplyShops last");
+            patch.Edit(go, string.Join("\n", goLines), $"{NameOf(go)} (&{go.FileId}): lists its {entries.Count} new vendors last");
 
             var own = new HashSet<long>(comps.Select(c => c.FileId)) { go.FileId };
             patch.AddAfter = scene.Docs.Last(d => own.Contains(d.FileId)).FileId;
