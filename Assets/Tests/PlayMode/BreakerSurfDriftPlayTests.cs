@@ -668,7 +668,21 @@ namespace HiddenHarbours.Tests.PlayMode
             var tuned = SeakeepingSettings.Default;
             tuned.SurfLiftScale = liftScale;
             _config.Seakeeping = tuned;
-            GameServices.Clock = new TestClock { LiveOrigin = Time.timeAsDouble };
+
+            // ⭐ THE SAME LOCK AS RunArm (see its comment for the full history). The ride sampled here is
+            // the swell's heave plus the lift, and the swell's heave moves at ~2.8 m/s. Without the lock the
+            // arm's sea depended on wall-clock frame time three ways: the clock origin was this frame's own
+            // time (anywhere inside a step), the wave bridge baked once per RENDERED frame (a long frame on a
+            // loaded runner holds two or three steps that all feel one stale sea), and the heave filter in
+            // BoatWaveMotion integrates over the frame's dt. Each arm's 32 samples therefore caught the swell
+            // at slightly different phases, and the two arms' means — whose difference IS the measurement —
+            // carried that as noise the size of the lift itself (run 43948125477: 0.0110 m carried against a
+            // 0.0232 m model, on a PR that touched nothing here). So: deal one physics step per frame, and
+            // read the clock on the grid, so both arms sail the same sea at the same instants on any machine.
+            Time.captureDeltaTime = Time.fixedDeltaTime;
+            yield return null;   // the deal starts on the next frame
+            GameServices.Clock = new TestClock { LiveOrigin = Time.fixedTimeAsDouble, OnGrid = true };
+            yield return null;   // let the bridge bake once with this arm's clock before her first step
 
             float x = StrongestSurfX();
             BoatController boat = NewBoat(Hull(400f, $"boat.lift_{liftScale:F0}"), new Vector2(x, 0f), out _);
@@ -685,14 +699,32 @@ namespace HiddenHarbours.Tests.PlayMode
             yield return new WaitForFixedUpdate();
             yield return null;
 
+            // ⚠ The ride and the model are read at the same resume but are NOT of the same step. A coroutine
+            // resumed by WaitForFixedUpdate runs after the physics step and BEFORE this frame's LateUpdate,
+            // where BoatWaveMotion writes the visual — so the visual still shows the LAST frame's LateUpdate,
+            // which drew the surf of the last step of an EARLIER frame. Pair the ride with that model value
+            // (the one the drawn picture was built from), not with the step that just ran. Tracked by frame,
+            // so it stays right even if a frame were to hold more or fewer than one step.
+            float ModelNow() => SeakeepingForcesMath.SurfLiftMeters(boat.SurfUnderHull, boat.SeakeepingPolicy);
+            float modelLatest = ModelNow();
+            int frameOfLatest = Time.frameCount;
+            float modelDrawn = modelLatest;
+
             const int Samples = 32;
             float step = period / 8f;
             for (int i = 0; i < Samples; i++)
             {
                 float deadline = Time.time + step;
-                while (Time.time < deadline) yield return new WaitForFixedUpdate();
+                do
+                {
+                    yield return new WaitForFixedUpdate();
+                    if (Time.frameCount != frameOfLatest) modelDrawn = modelLatest;   // what the last LateUpdate drew
+                    modelLatest = ModelNow();
+                    frameOfLatest = Time.frameCount;
+                }
+                while (Time.time < deadline);
                 rideSamples.Add(visual.position.y - boat.transform.position.y);
-                modelLift?.Add(SeakeepingForcesMath.SurfLiftMeters(boat.SurfUnderHull, boat.SeakeepingPolicy));
+                modelLift?.Add(modelDrawn);
             }
 
             DisplacedSea.Clear(this);
