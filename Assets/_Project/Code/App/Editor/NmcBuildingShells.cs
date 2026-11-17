@@ -364,12 +364,16 @@ namespace HiddenHarbours.App.Editor
         /// <b>The fishing gear wholesaler.</b> Owner, 11-16: "There is also a fishing gear wholesaler in NMC which
         /// is another building". A warehouse west of the lumber yard's fence (the plaza key scene's lumber shed
         /// stands at (-279, 111), its fence at x -288), on open meadow that the census (11-17) found clear of
-        /// every road, path and placed thing; the yard's out-drive is 10 m east. Door on the north wall, toward
-        /// the out-drive and Mill Road (no walk reaches it yet: a follow-up for the road lane).
+        /// every road, path and placed thing; the yard's out-drive is 10 m east. The customer door is in the
+        /// south wall, the face the view reads (a north door stands behind the shell and hides the player at
+        /// it); the ground south of the wall is open meadow down to the hedge line, and the 4 m strip between
+        /// the east wall and the yard fence leads round to it from the out-drive (no walk is laid yet: a
+        /// follow-up for the road lane).
         ///
-        /// <para>18 m by 14 m, one storey: the trade floor by the door with the counter and shelf markers, a bulk
-        /// display of pots, rope and net bales, a staff room with the staff microwave and a staff washroom (the
-        /// kitchens and bathrooms plan's shop rule), and the warehouse behind with pallet racking.</para>
+        /// <para>18 m by 14 m, one storey. At the front, by the door: the trade floor with the counter and shelf
+        /// markers, and a bulk display of pots, rope and net bales. Behind, through a doorway behind the counter:
+        /// the warehouse with pallet racking, and off it the staff room with the staff microwave and the staff
+        /// washroom (the kitchens and bathrooms plan's shop rule).</para>
         ///
         /// <para>No offer moves here yet, as for the boat gear wholesaler.</para>
         /// </summary>
@@ -380,42 +384,42 @@ namespace HiddenHarbours.App.Editor
             SellerId = "seller.nmc_fishing_gear_wholesaler",
             Centre = new Vector2(-301f, 125f),
             WidthMetres = 18f, LengthMetres = 14f, EavesMetres = 6f,
-            DoorOnPlusY = true, DoorAcrossMetres = 2f,
+            DoorOnPlusY = false, DoorAcrossMetres = 2f,
             ShellTint = WarehouseTan, FloorTint = Concrete,
             Zones = new[]
             {
-                new Zone("TradeFloor", -1, 9, 0.5f, 7, PublicFloor, true),
-                new Zone("BulkDisplay", -5.5f, -1, 0.5f, 7, PublicFloor, true),
-                new Zone("StaffRoom", -9, -5.5f, 0.5f, 3.5f, StaffFloor),
-                new Zone("StaffWashroom", -9, -5.5f, 3.5f, 7, ColdFloor),
-                new Zone("Warehouse", -9, 9, -7, 0.5f, DryFloor),
+                new Zone("TradeFloor", -1, 9, -7, -0.5f, PublicFloor, true),
+                new Zone("BulkDisplay", -9, -1, -7, -0.5f, PublicFloor, true),
+                new Zone("Warehouse", -9, 4.5f, -0.5f, 7, DryFloor),
+                new Zone("StaffRoom", 4.5f, 9, -0.5f, 3.5f, StaffFloor),
+                new Zone("StaffWashroom", 4.5f, 9, 3.5f, 7, ColdFloor),
             },
             Blocks = new[]
             {
-                // the warehouse wall, with its doorway behind the counter
-                new Block("WarehouseWallWest", -9f, 1.3f, 0.35f, 0.65f, 3.5f, Partition, true),
-                new Block("WarehouseWallEast", 2.7f, 9f, 0.35f, 0.65f, 3.5f, Partition, true),
-                // the staff rooms: the staff room opens off the bulk display, the washroom off the staff room
-                new Block("StaffWallSouth", -5.65f, -5.35f, 0.65f, 1.4f, 3f, Partition, true),
-                new Block("StaffWallNorth", -5.65f, -5.35f, 2.8f, 7f, 3f, Partition, true),
-                new Block("WashroomWallWest", -9f, -7.9f, 3.35f, 3.65f, 3f, Partition, true),
-                new Block("WashroomWallEast", -6.5f, -5.65f, 3.35f, 3.65f, 3f, Partition, true),
-                // the trade floor: the counter east of the way in (the seller stands south of it), shelf markers
-                new Block("TradeCounter", 3.0f, 7.5f, 2.4f, 3.0f, 1.05f, Wood, true),
-                new Block("WallShelfEast", 8.2f, 8.7f, 1.0f, 6.4f, 2.2f, Wood, true),
-                new Block("TackleGondola", 0.2f, 1.0f, 3.5f, 6.0f, 1.6f, Wood, true),
+                // the back wall, with the warehouse doorway behind the counter, in line with the front door
+                new Block("BackWallWest", -9f, 1.3f, -0.65f, -0.35f, 3.5f, Partition, true),
+                new Block("BackWallEast", 2.7f, 9f, -0.65f, -0.35f, 3.5f, Partition, true),
+                // the staff room opens off the warehouse, the washroom off the staff room
+                new Block("StaffWallSouth", 4.35f, 4.65f, -0.35f, 0.6f, 3f, Partition, true),
+                new Block("StaffWallNorth", 4.35f, 4.65f, 2.0f, 7f, 3f, Partition, true),
+                new Block("WashroomWallWest", 4.65f, 6.5f, 3.35f, 3.65f, 3f, Partition, true),
+                new Block("WashroomWallEast", 7.9f, 9f, 3.35f, 3.65f, 3f, Partition, true),
+                // the trade floor: the counter east of the way in (the seller stands behind it), shelf markers
+                new Block("TradeCounter", 3.0f, 7.5f, -3.0f, -2.4f, 1.05f, Wood, true),
+                new Block("WallShelfEast", 8.2f, 8.7f, -6.4f, -1.0f, 2.2f, Wood, true),
+                new Block("TackleGondola", 0.2f, 1.0f, -6.0f, -3.5f, 1.6f, Wood, true),
                 // the bulk display
-                new Block("PotStack", -5.0f, -3.0f, 4.5f, 6.5f, 1.8f, PotGreen, true),
-                new Block("NetBales", -5.0f, -3.4f, 1.2f, 2.6f, 1.2f, DarkSteel, true),
-                new Block("RopeCoils", -2.6f, -1.4f, 1.2f, 2.4f, 0.8f, RopeYellow, true),
-                // the warehouse: pallet racking and a floor stack
-                new Block("PalletRackWest", -8.6f, -7.4f, -6.6f, -0.4f, 3.2f, Steel, true),
-                new Block("PalletRackSouth", -6.5f, 6.5f, -6.6f, -5.6f, 3.2f, Steel, true),
-                new Block("FloorPallets", -3f, 3f, -3.5f, -1.5f, 1.4f, Wood, true),
+                new Block("PotStack", -5.0f, -3.0f, -6.5f, -4.5f, 1.8f, PotGreen, true),
+                new Block("NetBales", -5.0f, -3.4f, -2.6f, -1.2f, 1.2f, DarkSteel, true),
+                new Block("RopeCoils", -2.6f, -1.4f, -2.4f, -1.2f, 0.8f, RopeYellow, true),
+                // the warehouse: pallet racking and a floor stack, clear of the aisle from the doorway
+                new Block("PalletRackWest", -8.6f, -7.4f, 0.4f, 6.6f, 3.2f, Steel, true),
+                new Block("PalletRackNorth", -6.5f, 3.8f, 5.6f, 6.6f, 3.2f, Steel, true),
+                new Block("FloorPallets", -4f, 0f, 1.5f, 3.5f, 1.4f, Wood, true),
                 // the staff fixtures (markers)
-                new Block("StaffMicrowave", -8.6f, -7.2f, 0.8f, 1.3f, 0.95f, Steel, true),
-                new Block("Toilet", -8.6f, -7.9f, 5.8f, 6.6f, 0.45f, Porcelain, false),
-                new Block("Sink", -7.4f, -6.6f, 6.2f, 6.7f, 0.85f, Porcelain, false),
+                new Block("StaffMicrowave", 8.3f, 8.8f, 0.4f, 1.8f, 0.95f, Steel, true),
+                new Block("Toilet", 7.9f, 8.6f, 5.8f, 6.6f, 0.45f, Porcelain, false),
+                new Block("Sink", 5.0f, 5.8f, 6.2f, 6.7f, 0.85f, Porcelain, false),
             },
         };
 

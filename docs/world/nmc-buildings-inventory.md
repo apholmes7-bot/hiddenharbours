@@ -36,7 +36,7 @@ Both are scene changes made by the named text-patch steps `20-fish-plant` and `2
 | **Gym** | Strength and cardio training | Ruling 11-15; `docs/world/nmc-gym.md` | **Placed as the back room of the community hall (this PR)**: floor and equipment markers, no workouts | No gym art; greybox blocks sized from `Data/Resources/GymEquipment/*` | the hall's back room, its north-east corner |
 | **Community / parish hall** | Hall; hosts the gym | `nine-mile-creek-mainland.md` §1.3; `nmc-gym.md` | **Placed as a greybox shell (this PR)**: front hall, gym, kitchen and washroom (closed) | houses-kit manor / shop-building-kit for real art | parish lot (-153,62.5), 18 x 12 m, inside the yard rail; door (-159,62.8) facing the lot's west gate |
 | **Marine electronics and boat-gear wholesaler** (new, 11-16) | Sells the Loran and all current boat electronics. Not the boatyard, which sells hulls and engine upgrades. | Owner ruling 11-16 (seat relay) | **Placed as a greybox shell (step 22)**: shop floor with the trade counter, an electronics case and shelf markers; stock room with a staff microwave; staff washroom (toilet and sink markers). Seller identity `seller.nmc_boat_gear_wholesaler` (no keeper, no offers yet). The Loran is still offered by Marguerite (PR 1269) as a placeholder until the owner rules on the stock proposal. | shop-building-kit (`chandlery` room pattern) for real art | The main street key scene's east block lot on Water Street, centre (-148.4,235.9), 12 x 9 m; door (-148.4,233.0) onto the frontage walk. It stands in for the east block's ground floor until the key scene is placed. |
-| **Fishing-gear wholesaler** (new, 11-16) | Bulk fishing gear: rope, traps, nets, line | Owner ruling 11-16 (seat relay) | **Placed as a greybox shell (step 23)**: trade floor with the counter and shelf markers, bulk display (pots, net bales, rope), staff room with a staff microwave, staff washroom (toilet and sink markers), warehouse with pallet racking. Seller identity `seller.nmc_fishing_gear_wholesaler` (no keeper, no offers yet). | wharf-building-kit-v2 `netShed`/warehouse for real art | West of the lumber yard's fence, centre (-301,125), 18 x 14 m; door (-299,129.5) on the north wall. No walk reaches the door yet. |
+| **Fishing-gear wholesaler** (new, 11-16) | Bulk fishing gear: rope, traps, nets, line | Owner ruling 11-16 (seat relay) | **Placed as a greybox shell (step 23)**: trade floor with the counter and shelf markers, bulk display (pots, net bales, rope), and behind them the warehouse with pallet racking, a staff room with a staff microwave and a staff washroom (toilet and sink markers). Seller identity `seller.nmc_fishing_gear_wholesaler` (no keeper, no offers yet). | wharf-building-kit-v2 `netShed`/warehouse for real art | West of the lumber yard's fence, centre (-301,125), 18 x 14 m; customer door (-299,120.5) in the south wall, the face the view reads; the strip between the east wall and the yard fence leads round to it. No walk reaches the door yet. |
 | Harbour office `structure.nmc_harbourmaster` | Cod licence, vendor | `nine-mile-creek-wharf.md` §3 | Exterior only | wharf-building-kit-v2 / houses-kit manor | (86.4,112.6) |
 | Fish market `structure.nmc_fish_market` | Catch counter | `nine-mile-creek-wharf.md`; NineMileCreekShops.cs | Exterior only | shop-building-kit `fishMarket` (has an interior) | (91.2,127.6) |
 | Wharf restaurant `structure.nmc_restaurant` | Restaurant | NineMileCreekShops.cs; settlement population | Exterior only | shop-building-kit `restaurant` | (168,136) |
@@ -93,7 +93,7 @@ Both are scene changes made by the named text-patch steps `20-fish-plant` and `2
      counter, once the owner has ruled on the stock and price proposal.
 3. **Fishing-gear wholesaler** (ruled 11-16). The greybox shell and the seller identity are placed (step 23).
    Still needed: a keeper, the gear offers moved off their current placeholders once the owner rules, and a walk
-   or drive from the lumber yard's out-drive to its north door.
+   or drive from the lumber yard's out-drive round to its south door.
 4. **Fish plant jobs and the gym's workouts** (economy and gameplay lanes). The rooms exist now. The plant's
    staff rooms and cold stores open when its jobs do.
 5. **Real art for both shells**: bake the nmc-fish-plant-kit (#1203); give the hall a houses-kit or
@@ -116,6 +116,6 @@ Both are scene changes made by the named text-patch steps `20-fish-plant` and `2
   is in the west rail. The yard or roads lane owes either a gate at the walk's end or a walk to the west gate.
 - The two wholesalers: keepers, and moving their offers off placeholders once the owner rules on the stock
   proposal. The shells and seller identities are placed (steps 22 and 23).
-- A walk or drive to the fishing-gear wholesaler's north door, from the lumber yard's out-drive (roads lane).
+- A walk or drive to the fishing-gear wholesaler's south door, from the lumber yard's out-drive past its east wall (roads lane).
 - When the main street key scene is placed, its east block takes the boat-gear wholesaler's shell rather than
   doubling it.
