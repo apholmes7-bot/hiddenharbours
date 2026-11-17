@@ -163,9 +163,11 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.AreEqual(0, _save.Writes);
         }
 
-        [TestCase(false)]
-        [TestCase(true)]
-        public void HungryWorkout_PaysOverflowFromMass_EvenPastCap_AndStopsAtFloor(bool pastCap)
+        [TestCase(false, 0.01d)]
+        [TestCase(true, 0.01d)]
+        [TestCase(false, 1d)]
+        [TestCase(true, 1d)]
+        public void HungryWorkout_PaysOverflowFromMass_EvenPastCap_AndStopsAtFloor(bool pastCap, double massAboveFloor)
         {
             BodyService body = Body(); WorkoutDef plan = Plan(); WorkoutService workout = Workout(body);
             if (pastCap)
@@ -174,8 +176,19 @@ namespace HiddenHarbours.Tests.EditMode
                 _clock.T = workout.EndsAtGameSeconds; workout.Tick(_clock.T);
             }
             _save.Current.PlayerNeeds.Hunger = new NeedStateDto(1f, _clock.T);
-            _save.Current.PlayerBody.MassKg = body.FloorMassKg + 0.01d;
+            double floor = body.FloorMassKg;
+            double initialMass = floor + massAboveFloor;
+            _save.Current.PlayerBody.MassKg = initialMass;
             _save.Current.PlayerBody.MassSinceGameSeconds = _clock.T;
+            BodySettings settings = BodySettings.Default;
+            double kcal = StrengthMath.ActivityKcal(plan.Exercise, plan.Units, initialMass,
+                body.CardioLevel, settings, StrengthSettings.Default);
+            double kcalPerPoint = BodyMath.KcalPerHungerUnit(_settings.Hunger.RisePerGameHour, settings);
+            // BodyService rounds hunger to float; Spend adds to full hunger and returns float overflow.
+            float hunger = (float)(kcal / kcalPerPoint);
+            float fullHunger = (float)(1f + hunger);
+            float overflow = (float)(fullHunger - 1f);
+            double expectedMass = Math.Max(floor, initialMass - overflow * kcalPerPoint / settings.KcalPerKgOfMass);
             var reports = new List<ActivityReported>();
             Action<ActivityReported> listener = e => reports.Add(e);
             EventBus.Subscribe(listener);
@@ -183,11 +196,24 @@ namespace HiddenHarbours.Tests.EditMode
             {
                 Assert.AreEqual(WorkoutStartResult.Started, workout.TryStart(plan, "rack", _clock.T),
                     "Full hunger slows a set but never refuses it.");
-                Assert.AreEqual(_clock.T + 100d / (1f - _settings.Hunger.StrongWalkPenalty),
+                // Match the float returned by NeedsMath.Factor / NeedsService.PlayerMultiplier
+                // before double division; an inline subtraction can retain extra precision.
+                float pace = (float)(1f - _settings.Hunger.StrongWalkPenalty);
+                Assert.AreEqual(_clock.T + 100d / pace,
                     workout.EndsAtGameSeconds, 1e-9d);
                 // Report at the same body clock to isolate effort overflow from passive starvation.
                 Assert.IsTrue(workout.Tick(workout.EndsAtGameSeconds));
-                Assert.AreEqual(body.FloorMassKg, body.MassKg, 1e-9d);
+                if (massAboveFloor == 0.01d)
+                    Assert.AreEqual(floor, body.MassKg, "The double mass must clamp exactly to its floor.");
+                else
+                {
+                    Assert.Greater(expectedMass, floor, "Keep a case where the floor cannot mask a wrong burn rate.");
+                    // At this fixture's 56-58 kg, a float ulp is 2^-18 kg. Allow less than three
+                    // ulps for float hunger intermediates; the expected burn is about 0.33 kg.
+                    Assert.AreEqual(expectedMass, body.MassKg, 1e-5d,
+                        "The training cap must not change the mass paid for the same effort.");
+                }
+                Assert.GreaterOrEqual(body.MassKg, floor);
                 Assert.AreEqual(1f, _needs.Level(NeedKind.Hunger));
                 Assert.AreEqual(pastCap ? 0d : 30d, workout.LastReceipt.Value.CreditedUnits);
                 Assert.AreEqual(1, reports.Count);
