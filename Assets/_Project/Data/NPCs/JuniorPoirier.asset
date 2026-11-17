@@ -33,7 +33,8 @@ MonoBehaviour:
       - 'A striper! Now that''s a fish. I might tell the fellas I caught it myself.'
       Liked:
       - 'Hey, that''s not a clam. Thanks. Makes a change.'
-      Neutral: []
+      Neutral:
+      - 'Thanks. I''ll take it up the hill for supper.'
       Disliked:
       - 'A clam. For me. I''ve had my hands in clams since before the tide turned. Thanks, I guess.'
       NotGiftable: []
