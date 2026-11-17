@@ -451,8 +451,9 @@ namespace HiddenHarbours.Core
         public List<NpcGiftDayDto> NpcGiftDays = new();
 
         /// <summary>
-        /// <b>Cook jobs running on placed stations</b> (kitchens and microwaves). Added in v24 as data only:
-        /// the kitchens lane writes and restores it. Older saves start with nothing cooking.
+        /// <b>Cook jobs running on placed stations</b> (kitchens and microwaves). Added in v24; a row is
+        /// written when a job starts, removed when it finishes, and restored on load by
+        /// <see cref="CookJobSave"/>. Older saves start with nothing cooking.
         /// </summary>
         public List<CookJobDto> CookJobs = new();
 
