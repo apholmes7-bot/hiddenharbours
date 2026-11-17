@@ -11,7 +11,8 @@ using static HiddenHarbours.App.Editor.StPetersLayerRefresh;
 namespace HiddenHarbours.Tests.EditMode
 {
     /// <summary>
-    /// Nine Mile Creek's new building shells (the fish plant, the community hall with its gym), as the committed
+    /// Nine Mile Creek's new building shells (the fish plant, the community hall with its gym, the boat gear and
+    /// the fishing gear wholesalers), as the committed
     /// scene carries them: the steps over the committed scene change nothing (so the scene is what the steps write,
     /// and a second run is a no-op), each footprint stands clear of every road, every other placed thing and every
     /// plant, and each prefab is a working seamless room (ADR 0036) whose doorway is the one way in.
@@ -55,6 +56,17 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         static IEnumerable<string> Names() => NmcBuildingShells.All.Select(s => s.Name);
+
+        [Test]
+        public void EachCounterNamesASellerThatExists()
+        {
+            var sellers = new HashSet<string>(Resources.LoadAll<HiddenHarbours.Economy.SellerDef>(
+                HiddenHarbours.Economy.SellerDirectory.ResourceFolder).Select(d => d.Id));
+            foreach (var s in Shells.Where(x => !string.IsNullOrEmpty(x.SellerId)))
+                Assert.That(sellers.Contains(s.SellerId), Is.True, $"{s.Name} names {s.SellerId}, which no SellerDef carries");
+            Assert.That(NmcBuildingShells.BoatGearWholesaler.SellerId, Is.Not.Empty);
+            Assert.That(NmcBuildingShells.FishingGearWholesaler.SellerId, Is.Not.Empty);
+        }
 
         [Test]
         public void NoCarriagewayComesWithinTheMarginOfAWall()
