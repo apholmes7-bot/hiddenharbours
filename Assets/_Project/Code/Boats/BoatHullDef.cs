@@ -205,13 +205,16 @@ namespace HiddenHarbours.Boats
         public HelmConsoleDef Helm;
 
         [Header("Autopilot (heading hold — GameConfig.HelmAutopilot)")]
-        [Tooltip("Does her helm carry an AUTOPILOT? At the helm, the autopilot press (Helm/Autopilot, " +
-                 "P) then holds the heading she is on, on her own rudder, until a steer input, leaving " +
-                 "the helm, going aground, a knock, or losing way hands it back. OFF by default: the " +
-                 "owner's ruling (2026-11-15) makes it a purchased tool offered on recommended hulls, " +
-                 "and which hulls those are is his call. A hull asset whose YAML omits this key reads " +
-                 "false, which is the safe direction.")]
-        public bool HasAutopilot = false;
+        [Tooltip("Is an AUTOPILOT OFFERED for her helm? At the helm, the autopilot press (Helm/Autopilot, " +
+                 "P or the pad's Y) then holds the heading she is on, on her own rudder, until a steer " +
+                 "input, leaving the helm, going aground, a knock, or losing way hands it back. OFF by " +
+                 "default: the owner's ruling (2026-11-15) makes it a purchased tool offered on " +
+                 "recommended hulls, and which hulls those are is his call. A hull asset whose YAML omits " +
+                 "this key reads false, which is the safe direction.")]
+        // OFFERED, not FITTED. Today an offered hull's helm has the autopilot outright
+        // (BoatController.AutopilotFitted). Once the purchase step exists, "fitted" becomes offered by
+        // this Def AND bought for this boat in the save; this flag stays the Def's half only.
+        public bool AutopilotOffered = false;
 
         [Header("Helm throttle detents (0 = use the GameConfig default)")]
         [Tooltip("Per-hull override for the notched throttle's AHEAD detent count (ADR 0025 S1 — a " +

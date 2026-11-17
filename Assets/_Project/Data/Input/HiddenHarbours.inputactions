@@ -613,6 +613,17 @@
                     "action": "Autopilot",
                     "isComposite": false,
                     "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "3c9d71b2-58e4-4f0a-9b6d-2e47a1c08f53",
+                    "path": "<Gamepad>/buttonNorth",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Gamepad",
+                    "action": "Autopilot",
+                    "isComposite": false,
+                    "isPartOfComposite": false
                 }
             ]
         },

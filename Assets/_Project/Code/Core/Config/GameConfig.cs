@@ -689,7 +689,7 @@ namespace HiddenHarbours.Core
                  "owner-tunable, no code (rule 6).")]
         public HelmWheelSettings HelmWheel = HelmWheelSettings.Default;
 
-        [Header("Helm autopilot (heading hold — only on hulls whose Def says HasAutopilot)")]
+        [Header("Helm autopilot (heading hold — only on hulls whose Def says AutopilotOffered)")]
         [Tooltip("How the autopilot holds a heading on the rudder the hull already has: the three " +
                  "gains, how much helm it may use and how fast it may wind the wheel, and the limits " +
                  "that hand the helm back (too little way, a knock, a steer input). Owner-tunable, no " +

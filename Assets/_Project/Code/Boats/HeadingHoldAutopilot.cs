@@ -3,27 +3,8 @@ using HiddenHarbours.Core;
 
 namespace HiddenHarbours.Boats
 {
-    /// <summary>Why the autopilot last handed the helm back (or refused to take it).</summary>
-    public enum AutopilotDisengage
-    {
-        None = 0,
-        /// <summary>The player flicked it off.</summary>
-        Toggled = 1,
-        /// <summary>A steer key, the stick or the wheel took the helm back.</summary>
-        SteerInput = 2,
-        /// <summary>Nobody is at the helm any more (left it, stopped, region change).</summary>
-        LeftHelm = 3,
-        /// <summary>Her keel is on the bottom.</summary>
-        Aground = 4,
-        /// <summary>She hit something harder than a fender touch.</summary>
-        Collision = 5,
-        /// <summary>Too little way ahead for the rudder to bite (or going astern).</summary>
-        NoWay = 6,
-        /// <summary>This hull's Def carries no autopilot.</summary>
-        NotFitted = 7,
-        /// <summary>The hull under the controller changed.</summary>
-        HullChanged = 8,
-    }
+    // The hand-back reasons (AutopilotDisengage) and the transition signal live in Core
+    // (Core/Events/AutopilotSignals.cs), so UI and audio can react without this module.
 
     /// <summary>What the autopilot reads each fixed step: every input is a plain value, so the rules
     /// and the controller are provable without a scene.</summary>
@@ -89,6 +70,13 @@ namespace HiddenHarbours.Boats
         public AutopilotDisengage LastDisengage { get; private set; }
 
         /// <summary>
+        /// Raised on each transition and only then: (true, None) when it takes the helm, (false, the
+        /// reason) when it hands the helm back. A refusal or a repeat hand-back raises nothing. The
+        /// owner (<see cref="BoatController"/>) turns this into the Core <c>AutopilotStateChanged</c>.
+        /// </summary>
+        public event System.Action<bool, AutopilotDisengage> StateChanged;
+
+        /// <summary>
         /// Take the helm and hold the heading she is on. Refused (and the reason kept in
         /// <see cref="LastDisengage"/>) under the same rules that would hand it straight back: no
         /// autopilot on this hull, nobody at the helm, aground, or too little way. A collision flag is
@@ -99,10 +87,12 @@ namespace HiddenHarbours.Boats
             AutopilotSensors noKnock = new AutopilotSensors(sensors.Fitted, sensors.Manned, sensors.Aground,
                 false, sensors.HeadingDegrees, sensors.YawRateDegreesPerSecond, sensors.WayMetresPerSecond);
             AutopilotDisengage refusal = HandBackReason(in noKnock, in cfg);
+            bool was = Engaged;
             if (refusal != AutopilotDisengage.None)
             {
                 Engaged = false;
                 LastDisengage = refusal;
+                if (was) StateChanged?.Invoke(false, refusal);
                 return false;
             }
 
@@ -111,6 +101,7 @@ namespace HiddenHarbours.Boats
             TargetHeadingDegrees = sensors.HeadingDegrees;
             _integral = 0f;
             _helm = Mathf.Clamp(currentHelm, -1f, 1f);
+            if (!was) StateChanged?.Invoke(true, AutopilotDisengage.None);   // re-arming a hold is not a transition
             return true;
         }
 
@@ -121,6 +112,7 @@ namespace HiddenHarbours.Boats
             Engaged = false;
             LastDisengage = reason;
             _integral = 0f;
+            StateChanged?.Invoke(false, reason);
         }
 
         /// <summary>

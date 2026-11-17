@@ -277,7 +277,7 @@ namespace HiddenHarbours.Tests.EditMode
         {
             var hull = ScriptableObject.CreateInstance<BoatHullDef>();
             hull.Propulsion = propulsion;
-            hull.HasAutopilot = hasAutopilot;
+            hull.AutopilotOffered = hasAutopilot;
             _made.Add(hull);
             return hull;
         }
@@ -286,7 +286,7 @@ namespace HiddenHarbours.Tests.EditMode
         public void TheFlagIsOffByDefault_AndOnlyARudderHullWithItIsFitted()
         {
             var fresh = ScriptableObject.CreateInstance<BoatHullDef>();
-            try { Assert.IsFalse(fresh.HasAutopilot, "a hull carries no autopilot unless her Def says so."); }
+            try { Assert.IsFalse(fresh.AutopilotOffered, "a hull carries no autopilot unless her Def says so."); }
             finally { Object.DestroyImmediate(fresh); }
 
             Assert.IsFalse(BoatController.AutopilotFitted(null));
@@ -315,7 +315,7 @@ namespace HiddenHarbours.Tests.EditMode
         // =============================================================================================
 
         [Test]
-        public void TheSwitchIsP_InTheHelmMap_BoundOnce_UnderTheHudGates()
+        public void TheSwitchIsP_OrThePadsY_InTheHelmMap_EachBoundOnce_UnderTheHudGates()
         {
             InputActionAsset asset = InputSystem.actions;
             Assert.IsNotNull(asset, "no project-wide actions asset is configured.");
@@ -323,10 +323,19 @@ namespace HiddenHarbours.Tests.EditMode
                                       .FindAction(DeviceAutopilotIntentSource.AutopilotAction, throwIfNotFound: false);
             Assert.IsNotNull(toggle, "the Helm map has no Autopilot action.");
             Assert.AreEqual(InputActionType.Button, toggle.type, "the switch is a press.");
-            CollectionAssert.AreEqual(new[] { "<Keyboard>/p" }, toggle.bindings.Select(b => b.path).ToArray());
-            int ps = asset.actionMaps.SelectMany(m => m.bindings)
-                .Count(b => string.Equals(b.path, "<Keyboard>/p", StringComparison.OrdinalIgnoreCase));
-            Assert.AreEqual(1, ps, "P is bound once in the whole asset, to the autopilot.");
+            CollectionAssert.AreEqual(new[] { "<Keyboard>/p" },
+                toggle.bindings.Where(b => b.groups == InputBindings.KeyboardMouseScheme).Select(b => b.path).ToArray(),
+                "P on the keyboard.");
+            CollectionAssert.AreEqual(new[] { "<Gamepad>/buttonNorth" },
+                toggle.bindings.Where(b => b.groups == InputBindings.GamepadScheme).Select(b => b.path).ToArray(),
+                "Y (north) on the pad: free at the helm, where A is the haul, B the neutral, the d-pad the detents " +
+                "and the chooser, the left stick the steer, the shoulders the zoom and Start the shell.");
+            foreach (string path in new[] { "<Keyboard>/p", "<Gamepad>/buttonNorth" })
+            {
+                int n = asset.actionMaps.SelectMany(m => m.bindings)
+                    .Count(b => string.Equals(b.path, path, StringComparison.OrdinalIgnoreCase));
+                Assert.AreEqual(1, n, $"{path} is bound once in the whole asset, to the autopilot.");
+            }
 
             Assert.IsTrue(DeviceAutopilotIntentSource.Map(true, false, false).Toggle, "an open press arrives.");
             Assert.IsFalse(DeviceAutopilotIntentSource.Map(false, false, false).Toggle, "no press is no intent.");
@@ -362,6 +371,65 @@ namespace HiddenHarbours.Tests.EditMode
                 input.ConfigureAutopilotInput(null);
                 AutopilotInput.InstallDevice(before);
             }
+        }
+
+        // =============================================================================================
+        //  the Core signal: one AutopilotStateChanged per transition, none for a refusal or a repeat
+        // =============================================================================================
+
+        [Test]
+        public void TheHoldAnnouncesEachTransition_AndNothingElse()
+        {
+            var ap = new HeadingHoldAutopilot();
+            var seen = new System.Collections.Generic.List<(bool on, AutopilotDisengage why)>();
+            ap.StateChanged += (on, why) => seen.Add((on, why));
+
+            Assert.IsFalse(ap.TryEngage(Sensors(way: 0f), 0f, Cfg), "premise: refused at rest");
+            CollectionAssert.IsEmpty(seen, "a refusal is not a transition: it was off and stays off.");
+
+            Assert.IsTrue(ap.TryEngage(Sensors(), 0f, Cfg));
+            ap.Tick(Sensors(), 0.02f, Cfg, out _);
+            ap.Tick(Sensors(aground: true), 0.02f, Cfg, out _);
+            ap.Disengage(AutopilotDisengage.Toggled);   // already off: a no-op, no second signal
+
+            CollectionAssert.AreEqual(new[] { (true, AutopilotDisengage.None), (false, AutopilotDisengage.Aground) },
+                seen, "on, then off for the rule that ended it; a steady hold and a repeat say nothing.");
+        }
+
+        [Test]
+        public void TheBoatPublishesTheTransitionOnTheEventBus()
+        {
+            var got = new System.Collections.Generic.List<AutopilotStateChanged>();
+            Action<AutopilotStateChanged> h = e => got.Add(e);
+            EventBus.Subscribe(h);
+            try
+            {
+                _go = new GameObject("autopilot-signal");
+                var boat = _go.AddComponent<BoatController>();
+                boat.SetHull(Hull(PropulsionType.Engine, hasAutopilot: true));
+                boat.ToggleAutopilot();   // at rest, no body moving: refused, so nothing is published
+                CollectionAssert.IsEmpty(got, "a refused press publishes nothing.");
+
+                var rb = _go.GetComponent<Rigidbody2D>();
+                rb.linearVelocity = (Vector2)_go.transform.up * 2f;   // way ahead, well over the floor
+                Assert.IsTrue(boat.ToggleAutopilot(), "premise: under way it engages");
+                boat.DisengageAutopilot(AutopilotDisengage.SteerInput);
+                boat.DisengageAutopilot(AutopilotDisengage.Toggled);   // already off
+                Assert.AreEqual(2, got.Count, "one signal per transition: " +
+                    string.Join(", ", got.Select(e => e.Engaged + "/" + e.Reason)));
+                Assert.IsTrue(got[0].Engaged); Assert.AreEqual(AutopilotDisengage.None, got[0].Reason);
+                Assert.AreSame(boat, got[0].Boat, "the signal names the boat it is about.");
+                Assert.IsFalse(got[1].Engaged); Assert.AreEqual(AutopilotDisengage.SteerInput, got[1].Reason);
+
+                got.Clear();
+                boat.SetHull(Hull(PropulsionType.Engine, hasAutopilot: false));
+                CollectionAssert.IsEmpty(got, "a hull change while off publishes nothing.");
+                Assert.AreEqual(nameof(AutopilotDisengage), typeof(AutopilotStateChanged)
+                    .GetField(nameof(AutopilotStateChanged.Reason)).FieldType.Name);
+                Assert.AreEqual("HiddenHarbours.Core", typeof(AutopilotDisengage).Namespace,
+                    "the reason lives in Core, so UI and audio read it without the Boats module.");
+            }
+            finally { EventBus.Unsubscribe(h); }
         }
     }
 }

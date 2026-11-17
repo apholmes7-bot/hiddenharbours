@@ -1490,11 +1490,12 @@ The owner ruled (2026-11-15) that set-a-course becomes an **autopilot, a purchas
 recommended hulls** (P4: earn it, then automate it). Slice 1 holds a heading; it does not follow a
 route.
 
-- **Who has one:** a hull whose `BoatHullDef.HasAutopilot` is true and that has a rudder (an engine
+- **Who has one:** a hull whose `BoatHullDef.AutopilotOffered` is true and that has a rudder (an engine
   helm or a sail plan). Off by default, and off on every shipped hull until the owner names which
   hulls are "recommended" (the rig edit lists suggest 12 m and up). The purchase step is a later
-  slice.
-- **The switch:** at the helm, `Helm/Autopilot` (P) holds the heading she is on
+  slice. The flag says **offered**, not fitted: once the purchase exists, a helm has the autopilot when
+  her Def offers it AND the save says it was bought for that boat.
+- **The switch:** at the helm, `Helm/Autopilot` (P, or Y on a pad) holds the heading she is on
   (`BoatController.ToggleAutopilot`). Engaging is refused under the same rules that end a hold.
 - **The controller:** `HeadingHoldAutopilot`, a PID on the wrapped heading error with a yaw-rate
   damping term and a clamped integral, writing the same helm (−1..1) a steer key writes, on the fixed
@@ -1506,7 +1507,13 @@ route.
   (astern counts as below).
 - **What the player sees:** the dash wheel, which mirrors the helm, turns by itself while it holds.
   There is no lamp or text yet: the helm band has no generic switch lamp to reuse.
+- **The signal:** each engage and each hand-back publishes the Core `AutopilotStateChanged`
+  (`Engaged`, and the Core `AutopilotDisengage` reason, append-only), so a lamp, a click or a chime
+  can answer it without reading the boat's controller. A refused press publishes nothing.
 - **Saved:** never. A loaded game starts with it off.
+- **Owed by slice 2 (route following):** the hold must survive leaving the helm, the unmanned tick
+  and region crossings (`RegionTravelCoordinator` calls `Stop()` at every crossing), so its state
+  must live outside a manned `BoatController`. Saving a route is a later save step.
 
 ## 10. Open questions
 
