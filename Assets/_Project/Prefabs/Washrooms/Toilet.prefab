@@ -85,7 +85,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.SitPoint
   _id: fixture.toilet
   _stationId: washstation.toilet
-  _reachMeters: 1.1
+  _reachMeters: 1.4
   _walkAwaySlackMeters: 0.5
   _sitLabel: Sit down
   _sitLine: He sits a moment.

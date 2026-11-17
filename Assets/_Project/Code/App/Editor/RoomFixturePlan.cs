@@ -177,17 +177,17 @@ namespace HiddenHarbours.App.Editor
 
         // Ginny's cottage, the R1 pilot (re-planned after its first editor look): a longer, shallower
         // closet in the back-right corner, 2.05 m across by 2.9 m along, its front end stopping 0.1 m short
-        // of the dresser. The three pieces stand in one line against the right wall: shower in the corner,
-        // toilet, then basin. Each is 0.95 m or more from the next, and they line up along the room's length,
-        // which the camera does not squash, so they read apart on screen. The 0.9 m to 1.3 m between them and
-        // the inner partition is the walkway, and the closet door opens onto it.
+        // of the dresser. Re-planned a second time from the scene's colliders (no editor): the toilet at the
+        // front end of the right wall, the shower behind it, the basin on the back wall. Standing just inside
+        // the closet door the player reaches each piece with that piece the nearest (the toilet's seat reach
+        // is 1.4 m on its prefab for this). Each piece is 0.9 m or more from the next.
         const float GinnyClosetFront = -1.10f, GinnyClosetInner = -1.25f;
 
         static IEnumerable<Row> GinnyBathroom(string root)
         {
-            yield return Ginny(root, Kind.Shower, new Vector2(-2.575f, -3.30f));
-            yield return Ginny(root, Kind.Toilet, new Vector2(-2.775f, -2.35f));
-            yield return Ginny(root, Kind.BathroomSink, new Vector2(-2.725f, -1.40f));
+            yield return Ginny(root, Kind.Shower, new Vector2(-2.575f, -2.85f));
+            yield return Ginny(root, Kind.Toilet, new Vector2(-2.775f, -1.475f));
+            yield return Ginny(root, Kind.BathroomSink, new Vector2(-1.925f, -3.50f));
         }
 
         static Row Ginny(string root, Kind k, Vector2 at) =>
