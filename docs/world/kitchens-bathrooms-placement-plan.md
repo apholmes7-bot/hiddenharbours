@@ -37,8 +37,8 @@ parallel with St Peters.
 | # | PR | Scene | Needs first | Editor look |
 |---|---|---|---|---|
 | R0 | **This PR:** the plan and the `RoomFixturePlan` table, with tests | none | nothing | no |
-| R1 | Bathroom fixture prefabs: toilet (a "sit that does nothing" fixture), indoor shower, bath, and the bathroom basin (#1273's `WashStand`, reused). The outhouse prefab. The generic `InteriorFixturePlacement` step (section 3). | none | #1272 and #1273 merged | no |
-| R2 | St Peters homes A: Ginny's cottage, the village sage cottage, the red saltbox and the white farmhouse. Kitchens, bathrooms, and the four ground-floor closet partitions. | StPeters | R1 | **yes** (closets and the counter run against the drawn walls, windows and hearth) |
+| R1 | Bathroom fixture prefabs: toilet (a "sit that does nothing" fixture), indoor shower, bath, and the bathroom basin (#1273's `WashStand`, reused). The outhouse prefab. The generic `InteriorFixturePlacement` step (section 3). **Built**, and as a pilot it places Ginny's cottage's ground-floor bathroom (toilet, basin, shower) with no closet partition yet (R2 adds it). | StPeters (pilot only) | #1272 and #1273 merged | one look of the pilot room |
+| R2 | St Peters homes A: Ginny's cottage (kitchen and closet; its bathroom fixtures are R1's pilot), the village sage cottage, the red saltbox and the white farmhouse. Kitchens, bathrooms, and the four ground-floor closet partitions. | StPeters | R1 | **yes** (closets and the counter run against the drawn walls, windows and hearth) |
 | R3 | St Peters workplaces: the general store, the post office and the school kitchenette, plus the school's outhouse | StPeters | R2 merged | **yes**, and probably a shop stockroom re-bake |
 | R4 | St Peters empty homes: the harbour gable, cream saltbox and white gable. Kitchens, a stair to each upper storey, upstairs bathrooms and their partitions. | StPeters | R3 merged | **yes** |
 | R5 | St Peters open-air outhouses (section 2.3) | StPeters | R4 merged | light |
@@ -210,7 +210,9 @@ in the region's station table and give the home's residents one `RoutineActivity
 meal stops (#1235 section 4) attach to the kitchens and tables the same way. Both are routine changes, so
 they get their own PRs after R2 and R3, not inside a placement PR.
 
-## 3. The generic placement step (spec; not built here)
+## 3. The generic placement step (built in R1)
+
+**R1 notes.** The step is `InteriorFixturePlacement`. It differs from the spec below in three small ways: the builder hook is still called from `StPetersGinnyPlot` (the one building with rows), not from `BuildingInteriorStander`, and moves there when R2 adds rows for buildings the stander stands; one patch is written per building root, holding every level's fixtures; and `WashStationPlacement` keeps only its two prefabs and their ids. The toilet's seat is `SitPoint` (World): it sits the player through Core's `SeatSession`, so a seated stretch is banked as seated rest like any seat, and it washes nothing.
 
 **Why it is not built in this PR.** It would generalise #1273's `WashStationPlacement`, which is not
 merged. Building it now on main means a second copy of the same ~250 lines of scene-text patching, which

@@ -343,7 +343,9 @@ namespace HiddenHarbours.Tests.EditMode
             // the washstand and the wharf shower: a sprite, a collider and a WashStationPoint, no travel component.
             // The NMC building shells add the community hall and the fish plant: seamless interiors (a
             // BuildingInterior, sprites, YSort, wall colliders, and on the plant the outside kit's set-piece
-            // placements), no nested prefab and no travel component.
+            // placements), no nested prefab and no travel component. Ginny's ground-floor bathroom (kitchens and
+            // bathrooms plan, R1) adds the indoor shower and the toilet (its basin is the washstand again):
+            // greybox sprites, a collider on the toilet, and a WashStationPoint or a SitPoint, no travel component.
             Assert.That(seen.Select(g => paths[g].Replace('\\', '/')).OrderBy(p => p, StringComparer.Ordinal), Is.EqualTo(new[] {
                 "Assets/_Project/Prefabs/Bridges/CampBrookBridge.prefab",
                 "Assets/_Project/Prefabs/Bridges/CampPondCulvert.prefab",
@@ -352,6 +354,8 @@ namespace HiddenHarbours.Tests.EditMode
                 "Assets/_Project/Prefabs/Buildings/NineMileCreek/NmcFishPlant.prefab",
                 "Assets/_Project/Prefabs/Decor/NavBuoy.prefab",
                 "Assets/_Project/Prefabs/GasStation/dispenser_sDock.prefab",
+                "Assets/_Project/Prefabs/Washrooms/Shower.prefab",
+                "Assets/_Project/Prefabs/Washrooms/Toilet.prefab",
                 "Assets/_Project/Prefabs/Washrooms/WashStand.prefab",
                 "Assets/_Project/Prefabs/Washrooms/WharfShower.prefab",
             }), "Audit every referenced prefab, including nested sources.");
