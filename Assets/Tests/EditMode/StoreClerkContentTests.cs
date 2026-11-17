@@ -247,9 +247,9 @@ namespace HiddenHarbours.Tests.EditMode
 
             CollectionAssert.AreEquivalent(
                 new[] { "gear.rod", "bait.capelin", "supply.ice", "instrument.depth_sounder", "license.clam",
-                        "supply.bread", "supply.tinned_beans", "supply.oatcakes", "instrument.loran" },
-                ids, "her book on day one is the counter #356 built plus the first food staples and the Loran " +
-                     "receiver, item for item");
+                        "supply.bread", "supply.tinned_beans", "supply.oatcakes" },
+                ids, "her book on day one is the counter #356 built plus the first food staples, item for item " +
+                     "(the Loran left her counter for the Nine Mile Creek boat/gear wholesaler)");
         }
 
         [Test]

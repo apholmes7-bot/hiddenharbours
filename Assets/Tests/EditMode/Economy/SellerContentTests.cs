@@ -54,7 +54,7 @@ namespace HiddenHarbours.Tests.Economy
                 Assert.AreEqual("trade.vehicles", byId[sellerId].TradeId);
             }
 
-            // The two wholesalers (ruling 11-16) have their buildings and identities; no keeper and no offer yet.
+            // The two wholesalers (ruling 11-16) have their buildings, identities and unlisted offers; no keeper yet.
             foreach (var (sellerId, tradeId) in new[]
                      {
                          ("seller.nmc_boat_gear_wholesaler", "trade.boat_gear_wholesale"),

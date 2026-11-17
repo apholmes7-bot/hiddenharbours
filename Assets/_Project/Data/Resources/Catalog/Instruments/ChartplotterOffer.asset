@@ -18,10 +18,10 @@ MonoBehaviour:
     the shoal ground the way the paper chart does, remembers where you have been, and
     holds the marks you put on it - the wreck, the fuel float, the spot that fished.
     Wants a wheelhouse: the skiffs have nowhere to mount it.'
-  Price: 650
+  Price: 1800
   Catalog:
     Listed: 0
     Section: 5
     Sellers:
-    - seller.nmc_chandlery
+    - seller.nmc_boat_gear_wholesaler
     SortOrder: 42

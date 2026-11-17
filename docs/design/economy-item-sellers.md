@@ -4,6 +4,14 @@
 > somewhere, and some can be sold back. This file lists every item Def, who offers it, at what price, and
 > whether it is on a shelf today. The guard is
 > `Assets/Tests/EditMode/Economy/EveryItemHasASellerTests.cs`.
+>
+> **Updated 2026-11-17 (main 1631a4ec9f): the two Nine Mile Creek wholesalers.** Owner ruling 11-16 puts
+> the Loran and every boat electronic at a new boat/gear wholesaler and fishing stock at a separate fishing
+> gear wholesaler; the prices and routing are the ones approved from
+> [`docs/economy/nmc-wholesalers-stock.md`](../economy/nmc-wholesalers-stock.md) (§2, §4.2, §4.3). The
+> wholesalers' stock is pinned by `Assets/Tests/EditMode/Economy/WholesalerStockTests.cs`. Neither
+> wholesaler has a keeper or a counter vendor in a scene yet, so their offers are on file and unlisted
+> (§5 says what the editor run must do).
 
 ## 1. What counts
 
@@ -40,6 +48,8 @@ Loran receiver's tuning Def.
 | `seller.nmc_yard` | the yard | boatyard (NMC) | shipwright, pots |
 | `seller.nmc_harbourmaster` | harbourmaster | licensing (NMC) | licence |
 | `seller.nmc_wharf_market` | Wendell Arsenault | fish buyer | none (buys only) |
+| `seller.nmc_boat_gear_wholesaler` | not authored | boat/gear wholesale (NMC, Water Street east block) | none yet (greybox shell #1292; no counter vendor, no keeper) |
+| `seller.nmc_fishing_gear_wholesaler` | not authored | fishing gear wholesale (NMC, by the lumber yard) | none yet (greybox shell #1292; no counter vendor, no keeper) |
 | `seller.nmc_vehicle_dealer` | not authored | vehicles | none (key scene not built) |
 | `seller.nmc_industrial_yard` | not authored | vehicles | none (key scene not built) |
 
@@ -47,6 +57,9 @@ Loran receiver's tuning Def.
 
 - **Counter gear, bait, instruments:** the price already authored on each asset. This change adds no
   new counter prices; it only names sellers.
+- **Boat electronics at the boat/gear wholesaler (2026-11-17):** the approved prices from
+  `nmc-wholesalers-stock.md` §4.2: Loran 900 (was the 380 placeholder), fish finder 650 (was 480),
+  chartplotter 1,800 (was 650). The depth sounder stays 140. Fishing stock keeps its prices (§4.3).
 - **Hulls at the yard:** the yard's one existing new-hull price is the punt, ₲1,800 for an engine power
   of 650. Each new hull is priced at the same rate: `price = EnginePower × 1800 / 650`, rounded to the
   nearest ₲100 (nearest ₲1,000 above ₲100,000). It lands each hull in the net-worth band of its
@@ -68,26 +81,26 @@ the reason recorded in the guard.
 
 | Item | Price ₲ | Seller | State |
 |---|---|---|---|
-| `gear.rod` | 60 | leblancs, nmc_chandlery | shelf |
-| `gear.shovel` | 25 | leblancs | offer (seller **added**; also starting gear) |
-| `gear.bucket` (clam bucket) | 15 | leblancs | offer (seller **added**; also starting gear) |
-| `gear.rod_rack` | 25 | nmc_chandlery | offer (seller **added**) |
-| `gear.shellfish_rake` | 30 | leblancs | offer (held back on purpose until hand-gathering is built) |
-| `gear.oyster_tongs` | 45 | leblancs | offer (same) |
-| `gear.mussel_sack` | 10 | leblancs | offer (same) |
-| `gear.shellfish_basket` | 20 | leblancs | offer (same) |
-| `bait.capelin` | 2 | leblancs | shelf |
-| `bait.herring` | 3 | leblancs, nmc_chandlery | offer (sellers **added**) |
-| `bait.mackerel` | 4 | leblancs, nmc_chandlery | offer (sellers **added**) |
-| `bait.squid_strip` | 6 | leblancs, nmc_chandlery | offer (sellers **added**) |
-| `bait.sea_worm` | 4 | leblancs | offer (seller **added**) |
-| `bait.shucked_clam` | 3 | leblancs | offer (seller **added**) |
-| `bait.fish_scrap` | 1 | leblancs | offer (seller **added**) |
+| `gear.rod` | 60 | leblancs, nmc_chandlery | shelf (fishing gear wholesaler joins when its counter stands) |
+| `gear.shovel` | 25 | leblancs, nmc_fishing_gear_wholesaler | offer (also starting gear) |
+| `gear.bucket` (clam bucket) | 15 | leblancs, nmc_fishing_gear_wholesaler | offer (also starting gear) |
+| `gear.rod_rack` | 25 | nmc_fishing_gear_wholesaler (moved from nmc_chandlery) | offer |
+| `gear.shellfish_rake` | 30 | leblancs, nmc_fishing_gear_wholesaler | offer (held back on purpose until hand-gathering is built) |
+| `gear.oyster_tongs` | 45 | leblancs, nmc_fishing_gear_wholesaler | offer (same) |
+| `gear.mussel_sack` | 10 | leblancs, nmc_fishing_gear_wholesaler | offer (same) |
+| `gear.shellfish_basket` | 20 | leblancs, nmc_fishing_gear_wholesaler | offer (same) |
+| `bait.capelin` | 2 | leblancs | shelf (fishing gear wholesaler joins when its counter stands) |
+| `bait.herring` | 3 | leblancs, nmc_fishing_gear_wholesaler (moved from nmc_chandlery) | offer |
+| `bait.mackerel` | 4 | leblancs, nmc_fishing_gear_wholesaler (moved from nmc_chandlery) | offer |
+| `bait.squid_strip` | 6 | leblancs, nmc_fishing_gear_wholesaler (moved from nmc_chandlery) | offer |
+| `bait.sea_worm` | 4 | leblancs, nmc_fishing_gear_wholesaler | offer |
+| `bait.shucked_clam` | 3 | leblancs, nmc_fishing_gear_wholesaler | offer |
+| `bait.fish_scrap` | 1 | leblancs, nmc_fishing_gear_wholesaler | offer |
 | `supply.ice` / `bread` / `tinned_beans` / `oatcakes` | 6 / 4 / 3 / 2 | leblancs | shelf |
-| `instrument.depth_sounder` | 140 | leblancs | shelf |
-| `instrument.fish_finder` | 480 | leblancs (same dash cutout as the sounder) | offer (seller **added**) |
-| `instrument.gps` (chartplotter) | 650 | nmc_chandlery (wants a wheelhouse boat) | offer (seller **added**) |
-| `instrument.loran` | 380 | leblancs (placeholder until the NMC boat/gear wholesaler stands; wants a wheelhouse boat) | shelf |
+| `instrument.depth_sounder` | 140 | leblancs | shelf (moves to the boat/gear wholesaler with its counter; see §5) |
+| `instrument.fish_finder` | 650 | nmc_boat_gear_wholesaler (moved from leblancs; same dash cutout as the sounder) | offer |
+| `instrument.gps` (chartplotter) | 1,800 | nmc_boat_gear_wholesaler (moved from nmc_chandlery; wants a wheelhouse boat) | offer |
+| `instrument.loran` | 900 | nmc_boat_gear_wholesaler only (the leblancs placeholder and its St Peters vendor are gone; wants a wheelhouse boat) | offer |
 | `license.clam` | 15 | leblancs | shelf |
 | `license.cod` | 120 | nmc_harbourmaster | shelf |
 
@@ -146,8 +159,8 @@ the reason recorded in the guard.
 | Item | State |
 |---|---|
 | `watch.harbour_digital` | exempt: starting item; needs shop: a watch seller for a replacement |
-| `tackle.*` (cod jig, feathers, soft bait, spinner, spoon) | exempt: the rod's tackle box gives the player every lure, so there is no per-lure ownership to sell yet; needs that seam, then a chandlery |
-| `longline.groundfish_tub` | exempt: tub stock is counted but has no offer type; needs a tub offer, then the NMC chandlery |
+| `tackle.*` (cod jig, feathers, soft bait, spinner, spoon) | exempt: the rod's tackle box gives the player every lure, so there is no per-lure ownership to sell yet; needs that seam, then the NMC fishing gear wholesaler |
+| `longline.groundfish_tub` | exempt: tub stock is counted but has no offer type; needs a tub offer, then the NMC fishing gear wholesaler |
 | `golf_club.*` (4) | exempt: lent at the course; needs shop: a pro shop |
 | `fuelstore.*` carriable cans and nozzles (36) | exempt: station stock at the pump; an empty can needs an offer type and a fuel-station till |
 
@@ -158,3 +171,43 @@ the reason recorded in the guard.
 - **New shops the owner would need to approve:** a pleasure-boat dealer and a yacht broker, a ship
   broker, Fundy and Newfoundland yards (only if those regions arrive), a golf pro shop, a watch seller.
 - **New offer types (code):** longline tubs, empty fuel cans, and per-lure tackle once tackle is owned.
+
+### 5.1 Putting the two wholesalers on a shelf (owed; editor and content work)
+
+The offers are on file (data), so the rest is the counter. `StoreWiringPatch` can only give an existing
+vendor its seller id, or add a `SupplyShop`/`InstrumentShop` as a copy of one the same root already holds;
+it cannot create a counter from nothing, and neither wholesaler shell has a vendor to copy. So:
+
+1. **A keeper and a way to open the book (world-content).** A wares book opens only from a dialogue row
+   whose `CatalogSellerId` names the seller (`DialoguePresenter`); `StoreWiringTests` guard 5 then needs a
+   committed vendor selling as that id. Author a keeper NPC and a first dialogue for each wholesaler, and
+   set the seller's `KeeperNpcId` (`SellerContentTests` pins it empty until then).
+2. **The counter vendors (editor run, NineMileCreek.unity).** Add one root GameObject per wholesaler
+   counter, placed at the shell's counter marker (`NmcBuildingShells` steps 22 and 23), holding:
+   - boat/gear: one `InstrumentShop` per electronic, `_offer` = `LoranOffer`, `FishFinderOffer`,
+     `ChartplotterOffer` (and `DepthSounderOffer` when the sounder moves), `_sellerId` =
+     `seller.nmc_boat_gear_wholesaler`, `_walletProvider` = the same player wallet the chandlery's
+     `GearShop` uses (`GeneralStore` root, `{fileID: 957678902}`), `_onPurchased` empty;
+   - fishing gear: one `GearShop` per gear offer, one `BaitShop` per bait, one `PotShop` per pot,
+     `_sellerId` = `seller.nmc_fishing_gear_wholesaler`, same wallet.
+
+   Then add those rows to `StoreWiringPatch.NineMileCreek` (root name, class, wares id, seller id) so the
+   step's re-plan over the committed scene is empty (`StoreWiringTests` 1 and 3), and run
+   *World > Store Wiring > Apply the Store Patches* to confirm nothing is left to write.
+3. **Tick `Listed`** on each offer in the same change; guard 4 holds every listed (ware, seller) pair to
+   exactly one committed vendor, so the tick and the vendor land together.
+4. **Moves that wait for that counter, so nothing goes unbuyable in between:** the depth sounder off
+   `leblancs` (approved: electronics are the boat/gear wholesaler's alone; it is the St Peters counter's
+   `InstrumentShop` template today, and the StPeters builder and `StoreClerkContentTests` name it), and
+   the fishing gear wholesaler joining the listed rod, capelin and both pots (the rod then leaves
+   `nmc_chandlery`, the pots leave `nmc_yard`, per §2 of the stock proposal).
+
+### 5.2 Wholesaler items that do not exist yet (owed; no offer invented here)
+
+| Wholesaler | Missing item | Approved price ₲ | What it needs first |
+|---|---|---|---|
+| boat/gear | dome compass, flush compass, radar, wind dial, wind display | 80, 180, 3,000, 220, 600 | an `InstrumentOffer` per id (`BoatEquipment` already reserves the ids) and a purchase check that refuses factory-fitted or unsupported fits |
+| boat/gear | autopilot | 6,000 (recommended candidate B) | a paid per-hull ownership record; today eligible hulls get heading hold outright (`BoatHullDef.AutopilotOffered`), so a sale would charge for something already granted. Needs a save step (v25, the owner's call) |
+| fishing gear | cod jig, mackerel feathers, soft bait, spinner, spoon | 18, 16, 12, 14, 10 | an owned-tackle seam and a tackle offer type (the rod hands every lure today) |
+| fishing gear | groundfish longline tub | 120 per tub | a counted tub offer type (`TubLocker` counts stock; there is no offer to buy it through) |
+
