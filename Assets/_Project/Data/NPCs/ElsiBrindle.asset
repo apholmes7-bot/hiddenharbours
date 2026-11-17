@@ -19,3 +19,24 @@ MonoBehaviour:
   CompletionFlag: 
   Voice: {fileID: 0}
   Build: {fileID: 11400000, guid: 2e147e3333fb1ba45998f7ce86e43e24, type: 2}
+  Gifts:
+    LovedItemIds:
+    - fish.sea_scallop
+    LikedItemIds: []
+    DislikedItemIds:
+    - fish.atlantic_tomcod
+    LovedTags: []
+    LikedTags:
+    - shellfish
+    DislikedTags: []
+    Lines:
+      Loved:
+      - 'Scallops. Now that''s worth the long drive out. Thank you.'
+      Liked:
+      - 'How kind. I''ll have it tonight with the window open.'
+      Neutral:
+      - 'Thank you. A nice end to a round.'
+      Disliked:
+      - 'Oh. It''s very fresh. I''m not sure what I''ll do with it. Thank you.'
+      NotGiftable: []
+      AlreadyGiftedToday: []

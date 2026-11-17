@@ -19,3 +19,4 @@ MonoBehaviour:
   PreppedId: 
   CookedId: 
   EnergyKcal: 420
+  Microwavable: 1

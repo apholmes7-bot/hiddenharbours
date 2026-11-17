@@ -17,5 +17,10 @@ namespace HiddenHarbours.Core
         /// <summary>The output id of another recipe (a fillet from the prep station going to the cooktop).
         /// </summary>
         Intermediate = 2,
+
+        /// <summary>Any stock item by its id (a <see cref="FoodDef.ItemId"/> or a supply id such as
+        /// <c>supply.tinned_beans</c>), not another recipe's output: what a microwave heats. Not part of the
+        /// raw-catch chain, so <see cref="RecipeBook.IsReachableFromCatch"/> never follows it.</summary>
+        Item = 3,
     }
 }

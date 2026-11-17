@@ -20,7 +20,8 @@ namespace HiddenHarbours.Core
     /// asset's own raw figures, so the two cannot drift apart.</para>
     ///
     /// <para><b>The galley chain is ids only.</b> <see cref="PreppedId"/> and <see cref="CookedId"/> name
-    /// recipe outputs (<see cref="RecipeDef.OutputId"/>); the stations that run them are a later slice.</para>
+    /// recipe outputs (<see cref="RecipeDef.OutputId"/>); <see cref="RecipeRunner"/> runs them at a
+    /// <see cref="CookingStationDef"/>.</para>
     /// </summary>
     [CreateAssetMenu(menuName = "Hidden Harbours/Food/Food", fileName = "Food")]
     public sealed class FoodDef : ScriptableObject
@@ -59,5 +60,13 @@ namespace HiddenHarbours.Core
                  "how rich it is. 0 = unstated: the body takes the relief's own energy (a full meal of " +
                  "relief 1 is the reference body's daily need over the hours a meal lasts).")]
         [Min(0f)] public float EnergyKcal;
+
+        /// <summary>Can it go in a microwave (owner ask 2026-11-15: "microwaves can only reheat cooked or
+        /// microwavable items, you cant microwave a raw fish or raw food")? False, the default and what an
+        /// asset written before this field reads, so raw food is refused unless an asset says otherwise. Set
+        /// only on cooked dishes and microwavable shop food.</summary>
+        [Tooltip("Can it go in a microwave? Only cooked dishes and microwavable food (a tin of beans). Never " +
+                 "raw fish or raw food (owner 2026-11-15). Off by default.")]
+        public bool Microwavable;
     }
 }
