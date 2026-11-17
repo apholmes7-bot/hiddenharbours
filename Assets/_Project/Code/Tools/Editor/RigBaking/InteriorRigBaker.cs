@@ -108,6 +108,15 @@ namespace HiddenHarbours.Tools.RigBaking
             new InteriorBakeRequest("interiorProp", optsJs, propName, label, outputFolder, baseName,
                                     facings, maxSheetDimension, requireDistinctFromDefault);
 
+        /// <summary>A PROP build from a sibling prop rig on the same turntable (the appliance kit):
+        /// <c>&lt;Global&gt;.render(name, dir, opts)</c>, measured against the room exactly like
+        /// <see cref="Prop"/>.</summary>
+        public static InteriorBakeRequest PropOf(string rigKey, string propName, string optsJs, string label,
+                                                 string outputFolder, string baseName, int facings,
+                                                 int maxSheetDimension) =>
+            new InteriorBakeRequest(rigKey, optsJs, propName, label, outputFolder, baseName,
+                                    facings, maxSheetDimension, requireDistinctFromDefault: false);
+
         /// <summary>The exact JS expression that renders one facing. The ONE place the two rigs'
         /// differing call signatures are expressed, so nothing downstream has to know which it is.</summary>
         public string RenderJs(string globalName, double dir) =>

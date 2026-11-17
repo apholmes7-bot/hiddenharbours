@@ -71,6 +71,8 @@ namespace HiddenHarbours.Tests.RigBaking
         /// </summary>
         static readonly Snapshot[] Baseline =
         {
+            new Snapshot("appliance", "docs/art/rigs/appliance-kit/applianceIsoRig.js",
+                         "ApplianceIso", AzimuthConvention.CounterClockwise),
             new Snapshot("bobber", "docs/art/rigs/bobberRig.js",
                          "RodBobber", AzimuthConvention.Clockwise),
             new Snapshot("bucket", "docs/art/rigs/bucketRig.js",

@@ -885,3 +885,23 @@ MonoBehaviour:
     OrdersAboveFigure: 2
     ResampleSeconds: 1
     ShowBelowDecks: 0
+  WashVisuals:
+    Enabled: 1
+    FillSeconds: 1.6
+    DrainSeconds: 1.2
+    FrothFramesPerSecond: 4
+    RunFramesPerSecond: 10
+    FlushSeconds: 0.9
+    FrothWithoutSoap: 0
+    ClimbSeconds: 0.55
+    ClimbArcMetres: 0.22
+    EntryStandOffMetres: 0.35
+    FallbackBakedSeatMetres: 0.4
+    BubbleCount: 6
+    BubbleRiseMetresPerSecond: 0.35
+    BubbleLifetimeSeconds: 1.4
+    BubbleSpreadMetres: 0.22
+    BubbleOffsetMetres: {x: 0, y: 0.75}
+    BubbleSizeMetres: 0.09375
+    BubbleColor: {r: 0.93, g: 0.97, b: 1, a: 0.9}
+    BubbleOrdersAboveFigure: 2
