@@ -17,7 +17,7 @@ MonoBehaviour:
   Category: 1
   Rarity: 2
   Flavor: "Dredged from gravel beds; the meat sells, packaged sells better. GEAR NOTE: Dredge only. Nothing in the game drags a dredge yet, so this is data waiting on the trawl arc out of Rice Point; it is in no rod pool and no trap."
-  Sprite: {fileID: -1760578941, guid: 11c3f48b8f3e36e4fb81009cb8ed1f12, type: 3}
+  Sprite: {fileID: 0}
   RegionIds:
   - region.rice_point
   AllowedGear: 16

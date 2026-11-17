@@ -128,21 +128,34 @@ namespace HiddenHarbours.Tests
             Assert.GreaterOrEqual(n, 7, "the seven rig species were all checked");
         }
 
+        /// <summary>
+        /// The shellfish keep their flat icons for now. The pass 2 shell art is drawn at true size in the
+        /// tote (an 8 px cell with a 2-3 px shell), so in the 64 px card slot it would be a blob. Icon-scale
+        /// shellfish art is owed; until it lands no shellfish icon may be the tiny tote art.
+        /// </summary>
         [Test]
-        public void EveryShellfish_HasANewArtIcon_AndItsDefAgrees()
+        public void NoShellfishIcon_IsTheTrueSizeToteArt()
         {
             IconLibrary icons = Icons();
             int n = 0;
             foreach (FishSpeciesDef d in Shellfish())
             {
-                Sprite icon = IconFor(icons, d.Id);
-                Assert.IsNotNull(icon, $"{d.Id}: no icon");
-                StringAssert.StartsWith(Storage + "CatchItem2_", PathOf(icon), $"{d.Id}: icon must be the pass 2 item art");
-                Assert.AreSame(icon, d.Sprite, $"{d.Id}: the Def's Sprite and the icon library must agree");
+                foreach (Sprite s in new[] { IconFor(icons, d.Id), d.Sprite })
+                {
+                    if (s == null) continue;
+                    StringAssert.DoesNotStartWith(Storage, PathOf(s), $"{d.Id}: '{s.name}' is tote art, too small for an icon");
+                    Assert.GreaterOrEqual(s.rect.width, KeptShellfishIconMinPx, $"{d.Id}: '{s.name}' is too small to read as an icon");
+                }
                 n++;
             }
             Assert.GreaterOrEqual(n, 5, "the shellfish were all checked");
         }
+
+        /// <summary>The smallest sprite, px wide, that still reads in the card's icon slot.</summary>
+        const float KeptShellfishIconMinPx = 16f;
+
+        /// <summary>The old flat sprites the shellfish still use (see <see cref="NoShellfishIcon_IsTheTrueSizeToteArt"/>).</summary>
+        static readonly string[] KeptShellfishIcons = { "SoftShellClam" };
 
         // ---- the fight: on the line and the land pose ----------------------------------------------
 
@@ -327,8 +340,9 @@ namespace HiddenHarbours.Tests
         }
 
         /// <summary>
-        /// The old flat fish sprites are retired: no shipped asset, prefab or scene points at any of them.
-        /// (The files themselves are left for a deliberate delete.)
+        /// The old flat fish sprites are retired: no shipped asset, prefab or scene points at any of them,
+        /// except the shellfish icons kept on purpose (<see cref="KeptShellfishIcons"/>). (The files
+        /// themselves are left for a deliberate delete.)
         /// </summary>
         [Test]
         public void NothingShipped_ReferencesTheOldFishSprites()
@@ -336,6 +350,7 @@ namespace HiddenHarbours.Tests
             // Read the guids off the .meta files themselves, so the check does not depend on the PNGs
             // having imported.
             string[] oldGuids = Directory.GetFiles(OldFishFolder, "*.png.meta")
+                .Where(m => !KeptShellfishIcons.Contains(Path.GetFileNameWithoutExtension(Path.GetFileNameWithoutExtension(m))))
                 .Select(m => File.ReadLines(m).FirstOrDefault(l => l.StartsWith("guid: ")))
                 .Where(l => l != null)
                 .Select(l => l.Substring("guid: ".Length).Trim())

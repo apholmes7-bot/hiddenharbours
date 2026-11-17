@@ -34,17 +34,7 @@ MonoBehaviour:
   - Id: fish.green_crab
     Icon: {fileID: 21300000, guid: b6bc2c66344a71e4b46243ea685d1ae0, type: 3}
   - Id: fish.soft_shell_clam
-    Icon: {fileID: -591464610, guid: bf1180af116a57a409bb665f3e564cde, type: 3}
-  - Id: fish.northern_quahog
-    Icon: {fileID: -591464610, guid: bf1180af116a57a409bb665f3e564cde, type: 3}
-  - Id: fish.atlantic_surf_clam
-    Icon: {fileID: -591464610, guid: bf1180af116a57a409bb665f3e564cde, type: 3}
-  - Id: fish.blue_mussel
-    Icon: {fileID: -2103132598, guid: 59c56e0d48c6a594f9816505a9926518, type: 3}
-  - Id: fish.american_oyster
-    Icon: {fileID: -1376756797, guid: d54c85ce2444bb24ea6e38c5888f1376, type: 3}
-  - Id: fish.sea_scallop
-    Icon: {fileID: -1760578941, guid: 11c3f48b8f3e36e4fb81009cb8ed1f12, type: 3}
+    Icon: {fileID: -8350118145691459604, guid: bae98caad6f379308446110bc6a39b4f, type: 3}
   - Id: gear.rod
     Icon: {fileID: 3043605626722657392, guid: a237e0b5e9c386cad0782dd33e12953a, type: 3}
   - Id: gear.shovel
