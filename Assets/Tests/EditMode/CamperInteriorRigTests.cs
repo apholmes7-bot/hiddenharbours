@@ -12,7 +12,7 @@ using HiddenHarbours.Core;               // KitchenStorageDef, WashStationDef
 using HiddenHarbours.Player;             // StowageDef, GinnyFreezer
 using HiddenHarbours.Tools.RigBaking;
 
-namespace HiddenHarbours.Tests.RigBaking
+namespace HiddenHarbours.Tests.EditMode
 {
     /// <summary>
     /// <b>THE CAMPER ROOM: does it fit inside its shell, and can the player use it?</b>
