@@ -11,8 +11,8 @@ namespace HiddenHarbours.Core
     /// into a caller-supplied, pre-sized <see cref="StringBuilder"/> by <see cref="WriteTo"/>, never
     /// through <c>int.ToString</c>.
     ///
-    /// <para>Weights count in TENTHS (the notebook shows one decimal) — the same integer count-up
-    /// with <see cref="WriteTo"/>'s <c>decimals = 1</c>. Coins count in whole coins.</para>
+    /// <para>Weights count in whole GRAMS and are lettered by <see cref="WeightFormat.WriteGrams"/>
+    /// (grams under a kilogram, kilograms to one decimal from one up). Coins count in whole coins.</para>
     /// </summary>
     public sealed class CountUp
     {

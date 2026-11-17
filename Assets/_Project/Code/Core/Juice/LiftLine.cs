@@ -1,5 +1,3 @@
-using System.Globalization;
-
 namespace HiddenHarbours.Core
 {
     /// <summary>
@@ -40,10 +38,13 @@ namespace HiddenHarbours.Core
 
             string name = Name(in item);
             string verb = item.Category == FishCategory.Shellfish ? "Lifted out" : "Landed";
-            string kg = item.WeightKg.ToString("0.0", CultureInfo.InvariantCulture);
+            // The shared weight rule (WeightFormat): grams under a kilogram, so a 40 g smelt is
+            // "a 40 g rainbow smelt", never "a 0.0 kg" one.
+            string number = WeightFormat.Number(item.WeightKg);
+            string unit = WeightFormat.Unit(item.WeightKg);
             FishSizeBand band = FishFeelMath.BandFor(
                 FishFeelMath.Size01(item.WeightKg, minKg, maxKg), in feel);
-            return $"{verb} {NumberArticle(kg)} {kg} kg {name} — {FishFeelMath.SizeWord(band)}.";
+            return $"{verb} {NumberArticle(number)} {number}{unit} {name} — {FishFeelMath.SizeWord(band)}.";
         }
 
         private static string Plain(in CatchItem item)
@@ -64,7 +65,8 @@ namespace HiddenHarbours.Core
         }
 
         /// <summary>"an" before a number that is SPOKEN with a vowel first: anything starting with 8
-        /// ("an 8.2 kg"), and eleven and eighteen ("an 11.0 kg", "an 18.5 kg"). Everything else is "a".</summary>
+        /// ("an 8.2 kg", "an 80 g", "an 800 g"), and eleven and eighteen ("an 11.0 kg", "an 18 g").
+        /// Everything else is "a" ("a 180 g": one hundred and eighty).</summary>
         private static string NumberArticle(string number)
         {
             if (string.IsNullOrEmpty(number)) return "a";

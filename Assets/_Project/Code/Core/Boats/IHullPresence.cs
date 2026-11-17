@@ -25,5 +25,14 @@ namespace HiddenHarbours.Core
     {
         /// <summary>Her outline in WORLD metres, as she lies this instant.</summary>
         HullFootprint Footprint { get; }
+
+        /// <summary>
+        /// How far up-screen her PICTURE is drawn from that outline this instant (world units, positive
+        /// on the flood, negative on the ebb) — the tide ride, <see cref="IHullTideRide.ScreenRiseNow"/>,
+        /// or 0 for a hull nothing carries. The outline stays where her plan is (a swimmer, a ladder and
+        /// a walk all meet her there); anything DRAWN against her — foam parting round her hull — adds
+        /// this, or it draws her where she would lie at the baked tide while she lies lower or higher.
+        /// </summary>
+        float PictureRise { get; }
     }
 }

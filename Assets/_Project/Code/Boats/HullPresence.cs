@@ -57,6 +57,23 @@ namespace HiddenHarbours.Boats
             HullFootprint.FromBowDirection(transform.position, transform.up,
                                            _lengthMetres, _halfBeamMetres);
 
+        /// <summary>
+        /// How far up-screen her picture rides from <see cref="Footprint"/> right now: the sibling
+        /// <see cref="IHullTideRide"/>'s <see cref="IHullTideRide.ScreenRiseNow"/> (the same number
+        /// <see cref="BoatWaveMotion"/> lowers her visual by), or 0 when nothing carries her. Looked up
+        /// once and cached; the ride may be added after this component, so a miss looks again.
+        /// </summary>
+        public float PictureRise
+        {
+            get
+            {
+                if (_ride == null) _ride = GetComponent<IHullTideRide>();
+                return _ride != null ? _ride.ScreenRiseNow() : 0f;
+            }
+        }
+
+        private IHullTideRide _ride;
+
         /// <summary>Her length overall (m) as configured; 0 = not configured, i.e. not registered.</summary>
         public float LengthMetres => _lengthMetres;
 

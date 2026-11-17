@@ -153,7 +153,7 @@ namespace HiddenHarbours.World
         private Text _registerLabel;                      // the left head, left: the lift line
         private Text _weightLabel;                        // the left head, right: the weight readout
         private string _registerLine = "";                // the last landing's line (stands until the next)
-        private readonly CountUp _weight = new CountUp(); // tenths of a kg
+        private readonly CountUp _weight = new CountUp(); // whole grams (WeightFormat reads them as g or kg)
         private bool _weightAnimating;
         private readonly CountUp _purse = new CountUp();  // the balance after a sale
         private readonly StringBuilder _sb = new StringBuilder(32);   // pre-sized; ONE small string per tick
@@ -915,8 +915,12 @@ namespace HiddenHarbours.World
         /// <summary>The last landing's line in the register — what the left head letters (tests, proofs).</summary>
         public string RegisterLine => _registerLine;
 
-        /// <summary>The weight readout right now, in tenths of a kg (tests: the count-up, and where it landed).</summary>
-        public int WeightTenths => _weight.Value;
+        /// <summary>The weight readout right now, in whole grams (tests: the count-up, and where it landed).
+        /// It is lettered by <see cref="WeightFormat.WriteGrams"/>: grams under a kilogram, else kg to one decimal.</summary>
+        public int WeightGrams => _weight.Value;
+
+        /// <summary>The weight readout's text right now ("40 g", "1.2 kg") — what the left head letters.</summary>
+        public string WeightReadout => WeightText();
 
         /// <summary>The balance the purse letters right now: the true balance, or — for the length of a sale's
         /// coins and count-up — the balance she SEES climbing toward it.</summary>
@@ -944,17 +948,18 @@ namespace HiddenHarbours.World
         public void OnMoment(JuiceMomentCue e)
         {
             if (e.Kind != JuiceMoment.Landing && e.Kind != JuiceMoment.DigStrike) return;
-            int tenths = Mathf.RoundToInt(Mathf.Max(0f, e.Strength) * 10f);
+            // Whole grams, not tenths of a kg: a 40 g smelt is 0 tenths, which read "0.0 kg" (or nothing).
+            int grams = WeightFormat.Grams(e.Strength);
             JuiceSettings j = Juice;
             if (!IsOpen || !j.MomentsEnabled || j.WeightCountUpSeconds <= 0f)
             {
-                _weight.Set(tenths);
+                _weight.Set(grams);
                 _weightAnimating = false;
                 if (IsOpen) { EnsureRegisterLabels(); RepaintWeight(1f); }
                 return;
             }
             EnsureRegisterLabels();
-            _weight.Start(0, tenths, j.WeightCountUpSeconds);
+            _weight.Start(0, grams, j.WeightCountUpSeconds);
             _weightAnimating = true;
             RepaintWeight(1f);
         }
@@ -1076,9 +1081,7 @@ namespace HiddenHarbours.World
 
         private string WeightText()
         {
-            _sb.Clear();
-            _weight.WriteTo(_sb, 1);
-            _sb.Append(" kg");
+            WeightFormat.WriteGrams(_sb, _weight.Value);
             return _sb.ToString();
         }
 
