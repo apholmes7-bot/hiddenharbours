@@ -26,10 +26,10 @@ logbook's.
 | Maths | `LoranMath` | position to TD, TD pair to position (Newton), geometry, deterministic error |
 | Read model | `LoranReceiver.Read` → `LoranReading`; `LoranReceiver.Steer` → `LoranSteer` | pure, allocation-free |
 | The numbers | `LoranWaypointStore`, `LoranWaypoint` | runtime only (§6) |
-| Purchase | `LoranOffer.asset` (`instrument.loran`, an `InstrumentOffer`) | bolted into one hull, bought through `InstrumentShop` like the sounder; **not listed in any seller's book yet** |
+| Purchase | `LoranOffer.asset` (`instrument.loran`, an `InstrumentOffer`) | bolted into one hull, bought through `InstrumentShop` like the sounder; **listed at the St Peters general store (`seller.leblancs`), on the Gear shelf beside the sounder**, with its own `InstrumentShop` on `GeneralStoreCounter` (written by `StoreWiringPatch`). The fitment is recorded in the save's `InstrumentLocker` (`SaveData.HullInstruments`), which already persists, so owning it survives a reload with no save version step |
 | Helm slot | `HelmConsoleDef.SupportsLoran` / `DefaultLoran`, `HelmFit.Loran` | resolved by `BoatEquipment.EffectiveFit`; **only `helm.cape_islander` (the 1982 wheelhouse) has room** |
 
-Not built: the instrument view (§7), a seller, saving the numbers (§6), the world-frame mapping
+Not built: the instrument view (§7), saving the numbers (§6), the world-frame mapping
 from a region's scene frame (§3).
 
 ## 3. Chain layout
@@ -110,4 +110,6 @@ There is no generic readout widget on the dash, so nothing is drawn yet. Owed:
 3. **The renderer** (ui-ux), reading `LoranReading` + `LoranSteer` only; it never computes a fix.
 4. **The instrument host** (Boats/App): read `Fit.Loran`, map the hull position through the world
    frame, call `LoranReceiver.Read` on the instrument tick, own one `LoranWaypointStore` per hull.
-5. A seller (economy-sim / world-content): the coast-tech is the natural vendor.
+5. ~~A seller~~ done: Marguerite's counter at St Peters sells it (the only counter with an instrument
+   seam today). A Nine Mile Creek chandlery or a coast-tech counter is the more natural home later;
+   moving it there is a listing change plus an `InstrumentShop` on that counter (a scene step).

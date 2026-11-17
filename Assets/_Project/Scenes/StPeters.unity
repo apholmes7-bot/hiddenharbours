@@ -74444,6 +74444,7 @@ GameObject:
   - component: {fileID: 1809999676}
   - component: {fileID: 518165546}
   - component: {fileID: 2071340022}
+  - component: {fileID: 1859650600}
   m_Layer: 0
   m_Name: GeneralStoreCounter
   m_TagString: Untagged
@@ -74730,6 +74731,24 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: HiddenHarbours.Economy::HiddenHarbours.Economy.SupplyShop
   _supply: {fileID: 11400000, guid: 42dda1f1cebe42e7866efb4f86743cc9, type: 2}
+  _sellerId: seller.leblancs
+  _walletProvider: {fileID: 1773492499}
+  _onPurchased:
+    m_PersistentCalls:
+      m_Calls: []
+--- !u!114 &1859650600
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1384401473}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2b9d0eb07b9fa3045a203d5654276a6d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: HiddenHarbours.Economy::HiddenHarbours.Economy.InstrumentShop
+  _offer: {fileID: 11400000, guid: fb1f3e3bcf5342b4bc3e953fa54db0a6, type: 2}
   _sellerId: seller.leblancs
   _walletProvider: {fileID: 1773492499}
   _onPurchased:

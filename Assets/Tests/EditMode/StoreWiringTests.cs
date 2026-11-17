@@ -151,6 +151,40 @@ namespace HiddenHarbours.Tests.EditMode
                                    "the step added a SupplyShop to a counter holding none to copy");
         }
 
+        // ---- 2c: a listed InstrumentShop missing from its counter is added the same way ------------------
+
+        [Test]
+        public void StPeters_AMissingLoranShop_IsAddedAsACopyOfTheSounderShop_AndOnlyOnce()
+        {
+            string committed = File.ReadAllText(StPetersPath);
+            var t = new LayerRefreshSceneText(committed);
+            List<Listing> catalog = Listings();
+            string instrumentClass = ClassIdOf(typeof(InstrumentShop));
+            long counter = t.RootGameObject("GeneralStoreCounter");
+            List<long> instrumentShops = t.Order.Where(id => t.ClassOf(id) == 114 && t.Field(id, "m_EditorClassIdentifier") == instrumentClass &&
+                                                             t.Ref(id, "m_GameObject") == counter).ToList();
+            string sounderGuid = catalog.Single(l => l.Id == "instrument.depth_sounder").Guid;
+            string loranGuid = catalog.Single(l => l.Id == "instrument.loran").Guid;
+            long sounder = instrumentShops.Single(id => t.Text(id).Contains(sounderGuid));
+            long loran = instrumentShops.Single(id => t.Text(id).Contains(loranGuid));
+            Assert.AreEqual(t.Field(sounder, "_walletProvider"), t.Field(loran, "_walletProvider"), "the Loran shop pays into the sounder shop's wallet");
+            Assert.AreEqual("seller.leblancs", t.Field(loran, SellerIdKey));
+
+            // The Loran shop taken back out by the test's hand: the step adds it back, byte for byte.
+            string bare = WithoutComponents(committed, counter, new[] { loran });
+            List<LayerPatch> patches = StoreWiringPatch.Plan(bare, StoreWiringPatch.StPeters, Assets);
+            List<Op> ops = patches.SelectMany(p => p.Ops).ToList();
+            Assert.IsEmpty(ops.Where(o => o.Kind == OpKind.Delete).Select(o => o.Name).ToList(), "the store patch deletes");
+            CollectionAssert.AreEqual(new[] { loran }, ops.Where(o => o.Kind == OpKind.Add).Select(o => o.FileId).ToList(),
+                                      "the store patch does not add the Loran shop under the id it gave it");
+            CollectionAssert.AreEqual(new[] { counter }, ops.Where(o => o.Kind == OpKind.Edit).Select(o => o.FileId).ToList(),
+                                      "the store patch edits something other than the counter's component list");
+            string once = StoreWiringPatch.ApplyAll(bare, patches);
+            Assert.IsTrue(once == committed, $"the Loran shop, added back by the step, is not the committed scene: {FirstDifference(committed, once)}. {Fix}");
+            Assert.IsTrue(StoreWiringPatch.Plan(once, StoreWiringPatch.StPeters, Assets).All(p => p.IsEmpty),
+                          "planned again on its own output, the step still adds");
+        }
+
         /// <summary>The scene without the given components of one GameObject: their documents and their entries
         /// in its component list, by the test's hand.</summary>
         static string WithoutComponents(string committed, long go, IEnumerable<long> components)
