@@ -93,6 +93,21 @@ namespace HiddenHarbours.Player
         public static CatchItemLibrary ResolveCatchArt(CatchItemLibrary inline, FishArtLibrary library)
             => inline != null ? inline : library != null ? library.CatchArt : null;
 
+        /// <summary>
+        /// The rung the fight draws a hooked fish at: the ladder's nearest rung to the weight the catch
+        /// art table says it is DRAWN at (<see cref="CatchItemLibrary.ReadableWeightKg(string, float)"/>),
+        /// so a fish too small to read is shown on the line with the same drawing the hands and the tote
+        /// will use. With no catch art table the weight is used as it is. Pure, so the agreement is pinned
+        /// without a scene.
+        /// </summary>
+        public static FishRungVisual LineRungFor(FishSpeciesVisual species, CatchItemLibrary catchArt,
+                                                 string fishId, float weightKg)
+        {
+            if (species == null) return null;
+            float drawnKg = catchArt != null ? catchArt.ReadableWeightKg(fishId, weightKg) : weightKg;
+            return species.RungFor(drawnKg);
+        }
+
         static bool HasRungs(FishSpeciesVisual v)
         {
             if (v == null || v.Rungs == null) return false;

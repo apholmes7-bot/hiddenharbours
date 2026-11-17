@@ -41,6 +41,7 @@ MonoBehaviour:
     HeldMesh: {fileID: 11400000, guid: 43b342f20260e624bb3e4e2b33741a93, type: 2}
     SizeOf: 
     SizeKg: 7.55
+    HeldLengthPx: 26
   - Kind: bass_sm
     Variants:
     - {fileID: 1217899266, guid: 0407b47bcb920d248b937659f07b3122, type: 3}
@@ -69,6 +70,7 @@ MonoBehaviour:
     HeldMesh: {fileID: 11400000, guid: 43b342f20260e624bb3e4e2b33741a93, type: 2}
     SizeOf: bass
     SizeKg: 1
+    HeldLengthPx: 13
   - Kind: bass_lg
     Variants:
     - {fileID: -1791210117, guid: 286ef82f30a56e847a7740953246de6a, type: 3}
@@ -97,6 +99,7 @@ MonoBehaviour:
     HeldMesh: {fileID: 11400000, guid: 43b342f20260e624bb3e4e2b33741a93, type: 2}
     SizeOf: bass
     SizeKg: 25
+    HeldLengthPx: 39
   - Kind: cod
     Variants:
     - {fileID: -2137819845, guid: 0ae85c3b18a93644ba4e29e415f60def, type: 3}
@@ -125,6 +128,7 @@ MonoBehaviour:
     HeldMesh: {fileID: 11400000, guid: 1dd9f87186210aa4fa4d8159b9cb9622, type: 2}
     SizeOf: 
     SizeKg: 5.59
+    HeldLengthPx: 26
   - Kind: cod_sm
     Variants:
     - {fileID: -1956734648, guid: eb3a56e1cac94314ca8e4990cdb7f78e, type: 3}
@@ -153,6 +157,7 @@ MonoBehaviour:
     HeldMesh: {fileID: 11400000, guid: 1dd9f87186210aa4fa4d8159b9cb9622, type: 2}
     SizeOf: cod
     SizeKg: 2
+    HeldLengthPx: 18
   - Kind: cod_lg
     Variants:
     - {fileID: -1008036311, guid: 66ebafe07add22d4681f10072f86e39c, type: 3}
@@ -181,6 +186,7 @@ MonoBehaviour:
     HeldMesh: {fileID: 11400000, guid: 1dd9f87186210aa4fa4d8159b9cb9622, type: 2}
     SizeOf: cod
     SizeKg: 12
+    HeldLengthPx: 34
   - Kind: flounder
     Variants:
     - {fileID: 10148047, guid: 46c2619bce74db745a8dd5c09af71589, type: 3}
@@ -209,6 +215,7 @@ MonoBehaviour:
     HeldMesh: {fileID: 11400000, guid: fc90e4a6451fcc24ab25fb64043d4bdd, type: 2}
     SizeOf: 
     SizeKg: 0.78
+    HeldLengthPx: 13
   - Kind: flounder_sm
     Variants:
     - {fileID: -486357052, guid: 2d282f9e3b259404786b2fb74b46cf43, type: 3}
@@ -237,6 +244,7 @@ MonoBehaviour:
     HeldMesh: {fileID: 11400000, guid: fc90e4a6451fcc24ab25fb64043d4bdd, type: 2}
     SizeOf: flounder
     SizeKg: 0.2
+    HeldLengthPx: 8
   - Kind: flounder_lg
     Variants:
     - {fileID: 324682995, guid: 50b2ea2ef2576ab46a1d3bf2e8c60a6f, type: 3}
@@ -265,6 +273,7 @@ MonoBehaviour:
     HeldMesh: {fileID: 11400000, guid: fc90e4a6451fcc24ab25fb64043d4bdd, type: 2}
     SizeOf: flounder
     SizeKg: 2
+    HeldLengthPx: 17
   - Kind: haddock
     Variants:
     - {fileID: 215540679, guid: db63267d07e4b594db982c61291d4fc5, type: 3}
@@ -293,6 +302,7 @@ MonoBehaviour:
     HeldMesh: {fileID: 11400000, guid: e05700ba238ba3249a951c54cc98219e, type: 2}
     SizeOf: 
     SizeKg: 2.79
+    HeldLengthPx: 19
   - Kind: haddock_sm
     Variants:
     - {fileID: 882314877, guid: 4a081f76203bd7f4f83e281fbf4aad42, type: 3}
@@ -321,6 +331,7 @@ MonoBehaviour:
     HeldMesh: {fileID: 11400000, guid: e05700ba238ba3249a951c54cc98219e, type: 2}
     SizeOf: haddock
     SizeKg: 1
+    HeldLengthPx: 13
   - Kind: haddock_lg
     Variants:
     - {fileID: 534143428, guid: 0d0e3dd31ad4a354aabceda119d473b8, type: 3}
@@ -349,6 +360,7 @@ MonoBehaviour:
     HeldMesh: {fileID: 11400000, guid: e05700ba238ba3249a951c54cc98219e, type: 2}
     SizeOf: haddock
     SizeKg: 6
+    HeldLengthPx: 24
   - Kind: herring
     Variants:
     - {fileID: 1529871688, guid: 57c8659b67a50e1459b6c4f7f767e601, type: 3}
@@ -377,6 +389,7 @@ MonoBehaviour:
     HeldMesh: {fileID: 11400000, guid: fd943c4c961170a4d9c7cec999e4319e, type: 2}
     SizeOf: 
     SizeKg: 0.25
+    HeldLengthPx: 9
   - Kind: herring_sm
     Variants:
     - {fileID: -1517033314, guid: 0ba67d70a91c7384ca6eabbaa4b687fa, type: 3}
@@ -405,6 +418,7 @@ MonoBehaviour:
     HeldMesh: {fileID: 11400000, guid: fd943c4c961170a4d9c7cec999e4319e, type: 2}
     SizeOf: herring
     SizeKg: 0.1
+    HeldLengthPx: 7
   - Kind: herring_lg
     Variants:
     - {fileID: 202277615, guid: 3bb4ffe7ccb6a5347afe0eae888963b5, type: 3}
@@ -433,6 +447,7 @@ MonoBehaviour:
     HeldMesh: {fileID: 11400000, guid: fd943c4c961170a4d9c7cec999e4319e, type: 2}
     SizeOf: herring
     SizeKg: 0.5
+    HeldLengthPx: 11
   - Kind: mackerel
     Variants:
     - {fileID: 287460093, guid: 469f3f01633bb264e9bc846edcb195ab, type: 3}
@@ -461,6 +476,7 @@ MonoBehaviour:
     HeldMesh: {fileID: 11400000, guid: 869ce0b9a6f833649bac060932e59c32, type: 2}
     SizeOf: 
     SizeKg: 0.75
+    HeldLengthPx: 13
   - Kind: mackerel_sm
     Variants:
     - {fileID: -1412050813, guid: 4ab558e5e8f449446a037b54a4fbd941, type: 3}
@@ -489,6 +505,7 @@ MonoBehaviour:
     HeldMesh: {fileID: 11400000, guid: 869ce0b9a6f833649bac060932e59c32, type: 2}
     SizeOf: mackerel
     SizeKg: 0.3
+    HeldLengthPx: 10
   - Kind: mackerel_lg
     Variants:
     - {fileID: -1702975071, guid: 6c74475469629a8408eaacea7df286ba, type: 3}
@@ -517,6 +534,7 @@ MonoBehaviour:
     HeldMesh: {fileID: 11400000, guid: 869ce0b9a6f833649bac060932e59c32, type: 2}
     SizeOf: mackerel
     SizeKg: 1.5
+    HeldLengthPx: 16
   - Kind: pollock
     Variants:
     - {fileID: -2106970796, guid: 09413df64d4029845b4049ca288fb002, type: 3}
@@ -545,6 +563,7 @@ MonoBehaviour:
     HeldMesh: {fileID: 11400000, guid: 1e43f1fc305a06d449c09a2ae2b922f0, type: 2}
     SizeOf: 
     SizeKg: 4.19
+    HeldLengthPx: 22
   - Kind: pollock_sm
     Variants:
     - {fileID: 636153633, guid: 174acd0f743b6f7458c1280dc5e82f5b, type: 3}
@@ -573,6 +592,7 @@ MonoBehaviour:
     HeldMesh: {fileID: 11400000, guid: 1e43f1fc305a06d449c09a2ae2b922f0, type: 2}
     SizeOf: pollock
     SizeKg: 1.5
+    HeldLengthPx: 16
   - Kind: pollock_lg
     Variants:
     - {fileID: -108855495, guid: a0d8003e4a79c1d4289f91818e552987, type: 3}
@@ -601,6 +621,7 @@ MonoBehaviour:
     HeldMesh: {fileID: 11400000, guid: 1e43f1fc305a06d449c09a2ae2b922f0, type: 2}
     SizeOf: pollock
     SizeKg: 9
+    HeldLengthPx: 30
   - Kind: clam
     Variants:
     - {fileID: -591464610, guid: bf1180af116a57a409bb665f3e564cde, type: 3}
@@ -615,6 +636,7 @@ MonoBehaviour:
     HeldMesh: {fileID: 0}
     SizeOf: 
     SizeKg: 0
+    HeldLengthPx: 0
   - Kind: crab
     Variants:
     - {fileID: -909582081, guid: 3d119cd01366379488ca5f9b1bfd2906, type: 3}
@@ -643,6 +665,7 @@ MonoBehaviour:
     HeldMesh: {fileID: 0}
     SizeOf: 
     SizeKg: 0
+    HeldLengthPx: 0
   - Kind: lobster
     Variants:
     - {fileID: -1296597542, guid: bf2eca950dfca1f45b25067a71473aef, type: 3}
@@ -671,6 +694,7 @@ MonoBehaviour:
     HeldMesh: {fileID: 0}
     SizeOf: 
     SizeKg: 0
+    HeldLengthPx: 0
   - Kind: mussel
     Variants:
     - {fileID: -2103132598, guid: 59c56e0d48c6a594f9816505a9926518, type: 3}
@@ -685,6 +709,7 @@ MonoBehaviour:
     HeldMesh: {fileID: 0}
     SizeOf: 
     SizeKg: 0
+    HeldLengthPx: 0
   - Kind: oyster
     Variants:
     - {fileID: -1376756797, guid: d54c85ce2444bb24ea6e38c5888f1376, type: 3}
@@ -699,6 +724,7 @@ MonoBehaviour:
     HeldMesh: {fileID: 0}
     SizeOf: 
     SizeKg: 0
+    HeldLengthPx: 0
   - Kind: periwinkle
     Variants:
     - {fileID: 156112072, guid: 8b6cd73a141fb2f4293aa2ca5961b1db, type: 3}
@@ -713,6 +739,7 @@ MonoBehaviour:
     HeldMesh: {fileID: 0}
     SizeOf: 
     SizeKg: 0
+    HeldLengthPx: 0
   - Kind: scallop
     Variants:
     - {fileID: -1760578941, guid: 11c3f48b8f3e36e4fb81009cb8ed1f12, type: 3}
@@ -727,6 +754,7 @@ MonoBehaviour:
     HeldMesh: {fileID: 0}
     SizeOf: 
     SizeKg: 0
+    HeldLengthPx: 0
   _species:
   - SpeciesId: fish.american_oyster
     Kind: oyster

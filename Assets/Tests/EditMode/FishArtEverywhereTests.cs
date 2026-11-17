@@ -121,11 +121,91 @@ namespace HiddenHarbours.Tests
             {
                 if (Crustaceans.Contains(d.Id)) continue;
                 Sprite icon = IconFor(icons, d.Id);
-                AssertNewFishSheet(icon, $"Fish_{RigKey(d.Id)}_lg_deck", $"{d.Id} icon (catch card, sell screen)");
+                Assert.IsNotNull(icon, $"{d.Id}: no icon (catch card, sell screen)");
+                Assert.AreEqual(FishIconBuilder.IconPath(RigKey(d.Id)), PathOf(icon),
+                    $"{d.Id} icon: must be the tight new-art icon, not the padded deck cell");
                 Assert.AreSame(icon, d.Sprite, $"{d.Id}: the Def's Sprite and the icon library must be the same art");
                 n++;
             }
             Assert.GreaterOrEqual(n, 7, "the seven rig species were all checked");
+        }
+
+        /// <summary>The share of a square icon slot's WIDTH the fish must fill. The old flat icons
+        /// (48x32 art) filled all of it; the padded 64x80 deck cell filled about 40%.</summary>
+        const float MinIconSlotFill = 0.8f;
+
+        /// <summary>
+        /// <b>The fish fills the slot.</b> The catch card and the sell screen draw an icon in a SQUARE slot
+        /// with preserveAspect, so the sprite's longer side meets the slot and the fish's opaque width is
+        /// <c>opaque / max(w, h)</c> of it. Read off the committed PNG (the icon imports non-readable).
+        /// </summary>
+        [Test]
+        public void EveryFinfishIcon_FillsItsSlotWidth()
+        {
+            IconLibrary icons = Icons();
+            int n = 0;
+            foreach (FishSpeciesDef d in RigFinfish())
+            {
+                Sprite icon = IconFor(icons, d.Id);
+                Assert.IsNotNull(icon, $"{d.Id}: no icon");
+                FishSheetPixels.Image png = FishSheetPixels.Read(PathOf(icon));
+                Assert.IsFalse(png.IsEmpty, $"{PathOf(icon)}: could not be read (LFS pointer not pulled?)");
+                Assert.AreEqual(new Vector2(png.Width, png.Height), icon.rect.size,
+                    $"{d.Id}: the icon sprite must be the whole PNG (Single sprite mode)");
+
+                RectInt opaque = FishSheetPixels.OpaqueBounds(png, new RectInt(0, 0, png.Width, png.Height));
+                float fill = opaque.width / Mathf.Max(icon.rect.width, icon.rect.height);
+                Assert.GreaterOrEqual(fill, MinIconSlotFill,
+                    $"{d.Id}: the fish fills {fill:P0} of the icon slot's width");
+                n++;
+            }
+            Assert.GreaterOrEqual(n, 7, "the seven rig species were all checked");
+        }
+
+        /// <summary>
+        /// <b>The icon IS the new art</b>: each committed icon is, pixel for pixel, its large rung's deck
+        /// cell trimmed to the fish (<see cref="FishIconBuilder.TrimmedIcon"/>). A fish re-bake that is not
+        /// followed by Build Fish Icons fails here instead of leaving a stale icon behind.
+        /// </summary>
+        [Test]
+        public void EveryFinfishIcon_IsItsDeckCell_TrimmedTight()
+        {
+            foreach (FishSpeciesDef d in RigFinfish())
+            {
+                string key = RigKey(d.Id);
+                FishSheetPixels.Image want = FishIconBuilder.TrimmedIcon(key);
+                Assert.IsFalse(want.IsEmpty, $"{d.Id}: could not cut '{FishIconBuilder.SourceSprite(key)}'");
+                FishSheetPixels.Image got = FishSheetPixels.Read(FishIconBuilder.IconPath(key));
+                Assert.IsFalse(got.IsEmpty, $"{FishIconBuilder.IconPath(key)}: missing");
+                Assert.AreEqual(want.Width, got.Width, $"{d.Id}: icon width");
+                Assert.AreEqual(want.Height, got.Height, $"{d.Id}: icon height");
+                int wrong = 0;
+                for (int i = 0; i < want.Pixels.Length; i++)
+                {
+                    Color32 a = want.Pixels[i], b = got.Pixels[i];
+                    if (a.a != b.a || (a.a != 0 && (a.r != b.r || a.g != b.g || a.b != b.b))) wrong++;
+                }
+                Assert.AreEqual(0, wrong, $"{d.Id}: {wrong} icon pixels differ from the deck cell (re-run Build Fish Icons)");
+            }
+        }
+
+        /// <summary>The icons import under the art lock: a Single sprite, point filtered, uncompressed,
+        /// PPU 32.</summary>
+        [Test]
+        public void EveryFinfishIcon_ImportsUnderTheArtLock()
+        {
+            foreach (FishSpeciesDef d in RigFinfish())
+            {
+                string path = FishIconBuilder.IconPath(RigKey(d.Id));
+                var imp = AssetImporter.GetAtPath(path) as TextureImporter;
+                Assert.IsNotNull(imp, $"{path}: not imported as a texture");
+                Assert.AreEqual(TextureImporterType.Sprite, imp.textureType, path);
+                Assert.AreEqual(SpriteImportMode.Single, imp.spriteImportMode, path);
+                Assert.AreEqual(FilterMode.Point, imp.filterMode, path);
+                Assert.AreEqual(TextureImporterCompression.Uncompressed, imp.textureCompression, path);
+                Assert.AreEqual(32f, imp.spritePixelsPerUnit, path);
+                Assert.IsFalse(imp.mipmapEnabled, path);
+            }
         }
 
         /// <summary>
@@ -225,7 +305,8 @@ namespace HiddenHarbours.Tests
                 Assert.IsNotNull(art.HeldMeshFor(key), $"{d.Id}: the held mesh (ADR 0053) is on the kind");
                 foreach (FishRungVisual r in lib.Find(d.Id).Rungs)
                 {
-                    string kind = art.SizedKindFor(d.Id, r.Kg);
+                    // The LADDER's wiring, so with the readability floor off: every rung is reachable.
+                    string kind = art.SizedKindFor(d.Id, r.Kg, 0f);
                     Assert.AreEqual(key + r.Suffix, kind, $"{d.Id} at {r.Kg} kg: the sized kind");
                     Assert.AreEqual(8, art.HeldFacingsFor(kind), $"{kind}: eight held facings");
                     AssertNewFishSheet(art.HeldSprite(kind, 0, 0), $"Fish_{kind}_tail", $"{kind} in the hands");
@@ -236,7 +317,8 @@ namespace HiddenHarbours.Tests
         }
 
         /// <summary>The hands, the tote and the fight pick the SAME size for the same fish, at every
-        /// weight the species can roll.</summary>
+        /// weight the species can roll, with the readability floor applied (the line asks it through
+        /// <see cref="FishArtLibrary.LineRungFor"/>, exactly as <c>RodFightPresenter</c> does).</summary>
         [Test]
         public void TheSizePicked_IsTheSameOnTheLine_InTheHands_AndInTheTote()
         {
@@ -248,10 +330,91 @@ namespace HiddenHarbours.Tests
                 for (int i = 0; i <= 40; i++)
                 {
                     float kg = Mathf.Lerp(d.MinWeightKg, d.MaxWeightKg, i / 40f);
-                    FishRungVisual rung = v.RungFor(kg);
+                    FishRungVisual rung = FishArtLibrary.LineRungFor(v, art, d.Id, kg);
                     Assert.AreEqual(RigKey(d.Id) + rung.Suffix, art.SizedKindFor(d.Id, kg), $"{d.Id} at {kg:0.###} kg");
                 }
             }
+        }
+
+        // ---- the readability floor: a fish too small to read is shown with a readable drawing -------
+
+        /// <summary>Every sized kind's drawn length is the one measured off its own held sheet, so the
+        /// floor reads the art and not a number someone typed.</summary>
+        [Test]
+        public void EverySizedKind_HeldLength_IsMeasuredOffItsHeldSheet()
+        {
+            CatchItemLibrary art = CatchArt();
+            foreach (FishSpeciesDef d in RigFinfish())
+                foreach (FishRungVisual r in FishArt().Find(d.Id).Rungs)
+                {
+                    string kind = RigKey(d.Id) + r.Suffix;
+                    int measured = FishSheetPixels.HeldLengthPx($"{FishIso}Fish_{kind}_tail.png");
+                    Assert.Greater(measured, 0, $"{kind}: the held sheet could not be measured");
+                    Assert.AreEqual(measured, art.HeldLengthPxFor(kind),
+                        $"{kind}: HeldLengthPx is stale (re-run Build Catch Item Library)");
+                }
+        }
+
+        /// <summary>
+        /// With the shipped floor, no fish is drawn shorter than it while its species has a drawing that
+        /// is not, in the hands and in the tote alike; and a species with no drawing long enough is drawn
+        /// with its largest.
+        /// </summary>
+        [Test]
+        public void NoFish_IsDrawnShorterThanTheFloor_WhileItsSpeciesHasALongerDrawing()
+        {
+            CatchItemLibrary art = CatchArt();
+            float floor = GameConfig.DefaultMinDrawnFishLengthPx;
+            Assert.Greater(floor, 0f, "premise: the shipped floor is on");
+            foreach (FishSpeciesDef d in RigFinfish())
+            {
+                FishRungVisual[] rungs = FishArt().Find(d.Id).Rungs;
+                string key = RigKey(d.Id);
+                int longest = rungs.Max(r => art.HeldLengthPxFor(key + r.Suffix));
+                string largest = key + rungs.OrderBy(r => r.Kg).Last().Suffix;
+                for (int i = 0; i <= 40; i++)
+                {
+                    float kg = Mathf.Lerp(d.MinWeightKg, d.MaxWeightKg, i / 40f);
+                    string kind = art.SizedKindFor(d.Id, kg, floor);
+                    if (longest >= floor)
+                        Assert.GreaterOrEqual(art.HeldLengthPxFor(kind), floor, $"{d.Id} at {kg:0.###} kg drew {kind}");
+                    else
+                        Assert.AreEqual(largest, kind, $"{d.Id} at {kg:0.###} kg: nothing reads, so the largest");
+                }
+            }
+        }
+
+        [Test]
+        public void ReadableWeight_RaisesOnlyPastTheRungsTooShortToRead()
+        {
+            var lib = ScriptableObject.CreateInstance<CatchItemLibrary>();
+            try
+            {
+                lib.Configure(new[]
+                {
+                    new CatchItemLibrary.KindEntry { Kind = "fish_sm", SizeOf = "fish", SizeKg = 1f, HeldLengthPx = 8 },
+                    new CatchItemLibrary.KindEntry { Kind = "fish", SizeKg = 3f, HeldLengthPx = 13 },
+                    new CatchItemLibrary.KindEntry { Kind = "fish_lg", SizeOf = "fish", SizeKg = 8f, HeldLengthPx = 17 },
+                }, new[] { new CatchItemLibrary.SpeciesEntry { SpeciesId = "fish.test_fish", Kind = "fish" } });
+
+                Assert.AreEqual(3f, lib.ReadableWeightKg("fish.test_fish", 0.5f, 12f), "raised to the lightest readable rung");
+                Assert.AreEqual(5f, lib.ReadableWeightKg("fish.test_fish", 5f, 12f), "a heavier fish is left alone");
+                Assert.AreEqual(8f, lib.ReadableWeightKg("fish.test_fish", 0.5f, 20f), "nothing reads: the largest rung");
+                Assert.AreEqual(0.5f, lib.ReadableWeightKg("fish.test_fish", 0.5f, 0f), "a floor of 0 is off");
+                Assert.AreEqual("fish", lib.SizedKindFor("fish.test_fish", 0.9f, 12f));
+                Assert.AreEqual("fish_sm", lib.SizedKindFor("fish.test_fish", 0.9f, 0f));
+                Assert.AreEqual("fish_lg", lib.SizedKindFor("fish.test_fish", 0.9f, 16f));
+                Assert.AreEqual("fish_lg", lib.SizedKindFor("fish.test_fish", 7f, 12f), "the floor never shrinks a fish");
+
+                // Unmeasured rungs (0) are left alone: data from before the measurement behaves as before.
+                lib.Configure(new[]
+                {
+                    new CatchItemLibrary.KindEntry { Kind = "fish_sm", SizeOf = "fish", SizeKg = 1f },
+                    new CatchItemLibrary.KindEntry { Kind = "fish", SizeKg = 3f },
+                }, null);
+                Assert.AreEqual("fish_sm", lib.SizedKindFor("fish.test_fish", 0.9f, 12f));
+            }
+            finally { Object.DestroyImmediate(lib); }
         }
 
         [Test]
@@ -264,7 +427,10 @@ namespace HiddenHarbours.Tests
                 foreach ((string id, float kg, string kind) in new[]
                          {
                              ("fish.atlantic_cod", 2f, "cod_sm"), ("fish.atlantic_cod", 5.6f, "cod"),
-                             ("fish.atlantic_cod", 12f, "cod_lg"), ("fish.mackerel", 0.3f, "mackerel_sm"),
+                             ("fish.atlantic_cod", 12f, "cod_lg"),
+                             // The small mackerel is drawn 10 px long, under the 12 px readability floor,
+                             // so a 0.3 kg mackerel is held as the middle-rung drawing (13 px).
+                             ("fish.mackerel", 0.3f, "mackerel"), ("fish.mackerel", 1.4f, "mackerel_lg"),
                              ("fish.striped_bass", 20f, "bass_lg"),
                          })
                 {

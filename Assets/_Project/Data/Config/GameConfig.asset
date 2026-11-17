@@ -179,6 +179,7 @@ MonoBehaviour:
   FrontedLicenceFee: 20
   MaxOneHandFishLengthMeters: 0.62
   FishLengthPerKgCubeRootMeters: 0.477
+  MinDrawnFishLengthPx: 12
   HelmThrottle:
     AheadNotches: 4
     AsternNotches: 2

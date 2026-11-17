@@ -147,6 +147,9 @@ namespace HiddenHarbours.App.Editor
                 // is the fight's to draw (RodFightPresenter picks a size rung, and the rung's own hand
                 // count decides gill vs tail); carried, every rung hangs by the tail.
                 if (WireHeld(entry, $"{FishIso}/Fish_{kind}_tail.png", Directions)) held++;
+                // How long that held fish is drawn, measured off the sheet: the readability floor
+                // (GameConfig.MinDrawnFishLengthPx) reads it to skip a rung too small to see.
+                entry.HeldLengthPx = FishSheetPixels.HeldLengthPx($"{FishIso}/Fish_{kind}_tail.png");
                 // The same fish by the same tail, as a mesh. Nothing draws it yet (PR 4).
                 entry.HeldMesh = heldMeshes.FirstOrDefault(
                     d => d.Family == HeldPropMeshDef.FishFamily && d.Variant == kind);
@@ -171,6 +174,7 @@ namespace HiddenHarbours.App.Editor
                         HeldMesh = entry.HeldMesh,
                     };
                     if (WireHeld(rung, $"{FishIso}/Fish_{sized}_tail.png", Directions)) held++;
+                    rung.HeldLengthPx = FishSheetPixels.HeldLengthPx($"{FishIso}/Fish_{sized}_tail.png");
                     kinds.Add(rung);
                     sizedKinds++;
                 }

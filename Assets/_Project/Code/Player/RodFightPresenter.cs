@@ -445,7 +445,11 @@ namespace HiddenHarbours.Player
             {
                 _resolvedWeightKg = next.WeightKg;
                 FishSpeciesVisual sp = CurrentSpecies();
-                _rung = sp != null ? sp.RungFor(next.WeightKg) : null;
+                // Picked at the weight the fish is DRAWN at (the readability floor), the same rule the
+                // hands and the tote use, so the fish he lands is the fish he then holds.
+                FishArtLibrary table = _fishArt != null ? _fishArt : FishArtLibrary.Shared;
+                _rung = FishArtLibrary.LineRungFor(sp, table != null ? table.CatchArt : null,
+                                                   next.FishId, next.WeightKg);
             }
         }
 
