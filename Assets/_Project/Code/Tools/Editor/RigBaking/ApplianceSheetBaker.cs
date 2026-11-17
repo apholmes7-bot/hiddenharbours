@@ -203,10 +203,11 @@ namespace HiddenHarbours.Tools.RigBaking
                         if (sr != null) sortingLayer = sr.sortingLayerID;
                         UnityEngine.Object.DestroyImmediate(child.gameObject);
                     }
-                    var rootSr = root.GetComponent<SpriteRenderer>();
-                    if (rootSr != null) { sortingLayer = rootSr.sortingLayerID; UnityEngine.Object.DestroyImmediate(rootSr); }
+                    // The y-sort goes first: it requires the SpriteRenderer, which cannot be removed under it.
                     var rootSort = root.GetComponent("YSortSprite") as Component;
                     if (rootSort != null) UnityEngine.Object.DestroyImmediate(rootSort);
+                    var rootSr = root.GetComponent<SpriteRenderer>();
+                    if (rootSr != null) { sortingLayer = rootSr.sortingLayerID; UnityEngine.Object.DestroyImmediate(rootSr); }
 
                     SpriteRenderer far = NewRenderer(root.transform, "Art", material, sortingLayer);
                     SpriteRenderer near = NewRenderer(root.transform, "ArtNear", material, sortingLayer);
@@ -257,6 +258,7 @@ namespace HiddenHarbours.Tools.RigBaking
                 var sb = new StringBuilder(CompletionLine).AppendLine();
                 foreach (SheetReport r in reports) sb.AppendLine("  " + r);
                 Debug.Log(sb.ToString());
+                if (Application.isBatchMode) EditorApplication.Exit(0);
             }
             catch (Exception e)
             {
