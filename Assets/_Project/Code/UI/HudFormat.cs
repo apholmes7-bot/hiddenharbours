@@ -88,13 +88,13 @@ namespace HiddenHarbours.UI
         /// <summary>A payout flash like "+₲48" (positive) or "₲0" guard.</summary>
         public static string PayoutFlash(int amount) => MoneyFormat.Payout(amount);
 
-        /// <summary>A landed-fish celebration card like "Atlantic Cod — 3.4 kg — ₲48!". Weight to one
-        /// decimal; value is the fish's base worth (the market sale is a separate payout flash).</summary>
+        /// <summary>A landed-fish celebration card like "Atlantic Cod — 3.4 kg — ₲48!". Weight by the
+        /// shared rule (<see cref="WeightFormat"/>: whole grams under a kilogram, else kg to one decimal); value is the fish's base worth (the market sale is a separate payout flash).</summary>
         public static string CatchCard(string displayName, float weightKg, int baseValue)
         {
             string name = string.IsNullOrEmpty(displayName) ? "Catch" : displayName;
             int value = baseValue > 0 ? baseValue : 0;
-            return name + " — " + weightKg.ToString("0.0", Inv) + " kg — "
+            return name + " — " + WeightFormat.Text(weightKg) + " — "
                  + HudStrings.MoneyPrefix + value.ToString("N0", Inv) + "!";
         }
 

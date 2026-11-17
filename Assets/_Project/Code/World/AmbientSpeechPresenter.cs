@@ -756,7 +756,11 @@ namespace HiddenHarbours.World
             nr.anchorMin = Vector2.zero; nr.anchorMax = Vector2.one;
             nr.pivot = new Vector2(0.5f, 0.5f);
             nr.offsetMin = new Vector2(DialogueBubbleKit.ChipPadX * Scale, 0f);
-            nr.offsetMax = new Vector2(-DialogueBubbleKit.ChipPadX * Scale, 0f);
+            // Whole advances in the text box (ChipTextInsetR), and one line that never wraps — the
+            // modal's rule, so "Basil" is never "Basi" on either bubble.
+            nr.offsetMax = new Vector2(-DialogueBubbleKit.ChipTextInsetR * Scale, 0f);
+            s.NameText.horizontalOverflow = HorizontalWrapMode.Overflow;
+            s.NameText.verticalOverflow = VerticalWrapMode.Overflow;
             s.NameText.enabled = false;
 
             s.BodyText = MakeText(s.BubbleRect, "Body", TextAnchor.UpperLeft, BodyFontSize);

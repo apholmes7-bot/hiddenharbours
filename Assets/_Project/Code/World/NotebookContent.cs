@@ -78,14 +78,8 @@ namespace HiddenHarbours.World
         /// many were protected and put back (only when any were). Each fits the narrowest page
         /// (<see cref="NotebookKit.MinCols"/>) whole for four-digit counts and weights.</summary>
         public const string CaughtCountFormat = "Caught: {0}";
-        public const string CaughtRecordKgFormat = "Best: {0:0.0} kg";
-        public const string CaughtRecordGramsFormat = "Best: {0} g";
+        public const string CaughtRecordPrefix = "Best: ";
         public const string CaughtReleasedFormat = "Let go: {0}";
-
-        /// <summary>Grams in a kilogram, and tenths in a kilogram: the two roundings the record line
-        /// uses. Units, not tunables.</summary>
-        private const int GramsPerKg = 1000;
-        private const int TenthsPerKg = 10;
 
         /// <summary>Source-id prefix for a species' block, so the presenter's selection can name it.</summary>
         public const string CaughtSourcePrefix = "caught.";
@@ -266,24 +260,12 @@ namespace HiddenHarbours.World
         }
 
         /// <summary>
-        /// The record line for a positive weight. Under a kilogram it is whole grams, rounded half away
-        /// from zero and never below 1 g ("Best: 40 g"); a weight that rounds to 1000 g reads as a
-        /// kilogram. From a kilogram up it is kilograms rounded to the tenth the same way
-        /// ("Best: 7.5 kg"). Rounded in doubles from the stored float, so it is the same on every machine.
+        /// The record line for a positive weight, in the one weight reading every surface shares
+        /// (<see cref="WeightFormat.Text"/>): whole grams under a kilogram, never below 1 g
+        /// ("Best: 40 g"); a weight that rounds to 1000 g reads as a kilogram; kilograms to one decimal
+        /// from one up ("Best: 7.5 kg"). Deterministic on every machine.
         /// </summary>
-        public static string RecordText(float kg)
-        {
-            double weight = kg;
-            double grams = System.Math.Round(weight * GramsPerKg, System.MidpointRounding.AwayFromZero);
-            if (grams < GramsPerKg)
-            {
-                long g = grams < 1d ? 1L : (long)grams;
-                return string.Format(Invariant, CaughtRecordGramsFormat, g);
-            }
-
-            double tenths = System.Math.Round(weight * TenthsPerKg, System.MidpointRounding.AwayFromZero);
-            return string.Format(Invariant, CaughtRecordKgFormat, tenths / TenthsPerKg);
-        }
+        public static string RecordText(float kg) => CaughtRecordPrefix + WeightFormat.Text(kg);
 
         private static readonly System.Globalization.CultureInfo Invariant =
             System.Globalization.CultureInfo.InvariantCulture;
