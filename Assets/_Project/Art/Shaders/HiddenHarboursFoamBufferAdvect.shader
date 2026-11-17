@@ -844,9 +844,15 @@ Shader "Hidden/HiddenHarbours/FoamBufferAdvect"
                         // The ring: a triangle of half-width disp.y about the edge, whose integral over
                         // the edge's passage is exactly 1 — which is what makes one sweep leave exactly
                         // the envelope value behind and no more. Twin: FoamBuffer.EdgeBump.
-                        float edge = lerp(disp.z, disp.w, bestU);
+                        // From where the band's own stamp starts to fade (half its radius), laying only
+                        // the share that stamp does not: the band's fade and the edge's rise are one
+                        // curve, with no unfilled strip between them (the owner, 2026-11-16: "the two
+                        // lines that persist ... behind the stern"). Twins: FoamBuffer.EdgePosition,
+                        // FoamBuffer.LaidEnvelope.
+                        float edge = lerp(0.5 * disp.z, disp.w, bestU);
                         float bump = astern * saturate(1.0 - abs(bestD - edge) / max(disp.y, 1e-4));
-                        foam += disp.x * FoamEnvelope(bestD, disp.z, disp.w) * bump;
+                        float unstamped = 1.0 - FoamProfile01(bestD / max(disp.z, 1e-4));
+                        foam += disp.x * FoamEnvelope(bestD, disp.z, disp.w) * unstamped * bump;
 
                         // The dispersed foam lands on water this hull never churned, and that water has an
                         // AGE. Mark it with the freshness a mark made now would have decayed to by then,

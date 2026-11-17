@@ -121,6 +121,7 @@ ships as a preloaded asset). **One map per control mode**, two control schemes: 
 | | Searchlight | Button | L | `BoatSpotlight` (PR 1) |
 | | InstrumentCycle | Button | K (Shift steps the pilot deck) | `DevInstrumentCycle` (PR 1) |
 | | Interact | Button | E | `ControlSwitcher` (PR 1) |
+| | Autopilot (2026-11-16) | Button | P (bound nowhere else in the asset); **Gamepad**: `<Gamepad>/buttonNorth` (Y: free at the helm, where A hauls, B is neutral, the d-pad steps detents and moves the chooser, the left stick steers and moves the chooser, the shoulders zoom, Start is the shell) | `DeviceAutopilotIntentSource` → Core `AutopilotInput` → `DevBoatInput.ReadAutopilotSwitch` → `BoatController.ToggleAutopilot`. Its own small struct (`AutopilotIntents { Toggle }`, the HUD's gates) until `HelmIntents` lands in PR 1 and absorbs it ✅ |
 | **Drive** | Throttle | Value/Axis | `1DAxis(whichSideWins=0)`: − = S ∨ ↓, + = W ∨ ↑ | `KeyboardDriveInputSource` (PR 1 re-homes it; byte-identical) |
 | | Steer | Value/Axis | `1DAxis`: **+ = A ∨ ←** (LEFT is +1, the rig's own sense, ADR 0035 §5), − = D ∨ → | as above |
 | | Brake | Button | Space | as above |
@@ -156,13 +157,23 @@ runs on (`GameConfig.InteractChooserRepeatDelaySeconds`, then every `…RepeatIn
 `…PushThreshold`; the run-on is allowed only while `ActiveControlDevice.Current` is the pad, and the
 device is reported only for an axis actually pushed, so W/S and the arrows still move one row per press.
 `TheGamepadSchemeIsPresentButEmpty_UntilPr2FillsIt` became
-`TheGamepadScheme_BindsOnlyTheChoosersNavigate_UntilTheRestOfPr2Lands`, and with the TASKS fold's row
-(2026-11-16, the pad's west button on `Hud/ToggleTasks`)
-`TheGamepadScheme_BindsOnlyTheChoosersNavigateAndTheTasksFold_UntilTheRestOfPr2Lands`. Still owed by PR 2, under the
+`TheGamepadScheme_BindsOnlyTheChoosersNavigate_UntilTheRestOfPr2Lands`. Still owed by PR 2, under the
 owner's feel gate: the walk/deck/helm/drive/hide-all rows and the pad's interact press (so a pad alone
 cannot yet OPEN the chooser), the affordance glyph and HUD hints, `UiIntents`, the settings sheet, and
 explicit pad rows for Submit/Cancel once a scheme binding mask is ever applied (a mask on KeyboardMouse
 would hide the usage rows from the pad).
+
+**The autopilot's pad row (2026-11-16, lead-architect review of the autopilot slice 1).** One more row,
+outside the owner-gated helm rows because it is a single press with no feel to tune: `Helm/Autopilot` on
+`<Gamepad>/buttonNorth` (Y). The pin became
+`TheGamepadScheme_BindsOnlyTheChoosersNavigateAndTheAutopilot_UntilTheRestOfPr2Lands`.
+
+**The TASKS fold's pad row (2026-11-16, owner ask: the tasks note must be hideable).** One more single
+press: `Hud/ToggleTasks` on `<Gamepad>/buttonWest` (X), with T on the keyboard. It shares no control with
+the autopilot (P / Y, in the Helm map): the Hud map is live in every control mode, so at the helm X folds
+the note and Y switches the autopilot, and neither key is bound twice in any map or anywhere in the asset.
+The pin became
+`TheGamepadScheme_BindsOnlyTheChoosersNavigateTheAutopilotAndTheTasksFold_UntilTheRestOfPr2Lands`.
 
 **Why Digital (`mode=1`) and not the default DigitalNormalized.** The old read summed the keys and left
 a diagonal at (±1, ±1) for `PlayerWalkController.VelocityFor` to clamp. Mode 1 is that sum. (After the

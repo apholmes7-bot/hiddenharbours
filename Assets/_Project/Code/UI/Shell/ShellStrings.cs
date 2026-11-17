@@ -21,8 +21,9 @@ namespace HiddenHarbours.UI
     {
         // ---- the title page ------------------------------------------------------------------
 
-        /// <summary>The wordmark. A place name, not a slogan.</summary>
-        public const string GameTitle = "Hidden Harbours";
+        /// <summary>The wordmark: the game's title, the same words the built player's window and
+        /// executable carry (the player build's product name).</summary>
+        public const string GameTitle = "Red Skies At Night";
 
         public const string Continue = "Continue";
         public const string NewGame  = "New game";

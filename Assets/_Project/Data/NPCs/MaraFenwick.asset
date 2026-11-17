@@ -19,3 +19,24 @@ MonoBehaviour:
   CompletionFlag: 
   Voice: {fileID: 0}
   Build: {fileID: 11400000, guid: 14036e47ae6ad344ba6f8893f2b776ba, type: 2}
+  Gifts:
+    LovedItemIds:
+    - fish.winter_flounder
+    LikedItemIds: []
+    DislikedItemIds: []
+    LovedTags: []
+    LikedTags:
+    - inshore_groundfish
+    DislikedTags:
+    - pelagic
+    Lines:
+      Loved:
+      - 'Flounder. A quiet fish, and a good one. Thank you.'
+      Liked:
+      - 'That''s a kind finish to my round. Thank you.'
+      Neutral:
+      - 'Thank you.'
+      Disliked:
+      - 'It''s a little strong for me. But thank you, truly.'
+      NotGiftable: []
+      AlreadyGiftedToday: []

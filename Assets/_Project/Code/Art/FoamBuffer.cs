@@ -555,9 +555,10 @@ namespace HiddenHarbours.Art
 
         /// <summary>
         /// <c>2·∫ envelope(d) dd</c> across the DISPERSED annulus (from the band's own half-width out
-        /// to the envelope) — the integral conservation is stated on. Fixed-step Simpson, so it is
-        /// pure, deterministic and allocation-free; the shape is smooth and 64 panels put it well
-        /// inside the discretisation of everything downstream.
+        /// to the envelope). Fixed-step Simpson, so it is pure, deterministic and allocation-free; the
+        /// shape is smooth and 64 panels put it well inside the discretisation of everything
+        /// downstream. The edge LAYS <see cref="LaidEnvelope"/>, whose integral is
+        /// <see cref="LaidEnvelopeIntegral"/>; this one is the family's own.
         /// </summary>
         public static float EnvelopeIntegral(float halfWidth, float maxHalfWidth)
         {
@@ -569,6 +570,59 @@ namespace HiddenHarbours.Art
             for (int i = 1; i < panels; i++)
                 sum += (i % 2 == 1 ? 4f : 2f) * EnvelopeShape(halfWidth + i * h, halfWidth, maxHalfWidth);
             return 2f * sum * h / 3f;
+        }
+
+        // ---- THE SEAM (the owner, 2026-11-16) -----------------------------------------------------
+        // "in foam there still seems to be the two lines that persist, they do not look natural,
+        // behind the stern." The band's own stamp is full to HALF its radius and gone by its radius
+        // (Profile), while the edge used to start AT that radius: between the two lay a strip, one
+        // either side, that neither filled — two dark lines from her transom corners for the whole
+        // length of the wake. The edge now starts where the stamp starts to fade, and lays only the
+        // share the stamp does not (1 - Profile), so the band's fade and the edge's rise are one
+        // curve. Both numbers are the stamp's own: nothing here is a new dial.
+
+        /// <summary>Where the dispersal edge starts, metres from her track: where the band's own
+        /// stamp starts to fade (<see cref="Profile"/> is full to half its half-width).</summary>
+        public static float EdgeStart(float halfWidth) => 0.5f * Mathf.Max(halfWidth, 0f);
+
+        /// <summary>The edge's position at <paramref name="u"/> along its reach (0 at the transom,
+        /// 1 at the oldest node): from <see cref="EdgeStart"/> out to the envelope.</summary>
+        public static float EdgePosition(float u, float halfWidth, float maxHalfWidth) =>
+            Mathf.Lerp(EdgeStart(halfWidth), maxHalfWidth, Mathf.Clamp01(u));
+
+        /// <summary>What the edge lays at <paramref name="distance"/>, in the units of
+        /// <see cref="EnvelopeShape"/>: the envelope, less the share the band's own stamp already
+        /// covers there. Equal to the envelope outside the band. Twin: the advect shader's
+        /// dispersal block.</summary>
+        public static float LaidEnvelope(float distance, float halfWidth, float maxHalfWidth) =>
+            EnvelopeShape(distance, halfWidth, maxHalfWidth) * (1f - Profile(distance, halfWidth));
+
+        /// <summary><c>2·∫ LaidEnvelope(d) dd</c> from <see cref="EdgeStart"/> out to the envelope —
+        /// the integral conservation is stated on. Simpson, as <see cref="EnvelopeIntegral"/>.</summary>
+        public static float LaidEnvelopeIntegral(float halfWidth, float maxHalfWidth)
+        {
+            if (halfWidth <= 0f || maxHalfWidth <= halfWidth) return 0f;
+            const int panels = 128;                      // even, so Simpson's rule closes
+            float from = EdgeStart(halfWidth);
+            float h = (maxHalfWidth - from) / panels;
+            float sum = LaidEnvelope(from, halfWidth, maxHalfWidth)
+                      + LaidEnvelope(maxHalfWidth, halfWidth, maxHalfWidth);
+            for (int i = 1; i < panels; i++)
+                sum += (i % 2 == 1 ? 4f : 2f) * LaidEnvelope(from + i * h, halfWidth, maxHalfWidth);
+            return 2f * sum * h / 3f;
+        }
+
+        /// <summary>
+        /// How fast the edge moves out, metres per metre of track. The band widens at
+        /// <see cref="SpreadSlope"/> from her half-width to the envelope; the edge covers the same
+        /// track from <see cref="EdgeStart"/>, so it runs proportionally faster. (A reach cut short
+        /// by her track also cuts the envelope by the same slope, so the ratio holds there too.)
+        /// </summary>
+        public static float EdgeSlope(float kelvinFraction, float halfWidth, float maxHalfWidth)
+        {
+            float slope = SpreadSlope(kelvinFraction);
+            if (slope <= 0f || halfWidth <= 0f || maxHalfWidth <= halfWidth) return 0f;
+            return slope * (maxHalfWidth - EdgeStart(halfWidth)) / (maxHalfWidth - halfWidth);
         }
 
         /// <summary>
@@ -610,16 +664,17 @@ namespace HiddenHarbours.Art
         /// only decides how many frames the deposit is spread over, which is what keeps every one
         /// of them clear of the buffer's 8-bit rounding floor.</para>
         ///
-        /// <para>Multiply by <see cref="EnvelopeShape"/> and by <see cref="EdgeBump"/> to get the
-        /// amount added to a texel this frame. Twin: the advect shader's dispersal block.</para>
+        /// <para>Multiply by <see cref="LaidEnvelope"/> and by <see cref="EdgeBump"/> (about
+        /// <see cref="EdgePosition"/>) to get the amount added to a texel this frame; the edge moves
+        /// at <see cref="EdgeSlope"/>. Twin: the advect shader's dispersal block.</para>
         /// </summary>
         public static float EdgeGain(float depositRatePerSecond, float halfWidth, float maxHalfWidth,
                                      float kelvinFraction, float dt, float edgeWidth)
         {
-            float slope = SpreadSlope(kelvinFraction);
+            float slope = EdgeSlope(kelvinFraction, halfWidth, maxHalfWidth);
             if (slope <= 0f || halfWidth <= 0f || maxHalfWidth <= halfWidth || dt <= 0f) return 0f;
             if (edgeWidth <= 0f) return 0f;
-            float envelope = EnvelopeIntegral(halfWidth, maxHalfWidth);
+            float envelope = LaidEnvelopeIntegral(halfWidth, maxHalfWidth);
             if (envelope <= 1e-9f) return 0f;
             float share = DispersingShare(halfWidth, maxHalfWidth);
             if (share <= 0f) return 0f;

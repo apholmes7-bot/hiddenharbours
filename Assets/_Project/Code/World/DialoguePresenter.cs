@@ -1229,7 +1229,13 @@ namespace HiddenHarbours.World
             nr.anchorMin = Vector2.zero; nr.anchorMax = Vector2.one;
             nr.pivot = new Vector2(0.5f, 0.5f);
             nr.offsetMin = new Vector2(DialogueBubbleKit.ChipPadX * Scale, 0f);
-            nr.offsetMax = new Vector2(-DialogueBubbleKit.ChipPadX * Scale, 0f);
+            // The text box holds whole advances (ChipTextInsetR): inset by the full pad on the right
+            // it was one column short and the last letter wrapped out of sight ("Basil" read "Basi").
+            nr.offsetMax = new Vector2(-DialogueBubbleKit.ChipTextInsetR * Scale, 0f);
+            // A name is one line. Never wrap it: with a fallback font whose letters are wider than the
+            // face's cell, a spill past the chip still reads; a wrapped letter is simply gone.
+            _nameText.horizontalOverflow = HorizontalWrapMode.Overflow;
+            _nameText.verticalOverflow = VerticalWrapMode.Overflow;
 
             _bodyText = MakeText(_bubbleRect, "Body", TextAnchor.UpperLeft, BodyFontSize);
             _bodyText.color = new Color(0.13f, 0.12f, 0.10f, 1f);

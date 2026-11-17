@@ -242,6 +242,16 @@ MonoBehaviour:
     SelfCentre: 0
     RimGrabPadPx: 8
     SteerEaseSeconds: 0.25
+  HelmAutopilot:
+    HeadingGainPerDegree: 0.04
+    YawRateGainPerDegreePerSecond: 0.03
+    IntegralGainPerDegreeSecond: 0.004
+    IntegralLimitHelm: 0.3
+    MaxHelm: 0.6
+    HelmSlewPerSecond: 2
+    MinWayMetresPerSecond: 0.5
+    SteerOverrideThreshold: 0.2
+    CollisionMinImpactMetresPerSecond: 0.5
   HelmFootprint:
     CameraBandShare: 0.5
     CameraEaseSeconds: 0.4
@@ -733,6 +743,8 @@ MonoBehaviour:
     SideSpeedKnee: 1.2
     SideRadiusHalfBeams: 0.3
     SideReach: 0.7
+    ContactBowTaper: 0.35
+    ContactStemHalfBeams: 0.12
   DevAllHelmInstruments: 1
   MeshFishingAndDig: 1
   RegionCrossingHysteresisMetres: 0.25

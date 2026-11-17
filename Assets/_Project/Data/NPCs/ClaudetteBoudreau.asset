@@ -18,3 +18,24 @@ MonoBehaviour:
   Dialogue: {fileID: 11400000, guid: 02ec118010af4cd8aa302f08f6b8a554, type: 2}
   CompletionFlag: met_claudette
   Build: {fileID: 11400000, guid: 5e5ff01b97c0c9b4b9c85f3f2e8a6415, type: 2}
+  Gifts:
+    LovedItemIds:
+    - fish.sea_scallop
+    LikedItemIds: []
+    DislikedItemIds:
+    - fish.atlantic_herring
+    LovedTags: []
+    LikedTags:
+    - shellfish
+    DislikedTags: []
+    Lines:
+      Loved:
+      - 'Scallops? Those go for real money up the road. I''ll not ask what you''d have got for them.'
+      Liked:
+      - 'Now that''s a fair trade for nothing at all. Thank you.'
+      Neutral:
+      - 'Kind of you. It''ll ride home in the van with me.'
+      Disliked:
+      - 'Herring. In my van. All the way up Route 19. Well, thank you, I suppose.'
+      NotGiftable: []
+      AlreadyGiftedToday: []

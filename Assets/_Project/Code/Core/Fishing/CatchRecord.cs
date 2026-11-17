@@ -68,8 +68,11 @@ namespace HiddenHarbours.Core
     /// session starts the log afresh, so one save's catches never show in another's Notebook, whatever
     /// order <see cref="GameLoaded"/> subscribers run in.</para>
     ///
-    /// <para><b>In-session only.</b> Nothing here is written to the save yet; persistence needs a
-    /// SaveData list and a schema step, which is owed separately.</para>
+    /// <para><b>Saved with the game (v24).</b> When the session is the live <see cref="SaveData"/>, binding to
+    /// it loads the record from <see cref="SaveData.CaughtSpecies"/> and every counted catch writes its row
+    /// straight back there (<see cref="CatchRecordSave"/>), so the next save write carries it and a reload
+    /// shows the same page. The hand catch and the stow handoff are moment-to-moment and are never saved.
+    /// Any other session object (a test's) keeps the record in memory only.</para>
     /// </summary>
     public sealed class CatchRecordLog
     {
@@ -181,11 +184,13 @@ namespace HiddenHarbours.Core
                 string name = string.IsNullOrEmpty(e.DisplayName) ? item.DisplayName : e.DisplayName;
                 float best = item.WeightKg > e.RecordWeightKg ? item.WeightKg : e.RecordWeightKg;
                 _entries[i] = new CaughtSpeciesEntry(e.SpeciesId, name, e.Count + 1, e.ReleasedCount + add, best);
+                CatchRecordSave.Write(_session as SaveData, _entries[i]);
                 return true;
             }
 
             float weight = item.WeightKg > 0f ? item.WeightKg : 0f;
             _entries.Add(new CaughtSpeciesEntry(item.SpeciesId, item.DisplayName, 1, add, weight));
+            CatchRecordSave.Write(_session as SaveData, _entries[_entries.Count - 1]);
             return true;
         }
 
@@ -203,6 +208,53 @@ namespace HiddenHarbours.Core
             _inHand.Clear();
             _handoffArmed = false;
             _session = session;
+            CatchRecordSave.Load(session as SaveData, _entries);
+        }
+    }
+
+    /// <summary>
+    /// <b>The catch record's rows in the save</b> (v24, <see cref="SaveData.CaughtSpecies"/>): load them into
+    /// a <see cref="CatchRecordLog"/> on bind, write one back each time a catch is counted. Null-safe: a null
+    /// save reads as no rows and a write to it does nothing.
+    /// </summary>
+    public static class CatchRecordSave
+    {
+        /// <summary>Append the save's rows, in their saved (first-caught) order, to <paramref name="into"/>.
+        /// A row with no species or no count is skipped (the migration's heal drops them anyway).</summary>
+        public static void Load(SaveData save, List<CaughtSpeciesEntry> into)
+        {
+            if (save?.CaughtSpecies == null || into == null) return;
+            for (int i = 0; i < save.CaughtSpecies.Count; i++)
+            {
+                CaughtSpeciesDto r = save.CaughtSpecies[i];
+                if (r == null || string.IsNullOrEmpty(r.SpeciesId) || r.Count <= 0) continue;
+                into.Add(new CaughtSpeciesEntry(r.SpeciesId, r.DisplayName, r.Count, r.ReleasedCount, r.RecordWeightKg));
+            }
+        }
+
+        /// <summary>Write <paramref name="entry"/> as its species' row: the existing row updated in place, or
+        /// a new one appended (so first-caught order is kept).</summary>
+        public static void Write(SaveData save, in CaughtSpeciesEntry entry)
+        {
+            if (save == null || string.IsNullOrEmpty(entry.SpeciesId)) return;
+            save.CaughtSpecies ??= new List<CaughtSpeciesDto>();
+            CaughtSpeciesDto row = null;
+            for (int i = 0; i < save.CaughtSpecies.Count; i++)
+            {
+                CaughtSpeciesDto r = save.CaughtSpecies[i];
+                if (r == null || !string.Equals(r.SpeciesId, entry.SpeciesId, System.StringComparison.Ordinal)) continue;
+                row = r;
+                break;
+            }
+            if (row == null)
+            {
+                row = new CaughtSpeciesDto { SpeciesId = entry.SpeciesId };
+                save.CaughtSpecies.Add(row);
+            }
+            row.DisplayName = entry.DisplayName ?? "";
+            row.Count = entry.Count;
+            row.ReleasedCount = entry.ReleasedCount;
+            row.RecordWeightKg = entry.RecordWeightKg;
         }
     }
 

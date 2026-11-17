@@ -19,3 +19,24 @@ MonoBehaviour:
   CompletionFlag: 
   Voice: {fileID: 0}
   Build: {fileID: 11400000, guid: 939425e5e507d1346b625d3b93fe32b1, type: 2}
+  Gifts:
+    LovedItemIds:
+    - fish.northern_quahog
+    LikedItemIds: []
+    DislikedItemIds:
+    - fish.rock_crab
+    LovedTags: []
+    LikedTags:
+    - shellfish
+    DislikedTags: []
+    Lines:
+      Loved:
+      - 'A quahog. I''ll count this among the pleasant stretches. Thank you.'
+      Liked:
+      - 'That''s a pleasant thing to be handed. Thank you.'
+      Neutral:
+      - 'Thank you.'
+      Disliked:
+      - 'Oh, it''s all legs. Thank you, I suppose.'
+      NotGiftable: []
+      AlreadyGiftedToday: []

@@ -18,3 +18,9 @@ MonoBehaviour:
     20-unit capacity is gameplay-systems'' IHold/ShipHold mechanic; Economy records the
     purchase, they wire the on-foot 20-capacity hold from gear.bucket.'
   Price: 15
+  Catalog:
+    Listed: 0
+    Section: 5
+    Sellers:
+    - seller.leblancs
+    SortOrder: 21

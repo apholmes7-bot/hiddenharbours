@@ -214,7 +214,9 @@ important UI in the game (P1).
 >    cannot lose it by accident. The settings sheet's "Tasks note" row sets Shown / Chip / Hidden.
 >    As a chip, a new or finished task flashes it gold for a moment and the note never re-opens
 >    itself. Hidden, nothing is drawn and task changes are silent; the Notebook's TASKS page is
->    where they are read. The mode is a setting (kept across launches), never the save.
+>    where they are read. The mode is a setting (kept across launches), never the save. T and the
+>    west button are bound to nothing else; the autopilot's switch is P / the pad's north button
+>    (ADR 0043), so at the helm X folds the note and Y switches the autopilot.
 >
 > What is still always-on is the **watch** (she is wearing it) and the **boat's own instruments** —
 > the helm compass, the chartplotter, the apparent-wind read. Those are untouched, and deliberately:

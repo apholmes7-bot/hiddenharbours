@@ -13,7 +13,7 @@ namespace HiddenHarbours.Core
     public static class SaveMigration
     {
         /// <summary>The schema version this build writes. Bump when you add a field + a migration step.</summary>
-        public const int CurrentVersion = 23;
+        public const int CurrentVersion = 24;
 
         /// <summary>
         /// The region id Port Greywick was saved under before it was renamed Nine Mile Creek, and the id
@@ -390,6 +390,18 @@ namespace HiddenHarbours.Core
                 data.SchemaVersion = 23;
             }
 
+            // v23 -> v24: THE CATCH RECORD, GIFT DAYS, COOK JOBS AND LORAN NUMBERS (owner: "Save v24 yes").
+            // An older game never recorded any of them, so each starts empty: no catch invented, every person
+            // takes a gift today, nothing on the stove, no numbers in any set.
+            if (data.SchemaVersion < 24)
+            {
+                data.CaughtSpecies = new System.Collections.Generic.List<CaughtSpeciesDto>();
+                data.NpcGiftDays = new System.Collections.Generic.List<NpcGiftDayDto>();
+                data.CookJobs = new System.Collections.Generic.List<CookJobDto>();
+                data.HullLoranWaypoints = new System.Collections.Generic.List<LoranWaypointDto>();
+                data.SchemaVersion = 24;
+            }
+
             // ---- future steps go here, each guarded by `if (data.SchemaVersion < N)` and bumping to N.
 
             // Defensive null-repair (a hand-edited or partial JSON can omit reference-typed fields).
@@ -432,6 +444,11 @@ namespace HiddenHarbours.Core
             data.PlayerCleanliness.WashStationId ??= "";
             data.KitchenStores ??= new System.Collections.Generic.List<KitchenStorageStateDto>();
             HealKitchenStores(data.KitchenStores);
+            data.CaughtSpecies ??= new System.Collections.Generic.List<CaughtSpeciesDto>();
+            data.NpcGiftDays ??= new System.Collections.Generic.List<NpcGiftDayDto>();
+            data.CookJobs ??= new System.Collections.Generic.List<CookJobDto>();
+            data.HullLoranWaypoints ??= new System.Collections.Generic.List<LoranWaypointDto>();
+            HealV24Rows(data);
             // Same defensive spirit as the null-repair above, for the one field where a zero is not a
             // value but a crash: a hand-edited JSON, or a row written by a build between the field landing
             // and this heal, would otherwise divide by it. Idempotent — after the v9 step there is nothing
@@ -506,6 +523,58 @@ namespace HiddenHarbours.Core
                 s.Stacks ??= new System.Collections.Generic.List<KitchenStackDto>();
                 for (int k = s.Stacks.Count - 1; k >= 0; k--)
                     if (string.IsNullOrEmpty(s.Stacks[k].ItemId) || s.Stacks[k].Count <= 0) s.Stacks.RemoveAt(k);
+            }
+        }
+
+        /// <summary>
+        /// Null-repair the v24 rows. A row that can never be found or used again is dropped: a catch row with
+        /// no species or no count (or a second row for a species already kept, so the record stays one row
+        /// per species), a gift row with no person or no count, a cook job with no station, no recipe or no
+        /// finite ready time, a Loran row with no hull or one that is not a usable waypoint. A kept row's
+        /// counts and numbers are never changed, except that a catch row's released count is held inside
+        /// 0..count and an unreadable record weight reads as unknown (0). Idempotent.
+        /// </summary>
+        private static void HealV24Rows(SaveData data)
+        {
+            var seen = new System.Collections.Generic.HashSet<string>(System.StringComparer.Ordinal);
+            var caught = data.CaughtSpecies;
+            for (int i = 0; i < caught.Count; i++)
+            {
+                CaughtSpeciesDto c = caught[i];
+                if (c == null || string.IsNullOrEmpty(c.SpeciesId) || c.Count <= 0 || !seen.Add(c.SpeciesId))
+                {
+                    caught.RemoveAt(i--);
+                    continue;
+                }
+                c.DisplayName ??= "";
+                if (c.ReleasedCount < 0) c.ReleasedCount = 0;
+                if (c.ReleasedCount > c.Count) c.ReleasedCount = c.Count;
+                if (float.IsNaN(c.RecordWeightKg) || float.IsInfinity(c.RecordWeightKg) || c.RecordWeightKg < 0f)
+                    c.RecordWeightKg = 0f;
+            }
+
+            var gifts = data.NpcGiftDays;
+            for (int i = gifts.Count - 1; i >= 0; i--)
+                if (gifts[i] == null || string.IsNullOrEmpty(gifts[i].NpcId) || gifts[i].Count <= 0) gifts.RemoveAt(i);
+
+            var jobs = data.CookJobs;
+            for (int i = jobs.Count - 1; i >= 0; i--)
+            {
+                CookJobDto j = jobs[i];
+                if (j == null || string.IsNullOrEmpty(j.StationKey) || string.IsNullOrEmpty(j.RecipeId)
+                    || double.IsNaN(j.ReadyAtGameSeconds) || double.IsInfinity(j.ReadyAtGameSeconds))
+                {
+                    jobs.RemoveAt(i);
+                    continue;
+                }
+                j.StationId ??= "";
+            }
+
+            var loran = data.HullLoranWaypoints;
+            for (int i = loran.Count - 1; i >= 0; i--)
+            {
+                LoranWaypointDto w = loran[i];
+                if (w == null || string.IsNullOrEmpty(w.HullId) || !w.ToWaypoint().IsValid) loran.RemoveAt(i);
             }
         }
 

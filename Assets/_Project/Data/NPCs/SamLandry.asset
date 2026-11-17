@@ -18,3 +18,24 @@ MonoBehaviour:
   Dialogue: {fileID: 11400000, guid: 97d7cc188bb74a9397784484a210a6f7, type: 2}
   CompletionFlag: met_sam
   Build: {fileID: 11400000, guid: 38398184b2d13c445b32a0c2009f2662, type: 2}
+  Gifts:
+    LovedItemIds:
+    - fish.rock_crab
+    LikedItemIds: []
+    DislikedItemIds:
+    - fish.northern_quahog
+    LovedTags: []
+    LikedTags:
+    - catch
+    DislikedTags: []
+    Lines:
+      Loved:
+      - 'A CRAB! It''s bigger than mine! Lucie! LUCIE, look!'
+      Liked:
+      - 'Whoa. Can I keep it? I''m keeping it.'
+      Neutral:
+      - 'Thanks! What is it?'
+      Disliked:
+      - 'It''s just a rock that''s a shell. It doesn''t even do anything. Thanks anyway.'
+      NotGiftable: []
+      AlreadyGiftedToday: []

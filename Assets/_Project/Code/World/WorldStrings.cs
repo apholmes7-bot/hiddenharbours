@@ -152,6 +152,18 @@ namespace HiddenHarbours.World
         public const string OnboardSailHome  = "Seaworthy at last — sail your dory home to Coddle Cove.";
         public const string OnboardDone      = "You earned her, plank and rope. Fair winds, skipper!";
 
+        // ---- wash stations (washrooms plan: the first placed basins and showers) --------------------
+        // The popup offers (present tense, never the key) and the short lines a wash starts and ends with.
+        public const string WashAtBasin     = "Wash up at the basin";
+        public const string WashBeginBasin  = "He splashes his face and scrubs his hands.";
+        public const string WashDoneBasin   = "As clean as a basin gets him.";
+        public const string WashAtShower    = "Rinse off under the shower";
+        public const string WashBeginShower = "Cold water off the wharf hose. Bracing.";
+        public const string WashDoneShower  = "Rinsed clean.";
+        public const string WashStop        = "Stop washing";
+        public const string WashStopped     = "He leaves off washing.";
+        public const string WashWalkedOff   = "He walks off, still dripping.";
+
         // ---- the TASKS note's fold (owner ask 2026-11-16) ----
         // The marks on the note's head (fold it down) and on its folded chip (open it again). One
         // character each: the head and the chip are a glance, not a sentence.

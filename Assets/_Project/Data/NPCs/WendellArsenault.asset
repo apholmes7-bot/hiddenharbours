@@ -18,3 +18,24 @@ MonoBehaviour:
   Dialogue: {fileID: 11400000, guid: 9414f5c6da6e48cdb3b6481653950824, type: 2}
   CompletionFlag: met_wendell
   Build: {fileID: 11400000, guid: fae300df84b17024b93d2b8f20d77ec5, type: 2}
+  Gifts:
+    LovedItemIds:
+    - fish.striped_bass
+    LikedItemIds: []
+    DislikedItemIds:
+    - fish.green_crab
+    LovedTags: []
+    LikedTags:
+    - catch
+    DislikedTags: []
+    Lines:
+      Loved:
+      - 'A striper. I can''t buy these off you and you know it, so this one''s mine for supper. Thank you.'
+      Liked:
+      - 'Giving it to the buyer for nothing? You''ll never get rich. Thank you, though.'
+      Neutral:
+      - 'Thanks. Goes in the cooler with my lunch.'
+      Disliked:
+      - 'Green crab. Nobody pays for those, not me, not St Peters. Thanks for the laugh.'
+      NotGiftable: []
+      AlreadyGiftedToday: []
