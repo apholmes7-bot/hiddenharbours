@@ -23,7 +23,9 @@ namespace HiddenHarbours.Core
         [Range(0f, 2f)] public float LeadWeight;
         [Tooltip("Speed along her length, m/s, at which the leading end's foam saturates. Zero uses 3.")]
         [Range(0f, 12f)] public float LeadSpeedKnee;
-        [Tooltip("Half-length of the leading end's foam across her, in half-beams. Zero uses 0.8.")]
+        [Tooltip("How far out across her the leading end's foam reaches each side, in half-beams: the bow " +
+                 "wave runs aft along her waterline until it is this wide; the transom's bar spans this " +
+                 "each side. Zero uses 0.8.")]
         [Range(0f, 2f)] public float LeadSpanHalfBeams;
         [Tooltip("Thickness of the leading end's foam, in half-beams. Zero uses 0.35.")]
         [Range(0f, 1f)] public float LeadRadiusHalfBeams;
