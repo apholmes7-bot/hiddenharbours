@@ -178,24 +178,32 @@ The offers are on file (data), so the rest is the counter. `StoreWiringPatch` ca
 vendor its seller id, or add a `SupplyShop`/`InstrumentShop` as a copy of one the same root already holds;
 it cannot create a counter from nothing, and neither wholesaler shell has a vendor to copy. So:
 
-1. **A keeper and a way to open the book (world-content).** A wares book opens only from a dialogue row
-   whose `CatalogSellerId` names the seller (`DialoguePresenter`); `StoreWiringTests` guard 5 then needs a
-   committed vendor selling as that id. Author a keeper NPC and a first dialogue for each wholesaler, and
-   set the seller's `KeeperNpcId` (`SellerContentTests` pins it empty until then).
-2. **The counter vendors (editor run, NineMileCreek.unity).** Add one root GameObject per wholesaler
-   counter, placed at the shell's counter marker (`NmcBuildingShells` steps 22 and 23), holding:
-   - boat/gear: one `InstrumentShop` per electronic, `_offer` = `LoranOffer`, `FishFinderOffer`,
-     `ChartplotterOffer` (and `DepthSounderOffer` when the sounder moves), `_sellerId` =
-     `seller.nmc_boat_gear_wholesaler`, `_walletProvider` = the same player wallet the chandlery's
-     `GearShop` uses (`GeneralStore` root, `{fileID: 957678902}`), `_onPurchased` empty;
-   - fishing gear: one `GearShop` per gear offer, one `BaitShop` per bait, one `PotShop` per pot,
-     `_sellerId` = `seller.nmc_fishing_gear_wholesaler`, same wallet.
+1. **A keeper and a way to open the book (world-content). Done (PR 1301).** Lionel Cormier keeps the
+   boat/gear counter (`npc.lionel_cormier`, `dialogue.lionel_first`, `routine.lionel_cormier`: the counter
+   from about 08:00, home from about 18:00) and Bernadette Pitre the fishing gear counter
+   (`npc.bernadette_pitre`, `dialogue.bernadette_first`, `routine.bernadette_pitre`: 06:00 to 17:00). Both
+   sellers name them as `KeeperNpcId`. Their dialogues carry a question row but no browse row yet: a browse
+   row whose seller has no committed vendor fails `StoreWiringTests` guard 5 and `StoreClerkContentTests`.
+2. **The counters, the keepers in the scene, the ticks and the browse rows (one editor run).**
+   `NmcWholesalerKeepers.Place` (*World > Nine Mile Creek Buildings > Place the Wholesaler Counters and
+   Keepers*, or `-executeMethod HiddenHarbours.App.Editor.NmcWholesalerKeepers.PlaceAndSaveBatch`) does all
+   of it in `NineMileCreek.unity`, inside the greybox shells (steps 22 and 23):
+   - one root per counter (`NmcBoatGearWholesalerCounter`, `NmcFishingGearWholesalerCounter`) at the shell's
+     `TradeCounter` block, holding one vendor per row of `StoreWiringPatch.NineMileCreekWholesalers`, each
+     selling as its wholesaler with the chandlery `GearShop`'s wallet;
+   - one root per keeper with its station table (counter indoors, in the shell's `BuildingInterior`; home out
+     of sight, a short walk off from the door) and lane tree, and the keeper dressed, talkable and walking
+     their day; each keeper joins the creek's `WorldInteractor`;
+   - `Listed` ticked on each row's offer, and the keeper's browse row added first.
 
-   Then add those rows to `StoreWiringPatch.NineMileCreek` (root name, class, wares id, seller id) so the
-   step's re-plan over the committed scene is empty (`StoreWiringTests` 1 and 3), and run
-   *World > Store Wiring > Apply the Store Patches* to confirm nothing is left to write.
-3. **Tick `Listed`** on each offer in the same change; guard 4 holds every listed (ware, seller) pair to
-   exactly one committed vendor, so the tick and the vendor land together.
+   Then fold `NineMileCreekWholesalers` into `StoreWiringPatch.NineMileCreek` in the same commit and run
+   *World > Store Wiring > Apply the Store Patches*: the plan must be empty (`StoreWiringTests` 1 and 3).
+3. **What the run lists.** `Listed` is one flag per offer, and guard 4 needs a committed vendor for every
+   seller a listed offer names. The Loran, fish finder, chartplotter and rod rack name only a wholesaler, so
+   they are the rows. The six baits, the clam shovel and the clam bucket also name `leblancs`, so listing
+   them needs a St Peters `BaitShop`/`GearShop` too (the patch cannot copy either) or `leblancs` dropped
+   from them; the rake, tongs, sack and basket wait for hand-gathering as well
+   (`NmcWholesalerKeepers.Waiting`). A seat or owner call; a new row is all the step needs.
 4. **Moves that wait for that counter, so nothing goes unbuyable in between:** the depth sounder off
    `leblancs` (approved: electronics are the boat/gear wholesaler's alone; it is the St Peters counter's
    `InstrumentShop` template today, and the StPeters builder and `StoreClerkContentTests` name it), and

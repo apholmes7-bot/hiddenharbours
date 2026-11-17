@@ -54,15 +54,15 @@ namespace HiddenHarbours.Tests.Economy
                 Assert.AreEqual("trade.vehicles", byId[sellerId].TradeId);
             }
 
-            // The two wholesalers (ruling 11-16) have their buildings, identities and unlisted offers; no keeper yet.
-            foreach (var (sellerId, tradeId) in new[]
+            // The two wholesalers (ruling 11-16): their buildings, identities and offers, and now their keepers.
+            foreach (var (sellerId, tradeId, keeperId) in new[]
                      {
-                         ("seller.nmc_boat_gear_wholesaler", "trade.boat_gear_wholesale"),
-                         ("seller.nmc_fishing_gear_wholesaler", "trade.fishing_gear_wholesale"),
+                         ("seller.nmc_boat_gear_wholesaler", "trade.boat_gear_wholesale", "npc.lionel_cormier"),
+                         ("seller.nmc_fishing_gear_wholesaler", "trade.fishing_gear_wholesale", "npc.bernadette_pitre"),
                      })
             {
                 Assert.IsTrue(byId.ContainsKey(sellerId), "wholesaler seller missing: " + sellerId);
-                Assert.AreEqual("", byId[sellerId].KeeperNpcId, "wholesaler keepers have not been authored");
+                Assert.AreEqual(keeperId, byId[sellerId].KeeperNpcId, "the wholesaler's keeper");
                 Assert.AreEqual(tradeId, byId[sellerId].TradeId);
             }
 

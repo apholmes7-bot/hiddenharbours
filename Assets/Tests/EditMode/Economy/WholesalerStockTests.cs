@@ -14,8 +14,8 @@ namespace HiddenHarbours.Tests.Economy
     /// electronic at a new boat/gear wholesaler, fishing stock at a separate fishing gear wholesaler; prices
     /// and routing approved from <c>docs/economy/nmc-wholesalers-stock.md</c>). Reads the shipped catalog.
     ///
-    /// <para><b>Offer on file, not yet on a shelf.</b> Neither wholesaler has a keeper or a counter vendor in
-    /// the scene yet, so every offer naming one is authored unlisted (<c>StoreWiringTests</c> guard 4 holds a
+    /// <para><b>Offer on file, not yet on a shelf.</b> Both wholesalers have keepers (data), but neither has a
+    /// counter vendor in the scene yet, so every offer naming one is authored unlisted (<c>StoreWiringTests</c> guard 4 holds a
     /// listed ware to a committed vendor). Listing them is one tick per asset plus the counter's vendors;
     /// <c>docs/design/economy-item-sellers.md</c> §5 says what that editor run must do.</para>
     ///

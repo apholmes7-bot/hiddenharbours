@@ -107,6 +107,28 @@ namespace HiddenHarbours.App.Editor
             new Seller("GeneralStoreCounter", typeof(LicenseVendor), "license.clam", StPetersBuilder.StoreSellerId),
         });
 
+        /// <summary>
+        /// The two wholesalers' counters (ruling 11-16), <b>not yet folded into <see cref="NineMileCreek"/></b>.
+        /// Their roots do not stand in the committed scene until <see cref="NmcWholesalerKeepers.Place"/> runs in
+        /// the editor, and <see cref="NineMileCreek"/>'s plan finds every root it names or refuses
+        /// (<c>StoreWiringTests</c> guard 1). The run that places the counters folds these rows in, in the same
+        /// commit as the scene and the <c>Listed</c> ticks (<c>docs/design/economy-item-sellers.md</c> §5.1).
+        ///
+        /// <para>Only the offers that name a wholesaler and nobody else are here. The bait, the clam shovel and
+        /// the clam bucket also name <c>seller.leblancs</c>, so listing them needs a St Peters vendor as well
+        /// (guard 4 counts every seller a listed offer names); and the rake, tongs, sack and basket wait for
+        /// hand-gathering. See <see cref="NmcWholesalerKeepers.Waiting"/>.</para>
+        ///
+        /// <para>Declared above <see cref="NineMileCreek"/> so it is initialised first when folded in.</para>
+        /// </summary>
+        public static readonly IReadOnlyList<Seller> NineMileCreekWholesalers = new[]
+        {
+            new Seller(NmcWholesalerKeepers.BoatGearCounterRoot, typeof(InstrumentShop), "instrument.loran", NmcWholesalerKeepers.BoatGearSellerId),
+            new Seller(NmcWholesalerKeepers.BoatGearCounterRoot, typeof(InstrumentShop), "instrument.fish_finder", NmcWholesalerKeepers.BoatGearSellerId),
+            new Seller(NmcWholesalerKeepers.BoatGearCounterRoot, typeof(InstrumentShop), "instrument.gps", NmcWholesalerKeepers.BoatGearSellerId),
+            new Seller(NmcWholesalerKeepers.FishingGearCounterRoot, typeof(GearShop), "gear.rod_rack", NmcWholesalerKeepers.FishingGearSellerId),
+        };
+
         /// <summary>Nine Mile Creek: the yard's shed and dory yard, the harbourmaster, the chandlery, and Hector's barrel.</summary>
         public static readonly Region NineMileCreek = new Region("NineMileCreek", NineMileCreekScenePath, new[]
         {
@@ -350,7 +372,7 @@ namespace HiddenHarbours.App.Editor
         static string NameOf(Doc go) => go.Field("m_Name") ?? "the counter";
 
         /// <summary>The one serialised field of a vendor class that holds its listing.</summary>
-        static FieldInfo WaresField(Type kind)
+        internal static FieldInfo WaresField(Type kind)
         {
             List<FieldInfo> hits = kind.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
                 .Where(f => typeof(ICatalogListing).IsAssignableFrom(f.FieldType) &&
