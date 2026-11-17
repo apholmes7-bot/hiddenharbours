@@ -175,6 +175,25 @@ namespace HiddenHarbours.App.Editor
             yield return Farm(Kind.BathroomSink, new Vector2(-hw + 0.60f, -hl + 2.15f));
         }
 
+        // Ginny's cottage, the R1 pilot (re-planned after its first editor look): a longer, shallower
+        // closet in the back-right corner, 2.05 m across by 2.9 m along, its front end stopping 0.1 m short
+        // of the dresser. The three pieces stand in one line against the right wall: shower in the corner,
+        // toilet, then basin. Each is 0.95 m or more from the next, and they line up along the room's length,
+        // which the camera does not squash, so they read apart on screen. The 0.9 m to 1.3 m between them and
+        // the inner partition is the walkway, and the closet door opens onto it.
+        const float GinnyClosetFront = -1.10f, GinnyClosetInner = -1.25f;
+
+        static IEnumerable<Row> GinnyBathroom(string root)
+        {
+            yield return Ginny(root, Kind.Shower, new Vector2(-2.575f, -3.30f));
+            yield return Ginny(root, Kind.Toilet, new Vector2(-2.775f, -2.35f));
+            yield return Ginny(root, Kind.BathroomSink, new Vector2(-2.725f, -1.40f));
+        }
+
+        static Row Ginny(string root, Kind k, Vector2 at) =>
+            new Row("ginny_cottage", root, StPetersGinnyPlot.CottageKey, "sageCottage",
+                    StPetersInteriors.GinnyCottagePlanKey, 0, k, at);
+
         static Row Farm(Kind k, Vector2 at) =>
             new Row("white_farmhouse", StPetersVillage.RootName, "whiteFarmhouse", "whiteFarmhouse", null, 0, k, at);
 
@@ -203,8 +222,7 @@ namespace HiddenHarbours.App.Editor
 
             r.AddRange(Kitchen("ginny_cottage", ginny, StPetersGinnyPlot.CottageKey, "sageCottage",
                                StPetersInteriors.GinnyCottagePlanKey, SageW, SageL));
-            r.AddRange(Bathroom("ginny_cottage", ginny, StPetersGinnyPlot.CottageKey, "sageCottage",
-                                StPetersInteriors.GinnyCottagePlanKey, 0, SageW, SageL));
+            r.AddRange(GinnyBathroom(ginny));
 
             r.AddRange(Kitchen("sage_cottage", village, "sageCottage", "sageCottage", null, SageW, SageL));
             r.AddRange(Bathroom("sage_cottage", village, "sageCottage", "sageCottage", null, 0, SageW, SageL));
@@ -234,7 +252,9 @@ namespace HiddenHarbours.App.Editor
         /// <summary>Every planned bathroom closet (the partitions a layout change must stand).</summary>
         public static readonly Closet[] Closets =
         {
-            StandardCloset("ginny_cottage", 0, SageW, SageL),
+            new Closet("ginny_cottage", 0,
+                       Rect.MinMaxRect(-SageW * 0.5f, -SageL * 0.5f, GinnyClosetInner, GinnyClosetFront),
+                       -2.40f, -1.60f),
             StandardCloset("sage_cottage", 0, SageW, SageL),
             StandardCloset("red_saltbox", 0, RedW, RedL, front: true),
             new Closet("white_farmhouse", 0,

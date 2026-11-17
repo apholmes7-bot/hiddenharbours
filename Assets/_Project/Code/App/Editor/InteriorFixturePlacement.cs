@@ -96,17 +96,22 @@ namespace HiddenHarbours.App.Editor
             /// under it. Null for an open-air site.</summary>
             public readonly string BuildingRoot, Building;
 
-            /// <summary>Interior: the ROOM's model metres (StPetersInteriors' frame) on <see cref="Level"/>.
-            /// Open air: world metres under <see cref="WashStationPlacement.NmcRootName"/>.</summary>
+            /// <summary>Interior: model metres on <see cref="Level"/>, in the building's serialized footprint
+            /// frame, or in the plan's door-at-+y frame when <see cref="PlanFrame"/> is set (see
+            /// <see cref="ModelPoint"/>). Open air: world metres under <see cref="WashStationPlacement.NmcRootName"/>.</summary>
             public readonly Vector2 At;
 
             public readonly int Level;
 
+            /// <summary>True for a <see cref="RoomFixturePlan"/> row, whose frame always has the front door
+            /// at <c>+y</c>; false for a site written in the footprint's own frame.</summary>
+            public readonly bool PlanFrame;
+
             public Site(string scene, string prefab, string name, string interactId, Vector2 at, string why,
-                        string buildingRoot = null, string building = null, int level = 0)
+                        string buildingRoot = null, string building = null, int level = 0, bool planFrame = false)
             {
                 Scene = scene; Prefab = prefab; Name = name; InteractId = interactId; At = at; Why = why;
-                BuildingRoot = buildingRoot; Building = building; Level = level;
+                BuildingRoot = buildingRoot; Building = building; Level = level; PlanFrame = planFrame;
             }
 
             public bool IsInterior => !string.IsNullOrEmpty(BuildingRoot);
@@ -116,7 +121,16 @@ namespace HiddenHarbours.App.Editor
         public static Site SiteOf(RoomFixturePlan.Row row) =>
             new Site(RoomFixturePlan.Scene, PrefabFor(row.Kind), NameOf(RoomFixturePlan.Slot(row.Kind)), row.Id, row.At,
                      $"{row.BuildingKey}, room '{row.RoomKey}', level {row.Level}: the plan's {RoomFixturePlan.Slot(row.Kind)}",
-                     row.BuildingRoot, row.Building, row.Level);
+                     row.BuildingRoot, row.Building, row.Level, planFrame: true);
+
+        /// <summary>
+        /// The site's point in the footprint's own model frame. A plan row's frame has the door at <c>+y</c>;
+        /// a footprint whose door is in its <c>−y</c> wall (Ginny's cottage, which was not turned with the
+        /// village) holds the same room half a turn round, so the row is negated. Without this the pilot
+        /// bathroom stood in the opposite corner, at the door end, beside the table.
+        /// </summary>
+        public static Vector2 ModelPoint(InteriorFootprint footprint, Site site) =>
+            site.PlanFrame && footprint.DoorSign < 0f ? -site.At : site.At;
 
         /// <summary>The rows this slice places: the pilot building's bathroom.</summary>
         public static IEnumerable<RoomFixturePlan.Row> PlacedRows() =>
@@ -173,7 +187,8 @@ namespace HiddenHarbours.App.Editor
                 if (old != null) Object.DestroyImmediate(old.gameObject);
                 var go = (GameObject)PrefabUtility.InstantiatePrefab(prefab, parent);
                 go.name = site.Name;
-                Vector2 world = interior.FootprintFor(site.Level).ModelToWorld(site.At);
+                InteriorFootprint footprint = interior.FootprintFor(site.Level);
+                Vector2 world = footprint.ModelToWorld(ModelPoint(footprint, site));
                 go.transform.position = new Vector3(world.x, world.y, 0f);
                 MonoBehaviour point = IdComponentOf(go);
                 if (point != null)
@@ -271,8 +286,11 @@ namespace HiddenHarbours.App.Editor
         }
 
         /// <summary>The world point an interior site stands at, from the building's serialized footprint.</summary>
-        public static Vector2 InteriorWorld(SceneYaml scene, Site site, out Doc parentTr, out Doc rootGo) =>
-            FootprintOf(scene, site, out parentTr, out rootGo).ModelToWorld(site.At);
+        public static Vector2 InteriorWorld(SceneYaml scene, Site site, out Doc parentTr, out Doc rootGo)
+        {
+            InteriorFootprint footprint = FootprintOf(scene, site, out parentTr, out rootGo);
+            return footprint.ModelToWorld(ModelPoint(footprint, site));
+        }
 
         /// <summary>A transform's world position by its chain of local positions; refuses a rotated or scaled
         /// ancestor, under which a local position would not be a world offset.</summary>

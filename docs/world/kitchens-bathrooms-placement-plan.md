@@ -93,8 +93,8 @@ The gables also need a stair before their upstairs bathroom can be reached.
 
 | Building (scene path) | Who | Kitchen | Bathroom | Stations, model metres | Room? |
 |---|---|---|---|---|---|
-| Ginny's cottage (`GinnyPlot/sageCottage`), 6.60 × 8.05 m, 2 storeys | Ginny; the player lodges upstairs | Full | Ground closet, back-right | Prep (2.70, 1.425), Stove (2.70, 2.425), Micro (2.70, 3.275). Toilet (−2.65, −3.375), Sink (−1.85, −3.475), Shower (−2.55, −2.425). Closet x −3.3..−1.4, y −4.025..−1.825, door y −2.825..−2.025. #1273's washstand upstairs (0.45, 3.55, level 1) stays. | Fits. The closet clears the dresser (−2.75, −0.50) and the stair foot (−2.50, 0.90). Layout change: ground partitions. |
-| Village sage cottage (`IslandVillage/sageCottage`), same room | Junior and Basil | Full | Ground closet, back-right | Same numbers as Ginny's (same room key, same furniture) | Fits; ground partitions |
+| Ginny's cottage (`GinnyPlot/sageCottage`), 6.60 × 8.05 m, 2 storeys | Ginny; the player lodges upstairs | Full | Ground closet, back-right | Prep (2.70, 1.425), Stove (2.70, 2.425), Micro (2.70, 3.275). Re-planned after the first R1 look: in one line along the right wall, Shower (−2.575, −3.30), Toilet (−2.775, −2.35), Sink (−2.725, −1.40), each 0.95 m or more from the next. Closet x −3.3..−1.25, y −4.025..−1.10, door y −2.40..−1.60 in the inner partition, a 0.9 to 1.3 m walkway inside it. #1273's washstand upstairs (0.45, 3.55, level 1) stays. | Fits. The closet stops 0.1 m short of the dresser (−2.75, −0.50, its footprint y −1.0..0) and clears the stair foot (−2.50, 0.90). Layout change: ground partitions. |
+| Village sage cottage (`IslandVillage/sageCottage`), same room | Junior and Basil | Full | Ground closet, back-right | The standard closet: Toilet (−2.65, −3.375), Sink (−1.85, −3.475), Shower (−2.55, −2.425); closet x −3.3..−1.4, y −4.025..−1.825, door y −2.825..−2.025. Its R2 look should consider Ginny's line layout instead (the toilet and basin here are 0.81 m apart and overlap on screen). | Fits; ground partitions |
 | Red saltbox (`IslandVillage/redSaltbox`), 6.96 × 8.68 m | Rose (also `home.st_peters_red_saltbox`) | Full | Ground closet, **front-right** (the dresser holds the back-right corner) | Prep (2.88, 1.74), Stove (2.88, 2.74), Micro (2.88, 3.59). Toilet (−2.83, 3.69), Sink (−2.03, 3.79), Shower (−2.73, 2.74). Closet x −3.48..−1.58, y 2.14..4.34, door y 2.34..3.14. | Fits; ground partitions. The editor must check the front-right corner for a drawn window. |
 | White farmhouse (`IslandVillage/whiteFarmhouse`), 7.68 × 9.94 m | Eileen boards here; a family house | Full | Ground closet, back-right, 2.3 × 2.6 m, **bath** (a family house) | Prep (3.24, 2.37), Stove (3.24, 3.37), Micro (3.24, 4.22). Bath (−2.64, −4.27) along the back wall, Toilet (−3.19, −3.42), Sink (−3.24, −2.82). Closet x −3.84..−1.54, y −4.97..−2.37, door y −3.57..−2.77. | Fits; ground partitions. When its upper storey is built (the comment in `StPetersInteriors` says the family sleeps up there), a second bathroom can go up; this one stays. |
 | Harbour gable (`IslandVillage/harbourGable`), 6.72 × 8.26 m, 2 storeys | Nobody yet | Full, ground | **Upstairs** closet, back-right | Prep (2.76, 1.53), Stove (2.76, 2.53), Micro (2.76, 3.38). Level 1: Toilet (−2.71, −3.48), Sink (−1.91, −3.58), Shower (−2.61, −2.53). Closet x −3.36..−1.46, y −4.13..−1.93. | Both floors are empty. **Needs a stair** (no stair fixture today, so upstairs is unreachable) and upper partitions. The stair must avoid the closet. |
@@ -184,9 +184,11 @@ The wharf shower (#1273) and the outhouses cover the wharf.
 ### 2.2 Questions for the editor look
 - **Which end is the door?** The model frame puts the door at +y. Three buildings serialize
   `_doorOnPlusY: 0` (red saltbox, Ginny's cottage, white farmhouse) while the other house-kit rooms say 1.
-  That flag only places the doorway gap in the colliders, and the furniture tables are written with the
-  door at +y, so it is probably harmless. Still, the editor look must confirm the counter run is at the end
-  the player enters by before R2 merges.
+  **Answered by the first R1 look: it is not harmless.** The committed scene holds those rooms half a turn
+  round: their furniture stands at the negated table coordinates, with the door in the footprint's −y wall.
+  The placement step therefore negates a plan row when the footprint's door is at −y
+  (`InteriorFixturePlacement.ModelPoint`). Without that, the pilot bathroom stood at the door end beside the
+  table. The R2 look should still confirm the counter run is at the end the player enters by.
 - **Drawn windows, and the hearth's width,** on the walls the counter run and closets back onto. These come
   from the room sprites, not from data.
 - **The shop stockrooms' rig side sign** (E as +x or −x), for the general store and post office zones.
@@ -212,7 +214,9 @@ they get their own PRs after R2 and R3, not inside a placement PR.
 
 ## 3. The generic placement step (built in R1)
 
-**R1 notes.** The step is `InteriorFixturePlacement`. It differs from the spec below in three small ways: the builder hook is still called from `StPetersGinnyPlot` (the one building with rows), not from `BuildingInteriorStander`, and moves there when R2 adds rows for buildings the stander stands; one patch is written per building root, holding every level's fixtures; and `WashStationPlacement` keeps only its two prefabs and their ids. The toilet's seat is `SitPoint` (World): it sits the player through Core's `SeatSession`, so a seated stretch is banked as seated rest like any seat, and it washes nothing.
+**R1 notes.** The step is `InteriorFixturePlacement`. It differs from the spec below in three small ways: the builder hook is still called from `StPetersGinnyPlot` (the one building with rows), not from `BuildingInteriorStander`, and moves there when R2 adds rows for buildings the stander stands; one patch is written per building root, holding every level's fixtures; and `WashStationPlacement` keeps only its two prefabs and their ids. The toilet's seat is `SitPoint` (World): it sits the player through Core's `SeatSession`, so a seated stretch is banked as seated rest like any seat, and it washes nothing. After the first look, plan rows are marked `PlanFrame` and negated for a footprint whose door is at −y (section 2.2), and Ginny's bathroom moved to its own line layout (section 2 table).
+
+**Open (not R1's): #1273's upstairs washstand.** Its site (0.45, 3.55) is written in the footprint frame, not the plan frame, so with Ginny's door at −y it stands at world x ≈ 87.55, in the back bedroom (Ginny's) rather than against the front wall of the player's room as its note says. It is left as it is here; moving it is a one-line change plus its own look.
 
 **Why it is not built in this PR.** It would generalise #1273's `WashStationPlacement`, which is not
 merged. Building it now on main means a second copy of the same ~250 lines of scene-text patching, which

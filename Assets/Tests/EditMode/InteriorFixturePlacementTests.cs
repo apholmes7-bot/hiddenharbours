@@ -86,9 +86,10 @@ namespace HiddenHarbours.Tests.EditMode
             {
                 SceneYaml scene = Scene(site.Scene);
                 InteriorFootprint footprint = InteriorFixturePlacement.FootprintOf(scene, site, out Doc parent, out _);
-                Vector2 world = footprint.ModelToWorld(site.At);
+                Vector2 model = InteriorFixturePlacement.ModelPoint(footprint, site);
+                Vector2 world = InteriorFixturePlacement.InteriorWorld(scene, site, out _, out _);
                 Vector2 back = footprint.WorldToModel(world);
-                Assert.Less(Vector2.Distance(back, site.At), 0.001f, $"{site.InteractId}: model {site.At} came back {back}");
+                Assert.Less(Vector2.Distance(back, model), 0.001f, $"{site.InteractId}: model {model} came back {back}");
                 Doc parentGo = scene.Require(parent.FieldRef("m_GameObject"), "furniture root");
                 Assert.AreEqual(site.Level > 0 ? StPetersInteriors.UpperPropsChildName : StPetersInteriors.PropsChildName,
                                 parentGo.Field("m_Name"), $"{site.InteractId} hangs under its own level's furniture");
@@ -124,6 +125,34 @@ namespace HiddenHarbours.Tests.EditMode
             }
             Assert.AreEqual(2 + placed.Count, InteriorFixturePlacement.Sites.Length,
                             "the two first wash stations plus the pilot bathroom");
+        }
+
+        [Test]
+        public void APlanRowKeepsItsDistanceFromTheDoor_WhicheverWallTheFootprintsDoorIsIn()
+        {
+            // The plan's +y is the door end. Ginny's footprint has its door in the -y wall, so a row stood
+            // there without the half turn lands at the wrong end of the room (the first look's bug).
+            foreach (InteriorFixturePlacement.Site site in InteriorFixturePlacement.Sites.Where(s => s.PlanFrame))
+            {
+                SceneYaml scene = Scene(site.Scene);
+                InteriorFootprint footprint = InteriorFixturePlacement.FootprintOf(scene, site, out _, out _);
+                Vector2 world = InteriorFixturePlacement.InteriorWorld(scene, site, out _, out _);
+                Vector2 model = footprint.WorldToModel(world);
+                Assert.AreEqual(site.At.y, model.y * footprint.DoorSign, 0.001f, $"{site.InteractId}: toward the door");
+                float toDoor = Vector2.Distance(world, footprint.DoorWorld);
+                float centreToDoor = Vector2.Distance(footprint.Centre, footprint.DoorWorld);
+                if (site.At.y < 0f)
+                    Assert.Greater(toDoor, centreToDoor, $"{site.InteractId} is planned in the back half, so it stands farther from the door than the centre");
+            }
+        }
+
+        [Test]
+        public void GinnysBathroomPiecesStandAtLeastNinetyCentimetresApart()
+        {
+            var rows = InteriorFixturePlacement.PlacedRows().ToList();
+            for (int i = 0; i < rows.Count; i++)
+            for (int j = i + 1; j < rows.Count; j++)
+                Assert.GreaterOrEqual(Vector2.Distance(rows[i].At, rows[j].At), 0.9f, $"{rows[i].Id} and {rows[j].Id}");
         }
 
         [Test]
