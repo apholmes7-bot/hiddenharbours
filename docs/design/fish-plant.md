@@ -5,7 +5,7 @@ Serves P3 (a working coast) and P4 (deliver by hand, learn work, later hire).
 
 ## What main already supplies
 
-Audit base: `32dfdecdf3c36167598b97401bc8cfda336583b9`.
+Audit base after review merge: `236b10e3c5f99cce0e745e42a838cc5a72592931`.
 
 | Concern | Existing files and reuse |
 |---|---|
@@ -21,6 +21,44 @@ Code paths above abbreviate `Assets/_Project/Code/` after the first row.
 See also [the supply-chain design](fish-plant-supply-chain.md) and
 [its implementation notes](fish-plant-logic.md). This narrow component adds grading,
 not a second fleet, warehouse or market simulation.
+
+## Two fish-plant models
+
+Both models are isolated proposals; neither runs the plant scene today.
+
+| Model | Already built | Missing before scene use |
+|---|---|---|
+| `Economy/SupplyChain`: `FishPlantDef`, `FishLineDef`, `FishChainModel`, `FishLotStore` | A fixed slow step, hand-transfer receipts, species/size lots, authored yields, workers, bounded mass/volume stores, carriers and outlet demand. | Individual receipt identity, freshness, grades and player intake settlement. Equal-sized lots merge without those distinctions. Physical hands/carrier/market adapters, supported storage and waste removal, and persistence remain uninstalled. |
+| `Economy/PlantIntake`: graded intake and line | Per-fish hand-delivery receipt deduplication, grade and price, freshness carried on the source receipt, one-time loading, timed work and exact product/byproduct mass with provenance. | Freshness decay during storage/work, physical handover and collection, wallet/market settlement, volume-bounded queues, workers, carriers, outlet demand and persistence. It is one slot, not the larger supply chain. |
+
+A bridge needs one processing authority to prevent double payment or cutting.
+Estimated scope starts with four existing runtime files:
+`Core/Economy/IFishChainWork.cs`, `SupplyChain/FishLotStore.cs`,
+`SupplyChain/FishChainModel.cs` and `PlantIntake/FishPlantIntake.cs`, plus a new
+Economy adapter, App composition, both model test suites and new bridge tests.
+Physical goods/carrier adapters add further files. New reviewed save rows must
+atomically retain receipts/settlement, individual lot/grade identity, freshness
+and protection, locations/mass/waste, recipes/work completion, workers, demand
+and carrier progress. Merged lots cannot recover lost provenance.
+
+Retirement scope: SupplyChain has eight source files, 41 Def assets and two test
+fixtures; PlantIntake has five source files, five assets and two fixtures, plus
+metas and identity declarations. Audit references, preserve recorded ids/GUIDs
+under the identity contract and retain shared Core `FishProduct` uses. Neither
+has saved plant state today. After installation, replacement needs a migration
+for receipts, inventory and work in flight, or an approved retirement policy.
+
+**Recommendation for the first plant scene:** use the graded intake and single
+line after physical delivery, settlement and persistence review. It fits hand
+intake and preserves grade, freshness and individual provenance. Keep SupplyChain
+uninstalled for later logistics pending a bridge or retirement. The seat and
+owner decide; this recommendation does not approve scene wiring.
+
+There is also a third "fillet" on main: the `Core/Food` prep-station recipes
+`recipe.cod_fillet` and `recipe.groundfish_fillet` output `food.cod_fillet` and
+`food.white_fish_fillet`. `RecipeRunner` runs that cooking/prep path; those food
+ids differ from plant `FishProduct.FreshFillet`; conversion needs quantity, yield,
+provenance and saved-cooking-job rules.
 
 ## Player path and the 21 zones
 
