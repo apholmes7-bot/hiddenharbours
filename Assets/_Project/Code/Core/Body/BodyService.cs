@@ -78,7 +78,7 @@ namespace HiddenHarbours.Core
             return StrengthMath.StrengthFactor(MassNow(b, s), BodyMath.FrameOf(b, s), level, s, st);
         }
 
-        public double ReportActivity(ActivityDef activity, float units)
+        public double ReportActivity(ActivityDef activity, float units, bool train = true)
         {
             if (activity == null || !(units > 0f)) return 0d;
             SaveData data = _save()?.Current;
@@ -111,7 +111,7 @@ namespace HiddenHarbours.Core
                 }
             }
 
-            for (int i = 0; i < StrengthMath.Kinds.Length; i++)
+            for (int i = 0; train && i < StrengthMath.Kinds.Length; i++)
             {
                 FitnessKind kind = StrengthMath.Kinds[i];
                 float dose = activity.Training.Of(kind) * units;

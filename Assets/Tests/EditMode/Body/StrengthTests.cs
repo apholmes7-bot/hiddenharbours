@@ -455,7 +455,7 @@ namespace HiddenHarbours.Tests.EditMode
             public bool ChooseShape(float frame, float heightScale) => false;
             public MealOutcome Eat(float meals, Vector2 position, string regionId) => MealOutcome.Nothing;
             public void Settle() { }
-            public double ReportActivity(ActivityDef activity, float units)
+            public double ReportActivity(ActivityDef activity, float units, bool train = true)
             {
                 Calls.Add((activity, units));
                 return 0d;
