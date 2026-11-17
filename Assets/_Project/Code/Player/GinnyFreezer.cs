@@ -23,8 +23,17 @@ namespace HiddenHarbours.Player
     /// <see cref="ClamBucket"/>. New Input System only; feedback rides <see cref="DevNotice"/>.</para>
     /// </summary>
     [DisallowMultipleComponent]
-    public sealed class GinnyFreezer : MonoBehaviour, IHold
+    public sealed class GinnyFreezer : MonoBehaviour, IHold, IHoldRemove, IStorageContainer
     {
+        /// <summary>The freezer's fixed id (<see cref="StorageIds.GinnyFreezer"/>).</summary>
+        public string StorageId => StorageIds.GinnyFreezer;
+
+        /// <summary>After the boat's hold (<see cref="PlayerStorage.PriorityHomeFreezer"/>).</summary>
+        public int StoragePriority => PlayerStorage.PriorityHomeFreezer;
+
+        // The save blob this freezer last restored from: a scene enabled after GameLoaded binds on enable.
+        private SaveData _boundTo;
+
         [Tooltip("How many units the chest freezer holds. A tunable, not a magic number (rule 6).")]
         [SerializeField] private int _capacity = 20;
 
@@ -61,6 +70,15 @@ namespace HiddenHarbours.Player
             SyncToSave();
         }
 
+        /// <summary>Take out the one item at <paramref name="index"/> and nothing else (IHoldRemove).</summary>
+        public bool TryRemoveAt(int index)
+        {
+            if (index < 0 || index >= _items.Count) return false;
+            _items.RemoveAt(index);
+            SyncToSave();
+            return true;
+        }
+
         /// <summary>Surgical restore write (save/load) — items land EXACTLY as given, no re-mode.</summary>
         public void ReplaceAll(IReadOnlyList<CatchItem> items)
         {
@@ -78,6 +96,11 @@ namespace HiddenHarbours.Player
             // One of the player's storage containers (what the gift rows list): listed on enable, taken
             // off on destroy, never on disable, so a region hop does not drop it (PlayerStorage).
             PlayerStorage.Register(this);
+            // The save is the truth and this freezer a view of it: a scene enabled AFTER the GameLoaded edge
+            // (loaded late, or toggled on by a crossing) binds to the save it has not yet read, instead of
+            // starting empty and then writing that empty over the saved catch on its first change.
+            ISaveService save = GameServices.Save;
+            if (save?.Current != null && !ReferenceEquals(save.Current, _boundTo)) OnGameLoaded(default);
         }
 
         private void OnDestroy() => PlayerStorage.Unregister(this);
@@ -94,6 +117,7 @@ namespace HiddenHarbours.Player
         {
             ISaveService save = GameServices.Save;
             if (save == null || save.Current == null) return;
+            _boundTo = save.Current;
             HoldCatchCodec.Restore(save.Current.FreezerCatch, GameServices.CatchFactory, _items);
         }
 

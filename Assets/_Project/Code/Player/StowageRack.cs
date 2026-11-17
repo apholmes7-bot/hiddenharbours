@@ -7,13 +7,18 @@ namespace HiddenHarbours.Player
     /// <summary>
     /// <b>A rod rack (or any stowage fixture) you walk up to and put a tool in, or take one out of</b> —
     /// owner ask 2026-11-15: "rods also need storage on boats, only fitting in a rod rack or appropriate
-    /// locker".
+    /// locker"; and 2026-11-17: storage WITH MEMORY at Ginny's, more of it in the camper and the shed.
     ///
     /// <para><b>What it takes is the Def's, never this class's.</b> <see cref="StowageDef.Accepts"/> and
     /// <see cref="StowageDef.Capacity"/> go straight into <see cref="StowageRule.Check"/> with the held
     /// tool's <see cref="ToolDef.Stowage"/>. A rack refuses a shovel because its Def takes Rods only; a fish
     /// hold refuses a rod because every hold takes <see cref="StowageRule.ExistingContainer"/> (and a hold's
-    /// <c>TryAdd</c> takes a catch, not a tool, so no path even reaches it).</para>
+    /// <c>TryAdd</c> takes a catch, not a tool, so no path even reaches it). A gear locker is the same class
+    /// with a Def that takes General.</para>
+    ///
+    /// <para><b>Who may use it is the Def's too.</b> <see cref="StowageDef.DeedHomeId"/> names the home whose
+    /// deed opens it (the camper's and the shed's stores); until that deed is his, a stow is refused
+    /// <see cref="StowRefusal.NotYours"/> and nothing comes out (<see cref="StorageAccess"/>).</para>
     ///
     /// <para><b>Nothing is ever deleted or stranded.</b> Every refusal is decided before anything moves, so
     /// a rod the rack will not take stays in the hand. A stowed tool is the SAME object, re-parented under
@@ -25,14 +30,20 @@ namespace HiddenHarbours.Player
     /// otherwise it is a <see cref="InteractPriority.Fixture"/> and the press takes one out. The ToolTarget
     /// rung is gated on that tool actually being held, as the rung requires.</para>
     ///
-    /// <para><b>No persistence, on purpose.</b> What is in a rack is SESSION-LOCAL, the same honest
-    /// half-measure a tool set down on the ground ships with (<see cref="CarriableTool"/>): the rod lives
-    /// until the scene does. Saving rack contents is new save schema (ADR 0020's placed-object
-    /// persistence) and is not done here.</para>
+    /// <para><b>Memory (save v25).</b> A rack whose id is a <c>storage.*</c> id (<see cref="StorageIds"/>)
+    /// is REMEMBERED: it is one of the player's containers in <see cref="PlayerStorage"/>, and every stow and
+    /// take writes the tool's stable instance id into its row on the save (<see cref="StoredContainers"/>,
+    /// keyed by this id). The save is the truth and the rack a view of it: it binds to its row on Start, on
+    /// <see cref="GameLoaded"/>, and on the first frame after an enable that finds a save it has not read, so
+    /// a scene loaded after the load still finds its rods. Binding moves the SAME scene tool back into the
+    /// rack, found by its id; nothing is ever spawned, so the starter rod can never be two rods. A row whose
+    /// tool is not in any loaded scene keeps its slot until that tool's scene loads, when the tool walks
+    /// back in itself (<see cref="ReturnIfStored"/>). Only tools with an authored id are remembered; any
+    /// other rack (a boat's, a test's) stays session-local as before.</para>
     /// </summary>
     [DisallowMultipleComponent]
     [AddComponentMenu("Hidden Harbours/Stowage Rack")]
-    public sealed class StowageRack : MonoBehaviour, IInteractable
+    public sealed class StowageRack : MonoBehaviour, IInteractable, IStorageContainer
     {
         [Header("What it is (content is data — rule 2)")]
         [Tooltip("What this rack takes and how many. Null makes the rack inert rather than universal.")]
@@ -50,22 +61,51 @@ namespace HiddenHarbours.Player
         [Tooltip("Where the rack can be used from. On foot ashore and on a boat's deck by default.")]
         [SerializeField] private InteractContext _contexts = InteractContext.OnFoot | InteractContext.OnDeck;
 
-        [Tooltip("Stable INSTANCE id (unique among live registrants). Left empty, one is derived from the " +
-                 "Def id and this instance.")]
+        [Tooltip("Stable INSTANCE id (unique among live registrants). A storage.* id (storage.stpeters." +
+                 "ginny_rod_rack) makes the rack REMEMBERED: what is in it is kept on the save under this id, " +
+                 "so it is append-only. Left empty, a session-only id is derived from the Def id and this " +
+                 "instance.")]
         [SerializeField] private string _id;
 
         private readonly List<CarriableTool> _stowed = new List<CarriableTool>();
         private CarryHands _hands;
         private string _resolvedId;
         private string _labelledWhat, _stowLabel, _takeLabel;
+        private SaveData _boundTo;      // the save blob this rack last bound to
+        private bool _bindPending;      // an enable found a save it has not read: bind next frame
+        private bool _listed;           // in PlayerStorage
+
+        // Scratch for the save reads (press-time and bind-time only, never per frame).
+        private static readonly List<string> _scratchIds = new List<string>(8);
+        private static CarriableTool[] _sceneTools;
 
         /// <summary>The Def this rack draws what it takes from.</summary>
         public StowageDef Def => _def;
 
-        /// <summary>How many tools are in the rack now.</summary>
+        /// <summary>How many tools are in the rack now (in this scene).</summary>
         public int Count
         {
             get { Prune(); return _stowed.Count; }
+        }
+
+        /// <summary>
+        /// How many of its slots are taken: the tools in it here, plus any its save row lists whose tool is
+        /// in a scene not loaded now (that rod is still in the rack). What the capacity check reads.
+        /// </summary>
+        public int UsedSlots
+        {
+            get
+            {
+                int used = Count;
+                SaveData data = RememberedSave();
+                if (data == null) return used;
+                _scratchIds.Clear();
+                StoredContainers.InstancesIn(data, StorageId, _scratchIds);
+                for (int i = 0; i < _scratchIds.Count; i++)
+                    if (IndexOfStowed(_scratchIds[i]) < 0) used++;
+                _scratchIds.Clear();
+                return used;
+            }
         }
 
         /// <summary>How many it holds at most (the Def's; 0 without one).</summary>
@@ -74,23 +114,41 @@ namespace HiddenHarbours.Player
         /// <summary>What it takes (the Def's; nothing without one).</summary>
         public StowageAccepts Accepts => _def != null ? _def.Accepts : StowageAccepts.None;
 
+        /// <summary>True when the player may use it: no deed named, or that deed is his.</summary>
+        public bool IsOpen => _def == null || StorageAccess.IsOpen(_def.DeedHomeId);
+
+        /// <summary>True when what is in it is kept on the save (its id is a <c>storage.*</c> id).</summary>
+        public bool IsRemembered => StorageIds.IsStorageId(_id);
+
+        /// <summary>True when <paramref name="tool"/> is in this rack now.</summary>
+        public bool Holds(CarriableTool tool) => tool != null && _stowed.Contains(tool);
+
         private Transform HolderTransform => _holder != null ? _holder : transform;
+
+        // ---- IStorageContainer --------------------------------------------------------------------------
+
+        /// <summary>The rack's id: the save key when it is remembered.</summary>
+        public string StorageId => Id;
+
+        /// <summary>A placed fixture (<see cref="PlayerStorage.PriorityFixture"/>).</summary>
+        public int StoragePriority => PlayerStorage.PriorityFixture;
 
         // ---- the two verbs, testable without the resolver ---------------------------------------------
 
         /// <summary>
-        /// May this tool go in the rack right now? Changes nothing. Asks the one shared rule.
+        /// May this tool go in the rack right now? Changes nothing. Asks the deed, then the one shared rule.
         /// </summary>
         public StowRefusal CanStow(CarriableTool tool)
         {
             if (tool == null || tool.Tool == null) return StowRefusal.NothingToStow;
             if (_def == null) return StowRefusal.NoContainer;
-            return StowageRule.Check(tool.Tool.Stowage, Accepts, Count, Capacity);
+            if (!IsOpen) return StowRefusal.NotYours;
+            return StowageRule.Check(tool.Tool.Stowage, Accepts, UsedSlots, Capacity);
         }
 
         /// <summary>
         /// Put <paramref name="tool"/> from <paramref name="hands"/> into the rack. On any refusal nothing
-        /// has moved: the tool is still in the hand.
+        /// has moved: the tool is still in the hand. A remembered rack writes it to the save.
         /// </summary>
         public StowRefusal TryStow(CarryHands hands, CarriableTool tool)
         {
@@ -101,21 +159,25 @@ namespace HiddenHarbours.Player
 
             tool.gameObject.SetActive(false);   // in the rack, out of the interact registry
             _stowed.Add(tool);
+            Remember(tool);
             return StowRefusal.None;
         }
 
         /// <summary>
         /// Take the most recently stowed tool into <paramref name="hands"/>. Returns the hands' own refusal
         /// when they cannot take it (the tool stays in the rack), and
-        /// <see cref="CarryRefusal.NotCarriable"/> when the rack is empty.
+        /// <see cref="CarryRefusal.NotCarriable"/> when the rack is empty or not his to use.
         /// </summary>
         public CarryRefusal TryTake(CarryHands hands, out CarriableTool taken)
         {
             taken = null;
-            if (hands == null || Count == 0) return CarryRefusal.NotCarriable;
+            if (hands == null || Count == 0 || !IsOpen) return CarryRefusal.NotCarriable;
 
             int last = _stowed.Count - 1;
             CarriableTool tool = _stowed[last];
+
+            // Off the save row BEFORE the tool wakes, so nothing reads it as still stowed.
+            Forget(tool);
 
             // Out of the rack to the scene root BEFORE the lift, because the hands remember the parent a
             // thing was lifted from and set it back down under that parent. Lifted straight off a boat's
@@ -125,10 +187,11 @@ namespace HiddenHarbours.Player
             CarryRefusal refusal = hands.TryPickUp(tool);
             if (refusal != CarryRefusal.None)
             {
-                // Refused: back in the rack exactly as it was.
+                // Refused: back in the rack exactly as it was, and on the save again.
                 tool.transform.SetParent(HolderTransform, worldPositionStays: false);
                 tool.transform.localPosition = Vector3.zero;
                 tool.gameObject.SetActive(false);
+                Remember(tool);
                 return refusal;
             }
 
@@ -147,6 +210,126 @@ namespace HiddenHarbours.Player
             CarriableTool left = hands.Slots.Left as CarriableTool;
             if (left != null && left.Tool != null && StowageRule.Accepts(Accepts, left.Tool.Stowage)) return left;
             return null;
+        }
+
+        // ---- memory (save v25) --------------------------------------------------------------------------
+
+        /// <summary>
+        /// Make the rack show what its save row says: tools it holds that the row does not list come out
+        /// (set down where the rack stands), and listed tools found in any loaded scene go in. A tool in
+        /// someone's hands or in another rack is left where it is. No-op for a rack that is not remembered
+        /// or with no save. Public so a test can drive it without the player loop.
+        /// </summary>
+        public void BindToSave()
+        {
+            _bindPending = false;
+            SaveData data = RememberedSave();
+            if (data == null) return;
+            _boundTo = data;
+
+            _scratchIds.Clear();
+            StoredContainers.InstancesIn(data, StorageId, _scratchIds);
+
+            Prune();
+            for (int i = _stowed.Count - 1; i >= 0; i--)
+            {
+                CarriableTool tool = _stowed[i];
+                if (!tool.HasAuthoredId || _scratchIds.Contains(tool.Id)) continue;
+                _stowed.RemoveAt(i);
+                SetDownHere(tool);
+            }
+
+            _sceneTools = null;
+            for (int i = 0; i < _scratchIds.Count; i++)
+            {
+                if (IndexOfStowed(_scratchIds[i]) >= 0) continue;
+                CarriableTool tool = FindSceneTool(_scratchIds[i]);
+                if (tool != null && !tool.IsCarried && !InAnyRack(tool)) Hold(tool);
+            }
+            _sceneTools = null;
+            _scratchIds.Clear();
+        }
+
+        /// <summary>
+        /// A remembered tool that wakes in a scene loaded after its rack bound (its <c>Start</c>) asks this:
+        /// if the save lists it in a rack that is listed in <see cref="PlayerStorage"/>, it goes back in.
+        /// True when it did.
+        /// </summary>
+        public static bool ReturnIfStored(CarriableTool tool)
+        {
+            if (tool == null || !tool.HasAuthoredId || tool.IsCarried) return false;
+            SaveData data = GameServices.Save?.Current;
+            string key = StoredContainers.ContainerOf(data, tool.Id);
+            if (key == null || !(PlayerStorage.Find(key) is StowageRack rack)) return false;
+            if (rack.Holds(tool) || InAnyRack(tool)) return false;
+            rack.Hold(tool);
+            return true;
+        }
+
+        private void Remember(CarriableTool tool)
+        {
+            SaveData data = RememberedSave();
+            if (data == null || tool == null || !tool.HasAuthoredId) return;
+            if (!StoredContainers.TryStoreInstance(data, StorageId, _def != null ? _def.Id : "", tool.DefId,
+                                                   tool.Id, Capacity))
+                Debug.LogWarning($"[StowageRack] '{StorageId}' could not remember '{tool.Id}' on the save.", this);
+        }
+
+        private void Forget(CarriableTool tool)
+        {
+            SaveData data = RememberedSave();
+            if (data == null || tool == null || !tool.HasAuthoredId) return;
+            StoredContainers.RemoveInstance(data, StorageId, tool.Id);
+        }
+
+        private void Hold(CarriableTool tool)
+        {
+            tool.transform.SetParent(HolderTransform, worldPositionStays: false);
+            tool.transform.localPosition = Vector3.zero;
+            tool.gameObject.SetActive(false);
+            _stowed.Add(tool);
+        }
+
+        private void SetDownHere(CarriableTool tool)
+        {
+            tool.transform.SetParent(null, worldPositionStays: true);
+            tool.transform.position = transform.position;
+            tool.gameObject.SetActive(true);
+        }
+
+        private SaveData RememberedSave() => IsRemembered ? GameServices.Save?.Current : null;
+
+        private int IndexOfStowed(string toolId)
+        {
+            for (int i = 0; i < _stowed.Count; i++)
+                if (_stowed[i] != null && string.Equals(_stowed[i].Id, toolId, System.StringComparison.Ordinal))
+                    return i;
+            return -1;
+        }
+
+        private static CarriableTool FindSceneTool(string toolId)
+        {
+            _sceneTools ??= FindObjectsByType<CarriableTool>(FindObjectsInactive.Include);
+            for (int i = 0; i < _sceneTools.Length; i++)
+                if (_sceneTools[i] != null && string.Equals(_sceneTools[i].Id, toolId, System.StringComparison.Ordinal))
+                    return _sceneTools[i];
+            return null;
+        }
+
+        private static bool InAnyRack(CarriableTool tool)
+        {
+            for (int i = 0; i < PlayerStorage.Count; i++)
+                if (PlayerStorage.GetContainer(i) is StowageRack rack && rack.Holds(tool)) return true;
+            return false;
+        }
+
+        private void OnGameLoaded(GameLoaded _) => BindToSave();
+
+        private void Start() => BindToSave();
+
+        private void LateUpdate()
+        {
+            if (_bindPending) BindToSave();
         }
 
         // ---- IInteractable ------------------------------------------------------------------------------
@@ -172,8 +355,8 @@ namespace HiddenHarbours.Player
         /// <inheritdoc/>
         public bool RequiresFacing => false;
 
-        /// <summary>Available whenever it has a Def: a full or empty rack earns a sentence, not silence.
-        /// </summary>
+        /// <summary>Available whenever it has a Def: a full, empty or not-yet-his rack earns a sentence, not
+        /// silence.</summary>
         public bool IsAvailable => _def != null;
 
         /// <summary>"Stow it in the rod rack" / "Take one from the rod rack", cached (read every frame on the
@@ -204,6 +387,12 @@ namespace HiddenHarbours.Player
             }
 
             string rack = RackName();
+            if (!IsOpen)
+            {
+                EventBus.Publish(new DevNotice($"The {rack} is not yours to use yet."));
+                return;
+            }
+
             CarriableTool held = HeldStowable(hands);
             if (held != null)
             {
@@ -213,6 +402,7 @@ namespace HiddenHarbours.Player
                     StowRefusal.None => $"You stow the {ToolName(held)} in the {rack}.",
                     StowRefusal.Full => $"The {rack} is full.",
                     StowRefusal.WrongContainer => $"That does not go in the {rack}.",
+                    StowRefusal.NotYours => $"The {rack} is not yours to use yet.",
                     _ => $"You cannot stow that in the {rack}.",
                 }));
                 return;
@@ -232,30 +422,64 @@ namespace HiddenHarbours.Player
 
         // ---- registration -------------------------------------------------------------------------------
 
-        private void OnEnable() => RefreshRegistration();
+        private void OnEnable()
+        {
+            RefreshRegistration();
+            EventBus.Subscribe<GameLoaded>(OnGameLoaded);
+            ISaveService save = GameServices.Save;
+            if (IsRemembered && save?.Current != null && !ReferenceEquals(save.Current, _boundTo))
+                _bindPending = true;   // not now: another object may be mid-activation
+        }
 
-        private void OnDisable() => Interactables.Unregister(this);
+        private void OnDisable()
+        {
+            Interactables.Unregister(this);
+            EventBus.Unsubscribe<GameLoaded>(OnGameLoaded);
+        }
 
-        /// <summary>Register or relinquish according to whether a Def is wired. Call after a late
-        /// <see cref="Configure"/> (and explicitly in EditMode, where <c>OnEnable</c> does not fire).</summary>
+        private void OnDestroy() => Unlist();
+
+        /// <summary>Register or relinquish according to whether a Def is wired, and list a remembered rack
+        /// in <see cref="PlayerStorage"/> (listed on enable, taken off on destroy, never on disable). Call
+        /// after a late <see cref="Configure"/> (and explicitly in EditMode, where <c>OnEnable</c> does not
+        /// fire).</summary>
         public void RefreshRegistration()
         {
             if (_def != null) Interactables.Register(this);
             else Interactables.Unregister(this);
+
+            if (IsRemembered && !_listed)
+            {
+                PlayerStorage.Register(this);
+                _listed = true;
+            }
+            else if (!IsRemembered && _listed)
+            {
+                Unlist();
+            }
         }
 
         /// <summary>Wire the rack in one call (tests / editor builder). A negative
         /// <paramref name="reachMeters"/> leaves the serialized reach untouched.</summary>
         public void Configure(StowageDef def, Transform holder, string id, float reachMeters = -1f)
         {
+            Unlist();   // the id is the list key; a new one is listed again by RefreshRegistration
             _def = def;
             _holder = holder;
             _id = id;
             _resolvedId = null;
+            _boundTo = null;
             if (reachMeters >= 0f) _reachMeters = reachMeters;
         }
 
         // ---- helpers --------------------------------------------------------------------------------------
+
+        private void Unlist()
+        {
+            if (!_listed) return;
+            PlayerStorage.Unregister(this);
+            _listed = false;
+        }
 
         private void Prune()
         {

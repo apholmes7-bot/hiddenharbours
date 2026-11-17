@@ -400,6 +400,29 @@ arrival opening keeps its authored door). A foot crossing never moves the boat: 
 (on `GameServices.Whereabouts`) report where the player and the boat are, for save and sleep. Layout
 table and rules: [`world-frame.md`](world-frame.md).
 
+### The player's storage containers (storage with memory, owner 2026-11-17, save v25)
+
+Core `PlayerStorage` is the one list of the containers the player keeps things in (the boat's hold, the
+freezer at Ginny's, a rod rack or gear locker at home); a reader in another lane (the gift rows) walks it
+without naming a class. Contracts, all additive:
+
+- `IStorageContainer` (`StorageId`, `StoragePriority`): a stable `storage.snake_case` id (`StorageIds`;
+  the boat's hold is the fixed `storage.boat_hold`). The id is the container's SAVE KEY, so it is unique:
+  registering a second live container under one id logs a warning, and `HomeStoragePlanTests` refuses a
+  repeated id in the plan or in any placed scene or prefab.
+- `IHold` stays an optional facet with `Register(IHold)` kept: `PlayerStorage.Get(i)` answers only catch
+  holds (a rack reads null there), `GetContainer(i)` only named containers, `Find(id)` one by id. A type
+  that is both registers through the generic `Register<T>` (one entry).
+- **Order is deterministic**: priority (boat hold 10, home freezer 20, fixtures 50, an unnamed hold 100),
+  then ordinal id; only exact ties keep listing order. That order is the Give rows' order and the container
+  a gift comes from.
+- `IHoldRemove.TryRemoveAt(index)` (on `ShipHold`, `GinnyFreezer`, `ClamBucket`): the gift take removes the
+  one item and touches nothing else; a hold without it is still emptied and refilled.
+- **The save is the source of truth.** The contents live in `SaveData.StoredContainers` (and food in v23
+  `KitchenStores`) under the container's id; the scene object is a view that binds to its record by id on
+  enable (a changed save), on start and on `GameLoaded`, not only on the load edge. `GameServices.Reset`
+  still clears the list; whatever outlives a Reset registers again.
+
 ## 5. Boat & entity architecture (composition)
 
 **Character clothing interchange (CW-01, 2026-09-13).** Core now defines the version-1

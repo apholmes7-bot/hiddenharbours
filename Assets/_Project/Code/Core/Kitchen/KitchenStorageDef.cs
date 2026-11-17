@@ -71,6 +71,13 @@ namespace HiddenHarbours.Core
                  "changes it. An insulated cooler is a lidded tote: 12 h, twice an open tote's 6 h.")]
         [Min(0.1f)] public float IceHoursPerUnit = 12f;
 
+        [Header("Who may use it")]
+        [Tooltip("The home whose deed opens this store (home.ginny_lot_camper for the camper's freezer, fridge " +
+                 "and pantry). Empty = open to the player with no deed: every galley store aboard, and every " +
+                 "store he lodges beside. Read through StorageAccess; a closed store takes nothing in and gives " +
+                 "nothing out.")]
+        public string DeedHomeId = "";
+
         /// <summary>True for a store that can ever be cold.</summary>
         public bool CanBeCold => Kind == KitchenStorageKind.Cooler || Kind == KitchenStorageKind.Fridge;
     }

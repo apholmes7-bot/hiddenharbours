@@ -65,6 +65,11 @@ namespace HiddenHarbours.Tests.Economy
             ["fuelstore.*"] = "cans stand at the pump as station stock; an empty can needs an offer type; needs shop: a fuel station till",
             ["golf_club.*"] = "lent with the round at the course; needs shop: a pro shop at the course",
 
+            // ---- Built into a home, not bought (owner 2026-11-17: storage with memory) ---------------
+            ["stowage.ginny_*"] = "built into his room at Ginny's: comes with lodging, never sold",
+            ["stowage.camper_*"] = "built into the camper: comes with the camper's deed, never sold on its own",
+            ["stowage.shed_*"] = "built into the small shed on the camper lot: comes with the camper's deed, never sold on its own",
+
             // ---- Regional lobster builds with no yard in their region yet ----------------------------
             ["boat.lobster_inshore_open_fundy"] = "needs shop: a Bay of Fundy boatyard",
             ["boat.lobster_inshore_hardtop_fundy"] = "needs shop: a Bay of Fundy boatyard",

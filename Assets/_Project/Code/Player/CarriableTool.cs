@@ -41,7 +41,9 @@ namespace HiddenHarbours.Player
     ///
     /// <para><b>No persistence.</b> A tool set down is SESSION-LOCAL, the same honest half-measure the
     /// fuel can ships with — world-placed persistence is net-new save schema and its own ADR
-    /// (<c>diegetic-ui-and-inventory.md</c> §4.3). A tool put down therefore lives until the scene does.</para>
+    /// (<c>diegetic-ui-and-inventory.md</c> §4.3). A tool put down therefore lives until the scene does.
+    /// The one exception is a rack with memory (save v25, <see cref="StowageRack"/>): a tool with an
+    /// authored id put away in one is kept there across saves, as the same object.</para>
     /// </summary>
     [DisallowMultipleComponent]
     [AddComponentMenu("Hidden Harbours/Carriable Tool")]
@@ -253,6 +255,14 @@ namespace HiddenHarbours.Player
         private void OnEnable() => RefreshRegistration();
 
         private void OnDisable() => Interactables.Unregister(this);
+
+        // A remembered tool whose scene loads after its rack bound walks back into that rack (save v25):
+        // on Start, not OnEnable, so it is never switched off in the middle of its own activation.
+        private void Start() => StowageRack.ReturnIfStored(this);
+
+        /// <summary>True when the id is authored (the builder's stable <c>tool.st_peters.rod</c>), not the
+        /// per-instance fallback: only such a tool can be remembered in a rack on the save.</summary>
+        public bool HasAuthoredId => !string.IsNullOrEmpty(_id);
 
         /// <summary>
         /// Register or relinquish according to what the Def now says. <b>Call this if the Def arrives
