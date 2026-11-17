@@ -872,18 +872,24 @@ not saved: relationships slice 2), and publishes
   declined-today answers nobody has overridden. A few tastes are written to rub against each other:
   Rene loves mackerel and Dougie, who shares his gable and tins pelagics all day, does not; the oyster
   man does not want oysters and the shopkeeper loves them; Sam and Rose like any catch at all.
-- **The daily limit is unchanged and still not saved.** It is per person, per game day (the clock's day
-  index), from `GiftConfig.GiftsPerNpcPerDay`. The save has no field it could ride in honestly (the only
-  open bag is the onboarding flags, which would grow by a key per person per day), so it stays runtime
-  only. **The save step it needs:** one `List<NpcGiftDayDto>` on `SaveData` (`NpcId`, `DayIndex`,
-  `Count`; only today's entries are written, so it never grows past the cast), captured from and restored
-  into `GiftLedger.Shared` through a small Core seam the save service calls, under a schema bump with an
-  empty-list default for older saves.
+- **The daily limit** is per person, per game day (the clock's day index), from
+  `GiftConfig.GiftsPerNpcPerDay`. **Saved since v24** (next bullet).
 - **Still owed:** Talk and Give as two rows in the interaction chooser (today a giftable catch in hand
   makes the press a Give; the chooser's NPC rows wait on the owner's open question of whether talk joins
   the list, and on the NPC becoming a chooser candidate without double-acting on one press); food and
-  other hand items as gifts once food is a hand item; a gift limit saved with the game (above); the
-  relationship graph applied and saved (relationships slice 2).
+  other hand items as gifts once food is a hand item; the relationship graph applied and saved
+  (relationships slice 2).
+
+### 5.6 As built: gift days saved (v24 rows wired)
+
+- `GiftLedger` binds to the live save object (`GameServices.Save.Current`), the catch record's pattern:
+  binding loads `SaveData.NpcGiftDays` (the latest day's rows; a duplicate keeps the larger count, a row
+  with no person or no count is skipped), and every accepted gift writes its person's row back. Only the
+  current day's rows are kept: the first look on a new day drops the old ones, so the list never grows
+  past the cast. A new game or another loaded save is a new object, so the ledger starts from its rows.
+- Reloading on the same game day now remembers who has had their gift. A v23 save loads with no gift
+  history. Nothing else is saved for gifts: the relationship event a gift records goes to the
+  relationship service, whose graph is not saved yet (relationships slice 2).
 
 ---
 
