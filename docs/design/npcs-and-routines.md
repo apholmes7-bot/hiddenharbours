@@ -840,10 +840,16 @@ knows you.
   act only peeks the hand's loose catch (`ICatchHands.TryPeekHand`). Food is not a hand item on main
   yet, so it has no flag; when it is, it answers through the same seam.
 - **How it is offered.** Facing a villager you have MET (her completion flag is set) with a giftable
-  catch in hand, the popup says **Give — Aunt Ginny** instead of Talk, and E gives. Her opening
-  conversation is never skipped by a fish in your hand. Put the catch away to talk. When the
-  interaction chooser lands, this one branch in `WorldInteractor.BeginInteract` becomes two rows
-  (Talk, Give); `Give()` is already the whole act.
+  catch in hand, the press opens the interaction chooser with two rows: **Talk** first and selected,
+  and **Give &lt;item&gt;** beneath it ("Give Atlantic Cod"). Confirming the default talks and the catch
+  stays in his hand; only picking the Give row gives. With nothing giftable in hand there is no list
+  and the press talks at once. A bare press never gives. The popup always names Talk. Her opening
+  conversation is never skipped by a fish in your hand. Talk as a row in the list is built this way
+  pending the owner's confirmation. The faced villager is handed to the chooser as one thing
+  (`ConversationChoice`) through `InteractChooser.OpenUnregistered`, whose confirm re-checks reach,
+  facing and availability but not registration; the Give row re-reads the hand at the confirm.
+- **The chooser switch.** With `GameConfig.InteractChooserEnabled` off, gifting is unreachable by
+  design: there is no list to pick Give from, and a bare press never gives, so the press only talks.
 - **Tastes are data** on the villager's `NpcDef.Gifts`: loved / liked / disliked by item id and by
   item tag (`catch`, and the fish category in snake case: `shellfish`, `inshore_groundfish`,
   `pelagic` ...). An id beats a tag; on a tie between tags the warmer wins. Nothing authored = she takes
@@ -879,10 +885,8 @@ not saved: relationships slice 2), and publishes
   `Count`; only today's entries are written, so it never grows past the cast), captured from and restored
   into `GiftLedger.Shared` through a small Core seam the save service calls, under a schema bump with an
   empty-list default for older saves.
-- **Still owed:** Talk and Give as two rows in the interaction chooser (today a giftable catch in hand
-  makes the press a Give; the chooser's NPC rows wait on the owner's open question of whether talk joins
-  the list, and on the NPC becoming a chooser candidate without double-acting on one press); food and
-  other hand items as gifts once food is a hand item; a gift limit saved with the game (above); the
+- **Still owed:** the owner's confirmation that Talk belongs in the list beside Give (built that way,
+  see 5.4); food and other hand items as gifts once food is a hand item; a gift limit saved with the game (above); the
   relationship graph applied and saved (relationships slice 2).
 
 ---

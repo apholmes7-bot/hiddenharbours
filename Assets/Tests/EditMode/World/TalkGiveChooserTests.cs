@@ -255,10 +255,10 @@ namespace HiddenHarbours.Tests.World.EditMode
             Assert.AreEqual(0, hands.Takes, "no list means no give, never a give on the bare press");
         }
 
-        // ---- the chooser's owned rows --------------------------------------------------------------
+        // ---- the chooser's unregistered rows --------------------------------------------------------------
 
         [Test]
-        public void An_owned_list_confirms_on_a_thing_that_is_not_registered()
+        public void An_unregistered_list_confirms_on_a_thing_that_is_not_registered()
         {
             int gives = 0;
             var choice = new ConversationChoice(_ => { }, _ => gives++);
@@ -268,7 +268,7 @@ namespace HiddenHarbours.Tests.World.EditMode
             rows.BuildActionsOf(choice, GameConfig.DefaultInteractChooserMaxRows);
             var actor = new InteractActor(Vector2.zero, Vector2.zero, InteractContext.OnFoot);
 
-            Assert.IsTrue(InteractChooser.OpenOwned(rows, actor, WorldInteractor.DefaultFacingArcDegrees));
+            Assert.IsTrue(InteractChooser.OpenUnregistered(rows, actor, WorldInteractor.DefaultFacingArcDegrees));
             _frame++;
             Assert.IsTrue(InteractChooser.Pick(ConversationChoice.GiveAction));
             Assert.AreEqual(1, gives);
@@ -292,7 +292,7 @@ namespace HiddenHarbours.Tests.World.EditMode
         }
 
         [Test]
-        public void An_owned_row_whose_villager_walked_out_of_reach_does_nothing()
+        public void An_unregistered_row_whose_villager_walked_out_of_reach_does_nothing()
         {
             int gives = 0;
             var choice = new ConversationChoice(_ => { }, _ => gives++);
@@ -301,7 +301,7 @@ namespace HiddenHarbours.Tests.World.EditMode
             var rows = new InteractChoiceList();
             rows.BuildActionsOf(choice, GameConfig.DefaultInteractChooserMaxRows);
             var actor = new InteractActor(Vector2.zero, Vector2.zero, InteractContext.OnFoot);
-            InteractChooser.OpenOwned(rows, actor, WorldInteractor.DefaultFacingArcDegrees);
+            InteractChooser.OpenUnregistered(rows, actor, WorldInteractor.DefaultFacingArcDegrees);
             _frame++;
 
             it.transform.position = new Vector3(10f, 0f, 0f);

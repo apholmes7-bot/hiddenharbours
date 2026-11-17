@@ -12,7 +12,7 @@ namespace HiddenHarbours.World
     /// <para><b>Why a thing of its own.</b> Villagers are found by <see cref="WorldInteractor"/> (its own
     /// reach and facing filter), not registered with <see cref="Interactables"/>, so the chooser is handed
     /// this one object (<see cref="InteractChoiceList.BuildActionsOf"/>,
-    /// <see cref="InteractChooser.OpenOwned"/>). The chooser's confirm re-checks it live through the
+    /// <see cref="InteractChooser.OpenUnregistered"/>). The chooser's confirm re-checks it live through the
     /// <see cref="IInteractable"/> half — she is still there, still in reach, still in front of him — and
     /// then calls back into the interactor, which owns the talk and the gift.</para>
     ///

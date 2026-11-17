@@ -229,7 +229,9 @@ namespace HiddenHarbours.World
             GameConfig config = GameServices.Config;
             int maxRows = config != null ? config.InteractChooserMaxRows : GameConfig.DefaultInteractChooserMaxRows;
             _rows.BuildActionsOf(_choice, maxRows);
-            return InteractChooser.OpenOwned(_rows, CurrentActor(), _facingArcDegrees);
+            // A confirm here ends in InteractVerb.Perform, which publishes InteractPerformed(npc id); a bare-press
+            // Talk (Begin) does not, so a listener must not count talks from that event.
+            return InteractChooser.OpenUnregistered(_rows, CurrentActor(), _facingArcDegrees);
         }
 
         private static bool ChooserEnabled()

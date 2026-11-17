@@ -43,7 +43,7 @@ namespace HiddenHarbours.Core
         private static bool _heldGate;
         private static bool _heldMove;
         private static bool _heldCancel;
-        private static bool _owned;
+        private static bool _unregistered;
 
         /// <summary>True while the list is up.</summary>
         public static bool IsOpen { get; private set; }
@@ -84,7 +84,7 @@ namespace HiddenHarbours.Core
         /// already open, or when a modal already holds the key.
         /// </summary>
         public static bool Open(InteractChoiceList built, in InteractActor actor, float facingArcDegrees)
-            => OpenRowsFrom(built, actor, facingArcDegrees, owned: false);
+            => OpenRowsFrom(built, actor, facingArcDegrees, unregistered: false);
 
         /// <summary>
         /// Put up rows its owner built for one thing that is NOT in <see cref="Interactables"/> (a villager,
@@ -92,14 +92,14 @@ namespace HiddenHarbours.Core
         /// refusals and holds as <see cref="Open"/>; a confirm re-checks the thing's context, availability,
         /// reach and facing live, but not its registration, which it never had.
         /// </summary>
-        public static bool OpenOwned(InteractChoiceList built, in InteractActor actor, float facingArcDegrees)
-            => OpenRowsFrom(built, actor, facingArcDegrees, owned: true);
+        public static bool OpenUnregistered(InteractChoiceList built, in InteractActor actor, float facingArcDegrees)
+            => OpenRowsFrom(built, actor, facingArcDegrees, unregistered: true);
 
         private static bool OpenRowsFrom(InteractChoiceList built, in InteractActor actor, float facingArcDegrees,
-                                         bool owned)
+                                         bool unregistered)
         {
             if (IsOpen || built == null || !built.IsChoice || InteractionGate.IsBlocked) return false;
-            _owned = owned;
+            _unregistered = unregistered;
             OpenRows.CopyFrom(built);
             _actor = actor;
             _arc = facingArcDegrees;
@@ -161,10 +161,10 @@ namespace HiddenHarbours.Core
 
             InteractActor actor = InteractActorProbe.Has ? InteractActorProbe.Current : _actor;
             float arc = _arc;
-            bool owned = _owned;
+            bool unregistered = _unregistered;
             Close();
 
-            if (!StillWorkable(choice, actor, arc, owned)) return true;   // it went away under the cursor
+            if (!StillWorkable(choice, actor, arc, unregistered)) return true;   // it went away under the cursor
             InteractVerb.Perform(choice.Candidate, choice.Action, actor);
             return true;
         }
@@ -185,14 +185,15 @@ namespace HiddenHarbours.Core
             _frameClock = UnityFrame;
         }
 
-        private static bool StillWorkable(in InteractChoice choice, in InteractActor actor, float arc, bool owned)
+        private static bool StillWorkable(in InteractChoice choice, in InteractActor actor, float arc, bool unregistered)
         {
             IInteractable c = choice.Candidate;
-            bool registered = owned;
+            // An unregistered list skips the registry check (its thing was never in it); the rest still runs.
+            bool found = unregistered;
             var live = Interactables.Active;
-            for (int i = 0; i < live.Count && !registered; i++)
-                if (ReferenceEquals(live[i], c)) registered = true;
-            if (!registered) return false;
+            for (int i = 0; i < live.Count && !found; i++)
+                if (ReferenceEquals(live[i], c)) found = true;
+            if (!found) return false;
             if (c is IExclusiveInteractable ex && ex.IsOccupied) return false;
             return InteractResolver.Qualifies(c, actor, actor.Facing, InteractArc.CosHalfArc(arc), out _);
         }
@@ -207,7 +208,7 @@ namespace HiddenHarbours.Core
             _heldGate = false;
             _heldMove = false;
             _heldCancel = false;
-            _owned = false;
+            _unregistered = false;
             OpenRows.Clear();
             Announce();
         }
