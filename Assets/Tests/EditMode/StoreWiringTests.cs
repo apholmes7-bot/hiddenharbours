@@ -132,13 +132,22 @@ namespace HiddenHarbours.Tests.EditMode
             foreach (long f in foods)
                 Assert.AreEqual(t.Field(ice, "_walletProvider"), t.Field(f, "_walletProvider"), $"the food shop &{f} does not pay into the ice shop's wallet");
 
-            // The three food shops taken back out by the test's hand: the step adds them back, byte for byte.
-            string bare = WithoutComponents(committed, counter, foods);
+            // The step listed the Loran's InstrumentShop after the foods, so taking the foods out alone would leave
+            // it ahead of them; the copies it added are taken back together and come back in the step's order.
+            string instrumentClass = ClassIdOf(typeof(InstrumentShop));
+            string loranGuid = catalog.Single(l => l.Id == "instrument.loran").Guid;
+            long loran = t.Order.Single(id => t.ClassOf(id) == 114 && t.Field(id, "m_EditorClassIdentifier") == instrumentClass &&
+                                              t.Ref(id, "m_GameObject") == counter && t.Text(id).Contains(loranGuid));
+            List<long> copies = foods.Concat(new[] { loran }).ToList();
+
+            // The three food shops and the Loran shop taken back out by the test's hand: the step adds them back, byte for byte.
+            string bare = WithoutComponents(committed, counter, copies);
             List<LayerPatch> patches = StoreWiringPatch.Plan(bare, StoreWiringPatch.StPeters, Assets);
             List<Op> ops = patches.SelectMany(p => p.Ops).ToList();
             Assert.IsEmpty(ops.Where(o => o.Kind == OpKind.Delete).Select(o => o.Name).ToList(), "the store patch deletes");
-            CollectionAssert.AreEquivalent(foods, ops.Where(o => o.Kind == OpKind.Add).Select(o => o.FileId).ToList(),
-                                           "the store patch does not add the three food shops under the ids it gave them");
+            List<long> adds = ops.Where(o => o.Kind == OpKind.Add).Select(o => o.FileId).ToList();
+            CollectionAssert.AreEquivalent(copies, adds, "the store patch does not add the food shops and the Loran shop under the ids it gave them");
+            Assert.AreEqual(loran, adds.Last(), "the step writes the SupplyShops first and the InstrumentShop after them");
             CollectionAssert.AreEqual(new[] { counter }, ops.Where(o => o.Kind == OpKind.Edit).Select(o => o.FileId).ToList(),
                                       "the store patch edits something other than the counter's component list");
             string once = StoreWiringPatch.ApplyAll(bare, patches);
