@@ -18,3 +18,24 @@ MonoBehaviour:
   Dialogue: {fileID: 11400000, guid: 76960ab7fc034a42a95177ae8ac4e8d1, type: 2}
   CompletionFlag: met_paul
   Build: {fileID: 11400000, guid: e2f8f5fbb3760dc4ba2f13d192d64a46, type: 2}
+  Gifts:
+    LovedItemIds:
+    - fish.atlantic_surf_clam
+    LikedItemIds: []
+    DislikedItemIds:
+    - fish.atlantic_tomcod
+    LovedTags: []
+    LikedTags:
+    - shellfish
+    DislikedTags: []
+    Lines:
+      Loved:
+      - 'Surf clams! That''s chowder for the four of us and some over. You''ve fed my whole house.'
+      Liked:
+      - 'That''ll go a long way at our table. Thanks.'
+      Neutral:
+      - 'Thanks. I''ll tell Monique it was you.'
+      Disliked:
+      - 'Tomcod. Bony little things. I''ll not waste it, but I''ll be picking bones all night.'
+      NotGiftable: []
+      AlreadyGiftedToday: []

@@ -18,3 +18,24 @@ MonoBehaviour:
   Dialogue: {fileID: 11400000, guid: 6586cc17886f49028365e0165ae1e248, type: 2}
   CompletionFlag: met_rose
   Build: {fileID: 11400000, guid: 510dcc541b277c1488956f57098b2547, type: 2}
+  Gifts:
+    LovedItemIds:
+    - fish.lobster
+    LikedItemIds: []
+    DislikedItemIds:
+    - fish.green_crab
+    LovedTags: []
+    LikedTags:
+    - catch
+    DislikedTags: []
+    Lines:
+      Loved:
+      - 'A lobster! Oh, you''ll come by for your share when it''s cooked. That''s how a dooryard works.'
+      Liked:
+      - 'Well, aren''t you good. Thank you, dear.'
+      Neutral:
+      - 'Thank you. I''ll find a pot for it.'
+      Disliked:
+      - 'A green crab. Those are wrecking the shore. I''ll put it where it can''t do any more harm.'
+      NotGiftable: []
+      AlreadyGiftedToday: []

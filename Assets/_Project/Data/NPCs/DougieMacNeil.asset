@@ -18,3 +18,24 @@ MonoBehaviour:
   Dialogue: {fileID: 11400000, guid: 7b5112291b0f4c1b85247fc41b194103, type: 2}
   CompletionFlag: met_dougie
   Build: {fileID: 11400000, guid: 0b7b08407b6e3e248a7565666848676e, type: 2}
+  Gifts:
+    LovedItemIds:
+    - fish.winter_flounder
+    LikedItemIds: []
+    DislikedItemIds: []
+    LovedTags: []
+    LikedTags:
+    - inshore_groundfish
+    DislikedTags:
+    - pelagic
+    Lines:
+      Loved:
+      - 'A flounder! Nobody tins a flounder. That one''s going in a pan, whole, the way it should.'
+      Liked:
+      - 'Fresh off the bottom. That''s a treat for a cannery man.'
+      Neutral:
+      - 'Thanks. Rene will want half, but he can ask.'
+      Disliked:
+      - 'I put that kind in tins all day long, and now here it is at home. Thanks, though.'
+      NotGiftable: []
+      AlreadyGiftedToday: []

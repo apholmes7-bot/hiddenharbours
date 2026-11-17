@@ -19,3 +19,24 @@ MonoBehaviour:
   CompletionFlag: 
   Voice: {fileID: 0}
   Build: {fileID: 11400000, guid: 8d2a17d85c48ae747b5075e4d81707b4, type: 2}
+  Gifts:
+    LovedItemIds:
+    - fish.lobster
+    LikedItemIds: []
+    DislikedItemIds:
+    - fish.green_crab
+    LovedTags: []
+    LikedTags:
+    - shellfish
+    DislikedTags: []
+    Lines:
+      Loved:
+      - 'A lobster! There''s the surprise in the day. Thank you!'
+      Liked:
+      - 'Oh, that''s lovely. Thank you.'
+      Neutral:
+      - 'Thank you, that''s kind.'
+      Disliked:
+      - 'It has a look about it, doesn''t it. Thank you, I think.'
+      NotGiftable: []
+      AlreadyGiftedToday: []
