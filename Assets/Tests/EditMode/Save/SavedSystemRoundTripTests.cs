@@ -106,6 +106,9 @@ namespace HiddenHarbours.Tests.EditMode
             object value = Activator.CreateInstance(type);
             foreach (var field in Fields(type))
                 field.SetValue(value, Populated(field.FieldType, path + "." + field.Name, variant));
+            // A Loran waypoint is read on two DIFFERENT secondaries; the generic fill gives both the same
+            // index, a row the load repair rightly drops as unusable. Keep every other value generic.
+            if (value is LoranWaypointDto loran) loran.SecondaryB = loran.SecondaryA + 1;
             return value;
         }
 
