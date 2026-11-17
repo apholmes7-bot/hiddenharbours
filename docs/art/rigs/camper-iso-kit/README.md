@@ -60,10 +60,30 @@ the cell at every facing, with the door open and every deployable fitted.
 | `camperIsoRig.js` → `globalThis.CamperIso` | The rig: loft, stations, fit-out, bake, anchors, and the sidecar generator. Self-contained — no deps, no `isoSolid.js`. |
 | `camperIsoRig.bantam.gameplay.json` | Gameplay sidecar for the 16 ft. |
 | `camperIsoRig.clipper.gameplay.json` | Gameplay sidecar for the 26 ft. |
+| `camperInteriorRig.js` → `globalThis.CamperInterior` | The Clipper's ROOM: liner, ceiling, cutaway, fit-out, walkable levels, interactables. Needs `camperIsoRig.js` loaded first and throws without it. Not in `RigCatalog` yet; the bake is the next slice. |
+| `camperInteriorRig.clipper.interior.json` | The room's sidecar, written by `node tools/rig-recipes/camper-interior.mjs` (`--check` fails on drift, `--plates <dir>` draws the eight cut facings and the plan). |
 
-Both sidecars are stamped `derivedFromRigSha256: b7a48e2f…7549`, hashed from **the exact
+Both shell sidecars are stamped `derivedFromRigSha256: b7a48e2f…7549`, hashed from **the exact
 `camperIsoRig.js` in this folder**. Re-hash it before you trust either file; a mismatch means one of the
-three moved without the others.
+three moved without the others. The room sidecar carries two stamps: its own rig and the shell it measures
+against (both LF-folded sha256).
+
+## The room (`camperInteriorRig.js`)
+
+The room measures against the shell and never beside it: every wall, the ceiling and every fixture clamp
+read `CamperIso.loft`, and the saloon floor **is** `CamperIso.gameplayGeometry().SOLE`. On the lot the
+curb faces the cottage (south) and the hitch points east, so **rig −x is north**, and the galley, the
+pantry and the wet bath stand on −x (the owner's north-wall ruling). The curb wall holds the 40-unit chest
+freezer, a gear locker for about 10, and four rods on overhead brackets; a transverse double fills the
+tail and a bench crosses the nose. The wet bath fits (0.83 × 0.94 m pan with toilet, corner basin and
+shower) but not the 0.35 m foot circle, so it is a second, point-clamped level entered through a sliding
+door. `sidecar().FIT` publishes the aisle, door and fixture numbers; `sidecar().LOT` publishes the facing
+mapping and the ground reserved for the lot's small shed. `render(dir)` is cut by default: ceiling culled,
+near walls and tall fixtures sectioned to a 0.60 m sill.
+
+⚠️ `LAYOUT.clipper` in `camperIsoRig.js` (the dark volumes seen through the open door, and the shell
+sidecar's obstructions) still describes the older plan. The room supersedes it; it is retired or
+regenerated with the bake rather than edited here, because editing the shell moves its stamp.
 
 ## Load order
 
@@ -129,9 +149,9 @@ Same frame convention as the hulls, the dually and the Otter — metres, 32 px =
   parameters on these two.
 - **No tow coupling.** The hitch anchor is published, but nothing in this rig articulates against a
   vehicle: pair it with the dually by hand, and mind that neither rig knows about the other.
-- **No interior.** This is the shell. What you see through the open door is the dark seen-in volume of
-  the fit-out, not a room; `camperInteriorRig.js` owns the room and measures against this rig's
-  published `loft`.
+- **The shell has no interior.** What you see through the open door is the dark seen-in volume of
+  the fit-out, not a room; `camperInteriorRig.js` (Clipper only) owns the room and measures against this
+  rig's published `loft`.
 - **The roof is not walkable** and no sidecar section pretends otherwise, even though vents, AC pod and
   rack are all modelled.
 - **Weather is a single scalar** with a fixed speckle seed, so two identically-weathered campers wear

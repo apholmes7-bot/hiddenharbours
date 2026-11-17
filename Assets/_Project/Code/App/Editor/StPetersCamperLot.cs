@@ -219,13 +219,49 @@ namespace HiddenHarbours.App.Editor
         /// The key a baked camper INTERIOR would be filed under, if one existed.
         ///
         /// <para><b>⚠️ It is a tripwire, not a feature.</b> Nothing has ever been baked under it — the
-        /// interior rig is not in the repo. <see cref="Place"/> asks the interior contract for it anyway,
+        /// interior rig (<c>docs/art/rigs/camper-iso-kit/camperInteriorRig.js</c>) is in the repo but
+        /// not yet in the catalog or baked. <see cref="Place"/> asks the interior contract for it anyway,
         /// so the day someone bakes a camper room the build LOG says so out loud instead of the room
         /// sitting there unnoticed. Standing it is a follow-up PR's job (a camper room is not a house
         /// room: no gable, no porch, and its sole is a tumblehome polygon, so
         /// <c>StPetersInteriors.Stand</c> does not apply unchanged).</para>
         /// </summary>
         public static string InteriorKey => "camper." + Variant;
+
+        // =====================================================================================
+        //  THE SHED THAT COMES WITH THE LOT (reserved ground only; nothing is placed here yet)
+        // =====================================================================================
+
+        /// <summary>
+        /// How far behind the camper's body centre the lot's small shed stands, along its long axis.
+        /// The owner directed (2026-11-17) that the camper comes with a small shed for more rods and
+        /// gear; this reserves its ground. Nine metres is the camper's own reserve (5.21 m on the
+        /// Clipper), the plot's 2.00 m walking gap and the shed's 1.50 m, rounded up: 2.29 m clear.
+        /// <c>CamperInteriorRigTests</c> re-derives every clearance from the contracts.
+        /// </summary>
+        public const float ShedTailMetres = 9f;
+
+        /// <summary>The shed's footprint in metres: x along the camper's long axis (east-west on this
+        /// lot), y across it.</summary>
+        public static readonly Vector2 ShedSize = new Vector2(2.4f, 1.8f);
+
+        /// <summary>Where the shed stands: off the camper's TAIL, so it never meets the drawbar
+        /// whichever way <see cref="NoseDirection"/> resolves. West of the camper today.</summary>
+        public static Vector2 ShedPos => LotPos - NoseDirection * ShedTailMetres;
+
+        /// <summary>The any-facing circle the shed reserves, the same promise the plot's sheds make.</summary>
+        public static float ShedFootprintRadiusMetres => ShedSize.magnitude * 0.5f;
+
+        /// <summary>Which way the shed door faces: the camper's curb side, toward the ground people arrive
+        /// on (south, toward the cottage and the path).</summary>
+        public static Vector2 ShedDoorDirection
+        {
+            get
+            {
+                Vector2 v = Approach - LotPos;
+                return v.sqrMagnitude < 1e-6f ? Vector2.down : v.normalized;
+            }
+        }
 
         // =====================================================================================
         //  PLACEMENT

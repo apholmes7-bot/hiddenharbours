@@ -341,6 +341,11 @@ namespace HiddenHarbours.App.Editor
                 if (reach > worst) worst = reach;
             }
 
+            // the camper lot's own small shed (reserved 2026-11-17)
+            float lotShed = Vector2.Distance(StPetersCamperLot.ShedPos, CottagePos) +
+                            StPetersCamperLot.ShedFootprintRadiusMetres;
+            if (lotShed > worst) worst = lotShed;
+
             float camper = StPetersCamperLot.ClearingReachMetres;
             return camper > worst ? camper : worst;
         }
