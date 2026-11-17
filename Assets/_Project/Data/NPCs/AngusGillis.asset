@@ -18,3 +18,24 @@ MonoBehaviour:
   Dialogue: {fileID: 11400000, guid: 9e34538e677944eaaea1e89f7c86c210, type: 2}
   CompletionFlag: met_angus
   Build: {fileID: 11400000, guid: 2b27ab4c0b694b5f806e0d25514ca44a, type: 2}
+  Gifts:
+    LovedItemIds:
+    - fish.lobster
+    LikedItemIds: []
+    DislikedItemIds:
+    - fish.blue_mussel
+    LovedTags: []
+    LikedTags:
+    - inshore_groundfish
+    DislikedTags: []
+    Lines:
+      Loved:
+      - 'Lobster. I can''t mind the last time one came my way. Theresa won''t believe it.'
+      Liked:
+      - 'A fish off the bottom, and not a mussel in sight. Thank you.'
+      Neutral:
+      - 'That''ll do for supper. Thank you.'
+      Disliked:
+      - 'Mussels. You''ve brought a mussel man mussels. I''ll find them a home, I suppose.'
+      NotGiftable: []
+      AlreadyGiftedToday: []

@@ -18,3 +18,24 @@ MonoBehaviour:
   Dialogue: {fileID: 11400000, guid: 96dc0ad4d23648f0ba64ca16cb8f4a9e, type: 2}
   CompletionFlag: met_hector
   Build: {fileID: 11400000, guid: e2f8f5fbb3760dc4ba2f13d192d64a46, type: 2}
+  Gifts:
+    LovedItemIds:
+    - fish.pollock
+    LikedItemIds: []
+    DislikedItemIds: []
+    LovedTags: []
+    LikedTags:
+    - inshore_groundfish
+    DislikedTags:
+    - shellfish
+    Lines:
+      Loved:
+      - 'Pollock! My father fried pollock every Friday. You''ve got me remembering, now.'
+      Liked:
+      - 'A good fish from a good boat. Thank you.'
+      Neutral:
+      - 'Thanks. I''ll have it tonight, once I''ve scrubbed the oil off.'
+      Disliked:
+      - 'Shellfish. Grit in everything. I''ll take it, but I won''t pretend.'
+      NotGiftable: []
+      AlreadyGiftedToday: []

@@ -19,3 +19,24 @@ MonoBehaviour:
   CompletionFlag: 
   Voice: {fileID: 0}
   Build: {fileID: 11400000, guid: f2e43668835fae04bbd5a5bf85c9a313, type: 2}
+  Gifts:
+    LovedItemIds:
+    - fish.striped_bass
+    LikedItemIds: []
+    DislikedItemIds:
+    - fish.soft_shell_clam
+    LovedTags: []
+    LikedTags:
+    - pelagic
+    DislikedTags: []
+    Lines:
+      Loved:
+      - 'A striper! That''s the shot of the afternoon. Thank you.'
+      Liked:
+      - 'Oh, nicely done. Thank you.'
+      Neutral:
+      - 'Thank you, that''s kind of you.'
+      Disliked:
+      - 'Clams. I never learned to like them. Thank you all the same.'
+      NotGiftable: []
+      AlreadyGiftedToday: []
