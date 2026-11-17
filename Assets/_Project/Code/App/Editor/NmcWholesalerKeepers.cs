@@ -337,14 +337,17 @@ namespace HiddenHarbours.App.Editor
             EditorUtility.SetDirty(dialogue);
         }
 
+        /// <summary>The keeper goes at the HEAD of the interactor's list: the vendor-anchor step appends its
+        /// anchors at the tail and <c>NmcVendorAnchorTests</c> rebuilds them there to the byte, so nothing may
+        /// follow them.</summary>
         static void Join(WorldInteractor interactor, Interactable it)
         {
             var so = new SerializedObject(interactor);
             SerializedProperty list = so.FindProperty("_interactables");
             for (int i = 0; i < list.arraySize; i++)
                 if (list.GetArrayElementAtIndex(i).objectReferenceValue == it) return;
-            list.InsertArrayElementAtIndex(list.arraySize);
-            list.GetArrayElementAtIndex(list.arraySize - 1).objectReferenceValue = it;
+            list.InsertArrayElementAtIndex(0);
+            list.GetArrayElementAtIndex(0).objectReferenceValue = it;
             so.ApplyModifiedPropertiesWithoutUndo();
         }
 

@@ -108,11 +108,9 @@ namespace HiddenHarbours.App.Editor
         });
 
         /// <summary>
-        /// The two wholesalers' counters (ruling 11-16), <b>not yet folded into <see cref="NineMileCreek"/></b>.
-        /// Their roots do not stand in the committed scene until <see cref="NmcWholesalerKeepers.Place"/> runs in
-        /// the editor, and <see cref="NineMileCreek"/>'s plan finds every root it names or refuses
-        /// (<c>StoreWiringTests</c> guard 1). The run that places the counters folds these rows in, in the same
-        /// commit as the scene and the <c>Listed</c> ticks (<c>docs/design/economy-item-sellers.md</c> §5.1).
+        /// The two wholesalers' counters (ruling 11-16), folded into <see cref="NineMileCreek"/>. Their roots
+        /// were placed by <see cref="NmcWholesalerKeepers.Place"/>, which wires the vendors itself, so the plan
+        /// for these rows is empty once the scene holds them (<c>docs/design/economy-item-sellers.md</c> §5.1).
         ///
         /// <para>Only the offers that name a wholesaler and nobody else are here. The bait, the clam shovel and
         /// the clam bucket also name <c>seller.leblancs</c>, so listing them needs a St Peters vendor as well
@@ -129,7 +127,8 @@ namespace HiddenHarbours.App.Editor
             new Seller(NmcWholesalerKeepers.FishingGearCounterRoot, typeof(GearShop), "gear.rod_rack", NmcWholesalerKeepers.FishingGearSellerId),
         };
 
-        /// <summary>Nine Mile Creek: the yard's shed and dory yard, the harbourmaster, the chandlery, and Hector's barrel.</summary>
+        /// <summary>Nine Mile Creek: the yard's shed and dory yard, the harbourmaster, the chandlery, Hector's barrel,
+        /// and the two wholesalers.</summary>
         public static readonly Region NineMileCreek = new Region("NineMileCreek", NineMileCreekScenePath, new[]
         {
             new Seller(NineMileCreekWharfYard.CatalogueName, typeof(Shipwright), "boat.punt", NineMileCreekBuilder.SellerYard),
@@ -139,7 +138,7 @@ namespace HiddenHarbours.App.Editor
             new Seller("GeneralStore", typeof(GearShop), "gear.rod", NineMileCreekBuilder.SellerChandlery),
             new Seller(NineMileCreekWharfYard.DoryTradeName, typeof(Shipwright), "boat.dory", NineMileCreekBuilder.SellerYard),
             new Seller(NineMileCreekWharfYard.OutboardTradeName, typeof(Shipwright), "boat.dory_outboard", NineMileCreekBuilder.SellerHectorsBarrel),
-        });
+        }.Concat(NineMileCreekWholesalers).ToArray());
 
         public static readonly IReadOnlyList<Region> Regions = new[] { StPeters, NineMileCreek };
 

@@ -26,6 +26,13 @@ MonoBehaviour:
   ConditionalFlag: 
   ConditionalLines: []
   Options:
+  - Id: option.browse_wares
+    Label: What have you got for the boat?
+    ReplyLines: []
+    CatalogSellerId: seller.nmc_boat_gear_wholesaler
+    CatalogSection: gear
+    SellAtSellerId: 
+    NothingToSellLines: []
   - Id: option.ask_about_loran
     Label: 'How does a Loran work?'
     ReplyLines:

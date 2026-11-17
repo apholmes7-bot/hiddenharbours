@@ -14,10 +14,10 @@ namespace HiddenHarbours.Tests.Economy
     /// electronic at a new boat/gear wholesaler, fishing stock at a separate fishing gear wholesaler; prices
     /// and routing approved from <c>docs/economy/nmc-wholesalers-stock.md</c>). Reads the shipped catalog.
     ///
-    /// <para><b>Offer on file, not yet on a shelf.</b> Both wholesalers have keepers (data), but neither has a
-    /// counter vendor in the scene yet, so every offer naming one is authored unlisted (<c>StoreWiringTests</c> guard 4 holds a
-    /// listed ware to a committed vendor). Listing them is one tick per asset plus the counter's vendors;
-    /// <c>docs/design/economy-item-sellers.md</c> §5 says what that editor run must do.</para>
+    /// <para><b>On the shelf, or on file.</b> Both counters and keepers stand in the creek, and the four offers
+    /// only a wholesaler sells (the three electronics and the rod rack) are listed at their vendors
+    /// (<c>StoreWiringTests</c> guard 4 holds a listed ware to a committed vendor). The rest also name another
+    /// seller and stay unlisted until that is settled; <c>docs/design/economy-item-sellers.md</c> §5.1 says why.</para>
     ///
     /// <para>The ids are spelled here rather than read from the Boats module's constants: this assembly
     /// references Core and Economy only (rule 4), and an id is a stable contract either way.</para>

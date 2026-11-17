@@ -9,9 +9,9 @@
 > the Loran and every boat electronic at a new boat/gear wholesaler and fishing stock at a separate fishing
 > gear wholesaler; the prices and routing are the ones approved from
 > [`docs/economy/nmc-wholesalers-stock.md`](../economy/nmc-wholesalers-stock.md) (§2, §4.2, §4.3). The
-> wholesalers' stock is pinned by `Assets/Tests/EditMode/Economy/WholesalerStockTests.cs`. Neither
-> wholesaler has a keeper or a counter vendor in a scene yet, so their offers are on file and unlisted
-> (§5 says what the editor run must do).
+> wholesalers' stock is pinned by `Assets/Tests/EditMode/Economy/WholesalerStockTests.cs`. Both counters
+> and keepers stand in `NineMileCreek.unity`; the Loran, fish finder, chartplotter and rod rack are listed
+> there, and the rest of their stock stays on file, unlisted (§5.1 says why).
 
 ## 1. What counts
 
@@ -172,7 +172,7 @@ the reason recorded in the guard.
   broker, Fundy and Newfoundland yards (only if those regions arrive), a golf pro shop, a watch seller.
 - **New offer types (code):** longline tubs, empty fuel cans, and per-lure tackle once tackle is owned.
 
-### 5.1 Putting the two wholesalers on a shelf (owed; editor and content work)
+### 5.1 Putting the two wholesalers on a shelf (steps 1 to 3 done in PR 1301; step 4 owed)
 
 The offers are on file (data), so the rest is the counter. `StoreWiringPatch` can only give an existing
 vendor its seller id, or add a `SupplyShop`/`InstrumentShop` as a copy of one the same root already holds;
@@ -182,9 +182,9 @@ it cannot create a counter from nothing, and neither wholesaler shell has a vend
    boat/gear counter (`npc.lionel_cormier`, `dialogue.lionel_first`, `routine.lionel_cormier`: the counter
    from about 08:00, home from about 18:00) and Bernadette Pitre the fishing gear counter
    (`npc.bernadette_pitre`, `dialogue.bernadette_first`, `routine.bernadette_pitre`: 06:00 to 17:00). Both
-   sellers name them as `KeeperNpcId`. Their dialogues carry a question row but no browse row yet: a browse
-   row whose seller has no committed vendor fails `StoreWiringTests` guard 5 and `StoreClerkContentTests`.
-2. **The counters, the keepers in the scene, the ticks and the browse rows (one editor run).**
+   sellers name them as `KeeperNpcId`. Each dialogue opens with the browse row (added by step 2), then a
+   question row.
+2. **The counters, the keepers in the scene, the ticks and the browse rows (one editor run). Done (PR 1301).**
    `NmcWholesalerKeepers.Place` (*World > Nine Mile Creek Buildings > Place the Wholesaler Counters and
    Keepers*, or `-executeMethod HiddenHarbours.App.Editor.NmcWholesalerKeepers.PlaceAndSaveBatch`) does all
    of it in `NineMileCreek.unity`, inside the greybox shells (steps 22 and 23):
@@ -196,8 +196,11 @@ it cannot create a counter from nothing, and neither wholesaler shell has a vend
      their day; each keeper joins the creek's `WorldInteractor`;
    - `Listed` ticked on each row's offer, and the keeper's browse row added first.
 
-   Then fold `NineMileCreekWholesalers` into `StoreWiringPatch.NineMileCreek` in the same commit and run
-   *World > Store Wiring > Apply the Store Patches*: the plan must be empty (`StoreWiringTests` 1 and 3).
+   `NineMileCreekWholesalers` is folded into `StoreWiringPatch.NineMileCreek`, and *World > Store Wiring >
+   Apply the Store Patches* plans nothing (`StoreWiringTests` 1 and 3). An editor save re-serialises the
+   whole creek scene (stale and new fields on every component), so only the step's additions were kept
+   in the committed text: its new documents, the two keepers in the interactor's list, and the four new
+   scene roots. A re-run should be spliced the same way.
 3. **What the run lists.** `Listed` is one flag per offer, and guard 4 needs a committed vendor for every
    seller a listed offer names. The Loran, fish finder, chartplotter and rod rack name only a wholesaler, so
    they are the rows. The six baits, the clam shovel and the clam bucket also name `leblancs`, so listing

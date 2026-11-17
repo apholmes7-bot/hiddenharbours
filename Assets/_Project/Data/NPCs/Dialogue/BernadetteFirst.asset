@@ -24,6 +24,13 @@ MonoBehaviour:
   ConditionalFlag: 
   ConditionalLines: []
   Options:
+  - Id: option.browse_wares
+    Label: What have you got in?
+    ReplyLines: []
+    CatalogSellerId: seller.nmc_fishing_gear_wholesaler
+    CatalogSection: gear
+    SellAtSellerId: 
+    NothingToSellLines: []
   - Id: option.ask_about_bait
     Label: 'What bait should I be using?'
     ReplyLines:
