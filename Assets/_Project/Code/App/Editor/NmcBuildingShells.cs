@@ -312,10 +312,10 @@ namespace HiddenHarbours.App.Editor
         /// chandlery's lot, and stands in for that block's ground floor until the key scene is placed (the
         /// placement then takes this building rather than doubling it).
         ///
-        /// <para>Census (11-17, the committed scene and the road network): the frontage walk runs 0.3 m off the
-        /// south wall, so the door opens onto it; the east court's turning end is 1.1 m off the north-west
-        /// corner; the east lane is 6 m north; Water Street's carriageway 4 m south. Nothing placed stands on the
-        /// lot. 12 m along the street by 9 m deep, one storey of shop: the shop floor with the trade counter, a
+        /// <para>Census (11-17, the committed scene and the road network): the south wall stands 0.3 m behind the
+        /// frontage walk's edge, so the door opens onto the walk; Water Street's carriageway is 4 m south, the
+        /// east court's turning end and the east lane further off to the north. Nothing placed stands on the lot.
+        /// 12 m along the street by 9 m deep, one storey of shop: the shop floor with the trade counter, a
         /// glass case for the electronics and shelf markers, and behind it the stock room, with the staff
         /// microwave and the staff washroom (toilet and sink) that the kitchens and bathrooms plan gives every
         /// shop (<c>docs/world/kitchens-bathrooms-placement-plan.md</c>, "Shops get a staff Toilet and Sink in
@@ -328,7 +328,7 @@ namespace HiddenHarbours.App.Editor
             Name = "NmcBoatGearWholesaler", Step = "22-boat-gear-wholesaler",
             Why = "the marine electronics and boat gear wholesaler on Water Street (ruling 11-16), the east block's lot",
             SellerId = "seller.nmc_boat_gear_wholesaler",
-            Centre = new Vector2(-148.4f, 237.5f),
+            Centre = new Vector2(-148.4f, 235.9f),
             WidthMetres = 12f, LengthMetres = 9f, EavesMetres = 7f,
             DoorOnPlusY = false, DoorAcrossMetres = 0f,
             ShellTint = StorefrontBlue, FloorTint = PublicFloor,
@@ -380,7 +380,7 @@ namespace HiddenHarbours.App.Editor
             SellerId = "seller.nmc_fishing_gear_wholesaler",
             Centre = new Vector2(-301f, 125f),
             WidthMetres = 18f, LengthMetres = 14f, EavesMetres = 6f,
-            DoorOnPlusY = true, DoorAcrossMetres = 5f,
+            DoorOnPlusY = true, DoorAcrossMetres = 2f,
             ShellTint = WarehouseTan, FloorTint = Concrete,
             Zones = new[]
             {
@@ -400,7 +400,7 @@ namespace HiddenHarbours.App.Editor
                 new Block("StaffWallNorth", -5.65f, -5.35f, 2.8f, 7f, 3f, Partition, true),
                 new Block("WashroomWallWest", -9f, -7.9f, 3.35f, 3.65f, 3f, Partition, true),
                 new Block("WashroomWallEast", -6.5f, -5.65f, 3.35f, 3.65f, 3f, Partition, true),
-                // the trade floor: the counter (the seller stands south of it), shelf markers
+                // the trade floor: the counter east of the way in (the seller stands south of it), shelf markers
                 new Block("TradeCounter", 3.0f, 7.5f, 2.4f, 3.0f, 1.05f, Wood, true),
                 new Block("WallShelfEast", 8.2f, 8.7f, 1.0f, 6.4f, 2.2f, Wood, true),
                 new Block("TackleGondola", 0.2f, 1.0f, 3.5f, 6.0f, 1.6f, Wood, true),
