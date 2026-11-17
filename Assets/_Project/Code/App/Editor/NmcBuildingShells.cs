@@ -235,8 +235,66 @@ namespace HiddenHarbours.App.Editor
             },
         };
 
+        // ---- the community hall and its gym -------------------------------------------------------------
+
+        /// <summary>
+        /// <b>The community hall, with the gym in its back room</b> (owner's ruling of 2026-11-15; <c>docs/world/nmc-gym.md</c>:
+        /// "the back room of the community hall ... a seamless door"). The hall stands on the parish hall's town lot
+        /// (<c>NineMileCreekMainland.ParishHallPos</c>), inside its post-and-rail fence. The lot's one gate is in its
+        /// WEST rail (<c>NineMileCreekYards</c>, (-161.5, 62.8)); its north rail has none, so a door on the north
+        /// wall could only be reached round the side. The hall is therefore turned a quarter (facing 2 of 8) so its
+        /// door, on the model's -y wall, is the west wall, 2.5 m in from the gate and square on to it.
+        ///
+        /// <para>Model frame at this facing: model +y runs east (away from the door), model +x runs south. 18 m
+        /// across (north to south) by 12 m deep (west to east), one storey: the front hall by the door (model y
+        /// [-6, 0]), and behind it the gym (the doc's 8 x 6 floor, the north-east corner), a kitchen and a washroom
+        /// (closed for now: the owner's 11-16 ask that halls carry them). The gym's equipment follows the doc (rack
+        /// and bench on the back wall, treadmill under the north windows, pull-up bar and grip trainer by its door,
+        /// skipping in the middle, a bench by the door), each marker sized from its Def. No workouts: a room for now.</para>
+        /// </summary>
+        public static readonly Shell CommunityHall = new Shell
+        {
+            Name = "NmcCommunityHall", Step = "21-community-hall-gym",
+            Why = "the community hall on the parish lot, door to the lot's gate, the gym in its back room (ruling 11-15, nmc-gym.md)",
+            // Measured against the lot's rail (warm-a census, 11-16): the yard runs x -161.5 to -144.5 at the gate's
+            // height and y 53.5 to 70.3; the west wall at x -159 leaves 2.5 m to the gate, the east wall 2.6 m to the
+            // rail, the north wall 2.1 m and the south wall 3.2 m. The door's -0.5 m offset puts it at the gate's y.
+            Centre = new Vector2(-153f, 62.5f),
+            Facing = 2,
+            WidthMetres = 18f, LengthMetres = 12f, EavesMetres = 5f,
+            DoorOnPlusY = false, DoorAcrossMetres = -0.5f,
+            ShellTint = new Color(0.78f, 0.72f, 0.62f), FloorTint = Wood,
+            Zones = new[]
+            {
+                new Zone("FrontHall", -9, 9, -6, 0, PublicFloor, true),
+                new Zone("Gym", -9, -1, 0, 6, StaffFloor, true),
+                new Zone("Kitchen", -1, 4, 0, 6, WetFloor),
+                new Zone("Washroom", 4, 9, 0, 6, ColdFloor),
+            },
+            Blocks = new[]
+            {
+                // the back-room wall, with the gym's doorway (the room convention's width) at model x -5
+                new Block("BackWallNorth", -9f, -5.7f, -0.15f, 0.15f, 3f, Partition, true),
+                new Block("BackWallSouth", -4.3f, 9f, -0.15f, 0.15f, 3f, Partition, true),
+                new Block("GymKitchenWall", -1.15f, -0.85f, 0.15f, 6f, 3f, Partition, true),
+                new Block("KitchenWashroomWall", 3.85f, 4.15f, 0.15f, 6f, 3f, Partition, true),
+                new Block("GymBench", -8.8f, -6.8f, 0.2f, 0.6f, 0.45f, Wood, true),
+                new Block("HallStage", 6.5f, 8.7f, -5f, -1f, 0.6f, Wood, false),
+            },
+            Fittings = new[]
+            {
+                new Fitting("gym_equipment.squat_rack", -8.8f, 3.8f, 2.2f, true),
+                new Fitting("gym_equipment.bench_press", -6.2f, 3.8f, 0.5f, true),
+                new Fitting("gym_equipment.treadmill", -8.8f, 1.0f, 1.3f, true),
+                new Fitting("gym_equipment.rowing_machine", -2.2f, 2.6f, 0.6f, true),
+                new Fitting("gym_equipment.pull_up_bar", -4.0f, 0.3f, 2.3f, false),
+                new Fitting("gym_equipment.grip_trainer", -2.6f, 0.3f, 0.9f, false),
+                new Fitting("gym_equipment.skipping_rope", -5.5f, 2.4f, 0.05f, false),
+            },
+        };
+
         /// <summary>Every shell this file places, in step order.</summary>
-        public static readonly Shell[] All = { FishPlant };
+        public static readonly Shell[] All = { FishPlant, CommunityHall };
 
         /// <summary>The metres a Def's footprint tile covers (<c>nmc-gym.md</c>: one tile, one metre).</summary>
         public const float TileMetres = 1f;
