@@ -59,9 +59,6 @@ namespace HiddenHarbours.Tests.Economy
             // ---- Starting kit -----------------------------------------------------------------------
             ["watch.harbour_digital"] = "starting item: worn from the first morning (StartsOwned); needs shop: a watch seller for a replacement",
 
-            // ---- A separate change in flight ---------------------------------------------------------
-            ["instrument.loran"] = "its seller is being added by a separate change (feat/loran-seller); drop this line when that lands",
-
             // ---- No ownership or purchase seam yet (an offer type is code, not data) ------------------
             ["tackle.*"] = "not owned piece by piece yet: the rod's tackle box hands every lure; needs an owned-tackle seam, then shop: a chandlery",
             ["longline.groundfish_tub"] = "counted tub stock has no offer type to buy it through; needs shop: the NMC chandlery once a tub offer exists",
