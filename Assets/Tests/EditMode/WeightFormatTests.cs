@@ -58,6 +58,18 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.AreEqual("0 g", sb.ToString(), "a negative count is guarded");
         }
 
+        [Test]
+        public void Chars_CountsExactlyWhatWriteGramsLetters()
+        {
+            var sb = new StringBuilder(16);
+            int[] counts = { -5, 0, 1, 9, 10, 99, 100, 999, 1000, 1049, 1050, 9949, 9950, 12300, 99999, 1234560 };
+            foreach (int grams in counts)
+            {
+                WeightFormat.WriteGrams(sb, grams);
+                Assert.AreEqual(sb.Length, WeightFormat.Chars(grams), $"{grams} g reads \"{sb}\"");
+            }
+        }
+
         // ---- the landing line uses it ---------------------------------------------------------------
 
         static CatchItem Smelt(float kg)

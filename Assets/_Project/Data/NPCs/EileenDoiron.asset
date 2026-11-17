@@ -18,3 +18,24 @@ MonoBehaviour:
   Dialogue: {fileID: 11400000, guid: 80a887a9403f47b9abab9fe9138eaef6, type: 2}
   CompletionFlag: met_eileen
   Build: {fileID: 11400000, guid: 62d9a9f4c0de2ee40977937767187b34, type: 2}
+  Gifts:
+    LovedItemIds:
+    - fish.northern_quahog
+    LikedItemIds: []
+    DislikedItemIds:
+    - fish.mackerel
+    LovedTags: []
+    LikedTags:
+    - shellfish
+    DislikedTags: []
+    Lines:
+      Loved:
+      - 'A quahog! I''ll show the class the rings on the shell before it goes in the pot. Four children, one quahog. That''s arithmetic.'
+      Liked:
+      - 'Oh, the children will want to see this before it goes in the pot. Thank you.'
+      Neutral:
+      - 'How thoughtful. Thank you.'
+      Disliked:
+      - 'Mackerel. I''ll be honest, I never took to it. But thank you for thinking of me.'
+      NotGiftable: []
+      AlreadyGiftedToday: []

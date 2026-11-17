@@ -84,6 +84,23 @@ namespace HiddenHarbours.Core
             sb.Append(KgUnit);
         }
 
+        /// <summary>How many characters <see cref="WriteGrams"/> letters for <paramref name="grams"/>
+        /// ("40 g" is 4, "12.3 kg" is 7), worked out without allocating: for a layout that reserves room
+        /// for the reading beside another line.</summary>
+        public static int Chars(int grams)
+        {
+            int g = grams > 0 ? grams : 0;
+            if (ReadsInGrams(g)) return Digits(g) + GramsUnit.Length;
+            return Digits(TenthsKg(g) / 10) + 2 + KgUnit.Length;   // whole kilograms, the point, one decimal
+        }
+
+        private static int Digits(int value)
+        {
+            int digits = 1;
+            for (int v = value; v >= 10; v /= 10) digits++;
+            return digits;
+        }
+
         private static string NumberOfGrams(int grams)
         {
             if (ReadsInGrams(grams)) return grams.ToString(Inv);

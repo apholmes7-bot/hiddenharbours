@@ -155,6 +155,7 @@ namespace HiddenHarbours.World
         private Text _weightLabel;                        // the left head, right: the weight readout
         private string _registerLine = "";                // the last landing's line (stands until the next)
         private readonly CountUp _weight = new CountUp(); // whole grams (WeightFormat reads them as g or kg)
+        private int _weightTargetGrams;                   // where the readout lands (the register's reserve)
         private bool _weightAnimating;
         private readonly CountUp _purse = new CountUp();  // the balance after a sale
         private readonly StringBuilder _sb = new StringBuilder(32);   // pre-sized; ONE small string per tick
@@ -800,9 +801,13 @@ namespace HiddenHarbours.World
                 // stands proud of the fore-edge", and those 9 px are exactly what a five-character
                 // label needs — ChipChars × CellWidth = 25 px against TabCol's 22 px lane. Drawn at
                 // TabCol, TASKS overflowed its own chip (found on the 2026-08-20 eyeball proofs).
-                RectTransform chip = AddPiece(_bookRect, "Tab", _tab, x, tabY,
+                // The selected stub is the kit's "on" state: pulled out, inked edge, lit top row. A
+                // tint alone cannot carry it: a baked chip draws white, so the gold never showed.
+                bool on = i == TabIndex;
+                RectTransform chip = AddPiece(_bookRect, "Tab", _tab, on ? x + NotebookKit.TabPull : x, tabY,
                                               NotebookKit.TabChipWidth, NotebookKit.TabHeight,
-                                              i == TabIndex ? GoldInk : TabInk);
+                                              on ? GoldInk : TabInk);
+                if (on) DrawTabOn(chip);
 
                 // The chip clips at the kit's cap, applied here rather than at the model, so the full
                 // label stays readable to anything that wants it.
@@ -818,6 +823,19 @@ namespace HiddenHarbours.World
             {
                 AddPiece(_bookRect, "Ribbon", _ribbon, x - NotebookKit.RibbonWidth - 1, y, 5, 26, GoldInk);
             }
+        }
+
+        /// <summary>The "on" stub's ink, drawn over the card in the rig's order: an ink line down the
+        /// end nearest the page and along the top, and a paper-lit row under the top line. Its outer
+        /// end takes the gold band, the one warm accent the shared palette keeps for the selected stub.</summary>
+        private void DrawTabOn(RectTransform chip)
+        {
+            int w = NotebookKit.TabChipWidth, h = NotebookKit.TabHeight;
+            AddPiece(chip, "TabOnGold", null, w - NotebookKit.TabPull, 0, NotebookKit.TabPull, h, GoldInk);
+            AddPiece(chip, "TabOnEdge", null, 0, 0, NotebookKit.Edge, h, InkStrong);
+            AddPiece(chip, "TabOnTop", null, 0, 0, w, NotebookKit.Edge, InkStrong);
+            AddPiece(chip, "TabOnLit", null, NotebookKit.Edge, NotebookKit.Edge,
+                     w - NotebookKit.Edge - NotebookKit.TabPull, NotebookKit.Edge, PaperInk);
         }
 
         private void DrawPageMarks(int x, int y, int pageW, int pageH)
@@ -943,7 +961,24 @@ namespace HiddenHarbours.World
             _registerLine = LiftLine.For(e.Item);
             if (!IsOpen) return;
             EnsureRegisterLabels();
-            if (_registerLabel != null && _registerLabel.text != _registerLine) _registerLabel.text = _registerLine;
+            RepaintRegister();
+        }
+
+        /// <summary>The register line as the head letters it: fitted to the cells the head has beside the
+        /// weight readout, so it never runs across the gutter onto the facing leaf.</summary>
+        public string RegisterShown =>
+            NotebookLayout.FitLine(_registerLine, NotebookLayout.RegisterCols(_leftHeadW, RegisterWeightGrams));
+
+        // A lettered readout always takes its room, even reading "0 g" (hence the floor of one gram).
+        private int RegisterWeightGrams =>
+            _weightLabel != null || _weight.Value > 0 || _weight.Running
+                ? Mathf.Max(1, Mathf.Max(_weight.Value, _weightTargetGrams)) : 0;
+
+        private void RepaintRegister()
+        {
+            if (_registerLabel == null) return;
+            string shown = RegisterShown;
+            if (_registerLabel.text != shown) _registerLabel.text = shown;
         }
 
         /// <summary>
@@ -955,18 +990,20 @@ namespace HiddenHarbours.World
             if (e.Kind != JuiceMoment.Landing && e.Kind != JuiceMoment.DigStrike) return;
             // Whole grams, not tenths of a kg: a 40 g smelt is 0 tenths, which read "0.0 kg" (or nothing).
             int grams = WeightFormat.Grams(e.Strength);
+            _weightTargetGrams = grams;
             JuiceSettings j = Juice;
             if (!IsOpen || !j.MomentsEnabled || j.WeightCountUpSeconds <= 0f)
             {
                 _weight.Set(grams);
                 _weightAnimating = false;
-                if (IsOpen) { EnsureRegisterLabels(); RepaintWeight(1f); }
+                if (IsOpen) { EnsureRegisterLabels(); RepaintWeight(1f); RepaintRegister(); }
                 return;
             }
-            EnsureRegisterLabels();
             _weight.Start(0, grams, j.WeightCountUpSeconds);
+            EnsureRegisterLabels();
             _weightAnimating = true;
             RepaintWeight(1f);
+            RepaintRegister();
         }
 
         /// <summary>The sale: arm the coins (crate → purse) and the balance's climb behind them (§4.2).
@@ -1079,7 +1116,7 @@ namespace HiddenHarbours.World
         {
             if (_bookRect == null) return;
             if (_registerLabel == null && !string.IsNullOrEmpty(_registerLine))
-                _registerLabel = AddText(_bookRect, _registerLine, _leftHeadX, _leftHeadY, _leftHeadW, Ink, TextAnchor.UpperLeft);
+                _registerLabel = AddText(_bookRect, RegisterShown, _leftHeadX, _leftHeadY, _leftHeadW, Ink, TextAnchor.UpperLeft);
             if (_weightLabel == null && (_weight.Value > 0 || _weight.Running))
                 _weightLabel = AddText(_bookRect, WeightText(), _leftHeadX, _leftHeadY, _leftHeadW, InkStrong, TextAnchor.UpperRight);
         }

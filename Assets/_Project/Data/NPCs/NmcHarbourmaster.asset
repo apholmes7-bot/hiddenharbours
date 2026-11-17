@@ -17,3 +17,24 @@ MonoBehaviour:
   Kind: 0
   Dialogue: {fileID: 11400000, guid: c48c74c1d02f4b63ac5f0160f8c49f04, type: 2}
   CompletionFlag: met_nmc_harbourmaster
+  Gifts:
+    LovedItemIds:
+    - fish.atlantic_cod
+    LikedItemIds: []
+    DislikedItemIds:
+    - fish.atlantic_herring
+    LovedTags: []
+    LikedTags:
+    - inshore_groundfish
+    DislikedTags: []
+    Lines:
+      Loved:
+      - 'Cod, on rod and line. I hope that''s on your licence. ...I''ll take your word for it. Thank you.'
+      Liked:
+      - 'Good fish. I''ll have it in the office over the kettle. Thanks.'
+      Neutral:
+      - 'Thank you. Noted. Not in the book, mind.'
+      Disliked:
+      - 'Herring. The office will smell of it for a week. Thanks, all the same.'
+      NotGiftable: []
+      AlreadyGiftedToday: []

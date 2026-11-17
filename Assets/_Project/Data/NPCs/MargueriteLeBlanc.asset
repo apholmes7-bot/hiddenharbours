@@ -18,3 +18,24 @@ MonoBehaviour:
   Dialogue: {fileID: 11400000, guid: ac36a7c6b96c486b83092de70507b97d, type: 2}
   CompletionFlag: met_marguerite
   Build: {fileID: 11400000, guid: 5e5ff01b97c0c9b4b9c85f3f2e8a6415, type: 2}
+  Gifts:
+    LovedItemIds:
+    - fish.american_oyster
+    LikedItemIds: []
+    DislikedItemIds:
+    - fish.cunner
+    LovedTags: []
+    LikedTags:
+    - shellfish
+    DislikedTags: []
+    Lines:
+      Loved:
+      - 'An oyster. Well. I''d sell that for more than you''d guess, and I''m not going to. Thank you.'
+      Liked:
+      - 'That''s worth something, and I know what things are worth. Thank you.'
+      Neutral:
+      - 'Thank you. I''ll not put a price on it.'
+      Disliked:
+      - 'Cunner. I''d not get a nickel for it across this counter. Still, thank you.'
+      NotGiftable: []
+      AlreadyGiftedToday: []

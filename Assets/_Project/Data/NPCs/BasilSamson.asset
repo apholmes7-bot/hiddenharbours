@@ -34,7 +34,8 @@ MonoBehaviour:
       - 'Haddock. Forty-one years and I never tired of it. You''ve a good eye.'
       Liked:
       - 'A proper fish from off the bottom. That''s kindly meant, and kindly taken.'
-      Neutral: []
+      Neutral:
+      - 'Thank you. I''ll have it with a cup of tea and the tide table.'
       Disliked:
       - 'We used those for bait, when I was going out. Still, it''s the thought.'
       NotGiftable: []

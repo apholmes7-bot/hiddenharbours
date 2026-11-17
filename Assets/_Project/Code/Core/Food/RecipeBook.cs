@@ -11,8 +11,9 @@ namespace HiddenHarbours.Core
     ///
     /// <para><b>Specificity.</b> For a raw catch, a recipe naming its species beats one naming its category.
     /// Inside one tier the lowest id (ordinal) wins, so two equally specific assets never depend on load
-    /// order. An intermediate (a prep output) matches only an <see cref="RecipeInputKind.Intermediate"/>
-    /// recipe naming that exact id.</para>
+    /// order. An item id matches only an <see cref="RecipeInputKind.Intermediate"/> or
+    /// <see cref="RecipeInputKind.Item"/> recipe naming that exact id; reachability from a catch follows
+    /// Intermediate only.</para>
     ///
     /// <para><b>Refusal.</b> Every lookup answers false with a null recipe for an empty station, an empty or
     /// unknown input, or a station with no matching recipe; it never throws. A blank-id or duplicate-id Def
@@ -74,15 +75,15 @@ namespace HiddenHarbours.Core
             return recipe != null;
         }
 
-        /// <summary>The recipe <paramref name="stationId"/> runs on an intermediate (another recipe's output id).
-        /// </summary>
+        /// <summary>The recipe <paramref name="stationId"/> runs on an item id: an intermediate (another
+        /// recipe's output id) or a stock item (<see cref="RecipeInputKind.Item"/>).</summary>
         public bool TryFind(string stationId, string intermediateId, out RecipeDef recipe)
         {
             recipe = null;
             if (string.IsNullOrEmpty(stationId) || string.IsNullOrEmpty(intermediateId)) return false;
             foreach (RecipeDef def in _all)
             {
-                if (def.InputKind != RecipeInputKind.Intermediate) continue;
+                if (def.InputKind != RecipeInputKind.Intermediate && def.InputKind != RecipeInputKind.Item) continue;
                 if (!string.Equals(def.Station, stationId, StringComparison.Ordinal)) continue;
                 if (!string.Equals(def.InputId, intermediateId, StringComparison.Ordinal)) continue;
                 recipe = def;
