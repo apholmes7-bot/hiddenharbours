@@ -1,0 +1,804 @@
+{
+  "schema": "small-shed@1",
+  "exportSymbol": "SmallShed",
+  "rig": "smallShedRig.js",
+  "variant": "lot_shed",
+  "derivedFromRigSha256": "fa4cff67444c02af13da4dc661b4c4d847e6b11af1ec6f9cd77f62ab22ced795",
+  "generatedBy": "SmallShed.sidecar({variant:\"lot_shed\"}) via node tools/rig-recipes/small-shed.mjs (--check fails on drift)",
+  "frame": {
+    "units": "metres",
+    "scale_px_per_m": 32,
+    "origin": "ground-centre of the wall footprint",
+    "axes": "+x east (along the camper on the lot), +y north, +z up from the ground; the door is on -y",
+    "heading_independent": true
+  },
+  "cell": {
+    "w": 160,
+    "h": 176,
+    "pivot": {
+      "x": 80,
+      "y": 120
+    },
+    "facings": [
+      "N",
+      "NE",
+      "E",
+      "SE",
+      "S",
+      "SW",
+      "W",
+      "NW"
+    ],
+    "convention": "CounterClockwise"
+  },
+  "BODY": {
+    "walls_m": {
+      "along_x": 2.2,
+      "across_y": 1.6,
+      "thickness": 0.08
+    },
+    "floor_z_m": 0.18,
+    "wall_plate_z_m": 2.2,
+    "ridge_under_z_m": 2.733,
+    "roof_pitch": "8/12",
+    "eave_m": 0.1,
+    "rake_m": 0.1,
+    "plan_with_eaves_m": {
+      "x0": -1.2,
+      "x1": 1.2,
+      "y0": -0.9,
+      "y1": 0.9
+    },
+    "cutaway": {
+      "lid": "the roof, always culled",
+      "sill_above_floor_m": 0.6,
+      "near_rule": "a wall panel or tall fixture part whose outward plan normal o has o . view > 0.2 is sectioned to the sill; view = (-sin(dir*45deg), -cos(dir*45deg))"
+    }
+  },
+  "WALKABLE": {
+    "floor": {
+      "z": 0.18,
+      "polygon": [
+        [
+          -1.02,
+          -0.72
+        ],
+        [
+          1.02,
+          -0.72
+        ],
+        [
+          1.02,
+          0.72
+        ],
+        [
+          -1.02,
+          0.72
+        ]
+      ],
+      "walker": "foot_circle",
+      "foot_radius_m": 0.35,
+      "obstructions": [
+        {
+          "id": "rod_rack",
+          "kind": "rack",
+          "wall": "west",
+          "footprint": [
+            [
+              -1.02,
+              -0.48
+            ],
+            [
+              -0.8,
+              -0.48
+            ],
+            [
+              -0.8,
+              0.48
+            ],
+            [
+              -1.02,
+              0.48
+            ]
+          ],
+          "height_above_floor_m": 2.1,
+          "treatment": "wall"
+        },
+        {
+          "id": "gear_shelf",
+          "kind": "shelf",
+          "wall": "north",
+          "footprint": [
+            [
+              -0.72,
+              0.38
+            ],
+            [
+              1.02,
+              0.38
+            ],
+            [
+              1.02,
+              0.72
+            ],
+            [
+              -0.72,
+              0.72
+            ]
+          ],
+          "height_above_floor_m": 1.8,
+          "treatment": "wall"
+        }
+      ]
+    },
+    "ground_outside": {
+      "z": 0,
+      "note": "Outside the walls the ground is the scene's; the step is a tread, walked over.",
+      "obstructions": [
+        {
+          "id": "step",
+          "kind": "tread",
+          "footprint": [
+            [
+              -0.06,
+              -1.08
+            ],
+            [
+              0.62,
+              -1.08
+            ],
+            [
+              0.62,
+              -0.8
+            ],
+            [
+              -0.06,
+              -0.8
+            ]
+          ],
+          "height_above_ground_m": 0.09,
+          "treatment": "step_over"
+        }
+      ]
+    }
+  },
+  "THRESHOLD": {
+    "id": "entry",
+    "wall": "south",
+    "door_clear_m": {
+      "u0": -0.1,
+      "u1": 0.66,
+      "width": 0.76,
+      "height_above_floor": 1.85
+    },
+    "leaf": {
+      "hinge": "west",
+      "swing": "out",
+      "hinge_point": [
+        -0.1,
+        -0.8
+      ],
+      "width_m": 0.76,
+      "thickness_m": 0.04,
+      "shut_plan": [
+        [
+          -0.1,
+          -0.8
+        ],
+        [
+          0.66,
+          -0.8
+        ],
+        [
+          0.66,
+          -0.76
+        ],
+        [
+          -0.1,
+          -0.76
+        ]
+      ],
+      "open_plan": [
+        [
+          -0.1,
+          -0.8
+        ],
+        [
+          -0.86,
+          -0.8
+        ],
+        [
+          -0.86,
+          -0.84
+        ],
+        [
+          -0.1,
+          -0.84
+        ]
+      ],
+      "open_deg": 180,
+      "note": "A press moves the leaf (the door ruling): it swings out and west and rests folded back against the wall."
+    },
+    "floor_step_m": 0.18,
+    "outside_step": {
+      "footprint": [
+        [
+          -0.06,
+          -1.08
+        ],
+        [
+          0.62,
+          -1.08
+        ],
+        [
+          0.62,
+          -0.8
+        ],
+        [
+          -0.06,
+          -0.8
+        ]
+      ],
+      "top_above_ground_m": 0.09
+    },
+    "inside_landing": {
+      "centre": [
+        0.28,
+        -0.36
+      ],
+      "radius_m": 0.35,
+      "z": 0.18
+    },
+    "outside_landing": {
+      "centre": [
+        0.28,
+        -1.44
+      ],
+      "radius_m": 0.35,
+      "z": 0
+    },
+    "keep_clear_inside": [
+      [
+        -0.1,
+        -0.72
+      ],
+      [
+        0.66,
+        -0.72
+      ],
+      [
+        0.66,
+        -0.02
+      ],
+      [
+        -0.1,
+        -0.02
+      ]
+    ]
+  },
+  "STAND": {
+    "centre": [
+      0.12,
+      -0.16
+    ],
+    "z": 0.18,
+    "radius_m": 0.35,
+    "note": "a spot inside where the 0.35 m foot stands clear of every wall and fixture: room to stand"
+  },
+  "INTERACT": [
+    {
+      "id": "door",
+      "action": "step_out",
+      "reach_point": [
+        0.28,
+        -0.36,
+        0.18
+      ],
+      "at": [
+        0.28,
+        -0.8,
+        0.18
+      ],
+      "level": "floor",
+      "visible_facings": [
+        "N",
+        "NE",
+        "E",
+        "SE",
+        "S",
+        "SW",
+        "W",
+        "NW"
+      ],
+      "_note": "mechanism: the plank door (a press moves the leaf); the reach is the inside landing, where a 0.35 m foot stands clear",
+      "door": {
+        "clear_width_m": 0.76,
+        "landing_centre": [
+          0.28,
+          -0.36
+        ],
+        "landing_radius_m": 0.35
+      }
+    },
+    {
+      "id": "door_outside",
+      "action": "enter",
+      "reach_point": [
+        0.28,
+        -1.44,
+        0
+      ],
+      "at": [
+        0.28,
+        -0.8,
+        0.18
+      ],
+      "level": "ground",
+      "visible_facings": [
+        "N",
+        "NE",
+        "E",
+        "SE",
+        "S",
+        "SW",
+        "W",
+        "NW"
+      ],
+      "_note": "mechanism: the same door from outside; the reach is the ground landing in front of the step",
+      "door": {
+        "clear_width_m": 0.76,
+        "landing_centre": [
+          0.28,
+          -1.44
+        ],
+        "landing_radius_m": 0.35
+      }
+    },
+    {
+      "id": "rod_rack",
+      "action": "storage",
+      "reach_point": [
+        -0.56,
+        0,
+        0.18
+      ],
+      "at": [
+        -0.91,
+        0,
+        1.18
+      ],
+      "level": "floor",
+      "visible_facings": [
+        "N",
+        "NE",
+        "E",
+        "SE",
+        "S",
+        "SW",
+        "W",
+        "NW"
+      ],
+      "_note": "mechanism: rod stowage (StowageRack, a StowageDef that accepts Rods)",
+      "stowage": "stowage.shed_rod_rack",
+      "stowage_status": "proposed id, no Def yet (storage-with-memory lane)",
+      "accepts": "Rods",
+      "capacity": 8
+    },
+    {
+      "id": "gear_shelf",
+      "action": "storage",
+      "reach_point": [
+        0.3,
+        0.16,
+        0.18
+      ],
+      "at": [
+        0.15,
+        0.38,
+        1.03
+      ],
+      "level": "floor",
+      "visible_facings": [
+        "N",
+        "NE",
+        "E",
+        "SE",
+        "S",
+        "SW",
+        "W",
+        "NW"
+      ],
+      "_note": "mechanism: gear stowage (StowageRack, a StowageDef that accepts General)",
+      "stowage": "stowage.shed_gear_shelf",
+      "stowage_status": "proposed id, no Def yet (storage-with-memory lane)",
+      "accepts": "General",
+      "capacity": 12
+    }
+  ],
+  "STORAGE": {
+    "rod_rack": {
+      "fixture": "rod_rack",
+      "stowage": "stowage.shed_rod_rack",
+      "status": "proposed id, no Def yet (storage-with-memory lane)",
+      "accepts": "Rods",
+      "capacity": 8,
+      "slot_pitch_m": 0.12,
+      "slots": [
+        {
+          "slot": 0,
+          "foot": [
+            -0.91,
+            -0.42,
+            0.21
+          ],
+          "tip": [
+            -0.91,
+            -0.42,
+            2.28
+          ]
+        },
+        {
+          "slot": 1,
+          "foot": [
+            -0.91,
+            -0.3,
+            0.21
+          ],
+          "tip": [
+            -0.91,
+            -0.3,
+            2.28
+          ]
+        },
+        {
+          "slot": 2,
+          "foot": [
+            -0.91,
+            -0.18,
+            0.21
+          ],
+          "tip": [
+            -0.91,
+            -0.18,
+            2.28
+          ]
+        },
+        {
+          "slot": 3,
+          "foot": [
+            -0.91,
+            -0.06,
+            0.21
+          ],
+          "tip": [
+            -0.91,
+            -0.06,
+            2.28
+          ]
+        },
+        {
+          "slot": 4,
+          "foot": [
+            -0.91,
+            0.06,
+            0.21
+          ],
+          "tip": [
+            -0.91,
+            0.06,
+            2.28
+          ]
+        },
+        {
+          "slot": 5,
+          "foot": [
+            -0.91,
+            0.18,
+            0.21
+          ],
+          "tip": [
+            -0.91,
+            0.18,
+            2.28
+          ]
+        },
+        {
+          "slot": 6,
+          "foot": [
+            -0.91,
+            0.3,
+            0.21
+          ],
+          "tip": [
+            -0.91,
+            0.3,
+            2.28
+          ]
+        },
+        {
+          "slot": 7,
+          "foot": [
+            -0.91,
+            0.42,
+            0.21
+          ],
+          "tip": [
+            -0.91,
+            0.42,
+            2.28
+          ]
+        }
+      ]
+    },
+    "gear_shelf": {
+      "fixture": "gear_shelf",
+      "stowage": "stowage.shed_gear_shelf",
+      "status": "proposed id, no Def yet (storage-with-memory lane)",
+      "accepts": "General",
+      "capacity": 12,
+      "bays": 4,
+      "shelves_above_floor_m": [
+        0.3,
+        0.85,
+        1.4
+      ],
+      "slots": [
+        {
+          "slot": 0,
+          "shelf": 0,
+          "bay": 0,
+          "centre": [
+            -0.502,
+            0.55,
+            0.48
+          ],
+          "width_m": 0.405,
+          "depth_m": 0.34
+        },
+        {
+          "slot": 1,
+          "shelf": 0,
+          "bay": 1,
+          "centre": [
+            -0.068,
+            0.55,
+            0.48
+          ],
+          "width_m": 0.405,
+          "depth_m": 0.34
+        },
+        {
+          "slot": 2,
+          "shelf": 0,
+          "bay": 2,
+          "centre": [
+            0.367,
+            0.55,
+            0.48
+          ],
+          "width_m": 0.405,
+          "depth_m": 0.34
+        },
+        {
+          "slot": 3,
+          "shelf": 0,
+          "bay": 3,
+          "centre": [
+            0.802,
+            0.55,
+            0.48
+          ],
+          "width_m": 0.405,
+          "depth_m": 0.34
+        },
+        {
+          "slot": 4,
+          "shelf": 1,
+          "bay": 0,
+          "centre": [
+            -0.502,
+            0.55,
+            1.03
+          ],
+          "width_m": 0.405,
+          "depth_m": 0.34
+        },
+        {
+          "slot": 5,
+          "shelf": 1,
+          "bay": 1,
+          "centre": [
+            -0.068,
+            0.55,
+            1.03
+          ],
+          "width_m": 0.405,
+          "depth_m": 0.34
+        },
+        {
+          "slot": 6,
+          "shelf": 1,
+          "bay": 2,
+          "centre": [
+            0.367,
+            0.55,
+            1.03
+          ],
+          "width_m": 0.405,
+          "depth_m": 0.34
+        },
+        {
+          "slot": 7,
+          "shelf": 1,
+          "bay": 3,
+          "centre": [
+            0.802,
+            0.55,
+            1.03
+          ],
+          "width_m": 0.405,
+          "depth_m": 0.34
+        },
+        {
+          "slot": 8,
+          "shelf": 2,
+          "bay": 0,
+          "centre": [
+            -0.502,
+            0.55,
+            1.58
+          ],
+          "width_m": 0.405,
+          "depth_m": 0.34
+        },
+        {
+          "slot": 9,
+          "shelf": 2,
+          "bay": 1,
+          "centre": [
+            -0.068,
+            0.55,
+            1.58
+          ],
+          "width_m": 0.405,
+          "depth_m": 0.34
+        },
+        {
+          "slot": 10,
+          "shelf": 2,
+          "bay": 2,
+          "centre": [
+            0.367,
+            0.55,
+            1.58
+          ],
+          "width_m": 0.405,
+          "depth_m": 0.34
+        },
+        {
+          "slot": 11,
+          "shelf": 2,
+          "bay": 3,
+          "centre": [
+            0.802,
+            0.55,
+            1.58
+          ],
+          "width_m": 0.405,
+          "depth_m": 0.34
+        }
+      ]
+    },
+    "memory": "What sits in each slot is saved by the storage-with-memory lane (save v25), keyed by the rack; this rig only places the slots."
+  },
+  "mechanism_map": {
+    "door": "plank door, inside (step_out)",
+    "door_outside": "plank door, outside (enter)",
+    "rod_rack": "StowageRack (stowage.shed_rod_rack, proposed): 8 rods",
+    "gear_shelf": "StowageRack (stowage.shed_gear_shelf, proposed): 12 pieces of gear"
+  },
+  "FIT": {
+    "walls_m": [
+      2.2,
+      1.6
+    ],
+    "plan_with_eaves_m": [
+      2.4,
+      1.8
+    ],
+    "plan_corner_radius_m": 1.5,
+    "reserve": {
+      "along": 2.4,
+      "across": 1.8,
+      "radius": 1.5
+    },
+    "floor_clear_m": [
+      2.04,
+      1.44
+    ],
+    "floor_area_m2": 2.938,
+    "wall_plate_above_floor_m": 2.02,
+    "ridge_under_above_floor_m": 2.553,
+    "stand": {
+      "centre": [
+        0.12,
+        -0.16
+      ],
+      "clear_m": 0.54,
+      "foot_radius_m": 0.35,
+      "free_floor_for_the_foot_m": [
+        1.1,
+        0.38
+      ]
+    },
+    "door": {
+      "clear_width_m": 0.76,
+      "clear_height_m": 1.85,
+      "foot_diameter_m": 0.7,
+      "inside_landing_clear_m": 0.01,
+      "outside_landing_clear_of_step_m": 0.01,
+      "outside_landing_clear_of_walls_m": 0.29,
+      "outside_landing_clear_of_leaf_m": {
+        "shut": 0.29,
+        "open": 0.36
+      },
+      "swing_sweep_radius_m": 0.76,
+      "swing_note": "The leaf swings out and west through the ground in front of the door; at rest (shut, or folded back against the wall) it is clear of the landing."
+    },
+    "rod_rack": {
+      "capacity": 8,
+      "slot_pitch_m": 0.12,
+      "span_m": 0.96,
+      "headroom_at_outer_slot_m": 2.173,
+      "longest_rod_m": 2.1
+    },
+    "gear_shelf": {
+      "capacity": 12,
+      "bays": 4,
+      "shelves": 3,
+      "bay_clear_m": 0.405,
+      "depth_m": 0.34,
+      "run_m": 1.74,
+      "height_m": 1.8
+    }
+  },
+  "LOT": {
+    "facing": 0,
+    "rig_dir": 0,
+    "convention": "CounterClockwise: rigDir = (8 - facing) % 8; facing is the compass point rig +y faces (0 = N)",
+    "compass": {
+      "north": "+y (back wall, the gear shelf)",
+      "south": "-y (the door)",
+      "east": "+x (the window gable, toward the camper)",
+      "west": "-x (the rod rack gable)"
+    },
+    "world_from_rig": "world = ShedPos + x * R + y * U, U = -ShedDoorDirection, R = (U.y, -U.x)",
+    "source": "StPetersCamperLot.ShedDoorDirection is the camper's curb side (south today), so U is north and R is east.",
+    "reservation": {
+      "footprint_m": {
+        "along_camper": 2.4,
+        "across_camper": 1.8
+      },
+      "reserve_radius_m": 1.5,
+      "csharp": "StPetersCamperLot.ShedPos / ShedSize / ShedFootprintRadiusMetres / ShedDoorDirection"
+    }
+  },
+  "walker": {
+    "source": "foot = CircleCollider2D radius 0.35 m (PersistentCoreBuilder, QuayEdgePlan.WalkerFootRadiusMetres); reach rules after the boat-interior kit",
+    "footRadius": 0.35,
+    "reachClear": 0.2,
+    "reachSpacing": 0.25,
+    "interactReach": 0.25
+  },
+  "_excluded": {
+    "bench": "No workbench: the floor is 2.04 x 1.44 m and a bench would take the standing room the owner asked for.",
+    "freezer": "The bigger freezer is the camper's (40 units); the shed holds rods and gear only.",
+    "light": "No lamp: the window lights it by day."
+  },
+  "_bake_owed": {
+    "catalog": "Register smallShedRig.js in RigCatalog (no prerequisites) once the baker has a building-with-cutaway path.",
+    "mesh": "Bake through the cutaway seam (ADR 0041/0048): roof culled, near walls sectioned to the 0.60 m sill per facing, faces tagged by seg.",
+    "placement": "Stand it at StPetersCamperLot.ShedPos at facing 0 (rig dir 0); the door faces ShedDoorDirection.",
+    "look": "Owner reviews the contact sheet before the bake lands."
+  }
+}

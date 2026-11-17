@@ -413,3 +413,8 @@ docs/art/rigs/birds/**/*.cjs                         text eol=lf
 # committed file byte for byte, so a CRLF checkout would drift both for line endings alone.
 docs/art/rigs/camper-iso-kit/camperInteriorRig.js                    text eol=lf
 docs/art/rigs/camper-iso-kit/camperInteriorRig.clipper.interior.json  text eol=lf linguist-language=json linguist-generated
+
+# The camper lot's small shed rig and its sidecar: the sidecar stamps the rig's LF sha256 and the generator
+# compares the committed file byte for byte, so a CRLF checkout would drift both for line endings alone.
+docs/art/rigs/small-shed-kit/smallShedRig.js                        text eol=lf
+docs/art/rigs/small-shed-kit/smallShedRig.lot_shed.gameplay.json    text eol=lf linguist-language=json linguist-generated
