@@ -159,6 +159,8 @@ namespace HiddenHarbours.Art
         private float _leadSeconds;
         private float _sideSeconds;
         private int _turn;
+        // Which flank's arm of her bow wave the next lead stamp lays (HullContactFoam.Lead): the two take turns.
+        private bool _leadStarboard;
         /// <summary>The longest a waiting stamp is owed for, seconds: a hitch never lands as one slab.</summary>
         private const float MaxOwedSeconds = 0.25f;
 
@@ -502,7 +504,7 @@ namespace HiddenHarbours.Art
             // nothing is laid twice. With no contact (at rest, or the weights at 0) every frame is the
             // trail's and this is the capsule the game laid before.
             float halfBeam = RadiusMeters;
-            HullContactFoam.Stamp lead = HullContactFoam.Lead(surge, halfLength, halfBeam, in hullFoam);
+            HullContactFoam.Stamp lead = HullContactFoam.Lead(surge, halfLength, halfBeam, in hullFoam, _leadStarboard);
             HullContactFoam.Stamp side = HullContactFoam.Side(sway, yawRate, halfLength, halfBeam, in hullFoam);
             _leadSeconds = lead.IsActive ? Mathf.Min(_leadSeconds + dt, MaxOwedSeconds) : 0f;
             _sideSeconds = side.IsActive ? Mathf.Min(_sideSeconds + dt, MaxOwedSeconds) : 0f;
@@ -517,7 +519,9 @@ namespace HiddenHarbours.Art
             {
                 HullContactFoam.Stamp stamp = leadTurn ? lead : side;
                 float seconds = leadTurn ? _leadSeconds : _sideSeconds;
-                if (leadTurn) _leadSeconds = 0f; else _sideSeconds = 0f;
+                // The owed lead time goes to whichever arm lays it, so the two arms share it and the bow
+                // lays what one bar across her did.
+                if (leadTurn) { _leadSeconds = 0f; _leadStarboard = !_leadStarboard; } else _sideSeconds = 0f;
                 float perSecond = Mathf.Max(_depositPerSecond, 0f) * Mathf.Max(_strength, 0f);
                 float stampAmount = stamp.Rate01 * perSecond * seconds;
                 _trailOwed += amount;
@@ -701,7 +705,7 @@ namespace HiddenHarbours.Art
             // can never fall between texels, and on its own advance so it cannot outrun itself. The
             // gain divides by it, so the frames a parcel spends under the sweeping edge SUM to the
             // envelope rather than to a multiple of it.
-            float edgeWidth = FoamBuffer.EdgeWidth(slope * speed, dt);
+            float edgeWidth = FoamBuffer.EdgeWidth(FoamBuffer.EdgeSlope(_spreadKelvinFraction, r0, wMax) * speed, dt);
             float gain = FoamBuffer.EdgeGain(depositRate, r0, wMax, _spreadKelvinFraction, dt,
                                              edgeWidth);
             if (gain <= 0f) { share = 0f; return default; }

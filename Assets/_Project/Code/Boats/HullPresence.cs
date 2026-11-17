@@ -57,6 +57,18 @@ namespace HiddenHarbours.Boats
             HullFootprint.FromBowDirection(transform.position, transform.up,
                                            _lengthMetres, _halfBeamMetres);
 
+        [Tooltip("How her picture foreshortens a north-south metre (sin of her art's bake elevation; 1 = " +
+                 "plan view). Set from her visual by Install; read by what draws against her waterline.")]
+        [SerializeField, Range(0.01f, 1f)] private float _pictureForeshortenY = 1f;
+
+        /// <inheritdoc cref="IHullPresence.PictureForeshortenY"/>
+        public float PictureForeshortenY => _pictureForeshortenY;
+
+        /// <summary>Tell her how her picture is projected: the bake elevation of the art she wears, in
+        /// degrees (90 or more, or not a number, = plan view).</summary>
+        public void ConfigurePicture(float bakeElevationDegrees) =>
+            _pictureForeshortenY = Mathf.Clamp(WakeRootMath.ForeshortenY(bakeElevationDegrees), 0.01f, 1f);
+
         /// <summary>
         /// How far up-screen her picture rides from <see cref="Footprint"/> right now: the sibling
         /// <see cref="IHullTideRide"/>'s <see cref="IHullTideRide.ScreenRiseNow"/> (the same number
@@ -121,6 +133,8 @@ namespace HiddenHarbours.Boats
             var presence = host.GetComponent<HullPresence>();
             if (presence == null) presence = host.AddComponent<HullPresence>();
             presence.Configure(hull.LengthMeters, HalfBeamOf(hull, visual));
+            BoatVisualDef skin = visual != null ? visual : hull.Visual;
+            presence.ConfigurePicture(skin != null ? skin.ResolveWaterlineElevationDegrees() : float.NaN);
             return presence;
         }
 
