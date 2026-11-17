@@ -20,7 +20,6 @@ namespace HiddenHarbours.Tests.EditMode
         private sealed class FakeHull : IHullPresence
         {
             public HullFootprint Footprint { get; set; }
-            public float PictureRise { get; set; }
 
             public static FakeHull At(Vector2 centre, float headingDegrees, float length, float halfBeam)
                 => new FakeHull { Footprint = HullFootprint.FromHeading(centre, headingDegrees, length, halfBeam) };

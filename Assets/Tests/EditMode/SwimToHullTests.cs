@@ -65,7 +65,6 @@ namespace HiddenHarbours.Tests.EditMode
         private sealed class BerthedHull : IHullPresence
         {
             public HullFootprint Footprint { get; set; }
-            public float PictureRise { get; set; }
         }
 
         const float SpringHigh = StPetersBuilder.TideMean + StPetersBuilder.TideAmplitude;
