@@ -23,13 +23,27 @@ namespace HiddenHarbours.Core
         public float Lifetime;
         /// <summary>Its e-folding time, seconds.</summary>
         public float DecaySeconds;
+        /// <summary>Seconds it takes to rise to full height after birth (0 = born at full).</summary>
+        public float RiseSeconds;
+        /// <summary>Seconds at the end of its life over which it fades out (0 = all its life).</summary>
+        public float EndFadeSeconds;
         /// <summary>Who laid it (0 = nobody in particular). A hull never rides her own waves.</summary>
         public int Owner;
 
         /// <summary>Its height at <paramref name="now"/>: birth height × <see cref="HullWaveMath.TimeFade"/>.</summary>
         public readonly float AmplitudeAt(double now)
         {
-            return Amplitude * HullWaveMath.TimeFade((float)(now - BirthSeconds), Lifetime, DecaySeconds);
+            return Amplitude * HullWaveMath.TimeFade((float)(now - BirthSeconds), Lifetime, DecaySeconds,
+                                                     RiseSeconds, EndFadeSeconds);
+        }
+
+        /// <summary>What it is worth to the pool at <paramref name="now"/>: <see cref="AmplitudeAt"/>
+        /// without the rise, so a ring still rising is not mistaken for the weakest and swapped out at
+        /// birth.</summary>
+        public readonly float StrengthAt(double now)
+        {
+            return Amplitude * HullWaveMath.TimeFade((float)(now - BirthSeconds), Lifetime, DecaySeconds,
+                                                     0f, EndFadeSeconds);
         }
 
         /// <summary>True from the end of its life on.</summary>
@@ -117,7 +131,7 @@ namespace HiddenHarbours.Core
             {
                 int weakest = WeakestIndex();
                 double now = NowSeconds > source.BirthSeconds ? NowSeconds : source.BirthSeconds;
-                if (_sources[weakest].AmplitudeAt(now) >= source.AmplitudeAt(now)) return false;
+                if (_sources[weakest].StrengthAt(now) >= source.StrengthAt(now)) return false;
                 RemoveAt(weakest);
             }
             _sources[_count++] = source;
@@ -130,7 +144,7 @@ namespace HiddenHarbours.Core
             float bestAmp = float.MaxValue;
             for (int i = 0; i < _count; i++)
             {
-                float a = _sources[i].AmplitudeAt(NowSeconds);
+                float a = _sources[i].StrengthAt(NowSeconds);
                 // Strictly less: on a tie the OLDEST (lowest index) goes, deterministically.
                 if (a < bestAmp) { bestAmp = a; best = i; }
             }
@@ -289,8 +303,9 @@ namespace HiddenHarbours.Core
             double span = now - _lastSeconds;
             if (span <= 0.0) return 0;   // a held clock lays nothing and loses nothing
 
-            float wavelength = HullWaveMath.Wavelength(speed, in s);
-            float lifetime = HullWaveMath.Lifetime(lengthMetres, in s);
+            float wavelength = HullWaveMath.Wavelength(speed, lengthMetres, in s);
+            float lifetime = HullWaveMath.KeptLifetime(HullWaveMath.Lifetime(lengthMetres, in s), speed,
+                                                       wavelength, budget, in s);
             float crest = HullWaveMath.CrestHeight(speed, lengthMetres, in s) * Mathf.Max(share, 0f);
             float interval = HullWaveMath.DepositInterval(speed, wavelength, lifetime, budget,
                                                           s.SpacingWavelengths);
@@ -321,6 +336,8 @@ namespace HiddenHarbours.Core
                     PacketWidth = HullWaveMath.PacketWidth(wavelength, in s),
                     Lifetime = lifetime,
                     DecaySeconds = lifetime * Mathf.Max(s.DecayShare, 0.01f),
+                    RiseSeconds = lifetime * Mathf.Clamp01(s.RiseShare),
+                    EndFadeSeconds = lifetime * Mathf.Clamp01(s.EndFadeShare),
                     Owner = owner,
                 };
                 while (_nextSeconds <= now && laid < budget)

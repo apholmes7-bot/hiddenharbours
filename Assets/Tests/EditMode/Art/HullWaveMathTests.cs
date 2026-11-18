@@ -74,6 +74,70 @@ namespace HiddenHarbours.Tests.Art.EditMode
         }
 
         [Test]
+        public void TheFadesEnds_RiseIn_AndHoldTheArmsUp_StillZeroAtTheEnd()
+        {
+            // The look, 2026-11-17: a ring born at full height painted a round blot round the hull (ahead
+            // of her bow too), and the whole-life fade left the arms of the V faint a short way behind her.
+            const float life = 4f, decay = 8f, rise = 0.5f, end = 1.6f;
+            for (int i = 0; i <= 40; i++)
+            {
+                float a = i * life / 40f;
+                Assert.AreEqual(HullWaveMath.TimeFade(a, life, decay), HullWaveMath.TimeFade(a, life, decay, 0f, 0f),
+                    1e-6f, "no rise and no end span is the old law exactly");
+                Assert.AreEqual(HullWaveMath.TimeFade(a, life, decay), HullWaveMath.TimeFade(a, life, decay, 0f, life),
+                    1e-6f, "an end span of a whole life is the old law exactly");
+            }
+
+            Assert.AreEqual(0f, HullWaveMath.TimeFade(0f, life, decay, rise, end), "a newborn ring draws nothing");
+            float last = -1f;
+            for (int i = 0; i <= 20; i++)
+            {
+                float f = HullWaveMath.TimeFade(i * rise / 20f, life, decay, rise, end);
+                Assert.Greater(f, last, $"it rises all through its rise (step {i})");
+                last = f;
+            }
+            Assert.AreEqual(Mathf.Exp(-rise / decay), HullWaveMath.TimeFade(rise, life, decay, rise, end), 1e-5f,
+                "risen: only the slow decay is left");
+            float held = life - end - 0.01f;
+            Assert.AreEqual(Mathf.Exp(-held / decay), HullWaveMath.TimeFade(held, life, decay, rise, end), 1e-5f,
+                "before its end span it keeps its height but for the slow decay");
+            Assert.Greater(HullWaveMath.TimeFade(0.5f * life, life, decay, rise, end),
+                           2f * HullWaveMath.TimeFade(0.5f * life, life, decay), "at half life the arms stand well above the old law");
+            Assert.AreEqual(0f, HullWaveMath.TimeFade(life, life, decay, rise, end), "exactly 0 at the end: retiring never pops");
+            Assert.AreEqual(0f, HullWaveMath.TimeFade(life + 1f, life, decay, rise, end));
+        }
+
+        [Test]
+        public void ARisingRing_IsNotTheWeakest_SoAFullPoolStillTakesIt()
+        {
+            var field = new HullWaveField(2);
+            field.Advance(1.0);
+            Assert.IsTrue(field.Add(Source(Vector2.zero, 0.1f, 0.5)));
+            Assert.IsTrue(field.Add(Source(Vector2.one, 0.1f, 0.6)));
+            HullWaveSource newborn = Source(new Vector2(3f, 0f), 0.5f, 1.0);
+            newborn.RiseSeconds = 0.5f;
+            Assert.AreEqual(0f, newborn.AmplitudeAt(1.0), "premise: at birth it draws nothing");
+            Assert.IsTrue(field.Add(in newborn), "a strong ring still rising must not lose to two weak ones");
+            Assert.AreEqual(2, field.Count);
+            Assert.AreEqual(0.5f, field[1].Amplitude, 1e-6f);
+        }
+
+        [Test]
+        public void HerChain_ShapesEachRingsEnds_FromHerShares()
+        {
+            var field = new HullWaveField();
+            var chain = new HullWaveChain();
+            chain.Step(field, Vector2.zero, 0.0, 6f, 20f, 1f, 8, Owner, S);
+            chain.Step(field, new Vector2(6f, 0f), 1.0, 6f, 20f, 1f, 8, Owner, S);
+            Assert.Greater(field.Count, 0, "premise: she laid waves");
+            HullWaveSource r = field[0];
+            Assert.Greater(S.RiseShare, 0f, "the game's rings rise in");
+            Assert.Less(S.EndFadeShare, 1f, "the game's rings hold their height before their end fade");
+            Assert.AreEqual(r.Lifetime * S.RiseShare, r.RiseSeconds, 1e-5f);
+            Assert.AreEqual(r.Lifetime * S.EndFadeShare, r.EndFadeSeconds, 1e-5f);
+        }
+
+        [Test]
         public void TheSpread_LosesHeightOutward()
         {
             Assert.AreEqual(1f, HullWaveMath.Spread(0f, 4f), 1e-6f);
@@ -147,6 +211,81 @@ namespace HiddenHarbours.Tests.Art.EditMode
             float p = HullWaveMath.Phase(3f, 9f, 1e6);
             Assert.GreaterOrEqual(p, 0f);
             Assert.Less(p, 2f * Mathf.PI + 1e-5f);
+        }
+
+        [Test]
+        public void TheWavelength_IsHeldToHerLength_SoACargoHullDrawsLongerWavesThanADory()
+        {
+            // The look, 2026-11-17: at game zoom the 30 m wave of a fast hull was wider than the frame,
+            // and a dory and a cargo vessel looked alike. The longest wave is held to her length.
+            // Tuned again the same day: the waves are held SHORT (about a seventh of her length), so several
+            // crests read across the frame at game zoom; a dory's are held at the owner's floor.
+            float lobster = HullWaveMath.Wavelength(9f, 12f, S);
+            float cargo = HullWaveMath.Wavelength(6f, 60f, S);
+            float dory = HullWaveMath.Wavelength(1.5f, 4.5f, S);
+            Assert.That(S.MaxWavelengthPerMetreLength * 12f, Is.InRange(S.MinWavelengthMetres, S.MaxWavelengthMetres),
+                "premise: a 12 m hull's cap lies inside the owner's range");
+            Assert.AreEqual(S.MaxWavelengthPerMetreLength * 12f, lobster, 1e-4f, "a lobster boat at 9 m/s is held to her length");
+            Assert.AreEqual(S.MaxWavelengthMetres, cargo, 1e-4f, "a cargo hull is held only by the ceiling");
+            Assert.AreEqual(S.MinWavelengthMetres, dory, 1e-4f, "a rowed dory's waves sit at the owner's floor");
+            Assert.Greater(cargo, 2f * lobster, "a cargo hull draws clearly longer waves than a lobster boat");
+            Assert.Greater(lobster, 2f * dory, "and a lobster boat clearly longer than a dory");
+            Assert.Less(lobster, HullWaveMath.StationaryWavelength(9f), "premise: the cap is what holds her");
+
+            HullWaveSettings off = S;
+            off.MaxWavelengthPerMetreLength = 0f;
+            Assert.AreEqual(HullWaveMath.Wavelength(6f, off), HullWaveMath.Wavelength(6f, 4.5f, off), 1e-6f,
+                "0 = no length limit");
+        }
+
+        [Test]
+        public void AFastHull_KeepsHerSpacing_ByLivingShorter()
+        {
+            const int budget = 10;
+            float lambda = HullWaveMath.Wavelength(6f, 60f, S);
+            float life = HullWaveMath.Lifetime(60f, S);
+            float kept = HullWaveMath.KeptLifetime(life, 6f, lambda, budget, S);
+            Assert.Less(kept, life, "premise: a cargo hull at 6 m/s could not fit a full life");
+            Assert.Greater(kept, S.MinLifetimeSeconds, "premise: and her kept life is above the floor");
+            float interval = HullWaveMath.DepositInterval(6f, lambda, kept, budget, S.SpacingWavelengths);
+            Assert.AreEqual(S.SpacingWavelengths * lambda, 6f * interval, 1e-3f * lambda,
+                "her sources stay SpacingWavelengths apart, so arms and crests stay joined up");
+
+            float shortWave = HullWaveMath.Wavelength(9f, 12f, S);
+            float lobsterKept = HullWaveMath.KeptLifetime(HullWaveMath.Lifetime(12f, S), 9f, shortWave, budget, S);
+            Assert.AreEqual(S.MinLifetimeSeconds, lobsterKept, 1e-5f,
+                "a fast hull with short waves keeps the floor's life: her V keeps its length, her rings spread a little");
+
+            float slow = HullWaveMath.Wavelength(1.5f, 4.5f, S);
+            float doryLife = HullWaveMath.Lifetime(4.5f, S);
+            float doryKept = HullWaveMath.KeptLifetime(doryLife, 1.5f, slow, budget, S);
+            Assert.LessOrEqual(doryKept, doryLife);
+            Assert.GreaterOrEqual(doryKept, Mathf.Min(S.MinLifetimeSeconds, doryLife) - 1e-5f, "never below the floor");
+
+            HullWaveSettings off = S;
+            off.KeepSpacing = false;
+            Assert.AreEqual(life, HullWaveMath.KeptLifetime(life, 9f, lambda, budget, off), "off: the life is untouched");
+            Assert.AreEqual(life, HullWaveMath.KeptLifetime(life, 0f, lambda, budget, S), "at rest: the life is untouched");
+        }
+
+        [Test]
+        public void HerTrailFoam_ThinsAndLosesItsFan_OnlyWhileHullWavesAreOn()
+        {
+            // The look, 2026-11-17: the white trail slab and the #1281 fan hid the V, and the fan's end
+            // made a steady curved seam inside the slab.
+            Assert.IsTrue(S.RetireFoamFan);
+            Assert.Less(S.TrailFoamShare, 1f);
+            Assert.AreEqual(0f, HullWaveMath.FoamFanFraction(0.8f, S), "the fan is not laid while the waves draw the V");
+            Assert.AreEqual(0.8f * S.TrailFoamShare, HullWaveMath.TrailFoamStrength(0.8f, true, S), 1e-6f);
+            Assert.AreEqual(0.8f, HullWaveMath.TrailFoamStrength(0.8f, false, S), "a moored hull churns as before");
+
+            HullWaveSettings off = S;
+            off.Enabled = false;
+            Assert.AreEqual(0.8f, HullWaveMath.FoamFanFraction(0.8f, off), "hull waves off: the fan comes back");
+            Assert.AreEqual(0.8f, HullWaveMath.TrailFoamStrength(0.8f, true, off), "hull waves off: the trail is as before");
+            off = S;
+            off.RetireFoamFan = false;
+            Assert.AreEqual(0.8f, HullWaveMath.FoamFanFraction(0.8f, off), "the owner can keep the fan");
         }
 
         // ==== 2. THE POOL ============================================================================
@@ -352,6 +491,10 @@ namespace HiddenHarbours.Tests.Art.EditMode
             string yaml = File.ReadAllText(Path.Combine(Application.dataPath, "..", ConfigPath));
             StringAssert.Contains("\n  HullWaves:\n", yaml.Replace("\r\n", "\n"), "the owner's dials are in GameConfig");
             StringAssert.Contains("KelvinHalfAngleDegrees: 19.47", yaml);
+            StringAssert.Contains("RetireFoamFan: 1", yaml, "the fan is retired in the game's own config");
+            StringAssert.Contains("KeepSpacing: 1", yaml);
+            StringAssert.Contains("RiseShare: ", yaml, "the rise is the owner's dial");
+            StringAssert.Contains("EndFadeShare: ", yaml, "so is the end fade");
         }
 
         static HullWaveSource Source(Vector2 at, float amp, double birth) => new HullWaveSource

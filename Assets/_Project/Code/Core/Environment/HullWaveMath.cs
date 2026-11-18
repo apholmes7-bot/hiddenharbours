@@ -72,6 +72,19 @@ namespace HiddenHarbours.Core
             return Mathf.Clamp(StationaryWavelength(speed), lo, hi);
         }
 
+        /// <summary>The wavelength a hull of <paramref name="lengthMetres"/> draws: as
+        /// <see cref="Wavelength(float, in HullWaveSettings)"/>, with the longest also held to
+        /// <c>MaxWavelengthPerMetreLength · L</c> (when that dial is above 0), so a small hull draws small
+        /// waves and a long one long waves.</summary>
+        public static float Wavelength(float speed, float lengthMetres, in HullWaveSettings s)
+        {
+            float lo = Mathf.Max(s.MinWavelengthMetres, 0.05f);
+            float hi = Mathf.Max(s.MaxWavelengthMetres, lo);
+            if (s.MaxWavelengthPerMetreLength > 0f && lengthMetres > 0f)
+                hi = Mathf.Max(Mathf.Min(hi, s.MaxWavelengthPerMetreLength * lengthMetres), lo);
+            return Mathf.Clamp(StationaryWavelength(speed), lo, hi);
+        }
+
         /// <summary>Deep-water phase speed of a wave of <paramref name="wavelength"/>: <c>√(gλ/2π)</c>.</summary>
         public static float PhaseSpeed(float wavelength)
         {
@@ -107,6 +120,41 @@ namespace HiddenHarbours.Core
             float lo = Mathf.Max(s.MinLifetimeSeconds, 0.1f);
             float hi = Mathf.Max(s.MaxLifetimeSeconds, lo);
             return Mathf.Clamp(s.LifetimeSecondsPerMetreLength * Mathf.Max(lengthMetres, 0f), lo, hi);
+        }
+
+        /// <summary>
+        /// Her waves' life once her budget is counted. With <c>KeepSpacing</c> on, a life her budget
+        /// cannot cover at <c>SpacingWavelengths</c> is shortened to what it can (never below
+        /// <c>MinLifetimeSeconds</c>, nor above <paramref name="lifetime"/>), so a fast hull keeps her
+        /// rings close enough to read as one wake instead of single rings. Off, or at rest: unchanged.
+        /// </summary>
+        public static float KeptLifetime(float lifetime, float speed, float wavelength, int budget,
+                                         in HullWaveSettings s)
+        {
+            if (!s.KeepSpacing || speed <= 0f || wavelength <= 0f || budget <= 0 || lifetime <= 0f)
+                return lifetime;
+            float fit = budget * Mathf.Max(s.SpacingWavelengths, 1e-3f) * wavelength / speed / BudgetMargin;
+            float floor = Mathf.Min(Mathf.Max(s.MinLifetimeSeconds, 0.1f), lifetime);
+            return Mathf.Clamp(fit, floor, lifetime);
+        }
+
+        /// <summary>
+        /// The trail foam's fan dial while hull waves are on: 0 when <c>RetireFoamFan</c> is set (the
+        /// waves draw the V now, and the fan's widening foam hid it), else <paramref name="fanFraction"/>.
+        /// </summary>
+        public static float FoamFanFraction(float fanFraction, in HullWaveSettings s)
+        {
+            return s.Enabled && s.RetireFoamFan ? 0f : fanFraction;
+        }
+
+        /// <summary>
+        /// The trail foam's strength while hull waves are on and she makes way:
+        /// <paramref name="strength"/> times <c>TrailFoamShare</c>. Moored, or hull waves off: unchanged.
+        /// </summary>
+        public static float TrailFoamStrength(float strength, bool makingWay, in HullWaveSettings s)
+        {
+            if (!s.Enabled || !makingWay) return strength;
+            return strength * Mathf.Clamp01(s.TrailFoamShare);
         }
 
         /// <summary>
@@ -149,11 +197,31 @@ namespace HiddenHarbours.Core
         /// </summary>
         public static float TimeFade(float age, float lifetime, float decaySeconds)
         {
+            return TimeFade(age, lifetime, decaySeconds, 0f, 0f);
+        }
+
+        /// <summary>
+        /// <see cref="TimeFade(float, float, float)"/> with its two ends shaped: the ring RISES from 0 to
+        /// full over its first <paramref name="riseSeconds"/> (a smoothstep; 0 = born at full height), so a
+        /// newborn ring paints no disk round the hull before it has spread, and its end fade
+        /// <c>(remaining/endSpan)²</c> runs over only its last <paramref name="endSeconds"/> (0, or a full
+        /// life, = the whole life, which is the three-argument law exactly). Still EXACTLY 0 at the end.
+        /// </summary>
+        public static float TimeFade(float age, float lifetime, float decaySeconds, float riseSeconds,
+                                     float endSeconds)
+        {
             if (lifetime <= 0f || age >= lifetime) return 0f;
             float a = Mathf.Max(age, 0f);
-            float end = 1f - a / lifetime;
+            float endSpan = endSeconds > 0f ? Mathf.Min(endSeconds, lifetime) : lifetime;
+            float end = Mathf.Clamp01((lifetime - a) / endSpan);
             float decay = decaySeconds > 0f ? Mathf.Exp(-a / decaySeconds) : 1f;
-            return decay * end * end;
+            float rise = 1f;
+            if (riseSeconds > 0f)
+            {
+                float t = Mathf.Clamp01(a / riseSeconds);
+                rise = t * t * (3f - 2f * t);
+            }
+            return decay * end * end * rise;
         }
 
         /// <summary>Height lost to spreading round the ring: <c>1/√(1 + r/R)</c>.</summary>

@@ -30,8 +30,13 @@ namespace HiddenHarbours.Core
         [Tooltip("Shortest wave a hull draws, metres. The wave that keeps pace with a slow hull is " +
                  "shorter than a pixel reads, so it is held here.")]
         [Range(0.1f, 5f)] public float MinWavelengthMetres;
-        [Tooltip("Longest wave a hull draws, metres.")]
+        [Tooltip("Longest wave a hull draws, metres. The wave that keeps pace with a fast hull is longer " +
+                 "than the screen, so it is held here; the V keeps its angle whatever the wave length.")]
         [Range(1f, 80f)] public float MaxWavelengthMetres;
+        [Tooltip("Longest wave a hull draws, per metre of her length (0 = no length limit). Keeps a small " +
+                 "hull's waves small and lets a long one draw long waves, so a dory and a cargo vessel " +
+                 "at the same speed look different.")]
+        [Range(0f, 4f)] public float MaxWavelengthPerMetreLength;
         [Tooltip("Width of each ring's band of crests, in wavelengths. Wider = more crests per ring.")]
         [Range(0.3f, 4f)] public float PacketWavelengths;
         [Tooltip("Metres over which a ring's height halves its energy as it spreads (height falls as " +
@@ -62,6 +67,13 @@ namespace HiddenHarbours.Core
         [Tooltip("How fast a ring loses height, as a share of its life (height falls as exp(-age / " +
                  "(life x this)), and reaches exactly zero at the end of life).")]
         [Range(0.05f, 2f)] public float DecayShare;
+        [Tooltip("Share of a ring's life over which it rises from nothing to full height (0 = born at " +
+                 "full). A newborn ring at full height paints a round blot round the hull, ahead of her " +
+                 "bow too; rising in, the wake opens out of her as a V.")]
+        [Range(0f, 0.5f)] public float RiseShare;
+        [Tooltip("Share of a ring's life, at its end, over which it fades out (1 = it fades all its life). " +
+                 "Smaller keeps the arms of the V at height further behind her before they go.")]
+        [Range(0.05f, 1f)] public float EndFadeShare;
 
         [Header("Budget (fixed; no allocations)")]
         [Tooltip("Sources one hull keeps alive at once, bow and stern together. A slow hull spaces them " +
@@ -72,9 +84,14 @@ namespace HiddenHarbours.Core
         [Tooltip("Sources alive at once across every hull and every splash (at most 64, the water " +
                  "shader's bound). When full, the weakest is replaced.")]
         [Range(0, 64)] public int MaxSources;
-        [Tooltip("Spacing between a hull's sources along her track, in wavelengths. Under about a third " +
-                 "and the rings blend into one wake; much more and single rings show.")]
+        [Tooltip("Spacing between a hull's sources along her track, in wavelengths. Under one, each ring " +
+                 "carries only part of her crest and the arms of the V go faint; much over two and single " +
+                 "rings show.")]
         [Range(0.05f, 2f)] public float SpacingWavelengths;
+        [Tooltip("When her budget cannot cover a full life at SpacingWavelengths, her waves live shorter " +
+                 "instead of being laid further apart (never below MinLifetimeSeconds). On keeps the arms " +
+                 "and transverse crests of a fast hull joined up; off spreads the rings apart.")]
+        public bool KeepSpacing;
         [Tooltip("Height each source carries, per wavelength of spacing, before overlap (keeps the summed " +
                  "crest near her crest height whatever the spacing).")]
         [Range(0f, 4f)] public float SourceGain;
@@ -95,6 +112,14 @@ namespace HiddenHarbours.Core
         [Tooltip("How white the crest foam gets at full (0..1).")]
         [Range(0f, 1f)] public float CrestFoam;
 
+        [Header("Her foam while she draws waves")]
+        [Tooltip("While hull waves are on, the trail foam's widening fan (the older drawn stand-in for " +
+                 "the Kelvin wake) is not laid: the waves draw the V now. Off keeps the fan.")]
+        public bool RetireFoamFan;
+        [Tooltip("While hull waves are on and she makes way, the share of her churned trail foam she still " +
+                 "lays (1 = all of it). Thinner foam lets the waves behind her show.")]
+        [Range(0f, 1f)] public float TrailFoamShare;
+
         [Header("Other hulls")]
         [Tooltip("How much another hull's drawn ride rises and falls on these waves (0 = not at all). " +
                  "Drawn only: no force. A hull never rides her own waves, and a long hull averages out " +
@@ -112,12 +137,13 @@ namespace HiddenHarbours.Core
 
             KelvinHalfAngleDegrees = 19.47f,
             MinWavelengthMetres = 0.6f,
-            MaxWavelengthMetres = 30f,
-            PacketWavelengths = 1.2f,
+            MaxWavelengthMetres = 4f,
+            MaxWavelengthPerMetreLength = 0.12f,
+            PacketWavelengths = 0.8f,
             SpreadMetres = 4f,
 
             MinSpeed = 0.3f,
-            HeightPerMetreLength = 0.012f,
+            HeightPerMetreLength = 0.018f,
             FroudeKnee = 0.4f,
             MaxHeightMetres = 0.6f,
             BowShare = 0.7f,
@@ -125,21 +151,27 @@ namespace HiddenHarbours.Core
             LifetimeSecondsPerMetreLength = 0.8f,
             MinLifetimeSeconds = 4f,
             MaxLifetimeSeconds = 30f,
-            DecayShare = 0.45f,
+            DecayShare = 2f,
+            RiseShare = 0.12f,
+            EndFadeShare = 0.4f,
 
-            SourcesPerHull = 28,
-            BowSourceShare = 0.35f,
+            SourcesPerHull = 20,
+            BowSourceShare = 0.25f,
             MaxSources = 64,
-            SpacingWavelengths = 0.3f,
+            SpacingWavelengths = 1f,
+            KeepSpacing = true,
             SourceGain = 1f,
 
             DrawnLift = 1.5f,
-            FaceLight = 6f,
-            CrestLight = 0.3f,
-            TroughDark = 0.12f,
-            CrestFoamOnsetMetres = 0.12f,
+            FaceLight = 10f,
+            CrestLight = 0.8f,
+            TroughDark = 0.3f,
+            CrestFoamOnsetMetres = 0.3f,
             CrestFoamRampMetres = 0.15f,
-            CrestFoam = 0.55f,
+            CrestFoam = 0.3f,
+
+            RetireFoamFan = true,
+            TrailFoamShare = 0.2f,
 
             RideScale = 1f,
 

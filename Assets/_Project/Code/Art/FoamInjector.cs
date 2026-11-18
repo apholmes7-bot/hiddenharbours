@@ -111,6 +111,9 @@ namespace HiddenHarbours.Art
                  "shipped, bit for bit. The owner, 2026-09-06: \"the foam always stays to the " +
                  "original foam path, it doesnt widen over time and fade away.\"")]
         [Range(0f, 1f)] [SerializeField] private float _spreadKelvinFraction = 0.8f;
+        // This frame's fan: _spreadKelvinFraction, or 0 while hull waves retire the fan. The trail's
+        // sample step (TrailStepMeters) keeps the serialized dial, so toggling never re-cuts the track.
+        private float _fanNow = 0.8f;
 
         [Tooltip("THE ENVELOPE the churn spreads to, in multiples of the band's own half-width — " +
                  "where the widening band's outer taper reaches exactly zero, and therefore how far " +
@@ -413,6 +416,12 @@ namespace HiddenHarbours.Art
             float sway = Vector2.Dot(through, new Vector2(heading.y, -heading.x));
             HullFoamSettings hullFoam = GameServices.HullFoam;
             float halfLength = _sternOffsetMeters;
+            // While the water draws her real waves, her trail foam thins and its fan is not laid, so
+            // the waves behind her show (HullWaveSettings: TrailFoamShare, RetireFoamFan).
+            HullWaveSettings hullWaves = GameServices.HullWaves;
+            float strength = Mathf.Max(HullWaveMath.TrailFoamStrength(
+                _strength, _way != VesselWay.Moored, in hullWaves), 0f);
+            _fanNow = HullWaveMath.FoamFanFraction(_spreadKelvinFraction, in hullWaves);
 
             // The trail is shed from the end that TRAILS: the bow, when she makes way astern (the owner,
             // 2026-11-02: it "looks off when going in reverse"). A swap of ends is a jump of the anchor,
@@ -480,10 +489,10 @@ namespace HiddenHarbours.Art
             float rate01 = FoamBuffer.Injection01(horizontalSpeed, verticalRate,
                                                   _wakeSpeedKnee, wakeExponent, _wakeWeight,
                                                   _slapRateKnee, _slapExponent, _slapWeight);
-            float amount = rate01 * Mathf.Max(_depositPerSecond, 0f) * dt * Mathf.Max(_strength, 0f);
+            float amount = rate01 * Mathf.Max(_depositPerSecond, 0f) * dt * strength;
             // The FRESHNESS mark (the buffer's age channel) is the dt-INDEPENDENT rate, scaled by this
             // hull's own contribution dial but never by the frame's dt — a clock reset, not a deposit.
-            float vigour = Mathf.Clamp01(rate01 * Mathf.Max(_strength, 0f));
+            float vigour = Mathf.Clamp01(rate01 * strength);
 
             // ---- the DISPERSAL (PR 11b) ---------------------------------------------------------
             // The share of this hull's churn that leaves her band is taken OUT of the stamp above and
@@ -501,7 +510,7 @@ namespace HiddenHarbours.Art
             float wake01 = Mathf.Min(rate01,
                 FoamBuffer.Shape01(horizontalSpeed, _wakeSpeedKnee, wakeExponent)
                 * Mathf.Max(_wakeWeight, 0f));
-            float depositRate = wake01 * Mathf.Max(_depositPerSecond, 0f) * Mathf.Max(_strength, 0f);
+            float depositRate = wake01 * Mathf.Max(_depositPerSecond, 0f) * strength;
             FoamDispersal dispersal = BuildDispersal(position, depositRate, horizontalSpeed, dt,
                                                      out float share);
             if (share > 0f && rate01 > 1e-6f) amount *= 1f - share * (wake01 / rate01);
@@ -531,13 +540,13 @@ namespace HiddenHarbours.Art
                 // The owed lead time goes to whichever arm lays it, so the two arms share it and the bow
                 // lays what one bar across her did.
                 if (leadTurn) { _leadSeconds = 0f; _leadStarboard = !_leadStarboard; } else _sideSeconds = 0f;
-                float perSecond = Mathf.Max(_depositPerSecond, 0f) * Mathf.Max(_strength, 0f);
+                float perSecond = Mathf.Max(_depositPerSecond, 0f) * strength;
                 float stampAmount = stamp.Rate01 * perSecond * seconds;
                 _trailOwed += amount;
                 _trailOwedVigour = Mathf.Max(_trailOwedVigour, vigour);
                 _pending = new FoamInjection(HullPointLaid(stamp.From), HullPointLaid(stamp.To), stamp.Radius,
                                              Mathf.Clamp01(stampAmount),
-                                             Mathf.Clamp01(stamp.Rate01 * Mathf.Max(_strength, 0f)), in dispersal);
+                                             Mathf.Clamp01(stamp.Rate01 * strength), in dispersal);
                 _hasPending = stampAmount > 1e-5f || dispersal.IsActive;
             }
             else
@@ -696,7 +705,7 @@ namespace HiddenHarbours.Art
                                              out float share)
         {
             share = 0f;
-            float slope = FoamBuffer.SpreadSlope(_spreadKelvinFraction);
+            float slope = FoamBuffer.SpreadSlope(_fanNow);
             float r0 = RadiusMeters;
             if (slope <= 0f || depositRate <= 0f || dt <= 0f) return default;
 
@@ -719,8 +728,8 @@ namespace HiddenHarbours.Art
             // can never fall between texels, and on its own advance so it cannot outrun itself. The
             // gain divides by it, so the frames a parcel spends under the sweeping edge SUM to the
             // envelope rather than to a multiple of it.
-            float edgeWidth = FoamBuffer.EdgeWidth(FoamBuffer.EdgeSlope(_spreadKelvinFraction, r0, wMax) * speed, dt);
-            float gain = FoamBuffer.EdgeGain(depositRate, r0, wMax, _spreadKelvinFraction, dt,
+            float edgeWidth = FoamBuffer.EdgeWidth(FoamBuffer.EdgeSlope(_fanNow, r0, wMax) * speed, dt);
+            float gain = FoamBuffer.EdgeGain(depositRate, r0, wMax, _fanNow, dt,
                                              edgeWidth);
             if (gain <= 0f) { share = 0f; return default; }
 
