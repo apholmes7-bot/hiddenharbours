@@ -99,6 +99,17 @@ namespace HiddenHarbours.Core
             state.Dirt = CleanlinessMath.Rise(state.Dirt, bump);
         }
 
+        public void ReportActivity(DirtActivity kind, double gameHours)
+        {
+            if (!(gameHours > 0d) || double.IsInfinity(gameHours)) return;
+            PlayerCleanlinessDto state = State();
+            if (state == null) return;
+            float rate = CleanlinessMath.RateOf(kind, _settings());
+            if (!(rate > 0f) || float.IsInfinity(rate)) return;
+            SettleNow(state);
+            state.Dirt = CleanlinessMath.Rise(state.Dirt, rate * gameHours);
+        }
+
         public void BeginWash(WashStationDef station)
         {
             if (station == null || !station.Washes) return;

@@ -436,9 +436,9 @@ namespace HiddenHarbours.Core
         /// (a galley, a house kitchen, a microwave) runs recipes through; the output goes into the supply
         /// locker, where <see cref="Food"/> eats it. Never null: a default over the shipped recipes and foods
         /// is made on first read; a test assigns its own. The runner in this slot is subscribed to
-        /// <see cref="GameLoaded"/> and drops every cook job on a load or new game (jobs are session-only and
-        /// must never deliver into a different save); replacing it unsubscribes the old one. Cleared by
-        /// <see cref="Reset"/>.
+        /// <see cref="GameLoaded"/> and rebinds on a load or new game, so what is cooking is always the loaded
+        /// save's own <see cref="SaveData.CookJobs"/> and a job never delivers into a different save; replacing
+        /// it unsubscribes the old one. Cleared by <see cref="Reset"/>.
         /// FLAG lead-architect: new Core contract (cooking).
         /// </summary>
         public static RecipeRunner Cooking
@@ -1577,7 +1577,7 @@ namespace HiddenHarbours.Core
             FoodPerishability = null;    // → NothingSpoilsPerishability.Instance; likewise never null
             KitchenStorageCatalog.Clear();
             Farm = null;                 // → a fresh default on next read; drops its catalog and baseline
-            Cooking = null;              // drops every session-only cook job
+            Cooking = null;              // drops the runner; the save's cook rows stay with the save
             Food = null;                 // → a fresh default on next read; drops its loaded food book
             Relationships = null;        // → a fresh default on next read; reseeds from the shipped ties
             Crew = null;                 // → a fresh, empty roster on next read
@@ -1589,6 +1589,7 @@ namespace HiddenHarbours.Core
             Hands = null;
             CatchHands = null;
             PlayerHold = null;
+            PlayerStorage.Clear();       // no container outlives the services that listed it
             CurrentRegionId = null;
             SwellClimates.Clear();
             PendingArrivalKey = null;

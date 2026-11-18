@@ -11,19 +11,23 @@ using Object = UnityEngine.Object;
 namespace HiddenHarbours.Tests.EditMode
 {
     /// <summary>
-    /// <b>WHO SELLS THE LORAN.</b> The receiver's offer is listed at the St Peters general store counter
-    /// (<c>seller.leblancs</c>), on the everyday shelf beside the depth sounder, and is bought through the
-    /// same <see cref="InstrumentShop"/> seam: the book quotes the offer's own price, a buy charges exactly
-    /// that, records the unit against the hull the player is aboard in the save's instrument locker, and
-    /// raises <see cref="InstrumentPurchased"/>. Owning it for a hull is what lights the receiver on a helm
-    /// with room for it, and nothing else does. Every price here is read from the shipped asset, so a
-    /// retune of the placeholder never turns this red.
+    /// <b>WHO SELLS THE LORAN.</b> The receiver's offer names one seller, the Nine Mile Creek boat/gear
+    /// wholesaler (<c>seller.nmc_boat_gear_wholesaler</c>, owner ruling 11-16), at the approved price; the
+    /// St Peters placeholder counter no longer stocks it. It is bought through the same
+    /// <see cref="InstrumentShop"/> seam as the sounder: the book quotes the offer's own price, a buy charges
+    /// exactly that, records the unit against the hull the player is aboard in the save's instrument locker,
+    /// and raises <see cref="InstrumentPurchased"/>. Owning it for a hull is what lights the receiver on a
+    /// helm with room for it, and nothing else does. The purchase checks read the price from the shipped
+    /// asset; the approved figure itself is pinned once, in <c>WholesalerStockTests</c>.
+    ///
+    /// <para>The wholesaler has no keeper or counter vendor in a scene yet, so the offer is on file but
+    /// unlisted; the row tests hand the book the offer directly rather than sweeping a shelf.</para>
     /// </summary>
     public class LoranSellerTests
     {
         private const string OfferPath = "Assets/_Project/Data/Resources/Catalog/Instruments/LoranOffer.asset";
         private const string CapeHelmPath = "Assets/_Project/Data/Boats/Helms/CapeIslanderHelm.asset";
-        private const string LeBlancs = "seller.leblancs";
+        private const string BoatGearWholesaler = "seller.nmc_boat_gear_wholesaler";
         private const string Cape = "boat.cape_islander";
 
         private sealed class FakeWallet : IWallet
@@ -71,7 +75,7 @@ namespace HiddenHarbours.Tests.EditMode
 
         private InstrumentShop MakeShop()
         {
-            var go = new GameObject("GeneralStoreCounter");
+            var go = new GameObject("BoatGearWholesaleCounter");
             _spawned.Add(go);
             return go.AddComponent<InstrumentShop>();
         }
@@ -90,34 +94,35 @@ namespace HiddenHarbours.Tests.EditMode
         // ---- the offer, as data ----------------------------------------------------------------------
 
         [Test]
-        public void TheOffer_IsTheLoranInstrument_ListedAtTheGeneralStore_OnTheEverydayShelf()
+        public void TheOffer_IsTheLoranInstrument_NamingOnlyTheBoatGearWholesaler_OnTheEverydayShelf()
         {
             InstrumentOffer offer = Offer();
             Assert.AreEqual(BoatEquipment.LoranId, offer.Id, "the offer's id is the one the helm fit reads");
             Assert.Greater(offer.Price, 0, "a priced offer: the price lives on the asset");
-            Assert.IsTrue(offer.Catalog.Listed, "the receiver is in a seller's book now");
-            Assert.IsFalse(offer.Catalog.IsOrphaned);
-            Assert.IsTrue(offer.Catalog.IsStockedBy(LeBlancs), "Marguerite's counter stocks it, beside the sounder");
+            CollectionAssert.AreEqual(new[] { BoatGearWholesaler }, offer.Catalog.Sellers,
+                                      "the boat/gear wholesaler is the receiver's only seller");
             Assert.AreEqual(CatalogSection.Gear, offer.Catalog.Section,
-                            "her book opens on its only shelf; an instrument on another shelf would never be seen");
+                            "a counter's book opens on its everyday shelf; an instrument on another shelf would never be seen");
         }
 
         [Test]
-        public void HerBook_HasTheLoranOnce_AndNoOtherSellerDoes()
+        public void TheIslandCounter_NoLongerSellsIt()
         {
-            Assert.AreEqual(1, CatalogSource.For<InstrumentOffer>(LeBlancs).Count(o => o.Id == BoatEquipment.LoranId));
+            Assert.IsFalse(CatalogSource.For<InstrumentOffer>("seller.leblancs").Any(o => o.Id == BoatEquipment.LoranId),
+                           "the St Peters placeholder still lists the Loran");
             foreach (string other in new[] { "seller.nmc_chandlery", "seller.hectors_barrel", "seller.nmc_yard" })
                 Assert.IsFalse(CatalogSource.For<InstrumentOffer>(other).Any(o => o.Id == BoatEquipment.LoranId),
-                               $"{other} has no instrument counter to sell it from");
+                               $"{other} is not the boat/gear wholesaler");
         }
 
         // ---- the book's row ---------------------------------------------------------------------------
 
-        private List<BuyRow> RowsAtHerCounter(InstrumentShop shop, int money, SaveData save)
+        private List<BuyRow> RowsAtTheWholesaler(InstrumentShop shop, int money, SaveData save)
         {
             var arms = new BuyCatalog.SellerArms(null, null, null, null, null, shop, null);
+            var stock = new BuyCatalog.CatalogStock(null, null, null, null, null, new[] { Offer() }, null);
             var rows = new List<BuyRow>();
-            BuyCatalog.Build(LeBlancs, arms, money, save, null, rows);
+            BuyCatalog.BuildFrom(arms, stock, money, save, null, rows);
             return rows;
         }
 
@@ -127,16 +132,16 @@ namespace HiddenHarbours.Tests.EditMode
             InstrumentOffer offer = Offer();
             InstrumentShop shop = MakeShop();
 
-            BuyRow rich = RowsAtHerCounter(shop, offer.Price, Aboard(Cape)).Single(r => r.Id == BoatEquipment.LoranId);
+            BuyRow rich = RowsAtTheWholesaler(shop, offer.Price, Aboard(Cape)).Single(r => r.Id == BoatEquipment.LoranId);
             Assert.AreEqual(BuyRowKind.Instrument, rich.Quote.Kind);
             Assert.AreEqual(offer.Price, rich.Quote.Price, "the row quotes the price on the asset, not a number in code");
             Assert.IsTrue(rich.Quote.CanBuy, "exactly the price buys it");
             Assert.AreSame(shop, rich.Vendor, "Confirm goes to the counter's instrument seam");
 
-            BuyRow poor = RowsAtHerCounter(shop, offer.Price - 1, Aboard(Cape)).Single(r => r.Id == BoatEquipment.LoranId);
+            BuyRow poor = RowsAtTheWholesaler(shop, offer.Price - 1, Aboard(Cape)).Single(r => r.Id == BoatEquipment.LoranId);
             Assert.IsFalse(poor.Quote.CanBuy, "one short does not");
 
-            BuyRow ashore = RowsAtHerCounter(shop, offer.Price * 2, Aboard("")).Single(r => r.Id == BoatEquipment.LoranId);
+            BuyRow ashore = RowsAtTheWholesaler(shop, offer.Price * 2, Aboard("")).Single(r => r.Id == BoatEquipment.LoranId);
             Assert.IsFalse(ashore.Quote.CanBuy, "with no boat there is nothing to bolt it into");
         }
 

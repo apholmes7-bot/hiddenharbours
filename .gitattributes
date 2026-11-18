@@ -408,3 +408,8 @@ docs/art/rigs/cormorantIsoRig.js                     text eol=lf
 docs/art/rigs/gameplay/cormorantIsoRig.gameplay.json text eol=lf
 docs/art/rigs/birds/**/*.json                        text eol=lf
 docs/art/rigs/birds/**/*.cjs                         text eol=lf
+
+# The camper room rig and its sidecar. The sidecar stamps the rig's LF sha256 and the generator compares the
+# committed file byte for byte, so a CRLF checkout would drift both for line endings alone.
+docs/art/rigs/camper-iso-kit/camperInteriorRig.js                    text eol=lf
+docs/art/rigs/camper-iso-kit/camperInteriorRig.clipper.interior.json  text eol=lf linguist-language=json linguist-generated

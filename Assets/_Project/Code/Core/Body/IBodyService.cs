@@ -91,9 +91,11 @@ namespace HiddenHarbours.Core
         /// <paramref name="units"/> of <paramref name="activity"/> for this body (<see cref="StrengthMath.ActivityKcal"/>),
         /// raises hunger by that (<see cref="INeedsService.Spend"/>; what does not fit burns mass, never below
         /// the floor), trains the fitness kinds it names, and publishes <see cref="ActivityReported"/>.
+        /// With <paramref name="train"/> false, still spends effort and publishes the event, but leaves
+        /// every fitness anchor unchanged (for gym units past their daily credit). Existing callers train.
         /// Returns the kcal spent. No save, no def or a non-positive amount does nothing and returns 0.
         /// </summary>
-        double ReportActivity(ActivityDef activity, float units);
+        double ReportActivity(ActivityDef activity, float units, bool train = true);
     }
 
     /// <summary>What a meal did.</summary>

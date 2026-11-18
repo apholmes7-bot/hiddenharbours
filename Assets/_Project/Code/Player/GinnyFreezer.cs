@@ -75,7 +75,12 @@ namespace HiddenHarbours.Player
         {
             _reach.Enable();
             EventBus.Subscribe<GameLoaded>(OnGameLoaded);
+            // One of the player's storage containers (what the gift rows list): listed on enable, taken
+            // off on destroy, never on disable, so a region hop does not drop it (PlayerStorage).
+            PlayerStorage.Register(this);
         }
+
+        private void OnDestroy() => PlayerStorage.Unregister(this);
 
         private void OnDisable()
         {

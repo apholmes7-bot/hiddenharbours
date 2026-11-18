@@ -41,7 +41,7 @@ namespace HiddenHarbours.Boats
     /// the per-oar state <see cref="BoatController"/> already computed.</para>
     /// </summary>
     [DisallowMultipleComponent]
-    public class DoryOarMeshLayer : MonoBehaviour
+    public class DoryOarMeshLayer : MonoBehaviour, IOarStroke
     {
         [Header("Stroke feel (tunable — defaults shared with the sprite oars)")]
         [Tooltip("Frames/sec the 8-frame stroke cycle plays at a full-effort pull. Same default as " +
@@ -99,6 +99,49 @@ namespace HiddenHarbours.Boats
         /// <summary>The starboard oar's signed state while it is rowing, else 0.</summary>
         public float StarboardOarState { get; private set; }
 
+        /// <summary>True while either oar is drawn rowing on a live, wired layer: what the rower's
+        /// body follows (<see cref="IOarStroke"/>).</summary>
+        public bool IsStroking => _stroking && isActiveAndEnabled && IsWired;
+
+        /// <summary>The leading oar's stroke phase in [0, 1), 0 = catch, 0.5 = release; 0 while not
+        /// stroking. Read from the SAME phase the oar was just posed from, so the body cannot drift
+        /// from the blade.</summary>
+        public float StrokePhase => IsStroking ? _strokePhase : 0f;
+
+        /// <summary>The part of the stroke <see cref="StrokePhase"/> is in.</summary>
+        public OarStrokePart StrokePart => OarStrokeMath.PartOf(IsStroking, _strokePhase);
+
+        private bool _stroking;
+        private float _strokePhase;
+
+        /// <summary>
+        /// The phase (in stroke columns) of the oar the rower's body should follow, or false when
+        /// neither is rowing. One body, two oars: it follows the one pulling HARDER (a turn on one oar
+        /// is rowed with that oar), and port on a tie, so a straight pull reads one oar consistently.
+        /// </summary>
+        public static bool LeadingOarPhase(bool portStroking, float portPhase, float portState,
+                                           bool starStroking, float starPhase, float starState,
+                                           out float phase)
+        {
+            if (portStroking && (!starStroking || Mathf.Abs(portState) >= Mathf.Abs(starState)))
+            {
+                phase = portPhase;
+                return true;
+            }
+            if (starStroking)
+            {
+                phase = starPhase;
+                return true;
+            }
+            phase = 0f;
+            return false;
+        }
+
+        /// <summary>The <see cref="IOarStroke"/> phase of an oar at <paramref name="phaseColumns"/> of
+        /// its <see cref="DoryOarMath.StrokeColumns"/>-column cycle.</summary>
+        public static float StrokePhaseOf(float phaseColumns) =>
+            OarStrokeMath.PhaseFromOarTurns(phaseColumns / DoryOarMath.StrokeColumns, DoryOarMeshPose.RowCatchTurns);
+
         /// <summary>True when <paramref name="column"/> is one of the stroke cycle's own columns
         /// rather than the trailing or shipped pose.</summary>
         public static bool IsStrokeColumn(int column) => column >= 0 && column < DoryOarMath.StrokeColumns;
@@ -137,7 +180,11 @@ namespace HiddenHarbours.Boats
 
         private void LateUpdate()
         {
-            if (!IsWired) return;
+            if (!IsWired)
+            {
+                _stroking = false;
+                return;
+            }
 
             float dt = Time.deltaTime;
             bool underPower = MotorIsRunning;
@@ -183,6 +230,11 @@ namespace HiddenHarbours.Boats
             StarboardStroking = IsStrokeColumn(starColumn);
             PortOarState = PortStroking ? portState : 0f;
             StarboardOarState = StarboardStroking ? starState : 0f;
+
+            // What the rower's body reads: the same decision, the same phase.
+            _stroking = LeadingOarPhase(PortStroking, _portPhase, PortOarState,
+                                        StarboardStroking, _starPhase, StarboardOarState, out float leading);
+            _strokePhase = _stroking ? StrokePhaseOf(leading) : 0f;
 
             _port.LocalRotation = DoryOarMeshPose.Rotation(PortSide, PortPose);
             _star.LocalRotation = DoryOarMeshPose.Rotation(StarboardSide, StarboardPose);
