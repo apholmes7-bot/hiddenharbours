@@ -2339,6 +2339,18 @@ col.rgb = lerp(col.rgb, bed.rgb, saturate(bedT) * saturate(bed.a) * bedIn);
   column darkens it again: whether both stay is the art director's call. A plant is absorbed at the depth of the
   ground under each of its pixels, not at its own height. The plants ship with the floor: alone they would bend
   against the unbent bake.
+- **The plant field's weed (2026-11-17, the kelp beds).** The procedural plant field (`PlantField`, the Plant
+  shader) joins the same list, chunk by chunk: a chunk whose species has a tide ladder and which sorts under the
+  sea plane (its submerged order, or the lying order, which also sits under the Sea) takes bit 27 and registers,
+  while both `PlantFieldDefinition.UnderWater` and `GameConfig.ShallowsSubmergedProps` are on
+  (`PlantField.JoinsUnderWater`). The Plant shader's own `HHUnderWater` pass draws the chunk's albedo and clump
+  tone, premultiplied and unlit, so the depth darkening, caustics and grade stay the column's alone. Two things are
+  the weed's own, both data: a per-species hue (`PlantSpeciesDef.UnderWaterTint` and `UnderWaterTintAmount`, which
+  take a sheet baked in a cold wet ramp back toward its colour in air at each pixel's own brightness, so the column
+  does not blue it twice; sugar kelp 0.8, every other species 0), and a soft surge sway along the wind
+  (`PlantFieldDefinition.UnderWaterSwayM`, `UnderWaterSwayPeriodS`, `UnderWaterSwayWavelengthM`; 0.12 m, 7 s, 9 m)
+  in place of the wind bend and walker push. Membership is rebuilt with the chunk on the field's slow tick, so
+  nothing is per frame.
 
 #### Why the sea draws them: the three routes
 

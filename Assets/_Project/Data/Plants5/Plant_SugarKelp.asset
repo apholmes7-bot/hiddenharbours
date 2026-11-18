@@ -3392,3 +3392,5 @@ MonoBehaviour:
       height: 51
     Pivot: {x: 57, y: 38}
     HeightM: 0.4013339
+  UnderWaterTint: {r: 0.4, g: 0.38, b: 0.16, a: 1}
+  UnderWaterTintAmount: 0.8

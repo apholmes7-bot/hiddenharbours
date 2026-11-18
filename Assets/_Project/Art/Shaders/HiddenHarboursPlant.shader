@@ -13,6 +13,13 @@ Shader "HiddenHarbours/Plant"
         _SkyAmount ("Sky amount", Float) = 0.8
         _SunAmount ("Sun amount", Float) = 1.1
         _Bounce ("Ground bounce", Float) = 0.12
+        // The weed under the water (the HHUnderWater pass below). PlantField writes all five per chunk from
+        // PlantFieldDefinition and PlantSpeciesDef; these defaults only show on a bare material.
+        _UnderWaterSway ("Under water sway metres", Float) = 0.12
+        _UnderWaterSwayPeriod ("Under water sway period seconds", Float) = 7
+        _UnderWaterSwayWavelength ("Under water sway wavelength metres", Float) = 9
+        _UnderWaterTint ("Under water tint", Color) = (0.4, 0.38, 0.16, 1)
+        _UnderWaterTintAmount ("Under water tint amount", Range(0, 1)) = 0
     }
     SubShader
     {
@@ -31,6 +38,8 @@ Shader "HiddenHarbours/Plant"
             TEXTURE2D(_NormalTex); TEXTURE2D(_LightTex); TEXTURE2D(_DetailTex);
             CBUFFER_START(UnityPerMaterial)
             float _Sway, _FootRadius, _FootStrength, _FootDirSoftness, _SkyAmount, _SunAmount, _Bounce;
+            float _UnderWaterSway, _UnderWaterSwayPeriod, _UnderWaterSwayWavelength, _UnderWaterTintAmount;
+            float4 _UnderWaterTint;
             CBUFFER_END
             float4 _WindWorld, _SunDir;
             float _FoliageSnow, _ShadowStrength, _SunElevation;
@@ -97,6 +106,74 @@ Shader "HiddenHarbours/Plant"
                 albedo.rgb = lerp(albedo.rgb, half3(0.81, 0.87, 0.89), snow * saturate(_FoliageSnow));
                 // The scene overlay applies the day and night grade after this pass.
                 return albedo;
+            }
+            ENDHLSL
+        }
+        // ---- THE WEED UNDER THE WATER (the sea's HHUnderWater list) -----------------------------------
+        // Drawn only for a chunk carrying UnderWaterRegistry.RenderingLayer (PlantField.JoinsUnderWater: a
+        // tidal species under the sea plane, both switches on), into the target the sea lays over its floor
+        // (IsoFacetHullFeature). ALBEDO ONLY, premultiplied, as HiddenHarboursLitSprite's pass draws a placed
+        // shore plant: the sea's column darkens and blues it with depth, bends it with the floor, adds the
+        // caustics and grades it, the one law the floor beside it takes, so nothing of that is copied here.
+        // No walker push and no wind bend: under the surface the weed rocks with the swell's surge instead.
+        // The rows are the pass above's, in the same order, so both passes share one UnityPerMaterial.
+        Pass
+        {
+            Name "HHPlantUnderWater"
+            Tags { "LightMode"="HHUnderWater" }
+            Blend One OneMinusSrcAlpha
+            Cull Off ZWrite Off ZTest Always
+            HLSLPROGRAM
+            #pragma vertex UnderWaterVert
+            #pragma fragment UnderWaterFrag
+            #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
+            TEXTURE2D(_MainTex); SAMPLER(sampler_MainTex);
+            CBUFFER_START(UnityPerMaterial)
+            float _Sway, _FootRadius, _FootStrength, _FootDirSoftness, _SkyAmount, _SunAmount, _Bounce;
+            float _UnderWaterSway, _UnderWaterSwayPeriod, _UnderWaterSwayWavelength, _UnderWaterTintAmount;
+            float4 _UnderWaterTint;
+            CBUFFER_END
+            float4 _WindWorld;
+            #define TONES_N 8
+            float4 _PlantTone[TONES_N];
+            // The HLSL twin of PlantField.UnderWaterSurge: along the wind (east when it is calm), a sine of
+            // the swell's period travelling one wavelength across the bed. 0.1 is
+            // PlantFieldDefinition.MinUnderWaterSwaySpan.
+            float2 PlantUnderWaterSurge(float2 root, float time, float2 windWorld, float sway, float period, float wavelength)
+            {
+                float2 dir = dot(windWorld, windWorld) > 1e-8 ? normalize(windWorld) : float2(1.0, 0.0);
+                float phase = 6.28318530718 * (time / max(period, 0.1) - dot(root, dir) / max(wavelength, 0.1));
+                return dir * (sway * sin(phase));
+            }
+            // The HLSL twin of PlantField.UnderWaterTint: the species' hue at the pixel's own brightness.
+            float3 PlantUnderWaterTint(float3 albedo, float3 tint, float amount)
+            {
+                const float3 lumaWeights = float3(0.299, 0.587, 0.114);
+                float luma = dot(albedo, lumaWeights);
+                float3 hue = tint * (luma / max(dot(tint, lumaWeights), 1e-3));
+                return lerp(albedo, saturate(hue), saturate(amount));
+            }
+            struct Input { float3 vertex : POSITION; float2 uv : TEXCOORD0; float4 root : TEXCOORD1; };
+            struct Output { float4 vertex : SV_POSITION; float2 uv : TEXCOORD0; nointerpolation half3 tone : TEXCOORD1; };
+            Output UnderWaterVert(Input v)
+            {
+                Output o;
+                float3 wp = TransformObjectToWorld(v.vertex);
+                // The pass above's bend: 0 at the holdfast, the full sway at the frond tips.
+                float bend = v.root.z * v.root.z;
+                float toneStep = floor(v.root.w * 0.5);
+                wp.xy += PlantUnderWaterSurge(v.root.xy, _Time.y, _WindWorld.xy, _UnderWaterSway,
+                                              _UnderWaterSwayPeriod, _UnderWaterSwayWavelength) * bend;
+                o.tone = toneStep < 0.5 ? half3(1, 1, 1) : _PlantTone[(int)min(toneStep, TONES_N - 1)].rgb;
+                o.vertex = TransformWorldToHClip(wp); o.uv = v.uv; return o;
+            }
+            half4 UnderWaterFrag(Output i) : SV_Target
+            {
+                half4 albedo = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, i.uv); clip(albedo.a - 0.01);
+                albedo.rgb *= i.tone;
+                albedo.rgb = PlantUnderWaterTint(albedo.rgb, _UnderWaterTint.rgb, _UnderWaterTintAmount);
+                // Premultiplied: overlapping fronds composite in ONE target, as the sea's read expects.
+                return half4(albedo.rgb * albedo.a, albedo.a);
             }
             ENDHLSL
         }

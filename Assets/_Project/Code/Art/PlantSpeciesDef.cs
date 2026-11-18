@@ -12,6 +12,14 @@ namespace HiddenHarbours.Art
         public float[] TideLadder = Array.Empty<float>();
         public PlantSheetPage[] Pages = Array.Empty<PlantSheetPage>();
         public PlantCell[] Cells = Array.Empty<PlantCell>();
+        // Declared after Cells so binding them adds lines at the foot of the asset and moves no baked byte.
+        [Tooltip("The hue this species takes under the water (PlantField's under-water pass), at each pixel's " +
+                 "own brightness. The sea then darkens and blues it with depth, so this is its colour in air.")]
+        public Color UnderWaterTint = new Color(0.40f, 0.38f, 0.16f, 1f);
+        [Tooltip("How far the under-water drawing moves toward that hue: 0 draws the baked sheet as it is; 1 " +
+                 "takes the hue wholly. For a sheet whose wet states are baked in a cold water ramp, which the " +
+                 "sea's own column would otherwise blue twice.")]
+        [Range(0f, 1f)] public float UnderWaterTintAmount;
 
         public PlantCell Find(int stage, int season, int variant, int tide)
         {
