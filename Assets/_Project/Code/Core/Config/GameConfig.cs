@@ -1519,6 +1519,12 @@ namespace HiddenHarbours.Core
                  "through StinkLinesSettings.Current.")]
         public StinkLinesSettings StinkLines = StinkLinesSettings.Default;
 
+        [Header("Wash fixtures (cleanliness, the look)")]
+        [Tooltip("Owner ask 2026-11-17: baths and basins fill and drain, the shower runs, the water closet " +
+                 "flushes, the player climbs into the bath, and suds froth while a soaped wash runs. The " +
+                 "picture only; nothing here is saved. Read through WashVisualsSettings.Current.")]
+        public WashVisualsSettings WashVisuals = WashVisualsSettings.Default;
+
         public float SecondsPerHour => SecondsPerDay / 24f;
         public float SecondsPerWeek => SecondsPerDay * DaysPerWeek;
         public float SecondsPerSeason => SecondsPerDay * DaysPerSeason;
