@@ -94,7 +94,7 @@ namespace HiddenHarbours.App.Editor
             }
         }
 
-        /// <summary>St Peters: the general store counter's nine vendors, all Marguerite's.</summary>
+        /// <summary>St Peters: the general store counter's eight vendors, all Marguerite's.</summary>
         public static readonly Region StPeters = new Region("StPeters", StPetersLayerRefresh.ScenePath, new[]
         {
             new Seller("GeneralStoreCounter", typeof(GearShop), "gear.rod", StPetersBuilder.StoreSellerId),
@@ -104,11 +104,31 @@ namespace HiddenHarbours.App.Editor
             new Seller("GeneralStoreCounter", typeof(SupplyShop), "supply.oatcakes", StPetersBuilder.StoreSellerId),
             new Seller("GeneralStoreCounter", typeof(SupplyShop), "supply.tinned_beans", StPetersBuilder.StoreSellerId),
             new Seller("GeneralStoreCounter", typeof(InstrumentShop), "instrument.depth_sounder", StPetersBuilder.StoreSellerId),
-            new Seller("GeneralStoreCounter", typeof(InstrumentShop), "instrument.loran", StPetersBuilder.StoreSellerId),
             new Seller("GeneralStoreCounter", typeof(LicenseVendor), "license.clam", StPetersBuilder.StoreSellerId),
         });
 
-        /// <summary>Nine Mile Creek: the yard's shed and dory yard, the harbourmaster, the chandlery, and Hector's barrel.</summary>
+        /// <summary>
+        /// The two wholesalers' counters (ruling 11-16), folded into <see cref="NineMileCreek"/>. Their roots
+        /// were placed by <see cref="NmcWholesalerKeepers.Place"/>, which wires the vendors itself, so the plan
+        /// for these rows is empty once the scene holds them (<c>docs/design/economy-item-sellers.md</c> §5.1).
+        ///
+        /// <para>Only the offers that name a wholesaler and nobody else are here. The bait, the clam shovel and
+        /// the clam bucket also name <c>seller.leblancs</c>, so listing them needs a St Peters vendor as well
+        /// (guard 4 counts every seller a listed offer names); and the rake, tongs, sack and basket wait for
+        /// hand-gathering. See <see cref="NmcWholesalerKeepers.Waiting"/>.</para>
+        ///
+        /// <para>Declared above <see cref="NineMileCreek"/> so it is initialised first when folded in.</para>
+        /// </summary>
+        public static readonly IReadOnlyList<Seller> NineMileCreekWholesalers = new[]
+        {
+            new Seller(NmcWholesalerKeepers.BoatGearCounterRoot, typeof(InstrumentShop), "instrument.loran", NmcWholesalerKeepers.BoatGearSellerId),
+            new Seller(NmcWholesalerKeepers.BoatGearCounterRoot, typeof(InstrumentShop), "instrument.fish_finder", NmcWholesalerKeepers.BoatGearSellerId),
+            new Seller(NmcWholesalerKeepers.BoatGearCounterRoot, typeof(InstrumentShop), "instrument.gps", NmcWholesalerKeepers.BoatGearSellerId),
+            new Seller(NmcWholesalerKeepers.FishingGearCounterRoot, typeof(GearShop), "gear.rod_rack", NmcWholesalerKeepers.FishingGearSellerId),
+        };
+
+        /// <summary>Nine Mile Creek: the yard's shed and dory yard, the harbourmaster, the chandlery, Hector's barrel,
+        /// and the two wholesalers.</summary>
         public static readonly Region NineMileCreek = new Region("NineMileCreek", NineMileCreekScenePath, new[]
         {
             new Seller(NineMileCreekWharfYard.CatalogueName, typeof(Shipwright), "boat.punt", NineMileCreekBuilder.SellerYard),
@@ -118,7 +138,7 @@ namespace HiddenHarbours.App.Editor
             new Seller("GeneralStore", typeof(GearShop), "gear.rod", NineMileCreekBuilder.SellerChandlery),
             new Seller(NineMileCreekWharfYard.DoryTradeName, typeof(Shipwright), "boat.dory", NineMileCreekBuilder.SellerYard),
             new Seller(NineMileCreekWharfYard.OutboardTradeName, typeof(Shipwright), "boat.dory_outboard", NineMileCreekBuilder.SellerHectorsBarrel),
-        });
+        }.Concat(NineMileCreekWholesalers).ToArray());
 
         public static readonly IReadOnlyList<Region> Regions = new[] { StPeters, NineMileCreek };
 
@@ -351,7 +371,7 @@ namespace HiddenHarbours.App.Editor
         static string NameOf(Doc go) => go.Field("m_Name") ?? "the counter";
 
         /// <summary>The one serialised field of a vendor class that holds its listing.</summary>
-        static FieldInfo WaresField(Type kind)
+        internal static FieldInfo WaresField(Type kind)
         {
             List<FieldInfo> hits = kind.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
                 .Where(f => typeof(ICatalogListing).IsAssignableFrom(f.FieldType) &&
