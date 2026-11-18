@@ -124,6 +124,12 @@ namespace HiddenHarbours.Core
         /// it reproduces to within 4 %. See <see cref="CatchSize"/> for why the law is a cube root.</summary>
         public const float DefaultFishLengthPerKgCubeRootMeters = 0.477f;
 
+        /// <summary>The default for <see cref="MinDrawnFishLengthPx"/>: 12 px, a little under two hand
+        /// widths of the 64 px figure. Measured against the catch pass 2 held sheets it lifts only the
+        /// drawings shorter than that (the small mackerel and flounder, the small and middle herring) and
+        /// leaves every other rung alone.</summary>
+        public const float DefaultMinDrawnFishLengthPx = 12f;
+
         /// <summary>
         /// The default for <see cref="VehicleDoorSweepSeconds"/> — how long a vehicle door takes to
         /// travel from shut to fully open.
@@ -647,6 +653,16 @@ namespace HiddenHarbours.Core
                  "cube of length; this is that law inverted, fitted to the rig's own four species. " +
                  "⚠️ Not a feel dial — move it only if the fish rig's proportions move.")]
         [Min(0f)] public float FishLengthPerKgCubeRootMeters = DefaultFishLengthPerKgCubeRootMeters;
+
+        [Tooltip("The shortest a fish may be DRAWN, in sprite pixels, wherever it is drawn: on the " +
+                 "line, in his hands, in the tote. A catch whose size rung is drawn shorter than this " +
+                 "is shown with the smallest rung of its species that is at least this long (or the " +
+                 "largest, if none is). One rule for all three places, so the fish on the line, in the " +
+                 "hands and in the tote is always the same drawing. The catch's weight, value and " +
+                 "one-hand rule are untouched: only the picture is chosen. 0 turns the floor off. " +
+                 "Default 12 lifts only the tiniest drawings; 16 lifts every mackerel and flounder " +
+                 "to the large rung, and higher starts to erase the size ladder.")]
+        [Min(0f)] public float MinDrawnFishLengthPx = DefaultMinDrawnFishLengthPx;
 
         [Header("Helm throttle (the notched single-lever throttle)")]
         [Tooltip("Feel of the diegetic notched throttle on engine hulls: how many detents from neutral to " +

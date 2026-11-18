@@ -65,5 +65,55 @@ namespace HiddenHarbours.Core
                                      CubeRoot(UnityEngine.Mathf.Max(0f, weightKg)));
 
         static float CubeRoot(float v) => v <= 0f ? 0f : UnityEngine.Mathf.Pow(v, 1f / 3f);
+
+        /// <summary>
+        /// <b>The readability floor on a baked size ladder</b>: fed every rung (its weight and how long
+        /// its fish is drawn, px), it answers the weight a catch should be DRAWN at so that no rung shorter
+        /// than <c>minLengthPx</c> is picked while a longer one exists. The floor is the lightest rung
+        /// that is long enough; with none long enough, the heaviest rung (the most legible drawing there
+        /// is). A weight below the floor is raised to it, a weight above it is left alone, and then the
+        /// ladder picks by <see cref="LengthGap"/> exactly as it always did.
+        ///
+        /// <para>A struct fed in a loop, not a method over an array, so the two ladders that ask it (the
+        /// fight's rungs and the catch art table's sized kinds, different types) share one rule without
+        /// allocating. A rung with no measured length (0) counts as long enough, so data from before the
+        /// measurement behaves exactly as before; a floor of 0 or less is off.</para>
+        /// </summary>
+        public struct DrawnLengthFloor
+        {
+            readonly float _minLengthPx;
+            float _lightestReadableKg;
+            float _heaviestKg;
+            bool _anyReadable;
+            bool _any;
+
+            public DrawnLengthFloor(float minLengthPx)
+            {
+                _minLengthPx = minLengthPx;
+                _lightestReadableKg = float.MaxValue;
+                _heaviestKg = 0f;
+                _anyReadable = false;
+                _any = false;
+            }
+
+            /// <summary>Count one rung of the ladder.</summary>
+            public void Consider(float rungKg, float drawnLengthPx)
+            {
+                _any = true;
+                if (rungKg > _heaviestKg) _heaviestKg = rungKg;
+                bool readable = _minLengthPx <= 0f || drawnLengthPx <= 0f || drawnLengthPx >= _minLengthPx;
+                if (!readable) return;
+                _anyReadable = true;
+                if (rungKg < _lightestReadableKg) _lightestReadableKg = rungKg;
+            }
+
+            /// <summary>The weight to pick the drawing by: <paramref name="weightKg"/> raised to the floor.</summary>
+            public float Apply(float weightKg)
+            {
+                if (!_any || _minLengthPx <= 0f) return weightKg;
+                float floorKg = _anyReadable ? _lightestReadableKg : _heaviestKg;
+                return weightKg < floorKg ? floorKg : weightKg;
+            }
+        }
     }
 }

@@ -70,6 +70,12 @@ namespace HiddenHarbours.Art
             [Tooltip("The weight this rung was drawn at, kg, read from the fish rig's own anchors " +
                      "(FishIsoAnchors.json). 0 = unsized: the kind is drawn at one size whatever it weighs.")]
             public float SizeKg;
+
+            [Tooltip("How long this rung's fish is DRAWN, in sprite px: the longest side of the held " +
+                     "sheet's opaque bounds over every facing's still frame. Measured off the sheet by the " +
+                     "library builder; the readability floor (GameConfig.MinDrawnFishLengthPx) skips a " +
+                     "rung drawn shorter than it. 0 = unmeasured: the floor leaves the rung alone.")]
+            public int HeldLengthPx;
         }
 
         [Serializable]
@@ -196,6 +202,14 @@ namespace HiddenHarbours.Art
             return e.Held == null || e.Held.Length == 0 ? 0 : Mathf.Max(1, e.HeldFacings);
         }
 
+        /// <summary>How long this kind's held fish is drawn, px (<see cref="KindEntry.HeldLengthPx"/>);
+        /// 0 when unmeasured or unknown.</summary>
+        public int HeldLengthPxFor(string kind)
+        {
+            if (_kindLookup == null) BuildLookups();
+            return kind != null && _kindLookup.TryGetValue(kind, out var e) ? e.HeldLengthPx : 0;
+        }
+
         /// <summary>This kind in a hand as a facet mesh, or null when the held-prop bake makes none
         /// for it.</summary>
         public HeldPropMeshDef HeldMeshFor(string kind)
@@ -241,15 +255,26 @@ namespace HiddenHarbours.Art
         /// fight's ladder picks by), so a 2 kg cod is held and laid as the small cod and a 12 kg cod as the
         /// large one. A kind with no sized rungs answers itself, so a table with no ladder (the shellfish,
         /// a test's hand-made table) behaves exactly as <see cref="KindFor"/>. On an exact tie the lighter
-        /// rung wins, as it does on the line.
+        /// rung wins, as it does on the line. The configured readability floor applies first
+        /// (<see cref="ReadableWeightKg(string, float)"/>).
         /// </summary>
         public string SizedKindFor(string speciesId, float weightKg)
+            => SizedKindFor(speciesId, weightKg, GameServices.MinDrawnFishLengthPx);
+
+        /// <summary>
+        /// <see cref="SizedKindFor(string, float)"/> with the readability floor stated rather than read
+        /// from the config: the weight is first raised by <see cref="ReadableWeightKg(string, float, float)"/>,
+        /// so a rung drawn shorter than <paramref name="minDrawnLengthPx"/> is never picked while a longer
+        /// one exists. 0 = no floor.
+        /// </summary>
+        public string SizedKindFor(string speciesId, float weightKg, float minDrawnLengthPx)
         {
             string kind = KindFor(speciesId);
             if (kind == null) return null;
             if (_ladderLookup == null) BuildLookups();
             if (!_ladderLookup.TryGetValue(kind, out List<KindEntry> rungs) || rungs.Count == 0) return kind;
 
+            weightKg = ReadableWeightKg(speciesId, weightKg, minDrawnLengthPx);
             KindEntry best = null;
             float bestGap = float.MaxValue;
             for (int i = 0; i < rungs.Count; i++)
@@ -263,6 +288,37 @@ namespace HiddenHarbours.Art
             }
             return best != null ? best.Kind : kind;
         }
+
+        /// <summary>
+        /// <b>The weight a catch is DRAWN at</b>: its own, raised to the lightest rung of its species'
+        /// ladder whose drawing is at least <paramref name="minDrawnLengthPx"/> long (the largest rung
+        /// when none is), so a fish too small to read in his hands is shown with its species' smallest
+        /// readable drawing (<see cref="CatchSize.DrawnLengthFloor"/>). Only the picture moves: the item's
+        /// own weight, value and carry rule never see this number.
+        ///
+        /// <para><b>One rule, three places.</b> The hands and the tote reach it through
+        /// <see cref="SizedKindFor(string, float)"/>, and the fight on the line asks it before picking its
+        /// own rung (<c>FishArtLibrary.LineRungFor</c>), so all three draw the same fish. A species with
+        /// no ladder, an unmeasured rung (<see cref="KindEntry.HeldLengthPx"/> 0) or a floor of 0 leaves
+        /// the weight as it is.</para>
+        /// </summary>
+        public float ReadableWeightKg(string speciesId, float weightKg, float minDrawnLengthPx)
+        {
+            if (minDrawnLengthPx <= 0f) return weightKg;
+            string kind = KindFor(speciesId);
+            if (kind == null) return weightKg;
+            if (_ladderLookup == null) BuildLookups();
+            if (!_ladderLookup.TryGetValue(kind, out List<KindEntry> rungs) || rungs.Count == 0) return weightKg;
+
+            var floor = new CatchSize.DrawnLengthFloor(minDrawnLengthPx);
+            for (int i = 0; i < rungs.Count; i++) floor.Consider(rungs[i].SizeKg, rungs[i].HeldLengthPx);
+            return floor.Apply(weightKg);
+        }
+
+        /// <summary><see cref="ReadableWeightKg(string, float, float)"/> at the configured floor
+        /// (<see cref="GameServices.MinDrawnFishLengthPx"/>).</summary>
+        public float ReadableWeightKg(string speciesId, float weightKg)
+            => ReadableWeightKg(speciesId, weightKg, GameServices.MinDrawnFishLengthPx);
 
         /// <summary>The visual kind a hold species draws as (mapped, else the fallback).</summary>
         public string KindFor(string speciesId)

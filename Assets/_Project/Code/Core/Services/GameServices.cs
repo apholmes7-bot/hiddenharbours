@@ -1269,6 +1269,12 @@ namespace HiddenHarbours.Core
             Config != null ? Config.FishLengthPerKgCubeRootMeters
                            : GameConfig.DefaultFishLengthPerKgCubeRootMeters;
 
+        /// <summary>The readability floor on a fish's DRAWN length, sprite px (see
+        /// <see cref="GameConfig.MinDrawnFishLengthPx"/>), same contract as
+        /// <see cref="MaxOneHandFishLengthMeters"/>: the config's value, or the default with none.</summary>
+        public static float MinDrawnFishLengthPx =>
+            Config != null ? Config.MinDrawnFishLengthPx : GameConfig.DefaultMinDrawnFishLengthPx;
+
         /// <summary>The tide table's owner tunables (VS-06) — how far the almanac page looks ahead and
         /// how finely it hunts each turn. Same contract as <see cref="WaveField"/>, including the
         /// <c>Config != null</c> discipline (never <c>?.</c>/<c>??</c> on a <c>UnityEngine.Object</c>).

@@ -17,7 +17,7 @@ MonoBehaviour:
   Category: 2
   Rarity: 1
   Flavor:
-  Sprite: {fileID: -1702975071, guid: 6c74475469629a8408eaacea7df286ba, type: 3}
+  Sprite: {fileID: 21300000, guid: 9b6b73bbbbab404e839983bbcf9956ce, type: 3}
   RegionIds:
   - region.coddle_cove
   - region.st_peters
