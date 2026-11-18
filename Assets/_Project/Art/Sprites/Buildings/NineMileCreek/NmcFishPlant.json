@@ -1,0 +1,195 @@
+{
+ "schema": "nmc-building-art@1",
+ "building": "NmcFishPlant",
+ "kit": "nmc-fish-plant-kit/nmcFishPlant.js 1.0.0",
+ "bakeSky": {
+  "time": 14,
+  "cloud": 0.1,
+  "wind": 0.3
+ },
+ "ppu": 32,
+ "dir": 4,
+ "centreWorld": [
+  -265,
+  -40
+ ],
+ "footprintMetres": {
+  "eastWest": 48,
+  "northSouth": 28
+ },
+ "frame": "local x = -(world east offset), local y = -(world north offset); 1 m north draws sin 40 = 0.643 units up the screen",
+ "sortPivotYOffsetUnits": -8.999,
+ "sortNote": "YSortSprite.SortPivotYOffset on the Shell: the front (south) wall’s foot, as the greybox shell sorts",
+ "sprites": {
+  "exterior": {
+   "file": "NmcFishPlant_exterior.png",
+   "sprite": "NmcFishPlant_exterior",
+   "w": 1653,
+   "h": 788,
+   "pivotPx": [
+    785,
+    471
+   ],
+   "pivotUnity": [
+    0.475,
+    0.402
+   ],
+   "worldUnits": [
+    51.656,
+    24.625
+   ],
+   "doorPx": [
+    1425,
+    783.7
+   ],
+   "words": [
+    {
+     "id": "words.nmc_fish_plant",
+     "cornersPx": [
+      [
+       1309.8,
+       674.9
+      ],
+      [
+       1533.8,
+       674.9
+      ],
+      [
+       1533.8,
+       689.6
+      ],
+      [
+       1309.8,
+       689.6
+      ]
+     ]
+    },
+    {
+     "id": "words.nmc_fish_plant_notice",
+     "cornersPx": [
+      [
+       1492.2,
+       711
+      ],
+      [
+       1524.2,
+       711
+      ],
+      [
+       1524.2,
+       730.6
+      ],
+      [
+       1492.2,
+       730.6
+      ]
+     ]
+    },
+    {
+     "id": "words.nmc_fish_plant_gable",
+     "cornersPx": [
+      [
+       1555.2,
+       354.7
+      ],
+      [
+       1555.2,
+       181.9
+      ],
+      [
+       1555.2,
+       157.4
+      ],
+      [
+       1555.2,
+       330.2
+      ]
+     ]
+    }
+   ],
+   "lightsPx": [
+    {
+     "id": "light.public_door",
+     "atPx": [
+      1425,
+      702.1
+     ]
+    },
+    {
+     "id": "light.staff_door",
+     "atPx": [
+      497,
+      702.1
+     ]
+    },
+    {
+     "id": "light.service_door",
+     "atPx": [
+      177,
+      699.7
+     ]
+    },
+    {
+     "id": "light.intake1",
+     "atPx": [
+      1557.8,
+      376.4
+     ]
+    },
+    {
+     "id": "light.intake2",
+     "atPx": [
+      1557.8,
+      211.8
+     ]
+    },
+    {
+     "id": "light.outbound",
+     "atPx": [
+      1557.8,
+      129.5
+     ]
+    },
+    {
+     "id": "light.gable_flood",
+     "atPx": [
+      1557.8,
+      237
+     ]
+    }
+   ]
+  },
+  "cutaway": {
+   "file": "NmcFishPlant_cutaway.png",
+   "sprite": "NmcFishPlant_cutaway",
+   "w": 1549,
+   "h": 619,
+   "pivotPx": [
+    773,
+    319
+   ],
+   "pivotUnity": [
+    0.499,
+    0.485
+   ],
+   "worldUnits": [
+    48.406,
+    19.344
+   ],
+   "doorPx": [
+    1413,
+    631.7
+   ],
+   "words": [],
+   "lightsPx": []
+  }
+ },
+ "door": {
+  "wall": "S",
+  "world": [
+   -245,
+   -49
+  ],
+  "note": "the shell’s DoorWorld (NmcBuildingShells): the threshold; the art’s door lands on it"
+ }
+}

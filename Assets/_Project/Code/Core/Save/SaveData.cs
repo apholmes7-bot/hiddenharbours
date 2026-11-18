@@ -451,14 +451,16 @@ namespace HiddenHarbours.Core
         public List<NpcGiftDayDto> NpcGiftDays = new();
 
         /// <summary>
-        /// <b>Cook jobs running on placed stations</b> (kitchens and microwaves). Added in v24 as data only:
-        /// the kitchens lane writes and restores it. Older saves start with nothing cooking.
+        /// <b>Cook jobs running on placed stations</b> (kitchens and microwaves). Added in v24; a row is
+        /// written when a job starts, removed when it finishes, and restored on load by
+        /// <see cref="CookJobSave"/>. Older saves start with nothing cooking.
         /// </summary>
         public List<CookJobDto> CookJobs = new();
 
         /// <summary>
-        /// <b>The Loran numbers each hull's receiver remembers</b>, as time differences. Added in v24 as data
-        /// only: the Loran instrument host writes and restores it. Older saves start with none.
+        /// <b>The Loran numbers each hull's receiver remembers</b>, as time differences. Added in v24; read and
+        /// written per hull by a <c>LoranWaypointStore</c> bound to this save (<c>LoranWaypointSave</c>).
+        /// Older saves start with none.
         /// </summary>
         public List<LoranWaypointDto> HullLoranWaypoints = new();
     }

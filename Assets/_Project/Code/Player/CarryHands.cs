@@ -96,8 +96,9 @@ namespace HiddenHarbours.Player
         [SerializeField] private CarryAnchorTableDef _carryAnchors;
 
         [SerializeField, Tooltip("The catch ART table — which held sprite each landed species draws " +
-                                 "in the hand. Null is survivable: a catch then falls back to its UI " +
-                                 "icon, which is what every catch did before pass 2 baked held poses.")]
+                                 "in the hand. Empty = the shared fish art table's (Resources/" +
+                                 "FishArtLibrary), so a scene saved before this field still draws the " +
+                                 "new held art; only with neither does a catch fall back to its UI icon.")]
         private HiddenHarbours.Art.CatchItemLibrary _catchArt;
 
         [Header("How it is held (greybox tunables, rule 6)")]
@@ -254,7 +255,7 @@ namespace HiddenHarbours.Player
                 return false;
             }
 
-            CarriableCatch catchObject = CarriableCatch.Create(item, transform, _catchArt);
+            CarriableCatch catchObject = CarriableCatch.Create(item, transform, EffectiveCatchArt);
             CarryHandSide preferred = PreferredHand(catchObject);
             if (_slots.TryTake(catchObject, cradle, preferred, out CarryHandSide side) != HandSlotRefusal.None)
             {
@@ -713,6 +714,12 @@ namespace HiddenHarbours.Player
 
         /// <summary>The catch art table currently wired, or null. For tests / tooling.</summary>
         public HiddenHarbours.Art.CatchItemLibrary CatchArt => _catchArt;
+
+        /// <summary>The catch art table a landed catch is actually drawn from: the wired one, else the
+        /// shared fish art table's (St Peters and Nine Mile Creek were saved before the field existed).
+        /// Asked once per landed catch, never per frame.</summary>
+        public HiddenHarbours.Art.CatchItemLibrary EffectiveCatchArt
+            => FishArtLibrary.ResolveCatchArt(_catchArt, FishArtLibrary.Shared);
 
         /// <summary>The hand-prop table currently wired, or null. For tests / tooling.</summary>
         public CarryAnchorTableDef CarryAnchors => _carryAnchors;

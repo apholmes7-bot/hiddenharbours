@@ -138,15 +138,14 @@ namespace HiddenHarbours.App.Editor
             // The held MESHES (ADR 0053), read off the held-prop bake's own folder and matched by the
             // state names the defs carry — the rig's own species and fills, never typed here.
             HeldPropMeshDef[] heldMeshes = HeldMeshes();
-            int meshed = 0;
+            int meshed = 0, sizedKinds = 0;
             foreach (string kind in finfish)
             {
                 Sprite[] variants = DeckLayVariants($"{FishIso}/Fish_{kind}_deck.png", kind, ref missing);
                 var entry = new CatchItemLibrary.KindEntry { Kind = kind, Variants = variants };
-                // A carried fish hangs from one hand by the TAIL. The two-arm cradle is the fight's
-                // to choose, because only the fight knows the fish's weight (RodFightPresenter picks
-                // a size rung, and the rung's own hand count decides gill vs tail). A container's
-                // catch has no weight to ask about.
+                // A carried fish hangs from one hand by the TAIL. The two-arm cradle of the land pose
+                // is the fight's to draw (RodFightPresenter picks a size rung, and the rung's own hand
+                // count decides gill vs tail); carried, every rung hangs by the tail.
                 if (WireHeld(entry, $"{FishIso}/Fish_{kind}_tail.png", Directions)) held++;
                 // The same fish by the same tail, as a mesh. Nothing draws it yet (PR 4).
                 entry.HeldMesh = heldMeshes.FirstOrDefault(
@@ -154,6 +153,31 @@ namespace HiddenHarbours.App.Editor
                 if (entry.HeldMesh != null) meshed++;
                 kinds.Add(entry);
                 if (variants.Length > 0) wired++;
+
+                // THE SIZE LADDER. The unsuffixed stem is the middle rung; its _sm/_lg siblings are the
+                // same fish drawn at the other two weights the rig published. Each becomes a sized
+                // kind ('cod_sm' SizeOf 'cod'), so a catch held in the hands or laid in a tote is
+                // drawn at its own size (CatchItemLibrary.SizedKindFor) rather than always the middle.
+                foreach ((string suffix, float kg) in RodKitImporter.RungWeights(kind))
+                {
+                    if (suffix.Length == 0) { entry.SizeKg = kg; continue; }
+                    string sized = kind + suffix;
+                    Sprite[] lays = DeckLayVariants($"{FishIso}/Fish_{sized}_deck.png", sized, ref missing);
+                    var rung = new CatchItemLibrary.KindEntry
+                    {
+                        Kind = sized, Variants = lays, SizeOf = kind, SizeKg = kg,
+                        // One held mesh per species today (baked at the middle rung); the size rungs
+                        // share it until the held-prop bake makes one per rung.
+                        HeldMesh = entry.HeldMesh,
+                    };
+                    if (WireHeld(rung, $"{FishIso}/Fish_{sized}_tail.png", Directions)) held++;
+                    kinds.Add(rung);
+                    sizedKinds++;
+                }
+                if (entry.SizeKg <= 0f)
+                    Debug.LogWarning($"[CatchItemLibraryBuilder] '{kind}' has no size ladder in " +
+                                     $"'{RodKitImporter.FishAnchorsPath}', so it is drawn at one size whatever " +
+                                     "it weighs. Re-run the catch pass 2 fish anchors rewrite.");
             }
             foreach (HeldPropMeshDef d in heldMeshes)
                 if (d.Family == HeldPropMeshDef.FishFamily && !finfish.Contains(d.Variant))
@@ -188,7 +212,8 @@ namespace HiddenHarbours.App.Editor
             AssetDatabase.Refresh();
 
             summary = $"{(created ? "Created" : "Refreshed")} '{LibraryPath}': " +
-                      $"{wired}/{kinds.Count} kinds with art, {held} with HELD art, " +
+                      $"{wired}/{kinds.Count - sizedKinds} kinds with art (+{sizedKinds} size rungs), " +
+                      $"{held} with HELD art, " +
                       $"{meshed} with a HELD MESH, {bucketMeshes.Length} bucket states as meshes, " +
                       $"{species.Count} species mapped" +
                       (missing > 0 ? $", {missing} sheet(s) MISSING (see the warnings above)" : "") +

@@ -1032,9 +1032,10 @@ namespace HiddenHarbours.Player
         /// still turns with the boat, and one walking the deck faces their walk — and because both terms are
         /// re-read from the authority every frame there is no delta anywhere for drift to accumulate in.</para>
         ///
-        /// <para><b>At the helm</b> the bearing is the bow: a pilot is at their station, facing forward, and
-        /// the deck walk is disabled so there is no step to read anyway. This is exactly the pinned
-        /// <c>DrawnHeadingDegrees()</c> that shipped, restated through the one composition.</para>
+        /// <para><b>At the helm</b> the bearing is the station's, read off the hull's visual asset
+        /// (<see cref="BoatVisualDef.PilotDeckBearingDegrees"/>): the bow at a wheel or tiller, the stern
+        /// at the oars (a rower sits facing aft). The deck walk is disabled there, so there is no step to
+        /// read anyway.</para>
         ///
         /// <para><b>Ashore</b> nothing is held and the presenter's own motion read stands untouched.</para>
         ///
@@ -1074,8 +1075,9 @@ namespace HiddenHarbours.Player
             }
             else
             {
-                // At the helm: the station's own facing, and a body that is not travelling.
-                _deckBearingDegrees = 0f;
+                // At the helm: the station's own facing (the hull's answer: the bow at a wheel, the
+                // stern at the oars), and a body that is not travelling.
+                _deckBearingDegrees = PilotDeckBearingForMode();
                 _deckTracked = false;
             }
 
@@ -1267,6 +1269,15 @@ namespace HiddenHarbours.Player
                 bool bodyVisible = BodyShownOnRoot;
                 if (_bodyRenderer.enabled != bodyVisible) _bodyRenderer.enabled = bodyVisible;
             }
+        }
+
+        /// <summary>Which way the pilot faces at this hull's station, as a deck bearing: the HULL's own
+        /// answer, read off her visual asset (the stern for a rower, the bow at a wheel). A boat with
+        /// no visual def wired (greybox, tests) faces the bow, as it always did.</summary>
+        private float PilotDeckBearingForMode()
+        {
+            BoatVisualDef visual = _boat != null && _boat.Hull != null ? _boat.Hull.Visual : null;
+            return visual != null ? visual.PilotDeckBearingDegrees() : BoatVisualDef.HelmPilotDeckBearingDegrees;
         }
 
         /// <summary>Which stance this mode asks for. On deck it is the deck brace; at the helm it is the

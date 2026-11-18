@@ -121,6 +121,9 @@ namespace HiddenHarbours.App.Editor
             public Block[] Blocks = Array.Empty<Block>();
             public Fitting[] Fittings = Array.Empty<Fitting>();
             public Dressing[] Outside = Array.Empty<Dressing>();
+            /// <summary>The trade this building houses, as its <c>SellerDef</c> id; empty for a building with no
+            /// counter. The shell only names it: offers and stock stay where they are until the owner rules.</summary>
+            public string SellerId = "";
             public string PrefabPath => PrefabFolder + "/" + Name + ".prefab";
         }
 
@@ -141,6 +144,12 @@ namespace HiddenHarbours.App.Editor
         static readonly Color Wood = new Color(0.55f, 0.40f, 0.26f);
         static readonly Color ToteBlue = new Color(0.25f, 0.45f, 0.70f);
         static readonly Color DoorMark = new Color(0.30f, 0.30f, 0.32f);
+        static readonly Color StorefrontBlue = new Color(0.60f, 0.67f, 0.74f);
+        static readonly Color WarehouseTan = new Color(0.70f, 0.66f, 0.56f);
+        static readonly Color GlassCase = new Color(0.62f, 0.78f, 0.82f);
+        static readonly Color Porcelain = new Color(0.92f, 0.92f, 0.90f);
+        static readonly Color PotGreen = new Color(0.36f, 0.52f, 0.38f);
+        static readonly Color RopeYellow = new Color(0.82f, 0.72f, 0.40f);
 
         // ---- the fish plant --------------------------------------------------------------------------
 
@@ -293,8 +302,129 @@ namespace HiddenHarbours.App.Editor
             },
         };
 
+        // ---- the two wholesalers (owner's ruling of 2026-11-16) ----------------------------------------
+
+        /// <summary>
+        /// <b>The marine electronics and boat gear wholesaler.</b> Owner, 11-16: "The loran and all current boat
+        /// electronics will be sold at a boat/gear wholesaler in NMC this is a new building. Its not a boatyard
+        /// which does hull sales and engine upgrades." It takes the Water Street lot the main street key scene
+        /// calls the east block (<c>structure.nmc_main_street_east_block</c>, no trade assigned), just east of the
+        /// chandlery's lot, and stands in for that block's ground floor until the key scene is placed (the
+        /// placement then takes this building rather than doubling it).
+        ///
+        /// <para>Census (11-17, the committed scene and the road network): the south wall stands 0.3 m behind the
+        /// frontage walk's edge, so the door opens onto the walk; Water Street's carriageway is 4 m south, the
+        /// east court's turning end and the east lane further off to the north. Nothing placed stands on the lot.
+        /// 12 m along the street by 9 m deep, one storey of shop: the shop floor with the trade counter, a
+        /// glass case for the electronics and shelf markers, and behind it the stock room, with the staff
+        /// microwave and the staff washroom (toilet and sink) that the kitchens and bathrooms plan gives every
+        /// shop (<c>docs/world/kitchens-bathrooms-placement-plan.md</c>, "Shops get a staff Toilet and Sink in
+        /// the back room, plus a staff Micro").</para>
+        ///
+        /// <para>No offer moves here yet: the stock and its prices are a proposal the owner has not ruled on.</para>
+        /// </summary>
+        public static readonly Shell BoatGearWholesaler = new Shell
+        {
+            Name = "NmcBoatGearWholesaler", Step = "22-boat-gear-wholesaler",
+            Why = "the marine electronics and boat gear wholesaler on Water Street (ruling 11-16), the east block's lot",
+            SellerId = "seller.nmc_boat_gear_wholesaler",
+            Centre = new Vector2(-148.4f, 235.9f),
+            WidthMetres = 12f, LengthMetres = 9f, EavesMetres = 7f,
+            DoorOnPlusY = false, DoorAcrossMetres = 0f,
+            ShellTint = StorefrontBlue, FloorTint = PublicFloor,
+            Zones = new[]
+            {
+                new Zone("ShopFloor", -6, 6, -4.5f, 1.2f, PublicFloor, true),
+                new Zone("StockRoom", -6, 3.6f, 1.2f, 4.5f, DryFloor),
+                new Zone("StaffWashroom", 3.6f, 6, 1.2f, 4.5f, ColdFloor),
+            },
+            Blocks = new[]
+            {
+                // the stock room's wall, with its doorway (the room convention's width) behind the counter
+                new Block("BackWallWest", -6f, -0.1f, 1.05f, 1.35f, 3f, Partition, true),
+                new Block("BackWallEast", 1.3f, 6f, 1.05f, 1.35f, 3f, Partition, true),
+                // the washroom opens off the stock room
+                new Block("WashroomWall", 3.45f, 3.75f, 1.35f, 2.8f, 3f, Partition, true),
+                // the shop: the trade counter, the electronics case on the back wall, shelf markers
+                new Block("TradeCounter", 1.8f, 4.4f, -0.9f, -0.4f, 1.05f, Wood, true),
+                new Block("ElectronicsCase", -4.2f, -1.0f, 0.45f, 0.95f, 1.2f, GlassCase, true),
+                new Block("WallShelfWest", -5.7f, -5.2f, -3.6f, 0.9f, 2.0f, Wood, true),
+                new Block("ShelfGondola", -3.4f, -2.6f, -3.0f, -1.0f, 1.5f, Wood, true),
+                // the stock room: shelving, a pallet, the staff microwave
+                new Block("StockShelving", -5.7f, -1.0f, 3.6f, 4.2f, 2.2f, Wood, true),
+                new Block("StockPallet", -5.0f, -3.6f, 1.8f, 3.0f, 1.0f, Wood, true),
+                new Block("StaffMicrowave", 1.6f, 3.2f, 3.7f, 4.2f, 0.95f, Steel, true),
+                // the washroom's fixtures (markers)
+                new Block("Toilet", 4.8f, 5.5f, 3.3f, 4.1f, 0.45f, Porcelain, false),
+                new Block("Sink", 4.0f, 4.6f, 3.7f, 4.2f, 0.85f, Porcelain, false),
+            },
+        };
+
+        /// <summary>
+        /// <b>The fishing gear wholesaler.</b> Owner, 11-16: "There is also a fishing gear wholesaler in NMC which
+        /// is another building". A warehouse west of the lumber yard's fence (the plaza key scene's lumber shed
+        /// stands at (-279, 111), its fence at x -288), on open meadow that the census (11-17) found clear of
+        /// every road, path and placed thing; the yard's out-drive is 10 m east. The customer door is in the
+        /// south wall, the face the view reads (a north door stands behind the shell and hides the player at
+        /// it); the ground south of the wall is open meadow down to the hedge line, and the 4 m strip between
+        /// the east wall and the yard fence leads round to it from the out-drive (no walk is laid yet: a
+        /// follow-up for the road lane).
+        ///
+        /// <para>18 m by 14 m, one storey. At the front, by the door: the trade floor with the counter and shelf
+        /// markers, and a bulk display of pots, rope and net bales. Behind, through a doorway behind the counter:
+        /// the warehouse with pallet racking, and off it the staff room with the staff microwave and the staff
+        /// washroom (the kitchens and bathrooms plan's shop rule).</para>
+        ///
+        /// <para>No offer moves here yet, as for the boat gear wholesaler.</para>
+        /// </summary>
+        public static readonly Shell FishingGearWholesaler = new Shell
+        {
+            Name = "NmcFishingGearWholesaler", Step = "23-fishing-gear-wholesaler",
+            Why = "the fishing gear wholesaler's warehouse west of the lumber yard (ruling 11-16)",
+            SellerId = "seller.nmc_fishing_gear_wholesaler",
+            Centre = new Vector2(-301f, 125f),
+            WidthMetres = 18f, LengthMetres = 14f, EavesMetres = 6f,
+            DoorOnPlusY = false, DoorAcrossMetres = 2f,
+            ShellTint = WarehouseTan, FloorTint = Concrete,
+            Zones = new[]
+            {
+                new Zone("TradeFloor", -1, 9, -7, -0.5f, PublicFloor, true),
+                new Zone("BulkDisplay", -9, -1, -7, -0.5f, PublicFloor, true),
+                new Zone("Warehouse", -9, 4.5f, -0.5f, 7, DryFloor),
+                new Zone("StaffRoom", 4.5f, 9, -0.5f, 3.5f, StaffFloor),
+                new Zone("StaffWashroom", 4.5f, 9, 3.5f, 7, ColdFloor),
+            },
+            Blocks = new[]
+            {
+                // the back wall, with the warehouse doorway behind the counter, in line with the front door
+                new Block("BackWallWest", -9f, 1.3f, -0.65f, -0.35f, 3.5f, Partition, true),
+                new Block("BackWallEast", 2.7f, 9f, -0.65f, -0.35f, 3.5f, Partition, true),
+                // the staff room opens off the warehouse, the washroom off the staff room
+                new Block("StaffWallSouth", 4.35f, 4.65f, -0.35f, 0.6f, 3f, Partition, true),
+                new Block("StaffWallNorth", 4.35f, 4.65f, 2.0f, 7f, 3f, Partition, true),
+                new Block("WashroomWallWest", 4.65f, 6.5f, 3.35f, 3.65f, 3f, Partition, true),
+                new Block("WashroomWallEast", 7.9f, 9f, 3.35f, 3.65f, 3f, Partition, true),
+                // the trade floor: the counter east of the way in (the seller stands behind it), shelf markers
+                new Block("TradeCounter", 3.0f, 7.5f, -3.0f, -2.4f, 1.05f, Wood, true),
+                new Block("WallShelfEast", 8.2f, 8.7f, -6.4f, -1.0f, 2.2f, Wood, true),
+                new Block("TackleGondola", 0.2f, 1.0f, -6.0f, -3.5f, 1.6f, Wood, true),
+                // the bulk display
+                new Block("PotStack", -5.0f, -3.0f, -6.5f, -4.5f, 1.8f, PotGreen, true),
+                new Block("NetBales", -5.0f, -3.4f, -2.6f, -1.2f, 1.2f, DarkSteel, true),
+                new Block("RopeCoils", -2.6f, -1.4f, -2.4f, -1.2f, 0.8f, RopeYellow, true),
+                // the warehouse: pallet racking and a floor stack, clear of the aisle from the doorway
+                new Block("PalletRackWest", -8.6f, -7.4f, 0.4f, 6.6f, 3.2f, Steel, true),
+                new Block("PalletRackNorth", -6.5f, 3.8f, 5.6f, 6.6f, 3.2f, Steel, true),
+                new Block("FloorPallets", -4f, 0f, 1.5f, 3.5f, 1.4f, Wood, true),
+                // the staff fixtures (markers)
+                new Block("StaffMicrowave", 8.3f, 8.8f, 0.4f, 1.8f, 0.95f, Steel, true),
+                new Block("Toilet", 7.9f, 8.6f, 5.8f, 6.6f, 0.45f, Porcelain, false),
+                new Block("Sink", 5.0f, 5.8f, 6.2f, 6.7f, 0.85f, Porcelain, false),
+            },
+        };
+
         /// <summary>Every shell this file places, in step order.</summary>
-        public static readonly Shell[] All = { FishPlant, CommunityHall };
+        public static readonly Shell[] All = { FishPlant, CommunityHall, BoatGearWholesaler, FishingGearWholesaler };
 
         /// <summary>The metres a Def's footprint tile covers (<c>nmc-gym.md</c>: one tile, one metre).</summary>
         public const float TileMetres = 1f;
@@ -340,7 +470,10 @@ namespace HiddenHarbours.App.Editor
             Directory.CreateDirectory(PrefabFolder);
             Sprite square = AssetDatabase.LoadAllAssetsAtPath(SquareSprite).OfType<Sprite>().FirstOrDefault()
                             ?? throw new Refusal($"no sprite in {SquareSprite}; the greybox kit is missing.");
-            foreach (Shell s in All) BuildPrefab(s, square);
+            // Only the missing ones: a rebuilt prefab gets fresh random file ids, which orphans every override
+            // the region scene holds against the old ones. Delete a prefab first to rebuild it on purpose.
+            foreach (Shell s in All)
+                if (AssetDatabase.LoadAssetAtPath<GameObject>(s.PrefabPath) == null) BuildPrefab(s, square);
             AssetDatabase.SaveAssets();
         }
 

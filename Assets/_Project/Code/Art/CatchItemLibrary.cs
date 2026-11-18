@@ -55,6 +55,21 @@ namespace HiddenHarbours.Art
                      "tail rest, grip at the origin. Set by the library builder from the held-prop bake; " +
                      "empty for a kind the bake does not make. Nothing draws it yet.")]
             public HeldPropMeshDef HeldMesh;
+
+            // ---- the same animal, drawn at another size ----------------------------------------
+            //
+            // The runtime never scales a fish sprite, so a 2 kg cod and a 12 kg cod only look different
+            // because the rig drew them at different sizes (the catch pass 2 size ladder: _sm, the
+            // middle rung, _lg). A sized kind is one rung of that ladder: 'cod_sm' is SizeOf 'cod'.
+
+            [Tooltip("Empty for a kind that is its own ladder's base (the middle rung, 'cod'); else the " +
+                     "base kind this one is a size rung of ('cod_sm' and 'cod_lg' say 'cod'). Species map " +
+                     "to the base kind; SizedKindFor picks the rung by the catch's weight.")]
+            public string SizeOf;
+
+            [Tooltip("The weight this rung was drawn at, kg, read from the fish rig's own anchors " +
+                     "(FishIsoAnchors.json). 0 = unsized: the kind is drawn at one size whatever it weighs.")]
+            public float SizeKg;
         }
 
         [Serializable]
@@ -104,20 +119,31 @@ namespace HiddenHarbours.Art
         // Lookup caches (built once; invalidated when the asset reloads).
         [NonSerialized] private Dictionary<string, KindEntry> _kindLookup;
         [NonSerialized] private Dictionary<string, string> _speciesLookup;
+        // base kind → every sized kind of its ladder (the base itself included when it is sized).
+        [NonSerialized] private Dictionary<string, List<KindEntry>> _ladderLookup;
 
         private void OnEnable()
         {
             _kindLookup = null;
             _speciesLookup = null;
+            _ladderLookup = null;
         }
 
         private void BuildLookups()
         {
             _kindLookup = new Dictionary<string, KindEntry>(StringComparer.Ordinal);
+            _ladderLookup = new Dictionary<string, List<KindEntry>>(StringComparer.Ordinal);
             if (_kinds != null)
                 foreach (var e in _kinds)
                     if (e != null && !string.IsNullOrEmpty(e.Kind))
+                    {
                         _kindLookup[e.Kind] = e;
+                        if (e.SizeKg <= 0f) continue;
+                        string ladder = string.IsNullOrEmpty(e.SizeOf) ? e.Kind : e.SizeOf;
+                        if (!_ladderLookup.TryGetValue(ladder, out List<KindEntry> rungs))
+                            _ladderLookup[ladder] = rungs = new List<KindEntry>(3);
+                        rungs.Add(e);
+                    }
 
             _speciesLookup = new Dictionary<string, string>(StringComparer.Ordinal);
             if (_species != null)
@@ -206,6 +232,36 @@ namespace HiddenHarbours.Art
             if (bucketMeshes != null) _bucketMeshes = bucketMeshes;
             _kindLookup = null;
             _speciesLookup = null;
+            _ladderLookup = null;
+        }
+
+        /// <summary>
+        /// The visual kind a catch of this species <b>and this weight</b> draws as: the size rung of its
+        /// kind closest to it in drawn length (<see cref="CatchSize.LengthGap"/>, the same distance the
+        /// fight's ladder picks by), so a 2 kg cod is held and laid as the small cod and a 12 kg cod as the
+        /// large one. A kind with no sized rungs answers itself, so a table with no ladder (the shellfish,
+        /// a test's hand-made table) behaves exactly as <see cref="KindFor"/>. On an exact tie the lighter
+        /// rung wins, as it does on the line.
+        /// </summary>
+        public string SizedKindFor(string speciesId, float weightKg)
+        {
+            string kind = KindFor(speciesId);
+            if (kind == null) return null;
+            if (_ladderLookup == null) BuildLookups();
+            if (!_ladderLookup.TryGetValue(kind, out List<KindEntry> rungs) || rungs.Count == 0) return kind;
+
+            KindEntry best = null;
+            float bestGap = float.MaxValue;
+            for (int i = 0; i < rungs.Count; i++)
+            {
+                float gap = CatchSize.LengthGap(rungs[i].SizeKg, weightKg);
+                if (gap < bestGap || (gap == bestGap && best != null && rungs[i].SizeKg < best.SizeKg))
+                {
+                    bestGap = gap;
+                    best = rungs[i];
+                }
+            }
+            return best != null ? best.Kind : kind;
         }
 
         /// <summary>The visual kind a hold species draws as (mapped, else the fallback).</summary>

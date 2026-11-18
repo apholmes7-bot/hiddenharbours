@@ -13,7 +13,8 @@ namespace HiddenHarbours.Tests.Economy
         public void EveryCatalogAndConversationSeller_HasUniqueDataAndValidKeeper()
         {
             var sellers = Resources.LoadAll<SellerDef>(SellerDirectory.ResourceFolder);
-            Assert.AreEqual(8, sellers.Length, "six existing counters and two authored vehicle sellers receive identities");
+            Assert.AreEqual(10, sellers.Length,
+                "six existing counters, two authored vehicle sellers and the two NMC wholesalers receive identities");
             var byId = new Dictionary<string, SellerDef>();
             foreach (var seller in sellers)
             {
@@ -51,6 +52,18 @@ namespace HiddenHarbours.Tests.Economy
                 Assert.IsTrue(byId.ContainsKey(sellerId), "authored vehicle seller missing: " + sellerId);
                 Assert.AreEqual("", byId[sellerId].KeeperNpcId, "vehicle keepers have not been authored");
                 Assert.AreEqual("trade.vehicles", byId[sellerId].TradeId);
+            }
+
+            // The two wholesalers (ruling 11-16): their buildings, identities and offers, and now their keepers.
+            foreach (var (sellerId, tradeId, keeperId) in new[]
+                     {
+                         ("seller.nmc_boat_gear_wholesaler", "trade.boat_gear_wholesale", "npc.lionel_cormier"),
+                         ("seller.nmc_fishing_gear_wholesaler", "trade.fishing_gear_wholesale", "npc.bernadette_pitre"),
+                     })
+            {
+                Assert.IsTrue(byId.ContainsKey(sellerId), "wholesaler seller missing: " + sellerId);
+                Assert.AreEqual(keeperId, byId[sellerId].KeeperNpcId, "the wholesaler's keeper");
+                Assert.AreEqual(tradeId, byId[sellerId].TradeId);
             }
 
             foreach (string guid in AssetDatabase.FindAssets("t:ScriptableObject", new[] { CatalogSource.CatalogFolderPath }))

@@ -1,0 +1,46 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 88201f4f4f3247558c87e55aa4fb8ac4, type: 3}
+  m_Name: BernadetteFirst
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.DialogueDef
+  Id: dialogue.bernadette_first
+  FirstLines:
+  - 'Pitre''s. Bait, gear, and whatever else the boats wear out. I open at six, because
+    the boats go out at five and come back wanting things.'
+  - 'You will be Ned''s nephew. He bought off my father for thirty years and complained
+    about the price every single time.'
+  - 'The prices have not moved much since. Neither has the complaining.'
+  RepeatLines:
+  - 'Morning. Or whatever it is out there by now. Have a look, it is all where it was.'
+  ConditionalFlag: 
+  ConditionalLines: []
+  Options:
+  - Id: option.browse_wares
+    Label: What have you got in?
+    ReplyLines: []
+    CatalogSellerId: seller.nmc_fishing_gear_wholesaler
+    CatalogSection: gear
+    SellAtSellerId: 
+    NothingToSellLines: []
+  - Id: option.ask_about_bait
+    Label: 'What bait should I be using?'
+    ReplyLines:
+    - 'Depends what you want on the end of it. Mackerel and herring for anything with
+      teeth. Worms and clam for the bottom fish that are too lazy to chase.'
+    - 'Squid strip stays on the hook after everything else has been picked off. It costs
+      more because of that.'
+    - 'And fish scrap is for people who want to catch something and do not much mind
+      what.'
+    CatalogSellerId: 
+    CatalogSection: 
+    SellAtSellerId: 
+    NothingToSellLines: []
