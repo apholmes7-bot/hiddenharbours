@@ -193,16 +193,23 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.AreEqual(3, sys.Ripples.AliveCount, "one set of three rings, from the one blade that entered");
             Assert.AreEqual(1, sys.Ripples.ShownCount, "only the first ring shows at once");
 
+            // The frame that lays the set also ages it: the first ring is already showing (its Age is
+            // that frame's dt) while the others have spent that dt from their wait. So the moment a
+            // ring shows, measured from now, is its remaining Delay less the Age it has already had.
             var rings = new System.Collections.Generic.List<OarWaterMarkPool.Mark>();
             foreach (var m in sys.Ripples.Pool) if (m.Alive) rings.Add(m);
-            rings.Sort((a, b) => a.Delay.CompareTo(b.Delay));
+            rings.Sort((a, b) => ShowsAt(a).CompareTo(ShowsAt(b)));
             for (int i = 1; i < rings.Count; i++)
             {
-                Assert.AreEqual(cfg.RippleStaggerSeconds, rings[i].Delay - rings[i - 1].Delay, 1e-4f);
+                Assert.AreEqual(cfg.RippleStaggerSeconds, ShowsAt(rings[i]) - ShowsAt(rings[i - 1]), 1e-4f,
+                    "each ring shows one stagger after the last");
                 Assert.Less(rings[i].Alpha, rings[i - 1].Alpha, "each echo is fainter");
                 Assert.AreEqual(-1.2f, rings[i].Pos.x, 1e-5f, "every ring of a set spreads from the blade");
             }
         }
+
+        /// <summary>When a ring shows, in seconds from now: negative once it is already on the water.</summary>
+        private static float ShowsAt(in OarWaterMarkPool.Mark m) => m.Delay - m.Age;
 
         [Test]
         public void ARing_SpreadsFastThenSlow_AndOnlyEverFades()
