@@ -141,11 +141,19 @@ namespace HiddenHarbours.Boats
         /// </summary>
         public float LastSeaYawHelmShare { get; private set; }
 
-        // The mooring and anchor on this hull, if any (resolved lazily: a test rig or a builder may add them
-        // after Awake). Read by the sea-yaw pass only: a line ashore holds her head, an anchor turns it to
-        // the wind.
+        // The mooring and anchor on this hull, if any. Looked up ONCE, on the first sea-yaw pass after the
+        // hull is set (a test rig or a builder may add them after Awake but composes them before it sets
+        // the hull), then cached, misses included: no per-tick component search. Read by the sea-yaw pass
+        // only: a line ashore holds her head, an anchor turns it to the wind.
         private BoatMooring _mooringRef;
         private BoatAnchor _anchorRef;
+        private bool _seaYawPartsResolved;
+
+        // The sea the sim is running THIS tick (SimTrains), derived once and shared by the swell force
+        // and the sea yaw. Cleared at the top of every physics tick; never saved (rule 5).
+        private bool _simTrainsThisTick;
+        private bool _simTrainsPublished;
+        private WaveTrains _simTrains;
 
         /// <summary>
         /// ⭐ <b>Is she to be DRAWN in irons?</b> The one place anything may ask (owner ruling
@@ -695,6 +703,8 @@ namespace HiddenHarbours.Boats
             // next physics tick, never carried over from the last hull's.
             _trimTargetDegrees = 0f;
             _trimRestSerial++;
+            // A (re)built rig looks for its mooring and anchor again on the next sea-yaw pass.
+            _seaYawPartsResolved = false;
             if (_hull == null) return;
             var rb = _rb != null ? _rb : GetComponent<Rigidbody2D>();
             if (rb != null) rb.mass = BodyMassFor(_hull.MassKg);
@@ -783,6 +793,8 @@ namespace HiddenHarbours.Boats
             _trimTargetDegrees = 0f;
             _trimDrive = 0f; _trimResist = 0f;
             LastSeaYawHelmShare = 0f;
+            // The sea is derived at most once per tick (SimTrains): every reader this tick shares it.
+            _simTrainsThisTick = false;
             if (_hull == null) return;
             // Resolve the body lazily (the Stop()/SetHull precedent): the unmanned drift tick can run
             // through the disabled component in rigs where Awake hasn't cached it yet.
@@ -1212,9 +1224,25 @@ namespace HiddenHarbours.Boats
         /// published them (their travel is baked, so they are sampled at time 0), else the trains derived
         /// from the wind history (or the instantaneous wind) plus the swell, sampled at the clock. One
         /// derivation for every force that reads the sea, so the swell's push and the sea yaw read one sea.
+        /// Derived once per physics tick and cached for the rest of it (the clock, the wind and the
+        /// published field cannot change inside a tick, so the second reader gets the identical value).
         /// </summary>
-        private static WaveTrains SimTrains(EnvironmentSample env, double now, in WaveFieldSettings waveField,
-                                            out bool published)
+        private WaveTrains SimTrains(EnvironmentSample env, double now, in WaveFieldSettings waveField,
+                                     out bool published)
+        {
+            if (!_simTrainsThisTick)
+            {
+                _simTrains = DeriveSimTrains(env, now, in waveField, out _simTrainsPublished);
+                _simTrainsThisTick = true;
+            }
+            published = _simTrainsPublished;
+            return _simTrains;
+        }
+
+        /// <summary>The derivation <see cref="SimTrains"/> caches: published trains first, else the boot
+        /// fallbacks (the wind history, else the instantaneous wind) plus the swell.</summary>
+        private static WaveTrains DeriveSimTrains(EnvironmentSample env, double now, in WaveFieldSettings waveField,
+                                                  out bool published)
         {
             published = SharedWaveField.TryGet(out WaveTrains trains);
             if (published) return trains;
@@ -1247,7 +1275,12 @@ namespace HiddenHarbours.Boats
             if (!policy.Enabled) return;
 
             // Tied up: the line holds her head. The dock is unchanged.
-            if (_mooringRef == null) TryGetComponent(out _mooringRef);
+            if (!_seaYawPartsResolved)
+            {
+                TryGetComponent(out _mooringRef);
+                TryGetComponent(out _anchorRef);
+                _seaYawPartsResolved = true;
+            }
             if (_mooringRef != null && _mooringRef.HasLineOut) return;
 
             float fullHelm = SeaYawMath.FullHelmTorque(_hull);
@@ -1263,7 +1296,6 @@ namespace HiddenHarbours.Boats
             if (exposure <= 0f) return;
 
             // --- The wind's turn ---
-            if (_anchorRef == null) TryGetComponent(out _anchorRef);
             bool anchored = _anchorRef != null && _anchorRef.IsDown;
             bool sailPlan = _hull.HasSailPlan;
             bool sailsDrawing = sailPlan && LastSailTargetKn > 0f;

@@ -111,6 +111,24 @@ namespace HiddenHarbours.Tests.PlayMode
 #endif
 
         /// <summary>
+        /// A helmsman who holds her on the stated heading. With her sails drawing she carries weather
+        /// helm (<c>BoatHullDef.SailWeatherHelm</c>, felt through <c>GameConfig.SeaYaw</c>): left alone
+        /// she rounds up into the wind, which is the feel the game wants, and a sailor answers it with
+        /// the helm. These fixtures measure the polar AT a stated true-wind angle, so the angle must
+        /// survive the run: at 45° she sits exactly on the no-go edge, and an unheld bow luffs into it,
+        /// loses drive, falls off and luffs again, settling well under the polar. Holding the heading
+        /// removes only the turn: the sea yaw is a torque and nothing else, so it cannot add or remove
+        /// a single newton along her course, and with the turn held this is the pre-yaw physics exactly.
+        /// </summary>
+        static void HoldHeading(BoatController boat, float headingDeg)
+        {
+            var body = boat.GetComponent<Rigidbody2D>();
+            body.angularVelocity = 0f;
+            body.rotation = -headingDeg;
+            body.constraints |= RigidbodyConstraints2D.FreezeRotation;
+        }
+
+        /// <summary>
         /// Step the real physics until her speed stops changing, and answer the settled speed in knots.
         /// The settle is MEASURED (two windows that agree to 0.5 %), never assumed from a step count —
         /// so this cannot silently report a mid-acceleration number if the hull is ever made heavier.
@@ -158,6 +176,8 @@ namespace HiddenHarbours.Tests.PlayMode
             {
                 BoatController boat = null;
                 yield return BuildSloop(leg.Item1, headingDeg: 47f, twsKn: TwsKn, ready: (b, _) => boat = b);
+                // The polar is a speed AT an angle: hold her on it against her weather helm.
+                HoldHeading(boat, 47f);
 
                 float settled = 0f;
                 yield return SettleAndRead(boat.GetComponent<Rigidbody2D>(), kn => settled = kn);
@@ -169,6 +189,12 @@ namespace HiddenHarbours.Tests.PlayMode
                     "body's own linearDamping — see SailDrive.LinearResistance.");
 
                 Assert.Greater(boat.LastSailTargetKn, 0f, "the drive must have read a target from the polar.");
+                // ...and the hold is not hiding a switched-off yaw: her weather helm was asking to bring
+                // her up (negative = clockwise, her bow towards the wind on her starboard side) on the
+                // very tick she was making her polar speed. A torque costs no speed along her course.
+                Assert.Less(boat.LastSeaYawHelmShare, 0f,
+                    $"{leg.Item3}: with her sails drawing in {TwsKn} kn her weather helm must be asking to " +
+                    "round her up; zero here means the sea yaw never ran and the hold above proves nothing.");
                 TearDown();
             }
 #endif
@@ -190,6 +216,8 @@ namespace HiddenHarbours.Tests.PlayMode
             GlassSea sea = null;
             yield return BuildSloop(CloseHauledTwa, headingDeg: 47f, twsKn: TwsKn,
                                     ready: (b, s) => { boat = b; sea = s; });
+            // The cos(45°) below is only her course if she is held on it against her weather helm.
+            HoldHeading(boat, 47f);
 
             var rb = boat.GetComponent<Rigidbody2D>();
             float settled = 0f;
