@@ -95,6 +95,13 @@ namespace HiddenHarbours.Core
         /// <see cref="AboveDecor"/>.</summary>
         public const int DecorCeiling = DecorBase + (int)(DecorHalfExtentMetres * OrdersPerMetre);
 
+        /// <summary>
+        /// How many rungs a hull sorts BEHIND the decor band's Y-sort at her waterline pivot (ADR 0059,
+        /// <see cref="HullSorting.OrderAt"/>). One, the mesh vehicle's rule: whoever stands on her root
+        /// would otherwise tie with her, and the hull must yield so he draws over the deck he stands on.
+        /// </summary>
+        public const int HullYieldRungs = 1;
+
         // --- ABOVE THE DECOR BAND ---------------------------------------------------------------------
 
         /// <summary>

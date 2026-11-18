@@ -1,6 +1,13 @@
 # ADR 0059: Hulls sort among the scenery by where they lie
 
-- **Status: Proposed** (2026-11-16). The owner accepts or rejects it in its PR (decision 1 below). The
+- **Status: Accepted** (2026-11-17). The owner took the three recommendations ("i go with leans"):
+  1. **Accepted:** hulls sort among the scenery by where they lie (option A).
+  2. **Covered weed draws under the sea plane.** No species floats at the surface for now, so the
+     per-species `WhenCovered` choice and `SortingBands.FloatingWeed` in decision 5 are not built until
+     a species is ruled to float.
+  3. **The sort point is the waterline pivot** amidships (the boat root, `HullFootprint.Center`), not
+     her nearest waterline point when aground.
+- Originally: **Proposed** (2026-11-16). The owner accepts or rejects it in its PR (decision 1 below). The
   index row in `README.md` is added when it is accepted, so that this draft does not collide with the
   open renumbering of 0058.
 - **Decision owner:** lead-architect (the rule and the Core constants); gameplay-systems (the boat's
@@ -70,7 +77,7 @@ hull, and the player aboard would sort under the deck he stands on.
 - **Real sorting layers** (ADR 0032's deferred item). A hull must interleave with decor, and a layer
   boundary cannot express that.
 
-## Decisions for the owner
+## Decisions for the owner (ruled 2026-11-17: all three as recommended, see Status)
 
 1. Accept this ADR: hulls sort among the scenery by where they lie.
 2. Covered weed under the sea plane (recommended) or over it. And which species, if any, float at the
