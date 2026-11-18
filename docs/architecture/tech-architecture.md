@@ -425,6 +425,15 @@ without naming a class. Contracts, all additive:
   unbound and refuses every change, so an empty view can never be written over the saved catch.
   `GameServices.Reset` still clears the list; whatever outlives a Reset registers again.
 
+### Hulls sort among the scenery (ADR 0059, accepted 2026-11-17)
+
+A boat is an upright world object. Core's pure `HullSorting.OrderAt(waterlinePivotY)` gives her order:
+the decor band's Y-sort at her waterline pivot (the boat root, `HullFootprint.Center`, which does not
+ride the swell), `SortingBands.HullYieldRungs` (1) behind, the same rule as the mesh vehicles.
+`HullSorting.OrderFor(HullFootprint)` reads the pivot off a footprint. Rollout (the boat root's
+`SortingGroup`, the re-anchored effects) follows `hull-vs-decor-sorting.md` §7; until it lands, hulls
+still sort at `BoatVisualDef.SortingOrder`.
+
 ## 5. Boat & entity architecture (composition)
 
 **Character clothing interchange (CW-01, 2026-09-13).** Core now defines the version-1

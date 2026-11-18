@@ -175,5 +175,17 @@ namespace HiddenHarbours.World
         public const string WashStop        = "Stop washing";
         public const string WashStopped     = "He leaves off washing.";
         public const string WashWalkedOff   = "He walks off, still dripping.";
+
+        // ---- bathrooms (kitchens and bathrooms placement plan, R1) ---------------------------------
+        // The indoor shower and the bath, and the seat that only seats (a toilet, an outhouse).
+        public const string WashAtIndoorShower    = "Take a shower";
+        public const string WashBeginIndoorShower = "He turns the tap and steps under the water.";
+        public const string WashAtBath            = "Have a bath";
+        public const string WashBeginBath         = "He runs the bath and sinks into it.";
+        public const string WashDoneBath          = "Clean and pink from the bath.";
+        public const string SitDown               = "Sit down";
+        public const string SitGetUp              = "Get up";
+        public const string SitBegin              = "He sits a moment.";
+        public const string SitStood              = "He gets up.";
     }
 }

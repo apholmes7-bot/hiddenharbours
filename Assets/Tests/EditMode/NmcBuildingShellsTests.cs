@@ -128,11 +128,16 @@ namespace HiddenHarbours.Tests.EditMode
                 // yard's polygon, which the hall test holds the hall inside.
                 if (top == "Yards" && Lineage(tr).Contains("Boundary")) continue;
                 foreach (var s in Shells)
-                    if (NmcBuildingShells.WorldRect(s).Contains(at))
+                    if (NmcBuildingShells.WorldRect(s).Contains(at) && !BelongsInside(top, s))
                         offenders.Add($"{Scene.Require(tr.FieldRef("m_GameObject"), "go").Field("m_Name")} (under {top}) at {at} in {s.Name}");
             }
             Assert.That(offenders, Is.Empty, string.Join("\n", offenders));
         }
+
+        /// <summary>A wholesaler's counter and keeper are placed inside their own shell on purpose
+        /// (<c>NmcWholesalerKeepers.Place</c>); inside any other shell they are still offenders.</summary>
+        static bool BelongsInside(string top, NmcBuildingShells.Shell s) =>
+            NmcWholesalerKeepers.All.Any(k => k.Shell.Name == s.Name && (top == k.CounterRoot || top == k.KeeperRoot));
 
         [Test]
         public void ThePrefabsAreWorkingRooms([ValueSource(nameof(Names))] string name)

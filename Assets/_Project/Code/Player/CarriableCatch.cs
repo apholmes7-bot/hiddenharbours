@@ -52,6 +52,10 @@ namespace HiddenHarbours.Player
         /// <summary>True while this actually carries a landed catch.</summary>
         public bool HasItem => _hasItem;
 
+        /// <summary>The catch art kind this draws as ('cod_sm', 'clam'), or null with no art table. For
+        /// tests / tooling.</summary>
+        public string ArtKind => _kind;
+
         /// <summary>
         /// Make one, holding the given catch, parented under <paramref name="parent"/>.
         ///
@@ -80,7 +84,12 @@ namespace HiddenHarbours.Player
             carriable._item = item;
             carriable._hasItem = true;
             carriable._art = art;
-            carriable._kind = art != null ? art.KindFor(item.SpeciesId) : null;
+            // SIZED: the size rung of the species closest to this catch's weight, so a 2 kg cod is held
+            // as the small cod drawing and a 12 kg one as the large. A rung with no held sheet falls
+            // back to the species' plain kind rather than to the icon.
+            string kind = art != null ? art.SizedKindFor(item.SpeciesId, item.WeightKg) : null;
+            if (art != null && art.HeldFacingsFor(kind) == 0) kind = art.KindFor(item.SpeciesId);
+            carriable._kind = kind;
             carriable._facings = art != null ? art.HeldFacingsFor(carriable._kind) : 0;
 
             // Draw something NOW rather than waiting for the first ShowFacing: a carrier only turns

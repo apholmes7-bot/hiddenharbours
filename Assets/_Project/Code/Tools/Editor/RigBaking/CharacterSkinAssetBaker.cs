@@ -678,7 +678,10 @@ namespace HiddenHarbours.Tools.RigBaking
                 bake = LiveRigIsV9 ? ComposeV9(host, preset, existing, progress)
                                    : Compose(host, preset, existing, progress);
                 if (LiveKit == CharacterRigKit.Rig10)
+                {
                     AppendSeatedHelms(host, bake.Def, bake.Bones, enable: false);
+                    AppendRowStroke(host, bake.Def, bake.Bones, enable: false);
+                }
             }
 
             CharacterSkinDef def = bake.Def;

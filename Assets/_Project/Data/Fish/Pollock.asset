@@ -17,6 +17,7 @@ MonoBehaviour:
   Category: 0
   Rarity: 0
   Flavor: Green-backed and hard-shouldered. They hunt in packs off the ledges and hit a worked lure like a thrown stone.
+  Sprite: {fileID: -108855495, guid: a0d8003e4a79c1d4289f91818e552987, type: 3}
   RegionIds:
   - region.coddle_cove
   - region.south_water

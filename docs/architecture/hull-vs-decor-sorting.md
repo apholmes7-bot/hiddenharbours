@@ -1,6 +1,6 @@
 # Hulls against decor: why a rock can draw over a beached boat, and the fix
 
-**Status:** design, awaiting the owner's decisions (§8). No code in this change.
+**Status:** decided 2026-11-17 (§8: the owner took all three recommendations). Rollout in progress, §7.
 **Serves:** P1 (the sea has moods: a boat run up on the foreshore must read as lying *on* it),
 P3 (a living working coast: boats, people and scenery interleave by where they are), rule 7.
 **Related:** ADR 0032 (the Y-sort band, and "a fixed order on an upright world object is a bug by
@@ -286,6 +286,9 @@ lowbush blueberry).
 
 1. **Core, no behaviour change.** `SortingBands.HullYieldRungs` (1, the vehicle rule) and `FloatingWeed`
    (-3); a pure `HullSorting.OrderAt(pivotY)` beside the vehicle's; `HullSortingTests`. (lead-architect)
+   *As built:* `FloatingWeed` is left out, because the owner ruled that covered weed draws under the sea
+   and no species floats yet (§8 decision 2). `HullSorting.OrderFor(HullFootprint)` adds the sort point
+   (decision 3: the footprint centre, which is the root).
 2. **Re-anchor the parked effects first**, while hulls still sit at 1, so nothing vanishes later: spray,
    surf spray, wade splash, moment burst, buoys, emergent shore-plant sprites, NPC catch and rod fight
    line and splash. Add the low-band literal guard test. Visible change: these now interleave with decor
@@ -299,7 +302,8 @@ lowbush blueberry).
    ordinary Y-sort gives "behind the pivot, under her" by itself, and without sending it under the sea.
    Keep `LiesFlat`. (art-pipeline)
 5. **Species data.** `WhenCovered` and `Posture` on `PlantSpeciesDef`, the content test, and the six
-   intertidal species set as the owner rules. (art-pipeline)
+   intertidal species set as the owner rules. (art-pipeline) *After the 2026-11-17 ruling:* `Posture`
+   only; `WhenCovered` waits until a species is ruled to float.
 6. **Flat non-plant decor** (option C) as a data flag, if a play-look after PR 3 still shows flat decor over
    a hull. (world-content)
 
@@ -307,6 +311,10 @@ lowbush blueberry).
 `BehindAHull` is retired in step 4.
 
 ## 8. Decisions for the owner
+
+**Ruled 2026-11-17:** the owner took all three recommendations ("i go with leans"): option A and ADR 0059
+accepted; covered weed under the sea plane, with no species floating; the sort point is the waterline
+pivot amidships.
 
 1. **Hulls are upright world objects and sort among the scenery by where they lie** (option A, draft ADR
    0059). Yes or no.
