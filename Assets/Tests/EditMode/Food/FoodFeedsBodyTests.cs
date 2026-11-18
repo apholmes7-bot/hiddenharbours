@@ -289,7 +289,7 @@ namespace HiddenHarbours.Tests.EditMode
                 return MealOutcome.Eaten;
             }
             public void Settle() { }
-            public double ReportActivity(ActivityDef activity, float units) => 0d;
+            public double ReportActivity(ActivityDef activity, float units, bool train = true) => 0d;
         }
     }
 }

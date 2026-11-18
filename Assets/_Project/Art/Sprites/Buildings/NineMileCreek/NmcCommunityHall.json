@@ -1,0 +1,132 @@
+{
+ "schema": "nmc-building-art@1",
+ "building": "NmcCommunityHall",
+ "kit": "nmc-community-hall-kit/nmcCommunityHall.js 1.0.0",
+ "bakeSky": {
+  "time": 14,
+  "cloud": 0.1,
+  "wind": 0.3
+ },
+ "ppu": 32,
+ "dir": 4,
+ "centreWorld": [
+  -153,
+  62.5
+ ],
+ "footprintMetres": {
+  "eastWest": 12,
+  "northSouth": 18
+ },
+ "frame": "local x = -(world east offset), local y = -(world north offset); 1 m north draws sin 40 = 0.643 units up the screen",
+ "sortPivotYOffsetUnits": -5.785,
+ "sortNote": "YSortSprite.SortPivotYOffset on the Shell: the front (south) wall’s foot, as the greybox shell sorts",
+ "sprites": {
+  "exterior": {
+   "file": "NmcCommunityHall_exterior.png",
+   "sprite": "NmcCommunityHall_exterior",
+   "w": 463,
+   "h": 581,
+   "pivotPx": [
+    250,
+    386
+   ],
+   "pivotUnity": [
+    0.54,
+    0.336
+   ],
+   "worldUnits": [
+    14.469,
+    18.156
+   ],
+   "doorPx": [
+    19.6,
+    375.7
+   ],
+   "words": [
+    {
+     "id": "words.nmc_community_hall",
+     "cornersPx": [
+      [
+       189.2,
+       453.7
+      ],
+      [
+       310.8,
+       453.7
+      ],
+      [
+       310.8,
+       469.6
+      ],
+      [
+       189.2,
+       469.6
+      ]
+     ]
+    },
+    {
+     "id": "words.nmc_community_hall_notice",
+     "cornersPx": [
+      [
+       56.4,
+       367.2
+      ],
+      [
+       56.4,
+       385.7
+      ],
+      [
+       56.4,
+       366.1
+      ],
+      [
+       56.4,
+       347.5
+      ]
+     ]
+    }
+   ],
+   "lightsPx": [
+    {
+     "id": "light.hall_door",
+     "atPx": [
+      54.2,
+      300.9
+     ]
+    }
+   ]
+  },
+  "cutaway": {
+   "file": "NmcCommunityHall_cutaway.png",
+   "sprite": "NmcCommunityHall_cutaway",
+   "w": 447,
+   "h": 423,
+   "pivotPx": [
+    250,
+    228
+   ],
+   "pivotUnity": [
+    0.559,
+    0.461
+   ],
+   "worldUnits": [
+    13.969,
+    13.219
+   ],
+   "doorPx": [
+    19.6,
+    217.7
+   ],
+   "words": [],
+   "lightsPx": []
+  }
+ },
+ "door": {
+  "wall": "W",
+  "world": [
+   -159,
+   62.821
+  ],
+  "note": "the shell’s DoorWorld (NmcBuildingShells): the threshold; the art’s door lands on it"
+ }
+}
