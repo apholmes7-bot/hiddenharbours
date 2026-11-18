@@ -153,6 +153,30 @@ namespace HiddenHarbours.Art
         }
 
         /// <summary>
+        /// The twin of the water shader's <c>UnderWaterPropTransmission</c>, the column's ONE named exception
+        /// (2026-11-17, the kelp beds): where a prop under the water (the weed) covers the bed, the column's own
+        /// BANDED transmission is raised to <c>1 − clarity</c>, so the weed is read through less water than the
+        /// floor it grows from (its fronds stand up toward the light) while keeping the column's per-channel
+        /// order and bands. No second exponential, no second depth. Clarity is
+        /// <c>GameConfig.UnderWaterWeedClarity</c>, clamped to <c>0..GameConfig.MaxUnderWaterWeedClarity</c>;
+        /// at 0, or where no prop is drawn (<paramref name="cover"/> 0), this is the floor's transmission.
+        /// Change one, change BOTH in the same PR.
+        /// </summary>
+        public static Vector3 WeedTransmission(Vector3 bandedTransmission, float clarity, float cover)
+        {
+            float power = 1f - Core.GameConfig.ClampUnderWaterWeedClarity(clarity);
+            float c = Mathf.Clamp01(cover);
+            return new Vector3(Weed(bandedTransmission.x, power, c),
+                               Weed(bandedTransmission.y, power, c),
+                               Weed(bandedTransmission.z, power, c));
+        }
+
+        private static float Weed(float t, float power, float cover)
+        {
+            return Mathf.Lerp(t, Mathf.Pow(Mathf.Max(t, 0f), power), cover);
+        }
+
+        /// <summary>
         /// The composite: the bottom is admitted in proportion to its own transmission, and what it
         /// does not fill in is the water body's own (painted-LUT) colour — <b>which absorption never
         /// touches</b>. <paramref name="coverage"/> is <c>_SeabedTex</c>'s alpha (0 where the bake

@@ -342,6 +342,7 @@ MonoBehaviour:
   ShallowsFloor: 1
   ShallowsFloorRefraction: 0.25
   ShallowsSubmergedProps: 1
+  UnderWaterWeedClarity: 0.85
   HullKeylineFlood: 0
   PlayerFigureIdReserve: 2
   HullMeshReflections: 0

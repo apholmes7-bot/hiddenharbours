@@ -80,6 +80,7 @@ namespace HiddenHarbours.Art
         static readonly int UnderWaterSwayWavelengthId = Shader.PropertyToID("_UnderWaterSwayWavelength");
         static readonly int UnderWaterTintId = Shader.PropertyToID("_UnderWaterTint");
         static readonly int UnderWaterTintAmountId = Shader.PropertyToID("_UnderWaterTintAmount");
+        static readonly int UnderWaterShadeId = Shader.PropertyToID("_UnderWaterShade");
         // The chunks in the sea's under-water list, so a chunk cleared after its object died still leaves it.
         readonly Dictionary<(int, int, int, int), MeshRenderer> _underWater = new Dictionary<(int, int, int, int), MeshRenderer>();
         // GameConfig.ShallowsSubmergedProps as the chunks were last built against; a flip re-applies.
@@ -334,6 +335,7 @@ namespace HiddenHarbours.Art
             props.SetFloat(UnderWaterSwayWavelengthId, Mathf.Max(PlantFieldDefinition.MinUnderWaterSwaySpan, UnderWaterSwayWavelengthM));
             props.SetColor(UnderWaterTintId, first.Def.UnderWaterTint);
             props.SetFloat(UnderWaterTintAmountId, Mathf.Clamp01(first.Def.UnderWaterTintAmount));
+            props.SetFloat(UnderWaterShadeId, Mathf.Clamp01(first.Def.UnderWaterShade));
             mr.SetPropertyBlock(props); _chunks.Add(key, (go, mesh));
             ApplyUnderWater(key, mr);
         }
@@ -364,15 +366,18 @@ namespace HiddenHarbours.Art
         }
 
         /// <summary>The C# twin of the Plant shader's <c>PlantUnderWaterTint</c>: the species' hue at the
-        /// pixel's own brightness (Rec. 601 weights), <paramref name="amount"/> of the way from the baked colour.
-        /// Change one, change the other in the same commit.</summary>
-        public static Color UnderWaterTint(Color albedo, Color tint, float amount)
+        /// pixel's own brightness (Rec. 601 weights), <paramref name="amount"/> of the way from the baked colour,
+        /// then times its <paramref name="shade"/> (1 as bright as the sheet; less toward a dark silhouette, so a
+        /// kelp bed reads as a dark mass over the lighter floor). Change one, change the other in the same commit.</summary>
+        public static Color UnderWaterTint(Color albedo, Color tint, float amount, float shade = 1f)
         {
             const float r = 0.299f, g = 0.587f, b = 0.114f;
             float luma = albedo.r * r + albedo.g * g + albedo.b * b;
             float scale = luma / Mathf.Max(tint.r * r + tint.g * g + tint.b * b, 1e-3f);
             var hue = new Color(Mathf.Clamp01(tint.r * scale), Mathf.Clamp01(tint.g * scale), Mathf.Clamp01(tint.b * scale), albedo.a);
-            return Color.Lerp(albedo, hue, Mathf.Clamp01(amount));
+            Color tinted = Color.Lerp(albedo, hue, Mathf.Clamp01(amount));
+            float k = Mathf.Clamp01(shade);
+            return new Color(tinted.r * k, tinted.g * k, tinted.b * k, albedo.a);
         }
 
         void ApplyUnderWater((int, int, int, int) key, MeshRenderer mr)

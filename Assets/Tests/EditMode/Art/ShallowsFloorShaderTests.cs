@@ -55,8 +55,14 @@ namespace HiddenHarbours.Tests.Art.EditMode
         // :5210-:5212): the floor's gate without the floor's switch, behind the props pass's own flag.
         internal const string PropsGate =
             "[branch]if(_HHUnderWaterLive>0.5&&bedIn>0.0&&max(bedT.r,max(bedT.g,bedT.b))>0.0)";
-        internal const string PropsCall = "bed=ShallowsPropsBed(bed,worldXY,waveSlope,max(depthC,0.0));";
+        // 2026-11-17 (the kelp beds) the props' call hands back the prop's cover, and the weed's clarity, the
+        // column's one named exception (TheWeedsClarity_IsTheOneNamedExceptionToTheColumnLaw), follows it
+        // inside the same gate.
+        internal const string PropsCall =
+            "{floatpropCover;bed=ShallowsPropsBed(bed,worldXY,waveSlope,max(depthC,0.0),propCover);" +
+            "bedT=UnderWaterPropTransmission(bedT,propCover);}";
         private const string PropsHelper = "half4 ShallowsPropsBed(";
+        private const string WeedHelper = "float3 UnderWaterPropTransmission(";
         private const string BendHelper = "float2 ShallowsBend(float2 worldXY, float2 slope, float depth)";
         internal const string LitSpritePath = ShaderDir + "/HiddenHarboursLitSprite.shader";
         // b8710c59's water frag :5469 (the caustics' add) and :6025 (the palette grade).
@@ -501,14 +507,16 @@ namespace HiddenHarbours.Tests.Art.EditMode
             foreach (string law in new[] { "Absorption", "absSigma", "bedT", "[Cc]austic", "PaletteGrade", "dayNight", "_Turbidity" })
                 Assert.AreEqual(0, Count(props, law), "no law of the props' own: " + law);
             StringAssert.Contains(
+                "float2wp=ShallowsBend(worldXY,slope,depth);cover=0.0;" +
                 "float2ndc=ComputeNormalizedDeviceCoordinates(float3(wp,0.0),UNITY_MATRIX_VP);" +
                 "int2px=int2(floor(ndc*_ScreenParams.xy));" +
                 "if(any(px<0)||any(px>=int2(_ScreenParams.xy)))returnbed;" +
                 "half4prop=LOAD_TEXTURE2D(_HHUnderWaterTex,px);[branch]if(prop.a<=0.0)returnbed;", squashed,
                 "the bent point's own pixel; off the target or a clear texel, the bed untouched");
             StringAssert.EndsWith(
+                "[branch]if(prop.a<=0.0)returnbed;cover=prop.a;" +
                 "floata=lerp(bed.a,1.0,prop.a);returnhalf4((prop.rgb+bed.rgb*bed.a*(1.0-prop.a))/max(a,1e-4),a);",
-                squashed, "the prop over the bed, premultiplied over straight alpha");
+                squashed, "the prop over the bed, premultiplied over straight alpha; its cover handed back");
             Assert.AreEqual(3, Count(props, @"\breturn\b"));
 
             // The caustics, added after the composite, read nothing of the props': they light the bed.
@@ -533,6 +541,56 @@ namespace HiddenHarbours.Tests.Art.EditMode
                 "returnhalf4(col.rgb*col.a,col.a);",
                 Squash(Body(pass, "half4 underWaterFrag(UnderWaterVaryings IN) : SV_Target")),
                 "the sprite's albedo and clip, premultiplied");
+        }
+
+        /// <summary>
+        /// 2026-11-17, the kelp beds: THE ONE NAMED EXCEPTION to the one column law. A kelp bed is a dark mass
+        /// under clear water long after the sand beside it has gone blue, because its fronds stand up toward the
+        /// light; drawn through the floor's own column at 3-6 m it changed a pixel by 15/255 at most. So where a
+        /// prop covers the bed, and only there, the column's OWN banded transmission is raised to (1 - clarity),
+        /// GameConfig.UnderWaterWeedClarity. It is an exception and not a second copy of the law: one helper,
+        /// called once, inside the props' gate, after the props are laid; it reads the column's banded
+        /// transmission and the prop's cover and nothing else (no exponential, no depth, no sigma); its cap is
+        /// GameConfig's; and with no prop drawn (cover 0) or a clarity of 0 the transmission is the floor's. The
+        /// C# twin (WaterAbsorption.WeedTransmission) pins the arithmetic.
+        /// </summary>
+        [Test]
+        public void TheWeedsClarity_IsTheOneNamedExceptionToTheColumnLaw()
+        {
+            string water = Code(WaterPath);
+            string frag = Squash(Body(water, WaterFrag));
+            Assert.AreEqual(1, Definitions(water, "UnderWaterPropTransmission"), "one exception, defined once");
+            Assert.AreEqual(1, Count(frag, @"UnderWaterPropTransmission\("), "called once");
+            StringAssert.Contains(PropsGate + PropsCall + "#endif" + BedLerp, frag,
+                "inside the props' gate, after the props are laid, before the one composite");
+            Assert.AreEqual(1, Count(frag, @"\bbedT=UnderWaterPropTransmission"), "the only write to bedT past its bands");
+
+            string helper = Squash(Body(water, WeedHelper));
+            Assert.AreEqual(
+                "floatpower=1.0-clamp(_HHUnderWaterClarity,0.0,0.9);" +
+                "returnlerp(bedT,pow(max(bedT,0.0),power),saturate(cover));", helper,
+                "the column's own banded transmission to a power, by the prop's cover");
+            foreach (string law in new[] { "exp(", "Absorption", "absSigma", "sigma", "depth", "_Turbidity", "ABSORPTION_PATH" })
+                StringAssert.DoesNotContain(law, helper, "no second copy of the column law: " + law);
+            Assert.AreEqual(0.9f, global::HiddenHarbours.Core.GameConfig.MaxUnderWaterWeedClarity, "the shader's cap is GameConfig's");
+            Assert.AreEqual(2, Count(Squash(water), @"_HHUnderWaterClarity(?![A-Za-z0-9_])"),
+                "declared once, read once (by the helper)");
+            StringAssert.DoesNotContain("_HHUnderWaterClarity", Body(water, "Properties"), "a global, never a Property");
+
+            // The twin's arithmetic. Bars: 0.25 ^ 0.5 = 0.5; 0.25 ^ 0.1 = 0.870551; halfway covered, 0.375.
+            var t = new UnityEngine.Vector3(0.25f, 0f, 1f);
+            Assert.AreEqual(t, global::HiddenHarbours.Art.WaterAbsorption.WeedTransmission(t, 0f, 1f), "clarity 0: the floor's law");
+            Assert.AreEqual(t, global::HiddenHarbours.Art.WaterAbsorption.WeedTransmission(t, 0.6f, 0f), "no prop: the floor's law");
+            UnityEngine.Vector3 clear = global::HiddenHarbours.Art.WaterAbsorption.WeedTransmission(t, 0.5f, 1f);
+            Assert.AreEqual(0.5f, clear.x, 1e-6f, "read through half the water");
+            Assert.AreEqual(0f, clear.y, "a channel the column passes nothing of stays dark: red still goes first");
+            Assert.AreEqual(1f, clear.z, 1e-6f, "the surface stays the surface");
+            Assert.AreEqual(0.870551f, global::HiddenHarbours.Art.WaterAbsorption.WeedTransmission(t, 5f, 1f).x, 1e-5f, "capped at 0.9");
+            Assert.AreEqual(0.25f, global::HiddenHarbours.Art.WaterAbsorption.WeedTransmission(t, -1f, 1f).x, 1e-6f, "never below the floor's");
+            Assert.AreEqual(0.375f, global::HiddenHarbours.Art.WaterAbsorption.WeedTransmission(t, 0.5f, 0.5f).x, 1e-6f, "by the prop's cover");
+            for (float c = 0f; c <= 0.9f; c += 0.1f)
+                Assert.GreaterOrEqual(global::HiddenHarbours.Art.WaterAbsorption.WeedTransmission(t, c, 1f).x, 0.25f - 1e-6f,
+                    "the weed is never read through MORE water than the floor");
         }
 
         // ---- source helpers ------------------------------------------------------------------------------

@@ -13,13 +13,14 @@ Shader "HiddenHarbours/Plant"
         _SkyAmount ("Sky amount", Float) = 0.8
         _SunAmount ("Sun amount", Float) = 1.1
         _Bounce ("Ground bounce", Float) = 0.12
-        // The weed under the water (the HHUnderWater pass below). PlantField writes all five per chunk from
+        // The weed under the water (the HHUnderWater pass below). PlantField writes all six per chunk from
         // PlantFieldDefinition and PlantSpeciesDef; these defaults only show on a bare material.
         _UnderWaterSway ("Under water sway metres", Float) = 0.12
         _UnderWaterSwayPeriod ("Under water sway period seconds", Float) = 7
         _UnderWaterSwayWavelength ("Under water sway wavelength metres", Float) = 9
         _UnderWaterTint ("Under water tint", Color) = (0.4, 0.38, 0.16, 1)
         _UnderWaterTintAmount ("Under water tint amount", Range(0, 1)) = 0
+        _UnderWaterShade ("Under water shade", Range(0, 1)) = 1
     }
     SubShader
     {
@@ -38,7 +39,7 @@ Shader "HiddenHarbours/Plant"
             TEXTURE2D(_NormalTex); TEXTURE2D(_LightTex); TEXTURE2D(_DetailTex);
             CBUFFER_START(UnityPerMaterial)
             float _Sway, _FootRadius, _FootStrength, _FootDirSoftness, _SkyAmount, _SunAmount, _Bounce;
-            float _UnderWaterSway, _UnderWaterSwayPeriod, _UnderWaterSwayWavelength, _UnderWaterTintAmount;
+            float _UnderWaterSway, _UnderWaterSwayPeriod, _UnderWaterSwayWavelength, _UnderWaterTintAmount, _UnderWaterShade;
             float4 _UnderWaterTint;
             CBUFFER_END
             float4 _WindWorld, _SunDir;
@@ -130,7 +131,7 @@ Shader "HiddenHarbours/Plant"
             TEXTURE2D(_MainTex); SAMPLER(sampler_MainTex);
             CBUFFER_START(UnityPerMaterial)
             float _Sway, _FootRadius, _FootStrength, _FootDirSoftness, _SkyAmount, _SunAmount, _Bounce;
-            float _UnderWaterSway, _UnderWaterSwayPeriod, _UnderWaterSwayWavelength, _UnderWaterTintAmount;
+            float _UnderWaterSway, _UnderWaterSwayPeriod, _UnderWaterSwayWavelength, _UnderWaterTintAmount, _UnderWaterShade;
             float4 _UnderWaterTint;
             CBUFFER_END
             float4 _WindWorld;
@@ -145,13 +146,14 @@ Shader "HiddenHarbours/Plant"
                 float phase = 6.28318530718 * (time / max(period, 0.1) - dot(root, dir) / max(wavelength, 0.1));
                 return dir * (sway * sin(phase));
             }
-            // The HLSL twin of PlantField.UnderWaterTint: the species' hue at the pixel's own brightness.
-            float3 PlantUnderWaterTint(float3 albedo, float3 tint, float amount)
+            // The HLSL twin of PlantField.UnderWaterTint: the species' hue at the pixel's own brightness, then its
+            // shade (1 as bright as the sheet, less toward a dark silhouette over the lighter floor).
+            float3 PlantUnderWaterTint(float3 albedo, float3 tint, float amount, float shade)
             {
                 const float3 lumaWeights = float3(0.299, 0.587, 0.114);
                 float luma = dot(albedo, lumaWeights);
                 float3 hue = tint * (luma / max(dot(tint, lumaWeights), 1e-3));
-                return lerp(albedo, saturate(hue), saturate(amount));
+                return lerp(albedo, saturate(hue), saturate(amount)) * saturate(shade);
             }
             struct Input { float3 vertex : POSITION; float2 uv : TEXCOORD0; float4 root : TEXCOORD1; };
             struct Output { float4 vertex : SV_POSITION; float2 uv : TEXCOORD0; nointerpolation half3 tone : TEXCOORD1; };
@@ -171,7 +173,7 @@ Shader "HiddenHarbours/Plant"
             {
                 half4 albedo = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, i.uv); clip(albedo.a - 0.01);
                 albedo.rgb *= i.tone;
-                albedo.rgb = PlantUnderWaterTint(albedo.rgb, _UnderWaterTint.rgb, _UnderWaterTintAmount);
+                albedo.rgb = PlantUnderWaterTint(albedo.rgb, _UnderWaterTint.rgb, _UnderWaterTintAmount, _UnderWaterShade);
                 // Premultiplied: overlapping fronds composite in ONE target, as the sea's read expects.
                 return half4(albedo.rgb * albedo.a, albedo.a);
             }

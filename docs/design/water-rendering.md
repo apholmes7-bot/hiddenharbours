@@ -2351,6 +2351,18 @@ col.rgb = lerp(col.rgb, bed.rgb, saturate(bedT) * saturate(bed.a) * bedIn);
   (`PlantFieldDefinition.UnderWaterSwayM`, `UnderWaterSwayPeriodS`, `UnderWaterSwayWavelengthM`; 0.12 m, 7 s, 9 m)
   in place of the wind bend and walker push. Membership is rebuilt with the chunk on the field's slow tick, so
   nothing is per frame.
+- **The kelp reads as a bed (2026-11-17, tuning).** Two more dials, both data. `PlantSpeciesDef.UnderWaterShade`
+  darkens a species' fronds after the hue (1 as bright as the sheet; sugar kelp 0.8, tint 0.38/0.33/0.13 at amount
+  1, every other species 1). `GameConfig.UnderWaterWeedClarity` (0.85, capped at 0.9, code default 0) is the column
+  law's ONE named exception, `UnderWaterPropTransmission` with the C# twin `WaterAbsorption.WeedTransmission`:
+  where a prop covers the bed, the column's own banded transmission is raised to the power `1 - clarity`, so the
+  fronds, which stand up toward the light, are read through less water than the floor they grow from. Same
+  per-channel order (red still goes first, so a bed at 3-6 m reads green-blue, an olive-brown one at mid tide),
+  same bands, no second exponential and no second depth. `ShallowsFloorShaderTests.TheWeedsClarity_IsTheOneNamedExceptionToTheColumnLaw`
+  pins the helper's body and that it is the only one. Measured at St Peters: after the composite the bed's
+  contrast is cut to about a quarter by the layers drawn over it (envelope bands, swell read, sky, palette grade),
+  which is why the weed needs the extra transmission rather than only a darker frond; a darker frond alone reads
+  less at high water, dark on a dark sea.
 
 #### Why the sea draws them: the three routes
 

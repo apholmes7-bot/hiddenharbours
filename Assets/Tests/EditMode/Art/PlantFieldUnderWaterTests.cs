@@ -39,12 +39,15 @@ namespace HiddenHarbours.Tests.Art.EditMode
         const string FieldPath = "Assets/_Project/Data/Plants5/StPetersPlantField.asset";
         const string KelpPath = "Assets/_Project/Data/Plants5/Plant_SugarKelp.asset";
         const string PlantShaderPath = "Assets/_Project/Art/Shaders/HiddenHarboursPlant.shader";
+        const string ConfigAssetPath = "Assets/_Project/Data/Config/GameConfig.asset";
+        const string WaterSurfacePath = "Assets/_Project/Code/Art/WaterSurface.cs";
         const int Submerged = -8;
 
         static readonly int SwayId = Shader.PropertyToID("_UnderWaterSway");
         static readonly int PeriodId = Shader.PropertyToID("_UnderWaterSwayPeriod");
         static readonly int WavelengthId = Shader.PropertyToID("_UnderWaterSwayWavelength");
         static readonly int TintAmountId = Shader.PropertyToID("_UnderWaterTintAmount");
+        static readonly int ShadeId = Shader.PropertyToID("_UnderWaterShade");
 
         readonly List<Object> _owned = new List<Object>();
         readonly List<PlantField> _fields = new List<PlantField>();
@@ -164,7 +167,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
         [Test]
         public void EachChunk_CarriesTheDefsTunables()
         {
-            var (field, _) = Field(tidal: true, habitat: "", waterLevel: 0f, sway: 0.2f, period: 0f, wavelength: 4f, tintAmount: 0.6f);
+            var (field, _) = Field(tidal: true, habitat: "", waterLevel: 0f, sway: 0.2f, period: 0f, wavelength: 4f, tintAmount: 0.6f, shade: 0.4f);
             var block = new MaterialPropertyBlock();
             foreach (var mr in Renderers(field))
             {
@@ -173,6 +176,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
                 Assert.AreEqual(PlantFieldDefinition.MinUnderWaterSwaySpan, block.GetFloat(PeriodId), 1e-6f, "a zero period is floored");
                 Assert.AreEqual(4f, block.GetFloat(WavelengthId), 1e-6f);
                 Assert.AreEqual(0.6f, block.GetFloat(TintAmountId), 1e-6f);
+                Assert.AreEqual(0.4f, block.GetFloat(ShadeId), 1e-6f, "the species' shade");
             }
         }
 
@@ -229,6 +233,26 @@ namespace HiddenHarbours.Tests.Art.EditMode
             Assert.LessOrEqual(Mathf.Max(hot.r, Mathf.Max(hot.g, hot.b)), 1f, "never past 1");
         }
 
+        [Test]
+        public void UnderWaterShade_DarkensTheTintedFrond_TowardASilhouette()
+        {
+            var tint = new Color(0.36f, 0.30f, 0.12f, 1f);
+            var baked = new Color(0.20f, 0.30f, 0.45f, 0.7f);
+            Color tinted = PlantField.UnderWaterTint(baked, tint, 1f);
+            Assert.AreEqual(tinted, PlantField.UnderWaterTint(baked, tint, 1f, 1f), "1: as bright as the sheet");
+            Color dark = PlantField.UnderWaterTint(baked, tint, 1f, 0.4f);
+            Assert.AreEqual(tinted.r * 0.4f, dark.r, 1e-6f, "every channel by the shade");
+            Assert.AreEqual(tinted.g * 0.4f, dark.g, 1e-6f);
+            Assert.AreEqual(tinted.b * 0.4f, dark.b, 1e-6f);
+            Assert.AreEqual(tinted.r / tinted.g, dark.r / dark.g, 1e-4f, "the hue kept");
+            Assert.AreEqual(baked.a, dark.a, "alpha untouched: the frond's shape is the sheet's");
+            Assert.AreEqual(0f, PlantField.UnderWaterTint(baked, tint, 1f, 0f).g, 1e-6f, "0: a black silhouette");
+            Assert.AreEqual(tinted, PlantField.UnderWaterTint(baked, tint, 1f, 2f), "clamped at 1");
+            Assert.AreEqual(0f, PlantField.UnderWaterTint(baked, tint, 1f, -1f).g, 1e-6f, "and at 0");
+            Assert.AreEqual(baked.g * 0.5f, PlantField.UnderWaterTint(baked, tint, 0f, 0.5f).g, 1e-6f,
+                "a shade with no hue darkens the baked sheet");
+        }
+
         // ---- the Defs ---------------------------------------------------------------------------------
 
         [Test]
@@ -241,6 +265,8 @@ namespace HiddenHarbours.Tests.Art.EditMode
             Assert.AreEqual(PlantFieldDefinition.DefaultUnderWaterSwayWavelengthM, fresh.UnderWaterSwayWavelengthM);
             Assert.AreEqual(0f, Own(ScriptableObject.CreateInstance<PlantSpeciesDef>()).UnderWaterTintAmount,
                 "a species with no say draws its baked sheet under the water");
+            Assert.AreEqual(1f, Own(ScriptableObject.CreateInstance<PlantSpeciesDef>()).UnderWaterShade,
+                "and as bright as the sheet");
 
             var real = AssetDatabase.LoadAssetAtPath<PlantFieldDefinition>(FieldPath);
             Assert.IsNotNull(real);
@@ -253,6 +279,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
             {
                 Assert.IsNotNull(species);
                 Assert.That(species.UnderWaterTintAmount, Is.InRange(0f, 1f), species.Id);
+                Assert.That(species.UnderWaterShade, Is.InRange(0f, 1f), species.Id);
                 for (int c = 0; c < 3; c++) Assert.That(species.UnderWaterTint[c], Is.InRange(0f, 1f), species.Id);
             }
 
@@ -263,6 +290,40 @@ namespace HiddenHarbours.Tests.Art.EditMode
             Assert.Greater(kelp.TideLadder.Length, 0, "the kelp is tidal, so it can join");
             Assert.Greater(kelp.UnderWaterTintAmount, 0f, "its cold baked wet ramp is warmed before the sea blues it");
             Assert.Greater(kelp.UnderWaterTint.g, kelp.UnderWaterTint.b, "a brown-olive frond, not a blue one");
+            Assert.Greater(kelp.UnderWaterTint.r, kelp.UnderWaterTint.b, "brown, not teal");
+            Assert.Less(kelp.UnderWaterShade, 1f, "a dark frond: the bed reads as a dark mass over the lighter floor");
+            Assert.Greater(kelp.UnderWaterShade, 0f, "a frond, not a hole");
+
+            // The other tidal weed stays subtler than the kelp: never darker.
+            foreach (var species in real.Species)
+                if (species != null && species != kelp && species.TideLadder != null && species.TideLadder.Length > 0)
+                    Assert.GreaterOrEqual(species.UnderWaterShade, kelp.UnderWaterShade, species.Id + " no darker than the kelp");
+        }
+
+        [Test]
+        public void TheWeedsClarity_ShipsFromGameConfig_AndTheSeaPushesIt()
+        {
+            Assert.AreEqual(0f, GameConfig.DefaultUnderWaterWeedClarity, "the code's default is the floor's own law");
+            Assert.AreEqual(0f, Own(ScriptableObject.CreateInstance<GameConfig>()).UnderWaterWeedClarity);
+            Assert.AreEqual(0.9f, GameConfig.MaxUnderWaterWeedClarity);
+            Assert.AreEqual(0.9f, GameConfig.ClampUnderWaterWeedClarity(4f));
+            Assert.AreEqual(0f, GameConfig.ClampUnderWaterWeedClarity(-1f));
+
+            var shipped = AssetDatabase.LoadAssetAtPath<GameConfig>(ConfigAssetPath);
+            Assert.IsNotNull(shipped);
+            Assert.Greater(shipped.UnderWaterWeedClarity, 0f, "the shipped look reads the weed through less water");
+            Assert.LessOrEqual(shipped.UnderWaterWeedClarity, GameConfig.MaxUnderWaterWeedClarity);
+            Assert.AreEqual(1, Regex.Matches(File.ReadAllText(ConfigAssetPath), @"(?m)^  UnderWaterWeedClarity: ").Count,
+                "written in the asset once, so the owner can tune it");
+
+            // The sea pushes it with the floor's switch, from its own config (the code's default with none).
+            string sea = Code(WaterSurfacePath);
+            StringAssert.Contains(
+                "privatestaticreadonlyintIdUnderWaterClarity=Shader.PropertyToID(\"_HHUnderWaterClarity\");", Squash(sea));
+            StringAssert.Contains(
+                "floatclarity=_config!=null?_config.UnderWaterWeedClarity:GameConfig.DefaultUnderWaterWeedClarity;" +
+                "mpb.SetFloat(IdUnderWaterClarity,GameConfig.ClampUnderWaterWeedClarity(clarity));",
+                Squash(Body(sea, "private void PushShallowsFloor(MaterialPropertyBlock mpb)")));
         }
 
         // ---- the shader pass --------------------------------------------------------------------------
@@ -306,6 +367,11 @@ namespace HiddenHarbours.Tests.Art.EditMode
             Assert.AreEqual(PlantFieldDefinition.DefaultUnderWaterSwayPeriodS, Default(props, "_UnderWaterSwayPeriod"), 1e-6f);
             Assert.AreEqual(PlantFieldDefinition.DefaultUnderWaterSwayWavelengthM, Default(props, "_UnderWaterSwayWavelength"), 1e-6f);
             Assert.AreEqual(0f, Default(props, "_UnderWaterTintAmount"), 1e-6f);
+            Assert.AreEqual(1f, Default(props, "_UnderWaterShade"), 1e-6f);
+            StringAssert.Contains("returnlerp(albedo,saturate(hue),saturate(amount))*saturate(shade);", squashed,
+                "the shade twins PlantField.UnderWaterTint");
+            StringAssert.Contains(
+                "PlantUnderWaterTint(albedo.rgb,_UnderWaterTint.rgb,_UnderWaterTintAmount,_UnderWaterShade);", squashed);
         }
 
         // ---- fixture ----------------------------------------------------------------------------------
@@ -313,7 +379,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
         (PlantField field, UnderWaterWeedGround ground) Field(bool tidal, string habitat, float waterLevel,
             bool fieldOn = true, float sway = PlantFieldDefinition.DefaultUnderWaterSwayM,
             float period = PlantFieldDefinition.DefaultUnderWaterSwayPeriodS,
-            float wavelength = PlantFieldDefinition.DefaultUnderWaterSwayWavelengthM, float tintAmount = 0.8f)
+            float wavelength = PlantFieldDefinition.DefaultUnderWaterSwayWavelengthM, float tintAmount = 0.8f, float shade = 1f)
         {
             var real = AssetDatabase.LoadAssetAtPath<PlantFieldDefinition>(FieldPath);
             Assert.That(real, Is.Not.Null); Assert.That(real.Material, Is.Not.Null);
@@ -323,7 +389,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
             species.Code = 1; species.Family = "shore"; species.Habitat = habitat; species.StandingHeightM = 1f;
             species.TideLadder = tidal ? new[] { 0f, 1f } : new float[0];
             species.Pages = new[] { new PlantSheetPage { Albedo = texture, Normal = texture, Light = texture, Detail = texture } };
-            species.UnderWaterTintAmount = tintAmount;
+            species.UnderWaterTintAmount = tintAmount; species.UnderWaterShade = shade;
             var cells = new List<PlantCell>();
             for (int tide = 0; tide <= 1; tide++) for (int stage = 0; stage <= 2; stage++) for (int variant = 0; variant < 4; variant++)
                 cells.Add(new PlantCell { Stage = stage, Season = 1, Variant = variant, Tide = tide,
