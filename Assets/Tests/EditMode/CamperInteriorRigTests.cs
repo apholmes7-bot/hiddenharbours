@@ -8,7 +8,8 @@ using NUnit.Framework;
 using UnityEditor;
 using UnityEngine;
 using HiddenHarbours.App.Editor;         // StPetersCamperLot, StPetersGinnyPlot
-using HiddenHarbours.Core;               // KitchenStorageDef, WashStationDef
+using HiddenHarbours.Core;               // WashStationDef
+using HiddenHarbours.Economy;            // HomeDef
 using HiddenHarbours.Player;             // StowageDef, GinnyFreezer
 using HiddenHarbours.Tools.RigBaking;
 
@@ -177,6 +178,26 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         [Test]
+        public void TheCatalog_LoadsTheRoomByKey_ShellFirst_OnTheShellsCell()
+        {
+            using IRigScriptHost host = RigScriptHostFactory.Create();
+            RigGeometry room = RigCatalog.Install(host, RigCatalog.Get("camperInterior"));
+            Assert.IsTrue(host.EvaluateBool("typeof CamperIso === 'object' && CamperIso !== null"),
+                "the catalog did not install the shell before the room");
+            CollectionAssert.AreEqual(new[] { "camper" }, RigCatalog.Get("camperInterior").Prerequisites);
+            Assert.AreEqual(RigCatalog.Get("camper").DeclaredConvention, RigCatalog.Get("camperInterior").DeclaredConvention,
+                "the room is drawn by the shell's camera, so it turns the shell's way");
+
+            using IRigScriptHost shellHost = RigScriptHostFactory.Create();
+            RigGeometry shell = RigCatalog.Install(shellHost, RigCatalog.Get("camper"));
+            Assert.AreEqual(shell.Width, room.Width);
+            Assert.AreEqual(shell.Height, room.Height);
+            Assert.AreEqual(shell.PivotX, room.PivotX, 1e-9);
+            Assert.AreEqual(shell.PivotY, room.PivotY, 1e-9);
+            Assert.AreEqual(8, room.NativeDirs);
+        }
+
+        [Test]
         public void TheRoom_SharesTheShellsCellPivotAndFacings()
         {
             using IRigScriptHost host = Host();
@@ -249,17 +270,30 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         [Test]
-        public void TheStores_NameRealDefs_AndTheFreezerIsBiggerThanGinnys()
+        public void TheStores_NameTheCampersOwnDefs_AndTheFreezerIsBiggerThanGinnys()
         {
             using IRigScriptHost host = Host();
             string I(string id, string field) =>
                 host.EvaluateString($"String({Global}.interactables({V}).find(a=>a.id==='{id}').{field})");
 
-            var kitchen = AssetDatabase.FindAssets("t:KitchenStorageDef")
-                .Select(g => AssetDatabase.LoadAssetAtPath<KitchenStorageDef>(AssetDatabase.GUIDToAssetPath(g)))
-                .Where(d => d != null).Select(d => d.Id).ToHashSet();
-            foreach (string id in new[] { "fridge", "pantry" })
-                Assert.IsTrue(kitchen.Contains(I(id, "kitchen_storage")), $"'{id}' names {I(id, "kitchen_storage")}, which no KitchenStorageDef carries");
+            // The camper's stores are its OWN, gated by its deed, never the shared ones. Their Defs land
+            // with the storage PR; until then the ids are strings, and the capacity check below tightens
+            // by itself the day a StowageDef carries one of them.
+            var home = AssetDatabase.LoadAssetAtPath<HomeDef>("Assets/_Project/Data/Homes/GinnyLotCamper.asset");
+            Assert.IsNotNull(home, "the camper's HomeDef moved");
+            var bound = new (string anchor, string field, string id)[]
+            {
+                ("fridge", "kitchen_storage", "kitchen_storage.camper_fridge"),
+                ("pantry", "kitchen_storage", "kitchen_storage.camper_pantry"),
+                ("freezer", "freezer", "freezer.camper_freezer"),
+                ("gear_locker", "stowage", "stowage.camper_gear_locker"),
+                ("rod_rack", "stowage", "stowage.camper_rod_rack"),
+            };
+            foreach (var b in bound)
+            {
+                Assert.AreEqual(b.id, I(b.anchor, b.field), $"'{b.anchor}' must bind the camper's own store");
+                Assert.AreEqual(home.Id, I(b.anchor, "deed_gated"), $"'{b.anchor}' must be gated by the camper's deed");
+            }
 
             var wash = AssetDatabase.FindAssets("t:WashStationDef")
                 .Select(g => AssetDatabase.LoadAssetAtPath<WashStationDef>(AssetDatabase.GUIDToAssetPath(g)))
@@ -267,12 +301,17 @@ namespace HiddenHarbours.Tests.EditMode
             foreach (string id in new[] { "head_basin", "head_toilet", "head_shower" })
                 Assert.IsTrue(wash.Contains(I(id, "washstation")), $"'{id}' names {I(id, "washstation")}, which no WashStationDef carries");
 
-            var rack = AssetDatabase.LoadAssetAtPath<StowageDef>("Assets/_Project/Data/Stowage/RodRack.asset");
-            Assert.IsNotNull(rack, "the rod rack StowageDef moved");
-            Assert.AreEqual(rack.Id, I("rod_rack", "stowage"));
             Assert.AreEqual(4, int.Parse(I("rod_rack", "capacity")), "the owner sized the camper's rod rack for 4");
-            Assert.AreEqual(rack.Capacity, int.Parse(I("rod_rack", "capacity")), "the rig and the rod-rack Def disagree");
             Assert.AreEqual(10, int.Parse(I("gear_locker", "capacity")), "the owner sized the camper's gear locker for about 10");
+            var stowage = AssetDatabase.FindAssets("t:StowageDef")
+                .Select(g => AssetDatabase.LoadAssetAtPath<StowageDef>(AssetDatabase.GUIDToAssetPath(g)))
+                .Where(d => d != null).ToList();
+            foreach (string anchor in new[] { "rod_rack", "gear_locker" })
+            {
+                StowageDef def = stowage.FirstOrDefault(d => d.Id == I(anchor, "stowage"));
+                if (def != null)
+                    Assert.AreEqual(def.Capacity, int.Parse(I(anchor, "capacity")), $"the rig and {def.Id} disagree on capacity");
+            }
 
             var go = new GameObject("ginny-freezer-probe");
             try
@@ -443,9 +482,9 @@ namespace HiddenHarbours.Tests.EditMode
         [Test]
         public void TheKitchenAndBath_StandOnTheNorthWall_AsTheLotParksTheCamper()
         {
-            // the lot: curb (+x, the door) toward the approach, hitch (+y) along NoseDirection
+            // the lot: curb (+x, the door) toward the approach, hitch (+y) the way the camper is drawn
             Vector2 curb = (StPetersCamperLot.Approach - StPetersCamperLot.LotPos).normalized;
-            Vector2 nose = StPetersCamperLot.NoseDirection;
+            Vector2 nose = StPetersCamperLot.DrawnNoseDirection;
             Assert.AreEqual(0f, Vector2.Dot(curb, nose), 1e-4f, "the camper's long axis is not square to its approach");
             Assert.Greater(curb.x * nose.y - curb.y * nose.x, 0f,
                 "+x then +y must turn counter-clockwise (the rig frame is right-handed, +z up)");
@@ -511,7 +550,7 @@ namespace HiddenHarbours.Tests.EditMode
             using IRigScriptHost host = Host();
             float cx = (float)host.EvaluateNumber($"{Global}.lot({V}).shed_reservation.centre_rig_m[0]");
             float cy = (float)host.EvaluateNumber($"{Global}.lot({V}).shed_reservation.centre_rig_m[1]");
-            Vector2 nose = StPetersCamperLot.NoseDirection, curb = (StPetersCamperLot.Approach - lot).normalized;
+            Vector2 nose = StPetersCamperLot.DrawnNoseDirection, curb = (StPetersCamperLot.Approach - lot).normalized;
             Vector2 world = lot + curb * cx + nose * cy;
             Assert.AreEqual(shed.x, world.x, 1e-3f, "sidecar and StPetersCamperLot disagree on the shed");
             Assert.AreEqual(shed.y, world.y, 1e-3f, "sidecar and StPetersCamperLot disagree on the shed");

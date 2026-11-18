@@ -130,7 +130,9 @@
   // ---- walkable levels ----
   function headPolygon(V, F) {
     const hr = fx(F, 'head_room'), yi0 = hr.y0 + HEAD.wall, yi1 = hr.y1 - HEAD.wall;
-    const xin = -Math.min(L.interiorHW(V, L.profAtY(V, yi0)), L.interiorHW(V, L.profAtY(V, yi1)));
+    // the liner at the pan's own stations, but never outside the room's footprint (which is fitted at
+    // the room's outer ends, where the dome is already narrower)
+    const xin = Math.max(hr.x0, -Math.min(L.interiorHW(V, L.profAtY(V, yi0)), L.interiorHW(V, L.profAtY(V, yi1))));
     const xi1 = hr.x1 - HEAD.wall;
     return [[r3(xin), r3(yi0)], [r3(xi1), r3(yi0)], [r3(xi1), r3(yi1)], [r3(xin), r3(yi1)]];
   }
@@ -181,15 +183,15 @@
       it('stove', 'cook', R(-0.17, 0.10), A(gx, mid(GALLEY.stove), top), 'saloon', 'camper stove pattern (cook)', { counter: 'galley_counter' }),
       it('prep', 'prep', R(-0.17, 0.55), A(gx, mid(GALLEY.prep), top), 'saloon', 'prep station (prep, then cook at the stove)', { counter: 'galley_counter' }),
       it('fridge', 'food_storage', R(-0.17, 1.02), A(g.x1, mid(GALLEY.fridge), z + 0.45), 'saloon',
-        'food store (fridge: cold while there is power; the camper is on shore power)', { counter: 'galley_counter', kitchen_storage: 'kitchen_storage.fridge' }),
-      it('pantry', 'food_storage', R(-0.17, 1.94), A(pa.x1, (pa.y0 + pa.y1) / 2, z + 1.0), 'saloon', 'food store (pantry)', { kitchen_storage: 'kitchen_storage.pantry' }),
+        'food store (fridge: cold while there is power; the camper is on shore power)', { counter: 'galley_counter', kitchen_storage: 'kitchen_storage.camper_fridge', deed_gated: 'home.ginny_lot_camper', def_status: 'the Def lands with the storage PR; it is not on this base, so the id is a string here' }),
+      it('pantry', 'food_storage', R(-0.17, 1.94), A(pa.x1, (pa.y0 + pa.y1) / 2, z + 1.0), 'saloon', 'food store (pantry)', { kitchen_storage: 'kitchen_storage.camper_pantry', deed_gated: 'home.ginny_lot_camper', def_status: 'the Def lands with the storage PR; it is not on this base, so the id is a string here' }),
       it('freezer', 'freeze_catch', R(0.12, 1.55), A((fr.x0 + fr.x1) / 2, (fr.y0 + fr.y1) / 2, z + fr.h), 'saloon',
         'catch freezer (the GinnyFreezer pattern, an IHold), powered from shore_power',
-        { capacity_units: 40, capacity_source: 'owner 2026-11-17: bigger than Ginny\'s 20 (seat lean 40); the capacity belongs in a Def when the freezer is wired' }),
+        { freezer: 'freezer.camper_freezer', capacity_units: 40, capacity_source: 'owner 2026-11-17: bigger than Ginny\'s 20 (seat lean 40); the FreezerDef owns the number once it lands', deed_gated: 'home.ginny_lot_camper', def_status: 'the Def lands with the storage PR; it is not on this base, so the id is a string here' }),
       it('gear_locker', 'storage', R(0.15, 0.72), A(gl.x0, (gl.y0 + gl.y1) / 2, z + 1.0), 'saloon', 'gear stowage (a StowageDef rack)',
-        { stowage: 'stowage.camper_gear_locker', stowage_status: 'proposed id, no Def yet', capacity: 10 }),
+        { stowage: 'stowage.camper_gear_locker', capacity: 10, deed_gated: 'home.ginny_lot_camper', def_status: 'the Def lands with the storage PR; it is not on this base, so the id is a string here' }),
       it('rod_rack', 'storage', R(0.12, 1.95), A((rr.x0 + rr.x1) / 2, (rr.y0 + rr.y1) / 2, z + rr.z0), 'saloon', 'rod stowage (StowageRack)',
-        { stowage: 'stowage.rod_rack', capacity: 4 }),
+        { stowage: 'stowage.camper_rod_rack', capacity: 4, deed_gated: 'home.ginny_lot_camper', def_status: 'the Def lands with the storage PR; it is not on this base, so the id is a string here' }),
       it('settee', 'sit', R(0, 2.24), A(0, (se.y0 + se.y1) / 2, z + se.h), 'saloon', 'seat (sit: rest short of a bed)',
         { seat: { level: 'saloon', obstruction: 'nose_settee', sit_point: A(0, (se.y0 + se.y1) / 2, z + se.h) } }),
       it('head_basin', 'wash', R(HEAD.stand[0], HEAD.stand[1]), A((HEAD.basin.x0 + HEAD.basin.x1) / 2, (HEAD.basin.y0 + HEAD.basin.y1) / 2, z + HEAD.basin.h), 'head',
@@ -286,10 +288,10 @@
       facing: 2, rig_dir: 6, convention: 'CounterClockwise: rigDir = (8 - facing) % 8',
       compass: { north: '-x', south: '+x (curb side, the door)', east: '+y (hitch)', west: '-y (tail)' },
       world_from_rig: 'world = LotPos + (y, -x)',
-      source: 'StPetersCamperLot: Approach is the cottage, due south, so the curb faces south; NoseDirection is east. The north-wall rule therefore means rig -x.',
+      source: 'StPetersCamperLot: Approach is the cottage, due south, so the curb faces south; the hitch is the curb turned a quarter counter-clockwise (StPetersCamperLot.DrawnNoseDirection), east, as DoorFacing 2 draws it. (NoseDirection, derived by room, now comes out west and disagrees.) The north-wall rule therefore means rig -x.',
       shed_reservation: {
         purpose: 'the lot\'s small shed (seat lean: an 8-rod rack and a 12-slot gear store); its rig is another slice',
-        centre_rig_m: [0, -SHED.tailMetres], offset: 'LotPos - NoseDirection * ' + SHED.tailMetres + ' (off the tail, west)',
+        centre_rig_m: [0, -SHED.tailMetres], offset: 'LotPos - DrawnNoseDirection * ' + SHED.tailMetres + ' (off the tail, west)',
         footprint_m: { along_camper: SHED.along, across_camper: SHED.across, world: SHED.along + ' m east-west x ' + SHED.across + ' m north-south' },
         reserve_radius_m: r3(rr), door_side: 'south: the curb side, toward the cottage and the path, like the camper door',
         csharp: 'StPetersCamperLot.ShedPos / ShedSize / ShedFootprintRadiusMetres / ShedDoorDirection',
@@ -590,9 +592,9 @@
       mechanism_map: {
         door: 'shell door (step_out)', bunk: 'InteriorBed (sleep, rest + save)', galley_sink: 'galley sink (wash_dishes)',
         stove: 'camper stove pattern (cook)', prep: 'prep station (prep, then cook at the stove)',
-        fridge: 'food store (kitchen_storage.fridge)', pantry: 'food store (kitchen_storage.pantry)',
-        freezer: 'catch freezer, GinnyFreezer pattern (IHold), 40 units', gear_locker: 'StowageRack (stowage.camper_gear_locker, proposed)',
-        rod_rack: 'StowageRack (stowage.rod_rack)', settee: 'seat (sit)',
+        fridge: 'food store (kitchen_storage.camper_fridge)', pantry: 'food store (kitchen_storage.camper_pantry)',
+        freezer: 'catch hold (freezer.camper_freezer), 40 units', gear_locker: 'StowageRack (stowage.camper_gear_locker)',
+        rod_rack: 'StowageRack (stowage.camper_rod_rack)', settee: 'seat (sit)',
         head_basin: 'wash station (washstation.sink)', head_toilet: 'wash station (washstation.toilet)', head_shower: 'wash station (washstation.shower)' },
       FIT: fit(opts),
       LOT: lot(opts),
@@ -603,13 +605,13 @@
         second_berth: 'The nose settee is ' + r3(fx(F, 'nose_settee').x1 - fx(F, 'nose_settee').x0) + ' m long: a seat, not a berth.',
       },
       _confirm: {
-        shell_layout: 'camperIsoRig.js LAYOUT.clipper (the dark seen-in volumes through the open door, and the shell sidecar\'s SOLE obstructions) still describes the old plan: head on the curb side, dinette, lounge. This room supersedes it; the shell is not edited here (its sha stamps two sidecars). Retire or regenerate it with the bake.',
+        shell_layout: 'camperIsoRig.js LAYOUT.clipper (the dark seen-in volumes through the open door, and the shell sidecar\'s SOLE obstructions) still describes the old plan: head on the curb side, dinette, lounge. This room supersedes it. It is retired with the shell\'s mesh bake, not before: editing it moves the shell\'s sha, which stamps two sidecars and four committed sprite recipes, so the sheets would be rebaked once for a look the mesh then replaces.',
         coop_sleep: 'One transverse double. The co-op rule (everyone in a separate bunk) is not met by this room alone.',
         freezer_power: 'The freezer and the fridge are powered; the shore_power hookup is on the street side of the shell.',
       },
       _bake_owed: {
-        catalog: 'Register camperInteriorRig.js in RigCatalog with camperIsoRig.js as its prerequisite (the room throws without it).',
-        mesh: 'Bake through VehicleMeshAssetBaker / the cutaway seam (ADR 0041/0048): ceiling culled, near walls sectioned to the 0.60 m sill per facing, faces tagged by seg.',
+        catalog: 'Done: RigCatalog key camperInterior, prerequisite camper (the shell), counter-clockwise like the shell.',
+        mesh: 'No dwelling-room mesh path exists yet. VehicleMeshAssetBaker bakes wheeled road vehicles (articulation, chassis); the level-gated cutaway (ADR 0041/0048) lives on HullMeshDef and the hull renderer; a building room has no mesh Def, no bake and no cutaway component. That seam is a lead-architect decision (a new Core Def, or HullMeshDef reused for a parked room). Once it exists: ceiling culled, near walls sectioned to the 0.60 m sill per facing, faces tagged by seg.',
         interior_key: 'File the baked room under StPetersCamperLot.InteriorKey ("camper.clipper") so InteriorStood flips.',
         facing: 'The lot parks facing 2, which this counter-clockwise rig draws as dir 6; at dir 6 the south (curb) wall is the near wall.',
         look: 'Owner reviews the contact sheet before the bake lands.',

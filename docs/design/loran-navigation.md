@@ -26,7 +26,7 @@ logbook's.
 | Maths | `LoranMath` | position to TD, TD pair to position (Newton), geometry, deterministic error |
 | Read model | `LoranReceiver.Read` → `LoranReading`; `LoranReceiver.Steer` → `LoranSteer` | pure, allocation-free |
 | The numbers | `LoranWaypointStore`, `LoranWaypoint`, `LoranWaypointSave` | saved per hull in v24 (§6) |
-| Purchase | `LoranOffer.asset` (`instrument.loran`, an `InstrumentOffer`) | bolted into one hull, bought through `InstrumentShop` like the sounder; **listed at the St Peters general store (`seller.leblancs`), on the Gear shelf beside the sounder**, with its own `InstrumentShop` on `GeneralStoreCounter` (written by `StoreWiringPatch`). The fitment is recorded in the save's `InstrumentLocker` (`SaveData.HullInstruments`), which already persists, so owning it survives a reload with no save version step |
+| Purchase | `LoranOffer.asset` (`instrument.loran`, an `InstrumentOffer`) | bolted into one hull, bought through `InstrumentShop` like the sounder; **sold only at the Nine Mile Creek boat/gear wholesaler (`seller.nmc_boat_gear_wholesaler`) at ₲900** (owner ruling 11-16; approved price from `docs/economy/nmc-wholesalers-stock.md` §4.2). The offer is on file but unlisted until that wholesaler has a keeper and a counter `InstrumentShop` (`docs/design/economy-item-sellers.md` §5.1); the St Peters placeholder listing and its vendor are gone. The fitment is recorded in the save's `InstrumentLocker` (`SaveData.HullInstruments`), which already persists, so owning it survives a reload with no save version step |
 | Helm slot | `HelmConsoleDef.SupportsLoran` / `DefaultLoran`, `HelmFit.Loran` | resolved by `BoatEquipment.EffectiveFit`; **only `helm.cape_islander` (the 1982 wheelhouse) has room** |
 
 Not built: the instrument view (§7), the instrument host that opens a hull's store (§6), the world-frame mapping
@@ -119,6 +119,6 @@ There is no generic readout widget on the dash, so nothing is drawn yet. Owed:
 3. **The renderer** (ui-ux), reading `LoranReading` + `LoranSteer` only; it never computes a fix.
 4. **The instrument host** (Boats/App): read `Fit.Loran`, map the hull position through the world
    frame, call `LoranReceiver.Read` on the instrument tick, own one `LoranWaypointStore` per hull.
-5. ~~A seller~~ done: Marguerite's counter at St Peters sells it (the only counter with an instrument
-   seam today). A Nine Mile Creek chandlery or a coast-tech counter is the more natural home later;
-   moving it there is a listing change plus an `InstrumentShop` on that counter (a scene step).
+5. A seller: the offer names the Nine Mile Creek boat/gear wholesaler (ruling 11-16). Owed: its keeper,
+   its counter `InstrumentShop` in NineMileCreek.unity and the `Listed` tick, together
+   (`docs/design/economy-item-sellers.md` §5.1). Until then nobody sells it.

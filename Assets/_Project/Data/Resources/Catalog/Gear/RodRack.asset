@@ -19,8 +19,8 @@ MonoBehaviour:
     stowage.rod_rack Def (gameplay-systems).'
   Price: 25
   Catalog:
-    Listed: 0
+    Listed: 1
     Section: 5
     Sellers:
-    - seller.nmc_chandlery
+    - seller.nmc_fishing_gear_wholesaler
     SortOrder: 15

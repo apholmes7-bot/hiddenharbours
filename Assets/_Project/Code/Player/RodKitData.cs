@@ -194,23 +194,20 @@ namespace HiddenHarbours.Player
         {
             if (rungs == null || rungs.Length == 0) return -1;
 
-            float want = CubeRoot(Mathf.Max(0f, weightKg));
             int best = -1;
             float bestGap = float.MaxValue;
             for (int i = 0; i < rungs.Length; i++)
             {
                 if (rungs[i] == null) continue;
-                float gap = Mathf.Abs(CubeRoot(Mathf.Max(0f, rungs[i].Kg)) - want);
+                // The same distance the catch art table picks its sized kinds by, so the fish on the
+                // line and the fish in the hands are always the same drawing.
+                float gap = HiddenHarbours.Core.CatchSize.LengthGap(rungs[i].Kg, weightKg);
                 // Strictly-less keeps the FIRST (smaller) rung on an exact tie, so a fish sitting
                 // precisely on a boundary always resolves the same way rather than by array order.
                 if (gap < bestGap) { bestGap = gap; best = i; }
             }
             return best;
         }
-
-        /// <summary>Cube root, defined at 0 and never handed a negative (Mathf.Pow returns NaN for
-        /// a negative base at a fractional exponent, which would poison every comparison).</summary>
-        static float CubeRoot(float v) => v <= 0f ? 0f : Mathf.Pow(v, 1f / 3f);
     }
 
     /// <summary>

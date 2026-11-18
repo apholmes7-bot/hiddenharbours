@@ -14,14 +14,24 @@ MonoBehaviour:
   m_EditorClassIdentifier: HiddenHarbours.Core::HiddenHarbours.Core.IconLibrary
   Entries:
   - Id: fish.atlantic_cod
-    Icon: {fileID: -3536239991035090404, guid: 2ebb3cba674a7834fbbfd59fb79f0b83, type: 3}
+    Icon: {fileID: -1008036311, guid: 66ebafe07add22d4681f10072f86e39c, type: 3}
   - Id: fish.haddock
-    Icon: {fileID: -247080572403776488, guid: c8834f13f90c30742a141b17ecfa4d46, type: 3}
+    Icon: {fileID: 534143428, guid: 0d0e3dd31ad4a354aabceda119d473b8, type: 3}
   - Id: fish.mackerel
-    Icon: {fileID: -8407166883477379423, guid: e9ea28cbd0a514a408c7c9cc278ef42d, type: 3}
+    Icon: {fileID: -1702975071, guid: 6c74475469629a8408eaacea7df286ba, type: 3}
+  - Id: fish.pollock
+    Icon: {fileID: -108855495, guid: a0d8003e4a79c1d4289f91818e552987, type: 3}
+  - Id: fish.striped_bass
+    Icon: {fileID: -1791210117, guid: 286ef82f30a56e847a7740953246de6a, type: 3}
+  - Id: fish.winter_flounder
+    Icon: {fileID: 324682995, guid: 50b2ea2ef2576ab46a1d3bf2e8c60a6f, type: 3}
+  - Id: fish.atlantic_herring
+    Icon: {fileID: 202277615, guid: 3bb4ffe7ccb6a5347afe0eae888963b5, type: 3}
   - Id: fish.lobster
     Icon: {fileID: 21300000, guid: 555eeebc25e370ae12601d4252236302, type: 3}
   - Id: fish.rock_crab
+    Icon: {fileID: 21300000, guid: b6bc2c66344a71e4b46243ea685d1ae0, type: 3}
+  - Id: fish.green_crab
     Icon: {fileID: 21300000, guid: b6bc2c66344a71e4b46243ea685d1ae0, type: 3}
   - Id: fish.soft_shell_clam
     Icon: {fileID: -8350118145691459604, guid: bae98caad6f379308446110bc6a39b4f, type: 3}
@@ -32,7 +42,7 @@ MonoBehaviour:
   - Id: gear.bucket
     Icon: {fileID: 1180958333410743825, guid: 9c457a82e4864b81a738e262fb058047, type: 3}
   - Id: license.cod
-    Icon: {fileID: -3536239991035090404, guid: 2ebb3cba674a7834fbbfd59fb79f0b83, type: 3}
+    Icon: {fileID: -1008036311, guid: 66ebafe07add22d4681f10072f86e39c, type: 3}
   - Id: boat.dory
     Icon: {fileID: -4273363844485199502, guid: 98bbb7aa1db20694e80169b89245b8c7, type: 3}
   - Id: boat.punt

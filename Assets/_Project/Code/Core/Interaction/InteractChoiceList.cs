@@ -202,6 +202,24 @@ namespace HiddenHarbours.Core
         }
 
         /// <summary>
+        /// The rows of ONE thing its owner has already found, with no registry scan: each of its actions
+        /// (an <see cref="IMultiActionInteractable"/> with two or more), else its one verb. The selection
+        /// starts on the first pickable row, so a thing that lists its default action first opens on it.
+        /// Used for a villager, whom the conversation driver finds rather than the resolver.
+        /// Allocation-free, like <see cref="Build"/>.
+        /// </summary>
+        /// <param name="candidate">The thing (null is empty).</param>
+        /// <param name="maxRows">The feel cap on rows, clamped to 1..<see cref="HardCap"/>.</param>
+        public void BuildActionsOf(IInteractable candidate, int maxRows)
+        {
+            Clear();
+            if (candidate == null) return;
+            Default = candidate;
+            AddRowsFor(candidate, Mathf.Clamp(maxRows, 1, HardCap));
+            FinishSelection();
+        }
+
+        /// <summary>
         /// Only <see cref="Default"/>, with no rows built: what the per-frame highlight needs. The
         /// resolver's winner, swapped for a free member of its group when it is an occupied exclusive
         /// thing. Allocation-free.
