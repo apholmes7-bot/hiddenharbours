@@ -442,6 +442,16 @@ namespace HiddenHarbours.Core
                  "off to restore today's flat-water handling. Per-hull response lives on each BoatHullDef.")]
         public SeakeepingSettings Seakeeping = SeakeepingSettings.Default;
 
+        [Header("Sea yaw (the wind and the sea turn her head)")]
+        [Tooltip("World-wide policy for how much the wind and the waves TURN a hull (P1): gusts and a beam " +
+                 "wind nudge the heading, a quartering or following sea makes the stern wander, light hulls " +
+                 "are turned more than heavy ones (scaled by each hull's mass, windage and seakeeping " +
+                 "response), drawing sails add weather helm (BoatHullDef.SailWeatherHelm). Quoted as a share " +
+                 "of the hull's own full helm and capped by MaxHelmShare, so the rudder wins with way on. " +
+                 "Calm water, sheltered water and a hull tied to the shore are UNCHANGED by construction. " +
+                 "Enabled off restores the handling from before.")]
+        public SeaYawSettings SeaYaw = SeaYawSettings.Default;
+
         [Header("Storm seakeeping read (ADR 0018 B2.5 — the hull answers the storm)")]
         [Tooltip("World-wide STORM policy for the VISUAL rock (the owner's 'the boat seemed to not be " +
                  "responsive to the waves'): above a storm-start sea state the rock's gains, caps and a " +

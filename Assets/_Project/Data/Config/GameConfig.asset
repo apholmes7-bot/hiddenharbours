@@ -82,6 +82,21 @@ MonoBehaviour:
     SurfBroachTorque: 1.2
     SurfBorePulse01: 1
     SurfLiftScale: 1
+  SeaYaw:
+    Enabled: 1
+    CalmWindMetresPerSecond: 3
+    ReferenceWindMetresPerSecond: 10
+    WindHelmShare: 0.2
+    HullWindYawBias: 1
+    AnchoredWindYawBias: -1
+    WaveHelmShare: 0.2
+    ReferenceWaveSlope: 0.1
+    WaveSpanWavelengthFraction: 0.25
+    ReferenceMassKg: 400
+    MassExponent: 0.35
+    ReferenceWindExposure: 0.6
+    MaxSusceptibility: 1.25
+    MaxHelmShare: 0.45
   Anchor:
     ReferenceAnchorMassKg: 6
     DefaultRodeMeters: 6

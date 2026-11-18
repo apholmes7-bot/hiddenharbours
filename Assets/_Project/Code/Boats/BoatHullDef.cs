@@ -319,6 +319,12 @@ namespace HiddenHarbours.Boats
         [Tooltip("Polar target speed (kn) at which unmanned round-up reaches twice its wind-loaded floor.")]
         [Min(0.01f)] public float RoundUpReferenceDriveKn = 6f;
 
+        [Tooltip("Weather helm while her sails are drawing: how hard the wind turns her bow UP into it, against " +
+                 "the hull's own fall-off (GameConfig.SeaYaw.HullWindYawBias). 0 = none (a hull without sails, " +
+                 "or one balanced to neutral); 2 = she rounds up about as hard as an unsailed hull falls off. " +
+                 "Felt as a gentle pull to windward the helmsman holds off, growing with the wind.")]
+        [Min(0f)] public float SailWeatherHelm = 0f;
+
         /// <summary>True when this hull is driven by her sails and has a table to sail to. A hull
         /// declared <see cref="PropulsionType.Sail"/> with no polar is NOT sailable — she falls back
         /// to her auxiliary rather than sitting still with no explanation.</summary>
