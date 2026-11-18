@@ -11,7 +11,8 @@ using static HiddenHarbours.App.Editor.StPetersLayerRefresh;
 namespace HiddenHarbours.Tests.EditMode
 {
     /// <summary>
-    /// Nine Mile Creek's new building shells (the fish plant, the community hall with its gym), as the committed
+    /// Nine Mile Creek's new building shells (the fish plant, the community hall with its gym, the boat gear and
+    /// the fishing gear wholesalers), as the committed
     /// scene carries them: the steps over the committed scene change nothing (so the scene is what the steps write,
     /// and a second run is a no-op), each footprint stands clear of every road, every other placed thing and every
     /// plant, and each prefab is a working seamless room (ADR 0036) whose doorway is the one way in.
@@ -55,6 +56,17 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         static IEnumerable<string> Names() => NmcBuildingShells.All.Select(s => s.Name);
+
+        [Test]
+        public void EachCounterNamesASellerThatExists()
+        {
+            var sellers = new HashSet<string>(Resources.LoadAll<HiddenHarbours.Economy.SellerDef>(
+                HiddenHarbours.Economy.SellerDirectory.ResourceFolder).Select(d => d.Id));
+            foreach (var s in Shells.Where(x => !string.IsNullOrEmpty(x.SellerId)))
+                Assert.That(sellers.Contains(s.SellerId), Is.True, $"{s.Name} names {s.SellerId}, which no SellerDef carries");
+            Assert.That(NmcBuildingShells.BoatGearWholesaler.SellerId, Is.Not.Empty);
+            Assert.That(NmcBuildingShells.FishingGearWholesaler.SellerId, Is.Not.Empty);
+        }
 
         [Test]
         public void NoCarriagewayComesWithinTheMarginOfAWall()
@@ -116,11 +128,16 @@ namespace HiddenHarbours.Tests.EditMode
                 // yard's polygon, which the hall test holds the hall inside.
                 if (top == "Yards" && Lineage(tr).Contains("Boundary")) continue;
                 foreach (var s in Shells)
-                    if (NmcBuildingShells.WorldRect(s).Contains(at))
+                    if (NmcBuildingShells.WorldRect(s).Contains(at) && !BelongsInside(top, s))
                         offenders.Add($"{Scene.Require(tr.FieldRef("m_GameObject"), "go").Field("m_Name")} (under {top}) at {at} in {s.Name}");
             }
             Assert.That(offenders, Is.Empty, string.Join("\n", offenders));
         }
+
+        /// <summary>A wholesaler's counter and keeper are placed inside their own shell on purpose
+        /// (<c>NmcWholesalerKeepers.Place</c>); inside any other shell they are still offenders.</summary>
+        static bool BelongsInside(string top, NmcBuildingShells.Shell s) =>
+            NmcWholesalerKeepers.All.Any(k => k.Shell.Name == s.Name && (top == k.CounterRoot || top == k.KeeperRoot));
 
         [Test]
         public void ThePrefabsAreWorkingRooms([ValueSource(nameof(Names))] string name)

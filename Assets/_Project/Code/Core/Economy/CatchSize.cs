@@ -48,5 +48,22 @@ namespace HiddenHarbours.Core
         /// than to zero.</remarks>
         public static float LengthMeters(in CatchItem item)
             => LengthMeters(item.WeightKg, GameServices.FishLengthPerKgCubeRootMeters);
+
+        /// <summary>
+        /// How far apart two fish of these weights are <b>in drawn length</b>, in cube roots of a
+        /// kilogram: the one distance a baked size ladder is picked by, wherever it is picked. The
+        /// fight's ladder (<c>FishSizeLadder</c>) and the catch art table's sized kinds
+        /// (<c>CatchItemLibrary.SizedKindFor</c>) both ask this, so a fish fought on the line, held in
+        /// the hands and laid in a tote resolves to the same drawing every time.
+        ///
+        /// <para>The coefficient cancels out of a comparison, so it is not asked for. A negative weight
+        /// reads as 0 (a cube root of a negative is NaN through Pow, which would poison every
+        /// comparison it touched).</para>
+        /// </summary>
+        public static float LengthGap(float rungKg, float weightKg)
+            => UnityEngine.Mathf.Abs(CubeRoot(UnityEngine.Mathf.Max(0f, rungKg)) -
+                                     CubeRoot(UnityEngine.Mathf.Max(0f, weightKg)));
+
+        static float CubeRoot(float v) => v <= 0f ? 0f : UnityEngine.Mathf.Pow(v, 1f / 3f);
     }
 }

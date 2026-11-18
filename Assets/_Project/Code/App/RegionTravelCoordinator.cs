@@ -40,6 +40,9 @@ namespace HiddenHarbours.App
             PublishPlayer();
             GameServices.Whereabouts = this;
             EnsureWorldFrame();
+            // The persistent boat hold is one of the player's storage containers (what the gift rows list).
+            // The region scenes' dev boats are not: only this core's hold is listed.
+            if (_hold != null) PlayerStorage.Register(_hold);
         }
 
         private void OnDisable()
@@ -92,6 +95,8 @@ namespace HiddenHarbours.App
         {
             if (GameServices.PlayerTransform == _player) GameServices.PlayerTransform = null;
             if (ReferenceEquals(GameServices.Whereabouts, this)) GameServices.Whereabouts = null;
+            // Reference test, not Unity's ==: a hold destroyed first must still come off the list.
+            if (!ReferenceEquals(_hold, null)) PlayerStorage.Unregister(_hold);
             // A neighbour this core warmed and never crossed into dies with it (PR 1223): left parked, it outlived
             // the core that loaded it and read as "loaded" to everything after (the next test's whole session).
             if (!_quitting) ReleaseWarmNeighbours();
@@ -918,7 +923,9 @@ namespace HiddenHarbours.App
         /// <summary>Wire the coordinator in one call (tests / editor builder).</summary>
         public void Configure(Transform player, Transform boat, ControlSwitcher switcher, ShipHold hold)
         {
+            if (!ReferenceEquals(_hold, null) && !ReferenceEquals(_hold, hold)) PlayerStorage.Unregister(_hold);
             _player = player; _boat = boat; _switcher = switcher; _hold = hold;
+            if (isActiveAndEnabled && _hold != null) PlayerStorage.Register(_hold);
 
             // Re-publish when wired AFTER we were already enabled. The builder and the test rigs both
             // configure while inactive and enable afterwards (so OnEnable does it), but a caller that

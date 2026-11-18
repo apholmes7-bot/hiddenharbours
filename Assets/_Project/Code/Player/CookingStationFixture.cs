@@ -17,7 +17,9 @@ namespace HiddenHarbours.Player
     ///
     /// <para><b>Finishing.</b> While something is on this station, <see cref="Update"/> compares the clock
     /// with the ready time (one comparison, no allocation) and, when it is done, the food goes into the supply
-    /// locker. A station whose scene unloads mid-cook finishes when it is next enabled.</para>
+    /// locker. A station whose scene unloads mid-cook finishes when it is next enabled. A pot is saved with
+    /// the game, so after a load the station picks it up again (on enable, and on <see cref="GameLoaded"/>)
+    /// and it finishes at the same game time, or at once when that time has already passed.</para>
     ///
     /// <para><b>Placing one.</b> The cook job is keyed by <see cref="Id"/>, and the three prefabs ship fixed
     /// ids (<c>fixture.kitchen.stove</c> and so on), so every placed instance must override <c>_id</c> with
@@ -90,10 +92,18 @@ namespace HiddenHarbours.Player
         private void OnEnable()
         {
             Interactables.Register(this);
+            EventBus.Subscribe<GameLoaded>(OnGameLoaded);
             _watching = GameServices.Cooking.IsCooking(_id, out _);
         }
 
-        private void OnDisable() => Interactables.Unregister(this);
+        private void OnDisable()
+        {
+            Interactables.Unregister(this);
+            EventBus.Unsubscribe<GameLoaded>(OnGameLoaded);
+        }
+
+        // A load can put a saved pot on this station (or take one off) while it is already enabled.
+        private void OnGameLoaded(GameLoaded loaded) => _watching = GameServices.Cooking.IsCooking(_id, out _);
 
         /// <summary>Start cooking, or say why not. Public so tests and a later driver call it without input.</summary>
         public CookRefusal Use()
