@@ -87,13 +87,14 @@ namespace HiddenHarbours.Tests.EditMode
 
         private void GiveBars(int n) => SupplyLocker.Add(Save, Soap, n);
 
-        /// <summary>One wash at <paramref name="station"/> from 0.9 dirt, long enough to reach any ceiling
-        /// and well inside the counted window.</summary>
+        /// <summary>One wash at <paramref name="station"/> from 0.9 dirt, one game hour: long enough to reach
+        /// any ceiling (the slowest station here, the sink at 1/h, needs 0.7 h to come down from 0.9 to its 0.2)
+        /// and well inside the 120-minute counted window.</summary>
         private float WashFrom09(CleanlinessService svc, WashStationDef station)
         {
             SetDirt(0.9f);
             svc.BeginWash(station);
-            _clock.T += 0.5d * Hour;
+            _clock.T += 1d * Hour;
             float dirt = svc.Dirt;
             svc.EndWash();
             _clock.T += 0.01d * Hour;
