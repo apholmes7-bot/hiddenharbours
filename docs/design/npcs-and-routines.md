@@ -834,16 +834,22 @@ knows you.
 
 "Some items can be gifted to npcs and npcs have preferences." What shipped, and what did not:
 
-- **What can be given.** The loose catch in your hand (a fish by the gill, a handful of clams). It is
-  giftable unless its species says otherwise (`FishSpeciesDef.Giftable`, default on), read through
-  Core's `IGiftableFacts` so the world layer never names Fishing. Tools and pails are never offered: the
-  act only peeks the hand's loose catch (`ICatchHands.TryPeekHand`). Food is not a hand item on main
+- **What can be given.** Catch he has: a fish by the gill, a handful of clams, and since 5.7 the same
+  catch in his pails and his storage. It is giftable unless its species says otherwise
+  (`FishSpeciesDef.Giftable`, default on), read through Core's `IGiftableFacts` so the world layer never
+  names Fishing. Tools and pails themselves are never offered. Food is not an item he holds on main
   yet, so it has no flag; when it is, it answers through the same seam.
-- **How it is offered.** Facing a villager you have MET (her completion flag is set) with a giftable
-  catch in hand, the popup says **Give — Aunt Ginny** instead of Talk, and E gives. Her opening
-  conversation is never skipped by a fish in your hand. Put the catch away to talk. When the
-  interaction chooser lands, this one branch in `WorldInteractor.BeginInteract` becomes two rows
-  (Talk, Give); `Give()` is already the whole act.
+- **How it is offered.** Facing a villager you have MET (her completion flag is set) with something
+  giftable, the press opens the interaction chooser: **Talk** first and selected, and a **Give
+  &lt;item&gt;** row per item type beneath it ("Give Atlantic Cod (3)"; 5.7). Confirming the default
+  talks and nothing moves; only picking a Give row gives. With nothing giftable there is no list and the
+  press talks at once. A bare press never gives. The popup always names Talk. Her opening conversation
+  is never skipped by a fish in your hand. Talk in the list is the owner's call (confirmed 2026-11-17).
+  The faced villager is handed to the chooser as one thing (`ConversationChoice`) through
+  `InteractChooser.OpenUnregistered`, whose confirm re-checks reach, facing and availability but not
+  registration; a Give row re-reads what he has at the confirm.
+- **The chooser switch.** With `GameConfig.InteractChooserEnabled` off, gifting is unreachable by
+  design: there is no list to pick Give from, and a bare press never gives, so the press only talks.
 - **Tastes are data** on the villager's `NpcDef.Gifts`: loved / liked / disliked by item id and by
   item tag (`catch`, and the fish category in snake case: `shellfish`, `inshore_groundfish`,
   `pelagic` ...). An id beats a tag; on a tie between tags the warmer wins. Nothing authored = she takes
@@ -873,12 +879,10 @@ not saved: relationships slice 2), and publishes
   Rene loves mackerel and Dougie, who shares his gable and tins pelagics all day, does not; the oyster
   man does not want oysters and the shopkeeper loves them; Sam and Rose like any catch at all.
 - **The daily limit** is per person, per game day (the clock's day index), from
-  `GiftConfig.GiftsPerNpcPerDay`. **Saved since v24** (next bullet).
-- **Still owed:** Talk and Give as two rows in the interaction chooser (today a giftable catch in hand
-  makes the press a Give; the chooser's NPC rows wait on the owner's open question of whether talk joins
-  the list, and on the NPC becoming a chooser candidate without double-acting on one press); food and
-  other hand items as gifts once food is a hand item; the relationship graph applied and saved
-  (relationships slice 2).
+  `GiftConfig.GiftsPerNpcPerDay`. **Saved since v24** (5.6).
+- **Still owed:** food and other items as gifts once they are items he can hold (the Give rows read
+  catch only); the pail and deck-tray pictures refreshing the moment a gift leaves them (5.7); the
+  relationship graph applied and saved (relationships slice 2).
 
 ### 5.6 As built: gift days saved (v24 rows wired)
 
@@ -890,6 +894,33 @@ not saved: relationships slice 2), and publishes
 - Reloading on the same game day now remembers who has had their gift. A v23 save loads with no gift
   history. Nothing else is saved for gifts: the relationship event a gift records goes to the
   relationship service, whose graph is not saved yet (relationships slice 2).
+
+### 5.7 As built: give from anywhere he keeps things (owner rule 2026-11-17)
+
+The owner's rule: Give only shows what the player has, whether in his hands, in his backpack or in his
+storage containers; with several of the same type it gives one of that type, unless he picks the action
+again.
+
+- **Where it looks** (`GiftInventory`, all through Core): his hands (the loose catch, then a pail he has
+  picked up), then what he carries on his person (the belt pail, `GameServices.PlayerHold`; there is no
+  backpack in the game yet, and when there is it answers here), then his storage containers
+  (`PlayerStorage`, a new Core list: the persistent boat hold, registered by the travel coordinator, and
+  Ginny's freezer, which registers itself). Region scenes' dev boats are not his and are not listed.
+- **One row per item type.** Talk first and selected, then "Give Atlantic Cod" per giftable type, with a
+  count when he has more than one anywhere: "Give Atlantic Cod (3)". Types are listed in the order first
+  met on that walk, so what is in his hand comes first. The chooser's row cap
+  (`GameConfig.InteractChooserMaxRows`, 6 by default) bounds the list: Talk plus five types; any further
+  types are not shown until there is room.
+- **One per pick.** A Give pick gives exactly one: from his hands first, then what he carries, then
+  storage. Picking Give again gives another, under the same daily limit (one per person per day by
+  default, so a second pick that day is declined kindly and nothing moves). Nothing giftable anywhere =
+  no list; the press talks.
+- **Taking one out of a container** uses the Core rebuild (`IHold` has no partial remove, the
+  `SellService` / `CatchDisposal` pattern). A container whose capacity could not take the rest back (a
+  belt pail whose gear is gone) is skipped, so a gift never loses catch.
+- **Known gap:** the pail and deck-tray pictures listen for a catch, a sale or a dump, not a gift, so they
+  show the old contents until the next of those. Fixing it is a one-line subscription in each presenter
+  (Art and Boats lanes).
 
 ---
 

@@ -41,6 +41,14 @@ namespace HiddenHarbours.Boats
         public const float RowDipCentreDegrees = 6f;
         public const float RowDipAmplitudeDegrees = 22f;
 
+        /// <summary>The phase of <see cref="Row"/> (in turns) at the CATCH: sweep is at its minimum
+        /// (-<see cref="RowSweepAmplitudeDegrees"/>), which is the blade furthest FORWARD, and the dip
+        /// is passing through its centre on the way down, so the blade is going in. The drive runs
+        /// from here half a turn (blade down, sweeping aft) to the release at 0.25. A fact of the sine
+        /// and cosine below, not a tunable: the rower's body reads it to know where the stroke
+        /// starts (<see cref="HiddenHarbours.Core.IOarStroke"/>).</summary>
+        public const float RowCatchTurns = 0.75f;
+
         /// <summary>Shipped fore, lying along the gunwale — the rig's 'resting' state.</summary>
         public const float RestingSweepDegrees = -82f, RestingDipDegrees = -7f;
 

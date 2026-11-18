@@ -127,9 +127,13 @@ namespace HiddenHarbours.Art
                                  "builders do this; a hand-made object must too).", this);
             }
 
+            // SIZED: a small cod lies in the tote as the small cod drawing, a big one as the big one
+            // (the library's size ladder; a kind with no ladder answers its plain kind). Every sized
+            // fish kind still reads as the fish catch group for the pail.
             _kinds.Clear();
             for (int i = 0; i < used; i++)
-                _kinds.Add(library != null ? library.KindFor(items[i].SpeciesId) : items[i].SpeciesId);
+                _kinds.Add(library != null ? library.SizedKindFor(items[i].SpeciesId, items[i].WeightKg)
+                                           : items[i].SpeciesId);
 
             // ⚠️ The MIN is the fix, not decoration. UsedUnits/CapacityUnits is 0/0 for a hold whose
             // capacity is gated (the pail before gear.bucket is owned) or not yet resolved, and a 0

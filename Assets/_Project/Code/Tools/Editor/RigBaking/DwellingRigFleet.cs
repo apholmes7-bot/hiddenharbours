@@ -114,9 +114,9 @@ namespace HiddenHarbours.Tools.RigBaking
         ///
         /// <para>⚠ <b>What the bake did NOT solve, because it is upstream art:</b> the kit still has
         /// no interior — <i>"No interior. This is the shell."</i> The room belongs to
-        /// <c>camperInteriorRig.js</c>, which is not in the repo. A camper used as a HOME needs it
-        /// before it can have a seamless interior (the owner's 2026-07-30 ruling); no amount of
-        /// placement or baking works around a rig that was never dropped.</para>
+        /// <c>camperInteriorRig.js</c> (Clipper only, catalog key <c>camperInterior</c>), which is in
+        /// the repo and registered but not baked: a room in a parked dwelling has no mesh path yet
+        /// (see the kit README). This sheet bake does not draw it.</para>
         /// </summary>
         public static readonly IReadOnlyList<string> Baked = new[] { "bantam", "clipper" };
 

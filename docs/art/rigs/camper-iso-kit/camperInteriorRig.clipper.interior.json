@@ -1,0 +1,1328 @@
+{
+  "schema": "camper-interior@1",
+  "exportSymbol": "CamperInterior",
+  "rig": "camperInteriorRig.js",
+  "variant": "clipper",
+  "derivedFromRigSha256": "134582a6ab8eb48d5a95dc841342c7f2fb9af5b0ae8959fe994f8910a64f64db",
+  "shellRigSha256": "b7a48e2fe0a9755deaf4f1c658a18a089b8254a0223a7c60d5cd53b53e8e7549",
+  "shell_rig": "camperIsoRig.js",
+  "shell_sidecar": "docs/art/rigs/gameplay/dwellings/camperIsoRig.clipper.gameplay.json",
+  "generatedBy": "CamperInterior.sidecar({variant:\"clipper\"}) via node tools/rig-recipes/camper-interior.mjs (--check fails on drift)",
+  "frame": {
+    "units": "metres",
+    "scale_px_per_m": 32,
+    "origin": "ground-centre of the BODY footprint (tongue excluded), the shell's",
+    "axes": "+x curb side (door side), +y bow/hitch, +z up",
+    "heading_independent": true
+  },
+  "cell": {
+    "w": 384,
+    "h": 320,
+    "pivot": {
+      "x": 192,
+      "y": 214
+    },
+    "facings": [
+      "N",
+      "NE",
+      "E",
+      "SE",
+      "S",
+      "SW",
+      "W",
+      "NW"
+    ],
+    "convention": "CounterClockwise",
+    "note": "The shell's cell and pivot: a baked room composites under the exterior 1:1."
+  },
+  "ROOM": {
+    "sole_z_m": 0.7,
+    "headroom_m": 2,
+    "ceiling_z_max_m": 2.7,
+    "liner_inset_m": 0.05,
+    "cutaway": {
+      "lid": "ceiling, always culled",
+      "sill_above_sole_m": 0.6,
+      "near_rule": "a wall, partition or tall fixture whose outward plan normal o has o . view > 0.2 is sectioned to the sill; view = (-sin(dir*45deg), -cos(dir*45deg))"
+    }
+  },
+  "WALKABLE": {
+    "saloon": {
+      "z": 0.7,
+      "polygon": [
+        [
+          0.101,
+          -3.57
+        ],
+        [
+          0.213,
+          -3.54
+        ],
+        [
+          0.339,
+          -3.49
+        ],
+        [
+          0.469,
+          -3.421
+        ],
+        [
+          0.597,
+          -3.333
+        ],
+        [
+          0.712,
+          -3.225
+        ],
+        [
+          0.81,
+          -3.1
+        ],
+        [
+          0.883,
+          -2.958
+        ],
+        [
+          0.925,
+          -2.799
+        ],
+        [
+          0.932,
+          -2.624
+        ],
+        [
+          0.932,
+          -2.435
+        ],
+        [
+          0.932,
+          -2.232
+        ],
+        [
+          0.932,
+          -2.017
+        ],
+        [
+          0.932,
+          -1.79
+        ],
+        [
+          0.932,
+          -1.553
+        ],
+        [
+          0.932,
+          -1.308
+        ],
+        [
+          0.932,
+          -1.055
+        ],
+        [
+          0.932,
+          -0.797
+        ],
+        [
+          0.932,
+          -0.534
+        ],
+        [
+          0.932,
+          -0.268
+        ],
+        [
+          0.932,
+          0
+        ],
+        [
+          0.932,
+          0.268
+        ],
+        [
+          0.932,
+          0.534
+        ],
+        [
+          0.932,
+          0.797
+        ],
+        [
+          0.932,
+          1.055
+        ],
+        [
+          0.932,
+          1.308
+        ],
+        [
+          0.932,
+          1.553
+        ],
+        [
+          0.932,
+          1.79
+        ],
+        [
+          0.932,
+          2.017
+        ],
+        [
+          0.932,
+          2.232
+        ],
+        [
+          0.932,
+          2.435
+        ],
+        [
+          0.922,
+          2.624
+        ],
+        [
+          0.884,
+          2.799
+        ],
+        [
+          0.821,
+          2.958
+        ],
+        [
+          0.738,
+          3.1
+        ],
+        [
+          0.64,
+          3.225
+        ],
+        [
+          0.53,
+          3.333
+        ],
+        [
+          0.414,
+          3.421
+        ],
+        [
+          0.298,
+          3.49
+        ],
+        [
+          0.188,
+          3.54
+        ],
+        [
+          0.09,
+          3.57
+        ],
+        [
+          -0.09,
+          3.57
+        ],
+        [
+          -0.188,
+          3.54
+        ],
+        [
+          -0.298,
+          3.49
+        ],
+        [
+          -0.414,
+          3.421
+        ],
+        [
+          -0.53,
+          3.333
+        ],
+        [
+          -0.64,
+          3.225
+        ],
+        [
+          -0.738,
+          3.1
+        ],
+        [
+          -0.821,
+          2.958
+        ],
+        [
+          -0.884,
+          2.799
+        ],
+        [
+          -0.922,
+          2.624
+        ],
+        [
+          -0.932,
+          2.435
+        ],
+        [
+          -0.932,
+          2.232
+        ],
+        [
+          -0.932,
+          2.017
+        ],
+        [
+          -0.932,
+          1.79
+        ],
+        [
+          -0.932,
+          1.553
+        ],
+        [
+          -0.932,
+          1.308
+        ],
+        [
+          -0.932,
+          1.055
+        ],
+        [
+          -0.932,
+          0.797
+        ],
+        [
+          -0.932,
+          0.534
+        ],
+        [
+          -0.932,
+          0.268
+        ],
+        [
+          -0.932,
+          0
+        ],
+        [
+          -0.932,
+          -0.268
+        ],
+        [
+          -0.932,
+          -0.534
+        ],
+        [
+          -0.932,
+          -0.797
+        ],
+        [
+          -0.932,
+          -1.055
+        ],
+        [
+          -0.932,
+          -1.308
+        ],
+        [
+          -0.932,
+          -1.553
+        ],
+        [
+          -0.932,
+          -1.79
+        ],
+        [
+          -0.932,
+          -2.017
+        ],
+        [
+          -0.932,
+          -2.232
+        ],
+        [
+          -0.932,
+          -2.435
+        ],
+        [
+          -0.932,
+          -2.624
+        ],
+        [
+          -0.925,
+          -2.799
+        ],
+        [
+          -0.883,
+          -2.958
+        ],
+        [
+          -0.81,
+          -3.1
+        ],
+        [
+          -0.712,
+          -3.225
+        ],
+        [
+          -0.597,
+          -3.333
+        ],
+        [
+          -0.469,
+          -3.421
+        ],
+        [
+          -0.339,
+          -3.49
+        ],
+        [
+          -0.213,
+          -3.54
+        ],
+        [
+          -0.101,
+          -3.57
+        ]
+      ],
+      "source": "CamperIso.gameplayGeometry({variant:\"clipper\"}).SOLE[0].polygon",
+      "walker": "foot_circle",
+      "foot_radius_m": 0.35,
+      "obstructions": [
+        {
+          "id": "rear_bunk",
+          "kind": "berth",
+          "wall": "tail",
+          "footprint": [
+            [
+              -0.829,
+              -3.06
+            ],
+            [
+              0.829,
+              -3.06
+            ],
+            [
+              0.829,
+              -1.88
+            ],
+            [
+              -0.829,
+              -1.88
+            ]
+          ],
+          "height_above_sole_m": 0.52,
+          "treatment": "waist_block"
+        },
+        {
+          "id": "head_room",
+          "kind": "room",
+          "wall": "north",
+          "footprint": [
+            [
+              -0.927,
+              -1.86
+            ],
+            [
+              -0.06,
+              -1.86
+            ],
+            [
+              -0.06,
+              -0.84
+            ],
+            [
+              -0.927,
+              -0.84
+            ]
+          ],
+          "height_above_sole_m": 1.92,
+          "treatment": "room"
+        },
+        {
+          "id": "galley_counter",
+          "kind": "counter",
+          "wall": "north",
+          "footprint": [
+            [
+              -0.927,
+              -0.8
+            ],
+            [
+              -0.4,
+              -0.8
+            ],
+            [
+              -0.4,
+              1.62
+            ],
+            [
+              -0.927,
+              1.62
+            ]
+          ],
+          "height_above_sole_m": 0.9,
+          "treatment": "waist_block"
+        },
+        {
+          "id": "pantry",
+          "kind": "tall",
+          "wall": "north",
+          "footprint": [
+            [
+              -0.885,
+              1.66
+            ],
+            [
+              -0.4,
+              1.66
+            ],
+            [
+              -0.4,
+              2.22
+            ],
+            [
+              -0.885,
+              2.22
+            ]
+          ],
+          "height_above_sole_m": 1.7,
+          "treatment": "wall"
+        },
+        {
+          "id": "gear_locker",
+          "kind": "tall",
+          "wall": "south",
+          "footprint": [
+            [
+              0.37,
+              0.5
+            ],
+            [
+              0.822,
+              0.5
+            ],
+            [
+              0.822,
+              0.94
+            ],
+            [
+              0.37,
+              0.94
+            ]
+          ],
+          "height_above_sole_m": 1.8,
+          "treatment": "wall"
+        },
+        {
+          "id": "freezer",
+          "kind": "chest",
+          "wall": "south",
+          "footprint": [
+            [
+              0.34,
+              1
+            ],
+            [
+              0.927,
+              1
+            ],
+            [
+              0.927,
+              2.1
+            ],
+            [
+              0.34,
+              2.1
+            ]
+          ],
+          "height_above_sole_m": 0.86,
+          "treatment": "waist_block"
+        },
+        {
+          "id": "rod_rack",
+          "kind": "overhead",
+          "wall": "south",
+          "footprint": [
+            [
+              0.34,
+              0.5
+            ],
+            [
+              0.62,
+              0.5
+            ],
+            [
+              0.62,
+              2.46
+            ],
+            [
+              0.34,
+              2.46
+            ]
+          ],
+          "height_above_sole_m": 1.94,
+          "treatment": "overhead",
+          "bottom_above_sole_m": 1.84
+        },
+        {
+          "id": "nose_settee",
+          "kind": "seat",
+          "wall": "nose",
+          "footprint": [
+            [
+              -0.795,
+              2.5
+            ],
+            [
+              0.795,
+              2.5
+            ],
+            [
+              0.795,
+              3
+            ],
+            [
+              -0.795,
+              3
+            ]
+          ],
+          "height_above_sole_m": 0.44,
+          "treatment": "step_over"
+        }
+      ]
+    },
+    "head": {
+      "z": 0.7,
+      "polygon": [
+        [
+          -0.927,
+          -1.82
+        ],
+        [
+          -0.1,
+          -1.82
+        ],
+        [
+          -0.1,
+          -0.88
+        ],
+        [
+          -0.927,
+          -0.88
+        ]
+      ],
+      "walker": "point_clamp",
+      "note": "The wet bath is too small for the 0.35 m foot circle once its fixtures stand in it; walk it the way the boat cabins walk theirs, a point clamped to this polygon. Entered through INNER_DOORS.head_door.",
+      "obstructions": [
+        {
+          "id": "toilet",
+          "kind": "fixture",
+          "footprint": [
+            [
+              -0.9,
+              -1.8
+            ],
+            [
+              -0.48,
+              -1.8
+            ],
+            [
+              -0.48,
+              -1.4
+            ],
+            [
+              -0.9,
+              -1.4
+            ]
+          ],
+          "height_above_sole_m": 0.45,
+          "treatment": "step_over"
+        },
+        {
+          "id": "basin",
+          "kind": "fixture",
+          "footprint": [
+            [
+              -0.9,
+              -1.18
+            ],
+            [
+              -0.62,
+              -1.18
+            ],
+            [
+              -0.62,
+              -0.9
+            ],
+            [
+              -0.9,
+              -0.9
+            ]
+          ],
+          "height_above_sole_m": 0.82,
+          "treatment": "waist_block"
+        }
+      ]
+    }
+  },
+  "THRESHOLD": {
+    "id": "entry",
+    "shell": "THRESHOLD in the shell sidecar is the door; this is its inside landing",
+    "door_clear_width_m": 0.72,
+    "landing_centre": [
+      0.56,
+      0.08
+    ],
+    "landing_radius_m": 0.35,
+    "keep_clear_inside": [
+      [
+        0.232,
+        -0.28
+      ],
+      [
+        0.932,
+        -0.28
+      ],
+      [
+        0.932,
+        0.44
+      ],
+      [
+        0.232,
+        0.44
+      ]
+    ]
+  },
+  "INNER_DOORS": [
+    {
+      "id": "head_door",
+      "from": "saloon",
+      "to": "head",
+      "kind": "sliding",
+      "clear_width_m": 0.52,
+      "span": [
+        [
+          -0.08,
+          -1.4
+        ],
+        [
+          -0.08,
+          -0.88
+        ]
+      ],
+      "saloon_side": [
+        0.2,
+        -1.14
+      ],
+      "head_side": [
+        -0.31,
+        -1.2
+      ],
+      "note": "The leaf slides aft inside the partition; the saloon walker hands over to the head's point clamp at the span."
+    }
+  ],
+  "INTERACT": [
+    {
+      "id": "door",
+      "action": "step_out",
+      "reach_point": [
+        0.56,
+        0.08,
+        0.7
+      ],
+      "at": [
+        0.968,
+        0.08,
+        0.7
+      ],
+      "level": "saloon",
+      "visible_facings": [
+        "N",
+        "NE",
+        "E",
+        "SE",
+        "S",
+        "SW",
+        "W",
+        "NW"
+      ],
+      "_note": "mechanism: the shell door (THRESHOLD in camperIsoRig.clipper.gameplay.json); the reach is the inside landing, where a 0.35 m foot stands clear",
+      "door": {
+        "clear_width_m": 0.72,
+        "landing_centre": [
+          0.56,
+          0.08
+        ],
+        "landing_radius_m": 0.35
+      }
+    },
+    {
+      "id": "bunk",
+      "action": "sleep_save",
+      "reach_point": [
+        0.4,
+        -1.62,
+        0.7
+      ],
+      "at": [
+        0,
+        -2.47,
+        1.22
+      ],
+      "level": "saloon",
+      "visible_facings": [
+        "N",
+        "NE",
+        "E",
+        "SE",
+        "S",
+        "SW",
+        "W",
+        "NW"
+      ],
+      "_note": "mechanism: InteriorBed (sleep, rest + save)",
+      "bunk": {
+        "level": "saloon",
+        "obstruction": "rear_bunk",
+        "mattress_centre": [
+          0,
+          -2.47,
+          1.22
+        ],
+        "pillow_end": [
+          -0.699,
+          -2.47,
+          1.22
+        ],
+        "pillow_source": "pillow on the street (north) side of the transverse double"
+      }
+    },
+    {
+      "id": "galley_sink",
+      "action": "wash_dishes",
+      "reach_point": [
+        -0.17,
+        -0.45,
+        0.7
+      ],
+      "at": [
+        -0.663,
+        -0.43,
+        1.6
+      ],
+      "level": "saloon",
+      "visible_facings": [
+        "N",
+        "NE",
+        "E",
+        "SE",
+        "S",
+        "SW",
+        "W",
+        "NW"
+      ],
+      "_note": "mechanism: galley sink (wash up)",
+      "counter": "galley_counter"
+    },
+    {
+      "id": "stove",
+      "action": "cook",
+      "reach_point": [
+        -0.17,
+        0.1,
+        0.7
+      ],
+      "at": [
+        -0.663,
+        0.1,
+        1.6
+      ],
+      "level": "saloon",
+      "visible_facings": [
+        "N",
+        "NE",
+        "E",
+        "SE",
+        "S",
+        "SW",
+        "W",
+        "NW"
+      ],
+      "_note": "mechanism: camper stove pattern (cook)",
+      "counter": "galley_counter"
+    },
+    {
+      "id": "prep",
+      "action": "prep",
+      "reach_point": [
+        -0.17,
+        0.55,
+        0.7
+      ],
+      "at": [
+        -0.663,
+        0.55,
+        1.6
+      ],
+      "level": "saloon",
+      "visible_facings": [
+        "N",
+        "NE",
+        "E",
+        "SE",
+        "S",
+        "SW",
+        "W",
+        "NW"
+      ],
+      "_note": "mechanism: prep station (prep, then cook at the stove)",
+      "counter": "galley_counter"
+    },
+    {
+      "id": "fridge",
+      "action": "food_storage",
+      "reach_point": [
+        -0.17,
+        1.02,
+        0.7
+      ],
+      "at": [
+        -0.4,
+        1.02,
+        1.15
+      ],
+      "level": "saloon",
+      "visible_facings": [
+        "N",
+        "NE",
+        "E",
+        "SE",
+        "S",
+        "SW",
+        "W",
+        "NW"
+      ],
+      "_note": "mechanism: food store (fridge: cold while there is power; the camper is on shore power)",
+      "counter": "galley_counter",
+      "kitchen_storage": "kitchen_storage.camper_fridge",
+      "deed_gated": "home.ginny_lot_camper",
+      "def_status": "the Def lands with the storage PR; it is not on this base, so the id is a string here"
+    },
+    {
+      "id": "pantry",
+      "action": "food_storage",
+      "reach_point": [
+        -0.17,
+        1.94,
+        0.7
+      ],
+      "at": [
+        -0.4,
+        1.94,
+        1.7
+      ],
+      "level": "saloon",
+      "visible_facings": [
+        "N",
+        "NE",
+        "E",
+        "SE",
+        "S",
+        "SW",
+        "W",
+        "NW"
+      ],
+      "_note": "mechanism: food store (pantry)",
+      "kitchen_storage": "kitchen_storage.camper_pantry",
+      "deed_gated": "home.ginny_lot_camper",
+      "def_status": "the Def lands with the storage PR; it is not on this base, so the id is a string here"
+    },
+    {
+      "id": "freezer",
+      "action": "freeze_catch",
+      "reach_point": [
+        0.12,
+        1.55,
+        0.7
+      ],
+      "at": [
+        0.634,
+        1.55,
+        1.56
+      ],
+      "level": "saloon",
+      "visible_facings": [
+        "N",
+        "NE",
+        "E",
+        "SE",
+        "S",
+        "SW",
+        "W",
+        "NW"
+      ],
+      "_note": "mechanism: catch freezer (the GinnyFreezer pattern, an IHold), powered from shore_power",
+      "freezer": "freezer.camper_freezer",
+      "capacity_units": 40,
+      "capacity_source": "owner 2026-11-17: bigger than Ginny's 20 (seat lean 40); the FreezerDef owns the number once it lands",
+      "deed_gated": "home.ginny_lot_camper",
+      "def_status": "the Def lands with the storage PR; it is not on this base, so the id is a string here"
+    },
+    {
+      "id": "gear_locker",
+      "action": "storage",
+      "reach_point": [
+        0.15,
+        0.72,
+        0.7
+      ],
+      "at": [
+        0.37,
+        0.72,
+        1.7
+      ],
+      "level": "saloon",
+      "visible_facings": [
+        "N",
+        "NE",
+        "E",
+        "SE",
+        "S",
+        "SW",
+        "W",
+        "NW"
+      ],
+      "_note": "mechanism: gear stowage (a StowageDef rack)",
+      "stowage": "stowage.camper_gear_locker",
+      "capacity": 10,
+      "deed_gated": "home.ginny_lot_camper",
+      "def_status": "the Def lands with the storage PR; it is not on this base, so the id is a string here"
+    },
+    {
+      "id": "rod_rack",
+      "action": "storage",
+      "reach_point": [
+        0.12,
+        1.95,
+        0.7
+      ],
+      "at": [
+        0.48,
+        1.48,
+        2.54
+      ],
+      "level": "saloon",
+      "visible_facings": [
+        "N",
+        "NE",
+        "E",
+        "SE",
+        "S",
+        "SW",
+        "W",
+        "NW"
+      ],
+      "_note": "mechanism: rod stowage (StowageRack)",
+      "stowage": "stowage.camper_rod_rack",
+      "capacity": 4,
+      "deed_gated": "home.ginny_lot_camper",
+      "def_status": "the Def lands with the storage PR; it is not on this base, so the id is a string here"
+    },
+    {
+      "id": "settee",
+      "action": "sit",
+      "reach_point": [
+        0,
+        2.24,
+        0.7
+      ],
+      "at": [
+        0,
+        2.75,
+        1.14
+      ],
+      "level": "saloon",
+      "visible_facings": [
+        "N",
+        "NE",
+        "E",
+        "SE",
+        "S",
+        "SW",
+        "W",
+        "NW"
+      ],
+      "_note": "mechanism: seat (sit: rest short of a bed)",
+      "seat": {
+        "level": "saloon",
+        "obstruction": "nose_settee",
+        "sit_point": [
+          0,
+          2.75,
+          1.14
+        ]
+      }
+    },
+    {
+      "id": "head_basin",
+      "action": "wash",
+      "reach_point": [
+        -0.31,
+        -1.2,
+        0.7
+      ],
+      "at": [
+        -0.76,
+        -1.04,
+        1.52
+      ],
+      "level": "head",
+      "visible_facings": [
+        "N",
+        "NE",
+        "E",
+        "SE",
+        "S",
+        "SW",
+        "W",
+        "NW"
+      ],
+      "_note": "mechanism: wash station (washstation.sink)",
+      "washstation": "washstation.sink"
+    },
+    {
+      "id": "head_toilet",
+      "action": "toilet",
+      "reach_point": [
+        -0.31,
+        -1.2,
+        0.7
+      ],
+      "at": [
+        -0.69,
+        -1.6,
+        1.15
+      ],
+      "level": "head",
+      "visible_facings": [
+        "N",
+        "NE",
+        "E",
+        "SE",
+        "S",
+        "SW",
+        "W",
+        "NW"
+      ],
+      "_note": "mechanism: wash station (washstation.toilet)",
+      "washstation": "washstation.toilet",
+      "seat": {
+        "level": "head",
+        "obstruction": "toilet",
+        "sit_point": [
+          -0.69,
+          -1.6,
+          1.15
+        ]
+      }
+    },
+    {
+      "id": "head_shower",
+      "action": "bathe",
+      "reach_point": [
+        -0.31,
+        -1.2,
+        0.7
+      ],
+      "at": [
+        -0.761,
+        -1.29,
+        2.55
+      ],
+      "level": "head",
+      "visible_facings": [
+        "N",
+        "NE",
+        "E",
+        "SE",
+        "S",
+        "SW",
+        "W",
+        "NW"
+      ],
+      "_note": "mechanism: wash station (washstation.shower); the whole head floor is the shower pan",
+      "washstation": "washstation.shower"
+    }
+  ],
+  "mechanism_map": {
+    "door": "shell door (step_out)",
+    "bunk": "InteriorBed (sleep, rest + save)",
+    "galley_sink": "galley sink (wash_dishes)",
+    "stove": "camper stove pattern (cook)",
+    "prep": "prep station (prep, then cook at the stove)",
+    "fridge": "food store (kitchen_storage.camper_fridge)",
+    "pantry": "food store (kitchen_storage.camper_pantry)",
+    "freezer": "catch hold (freezer.camper_freezer), 40 units",
+    "gear_locker": "StowageRack (stowage.camper_gear_locker)",
+    "rod_rack": "StowageRack (stowage.camper_rod_rack)",
+    "settee": "seat (sit)",
+    "head_basin": "wash station (washstation.sink)",
+    "head_toilet": "wash station (washstation.toilet)",
+    "head_shower": "wash station (washstation.shower)"
+  },
+  "FIT": {
+    "aisle_pairs_m": [
+      {
+        "between": [
+          "galley_counter",
+          "freezer"
+        ],
+        "clear_m": 0.74
+      },
+      {
+        "between": [
+          "pantry",
+          "freezer"
+        ],
+        "clear_m": 0.74
+      },
+      {
+        "between": [
+          "galley_counter",
+          "gear_locker"
+        ],
+        "clear_m": 0.77
+      },
+      {
+        "between": [
+          "pantry",
+          "gear_locker"
+        ],
+        "clear_m": 1.054
+      },
+      {
+        "between": [
+          "head_room",
+          "gear_locker"
+        ],
+        "clear_m": 1.407
+      },
+      {
+        "between": [
+          "head_room",
+          "freezer"
+        ],
+        "clear_m": 1.883
+      }
+    ],
+    "aisle_min_m": 0.74,
+    "vestibule_clear_m": 0.992,
+    "door": {
+      "clear_width_m": 0.72,
+      "foot_diameter_m": 0.7,
+      "landing_clear_of_fixtures_m": 0.07,
+      "landing_clear_of_sole_edge_m": 0.022
+    },
+    "freezer": {
+      "footprint_m": [
+        0.587,
+        1.1
+      ],
+      "height_m": 0.86,
+      "inner_volume_m3": 0.348,
+      "inner_volume_cuft": 12.3,
+      "capacity_units": 40,
+      "ginny_units": 20
+    },
+    "gear_locker": {
+      "footprint_m": [
+        0.452,
+        0.44
+      ],
+      "height_m": 1.8,
+      "capacity": 10
+    },
+    "rod_rack": {
+      "span_m": 1.96,
+      "clear_under_m": 1.84,
+      "capacity": 4
+    },
+    "pantry": {
+      "footprint_m": [
+        0.485,
+        0.56
+      ],
+      "height_m": 1.7
+    },
+    "galley": {
+      "counter_m": [
+        0.527,
+        2.42
+      ],
+      "top_above_sole_m": 0.9,
+      "window_sill_above_sole_m": 0.92
+    },
+    "wet_bath": {
+      "fits": true,
+      "clear_m": [
+        0.827,
+        0.94
+      ],
+      "area_m2": 0.777,
+      "door_clear_m": 0.52,
+      "stand_clear_m": 0.21,
+      "foot_circle_fits": false,
+      "verdict": "A wet bath fits: toilet, corner basin and a shower over one 0.827 x 0.94 m pan, with one standing spot 0.21 m clear of every fixture. The 0.35 m foot circle does not fit inside, so the head is a point-clamped level like a boat cabin."
+    },
+    "headroom_m": 2
+  },
+  "LOT": {
+    "facing": 2,
+    "rig_dir": 6,
+    "convention": "CounterClockwise: rigDir = (8 - facing) % 8",
+    "compass": {
+      "north": "-x",
+      "south": "+x (curb side, the door)",
+      "east": "+y (hitch)",
+      "west": "-y (tail)"
+    },
+    "world_from_rig": "world = LotPos + (y, -x)",
+    "source": "StPetersCamperLot: Approach is the cottage, due south, so the curb faces south; the hitch is the curb turned a quarter counter-clockwise (StPetersCamperLot.DrawnNoseDirection), east, as DoorFacing 2 draws it. (NoseDirection, derived by room, now comes out west and disagrees.) The north-wall rule therefore means rig -x.",
+    "shed_reservation": {
+      "purpose": "the lot's small shed (seat lean: an 8-rod rack and a 12-slot gear store); its rig is another slice",
+      "centre_rig_m": [
+        0,
+        -9
+      ],
+      "offset": "LotPos - DrawnNoseDirection * 9 (off the tail, west)",
+      "footprint_m": {
+        "along_camper": 2.4,
+        "across_camper": 1.8,
+        "world": "2.4 m east-west x 1.8 m north-south"
+      },
+      "reserve_radius_m": 1.5,
+      "door_side": "south: the curb side, toward the cottage and the path, like the camper door",
+      "csharp": "StPetersCamperLot.ShedPos / ShedSize / ShedFootprintRadiusMetres / ShedDoorDirection"
+    }
+  },
+  "walker": {
+    "source": "foot = CircleCollider2D radius 0.35 m (PersistentCoreBuilder, QuayEdgePlan.WalkerFootRadiusMetres); reach rules after the boat-interior kit",
+    "footRadius": 0.35,
+    "reachClear": 0.2,
+    "reachSpacing": 0.25,
+    "interactReach": 0.25,
+    "aisleMin": 0.7
+  },
+  "_excluded": {
+    "wardrobe": "No wardrobe: the shell layout's wardrobe slot went to the wet bath. Clothes stowage, if wanted, is over-bunk lockers.",
+    "dinette": "No dinette or table: the curb wall holds the freezer, the gear locker and the rod rack the owner asked for.",
+    "second_berth": "The nose settee is 1.59 m long: a seat, not a berth."
+  },
+  "_confirm": {
+    "shell_layout": "camperIsoRig.js LAYOUT.clipper (the dark seen-in volumes through the open door, and the shell sidecar's SOLE obstructions) still describes the old plan: head on the curb side, dinette, lounge. This room supersedes it. It is retired with the shell's mesh bake, not before: editing it moves the shell's sha, which stamps two sidecars and four committed sprite recipes, so the sheets would be rebaked once for a look the mesh then replaces.",
+    "coop_sleep": "One transverse double. The co-op rule (everyone in a separate bunk) is not met by this room alone.",
+    "freezer_power": "The freezer and the fridge are powered; the shore_power hookup is on the street side of the shell."
+  },
+  "_bake_owed": {
+    "catalog": "Done: RigCatalog key camperInterior, prerequisite camper (the shell), counter-clockwise like the shell.",
+    "mesh": "No dwelling-room mesh path exists yet. VehicleMeshAssetBaker bakes wheeled road vehicles (articulation, chassis); the level-gated cutaway (ADR 0041/0048) lives on HullMeshDef and the hull renderer; a building room has no mesh Def, no bake and no cutaway component. That seam is a lead-architect decision (a new Core Def, or HullMeshDef reused for a parked room). Once it exists: ceiling culled, near walls sectioned to the 0.60 m sill per facing, faces tagged by seg.",
+    "interior_key": "File the baked room under StPetersCamperLot.InteriorKey (\"camper.clipper\") so InteriorStood flips.",
+    "facing": "The lot parks facing 2, which this counter-clockwise rig draws as dir 6; at dir 6 the south (curb) wall is the near wall.",
+    "look": "Owner reviews the contact sheet before the bake lands."
+  }
+}

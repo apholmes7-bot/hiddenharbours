@@ -297,6 +297,13 @@ namespace HiddenHarbours.Boats
                  "oars are decor). Never decided in code — that is rule 2.")]
         public PilotStanceChoice PilotStance = PilotStanceChoice.Auto;
 
+        [Tooltip("Which way a ROWER faces on this hull, as a deck bearing in degrees (0 = the bow, 180 = " +
+                 "the stern). Read only when the pilot stance resolves to Oars. A dory is pulled from the " +
+                 "after thwart facing aft (her rig: the tholes are abaft the thwart), so the default is " +
+                 "180: he reaches toward the stern at the catch and leans back on the drive. A steered " +
+                 "helm always faces the bow.")]
+        public float OarsPilotDeckBearingDegrees = DefaultOarsPilotDeckBearingDegrees;
+
         [Tooltip("Calibrated seated skin clip at this helm. Empty keeps the standing pilot. " +
                  "Imported with the seat's floor origin from the hull's source walk.")]
         public string SeatedHelmState = "";
@@ -348,6 +355,22 @@ namespace HiddenHarbours.Boats
         /// <see cref="HiddenHarbours.Core.CharacterStance.Free"/> — an unfigured helm, drawn as an
         /// ordinary standing body.</para>
         /// </summary>
+        /// <summary>The deck bearing of a steered pilot: the bow. A helm station faces forward.</summary>
+        public const float HelmPilotDeckBearingDegrees = 0f;
+
+        /// <summary>The default rower's bearing: the stern (see <see cref="OarsPilotDeckBearingDegrees"/>).</summary>
+        public const float DefaultOarsPilotDeckBearingDegrees = 180f;
+
+        /// <summary>
+        /// <b>Which way the figure piloting this hull faces</b>, as a deck bearing (0 = the bow): the
+        /// def's own <see cref="OarsPilotDeckBearingDegrees"/> when its pilot rows, and the bow at a helm.
+        /// Like <see cref="PilotStanceFor"/>, the answer is the asset's, never a rule in a consumer.
+        /// </summary>
+        public float PilotDeckBearingDegrees() =>
+            PilotStanceFor() == HiddenHarbours.Core.CharacterStance.Oars
+                ? OarsPilotDeckBearingDegrees
+                : HelmPilotDeckBearingDegrees;
+
         public HiddenHarbours.Core.CharacterStance PilotStanceFor() => PilotStance switch
         {
             PilotStanceChoice.Helm => HiddenHarbours.Core.CharacterStance.Helm,

@@ -17,7 +17,7 @@ MonoBehaviour:
   Category: 0
   Rarity: 0
   Flavor:
-  Sprite: {fileID: -247080572403776488, guid: c8834f13f90c30742a141b17ecfa4d46, type: 3}
+  Sprite: {fileID: 534143428, guid: 0d0e3dd31ad4a354aabceda119d473b8, type: 3}
   RegionIds:
   - region.south_water
   AllowedGear: 3
