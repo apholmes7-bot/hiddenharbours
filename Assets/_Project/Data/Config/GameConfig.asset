@@ -836,7 +836,7 @@ MonoBehaviour:
     Convergence: 1
     ConvergenceAge: 0.5
     Wash: 1
-    WashAmount: 1
+    WashAmount: 3
     WashBackwashAge: 0.6
     AgeTear: 1
     Oar: 1

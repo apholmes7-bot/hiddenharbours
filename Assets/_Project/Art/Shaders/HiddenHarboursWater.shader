@@ -1122,7 +1122,7 @@ Shader "HiddenHarbours/Water"
         _FoamSheetConv     ("One foam: convergence (x join, y age)", Vector) = (1, 0.5, 0, 0)
         // The wash: x joins the run-up's smooth sheet to the one foam (0 = the older smooth sheet), y
         // scales the wash amount handed to the sheet, z how much older the foam reads as it drains back.
-        _FoamSheetWash     ("One foam: the wash (x join, y amount, z backwash age)", Vector) = (1, 1, 0.6, 0)
+        _FoamSheetWash     ("One foam: the wash (x join, y amount, z backwash age)", Vector) = (1, 3, 0.6, 0)
         // How hard the sheet tears apart as its foam ages (1 = half way through its age only the
         // lace's hearts survive). The wake also reads the hull waves' own tear; the larger wins.
         _FoamSheetAgeTear  ("One foam: age tear (0 = an even mat, 1 = hearts only by half age)", Range(0,1)) = 1

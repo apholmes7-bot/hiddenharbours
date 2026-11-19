@@ -82,7 +82,7 @@ namespace HiddenHarbours.Core
         [Range(0f, 1f)] public float Wash;
         [Tooltip("How much of the wash's foam is handed to the sheet. Lower = the thin wash drops out and " +
                  "only its thicker foam shows; higher = the wash reads fuller.")]
-        [Range(0.1f, 3f)] public float WashAmount;
+        [Range(0.1f, 6f)] public float WashAmount;
         [Tooltip("How much older the wash's foam reads as the water drains back down the sand: 0 = no " +
                  "difference, 1 = the backwash leaves old, torn lace.")]
         [Range(0f, 1f)] public float WashBackwashAge;
@@ -129,7 +129,7 @@ namespace HiddenHarbours.Core
             ConvergenceAge = 0.5f,
 
             Wash = 1f,
-            WashAmount = 1f,
+            WashAmount = 3f,
             WashBackwashAge = 0.6f,
 
             AgeTear = 1f,
