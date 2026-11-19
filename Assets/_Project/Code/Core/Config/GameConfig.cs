@@ -912,6 +912,27 @@ namespace HiddenHarbours.Core
                  "Read per camera per frame, and by each plant on the tide tick.")]
         public bool ShallowsSubmergedProps = DefaultShallowsSubmergedProps;
 
+        /// <summary>The weed's clarity by default: <b>0</b>, the floor's own law, so a config written before
+        /// this existed and an unwired sea draw the weed exactly as before. The shipped asset carries the
+        /// look's value (2026-11-17, the kelp beds).</summary>
+        public const float DefaultUnderWaterWeedClarity = 0f;
+
+        /// <summary>The most clarity the sea takes: some of the column is always read, so even the clearest
+        /// weed darkens and blues a little with depth. The water shader clamps with the same value.</summary>
+        public const float MaxUnderWaterWeedClarity = 0.9f;
+
+        [Tooltip("How much less water the weed under the tide (kelp, wrack, eelgrass, the shore plants) is " +
+                 "seen through than the floor it grows from. 0: the floor's own darkening and blueing with " +
+                 "depth. 0.5: the weed reads as if it stood half as deep, so a kelp bed still shows as a dark " +
+                 "mass at 3 to 6 m when the sand beside it has gone blue. Up to 0.9. Needs " +
+                 "ShallowsSubmergedProps on. Read every water tick (~8 Hz).")]
+        [Range(0f, MaxUnderWaterWeedClarity)]
+        public float UnderWaterWeedClarity = DefaultUnderWaterWeedClarity;
+
+        /// <summary>The clarity the sea is handed: within 0..<see cref="MaxUnderWaterWeedClarity"/>.</summary>
+        public static float ClampUnderWaterWeedClarity(float clarity) =>
+            Mathf.Clamp(clarity, 0f, MaxUnderWaterWeedClarity);
+
         /// <summary>The keyline gate's ship default — <b>OFF</b> (ADR 0031: the 1 px outline is retired
         /// from the world-art style, and the mesh fleet is the first family to go without it). A const so
         /// consumers with no config wired (EditMode, a bare test rig) resolve the SAME style the shipped

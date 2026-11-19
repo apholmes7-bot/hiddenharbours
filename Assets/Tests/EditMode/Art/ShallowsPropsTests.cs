@@ -26,6 +26,8 @@ namespace HiddenHarbours.Tests.Art.EditMode
     {
         private const string ViewPath = "Assets/_Project/Code/Art/ShorePlantTideView.cs";
         private const string MathPath = "Assets/_Project/Code/Art/ShorePlantTideMath.cs";
+        private const string PlantFieldPath = "Assets/_Project/Code/Art/PlantField.cs";
+        private const string PlantShaderPath = "Assets/_Project/Art/Shaders/HiddenHarboursPlant.shader";
         private const string RegistryPath = "Assets/_Project/Code/Art/UnderWaterRegistry.cs";
         private const string FeaturePath = "Assets/_Project/Code/Art/IsoFacetHullFeature.cs";
         private const string WaterSurfacePath = "Assets/_Project/Code/Art/WaterSurface.cs";
@@ -184,9 +186,9 @@ namespace HiddenHarbours.Tests.Art.EditMode
         /// <summary>
         /// An awash rock keeps its ONE waterline: its sprite is clipped at the sea plane its bake assumed
         /// (RockRigBakeTests.AnAwashRockIsCLIPPED_NotFlooded_SoNoWaterIsEverBaked), and no rock is also drawn
-        /// under the water, which would be a second line for the sea's to disagree with. Only the plant view
-        /// puts a renderer in the sea's under-water list, only the lit sprite carries the pass that list
-        /// draws, and every placed rock draws with Sprite-Lit-Default, with no plant view and no under-water
+        /// under the water, which would be a second line for the sea's to disagree with. Only plants (the plant
+        /// view and the plant field) put a renderer in the sea's under-water list, only the two plant shaders
+        /// carry the pass that list draws, and every placed rock draws with Sprite-Lit-Default, with no plant view and no under-water
         /// bit. Drawing a rock's below-water pixels through the column (its pixel rows against the sea's own
         /// level over the DRAWN ground at its foot, wearing its wet row) is a material change in both played
         /// scenes, raised before it is built; that change moves this guard by name.
@@ -198,19 +200,22 @@ namespace HiddenHarbours.Tests.Art.EditMode
         [Test]
         public void AnAwashRock_DrawsNoSecondWaterline()
         {
-            // One pass: only the lit sprite can be drawn under the water.
+            // Plants only: the lit sprite (a placed shore plant) and, re-pinned 2026-11-17 for the kelp beds,
+            // the plant field's own shader, whose tidal weed under the sea plane is now drawn by the sea's
+            // column as a placed plant is (PlantField.JoinsUnderWater). Still no rock and no other shader.
             string[] passes = Files("Assets", "*.shader").Concat(Files("Assets", "*.hlsl"))
                 .Where(p => Regex.IsMatch(Code(p), @"""LightMode""\s*=\s*""HHUnderWater""")).ToArray();
-            CollectionAssert.AreEqual(new[] { LitSpritePath }, passes, "the one shader with an HHUnderWater pass");
+            CollectionAssert.AreEquivalent(new[] { LitSpritePath, PlantShaderPath }, passes,
+                "the two plant shaders with an HHUnderWater pass");
 
-            // One way in: only the plant view registers, only it and its math write the bit, and the bit
-            // is spelt once.
+            // The ways in: the plant view and (2026-11-17) the plant field register, only they and the math
+            // write the bit, and the bit is spelt once.
             KeyValuePair<string, string>[] code = Files(CodeDir, "*.cs")
                 .Select(p => new KeyValuePair<string, string>(p, Code(p))).ToArray();
-            CollectionAssert.AreEquivalent(new[] { ViewPath }, Using(code, @"UnderWaterRegistry\.Register\("),
-                "one registrar");
-            CollectionAssert.AreEquivalent(new[] { MathPath, ViewPath }, Using(code, @"\bUnderWaterMask\("),
-                "one mask, written by the plant view");
+            CollectionAssert.AreEquivalent(new[] { ViewPath, PlantFieldPath }, Using(code, @"UnderWaterRegistry\.Register\("),
+                "the two plant registrars");
+            CollectionAssert.AreEquivalent(new[] { MathPath, ViewPath, PlantFieldPath }, Using(code, @"\bUnderWaterMask\("),
+                "one mask, written by the plant view and the plant field");
             CollectionAssert.AreEquivalent(new[] { MathPath, ViewPath, FeaturePath },
                 Using(code, @"UnderWaterRegistry\.RenderingLayer"), "the bit's readers");
             CollectionAssert.AreEquivalent(new[] { RegistryPath }, Using(code, @"<<\s*27\b"), "the bit, spelt once");
