@@ -138,7 +138,10 @@ namespace HiddenHarbours.App.Editor
             // The held MESHES (ADR 0053), read off the held-prop bake's own folder and matched by the
             // state names the defs carry — the rig's own species and fills, never typed here.
             HeldPropMeshDef[] heldMeshes = HeldMeshes();
-            int meshed = 0, sizedKinds = 0;
+            int meshed = 0, sizedKinds = 0, faceOn = 0;
+            // The flatfish, read off the species defs (FishSpeciesDef.HeldBroadSideOn): every rung of these
+            // kinds is held showing its broad side, never its edge.
+            HashSet<string> broadSideOn = BroadSideOnKinds(finfish);
             foreach (string kind in finfish)
             {
                 Sprite[] variants = DeckLayVariants($"{FishIso}/Fish_{kind}_deck.png", kind, ref missing);
@@ -150,6 +153,8 @@ namespace HiddenHarbours.App.Editor
                 // How long that held fish is drawn, measured off the sheet: the readability floor
                 // (GameConfig.MinDrawnFishLengthPx) reads it to skip a rung too small to see.
                 entry.HeldLengthPx = FishSheetPixels.HeldLengthPx($"{FishIso}/Fish_{kind}_tail.png");
+                if (broadSideOn.Contains(kind) &&
+                    WireFaceOn(entry, $"{FishIso}/Fish_{kind}_tail.png")) faceOn++;
                 // The same fish by the same tail, as a mesh. Nothing draws it yet (PR 4).
                 entry.HeldMesh = heldMeshes.FirstOrDefault(
                     d => d.Family == HeldPropMeshDef.FishFamily && d.Variant == kind);
@@ -175,6 +180,8 @@ namespace HiddenHarbours.App.Editor
                     };
                     if (WireHeld(rung, $"{FishIso}/Fish_{sized}_tail.png", Directions)) held++;
                     rung.HeldLengthPx = FishSheetPixels.HeldLengthPx($"{FishIso}/Fish_{sized}_tail.png");
+                    if (broadSideOn.Contains(kind) &&
+                        WireFaceOn(rung, $"{FishIso}/Fish_{sized}_tail.png")) faceOn++;
                     kinds.Add(rung);
                     sizedKinds++;
                 }
@@ -217,7 +224,7 @@ namespace HiddenHarbours.App.Editor
 
             summary = $"{(created ? "Created" : "Refreshed")} '{LibraryPath}': " +
                       $"{wired}/{kinds.Count - sizedKinds} kinds with art (+{sizedKinds} size rungs), " +
-                      $"{held} with HELD art, " +
+                      $"{held} with HELD art ({faceOn} held face-on), " +
                       $"{meshed} with a HELD MESH, {bucketMeshes.Length} bucket states as meshes, " +
                       $"{species.Count} species mapped" +
                       (missing > 0 ? $", {missing} sheet(s) MISSING (see the warnings above)" : "") +
@@ -310,6 +317,38 @@ namespace HiddenHarbours.App.Editor
             entry.HeldFacings = facings;
             entry.HeldFramesPerFacing = cells.Length / facings;
             return true;
+        }
+
+        /// <summary>
+        /// The face-on pick for one held kind (<see cref="CatchItemLibrary.KindEntry.HeldFacingMap"/>): each
+        /// facing draws whichever of itself and its two neighbours shows the most of the fish, measured off
+        /// the held sheet (<see cref="FishSheetPixels.BroadSideFacingMap"/>). False, leaving the map empty,
+        /// when the kind has no held art or the sheet cannot be read.
+        /// </summary>
+        public static bool WireFaceOn(CatchItemLibrary.KindEntry entry, string heldSheetPath)
+        {
+            if (entry == null || entry.Held == null || entry.HeldFacings <= 1) return false;
+            int[] areas = FishSheetPixels.HeldFacingAreas(heldSheetPath, entry.Held, entry.HeldFacings);
+            int[] map = FishSheetPixels.BroadSideFacingMap(areas);
+            if (map == null) return false;
+            entry.HeldFacingMap = map;
+            return true;
+        }
+
+        /// <summary>The finfish kinds a species def asks to be held face-on
+        /// (<see cref="FishSpeciesDef.HeldBroadSideOn"/>), by the same species → kind rule the table uses.</summary>
+        public static HashSet<string> BroadSideOnKinds(string[] finfish)
+        {
+            var set = new HashSet<string>(System.StringComparer.Ordinal);
+            var known = new HashSet<string>(finfish, System.StringComparer.Ordinal);
+            foreach (string guid in AssetDatabase.FindAssets("t:FishSpeciesDef", new[] { DataFish }))
+            {
+                var def = AssetDatabase.LoadAssetAtPath<FishSpeciesDef>(AssetDatabase.GUIDToAssetPath(guid));
+                if (def == null || !def.HeldBroadSideOn || string.IsNullOrEmpty(def.Id)) continue;
+                string kind = KindFor(def, known);
+                if (kind != null) set.Add(kind);
+            }
+            return set;
         }
 
         /// <summary>The four deck lays of one finfish kind: direction row <c>DeckLayRows[v]</c>, frame

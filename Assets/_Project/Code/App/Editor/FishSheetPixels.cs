@@ -126,6 +126,58 @@ namespace HiddenHarbours.App.Editor
             }
             return best;
         }
+
+        /// <summary>
+        /// How much of the fish each facing of a HELD sheet shows: the count of pixels with any alpha in
+        /// each facing's still frame (<paramref name="held"/> is facing-major, <paramref name="facings"/>
+        /// facings, frame 0 first, the order <c>CatchItemLibrary.KindEntry.Held</c> is wired in). A flatfish
+        /// hung by its tail shows its broad side at some facings and a 2-5 px sliver at others, and this is
+        /// the number that tells them apart. Null when the sheet cannot be read.
+        /// </summary>
+        public static int[] HeldFacingAreas(string heldSheetPath, Sprite[] held, int facings)
+        {
+            if (held == null || facings <= 0 || held.Length < facings || held.Length % facings != 0) return null;
+            Image img = Read(heldSheetPath);
+            if (img.IsEmpty) return null;
+            int per = held.Length / facings;
+            var areas = new int[facings];
+            for (int d = 0; d < facings; d++)
+            {
+                Sprite s = held[d * per];
+                if (s == null) continue;
+                Rect r = s.rect;
+                int x0 = Mathf.Max(0, Mathf.RoundToInt(r.x)), y0 = Mathf.Max(0, Mathf.RoundToInt(r.y));
+                int x1 = Mathf.Min(img.Width, Mathf.RoundToInt(r.xMax)), y1 = Mathf.Min(img.Height, Mathf.RoundToInt(r.yMax));
+                for (int y = y0; y < y1; y++)
+                    for (int x = x0; x < x1; x++)
+                        if (img.At(x, y).a != 0) areas[d]++;
+            }
+            return areas;
+        }
+
+        /// <summary>
+        /// <b>The face-on pick</b>: each facing draws whichever of itself and its two neighbours shows the
+        /// most of the fish (<see cref="HeldFacingAreas"/>). A fish hung by its tail hangs nearly upright, so
+        /// the neighbouring facing is the same fish turned 45 degrees about its length: an edge-on facing
+        /// takes its broad neighbour, and a facing already showing its broad side keeps itself unless a
+        /// neighbour shows strictly more. Ties keep the facing itself, then the lower neighbour, so the
+        /// map is the same on every machine. Null for no areas.
+        /// </summary>
+        public static int[] BroadSideFacingMap(int[] areas)
+        {
+            if (areas == null || areas.Length == 0) return null;
+            int n = areas.Length;
+            var map = new int[n];
+            for (int d = 0; d < n; d++)
+            {
+                int best = d;
+                int lower = (d - 1 + n) % n, upper = (d + 1) % n;
+                if (areas[lower] > areas[best]) best = lower;
+                if (areas[upper] > areas[best]) best = upper;
+                map[d] = best;
+            }
+            return map;
+        }
     }
 }
 #endif

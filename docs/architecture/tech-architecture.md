@@ -416,6 +416,14 @@ without naming a class. Contracts, all additive:
 - **Order is deterministic**: priority (boat hold 10, home freezer 20, fixtures 50, an unnamed hold 100),
   then ordinal id; only exact ties keep listing order. That order is the Give rows' order and the container
   a gift comes from.
+- **Lifetime: register on enable, unregister on destroy, never on disable** (the `GameServices.PlayerHold`
+  rule: a region hop toggles roots, and a container that left on disable would vanish mid-crossing). A
+  null or already-listed container is ignored, unlisting one not listed is a no-op, and one object is one
+  entry whichever facet lists or unlists it. A destroyed scene container still counts until it is
+  unlisted, but every getter and `Find` read it as null, so a rebuilt container under the same id is
+  found (and is not warned about). Priority and id are read once, at listing. Reading is a count and an
+  index, allocation-free. Tests: `PlayerStorageOrderTests`, `PlayerStorageCoverageTests`,
+  `StoredContainersTests`, `SaveMigrationV25Tests`.
 - `IHoldRemove.TryRemoveAt(index)` (on `ShipHold`, `GinnyFreezer`, `CamperFreezer`, `ClamBucket`): the gift take removes the
   one item and touches nothing else; a hold without it is still emptied and refilled.
 - **The save is the source of truth.** The contents live in `SaveData.StoredContainers` (and food in v23
@@ -433,6 +441,13 @@ ride the swell), `SortingBands.HullYieldRungs` (1) behind, the same rule as the 
 `HullSorting.OrderFor(HullFootprint)` reads the pivot off a footprint. Rollout (the boat root's
 `SortingGroup`, the re-anchored effects) follows `hull-vs-decor-sorting.md` §7; until it lands, hulls
 still sort at `BoatVisualDef.SortingOrder`.
+
+Free effects never take a fixed order in the band's low floor (step 2). Core's `EffectSorting` is the
+one table: an anchored effect (spray, splashes, buoys, an emergent shore plant, the NPC catch without a
+skipper) sorts at `EffectSorting.OrderAt(effect, anchorY)`, the band's Y-sort at its emission point plus
+its rungs; a carried one (the rod line and splash) at `EffectSorting.OrderOver(effect, carrierOrder)`.
+`EffectSortingTests` pins the table and guards the low floor (`DecorFloor` to `DecorFloor + 100`) against
+new literals.
 
 ## 5. Boat & entity architecture (composition)
 

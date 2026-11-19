@@ -51,6 +51,13 @@ namespace HiddenHarbours.Art
                      "count for a non-directional handful.")]
             public int HeldFramesPerFacing;
 
+            [Tooltip("Which baked facing each facing DRAWS in a hand, HeldFacings long; empty = each facing " +
+                     "draws itself. Set by the library builder for a flatfish (FishSpeciesDef.HeldBroadSideOn): " +
+                     "a fish hung by its tail hangs nearly upright, so turning the camera about it is turning " +
+                     "the fish about its length, and each facing that shows its edge draws the neighbouring " +
+                     "facing that shows the most of it, measured off the held sheet.")]
+            public int[] HeldFacingMap;
+
             [Tooltip("The kind in a hand as a facet MESH (ADR 0053): the fish rig's own geometry at the " +
                      "tail rest, grip at the origin. Set by the library builder from the held-prop bake; " +
                      "empty for a kind the bake does not make. Nothing draws it yet.")]
@@ -187,6 +194,11 @@ namespace HiddenHarbours.Art
             int facings = Mathf.Max(1, e.HeldFacings);
             int per = Mathf.Max(1, e.HeldFramesPerFacing);
             int d = ((facing % facings) + facings) % facings;
+            // The face-on pick (a flatfish shows its broad side): a map the wrong length, or an entry
+            // outside the sheet, is ignored rather than trusted, so a stale map never draws a blank.
+            if (e.HeldFacingMap != null && e.HeldFacingMap.Length == facings &&
+                e.HeldFacingMap[d] >= 0 && e.HeldFacingMap[d] < facings)
+                d = e.HeldFacingMap[d];
             int f = ((frame % per) + per) % per;
 
             int i = d * per + f;
@@ -208,6 +220,15 @@ namespace HiddenHarbours.Art
         {
             if (_kindLookup == null) BuildLookups();
             return kind != null && _kindLookup.TryGetValue(kind, out var e) ? e.HeldLengthPx : 0;
+        }
+
+        /// <summary>This kind's face-on facing map (<see cref="KindEntry.HeldFacingMap"/>), or null when
+        /// every facing draws itself. For tests and tooling; <see cref="HeldSprite"/> already applies it.</summary>
+        public int[] HeldFacingMapFor(string kind)
+        {
+            if (_kindLookup == null) BuildLookups();
+            return kind != null && _kindLookup.TryGetValue(kind, out var e) &&
+                   e.HeldFacingMap != null && e.HeldFacingMap.Length > 0 ? e.HeldFacingMap : null;
         }
 
         /// <summary>This kind in a hand as a facet mesh, or null when the held-prop bake makes none
