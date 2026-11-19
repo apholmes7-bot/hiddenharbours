@@ -124,6 +124,10 @@ namespace HiddenHarbours.Tests.Art.EditMode
             StringAssert.Contains("FoamAgedColor(0.0, _SurfLipColor.rgb, _SurfAgeStrength, col.rgb)", code,
                 "the lip is the newest water in the frame: the shared walk at age 0, which is the sea's " +
                 "own foam anchor rather than a pure white of the surf's own");
+            // The one foam sheet (2026-11-19): the shore's line now has an age too (the swash's backwash
+            // and the distance seaward of the wet edge), so it walks the same ramp.
+            StringAssert.Contains("FoamAgedColor(fringeAge01, _FoamColor.rgb, _FoamSheetShore.x, col.rgb)", code,
+                "the shore's foam line must compose through the shared walk");
         }
 
         [Test]
@@ -193,8 +197,8 @@ namespace HiddenHarbours.Tests.Art.EditMode
         [Test]
         public void TheSeaHasOneWhite_TheFringeIsBornWhereTheWalkStarts()
         {
-            // The shore fringe has no age — it is the wet edge, renewed continuously — and it composites
-            // _FoamColor. The walk STARTS at _PaletteFoam. So "one white" is only true while those two
+            // The shore fringe's legacy colour is _FoamColor (since the one foam sheet of 2026-11-19 it walks
+            // the ramp from age 0, and at _FoamSheetShore.x = 0 it is that flat colour). The walk STARTS at _PaletteFoam. So "one white" is only true while those two
             // are the same colour, and on every material today they are, per preset: (0.92, 0.97, 1) on
             // the hero, (0.86, 0.84, 0.74) in StirredBrown, (0.95, 0.99, 0.98) in Tropical.
             //

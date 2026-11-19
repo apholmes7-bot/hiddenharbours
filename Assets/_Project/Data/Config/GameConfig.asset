@@ -790,6 +790,12 @@ MonoBehaviour:
     FoamAgeTear: 1
     RideScale: 1
     RippleLifetimeSeconds: 2.5
+  FoamSheet:
+    Shore: 1
+    ShoreLineSharpness: 2.5
+    ShoreAgeAcross: 0.5
+    ShoreBackwashAge: 0.6
+    AgeTear: 1
   DevAllHelmInstruments: 1
   MeshFishingAndDig: 1
   RegionCrossingHysteresisMetres: 0.25

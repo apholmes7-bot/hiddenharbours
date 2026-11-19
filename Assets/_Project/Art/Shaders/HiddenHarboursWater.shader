@@ -1101,6 +1101,19 @@ Shader "HiddenHarbours/Water"
         // than as another whitecap.
         _WakeFoamLaceScale ("Wake foam lace scale (x the whitecap blob scale)", Float) = 1.8
 
+        // ---- THE ONE FOAM SHEET (the owner, 2026-11-19: "there needs to be consistency amongst the
+        // in game foam") ---------------------------------------------------------------------------
+        // The lace, threshold and bands above are the sea's ONE foam sheet: every foam source hands
+        // it an amount and an age. These dials say how each source joins it. They are owner policy
+        // pushed from GameConfig.FoamSheet (FoamSheetSettings) every tick; the defaults here are the
+        // same values, for a water with no config wired. Each source's x = 0 is its older separate look.
+        // Shore line: x joins the sheet, y how tightly the line's foam hugs the wet edge (higher =
+        // thinner), z how aged the line's seaward side reads, w how aged the line reads on the backwash.
+        _FoamSheetShore    ("One foam: shore line (x join, y sharpness, z age across, w age on backwash)", Vector) = (1, 2.5, 0.5, 0.6)
+        // How hard the sheet tears apart as its foam ages (1 = half way through its age only the
+        // lace's hearts survive). The wake also reads the hull waves' own tear; the larger wins.
+        _FoamSheetAgeTear  ("One foam: age tear (0 = an even mat, 1 = hearts only by half age)", Range(0,1)) = 1
+
         // ---- THE WAKE FOAM'S AGE RAMP (owner ask 2026-08-27) ----------------------------------
         // "the wakes behind the boat are still a solid white foam from wherever the boat interacts
         // with, this should churn through different shades of blue, distort and fade into the
@@ -1865,6 +1878,9 @@ Shader "HiddenHarbours/Water"
                 float  _WakeFoamBands;
                 float  _WakeFoamLace;
                 float  _WakeFoamLaceScale;
+                // The one foam sheet: how each source joins it (GameConfig.FoamSheet).
+                float4 _FoamSheetShore;
+                float  _FoamSheetAgeTear;
                 float  _WakeFoamAgeStrength;
                 float  _WakeFoamFreshFloor;
                 float  _WakeFoamWhiteHold;
@@ -3930,6 +3946,26 @@ Shader "HiddenHarbours/Water"
                 return wave * _SwashAmplitude * SwashSeaStateGate();
             }
 
+            // THE SWASH'S AGE (the one foam sheet, 2026-11-19): 0 while the swash RUNS UP the beach (its foam
+            // is fresh, just thrown up by the wave), 1 at the height of the BACKWASH (the line it leaves is
+            // foam that has sat on the water). The time derivative of BeachSwash's two beats, at the same
+            // phase (the shoreward term and the along-shore desync), normalised to -1..1 by their peak
+            // rate (0.7 + 0.5 x 0.3). A run-up is BeachSwash rising: the drawn edge moves onto the sand.
+            // Visual only; the same pure function of (worldXY, depth, t) as BeachSwash (rule 5).
+            float BeachSwashBackwash01(float2 worldXY, float depth, float t)
+            {
+                float2 shore = ShoreDir(worldXY);
+                float2 tangent = float2(-shore.y, shore.x);
+                float alongCoord = dot(Pixelize(worldXY), tangent) * 0.35;
+                float desync = (ValueNoise(float2(alongCoord, alongCoord * 0.7 + 11.3)) - 0.5)
+                               * _SwashAlongShoreVary * 6.2831853;
+                bool haveShore = dot(shore, shore) > 1e-6;
+                float shoreward = haveShore ? (max(depth, 0.0) * _SwashWavelength) : 0.0;
+                float base = t * _SwashSpeed * 6.2831853 + shoreward;
+                float rate = (cos(base + desync) * 0.7 + cos(base * 0.5 + desync * 1.7) * 0.15) / 0.85;
+                return saturate(0.5 - 0.5 * rate * sign(_SwashAmplitude));
+            }
+
             // ---- REFLECTION sea-state response: how STRONG + how SHARP at this sea-state ---------------------
             // Twins of WaterReflection.ReflectionStrength / ReflectionSharpness (the headless determinism guard).
             // Both read the already-pushed sea-state uniforms — _Chop (0 glass .. 1 storm; WaterSurface sets it
@@ -4067,6 +4103,61 @@ Shader "HiddenHarbours/Water"
             // block in frag): it joins the stored churn BEFORE the tear, the threshold and the bands, so a
             // breaking wake crest is the SAME torn, banded, aged mat as the prop's churn and every other
             // foam this buffer draws (the owner, 2026-11-19: "wake foam should be the same as any foam").
+            // ==== THE ONE FOAM SHEET (the owner, 2026-11-19: "wake foam should be the same as any foam ...
+            // there needs to be consistency amongst the in game foam") ==================================
+            // Every foam sheet on the sea is ONE substance in different amounts. Each source keeps its own
+            // COVERAGE logic, where and how much foam (the buffer for a wake, the swash for the shore line,
+            // the crest's life for a whitecap, the bore for the surf, the wind rows for a storm streak, the
+            // flow's convergence for a convergence line), and hands an AMOUNT and an AGE (0 fresh .. 1 old)
+            // to these shared steps:
+            //   FoamSheetLace  - ONE lace field: the sea's evolving foam field on the wind-stretched basis
+            //                    (_FoamStreakStretch), at ONE blob scale, BandFreq x 3 x _FoamBlobScale x
+            //                    _WakeFoamLaceScale, so it boils, streaks and coarsens with the sea;
+            //   FoamSheetTear  - the lace tears the amount (it can only remove foam, never invent it), and
+            //                    as the foam ages only the lace's hearts survive;
+            //   FoamSheetCover - ONE threshold and ONE set of bands on the world-locked Bayer cell.
+            // The colour is the one FoamAgedColor walk at the same age. Two sources at the same amount and
+            // age over the same water therefore draw the same foam, by construction.
+            // col.rgb dressing only; reads no sim state (rule 5); deterministic (no RNG).
+            float FoamSheetLace(float2 worldXY)
+            {
+                float2 lwdir  = normalize(_WindDir.xy + float2(0, 1e-4));
+                float2 lwperp = float2(-lwdir.y, lwdir.x);
+                float2 lace   = float2(dot(worldXY, lwdir),
+                                       dot(worldXY, lwperp) * max(_FoamStreakStretch, 1.0));
+                return EvolvingField(lace, float2(0, 0),
+                                     BandFreq(_NoiseScale) * 3.0 * _FoamBlobScale
+                                     * max(_WakeFoamLaceScale, 1e-3),
+                                     _FoamEvolveSpeed, _Time.y);
+            }
+
+            // `torn` is FoamSheetLace at this pixel; `extraTear` is a source's own age-tear dial (the wake
+            // reads the hull waves' FoamAgeTear); the larger of it and the sheet's _FoamSheetAgeTear wins.
+            float FoamSheetTear(float amount, float torn, float age01, float extraTear)
+            {
+                if (_WakeFoamLace <= 0.001) return amount;   // 0 = the untorn read, bit-exact
+                // The field centres near 0.5, so 2x lands it about 1: hearts keep their value, the low
+                // half of the field is what tears through. Dialed by the master.
+                amount *= lerp(1.0, saturate(torn * 2.0), saturate(_WakeFoamLace));
+                // AGE TEAR (the owner's look of 11-19): as the foam ages only the tear's hearts survive, so
+                // a sheet is densest where it is fresh and breaks into drifting patches and then flecks as
+                // it ages, instead of fading out as one even mat. Fresh foam is untouched.
+                float ageTear = saturate(max(extraTear, _FoamSheetAgeTear) * 2.0 * saturate(age01));   // full by half its age
+                return amount * lerp(1.0, smoothstep(0.35, 0.75, torn), ageTear);
+            }
+
+            // A sheet's faint edge drawn in full reads as a grey wash, not foam: threshold it, soften the
+            // edge, then band the value on the world Bayer cell (default ON) so every foam is solid tones.
+            float FoamSheetCover(float amount, float bayer)
+            {
+                float thr  = saturate(_WakeFoamThreshold);
+                float soft = max(_WakeFoamSoftness, 1e-3);
+                float cover = smoothstep(thr, min(thr + soft, 1.0), amount);
+                if (_WakeFoamBands >= 2.0)
+                    cover = BandValue01(cover, _WakeFoamBands, 0.5, bayer);
+                return cover;
+            }
+
             float WakeFoamCoverage(float2 worldXY, float bayer, float crestStored, out float freshness)
             {
                 freshness = 0.0;
@@ -4107,39 +4198,15 @@ Shader "HiddenHarbours/Water"
                 // as a disc. Its frequency rides BandFreq like every other band, so the tear coarsens
                 // with the growing sea (ADR 0027 #4). _WakeFoamLace = 0 is a BIT-EXACT passthrough.
                 // col.rgb dressing only, and it reads no sim state (rule 5).
-                if (_WakeFoamLace > 0.001)
-                {
-                    float2 lwdir  = normalize(_WindDir.xy + float2(0, 1e-4));
-                    float2 lwperp = float2(-lwdir.y, lwdir.x);
-                    float2 lace   = float2(dot(worldXY, lwdir),
-                                           dot(worldXY, lwperp) * max(_FoamStreakStretch, 1.0));
-                    float torn = EvolvingField(lace, float2(0, 0),
-                                               BandFreq(_NoiseScale) * 3.0 * _FoamBlobScale
-                                               * max(_WakeFoamLaceScale, 1e-3),
-                                               _FoamEvolveSpeed, _Time.y);
-                    // The field centres near 0.5, so 2x lands it about 1: hearts keep their value,
-                    // the low half of the field is what tears through. Dialed by the master.
-                    stored *= lerp(1.0, saturate(torn * 2.0), saturate(_WakeFoamLace));
-                    // AGE TEAR (the owner's look of 11-19): as the mat ages only the tear's hearts
-                    // survive, so a trail is densest where it was churned and breaks into drifting
-                    // patches and then flecks behind, instead of fading out as one even bar with a blunt
-                    // end. Fresh foam is untouched; 0 is a bit-exact passthrough.
-                    float ageTear = saturate(_HHHullWaveFoamAge.z * 2.0 * (1.0 - freshness));   // full by half its age
-                    stored *= lerp(1.0, smoothstep(0.35, 0.75, torn), ageTear);
-                }
+                // Since the one foam sheet (2026-11-19) the lace, the age tear, the threshold and the bands
+                // are the sheet's shared steps below, the SAME steps the shore line, the caps, the surf, the
+                // storm streaks and the convergence foam take; the wake's arithmetic is unchanged by the move.
+                stored = FoamSheetTear(stored, FoamSheetLace(worldXY), 1.0 - freshness, _HHHullWaveFoamAge.z);
 
                 // A trail's fringe holds a lot of very faint foam; drawn in full it reads as a grey wash
-                // over the sea rather than as churn. Threshold it, then soften the edge.
-                float thr  = saturate(_WakeFoamThreshold);
-                float soft = max(_WakeFoamSoftness, 1e-3);
-                float cover = smoothstep(thr, min(thr + soft, 1.0), stored);
-
-                // The layer's own quantization (default ON). The cells are already 4 screen px, so this
-                // posterizes VALUE — solid tones of churn instead of an airbrushed gradient.
-                if (_WakeFoamBands >= 2.0)
-                    cover = BandValue01(cover, _WakeFoamBands, 0.5, bayer);
-
-                return saturate(cover * _WakeFoamStrength);
+                // over the sea rather than as churn. Threshold it, soften the edge, and band it: the
+                // cells are already 4 screen px, so the bands posterize VALUE, solid tones of churn.
+                return saturate(FoamSheetCover(stored, bayer) * _WakeFoamStrength);
             }
 
             // THE WASH'S RESIDUE (owner clip review 2026-11-15): the same buffer read where the bore's
@@ -6579,6 +6646,27 @@ Shader "HiddenHarbours/Water"
                     float dens = FoamDensityAt(fringeRoughness);
                     float core = SolidCore(foamField, thr, dens);
                     float foamCoverage = lerp(milky, 1.0, core) * bandGate;
+                    // ---- THE SHORE LINE IS THE SEA'S ONE FOAM SHEET (the owner, 2026-11-19: "yes unify the
+                    // shore foam line with the wake foam"). The fringe keeps its own COVERAGE logic, where the
+                    // foam is: the swash-displaced band on the wet edge (foamEdge), lifted by the lee-read
+                    // wind as before. Its AMOUNT is that band sharpened toward the wet edge
+                    // (_FoamSheetShore.y), so the line stays a thin line that advances and retreats with the
+                    // swash, never a wide mat. Its AGE is fresh at the leading edge and older to seaward
+                    // (_FoamSheetShore.z), and older on the backwash than on the run-up (_FoamSheetShore.w,
+                    // BeachSwashBackwash01). Then the sheet's own lace, age tear, threshold and bands, and the
+                    // one colour walk below, exactly as the wake's foam. _FoamSheetShore.x = 0 is the older
+                    // separate fringe, bit-exact.
+                    float fringeAge01 = 0.0;
+                    if (_FoamSheetShore.x > 0.001)
+                    {
+                        float lineAmount = saturate(pow(foamEdge, max(_FoamSheetShore.y, 0.1))
+                                                    + fringeRoughness * 0.4 * foamEdge) * bandGate;
+                        fringeAge01 = saturate(_FoamSheetShore.z * (1.0 - foamEdge)
+                                               + _FoamSheetShore.w * BeachSwashBackwash01(worldXY, depthC, t));
+                        float lineSheet = FoamSheetCover(FoamSheetTear(lineAmount, FoamSheetLace(worldXY),
+                                                                       fringeAge01, 0.0), bay);
+                        foamCoverage = lerp(foamCoverage, lineSheet, saturate(_FoamSheetShore.x));
+                    }
                     // THE FRINGE YIELDS to the physical whitewater (owner ruling 2026-08-28). At
                     // _SurfSupersedeFringe = 0 this is exactly today's fringe — the passthrough the dial
                     // ships under, and the A/B a reviewer can take.
@@ -6597,7 +6685,10 @@ Shader "HiddenHarbours/Water"
                         foamCoverage *= lerp(1.0, frontPresence, fringeHandoff);
                     }
                     // B1 FRINGE COVER END
-                    col.rgb = lerp(col.rgb, _FoamColor.rgb, foamCoverage * _FoamColor.a);
+                    // The one colour walk at the line's own age (FoamAgedColor, the wake's, caps' and surf's
+                    // walk); at _FoamSheetShore.x = 0 it returns _FoamColor, the older flat white, bit-exact.
+                    float3 fringeFoam = FoamAgedColor(fringeAge01, _FoamColor.rgb, _FoamSheetShore.x, col.rgb);
+                    col.rgb = lerp(col.rgb, fringeFoam, foamCoverage * _FoamColor.a);
                     col.a = max(col.a, foamCoverage * _FoamColor.a);
                 }
 

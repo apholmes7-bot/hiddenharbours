@@ -222,12 +222,17 @@ namespace HiddenHarbours.Tests.Art.EditMode
             // sooner, the dense heart survives. Tearing the FINISHED coverage instead would punch
             // holes through an already-shaped, already-posterized patch: a stencil laid over a decal,
             // which is a different (and worse) artefact than the one being fixed.
+            // Since the one foam sheet (2026-11-19) the tear and the threshold are the sheet's shared
+            // steps (FoamSheetTear, FoamSheetCover; FoamSheetTests pins them): the tear multiplies the
+            // amount, the threshold shapes the torn amount, and the wake hands its STORED value to the tear.
             string src = Read(WaterShaderPath);
-            int tearAt = src.IndexOf("stored *= lerp(1.0, saturate(torn * 2.0), saturate(_WakeFoamLace));",
-                                     System.StringComparison.Ordinal);
-            int thresholdAt = src.IndexOf("float cover = smoothstep(thr, min(thr + soft, 1.0), stored);",
-                                          System.StringComparison.Ordinal);
-            Assert.Greater(tearAt, 0, "the lace tear is not applied in the shader");
+            StringAssert.Contains("amount *= lerp(1.0, saturate(torn * 2.0), saturate(_WakeFoamLace));", src,
+                "the lace tear is not applied in the shader");
+            StringAssert.Contains("float cover = smoothstep(thr, min(thr + soft, 1.0), amount);", src,
+                "the sheet's threshold shapes the amount it is handed");
+            int tearAt = src.IndexOf("stored = FoamSheetTear(stored,", System.StringComparison.Ordinal);
+            int thresholdAt = src.IndexOf("FoamSheetCover(stored, bayer)", System.StringComparison.Ordinal);
+            Assert.Greater(tearAt, 0, "the wake's stored coverage is not torn");
             Assert.Greater(thresholdAt, tearAt,
                 "the tear must multiply the STORED buffer value before the threshold shapes it — " +
                 "tearing afterwards stencils holes through a finished patch.");
@@ -241,7 +246,8 @@ namespace HiddenHarbours.Tests.Art.EditMode
             // outright rather than multiplied by zero (a lerp to 1.0 is not free, and worse, it is not
             // obviously exact to a future reader).
             string src = Read(WaterShaderPath);
-            StringAssert.Contains("if (_WakeFoamLace > 0.001)", src,
+            // The one foam sheet (2026-11-19) keeps the guard as an early return in FoamSheetTear.
+            StringAssert.Contains("if (_WakeFoamLace <= 0.001) return amount;", src,
                 "the lace block must be GUARDED, so 0 is an exact and obvious passthrough");
         }
 
@@ -253,9 +259,15 @@ namespace HiddenHarbours.Tests.Art.EditMode
             // BandFreq sea-state scaling the whitecaps use, so churn boils, streaks and coarsens with
             // the rest of the foam instead of being an unrelated texture laid on top. A second stretch
             // or a second noise here would be a second sea.
+            // Since the one foam sheet (2026-11-19) the tear is FoamSheetLace, the one lace every foam
+            // reads; the wake must read it and nothing of its own.
             string src = Read(WaterShaderPath);
-            int fnAt = src.IndexOf("float WakeFoamCoverage(", System.StringComparison.Ordinal);
-            Assert.Greater(fnAt, 0, "WakeFoamCoverage not found");
+            int wakeAt = src.IndexOf("float WakeFoamCoverage(", System.StringComparison.Ordinal);
+            Assert.Greater(wakeAt, 0, "WakeFoamCoverage not found");
+            string wake = src.Substring(wakeAt, src.IndexOf("\n            }", wakeAt, System.StringComparison.Ordinal) - wakeAt);
+            StringAssert.Contains("FoamSheetLace(worldXY)", wake, "the wake must tear on the sheet's one lace");
+            int fnAt = src.IndexOf("float FoamSheetLace(", System.StringComparison.Ordinal);
+            Assert.Greater(fnAt, 0, "FoamSheetLace not found");
             int fnEnd = src.IndexOf("\n            }", fnAt, System.StringComparison.Ordinal);
             string body = src.Substring(fnAt, fnEnd - fnAt);
 

@@ -409,7 +409,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
             string src = Src();
             int supersede = IndexOf(src, "foamCoverage *= (1.0 - surfSupersede);");
             int yield = IndexOf(src, "foamCoverage *= 1.0 - washPresence * step(0.001, _WashLineOpacity);");
-            int compose = IndexOf(src, "col.rgb = lerp(col.rgb, _FoamColor.rgb, foamCoverage * _FoamColor.a);");
+            int compose = IndexOf(src, "col.rgb = lerp(col.rgb, fringeFoam, foamCoverage * _FoamColor.a);");
             Assert.That(supersede < yield && yield < compose,
                 "the fringe's hand-back to the wash must sit between the surf supersede and the fringe compose");
             // The fence the one-piece edge fix set stays: the fringe's DEPTH still rides boreFoamBlend.

@@ -26,8 +26,8 @@ namespace HiddenHarbours.Tests.EditMode
         const string WaterPath = "Assets/_Project/Art/Shaders/HiddenHarboursWater.shader";
         const string AdvectPath = "Assets/_Project/Art/Shaders/HiddenHarboursFoamBufferAdvect.shader";
         const string Dial = "_SurfFringeSequenceStrength";
-        const string BaseWaterHash = "1bf125204f01a62b444af87cc3db44e238ae2e6ab88f0eb09406ea89e2f29c90";
-        // Approved b5825e1f; re-approved at W1 Phase D (#932, owner d20) and C2a Phase D (owner, clarity 1) and at water gains B7 (#992, the seat's lean under the standing word of 10-29) and at crest glow L1 (#1004, the owner's ruling of 11-01) and at the foam lattice hash (the open-sea repeat fix, a named moved premise) and at the run-up wash (fix/shore-runup-foam, the owner's shore clip review of 11-15) and at the run-up wash v4 (fix/shore-runup-foam, the owner's v3 clip review of 11-15) and at the shore-normal pulse (fix/shore-runup-foam, the owner's v4 clip review of 11-15) and at the wash v7 (fix/shore-runup-foam, the PR 1225 editor look of 11-15) and at the wash v8 (the f07a839 editor look of 11-15) and at the wash v9 (the 7e16896 editor look of 11-15) and at real hull waves (feat/real-wake-waves, the owner's ask of 11-17) and at the hull waves' soft look (feat/real-wake-waves, the owner's look of 11-19). UTF-8 without BOM, LF. These are scope guards, not copies of physics.
+        const string BaseWaterHash = "b0690f3d61af7ba821765711810f0cb2f2c7430536c1da6f8983badbd66161db";
+        // Approved b5825e1f; re-approved at W1 Phase D (#932, owner d20) and C2a Phase D (owner, clarity 1) and at water gains B7 (#992, the seat's lean under the standing word of 10-29) and at crest glow L1 (#1004, the owner's ruling of 11-01) and at the foam lattice hash (the open-sea repeat fix, a named moved premise) and at the run-up wash (fix/shore-runup-foam, the owner's shore clip review of 11-15) and at the run-up wash v4 (fix/shore-runup-foam, the owner's v3 clip review of 11-15) and at the shore-normal pulse (fix/shore-runup-foam, the owner's v4 clip review of 11-15) and at the wash v7 (fix/shore-runup-foam, the PR 1225 editor look of 11-15) and at the wash v8 (the f07a839 editor look of 11-15) and at the wash v9 (the 7e16896 editor look of 11-15) and at real hull waves (feat/real-wake-waves, the owner's ask of 11-17) and at the hull waves' soft look (feat/real-wake-waves, the owner's look of 11-19) and at the one foam sheet (feat/one-foam-everywhere, the owner's rulings of 11-19). UTF-8 without BOM, LF. These are scope guards, not copies of physics.
         const string LegacyDepth =
             "                float foamDepth  = depthC - lerp(BeachSwash(worldXY, depthC, t) * swashSlope * swashGate,  // local, foam-only\n" +
             "                                                 surfRunUpM, boreFoamBlend);   // …and the foam rides the bore's wash too\n";
@@ -151,7 +151,8 @@ namespace HiddenHarbours.Tests.EditMode
                 Assert.That(CorrectConsumers(mutation), Is.False, "the wiring guard must reject disconnected/wrong-clock consumers");
             string code = Code(src);
             StringAssert.Contains("surfBore=SurfBorePulse01(borePhase,_BreakerBore.x)*birth;", code);
-            StringAssert.Contains("col.rgb=lerp(col.rgb,_FoamColor.rgb,foamCoverage*_FoamColor.a);", code);
+            StringAssert.Contains("float3fringeFoam=FoamAgedColor(fringeAge01,_FoamColor.rgb,_FoamSheetShore.x,col.rgb);", code);
+            StringAssert.Contains("col.rgb=lerp(col.rgb,fringeFoam,foamCoverage*_FoamColor.a);", code);
             StringAssert.Contains("col.a=max(col.a,foamCoverage*_FoamColor.a);", code);
             MainSource(src); // Also rules out additional hidden consumers, time reads, samples or loops.
         }
@@ -223,7 +224,8 @@ namespace HiddenHarbours.Tests.EditMode
             // The wash v7 adds WashLineDrawn, WashBeachShare01 and WashCapScale, the CPU twins of the shader's ground-measured line, the anatomy's hand-over on the sand and the wash's cover cap; the pinned source includes them.
             // The wash v8 adds BeachSurfEvalPoint, ShoreSurfShare01, ShoreSurfCover01 and OpenSurfCover01, the CPU twins of the shader's beach projection and its shore surf; the pinned source includes them.
             // The wash v9 adds BeachSurfEvalPointRefined, AlongShoreGateDepth and ShoreLip01, the CPU twins of the shader's correcting step onto the still line, the break gate's along-shore box and the lip broken by the churn; the pinned source includes them.
-                Is.EqualTo("58d3d8c057bbc7c563b02560d5fe0453eb0b393dff86dd86b790bb31560fb4eb"));
+            // The one foam sheet (feat/one-foam-everywhere, the owner's rulings of 11-19) adds PushFoamSheet, the GameConfig.FoamSheet dials pushed beside the shallows floor; the pinned source includes it.
+                Is.EqualTo("341c714af9c8bc7abc0085e80c03c76c364a3bae074398d19b57a8810e5330bc"));
         }
 
         static void RequireGpu()
@@ -374,8 +376,8 @@ namespace HiddenHarbours.Tests.EditMode
                     "float4 _B1Time; float4 _B1Fringe; float4 _B1Event;\nCBUFFER_START(UnityPerMaterial)");
                 // Only the fringe's RGB target changes. _FoamColor also colours other layers: setting
                 // that shared material colour would NOT isolate the fringe.
-                source = source.Replace("col.rgb = lerp(col.rgb, _FoamColor.rgb, foamCoverage * _FoamColor.a);",
-                    "col.rgb = lerp(col.rgb, lerp(_FoamColor.rgb, _B1Fringe.rgb, _B1Fringe.a), foamCoverage * _FoamColor.a);");
+                source = source.Replace("col.rgb = lerp(col.rgb, fringeFoam, foamCoverage * _FoamColor.a);",
+                    "col.rgb = lerp(col.rgb, lerp(fringeFoam, _B1Fringe.rgb, _B1Fringe.a), foamCoverage * _FoamColor.a);");
                 source = source.Replace("col.rgb = lerp(col.rgb, surfFoam, cover * _SurfColor.a);",
                     "col.rgb = lerp(col.rgb, lerp(surfFoam, _B1Event.rgb, _B1Event.a), cover * _SurfColor.a);");
                 source = source.Replace("col.rgb = lerp(col.rgb, lipFoam, lip * _SurfLipColor.a);",

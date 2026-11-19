@@ -653,7 +653,8 @@ namespace HiddenHarbours.Tests.Art.EditMode
             // like the prop's churn and the shore's residue; nothing in the hull-wave block paints a white.
             string src = WaterSource();
             int join = src.IndexOf("float stored = max(buffered.x, crestStored);", System.StringComparison.Ordinal);
-            int tear = src.IndexOf("stored *= lerp(1.0, saturate(torn * 2.0), saturate(_WakeFoamLace));",
+            // Since the one foam sheet (2026-11-19) the tear is FoamSheetTear, the step every foam takes.
+            int tear = src.IndexOf("stored = FoamSheetTear(stored, FoamSheetLace(worldXY),",
                                    System.StringComparison.Ordinal);
             Assert.Greater(join, 0, "the crests' foam does not join the shared foam mat");
             Assert.Greater(tear, join, "the crests' foam must be torn and shaped with the churn, not after it");
@@ -691,8 +692,11 @@ namespace HiddenHarbours.Tests.Art.EditMode
             StringAssert.Contains(sq("hwShade *= hwShade < 0.0 ? _HHHullWaveFoam.z : 1.0;"), src, "twin of WaveShade");
             StringAssert.Contains(sq("hullCrestFoam = max(hwTall, hwSteep) * _HHHullWaveShade.w * hullWaveShore;"), src,
                 "twin of CrestFoam01");
-            int tear = src.IndexOf(sq("stored *= lerp(1.0, saturate(torn * 2.0), saturate(_WakeFoamLace));"), System.StringComparison.Ordinal);
-            int aged = src.IndexOf(sq("stored *= lerp(1.0, smoothstep(0.35, 0.75, torn), ageTear);"), System.StringComparison.Ordinal);
+            // The one foam sheet (2026-11-19): both steps live in FoamSheetTear, and the wake hands it the
+            // hull waves' own age tear (the larger of it and the sheet's wins).
+            int tear = src.IndexOf(sq("amount *= lerp(1.0, saturate(torn * 2.0), saturate(_WakeFoamLace));"), System.StringComparison.Ordinal);
+            int aged = src.IndexOf(sq("return amount * lerp(1.0, smoothstep(0.35, 0.75, torn), ageTear);"), System.StringComparison.Ordinal);
+            StringAssert.Contains(sq("1.0 - freshness, _HHHullWaveFoamAge.z)"), src, "the wake ages on its own tear dial");
             Assert.Greater(tear, 0);
             Assert.Greater(aged, tear, "old foam tears to its hearts on the shared mat, after the lace");
             Assert.That(s.FoamAgeTear, Is.InRange(0.01f, 1f));

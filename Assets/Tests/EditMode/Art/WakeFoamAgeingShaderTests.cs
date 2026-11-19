@@ -263,6 +263,9 @@ namespace HiddenHarbours.Tests.Art.EditMode
                     @"\s*col\.rgb\s*=\s*lerp\s*\(\s*col\.rgb\s*,\s*lipFoam\s*,",
                 @"col\.rgb\s*=\s*lerp\s*\(\s*col\.rgb\s*,\s*FoamAgedColor\s*\(\s*capAge01\s*,\s*_FoamColor\.rgb\s*,\s*_CapAgeStrength\s*,\s*col\.rgb\s*\)",
                 @"col\.rgb\s*=\s*lerp\s*\(\s*col\.rgb\s*,\s*WakeFoamAgedColor\s*\(\s*wakeFresh\s*,\s*col\.rgb\s*\)",
+                // The one foam sheet (2026-11-19): the shore's foam line walks too, at the swash's age.
+                @"float3\s+fringeFoam\s*=\s*FoamAgedColor\s*\(\s*fringeAge01\s*,\s*_FoamColor\.rgb\s*,\s*_FoamSheetShore\.x\s*,\s*col\.rgb\s*\)\s*;" +
+                    @"\s*col\.rgb\s*=\s*lerp\s*\(\s*col\.rgb\s*,\s*fringeFoam\s*,",
             };
 
             // …after the last light layers, so the col.rgb they end on is the lit sea.
