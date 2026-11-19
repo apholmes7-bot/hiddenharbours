@@ -38,6 +38,7 @@ MonoBehaviour:
     - {fileID: 1844000205, guid: 9ad557ac1ad42b04b9b5bdf40b30c661, type: 3}
     HeldFacings: 8
     HeldFramesPerFacing: 2
+    HeldFacingMap: 
     HeldMesh: {fileID: 11400000, guid: 43b342f20260e624bb3e4e2b33741a93, type: 2}
     SizeOf: 
     SizeKg: 7.55
@@ -67,6 +68,7 @@ MonoBehaviour:
     - {fileID: 2056283306, guid: ed316e85496dd444896dd5d3daa224f3, type: 3}
     HeldFacings: 8
     HeldFramesPerFacing: 2
+    HeldFacingMap: 
     HeldMesh: {fileID: 11400000, guid: 43b342f20260e624bb3e4e2b33741a93, type: 2}
     SizeOf: bass
     SizeKg: 1
@@ -96,6 +98,7 @@ MonoBehaviour:
     - {fileID: 1900816487, guid: 4b8f5ced1cc04c042bec5c13c7e0e6ab, type: 3}
     HeldFacings: 8
     HeldFramesPerFacing: 2
+    HeldFacingMap: 
     HeldMesh: {fileID: 11400000, guid: 43b342f20260e624bb3e4e2b33741a93, type: 2}
     SizeOf: bass
     SizeKg: 25
@@ -125,6 +128,7 @@ MonoBehaviour:
     - {fileID: -1872140467, guid: eba37c8ff4bdb9540bb4ee98e9a11ef6, type: 3}
     HeldFacings: 8
     HeldFramesPerFacing: 2
+    HeldFacingMap: 
     HeldMesh: {fileID: 11400000, guid: 1dd9f87186210aa4fa4d8159b9cb9622, type: 2}
     SizeOf: 
     SizeKg: 5.59
@@ -154,6 +158,7 @@ MonoBehaviour:
     - {fileID: 943123888, guid: 4edbfc2dc3ec90646849d5caee253337, type: 3}
     HeldFacings: 8
     HeldFramesPerFacing: 2
+    HeldFacingMap: 
     HeldMesh: {fileID: 11400000, guid: 1dd9f87186210aa4fa4d8159b9cb9622, type: 2}
     SizeOf: cod
     SizeKg: 2
@@ -183,6 +188,7 @@ MonoBehaviour:
     - {fileID: 1812135645, guid: d2b14f3d2f0244c47ae577a091d04d55, type: 3}
     HeldFacings: 8
     HeldFramesPerFacing: 2
+    HeldFacingMap: 
     HeldMesh: {fileID: 11400000, guid: 1dd9f87186210aa4fa4d8159b9cb9622, type: 2}
     SizeOf: cod
     SizeKg: 12
@@ -212,6 +218,7 @@ MonoBehaviour:
     - {fileID: 1078626344, guid: 671a9daa0f931874bb312d40446f9c41, type: 3}
     HeldFacings: 8
     HeldFramesPerFacing: 2
+    HeldFacingMap: 0100000001000000010000000400000005000000050000000500000000000000
     HeldMesh: {fileID: 11400000, guid: fc90e4a6451fcc24ab25fb64043d4bdd, type: 2}
     SizeOf: 
     SizeKg: 0.78
@@ -241,6 +248,7 @@ MonoBehaviour:
     - {fileID: 1189380046, guid: f49fecbaa7314ab4d846b3df68774be6, type: 3}
     HeldFacings: 8
     HeldFramesPerFacing: 2
+    HeldFacingMap: 0100000001000000010000000400000004000000050000000500000000000000
     HeldMesh: {fileID: 11400000, guid: fc90e4a6451fcc24ab25fb64043d4bdd, type: 2}
     SizeOf: flounder
     SizeKg: 0.2
@@ -270,6 +278,7 @@ MonoBehaviour:
     - {fileID: -1778195626, guid: fdb73fec224340043987c7a93599f0d1, type: 3}
     HeldFacings: 8
     HeldFramesPerFacing: 2
+    HeldFacingMap: 0100000001000000010000000400000005000000050000000500000000000000
     HeldMesh: {fileID: 11400000, guid: fc90e4a6451fcc24ab25fb64043d4bdd, type: 2}
     SizeOf: flounder
     SizeKg: 2
@@ -299,6 +308,7 @@ MonoBehaviour:
     - {fileID: 274749164, guid: 492afce9fd9c42447860c5eae234d2b0, type: 3}
     HeldFacings: 8
     HeldFramesPerFacing: 2
+    HeldFacingMap: 
     HeldMesh: {fileID: 11400000, guid: e05700ba238ba3249a951c54cc98219e, type: 2}
     SizeOf: 
     SizeKg: 2.79
@@ -328,6 +338,7 @@ MonoBehaviour:
     - {fileID: -1243113089, guid: 25fc18e89feaefa4a8b5f91ef72b2f3b, type: 3}
     HeldFacings: 8
     HeldFramesPerFacing: 2
+    HeldFacingMap: 
     HeldMesh: {fileID: 11400000, guid: e05700ba238ba3249a951c54cc98219e, type: 2}
     SizeOf: haddock
     SizeKg: 1
@@ -357,6 +368,7 @@ MonoBehaviour:
     - {fileID: -147787707, guid: 6a162810a8ff3834783df1140aa6fed6, type: 3}
     HeldFacings: 8
     HeldFramesPerFacing: 2
+    HeldFacingMap: 
     HeldMesh: {fileID: 11400000, guid: e05700ba238ba3249a951c54cc98219e, type: 2}
     SizeOf: haddock
     SizeKg: 6
@@ -386,6 +398,7 @@ MonoBehaviour:
     - {fileID: 289850681, guid: ce2171e49c89c894d804ec8e7b4d6d3a, type: 3}
     HeldFacings: 8
     HeldFramesPerFacing: 2
+    HeldFacingMap: 
     HeldMesh: {fileID: 11400000, guid: fd943c4c961170a4d9c7cec999e4319e, type: 2}
     SizeOf: 
     SizeKg: 0.25
@@ -415,6 +428,7 @@ MonoBehaviour:
     - {fileID: 1152616048, guid: bd120924d508312428da38d6837016be, type: 3}
     HeldFacings: 8
     HeldFramesPerFacing: 2
+    HeldFacingMap: 
     HeldMesh: {fileID: 11400000, guid: fd943c4c961170a4d9c7cec999e4319e, type: 2}
     SizeOf: herring
     SizeKg: 0.1
@@ -444,6 +458,7 @@ MonoBehaviour:
     - {fileID: -1405321849, guid: 79e0bf8931b9a074e8101a84a8a6ec0f, type: 3}
     HeldFacings: 8
     HeldFramesPerFacing: 2
+    HeldFacingMap: 
     HeldMesh: {fileID: 11400000, guid: fd943c4c961170a4d9c7cec999e4319e, type: 2}
     SizeOf: herring
     SizeKg: 0.5
@@ -473,6 +488,7 @@ MonoBehaviour:
     - {fileID: -1140674986, guid: c126921156f46cf468a964035712d532, type: 3}
     HeldFacings: 8
     HeldFramesPerFacing: 2
+    HeldFacingMap: 
     HeldMesh: {fileID: 11400000, guid: 869ce0b9a6f833649bac060932e59c32, type: 2}
     SizeOf: 
     SizeKg: 0.75
@@ -502,6 +518,7 @@ MonoBehaviour:
     - {fileID: -106357785, guid: 55adf917e5b839d41a3b706eda69ecc7, type: 3}
     HeldFacings: 8
     HeldFramesPerFacing: 2
+    HeldFacingMap: 
     HeldMesh: {fileID: 11400000, guid: 869ce0b9a6f833649bac060932e59c32, type: 2}
     SizeOf: mackerel
     SizeKg: 0.3
@@ -531,6 +548,7 @@ MonoBehaviour:
     - {fileID: 406788593, guid: 2ece43baaaa52c247aaab46b21cb96e9, type: 3}
     HeldFacings: 8
     HeldFramesPerFacing: 2
+    HeldFacingMap: 
     HeldMesh: {fileID: 11400000, guid: 869ce0b9a6f833649bac060932e59c32, type: 2}
     SizeOf: mackerel
     SizeKg: 1.5
@@ -560,6 +578,7 @@ MonoBehaviour:
     - {fileID: 1606076144, guid: eea70fcaf09080941942d033d1a40c75, type: 3}
     HeldFacings: 8
     HeldFramesPerFacing: 2
+    HeldFacingMap: 
     HeldMesh: {fileID: 11400000, guid: 1e43f1fc305a06d449c09a2ae2b922f0, type: 2}
     SizeOf: 
     SizeKg: 4.19
@@ -589,6 +608,7 @@ MonoBehaviour:
     - {fileID: 1895332617, guid: 370bc0ed1d03dcd4fbc9fa68d7935b72, type: 3}
     HeldFacings: 8
     HeldFramesPerFacing: 2
+    HeldFacingMap: 
     HeldMesh: {fileID: 11400000, guid: 1e43f1fc305a06d449c09a2ae2b922f0, type: 2}
     SizeOf: pollock
     SizeKg: 1.5
@@ -618,6 +638,7 @@ MonoBehaviour:
     - {fileID: 820589425, guid: 7187377126a071a4e86ec71ad3271492, type: 3}
     HeldFacings: 8
     HeldFramesPerFacing: 2
+    HeldFacingMap: 
     HeldMesh: {fileID: 11400000, guid: 1e43f1fc305a06d449c09a2ae2b922f0, type: 2}
     SizeOf: pollock
     SizeKg: 9
@@ -633,6 +654,7 @@ MonoBehaviour:
     - {fileID: 642901098, guid: 41ebc4a4146cf7c4ea4338238b7925e7, type: 3}
     HeldFacings: 1
     HeldFramesPerFacing: 2
+    HeldFacingMap: 
     HeldMesh: {fileID: 0}
     SizeOf: 
     SizeKg: 0
@@ -662,6 +684,7 @@ MonoBehaviour:
     - {fileID: -1055340020, guid: 0a6543ce775e8294eb781ff8dea17c1f, type: 3}
     HeldFacings: 8
     HeldFramesPerFacing: 2
+    HeldFacingMap: 
     HeldMesh: {fileID: 0}
     SizeOf: 
     SizeKg: 0
@@ -691,6 +714,7 @@ MonoBehaviour:
     - {fileID: -2140742918, guid: 1dd3317b82174214e90260bc2ca44e29, type: 3}
     HeldFacings: 8
     HeldFramesPerFacing: 2
+    HeldFacingMap: 
     HeldMesh: {fileID: 0}
     SizeOf: 
     SizeKg: 0
@@ -706,6 +730,7 @@ MonoBehaviour:
     - {fileID: -39917994, guid: 98f48a7ae105e2644812ab8918360797, type: 3}
     HeldFacings: 1
     HeldFramesPerFacing: 2
+    HeldFacingMap: 
     HeldMesh: {fileID: 0}
     SizeOf: 
     SizeKg: 0
@@ -721,6 +746,7 @@ MonoBehaviour:
     - {fileID: -350328097, guid: 1c2136947e9e01449853b8e4afa468ea, type: 3}
     HeldFacings: 1
     HeldFramesPerFacing: 2
+    HeldFacingMap: 
     HeldMesh: {fileID: 0}
     SizeOf: 
     SizeKg: 0
@@ -736,6 +762,7 @@ MonoBehaviour:
     - {fileID: -432732285, guid: b76ed376f8128e744819b5b8da52b29f, type: 3}
     HeldFacings: 1
     HeldFramesPerFacing: 2
+    HeldFacingMap: 
     HeldMesh: {fileID: 0}
     SizeOf: 
     SizeKg: 0
@@ -751,6 +778,7 @@ MonoBehaviour:
     - {fileID: -2127248993, guid: 60a768c643921664fbb7bcf5adccb136, type: 3}
     HeldFacings: 1
     HeldFramesPerFacing: 2
+    HeldFacingMap: 
     HeldMesh: {fileID: 0}
     SizeOf: 
     SizeKg: 0

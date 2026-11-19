@@ -43,5 +43,6 @@ MonoBehaviour:
   SupplyElasticity: 0.45
   SpawnWeight: 0.8
   Sprite: {fileID: 21300000, guid: 5887767b296c4e23a1181791e60b8c51, type: 3}
+  HeldBroadSideOn: 1
   Bite: {fileID: 0}
   RodFight: {fileID: 0}

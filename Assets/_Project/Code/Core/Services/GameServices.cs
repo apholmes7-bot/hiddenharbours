@@ -1275,6 +1275,23 @@ namespace HiddenHarbours.Core
         public static float MinDrawnFishLengthPx =>
             Config != null ? Config.MinDrawnFishLengthPx : GameConfig.DefaultMinDrawnFishLengthPx;
 
+        /// <summary>The longest held fish drawing that gets the contrast line, sprite px (see
+        /// <see cref="GameConfig.HeldFishKeylineMaxLengthPx"/>): the config's value, or the default with none.</summary>
+        public static float HeldFishKeylineMaxLengthPx =>
+            Config != null ? Config.HeldFishKeylineMaxLengthPx : GameConfig.DefaultHeldFishKeylineMaxLengthPx;
+
+        /// <summary>How dark the contrast line is (see <see cref="GameConfig.HeldFishKeylineShade"/>).</summary>
+        public static float HeldFishKeylineShade =>
+            Config != null ? Config.HeldFishKeylineShade : GameConfig.DefaultHeldFishKeylineShade;
+
+        /// <summary>Where the contrast line is drawn, sprite px (see
+        /// <see cref="GameConfig.HeldFishKeylineOffsetsPx"/>). Read once when a fish is put in his hands, never
+        /// per frame, so the default's fresh array is no per-frame allocation.</summary>
+        public static UnityEngine.Vector2[] HeldFishKeylineOffsetsPx =>
+            Config != null && Config.HeldFishKeylineOffsetsPx != null
+                ? Config.HeldFishKeylineOffsetsPx
+                : GameConfig.DefaultHeldFishKeylineOffsetsPx();
+
         /// <summary>The tide table's owner tunables (VS-06) — how far the almanac page looks ahead and
         /// how finely it hunts each turn. Same contract as <see cref="WaveField"/>, including the
         /// <c>Config != null</c> discipline (never <c>?.</c>/<c>??</c> on a <c>UnityEngine.Object</c>).
