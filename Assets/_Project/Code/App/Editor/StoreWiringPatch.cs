@@ -94,7 +94,7 @@ namespace HiddenHarbours.App.Editor
             }
         }
 
-        /// <summary>St Peters: the general store counter's eight vendors, all Marguerite's.</summary>
+        /// <summary>St Peters: the general store counter's nine vendors, all Marguerite's.</summary>
         public static readonly Region StPeters = new Region("StPeters", StPetersLayerRefresh.ScenePath, new[]
         {
             new Seller("GeneralStoreCounter", typeof(GearShop), "gear.rod", StPetersBuilder.StoreSellerId),
@@ -103,6 +103,7 @@ namespace HiddenHarbours.App.Editor
             new Seller("GeneralStoreCounter", typeof(SupplyShop), "supply.bread", StPetersBuilder.StoreSellerId),
             new Seller("GeneralStoreCounter", typeof(SupplyShop), "supply.oatcakes", StPetersBuilder.StoreSellerId),
             new Seller("GeneralStoreCounter", typeof(SupplyShop), "supply.tinned_beans", StPetersBuilder.StoreSellerId),
+            new Seller("GeneralStoreCounter", typeof(SupplyShop), "supply.soap_bar", StPetersBuilder.StoreSellerId),
             new Seller("GeneralStoreCounter", typeof(InstrumentShop), "instrument.depth_sounder", StPetersBuilder.StoreSellerId),
             new Seller("GeneralStoreCounter", typeof(LicenseVendor), "license.clam", StPetersBuilder.StoreSellerId),
         });

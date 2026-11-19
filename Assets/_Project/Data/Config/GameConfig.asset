@@ -666,6 +666,10 @@ MonoBehaviour:
     MaxStretchGameMinutes: 240
     WadeCountsAsSea: 0
     SeaStationId: washstation.sea
+    SoapSupplyId: supply.soap_bar
+    WashesPerSoapBar: 8
+    UnsoapedCeiling: 0.85
+    NoSoapLine: No soap. Can't get properly clean.
   Kitchen:
     DiningSeatReachMetres: 1.25
     PieceReachMetres: 1

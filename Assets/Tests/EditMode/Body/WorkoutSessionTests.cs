@@ -433,6 +433,10 @@ namespace HiddenHarbours.Tests.EditMode
             public float Dirt => 0f;
             public DirtActivity Activity => DirtActivity.None;
             public WashStationDef WashingAt => null;
+            public bool WashSoaped => false;
+            public bool HasSoap => false;
+            public bool SoapMatters(WashStationDef station) => false;
+            public float CeilingFor(WashStationDef station) => 0f;
             public void ReportActivity(DirtActivity kind, double hours) { Calls++; Kind = kind; Hours += hours; }
             public void BeginActivity(DirtActivity kind) { }
             public void EndActivity(DirtActivity kind) { }

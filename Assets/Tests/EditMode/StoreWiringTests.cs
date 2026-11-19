@@ -125,14 +125,15 @@ namespace HiddenHarbours.Tests.EditMode
                                                          t.Ref(id, "m_GameObject") == counter).ToList();
             string iceGuid = catalog.Single(l => l.Id == "supply.ice").Guid;
             long ice = supplyShops.Single(id => t.Text(id).Contains(iceGuid));
-            var foodGuids = new[] { "supply.bread", "supply.oatcakes", "supply.tinned_beans" }
+            // The three foods and the bar of soap: the everyday goods the step copies from the ice shop.
+            var foodGuids = new[] { "supply.bread", "supply.oatcakes", "supply.tinned_beans", "supply.soap_bar" }
                 .Select(f => catalog.Single(l => l.Id == f).Guid).ToList();
             List<long> foods = supplyShops.Where(id => foodGuids.Any(g => t.Text(id).Contains(g))).ToList();
-            Assert.AreEqual(3, foods.Count, $"the committed StPeters.unity's GeneralStoreCounter holds {foods.Count} of the three food shops. {Fix}");
+            Assert.AreEqual(4, foods.Count, $"the committed StPeters.unity's GeneralStoreCounter holds {foods.Count} of the four everyday-goods shops. {Fix}");
             foreach (long f in foods)
                 Assert.AreEqual(t.Field(ice, "_walletProvider"), t.Field(f, "_walletProvider"), $"the food shop &{f} does not pay into the ice shop's wallet");
 
-            // The three food shops taken back out by the test's hand: the step adds them back, byte for byte.
+            // The four everyday-goods shops taken back out by the test's hand: the step adds them back, byte for byte.
             string bare = WithoutComponents(committed, counter, foods);
             List<LayerPatch> patches = StoreWiringPatch.Plan(bare, StoreWiringPatch.StPeters, Assets);
             List<Op> ops = patches.SelectMany(p => p.Ops).ToList();

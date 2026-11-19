@@ -14,6 +14,11 @@ namespace HiddenHarbours.Core
     /// </list>
     /// Clam digging, farm work, engine work and the gym have no signal on main yet; they arrive through the
     /// body lane's activity entry point (see <c>docs/world/washrooms-plan.md</c>).
+    ///
+    /// <para><b>No soap.</b> It also hears <see cref="PlayerWashChanged"/>: a wash that began wanting soap the
+    /// player does not have (<see cref="PlayerWashChanged.SoapMissing"/>) makes him think
+    /// <see cref="CleanlinessSettings.NoSoapLine"/>, in the inner-voice bubble every station shares,
+    /// whichever station or anchor began it.</para>
     /// </summary>
     public static class CleanlinessResponder
     {
@@ -28,6 +33,7 @@ namespace HiddenHarbours.Core
             EventBus.Subscribe<FishCaught>(OnFishCaught);
             EventBus.Subscribe<TrapHaulStateChanged>(OnTrapHaul);
             EventBus.Subscribe<OnFootWaterStateChanged>(OnWater);
+            EventBus.Subscribe<PlayerWashChanged>(OnWash);
         }
 
         public static void Uninstall()
@@ -37,6 +43,27 @@ namespace HiddenHarbours.Core
             EventBus.Unsubscribe<FishCaught>(OnFishCaught);
             EventBus.Unsubscribe<TrapHaulStateChanged>(OnTrapHaul);
             EventBus.Unsubscribe<OnFootWaterStateChanged>(OnWater);
+            EventBus.Unsubscribe<PlayerWashChanged>(OnWash);
+        }
+
+        internal static void OnWash(PlayerWashChanged e)
+        {
+            if (e.Washing && e.SoapMissing) SayNoSoap();
+        }
+
+        /// <summary>
+        /// The player thinks the no-soap line: an inner-voice bubble anchored at him, the channel the effort
+        /// gate's refusal lines use. Nothing with no line authored. Returns true when a line went out.
+        /// </summary>
+        public static bool SayNoSoap()
+        {
+            string line = GameServices.CleanlinessSettings.NoSoapLine;
+            if (string.IsNullOrEmpty(line)) return false;
+            EventBus.Publish(new AmbientSpeechRequested(
+                AmbientSpeechId.Next(), GameServices.PlayerTransform,
+                new UnityEngine.Vector3(0f, EffortGate.Settings.BubbleHeightMetres, 0f),
+                speakerId: null, speakerName: null, line: line, voiceId: null, kind: AmbientSpeechKind.InnerVoice));
+            return true;
         }
 
         internal static void OnFishCaught(FishCaught e) => GameServices.Cleanliness.ReportAction(DirtActivity.FishHandling);

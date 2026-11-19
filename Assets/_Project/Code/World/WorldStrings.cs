@@ -175,6 +175,8 @@ namespace HiddenHarbours.World
         public const string WashStop        = "Stop washing";
         public const string WashStopped     = "He leaves off washing.";
         public const string WashWalkedOff   = "He walks off, still dripping.";
+        // A shower or bath that stopped short because he had no soap (owner ask 2026-11-17).
+        public const string WashDoneNoSoap  = "As clean as he gets without soap.";
 
         // ---- bathrooms (kitchens and bathrooms placement plan, R1) ---------------------------------
         // The indoor shower and the bath, and the seat that only seats (a toilet, an outhouse).

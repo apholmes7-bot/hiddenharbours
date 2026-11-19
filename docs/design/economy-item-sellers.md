@@ -97,6 +97,7 @@ the reason recorded in the guard.
 | `bait.shucked_clam` | 3 | leblancs, nmc_fishing_gear_wholesaler | offer |
 | `bait.fish_scrap` | 1 | leblancs, nmc_fishing_gear_wholesaler | offer |
 | `supply.ice` / `bread` / `tinned_beans` / `oatcakes` | 6 / 4 / 3 / 2 | leblancs | shelf |
+| `supply.soap_bar` | 3 | leblancs (8 showers or baths a bar; see `docs/world/washrooms-plan.md` §1a) | shelf |
 | `instrument.depth_sounder` | 140 | leblancs | shelf (moves to the boat/gear wholesaler with its counter; see §5) |
 | `instrument.fish_finder` | 650 | nmc_boat_gear_wholesaler (moved from leblancs; same dash cutout as the sounder) | offer |
 | `instrument.gps` (chartplotter) | 1,800 | nmc_boat_gear_wholesaler (moved from nmc_chandlery; wants a wheelhouse boat) | offer |
