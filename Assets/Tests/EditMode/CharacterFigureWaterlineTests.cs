@@ -6,7 +6,7 @@ using UnityEngine;
 namespace HiddenHarbours.Tests.EditMode
 {
     /// <summary>
-    /// ADR 0060: where the sea cuts the mesh figure. The rule is the rig's own (rig 10 poses: swim
+    /// ADR 0061: where the sea cuts the mesh figure. The rule is the rig's own (rig 10 poses: swim
     /// <c>waterZ = Pz + 0.09</c>, tread <c>mean(shoulder z) − 0.05</c>), read from the skin's posed
     /// bones; the margins are GameConfig's.
     /// </summary>

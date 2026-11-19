@@ -669,7 +669,7 @@ namespace HiddenHarbours.Art
         public float WaterlineMetres => _waterLine;
 
         /// <summary>
-        /// <b>The sea on her</b> (ADR 0060): hide every part of the figure below
+        /// <b>The sea on her</b> (ADR 0061): hide every part of the figure below
         /// <paramref name="metres"/>, measured up from the figure's ground plane in its own frame.
         /// Off draws her whole. Written to the material only when it changes, so a figure standing in
         /// still water costs nothing per frame. Only a v9 figure (the <c>HH_FIGURE</c> variant) reads it.
@@ -1253,7 +1253,7 @@ namespace HiddenHarbours.Art
 
         /// <summary><c>float4</c>, per material: <c>(on, lineZ, 0, 0)</c>. While <c>on</c> is 1 every
         /// fragment of the figure below <c>lineZ</c> (metres, the figure's own frame, z up) is
-        /// discarded: the sea on a wading or swimming figure (ADR 0060). 0 draws the whole figure.</summary>
+        /// discarded: the sea on a wading or swimming figure (ADR 0061). 0 draws the whole figure.</summary>
         public static readonly int FigureWater = Shader.PropertyToID("_HHFigureWater");
 
         /// <summary><see cref="FigureInkOn"/> for a figure inked by its rig's rules, keyline ring and all

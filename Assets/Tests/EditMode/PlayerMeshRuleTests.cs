@@ -9,7 +9,7 @@ using UnityEngine;
 namespace HiddenHarbours.Tests.EditMode
 {
     /// <summary>
-    /// ADR 0060: the player is always the mesh. The guard the owner asked for: with the legacy switch
+    /// ADR 0061: the player is always the mesh. The guard the owner asked for: with the legacy switch
     /// off, every state the player can be in resolves to a baked mesh clip on every body he can wear,
     /// directly or through the fallback map, and nothing hands him back to a sprite sheet.
     /// </summary>
@@ -66,7 +66,7 @@ namespace HiddenHarbours.Tests.EditMode
         {
             GameConfig shipped = Shipped();
             Assert.IsFalse(shipped.PlayerLegacySpriteFallback,
-                "the shipped config must keep the player on the mesh (ADR 0060)");
+                "the shipped config must keep the player on the mesh (ADR 0061)");
             Assert.IsTrue(DeckRiderMeshPresenter.MeshOnly(shipped));
         }
 

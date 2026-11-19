@@ -1456,12 +1456,12 @@ namespace HiddenHarbours.Core
         /// <summary>
         /// Code default for <see cref="PlayerLegacySpriteFallback"/>: ON, so a config built fresh in
         /// code (every PlayMode rig that tests the old hand-over) keeps the old behaviour. The shipped
-        /// <c>GameConfig.asset</c> turns it OFF: in the game the player is always the mesh (ADR 0060),
+        /// <c>GameConfig.asset</c> turns it OFF: in the game the player is always the mesh (ADR 0061),
         /// the same code-default/shipped split as <see cref="MeshCharacterAshore"/>.
         /// </summary>
         public const bool DefaultPlayerLegacySpriteFallback = true;
 
-        [Header("The player is always the mesh (ADR 0060)")]
+        [Header("The player is always the mesh (ADR 0061)")]
         [Tooltip("OFF (the shipped game): the player never switches to an old sprite sheet. A swim, a " +
                  "tread, a sleep, a drive, a reach or a carry the mesh did not list yet plays its baked " +
                  "mesh clip, and a state the skin has no clip for plays the nearest one from Player Mesh " +

@@ -21,7 +21,7 @@ namespace HiddenHarbours.Core
     }
 
     /// <summary>
-    /// <b>The player is always the mesh</b> (ADR 0060). The pure rule the player's presenter asks
+    /// <b>The player is always the mesh</b> (ADR 0061). The pure rule the player's presenter asks
     /// when <see cref="GameConfig.PlayerLegacySpriteFallback"/> is off: which baked clip draws a
     /// state, never "hand the picture back to the sprite sheet".
     ///

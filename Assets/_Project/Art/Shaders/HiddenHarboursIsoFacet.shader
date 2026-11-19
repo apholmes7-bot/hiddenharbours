@@ -256,7 +256,7 @@ Shader "HiddenHarbours/IsoFacet"
             float  _HHFigureInkOn;          // the dark target's alpha flag is 1 minus this: 1 while the rig's ink
                                             // is live with its keyline ring, 0.75 while it is live without one
                                             // (rig 10, owner ruling K4), 0 off
-            // THE SEA ON HER (ADR 0060). x = 1 while the line is live, y = its height in the figure's
+            // THE SEA ON HER (ADR 0061). x = 1 while the line is live, y = its height in the figure's
             // own frame (metres, z up: the posed mesh is the figure frame, so positionOS.z IS height).
             // Every fragment under the line is discarded, in the facet pass, the reflection and the
             // guard alike. Never written for the cast or the player ashore on dry ground: x = 0, and

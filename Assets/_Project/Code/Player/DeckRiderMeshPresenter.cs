@@ -338,7 +338,7 @@ namespace HiddenHarbours.Player
             CharacterSkinDef skin = ResolveSkin(stand);
             bool meshOnly = MeshOnly(config);
             bool clipPose = TryPerformancePose(skin, stand, out string moveKey, out int moveFrame, out float moveHeading);
-            // ADR 0060: with the legacy switch off nothing below hands him back to a sprite sheet; a
+            // ADR 0061: with the legacy switch off nothing below hands him back to a sprite sheet; a
             // performance the mesh cannot follow draws his own stance from the clips he does carry.
             if (PerformancePlaying() && !clipPose && !meshOnly) { Stop(ClipCannotDrawReason); return; }
             // A supported performance admits only its own claim; nested claims retain the sprite.
@@ -385,7 +385,7 @@ namespace HiddenHarbours.Player
 
             // ADR 0041: the switch is PER STATE. A state not listed still plays its sheet, which is
             // how the sheets retire one at a time at parity instead of all at once on a promise.
-            // ADR 0060: for the player, with the legacy switch off, the baked clip itself is the
+            // ADR 0061: for the player, with the legacy switch off, the baked clip itself is the
             // permission, and a state the skin lacks plays the nearest one it carries.
             if (meshOnly)
             {
@@ -587,7 +587,7 @@ namespace HiddenHarbours.Player
         public static bool AshoreSwitchOn(GameConfig config) =>
             config != null && config.MeshCharacter && config.MeshCharacterAshore;
 
-        /// <summary>ADR 0060: true when the player may never be handed back to a sprite sheet
+        /// <summary>ADR 0061: true when the player may never be handed back to a sprite sheet
         /// (<see cref="GameConfig.PlayerLegacySpriteFallback"/> off). No config: the old behaviour.</summary>
         public static bool MeshOnly(GameConfig config) =>
             config != null && !config.PlayerLegacySpriteFallback;
@@ -596,7 +596,7 @@ namespace HiddenHarbours.Player
         private Matrix4x4[] _waterWorld;
 
         /// <summary>
-        /// The sea on her ashore figure (ADR 0060): the waterline from her own posed bones while she
+        /// The sea on her ashore figure (ADR 0061): the waterline from her own posed bones while she
         /// wades or swims, none on dry ground. Wading reads the live depth over her feet.
         /// </summary>
         private void ApplyAshoreWaterline(CharacterSkinDef skin, in CharacterSkinDef.SkinClip clip, string stateKey,
@@ -628,7 +628,7 @@ namespace HiddenHarbours.Player
         /// (<see cref="IsoCharacterSprite.IsSuspended"/>) and writes her body sprite itself — the fight
         /// on the wharf, the haul. Left out, nothing has claimed it.</para>
         ///
-        /// <para><paramref name="spriteFallback"/> (ADR 0060): false when
+        /// <para><paramref name="spriteFallback"/> (ADR 0061): false when
         /// <see cref="GameConfig.PlayerLegacySpriteFallback"/> is off. Then the clip, the suspended skin
         /// and the water never hand her back: only the wiring fences and "inside something" remain,
         /// and the mesh draws her swimming, wading or mid-move. Left out, the old hand-over holds.</para>
@@ -776,7 +776,7 @@ namespace HiddenHarbours.Player
             GameConfig config = GameServices.Config;
             if (MeshOnly(config))
             {
-                // ADR 0060: every clip asks for its own baked state (swim, tread, sleep, drive and the
+                // ADR 0061: every clip asks for its own baked state (swim, tread, sleep, drive and the
                 // reaches included) and takes the nearest the skin carries. The sprite's clock and
                 // heading still lead, the frame folded onto the clip that actually draws.
                 if (skin == null) return false;

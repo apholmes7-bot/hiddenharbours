@@ -1,4 +1,4 @@
-# ADR 0060 — The player is always the mesh: no sprite-sheet fallback
+# ADR 0061 — The player is always the mesh: no sprite-sheet fallback
 
 - **Status:** Proposed (owner ask 2026-11-19: "change all player animations to the new mesh model")
 - **Owner:** lead-architect
