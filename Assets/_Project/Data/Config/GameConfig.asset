@@ -795,6 +795,10 @@ MonoBehaviour:
     ShoreLineSharpness: 2.5
     ShoreAgeAcross: 0.5
     ShoreBackwashAge: 0.6
+    Caps: 1
+    CapAmount: 0.6
+    Surf: 1
+    SurfAmount: 1
     AgeTear: 1
   DevAllHelmInstruments: 1
   MeshFishingAndDig: 1

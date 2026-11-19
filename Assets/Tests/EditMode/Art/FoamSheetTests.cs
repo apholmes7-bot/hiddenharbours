@@ -117,6 +117,40 @@ namespace HiddenHarbours.Tests.Art.EditMode
         }
 
         [Test]
+        public void TheCaps_DrawThroughTheSheet_AtTheirOwnAge()
+        {
+            string code = CodeOnly(Source());
+            // The caps keep their lifecycle, gates and clumping for WHERE and HOW MUCH; the finished opacity,
+            // scaled by the cap amount, is torn at the cap's lifecycle age and banded by the sheet.
+            StringAssert.Contains("float capSheet = FoamSheetCover(FoamSheetTear(saturate(capOpacity * _FoamSheetCaps.y),", code);
+            StringAssert.Contains("FoamSheetLace(worldXY), capAge01, 0.0), bay);", code);
+            StringAssert.Contains("capOpacity = lerp(capOpacity, capSheet, saturate(_FoamSheetCaps.x));", code);
+            int clump = code.IndexOf("capOpacity = saturate(capOpacity * clumpGate) * capShoreFade;", System.StringComparison.Ordinal);
+            int sheet = code.IndexOf("float capSheet = ", System.StringComparison.Ordinal);
+            int walk = code.IndexOf("FoamAgedColor(capAge01, _FoamColor.rgb, _CapAgeStrength, col.rgb)", System.StringComparison.Ordinal);
+            Assert.That(clump > 0 && clump < sheet && sheet < walk,
+                "the sheet takes the caps' FINISHED opacity (after clumping and the shore fade) and the walk colours it");
+        }
+
+        [Test]
+        public void TheSurf_DrawsThroughTheSheet_OffTheWash()
+        {
+            string code = CodeOnly(Source());
+            Assert.AreEqual(1, CountOf(code, "float FoamSheetJoin(float legacy, float amount, float age01, float torn, float bayer, float join)"));
+            StringAssert.Contains("if (join <= 0.001) return legacy;", Body(code, "float FoamSheetJoin("), "join 0 is the source's own read, bit-exact");
+            // One lace for the whitewater and the lip.
+            StringAssert.Contains("float surfTorn = _FoamSheetCaps.z > 0.001 ? FoamSheetLace(worldXY) : 0.5;", code);
+            StringAssert.Contains("FoamSheetJoin(SurfBandValue(surfCoverDrawn, surfBay), surfCoverDrawn * _FoamSheetCaps.w,", code);
+            StringAssert.Contains("surfAge01, surfTorn, surfBay, _FoamSheetCaps.z);", code,
+                "the whitewater tears at its own age (its energy, read off the march)");
+            StringAssert.Contains("FoamSheetJoin(SurfBandValue(saturate(surfLip), surfBay), surfLip * _FoamSheetCaps.w,", code);
+            StringAssert.Contains("0.0, surfTorn, surfBay, _FoamSheetCaps.z);", code, "the lip is the newest foam: age 0");
+            // The wash on the sand keeps its smooth, unbanded sheet.
+            StringAssert.Contains("float cover = lerp(surfBanded, saturate(surfCoverDrawn),", code);
+            StringAssert.Contains("float lip = lerp(lipBanded, saturate(surfLip), washThin)", code);
+        }
+
+        [Test]
         public void TheSwashAge_IsTheRateOfTheSameSwash()
         {
             // BeachSwashBackwash01 must read BeachSwash's own phase: the same shoreward term, desync and
@@ -147,6 +181,8 @@ namespace HiddenHarbours.Tests.Art.EditMode
             FoamSheetSettings d = FoamSheetSettings.Default;
             CollectionAssert.AreEqual(new[] { d.ShoreVector.x, d.ShoreVector.y, d.ShoreVector.z, d.ShoreVector.w },
                 VectorDefault(src, "_FoamSheetShore"), "_FoamSheetShore");
+            CollectionAssert.AreEqual(new[] { d.CapsVector.x, d.CapsVector.y, d.CapsVector.z, d.CapsVector.w },
+                VectorDefault(src, "_FoamSheetCaps"), "_FoamSheetCaps");
             Assert.AreEqual(d.AgeTear, FloatDefault(src, "_FoamSheetAgeTear"), 1e-6f, "_FoamSheetAgeTear");
         }
 
@@ -165,6 +201,8 @@ namespace HiddenHarbours.Tests.Art.EditMode
                     "FoamSheet." + f.Name + " ships at its default");
             }
             Assert.AreEqual(1f, d.Shore, "the shore line ships on the sheet (the owner's ruling)");
+            Assert.AreEqual(1f, d.Caps, "the whitecaps ship on the sheet (the owner's ruling)");
+            Assert.AreEqual(1f, d.Surf, "the surf ships on the sheet (the owner's ruling)");
         }
     }
 }

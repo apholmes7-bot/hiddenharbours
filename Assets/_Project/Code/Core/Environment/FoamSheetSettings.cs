@@ -37,6 +37,21 @@ namespace HiddenHarbours.Core
                  "foam left as the water draws back is old, torn lace.")]
         [Range(0f, 1f)] public float ShoreBackwashAge;
 
+        [Header("Whitecaps and surf")]
+        [Tooltip("How fully the whitecaps are drawn as the one foam sheet: 1 = the same lace, bands and " +
+                 "ageing tear as the wake's foam, 0 = the older soft-alpha caps.")]
+        [Range(0f, 1f)] public float Caps;
+        [Tooltip("How much of a cap's opacity is handed to the sheet. Lower = smaller, sparser caps (the " +
+                 "sheet's threshold eats the faint ones), higher = bigger, denser caps.")]
+        [Range(0.1f, 2f)] public float CapAmount;
+        [Tooltip("How fully the surf's whitewater and lip are drawn as the one foam sheet: 1 = the same lace, " +
+                 "bands and ageing tear as every other foam, 0 = the surf's own bands. The wash on the sand " +
+                 "keeps its smooth sheet either way.")]
+        [Range(0f, 1f)] public float Surf;
+        [Tooltip("How much of the surf's whitewater is handed to the sheet. Lower = the faint edges of the " +
+                 "whitewater drop out, higher = the whitewater spreads.")]
+        [Range(0.1f, 2f)] public float SurfAmount;
+
         [Header("Every sheet")]
         [Tooltip("How hard the sheet tears apart as its foam ages: 0 = it fades as one even mat, 1 = foam " +
                  "half way through its age keeps only its densest hearts. The wake also reads the hull " +
@@ -51,11 +66,20 @@ namespace HiddenHarbours.Core
             ShoreAgeAcross = 0.5f,
             ShoreBackwashAge = 0.6f,
 
+            Caps = 1f,
+            CapAmount = 0.6f,
+            Surf = 1f,
+            SurfAmount = 1f,
+
             AgeTear = 1f,
         };
 
         /// <summary>The shore line's dials as the shader reads them (<c>_FoamSheetShore</c>).</summary>
         public Vector4 ShoreVector => new Vector4(Mathf.Clamp01(Shore), Mathf.Max(ShoreLineSharpness, 0.1f),
                                                   Mathf.Clamp01(ShoreAgeAcross), Mathf.Clamp01(ShoreBackwashAge));
+
+        /// <summary>The caps' and surf's dials as the shader reads them (<c>_FoamSheetCaps</c>).</summary>
+        public Vector4 CapsVector => new Vector4(Mathf.Clamp01(Caps), Mathf.Max(CapAmount, 0f),
+                                                 Mathf.Clamp01(Surf), Mathf.Max(SurfAmount, 0f));
     }
 }

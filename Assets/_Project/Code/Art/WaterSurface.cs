@@ -319,6 +319,7 @@ namespace HiddenHarbours.Art
         private static readonly int IdEnvelopeBandStrength = Shader.PropertyToID("_EnvelopeBandStrength");
         // The one foam sheet (owner 2026-11-19): how each foam source joins it, pushed from _config when wired.
         private static readonly int IdFoamSheetShore = Shader.PropertyToID("_FoamSheetShore");
+        private static readonly int IdFoamSheetCaps = Shader.PropertyToID("_FoamSheetCaps");
         private static readonly int IdFoamSheetAgeTear = Shader.PropertyToID("_FoamSheetAgeTear");
         // (W4-4b) The floor in the shallows: its switch and its bend, pushed from _config beside the salience
         // knobs (GameConfig.ShallowsFloor / ShallowsFloorRefraction). Shader globals, never Properties.
@@ -1169,6 +1170,7 @@ namespace HiddenHarbours.Art
             if (_config == null) return;
             FoamSheetSettings fs = _config.FoamSheet;
             mpb.SetVector(IdFoamSheetShore, fs.ShoreVector);
+            mpb.SetVector(IdFoamSheetCaps, fs.CapsVector);
             mpb.SetFloat(IdFoamSheetAgeTear, Mathf.Clamp01(fs.AgeTear));
         }
 

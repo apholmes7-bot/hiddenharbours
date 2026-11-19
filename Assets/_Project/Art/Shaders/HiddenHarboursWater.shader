@@ -1110,6 +1110,10 @@ Shader "HiddenHarbours/Water"
         // Shore line: x joins the sheet, y how tightly the line's foam hugs the wet edge (higher =
         // thinner), z how aged the line's seaward side reads, w how aged the line reads on the backwash.
         _FoamSheetShore    ("One foam: shore line (x join, y sharpness, z age across, w age on backwash)", Vector) = (1, 2.5, 0.5, 0.6)
+        // Whitecaps and surf: x joins the caps, y scales the cap opacity handed to the sheet (lower =
+        // smaller, sparser caps: the sheet's threshold eats the faint ones), z joins the surf's
+        // whitewater and lip, w scales the surf amount handed to the sheet.
+        _FoamSheetCaps     ("One foam: caps and surf (x caps join, y cap amount, z surf join, w surf amount)", Vector) = (1, 0.6, 1, 1)
         // How hard the sheet tears apart as its foam ages (1 = half way through its age only the
         // lace's hearts survive). The wake also reads the hull waves' own tear; the larger wins.
         _FoamSheetAgeTear  ("One foam: age tear (0 = an even mat, 1 = hearts only by half age)", Range(0,1)) = 1
@@ -1880,6 +1884,7 @@ Shader "HiddenHarbours/Water"
                 float  _WakeFoamLaceScale;
                 // The one foam sheet: how each source joins it (GameConfig.FoamSheet).
                 float4 _FoamSheetShore;
+                float4 _FoamSheetCaps;
                 float  _FoamSheetAgeTear;
                 float  _WakeFoamAgeStrength;
                 float  _WakeFoamFreshFloor;
@@ -4156,6 +4161,16 @@ Shader "HiddenHarbours/Water"
                 if (_WakeFoamBands >= 2.0)
                     cover = BandValue01(cover, _WakeFoamBands, 0.5, bayer);
                 return cover;
+            }
+
+            // A source that already has its own banded read (the surf's whitewater and lip) joins the sheet
+            // here: its amount, scaled, takes the sheet's tear at its age and the sheet's threshold and bands.
+            // `join` 0 returns the source's own read, bit-exact (the A/B every dial in this shader keeps).
+            float FoamSheetJoin(float legacy, float amount, float age01, float torn, float bayer, float join)
+            {
+                if (join <= 0.001) return legacy;
+                float sheet = FoamSheetCover(FoamSheetTear(saturate(amount), torn, age01, 0.0), bayer);
+                return lerp(legacy, sheet, saturate(join));
             }
 
             float WakeFoamCoverage(float2 worldXY, float bayer, float crestStored, out float freshness)
@@ -6778,7 +6793,14 @@ Shader "HiddenHarbours/Water"
                     // On the run-up wash: hard bands (no Bayer checker) at the wash's own opacity.
                     // v4: inside the wash the sheet is SMOOTH, not hard bands either - the bands drew each bore's
                     // aging sheet as a hard-edged patch racing along the shore; smooth, it thins where it lies.
-                    float cover = lerp(SurfBandValue(surfCoverDrawn, washThin > 0.001 ? 0.5 : bay), saturate(surfCoverDrawn),
+                    // THE ONE FOAM SHEET (2026-11-19): the whitewater's amount takes the sheet's lace, tear (at
+                    // the surf's own age, so old whitewater breaks into drifting lace like an old wake) and bands
+                    // wherever it is not the wash's smooth sheet. _FoamSheetCaps.z = 0 is the surf's own bands.
+                    float surfBay = washThin > 0.001 ? 0.5 : bay;
+                    float surfTorn = _FoamSheetCaps.z > 0.001 ? FoamSheetLace(worldXY) : 0.5;
+                    float surfBanded = FoamSheetJoin(SurfBandValue(surfCoverDrawn, surfBay), surfCoverDrawn * _FoamSheetCaps.w,
+                                                     surfAge01, surfTorn, surfBay, _FoamSheetCaps.z);
+                    float cover = lerp(surfBanded, saturate(surfCoverDrawn),
                                        washThin) * strength
                                 * lerp(1.0, saturate(_WashSheetOpacity), saturate(washOnSand));
                     float3 surfFoam = FoamAgedColor(surfAge01, _SurfColor.rgb, _SurfAgeStrength, col.rgb);
@@ -6787,7 +6809,10 @@ Shader "HiddenHarbours/Water"
 
                     // THE LIP LAST, over the hollow it is throwing across — the brightest thing in the
                     // surf, and the thing that reads as the wave pitching forward.
-                    float lip = lerp(SurfBandValue(saturate(surfLip), washThin > 0.001 ? 0.5 : bay), saturate(surfLip), washThin)
+                    // The lip is the newest foam in the frame: the sheet at age 0 (the lace only, no age tear).
+                    float lipBanded = FoamSheetJoin(SurfBandValue(saturate(surfLip), surfBay), surfLip * _FoamSheetCaps.w,
+                                                    0.0, surfTorn, surfBay, _FoamSheetCaps.z);
+                    float lip = lerp(lipBanded, saturate(surfLip), washThin)
                               * strength * lerp(1.0, surfShoreBreak, shoreSurf);
                     float3 lipFoam = FoamAgedColor(0.0, _SurfLipColor.rgb, _SurfAgeStrength, col.rgb);
                     col.rgb = lerp(col.rgb, lipFoam, lip * _SurfLipColor.a);
@@ -7025,6 +7050,18 @@ Shader "HiddenHarbours/Water"
                     float capShoreFade = lerp(1.0, ShoreFade01(depth, _ShoreFadeBand),
                                               saturate(_CapSalienceStrength));
                     capOpacity = saturate(capOpacity * clumpGate) * capShoreFade;
+                    // ---- THE ONE FOAM SHEET (2026-11-19): the caps are the sea's foam, not their own -------
+                    // The cap's lifecycle, its wind and crest gates and its clumping still say WHERE and HOW
+                    // MUCH; that opacity, scaled by the cap amount (_FoamSheetCaps.y: lower = smaller, sparser
+                    // caps, the sheet's threshold eats the faint milky residue), takes the sheet's lace, its
+                    // tear at the cap's own age (an old residual breaks into flecks like an old wake) and its
+                    // threshold and bands. _FoamSheetCaps.x = 0 is the older soft-alpha cap, bit-exact.
+                    if (_FoamSheetCaps.x > 0.001)
+                    {
+                        float capSheet = FoamSheetCover(FoamSheetTear(saturate(capOpacity * _FoamSheetCaps.y),
+                                                                      FoamSheetLace(worldXY), capAge01, 0.0), bay);
+                        capOpacity = lerp(capOpacity, capSheet, saturate(_FoamSheetCaps.x));
+                    }
                     // ---- ONE FOAM LANGUAGE (row 2): the caps take the shared walk, at their own age ------
                     // Not a second palette, not a second set of dials and — since row 2 — not a second
                     // transcription either: FoamAgedColor is the ONE function the wake buffer and the
