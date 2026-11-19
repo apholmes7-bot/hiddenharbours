@@ -52,14 +52,14 @@ namespace HiddenHarbours.Tests.Art.EditMode
                 Assert.AreEqual(HullWaveMath.CrestHeight(v, LobsterLength, off), HullWaveMath.CrestHeight(v, LobsterLength, S),
                     0f, $"her crest at {v} m/s is unchanged");
             }
-            HullWaveSettings hers = HullWaveMath.ForHull(LobsterLength, in S);
+            HullWaveSettings hers = HullWaveMath.ForHull(LobsterLength, S);
             Assert.AreEqual(S.SpacingWavelengths, hers.SpacingWavelengths, 0f, "and her spacing is unchanged");
         }
 
         [Test]
         public void ADorysSources_LieCloser_SoHerRingsBlendIntoAV()
         {
-            HullWaveSettings hers = HullWaveMath.ForHull(DoryLength, in S);
+            HullWaveSettings hers = HullWaveMath.ForHull(DoryLength, S);
             Assert.AreEqual(S.SmallHullSpacingWavelengths, hers.SpacingWavelengths, 0f);
             Assert.Less(hers.SpacingWavelengths, S.SpacingWavelengths, "closer than a long hull's");
             const int budget = 15;
