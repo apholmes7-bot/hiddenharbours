@@ -111,3 +111,17 @@ pivot, drawn by the facet path in its parent's frame. A hand is a socket, as an 
 - **A rig edit means a re-bake.** A held rig that changes its faces, palette or pose reds the bake
   guards until its states are re-baked. A rig that renames a state keeps or retires the old id
   (content validation holds the ledger).
+
+## 7. Progress (2026-11-19)
+
+- **The rod in the fishing clips, PR 1 and PR 4 for the rod alone.** While the mesh body plays a
+  fishing clip (`GameConfig.MeshFishingAndDig` had already lifted D5 for the body), the cane is drawn
+  as its mesh on `tool_R`, aimed by the clip's own tool track (`HeldPropPose`), and the sprite rod is
+  off (`GameConfig.MeshRodInHand`, `ToolDef.DrawHeldMeshOnFigure`). D5 is therefore lifted for the
+  rod in those clips too: a mesh body with a sprite rod did not follow the hand.
+- **D2 stands in.** Until the line pass exists, the blank is drawn as thin square tubes along the
+  rig's own samples, in the rig's line colours (`IsoFacetHeldPropMesh`). PR 3 replaces them, and it
+  still needs art-pipeline's signature.
+- **Still a sprite:** the rod carried while walking or standing (those clips carry no tool track),
+  the rod on the rack, the bend under load, the coast and deep tiers' selection, and every other
+  held prop.
