@@ -85,7 +85,11 @@ namespace HiddenHarbours.App
 
             SpriteRenderer worn = skipper != null ? skipper.GetComponent<SpriteRenderer>() : null;
             int layer = worn != null ? worn.sortingLayerID : 0;
-            int order = worn != null ? worn.sortingOrder : def.CatchSortingOrder;
+            // The catch takes its carrier's order: the skipper's when she is there, else the band's Y-sort at
+            // the boat's waterline pivot (ADR 0059 step 2; no fixed order in the band's low floor).
+            int order = worn != null
+                ? worn.sortingOrder
+                : EffectSorting.OrderAt(SortedEffect.NpcCatch, hull.transform.position.y);
 
             for (int g = 0; g < grades; g++)
             {

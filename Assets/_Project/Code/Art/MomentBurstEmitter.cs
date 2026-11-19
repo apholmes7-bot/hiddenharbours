@@ -89,7 +89,7 @@ namespace HiddenHarbours.Art
     /// fish's weight, the sand chunks on the shovel's strike, the rings on the cast line's entry. ONE
     /// self-installing pooled host, ONE subscription (<see cref="JuiceMomentCue"/>), no prefab assets
     /// and no new art — three sprites built once at <c>Awake</c> (a dot, a smaller sand dot, a ring),
-    /// a fixed pool of <see cref="SpriteRenderer"/>s under a <see cref="SortingGroup"/>, and a tick at
+    /// a fixed pool of <see cref="SpriteRenderer"/>s, each under its own <see cref="SortingGroup"/>, and a tick at
     /// <c>MomentTickHz</c> on UNSCALED time (the landing hit-stop must not freeze its own splash).
     ///
     /// <para><b>Frame cost.</b> Nothing alive = one integer compare per frame. A burst alive = one loop
@@ -116,14 +116,16 @@ namespace HiddenHarbours.Art
         }
 
         [SerializeField] private MomentBurstConfig _config = MomentBurstConfig.Default;
-        [Tooltip("Sorting order of the motes (a small positive: they clear the water mesh and sit under the fisher).")]
-        [SerializeField] private int _sortingOrder = 6;
+        // ADR 0059 step 2: no fixed order. Each mote carries its own SortingGroup (#134) sorted at the cue's
+        // point by the decor band's Y-sort, one rung behind (EffectSorting, SortedEffect.MomentBurst), so it
+        // sits under the fisher who stands there and interleaves with decor by position.
         [Tooltip("Camera-ward z clear (the #134 quirk — a 2D sprite exactly on the water plane can z-fight it).")]
         [SerializeField] private float _cameraZOffset = 0.05f;
 
         private Sprite _droplet, _chunk, _ring;
         private Mote[] _pool;
         private SpriteRenderer[] _renderers;
+        private SortingGroup[] _groups;   // one per mote: its order is set once, at spawn
         private int _cursor;
         private int _alive;
         private float _tickTimer;
@@ -168,19 +170,17 @@ namespace HiddenHarbours.Art
             _droplet = AmbientGlobals.BuildDot("MomentBurst.Droplet", 6, 48);
             _chunk = AmbientGlobals.BuildDot("MomentBurst.Chunk", 4, 48);
             _ring = BuildRing("MomentBurst.Ring", 24, 48);
-            if (GetComponent<SortingGroup>() == null)
-                gameObject.AddComponent<SortingGroup>().sortingOrder = _sortingOrder;
-
             int n = Mathf.Max(1, _config.PoolSize);
             _pool = new Mote[n];
             _renderers = new SpriteRenderer[n];
+            _groups = new SortingGroup[n];
             for (int i = 0; i < n; i++)
             {
                 var go = new GameObject("mote");
                 go.transform.SetParent(transform, false);
                 var sr = go.AddComponent<SpriteRenderer>();
                 sr.sprite = _droplet;
-                sr.sortingOrder = _sortingOrder;
+                _groups[i] = go.AddComponent<SortingGroup>();   // "sort as 2D" (#134); ordered at spawn
                 go.SetActive(false);
                 _renderers[i] = sr;
             }
@@ -262,6 +262,7 @@ namespace HiddenHarbours.Art
                 i = (i + 1) % n;
             }
             if (!_pool[i].Alive) _alive++;
+            _groups[i].sortingOrder = EffectSorting.OrderAt(SortedEffect.MomentBurst, pos.y);   // ADR 0059 step 2
             _pool[i] = new Mote { Alive = true, Kind = kind, Pos = pos, Vel = vel, Age = age, Lifetime = lifetime, Size = size, Seed = seed };
             _cursor = (i + 1) % n;
         }

@@ -442,6 +442,13 @@ ride the swell), `SortingBands.HullYieldRungs` (1) behind, the same rule as the 
 `SortingGroup`, the re-anchored effects) follows `hull-vs-decor-sorting.md` §7; until it lands, hulls
 still sort at `BoatVisualDef.SortingOrder`.
 
+Free effects never take a fixed order in the band's low floor (step 2). Core's `EffectSorting` is the
+one table: an anchored effect (spray, splashes, buoys, an emergent shore plant, the NPC catch without a
+skipper) sorts at `EffectSorting.OrderAt(effect, anchorY)`, the band's Y-sort at its emission point plus
+its rungs; a carried one (the rod line and splash) at `EffectSorting.OrderOver(effect, carrierOrder)`.
+`EffectSortingTests` pins the table and guards the low floor (`DecorFloor` to `DecorFloor + 100`) against
+new literals.
+
 ## 5. Boat & entity architecture (composition)
 
 **Character clothing interchange (CW-01, 2026-09-13).** Core now defines the version-1
