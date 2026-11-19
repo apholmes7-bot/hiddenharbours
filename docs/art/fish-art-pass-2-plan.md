@@ -109,6 +109,19 @@ The floor leaves all three alone at 12. The fixes that make them read are owed:
 3. **The mesh held props (§3).** A mesh fish shares the hand's light and depth, which is most of
    why a 13 px fish vanishes against a sprite coat today.
 
+**Landed (2026-11-18), the smaller options for items 1 and 2:**
+
+- *Item 1, at runtime instead of baked.* `CarriableCatch` draws two darker copies of the held
+  sprite one sprite pixel either side, behind the fish, in one `SortingGroup`. It is only drawn
+  when `HeldLengthPx` is at or under `GameConfig.HeldFishKeylineMaxLengthPx` (16); the shade and
+  offsets are `GameConfig` tunables too. No rig edit, no shader, no re-bake. A baked line from
+  the rig can still replace it (set the max length to 0 to switch it off).
+- *Item 2, a measured facing remap instead of a rig roll.* `FishSpeciesDef.HeldBroadSideOn`
+  (the winter flounder) makes *Build Catch Item Library* measure each held facing's drawn area
+  and map every facing to its broadest neighbour (`KindEntry.HeldFacingMap`). A hanging fish is
+  nearly vertical, so the neighbouring facing is a roll about its length. Hands only: the
+  fight's landing pose is unchanged and still owed.
+
 ## 3. Held-prop meshes per species and size (ADR 0053 PRs 1, 3 and 4)
 
 ### 3.1 Where it stands

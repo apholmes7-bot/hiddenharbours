@@ -130,6 +130,19 @@ namespace HiddenHarbours.Core
         /// leaves every other rung alone.</summary>
         public const float DefaultMinDrawnFishLengthPx = 12f;
 
+        /// <summary>The default for <see cref="HeldFishKeylineMaxLengthPx"/>: 16 px. Measured against the
+        /// catch pass 2 held sheets it lines every herring and mackerel drawing, the small haddock, bass and
+        /// pollock and the small and middle flounder, and leaves every cod and every larger drawing alone.</summary>
+        public const float DefaultHeldFishKeylineMaxLengthPx = 16f;
+
+        /// <summary>The default for <see cref="HeldFishKeylineShade"/>: the line is the fish's own colours at
+        /// 40% brightness, a step down its own ramp rather than a colour of its own.</summary>
+        public const float DefaultHeldFishKeylineShade = 0.4f;
+
+        /// <summary>The default for <see cref="HeldFishKeylineOffsetsPx"/>: one sprite pixel to either side,
+        /// so a fish hanging by its tail gets a dark line down both long edges and none across its ends.</summary>
+        public static Vector2[] DefaultHeldFishKeylineOffsetsPx() => new[] { new Vector2(-1f, 0f), new Vector2(1f, 0f) };
+
         /// <summary>
         /// The default for <see cref="VehicleDoorSweepSeconds"/> — how long a vehicle door takes to
         /// travel from shut to fully open.
@@ -677,6 +690,22 @@ namespace HiddenHarbours.Core
                  "Default 12 lifts only the tiniest drawings; 16 lifts every mackerel and flounder " +
                  "to the large rung, and higher starts to erase the size ladder.")]
         [Min(0f)] public float MinDrawnFishLengthPx = DefaultMinDrawnFishLengthPx;
+
+        [Tooltip("The contrast line on a small fish in his hands: a held fish DRAWN this long or shorter " +
+                 "(sprite px, the length measured off its held sheet) gets a dark line along its edges so " +
+                 "it reads against his clothes and the deck. Not the interact outline: no lift, no glow, " +
+                 "just the fish's own colours a step darker. 0 turns the line off. Default 16 lines every " +
+                 "herring and mackerel and the small haddock, bass, pollock and flounder.")]
+        [Min(0f)] public float HeldFishKeylineMaxLengthPx = DefaultHeldFishKeylineMaxLengthPx;
+
+        [Tooltip("How dark the contrast line is: the fish's own colours multiplied by this (0 black, 1 no " +
+                 "line at all). Default 0.4.")]
+        [Range(0f, 1f)] public float HeldFishKeylineShade = DefaultHeldFishKeylineShade;
+
+        [Tooltip("Where the contrast line is drawn: one darker copy of the held fish behind it per entry, " +
+                 "moved this many SPRITE PIXELS. The default (-1,0) and (1,0) lines both long edges of a fish " +
+                 "hanging by its tail; a single entry gives a line down one side only.")]
+        public Vector2[] HeldFishKeylineOffsetsPx = DefaultHeldFishKeylineOffsetsPx();
 
         [Header("Helm throttle (the notched single-lever throttle)")]
         [Tooltip("Feel of the diegetic notched throttle on engine hulls: how many detents from neutral to " +

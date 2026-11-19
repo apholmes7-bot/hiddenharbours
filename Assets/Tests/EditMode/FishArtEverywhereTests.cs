@@ -467,6 +467,194 @@ namespace HiddenHarbours.Tests
             finally { Object.DestroyImmediate(go); }
         }
 
+        // ---- small fish read in the hand: the face-on flatfish and the contrast line -----------------
+
+        /// <summary>The flatfish is flagged on its def, the round fish are not, and the flag reaches
+        /// every rung of the kind it draws as (and nothing else).</summary>
+        [Test]
+        public void TheFlounder_IsHeldFaceOn_AtEveryRung_AndNoRoundFishIs()
+        {
+            CatchItemLibrary art = CatchArt();
+            FishArtLibrary lib = FishArt();
+            List<FishSpeciesDef> rig = RigFinfish().ToList();
+            Assert.IsTrue(rig.Single(d => d.Id == "fish.winter_flounder").HeldBroadSideOn,
+                "the winter flounder is a flatfish: held, it shows its broad side");
+            int mapped = 0;
+            foreach (FishSpeciesDef d in rig)
+                foreach (FishRungVisual r in lib.Find(d.Id).Rungs)
+                {
+                    string kind = RigKey(d.Id) + r.Suffix;
+                    int[] map = art.HeldFacingMapFor(kind);
+                    if (d.HeldBroadSideOn)
+                    {
+                        Assert.IsNotNull(map, $"{kind}: a flatfish rung with no face-on map (re-run Build Catch Item Library)");
+                        Assert.AreEqual(art.HeldFacingsFor(kind), map.Length, $"{kind}: one entry per facing");
+                        mapped++;
+                    }
+                    else Assert.IsNull(map, $"{kind}: a round fish turns with him, it is never re-faced");
+                }
+            Assert.AreEqual(3, mapped, "the flounder's three rungs");
+        }
+
+        /// <summary>
+        /// Each face-on map is the one measured off its own held sheet, no facing draws less of the fish
+        /// than it did, and the narrowest view the hands can show is wider than the edge-on sliver was.
+        /// </summary>
+        [Test]
+        public void EveryFaceOnMap_IsMeasuredOffItsHeldSheet_AndShowsMoreOfTheFish()
+        {
+            CatchItemLibrary art = CatchArt();
+            foreach (FishSpeciesDef d in RigFinfish().Where(x => x.HeldBroadSideOn))
+                foreach (FishRungVisual r in FishArt().Find(d.Id).Rungs)
+                {
+                    string kind = RigKey(d.Id) + r.Suffix;
+                    string sheet = $"{FishIso}Fish_{kind}_tail.png";
+                    Sprite[] held = Enumerable.Range(0, 8).Select(f => art.HeldSprite(kind, f, 0)).ToArray();
+                    int[] map = art.HeldFacingMapFor(kind);
+                    Assert.IsNotNull(map, kind);
+                    // Each facing's own still cell, read off the sheet by name (HeldSprite applies the map).
+                    Sprite[] cells = AssetDatabase.LoadAllAssetsAtPath(sheet).OfType<Sprite>().ToArray();
+                    var own = new Sprite[8];
+                    for (int f = 0; f < 8; f++)
+                        own[f] = cells.Single(s => s.name == $"Fish_{kind}_tail_d{f}_f0");
+
+                    int[] areas = FishSheetPixels.HeldFacingAreas(sheet, own, 8);
+                    Assert.IsNotNull(areas, $"{sheet}: could not be measured");
+                    CollectionAssert.AreEqual(FishSheetPixels.BroadSideFacingMap(areas), map,
+                        $"{kind}: the face-on map is stale (re-run Build Catch Item Library)");
+                    for (int f = 0; f < 8; f++)
+                    {
+                        Assert.AreSame(own[map[f]], held[f], $"{kind} facing {f}: the hands draw the mapped cell");
+                        Assert.GreaterOrEqual(areas[map[f]], areas[f], $"{kind} facing {f}: never shows less of the fish");
+                    }
+                    Assert.Greater(Enumerable.Range(0, 8).Min(f => areas[map[f]]), areas.Min(),
+                        $"{kind}: the narrowest view in the hands must be wider than the edge-on sliver");
+                }
+        }
+
+        [Test]
+        public void BroadSideFacingMap_TakesTheBroadestNeighbour_AndKeepsATie()
+        {
+            //                    d0   d1  d2  d3   d4   d5  d6  d7
+            int[] areas = { 100, 100, 20, 25, 100, 104, 22, 18 };
+            CollectionAssert.AreEqual(new[] { 0, 1, 1, 4, 5, 5, 5, 0 }, FishSheetPixels.BroadSideFacingMap(areas));
+            Assert.IsNull(FishSheetPixels.BroadSideFacingMap(null));
+            CollectionAssert.AreEqual(new[] { 0, 1, 2 }, FishSheetPixels.BroadSideFacingMap(new[] { 5, 5, 5 }),
+                "all equal: every facing keeps itself");
+        }
+
+        [Test]
+        public void HeldSprite_DrawsTheMappedFacing_AndIgnoresABadMap()
+        {
+            var lib = ScriptableObject.CreateInstance<CatchItemLibrary>();
+            var sprites = new List<Sprite>();
+            var tex = new Texture2D(8, 1);
+            try
+            {
+                for (int i = 0; i < 4; i++) sprites.Add(Sprite.Create(tex, new Rect(i * 2, 0, 2, 1), Vector2.zero));
+                var flat = new CatchItemLibrary.KindEntry
+                {
+                    Kind = "flat", Held = sprites.ToArray(), HeldFacings = 4, HeldFramesPerFacing = 1,
+                    HeldFacingMap = new[] { 0, 0, 3, 3 },
+                };
+                var bad = new CatchItemLibrary.KindEntry
+                {
+                    Kind = "bad", Held = sprites.ToArray(), HeldFacings = 4, HeldFramesPerFacing = 1,
+                    HeldFacingMap = new[] { 1, 2 },
+                };
+                lib.Configure(new[] { flat, bad }, null);
+                Assert.AreSame(sprites[0], lib.HeldSprite("flat", 1, 0));
+                Assert.AreSame(sprites[3], lib.HeldSprite("flat", 2, 0));
+                Assert.AreSame(sprites[3], lib.HeldSprite("flat", 6, 0), "the facing wraps before the map applies");
+                Assert.AreSame(sprites[1], lib.HeldSprite("bad", 1, 0), "a map the wrong length is ignored");
+                Assert.IsNull(lib.HeldFacingMapFor("unknown"));
+            }
+            finally
+            {
+                foreach (Sprite s in sprites) Object.DestroyImmediate(s);
+                Object.DestroyImmediate(tex);
+                Object.DestroyImmediate(lib);
+            }
+        }
+
+        /// <summary>
+        /// A fish drawn short enough is held with the contrast line: darker copies of its own sprite behind
+        /// it, a sprite pixel to the side, that turn with it and sort under it inside one sorting group. A
+        /// fish long enough to read, and a handful of clams, get none.
+        /// </summary>
+        [Test]
+        public void ASmallHeldFish_GetsTheContrastLine_AndALargeOneDoesNot()
+        {
+            CatchItemLibrary art = CatchArt();
+            Vector2[] offsets = GameServices.HeldFishKeylineOffsetsPx;
+            float maxPx = GameServices.HeldFishKeylineMaxLengthPx;
+            float shade = GameServices.HeldFishKeylineShade;
+            Assert.Greater(maxPx, 0f, "premise: the shipped line is on");
+            Assert.Greater(offsets.Length, 0, "premise: the shipped line draws at least one copy");
+            var made = new List<GameObject>();
+            try
+            {
+                var mackerel = new CatchItem("fish.mackerel", "Mackerel", FishCategory.Pelagic, 0.9f, 10, 0.1f);
+                CarriableCatch small = CarriableCatch.Create(mackerel, null, art);
+                made.Add(small.gameObject);
+                Assert.LessOrEqual(art.HeldLengthPxFor(small.ArtKind), maxPx, $"premise: {small.ArtKind} is a small drawing");
+                Assert.AreEqual(offsets.Length, small.KeylineCount, $"{small.ArtKind}: one copy per offset");
+                SpriteRenderer fish = small.GetComponent<SpriteRenderer>();
+                Assert.IsNotNull(small.GetComponent<UnityEngine.Rendering.SortingGroup>(), "the fish and its line sort as one");
+
+                small.RideSortingBand(0, 7);
+                small.ShowFacing(3);
+                for (int i = 0; i < small.KeylineCount; i++)
+                {
+                    SpriteRenderer line = small.Keyline(i);
+                    Assert.AreSame(fish.sprite, line.sprite, "the line is the fish's own drawing, turned with it");
+                    Assert.AreEqual(new Color(shade, shade, shade, 1f), line.color, "a step down the fish's own ramp");
+                    Assert.AreEqual((Vector3)(offsets[i] / fish.sprite.pixelsPerUnit), line.transform.localPosition,
+                        "moved whole sprite pixels");
+                    Assert.Less(line.sortingOrder, fish.sortingOrder, "the line draws under the fish");
+                }
+                Assert.AreEqual(7, small.GetComponent<UnityEngine.Rendering.SortingGroup>().sortingOrder,
+                    "the group rides the body's band, so the line can never sort under the body");
+
+                var cod = new CatchItem("fish.atlantic_cod", "Atlantic Cod", FishCategory.InshoreGroundfish, 12f, 10, 0.1f);
+                CarriableCatch big = CarriableCatch.Create(cod, null, art);
+                made.Add(big.gameObject);
+                Assert.Greater(art.HeldLengthPxFor(big.ArtKind), maxPx, "premise: the large cod reads on its own");
+                Assert.AreEqual(0, big.KeylineCount, "a fish long enough to read gets no line");
+                Assert.IsNull(big.GetComponent<UnityEngine.Rendering.SortingGroup>());
+
+                var clam = new CatchItem("fish.soft_shell_clam", "clam", FishCategory.Shellfish, 0.1f, 2, 0.45f);
+                CarriableCatch handful = CarriableCatch.Create(clam, null, art);
+                made.Add(handful.gameObject);
+                Assert.AreEqual(0, handful.KeylineCount, "a handful of shellfish is not a fish");
+            }
+            finally
+            {
+                foreach (GameObject go in made) Object.DestroyImmediate(go);
+            }
+        }
+
+        /// <summary>With the shipped default, the line falls on exactly the drawings no longer than it: the
+        /// small rungs and the tiny species, never a cod.</summary>
+        [Test]
+        public void TheContrastLine_FallsOnTheSmallDrawings_NeverACod()
+        {
+            CatchItemLibrary art = CatchArt();
+            float maxPx = GameConfig.DefaultHeldFishKeylineMaxLengthPx;
+            int lined = 0;
+            foreach (FishSpeciesDef d in RigFinfish())
+                foreach (FishRungVisual r in FishArt().Find(d.Id).Rungs)
+                {
+                    string kind = RigKey(d.Id) + r.Suffix;
+                    bool line = art.HeldLengthPxFor(kind) <= maxPx;
+                    if (RigKey(d.Id) == "cod") Assert.IsFalse(line, $"{kind}: a cod reads on its own");
+                    if (r.Suffix == "_lg" && RigKey(d.Id) != "herring" && RigKey(d.Id) != "mackerel")
+                        Assert.IsFalse(line, $"{kind}: a large rung reads on its own");
+                    if (line) lined++;
+                }
+            Assert.GreaterOrEqual(lined, 5, "the small drawings are lined");
+        }
+
         [Test]
         public void SizedKindFor_WithNoLadder_IsKindFor()
         {
