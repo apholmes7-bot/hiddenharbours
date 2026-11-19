@@ -37,9 +37,9 @@ namespace HiddenHarbours.Boats
     {
         /// <summary>The rig's <c>oarPose('row', t)</c> ellipse: the blade traces sweep against dip
         /// once per stroke. Transcribed from the rig; proven against it.</summary>
-        public const float RowSweepAmplitudeDegrees = 30f;
-        public const float RowDipCentreDegrees = 6f;
-        public const float RowDipAmplitudeDegrees = 22f;
+        public const float RowSweepAmplitudeDegrees = 24f;
+        public const float RowDipCentreDegrees = 12f;
+        public const float RowDipAmplitudeDegrees = 16f;
 
         /// <summary>The phase of <see cref="Row"/> (in turns) at the CATCH: sweep is at its minimum
         /// (-<see cref="RowSweepAmplitudeDegrees"/>), which is the blade furthest FORWARD, and the dip
@@ -49,8 +49,9 @@ namespace HiddenHarbours.Boats
         /// starts (<see cref="HiddenHarbours.Core.IOarStroke"/>).</summary>
         public const float RowCatchTurns = 0.75f;
 
-        /// <summary>Shipped fore, lying along the gunwale — the rig's 'resting' state.</summary>
-        public const float RestingSweepDegrees = -82f, RestingDipDegrees = -7f;
+        /// <summary>Shipped fore in the tholes, the handle inboard on the stern sheets — the rig's
+        /// 'resting' state.</summary>
+        public const float RestingSweepDegrees = -72f, RestingDipDegrees = 6f;
 
         /// <summary>Dragging aft in the water — the rig's 'trailing' state.</summary>
         public const float TrailingSweepDegrees = 76f, TrailingDipDegrees = 15f;

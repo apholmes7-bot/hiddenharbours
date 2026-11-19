@@ -38,9 +38,11 @@
     const a = 2*Math.PI*(((i%frames)+frames)%frames)/frames;
     return { roll: ROCK.rollA*Math.sin(a), pitch: ROCK.pitchA*Math.sin(a+Math.PI/2), heave: ROCK.heaveA*Math.sin(a) };
   }
-  const L = 4.5, TH = 0.035, FLOOR = 0.06, SEAT = 0.30, OARLOCK_U = 0.31;
+  // the after tholes stand 0.369 m abaft the rowing thwart's centre (were 0.135 m): a seated rower's stroke fits
+  // between them and him, the handles finishing in front of his chest instead of inside it (owner, 2026-11-19)
+  const L = 4.5, TH = 0.035, FLOOR = 0.06, SEAT = 0.30, OARLOCK_U = 0.258;
   const STERN_U = 0.13;                  // stern-bench station (motor build) -> y = -1.665 m, 0.58 m fwd of the transom
-  const FWD_LOCK_U = 0.57;               // the forward rowing station's tholes, the same 0.135 m abaft its thwart
+  const FWD_LOCK_U = 0.518;              // the forward rowing station's tholes, the same 0.369 m abaft its thwart
   const THWARTS = [0.34, 0.60], BOW_THWART_U = 0.80;
   const HANDLINE_U = 0.47;               // the hand-line chock on the rail, between the rowing thwarts
   const BAILER = { x: 0.20, y: -1.05 };  // the bailer's place on the boards, abaft the after thwart
@@ -477,10 +479,14 @@
   function oarlockPt(side){ const st=station(OARLOCK_U); return [ side*(st.ws-TH*0.15), st.y, st.kz+st.dep+0.04 ]; }
   function oarDir(side, sweepDeg, dipDeg){ const f=sweepDeg*DEG, p=dipDeg*DEG; return [ side*Math.cos(f)*Math.cos(p), -Math.sin(f)*Math.cos(p), -Math.sin(p) ]; }
   function oarPose(state, t){
-    if(state==='resting')  return { sweep:-82, dip:-7 };   // shipped fore, lying along the gunwale
+    // shipped fore in the tholes, the blade forward and the handle inboard on the stern sheets: with the tholes 0.369 m
+    // abaft the thwart, -82/-7 put the handle 0.24 m out through the narrowing stern quarter (0.14 m from the old tholes)
+    if(state==='resting')  return { sweep:-72, dip: 6 };
     if(state==='trailing') return { sweep: 76, dip: 15 };  // dragging aft in the water
-    const tt=(((t||0)%1)+1)%1, a=2*Math.PI*tt;             // row cycle: blade traces an ellipse (dip+sweep)
-    return { sweep: 30*Math.sin(a), dip: 6 + 22*Math.cos(a) };
+    // row cycle: the blade traces an ellipse (dip+sweep). Sweep +-24 and dip 12+-16: the blade goes as deep as before
+    // (28 deg) but lifts only 4 deg on the recovery, so the handles pass over his knees, not through his lap
+    const tt=(((t||0)%1)+1)%1, a=2*Math.PI*tt;
+    return { sweep: 24*Math.sin(a), dip: 12 + 16*Math.cos(a) };
   }
   function buildOar(side, pose){
     const O=oarlockPt(side), d=oarDir(side,pose.sweep,pose.dip);
@@ -660,7 +666,7 @@
     const STAND_MOTOR = [PILOT_MOTOR.x, PILOT_MOTOR.y, station((PILOT_MOTOR.y + L / 2) / L).kz + FLOOR];
     const thole = (lu, side) => { const st = station(lu); return [side * (st.ws - TH * 0.15), st.y, st.kz + st.dep + 0.04]; };
     const railPt = (u, side) => [side * station(u).ws, station(u).y, sheerZ(u) + CAP_RISE];
-    const stow = (side) => { const a = thole(OARLOCK_U, side), d = oarDir(side, -82, -7); return { id: side < 0 ? 'port' : 'star', lock: xyz(a), blade: xyz(v_add(a, v_mul(d, O_LOUT))), handle: xyz(v_sub(a, v_mul(d, O_LIN))) }; };
+    const stow = (side) => { const a = thole(OARLOCK_U, side), rp = oarPose('resting'), d = oarDir(side, rp.sweep, rp.dip); return { id: side < 0 ? 'port' : 'star', lock: xyz(a), blade: xyz(v_add(a, v_mul(d, O_LOUT))), handle: xyz(v_sub(a, v_mul(d, O_LIN))) }; };
     const spawn = { x: PILOT.x, y: PILOT.y, area: 'floor' };
     const on = (ar, x, y) => ({ x: q3(x), y: q3(y), z: ar.z });
     const sheer = sheerZ(0.5);
