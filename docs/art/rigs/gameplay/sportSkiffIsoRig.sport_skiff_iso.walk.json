@@ -5,7 +5,7 @@
  "hull": "sport_skiff_iso",
  "label": "SPORT SKIFF",
  "kind": "open",
- "derivedFromRigSha256": "dbf5b5e80c4eb6e0e69426dbc063baa722821595e24028a9049e7ef928b6fa8c",
+ "derivedFromRigSha256": "24fa7cabe868a5e69819ea0f15ba175c07c404d0126fe2abfbb64855f28eaaf9",
  "authoring": "Written by the rig: SportSkiffIso.byId('sport_skiff_iso').walk(), every number its own (mm), stamped with the rig's LF sha256 and fitted to character rig 10.3 (qa.character) by tools/rig-recipes/hull-walk.mjs. Regenerate with node tools/rig-recipes/hull-walk.mjs --write; never edit by hand.",
  "units": "metres",
  "frame": "metres; +x starboard, +y bow, +z up; origin amidships, keel bottom, centreline; polygons counter-clockwise seen from above",

@@ -746,6 +746,13 @@ Shader "HiddenHarbours/IsoFacet"
                 bool front = dot(wn, UNITY_MATRIX_V[2].xyz) >= 0.0;
                 int code = (int)round(v.attrs.w);
                 bool interior = code == 1 || code == (front ? 2 : 3);
+#ifdef HH_LEVEL_GATE
+                // A ROOM face (ADR 0041, UV1.y = 1) is inside the cabin by construction, and is only
+                // drawn while its level is shown. The bake appends the room after the classifier has
+                // run, so its side code is 0, and without this the sea drew on the cabin's lining
+                // below the waterline. The caustic path above has always read the flag the same way.
+                interior = interior || v.levelTag.y > 0.5;
+#endif
                 o.interior = interior ? 1.0 : 0.0;
                 return o;
             }
