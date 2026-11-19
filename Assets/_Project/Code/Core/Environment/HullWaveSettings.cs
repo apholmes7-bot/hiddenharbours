@@ -54,6 +54,16 @@ namespace HiddenHarbours.Core
         [Range(0.05f, 2f)] public float FroudeKnee;
         [Tooltip("Tallest crest any hull makes, metres.")]
         [Range(0f, 3f)] public float MaxHeightMetres;
+        [Tooltip("A short hull's lowest crest at full response, metres: her waves are raised to at least " +
+                 "this times her Froude response (speed over the knee, not squared), so a rowed dory's soft V " +
+                 "reads at game zoom. Only hulls no longer than SmallHullLengthMetres. 0 = off (the older height).")]
+        [Range(0f, 0.3f)] public float SmallHullCrestMetres;
+        [Tooltip("The longest hull, metres, that SmallHullCrestMetres raises. Longer hulls keep their height.")]
+        [Range(0f, 20f)] public float SmallHullLengthMetres;
+        [Tooltip("A short hull's source spacing along her track, in wavelengths, in place of " +
+                 "SpacingWavelengths: closer sources blend her rings into a soft V instead of single loops. " +
+                 "Only hulls no longer than SmallHullLengthMetres. 0 = her spacing is SpacingWavelengths.")]
+        [Range(0f, 2f)] public float SmallHullSpacingWavelengths;
         [Tooltip("The bow's waves as a share of the stern's.")]
         [Range(0f, 2f)] public float BowShare;
 
@@ -182,6 +192,9 @@ namespace HiddenHarbours.Core
             HeightPerMetreLength = 0.018f,
             FroudeKnee = 0.4f,
             MaxHeightMetres = 0.6f,
+            SmallHullCrestMetres = 0.07f,
+            SmallHullLengthMetres = 6f,
+            SmallHullSpacingWavelengths = 0.35f,
             BowShare = 0.7f,
 
             LifetimeSecondsPerMetreLength = 0.8f,

@@ -101,7 +101,9 @@ namespace HiddenHarbours.Core
 
         /// <summary>
         /// Her crest height, metres: <c>HeightPerMetreLength · L · min(Fr / knee, 1)²</c>, eased in over
-        /// one <c>MinSpeed</c> above <c>MinSpeed</c> and capped at <c>MaxHeightMetres</c>. So a rowed
+        /// one <c>MinSpeed</c> above <c>MinSpeed</c> and capped at <c>MaxHeightMetres</c>. A hull no longer than
+        /// <c>SmallHullLengthMetres</c> is raised to at least <c>SmallHullCrestMetres · response</c> (0 = off),
+        /// so a rowed dory's V reads at game zoom while longer hulls keep their height. So a rowed
         /// dory raises centimetres and a cargo vessel at speed raises tens of centimetres, from her
         /// length and her speed alone. Exactly 0 at or below <c>MinSpeed</c>.
         /// </summary>
@@ -111,7 +113,22 @@ namespace HiddenHarbours.Core
             float onset = Mathf.Clamp01((speed - s.MinSpeed) / Mathf.Max(s.MinSpeed, 0.05f));
             float response = Mathf.Min(Froude(speed, lengthMetres) / Mathf.Max(s.FroudeKnee, 1e-3f), 1f);
             float h = s.HeightPerMetreLength * lengthMetres * response * response * onset;
+            if (s.SmallHullCrestMetres > 0f && lengthMetres <= s.SmallHullLengthMetres)
+                h = Mathf.Max(h, s.SmallHullCrestMetres * response * onset);
             return Mathf.Min(h, Mathf.Max(s.MaxHeightMetres, 0f));
+        }
+
+        /// <summary>
+        /// The dials a hull of <paramref name="lengthMetres"/> lays her waves with: <paramref name="s"/>, with
+        /// <c>SpacingWavelengths</c> replaced by <c>SmallHullSpacingWavelengths</c> for a hull no longer than
+        /// <c>SmallHullLengthMetres</c> (when that dial is above 0). Otherwise <paramref name="s"/> unchanged.
+        /// </summary>
+        public static HullWaveSettings ForHull(float lengthMetres, in HullWaveSettings s)
+        {
+            HullWaveSettings e = s;
+            if (s.SmallHullSpacingWavelengths > 0f && lengthMetres > 0f && lengthMetres <= s.SmallHullLengthMetres)
+                e.SpacingWavelengths = s.SmallHullSpacingWavelengths;
+            return e;
         }
 
         /// <summary>How long her waves live, seconds: per metre of her length, held in range.</summary>

@@ -784,6 +784,9 @@ MonoBehaviour:
     HeightPerMetreLength: 0.018
     FroudeKnee: 0.4
     MaxHeightMetres: 0.6
+    SmallHullCrestMetres: 0.07
+    SmallHullLengthMetres: 6
+    SmallHullSpacingWavelengths: 0.35
     BowShare: 0.7
     LifetimeSecondsPerMetreLength: 0.8
     MinLifetimeSeconds: 3

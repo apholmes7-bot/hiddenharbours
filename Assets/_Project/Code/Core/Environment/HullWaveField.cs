@@ -303,12 +303,14 @@ namespace HiddenHarbours.Core
             double span = now - _lastSeconds;
             if (span <= 0.0) return 0;   // a held clock lays nothing and loses nothing
 
-            float wavelength = HullWaveMath.Wavelength(speed, lengthMetres, in s);
-            float lifetime = HullWaveMath.KeptLifetime(HullWaveMath.Lifetime(lengthMetres, in s), speed,
-                                                       wavelength, budget, in s);
-            float crest = HullWaveMath.CrestHeight(speed, lengthMetres, in s) * Mathf.Max(share, 0f);
+            // A short hull lays her sources at her own spacing (HullWaveSettings.SmallHullSpacingWavelengths).
+            HullWaveSettings hs = HullWaveMath.ForHull(lengthMetres, in s);
+            float wavelength = HullWaveMath.Wavelength(speed, lengthMetres, in hs);
+            float lifetime = HullWaveMath.KeptLifetime(HullWaveMath.Lifetime(lengthMetres, in hs), speed,
+                                                       wavelength, budget, in hs);
+            float crest = HullWaveMath.CrestHeight(speed, lengthMetres, in hs) * Mathf.Max(share, 0f);
             float interval = HullWaveMath.DepositInterval(speed, wavelength, lifetime, budget,
-                                                          s.SpacingWavelengths);
+                                                          hs.SpacingWavelengths);
             int laid = 0;
             if (crest <= 0f || float.IsInfinity(interval))
             {
