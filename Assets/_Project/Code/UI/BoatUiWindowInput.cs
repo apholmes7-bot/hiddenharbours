@@ -20,6 +20,11 @@ namespace HiddenHarbours.UI
     /// helm). The asset's source applies the same two gates; they stand here too, so a scripted source
     /// is held to them as the keys are. Self-installing (the HelmOverlayHost pattern), headless-safe,
     /// and inert with no source.</para>
+    ///
+    /// <para><b>The TASKS note's mode</b> (2026-11-16) rides the same read: T or the pad's west button
+    /// cycles Core's <see cref="TasksNoteFold"/> shown, chip, hidden; a click on the note's head folds it
+    /// and a click on the chip opens it. The note (World) draws it. One reader of the Hud map, one read a
+    /// frame (ADR 0043 ruling 2).</para>
     /// </summary>
     public sealed class BoatUiWindowInput : MonoBehaviour
     {
@@ -65,7 +70,16 @@ namespace HiddenHarbours.UI
             if (ShellFlow.WorldInputBlocked) return;   // title page / pause menu own the keyboard
             IControlIntentSource<HudIntents> source = HudInputSource;
             if (source == null) return;
-            if (source.Read().HideAll) BoatUiWindows.ToggleHideAll();
+            HudIntents intents = source.Read();
+            if (intents.HideAll) BoatUiWindows.ToggleHideAll();
+
+            // The TASKS note (owner asks 2026-11-16): T or the pad's west button cycles shown, chip,
+            // hidden; a click on the note's head folds it, a click on the chip opens it. Read here because
+            // this is the HUD map's one reader (ADR 0043 ruling 2); the note is World's, so the mode
+            // crosses through Core's TasksNoteFold.
+            if (TasksNoteFold.TryChoose(in intents, InteractionGate.IsBlocked, TasksNoteFold.ClickTarget,
+                                        TasksNoteFold.Mode, out TasksNoteMode next))
+                TasksNoteFold.SetMode(next);
         }
     }
 }

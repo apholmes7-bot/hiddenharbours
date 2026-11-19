@@ -321,6 +321,9 @@ namespace HiddenHarbours.Art
         // knobs (GameConfig.ShallowsFloor / ShallowsFloorRefraction). Shader globals, never Properties.
         private static readonly int IdShallowsFloor = Shader.PropertyToID("_ShallowsFloor");
         private static readonly int IdShallowsFloorRefraction = Shader.PropertyToID("_ShallowsFloorRefraction");
+        // (2026-11-17, the kelp beds) The weed's clarity under the water (GameConfig.UnderWaterWeedClarity),
+        // pushed with the floor's switch. A shader global, never a Property.
+        private static readonly int IdUnderWaterClarity = Shader.PropertyToID("_HHUnderWaterClarity");
         // (ADR 0027 #7, gains 2) The water type: the region's sigma and body, the surface's rect and seam, and
         // up to four plumes. Shader globals, never Properties: a surface with no type never writes them, so
         // the shader reads 0 and draws today's sea.
@@ -1166,6 +1169,10 @@ namespace HiddenHarbours.Art
             float bend = _config != null ? _config.ShallowsFloorRefraction : GameConfig.DefaultShallowsFloorRefraction;
             mpb.SetFloat(IdShallowsFloor, on ? 1f : 0f);
             mpb.SetFloat(IdShallowsFloorRefraction, bend);
+            // The weed under the water is read through less of the column than the floor (the sea's
+            // UnderWaterPropTransmission); with no config wired, the code's default.
+            float clarity = _config != null ? _config.UnderWaterWeedClarity : GameConfig.DefaultUnderWaterWeedClarity;
+            mpb.SetFloat(IdUnderWaterClarity, GameConfig.ClampUnderWaterWeedClarity(clarity));
         }
 
         /// <summary>

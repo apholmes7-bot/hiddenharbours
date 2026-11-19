@@ -119,12 +119,13 @@ namespace HiddenHarbours.Tests.EditMode
         /// The pad's pin (ADR 0043 PR 2). PR 0 declared the Gamepad scheme empty; PR 2 fills it a slice at a
         /// time, and the first slice is the interaction chooser's: the left stick and the d-pad on
         /// Chooser/PadNavigate. The autopilot's switch (Helm/Autopilot, Y) joined it with the autopilot's
-        /// slice 1 (2026-11-16). Every other pad row (walk, deck, helm, drive, the hide-all, the interact press) is
+        /// slice 1 (2026-11-16), and the TASKS fold (2026-11-16) with the pad's west button on
+        /// Hud/ToggleTasks. Every other pad row (walk, deck, helm, drive, the hide-all, the interact press) is
         /// still owed and owner-gated on feel, so anything else in the scheme reds this until its slice
         /// lands and adds its row here.
         /// </summary>
         [Test]
-        public void TheGamepadScheme_BindsOnlyTheChoosersNavigateAndTheAutopilot_UntilTheRestOfPr2Lands()
+        public void TheGamepadScheme_BindsOnlyTheChoosersNavigateTheAutopilotAndTheTasksFold_UntilTheRestOfPr2Lands()
         {
             InputActionAsset asset = Asset();
             string[] pad = asset.actionMaps
@@ -135,10 +136,9 @@ namespace HiddenHarbours.Tests.EditMode
                 .ToArray();
             CollectionAssert.AreEqual(
                 new[] { "Chooser/PadNavigate=<Gamepad>/dpad", "Chooser/PadNavigate=<Gamepad>/leftStick",
-                        "Helm/Autopilot=<Gamepad>/buttonNorth" }, pad,
-                "the pad's rows so far are the chooser's up/down (ADR 0043 PR 2, chooser slice) and the " +
-                "autopilot's switch. Found: " +
-                string.Join(", ", pad));
+                        "Helm/Autopilot=<Gamepad>/buttonNorth", "Hud/ToggleTasks=<Gamepad>/buttonWest" }, pad,
+                "the pad's rows so far are the chooser's up/down (ADR 0043 PR 2, chooser slice), the " +
+                "autopilot's switch and the TASKS fold. Found: " + string.Join(", ", pad));
         }
 
         /// <summary>
@@ -166,6 +166,49 @@ namespace HiddenHarbours.Tests.EditMode
                 "a stopped world takes the press: the pause menu is not the place to relayout the helm.");
             Assert.IsFalse(DeviceHudIntentSource.Map(true, worldStopped: false, keysCaptured: true).HideAll,
                 "a text field that owns the keys takes it: an M typed in a waypoint name is a letter.");
+        }
+
+        /// <summary>
+        /// The TASKS fold's row (owner ask 2026-11-16): T on the keyboard and the pad's west button, in the
+        /// Hud map because the note shows in every control mode. T and the west button are each bound once
+        /// in the whole asset (swept 2026-11-16: T is polled raw only by the BoatRotationTestRig dev rig,
+        /// which no scene or prefab holds; the west button is read raw only by the character creator,
+        /// which holds InteractionGate while it is up, and the fold is deaf to that gate). The pointer
+        /// rides on the UI map's Point and Click, and the pure map carries all of it through the HUD's
+        /// two gates.
+        /// </summary>
+        [Test]
+        public void ToggleTasks_IsT_AndThePadsWest_InTheBindingsAsset()
+        {
+            InputAction toggle = ActionOf(InputBindings.HudMap, DeviceHudIntentSource.ToggleTasksAction);
+            Assert.AreEqual(InputActionType.Button, toggle.type, "the fold is a press, not a value.");
+            CollectionAssert.AreEqual(new[] { "<Keyboard>/t" },
+                PathsOf(toggle, b => (b.groups ?? "").Split(';').Contains(InputBindings.KeyboardMouseScheme)));
+            CollectionAssert.AreEqual(new[] { "<Gamepad>/buttonWest" },
+                PathsOf(toggle, b => (b.groups ?? "").Split(';').Contains(InputBindings.GamepadScheme)));
+
+            foreach (string path in new[] { "<Keyboard>/t", "<Gamepad>/buttonWest" })
+            {
+                int n = Asset().actionMaps.SelectMany(m => m.bindings)
+                    .Count(b => string.Equals(b.path, path, StringComparison.OrdinalIgnoreCase));
+                Assert.AreEqual(1, n, path + " is bound once in the whole asset, to the TASKS fold.");
+            }
+
+            ActionOf(InputBindings.UiMap, DeviceHudIntentSource.PointAction);
+            ActionOf(InputBindings.UiMap, DeviceHudIntentSource.ClickAction);
+
+            var at = new Vector2(1800f, 60f);
+            HudIntents open = DeviceHudIntentSource.Map(false, true, true, at, worldStopped: false, keysCaptured: false);
+            Assert.IsTrue(open.ToggleTasks, "an open press arrives.");
+            Assert.IsTrue(open.Click, "and a click.");
+            Assert.AreEqual(at, open.Point, "with where the pointer is.");
+            Assert.IsFalse(open.HideAll, "the fold is not the hide-all.");
+
+            HudIntents stopped = DeviceHudIntentSource.Map(false, true, true, at, worldStopped: true, keysCaptured: false);
+            Assert.IsFalse(stopped.ToggleTasks || stopped.Click, "a stopped world takes the press and the click.");
+
+            HudIntents typing = DeviceHudIntentSource.Map(false, true, false, at, worldStopped: false, keysCaptured: true);
+            Assert.IsFalse(typing.ToggleTasks, "a T typed in a waypoint name is a letter.");
         }
 
         /// <summary>

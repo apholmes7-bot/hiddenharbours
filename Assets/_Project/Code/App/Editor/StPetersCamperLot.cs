@@ -131,40 +131,36 @@ namespace HiddenHarbours.App.Editor
         public const float StrideMetres = 1f;
 
         /// <summary>
-        /// <b>Which way the drawbar points</b>, as a unit vector. DERIVED, not authored: the camper's
-        /// long axis runs perpendicular to <see cref="Approach"/> (so the curb side, which is where the
-        /// door and the step are, faces the ground you walk up from), and of the two perpendiculars it
-        /// takes the one whose nose has more room — measured against everything else standing on the
-        /// plot. Today that is east, because the woodshed leaves more room than the lean-to; if a shed
-        /// moves, the parking re-derives instead of poking a drawbar through a wall.
+        /// <b>Which way the drawbar points</b>, as a unit vector: the ONE answer for this lot. The
+        /// parked camper (<see cref="DoorFacing"/>), the room inside it and the lot's shed all read it.
+        ///
+        /// <para>DERIVED from <see cref="Approach"/> alone, and there is no choice in it. The camper's
+        /// body frame is right-handed (+x the curb, where the door and the step are; +y the hitch; +z
+        /// up), so once the curb faces the ground you walk up from, the hitch is fixed: the curb turned
+        /// a quarter counter-clockwise. With the cottage due south that is east. A drawbar pointing west
+        /// would put the door on the north side, facing away from the cottage; no baked facing draws a
+        /// camper pointing west with its door to the south.</para>
+        ///
+        /// <para>It used to pick whichever end had more room, which came out west once the sheds moved
+        /// while the sprite still pointed east. <c>StPetersCamperLotTests</c> now checks this against
+        /// the baked door, step and hitch anchors, and that the drawbar tip clears every shed.</para>
         /// </summary>
         public static Vector2 NoseDirection
         {
             get
             {
-                Vector2 toApproach = Approach - LotPos;
-                if (toApproach.sqrMagnitude < 1e-6f) return Vector2.right;
-                Vector2 a = new Vector2(-toApproach.y, toApproach.x).normalized;   // one perpendicular
-                Vector2 b = -a;                                                    // and the other
-
-                float nose = Dimensions.IsValid ? Dimensions.NoseMetres : 0f;
-                return NoseRoom(a, nose) >= NoseRoom(b, nose) ? a : b;
+                Vector2 curb = Approach - LotPos;
+                if (curb.sqrMagnitude < 1e-6f) return Vector2.right;
+                curb.Normalize();
+                return new Vector2(-curb.y, curb.x);
             }
         }
 
-        /// <summary>How far the nearest thing on the plot is from where the drawbar tip would end up if
-        /// the camper were parked pointing <paramref name="dir"/>. Bigger is better.</summary>
-        static float NoseRoom(Vector2 dir, float noseMetres)
-        {
-            Vector2 tip = LotPos + dir * noseMetres;
-            float worst = Vector2.Distance(tip, StPetersGinnyPlot.CottagePos);
-            foreach (var shed in StPetersGinnyPlot.Sheds)
-            {
-                float gap = Vector2.Distance(tip, shed.Position) - shed.FootprintRadiusMetres;
-                if (gap < worst) worst = gap;
-            }
-            return worst;
-        }
+        /// <summary>The rig facing index (<c>N NE E SE S SW W NW</c>, so N = 0, clockwise) that points
+        /// along <paramref name="dir"/>. The compass point the rig's +y (the hitch) faces is the
+        /// facing it is drawn at.</summary>
+        public static int FacingOf(Vector2 dir) =>
+            ((Mathf.RoundToInt(Mathf.Atan2(dir.x, dir.y) * Mathf.Rad2Deg / 45f) % 8) + 8) % 8;
 
         // =====================================================================================
         //  WHAT IS PARKED THERE
@@ -219,13 +215,49 @@ namespace HiddenHarbours.App.Editor
         /// The key a baked camper INTERIOR would be filed under, if one existed.
         ///
         /// <para><b>⚠️ It is a tripwire, not a feature.</b> Nothing has ever been baked under it — the
-        /// interior rig is not in the repo. <see cref="Place"/> asks the interior contract for it anyway,
+        /// interior rig (<c>docs/art/rigs/camper-iso-kit/camperInteriorRig.js</c>) is in the repo but
+        /// not yet in the catalog or baked. <see cref="Place"/> asks the interior contract for it anyway,
         /// so the day someone bakes a camper room the build LOG says so out loud instead of the room
         /// sitting there unnoticed. Standing it is a follow-up PR's job (a camper room is not a house
         /// room: no gable, no porch, and its sole is a tumblehome polygon, so
         /// <c>StPetersInteriors.Stand</c> does not apply unchanged).</para>
         /// </summary>
         public static string InteriorKey => "camper." + Variant;
+
+        // =====================================================================================
+        //  THE SHED THAT COMES WITH THE LOT (reserved ground only; nothing is placed here yet)
+        // =====================================================================================
+
+        /// <summary>
+        /// How far behind the camper's body centre the lot's small shed stands, along its long axis.
+        /// The owner directed (2026-11-17) that the camper comes with a small shed for more rods and
+        /// gear; this reserves its ground. Nine metres is the camper's own reserve (5.21 m on the
+        /// Clipper), the plot's 2.00 m walking gap and the shed's 1.50 m, rounded up: 2.29 m clear.
+        /// <c>CamperInteriorRigTests</c> re-derives every clearance from the contracts.
+        /// </summary>
+        public const float ShedTailMetres = 9f;
+
+        /// <summary>The shed's footprint in metres: x along the camper's long axis (east-west on this
+        /// lot), y across it.</summary>
+        public static readonly Vector2 ShedSize = new Vector2(2.4f, 1.8f);
+
+        /// <summary>Where the shed stands: off the TAIL of the camper
+        /// (<see cref="NoseDirection"/>), so it never meets the drawbar. West of the camper.</summary>
+        public static Vector2 ShedPos => LotPos - NoseDirection * ShedTailMetres;
+
+        /// <summary>The any-facing circle the shed reserves, the same promise the plot's sheds make.</summary>
+        public static float ShedFootprintRadiusMetres => ShedSize.magnitude * 0.5f;
+
+        /// <summary>Which way the shed door faces: the camper's curb side, toward the ground people arrive
+        /// on (south, toward the cottage and the path).</summary>
+        public static Vector2 ShedDoorDirection
+        {
+            get
+            {
+                Vector2 v = Approach - LotPos;
+                return v.sqrMagnitude < 1e-6f ? Vector2.down : v.normalized;
+            }
+        }
 
         // =====================================================================================
         //  PLACEMENT
@@ -286,9 +318,9 @@ namespace HiddenHarbours.App.Editor
                 Debug.Log($"[StPetersCamperLot] Baked camper art found ('{baked.name}') — drawing the " +
                           $"{d.Label} at facing {DoorFacing}, parked on the {ParkedRole} sheet's frame " +
                           $"{ParkedFrame} so NO AWNING is drawn (the owner's 2026-08-18 ruling; see " +
-                          "StPetersCamperLot.ParkedRole). ⚠ That facing index is DECLARED, not read " +
-                          "from a contract (the kit ships none): confirm on screen that the door faces " +
-                          "the cottage, and correct StPetersCamperLot.DoorFacing if it does not.");
+                          "StPetersCamperLot.ParkedRole). The facing is derived from the drawbar " +
+                          $"direction ({NoseDirection.x:0.#},{NoseDirection.y:0.#}), with the door toward " +
+                          "the cottage.");
             }
             else
             {
@@ -441,27 +473,27 @@ namespace HiddenHarbours.App.Editor
         /// <summary>
         /// Which of the rig's eight facings shows the camper parked the way this lot parks it.
         ///
-        /// <para><b>⚠ DECLARED, NOT DERIVED — the one number here a contract should own.</b> The building
-        /// kit reads its facing from the bake's own door anchors (<c>BuildingFacing.FacingToward</c>); the
-        /// camper kit ships no contract, so there is nothing for this file to read. The reasoning: the
-        /// rig's order is <c>N NE E SE S SW W NW</c> (measured in the repo's V8 by
-        /// <c>CamperIsoKitProbeTests</c>), the lot parks the camper broadside to the approach so the curb
-        /// side faces the cottage, and <see cref="NoseDirection"/> comes out east — index 2.</para>
+        /// <para><b>DERIVED from <see cref="NoseDirection"/></b>, so the drawn camper and the parked
+        /// camper cannot disagree again: the rig's order is <c>N NE E SE S SW W NW</c> (measured in the
+        /// repo's V8 by <c>CamperIsoKitProbeTests</c>), the lot parks the camper broadside to the
+        /// approach so the curb side faces the cottage, and the drawbar comes out east — index 2.
+        /// <c>StPetersCamperLotTests</c> reads the bake's own anchors in <c>Camper.json</c> at this
+        /// facing and checks the hitch points along <see cref="NoseDirection"/> and the step toward
+        /// <see cref="Approach"/>.</para>
         ///
         /// <para><b>✔ CROSS-CHECKED against the bake lane's measured anchors, on two independent
         /// features.</b> Its <c>Camper.json</c> gives, for <c>camper_clipper_rest</c> facing 2, a hitch at
         /// <c>(+158.1, −10.8)</c> px from the pivot — level and to the right, i.e. pointing EAST — and the
         /// fold-down step at <c>(+2.6, +23.7)</c>, down-screen toward the camera, i.e. SOUTH. This lot
         /// parks the drawbar east and wants the step facing Ginny's cottage, which is due south of it.
-        /// Both agree. <b>That check was made against an OPEN branch</b> (the bake PR), so if its facing
-        /// convention moves before it merges, re-check — but this is no longer a guess.</para>
+        /// Both agree, and the anchor test now re-reads them from the merged sheet.</para>
         ///
         /// <para>Belt and braces either way: this repo has been wrong about a facing order before (the
         /// iso art baked counter-clockwise; the azimuth probe's taper heuristic was backwards on eighteen
         /// hulls), so <see cref="TryLoadCamperSprite"/> draws NOTHING rather than the wrong cell if this
-        /// is ever wrong — the correction is one integer.</para>
+        /// is ever wrong, and the anchor test fails with the measured directions.</para>
         /// </summary>
-        public const int DoorFacing = 2;
+        public static int DoorFacing => FacingOf(NoseDirection);
 
         /// <summary>Ground check shared with the plot — see <c>StPetersGinnyPlot.AssertDry</c>'s note.
         /// Silent when there is no terrain to ask, which is what the pure EditMode fixtures do.</summary>

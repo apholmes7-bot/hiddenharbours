@@ -138,22 +138,57 @@ namespace HiddenHarbours.App.Editor
             // The held MESHES (ADR 0053), read off the held-prop bake's own folder and matched by the
             // state names the defs carry — the rig's own species and fills, never typed here.
             HeldPropMeshDef[] heldMeshes = HeldMeshes();
-            int meshed = 0;
+            int meshed = 0, sizedKinds = 0, faceOn = 0;
+            // The flatfish, read off the species defs (FishSpeciesDef.HeldBroadSideOn): every rung of these
+            // kinds is held showing its broad side, never its edge.
+            HashSet<string> broadSideOn = BroadSideOnKinds(finfish);
             foreach (string kind in finfish)
             {
                 Sprite[] variants = DeckLayVariants($"{FishIso}/Fish_{kind}_deck.png", kind, ref missing);
                 var entry = new CatchItemLibrary.KindEntry { Kind = kind, Variants = variants };
-                // A carried fish hangs from one hand by the TAIL. The two-arm cradle is the fight's
-                // to choose, because only the fight knows the fish's weight (RodFightPresenter picks
-                // a size rung, and the rung's own hand count decides gill vs tail). A container's
-                // catch has no weight to ask about.
+                // A carried fish hangs from one hand by the TAIL. The two-arm cradle of the land pose
+                // is the fight's to draw (RodFightPresenter picks a size rung, and the rung's own hand
+                // count decides gill vs tail); carried, every rung hangs by the tail.
                 if (WireHeld(entry, $"{FishIso}/Fish_{kind}_tail.png", Directions)) held++;
+                // How long that held fish is drawn, measured off the sheet: the readability floor
+                // (GameConfig.MinDrawnFishLengthPx) reads it to skip a rung too small to see.
+                entry.HeldLengthPx = FishSheetPixels.HeldLengthPx($"{FishIso}/Fish_{kind}_tail.png");
+                if (broadSideOn.Contains(kind) &&
+                    WireFaceOn(entry, $"{FishIso}/Fish_{kind}_tail.png")) faceOn++;
                 // The same fish by the same tail, as a mesh. Nothing draws it yet (PR 4).
                 entry.HeldMesh = heldMeshes.FirstOrDefault(
                     d => d.Family == HeldPropMeshDef.FishFamily && d.Variant == kind);
                 if (entry.HeldMesh != null) meshed++;
                 kinds.Add(entry);
                 if (variants.Length > 0) wired++;
+
+                // THE SIZE LADDER. The unsuffixed stem is the middle rung; its _sm/_lg siblings are the
+                // same fish drawn at the other two weights the rig published. Each becomes a sized
+                // kind ('cod_sm' SizeOf 'cod'), so a catch held in the hands or laid in a tote is
+                // drawn at its own size (CatchItemLibrary.SizedKindFor) rather than always the middle.
+                foreach ((string suffix, float kg) in RodKitImporter.RungWeights(kind))
+                {
+                    if (suffix.Length == 0) { entry.SizeKg = kg; continue; }
+                    string sized = kind + suffix;
+                    Sprite[] lays = DeckLayVariants($"{FishIso}/Fish_{sized}_deck.png", sized, ref missing);
+                    var rung = new CatchItemLibrary.KindEntry
+                    {
+                        Kind = sized, Variants = lays, SizeOf = kind, SizeKg = kg,
+                        // One held mesh per species today (baked at the middle rung); the size rungs
+                        // share it until the held-prop bake makes one per rung.
+                        HeldMesh = entry.HeldMesh,
+                    };
+                    if (WireHeld(rung, $"{FishIso}/Fish_{sized}_tail.png", Directions)) held++;
+                    rung.HeldLengthPx = FishSheetPixels.HeldLengthPx($"{FishIso}/Fish_{sized}_tail.png");
+                    if (broadSideOn.Contains(kind) &&
+                        WireFaceOn(rung, $"{FishIso}/Fish_{sized}_tail.png")) faceOn++;
+                    kinds.Add(rung);
+                    sizedKinds++;
+                }
+                if (entry.SizeKg <= 0f)
+                    Debug.LogWarning($"[CatchItemLibraryBuilder] '{kind}' has no size ladder in " +
+                                     $"'{RodKitImporter.FishAnchorsPath}', so it is drawn at one size whatever " +
+                                     "it weighs. Re-run the catch pass 2 fish anchors rewrite.");
             }
             foreach (HeldPropMeshDef d in heldMeshes)
                 if (d.Family == HeldPropMeshDef.FishFamily && !finfish.Contains(d.Variant))
@@ -188,7 +223,8 @@ namespace HiddenHarbours.App.Editor
             AssetDatabase.Refresh();
 
             summary = $"{(created ? "Created" : "Refreshed")} '{LibraryPath}': " +
-                      $"{wired}/{kinds.Count} kinds with art, {held} with HELD art, " +
+                      $"{wired}/{kinds.Count - sizedKinds} kinds with art (+{sizedKinds} size rungs), " +
+                      $"{held} with HELD art ({faceOn} held face-on), " +
                       $"{meshed} with a HELD MESH, {bucketMeshes.Length} bucket states as meshes, " +
                       $"{species.Count} species mapped" +
                       (missing > 0 ? $", {missing} sheet(s) MISSING (see the warnings above)" : "") +
@@ -281,6 +317,38 @@ namespace HiddenHarbours.App.Editor
             entry.HeldFacings = facings;
             entry.HeldFramesPerFacing = cells.Length / facings;
             return true;
+        }
+
+        /// <summary>
+        /// The face-on pick for one held kind (<see cref="CatchItemLibrary.KindEntry.HeldFacingMap"/>): each
+        /// facing draws whichever of itself and its two neighbours shows the most of the fish, measured off
+        /// the held sheet (<see cref="FishSheetPixels.BroadSideFacingMap"/>). False, leaving the map empty,
+        /// when the kind has no held art or the sheet cannot be read.
+        /// </summary>
+        public static bool WireFaceOn(CatchItemLibrary.KindEntry entry, string heldSheetPath)
+        {
+            if (entry == null || entry.Held == null || entry.HeldFacings <= 1) return false;
+            int[] areas = FishSheetPixels.HeldFacingAreas(heldSheetPath, entry.Held, entry.HeldFacings);
+            int[] map = FishSheetPixels.BroadSideFacingMap(areas);
+            if (map == null) return false;
+            entry.HeldFacingMap = map;
+            return true;
+        }
+
+        /// <summary>The finfish kinds a species def asks to be held face-on
+        /// (<see cref="FishSpeciesDef.HeldBroadSideOn"/>), by the same species → kind rule the table uses.</summary>
+        public static HashSet<string> BroadSideOnKinds(string[] finfish)
+        {
+            var set = new HashSet<string>(System.StringComparer.Ordinal);
+            var known = new HashSet<string>(finfish, System.StringComparer.Ordinal);
+            foreach (string guid in AssetDatabase.FindAssets("t:FishSpeciesDef", new[] { DataFish }))
+            {
+                var def = AssetDatabase.LoadAssetAtPath<FishSpeciesDef>(AssetDatabase.GUIDToAssetPath(guid));
+                if (def == null || !def.HeldBroadSideOn || string.IsNullOrEmpty(def.Id)) continue;
+                string kind = KindFor(def, known);
+                if (kind != null) set.Add(kind);
+            }
+            return set;
         }
 
         /// <summary>The four deck lays of one finfish kind: direction row <c>DeckLayRows[v]</c>, frame

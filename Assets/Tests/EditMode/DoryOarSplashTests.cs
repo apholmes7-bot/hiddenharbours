@@ -203,7 +203,9 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.Greater(sys.Foam.AliveCount, 0);
 
             var shipped = FrameFor(DoryOarMeshPose.Resting, false, cfg);
-            float longest = cfg.FoamLifetime * (1f + cfg.LifetimeJitter) + 0.5f;
+            // The release's puddle puffs live SwirlLifetimeScale x FoamLifetime (2026-11-17), so the
+            // wait is the longest-lived foam the oars lay, not the pull foam alone.
+            float longest = cfg.FoamLifetime * Mathf.Max(1f, cfg.SwirlLifetimeScale) * (1f + cfg.LifetimeJitter) + 0.5f;
             for (float t = 0f; t < longest; t += Dt) sys.Step(in shipped, in shipped, 0f, Vector2.zero, Dt, in cfg);
 
             Assert.AreEqual(0, sys.Foam.AliveCount, "foam left by the oars fades out; it is not a permanent mark");

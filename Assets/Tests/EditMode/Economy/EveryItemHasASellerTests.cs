@@ -60,10 +60,15 @@ namespace HiddenHarbours.Tests.Economy
             ["watch.harbour_digital"] = "starting item: worn from the first morning (StartsOwned); needs shop: a watch seller for a replacement",
 
             // ---- No ownership or purchase seam yet (an offer type is code, not data) ------------------
-            ["tackle.*"] = "not owned piece by piece yet: the rod's tackle box hands every lure; needs an owned-tackle seam, then shop: a chandlery",
-            ["longline.groundfish_tub"] = "counted tub stock has no offer type to buy it through; needs shop: the NMC chandlery once a tub offer exists",
+            ["tackle.*"] = "not owned piece by piece yet: the rod's tackle box hands every lure; needs an owned-tackle seam, then shop: the NMC fishing gear wholesaler",
+            ["longline.groundfish_tub"] = "counted tub stock has no offer type to buy it through; needs shop: the NMC fishing gear wholesaler once a tub offer exists",
             ["fuelstore.*"] = "cans stand at the pump as station stock; an empty can needs an offer type; needs shop: a fuel station till",
             ["golf_club.*"] = "lent with the round at the course; needs shop: a pro shop at the course",
+
+            // ---- Built into a home, not bought (owner 2026-11-17: storage with memory) ---------------
+            ["stowage.ginny_*"] = "built into his room at Ginny's: comes with lodging, never sold",
+            ["stowage.camper_*"] = "built into the camper: comes with the camper's deed, never sold on its own",
+            ["stowage.shed_*"] = "built into the small shed on the camper lot: comes with the camper's deed, never sold on its own",
 
             // ---- Regional lobster builds with no yard in their region yet ----------------------------
             ["boat.lobster_inshore_open_fundy"] = "needs shop: a Bay of Fundy boatyard",
@@ -142,6 +147,16 @@ namespace HiddenHarbours.Tests.Economy
                     : ids.Contains(e.Key);
                 Assert.IsTrue(hit, "the exemption " + e.Key + " names no item Def: a typo, or the item is gone");
             }
+        }
+
+        [Test]
+        public void NoBoatElectronic_IsExempt()
+        {
+            // The Loran's in-flight exemption went when it got a seller; every instrument now has an offer
+            // naming a real seller (the boat/gear wholesaler for the electronics, ruling 11-16), so none may
+            // come back onto the list.
+            List<string> instruments = Exempt.Keys.Where(k => k.StartsWith("instrument.", StringComparison.Ordinal)).ToList();
+            Assert.IsEmpty(instruments, "boat electronics are exempt from the seller guard: " + string.Join(", ", instruments));
         }
 
         [Test]

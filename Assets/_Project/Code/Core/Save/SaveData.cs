@@ -451,16 +451,29 @@ namespace HiddenHarbours.Core
         public List<NpcGiftDayDto> NpcGiftDays = new();
 
         /// <summary>
-        /// <b>Cook jobs running on placed stations</b> (kitchens and microwaves). Added in v24 as data only:
-        /// the kitchens lane writes and restores it. Older saves start with nothing cooking.
+        /// <b>Cook jobs running on placed stations</b> (kitchens and microwaves). Added in v24; a row is
+        /// written when a job starts, removed when it finishes, and restored on load by
+        /// <see cref="CookJobSave"/>. Older saves start with nothing cooking.
         /// </summary>
         public List<CookJobDto> CookJobs = new();
 
         /// <summary>
-        /// <b>The Loran numbers each hull's receiver remembers</b>, as time differences. Added in v24 as data
-        /// only: the Loran instrument host writes and restores it. Older saves start with none.
+        /// <b>The Loran numbers each hull's receiver remembers</b>, as time differences. Added in v24; read and
+        /// written per hull by a <c>LoranWaypointStore</c> bound to this save (<c>LoranWaypointSave</c>).
+        /// Older saves start with none.
         /// </summary>
         public List<LoranWaypointDto> HullLoranWaypoints = new();
+
+        /// <summary>
+        /// <b>What is in the player's storage containers</b> (gear lockers, rod racks, a shed's stores), one row
+        /// per container keyed by where it stands (<see cref="StoredContainerDto.Key"/>). A world object is
+        /// kept by its stable instance id, so the load puts that same object back rather than making another;
+        /// a counted lot is kept by kind and count. Food stores stay in <see cref="KitchenStores"/>. Written
+        /// only through <see cref="StoredContainers"/>. Added in v25 (owner 2026-11-17: storage with memory);
+        /// every older save starts with every container empty, and its tools lie where the world places them.
+        /// FLAG lead-architect: save schema v25 (storage contents).
+        /// </summary>
+        public List<StoredContainerDto> StoredContainers = new();
     }
 
     /// <summary>

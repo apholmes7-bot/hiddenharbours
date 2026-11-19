@@ -12,7 +12,8 @@ namespace HiddenHarbours.World
     /// <para><b>The three ways a wash ends.</b> Press again ("Stop washing"); walk off (further than
     /// <see cref="ReachMeters"/> plus <see cref="WalkAwaySlackMeters"/> from the station); or the station has
     /// done all it can (dirt down to the Def's own floor, <c>1 - Ceiling</c>: a basin stops at 80 % clean, a
-    /// shower at fully clean). How long that takes is the Def's rate, nothing here.</para>
+    /// shower at fully clean). How long that takes is the Def's rate, nothing here. Without soap a shower or
+    /// a bath stops at the unsoaped cap instead (<see cref="ICleanlinessService.CeilingFor"/>), and says so.</para>
     ///
     /// <para><b>Which basin is washing.</b> The service only knows a station KIND by id, so two basins share
     /// one id; <see cref="Active"/> remembers which placed one began it, and only that one watches for the
@@ -119,9 +120,12 @@ namespace HiddenHarbours.World
             WashStationDef def = Def;
             if (def == null || !def.Washes) return;
             ICleanlinessService c = GameServices.Cleanliness;
-            if (WashStationRules.IsDone(c.Dirt, def))
+            if (WashStationRules.IsDone(c.Dirt, c.CeilingFor(def)))
             {
-                EventBus.Publish(new DevNotice(_doneLine));
+                // As clean as this station gets him. When that is only because he has no soap, he says so
+                // (the same thought a soapless wash begins with) instead of the station's "done" line.
+                if (c.SoapMatters(def) && !c.HasSoap) CleanlinessResponder.SayNoSoap();
+                else EventBus.Publish(new DevNotice(_doneLine));
                 return;
             }
             if (Active != null && Active != this) Active = null;
@@ -148,9 +152,9 @@ namespace HiddenHarbours.World
                 Stop(WorldStrings.WashWalkedOff);
                 return false;
             }
-            if (WashStationRules.IsDone(c.Dirt, def))
+            if (WashStationRules.IsDone(c.Dirt, c.CeilingFor(def)))
             {
-                Stop(_doneLine);
+                Stop(c.SoapMatters(def) && !c.WashSoaped ? WorldStrings.WashDoneNoSoap : _doneLine);
                 return false;
             }
             return true;
@@ -193,6 +197,11 @@ namespace HiddenHarbours.World
 
         /// <summary>True when the station can take no more dirt off.</summary>
         public static bool IsDone(float dirt, WashStationDef def) => def == null || dirt <= FloorOf(def) + DoneTolerance;
+
+        /// <summary>True when a wash that can reach <paramref name="ceiling"/> (0..1, from
+        /// <see cref="ICleanlinessService.CeilingFor"/>: the station's own, or the unsoaped cap without soap)
+        /// can take no more dirt off.</summary>
+        public static bool IsDone(float dirt, float ceiling) => dirt <= 1f - Mathf.Clamp01(ceiling) + DoneTolerance;
 
         /// <summary>True when the player is further than reach plus slack from the station.</summary>
         public static bool WalkedAway(Vector2 station, Vector2 player, float reachMeters, float slackMeters)

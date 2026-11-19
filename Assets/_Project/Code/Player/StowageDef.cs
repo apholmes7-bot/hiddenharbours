@@ -38,5 +38,11 @@ namespace HiddenHarbours.Player
         [Tooltip("One line for the stow message and later its label. Greybox copy.")]
         [TextArea(2, 4)]
         public string Flavor;
+
+        [Tooltip("The home whose deed opens this storage (home.ginny_lot_camper for the camper's and the " +
+                 "shed's racks and lockers). Empty = open with no deed: a boat's rack, the stores he lodges " +
+                 "beside at Ginny's. Read through Core.StorageAccess; a closed rack takes nothing and gives " +
+                 "nothing back.")]
+        public string DeedHomeId = "";
     }
 }

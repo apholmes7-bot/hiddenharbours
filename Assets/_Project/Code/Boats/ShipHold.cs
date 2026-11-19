@@ -8,11 +8,28 @@ namespace HiddenHarbours.Boats
     /// The boat's cargo hold. Capacity comes from the hull (HU). Implements <see cref="IHold"/> so
     /// Fishing fills it and the market empties it, all through the Core contract.
     /// </summary>
-    public class ShipHold : MonoBehaviour, IHold
+    public class ShipHold : MonoBehaviour, IHold, IHoldRemove, IStorageContainer
     {
         [SerializeField] private BoatHullDef _hull;
 
         private readonly List<CatchItem> _items = new();
+
+        /// <summary>The fixed id of the player's boat hold (<see cref="StorageIds.BoatHold"/>). Only the
+        /// region coordinator's persistent hold is listed in <see cref="PlayerStorage"/>; a region scene's
+        /// dev boat answers the same id and is never listed.</summary>
+        public string StorageId => StorageIds.BoatHold;
+
+        /// <summary>The boat's hold sorts first (<see cref="PlayerStorage.PriorityBoatHold"/>).</summary>
+        public int StoragePriority => PlayerStorage.PriorityBoatHold;
+
+        /// <summary>Take out the one item at <paramref name="index"/> and nothing else (IHoldRemove).</summary>
+        public bool TryRemoveAt(int index)
+        {
+            if (index < 0 || index >= _items.Count) return false;
+            _items.RemoveAt(index);
+            SyncToSave();
+            return true;
+        }
 
         /// <summary>The hull this hold reads its capacity from. Same-module read for the deck container
         /// (the tray needs the hull's container Def + deck anchor); cross-module callers keep to

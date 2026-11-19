@@ -400,6 +400,55 @@ arrival opening keeps its authored door). A foot crossing never moves the boat: 
 (on `GameServices.Whereabouts`) report where the player and the boat are, for save and sleep. Layout
 table and rules: [`world-frame.md`](world-frame.md).
 
+### The player's storage containers (storage with memory, owner 2026-11-17, save v25)
+
+Core `PlayerStorage` is the one list of the containers the player keeps things in (the boat's hold, the
+freezer at Ginny's, a rod rack or gear locker at home); a reader in another lane (the gift rows) walks it
+without naming a class. Contracts, all additive:
+
+- `IStorageContainer` (`StorageId`, `StoragePriority`): a stable `storage.snake_case` id (`StorageIds`;
+  the boat's hold is the fixed `storage.boat_hold`). The id is the container's SAVE KEY, so it is unique:
+  registering a second live container under one id logs a warning, and `HomeStoragePlanTests` refuses a
+  repeated id in the plan or in any placed scene or prefab.
+- `IHold` stays an optional facet with `Register(IHold)` kept: `PlayerStorage.Get(i)` answers only catch
+  holds (a rack reads null there), `GetContainer(i)` only named containers, `Find(id)` one by id. A type
+  that is both registers through the generic `Register<T>` (one entry).
+- **Order is deterministic**: priority (boat hold 10, home freezer 20, fixtures 50, an unnamed hold 100),
+  then ordinal id; only exact ties keep listing order. That order is the Give rows' order and the container
+  a gift comes from.
+- **Lifetime: register on enable, unregister on destroy, never on disable** (the `GameServices.PlayerHold`
+  rule: a region hop toggles roots, and a container that left on disable would vanish mid-crossing). A
+  null or already-listed container is ignored, unlisting one not listed is a no-op, and one object is one
+  entry whichever facet lists or unlists it. A destroyed scene container still counts until it is
+  unlisted, but every getter and `Find` read it as null, so a rebuilt container under the same id is
+  found (and is not warned about). Priority and id are read once, at listing. Reading is a count and an
+  index, allocation-free. Tests: `PlayerStorageOrderTests`, `PlayerStorageCoverageTests`,
+  `StoredContainersTests`, `SaveMigrationV25Tests`.
+- `IHoldRemove.TryRemoveAt(index)` (on `ShipHold`, `GinnyFreezer`, `CamperFreezer`, `ClamBucket`): the gift take removes the
+  one item and touches nothing else; a hold without it is still emptied and refilled.
+- **The save is the source of truth.** The contents live in `SaveData.StoredContainers` (and food in v23
+  `KitchenStores`) under the container's id; the scene object is a view that binds to its record by id on
+  enable (a changed save), on start and on `GameLoaded`, not only on the load edge. A catch hold binds only
+  once `GameServices.CatchFactory` exists (a restore without it rebuilds nothing); until then it stays
+  unbound and refuses every change, so an empty view can never be written over the saved catch.
+  `GameServices.Reset` still clears the list; whatever outlives a Reset registers again.
+
+### Hulls sort among the scenery (ADR 0059, accepted 2026-11-17)
+
+A boat is an upright world object. Core's pure `HullSorting.OrderAt(waterlinePivotY)` gives her order:
+the decor band's Y-sort at her waterline pivot (the boat root, `HullFootprint.Center`, which does not
+ride the swell), `SortingBands.HullYieldRungs` (1) behind, the same rule as the mesh vehicles.
+`HullSorting.OrderFor(HullFootprint)` reads the pivot off a footprint. Rollout (the boat root's
+`SortingGroup`, the re-anchored effects) follows `hull-vs-decor-sorting.md` §7; until it lands, hulls
+still sort at `BoatVisualDef.SortingOrder`.
+
+Free effects never take a fixed order in the band's low floor (step 2). Core's `EffectSorting` is the
+one table: an anchored effect (spray, splashes, buoys, an emergent shore plant, the NPC catch without a
+skipper) sorts at `EffectSorting.OrderAt(effect, anchorY)`, the band's Y-sort at its emission point plus
+its rungs; a carried one (the rod line and splash) at `EffectSorting.OrderOver(effect, carrierOrder)`.
+`EffectSortingTests` pins the table and guards the low floor (`DecorFloor` to `DecorFloor + 100`) against
+new literals.
+
 ## 5. Boat & entity architecture (composition)
 
 **Character clothing interchange (CW-01, 2026-09-13).** Core now defines the version-1

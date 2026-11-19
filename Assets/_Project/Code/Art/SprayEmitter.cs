@@ -38,10 +38,10 @@ namespace HiddenHarbours.Art
     /// boat-spotlight bug).</b> Unlike the falling rain (which sits well ABOVE everything), spray lives NEAR the
     /// water surface: it should draw just ABOVE the water plane but AROUND/BELOW the boats. A
     /// <see cref="SpriteRenderer"/> does NOT reliably sort against the water <see cref="MeshRenderer"/> by
-    /// <c>sortingOrder</c> alone (the mesh falls back to world-z), so the host carries a
-    /// <see cref="SortingGroup"/> ("sort as 2D") AND every wisp is nudged a SMALL amount toward the camera so it
-    /// clears the water plane — but LESS than the rain's nudge, and at a LOWER sortingOrder, so boats still read
-    /// on top. The owner must VERIFY in Unity that the spray reads above the water yet below the boats — a
+    /// <c>sortingOrder</c> alone (the mesh falls back to world-z), so every wisp carries its own
+    /// <see cref="SortingGroup"/> ("sort as 2D"), sorted where it spawned by the decor band's Y-sort
+    /// (<see cref="EffectSorting"/>, ADR 0059 step 2), AND every wisp is nudged a SMALL amount toward the camera
+    /// so it clears the water plane — but LESS than the rain's nudge. The owner must VERIFY in Unity that the spray reads above the water yet below the boats — a
     /// headless test can't catch mesh-vs-sprite depth.</para>
     ///
     /// <para><b>NOT storm-foam lanes.</b> The surface-locked col.rgb foam STREAKS that ride the crests are a
@@ -59,10 +59,9 @@ namespace HiddenHarbours.Art
                  "drift, look, day/night fade. Defaults ship the feature OFF (baseline 0) until you dial it in.")]
         [SerializeField] private SprayConfig _config = SprayConfig.Default;
 
-        [Tooltip("Sorting order — spray draws just ABOVE the water but should read AROUND/BELOW the boats, so " +
-                 "this sits LOW (a small positive), below the rain's order. A SortingGroup + a small camera-ward " +
-                 "z clear the water MeshRenderer without jumping in front of the boats (see class docs).")]
-        [SerializeField] private int _sortingOrder = 5;
+        // ADR 0059 step 2: no fixed order. Each wisp carries its own SortingGroup ("sort as 2D", the #134
+        // quirk) whose order is the decor band's Y-sort at the point it tore off the crest
+        // (EffectSorting, SortedEffect.WindSpray), so spray interleaves with rocks and figures by position.
 
         [Tooltip("Metres toward the camera (−z) each wisp is nudged so it clears the water plane. Kept SMALL " +
                  "(smaller than the rain's) so spray stays near the surface, not out in front of the boats.")]
@@ -86,6 +85,7 @@ namespace HiddenHarbours.Art
 
         private Wisp[] _pool;
         private SpriteRenderer[] _renderers;
+        private SortingGroup[] _groups;   // one per wisp: its order is set once, at spawn
         private Sprite _sprite;
         private float _tickTimer;
         private float _spawnCarry;
@@ -115,10 +115,6 @@ namespace HiddenHarbours.Art
             // A soft torn puff (point-filtered) — one shared sprite so every wisp batches (rule 7). A high
             // softness reads as a wispy tear of spray rather than a hard dot.
             _sprite = AmbientGlobals.BuildSoftPuff("Spray.Puff", 16, 48, 0.9f);
-            // "Sort as 2D": make the sprite pool sort by sortingOrder against 2D content instead of falling back
-            // to world-z, so the spray reliably clears the water mesh (the #134 quirk).
-            var group = gameObject.AddComponent<SortingGroup>();
-            group.sortingOrder = _sortingOrder;
             BuildPool();
         }
 
@@ -129,13 +125,16 @@ namespace HiddenHarbours.Art
             int n = Mathf.Max(1, _config.MaxWisps);
             _pool = new Wisp[n];
             _renderers = new SpriteRenderer[n];
+            _groups = new SortingGroup[n];
             for (int i = 0; i < n; i++)
             {
                 var go = new GameObject("wisp");
                 go.transform.SetParent(transform, false);
                 var sr = go.AddComponent<SpriteRenderer>();
                 sr.sprite = _sprite;
-                sr.sortingOrder = _sortingOrder;
+                // "Sort as 2D": the wisp sorts by order against 2D content instead of falling back to world-z,
+                // so it reliably clears the water mesh (the #134 quirk). Its order is set when it spawns.
+                _groups[i] = go.AddComponent<SortingGroup>();
                 go.SetActive(false);
                 _renderers[i] = sr;
             }
@@ -253,6 +252,9 @@ namespace HiddenHarbours.Art
             float spreadDeg = (hspread * 2f - 1f) * 20f;   // ±20° tear off the downwind line
             Vector2 launchDir = Rotate(windDir, spreadDeg);
             Vector2 vel = launchDir * speed;
+
+            // Sorted once, where it tore off the crest (ADR 0059 step 2).
+            _groups[i].sortingOrder = EffectSorting.OrderAt(SortedEffect.WindSpray, pos.y);
 
             _pool[i] = new Wisp
             {

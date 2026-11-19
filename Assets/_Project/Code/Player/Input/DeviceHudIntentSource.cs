@@ -24,7 +24,13 @@ namespace HiddenHarbours.Player
     {
         public const string HideAllAction = "HideAll";
 
-        private InputAction _hideAll;
+        /// <summary>Fold / open the TASKS note (2026-11-16): T, and the pad's west button.</summary>
+        public const string ToggleTasksAction = "ToggleTasks";
+
+        public const string PointAction = "Point";
+        public const string ClickAction = "Click";
+
+        private InputAction _hideAll, _toggleTasks, _point, _click;
         private bool _resolved;
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
@@ -48,17 +54,38 @@ namespace HiddenHarbours.Player
             bool hideAll = _hideAll.WasPressedThisFrame();
             InputBindings.ReportDevice(_hideAll);
 
-            return Map(hideAll, ControlIntentGates.WorldStopped, HelmKeyCapture.IsCapturing);
+            bool toggleTasks = _toggleTasks != null && _toggleTasks.WasPressedThisFrame();
+            if (_toggleTasks != null) InputBindings.ReportDevice(_toggleTasks);
+
+            // The pointer is the UI map's (the same UI/Point and UI/Click the chooser reads), hit-tested
+            // by the HUD's reader against the TASKS note's own box, never by a raycaster.
+            bool click = _click != null && _click.WasPressedThisFrame();
+            Vector2 point = _point != null ? _point.ReadValue<Vector2>() : Vector2.zero;
+
+            return Map(hideAll, toggleTasks, click, point, ControlIntentGates.WorldStopped,
+                       HelmKeyCapture.IsCapturing);
         }
 
         public static HudIntents Map(bool hideAll, bool worldStopped, bool keysCaptured)
             => ControlIntentGates.Apply(new HudIntents(hideAll), worldStopped, keysCaptured);
 
+        /// <summary>The pure assembly, through the HUD's two gates.</summary>
+        public static HudIntents Map(bool hideAll, bool toggleTasks, bool click, Vector2 point,
+                                     bool worldStopped, bool keysCaptured)
+            => ControlIntentGates.Apply(new HudIntents(hideAll, toggleTasks, click, point), worldStopped,
+                                        keysCaptured);
+
         private void Resolve()
         {
             if (_resolved) return;
             _resolved = true;
-            _hideAll = InputBindings.Action(InputBindings.Map(InputBindings.HudMap), HideAllAction);
+            InputActionMap hud = InputBindings.Map(InputBindings.HudMap);
+            _hideAll = InputBindings.Action(hud, HideAllAction);
+            _toggleTasks = InputBindings.Action(hud, ToggleTasksAction);
+
+            InputActionMap ui = InputBindings.Map(InputBindings.UiMap);
+            _point = InputBindings.Action(ui, PointAction);
+            _click = InputBindings.Action(ui, ClickAction);
         }
     }
 }

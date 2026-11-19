@@ -22,6 +22,10 @@ namespace HiddenHarbours.Fishing
         [Header("Art")]
         [Tooltip("Optional species sprite (icon/haul art). Attached by art-pipeline later; never required.")]
         public Sprite Sprite;
+        [Tooltip("A flatfish: held up by the tail it is shown with its broad side to the camera, never its " +
+                 "edge. The catch art builder turns this into a per-facing pick of the held sheet's broadest " +
+                 "neighbouring facing (CatchItemLibrary HeldFacingMap), measured off the art.")]
+        public bool HeldBroadSideOn;
 
         [Header("Where & when it bites")]
         public string[] RegionIds = { "region.coddle_cove" };

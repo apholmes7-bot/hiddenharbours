@@ -56,6 +56,10 @@ namespace HiddenHarbours.Player
 
         [Header("The fish (builder-wired from FishIsoAnchors.json + the Fish_* sheets)")]
         [SerializeField] private FishSpeciesVisual[] _species;
+        [Tooltip("The shared fish art table. A species this scene's own table has no size rungs for " +
+                 "(a scene saved before the ladder, or a species added since) is drawn from here. Empty " +
+                 "= the Resources copy (FishArtLibrary).")]
+        [SerializeField] private FishArtLibrary _fishArt;
         [Tooltip("Seconds per fish animation frame. The rig's own cadences are shadow 0.28 s, " +
                  "dart 0.08 s and thrash 0.11 s; this serialized playback cadence is independent.")]
         [SerializeField, Min(0.01f)] private float _fishSecondsPerFrame = 0.16f;
@@ -157,12 +161,13 @@ namespace HiddenHarbours.Player
         [SerializeField, Min(0f)] private float _boilCalmRadiusM = 0.3f;
         [SerializeField, Range(0f, 1f)] private float _boilAlpha = 0.5f;
 
-        [Header("Sorting (world elements; the rod rides the fisher's own order ±1)")]
-        [SerializeField] private int _lineSortingOrder = 50;     // the trap rope's precedent
+        // The rod, the line and the splash ride the fisher's own order (the rod ±1; the line and splash
+        // EffectSorting.RodOverFisherRungs in front, ADR 0059 step 2). The water elements below are not yet
+        // re-anchored: an open point of step 2 (see EffectSortingTests' low-floor guard).
+        [Header("Sorting (water elements)")]
         [SerializeField] private int _waterElementOrder = 49;    // bobber / surfaced fish / held under line
         [SerializeField] private int _shadowSortingOrder = 20;   // the deep shape sits under water detail
         [SerializeField] private int _rippleSortingOrder = 15;
-        [SerializeField] private int _splashSortingOrder = 51;
 
         // ---- runtime ----------------------------------------------------------------------------
         private PlayerFishingAnimator _animator;
@@ -243,6 +248,7 @@ namespace HiddenHarbours.Player
         private int _fishRow = Directions / 2;
         private string _resolvedFishId;
         private int _speciesIndex = -1;
+        private FishSpeciesVisual _resolvedSpecies;
         private float _resolvedWeightKg = float.NaN;
         private FishRungVisual _rung;
 
@@ -276,7 +282,7 @@ namespace HiddenHarbours.Player
             _bobberSr = MakeChild("Bobber", _waterElementOrder);
             _fishSr = MakeChild("FishOnTheLine", _waterElementOrder);
             _heldSr = MakeChild("HeldCatch", 0);
-            _splashSr = MakeChild("Splash", _splashSortingOrder);
+            _splashSr = MakeChild("Splash", 0);   // ordered over the fisher as it plays (RenderSplash)
             _rippleSr = MakeChild("SinkRipple", _rippleSortingOrder);
             _line = MakeLine();
             _lineBuffer = new Vector2[Mathf.Max(2, _lineSegments)];
@@ -409,6 +415,13 @@ namespace HiddenHarbours.Player
             {
                 _resolvedFishId = next.FishId;
                 _speciesIndex = FindSpecies(next.FishId);
+                // The scene's own ladder when it has rungs, else the shared fish art table's: a scene
+                // carrying the pre-ladder table must still draw the new fish on the line.
+                _resolvedSpecies = string.IsNullOrEmpty(next.FishId)
+                    ? null
+                    : FishArtLibrary.Resolve(
+                        _species != null && _speciesIndex >= 0 ? _species[_speciesIndex] : null,
+                        _fishArt != null ? _fishArt : FishArtLibrary.Shared, next.FishId);
 
                 // WHAT SHE DOES ON THE LINE, asked once per species through the Core seam rather than
                 // by reaching into the Fishing module for a Def (rule 4 — Player does not reference
@@ -433,7 +446,11 @@ namespace HiddenHarbours.Player
             {
                 _resolvedWeightKg = next.WeightKg;
                 FishSpeciesVisual sp = CurrentSpecies();
-                _rung = sp != null ? sp.RungFor(next.WeightKg) : null;
+                // Picked at the weight the fish is DRAWN at (the readability floor), the same rule the
+                // hands and the tote use, so the fish he lands is the fish he then holds.
+                FishArtLibrary table = _fishArt != null ? _fishArt : FishArtLibrary.Shared;
+                _rung = FishArtLibrary.LineRungFor(sp, table != null ? table.CatchArt : null,
+                                                   next.FishId, next.WeightKg);
             }
         }
 
@@ -1032,9 +1049,7 @@ namespace HiddenHarbours.Player
             _heldSr.enabled = true;
         }
 
-        private FishSpeciesVisual CurrentSpecies()
-            => _species != null && _speciesIndex >= 0 && _speciesIndex < _species.Length
-                ? _species[_speciesIndex] : null;
+        private FishSpeciesVisual CurrentSpecies() => _resolvedSpecies;
 
         private int FindSpecies(string fishId)
         {
@@ -1094,6 +1109,13 @@ namespace HiddenHarbours.Player
             float phase = Time.time * _shudderHz * (2f * Mathf.PI);
 
             if (!_line.enabled) _line.enabled = true;
+            // ADR 0059 step 2: the line rides the fisher's own order, one rung in front (Core EffectSorting),
+            // not a parked 50. One int, written only when it changes.
+            if (_playerSr != null)
+            {
+                int lineOrder = EffectSorting.OrderOver(SortedEffect.RodLine, _playerSr.sortingOrder);
+                if (_line.sortingOrder != lineOrder) _line.sortingOrder = lineOrder;
+            }
             _line.positionCount = n;
             for (int i = 0; i < n; i++)
             {
@@ -1143,6 +1165,12 @@ namespace HiddenHarbours.Player
                 return;
             }
             _splashSr.transform.position = new Vector3(_splashPos.x, _splashPos.y, 0f);
+            // ADR 0059 step 2: the splash rides the fisher's own order, one rung in front, not a parked 51.
+            if (_playerSr != null)
+            {
+                int splashOrder = EffectSorting.OrderOver(SortedEffect.RodSplash, _playerSr.sortingOrder);
+                if (_splashSr.sortingOrder != splashOrder) _splashSr.sortingOrder = splashOrder;
+            }
             _splashSr.sprite = _splashFrames[frame];
             _splashSr.enabled = true;
         }
@@ -1186,8 +1214,7 @@ namespace HiddenHarbours.Player
             lr.endWidth = _lineWidth;
             var shader = Shader.Find("Sprites/Default");
             if (shader != null) lr.material = new Material(shader);   // null headless → skip (rope precedent)
-            lr.sortingOrder = _lineSortingOrder;
-            lr.positionCount = 0;
+            lr.positionCount = 0;   // ordered over the fisher as it draws (RenderLine)
             lr.enabled = false;
             return lr;
         }

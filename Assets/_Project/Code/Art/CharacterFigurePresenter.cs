@@ -120,6 +120,12 @@ namespace HiddenHarbours.Art
         private CharacterSkinDef _configured;
         private string _stateKey;
         private double _stateStartSeconds;
+
+        // The way to the oars under this figure (Core's IOarStroke), so a rower at the oars rows.
+        private readonly RowingFigureReader _rowing = new RowingFigureReader();
+
+        /// <summary>True on a frame this figure is drawn ROWING, its frame taken from the oar's phase.</summary>
+        public bool Rowing { get; private set; }
         private readonly CharacterFigureLife _life = new CharacterFigureLife();
 
         // Who she is (ADR 0044 §9): the stand's one key, read in Configure, and its one hash, taken there
@@ -322,6 +328,7 @@ namespace HiddenHarbours.Art
         public void PoseFigure(ICharacterFigureStand stand, bool aboard)
         {
             DrawsInsteadOfSprite = false;
+            Rowing = false;
 
             if (!IsLive(stand)) { Stop(Refusal.NoStand); return; }
             if (!aboard)
@@ -372,8 +379,13 @@ namespace HiddenHarbours.Art
             // its reason (DrawnStance reports the SHEETS' coverage, not what the person is doing).
             CharacterStance stance = character.Stance;
             CharacterGait gait = character.Gait;
-            if (!CharacterSkinStateMap.Resolve(skin, stance, gait, out string stateKey, out bool fellBack) ||
-                (character.RequireExactFigureState && fellBack))
+            // At the oars and they are stroking: the figure rows, frame-locked to the blade, as the
+            // player's does. Resting oars fall through to the state map and its idle.
+            Rowing = _rowing.TryPose(skin, stand, stance, out string stateKey, out int rowFrame);
+            bool fellBack = false;
+            if (!Rowing &&
+                (!CharacterSkinStateMap.Resolve(skin, stance, gait, out stateKey, out fellBack) ||
+                 (character.RequireExactFigureState && fellBack)))
             {
                 _refusalStance = stance;
                 _refusalGait = gait;
@@ -404,7 +416,7 @@ namespace HiddenHarbours.Art
             // seed and time); a one-shot runs from the moment its state was entered and holds its end.
             double clipStart = clip.Loop ? 0d : _stateStartSeconds;
             int seed = GameServices.Environment != null ? GameServices.Environment.WorldSeed : 0;
-            int frame = CharacterSkinPose.FrameFor(clip, seed, now, clipStart);
+            int frame = Rowing ? rowFrame : CharacterSkinPose.FrameFor(clip, seed, now, clipStart);
 
             // Stood BEFORE it is posed: the look reads where the figure stands this frame.
             Place(stand, skin);

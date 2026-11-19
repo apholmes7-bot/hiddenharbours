@@ -22,5 +22,9 @@ namespace HiddenHarbours.Core
 
         /// <summary>The container takes this kind of thing but has no room left.</summary>
         Full,
+
+        /// <summary>The container is not his to use yet: it opens with a deed he does not hold (the camper's
+        /// racks and lockers before the camper is his; see <see cref="StorageAccess"/>).</summary>
+        NotYours,
     }
 }

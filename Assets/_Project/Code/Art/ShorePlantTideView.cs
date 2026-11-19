@@ -238,8 +238,12 @@ namespace HiddenHarbours.Art
             var sprite = _def.SpriteFor(state);
             if (sprite != null) _sr.sprite = sprite;
 
+            // Emergent, the plant takes the decor band's Y-sort at its root (ADR 0059 step 2), not a parked 3:
+            // the YSortSprite below lands on the same band when there is one, and a plant without one now
+            // interleaves with decor by position too.
             _sr.sortingOrder = ShorePlantTideMath.SortingOrderFor(
-                submerged, _def.SubmergedSortingOrder, _def.EmergentSortingOrder, out bool ySorted);
+                submerged, _def.SubmergedSortingOrder,
+                EffectSorting.OrderAt(SortedEffect.EmergentShorePlant, transform.position.y), out bool ySorted);
 
             // ⚠ YSortSprite would immediately overwrite sortingOrder back into its own decor band and
             // float a submerged bed up through the sea. Standing it down while under water is what
