@@ -265,9 +265,23 @@ namespace HiddenHarbours.Player
         /// </summary>
         public FishRungVisual Rung => _rung;
 
-        /// <summary>Is the fight drawing its own rod in her hands this frame? While it is, the carried rod
-        /// tool is not drawn (<c>CarryHands</c>), so she holds one rod and not two.</summary>
-        public bool DrawsRod => _rodSr != null && _rodSr.enabled;
+        /// <summary>Is the fight drawing its own rod in his hands this frame, sprite or mesh? While it is,
+        /// the carried rod tool is not drawn (<c>CarryHands</c>), so he holds one rod and not two.</summary>
+        public bool DrawsRod => DrawsMeshRod || (_rodSr != null && _rodSr.enabled);
+
+        /// <summary>True on a frame the rod is drawn as its facet mesh in the mesh figure's hand
+        /// (ADR 0053, <see cref="HeldRodMesh"/>); the sprite rod is off on exactly those frames.</summary>
+        public bool DrawsMeshRod { get; private set; }
+
+        /// <summary>The mesh rod's driver, once the rod has been asked for. For tests and plates.</summary>
+        public HeldRodMesh MeshRod => _meshRod;
+
+        /// <summary>Where the line left the rod on the last frame it was drawn, in world metres.</summary>
+        public Vector2 LineAnchorWorld { get; private set; }
+
+        private HeldRodMesh _meshRod;
+        private CarryHands _hands;
+        private DeckRiderMeshPresenter _meshPresenter;
 
         private void Awake()
         {
@@ -505,8 +519,20 @@ namespace HiddenHarbours.Player
             bool castPath = castAim.sqrMagnitude > 1e-4f;
             RodElements show = RodPresenterMath.ElementsFor(_s.Phase, castPath);
 
-            bool rodDrawn = RenderRod(show, hands, out Vector2 tip);
-            Vector2 unloadedTip = tip;   // the sheet's own tip, before the fight's load bends it over
+            bool rodDrawn = RenderRod(show, hands, out Vector2 spriteTip);
+            // THE MESH ROD (ADR 0053): while the mesh body plays the performance, the rod is its baked
+            // facet mesh in his hand, aimed by the clip's own tool track, and the sprite rod is off. Any
+            // refusal leaves the sprite rod exactly as RenderRod drew it.
+            DrawsMeshRod = (show & RodElements.Rod) != 0 && TryDrawMeshRod();
+            if (!DrawsMeshRod) _meshRod?.Hide();   // a beat with no rod must not leave the last pose up
+            if (DrawsMeshRod)
+            {
+                _rodSr.enabled = false;
+                _rodGrip = _meshRod.GripWorld;
+                rodDrawn = true;
+            }
+            Vector2 tip = RodPresenterMath.LineAnchor(DrawsMeshRod, DrawsMeshRod ? _meshRod.TipWorld : spriteTip, spriteTip);
+            Vector2 unloadedTip = tip;   // the rod's own tip, before the fight's load bends it over
 
             // ---- the line's far end (and the element that lives there) ---------------------------
             Vector2 far = tip;
@@ -568,7 +594,7 @@ namespace HiddenHarbours.Player
             RodLeanDegrees = 0f;
             if (rodDrawn && _s.IsFightPhase) tip = LeanRodUnderLoad(unloadedTip, far);
 
-            if ((show & RodElements.Line) != 0 && farValid) RenderLine(tip, far);
+            if ((show & RodElements.Line) != 0 && farValid) { RenderLine(tip, far); LineAnchorWorld = tip; }
             else { _line.enabled = false; _line.positionCount = 0; }
 
             if (farValid) _lastFarEnd = far;
@@ -585,6 +611,43 @@ namespace HiddenHarbours.Player
                 _riderResolved = true;
             }
             return _rider != null ? _rider.DrawnBodyOffset : Vector2.zero;
+        }
+
+        // ---- the mesh rod (ADR 0053) -------------------------------------------------------------
+
+        /// <summary>
+        /// Ask <see cref="HeldRodMesh"/> to draw the rod in the mesh figure's hand this frame: the rod he
+        /// carries (<see cref="CarryHands.HeldFightRod"/>), the figure the deck presenter is drawing him
+        /// with right now (aboard or ashore), and <see cref="GameConfig.MeshRodInHand"/>. The figure was
+        /// posed for this frame at order 100, before this component's 101. The wiring is looked up with
+        /// TryGetComponent while missing (the builder may add it after this component), which does not
+        /// allocate.
+        /// </summary>
+        private bool TryDrawMeshRod()
+        {
+            GameConfig config = GameServices.Config;
+            bool on = config != null && config.MeshRodInHand;
+            if (!on && _meshRod == null) return false;
+            if (_hands == null) TryGetComponent(out _hands);
+            if (_meshPresenter == null) TryGetComponent(out _meshPresenter);
+            _meshRod ??= new HeldRodMesh(transform);
+            ToolDef rod = _hands != null ? _hands.HeldFightRod : null;
+            float width = config != null ? config.HeldPropLineWidthPx : GameConfig.DefaultHeldPropLineWidthPx;
+            return _meshRod.TryDraw(on, rod, LiveFigure(), width);
+        }
+
+        /// <summary>The figure drawing him this frame, or null while he is a sprite.</summary>
+        private IsoCharacterFigureRenderer LiveFigure()
+        {
+            DeckRiderMeshPresenter p = _meshPresenter;
+            if (p == null || !p.DrawsInsteadOfSprite) return null;
+            return p.DrawsAshore ? p.AshoreFigure : p.Figure;
+        }
+
+        private void OnDestroy()
+        {
+            _meshRod?.Dispose();
+            _meshRod = null;
         }
 
         // ---- the rod overlay ---------------------------------------------------------------------
@@ -695,7 +758,8 @@ namespace HiddenHarbours.Player
             }
             RodLeanDegrees = lean;
             var rot = Quaternion.Euler(0f, 0f, lean);              // a WORLD-space delta off the baseline
-            _rodSr.transform.rotation = rot * _rodBaseRotation;    // composes with any parent rotation
+            if (DrawsMeshRod) _meshRod.Lean(lean);                 // the same picture-space turn, about the grip
+            else _rodSr.transform.rotation = rot * _rodBaseRotation;   // composes with any parent rotation
             return _rodGrip + (Vector2)(rot * shaft);
         }
 
@@ -1180,6 +1244,8 @@ namespace HiddenHarbours.Player
         private void HideInteraction()
         {
             if (_rodSr != null) _rodSr.enabled = false;
+            _meshRod?.Hide();
+            DrawsMeshRod = false;
             if (_bobberSr != null) _bobberSr.enabled = false;
             if (_fishSr != null) _fishSr.enabled = false;
             if (_heldSr != null) _heldSr.enabled = false;
