@@ -145,9 +145,48 @@ namespace HiddenHarbours.Tests.Art.EditMode
                 "the whitewater tears at its own age (its energy, read off the march)");
             StringAssert.Contains("FoamSheetJoin(SurfBandValue(saturate(surfLip), surfBay), surfLip * _FoamSheetCaps.w,", code);
             StringAssert.Contains("0.0, surfTorn, surfBay, _FoamSheetCaps.z);", code, "the lip is the newest foam: age 0");
-            // The wash on the sand keeps its smooth, unbanded sheet.
-            StringAssert.Contains("float cover = lerp(surfBanded, saturate(surfCoverDrawn),", code);
-            StringAssert.Contains("float lip = lerp(lipBanded, saturate(surfLip), washThin)", code);
+            // Off the wash the whitewater and lip are the banded reads above; on the wash, the wash's own join.
+            StringAssert.Contains("float cover = lerp(surfBanded, washSheet,", code);
+            StringAssert.Contains("float lip = lerp(lipBanded, washLip, washThin)", code);
+        }
+
+        [Test]
+        public void TheWash_RunsUpAndDrainsBack_ThroughTheSheet()
+        {
+            // The owner, 11-19, "Yes, unify surf": the run-up's smooth sheet takes the one foam's lace, tear,
+            // bands and colour walk, aged as it drains back, so the swash is the same foam as the wake.
+            string code = CodeOnly(Source());
+            StringAssert.Contains("if (_FoamSheetWash.x > 0.001)", code);
+            StringAssert.Contains("washAge01 = saturate(surfAge01 + _FoamSheetWash.z * BeachSwashBackwash01(worldXY, depthC, t));", code,
+                "the backwash reads older, off the swash's own phase");
+            StringAssert.Contains("washTorn = FoamSheetLace(worldXY);", code, "the same lace as every foam");
+            StringAssert.Contains("float washSheet = FoamSheetJoin(saturate(surfCoverDrawn), surfCoverDrawn * _FoamSheetWash.y,", code);
+            StringAssert.Contains("washAge01, washTorn, surfBay, _FoamSheetWash.x);", code, "the wash tears at its own age");
+            StringAssert.Contains("float washLip = FoamSheetJoin(saturate(surfLip), surfLip * _FoamSheetWash.y,", code);
+            StringAssert.Contains("0.0, washTorn, surfBay, _FoamSheetWash.x);", code, "the wash's lip is fresh foam");
+            StringAssert.Contains("float3 surfFoam = FoamAgedColor(lerp(surfAge01, washAge01, washThin), _SurfColor.rgb, _SurfAgeStrength, col.rgb);", code,
+                "the wash walks the same ageing colour, at its own age");
+            // It is still a sheet of water on the sand: the wash's opacity and the cap still apply after it.
+            int sheet = code.IndexOf("float cover = lerp(surfBanded, washSheet,", System.StringComparison.Ordinal);
+            int opacity = code.IndexOf("* lerp(1.0, saturate(_WashSheetOpacity), saturate(washOnSand));", sheet, System.StringComparison.Ordinal);
+            int cap = code.IndexOf("float washCapScale = washHeaviest > saturate(_WashMaxCover)", sheet, System.StringComparison.Ordinal);
+            Assert.Greater(opacity, sheet, "the wash keeps its sheet opacity");
+            Assert.Greater(cap, opacity, "and the cap: never a solid mat on the sand");
+        }
+
+        [Test]
+        public void WithTheWashJoinAtZero_TheOlderSmoothSheetComesBack()
+        {
+            // join 0: FoamSheetJoin returns its legacy argument, the age walk reads surfAge01, the lace is not read.
+            string code = CodeOnly(Source());
+            StringAssert.Contains("float washAge01 = surfAge01;", code);
+            StringAssert.Contains("float washTorn = 0.5;", code);
+            StringAssert.Contains("FoamSheetJoin(saturate(surfCoverDrawn),", code, "the legacy read is the old smooth sheet");
+            StringAssert.Contains("FoamSheetJoin(saturate(surfLip),", code, "the legacy lip is the old smooth lip");
+            // lerp(a, a, w) is a: the old colour walk.
+            int set = code.IndexOf("float washAge01 = surfAge01;", System.StringComparison.Ordinal);
+            int gate = code.IndexOf("if (_FoamSheetWash.x > 0.001)", System.StringComparison.Ordinal);
+            Assert.Greater(gate, set, "the age only moves inside the join's gate");
         }
 
         [Test]
@@ -222,6 +261,8 @@ namespace HiddenHarbours.Tests.Art.EditMode
                 VectorDefault(src, "_FoamSheetStorm"), "_FoamSheetStorm");
             CollectionAssert.AreEqual(new[] { d.ConvVector.x, d.ConvVector.y, d.ConvVector.z, d.ConvVector.w },
                 VectorDefault(src, "_FoamSheetConv"), "_FoamSheetConv");
+            CollectionAssert.AreEqual(new[] { d.WashVector.x, d.WashVector.y, d.WashVector.z, d.WashVector.w },
+                VectorDefault(src, "_FoamSheetWash"), "_FoamSheetWash");
             Assert.AreEqual(d.AgeTear, FloatDefault(src, "_FoamSheetAgeTear"), 1e-6f, "_FoamSheetAgeTear");
         }
 
@@ -244,6 +285,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
             Assert.AreEqual(1f, d.Surf, "the surf ships on the sheet (the owner's ruling)");
             Assert.AreEqual(1f, d.Storm, "the storm streaks ship on the sheet (the owner's ruling)");
             Assert.AreEqual(1f, d.Convergence, "the convergence foam ships on the sheet (the owner's ruling)");
+            Assert.AreEqual(1f, d.Wash, "the wash ships on the sheet (the owner's ruling of 11-19, 'Yes, unify surf')");
         }
     }
 }

@@ -1120,6 +1120,9 @@ Shader "HiddenHarbours/Water"
         // Convergence foam: x joins it (its texture becomes the sheet's lace, not the cap field's
         // blobs), y its age where it is the larger foam (foam gathered on a pinch line has drifted there).
         _FoamSheetConv     ("One foam: convergence (x join, y age)", Vector) = (1, 0.5, 0, 0)
+        // The wash: x joins the run-up's smooth sheet to the one foam (0 = the older smooth sheet), y
+        // scales the wash amount handed to the sheet, z how much older the foam reads as it drains back.
+        _FoamSheetWash     ("One foam: the wash (x join, y amount, z backwash age)", Vector) = (1, 1, 0.6, 0)
         // How hard the sheet tears apart as its foam ages (1 = half way through its age only the
         // lace's hearts survive). The wake also reads the hull waves' own tear; the larger wins.
         _FoamSheetAgeTear  ("One foam: age tear (0 = an even mat, 1 = hearts only by half age)", Range(0,1)) = 1
@@ -1897,6 +1900,7 @@ Shader "HiddenHarbours/Water"
                 float4 _FoamSheetCaps;
                 float4 _FoamSheetStorm;
                 float4 _FoamSheetConv;
+                float4 _FoamSheetWash;
                 float  _FoamSheetAgeTear;
                 float  _WakeFoamAgeStrength;
                 float  _WakeFoamFreshFloor;
@@ -6845,10 +6849,23 @@ Shader "HiddenHarbours/Water"
                     float surfTorn = _FoamSheetCaps.z > 0.001 ? FoamSheetLace(worldXY) : 0.5;
                     float surfBanded = FoamSheetJoin(SurfBandValue(surfCoverDrawn, surfBay), surfCoverDrawn * _FoamSheetCaps.w,
                                                      surfAge01, surfTorn, surfBay, _FoamSheetCaps.z);
-                    float cover = lerp(surfBanded, saturate(surfCoverDrawn),
+                    // THE WASH JOINS THE SHEET TOO (the owner, 11-19: "Yes, unify surf"): the run-up's smooth
+                    // sheet takes the same lace, tear, threshold and bands, aged by the surf's own age and
+                    // older still as it drains back down the sand, so the swash is the same foam as the wake
+                    // and the line. _FoamSheetWash.x = 0 is the older smooth sheet, bit-exact.
+                    float washAge01 = surfAge01;
+                    float washTorn = 0.5;
+                    if (_FoamSheetWash.x > 0.001)
+                    {
+                        washAge01 = saturate(surfAge01 + _FoamSheetWash.z * BeachSwashBackwash01(worldXY, depthC, t));
+                        washTorn = FoamSheetLace(worldXY);
+                    }
+                    float washSheet = FoamSheetJoin(saturate(surfCoverDrawn), surfCoverDrawn * _FoamSheetWash.y,
+                                                    washAge01, washTorn, surfBay, _FoamSheetWash.x);
+                    float cover = lerp(surfBanded, washSheet,
                                        washThin) * strength
                                 * lerp(1.0, saturate(_WashSheetOpacity), saturate(washOnSand));
-                    float3 surfFoam = FoamAgedColor(surfAge01, _SurfColor.rgb, _SurfAgeStrength, col.rgb);
+                    float3 surfFoam = FoamAgedColor(lerp(surfAge01, washAge01, washThin), _SurfColor.rgb, _SurfAgeStrength, col.rgb);
                     col.rgb = lerp(col.rgb, surfFoam, cover * _SurfColor.a);
                     col.a   = max(col.a, cover * _SurfColor.a);
 
@@ -6857,7 +6874,9 @@ Shader "HiddenHarbours/Water"
                     // The lip is the newest foam in the frame: the sheet at age 0 (the lace only, no age tear).
                     float lipBanded = FoamSheetJoin(SurfBandValue(saturate(surfLip), surfBay), surfLip * _FoamSheetCaps.w,
                                                     0.0, surfTorn, surfBay, _FoamSheetCaps.z);
-                    float lip = lerp(lipBanded, saturate(surfLip), washThin)
+                    float washLip = FoamSheetJoin(saturate(surfLip), surfLip * _FoamSheetWash.y,
+                                                  0.0, washTorn, surfBay, _FoamSheetWash.x);
+                    float lip = lerp(lipBanded, washLip, washThin)
                               * strength * lerp(1.0, surfShoreBreak, shoreSurf);
                     float3 lipFoam = FoamAgedColor(0.0, _SurfLipColor.rgb, _SurfAgeStrength, col.rgb);
                     col.rgb = lerp(col.rgb, lipFoam, lip * _SurfLipColor.a);

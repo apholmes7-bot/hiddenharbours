@@ -835,6 +835,9 @@ MonoBehaviour:
     StormAge: 0.4
     Convergence: 1
     ConvergenceAge: 0.5
+    Wash: 1
+    WashAmount: 1
+    WashBackwashAge: 0.6
     AgeTear: 1
     Oar: 1
     OarRadius: 0.35

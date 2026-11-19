@@ -390,7 +390,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
             int barrel = IndexOf(src,
                 "float barrel = lerp(SurfBandValue(barrelV, washThin > 0.001 ? 0.5 : bay), barrelV, washThin) * strength;");
             int lip = IndexOf(src,
-                "float lip = lerp(lipBanded, saturate(surfLip), washThin)");
+                "float lip = lerp(lipBanded, washLip, washThin)");
             int heaviest = IndexOf(src,
                 "float washHeaviest = max(cover * _SurfColor.a, max(lip * _SurfLipColor.a, barrel * _SurfBarrelColor.a));");
             int cap = IndexOf(src, "col.rgb = lerp(washUnder, col.rgb, lerp(1.0, washCapScale, max(washBeach, shoreSurf)));");
@@ -427,7 +427,9 @@ namespace HiddenHarbours.Tests.Art.EditMode
             StringAssert.Contains(
                 "float surfBanded = FoamSheetJoin(SurfBandValue(surfCoverDrawn, surfBay), surfCoverDrawn * _FoamSheetCaps.w,", src);
             StringAssert.Contains(
-                "float cover = lerp(surfBanded, saturate(surfCoverDrawn),", src);
+                "float cover = lerp(surfBanded, washSheet,", src);
+            // The wash joins the one foam sheet (11-19, "Yes, unify surf") on the same no-Bayer cell.
+            StringAssert.Contains("washAge01, washTorn, surfBay, _FoamSheetWash.x);", src);
             StringAssert.Contains("* lerp(1.0, saturate(_WashSheetOpacity), saturate(washOnSand));", src);
             int lip = IndexOf(src, "col.a   = max(col.a, lip * _SurfLipColor.a);");
             int washLine = IndexOf(src, "col.rgb = lerp(col.rgb, _FoamColor.rgb, washLine);");

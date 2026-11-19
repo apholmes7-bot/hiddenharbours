@@ -75,6 +75,18 @@ namespace HiddenHarbours.Core
                  "broken, so older = more lace and closer to the water's own colour.")]
         [Range(0f, 1f)] public float ConvergenceAge;
 
+        [Header("The wash")]
+        [Tooltip("How fully the run-up's wash (the sheet of water the surf sends up the sand and back) is " +
+                 "drawn as the one foam sheet: 1 = the same lace, tear, bands and ageing colour as every other " +
+                 "foam, 0 = the older smooth sheet.")]
+        [Range(0f, 1f)] public float Wash;
+        [Tooltip("How much of the wash's foam is handed to the sheet. Lower = the thin wash drops out and " +
+                 "only its thicker foam shows; higher = the wash reads fuller.")]
+        [Range(0.1f, 3f)] public float WashAmount;
+        [Tooltip("How much older the wash's foam reads as the water drains back down the sand: 0 = no " +
+                 "difference, 1 = the backwash leaves old, torn lace.")]
+        [Range(0f, 1f)] public float WashBackwashAge;
+
         [Header("Every sheet")]
         [Tooltip("How hard the sheet tears apart as its foam ages: 0 = it fades as one even mat, 1 = foam " +
                  "half way through its age keeps only its densest hearts. The wake also reads the hull " +
@@ -116,6 +128,10 @@ namespace HiddenHarbours.Core
             Convergence = 1f,
             ConvergenceAge = 0.5f,
 
+            Wash = 1f,
+            WashAmount = 1f,
+            WashBackwashAge = 0.6f,
+
             AgeTear = 1f,
 
             Oar = 1f,
@@ -142,5 +158,9 @@ namespace HiddenHarbours.Core
 
         /// <summary>The convergence foam's dials as the shader reads them (<c>_FoamSheetConv</c>).</summary>
         public Vector4 ConvVector => new Vector4(Mathf.Clamp01(Convergence), Mathf.Clamp01(ConvergenceAge), 0f, 0f);
+
+        /// <summary>The wash's dials as the shader reads them (<c>_FoamSheetWash</c>).</summary>
+        public Vector4 WashVector => new Vector4(Mathf.Clamp01(Wash), Mathf.Max(WashAmount, 0f),
+                                                 Mathf.Clamp01(WashBackwashAge), 0f);
     }
 }
