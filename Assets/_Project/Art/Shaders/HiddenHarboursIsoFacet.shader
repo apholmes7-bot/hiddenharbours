@@ -256,12 +256,16 @@ Shader "HiddenHarbours/IsoFacet"
             float  _HHFigureInkOn;          // the dark target's alpha flag is 1 minus this: 1 while the rig's ink
                                             // is live with its keyline ring, 0.75 while it is live without one
                                             // (rig 10, owner ruling K4), 0 off
-            // THE SEA ON HER (ADR 0061). x = 1 while the line is live, y = its height in the figure's
+            // THE SEA ON HIM (ADR 0061). x = 1 while the line is live, y = its height in the figure's
             // own frame (metres, z up: the posed mesh is the figure frame, so positionOS.z IS height).
-            // Every fragment under the line is discarded, in the facet pass, the reflection and the
-            // guard alike. Never written for the cast or the player ashore on dry ground: x = 0, and
-            // this variant draws exactly what it drew before.
+            // z = the foam band's height over the line (m, 0: a hard cut), w = how pale the foam goes.
+            // Under the line the reflection never draws; the facet and the guard draw it only while
+            // _HHFigureWaterLook.y is 1 (the old sprite's submerged look: tinted and dimmed toward
+            // the sea), and discard it otherwise. Never written for the cast or the player ashore on
+            // dry ground: x = 0, and this variant draws exactly what it drew before.
             float4 _HHFigureWater;
+            float4 _HHFigureWaterTint;      // rgb = the sea colour the submerged part tints toward, a = how far
+            float4 _HHFigureWaterLook;      // x = how much the submerged part dims, y = 1 while it is drawn
 #endif
 
             struct Attributes
@@ -583,7 +587,8 @@ Shader "HiddenHarbours/IsoFacet"
                 if (reflection ? i.lvl.y > 0.5 : HHLevelDiscards(i.lvl)) discard;
 #endif
 #ifdef HH_FIGURE
-                if (_HHFigureWater.x > 0.5 && i.figureUp < _HHFigureWater.y) discard;
+                bool hhUnder = _HHFigureWater.x > 0.5 && i.figureUp < _HHFigureWater.y;
+                if (hhUnder && (reflection || _HHFigureWaterLook.y < 0.5)) discard;
 #endif
                 if (reflection && i.reflectionHeight < 0)
                 {
@@ -683,6 +688,23 @@ Shader "HiddenHarbours/IsoFacet"
                 // A figure inked without its keyline ring (rig 10, K4) reads 0.25: the resolve gives
                 // it the figure's edge and no ring.
                 o.dark  = float4(_DarkRampTex.Load(int3(idx, m, 0)).rgb, 1.0 - _HHFigureInkOn);
+                // THE SEA ON HIM, its look: under the line tinted and dimmed toward the sea, and a pale
+                // foam band fading up from the line. Colour only; the alpha ids are untouched.
+                if (_HHFigureWater.x > 0.5)
+                {
+                    if (hhUnder)
+                    {
+                        float keep = 1.0 - _HHFigureWaterLook.x;
+                        o.facet.rgb = lerp(o.facet.rgb, _HHFigureWaterTint.rgb, _HHFigureWaterTint.a) * keep;
+                        o.dark.rgb  = lerp(o.dark.rgb,  _HHFigureWaterTint.rgb, _HHFigureWaterTint.a) * keep;
+                    }
+                    else if (_HHFigureWater.z > 0.0 && i.figureUp < _HHFigureWater.y + _HHFigureWater.z)
+                    {
+                        float foam = _HHFigureWater.w * (1.0 - (i.figureUp - _HHFigureWater.y) / _HHFigureWater.z);
+                        o.facet.rgb = lerp(o.facet.rgb, float3(1, 1, 1), foam);
+                        o.dark.rgb  = lerp(o.dark.rgb,  float3(1, 1, 1), foam);
+                    }
+                }
 #else
                 o.facet = float4(_RampTex.Load(int3(idx, m, 0)).rgb, hullId);
                 o.dark  = float4(_DarkRampTex.Load(int3(idx, m, 0)).rgb, 1.0);
@@ -775,7 +797,7 @@ Shader "HiddenHarbours/IsoFacet"
                 if (HHLevelDiscards(i.lvl)) discard;
 #endif
 #ifdef HH_FIGURE
-                if (_HHFigureWater.x > 0.5 && i.figureUp < _HHFigureWater.y) discard;
+                if (_HHFigureWater.x > 0.5 && i.figureUp < _HHFigureWater.y && _HHFigureWaterLook.y < 0.5) discard;
 #endif
                 return i.interior;
             }

@@ -1482,6 +1482,30 @@ namespace HiddenHarbours.Core
                  "0.05 m). It is also the highest a wade may ever reach on the figure.")]
         [Min(0f)] public float FigureTreadWaterBelowShouldersMetres = 0.05f;
 
+        [Tooltip("ON: the part of the player's mesh under the waterline still draws, tinted and dimmed " +
+                 "toward the sea, as the old sprite's submerged body did. OFF: it is hidden (a hard cut).")]
+        public bool FigureShowsUnderwater = true;
+
+        [Tooltip("The sea colour the submerged part of the player's mesh tints toward.")]
+        public Color FigureUnderwaterTint = new Color(0.16f, 0.34f, 0.44f, 1f);
+
+        [Tooltip("How far the submerged part takes the sea colour (0: its own colours, 1: all sea).")]
+        [Range(0f, 1f)] public float FigureUnderwaterTintAmount = 0.55f;
+
+        [Tooltip("How much darker the submerged part draws (0: as lit, 1: black).")]
+        [Range(0f, 1f)] public float FigureUnderwaterDim = 0.35f;
+
+        [Tooltip("Height (m) of the pale foam band on the mesh just above the waterline. 0: a hard edge.")]
+        [Min(0f)] public float FigureWaterlineFoamMetres = 0.06f;
+
+        [Tooltip("How pale that foam band is right at the waterline (0: none, 1: white).")]
+        [Range(0f, 1f)] public float FigureWaterlineFoam = 0.6f;
+
+        [Tooltip("ON: while the player swims or treads water his sun shadow is not drawn. The shadow is " +
+                 "the hidden body sprite's, standing upright, and on open water it read as a ghost " +
+                 "beside him. Wading keeps it.")]
+        public bool FigureSwimHidesSunShadow = true;
+
         /// <summary>Shipped crossing hysteresis (m), also the fallback for a rig with no GameConfig.</summary>
         public const float DefaultRegionCrossingHysteresisMetres = 0.25f;
 

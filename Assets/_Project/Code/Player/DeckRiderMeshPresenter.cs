@@ -561,7 +561,7 @@ namespace HiddenHarbours.Player
                         : clipPose ? moveFrame : CharacterSkinPose.FrameFor(clip, seed, now, clipStart);
             IsoCharacterFigureRenderer.Life life = _life.Step(skin, string.Empty, 0u, now, _ashoreFigure, looks: false);
             if (!_ashoreFigure.SetPose(stateKey, frame, life)) { HoldSprite($"could not pose '{stateKey}' frame {frame}"); return; }
-            ApplyAshoreWaterline(skin, clip, stateKey, water, config);
+            ApplyAshoreWaterline(skin, clip, stateKey, water, config, body);
 
             // Her facing: the sprite's own compass heading, through the def's MEASURED azimuth sign. The
             // ashore frame is a hull frame at heading 0, where a deck bearing and a compass heading are
@@ -596,11 +596,13 @@ namespace HiddenHarbours.Player
         private Matrix4x4[] _waterWorld;
 
         /// <summary>
-        /// The sea on her ashore figure (ADR 0061): the waterline from her own posed bones while she
-        /// wades or swims, none on dry ground. Wading reads the live depth over her feet.
+        /// The sea on his ashore figure (ADR 0061): the waterline from his own posed bones while he
+        /// wades or swims, none on dry ground. Wading reads the live depth over his feet. Swimming or
+        /// treading, his sun shadow stands down too (<see cref="GameConfig.FigureSwimHidesSunShadow"/>):
+        /// it is cast from the hidden body sprite, upright, and on open water it read as a ghost.
         /// </summary>
         private void ApplyAshoreWaterline(CharacterSkinDef skin, in CharacterSkinDef.SkinClip clip, string stateKey,
-                                          OnFootWaterState water, GameConfig config)
+                                          OnFootWaterState water, GameConfig config, SpriteRenderer body)
         {
             FigureWater mode = CharacterFigureWaterline.ModeFor(water, stateKey);
             bool on = false;
@@ -614,7 +616,32 @@ namespace HiddenHarbours.Player
                                                       config.FigureSwimWaterAbovePelvisMetres,
                                                       config.FigureTreadWaterBelowShouldersMetres, out line);
             }
-            _ashoreFigure.SetWaterline(on, line);
+            _ashoreFigure.SetWaterline(on, line, FigureWaterLook.FromConfig(config));
+            bool afloat = mode == FigureWater.Swim || mode == FigureWater.Tread;
+            if (afloat && config != null && config.FigureSwimHidesSunShadow) QuietShadow(body);
+            else GiveShadowBack();
+        }
+
+        // The sun shadow this component stood down, and only that one (a shadow somebody else switched
+        // off is theirs, and is never switched back on from here).
+        private SpriteShadow _quietShadow;
+
+        /// <summary>True while his sun shadow is stood down for the swim (the look probe reads it).</summary>
+        public bool SunShadowQuiet => _quietShadow != null;
+
+        private void QuietShadow(SpriteRenderer body)
+        {
+            if (_quietShadow != null || body == null) return;
+            SpriteShadow shadow = body.GetComponent<SpriteShadow>();
+            if (shadow == null || !shadow.enabled) return;
+            shadow.enabled = false;
+            _quietShadow = shadow;
+        }
+
+        private void GiveShadowBack()
+        {
+            if (_quietShadow != null) _quietShadow.enabled = true;
+            _quietShadow = null;
         }
 
         /// <summary>
@@ -630,8 +657,8 @@ namespace HiddenHarbours.Player
         ///
         /// <para><paramref name="spriteFallback"/> (ADR 0061): false when
         /// <see cref="GameConfig.PlayerLegacySpriteFallback"/> is off. Then the clip, the suspended skin
-        /// and the water never hand her back: only the wiring fences and "inside something" remain,
-        /// and the mesh draws her swimming, wading or mid-move. Left out, the old hand-over holds.</para>
+        /// and the water never hand him back: only the wiring fences and "inside something" remain,
+        /// and the mesh draws him swimming, wading or mid-move. Left out, the old hand-over holds.</para>
         /// </summary>
         public static string WhyNotShownAshore(bool riderLive, bool hasRiderChild, bool hasBody,
                                                bool bodyShownOnRoot, bool clipPlaying,
@@ -738,6 +765,7 @@ namespace HiddenHarbours.Player
         {
             if (_hiddenBody != null) _hiddenBody.forceRenderingOff = false;
             _hiddenBody = null;
+            GiveShadowBack();
         }
 
         /// <summary>A missing clip player plays nothing.</summary>

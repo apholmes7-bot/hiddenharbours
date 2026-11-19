@@ -163,7 +163,7 @@ namespace HiddenHarbours.Tests.EditMode
 
             // The wiring fences and "inside something" are not sprite fallbacks and still stand.
             Assert.IsNotNull(DeckRiderMeshPresenter.WhyNotShownAshore(true, true, true, false, false,
-                                 OnFootWaterState.Dry, spriteFallback: false), "inside a cab she draws neither");
+                                 OnFootWaterState.Dry, spriteFallback: false), "inside a cab he draws neither");
             Assert.IsNotNull(DeckRiderMeshPresenter.WhyNotShownAshore(false, true, true, true, false,
                                  OnFootWaterState.Dry, spriteFallback: false), "a disabled rider poses nothing");
 

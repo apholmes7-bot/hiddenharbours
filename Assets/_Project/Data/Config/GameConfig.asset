@@ -810,6 +810,13 @@ MonoBehaviour:
     To: balance
   FigureSwimWaterAbovePelvisMetres: 0.09
   FigureTreadWaterBelowShouldersMetres: 0.05
+  FigureShowsUnderwater: 1
+  FigureUnderwaterTint: {r: 0.16, g: 0.34, b: 0.44, a: 1}
+  FigureUnderwaterTintAmount: 0.55
+  FigureUnderwaterDim: 0.35
+  FigureWaterlineFoamMetres: 0.06
+  FigureWaterlineFoam: 0.6
+  FigureSwimHidesSunShadow: 1
   RegionCrossingHysteresisMetres: 0.25
   RegionPreloadDistanceMetres: 40
   RegionPreloadMinHeadingSpeed: 0.5
