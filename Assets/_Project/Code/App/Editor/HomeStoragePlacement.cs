@@ -112,12 +112,12 @@ namespace HiddenHarbours.App.Editor
         // ---- the lead's geometry ----------------------------------------------------------------------------
 
         /// <summary>A point in the parked camper's body frame (+x the curb, where the door is; +y the hitch) on
-        /// the ground, in world metres. The frame the room and the lot shed follow (<see cref="StPetersCamperLot.DrawnNoseDirection"/>).</summary>
+        /// the ground, in world metres. The frame the room and the lot shed follow (<see cref="StPetersCamperLot.NoseDirection"/>).</summary>
         public static Vector2 CamperGround(float curbMetres, float hitchMetres)
         {
             Vector2 curb = StPetersCamperLot.Approach - StPetersCamperLot.LotPos;
             curb = curb.sqrMagnitude < 1e-6f ? Vector2.down : curb.normalized;
-            return StPetersCamperLot.LotPos + curb * curbMetres + StPetersCamperLot.DrawnNoseDirection * hitchMetres;
+            return StPetersCamperLot.LotPos + curb * curbMetres + StPetersCamperLot.NoseDirection * hitchMetres;
         }
 
         /// <summary>The ground point under the camper's shore power hookup, read off the shell sidecar.</summary>

@@ -200,7 +200,7 @@ namespace HiddenHarbours.Tests.EditMode
             // Every corner it turns is clear of the camper's body (the body frame: |x| within half its width,
             // y from the tail to the nose of the body).
             CamperSidecar.Dimensions d = StPetersCamperLot.Dimensions;
-            Vector2 curb = toCottage, nose = StPetersCamperLot.DrawnNoseDirection;
+            Vector2 curb = toCottage, nose = StPetersCamperLot.NoseDirection;
             for (int i = 1; i < path.Count - 1; i++)
             {
                 Vector2 rel = path[i] - StPetersCamperLot.LotPos;
