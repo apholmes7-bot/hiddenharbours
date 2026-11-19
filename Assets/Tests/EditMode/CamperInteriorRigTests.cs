@@ -484,7 +484,7 @@ namespace HiddenHarbours.Tests.EditMode
         {
             // the lot: curb (+x, the door) toward the approach, hitch (+y) the way the camper is drawn
             Vector2 curb = (StPetersCamperLot.Approach - StPetersCamperLot.LotPos).normalized;
-            Vector2 nose = StPetersCamperLot.DrawnNoseDirection;
+            Vector2 nose = StPetersCamperLot.NoseDirection;
             Assert.AreEqual(0f, Vector2.Dot(curb, nose), 1e-4f, "the camper's long axis is not square to its approach");
             Assert.Greater(curb.x * nose.y - curb.y * nose.x, 0f,
                 "+x then +y must turn counter-clockwise (the rig frame is right-handed, +z up)");
@@ -550,7 +550,7 @@ namespace HiddenHarbours.Tests.EditMode
             using IRigScriptHost host = Host();
             float cx = (float)host.EvaluateNumber($"{Global}.lot({V}).shed_reservation.centre_rig_m[0]");
             float cy = (float)host.EvaluateNumber($"{Global}.lot({V}).shed_reservation.centre_rig_m[1]");
-            Vector2 nose = StPetersCamperLot.DrawnNoseDirection, curb = (StPetersCamperLot.Approach - lot).normalized;
+            Vector2 nose = StPetersCamperLot.NoseDirection, curb = (StPetersCamperLot.Approach - lot).normalized;
             Vector2 world = lot + curb * cx + nose * cy;
             Assert.AreEqual(shed.x, world.x, 1e-3f, "sidecar and StPetersCamperLot disagree on the shed");
             Assert.AreEqual(shed.y, world.y, 1e-3f, "sidecar and StPetersCamperLot disagree on the shed");
