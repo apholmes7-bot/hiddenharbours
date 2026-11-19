@@ -79,8 +79,8 @@ namespace HiddenHarbours.Tests.EditMode
         [Test]
         public void TheRigFrame_PutsTheDoorWhereTheLotFacesIt_AndTheLongSideAlongTheCamper()
         {
-            // DrawnNoseDirection, the axis ShedPos is laid along (the camper as the player sees it).
-            Assert.AreEqual(1f, Mathf.Abs(Vector2.Dot(R, StPetersCamperLot.DrawnNoseDirection)), 1e-4f,
+            // NoseDirection, the axis ShedPos is laid along (the camper as the player sees it).
+            Assert.AreEqual(1f, Mathf.Abs(Vector2.Dot(R, StPetersCamperLot.NoseDirection)), 1e-4f,
                 "the shed's long side (rig x, ShedSize.x) must run along the camper");
             Assert.Greater(R.x * U.y - R.y * U.x, 0f, "+x then +y must turn counter-clockwise (the rig frame is right-handed)");
             Vector2 doorOut = (World(new Vector2(0f, -1f)) - StPetersCamperLot.ShedPos).normalized;
