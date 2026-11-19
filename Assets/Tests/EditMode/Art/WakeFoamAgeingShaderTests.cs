@@ -257,7 +257,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
             // Each layer's walk ends on the very col.rgb its compose lerps from.
             string[] composes =
             {
-                @"float3\s+surfFoam\s*=\s*FoamAgedColor\s*\(\s*surfAge01\s*,\s*_SurfColor\.rgb\s*,\s*_SurfAgeStrength\s*,\s*col\.rgb\s*\)\s*;" +
+                @"float3\s+surfFoam\s*=\s*FoamAgedColor\s*\(\s*lerp\s*\(\s*surfAge01\s*,\s*washAge01\s*,\s*washThin\s*\)\s*,\s*_SurfColor\.rgb\s*,\s*_SurfAgeStrength\s*,\s*col\.rgb\s*\)\s*;" +
                     @"\s*col\.rgb\s*=\s*lerp\s*\(\s*col\.rgb\s*,\s*surfFoam\s*,",
                 @"float3\s+lipFoam\s*=\s*FoamAgedColor\s*\(\s*0\.0\s*,\s*_SurfLipColor\.rgb\s*,\s*_SurfAgeStrength\s*,\s*col\.rgb\s*\)\s*;" +
                     @"\s*col\.rgb\s*=\s*lerp\s*\(\s*col\.rgb\s*,\s*lipFoam\s*,",
