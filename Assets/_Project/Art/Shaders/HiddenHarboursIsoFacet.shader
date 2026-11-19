@@ -256,6 +256,12 @@ Shader "HiddenHarbours/IsoFacet"
             float  _HHFigureInkOn;          // the dark target's alpha flag is 1 minus this: 1 while the rig's ink
                                             // is live with its keyline ring, 0.75 while it is live without one
                                             // (rig 10, owner ruling K4), 0 off
+            // THE SEA ON HER (ADR 0060). x = 1 while the line is live, y = its height in the figure's
+            // own frame (metres, z up: the posed mesh is the figure frame, so positionOS.z IS height).
+            // Every fragment under the line is discarded, in the facet pass, the reflection and the
+            // guard alike. Never written for the cast or the player ashore on dry ground: x = 0, and
+            // this variant draws exactly what it drew before.
+            float4 _HHFigureWater;
 #endif
 
             struct Attributes
@@ -308,6 +314,8 @@ Shader "HiddenHarbours/IsoFacet"
 #ifndef HH_FIGURE
                 float3 causticPoint : TEXCOORD8; // plane-projected world XY and physical height
                 nointerpolation float4 causticFace : TEXCOORD9; // exterior, upward normal, ground-plane normal
+#else
+                float figureUp : TEXCOORD8;      // the posed vertex's height in the figure frame (m)
 #endif
 #ifdef HH_LEVEL_GATE
                 // xy = the level tag, z = 1 when the camera is rendering this
@@ -357,6 +365,7 @@ Shader "HiddenHarbours/IsoFacet"
                 // dot with LN — see the header comment.
                 float sh = dot(wn, _LN.xyz);
 #ifdef HH_FIGURE
+                o.figureUp = v.positionOS.z;
                 // RIG 10 LIGHTS ON THE SMOOTH NORMAL: "a face with a smooth normal is culled on its own
                 // normal and lit on the smooth one" (characterIsoRig10.js, paint). The renderer posed it
                 // into markAttr.xyz; the cull below still reads normalOS, the face's own.
@@ -573,6 +582,9 @@ Shader "HiddenHarbours/IsoFacet"
 #ifdef HH_LEVEL_GATE
                 if (reflection ? i.lvl.y > 0.5 : HHLevelDiscards(i.lvl)) discard;
 #endif
+#ifdef HH_FIGURE
+                if (_HHFigureWater.x > 0.5 && i.figureUp < _HHFigureWater.y) discard;
+#endif
                 if (reflection && i.reflectionHeight < 0)
                 {
                     FragOut blocker;
@@ -717,6 +729,9 @@ Shader "HiddenHarbours/IsoFacet"
 #ifdef HH_LEVEL_GATE
                 nointerpolation float4 lvl : TEXCOORD1;   // see HHLevelDiscards
 #endif
+#ifdef HH_FIGURE
+                float figureUp : TEXCOORD1;               // see _HHFigureWater
+#endif
             };
 
             GuardVaryings vertGuard (Attributes v)
@@ -726,6 +741,10 @@ Shader "HiddenHarbours/IsoFacet"
                 Varyings f = vert(v);
                 o.positionCS = f.positionCS;
                 o.lvl = f.lvl;
+#elif defined(HH_FIGURE)
+                Varyings f = vert(v);
+                o.positionCS = f.positionCS;
+                o.figureUp = f.figureUp;
 #else
                 o.positionCS = vert(v).positionCS;
 #endif
@@ -754,6 +773,9 @@ Shader "HiddenHarbours/IsoFacet"
             {
 #ifdef HH_LEVEL_GATE
                 if (HHLevelDiscards(i.lvl)) discard;
+#endif
+#ifdef HH_FIGURE
+                if (_HHFigureWater.x > 0.5 && i.figureUp < _HHFigureWater.y) discard;
 #endif
                 return i.interior;
             }

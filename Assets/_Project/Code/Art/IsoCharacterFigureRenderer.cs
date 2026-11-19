@@ -654,6 +654,34 @@ namespace HiddenHarbours.Art
             _facetMaterial.SetVector(IsoFacetFigureShaderIds.FigureHead, HeadSnapPoint);
             _facetMaterial.SetFloat(IsoFacetFigureShaderIds.FigureInkOn, 0f);
             _inkApplied = false;
+            _waterOn = false;
+            _waterLine = 0f;
+            _facetMaterial.SetVector(IsoFacetFigureShaderIds.FigureWater, Vector4.zero);
+        }
+
+        private bool _waterOn;
+        private float _waterLine;
+
+        /// <summary>True while the sea cuts this figure (<see cref="SetWaterline"/>).</summary>
+        public bool WaterlineOn => _waterOn;
+
+        /// <summary>The live waterline's height in the figure's frame (m), or 0 while there is none.</summary>
+        public float WaterlineMetres => _waterLine;
+
+        /// <summary>
+        /// <b>The sea on her</b> (ADR 0060): hide every part of the figure below
+        /// <paramref name="metres"/>, measured up from the figure's ground plane in its own frame.
+        /// Off draws her whole. Written to the material only when it changes, so a figure standing in
+        /// still water costs nothing per frame. Only a v9 figure (the <c>HH_FIGURE</c> variant) reads it.
+        /// </summary>
+        public void SetWaterline(bool on, float metres)
+        {
+            if (_facetMaterial == null) return;
+            if (!on || float.IsNaN(metres) || float.IsInfinity(metres)) { on = false; metres = 0f; }
+            if (on == _waterOn && metres == _waterLine) return;
+            _waterOn = on;
+            _waterLine = metres;
+            _facetMaterial.SetVector(IsoFacetFigureShaderIds.FigureWater, new Vector4(on ? 1f : 0f, metres, 0f, 0f));
         }
 
         private void BuildChild()
@@ -1222,6 +1250,11 @@ namespace HiddenHarbours.Art
         /// figure's pixels with 1 minus it in the dark target's alpha: 0 the figure's rules with its
         /// keyline ring, 0.25 its rules without the ring, 1 the hull's.</summary>
         public static readonly int FigureInkOn = Shader.PropertyToID("_HHFigureInkOn");
+
+        /// <summary><c>float4</c>, per material: <c>(on, lineZ, 0, 0)</c>. While <c>on</c> is 1 every
+        /// fragment of the figure below <c>lineZ</c> (metres, the figure's own frame, z up) is
+        /// discarded: the sea on a wading or swimming figure (ADR 0060). 0 draws the whole figure.</summary>
+        public static readonly int FigureWater = Shader.PropertyToID("_HHFigureWater");
 
         /// <summary><see cref="FigureInkOn"/> for a figure inked by its rig's rules, keyline ring and all
         /// (rig 9).</summary>

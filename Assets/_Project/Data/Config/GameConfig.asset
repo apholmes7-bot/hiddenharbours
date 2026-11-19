@@ -772,6 +772,44 @@ MonoBehaviour:
     ContactStemHalfBeams: 0.12
   DevAllHelmInstruments: 1
   MeshFishingAndDig: 1
+  PlayerLegacySpriteFallback: 0
+  PlayerMeshFallbacks:
+  - From: reachGround
+    To: reach
+  - From: reachStowV
+    To: reach
+  - From: reachStowH
+    To: reach
+  - From: swim
+    To: tread
+  - From: drive
+    To: bench
+  - From: drive_helm_go_fast
+    To: drive
+  - From: drive_helm_bowrider
+    To: drive
+  - From: drive_helm_express_cruiser
+    To: drive
+  - From: astride_helm_jet_ski
+    To: astride
+  - From: row_oars
+    To: idle_oars
+  - From: board_buckets
+    To: board
+  - From: board_tray
+    To: board
+  - From: board_pot
+    To: board
+  - From: boardDown_buckets
+    To: boardDown
+  - From: boardDown_tray
+    To: boardDown
+  - From: boardDown_pot
+    To: boardDown
+  - From: stagger
+    To: balance
+  FigureSwimWaterAbovePelvisMetres: 0.09
+  FigureTreadWaterBelowShouldersMetres: 0.05
   RegionCrossingHysteresisMetres: 0.25
   RegionPreloadDistanceMetres: 40
   RegionPreloadMinHeadingSpeed: 0.5

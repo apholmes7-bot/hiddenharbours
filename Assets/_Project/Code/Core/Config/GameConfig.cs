@@ -1453,6 +1453,35 @@ namespace HiddenHarbours.Core
                  "and unanimated dig. Held tools and catch keep their sprite presenters.")]
         public bool MeshFishingAndDig = true;
 
+        /// <summary>
+        /// Code default for <see cref="PlayerLegacySpriteFallback"/>: ON, so a config built fresh in
+        /// code (every PlayMode rig that tests the old hand-over) keeps the old behaviour. The shipped
+        /// <c>GameConfig.asset</c> turns it OFF: in the game the player is always the mesh (ADR 0060),
+        /// the same code-default/shipped split as <see cref="MeshCharacterAshore"/>.
+        /// </summary>
+        public const bool DefaultPlayerLegacySpriteFallback = true;
+
+        [Header("The player is always the mesh (ADR 0060)")]
+        [Tooltip("OFF (the shipped game): the player never switches to an old sprite sheet. A swim, a " +
+                 "tread, a sleep, a drive, a reach or a carry the mesh did not list yet plays its baked " +
+                 "mesh clip, and a state the skin has no clip for plays the nearest one from Player Mesh " +
+                 "Fallbacks. ON: the old behaviour, where those moves, wading and swimming hand the picture " +
+                 "back to the sprite sheet. Only the player reads this; the cast keeps its own switches.")]
+        public bool PlayerLegacySpriteFallback = DefaultPlayerLegacySpriteFallback;
+
+        [Tooltip("When the player's skin has no clip for a state, the state to try instead (From to To), " +
+                 "followed row by row until the skin has one; idle ends every chain. Both are baked clip " +
+                 "names. Read only while Player Legacy Sprite Fallback is OFF.")]
+        public MeshStateFallback[] PlayerMeshFallbacks = PlayerMeshRule.DefaultFallbacks();
+
+        [Tooltip("Swimming, the waterline on the mesh figure sits this far (m) above its pelvis. Rig 10's " +
+                 "own swim pose puts the sea 0.09 m over the pelvis.")]
+        [Min(0f)] public float FigureSwimWaterAbovePelvisMetres = 0.09f;
+
+        [Tooltip("Treading water, the waterline sits this far (m) below the mean of the shoulders (rig 10: " +
+                 "0.05 m). It is also the highest a wade may ever reach on the figure.")]
+        [Min(0f)] public float FigureTreadWaterBelowShouldersMetres = 0.05f;
+
         /// <summary>Shipped crossing hysteresis (m), also the fallback for a rig with no GameConfig.</summary>
         public const float DefaultRegionCrossingHysteresisMetres = 0.25f;
 

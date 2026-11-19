@@ -336,10 +336,13 @@ namespace HiddenHarbours.Player
             if (!config.MeshCharacter) { Stop("GameConfig.MeshCharacter is off"); return; }
 
             CharacterSkinDef skin = ResolveSkin(stand);
+            bool meshOnly = MeshOnly(config);
             bool clipPose = TryPerformancePose(skin, stand, out string moveKey, out int moveFrame, out float moveHeading);
-            if (PerformancePlaying() && !clipPose) { Stop(ClipCannotDrawReason); return; }
+            // ADR 0060: with the legacy switch off nothing below hands him back to a sprite sheet; a
+            // performance the mesh cannot follow draws his own stance from the clips he does carry.
+            if (PerformancePlaying() && !clipPose && !meshOnly) { Stop(ClipCannotDrawReason); return; }
             // A supported performance admits only its own claim; nested claims retain the sprite.
-            if (SkinSuspended(stand) && !clipPose)
+            if (SkinSuspended(stand) && !clipPose && !meshOnly)
             {
                 Stop("her skin is suspended (the fight, the haul, a clip), and the sprite shows what it is made to show");
                 return;
@@ -382,7 +385,18 @@ namespace HiddenHarbours.Player
 
             // ADR 0041: the switch is PER STATE. A state not listed still plays its sheet, which is
             // how the sheets retire one at a time at parity instead of all at once on a promise.
-            if (!skin.DrawsAsMesh(stateKey))
+            // ADR 0060: for the player, with the legacy switch off, the baked clip itself is the
+            // permission, and a state the skin lacks plays the nearest one it carries.
+            if (meshOnly)
+            {
+                if (!PlayerMeshRule.TryResolve(skin, stateKey, config.PlayerMeshFallbacks, out string drawable, out _))
+                {
+                    Stop($"CharacterSkinDef '{skin.Id}' carries neither '{stateKey}' nor idle — re-bake it");
+                    return;
+                }
+                stateKey = drawable;
+            }
+            else if (!skin.DrawsAsMesh(stateKey))
             {
                 Stop($"state '{stateKey}' is not in CharacterSkinDef.MeshStates (ADR 0041)");
                 return;
@@ -446,15 +460,18 @@ namespace HiddenHarbours.Player
 
             SpriteRenderer body = _rider != null ? _rider.BodyRenderer : null;
             CharacterSkinDef skin = ResolveSkin(stand);
+            bool meshOnly = MeshOnly(config);
             bool clipPose = TryPerformancePose(skin, stand, out string moveKey, out int moveFrame, out float moveHeading);
+            OnFootWaterState water = WaterAtFeet();
             string notShown = WhyNotShownAshore(
                 riderLive: _rider != null && _rider.isActiveAndEnabled,
                 hasRiderChild: _rider != null && _rider.HasRider,
                 hasBody: body != null,
                 bodyShownOnRoot: _rider != null && _rider.BodyShownOnRoot,
                 clipPlaying: PerformancePlaying(),
-                water: WaterAtFeet(),
-                skinSuspended: SkinSuspended(stand), clipDrawsAsMesh: clipPose);
+                water: water,
+                skinSuspended: SkinSuspended(stand), clipDrawsAsMesh: clipPose,
+                spriteFallback: !meshOnly);
             if (notShown != null) { StopAshore(notShown); return; }
 
             // Shown ashore on her own feet. An ARRIVAL clears a refusal, so the pool is asked once more.
@@ -484,7 +501,16 @@ namespace HiddenHarbours.Player
             }
             FellBackToGait = fellBack;
 
-            if (!skin.DrawsAsMesh(stateKey))
+            if (meshOnly)
+            {
+                if (!PlayerMeshRule.TryResolve(skin, stateKey, config.PlayerMeshFallbacks, out string drawable, out _))
+                {
+                    HoldSprite($"CharacterSkinDef '{skin.Id}' carries neither '{stateKey}' nor idle — re-bake it");
+                    return;
+                }
+                stateKey = drawable;
+            }
+            else if (!skin.DrawsAsMesh(stateKey))
             {
                 HoldSprite($"state '{stateKey}' is not in CharacterSkinDef.MeshStates (ADR 0041)");
                 return;
@@ -535,6 +561,7 @@ namespace HiddenHarbours.Player
                         : clipPose ? moveFrame : CharacterSkinPose.FrameFor(clip, seed, now, clipStart);
             IsoCharacterFigureRenderer.Life life = _life.Step(skin, string.Empty, 0u, now, _ashoreFigure, looks: false);
             if (!_ashoreFigure.SetPose(stateKey, frame, life)) { HoldSprite($"could not pose '{stateKey}' frame {frame}"); return; }
+            ApplyAshoreWaterline(skin, clip, stateKey, water, config);
 
             // Her facing: the sprite's own compass heading, through the def's MEASURED azimuth sign. The
             // ashore frame is a hull frame at heading 0, where a deck bearing and a compass heading are
@@ -560,6 +587,36 @@ namespace HiddenHarbours.Player
         public static bool AshoreSwitchOn(GameConfig config) =>
             config != null && config.MeshCharacter && config.MeshCharacterAshore;
 
+        /// <summary>ADR 0060: true when the player may never be handed back to a sprite sheet
+        /// (<see cref="GameConfig.PlayerLegacySpriteFallback"/> off). No config: the old behaviour.</summary>
+        public static bool MeshOnly(GameConfig config) =>
+            config != null && !config.PlayerLegacySpriteFallback;
+
+        // Scratch for the waterline's bone read: sized to the skin once, reused every frame (rule 7).
+        private Matrix4x4[] _waterWorld;
+
+        /// <summary>
+        /// The sea on her ashore figure (ADR 0060): the waterline from her own posed bones while she
+        /// wades or swims, none on dry ground. Wading reads the live depth over her feet.
+        /// </summary>
+        private void ApplyAshoreWaterline(CharacterSkinDef skin, in CharacterSkinDef.SkinClip clip, string stateKey,
+                                          OnFootWaterState water, GameConfig config)
+        {
+            FigureWater mode = CharacterFigureWaterline.ModeFor(water, stateKey);
+            bool on = false;
+            float line = 0f;
+            if (mode != FigureWater.Dry && config != null && skin != null)
+            {
+                int n = skin.BoneCount;
+                if (_waterWorld == null || _waterWorld.Length != n) _waterWorld = new Matrix4x4[n];
+                float depth = mode == FigureWater.Wade ? StandableSurfaces.OnFootDepthNow(transform.position) : 0f;
+                on = CharacterFigureWaterline.TryLine(skin, clip, _ashoreFigure.DrawnFrame, _waterWorld, mode, depth,
+                                                      config.FigureSwimWaterAbovePelvisMetres,
+                                                      config.FigureTreadWaterBelowShouldersMetres, out line);
+            }
+            _ashoreFigure.SetWaterline(on, line);
+        }
+
         /// <summary>
         /// <b>The ashore hand-over rule</b>, as a pure function of what the rider, the clip player, her
         /// skin and the walk controller publish: null when she is SHOWN ASHORE on her own feet and her
@@ -570,15 +627,22 @@ namespace HiddenHarbours.Player
         /// <para><paramref name="skinSuspended"/>: another driver has claimed her skin
         /// (<see cref="IsoCharacterSprite.IsSuspended"/>) and writes her body sprite itself — the fight
         /// on the wharf, the haul. Left out, nothing has claimed it.</para>
+        ///
+        /// <para><paramref name="spriteFallback"/> (ADR 0060): false when
+        /// <see cref="GameConfig.PlayerLegacySpriteFallback"/> is off. Then the clip, the suspended skin
+        /// and the water never hand her back: only the wiring fences and "inside something" remain,
+        /// and the mesh draws her swimming, wading or mid-move. Left out, the old hand-over holds.</para>
         /// </summary>
         public static string WhyNotShownAshore(bool riderLive, bool hasRiderChild, bool hasBody,
                                                bool bodyShownOnRoot, bool clipPlaying,
-                                               OnFootWaterState water, bool skinSuspended = false, bool clipDrawsAsMesh = false)
+                                               OnFootWaterState water, bool skinSuspended = false, bool clipDrawsAsMesh = false,
+                                               bool spriteFallback = true)
         {
             if (!riderLive) return "ashore — the rider is disabled, so nothing poses her each frame";
             if (!hasRiderChild) return "ashore — no rider child is wired, so the rider cannot tell a deck from the shore";
             if (!hasBody) return "ashore — there is no body sprite to stand in for";
             if (!bodyShownOnRoot) return "inside something (a cab, or a helm that hides its pilot): she draws neither";
+            if (!spriteFallback) return null;
             if (clipPlaying && !clipDrawsAsMesh) return "ashore — the running clip cannot draw as mesh; the sprite owns this move";
             if (skinSuspended && !(clipPlaying && clipDrawsAsMesh))
                 return "ashore — her skin is suspended (the fight, the haul), and the sprite shows what it is made to show";
@@ -709,8 +773,26 @@ namespace HiddenHarbours.Player
             key = null; frame = 0; heading = 0f;
             if (!ClipPlaying() || !_clipPlayer.OwnsOnlySkinClaim ||
                 stand.FigureCharacter == null || stand.FigureCharacter.gameObject != _clipPlayer.gameObject) return false;
+            GameConfig config = GameServices.Config;
+            if (MeshOnly(config))
+            {
+                // ADR 0060: every clip asks for its own baked state (swim, tread, sleep, drive and the
+                // reaches included) and takes the nearest the skin carries. The sprite's clock and
+                // heading still lead, the frame folded onto the clip that actually draws.
+                if (skin == null) return false;
+                string wanted = PlayerMeshRule.WantedKeyFor(_clipPlayer.Clip, CarryNow());
+                if (!PlayerMeshRule.TryResolve(skin, wanted, config.PlayerMeshFallbacks, out key, out _) ||
+                    !skin.TryGetClip(key, out var drawing))
+                {
+                    key = null;
+                    return false;
+                }
+                frame = PlayerMeshRule.FrameIn(drawing, _clipPlayer.Frame);
+                heading = _clipPlayer.HeadingDegrees;
+                return true;
+            }
             key = CharacterClipStateMap.StateKeyFor(_clipPlayer.Clip, CarryNow());
-            if (key == null) return false; // explicitly deferred: water, sleep, drive and reaches
+            if (key == null) return false; // legacy switch on: water, sleep, drive and reaches keep the sprite
             if (skin == null) return false;
             if (!skin.TryGetClip(key, out var clip) || !skin.DrawsAsMesh(key) ||
                 !clip.KeysWellFormed(skin.BoneCount))
