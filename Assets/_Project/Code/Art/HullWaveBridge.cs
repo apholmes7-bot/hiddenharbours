@@ -16,6 +16,7 @@ namespace HiddenHarbours.Art
     /// <item><c>_HHHullWaveParams</c> = (live count, drawn lift per metre, 1 / spread metres, on)</item>
     /// <item><c>_HHHullWaveShade</c> = (face light, crest light, trough dark, crest foam)</item>
     /// <item><c>_HHHullWaveFoam</c> = (crest foam onset m, crest foam ramp m, 0, 0)</item>
+    /// <item><c>_HHHullWaveLook</c> = (shade ceiling, breakup share, 1 / breakup metres, wobble metres)</item>
     /// </list>
     ///
     /// <para>Ages and phases are worked out here in double, so the GPU only ever sees small numbers.
@@ -34,6 +35,7 @@ namespace HiddenHarbours.Art
         public static readonly int IdParams = Shader.PropertyToID("_HHHullWaveParams");
         public static readonly int IdShade = Shader.PropertyToID("_HHHullWaveShade");
         public static readonly int IdFoam = Shader.PropertyToID("_HHHullWaveFoam");
+        public static readonly int IdLook = Shader.PropertyToID("_HHHullWaveLook");
 
         /// <summary>Metres added round the camera's view before a ring counts as out of sight (the
         /// displaced lift moves water up the screen, and the view must not clip a crest).</summary>
@@ -100,6 +102,8 @@ namespace HiddenHarbours.Art
                 Mathf.Max(s.TroughDark, 0f), Mathf.Clamp01(s.CrestFoam)));
             Shader.SetGlobalVector(IdFoam, new Vector4(Mathf.Max(s.CrestFoamOnsetMetres, 0f),
                 Mathf.Max(s.CrestFoamRampMetres, 1e-3f), 0f, 0f));
+            Shader.SetGlobalVector(IdLook, new Vector4(Mathf.Max(s.ShadeCeiling, 0f), Mathf.Clamp01(s.BreakupShare),
+                1f / Mathf.Max(s.BreakupMetres, 0.05f), Mathf.Max(s.WobbleMetres, 0f)));
         }
 
         private static bool TryViewRect(out Rect view)

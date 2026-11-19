@@ -158,6 +158,34 @@ namespace HiddenHarbours.Core
         }
 
         /// <summary>
+        /// Her churned trail band's half-width, metres, while hull waves are on and she makes way:
+        /// <paramref name="radius"/> held to <c>TrailFoamMaxHalfWidthMetres</c> (0 = no limit). Moored,
+        /// or hull waves off: unchanged.
+        /// </summary>
+        public static float TrailFoamRadius(float radius, bool makingWay, in HullWaveSettings s)
+        {
+            if (!s.Enabled || !makingWay || s.TrailFoamMaxHalfWidthMetres <= 0f) return radius;
+            return Mathf.Min(radius, s.TrailFoamMaxHalfWidthMetres);
+        }
+
+        /// <summary>
+        /// How the water draws a wave's light: the raw lift or darkening <paramref name="raw"/> (a share of
+        /// the water's colour) brought softly under <paramref name="ceiling"/>:
+        /// <c>raw · ceiling / (ceiling + |raw|)</c>. Slope 1 at zero, never reaching the ceiling, and smooth
+        /// all the way, so a wave never shows a clipped, hard-edged band. Twin: the water shader's
+        /// hull-wave shading (<c>hwShade</c>). 0 for no ceiling.
+        /// </summary>
+        /// <summary>While hull waves are on, the wake's own drawn foam puffs are not laid: her churn is the water's
+        /// foam buffer, drawn by the one foam path every foam on the sea uses.</summary>
+        public static bool DrawnFoamRetired(in HullWaveSettings s) => s.Enabled && s.RetireDrawnFoam;
+
+        public static float SoftShade(float raw, float ceiling)
+        {
+            if (ceiling <= 0f) return 0f;
+            return raw * ceiling / (ceiling + Mathf.Abs(raw) + 1e-5f);
+        }
+
+        /// <summary>
         /// Seconds between two of her sources on one chain: the spacing the owner asked for in
         /// wavelengths, or wider when that would keep more than <paramref name="budget"/> alive over a
         /// life of <paramref name="lifetime"/>. The second term is what makes the budget a hard bound:

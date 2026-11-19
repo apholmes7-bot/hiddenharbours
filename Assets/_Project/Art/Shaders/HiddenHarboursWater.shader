@@ -1479,6 +1479,8 @@ Shader "HiddenHarbours/Water"
             //                        w = 1 while hull waves are on (0 = OFF: the older wake train draws)
             //   _HHHullWaveShade   : x = face light, y = crest light /m, z = trough dark /m, w = crest foam
             //   _HHHullWaveFoam    : x = crest foam onset (m), y = crest foam ramp (m)
+            //   _HHHullWaveLook    : x = shade ceiling (share of the water's colour), y = breakup share,
+            //                        z = 1 / breakup metres, w = wobble metres
             // UNSET reads all-zero: count 0, OFF, nothing drawn and nothing read.
             // HH_HULL_WAVE_MAX is a COMPILE-TIME bound pinned to HullWaveField.ShaderCapacity by
             // HullWaveMathTests; the loops run [loop] and break at the live count, never [unroll] over it.
@@ -1489,6 +1491,7 @@ Shader "HiddenHarbours/Water"
             float4 _HHHullWaveParams;
             float4 _HHHullWaveShade;
             float4 _HHHullWaveFoam;
+            float4 _HHHullWaveLook;
 
             // ---- WIND FETCH (ADR 0027 #1) — globals, published by WaveFieldBridge.PublishFetchGlobals ------
             // How far the wind has blown over open water before it reaches this pixel. Lee shores go calm,
@@ -2802,13 +2805,21 @@ Shader "HiddenHarbours/Water"
                 if (_HHHullWaveParams.w < 0.5 || _HHHullWaveParams.x < 0.5) return;
                 int count = (int)_HHHullWaveParams.x;
                 float invSpread = _HHHullWaveParams.z;
+                // The sea's own noise, fixed in the world: it bends every ring the same way (so no ring
+                // is a true circle round a visible centre) and breaks the crests into patches the waves
+                // run through. Two value-noise octaves for the patches, two taps for the bend.
+                float2 hwN = worldXY * _HHHullWaveLook.z;
+                float hwPatch = 0.65 * ValueNoise(hwN) + 0.35 * ValueNoise(hwN * 2.3 + 17.1);
+                float hwGain = lerp(1.0, saturate(hwPatch * 2.0 - 0.4), _HHHullWaveLook.y);
+                float2 hwBend = float2(ValueNoise(hwN * 1.7 + 3.3), ValueNoise(hwN * 1.7 + 9.7)) - 0.5;
+                float2 hwAt = worldXY + hwBend * (2.0 * _HHHullWaveLook.w);
                 [loop]
                 for (int i = 0; i < HH_HULL_WAVE_MAX; i++)
                 {
                     if (i >= count) break;
                     float4 a = _HHHullWaveA[i];
                     float4 b = _HHHullWaveB[i];
-                    float2 d = worldXY - a.xy;
+                    float2 d = hwAt - a.xy;
                     float r2 = dot(d, d);
                     if (r2 >= b.w * b.w) continue;
                     float r = sqrt(r2);
@@ -2817,6 +2828,8 @@ Shader "HiddenHarbours/Water"
                     height += h;
                     slope += d * (dhdr / max(r, 1e-4));
                 }
+                height *= hwGain;
+                slope *= hwGain;
             }
 
 
@@ -4047,7 +4060,11 @@ Shader "HiddenHarbours/Water"
             // default ON) on the SAME world-locked Bayer cell every other banded layer uses.
             // col.rgb / col.a dressing ONLY — never depth/clip()/_WaterLevel/the height read/the sim
             // (P1 integrity, rule 5). _WakeFoamStrength = 0 skips the whole block.
-            float WakeFoamCoverage(float2 worldXY, float bayer, out float freshness)
+            // `crestStored` is the foam the hulls' own waves carry where their crests break (the hull-wave
+            // block in frag): it joins the stored churn BEFORE the tear, the threshold and the bands, so a
+            // breaking wake crest is the SAME torn, banded, aged mat as the prop's churn and every other
+            // foam this buffer draws (the owner, 2026-11-19: "wake foam should be the same as any foam").
+            float WakeFoamCoverage(float2 worldXY, float bayer, float crestStored, out float freshness)
             {
                 freshness = 0.0;
                 if (_WakeFoamStrength <= 0.001) return 0.0;
@@ -4067,8 +4084,9 @@ Shader "HiddenHarbours/Water"
                 // ONE fetch, both channels: r = coverage (how much churn is on this water),
                 // g = freshness (how recently it was churned - the age clock).
                 float2 buffered = SAMPLE_TEXTURE2D(_HHFoamBufferTex, sampler_HHFoamBufferTex, uv).rg;
-                float stored = buffered.x;
-                freshness = buffered.y;
+                float stored = max(buffered.x, crestStored);
+                // A breaking crest's foam is churned right now: as fresh as its own strength.
+                freshness = max(buffered.y, crestStored);
 
                 // ---- LACE (2026-08-05, the owner's "it needs another pass") -------------------------
                 // TEAR the stored coverage before it is thresholded. The buffer records how much churn
@@ -6079,10 +6097,12 @@ Shader "HiddenHarbours/Water"
                 }
 
                 // ---- REAL WAVES FROM HULLS: light, crests, a little foam (col.rgb ONLY) -------------------
-                // The rings hulls lay (HullWaveBridge). Their faces take the light the way the mound's do
-                // (same facing, same 0.15 add ceiling), crests brighten and troughs darken by their height,
-                // and a tall enough crest carries a little foam. Fades at the shore with the lift. Skipped
-                // whole while hull waves are off or none are on the water.
+                // The rings hulls lay (HullWaveBridge). Their faces take the light on the mound's facing,
+                // crests brighten and troughs darken by their height, all as a soft share of the water's
+                // own colour. A tall enough crest breaks: its foam is handed to the shared foam mat below
+                // (hullCrestFoam, into WakeFoamCoverage), never drawn here as a white of its own. Fades at
+                // the shore with the lift. Skipped whole while hull waves are off or none are on the water.
+                float hullCrestFoam = 0.0;
                 if (_HHHullWaveParams.w > 0.5 && _HHHullWaveParams.x > 0.5)
                 {
                     float hullWaveH;
@@ -6093,12 +6113,16 @@ Shader "HiddenHarbours/Water"
                     {
                         float2 hwSunXY = dot(_SunDir.xy, _SunDir.xy) > 1e-6 ? _SunDir.xy : _LightDir.xy;
                         float2 hwLd = normalize(hwSunXY + float2(1e-4, 0));
-                        float hwFace = clamp(-dot(hullWaveSlope, hwLd) * _HHHullWaveShade.x, -1.0, 1.0) * 0.15;
-                        float hwCrest = max(hullWaveH, 0.0) * _HHHullWaveShade.y
-                                      - max(-hullWaveH, 0.0) * _HHHullWaveShade.z;
-                        col.rgb += (hwFace + clamp(hwCrest, -0.15, 0.15)) * hullWaveShore;
-                        float hwFoam = saturate((hullWaveH - _HHHullWaveFoam.x) / max(_HHHullWaveFoam.y, 1e-3));
-                        col.rgb = lerp(col.rgb, _FoamColor.rgb, hwFoam * _HHHullWaveShade.w * hullWaveShore);
+                        // A share of the water's own colour, brought SOFTLY under the ceiling (never
+                        // clipped): a trough is a gentle darkening of this sea, a crest a gentle lift.
+                        // Twin: HullWaveMath.SoftShade.
+                        float hwRaw = -dot(hullWaveSlope, hwLd) * _HHHullWaveShade.x
+                                    + max(hullWaveH, 0.0) * _HHHullWaveShade.y
+                                    - max(-hullWaveH, 0.0) * _HHHullWaveShade.z;
+                        float hwShade = hwRaw * _HHHullWaveLook.x / (_HHHullWaveLook.x + abs(hwRaw) + 1e-5);
+                        col.rgb *= 1.0 + hwShade * hullWaveShore;
+                        hullCrestFoam = saturate((hullWaveH - _HHHullWaveFoam.x) / max(_HHHullWaveFoam.y, 1e-3))
+                                      * _HHHullWaveShade.w * hullWaveShore;
                     }
                 }
 
@@ -6933,7 +6957,7 @@ Shader "HiddenHarbours/Water"
                 float washZone = max(saturate(washOnSand), surfShore * saturate(washPresence));
                 // v4: across the hand-off the open-water read is taken WITHOUT its Bayer, so the blend of the
                 // two reads never shows a checker (the owner's "screen door" band in the wash).
-                float wakeFoam = WakeFoamCoverage(worldXY, washZone > 0.001 ? 0.5 : bay, wakeFresh);
+                float wakeFoam = WakeFoamCoverage(worldXY, washZone > 0.001 ? 0.5 : bay, hullCrestFoam, wakeFresh);
                 if (washZone > 0.001)
                 {
                     float washFresh;

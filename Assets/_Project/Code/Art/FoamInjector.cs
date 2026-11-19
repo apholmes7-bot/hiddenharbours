@@ -556,7 +556,10 @@ namespace HiddenHarbours.Art
                 _trailOwed = 0f;
                 _trailOwedVigour = 0f;
                 // The capsule from the trail's last capsule to here — continuous at any frame rate.
-                _pending = new FoamInjection(_trailFrom, position, RadiusMeters,
+                // While the water draws her waves, a broad hull's trail band is held to her prop wash,
+                // so the waves beside it show (HullWaveSettings.TrailFoamMaxHalfWidthMetres).
+                _pending = new FoamInjection(_trailFrom, position,
+                                             HullWaveMath.TrailFoamRadius(RadiusMeters, _way != VesselWay.Moored, in hullWaves),
                                              Mathf.Clamp01(amount), vigour, in dispersal);
                 _trailFrom = position;
                 // The dispersal can outlive the stamp it was taken from: a gently-working hull whose

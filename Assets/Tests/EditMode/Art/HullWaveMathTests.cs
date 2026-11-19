@@ -608,5 +608,81 @@ namespace HiddenHarbours.Tests.Art.EditMode
             StringAssert.Contains("lift += hullWave * _HHHullWaveParams.y * fade;", src,
                 "the hull waves lift the water beside the swell, faded at the shore with it");
         }
+
+        // ==== 4. THE LOOK (the owner, 2026-11-19: "it looks very calculated/structured and the
+        // dark/lighter parts of the new wake contrast highly") ======================================
+
+        [Test]
+        public void TheShade_IsSoft_NeverClippedAndNeverPastItsCeiling()
+        {
+            const float ceiling = 0.18f;
+            Assert.AreEqual(0f, HullWaveMath.SoftShade(0f, ceiling), 1e-7f);
+            Assert.AreEqual(0f, HullWaveMath.SoftShade(0.5f, 0f), 1e-7f, "no ceiling, no shade");
+            float small = 1e-3f;
+            Assert.AreEqual(small, HullWaveMath.SoftShade(small, ceiling), 1e-5f, "slope 1 at zero: small waves draw as they are");
+            float previous = 0f;
+            for (float raw = 0.01f; raw < 20f; raw *= 1.5f)
+            {
+                float lit = HullWaveMath.SoftShade(raw, ceiling);
+                Assert.Less(lit, ceiling, "never reaches the ceiling, so no band is flattened at a hard limit");
+                Assert.Greater(lit, previous, "always still rising: no thresholded edge anywhere");
+                Assert.AreEqual(-lit, HullWaveMath.SoftShade(-raw, ceiling), 1e-7f, "a trough darkens as a crest lifts");
+                previous = lit;
+            }
+            Assert.That(S.ShadeCeiling, Is.InRange(0.05f, 1f), "the shipped ceiling is a share of the water's colour, never a whitewash");
+        }
+
+        [Test]
+        public void TheShadersShade_IsTheTwinOfSoftShade_AndScalesTheWatersOwnColour()
+        {
+            string src = Regex.Replace(WaterSource(), @"\s+", "");
+            StringAssert.Contains("floathwShade=hwRaw*_HHHullWaveLook.x/(_HHHullWaveLook.x+abs(hwRaw)+1e-5);", src,
+                "the shader's soft shade moved away from HullWaveMath.SoftShade");
+            StringAssert.Contains("col.rgb*=1.0+hwShade*hullWaveShore;", src,
+                "the wave scales the water's own colour: a trough is a darker sea, never a black line");
+            StringAssert.Contains("float4 _HHHullWaveLook;", WaterSource());
+            Assert.AreEqual(PropertyId("_HHHullWaveLook"), HullWaveBridge.IdLook);
+        }
+
+        [Test]
+        public void TheWakesFoam_IsTheSeasFoam_NotAPieceOfItsOwn()
+        {
+            // The owner, 2026-11-19: "wake foam should be the same as any foam, not a drawn special piece
+            // special to just the wake." A breaking hull-wave crest joins the stored churn of the shared
+            // foam buffer BEFORE the lace tear and the threshold, so it is torn, banded and aged exactly
+            // like the prop's churn and the shore's residue; nothing in the hull-wave block paints a white.
+            string src = WaterSource();
+            int join = src.IndexOf("float stored = max(buffered.x, crestStored);", System.StringComparison.Ordinal);
+            int tear = src.IndexOf("stored *= lerp(1.0, saturate(torn * 2.0), saturate(_WakeFoamLace));",
+                                   System.StringComparison.Ordinal);
+            Assert.Greater(join, 0, "the crests' foam does not join the shared foam mat");
+            Assert.Greater(tear, join, "the crests' foam must be torn and shaped with the churn, not after it");
+            StringAssert.Contains("WakeFoamCoverage(worldXY, washZone > 0.001 ? 0.5 : bay, hullCrestFoam, wakeFresh);", src);
+            StringAssert.DoesNotContain("lerp(col.rgb, _FoamColor.rgb, hwFoam", src,
+                "the hull waves must not draw a foam white of their own");
+
+            HullWaveSettings s = S;
+            Assert.IsTrue(s.RetireDrawnFoam, "the wake's drawn foam puffs are retired in the shipped dials");
+            Assert.IsTrue(HullWaveMath.DrawnFoamRetired(in s));
+            s.Enabled = false;
+            Assert.IsFalse(HullWaveMath.DrawnFoamRetired(in s), "hull waves off: the puffs come back");
+            StringAssert.Contains("HullWaveMath.DrawnFoamRetired(in hullWaves)", File.ReadAllText(Path.Combine(Application.dataPath, "_Project", "Code", "Boats", "BoatWakeEmitter.cs")), "the emitter gates its puffs on the shared rule");
+            StringAssert.Contains("RetireDrawnFoam: 1", File.ReadAllText(Path.Combine(Application.dataPath, "..", ConfigPath)));
+        }
+
+        [Test]
+        public void ABroadHullsTrail_IsHeldToHerPropWash_OnlyWhileSheMakesWaves()
+        {
+            HullWaveSettings s = S;
+            s.TrailFoamMaxHalfWidthMetres = 2f;
+            Assert.AreEqual(2f, HullWaveMath.TrailFoamRadius(6f, true, in s), 1e-6f, "a cargo hull's band is held");
+            Assert.AreEqual(0.9f, HullWaveMath.TrailFoamRadius(0.9f, true, in s), 1e-6f, "a dory's is narrower already");
+            Assert.AreEqual(6f, HullWaveMath.TrailFoamRadius(6f, false, in s), 1e-6f, "moored: unchanged");
+            s.TrailFoamMaxHalfWidthMetres = 0f;
+            Assert.AreEqual(6f, HullWaveMath.TrailFoamRadius(6f, true, in s), 1e-6f, "0 = no limit");
+            s.TrailFoamMaxHalfWidthMetres = 2f;
+            s.Enabled = false;
+            Assert.AreEqual(6f, HullWaveMath.TrailFoamRadius(6f, true, in s), 1e-6f, "hull waves off: unchanged");
+        }
     }
 }
