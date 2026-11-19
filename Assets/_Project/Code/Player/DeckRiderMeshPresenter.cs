@@ -622,8 +622,9 @@ namespace HiddenHarbours.Player
             else GiveShadowBack();
         }
 
-        // The sun shadow this component stood down, and only that one (a shadow somebody else switched
-        // off is theirs, and is never switched back on from here).
+        // The sun shadow this component quietened, and only that one (a shadow somebody else quietened
+        // is theirs, and is never woken from here). Quiet, not disabled: the sun-caster installer owns
+        // the enable switch and turns it back on at its next refresh.
         private SpriteShadow _quietShadow;
 
         /// <summary>True while his sun shadow is stood down for the swim (the look probe reads it).</summary>
@@ -633,14 +634,14 @@ namespace HiddenHarbours.Player
         {
             if (_quietShadow != null || body == null) return;
             SpriteShadow shadow = body.GetComponent<SpriteShadow>();
-            if (shadow == null || !shadow.enabled) return;
-            shadow.enabled = false;
+            if (shadow == null || shadow.Quiet) return;
+            shadow.Quiet = true;
             _quietShadow = shadow;
         }
 
         private void GiveShadowBack()
         {
-            if (_quietShadow != null) _quietShadow.enabled = true;
+            if (_quietShadow != null) _quietShadow.Quiet = false;
             _quietShadow = null;
         }
 

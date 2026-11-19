@@ -1496,10 +1496,10 @@ namespace HiddenHarbours.Core
         [Range(0f, 1f)] public float FigureUnderwaterDim = 0.35f;
 
         [Tooltip("Height (m) of the pale foam band on the mesh just above the waterline. 0: a hard edge.")]
-        [Min(0f)] public float FigureWaterlineFoamMetres = 0.06f;
+        [Min(0f)] public float FigureWaterlineFoamMetres = 0.03f;
 
         [Tooltip("How pale that foam band is right at the waterline (0: none, 1: white).")]
-        [Range(0f, 1f)] public float FigureWaterlineFoam = 0.6f;
+        [Range(0f, 1f)] public float FigureWaterlineFoam = 0.5f;
 
         [Tooltip("ON: while the player swims or treads water his sun shadow is not drawn. The shadow is " +
                  "the hidden body sprite's, standing upright, and on open water it read as a ghost " +
