@@ -21,7 +21,7 @@ namespace HiddenHarbours.Core
     /// forward from the spine, by the least angle (bisected) that brings both grips into reach, up to
     /// the station's limit.</item>
     /// <item><b>Hold.</b> Each arm is a two-bone solve, shoulder to palm (the <c>carry</c> socket, where
-    /// the held props already sit, ADR 0053), onto its grip, the elbow kept in the clip's plane. A grip
+    /// the held props already sit, ADR 0053), onto its grip, the elbow dropped down and back. A grip
     /// still out of reach is reached TOWARD, with the arm straight: the arm is never stretched.</item>
     /// </list>
     ///
@@ -43,6 +43,13 @@ namespace HiddenHarbours.Core
         /// (the right leg mirrors x): forward and up, splayed a little outward, so a seated knee bends
         /// the way a knee does. Only its direction matters.</summary>
         public static readonly Vector3 LeftKneePole = new Vector3(-0.3f, 1f, 0.6f);
+
+        /// <summary>The elbow's pole for the LEFT arm, as a direction from the shoulder in the figure's
+        /// frame (the right arm mirrors x): down, back and a little out, so the elbows drop and draw back
+        /// past the ribs at the finish the way a rower's do, instead of flaring out level with the
+        /// shoulders (the clip's standing elbows did, with the hands drawn in to the chest). Only its
+        /// direction matters.</summary>
+        public static readonly Vector3 LeftElbowPole = new Vector3(-0.4f, -0.5f, -0.75f);
 
         /// <summary>Bisection steps for the reach lean: 10 halvings of a 30 degree limit is 0.03 degrees.</summary>
         public const int ReachLeanIterations = 10;
@@ -203,9 +210,10 @@ namespace HiddenHarbours.Core
 
             // 5. Hold.
             if (t.HasGripLeft)
-                r.ReachUseLeft = TwoBone(world, _shoulderL, _elbowL, _palmL, t.GripLeft, Pos(world, _elbowL));
+                r.ReachUseLeft = TwoBone(world, _shoulderL, _elbowL, _palmL, t.GripLeft, Pos(world, _shoulderL) + LeftElbowPole);
             if (t.HasGripRight)
-                r.ReachUseRight = TwoBone(world, _shoulderR, _elbowR, _palmR, t.GripRight, Pos(world, _elbowR));
+                r.ReachUseRight = TwoBone(world, _shoulderR, _elbowR, _palmR, t.GripRight,
+                                          Pos(world, _shoulderR) + new Vector3(-LeftElbowPole.x, LeftElbowPole.y, LeftElbowPole.z));
 
             r.Solved = true;
             return r;

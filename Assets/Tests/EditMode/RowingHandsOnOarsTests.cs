@@ -86,6 +86,14 @@ namespace HiddenHarbours.Tests.EditMode
 
         private static Vector3 P(Matrix4x4[] w, int b) => new Vector3(w[b].m03, w[b].m13, w[b].m23);
 
+        /// <summary>True when the leg hip-knee-foot is straight (within a millimetre of its full length).</summary>
+        private static bool LegStraight(CharacterSkinDef skin, Matrix4x4[] w, string hipId, string kneeId, int foot)
+        {
+            int hip = skin.IndexOfBone(hipId), knee = skin.IndexOfBone(kneeId);
+            float length = (P(w, knee) - P(w, hip)).magnitude + (P(w, foot) - P(w, knee)).magnitude;
+            return (P(w, foot) - P(w, hip)).magnitude >= length - 1e-3f;
+        }
+
         // ---------------------------------------------------------------- the cause, pinned
 
         [Test]
@@ -225,8 +233,12 @@ namespace HiddenHarbours.Tests.EditMode
                         failures.AppendLine($"{skin.Id} phase {s:0.000}: pelvis height wrong");
                     float footL = (P(world, solver.FootLeft) - (t.BraceLeft + new Vector3(0f, 0f, ankleL))).magnitude;
                     float footR = (P(world, solver.FootRight) - (t.BraceRight + new Vector3(0f, 0f, ankleR))).magnitude;
-                    if (footL > HalfPixelMeters || footR > HalfPixelMeters)
-                        failures.AppendLine($"{skin.Id} phase {s:0.000}: foot off its brace L {footL:0.0000} R {footR:0.0000}");
+                    // A short-legged figure (the children) cannot reach the adult's brace: the leg then
+                    // reaches TOWARD it, straight, and is never stretched, like an arm short of a grip.
+                    bool reachedL = footL <= HalfPixelMeters || LegStraight(skin, world, "hip_L", "knee_L", solver.FootLeft);
+                    bool reachedR = footR <= HalfPixelMeters || LegStraight(skin, world, "hip_R", "knee_R", solver.FootRight);
+                    if (!reachedL || !reachedR)
+                        failures.AppendLine($"{skin.Id} phase {s:0.000}: foot off its brace L {footL:0.0000} R {footR:0.0000}, leg not straight toward it");
                 }
             }
             Assert.That(failures.Length, Is.EqualTo(0), failures.ToString());

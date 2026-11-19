@@ -20,7 +20,7 @@ namespace HiddenHarbours.Boats
         public bool Enabled;
 
         [Tooltip("Where each hand holds its oar: metres INBOARD of the oarlock along the loom. The rig's " +
-                 "inboard loom is 0.85 m, so 0.70 is a hand's width in from the handle's end.")]
+                 "inboard loom is 0.85 m; 0.65 keeps the two hands a little apart where the handles pass his knees.")]
         [Min(0f)] public float GripInboardMeters;
 
         [Tooltip("The top of the thwart under his sitting bones. The dory's after thwart is at y -0.72, " +
@@ -43,7 +43,7 @@ namespace HiddenHarbours.Boats
         public static RowingStationConfig Default => new RowingStationConfig
         {
             Enabled = true,
-            GripInboardMeters = 0.70f,
+            GripInboardMeters = 0.65f,
             SeatLocalMeters = new Vector3(0f, -0.68f, 0.3056f),
             FootBraceLocalMeters = new Vector3(0.16f, -1.35f, 0.1098f),
             LaybackDegrees = 8f,
