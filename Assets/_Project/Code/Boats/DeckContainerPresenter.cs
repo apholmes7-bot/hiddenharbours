@@ -31,7 +31,8 @@ namespace HiddenHarbours.Boats
     /// <para><b>Seams + budget (rules 4/7).</b> Spawned at runtime by its same-module sibling
     /// <see cref="ShipHold"/> (no builder re-run needed; boats without a hold get no tray). Cross-module
     /// input is Core-only: the fill refreshes on <see cref="FishCaught"/> / <see cref="CatchSold"/> /
-    /// <see cref="GameLoaded"/> / <see cref="BoatPurchased"/> — event-driven sprite swaps, never a
+    /// <see cref="CatchDumped"/> / <see cref="GameLoaded"/> / <see cref="BoatPurchased"/> /
+    /// <see cref="GiftGiven"/> (a gift can come off the boat) — event-driven sprite swaps, never a
     /// per-frame poll. LateUpdate only repositions (plus a no-alloc hull ref-compare that catches a
     /// hull swap regardless of bus subscription order). Greybox sprites are code-built once and cached
     /// static; the owner's painted fill states drop into the Def with zero code change.</para>
@@ -118,6 +119,8 @@ namespace HiddenHarbours.Boats
             EventBus.Subscribe<CatchDumped>(OnCatchDumped);
             EventBus.Subscribe<GameLoaded>(OnGameLoaded);
             EventBus.Subscribe<BoatPurchased>(OnBoatPurchased);
+            // A gift taken off the boat moves one item with no hold event of its own: re-read at once.
+            EventBus.Subscribe<GiftGiven>(OnGiftGiven);
             Refresh();
         }
 
@@ -128,6 +131,7 @@ namespace HiddenHarbours.Boats
             EventBus.Unsubscribe<CatchDumped>(OnCatchDumped);
             EventBus.Unsubscribe<GameLoaded>(OnGameLoaded);
             EventBus.Unsubscribe<BoatPurchased>(OnBoatPurchased);
+            EventBus.Unsubscribe<GiftGiven>(OnGiftGiven);
         }
 
         private void OnFishCaught(FishCaught _) => Refresh();
@@ -135,6 +139,7 @@ namespace HiddenHarbours.Boats
         private void OnCatchDumped(CatchDumped _) => Refresh();   // dumped rubbish empties the tray too
         private void OnGameLoaded(GameLoaded _) => Refresh();
         private void OnBoatPurchased(BoatPurchased _) => Refresh();
+        private void OnGiftGiven(GiftGiven _) => Refresh();          // a gift may have come off the boat
 
         /// <summary>
         /// Where the tray is drawn RIGHT NOW, in world space — the anchor anything riding the container

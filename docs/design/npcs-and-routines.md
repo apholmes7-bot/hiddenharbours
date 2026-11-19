@@ -881,8 +881,8 @@ not saved: relationships slice 2), and publishes
 - **The daily limit** is per person, per game day (the clock's day index), from
   `GiftConfig.GiftsPerNpcPerDay`. **Saved since v24** (5.6).
 - **Still owed:** food and other items as gifts once they are items he can hold (the Give rows read
-  catch only); the pail and deck-tray pictures refreshing the moment a gift leaves them (5.7); the
-  relationship graph applied and saved (relationships slice 2).
+  catch only); the relationship graph applied and saved (relationships slice 2). (The pail and deck-tray
+  pictures now refresh the moment a gift leaves them: 5.7.)
 
 ### 5.6 As built: gift days saved (v24 rows wired)
 
@@ -918,9 +918,11 @@ again.
 - **Taking one out of a container** uses the Core rebuild (`IHold` has no partial remove, the
   `SellService` / `CatchDisposal` pattern). A container whose capacity could not take the rest back (a
   belt pail whose gear is gone) is skipped, so a gift never loses catch.
-- **Known gap:** the pail and deck-tray pictures listen for a catch, a sale or a dump, not a gift, so they
-  show the old contents until the next of those. Fixing it is a one-line subscription in each presenter
-  (Art and Boats lanes).
+- **The pictures follow the gift.** The pail picture (`HoldCatchFillSource`, Art) and the deck tray
+  (`DeckContainerPresenter`, Boats) re-read their hold on `GiftGiven` as well as on a catch, a sale or a
+  dump, so a fish he gives from the pail or off the boat leaves the picture the moment it is given.
+  Subscribed on enable, unsubscribed on disable, event-time only
+  (`GiftRefreshesContainerPicturesTests`).
 
 ---
 
