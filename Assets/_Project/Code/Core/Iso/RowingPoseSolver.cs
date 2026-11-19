@@ -45,11 +45,11 @@ namespace HiddenHarbours.Core
         public static readonly Vector3 LeftKneePole = new Vector3(-0.3f, 1f, 0.6f);
 
         /// <summary>The elbow's pole for the LEFT arm, as a direction from the shoulder in the figure's
-        /// frame (the right arm mirrors x): down, back and a little out, so the elbows drop and draw back
+        /// frame (the right arm mirrors x): down and back (barely out), so the elbows drop and draw back
         /// past the ribs at the finish the way a rower's do, instead of flaring out level with the
         /// shoulders (the clip's standing elbows did, with the hands drawn in to the chest). Only its
         /// direction matters.</summary>
-        public static readonly Vector3 LeftElbowPole = new Vector3(-0.4f, -0.5f, -0.75f);
+        public static readonly Vector3 LeftElbowPole = new Vector3(-0.15f, -0.7f, -0.7f);
 
         /// <summary>Bisection steps for the reach lean: 10 halvings of a 30 degree limit is 0.03 degrees.</summary>
         public const int ReachLeanIterations = 10;
