@@ -119,10 +119,10 @@ namespace HiddenHarbours.Core
             AgeTear = 1f,
 
             Oar = 1f,
-            OarRadius = 0.22f,
-            OarPerSecond = 2.5f,
-            OarCatch = 0.35f,
-            OarRelease = 0.3f,
+            OarRadius = 0.35f,
+            OarPerSecond = 0.8f,
+            OarCatch = 0.15f,
+            OarRelease = 0.12f,
         };
 
         /// <summary>True when the oars lay their foam into the sheet rather than drawing their own.</summary>

@@ -834,10 +834,10 @@ MonoBehaviour:
     ConvergenceAge: 0.5
     AgeTear: 1
     Oar: 1
-    OarRadius: 0.22
-    OarPerSecond: 2.5
-    OarCatch: 0.35
-    OarRelease: 0.3
+    OarRadius: 0.35
+    OarPerSecond: 0.8
+    OarCatch: 0.15
+    OarRelease: 0.12
   DevAllHelmInstruments: 1
   MeshFishingAndDig: 1
   RegionCrossingHysteresisMetres: 0.25
