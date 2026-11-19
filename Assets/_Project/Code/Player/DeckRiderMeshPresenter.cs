@@ -411,10 +411,19 @@ namespace HiddenHarbours.Player
                         : Rowing ? rowFrame
                         : CharacterSkinPose.FrameFor(clip, seed, now, clipStart);
 
+            // Placed BEFORE the pose: at the oars the pose is solved onto the oar handles, which the boat
+            // answers on her own posed mesh, and the root's place on that mesh is what takes them into
+            // the figure's frame.
+            Place(stand, skin, clipPose, moveHeading);
+
             IsoCharacterFigureRenderer.Life life = _life.Step(skin, string.Empty, 0u, now, _figure, looks: false);
+            if (Rowing && _rowing.TryTargets(stand, FigureLocalMetres, FigureYawDegrees, out RowingPoseSolver.Targets row))
+            {
+                life.Rowing = true;
+                life.Row = row;
+            }
             if (!_figure.SetPose(stateKey, frame, life)) { Stop($"could not pose '{stateKey}' frame {frame}"); return; }
 
-            Place(stand, skin, clipPose, moveHeading);
             _figure.Visible = true;
             DrawsInsteadOfSprite = true;
             NotDrawingReason = null;

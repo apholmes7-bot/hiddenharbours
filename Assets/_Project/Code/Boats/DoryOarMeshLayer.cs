@@ -41,7 +41,7 @@ namespace HiddenHarbours.Boats
     /// the per-oar state <see cref="BoatController"/> already computed.</para>
     /// </summary>
     [DisallowMultipleComponent]
-    public class DoryOarMeshLayer : MonoBehaviour, IOarStroke
+    public class DoryOarMeshLayer : MonoBehaviour, IOarStroke, IRowingStation
     {
         [Header("Stroke feel (tunable — defaults shared with the sprite oars)")]
         [Tooltip("Frames/sec the 8-frame stroke cycle plays at a full-effort pull. Same default as " +
@@ -163,6 +163,61 @@ namespace HiddenHarbours.Boats
             _portPhase = 0f;
             _starPhase = 0f;
             _bothIdleSeconds = 0f;
+        }
+
+        // The rowing station: where the oarlocks are (the fittings' pivots, hull rig metres) and the
+        // hull's station data. Set through ConfigureStation; unset = no station, the rower plays his clip.
+        private bool _hasStation;
+        private Vector3 _portLock, _starLock;
+        private RowingStationConfig _station;
+
+        /// <summary>
+        /// Wire the rowing station from the skinner: the two oarlocks (the fittings'
+        /// <c>PivotLocalMeters</c>, the point each oar turns about) and the hull's
+        /// <see cref="RowingStationConfig"/>. A disabled config leaves no station.
+        /// </summary>
+        public void ConfigureStation(Vector3 portOarlock, Vector3 starboardOarlock, in RowingStationConfig station)
+        {
+            _portLock = portOarlock;
+            _starLock = starboardOarlock;
+            _station = station;
+            _hasStation = station.Enabled;
+        }
+
+        /// <summary>
+        /// <see cref="IRowingStation"/>: the grips where the oars were posed this frame, the seat and the
+        /// braces, all in the hull's rig frame. False while nobody rows. A trailing or shipped oar's grip
+        /// is marked invalid: that hand lets go rather than chase a handle out of reach.
+        /// </summary>
+        public bool TryGetRowingTargets(out RowingTargets targets)
+        {
+            targets = default;
+            if (!_hasStation || !IsStroking) return false;
+            targets = StationTargets(_portLock, _starLock, in _station, PortPose, PortStroking,
+                                     StarboardPose, StarboardStroking);
+            return true;
+        }
+
+        /// <summary>The station's targets for two oar poses. Pure, so the arithmetic is provable without
+        /// a scene.</summary>
+        public static RowingTargets StationTargets(Vector3 portLock, Vector3 starLock, in RowingStationConfig station,
+                                                   DoryOarMeshPose.Pose portPose, bool portRowing,
+                                                   DoryOarMeshPose.Pose starPose, bool starRowing)
+        {
+            Vector3 portDir = DoryOarMeshPose.Direction(PortSide, portPose.SweepDegrees, portPose.DipDegrees);
+            Vector3 starDir = DoryOarMeshPose.Direction(StarboardSide, starPose.SweepDegrees, starPose.DipDegrees);
+            return new RowingTargets
+            {
+                PortGripValid = portRowing,
+                StarboardGripValid = starRowing,
+                PortGrip = RowingStationMath.Grip(portLock, portDir, station.GripInboardMeters),
+                StarboardGrip = RowingStationMath.Grip(starLock, starDir, station.GripInboardMeters),
+                Seat = station.SeatLocalMeters,
+                StarboardBrace = station.FootBraceLocalMeters,
+                PortBrace = RowingStationMath.MirrorAcrossCentreline(station.FootBraceLocalMeters),
+                LaybackDegrees = station.LaybackDegrees,
+                ReachLeanMaxDegrees = station.ReachLeanMaxDegrees,
+            };
         }
 
         /// <summary>

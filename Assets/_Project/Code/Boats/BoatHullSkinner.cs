@@ -535,6 +535,10 @@ namespace HiddenHarbours.Boats
             var layer = root.GetComponent<DoryOarMeshLayer>();
             if (layer == null) layer = root.AddComponent<DoryOarMeshLayer>();
             layer.Configure(port, star, boat, motor);
+            // The rowing station: the rower's hands are put on these oars' handles, his hips on the
+            // thwart and his feet on the boards (the hull's own Rowing data).
+            layer.ConfigureStation(visual.OarPortMesh.PivotLocalMeters, visual.OarStarMesh.PivotLocalMeters,
+                                   in visual.Rowing);
 
             // The oar splash (owner ruling 2026-11-13) rides the same wiring: it reads the poses this
             // layer draws and the hull driver's projection, so it exists exactly when rowed mesh oars
