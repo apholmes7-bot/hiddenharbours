@@ -80,6 +80,12 @@ namespace HiddenHarbours.Player
                  "draw (no mesh figure, no aim on the clip, no usable mesh).")]
         public bool DrawHeldMeshOnFigure;
 
+        [Tooltip("ADR 0053 D1: on a mesh-figure clip that aims NO tool (idle, walk, run, a moving angler's " +
+                 "gait), draw the held mesh at its rig's own held pose on the mount bone instead of the " +
+                 "tool's sprite: the rod he carries, and the rod he holds while the hold pose yields to his " +
+                 "gait. Needs DrawHeldMeshOnFigure. Off keeps the sprite on those clips.")]
+        public bool DrawCarriedMeshOnFigure;
+
         [Tooltip("Which of HeldMeshes the figure holds, by the def's Variant: the rod's 'cane' is the tier " +
                  "the rod kit's sprites are wired with today. Empty matches a single-state tool's empty " +
                  "variant.")]

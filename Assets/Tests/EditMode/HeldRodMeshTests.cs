@@ -338,8 +338,39 @@ namespace HiddenHarbours.Tests.EditMode
             Refuses(rod, figure, HeldRodMesh.Refusal.NoMeshFigure);
             figure.Visible = true;
 
+            ToolDef noCarry = Copy(rod);
+            noCarry.DrawCarriedMeshOnFigure = false;
             Assert.IsTrue(figure.SetPose("idle", 0), "harness: the fisher did not stand idle");
-            Refuses(rod, figure, HeldRodMesh.Refusal.ClipAimsNoTool);
+            Refuses(noCarry, figure, HeldRodMesh.Refusal.ClipAimsNoTool);
+        }
+
+        [Test]
+        public void AClipThatAimsNoTool_HoldsTheRodAtItsBakedPose_OnTheSocket()
+        {
+            ToolDef rod = Load<ToolDef>(RodPath);
+            Assert.IsTrue(rod.DrawCarriedMeshOnFigure, "the shipped rod must ask for its carried mesh");
+            IsoCharacterFigureRenderer figure = Fisher();
+            HeldRodMesh driver = Driver();
+            int socket = figure.SkinDef.IndexOfBone(rod.HeldMeshMountBone);
+            foreach (string state in new[] { "idle", "walk" })
+            {
+                Assert.IsTrue(figure.SkinDef.TryGetClip(state, out CharacterSkinDef.SkinClip clip), $"harness: no '{state}'");
+                foreach (int frame in new[] { 0, clip.FrameCount - 1 })
+                {
+                    Assert.IsTrue(figure.SetPose(state, frame), $"harness: the fisher did not pose '{state}' {frame}");
+                    Assert.IsTrue(driver.TryDraw(true, rod, figure, LineWidthPx), $"'{state}' {frame}: {driver.LastRefusal}");
+                    Assert.IsTrue(driver.Carried, $"'{state}' aims no tool, so the rod is carried");
+                    IsoFacetHeldPropRenderer r = driver.Renderer;
+                    Assert.AreSame(figure.FacetTransform, r.transform.parent);
+                    Assert.IsTrue(figure.TryBonePoint(socket, out Vector3 grip));
+                    Assert.Less((r.transform.localPosition - grip).magnitude, 1e-5f, "the carried grip is not on the socket");
+                    Assert.Less(Quaternion.Angle(r.transform.localRotation, Quaternion.identity), 1e-3f,
+                                "the carried rod must keep its rig's held pose (D1)");
+                }
+            }
+            Assert.IsTrue(figure.SetPose("hold", 0));
+            Assert.IsTrue(driver.TryDraw(true, rod, figure, LineWidthPx));
+            Assert.IsFalse(driver.Carried, "a clip that aims the rod is not the carried placement");
         }
 
         [Test]

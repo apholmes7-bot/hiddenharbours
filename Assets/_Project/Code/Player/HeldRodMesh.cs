@@ -12,8 +12,10 @@ namespace HiddenHarbours.Player
     /// <para><b>When it draws.</b> All of: the tool's Def asks for it
     /// (<see cref="ToolDef.DrawHeldMeshOnFigure"/>) and names a held mesh that is usable and plots a tip;
     /// a mesh figure is drawing him this frame; the clip it draws aims a tool of the mesh's family on
-    /// some frame (the fisher's fishing clips aim the rod on every frame); and the figure has the mount
-    /// bone the Def names. Anything else is a refusal with a reason (<see cref="Refusal"/>), and the
+    /// some frame (the fisher's fishing clips aim the rod on every frame), or the Def asks for the
+    /// carried placement (<see cref="ToolDef.DrawCarriedMeshOnFigure"/>: the rig's own held pose on the
+    /// socket, D1, for idle, walk and a moving angler's gait); and the figure has the mount bone the
+    /// Def names. Anything else is a refusal with a reason (<see cref="Refusal"/>), and the
     /// sprite rod draws exactly as before. Nothing here invents a pose or bakes a mesh.</para>
     ///
     /// <para><b>The pose is the rig's.</b> The grip is the mount bone's point on the frame drawn, and the
@@ -65,6 +67,10 @@ namespace HiddenHarbours.Player
 
         /// <summary>True on a frame the mesh rod is drawn.</summary>
         public bool Drawing { get; private set; }
+
+        /// <summary>True when the last resolve placed the prop at its rig's held pose (D1) because the
+        /// clip drawn aims no tool, rather than at the clip's own tool key.</summary>
+        public bool Carried { get; private set; }
 
         /// <summary>The renderer, once built. For tests and plates.</summary>
         public IsoFacetHeldPropRenderer Renderer => _renderer;
@@ -129,6 +135,7 @@ namespace HiddenHarbours.Player
         {
             gripLocal = Vector3.zero;
             aimLocal = Quaternion.identity;
+            Carried = false;
             if (!switchOn) return Refusal.SwitchOff;
             if (tool == null) return Refusal.NoTool;
             if (!tool.DrawHeldMeshOnFigure) return Refusal.ToolKeepsSprite;
@@ -145,12 +152,16 @@ namespace HiddenHarbours.Player
             if (_mountBone == CharacterSkinDef.NoBone) return Refusal.NoMountBone;
 
             ResolveClip(figure.DrawnStateKey);
-            if (!HeldPropPose.TryNearestHeldKey(_clipTrack, figure.DrawnFrame, _def.Family,
-                                                out CharacterSkinDef.ToolKey key))
-                return Refusal.ClipAimsNoTool;
+            bool aimed = HeldPropPose.TryNearestHeldKey(_clipTrack, figure.DrawnFrame, _def.Family,
+                                                        out CharacterSkinDef.ToolKey key);
+            // D1: a clip that aims no tool (idle, walk, a moving angler's gait) holds the prop at its
+            // rig's own held pose on the socket, when the Def asks for it; otherwise the sprite keeps it.
+            if (!aimed && !tool.DrawCarriedMeshOnFigure) return Refusal.ClipAimsNoTool;
 
             if (!figure.TryBonePoint(_mountBone, out gripLocal)) return Refusal.NoMeshFigure;
-            aimLocal = HeldPropPose.FromBakedPose(_bakedPitch, _bakedYaw, key.Pitch, key.Yaw);
+            Carried = !aimed;
+            aimLocal = aimed ? HeldPropPose.FromBakedPose(_bakedPitch, _bakedYaw, key.Pitch, key.Yaw)
+                             : Quaternion.identity;
             return Refusal.None;
         }
 

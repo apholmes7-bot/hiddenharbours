@@ -505,7 +505,13 @@ namespace HiddenHarbours.Player
 
             if (!_s.IsActive)
             {
-                HideInteraction();
+                HideInteraction(keepMeshRod: true);
+                // THE CARRIED ROD (ADR 0053 D1): out of a fishing state the rod he carries is drawn as
+                // its mesh at the rig's held pose on his hand, when the mesh body draws him and the rod's
+                // Def asks for it. DrawsRod then holds the carried sprite out of the picture (CarryHands),
+                // so he carries one rod, not two. Any refusal hands the rod back to the carried sprite.
+                DrawsMeshRod = TryDrawMeshRod();
+                if (!DrawsMeshRod) _meshRod?.Hide();
                 return;
             }
 
@@ -1241,11 +1247,16 @@ namespace HiddenHarbours.Player
 
         // ---- plumbing --------------------------------------------------------------------------------
 
-        private void HideInteraction()
+        private void HideInteraction() => HideInteraction(keepMeshRod: false);
+
+        private void HideInteraction(bool keepMeshRod)
         {
             if (_rodSr != null) _rodSr.enabled = false;
-            _meshRod?.Hide();
-            DrawsMeshRod = false;
+            if (!keepMeshRod)
+            {
+                _meshRod?.Hide();
+                DrawsMeshRod = false;
+            }
             if (_bobberSr != null) _bobberSr.enabled = false;
             if (_fishSr != null) _fishSr.enabled = false;
             if (_heldSr != null) _heldSr.enabled = false;

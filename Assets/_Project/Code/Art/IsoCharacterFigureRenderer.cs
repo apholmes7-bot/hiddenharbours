@@ -1079,12 +1079,15 @@ namespace HiddenHarbours.Art
         /// facet pass composites through, and a held prop drawn under her facet child (a rod) reaches past
         /// the body's cell; outside the overlay it would be clipped. Pads every side by
         /// <paramref name="metres"/> (the prop's grip-to-tip length; 0 gives the cell back). Re-writes
-        /// the quad only when the value changes; aboard it is the hull's overlay, and this only records
-        /// the value for the next time she goes ashore.
+        /// the quad only when the value changes. Aboard the window is the hull's overlay, so the pad is
+        /// asked of the hull (<see cref="IsoFacetHullRenderer.EnsureHeldReachMetres"/>) and recorded here
+        /// for the next time she goes ashore.
         /// </summary>
         public void SetHeldReachMetres(float metres)
         {
             metres = Mathf.Max(0f, metres);
+            // Aboard she is composited through the hull's overlay: ask it for the room (it only grows).
+            if (!IsAshore && _hull != null) _hull.EnsureHeldReachMetres(metres);
             if (Mathf.Approximately(metres, _heldReachMetres)) return;
             _heldReachMetres = metres;
             WriteOverlayCorners();
