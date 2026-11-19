@@ -796,12 +796,12 @@ MonoBehaviour:
     ShoreAgeAcross: 0.5
     ShoreBackwashAge: 0.6
     Caps: 1
-    CapAmount: 0.6
+    CapAmount: 1.3
     Surf: 1
     SurfAmount: 1
     Storm: 1
-    StormAmount: 2
-    StormAge: 0.7
+    StormAmount: 4
+    StormAge: 0.4
     Convergence: 1
     ConvergenceAge: 0.5
     AgeTear: 1

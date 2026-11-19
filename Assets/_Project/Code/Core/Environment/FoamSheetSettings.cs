@@ -87,13 +87,13 @@ namespace HiddenHarbours.Core
             ShoreBackwashAge = 0.6f,
 
             Caps = 1f,
-            CapAmount = 0.6f,
+            CapAmount = 1.3f,
             Surf = 1f,
             SurfAmount = 1f,
 
             Storm = 1f,
-            StormAmount = 2f,
-            StormAge = 0.7f,
+            StormAmount = 4f,
+            StormAge = 0.4f,
 
             Convergence = 1f,
             ConvergenceAge = 0.5f,

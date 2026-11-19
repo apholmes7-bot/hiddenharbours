@@ -1113,10 +1113,10 @@ Shader "HiddenHarbours/Water"
         // Whitecaps and surf: x joins the caps, y scales the cap opacity handed to the sheet (lower =
         // smaller, sparser caps: the sheet's threshold eats the faint ones), z joins the surf's
         // whitewater and lip, w scales the surf amount handed to the sheet.
-        _FoamSheetCaps     ("One foam: caps and surf (x caps join, y cap amount, z surf join, w surf amount)", Vector) = (1, 0.6, 1, 1)
+        _FoamSheetCaps     ("One foam: caps and surf (x caps join, y cap amount, z surf join, w surf amount)", Vector) = (1, 1.3, 1, 1)
         // Storm streaks: x joins them, y scales the lane amount handed to the sheet (higher = fuller
         // streaks), z their age (old foam strung out by the wind: higher = more broken, more sea-coloured).
-        _FoamSheetStorm    ("One foam: storm streaks (x join, y amount, z age)", Vector) = (1, 2, 0.7, 0)
+        _FoamSheetStorm    ("One foam: storm streaks (x join, y amount, z age)", Vector) = (1, 4, 0.4, 0)
         // Convergence foam: x joins it (its texture becomes the sheet's lace, not the cap field's
         // blobs), y its age where it is the larger foam (foam gathered on a pinch line has drifted there).
         _FoamSheetConv     ("One foam: convergence (x join, y age)", Vector) = (1, 0.5, 0, 0)
