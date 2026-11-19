@@ -799,6 +799,9 @@ MonoBehaviour:
     CapAmount: 0.6
     Surf: 1
     SurfAmount: 1
+    Storm: 1
+    StormAmount: 2
+    StormAge: 0.7
     AgeTear: 1
   DevAllHelmInstruments: 1
   MeshFishingAndDig: 1

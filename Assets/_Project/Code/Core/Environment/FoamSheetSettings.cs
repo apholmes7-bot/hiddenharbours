@@ -52,6 +52,17 @@ namespace HiddenHarbours.Core
                  "whitewater drop out, higher = the whitewater spreads.")]
         [Range(0.1f, 2f)] public float SurfAmount;
 
+        [Header("Storm streaks")]
+        [Tooltip("How fully the storm's downwind streaks are drawn as the one foam sheet: 1 = the same lace, " +
+                 "bands and ageing colour as every other foam, 0 = the older faint additive tint.")]
+        [Range(0f, 1f)] public float Storm;
+        [Tooltip("How much of the streaks' lane amount is handed to the sheet. Higher = fuller, longer " +
+                 "streaks; lower = only their brightest veins.")]
+        [Range(0.1f, 6f)] public float StormAmount;
+        [Tooltip("How old the streaks' foam reads: they are foam strung out by the wind, so older = more " +
+                 "broken into lace and closer to the water's own colour.")]
+        [Range(0f, 1f)] public float StormAge;
+
         [Header("Every sheet")]
         [Tooltip("How hard the sheet tears apart as its foam ages: 0 = it fades as one even mat, 1 = foam " +
                  "half way through its age keeps only its densest hearts. The wake also reads the hull " +
@@ -71,6 +82,10 @@ namespace HiddenHarbours.Core
             Surf = 1f,
             SurfAmount = 1f,
 
+            Storm = 1f,
+            StormAmount = 2f,
+            StormAge = 0.7f,
+
             AgeTear = 1f,
         };
 
@@ -81,5 +96,9 @@ namespace HiddenHarbours.Core
         /// <summary>The caps' and surf's dials as the shader reads them (<c>_FoamSheetCaps</c>).</summary>
         public Vector4 CapsVector => new Vector4(Mathf.Clamp01(Caps), Mathf.Max(CapAmount, 0f),
                                                  Mathf.Clamp01(Surf), Mathf.Max(SurfAmount, 0f));
+
+        /// <summary>The storm streaks' dials as the shader reads them (<c>_FoamSheetStorm</c>).</summary>
+        public Vector4 StormVector => new Vector4(Mathf.Clamp01(Storm), Mathf.Max(StormAmount, 0f),
+                                                  Mathf.Clamp01(StormAge), 0f);
     }
 }

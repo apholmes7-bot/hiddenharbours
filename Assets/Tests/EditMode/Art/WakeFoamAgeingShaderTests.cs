@@ -266,6 +266,9 @@ namespace HiddenHarbours.Tests.Art.EditMode
                 // The one foam sheet (2026-11-19): the shore's foam line walks too, at the swash's age.
                 @"float3\s+fringeFoam\s*=\s*FoamAgedColor\s*\(\s*fringeAge01\s*,\s*_FoamColor\.rgb\s*,\s*_FoamSheetShore\.x\s*,\s*col\.rgb\s*\)\s*;" +
                     @"\s*col\.rgb\s*=\s*lerp\s*\(\s*col\.rgb\s*,\s*fringeFoam\s*,",
+                // …and the storm streaks, at their own age.
+                @"float3\s+stormFoam\s*=\s*FoamAgedColor\s*\(\s*stormAge01\s*,\s*_FoamColor\.rgb\s*,\s*stormJoin\s*,\s*col\.rgb\s*\)\s*;" +
+                    @"\s*col\.rgb\s*=\s*lerp\s*\(\s*col\.rgb\s*,\s*stormFoam\s*,",
             };
 
             // …after the last light layers, so the col.rgb they end on is the lit sea.

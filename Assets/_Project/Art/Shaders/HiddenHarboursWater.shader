@@ -1114,6 +1114,9 @@ Shader "HiddenHarbours/Water"
         // smaller, sparser caps: the sheet's threshold eats the faint ones), z joins the surf's
         // whitewater and lip, w scales the surf amount handed to the sheet.
         _FoamSheetCaps     ("One foam: caps and surf (x caps join, y cap amount, z surf join, w surf amount)", Vector) = (1, 0.6, 1, 1)
+        // Storm streaks: x joins them, y scales the lane amount handed to the sheet (higher = fuller
+        // streaks), z their age (old foam strung out by the wind: higher = more broken, more sea-coloured).
+        _FoamSheetStorm    ("One foam: storm streaks (x join, y amount, z age)", Vector) = (1, 2, 0.7, 0)
         // How hard the sheet tears apart as its foam ages (1 = half way through its age only the
         // lace's hearts survive). The wake also reads the hull waves' own tear; the larger wins.
         _FoamSheetAgeTear  ("One foam: age tear (0 = an even mat, 1 = hearts only by half age)", Range(0,1)) = 1
@@ -1885,6 +1888,7 @@ Shader "HiddenHarbours/Water"
                 // The one foam sheet: how each source joins it (GameConfig.FoamSheet).
                 float4 _FoamSheetShore;
                 float4 _FoamSheetCaps;
+                float4 _FoamSheetStorm;
                 float  _FoamSheetAgeTear;
                 float  _WakeFoamAgeStrength;
                 float  _WakeFoamFreshFloor;
@@ -5143,17 +5147,20 @@ Shader "HiddenHarbours/Water"
             // with the night like the foam it belongs to (opposite of the night-visible rain rings). Returns the
             // additive RGB (tinted to the foam colour). col.rgb ONLY: never depth/clip/_WaterLevel/the height
             // read/the sim (P1 integrity, rule 5). Deterministic (ValueNoise/EvolvingField, no RNG).
-            float3 StormFoamLanes(float2 worldXY, float dt, float t)
+            // THE ONE FOAM SHEET (2026-11-19): the lanes' AMOUNT (where the blow strings foam out downwind and
+            // how much) is this function; the compose hands it to the sheet (FoamSheetTear/Cover at the
+            // streaks' own age) unless _FoamSheetStorm.x = 0, where StormFoamLanes below adds it as before.
+            float StormFoamLaneAmount(float2 worldXY, float dt, float t)
             {
                 if (_StormFoamLaneStrength <= 0.001)
-                    return float3(0, 0, 0);                 // EXACT passthrough - opt-in (rule 6): today's look
+                    return 0.0;                             // EXACT passthrough - opt-in (rule 6): today's look
 
                 // MONOTONE wind gate: gone on calm, rising with _Roughness (the wind uniform), eased in so the
                 // lanes come up as the blow builds rather than snapping on.
                 float blow = saturate(_Roughness);
                 blow = blow * blow;                          // ease-in: they belong to a real wind, not a breeze
                 if (blow <= 0.001)
-                    return float3(0, 0, 0);
+                    return 0.0;
 
                 // wind aniso basis (same idiom as the whitecaps): keep along-wind, compress cross-wind.
                 float2 wdir  = normalize(_WindDir.xy + float2(0, 1e-4));   // safe axis on a zero wind
@@ -5177,7 +5184,13 @@ Shader "HiddenHarbours/Water"
 
                 // gates: the wind blow (monotone) * open-water (fade at the wet shore edge, dt read-only).
                 float openWater = saturate(dt);
-                float amount = lanes * blow * openWater * saturate(_StormFoamLaneStrength);
+                return lanes * blow * openWater * saturate(_StormFoamLaneStrength);
+            }
+
+            // The older separate look: the amount added as a faint foam tint.
+            float3 StormFoamLanes(float2 worldXY, float dt, float t)
+            {
+                float amount = StormFoamLaneAmount(worldXY, dt, t);
                 return _FoamColor.rgb * amount * 0.25;                        // crisp streaks (was 0.4), tinted to the foam
             }
 
@@ -7124,7 +7137,27 @@ Shader "HiddenHarbours/Water"
                 // opposite of the night-visible rain rings added post-grade below). Keyed to the WIND
                 // (_WindDir/_Roughness - the blow), a MONOTONE gate: gone on calm, strong in a gale. dt (the
                 // depth key) is READ-ONLY here (never depth/clip/_WaterLevel/the sim - P1, rule 5).
-                col.rgb += StormFoamLanes(worldXY, dt, t);
+                // THE ONE FOAM SHEET (2026-11-19): the streaks are the sea's foam strung out by the wind, so
+                // their amount (scaled by _FoamSheetStorm.y) takes the sheet's lace, its tear at the streaks'
+                // age (_FoamSheetStorm.z: old foam, so they break into chains of lace patches) and its
+                // threshold and bands, and walks the one colour ramp at that age. _FoamSheetStorm.x = 0 is
+                // the older faint additive tint, bit-exact.
+                if (_FoamSheetStorm.x <= 0.001)
+                    col.rgb += StormFoamLanes(worldXY, dt, t);
+                else
+                {
+                    float stormAmount = StormFoamLaneAmount(worldXY, dt, t);
+                    float stormJoin = saturate(_FoamSheetStorm.x);
+                    col.rgb += _FoamColor.rgb * stormAmount * 0.25 * (1.0 - stormJoin);
+                    if (stormAmount > 0.0)
+                    {
+                        float stormAge01 = saturate(_FoamSheetStorm.z);
+                        float stormSheet = FoamSheetCover(FoamSheetTear(saturate(stormAmount * _FoamSheetStorm.y),
+                                                                        FoamSheetLace(worldXY), stormAge01, 0.0), bay);
+                        float3 stormFoam = FoamAgedColor(stormAge01, _FoamColor.rgb, stormJoin, col.rgb);
+                        col.rgb = lerp(col.rgb, stormFoam, stormSheet * stormJoin * _FoamColor.a);
+                    }
+                }
 
                 // ---- CURRENT DRIFT LINES: faint streaks tracing the tidal set (col.rgb ONLY; Arc C, default OFF)
                 // Added in the same pre-grade dressing zone the foam + whitecaps occupy, so the palette guard-rail

@@ -151,6 +151,22 @@ namespace HiddenHarbours.Tests.Art.EditMode
         }
 
         [Test]
+        public void TheStormStreaks_DrawThroughTheSheet_AsOldFoam()
+        {
+            string code = CodeOnly(Source());
+            // The lanes' amount is one function; the older tint is a wrapper over it, so the two reads agree.
+            Assert.AreEqual(1, CountOf(code, "float StormFoamLaneAmount(float2 worldXY, float dt, float t)"));
+            StringAssert.Contains("float amount = StormFoamLaneAmount(worldXY, dt, t);", Body(code, "float3 StormFoamLanes("));
+            StringAssert.Contains("float stormSheet = FoamSheetCover(FoamSheetTear(saturate(stormAmount * _FoamSheetStorm.y),", code);
+            StringAssert.Contains("FoamSheetLace(worldXY), stormAge01, 0.0), bay);", code);
+            StringAssert.Contains("float3 stormFoam = FoamAgedColor(stormAge01, _FoamColor.rgb, stormJoin, col.rgb);", code);
+            StringAssert.Contains("col.rgb = lerp(col.rgb, stormFoam, stormSheet * stormJoin * _FoamColor.a);", code);
+            // join 0 is the older tint, bit-exact.
+            StringAssert.Contains("if (_FoamSheetStorm.x <= 0.001)", code);
+            StringAssert.Contains("col.rgb += StormFoamLanes(worldXY, dt, t);", code);
+        }
+
+        [Test]
         public void TheSwashAge_IsTheRateOfTheSameSwash()
         {
             // BeachSwashBackwash01 must read BeachSwash's own phase: the same shoreward term, desync and
@@ -183,6 +199,8 @@ namespace HiddenHarbours.Tests.Art.EditMode
                 VectorDefault(src, "_FoamSheetShore"), "_FoamSheetShore");
             CollectionAssert.AreEqual(new[] { d.CapsVector.x, d.CapsVector.y, d.CapsVector.z, d.CapsVector.w },
                 VectorDefault(src, "_FoamSheetCaps"), "_FoamSheetCaps");
+            CollectionAssert.AreEqual(new[] { d.StormVector.x, d.StormVector.y, d.StormVector.z, d.StormVector.w },
+                VectorDefault(src, "_FoamSheetStorm"), "_FoamSheetStorm");
             Assert.AreEqual(d.AgeTear, FloatDefault(src, "_FoamSheetAgeTear"), 1e-6f, "_FoamSheetAgeTear");
         }
 
@@ -203,6 +221,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
             Assert.AreEqual(1f, d.Shore, "the shore line ships on the sheet (the owner's ruling)");
             Assert.AreEqual(1f, d.Caps, "the whitecaps ship on the sheet (the owner's ruling)");
             Assert.AreEqual(1f, d.Surf, "the surf ships on the sheet (the owner's ruling)");
+            Assert.AreEqual(1f, d.Storm, "the storm streaks ship on the sheet (the owner's ruling)");
         }
     }
 }
