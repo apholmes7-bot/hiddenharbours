@@ -416,6 +416,14 @@ without naming a class. Contracts, all additive:
 - **Order is deterministic**: priority (boat hold 10, home freezer 20, fixtures 50, an unnamed hold 100),
   then ordinal id; only exact ties keep listing order. That order is the Give rows' order and the container
   a gift comes from.
+- **Lifetime: register on enable, unregister on destroy, never on disable** (the `GameServices.PlayerHold`
+  rule: a region hop toggles roots, and a container that left on disable would vanish mid-crossing). A
+  null or already-listed container is ignored, unlisting one not listed is a no-op, and one object is one
+  entry whichever facet lists or unlists it. A destroyed scene container still counts until it is
+  unlisted, but every getter and `Find` read it as null, so a rebuilt container under the same id is
+  found (and is not warned about). Priority and id are read once, at listing. Reading is a count and an
+  index, allocation-free. Tests: `PlayerStorageOrderTests`, `PlayerStorageCoverageTests`,
+  `StoredContainersTests`, `SaveMigrationV25Tests`.
 - `IHoldRemove.TryRemoveAt(index)` (on `ShipHold`, `GinnyFreezer`, `CamperFreezer`, `ClamBucket`): the gift take removes the
   one item and touches nothing else; a hold without it is still emptied and refilled.
 - **The save is the source of truth.** The contents live in `SaveData.StoredContainers` (and food in v23
