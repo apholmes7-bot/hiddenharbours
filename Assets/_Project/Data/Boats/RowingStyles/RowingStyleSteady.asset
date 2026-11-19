@@ -22,5 +22,5 @@ MonoBehaviour:
   RestAtStrokePhase: 0.75
   RestEase: 0
   LaybackScale: 1
-  SurgeDepth: 0.35
+  SurgeDepth: 1
   AverageThrustScale: 1
