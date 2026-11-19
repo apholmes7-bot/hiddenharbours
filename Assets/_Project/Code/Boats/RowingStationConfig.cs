@@ -45,8 +45,8 @@ namespace HiddenHarbours.Boats
             Enabled = true,
             GripInboardMeters = 0.70f,
             SeatLocalMeters = new Vector3(0f, -0.68f, 0.3056f),
-            FootBraceLocalMeters = new Vector3(0.16f, -1.12f, 0.1098f),
-            LaybackDegrees = 20f,
+            FootBraceLocalMeters = new Vector3(0.16f, -1.35f, 0.1098f),
+            LaybackDegrees = 8f,
             ReachLeanMaxDegrees = 30f,
         };
     }

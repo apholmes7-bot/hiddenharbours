@@ -60,6 +60,12 @@ namespace HiddenHarbours.Boats
                  "pause between strokes doesn't stow them.")]
         [SerializeField] private float _restGraceSeconds = DoryOarMath.DefaultRestGraceSeconds;
 
+        [Tooltip("Stroke columns per second the second oar falls into step with the leading oar while " +
+                 "both are pulled the same way: one rower, two hands, one stroke. 0 = each oar keeps " +
+                 "its own phase (a turn then leaves them out of step for good).")]
+        [Min(0f)]
+        [SerializeField] private float _phaseLockColumnsPerSecond = DoryOarMath.DefaultPhaseLockColumnsPerSecond;
+
         [Tooltip("The boat whose REAL per-oar state (LeftOar = port, RightOar = starboard) drives the " +
                  "strokes. Read only while the controller is enabled — a dropped helm ships the oars.")]
         [SerializeField] private BoatController _boat;
@@ -186,13 +192,15 @@ namespace HiddenHarbours.Boats
 
         /// <summary>
         /// <see cref="IRowingStation"/>: the grips where the oars were posed this frame, the seat and the
-        /// braces, all in the hull's rig frame. False while nobody rows. A trailing or shipped oar's grip
-        /// is marked invalid: that hand lets go rather than chase a handle out of reach.
+        /// braces, all in the hull's rig frame. Answers whenever the station is wired, rowed or not: a
+        /// rower resting on his oars stays sat on his thwart instead of standing up between strokes. A
+        /// trailing or shipped oar's grip is marked invalid: that hand lets go rather than chase a
+        /// handle out of reach.
         /// </summary>
         public bool TryGetRowingTargets(out RowingTargets targets)
         {
             targets = default;
-            if (!_hasStation || !IsStroking) return false;
+            if (!_hasStation || !IsWired || !isActiveAndEnabled) return false;
             targets = StationTargets(_portLock, _starLock, in _station, PortPose, PortStroking,
                                      StarboardPose, StarboardStroking);
             return true;
@@ -270,6 +278,20 @@ namespace HiddenHarbours.Boats
                     _starPhase, DoryOarMath.StrokeDirection(starState, _oarDeadzone),
                     DoryOarMath.StrokeFramesPerSecond(_strokeFramesPerSecond, starState, _effortInfluence),
                     dt, DoryOarMath.StrokeColumns);
+
+                // One rower, two hands: pulled the same way, the oars stroke together. The one pulled
+                // harder leads (port on a tie, as LeadingOarPhase reads it) and the other falls into
+                // step, so the hands on the handles are never half a stroke apart after a turn.
+                float portDir = DoryOarMath.StrokeDirection(portState, _oarDeadzone);
+                float starDir = DoryOarMath.StrokeDirection(starState, _oarDeadzone);
+                if (portDir != 0f && portDir == starDir && _phaseLockColumnsPerSecond > 0f)
+                {
+                    float step = _phaseLockColumnsPerSecond * dt;
+                    if (Mathf.Abs(portState) >= Mathf.Abs(starState))
+                        _starPhase = DoryOarMath.LockPhaseToward(_starPhase, _portPhase, step, DoryOarMath.StrokeColumns);
+                    else
+                        _portPhase = DoryOarMath.LockPhaseToward(_portPhase, _starPhase, step, DoryOarMath.StrokeColumns);
+                }
             }
 
             int portColumn = ColumnForOar(underPower, portWorking, _portPhase, starWorking,

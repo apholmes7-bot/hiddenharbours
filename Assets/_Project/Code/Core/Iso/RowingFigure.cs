@@ -192,8 +192,9 @@ namespace HiddenHarbours.Core
 
         /// <summary>
         /// The points the rower's body must reach this frame, in the FIGURE's own frame, or false when
-        /// the oars under him are not a live <see cref="IRowingStation"/> that is being rowed (the figure
-        /// then draws exactly its clip, as before). <paramref name="figureLocalMetres"/> and
+        /// the oars under him are not a wired <see cref="IRowingStation"/> (the figure then draws exactly
+        /// its clip, as before). While the oars rest the station still answers, with no grip held: he
+        /// stays sat on the thwart with his feet braced. <paramref name="figureLocalMetres"/> and
         /// <paramref name="figureYawDegrees"/> are where the figure's root sits on the hull's posed mesh
         /// this frame, which is the frame the station answers in. Call after <see cref="TryPose"/>; it
         /// reuses the source that call cached, so it never searches.
@@ -204,10 +205,13 @@ namespace HiddenHarbours.Core
             targets = default;
             if (stand == null) return false;
             IOarStroke stroke = StrokeUnder(stand.FigureHull);
-            if (!RowingFigure.IsLiveStroke(stroke) || !(stroke is IRowingStation station)) return false;
+            if (!(stroke is IRowingStation station)) return false;
             if (!station.TryGetRowingTargets(out RowingTargets onHull)) return false;
-            float body = RowingFigure.BodyPhase(stroke.StrokePhase, RowingFigure.FacesBow(stand.FigureDeckBearingDegrees));
-            targets = RowingPoseSolver.ToFigure(onHull, figureLocalMetres, figureYawDegrees, RowingFigure.RigDrive(body));
+            // Resting oars: no stroke, no layback (drive 0), and the grips the station marked let go.
+            float drive = RowingFigure.IsLiveStroke(stroke)
+                ? RowingFigure.RigDrive(RowingFigure.BodyPhase(stroke.StrokePhase, RowingFigure.FacesBow(stand.FigureDeckBearingDegrees)))
+                : 0f;
+            targets = RowingPoseSolver.ToFigure(onHull, figureLocalMetres, figureYawDegrees, drive);
             return true;
         }
 
