@@ -3920,6 +3920,13 @@ namespace HiddenHarbours.Core
                  "0 = the scene's metres cap (CameraFollow, 2.5 m) at every rung, as before.")]
         [Range(0f, 1f)] public float BoatLeadMaxViewFraction;
 
+        [Tooltip("Seconds the boat lead's speed is smoothed over while the followed hull is ROWED. A rowed " +
+                 "hull surges on every stroke (RowingStyleDef), and a lead read off the raw speed pushed the " +
+                 "view forward on each pull and dropped it back in each rest, so the world lurched about twice " +
+                 "as much as the boat. About one slow stroke. 0 = the raw speed, as before. Engine and sail " +
+                 "hulls never read it.")]
+        [Min(0f)] public float BoatLeadRowedSpeedSmoothSeconds;
+
         [Tooltip("Whether the speed pull-back also runs while she RIDES someone else's deck as a passenger " +
                  "(the intro). Off = open water is the helm's alone, as before. The deck gate still holds: " +
                  "it needs FeelOnDeckEnabled as well.")]
@@ -4020,6 +4027,7 @@ namespace HiddenHarbours.Core
             BoatLeadSeconds = 0f,
             BoatLeadLagCompensation = 0f,
             BoatLeadMaxViewFraction = 0f,
+            BoatLeadRowedSpeedSmoothSeconds = 0f,
             SpeedPullBackWhenCarriedAboard = false,
 
             // Moments (PR 3)

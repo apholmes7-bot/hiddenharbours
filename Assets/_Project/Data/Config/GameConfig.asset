@@ -714,6 +714,7 @@ MonoBehaviour:
     BoatLeadSeconds: 0.6
     BoatLeadLagCompensation: 1
     BoatLeadMaxViewFraction: 0.35
+    BoatLeadRowedSpeedSmoothSeconds: 1.5
     SpeedPullBackWhenCarriedAboard: 1
     MomentsEnabled: 1
     LandingHitStopScale: 0.05
