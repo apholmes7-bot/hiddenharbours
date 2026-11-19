@@ -194,7 +194,7 @@ T/S = toilet and sink; C = commercial prep and stove; shared = shared campsite f
 | `structure.nmc_south_shore_house_3` | home | `estateHouse` | K / B | [key-scene row](../../Assets/_Project/Data/KeyScenes/KeyScene_nmc_south_shore.asset#L414) |
 | `structure.nmc_south_shore_house_4` | home | `estateHouse` | K / B | [key-scene row](../../Assets/_Project/Data/KeyScenes/KeyScene_nmc_south_shore.asset#L513) |
 | `structure.nmc_south_shore_house_5` | home | `estateHouse` | K / B | [key-scene row](../../Assets/_Project/Data/KeyScenes/KeyScene_nmc_south_shore.asset#L613) |
-| `structure.nmc_south_shore_house_6` | public / pool house | `estateHouse` | staff M if staffed / changing T/S + shower | [key-scene row](../../Assets/_Project/Data/KeyScenes/KeyScene_nmc_south_shore.asset#L712) |
+| `structure.nmc_south_shore_house_6` | home; use of “pool house” unresolved | `estateHouse` | K / B provisionally; settle Q6 | [key-scene row](../../Assets/_Project/Data/KeyScenes/KeyScene_nmc_south_shore.asset#L712) |
 
 This is **41 building/site records** and **13 camper records**. One building record is the already-occupied east-block lot, so it is not a fresh exterior. These are source records, not a total of finished homes.
 
@@ -359,7 +359,7 @@ appearance and belongs to the building/art roles. No such work is performed by t
 | G14: St Peters camper | Room rig exists but entry is refused; stove/prep lack explicit station Def; dish-wash verb is unbound; no placed kitchen/bath | Resolve ADR 0060 first; map stove/prep to existing cooking Defs and head pieces to existing wash/sit Defs, qualify storage by site, then install the full dwelling with its wet bath and test the actual bearing. Keep dish washing descriptive until its own gameplay contract exists | lead-architect for contract; editor engineering, world-content, art roles for installation. [room anchors](../art/rigs/camper-iso-kit/camperInteriorRig.clipper.interior.json), [door state](../../Assets/_Project/Scenes/StPeters.unity#L31964) |
 | G15: keeper dwelling and both St Peters upper flats | No installed rooms or full home kit; flat ids absent | Give each site/unit a stable identity, then build its room and full home kit together; separate flat storage/fixture keys from the shop below. The light tower is not a second home | world-content + art roles; economy-sim for flat deeds if offered. [keeper rows](../../Assets/_Project/Data/KeyScenes/KeyScene_stp_ne_light.asset#L22), [flat plans](kitchens-bathrooms-placement-plan.md#L103) |
 | G16: all NMC unplaced source rows in section 1, except the east-block overlay | No installed rooms or facilities; mixed-use flats have no roster | Use the kit stated per row; one building per PR, every shop bay and dwelling unit separately supplied. Add kitchen/bath anchors when its first interior is built. Map public changing facilities and campsite shared facilities explicitly | world-content + art roles; data mapping before placement. [main street](../../Assets/_Project/Data/KeyScenes/KeyScene_nmc_main_street.asset#L20), [campground](../../Assets/_Project/Data/KeyScenes/KeyScene_nmc_campground.asset#L20) |
-| G17: each of the 20 expanded plaza units | No runtime room or anchor-to-Def map; `baths` counts and actual bathing anchors differ; no compass-wall proof | Add a per-source-unit anchor manifest and Def binding, preserving the unit roster; audit any missing bathing anchors in the rig. Derive N/E/W in the actual site frame before baking/placement, never from local coordinates alone | editor engineering + world-content; art-director for missing geometry/anchors. [walk-up anchors](../art/rigs/multiunit-kit/walkup/gameplay/walkupIsoRig.walkup8.gameplay.json), [binding contract](../adr/0060-rigged-dwelling-interiors.md#L167) |
+| G17: each of the 20 expanded plaza units | No runtime room or anchor-to-Def map; `baths` and bathing anchors measure different things; no compass-wall proof | Add a per-source-unit anchor manifest and Def binding, preserving the unit roster; reconcile declared bathrooms with actual toilet/basin/tub/shower anchors. Derive N/E/W in the actual site frame before baking/placement, never from local coordinates alone | editor engineering + world-content; art-director for geometry/anchors. [walk-up anchors](../art/rigs/multiunit-kit/walkup/gameplay/walkupIsoRig.walkup8.gameplay.json), [binding contract](../adr/0060-rigged-dwelling-interiors.md#L167) |
 | G18: Cumberland's 20 assessed buildings, including 13 residences | Ground records only; no rooms, kitchens/baths or fixture walls | Author one room and complete appropriate kit per building, keep church kitchen an explicit decision, use marina washrooms for the float bar. Guest-cottage kitchens are per cottage, not one at the lodge | world-content + art roles. [ground plan](../../Assets/_Project/Data/Terrain/CumberlandGround/plan.json), [facility rules](kitchens-bathrooms-placement-plan.md#L130) |
 | G19: Rice Point's 11 residences, old store and stage-3 cold store | Ground/stage plans only; no rooms or kitchens/baths | Per current phase, one site per PR with its full kit. Stage-2 bunkhouse reuses the wharf-house identity; later crew/skipper houses stay later-stage data until enabled | world-content + art roles; economy-sim for stage gates. [ground/stages](../../Assets/_Project/Data/Terrain/RicePointGround/plan.json) |
 | G20: all placed and planned fixtures | The plan Row has no backing wall or facing; a position test cannot guarantee north-facing readability | Introduce a plan/rig backing-side and a site-bearing conversion, with a named exception list and validator. Keep the standard doorway/overlap/reach assertions, changing only the obsolete fixed-right-closet assumption when the layout truly moves | editor engineering + world-content; qa-test for rule migration. [Row fields](../../Assets/_Project/Code/App/Editor/RoomFixturePlan.cs#L80), [facing gap](appliance-wall-plan.md#L114) |
@@ -416,7 +416,7 @@ first data each group needs, including plans outside that packaged set.
 | Standalone chandlery | Still an unplaced set-piece building, separate from the legacy counter/stand-in. [key-scene row](../../Assets/_Project/Data/KeyScenes/KeyScene_nmc_main_street.asset#L5138), [old lot purpose](../design/nine-mile-creek-mainland.md#L130) | Decide which site/counter it replaces; bind the existing seller without a duplicate shop; staff facilities and any retained upstairs home roster |
 | Grocery, lumber store and lumber-yard gatehouse | Three unplaced workplace records. [plaza data](../../Assets/_Project/Data/KeyScenes/KeyScene_nmc_plaza.asset#L22) | Per-shop staff/customer kit, food-prep distinction at grocery, stock/receiving doors and public path; seller ids and real storage anchors before enabling trade |
 | Cannery lofts, walk-up block and terrace | Three building records containing 8 + 8 + 4 known units. [plaza rows](../../Assets/_Project/Data/KeyScenes/KeyScene_nmc_plaza.asset#L3335), [unit kit](../art/rigs/multiunit-kit/README.md#L54) | Per-unit manifests and site-qualified keys, common access/storeys, actual bathing-anchor coverage and full kitchen/bath bindings; separate the residential loft building from the processing plant |
-| Seven north-creek homes, three Shore Lane homes, five south-shore residences and the sixth estate's pool house | 16 building/site records with no placed rooms; include the three for-sale NMC homes. [north creek](../../Assets/_Project/Data/KeyScenes/KeyScene_nmc_north_creek.asset#L22), [Shore Lane](../../Assets/_Project/Data/KeyScenes/KeyScene_nmc_shore_lane.asset#L22), [south shore](../../Assets/_Project/Data/KeyScenes/KeyScene_nmc_south_shore.asset#L22) | Map each site to household/deed where applicable; choose room source and actual ground bearing; full home kit per residence, changing-room kit for pool use. The estate named “pool house” needs Q6 before final classification |
+| Seven north-creek homes, three Shore Lane homes, six south-shore estate records | 16 building/site records with no placed rooms; include the three for-sale NMC homes. [north creek](../../Assets/_Project/Data/KeyScenes/KeyScene_nmc_north_creek.asset#L22), [Shore Lane](../../Assets/_Project/Data/KeyScenes/KeyScene_nmc_shore_lane.asset#L22), [south shore](../../Assets/_Project/Data/KeyScenes/KeyScene_nmc_south_shore.asset#L22) | Map each site to household/deed where applicable; choose room source and actual ground bearing; full home kit per residence. Treat the sixth estate as a home by its `estateHouse` kind until Q6 settles whether “pool house” instead means a changing facility |
 | Campground comfort station and pool/pool house | Two building/site records, both absent. [comfort row](../../Assets/_Project/Data/KeyScenes/KeyScene_nmc_campground.asset#L3657), [pool row](../../Assets/_Project/Data/KeyScenes/KeyScene_nmc_campground.asset#L7832) | Public access, toilets/basins/showers, privacy and fixture count, approach routes; reconcile rig id `structure.nmc_camp_comfort` with placed-source identity `structure.nmc_camp_comfort_a` before creating a duplicate Def |
 | Thirteen campsite campers | Individual identities in section 1, still not placed. [campground data](../../Assets/_Project/Data/KeyScenes/KeyScene_nmc_campground.asset#L20) | Per-variant galley/wet-bath capability and shared-facility assignment. Two pop-ups must not be given an invented full bathroom; all residents need a real route to the comfort station |
 | Relocated south-lot farmhouse | Planned at (-200, -8), no established building at the new site. [decision 8](../design/nmc-key-scenes/README.md#L194) | Preserve the household/lot identity, identify the source shell it replaces, deed/fixture keys and room kit. Move once, do not add another farmhouse |
@@ -443,3 +443,132 @@ outhouses) remain in the [key-scene inventory](nmc-buildings-inventory.md#L66). 
 district wash-access locations, not additional indoor buildings. Barns, fleet sheds and similar storage
 exceptions stay exceptions unless their use changes to a staffed trade. No proposed count in this section
 authorizes a new later-phase market, production, housing or logistics system.
+
+## 4. Build order: ready prerequisites, then one site per PR
+
+This is a dependency order, not a proposal for one large build. Take a slice only after its prerequisites
+are present, so no started scene PR waits on another scene writer or an undecided room contract.
+Independent data/brief slices can be prepared while a different region is occupied. For every “repeat” row,
+each named site or unit is its **own PR**, never the whole row in one PR. Site ids and persisted fixture/store
+keys survive replacement. New identities use addition records; the frozen identity baseline is not extended.
+
+The present snapshot still labels ADR 0060 Proposed. An
+acceptance change is open (PR #1327); read the merged decision
+before scheduling its dependent work. A storage placement change (PR #1318)
+also owns lodging/camper placement, and a
+Cumberland/Rice Point plan (PR #1288) is open.
+Reconcile those results rather than creating another owner for their files. The
+older kitchen audit (PR #1235) must be read against this dated
+snapshot, especially the canopy and new shells. This audit edits none of those documents or scenes.
+
+### Data and contracts: no visible placement
+
+| Slice / one-PR boundary | Ready after | Result and owning role | Acceptance proof |
+| --- | --- | --- | --- |
+| D1a: current-site alias ledger | this inventory | Document aliases for lodging, two flavour homes, hall, east block/wholesaler, plant and comfort station. Separate placement ids, Def ids, HomeDef keys and unit addresses. world-content | Each alias resolves to one retained site; no double-counted building, no new save key merely because art changes |
+| D1b: main-street dwelling roster | D1a; Q7 | One district roster, linking every shop bay, floor and retained over-trade home to a definite unit or an explicit non-residential use. world-content + economy-sim | Exact unit count and ids; the old lot proposals are either mapped or expressly excluded; no unit count inferred from windows |
+| D1c: plaza unit manifest | D1a | Manifest for the existing 8 + 8 + 4 units and their fixture anchors; no new rooms. world-content + editor engineering | All 20 source units appear exactly once; declared bathrooms reconciled with real anchors, including `tub` as distinct from `shower` |
+| D1d: campsite capability map | Q5; existing 13 camper rows | One per-variant table of galley/bathing capability and shared-facility assignment. world-content | All 13 campers plus the tent populations have a specified bathroom destination; no invented bathroom in a pop-up |
+| D2: backing-side / bearing contract | Q1; D1a | Add a plan-facing field and pure conversion to ground compass; named exceptions with reasons. This prepares data and does not place or turn anything. editor engineering + world-content | Wrong south wall, changed site bearing, mirrored door frame and unknown backing side each fail a focused rule case; retain doorway/overlap/clearance invariants |
+| D3a: fixture verb/Def manifest | D1c; accepted room contract | Bind the current cooking, wash/sit and food-store Defs to anchors. Cover the camper and one representative source per family; no decorative verb silently becomes a feature. editor engineering, lead-architect review | Unknown verb/Def, duplicate site key and fridge mapped to generic gear storage refuse; exact type/Def agreement |
+| D3b: dwelling foundations | accepted ADR 0060 and its existing prerequisites | Follow the ADR's separate Core-contract, bake, presentation and interior-seam PR boundaries. lead-architect, art-pipeline, editor engineering, world-content | Existing sprite rooms preserve behavior until migration; one inside test, true floor/door, real storey rise, no duplicate shell/room draw. Each asset/presentation PR has its own later editor evidence |
+| D4a: road-vehicle dealer brief | this inventory; Q8 | One site/room/yard brief for the existing vehicle seller. world-content + economy-sim | Measured access/display/handover space, seller identity and staff facilities; no purchase or repair system added by the brief |
+| D4b: industrial-yard brief | this inventory; Q8 | Separate site/repair-yard brief. world-content + economy-sim | Supported vehicle positions, routes and staff wash/lunch space; no shared ambiguous dealer identity |
+| D4c: missing-lot reconciliation | D1a; latest regional plan | One document mapping farmhouse move, Mill Road house and retained old town sites. world-content | The south-lot household moves once; north-lot no-placement ruling preserved; no counting a marker as a house |
+| D4d: auction/outlet/broker siting decisions | phase scheduling; Q9 | Separate brief per approved business; leave unsited proposals as data/design. world-content + economy-sim | Region, purpose, existing-business reuse and phase named before any building is proposed |
+
+D3b is an umbrella for the ADR's already-separated PRs, not one combined PR. D2, D4a and D4b do not depend
+on a mesh bake. D1c does not wait for a model to be drawn. No save-format or ground change is included in
+any of these preparation slices; a demonstrated need for one becomes a separately scoped decision.
+
+### St Peters: serialize all scene writes
+
+| Slice / one-PR boundary, in order | Ready after | Minimum completed experience | Roles / proof |
+| --- | --- | --- | --- |
+| S1: lodging room source/layout | D2; Q2/Q4; storage change reconciled | One source plan for N-backed kitchen and bathroom, with site-specific furniture override where needed | world-content + art-director; anchor/route/doorway proof before standing it |
+| S2: lodging fit-out | S1; correct accepted room path; fixture presentation ready | Prep/stove/microwave and private usable ground bathroom, existing upstairs basin preserved | world-content + art-pipeline; later editor walk/reach and north-wall evidence. No new sprite fit-out over a mesh room |
+| S3: camper room/prefab walk-in | D3a/D3b; D1a; existing camper/storage work reconciled | Its complete galley, wet bath and site storage installed together, entry really opens | world-content + art roles; walk/sleep/wash/cook/store evidence, reload existing storage keys, physical supported goods |
+| S4: red saltbox source and fit-out | D2; Q3/Q4; correct room path | One purchased home with reachable kitchen and private bathroom; furniture moved only as selected | world-content + art roles; kitchen/bath backing, doorway and deed access; preserve the home/fixture identities |
+| S5: village sage cottage | S4 scene write finished; D2 | Full kit and privacy with separated fixture approaches | world-content + art roles; one-home evidence and exact fixture count |
+| S6: white farmhouse | S5 scene write finished; diagonal bearing resolved | Full home kitchen and bath, no unrecorded SE fixture exception | world-content + art roles; actual ground-wall proof and access |
+| S7: general store | S6 finished; stockroom source ready | Staff prep/microwave and T/S without blocking shelves or trade | world-content + art roles; room-scale walk/reach; upstairs flat remains a separate residence |
+| S8: post office | S7 finished; sorting-room source ready | Staff microwave and T/S clear of the mail/stair route | world-content + art roles; off-centre doorway preserved |
+| S9: school | S8 finished; outhouse path ready | Staff kitchenette, outdoor toilet and hand washing | world-content + art roles; classroom and public route remain usable |
+| S10a/b/c: harbour gable, cream saltbox, white gable | previous scene PR finished; own upper source ready | One house per PR with stair, ground kitchen, upper bathroom and correct full-height shower location | world-content + art roles; actual stair use, one-footprint level test, no through-floor fixture interaction |
+| S11: each retained shop flat, then keeper dwelling | own unit/site manifest and source ready; previous scene PR finished | Full private home kit per unit; tower is not another residence | world-content + art roles; qualified fixture/storage keys, stairs and access independently proved |
+| S12: cannery restoration facilities | restoration phase scheduled | Staff lunch/wash facilities come with the restored workplace | world-content + economy-sim/art roles; derelict state does not gain a phantom working kitchen |
+
+If the accepted dwelling sequence changes which home proves the mesh path first, reorder S3/S4 to match
+that decision; do not build a second room system to keep this table's numbering. Source plans may be ready
+before scene slots, but every placed room must use the approved presentation path for that building.
+
+### NMC: a separate serial scene queue
+
+| Slice / one-PR boundary, in order | Ready after | Minimum completed experience | Roles / proof |
+| --- | --- | --- | --- |
+| N1: boat-gear wholesaler staff fixtures | D1a/D2; fixture presentation ready | Bind its three markers, preserve seller and east-block site | world-content + art roles; exact three fixtures, N/NE backing and staff access |
+| N2: fishing-gear wholesaler staff fixtures | N1 scene write finished; public approach defined | Bind its three markers and a reachable public approach, as separate road/scene work if needed | world-content + art roles; exact three fixtures, E/N backing, door route |
+| N3: community hall facilities | N2 finished; Q4/Q10; walk/gate decision complete | Accessible kitchenette and T/S, gym wash/changing provision as chosen | world-content + art roles; real route through the west gate, usable private fixtures |
+| N4: fish-plant staff facilities | N3 finished; staff access/job phase ready | Actual north-backed lunch/wash spaces, coordinated with its room access | world-content + economy-sim/art roles; no inaccessible “completed” bathroom or unbound work-zone labels |
+| N5: C-store interior and facilities | N4 finished; store source/back room ready | A store room distinct from canopy, microwave and customer washroom | world-content + art roles; source-frame-to-site proof, no cooler/door blockage |
+| N6a/b/c/d: fish market, restaurant, harbour office, cold store | previous scene PR finished; own room source ready | One building per PR, appropriate staff/customer kit, dirty-work shower at cold store | world-content + art roles; every promised station is placed, bound and reachable |
+| N7: dealer, then industrial yard | D4a/D4b approved and scheduled; previous scene PR finished | One complete premises per PR including staff facilities, without silently enabling an unfinished sale/repair feature | world-content + economy-sim/art roles; supported display/handover and door routes |
+| N8: retained household sites and mixed-use buildings | D1a/D1b/D4c; own source/ground/access ready | One building per PR, separate kit for every shop bay and resident unit; integrate east-block shell once | world-content + art roles; source-to-site identity and every unit's kitchen/bath count |
+| N9: plaza housing | D1c/D3a/D3b; own access/source ready; previous scene PR finished | One building shell/common access PR followed by one complete unit per PR, or a whole small building only if still a single small slice | world-content + art roles; no claiming occupied housing before every intended unit is finished; 8/8/4-unit roster remains exact |
+| N10: campsite comfort station, then pool facilities | D1d; fixture numbers/routes settled; previous scene PR finished | Shared washing works before campers and tent accommodation are populated | world-content + art roles; each pitch has an actual public route to toilets/basins/showers |
+| N11: campsite camper families | N10; own capability/room source ready | One variant/pitch per PR; galley/wet bath where it fits, assigned shared access otherwise | world-content + art roles; all 13 identities accounted for, no invented pop-up washroom |
+| N12: future auction/extra housing/unsited businesses | D4d and phase gate | Only individually approved sites, built with their facilities | world-content + economy-sim/art roles; no unapproved location or later-phase system |
+
+Plant court, road access, gym workout behavior and seller handover code remain separate owning-role slices.
+They may be prepared without editing this scene, then consumed before the dependent building PR starts.
+Catch and goods remain loaded, carried and unloaded by hand; a fixture or store key cannot move them remotely.
+
+### Other regions and common acceptance
+
+For Cumberland, follow the open regional plan (PR #1288)
+after it is reconciled: first **one currently offered home** as the room/Def/deed pilot, then one building
+per PR in its own regional queue. Put marina public washrooms before the float bar relies on them; put the
+lodge's receiving/staff spaces before opening guest services. Every guest cottage is a separate kitchen/bath
+site. Church kitchen provision is Q11. Storage outbuildings keep their documented shared-facility exception.
+
+For Rice Point, use a separate regional queue: one offered home first, then each current residence/store
+in its scheduled phase. Later-stage buildings remain later-stage data. Stage 2 reopens the **same** wharf house
+as a bunkhouse; stage 3 adds each crew/skipper home and cold-store staff facilities individually. Do not build
+the winch house's facilities as if it were a residence. No retired prototype scene receives work.
+
+A placement PR is complete only when its exact fixture/unit count, Def bindings and distinct site keys are
+checked; the correct ground bearing and every exception are recorded; doors, approach, privacy and stairs
+work at actual body size; washing/cooking and deed access use existing rules; stores retain their existing
+save keys; and appropriate editor evidence shows the result. Off-floor fixtures must not interact through
+ceilings. A changed rule test moves to the new rule with an equally precise assertion, never a weaker count.
+Visual acceptance belongs to the building/art roles. This document's text audit is not that acceptance.
+
+### Recorded choices still needed before the dependent slice
+
+These questions are for the plan record; no answer is assumed to have been given by this audit. The stated
+working preference lets independent preparation continue, and does not approve a look or a new building.
+
+1. **Q1: Must every appliance be on strict compass N, or is north-first with recorded E/W and readable-S exceptions the rule?** Choices: north-first with explicit exceptions (working preference, follows the later wording); strict N. Apply the resulting policy to every assessed building, not only deeded homes.
+2. **Q2: Which lodging bathroom layout should be used?** Choices: north-east closet with site-specific furniture change (working preference); keep current closet and explicitly justify each remaining S fixture; re-plan within the existing closet. A building/art review must verify the approach.
+3. **Q3: Should the red-saltbox bathroom move to the north-east, or use the documented E/W fallback?** Choices: north-east with bed/chest move (working preference); E/W fallback with no furniture move.
+4. **Q4: How should privacy partitions be presented without hiding the fixtures?** Choices: cut/low partitions (working preference); collider-only interim partition; full-height walls with the accepted cutaway. This is a visible source decision.
+5. **Q5: Which campground variants get their own bathroom?** Choices: per-variant capability plus shared comfort-station access for all, including the two pop-ups (working preference); private wet rooms in every enclosed camper that can physically fit one; shared bathrooms only. Galleys are still assessed separately per variant.
+6. **Q6: Is south-shore estate 6 a private home with a pool, or a separate pool/changing facility?** Choices: private home with full home kit (working preference from `estateHouse`); staffed pool facility with changing-room kit. Its name alone does not settle its use.
+7. **Q7: Should the four older over-trade/harbour-quarter proposals be mapped into the new mixed-use roster or retained as additional units?** Choices: reconcile into current sites first (working preference); retain specified additional units with explicit identities and space. Do not count both versions automatically.
+8. **Q8: Should the vehicle dealer and industrial yard be separate sites or a shared site with distinct premises and sellers?** Choices: separate briefs/sites (working preference); one measured site with separate public/work areas and seller identities. No location is chosen here.
+9. **Q9: Which unsited auction/broker/hotel/shop proposals are actually NMC buildings?** Choices: keep them unsited and later-phase until individually located (working preference); approve named premises in NMC; assign named premises to another region. Existing outlet ids alone are insufficient.
+10. **Q10: What washing provision does the hall gym need?** Choices: hall T/S plus a shared shower/changing space (working preference); T/S only; separate changing/shower rooms with explicit capacity. Fit is measured before installation.
+11. **Q11: Does Cumberland's church need its own kitchenette or only a washroom with shared hall catering?** Choices: T/S with hall catering (working preference); small church kitchenette plus T/S. This does not change the requirement for a hall kitchen.
+
+## Verification of this audit
+
+The proof is serialized source and data, not an editor run. The six scene census resolves referenced prefabs,
+separates the canopy from room-bearing interiors, enumerates every installed wash/sit instance and checks its
+station Def. Key-scene source tables include set-piece buildings as well as `Kind: building`, campers as well
+as houses, and every known plaza unit. Ground-plan ids are deduplicated across repeated JSON references.
+Relative evidence targets, stated counts, source-unit coverage and the document-only change scope were checked.
+Unity and gameplay tests were not run; no appearance, reach-in-play or visual parity claim is made.
+
+what the player sees: The current game is unchanged; this is a plan only.
+the proof: Dated source-linked inventory, exact fixture and unit counts, documented gaps and dependency checks.
+the cost: One document; no asset, scene, prefab, code, metadata or save change.
