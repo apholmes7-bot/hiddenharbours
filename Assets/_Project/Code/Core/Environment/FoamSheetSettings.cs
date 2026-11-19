@@ -17,6 +17,9 @@ namespace HiddenHarbours.Core
     /// threshold and bands are the water material's <c>_WakeFoam*</c> dials and its blob size is the
     /// material's <c>_FoamBlobScale</c>: one dial for every foam.</para>
     ///
+    /// <para>The oar dials are not shader properties: the oars lay their foam through
+    /// <see cref="FoamSplashes"/> into the same buffer the wake fills, and the sheet ages it.</para>
+    ///
     /// <para>Presentation only: no simulation state, nothing saved and no force reads them.</para>
     /// </summary>
     [Serializable]
@@ -78,6 +81,21 @@ namespace HiddenHarbours.Core
                  "waves' own FoamAgeTear; the larger wins.")]
         [Range(0f, 1f)] public float AgeTear;
 
+        [Header("Oar splash")]
+        [Tooltip("How the oars' foam is drawn: 1 = where a blade goes in, works and comes out it lays foam " +
+                 "into the one foam sheet (the same buffer, lace and ageing as the wake), and the oars draw no " +
+                 "foam pictures or rings of their own; 0 = the older drawn puffs and rings, for an A/B.")]
+        [Range(0f, 1f)] public float Oar;
+        [Tooltip("Half-width of the foam a blade lays (m). The dory's blade is about 0.5 m long.")]
+        [Range(0.05f, 1f)] public float OarRadius;
+        [Tooltip("Foam a blade lays per second while it is pulling through the water, at full strength. " +
+                 "Higher = a whiter puddle where each stroke works.")]
+        [Range(0f, 10f)] public float OarPerSecond;
+        [Tooltip("Foam laid at once where a blade goes in, at full strength: the white of the catch.")]
+        [Range(0f, 1f)] public float OarCatch;
+        [Tooltip("Foam laid at once where a blade comes out, at full strength: the puddle it leaves.")]
+        [Range(0f, 1f)] public float OarRelease;
+
         /// <summary>The shader's property defaults, value for value (<c>FoamSheetTests</c> pins the pair).</summary>
         public static FoamSheetSettings Default => new FoamSheetSettings
         {
@@ -99,7 +117,16 @@ namespace HiddenHarbours.Core
             ConvergenceAge = 0.5f,
 
             AgeTear = 1f,
+
+            Oar = 1f,
+            OarRadius = 0.22f,
+            OarPerSecond = 2.5f,
+            OarCatch = 0.35f,
+            OarRelease = 0.3f,
         };
+
+        /// <summary>True when the oars lay their foam into the sheet rather than drawing their own.</summary>
+        public bool OarJoinsSheet => Oar >= 0.5f;
 
         /// <summary>The shore line's dials as the shader reads them (<c>_FoamSheetShore</c>).</summary>
         public Vector4 ShoreVector => new Vector4(Mathf.Clamp01(Shore), Mathf.Max(ShoreLineSharpness, 0.1f),

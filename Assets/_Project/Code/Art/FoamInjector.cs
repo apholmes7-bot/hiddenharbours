@@ -285,8 +285,9 @@ namespace HiddenHarbours.Art
             return BelowSurfaceLift(HullContactFoam.ToDrawn(centre, _wakeHeading, local, _bakeElevationDegrees));
         }
 
-        /// <summary>The ground point the water draws at <paramref name="drawn"/>.</summary>
-        private static Vector2 BelowSurfaceLift(Vector2 drawn)
+        /// <summary>The ground point the water draws at <paramref name="drawn"/>. Also used for the small
+        /// deposits (<see cref="HiddenHarbours.Core.FoamSplashes"/>), so an oar's foam lands where it is seen.</summary>
+        internal static Vector2 BelowSurfaceLift(Vector2 drawn)
         {
             Vector2 at = drawn;
             // Invert the surface's drawing lift at birth, so it is not added twice.

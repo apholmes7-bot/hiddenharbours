@@ -553,7 +553,8 @@ namespace HiddenHarbours.Boats
                 bool painted = !PaintedCrestsRetired(GameServices.HullWaves);
                 _rigs.Add(new WakeRig(boat, _poolPerBoat, painted ? _linePoolPerBoat : 0, _dropletPoolPerBoat,
                                       painted && _wave.TransomCrest ? _transomPoolPerBoat : 0,
-                                      _bubbles.Enabled ? _bubblePoolPerBoat : 0, _foamSprites,
+                                      BubblesDrawn(in _bubbles, GameServices.HullWaves) ? _bubblePoolPerBoat : 0,
+                                      _foamSprites,
                                       crest, _bubbleSprites, _tierSprites, _spraySprites, transform,
                                       _sortingLayer, _sortingOrder, _lineSortingOrder, _plumeSortingOrder,
                                       _spraySortingOrder, _bubbleSortingOrder));
@@ -569,6 +570,12 @@ namespace HiddenHarbours.Boats
         /// and the hull waves' breaking crests): hull waves on, and the owner's retire switch on.</summary>
         public static bool DrawnFoamRetired(in HullWaveSettings hullWaves) =>
             HullWaveMath.DrawnFoamRetired(in hullWaves);
+
+        /// <summary>True when the wake's bubble films are drawn. They are drawn foam blobs beside the sea's
+        /// one foam sheet (the owner, 2026-11-19: "wake foam should be the same as any foam"), so they
+        /// retire with the drawn puffs under the same switch.</summary>
+        public static bool BubblesDrawn(in WakeBubbleConfig bubbles, in HullWaveSettings hullWaves) =>
+            bubbles.Enabled && !DrawnFoamRetired(in hullWaves);
 
         private bool HasRigFor(BoatController boat)
         {
