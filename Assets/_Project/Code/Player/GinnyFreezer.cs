@@ -23,8 +23,17 @@ namespace HiddenHarbours.Player
     /// <see cref="ClamBucket"/>. New Input System only; feedback rides <see cref="DevNotice"/>.</para>
     /// </summary>
     [DisallowMultipleComponent]
-    public sealed class GinnyFreezer : MonoBehaviour, IHold
+    public sealed class GinnyFreezer : MonoBehaviour, IHold, IHoldRemove, IStorageContainer
     {
+        /// <summary>The freezer's fixed id (<see cref="StorageIds.GinnyFreezer"/>).</summary>
+        public string StorageId => StorageIds.GinnyFreezer;
+
+        /// <summary>After the boat's hold (<see cref="PlayerStorage.PriorityHomeFreezer"/>).</summary>
+        public int StoragePriority => PlayerStorage.PriorityHomeFreezer;
+
+        // The save blob this freezer last restored from: a scene enabled after GameLoaded binds on enable.
+        private SaveData _boundTo;
+
         [Tooltip("How many units the chest freezer holds. A tunable, not a magic number (rule 6).")]
         [SerializeField] private int _capacity = 20;
 
@@ -47,6 +56,7 @@ namespace HiddenHarbours.Player
         {
             if (!CatchKeep.MayKeep(in item)) return false;   // protected: release-only, never held
             if (_items.Count >= _capacity) return false;
+            if (!IsBound()) return false;   // the saved catch is not read yet: a write would bury it
             SpoilContext spoil = SpoilContext.Capture();
             _items.Add(item.WithFreshness(Freshness.WithMode(item.Freshness, spoil.NowGameSeconds,
                                                              item.SpoilPerDay, spoil.SecondsPerDay,
@@ -57,13 +67,24 @@ namespace HiddenHarbours.Player
 
         public void Clear()
         {
+            if (!IsBound()) return;
             _items.Clear();
             SyncToSave();
+        }
+
+        /// <summary>Take out the one item at <paramref name="index"/> and nothing else (IHoldRemove).</summary>
+        public bool TryRemoveAt(int index)
+        {
+            if (index < 0 || index >= _items.Count || !IsBound()) return false;
+            _items.RemoveAt(index);
+            SyncToSave();
+            return true;
         }
 
         /// <summary>Surgical restore write (save/load) — items land EXACTLY as given, no re-mode.</summary>
         public void ReplaceAll(IReadOnlyList<CatchItem> items)
         {
+            if (!IsBound()) return;
             _items.Clear();
             if (items != null)
                 for (int i = 0; i < items.Count; i++)
@@ -78,6 +99,10 @@ namespace HiddenHarbours.Player
             // One of the player's storage containers (what the gift rows list): listed on enable, taken
             // off on destroy, never on disable, so a region hop does not drop it (PlayerStorage).
             PlayerStorage.Register(this);
+            // The save is the truth and this freezer a view of it: a scene enabled AFTER the GameLoaded edge
+            // (loaded late, or toggled on by a crossing) binds to the save it has not yet read, instead of
+            // starting empty and then writing that empty over the saved catch on its first change.
+            BindToSave();
         }
 
         private void OnDestroy() => PlayerStorage.Unregister(this);
@@ -90,11 +115,38 @@ namespace HiddenHarbours.Player
 
         // Banked catch persists (M1 §7.3, SaveData v5) — the ShipHold pattern; restore lands items
         // EXACTLY as saved (already Frozen), never re-moded.
-        private void OnGameLoaded(GameLoaded _)
+        private void OnGameLoaded(GameLoaded _) => BindToSave(force: true);
+
+        /// <summary>Read the catch back from the save it has not read yet (or <paramref name="force"/>).
+        /// Public for EditMode, where <c>OnEnable</c> does not fire.
+        ///
+        /// <para>⚠️ With no <see cref="GameServices.CatchFactory"/> yet, a restore rebuilds nothing, so it does
+        /// NOT count as read: the in-memory view is emptied (as a factory-less restore always did), the saved
+        /// <c>FreezerCatch</c> is left exactly as it is, and the freezer stays unbound (changes refused, see
+        /// <see cref="IsBound"/>) until a later bind finds a factory.</para></summary>
+        public void BindToSave(bool force = false)
         {
-            ISaveService save = GameServices.Save;
-            if (save == null || save.Current == null) return;
-            HoldCatchCodec.Restore(save.Current.FreezerCatch, GameServices.CatchFactory, _items);
+            SaveData data = GameServices.Save?.Current;
+            if (data == null || (!force && ReferenceEquals(data, _boundTo))) return;
+            ICatchItemFactory factory = GameServices.CatchFactory;
+            if (factory == null)
+            {
+                _items.Clear();
+                _boundTo = null;
+                return;
+            }
+            _boundTo = data;
+            HoldCatchCodec.Restore(data.FreezerCatch, factory, _items);
+        }
+
+        /// <summary>True when a change may be written: no save to guard, or the current save has been read
+        /// (binding now if it can).</summary>
+        public bool IsBound()
+        {
+            SaveData data = GameServices.Save?.Current;
+            if (data == null) return true;
+            if (!ReferenceEquals(data, _boundTo)) BindToSave();
+            return ReferenceEquals(data, _boundTo);
         }
 
         private void SyncToSave()

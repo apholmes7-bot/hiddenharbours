@@ -115,6 +115,13 @@ namespace HiddenHarbours.World
             }
 
             IHold hold = _holds[source];
+            // The surgical remove first: the one item goes and nothing else is touched (a persisted hold's
+            // save row is not rewritten, no item is re-moded). Only a hold without it is rebuilt.
+            if (hold is IHoldRemove surgical && surgical.TryRemoveAt(index))
+            {
+                Tally();
+                return true;
+            }
             IReadOnlyList<CatchItem> items = hold.Items;
             _keep.Clear();
             for (int i = 0; i < items.Count; i++)
@@ -165,8 +172,10 @@ namespace HiddenHarbours.World
         }
 
         // The rebuild re-adds everything but the one taken; a container that could not hold that many (a
-        // belt pail whose gear was lost) would drop catch, so it is not taken from.
-        private static bool MayTakeFrom(IHold hold) => hold.CapacityUnits >= hold.UsedUnits - 1;
+        // belt pail whose gear was lost) would drop catch, so it is not taken from. A hold with the surgical
+        // remove is never rebuilt, so it can always be taken from.
+        private static bool MayTakeFrom(IHold hold)
+            => hold is IHoldRemove || hold.CapacityUnits >= hold.UsedUnits - 1;
 
         private bool Matches(in CatchItem item, string id)
             => string.Equals(item.SpeciesId, id, StringComparison.Ordinal) && GiftItem.IsGiftable(in item, _facts);
