@@ -40,7 +40,7 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.AreEqual(0, EffectSorting.BuoyRungs, "a buoy sorts where it floats");
             Assert.AreEqual(0, EffectSorting.EmergentShorePlantRungs, "a plant sorts as a YSortSprite would");
             Assert.AreEqual(0, EffectSorting.NpcCatchRungs, "the NPC catch sorts at the boat's pivot");
-            Assert.AreEqual(1, EffectSorting.RodOverFisherRungs, "the line and splash, one rung over the fisher");
+            Assert.AreEqual(1, EffectSorting.RodOverFisherRungs, "the rod splash, one rung over the fisher");
         }
 
         [Test] public void EveryEffect_ReadsItsRungsFromTheTable()
@@ -55,8 +55,9 @@ namespace HiddenHarbours.Tests.EditMode
                 { SortedEffect.Buoy, EffectSorting.BuoyRungs },
                 { SortedEffect.EmergentShorePlant, EffectSorting.EmergentShorePlantRungs },
                 { SortedEffect.NpcCatch, EffectSorting.NpcCatchRungs },
-                { SortedEffect.RodLine, EffectSorting.RodOverFisherRungs },
+                { SortedEffect.RodLine, EffectSorting.RodLineRungs },
                 { SortedEffect.RodSplash, EffectSorting.RodOverFisherRungs },
+                { SortedEffect.NpcGearAtRail, EffectSorting.NpcGearOverHullRungs },
             };
             CollectionAssert.AreEquivalent(AllEffects().ToArray(), expected.Keys.ToArray(),
                 "a new SortedEffect needs its row here and in EffectSorting.RungsFor");
@@ -64,11 +65,11 @@ namespace HiddenHarbours.Tests.EditMode
                 Assert.AreEqual(kv.Value, EffectSorting.RungsFor(kv.Key), kv.Key.ToString());
         }
 
-        [Test] public void OnlyTheRodRidesItsCarrier()
+        [Test] public void OnlyTheRodAndTheNpcRailGear_RideTheirCarrier()
         {
             foreach (SortedEffect e in AllEffects())
-                Assert.AreEqual(e == SortedEffect.RodLine || e == SortedEffect.RodSplash, EffectSorting.IsCarried(e),
-                                e.ToString());
+                Assert.AreEqual(e == SortedEffect.RodLine || e == SortedEffect.RodSplash || e == SortedEffect.NpcGearAtRail,
+                                EffectSorting.IsCarried(e), e.ToString());
         }
 
         // ---- the rule -------------------------------------------------------------------------------
@@ -109,7 +110,7 @@ namespace HiddenHarbours.Tests.EditMode
         {
             foreach (int carrier in new[] { SortingBands.DecorFloor, 1003, SortingBands.DecorBase, SortingBands.DecorCeiling })
             {
-                Assert.AreEqual(carrier + 1, EffectSorting.OrderOver(SortedEffect.RodLine, carrier));
+                Assert.AreEqual(carrier - 2, EffectSorting.OrderOver(SortedEffect.RodLine, carrier));
                 Assert.AreEqual(carrier + 1, EffectSorting.OrderOver(SortedEffect.RodSplash, carrier));
             }
         }
@@ -223,7 +224,7 @@ namespace HiddenHarbours.Tests.EditMode
         /// </summary>
         static readonly string[] KnownLowFloorLiterals =
         {
-            // Rides with the boat: becomes a local order inside the boat's SortingGroup in step 3.
+            // Rides with the boat: a local order inside the boat's SortingGroup since step 3 (BoatSortingGroupTests).
             "Assets/_Project/Code/Boats/BoatInteriorInstaller.cs|_sortingOrderAboveHull|2",
             "Assets/_Project/Code/Boats/DeckContainerPresenter.cs|ContainerSortingOrder|50",
             "Assets/_Project/Code/Boats/MastheadTelltale.cs|TelltaleSortingOrder|60",

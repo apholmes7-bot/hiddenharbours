@@ -124,5 +124,28 @@ namespace HiddenHarbours.Tests.EditMode
                 Assert.Less(weed, HullSorting.OrderAt(y + 20f), $"weed at y = {y} is under a hull north of it");
             }
         }
+
+        // ---- step 3: a situational rule is an input, not a second writer ---------------------------
+
+        sealed class FixedInput : IHullSortingInput
+        {
+            public bool Applies; public int Order; public Vector2 AskedAt;
+            public bool TryOrderAt(Vector2 at, out int order) { AskedAt = at; order = Order; return Applies; }
+        }
+
+        [Test] public void WithNoRule_OrSilentRule_SheSortsByWhereSheLies()
+        {
+            var at = new Vector2(12f, Aground.y);
+            Assert.AreEqual(HullSorting.OrderAt(at.y), HullSorting.OrderFor(at, null), "no rule");
+            var silent = new FixedInput { Applies = false, Order = -1 };
+            Assert.AreEqual(HullSorting.OrderAt(at.y), HullSorting.OrderFor(at, silent), "a rule that stands aside");
+            Assert.AreEqual(at, silent.AskedAt, "the rule is asked at her waterline pivot");
+        }
+
+        [Test] public void ARuleThatApplies_DecidesHerOrder()
+        {
+            var behind = new FixedInput { Applies = true, Order = -1 };
+            Assert.AreEqual(-1, HullSorting.OrderFor(new Vector2(0f, 30f), behind));
+        }
     }
 }

@@ -161,8 +161,8 @@ namespace HiddenHarbours.Player
         [SerializeField, Min(0f)] private float _boilCalmRadiusM = 0.3f;
         [SerializeField, Range(0f, 1f)] private float _boilAlpha = 0.5f;
 
-        // The rod, the line and the splash ride the fisher's own order (the rod ±1; the line and splash
-        // EffectSorting.RodOverFisherRungs in front, ADR 0059 step 2). The water elements below are not yet
+        // The rod, the line and the splash ride the fisher's own order (the rod ±1; the line behind him and
+        // the splash in front, Core EffectSorting, ADR 0059). The water elements below are not yet
         // re-anchored: an open point of step 2 (see EffectSortingTests' low-floor guard).
         [Header("Sorting (water elements)")]
         [SerializeField] private int _waterElementOrder = 49;    // bobber / surfaced fish / held under line
@@ -1109,7 +1109,7 @@ namespace HiddenHarbours.Player
             float phase = Time.time * _shudderHz * (2f * Mathf.PI);
 
             if (!_line.enabled) _line.enabled = true;
-            // ADR 0059 step 2: the line rides the fisher's own order, one rung in front (Core EffectSorting),
+            // ADR 0059: the line rides the fisher's own order, behind him (Core EffectSorting.RodLineRungs),
             // not a parked 50. One int, written only when it changes.
             if (_playerSr != null)
             {
