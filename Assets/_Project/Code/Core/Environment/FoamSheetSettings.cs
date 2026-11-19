@@ -63,6 +63,15 @@ namespace HiddenHarbours.Core
                  "broken into lace and closer to the water's own colour.")]
         [Range(0f, 1f)] public float StormAge;
 
+        [Header("Convergence foam")]
+        [Tooltip("How fully the foam where wave trains pinch together is drawn as the one foam sheet: 1 = it " +
+                 "is the same foam as the caps (lace, bands, ageing colour) at full body, 0 = the older milky " +
+                 "texture borrowed from the caps.")]
+        [Range(0f, 1f)] public float Convergence;
+        [Tooltip("How old convergence foam reads: foam gathered where trains meet is collected, not freshly " +
+                 "broken, so older = more lace and closer to the water's own colour.")]
+        [Range(0f, 1f)] public float ConvergenceAge;
+
         [Header("Every sheet")]
         [Tooltip("How hard the sheet tears apart as its foam ages: 0 = it fades as one even mat, 1 = foam " +
                  "half way through its age keeps only its densest hearts. The wake also reads the hull " +
@@ -86,6 +95,9 @@ namespace HiddenHarbours.Core
             StormAmount = 2f,
             StormAge = 0.7f,
 
+            Convergence = 1f,
+            ConvergenceAge = 0.5f,
+
             AgeTear = 1f,
         };
 
@@ -100,5 +112,8 @@ namespace HiddenHarbours.Core
         /// <summary>The storm streaks' dials as the shader reads them (<c>_FoamSheetStorm</c>).</summary>
         public Vector4 StormVector => new Vector4(Mathf.Clamp01(Storm), Mathf.Max(StormAmount, 0f),
                                                   Mathf.Clamp01(StormAge), 0f);
+
+        /// <summary>The convergence foam's dials as the shader reads them (<c>_FoamSheetConv</c>).</summary>
+        public Vector4 ConvVector => new Vector4(Mathf.Clamp01(Convergence), Mathf.Clamp01(ConvergenceAge), 0f, 0f);
     }
 }

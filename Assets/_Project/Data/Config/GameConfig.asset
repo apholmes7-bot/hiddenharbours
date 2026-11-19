@@ -802,6 +802,8 @@ MonoBehaviour:
     Storm: 1
     StormAmount: 2
     StormAge: 0.7
+    Convergence: 1
+    ConvergenceAge: 0.5
     AgeTear: 1
   DevAllHelmInstruments: 1
   MeshFishingAndDig: 1

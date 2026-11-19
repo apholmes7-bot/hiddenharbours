@@ -167,6 +167,25 @@ namespace HiddenHarbours.Tests.Art.EditMode
         }
 
         [Test]
+        public void TheConvergenceFoam_IsTheCapsFoam_AtItsOwnAge()
+        {
+            string code = CodeOnly(Source());
+            // The pinch keeps WHERE and HOW MUCH; joined, it is the caps' foam at full body (not the
+            // borrowed milky texture), and where it is the larger foam the caps' age walk reads its age.
+            StringAssert.Contains("float convPart = capMilkyT * conv;", code);
+            StringAssert.Contains("if (_FoamSheetConv.x > 0.001)", code);
+            StringAssert.Contains("convPart = conv * lerp(capMilkyT, 1.0, convJoin);", code);
+            StringAssert.Contains("capAge01 = lerp(capAge01, saturate(_FoamSheetConv.y), convShare);", code);
+            StringAssert.Contains("lifecyclePart = max(lifecyclePart, convPart);", code);
+            // The age is set before the caps draw through the sheet, so the convergence foam takes the
+            // same tear and the same colour walk.
+            int age = code.IndexOf("capAge01 = lerp(capAge01, saturate(_FoamSheetConv.y), convShare);", System.StringComparison.Ordinal);
+            int sheet = code.IndexOf("FoamSheetLace(worldXY), capAge01, 0.0), bay);", System.StringComparison.Ordinal);
+            Assert.That(age, Is.GreaterThan(0));
+            Assert.That(sheet, Is.GreaterThan(age), "the convergence age must be set before the caps' sheet reads it");
+        }
+
+        [Test]
         public void TheSwashAge_IsTheRateOfTheSameSwash()
         {
             // BeachSwashBackwash01 must read BeachSwash's own phase: the same shoreward term, desync and
@@ -201,6 +220,8 @@ namespace HiddenHarbours.Tests.Art.EditMode
                 VectorDefault(src, "_FoamSheetCaps"), "_FoamSheetCaps");
             CollectionAssert.AreEqual(new[] { d.StormVector.x, d.StormVector.y, d.StormVector.z, d.StormVector.w },
                 VectorDefault(src, "_FoamSheetStorm"), "_FoamSheetStorm");
+            CollectionAssert.AreEqual(new[] { d.ConvVector.x, d.ConvVector.y, d.ConvVector.z, d.ConvVector.w },
+                VectorDefault(src, "_FoamSheetConv"), "_FoamSheetConv");
             Assert.AreEqual(d.AgeTear, FloatDefault(src, "_FoamSheetAgeTear"), 1e-6f, "_FoamSheetAgeTear");
         }
 
@@ -222,6 +243,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
             Assert.AreEqual(1f, d.Caps, "the whitecaps ship on the sheet (the owner's ruling)");
             Assert.AreEqual(1f, d.Surf, "the surf ships on the sheet (the owner's ruling)");
             Assert.AreEqual(1f, d.Storm, "the storm streaks ship on the sheet (the owner's ruling)");
+            Assert.AreEqual(1f, d.Convergence, "the convergence foam ships on the sheet (the owner's ruling)");
         }
     }
 }

@@ -1117,6 +1117,9 @@ Shader "HiddenHarbours/Water"
         // Storm streaks: x joins them, y scales the lane amount handed to the sheet (higher = fuller
         // streaks), z their age (old foam strung out by the wind: higher = more broken, more sea-coloured).
         _FoamSheetStorm    ("One foam: storm streaks (x join, y amount, z age)", Vector) = (1, 2, 0.7, 0)
+        // Convergence foam: x joins it (its texture becomes the sheet's lace, not the cap field's
+        // blobs), y its age where it is the larger foam (foam gathered on a pinch line has drifted there).
+        _FoamSheetConv     ("One foam: convergence (x join, y age)", Vector) = (1, 0.5, 0, 0)
         // How hard the sheet tears apart as its foam ages (1 = half way through its age only the
         // lace's hearts survive). The wake also reads the hull waves' own tear; the larger wins.
         _FoamSheetAgeTear  ("One foam: age tear (0 = an even mat, 1 = hearts only by half age)", Range(0,1)) = 1
@@ -1889,6 +1892,7 @@ Shader "HiddenHarbours/Water"
                 float4 _FoamSheetShore;
                 float4 _FoamSheetCaps;
                 float4 _FoamSheetStorm;
+                float4 _FoamSheetConv;
                 float  _FoamSheetAgeTear;
                 float  _WakeFoamAgeStrength;
                 float  _WakeFoamFreshFloor;
@@ -7023,7 +7027,21 @@ Shader "HiddenHarbours/Water"
                             float convHxy = ((cspx.y - csmx.y) + (cspy.x - csmy.x)) / (4.0 * fe);
                             float conv = ConvergenceGate(convHxx, convHyy, convHxy, _FoamConvergencePinch)
                                        * saturate(_FoamConvergenceStrength);
-                            lifecyclePart = max(lifecyclePart, capMilkyT * conv);
+                            float convPart = capMilkyT * conv;
+                            // THE ONE FOAM SHEET (2026-11-19): the pinch says WHERE and HOW MUCH; its texture is
+                            // the sheet's lace (the caps' sheet step below tears it), not the cap field's own
+                            // blobs, and where it is the larger foam the cap's age reads the convergence age
+                            // (_FoamSheetConv.y: foam gathered on a pinch line has drifted there, so it is not
+                            // fresh). _FoamSheetConv.x = 0 is the older capMilkyT-textured term, bit-exact.
+                            if (_FoamSheetConv.x > 0.001)
+                            {
+                                float convJoin = saturate(_FoamSheetConv.x);
+                                convPart = conv * lerp(capMilkyT, 1.0, convJoin);
+                                float convShare = saturate((convPart - lifecyclePart) * 4.0 + 0.5)
+                                                * saturate(convPart * 8.0) * convJoin;
+                                capAge01 = lerp(capAge01, saturate(_FoamSheetConv.y), convShare);
+                            }
+                            lifecyclePart = max(lifecyclePart, convPart);
                         }
                         capOpacity = lifecyclePart * waveGate * saturate(dt);
                     }
