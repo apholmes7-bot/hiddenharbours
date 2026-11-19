@@ -119,10 +119,10 @@ namespace HiddenHarbours.Tests.EditMode
             sheet.Oar = 0f;
             var sys = NewSystem(in cfg);
             int foam = 0;
-            Row(sys, cfg, sheet, 2, (s, _) =>
+            Row(sys, cfg, sheet, 2, (s, portIn) =>
             {
-                Assert.IsFalse(s.TryGetSheetDeposit(DoryOarSplashSystem.Port, out _));
-                Assert.IsFalse(s.TryGetSheetDeposit(DoryOarSplashSystem.Starboard, out _));
+                Assert.IsFalse(s.TryGetSheetDeposit(DoryOarSplashSystem.Port, out var p));
+                Assert.IsFalse(s.TryGetSheetDeposit(DoryOarSplashSystem.Starboard, out var q));
                 foam = Mathf.Max(foam, s.Foam.AliveCount);
             });
             Assert.Greater(foam, 0, "the A/B path still draws its puffs");
