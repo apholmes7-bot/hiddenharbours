@@ -59,3 +59,4 @@ MonoBehaviour:
   SailYawReferenceWindKn: 10
   UnmannedRoundUpTorque: 2400
   RoundUpReferenceDriveKn: 6
+  SailWeatherHelm: 2.5

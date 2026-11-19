@@ -56,6 +56,10 @@ namespace HiddenHarbours.Player
 
         [Header("The fish (builder-wired from FishIsoAnchors.json + the Fish_* sheets)")]
         [SerializeField] private FishSpeciesVisual[] _species;
+        [Tooltip("The shared fish art table. A species this scene's own table has no size rungs for " +
+                 "(a scene saved before the ladder, or a species added since) is drawn from here. Empty " +
+                 "= the Resources copy (FishArtLibrary).")]
+        [SerializeField] private FishArtLibrary _fishArt;
         [Tooltip("Seconds per fish animation frame. The rig's own cadences are shadow 0.28 s, " +
                  "dart 0.08 s and thrash 0.11 s; this serialized playback cadence is independent.")]
         [SerializeField, Min(0.01f)] private float _fishSecondsPerFrame = 0.16f;
@@ -243,6 +247,7 @@ namespace HiddenHarbours.Player
         private int _fishRow = Directions / 2;
         private string _resolvedFishId;
         private int _speciesIndex = -1;
+        private FishSpeciesVisual _resolvedSpecies;
         private float _resolvedWeightKg = float.NaN;
         private FishRungVisual _rung;
 
@@ -409,6 +414,13 @@ namespace HiddenHarbours.Player
             {
                 _resolvedFishId = next.FishId;
                 _speciesIndex = FindSpecies(next.FishId);
+                // The scene's own ladder when it has rungs, else the shared fish art table's: a scene
+                // carrying the pre-ladder table must still draw the new fish on the line.
+                _resolvedSpecies = string.IsNullOrEmpty(next.FishId)
+                    ? null
+                    : FishArtLibrary.Resolve(
+                        _species != null && _speciesIndex >= 0 ? _species[_speciesIndex] : null,
+                        _fishArt != null ? _fishArt : FishArtLibrary.Shared, next.FishId);
 
                 // WHAT SHE DOES ON THE LINE, asked once per species through the Core seam rather than
                 // by reaching into the Fishing module for a Def (rule 4 — Player does not reference
@@ -433,7 +445,11 @@ namespace HiddenHarbours.Player
             {
                 _resolvedWeightKg = next.WeightKg;
                 FishSpeciesVisual sp = CurrentSpecies();
-                _rung = sp != null ? sp.RungFor(next.WeightKg) : null;
+                // Picked at the weight the fish is DRAWN at (the readability floor), the same rule the
+                // hands and the tote use, so the fish he lands is the fish he then holds.
+                FishArtLibrary table = _fishArt != null ? _fishArt : FishArtLibrary.Shared;
+                _rung = FishArtLibrary.LineRungFor(sp, table != null ? table.CatchArt : null,
+                                                   next.FishId, next.WeightKg);
             }
         }
 
@@ -1032,9 +1048,7 @@ namespace HiddenHarbours.Player
             _heldSr.enabled = true;
         }
 
-        private FishSpeciesVisual CurrentSpecies()
-            => _species != null && _speciesIndex >= 0 && _speciesIndex < _species.Length
-                ? _species[_speciesIndex] : null;
+        private FishSpeciesVisual CurrentSpecies() => _resolvedSpecies;
 
         private int FindSpecies(string fishId)
         {

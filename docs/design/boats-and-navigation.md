@@ -155,6 +155,35 @@ Concrete skill expressions the model produces *for free*:
 - **Lee shores & docking:** wind pins you onto or off a wharf; docking a big boat in a cross-wind/cross-tide is a genuine skill moment (and why the Tanker gets tug assist). A **gentle docking assist** (auto-fender / snap when slow & close) keeps it cozy for small boats; big boats stay manual-ish for the satisfaction.
 - **Windage matters by size:** the high-sided Packet/Tanker get blown around far more than a low dory for the same wind — different boats, different problems (P2).
 
+#### 2.5.1 The wind and the sea turn her head (owner ask 2026-11-17)
+
+Before this, the wind shove acted at the centre of mass (no lever, so no turn) and the seakeeping
+slew read the sea at the hull's middle only (a passing wave swung her both ways and averaged out),
+so on a rough day the heading barely moved. The **sea yaw** (`SeaYawMath`, dials on
+`GameConfig.SeaYaw`) adds the two turns a real hull feels:
+
+- **Wind:** above `CalmWindMetresPerSecond` every gust in the weather model's wind turns her, most
+  with the wind on her beam, none dead ahead or astern. An unsailed hull's bow **blows off
+  downwind** (`HullWindYawBias`); with her sails drawing, `BoatHullDef.SailWeatherHelm` brings her
+  **up into the wind** instead (weather helm, the sloops ship 2.5); at anchor she lies **head to
+  wind** (`AnchoredWindYawBias`). An unmanned sailing hull is left to the sail drive's own round-up.
+- **Waves:** the difference in the sea's beam slope under her **bow and her stern**, read from the
+  same trains as the swell force (SEE==FEEL applies). A beam sea shoves her bodily; a quartering or
+  **following sea** turns her, and running before it she meets the waves slowly, so each swing lasts
+  long enough for the **stern to wander**.
+
+**Every strength is a share of her own full helm** (rudder at full authority; one oar at full pull
+for a rowed hull), scaled per hull from existing data: wind by `WindExposure` over `MassKg` (to the
+`MassExponent`), waves by the seakeeping response (liveliness over mass factor). The dory is the
+reference hull; a cape islander feels about a quarter of the dory's wind turn, a tanker under
+a twentieth. This is the TURN, as a share of her helm; the high-sided hulls above still DRIFT more
+in absolute terms (the shove at the centre is unchanged). The sum is capped at `MaxHelmShare`
+(0.45, under the autopilot's 0.6 `MaxHelm`), so with way on **the rudder always wins** and the
+autopilot holds. Both turns fade with the seakeeping exposure ramp (sheltered water turns nothing),
+calm air and a glass sea turn nothing, and a hull with a **mooring line out** is held by it: the
+dock is unchanged. Deterministic: the wind and waves are the sim's own (worldSeed, gameTime)
+fields, nothing is random and nothing is saved. `Enabled` off restores the previous handling.
+
 ### 2.6 Speed, range & fuel
 
 - **Range** (the §1.1 column) is the practical reach before fuel/time forces a return; it scales with tank size, burn rate, and cruising speed. It's a *soft* gate (you *can* push it and risk running dry — P5) reinforced by hard region gates (seaworthiness/draught) and story unlocks.

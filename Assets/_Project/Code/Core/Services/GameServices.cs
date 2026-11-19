@@ -1059,6 +1059,14 @@ namespace HiddenHarbours.Core
         public static HullTrimSettings HullTrim =>
             Config != null ? Config.HullTrim : HullTrimSettings.Default;
 
+        /// <summary>The SEA-YAW policy (the wind and the sea turn a hull's head), same contract as
+        /// <see cref="HullTrim"/>: the <c>Config != null</c> discipline and resolved per read, so the
+        /// sliders move the next tick. Falls back to <see cref="SeaYawSettings.Default"/> with no config
+        /// wired. Read by <c>BoatController</c>.
+        /// FLAG lead-architect: new Core accessor (the HullTrim pattern).</summary>
+        public static SeaYawSettings SeaYaw =>
+            Config != null ? Config.SeaYaw : SeaYawSettings.Default;
+
         /// <summary>The LADDER-BOARDING policy (the tide gap at which a step aboard becomes a climb, and
         /// the measured rig geometry the climb runs on), same contract as <see cref="WaveField"/> —
         /// including the <c>Config != null</c> discipline (never <c>?.</c>/<c>??</c> on a
@@ -1260,6 +1268,12 @@ namespace HiddenHarbours.Core
         public static float FishLengthPerKgCubeRootMeters =>
             Config != null ? Config.FishLengthPerKgCubeRootMeters
                            : GameConfig.DefaultFishLengthPerKgCubeRootMeters;
+
+        /// <summary>The readability floor on a fish's DRAWN length, sprite px (see
+        /// <see cref="GameConfig.MinDrawnFishLengthPx"/>), same contract as
+        /// <see cref="MaxOneHandFishLengthMeters"/>: the config's value, or the default with none.</summary>
+        public static float MinDrawnFishLengthPx =>
+            Config != null ? Config.MinDrawnFishLengthPx : GameConfig.DefaultMinDrawnFishLengthPx;
 
         /// <summary>The tide table's owner tunables (VS-06) — how far the almanac page looks ahead and
         /// how finely it hunts each turn. Same contract as <see cref="WaveField"/>, including the
@@ -1583,6 +1597,7 @@ namespace HiddenHarbours.Core
             Hands = null;
             CatchHands = null;
             PlayerHold = null;
+            PlayerStorage.Clear();       // no container outlives the services that listed it
             CurrentRegionId = null;
             SwellClimates.Clear();
             PendingArrivalKey = null;

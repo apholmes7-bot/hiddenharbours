@@ -90,6 +90,10 @@ namespace HiddenHarbours.Player
         /// <summary>Wire the mount contract explicitly (the builder's and the tests' path).</summary>
         public void ConfigureMounts(CharacterOffDeckMountsDef mounts) => _mounts = mounts;
 
+        /// <summary>The off-deck mount contract, or null when unwired. Read by the fixture pose (a bath, a seat)
+        /// for the height the seated pose was baked at.</summary>
+        public CharacterOffDeckMountsDef Mounts => _mounts;
+
         /// <summary>Wire the clip seam explicitly (tests). Null hands it back to the auto-resolve.</summary>
         public void ConfigureClipPlayer(CharacterClipPlayer clipPlayer) => _clipPlayer = clipPlayer;
 

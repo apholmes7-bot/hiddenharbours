@@ -71,6 +71,8 @@ namespace HiddenHarbours.Tests.RigBaking
         /// </summary>
         static readonly Snapshot[] Baseline =
         {
+            new Snapshot("appliance", "docs/art/rigs/appliance-kit/applianceIsoRig.js",
+                         "ApplianceIso", AzimuthConvention.CounterClockwise),
             new Snapshot("bobber", "docs/art/rigs/bobberRig.js",
                          "RodBobber", AzimuthConvention.Clockwise),
             new Snapshot("bucket", "docs/art/rigs/bucketRig.js",
@@ -97,6 +99,10 @@ namespace HiddenHarbours.Tests.RigBaking
             // MinDoorOffsetPx. That probe would refuse, correctly — hence CamperRigAzimuthProbe.
             new Snapshot("camper", "docs/art/rigs/camper-iso-kit/camperIsoRig.js",
                          "CamperIso", AzimuthConvention.CounterClockwise),
+            // Added by the camper room (camper plan C1): the Clipper's interior, which loads the shell
+            // first and shares its cell, pivot and handedness.
+            new Snapshot("camperInterior", "docs/art/rigs/camper-iso-kit/camperInteriorRig.js",
+                         "CamperInterior", AzimuthConvention.CounterClockwise, "camper"),
             // Added by the cape exterior sheet re-bake (full-mesh rollout PR 2b, 2026-09-02). Her
             // mesh had been baked through HullMeshFleet since #666, but the sprite turntable
             // resolves by catalog key, so her 8-cell hand-exported sheet could never be re-baked

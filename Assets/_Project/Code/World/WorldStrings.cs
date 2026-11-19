@@ -74,14 +74,26 @@ namespace HiddenHarbours.World
         /// <summary>The popup's verb for a thing you read — a letter, a logbook.</summary>
         public const string ReadVerb = "Read";
 
-        /// <summary>The popup's verb when a giftable catch is in hand and you face a person you have met
-        /// (gifting slice 1). ⚑ OWNER TASTE — one const, one edit.</summary>
+        /// <summary>The chooser row's verb when he has something giftable and faces a person he has met
+        /// (gifting). ⚑ OWNER TASTE — one const, one edit.</summary>
         public const string GiveVerb = "Give";
 
-        /// <summary>"Give — Aunt Ginny": the gift offer, same shape as <see cref="OfferLabel"/>. Allocates,
-        /// so <c>WorldInteractor</c> caches it per speaker exactly as it caches the talk line.</summary>
-        public static string GiftOfferLabel(string who)
-            => string.IsNullOrEmpty(who) ? GiveVerb : GiveVerb + LabelSeparator + who;
+        /// <summary>"Give Atlantic Cod": the chooser's gift row, beneath "Talk" (see
+        /// <see cref="ConversationChoice"/>). Names the thing, never the person — the list stands in front of
+        /// her already. Allocates; built once per press, never per frame.</summary>
+        public static string GiveRowLabel(string item)
+            => string.IsNullOrEmpty(item) ? GiveVerb : GiveVerb + GiveRowSeparator + item;
+
+        /// <summary>"Give Atlantic Cod (3)": the gift row for a type he has more than one of, anywhere he
+        /// keeps things. One of them goes per pick. A count of one or less shows no count.</summary>
+        public static string GiveRowLabel(string item, int count)
+            => count > 1 ? string.Format(GiveRowCountFormat, GiveRowLabel(item), count) : GiveRowLabel(item);
+
+        /// <summary>What sits between "Give" and the thing given on the chooser row.</summary>
+        public const string GiveRowSeparator = " ";
+
+        /// <summary>How a gift row shows how many he has: {0} is the row, {1} the count. ⚑ OWNER TASTE.</summary>
+        public const string GiveRowCountFormat = "{0} ({1})";
 
         /// <summary>What sits between the verb and who/what it is about.</summary>
         public const string LabelSeparator = " — ";
@@ -163,5 +175,25 @@ namespace HiddenHarbours.World
         public const string WashStop        = "Stop washing";
         public const string WashStopped     = "He leaves off washing.";
         public const string WashWalkedOff   = "He walks off, still dripping.";
+        // A shower or bath that stopped short because he had no soap (owner ask 2026-11-17).
+        public const string WashDoneNoSoap  = "As clean as he gets without soap.";
+
+        // ---- bathrooms (kitchens and bathrooms placement plan, R1) ---------------------------------
+        // The indoor shower and the bath, and the seat that only seats (a toilet, an outhouse).
+        public const string WashAtIndoorShower    = "Take a shower";
+        public const string WashBeginIndoorShower = "He turns the tap and steps under the water.";
+        public const string WashAtBath            = "Have a bath";
+        public const string WashBeginBath         = "He runs the bath and sinks into it.";
+        public const string WashDoneBath          = "Clean and pink from the bath.";
+        public const string SitDown               = "Sit down";
+        public const string SitGetUp              = "Get up";
+        public const string SitBegin              = "He sits a moment.";
+        public const string SitStood              = "He gets up.";
+
+        // ---- the TASKS note's fold (owner ask 2026-11-16) ----
+        // The marks on the note's head (fold it down) and on its folded chip (open it again). One
+        // character each: the head and the chip are a glance, not a sentence.
+        public const string TasksFoldMark   = "-";
+        public const string TasksUnfoldMark = "+";
     }
 }

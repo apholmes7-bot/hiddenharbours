@@ -341,6 +341,11 @@ namespace HiddenHarbours.App.Editor
                 if (reach > worst) worst = reach;
             }
 
+            // the camper lot's own small shed (reserved 2026-11-17)
+            float lotShed = Vector2.Distance(StPetersCamperLot.ShedPos, CottagePos) +
+                            StPetersCamperLot.ShedFootprintRadiusMetres;
+            if (lotShed > worst) worst = lotShed;
+
             float camper = StPetersCamperLot.ClearingReachMetres;
             return camper > worst ? camper : worst;
         }
@@ -417,9 +422,10 @@ namespace HiddenHarbours.App.Editor
                             $"[StPetersGinnyPlot] {CottageKey} has no baked room, so Ginny's door does not " +
                             "open. The owner ruled this cottage enterable — re-bake the interior kit.");
                     else
-                        // The washstand in the player's room (washrooms plan section 3): the same row the
-                        // scene's text patch placed, so a rebuild keeps it.
-                        WashStationPlacement.StandInterior(go, RootName);
+                        // The room fixtures: the washstand in the player's room (washrooms plan section 3)
+                        // and the ground-floor bathroom (kitchens and bathrooms plan, R1). The same rows the
+                        // scene's text patch placed, so a rebuild keeps them.
+                        InteriorFixturePlacement.StandInterior(go, RootName);
 
                     // The cosy night read. ⚠ The greybox standee this replaces carried THREE night
                     // pieces; only two survive the move to a kit building. CottageDayNight is a SPRITE

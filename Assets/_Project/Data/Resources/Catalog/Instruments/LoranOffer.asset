@@ -18,10 +18,10 @@ MonoBehaviour:
     does not trust them. It listens for the shore chains and tells you where you are
     as two time differences - write them down at a good ground and they will bring
     you back to the same water. Wants a wheelhouse to mount in.'
-  Price: 380
+  Price: 900
   Catalog:
     Listed: 1
     Section: 5
     Sellers:
-    - seller.leblancs
+    - seller.nmc_boat_gear_wholesaler
     SortOrder: 45

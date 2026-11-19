@@ -1,0 +1,962 @@
+fileFormatVersion: 2
+guid: 65f9473db14081047a154367145e364b
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -1399537393750099274
+    second: Appliance_wharfShower_0
+  - first:
+      213: 162838455183930870
+    second: Appliance_wharfShower_1
+  - first:
+      213: 4688523422932848607
+    second: Appliance_wharfShower_2
+  - first:
+      213: 8448915415747491560
+    second: Appliance_wharfShower_3
+  - first:
+      213: 4796819911531324686
+    second: Appliance_wharfShower_4
+  - first:
+      213: 1571562516080311086
+    second: Appliance_wharfShower_5
+  - first:
+      213: -6894207274097408946
+    second: Appliance_wharfShower_6
+  - first:
+      213: 8488613410879342385
+    second: Appliance_wharfShower_7
+  - first:
+      213: -4209858355509799734
+    second: Appliance_wharfShower_8
+  - first:
+      213: -7724143762800885882
+    second: Appliance_wharfShower_9
+  - first:
+      213: -6360868467121526559
+    second: Appliance_wharfShower_10
+  - first:
+      213: 5859459702608427891
+    second: Appliance_wharfShower_11
+  - first:
+      213: -6276020273802036936
+    second: Appliance_wharfShower_12
+  - first:
+      213: 2719236852086211861
+    second: Appliance_wharfShower_13
+  - first:
+      213: -4319932383505843058
+    second: Appliance_wharfShower_14
+  - first:
+      213: -179761131574592540
+    second: Appliance_wharfShower_15
+  - first:
+      213: 3205725082953908735
+    second: Appliance_wharfShower_16
+  - first:
+      213: -1877016463797499114
+    second: Appliance_wharfShower_17
+  - first:
+      213: -5747180378341565173
+    second: Appliance_wharfShower_18
+  - first:
+      213: 3530103184902816436
+    second: Appliance_wharfShower_19
+  - first:
+      213: 7402169892228207598
+    second: Appliance_wharfShower_20
+  - first:
+      213: 5224831477808873051
+    second: Appliance_wharfShower_21
+  - first:
+      213: -7289955070447687735
+    second: Appliance_wharfShower_22
+  - first:
+      213: -7515956117557890676
+    second: Appliance_wharfShower_23
+  - first:
+      213: 6765558757838575589
+    second: Appliance_wharfShower_24
+  - first:
+      213: -5634287922672549085
+    second: Appliance_wharfShower_25
+  - first:
+      213: -2092353814796520520
+    second: Appliance_wharfShower_26
+  - first:
+      213: -684701948096730438
+    second: Appliance_wharfShower_27
+  - first:
+      213: -8089569730420025072
+    second: Appliance_wharfShower_28
+  - first:
+      213: 999219195075066458
+    second: Appliance_wharfShower_29
+  - first:
+      213: -5883150196782971878
+    second: Appliance_wharfShower_30
+  - first:
+      213: -3727541662215643546
+    second: Appliance_wharfShower_31
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 4096
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Appliance_wharfShower_s0_d0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 246
+        width: 46
+        height: 82
+      alignment: 9
+      pivot: {x: 0.5, y: 0.18292683}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0e8f56d72e2207646bcdd14c7a8dd383
+      internalID: -1349718373
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_wharfShower_s0_d1
+      rect:
+        serializedVersion: 2
+        x: 46
+        y: 246
+        width: 46
+        height: 82
+      alignment: 9
+      pivot: {x: 0.5, y: 0.18292683}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fde74b6933d18e94c818c34c337d8ecd
+      internalID: 1292412623
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_wharfShower_s0_d2
+      rect:
+        serializedVersion: 2
+        x: 92
+        y: 246
+        width: 46
+        height: 82
+      alignment: 9
+      pivot: {x: 0.5, y: 0.18292683}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b16dd71df5aef0445ab57253d1bb248a
+      internalID: 2006091388
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_wharfShower_s0_d3
+      rect:
+        serializedVersion: 2
+        x: 138
+        y: 246
+        width: 46
+        height: 82
+      alignment: 9
+      pivot: {x: 0.5, y: 0.18292683}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e34d8308f3d86e044a939c6cc3aecb42
+      internalID: 1962367569
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_wharfShower_s0_d4
+      rect:
+        serializedVersion: 2
+        x: 184
+        y: 246
+        width: 46
+        height: 82
+      alignment: 9
+      pivot: {x: 0.5, y: 0.18292683}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 94784dd1d6c22b74b8de8d7afec834a2
+      internalID: 821867832
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_wharfShower_s0_d5
+      rect:
+        serializedVersion: 2
+        x: 230
+        y: 246
+        width: 46
+        height: 82
+      alignment: 9
+      pivot: {x: 0.5, y: 0.18292683}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cd526e21aa527b54faf9b804e8f6f77b
+      internalID: -1670777629
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_wharfShower_s0_d6
+      rect:
+        serializedVersion: 2
+        x: 276
+        y: 246
+        width: 46
+        height: 82
+      alignment: 9
+      pivot: {x: 0.5, y: 0.18292683}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bfc2eecf6823417449888629b3503842
+      internalID: -1111126778
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_wharfShower_s0_d7
+      rect:
+        serializedVersion: 2
+        x: 322
+        y: 246
+        width: 46
+        height: 82
+      alignment: 9
+      pivot: {x: 0.5, y: 0.18292683}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 492f346b50a18aa4fb49c52e4bf66b76
+      internalID: -2088668482
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_wharfShower_s1_d0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 164
+        width: 46
+        height: 82
+      alignment: 9
+      pivot: {x: 0.5, y: 0.18292683}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 80d0aebf4a882784396d9955bdfb287e
+      internalID: -332277800
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_wharfShower_s1_d1
+      rect:
+        serializedVersion: 2
+        x: 46
+        y: 164
+        width: 46
+        height: 82
+      alignment: 9
+      pivot: {x: 0.5, y: 0.18292683}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4af62076f03358b4da57d951ab3da061
+      internalID: -797311568
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_wharfShower_s1_d2
+      rect:
+        serializedVersion: 2
+        x: 92
+        y: 164
+        width: 46
+        height: 82
+      alignment: 9
+      pivot: {x: 0.5, y: 0.18292683}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3e73f54e2b5ad344fa831d8096ceedf1
+      internalID: -1777188625
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_wharfShower_s1_d3
+      rect:
+        serializedVersion: 2
+        x: 138
+        y: 164
+        width: 46
+        height: 82
+      alignment: 9
+      pivot: {x: 0.5, y: 0.18292683}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9ef123b2889985d42a8cdc1825f96b3a
+      internalID: -165624947
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_wharfShower_s1_d4
+      rect:
+        serializedVersion: 2
+        x: 184
+        y: 164
+        width: 46
+        height: 82
+      alignment: 9
+      pivot: {x: 0.5, y: 0.18292683}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7b387c7c5c3501c4ba78625f86fb342c
+      internalID: -1411341679
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_wharfShower_s1_d5
+      rect:
+        serializedVersion: 2
+        x: 230
+        y: 164
+        width: 46
+        height: 82
+      alignment: 9
+      pivot: {x: 0.5, y: 0.18292683}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c2f1f05e6fd73d24db9abb3f97292237
+      internalID: -1512093942
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_wharfShower_s1_d6
+      rect:
+        serializedVersion: 2
+        x: 276
+        y: 164
+        width: 46
+        height: 82
+      alignment: 9
+      pivot: {x: 0.5, y: 0.18292683}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0549d0df360c45143949221221cc5079
+      internalID: 542183910
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_wharfShower_s1_d7
+      rect:
+        serializedVersion: 2
+        x: 322
+        y: 164
+        width: 46
+        height: 82
+      alignment: 9
+      pivot: {x: 0.5, y: 0.18292683}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 764d57fa4b0d3954c875c2cf2c8915d2
+      internalID: -1946091839
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_wharfShower_s2_d0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 82
+        width: 46
+        height: 82
+      alignment: 9
+      pivot: {x: 0.5, y: 0.18292683}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ff385d478f5b1bb4aa74cdd1fd78ad22
+      internalID: -259936834
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_wharfShower_s2_d1
+      rect:
+        serializedVersion: 2
+        x: 46
+        y: 82
+        width: 46
+        height: 82
+      alignment: 9
+      pivot: {x: 0.5, y: 0.18292683}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4cc12f156dbe18d42a303f8b0c1e0683
+      internalID: -1177189896
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_wharfShower_s2_d2
+      rect:
+        serializedVersion: 2
+        x: 92
+        y: 82
+        width: 46
+        height: 82
+      alignment: 9
+      pivot: {x: 0.5, y: 0.18292683}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6adf97fef5d3c344f815ba0172994efb
+      internalID: 743441133
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_wharfShower_s2_d3
+      rect:
+        serializedVersion: 2
+        x: 138
+        y: 82
+        width: 46
+        height: 82
+      alignment: 9
+      pivot: {x: 0.5, y: 0.18292683}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4bd0c8bda80616b4db0852f33fb54ba2
+      internalID: 1991587100
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_wharfShower_s2_d4
+      rect:
+        serializedVersion: 2
+        x: 184
+        y: 82
+        width: 46
+        height: 82
+      alignment: 9
+      pivot: {x: 0.5, y: 0.18292683}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 692de31fd4d7935429021cd40af04d62
+      internalID: 45043265
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_wharfShower_s2_d5
+      rect:
+        serializedVersion: 2
+        x: 230
+        y: 82
+        width: 46
+        height: 82
+      alignment: 9
+      pivot: {x: 0.5, y: 0.18292683}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bed2bdaed759ec04d83b156793012883
+      internalID: -1259169918
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_wharfShower_s2_d6
+      rect:
+        serializedVersion: 2
+        x: 276
+        y: 82
+        width: 46
+        height: 82
+      alignment: 9
+      pivot: {x: 0.5, y: 0.18292683}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ce04181f4834a7e468fefc2d86712e00
+      internalID: -1861763218
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_wharfShower_s2_d7
+      rect:
+        serializedVersion: 2
+        x: 322
+        y: 82
+        width: 46
+        height: 82
+      alignment: 9
+      pivot: {x: 0.5, y: 0.18292683}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4b1ce82db1f615042aa4664e629c6a8c
+      internalID: -403257989
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_wharfShower_s3_d0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 46
+        height: 82
+      alignment: 9
+      pivot: {x: 0.5, y: 0.18292683}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7d396359db0751a4cb158857205d355d
+      internalID: 559016184
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_wharfShower_s3_d1
+      rect:
+        serializedVersion: 2
+        x: 46
+        y: 0
+        width: 46
+        height: 82
+      alignment: 9
+      pivot: {x: 0.5, y: 0.18292683}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5d12682edd5b9d74bb10759c3665b3d9
+      internalID: -2008065384
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_wharfShower_s3_d2
+      rect:
+        serializedVersion: 2
+        x: 92
+        y: 0
+        width: 46
+        height: 82
+      alignment: 9
+      pivot: {x: 0.5, y: 0.18292683}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d97be9d2e91c24a4787cb461c6fb14e4
+      internalID: -1908500768
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_wharfShower_s3_d3
+      rect:
+        serializedVersion: 2
+        x: 138
+        y: 0
+        width: 46
+        height: 82
+      alignment: 9
+      pivot: {x: 0.5, y: 0.18292683}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: afc2e7e38f013a544b2bfc181bf29136
+      internalID: -1495179697
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_wharfShower_s3_d4
+      rect:
+        serializedVersion: 2
+        x: 184
+        y: 0
+        width: 46
+        height: 82
+      alignment: 9
+      pivot: {x: 0.5, y: 0.18292683}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9626bee49e70b3b47af166ea5cff9624
+      internalID: -56217622
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_wharfShower_s3_d5
+      rect:
+        serializedVersion: 2
+        x: 230
+        y: 0
+        width: 46
+        height: 82
+      alignment: 9
+      pivot: {x: 0.5, y: 0.18292683}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 04e45b7af6280ba49835790a5e2e8bd4
+      internalID: 2123967111
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_wharfShower_s3_d6
+      rect:
+        serializedVersion: 2
+        x: 276
+        y: 0
+        width: 46
+        height: 82
+      alignment: 9
+      pivot: {x: 0.5, y: 0.18292683}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cbe633057d82ad8408bd7418564304bf
+      internalID: 1503217654
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_wharfShower_s3_d7
+      rect:
+        serializedVersion: 2
+        x: 322
+        y: 0
+        width: 46
+        height: 82
+      alignment: 9
+      pivot: {x: 0.5, y: 0.18292683}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1681ebd3169d02e498ea72e7ceacc8ed
+      internalID: -582853251
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 500d3aaa6a6b91b4585e46fdee818d6c
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Appliance_wharfShower_s0_d0: -1349718373
+      Appliance_wharfShower_s0_d1: 1292412623
+      Appliance_wharfShower_s0_d2: 2006091388
+      Appliance_wharfShower_s0_d3: 1962367569
+      Appliance_wharfShower_s0_d4: 821867832
+      Appliance_wharfShower_s0_d5: -1670777629
+      Appliance_wharfShower_s0_d6: -1111126778
+      Appliance_wharfShower_s0_d7: -2088668482
+      Appliance_wharfShower_s1_d0: -332277800
+      Appliance_wharfShower_s1_d1: -797311568
+      Appliance_wharfShower_s1_d2: -1777188625
+      Appliance_wharfShower_s1_d3: -165624947
+      Appliance_wharfShower_s1_d4: -1411341679
+      Appliance_wharfShower_s1_d5: -1512093942
+      Appliance_wharfShower_s1_d6: 542183910
+      Appliance_wharfShower_s1_d7: -1946091839
+      Appliance_wharfShower_s2_d0: -259936834
+      Appliance_wharfShower_s2_d1: -1177189896
+      Appliance_wharfShower_s2_d2: 743441133
+      Appliance_wharfShower_s2_d3: 1991587100
+      Appliance_wharfShower_s2_d4: 45043265
+      Appliance_wharfShower_s2_d5: -1259169918
+      Appliance_wharfShower_s2_d6: -1861763218
+      Appliance_wharfShower_s2_d7: -403257989
+      Appliance_wharfShower_s3_d0: 559016184
+      Appliance_wharfShower_s3_d1: -2008065384
+      Appliance_wharfShower_s3_d2: -1908500768
+      Appliance_wharfShower_s3_d3: -1495179697
+      Appliance_wharfShower_s3_d4: -56217622
+      Appliance_wharfShower_s3_d5: 2123967111
+      Appliance_wharfShower_s3_d6: 1503217654
+      Appliance_wharfShower_s3_d7: -582853251
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

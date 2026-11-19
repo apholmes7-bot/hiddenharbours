@@ -22,4 +22,5 @@ MonoBehaviour:
     Section: 5
     Sellers:
     - seller.leblancs
+    - seller.nmc_fishing_gear_wholesaler
     SortOrder: 60

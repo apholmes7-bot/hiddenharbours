@@ -124,6 +124,12 @@ namespace HiddenHarbours.Core
         /// it reproduces to within 4 %. See <see cref="CatchSize"/> for why the law is a cube root.</summary>
         public const float DefaultFishLengthPerKgCubeRootMeters = 0.477f;
 
+        /// <summary>The default for <see cref="MinDrawnFishLengthPx"/>: 12 px, a little under two hand
+        /// widths of the 64 px figure. Measured against the catch pass 2 held sheets it lifts only the
+        /// drawings shorter than that (the small mackerel and flounder, the small and middle herring) and
+        /// leaves every other rung alone.</summary>
+        public const float DefaultMinDrawnFishLengthPx = 12f;
+
         /// <summary>
         /// The default for <see cref="VehicleDoorSweepSeconds"/> — how long a vehicle door takes to
         /// travel from shut to fully open.
@@ -297,6 +303,20 @@ namespace HiddenHarbours.Core
         [Tooltip("Gamepad only: seconds between rows once a held stick or d-pad is running on.")]
         [Range(0.05f, 0.5f)] public float InteractChooserRepeatIntervalSeconds = DefaultInteractChooserRepeatIntervalSeconds;
 
+        /// <summary>How long the folded TASKS chip signals a new or finished task, when no config is
+        /// wired (owner ask 2026-11-16).</summary>
+        public const float DefaultTasksChipSignalSeconds = 2.4f;
+
+        /// <summary>How long each on/off beat of that signal lasts, when no config is wired.</summary>
+        public const float DefaultTasksChipBlinkSeconds = 0.3f;
+
+        [Tooltip("Folded TASKS note: seconds its chip flashes gold when a task is added or finished. The " +
+                 "note never re-opens itself; this is the whole of the nudge.")]
+        [Range(0.5f, 8f)] public float TasksChipSignalSeconds = DefaultTasksChipSignalSeconds;
+
+        [Tooltip("Folded TASKS note: seconds per on/off beat of the chip's flash.")]
+        [Range(0.1f, 1f)] public float TasksChipBlinkSeconds = DefaultTasksChipBlinkSeconds;
+
         [Tooltip("The bar for heavy work, for an action that opts in: refused at this tiredness / hunger " +
                  "stage or worse, and the player says \"I'm too tired\" / \"I'm too hungry\" / both. None = " +
                  "never refused for that need. No action opts in yet (the needs ruling: a need never stops " +
@@ -441,6 +461,16 @@ namespace HiddenHarbours.Core
                  "construction (force scales by SeaState01 × exposure). Dial Strength to taste; set Enabled " +
                  "off to restore today's flat-water handling. Per-hull response lives on each BoatHullDef.")]
         public SeakeepingSettings Seakeeping = SeakeepingSettings.Default;
+
+        [Header("Sea yaw (the wind and the sea turn her head)")]
+        [Tooltip("World-wide policy for how much the wind and the waves TURN a hull (P1): gusts and a beam " +
+                 "wind nudge the heading, a quartering or following sea makes the stern wander, light hulls " +
+                 "are turned more than heavy ones (scaled by each hull's mass, windage and seakeeping " +
+                 "response), drawing sails add weather helm (BoatHullDef.SailWeatherHelm). Quoted as a share " +
+                 "of the hull's own full helm and capped by MaxHelmShare, so the rudder wins with way on. " +
+                 "Calm water, sheltered water and a hull tied to the shore are UNCHANGED by construction. " +
+                 "Enabled off restores the handling from before.")]
+        public SeaYawSettings SeaYaw = SeaYawSettings.Default;
 
         [Header("Storm seakeeping read (ADR 0018 B2.5 — the hull answers the storm)")]
         [Tooltip("World-wide STORM policy for the VISUAL rock (the owner's 'the boat seemed to not be " +
@@ -637,6 +667,16 @@ namespace HiddenHarbours.Core
                  "cube of length; this is that law inverted, fitted to the rig's own four species. " +
                  "⚠️ Not a feel dial — move it only if the fish rig's proportions move.")]
         [Min(0f)] public float FishLengthPerKgCubeRootMeters = DefaultFishLengthPerKgCubeRootMeters;
+
+        [Tooltip("The shortest a fish may be DRAWN, in sprite pixels, wherever it is drawn: on the " +
+                 "line, in his hands, in the tote. A catch whose size rung is drawn shorter than this " +
+                 "is shown with the smallest rung of its species that is at least this long (or the " +
+                 "largest, if none is). One rule for all three places, so the fish on the line, in the " +
+                 "hands and in the tote is always the same drawing. The catch's weight, value and " +
+                 "one-hand rule are untouched: only the picture is chosen. 0 turns the floor off. " +
+                 "Default 12 lifts only the tiniest drawings; 16 lifts every mackerel and flounder " +
+                 "to the large rung, and higher starts to erase the size ladder.")]
+        [Min(0f)] public float MinDrawnFishLengthPx = DefaultMinDrawnFishLengthPx;
 
         [Header("Helm throttle (the notched single-lever throttle)")]
         [Tooltip("Feel of the diegetic notched throttle on engine hulls: how many detents from neutral to " +
@@ -1529,6 +1569,12 @@ namespace HiddenHarbours.Core
                  "they change nothing but the picture. Derived from the saved dirt, never saved. Read " +
                  "through StinkLinesSettings.Current.")]
         public StinkLinesSettings StinkLines = StinkLinesSettings.Default;
+
+        [Header("Wash fixtures (cleanliness, the look)")]
+        [Tooltip("Owner ask 2026-11-17: baths and basins fill and drain, the shower runs, the water closet " +
+                 "flushes, the player climbs into the bath, and suds froth while a soaped wash runs. The " +
+                 "picture only; nothing here is saved. Read through WashVisualsSettings.Current.")]
+        public WashVisualsSettings WashVisuals = WashVisualsSettings.Default;
 
         public float SecondsPerHour => SecondsPerDay / 24f;
         public float SecondsPerWeek => SecondsPerDay * DaysPerWeek;
