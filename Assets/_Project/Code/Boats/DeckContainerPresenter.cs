@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using UnityEngine;
 using HiddenHarbours.Core;
 
@@ -34,8 +33,15 @@ namespace HiddenHarbours.Boats
     /// <see cref="CatchDumped"/> / <see cref="GameLoaded"/> / <see cref="BoatPurchased"/> /
     /// <see cref="GiftGiven"/> (a gift can come off the boat) — event-driven sprite swaps, never a
     /// per-frame poll. LateUpdate only repositions (plus a no-alloc hull ref-compare that catches a
-    /// hull swap regardless of bus subscription order). Greybox sprites are code-built once and cached
-    /// static; the owner's painted fill states drop into the Def with zero code change.</para>
+    /// hull swap regardless of bus subscription order). The owner's painted fill states drop into the
+    /// Def with zero code change.</para>
+    ///
+    /// <para><b>No painted art, no tray.</b> A container whose Def carries no fill sprites draws
+    /// NOTHING. There used to be a code-built placeholder tray for that case; it is a flat,
+    /// screen-upright sprite that does not sit in a mesh hull at most headings, so in play it floated
+    /// as a grey rectangle over the water, over the rower's legs or above his head as the boat turned
+    /// (the reason the larger hulls were already left without a container). The tray comes back the
+    /// moment its painted states are authored.</para>
     /// </summary>
     [DisallowMultipleComponent]
     public sealed class DeckContainerPresenter : MonoBehaviour
@@ -45,11 +51,6 @@ namespace HiddenHarbours.Boats
         // INTERNAL so the freshness tag that rides just above the tray (DeckFreshnessTag) can sort
         // against it by name rather than repeating the number.
         internal const int ContainerSortingOrder = 50;
-        // Greybox-art constants, not balance numbers (the PotDeckWorkController silhouette convention) —
-        // the pixels-per-unit of the code-built tray states and how many states the built set has. The
-        // owner's painted sprites replace both via DeckContainerDef.FillSprites.
-        private const float SilhouettePixelsPerUnit = 24f;
-        private const int GreyboxStateCount = 4;
 
         private ShipHold _hold;                       // same-module sibling on the physics root
         private IBoatHullPresenter _hull;             // the drawn-facing read via the seam (null = smooth hull)
@@ -195,8 +196,14 @@ namespace HiddenHarbours.Boats
                 return;
             }
 
-            EnsureRenderer();
             Sprite s = SpriteForFill(def, _hold.UsedUnits, _hold.CapacityUnits);
+            if (s == null)
+            {
+                if (_renderer != null) _renderer.enabled = false;   // no painted fill states → no prop
+                return;
+            }
+
+            EnsureRenderer();
             if (_renderer.sprite != s) _renderer.sprite = s;
             _renderer.enabled = true;
             UpdateSpoilTint();
@@ -220,18 +227,15 @@ namespace HiddenHarbours.Boats
             if (_renderer.color != tint) _renderer.color = tint;
         }
 
-        /// <summary>The sprite for a hold fill: the Def's authored fill states when present (the owner's
-        /// painted art), else the built greybox silhouettes. A null authored entry falls back to greybox
-        /// so a half-authored array never blanks the tray.</summary>
-        private static Sprite SpriteForFill(DeckContainerDef def, int used, int capacity)
+        /// <summary>The sprite for a hold fill: the Def's authored fill state (the owner's painted art),
+        /// or null when the Def has no fill states or that state is a hole, which means draw nothing.
+        /// There is no code-built placeholder: it floated off the mesh hulls as a bare rectangle.
+        /// Pure + static (no engine state, no allocation).</summary>
+        public static Sprite SpriteForFill(DeckContainerDef def, int used, int capacity)
         {
-            if (def.FillSprites != null && def.FillSprites.Length > 0)
-            {
-                int idx = FillStateIndex(used, capacity, def.FillSprites.Length);
-                Sprite authored = def.FillSprites[idx];
-                if (authored != null) return authored;
-            }
-            return GreyboxState(FillStateIndex(used, capacity, GreyboxStateCount));
+            if (def == null || def.FillSprites == null || def.FillSprites.Length == 0) return null;
+            int idx = FillStateIndex(used, capacity, def.FillSprites.Length);
+            return def.FillSprites[idx];
         }
 
         private void EnsureRenderer()
@@ -241,116 +245,6 @@ namespace HiddenHarbours.Boats
             go.transform.SetParent(transform, false);
             _renderer = go.AddComponent<SpriteRenderer>();
             _renderer.sortingOrder = ContainerSortingOrder;
-        }
-
-        // ---- code-built greybox fill states (cached; the owner's sprites replace them via the Def) ----
-
-        private static readonly Sprite[] _greyboxCache = new Sprite[GreyboxStateCount];
-
-        private static Sprite GreyboxState(int index)
-        {
-            index = Mathf.Clamp(index, 0, GreyboxStateCount - 1);
-            if (_greyboxCache[index] != null) return _greyboxCache[index];
-            _greyboxCache[index] = BuildSprite(TrayMaps[index], TrayPalette);
-            return _greyboxCache[index];
-        }
-
-        // Pixel maps, drawn top row first ('.' = transparent). Greybox art, not balance data — a ¾-view
-        // fish tray whose contents (lobster 'o', crab 'c') visibly accumulate: empty → low → half → brim
-        // (the brim heaps over the back rim). All four share one canvas so the swap never shifts.
-        // 'T' = tray shell, 'f' = tray floor.
-        private static readonly string[][] TrayMaps =
-        {
-            new[]   // 0 — empty: bare floor, the tray reads as an open box
-            {
-                "......................",
-                "......................",
-                "......................",
-                "TTTTTTTTTTTTTTTTTTTTTT",
-                "TffffffffffffffffffffT",
-                "TffffffffffffffffffffT",
-                "TffffffffffffffffffffT",
-                "TffffffffffffffffffffT",
-                "TffffffffffffffffffffT",
-                "TTTTTTTTTTTTTTTTTTTTTT",
-                "T.T................T.T",
-                "TTTTTTTTTTTTTTTTTTTTTT",
-            },
-            new[]   // 1 — low: a lobster and a crab in the corners
-            {
-                "......................",
-                "......................",
-                "......................",
-                "TTTTTTTTTTTTTTTTTTTTTT",
-                "TffffffffffffffffffffT",
-                "TffooofffffffffffffffT",
-                "TfooooofffffffccfffffT",
-                "TffoooffffffcccccffffT",
-                "TffffofffffffccffffffT",
-                "TTTTTTTTTTTTTTTTTTTTTT",
-                "T.T................T.T",
-                "TTTTTTTTTTTTTTTTTTTTTT",
-            },
-            new[]   // 2 — half: the floor is going under
-            {
-                "......................",
-                "......................",
-                "......................",
-                "TTTTTTTTTTTTTTTTTTTTTT",
-                "TffccffffooooffffffffT",
-                "TfccccffooooooffccfffT",
-                "ToooccfffoooofccccfffT",
-                "ToooooffffffffccccoofT",
-                "TfoooffffccfffffoooooT",
-                "TTTTTTTTTTTTTTTTTTTTTT",
-                "T.T................T.T",
-                "TTTTTTTTTTTTTTTTTTTTTT",
-            },
-            new[]   // 3 — brim: full, heaped over the back rim
-            {
-                "......oo.....cc.......",
-                "...oooooocccccccoo....",
-                ".oooocccccooooccccco..",
-                "TTTTTTTTTTTTTTTTTTTTTT",
-                "ToooccccooooooccccoooT",
-                "ToccccooooccccooooccoT",
-                "ToooooccccooooccccoooT",
-                "ToccccooooccccooooccoT",
-                "ToooccccooooooccccoooT",
-                "TTTTTTTTTTTTTTTTTTTTTT",
-                "T.T................T.T",
-                "TTTTTTTTTTTTTTTTTTTTTT",
-            },
-        };
-
-        // Greybox palette: a pale weathered tray shell, a darker floor, the deck-work silhouettes'
-        // lobster blue-green and crab brick so the tray's contents match the animals you banded.
-        private static readonly Dictionary<char, Color> TrayPalette = new()
-        {
-            { 'T', new Color(0.55f, 0.62f, 0.68f, 1f) },   // tray shell — weathered pale blue-grey
-            { 'f', new Color(0.33f, 0.40f, 0.46f, 1f) },   // tray floor — wet slate
-            { 'o', new Color(0.13f, 0.22f, 0.28f, 1f) },   // lobster — dark blue-green (deck-work match)
-            { 'c', new Color(0.62f, 0.32f, 0.22f, 1f) },   // crab — brick-brown (deck-work match)
-        };
-
-        private static Sprite BuildSprite(string[] map, Dictionary<char, Color> palette)
-        {
-            int h = map.Length;
-            int w = map[0].Length;
-            var tex = new Texture2D(w, h, TextureFormat.RGBA32, false) { filterMode = FilterMode.Point };
-            var clear = new Color(0f, 0f, 0f, 0f);
-            for (int y = 0; y < h; y++)
-            {
-                string row = map[y];
-                for (int x = 0; x < w; x++)
-                {
-                    Color px = clear;
-                    if (x < row.Length && palette.TryGetValue(row[x], out Color c)) px = c;
-                    tex.SetPixel(x, h - 1 - y, px);
-                }
-            }
-            tex.Apply(false, true);
-            return Sprite.Create(tex, new Rect(0, 0, w, h), new Vector2(0.5f, 0.5f), SilhouettePixelsPerUnit);
         }
     }
 }
