@@ -222,6 +222,8 @@ namespace HiddenHarbours.Tools.RigBaking
         {
             var states = new List<string>(existing);
             states.AddRange(new[] { "hold", "cast", "bite", "strike", "reel", "land", "castBack", "castRelease", "dig" });
+            // The one-stroke rowing clip (row-stroke.md), switched on by BakeRowStrokeCli.
+            states.Add("row_oars");
             return states.ToArray();
         }
 
