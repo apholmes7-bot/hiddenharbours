@@ -15,7 +15,7 @@ MonoBehaviour:
   Id: deck.dory_iso
   SourceSidecar: docs/art/rigs/gameplay/doryIsoRig.dory_iso.walk.json
   SourceRig: docs/art/rigs/doryIsoRig.js
-  DerivedFromRigSha256: b981cd79806d211c30661fc51ad0c8a1003d2606aa2bd4cf09569e18c5d305c7
+  DerivedFromRigSha256: ea3224dcb6bd976dc25a6646c8dadc0254c40d6ffdd43c87c6a29078a7c89b56
   LoaMeters: 4.5
   Areas:
   - Id: floor
