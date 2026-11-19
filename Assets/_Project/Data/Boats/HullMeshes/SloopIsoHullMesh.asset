@@ -482,7 +482,7 @@ MonoBehaviour:
     SoleZMeters: 0.35
     CeilingZMeters: 2.234
   InteriorRamps: []
-  AzimuthCounterClockwise: 0
+  AzimuthCounterClockwise: 1
   RockRollDegrees: 2.4
   RockPitchDegrees: 1.5
   RockHeavePixels: 1.3
