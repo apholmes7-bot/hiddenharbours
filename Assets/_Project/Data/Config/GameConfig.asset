@@ -932,3 +932,5 @@ MonoBehaviour:
     BubbleSizeMetres: 0.09375
     BubbleColor: {r: 0.93, g: 0.97, b: 1, a: 0.9}
     BubbleOrdersAboveFigure: 2
+  PlayerRowingStyle: {fileID: 11400000, guid: 9c8a76caa1e04be7b70a59724f06e1ee, type: 2}
+  NpcRowingStyle: {fileID: 11400000, guid: ca108a37b5f94da282e01117a5da0828, type: 2}

@@ -51,6 +51,15 @@ namespace HiddenHarbours.Core
                  "GameServices.CrewPolicy. The per-hull numbers live on each BoatVoyageDef.")]
         public CrewPolicy Crew = CrewPolicy.Default;
 
+        [Header("Rowing styles (how a rower pulls: timing and the hull's surge)")]
+        [Tooltip("The style the PLAYER rows. rowstyle.steady is the stroke he has always rowed (plus a " +
+                 "subtle surge on the pull); point it at rowstyle.casual to give him the unhurried pull " +
+                 "with a rest. Empty = the plain stroke with an even push.")]
+        public RowingStyleDef PlayerRowingStyle;
+        [Tooltip("The style a character the game rows for uses when their CharacterVisualDef names " +
+                 "none (rowstyle.casual: nobody else rows like a racer).")]
+        public RowingStyleDef NpcRowingStyle;
+
         [Header("Cleanliness (the third need)")]
         [Tooltip("Dirt (owner ask 2026-11-15): rises slowly with game time and faster with dirty work, the " +
                  "gym and the sea; washing at a station clears it, each station only to its own ceiling (sea " +
