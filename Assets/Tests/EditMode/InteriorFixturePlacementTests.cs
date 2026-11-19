@@ -63,7 +63,7 @@ namespace HiddenHarbours.Tests.EditMode
         [Test]
         public void EachInteractIdIsInItsSceneOnce()
         {
-            foreach (InteriorFixturePlacement.Site site in InteriorFixturePlacement.Sites)
+            foreach (InteriorFixturePlacement.Site site in InteriorFixturePlacement.Sites.Where(s => s.InteractId != null))
             {
                 string text = File.ReadAllText(site.Scene).Replace("\r\n", "\n");
                 int n = Regex.Matches(text, "(?m)^      value: " + Regex.Escape(site.InteractId) + "$").Count;
@@ -74,9 +74,12 @@ namespace HiddenHarbours.Tests.EditMode
         [Test]
         public void InteractIdsAreDistinctFixtureIds()
         {
-            var ids = InteriorFixturePlacement.Sites.Select(s => s.InteractId).ToList();
+            // A fixture's interact id, or a remembered container's storage.* save key (the home storage sites);
+            // a site with no id (the shore lead) is a picture and claims nothing.
+            var ids = InteriorFixturePlacement.Sites.Select(s => s.InteractId).Where(id => id != null).ToList();
             CollectionAssert.AllItemsAreUnique(ids);
-            foreach (string id in ids) StringAssert.StartsWith("fixture.", id);
+            foreach (string id in ids)
+                Assert.IsTrue(id.StartsWith("fixture.") || StorageIds.IsStorageId(id), $"'{id}' is neither a fixture nor a storage id");
         }
 
         [Test]
@@ -123,8 +126,8 @@ namespace HiddenHarbours.Tests.EditMode
                 Assert.AreEqual(InteriorFixturePlacement.PilotBuildingKey, r.BuildingKey);
                 Assert.AreEqual(0, r.Level, "the bathroom is on the ground floor");
             }
-            Assert.AreEqual(2 + placed.Count, InteriorFixturePlacement.Sites.Length,
-                            "the two first wash stations plus the pilot bathroom");
+            Assert.AreEqual(2 + placed.Count + HomeStoragePlacement.Sites().Count, InteriorFixturePlacement.Sites.Length,
+                            "the two first wash stations plus the pilot bathroom, plus the home storage sites");
         }
 
         [Test]
