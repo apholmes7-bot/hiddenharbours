@@ -84,5 +84,43 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.IsFalse(CharacterFigureWaterline.TryLine(skin, swim, 0, new Matrix4x4[1], FigureWater.Swim, 0f,
                                                             SwimMargin, TreadMargin, out _), "a scratch too short: no line");
         }
+
+        [Test]
+        public void TheWaterLook_IsTheHardCutWithNoConfig_AndTheConfigsOtherwise()
+        {
+            FigureWaterLook none = FigureWaterLook.FromConfig(null);
+            Assert.IsFalse(none.ShowsUnderwater, "no config: nothing drawn under the line");
+            Assert.AreEqual(0f, none.FoamMetres, "no config: no foam");
+
+            var config = ScriptableObject.CreateInstance<GameConfig>();
+            try
+            {
+                config.FigureShowsUnderwater = true;
+                config.FigureUnderwaterTint = new Color(0.1f, 0.2f, 0.3f, 1f);
+                config.FigureUnderwaterTintAmount = 0.4f;
+                config.FigureUnderwaterDim = 0.25f;
+                config.FigureWaterlineFoamMetres = 0.02f;
+                config.FigureWaterlineFoam = 0.7f;
+                FigureWaterLook look = FigureWaterLook.FromConfig(config);
+                Assert.IsTrue(look.ShowsUnderwater);
+                Assert.AreEqual(config.FigureUnderwaterTint, look.Tint);
+                Assert.AreEqual(0.4f, look.TintAmount);
+                Assert.AreEqual(0.25f, look.Dim);
+                Assert.AreEqual(0.02f, look.FoamMetres);
+                Assert.AreEqual(0.7f, look.Foam);
+            }
+            finally { Object.DestroyImmediate(config); }
+        }
+
+        [Test]
+        public void TheShippedConfig_DrawsHimInTheWater_AndQuietensTheSwimShadow()
+        {
+            var shipped = AssetDatabase.LoadAssetAtPath<GameConfig>("Assets/_Project/Data/Config/GameConfig.asset");
+            Assert.IsNotNull(shipped, "the shipped GameConfig");
+            Assert.IsTrue(shipped.FigureShowsUnderwater, "the submerged body draws, tinted");
+            Assert.Greater(shipped.FigureUnderwaterTintAmount, 0f);
+            Assert.Greater(shipped.FigureWaterlineFoamMetres, 0f, "a soft waterline, not a hard cut");
+            Assert.IsTrue(shipped.FigureSwimHidesSunShadow, "no upright ghost shadow on the water");
+        }
     }
 }

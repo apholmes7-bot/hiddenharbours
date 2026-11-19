@@ -39,9 +39,13 @@ The owner saw it as "when the player swims or does other actions it switches to 
      a helm that hides its pilot" remain, which are not sprite fallbacks.
 3. **The sea cuts the mesh.** `CharacterFigureWaterline` computes the line in the figure's own frame from the
    posed bones, by the rig's own rule: swim `pelvis z + 0.09`, tread `mean(shoulder z) − 0.05`, wade the live
-   depth over the feet capped at the tread line. The margins are `GameConfig` values. The `HH_FIGURE` shader
-   variant discards every fragment under the line (`_HHFigureWater`), in the facet, reflection and guard passes.
-   Nothing outside `#ifdef HH_FIGURE` changes, so hulls compile the same program.
+   depth over the feet capped at the tread line. The margins are `GameConfig` values. In the `HH_FIGURE` shader
+   variant (`_HHFigureWater`, `_HHFigureWaterTint`, `_HHFigureWaterLook`) the part under the line draws tinted
+   and dimmed toward the sea, as the old sprite's submerged body did, and a thin pale foam band fades up from
+   the line; the reflection never draws it. With `FigureShowsUnderwater` off it is discarded instead (a hard
+   cut). While he swims or treads, his sun shadow is quietened (`SpriteShadow.Quiet`): it is cast from the
+   hidden body sprite, upright, and on open water it read as a ghost beside him. Every number is a
+   `GameConfig` value. Nothing outside `#ifdef HH_FIGURE` changes, so hulls compile the same program.
 4. **A guard test** (`PlayerMeshRuleTests`) walks every state key the player's presenter can ask for, from the
    enums and maps, on all ten preset skins, and requires each to resolve to a clip the skin can pose.
 
@@ -50,8 +54,8 @@ The owner saw it as "when the player swims or does other actions it switches to 
 - Swim, tread, sleep, drive, the reaches, the tray/pot carries and stagger now draw as the mesh. A move the mesh
   does not follow frame for frame (the legacy haul frames, fishing with its own switch off) draws the player's
   own stance instead of the sheet.
-- Below the waterline the mesh is **hidden**, not tinted and refracted the way `PlayerSubmergeVisual` treated
-  the sprite. A tint pass is a later slice.
+- Below the waterline the mesh is tinted and dimmed but not refracted (no shimmer) the way
+  `PlayerSubmergeVisual` treated the sprite. A refraction pass is a later slice if it is missed.
 - `MeshStates` stays the cast's parity switch. A later cast PR can widen it; the player no longer waits on it.
 - Placement of the lying and sitting clips (bunk height, an open machine, the washroom fixtures) is the rig's;
   it is unverified on a plate and owed to a check in the editor.
