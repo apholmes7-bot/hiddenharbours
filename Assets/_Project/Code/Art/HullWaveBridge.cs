@@ -36,6 +36,7 @@ namespace HiddenHarbours.Art
         public static readonly int IdShade = Shader.PropertyToID("_HHHullWaveShade");
         public static readonly int IdFoam = Shader.PropertyToID("_HHHullWaveFoam");
         public static readonly int IdLook = Shader.PropertyToID("_HHHullWaveLook");
+        public static readonly int IdFoamAge = Shader.PropertyToID("_HHHullWaveFoamAge");
 
         /// <summary>Metres added round the camera's view before a ring counts as out of sight (the
         /// displaced lift moves water up the screen, and the view must not clip a crest).</summary>
@@ -66,14 +67,14 @@ namespace HiddenHarbours.Art
             // The arrays' size is fixed by their first upload: always the full bound.
             Shader.SetGlobalVectorArray(IdA, _a);
             Shader.SetGlobalVectorArray(IdB, _b);
-            Shader.SetGlobalVector(IdParams, Vector4.zero);
+            Shader.SetGlobalVector(IdParams, Vector4.zero); Shader.SetGlobalVector(IdFoamAge, Vector4.zero);
         }
 
         private void OnDisable()
         {
             HullWaves.Uninstall(_field);
             _field.Clear();
-            Shader.SetGlobalVector(IdParams, Vector4.zero);
+            Shader.SetGlobalVector(IdParams, Vector4.zero); Shader.SetGlobalVector(IdFoamAge, Vector4.zero);
         }
 
         private void LateUpdate()
@@ -82,7 +83,7 @@ namespace HiddenHarbours.Art
             if (!s.Enabled)
             {
                 _field.Clear();
-                Shader.SetGlobalVector(IdParams, Vector4.zero);
+                Shader.SetGlobalVector(IdParams, Vector4.zero); Shader.SetGlobalVector(IdFoamAge, Vector4.zero);
                 return;
             }
 
@@ -101,7 +102,9 @@ namespace HiddenHarbours.Art
             Shader.SetGlobalVector(IdShade, new Vector4(Mathf.Max(s.FaceLight, 0f), Mathf.Max(s.CrestLight, 0f),
                 Mathf.Max(s.TroughDark, 0f), Mathf.Clamp01(s.CrestFoam)));
             Shader.SetGlobalVector(IdFoam, new Vector4(Mathf.Max(s.CrestFoamOnsetMetres, 0f),
-                Mathf.Max(s.CrestFoamRampMetres, 1e-3f), 0f, 0f));
+                Mathf.Max(s.CrestFoamRampMetres, 1e-3f), Mathf.Clamp01(s.TroughCeilingShare), 0f));
+            Shader.SetGlobalVector(IdFoamAge, new Vector4(Mathf.Max(s.CrestFoamSteepness, 0f),
+                Mathf.Max(s.CrestFoamSteepnessRamp, 1e-3f), Mathf.Clamp01(s.FoamAgeTear), 0f));
             Shader.SetGlobalVector(IdLook, new Vector4(Mathf.Max(s.ShadeCeiling, 0f), Mathf.Clamp01(s.BreakupShare),
                 1f / Mathf.Max(s.BreakupMetres, 0.05f), Mathf.Max(s.WobbleMetres, 0f)));
         }

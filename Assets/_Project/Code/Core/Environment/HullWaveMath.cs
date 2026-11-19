@@ -179,6 +179,23 @@ namespace HiddenHarbours.Core
         /// foam buffer, drawn by the one foam path every foam on the sea uses.</summary>
         public static bool DrawnFoamRetired(in HullWaveSettings s) => s.Enabled && s.RetireDrawnFoam;
 
+        /// <summary>The shade the water draws: <see cref="SoftShade"/>, with a trough held to
+        /// TroughCeilingShare of it. Twin of the shader's hull-wave shading.</summary>
+        public static float WaveShade(float raw, in HullWaveSettings s)
+        {
+            float shade = SoftShade(raw, s.ShadeCeiling);
+            return shade < 0f ? shade * s.TroughCeilingShare : shade;
+        }
+
+        /// <summary>How much a crest breaks (0..1, before CrestFoam): tall OR steep. Twin of the shader's
+        /// hullCrestFoam.</summary>
+        public static float CrestFoam01(float height, float steepness, in HullWaveSettings s)
+        {
+            float tall = Mathf.Clamp01((height - s.CrestFoamOnsetMetres) / Mathf.Max(s.CrestFoamRampMetres, 1e-3f));
+            float steep = Mathf.Clamp01((steepness - s.CrestFoamSteepness) / Mathf.Max(s.CrestFoamSteepnessRamp, 1e-3f));
+            return Mathf.Max(tall, steep);
+        }
+
         public static float SoftShade(float raw, float ceiling)
         {
             if (ceiling <= 0f) return 0f;

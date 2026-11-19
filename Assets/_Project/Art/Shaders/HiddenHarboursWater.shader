@@ -1478,7 +1478,9 @@ Shader "HiddenHarbours/Water"
             //   _HHHullWaveParams  : x = live count, y = drawn lift per metre, z = 1 / spread metres,
             //                        w = 1 while hull waves are on (0 = OFF: the older wake train draws)
             //   _HHHullWaveShade   : x = face light, y = crest light /m, z = trough dark /m, w = crest foam
-            //   _HHHullWaveFoam    : x = crest foam onset (m), y = crest foam ramp (m)
+            //   _HHHullWaveFoam    : x = crest foam onset (m), y = crest foam ramp (m), z = trough share of the
+            //                        ceiling (a trough darkens at most this share of what a crest lifts)
+            //   _HHHullWaveFoamAge : x = crest foam steepness onset, y = its ramp, z = the foam mat's age tear
             //   _HHHullWaveLook    : x = shade ceiling (share of the water's colour), y = breakup share,
             //                        z = 1 / breakup metres, w = wobble metres
             // UNSET reads all-zero: count 0, OFF, nothing drawn and nothing read.
@@ -1492,6 +1494,7 @@ Shader "HiddenHarbours/Water"
             float4 _HHHullWaveShade;
             float4 _HHHullWaveFoam;
             float4 _HHHullWaveLook;
+            float4 _HHHullWaveFoamAge;
 
             // ---- WIND FETCH (ADR 0027 #1) — globals, published by WaveFieldBridge.PublishFetchGlobals ------
             // How far the wind has blown over open water before it reaches this pixel. Lee shores go calm,
@@ -4117,6 +4120,12 @@ Shader "HiddenHarbours/Water"
                     // The field centres near 0.5, so 2x lands it about 1: hearts keep their value,
                     // the low half of the field is what tears through. Dialed by the master.
                     stored *= lerp(1.0, saturate(torn * 2.0), saturate(_WakeFoamLace));
+                    // AGE TEAR (the owner's look of 11-19): as the mat ages only the tear's hearts
+                    // survive, so a trail is densest where it was churned and breaks into drifting
+                    // patches and then flecks behind, instead of fading out as one even bar with a blunt
+                    // end. Fresh foam is untouched; 0 is a bit-exact passthrough.
+                    float ageTear = saturate(_HHHullWaveFoamAge.z * 2.0 * (1.0 - freshness));   // full by half its age
+                    stored *= lerp(1.0, smoothstep(0.35, 0.75, torn), ageTear);
                 }
 
                 // A trail's fringe holds a lot of very faint foam; drawn in full it reads as a grey wash
@@ -6120,9 +6129,16 @@ Shader "HiddenHarbours/Water"
                                     + max(hullWaveH, 0.0) * _HHHullWaveShade.y
                                     - max(-hullWaveH, 0.0) * _HHHullWaveShade.z;
                         float hwShade = hwRaw * _HHHullWaveLook.x / (_HHHullWaveLook.x + abs(hwRaw) + 1e-5);
+                        // A trough is held to a share of the ceiling, so a dark sea never goes near black.
+                        hwShade *= hwShade < 0.0 ? _HHHullWaveFoam.z : 1.0;
                         col.rgb *= 1.0 + hwShade * hullWaveShore;
-                        hullCrestFoam = saturate((hullWaveH - _HHHullWaveFoam.x) / max(_HHHullWaveFoam.y, 1e-3))
-                                      * _HHHullWaveShade.w * hullWaveShore;
+                        // A crest breaks where it is TALL or where it is STEEP (the young crests at her
+                        // quarters at speed), so the first crests of each arm carry foam and the foam and
+                        // the waves are one thing. Twin: HullWaveMath.CrestFoam01.
+                        float hwTall  = saturate((hullWaveH - _HHHullWaveFoam.x) / max(_HHHullWaveFoam.y, 1e-3));
+                        float hwSteep = saturate((length(hullWaveSlope) - _HHHullWaveFoamAge.x)
+                                                 / max(_HHHullWaveFoamAge.y, 1e-3));
+                        hullCrestFoam = max(hwTall, hwSteep) * _HHHullWaveShade.w * hullWaveShore;
                     }
                 }
 

@@ -671,6 +671,36 @@ namespace HiddenHarbours.Tests.Art.EditMode
         }
 
         [Test]
+        public void ATrough_IsHeldUnderTheCeiling_AndASteepCrestBreaks()
+        {
+            HullWaveSettings s = S;
+            Assert.That(s.TroughCeilingShare, Is.InRange(0.2f, 1f), "a trough darkens less than a crest lifts");
+            float lift = HullWaveMath.WaveShade(10f, in s), dark = HullWaveMath.WaveShade(-10f, in s);
+            Assert.Less(lift, s.ShadeCeiling + 1e-6f);
+            Assert.AreEqual(-lift * s.TroughCeilingShare, dark, 1e-6f, "the trough is the crest's soft shade, held to its share");
+            Assert.Greater(1f - s.ShadeCeiling * s.TroughCeilingShare, 0.3f, "the deepest trough keeps most of the sea's colour");
+
+            Assert.AreEqual(0f, HullWaveMath.CrestFoam01(0f, 0f, in s), 1e-7f, "flat water does not break");
+            Assert.AreEqual(1f, HullWaveMath.CrestFoam01(0f, s.CrestFoamSteepness + s.CrestFoamSteepnessRamp, in s), 1e-5f,
+                "a steep crest breaks however low it is");
+            Assert.AreEqual(1f, HullWaveMath.CrestFoam01(s.CrestFoamOnsetMetres + s.CrestFoamRampMetres, 0f, in s), 1e-5f,
+                "a tall crest breaks however gentle it is");
+
+            System.Func<string, string> sq = t => Regex.Replace(t, @"\s+", "");
+            string src = sq(WaterSource());
+            StringAssert.Contains(sq("hwShade *= hwShade < 0.0 ? _HHHullWaveFoam.z : 1.0;"), src, "twin of WaveShade");
+            StringAssert.Contains(sq("hullCrestFoam = max(hwTall, hwSteep) * _HHHullWaveShade.w * hullWaveShore;"), src,
+                "twin of CrestFoam01");
+            int tear = src.IndexOf(sq("stored *= lerp(1.0, saturate(torn * 2.0), saturate(_WakeFoamLace));"), System.StringComparison.Ordinal);
+            int aged = src.IndexOf(sq("stored *= lerp(1.0, smoothstep(0.35, 0.75, torn), ageTear);"), System.StringComparison.Ordinal);
+            Assert.Greater(tear, 0);
+            Assert.Greater(aged, tear, "old foam tears to its hearts on the shared mat, after the lace");
+            Assert.That(s.FoamAgeTear, Is.InRange(0.01f, 1f));
+            Assert.AreEqual(PropertyId("_HHHullWaveFoamAge"), HullWaveBridge.IdFoamAge);
+            StringAssert.Contains("float4 _HHHullWaveFoamAge;", WaterSource());
+        }
+
+        [Test]
         public void ABroadHullsTrail_IsHeldToHerPropWash_OnlyWhileSheMakesWaves()
         {
             HullWaveSettings s = S;

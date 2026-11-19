@@ -102,9 +102,9 @@ namespace HiddenHarbours.Core
         [Tooltip("Light on the faces of the waves: slope towards the sun brightens, away darkens.")]
         [Range(0f, 40f)] public float FaceLight;
         [Tooltip("Brightening on a crest, per metre of crest height above the sea.")]
-        [Range(0f, 4f)] public float CrestLight;
+        [Range(0f, 40f)] public float CrestLight;
         [Tooltip("Darkening in a trough, per metre of trough depth.")]
-        [Range(0f, 4f)] public float TroughDark;
+        [Range(0f, 40f)] public float TroughDark;
         [Tooltip("Crest height, metres, where a little foam starts to show on the crests.")]
         [Range(0f, 2f)] public float CrestFoamOnsetMetres;
         [Tooltip("Metres above the onset over which the crest foam comes in fully.")]
@@ -124,6 +124,15 @@ namespace HiddenHarbours.Core
         [Tooltip("How far, metres, the crests wobble off true circles (the same noise bends every ring, " +
                  "so no ring shows a perfect centre).")]
         [Range(0f, 3f)] public float WobbleMetres;
+        [Tooltip("The most a trough darkens, as a share of the most a crest lifts (ShadeCeiling). Under 1 keeps " +
+                 "a dark sea from going near black in a deep trough.")]
+        [Range(0f, 1f)] public float TroughCeilingShare;
+        [Tooltip("Steepness (rise over run) where a crest starts to break and carry foam, whatever its height. " +
+                 "The young crests at her quarters at speed are the steepest, so the first crests of each arm " +
+                 "foam and the foam and the waves read as one thing.")]
+        [Range(0f, 3f)] public float CrestFoamSteepness;
+        [Tooltip("Steepness above the onset over which that crest foam comes in fully.")]
+        [Range(0.01f, 2f)] public float CrestFoamSteepnessRamp;
 
         [Header("Her foam while she draws waves")]
         [Tooltip("While hull waves are on, the trail foam's widening fan (the older drawn stand-in for " +
@@ -141,6 +150,11 @@ namespace HiddenHarbours.Core
                  "churn band) are not laid: her churn is the water's foam buffer and her breaking crests join " +
                  "it, drawn by the same foam path as every other foam on the sea. Off brings the puffs back.")]
         public bool RetireDrawnFoam;
+        [Tooltip("While hull waves are on, how hard the sea's foam mat (the shared foam buffer: her churn, her " +
+                 "breaking crests, every hull's marks) tears apart as it ages: 0 = it fades as one even mat, " +
+                 "1 = foam half way through its age keeps only its densest hearts, so a trail is dense at her stern and breaks into " +
+                 "drifting patches and flecks behind her.")]
+        [Range(0f, 1f)] public float FoamAgeTear;
 
         [Header("Other hulls")]
         [Tooltip("How much another hull's drawn ride rises and falls on these waves (0 = not at all). " +
@@ -162,7 +176,7 @@ namespace HiddenHarbours.Core
             MaxWavelengthMetres = 4f,
             MaxWavelengthPerMetreLength = 0.12f,
             PacketWavelengths = 0.8f,
-            SpreadMetres = 3f,
+            SpreadMetres = 4f,
 
             MinSpeed = 0.3f,
             HeightPerMetreLength = 0.018f,
@@ -173,7 +187,7 @@ namespace HiddenHarbours.Core
             LifetimeSecondsPerMetreLength = 0.8f,
             MinLifetimeSeconds = 3f,
             MaxLifetimeSeconds = 30f,
-            DecayShare = 1.4f,
+            DecayShare = 1.8f,
             RiseShare = 0.12f,
             EndFadeShare = 0.8f,
 
@@ -184,22 +198,26 @@ namespace HiddenHarbours.Core
             KeepSpacing = true,
             SourceGain = 1f,
 
-            DrawnLift = 0.4f,
-            FaceLight = 24f,
-            CrestLight = 4f,
-            TroughDark = 4f,
+            DrawnLift = 0.6f,
+            FaceLight = 30f,
+            CrestLight = 14f,
+            TroughDark = 12f,
             CrestFoamOnsetMetres = 0.5f,
             CrestFoamRampMetres = 0.3f,
-            CrestFoam = 0.4f,
-            ShadeCeiling = 0.4f,
-            BreakupShare = 0.7f,
+            CrestFoam = 0.25f,
+            ShadeCeiling = 0.65f,
+            BreakupShare = 0.4f,
             BreakupMetres = 4f,
-            WobbleMetres = 0.6f,
+            WobbleMetres = 0.4f,
+            TroughCeilingShare = 0.6f,
+            CrestFoamSteepness = 0.6f,
+            CrestFoamSteepnessRamp = 0.3f,
 
             RetireFoamFan = true,
             TrailFoamShare = 0.2f,
-            TrailFoamMaxHalfWidthMetres = 2f,
+            TrailFoamMaxHalfWidthMetres = 3f,
             RetireDrawnFoam = true,
+            FoamAgeTear = 1f,
 
             RideScale = 1f,
 
