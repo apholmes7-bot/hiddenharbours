@@ -34,6 +34,8 @@ MonoBehaviour:
   InteractChooserPushThreshold: 0.5
   InteractChooserRepeatDelaySeconds: 0.4
   InteractChooserRepeatIntervalSeconds: 0.12
+  TasksChipSignalSeconds: 2.4
+  TasksChipBlinkSeconds: 0.3
   HeavyWorkNeeds:
     RefusedAtTiredness: 2
     RefusedAtHunger: 2

@@ -1073,6 +1073,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "ToggleTasks",
+                    "type": "Button",
+                    "id": "95e0ba73-fcd8-40a3-8d72-48bd4bf4439a",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -1084,6 +1093,28 @@
                     "processors": "",
                     "groups": "KeyboardMouse",
                     "action": "HideAll",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "1aed251f-3313-4e1a-a5e4-3fb862c19488",
+                    "path": "<Keyboard>/t",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "KeyboardMouse",
+                    "action": "ToggleTasks",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "d82b2407-203b-4c5e-afc9-6e97e64958c0",
+                    "path": "<Gamepad>/buttonWest",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Gamepad",
+                    "action": "ToggleTasks",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

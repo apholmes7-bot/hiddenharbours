@@ -189,5 +189,11 @@ namespace HiddenHarbours.World
         public const string SitGetUp              = "Get up";
         public const string SitBegin              = "He sits a moment.";
         public const string SitStood              = "He gets up.";
+
+        // ---- the TASKS note's fold (owner ask 2026-11-16) ----
+        // The marks on the note's head (fold it down) and on its folded chip (open it again). One
+        // character each: the head and the chip are a glance, not a sentence.
+        public const string TasksFoldMark   = "-";
+        public const string TasksUnfoldMark = "+";
     }
 }
