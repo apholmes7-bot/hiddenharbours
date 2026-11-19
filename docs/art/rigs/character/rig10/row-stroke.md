@@ -26,6 +26,11 @@ refuses to run.
 
 ## The bake (needs a warm box, a Unity editor)
 
+**Status: baked.** All ten committed skins carry `row_oars` at 16 frames and switch it on; the
+switch guards below are updated, and `RowStrokeContractTests` now fails (rather than skips) if a skin
+loses the clip. The bake log's worst step between neighbouring frames is 21 to 24 degrees, at bone 7
+from frame 14 to 15 on every skin.
+
 `CharacterSkinAssetBaker.BakeRowStrokeCli` adds the clip to the ten committed skins under
 `Assets/_Project/Data/Characters/Skin/` and appends `row_oars` to each skin's `MeshStates`. It keeps
 every other clip, state, bind mesh and material. A full skin refresh (`Bake`) also appends the clip,

@@ -106,8 +106,9 @@ namespace HiddenHarbours.Tests.RigBaking
                 Assert.AreEqual(hash, clip.PoseContractSha256, $"{file}: baked from another contract; re-run the bake");
                 Assert.IsTrue(clip.Loop, file);
             }
-            if (carrying == 0)
-                Assert.Ignore($"{c.state} is not baked yet: run CharacterSkinAssetBaker.BakeRowStrokeBatchCli on a warm box (row-stroke.md).");
+            // Baked since the row-stroke bake: a skin refresh that drops the clip now fails here.
+            Assert.Greater(carrying, 0, $"no committed skin carries {c.state}: re-run " +
+                "CharacterSkinAssetBaker.BakeRowStrokeBatchCli on a warm box (row-stroke.md).");
             Assert.AreEqual(files.Length, carrying, "some committed skins carry the rowing clip and some do not");
         }
 
