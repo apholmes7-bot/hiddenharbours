@@ -41,6 +41,10 @@ namespace HiddenHarbours.App.Editor
     /// <para><b>The pilot (R1).</b> Only Ginny's cottage gets a bathroom in this slice: the toilet, the
     /// basin and the shower of its <see cref="RoomFixturePlan"/> rows, on the ground floor. The closet
     /// partition around them, the kitchen and every other building are R2 onward.</para>
+    ///
+    /// <para><b>The player's storage</b> (owner 2026-11-17) rides the same step: <see cref="HomeStoragePlacement"/>
+    /// adds Ginny's rod rack and gear locker (their interact id is the row's <c>storage.*</c> save key) and the
+    /// camper's shore power lead, an open-air picture with no interact id under St Peters' own open-air root.</para>
     /// </summary>
     public static class InteriorFixturePlacement
     {
@@ -154,6 +158,7 @@ namespace HiddenHarbours.App.Editor
                          "picnic table: the first dry ground a skipper crosses coming up off the boats"),
             };
             sites.AddRange(PlacedRows().Select(SiteOf));
+            sites.AddRange(HomeStoragePlacement.Sites());   // Ginny's rod rack and locker, the camper's shore lead
             return sites.ToArray();
         }
 
@@ -190,7 +195,7 @@ namespace HiddenHarbours.App.Editor
                 InteriorFootprint footprint = interior.FootprintFor(site.Level);
                 Vector2 world = footprint.ModelToWorld(ModelPoint(footprint, site));
                 go.transform.position = new Vector3(world.x, world.y, 0f);
-                MonoBehaviour point = IdComponentOf(go);
+                MonoBehaviour point = site.InteractId != null ? IdComponentOf(go) : null;
                 if (point != null)
                 {
                     var so = new SerializedObject(point);
@@ -221,7 +226,8 @@ namespace HiddenHarbours.App.Editor
         // ---- the text patch ------------------------------------------------------------------------
 
         /// <summary>One prefab as its file holds it: the GUID and the root's three documents' ids. The point is
-        /// the root MonoBehaviour that serializes <c>_id</c>: exactly one, or the prefab is refused.</summary>
+        /// the root MonoBehaviour that serializes <c>_id</c>: at most one, or the prefab is refused; none (0) is a
+        /// prefab with no interact id (a picture, such as the shore lead), which only a site with no id may stand.</summary>
         public sealed class PrefabFacts
         {
             public string Path, Name, Guid;
@@ -238,15 +244,33 @@ namespace HiddenHarbours.App.Editor
                 Doc go = prefab.Require(rootTr.FieldRef("m_GameObject"), path + "'s root");
                 var points = prefab.ComponentsOf(go)
                     .Where(d => d.ClassId == 114 && Regex.IsMatch(d.Text, @"(?m)^  _id: ")).ToList();
-                if (points.Count == 0) throw new Refusal($"interior-fixtures: {path}'s root serializes no _id.");
                 if (points.Count > 1) throw new Refusal($"interior-fixtures: {path}'s root has {points.Count} components with an _id.");
                 return new PrefabFacts
                 {
                     Path = path, Name = go.Field("m_Name"), Guid = guid.Groups[1].Value,
-                    GameObject = go.FileId, Transform = rootTr.FileId, Point = points[0].FileId,
+                    GameObject = go.FileId, Transform = rootTr.FileId, Point = points.Count == 1 ? points[0].FileId : 0L,
                 };
             }
         }
+
+        /// <summary>The prefab a site stands, refused when the site names an interact id its root cannot carry.</summary>
+        static PrefabFacts FactsFor(Site site, Func<string, PrefabFacts> prefabs)
+        {
+            PrefabFacts prefab = prefabs(site.Prefab);
+            if (site.InteractId != null && prefab.Point == 0L)
+                throw new Refusal($"interior-fixtures: {site.Prefab}'s root serializes no _id.");
+            return prefab;
+        }
+
+        /// <summary>The root a scene's open-air sites hang under (at the origin, so local = world).</summary>
+        public static string OpenAirRootFor(string scenePath) =>
+            scenePath == StPetersScene ? StPetersOpenAirRootName : WashStationPlacement.NmcRootName;
+
+        /// <summary>The St Peters open-air root (the camper's shore lead).</summary>
+        public const string StPetersOpenAirRootName = "StPetersOpenAirFixtures";
+
+        /// <summary>The allocator key of a site: its interact id, or its name when it has none.</summary>
+        static string KeyOf(Site site) => site.InteractId ?? site.Name;
 
         /// <summary>Plan the scene's sites (every <see cref="Sites"/> row for <paramref name="scenePath"/>), one
         /// patch per root touched. Re-planning the patched text gives patches with no operations.</summary>
@@ -319,7 +343,7 @@ namespace HiddenHarbours.App.Editor
             var childrenOf = new Dictionary<long, (Doc tr, List<long> before, List<long> after)>();
             foreach (Site site in sites)
             {
-                PrefabFacts prefab = prefabs(site.Prefab);
+                PrefabFacts prefab = FactsFor(site, prefabs);
                 Vector2 world = InteriorWorld(scene, site, out Doc parentTr, out _);
                 Vector2 local = world - WorldOf(scene, parentTr);
                 if (!childrenOf.TryGetValue(parentTr.FileId, out var kids))
@@ -328,8 +352,8 @@ namespace HiddenHarbours.App.Editor
                     childrenOf[parentTr.FileId] = kids = (parentTr, before, new List<long>(before));
                 }
                 FindInstance(scene, kids.before, prefab, site.Name, out Doc pi, out Doc piTr);
-                long piId = pi?.FileId ?? ids.Next($"{step}/{site.InteractId}/PrefabInstance");
-                long trId = piTr?.FileId ?? ids.Next($"{step}/{site.InteractId}/Transform");
+                long piId = pi?.FileId ?? ids.Next($"{step}/{KeyOf(site)}/PrefabInstance");
+                long trId = piTr?.FileId ?? ids.Next($"{step}/{KeyOf(site)}/Transform");
                 Put(patch, pi, Instance(piId, parentTr.FileId, prefab, site.Name, local, site.InteractId), site.Name + " (PrefabInstance)");
                 Put(patch, piTr, Stripped(trId, piId, prefab), site.Name + "/Transform (stripped)");
                 if (!kids.after.Contains(trId)) kids.after.Add(trId);
@@ -344,7 +368,7 @@ namespace HiddenHarbours.App.Editor
 
         static LayerPatch PlanOpenAir(SceneYaml scene, string step, List<Site> sites, Func<string, PrefabFacts> prefabs)
         {
-            string rootName = WashStationPlacement.NmcRootName;
+            string rootName = OpenAirRootFor(sites[0].Scene);
             Doc root = scene.Docs.SingleOrDefault(d => d.ClassId == 1 && !d.Stripped && d.Field("m_Name") == rootName &&
                                                        scene.TransformOf(d).FieldRef("m_Father") == 0);
             Doc rootTr = root != null ? scene.TransformOf(root) : null;
@@ -357,10 +381,10 @@ namespace HiddenHarbours.App.Editor
             var children = new List<long>(standing);
             foreach (Site site in sites)
             {
-                PrefabFacts prefab = prefabs(site.Prefab);
+                PrefabFacts prefab = FactsFor(site, prefabs);
                 FindInstance(scene, standing, prefab, site.Name, out Doc pi, out Doc piTr);
-                long piId = pi?.FileId ?? ids.Next($"{step}/{site.InteractId}/PrefabInstance");
-                long trId = piTr?.FileId ?? ids.Next($"{step}/{site.InteractId}/Transform");
+                long piId = pi?.FileId ?? ids.Next($"{step}/{KeyOf(site)}/PrefabInstance");
+                long trId = piTr?.FileId ?? ids.Next($"{step}/{KeyOf(site)}/Transform");
                 Put(patch, pi, Instance(piId, tr, prefab, site.Name, site.At, site.InteractId), site.Name + " (PrefabInstance)");
                 Put(patch, piTr, Stripped(trId, piId, prefab), site.Name + "/Transform (stripped)");
                 if (!children.Contains(trId)) children.Add(trId);
@@ -404,8 +428,8 @@ namespace HiddenHarbours.App.Editor
                 (prefab.Transform, "m_LocalRotation.y", "0"), (prefab.Transform, "m_LocalRotation.z", "0"),
                 (prefab.Transform, "m_LocalEulerAnglesHint.x", "0"), (prefab.Transform, "m_LocalEulerAnglesHint.y", "0"),
                 (prefab.Transform, "m_LocalEulerAnglesHint.z", "0"),
-                (prefab.Point, "_id", Plain(interactId)),
             };
+            if (interactId != null) records.Add((prefab.Point, "_id", Plain(interactId)));
             var lines = new List<string>
             {
                 $"--- !u!1001 &{Id(id)}", "PrefabInstance:", "  m_ObjectHideFlags: 0", "  serializedVersion: 2",

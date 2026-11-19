@@ -30,7 +30,8 @@ namespace HiddenHarbours.App.Editor
     /// (docs/world/camper-home-plan.md, on its own branch). Their rows carry the id and the Def, so the save
     /// keys and capacities are fixed now and the camper lane only adds a position.</para>
     ///
-    /// <para><b>Footprints are planning sizes</b>, not art: neither prefab exists yet.</para>
+    /// <para><b>Footprints are planning sizes</b>, not art. The placement step is <see cref="HomeStoragePlacement"/>
+    /// (rows of <see cref="InteriorFixturePlacement"/>); its greybox prefabs are drawn and collide at these sizes.</para>
     /// </summary>
     public static class HomeStoragePlan
     {
