@@ -24,13 +24,19 @@ namespace HiddenHarbours.Boats
     /// <c>(trueWind, boatVelocity)</c>; only the visible angle is eased toward it, so the look never
     /// feeds back into the sim (rule 5). Wind is sampled on the HUD's ~4 Hz cadence rather than per
     /// frame, and the sprite is built once — no per-frame allocation (rule 7).</para>
+    ///
+    /// <para><b>Only a sailing rig flies it.</b> A pennant needs a masthead to fly from. On a hull with
+    /// no sail plan (the dory, the punts, every engine boat) it hung in the air beside the gunwale as a
+    /// small red fleck that moved with the boat, so it is drawn only where <see cref="FliesOn"/> says the
+    /// hull's own data carries a sail plan. The rule is read every frame, so a hull swap (buying up the
+    /// ladder) hoists or strikes it with no rebuild. Wind for every other hull is read on the helm
+    /// instruments.</para>
     /// </summary>
     [DisallowMultipleComponent]
     public sealed class MastheadTelltale : MonoBehaviour
     {
         [Tooltip("Where the pennant flies, in the DECK frame (x abeam toward starboard, y along the " +
-                 "keel toward the bow), in metres. Default is just forward of amidships — a dory's " +
-                 "painter staff rather than a mast she does not have.")]
+                 "keel toward the bow), in metres. Only hulls with a sail plan fly the pennant.")]
         [SerializeField] private Vector2 _mastheadDeckOffset = new Vector2(0f, 1.1f);
 
         [Tooltip("Height of the pennant above the deck anchor, in metres — how far up the staff it flies.")]
@@ -69,9 +75,21 @@ namespace HiddenHarbours.Boats
             BuildPennant();
         }
 
+        /// <summary>
+        /// Does this hull fly a masthead pennant? Only a hull whose data carries a usable sail plan
+        /// (<see cref="BoatHullDef.HasSailPlan"/>) has a masthead to fly it from; every other hull
+        /// draws nothing. Pure: no scene, no time.
+        /// </summary>
+        public static bool FliesOn(BoatHullDef hull) => hull != null && hull.HasSailPlan;
+
         private void LateUpdate()
         {
             if (_renderer == null) return;
+
+            // No sail plan, no masthead: strike the pennant and skip the wind read entirely.
+            bool flies = FliesOn(_boat != null ? _boat.Hull : null);
+            if (_renderer.enabled != flies) _renderer.enabled = flies;
+            if (!flies) return;
 
             // Re-resolve the wind on the sim's cadence; ease the drawn angle every frame so a veering
             // gust reads as a swing rather than a jump.
@@ -140,6 +158,8 @@ namespace HiddenHarbours.Boats
             _renderer = go.AddComponent<SpriteRenderer>();
             _renderer.sprite = BuildPennantSprite();
             _renderer.sortingOrder = TelltaleSortingOrder;
+            // Struck until the first LateUpdate reads the hull: a hull with no sail plan never shows it.
+            _renderer.enabled = false;
         }
 
         /// <summary>

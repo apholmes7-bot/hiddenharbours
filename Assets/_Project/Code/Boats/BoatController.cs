@@ -244,7 +244,8 @@ namespace HiddenHarbours.Boats
         {
             // THE WIND, READ OFF THE BOAT (VS-19): a masthead pennant streaming with the apparent wind,
             // so the sea's mood is legible from the boat itself and not from a HUD line. Runtime-spawned
-            // like the hold's deck tray, so every boat rig flies one with no builder re-run; play mode
+            // like the hold's deck tray, so every boat rig carries one with no builder re-run (it draws
+            // only on a hull with a sail plan, MastheadTelltale.FliesOn); play mode
             // only (EditMode tests build BoatControllers freely and must stay presentation-free).
             if (Application.isPlaying && GetComponent<MastheadTelltale>() == null)
                 gameObject.AddComponent<MastheadTelltale>();
