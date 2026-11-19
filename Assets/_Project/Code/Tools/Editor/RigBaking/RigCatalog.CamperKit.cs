@@ -49,6 +49,17 @@ namespace HiddenHarbours.Tools.RigBaking
                 // single cell rather than trusting the call site.
                 ["camper"] = new RigEntry($"{RigFolder}/camper-iso-kit/camperIsoRig.js", "CamperIso",
                                           AzimuthConvention.CounterClockwise),
+
+                // ---- the Clipper's room (camper plan C1, 2026-11-17) ------------------------------
+                //
+                // The room measures against the shell and throws without it, so the shell is its one
+                // prerequisite. It shares the shell's cell, pivot, DIRS and camera exactly
+                // (CamperInteriorRigTests pins all four), so it shares the shell's measured
+                // counter-clockwise turn as well. Registered so a baker can load it by key; nothing
+                // bakes it yet (no dwelling-room mesh path exists, see the kit README).
+                ["camperInterior"] = new RigEntry($"{RigFolder}/camper-iso-kit/camperInteriorRig.js",
+                                                  "CamperInterior", AzimuthConvention.CounterClockwise,
+                                                  prerequisites: new[] { "camper" }),
             };
     }
 }

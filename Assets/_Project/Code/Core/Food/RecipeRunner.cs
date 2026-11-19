@@ -21,7 +21,7 @@ namespace HiddenHarbours.Core
         }
     }
 
-    /// <summary>Something on a station (<see cref="RecipeRunner"/>). Session-only: never saved.</summary>
+    /// <summary>Something on a station (<see cref="RecipeRunner"/>). Saved as a <see cref="CookJobDto"/> row.</summary>
     public readonly struct CookJob
     {
         /// <summary>The <see cref="CookingStationDef.Id"/> of the station kind.</summary>
@@ -57,12 +57,21 @@ namespace HiddenHarbours.Core
     /// when the work starts (it is on the stove), and the output arrives when <see cref="TryFinish"/> is
     /// asked at or after the ready time.</para>
     ///
-    /// <para><b>Session-only, and dropped on every load.</b> Jobs live in memory and are never saved (no save
-    /// version change). A load or a new game raises <see cref="GameLoaded"/>; <see cref="GameServices.Cooking"/>
-    /// subscribes its runner's <see cref="GameLoadedHandler"/> to it, so every job is forgotten then and a
-    /// job started before a load can never deliver into the loaded save (which would duplicate food across
-    /// saves). The input taken for a dropped job is lost with the session it was taken in. A later save step
-    /// would add one row per job (station key, recipe id, ready time) to <see cref="SaveData"/>.</para>
+    /// <para><b>Saved with the game (v24), bound to one save.</b> The jobs belong to the live
+    /// <see cref="SaveData"/> object, the catch record's pattern (<see cref="CatchRecordLog"/>). The first
+    /// read after the save object changes (a load, a new game) loads the jobs from
+    /// <see cref="SaveData.CookJobs"/>; every start writes its row and every finish removes it
+    /// (<see cref="CookJobSave"/>), so the next save write carries what is on each station and a reload finds
+    /// it there, finishing at the same game time. A job is never carried from one save object to another,
+    /// so food never duplicates across saves. While there is no save at all (pre-boot, mid-load) the runner
+    /// stays bound to the last one. <see cref="GameServices.Cooking"/> subscribes its runner's
+    /// <see cref="GameLoadedHandler"/> to <see cref="GameLoaded"/>, which unbinds it so the next read reloads
+    /// from the rows even when the save object is reused.</para>
+    ///
+    /// <para><b>Load-time repair.</b> A row whose recipe id is no longer in the recipe book, or whose
+    /// station id names no <see cref="CookingStationDef"/>, or that repeats a station key already loaded, is
+    /// dropped from the save as it loads (the migration's heal has already dropped rows with no key, no
+    /// recipe or no usable time). Nothing throws.</para>
     ///
     /// <para><b>Job keys.</b> A job is keyed by the placed station's interactable id, so every placed
     /// station needs its own id, built from its owner (scene or boat instance) plus the fixture id; two
@@ -79,20 +88,53 @@ namespace HiddenHarbours.Core
         private readonly Func<ISaveService> _save;
         private readonly Func<ICatchHands> _hands;
         private readonly Func<double> _now;
+        private readonly Func<string, CookingStationDef> _stations;
         private readonly Dictionary<string, CookJob> _jobs = new Dictionary<string, CookJob>(StringComparer.Ordinal);
         private readonly List<string> _scratch = new List<string>();
         private RecipeBook _shippedRecipes;
         private FoodBook _shippedFoods;
+        private Dictionary<string, CookingStationDef> _shippedStations;
 
+        // The save object the jobs belong to. Unbound until the first read; null is a real binding (no save).
+        private static readonly object Unbound = new object();
+        private object _session = Unbound;
+
+        /// <param name="stations">Finds a station kind by its <see cref="CookingStationDef.Id"/> when jobs are
+        /// loaded from a save; defaults to the shipped Defs under <c>Resources/CookingStations/</c>.</param>
         public RecipeRunner(Func<RecipeBook> recipes = null, Func<FoodBook> foods = null,
                             Func<ISaveService> save = null, Func<ICatchHands> hands = null,
-                            Func<double> now = null)
+                            Func<double> now = null, Func<string, CookingStationDef> stations = null)
         {
             _recipes = recipes ?? (() => _shippedRecipes ??= RecipeBook.FromResources());
             _foods = foods ?? (() => _shippedFoods ??= FoodBook.FromResources());
             _save = save ?? (() => GameServices.Save);
             _hands = hands ?? (() => GameServices.CatchHands);
             _now = now ?? (() => GameServices.Clock != null ? GameServices.Clock.TotalSeconds : 0d);
+            _stations = stations ?? ShippedStation;
+        }
+
+        private CookingStationDef ShippedStation(string id)
+        {
+            if (_shippedStations == null)
+            {
+                _shippedStations = new Dictionary<string, CookingStationDef>(StringComparer.Ordinal);
+                foreach (CookingStationDef def in UnityEngine.Resources.LoadAll<CookingStationDef>(CookingStationDef.ResourcesFolder))
+                    if (def != null && !string.IsNullOrEmpty(def.Id) && !_shippedStations.ContainsKey(def.Id))
+                        _shippedStations.Add(def.Id, def);
+            }
+            return !string.IsNullOrEmpty(id) && _shippedStations.TryGetValue(id, out CookingStationDef found) ? found : null;
+        }
+
+        /// <summary>Bind the jobs to the live save object: when it changed since the last read, forget the
+        /// old jobs and load the new save's rows. No save keeps the current binding.</summary>
+        private void Bind()
+        {
+            SaveData live = _save()?.Current;
+            if (ReferenceEquals(live, _session)) return;
+            if (live == null && !ReferenceEquals(_session, Unbound)) return;
+            _jobs.Clear();
+            _session = live;
+            CookJobSave.Load(live, _recipes(), _stations, _jobs);
         }
 
         /// <summary>Game seconds <paramref name="recipe"/> takes at <paramref name="station"/>.</summary>
@@ -107,17 +149,26 @@ namespace HiddenHarbours.Core
         public bool IsCooking(string stationKey, out CookJob job)
         {
             job = default;
+            Bind();
             return !string.IsNullOrEmpty(stationKey) && _jobs.TryGetValue(stationKey, out job);
         }
 
         /// <summary>How many stations are cooking.</summary>
-        public int ActiveCount => _jobs.Count;
+        public int ActiveCount
+        {
+            get
+            {
+                Bind();
+                return _jobs.Count;
+            }
+        }
 
         /// <summary>What <paramref name="station"/> would cook now. Changes nothing and publishes nothing.</summary>
         public CookRefusal Check(CookingStationDef station, string stationKey, out CookPlan plan)
         {
             plan = default;
             if (station == null || string.IsNullOrEmpty(stationKey)) return CookRefusal.NoStation;
+            Bind();
             if (_jobs.ContainsKey(stationKey)) return CookRefusal.Busy;
             RecipeBook book = _recipes();
             if (book == null) return CookRefusal.NoStation;
@@ -195,7 +246,9 @@ namespace HiddenHarbours.Core
             if (!taken) return Refuse(station, stationKey, CookRefusal.NothingToCook);
 
             double readyAt = _now() + plan.Seconds;
-            _jobs[stationKey] = new CookJob(station.Id, stationKey, plan.Recipe, readyAt);
+            var job = new CookJob(station.Id, stationKey, plan.Recipe, readyAt);
+            _jobs[stationKey] = job;
+            CookJobSave.Write(_session as SaveData, job);
             EventBus.Publish(new FoodCookStarted(station.Id, stationKey, plan.Recipe.Id, plan.InputItemId, readyAt));
             return CookRefusal.None;
         }
@@ -209,7 +262,9 @@ namespace HiddenHarbours.Core
         public bool TryFinish(string stationKey, out CookJob finished)
         {
             finished = default;
-            if (string.IsNullOrEmpty(stationKey) || !_jobs.TryGetValue(stationKey, out CookJob job)) return false;
+            if (string.IsNullOrEmpty(stationKey)) return false;
+            Bind();
+            if (!_jobs.TryGetValue(stationKey, out CookJob job)) return false;
             if (_now() < job.ReadyAt) return false;
 
             // No save to put it in (pre-boot, mid-load): keep the job and deliver later; never announce food
@@ -218,6 +273,7 @@ namespace HiddenHarbours.Core
             if (save == null) return false;
 
             _jobs.Remove(stationKey);
+            CookJobSave.Remove(save, stationKey);
             if (job.Recipe == null || string.IsNullOrEmpty(job.Recipe.OutputId)) return false;
             SupplyLocker.Add(save, job.Recipe.OutputId, 1);
             EventBus.Publish(new FoodCooked(job.StationId, stationKey, job.Recipe.Id, job.Recipe.OutputId));
@@ -225,19 +281,99 @@ namespace HiddenHarbours.Core
             return true;
         }
 
-        /// <summary>Forget every job (a load, a new game, fixtures).</summary>
-        public void Clear() => _jobs.Clear();
+        /// <summary>Forget the jobs held in memory and unbind: the next read reloads them from the live save's
+        /// rows (a load, a new game, fixtures). The save's rows are untouched.</summary>
+        public void Clear()
+        {
+            _jobs.Clear();
+            _session = Unbound;
+        }
 
         private Action<GameLoaded> _gameLoadedHandler;
 
         /// <summary>The handler <see cref="GameServices.Cooking"/> subscribes to <see cref="GameLoaded"/>: it
-        /// clears every job. One cached delegate, so the same instance unsubscribes cleanly.</summary>
+        /// unbinds (<see cref="Clear"/>), so the loaded save's own rows are what is cooking. One cached
+        /// delegate, so the same instance unsubscribes cleanly.</summary>
         public Action<GameLoaded> GameLoadedHandler => _gameLoadedHandler ??= _ => Clear();
 
         private static CookRefusal Refuse(CookingStationDef station, string stationKey, CookRefusal reason)
         {
             EventBus.Publish(new CookRefused(station != null ? station.Id : null, stationKey, reason));
             return reason;
+        }
+    }
+
+    /// <summary>
+    /// <b>Cook jobs in the save</b> (v24, <see cref="SaveData.CookJobs"/>): load them into a
+    /// <see cref="RecipeRunner"/> on bind (with the load-time repair), write a row when a job starts, remove
+    /// it when the job finishes. Null-safe: a null save reads as no rows and a write to it does nothing.
+    /// The row carries the station key, the station kind id, the recipe id and the ready game time; the
+    /// output is always one of the recipe's own, into the supply locker, so nothing else is needed.
+    /// </summary>
+    public static class CookJobSave
+    {
+        /// <summary>
+        /// Add the save's jobs to <paramref name="into"/>, in saved order. A row is dropped from the save
+        /// (and not loaded) when it is damaged, repeats a station key, names a recipe <paramref name="recipes"/>
+        /// does not hold, or names a station kind <paramref name="stations"/> cannot find. Never throws.
+        /// </summary>
+        public static void Load(SaveData save, RecipeBook recipes, Func<string, CookingStationDef> stations,
+                                Dictionary<string, CookJob> into)
+        {
+            if (save?.CookJobs == null || into == null) return;
+            List<CookJobDto> rows = save.CookJobs;
+            for (int i = 0; i < rows.Count; i++)
+            {
+                CookJobDto r = rows[i];
+                RecipeDef recipe = r != null && recipes != null ? recipes.Find(r.RecipeId) : null;
+                CookingStationDef station = null;
+                if (r != null && stations != null && !string.IsNullOrEmpty(r.StationId))
+                {
+                    try { station = stations(r.StationId); }
+                    catch (Exception) { station = null; }
+                }
+                bool usable = r != null && !string.IsNullOrEmpty(r.StationKey) && recipe != null && station != null
+                              && !double.IsNaN(r.ReadyAtGameSeconds) && !double.IsInfinity(r.ReadyAtGameSeconds)
+                              && !into.ContainsKey(r.StationKey);
+                if (!usable)
+                {
+                    rows.RemoveAt(i--);
+                    continue;
+                }
+                into.Add(r.StationKey, new CookJob(station.Id, r.StationKey, recipe, r.ReadyAtGameSeconds));
+            }
+        }
+
+        /// <summary>Write <paramref name="job"/> as its station's row: the existing row for that key replaced
+        /// in place, or a new one appended.</summary>
+        public static void Write(SaveData save, in CookJob job)
+        {
+            if (save == null || string.IsNullOrEmpty(job.StationKey) || job.Recipe == null) return;
+            save.CookJobs ??= new List<CookJobDto>();
+            CookJobDto row = null;
+            for (int i = 0; i < save.CookJobs.Count; i++)
+                if (save.CookJobs[i] != null && string.Equals(save.CookJobs[i].StationKey, job.StationKey, StringComparison.Ordinal))
+                {
+                    row = save.CookJobs[i];
+                    break;
+                }
+            if (row == null)
+            {
+                row = new CookJobDto { StationKey = job.StationKey };
+                save.CookJobs.Add(row);
+            }
+            row.StationId = job.StationId ?? "";
+            row.RecipeId = job.Recipe.Id ?? "";
+            row.ReadyAtGameSeconds = job.ReadyAt;
+        }
+
+        /// <summary>Remove every row for <paramref name="stationKey"/>.</summary>
+        public static void Remove(SaveData save, string stationKey)
+        {
+            if (save?.CookJobs == null || string.IsNullOrEmpty(stationKey)) return;
+            for (int i = save.CookJobs.Count - 1; i >= 0; i--)
+                if (save.CookJobs[i] == null || string.Equals(save.CookJobs[i].StationKey, stationKey, StringComparison.Ordinal))
+                    save.CookJobs.RemoveAt(i);
         }
     }
 }

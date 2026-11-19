@@ -1317,6 +1317,10 @@ Shader "HiddenHarbours/Water"
                 // once they are drawn. GLOBALS, never in Properties: unset, the flag reads 0, no prop.
                 TEXTURE2D(_HHUnderWaterTex);
                 float  _HHUnderWaterLive;
+                // GameConfig.UnderWaterWeedClarity (WaterSurface pushes it with the floor's switch): how much
+                // less of the column the weed is read through than the floor it grows from. Unset reads 0,
+                // the floor's own law (UnderWaterPropTransmission).
+                float  _HHUnderWaterClarity;
                 // URP's inline samplers (Core.hlsl's GlobalSamplers) in the ground's own sampler states (the
                 // include's header says why they match): two slots, where the textures' own seven would pass
                 // the sixteen a D3D11 stage allows. The splats have no mips, so level 0 IS the texture, and
@@ -2567,9 +2571,13 @@ Shader "HiddenHarbours/Water"
             //
             // The share, premultiplied over straight: a = prop.a + bed.a x (1 - prop.a), colour
             // (prop + bed x bed.a x (1 - prop.a)) / a. A clear texel returns the bed untouched.
-            half4 ShallowsPropsBed(half4 bed, float2 worldXY, float2 slope, float depth)
+            //
+            // `cover` hands the frag the prop's own coverage at this pixel (0 where none is drawn), which is all
+            // UnderWaterPropTransmission below needs; the props' helper itself still carries no law.
+            half4 ShallowsPropsBed(half4 bed, float2 worldXY, float2 slope, float depth, out float cover)
             {
                 float2 wp = ShallowsBend(worldXY, slope, depth);
+                cover = 0.0;
                 float2 ndc = ComputeNormalizedDeviceCoordinates(float3(wp, 0.0), UNITY_MATRIX_VP);
                 int2 px = int2(floor(ndc * _ScreenParams.xy));
                 if (any(px < 0) || any(px >= int2(_ScreenParams.xy)))
@@ -2578,8 +2586,23 @@ Shader "HiddenHarbours/Water"
                 [branch]
                 if (prop.a <= 0.0)
                     return bed;
+                cover = prop.a;
                 float a = lerp(bed.a, 1.0, prop.a);
                 return half4((prop.rgb + bed.rgb * bed.a * (1.0 - prop.a)) / max(a, 1e-4), a);
+            }
+
+            // THE ONE NAMED EXCEPTION TO THE COLUMN'S ONE LAW (2026-11-17, the kelp beds): the weed is read
+            // through less water than the floor it grows from. Its fronds stand up off the bottom toward the
+            // light, and a dark bed of kelp shows under clear water long after the sand beside it has gone blue.
+            // So where a prop covers the bed, the column's OWN banded transmission is raised to (1 - clarity):
+            // the same per-channel order (red still goes first), the same bands, no second exp, no second depth.
+            // Clarity is GameConfig.UnderWaterWeedClarity, capped at 0.9 so some water is always read; at 0 the
+            // power is 1 and this is the floor's law. Where no prop is drawn (cover 0) the transmission is the
+            // floor's, bit for bit. Guarded by ShallowsFloorShaderTests.TheWeedsClarity_IsTheOneNamedException.
+            float3 UnderWaterPropTransmission(float3 bedT, float cover)
+            {
+                float power = 1.0 - clamp(_HHUnderWaterClarity, 0.0, 0.9);
+                return lerp(bedT, pow(max(bedT, 0.0), power), saturate(cover));
             }
             #endif
 
@@ -6010,7 +6033,12 @@ Shader "HiddenHarbours/Water"
                     // the rect or where the column passes nothing, the bed is the floor's, bit for bit.
                     [branch]
                     if (_HHUnderWaterLive > 0.5 && bedIn > 0.0 && max(bedT.r, max(bedT.g, bedT.b)) > 0.0)
-                        bed = ShallowsPropsBed(bed, worldXY, waveSlope, max(depthC, 0.0));
+                    {
+                        float propCover;
+                        bed = ShallowsPropsBed(bed, worldXY, waveSlope, max(depthC, 0.0), propCover);
+                        // The weed's clarity, the column's one named exception (UnderWaterPropTransmission).
+                        bedT = UnderWaterPropTransmission(bedT, propCover);
+                    }
             #endif
                     col.rgb = lerp(col.rgb, bed.rgb, saturate(bedT) * saturate(bed.a) * bedIn);
                 }

@@ -13,7 +13,7 @@ namespace HiddenHarbours.Core
     public static class SaveMigration
     {
         /// <summary>The schema version this build writes. Bump when you add a field + a migration step.</summary>
-        public const int CurrentVersion = 24;
+        public const int CurrentVersion = 25;
 
         /// <summary>
         /// The region id Port Greywick was saved under before it was renamed Nine Mile Creek, and the id
@@ -402,6 +402,16 @@ namespace HiddenHarbours.Core
                 data.SchemaVersion = 24;
             }
 
+            // v24 -> v25: STORAGE WITH MEMORY (owner 2026-11-17: "give them storage with memory at ginnys").
+            // No container remembered anything before v25, so every one starts empty. Nothing is invented: the
+            // first rod and the shovel lie where the world places them, which is where an older game left them
+            // on every load anyway.
+            if (data.SchemaVersion < 25)
+            {
+                data.StoredContainers = new System.Collections.Generic.List<StoredContainerDto>();
+                data.SchemaVersion = 25;
+            }
+
             // ---- future steps go here, each guarded by `if (data.SchemaVersion < N)` and bumping to N.
 
             // Defensive null-repair (a hand-edited or partial JSON can omit reference-typed fields).
@@ -449,6 +459,8 @@ namespace HiddenHarbours.Core
             data.CookJobs ??= new System.Collections.Generic.List<CookJobDto>();
             data.HullLoranWaypoints ??= new System.Collections.Generic.List<LoranWaypointDto>();
             HealV24Rows(data);
+            data.StoredContainers ??= new System.Collections.Generic.List<StoredContainerDto>();
+            HealStoredContainers(data.StoredContainers);
             // Same defensive spirit as the null-repair above, for the one field where a zero is not a
             // value but a crash: a hand-edited JSON, or a row written by a build between the field landing
             // and this heal, would otherwise divide by it. Idempotent — after the v9 step there is nothing
@@ -524,6 +536,54 @@ namespace HiddenHarbours.Core
                 for (int k = s.Stacks.Count - 1; k >= 0; k--)
                     if (string.IsNullOrEmpty(s.Stacks[k].ItemId) || s.Stacks[k].Count <= 0) s.Stacks.RemoveAt(k);
             }
+        }
+
+        /// <summary>
+        /// Null-repair the v25 storage rows. A container with no key is dropped (nothing could find it again);
+        /// a second row for a key already kept is folded into the first, so no item is lost and the key stays
+        /// one row. An item with no kind, or a counted lot of zero or fewer, is dropped, and so is a catch record
+        /// with no species or no quantity; a container left with nothing in it is dropped. One object, one
+        /// place: an instance id that repeats (in two containers, or twice in one) keeps its FIRST occurrence in
+        /// list order and every later one is dropped. Kept rows are never changed. Idempotent.
+        /// </summary>
+        private static void HealStoredContainers(System.Collections.Generic.List<StoredContainerDto> containers)
+        {
+            var kept = new System.Collections.Generic.Dictionary<string, StoredContainerDto>(System.StringComparer.Ordinal);
+            var instances = new System.Collections.Generic.HashSet<string>(System.StringComparer.Ordinal);
+            for (int i = 0; i < containers.Count; i++)
+            {
+                StoredContainerDto c = containers[i];
+                if (c == null || string.IsNullOrEmpty(c.Key))
+                {
+                    containers.RemoveAt(i--);
+                    continue;
+                }
+                c.ContainerDefId ??= "";
+                c.Items ??= new System.Collections.Generic.List<StoredItemDto>();
+                for (int k = 0; k < c.Items.Count; k++)   // forward: the first occurrence is the one kept
+                {
+                    StoredItemDto item = c.Items[k];
+                    if (item == null || string.IsNullOrEmpty(item.ItemId) || (!item.IsInstance && item.Count <= 0)
+                        || (item.IsInstance && !instances.Add(item.InstanceId)))
+                    {
+                        c.Items.RemoveAt(k--);
+                        continue;
+                    }
+                    item.InstanceId ??= "";
+                }
+                c.Catch ??= new System.Collections.Generic.List<HeldCatchDto>();
+                c.Catch.RemoveAll(r => string.IsNullOrEmpty(r.SpeciesId) || r.Quantity <= 0);
+                if (kept.TryGetValue(c.Key, out StoredContainerDto first))
+                {
+                    first.Items.AddRange(c.Items);
+                    first.Catch.AddRange(c.Catch);
+                    containers.RemoveAt(i--);
+                    continue;
+                }
+                kept.Add(c.Key, c);
+            }
+            for (int i = containers.Count - 1; i >= 0; i--)
+                if (StoredContainers.IsEmpty(containers[i])) containers.RemoveAt(i);
         }
 
         /// <summary>

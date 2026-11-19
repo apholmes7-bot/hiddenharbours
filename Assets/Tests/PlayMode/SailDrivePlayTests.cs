@@ -1,6 +1,9 @@
 using System.Collections;
+using System.Collections.Generic;
+using System.Text;
 using NUnit.Framework;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.TestTools;
 using HiddenHarbours.Boats;
 using HiddenHarbours.Core;
@@ -60,6 +63,29 @@ namespace HiddenHarbours.Tests.PlayMode
             public float WaterLevelAt(double totalSeconds) => 0f;
         }
 
+        /// <summary>
+        /// A settle read under this is not a speed the hull sailed to: she was HELD. Both this and
+        /// <see cref="ReachedKn"/> sit far outside 5 % of every polar number this fixture asserts (the
+        /// smallest is 4.97 kn), so the precondition that uses them can only re-word a failure the polar
+        /// assertion would make anyway; it can never fail a case that assertion would pass.
+        /// </summary>
+        const float HeldKn = 0.1f;
+
+        /// <summary>The fastest window must reach at least this, or she never got going at all.</summary>
+        const float ReachedKn = 0.25f;
+
+        /// <summary>
+        /// Start every test from the same empty service state the legs after a <see cref="TearDown"/>
+        /// already get. Without this the FIRST leg of a test inherits whatever the previous fixture in
+        /// the run left in <see cref="GameServices"/> — a registered <c>TidalTerrain</c>, a <c>Clock</c>,
+        /// a <c>Config</c> — none of which <see cref="BuildSloop"/> sets and all of which the controller
+        /// reads every tick (a terrain alone puts land under a hull sailing out from the origin, and
+        /// aground she takes the grounded-slowdown drag). The second leg of the polar test, run after
+        /// this fixture's own reset, never saw those; the first one could.
+        /// </summary>
+        [SetUp]
+        public void SetUp() => GameServices.Reset();
+
         [TearDown]
         public void TearDown()
         {
@@ -111,11 +137,29 @@ namespace HiddenHarbours.Tests.PlayMode
 #endif
 
         /// <summary>
+        /// A helmsman who holds her on the stated heading. With her sails drawing she carries weather
+        /// helm (<c>BoatHullDef.SailWeatherHelm</c>, felt through <c>GameConfig.SeaYaw</c>): left alone
+        /// she rounds up into the wind, which is the feel the game wants, and a sailor answers it with
+        /// the helm. These fixtures measure the polar AT a stated true-wind angle, so the angle must
+        /// survive the run: at 45° she sits exactly on the no-go edge, and an unheld bow luffs into it,
+        /// loses drive, falls off and luffs again, settling well under the polar. Holding the heading
+        /// removes only the turn: the sea yaw is a torque and nothing else, so it cannot add or remove
+        /// a single newton along her course, and with the turn held this is the pre-yaw physics exactly.
+        /// </summary>
+        static void HoldHeading(BoatController boat, float headingDeg)
+        {
+            var body = boat.GetComponent<Rigidbody2D>();
+            body.angularVelocity = 0f;
+            body.rotation = -headingDeg;
+            body.constraints |= RigidbodyConstraints2D.FreezeRotation;
+        }
+
+        /// <summary>
         /// Step the real physics until her speed stops changing, and answer the settled speed in knots.
         /// The settle is MEASURED (two windows that agree to 0.5 %), never assumed from a step count —
         /// so this cannot silently report a mid-acceleration number if the hull is ever made heavier.
         /// </summary>
-        static IEnumerator SettleAndRead(Rigidbody2D rb, System.Action<float> settledKn)
+        static IEnumerator SettleAndRead(Rigidbody2D rb, System.Action<float> settledKn, SettleLog log = null)
         {
             float previous = -1f;
             for (int window = 0; window < 40; window++)
@@ -123,6 +167,7 @@ namespace HiddenHarbours.Tests.PlayMode
                 for (int step = 0; step < 60; step++) yield return new WaitForFixedUpdate();
 
                 float now = SailDrive.ToKnots(rb.linearVelocity.magnitude);
+                log?.WindowKn.Add(now);
                 if (previous >= 0f && Mathf.Abs(now - previous) <= Mathf.Max(0.002f, previous * 0.005f))
                 {
                     settledKn(now);
@@ -133,6 +178,140 @@ namespace HiddenHarbours.Tests.PlayMode
             Assert.Fail($"she never settled — still changing after 2400 physics steps, last read " +
                         $"{previous:0.00} kn. Either the drive is oscillating or the hull's time " +
                         "constant has grown past what this fixture waits for.");
+        }
+
+        /// <summary>The speed at the end of each 60-step settle window, in order. Recording a float per
+        /// window is the whole green-path cost; everything else is built only when a test fails.</summary>
+        sealed class SettleLog
+        {
+            public readonly List<float> WindowKn = new List<float>(40);
+
+            public float PeakKn
+            {
+                get
+                {
+                    float peak = 0f;
+                    foreach (float kn in WindowKn) peak = Mathf.Max(peak, kn);
+                    return peak;
+                }
+            }
+        }
+
+        /// <summary>
+        /// "Settled" near zero, or never reached a real speed: the two windows that agreed were two windows
+        /// in which something held her, not a balance of drive against resistance. Such a read says nothing
+        /// about the drive's arithmetic, so it must not be reported as if it did.
+        /// </summary>
+        static bool WasHeld(SettleLog log, float settledKn) => settledKn < HeldKn || log.PeakKn < ReachedKn;
+
+        /// <summary>
+        /// What the scene shows when she was held: built ONLY on that failure. Names her own state, every
+        /// contact on her colliders, every other body and boat in every loaded scene, and the services the
+        /// controller reads — so a CI log alone can say who stopped her.
+        /// </summary>
+        static string DescribeHold(BoatController boat, string leg, float twa, float polarKn, float settledKn,
+                                   SettleLog log)
+        {
+            const int MaxListed = 40;
+            var sb = new StringBuilder(2048);
+            var rb = boat.GetComponent<Rigidbody2D>();
+            float stepsRun = log.WindowKn.Count * 60f;
+
+            sb.Append($"{leg} at twa {twa}° in {TwsKn} kn her polar says {polarKn} kn, but she was HELD, not " +
+                      $"sailed: the settle read {settledKn:0.000} kn (held under {HeldKn} kn) and her fastest " +
+                      $"window was {log.PeakKn:0.000} kn (a real start reaches {ReachedKn} kn). This is not " +
+                      "the damping balance; something in the scene stopped her. What the scene shows:\n");
+
+            sb.Append($"  windows (kn per 60 steps, {stepsRun:0} steps = {stepsRun * Time.fixedDeltaTime:0.0} s " +
+                      "simulated):");
+            foreach (float kn in log.WindowKn) sb.Append($" {kn:0.000}");
+            sb.Append('\n');
+
+            sb.Append($"  her: '{boat.name}' scene '{boat.gameObject.scene.name}' pos {rb.position} heading " +
+                      $"{-rb.rotation:0.0}° velocity {rb.linearVelocity} angularVelocity {rb.angularVelocity:0.00}\n");
+            sb.Append($"  body: bodyType {rb.bodyType} simulated {rb.simulated} awake {rb.IsAwake()} " +
+                      $"constraints {rb.constraints} linearDamping {rb.linearDamping} angularDamping " +
+                      $"{rb.angularDamping} mass {rb.mass} gravityScale {rb.gravityScale}\n");
+            var anchor = boat.GetComponent<BoatAnchor>();
+            var mooring = boat.GetComponent<BoatMooring>();
+            sb.Append($"  controller: enabled {boat.isActiveAndEnabled} aground {boat.IsAground} " +
+                      $"moored {(mooring != null ? mooring.State.ToString() : "none")} anchor " +
+                      $"{(anchor != null ? anchor.State.ToString() : "none")} autopilot {boat.AutopilotEngaged} " +
+                      $"sailTarget {boat.LastSailTargetKn:0.00} kn trueAngle " +
+                      $"{boat.LastSailWind.TrueAngleDeg:0.0}° inIrons {boat.DrawnInIrons} " +
+                      $"hull '{(boat.Hull != null ? boat.Hull.name : "null")}'\n");
+
+            var contacts = new List<ContactPoint2D>();
+            rb.GetContacts(contacts);
+            sb.Append($"  contacts on her body: {contacts.Count}\n");
+            for (int i = 0; i < contacts.Count && i < MaxListed; i++)
+            {
+                Collider2D other = contacts[i].collider != null && contacts[i].collider.attachedRigidbody != rb
+                    ? contacts[i].collider : contacts[i].otherCollider;
+                sb.Append("    ").Append(DescribeCollider(other)).Append('\n');
+            }
+            var overlaps = new List<Collider2D>();
+            foreach (var mine in boat.GetComponentsInChildren<Collider2D>())
+            {
+                overlaps.Clear();
+                mine.Overlap(new ContactFilter2D().NoFilter(), overlaps);
+                sb.Append($"  overlapping her {mine.GetType().Name} '{mine.name}' (trigger {mine.isTrigger}, " +
+                          $"enabled {mine.enabled}): {overlaps.Count}\n");
+                for (int i = 0; i < overlaps.Count && i < MaxListed; i++)
+                    sb.Append("    ").Append(DescribeCollider(overlaps[i])).Append('\n');
+            }
+
+            var bodies = Object.FindObjectsByType<Rigidbody2D>(FindObjectsSortMode.None);
+            sb.Append($"  other Rigidbody2D in loaded scenes: {bodies.Length - 1}\n");
+            int listed = 0;
+            foreach (var body in bodies)
+            {
+                if (body == rb) continue;
+                if (listed++ >= MaxListed) { sb.Append("    ...\n"); break; }
+                sb.Append($"    '{body.name}' root '{body.transform.root.name}' scene '{body.gameObject.scene.name}' " +
+                          $"pos {body.position} bodyType {body.bodyType} simulated {body.simulated}\n");
+            }
+            var boats = Object.FindObjectsByType<BoatController>(FindObjectsSortMode.None);
+            sb.Append($"  BoatControllers in loaded scenes: {boats.Length}\n");
+            listed = 0;
+            foreach (var b in boats)
+            {
+                if (listed++ >= MaxListed) { sb.Append("    ...\n"); break; }
+                sb.Append($"    '{b.name}' scene '{b.gameObject.scene.name}' pos {b.transform.position} " +
+                          $"active {b.isActiveAndEnabled}{(b == boat ? " (her)" : "")}\n");
+            }
+
+            sb.Append("  loaded scenes:");
+            for (int i = 0; i < SceneManager.sceneCount; i++) sb.Append($" '{SceneManager.GetSceneAt(i).name}'");
+            sb.Append('\n');
+
+            IEnvironmentService env = GameServices.Environment;
+            if (env != null)
+            {
+                EnvironmentSample s = env.Sample();
+                sb.Append($"  environment: {env.GetType().Name} wind {s.WindVector} current {s.CurrentVector} " +
+                          $"tide {s.TideHeight} seaState01 {s.SeaState01}\n");
+            }
+            else sb.Append("  environment: null\n");
+            sb.Append($"  services: tidalTerrain {TypeOf(GameServices.TidalTerrain)} stillWater " +
+                      $"{TypeOf(GameServices.StillWater)} clock {TypeOf(GameServices.Clock)}" +
+                      $"{(GameServices.Clock != null ? $" at {GameServices.Clock.TotalSeconds:0.0} s" : "")} config " +
+                      $"{(GameServices.Config != null ? GameServices.Config.name : "null")} region " +
+                      $"'{GameServices.CurrentRegionId}'\n");
+            sb.Append($"  time: timeScale {Time.timeScale} fixedDeltaTime {Time.fixedDeltaTime} physics2D " +
+                      $"simulationMode {Physics2D.simulationMode}");
+            return sb.ToString();
+        }
+
+        static string TypeOf(object o) => o != null ? o.GetType().Name : "null";
+
+        static string DescribeCollider(Collider2D c)
+        {
+            if (c == null) return "(null collider)";
+            Rigidbody2D owner = c.attachedRigidbody;
+            return $"{c.GetType().Name} '{c.name}' root '{c.transform.root.name}' scene '{c.gameObject.scene.name}' " +
+                   $"pos {(Vector2)c.transform.position} trigger {c.isTrigger} body " +
+                   $"{(owner != null ? $"'{owner.name}' {owner.bodyType}" : "static")}";
         }
 
         // =============================================================================================
@@ -158,9 +337,18 @@ namespace HiddenHarbours.Tests.PlayMode
             {
                 BoatController boat = null;
                 yield return BuildSloop(leg.Item1, headingDeg: 47f, twsKn: TwsKn, ready: (b, _) => boat = b);
+                // The polar is a speed AT an angle: hold her on it against her weather helm.
+                HoldHeading(boat, 47f);
 
                 float settled = 0f;
-                yield return SettleAndRead(boat.GetComponent<Rigidbody2D>(), kn => settled = kn);
+                var log = new SettleLog();
+                yield return SettleAndRead(boat.GetComponent<Rigidbody2D>(), kn => settled = kn, log);
+
+                // Precondition: she sailed and settled, rather than being held still for two windows
+                // (which SettleAndRead's "two windows agree" would otherwise accept as settled). Only a
+                // read that fails the polar assertion below anyway can trip this; it names who held her.
+                if (WasHeld(log, settled))
+                    Assert.Fail(DescribeHold(boat, leg.Item3, leg.Item1, leg.Item2, settled, log));
 
                 Assert.AreEqual(leg.Item2, settled, leg.Item2 * 0.05f,
                     $"{leg.Item3} at twa {leg.Item1}° in {TwsKn} kn her polar says {leg.Item2} kn; the " +
@@ -169,6 +357,12 @@ namespace HiddenHarbours.Tests.PlayMode
                     "body's own linearDamping — see SailDrive.LinearResistance.");
 
                 Assert.Greater(boat.LastSailTargetKn, 0f, "the drive must have read a target from the polar.");
+                // ...and the hold is not hiding a switched-off yaw: her weather helm was asking to bring
+                // her up (negative = clockwise, her bow towards the wind on her starboard side) on the
+                // very tick she was making her polar speed. A torque costs no speed along her course.
+                Assert.Less(boat.LastSeaYawHelmShare, 0f,
+                    $"{leg.Item3}: with her sails drawing in {TwsKn} kn her weather helm must be asking to " +
+                    "round her up; zero here means the sea yaw never ran and the hold above proves nothing.");
                 TearDown();
             }
 #endif
@@ -190,6 +384,8 @@ namespace HiddenHarbours.Tests.PlayMode
             GlassSea sea = null;
             yield return BuildSloop(CloseHauledTwa, headingDeg: 47f, twsKn: TwsKn,
                                     ready: (b, s) => { boat = b; sea = s; });
+            // The cos(45°) below is only her course if she is held on it against her weather helm.
+            HoldHeading(boat, 47f);
 
             var rb = boat.GetComponent<Rigidbody2D>();
             float settled = 0f;

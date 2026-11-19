@@ -30,6 +30,31 @@ real seconds at the shipped 1800 s day):
 - Sea (swimming): pulls toward 55 % clean (dirt 0.45, just under grubby) from either side at 1.2 per
   hour: rinses a stinky player in 15 game minutes, and salts a freshly showered one down in 22.
 
+## 1a. Soap
+
+Owner ask, 2026-11-17: "add soap as a new inventory item to purchase and to be needed to reach 100%
+cleanliness".
+
+- **The item:** `supply.soap_bar` (`Data/Resources/Catalog/Supplies/SoapBar.asset`), a counted supply
+  like ice and bread, ₲3 at the St Peters general store (`seller.leblancs`). The NMC store has no
+  supply counter yet; when one stands, add `seller.nmc_*` to the bar's sellers and a vendor row in
+  `StoreWiringPatch`.
+- **Without soap** a shower or bath stops at `GameConfig.Cleanliness.UnsoapedCeiling` (85 % clean,
+  dirt 0.15). The sink keeps its own 80 % (it is below the soap cap, so soap changes nothing there) and
+  the sea is unchanged. A station only asks for soap when its own ceiling is above the unsoaped cap
+  (`CleanlinessMath.SoapMatters`).
+- **With soap** the shower and bath reach fully clean. One wash uses one of
+  `WashesPerSoapBar` (8) washes. The first wash on a new bar takes the bar out of the locker and counts
+  its other washes under `supply.soap_bar.washes_left` in the same `SaveData.SupplyStock` list, so an
+  open bar saves with no new save field. The book's "You have N" counts unopened bars only.
+- **What the player sees:** an unsoaped wash makes him think `NoSoapLine` ("No soap. Can't get properly
+  clean.") in the inner-voice bubble, and the wash stops with "As clean as he gets without soap." A
+  player already at the cap who tries the shower again is told the no-soap line instead of "already
+  clean".
+- **For a visuals lane:** `PlayerWashChanged.Soaped` is true for a soaped wash (on its begin and its
+  end); `PlayerWashChanged.SoapMissing` is true on the begin of a wash that wanted soap and had none.
+- **Off switch:** an empty `SoapSupplyId` turns the rule off (every wash back to its own ceiling).
+
 ## 2. Boats: which hulls get a head, a sink, a shower
 
 Rule of thumb by size and type. Open boats and small skiffs get nothing; a cabin boat gets a sink; a

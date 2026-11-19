@@ -121,8 +121,8 @@ namespace HiddenHarbours.Boats
             new Color(0.20f, 0.65f, 0.30f),   // green
             new Color(0.95f, 0.55f, 0.15f),   // orange
         };
-        [Tooltip("SpriteRenderer sortingOrder for the buoys. 3 matches the player's trap buoys (above the " +
-                 "Sea plane at -5).")]
+        [Tooltip("NO LONGER READ (ADR 0059 step 2): a buoy sorts by the decor band's Y-sort where it floats, " +
+                 "like the player's trap buoys (Core EffectSorting). Kept so existing assets load unchanged.")]
         public int BuoySortingOrder = 3;
 
         // Appended after BuoySortingOrder (owner feedback on #189 — "spinning in circles"). Fields are

@@ -6,7 +6,10 @@ namespace HiddenHarbours.Boats
     /// <summary>
     /// <b>Draws the oar splash</b> (owner ruling 2026-11-13: the dory's oars "MUST splash and
     /// foam"): droplets on the frame a rowing blade enters the water, and a short patch of foam
-    /// left where the blade works, fading behind the boat.
+    /// left where the blade works, fading behind the boat. Since 2026-11-17 also the rest of the
+    /// stroke: the flick and the turning puddle where the blade comes out, rings spreading from the
+    /// catch and the release (drawn squashed by <c>sin(elevation)</c>, because they lie on the water),
+    /// and drips falling from the blade tip on the recovery, each with a ring where it lands.
     ///
     /// <para><b>The timing is the oar's own.</b> Each frame this reads the pose
     /// <see cref="DoryOarMeshLayer"/> actually drew — the same sweep and dip the mesh was rotated
@@ -70,10 +73,18 @@ namespace HiddenHarbours.Boats
 
             int foam = Mathf.Max(1, config.FoamPoolSize);
             int drops = Mathf.Max(1, config.DropletPoolSize);
-            if (_system == null || _system.Foam.Capacity != foam || _system.Droplets.Capacity != drops)
+            int rings = Mathf.Max(1, config.RipplePoolSize);
+            int drips = Mathf.Max(1, config.DripPoolSize);
+            if (_system == null || _system.Foam.Capacity != foam || _system.Droplets.Capacity != drops ||
+                _system.Ripples.Capacity != rings || _system.Drips.Capacity != drips)
             {
                 DestroyMotes();
-                _system = new DoryOarSplashSystem(foam, drops);
+                _system = new DoryOarSplashSystem(foam, drops, rings, drips);
+            }
+            else if (_ringRenderers != null && !RingPictureMatches(in config))
+            {
+                // A retuned band changes the ring picture: rebuild it on the next draw.
+                DestroyMotes();
             }
             _system.ResetTracking();
         }
@@ -109,10 +120,12 @@ namespace HiddenHarbours.Boats
             float waterline = _driver.DesignWaterlineMeters;
 
             Vector2 aft = Direction(new Vector3(0f, -1f, 0f), turntable, elevation);
+            _groundSquash = Mathf.Sin(elevation);
+            float heightToScreen = Mathf.Cos(elevation);
             var port = Frame(DoryOarMeshLayer.PortSide, _portLock, _oars.PortPose, portStroking,
-                             _oars.PortOarState, origin, turntable, elevation, waterline, aft);
+                             _oars.PortOarState, origin, turntable, elevation, waterline, aft, heightToScreen);
             var star = Frame(DoryOarMeshLayer.StarboardSide, _starLock, _oars.StarboardPose, starStroking,
-                             _oars.StarboardOarState, origin, turntable, elevation, waterline, aft);
+                             _oars.StarboardOarState, origin, turntable, elevation, waterline, aft, heightToScreen);
 
             Vector2 current = Vector2.zero;
             var env = GameServices.Environment;
@@ -125,10 +138,13 @@ namespace HiddenHarbours.Boats
 
         private DoryOarSplashSystem.OarFrame Frame(int side, Vector3 lockLocal, in DoryOarMeshPose.Pose pose,
                                                    bool stroking, float oarState, Vector2 origin,
-                                                   float turntable, float elevation, float waterline, Vector2 aft)
+                                                   float turntable, float elevation, float waterline, Vector2 aft,
+                                                   float heightToScreen)
         {
             Vector3 blade = DoryOarSplashMath.BladeOnWaterLocal(lockLocal, side, in pose,
                                                                 _config.SplashReachMeters, waterline);
+            Vector3 tip = DoryOarSplashMath.BladeOnWaterLocal(lockLocal, side, in pose,
+                                                              _config.BladeReachMeters, waterline);
             return new DoryOarSplashSystem.OarFrame
             {
                 Stroking = stroking,
@@ -139,6 +155,9 @@ namespace HiddenHarbours.Boats
                 Aft = aft,
                 Effort01 = Mathf.Clamp01(Mathf.Abs(oarState)),
                 StrokeDirection = oarState < 0f ? -1f : 1f,
+                TipOnWaterWorld = origin + MountedRockPoseMath.Project(tip, turntable, 0f, 0f, elevation),
+                GroundSquash = _groundSquash,
+                HeightToScreen = heightToScreen,
             };
         }
 
@@ -152,6 +171,11 @@ namespace HiddenHarbours.Boats
         // ==== drawing ======================================================================================
 
         private bool _anyAlive;
+        private float _groundSquash = 1f;
+
+        /// <summary>The ring picture's resolution (px across). An implementation size, not a look dial:
+        /// the ring is scaled to its radius in metres, and the band's shape is <see cref="OarSplashConfig"/>'s.</summary>
+        public const int RingTextureSize = 64;
 
         private void Render()
         {
@@ -160,7 +184,42 @@ namespace HiddenHarbours.Boats
             WakeConfig dropCfg = _config.DropletWakeConfig();
             bool foamAlive = RenderPool(_system.Foam, _foamRenderers, in foamCfg, _config.FoamColor);
             bool dropsAlive = RenderPool(_system.Droplets, _dropletRenderers, in dropCfg, _config.DropletColor);
-            _anyAlive = foamAlive || dropsAlive;
+            bool ringsAlive = RenderMarks(_system.Ripples, _ringRenderers, _config.RippleColor,
+                                          _config.RippleSpreadEase, _config.RippleFadePower, _groundSquash);
+            bool dripsAlive = RenderMarks(_system.Drips, _dripRenderers, _config.DropletColor, 1f, 1f, 1f);
+            _anyAlive = foamAlive || dropsAlive || ringsAlive || dripsAlive;
+        }
+
+        /// <summary>
+        /// Draw a pool of water marks. A ring lies on the water, so it is squashed by
+        /// <paramref name="ySquash"/> (<c>sin(elevation)</c>) into the ellipse the camera sees; a drip
+        /// is a round mote (squash 1). A mark still waiting out its delay stays hidden.
+        /// </summary>
+        private static bool RenderMarks(OarWaterMarkPool pool, SpriteRenderer[] renderers, Color tint,
+                                        float spreadEase, float fadePower, float ySquash)
+        {
+            var marks = pool.Pool;
+            bool any = false;
+            for (int i = 0; i < marks.Length; i++)
+            {
+                SpriteRenderer sr = renderers[i];
+                ref readonly var m = ref marks[i];
+                if (m.Alive) any = true;
+                if (!OarWaterMarkPool.IsShown(in m) || sr.sprite == null)
+                {
+                    if (sr.gameObject.activeSelf) sr.gameObject.SetActive(false);
+                    continue;
+                }
+
+                float diameter = 2f * OarWaterMarkPool.Radius(in m, spreadEase) * SpriteScale(sr);
+                tint.a = OarWaterMarkPool.Opacity(in m, fadePower);
+                Transform t = sr.transform;
+                t.position = new Vector3(m.Pos.x, m.Pos.y, 0f);
+                t.localScale = new Vector3(diameter, diameter * ySquash, 1f);
+                sr.color = tint;
+                if (!sr.gameObject.activeSelf) sr.gameObject.SetActive(true);
+            }
+            return any;
         }
 
         private static bool RenderPool(WakeParticleSystem system, SpriteRenderer[] renderers,
@@ -216,7 +275,16 @@ namespace HiddenHarbours.Boats
                 _moteRoot = root.transform;
                 _foamRenderers = BuildRenderers(_system.Foam.Capacity, "oarFoam");
                 _dropletRenderers = BuildRenderers(_system.Droplets.Capacity, "oarDroplet");
+                _ringRenderers = BuildRenderers(_system.Ripples.Capacity, "oarRipple");
+                _dripRenderers = BuildRenderers(_system.Drips.Capacity, "oarDrip");
                 _spritesBound = false;
+
+                // The ring is this effect's own picture (the wake's rafts are blobs), built once per
+                // wiring from the band the config asks for.
+                _ringSprite = BuildRingSprite(_config.RippleBandCentre, _config.RippleBandHalfWidth);
+                _ringBandCentre = _config.RippleBandCentre;
+                _ringBandHalfWidth = _config.RippleBandHalfWidth;
+                for (int i = 0; i < _ringRenderers.Length; i++) _ringRenderers[i].sprite = _ringSprite;
             }
 
             if (_spritesBound) return;
@@ -224,7 +292,37 @@ namespace HiddenHarbours.Boats
             if (rafts == null || rafts.Length == 0) return;   // no wake host yet: try again next frame
             BindSprites(_foamRenderers, rafts);
             BindSprites(_dropletRenderers, rafts);
+            BindSprites(_dripRenderers, rafts);
             _spritesBound = true;
+        }
+
+        private Sprite _ringSprite;
+        private float _ringBandCentre, _ringBandHalfWidth;
+        private SpriteRenderer[] _ringRenderers, _dripRenderers;
+
+        private bool RingPictureMatches(in OarSplashConfig config)
+            => Mathf.Approximately(_ringBandCentre, config.RippleBandCentre) &&
+               Mathf.Approximately(_ringBandHalfWidth, config.RippleBandHalfWidth);
+
+        private static Sprite BuildRingSprite(float bandCentre01, float bandHalfWidth01)
+        {
+            int n = RingTextureSize;
+            float[] a = OarRippleTexture.RingCoverage(n, bandCentre01, bandHalfWidth01);
+            var tex = new Texture2D(n, n, TextureFormat.RGBA32, false, true)
+            {
+                name = "OarRipple.Ring",
+                filterMode = FilterMode.Point,
+                wrapMode = TextureWrapMode.Clamp,
+                hideFlags = HideFlags.HideAndDontSave,
+            };
+            var px = new Color32[n * n];
+            for (int i = 0; i < px.Length; i++)
+                px[i] = new Color32(255, 255, 255, (byte)Mathf.RoundToInt(Mathf.Clamp01(a[i]) * 255f));
+            tex.SetPixels32(px);
+            tex.Apply(false, false);
+            var sprite = Sprite.Create(tex, new Rect(0, 0, n, n), new Vector2(0.5f, 0.5f), n);
+            sprite.hideFlags = HideFlags.HideAndDontSave;
+            return sprite;
         }
 
         private SpriteRenderer[] BuildRenderers(int count, string label)
@@ -259,6 +357,8 @@ namespace HiddenHarbours.Boats
         {
             Hide(_foamRenderers);
             Hide(_dropletRenderers);
+            Hide(_ringRenderers);
+            Hide(_dripRenderers);
         }
 
         private static void Hide(SpriteRenderer[] renderers)
@@ -276,9 +376,18 @@ namespace HiddenHarbours.Boats
                 if (Application.isPlaying) Destroy(_moteRoot.gameObject);
                 else DestroyImmediate(_moteRoot.gameObject);
             }
+            if (_ringSprite != null)
+            {
+                Texture2D tex = _ringSprite.texture;
+                if (Application.isPlaying) { Destroy(_ringSprite); if (tex != null) Destroy(tex); }
+                else { DestroyImmediate(_ringSprite); if (tex != null) DestroyImmediate(tex); }
+            }
+            _ringSprite = null;
             _moteRoot = null;
             _foamRenderers = null;
             _dropletRenderers = null;
+            _ringRenderers = null;
+            _dripRenderers = null;
             _spritesBound = false;
             _anyAlive = false;
         }

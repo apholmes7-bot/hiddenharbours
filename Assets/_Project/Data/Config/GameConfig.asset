@@ -34,6 +34,8 @@ MonoBehaviour:
   InteractChooserPushThreshold: 0.5
   InteractChooserRepeatDelaySeconds: 0.4
   InteractChooserRepeatIntervalSeconds: 0.12
+  TasksChipSignalSeconds: 2.4
+  TasksChipBlinkSeconds: 0.3
   HeavyWorkNeeds:
     RefusedAtTiredness: 2
     RefusedAtHunger: 2
@@ -82,6 +84,21 @@ MonoBehaviour:
     SurfBroachTorque: 1.2
     SurfBorePulse01: 1
     SurfLiftScale: 1
+  SeaYaw:
+    Enabled: 1
+    CalmWindMetresPerSecond: 3
+    ReferenceWindMetresPerSecond: 10
+    WindHelmShare: 0.2
+    HullWindYawBias: 1
+    AnchoredWindYawBias: -1
+    WaveHelmShare: 0.2
+    ReferenceWaveSlope: 0.1
+    WaveSpanWavelengthFraction: 0.25
+    ReferenceMassKg: 400
+    MassExponent: 0.35
+    ReferenceWindExposure: 0.6
+    MaxSusceptibility: 1.25
+    MaxHelmShare: 0.45
   Anchor:
     ReferenceAnchorMassKg: 6
     DefaultRodeMeters: 6
@@ -179,6 +196,12 @@ MonoBehaviour:
   FrontedLicenceFee: 20
   MaxOneHandFishLengthMeters: 0.62
   FishLengthPerKgCubeRootMeters: 0.477
+  MinDrawnFishLengthPx: 12
+  HeldFishKeylineMaxLengthPx: 16
+  HeldFishKeylineShade: 0.4
+  HeldFishKeylineOffsetsPx:
+  - {x: -1, y: 0}
+  - {x: 1, y: 0}
   HelmThrottle:
     AheadNotches: 4
     AsternNotches: 2
@@ -342,6 +365,7 @@ MonoBehaviour:
   ShallowsFloor: 1
   ShallowsFloorRefraction: 0.25
   ShallowsSubmergedProps: 1
+  UnderWaterWeedClarity: 0.85
   HullKeylineFlood: 0
   PlayerFigureIdReserve: 2
   HullMeshReflections: 0
@@ -650,6 +674,10 @@ MonoBehaviour:
     MaxStretchGameMinutes: 240
     WadeCountsAsSea: 0
     SeaStationId: washstation.sea
+    SoapSupplyId: supply.soap_bar
+    WashesPerSoapBar: 8
+    UnsoapedCeiling: 0.85
+    NoSoapLine: No soap. Can't get properly clean.
   Kitchen:
     DiningSeatReachMetres: 1.25
     PieceReachMetres: 1
@@ -947,3 +975,23 @@ MonoBehaviour:
     OrdersAboveFigure: 2
     ResampleSeconds: 1
     ShowBelowDecks: 0
+  WashVisuals:
+    Enabled: 1
+    FillSeconds: 1.6
+    DrainSeconds: 1.2
+    FrothFramesPerSecond: 4
+    RunFramesPerSecond: 10
+    FlushSeconds: 0.9
+    FrothWithoutSoap: 0
+    ClimbSeconds: 0.55
+    ClimbArcMetres: 0.22
+    EntryStandOffMetres: 0.35
+    FallbackBakedSeatMetres: 0.4
+    BubbleCount: 6
+    BubbleRiseMetresPerSecond: 0.35
+    BubbleLifetimeSeconds: 1.4
+    BubbleSpreadMetres: 0.22
+    BubbleOffsetMetres: {x: 0, y: 0.75}
+    BubbleSizeMetres: 0.09375
+    BubbleColor: {r: 0.93, g: 0.97, b: 1, a: 0.9}
+    BubbleOrdersAboveFigure: 2

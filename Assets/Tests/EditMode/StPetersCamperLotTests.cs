@@ -271,37 +271,72 @@ namespace HiddenHarbours.Tests.EditMode
                 "the step is not on the side you walk up from");
         }
 
-        /// <summary>The drawbar points along the lot, not at a shed — derived, so a shed that moves
-        /// re-parks the camper instead of poking a tow hitch through a wall.</summary>
+        /// <summary>The drawbar points across the approach with the door (the curb, rig +x) toward the
+        /// cottage, which fixes it: the body frame is right-handed, so the hitch (rig +y) is the curb
+        /// turned a quarter counter-clockwise. The facing the lot draws is that same direction, and the
+        /// drawbar tip stands clear of every shed.</summary>
         [Test]
-        public void TheDrawbar_PointsAcrossTheApproach_AndAwayFromTheNearestBuilding()
+        public void TheDrawbar_PointsAcrossTheApproach_WithTheDoorTowardTheCottage_AndClearsEveryShed()
         {
             Vector2 nose = StPetersCamperLot.NoseDirection;
             Assert.AreEqual(1f, nose.magnitude, 1e-3f);
 
-            Vector2 toApproach = (StPetersCamperLot.Approach - StPetersCamperLot.LotPos).normalized;
-            Assert.AreEqual(0f, Vector2.Dot(nose, toApproach), 1e-3f,
+            Vector2 curb = (StPetersCamperLot.Approach - StPetersCamperLot.LotPos).normalized;
+            Assert.AreEqual(0f, Vector2.Dot(nose, curb), 1e-3f,
                 "the camper is parked end-on to the approach, so its door faces sideways");
+            Assert.Greater(curb.x * nose.y - curb.y * nose.x, 0f,
+                "curb (+x) then hitch (+y) must turn counter-clockwise: with the drawbar this way the door " +
+                "faces AWAY from the cottage");
+
+            Assert.AreEqual(StPetersCamperLot.FacingOf(nose), StPetersCamperLot.DoorFacing,
+                "the facing the lot draws does not point where the drawbar points");
 
             Vector2 tip = StPetersCamperLot.LotPos + nose * StPetersCamperLot.Dimensions.NoseMetres;
-            Vector2 wrongTip = StPetersCamperLot.LotPos - nose * StPetersCamperLot.Dimensions.NoseMetres;
-            Assert.GreaterOrEqual(NearestBuilding(tip), NearestBuilding(wrongTip),
-                "the drawbar points at the tighter side of the lot");
-
             foreach (var shed in StPetersGinnyPlot.Sheds)
                 Assert.Greater(Vector2.Distance(tip, shed.Position), shed.FootprintRadiusMetres,
                     $"the drawbar tip is inside the {shed.Key}");
+        }
 
-            static float NearestBuilding(Vector2 at)
+        /// <summary>
+        /// The camper the player SEES agrees with the lot: at <see cref="StPetersCamperLot.DoorFacing"/>
+        /// the bake's own anchors (<c>Camper.json</c>, written by the bake, top-left origin, so screen
+        /// y runs south) put the hitch along <see cref="StPetersCamperLot.NoseDirection"/> and the step
+        /// toward <see cref="StPetersCamperLot.Approach"/>. Checked on every sheet of every variant,
+        /// because the variant is the owner's to flip on the Def. The tolerance (cos 0.85, about 32°)
+        /// covers the camera's foreshortening of the north-south axis at a diagonal facing.
+        /// </summary>
+        [Test]
+        public void TheBakedFrameAtTheLotsFacing_PointsItsHitchAlongTheDrawbar_AndItsStepAtTheCottage()
+        {
+            var json = AssetDatabase.LoadAssetAtPath<TextAsset>(CamperKit.ContractPath);
+            Assert.IsNotNull(json, $"no camper contract at {CamperKit.ContractPath}");
+            var contract = JsonUtility.FromJson<CamperKit.Contract>(json.text);
+            Assert.IsNotNull(contract?.sheets, "the camper contract did not parse");
+
+            int facing = StPetersCamperLot.DoorFacing;
+            Vector2 nose = StPetersCamperLot.NoseDirection;
+            Vector2 curb = (StPetersCamperLot.Approach - StPetersCamperLot.LotPos).normalized;
+
+            int checkedSheets = 0;
+            foreach (var sheet in contract.sheets)
             {
-                float worst = Vector2.Distance(at, StPetersGinnyPlot.CottagePos);
-                foreach (var shed in StPetersGinnyPlot.Sheds)
-                {
-                    float gap = Vector2.Distance(at, shed.Position) - shed.FootprintRadiusMetres;
-                    if (gap < worst) worst = gap;
-                }
-                return worst;
+                CamperKit.AnchorEntry a = null;
+                foreach (var e in sheet.anchors)
+                    if (e.facing == facing) { a = e; break; }
+                Assert.IsNotNull(a, $"'{sheet.key}' has no anchors at facing {facing}");
+
+                Vector2 hitch = new Vector2(a.hitchX - sheet.pivotX, sheet.pivotY - a.hitchY).normalized;
+                Vector2 step = new Vector2(a.stepX - sheet.pivotX, sheet.pivotY - a.stepY).normalized;
+                Assert.Greater(Vector2.Dot(hitch, nose), 0.85f,
+                    $"'{sheet.key}' at facing {facing} draws its hitch toward {hitch}, but the lot parks the " +
+                    $"drawbar toward {nose}");
+                Assert.Greater(Vector2.Dot(step, curb), 0.85f,
+                    $"'{sheet.key}' at facing {facing} draws its step toward {step}, but the cottage is " +
+                    $"toward {curb}: the door would face away from where the player walks up");
+                checkedSheets++;
             }
+            Assert.GreaterOrEqual(checkedSheets, CamperKit.Variants.Count * 2,
+                "expected a rest and an enter sheet per variant in the contract");
         }
 
         // =================================================================================

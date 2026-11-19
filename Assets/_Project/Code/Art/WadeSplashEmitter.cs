@@ -160,9 +160,11 @@ namespace HiddenHarbours.Art
     /// boat-spotlight bug).</b> Splashes live at the water surface around the wading player: they should draw
     /// just ABOVE the water plane but AROUND/BELOW the player sprite (like spray, not out in front). A
     /// <see cref="SpriteRenderer"/> does NOT reliably sort against the water <see cref="MeshRenderer"/> by
-    /// <c>sortingOrder</c> alone (the mesh falls back to world-z), so the host carries a <see cref="SortingGroup"/>
-    /// ("sort as 2D") AND every splash is nudged a SMALL amount toward the camera to clear the water plane — the
-    /// same small nudge the spray uses, at a low sortingOrder, so the player still reads on top. THE OWNER MUST
+    /// <c>sortingOrder</c> alone (the mesh falls back to world-z), so every splash carries its own
+    /// <see cref="SortingGroup"/> ("sort as 2D"), sorted where it was thrown one rung behind the band's Y-sort
+    /// (<see cref="EffectSorting"/>, ADR 0059 step 2) so the player standing there still reads on top, AND every
+    /// splash is nudged a SMALL amount toward the camera to clear the water plane — the same small nudge the
+    /// spray uses. THE OWNER MUST
     /// VERIFY in Unity that the splashes read above the water yet below/around the player — a headless test can't
     /// catch mesh-vs-sprite depth.</para>
     ///
@@ -179,10 +181,9 @@ namespace HiddenHarbours.Art
                  "droplet/ring look, forward spray, day/night fade. The feature is gated (no splash when Dry).")]
         [SerializeField] private WadeSplashConfig _config = WadeSplashConfig.Default;
 
-        [Tooltip("Sorting order — splashes draw just ABOVE the water but should read AROUND/BELOW the player, so " +
-                 "this sits LOW (a small positive), like the spray. A SortingGroup + a small camera-ward z clear " +
-                 "the water MeshRenderer without jumping in front of the player (see class docs; #134).")]
-        [SerializeField] private int _sortingOrder = 6;
+        // ADR 0059 step 2: no fixed order. Each splash carries its own SortingGroup (#134) sorted at its spawn
+        // point by the decor band's Y-sort, one rung behind (EffectSorting, SortedEffect.WadeSplash), so the
+        // wader standing on that point draws over it and decor interleaves with it by position.
 
         [Tooltip("Metres toward the camera (−z) each splash is nudged so it clears the water plane. Kept SMALL " +
                  "(like the spray's) so splashes stay near the surface, not out in front of the player.")]
@@ -211,6 +212,7 @@ namespace HiddenHarbours.Art
 
         private Splash[] _pool;
         private SpriteRenderer[] _renderers;
+        private SortingGroup[] _groups;   // one per splash: its order is set once, at spawn
         private Sprite _droplet;
         private Sprite _ring;
         private float _tickTimer;
@@ -249,10 +251,6 @@ namespace HiddenHarbours.Art
             // thin ring-ripple (the widening ring where a foot breaks the surface).
             _droplet = AmbientGlobals.BuildDot("WadeSplash.Droplet", 6, 48);
             _ring = BuildRing("WadeSplash.Ring", 24, 48);
-            // "Sort as 2D": make the sprite pool sort by sortingOrder against 2D content instead of falling back
-            // to world-z, so the splashes reliably clear the water mesh (the #134 quirk).
-            var group = gameObject.AddComponent<SortingGroup>();
-            group.sortingOrder = _sortingOrder;
             BuildPool();
         }
 
@@ -273,13 +271,16 @@ namespace HiddenHarbours.Art
             int n = Mathf.Max(1, _config.MaxSplashes);
             _pool = new Splash[n];
             _renderers = new SpriteRenderer[n];
+            _groups = new SortingGroup[n];
             for (int i = 0; i < n; i++)
             {
                 var go = new GameObject("splash");
                 go.transform.SetParent(transform, false);
                 var sr = go.AddComponent<SpriteRenderer>();
                 sr.sprite = _droplet;
-                sr.sortingOrder = _sortingOrder;
+                // "Sort as 2D": the splash sorts by order against 2D content instead of falling back to
+                // world-z, so it reliably clears the water mesh (the #134 quirk). Ordered when it spawns.
+                _groups[i] = go.AddComponent<SortingGroup>();
                 go.SetActive(false);
                 _renderers[i] = sr;
             }
@@ -479,6 +480,9 @@ namespace HiddenHarbours.Art
 
             float baseSize = isRing ? _config.RingSize : _config.DropletSize;
             float life = isRing ? _config.RingLifetime : _config.DropletLifetime;
+
+            // Sorted once, where it was thrown (ADR 0059 step 2).
+            _groups[i].sortingOrder = EffectSorting.OrderAt(SortedEffect.WadeSplash, pos.y);
 
             _pool[i] = new Splash
             {

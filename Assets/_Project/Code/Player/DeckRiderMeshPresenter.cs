@@ -115,6 +115,14 @@ namespace HiddenHarbours.Player
         private string _stateKey;
         private double _stateStartSeconds;
 
+        // The way to the oars under him (Core's IOarStroke, never the Boats layer itself), and the
+        // frame they put him on this frame.
+        private readonly RowingFigureReader _rowing = new RowingFigureReader();
+
+        /// <summary>True on a frame he is drawn ROWING: at the oars while they stroke, his clip and
+        /// frame taken from the oar's phase rather than from the clock.</summary>
+        public bool Rowing { get; private set; }
+
         // Character PR 2a: her blink (one schedule, aboard and ashore alike, seeded by her skin alone: she
         // has no key, hash 0) and the carry-pose table, loaded once on first ask (a missing table carries
         // nothing).
@@ -306,6 +314,7 @@ namespace HiddenHarbours.Player
         public void PoseFigure(ICharacterFigureStand stand, bool aboard)
         {
             DrawsInsteadOfSprite = false;
+            Rowing = false;
             DrawsAshore = false;
 
             if (stand == null || (stand is Object standObject && standObject == null))
@@ -353,8 +362,16 @@ namespace HiddenHarbours.Player
             // frame, in StateContext.
             string stateKey = moveKey;
             bool fellBack = false;
+            int rowFrame = 0;
             string seatedKey = _rider != null ? _rider.SeatedHelmStateKey : null;
             if (!clipPose && !string.IsNullOrEmpty(seatedKey)) stateKey = seatedKey;
+            // At the oars and they are stroking: he rows, frame-locked to the blade. Resting oars
+            // fall through to the state map, which gives his idle back.
+            else if (!clipPose && _rowing.TryPose(skin, stand, character.Stance, out string rowKey, out rowFrame))
+            {
+                stateKey = rowKey;
+                Rowing = true;
+            }
             else if (!clipPose && !CharacterSkinStateMap.Resolve(skin, character.Stance, character.Gait, CarryNow(),
                                                           out stateKey, out fellBack))
             {
@@ -390,7 +407,9 @@ namespace HiddenHarbours.Player
             int seed = GameServices.Environment != null ? GameServices.Environment.WorldSeed : 0;
             int frame = SabotageHoldFrameZero
                         ? 0
-                        : clipPose ? moveFrame : CharacterSkinPose.FrameFor(clip, seed, now, clipStart);
+                        : clipPose ? moveFrame
+                        : Rowing ? rowFrame
+                        : CharacterSkinPose.FrameFor(clip, seed, now, clipStart);
 
             IsoCharacterFigureRenderer.Life life = _life.Step(skin, string.Empty, 0u, now, _figure, looks: false);
             if (!_figure.SetPose(stateKey, frame, life)) { Stop($"could not pose '{stateKey}' frame {frame}"); return; }

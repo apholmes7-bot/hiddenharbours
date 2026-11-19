@@ -124,6 +124,25 @@ namespace HiddenHarbours.Core
         /// it reproduces to within 4 %. See <see cref="CatchSize"/> for why the law is a cube root.</summary>
         public const float DefaultFishLengthPerKgCubeRootMeters = 0.477f;
 
+        /// <summary>The default for <see cref="MinDrawnFishLengthPx"/>: 12 px, a little under two hand
+        /// widths of the 64 px figure. Measured against the catch pass 2 held sheets it lifts only the
+        /// drawings shorter than that (the small mackerel and flounder, the small and middle herring) and
+        /// leaves every other rung alone.</summary>
+        public const float DefaultMinDrawnFishLengthPx = 12f;
+
+        /// <summary>The default for <see cref="HeldFishKeylineMaxLengthPx"/>: 16 px. Measured against the
+        /// catch pass 2 held sheets it lines every herring and mackerel drawing, the small haddock, bass and
+        /// pollock and the small and middle flounder, and leaves every cod and every larger drawing alone.</summary>
+        public const float DefaultHeldFishKeylineMaxLengthPx = 16f;
+
+        /// <summary>The default for <see cref="HeldFishKeylineShade"/>: the line is the fish's own colours at
+        /// 40% brightness, a step down its own ramp rather than a colour of its own.</summary>
+        public const float DefaultHeldFishKeylineShade = 0.4f;
+
+        /// <summary>The default for <see cref="HeldFishKeylineOffsetsPx"/>: one sprite pixel to either side,
+        /// so a fish hanging by its tail gets a dark line down both long edges and none across its ends.</summary>
+        public static Vector2[] DefaultHeldFishKeylineOffsetsPx() => new[] { new Vector2(-1f, 0f), new Vector2(1f, 0f) };
+
         /// <summary>
         /// The default for <see cref="VehicleDoorSweepSeconds"/> — how long a vehicle door takes to
         /// travel from shut to fully open.
@@ -297,6 +316,20 @@ namespace HiddenHarbours.Core
         [Tooltip("Gamepad only: seconds between rows once a held stick or d-pad is running on.")]
         [Range(0.05f, 0.5f)] public float InteractChooserRepeatIntervalSeconds = DefaultInteractChooserRepeatIntervalSeconds;
 
+        /// <summary>How long the folded TASKS chip signals a new or finished task, when no config is
+        /// wired (owner ask 2026-11-16).</summary>
+        public const float DefaultTasksChipSignalSeconds = 2.4f;
+
+        /// <summary>How long each on/off beat of that signal lasts, when no config is wired.</summary>
+        public const float DefaultTasksChipBlinkSeconds = 0.3f;
+
+        [Tooltip("Folded TASKS note: seconds its chip flashes gold when a task is added or finished. The " +
+                 "note never re-opens itself; this is the whole of the nudge.")]
+        [Range(0.5f, 8f)] public float TasksChipSignalSeconds = DefaultTasksChipSignalSeconds;
+
+        [Tooltip("Folded TASKS note: seconds per on/off beat of the chip's flash.")]
+        [Range(0.1f, 1f)] public float TasksChipBlinkSeconds = DefaultTasksChipBlinkSeconds;
+
         [Tooltip("The bar for heavy work, for an action that opts in: refused at this tiredness / hunger " +
                  "stage or worse, and the player says \"I'm too tired\" / \"I'm too hungry\" / both. None = " +
                  "never refused for that need. No action opts in yet (the needs ruling: a need never stops " +
@@ -441,6 +474,16 @@ namespace HiddenHarbours.Core
                  "construction (force scales by SeaState01 × exposure). Dial Strength to taste; set Enabled " +
                  "off to restore today's flat-water handling. Per-hull response lives on each BoatHullDef.")]
         public SeakeepingSettings Seakeeping = SeakeepingSettings.Default;
+
+        [Header("Sea yaw (the wind and the sea turn her head)")]
+        [Tooltip("World-wide policy for how much the wind and the waves TURN a hull (P1): gusts and a beam " +
+                 "wind nudge the heading, a quartering or following sea makes the stern wander, light hulls " +
+                 "are turned more than heavy ones (scaled by each hull's mass, windage and seakeeping " +
+                 "response), drawing sails add weather helm (BoatHullDef.SailWeatherHelm). Quoted as a share " +
+                 "of the hull's own full helm and capped by MaxHelmShare, so the rudder wins with way on. " +
+                 "Calm water, sheltered water and a hull tied to the shore are UNCHANGED by construction. " +
+                 "Enabled off restores the handling from before.")]
+        public SeaYawSettings SeaYaw = SeaYawSettings.Default;
 
         [Header("Storm seakeeping read (ADR 0018 B2.5 — the hull answers the storm)")]
         [Tooltip("World-wide STORM policy for the VISUAL rock (the owner's 'the boat seemed to not be " +
@@ -650,6 +693,32 @@ namespace HiddenHarbours.Core
                  "⚠️ Not a feel dial — move it only if the fish rig's proportions move.")]
         [Min(0f)] public float FishLengthPerKgCubeRootMeters = DefaultFishLengthPerKgCubeRootMeters;
 
+        [Tooltip("The shortest a fish may be DRAWN, in sprite pixels, wherever it is drawn: on the " +
+                 "line, in his hands, in the tote. A catch whose size rung is drawn shorter than this " +
+                 "is shown with the smallest rung of its species that is at least this long (or the " +
+                 "largest, if none is). One rule for all three places, so the fish on the line, in the " +
+                 "hands and in the tote is always the same drawing. The catch's weight, value and " +
+                 "one-hand rule are untouched: only the picture is chosen. 0 turns the floor off. " +
+                 "Default 12 lifts only the tiniest drawings; 16 lifts every mackerel and flounder " +
+                 "to the large rung, and higher starts to erase the size ladder.")]
+        [Min(0f)] public float MinDrawnFishLengthPx = DefaultMinDrawnFishLengthPx;
+
+        [Tooltip("The contrast line on a small fish in his hands: a held fish DRAWN this long or shorter " +
+                 "(sprite px, the length measured off its held sheet) gets a dark line along its edges so " +
+                 "it reads against his clothes and the deck. Not the interact outline: no lift, no glow, " +
+                 "just the fish's own colours a step darker. 0 turns the line off. Default 16 lines every " +
+                 "herring and mackerel and the small haddock, bass, pollock and flounder.")]
+        [Min(0f)] public float HeldFishKeylineMaxLengthPx = DefaultHeldFishKeylineMaxLengthPx;
+
+        [Tooltip("How dark the contrast line is: the fish's own colours multiplied by this (0 black, 1 no " +
+                 "line at all). Default 0.4.")]
+        [Range(0f, 1f)] public float HeldFishKeylineShade = DefaultHeldFishKeylineShade;
+
+        [Tooltip("Where the contrast line is drawn: one darker copy of the held fish behind it per entry, " +
+                 "moved this many SPRITE PIXELS. The default (-1,0) and (1,0) lines both long edges of a fish " +
+                 "hanging by its tail; a single entry gives a line down one side only.")]
+        public Vector2[] HeldFishKeylineOffsetsPx = DefaultHeldFishKeylineOffsetsPx();
+
         [Header("Helm throttle (the notched single-lever throttle)")]
         [Tooltip("Feel of the diegetic notched throttle on engine hulls: how many detents from neutral to " +
                  "full AHEAD and to full ASTERN (reverse usually shorter), and an optional hold-to-repeat " +
@@ -854,6 +923,27 @@ namespace HiddenHarbours.Core
                  "a mobile build's sea never reads it. Ship it with ShallowsFloor, whose bend it shares. " +
                  "Read per camera per frame, and by each plant on the tide tick.")]
         public bool ShallowsSubmergedProps = DefaultShallowsSubmergedProps;
+
+        /// <summary>The weed's clarity by default: <b>0</b>, the floor's own law, so a config written before
+        /// this existed and an unwired sea draw the weed exactly as before. The shipped asset carries the
+        /// look's value (2026-11-17, the kelp beds).</summary>
+        public const float DefaultUnderWaterWeedClarity = 0f;
+
+        /// <summary>The most clarity the sea takes: some of the column is always read, so even the clearest
+        /// weed darkens and blues a little with depth. The water shader clamps with the same value.</summary>
+        public const float MaxUnderWaterWeedClarity = 0.9f;
+
+        [Tooltip("How much less water the weed under the tide (kelp, wrack, eelgrass, the shore plants) is " +
+                 "seen through than the floor it grows from. 0: the floor's own darkening and blueing with " +
+                 "depth. 0.5: the weed reads as if it stood half as deep, so a kelp bed still shows as a dark " +
+                 "mass at 3 to 6 m when the sand beside it has gone blue. Up to 0.9. Needs " +
+                 "ShallowsSubmergedProps on. Read every water tick (~8 Hz).")]
+        [Range(0f, MaxUnderWaterWeedClarity)]
+        public float UnderWaterWeedClarity = DefaultUnderWaterWeedClarity;
+
+        /// <summary>The clarity the sea is handed: within 0..<see cref="MaxUnderWaterWeedClarity"/>.</summary>
+        public static float ClampUnderWaterWeedClarity(float clarity) =>
+            Mathf.Clamp(clarity, 0f, MaxUnderWaterWeedClarity);
 
         /// <summary>The keyline gate's ship default — <b>OFF</b> (ADR 0031: the 1 px outline is retired
         /// from the world-art style, and the mesh fleet is the first family to go without it). A const so
@@ -1520,6 +1610,12 @@ namespace HiddenHarbours.Core
                  "they change nothing but the picture. Derived from the saved dirt, never saved. Read " +
                  "through StinkLinesSettings.Current.")]
         public StinkLinesSettings StinkLines = StinkLinesSettings.Default;
+
+        [Header("Wash fixtures (cleanliness, the look)")]
+        [Tooltip("Owner ask 2026-11-17: baths and basins fill and drain, the shower runs, the water closet " +
+                 "flushes, the player climbs into the bath, and suds froth while a soaped wash runs. The " +
+                 "picture only; nothing here is saved. Read through WashVisualsSettings.Current.")]
+        public WashVisualsSettings WashVisuals = WashVisualsSettings.Default;
 
         public float SecondsPerHour => SecondsPerDay / 24f;
         public float SecondsPerWeek => SecondsPerDay * DaysPerWeek;

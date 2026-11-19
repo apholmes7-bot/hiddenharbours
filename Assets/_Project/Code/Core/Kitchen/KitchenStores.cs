@@ -52,6 +52,7 @@ namespace HiddenHarbours.Core
         public static int Store(SaveData save, string key, KitchenStorageDef def, in KitchenContext ctx,
                                 string itemId, int count, in FreshnessState arriving)
         {
+            if (def == null || !StorageAccess.IsOpen(save, def.DeedHomeId)) return 0;   // not his yet
             KitchenStorageStateDto store = Open(save, key, def);
             int n = KitchenStorageModel.Store(store, def, ctx, itemId, count, arriving);
             if (n > 0) EventBus.Publish(new KitchenItemStored(key, def.Id, itemId, n));
@@ -64,7 +65,7 @@ namespace HiddenHarbours.Core
                                string itemId, int count, List<KitchenStackDto> taken = null)
         {
             KitchenStorageStateDto store = Find(save, key);
-            if (store == null || def == null) return 0;
+            if (store == null || def == null || !StorageAccess.IsOpen(save, def.DeedHomeId)) return 0;
             int n = KitchenStorageModel.Take(store, def, ctx, itemId, count, taken);
             if (n > 0) EventBus.Publish(new KitchenItemTaken(key, def.Id, itemId, n));
             return n;
@@ -80,6 +81,7 @@ namespace HiddenHarbours.Core
                                             int units)
         {
             if (save == null || def == null || def.Kind != KitchenStorageKind.Cooler || units <= 0) return 0;
+            if (!StorageAccess.IsOpen(save, def.DeedHomeId)) return 0;
             KitchenStorageStateDto store = Open(save, key, def);
             int want = Math.Min(units, KitchenStorageModel.IceRoom(store, def, ctx));
             int have = SupplyLocker.Count(save, def.IceSupplyId);

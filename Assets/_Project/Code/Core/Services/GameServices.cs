@@ -436,9 +436,9 @@ namespace HiddenHarbours.Core
         /// (a galley, a house kitchen, a microwave) runs recipes through; the output goes into the supply
         /// locker, where <see cref="Food"/> eats it. Never null: a default over the shipped recipes and foods
         /// is made on first read; a test assigns its own. The runner in this slot is subscribed to
-        /// <see cref="GameLoaded"/> and drops every cook job on a load or new game (jobs are session-only and
-        /// must never deliver into a different save); replacing it unsubscribes the old one. Cleared by
-        /// <see cref="Reset"/>.
+        /// <see cref="GameLoaded"/> and rebinds on a load or new game, so what is cooking is always the loaded
+        /// save's own <see cref="SaveData.CookJobs"/> and a job never delivers into a different save; replacing
+        /// it unsubscribes the old one. Cleared by <see cref="Reset"/>.
         /// FLAG lead-architect: new Core contract (cooking).
         /// </summary>
         public static RecipeRunner Cooking
@@ -1059,6 +1059,14 @@ namespace HiddenHarbours.Core
         public static HullTrimSettings HullTrim =>
             Config != null ? Config.HullTrim : HullTrimSettings.Default;
 
+        /// <summary>The SEA-YAW policy (the wind and the sea turn a hull's head), same contract as
+        /// <see cref="HullTrim"/>: the <c>Config != null</c> discipline and resolved per read, so the
+        /// sliders move the next tick. Falls back to <see cref="SeaYawSettings.Default"/> with no config
+        /// wired. Read by <c>BoatController</c>.
+        /// FLAG lead-architect: new Core accessor (the HullTrim pattern).</summary>
+        public static SeaYawSettings SeaYaw =>
+            Config != null ? Config.SeaYaw : SeaYawSettings.Default;
+
         /// <summary>The LADDER-BOARDING policy (the tide gap at which a step aboard becomes a climb, and
         /// the measured rig geometry the climb runs on), same contract as <see cref="WaveField"/> —
         /// including the <c>Config != null</c> discipline (never <c>?.</c>/<c>??</c> on a
@@ -1265,6 +1273,29 @@ namespace HiddenHarbours.Core
         public static float FishLengthPerKgCubeRootMeters =>
             Config != null ? Config.FishLengthPerKgCubeRootMeters
                            : GameConfig.DefaultFishLengthPerKgCubeRootMeters;
+
+        /// <summary>The readability floor on a fish's DRAWN length, sprite px (see
+        /// <see cref="GameConfig.MinDrawnFishLengthPx"/>), same contract as
+        /// <see cref="MaxOneHandFishLengthMeters"/>: the config's value, or the default with none.</summary>
+        public static float MinDrawnFishLengthPx =>
+            Config != null ? Config.MinDrawnFishLengthPx : GameConfig.DefaultMinDrawnFishLengthPx;
+
+        /// <summary>The longest held fish drawing that gets the contrast line, sprite px (see
+        /// <see cref="GameConfig.HeldFishKeylineMaxLengthPx"/>): the config's value, or the default with none.</summary>
+        public static float HeldFishKeylineMaxLengthPx =>
+            Config != null ? Config.HeldFishKeylineMaxLengthPx : GameConfig.DefaultHeldFishKeylineMaxLengthPx;
+
+        /// <summary>How dark the contrast line is (see <see cref="GameConfig.HeldFishKeylineShade"/>).</summary>
+        public static float HeldFishKeylineShade =>
+            Config != null ? Config.HeldFishKeylineShade : GameConfig.DefaultHeldFishKeylineShade;
+
+        /// <summary>Where the contrast line is drawn, sprite px (see
+        /// <see cref="GameConfig.HeldFishKeylineOffsetsPx"/>). Read once when a fish is put in his hands, never
+        /// per frame, so the default's fresh array is no per-frame allocation.</summary>
+        public static UnityEngine.Vector2[] HeldFishKeylineOffsetsPx =>
+            Config != null && Config.HeldFishKeylineOffsetsPx != null
+                ? Config.HeldFishKeylineOffsetsPx
+                : GameConfig.DefaultHeldFishKeylineOffsetsPx();
 
         /// <summary>The tide table's owner tunables (VS-06) — how far the almanac page looks ahead and
         /// how finely it hunts each turn. Same contract as <see cref="WaveField"/>, including the
@@ -1576,7 +1607,7 @@ namespace HiddenHarbours.Core
             FoodPerishability = null;    // → NothingSpoilsPerishability.Instance; likewise never null
             KitchenStorageCatalog.Clear();
             Farm = null;                 // → a fresh default on next read; drops its catalog and baseline
-            Cooking = null;              // drops every session-only cook job
+            Cooking = null;              // drops the runner; the save's cook rows stay with the save
             Food = null;                 // → a fresh default on next read; drops its loaded food book
             Relationships = null;        // → a fresh default on next read; reseeds from the shipped ties
             Crew = null;                 // → a fresh, empty roster on next read
@@ -1588,6 +1619,7 @@ namespace HiddenHarbours.Core
             Hands = null;
             CatchHands = null;
             PlayerHold = null;
+            PlayerStorage.Clear();       // no container outlives the services that listed it
             CurrentRegionId = null;
             SwellClimates.Clear();
             PendingArrivalKey = null;

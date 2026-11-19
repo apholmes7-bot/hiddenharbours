@@ -134,6 +134,28 @@ namespace HiddenHarbours.Boats
         public float LastSailTargetKn { get; private set; }
 
         /// <summary>
+        /// The share of her full helm the wind and the sea asked of her on the last physics tick
+        /// (<see cref="SeaYawMath"/>; positive = turning her bow to port). 0 in calm or sheltered water,
+        /// with a line ashore, and on any tick that did not reach the sea-yaw pass. Read-only for tests and
+        /// dev rigs; nothing steers by it.
+        /// </summary>
+        public float LastSeaYawHelmShare { get; private set; }
+
+        // The mooring and anchor on this hull, if any. Looked up ONCE, on the first sea-yaw pass after the
+        // hull is set (a test rig or a builder may add them after Awake but composes them before it sets
+        // the hull), then cached, misses included: no per-tick component search. Read by the sea-yaw pass
+        // only: a line ashore holds her head, an anchor turns it to the wind.
+        private BoatMooring _mooringRef;
+        private BoatAnchor _anchorRef;
+        private bool _seaYawPartsResolved;
+
+        // The sea the sim is running THIS tick (SimTrains), derived once and shared by the swell force
+        // and the sea yaw. Cleared at the top of every physics tick; never saved (rule 5).
+        private bool _simTrainsThisTick;
+        private bool _simTrainsPublished;
+        private WaveTrains _simTrains;
+
+        /// <summary>
         /// ⭐ <b>Is she to be DRAWN in irons?</b> The one place anything may ask (owner ruling
         /// 2026-09-06): the picture is derived from the drive's OWN apparent wind, never from a second
         /// derivation and never from a threshold the presentation keeps for itself. A pose loop, a HUD
@@ -681,6 +703,8 @@ namespace HiddenHarbours.Boats
             // next physics tick, never carried over from the last hull's.
             _trimTargetDegrees = 0f;
             _trimRestSerial++;
+            // A (re)built rig looks for its mooring and anchor again on the next sea-yaw pass.
+            _seaYawPartsResolved = false;
             if (_hull == null) return;
             var rb = _rb != null ? _rb : GetComponent<Rigidbody2D>();
             if (rb != null) rb.mass = BodyMassFor(_hull.MassKg);
@@ -768,6 +792,9 @@ namespace HiddenHarbours.Boats
             // for last tick's bow. The accumulators start empty and fill as each force is applied.
             _trimTargetDegrees = 0f;
             _trimDrive = 0f; _trimResist = 0f;
+            LastSeaYawHelmShare = 0f;
+            // The sea is derived at most once per tick (SimTrains): every reader this tick shares it.
+            _simTrainsThisTick = false;
             if (_hull == null) return;
             // Resolve the body lazily (the Stop()/SetHull precedent): the unmanned drift tick can run
             // through the disabled component in rigs where Awake hasn't cached it yet.
@@ -843,6 +870,12 @@ namespace HiddenHarbours.Boats
             // construction — and the whole thing is off when the policy switch is off. Gentle-to-medium
             // for M1: it makes rough/exposed water a real challenge, it does NOT capsize/swamp (M2). ---
             ApplySeakeeping(fwd, env);
+
+            // --- Sea yaw: THE WIND AND THE SEA TURN HER HEAD (P1). The wind shove above acts at her
+            // centre of mass and the seakeeping slew reads the sea at her middle, so neither has a lever;
+            // this is the turn her windage and her bow-to-stern sea give her. A share of her own helm,
+            // capped below it, so the rudder wins with way on. Zero in calm, in shelter, and tied up. ---
+            ApplySeaYaw(fwd, env, unmanned);
 
             // --- Boat-cross gate (St Peters, P1/P5): can't pass water too shallow to float the hull. ---
             // The inverse of the on-foot walkability gate, over the SAME authored terrain + tide. Forgiving:
@@ -1118,14 +1151,7 @@ namespace HiddenHarbours.Boats
             Vector2 pos = _rb.position;
 
             WaveFieldSettings waveField = GameServices.WaveField;
-            bool published = SharedWaveField.TryGet(out WaveTrains trains);
-            if (!published)
-            {
-                trains = GameServices.Environment is IWaveWindSource history
-                    ? WaveMemory.TrainsAt(history, now, in waveField)
-                    : WaveMath.TrainsFrom(env.WindVector, env.SeaState01, in waveField);
-                trains = GameServices.WithSwell(in trains, now, waveField.Gravity);
-            }
+            WaveTrains trains = SimTrains(env, now, in waveField, out bool published);
             // Published travel is baked; a first-frame fallback carries raw phases at the clock.
             WaveSample wave = WaveMath.Sample(pos, published ? 0.0 : now, in trains, GameServices.FetchAt(pos));
 
@@ -1191,6 +1217,119 @@ namespace HiddenHarbours.Boats
                 _rb.AddForce(-_rb.linearVelocity * damp, ForceMode2D.Force);
                 _rb.AddTorque(-_rb.angularVelocity * damp);
             }
+        }
+
+        /// <summary>
+        /// The sea the sim is running this tick: the shared published trains when the surface has
+        /// published them (their travel is baked, so they are sampled at time 0), else the trains derived
+        /// from the wind history (or the instantaneous wind) plus the swell, sampled at the clock. One
+        /// derivation for every force that reads the sea, so the swell's push and the sea yaw read one sea.
+        /// Derived once per physics tick and cached for the rest of it (the clock, the wind and the
+        /// published field cannot change inside a tick, so the second reader gets the identical value).
+        /// </summary>
+        private WaveTrains SimTrains(EnvironmentSample env, double now, in WaveFieldSettings waveField,
+                                     out bool published)
+        {
+            if (!_simTrainsThisTick)
+            {
+                _simTrains = DeriveSimTrains(env, now, in waveField, out _simTrainsPublished);
+                _simTrainsThisTick = true;
+            }
+            published = _simTrainsPublished;
+            return _simTrains;
+        }
+
+        /// <summary>The derivation <see cref="SimTrains"/> caches: published trains first, else the boot
+        /// fallbacks (the wind history, else the instantaneous wind) plus the swell.</summary>
+        private static WaveTrains DeriveSimTrains(EnvironmentSample env, double now, in WaveFieldSettings waveField,
+                                                  out bool published)
+        {
+            published = SharedWaveField.TryGet(out WaveTrains trains);
+            if (published) return trains;
+            trains = GameServices.Environment is IWaveWindSource history
+                ? WaveMemory.TrainsAt(history, now, in waveField)
+                : WaveMath.TrainsFrom(env.WindVector, env.SeaState01, in waveField);
+            return GameServices.WithSwell(in trains, now, waveField.Gravity);
+        }
+
+        /// <summary>
+        /// ⭐ <b>The wind and the sea turn her head</b> (P1; the law is <see cref="SeaYawMath"/>, the dials
+        /// <see cref="SeaYawSettings"/> on GameConfig). Two turns, each a share of her own full helm:
+        /// <list type="bullet">
+        /// <item><b>Wind:</b> above the calm threshold every gust in the weather model's wind turns her,
+        /// most with the wind on her beam. A hull blows off downwind; with her sails drawing her weather
+        /// helm brings her up into it instead; at anchor she lies head to wind. Light, high-sided hulls
+        /// are turned more (her WindExposure over her mass).</item>
+        /// <item><b>Waves:</b> the difference in the sea's beam slope under her bow and her stern, read
+        /// from the same trains the swell force reads. A quartering or following sea, met slowly, makes
+        /// her stern wander. Scaled by her seakeeping response and by the displaced sea's SEE==FEEL factor
+        /// like the swell force.</item>
+        /// </list>
+        /// Both fade with the seakeeping exposure (shelter turns nothing), the sum is capped below her
+        /// helm, and a hull with a line ashore is held by it. Deterministic: wind and waves are the sim's
+        /// own (worldSeed, gameTime) fields; nothing is drawn at random and nothing is stored.
+        /// </summary>
+        private void ApplySeaYaw(Vector2 fwd, EnvironmentSample env, bool unmanned)
+        {
+            SeaYawSettings policy = _config != null ? _config.SeaYaw : GameServices.SeaYaw;
+            if (!policy.Enabled) return;
+
+            // Tied up: the line holds her head. The dock is unchanged.
+            if (!_seaYawPartsResolved)
+            {
+                TryGetComponent(out _mooringRef);
+                TryGetComponent(out _anchorRef);
+                _seaYawPartsResolved = true;
+            }
+            if (_mooringRef != null && _mooringRef.HasLineOut) return;
+
+            float fullHelm = SeaYawMath.FullHelmTorque(_hull);
+            if (fullHelm <= 0f) return;
+
+            double now = GameServices.Clock != null ? GameServices.Clock.TotalSeconds : 0.0;
+            Vector2 pos = _rb.position;
+
+            // The same place gate as the swell force: the shallow lee is sheltered, open water is exposed.
+            float depth = BoatCrossing.DepthAt(GameServices.TidalTerrain, GameServices.Environment, now, pos);
+            float exposure = SeakeepingForcesMath.Exposure01(
+                depth, _seakeeping.ShelterDepthMeters, _seakeeping.FullExposureDepthMeters);
+            if (exposure <= 0f) return;
+
+            // --- The wind's turn ---
+            bool anchored = _anchorRef != null && _anchorRef.IsDown;
+            bool sailPlan = _hull.HasSailPlan;
+            bool sailsDrawing = sailPlan && LastSailTargetKn > 0f;
+            float bias = SeaYawMath.WindYawBias(anchored, sailPlan, unmanned, sailsDrawing,
+                                                _hull.SailWeatherHelm, in policy);
+            float windSusceptibility = SeaYawMath.WindSusceptibility(_hull.WindExposure, _hull.MassKg, in policy);
+            float windShare = SeaYawMath.WindShare(env.WindVector, fwd, bias, windSusceptibility, in policy);
+
+            // --- The sea's turn (only while the seakeeping policy is working the hull at all) ---
+            float waveShare = 0f;
+            if (_seakeeping.Enabled && env.SeaState01 > 0f)
+            {
+                WaveFieldSettings waveField = GameServices.WaveField;
+                WaveTrains trains = SimTrains(env, now, in waveField, out bool published);
+                float halfSpan = SeaYawMath.WaveHalfSpan(_hull.LengthMeters, trains.Dominant.Wavelength, in policy);
+                if (halfSpan > 0f)
+                {
+                    double t = published ? 0.0 : now;
+                    WaveFetchSample fetch = GameServices.FetchAt(pos);
+                    Vector2 bowSlope = WaveMath.Sample(pos + fwd * halfSpan, t, in trains, fetch).Slope;
+                    Vector2 sternSlope = WaveMath.Sample(pos - fwd * halfSpan, t, in trains, fetch).Slope;
+                    float waveSusceptibility = SeaYawMath.WaveSusceptibility(ResponseFor(_hull), in policy);
+                    bool displacedActive = DisplacedSea.TryGet(out DisplacedSeaState displaced);
+                    waveShare = SeaYawMath.WaveShare(bowSlope, sternSlope, fwd, waveSusceptibility, in policy)
+                              * SeakeepingForcesMath.DisplacedForceScale(displacedActive, depth, in displaced);
+                }
+            }
+
+            float share = SeaYawMath.Combine(windShare, waveShare, exposure, in policy);
+            LastSeaYawHelmShare = share;
+            // The same feel scale her own helm torque is applied at: the rudder's for a sailing or engine
+            // hull, the oars' (the force scale) for a rowed one. A share of her helm stays a share of it.
+            float feel = sailPlan || UsesEngineHelm(_hull.Propulsion) ? RudderFeelScale : ForceFeelScale;
+            if (share != 0f) _rb.AddTorque(SeaYawMath.Torque(share, fullHelm, feel));
         }
     }
 }

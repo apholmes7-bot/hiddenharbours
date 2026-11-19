@@ -77,7 +77,10 @@ namespace HiddenHarbours.World
         private readonly Dictionary<string, double> _ranAt =
             new Dictionary<string, double>(8, System.StringComparer.Ordinal);
 
-        private RoutineStations _stations;
+        /// <summary>Every station table loaded, re-read at each roster rescan. More than one region keeps a
+        /// table (St Peters, Cumberland, the Nine Mile Creek wholesalers) and a neighbour's scene can be
+        /// loaded alongside this one, so "the first table found" could be the wrong region's.</summary>
+        private readonly List<RoutineStations> _stationTables = new List<RoutineStations>(4);
         private float _tickClock;
         private float _rosterClock;
         private bool _subscribed;
@@ -235,7 +238,20 @@ namespace HiddenHarbours.World
                 if (!string.IsNullOrEmpty(id)) _villagers[id] = v;
             }
 
-            if (_stations == null) _stations = FindAnyObjectByType<RoutineStations>(FindObjectsInactive.Exclude);
+            _stationTables.Clear();
+            foreach (RoutineStations table in FindObjectsByType<RoutineStations>(FindObjectsInactive.Exclude,
+                                                                                 FindObjectsSortMode.None))
+                if (table != null) _stationTables.Add(table);
+        }
+
+        /// <summary>The named station in whichever loaded table has it. Station ids carry their region
+        /// (<c>station.&lt;region&gt;.&lt;name&gt;</c>), so two tables never answer for the same id.</summary>
+        private bool TryFindStation(string id, out RoutineStationEntry station)
+        {
+            for (int i = 0; i < _stationTables.Count; i++)
+                if (_stationTables[i] != null && _stationTables[i].TryFind(id, out station)) return true;
+            station = default;
+            return false;
         }
 
         /// <summary>
@@ -248,7 +264,7 @@ namespace HiddenHarbours.World
         {
             IGameClock clock = GameServices.Clock;
             IEnvironmentService env = GameServices.Environment;
-            if (clock == null || env == null || _stations == null) return;
+            if (clock == null || env == null || _stationTables.Count == 0) return;
 
             string region = GameServices.CurrentRegionId;
             if (string.IsNullOrEmpty(region)) return;
@@ -272,7 +288,7 @@ namespace HiddenHarbours.World
                                                                 def.EarliestHour, def.LatestHour);
                 if (!ConversationSchedule.IsDue(hour, start, def.LatestHour)) continue;
 
-                if (!_stations.TryFind(def.StationId, out RoutineStationEntry station))
+                if (!TryFindStation(def.StationId, out RoutineStationEntry station))
                 { Refuse(def, $"no station '{def.StationId}' in this region"); continue; }
 
                 VillagerRoutine a = Villager(def.ParticipantId(0));

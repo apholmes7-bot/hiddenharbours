@@ -35,8 +35,35 @@ namespace HiddenHarbours.Core
         [Tooltip("The WashStationDef id the sea uses (its rate and base level live on that asset).")]
         public string SeaStationId;
 
+        [Header("Soap")]
+        [Tooltip("The SupplyDef id of a bar of soap (bought at the store, counted in the supply locker). " +
+                 "Without one, no wash station gets the player cleaner than UnsoapedCeiling. EMPTY turns the " +
+                 "soap rule off: every station reaches its own ceiling again.")]
+        public string SoapSupplyId;
+
+        [Tooltip("How many washes one bar of soap lasts. A soaped wash at a shower or a bath uses one; the " +
+                 "first wash on a new bar takes the bar out of the locker and the rest stay counted as the " +
+                 "open bar's washes left. 1 or less: every soaped wash uses a whole bar.")]
+        [Min(1)] public int WashesPerSoapBar;
+
+        [Tooltip("How clean (0..1, 1 = fully clean) any station can get the player WITHOUT soap. A station " +
+                 "whose own ceiling is already lower (the sink) keeps its own; the sea is never soaped and " +
+                 "keeps its base. Only a station that could go higher (shower, bath) uses soap.")]
+        [Range(0f, 1f)] public float UnsoapedCeiling;
+
+        [Tooltip("What the player thinks (an inner-voice bubble) when a wash that wants soap begins without " +
+                 "any, or when he is already as clean as he gets without it.")]
+        public string NoSoapLine;
+
         /// <summary>The id of the shipped sea station asset.</summary>
         public const string DefaultSeaStationId = "washstation.sea";
+
+        /// <summary>The id of the shipped bar of soap (a <c>SupplyDef</c> in the store's catalog).</summary>
+        public const string DefaultSoapSupplyId = "supply.soap_bar";
+
+        /// <summary>True when the soap rule is on (a soap id is set). A config written before the rule
+        /// existed has none, so it reads as off rather than as a zero ceiling that would clean nothing.</summary>
+        public bool SoapRuleOn => !string.IsNullOrEmpty(SoapSupplyId);
 
         /// <summary>The shipped starting numbers (guesses for the owner to tune by feel). Read with
         /// <see cref="GameConfig.SecondsPerDay"/> 1800: one game hour is 75 real seconds.</summary>
@@ -65,6 +92,10 @@ namespace HiddenHarbours.Core
             MaxStretchGameMinutes = 240f,
             WadeCountsAsSea = false,
             SeaStationId = DefaultSeaStationId,
+            SoapSupplyId = DefaultSoapSupplyId,
+            WashesPerSoapBar = 8,                 // one bar, eight showers or baths
+            UnsoapedCeiling = 0.85f,              // without soap: 85 % clean at best (the sink stays at 80 %)
+            NoSoapLine = "No soap. Can't get properly clean.",
         };
     }
 }
