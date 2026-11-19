@@ -293,6 +293,15 @@ lowbush blueberry).
    surf spray, wade splash, moment burst, buoys, emergent shore-plant sprites, NPC catch and rod fight
    line and splash. Add the low-band literal guard test. Visible change: these now interleave with decor
    by position instead of drawing under all of it. (art-pipeline, gameplay-systems for the rod)
+   *As built:* Core `EffectSorting` holds the rungs (spray 0, a splash at somebody's feet -1, a trap
+   splash +1 over its buoy, buoys 0, emergent plants 0, the NPC catch 0 at the boat's pivot when it has
+   no skipper, the rod line and splash +1 over the fisher). The pooled emitters (spray, surf spray, wade
+   splash, moment burst, trap splash) drop their one host `SortingGroup` for one per particle, ordered
+   at spawn. `EffectSortingTests` pins the table and the call sites and adds the low-floor guard, with a
+   listed row for every literal still on main. Left as open points, not named in this step: dust motes
+   (8), the NPC haul rope and the pot at the rail (2), the rod fight's bobber and surfaced fish (49),
+   deep shape (20) and sink ripple (15), and the editor-baked nav buoys (3, a re-bake). The deck-borne
+   orders (interior 2, containers 50, telltale 60, pot-deck props 51 and 52) wait for step 3's group.
 3. **The boat group.** A root `SortingGroup` installed by `BoatHullSkinner` on both paths, Y-sorted
    each `LateUpdate`. The ropes escape it. The pier rule becomes an input. Ambient fleet, NPC pot boats,
    moored boats and the beached wreck all go through the same rule (`BeachedWreck` loses its private copy).

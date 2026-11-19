@@ -161,12 +161,13 @@ namespace HiddenHarbours.Player
         [SerializeField, Min(0f)] private float _boilCalmRadiusM = 0.3f;
         [SerializeField, Range(0f, 1f)] private float _boilAlpha = 0.5f;
 
-        [Header("Sorting (world elements; the rod rides the fisher's own order ±1)")]
-        [SerializeField] private int _lineSortingOrder = 50;     // the trap rope's precedent
+        // The rod, the line and the splash ride the fisher's own order (the rod ±1; the line and splash
+        // EffectSorting.RodOverFisherRungs in front, ADR 0059 step 2). The water elements below are not yet
+        // re-anchored: an open point of step 2 (see EffectSortingTests' low-floor guard).
+        [Header("Sorting (water elements)")]
         [SerializeField] private int _waterElementOrder = 49;    // bobber / surfaced fish / held under line
         [SerializeField] private int _shadowSortingOrder = 20;   // the deep shape sits under water detail
         [SerializeField] private int _rippleSortingOrder = 15;
-        [SerializeField] private int _splashSortingOrder = 51;
 
         // ---- runtime ----------------------------------------------------------------------------
         private PlayerFishingAnimator _animator;
@@ -281,7 +282,7 @@ namespace HiddenHarbours.Player
             _bobberSr = MakeChild("Bobber", _waterElementOrder);
             _fishSr = MakeChild("FishOnTheLine", _waterElementOrder);
             _heldSr = MakeChild("HeldCatch", 0);
-            _splashSr = MakeChild("Splash", _splashSortingOrder);
+            _splashSr = MakeChild("Splash", 0);   // ordered over the fisher as it plays (RenderSplash)
             _rippleSr = MakeChild("SinkRipple", _rippleSortingOrder);
             _line = MakeLine();
             _lineBuffer = new Vector2[Mathf.Max(2, _lineSegments)];
@@ -1108,6 +1109,13 @@ namespace HiddenHarbours.Player
             float phase = Time.time * _shudderHz * (2f * Mathf.PI);
 
             if (!_line.enabled) _line.enabled = true;
+            // ADR 0059 step 2: the line rides the fisher's own order, one rung in front (Core EffectSorting),
+            // not a parked 50. One int, written only when it changes.
+            if (_playerSr != null)
+            {
+                int lineOrder = EffectSorting.OrderOver(SortedEffect.RodLine, _playerSr.sortingOrder);
+                if (_line.sortingOrder != lineOrder) _line.sortingOrder = lineOrder;
+            }
             _line.positionCount = n;
             for (int i = 0; i < n; i++)
             {
@@ -1157,6 +1165,12 @@ namespace HiddenHarbours.Player
                 return;
             }
             _splashSr.transform.position = new Vector3(_splashPos.x, _splashPos.y, 0f);
+            // ADR 0059 step 2: the splash rides the fisher's own order, one rung in front, not a parked 51.
+            if (_playerSr != null)
+            {
+                int splashOrder = EffectSorting.OrderOver(SortedEffect.RodSplash, _playerSr.sortingOrder);
+                if (_splashSr.sortingOrder != splashOrder) _splashSr.sortingOrder = splashOrder;
+            }
             _splashSr.sprite = _splashFrames[frame];
             _splashSr.enabled = true;
         }
@@ -1200,8 +1214,7 @@ namespace HiddenHarbours.Player
             lr.endWidth = _lineWidth;
             var shader = Shader.Find("Sprites/Default");
             if (shader != null) lr.material = new Material(shader);   // null headless → skip (rope precedent)
-            lr.sortingOrder = _lineSortingOrder;
-            lr.positionCount = 0;
+            lr.positionCount = 0;   // ordered over the fisher as it draws (RenderLine)
             lr.enabled = false;
             return lr;
         }
