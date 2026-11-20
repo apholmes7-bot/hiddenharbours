@@ -378,8 +378,11 @@ namespace HiddenHarbours.Tests.PlayMode
 
         [UnityTest] public IEnumerator ProductionAllocation_Resize_TextureLoss_CameraIsolation()
         {
-            var passType=typeof(IsoFacetHullFeature).GetNestedType("HullPass",BindingFlags.NonPublic);
-            var pass=Activator.CreateInstance(passType,true);
+            // Built the way the feature builds it (Create: new HullPass()). The constructor's only
+            // parameter is optional, so reflection's parameterless lookup cannot find it; a direct call
+            // also turns a future signature change into a compile error instead of a GPU-only failure.
+            var passType=typeof(IsoFacetHullFeature.HullPass);
+            object pass=new IsoFacetHullFeature.HullPass();
             var get=passType.GetMethod("GetFoamState",Private);
             var cameraA=_cameraA;
             var cameraB=_cameraB;

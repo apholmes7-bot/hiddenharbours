@@ -42,7 +42,9 @@ The owner saw it as "when the player swims or does other actions it switches to 
    depth over the feet capped at the tread line. The margins are `GameConfig` values. In the `HH_FIGURE` shader
    variant (`_HHFigureWater`, `_HHFigureWaterTint`, `_HHFigureWaterLook`) the part under the line draws tinted
    and dimmed toward the sea, as the old sprite's submerged body did, and a thin pale foam band fades up from
-   the line; the reflection never draws it. With `FigureShowsUnderwater` off it is discarded instead (a hard
+   the line; the reflection never draws it. Wading takes its own band (`FigureWadeWaterlineFoamMetres`,
+   0.1 m): standing upright he sees the band edge-on, and the swim band's 0.03 m drew under one pixel at the
+   skin's 32 px/m and 40° elevation, so the line at the surface vanished. With `FigureShowsUnderwater` off it is discarded instead (a hard
    cut). While he swims or treads, his sun shadow is quietened (`SpriteShadow.Quiet`): it is cast from the
    hidden body sprite, upright, and on open water it read as a ghost beside him. Every number is a
    `GameConfig` value. Nothing outside `#ifdef HH_FIGURE` changes, so hulls compile the same program.

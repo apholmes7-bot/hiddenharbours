@@ -259,7 +259,6 @@ render/input exclusions.
 | `Boats/DoryOarLayer.cs` | 185 | Presentation, cache refresh or interaction-frame guard |
 | `Boats/DoryOarMeshLayer.cs` | 125 | Presentation, cache refresh or interaction-frame guard |
 | `Boats/HelmControlRelay.cs` | 334 | Presentation, cache refresh or interaction-frame guard |
-| `Boats/MastheadTelltale.cs` | 78, 119 | Presentation, cache refresh or interaction-frame guard |
 | `Boats/MeshHullDriver.cs` | 307 | Presentation, cache refresh or interaction-frame guard |
 | `Boats/OutboardMotorLayer.cs` | 342 | Presentation, cache refresh or interaction-frame guard |
 | `Boats/OutboardMotorMeshLayer.cs` | 153 | Presentation, cache refresh or interaction-frame guard |

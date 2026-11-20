@@ -157,9 +157,17 @@ namespace HiddenHarbours.Player
         public void SetDrawnElsewhere(bool drawnElsewhere)
         {
             ResolveRenderer();
-            if (_renderer != null && _renderer.forceRenderingOff != drawnElsewhere)
+            if (_renderer == null) return;
+            if (_renderer.forceRenderingOff != drawnElsewhere)
                 _renderer.forceRenderingOff = drawnElsewhere;
+            // ⚠️ forceRenderingOff hides the sprite but not its sun shadow: SpriteShadow keys off the
+            // caster's ENABLED, so a hidden gear rod kept throwing its silhouette on the ground and the
+            // water beside the figure that is really holding it. Quiet goes with the hide, both ways.
+            if (_shadow == null) _shadow = _renderer.GetComponent<SpriteShadow>();
+            if (_shadow != null && _shadow.Quiet != drawnElsewhere) _shadow.Quiet = drawnElsewhere;
         }
+
+        private SpriteShadow _shadow;   // the hidden sprite's sun caster, if the installer gave it one
 
         // ---- IInteractable --------------------------------------------------------------------------
 

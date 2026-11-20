@@ -637,7 +637,8 @@ namespace HiddenHarbours.Player
             if (_hands == null) TryGetComponent(out _hands);
             if (_meshPresenter == null) TryGetComponent(out _meshPresenter);
             _meshRod ??= new HeldRodMesh(transform);
-            ToolDef rod = _hands != null ? _hands.HeldFightRod : null;
+            // A stowed rod (he is swimming, CarryHands.ToolsStowed) is not in his hand: no rod to draw.
+            ToolDef rod = _hands != null && !_hands.ToolsStowed ? _hands.HeldFightRod : null;
             float width = config != null ? config.HeldPropLineWidthPx : GameConfig.DefaultHeldPropLineWidthPx;
             return _meshRod.TryDraw(on, rod, LiveFigure(), width);
         }

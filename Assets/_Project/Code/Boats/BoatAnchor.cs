@@ -49,7 +49,7 @@ namespace HiddenHarbours.Boats
     /// <para><b>No magic numbers</b> (rule 6): every constant comes from the owner's
     /// <see cref="GameServices.Anchor"/> policy (<c>GameConfig.Anchor</c>) or from hull data, resolved
     /// per tick so dragging a slider in play changes the next hold. The component is runtime-spawned by
-    /// <see cref="BoatController"/> (the <see cref="MastheadTelltale"/>/<see cref="HelmControlRelay"/>
+    /// <see cref="BoatController"/> (the <see cref="HelmControlRelay"/>
     /// precedent), so every already-built scene grows it with no builder re-run — which is also why it
     /// serializes no tunables of its own: fields on a component that exists in no prefab could never be
     /// edited by the owner.</para>

@@ -227,7 +227,6 @@ namespace HiddenHarbours.Tests.EditMode
             // Rides with the boat: a local order inside the boat's SortingGroup since step 3 (BoatSortingGroupTests).
             "Assets/_Project/Code/Boats/BoatInteriorInstaller.cs|_sortingOrderAboveHull|2",
             "Assets/_Project/Code/Boats/DeckContainerPresenter.cs|ContainerSortingOrder|50",
-            "Assets/_Project/Code/Boats/MastheadTelltale.cs|TelltaleSortingOrder|60",
             "Assets/_Project/Code/Fishing/PotDeckWorkController.cs|PotSortingOrder|51",
             "Assets/_Project/Code/Fishing/PotDeckWorkController.cs|AnimalSortingOrder|52",
 

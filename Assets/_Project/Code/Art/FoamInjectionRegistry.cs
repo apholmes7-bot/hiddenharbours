@@ -215,7 +215,46 @@ namespace HiddenHarbours.Art
         public static float LookStrength { get; private set; }
 
         /// <summary>Everything the feature needs to decide whether to record the pass at all.</summary>
-        public static bool ShouldRun => LookStrength > 0f && (s_Live.Count > 0 || SurfDepositStrength > 0f);
+        public static bool ShouldRun => LookStrength > 0f &&
+            (s_Live.Count > 0 || SurfDepositStrength > 0f || HiddenHarbours.Core.FoamSplashes.Count > 0);
+
+        // ---- SMALL DEPOSITS (the one foam, the owner 2026-11-19) ---------------------------------
+        // An oar blade's foam comes through the Core seam (FoamSplashes) in DRAWN world points. Each is
+        // offered for a slot exactly like a hull's capsule, under a fixed stable key, with the surface's
+        // drawing lift taken off once per frame (the transom's own inversion), never per camera.
+        static readonly string[] s_SplashKeys = BuildSplashKeys();
+        static readonly FoamInjection[] s_SplashLaid = new FoamInjection[HiddenHarbours.Core.FoamSplashes.Capacity];
+        static int s_SplashLaidFrame = -1;
+        static int s_SplashLaidCount;
+        static int s_SplashLaidVersion = -1;
+
+        static string[] BuildSplashKeys()
+        {
+            var keys = new string[HiddenHarbours.Core.FoamSplashes.Capacity];
+            for (int i = 0; i < keys.Length; i++)
+                keys[i] = "~splash/" + i.ToString(System.Globalization.CultureInfo.InvariantCulture);
+            return keys;
+        }
+
+        /// <summary>This frame's small deposits as the buffer lays them (lift inverted), cached per frame.</summary>
+        static int LaidSplashes()
+        {
+            int frame = Time.frameCount;
+            int version = HiddenHarbours.Core.FoamSplashes.Version;
+            if (frame == s_SplashLaidFrame && version == s_SplashLaidVersion) return s_SplashLaidCount;
+            s_SplashLaidFrame = frame;
+            s_SplashLaidVersion = version;
+            int n = Mathf.Min(HiddenHarbours.Core.FoamSplashes.CountFor(frame), s_SplashLaid.Length);
+            for (int i = 0; i < n; i++)
+            {
+                HiddenHarbours.Core.FoamSplashes.Deposit d = HiddenHarbours.Core.FoamSplashes.Get(i);
+                Vector2 from = FoamInjector.BelowSurfaceLift(d.From);
+                Vector2 to = (d.To - d.From).sqrMagnitude < 1e-8f ? from : FoamInjector.BelowSurfaceLift(d.To);
+                s_SplashLaid[i] = new FoamInjection(from, to, d.Radius, d.Amount, d.Vigour);
+            }
+            s_SplashLaidCount = n;
+            return n;
+        }
 
         /// <summary>
         /// The velocity the whole buffer advects at (m/s) — the shared wind/current blend
@@ -500,8 +539,8 @@ namespace HiddenHarbours.Art
                 key = "/" + node.GetSiblingIndex().ToString(System.Globalization.CultureInfo.InvariantCulture)
                     + ":" + node.name + key;
             s_SelectionKeys[injector] = injector.gameObject.scene.path + key;
-            if (s_Candidates.Length < s_Live.Count)
-                s_Candidates = new FoamCandidate[s_Live.Count];
+            if (s_Candidates.Length < s_Live.Count + HiddenHarbours.Core.FoamSplashes.Capacity)
+                s_Candidates = new FoamCandidate[s_Live.Count + HiddenHarbours.Core.FoamSplashes.Capacity];
             EnsureFallbackBound();
         }
 
@@ -537,6 +576,13 @@ namespace HiddenHarbours.Art
                 if (!injector.TryTakeInjection(out FoamInjection injection)) continue;
                 s_Candidates[offered++] = new FoamCandidate(injection, s_SelectionKeys[injector], i);
             }
+            // The small deposits (oar blades) compete for the same eight slots, nearest first; a negative
+            // source index marks them as not a hull (the observer below reports hulls only).
+            int splashes = LaidSplashes();
+            if (splashes > 0 && s_Candidates.Length < offered + splashes)
+                s_Candidates = new FoamCandidate[s_Live.Count + HiddenHarbours.Core.FoamSplashes.Capacity];
+            for (int i = 0; i < splashes; i++)
+                s_Candidates[offered++] = new FoamCandidate(s_SplashLaid[i], s_SplashKeys[i], -1 - i);
             int selected = FoamSelection.Select(s_Candidates, offered, bounds, s_Selected, out int eligible);
             int n = Mathf.Min(selected, into.Length);
             for (int i = 0; i < n; i++) into[i] = s_Selected[i].Candidate.Injection;
@@ -546,6 +592,7 @@ namespace HiddenHarbours.Art
                 for (int i = 0; i < offered; i++)
                 {
                     FoamCandidate candidate = s_Candidates[i];
+                    if (candidate.SourceIndex < 0) continue;   // a small deposit, not a hull
                     int rank = -1;
                     for (int j = 0; j < n; j++)
                         if (s_Selected[j].Candidate.SourceIndex == candidate.SourceIndex) { rank = j; break; }
