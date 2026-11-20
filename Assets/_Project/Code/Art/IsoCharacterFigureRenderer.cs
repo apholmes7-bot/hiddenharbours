@@ -256,6 +256,22 @@ namespace HiddenHarbours.Art
             return true;
         }
 
+        /// <summary>
+        /// A bone's point and attitude in her facet frame on the frame drawn (see <see cref="TryBonePoint"/>):
+        /// for a mount that carries its own attitude, such as the rig's slung-rod <c>back</c> socket, whose
+        /// +y is the rod's axis. False before any pose or for a bone out of range. Allocation-free.
+        /// </summary>
+        public bool TryBoneFrame(int bone, out Vector3 point, out Quaternion rotation)
+        {
+            rotation = Quaternion.identity;
+            if (!TryBonePoint(bone, out point)) return false;
+            Matrix4x4 m = _world[bone];
+            Vector3 up = m.MultiplyVector(Vector3.up), forward = m.MultiplyVector(Vector3.forward);
+            if (up.sqrMagnitude < 1e-12f || forward.sqrMagnitude < 1e-12f) return false;
+            rotation = Quaternion.LookRotation(forward, up);
+            return true;
+        }
+
         /// <summary>True while this figure is inked by the rig's own rules
         /// (<see cref="GameConfig.MeshFigureKeyline"/> on and a def that <see cref="CharacterSkinDef.HasInk"/>).</summary>
         public bool InkLive => _inkApplied;
