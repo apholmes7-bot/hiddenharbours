@@ -1256,9 +1256,10 @@ Shader "HiddenHarbours/Water"
 
             TEXTURE2D(_HeightTex);
             SAMPLER(sampler_HeightTex);
-            // The shore-wave field, over the _HeightTex rect; read through sampler_HeightTex (bilinear,
-            // clamp) so it costs no sampler slot of its own.
+            // The shore-wave field, over the _HeightTex rect. Its own inline bilinear/clamp sampler: the
+            // height sampler is stripped from variants that never read the height texture.
             TEXTURE2D(_ShoreWaveTex);
+            SAMPLER(sampler_ShoreWave_linear_clamp);
 
             // Owner-painted slots. Each uses its own sampler so the texture's import settings (author
             // them Point filter + Repeat wrap for the pixel look) drive sampling — no forced inline state.
@@ -3743,7 +3744,7 @@ Shader "HiddenHarbours/Water"
                 if (_ShoreWaveOn <= 0.0 || _ShoreWaveBend <= 0.0) return 0.0;
                 float2 uv = (worldXY - _HeightWorldMin.xy) / max(_HeightWorldSize.xy, float2(1e-3, 1e-3));
                 if (any(uv < 0.0) || any(uv > 1.0)) return 0.0;
-                float4 field = SAMPLE_TEXTURE2D_LOD(_ShoreWaveTex, sampler_HeightTex, uv, 0);
+                float4 field = SAMPLE_TEXTURE2D_LOD(_ShoreWaveTex, sampler_ShoreWave_linear_clamp, uv, 0);
                 metresOffshore = field.r;
                 offshoreGradient = field.gb;
                 return saturate(_ShoreWaveBend) * (1.0 - smoothstep(0.0, max(_ShoreWaveReach, 1e-3), field.r));
