@@ -109,6 +109,7 @@ namespace HiddenHarbours.Art
             BuildChild(setup);
             _dirty = true;
             Apply();
+            EnsureWindow();
         }
 
         private void BuildRampTextures(IsoFacetPropSetup setup)
@@ -205,7 +206,23 @@ namespace HiddenHarbours.Art
         private void LateUpdate()
         {
             Apply();
+            EnsureWindow();
             WriteHullProperties();
+        }
+
+        /// <summary>
+        /// Ask the hull's composite window to cover this fitting's cell (see
+        /// <see cref="IsoFacetHullRenderer.EnsureFittingCell"/>). Every frame, because a hull
+        /// re-configured under a fitting forgets the union; once covered it is four compares.
+        /// The slack is the translation this fitting carries beyond what its rig baked in: the clamp
+        /// offset of a multi-engine fit and a borrowed fitting's shift, which move it by at most
+        /// their own length on screen.
+        /// </summary>
+        internal void EnsureWindow()
+        {
+            if (_hull == null || _setup == null) return;
+            _hull.EnsureFittingCell(_setup.PivotPx, _setup.CellW, _setup.CellH, _setup.PxPerMetre,
+                                    Mathf.Abs(_lateral) + _fitment.magnitude);
         }
 
         /// <summary>
