@@ -28,12 +28,18 @@ namespace HiddenHarbours.Tests.Economy
         const string FishingGear = "seller.nmc_fishing_gear_wholesaler";
         const string Loran = "instrument.loran";
 
-        /// <summary>The boat electronics that exist as items today, at the approved prices.</summary>
+        /// <summary>Authored electronics: three existing prices and six unlisted price proposals.</summary>
         static readonly Dictionary<string, int> BoatGearStock = new Dictionary<string, int>(StringComparer.Ordinal)
         {
             [Loran] = 900,
             ["instrument.fish_finder"] = 650,
             ["instrument.gps"] = 1800,
+            ["instrument.autopilot"] = 6000,
+            ["instrument.compass_dome"] = 70,
+            ["instrument.compass_flush"] = 140,
+            ["instrument.radar"] = 3600,
+            ["instrument.wind_dial"] = 140,
+            ["instrument.wind_display"] = 650,
         };
 
         /// <summary>The fishing stock that exists as unlisted offers today, at its retained prices. The rod,
@@ -111,7 +117,7 @@ namespace HiddenHarbours.Tests.Economy
         // ---- the two lists -----------------------------------------------------------------------------------
 
         [Test]
-        public void TheBoatGearWholesaler_StocksTheBoatElectronics_AtTheApprovedPrices() =>
+        public void TheBoatGearWholesaler_NamesAllNineElectronics_AtTheirAuthoredPrices() =>
             StocksExactly(BoatGear, BoatGearStock);
 
         [Test]
@@ -124,7 +130,7 @@ namespace HiddenHarbours.Tests.Economy
             CollectionAssert.AreEquivalent(expected.Keys, named.Select(o => o.Id).ToList(),
                                            $"the offers naming {seller}: " + string.Join(", ", named));
             foreach (Offer o in named)
-                Assert.AreEqual(expected[o.Id], o.Price, $"{o} is not at its approved price");
+                Assert.AreEqual(expected[o.Id], o.Price, $"{o} is not at its authored price");
         }
 
         [Test]

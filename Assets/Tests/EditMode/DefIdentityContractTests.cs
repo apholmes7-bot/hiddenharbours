@@ -57,7 +57,8 @@ namespace HiddenHarbours.Tests.EditMode
         private static Ledger ReadLedger() => _ledger ??= DefIdentityLedger.Load();
 
         private static IEnumerable<Type> ConcreteDefTypes() => TypeCache.GetTypesDerivedFrom<ScriptableObject>()
-            .Where(type => !type.IsAbstract && type.Name.EndsWith("Def", StringComparison.Ordinal)
+            .Where(type => !type.IsAbstract && (type.Name.EndsWith("Def", StringComparison.Ordinal)
+                || type == typeof(HiddenHarbours.Economy.InstrumentOffer))
                 && type.Namespace != null && type.Namespace.StartsWith("HiddenHarbours", StringComparison.Ordinal))
             .OrderBy(type => type.FullName, StringComparer.Ordinal);
 
