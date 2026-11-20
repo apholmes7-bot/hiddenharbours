@@ -129,7 +129,7 @@ namespace HiddenHarbours.Tools.RigBaking
             }
         }
 
-        [MenuItem("Hidden Harbours/Art/Bake Catch Pass 2 Fish (7 species × 10 states × 3 sizes)",
+        [MenuItem("Hidden Harbours/Art/Bake Catch Pass 2 Fish (every species × 10 states × 3 sizes)",
                   priority = 48)]
         public static void BakeCatchPass2Fish()
         {
@@ -224,11 +224,14 @@ namespace HiddenHarbours.Tools.RigBaking
             using IRigScriptHost host = RigScriptHostFactory.Create();
             var entry = RigCatalog.Get(CatchPass2Baker.RigKey);
             RigCatalog.Install(host, entry);
-            var species = FishingKitBaker.ReadStringArray(host, $"{entry.GlobalName}.ORDER");
+            CatchPass2Baker.InstallCoast(host);
+            var species = CatchPass2Baker.AllSpecies(host, entry.GlobalName);
 
             foreach (string key in species)
             {
-                FishSpeciesDef[] hits = defs.Where(d => d.Id.Contains(key)).ToArray();
+                // The id's LAST WORD, the rule FishIconBuilder.RigKey wires icons by. A bare
+                // substring stopped being safe when fish.atlantic_tomcod arrived: "cod" is inside it.
+                FishSpeciesDef[] hits = defs.Where(d => LastWord(d.Id) == key).ToArray();
                 if (hits.Length == 0) continue;
                 if (hits.Length > 1)
                     throw new InvalidOperationException(
@@ -248,6 +251,13 @@ namespace HiddenHarbours.Tools.RigBaking
             }
 
             return bands;
+        }
+
+        /// <summary><c>fish.atlantic_tomcod</c> to <c>tomcod</c>: the text after the last '.' or '_'.</summary>
+        static string LastWord(string id)
+        {
+            int cut = Math.Max(id.LastIndexOf('.'), id.LastIndexOf('_'));
+            return cut < 0 ? id : id.Substring(cut + 1);
         }
 
         static string Summarise(CatchPass2BakeResult r,
