@@ -585,6 +585,12 @@ namespace HiddenHarbours.Core
                  "light, crest foam) and other hulls' drawn ride bobs on them. Drawn only: no force.")]
         public HullWaveSettings HullWaves = HullWaveSettings.Default;
 
+        [Tooltip("ONE FOAM SHEET: every foam on the water (wake, shore foam line, whitecaps, surf, storm " +
+                 "streaks, convergence foam) is drawn as the same substance in different amounts: the same " +
+                 "lace, bands and ageing colour. These dials say how each source joins it; 0 on a source's " +
+                 "join dial brings back its older separate look. Drawn only.")]
+        public FoamSheetSettings FoamSheet = FoamSheetSettings.Default;
+
         [Tooltip("BREAKING WAVES (ADR 0040): where the sea gives out and how — the breaker index γ, " +
                  "the Iribarren thresholds that separate a spilling crumble from a plunging barrel, and " +
                  "the whitewater decay. Ships at the TEXTBOOK PHYSICS (γ = 0.78, Battjes' 0.5/3.3/5.0), " +

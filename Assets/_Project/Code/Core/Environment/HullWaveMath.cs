@@ -101,7 +101,9 @@ namespace HiddenHarbours.Core
 
         /// <summary>
         /// Her crest height, metres: <c>HeightPerMetreLength · L · min(Fr / knee, 1)²</c>, eased in over
-        /// one <c>MinSpeed</c> above <c>MinSpeed</c> and capped at <c>MaxHeightMetres</c>. So a rowed
+        /// one <c>MinSpeed</c> above <c>MinSpeed</c> and capped at <c>MaxHeightMetres</c>. A hull no longer than
+        /// <c>SmallHullLengthMetres</c> is raised to at least <c>SmallHullCrestMetres · response</c> (0 = off),
+        /// so a rowed dory's V reads at game zoom while longer hulls keep their height. So a rowed
         /// dory raises centimetres and a cargo vessel at speed raises tens of centimetres, from her
         /// length and her speed alone. Exactly 0 at or below <c>MinSpeed</c>.
         /// </summary>
@@ -111,7 +113,94 @@ namespace HiddenHarbours.Core
             float onset = Mathf.Clamp01((speed - s.MinSpeed) / Mathf.Max(s.MinSpeed, 0.05f));
             float response = Mathf.Min(Froude(speed, lengthMetres) / Mathf.Max(s.FroudeKnee, 1e-3f), 1f);
             float h = s.HeightPerMetreLength * lengthMetres * response * response * onset;
+            if (s.SmallHullCrestMetres > 0f && lengthMetres <= s.SmallHullLengthMetres)
+                h = Mathf.Max(h, s.SmallHullCrestMetres * response * onset);
             return Mathf.Min(h, Mathf.Max(s.MaxHeightMetres, 0f));
+        }
+
+        /// <summary>
+        /// The dials a hull of <paramref name="lengthMetres"/> lays her waves with: <paramref name="s"/>, with
+        /// <c>SpacingWavelengths</c> replaced by <c>SmallHullSpacingWavelengths</c> for a hull no longer than
+        /// <c>SmallHullLengthMetres</c> (when that dial is above 0). Otherwise <paramref name="s"/> unchanged.
+        /// </summary>
+        public static HullWaveSettings ForHull(float lengthMetres, in HullWaveSettings s)
+        {
+            HullWaveSettings e = s;
+            if (s.SmallHullSpacingWavelengths > 0f && lengthMetres > 0f && lengthMetres <= s.SmallHullLengthMetres)
+                e.SpacingWavelengths = s.SmallHullSpacingWavelengths;
+            return e;
+        }
+
+        /// <summary>True for a hull no longer than <c>SmallHullLengthMetres</c> (and longer than nothing).</summary>
+        public static bool IsSmallHull(float lengthMetres, in HullWaveSettings s)
+        {
+            return lengthMetres > 0f && lengthMetres <= s.SmallHullLengthMetres;
+        }
+
+        /// <summary>
+        /// A fixed number in [0, 1) for one ring, from the time it was laid (game seconds, to the tenth of a
+        /// millisecond), a salt that tells her chains apart and a channel that tells the dials apart. A pure
+        /// integer hash: the same voyage gives the same numbers on every run and at every frame rate (rule 5).
+        /// </summary>
+        public static float Scatter01(double birthSeconds, float salt, int channel)
+        {
+            unchecked
+            {
+                long t = (long)System.Math.Floor(birthSeconds * 10000.0);
+                uint h = (uint)t ^ (uint)(t >> 32) * 0x9E3779B1u;
+                h ^= (uint)Mathf.RoundToInt(salt * 1000f) * 0x85EBCA77u;
+                h ^= (uint)channel * 0xC2B2AE3Du;
+                h ^= h >> 16; h *= 0x7FEB352Du;
+                h ^= h >> 15; h *= 0x846CA68Bu;
+                h ^= h >> 16;
+                return (h >> 8) * (1f / 16777216f);
+            }
+        }
+
+        /// <summary>
+        /// A short hull's ring made a little different from the one before it (the owner's look of 11-19: the
+        /// rowed dory's stacked loops read as "calculated"): its height cut by up to
+        /// <c>SmallHullHeightScatter</c>, its wavelength (and band) moved by up to
+        /// <c>SmallHullWavelengthScatter</c> either way, and its crests set off by up to
+        /// <c>SmallHullPhaseScatter</c> of half a wavelength either way, each from <see cref="Scatter01"/> of
+        /// its birth time, and its centre laid up to <c>SmallHullCentreScatterMetres</c> off her track either way.
+        /// It is marked to be drawn as broken arcs while <c>SmallHullArcShare</c> is above 0.
+        /// A longer hull's ring, or every dial at 0, is returned unchanged.
+        /// </summary>
+        public static HullWaveSource ScatterRing(in HullWaveSource source, float lengthMetres, float salt,
+                                                 in HullWaveSettings s)
+        {
+            HullWaveSource r = source;
+            if (!IsSmallHull(lengthMetres, in s)) return r;
+            double at = source.BirthSeconds;
+            float height = Mathf.Clamp01(s.SmallHullHeightScatter);
+            if (height > 0f) r.Amplitude *= 1f - height * Scatter01(at, salt, 0);
+            float stretch = Mathf.Clamp(s.SmallHullWavelengthScatter, 0f, 0.9f);
+            if (stretch > 0f && r.Wavenumber > 0f)
+            {
+                float scale = 1f + stretch * (2f * Scatter01(at, salt, 1) - 1f);
+                r.Wavenumber /= scale;
+                r.PacketWidth *= scale;
+            }
+            float phase = Mathf.Clamp01(s.SmallHullPhaseScatter);
+            if (phase > 0f) r.PhaseOffset = phase * Mathf.PI * (2f * Scatter01(at, salt, 2) - 1f);
+            float centre = Mathf.Max(s.SmallHullCentreScatterMetres, 0f);
+            if (centre > 0f)
+                r.Position += centre * new Vector2(2f * Scatter01(at, salt, 4) - 1f, 2f * Scatter01(at, salt, 5) - 1f);
+            r.Arcs = s.SmallHullArcShare > 0f;
+            return r;
+        }
+
+        /// <summary>
+        /// The factor a short hull's next interval is laid at: from 1 up to <c>1 + 2·SmallHullSpacingScatter</c>
+        /// (never closer, so her budget stays a hard bound), from <see cref="Scatter01"/> of the ring just laid.
+        /// 1 for a longer hull or the dial at 0.
+        /// </summary>
+        public static float SpacingScatter(double birthSeconds, float lengthMetres, float salt, in HullWaveSettings s)
+        {
+            float spread = Mathf.Clamp(s.SmallHullSpacingScatter, 0f, 0.9f);
+            if (spread <= 0f || !IsSmallHull(lengthMetres, in s)) return 1f;
+            return 1f + 2f * spread * Scatter01(birthSeconds, salt, 3);
         }
 
         /// <summary>How long her waves live, seconds: per metre of her length, held in range.</summary>
@@ -158,6 +247,19 @@ namespace HiddenHarbours.Core
         }
 
         /// <summary>
+        /// <see cref="TrailFoamStrength(float, bool, in HullWaveSettings)"/> for a hull of
+        /// <paramref name="lengthMetres"/>: a short hull lays <c>SmallHullTrailFoamShare</c> of it instead
+        /// (when that dial is 0 or above), so a rowed hull's trail is a thin lace rather than a mat.
+        /// </summary>
+        public static float TrailFoamStrength(float strength, bool makingWay, float lengthMetres, in HullWaveSettings s)
+        {
+            if (!s.Enabled || !makingWay) return strength;
+            if (s.SmallHullTrailFoamShare >= 0f && IsSmallHull(lengthMetres, in s))
+                return strength * Mathf.Clamp01(s.SmallHullTrailFoamShare);
+            return strength * Mathf.Clamp01(s.TrailFoamShare);
+        }
+
+        /// <summary>
         /// Her churned trail band's half-width, metres, while hull waves are on and she makes way:
         /// <paramref name="radius"/> held to <c>TrailFoamMaxHalfWidthMetres</c> (0 = no limit). Moored,
         /// or hull waves off: unchanged.
@@ -178,6 +280,23 @@ namespace HiddenHarbours.Core
         /// <summary>While hull waves are on, the wake's own drawn foam puffs are not laid: her churn is the water's
         /// foam buffer, drawn by the one foam path every foam on the sea uses.</summary>
         public static bool DrawnFoamRetired(in HullWaveSettings s) => s.Enabled && s.RetireDrawnFoam;
+
+        /// <summary>
+        /// The low-light lift on her waves' shade: <c>1 + LowLightGain · dim</c>. The water draws the
+        /// shade once before its palette grade as at noon, and the extra <c>LowLightGain · dim</c> share of
+        /// it again after the grade, where the dusk value floor cannot flatten it. <c>dim</c> runs
+        /// 0..1 as the sun's luminance <paramref name="sunLuminance"/> falls from
+        /// <c>LowLightStartLuminance</c> to <c>LowLightFullLuminance</c>. Exactly 1 at or above the start
+        /// (noon is untouched) and with no day/night cycle running (<paramref name="cycleOn"/> false).
+        /// Twin of the shader's <c>hwDim</c>.
+        /// </summary>
+        public static float LowLightGain(float sunLuminance, bool cycleOn, in HullWaveSettings s)
+        {
+            if (!cycleOn) return 1f;
+            float span = Mathf.Max(s.LowLightStartLuminance - s.LowLightFullLuminance, 1e-3f);
+            float dim = Mathf.Clamp01((s.LowLightStartLuminance - sunLuminance) / span);
+            return 1f + Mathf.Max(s.LowLightGain, 0f) * dim;
+        }
 
         /// <summary>The shade the water draws: <see cref="SoftShade"/>, with a trough held to
         /// TroughCeilingShare of it. Twin of the shader's hull-wave shading.</summary>
@@ -289,7 +408,14 @@ namespace HiddenHarbours.Core
         /// </summary>
         public static float Phase(float wavenumber, float phaseSpeed, double age)
         {
-            double p = (double)wavenumber * phaseSpeed * System.Math.Max(age, 0.0);
+            return Phase(wavenumber, phaseSpeed, age, 0f);
+        }
+
+        /// <summary><see cref="Phase(float, float, double)"/> with the source's own fixed
+        /// <paramref name="offset"/> (radians) added, wrapped into [0, 2π).</summary>
+        public static float Phase(float wavenumber, float phaseSpeed, double age, float offset)
+        {
+            double p = (double)wavenumber * phaseSpeed * System.Math.Max(age, 0.0) + offset;
             p %= 2.0 * System.Math.PI;
             if (p < 0.0) p += 2.0 * System.Math.PI;
             return (float)p;
