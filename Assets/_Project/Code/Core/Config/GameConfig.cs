@@ -1556,6 +1556,34 @@ namespace HiddenHarbours.Core
                  "shader's own line pass exists (ADR 0053 D2). 1 to 2 is the ruled look.")]
         [Range(0.5f, 3f)] public float HeldPropLineWidthPx = DefaultHeldPropLineWidthPx;
 
+        [Header("Fish at the stove and in the freezer")]
+        [Tooltip("The cooked colour ramp: the fish on a browning station is tinted along these stops as its job " +
+                 "runs, first stop at the start, last when it is done. One ramp for every species (no sheet " +
+                 "per species). Empty = no browning.")]
+        public Color[] CookedFishRamp =
+        {
+            new Color(1f, 1f, 1f, 1f), new Color(1f, 0.86f, 0.64f, 1f), new Color(0.84f, 0.6f, 0.34f, 1f),
+        };
+
+        [Tooltip("The tint of a frozen fish lying in the freezer (a frost look).")]
+        public Color FrozenFishTint = new Color(0.8f, 0.9f, 1f, 1f);
+
+        [Tooltip("The freezer's contents are drawn only while the player stands this close (m), as if the lid " +
+                 "were open: no draw calls for a freezer nobody is at.")]
+        [Min(0f)] public float FreezerFishShowRangeMeters = 1.6f;
+
+        [Tooltip("The freezer's fish slots: columns across the chest (a fish lies across, so few and wide).")]
+        [Min(1)] public int FreezerFishColumns = 2;
+
+        [Tooltip("The freezer's fish slots: rows from the back to the front.")]
+        [Min(1)] public int FreezerFishRows = 4;
+
+        [Tooltip("The back-left slot, metres from the freezer's pivot (x right, y up on screen).")]
+        public Vector2 FreezerFishOriginMeters = new Vector2(-0.26f, 0.3f);
+
+        [Tooltip("Metres from one slot to the next: x across a row, y down to the next row (towards the front).")]
+        public Vector2 FreezerFishPitchMeters = new Vector2(0.52f, 0.2f);
+
         /// <summary>Shipped crossing hysteresis (m), also the fallback for a rig with no GameConfig.</summary>
         public const float DefaultRegionCrossingHysteresisMetres = 0.25f;
 
