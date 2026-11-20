@@ -46,6 +46,13 @@ namespace HiddenHarbours.Player
         private CatchItemLibrary _art;
         private string _kind;
         private int _facings;
+        private int _facing;
+
+        // ---- the same fish as a facet mesh (ADR 0053), resolved once at pickup -------------------
+        private HeldPropMeshDef _heldMesh;
+        private float _heldMeshScale = 1f;
+        private int[] _facingMap;
+        private bool _spriteHidden;
 
         // ---- the contrast line on a small fish (fish art pass 2, section 2.3) ----------------------
         // Darker copies of the held sprite one sprite pixel to the side, behind it, so a fish drawn a
@@ -69,6 +76,23 @@ namespace HiddenHarbours.Player
         /// <summary>How many contrast-line copies this catch draws behind it (0 for a fish drawn long enough
         /// to read on its own, a shellfish, or a catch on the icon fallback). For tests / tooling.</summary>
         public int KeylineCount => _keylines.Length;
+
+        /// <summary>The held facet mesh this catch draws as on a mesh figure, or null when its species
+        /// keeps the sprite (<see cref="CatchItemLibrary.HeldMeshFor(string, string, out float)"/>).</summary>
+        public HeldPropMeshDef HeldMesh => _heldMesh;
+
+        /// <summary>The scale <see cref="HeldMesh"/> is drawn at (its size rung).</summary>
+        public float HeldMeshScale => _heldMeshScale;
+
+        /// <summary>The facing last shown (<see cref="ShowFacing"/>).</summary>
+        public int Facing => _facing;
+
+        /// <summary>The held sheet's face-on map (a flatfish), or null.</summary>
+        public int[] FacingMap => _facingMap;
+
+        /// <summary>True while the sprite (and its contrast lines) is drawn; false while the mesh draws
+        /// the fish instead (<see cref="SetSpriteVisible"/>).</summary>
+        public bool SpriteVisible => !_spriteHidden;
 
         /// <summary>One contrast-line copy, by index, or null. For tests / tooling.</summary>
         public SpriteRenderer Keyline(int i) => i >= 0 && i < _keylines.Length ? _keylines[i] : null;
@@ -108,6 +132,11 @@ namespace HiddenHarbours.Player
             if (art != null && art.HeldFacingsFor(kind) == 0) kind = art.KindFor(item.SpeciesId);
             carriable._kind = kind;
             carriable._facings = art != null ? art.HeldFacingsFor(carriable._kind) : 0;
+            if (art != null)
+            {
+                carriable._heldMesh = art.HeldMeshFor(item.SpeciesId, carriable._kind, out carriable._heldMeshScale);
+                carriable._facingMap = art.HeldFacingMapFor(carriable._kind);
+            }
 
             // Draw something NOW rather than waiting for the first ShowFacing: a carrier only turns
             // what it knows turns, so a one-facing handful would otherwise never be told to draw.
@@ -218,6 +247,7 @@ namespace HiddenHarbours.Player
         /// <inheritdoc/>
         public void ShowFacing(int facingIndex)
         {
+            _facing = facingIndex;
             if (_renderer == null) _renderer = GetComponent<SpriteRenderer>();
             if (_renderer == null) return;
             Sprite s = HeldSprite(facingIndex);
@@ -244,6 +274,21 @@ namespace HiddenHarbours.Player
                 _keylines[i].sortingLayerID = sortingLayerId;
                 _keylines[i].sortingOrder = sortingOrder - 1;
             }
+        }
+
+        /// <summary>
+        /// Draw the sprite (and its contrast lines) or not: off while the fish is drawn as its mesh on a
+        /// mesh figure, so the fish is never in his hand twice. Stated every frame by the carrier.
+        /// </summary>
+        public void SetSpriteVisible(bool visible)
+        {
+            bool hidden = !visible;
+            if (hidden == _spriteHidden) return;
+            _spriteHidden = hidden;
+            if (_renderer == null) _renderer = GetComponent<SpriteRenderer>();
+            if (_renderer != null) _renderer.enabled = visible;
+            for (int i = 0; i < _keylines.Length; i++)
+                if (_keylines[i] != null) _keylines[i].enabled = visible;
         }
 
         /// <summary>Nothing to remember — a catch has no Y-sort of its own to stand down (it never lies on

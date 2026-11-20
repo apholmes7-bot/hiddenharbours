@@ -153,6 +153,46 @@ The floor leaves all three alone at 12. The fixes that make them read are owed:
 
 Order: 3a can land any time (data only, nothing reads it). Then 3b → 3c → 3d, as ADR 0053 §4 says.
 
+### 3.3 What was built (`feat/held-fish-mesh`, one change for 3a-3d, 3e judged)
+
+- **3a by scale, not by new defs.** The rig's tail-rest geometry is linear in its scale, so the one
+  scale-1 mesh scaled about the grip IS the rung's mesh. `KindEntry.HeldMeshScale` carries each
+  rung's scale from `FishIsoAnchors.json` (`RodKitImporter.RungScales`); no new ids were minted. A
+  test pins every committed rung's scale to the rig's.
+- **3b** `HeldCatchMesh` hangs the mesh on `tool_R`/`tool_L` at the rig's held pose, turned about
+  its length so it shows the facing the held sprite shows (the flatfish face-on map applied).
+  The figure's overlay is padded by a per-holder claim, so a fish and a rod do not undo each other.
+- **3c without a shader change.** Fins and tails get a 1 px tube along each open edge of the fin
+  ramp's faces, and the eyes a 1 px block (`GameConfig.HeldFishFinLineWidthPx`,
+  `HeldFishEyeSizePx`). The line pass in the facet shader is still a later step.
+- **3d** `CarryHands` (carried catch) and the landing beat draw the mesh and hide the sprite; any
+  refusal keeps the sprite. A species that only borrows a kind's art (`SpeciesEntry.BorrowsKind`:
+  tomcod, quahog) keeps its sprite. Switch: `GameConfig.MeshCatchInHand`.
+- **3e** shows mildly (a back-lit fin reads a little darker and more dithered than the sprite).
+  The flag is not carried yet.
+
+**Second pass (readability against the sheet it replaces).** Measured at 4x on the hands, seven
+species x three rungs x eight headings x carry and landing, day and dusk, sheet vs mesh in the same
+pose:
+
+- **Tone.** As baked the mesh read duller and greyer than the sheet (dither checker, mid-ramp
+  shades). A held fish now draws with its own tone: gain x1.5, +1 ramp step, no dither
+  (`GameConfig.HeldFishToneGain`, `HeldFishToneLift`, `HeldFishDitherScale`). A rod keeps its bake.
+- **In front of the body.** The sheet is always drawn over his legs; the mesh hung behind them when
+  he faced away. A held fish is pulled `HeldFishFrontBiasMeters` (0.4 m) toward the camera.
+- **The landing uses the nearer hand.** It started on `tool_L` and hid the fish when he faced
+  west; it now changes to the hand nearer the camera, with a small dead band
+  (`HeldFishHandSwapDepthMeters`) so it does not flicker.
+- **A size floor for the mesh.** A mesh shorter than `HeldFishMinLengthPx` (20 px) is scaled up about
+  its grip (the mesh is linear in its scale, pinned by a test over all seven species). The herring's
+  three rungs all land on the floor, so its rungs no longer differ in size.
+- **No cradle.** The fisher has carry bones but no two-arm carry clip; with the arms in idle/walk a
+  cradled fish would sit inside his legs. A cradle needs a new carry clip and a held bake at the fish
+  rig's `cradle` rest first.
+- **Still weak.** No dark keyline round the mesh (the sheet has one), so it reads flatter on light
+  ground; the flounder loses its mottle without dither; facing north at the landing the fish is
+  still partly behind him.
+
 ## 4. Fish pictures at the stove, the locker and the freezer
 
 ### 4.1 Where it stands
