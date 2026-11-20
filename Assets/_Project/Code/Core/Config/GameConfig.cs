@@ -1542,6 +1542,12 @@ namespace HiddenHarbours.Core
                  "beside him. Wading keeps it.")]
         public bool FigureSwimHidesSunShadow = true;
 
+        [Tooltip("ON: while the player swims or treads water the tools he carries (the rod) are stowed: " +
+                 "neither the rod mesh on the figure nor the carried sprite is drawn, and they are drawn " +
+                 "again the moment he finds his footing. The rod mesh has no waterline cut, so held on the " +
+                 "swim pose it stood out of the water at full strength. Wading keeps them in his hands.")]
+        public bool SwimStowsCarriedTools = true;
+
         /// <summary>Code default for <see cref="HeldPropLineWidthPx"/>.</summary>
         public const float DefaultHeldPropLineWidthPx = 1.5f;
 

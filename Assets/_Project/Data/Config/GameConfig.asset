@@ -866,6 +866,7 @@ MonoBehaviour:
   FigureWaterlineFoamMetres: 0.03
   FigureWaterlineFoam: 0.5
   FigureSwimHidesSunShadow: 1
+  SwimStowsCarriedTools: 1
   MeshRodInHand: 1
   HeldPropLineWidthPx: 1.5
   RegionCrossingHysteresisMetres: 0.25
