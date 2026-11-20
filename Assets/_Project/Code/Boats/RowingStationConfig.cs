@@ -25,6 +25,10 @@ namespace HiddenHarbours.Boats
                  "off the centreline, so at 0.70 the handles crossed).")]
         [Min(0f)] public float GripInboardMeters;
 
+        [Tooltip("The oar's whole inboard loom, oarlock to handle end, metres (the rig's O_LIN, 0.85 on the " +
+                 "dory). The handle end is kept out of his body with his arms.")]
+        [Min(0f)] public float LoomInboardMeters;
+
         [Tooltip("The top of the thwart under his sitting bones. The dory's after thwart is at y -0.72, " +
                  "its top 0.3056 (the deck's helm station), 0.22 m fore and aft; he sits 4 cm toward its after " +
                  "edge, toward the tholes (0.369 m abaft its centre), which keeps the grips in the arm's reach " +
@@ -33,7 +37,8 @@ namespace HiddenHarbours.Boats
 
         [Tooltip("The STARBOARD foot's brace: the point on the boards ahead of the thwart (toward the " +
                  "way he faces) where the sole rests; the port one mirrors x. The ankle is lifted above " +
-                 "it by the clip's own ankle height.")]
+                 "it by the clip's own ankle height. The dory's sits 0.66 m from the seat: knees bent, " +
+                 "low enough for the loom to pass over them on the recovery.")]
         public Vector3 FootBraceLocalMeters;
 
         [Tooltip("How far he lies back at the finish, degrees, on top of the clip's own lean. Scaled " +
@@ -43,14 +48,66 @@ namespace HiddenHarbours.Boats
         [Tooltip("The most extra forward lean he may take to reach a grip at the catch, degrees.")]
         [Range(0f, 60f)] public float ReachLeanMaxDegrees;
 
+        [Header("Clear of himself")]
+        [Tooltip("How far the loom must pass from the centre of either knee, metres, through the whole " +
+                 "stroke: a knee's half-thickness plus the loom's, plus air. The station's promise; the " +
+                 "EditMode tests hold every skin to it.")]
+        [Min(0f)] public float KneeClearanceMeters;
+
+        [Tooltip("How far his hands and forearms (and the elbow end of the upper arm) stay outside his " +
+                 "own torso, metres. When an arm would pass inside it the elbow is swung out first, and " +
+                 "only if that is not enough does he lean back, by at most BodyClearLeanMaxDegrees.")]
+        [Min(0f)] public float BodyClearanceMeters;
+
+        [Tooltip("The most extra lean back he may take to keep his arms out of his body, degrees.")]
+        [Range(0f, 30f)] public float BodyClearLeanMaxDegrees;
+
+        [Tooltip("The most he may turn his shoulders toward the handles to keep his arms out of his body, " +
+                 "degrees either way: the last resort, after the elbows and the lean, for a figure turned on " +
+                 "the hull or a broad trunk.")]
+        [Range(0f, 30f)] public float BodyClearTwistMaxDegrees;
+
+        [Header("Resting")]
+        [Tooltip("Where the blades settle in a rowing style's rest between strokes: the dip, degrees. 15 " +
+                 "hangs the blade tips a few centimetres over the water, feathered, handles at his belly.")]
+        [Range(0f, 30f)] public float RestBladeDipDegrees;
+
+        [Tooltip("How far he slumps forward when resting, degrees: the shoulders come down and round.")]
+        [Range(0f, 30f)] public float RestSlumpDegrees;
+
+        [Tooltip("How far each breath rocks him while resting, degrees either side.")]
+        [Range(0f, 10f)] public float RestBreathDegrees;
+
+        [Tooltip("Seconds per breath with the oars resting (shipped or trailing). A style's rest between " +
+                 "strokes breathes once per rest instead.")]
+        [Min(0.1f)] public float RestBreathSeconds;
+
+        [Tooltip("With the oars let go, where each hand rests along his thigh: 0 at the hip, 1 at the knee.")]
+        [Range(0f, 1f)] public float RestHandAlongThigh;
+
+        [Tooltip("With the oars let go, how high above the thigh bone his palm rests, metres (the thigh's " +
+                 "own half-thickness).")]
+        [Min(0f)] public float RestHandAboveThighMeters;
+
         public static RowingStationConfig Default => new RowingStationConfig
         {
             Enabled = true,
             GripInboardMeters = 0.68f,
+            LoomInboardMeters = 0.85f,
             SeatLocalMeters = new Vector3(0f, -0.76f, 0.3056f),
-            FootBraceLocalMeters = new Vector3(0.16f, -1.35f, 0.1098f),
-            LaybackDegrees = 8f,
+            FootBraceLocalMeters = new Vector3(0.16f, -1.42f, 0.1098f),
+            LaybackDegrees = 6f,
             ReachLeanMaxDegrees = 40f,
+            KneeClearanceMeters = 0.11f,
+            BodyClearanceMeters = 0.02f,
+            BodyClearLeanMaxDegrees = 12f,
+            BodyClearTwistMaxDegrees = 15f,
+            RestBladeDipDegrees = 15f,
+            RestSlumpDegrees = 8f,
+            RestBreathDegrees = 1.5f,
+            RestBreathSeconds = 4f,
+            RestHandAlongThigh = 0.78f,
+            RestHandAboveThighMeters = 0.07f,
         };
     }
 }

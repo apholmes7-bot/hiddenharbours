@@ -36,13 +36,18 @@ namespace HiddenHarbours.Boats
     public static class DoryOarMeshPose
     {
         /// <summary>The rig's <c>oarPose('row', t)</c> ellipse: the blade traces sweep against dip
-        /// once per stroke. Transcribed from the rig; proven against it.</summary>
-        public const float RowSweepAmplitudeDegrees = 24f;
-        public const float RowDipCentreDegrees = 12f;
-        public const float RowDipAmplitudeDegrees = 16f;
+        /// once per stroke. Transcribed from the rig; proven against it. The dip band (14 to 26
+        /// degrees) keeps the handles at the rower's belly, clear over his knees, with the blade
+        /// buried at the bottom of the drive and skimming the water on the recovery; the sweep's
+        /// centre sits 4 degrees forward so the finish (+16) brings the handles to his ribs, not
+        /// through them.</summary>
+        public const float RowSweepCentreDegrees = -4f;
+        public const float RowSweepAmplitudeDegrees = 20f;
+        public const float RowDipCentreDegrees = 20f;
+        public const float RowDipAmplitudeDegrees = 6f;
 
         /// <summary>The phase of <see cref="Row"/> (in turns) at the CATCH: sweep is at its minimum
-        /// (-<see cref="RowSweepAmplitudeDegrees"/>), which is the blade furthest FORWARD, and the dip
+        /// (<see cref="RowSweepCentreDegrees"/> - <see cref="RowSweepAmplitudeDegrees"/>), which is the blade furthest FORWARD, and the dip
         /// is passing through its centre on the way down, so the blade is going in. The drive runs
         /// from here half a turn (blade down, sweeping aft) to the release at 0.25. A fact of the sine
         /// and cosine below, not a tunable: the rower's body reads it to know where the stroke
@@ -58,7 +63,7 @@ namespace HiddenHarbours.Boats
 
         /// <summary>The rig's <c>|ax.z| &gt; 0.9</c> switch to a different up-vector, kept because a
         /// near-vertical oar would otherwise take the cross product of two parallel vectors. It does
-        /// not fire in any reachable pose (the steepest dip is 28°), but it is transcribed so that a
+        /// not fire in any reachable pose (the steepest dip is 26°), but it is transcribed so that a
         /// future rig change cannot make C# and the rig disagree silently.</summary>
         public const float VerticalUpSwitch = 0.9f;
 
@@ -87,7 +92,7 @@ namespace HiddenHarbours.Boats
             float tt = t % 1f;
             if (tt < 0f) tt += 1f;
             float a = 2f * Mathf.PI * tt;
-            return new Pose(RowSweepAmplitudeDegrees * Mathf.Sin(a),
+            return new Pose(RowSweepCentreDegrees + RowSweepAmplitudeDegrees * Mathf.Sin(a),
                             RowDipCentreDegrees + RowDipAmplitudeDegrees * Mathf.Cos(a));
         }
 

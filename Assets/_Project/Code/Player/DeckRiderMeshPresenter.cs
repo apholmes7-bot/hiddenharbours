@@ -433,7 +433,7 @@ namespace HiddenHarbours.Player
             IsoCharacterFigureRenderer.Life life = _life.Step(skin, string.Empty, 0u, now, _figure, looks: false);
             // At the oars, rowing or resting on them: sat on the thwart (resting, his hands let go).
             bool atOars = Rowing || (!clipPose && string.IsNullOrEmpty(seatedKey) && character.Stance == CharacterStance.Oars);
-            if (atOars && _rowing.TryTargets(stand, FigureLocalMetres, FigureYawDegrees, out RowingPoseSolver.Targets row))
+            if (atOars && _rowing.TryTargets(stand, FigureLocalMetres, FigureYawDegrees, out RowingPoseSolver.Targets row, now))
             {
                 life.Rowing = true;
                 life.Row = row;

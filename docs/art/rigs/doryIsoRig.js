@@ -483,10 +483,12 @@
     // abaft the thwart, -82/-7 put the handle 0.24 m out through the narrowing stern quarter (0.14 m from the old tholes)
     if(state==='resting')  return { sweep:-72, dip: 6 };
     if(state==='trailing') return { sweep: 76, dip: 15 };  // dragging aft in the water
-    // row cycle: the blade traces an ellipse (dip+sweep). Sweep +-24 and dip 12+-16: the blade goes as deep as before
-    // (28 deg) but lifts only 4 deg on the recovery, so the handles pass over his knees, not through his lap
+    // row cycle: the blade traces an ellipse (dip+sweep). Dip 20+-6: the blade is buried to its throat at the bottom
+    // of the drive (26 deg) and skims 7 cm over the water on the recovery (14 deg), so the handles run at his belly,
+    // clear over his knees, never down in his lap. Sweep -4+-20: the catch reaches as far forward as before (-24) and
+    // the finish stops at +16, so the handles come in to his ribs and not through them (owner, 2026-11-20)
     const tt=(((t||0)%1)+1)%1, a=2*Math.PI*tt;
-    return { sweep: 24*Math.sin(a), dip: 12 + 16*Math.cos(a) };
+    return { sweep: -4 + 20*Math.sin(a), dip: 20 + 6*Math.cos(a) };
   }
   function buildOar(side, pose){
     const O=oarlockPt(side), d=oarDir(side,pose.sweep,pose.dip);

@@ -363,7 +363,8 @@ namespace HiddenHarbours.Art
             _outNorms = new Vector3[_srcVerts.Length];
             _world = new Matrix4x4[bones];
             _skin = new Matrix4x4[bones];
-            _rowSolver = new RowingPoseSolver(def.Bones);
+            // The skin's own torso, measured once from its bind mesh: the arms are kept out of it.
+            _rowSolver = new RowingPoseSolver(def.Bones, RowingBodyVolume.Of(def));
             _drawnRowing = false;
 
             // ONE mesh, written into every frame — MarkDynamic so the driver keeps it in a buffer it
@@ -892,7 +893,12 @@ namespace HiddenHarbours.Art
             if ((now.BraceLeft - drawn.BraceLeft).sqrMagnitude > halfSqr) return true;
             if ((now.BraceRight - drawn.BraceRight).sqrMagnitude > halfSqr) return true;
             if (Mathf.Abs(now.LaybackDegrees - drawn.LaybackDegrees) * Mathf.Deg2Rad > half) return true;
-            return now.ReachLeanMaxDegrees != drawn.ReachLeanMaxDegrees;
+            if (Mathf.Abs(now.RestLeanDegrees - drawn.RestLeanDegrees) * Mathf.Deg2Rad > half) return true;
+            if (now.ThighRest != drawn.ThighRest) return true;
+            return now.ReachLeanMaxDegrees != drawn.ReachLeanMaxDegrees
+                   || now.BodyClearanceMeters != drawn.BodyClearanceMeters
+                   || now.BodyClearLeanMaxDegrees != drawn.BodyClearLeanMaxDegrees
+                   || now.BodyClearTwistMaxDegrees != drawn.BodyClearTwistMaxDegrees;
         }
 
         /// <summary>
