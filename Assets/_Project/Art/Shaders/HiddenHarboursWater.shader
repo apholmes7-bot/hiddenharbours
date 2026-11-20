@@ -653,6 +653,10 @@ Shader "HiddenHarbours/Water"
         _StarTwinkleSpeed ("Star twinkle speed", Float) = 1.4
         _NightStart       ("Night content start (darkness 0..1 where moon/stars fade in)", Range(0,1)) = 0.35
         _NightSoftness    ("Night content dusk ramp width", Range(0,1)) = 0.3
+        // The moon/stars must not draw while the sun is still up: darkness alone let a dim dusk tint raise
+        // them at 20:00 (grey star squares, a pale moon blob). Fades night content to 0 as the sun's
+        // elevation climbs from 0 to this value. 0 = off (darkness-only gate, the old look).
+        _NightSunCutoff   ("Sun elevation above which no moon or stars draw (0 = off)", Range(0,0.5)) = 0.1
         _SunGlitterStrength ("Sun glitter path intensity (golden hour; 0 = off)", Range(0,2)) = 0.6
         _SunGlitterColor  ("Sun glitter color (warm gold)", Color) = (1.0, 0.82, 0.55, 1.0)
 
@@ -1803,6 +1807,7 @@ Shader "HiddenHarbours/Water"
                 float  _StarTwinkleSpeed;
                 float  _NightStart;
                 float  _NightSoftness;
+                float  _NightSunCutoff;
                 float  _SunGlitterStrength;
                 float4 _SunGlitterColor;
                 float  _WaterLevel;
@@ -4594,7 +4599,12 @@ Shader "HiddenHarbours/Water"
                 float darkness = saturate(1.0 - tintLum);
                 float lo = saturate(_NightStart);
                 float hi = saturate(_NightStart + max(_NightSoftness, 1e-4));
-                return smoothstep(lo, hi, darkness);
+                float night = smoothstep(lo, hi, darkness);
+                // Sun still up -> no night content (twin: WaterReflection.NightFactor with sunElevation).
+                // _SunElevation 0 (unset, or the horizon) leaves the darkness gate as it was.
+                if (_NightSunCutoff > 1e-4)
+                    night *= 1.0 - smoothstep(0.0, _NightSunCutoff, _SunElevation);
+                return night;
             }
 
             // ---- sun glitter gate: the GOLDEN-HOUR window over the sun's elevation ---------------------------
