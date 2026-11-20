@@ -2065,7 +2065,7 @@
    "exportSymbol": "CharacterIso10",
    "revision": "10.3",
    "derivedFromRigSha256": "ad563075475740cea1258de68d05c184f2fc136491357bc22988a10d810413f3",
-   "posesDerivedFromRigSha256": "0f95229bac56325c29b22b07bd71928edaf6b92d89ff67d2a97ad16a8e54fe8e",
+   "posesDerivedFromRigSha256": "92467b1f3100d5b9f8886862fdc42a1478b065be6527db6dee4ecf3678fe0adb",
    "builds": 30,
    "crown_m": [
     1.257,

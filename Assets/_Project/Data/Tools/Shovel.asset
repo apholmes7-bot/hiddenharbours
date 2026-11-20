@@ -23,8 +23,8 @@ MonoBehaviour:
   DrawCarriedMeshOnFigure: 1
   HeldMeshVariant: 
   HeldMeshMountBone: tool_R
-  CarriedPitchDeg: -35
-  CarriedYawDeg: 20
+  CarriedPitchDeg: -72
+  CarriedYawDeg: 0
   StowOnBack: 0
   StowWhileSwimming: 0
   StowMountBone: back

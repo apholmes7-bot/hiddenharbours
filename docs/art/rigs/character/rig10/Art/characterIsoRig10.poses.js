@@ -21,6 +21,8 @@
    (10.2 flipped it in one frame as the foot crossed beside the hip: up to 179 deg at the hip).
    10.3 arm clearance (2026-11-20): dig, hauler and strike keep the left forearm and palm out of the torso. Only left-arm keys moved
    (elbow poles, the dig's top hand, the strike's last grip); every hand still meets its tool or line, and no other clip changed.
+   10.3 dig blade (2026-11-20): the dig's hand keys, lean and yaw are re-authored as a stab, a lever and a lift, with a knee-bend track
+   (drop), so the shovel's blade reaches the ground at the low point at every facing. Only the dig clip changed.
    */
 (function (root) {
   'use strict';
@@ -121,11 +123,16 @@
     const fr=(u,n)=>Math.round(frac(u)*n)%n;
 
     /* ================= digging — the shaft runs left palm to right palm ================= */
-    /* 10.3 arm clearance: the top (left) hand rides 0.05 further forward than 10.3 shipped, and its elbow turns out (el), so the
-       forearm and palm clear the belly and chest in every frame; the right hand, the shaft's lower grip, is unchanged */
-    const DIG={ L:[[0.02,0.21,0.84],[0.03,0.24,0.79],[0.03,0.26,0.75],[0.00,0.14,0.68],[0.02,0.18,0.82],[0.10,0.17,0.92],[0.12,0.15,0.94],[0.06,0.18,0.90],[0.03,0.22,0.87],[0.02,0.22,0.85]],
-                R:[[0.17,0.30,0.63],[0.18,0.33,0.58],[0.19,0.34,0.57],[0.18,0.32,0.58],[0.18,0.34,0.71],[0.32,0.26,0.83],[0.36,0.18,0.81],[0.26,0.28,0.73],[0.18,0.32,0.67],[0.17,0.30,0.65]],
-                lean:[22,26,28,20,18,14,12,16,20,22], yaw:[8,8,8,5,7,20,26,17,10,9] };
+    /* 10.3 arm clearance: the top (left) hand rides out from the body and its elbow turns out (el), so the forearm and palm clear
+       the belly and chest in every frame.
+       10.3 dig blade: the keys are a stab, a lever and a lift. The shaft runs steeply down and forward of him (pitch -62 to -74,
+       yaw under 15 deg from frame 0 to 4), so the blade reads as digging at every facing, and the 1.05 m tool's tip meets the ground on
+       frame 2 (the dig's low point, within GameConfig.HeldShovelGroundToleranceMetres) without going under it. Frame 3 levers the
+       handle back over the buried blade, frames 4 to 6 lift and toss, 7 to 9 come back to the ready. He bends his back (lean) and his
+       knees (drop: the pelvis lowers by drop x the build's leg scale) to reach it; both palms stay on the shaft. */
+    const DIG={ L:[[0.146,0.29,0.703],[0.153,0.315,0.63],[0.157,0.325,0.597],[0.178,0.195,0.566],[0.132,0.145,0.56],[0.11,0.15,0.616],[0.132,0.134,0.64],[0.132,0.175,0.741],[0.11,0.252,0.811],[0.108,0.296,0.829]],
+                R:[[0.172,0.377,0.499],[0.172,0.385,0.442],[0.172,0.385,0.416],[0.205,0.296,0.405],[0.183,0.287,0.424],[0.226,0.302,0.492],[0.312,0.264,0.52],[0.237,0.302,0.557],[0.161,0.362,0.589],[0.14,0.392,0.595]],
+                lean:[30,37,40,30,28,22,18,16,20,24], yaw:[8,8,8,6,8,16,24,16,10,9], drop:[0.043,0.067,0.091,0.091,0.067,0.043,0.03,0.024,0.024,0.03] };
 
     /* ================= the saddle ================= */
     function solveLean(I,K,grip,lo,hi){ const D=K.D, arm=D.upper+D.fore+D.palmLen-0.012;
@@ -240,7 +247,7 @@
         const f=fr(u,12); face(I,'open', f>=6&&f<=8?'knit':'flat', f>=6&&f<=8?'open':f>=9?'smile':'flat'); },
       dig(u,I,K){ const D=K.D, m=K.mode, Lh=K.bp(ftab(u,DIG.L,m)), Rh=K.bp(ftab(u,DIG.R,m)), lean=ftab(u,DIG.lean,m), yaw=ftab(u,DIG.yaw,m);
         I.legs.L={ p:K.ft(-0.125,0.13), yaw:-8 }; I.legs.R={ p:K.ft(0.125,-0.08), yaw:20 };
-        I.pelvis.p=[0.01,-0.03,D.pelvisZ-0.07]; I.pelvis.yaw=yaw*0.6; I.spine.yaw=yaw*0.25; I.chest.yaw=yaw*0.15;
+        I.pelvis.p=[0.01,-0.03,D.pelvisZ-0.07-ftab(u,DIG.drop,m)*K.k.l]; I.pelvis.yaw=yaw*0.6; I.spine.yaw=yaw*0.25; I.chest.yaw=yaw*0.15;
         I.spine.pitch=lean*0.55; I.chest.pitch=lean*0.45; I.neck.pitch=-lean*0.3; I.head.pitch=10;
         I.arms.L={ w:Lh, el:[-1,-0.3,-0.3] }; I.arms.R={ w:Rh, el:[0.9,-0.4,-0.6] };
         const d=vsub(Rh,Lh), dl=vlen(d)||1; I.tool={ held:true, kind:'shovel', pitch:Math.asin(d[2]/dl)/DEG, yaw:Math.atan2(d[0],d[1])/DEG, bend:0, len:1.05 };

@@ -2,9 +2,41 @@
 
 This file records each intake of Claude Design's character rig 10 into this folder, newest first:
 
-- 10.3 arm clearance (2026-11-20, next): a pose edit in this repo, not a kit drop;
+- 10.3 dig blade (2026-11-20, next): a pose edit in this repo, not a kit drop;
+- 10.3 arm clearance (2026-11-20): a pose edit in this repo, not a kit drop;
 - kit 10.3 (2026-10-05);
 - kit 10.2 (2026-10-02, further down, as #918 wrote it).
+
+## 10.3 dig blade (2026-11-20): the shovel reaches the ground
+
+A source edit to `Art/characterIsoRig10.poses.js`, made here. The dig's shovel stopped 0.37 m above
+the ground at its lowest point (frame 1), and its keys held the shaft 35 to 80 degrees off his
+facing, so at N and W the dig read as a level jab, not a dig.
+
+Only the dig clip changed:
+
+- the `DIG` hand keys, `lean` and `yaw` are re-authored as a stab (frames 0 to 2), a lever
+  (frame 3), a lift and toss (frames 4 to 6) and a return (7 to 9);
+- a new `drop` track lowers the pelvis by `drop` times the build's leg scale, so he bends his
+  knees as well as his back;
+- the shaft runs 62 to 74 degrees down through the stab and the lever, within 15 degrees of his
+  facing until the toss.
+
+On the Fisher, the 1.05 m tool's tip (the same line the held shovel mesh is pinned to) bottoms
+out on frame 2 at 0.001 m above the ground, inside `GameConfig.HeldShovelGroundToleranceMetres`
+(0.1 m), and never goes under it. Both palms stay on the shaft on every frame (the left hand
+0.29 m up it). The worst arm clearance is 0.34 rig px, under `GameConfig.MeshArmClearancePx`.
+`HeldShovelMeshTests.TheDig_TheBladeMeetsTheGround_AtTheDigsLowPoint` now runs.
+
+The pose library's LF sha256 is now
+`92467b1f3100d5b9f8886862fdc42a1478b065be6527db6dee4ecf3678fe0adb`. `tools/check.cjs --write`
+regenerated the builds, sidecars, options, golden report, manifest and sums. The pin moved in the
+row-stroke and seated-helm contracts, in eight of the hull walks `hull-walk.mjs` writes, and in the
+ten re-baked skins. The dory's walk (`doryIsoRig.dory_iso.walk.json`) keeps the old pin: an open
+rowing PR edits that file, so it is re-pinned there or after it lands.
+
+The carried shovel moved too, in data only: `Shovel.asset` carries it at pitch -72, yaw 0 (was -35,
+20), low at his side, so the shaft no longer crosses his legs at E and W.
 
 ## 10.3 arm clearance (2026-11-20): dig, hauler and strike
 

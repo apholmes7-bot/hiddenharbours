@@ -15,9 +15,8 @@ namespace HiddenHarbours.Tests.EditMode
     /// <b>The clam shovel is its facet mesh in both of his hands</b> (ADR 0053): the same driver as the rod
     /// (<see cref="HeldRodMesh"/>), read off the shovel's own Def. While the mesh body digs, the grip is on
     /// the right hand's tool socket on every frame and the clip's tool track aims it, so the shaft runs
-    /// through the left hand and the blade bottoms out where the clip's tool does (how far short of the
-    /// ground it stops is a rig gap, pinned below as an ignored test). On a free gait he
-    /// carries it at the Def's carried aim, blade clear of the ground.
+    /// through the left hand and the blade bottoms out where the clip's tool does, on the ground. On a
+    /// free gait he carries it at the Def's carried aim, blade clear of the ground.
     ///
     /// <para>Measured on the SHIPPED fisher skin, through the ashore frame chain at all eight headings, so
     /// a rig re-bake that moves the hands or the blade fails here rather than in a picture.</para>
@@ -206,13 +205,12 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         /// <summary>
-        /// KNOWN GAP, not a pass: the fisher's dig holds the tool 1.05 m from the right hand (its tool track's
-        /// length) while the baked shovel's blade is 0.665 m from that hand, and the left hand is 0.26-0.31 m
-        /// above it on the shaft. With both hands on the shaft the blade can come no lower than ~0.32 m;
-        /// as gripped it stops 0.37 m above the ground. Meeting the ground needs the dig clip's hands
-        /// lower at the strike, or the shovel rig's grip moved, both rig sources. Un-ignore once one lands.
+        /// The dig's stab drives the blade to the ground: at the clip's low point the lowest vertex of the
+        /// baked shovel sits on the ground, within <see cref="GameConfig.HeldShovelGroundToleranceMetres"/>.
+        /// The rig's dig keys (characterIsoRig10.poses.js, DIG) put the right hand low with the back and
+        /// knees bent, so the blade reaches the ground with both hands on the shaft.
         /// </summary>
-        [Test, Ignore("Rig gap: the dig clip's hands are ~0.37 m too high for the baked 1.04 m shovel; needs a rig change")]
+        [Test]
         public void TheDig_TheBladeMeetsTheGround_AtTheDigsLowPoint()
         {
             (float lowest, int lowFrame, _) = DigLowPoint();

@@ -3,7 +3,7 @@
  "rig": "characterIsoRig10.js",
  "revision": "10.3",
  "derivedFromRigSha256": "ad563075475740cea1258de68d05c184f2fc136491357bc22988a10d810413f3",
- "posesDerivedFromRigSha256": "0f95229bac56325c29b22b07bd71928edaf6b92d89ff67d2a97ad16a8e54fe8e",
+ "posesDerivedFromRigSha256": "92467b1f3100d5b9f8886862fdc42a1478b065be6527db6dee4ecf3678fe0adb",
  "checksSha256": "9649a0f01b96f400b7c7265d3d90e4cc4a260aded69cbbcc2591f964959bf5fe",
  "authoring": "CharacterIso10.CHECKS run to the end on every CAST build (tools/check.cjs; the review page steps the same generators). Residuals print with toFixed(7).",
  "summary": {
@@ -928,7 +928,7 @@
      "gate": true,
      "pass": true,
      "value": "0.0000000 m",
-     "detail": "28 bones (17 deform + root + 10 sockets). Largest change in any joint-to-joint length over 438 frames: 0.0000000 m (swim f7 foot_L). No tip, cuff, hem or inseam bones."
+     "detail": "28 bones (17 deform + root + 10 sockets). Largest change in any joint-to-joint length over 438 frames: 0.0000000 m (dig f3 foot_R). No tip, cuff, hem or inseam bones."
     },
     {
      "id": "skin",
@@ -4822,7 +4822,7 @@
      "gate": true,
      "pass": true,
      "value": "0.0000000 m",
-     "detail": "28 bones (17 deform + root + 10 sockets). Largest change in any joint-to-joint length over 438 frames: 0.0000000 m (idle f5 foot_R). No tip, cuff, hem or inseam bones."
+     "detail": "28 bones (17 deform + root + 10 sockets). Largest change in any joint-to-joint length over 438 frames: 0.0000000 m (dig f0 foot_R). No tip, cuff, hem or inseam bones."
     },
     {
      "id": "skin",

@@ -3,7 +3,7 @@
  "rig": "characterIsoRig10.js",
  "exportSymbol": "CharacterIso10",
  "derivedFromRigSha256": "ad563075475740cea1258de68d05c184f2fc136491357bc22988a10d810413f3",
- "posesDerivedFromRigSha256": "0f95229bac56325c29b22b07bd71928edaf6b92d89ff67d2a97ad16a8e54fe8e",
+ "posesDerivedFromRigSha256": "92467b1f3100d5b9f8886862fdc42a1478b065be6527db6dee4ecf3678fe0adb",
  "revision": "10.3",
  "authoring": "tools/check.cjs --write renders every PNG from tools/kit.js renderPlan(); 4x is the 1x grid scaled by 4, nearest neighbour. rgbaSha256 is the SHA-256 of the pixels as straight RGBA bytes, row-major, empty pixels 0,0,0,0; pngSha256 the file's as shipped (another PNG encoder writes other bytes for the same pixels; tools/check.cjs holds the pixels and only notes a pngSha256 that differs).",
  "render": {
