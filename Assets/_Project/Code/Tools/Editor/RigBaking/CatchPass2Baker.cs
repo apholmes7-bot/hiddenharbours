@@ -259,6 +259,7 @@ namespace HiddenHarbours.Tools.RigBaking
 
             using IRigScriptHost host = RigScriptHostFactory.Create();
             var geo = RigCatalog.Install(host, entry);
+            InstallCoast(host);
             string g = entry.GlobalName;
 
             var result = new CatchPass2BakeResult
@@ -272,7 +273,7 @@ namespace HiddenHarbours.Tools.RigBaking
             FishingKitBaker.RefuseOnMismatch(RigKey, entry.DeclaredConvention, probe.Convention,
                                              probe.Report);
 
-            species ??= FishingKitBaker.ReadStringArray(host, $"{g}.ORDER");
+            species ??= AllSpecies(host, g);
             states ??= ReadStateOrder(host, g);
             foreach (string s in species) AssertSpecies(host, g, s);
             foreach (string st in states) StateFrames(host, g, st);
@@ -320,6 +321,7 @@ namespace HiddenHarbours.Tools.RigBaking
 
             using IRigScriptHost host = RigScriptHostFactory.Create();
             var geo = RigCatalog.Install(host, entry);
+            InstallCoast(host);
             string g = entry.GlobalName;
 
             var result = new CatchPass2BakeResult
@@ -336,7 +338,7 @@ namespace HiddenHarbours.Tools.RigBaking
             FishingKitBaker.RefuseOnMismatch(RigKey, entry.DeclaredConvention, probe.Convention,
                                              probe.Report);
 
-            species ??= FishingKitBaker.ReadStringArray(host, $"{g}.ORDER");
+            species ??= AllSpecies(host, g);
             states ??= ReadStateOrder(host, g);
 
             // Validate the WHOLE recipe before writing anything — a mistyped species or state fails
@@ -391,6 +393,31 @@ namespace HiddenHarbours.Tools.RigBaking
             total.Stop();
             result.TotalMilliseconds = total.Elapsed.TotalMilliseconds;
             return result;
+        }
+
+        /// <summary>The coast species kit's catalog key: it adds smelt, tomcod and cunner to
+        /// <c>FishIso2.SPECIES</c> at load, so every pass-2 fish bake installs it after the body.</summary>
+        public const string CoastRigKey = "coastSpecies";
+
+        /// <summary>Loads the coast species extension into a host that already carries FishIso2.
+        /// Idempotent; moves no pixel of the seven pass-2 species (its render wrapper only touches
+        /// its own keys).</summary>
+        public static void InstallCoast(IRigScriptHost host)
+        {
+            if (!RigCatalog.Has(CoastRigKey)) return;
+            if (host.EvaluateBool("typeof CoastSpecies === 'object' && CoastSpecies !== null")) return;
+            RigCatalog.InstallModule(host, RigCatalog.Get(CoastRigKey));
+        }
+
+        /// <summary>Every fish the pass-2 baker draws: the rig's own <c>ORDER</c> (pinned at seven)
+        /// followed by the coast kit's <c>ORDER</c> when it is installed.</summary>
+        public static IReadOnlyList<string> AllSpecies(IRigScriptHost host, string g)
+        {
+            var all = new List<string>(FishingKitBaker.ReadStringArray(host, $"{g}.ORDER"));
+            if (host.EvaluateBool("typeof CoastSpecies === 'object' && CoastSpecies !== null"))
+                foreach (string s in FishingKitBaker.ReadStringArray(host, "CoastSpecies.ORDER"))
+                    if (!all.Contains(s)) all.Add(s);
+            return all;
         }
 
         /// <summary>Water anims (AORDER, in rig order) then dry rests (RESTS, in rig order).</summary>

@@ -26,8 +26,8 @@ namespace HiddenHarbours.Tests.EditMode
         const string WaterPath = "Assets/_Project/Art/Shaders/HiddenHarboursWater.shader";
         const string AdvectPath = "Assets/_Project/Art/Shaders/HiddenHarboursFoamBufferAdvect.shader";
         const string Dial = "_SurfFringeSequenceStrength";
-        const string BaseWaterHash = "2e881788d37628bc1013ee7773f5806dfef036c479b5fcb4ea555023d35e946f";
-        // Approved b5825e1f; re-approved at W1 Phase D (#932, owner d20) and C2a Phase D (owner, clarity 1) and at water gains B7 (#992, the seat's lean under the standing word of 10-29) and at crest glow L1 (#1004, the owner's ruling of 11-01) and at the foam lattice hash (the open-sea repeat fix, a named moved premise) and at the run-up wash (fix/shore-runup-foam, the owner's shore clip review of 11-15) and at the run-up wash v4 (fix/shore-runup-foam, the owner's v3 clip review of 11-15) and at the shore-normal pulse (fix/shore-runup-foam, the owner's v4 clip review of 11-15) and at the wash v7 (fix/shore-runup-foam, the PR 1225 editor look of 11-15) and at the wash v8 (the f07a839 editor look of 11-15) and at the wash v9 (the 7e16896 editor look of 11-15) and at real hull waves (feat/real-wake-waves, the owner's ask of 11-17) and at the hull waves' soft look (feat/real-wake-waves, the owner's look of 11-19) and at the kelp under the water (feat/kelp-reads-under-water, the weed's clarity in the seabed composite, outside the surf paths). UTF-8 without BOM, LF. These are scope guards, not copies of physics.
+        const string BaseWaterHash = "ddbf54a73a81557727b37752a92a60af90bb82b3a07801f24c26677a070611b2";
+        // Approved b5825e1f; re-approved at W1 Phase D (#932, owner d20) and C2a Phase D (owner, clarity 1) and at water gains B7 (#992, the seat's lean under the standing word of 10-29) and at crest glow L1 (#1004, the owner's ruling of 11-01) and at the foam lattice hash (the open-sea repeat fix, a named moved premise) and at the run-up wash (fix/shore-runup-foam, the owner's shore clip review of 11-15) and at the run-up wash v4 (fix/shore-runup-foam, the owner's v3 clip review of 11-15) and at the shore-normal pulse (fix/shore-runup-foam, the owner's v4 clip review of 11-15) and at the wash v7 (fix/shore-runup-foam, the PR 1225 editor look of 11-15) and at the wash v8 (the f07a839 editor look of 11-15) and at the wash v9 (the 7e16896 editor look of 11-15) and at the kelp under the water (feat/kelp-reads-under-water, the weed's clarity in the seabed composite, outside the surf paths) and at real hull waves (feat/real-wake-waves, the owner's ask of 11-17) and at the hull waves' soft look (feat/real-wake-waves, the owner's look of 11-19) and at the one foam sheet (feat/one-foam-everywhere, the owner's rulings of 11-19: the shore line, then the caps and surf, then the storm streaks, then the convergence foam, then the caps' and streaks' amounts tuned from the looks, then main merged in under the same ruling, then the wash in the run-up through the sheet under the owner's ruling of 11-19, "Yes, unify surf": its join, amount and backwash age, join 0 the older smooth sheet bit-exact, then the wash's amount tuned from the looks, then the owner's oar look of 11-19: the open-water foam read soft and torn through _FoamSheetEdge, both dials 0 the older point read bit-exact, and the hull waves' low-light share laid after the palette grade, 0 at noon, then the owner's oar look of 11-19 again: the one sheet's band edges broken by a fixed torn world noise through _FoamSheetDither (x 0 the Bayer cell, bit-exact), and a short hull's rings packed with a negative width drawn as broken arcs through _HHHullWaveArcs, every other ring bit-exact; no surf, bore or wash term moved) and at the cut-off pools (fix/cut-off-pools-stay-still-impl, the owner's ask of 11-19 that a pool the falling tide has cut off stays still: the sea's reach multiplies the swell, the surf's outputs, the drawn edge's swash, the wash and the shore line; exactly 1, so bit-exact, wherever no reach map is bound or the water is joined to the sea). UTF-8 without BOM, LF. These are scope guards, not copies of physics.
         const string LegacyDepth =
             "                float foamDepth  = depthC - lerp(BeachSwash(worldXY, depthC, t) * swashSlope * swashGate,  // local, foam-only\n" +
             "                                                 surfRunUpM, boreFoamBlend);   // …and the foam rides the bore's wash too\n";
@@ -151,7 +151,8 @@ namespace HiddenHarbours.Tests.EditMode
                 Assert.That(CorrectConsumers(mutation), Is.False, "the wiring guard must reject disconnected/wrong-clock consumers");
             string code = Code(src);
             StringAssert.Contains("surfBore=SurfBorePulse01(borePhase,_BreakerBore.x)*birth;", code);
-            StringAssert.Contains("col.rgb=lerp(col.rgb,_FoamColor.rgb,foamCoverage*_FoamColor.a);", code);
+            StringAssert.Contains("float3fringeFoam=FoamAgedColor(fringeAge01,_FoamColor.rgb,_FoamSheetShore.x,col.rgb);", code);
+            StringAssert.Contains("col.rgb=lerp(col.rgb,fringeFoam,foamCoverage*_FoamColor.a);", code);
             StringAssert.Contains("col.a=max(col.a,foamCoverage*_FoamColor.a);", code);
             MainSource(src); // Also rules out additional hidden consumers, time reads, samples or loops.
         }
@@ -213,8 +214,9 @@ namespace HiddenHarbours.Tests.EditMode
             // The wash v7 (fix/shore-runup-foam, the PR 1225 editor look 11-15) measures the leading line on the ground up the shore normal instead of the screen gradient (no ddx/ddy in the wash), hands the breaker's lip and barrel to the wash above the still line, and caps what the surf's layers hide of the sand (_WashMaxCover); the pinned source includes it.
             // The wake seam fix (fix/bow-foam-and-hull-sorting, owner 11-16 "the two lines that persist ... behind the stern") changes only the HULL dispersal block of the advect pass: its edge starts at half the band's radius and lays (1 - FoamProfile01) of the envelope. That block runs only for a hull injector (disp.x > 0) and adds to foam independently of the bore's deposit, which reads neither foam nor fresh, so the bore it deposits is unchanged; the pinned source includes it.
             // The kelp under the water (feat/kelp-reads-under-water) adds the global _HHUnderWaterClarity, a cover out-parameter on ShallowsPropsBed and UnderWaterPropTransmission, which raises the seabed column's banded transmission (bedT, local to the absorption block) only where a prop under the water covers the bed. It sits in the seabed composite, reads no surf, bore, foam, wash or clock term, and nothing in the surf paths reads it; the B1 blocks are byte-identical; the pinned source includes it.
+            // The cut-off pools (fix/cut-off-pools-stay-still-impl, the owner's ask of 11-19) multiply the bore's deposit front by the sea's reach after the front line: exactly 1 wherever the water is joined to the sea, so the bore deposited on every open shore is unchanged, and a pool the tide has cut off takes no new surf residue; the pinned source includes it.
             MainSource(Read(WaterPath)); // Pins the edge, clip, sheet and both twins to approved main.
-            Assert.That(Hash(Read(AdvectPath)), Is.EqualTo("a5f536c6c7d483d4eeb17d64d485055c969b34b2e3880b56abdee9009ba024bf"));
+            Assert.That(Hash(Read(AdvectPath)), Is.EqualTo("c44e6f51d9260d92c832e7c4e4d319fa848475710ba64aaad57a9bc9f5bc0dfa"));
             Assert.That(Hash(Read("Assets/_Project/Code/Core/Environment/BreakerMath.cs")),
                 Is.EqualTo("294994086ac8bdb0f1a8de662b7520c58698332fff20f241cb64461ace8007f4"));
             Assert.That(Hash(Read("Assets/_Project/Code/Art/WaterSurface.cs")),
@@ -225,7 +227,11 @@ namespace HiddenHarbours.Tests.EditMode
             // The wash v8 adds BeachSurfEvalPoint, ShoreSurfShare01, ShoreSurfCover01 and OpenSurfCover01, the CPU twins of the shader's beach projection and its shore surf; the pinned source includes them.
             // The wash v9 adds BeachSurfEvalPointRefined, AlongShoreGateDepth and ShoreLip01, the CPU twins of the shader's correcting step onto the still line, the break gate's along-shore box and the lip broken by the churn; the pinned source includes them.
             // The kelp under the water pushes _HHUnderWaterClarity (GameConfig.UnderWaterWeedClarity) beside the shallows floor's switch in PushShallowsFloor; no surf twin moved; the pinned source includes it.
-                Is.EqualTo("2be54d234d9bde6b258ce5519493d7d2eb4d6831ca105bd0be5d6cb68a5f7a33"));
+            // The one foam sheet (feat/one-foam-everywhere, the owner's rulings of 11-19) adds PushFoamSheet, the GameConfig.FoamSheet dials pushed beside the shallows floor (the shore line, then the caps and surf, then the storm streaks, then the convergence foam, then the wash under the 11-19 ruling "Yes, unify surf"); the pinned source includes it.
+            // The owner's oar look of 11-19 adds IdFoamSheetEdge and pushes GameConfig.FoamSheet.EdgeVector in PushFoamSheet; no surf twin moved; the pinned source includes it.
+            // The owner's oar look of 11-19 (the band edges) adds IdFoamSheetDither and pushes GameConfig.FoamSheet.DitherVector in PushFoamSheet; no surf twin moved; the pinned source includes it.
+            // The cut-off pools publish the sea's reach from the seabed the water draws (SeaReachGlobals.PublishPainted / PublishElevations, released in OnDisable, its blend refreshed in PushUniforms); no surf twin moved; the pinned source includes it.
+                Is.EqualTo("f930ddc509bc311fb47dd442f87d6e6a77b2ad6cfae6b146a2436985023e1b61"));
         }
 
         static void RequireGpu()
@@ -376,8 +382,8 @@ namespace HiddenHarbours.Tests.EditMode
                     "float4 _B1Time; float4 _B1Fringe; float4 _B1Event;\nCBUFFER_START(UnityPerMaterial)");
                 // Only the fringe's RGB target changes. _FoamColor also colours other layers: setting
                 // that shared material colour would NOT isolate the fringe.
-                source = source.Replace("col.rgb = lerp(col.rgb, _FoamColor.rgb, foamCoverage * _FoamColor.a);",
-                    "col.rgb = lerp(col.rgb, lerp(_FoamColor.rgb, _B1Fringe.rgb, _B1Fringe.a), foamCoverage * _FoamColor.a);");
+                source = source.Replace("col.rgb = lerp(col.rgb, fringeFoam, foamCoverage * _FoamColor.a);",
+                    "col.rgb = lerp(col.rgb, lerp(fringeFoam, _B1Fringe.rgb, _B1Fringe.a), foamCoverage * _FoamColor.a);");
                 source = source.Replace("col.rgb = lerp(col.rgb, surfFoam, cover * _SurfColor.a);",
                     "col.rgb = lerp(col.rgb, lerp(surfFoam, _B1Event.rgb, _B1Event.a), cover * _SurfColor.a);");
                 source = source.Replace("col.rgb = lerp(col.rgb, lipFoam, lip * _SurfLipColor.a);",

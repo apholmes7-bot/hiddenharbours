@@ -644,6 +644,46 @@ namespace HiddenHarbours.Tests.Art.EditMode
             Assert.AreEqual(PropertyId("_HHHullWaveLook"), HullWaveBridge.IdLook);
         }
 
+        // The owner, 2026-11-19: the rowed V is "invisible at dusk"; it should read gently at dusk as at noon.
+        [Test]
+        public void InLowLight_HerWavesTakeAShareAgain_AndNoonIsUntouched()
+        {
+            HullWaveSettings s = S;
+            Assert.That(s.LowLightGain, Is.GreaterThan(0f), "the shipped dials lift her waves at dusk");
+            Assert.Greater(s.LowLightStartLuminance, s.LowLightFullLuminance);
+            const float noon = 0.91f, dusk = 0.48f;   // the day/night tint's luminance at 12:00 and 19:30
+            Assert.Less(s.LowLightStartLuminance, noon, "noon sits above the start: the noon look is exactly as approved");
+            Assert.AreEqual(1f, HullWaveMath.LowLightGain(noon, true, in s), 0f, "noon is untouched");
+            Assert.AreEqual(1f, HullWaveMath.LowLightGain(dusk, false, in s), 0f, "no day/night cycle: untouched");
+            Assert.AreEqual(1f + s.LowLightGain, HullWaveMath.LowLightGain(dusk, true, in s), 1e-6f,
+                "dusk is darker than the full point: the whole lift");
+            float mid = 0.5f * (s.LowLightStartLuminance + s.LowLightFullLuminance);
+            Assert.AreEqual(1f + 0.5f * s.LowLightGain, HullWaveMath.LowLightGain(mid, true, in s), 1e-5f, "it eases in");
+            float previous = 0f;
+            for (float lum = 1f; lum >= 0f; lum -= 0.05f)
+            {
+                float g = HullWaveMath.LowLightGain(lum, true, in s);
+                Assert.GreaterOrEqual(g, previous, "darker light never lifts less");
+                previous = g;
+            }
+
+            // The twin: the extra share is laid AFTER the palette grade, whose dusk value floor flattened
+            // a shade laid below it, and only that extra share (gain * dim), so noon (dim 0) is a no-op.
+            System.Func<string, string> sq = t => Regex.Replace(t, @"\s+", "");
+            string raw = WaterSource(), src = sq(raw);
+            StringAssert.Contains(sq("float hwTintLum = dot(_DayNightTint.rgb, float3(0.299, 0.587, 0.114));"), src);
+            StringAssert.Contains(sq("? saturate((_HHHullWaveLowLight.y - hwTintLum) / max(_HHHullWaveLowLight.y - _HHHullWaveLowLight.z, 1e-3))"), src);
+            StringAssert.Contains(sq("hullWaveLowLight = hwShade * hullWaveShore * max(_HHHullWaveLowLight.x, 0.0) * hwDim;"), src);
+            int grade = src.IndexOf(sq("col.rgb = PaletteGrade(col.rgb, dayNightLuma);"), System.StringComparison.Ordinal);
+            int post = src.IndexOf(sq("col.rgb *= 1.0 + hullWaveLowLight;"), System.StringComparison.Ordinal);
+            Assert.Greater(grade, 0);
+            Assert.Greater(post, grade, "the low-light share must be laid after the grade");
+            StringAssert.Contains("float4 _HHHullWaveLowLight;", raw);
+            Assert.AreEqual(PropertyId("_HHHullWaveLowLight"), HullWaveBridge.IdLowLight);
+            string asset = File.ReadAllText(Path.Combine(Application.dataPath, "..", ConfigPath));
+            StringAssert.Contains("LowLightGain: " + s.LowLightGain.ToString(System.Globalization.CultureInfo.InvariantCulture), asset);
+        }
+
         [Test]
         public void TheWakesFoam_IsTheSeasFoam_NotAPieceOfItsOwn()
         {
@@ -653,11 +693,12 @@ namespace HiddenHarbours.Tests.Art.EditMode
             // like the prop's churn and the shore's residue; nothing in the hull-wave block paints a white.
             string src = WaterSource();
             int join = src.IndexOf("float stored = max(buffered.x, crestStored);", System.StringComparison.Ordinal);
-            int tear = src.IndexOf("stored *= lerp(1.0, saturate(torn * 2.0), saturate(_WakeFoamLace));",
+            // Since the one foam sheet (2026-11-19) the tear is FoamSheetTear, the step every foam takes.
+            int tear = src.IndexOf("stored = FoamSheetTear(stored, FoamSheetLace(worldXY),",
                                    System.StringComparison.Ordinal);
             Assert.Greater(join, 0, "the crests' foam does not join the shared foam mat");
             Assert.Greater(tear, join, "the crests' foam must be torn and shaped with the churn, not after it");
-            StringAssert.Contains("WakeFoamCoverage(worldXY, washZone > 0.001 ? 0.5 : bay, hullCrestFoam, wakeFresh);", src);
+            StringAssert.Contains("WakeFoamCoverage(worldXY, washZone > 0.001 ? 0.5 : sheetBay, hullCrestFoam, wakeFresh);", src);
             StringAssert.DoesNotContain("lerp(col.rgb, _FoamColor.rgb, hwFoam", src,
                 "the hull waves must not draw a foam white of their own");
 
@@ -691,8 +732,11 @@ namespace HiddenHarbours.Tests.Art.EditMode
             StringAssert.Contains(sq("hwShade *= hwShade < 0.0 ? _HHHullWaveFoam.z : 1.0;"), src, "twin of WaveShade");
             StringAssert.Contains(sq("hullCrestFoam = max(hwTall, hwSteep) * _HHHullWaveShade.w * hullWaveShore;"), src,
                 "twin of CrestFoam01");
-            int tear = src.IndexOf(sq("stored *= lerp(1.0, saturate(torn * 2.0), saturate(_WakeFoamLace));"), System.StringComparison.Ordinal);
-            int aged = src.IndexOf(sq("stored *= lerp(1.0, smoothstep(0.35, 0.75, torn), ageTear);"), System.StringComparison.Ordinal);
+            // The one foam sheet (2026-11-19): both steps live in FoamSheetTear, and the wake hands it the
+            // hull waves' own age tear (the larger of it and the sheet's wins).
+            int tear = src.IndexOf(sq("amount *= lerp(1.0, saturate(torn * 2.0), saturate(_WakeFoamLace));"), System.StringComparison.Ordinal);
+            int aged = src.IndexOf(sq("return amount * lerp(1.0, smoothstep(0.35, 0.75, torn), ageTear);"), System.StringComparison.Ordinal);
+            StringAssert.Contains(sq("1.0 - freshness, _HHHullWaveFoamAge.z)"), src, "the wake ages on its own tear dial");
             Assert.Greater(tear, 0);
             Assert.Greater(aged, tear, "old foam tears to its hearts on the shared mat, after the lace");
             Assert.That(s.FoamAgeTear, Is.InRange(0.01f, 1f));

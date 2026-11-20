@@ -29,7 +29,7 @@ namespace HiddenHarbours.Boats
     /// <see cref="HelmControlRelay.DevAllInstrumentsEnabled"/>, which compiles to false outside the editor
     /// and a development build. This component reads that gate rather than re-deriving it, so the two can never
     /// drift apart and a player can never key their way to a free fish finder. The component is mounted
-    /// unconditionally (the <see cref="MastheadTelltale"/>/<see cref="HelmControlRelay"/> precedent —
+    /// unconditionally (the <see cref="HelmControlRelay"/> precedent —
     /// self-installed from <see cref="BoatController"/>'s Awake so every already-built scene grows it with
     /// no builder re-run); it is the BEHAVIOUR that is gated, not the mount.</para>
     ///

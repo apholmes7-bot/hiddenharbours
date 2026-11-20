@@ -1,4 +1,5 @@
 using System;
+using HiddenHarbours.Core;
 using UnityEngine;
 
 namespace HiddenHarbours.Boats
@@ -462,6 +463,36 @@ namespace HiddenHarbours.Boats
         private readonly int[] _releases = new int[2];
         private uint _salt;
 
+        /// <summary>
+        /// One oar's deposit into the sea's ONE foam sheet this frame (the owner, 2026-11-19: "wake foam
+        /// should be the same as any foam"): the capsule of water the blade worked, in DRAWN world metres,
+        /// its half-width, the coverage to add at its centre (already dt-scaled) and the freshness gate.
+        /// The emitter hands it to <see cref="HiddenHarbours.Core.FoamSplashes"/>; the buffer ages it.
+        /// </summary>
+        public struct SheetDeposit
+        {
+            public Vector2 From, To;
+            public float Radius, Amount, Vigour;
+        }
+
+        private readonly SheetDeposit[] _sheet = new SheetDeposit[2];
+        private readonly bool[] _hasSheet = new bool[2];
+        private readonly Vector2[] _lastWater = new Vector2[2];
+        private readonly bool[] _hadWater = new bool[2];
+        private FoamSheetSettings _sheetCfg;
+        private bool _joined;
+
+        /// <summary>True while the oars lay their foam into the sheet: no drawn puffs, puddles or rings.</summary>
+        public bool JoinsSheet => _joined;
+
+        /// <summary>This frame's sheet deposit for one oar, if it laid one.</summary>
+        public bool TryGetSheetDeposit(int oar, out SheetDeposit deposit)
+        {
+            int i = Mathf.Clamp(oar, 0, 1);
+            deposit = _sheet[i];
+            return _hasSheet[i];
+        }
+
         public DoryOarSplashSystem(int foamPoolSize, int dropletPoolSize)
             : this(foamPoolSize, dropletPoolSize, OarSplashConfig.Default.RipplePoolSize,
                    OarSplashConfig.Default.DripPoolSize) { }
@@ -496,6 +527,7 @@ namespace HiddenHarbours.Boats
             {
                 _primed[i] = false; _wasImmersed[i] = false; _foamCarry[i] = 0f;
                 _dripCarry[i] = 0f; _sinceRelease[i] = float.PositiveInfinity;
+                _hadWater[i] = false; _hasSheet[i] = false;
             }
         }
 
@@ -505,7 +537,21 @@ namespace HiddenHarbours.Boats
         /// </summary>
         public int Step(in OarFrame port, in OarFrame starboard, float boatSpeed, Vector2 current,
                         float dt, in OarSplashConfig cfg)
+            => Step(in port, in starboard, boatSpeed, current, dt, in cfg, default);
+
+        /// <summary>
+        /// The same frame, with the one foam sheet's dials: when <paramref name="sheet"/> joins the oars
+        /// to the sheet (<see cref="FoamSheetSettings.OarJoinsSheet"/>), each working blade lays a
+        /// <see cref="SheetDeposit"/> where it goes in, pulls and comes out, and no foam puffs, puddle
+        /// puffs or rings are laid. Droplets and drips (water in the air, not foam) are kept either way.
+        /// </summary>
+        public int Step(in OarFrame port, in OarFrame starboard, float boatSpeed, Vector2 current,
+                        float dt, in OarSplashConfig cfg, in FoamSheetSettings sheet)
         {
+            _sheetCfg = sheet;
+            _joined = sheet.OarJoinsSheet;
+            _hasSheet[Port] = false;
+            _hasSheet[Starboard] = false;
             int fired = 0;
             if (StepOar(Port, in port, boatSpeed, dt, in cfg)) fired++;
             if (StepOar(Starboard, in starboard, boatSpeed, dt, in cfg)) fired++;
@@ -533,6 +579,12 @@ namespace HiddenHarbours.Boats
             _primed[oar] = true;
             _wasImmersed[oar] = immersed;
 
+            // Where this blade last worked the water, for the sheet's capsule. Read before it is updated.
+            bool hadWater = _hadWater[oar];
+            Vector2 lastWater = _lastWater[oar];
+            _hadWater[oar] = immersed && cfg.Enabled && f.Stroking;
+            if (_hadWater[oar]) _lastWater[oar] = f.BladeWorld;
+
             if (!cfg.Enabled || !f.Stroking)
             {
                 _foamCarry[oar] = 0f;   // no burst of saved-up foam on the next entry
@@ -551,6 +603,9 @@ namespace HiddenHarbours.Boats
                 if (exited)
                 {
                     _releases[oar]++;
+                    // The puddle the blade leaves, laid where it last worked the water.
+                    if (_joined && hadWater)
+                        LaySheet(oar, lastWater, lastWater, _sheetCfg.OarRelease * strength, strength, _sheetCfg.OarCatchRadius);
                     Release(in f, sweep, strength, in cfg);
                     _sinceRelease[oar] = 0f;
                     _releaseStrength[oar] = strength;
@@ -570,13 +625,41 @@ namespace HiddenHarbours.Boats
             {
                 _catches[oar]++;
                 ThrowDroplets(in f, DoryOarSplashMath.CatchDrops(strength, in cfg), strength, in cfg);
-                LayFoam(in f, cfg.CatchFoamPuffs, push, strength, in cfg);
-                SendRipples(f.BladeWorld, cfg.RipplesAtCatch, 1f, 1f, 1f, 0f, strength, in cfg);
+                if (!_joined)
+                {
+                    LayFoam(in f, cfg.CatchFoamPuffs, push, strength, in cfg);
+                    SendRipples(f.BladeWorld, cfg.RipplesAtCatch, 1f, 1f, 1f, 0f, strength, in cfg);
+                }
+            }
+
+            if (_joined)
+            {
+                // The blade's sweep through the water since the last frame, plus the catch's own white on
+                // the frame it went in: one capsule per oar per frame, continuous at any frame rate.
+                Vector2 from = hadWater && !entered ? lastWater : f.BladeWorld;
+                float amount = Mathf.Max(0f, _sheetCfg.OarPerSecond) * strength * Mathf.Max(0f, dt);
+                if (entered) amount += Mathf.Max(0f, _sheetCfg.OarCatch) * strength;
+                LaySheet(oar, from, f.BladeWorld, amount, strength, entered ? _sheetCfg.OarCatchRadius : _sheetCfg.OarRadius);
+                return entered;
             }
 
             int puffs = DoryOarSplashMath.FoamPuffs(cfg.FoamPuffsPerSecond * strength, dt, ref _foamCarry[oar]);
             LayFoam(in f, puffs, push, strength, in cfg);
             return entered;
+        }
+
+        private void LaySheet(int oar, Vector2 from, Vector2 to, float amount, float strength, float radius)
+        {
+            if (!(amount > 0f) || !(radius > 0f)) return;
+            _sheet[oar] = new SheetDeposit
+            {
+                From = from,
+                To = to,
+                Radius = radius,
+                Amount = Mathf.Clamp01(amount),
+                Vigour = Mathf.Clamp01(strength),
+            };
+            _hasSheet[oar] = true;
         }
 
         /// <summary>
@@ -599,6 +682,10 @@ namespace HiddenHarbours.Boats
                     _droplets.EmitAt(f.BladeWorld, dir * speed, in wc, 1f, 1f, strength, orientDeg: 0f);
                 }
             }
+
+            // Joined to the sheet, the puddle is the sheet's own foam (laid by the caller) and the water
+            // draws no ring picture.
+            if (_joined) return;
 
             int n = cfg.SwirlPuffs;
             if (n > 0)
@@ -642,7 +729,7 @@ namespace HiddenHarbours.Boats
                 Vector2 landing = f.TipOnWaterWorld + along * ((Hash() - 0.5f) * 2f * cfg.DripScatterMeters);
                 _drips.Add(landing + new Vector2(0f, lift), new Vector2(0f, -lift / fall), 0f, fall,
                            cfg.DripSize * 0.5f, cfg.DripSize * 0.5f, strength, airborne: true);
-                SendRipples(landing, 1, cfg.DripRingScale, cfg.DripRingLifetimeScale, cfg.DripRingAlphaScale,
+                if (!_joined) SendRipples(landing, 1, cfg.DripRingScale, cfg.DripRingLifetimeScale, cfg.DripRingAlphaScale,
                             fall, strength, in cfg);
             }
         }

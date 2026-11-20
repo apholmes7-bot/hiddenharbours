@@ -47,10 +47,6 @@ MonoBehaviour:
     SlopeStepHours: 0.05
     ScanStepHours: 0.1
     MaxTurns: 64
-  Telltale:
-    LimpBelowMetresPerSecond: 0.6
-    StiffAtMetresPerSecond: 10
-    ResponsePerSecond: 6
   BaseWindStrength: 4
   WindVariability: 5
   WeatherChangeHours: 6
@@ -785,6 +781,17 @@ MonoBehaviour:
     HeightPerMetreLength: 0.018
     FroudeKnee: 0.4
     MaxHeightMetres: 0.6
+    SmallHullCrestMetres: 0.07
+    SmallHullLengthMetres: 6
+    SmallHullSpacingWavelengths: 0.35
+    SmallHullHeightScatter: 0.85
+    SmallHullWavelengthScatter: 0.25
+    SmallHullPhaseScatter: 0.7
+    SmallHullSpacingScatter: 0.3
+    SmallHullTrailFoamShare: 0.18
+    SmallHullCentreScatterMetres: 0.3
+    SmallHullArcShare: 1
+    SmallHullArcLobes: 3
     BowShare: 0.7
     LifetimeSecondsPerMetreLength: 0.8
     MinLifetimeSeconds: 3
@@ -812,6 +819,9 @@ MonoBehaviour:
     TroughCeilingShare: 0.6
     CrestFoamSteepness: 0.6
     CrestFoamSteepnessRamp: 0.3
+    LowLightGain: 2
+    LowLightStartLuminance: 0.85
+    LowLightFullLuminance: 0.5
     RetireFoamFan: 1
     TrailFoamShare: 0.2
     TrailFoamMaxHalfWidthMetres: 3
@@ -819,6 +829,42 @@ MonoBehaviour:
     FoamAgeTear: 1
     RideScale: 1
     RippleLifetimeSeconds: 2.5
+  FoamSheet:
+    Shore: 1
+    ShoreLineSharpness: 2.5
+    ShoreAgeAcross: 0.5
+    ShoreBackwashAge: 0.6
+    Caps: 1
+    CapAmount: 1.3
+    Surf: 1
+    SurfAmount: 1
+    Storm: 1
+    StormAmount: 4
+    StormAge: 0.4
+    Convergence: 1
+    ConvergenceAge: 0.5
+    Wash: 1
+    WashAmount: 3
+    WashBackwashAge: 0.6
+    AgeTear: 1
+    EdgeSoftenMetres: 0.2
+    EdgeWarpMetres: 0.18
+    EdgeWarpSizeMetres: 0.5
+    BandNoise: 1
+    BandNoiseSizeMetres: 0.12
+    Oar: 1
+    OarRadius: 0.15
+    OarCatchRadius: 0.25
+    OarPerSecond: 0.8
+    OarCatch: 0.4
+    OarRelease: 0.16
+  SeaReach:
+    Enabled: 1
+    ReconnectBlendMeters: 0.25
+    SeedMaxElevationMeters: -2.5
+    MinPoolDepthMeters: 0.05
+    QuantumMeters: 0.001
+    WetBandMeters: 0.05
   DevAllHelmInstruments: 1
   MeshFishingAndDig: 1
   PlayerLegacySpriteFallback: 0
@@ -865,9 +911,21 @@ MonoBehaviour:
   FigureUnderwaterDim: 0.35
   FigureWaterlineFoamMetres: 0.03
   FigureWaterlineFoam: 0.5
+  FigureWadeWaterlineFoamMetres: 0.1
+  FigureWadeWaterlineFoam: 0.8
   FigureSwimHidesSunShadow: 1
+  SwimStowsCarriedTools: 1
   MeshRodInHand: 1
   HeldPropLineWidthPx: 1.5
+  MeshCatchInHand: 1
+  HeldFishFinLineWidthPx: 1
+  HeldFishEyeSizePx: 1
+  HeldFishToneGain: 1.5
+  HeldFishToneLift: 1
+  HeldFishDitherScale: 0
+  HeldFishFrontBiasMeters: 0.4
+  HeldFishMinLengthPx: 20
+  HeldFishHandSwapDepthMeters: 0.05
   CookedFishRamp:
   - {r: 1, g: 1, b: 1, a: 1}
   - {r: 1, g: 0.86, b: 0.64, a: 1}

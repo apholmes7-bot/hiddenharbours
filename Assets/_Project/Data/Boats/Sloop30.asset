@@ -60,4 +60,3 @@ MonoBehaviour:
   UnmannedRoundUpTorque: 2400
   RoundUpReferenceDriveKn: 6
   SailWeatherHelm: 2.5
-  MastheadRigMetres: {x: 0, y: 0.57, z: 13}
