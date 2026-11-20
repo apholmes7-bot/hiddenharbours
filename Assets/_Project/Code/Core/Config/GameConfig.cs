@@ -591,6 +591,11 @@ namespace HiddenHarbours.Core
                  "join dial brings back its older separate look. Drawn only.")]
         public FoamSheetSettings FoamSheet = FoamSheetSettings.Default;
 
+        [Tooltip("STILL POOLS: water the falling tide has cut off from the open sea draws still: no swell, " +
+                 "no pulsing edge, no surf or shore foam. The rising tide reconnects it and the swell eases " +
+                 "back in over the blend. Recomputed from the seabed and the tide, never saved.")]
+        public SeaReachSettings SeaReach = SeaReachSettings.Default;
+
         [Tooltip("BREAKING WAVES (ADR 0040): where the sea gives out and how — the breaker index γ, " +
                  "the Iribarren thresholds that separate a spilling crumble from a plunging barrel, and " +
                  "the whitewater decay. Ships at the TEXTBOOK PHYSICS (γ = 0.78, Battjes' 0.5/3.3/5.0), " +

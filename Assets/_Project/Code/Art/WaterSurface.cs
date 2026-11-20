@@ -595,6 +595,7 @@ namespace HiddenHarbours.Art
             PublishSeaLevelUnset();
             SeabedGlobals.PublishUnset();   // the published seabed goes with the waterline (ADR 0040 rev 3)
             StillWaterGlobals.Release(this);   // the last sea to go unsets the still water too (ADR 0046)
+            SeaReachGlobals.Release(this);     // ...and its sea-reach map (only this sea's own)
             // (WS-2) Free the baked fallback height texture (the painted path never allocates _heightTex).
             DestroyBakedHeightTexture();
         }
@@ -808,6 +809,8 @@ namespace HiddenHarbours.Art
 
             // ---- SLOW TIER: re-read the deterministic sim + the mood anchors into the TARGETS -------------
             if (sampleSim || !_targetsValid) SampleSimTargets(env);
+            // The sea-reach blend follows a tuning edit on the slow tier (no flood, no upload).
+            if (sampleSim) SeaReachGlobals.RefreshBlend(this);
 
             // ---- FAST TIER: ease every drawn value toward its target, THIS FRAME --------------------------
             // Frame-rate-independent exponential easing, so a 30 fps machine and a 144 fps machine reach the
@@ -1739,6 +1742,10 @@ namespace HiddenHarbours.Art
             _mpb.SetVector(IdHWorldSize, new Vector4(_heightWorldSize.x, _heightWorldSize.y, 0f, 0f));
             FeedSeabedTexture(_mpb);
             SeabedGlobals.Publish(_heightTex, min, _heightWorldSize, _heightMin, _heightMax, ShoreSampleStep());
+            // The sea's reach (cut-off pools stay still) floods REAL heights only: a distance-to-land
+            // stand-in has no sills, so it leaves the older look in place.
+            if (useTerrain) SeaReachGlobals.PublishElevations(this, elevation, res, res, min, _heightWorldSize);
+            else SeaReachGlobals.Release(this);
             _renderer.SetPropertyBlock(_mpb);
 
             // Enable the shader's height-map branch so the depth read uses the bake.
@@ -1763,6 +1770,9 @@ namespace HiddenHarbours.Art
             _mpb.SetVector(IdHWorldSize, new Vector4(_heightWorldSize.x, _heightWorldSize.y, 0f, 0f));
             FeedSeabedTexture(_mpb);
             SeabedGlobals.Publish(_paintedHeightTex, min, _heightWorldSize, _heightMin, _heightMax, ShoreSampleStep());
+            // The sea's reach (cut-off pools stay still): flooded once from this same seabed (cached by
+            // texture, rect and settings, so a re-feed of the same bed costs nothing).
+            SeaReachGlobals.PublishPainted(this, _paintedHeightTex, min, _heightWorldSize, _heightMin, _heightMax);
             _renderer.SetPropertyBlock(_mpb);
 
             EnableHeightTexKeyword();

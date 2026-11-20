@@ -862,6 +862,13 @@ MonoBehaviour:
     OarPerSecond: 0.8
     OarCatch: 0.4
     OarRelease: 0.16
+  SeaReach:
+    Enabled: 1
+    ReconnectBlendMeters: 0.25
+    SeedMaxElevationMeters: -2.5
+    MinPoolDepthMeters: 0.05
+    QuantumMeters: 0.001
+    WetBandMeters: 0.05
   DevAllHelmInstruments: 1
   MeshFishingAndDig: 1
   PlayerLegacySpriteFallback: 0
