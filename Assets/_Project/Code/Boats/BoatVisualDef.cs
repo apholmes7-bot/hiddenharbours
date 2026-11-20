@@ -149,8 +149,9 @@ namespace HiddenHarbours.Boats
                  "and they drift as she turns.")]
         [Range(0f, 90f)] public float ArtBakeElevationDegrees = 90f;
 
-        [Tooltip("SpriteRenderer sortingOrder for the hull picture. 1 draws it above the hidden base hull " +
-                 "renderer at 0 and below the on-foot player at 10. Overlays take the orders above this.")]
+        [Tooltip("The hull picture's order INSIDE the boat's sorting group (ADR 0059): 1 draws it above the " +
+                 "hidden base hull renderer at 0 and under everything aboard; overlays take the orders above " +
+                 "this. Against other boats and the scenery the whole boat sorts by where she lies.")]
         public int SortingOrder = 1;
 
         [Header("Rock grid (OPTIONAL — wave-coupled rock, drawn not faked)")]
@@ -193,6 +194,13 @@ namespace HiddenHarbours.Boats
                  "oars are mesh fittings, only while they are being rowed. Feel dials — safe to tune; " +
                  "Enabled off rows dry.")]
         public OarSplashConfig OarSplash = OarSplashConfig.Default;
+
+        [Tooltip("THE ROWING STATION: where the rower holds each oar (metres inboard of its oarlock), " +
+                 "the thwart he sits on and the boards his feet brace against, in this hull's rig " +
+                 "metres. Read only on a hull whose oars are mesh fittings: the mesh rower is solved " +
+                 "onto these points every frame, hands on the handles. Enabled off = he plays his clip " +
+                 "as authored.")]
+        public RowingStationConfig Rowing = RowingStationConfig.Default;
 
         [Header("Outboard motor (OPTIONAL — the hull's engine, drawn)")]
         [Tooltip("Motor LOWER sheet (leg + plate + skeg + prop), element [heading·MotorColumnCount + col]. " +

@@ -1102,6 +1102,11 @@ namespace HiddenHarbours.Core
         public static HullFoamSettings HullFoam =>
             Config != null ? Config.HullFoam : HullFoamSettings.Default;
 
+        /// <summary>The waves hulls make (<see cref="HullWaveSettings"/>), same contract as
+        /// <see cref="HullFoam"/> including the <c>Config != null</c> discipline. Drawn only.</summary>
+        public static HullWaveSettings HullWaves =>
+            Config != null ? Config.HullWaves : HullWaveSettings.Default;
+
         /// <summary>The BREAKING-WAVE model's tunables (ADR 0040), same contract as
         /// <see cref="WaveField"/> and <see cref="WaveFetch"/> including the <c>Config != null</c>
         /// discipline. Read by the shader bridge (which solves the contour and publishes it) and by the

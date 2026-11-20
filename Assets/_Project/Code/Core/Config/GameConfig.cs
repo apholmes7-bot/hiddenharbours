@@ -51,6 +51,15 @@ namespace HiddenHarbours.Core
                  "GameServices.CrewPolicy. The per-hull numbers live on each BoatVoyageDef.")]
         public CrewPolicy Crew = CrewPolicy.Default;
 
+        [Header("Rowing styles (how a rower pulls: timing and the hull's surge)")]
+        [Tooltip("The style the PLAYER rows. rowstyle.steady is the stroke he has always rowed (plus a " +
+                 "subtle surge on the pull); point it at rowstyle.casual to give him the unhurried pull " +
+                 "with a rest. Empty = the plain stroke with an even push.")]
+        public RowingStyleDef PlayerRowingStyle;
+        [Tooltip("The style a character the game rows for uses when their CharacterVisualDef names " +
+                 "none (rowstyle.casual: nobody else rows like a racer).")]
+        public RowingStyleDef NpcRowingStyle;
+
         [Header("Cleanliness (the third need)")]
         [Tooltip("Dirt (owner ask 2026-11-15): rises slowly with game time and faster with dirty work, the " +
                  "gym and the sea; washing at a station clears it, each station only to its own ceiling (sea " +
@@ -569,6 +578,12 @@ namespace HiddenHarbours.Core
                  "shed from the bow when she goes astern; the end she drives into the water and the side " +
                  "she pushes through it foam too. Drawn only: no boat feels it. Weights at 0 = the trail alone.")]
         public HullFoamSettings HullFoam = HullFoamSettings.Default;
+
+        [Tooltip("REAL WAVES FROM HULLS: a hull making way lays wave sources at her stern and her bow; each "+
+                 "sends a ring of waves out across the water, and together they make the V-shaped wake with "+
+                 "transverse waves behind her, sized by her length and speed. The water draws them (lift, "+
+                 "light, crest foam) and other hulls' drawn ride bobs on them. Drawn only: no force.")]
+        public HullWaveSettings HullWaves = HullWaveSettings.Default;
 
         [Tooltip("BREAKING WAVES (ADR 0040): where the sea gives out and how — the breaker index γ, " +
                  "the Iribarren thresholds that separate a spilling crumble from a plunging barrel, and " +
@@ -1473,6 +1488,59 @@ namespace HiddenHarbours.Core
                  "the clip and enables it in MeshStates. Off restores the previous sprite fishing " +
                  "and unanimated dig. Held tools and catch keep their sprite presenters.")]
         public bool MeshFishingAndDig = true;
+
+        /// <summary>
+        /// Code default for <see cref="PlayerLegacySpriteFallback"/>: ON, so a config built fresh in
+        /// code (every PlayMode rig that tests the old hand-over) keeps the old behaviour. The shipped
+        /// <c>GameConfig.asset</c> turns it OFF: in the game the player is always the mesh (ADR 0061),
+        /// the same code-default/shipped split as <see cref="MeshCharacterAshore"/>.
+        /// </summary>
+        public const bool DefaultPlayerLegacySpriteFallback = true;
+
+        [Header("The player is always the mesh (ADR 0061)")]
+        [Tooltip("OFF (the shipped game): the player never switches to an old sprite sheet. A swim, a " +
+                 "tread, a sleep, a drive, a reach or a carry the mesh did not list yet plays its baked " +
+                 "mesh clip, and a state the skin has no clip for plays the nearest one from Player Mesh " +
+                 "Fallbacks. ON: the old behaviour, where those moves, wading and swimming hand the picture " +
+                 "back to the sprite sheet. Only the player reads this; the cast keeps its own switches.")]
+        public bool PlayerLegacySpriteFallback = DefaultPlayerLegacySpriteFallback;
+
+        [Tooltip("When the player's skin has no clip for a state, the state to try instead (From to To), " +
+                 "followed row by row until the skin has one; idle ends every chain. Both are baked clip " +
+                 "names. Read only while Player Legacy Sprite Fallback is OFF.")]
+        public MeshStateFallback[] PlayerMeshFallbacks = PlayerMeshRule.DefaultFallbacks();
+
+        [Tooltip("Swimming, the waterline on the mesh figure sits this far (m) above its pelvis. Rig 10's " +
+                 "own swim pose puts the sea 0.09 m over the pelvis.")]
+        [Min(0f)] public float FigureSwimWaterAbovePelvisMetres = 0.09f;
+
+        [Tooltip("Treading water, the waterline sits this far (m) below the mean of the shoulders (rig 10: " +
+                 "0.05 m). It is also the highest a wade may ever reach on the figure.")]
+        [Min(0f)] public float FigureTreadWaterBelowShouldersMetres = 0.05f;
+
+        [Tooltip("ON: the part of the player's mesh under the waterline still draws, tinted and dimmed " +
+                 "toward the sea, as the old sprite's submerged body did. OFF: it is hidden (a hard cut).")]
+        public bool FigureShowsUnderwater = true;
+
+        [Tooltip("The sea colour the submerged part of the player's mesh tints toward.")]
+        public Color FigureUnderwaterTint = new Color(0.16f, 0.34f, 0.44f, 1f);
+
+        [Tooltip("How far the submerged part takes the sea colour (0: its own colours, 1: all sea).")]
+        [Range(0f, 1f)] public float FigureUnderwaterTintAmount = 0.55f;
+
+        [Tooltip("How much darker the submerged part draws (0: as lit, 1: black).")]
+        [Range(0f, 1f)] public float FigureUnderwaterDim = 0.35f;
+
+        [Tooltip("Height (m) of the pale foam band on the mesh just above the waterline. 0: a hard edge.")]
+        [Min(0f)] public float FigureWaterlineFoamMetres = 0.03f;
+
+        [Tooltip("How pale that foam band is right at the waterline (0: none, 1: white).")]
+        [Range(0f, 1f)] public float FigureWaterlineFoam = 0.5f;
+
+        [Tooltip("ON: while the player swims or treads water his sun shadow is not drawn. The shadow is " +
+                 "the hidden body sprite's, standing upright, and on open water it read as a ghost " +
+                 "beside him. Wading keeps it.")]
+        public bool FigureSwimHidesSunShadow = true;
 
         /// <summary>Code default for <see cref="HeldPropLineWidthPx"/>.</summary>
         public const float DefaultHeldPropLineWidthPx = 1.5f;
@@ -3946,6 +4014,13 @@ namespace HiddenHarbours.Core
                  "0 = the scene's metres cap (CameraFollow, 2.5 m) at every rung, as before.")]
         [Range(0f, 1f)] public float BoatLeadMaxViewFraction;
 
+        [Tooltip("Seconds the boat lead's speed is smoothed over while the followed hull is ROWED. A rowed " +
+                 "hull surges on every stroke (RowingStyleDef), and a lead read off the raw speed pushed the " +
+                 "view forward on each pull and dropped it back in each rest, so the world lurched about twice " +
+                 "as much as the boat. About one slow stroke. 0 = the raw speed, as before. Engine and sail " +
+                 "hulls never read it.")]
+        [Min(0f)] public float BoatLeadRowedSpeedSmoothSeconds;
+
         [Tooltip("Whether the speed pull-back also runs while she RIDES someone else's deck as a passenger " +
                  "(the intro). Off = open water is the helm's alone, as before. The deck gate still holds: " +
                  "it needs FeelOnDeckEnabled as well.")]
@@ -4046,6 +4121,7 @@ namespace HiddenHarbours.Core
             BoatLeadSeconds = 0f,
             BoatLeadLagCompensation = 0f,
             BoatLeadMaxViewFraction = 0f,
+            BoatLeadRowedSpeedSmoothSeconds = 0f,
             SpeedPullBackWhenCarriedAboard = false,
 
             // Moments (PR 3)

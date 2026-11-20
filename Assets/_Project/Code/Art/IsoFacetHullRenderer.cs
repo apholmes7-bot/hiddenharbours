@@ -865,17 +865,50 @@ namespace HiddenHarbours.Art
             WriteOverlayCorners(_setup);
         }
 
-        // The overlay quad: the cell rectangle in world metres around the pivot, padded 1 px on every
-        // side so the keyline (which floods 1 px OUTSIDE the silhouette) is inside it even when the
-        // silhouette touches the cell edge, plus any held-prop pad.
+        // The union of every bolted fitting's cell (left, right, top, bottom), in metres from the
+        // pivot; grows, never shrinks, for the same reason as the held-prop pad.
+        private Vector4 _fittingCell;
+
+        /// <summary>The fittings' cell union the window covers, metres from the pivot (x left, y right,
+        /// z top, w bottom). Zero on a hull with nothing bolted on.</summary>
+        public Vector4 FittingCellMetres => _fittingCell;
+
+        /// <summary>
+        /// <b>Room in the composite window for a fitting's own cell</b> (ADR 0022 phase 7). An outboard
+        /// or an oar is drawn into the same off-screen target as this hull and reaches the screen only
+        /// through THIS overlay, which was sized from the hull's cell alone. A fitting's cell is often
+        /// wider than its hull's (the skiff outboard is 272 px against a 244 px hull) because the
+        /// engine hangs off the transom and swings outboard of it, so on east and west headings, where
+        /// the boat's length lies across the screen, the cowl was cut off square at the window's edge.
+        /// The window now covers the union: the fitting's cell, measured from the same rig origin (a
+        /// fitting is baked in its hull's rig space), grown by <paramref name="slackMetres"/> for any
+        /// translation the fitting carries on top (a twin's clamp offset, a borrowed fitting's shift).
+        /// Grows only; costs a few fragments of window, never a clipped engine.
+        /// </summary>
+        public void EnsureFittingCell(Vector2 pivotPx, int cellW, int cellH, int pxPerMetre, float slackMetres)
+        {
+            if (_setup == null || _overlayQuad == null || pxPerMetre <= 0) return;
+            float ppu = pxPerMetre, slack = Mathf.Max(0f, slackMetres);
+            var want = new Vector4(pivotPx.x / ppu + slack, (cellW - pivotPx.x) / ppu + slack,
+                                   pivotPx.y / ppu + slack, (cellH - pivotPx.y) / ppu + slack);
+            Vector4 grown = Vector4.Max(_fittingCell, want);
+            if (grown == _fittingCell) return;
+            _fittingCell = grown;
+            WriteOverlayCorners(_setup);
+        }
+
+        // The overlay quad: the cell rectangle in world metres around the pivot, grown to cover any
+        // bolted fitting's cell, padded 1 px on every side so the keyline (which floods 1 px OUTSIDE
+        // the silhouette) is inside it even when the silhouette touches the cell edge, plus any
+        // held-prop pad.
         private void WriteOverlayCorners(IsoFacetHullSetup setup)
         {
             float ppu = setup.PxPerMetre;
             float pad = 1f / ppu + _heldReachMetres;
-            float left = -setup.PivotPx.x / ppu - pad;
-            float right = (setup.CellW - setup.PivotPx.x) / ppu + pad;
-            float top = setup.PivotPx.y / ppu + pad;
-            float bottom = -(setup.CellH - setup.PivotPx.y) / ppu - pad;
+            float left = -Mathf.Max(setup.PivotPx.x / ppu, _fittingCell.x) - pad;
+            float right = Mathf.Max((setup.CellW - setup.PivotPx.x) / ppu, _fittingCell.y) + pad;
+            float top = Mathf.Max(setup.PivotPx.y / ppu, _fittingCell.z) + pad;
+            float bottom = -Mathf.Max((setup.CellH - setup.PivotPx.y) / ppu, _fittingCell.w) - pad;
             _overlayCorners[0] = new Vector3(left, bottom, 0f);
             _overlayCorners[1] = new Vector3(right, bottom, 0f);
             _overlayCorners[2] = new Vector3(right, top, 0f);
@@ -1390,6 +1423,7 @@ namespace HiddenHarbours.Art
             _overlayQuad = null;
             _setup = null;
             _heldReachMetres = 0f;   // a rider still holding asks again on her next frame
+            _fittingCell = default;  // and a fitting still bolted on asks again on its next frame
         }
     }
 

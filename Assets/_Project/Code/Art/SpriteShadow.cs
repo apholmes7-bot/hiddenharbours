@@ -261,8 +261,16 @@ namespace HiddenHarbours.Art
         }
 
         private bool _castOnWalkingDeck;
-        private bool CasterVisible => _caster != null && !_artExcluded &&
+        private bool CasterVisible => _caster != null && !_artExcluded && !Quiet &&
             (_caster.enabled || (_castOnWalkingDeck && DeckStance.IsActive));
+
+        /// <summary>
+        /// True: this caster throws no silhouette, no ground pool and no lamp shadow, whatever its sprite
+        /// does, until cleared (picked up at the next refresh). For an owner that draws the caster some
+        /// other way for a while: the player's mesh swimming (ADR 0061), whose hidden body sprite would
+        /// otherwise cast an upright ghost on the water. Not the installers' enable switch, which they own.
+        /// </summary>
+        public bool Quiet { get; set; }
 
         // ── excluded art: a cell that must cast nothing ─────────────────────────────────────────────
         // SunCasterRules says splash, spray, foam, shade and the rest cast no shadow. The installer asks

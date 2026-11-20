@@ -17,6 +17,32 @@ namespace HiddenHarbours.Tests.EditMode
         const float Deadzone = 0.05f;
         const int Columns = DoryOarMath.StrokeColumns;    // 8
 
+        // ---- one rower, two hands: the second oar falls into step with the first ----------------
+
+        [Test]
+        public void LockPhaseToward_StepsTheShortWayRound_ClampedAndWrapped()
+        {
+            Assert.AreEqual(1.5f, DoryOarMath.LockPhaseToward(1f, 3f, 0.5f, Columns), 1e-5f, "toward the leader, clamped");
+            Assert.AreEqual(3f, DoryOarMath.LockPhaseToward(2.8f, 3f, 0.5f, Columns), 1e-5f, "inside a step it lands ON the leader");
+            Assert.AreEqual(7.5f, DoryOarMath.LockPhaseToward(0f, 6f, 0.5f, Columns), 1e-5f, "6 is 2 behind 0, so it steps back across the wrap");
+            Assert.AreEqual(0.25f, DoryOarMath.LockPhaseToward(7.75f, 1f, 0.5f, Columns), 1e-5f, "forward across the top of the cycle");
+            Assert.AreEqual(2f, DoryOarMath.LockPhaseToward(2f, 5f, 0f, Columns), 1e-5f, "a zero step leaves it alone");
+        }
+
+        [Test]
+        public void LockPhaseToward_RepeatedSteps_ConvergeFromHalfAStrokeApart()
+        {
+            float follower = 0f, leader = 4f;   // half a stroke apart: the worst a turn can leave them
+            for (int i = 0; i < 60; i++)
+            {
+                leader = DoryOarMath.AdvanceStrokePhase(leader, +1f, 9f, 1f / 60f, Columns);
+                follower = DoryOarMath.AdvanceStrokePhase(follower, +1f, 9f, 1f / 60f, Columns);
+                follower = DoryOarMath.LockPhaseToward(follower, leader, DoryOarMath.DefaultPhaseLockColumnsPerSecond / 60f, Columns);
+                Assert.That(follower, Is.GreaterThanOrEqualTo(0f).And.LessThan((float)Columns));
+            }
+            Assert.AreEqual(leader, follower, 1e-4f, "in step within a second at the default rate");
+        }
+
         // ---- the sheet contract (the art's layout — a mis-index here draws the wrong oar) --------
 
         [Test]

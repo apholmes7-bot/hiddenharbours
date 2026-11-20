@@ -194,6 +194,8 @@ namespace HiddenHarbours.Boats
             {
                 // No skin for this hull → the plain rotating hull picture, exactly as before skins existed.
                 RemoveSkin(root);
+                // …still one object among the scenery (ADR 0059 step 3): the plain picture is on the root.
+                BoatSortingGroup.Install(root);
                 // …and no measured deck either: an unskinned hull falls back to the walk's greybox
                 // rectangle. Cleared rather than left stale, so a swap DOWN from a measured hull does
                 // not leave the player clamped to the boat they just sold.
@@ -229,6 +231,13 @@ namespace HiddenHarbours.Boats
                                 Options options = default)
         {
             if (root == null || visual == null) return default;
+
+            // SHE SORTS AS ONE OBJECT (ADR 0059 step 3), on both presentation paths: a root SortingGroup at
+            // the decor band's Y-sort at her waterline pivot, one rung behind, so another boat, a pier, a rock
+            // or the player ashore sorts against the whole boat by where she lies. Everything under the root
+            // (the hull at visual.SortingOrder, its fittings, the deck, whoever is aboard) keeps its order
+            // INSIDE the group, which is what those orders always meant.
+            BoatSortingGroup.Install(root);
 
             // WHERE THE PLAYER MAY STAND, before either presentation branch: the walkable polygons are
             // hull geometry and belong to the hull whichever way she is DRAWN (M2-37's data half). Null
@@ -383,7 +392,7 @@ namespace HiddenHarbours.Boats
         /// facet renderer (installed through the Core seam — Boats never sees a URP type) instead of a
         /// SpriteRenderer, driven by <see cref="MeshHullDriver"/> on the ROOT. Continuous heading,
         /// continuous wave rock; sorts against sprites whole-object at the visual's own SortingOrder,
-        /// exactly as the baked sprite would. Sprite-only overlays (oars, outboard) cannot ride a mesh
+        /// exactly as the baked sprite would (a local order inside the boat's root group, ADR 0059). Sprite-only overlays (oars, outboard) cannot ride a mesh
         /// hull — their sheets are baked per facing cell — so a visual binding them here is refused
         /// loudly rather than drawn wrongly.
         /// </summary>
@@ -535,6 +544,10 @@ namespace HiddenHarbours.Boats
             var layer = root.GetComponent<DoryOarMeshLayer>();
             if (layer == null) layer = root.AddComponent<DoryOarMeshLayer>();
             layer.Configure(port, star, boat, motor);
+            // The rowing station: the rower's hands are put on these oars' handles, his hips on the
+            // thwart and his feet on the boards (the hull's own Rowing data).
+            layer.ConfigureStation(visual.OarPortMesh.PivotLocalMeters, visual.OarStarMesh.PivotLocalMeters,
+                                   in visual.Rowing);
 
             // The oar splash (owner ruling 2026-11-13) rides the same wiring: it reads the poses this
             // layer draws and the hull driver's projection, so it exists exactly when rowed mesh oars

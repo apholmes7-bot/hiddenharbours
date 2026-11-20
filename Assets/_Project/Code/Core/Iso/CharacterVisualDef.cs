@@ -496,6 +496,12 @@ namespace HiddenHarbours.Core
                  "not available for this character — no error, no placeholder, the sheets draw.")]
         public CharacterSkinDef Skin;
 
+        [Header("Rowing (how this character pulls an oar when the game rows for them)")]
+        [Tooltip("This character's RowingStyleDef when the game puts them at the oars. Empty = " +
+                 "GameConfig.NpcRowingStyle. The player's own rowing reads GameConfig.PlayerRowingStyle " +
+                 "instead, whichever character he looks like.")]
+        public RowingStyleDef RowingStyle;
+
         // ---- the all-or-nothing gates + lookups (pure; EditMode-testable without a scene) ----------
 
         /// <summary>The sheet for a gait (never null — an unwired gait returns an empty array).</summary>

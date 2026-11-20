@@ -82,6 +82,26 @@ namespace HiddenHarbours.Core
         }
 
         /// <summary>
+        /// The rig's DRIVE at <paramref name="bodyPhase"/>: 0 with the hands out, 1 with them in. A RIG
+        /// FACT, transcribed: the rig's <c>oars_row</c> pose reads
+        /// <c>drive = ph &lt; 0.55 ? sm(ph/0.55) : 1 - sm((ph-0.55)/0.45)</c> with <c>sm</c> the
+        /// smoothstep <c>t*t*(3-2t)</c>. The seated solve lies the rower back by it
+        /// (<see cref="RowingPoseSolver"/>), so his layback peaks at the finish, when his hands are in.
+        /// </summary>
+        public static float RigDrive(float bodyPhase, float handsInShare = RigHandsInShare)
+        {
+            float share = Mathf.Clamp(handsInShare, 1e-3f, 1f - 1e-3f);
+            float ph = OarStrokeMath.Wrap01(bodyPhase);
+            return ph < share ? Smooth(ph / share) : 1f - Smooth((ph - share) / (1f - share));
+        }
+
+        private static float Smooth(float t)
+        {
+            t = Mathf.Clamp01(t);
+            return t * t * (3f - 2f * t);
+        }
+
+        /// <summary>
         /// The frame of a clip of <paramref name="frameCount"/> frames holding
         /// <paramref name="strokesPerLoop"/> strokes that shows <paramref name="bodyPhase"/> of the first
         /// stroke: the NEAREST sample, so a frame is centred on the phase it was sampled at. Only the
@@ -168,6 +188,31 @@ namespace HiddenHarbours.Core
             IOarStroke stroke = StrokeUnder(stand.FigureHull);
             return RowingFigure.TryResolve(skin, stance, stroke, stand.FigureDeckBearingDegrees,
                                            out stateKey, out frame);
+        }
+
+        /// <summary>
+        /// The points the rower's body must reach this frame, in the FIGURE's own frame, or false when
+        /// the oars under him are not a wired <see cref="IRowingStation"/> (the figure then draws exactly
+        /// its clip, as before). While the oars rest the station still answers, with no grip held: he
+        /// stays sat on the thwart with his feet braced. <paramref name="figureLocalMetres"/> and
+        /// <paramref name="figureYawDegrees"/> are where the figure's root sits on the hull's posed mesh
+        /// this frame, which is the frame the station answers in. Call after <see cref="TryPose"/>; it
+        /// reuses the source that call cached, so it never searches.
+        /// </summary>
+        public bool TryTargets(ICharacterFigureStand stand, Vector3 figureLocalMetres, float figureYawDegrees,
+                               out RowingPoseSolver.Targets targets)
+        {
+            targets = default;
+            if (stand == null) return false;
+            IOarStroke stroke = StrokeUnder(stand.FigureHull);
+            if (!(stroke is IRowingStation station)) return false;
+            if (!station.TryGetRowingTargets(out RowingTargets onHull)) return false;
+            // Resting oars: no stroke, no layback (drive 0), and the grips the station marked let go.
+            float drive = RowingFigure.IsLiveStroke(stroke)
+                ? RowingFigure.RigDrive(RowingFigure.BodyPhase(stroke.StrokePhase, RowingFigure.FacesBow(stand.FigureDeckBearingDegrees)))
+                : 0f;
+            targets = RowingPoseSolver.ToFigure(onHull, figureLocalMetres, figureYawDegrees, drive);
+            return true;
         }
 
         /// <summary>The <see cref="IOarStroke"/> on <paramref name="hull"/> or one of its parents.</summary>

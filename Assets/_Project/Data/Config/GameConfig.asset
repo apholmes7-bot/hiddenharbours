@@ -715,6 +715,7 @@ MonoBehaviour:
     BoatLeadSeconds: 0.6
     BoatLeadLagCompensation: 1
     BoatLeadMaxViewFraction: 0.35
+    BoatLeadRowedSpeedSmoothSeconds: 1.5
     SpeedPullBackWhenCarriedAboard: 1
     MomentsEnabled: 1
     LandingHitStopScale: 0.05
@@ -771,8 +772,100 @@ MonoBehaviour:
     SideReach: 0.7
     ContactBowTaper: 0.35
     ContactStemHalfBeams: 0.12
+  HullWaves:
+    Enabled: 1
+    RetirePaintedCrests: 1
+    KelvinHalfAngleDegrees: 19.47
+    MinWavelengthMetres: 0.6
+    MaxWavelengthMetres: 4
+    MaxWavelengthPerMetreLength: 0.12
+    PacketWavelengths: 0.8
+    SpreadMetres: 4
+    MinSpeed: 0.3
+    HeightPerMetreLength: 0.018
+    FroudeKnee: 0.4
+    MaxHeightMetres: 0.6
+    BowShare: 0.7
+    LifetimeSecondsPerMetreLength: 0.8
+    MinLifetimeSeconds: 3
+    MaxLifetimeSeconds: 30
+    DecayShare: 1.8
+    RiseShare: 0.12
+    EndFadeShare: 0.8
+    SourcesPerHull: 20
+    BowSourceShare: 0.25
+    MaxSources: 64
+    SpacingWavelengths: 1
+    KeepSpacing: 1
+    SourceGain: 1
+    DrawnLift: 0.6
+    FaceLight: 30
+    CrestLight: 14
+    TroughDark: 12
+    CrestFoamOnsetMetres: 0.5
+    CrestFoamRampMetres: 0.3
+    CrestFoam: 0.25
+    ShadeCeiling: 0.65
+    BreakupShare: 0.4
+    BreakupMetres: 4
+    WobbleMetres: 0.4
+    TroughCeilingShare: 0.6
+    CrestFoamSteepness: 0.6
+    CrestFoamSteepnessRamp: 0.3
+    RetireFoamFan: 1
+    TrailFoamShare: 0.2
+    TrailFoamMaxHalfWidthMetres: 3
+    RetireDrawnFoam: 1
+    FoamAgeTear: 1
+    RideScale: 1
+    RippleLifetimeSeconds: 2.5
   DevAllHelmInstruments: 1
   MeshFishingAndDig: 1
+  PlayerLegacySpriteFallback: 0
+  PlayerMeshFallbacks:
+  - From: reachGround
+    To: reach
+  - From: reachStowV
+    To: reach
+  - From: reachStowH
+    To: reach
+  - From: swim
+    To: tread
+  - From: drive
+    To: bench
+  - From: drive_helm_go_fast
+    To: drive
+  - From: drive_helm_bowrider
+    To: drive
+  - From: drive_helm_express_cruiser
+    To: drive
+  - From: astride_helm_jet_ski
+    To: astride
+  - From: row_oars
+    To: idle_oars
+  - From: board_buckets
+    To: board
+  - From: board_tray
+    To: board
+  - From: board_pot
+    To: board
+  - From: boardDown_buckets
+    To: boardDown
+  - From: boardDown_tray
+    To: boardDown
+  - From: boardDown_pot
+    To: boardDown
+  - From: stagger
+    To: balance
+  FigureSwimWaterAbovePelvisMetres: 0.09
+  FigureTreadWaterBelowShouldersMetres: 0.05
+  FigureShowsUnderwater: 1
+  FigureUnderwaterTint: {r: 0.16, g: 0.34, b: 0.44, a: 1}
+  FigureUnderwaterTintAmount: 0.55
+  FigureUnderwaterDim: 0.35
+  FigureWaterlineFoamMetres: 0.03
+  FigureWaterlineFoam: 0.5
+  FigureSwimHidesSunShadow: 1
   MeshRodInHand: 1
   HeldPropLineWidthPx: 1.5
   RegionCrossingHysteresisMetres: 0.25
@@ -935,3 +1028,5 @@ MonoBehaviour:
     BubbleSizeMetres: 0.09375
     BubbleColor: {r: 0.93, g: 0.97, b: 1, a: 0.9}
     BubbleOrdersAboveFigure: 2
+  PlayerRowingStyle: {fileID: 11400000, guid: 9c8a76caa1e04be7b70a59724f06e1ee, type: 2}
+  NpcRowingStyle: {fileID: 11400000, guid: ca108a37b5f94da282e01117a5da0828, type: 2}

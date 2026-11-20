@@ -220,6 +220,12 @@ namespace HiddenHarbours.App
         private Vector2 _lookahead;   // current (smoothed) look-ahead offset
         private bool _hasLast;
 
+        // The speed the boat lead reads while the followed hull is rowed (stroke-averaged), and which
+        // target was last asked whether it carries oars (so the answer is looked up once per target).
+        private Vector2 _leadVelocity;
+        private Transform _rowedProbeTarget;
+        private bool _targetIsRowed;
+
         // THE FOLLOW FILTER'S OWN CONTINUOUS POSITION. The transform is a rounded COPY of this once
         // the pixel snap is on (see ApplyPixelGrid); the smoothing must never read the rounded value
         // back, or the rounding enters the filter and a slow pan stalls on a pixel until the error
@@ -1134,6 +1140,32 @@ namespace HiddenHarbours.App
             return net + velocity * (Mathf.Clamp01(lagCompensation) * FollowLagSeconds(smooth, dt));
         }
 
+        /// <summary>
+        /// One step of the rowed hull's lead speed: <paramref name="smoothed"/> eased toward
+        /// <paramref name="raw"/> with a time constant of <paramref name="seconds"/>, frame-rate
+        /// independent. A steady speed passes through unchanged; a stroke's surge is averaged out. 0 or
+        /// less seconds (or no time) = the raw speed. Pure, no allocation.
+        /// </summary>
+        public static Vector2 SmoothLeadVelocity(Vector2 smoothed, Vector2 raw, float dt, float seconds)
+        {
+            if (!(seconds > 0f) || !(dt > 0f)) return raw;
+            return Vector2.Lerp(smoothed, raw, 1f - Mathf.Exp(-dt / seconds));
+        }
+
+        /// <summary>True when the follow target is a hull with oars (a Core <see cref="IOarStroke"/> on it,
+        /// above it or below it). Looked up once per target, so no per-frame search.</summary>
+        private bool TargetIsRowed()
+        {
+            if (!ReferenceEquals(_rowedProbeTarget, Target))
+            {
+                _rowedProbeTarget = Target;
+                _targetIsRowed = Target != null
+                                 && (Target.GetComponentInParent<IOarStroke>() != null
+                                     || Target.GetComponentInChildren<IOarStroke>() != null);
+            }
+            return _targetIsRowed;
+        }
+
         // ---- the helm's footprint: the band offset (ADR 0050) --------------------------------------
 
         /// <summary>
@@ -1231,14 +1263,21 @@ namespace HiddenHarbours.App
             // boat, the owner's dials (boat feel PR 1) stand in for the scene's look-ahead; each one at 0
             // hands the scene's own number back, so a zero config is the old follow exactly.
             float leadSeconds = _lookaheadSeconds, leadCap = _lookaheadMaxMeters, lagPayBack = 0f;
+            Vector2 leadVelocity = velocity;
             if (BoatLeadIsLive)
             {
                 JuiceSettings s = FeelSettings;
                 if (s.BoatLeadSeconds > 0f) leadSeconds = s.BoatLeadSeconds;
                 if (s.BoatLeadMaxViewFraction > 0f) leadCap = s.BoatLeadMaxViewFraction * HalfViewAtRungMeters;
                 lagPayBack = s.BoatLeadLagCompensation;
+                // A rowed hull surges on every stroke; the lead reads her stroke-averaged speed so the
+                // view does not lunge forward on each pull and fall back in each rest. Her own surge
+                // still shows: the follow tracks her position, only the lead is averaged.
+                if (s.BoatLeadRowedSpeedSmoothSeconds > 0f && TargetIsRowed())
+                    leadVelocity = SmoothLeadVelocity(_leadVelocity, velocity, dt, s.BoatLeadRowedSpeedSmoothSeconds);
             }
-            Vector2 desiredLookahead = LeadOffset(velocity, leadSeconds, leadCap, lagPayBack, Smooth, dt);
+            _leadVelocity = leadVelocity;
+            Vector2 desiredLookahead = LeadOffset(leadVelocity, leadSeconds, leadCap, lagPayBack, Smooth, dt);
             _lookahead = Vector2.Lerp(_lookahead, desiredLookahead,
                                       1f - Mathf.Exp(-_lookaheadSmooth * dt));
 

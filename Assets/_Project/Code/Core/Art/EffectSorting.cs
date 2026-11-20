@@ -31,6 +31,10 @@ namespace HiddenHarbours.Core
         RodLine = 8,
         /// <summary>The rod fight's surface splash (Player <c>RodFightPresenter</c>). Carried: the fisher's own order.</summary>
         RodSplash = 9,
+        /// <summary>An NPC pot boat's gear while it is at her rail: the pot aboard, the haul rope, the buoy
+        /// being gaffed or tossed (App <c>NpcPotBoats</c>). Carried: the boat's own order. The gear is not her
+        /// child, so without this it would sort under the hull it is being worked over.</summary>
+        NpcGearAtRail = 10,
     }
 
     /// <summary>
@@ -80,11 +84,25 @@ namespace HiddenHarbours.Core
         public const int NpcCatchRungs = 0;
 
         /// <summary>
-        /// The rod line and the rod fight's splash sort one rung in front of the fisher (the architecture
-        /// note, option A: "at the player's order +1"). Both used to sit at 50 and 51, under the fisher and
-        /// over nothing but the low floor.
+        /// The rod fight's splash sorts one rung in front of the fisher (the architecture note, option A: "at
+        /// the player's order +1"). It used to sit at 51, over nothing but the low floor.
         /// </summary>
         public const int RodOverFisherRungs = 1;
+
+        /// <summary>
+        /// The fishing line sorts two rungs <b>behind</b> the fisher (ADR 0059 step 3): under his body and under
+        /// the rod even when the rod is behind him (the rod sorts one rung behind in the away row), over the deck
+        /// he fishes from. Step 2 put it one rung in front and it drew across the player; before that it sat at a
+        /// parked 50, under him. Now that the boat's group holds the deck, behind the fisher is still over the
+        /// hull, and ashore it is over the ground and anything north of him.
+        /// </summary>
+        public const int RodLineRungs = -2;
+
+        /// <summary>
+        /// An NPC pot boat's gear at her rail sorts one rung in front of the boat (ADR 0059 step 3): over her
+        /// hull and deck, as it was when the hull sat at 1 and the gear at 2.
+        /// </summary>
+        public const int NpcGearOverHullRungs = 1;
 
         // --- THE RULE ---------------------------------------------------------------------------------
 
@@ -101,8 +119,9 @@ namespace HiddenHarbours.Core
                 case SortedEffect.Buoy: return BuoyRungs;
                 case SortedEffect.EmergentShorePlant: return EmergentShorePlantRungs;
                 case SortedEffect.NpcCatch: return NpcCatchRungs;
-                case SortedEffect.RodLine:
+                case SortedEffect.RodLine: return RodLineRungs;
                 case SortedEffect.RodSplash: return RodOverFisherRungs;
+                case SortedEffect.NpcGearAtRail: return NpcGearOverHullRungs;
                 default: return 0;
             }
         }
@@ -112,7 +131,7 @@ namespace HiddenHarbours.Core
         /// anchored at a world Y (<see cref="OrderAt"/>).
         /// </summary>
         public static bool IsCarried(SortedEffect effect) =>
-            effect == SortedEffect.RodLine || effect == SortedEffect.RodSplash;
+            effect == SortedEffect.RodLine || effect == SortedEffect.RodSplash || effect == SortedEffect.NpcGearAtRail;
 
         /// <summary>
         /// The decor band's Y-sort at world <paramref name="worldY"/>: <c>round(DecorBase - y * OrdersPerMetre)</c>

@@ -195,7 +195,9 @@
     // moulded non-skid sole
     sec('sole');
     const DSEG=16;
-    const dw=(u)=>{ const st=station(u); return (lerp(st.wb,st.ws,dfrac(st))-TH)*0.96; };
+    // the sole runs 3 mm into the liner at its own height, so no slot is left beside it. It used to stop 4 % short, and the
+    // slot showed the inside of the outer skin below the sole, under the waterline, where the sea drew on it in a swell
+    const dw=(u)=>{ const st=station(u); return lerp(st.wb-TH*0.6,st.ws-TH,(DECK-st.kz)/(st.dep-0.02))+0.003; };
     for(let i=0;i<DSEG;i++){
       const u0=0.80*i/DSEG, u1=0.80*(i+1)/DSEG;
       face([[-dw(u0),station(u0).y,DECK],[dw(u0),station(u0).y,DECK],[dw(u1),station(u1).y,DECK],[-dw(u1),station(u1).y,DECK]],'deckf',-0.35);
@@ -513,7 +515,7 @@
     return _toRGBA(_paint(FL, Object.assign({}, opts, { dir }), matsFor(opts))); }
 
   // ---- the walk: written to her walk file by tools/rig-recipes/hull-walk.mjs, never by hand ----
-  // The floor the walker's disc is held on: the inner skin at the sole's height (the drawn sole stops 4 % short of it),
+  // The floor the walker's disc is held on: the inner skin at the sole's height (the drawn sole runs 3 mm into it),
   // transom to the casting deck's step. A footprint per fitting: the plan box of its section's faces.
   const SOLE_N = 16;
   const soleIn = (u) => { const st = station(u); return lerp(st.wb, st.ws, dfrac(st)) - TH; };

@@ -183,7 +183,18 @@ namespace HiddenHarbours.Art
             /// <summary>The blink's eyes group at this moment (<see cref="CharacterFigureBlink.EyesAt"/>),
             /// or <see cref="CharacterSkinDef.NoFaceGroup"/> between blinks.</summary>
             public int BlinkEyes;
+
+            /// <summary>True when the figure is at the oars and <see cref="Row"/> holds where his hands,
+            /// hips and feet must be: the frame is solved onto them after the clip and the look
+            /// (<see cref="RowingPoseSolver"/>).</summary>
+            public bool Rowing;
+
+            /// <summary>The rowing targets, in the figure's own frame (see <see cref="Target"/>).</summary>
+            public RowingPoseSolver.Targets Row;
         }
+
+        /// <summary>The last rowing solve's result (default when the figure is not rowing).</summary>
+        public RowingPoseSolver.Result DrawnRowing => _drawnRowResult;
 
         /// <summary>The face drawn by the last <see cref="SetPose(string, int, in Life)"/>: the group id
         /// (1-based into <see cref="CharacterSkinDef.FaceGroups"/>) per slot — x eyes, y brows, z mouth.
@@ -352,6 +363,8 @@ namespace HiddenHarbours.Art
             _outNorms = new Vector3[_srcVerts.Length];
             _world = new Matrix4x4[bones];
             _skin = new Matrix4x4[bones];
+            _rowSolver = new RowingPoseSolver(def.Bones);
+            _drawnRowing = false;
 
             // ONE mesh, written into every frame — MarkDynamic so the driver keeps it in a buffer it
             // expects to be rewritten. The topology and every UV channel are copied once, here: only
@@ -683,6 +696,54 @@ namespace HiddenHarbours.Art
             _facetMaterial.SetVector(IsoFacetFigureShaderIds.FigureHead, HeadSnapPoint);
             _facetMaterial.SetFloat(IsoFacetFigureShaderIds.FigureInkOn, 0f);
             _inkApplied = false;
+            _waterOn = false;
+            _waterLine = 0f;
+            _waterVector = _waterTint = _waterLook = Vector4.zero;
+            _facetMaterial.SetVector(IsoFacetFigureShaderIds.FigureWater, Vector4.zero);
+            _facetMaterial.SetVector(IsoFacetFigureShaderIds.FigureWaterTint, Vector4.zero);
+            _facetMaterial.SetVector(IsoFacetFigureShaderIds.FigureWaterLook, Vector4.zero);
+        }
+
+        private bool _waterOn;
+        private float _waterLine;
+        private Vector4 _waterVector, _waterTint, _waterLook;
+
+        /// <summary>True while the sea cuts this figure (<see cref="SetWaterline"/>).</summary>
+        public bool WaterlineOn => _waterOn;
+
+        /// <summary>The live waterline's height in the figure's frame (m), or 0 while there is none.</summary>
+        public float WaterlineMetres => _waterLine;
+
+        /// <summary>
+        /// <b>The sea on him</b> (ADR 0061): hide every part of the figure below
+        /// <paramref name="metres"/>, measured up from the figure's ground plane in its own frame.
+        /// Off draws him whole. Written to the material only when it changes, so a figure standing in
+        /// still water costs nothing per frame. Only a v9 figure (the <c>HH_FIGURE</c> variant) reads it.
+        /// This overload is the hard cut: no foam, nothing drawn under the line.
+        /// </summary>
+        public void SetWaterline(bool on, float metres) => SetWaterline(on, metres, default);
+
+        /// <summary>
+        /// <see cref="SetWaterline(bool, float)"/> with its look: <paramref name="look"/> says whether
+        /// the part under the line is drawn tinted and dimmed toward the sea or hidden, and how tall
+        /// and pale the foam band over the line is. The default look is the hard cut.
+        /// </summary>
+        public void SetWaterline(bool on, float metres, in FigureWaterLook look)
+        {
+            if (_facetMaterial == null) return;
+            if (!on || float.IsNaN(metres) || float.IsInfinity(metres)) { on = false; metres = 0f; }
+            Vector4 water = on ? new Vector4(1f, metres, Mathf.Max(0f, look.FoamMetres), Mathf.Clamp01(look.Foam)) : Vector4.zero;
+            Vector4 tint = on ? new Vector4(look.Tint.r, look.Tint.g, look.Tint.b, Mathf.Clamp01(look.TintAmount)) : Vector4.zero;
+            Vector4 shown = on ? new Vector4(Mathf.Clamp01(look.Dim), look.ShowsUnderwater ? 1f : 0f, 0f, 0f) : Vector4.zero;
+            if (on == _waterOn && metres == _waterLine && water == _waterVector && tint == _waterTint && shown == _waterLook) return;
+            _waterOn = on;
+            _waterLine = metres;
+            _waterVector = water;
+            _waterTint = tint;
+            _waterLook = shown;
+            _facetMaterial.SetVector(IsoFacetFigureShaderIds.FigureWater, water);
+            _facetMaterial.SetVector(IsoFacetFigureShaderIds.FigureWaterTint, tint);
+            _facetMaterial.SetVector(IsoFacetFigureShaderIds.FigureWaterLook, shown);
         }
 
         private void BuildChild()
@@ -748,7 +809,9 @@ namespace HiddenHarbours.Art
             bool composed = false;
             if (!sameClip || RequestedFrame != frame) composed = SampleLook(clip, drawn, life);
 
-            if (!sameClip || DrawnFrame != drawn || _lookYaw != _drawnYaw || _lookPitch != _drawnPitch)
+            bool rowing = life.Rowing && _rowSolver != null && _rowSolver.IsUsable;
+            bool rowMoved = rowing != _drawnRowing || (rowing && RowTargetsMoved(in life.Row, in _drawnRow));
+            if (!sameClip || DrawnFrame != drawn || _lookYaw != _drawnYaw || _lookPitch != _drawnPitch || rowMoved)
             {
                 if (!composed) CharacterSkinPose.ComposeWorld(clip, drawn, _def.Bones, _world);
                 if (_lookYaw != 0d || _lookPitch != 0d)
@@ -759,6 +822,11 @@ namespace HiddenHarbours.Art
                         _def.LookNeckBone, CharacterFigureLook.TurnOf(_lookYaw, _lookPitch, _def.LookSplitNeck, limits),
                         _def.LookHeadBone, CharacterFigureLook.TurnOf(_lookYaw, _lookPitch, _def.LookSplitHead, limits));
                 }
+                // At the oars: sat on the thwart, feet braced, hands on the handles. After the clip and
+                // the look, before the skin; the composition the skin reads is the solved one.
+                _drawnRowResult = rowing ? _rowSolver.Solve(_world, in life.Row) : default;
+                _drawnRowing = rowing;
+                _drawnRow = rowing ? life.Row : default;
                 CharacterSkinPose.FinishSkin(_world, _bindposes, _skin);
                 CharacterSkinPose.Skin(_skin, _weights, _srcVerts, _srcNorms, _outVerts, _outNorms);
                 if (_faceStarts != null)
@@ -798,6 +866,33 @@ namespace HiddenHarbours.Art
                 }
             }
             return true;
+        }
+
+        // The rowing solve (RowingPoseSolver), bound to the skin's bones in ReadBindMesh, and the
+        // targets the drawn mesh was solved onto.
+        private RowingPoseSolver _rowSolver;
+        private bool _drawnRowing;
+        private RowingPoseSolver.Targets _drawnRow;
+        private RowingPoseSolver.Result _drawnRowResult;
+
+        /// <summary>
+        /// True when the rowing targets moved far enough since the drawn solve to show: any point by more
+        /// than half a pixel, or the layback by more than half a pixel's arc at a metre (the shoulders sit
+        /// well inside that), or a hand taking hold or letting go. Below that the mesh is not re-skinned
+        /// (rule 7): the oars move every frame, the picture only when a pixel would.
+        /// </summary>
+        private bool RowTargetsMoved(in RowingPoseSolver.Targets now, in RowingPoseSolver.Targets drawn)
+        {
+            float half = 0.5f / Mathf.Max(1f, _def.PxPerMetre);
+            float halfSqr = half * half;
+            if (now.HasGripLeft != drawn.HasGripLeft || now.HasGripRight != drawn.HasGripRight) return true;
+            if ((now.GripLeft - drawn.GripLeft).sqrMagnitude > halfSqr) return true;
+            if ((now.GripRight - drawn.GripRight).sqrMagnitude > halfSqr) return true;
+            if ((now.Pelvis - drawn.Pelvis).sqrMagnitude > halfSqr) return true;
+            if ((now.BraceLeft - drawn.BraceLeft).sqrMagnitude > halfSqr) return true;
+            if ((now.BraceRight - drawn.BraceRight).sqrMagnitude > halfSqr) return true;
+            if (Mathf.Abs(now.LaybackDegrees - drawn.LaybackDegrees) * Mathf.Deg2Rad > half) return true;
+            return now.ReachLeanMaxDegrees != drawn.ReachLeanMaxDegrees;
         }
 
         /// <summary>
@@ -1283,6 +1378,19 @@ namespace HiddenHarbours.Art
         /// figure's pixels with 1 minus it in the dark target's alpha: 0 the figure's rules with its
         /// keyline ring, 0.25 its rules without the ring, 1 the hull's.</summary>
         public static readonly int FigureInkOn = Shader.PropertyToID("_HHFigureInkOn");
+
+        /// <summary><c>float4</c>, per material: <c>(on, lineZ, 0, 0)</c>. While <c>on</c> is 1 every
+        /// fragment of the figure below <c>lineZ</c> (metres, the figure's own frame, z up) is
+        /// discarded: the sea on a wading or swimming figure (ADR 0061). 0 draws the whole figure.</summary>
+        public static readonly int FigureWater = Shader.PropertyToID("_HHFigureWater");
+
+        /// <summary><c>float4</c>, per material: the sea colour the part under <see cref="FigureWater"/>'s
+        /// line tints toward (rgb) and how far (a). Read only while that part is drawn.</summary>
+        public static readonly int FigureWaterTint = Shader.PropertyToID("_HHFigureWaterTint");
+
+        /// <summary><c>float4</c>, per material: <c>(dim, drawn, 0, 0)</c>. <c>drawn</c> 1 draws the part
+        /// under the line tinted and dimmed by <c>dim</c>; 0 discards it (the hard cut).</summary>
+        public static readonly int FigureWaterLook = Shader.PropertyToID("_HHFigureWaterLook");
 
         /// <summary><see cref="FigureInkOn"/> for a figure inked by its rig's rules, keyline ring and all
         /// (rig 9).</summary>

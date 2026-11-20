@@ -110,6 +110,30 @@ namespace HiddenHarbours.Boats
                  "(~40%) — enough to back off the dock without turning the dory into a reversing car.")]
         [SerializeField] private float _asternThrustFactor = DefaultAsternFactor;
 
+        [Header("Rowing stroke (the one clock the oars, the rower and the surge read)")]
+        [Tooltip("Frames/sec the 8-frame stroke cycle plays at a full-effort pull, before the rower's " +
+                 "style scales it. The tempo the oars have always rowed at.")]
+        [SerializeField] private float _strokeFramesPerSecond = DoryOarMath.DefaultStrokeFramesPerSecond;
+        [Tooltip("|oar state| at or below which an oar's stroke phase holds.")]
+        [SerializeField] private float _strokeDeadzone = DoryOarMath.DefaultOarDeadzone;
+        [Tooltip("How much a GENTLE pull slows the sweep: 0 = every stroke at full tempo; 1 = the rate " +
+                 "is proportional to effort.")]
+        [Range(0f, 1f)]
+        [SerializeField] private float _strokeEffortInfluence = DoryOarMath.DefaultEffortInfluence;
+        [Tooltip("Stroke columns per second the second oar falls into step with the leading oar while " +
+                 "both are pulled the same way. 0 = each oar keeps its own phase.")]
+        [Min(0f)]
+        [SerializeField] private float _strokePhaseLockColumnsPerSecond = DoryOarMath.DefaultPhaseLockColumnsPerSecond;
+        [Tooltip("How whoever is at the oars rows: the stroke's timing and how the hull surges on the " +
+                 "pull. Set by the rower (the player's helm input, or the game for a character it rows " +
+                 "for); empty = the plain stroke and an even push, exactly as before.")]
+        [SerializeField] private RowingStyleDef _rowingStyle;
+
+        private RowStrokeClock _strokeClock;
+        private RowingStyle _style = RowingStyle.Unstyled;
+        private RowingStyleDef _styleBuiltFrom;
+        private bool _styleBuilt;
+
         private Rigidbody2D _rb;
         private float _throttle;   // Engine: -1..1 (negative = astern)
         private float _steer;      // Engine: -1..1 (rudder)
@@ -240,11 +264,62 @@ namespace HiddenHarbours.Boats
         /// <summary>Starboard-oar stroke state (-1 back-water .. +1 forward), for the per-oar row rig animation.</summary>
         public float RightOar => _rightOar;
 
+        /// <summary>The stroke clock as of the last physics step: both oars' raw phases and rates.
+        /// Read by the oar picture, which draws it at the frame's interpolation offset.</summary>
+        public RowStrokeClock StrokeClock => _strokeClock;
+
+        /// <summary>The rowing style whoever is at the oars rows (null = unstyled).</summary>
+        public RowingStyleDef RowingStyleDef => _rowingStyle;
+
+        /// <summary>The baked form of <see cref="RowingStyleDef"/>, built once per change.</summary>
+        public RowingStyle RowingStyle
+        {
+            get
+            {
+                EnsureRowingStyle();
+                return _style;
+            }
+        }
+
+        /// <summary>
+        /// Who is at the oars says how they row. Cheap to call every frame: a repeat of the same def
+        /// does nothing. Null = the plain stroke and an even push.
+        /// </summary>
+        public void SetRowingStyle(RowingStyleDef style)
+        {
+            _rowingStyle = style;
+            EnsureRowingStyle();
+        }
+
+        private void EnsureRowingStyle()
+        {
+            if (_styleBuilt && ReferenceEquals(_styleBuiltFrom, _rowingStyle)) return;
+            _style = RowingStyle.From(_rowingStyle);
+            _styleBuiltFrom = _rowingStyle;
+            _styleBuilt = true;
+        }
+
+        /// <summary>The stroke tempo from this hull's inspector.</summary>
+        public RowStrokeTempo StrokeTempo => new RowStrokeTempo(_strokeFramesPerSecond, _strokeDeadzone,
+                                                                _strokeEffortInfluence, _strokePhaseLockColumnsPerSecond);
+
+        /// <summary>
+        /// The per-oar drive multipliers for the oars at <paramref name="clock"/> rowing
+        /// <paramref name="style"/>: how hard each oar pushes the hull at its own phase. Pure.
+        /// </summary>
+        public static void OarDriveMultipliers(in RowingStyle style, in RowStrokeClock clock,
+                                               out float port, out float starboard)
+        {
+            port = style.ThrustMultiplier(RowStrokeClock.StrokePhaseOfColumns(clock.PortPhase));
+            starboard = style.ThrustMultiplier(RowStrokeClock.StrokePhaseOfColumns(clock.StarboardPhase));
+        }
+
         private void Awake()
         {
             // THE WIND, READ OFF THE BOAT (VS-19): a masthead pennant streaming with the apparent wind,
             // so the sea's mood is legible from the boat itself and not from a HUD line. Runtime-spawned
-            // like the hold's deck tray, so every boat rig flies one with no builder re-run; play mode
+            // like the hold's deck tray, so every boat rig carries one with no builder re-run (it draws
+            // only on a hull with a sail plan, MastheadTelltale.FliesOn); play mode
             // only (EditMode tests build BoatControllers freely and must stay presentation-free).
             if (Application.isPlaying && GetComponent<MastheadTelltale>() == null)
                 gameObject.AddComponent<MastheadTelltale>();
@@ -1043,10 +1118,19 @@ namespace HiddenHarbours.Boats
         /// </summary>
         private void ApplyOarDrive(Vector2 fwd, Vector2 vel, EnvironmentSample env)
         {
+            // The stroke clock runs on the physics step, so the push below and the oars drawn over the
+            // hull read one phase: she surges while the blades are in the water and eases through the
+            // release, the recovery and any rest. An idle oar's phase holds; its state is 0, so it pushes
+            // nothing whatever its phase, and the coast-down is exactly as before.
+            EnsureRowingStyle();
+            _strokeClock.Step(_leftOar, _rightOar, Time.fixedDeltaTime, StrokeTempo, _style.TempoScale);
+            OarDriveMultipliers(in _style, in _strokeClock, out float portDrive, out float starDrive);
+
             // Oar thrust + yaw always live — never killed by grounding (the player can always pull the oars).
             {
-                float thrust = OarThrust(_leftOar, _rightOar, _hull.OarPower) * ForceFeelScale;
-                float yaw    = OarYawTorque(_leftOar, _rightOar, _hull.OarPower, _hull.OarLateralOffset) * ForceFeelScale;
+                float left = _leftOar * portDrive, right = _rightOar * starDrive;
+                float thrust = OarThrust(left, right, _hull.OarPower) * ForceFeelScale;
+                float yaw    = OarYawTorque(left, right, _hull.OarPower, _hull.OarLateralOffset) * ForceFeelScale;
                 _rb.AddForce(fwd * thrust, ForceMode2D.Force);
                 _rb.AddTorque(yaw);
                 _trimDrive += thrust;
