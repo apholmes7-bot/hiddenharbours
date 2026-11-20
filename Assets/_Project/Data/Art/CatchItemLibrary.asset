@@ -955,7 +955,7 @@ MonoBehaviour:
     HeldFacings: 1
     HeldFramesPerFacing: 2
     HeldFacingMap: 
-    HeldMesh: {fileID: 0}
+    HeldMesh: {fileID: 11400000, guid: f55ad1dafa8eb7f4895e8ee121a4f9d0, type: 2}
     HeldMeshScale: 1
     SizeOf: 
     SizeKg: 0
@@ -986,7 +986,7 @@ MonoBehaviour:
     HeldFacings: 8
     HeldFramesPerFacing: 2
     HeldFacingMap: 
-    HeldMesh: {fileID: 0}
+    HeldMesh: {fileID: 11400000, guid: 20916c177c5b31345a6b1eca2571df85, type: 2}
     HeldMeshScale: 1
     SizeOf: 
     SizeKg: 0
@@ -1017,7 +1017,7 @@ MonoBehaviour:
     HeldFacings: 8
     HeldFramesPerFacing: 2
     HeldFacingMap: 
-    HeldMesh: {fileID: 0}
+    HeldMesh: {fileID: 11400000, guid: fb6a8dfb68aea81478404f8c8434bcd9, type: 2}
     HeldMeshScale: 1
     SizeOf: 
     SizeKg: 0
@@ -1034,7 +1034,7 @@ MonoBehaviour:
     HeldFacings: 1
     HeldFramesPerFacing: 2
     HeldFacingMap: 
-    HeldMesh: {fileID: 0}
+    HeldMesh: {fileID: 11400000, guid: f236ee450ac2cd349aa7a6befddfbe4b, type: 2}
     HeldMeshScale: 1
     SizeOf: 
     SizeKg: 0
@@ -1051,7 +1051,7 @@ MonoBehaviour:
     HeldFacings: 1
     HeldFramesPerFacing: 2
     HeldFacingMap: 
-    HeldMesh: {fileID: 0}
+    HeldMesh: {fileID: 11400000, guid: fb4a03ef733620744b20894bde54dab5, type: 2}
     HeldMeshScale: 1
     SizeOf: 
     SizeKg: 0
@@ -1068,7 +1068,7 @@ MonoBehaviour:
     HeldFacings: 1
     HeldFramesPerFacing: 2
     HeldFacingMap: 
-    HeldMesh: {fileID: 0}
+    HeldMesh: {fileID: 11400000, guid: f6330ef69dac0de40a6b596ee563a144, type: 2}
     HeldMeshScale: 1
     SizeOf: 
     SizeKg: 0
@@ -1085,7 +1085,7 @@ MonoBehaviour:
     HeldFacings: 1
     HeldFramesPerFacing: 2
     HeldFacingMap: 
-    HeldMesh: {fileID: 0}
+    HeldMesh: {fileID: 11400000, guid: 76102e440e3d2184b998700dd94c644f, type: 2}
     HeldMeshScale: 1
     SizeOf: 
     SizeKg: 0
@@ -1094,60 +1094,79 @@ MonoBehaviour:
   - SpeciesId: fish.american_oyster
     Kind: oyster
     BorrowsKind: 0
+    HeldMesh: {fileID: 0}
   - SpeciesId: fish.atlantic_cod
     Kind: cod
     BorrowsKind: 0
+    HeldMesh: {fileID: 0}
   - SpeciesId: fish.atlantic_herring
     Kind: herring
     BorrowsKind: 0
+    HeldMesh: {fileID: 0}
   - SpeciesId: fish.atlantic_surf_clam
     Kind: clam
     BorrowsKind: 0
+    HeldMesh: {fileID: 11400000, guid: 3aaf9cc07be5dff489a4af826d4bddb8, type: 2}
   - SpeciesId: fish.atlantic_tomcod
     Kind: tomcod
     BorrowsKind: 0
+    HeldMesh: {fileID: 0}
   - SpeciesId: fish.blue_mussel
     Kind: mussel
     BorrowsKind: 0
+    HeldMesh: {fileID: 0}
   - SpeciesId: fish.cunner
     Kind: cunner
     BorrowsKind: 0
+    HeldMesh: {fileID: 0}
   - SpeciesId: fish.green_crab
     Kind: crab
     BorrowsKind: 0
+    HeldMesh: {fileID: 11400000, guid: d3de72705cbb5b145b6315e92c5ac9e4, type: 2}
   - SpeciesId: fish.haddock
     Kind: haddock
     BorrowsKind: 0
+    HeldMesh: {fileID: 0}
   - SpeciesId: fish.lobster
     Kind: lobster
     BorrowsKind: 0
+    HeldMesh: {fileID: 0}
   - SpeciesId: fish.mackerel
     Kind: mackerel
     BorrowsKind: 0
+    HeldMesh: {fileID: 0}
   - SpeciesId: fish.northern_quahog
     Kind: clam
     BorrowsKind: 1
+    HeldMesh: {fileID: 11400000, guid: d3656fbdb589790469e09c6f1500b98c, type: 2}
   - SpeciesId: fish.pollock
     Kind: pollock
     BorrowsKind: 0
+    HeldMesh: {fileID: 0}
   - SpeciesId: fish.rainbow_smelt
     Kind: smelt
     BorrowsKind: 0
+    HeldMesh: {fileID: 0}
   - SpeciesId: fish.rock_crab
     Kind: crab
     BorrowsKind: 0
+    HeldMesh: {fileID: 0}
   - SpeciesId: fish.sea_scallop
     Kind: scallop
     BorrowsKind: 0
+    HeldMesh: {fileID: 0}
   - SpeciesId: fish.soft_shell_clam
     Kind: clam
     BorrowsKind: 0
+    HeldMesh: {fileID: 0}
   - SpeciesId: fish.striped_bass
     Kind: bass
     BorrowsKind: 0
+    HeldMesh: {fileID: 0}
   - SpeciesId: fish.winter_flounder
     Kind: flounder
     BorrowsKind: 0
+    HeldMesh: {fileID: 0}
   _fallbackKind: cod
   _bucketMeshes:
   - TierId: pail

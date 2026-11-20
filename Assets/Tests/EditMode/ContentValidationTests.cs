@@ -720,6 +720,11 @@ namespace HiddenHarbours.Tests.EditMode
             "heldprop.bucket_tray_brim_fish", "heldprop.bucket_tray_brim_shell", "heldprop.bucket_tray_brim_crust",
             // The coast species kit's three fish, held by the tail (appended 2026-11-20).
             "heldprop.fish_smelt", "heldprop.fish_tomcod", "heldprop.fish_cunner",
+            // Crustaceans by the back and shellfish by the handful (appended 2026-11-20).
+            "heldprop.shellfish_lobster", "heldprop.shellfish_crab", "heldprop.shellfish_green_crab",
+            "heldprop.shellfish_mussel", "heldprop.shellfish_clam", "heldprop.shellfish_scallop",
+            "heldprop.shellfish_oyster", "heldprop.shellfish_periwinkle",
+            "heldprop.shellfish_quahog", "heldprop.shellfish_surfclam",
         };
 
         /// <summary>

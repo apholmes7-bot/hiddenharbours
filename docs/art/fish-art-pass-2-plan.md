@@ -199,9 +199,23 @@ pose:
 rig's own `held` reconstruction lists them after its seven. The kit's painted-on marks (mottle,
 silver band, barbel, extra fins) are pixel passes, not geometry, so the meshes carry the body, the
 rig's fins and the species' colours only. `HeldCatchMeshTests.EveryCatchableSpecies_IsHeldAsAMesh_OrIsNamedOwed`
-now requires every shipped species to resolve to a held mesh at every rung. Owed by name, because
-no held-mesh pattern exists for their body type: the lobster, both crabs and the six shellfish
-(held as the storage bake's `Crust2Held` / `Shell2Hand` sprites).
+now requires every shipped species to resolve to a held mesh at every rung.
+
+**The crustaceans and the shellfish (2026-11-20).** The owed list is empty. A fifth held family,
+`shellfish`, is reconstructed from `crustaceanRig2.js` (with `shellfish2` and the coast kit as
+add-ons): the lobster and the rock crab come from the rig's own builders at the `held` pose (held
+by the back, the way `Crust2Held` draws them); the green crab is the crab rebuilt in the kit's
+`crabMap` colours; the shellfish are a handful, because the game hands one catch over as a handful
+(`renderHandful`: five shells for mussel, clam and periwinkle, three for the rest, at the sheet's
+spots), each shell an ellipsoid in its species' ramp. The quahog and the surf clam are recolours
+in the kit, so they carry their own mesh as a per-species override (`SpeciesEntry.HeldMesh`) even
+though the quahog borrows the clam's sprite. The bucket rig's shapes were not used: one box ramp
+for every shell reads as nothing in the hand. The held floor (`HeldFishMinLengthPx`) came down
+from 20 to 16 px, the keyline cut-off, so a smelt reads clearly smaller than a cod (about half its
+length instead of two thirds). Still weak: the green crab has no mottle or teeth (pixel passes in
+the kit), and the quahog's purple rim and the carapace glint are not geometry. The floor raises
+the fish family only (`HeldCatchMesh.ReadableScale`): at 16 px it drew the green crab three times
+its sheet size, wider than his chest, so crustaceans and handfuls are drawn at their sheet's size.
 
 ## 4. Fish pictures at the stove, the locker and the freezer
 

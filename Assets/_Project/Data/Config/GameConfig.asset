@@ -924,7 +924,7 @@ MonoBehaviour:
   HeldFishToneLift: 1
   HeldFishDitherScale: 0
   HeldFishFrontBiasMeters: 0.4
-  HeldFishMinLengthPx: 20
+  HeldFishMinLengthPx: 16
   HeldFishHandSwapDepthMeters: 0.05
   RegionCrossingHysteresisMetres: 0.25
   RegionPreloadDistanceMetres: 40

@@ -208,6 +208,11 @@ namespace HiddenHarbours.App.Editor
                 // is a clutch the rig draws with no camera at all (one facing, two variants).
                 if (WireHeld(entry, $"{Storage}/Crust2Held_{kind}.png", Directions)
                     || WireHeld(entry, $"{Storage}/Shell2Hand_{kind}.png", 1)) held++;
+                // The same animal as a mesh (the shellfish family: a crustacean by the back, a shell kind
+                // as the handful the sheet draws), baked at the rig's scale 1; no size ladder.
+                entry.HeldMesh = heldMeshes.FirstOrDefault(
+                    d => d.Family == HeldPropMeshDef.ShellfishFamily && d.Variant == kind);
+                if (entry.HeldMesh != null) meshed++;
                 kinds.Add(entry);
                 if (variants.Length > 0) wired++;
             }
@@ -215,6 +220,7 @@ namespace HiddenHarbours.App.Editor
             RefusePass1(strips);
 
             var species = SpeciesRows(finfish, strips, out int unmapped);
+            int ownMeshes = WireSpeciesMeshes(species, strips, heldMeshes);
 
             CatchItemLibrary.BucketMeshEntry[] bucketMeshes = BucketMeshes(heldMeshes);
 
@@ -229,7 +235,8 @@ namespace HiddenHarbours.App.Editor
             summary = $"{(created ? "Created" : "Refreshed")} '{LibraryPath}': " +
                       $"{wired}/{kinds.Count - sizedKinds} kinds with art (+{sizedKinds} size rungs), " +
                       $"{held} with HELD art ({faceOn} held face-on), " +
-                      $"{meshed} with a HELD MESH, {bucketMeshes.Length} bucket states as meshes, " +
+                      $"{meshed} with a HELD MESH (+{ownMeshes} species with their own), " +
+                      $"{bucketMeshes.Length} bucket states as meshes, " +
                       $"{species.Count} species mapped" +
                       (missing > 0 ? $", {missing} sheet(s) MISSING (see the warnings above)" : "") +
                       (unmapped > 0 ? $", {unmapped} species left on the fallback kind" : "") +
@@ -458,6 +465,37 @@ namespace HiddenHarbours.App.Editor
 
             rows.Sort((a, b) => System.StringComparer.Ordinal.Compare(a.SpeciesId, b.SpeciesId));
             return rows;
+        }
+
+        /// <summary>
+        /// The shellfish states that are no strip kind (the coast kit's green crab, quahog and surf clam:
+        /// a species of its own drawn as another kind's sheet) go on the ONE species they name, as that
+        /// species' own held mesh. Matched by the species id's leaf, underscores dropped, ending with the
+        /// state's (<c>fish.atlantic_surf_clam</c> ends <c>surfclam</c>), so no table is typed here; a state
+        /// that names no species, or more than one, is left off with an error naming it.
+        /// </summary>
+        static int WireSpeciesMeshes(List<CatchItemLibrary.SpeciesEntry> species, string[] strips,
+                                     HeldPropMeshDef[] meshes)
+        {
+            int wired = 0;
+            foreach (HeldPropMeshDef d in meshes)
+            {
+                if (d.Family != HeldPropMeshDef.ShellfishFamily || strips.Contains(d.Variant)) continue;
+                string want = d.Variant.Replace("_", "");
+                var hits = species.Where(s =>
+                    s.SpeciesId.Substring(s.SpeciesId.LastIndexOf('.') + 1).Replace("_", "")
+                     .EndsWith(want, System.StringComparison.Ordinal)).ToList();
+                if (hits.Count != 1)
+                {
+                    Debug.LogError($"[CatchItemLibraryBuilder] {d.Id} names {hits.Count} species " +
+                                   $"({string.Join(", ", hits.Select(h => h.SpeciesId))}), not one, so " +
+                                   "no species is held as it.");
+                    continue;
+                }
+                hits[0].HeldMesh = d;
+                wired++;
+            }
+            return wired;
         }
 
         /// <summary>True when <paramref name="kind"/> IS the species (the id's leaf, or its last word:

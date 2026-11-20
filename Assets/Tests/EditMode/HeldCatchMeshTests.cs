@@ -49,18 +49,13 @@ namespace HiddenHarbours.Tests.EditMode
         };
 
         /// <summary>
-        /// The catchable species that have NO held mesh yet, by id, because no held-mesh pattern exists
-        /// for their body type: the crustaceans and the shellfish are held as the storage bake's sprites
-        /// (Crust2Held / Shell2Hand), and the held-prop bake has no crustacean or shellfish family.
-        /// Owed, not excused: <see cref="EveryCatchableSpecies_IsHeldAsAMesh_OrIsNamedOwed"/> fails when
-        /// a species here gains a mesh (take it off) and when a new species has neither.
+        /// The catchable species that have NO held mesh yet, by id. Empty: the crustaceans and the
+        /// shellfish landed as the shellfish family (crustaceans by the back from their own rig,
+        /// shellfish as the handful the game hands over). Owed, not excused:
+        /// <see cref="EveryCatchableSpecies_IsHeldAsAMesh_OrIsNamedOwed"/> fails when a species here
+        /// gains a mesh (take it off) and when a new species has neither.
         /// </summary>
-        private static readonly string[] OwedNoHeldMeshPattern =
-        {
-            "fish.lobster", "fish.rock_crab", "fish.green_crab",
-            "fish.blue_mussel", "fish.soft_shell_clam", "fish.atlantic_surf_clam", "fish.northern_quahog",
-            "fish.american_oyster", "fish.sea_scallop",
-        };
+        private static readonly string[] OwedNoHeldMeshPattern = { };
 
         private const string FishDataFolder = "Assets/_Project/Data/Fish";
 
@@ -205,7 +200,7 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         [Test]
-        public void ASpeciesThatBorrowsItsKind_OrIsUnmapped_KeepsItsSprite()
+        public void ASpeciesThatBorrowsItsKind_IsHeldAsItsOwnMesh_AndAnUnmappedOneIsNot()
         {
             CatchItemLibrary art = Load<CatchItemLibrary>(LibraryPath);
             Assert.AreEqual("tomcod", art.KindFor("fish.atlantic_tomcod"),
@@ -214,11 +209,23 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.IsNotNull(tomcod, "the tomcod's own kind is held as a mesh");
             Assert.AreEqual("tomcod", tomcod.Variant, "the tomcod is held as its own mesh, never the cod's");
             Assert.AreNotSame(art.HeldMeshFor("cod"), tomcod);
-            Assert.IsNull(art.HeldMeshFor("fish.lobster", "lobster", out float s), "the lobster bakes no held mesh");
+            HeldPropMeshDef lobster = art.HeldMeshFor("fish.lobster", "lobster", out float s);
+            Assert.IsNotNull(lobster, "the lobster is held as a mesh from its own rig");
+            Assert.AreEqual("heldprop.shellfish_lobster", lobster.Id);
             Assert.AreEqual(1f, s);
-            Assert.IsNull(art.HeldMeshFor("fish.northern_quahog", "clam", out _),
-                          "the quahog only borrows the clam's art, so it keeps its sprite");
-            Assert.IsNull(art.HeldMeshFor("fish.green_crab", "crab", out _), "the crab bakes no held mesh");
+            HeldPropMeshDef clam = art.HeldMeshFor("clam");
+            HeldPropMeshDef quahog = art.HeldMeshFor("fish.northern_quahog", "clam", out float qs);
+            Assert.IsNotNull(quahog, "the quahog borrows the clam's sprite but is held as its own mesh");
+            Assert.AreEqual("heldprop.shellfish_quahog", quahog.Id);
+            Assert.AreNotSame(clam, quahog, "the quahog is never held as the clam's mesh");
+            Assert.AreEqual(1f, qs);
+            HeldPropMeshDef crab = art.HeldMeshFor("fish.rock_crab", "crab", out _);
+            Assert.IsNotNull(crab, "the rock crab is held as the crab kind's mesh");
+            Assert.AreEqual("heldprop.shellfish_crab", crab.Id);
+            HeldPropMeshDef green = art.HeldMeshFor("fish.green_crab", "crab", out _);
+            Assert.IsNotNull(green, "the green crab is held as its own recoloured mesh");
+            Assert.AreEqual("heldprop.shellfish_green_crab", green.Id);
+            Assert.AreNotSame(crab, green, "the green crab is never held in the rock crab's colours");
             Assert.IsNull(art.HeldMeshFor(null, "cod", out _));
             Assert.IsNull(art.HeldMeshFor("fish.atlantic_cod", null, out _));
             Assert.IsNull(art.HeldMeshFor("fish.atlantic_cod", "no_such_kind", out _));
@@ -431,6 +438,14 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.AreEqual(tiny, HeldCatchMesh.ReadableScale(herring, tiny, 0f), 1e-6f, "a floor of 0 changed the scale");
             Assert.AreEqual(1f, HeldCatchMesh.ReadableScale(null, 0f, 16f), "no def and no scale is 1");
             Assert.AreEqual(1f, HeldCatchMesh.ReadableScale(herring, 0f, 0f), "a scale of 0 is 1");
+            foreach (string kind in new[] { "crab", "mussel" })
+            {
+                HeldPropMeshDef shell = art.HeldMeshFor(kind);
+                Assert.IsNotNull(shell, $"harness: '{kind}' carries no held mesh");
+                Assert.AreEqual(HeldPropMeshDef.ShellfishFamily, shell.Family);
+                Assert.AreEqual(1f, HeldCatchMesh.ReadableScale(shell, 1f, 16f), 1e-6f,
+                                $"the fish floor raised the {kind}: a crustacean or a handful is drawn at its sheet's size");
+            }
             Assert.GreaterOrEqual(_config.HeldFishMinLengthPx, _config.HeldFishKeylineMaxLengthPx, "the floor is under the length the sheet already outlines to read");
         }
 

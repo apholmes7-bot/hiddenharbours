@@ -139,12 +139,16 @@ namespace HiddenHarbours.Player
         /// <b>The scale a fish mesh is drawn at so it reads</b>: <paramref name="scale"/> (its size rung), raised
         /// so the mesh's longest side is at least <paramref name="minLengthPx"/> art pixels
         /// (<see cref="GameConfig.HeldFishMinLengthPx"/>). The mesh is linear in its scale about the grip, so
-        /// this is the same fish, only bigger. Pure; 0 or a def with no mesh leaves the scale alone.
+        /// this is the same fish, only bigger. Pure; 0 or a def with no mesh leaves the scale alone. Only the
+        /// fish family is raised: a crustacean or a handful of shellfish (<see cref="HeldPropMeshDef.ShellfishFamily"/>)
+        /// is baked at the size the game's own hand sheet draws it, and the fish floor would blow a crab up
+        /// past his chest.
         /// </summary>
         public static float ReadableScale(HeldPropMeshDef def, float scale, float minLengthPx)
         {
             scale = scale > 0f ? scale : 1f;
             if (def == null || def.Mesh == null || minLengthPx <= 0f || def.PxPerMetre <= 0) return scale;
+            if (def.Family != HeldPropMeshDef.FishFamily) return scale;
             Vector3 size = def.Mesh.bounds.size;
             float lengthPx = Mathf.Max(size.x, Mathf.Max(size.y, size.z)) * def.PxPerMetre * scale;
             return lengthPx > 0f && lengthPx < minLengthPx ? scale * (minLengthPx / lengthPx) : scale;

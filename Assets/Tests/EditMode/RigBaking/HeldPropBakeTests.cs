@@ -63,6 +63,19 @@ namespace HiddenHarbours.Tests.RigBaking
             ["heldprop.fish_smelt"] = 86,
             ["heldprop.fish_tomcod"] = 87,
             ["heldprop.fish_cunner"] = 86,
+            // The crustacean rig's own builders at its held pose (the green crab is the crab's faces).
+            ["heldprop.shellfish_lobster"] = 220,
+            ["heldprop.shellfish_crab"] = 138,
+            ["heldprop.shellfish_green_crab"] = 138,
+            // The handfuls: 34 faces a shell (an 8-gon ellipsoid of 5 stations, capped), five shells
+            // for a TINY kind and three for the rest, as renderHandful lays them.
+            ["heldprop.shellfish_mussel"] = 170,
+            ["heldprop.shellfish_clam"] = 170,
+            ["heldprop.shellfish_scallop"] = 102,
+            ["heldprop.shellfish_oyster"] = 102,
+            ["heldprop.shellfish_periwinkle"] = 170,
+            ["heldprop.shellfish_quahog"] = 102,
+            ["heldprop.shellfish_surfclam"] = 102,
         };
 
         /// <summary>The bail is plotted, not built: 45 samples of the rig's arc on the pail and the
@@ -482,6 +495,18 @@ namespace HiddenHarbours.Tests.RigBaking
             foreach (HeldPropMeshDef fish in Family(HeldPropMeshDef.FishFamily))
                 Assert.AreSame(fish, library.HeldMeshFor(fish.Variant),
                     $"The catch library's '{fish.Variant}' does not hold {fish.Id}. {Rebake}");
+
+            // A shellfish state is a kind's mesh (the strip kinds) or exactly one species' own (the coast
+            // kit's green crab, quahog and surf clam); never baked and pointed at by nothing.
+            foreach (HeldPropMeshDef shell in Family(HeldPropMeshDef.ShellfishFamily))
+            {
+                if (library.HeldMeshFor(shell.Variant) == shell) continue;
+                int owners = 0;
+                foreach (string speciesId in new[] { "fish.green_crab", "fish.northern_quahog", "fish.atlantic_surf_clam" })
+                    if (library.HeldMeshFor(speciesId, library.KindFor(speciesId), out _) == shell) owners++;
+                Assert.AreEqual(1, owners,
+                    $"{shell.Id} is neither the catch library's '{shell.Variant}' mesh nor one species' own. {Rebake}");
+            }
 
             var seen = new HashSet<string>(StringComparer.Ordinal);
             foreach (HeldPropMeshDef bucket in Family(HeldPropMeshDef.BucketFamily))

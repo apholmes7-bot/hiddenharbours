@@ -108,6 +108,13 @@ namespace HiddenHarbours.Art
                      "kind keeps its sprite in the hand: the held mesh is the rig's own species, and a " +
                      "tomcod is not a cod. Set by the library builder.")]
             public bool BorrowsKind;
+
+            [Tooltip("This species' OWN held mesh, when it has one and its kind's is another animal's: the " +
+                     "green crab draws as the crab kind but is held as the coast kit's green recolour, the " +
+                     "quahog and the surf clam as their own shells. Drawn at scale 1 (the rig's own size) and " +
+                     "ahead of the kind's mesh, even for a species that borrows the kind. Empty = the kind's " +
+                     "rule. Set by the library builder.")]
+            public HeldPropMeshDef HeldMesh;
         }
 
         /// <summary>One bucket state as a facet mesh (ADR 0053): a bucket tier at a fill band, holding
@@ -175,17 +182,22 @@ namespace HiddenHarbours.Art
 
             _speciesLookup = new Dictionary<string, string>(StringComparer.Ordinal);
             _ownKind = new HashSet<string>(StringComparer.Ordinal);
+            _speciesMesh = new Dictionary<string, HeldPropMeshDef>(StringComparer.Ordinal);
             if (_species != null)
                 foreach (var e in _species)
                     if (e != null && !string.IsNullOrEmpty(e.SpeciesId) && !string.IsNullOrEmpty(e.Kind))
                     {
                         _speciesLookup[e.SpeciesId] = e.Kind;
                         if (!e.BorrowsKind) _ownKind.Add(e.SpeciesId);
+                        if (e.HeldMesh != null) _speciesMesh[e.SpeciesId] = e.HeldMesh;
                     }
         }
 
         // Species mapped to a kind that IS that animal (not borrowed, not the fallback).
         [NonSerialized] private HashSet<string> _ownKind;
+
+        // Species with a held mesh of their own (SpeciesEntry.HeldMesh).
+        [NonSerialized] private Dictionary<string, HeldPropMeshDef> _speciesMesh;
 
         /// <summary>The sprite for one drawn item, or null when that kind has no art wired yet
         /// (the renderer skips it rather than drawing a blank).</summary>
@@ -266,12 +278,15 @@ namespace HiddenHarbours.Art
         /// sized <paramref name="kind"/> (<see cref="SizedKindFor(string, float)"/>), and the scale it is
         /// drawn at (<see cref="KindEntry.HeldMeshScale"/>). Null for a species that only borrows the
         /// kind's art (<see cref="SpeciesEntry.BorrowsKind"/>), a species on the fallback kind, and a
-        /// kind with no mesh: each keeps its sprite. Lookups only; no allocation.
+        /// kind with no mesh: each keeps its sprite. A species with its own mesh
+        /// (<see cref="SpeciesEntry.HeldMesh"/>) gets that, at scale 1, whatever its kind. Lookups only;
+        /// no allocation.
         /// </summary>
         public HeldPropMeshDef HeldMeshFor(string speciesId, string kind, out float scale)
         {
             scale = 1f;
-            if (_kindLookup == null || _ownKind == null) BuildLookups();
+            if (_kindLookup == null || _ownKind == null || _speciesMesh == null) BuildLookups();
+            if (speciesId != null && _speciesMesh.TryGetValue(speciesId, out HeldPropMeshDef own)) return own;
             if (speciesId == null || !_ownKind.Contains(speciesId)) return null;
             if (kind == null || !_kindLookup.TryGetValue(kind, out var e) || e.HeldMesh == null) return null;
             if (e.HeldMeshScale > 0f) scale = e.HeldMeshScale;
