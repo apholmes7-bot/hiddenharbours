@@ -193,7 +193,25 @@ namespace HiddenHarbours.Boats
             targets = StationTargets(_portLock, _starLock, in _station, PortPose, PortStroking,
                                      StarboardPose, StarboardStroking);
             targets.LaybackDegrees *= _laybackScale;
+            targets.RestWeight = _restWeight;
+            targets.RestBreath = _restBreath;
             return true;
+        }
+
+        // The rower's style's rest this frame (RowingStyle.RestWeight / RestBreath), taken with the pose.
+        private float _restWeight, _restBreath;
+
+        /// <summary>
+        /// A rowing oar's pose with the style's rest folded in: through a rest the blade settles from the
+        /// stroke's own dip to <paramref name="restBladeDipDegrees"/> (feathered just over the water) by
+        /// <paramref name="restWeight"/>, so the hands sit relaxed instead of holding the stroke's highest
+        /// blade still. The sweep is the stroke's. Weight 0 is the stroke exactly.
+        /// </summary>
+        public static DoryOarMeshPose.Pose Rested(in DoryOarMeshPose.Pose rowing, float restWeight, float restBladeDipDegrees)
+        {
+            if (restWeight <= 0f) return rowing;
+            return new DoryOarMeshPose.Pose(rowing.SweepDegrees,
+                                            Mathf.Lerp(rowing.DipDegrees, restBladeDipDegrees, Mathf.Clamp01(restWeight)));
         }
 
         // The rower's style's lean-back scale, taken with the pose each frame (1 = the station's own).
@@ -228,11 +246,21 @@ namespace HiddenHarbours.Boats
                 StarboardGripValid = starRowing,
                 PortGrip = RowingStationMath.Grip(portLock, portDir, station.GripInboardMeters),
                 StarboardGrip = RowingStationMath.Grip(starLock, starDir, station.GripInboardMeters),
+                PortHandleEnd = RowingStationMath.Grip(portLock, portDir, station.LoomInboardMeters),
+                StarboardHandleEnd = RowingStationMath.Grip(starLock, starDir, station.LoomInboardMeters),
                 Seat = station.SeatLocalMeters,
                 StarboardBrace = station.FootBraceLocalMeters,
                 PortBrace = RowingStationMath.MirrorAcrossCentreline(station.FootBraceLocalMeters),
                 LaybackDegrees = station.LaybackDegrees,
                 ReachLeanMaxDegrees = station.ReachLeanMaxDegrees,
+                BodyClearanceMeters = station.BodyClearanceMeters,
+                BodyClearLeanMaxDegrees = station.BodyClearLeanMaxDegrees,
+                BodyClearTwistMaxDegrees = station.BodyClearTwistMaxDegrees,
+                RestSlumpDegrees = station.RestSlumpDegrees,
+                RestBreathDegrees = station.RestBreathDegrees,
+                RestBreathSeconds = station.RestBreathSeconds,
+                RestHandAlongThigh = station.RestHandAlongThigh,
+                RestHandAboveThighMeters = station.RestHandAboveThighMeters,
             };
         }
 
@@ -305,6 +333,21 @@ namespace HiddenHarbours.Boats
                                           _bothIdleSeconds, _restGraceSeconds, DoryOarMath.StrokeColumns);
             PortPose = PoseFor(portColumn, portStyled);
             StarboardPose = PoseFor(starColumn, starStyled);
+
+            // The style's rest: the blades settle feathered over the water and the rower relaxes, by the
+            // same weight, read off the same raw phase the warp held still.
+            float portRest = IsStrokeColumn(portColumn) ? style.RestWeight(RowStrokeClock.StrokePhaseOfColumns(_portPhase)) : 0f;
+            float starRest = IsStrokeColumn(starColumn) ? style.RestWeight(RowStrokeClock.StrokePhaseOfColumns(_starPhase)) : 0f;
+            if (_hasStation)
+            {
+                PortPose = Rested(PortPose, portRest, _station.RestBladeDipDegrees);
+                StarboardPose = Rested(StarboardPose, starRest, _station.RestBladeDipDegrees);
+            }
+            bool portLeads = portRest >= starRest;
+            _restWeight = Mathf.Max(portRest, starRest);
+            _restBreath = _restWeight > 0f
+                ? style.RestBreath(RowStrokeClock.StrokePhaseOfColumns(portLeads ? _portPhase : _starPhase))
+                : 0f;
 
             // What the oar splash reads: the SAME decision the pose was just made from, so a blade
             // can only splash on a frame it was drawn rowing.
