@@ -23,8 +23,8 @@ Still owed:
   (`FishArtEverywhereTests.OwedHeldMesh`).
 - Carry and tote art for the green crab, quahog and surf clam: they still draw as the shared `crab` and
   `clam` kinds in the hands and the tote.
-- Anatomy the rig's body cannot draw: the tomcod's third dorsal and thread-like pelvic rays, the cunner's
-  single long dorsal and thick lips. Colour, proportion, mottling and the tomcod's barbel carry them.
+- The tomcod's thread-like pelvic rays. (Its third dorsal and second anal, and the cunner's long dorsal
+  and thick lips, came in the kit's second pass.)
 
 The table below is the original brief, kept for the description of each animal.
 

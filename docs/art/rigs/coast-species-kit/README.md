@@ -36,11 +36,24 @@ The `Art/Bake Coast Species` menu item (or `-executeMethod
 HiddenHarbours.Tools.RigBaking.CoastSpeciesBaker.BakeCli`), then the usual follow-ups: slice the new
 sheets, Build Fish Icons, Build Catch Item Library, Build Fish Art Library.
 
+## Second pass (2026-11-20)
+
+- **Fins the rig has no slot for** (`extraFins`): the tomcod's third dorsal and first anal (three dorsals,
+  two anals with the rig's own), the cunner's one long spiny dorsal from the nape nearly to the tail. They
+  are posed and lit by the fish rig's law, mirrored in this file, and painted only where the rig left the
+  cell empty, so they show where a fin stands clear of the body.
+- **Cunner:** darker brown and olive-green with rust blotches, a deeper body (`zflat` 1.28: taller, not
+  heavier, since the mass law reads `girth`), and thick lips on the icon.
+- **One mark that lasts at world scale** (`worldMark`, cells under 160 opaque px, dry and wet pixels
+  alike): the smelt's flank turns silver, the tomcod's dark back splits from its pale belly, and the cunner's
+  back goes a step darker.
+- **Green crab on deck:** the crab rig's own keyline, the shell's lit front edge a step lighter, and legs and
+  claws in a lighter yellow-olive than the shell. The size stays true (smaller than the rock crab).
+
 ## Known gaps
 
-- The marks only show at icon scale; at world scale these fish are 8-10 px and read by colour and shape.
-- The tomcod has the rig's two dorsals (not three) and no pelvic threads; the cunner has the rig's short
-  dorsal, not the wrasse's single long one.
+- Seen from above in the water, the smelt shows little flank, so its silver line is faint while it swims.
+- The tomcod has no pelvic threads. The extra fins are hidden where they lie over the body.
 - The green crab's teeth are visible on the icon only; the deck cells are too small for them.
 - No held meshes for the three finfish yet, and the crab and clams still share the `crab` / `clam` carry
   kinds.
