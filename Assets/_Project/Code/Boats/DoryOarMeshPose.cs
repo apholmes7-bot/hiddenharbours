@@ -36,14 +36,14 @@ namespace HiddenHarbours.Boats
     public static class DoryOarMeshPose
     {
         /// <summary>The rig's <c>oarPose('row', t)</c> ellipse: the blade traces sweep against dip
-        /// once per stroke. Transcribed from the rig; proven against it. The dip band (17.5 to 29.5
-        /// degrees, off the tholes chocked 8 cm proud of the rail) buries the blade at the bottom of the drive and skims it 6 cm over the water on
-        /// the recovery, the handles as high as the tholes allow; the sweep (-11 to +20) is a short
+        /// once per stroke. Transcribed from the rig; proven against it. The dip band (16.5 to 28.5
+        /// degrees, off the tholes chocked 6 cm proud of the rail) buries the blade at the bottom of the drive and skims it 6 cm over the water on
+        /// the recovery, the handles as high as the tholes allow; the sweep (-8 to +20) is a short
         /// dory stroke that keeps the hands near his body and brings them to his ribs at the finish,
         /// not through them.</summary>
-        public const float RowSweepCentreDegrees = 4.5f;
-        public const float RowSweepAmplitudeDegrees = 15.5f;
-        public const float RowDipCentreDegrees = 23.5f;
+        public const float RowSweepCentreDegrees = 6f;
+        public const float RowSweepAmplitudeDegrees = 14f;
+        public const float RowDipCentreDegrees = 22.5f;
         public const float RowDipAmplitudeDegrees = 6f;
 
         /// <summary>The phase of <see cref="Row"/> (in turns) at the CATCH: sweep is at its minimum
@@ -59,7 +59,7 @@ namespace HiddenHarbours.Boats
         public const float RestingSweepDegrees = -72f, RestingDipDegrees = 6f;
 
         /// <summary>Dragging aft in the water — the rig's 'trailing' state.</summary>
-        public const float TrailingSweepDegrees = 76f, TrailingDipDegrees = 18f;
+        public const float TrailingSweepDegrees = 76f, TrailingDipDegrees = 17f;
 
         /// <summary>The rig's <c>|ax.z| &gt; 0.9</c> switch to a different up-vector, kept because a
         /// near-vertical oar would otherwise take the cross product of two parallel vectors. It does

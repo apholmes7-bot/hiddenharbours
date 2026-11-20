@@ -336,10 +336,10 @@ MonoBehaviour:
     BodyClearLeanMaxDegrees: 12
     BodyClearTwistMaxDegrees: 15
     HandAboveKneeMeters: 0.2
-    HandAboveHipLineShareFromAhead: 0.15
+    HandAboveHipLineShareFromAhead: 0.13
     LoomHalfThicknessMeters: 0.055
     LoomClearanceMeters: 0.02
-    RestBladeDipDegrees: 18
+    RestBladeDipDegrees: 17
     RestSlumpDegrees: 8
     RestBreathDegrees: 1.5
     RestBreathSeconds: 4

@@ -89,7 +89,7 @@ namespace HiddenHarbours.Boats
         [Min(0f)] public float LoomClearanceMeters;
 
         [Header("Resting")]
-        [Tooltip("Where the blades settle in a rowing style's rest between strokes: the dip, degrees. 18 " +
+        [Tooltip("Where the blades settle in a rowing style's rest between strokes: the dip, degrees. 17 " +
                  "(off the chocked tholes) hangs the blade tips a few centimetres over the water, feathered, handles at his belly.")]
         [Range(0f, 30f)] public float RestBladeDipDegrees;
 
@@ -124,10 +124,10 @@ namespace HiddenHarbours.Boats
             BodyClearLeanMaxDegrees = 12f,
             BodyClearTwistMaxDegrees = 15f,
             HandAboveKneeMeters = 0.20f,
-            HandAboveHipLineShareFromAhead = 0.15f,
+            HandAboveHipLineShareFromAhead = 0.13f,
             LoomHalfThicknessMeters = 0.055f,
             LoomClearanceMeters = 0.02f,
-            RestBladeDipDegrees = 18f,
+            RestBladeDipDegrees = 17f,
             RestSlumpDegrees = 8f,
             RestBreathDegrees = 1.5f,
             RestBreathSeconds = 4f,

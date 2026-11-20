@@ -43,10 +43,11 @@
   const L = 4.5, TH = 0.035, FLOOR = 0.06, SEAT = 0.30, OARLOCK_U = 0.258;
   const STERN_U = 0.13;                  // stern-bench station (motor build) -> y = -1.665 m, 0.58 m fwd of the transom
   const FWD_LOCK_U = 0.518;              // the forward rowing station's tholes, the same 0.369 m abaft its thwart
-  // each pair of tholes stands in an oak chock on the rail, 0.08 m proud of the cap: the loom works 8 cm higher, so
+  // each pair of tholes stands in an oak chock on the rail, 0.06 m proud of the cap: the loom works 6 cm higher, so
   // his hands ride over his thighs at belly height through the recovery instead of in his lap (owner, 2026-11-20:
-  // "raise the pins first"). A pad on the gunwale, not an outrigger: the pins stay over the rail.
-  const THOLE_CHOCK = { rise: 0.08, halfY: 0.10, halfX: 0.026 };
+  // "raise the pins first", then "try them 2 cm lower" so the drive reads at his chest, not his shoulders, from the
+  // side). A pad on the gunwale, not an outrigger: the pins stay over the rail.
+  const THOLE_CHOCK = { rise: 0.06, halfY: 0.10, halfX: 0.026 };
   const THWARTS = [0.34, 0.60], BOW_THWART_U = 0.80;
   const HANDLINE_U = 0.47;               // the hand-line chock on the rail, between the rowing thwarts
   const BAILER = { x: 0.20, y: -1.05 };  // the bailer's place on the boards, abaft the after thwart
@@ -490,15 +491,16 @@
     // shipped fore in the tholes, the blade forward and the handle inboard on the stern sheets: with the tholes 0.369 m
     // abaft the thwart, -82/-7 put the handle 0.24 m out through the narrowing stern quarter (0.14 m from the old tholes)
     if(state==='resting')  return { sweep:-72, dip: 6 };
-    if(state==='trailing') return { sweep: 76, dip: 18 };  // dragging aft in the water (18 deg off the chocked tholes)
-    // row cycle: the blade traces an ellipse (dip+sweep). Dip 23.5+-6: off the chocked tholes the blade is still buried
-    // to its throat at the bottom of the drive (29.5 deg) and skims 6 cm over the water on the recovery (17.5 deg).
-    // Sweep 4.5+-15.5: a short dory stroke, the catch at -11 and the finish at +20, so his reach toward the stern stays
-    // short and the hands stay near his body and come in to his ribs. The inboard loom is 0.65 m, 5 cm short of the
-    // tholes' half-beam (0.697), so the two handles never meet: they pass 13 cm apart at their closest and the hands
-    // work either side of his ribs, not one through the other (owner, 2026-11-20)
+    if(state==='trailing') return { sweep: 76, dip: 17 };  // dragging aft in the water (17 deg off the chocked tholes)
+    // row cycle: the blade traces an ellipse (dip+sweep). Dip 22.5+-6: off the chocked tholes the blade is still buried
+    // to its throat at the bottom of the drive (28.5 deg) and skims 6 cm over the water on the recovery (16.5 deg).
+    // Sweep 6+-14: a short dory stroke, the catch at -8 and the finish at +20, so his reach toward the stern stays
+    // short (his hands stay over his belly seen from ahead, and the near loom keeps off his chin at the catch) and
+    // they come in to his ribs at the finish. The inboard loom is 0.65 m, 5 cm short of the tholes' half-beam
+    // (0.697), so the two handles never meet: they pass 13 cm apart at their closest and the hands work either side
+    // of his ribs, not one through the other (owner, 2026-11-20)
     const tt=(((t||0)%1)+1)%1, a=2*Math.PI*tt;
-    return { sweep: 4.5 + 15.5*Math.sin(a), dip: 23.5 + 6*Math.cos(a) };
+    return { sweep: 6 + 14*Math.sin(a), dip: 22.5 + 6*Math.cos(a) };
   }
   function buildOar(side, pose){
     const O=oarlockPt(side), d=oarDir(side,pose.sweep,pose.dip);

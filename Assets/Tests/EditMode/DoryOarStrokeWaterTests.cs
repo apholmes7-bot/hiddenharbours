@@ -17,9 +17,9 @@ namespace HiddenHarbours.Tests.EditMode
     /// </summary>
     public class DoryOarStrokeWaterTests
     {
-        // The dory's own facts: oarlock z 0.60808 m (DoryOarPortPropMesh.PivotLocalMeters) over a
+        // The dory's own facts: oarlock z 0.58808 m (DoryOarPortPropMesh.PivotLocalMeters) over a
         // 0.11 m resting draught (DoryIsoHullMesh.RestingDraftMeters).
-        private const float LockHeight = 0.60808f - 0.11f;
+        private const float LockHeight = 0.58808f - 0.11f;
         private const float Dt = 1f / 60f;
         // A camera looking down at 60 degrees: a ground metre across the view is sin 60 on screen,
         // a metre of height cos 60.
