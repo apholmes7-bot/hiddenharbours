@@ -141,6 +141,7 @@ namespace HiddenHarbours.Tests.PlayMode
         private FlatTerrain _terrain;
         private TidalEnv _env;
         private TestClock _clock;
+        private GameConfig _config;
         private GameObject _ownEmitter;
         private GameObject _rigRoot;
         private int _ticksSeen;
@@ -160,6 +161,12 @@ namespace HiddenHarbours.Tests.PlayMode
             _terrain = new FlatTerrain { Elevation = -10f };
             _env = new TidalEnv { BaseLevel = -1f };
             _clock = new TestClock();
+            // These guards measure the wake's DRAWN foam puffs. The shipped dials retire those puffs while the
+            // water draws real hull waves (HullWaveSettings.RetireDrawnFoam: one foam on the sea, laid by the
+            // hull's foam injector at her drawn transom; pinned in HullWaveMathTests). The puffs still ship
+            // behind that switch, so this fixture turns it off and keeps guarding their frame.
+            _config = ScriptableObject.CreateInstance<GameConfig>();
+            _config.HullWaves.RetireDrawnFoam = false;
             Pin();
 
             // Pin the frame: 1/20 s is longer than the emitter's 1/30 s tick, so every frame is exactly one tick.
@@ -186,6 +193,8 @@ namespace HiddenHarbours.Tests.PlayMode
             _rigRoot = null;
             yield return null;          // let the destroys land, so the next fixture's emitter scan finds none of ours
             GameServices.Reset();
+            if (_config != null) Object.Destroy(_config);
+            _config = null;
         }
 
         [UnityTest]
@@ -435,6 +444,7 @@ namespace HiddenHarbours.Tests.PlayMode
             GameServices.TidalTerrain = _terrain;
             GameServices.Environment = _env;
             GameServices.Clock = _clock;
+            GameServices.Config = _config;
         }
 
         private void EnsureEmitter()

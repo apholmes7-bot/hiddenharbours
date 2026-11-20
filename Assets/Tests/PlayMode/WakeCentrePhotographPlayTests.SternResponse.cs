@@ -438,7 +438,9 @@ namespace HiddenHarbours.Tests.PlayMode
                 SavePlate($"v24-response-speed-{speed}-bare.png",bare);
                 WorstChannelDelta(complete,bare,out int pixels);
                 _rows.Add($"RESPONSE speed={speed} frame=90 time={GameServices.Clock.TotalSeconds} crestPeakAlpha={alpha:F6} crestLength={scale:F6} visiblePixels={pixels} metresPerPixel={2f*_cam.orthographicSize/_h:F6}");
-                if(alpha<=previousAlpha || scale<=previousScale) errors.AppendLine($"speed {speed}: alpha {alpha} <= {previousAlpha} or scale {scale} <= {previousScale}");
+                // The painted crests are not built while the water draws real hull waves; their
+                // growth with speed is then the hull waves' (HullWaveMathTests), not a sprite's.
+                if(!BoatWakeEmitter.PaintedCrestsRetired(GameServices.HullWaves) && (alpha<=previousAlpha || scale<=previousScale)) errors.AppendLine($"speed {speed}: alpha {alpha} <= {previousAlpha} or scale {scale} <= {previousScale}");
                 previousAlpha=alpha;previousScale=scale;
                 if(speed==12f)
                 {

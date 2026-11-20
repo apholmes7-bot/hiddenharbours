@@ -31,8 +31,22 @@ namespace HiddenHarbours.Tests.PlayMode
         private GameObject _straight;
         private GameObject _turning;
         private GameObject _ownEmitter;
+        private GameConfig _config;
 
         /// <summary>
+        /// These guards measure the wake's DRAWN foam puffs. The shipped dials retire those puffs while the
+        /// water draws real hull waves (<see cref="HullWaveSettings.RetireDrawnFoam"/>: one foam on the
+        /// sea, laid by the hull's foam injector; pinned in <c>HullWaveMathTests</c>). The puffs still
+        /// ship behind that switch, so this fixture turns the switch off and keeps guarding where they
+        /// are laid; everything else stays at the shipped defaults.
+        /// </summary>
+        [SetUp]
+        public void SetUp()
+        {
+            _config = ScriptableObject.CreateInstance<GameConfig>();
+            _config.HullWaves.RetireDrawnFoam = false;
+            GameServices.Config = _config;
+        }
         /// The emitter installs itself once per PLAY SESSION from <c>RuntimeInitializeOnLoadMethod</c> and
         /// guards that with a static flag — so by the time a late test class runs, an earlier test that
         /// tore down DontDestroyOnLoad objects can have taken the host away with no chance of it coming
@@ -55,6 +69,8 @@ namespace HiddenHarbours.Tests.PlayMode
             if (_turning != null) Object.Destroy(_turning);
             if (_ownEmitter != null) Object.Destroy(_ownEmitter);
             GameServices.Reset();
+            if (_config != null) Object.Destroy(_config);
+            _config = null;
         }
 
         /// <summary>
