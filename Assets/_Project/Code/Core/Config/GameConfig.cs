@@ -1568,6 +1568,31 @@ namespace HiddenHarbours.Core
         [Tooltip("How wide (art pixels) a held fish's eye is drawn. 0 = no eye.")]
         [Range(0f, 3f)] public float HeldFishEyeSizePx = 1f;
 
+        [Tooltip("A held fish mesh's shade gain, as a multiple of its bake's (more contrast between the lit " +
+                 "belly and the shaded back, as the held sheet draws it). 1 = the bake's own.")]
+        [Range(0.5f, 3f)] public float HeldFishToneGain = 1.5f;
+
+        [Tooltip("Added to a held fish mesh's shade, in ramp steps: a brighter fish. 0 = the bake's own.")]
+        [Range(-2f, 2f)] public float HeldFishToneLift = 1f;
+
+        [Tooltip("A held fish mesh's dither, as a multiple of its bake's: 1 = as baked, 0 = clean bands of " +
+                 "the ramp's own colours (the held sheet's look at hand size).")]
+        [Range(0f, 1f)] public float HeldFishDitherScale = 0f;
+
+        [Tooltip("How far a held fish mesh is drawn toward the camera, in metres, so his body or legs never " +
+                 "hide it (the held sheet is always drawn in front). 0 = where the hand is.")]
+        [Min(0f)] public float HeldFishFrontBiasMeters = 0.4f;
+
+        [Tooltip("The shortest a held fish MESH is drawn, art pixels along its longest side: a smaller fish " +
+                 "is scaled up about its grip to this, so a herring still reads in his hand. The mesh can " +
+                 "grow where a sprite can only pick a bigger rung (MinDrawnFishLengthPx). 0 = no floor.")]
+        [Min(0f)] public float HeldFishMinLengthPx = 20f;
+
+        [Tooltip("At the landing the fish hangs from whichever hand is nearer the camera, so it is never " +
+                 "hidden behind him (the rig's own fish prop swaps hands the same way). It changes hands " +
+                 "only when the other hand is nearer by more than this (m), so it does not flicker.")]
+        [Min(0f)] public float HeldFishHandSwapDepthMeters = 0.05f;
+
         /// <summary>Shipped crossing hysteresis (m), also the fallback for a rig with no GameConfig.</summary>
         public const float DefaultRegionCrossingHysteresisMetres = 0.25f;
 

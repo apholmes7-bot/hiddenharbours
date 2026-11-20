@@ -871,6 +871,12 @@ MonoBehaviour:
   MeshCatchInHand: 1
   HeldFishFinLineWidthPx: 1
   HeldFishEyeSizePx: 1
+  HeldFishToneGain: 1.5
+  HeldFishToneLift: 1
+  HeldFishDitherScale: 0
+  HeldFishFrontBiasMeters: 0.4
+  HeldFishMinLengthPx: 20
+  HeldFishHandSwapDepthMeters: 0.05
   RegionCrossingHysteresisMetres: 0.25
   RegionPreloadDistanceMetres: 40
   RegionPreloadMinHeadingSpeed: 0.5

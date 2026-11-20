@@ -540,7 +540,8 @@ namespace HiddenHarbours.Player
             _catchMesh ??= new HeldCatchMesh(transform);
             string socket = hand == CarryHandSide.Left ? HeldPropSockets.LeftHandTool : HeldPropSockets.RightHandTool;
             float turn = HeldCatchMesh.TurnToFacingDegrees(fish.HeldMesh, fish.FacingMap, fish.Facing, DrawnHeadingDegrees);
-            bool drawn = _catchMesh.TryDraw(config, fish.HeldMesh, fish.HeldMeshScale, socket, turn, LiveFigure());
+            float scale = HeldCatchMesh.ReadableScale(fish.HeldMesh, fish.HeldMeshScale, config.HeldFishMinLengthPx);
+            bool drawn = _catchMesh.TryDraw(config, fish.HeldMesh, scale, socket, turn, LiveFigure());
             fish.SetSpriteVisible(!drawn);
             _catchMeshPosed |= drawn;
         }

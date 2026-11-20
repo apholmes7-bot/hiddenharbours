@@ -52,6 +52,8 @@ namespace HiddenHarbours.Player
         private int _mountBone = CharacterSkinDef.NoBone;
         private IsoCharacterFigureRenderer _reachFigure;
         private float _builtFinPx = -1f, _builtEyePx = -1f;
+        private Vector3 _builtTone = new Vector3(-1f, -1f, -1f);
+        private float _builtFront = -1f;
 
         /// <param name="home">Where the renderer's object is made and given back to when hidden.</param>
         /// <param name="name">The renderer object's name (for a plate or a hierarchy read).</param>
@@ -132,6 +134,46 @@ namespace HiddenHarbours.Player
             float compass = Mathf.DeltaAngle(drawn, f * StepDegrees);
             return def.AzimuthCounterClockwise ? -compass : compass;
         }
+
+        /// <summary>
+        /// <b>The scale a fish mesh is drawn at so it reads</b>: <paramref name="scale"/> (its size rung), raised
+        /// so the mesh's longest side is at least <paramref name="minLengthPx"/> art pixels
+        /// (<see cref="GameConfig.HeldFishMinLengthPx"/>). The mesh is linear in its scale about the grip, so
+        /// this is the same fish, only bigger. Pure; 0 or a def with no mesh leaves the scale alone.
+        /// </summary>
+        public static float ReadableScale(HeldPropMeshDef def, float scale, float minLengthPx)
+        {
+            scale = scale > 0f ? scale : 1f;
+            if (def == null || def.Mesh == null || minLengthPx <= 0f || def.PxPerMetre <= 0) return scale;
+            Vector3 size = def.Mesh.bounds.size;
+            float lengthPx = Mathf.Max(size.x, Mathf.Max(size.y, size.z)) * def.PxPerMetre * scale;
+            return lengthPx > 0f && lengthPx < minLengthPx ? scale * (minLengthPx / lengthPx) : scale;
+        }
+
+        /// <summary>
+        /// <b>Which hand a held fish hangs from so he does not hide it</b>: the one nearer the camera (the
+        /// smaller depth), changing from <paramref name="current"/> only when the other is nearer by more
+        /// than <paramref name="swapDepth"/>, so it never flickers between two near-equal hands. The rig's own
+        /// fish prop swaps hands by facing the same way. Pure.
+        /// </summary>
+        public static string NearerSocket(string current, string other, float currentDepth, float otherDepth,
+                                          float swapDepth)
+            => otherDepth < currentDepth - Mathf.Max(0f, swapDepth) ? other : current;
+
+        /// <summary>
+        /// The depth (world z; smaller is nearer the camera) of <paramref name="socket"/> on the frame the
+        /// figure last drew. False when the figure or the socket is not there.
+        /// </summary>
+        public static bool TrySocketDepth(IsoCharacterFigureRenderer figure, string socket, out float depth)
+        {
+            depth = 0f;
+            if (figure == null || figure.SkinDef == null || figure.FacetTransform == null) return false;
+            int bone = figure.SkinDef.IndexOfBone(socket);
+            if (bone == CharacterSkinDef.NoBone || !figure.TryBonePoint(bone, out Vector3 p)) return false;
+            depth = figure.FacetTransform.TransformPoint(p).z;
+            return true;
+        }
+
         /// <summary>Stop drawing it.</summary>
         public void Hide()
         {
@@ -182,9 +224,12 @@ namespace HiddenHarbours.Player
             scale = scale > 0f ? scale : 1f;
             float finPx = Mathf.Max(0f, config.HeldFishFinLineWidthPx);
             float eyePx = Mathf.Max(0f, config.HeldFishEyeSizePx);
+            var tone = new Vector3(config.HeldFishToneGain, config.HeldFishToneLift, config.HeldFishDitherScale);
+            float front = Mathf.Max(0f, config.HeldFishFrontBiasMeters);
             if (_renderer != null && _renderer.IsConfigured && ReferenceEquals(_renderer.Def, def)
                 && Mathf.Approximately(_renderer.BuiltScale, scale)
-                && Mathf.Approximately(finPx, _builtFinPx) && Mathf.Approximately(eyePx, _builtEyePx))
+                && Mathf.Approximately(finPx, _builtFinPx) && Mathf.Approximately(eyePx, _builtEyePx)
+                && tone == _builtTone && Mathf.Approximately(front, _builtFront))
                 return true;
             if (_renderer == null)
             {
@@ -205,10 +250,19 @@ namespace HiddenHarbours.Player
                 DotSizeMeters = eyePx * m,
                 EdgeLineWidthMeters = finPx * m,
                 EdgeRampName = FinRampName,
+                // The held sheet's tone: its contrast, brightness and dither, as data (GameConfig).
+                Tone = true,
+                ToneGain = tone.x,
+                ToneLift = tone.y,
+                DitherScale = tone.z,
+                // In front of the body that would hide it, as the sheet always is (GameConfig).
+                DepthBiasMeters = front,
             };
             CharacterSkinDef skin = figure.SkinDef;
             _builtFinPx = finPx;
             _builtEyePx = eyePx;
+            _builtTone = tone;
+            _builtFront = front;
             if (_renderer.Configure(def, options, skin.PivotPx, skin.PxPerMetre, out string why)) return true;
             Debug.LogWarning($"[HeldCatchMesh] {why}: the fish stays a sprite.");
             return false;

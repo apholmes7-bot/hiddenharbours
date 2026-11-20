@@ -271,6 +271,122 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.AreEqual(old.Ramps.Length, stated.Ramps.Length);
         }
 
+        [Test]
+        public void ScalingAboutTheGrip_IsLinear_ForEveryMeshedSpecies()
+        {
+            CatchItemLibrary art = Load<CatchItemLibrary>(LibraryPath);
+            float[] scales = { 0.25f, 0.5f, 0.8f, 1.5f, 2f, 3.2f };
+            foreach ((string _, string kind) in Meshed)
+            {
+                HeldPropMeshDef def = art.HeldMeshFor(kind);
+                Assert.IsNotNull(def, $"'{kind}' carries no held mesh");
+                Assert.IsTrue(IsoFacetHeldPropMesh.TryBuild(def, new IsoFacetHeldPropMesh.Options { Scale = 1f },
+                                                            out var one, out string why), why);
+                _made.Add(one.Mesh);
+                Vector3 grip = def.GripLocalMeters;
+                Vector3[] a = one.Mesh.vertices;
+                Vector3 size1 = one.Mesh.bounds.size;
+                foreach (float s in scales)
+                {
+                    Assert.IsTrue(IsoFacetHeldPropMesh.TryBuild(def, new IsoFacetHeldPropMesh.Options { Scale = s },
+                                                                out var got, out why), why);
+                    _made.Add(got.Mesh);
+                    Vector3[] b = got.Mesh.vertices;
+                    Assert.AreEqual(a.Length, b.Length, $"'{kind}' x{s} changed its vertex count");
+                    for (int i = 0; i < a.Length; i++)
+                        Assert.Less(((b[i] - grip) - (a[i] - grip) * s).magnitude, 1e-4f * Mathf.Max(1f, s),
+                                    $"'{kind}' x{s}: vertex {i} is not on the line through the grip");
+                    Vector3 want = size1 * s;
+                    Assert.Less((got.Mesh.bounds.size - want).magnitude, 1e-4f * Mathf.Max(1f, s),
+                                $"'{kind}' x{s}: the bounds did not scale with it");
+                }
+            }
+        }
+
+        [Test]
+        public void TheFrontBias_PullsEveryVertexTowardTheCamera_AndTheRodHasNone()
+        {
+            HeldPropMeshDef cod = Load<HeldPropMeshDef>(CodPath);
+            Assert.IsTrue(IsoFacetHeldPropMesh.TryBuild(cod, new IsoFacetHeldPropMesh.Options(), out var flat, out string why), why);
+            _made.Add(flat.Mesh);
+            Assert.IsTrue(IsoFacetHeldPropMesh.TryBuild(cod, new IsoFacetHeldPropMesh.Options { DepthBiasMeters = 0.4f },
+                                                        out var front, out why), why);
+            _made.Add(front.Mesh);
+            var a = new List<Vector4>(); var b = new List<Vector4>();
+            flat.Mesh.GetUVs(0, a); front.Mesh.GetUVs(0, b);
+            Assert.AreEqual(a.Count, b.Count);
+            for (int i = 0; i < a.Count; i++)
+            {
+                Assert.AreEqual(a[i].z + 0.4f, b[i].z, 1e-5f, $"vertex {i}'s depth bias");
+                Assert.AreEqual(a[i].x, b[i].x, 0f, "the bias changed a material id");
+            }
+            Assert.Greater(_config.HeldFishFrontBiasMeters, 0f, "a held fish is drawn in front of his body by default");
+        }
+
+        [Test]
+        public void TheReadableScale_RaisesATinyFishToTheFloor_AndLeavesABigOneAlone()
+        {
+            CatchItemLibrary art = Load<CatchItemLibrary>(LibraryPath);
+            HeldPropMeshDef herring = art.HeldMeshFor("herring");
+            Assert.IsNotNull(herring);
+            Vector3 size = herring.Mesh.bounds.size;
+            float lengthPx = Mathf.Max(size.x, Mathf.Max(size.y, size.z)) * herring.PxPerMetre;
+
+            float tiny = 4f / lengthPx;
+            float raised = HeldCatchMesh.ReadableScale(herring, tiny, 16f);
+            Assert.AreEqual(16f, lengthPx * raised, 1e-3f, "a tiny fish is not raised to the floor exactly");
+            float big = 40f / lengthPx;
+            Assert.AreEqual(big, HeldCatchMesh.ReadableScale(herring, big, 16f), 1e-6f, "a fish over the floor was changed");
+            Assert.AreEqual(tiny, HeldCatchMesh.ReadableScale(herring, tiny, 0f), 1e-6f, "a floor of 0 changed the scale");
+            Assert.AreEqual(1f, HeldCatchMesh.ReadableScale(null, 0f, 16f), "no def and no scale is 1");
+            Assert.AreEqual(1f, HeldCatchMesh.ReadableScale(herring, 0f, 0f), "a scale of 0 is 1");
+            Assert.GreaterOrEqual(_config.HeldFishMinLengthPx, _config.HeldFishKeylineMaxLengthPx, "the floor is under the length the sheet already outlines to read");
+        }
+
+        [Test]
+        public void TheNearerHand_TakesTheFish_OnlyPastTheSwapDepth()
+        {
+            const string R = HeldPropSockets.RightHandTool, L = HeldPropSockets.LeftHandTool;
+            Assert.AreEqual(L, HeldCatchMesh.NearerSocket(R, L, 0f, -0.2f, 0.05f), "the clearly nearer hand did not take it");
+            Assert.AreEqual(R, HeldCatchMesh.NearerSocket(R, L, 0f, -0.03f, 0.05f), "a hair's difference swapped hands");
+            Assert.AreEqual(R, HeldCatchMesh.NearerSocket(R, L, 0f, 0.2f, 0.05f), "the farther hand took it");
+            Assert.AreEqual(L, HeldCatchMesh.NearerSocket(R, L, 0f, -0.01f, -1f), "a negative swap depth is not 0");
+        }
+
+        [Test]
+        public void TheFishTone_SetsGainLiftAndDither_AndTheRodIsUntouched()
+        {
+            HeldPropMeshDef cod = Load<HeldPropMeshDef>(CodPath);
+            Assert.IsTrue(IsoFacetHeldPropMesh.TryBuild(cod, new IsoFacetHeldPropMesh.Options(), out var plain, out string why), why);
+            _made.Add(plain.Mesh);
+            var half = new IsoFacetHeldPropMesh.Options { Tone = true, ToneGain = 1f, ToneLift = 0f, DitherScale = 0.5f };
+            Assert.IsTrue(IsoFacetHeldPropMesh.TryBuild(cod, half, out var toned, out why), why);
+            _made.Add(toned.Mesh);
+            Assert.AreEqual(plain.RampDitherWeights.Length, toned.RampDitherWeights.Length);
+            for (int i = 0; i < plain.RampDitherWeights.Length; i++)
+                Assert.AreEqual(plain.RampDitherWeights[i] * 0.5f, toned.RampDitherWeights[i], 1e-6f, $"ramp {i}'s dither");
+            var off = new IsoFacetHeldPropMesh.Options { Tone = false, DitherScale = 0f };
+            Assert.IsTrue(IsoFacetHeldPropMesh.TryBuild(cod, off, out var untoned, out why), why);
+            _made.Add(untoned.Mesh);
+            CollectionAssert.AreEqual(plain.RampDitherWeights, untoned.RampDitherWeights, "tone off still scaled the dither");
+
+            IsoCharacterFigureRenderer figure = Fisher();
+            Assert.IsTrue(figure.SetPose("idle", 0));
+            _config.HeldFishToneGain = 1.5f;
+            _config.HeldFishToneLift = 0.4f;
+            HeldCatchMesh driver = Driver();
+            Assert.IsTrue(driver.TryDraw(_config, cod, 1f, HeldPropSockets.RightHandTool, 0f, figure), $"{driver.LastRefusal}");
+            Material m = driver.Renderer.FacetMaterial;
+            Assert.IsNotNull(m);
+            Assert.AreEqual(cod.Gain * 1.5f, m.GetFloat(IsoFacetShaderIds.Gain), 1e-5f, "the fish's gain");
+            Assert.AreEqual(cod.Bias + 0.4f, m.GetFloat(IsoFacetShaderIds.Bias), 1e-5f, "the fish's lift");
+
+            _config.HeldFishToneLift = 0.1f;
+            Assert.IsTrue(driver.TryDraw(_config, cod, 1f, HeldPropSockets.RightHandTool, 0f, figure));
+            Assert.AreEqual(cod.Bias + 0.1f, driver.Renderer.FacetMaterial.GetFloat(IsoFacetShaderIds.Bias), 1e-5f,
+                            "a changed tone was not rebuilt");
+        }
+
         // ================================================================ on a posed fisher
 
         [Test]

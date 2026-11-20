@@ -471,6 +471,7 @@ namespace HiddenHarbours.Player
                     ? catchArt.HeldMeshFor(next.FishId, catchArt.SizedKindFor(next.FishId, next.WeightKg),
                                            out _landMeshScale)
                     : null;
+                _landSocket = HeldPropSockets.LeftHandTool;
             }
         }
 
@@ -661,6 +662,7 @@ namespace HiddenHarbours.Player
         private HeldCatchMesh _landMesh;
         private HeldPropMeshDef _landMeshDef;
         private float _landMeshScale = 1f;
+        private string _landSocket = HeldPropSockets.LeftHandTool;
 
         /// <summary>The landed-fish mesh, once made. For tests and plates.</summary>
         public HeldCatchMesh LandMesh => _landMesh;
@@ -677,8 +679,19 @@ namespace HiddenHarbours.Player
             if (!on && _landMesh == null) return false;
             if (_meshPresenter == null) TryGetComponent(out _meshPresenter);
             _landMesh ??= new HeldCatchMesh(transform, "LandedCatchMesh");
-            return _landMesh.TryDraw(config, _landMeshDef, _landMeshScale, HeldPropSockets.LeftHandTool, 0,
-                                     LiveFigure());
+            IsoCharacterFigureRenderer figure = LiveFigure();
+            // From the free (left) hand, unless that hand is behind him at this facing: then the nearer one,
+            // so the fish he shows off is never hidden by his own body.
+            string other = _landSocket == HeldPropSockets.LeftHandTool
+                ? HeldPropSockets.RightHandTool : HeldPropSockets.LeftHandTool;
+            if (config != null && HeldCatchMesh.TrySocketDepth(figure, _landSocket, out float here)
+                && HeldCatchMesh.TrySocketDepth(figure, other, out float there))
+                _landSocket = HeldCatchMesh.NearerSocket(_landSocket, other, here, there,
+                                                         config.HeldFishHandSwapDepthMeters);
+            float scale = config != null
+                ? HeldCatchMesh.ReadableScale(_landMeshDef, _landMeshScale, config.HeldFishMinLengthPx)
+                : _landMeshScale;
+            return _landMesh.TryDraw(config, _landMeshDef, scale, _landSocket, 0, figure);
         }
 
         private void HideLandMesh()

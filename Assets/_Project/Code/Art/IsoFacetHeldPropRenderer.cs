@@ -62,6 +62,25 @@ namespace HiddenHarbours.Art
             /// <summary>The face ramp (<see cref="HeldPropMeshDef.RampNames"/>) whose open edges get
             /// <see cref="EdgeLineWidthMeters"/>: "fin" for a fish.</summary>
             public string EdgeRampName;
+
+            /// <summary>True to apply <see cref="ToneGain"/>, <see cref="ToneLift"/> and
+            /// <see cref="DitherScale"/>; false draws the def's own tone, as a rod does.</summary>
+            public bool Tone;
+
+            /// <summary>The def's shade gain is multiplied by this (more contrast between the lit and
+            /// the shaded faces). 0 or less = 1.</summary>
+            public float ToneGain;
+
+            /// <summary>Added to the def's shade bias, in ramp steps (a brighter fish).</summary>
+            public float ToneLift;
+
+            /// <summary>Each face ramp's dither weight is multiplied by this: 1 = as baked, 0 = no dither
+            /// (clean bands of the ramp's own colours).</summary>
+            public float DitherScale;
+
+            /// <summary>Added to every vertex's depth bias, in metres toward the camera: a held fish drawn
+            /// in front of the body that would hide it, as the held sheet always is. 0 = none (a rod).</summary>
+            public float DepthBiasMeters;
         }
 
         /// <summary>
@@ -91,7 +110,7 @@ namespace HiddenHarbours.Art
             {
                 ramps.Add(r.Colors);
                 offsets.Add(r.Offset);
-                dither.Add(r.DitherWeight);
+                dither.Add(options.Tone ? r.DitherWeight * Mathf.Max(0f, options.DitherScale) : r.DitherWeight);
             }
 
             var verts = new List<Vector3>(src.vertices);
@@ -143,6 +162,14 @@ namespace HiddenHarbours.Art
                     }
                 }
             }
+
+            if (options.DepthBiasMeters != 0f)
+                for (int i = 0; i < attrs.Count; i++)
+                {
+                    Vector4 biased = attrs[i];
+                    biased.z += options.DepthBiasMeters;
+                    attrs[i] = biased;
+                }
 
             var mesh = new Mesh { name = "HHHeldPropDrawn", hideFlags = HideFlags.HideAndDontSave };
             if (verts.Count > 65535) mesh.indexFormat = IndexFormat.UInt32;
@@ -414,7 +441,7 @@ namespace HiddenHarbours.Art
             _mesh = built.Mesh;
             RampCount = built.Ramps.Length;
             BuildRampTextures(built.Ramps);
-            BuildMaterial(facetShader, def, built, ditherPivotPx, ditherPxPerMetre);
+            BuildMaterial(facetShader, def, built, options, ditherPivotPx, ditherPxPerMetre);
             BuildRenderer();
             why = null;
             return true;
@@ -448,14 +475,15 @@ namespace HiddenHarbours.Art
             };
 
         private void BuildMaterial(Shader shader, HeldPropMeshDef def, in IsoFacetHeldPropMesh.Built built,
+                                   in IsoFacetHeldPropMesh.Options options,
                                    Vector2 ditherPivotPx, float ditherPxPerMetre)
         {
             _facetMaterial = new Material(shader) { name = "HHHeldPropFacet", hideFlags = HideFlags.HideAndDontSave };
             _facetMaterial.SetTexture(IsoFacetShaderIds.RampTex, _rampTex);
             _facetMaterial.SetTexture(IsoFacetShaderIds.DarkRampTex, _darkRampTex);
             _facetMaterial.SetVector(IsoFacetShaderIds.LightN, IsoFacetMath.ShaderLightVector(def.LightN));
-            _facetMaterial.SetFloat(IsoFacetShaderIds.Gain, def.Gain);
-            _facetMaterial.SetFloat(IsoFacetShaderIds.Bias, def.Bias);
+            _facetMaterial.SetFloat(IsoFacetShaderIds.Gain, options.Tone && options.ToneGain > 0f ? def.Gain * options.ToneGain : def.Gain);
+            _facetMaterial.SetFloat(IsoFacetShaderIds.Bias, options.Tone ? def.Bias + options.ToneLift : def.Bias);
             _facetMaterial.SetColor(IsoFacetShaderIds.KeyColor, ((Color)def.Keyline).linear);
             _facetMaterial.SetVector(IsoFacetShaderIds.PivotPx, ditherPivotPx);
             _facetMaterial.SetFloat(IsoFacetShaderIds.PixelsPerMetre, ditherPxPerMetre);
