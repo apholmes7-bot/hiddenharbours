@@ -229,7 +229,8 @@ namespace HiddenHarbours.Tests.EditMode
             // The one foam sheet (feat/one-foam-everywhere, the owner's rulings of 11-19) adds PushFoamSheet, the GameConfig.FoamSheet dials pushed beside the shallows floor (the shore line, then the caps and surf, then the storm streaks, then the convergence foam, then the wash under the 11-19 ruling "Yes, unify surf"); the pinned source includes it.
             // The owner's oar look of 11-19 adds IdFoamSheetEdge and pushes GameConfig.FoamSheet.EdgeVector in PushFoamSheet; no surf twin moved; the pinned source includes it.
             // The owner's oar look of 11-19 (the band edges) adds IdFoamSheetDither and pushes GameConfig.FoamSheet.DitherVector in PushFoamSheet; no surf twin moved; the pinned source includes it.
-                Is.EqualTo("8c3666731e461811d86831a4cd040e842cb88c0f1fe9f3e1075cefcb42f87124"));
+            // The shore-wave turn (feat/waves-follow-the-seabed) adds FeedShoreWaveField, built once from the seabed beside the height texture and bound as _ShoreWaveTex; no surf twin moved; the pinned source includes it.
+                Is.EqualTo("33e389ad23ede6e06345a508ecb0e7a0d3acf199c9e29200d1a7461eb501716c"));
         }
 
         static void RequireGpu()
