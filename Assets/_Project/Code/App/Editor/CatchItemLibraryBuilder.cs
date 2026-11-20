@@ -155,10 +155,14 @@ namespace HiddenHarbours.App.Editor
                 entry.HeldLengthPx = FishSheetPixels.HeldLengthPx($"{FishIso}/Fish_{kind}_tail.png");
                 if (broadSideOn.Contains(kind) &&
                     WireFaceOn(entry, $"{FishIso}/Fish_{kind}_tail.png")) faceOn++;
-                // The same fish by the same tail, as a mesh. Nothing draws it yet (PR 4).
+                // The same fish by the same tail, as a mesh, baked at the rig's scale 1. Each rung draws
+                // it at the scale the rig drew that rung's sheets at (FishIsoAnchors.json), so the mesh
+                // and the sprite of one rung are the same fish at the same size.
                 entry.HeldMesh = heldMeshes.FirstOrDefault(
                     d => d.Family == HeldPropMeshDef.FishFamily && d.Variant == kind);
                 if (entry.HeldMesh != null) meshed++;
+                Dictionary<string, float> rungScales = RodKitImporter.RungScales(kind);
+                entry.HeldMeshScale = rungScales.TryGetValue("", out float midScale) ? midScale : 1f;
                 kinds.Add(entry);
                 if (variants.Length > 0) wired++;
 
@@ -174,9 +178,9 @@ namespace HiddenHarbours.App.Editor
                     var rung = new CatchItemLibrary.KindEntry
                     {
                         Kind = sized, Variants = lays, SizeOf = kind, SizeKg = kg,
-                        // One held mesh per species today (baked at the middle rung); the size rungs
-                        // share it until the held-prop bake makes one per rung.
+                        // One held mesh per species, baked at scale 1; each rung draws it at its own scale.
                         HeldMesh = entry.HeldMesh,
+                        HeldMeshScale = rungScales.TryGetValue(suffix, out float rungScale) ? rungScale : 1f,
                     };
                     if (WireHeld(rung, $"{FishIso}/Fish_{sized}_tail.png", Directions)) held++;
                     rung.HeldLengthPx = FishSheetPixels.HeldLengthPx($"{FishIso}/Fish_{sized}_tail.png");
@@ -446,11 +450,25 @@ namespace HiddenHarbours.App.Editor
 
                 string kind = KindFor(def, known);
                 if (kind == null) { unmapped++; continue; }
-                rows.Add(new CatchItemLibrary.SpeciesEntry { SpeciesId = def.Id, Kind = kind });
+                rows.Add(new CatchItemLibrary.SpeciesEntry
+                {
+                    SpeciesId = def.Id, Kind = kind, BorrowsKind = !IsOwnKind(def.Id, kind),
+                });
             }
 
             rows.Sort((a, b) => System.StringComparer.Ordinal.Compare(a.SpeciesId, b.SpeciesId));
             return rows;
+        }
+
+        /// <summary>True when <paramref name="kind"/> IS the species (the id's leaf, or its last word:
+        /// fish.atlantic_cod is cod), false when the species only borrows it (fish.atlantic_tomcod draws
+        /// as cod because its name contains it). The first two rules of <see cref="KindFor"/>.</summary>
+        static bool IsOwnKind(string speciesId, string kind)
+        {
+            string leaf = speciesId.Substring(speciesId.LastIndexOf('.') + 1);
+            if (leaf == kind) return true;
+            int under = leaf.LastIndexOf('_');
+            return under >= 0 && leaf.Substring(under + 1) == kind;
         }
 
         /// <summary>Which baked kind a species draws as, or null when nothing fits and the library's own

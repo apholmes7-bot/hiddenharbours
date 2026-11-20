@@ -124,6 +124,23 @@ namespace HiddenHarbours.Core
         /// <summary>0..1, how pale the foam is right at the line.</summary>
         public float Foam;
 
+        /// <summary>
+        /// The look for one mode of the sea on him: wading takes its own foam band
+        /// (<see cref="GameConfig.FigureWadeWaterlineFoamMetres"/>), because an upright figure sees the
+        /// band edge-on and the swim band's few centimetres draw under one pixel there. Every other
+        /// mode is <see cref="FromConfig(GameConfig)"/>.
+        /// </summary>
+        public static FigureWaterLook FromConfig(GameConfig config, FigureWater mode)
+        {
+            FigureWaterLook look = FromConfig(config);
+            if (config != null && mode == FigureWater.Wade)
+            {
+                look.FoamMetres = config.FigureWadeWaterlineFoamMetres;
+                look.Foam = config.FigureWadeWaterlineFoam;
+            }
+            return look;
+        }
+
         /// <summary>The look the shipped config asks for; the hard cut with no config.</summary>
         public static FigureWaterLook FromConfig(GameConfig config) => config == null ? default : new FigureWaterLook
         {

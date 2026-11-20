@@ -60,8 +60,17 @@ namespace HiddenHarbours.Art
 
             [Tooltip("The kind in a hand as a facet MESH (ADR 0053): the fish rig's own geometry at the " +
                      "tail rest, grip at the origin. Set by the library builder from the held-prop bake; " +
-                     "empty for a kind the bake does not make. Nothing draws it yet.")]
+                     "empty for a kind the bake does not make. Drawn in his hand by CarryHands and at " +
+                     "the landing (GameConfig.MeshCatchInHand), at HeldMeshScale.")]
             public HeldPropMeshDef HeldMesh;
+
+            [Tooltip("The size this rung's fish is drawn at, as a multiple of the held mesh's own bake " +
+                     "(the mesh is baked at the rig's scale 1, the species' real length). Read from the " +
+                     "fish rig's own anchors (FishIsoAnchors.json, the rung's 'scale') by the library " +
+                     "builder, the same scale the rung's sprite sheets were drawn at. The rig's fish at " +
+                     "the tail rest is exactly linear in its scale, so the mesh scaled about its grip is " +
+                     "the rig's own fish at that size. 0 or less = 1.")]
+            public float HeldMeshScale = 1f;
 
             // ---- the same animal, drawn at another size ----------------------------------------
             //
@@ -93,6 +102,12 @@ namespace HiddenHarbours.Art
 
             [Tooltip("The visual kind it draws as (a Kind key above)")]
             public string Kind;
+
+            [Tooltip("True when the species BORROWS the kind's art (its id only contains the kind's name, " +
+                     "like fish.atlantic_tomcod drawing as cod) rather than being that animal. A borrowed " +
+                     "kind keeps its sprite in the hand: the held mesh is the rig's own species, and a " +
+                     "tomcod is not a cod. Set by the library builder.")]
+            public bool BorrowsKind;
         }
 
         /// <summary>One bucket state as a facet mesh (ADR 0053): a bucket tier at a fill band, holding
@@ -159,11 +174,18 @@ namespace HiddenHarbours.Art
                     }
 
             _speciesLookup = new Dictionary<string, string>(StringComparer.Ordinal);
+            _ownKind = new HashSet<string>(StringComparer.Ordinal);
             if (_species != null)
                 foreach (var e in _species)
                     if (e != null && !string.IsNullOrEmpty(e.SpeciesId) && !string.IsNullOrEmpty(e.Kind))
+                    {
                         _speciesLookup[e.SpeciesId] = e.Kind;
+                        if (!e.BorrowsKind) _ownKind.Add(e.SpeciesId);
+                    }
         }
+
+        // Species mapped to a kind that IS that animal (not borrowed, not the fallback).
+        [NonSerialized] private HashSet<string> _ownKind;
 
         /// <summary>The sprite for one drawn item, or null when that kind has no art wired yet
         /// (the renderer skips it rather than drawing a blank).</summary>
@@ -237,6 +259,23 @@ namespace HiddenHarbours.Art
         {
             if (_kindLookup == null) BuildLookups();
             return kind != null && _kindLookup.TryGetValue(kind, out var e) ? e.HeldMesh : null;
+        }
+
+        /// <summary>
+        /// <b>The mesh a catch of <paramref name="speciesId"/> is drawn with in a hand</b>, drawn as the
+        /// sized <paramref name="kind"/> (<see cref="SizedKindFor(string, float)"/>), and the scale it is
+        /// drawn at (<see cref="KindEntry.HeldMeshScale"/>). Null for a species that only borrows the
+        /// kind's art (<see cref="SpeciesEntry.BorrowsKind"/>), a species on the fallback kind, and a
+        /// kind with no mesh: each keeps its sprite. Lookups only; no allocation.
+        /// </summary>
+        public HeldPropMeshDef HeldMeshFor(string speciesId, string kind, out float scale)
+        {
+            scale = 1f;
+            if (_kindLookup == null || _ownKind == null) BuildLookups();
+            if (speciesId == null || !_ownKind.Contains(speciesId)) return null;
+            if (kind == null || !_kindLookup.TryGetValue(kind, out var e) || e.HeldMesh == null) return null;
+            if (e.HeldMeshScale > 0f) scale = e.HeldMeshScale;
+            return e.HeldMesh;
         }
 
         /// <summary>One bucket state's mesh, or null when it was not baked. The Empty band carries no

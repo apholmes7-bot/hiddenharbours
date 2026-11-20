@@ -373,11 +373,6 @@ namespace HiddenHarbours.Core
                  "exactly as before.")]
         public TideTableSettings TideTable = TideTableSettings.Default;
 
-        [Tooltip("The masthead pennant (VS-19) — the boat's own wind instrument. Where the burgee gives " +
-                 "up and hangs, the apparent wind at which it flies board-stiff, and how quickly it " +
-                 "chases a veering gust. This is the read that replaces squinting at a HUD line.")]
-        public TelltaleSettings Telltale = TelltaleSettings.Default;
-
         [Header("Weather")]
         [Tooltip("Baseline wind strength (m/s) before regional/temporal variation.")]
         public float BaseWindStrength = 4f;
@@ -590,6 +585,11 @@ namespace HiddenHarbours.Core
                  "lace, bands and ageing colour. These dials say how each source joins it; 0 on a source's " +
                  "join dial brings back its older separate look. Drawn only.")]
         public FoamSheetSettings FoamSheet = FoamSheetSettings.Default;
+
+        [Tooltip("STILL POOLS: water the falling tide has cut off from the open sea draws still: no swell, " +
+                 "no pulsing edge, no surf or shore foam. The rising tide reconnects it and the swell eases " +
+                 "back in over the blend. Recomputed from the seabed and the tide, never saved.")]
+        public SeaReachSettings SeaReach = SeaReachSettings.Default;
 
         [Tooltip("BREAKING WAVES (ADR 0040): where the sea gives out and how — the breaker index γ, " +
                  "the Iribarren thresholds that separate a spilling crumble from a plunging barrel, and " +
@@ -1543,10 +1543,25 @@ namespace HiddenHarbours.Core
         [Tooltip("How pale that foam band is right at the waterline (0: none, 1: white).")]
         [Range(0f, 1f)] public float FigureWaterlineFoam = 0.5f;
 
+        [Tooltip("WADING, the height (m) of the pale foam band just above the waterline. He stands " +
+                 "upright, so the band is seen edge-on: the figure draws at its def's pixels per metre, " +
+                 "foreshortened by the view's elevation, and the swim band's few centimetres come to under " +
+                 "one pixel there, so the line at the surface vanished. Keep it at two pixels or more.")]
+        [Min(0f)] public float FigureWadeWaterlineFoamMetres = 0.1f;
+
+        [Tooltip("WADING, how pale that foam band is right at the waterline (0: none, 1: white).")]
+        [Range(0f, 1f)] public float FigureWadeWaterlineFoam = 0.8f;
+
         [Tooltip("ON: while the player swims or treads water his sun shadow is not drawn. The shadow is " +
                  "the hidden body sprite's, standing upright, and on open water it read as a ghost " +
                  "beside him. Wading keeps it.")]
         public bool FigureSwimHidesSunShadow = true;
+
+        [Tooltip("ON: while the player swims or treads water the tools he carries (the rod) are stowed: " +
+                 "neither the rod mesh on the figure nor the carried sprite is drawn, and they are drawn " +
+                 "again the moment he finds his footing. The rod mesh has no waterline cut, so held on the " +
+                 "swim pose it stood out of the water at full strength. Wading keeps them in his hands.")]
+        public bool SwimStowsCarriedTools = true;
 
         /// <summary>Code default for <see cref="HeldPropLineWidthPx"/>.</summary>
         public const float DefaultHeldPropLineWidthPx = 1.5f;
@@ -1561,6 +1576,43 @@ namespace HiddenHarbours.Core
         [Tooltip("How wide (art pixels) a held prop's thin parts are drawn — the rod blank, until the facet " +
                  "shader's own line pass exists (ADR 0053 D2). 1 to 2 is the ruled look.")]
         [Range(0.5f, 3f)] public float HeldPropLineWidthPx = DefaultHeldPropLineWidthPx;
+        [Tooltip("Draw a fish in his hand (carried, and held up at the landing) as the rig's facet mesh on " +
+                 "his hand's socket, at its size rung, instead of the held fish sprite. Only for a species " +
+                 "the held-prop bake makes a mesh for (CatchItemLibrary.HeldMeshFor); every other catch, " +
+                 "and any frame the mesh figure is not drawing him, keeps its sprite.")]
+        public bool MeshCatchInHand = true;
+
+        [Tooltip("How wide (art pixels) the thin line along a held fish's fins and tail is drawn, so a fin " +
+                 "that is a sliver at a pixel still reads (ADR 0053 D2). 0 = no fin line.")]
+        [Range(0f, 3f)] public float HeldFishFinLineWidthPx = 1f;
+
+        [Tooltip("How wide (art pixels) a held fish's eye is drawn. 0 = no eye.")]
+        [Range(0f, 3f)] public float HeldFishEyeSizePx = 1f;
+
+        [Tooltip("A held fish mesh's shade gain, as a multiple of its bake's (more contrast between the lit " +
+                 "belly and the shaded back, as the held sheet draws it). 1 = the bake's own.")]
+        [Range(0.5f, 3f)] public float HeldFishToneGain = 1.5f;
+
+        [Tooltip("Added to a held fish mesh's shade, in ramp steps: a brighter fish. 0 = the bake's own.")]
+        [Range(-2f, 2f)] public float HeldFishToneLift = 1f;
+
+        [Tooltip("A held fish mesh's dither, as a multiple of its bake's: 1 = as baked, 0 = clean bands of " +
+                 "the ramp's own colours (the held sheet's look at hand size).")]
+        [Range(0f, 1f)] public float HeldFishDitherScale = 0f;
+
+        [Tooltip("How far a held fish mesh is drawn toward the camera, in metres, so his body or legs never " +
+                 "hide it (the held sheet is always drawn in front). 0 = where the hand is.")]
+        [Min(0f)] public float HeldFishFrontBiasMeters = 0.4f;
+
+        [Tooltip("The shortest a held fish MESH is drawn, art pixels along its longest side: a smaller fish " +
+                 "is scaled up about its grip to this, so a herring still reads in his hand. The mesh can " +
+                 "grow where a sprite can only pick a bigger rung (MinDrawnFishLengthPx). 0 = no floor.")]
+        [Min(0f)] public float HeldFishMinLengthPx = 20f;
+
+        [Tooltip("At the landing the fish hangs from whichever hand is nearer the camera, so it is never " +
+                 "hidden behind him (the rig's own fish prop swaps hands the same way). It changes hands " +
+                 "only when the other hand is nearer by more than this (m), so it does not flicker.")]
+        [Min(0f)] public float HeldFishHandSwapDepthMeters = 0.05f;
 
         /// <summary>Shipped crossing hysteresis (m), also the fallback for a rig with no GameConfig.</summary>
         public const float DefaultRegionCrossingHysteresisMetres = 0.25f;

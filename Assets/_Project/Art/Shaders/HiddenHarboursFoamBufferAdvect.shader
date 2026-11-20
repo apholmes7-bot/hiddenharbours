@@ -158,6 +158,9 @@ Shader "Hidden/HiddenHarbours/FoamBufferAdvect"
             // Foam laid per second under a full-strength front; twin: FoamBuffer.SurfDepositRatePerSecond.
             #define SURF_DEPOSIT_RATE 2.0
 
+            // The sea's reach (SeaReachGlobals): a pool the falling tide has cut off takes no surf deposit.
+            #include "Assets/_Project/Art/Shaders/Include/SeaReach.hlsl"
+
             // ==== TWIN A (begin): the shore helpers, VERBATIM in HiddenHarboursFoamBufferAdvect.shader (BreakerDepositTests pins the copy) ====
             float2 ShoreDir(float2 worldXY)
             {
@@ -897,6 +900,8 @@ Shader "Hidden/HiddenHarbours/FoamBufferAdvect"
                             float bore = SurfBorePulse01(phase, _BreakerBore.x) * birth;
                             // Twin: BreakerMath.SurfAt — Breaking01 * Whitewater01 * Bore01.
                             float front = breaking * alive * bore;
+                            // THE SEA'S REACH: no bore reaches a cut-off pool (1 = unchanged, exactly).
+                            front *= SeaReach01(worldXY, _WaterLevel);
                             foam += front * depositStrength * SURF_DEPOSIT_RATE * max(_HHSurfDeposit.z, 0.0);
                             // The freshness GATE: the front passing NOW marks the clock, exactly as a
                             // hull's churn does — a max, never an add.
