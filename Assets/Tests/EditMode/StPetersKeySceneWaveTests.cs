@@ -66,11 +66,12 @@ namespace HiddenHarbours.Tests.EditMode
         /// <summary>
         /// Ginny's cottage is placed by its plot's own code (its key-scene row has an owner), so the
         /// loop above never sees it. Its floor is read back from the scene's serialized interior, the
-        /// same footprint the player walks inside, and no authored plant root or committed grass site
-        /// may stand on it.
+        /// same footprint the player walks inside. While he is inside, the room is drawn as a flat plan
+        /// under every plant, so the ground kept clear is the floor grown by the wall's thickness, and
+        /// behind the back wall one storey's drawn rise: a plant rooted there paints over the room.
         /// </summary>
         [Test]
-        public void GinnysCottage_HasNoPlantOrGrassInsideItsFloor()
+        public void GinnysCottage_HasNoPlantOrGrassInsideItsRoom()
         {
             var scene = StPetersLayerRefresh.SceneYaml.Parse(File.ReadAllText(StPetersLayerRefresh.ScenePath));
             var root = scene.TransformOf(scene.RootNamed(StPetersGinnyPlot.RootName));
@@ -87,13 +88,20 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.That(Vector2.Distance(floor.Centre, StPetersGinnyPlot.CottagePos), Is.LessThan(0.01f));
             Assert.Greater(floor.WidthMetres * floor.LengthMetres, 1f, "an empty floor would pass vacuously");
 
+            float wall = StPetersLayerRefresh.ParseFloat(interior.Field("_wallThicknessMetres"));
+            float rise = StPetersLayerRefresh.ParseFloat(interior.Field("_upperLevelY"));
+            Assert.Greater(wall, 0f);
+            var corners = floor.Corners();
+            var room = Rect.MinMaxRect(corners.Min(c => c.x) - wall, corners.Min(c => c.y) - wall,
+                                       corners.Max(c => c.x) + wall, corners.Max(c => c.y) + Mathf.Max(wall, rise));
+
             var definition = UnityEditor.AssetDatabase.LoadAssetAtPath<PlantFieldDefinition>(StPetersGrassFieldTests.DefinitionPath);
             Assert.That(definition.HeightProjection, Is.Zero, "authored roots use their data coordinates");
             foreach (var site in definition.Authored)
-                Assert.IsFalse(floor.Contains(site.At, 0f), $"{site.Id} at {site.At} stands inside Ginny's cottage");
+                Assert.IsFalse(room.Contains(site.At), $"{site.Id} at {site.At} draws inside Ginny's cottage ({room})");
 
             var grass = StPetersLayerRefresh.CommittedGrassSites(scene);
-            Assert.AreEqual(0, grass.Count(g => floor.Contains(g, 0f)), "committed grass inside Ginny's cottage");
+            Assert.AreEqual(0, grass.Count(g => room.Contains(g)), "committed grass inside Ginny's cottage");
         }
 
         [Test]

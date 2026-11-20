@@ -24283,11 +24283,6 @@ MonoBehaviour:
     Species: 45
     Stage: 1
     Variant: 0
-  - Id: plant.stp_ginnys_plot_1199
-    At: {x: 81.72, y: 25.83}
-    Species: 45
-    Stage: 0
-    Variant: 0
   - Id: plant.stp_ginnys_plot_1200
     At: {x: 89.19, y: 25.78}
     Species: 39
@@ -25058,11 +25053,6 @@ MonoBehaviour:
     Species: 45
     Stage: 0
     Variant: 3
-  - Id: plant.stp_ginnys_plot_1364
-    At: {x: 79.82, y: 28.76}
-    Species: 45
-    Stage: 1
-    Variant: 0
   - Id: plant.stp_ginnys_plot_1366
     At: {x: 91.29, y: 28.83}
     Species: 37
@@ -25278,11 +25268,6 @@ MonoBehaviour:
     Species: 44
     Stage: 1
     Variant: 0
-  - Id: plant.stp_ginnys_plot_1411
-    At: {x: 79.87, y: 29.82}
-    Species: 44
-    Stage: 0
-    Variant: 1
   - Id: plant.stp_ginnys_plot_1412
     At: {x: 90.34, y: 29.5}
     Species: 44
@@ -25372,11 +25357,6 @@ MonoBehaviour:
     At: {x: 75.39, y: 30.17}
     Species: 37
     Stage: 1
-    Variant: 3
-  - Id: plant.stp_ginnys_plot_1432
-    At: {x: 85.66, y: 30.2}
-    Species: 45
-    Stage: 0
     Variant: 3
   - Id: plant.stp_ginnys_plot_1433
     At: {x: 89.47, y: 30.19}
@@ -25473,26 +25453,6 @@ MonoBehaviour:
     Species: 39
     Stage: 0
     Variant: 1
-  - Id: plant.stp_ginnys_plot_1452
-    At: {x: 80.97, y: 30.49}
-    Species: 45
-    Stage: 0
-    Variant: 2
-  - Id: plant.stp_ginnys_plot_1453
-    At: {x: 82.32, y: 30.54}
-    Species: 45
-    Stage: 0
-    Variant: 0
-  - Id: plant.stp_ginnys_plot_1454
-    At: {x: 83.3, y: 30.56}
-    Species: 44
-    Stage: 0
-    Variant: 3
-  - Id: plant.stp_ginnys_plot_1455
-    At: {x: 86.4, y: 30.6}
-    Species: 44
-    Stage: 0
-    Variant: 3
   - Id: plant.stp_ginnys_plot_1456
     At: {x: 90.03, y: 30.33}
     Species: 37
@@ -25643,11 +25603,6 @@ MonoBehaviour:
     Species: 42
     Stage: 0
     Variant: 2
-  - Id: plant.stp_ginnys_plot_1486
-    At: {x: 83.36, y: 31.28}
-    Species: 45
-    Stage: 0
-    Variant: 0
   - Id: plant.stp_ginnys_plot_1487
     At: {x: 91.7, y: 31.08}
     Species: 37
@@ -25758,11 +25713,6 @@ MonoBehaviour:
     Species: 42
     Stage: 0
     Variant: 2
-  - Id: plant.stp_ginnys_plot_1509
-    At: {x: 86.92, y: 31.72}
-    Species: 44
-    Stage: 0
-    Variant: 3
   - Id: plant.stp_ginnys_plot_1510
     At: {x: 88.7, y: 31.51}
     Species: 45
@@ -25931,11 +25881,6 @@ MonoBehaviour:
   - Id: plant.stp_ginnys_plot_1543
     At: {x: 76.36, y: 32.23}
     Species: 37
-    Stage: 0
-    Variant: 1
-  - Id: plant.stp_ginnys_plot_1544
-    At: {x: 84.06, y: 32.22}
-    Species: 44
     Stage: 0
     Variant: 1
   - Id: plant.stp_ginnys_plot_1545
