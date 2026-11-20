@@ -63,6 +63,39 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.AreEqual(3, checkedBuildings, "the ice house and its two pieces wait for the grass refresh");
         }
 
+        /// <summary>
+        /// Ginny's cottage is placed by its plot's own code (its key-scene row has an owner), so the
+        /// loop above never sees it. Its floor is read back from the scene's serialized interior, the
+        /// same footprint the player walks inside, and no authored plant root or committed grass site
+        /// may stand on it.
+        /// </summary>
+        [Test]
+        public void GinnysCottage_HasNoPlantOrGrassInsideItsFloor()
+        {
+            var scene = StPetersLayerRefresh.SceneYaml.Parse(File.ReadAllText(StPetersLayerRefresh.ScenePath));
+            var root = scene.TransformOf(scene.RootNamed(StPetersGinnyPlot.RootName));
+            var cottage = scene.ChildNamed(root, StPetersGinnyPlot.CottageKey);
+            var interior = scene.ComponentsOf(cottage).SingleOrDefault(d => d.IsScript("HiddenHarbours.World.BuildingInterior"));
+            Assert.IsNotNull(interior, "Ginny's cottage has no interior to keep clear");
+            var floor = new InteriorFootprint(
+                InteriorFixturePlacement.WorldOf(scene, scene.TransformOf(cottage)),
+                StPetersLayerRefresh.ParseFloat(interior.Field("_widthMetres")),
+                StPetersLayerRefresh.ParseFloat(interior.Field("_lengthMetres")),
+                StPetersLayerRefresh.ParseInt(interior.Field("_facing")),
+                StPetersLayerRefresh.ParseInt(interior.Field("_facings")),
+                StPetersLayerRefresh.ParseFloat(interior.Field("_groundDepthScale")));
+            Assert.That(Vector2.Distance(floor.Centre, StPetersGinnyPlot.CottagePos), Is.LessThan(0.01f));
+            Assert.Greater(floor.WidthMetres * floor.LengthMetres, 1f, "an empty floor would pass vacuously");
+
+            var definition = UnityEditor.AssetDatabase.LoadAssetAtPath<PlantFieldDefinition>(StPetersGrassFieldTests.DefinitionPath);
+            Assert.That(definition.HeightProjection, Is.Zero, "authored roots use their data coordinates");
+            foreach (var site in definition.Authored)
+                Assert.IsFalse(floor.Contains(site.At, 0f), $"{site.Id} at {site.At} stands inside Ginny's cottage");
+
+            var grass = StPetersLayerRefresh.CommittedGrassSites(scene);
+            Assert.AreEqual(0, grass.Count(g => floor.Contains(g, 0f)), "committed grass inside Ginny's cottage");
+        }
+
         [Test]
         public void TheIceHouseAndItsTwoPieces_WaitTogether()
         {
