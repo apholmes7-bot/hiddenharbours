@@ -195,6 +195,13 @@ namespace HiddenHarbours.Boats
                  "Enabled off rows dry.")]
         public OarSplashConfig OarSplash = OarSplashConfig.Default;
 
+        [Tooltip("THE ROWING STATION: where the rower holds each oar (metres inboard of its oarlock), " +
+                 "the thwart he sits on and the boards his feet brace against, in this hull's rig " +
+                 "metres. Read only on a hull whose oars are mesh fittings: the mesh rower is solved " +
+                 "onto these points every frame, hands on the handles. Enabled off = he plays his clip " +
+                 "as authored.")]
+        public RowingStationConfig Rowing = RowingStationConfig.Default;
+
         [Header("Outboard motor (OPTIONAL — the hull's engine, drawn)")]
         [Tooltip("Motor LOWER sheet (leg + plate + skeg + prop), element [heading·MotorColumnCount + col]. " +
                  "Col 0 = full port, the middle col = dead ahead, the last = full starboard. When COMPLETE " +

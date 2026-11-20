@@ -139,6 +139,9 @@ namespace HiddenHarbours.Boats
                 return;
             }
 
+            // The player rows the game's player style (GameConfig.PlayerRowingStyle): one field to
+            // switch him to another. A repeat of the same style is a reference compare.
+            _boat.SetRowingStyle(RowingStyle.ChooseForPlayer(GameServices.Config));
             _boat.SetOarInput(left, right, brace);
         }
 
