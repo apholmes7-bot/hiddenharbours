@@ -36,11 +36,33 @@ MonoBehaviour:
   - Id: fish.soft_shell_clam
     Icon: {fileID: -8350118145691459604, guid: bae98caad6f379308446110bc6a39b4f, type: 3}
   - Id: gear.rod
-    Icon: {fileID: 3043605626722657392, guid: a237e0b5e9c386cad0782dd33e12953a, type: 3}
+    Icon: {fileID: 21300000, guid: c9a64a230eaa44148c43164495c78ce8, type: 3}
   - Id: gear.shovel
     Icon: {fileID: 5797802837027575224, guid: db7f83f9d8ade533c1a7bb065ed12d82, type: 3}
   - Id: gear.bucket
     Icon: {fileID: 1180958333410743825, guid: 9c457a82e4864b81a738e262fb058047, type: 3}
+  - Id: gear.oyster_tongs
+    Icon: {fileID: 21300000, guid: eb55194188594e508ba730861393dcad, type: 3}
+  - Id: gear.shellfish_rake
+    Icon: {fileID: 21300000, guid: 8ab67cee7fc2489dbc802e1e504f2703, type: 3}
+  - Id: gear.mussel_sack
+    Icon: {fileID: 21300000, guid: de1d65fba5794074804ba3a408debc18, type: 3}
+  - Id: gear.shellfish_basket
+    Icon: {fileID: 21300000, guid: ad3dc49305a14300b9edb837d90bba8e, type: 3}
+  - Id: tackle.cod_jig
+    Icon: {fileID: 21300000, guid: 536f0c28a86f42f2a7585fec019396cf, type: 3}
+  - Id: tackle.mackerel_feathers
+    Icon: {fileID: 21300000, guid: d4da7d05773c4691970b730116dba419, type: 3}
+  - Id: tackle.soft_bait
+    Icon: {fileID: 21300000, guid: acec4110af004a64aab568c84156d132, type: 3}
+  - Id: tackle.spinner
+    Icon: {fileID: 21300000, guid: 35e4a7cdde904a81b9ef42a0070ac526, type: 3}
+  - Id: tackle.spoon
+    Icon: {fileID: 21300000, guid: 5bf94cf839d441309a397049379746a8, type: 3}
+  - Id: longline.groundfish_tub
+    Icon: {fileID: 21300000, guid: 469a80da096841fb8212867232c6d76d, type: 3}
+  - Id: trawl_gear.bottom_otter_prototype
+    Icon: {fileID: 21300000, guid: a5c07fc21641433994a0d9d697e36ea8, type: 3}
   - Id: license.cod
     Icon: {fileID: 21300000, guid: 4bd247b5cbbe4ca3a9869c1fed00f1d6, type: 3}
   - Id: boat.dory
