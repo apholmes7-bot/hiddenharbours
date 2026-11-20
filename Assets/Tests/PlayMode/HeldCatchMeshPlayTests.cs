@@ -11,7 +11,7 @@ namespace HiddenHarbours.Tests.PlayMode
     /// <summary>
     /// <b>A fish in his hand is drawn as its mesh in the real scene</b> (fish art pass 2, section 3): the
     /// real player at Rice Point is handed a cod, and the mesh draws on his hand while the carried sprite
-    /// stands down; a tomcod (which only borrows the cod's art) keeps its sprite; the switch off hands
+    /// stands down; a tomcod (its own kind, with no held mesh yet) keeps its sprite; the switch off hands
     /// the cod back to the sprite; and the fish he holds up at the landing is the mesh too.
     /// </summary>
     public sealed class HeldCatchMeshPlayTests : RicePointSceneFixture
@@ -60,13 +60,13 @@ namespace HiddenHarbours.Tests.PlayMode
             for (int i = 0; i < 3; i++) yield return null;
             Assert.IsFalse(hands.CatchMesh.Drawing, "an empty hand still draws the fish");
 
-            // A tomcod borrows the cod's art: it keeps its sprite.
+            // A tomcod is its own kind with no held mesh yet: it keeps its sprite.
             Assert.IsTrue(hands.TryPutInHand(new CatchItem("fish.atlantic_tomcod", "Atlantic Tomcod",
                                                            FishCategory.InshoreGroundfish, 0.2f, 10, 0.1f)));
             for (int i = 0; i < 6; i++) yield return null;
             var tomcod = hands.Carried as CarriableCatch;
             Assert.IsNotNull(tomcod);
-            Assert.IsFalse(hands.CatchMesh.Drawing, "a tomcod must not be drawn as the cod's mesh");
+            Assert.IsFalse(hands.CatchMesh.Drawing, "a tomcod has no held mesh yet and must not be drawn as one");
             Assert.AreEqual(HeldCatchMesh.Refusal.NoMesh, hands.CatchMesh.LastRefusal);
             Assert.IsTrue(tomcod.SpriteVisible, "the tomcod's sprite is hidden");
             Assert.IsTrue(hands.TryTakeFromHand(out _));

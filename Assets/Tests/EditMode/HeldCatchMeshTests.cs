@@ -121,12 +121,15 @@ namespace HiddenHarbours.Tests.EditMode
         public void ASpeciesThatBorrowsItsKind_OrIsUnmapped_KeepsItsSprite()
         {
             CatchItemLibrary art = Load<CatchItemLibrary>(LibraryPath);
-            Assert.AreEqual("cod", art.KindFor("fish.atlantic_tomcod"), "harness: the tomcod no longer draws as cod");
-            Assert.IsNull(art.HeldMeshFor("fish.atlantic_tomcod", "cod", out float s), "a tomcod is not a cod");
+            Assert.AreEqual("tomcod", art.KindFor("fish.atlantic_tomcod"),
+                            "harness: the tomcod draws as its own kind, not as the cod");
+            Assert.IsNull(art.HeldMeshFor("fish.atlantic_tomcod", art.KindFor("fish.atlantic_tomcod"), out float s),
+                          "the tomcod's own kind has no held mesh yet, so it keeps its sprite");
             Assert.AreEqual(1f, s);
-            Assert.IsNull(art.HeldMeshFor("fish.northern_quahog", "clam", out _));
+            Assert.IsNull(art.HeldMeshFor("fish.northern_quahog", "clam", out _),
+                          "the quahog only borrows the clam's art, so it keeps its sprite");
             Assert.IsNull(art.HeldMeshFor("fish.rainbow_smelt", art.KindFor("fish.rainbow_smelt"), out _),
-                          "a species on the fallback kind is not that kind");
+                          "the smelt's own kind has no held mesh yet, so it keeps its sprite");
             Assert.IsNull(art.HeldMeshFor("fish.green_crab", "crab", out _), "the crab bakes no held mesh");
             Assert.IsNull(art.HeldMeshFor(null, "cod", out _));
             Assert.IsNull(art.HeldMeshFor("fish.atlantic_cod", null, out _));
