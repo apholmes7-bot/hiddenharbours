@@ -91,7 +91,7 @@ namespace HiddenHarbours.Boats
         /// not a thing you can reach from anywhere on the sole: she takes the thwart the deck def
         /// publishes as her helm station (<c>BoatDeckDef.HelmStationLocalMeters</c> - the dory's
         /// <c>STATIONS[id=helm]</c> at hull-local (0, -0.72, 0.3056), the AFTER thwart, with the thole
-        /// pins 0.135 m abaft it), and until she does, W/A/S/D and Space do nothing at all.</para>
+        /// pins 0.369 m abaft it), and until she does, W/A/S/D and Space do nothing at all.</para>
         ///
         /// <para><b>The read is the helm slot, not a second copy of the answer.</b>
         /// <see cref="HiddenHarbours.Core.HelmSlot.PilotedHull"/> is the project's arbiter of "who is

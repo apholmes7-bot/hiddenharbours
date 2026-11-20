@@ -38,9 +38,11 @@
     const a = 2*Math.PI*(((i%frames)+frames)%frames)/frames;
     return { roll: ROCK.rollA*Math.sin(a), pitch: ROCK.pitchA*Math.sin(a+Math.PI/2), heave: ROCK.heaveA*Math.sin(a) };
   }
-  const L = 4.5, TH = 0.035, FLOOR = 0.06, SEAT = 0.30, OARLOCK_U = 0.31;
+  // the after tholes stand 0.369 m abaft the rowing thwart's centre (were 0.135 m): a seated rower's stroke fits
+  // between them and him, the handles finishing in front of his chest instead of inside it (owner, 2026-11-19)
+  const L = 4.5, TH = 0.035, FLOOR = 0.06, SEAT = 0.30, OARLOCK_U = 0.258;
   const STERN_U = 0.13;                  // stern-bench station (motor build) -> y = -1.665 m, 0.58 m fwd of the transom
-  const FWD_LOCK_U = 0.57;               // the forward rowing station's tholes, the same 0.135 m abaft its thwart
+  const FWD_LOCK_U = 0.518;              // the forward rowing station's tholes, the same 0.369 m abaft its thwart
   const THWARTS = [0.34, 0.60], BOW_THWART_U = 0.80;
   const HANDLINE_U = 0.47;               // the hand-line chock on the rail, between the rowing thwarts
   const BAILER = { x: 0.20, y: -1.05 };  // the bailer's place on the boards, abaft the after thwart
@@ -48,6 +50,11 @@
   const FR = [0, 0.36, 0.69, 1];         // strake edges up the side: garboard, broad strake, sheer strake
   const SEAM = 0.085;                    // the lap's shadow under each edge, as a share of the side's height
   const BOARD_T = 0.03;                  // bottom boards over the bilge
+  // the inside planking stands on the bilge floor: its foot a little under the bilge's edge, never down on the
+  // bottom's outer plane. Run down to the bottom, its lower edge lay ON the outside of the boat, so the sea saw it from
+  // underneath and the whole garboard strake was baked wettable on both sides: the sea drew over it inside the boat,
+  // in the band between the boards and the waterline (owner, 2026-11-19).
+  const LINING_FOOT = 0.048;             // m above the keel bottom: 12 mm under the bilge floor (FLOOR)
   const CAP_RISE = 0.012, RUB = 0.022, INWALE = 0.03;   // rail cap over the sheer; rub strake outboard; inwale inboard
   const RAKE_AFT = 0.26, RAKE_AFT_U = 0.20;             // the tombstone: its foot 0.26 m forward of its head
   const RAKE_BOW = 0.42, RAKE_BOW_U = 0.70;             // the stem: its foot 0.42 m abaft its head
@@ -155,6 +162,8 @@
   // the bilge floor runs out to the inner skin at its own height
   const floorHalf = (u) => Math.max(0, halfAt(u, station(u).kz+FLOOR, true) - 0.004);
   function floorPt(side,u){ const st=station(u); return [ side*floorHalf(u), st.y+rakeAt(u,FLOOR/st.dep), st.kz+FLOOR ]; }
+  // the inner skin's height fraction at LINING_FOOT over the keel (the inner skin spans dep-0.02 m)
+  const liningFoot = (u) => LINING_FOOT/(station(u).dep-0.02);
   // the transom's planes at a height: its outer face, and its inner face a plank's thickness forward
   const TR = { y:-L/2, zTop:T[0][3]+T[0][2], zFoot:T[0][3], halfW:T[0][0] };
   const transomY = (z) => TR.y + RAKE_AFT*(1-Math.max(0,Math.min(1,(z-TR.zFoot)/T[0][2])));
@@ -211,7 +220,8 @@
           // the lap: the shadow each strake's lower edge throws on the one below (biased forward so it wins the coplanar test)
           if(k>0) face([skin(side,u0,f0-SEAM),skin(side,u1,f0-SEAM),skin(side,u1,f0),skin(side,u0,f0)],'paint',-2.2,0.02,out);
           SEC='lining';
-          face([skin(side,u0,f0,1),skin(side,u1,f0,1),skin(side,u1,f1,1),skin(side,u0,f1,1)],'inner',0,0,inn);
+          const g0=k===0?liningFoot(u0):f0, g1=k===0?liningFoot(u1):f0;   // the garboard's inside stands on the bilge
+          face([skin(side,u0,g0,1),skin(side,u1,g1,1),skin(side,u1,f1,1),skin(side,u0,f1,1)],'inner',0,0,inn);
           if(k>0) face([skin(side,u0,f0,1),skin(side,u1,f0,1),skin(side,u1,f0+SEAM,1),skin(side,u0,f0+SEAM,1)],'inner',-1.6,0.02,inn);
         }
         // the rail: a cap over the sheer, the rub strake's face outboard of it, the inwale's inboard
@@ -469,10 +479,14 @@
   function oarlockPt(side){ const st=station(OARLOCK_U); return [ side*(st.ws-TH*0.15), st.y, st.kz+st.dep+0.04 ]; }
   function oarDir(side, sweepDeg, dipDeg){ const f=sweepDeg*DEG, p=dipDeg*DEG; return [ side*Math.cos(f)*Math.cos(p), -Math.sin(f)*Math.cos(p), -Math.sin(p) ]; }
   function oarPose(state, t){
-    if(state==='resting')  return { sweep:-82, dip:-7 };   // shipped fore, lying along the gunwale
+    // shipped fore in the tholes, the blade forward and the handle inboard on the stern sheets: with the tholes 0.369 m
+    // abaft the thwart, -82/-7 put the handle 0.24 m out through the narrowing stern quarter (0.14 m from the old tholes)
+    if(state==='resting')  return { sweep:-72, dip: 6 };
     if(state==='trailing') return { sweep: 76, dip: 15 };  // dragging aft in the water
-    const tt=(((t||0)%1)+1)%1, a=2*Math.PI*tt;             // row cycle: blade traces an ellipse (dip+sweep)
-    return { sweep: 30*Math.sin(a), dip: 6 + 22*Math.cos(a) };
+    // row cycle: the blade traces an ellipse (dip+sweep). Sweep +-24 and dip 12+-16: the blade goes as deep as before
+    // (28 deg) but lifts only 4 deg on the recovery, so the handles pass over his knees, not through his lap
+    const tt=(((t||0)%1)+1)%1, a=2*Math.PI*tt;
+    return { sweep: 24*Math.sin(a), dip: 12 + 16*Math.cos(a) };
   }
   function buildOar(side, pose){
     const O=oarlockPt(side), d=oarDir(side,pose.sweep,pose.dip);
@@ -652,7 +666,7 @@
     const STAND_MOTOR = [PILOT_MOTOR.x, PILOT_MOTOR.y, station((PILOT_MOTOR.y + L / 2) / L).kz + FLOOR];
     const thole = (lu, side) => { const st = station(lu); return [side * (st.ws - TH * 0.15), st.y, st.kz + st.dep + 0.04]; };
     const railPt = (u, side) => [side * station(u).ws, station(u).y, sheerZ(u) + CAP_RISE];
-    const stow = (side) => { const a = thole(OARLOCK_U, side), d = oarDir(side, -82, -7); return { id: side < 0 ? 'port' : 'star', lock: xyz(a), blade: xyz(v_add(a, v_mul(d, O_LOUT))), handle: xyz(v_sub(a, v_mul(d, O_LIN))) }; };
+    const stow = (side) => { const a = thole(OARLOCK_U, side), rp = oarPose('resting'), d = oarDir(side, rp.sweep, rp.dip); return { id: side < 0 ? 'port' : 'star', lock: xyz(a), blade: xyz(v_add(a, v_mul(d, O_LOUT))), handle: xyz(v_sub(a, v_mul(d, O_LIN))) }; };
     const spawn = { x: PILOT.x, y: PILOT.y, area: 'floor' };
     const on = (ar, x, y) => ({ x: q3(x), y: q3(y), z: ar.z });
     const sheer = sheerZ(0.5);

@@ -191,7 +191,7 @@ namespace HiddenHarbours.App.Editor
                 "  m_SortingOrder: -1", "  m_SortAtRoot: 0"), "Dory: SortingGroup");
             DockPut(scene, patch, MonoBehaviourYaml(sort, go.FileId, DockScript("StPetersPierBoatSorting"), new[]
             {
-                "  _pier: " + RectYaml(StPetersWharf.DeckFootprint()), "  _frontOrder: 1", "  _behindOrder: -1",
+                "  _pier: " + RectYaml(StPetersWharf.DeckFootprint()), "  _behindOrder: -1",
             }), "Dory: pier sorting");
             return patch.Seal(scene);
         }

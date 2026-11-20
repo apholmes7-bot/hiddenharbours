@@ -1486,6 +1486,20 @@ namespace HiddenHarbours.Core
                  "and unanimated dig. Held tools and catch keep their sprite presenters.")]
         public bool MeshFishingAndDig = true;
 
+        /// <summary>Code default for <see cref="HeldPropLineWidthPx"/>.</summary>
+        public const float DefaultHeldPropLineWidthPx = 1.5f;
+
+        [Header("Held props on the mesh figure (ADR 0053)")]
+        [Tooltip("While the mesh body plays the fishing performance, draw the rod as its baked facet mesh " +
+                 "in his hand, aimed by the clip's own tool track, instead of the rod sprite overlay. Only " +
+                 "for a tool whose ToolDef asks for it (DrawHeldMeshOnFigure). Off, or whenever the mesh " +
+                 "cannot draw, the sprite rod is drawn exactly as before.")]
+        public bool MeshRodInHand = true;
+
+        [Tooltip("How wide (art pixels) a held prop's thin parts are drawn — the rod blank, until the facet " +
+                 "shader's own line pass exists (ADR 0053 D2). 1 to 2 is the ruled look.")]
+        [Range(0.5f, 3f)] public float HeldPropLineWidthPx = DefaultHeldPropLineWidthPx;
+
         /// <summary>Shipped crossing hysteresis (m), also the fallback for a rig with no GameConfig.</summary>
         public const float DefaultRegionCrossingHysteresisMetres = 0.25f;
 

@@ -438,14 +438,19 @@ without naming a class. Contracts, all additive:
 A boat is an upright world object. Core's pure `HullSorting.OrderAt(waterlinePivotY)` gives her order:
 the decor band's Y-sort at her waterline pivot (the boat root, `HullFootprint.Center`, which does not
 ride the swell), `SortingBands.HullYieldRungs` (1) behind, the same rule as the mesh vehicles.
-`HullSorting.OrderFor(HullFootprint)` reads the pivot off a footprint. Rollout (the boat root's
-`SortingGroup`, the re-anchored effects) follows `hull-vs-decor-sorting.md` §7; until it lands, hulls
-still sort at `BoatVisualDef.SortingOrder`.
+`HullSorting.OrderFor(HullFootprint)` reads the pivot off a footprint. Each boat sorts as one object
+(step 3): `Boats/BoatSortingGroup` keeps one root `SortingGroup` at `HullSorting.OrderFor(pivot, input)`,
+installed by `BoatHullSkinner` on both paths, so everything aboard (hull facets, deck, fittings, the
+rider and his rod, containers, lamps) keeps its order inside the group, and `BoatVisualDef.SortingOrder`
+is now local to it. A situational rule (the St Peters pier) is an `IHullSortingInput` the group asks,
+never a second writer. Things that must reach the world from aboard (mooring line, anchor rode, haul
+rope) escape with `HullSorting.EscapeTheBoat` (`sortAtRoot`).
 
 Free effects never take a fixed order in the band's low floor (step 2). Core's `EffectSorting` is the
 one table: an anchored effect (spray, splashes, buoys, an emergent shore plant, the NPC catch without a
 skipper) sorts at `EffectSorting.OrderAt(effect, anchorY)`, the band's Y-sort at its emission point plus
-its rungs; a carried one (the rod line and splash) at `EffectSorting.OrderOver(effect, carrierOrder)`.
+its rungs; a carried one (the rod line two rungs behind the fisher, the rod splash one over him, an NPC pot boat's
+gear at her rail one over her group) at `EffectSorting.OrderOver(effect, carrierOrder)`.
 `EffectSortingTests` pins the table and guards the low floor (`DecorFloor` to `DecorFloor + 100`) against
 new literals.
 

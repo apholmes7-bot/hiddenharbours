@@ -1355,10 +1355,24 @@
       _confirm:{ heel_law:'art-side; gameplay may override with heelDeg per frame', boom_over_cockpit:'1.85 m over the sole — whether a character ducks or clips is a gameplay ruling', coachroof_walkable:'published walkable; slope and hatches as notes — rule whether the front slope is a route down to the foredeck', reach_points:'untested requests, per the camper precedent' } };
   }
 
+  // ---- bow and stern eyes -------------------------------------------------------------------------
+  // A centreline fore-and-aft pair: the bow roller and the transom foot, both on x = 0. The mesh bake
+  // reads its azimuth convention from these two (painter.x - sternEye.x at a quarter turn) before it
+  // falls back to guessing the bow from the silhouette's taper. That guess fails on a sloop: the mast
+  // and the sails stand over the bow half and make it the WIDE end of the picture, so without this
+  // pair the bake turned this hull's picture the wrong way at 90 and 270 degrees. Rest pose, no heel:
+  // the answer is a sign and must not depend on the sea state.
+  function eye(P, dir, opts){
+    opts=Object.assign({}, (typeof opts==='number'?{elev:opts}:opts||{}), {dir, roll:0, pitch:0, heave:0});
+    const p=projVert(P.x,P.y,P.z,camBasis(opts)); return {x:p.sx,y:p.sy};
+  }
+  function painter(dir, opts){ return eye(ANCHOR_PTS.bowRoller, dir, opts); }
+  function sternEye(dir, opts){ return eye({x:0,y:-L/2,z:DWL}, dir, opts); }
+
   root.SloopIso = { W, H, PX, DIRS:8, pivot:{x:cx,y:cy}, defaultElev:DEFAULT_ELEV,
     order:['N','NE','E','SE','S','SW','W','NW'], PAINT, STEEL, DECKF, GLAS, MOTO, ROPE, TEAK, CREAM, KEY,
     render, bounds, renderWheel, wheelFaces, WHEEL_GEO, WHEEL_HUB, WHEEL_LOCK, ROCK, rock:rockMotion,
-    sailPose, poseOf, anchors, ANCHOR_PTS, CLEAT_PTS, doorMount, DOOR, HATCH, RIG, SAILS:{ main:MAIN, jib:JIB },
+    sailPose, poseOf, anchors, painter, sternEye, ANCHOR_PTS, CLEAT_PTS, doorMount, DOOR, HATCH, RIG, SAILS:{ main:MAIN, jib:JIB },
     L, DWL, SOLE, CAB_SOLE, ZLIP, geometry, LEVEL_IDS, gameplayGeometry, faces:()=>F,
     loft:{ station, skin, fracAtZ, halfAtZ, sheerZ, deckZ, roofZ, hxRoof, xCoam, uOf, yOf, L, TH, DWL, SOLE, CAB_SOLE, NSEG,
            coachroof:RF, cockpit:CK, mast:MAST, shade:{ GAIN, BIAS, LN, BAYER, KEY, EDGE:0.30 }, cell:{ W, H, cx, cy, S } },

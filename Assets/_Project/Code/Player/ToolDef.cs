@@ -71,8 +71,29 @@ namespace HiddenHarbours.Player
         [Tooltip("This tool in a hand as facet MESHES (ADR 0053): every held state its rig bakes, in the " +
                  "rig's own order — a rod's three tiers, the spade's one state. Which tier shows is the " +
                  "holder's to pick by the tier its own data names, so none is chosen here. Written by " +
-                 "the held-prop bake; nothing draws them yet.")]
+                 "the held-prop bake. Drawn on the mesh figure's hand where DrawHeldMeshOnFigure says so.")]
         public HeldPropMeshDef[] HeldMeshes = System.Array.Empty<HeldPropMeshDef>();
+
+        [Tooltip("ADR 0053: while the figure is a MESH and its clip aims this tool on the frame drawn, draw " +
+                 "the held mesh (HeldMeshVariant) on the figure's hand socket instead of the tool's sprite. " +
+                 "Off keeps the sprite everywhere. The sprite stays the fallback whenever the mesh cannot " +
+                 "draw (no mesh figure, no aim on the clip, no usable mesh).")]
+        public bool DrawHeldMeshOnFigure;
+
+        [Tooltip("ADR 0053 D1: on a mesh-figure clip that aims NO tool (idle, walk, run, a moving angler's " +
+                 "gait), draw the held mesh at its rig's own held pose on the mount bone instead of the " +
+                 "tool's sprite: the rod he carries, and the rod he holds while the hold pose yields to his " +
+                 "gait. Needs DrawHeldMeshOnFigure. Off keeps the sprite on those clips.")]
+        public bool DrawCarriedMeshOnFigure;
+
+        [Tooltip("Which of HeldMeshes the figure holds, by the def's Variant: the rod's 'cane' is the tier " +
+                 "the rod kit's sprites are wired with today. Empty matches a single-state tool's empty " +
+                 "variant.")]
+        public string HeldMeshVariant = "";
+
+        [Tooltip("The figure bone the held mesh grips at: Core.HeldPropSockets names the rig's two tool " +
+                 "mounts ('tool_R', 'tool_L'). The rigs aim a held tool from the right hand.")]
+        public string HeldMeshMountBone = HeldPropSockets.RightHandTool;
 
         /// <summary>Resolve a held state by its authored variant. Missing states return null so the
         /// caller can keep its sprite; array order never selects a different tier. A single-state

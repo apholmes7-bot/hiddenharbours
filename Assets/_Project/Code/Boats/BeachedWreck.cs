@@ -65,12 +65,10 @@ namespace HiddenHarbours.Boats
             // The skinner resets the tilt when it configures her, so the heel goes on after.
             if (_rig.Presenter != null) _rig.Presenter.VisualTiltDegrees = _wreck.HeelDegrees;
 
-            // She stands on the ground among the things people walk round, so she sorts by where she
-            // lies, not at a floating hull's fixed order (which is under everything ashore).
-            var picture = _rig.Visual != null ? _rig.Visual.GetComponent<IHullMeshRenderer>() : null;
-            if (picture != null)
-                picture.SetSorting(SortingLayer.NameToID("Default"),
-                    SortingBands.DecorBase - Mathf.RoundToInt(transform.position.y * SortingBands.OrdersPerMetre));
+            // She stands on the ground among the things people walk round, so she sorts by where she lies.
+            // That is every boat's rule now (ADR 0059 step 3): the skinner gave her root the boat's sorting
+            // group, ordered by HullSorting at her pivot, and her picture keeps the hull's local order inside
+            // it. Her private copy of the rule is gone.
 
             // Nobody makes a line fast to a wreck.
             var cleats = GetComponent<BoatCleats>();

@@ -1,6 +1,6 @@
 # ADR 0060: Rigged dwelling interiors: a parked home is a facet mesh that does not move
 
-- **Status: Proposed** (2026-11-17). The owner accepts or rejects it in its PR (decisions for the owner,
+- **Status: Accepted** (2026-11-19). The owner accepts or rejects it in its PR (decisions for the owner,
   below). The index row in `README.md` is added when it is accepted, the same way as ADR 0059, so this draft
   does not collide with the open index edits for 0058 and 0059.
 - **Date:** 2026-11-17

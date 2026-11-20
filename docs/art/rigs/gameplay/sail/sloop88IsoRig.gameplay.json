@@ -2,7 +2,7 @@
   "schema": "hidden-harbours/boat-gameplay-geometry@1",
   "rig": "sloop88IsoRig.js",
   "exportSymbol": "Sloop88Iso",
-  "derivedFromRigSha256": "909fb28413aa73e15bc445668c0719de5c9f47e97618824341543596e6b8e251",
+  "derivedFromRigSha256": "b69781d41c10f6b45b9ce977ad09dfb073e9bdcc13d1aa1d21264c62fda73fb2",
   "units": "metres",
   "frame": {
     "origin": "amidships / canoe-body bottom / centreline",

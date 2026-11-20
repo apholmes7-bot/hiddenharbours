@@ -227,6 +227,14 @@ namespace HiddenHarbours.Player
             return Mathf.Min(Mathf.FloorToInt(Mathf.Max(0f, clockSeconds) / spf), frameCount);
         }
 
+        /// <summary>
+        /// Where the line leaves the rod: the tip of whichever rod is DRAWN this frame. The mesh rod
+        /// (ADR 0053) when it draws, else the sprite rod's tip pin. One rod is drawn at a time, so the line
+        /// can never hang off the one that is hidden.
+        /// </summary>
+        public static Vector2 LineAnchor(bool meshRodDrawn, Vector2 meshTip, Vector2 spriteTip) =>
+            meshRodDrawn ? meshTip : spriteTip;
+
         /// <summary>Safe [dir·framesPerDir + frame] index into a d/f sheet, or −1 when out of range /
         /// unwired — the caller hides the element instead of throwing (null-safe greybox rule).</summary>
         public static int SheetIndex(int row, int frame, int framesPerDir, int totalLength)

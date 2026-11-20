@@ -863,6 +863,8 @@ MonoBehaviour:
     OarRelease: 0.16
   DevAllHelmInstruments: 1
   MeshFishingAndDig: 1
+  MeshRodInHand: 1
+  HeldPropLineWidthPx: 1.5
   RegionCrossingHysteresisMetres: 0.25
   RegionPreloadDistanceMetres: 40
   RegionPreloadMinHeadingSpeed: 0.5

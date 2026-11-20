@@ -149,8 +149,9 @@ namespace HiddenHarbours.Boats
                  "and they drift as she turns.")]
         [Range(0f, 90f)] public float ArtBakeElevationDegrees = 90f;
 
-        [Tooltip("SpriteRenderer sortingOrder for the hull picture. 1 draws it above the hidden base hull " +
-                 "renderer at 0 and below the on-foot player at 10. Overlays take the orders above this.")]
+        [Tooltip("The hull picture's order INSIDE the boat's sorting group (ADR 0059): 1 draws it above the " +
+                 "hidden base hull renderer at 0 and under everything aboard; overlays take the orders above " +
+                 "this. Against other boats and the scenery the whole boat sorts by where she lies.")]
         public int SortingOrder = 1;
 
         [Header("Rock grid (OPTIONAL — wave-coupled rock, drawn not faked)")]
