@@ -756,6 +756,7 @@ MonoBehaviour:
     FrameRate: 60
   CreatorBackdropColor: {r: 0.921, g: 0.886, b: 0.8, a: 1}
   CreatorFigureHeightFraction: 0.6
+  MeshArmClearancePx: 1
   HullFoam:
     TrailFlipSpeed: 0.15
     LeadWeight: 0.6
