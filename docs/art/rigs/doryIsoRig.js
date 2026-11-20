@@ -472,7 +472,7 @@
 
   // ---- oars (separate overlay layer, same camera + pivot as the hull) ----
   const OAR = { rowFrames: 8, states: ['row','resting','trailing'] };
-  const O_LOUT=1.45, O_LIN=0.85, O_TS=0.055, O_BLEN=0.5, O_BW=0.12;   // outboard/inboard len, loom radius, blade len/max half-width (m)
+  const O_LOUT=1.45, O_LIN=0.65, O_TS=0.055, O_BLEN=0.5, O_BW=0.12;   // outboard/inboard len, loom radius, blade len/max half-width (m)
   const v_sub=(a,b)=>[a[0]-b[0],a[1]-b[1],a[2]-b[2]], v_add=(a,b)=>[a[0]+b[0],a[1]+b[1],a[2]+b[2]];
   const v_mul=(a,s)=>[a[0]*s,a[1]*s,a[2]*s], v_norm=(a)=>{const m=Math.hypot(a[0],a[1],a[2])||1;return [a[0]/m,a[1]/m,a[2]/m];};
   const v_cross=(a,b)=>[a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]];
@@ -484,11 +484,12 @@
     if(state==='resting')  return { sweep:-72, dip: 6 };
     if(state==='trailing') return { sweep: 76, dip: 15 };  // dragging aft in the water
     // row cycle: the blade traces an ellipse (dip+sweep). Dip 20+-6: the blade is buried to its throat at the bottom
-    // of the drive (26 deg) and skims 7 cm over the water on the recovery (14 deg), so the handles run at his belly,
-    // clear over his knees, never down in his lap. Sweep -4+-20: the catch reaches as far forward as before (-24) and
-    // the finish stops at +16, so the handles come in to his ribs and not through them (owner, 2026-11-20)
+    // of the drive (26 deg) and skims 7 cm over the water on the recovery (14 deg). Sweep 1+-19: a short dory stroke, the
+    // catch at -18 and the finish at +20, so the hands stay near his body and come in to his ribs. The inboard loom is
+    // 0.65 m, 5 cm short of the tholes' half-beam (0.697), so the two handles never meet: they pass 13 cm apart at
+    // their closest and the hands work either side of his ribs, not one through the other (owner, 2026-11-20)
     const tt=(((t||0)%1)+1)%1, a=2*Math.PI*tt;
-    return { sweep: -4 + 20*Math.sin(a), dip: 20 + 6*Math.cos(a) };
+    return { sweep: 1 + 19*Math.sin(a), dip: 20 + 6*Math.cos(a) };
   }
   function buildOar(side, pose){
     const O=oarlockPt(side), d=oarDir(side,pose.sweep,pose.dip);

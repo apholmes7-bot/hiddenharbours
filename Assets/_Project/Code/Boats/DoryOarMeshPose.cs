@@ -37,12 +37,12 @@ namespace HiddenHarbours.Boats
     {
         /// <summary>The rig's <c>oarPose('row', t)</c> ellipse: the blade traces sweep against dip
         /// once per stroke. Transcribed from the rig; proven against it. The dip band (14 to 26
-        /// degrees) keeps the handles at the rower's belly, clear over his knees, with the blade
-        /// buried at the bottom of the drive and skimming the water on the recovery; the sweep's
-        /// centre sits 4 degrees forward so the finish (+16) brings the handles to his ribs, not
-        /// through them.</summary>
-        public const float RowSweepCentreDegrees = -4f;
-        public const float RowSweepAmplitudeDegrees = 20f;
+        /// degrees) buries the blade at the bottom of the drive and skims it 7 cm over the water on
+        /// the recovery, the handles as high as the tholes allow; the sweep (-18 to +20) is a short
+        /// dory stroke that keeps the hands near his body and brings them to his ribs at the finish,
+        /// not through them.</summary>
+        public const float RowSweepCentreDegrees = 1f;
+        public const float RowSweepAmplitudeDegrees = 19f;
         public const float RowDipCentreDegrees = 20f;
         public const float RowDipAmplitudeDegrees = 6f;
 

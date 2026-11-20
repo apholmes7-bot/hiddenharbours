@@ -367,8 +367,10 @@ namespace HiddenHarbours.Tests.EditMode
         {
             BoatVisualDef dory = Dory();
             Assert.That(dory.Rowing.Enabled, Is.True, "the dory's rower is solved onto her oars");
-            // The rig's inboard loom (doryIsoRig.js O_LIN) is 0.85 m: the grip must be on it.
-            Assert.That(dory.Rowing.GripInboardMeters, Is.GreaterThan(0f).And.LessThan(0.85f));
+            // The rig's inboard loom (doryIsoRig.js O_LIN) is 0.65 m: the station must say so, and the grip must be on it.
+            Assert.That(dory.Rowing.LoomInboardMeters, Is.EqualTo(RigLoomInboardMeters).Within(Rigid),
+                        "the station's loom is the rig's O_LIN");
+            Assert.That(dory.Rowing.GripInboardMeters, Is.GreaterThan(0f).And.LessThan(RigLoomInboardMeters));
             Assert.That(dory.Rowing.SeatLocalMeters.z, Is.GreaterThan(dory.Rowing.FootBraceLocalMeters.z),
                         "he sits above where his feet rest");
         }
@@ -376,7 +378,84 @@ namespace HiddenHarbours.Tests.EditMode
         // ---------------------------------------------------------------- clear of himself
 
         /// <summary>The rig's inboard loom, oarlock to handle end (doryIsoRig.js O_LIN).</summary>
-        private const float RigLoomInboardMeters = 0.85f;
+        private const float RigLoomInboardMeters = 0.65f;
+
+        /// <summary>The closest approach of two segments (sampled along the first, exact onto the second).</summary>
+        private static float SegmentToSegment(Vector3 a0, Vector3 a1, Vector3 b0, Vector3 b1)
+        {
+            float d = float.MaxValue;
+            for (int q = 0; q <= 64; q++) d = Mathf.Min(d, SegmentDistance(Vector3.Lerp(a0, a1, q / 64f), b0, b1));
+            return d;
+        }
+
+        [Test]
+        public void TheTwoLooms_NeverMeet_TheHandlesStayApartThroughTheWholeStroke()
+        {
+            // The owner: "fix the overlapping oars". At the finish the two looms crossed in front of him
+            // and drew as one shaft: the inboard (0.85) was longer than the tholes' half-beam. With the
+            // rig's 0.65 m loom the two looms, wood to wood, keep the station's air at every phase, and
+            // the handle ends never reach the centreline.
+            BoatVisualDef dory = Dory();
+            RowingStationConfig st = dory.Rowing;
+            Assert.That(st.LoomClearanceMeters, Is.GreaterThan(0f), "the loom clearance is data");
+            Assert.That(st.LoomHalfThicknessMeters, Is.GreaterThan(0f), "the loom thickness is data");
+            Vector3 portLock = dory.OarPortMesh.PivotLocalMeters, starLock = dory.OarStarMesh.PivotLocalMeters;
+            var failures = new StringBuilder();
+            float worst = float.MaxValue;
+            const int Samples = 128;
+            for (int i = 0; i < Samples; i++)
+            {
+                float s = (float)i / Samples;
+                RowingTargets t = StationAt(dory, s);
+                float air = SegmentToSegment(portLock, t.PortHandleEnd, starLock, t.StarboardHandleEnd) - 2f * st.LoomHalfThicknessMeters;
+                worst = Mathf.Min(worst, air);
+                if (air < st.LoomClearanceMeters)
+                    failures.AppendLine($"phase {s:0.000}: looms {air:0.000} m apart, wood to wood (< {st.LoomClearanceMeters})");
+                if (t.PortHandleEnd.x + st.LoomHalfThicknessMeters >= 0f || t.StarboardHandleEnd.x - st.LoomHalfThicknessMeters <= 0f)
+                    failures.AppendLine($"phase {s:0.000}: a handle end reaches the centreline (port {t.PortHandleEnd.x:0.000}, star {t.StarboardHandleEnd.x:0.000})");
+            }
+            Assert.That(failures.Length, Is.EqualTo(0), failures.ToString());
+            Assert.That(worst, Is.LessThan(1f), "the looms were measured");
+        }
+
+        [Test]
+        public void HisHands_RideAboveHisKnees_ThroughTheRecovery_ByTheStationsMargin()
+        {
+            // The owner: "fix the low hands". On the recovery the handles must travel clearly over his
+            // thighs, not down in his lap: every palm rides at least the station's margin above the top
+            // of either knee (the thigh's highest point), at every recovery phase, facing and skin.
+            BoatVisualDef dory = Dory();
+            float margin = dory.Rowing.HandAboveKneeMeters;
+            Assert.That(margin, Is.GreaterThan(0f), "the hand height over the knees is data");
+            var failures = new StringBuilder();
+            int skins = 0, checks = 0;
+            foreach (CharacterSkinDef skin in RowingSkins())
+            {
+                skins++;
+                var solver = new RowingPoseSolver(skin.Bones, RowingBodyVolume.Of(skin));
+                int kneeL = skin.IndexOfBone(RowingPoseSolver.KneeLId), kneeR = skin.IndexOfBone(RowingPoseSolver.KneeRId);
+                var world = new Matrix4x4[skin.Bones.Length];
+                foreach (float yaw in Facings)
+                {
+                    // the recovery: the second half of the stroke, finish to catch
+                    for (int i = Phases / 2; i < Phases; i++)
+                    {
+                        float s = (float)i / Phases;
+                        Compose(skin, s, yaw, world);
+                        RowingPoseSolver.Targets t = FigureTargets(StationAt(dory, s), s, yaw);
+                        solver.Solve(world, in t);
+                        float palmZ = Mathf.Min(P(world, solver.PalmLeft).z, P(world, solver.PalmRight).z);
+                        float kneeZ = Mathf.Max(P(world, kneeL).z, P(world, kneeR).z);
+                        checks++;
+                        if (palmZ - kneeZ < margin)
+                            failures.AppendLine($"{skin.Id} facing {yaw} phase {s:0.000}: palms {palmZ - kneeZ:0.000} m over the knees (< {margin})");
+                    }
+                }
+            }
+            Assert.That(skins, Is.GreaterThan(0), "no committed skin carries row_oars");
+            Assert.That(checks, Is.GreaterThan(0));
+            Assert.That(failures.Length, Is.EqualTo(0), failures.ToString());
+        }
 
         /// <summary>A millimetre of numerical slack on a clearance the solve bisects toward.</summary>
         private const float ClearSlack = 1e-3f;

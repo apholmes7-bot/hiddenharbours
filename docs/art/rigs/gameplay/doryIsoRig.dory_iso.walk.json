@@ -5,7 +5,7 @@
  "hull": "dory_iso",
  "label": "BANKS DORY",
  "kind": "open",
- "derivedFromRigSha256": "65782cffdee2d63a483dc422d5b466a997bcac6e55262a8f3d2cf152685bfcec",
+ "derivedFromRigSha256": "ad56e71efbd41b967ad55663762f38df729a650046b2a6f084e30be89549cb32",
  "authoring": "Written by the rig: DoryIso.byId('dory_iso').walk(), every number its own (mm), stamped with the rig's LF sha256 and fitted to character rig 10.3 (qa.character) by tools/rig-recipes/hull-walk.mjs. Regenerate with node tools/rig-recipes/hull-walk.mjs --write; never edit by hand.",
  "units": "metres",
  "frame": "metres; +x starboard, +y bow, +z up; origin amidships, keel bottom, centreline; polygons counter-clockwise seen from above",
@@ -298,9 +298,9 @@
      "z": 0.3765
     },
     "handle": {
-     "x": -0.4361,
-     "y": -1.893,
-     "z": 0.6169
+     "x": -0.4975,
+     "y": -1.7038,
+     "z": 0.596
     }
    },
    {
@@ -316,9 +316,9 @@
      "z": 0.3765
     },
     "handle": {
-     "x": 0.4361,
-     "y": -1.893,
-     "z": 0.6169
+     "x": 0.4975,
+     "y": -1.7038,
+     "z": 0.596
     }
    }
   ],

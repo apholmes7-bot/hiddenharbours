@@ -263,21 +263,24 @@ MonoBehaviour:
   OarStarMesh: {fileID: 11400000, guid: 7d24bfd4e93adb64e82011b3861e96df, type: 2}
   Rowing:
     Enabled: 1
-    GripInboardMeters: 0.68
-    LoomInboardMeters: 0.85
+    GripInboardMeters: 0.55
+    LoomInboardMeters: 0.65
     SeatLocalMeters: {x: 0, y: -0.76, z: 0.3056}
-    FootBraceLocalMeters: {x: 0.16, y: -1.42, z: 0.1098}
+    FootBraceLocalMeters: {x: 0.16, y: -1.48, z: 0.115}
     LaybackDegrees: 6
     ReachLeanMaxDegrees: 40
     KneeClearanceMeters: 0.11
     BodyClearanceMeters: 0.02
     BodyClearLeanMaxDegrees: 12
     BodyClearTwistMaxDegrees: 15
+    HandAboveKneeMeters: 0.14
+    LoomHalfThicknessMeters: 0.055
+    LoomClearanceMeters: 0.02
     RestBladeDipDegrees: 15
     RestSlumpDegrees: 8
     RestBreathDegrees: 1.5
     RestBreathSeconds: 4
-    RestHandAlongThigh: 0.78
+    RestHandAlongThigh: 0.86
     RestHandAboveThighMeters: 0.07
   MotorLower: []
   MotorUpper: []
