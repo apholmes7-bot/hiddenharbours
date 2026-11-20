@@ -307,6 +307,30 @@ lowbush blueberry).
    moored boats and the beached wreck all go through the same rule (`BeachedWreck` loses its private copy).
    `BoatSortingGroupTests`, plus the St Peters plate on a granted warm box. **This is the PR that fixes
    the report.** (gameplay-systems, lead-architect review)
+   *As built:* `Boats/BoatSortingGroup` owns the root group. `BoatHullSkinner.Apply` installs it on both
+   paths, and so does the unskinned branch of `ApplyHull`, so a hull that loses her skin still sorts. It
+   writes `HullSorting.OrderFor(pivot, input)` in `LateUpdate`, and only when the order changes, so a
+   moored boat costs a compare per frame and dirties nothing. Every authored order on a hull (facets,
+   deck, fittings, interior, containers, lamps, the rider and his rod) is now local to that group, so
+   the def tooltips say so. The St Peters pier rule is a Core `IHullSortingInput`
+   (`StPetersPierBoatSorting.TryOrderAt`): north of the pier it answers -1, elsewhere it stands aside and
+   she takes the band; its old front order is gone (the band is the front order). The mooring line, the
+   anchor rode and the haul rope escape with `HullSorting.EscapeTheBoat` (`sortAtRoot`, still
+   `AboveDecor`). The greybox ambient fisher installs the group itself; the compass fisher, moored boats
+   and the beached wreck come through the skinner, and `BeachedWreck` lost its private order. NPC pot
+   boats' gear is hosted in the world, not on the hull, so the gear at her rail (the pot coming aboard,
+   the rope and buoy in her hands) now reads her group order and sits one rung over it
+   (`SortedEffect.NpcGearAtRail`); gear in the water keeps its def order. The rod line now sits two
+   rungs behind the fisher (behind his rod's away row too) instead of one over him, which is what drew
+   it over the player; the splash stays one over. Still open: the screen-space sun shade of the player
+   is a child of him, so aboard it shades inside the boat group, as it already did on the St Peters
+   dory.
+   *Why the key is the root, not the root plus the tide's rise:* a hull's picture height is authored at
+   the deck-lip height (the St Peters dory's datum is the landing deck's lip, 5.35 m), so her root and
+   the pier's deck rectangle are compared at the same height. The tide only moves her picture down-screen
+   at St Peters (2.5 to 5.7 units between high and low water) and never changes how far north she lies,
+   which is what decides depth. Adding the rise was tried and looked at: it put the dory moored behind
+   the pier's north face on top of the deck planks at high water and over the pilings at low water.
 4. **Retire `PlantHullSorting.BehindAHull`** (#1281). With hulls in the band, a standing plant's
    ordinary Y-sort gives "behind the pivot, under her" by itself, and without sending it under the sea.
    Keep `LiesFlat`. (art-pipeline)

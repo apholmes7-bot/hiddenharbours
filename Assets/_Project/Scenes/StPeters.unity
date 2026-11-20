@@ -54393,7 +54393,6 @@ MonoBehaviour:
   m_Name:
   m_EditorClassIdentifier: HiddenHarbours.App::HiddenHarbours.App.StPetersPierBoatSorting
   _pier: {serializedVersion: 2, x: 183, y: 2.533452, width: 30.5, height: 3.71875}
-  _frontOrder: 1
   _behindOrder: -1
 --- !u!114 &971817989
 MonoBehaviour:

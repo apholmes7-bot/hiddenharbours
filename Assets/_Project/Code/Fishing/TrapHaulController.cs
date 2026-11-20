@@ -602,6 +602,8 @@ namespace HiddenHarbours.Fishing
             // Was a literal 50, which cleared the decor band's old ceiling of 40; the band now reaches 2402
             // (it used to resolve 9.5 m of a 520 m region — ADR 0032), so this follows the band by name.
             _rope.sortingOrder = SortingBands.AboveDecor;
+            // Built on the boat, so a child of her: escape her sorting group (ADR 0059 step 3).
+            HullSorting.EscapeTheBoat(go, SortingBands.AboveDecor);
             _rope.positionCount = 0;
             _rope.enabled = false;
         }

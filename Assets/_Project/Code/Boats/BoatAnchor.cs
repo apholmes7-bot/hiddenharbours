@@ -351,6 +351,8 @@ namespace HiddenHarbours.Boats
             // here. A rode drawn over the decor band reads as tackle laid across whatever it crosses, and
             // (unlike a decor sprite) cannot be walked in front of, which is correct for a line in the air.
             _rode.sortingOrder = SortingBands.AboveDecor;
+            // A child of the boat: escape her sorting group (ADR 0059 step 3) to keep clearing all decor.
+            HullSorting.EscapeTheBoat(go, SortingBands.AboveDecor);
             _rode.enabled = false;
         }
 
