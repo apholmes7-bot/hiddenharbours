@@ -22,8 +22,14 @@ namespace HiddenHarbours.Core
     /// the station's limit.</item>
     /// <item><b>Hold.</b> Each arm is a two-bone solve, shoulder to palm (the <c>carry</c> socket, where
     /// the held props already sit, ADR 0053), onto its grip, the elbow dropped down and back. A grip
-    /// still out of reach is reached TOWARD, with the arm straight: the arm is never stretched.</item>
+    /// still out of reach is reached TOWARD, with the arm straight: the arm is never stretched. Resting
+    /// with no grip, the hand rests on its thigh instead, the elbow hanging down and out.</item>
+    /// <item><b>Clear.</b> With the skin's torso (<see cref="RowingBodyVolume"/>), no forearm, palm or
+    /// elbow passes inside it closer than the station's margin: the elbow swings back and out first,
+    /// and only if that is not enough does he lean back (bisected, up to the station's limit).</item>
     /// </list>
+    /// <para>Resting (the station's rest weight), the lie-back step slumps him forward a few degrees
+    /// and rocks him with his breath, so a rest is never a held frame.</para>
     ///
     /// <para>Bone indices are resolved by id once; every solve is in place on the caller's world
     /// matrices, with no allocation, and is a pure function of the clip frame and the targets (rule 5).
@@ -51,6 +57,30 @@ namespace HiddenHarbours.Core
         /// direction matters.</summary>
         public static readonly Vector3 LeftElbowPole = new Vector3(-0.15f, -0.7f, -0.7f);
 
+        /// <summary>The elbow's pole for the LEFT arm when it must clear his body: back and OUT, so at the
+        /// finish the hands stop at the body and the elbows go back past the ribs, outside them. The
+        /// clear step blends from <see cref="LeftElbowPole"/> toward this one, as far as it needs.</summary>
+        public static readonly Vector3 LeftElbowOutPole = new Vector3(-0.85f, -0.5f, -0.25f);
+
+        /// <summary>The elbow's pole for the LEFT arm with the hand resting on the thigh: down, out and
+        /// a little back, the arm hanging loose from a dropped shoulder.</summary>
+        public static readonly Vector3 LeftRestElbowPole = new Vector3(-0.55f, -0.35f, -0.75f);
+
+        /// <summary>Steps of the elbow's swing outward in the clear step.</summary>
+        public const int ElbowOutSteps = 6;
+
+        /// <summary>Points sampled along the forearm (elbow to palm) when measuring its clearance from
+        /// the torso; the elbow half of the upper arm is sampled at half as many.</summary>
+        public const int ArmClearSamples = 6;
+
+        /// <summary>Where the upper-arm samples start, as a share of the shoulder-to-elbow bone: the
+        /// shoulder's own half sits in the deltoid, which is the torso's edge by construction.</summary>
+        public const float UpperArmClearFrom = 0.6f;
+
+        /// <summary>How much further out of reach (as a share of the arm) a clearing turn may take a held
+        /// grip: none beyond rounding, so a hand on its handle stays on it.</summary>
+        public const float ReachUseSlack = 1e-4f;
+
         /// <summary>Bisection steps for the reach lean: 10 halvings of a 30 degree limit is 0.03 degrees.</summary>
         public const int ReachLeanIterations = 10;
 
@@ -68,12 +98,29 @@ namespace HiddenHarbours.Core
         {
             public bool HasGripLeft, HasGripRight;
             public Vector3 GripLeft, GripRight;
+            /// <summary>The handle ends of the oars those hands hold, kept out of his body too.</summary>
+            public Vector3 HandleEndLeft, HandleEndRight;
             /// <summary>Where the pelvis bone goes (the seat plus the rig's seated offset).</summary>
             public Vector3 Pelvis;
             public Vector3 BraceLeft, BraceRight;
             /// <summary>Layback this frame, degrees (already scaled by the drive).</summary>
             public float LaybackDegrees;
             public float ReachLeanMaxDegrees;
+            /// <summary>How far the arms stay outside the torso, metres (0 = unchecked).</summary>
+            public float BodyClearanceMeters;
+            /// <summary>The most extra lean back the clear step may take, degrees.</summary>
+            public float BodyClearLeanMaxDegrees;
+            /// <summary>The most shoulder turn the clear step may take, degrees either way.</summary>
+            public float BodyClearTwistMaxDegrees;
+            /// <summary>The rest's own lean this frame, degrees, positive back: the slump forward plus
+            /// the breath, both already scaled by the rest's weight.</summary>
+            public float RestLeanDegrees;
+            /// <summary>True when a hand with no grip rests on its thigh instead of playing the clip.</summary>
+            public bool ThighRest;
+            /// <summary>Where a free hand rests along the thigh (0 hip, 1 knee).</summary>
+            public float RestHandAlongThigh;
+            /// <summary>The free palm's height above the thigh bone, metres.</summary>
+            public float RestHandAboveThighMeters;
         }
 
         /// <summary>What one solve did, for tests and the inspector.</summary>
@@ -86,8 +133,19 @@ namespace HiddenHarbours.Core
             /// <summary>Grip distance from the shoulder over the arm's length, before the solve; above 1
             /// the grip was out of reach and the arm was left straight toward it.</summary>
             public float ReachUseLeft, ReachUseRight;
+            /// <summary>Extra lean back taken to keep the arms out of the body, degrees.</summary>
+            public float ClearLeanDegrees;
+            /// <summary>Shoulder turn (about the vertical) taken to keep the arms out of the body, degrees.</summary>
+            public float ClearTwistDegrees;
+            /// <summary>How far the elbows swung out to clear the body (0 not at all, 1 fully).</summary>
+            public float ElbowOutLeft, ElbowOutRight;
+            /// <summary>The arm's least clearance from the torso after the solve, metres (+inf when the
+            /// arm was not solved or there is no body volume).</summary>
+            public float ClearanceLeft, ClearanceRight;
         }
 
+        private readonly RowingBodyVolume _body;
+        private readonly Matrix4x4[] _scratch;
         private readonly int[] _parent;
         private readonly bool[] _subtree;
         private readonly int _pelvis, _spine;
@@ -117,11 +175,18 @@ namespace HiddenHarbours.Core
         public int FootLeft => _footL;
         public int FootRight => _footR;
 
-        public RowingPoseSolver(CharacterSkinDef.Bone[] bones)
+        /// <summary>The torso the arms are kept out of, or null.</summary>
+        public RowingBodyVolume Body => _body;
+
+        /// <summary>Bind a solver to <paramref name="bones"/>; with <paramref name="body"/> (the skin's
+        /// own torso, <see cref="RowingBodyVolume.Of"/>) the arms are also kept out of it.</summary>
+        public RowingPoseSolver(CharacterSkinDef.Bone[] bones, RowingBodyVolume body = null)
         {
             int n = bones != null ? bones.Length : 0;
+            _body = body != null && body.IsUsable ? body : null;
             _parent = new int[n];
             _subtree = new bool[n];
+            _scratch = new Matrix4x4[n];
             for (int b = 0; b < n; b++) _parent[b] = bones[b].Parent;
 
             _pelvis = Find(bones, PelvisId); _spine = Find(bones, SpineId);
@@ -165,9 +230,21 @@ namespace HiddenHarbours.Core
                 Pelvis = seat + new Vector3(0f, PelvisAlongFacingMeters, PelvisAboveSeatMeters),
                 LaybackDegrees = onHull.LaybackDegrees * Mathf.Clamp01(drive),
                 ReachLeanMaxDegrees = Mathf.Max(0f, onHull.ReachLeanMaxDegrees),
+                BodyClearanceMeters = Mathf.Max(0f, onHull.BodyClearanceMeters),
+                BodyClearLeanMaxDegrees = Mathf.Max(0f, onHull.BodyClearLeanMaxDegrees),
+                BodyClearTwistMaxDegrees = Mathf.Max(0f, onHull.BodyClearTwistMaxDegrees),
+                RestHandAlongThigh = Mathf.Clamp01(onHull.RestHandAlongThigh),
+                RestHandAboveThighMeters = Mathf.Max(0f, onHull.RestHandAboveThighMeters),
             };
+            float w = Mathf.Clamp01(onHull.RestWeight);
+            t.RestLeanDegrees = w * (Mathf.Clamp(onHull.RestBreath, -1f, 1f) * onHull.RestBreathDegrees - onHull.RestSlumpDegrees);
+            t.ThighRest = w > 0f;
 
             bool starOnRight = star.x >= port.x;
+            Vector3 portEnd = inv * (onHull.PortHandleEnd - figureLocal);
+            Vector3 starEnd = inv * (onHull.StarboardHandleEnd - figureLocal);
+            t.HandleEndRight = starOnRight ? starEnd : portEnd;
+            t.HandleEndLeft = starOnRight ? portEnd : starEnd;
             t.GripRight = starOnRight ? star : port;
             t.HasGripRight = starOnRight ? onHull.StarboardGripValid : onHull.PortGripValid;
             t.GripLeft = starOnRight ? port : star;
@@ -195,9 +272,10 @@ namespace HiddenHarbours.Core
             // 1. Sit.
             Translate(world, _pelvis, t.Pelvis - Pos(world, _pelvis));
 
-            // 2. Lie back.
-            if (t.LaybackDegrees != 0f)
-                Rotate(world, _spine, Pos(world, _spine), Quaternion.AngleAxis(t.LaybackDegrees, AxisX(world, _spine)));
+            // 2. Lie back (or, resting, slump and breathe).
+            float back = t.LaybackDegrees + t.RestLeanDegrees;
+            if (back != 0f)
+                Rotate(world, _spine, Pos(world, _spine), Quaternion.AngleAxis(back, AxisX(world, _spine)));
 
             // 3. Brace.
             Leg(world, _hipL, _kneeL, _footL, t.BraceLeft + new Vector3(0f, 0f, ankleL), footRotL, -1f);
@@ -208,15 +286,242 @@ namespace HiddenHarbours.Core
             if (r.LeanDegrees > 0f)
                 Rotate(world, _spine, Pos(world, _spine), Quaternion.AngleAxis(-r.LeanDegrees, AxisX(world, _spine)));
 
-            // 5. Hold.
-            if (t.HasGripLeft)
-                r.ReachUseLeft = TwoBone(world, _shoulderL, _elbowL, _palmL, t.GripLeft, Pos(world, _shoulderL) + LeftElbowPole);
-            if (t.HasGripRight)
-                r.ReachUseRight = TwoBone(world, _shoulderR, _elbowR, _palmR, t.GripRight,
-                                          Pos(world, _shoulderR) + new Vector3(-LeftElbowPole.x, LeftElbowPole.y, LeftElbowPole.z));
+            // 5. Hold: each hand on its grip, or, resting with no grip, on its thigh.
+            bool armL = HandTarget(world, in t, true, out Vector3 handL, out bool restL);
+            bool armR = HandTarget(world, in t, false, out Vector3 handR, out bool restR);
+            if (armL) r.ReachUseLeft = Arm(world, true, handL, restL, 0f);
+            if (armR) r.ReachUseRight = Arm(world, false, handR, restR, 0f);
+
+            // 6. Clear: the arms stay out of his own body. Elbows out first, then, if that is not
+            // enough, the least lean back that clears them, then the least turn of the shoulders.
+            r.ClearanceLeft = r.ClearanceRight = float.PositiveInfinity;
+            if (_body != null && t.BodyClearanceMeters > 0f && (armL || armR))
+                Clear(world, in t, armL, handL, restL, armR, handR, restR, ref r);
 
             r.Solved = true;
             return r;
+        }
+
+        /// <summary>The least clearance of the left or right arm's palm and forearm (elbow to palm) from
+        /// the torso, metres; +inf with no body volume. Held to the station's margin.</summary>
+        public float ForearmClearance(Matrix4x4[] world, bool left)
+        {
+            if (_body == null) return float.PositiveInfinity;
+            Vector3 E = Pos(world, left ? _elbowL : _elbowR), P = Pos(world, left ? _palmL : _palmR);
+            float c = float.PositiveInfinity;
+            for (int i = 0; i <= ArmClearSamples; i++)
+                c = Mathf.Min(c, _body.Outside(world, Vector3.Lerp(E, P, i / (float)ArmClearSamples)));
+            return c;
+        }
+
+        /// <summary>The least clearance of the elbow end of the left or right upper arm from the torso,
+        /// metres; +inf with no body volume. An elbow may rest against the ribs (0), never sink in.</summary>
+        public float UpperArmClearance(Matrix4x4[] world, bool left)
+        {
+            if (_body == null) return float.PositiveInfinity;
+            Vector3 S = Pos(world, left ? _shoulderL : _shoulderR), E = Pos(world, left ? _elbowL : _elbowR);
+            float c = float.PositiveInfinity;
+            int upper = ArmClearSamples / 2;
+            for (int i = 0; i < upper; i++)
+                c = Mathf.Min(c, _body.Outside(world, Vector3.Lerp(S, E, Mathf.Lerp(UpperArmClearFrom, 1f, i / (float)upper))));
+            return c;
+        }
+
+        /// <summary>The least clearance of the whole checked arm (forearm, palm, elbow end of the upper
+        /// arm), metres.</summary>
+        public float ArmClearance(Matrix4x4[] world, bool left) =>
+            Mathf.Min(ForearmClearance(world, left), UpperArmClearance(world, left));
+
+        /// <summary>How far the arm is from failing the clear rule, metres: the forearm against
+        /// <paramref name="need"/>, the upper arm against zero. Non-negative is clear.</summary>
+        private float ArmSlack(Matrix4x4[] world, bool left, float need) =>
+            Mathf.Min(ForearmClearance(world, left) - need, UpperArmClearance(world, left));
+
+        private float Slack(Matrix4x4[] world, in Targets t, bool armL, bool armR, float need)
+        {
+            float s = HandleEndClearance(world, in t) - need;
+            if (armL) s = Mathf.Min(s, ArmSlack(world, true, need));
+            if (armR) s = Mathf.Min(s, ArmSlack(world, false, need));
+            return s;
+        }
+
+        private bool HandTarget(Matrix4x4[] world, in Targets t, bool left, out Vector3 hand, out bool rest)
+        {
+            rest = false;
+            hand = default;
+            if (left ? t.HasGripLeft : t.HasGripRight)
+            {
+                hand = left ? t.GripLeft : t.GripRight;
+                return true;
+            }
+            if (!t.ThighRest) return false;
+            Vector3 hip = Pos(world, left ? _hipL : _hipR), knee = Pos(world, left ? _kneeL : _kneeR);
+            hand = Vector3.Lerp(hip, knee, t.RestHandAlongThigh) + new Vector3(0f, 0f, t.RestHandAboveThighMeters);
+            rest = true;
+            return true;
+        }
+
+        /// <summary>Solve one arm onto <paramref name="hand"/>, its elbow swung <paramref name="outward"/>
+        /// (0..1) from its usual pole toward <see cref="LeftElbowOutPole"/>.</summary>
+        private float Arm(Matrix4x4[] world, bool left, Vector3 hand, bool rest, float outward)
+        {
+            Vector3 pole = Vector3.Lerp(rest ? LeftRestElbowPole : LeftElbowPole, LeftElbowOutPole, outward);
+            if (!left) pole.x = -pole.x;
+            int s = left ? _shoulderL : _shoulderR;
+            return TwoBone(world, s, left ? _elbowL : _elbowR, left ? _palmL : _palmR, hand, Pos(world, s) + pole);
+        }
+
+        // The arms being cleared, for the probes below (set by Clear; read only inside it).
+        private bool _armL, _armR, _restL, _restR;
+        private Vector3 _handL, _handR;
+        private float _outL, _outR;
+
+        private void Clear(Matrix4x4[] world, in Targets t, bool armL, Vector3 handL, bool restL,
+                           bool armR, Vector3 handR, bool restR, ref Result r)
+        {
+            float need = t.BodyClearanceMeters;
+            _armL = armL; _armR = armR; _restL = restL; _restR = restR; _handL = handL; _handR = handR;
+            _outL = _outR = 0f;
+
+            // a. Elbows out, each arm only as far as it needs (the least step that clears, else the best).
+            if (armL && ArmSlack(world, true, need) < 0f) _outL = SwingOut(world, true, handL, restL, need);
+            if (armR && ArmSlack(world, false, need) < 0f) _outR = SwingOut(world, false, handR, restR, need);
+            r.ElbowOutLeft = _outL;
+            r.ElbowOutRight = _outR;
+
+            float slack = Slack(world, in t, armL, armR, need);
+            if (slack < 0f)
+            {
+                // b. Lean back, by the least angle (bisected) that clears, within the reach of both grips.
+                Vector3 pivot = Pos(world, _spine), axis = AxisX(world, _spine);
+                float cap = ReachCap(world, in t, Quaternion.identity, axis, t.BodyClearLeanMaxDegrees, need);
+                float lean = Least(world, in t, Quaternion.identity, axis, cap, need, out slack);
+
+                // c. Still not clear (a figure turned on the hull, a broad trunk): the shoulders turn with
+                // the handles, by the least twist either way that clears, within reach.
+                float twist = 0f;
+                if (slack < 0f && t.BodyClearTwistMaxDegrees > 0f)
+                {
+                    Quaternion leanQ = Quaternion.AngleAxis(lean, axis);
+                    float bestSlack = slack;
+                    for (int sign = -1; sign <= 1; sign += 2)
+                    {
+                        float tcap = ReachCap(world, in t, leanQ, sign * Vector3.forward, t.BodyClearTwistMaxDegrees, need);
+                        float tw = Least(world, in t, leanQ, sign * Vector3.forward, tcap, need, out float s);
+                        if (s > bestSlack + Tiny || (s >= 0f && bestSlack >= 0f && tw < Mathf.Abs(twist)))
+                        {
+                            bestSlack = s;
+                            twist = sign * tw;
+                        }
+                    }
+                    slack = bestSlack;
+                }
+
+                if (lean != 0f || twist != 0f)
+                {
+                    Quaternion q = Quaternion.AngleAxis(twist, Vector3.forward) * Quaternion.AngleAxis(lean, axis);
+                    TurnAndHold(world, pivot, q);
+                }
+                r.ClearLeanDegrees = lean;
+                r.ClearTwistDegrees = twist;
+            }
+            r.ClearanceLeft = armL ? ArmClearance(world, true) : float.PositiveInfinity;
+            r.ClearanceRight = armR ? ArmClearance(world, false) : float.PositiveInfinity;
+        }
+
+        /// <summary>The least clearance from the torso of the handle ends of the oars he holds, metres;
+        /// +inf with no body volume or no grip.</summary>
+        public float HandleEndClearance(Matrix4x4[] world, in Targets t)
+        {
+            float c = float.PositiveInfinity;
+            if (_body == null) return c;
+            if (t.HasGripLeft) c = Mathf.Min(c, _body.Outside(world, t.HandleEndLeft));
+            if (t.HasGripRight) c = Mathf.Min(c, _body.Outside(world, t.HandleEndRight));
+            return c;
+        }
+
+        /// <summary>
+        /// Turn the trunk on a copy of <paramref name="world"/> by <paramref name="degrees"/> about
+        /// <paramref name="axis"/> on top of <paramref name="before"/>, re-solve the arms, and answer the
+        /// clear slack; <paramref name="reachUse"/> is the held grips' worst distance over the arm's length.
+        /// </summary>
+        private float Probe(Matrix4x4[] world, in Targets t, Quaternion before, Vector3 axis, float degrees,
+                            float need, out float reachUse)
+        {
+            System.Array.Copy(world, _scratch, _parent.Length);
+            reachUse = TurnAndHold(_scratch, Pos(world, _spine), Quaternion.AngleAxis(degrees, axis) * before);
+            return Slack(_scratch, in t, _armL, _armR, need);
+        }
+
+        /// <summary>The most turn (up to <paramref name="max"/>) that takes no held grip further out of
+        /// reach than it already was (a grip in reach stays in reach).</summary>
+        private float ReachCap(Matrix4x4[] world, in Targets t, Quaternion before, Vector3 axis, float max, float need)
+        {
+            if (max <= 0f) return 0f;
+            Probe(world, in t, before, axis, 0f, need, out float baseUse);
+            float allowed = Mathf.Max(1f, baseUse) + ReachUseSlack;
+            Probe(world, in t, before, axis, max, need, out float use);
+            if (use <= allowed) return max;
+            float lo = 0f, hi = max;
+            for (int i = 0; i < ReachLeanIterations; i++)
+            {
+                float mid = 0.5f * (lo + hi);
+                Probe(world, in t, before, axis, mid, need, out use);
+                if (use <= allowed) lo = mid;
+                else hi = mid;
+            }
+            return lo;
+        }
+
+        /// <summary>The least turn in [0, <paramref name="cap"/>] that clears (bisected), or the cap when
+        /// none does and it helps, else none.</summary>
+        private float Least(Matrix4x4[] world, in Targets t, Quaternion before, Vector3 axis, float cap, float need,
+                            out float slack)
+        {
+            float none = Probe(world, in t, before, axis, 0f, need, out _);
+            if (cap <= 0f) { slack = none; return 0f; }
+            float atCap = Probe(world, in t, before, axis, cap, need, out _);
+            if (atCap < 0f)
+            {
+                if (atCap > none) { slack = atCap; return cap; }
+                slack = none;
+                return 0f;
+            }
+            float lo = 0f, hi = cap;
+            for (int i = 0; i < ReachLeanIterations; i++)
+            {
+                float mid = 0.5f * (lo + hi);
+                if (Probe(world, in t, before, axis, mid, need, out _) >= 0f) hi = mid;
+                else lo = mid;
+            }
+            slack = Probe(world, in t, before, axis, hi, need, out _);
+            return hi;
+        }
+
+        private float SwingOut(Matrix4x4[] world, bool left, Vector3 hand, bool rest, float need)
+        {
+            float best = ArmSlack(world, left, need), bestOut = 0f;
+            for (int k = 1; k <= ElbowOutSteps; k++)
+            {
+                float f = k / (float)ElbowOutSteps;
+                Arm(world, left, hand, rest, f);
+                float c = ArmSlack(world, left, need);
+                if (c > best) { best = c; bestOut = f; }
+                if (c >= 0f) break;
+            }
+            Arm(world, left, hand, rest, bestOut);
+            return bestOut;
+        }
+
+        /// <summary>Turn the trunk by <paramref name="q"/> about <paramref name="pivot"/> and re-solve the
+        /// arms being cleared; false when a held grip is then out of reach.</summary>
+        private float TurnAndHold(Matrix4x4[] world, Vector3 pivot, Quaternion q)
+        {
+            Rotate(world, _spine, pivot, q);
+            float use = 0f;
+            if (_armL) { float u = Arm(world, true, _handL, _restL, _outL); if (!_restL) use = Mathf.Max(use, u); }
+            if (_armR) { float u = Arm(world, false, _handR, _restR, _outR); if (!_restR) use = Mathf.Max(use, u); }
+            return use;
         }
 
         /// <summary>The arm's full length on this frame: shoulder to elbow plus elbow to palm.</summary>

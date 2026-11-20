@@ -113,6 +113,21 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         [Test]
+        public void TryRowFindsTheWholeRowOrdinal_AndAnEmptySocketHangsNothing()
+        {
+            CharacterCarryPoseDef table = Table(("container.creel", "pot"));
+            table.Rows[0].SocketRight = "carry_R";
+            Assert.IsTrue(table.TryRow("container.creel", out CharacterCarryPoseDef.Row row));
+            Assert.AreEqual("pot", row.Carry);
+            Assert.AreEqual("carry_R", row.SocketFor(CarryHandSide.Right));
+            Assert.IsNull(row.SocketFor(CarryHandSide.Left), "An empty socket hung the thing from the figure.");
+            Assert.IsFalse(table.TryRow("Container.Creel", out _), "The match is not ordinal.");
+            Assert.IsFalse(table.TryRow(null, out _));
+            table.Rows = null;
+            Assert.IsFalse(table.TryRow("container.creel", out _));
+        }
+
+        [Test]
         public void TheShippedTableCarriesThePail()
         {
             var shipped = Resources.Load<CharacterCarryPoseDef>(CharacterCarryPoseDef.ResourcesPath);

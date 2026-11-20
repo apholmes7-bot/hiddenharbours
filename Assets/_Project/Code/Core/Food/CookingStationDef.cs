@@ -70,6 +70,19 @@ namespace HiddenHarbours.Core
         [Tooltip("Said when the catch in the hand needs preparing first.")]
         public string NeedsPrepLine;
 
+        [Header("The food on it")]
+        [Tooltip("Draw the fish being worked on this station (on the pan or the board) for the length of the " +
+                 "job. Off for a microwave: its door is shut.")]
+        public bool ShowsFood;
+
+        [Tooltip("Where the pan or the board sits, in the station's own frame: metres from its pivot, x along its " +
+                 "front, y toward the wall it backs onto, z up. Turned with the wall it stands against.")]
+        public Vector3 FoodAnchorPropMeters;
+
+        [Tooltip("The food browns as it cooks, along GameConfig.CookedFishRamp. Off for a prep board: the " +
+                 "fish there stays raw.")]
+        public bool BrownsAsItCooks;
+
         /// <summary>The multiplier in force: an unset (zero or less) value reads as 1.</summary>
         public float CookTimeMultiplierInForce => CookTimeMultiplier > 0f ? CookTimeMultiplier : 1f;
 

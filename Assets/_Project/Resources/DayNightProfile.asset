@@ -19,7 +19,7 @@ MonoBehaviour:
     key2: {r: 0.95, g: 0.66, b: 0.45, a: 0}
     key3: {r: 1, g: 0.98, b: 0.95, a: 0}
     key4: {r: 0.98, g: 1, b: 1, a: 0}
-    key5: {r: 1, g: 0.55, b: 0.32, a: 0}
+    key5: {r: 1, g: 0.75, b: 0.56, a: 0}
     key6: {r: 0.12, g: 0.16, b: 0.34, a: 0}
     key7: {r: 0.12, g: 0.16, b: 0.34, a: 0}
     ctime0: 0
@@ -125,6 +125,7 @@ MonoBehaviour:
   _nightHour: 22
   _dawnBlendHours: 2
   _warmKeyBeforeSunsetHours: 3.4285715
+  _nightBlendHours: 1
   _shadowSouthBias: 0.2
   _shadowNoonLift: 0.9
   _fogVisibilityForFullDim: 0.15
