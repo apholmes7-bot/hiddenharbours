@@ -18,3 +18,25 @@ MonoBehaviour:
   Dialogue: {fileID: 11400000, guid: bf730254deee4f6b95980b24ef67026e, type: 2}
   CompletionFlag: met_ginny
   Build: {fileID: 11400000, guid: bb7996803a56b874e8b86df42d1e17b7, type: 2}
+  Gifts:
+    LovedItemIds:
+    - fish.atlantic_cod
+    LikedItemIds: []
+    DislikedItemIds:
+    - fish.green_crab
+    LovedTags: []
+    LikedTags:
+    - shellfish
+    DislikedTags: []
+    Lines:
+      Loved:
+      - 'A cod! Ned used to come up the path with one just like that. Chowder tonight, and you''re staying for it.'
+      Liked:
+      - 'Oh, that''s lovely, dear. That''ll go in the pot with a bit of salt pork.'
+      Neutral:
+      - 'Thank you, dear. Everything finds its way into the pot in this house sooner or later.'
+      Disliked:
+      - 'A green crab? Those devils are eating the flats bare. Well, that''s one less of them, I suppose.'
+      NotGiftable: []
+      AlreadyGiftedToday:
+      - 'You''ll spoil me, child. One is plenty for one day. Keep that for your own supper.'

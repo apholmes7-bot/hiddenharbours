@@ -126,6 +126,30 @@ namespace HiddenHarbours.Core
                  "0 = every bore is born at full energy. Ships at 1.")]
         [Range(0f, 1f)] public float BoreSetStrength;
 
+        [Tooltip("How far the bore's crest is turned to the shore before it runs in. A shoaling wave " +
+                 "refracts until its crest lies along the depth contours, so in the swash every point of a " +
+                 "beach is reached at the same moment and the wash runs up and drains back square to the " +
+                 "shore. 1 = the bore's clock reads only the shore-normal travel (the march) and the time: " +
+                 "nothing travels ALONG the shore. 0 = the offshore train's heading at the break line, which " +
+                 "on a beach oblique to the swell sweeps the run-up along the shore at c / sin(angle).")]
+        [Range(0f, 1f)] public float BoreRefraction;
+
+        [Tooltip("A small STATIC phase offset (degrees) along the shore, so a refracted wash does not arrive " +
+                 "on a ruler line. It does not move with time, so it can never travel. 0 = none.")]
+        [Range(0f, 90f)] public float BorePhaseJitterDegrees;
+
+        [Tooltip("The jitter's wavelength along the ground (metres). Long = the offset changes slowly, so " +
+                 "neighbouring metres of beach are reached within a few hundredths of a second.")]
+        public float BorePhaseJitterMeters;
+
+        [Tooltip("Where the DRAWN wash reads the wind-fetch envelope: this many metres seaward of the pixel, " +
+                 "along the shore normal (metres). A bore carries the energy it was born with; the beach it " +
+                 "runs onto does not take it back. Read at the pixel, a near-alongshore wind put a thin lee " +
+                 "strip on the sand wherever the fetch march clipped the beach, and the wash's edge notched " +
+                 "along its ragged border. A real headland lee is wider than this and is kept. 0 = read at " +
+                 "the pixel (the previous look).")]
+        public float BoreFetchProbeMeters;
+
         [Header("Run-up — how far the wash reaches up the beach (metres of LEVEL, Hunt 1959)")]
         [Tooltip("Hunt's law: run-up R = coefficient × ξ × H — the vertical reach of the wash above still " +
                  "water for a bore of standing height H on a bed of surf similarity ξ. 1.0 is Hunt's " +
@@ -159,6 +183,10 @@ namespace HiddenHarbours.Core
             WhitewaterStepMeters = 2f,
             BorePulseSharpness = 2.6f,
             BoreSetStrength = 1f,
+            BoreRefraction = 1f,
+            BorePhaseJitterDegrees = 12f,
+            BorePhaseJitterMeters = 64f,
+            BoreFetchProbeMeters = 3f,
             RunUpCoefficient = 1f,
             RunUpCapMeters = 0.35f,
         };
@@ -1094,6 +1122,48 @@ namespace HiddenHarbours.Core
                                               timeSeconds - (double)Mathf.Max(0f, travelSeconds));
         }
 
+        /// <summary>
+        /// <b>Where the bore's clock reads the field</b>: the break-line point pulled toward the field's
+        /// origin by <see cref="BreakerSettings.BoreRefraction"/>. At 1 the position term of the phase is
+        /// gone, so the bore's phase is the field's phase plus the shore-normal travel time: every point of a
+        /// beach is reached together and nothing runs along it (a refracted crest lies on the contours). At 0
+        /// it is the break-line point itself, the offshore heading. The set's birth is read here too, so the
+        /// sets arrive with the same refracted crest. Twin: the water shader's <c>SurfBoreClockPoint</c>.
+        /// </summary>
+        public static Vector2 BoreClockPoint(Vector2 breakLinePoint, in BreakerSettings settings)
+        {
+            float keep = 1f - Mathf.Clamp01(settings.BoreRefraction);
+            return new Vector2(breakLinePoint.x * keep, breakLinePoint.y * keep);
+        }
+
+        /// <summary>The refracted bore's small STATIC alongshore offset (degrees): a smooth product of a sine
+        /// and a cosine of the break-line point over <see cref="BreakerSettings.BorePhaseJitterMeters"/>. It
+        /// is a function of position only, so it can never travel. Twin: <c>SurfBoreJitterDeg</c>.</summary>
+        public static float BorePhaseJitterDegrees(Vector2 breakLinePoint, in BreakerSettings settings)
+        {
+            float amplitude = Mathf.Max(0f, settings.BorePhaseJitterDegrees);
+            float wavelength = settings.BorePhaseJitterMeters;
+            if (amplitude <= 0f || wavelength <= 1e-3f) return 0f;
+            float w = 2f * Mathf.PI / wavelength;
+            return amplitude * Mathf.Sin(breakLinePoint.x * w) * Mathf.Cos(breakLinePoint.y * w);
+        }
+
+        /// <summary>
+        /// <b>The bore's phase on the refracted clock</b>, degrees in [0, 360):
+        /// <see cref="BorePhaseDegrees"/> read at <see cref="BoreClockPoint"/>, plus
+        /// <see cref="BorePhaseJitterDegrees"/>. This is the phase the surf, the run-up and the hull's shove
+        /// all ride. Twin: the water shader's <c>SurfBoreClockPhaseDeg</c>.
+        /// </summary>
+        public static float BoreClockPhaseDegrees(in WaveTrain train, Vector2 breakLinePoint, float travelSeconds,
+                                                  in BreakerSettings settings, float freqScale = 1f,
+                                                  double timeSeconds = 0.0)
+        {
+            float phase = BorePhaseDegrees(in train, BoreClockPoint(breakLinePoint, in settings), travelSeconds,
+                                           freqScale, timeSeconds)
+                        + BorePhaseJitterDegrees(breakLinePoint, in settings);
+            return Mathf.Repeat(phase, 360f);
+        }
+
         /// <summary>The train's period (seconds) — conserved through shoaling, so it is the bore's beat
         /// on every depth: <c>T = L₀ / c₀</c>.</summary>
         public static float PeriodSeconds(in WaveTrain train)
@@ -1342,8 +1412,9 @@ namespace HiddenHarbours.Core
             float standing = Mathf.Max(0f, settings.BreakerIndex) * depth;
 
             Vector2 breakLine = BreakLinePoint(worldPos, shoreward, age);
-            float phase = BorePhaseDegrees(in dominant, breakLine, travel, freqScale, timeSeconds);
-            float birth = BoreBirthEnergy01(in field, breakLine, travel, phase, PeriodSeconds(in dominant),
+            float phase = BoreClockPhaseDegrees(in dominant, breakLine, travel, in settings, freqScale, timeSeconds);
+            float birth = BoreBirthEnergy01(in field, BoreClockPoint(breakLine, in settings), travel, phase,
+                                            PeriodSeconds(in dominant),
                                             birthFetch, settings.BoreSetStrength, freqScale, timeSeconds);
             float bore = BorePulse01(phase, settings.BorePulseSharpness) * birth;
 

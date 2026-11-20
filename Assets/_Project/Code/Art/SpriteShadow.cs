@@ -74,6 +74,7 @@ namespace HiddenHarbours.Art
         private static readonly int IdShadowLen    = Shader.PropertyToID("_ShadowLen");
         private static readonly int IdShadowUV     = Shader.PropertyToID("_ShadowUV");
         private static readonly int IdShadowUVPerUnit = Shader.PropertyToID("_ShadowUVPerUnit");
+        private static readonly int IdShadowSelfRect = Shader.PropertyToID("_ShadowSelfRect");
         private static readonly int IdEdgeSoftness = Shader.PropertyToID("_EdgeSoftness");
         private static readonly int IdGroundContact = Shader.PropertyToID("_GroundContact");
         private static readonly int IdSunDir        = Shader.PropertyToID("_SunDir");
@@ -260,8 +261,104 @@ namespace HiddenHarbours.Art
         }
 
         private bool _castOnWalkingDeck;
-        private bool CasterVisible => _caster != null &&
+        private bool CasterVisible => _caster != null && !_artExcluded &&
             (_caster.enabled || (_castOnWalkingDeck && DeckStance.IsActive));
+
+        // ── excluded art: a cell that must cast nothing ─────────────────────────────────────────────
+        // SunCasterRules says splash, spray, foam, shade and the rest cast no shadow. The installer asks
+        // that ONCE, when it decides to attach, and an owner that attaches its own caster (GullFlock)
+        // never asks at all, so an ANIMATED caster kept casting when its sprite swapped onto an excluded
+        // cell: a gull's splash row threw the spray's silhouette on the water. The caster now asks on
+        // every swap, through the renderer's own sprite-change callback, so it stands down in the same
+        // frame the cell lands and returns the frame it leaves. Only the CELL half of the rule is asked
+        // here: the object half (name, UI canvas) cannot change while a sprite animates, and it stays
+        // the installer's and the audit's.
+        private bool _artExcluded;
+        private Sprite _artCheckedSprite;
+        private bool _artChecked;
+        private UnityEngine.Events.UnityAction<SpriteRenderer> _onSpriteChanged;
+
+        /// <summary>The caster's current sprite is excluded art (<see cref="SunCasterRules.IsExcludedSprite"/>),
+        /// so it draws no silhouette, no ground pool and no lamp shadow until the sprite leaves it.</summary>
+        public bool StandsDownForExcludedArt => _artExcluded;
+
+        /// <summary>Whether either pooled child (the silhouette or the ground-contact pool) is drawing.</summary>
+        public bool IsDrawing => (_shadow != null && _shadow.enabled) || (_pool != null && _pool.enabled);
+
+        private static SunCasterRules s_artRules;
+        private static bool s_artRulesLoaded;
+        // One answer per distinct sprite: Sprite.name allocates, and a walking figure swaps several times a
+        // second. A gull sheet is 384 cells; the bound only keeps runtime-minted sprites from piling up.
+        private const int ExcludedSpriteCacheBound = 4096;
+        private static readonly System.Collections.Generic.Dictionary<Sprite, bool> s_excludedSprites = new();
+
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        private static void ResetExcludedArtCache()
+        {
+            s_artRules = null;
+            s_artRulesLoaded = false;
+            s_excludedSprites.Clear();
+        }
+
+        /// <summary>
+        /// Settle the excluded-art verdict for every sprite of a sheet up front, off the hot path. The first
+        /// ask for a sprite reads <c>Sprite.name</c> (a managed string per call), so an animated caster that
+        /// meets a cell for the first time mid-tick would allocate; an owner that knows its whole sheet
+        /// (GullFlock) prewarms it once at setup and its ticks then only ever hit the cache.
+        /// </summary>
+        public static void PrewarmExcludedArt(System.Collections.Generic.IReadOnlyList<Sprite> sprites)
+        {
+            if (sprites == null) return;
+            // Make room first, so the bound's clear cannot evict half of the page being prewarmed.
+            if (s_excludedSprites.Count + sprites.Count > ExcludedSpriteCacheBound) s_excludedSprites.Clear();
+            for (int i = 0; i < sprites.Count; i++) IsExcludedSprite(sprites[i]);
+        }
+
+        /// <summary>Whether a verdict for this sprite is already cached (tests prove the cache with it).</summary>
+        internal static bool HasExcludedArtVerdict(Sprite sprite)
+            => sprite != null && s_excludedSprites.ContainsKey(sprite);
+
+        internal static bool IsExcludedSprite(Sprite sprite)
+        {
+            if (sprite == null) return false;
+            if (!s_artRulesLoaded)
+            {
+                s_artRules = Resources.Load<SunCasterRules>(nameof(SunCasterRules));
+                s_artRulesLoaded = true;
+            }
+            if (s_artRules == null) return false;
+            if (s_excludedSprites.TryGetValue(sprite, out bool excluded)) return excluded;
+            if (s_excludedSprites.Count >= ExcludedSpriteCacheBound) s_excludedSprites.Clear();
+            excluded = s_artRules.IsExcludedSprite(sprite);
+            s_excludedSprites.Add(sprite, excluded);
+            return excluded;
+        }
+
+        /// <summary>Re-ask the rule when the sprite moved. One reference compare when it did not.</summary>
+        private void RefreshArtExclusion()
+        {
+            if (_caster == null) _caster = GetComponent<SpriteRenderer>();
+            if (_caster == null) return;
+            Sprite sprite = _caster.sprite;
+            if (_artChecked && sprite == _artCheckedSprite) return;
+            _artChecked = true;
+            _artCheckedSprite = sprite;
+            bool excluded = IsExcludedSprite(sprite);
+            if (excluded == _artExcluded) return;
+            _artExcluded = excluded;
+            if (excluded)
+            {
+                // Off NOW, not at the next tick: the frame the splash lands must not draw its shade.
+                if (_shadow != null) _shadow.enabled = false;
+                if (_pool != null) _pool.enabled = false;
+            }
+            else if (isActiveAndEnabled)
+            {
+                Tick();   // back on in the same frame, at the current sun alpha
+            }
+        }
+
+        private void OnSpriteChanged(SpriteRenderer changed) => RefreshArtExclusion();
 
         /// <summary>
         /// Attach once, optionally keeping the fisher's hidden body as the walking-deck silhouette.
@@ -314,6 +411,8 @@ namespace HiddenHarbours.Art
         // it to convert the vertex shear back into texture space and find the caster's own texel under a
         // shade fragment; see UvPerObjectUnit. Cached and republished exactly like _shearMap.
         private Vector2 _uvPerUnit = Vector2.one;
+        // The caster's CELL on its sheet, in uv (xMin, yMin, xMax, yMax): where the self lookup may land.
+        private Vector4 _cellUvRect = FullSheetUvRect;
 
         /// <summary>
         /// The map for a caster whose pivot IS its cell-bottom-centre and whose sprite fills its whole texture:
@@ -450,6 +549,19 @@ namespace HiddenHarbours.Art
             _resolvedProfile = _profile != null ? _profile : Resources.Load<DayNightProfile>("DayNightProfile");
             if (_resolvedProfile == null) _resolvedProfile = DayNightProfile.CreateDefault();
             EnsureShadow();
+            // Registered for the component's whole life, not per enable: a caster the installer culls by
+            // distance (disabled) must still know what it is showing when it is switched back on.
+            if (_caster != null)
+            {
+                _onSpriteChanged ??= OnSpriteChanged;
+                _caster.RegisterSpriteChangeCallback(_onSpriteChanged);
+            }
+            RefreshArtExclusion();
+        }
+
+        private void OnDestroy()
+        {
+            if (_caster != null && _onSpriteChanged != null) _caster.UnregisterSpriteChangeCallback(_onSpriteChanged);
         }
 
         private void OnEnable()
@@ -514,6 +626,102 @@ namespace HiddenHarbours.Art
         {
             SyncSilhouette();
             PoseShadow();
+            SyncFootOffset();
+        }
+
+        // The foot offset the shadow's block last carried, in the shadow's LOCAL units (NaN = never).
+        private float _publishedFootLocal = float.NaN;
+
+        /// <summary>
+        /// The foot offset in the shadow sprite's local units - what the shader subtracts to find the
+        /// caster's own texel (see <see cref="SyncFootOffset"/>). <c>_footOffset</c> is in the CASTER's
+        /// local units (PoseShadow anchors at <c>TransformPoint(0, -_footOffset)</c>), so it is carried
+        /// across by the two lossy scales - equal for the planted child, which takes localScale 1.
+        /// </summary>
+        private float FootOffsetLocal() => FootOffsetInShadowUnits(
+            _footOffset, transform.lossyScale.y,
+            _shadow != null ? _shadow.transform.lossyScale.y : transform.lossyScale.y);
+
+        /// <summary>A caster-local foot offset in its shadow's local units (the ratio of the two lossy Y
+        /// scales; a degenerate shadow scale passes the offset through).</summary>
+        public static float FootOffsetInShadowUnits(float footOffset, float casterScaleY, float shadowScaleY)
+        {
+            float c = Mathf.Abs(casterScaleY), s = Mathf.Abs(shadowScaleY);
+            return s > 1e-5f ? footOffset * c / s : footOffset;
+        }
+
+        /// <summary>
+        /// C# mirror of the shade arm's self-test lookup: the CASTER's texel under a shadow fragment at
+        /// <paramref name="uv"/>, given the vertex shear and the foot offset (both in shadow-local units).
+        /// The vertex stage computes <c>(shear - (0, foot)) * uvPerUnit</c>; the fragment adds it to uv.
+        /// </summary>
+        public static Vector2 CasterSelfTexelUv(Vector2 uv, Vector2 shear, float footLocal, Vector2 uvPerUnit)
+            => uv + Vector2.Scale(shear - new Vector2(0f, footLocal), uvPerUnit);
+
+        /// <summary>
+        /// The <c>_ShadowUVPerUnit</c> block: xy = uv per object unit, z = the foot offset in local units.
+        /// Recorded as published, so <see cref="SyncFootOffset"/> rewrites only on a change.
+        /// </summary>
+        /// <summary>
+        /// Write the shade arm's self lookup into <paramref name="block"/>: <c>_ShadowUVPerUnit</c> (uv per
+        /// unit, foot offset) and <c>_ShadowSelfRect</c> (the caster's own cell). Every write of either goes
+        /// through here, so the two can never disagree about which caster they describe.
+        /// </summary>
+        private void PublishSelfLookup(MaterialPropertyBlock block)
+        {
+            block.SetVector(IdShadowUVPerUnit, UvPerUnitBlock());
+            block.SetVector(IdShadowSelfRect, _cellUvRect);
+        }
+
+        /// <summary>The whole sheet in uv - the self lookup's bound before it knew the cell.</summary>
+        public static readonly Vector4 FullSheetUvRect = new Vector4(0f, 0f, 1f, 1f);
+
+        /// <summary>
+        /// The sprite's CELL on its sheet in uv, <c>(xMin, yMin, xMax, yMax)</c>; the whole sheet when there
+        /// is no sprite or texture. The self lookup is bounded by this and not by the sheet: displaced by a
+        /// gull's altitude it would otherwise land in a NEIGHBOURING cell (the sheet's eight bearing rows)
+        /// and punch this shadow with another frame's bird.
+        /// </summary>
+        public static Vector4 CellUvRect(Sprite sprite)
+        {
+            if (sprite == null || sprite.texture == null) return FullSheetUvRect;
+            return CellUvRect(sprite.rect, sprite.texture.width, sprite.texture.height);
+        }
+
+        /// <summary><see cref="CellUvRect(Sprite)"/> on the raw numbers.</summary>
+        public static Vector4 CellUvRect(Rect rectPx, int textureWidth, int textureHeight)
+        {
+            if (textureWidth <= 0 || textureHeight <= 0) return FullSheetUvRect;
+            return new Vector4(rectPx.xMin / textureWidth, rectPx.yMin / textureHeight,
+                               rectPx.xMax / textureWidth, rectPx.yMax / textureHeight);
+        }
+
+        private Vector4 UvPerUnitBlock()
+        {
+            _publishedFootLocal = FootOffsetLocal();
+            return new Vector4(_uvPerUnit.x, _uvPerUnit.y, _publishedFootLocal, 0f);
+        }
+
+        /// <summary>
+        /// Keep the shader told how far ABOVE its shadow's anchor the caster is drawn. <b>Every frame, on
+        /// a change only</b>: a gull's altitude moves its foot offset every frame it climbs or settles,
+        /// while every grounded caster (offset fixed) pays one compare and nothing else.
+        ///
+        /// <para>Why the shader needs it: the screen-space shade refuses to darken its OWN caster, and
+        /// finds the caster's texel at each shadow pixel by undoing the shear. That assumed the caster
+        /// stood on the anchor. A flying gull is drawn its altitude above it, so the test was punching
+        /// the shadow with a silhouette that was not there: the bird's own outline, offset only by the
+        /// small noon shear, cut the shadow down to a rim and two wingtips (owner, 2026-11-15: "only
+        /// take to certain parts of the gull. Not the whole silhouette").</para>
+        /// </summary>
+        private void SyncFootOffset()
+        {
+            if (_shadow == null) return;
+            float foot = FootOffsetLocal();
+            if (foot == _publishedFootLocal) return;   // grounded casters: the common case, one compare
+            _shadow.GetPropertyBlock(_mpb);
+            PublishSelfLookup(_mpb);
+            _shadow.SetPropertyBlock(_mpb);
         }
 
         /// <summary>
@@ -531,6 +739,7 @@ namespace HiddenHarbours.Art
             Sprite sprite = _caster.sprite;
             if (sprite == _lastSprite) return;      // the overwhelmingly common case — one compare, no work
             _lastSprite = sprite;
+            RefreshArtExclusion();                  // belt and braces behind the sprite-change callback
             _shadow.sprite = sprite;
 
             // The PIVOT ANCHOR travels with the cell, so it is re-derived here and not on the throttled tick:
@@ -546,6 +755,10 @@ namespace HiddenHarbours.Art
             // reason and at the same cadence — one compare, and static decor never reaches this line.
             Vector2 perUnit = UvPerObjectUnit(sprite);
             if (perUnit != _uvPerUnit) { _uvPerUnit = perUnit; mapMoved = true; }
+            // The cell travels with the frame (a gull's flap is a new cell every few frames), so this is the
+            // one value here that moves on an animation step rather than a turn.
+            Vector4 cell = CellUvRect(sprite);
+            if (cell != _cellUvRect) { _cellUvRect = cell; mapMoved = true; }
 
             // Only when the SHEET changes (a walk skin handing over to a fight skin) is the texture worth
             // rewriting — frames from one sheet all share a texture, and the block already points at it.
@@ -559,7 +772,7 @@ namespace HiddenHarbours.Art
             if (mapMoved)
             {
                 _mpb.SetVector(IdShadowUV, _shearMap);
-                _mpb.SetVector(IdShadowUVPerUnit, new Vector4(_uvPerUnit.x, _uvPerUnit.y, 0f, 0f));
+                PublishSelfLookup(_mpb);
             }
             _shadow.SetPropertyBlock(_mpb);
         }
@@ -597,6 +810,7 @@ namespace HiddenHarbours.Art
         private void Tick()
         {
             if (_shadow == null || _caster == null) return;
+            RefreshArtExclusion();
 
             // The silhouette itself is synced in LateUpdate (see SyncSilhouette) so an animating caster
             // cannot lag it; this call still seeds it, which is what makes OnEnable's first tick correct.
@@ -669,7 +883,7 @@ namespace HiddenHarbours.Art
             // seeds a caster which never changes sprite (all of the decor), so the anchor is right from the
             // first frame without depending on a silhouette swap ever happening.
             _mpb.SetVector(IdShadowUV, _shearMap);
-            _mpb.SetVector(IdShadowUVPerUnit, new Vector4(_uvPerUnit.x, _uvPerUnit.y, 0f, 0f));
+            PublishSelfLookup(_mpb);
             _mpb.SetFloat(IdEdgeSoftness, look.EdgeSoftness);
             // 0 = draw this caster's sheared SILHOUETTE. Published explicitly rather than left to the
             // material's default, because a MaterialPropertyBlock is STICKY: the pool below sets this on

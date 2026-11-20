@@ -258,6 +258,11 @@ namespace HiddenHarbours.Art
             _behaviour = _visual.Behaviour;
             if (_behaviour == null) { enabled = false; return; }
 
+            // Every bird's caster asks "is this cell excluded art?" on each swap, and the first ask for a
+            // cell reads Sprite.name, which allocates. Ask for the whole page here, once, so no tick
+            // ever meets a cell the cache has not seen (rule 7: nothing per tick).
+            SpriteShadow.PrewarmExcludedArt(_visual.Cells);
+
             // No library is no places: an empty sky, except for a fixture's pinned place.
             if (_library == null) _library = Resources.Load<BirdHauntLibrary>(BirdHauntLibrary.ResourcesPath);
             ReadSunHours();
@@ -887,6 +892,15 @@ namespace HiddenHarbours.Art
             b.Sim.IntentState = -1;
             b.Sim.FlockBound = false;
             b.Sim.RejoinMilliseconds = 1.0;   // any positive value arms the ramp
+            // A take-off's cross-fade restarts with the ramp: re-seed its own path at where the bird is DRAWN,
+            // or the restarted blend would jump back to the path it had drifted off.
+            if (b.Sim.Departing)
+            {
+                b.Sim.FreeX = b.Sim.X;
+                b.Sim.FreeY = b.Sim.Y;
+                b.Sim.FreeAltitudeMetres = b.Sim.AltitudeMetres;
+                b.Sim.FreeHeading = b.Sim.Heading;
+            }
         }
 
         /// <summary>
@@ -1510,7 +1524,17 @@ namespace HiddenHarbours.Art
             b.Node.SetPositionAndRotation(
                 new Vector3(pivot.x, pivot.y + lift, 0f),
                 Mathf.Abs(roll) < 1e-4f ? Quaternion.identity : Quaternion.Euler(0f, 0f, roll));
-            b.Shadow.FootOffset = lift;
+            // ...with ONE exception the owner asked for (2026-11-15: "make landed birds slightly smaller as they are
+            // further from camera than a flying one"): near the surface the bird is drawn at the def's ground scale,
+            // eased up to full size over the first metre or so of altitude, so a take-off grows and a landing shrinks
+            // smoothly. The shadow is a child at localScale 1, so it scales with the silhouette it is cast from.
+            float drawScale = SeagullVisualDef.ScaleAtAltitude((float)b.Sim.AltitudeMetres, _visual.GroundScale,
+                                                               _visual.GroundScaleBlendMetres);
+            if (Mathf.Abs(b.Node.localScale.x - drawScale) > 1e-5f)
+                b.Node.localScale = new Vector3(drawScale, drawScale, 1f);
+            // The foot offset is in the scaled bird's OWN units, so the world lift is divided by the scale the node
+            // actually carries: the anchor comes back down by exactly the lift and stays on the pivot at every size.
+            b.Shadow.FootOffset = SeagullVisualDef.ShadowFootOffset(lift, b.Node.localScale.y);
 
             // Sky or world? Above the wheel's own floor the bird is sky and draws over everything;
             // below it, it is among the harbour and sorts by its pivot like anything else standing there.

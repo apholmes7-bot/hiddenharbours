@@ -195,16 +195,61 @@ jobs:
         # save) and still turns that hang into a fast, obviously-infrastructure failure instead of
         # a silent queue block.
         timeout-minutes: 25
-        uses: buildalon/unity-setup@30fcbcb56c10ea5d64298e970d952b8d29bc268b # v2
+        # Run the pinned installer directly: its failed main action can run setup again in
+        # post cleanup, outside a retry budget. This wrapper has no post action and uses the
+        # same Node 24 runtime. The existing 25-minute cap covers all three attempts + waits.
+        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8
         with:
-          version-file: 'ProjectSettings/ProjectVersion.txt'   # resolves to 6000.5.0f1
-          build-targets: StandaloneLinux64
-          install-path: ${{ env.HH_UNITY_EDITOR_DIR }}         # the folder the editor cache holds
-          # false since 2026-09-27: this job saves the editor itself, from a push to main only,
-          # because the action's own save broke on the Hub's log line (see "THE EDITOR CACHE" and
-          # "WHO SAVES WHAT" above "Restore the Unity editor").
-          cache-installation: false
-          hub-version: '3.19.5'                                # see "WHY THE HUB IS PINNED" above
+          script: |
+            const fs = require('node:fs/promises');
+            const path = require('node:path');
+            const { randomUUID } = require('node:crypto');
+            const directory = path.join(process.env.RUNNER_TEMP, 'unity-setup');
+            const installer = path.join(directory, 'index.js');
+            const source = 'https://raw.githubusercontent.com/buildalon/unity-setup/30fcbcb56c10ea5d64298e970d952b8d29bc268b/dist'; // v2
+            const env = {
+              ...process.env,
+              'INPUT_GITHUB-TOKEN': '', // The installer does not need the wrapper's token.
+              'INPUT_VERSION-FILE': 'ProjectSettings/ProjectVersion.txt',
+              'INPUT_BUILD-TARGETS': 'StandaloneLinux64',
+              'INPUT_INSTALL-PATH': process.env.HH_UNITY_EDITOR_DIR,
+              'INPUT_CACHE-INSTALLATION': 'false', // Saved by this job on main only.
+              'INPUT_HUB-VERSION': '3.19.5', // See the hub pin above.
+              'INPUT_AUTO-UPDATE-HUB': 'true', // The explicit hub version disables updates.
+              STATE_isPost: '',
+            };
+            for (let attempt = 1; attempt <= 3; attempt++) {
+              core.info(`Editor install attempt ${attempt}/3`);
+              try {
+                await fs.mkdir(directory, { recursive: true });
+                for (const file of ['index.js', 'sourcemap-register.js']) {
+                  const response = await fetch(`${source}/${file}`);
+                  if (!response.ok) throw new Error(`Installer download returned HTTP ${response.status}`);
+                  await fs.writeFile(path.join(directory, file), Buffer.from(await response.arrayBuffer()));
+                }
+                // Keep attempt diagnostics in the log, without extra error annotations.
+                // The installer's environment/output files still reach subsequent steps.
+                const token = randomUUID();
+                core.info(`::stop-commands::${token}`);
+                let code;
+                try {
+                  code = await exec.exec(process.execPath, [installer], { env, ignoreReturnCode: true });
+                } finally {
+                  core.info(`::${token}::`);
+                }
+                if (code === 0) return;
+                core.info(`Editor install attempt ${attempt} exited ${code}`);
+              } catch (error) {
+                core.info(`Editor install attempt ${attempt} failed: ${error.message}`);
+              }
+              if (attempt < 3) {
+                const seconds = attempt * 30;
+                core.info(`Waiting ${seconds} seconds before retrying the editor install`);
+                await new Promise(resolve => setTimeout(resolve, seconds * 1000));
+              }
+            }
+            // The verdict below emits the single install-failure title; no tests may run.
+            process.exitCode = 1;
 
       - name: Save the Unity editor (main only)
         # Right after the install, so a later red test cannot stop it; only when the restore
@@ -230,18 +275,78 @@ jobs:
           log-name: editmode-tests
           args: -batchmode -runTests -testPlatform EditMode -testResults ${{ github.workspace }}/artifacts/editmode-results.xml
 
+      # The hang watchdog's all-thread dump (PlayModeHangWatchdog.AllThreadStacks) needs gdb. Run
+      # 43754485394's main-thread stack showed it waiting on a lock another thread held; only every
+      # thread's stack names that holder. Best effort: a failed install only drops that one section.
+      - name: Install gdb for the hang watchdog
+        if: (success() || failure()) && steps.setup_unity.outcome == 'success'
+        continue-on-error: true
+        timeout-minutes: 5
+        shell: bash
+        run: command -v gdb >/dev/null || { sudo apt-get update -q && sudo apt-get install -y -q --no-install-recommends gdb; }
+
       - name: PlayMode tests
         id: playmode
         # Run even if EditMode failed, so a single CI run reports both suites.
-        if: success() || failure()
+        if: (success() || failure()) && steps.setup_unity.outcome == 'success'
+        # THE HANG (2026-11-14). PlayMode sometimes goes silent mid-suite and rode the job's 150-minute cap
+        # to "cancelled" with no results and no test named: 21 attempts on 11-12..14 hit that cap (run
+        # 43623934300 attempt 1 stopped logging at 19:29:30 and sat silent 58 min), at several different
+        # tests, each at a test boundary where the next scene unload or load never came. UTF's [Timeout] cannot fire there,
+        # because it is checked on the main thread and the main thread is what is stuck. Two guards:
+        #  1. PlayModeHangWatchdog (Assets/Tests/PlayMode) watches from a background thread: past 600 s on
+        #     one test or gap ([Timeout] + 120 s where a test declares more; limits in TestHangWatch), it
+        #     writes `HANG: <test> has run N s` to the log and $HH_TEST_WATCHDOG_DIR/playmode-hang.txt and
+        #     ends the editor with exit code 124. A hang costs ~10 minutes and names its test. The verdict
+        #     also says whether the main thread had STOPPED or was still TURNING frames (MainThreadPulse);
+        #     when stopped, it SIGABRTs the main thread so the crash handler logs its native stack, and the
+        #     exit code may then be the crash handler's. playmode-hang.txt is the signal, not the code.
+        #     Before that it logs every thread (/proc states always; gdb stacks when stopped) and saves
+        #     them to playmode-hang-threads.txt in the artifacts.
+        #  2. This step timeout is the backstop for a stall the watchdog cannot see (before the first test
+        #     or after the last). 129 green PlayMode phases on 11-12..14 took 75.6-84.6 min (p50 81.1); 100
+        #     is 18% over the slowest. Twice the slowest would be past the job's own cap, so it is not used.
+        #     If green runs climb toward 100, raise it with the measurement, as the job cap's note does.
+        timeout-minutes: 100
+        env:
+          HH_TEST_WATCHDOG_DIR: ${{ github.workspace }}/artifacts
         uses: buildalon/unity-action@2d420bea0f47fbe01377601fa3231bcf4de04f3a # v3
         with:
           log-name: playmode-tests
           args: -batchmode -runTests -testPlatform PlayMode -testResults ${{ github.workspace }}/artifacts/playmode-results.xml
 
+      # Names the test a hung or crashed PlayMode run was in, so the red job says it without anyone reading
+      # a 1.2-million-line log. Reads the watchdog's two files (above) and, as a fallback, the last
+      # `[HangWatchdog] START` line of the Unity log. A reporter: always exits 0.
+      - name: Name the last PlayMode test
+        if: always() && steps.setup_unity.outcome == 'success' && steps.playmode.outcome != 'skipped'
+        shell: bash
+        env:
+          PLAYMODE: ${{ steps.playmode.outcome }}
+        run: |
+          dir=artifacts
+          last=""
+          [ -f "$dir/playmode-current-test.txt" ] && last=$(tail -n 1 "$dir/playmode-current-test.txt")
+          if [ -z "$last" ]; then
+            log=$(ls -t Builds/Logs/playmode-tests-*.log 2>/dev/null | head -n 1)
+            [ -n "$log" ] && last=$(grep -a '\[HangWatchdog\] START' "$log" | tail -n 1)
+          fi
+          [ -n "$last" ] || last="(no test had started: the watchdog never armed, or the editor died before the first test)"
+          echo "PlayMode step: $PLAYMODE"
+          echo "Last PlayMode test event: $last"
+          if [ -f "$dir/playmode-hang.txt" ]; then
+            verdict=$(head -n 1 "$dir/playmode-hang.txt")
+            echo "::error title=PlayMode HANG - the watchdog ended the editor::$verdict"
+            cat "$dir/playmode-hang.txt"
+            { echo "## PlayMode HANG"; echo; echo "\`$verdict\`"; } >> "$GITHUB_STEP_SUMMARY"
+          elif [ "$PLAYMODE" != "success" ]; then
+            echo "::error title=PlayMode did not finish cleanly - last test event::$last"
+            { echo "## PlayMode did not finish cleanly"; echo; echo "Last test event: \`$last\`"; } >> "$GITHUB_STEP_SUMMARY"
+          fi
+
       - name: Upload test results
         uses: actions/upload-artifact@v4
-        if: always()
+        if: always() && steps.setup_unity.outcome == 'success'
         with:
           name: test-results
           path: artifacts
@@ -251,7 +356,7 @@ jobs:
       # Pass BOTH paths explicitly so a missing suite cannot disappear through a glob.
       - name: Summarise test failures
         id: results_gate
-        if: always()
+        if: always() && steps.setup_unity.outcome == 'success'
         shell: bash
         run: |
           set -o pipefail
@@ -283,8 +388,7 @@ jobs:
       # annotation — surfaced at the top of the run page and on the PR checks tab — plus a
       # step-summary heading. It runs only on failure (skipped on green), always exits 0, and
       # never changes the job's outcome — a reporter, not a gate. Gate semantics are untouched:
-      # an environment fault stays red, and re-running stays a manual human act (an auto-retry
-      # could mask a real break and burns expensive Unity-install minutes).
+      # an environment fault stays red after the bounded install retries. Tests are never retried.
       - name: Red X verdict — environment fault or code failure?
         if: failure()
         shell: bash
@@ -304,19 +408,18 @@ jobs:
             echo "::error title=${1}::${2}"
             { echo "## ${1}"; echo; echo "${2}"; } >> "$GITHUB_STEP_SUMMARY"
           }
-          # Order matters: PlayMode's `success() || failure()` means it runs (and fails) even
-          # when setup died, so check the environment steps before reading the test outcomes —
-          # and the LFS-budget case before everything, because it is the one fault a re-run
-          # can never fix.
+          # Check environment steps before test outcomes. PlayMode needs successful setup but
+          # still runs after an EditMode failure. Check the LFS-budget case first, because it
+          # is the one fault a re-run can never fix.
           if [ "$LFS_BUDGET" = "exceeded" ]; then
             verdict "ACCOUNT BILLING — Git LFS budget exhausted — re-runs CANNOT pass" \
-              "GitHub refused the LFS download because the account has exceeded its Git LFS bandwidth budget. This is billing, not code and not a flake — do NOT re-run the job; every re-run fails the same way and burns more of any remaining quota. The owner must raise the Git LFS budget in GitHub's billing settings (Settings ▸ Billing and plans ▸ Git LFS). Ignore the PlayMode failure below: the 'success() || failure()' guard makes that step run with no Unity installed, so its red is this same fault echoing, not a test result."
+              "GitHub refused the LFS download because the account has exceeded its Git LFS bandwidth budget. This is billing, not code and not a flake — do NOT re-run the job; every re-run fails the same way and burns more of any remaining quota. The owner must raise the Git LFS budget in GitHub's billing settings (Settings ▸ Billing and plans ▸ Git LFS)."
           elif [ "$GATE_CHECK" = "failure" ]; then
             verdict "RESULTS GATE SELF-TEST FAILED — read the unit-test output" \
               "The standalone results-gate checks failed before Unity setup. This is a harness failure, not a licensing or install fault."
           elif [ "$SETUP" = "failure" ]; then
-            verdict "ENVIRONMENT FAULT at 'Set up Unity' — not a code failure" \
-              "The Unity Hub / editor-install toolchain died before any test ran. Re-run the job; if it recurs, read the hub-pin header in .github/workflows/ci.yml."
+            verdict "Runner could not install the editor - no test ran" \
+              "Editor setup failed after bounded retries or reached its 25-minute limit. No Unity test ran. Read the install attempts in 'Set up Unity'; re-run the job when the runner can reach the install servers."
           elif [ "$ACTIVATE" = "failure" ]; then
             verdict "ENVIRONMENT FAULT at 'Activate Unity license' — not a code failure" \
               "Unity's licensing servers / the repo credentials failed before any test ran. Re-run the job; see the secrets notes in the header of .github/workflows/ci.yml."

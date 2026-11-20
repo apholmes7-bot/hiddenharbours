@@ -55754,6 +55754,9 @@ Transform:
   - {fileID: 1522954627}
   - {fileID: 1250860795}
   - {fileID: 1424524824}
+  - {fileID: 674199292}
+  - {fileID: 233621698}
+  - {fileID: 1176197895}
   m_Father: {fileID: 356182232}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &983856081
@@ -74441,6 +74444,10 @@ GameObject:
   - component: {fileID: 1384401478}
   - component: {fileID: 1384401477}
   - component: {fileID: 1384401476}
+  - component: {fileID: 1809999676}
+  - component: {fileID: 518165546}
+  - component: {fileID: 2071340022}
+  - component: {fileID: 563467952}
   m_Layer: 0
   m_Name: GeneralStoreCounter
   m_TagString: Untagged
@@ -74678,6 +74685,78 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1809999676
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1384401473}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 62cc24c4094f4c56b44b99e79a056d73, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: HiddenHarbours.Economy::HiddenHarbours.Economy.SupplyShop
+  _supply: {fileID: 11400000, guid: a8365320921248768c81c4dd2ca0189b, type: 2}
+  _sellerId: seller.leblancs
+  _walletProvider: {fileID: 1773492499}
+  _onPurchased:
+    m_PersistentCalls:
+      m_Calls: []
+--- !u!114 &518165546
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1384401473}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 62cc24c4094f4c56b44b99e79a056d73, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: HiddenHarbours.Economy::HiddenHarbours.Economy.SupplyShop
+  _supply: {fileID: 11400000, guid: 3e7f76e54f0d4fdc9ac25593ebcc814c, type: 2}
+  _sellerId: seller.leblancs
+  _walletProvider: {fileID: 1773492499}
+  _onPurchased:
+    m_PersistentCalls:
+      m_Calls: []
+--- !u!114 &2071340022
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1384401473}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 62cc24c4094f4c56b44b99e79a056d73, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: HiddenHarbours.Economy::HiddenHarbours.Economy.SupplyShop
+  _supply: {fileID: 11400000, guid: 42dda1f1cebe42e7866efb4f86743cc9, type: 2}
+  _sellerId: seller.leblancs
+  _walletProvider: {fileID: 1773492499}
+  _onPurchased:
+    m_PersistentCalls:
+      m_Calls: []
+--- !u!114 &563467952
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1384401473}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 62cc24c4094f4c56b44b99e79a056d73, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: HiddenHarbours.Economy::HiddenHarbours.Economy.SupplyShop
+  _supply: {fileID: 11400000, guid: 8880d541c0fb4e72ab10860cdbcc394b, type: 2}
+  _sellerId: seller.leblancs
+  _walletProvider: {fileID: 1773492499}
+  _onPurchased:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &1385273178
 GameObject:
   m_ObjectHideFlags: 0
@@ -102554,6 +102633,9 @@ Transform:
   - {fileID: 122409394}
   - {fileID: 1840128969}
   - {fileID: 67967147}
+  - {fileID: 393698022}
+  - {fileID: 1867124923}
+  - {fileID: 567113301}
   m_Father: {fileID: 356182232}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1878738861
@@ -161525,6 +161607,496 @@ MonoBehaviour:
   m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.PlantField
   Definition: {fileID: 11400000, guid: 76ec0c0cea6a58718a98a31e7da15d81, type: 2}
   GroundSource: {fileID: 910510003}
+--- !u!1001 &1634993502
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 977942616}
+    m_Modifications:
+    - target: {fileID: 839404730520791078, guid: 069317a148180ae4f894cf79cb417d39, type: 3}
+      propertyPath: _id
+      value: fixture.st_peters.ginny_cottage.washstand
+      objectReference: {fileID: 0}
+    - target: {fileID: 2012394428601004863, guid: 069317a148180ae4f894cf79cb417d39, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 3.550003
+      objectReference: {fileID: 0}
+    - target: {fileID: 2012394428601004863, guid: 069317a148180ae4f894cf79cb417d39, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 2.0873985
+      objectReference: {fileID: 0}
+    - target: {fileID: 2012394428601004863, guid: 069317a148180ae4f894cf79cb417d39, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2012394428601004863, guid: 069317a148180ae4f894cf79cb417d39, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2012394428601004863, guid: 069317a148180ae4f894cf79cb417d39, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2012394428601004863, guid: 069317a148180ae4f894cf79cb417d39, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2012394428601004863, guid: 069317a148180ae4f894cf79cb417d39, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2012394428601004863, guid: 069317a148180ae4f894cf79cb417d39, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2012394428601004863, guid: 069317a148180ae4f894cf79cb417d39, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2012394428601004863, guid: 069317a148180ae4f894cf79cb417d39, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6503050993931259974, guid: 069317a148180ae4f894cf79cb417d39, type: 3}
+      propertyPath: m_Name
+      value: WashStand
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 069317a148180ae4f894cf79cb417d39, type: 3}
+--- !u!4 &674199292 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 2012394428601004863, guid: 069317a148180ae4f894cf79cb417d39, type: 3}
+  m_PrefabInstance: {fileID: 1634993502}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1001 &306508108
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 1878120120}
+    m_Modifications:
+    - target: {fileID: 4420263045833924240, guid: 71ac4057a9e647aaa5b1f3e7d70f2d07, type: 3}
+      propertyPath: m_Name
+      value: Toilet
+      objectReference: {fileID: 0}
+    - target: {fileID: 5159439289604540858, guid: 71ac4057a9e647aaa5b1f3e7d70f2d07, type: 3}
+      propertyPath: _id
+      value: fixture.st_peters.ginny_cottage.toilet
+      objectReference: {fileID: 0}
+    - target: {fileID: 8939669668250744907, guid: 71ac4057a9e647aaa5b1f3e7d70f2d07, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 1.4749985
+      objectReference: {fileID: 0}
+    - target: {fileID: 8939669668250744907, guid: 71ac4057a9e647aaa5b1f3e7d70f2d07, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -1.7837353
+      objectReference: {fileID: 0}
+    - target: {fileID: 8939669668250744907, guid: 71ac4057a9e647aaa5b1f3e7d70f2d07, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8939669668250744907, guid: 71ac4057a9e647aaa5b1f3e7d70f2d07, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8939669668250744907, guid: 71ac4057a9e647aaa5b1f3e7d70f2d07, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8939669668250744907, guid: 71ac4057a9e647aaa5b1f3e7d70f2d07, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8939669668250744907, guid: 71ac4057a9e647aaa5b1f3e7d70f2d07, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8939669668250744907, guid: 71ac4057a9e647aaa5b1f3e7d70f2d07, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8939669668250744907, guid: 71ac4057a9e647aaa5b1f3e7d70f2d07, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8939669668250744907, guid: 71ac4057a9e647aaa5b1f3e7d70f2d07, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 71ac4057a9e647aaa5b1f3e7d70f2d07, type: 3}
+--- !u!4 &393698022 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 8939669668250744907, guid: 71ac4057a9e647aaa5b1f3e7d70f2d07, type: 3}
+  m_PrefabInstance: {fileID: 306508108}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1001 &383785600
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 1878120120}
+    m_Modifications:
+    - target: {fileID: 839404730520791078, guid: 069317a148180ae4f894cf79cb417d39, type: 3}
+      propertyPath: _id
+      value: fixture.st_peters.ginny_cottage.bathroom_sink
+      objectReference: {fileID: 0}
+    - target: {fileID: 2012394428601004863, guid: 069317a148180ae4f894cf79cb417d39, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 3.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 2012394428601004863, guid: 069317a148180ae4f894cf79cb417d39, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -1.2373657
+      objectReference: {fileID: 0}
+    - target: {fileID: 2012394428601004863, guid: 069317a148180ae4f894cf79cb417d39, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2012394428601004863, guid: 069317a148180ae4f894cf79cb417d39, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2012394428601004863, guid: 069317a148180ae4f894cf79cb417d39, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2012394428601004863, guid: 069317a148180ae4f894cf79cb417d39, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2012394428601004863, guid: 069317a148180ae4f894cf79cb417d39, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2012394428601004863, guid: 069317a148180ae4f894cf79cb417d39, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2012394428601004863, guid: 069317a148180ae4f894cf79cb417d39, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2012394428601004863, guid: 069317a148180ae4f894cf79cb417d39, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6503050993931259974, guid: 069317a148180ae4f894cf79cb417d39, type: 3}
+      propertyPath: m_Name
+      value: BathroomSink
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 069317a148180ae4f894cf79cb417d39, type: 3}
+--- !u!4 &1867124923 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 2012394428601004863, guid: 069317a148180ae4f894cf79cb417d39, type: 3}
+  m_PrefabInstance: {fileID: 383785600}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1001 &988421229
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 1878120120}
+    m_Modifications:
+    - target: {fileID: 3303309805231746731, guid: f348edbf00544ddb89acd7e879c8a671, type: 3}
+      propertyPath: _id
+      value: fixture.st_peters.ginny_cottage.shower
+      objectReference: {fileID: 0}
+    - target: {fileID: 3338759676406241365, guid: f348edbf00544ddb89acd7e879c8a671, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 2.8499985
+      objectReference: {fileID: 0}
+    - target: {fileID: 3338759676406241365, guid: f348edbf00544ddb89acd7e879c8a671, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -1.6551781
+      objectReference: {fileID: 0}
+    - target: {fileID: 3338759676406241365, guid: f348edbf00544ddb89acd7e879c8a671, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3338759676406241365, guid: f348edbf00544ddb89acd7e879c8a671, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3338759676406241365, guid: f348edbf00544ddb89acd7e879c8a671, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3338759676406241365, guid: f348edbf00544ddb89acd7e879c8a671, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3338759676406241365, guid: f348edbf00544ddb89acd7e879c8a671, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3338759676406241365, guid: f348edbf00544ddb89acd7e879c8a671, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3338759676406241365, guid: f348edbf00544ddb89acd7e879c8a671, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3338759676406241365, guid: f348edbf00544ddb89acd7e879c8a671, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7947399269567592422, guid: f348edbf00544ddb89acd7e879c8a671, type: 3}
+      propertyPath: m_Name
+      value: Shower
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: f348edbf00544ddb89acd7e879c8a671, type: 3}
+--- !u!4 &567113301 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 3338759676406241365, guid: f348edbf00544ddb89acd7e879c8a671, type: 3}
+  m_PrefabInstance: {fileID: 988421229}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1001 &1464504581
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 977942616}
+    m_Modifications:
+    - target: {fileID: 2430395411743991761, guid: 8a9e1dd5574e0de4aa7c81c005330e5e, type: 3}
+      propertyPath: m_Name
+      value: GinnyRodRack
+      objectReference: {fileID: 0}
+    - target: {fileID: 3879039053862897162, guid: 8a9e1dd5574e0de4aa7c81c005330e5e, type: 3}
+      propertyPath: _id
+      value: storage.stpeters.ginny_rod_rack
+      objectReference: {fileID: 0}
+    - target: {fileID: 8570887749275024348, guid: 8a9e1dd5574e0de4aa7c81c005330e5e, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -0.25
+      objectReference: {fileID: 0}
+    - target: {fileID: 8570887749275024348, guid: 8a9e1dd5574e0de4aa7c81c005330e5e, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 2.183817
+      objectReference: {fileID: 0}
+    - target: {fileID: 8570887749275024348, guid: 8a9e1dd5574e0de4aa7c81c005330e5e, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8570887749275024348, guid: 8a9e1dd5574e0de4aa7c81c005330e5e, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8570887749275024348, guid: 8a9e1dd5574e0de4aa7c81c005330e5e, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8570887749275024348, guid: 8a9e1dd5574e0de4aa7c81c005330e5e, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8570887749275024348, guid: 8a9e1dd5574e0de4aa7c81c005330e5e, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8570887749275024348, guid: 8a9e1dd5574e0de4aa7c81c005330e5e, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8570887749275024348, guid: 8a9e1dd5574e0de4aa7c81c005330e5e, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8570887749275024348, guid: 8a9e1dd5574e0de4aa7c81c005330e5e, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 8a9e1dd5574e0de4aa7c81c005330e5e, type: 3}
+--- !u!4 &233621698 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 8570887749275024348, guid: 8a9e1dd5574e0de4aa7c81c005330e5e, type: 3}
+  m_PrefabInstance: {fileID: 1464504581}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1001 &2039350696
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 977942616}
+    m_Modifications:
+    - target: {fileID: 546277435343301657, guid: ca0bbf38090e497468ba965b71d6b0ca, type: 3}
+      propertyPath: m_Name
+      value: GinnyGearLocker
+      objectReference: {fileID: 0}
+    - target: {fileID: 1244638501511046035, guid: ca0bbf38090e497468ba965b71d6b0ca, type: 3}
+      propertyPath: _id
+      value: storage.stpeters.ginny_gear_locker
+      objectReference: {fileID: 0}
+    - target: {fileID: 6364164734926587442, guid: ca0bbf38090e497468ba965b71d6b0ca, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -0.099998474
+      objectReference: {fileID: 0}
+    - target: {fileID: 6364164734926587442, guid: ca0bbf38090e497468ba965b71d6b0ca, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 1.4767513
+      objectReference: {fileID: 0}
+    - target: {fileID: 6364164734926587442, guid: ca0bbf38090e497468ba965b71d6b0ca, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6364164734926587442, guid: ca0bbf38090e497468ba965b71d6b0ca, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6364164734926587442, guid: ca0bbf38090e497468ba965b71d6b0ca, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6364164734926587442, guid: ca0bbf38090e497468ba965b71d6b0ca, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6364164734926587442, guid: ca0bbf38090e497468ba965b71d6b0ca, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6364164734926587442, guid: ca0bbf38090e497468ba965b71d6b0ca, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6364164734926587442, guid: ca0bbf38090e497468ba965b71d6b0ca, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6364164734926587442, guid: ca0bbf38090e497468ba965b71d6b0ca, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: ca0bbf38090e497468ba965b71d6b0ca, type: 3}
+--- !u!4 &1176197895 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 6364164734926587442, guid: ca0bbf38090e497468ba965b71d6b0ca, type: 3}
+  m_PrefabInstance: {fileID: 2039350696}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1001 &1859706062
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 1709556905}
+    m_Modifications:
+    - target: {fileID: 6250056019406461898, guid: fd80bfe97cd136a40bcf2021ecd6ab30, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 82.43
+      objectReference: {fileID: 0}
+    - target: {fileID: 6250056019406461898, guid: fd80bfe97cd136a40bcf2021ecd6ab30, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 43.012
+      objectReference: {fileID: 0}
+    - target: {fileID: 6250056019406461898, guid: fd80bfe97cd136a40bcf2021ecd6ab30, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6250056019406461898, guid: fd80bfe97cd136a40bcf2021ecd6ab30, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6250056019406461898, guid: fd80bfe97cd136a40bcf2021ecd6ab30, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6250056019406461898, guid: fd80bfe97cd136a40bcf2021ecd6ab30, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6250056019406461898, guid: fd80bfe97cd136a40bcf2021ecd6ab30, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6250056019406461898, guid: fd80bfe97cd136a40bcf2021ecd6ab30, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6250056019406461898, guid: fd80bfe97cd136a40bcf2021ecd6ab30, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6250056019406461898, guid: fd80bfe97cd136a40bcf2021ecd6ab30, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7731194034759907460, guid: fd80bfe97cd136a40bcf2021ecd6ab30, type: 3}
+      propertyPath: m_Name
+      value: CamperShoreLead
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: fd80bfe97cd136a40bcf2021ecd6ab30, type: 3}
+--- !u!4 &537673938 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 6250056019406461898, guid: fd80bfe97cd136a40bcf2021ecd6ab30, type: 3}
+  m_PrefabInstance: {fileID: 1859706062}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &1073621399
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1709556905}
+  m_Layer: 0
+  m_Name: StPetersOpenAirFixtures
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1709556905
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1073621399}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 537673938}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -161586,3 +162158,4 @@ SceneRoots:
   - {fileID: 1757780506}
   - {fileID: 866884044}
   - {fileID: 910510002}
+  - {fileID: 1709556905}

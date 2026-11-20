@@ -19,3 +19,10 @@ MonoBehaviour:
   Price: 3
   FavorsSpeciesIds:
   - fish.lobster
+  Catalog:
+    Listed: 0
+    Section: 5
+    Sellers:
+    - seller.leblancs
+    - seller.nmc_fishing_gear_wholesaler
+    SortOrder: 31

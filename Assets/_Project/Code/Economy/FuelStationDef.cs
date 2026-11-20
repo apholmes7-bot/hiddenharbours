@@ -120,5 +120,13 @@ namespace HiddenHarbours.Economy
                 return n;
             }
         }
+        [Header("Custom identity")]
+        [Tooltip("NpcDef.Id of this till's keeper. Leave empty where no keeper has been authored.")]
+        public string KeeperNpcId = "";
+        [Tooltip("Stable trade/kind for daily custom shares, authored in data.")]
+        public string TradeId = "";
+
+        public HiddenHarbours.Core.TradeCounterparty Counterparty
+            => new HiddenHarbours.Core.TradeCounterparty(KeeperNpcId, Id, TradeId);
     }
 }

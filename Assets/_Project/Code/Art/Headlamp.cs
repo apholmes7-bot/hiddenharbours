@@ -5,26 +5,38 @@ using HiddenHarbours.Core;
 namespace HiddenHarbours.Art
 {
     /// <summary>
-    /// <b>The walker's headlamp</b> — the directed half of world-lighting PR 3: a narrow cone worn on her
-    /// brow, switched, aimed wherever she is looking.
+    /// <b>The walker's headlamp</b> — the directed half of world-lighting PR 3: a narrow cone worn on his
+    /// forehead, switched, aimed wherever he is looking.
     ///
-    /// <para><b>Why a headlamp and not a torch in her hand.</b> The owner asked for <i>"a spotlight"</i>.
+    /// <para><b>Why a headlamp and not a torch in his hand.</b> The owner asked for <i>"a spotlight"</i>.
     /// A hand torch would cost a hand — and the TOOL CONTINUITY LAW (owner playtest, 2026-08-23) says what
-    /// she is holding does not silently change underneath her, so a torch would have to be taken out and
-    /// put away, and would fight the rod and the catch for the same slot. A headlamp costs no slot. Its small housing and lens are drawn at the live mesh head point.</para>
+    /// he is holding does not silently change underneath him, so a torch would have to be taken out and
+    /// put away, and would fight the rod and the catch for the same slot. A headlamp costs no slot.</para>
+    ///
+    /// <para><b>Worn from the pocket (owner, 2026-11-16).</b> It starts in his pocket and nothing is drawn
+    /// on his head. Putting it on (<see cref="PutOn"/>) draws a small lamp on a head strap at his
+    /// forehead, and it stays drawn while he wears it, lit or not (<see cref="FittingShows"/>); taking it
+    /// off (<see cref="TakeOff"/>) puts it back in the pocket and switches it off. Lighting it implies
+    /// wearing it. The worn state is a transient like the switch: nothing is saved.</para>
+    ///
+    /// <para><b>The light leaves the lens.</b> The lens is a point on his head, in the head bone's own
+    /// frame (<see cref="GameConfig.WalkerHeadlampLensForwardMetres"/>, <see cref="GameConfig.WalkerHeadlampLensUpMetres"/>
+    /// from the rig's head mid point), so it turns and bobs with the head. The glow sits exactly on that
+    /// point, the cone starts on the ground directly beneath it, and the drawn lens pixel is pinned to it in
+    /// every facing. From behind the strap is drawn and the lens is hidden by his head.</para>
     ///
     /// <para><b>It lights the world, not just a patch of ground</b> — which is the whole reason it is a
     /// <see cref="SceneLight"/> and not a sprite:
     /// <list type="bullet">
     ///   <item>the GROUND, through <see cref="LampPoolSystem"/> off <see cref="SceneLight.ReachMetres"/>
     ///   (#736's pool — the thing the bloom used to stand in for);</item>
-    ///   <item>the WATER, through <see cref="IWaterLightEmitter"/> — from a wharf edge her beam plays on
+    ///   <item>the WATER, through <see cref="IWaterLightEmitter"/> — from a wharf edge his beam plays on
     ///   the sea by the same relief model the searchlight uses (#691), taking one of the bridge's four
     ///   nearest-lamp slots;</item>
     ///   <item>the TREES, shrubs and shore plants, through the lit-decor path — which reads one global
     ///   lamp, so who writes it is arbitrated: see <see cref="WalkerLights.OwnsDecorLight"/>;</item>
     ///   <item>and it throws CAST SHADOWS off whatever stands in it (<see cref="LampShadowSystem"/>) —
-    ///   except her own, which the carrier rule declines.</item>
+    ///   except his own, which the carrier rule declines.</item>
     /// </list></para>
     ///
     /// <para><b>Determinism (rule 5):</b> the beam's state is a transient the player toggles; nothing is
@@ -35,8 +47,12 @@ namespace HiddenHarbours.Art
     [RequireComponent(typeof(SceneLight))]
     public sealed class Headlamp : MonoBehaviour, IWaterLightEmitter
     {
-        [Tooltip("Is the beam switched ON? A transient — never saved, and off is the state she starts in.")]
+        [Tooltip("Is the beam switched ON? A transient — never saved, and off is the state he starts in.")]
         [SerializeField] private bool _on;
+
+        [Tooltip("Is the lamp on his head (true) or in his pocket (false)? A transient — never saved; " +
+                 "it starts in the pocket.")]
+        [SerializeField] private bool _worn;
 
         [Tooltip("How hard the beam reads on WATER relative to land, so the owner can balance the two " +
                  "independently — the same dial BoatSpotlight's searchlight carries, and for the same reason.")]
@@ -52,20 +68,28 @@ namespace HiddenHarbours.Art
         private IsoCharacterFigureRenderer _mountedFigure;
         private SpriteRenderer _fitting;
         private Camera _headCamera;
+        private View _view = View.Front;
+        private Vector2 _bandOffset;
         private readonly List<IsoCharacterFigureRenderer> _figures = new(2);
         private readonly List<MeshFilter> _filters = new(3);
-        private static Sprite _fittingSprite;
+        private static Sprite[] _unlitSprites, _litSprites;
         private static Headlamp _decorOwner;
 
         /// <summary>Is the beam lit?</summary>
         public bool IsOn => _on;
 
+        /// <summary>Is the lamp on his head (as opposed to in his pocket)?</summary>
+        public bool IsWorn => _worn;
+
+        /// <summary>Which way the drawn lamp is seen this frame (from the head's facing on screen).</summary>
+        public View DrawnView => _view;
+
         /// <summary>The lamp this drives.</summary>
         public SceneLight Light => _light != null ? _light : _light = GetComponent<SceneLight>();
 
-        /// <summary>Set the height it is worn at. The beam's SHAPE is not a parameter: it comes from
-        /// <see cref="LightPresets.ConeHalfDegrees"/>, so the angle is written in exactly one place and
-        /// the preset library's own guard can assert it. Called once by the carrier.</summary>
+        /// <summary>Set the height it is worn at before a mesh head exists. The beam's SHAPE is not a
+        /// parameter: it comes from <see cref="LightPresets.ConeHalfDegrees"/>, so the angle is written in
+        /// exactly one place and the preset library's own guard can assert it. Called once by the carrier.</summary>
         public void Configure(float browHeightMetres)
         {
             SceneLight l = Light;
@@ -77,30 +101,60 @@ namespace HiddenHarbours.Art
             l.ConeHalfAngle = LightPresets.ConeHalfDegrees(LightPresets.Kind.Headlamp);
             l.AngularSoftness = 0.35f;                 // a feathered edge; a hard-edged cone reads as a cutout
             l.ReachMetres = LightPresets.ReachMetres(LightPresets.Kind.Headlamp);
-            l.BloomLiftMetres = browHeightMetres;      // the lit fitting rides on her brow (#733)
+            l.BloomLiftMetres = browHeightMetres;      // the lit lens rides on his forehead (#733)
             l.LampHeightMeters = browHeightMetres;     // and its cast shadows are thrown from there
             l.CastsShadows = true;
             ApplyBeamState();
         }
 
-        /// <summary>Throw the switch.</summary>
-        public void Toggle() => SetOn(!_on);
+        /// <summary>Take it out of the pocket and put it on, lit. Already worn, it just lights.</summary>
+        public void PutOn()
+        {
+            _worn = true;
+            _on = true;
+            ApplyBeamState();
+        }
 
-        /// <summary>Set the beam on or off.</summary>
+        /// <summary>Take it off into the pocket. It goes out as it comes off.</summary>
+        public void TakeOff()
+        {
+            _worn = false;
+            _on = false;
+            ApplyBeamState();
+        }
+
+        /// <summary>Wear it or pocket it without touching the switch, except that a pocketed lamp is
+        /// never lit.</summary>
+        public void SetWorn(bool worn)
+        {
+            _worn = worn;
+            if (!worn) _on = false;
+            ApplyBeamState();
+        }
+
+        /// <summary>Throw the switch. A lamp in the pocket is put on first (<see cref="PutOn"/>).</summary>
+        public void Toggle()
+        {
+            if (!_worn) PutOn();
+            else SetOn(!_on);
+        }
+
+        /// <summary>Set the beam on or off. Lighting it puts it on his head: a lit lamp is a worn lamp.</summary>
         public void SetOn(bool on)
         {
             _on = on;
+            if (on) _worn = true;
             ApplyBeamState();
         }
 
         /// <summary>
-        /// Is this lamp hers to burn at all right now? Off her feet the whole component stands down —
-        /// the renderer, the water slot and the decor singleton alike — so nothing of hers is lit while
-        /// she is at a wheel.
+        /// Is this lamp his to burn at all right now? Off his feet the whole component stands down —
+        /// the renderer, the drawn lamp, the water slot and the decor singleton alike — so nothing of his is
+        /// lit or drawn while he is at a wheel.
         ///
-        /// <para>⚠️ It does NOT clear <see cref="_on"/>. Stepping aboard and back off again should give her
-        /// the beam she had, not a lamp she has to switch on twice; the state is hers, the LIVENESS is the
-        /// mode's.</para>
+        /// <para>⚠️ It does NOT clear <see cref="_on"/> or <see cref="_worn"/>. Stepping aboard and back
+        /// off again should give him the lamp he had, not a lamp he has to put on and switch on again; the
+        /// state is his, the LIVENESS is the mode's.</para>
         /// </summary>
         public void SetLive(bool live)
         {
@@ -127,27 +181,27 @@ namespace HiddenHarbours.Art
         }
 
         /// <summary>
-        /// <b>⭐ SHE WRITES THE ONE DECOR LAMP — the other half of "one publisher".</b>
+        /// <b>⭐ HE WRITES THE ONE DECOR LAMP — the other half of "one publisher".</b>
         ///
         /// <para><see cref="WalkerLights.OwnsDecorLight"/> makes every <see cref="BoatSpotlight"/> in the
-        /// scene STAND OFF the <c>_BoatLight*</c> singleton while her beam is lit. That half on its own is
+        /// scene STAND OFF the <c>_BoatLight*</c> singleton while his beam is lit. That half on its own is
         /// not a handover, it is a HOLE: with the boats standing off and nothing put in their place, the
         /// five globals simply KEEP whatever a boat wrote last — a beam frozen at a moored dory's bow, or
-        /// zeros in a region with no boat in it — and the trees in front of her are lit by a ghost, or not
+        /// zeros in a region with no boat in it — and the trees in front of him are lit by a ghost, or not
         /// at all. Standing the boats off is only correct because this line takes their place.
         /// </para>
         ///
         /// <para><b>Off the WATER state, deliberately.</b> The numbers are the ones
         /// <see cref="TryGetWaterLight"/> has already composed, published through
-        /// <see cref="DecorLampGlobals"/>'s <c>WaterLightState</c> overload — so her beam cannot light a
-        /// spruce unlike it lights the sea she is pointing it over, and it carries the same water-strength
+        /// <see cref="DecorLampGlobals"/>'s <c>WaterLightState</c> overload — so his beam cannot light a
+        /// spruce unlike it lights the sea he is pointing it over, and it carries the same water-strength
         /// scaling a boat's searchlight carries into this same path (<c>BoatSpotlight</c> publishes its
         /// <c>waterIntensity</c> here, not its land intensity). One packing, one meaning, both lamps.</para>
         ///
         /// <para><b>⚠️ LateUpdate, not Update, and that is the ordering guarantee.</b> Every
-        /// <see cref="BoatSpotlight"/> publishes in <c>Update</c>. Writing here makes her the LAST word in
-        /// the frame whatever order the boats ticked in — so on the frame her beam is switched ON she
-        /// cannot be overwritten by a boat that happened to run after her, and on the frame it is switched
+        /// <see cref="BoatSpotlight"/> publishes in <c>Update</c>. Writing here makes him the LAST word in
+        /// the frame whatever order the boats ticked in — so on the frame his beam is switched ON he
+        /// cannot be overwritten by a boat that happened to run after him, and on the frame it is switched
         /// OFF the boats resume with no blank frame in between. The stand-off guard and this ordering are
         /// belt and braces on purpose: either one alone leaves a single-frame flicker in the woods, which
         /// is exactly the class of defect nothing would ever report.</para>
@@ -166,6 +220,22 @@ namespace HiddenHarbours.Art
             WaterLightState dark = default;
             DecorLampGlobals.Publish(in dark);
             _decorOwner = null;
+        }
+
+        /// <summary>The lens, metres in the head bone's frame from the rig's head mid point.</summary>
+        public static Vector3 LensOffsetHeadLocal()
+        {
+            GameConfig c = GameServices.Config;
+            float forward = c != null ? c.WalkerHeadlampLensForwardMetres : GameConfig.DefaultWalkerHeadlampLensForwardMetres;
+            float up = c != null ? c.WalkerHeadlampLensUpMetres : GameConfig.DefaultWalkerHeadlampLensUpMetres;
+            return new Vector3(0f, forward, up);
+        }
+
+        /// <summary>How far behind the lens the strap crosses the back of his head, metres.</summary>
+        public static float StrapBackMetres()
+        {
+            GameConfig c = GameServices.Config;
+            return c != null ? c.WalkerHeadlampStrapBackMetres : GameConfig.DefaultWalkerHeadlampStrapBackMetres;
         }
 
         // A visible mesh is the source of truth. Hidden figures retain stale HeadSnapPoint data.
@@ -194,10 +264,22 @@ namespace HiddenHarbours.Art
             if (drawn)
             {
                 Vector4 h = liveFigure.HeadSnapPoint;
-                Vector3 head = SnapDrawnHead(_facet.TransformPoint(new Vector3(h.x, h.y, h.z)));
-                _headOffset = (Vector2)head - (Vector2)_carrier.position;
-                _projectedLift = IsoGround.HeightScale * Mathf.Max(.01f, h.z);
-                Light.LampHeightMeters = Mathf.Max(.01f, h.z);
+                Vector3 headRig = new Vector3(h.x, h.y, h.z);
+                Vector3 offset = LensOffsetHeadLocal();
+                Vector3 mid = liveFigure.HeadMidLocal;
+                Vector3 lensRig = liveFigure.HeadLocalToFigure(mid + offset);
+                Vector3 bandRig = liveFigure.HeadLocalToFigure(mid + offset - new Vector3(0f, StrapBackMetres(), 0f));
+                // The head is drawn snapped to the art grid about its mid point; the lens rides the same
+                // snap, a whole number of art pixels from it, so it never swims against the face.
+                Vector3 headWorld = _facet.TransformPoint(headRig);
+                Vector3 head = SnapDrawnHead(headWorld);
+                Vector2 lens = (Vector2)head + OnArtGrid((Vector2)(_facet.TransformPoint(lensRig) - headWorld));
+                _bandOffset = OnArtGrid((Vector2)(_facet.TransformPoint(bandRig) - headWorld)) + (Vector2)head - lens;
+                _headOffset = lens - (Vector2)_carrier.position;
+                float height = Mathf.Max(.01f, lensRig.z);
+                _projectedLift = IsoGround.HeightScale * height;
+                Light.LampHeightMeters = height;
+                _view = ViewOf(liveFigure.HeadDirectionToFigure(Vector3.up), _facet);
                 _hasHeadPoint = true;
             }
             // ConstantLiftUntilFirstHeadPoint; after that, every sprite pose holds this root offset.
@@ -209,10 +291,13 @@ namespace HiddenHarbours.Art
             if (drawn && _hasHeadPoint && _fitting == null) BuildFitting();
             if (_fitting != null)
             {
-                _fitting.enabled = drawn && _live;
-                _fitting.transform.position = new Vector3(point.x, point.y, _carrier.position.z);
+                _fitting.enabled = FittingShows(drawn, _live, _worn);
+                _fitting.sprite = SpriteFor(_view, _on);
+                // Views that show the lens pin it to the light's origin; from behind, the strap is centred
+                // on the band round the back of his head.
+                Vector2 at = LensShows(_view) ? point : point + _bandOffset;
+                _fitting.transform.position = new Vector3(at.x, at.y, _carrier.position.z);
                 _fitting.transform.rotation = Quaternion.identity;
-                _fitting.color = _on ? Color.white : new Color(.55f, .55f, .55f, 1f);
                 if (drawn && liveFigure.AshoreOverlay != null)
                 {
                     _fitting.sortingLayerID = liveFigure.AshoreOverlay.sortingLayerID;
@@ -221,6 +306,140 @@ namespace HiddenHarbours.Art
                 }
             }
         }
+
+        /// <summary>
+        /// <b>Is the lamp drawn on his head?</b> While he wears it, lit or not, he is on his feet and a
+        /// mesh head is drawn to wear it. In the pocket nothing is drawn: the 2026-11-16 face fix (#1259)
+        /// stands, now as "pocketed means no lamp on the head".
+        /// </summary>
+        public static bool FittingShows(bool headDrawn, bool live, bool worn) => headDrawn && live && worn;
+
+        // =============================================================================================
+        //  THE DRAWN LAMP — a small lamp on a head strap, per view
+        // =============================================================================================
+
+        /// <summary>How the lamp is seen. Right/Left is the way he faces on screen.</summary>
+        public enum View
+        {
+            Front, FrontQuarterRight, SideRight, BackQuarterRight, Back,
+            FrontQuarterLeft, SideLeft, BackQuarterLeft,
+        }
+
+        /// <summary>Does this view show the lens? From behind his head hides it.</summary>
+        public static bool LensShows(View view) =>
+            view != View.Back && view != View.BackQuarterRight && view != View.BackQuarterLeft;
+
+        /// <summary>
+        /// The view from his head's facing: the angle between where the head points on the ground and the
+        /// direction toward the camera, read through the facet's own projection so no screen ratio is
+        /// assumed. 0° faces the viewer, 180° faces away; the eight views split it every 45°.
+        /// </summary>
+        public static View ViewOf(Vector3 headForwardFigure, Transform facet)
+        {
+            Vector3 ex = facet.TransformVector(Vector3.right), ey = facet.TransformVector(Vector3.up);
+            float det = ex.x * ey.y - ey.x * ex.y;
+            if (Mathf.Abs(det) < 1e-9f) return View.Front;
+            // Figure-ground directions whose screen images are straight down (toward the viewer) and right.
+            Vector2 toward = new Vector2(ey.x, -ex.x) / det, right = new Vector2(ey.y, -ex.y) / det;
+            Vector2 g = new Vector2(headForwardFigure.x, headForwardFigure.y);
+            if (g.sqrMagnitude < 1e-9f || toward.sqrMagnitude < 1e-12f || right.sqrMagnitude < 1e-12f) return View.Front;
+            float a = Mathf.Atan2(Vector2.Dot(g, right.normalized), Vector2.Dot(g, toward.normalized)) * Mathf.Rad2Deg;
+            return ViewOfAngle(a);
+        }
+
+        /// <summary>The view for a facing angle in degrees (0 toward the viewer, positive to screen right).</summary>
+        public static View ViewOfAngle(float degrees)
+        {
+            float a = Mathf.Abs(Mathf.DeltaAngle(0f, degrees));
+            bool right = Mathf.DeltaAngle(0f, degrees) > 0f;
+            if (a <= 22.5f) return View.Front;
+            if (a <= 67.5f) return right ? View.FrontQuarterRight : View.FrontQuarterLeft;
+            if (a <= 112.5f) return right ? View.SideRight : View.SideLeft;
+            if (a <= 157.5f) return right ? View.BackQuarterRight : View.BackQuarterLeft;
+            return View.Back;
+        }
+
+        // Pixel maps, top row first, drawn for the RIGHT-facing views and mirrored for the left.
+        // S strap · B buckle · h housing top · H housing · L lens. The anchor is the lens pixel where the
+        // view shows one, else the middle of the band; the sprite's pivot sits on its centre.
+        private static readonly string[][] Maps =
+        {
+            new[] { "..hhh..", "SSHLHSS" },   // Front: lamp on the forehead, strap both ways
+            new[] { "...hh.", "SSSHLS" },     // FrontQuarterRight
+            new[] { "....hh.", "SSSSSHL" },   // SideRight: lamp at the brow in profile, strap round the head
+            new[] { ".....h", "SSSSSH" },     // BackQuarterRight: strap and the lamp's edge past his head
+            new[] { "SSSBSSS" },              // Back: strap only
+        };
+        private static readonly Vector2Int[] Anchors =
+        {
+            new(3, 1), new(4, 1), new(6, 1), new(3, 1), new(3, 0),
+        };
+
+        public static readonly Color32 StrapColour = new(84, 74, 64, 255);
+        public static readonly Color32 BuckleColour = new(140, 132, 118, 255);
+        public static readonly Color32 HousingColour = new(170, 74, 58, 255);
+        public static readonly Color32 HousingTopColour = new(198, 104, 82, 255);
+        public static readonly Color32 LensUnlitColour = new(150, 170, 186, 255);
+        public static readonly Color32 LensLitColour = new(255, 246, 220, 255);
+
+        /// <summary>The sprite drawn for a view, lit or unlit (the lens is the only pixel that changes).</summary>
+        public static Sprite SpriteFor(View view, bool lit)
+        {
+            if (_litSprites == null) BuildSprites();
+            return (lit ? _litSprites : _unlitSprites)[(int)view];
+        }
+
+        private static void BuildSprites()
+        {
+            int views = System.Enum.GetValues(typeof(View)).Length;
+            _unlitSprites = new Sprite[views];
+            _litSprites = new Sprite[views];
+            for (int v = 0; v < views; v++)
+            {
+                bool left = v > (int)View.Back;
+                int map = left ? v - (int)View.Back : v;   // FrontQuarterLeft→1, SideLeft→2, BackQuarterLeft→3
+                _unlitSprites[v] = BuildSprite(Maps[map], Anchors[map], left, false, ((View)v).ToString());
+                _litSprites[v] = BuildSprite(Maps[map], Anchors[map], left, true, ((View)v).ToString());
+            }
+        }
+
+        private static Sprite BuildSprite(string[] rows, Vector2Int anchor, bool mirror, bool lit, string name)
+        {
+            int h = rows.Length, w = rows[0].Length;
+            var texture = new Texture2D(w, h, TextureFormat.RGBA32, false)
+            {
+                name = "Headlamp" + name + (lit ? "Lit" : ""), filterMode = FilterMode.Point,
+                wrapMode = TextureWrapMode.Clamp, hideFlags = HideFlags.HideAndDontSave,
+            };
+            var pixels = new Color32[w * h];
+            for (int r = 0; r < h; r++)
+            for (int x = 0; x < w; x++)
+            {
+                char c = rows[r][mirror ? w - 1 - x : x];
+                pixels[(h - 1 - r) * w + x] = c switch
+                {
+                    'S' => StrapColour,
+                    'B' => BuckleColour,
+                    'h' => HousingTopColour,
+                    'H' => HousingColour,
+                    'L' => lit ? LensLitColour : LensUnlitColour,
+                    _ => new Color32(0, 0, 0, 0),
+                };
+            }
+            texture.SetPixels32(pixels); texture.Apply();
+            int ax = mirror ? w - 1 - anchor.x : anchor.x;
+            var pivot = new Vector2((ax + .5f) / w, (h - 1 - anchor.y + .5f) / h);
+            var sprite = Sprite.Create(texture, new Rect(0, 0, w, h), pivot, ArtPixelsPerMetre);
+            sprite.name = texture.name;
+            sprite.hideFlags = HideFlags.HideAndDontSave;
+            return sprite;
+        }
+
+        /// <summary>Art pixels per world unit — the figure grid the snap rounds to.</summary>
+        public const float ArtPixelsPerMetre = 32f;
+
+        private static Vector2 OnArtGrid(Vector2 d) =>
+            new(Mathf.Round(d.x * ArtPixelsPerMetre) / ArtPixelsPerMetre, Mathf.Round(d.y * ArtPixelsPerMetre) / ArtPixelsPerMetre);
 
         private Vector3 SnapDrawnHead(Vector3 world)
         {
@@ -247,30 +466,16 @@ namespace HiddenHarbours.Art
 
         private void BuildFitting()
         {
-            if (_fittingSprite == null)
-            {
-                var texture = new Texture2D(5, 3, TextureFormat.RGBA32, false)
-                { name = "HeadlampHousing", filterMode = FilterMode.Point, hideFlags = HideFlags.HideAndDontSave };
-                var pixels = new Color32[15];
-                for (int y = 0; y < 3; y++)
-                for (int x = 0; x < 5; x++)
-                    pixels[y * 5 + x] = y == 1 && x > 0 && x < 4
-                        ? new Color32(210, 220, 230, 255) : new Color32(38, 42, 46, 255);
-                texture.SetPixels32(pixels); texture.Apply();
-                // Centre the housing; its measured raster offset stays within one art pixel of the head origin.
-                var pivot = new Vector2(.5f, .5f);
-                _fittingSprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), pivot, 32f);
-                _fittingSprite.hideFlags = HideFlags.HideAndDontSave;
-            }
             var go = new GameObject("HeadlampFitting") { hideFlags = HideFlags.DontSave, layer = gameObject.layer };
             go.transform.SetParent(transform, false);
             _fitting = go.AddComponent<SpriteRenderer>();
-            _fitting.sprite = _fittingSprite;
+            _fitting.sprite = SpriteFor(_view, _on);
             _fitting.sharedMaterial = Resources.Load<Material>("PlayerSubmerge");
+            _fitting.enabled = false;
         }
 
         /// <summary>
-        /// Publish this beam as the lit-decor path's one lamp, IF she is the one who owns it this frame.
+        /// Publish this beam as the lit-decor path's one lamp, IF he is the one who owns it this frame.
         /// Returns whether it published.
         ///
         /// <para>Split out of <c>LateUpdate</c> for one reason: EditMode runs no Unity messages, so a
@@ -290,11 +495,16 @@ namespace HiddenHarbours.Art
         private void ApplyBeamState()
         {
             if (Light != null) Light.enabled = _live && _on;
+            if (_fitting != null)
+            {
+                if (!(_live && _worn)) _fitting.enabled = false;
+                else _fitting.sprite = SpriteFor(_view, _on);
+            }
         }
 
         /// <summary>
         /// The water's view of this beam: the same numbers the land quad burns at, so the sea and the
-        /// ground can never disagree about where she is pointing or how hard the lamp is going.
+        /// ground can never disagree about where he is pointing or how hard the lamp is going.
         /// </summary>
         public bool TryGetWaterLight(out WaterLightState state)
         {

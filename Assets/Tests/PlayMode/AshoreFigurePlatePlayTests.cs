@@ -290,7 +290,7 @@ namespace HiddenHarbours.Tests.PlayMode
             if (_loadedConfig != null) GameServices.Config = _loadedConfig;
             if (_switchOff != null) Object.Destroy(_switchOff);
             if (_switchOn != null) Object.Destroy(_switchOn);
-            if (_headlampTurnedOn != null) _headlampTurnedOn.SetOn(false);
+            if (_headlampTurnedOn != null) _headlampTurnedOn.TakeOff();
             if (_plateWalkerLights != null)
             {
                 if (_plateWalkerLights.Beam != null) Object.Destroy(_plateWalkerLights.Beam.gameObject);
@@ -317,7 +317,7 @@ namespace HiddenHarbours.Tests.PlayMode
 
             Scene additiveDestination = SceneManager.GetSceneByName(NineMileCreekScene);
             if (additiveDestination.IsValid() && additiveDestination.isLoaded)
-                yield return SceneManager.UnloadSceneAsync(additiveDestination);
+                yield return HiddenHarbours.Tests.Support.SceneSettle.Unload(additiveDestination);
 
             foreach (GameObject go in PersistentRoots())
                 if (go != null && !_residentBefore.Contains(go)) Object.DestroyImmediate(go);
@@ -1996,8 +1996,8 @@ namespace HiddenHarbours.Tests.PlayMode
 
             bool lit = lamp.IsOn && lamp.Light != null && lamp.Light.enabled;
             if (!lit)
-                _lampUnlitWhy = $"her headlamp is ON but not LIVE: WalkerLights.WalksHerOwnBeam " +
-                                $"{WalkerLights.WalksHerOwnBeam} (InteractActorProbe.Has {InteractActorProbe.Has}" +
+                _lampUnlitWhy = $"his headlamp is ON but not LIVE: WalkerLights.WalksHisOwnBeam " +
+                                $"{WalkerLights.WalksHisOwnBeam} (InteractActorProbe.Has {InteractActorProbe.Has}" +
                                 (InteractActorProbe.Has ? $", context {InteractActorProbe.Current.Context}" : "") +
                                 $"), SceneLight {(lamp.Light == null ? "missing" : lamp.Light.enabled ? "enabled" : "disabled")}";
 

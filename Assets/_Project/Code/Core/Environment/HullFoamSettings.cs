@@ -23,7 +23,9 @@ namespace HiddenHarbours.Core
         [Range(0f, 2f)] public float LeadWeight;
         [Tooltip("Speed along her length, m/s, at which the leading end's foam saturates. Zero uses 3.")]
         [Range(0f, 12f)] public float LeadSpeedKnee;
-        [Tooltip("Half-length of the leading end's foam across her, in half-beams. Zero uses 0.8.")]
+        [Tooltip("How far out across her the leading end's foam reaches each side, in half-beams: the bow " +
+                 "wave runs aft along her waterline until it is this wide; the transom's bar spans this " +
+                 "each side. Zero uses 0.8.")]
         [Range(0f, 2f)] public float LeadSpanHalfBeams;
         [Tooltip("Thickness of the leading end's foam, in half-beams. Zero uses 0.35.")]
         [Range(0f, 1f)] public float LeadRadiusHalfBeams;
@@ -38,11 +40,19 @@ namespace HiddenHarbours.Core
         [Tooltip("How far toward each end the side's foam reaches, as a share of the half-length. Zero uses 0.7.")]
         [Range(0f, 1f)] public float SideReach;
 
+        [Tooltip("The foam parts round her WATERLINE, which narrows to her stem: the share of her length, " +
+                 "from the stem aft, over which it narrows. A wider share is a finer bow. Zero uses 0.35.")]
+        [Range(0f, 1f)] public float ContactBowTaper;
+        [Tooltip("Half her waterline's width right at the stem, in half-beams (the foam parts round a " +
+                 "point there, not a square end). Zero uses 0.12.")]
+        [Range(0f, 1f)] public float ContactStemHalfBeams;
+
         public static HullFoamSettings Default => new HullFoamSettings
         {
             TrailFlipSpeed = 0.15f,
             LeadWeight = 0.6f, LeadSpeedKnee = 3f, LeadSpanHalfBeams = 0.8f, LeadRadiusHalfBeams = 0.35f,
             SideWeight = 0.8f, SideSpeedKnee = 1.2f, SideRadiusHalfBeams = 0.3f, SideReach = 0.7f,
+            ContactBowTaper = 0.35f, ContactStemHalfBeams = 0.12f,
         };
     }
 }

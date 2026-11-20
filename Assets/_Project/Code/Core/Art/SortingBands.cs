@@ -35,6 +35,16 @@ namespace HiddenHarbours.Core
         /// (<c>ShorePlantDef.SubmergedSortingOrder</c>; the plant returns to the decor band when emergent.)</summary>
         public const int SubmergedShorePlant = -8;
 
+        /// <summary>
+        /// Growth that must draw UNDER every hull (whose picture sorts at <c>BoatVisualDef.SortingOrder</c>,
+        /// 1, below the decor band): ground cover and intertidal weed lying on the foreshore, and a taller
+        /// plant while it stands behind a hull's waterline. Over the seabed and a submerged plant, under
+        /// the sea plane, which draws nothing on dry ground and reads over the weed where the tide does
+        /// reach it. (The owner, 2026-11-16: "sprites appear above the boat when they should be
+        /// below/behind".)
+        /// </summary>
+        public const int UnderHulls = -6;
+
         /// <summary>The sea plane itself.</summary>
         public const int Sea = -5;
 
@@ -84,6 +94,13 @@ namespace HiddenHarbours.Core
         /// (2402.) Nothing that must draw over all decor may sit at or below this — see
         /// <see cref="AboveDecor"/>.</summary>
         public const int DecorCeiling = DecorBase + (int)(DecorHalfExtentMetres * OrdersPerMetre);
+
+        /// <summary>
+        /// How many rungs a hull sorts BEHIND the decor band's Y-sort at her waterline pivot (ADR 0059,
+        /// <see cref="HullSorting.OrderAt"/>). One, the mesh vehicle's rule: whoever stands on her root
+        /// would otherwise tie with her, and the hull must yield so he draws over the deck he stands on.
+        /// </summary>
+        public const int HullYieldRungs = 1;
 
         // --- ABOVE THE DECOR BAND ---------------------------------------------------------------------
 

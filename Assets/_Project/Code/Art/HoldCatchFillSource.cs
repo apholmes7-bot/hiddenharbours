@@ -10,7 +10,8 @@ namespace HiddenHarbours.Art
     /// <c>GetComponent&lt;IHold&gt;()</c> resolution <c>WharfSellPoint</c> uses against the provider/proxy
     /// pattern), and refreshes ride the Core bus edges the deck tray already established —
     /// <see cref="FishCaught"/>, <see cref="CatchSold"/>, <see cref="CatchDumped"/>,
-    /// <see cref="GameLoaded"/>, <see cref="BoatPurchased"/>. No reference to Boats, Fishing or Economy
+    /// <see cref="GameLoaded"/>, <see cref="BoatPurchased"/>, and <see cref="GiftGiven"/> (a gift can come
+    /// out of this very pail). No reference to Boats, Fishing or Economy
     /// concrete classes.
     ///
     /// <para><b>⭐ THE FILL FIX (and what was actually broken).</b> This bridge used to be welded to
@@ -67,6 +68,9 @@ namespace HiddenHarbours.Art
             EventBus.Subscribe<CatchDumped>(OnCatchDumped);
             EventBus.Subscribe<GameLoaded>(OnGameLoaded);
             EventBus.Subscribe<BoatPurchased>(OnBoatPurchased);
+            // A gift leaves through Core with no hold event of its own (hands first, then what he
+            // carries, then storage): the picture re-reads at once instead of showing the fish he gave.
+            EventBus.Subscribe<GiftGiven>(OnGiftGiven);
             Refresh();
         }
 
@@ -77,6 +81,7 @@ namespace HiddenHarbours.Art
             EventBus.Unsubscribe<CatchDumped>(OnCatchDumped);
             EventBus.Unsubscribe<GameLoaded>(OnGameLoaded);
             EventBus.Unsubscribe<BoatPurchased>(OnBoatPurchased);
+            EventBus.Unsubscribe<GiftGiven>(OnGiftGiven);
         }
 
         private void OnFishCaught(FishCaught _) => Refresh();
@@ -84,6 +89,7 @@ namespace HiddenHarbours.Art
         private void OnCatchDumped(CatchDumped _) => Refresh();   // dumped rubbish leaves the tote too
         private void OnGameLoaded(GameLoaded _) => Refresh();
         private void OnBoatPurchased(BoatPurchased _) => Refresh();
+        private void OnGiftGiven(GiftGiven _) => Refresh();          // the gift may have left this pail
 
         /// <summary>
         /// Re-read the hold and hand every target plain data. Public so tools/tests can force a re-read;
@@ -127,9 +133,13 @@ namespace HiddenHarbours.Art
                                  "builders do this; a hand-made object must too).", this);
             }
 
+            // SIZED: a small cod lies in the tote as the small cod drawing, a big one as the big one
+            // (the library's size ladder; a kind with no ladder answers its plain kind). Every sized
+            // fish kind still reads as the fish catch group for the pail.
             _kinds.Clear();
             for (int i = 0; i < used; i++)
-                _kinds.Add(library != null ? library.KindFor(items[i].SpeciesId) : items[i].SpeciesId);
+                _kinds.Add(library != null ? library.SizedKindFor(items[i].SpeciesId, items[i].WeightKg)
+                                           : items[i].SpeciesId);
 
             // ⚠️ The MIN is the fix, not decoration. UsedUnits/CapacityUnits is 0/0 for a hold whose
             // capacity is gated (the pail before gear.bucket is owned) or not yet resolved, and a 0

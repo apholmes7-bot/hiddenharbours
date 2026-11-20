@@ -298,6 +298,41 @@ namespace HiddenHarbours.Core
         /// ground.</para></summary>
         public int RestLevel;
 
+        // ---- the rest of the sleep place (owner ruling 2026-11-15, added in v20) ------------------
+        // "Reloading restarts the day where you last slept. A sleep is a save." The four fields above say
+        // WHERE the player stood; these say which bed it was, when they woke, and, for a bunk aboard, where
+        // the boat lay. Flat scalars on the same precedent, read and written only through RestLocker as one
+        // SleepPlace. All positions are in the named region's own scene frame (see SleepPlace).
+
+        /// <summary>The stable fixture id of the bed or bunk last slept in. Empty for an unnamed bed and
+        /// for every save written before v20. Added in v20.</summary>
+        public string RestBedId = "";
+
+        /// <summary>The game time the last sleep ended (<see cref="IGameClock.TotalSeconds"/>). Meaningless
+        /// unless <see cref="RestRegion"/> is set. Added in v20.</summary>
+        public double RestWokeAtSeconds;
+
+        /// <summary>True when the last sleep was in a bunk aboard a boat. Added in v20; false is the honest
+        /// default for every older save (a pre-v20 bunk rest recorded no place at all).</summary>
+        public bool RestAboard;
+
+        /// <summary>The hull id of the boat slept aboard. Meaningful only when <see cref="RestAboard"/>.
+        /// Added in v20.</summary>
+        public string RestBoatHullId = "";
+
+        /// <summary>The region the boat lay in. Meaningful only when <see cref="RestAboard"/>. Added in
+        /// v20.</summary>
+        public string RestBoatRegion = "";
+
+        /// <summary>The boat root's X in <see cref="RestBoatRegion"/>'s frame. Added in v20.</summary>
+        public float RestBoatPosX;
+
+        /// <summary>The boat root's Y in <see cref="RestBoatRegion"/>'s frame. Added in v20.</summary>
+        public float RestBoatPosY;
+
+        /// <summary>The boat root's rotation about Z in degrees, as its transform held it. Added in v20.</summary>
+        public float RestBoatRotation;
+
         /// <summary>
         /// <b>The player's own build</b> (character PR 2b, ADR 0051, added in v15): a
         /// <see cref="CharacterRecipe"/> of rig keys the builder resolves against shipped tables. EMPTY
@@ -335,6 +370,110 @@ namespace HiddenHarbours.Core
         /// FLAG lead-architect: additive save member (clam flats, catch-honesty).
         /// </summary>
         public List<SpentClamHoleDto> SpentClamHoles = new();
+
+        /// <summary>
+        /// <b>The player's traits</b> (traits slice 1, owner ruling 2026-11-14, added in v18): the ids of the
+        /// <see cref="TraitDef"/>s the player picked, in pick order. EMPTY means no traits, which is both
+        /// the new-game state and the honest answer for every save written before traits existed. Written
+        /// only through <see cref="ITraitService.SetPlayerTraits"/>.
+        ///
+        /// <para><b>Ids, not numbers</b>, for the <see cref="WornOutfitId"/> reason: a save names a choice
+        /// and never a bonus, so a number the owner retunes follows into every save. An id no shipped trait
+        /// claims is ignored by the maths, never a crash.</para>
+        /// FLAG lead-architect: save schema v18 (traits).
+        /// </summary>
+        public List<string> PlayerTraits = new();
+
+        /// <summary>
+        /// <b>The player's hunger and tiredness</b> (needs slice 1, owner ruling 2026-11-14, added in v19):
+        /// per need, the level at one instant and that instant on the game clock. The level now is worked
+        /// out from the clock (<see cref="NeedsMath.LevelAt"/>), never stored as a ticking number. A new game
+        /// starts fed and rested and unanchored (the first slow tick anchors it); an older save is migrated
+        /// to fed and rested at its own saved time. Written only through <see cref="INeedsService"/>.
+        /// FLAG lead-architect: save schema v19 (needs).
+        /// </summary>
+        public PlayerNeedsDto PlayerNeeds = new();
+
+        /// <summary>
+        /// <b>The player's body</b> (body slice 1, owner ask 2026-11-15, added in v21): the frame and height
+        /// the creator chose, the mass at one instant and the stomach at one instant. Values now are worked
+        /// out from the clock (<see cref="BodyMath"/>). Unset (negative) shape and mass read as the default
+        /// body at its lean mass, which is today's player exactly; a new game and every older save start
+        /// there. Written only through <see cref="IBodyService"/>.
+        /// FLAG lead-architect: save schema v21 (body).
+        /// </summary>
+        public PlayerBodyDto PlayerBody = new();
+
+        /// <summary>
+        /// <b>Messes left in the world</b> (body slice 1, added in v21), oldest first: where the player was
+        /// sick. Removed only by <see cref="IMessRegistry.CleanUp"/>. Written only through
+        /// <see cref="IMessRegistry"/>.
+        /// </summary>
+        public List<MessRecordDto> Messes = new();
+
+        /// <summary>The last mess id serial handed out (<c>mess.N</c>), so an id is never reused, even after
+        /// its mess is cleaned up. Added in v21; 0 = none yet.</summary>
+        public int NextMessSerial;
+
+        /// <summary>
+        /// <b>The player's cleanliness</b> (cleanliness slice 1, owner ask 2026-11-15, added in v22): the dirt
+        /// at one instant, that instant, and the stretch of work or the wash going on since. The dirt now is
+        /// worked out from the clock (<see cref="CleanlinessMath.DirtAt"/>). A new game starts clean and
+        /// unanchored; an older save is migrated to clean at its own saved time. Written only through
+        /// <see cref="ICleanlinessService"/>.
+        /// FLAG lead-architect: save schema v22 (cleanliness).
+        /// </summary>
+        public PlayerCleanlinessDto PlayerCleanliness = new();
+
+        /// <summary>
+        /// The food stores (kitchens slice 1): a galley's pantry, cooler and fridge aboard, and later a
+        /// home's, a shop's or a player-built kitchen's, each keyed by where it stands
+        /// (<see cref="KitchenStorageStateDto.Key"/>). Contents and freshness clocks are saved; a cooler's
+        /// cold is one saved instant (when its ice runs out), never a ticking number. Written only through
+        /// <see cref="KitchenStores"/>. Added in v23; every older save starts with none.
+        /// FLAG lead-architect: save schema v23 (kitchens).
+        /// </summary>
+        public List<KitchenStorageStateDto> KitchenStores = new();
+
+        /// <summary>
+        /// <b>The catch record</b> (the Notebook's catch page): one row per species caught, in first-caught
+        /// order, with the count, the released count and the record weight. Written only through
+        /// <see cref="CatchRecordLog"/>. Added in v24; every older save starts with none (catches made
+        /// before v24 were never recorded, so nothing is invented).
+        /// FLAG lead-architect: save schema v24 (catch record, gift days, cook jobs, Loran numbers).
+        /// </summary>
+        public List<CaughtSpeciesDto> CaughtSpecies = new();
+
+        /// <summary>
+        /// <b>Gifts accepted today, per person</b> (the gifting daily limit). Only today's rows are kept.
+        /// Added in v24 as data only: the gifting lane captures and restores it. Older saves start empty.
+        /// </summary>
+        public List<NpcGiftDayDto> NpcGiftDays = new();
+
+        /// <summary>
+        /// <b>Cook jobs running on placed stations</b> (kitchens and microwaves). Added in v24; a row is
+        /// written when a job starts, removed when it finishes, and restored on load by
+        /// <see cref="CookJobSave"/>. Older saves start with nothing cooking.
+        /// </summary>
+        public List<CookJobDto> CookJobs = new();
+
+        /// <summary>
+        /// <b>The Loran numbers each hull's receiver remembers</b>, as time differences. Added in v24; read and
+        /// written per hull by a <c>LoranWaypointStore</c> bound to this save (<c>LoranWaypointSave</c>).
+        /// Older saves start with none.
+        /// </summary>
+        public List<LoranWaypointDto> HullLoranWaypoints = new();
+
+        /// <summary>
+        /// <b>What is in the player's storage containers</b> (gear lockers, rod racks, a shed's stores), one row
+        /// per container keyed by where it stands (<see cref="StoredContainerDto.Key"/>). A world object is
+        /// kept by its stable instance id, so the load puts that same object back rather than making another;
+        /// a counted lot is kept by kind and count. Food stores stay in <see cref="KitchenStores"/>. Written
+        /// only through <see cref="StoredContainers"/>. Added in v25 (owner 2026-11-17: storage with memory);
+        /// every older save starts with every container empty, and its tools lie where the world places them.
+        /// FLAG lead-architect: save schema v25 (storage contents).
+        /// </summary>
+        public List<StoredContainerDto> StoredContainers = new();
     }
 
     /// <summary>

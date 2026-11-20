@@ -119,7 +119,7 @@ namespace HiddenHarbours.Tests.PlayMode
         {
             Assert.That(Object.FindObjectsByType<GameRoot>(), Is.Empty, "premise: the trip boots from no core, in a launch of its own");
             LogAssert.ignoreFailingMessages = true;   // the regions log decor complaints a measurement makes no claim on
-            yield return SceneManager.LoadSceneAsync(StPetersScene, LoadSceneMode.Single);
+            yield return HiddenHarbours.Tests.Support.SceneSettle.Load(StPetersScene, LoadSceneMode.Single);
             for (int i = 0; i < BootFrames; i++) yield return null;
             Assert.That(Object.FindObjectsByType<GameRoot>().Length, Is.EqualTo(1), "premise: St Peters boots one core");
             if (ShellFlow.WorldInputBlocked) ShellFlow.Reset();
@@ -319,7 +319,7 @@ namespace HiddenHarbours.Tests.PlayMode
             for (int i = SceneManager.sceneCount - 1; i >= 0; i--)
             {
                 Scene s = SceneManager.GetSceneAt(i);
-                if (s.IsValid() && s.isLoaded && _tripScenes.Contains(s.name)) yield return SceneManager.UnloadSceneAsync(s);
+                if (s.IsValid() && s.isLoaded && _tripScenes.Contains(s.name)) yield return HiddenHarbours.Tests.Support.SceneSettle.Unload(s);
             }
             foreach (GameObject go in PersistentRoots())
                 if (go != null && !_resident.Contains(go)) Object.DestroyImmediate(go);

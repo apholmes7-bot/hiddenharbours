@@ -108,6 +108,10 @@ namespace HiddenHarbours.Tests.RigBaking
             }
             Assert.Greater(rig, 0, "the rig declares no carry clip, so the twin was held to nothing");
 
+            // The one-stroke rowing clip (row-stroke.md) is a finer sampling of the oars clip, stored under
+            // the contract's own state so the runtime can prefer it. It keeps the source's anim and carry,
+            // so the twin still holds for it; only its key is the contract's rather than the baker's.
+            string rowStroke = CharacterSkinAssetBaker.ReadRowStrokeContract().state;
             int baked = 0;
             foreach (string preset in Cast())
             {
@@ -120,6 +124,13 @@ namespace HiddenHarbours.Tests.RigBaking
                     string key = new CharacterState(clip.Anim, null, clip.Carry).Key;
                     Assert.AreEqual(key, CharacterSkinStateMap.CarryKey(clip.Anim, clip.Carry),
                         $"'{preset}' clip '{clip.StateKey}' ({clip.Anim} carrying {clip.Carry})");
+                    if (clip.StateKey == rowStroke)
+                    {
+                        Assert.AreEqual(CharacterSkinStateMap.CarryKey(CharacterSkinStateMap.Walk, CharacterSkinStateMap.OarsCarry), key,
+                            $"'{preset}' clip '{rowStroke}' must be a sampling of the oars clip");
+                        baked++;
+                        continue;
+                    }
                     Assert.AreEqual(key, clip.StateKey,
                         $"'{preset}' keys its {clip.Anim}/{clip.Carry} clip '{clip.StateKey}', not the baker's '{key}'");
                     baked++;

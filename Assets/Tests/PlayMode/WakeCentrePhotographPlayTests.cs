@@ -185,7 +185,7 @@ namespace HiddenHarbours.Tests.PlayMode
             {
                 Scene s = SceneManager.GetSceneAt(i);
                 if (s.IsValid() && s != clean && (s.name == SceneName || (_v24LoadedIntro && (s.name == "StPeters" || s.name == "RicePoint"))))
-                    yield return SceneManager.UnloadSceneAsync(s);
+                    yield return HiddenHarbours.Tests.Support.SceneSettle.Unload(s);
             }
         }
 
@@ -803,7 +803,8 @@ namespace HiddenHarbours.Tests.PlayMode
             // scaled time is no budget at all.
             Debug.Log($"[{PlateDir}] loading {scene}…");
             float wall = Time.realtimeSinceStartup;
-            AsyncOperation op = SceneManager.LoadSceneAsync(scene, LoadSceneMode.Single);
+            yield return HiddenHarbours.Tests.Support.SceneSettle.Frames();
+            AsyncOperation op = HiddenHarbours.Tests.Support.SceneSettle.StartLoad(scene, LoadSceneMode.Single);
             Assert.IsNotNull(op, $"SceneManager refused to start loading '{scene}' — it is most " +
                                  "likely not in Build Settings, and there is no region to photograph.");
             while (op != null && !op.isDone)

@@ -24,14 +24,14 @@ namespace HiddenHarbours.App.Editor
     /// <summary>
     /// <b>THE STORE'S SELLER IDS AND WARES BOOKS, WRITTEN INTO THE COMMITTED SCENES</b> (O4). The builders
     /// give every store vendor its seller id and each region's DialogueUI its wares book
-    /// (<see cref="CatalogBookPresenter"/>), but neither region can be rebuilt — Build() wipes the scene,
-    /// and both carry hand work — so the committed StPeters.unity and NineMileCreek.unity hold vendors that
+    /// (<see cref="CatalogBookPresenter"/>), but neither region can be rebuilt â€” Build() wipes the scene,
+    /// and both carry hand work â€” so the committed StPeters.unity and NineMileCreek.unity hold vendors that
     /// sell as no one and no book, and a "show me your wares" row finds neither. This step writes the
     /// missing lines into the scene files as text, with <see cref="StPetersLayerRefresh"/>'s patches.
     ///
     /// <para><b>The wiring is a table per region</b> (<see cref="StPeters"/>, <see cref="NineMileCreek"/>): the
     /// root a vendor stands on, its class, the listing it stocks (by listing id, resolved to the listing
-    /// asset's guid), and the seller id it sells as — always the builder's own constant, so the scene and the
+    /// asset's guid), and the seller id it sells as â€” always the builder's own constant, so the scene and the
     /// builder can only ever name the same id. A vendor is found by all three of root, class and wares, and
     /// anything but exactly one match refuses.</para>
     ///
@@ -94,17 +94,42 @@ namespace HiddenHarbours.App.Editor
             }
         }
 
-        /// <summary>St Peters: the general store counter's five vendors, all Marguerite's.</summary>
+        /// <summary>St Peters: the general store counter's nine vendors, all Marguerite's.</summary>
         public static readonly Region StPeters = new Region("StPeters", StPetersLayerRefresh.ScenePath, new[]
         {
             new Seller("GeneralStoreCounter", typeof(GearShop), "gear.rod", StPetersBuilder.StoreSellerId),
             new Seller("GeneralStoreCounter", typeof(BaitShop), "bait.capelin", StPetersBuilder.StoreSellerId),
             new Seller("GeneralStoreCounter", typeof(SupplyShop), "supply.ice", StPetersBuilder.StoreSellerId),
+            new Seller("GeneralStoreCounter", typeof(SupplyShop), "supply.bread", StPetersBuilder.StoreSellerId),
+            new Seller("GeneralStoreCounter", typeof(SupplyShop), "supply.oatcakes", StPetersBuilder.StoreSellerId),
+            new Seller("GeneralStoreCounter", typeof(SupplyShop), "supply.tinned_beans", StPetersBuilder.StoreSellerId),
+            new Seller("GeneralStoreCounter", typeof(SupplyShop), "supply.soap_bar", StPetersBuilder.StoreSellerId),
             new Seller("GeneralStoreCounter", typeof(InstrumentShop), "instrument.depth_sounder", StPetersBuilder.StoreSellerId),
             new Seller("GeneralStoreCounter", typeof(LicenseVendor), "license.clam", StPetersBuilder.StoreSellerId),
         });
 
-        /// <summary>Nine Mile Creek: the yard's shed and dory yard, the harbourmaster, the chandlery, and Hector's barrel.</summary>
+        /// <summary>
+        /// The two wholesalers' counters (ruling 11-16), folded into <see cref="NineMileCreek"/>. Their roots
+        /// were placed by <see cref="NmcWholesalerKeepers.Place"/>, which wires the vendors itself, so the plan
+        /// for these rows is empty once the scene holds them (<c>docs/design/economy-item-sellers.md</c> §5.1).
+        ///
+        /// <para>Only the offers that name a wholesaler and nobody else are here. The bait, the clam shovel and
+        /// the clam bucket also name <c>seller.leblancs</c>, so listing them needs a St Peters vendor as well
+        /// (guard 4 counts every seller a listed offer names); and the rake, tongs, sack and basket wait for
+        /// hand-gathering. See <see cref="NmcWholesalerKeepers.Waiting"/>.</para>
+        ///
+        /// <para>Declared above <see cref="NineMileCreek"/> so it is initialised first when folded in.</para>
+        /// </summary>
+        public static readonly IReadOnlyList<Seller> NineMileCreekWholesalers = new[]
+        {
+            new Seller(NmcWholesalerKeepers.BoatGearCounterRoot, typeof(InstrumentShop), "instrument.loran", NmcWholesalerKeepers.BoatGearSellerId),
+            new Seller(NmcWholesalerKeepers.BoatGearCounterRoot, typeof(InstrumentShop), "instrument.fish_finder", NmcWholesalerKeepers.BoatGearSellerId),
+            new Seller(NmcWholesalerKeepers.BoatGearCounterRoot, typeof(InstrumentShop), "instrument.gps", NmcWholesalerKeepers.BoatGearSellerId),
+            new Seller(NmcWholesalerKeepers.FishingGearCounterRoot, typeof(GearShop), "gear.rod_rack", NmcWholesalerKeepers.FishingGearSellerId),
+        };
+
+        /// <summary>Nine Mile Creek: the yard's shed and dory yard, the harbourmaster, the chandlery, Hector's barrel,
+        /// and the two wholesalers.</summary>
         public static readonly Region NineMileCreek = new Region("NineMileCreek", NineMileCreekScenePath, new[]
         {
             new Seller(NineMileCreekWharfYard.CatalogueName, typeof(Shipwright), "boat.punt", NineMileCreekBuilder.SellerYard),
@@ -114,7 +139,7 @@ namespace HiddenHarbours.App.Editor
             new Seller("GeneralStore", typeof(GearShop), "gear.rod", NineMileCreekBuilder.SellerChandlery),
             new Seller(NineMileCreekWharfYard.DoryTradeName, typeof(Shipwright), "boat.dory", NineMileCreekBuilder.SellerYard),
             new Seller(NineMileCreekWharfYard.OutboardTradeName, typeof(Shipwright), "boat.dory_outboard", NineMileCreekBuilder.SellerHectorsBarrel),
-        });
+        }.Concat(NineMileCreekWholesalers).ToArray());
 
         public static readonly IReadOnlyList<Region> Regions = new[] { StPeters, NineMileCreek };
 
@@ -166,7 +191,7 @@ namespace HiddenHarbours.App.Editor
 
         /// <summary>
         /// The store's patches to one region's scene: one per root the wiring names, in the wiring's order,
-        /// then DialogueUI's for the book — each sealed against the scene. Apply them with <see cref="ApplyAll"/>.
+        /// then DialogueUI's for the book â€” each sealed against the scene. Apply them with <see cref="ApplyAll"/>.
         /// </summary>
         public static List<LayerPatch> Plan(string sceneText, Region region, IStoreWiringAssets assets)
         {
@@ -178,7 +203,9 @@ namespace HiddenHarbours.App.Editor
                 Doc go = scene.RootNamed(root.Key);
                 var patch = new LayerPatch(StepOf(region, root.Key), root.Key, go.FileId);
                 List<Doc> comps = scene.ComponentsOf(go);
-                foreach (Seller s in root) Wire(patch, comps, s, assets, claimed);
+                HashSet<(Type, string)> added = AddMissingCopies(patch, scene, go, comps, root.ToList(), region, assets);
+                foreach (Seller s in root)
+                    if (!added.Contains((s.Kind, s.Wares))) Wire(patch, comps, s, assets, claimed);
                 patches.Add(patch.Seal(scene));
             }
             patches.Add(Book(scene, region, assets).Seal(scene));
@@ -257,8 +284,95 @@ namespace HiddenHarbours.App.Editor
             patch.Note($"{s.Root}'s {s.Kind.Name}", $"sells {s.Wares} as {s.SellerId}");
         }
 
+        /// <summary>The vendor classes the step may ADD as a copy of one the counter already holds, in the order
+        /// their new documents are written. Each is a plain wares + seller id + wallet + empty purchase event
+        /// component, so a copy differs from its template by its wares and its id alone.</summary>
+        static readonly Type[] CopyableKinds = { typeof(SupplyShop), typeof(InstrumentShop) };
+
+        /// <summary>
+        /// The vendors the step may ADD: a <see cref="SupplyShop"/> or an <see cref="InstrumentShop"/> the wiring
+        /// lists on a counter that already holds at least one of that class. The new vendor is a copy of the
+        /// counter's first of its class (same script, same GameObject, same <c>_walletProvider</c>, same empty
+        /// purchase event), stocking the listed wares and selling as the row's id, written where Unity serialises
+        /// <c>_sellerId</c>; it is listed last among the counter's components and its document follows the
+        /// counter's own. Any other missing vendor is left to <see cref="Wire"/>, which refuses it. Returns the
+        /// (class, wares) of the vendors added; one the counter already stocks is never added, so a second plan
+        /// adds nothing.
+        /// </summary>
+        static HashSet<(Type, string)> AddMissingCopies(LayerPatch patch, SceneYaml scene, Doc go, List<Doc> comps,
+                                                        List<Seller> rows, Region region, IStoreWiringAssets assets)
+        {
+            var added = new HashSet<(Type, string)>();
+            IdAllocator ids = null;
+            var entries = new List<string>();
+            foreach (Type kind in CopyableKinds)
+            {
+                List<Seller> mine = rows.Where(s => s.Kind == kind).ToList();
+                if (mine.Count == 0) continue;
+                List<Doc> shops = comps.Where(c => c.IsScript(kind.FullName)).ToList();
+                if (shops.Count == 0) continue;     // nothing to copy the wallet from: Wire refuses the missing one
+
+                FieldInfo wares = WaresField(kind);
+                var stocked = new HashSet<string>(shops.Select(c => ObjRef.Parse(c.Field(wares.Name)).Guid ?? ""), StringComparer.Ordinal);
+                var missing = new List<(Seller Row, string Guid)>();
+                foreach (Seller s in mine)
+                {
+                    string guid = assets.WaresGuid(wares.FieldType, s.Wares);
+                    if (stocked.Contains(guid)) continue;
+                    if (s.SellerId == null || !PlainId.IsMatch(s.SellerId))
+                        throw new Refusal($"{patch.Step}: {s} would sell as '{s.SellerId}', which is not a seller id (type.snake_case).");
+                    if (missing.Any(m => m.Guid == guid))
+                        throw new Refusal($"{patch.Step}: two rows of the wiring name {s}.");
+                    missing.Add((s, guid));
+                }
+                if (missing.Count == 0) continue;
+
+                Doc template = shops[0];
+                List<string> body = template.Lines.Skip(1).ToList();
+                body.RemoveAll(l => l.StartsWith($"  {SellerIdField}:", StringComparison.Ordinal));
+                int waresAt = body.FindIndex(l => l.StartsWith($"  {wares.Name}: ", StringComparison.Ordinal));
+                if (waresAt < 0 || waresAt + 1 >= body.Count || !body[waresAt + 1].StartsWith($"  {WalletField}:", StringComparison.Ordinal))
+                    throw new Refusal($"{patch.Step}: {NameOf(go)}'s {kind.Name} (&{template.FileId}) does not hold its {WalletField} right " +
+                                      $"after its {wares.Name}; the step copies no shop it cannot read.");
+                if (!body.Contains("      m_Calls: []"))
+                    throw new Refusal($"{patch.Step}: {NameOf(go)}'s {kind.Name} (&{template.FileId}) has purchase calls wired; the step " +
+                                      "copies only a shop with an empty purchase event.");
+                ObjRef held = ObjRef.Parse(body[waresAt].Substring($"  {wares.Name}: ".Length));
+
+                ids ??= new IdAllocator(scene);
+                foreach ((Seller s, string guid) in missing)
+                {
+                    long id = ids.Next($"{region.Name}/{s.Root}/{kind.Name}/{s.Wares}");
+                    string at = id.ToString(CultureInfo.InvariantCulture);
+                    var lines = new List<string> { $"--- !u!114 &{at}" };
+                    lines.AddRange(body);
+                    lines[waresAt + 1] = $"  {wares.Name}: " + new ObjRef(held.FileId, guid, held.Type).Yaml;
+                    lines.Insert(waresAt + 2, $"  {SellerIdField}: {s.SellerId}");
+                    patch.Add(string.Join("\n", lines), $"{s} (&{at}), a copy of &{template.FileId} stocking {s.Wares}");
+                    entries.Add($"  - component: {{fileID: {at}}}");
+                    patch.Note($"{s.Root}'s {kind.Name}", $"added, sells {s.Wares} as {s.SellerId}");
+                    added.Add((kind, s.Wares));
+                }
+            }
+            if (entries.Count == 0) return added;
+
+            var goLines = go.Lines.ToList();
+            int head = goLines.IndexOf("  m_Component:");
+            if (head < 0) throw new Refusal($"{patch.Step}: {NameOf(go)} (&{go.FileId}) lists no components.");
+            int end = head + 1;
+            while (end < goLines.Count && goLines[end].StartsWith("  - component: ", StringComparison.Ordinal)) end++;
+            goLines.InsertRange(end, entries);
+            patch.Edit(go, string.Join("\n", goLines), $"{NameOf(go)} (&{go.FileId}): lists its {entries.Count} new vendors last");
+
+            var own = new HashSet<long>(comps.Select(c => c.FileId)) { go.FileId };
+            patch.AddAfter = scene.Docs.Last(d => own.Contains(d.FileId)).FileId;
+            return added;
+        }
+
+        static string NameOf(Doc go) => go.Field("m_Name") ?? "the counter";
+
         /// <summary>The one serialised field of a vendor class that holds its listing.</summary>
-        static FieldInfo WaresField(Type kind)
+        internal static FieldInfo WaresField(Type kind)
         {
             List<FieldInfo> hits = kind.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
                 .Where(f => typeof(ICatalogListing).IsAssignableFrom(f.FieldType) &&

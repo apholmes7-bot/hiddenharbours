@@ -122,7 +122,8 @@ namespace HiddenHarbours.Tests.PlayMode
             try
             {
                 Step("load-destination/begin");
-                var load = SceneManager.LoadSceneAsync(Plan.Region.SceneName, LoadSceneMode.Additive);
+                yield return HiddenHarbours.Tests.Support.SceneSettle.Frames();
+                var load = HiddenHarbours.Tests.Support.SceneSettle.StartLoad(Plan.Region.SceneName, LoadSceneMode.Additive);
                 while (!load.isDone) yield return null;
                 Step("load-destination/done");
             }
@@ -227,10 +228,9 @@ namespace HiddenHarbours.Tests.PlayMode
             WalkInput?.Release();
             if (Oars != null) Oars.DriveOars(0, 0, true);
             if (_origin.IsValid() && _origin.isLoaded) SceneManager.SetActiveScene(_origin);
-            if (RegionScene.IsValid() && RegionScene.isLoaded) yield return SceneManager.UnloadSceneAsync(RegionScene);
-            if (_standIn.IsValid() && _standIn.isLoaded) yield return SceneManager.UnloadSceneAsync(_standIn);
-            foreach (var root in PersistentRoots()) if (!_resident.Contains(root)) Object.Destroy(root);
-            yield return null;
+            if (RegionScene.IsValid() && RegionScene.isLoaded) yield return HiddenHarbours.Tests.Support.SceneSettle.Unload(RegionScene);
+            if (_standIn.IsValid() && _standIn.isLoaded) yield return HiddenHarbours.Tests.Support.SceneSettle.Unload(_standIn);
+            yield return HiddenHarbours.Tests.Support.SceneSettle.DestroyAndSettle(PersistentRoots().Where(root => !_resident.Contains(root)).ToArray());
             GameServices.Reset();
             GameServices.Save = _save;
             ShellFlow.Reset();
@@ -243,7 +243,7 @@ namespace HiddenHarbours.Tests.PlayMode
     public sealed class CumberlandPlayablePlayTests : CumberlandSceneFixture
     {
         [UnityTest]
-        public IEnumerator DirectPlay_OneCore_WalkNorthBeach_RowBasinAndBay_CastHasNoEligibleSpecies()
+        public IEnumerator DirectPlay_OneCore_WalkNorthBeach_RowBasinAndBay_CastIsAnswered()
         {
             Step("direct/load");
             yield return LoadDirect();
@@ -265,8 +265,9 @@ namespace HiddenHarbours.Tests.PlayMode
             Step("direct/cast");
             Boat.Stop();
             var fish = Boat.GetComponent<FishingController>();
-            foreach (var species in Plan.DevFish)
-                Assert.That(species.RegionIds, Does.Not.Contain(Plan.Region.Id), "Eligibility is reserved for CMB4.");
+            // R1 (2026-11-15) moved eligibility ahead of CMB4: the bay now has a real rod table.
+            Assert.That(Plan.DevFish.Any(s => s.RegionAllowed(Plan.Region.Id) && s.GearAllowed(Gear.Handline)),
+                Is.True, "R1: some dev-core rod species must list Cumberland");
             Assert.That(fish.HasSomethingOnTheHook, Is.True);
             // The shared flick gesture, directed south into water from the live angler.
             Vector2 a = fish.Angler != null ? (Vector2)fish.Angler.position : (Vector2)fish.transform.position;
@@ -275,11 +276,18 @@ namespace HiddenHarbours.Tests.PlayMode
             fish.Tick(.02f, false, a + Vector2.down, true);
             Assert.That(fish.LastCast.IsCast, Is.True);
             Assert.That(fish.Phase, Is.EqualTo(FishingPhase.Cast));
-            for (int i = 0; i < 6000 && fish.Phase != FishingPhase.NoBite; ++i) fish.Tick(.05f, false);
-            Assert.That(fish.Phase, Is.EqualTo(FishingPhase.NoBite));
+            // The cast is answered: a bite (season, hour and tide permitting) or a clean no-bite. Either
+            // way it leaves the waiting phases; it must never hang there.
+            for (int i = 0; i < 6000 && StillWaiting(fish.Phase); ++i) fish.Tick(.05f, false);
+            Assert.That(StillWaiting(fish.Phase), Is.False, "the cast was never answered: " + fish.Phase);
             Assert.That(SceneManager.GetSceneByName("NineMileCreek").isLoaded, Is.False);
             Step("direct/PASS");
         }
+
+        /// <summary>The phases a cast passes through before the water answers it (R1: a bite or a
+        /// clean no-bite both count as an answer).</summary>
+        static bool StillWaiting(FishingPhase phase) =>
+            phase == FishingPhase.Cast || phase == FishingPhase.Sinking || phase == FishingPhase.Waiting;
 
         sealed class TestTruckSeat : IDriveSeat
         {
@@ -326,7 +334,7 @@ namespace HiddenHarbours.Tests.PlayMode
             var player = Walk;
             Step("arrival/unload-region-with-core-alive");
             LeaveForAStandIn();
-            yield return SceneManager.UnloadSceneAsync(RegionScene);
+            yield return HiddenHarbours.Tests.Support.SceneSettle.Unload(RegionScene);
             Assert.That(GameServices.Ready, Is.True);
             Step("arrival/reload-destination");
             yield return LoadDestination();

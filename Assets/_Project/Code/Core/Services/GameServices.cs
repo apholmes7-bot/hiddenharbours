@@ -195,6 +195,23 @@ namespace HiddenHarbours.Core
         public static IFishSizeFacts FishSizes { get; set; }
 
         /// <summary>
+        /// WHICH SPECIES ARE PROTECTED (<see cref="IFishConservationFacts"/>) — published by the Fishing
+        /// module's species registry, read through <see cref="CatchKeep"/> by every hold, pail, freezer,
+        /// hand and save restore so a protected catch is never kept. May be null (a bare scene, an
+        /// EditMode rig): <see cref="CatchKeep"/> then refuses nothing.
+        /// FLAG lead-architect: new Core contract (2026-11-15, protected species are release-only).
+        /// </summary>
+        public static IFishConservationFacts FishConservation { get; set; }
+
+        /// <summary>
+        /// WHETHER AN ITEM MAY BE GIVEN (<see cref="IGiftableFacts"/>) — published by the Fishing module's
+        /// species registry off <c>FishSpeciesDef.Giftable</c>, read by the world layer's gift act. May be
+        /// null: the giver then uses its default for the kind of thing held (a loose catch is giftable).
+        /// FLAG lead-architect: new Core contract (2026-11-15, NPC gifting).
+        /// </summary>
+        public static IGiftableFacts GiftableFacts { get; set; }
+
+        /// <summary>
         /// What a radar can see (ADR 0025 S5): the NPC vessels and buoys out there right now, published
         /// by whoever is driving them and read by the scope at the helm (<see cref="IRadarContacts"/>).
         ///
@@ -281,6 +298,236 @@ namespace HiddenHarbours.Core
         }
 
         private static IPlayerAppearance _appearance;
+
+        /// <summary>
+        /// The character traits (traits slice 1, owner ruling 2026-11-14): the seam a feature module asks
+        /// for its own stat's combined factor through, so the walk, the till and the rod never reference
+        /// each other (rule 4). Never null: a default <see cref="TraitService"/> over <see cref="Save"/>
+        /// and the shipped <see cref="TraitDef"/>s is made on first read; a test assigns its own. Cleared
+        /// by <see cref="Reset"/>. With no traits on the save every factor is exactly 1.
+        /// FLAG lead-architect: new Core contract (traits).
+        /// </summary>
+        public static ITraitService Traits
+        {
+            get => _traits ??= new TraitService();
+            set => _traits = value;
+        }
+
+        private static ITraitService _traits;
+
+        /// <summary>
+        /// Hunger and tiredness (needs slice 1, owner ruling 2026-11-14): the local player's needs over
+        /// <see cref="Save"/> and <see cref="Clock"/>. A seam reads the combined trait x needs factor through
+        /// <see cref="CharacterFactors.Player"/>, never this directly. Never null: a default
+        /// <see cref="NeedsService"/> is made on first read; a test assigns its own. Cleared by
+        /// <see cref="Reset"/>. Fed and rested, every factor is exactly 1.
+        /// FLAG lead-architect: new Core contract (needs).
+        /// </summary>
+        public static INeedsService Needs
+        {
+            get => _needs ??= new NeedsService();
+            set => _needs = value;
+        }
+
+        private static INeedsService _needs;
+
+        /// <summary>
+        /// The player's body (body slice 1, owner ask 2026-11-15): frame, height, mass, stomach, over
+        /// <see cref="Save"/> and <see cref="Clock"/>. A seam reads its walk factor through
+        /// <see cref="CharacterFactors.Player"/>, and the needs read its hunger scale; nothing else needs it.
+        /// Never null: a default <see cref="BodyService"/> is made on first read; a test assigns its own.
+        /// Cleared by <see cref="Reset"/>. The default body changes nothing (every factor exactly 1).
+        /// FLAG lead-architect: new Core contract (body).
+        /// </summary>
+        public static IBodyService Body
+        {
+            get => _body ??= new BodyService();
+            set => _body = value;
+        }
+
+        private static IBodyService _body;
+
+        /// <summary>
+        /// The messes left in the world (body slice 1), over <see cref="Save"/>. Never null: a default
+        /// <see cref="MessRegistry"/> is made on first read; a test assigns its own. Cleared by
+        /// <see cref="Reset"/>.
+        /// </summary>
+        public static IMessRegistry Messes
+        {
+            get => _messes ??= new MessRegistry();
+            set => _messes = value;
+        }
+
+        private static IMessRegistry _messes;
+
+        /// <summary>
+        /// The player's strength and cardio, read-only (body slice 2): rod, pull and leg strength, carry
+        /// capacity. The default is the <see cref="Body"/> itself when it offers them, else a neutral reading
+        /// (every multiplier exactly 1). A future Fishing or Boats reader takes it from here. Cleared by
+        /// <see cref="Reset"/>. FLAG lead-architect: new Core contract (strength).
+        /// </summary>
+        public static IPlayerStrength PlayerStrength
+        {
+            get => _playerStrength ?? Body as IPlayerStrength ?? NeutralStrength.Instance;
+            set => _playerStrength = value;
+        }
+
+        private static IPlayerStrength _playerStrength;
+
+        /// <summary>
+        /// What the player carries, by weight (body slice 2). Never null: nothing carried by default; the hands
+        /// module installs a real one when hand loads have weights. Cleared by <see cref="Reset"/>.
+        /// </summary>
+        public static ICarriedLoad CarriedLoad
+        {
+            get => _carriedLoad ?? NoCarriedLoad.Instance;
+            set => _carriedLoad = value;
+        }
+
+        private static ICarriedLoad _carriedLoad;
+
+        /// <summary>
+        /// Cleanliness, the third need (cleanliness slice 1, owner ask 2026-11-15): the local player's dirt
+        /// over <see cref="Save"/>, <see cref="Clock"/> and the shipped wash stations under
+        /// <c>Resources/WashStations/</c>. Never null: a default <see cref="CleanlinessService"/> is made on
+        /// first read; a test assigns its own. Cleared by <see cref="Reset"/>. Clean, nothing changes.
+        /// FLAG lead-architect: new Core contract (cleanliness).
+        /// </summary>
+        public static ICleanlinessService Cleanliness
+        {
+            get => _cleanliness ??= new CleanlinessService();
+            set => _cleanliness = value;
+        }
+
+        private static ICleanlinessService _cleanliness;
+
+        /// <summary>
+        /// The farm plots (farm slice 1): read-only questions about each plot's stage and the work due on it,
+        /// recomputed from the Defs, the world seed and the day (rule 5). Never null: a default
+        /// <see cref="FarmService"/> over the shipped Defs under <c>Resources/Farming/</c> is made on first
+        /// read; a test assigns its own. Cleared by <see cref="Reset"/>.
+        /// FLAG lead-architect: new Core contract (farming).
+        /// </summary>
+        public static IFarmService Farm
+        {
+            get => _farm ??= new FarmService();
+            set => _farm = value;
+        }
+
+        private static IFarmService _farm;
+
+        /// <summary>
+        /// Eating (first food slice): use up one unit of a food from the supply locker or the hands and lower
+        /// hunger through <see cref="Needs"/> by the food's <see cref="FoodDef.HungerRelief"/>. Never null: a
+        /// default <see cref="FoodEater"/> over the shipped Defs under <c>Resources/Food/</c> is made on first
+        /// read; a test assigns its own. Cleared by <see cref="Reset"/>.
+        /// FLAG lead-architect: new Core contract (food).
+        /// </summary>
+        public static FoodEater Food
+        {
+            get => _food ??= new FoodEater();
+            set => _food = value;
+        }
+
+        private static FoodEater _food;
+
+        /// <summary>
+        /// Cooking (kitchens and microwaves slice): the one <see cref="RecipeRunner"/> every kitchen station
+        /// (a galley, a house kitchen, a microwave) runs recipes through; the output goes into the supply
+        /// locker, where <see cref="Food"/> eats it. Never null: a default over the shipped recipes and foods
+        /// is made on first read; a test assigns its own. The runner in this slot is subscribed to
+        /// <see cref="GameLoaded"/> and rebinds on a load or new game, so what is cooking is always the loaded
+        /// save's own <see cref="SaveData.CookJobs"/> and a job never delivers into a different save; replacing
+        /// it unsubscribes the old one. Cleared by <see cref="Reset"/>.
+        /// FLAG lead-architect: new Core contract (cooking).
+        /// </summary>
+        public static RecipeRunner Cooking
+        {
+            get
+            {
+                if (_cooking == null) Cooking = new RecipeRunner();
+                return _cooking;
+            }
+            set
+            {
+                if (ReferenceEquals(_cooking, value)) return;
+                if (_cooking != null) EventBus.Unsubscribe(_cooking.GameLoadedHandler);
+                _cooking = value;
+                if (_cooking != null) EventBus.Subscribe(_cooking.GameLoadedHandler);
+            }
+        }
+
+        private static RecipeRunner _cooking;
+
+        /// <summary>
+        /// The web of ties between people (relationships slice 1, owner ruling 2026-11-14): the seam a feature
+        /// module records "something happened between these two" through and asks a pair's stage from, so the
+        /// crew system, the cannery, the shops, talk and routines never reference each other (rule 4). Never
+        /// null: a default <see cref="RelationshipService"/> over the shipped <see cref="RelationshipTieDef"/>s
+        /// and <see cref="RelationshipConfig"/> is made on first read; a test assigns its own. Cleared by
+        /// <see cref="Reset"/>. In memory only until relationships slice 2 adds it to the save.
+        /// FLAG lead-architect: new Core contract (relationships).
+        /// </summary>
+        public static IRelationshipService Relationships
+        {
+            get => _relationships ??= new RelationshipService();
+            set => _relationships = value;
+        }
+
+        private static IRelationshipService _relationships;
+
+        /// <summary>
+        /// Who is aboard which boat, in which role (crew slice R2): players and hired hands alike. Boarding
+        /// enforces the hull's crew slots; <see cref="ICrewRoster.CanSail"/> answers the night and trip
+        /// rules through <see cref="VoyageLimits"/>. Never null: a default <see cref="CrewRoster"/> over
+        /// <see cref="Voyages"/>, the shipped roles and <see cref="CrewPolicy"/> is made on first read; a
+        /// test assigns its own. Cleared by <see cref="Reset"/>. In memory only: not saved yet.
+        /// FLAG lead-architect: new Core contract (crew).
+        /// </summary>
+        public static ICrewRoster Crew
+        {
+            get => _crew ??= new CrewRoster();
+            set => _crew = value;
+        }
+
+        private static ICrewRoster _crew;
+
+        /// <summary>
+        /// The voyage records by hull id (crew slice R2), each joined to its hull's crew slots and bunks.
+        /// The Boats module registers one (<c>BoatVoyageCatalog</c>). <b>Never null</b>: absent a
+        /// registration it reads <see cref="EmptyVoyageCatalog"/>, under which every hull is unknown and the
+        /// roster refuses with <see cref="VoyageRefusal.UnknownHull"/> rather than guessing. Cleared by
+        /// <see cref="Reset"/>.
+        /// FLAG lead-architect: new Core contract (crew).
+        /// </summary>
+        public static IVoyageCatalog Voyages
+        {
+            get
+            {
+                IVoyageCatalog catalog = _voyages;
+                // The FishSchools fake-null discipline: a registrant may be a UnityEngine.Object.
+                if (catalog is UnityEngine.Object producer && producer == null) return EmptyVoyageCatalog.Instance;
+                return catalog != null ? catalog : EmptyVoyageCatalog.Instance;
+            }
+            set => _voyages = value;
+        }
+
+        private static IVoyageCatalog _voyages;
+
+        /// <summary>
+        /// Whether a gated crossing (the St Peters bar at low water) can be set out on at a given game hour:
+        /// the seam a cross-region NPC routine asks before it leaves one region for the next (owner ask
+        /// 2026-11-15). Never null: <see cref="AlwaysOpenCrossingGate.Instance"/> until a real gate is
+        /// assigned (the tide-window slice); a test assigns its own. Cleared by <see cref="Reset"/>.
+        /// FLAG lead-architect: new Core contract (cross-region routines).
+        /// </summary>
+        public static ICrossingGate CrossingGate
+        {
+            get => _crossingGate ?? AlwaysOpenCrossingGate.Instance;
+            set => _crossingGate = value;
+        }
+
+        private static ICrossingGate _crossingGate;
 
         /// <summary>
         /// The active region's terrain-elevation source — the "height map" the tidal-exposure seam reads
@@ -594,6 +841,70 @@ namespace HiddenHarbours.Core
         public static UnityEngine.Rect CurrentRegionBounds { get; set; }
 
         /// <summary>
+        /// ⭐ <b>The shared world frame</b> (ADR 0057): where every built region sits in one world, so a
+        /// crossing anywhere along a shared edge lands at the same world point. Built from data
+        /// (<c>WorldMap</c> + each <c>RegionDef.WorldOrigin</c>) by the persistent travel rig.
+        ///
+        /// <para>OPTIONAL and NOT part of <see cref="Ready"/>: <b>null means no frame</b>, and every
+        /// consumer then behaves exactly as before it existed (keyed passages, fixed arrivals) — which is
+        /// what every fixture with made-up region ids still gets even when a frame is live, because only
+        /// regions IN the frame are governed by it.</para>
+        /// FLAG lead-architect: new Core contract.
+        /// </summary>
+        public static WorldFrame WorldFrame { get; set; }
+
+        /// <summary>
+        /// Where the player and the player's boat are (region + local pose) — see
+        /// <see cref="IWorldWhereabouts"/>. The persistent travel rig registers itself; the save reads it.
+        /// OPTIONAL: null when no rig is up. FLAG lead-architect: new Core contract (ADR 0057).
+        /// </summary>
+        public static IWorldWhereabouts Whereabouts { get; set; }
+
+        /// <summary>How far (m) past a region's edge a mover must go before the crossing fires — the
+        /// anti-bounce band (ADR 0057). Same <c>Config != null</c> contract as the other tunables.</summary>
+        public static float RegionCrossingHysteresisMetres =>
+            UnityEngine.Mathf.Max(0f, Config != null ? Config.RegionCrossingHysteresisMetres
+                                                     : GameConfig.DefaultRegionCrossingHysteresisMetres);
+
+        /// <summary>How near (m) a shared edge a mover must come before the neighbour's scene starts
+        /// loading in the background (PR 1223). 0 = no preload. Same <c>Config != null</c> contract.</summary>
+        public static float RegionPreloadDistanceMetres =>
+            UnityEngine.Mathf.Max(0f, Config != null ? Config.RegionPreloadDistanceMetres
+                                                     : GameConfig.DefaultRegionPreloadDistanceMetres);
+
+        /// <summary>The seam fade's timings (s), fade distances and drawn margins (m) and least approach speed (m/s), owner
+        /// ruling on PR 1223. Same <c>Config != null</c> contract as the other tunables.</summary>
+        public static float RegionSeamFadeOutSeconds => SeamTunable(c => c.RegionSeamFadeOutSeconds, GameConfig.DefaultRegionSeamFadeOutSeconds);
+        public static float RegionSeamFadeInSeconds => SeamTunable(c => c.RegionSeamFadeInSeconds, GameConfig.DefaultRegionSeamFadeInSeconds);
+        public static float RegionSeamMaxBlackSeconds => SeamTunable(c => c.RegionSeamMaxBlackSeconds, GameConfig.DefaultRegionSeamMaxBlackSeconds);
+        public static float RegionSeamFootFadeDistanceMetres => SeamTunable(c => c.RegionSeamFootFadeDistanceMetres, GameConfig.DefaultRegionSeamFootFadeDistanceMetres);
+        public static float RegionSeamFootDrawnMarginMetres => SeamTunable(c => c.RegionSeamFootDrawnMarginMetres, GameConfig.DefaultRegionSeamFootDrawnMarginMetres);
+        public static float RegionSeamBoatFadeDistanceMetres => SeamTunable(c => c.RegionSeamBoatFadeDistanceMetres, GameConfig.DefaultRegionSeamBoatFadeDistanceMetres);
+        public static float RegionSeamBoatDrawnMarginMetres => SeamTunable(c => c.RegionSeamBoatDrawnMarginMetres, GameConfig.DefaultRegionSeamBoatDrawnMarginMetres);
+        public static float RegionSeamMinApproachSpeed => SeamTunable(c => c.RegionSeamMinApproachSpeed, GameConfig.DefaultRegionSeamMinApproachSpeed);
+        public static float RegionSeamRearmMoverLengths => SeamTunable(c => c.RegionSeamRearmMoverLengths, GameConfig.DefaultRegionSeamRearmMoverLengths);
+        public static float RegionSeamRearmMinMetres => SeamTunable(c => c.RegionSeamRearmMinMetres, GameConfig.DefaultRegionSeamRearmMinMetres);
+        public static float RegionSeamReturnMoverLengths => SeamTunable(c => c.RegionSeamReturnMoverLengths, GameConfig.DefaultRegionSeamReturnMoverLengths);
+
+        /// <summary>The preload's heading gate (m/s, s), release delay (s) and the teleport cap (m/s) on a
+        /// mover's speed, PR 1223. Same <c>Config != null</c> contract.</summary>
+        public static float RegionPreloadMinHeadingSpeed => SeamTunable(c => c.RegionPreloadMinHeadingSpeed, GameConfig.DefaultRegionPreloadMinHeadingSpeed);
+        public static float RegionPreloadHeadingSeconds => SeamTunable(c => c.RegionPreloadHeadingSeconds, GameConfig.DefaultRegionPreloadHeadingSeconds);
+        public static float RegionPreloadReleaseSeconds => SeamTunable(c => c.RegionPreloadReleaseSeconds, GameConfig.DefaultRegionPreloadReleaseSeconds);
+        public static float RegionMoverMaxPlausibleSpeed => SeamTunable(c => c.RegionMoverMaxPlausibleSpeed, GameConfig.DefaultRegionMoverMaxPlausibleSpeed);
+
+        static float SeamTunable(System.Func<GameConfig, float> read, float fallback) =>
+            UnityEngine.Mathf.Max(0f, Config != null ? read(Config) : fallback);
+
+        /// <summary>
+        /// How black the screen is for a seam crossing RIGHT NOW (0 clear .. 1 black): written by the travel
+        /// rig's seam fade (App), read by the one screen fade (UI), so the crossing reuses the existing cover
+        /// without either module referencing the other (rule 4). A plain float, polled per frame: no event,
+        /// no allocation. 0 whenever no seam crossing is under way.
+        /// </summary>
+        public static float SeamCoverAlpha { get; set; }
+
+        /// <summary>
         /// TRUE while the ARRIVAL OPENING is running — from the moment <c>ArrivalOpening</c> leaves
         /// <c>Dormant</c> until it hands the player the boat, and false again the instant it is torn
         /// down. The <b>App</b> opening is the writer; the <b>Art</b> mood-grade director is the reader,
@@ -628,6 +939,63 @@ namespace HiddenHarbours.Core
         /// <summary>The name limit, including the fallback for an unwired config.</summary>
         public static int PlayerNameMaxLength => Config != null
             ? System.Math.Max(1, Config.PlayerNameMaxLength) : GameConfig.DefaultPlayerNameMaxLength;
+
+        /// <summary>How many traits a character picks (the owner's two), with the fallback for an unwired
+        /// config. Never below zero.</summary>
+        public static int TraitPicksPerCharacter => Config != null
+            ? System.Math.Max(0, Config.TraitPicksPerCharacter) : GameConfig.DefaultTraitPicksPerCharacter;
+
+        /// <summary>The hunger and tiredness numbers, with the fallback for an unwired config.</summary>
+        public static NeedsSettings NeedsSettings => Config != null ? Config.Needs : NeedsSettings.Default;
+
+        /// <summary>The body numbers (body slice 1), with the fallback for an unwired config.</summary>
+        public static BodySettings BodySettings => Config != null ? Config.Body : BodySettings.Default;
+
+        /// <summary>The strength and cardio numbers (body slice 2), with the fallback for an unwired config.</summary>
+        public static StrengthSettings StrengthSettings => Config != null ? Config.Strength : StrengthSettings.Default;
+
+        /// <summary>The crew and trip-limit rules (crew slice R2), with the fallback for an unwired config.</summary>
+        public static CrewPolicy CrewPolicy => Config != null ? Config.Crew : CrewPolicy.Default;
+
+        /// <summary>The cleanliness numbers, with the fallback for an unwired config (or a config asset
+        /// written before the block existed, which deserializes it with no source rows).</summary>
+        public static CleanlinessSettings CleanlinessSettings
+            => Config != null && Config.Cleanliness.Sources != null ? Config.Cleanliness : CleanlinessSettings.Default;
+
+        /// <summary>The kitchen numbers (kitchens slice 1), with the fallback for an unwired config.</summary>
+        public static KitchenSettings KitchenSettings => Config != null ? Config.Kitchen : KitchenSettings.Default;
+
+        /// <summary>
+        /// Whether a fridge has power (kitchens slice 1). Never null: <see cref="AlwaysOnKitchenPower"/>
+        /// until a power model answers (⚠ SEAM: main has none). Cleared by <see cref="Reset"/>.
+        /// FLAG lead-architect: new Core contract (kitchens).
+        /// </summary>
+        public static IKitchenPower KitchenPower
+        {
+            get => _kitchenPower ?? AlwaysOnKitchenPower.Instance;
+            set => _kitchenPower = value;
+        }
+
+        private static IKitchenPower _kitchenPower;
+
+        /// <summary>
+        /// How fast a stored item spoils, by id (kitchens slice 1). Never null:
+        /// <see cref="NothingSpoilsPerishability"/> until the food Defs land (⚠ SEAM: draft PR 1227) and
+        /// assign a resolver. Cleared by <see cref="Reset"/>.
+        /// FLAG lead-architect: new Core contract (kitchens).
+        /// </summary>
+        public static IFoodPerishability FoodPerishability
+        {
+            get => _foodPerishability ?? NothingSpoilsPerishability.Instance;
+            set => _foodPerishability = value;
+        }
+
+        private static IFoodPerishability _foodPerishability;
+
+        /// <summary>The needs' slow tick in in-game seconds (never below one game minute), with the
+        /// fallback for an unwired config. The game clock calls <see cref="INeedsService.Tick"/> this often.</summary>
+        public static double NeedsTickGameSeconds
+            => System.Math.Max(1d, NeedsSettings.TickGameMinutes) * SecondsPerDay / (24d * 60d);
 
         public static UnityEngine.Color CreatorBackdropColor => Config != null ? Config.CreatorBackdropColor : NotebookInk.Paper;
         public static float CreatorFigureHeightFraction => Config != null
@@ -690,6 +1058,14 @@ namespace HiddenHarbours.Core
         /// FLAG lead-architect: new Core accessor (the trim block, the WaveField pattern).</summary>
         public static HullTrimSettings HullTrim =>
             Config != null ? Config.HullTrim : HullTrimSettings.Default;
+
+        /// <summary>The SEA-YAW policy (the wind and the sea turn a hull's head), same contract as
+        /// <see cref="HullTrim"/>: the <c>Config != null</c> discipline and resolved per read, so the
+        /// sliders move the next tick. Falls back to <see cref="SeaYawSettings.Default"/> with no config
+        /// wired. Read by <c>BoatController</c>.
+        /// FLAG lead-architect: new Core accessor (the HullTrim pattern).</summary>
+        public static SeaYawSettings SeaYaw =>
+            Config != null ? Config.SeaYaw : SeaYawSettings.Default;
 
         /// <summary>The LADDER-BOARDING policy (the tide gap at which a step aboard becomes a climb, and
         /// the measured rig geometry the climb runs on), same contract as <see cref="WaveField"/> —
@@ -893,6 +1269,29 @@ namespace HiddenHarbours.Core
             Config != null ? Config.FishLengthPerKgCubeRootMeters
                            : GameConfig.DefaultFishLengthPerKgCubeRootMeters;
 
+        /// <summary>The readability floor on a fish's DRAWN length, sprite px (see
+        /// <see cref="GameConfig.MinDrawnFishLengthPx"/>), same contract as
+        /// <see cref="MaxOneHandFishLengthMeters"/>: the config's value, or the default with none.</summary>
+        public static float MinDrawnFishLengthPx =>
+            Config != null ? Config.MinDrawnFishLengthPx : GameConfig.DefaultMinDrawnFishLengthPx;
+
+        /// <summary>The longest held fish drawing that gets the contrast line, sprite px (see
+        /// <see cref="GameConfig.HeldFishKeylineMaxLengthPx"/>): the config's value, or the default with none.</summary>
+        public static float HeldFishKeylineMaxLengthPx =>
+            Config != null ? Config.HeldFishKeylineMaxLengthPx : GameConfig.DefaultHeldFishKeylineMaxLengthPx;
+
+        /// <summary>How dark the contrast line is (see <see cref="GameConfig.HeldFishKeylineShade"/>).</summary>
+        public static float HeldFishKeylineShade =>
+            Config != null ? Config.HeldFishKeylineShade : GameConfig.DefaultHeldFishKeylineShade;
+
+        /// <summary>Where the contrast line is drawn, sprite px (see
+        /// <see cref="GameConfig.HeldFishKeylineOffsetsPx"/>). Read once when a fish is put in his hands, never
+        /// per frame, so the default's fresh array is no per-frame allocation.</summary>
+        public static UnityEngine.Vector2[] HeldFishKeylineOffsetsPx =>
+            Config != null && Config.HeldFishKeylineOffsetsPx != null
+                ? Config.HeldFishKeylineOffsetsPx
+                : GameConfig.DefaultHeldFishKeylineOffsetsPx();
+
         /// <summary>The tide table's owner tunables (VS-06) — how far the almanac page looks ahead and
         /// how finely it hunts each turn. Same contract as <see cref="WaveField"/>, including the
         /// <c>Config != null</c> discipline (never <c>?.</c>/<c>??</c> on a <c>UnityEngine.Object</c>).
@@ -951,6 +1350,11 @@ namespace HiddenHarbours.Core
         /// <see cref="WaveField"/>, including the <c>Config != null</c> discipline.</summary>
         public static HelmWheelSettings HelmWheel =>
             Config != null ? Config.HelmWheel : HelmWheelSettings.Default;
+
+        /// <summary>The autopilot's heading-hold tunables (gains, helm limits, hand-back limits). Same
+        /// contract as <see cref="WaveField"/>, including the <c>Config != null</c> discipline.</summary>
+        public static HelmAutopilotSettings HelmAutopilot =>
+            Config != null ? Config.HelmAutopilot : HelmAutopilotSettings.Default;
 
         /// <summary>The masthead pennant's tunables (VS-19) — the boat's own wind instrument. Same
         /// contract as <see cref="WaveField"/>, including the <c>Config != null</c> discipline (never
@@ -1171,6 +1575,7 @@ namespace HiddenHarbours.Core
         /// <summary>Clear references (scene teardown / tests).</summary>
         public static void Reset()
         {
+            SleepFlow.Reset();   // nobody in bed, no chooser: the next session presents its own
             Clock = null;
             Environment = null;
             Wallet = null;
@@ -1180,20 +1585,43 @@ namespace HiddenHarbours.Core
             FishSchools = null;          // → EmptyFishSchools.Instance; this property is never null
             FishBehaviour = null;        // → EmptyFishBehaviourFacts.Instance; likewise never null
             FishSizes = null;            // nullable by contract: no size word without a registry
+            FishConservation = null;     // nullable by contract: nothing refused without a registry
+            GiftableFacts = null;        // nullable by contract: the giver falls back to its kind default
             RadarContacts = null;        // → EmptyRadarSea.Instance; likewise never null
             BirdPresence = null;         // → EmptyBirdPresence.Instance; likewise never null
             Save = null;
             Appearance = null;           // → a fresh default on next read; drops any open preview
+            Traits = null;               // → a fresh default on next read; drops its catalog and cache
+            Needs = null;                // → a fresh default on next read; drops its stage baseline
+            Body = null;                 // → a fresh default on next read
+            Messes = null;               // → a fresh default on next read
+            PlayerStrength = null;       // → the body, or the neutral reading
+            CarriedLoad = null;          // → NoCarriedLoad.Instance (nothing carried)
+            Cleanliness = null;          // → a fresh default on next read; drops its station catalog
+            KitchenPower = null;        // → AlwaysOnKitchenPower.Instance; this property is never null
+            FoodPerishability = null;    // → NothingSpoilsPerishability.Instance; likewise never null
+            KitchenStorageCatalog.Clear();
+            Farm = null;                 // → a fresh default on next read; drops its catalog and baseline
+            Cooking = null;              // drops the runner; the save's cook rows stay with the save
+            Food = null;                 // → a fresh default on next read; drops its loaded food book
+            Relationships = null;        // → a fresh default on next read; reseeds from the shipped ties
+            Crew = null;                 // → a fresh, empty roster on next read
+            Voyages = null;              // → EmptyVoyageCatalog.Instance; this property is never null
+            CrossingGate = null;         // → AlwaysOpenCrossingGate.Instance; this property is never null
             TidalTerrain = null;
             StillWater = null;           // → EmptyStillWater.Instance; this property is never null
             PlayerTransform = null;
             Hands = null;
             CatchHands = null;
             PlayerHold = null;
+            PlayerStorage.Clear();       // no container outlives the services that listed it
             CurrentRegionId = null;
             SwellClimates.Clear();
             PendingArrivalKey = null;
             CurrentRegionBounds = default;
+            SeamCoverAlpha = 0f;          // no crossing outlives its rig: the cover is clear
+            WorldFrame = null;           // no frame: legacy keyed passages, as every fixture expects
+            Whereabouts = null;
             OpeningCinematicRunning = false;   // a torn-down opening never leaves the intro grade on
             WorldUnitsPerRenderedPixel = 0f;   // 0 = no camera has reported; every snap inert
             Config = null;

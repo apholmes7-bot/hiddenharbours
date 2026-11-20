@@ -4,10 +4,32 @@ using UnityEngine;
 
 namespace HiddenHarbours.World
 {
-    public sealed class StPetersPlantGround : MonoBehaviour, IPlantFieldGround
+    public sealed class StPetersPlantGround : MonoBehaviour, IPlantFieldGround, IGroundZoneSource
     {
         public PlantFieldGroundData Data;
         byte[] _cells;
+
+        // The same painted ground the plants grow from tells the print layer what ground is underfoot.
+        void OnEnable() => GroundZoneSources.Register(this);
+        void OnDisable() => GroundZoneSources.Unregister(this);
+
+        /// <summary>The terrain zone at a point: the cell's material slot read as a
+        /// <see cref="TerrainPlanZones"/> name. False outside the grid and on excluded cells.</summary>
+        public bool TryGetZone(Vector2 worldPos, out string zone)
+        {
+            zone = null;
+            if (Data == null || Data.CellSize <= 0f || string.IsNullOrEmpty(Data.Payload)) return false;
+            _cells ??= Data.Decode();
+            int c = Mathf.FloorToInt((worldPos.x - Data.Origin.x) / Data.CellSize);
+            int r = Mathf.FloorToInt((worldPos.y - Data.Origin.y) / Data.CellSize);
+            if (c < 0 || c >= Data.Width || r < 0 || r >= Data.Height) return false;
+            byte value = _cells[r * Data.Width + c];
+            if (value == TerrainPlanZones.Unpainted) return false;
+            int material = value & 31;
+            if (material >= TerrainPlanZones.Names.Length) return false;
+            zone = TerrainPlanZones.Names[material];
+            return true;
+        }
 
         public int PlantSeason => GameServices.Clock != null ? (int)GameServices.Clock.Season : (int)Season.EarlySpring;
 

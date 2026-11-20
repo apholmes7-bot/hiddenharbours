@@ -17,11 +17,28 @@ MonoBehaviour:
   SecondsPerDay: 1800
   StartHour: 7.5
   WakeHour: 6
+  SleepMinHours: 1
+  SleepMaxHours: 8
+  SleepStepHours: 1
+  SleepGameHoursPerRealSecond: 1
+  BunkRequiresMooredOrAnchored: 1
+  BunkReachMetres: 1
   StartSeason: 1
   StartDayOfSeason: 1
   DaysPerWeek: 7
   DaysPerSeason: 28
   MarketDayIndex: 4
+  InteractChooserEnabled: 1
+  InteractChooserMaxPriority: 0
+  InteractChooserMaxRows: 6
+  InteractChooserPushThreshold: 0.5
+  InteractChooserRepeatDelaySeconds: 0.4
+  InteractChooserRepeatIntervalSeconds: 0.12
+  TasksChipSignalSeconds: 2.4
+  TasksChipBlinkSeconds: 0.3
+  HeavyWorkNeeds:
+    RefusedAtTiredness: 2
+    RefusedAtHunger: 2
   TidalPeriodHours: 12.4206
   LunarMonthDays: 28
   NeapAmplitudeFraction: 0.45
@@ -67,6 +84,21 @@ MonoBehaviour:
     SurfBroachTorque: 1.2
     SurfBorePulse01: 1
     SurfLiftScale: 1
+  SeaYaw:
+    Enabled: 1
+    CalmWindMetresPerSecond: 3
+    ReferenceWindMetresPerSecond: 10
+    WindHelmShare: 0.2
+    HullWindYawBias: 1
+    AnchoredWindYawBias: -1
+    WaveHelmShare: 0.2
+    ReferenceWaveSlope: 0.1
+    WaveSpanWavelengthFraction: 0.25
+    ReferenceMassKg: 400
+    MassExponent: 0.35
+    ReferenceWindExposure: 0.6
+    MaxSusceptibility: 1.25
+    MaxHelmShare: 0.45
   Anchor:
     ReferenceAnchorMassKg: 6
     DefaultRodeMeters: 6
@@ -147,6 +179,10 @@ MonoBehaviour:
     WhitewaterStepMeters: 2
     BorePulseSharpness: 2.6
     BoreSetStrength: 1
+    BoreRefraction: 1
+    BorePhaseJitterDegrees: 12
+    BorePhaseJitterMeters: 64
+    BoreFetchProbeMeters: 3
     RunUpCoefficient: 1
     RunUpCapMeters: 0.35
   SurfSprayIntensityOffset: 0
@@ -160,6 +196,12 @@ MonoBehaviour:
   FrontedLicenceFee: 20
   MaxOneHandFishLengthMeters: 0.62
   FishLengthPerKgCubeRootMeters: 0.477
+  MinDrawnFishLengthPx: 12
+  HeldFishKeylineMaxLengthPx: 16
+  HeldFishKeylineShade: 0.4
+  HeldFishKeylineOffsetsPx:
+  - {x: -1, y: 0}
+  - {x: 1, y: 0}
   HelmThrottle:
     AheadNotches: 4
     AsternNotches: 2
@@ -221,6 +263,16 @@ MonoBehaviour:
     SelfCentre: 0
     RimGrabPadPx: 8
     SteerEaseSeconds: 0.25
+  HelmAutopilot:
+    HeadingGainPerDegree: 0.04
+    YawRateGainPerDegreePerSecond: 0.03
+    IntegralGainPerDegreeSecond: 0.004
+    IntegralLimitHelm: 0.3
+    MaxHelm: 0.6
+    HelmSlewPerSecond: 2
+    MinWayMetresPerSecond: 0.5
+    SteerOverrideThreshold: 0.2
+    CollisionMinImpactMetresPerSecond: 0.5
   HelmFootprint:
     CameraBandShare: 0.5
     CameraEaseSeconds: 0.4
@@ -313,6 +365,7 @@ MonoBehaviour:
   ShallowsFloor: 1
   ShallowsFloorRefraction: 0.25
   ShallowsSubmergedProps: 1
+  UnderWaterWeedClarity: 0.85
   HullKeylineFlood: 0
   PlayerFigureIdReserve: 2
   HullMeshReflections: 0
@@ -322,6 +375,10 @@ MonoBehaviour:
   HullReflectionMaxTriangles: 1000000
   BoatLegacyCabinGlow: 0
   WalkerAutoLantern: 0
+  WalkerHeadlampHoldSeconds: 0.4
+  WalkerHeadlampLensForwardMetres: 0.01
+  WalkerHeadlampLensUpMetres: 0.1
+  WalkerHeadlampStrapBackMetres: 0.18
   PixelGridSnap: 1
   CharacterBlink: 1
   CharacterHeadLook: 1
@@ -506,8 +563,128 @@ MonoBehaviour:
     AboardStopsCloser: 2
     AboardStopsWider: 2
   InteriorRockScale: 0.45
+  CutTheHelmRoomAtTheWheel: 1
   StairClimbSeconds: 0.5
   PlayerNameMaxLength: 32
+  TraitPicksPerCharacter: 2
+  Needs:
+    Hunger:
+      RisePerGameHour: 0.0625
+      MildAt: 0.4
+      StrongAt: 0.75
+      MildWalkPenalty: 0.04
+      StrongWalkPenalty: 0.1
+      MildSellPenalty: 0
+      StrongSellPenalty: 0
+    Tiredness:
+      RisePerGameHour: 0.055555556
+      MildAt: 0.6
+      StrongAt: 0.9
+      MildWalkPenalty: 0.04
+      StrongWalkPenalty: 0.08
+      MildSellPenalty: 0
+      StrongSellPenalty: 0
+    WalkFloor: 0.85
+    SellFloor: 0.92
+    TickGameMinutes: 5
+    SleepReliefPerGameHour: 0.125
+  Body:
+    ReferenceHeightMetres: 1.75
+    MinHeightScale: 0.92
+    MaxHeightScale: 1.08
+    DefaultFrame: 0.5
+    SmallFrameLeanBmi: 20
+    LargeFrameLeanBmi: 24
+    SmallFrameMaxBmi: 30
+    LargeFrameMaxBmi: 40
+    SmallFrameFloorBmi: 17
+    LargeFrameFloorBmi: 20
+    MetabolicAgeYears: 30
+    MetabolicSexConstantKcal: -78
+    ActivityFactor: 1.7
+    KcalPerKgOfMass: 1540
+    SurplusStoredFraction: 0.75
+    MaxGainKgPerMeal: 1
+    StarvingLossKgPerGameDay: 1.5
+    HeightStrideExponent: 1
+    SlowPerExtraLeanMass: 0.35
+    WalkFloor: 0.75
+    StomachCapacityMeals: 1.5
+    StomachEmptiesPerGameHour: 0.25
+  Strength:
+    Strength:
+      GainPerDose: 0.0005
+      DecayPerGameDay: 0.01
+      GraceGameDays: 3
+      MaintainDose: 15
+    Cardio:
+      GainPerDose: 0.0007
+      DecayPerGameDay: 0.02
+      GraceGameDays: 2
+      MaintainDose: 20
+    MemoryRegainFactor: 4
+    MassExponent: 0.6666667
+    SmallFrameTrainableGain: 0.6
+    LargeFrameTrainableGain: 0.9
+    ReferenceCarryCapacityKg: 30
+    CarrySlowAtCapacity: 0.4
+    CarryWalkFloor: 0.6
+    CardioSpeedGainMax: 0.06
+    CardioMovementSavingMax: 0.25
+    ReportWorkFromSignals: 1
+    MaxSignalWindowGameMinutes: 240
+  Crew:
+    HiredHandsShareBunks: 1
+    HandsPerSharedBunk: 2
+    OvernightNights: 3
+    WeekNights: 10
+    MonthNights: 30
+    MonthTripsNeedHiredSkipper: 0
+  Cleanliness:
+    Curve:
+      RisePerGameHour: 0.020833334
+      MildAt: 0.5
+      StrongAt: 0.75
+      MildWalkPenalty: 0
+      StrongWalkPenalty: 0
+      MildSellPenalty: 0
+      StrongSellPenalty: 0
+    Sources:
+    - Kind: 1
+      RisePerGameHour: 0.08
+      PerAction: 0
+    - Kind: 2
+      RisePerGameHour: 0.1
+      PerAction: 0.015
+    - Kind: 3
+      RisePerGameHour: 0.12
+      PerAction: 0.01
+    - Kind: 4
+      RisePerGameHour: 0.15
+      PerAction: 0.01
+    - Kind: 5
+      RisePerGameHour: 0.12
+      PerAction: 0
+    - Kind: 6
+      RisePerGameHour: 0.2
+      PerAction: 0
+    - Kind: 7
+      RisePerGameHour: 0.15
+      PerAction: 0
+    MaxStretchGameMinutes: 240
+    WadeCountsAsSea: 0
+    SeaStationId: washstation.sea
+    SoapSupplyId: supply.soap_bar
+    WashesPerSoapBar: 8
+    UnsoapedCeiling: 0.85
+    NoSoapLine: No soap. Can't get properly clean.
+  Kitchen:
+    DiningSeatReachMetres: 1.25
+    PieceReachMetres: 1
+    SeatedReliefMultiplier: 1.1
+    DiningReliefMultiplier: 1.5
+    SitRestFloor: 0.35
+    SitRecoveryPerGameHour: 0.0625
   Juice:
     GradeEnabled: 1
     GradeStrength: 0.35
@@ -592,3 +769,169 @@ MonoBehaviour:
     SideSpeedKnee: 1.2
     SideRadiusHalfBeams: 0.3
     SideReach: 0.7
+    ContactBowTaper: 0.35
+    ContactStemHalfBeams: 0.12
+  DevAllHelmInstruments: 1
+  MeshFishingAndDig: 1
+  MeshRodInHand: 1
+  HeldPropLineWidthPx: 1.5
+  RegionCrossingHysteresisMetres: 0.25
+  RegionPreloadDistanceMetres: 40
+  RegionPreloadMinHeadingSpeed: 0.5
+  RegionPreloadHeadingSeconds: 0.25
+  RegionPreloadReleaseSeconds: 15
+  RegionMoverMaxPlausibleSpeed: 40
+  RegionSeamFadeOutSeconds: 0.15
+  RegionSeamFadeInSeconds: 0.2
+  RegionSeamMaxBlackSeconds: 1.5
+  RegionSeamFootFadeDistanceMetres: 0.45
+  RegionSeamBoatFadeDistanceMetres: 1.5
+  RegionSeamFootDrawnMarginMetres: 0.1
+  RegionSeamBoatDrawnMarginMetres: 0.3
+  RegionSeamMinApproachSpeed: 0.1
+  RegionSeamRearmMoverLengths: 1.5
+  RegionSeamRearmMinMetres: 0.5
+  RegionSeamReturnMoverLengths: 0.5
+  GroundPrints:
+    Enabled: 1
+    LifetimeGameHours: 24
+    FadeExponent: 1
+    FadeSteps: 6
+    StrideMetres: 0.75
+    FootLengthMetres: 0.28
+    FootWidthMetres: 0.11
+    FootSideOffsetMetres: 0.09
+    TireSegmentMetres: 0.5
+    DefaultTireWidthMetres: 0.22
+    TreadRepeatMetres: 0.25
+    TeleportMetres: 3
+    MaxPrintsPerUpdate: 8
+    Capacity: 2048
+    HeadingSteps: 16
+    SlowTickRealSeconds: 0.5
+    TideChecksPerTick: 256
+    SortingOrder: -9
+    ShapeTexturePixels: 8
+    Surfaces:
+    - Surface: 1
+      Tint: {r: 0.2, g: 0.22, b: 0.04, a: 1}
+      StartStrength: 0.87
+      EdgeBreakup: 0.15
+      InteriorBreakup: 0.2
+      TireTint: {r: 0.22, g: 0.23, b: 0.08, a: 1}
+      TireStartStrength: 0.7
+      TireEdgeBreakup: 0.3
+      TireInteriorBreakup: 0.15
+    - Surface: 2
+      Tint: {r: 0.3, g: 0.24, b: 0.16, a: 0.8}
+      StartStrength: 0.85
+      EdgeBreakup: 0
+      InteriorBreakup: 0
+      TireTint: {r: 0.3, g: 0.24, b: 0.16, a: 0.8}
+      TireStartStrength: 0.85
+      TireEdgeBreakup: 0
+      TireInteriorBreakup: 0
+    - Surface: 3
+      Tint: {r: 0.09, g: 0.07, b: 0.05, a: 0.8}
+      StartStrength: 1
+      EdgeBreakup: 0
+      InteriorBreakup: 0
+      TireTint: {r: 0.09, g: 0.07, b: 0.05, a: 0.8}
+      TireStartStrength: 1
+      TireEdgeBreakup: 0
+      TireInteriorBreakup: 0
+    - Surface: 4
+      Tint: {r: 0.13, g: 0.09, b: 0.06, a: 0.8}
+      StartStrength: 0.9
+      EdgeBreakup: 0
+      InteriorBreakup: 0
+      TireTint: {r: 0.13, g: 0.09, b: 0.06, a: 0.8}
+      TireStartStrength: 0.9
+      TireEdgeBreakup: 0
+      TireInteriorBreakup: 0
+    - Surface: 5
+      Tint: {r: 0.36, g: 0.42, b: 0.52, a: 0.8}
+      StartStrength: 0.85
+      EdgeBreakup: 0
+      InteriorBreakup: 0
+      TireTint: {r: 0.36, g: 0.42, b: 0.52, a: 0.8}
+      TireStartStrength: 0.85
+      TireEdgeBreakup: 0
+      TireInteriorBreakup: 0
+    Zones:
+    - Zone: grass
+      Surface: 1
+    - Zone: lawn
+      Surface: 1
+    - Zone: sedge
+      Surface: 1
+    - Zone: marram
+      Surface: 2
+    - Zone: sand
+      Surface: 2
+    - Zone: ripple
+      Surface: 2
+    - Zone: foreshore
+      Surface: 2
+    - Zone: silt
+      Surface: 3
+    - Zone: marsh
+      Surface: 3
+    - Zone: mud
+      Surface: 3
+    - Zone: dirt
+      Surface: 4
+    - Zone: path
+      Surface: 4
+  Effort:
+    RefuseLight: 0
+    RefuseModerate: 0
+    RefuseHeavy: 1
+    TiredRefuseAt: 0.9
+    HungryRefuseAt: 0.97
+    HungryAlsoSaidAt: 0.75
+    TiredLine: I'm too tired.
+    HungryLine: I'm too hungry.
+    BothLine: I'm too tired and too hungry.
+    LineCooldownSeconds: 4
+    BubbleHeightMetres: 2.1
+    SitReliefShareOfSleep: 0.25
+    SitRestFloor: 0.4
+  StinkLines:
+    Enabled: 1
+    StartAtDirt: 0.5
+    FullAtDirt: 1
+    MinLines: 1
+    MaxLines: 3
+    RiseMetresPerSecond: 0.2
+    LifetimeSeconds: 2
+    FadeSeconds: 0.5
+    SwayMetres: 0.04
+    SwayCyclesPerSecond: 0.75
+    HeadOffsetMetres: {x: 0, y: 1.3}
+    SpreadMetres: 0.18
+    LineHeightMetres: 0.34375
+    Color: {r: 0.72, g: 0.82, b: 0.46, a: 0.85}
+    OrdersAboveFigure: 2
+    ResampleSeconds: 1
+    ShowBelowDecks: 0
+  WashVisuals:
+    Enabled: 1
+    FillSeconds: 1.6
+    DrainSeconds: 1.2
+    FrothFramesPerSecond: 4
+    RunFramesPerSecond: 10
+    FlushSeconds: 0.9
+    FrothWithoutSoap: 0
+    ClimbSeconds: 0.55
+    ClimbArcMetres: 0.22
+    EntryStandOffMetres: 0.35
+    FallbackBakedSeatMetres: 0.4
+    BubbleCount: 6
+    BubbleRiseMetresPerSecond: 0.35
+    BubbleLifetimeSeconds: 1.4
+    BubbleSpreadMetres: 0.22
+    BubbleOffsetMetres: {x: 0, y: 0.75}
+    BubbleSizeMetres: 0.09375
+    BubbleColor: {r: 0.93, g: 0.97, b: 1, a: 0.9}
+    BubbleOrdersAboveFigure: 2

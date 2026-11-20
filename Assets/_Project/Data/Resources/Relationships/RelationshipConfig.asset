@@ -1,0 +1,59 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e52e0a100c96de27a1a1570a8b3756af, type: 3}
+  m_Name: RelationshipConfig
+  m_EditorClassIdentifier: HiddenHarbours.Core::HiddenHarbours.Core.RelationshipConfig
+  Thresholds:
+    MinStrength: -100
+    MaxStrength: 100
+    RivalAtOrBelow: -40
+    StrainedAtOrBelow: -15
+    AcquaintanceFrom: 10
+    FriendFrom: 35
+    CloseFrom: 70
+  Rules:
+  - Kind: 0
+    PointsPerUnit: 2
+    CapPerPairPerDay: 2
+    CanMakeRival: 0
+  - Kind: 1
+    PointsPerUnit: 15
+    CapPerPairPerDay: 15
+    CanMakeRival: 0
+  - Kind: 2
+    PointsPerUnit: 1
+    CapPerPairPerDay: 5
+    CanMakeRival: 0
+  - Kind: 3
+    PointsPerUnit: -1
+    CapPerPairPerDay: 3
+    CanMakeRival: 0
+  - Kind: 4
+    PointsPerUnit: 12
+    CapPerPairPerDay: 12
+    CanMakeRival: 0
+  - Kind: 5
+    PointsPerUnit: 8
+    CapPerPairPerDay: 8
+    CanMakeRival: 0
+  - Kind: 6
+    PointsPerUnit: 4
+    CapPerPairPerDay: 4
+    CanMakeRival: 0
+  - Kind: 7
+    PointsPerUnit: 2
+    CapPerPairPerDay: 2
+    CanMakeRival: 0
+  - Kind: 8
+    PointsPerUnit: -3
+    CapPerPairPerDay: 3
+    CanMakeRival: 0

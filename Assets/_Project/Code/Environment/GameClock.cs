@@ -60,7 +60,11 @@ namespace HiddenHarbours.Environment
             _flow = _t;
             _lastTotalDays = TotalDays;
             _lastSeason = Season;
+            // Body slice 2: the work the game announces (fights, hauls, deck work, driving) counts as effort.
+            ActivitySignalListener.Install();
         }
+
+        private void OnDestroy() => ActivitySignalListener.Uninstall();
 
         /// <summary>
         /// Seek the master clock to an absolute game-time (<see cref="IGameClock.SeekTo"/>): how a loaded
@@ -73,6 +77,11 @@ namespace HiddenHarbours.Environment
         {
             _t = totalSeconds < 0d ? 0d : totalSeconds;
             _flow = _t;
+            // A seek is a restore, not time passing: hunger and tiredness hold (needs slice 1).
+            NeedsMath.Rebase(GameServices.Save?.Current?.PlayerNeeds, _t);
+            BodyMath.Rebase(GameServices.Save?.Current?.PlayerBody, _t);   // body slice 1: mass and stomach hold too
+            CleanlinessMath.Rebase(GameServices.Save?.Current?.PlayerCleanliness, _t);   // and the dirt
+            _needsTickAccum = 0d;
             // Keep the rollover guards in step with where we landed (only meaningful once configured).
             if (_config != null)
             {
@@ -146,7 +155,11 @@ namespace HiddenHarbours.Environment
             if (_config == null || IsPaused) return;
             double step = wallSeconds * Mathf.Max(0f, TimeScale);
             _flow += step;
-            if (!IsHeld) _t += step;
+            if (!IsHeld)
+            {
+                _t += step;
+                TickNeeds(step);
+            }
 
             int today = TotalDays;
             if (today != _lastTotalDays)
@@ -160,5 +173,26 @@ namespace HiddenHarbours.Environment
                 }
             }
         }
+
+        /// <summary>
+        /// The needs' slow tick (needs slice 1): every <see cref="GameServices.NeedsTickGameSeconds"/> of
+        /// game time that actually passed, ask <see cref="INeedsService.Tick"/> whether hunger or tiredness
+        /// crossed a stage. Never per frame (rule 7), and only a stage announcement waits on it: the levels
+        /// themselves are read off this clock on demand, so the cadence cannot change them (rule 5). A held
+        /// hour passes no game time and so ticks nothing.
+        /// </summary>
+        private void TickNeeds(double gameStep)
+        {
+            _needsTickAccum += gameStep;
+            if (_needsTickAccum < GameServices.NeedsTickGameSeconds) return;
+            _needsTickAccum = 0d;
+            GameServices.Needs.Tick();
+            // The food stores share the needs' slow cadence (kitchens slice 1): it only notices a cooler's
+            // ice running out and a fridge's power changing; contents settle on read, so a sleep straight
+            // past the melt lands on the same numbers as these ticks would.
+            KitchenStores.Tick();
+        }
+
+        private double _needsTickAccum;
     }
 }

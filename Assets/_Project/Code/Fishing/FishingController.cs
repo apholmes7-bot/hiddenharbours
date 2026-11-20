@@ -737,6 +737,16 @@ namespace HiddenHarbours.Fishing
             _fight = null;
             EndRodFight();
 
+            // --- Protected species (owner ruling 2026-11-15): "documented but must be released". Asked
+            // FIRST, ahead of the licence gate: a protected fish is landed and documented whatever
+            // licence is held, and then it goes back. The verdict is data (FishSpeciesDef.Protected) read
+            // through the one pure rule, never a species list here.
+            if (CatchReleaseRule.MustRelease(fish, GameServices.FishConservation))
+            {
+                ReleaseProtected(fish, tension);
+                return;
+            }
+
             // --- Licence gate (St Peters, P5 cozy): some species may only be LANDED with the right
             // licence (the rod takes cod only once you hold the cod licence). The mapping species→licence
             // is the authored licence data (CatchLicensePolicy); the player's held licences come from the
@@ -798,6 +808,34 @@ namespace HiddenHarbours.Fishing
                 Debug.Log($"[Fishing] {FishingStrings.LandedNoRoom}");
                 EventBus.Publish(new DevNotice(FishingStrings.LandedNoRoom));
             }
+
+            _phaseTimer = _resultDisplay;
+            Emit(FishingPhase.Landed, tension, 1f);
+        }
+
+        /// <summary>
+        /// A won fight on a protected species: documented exactly as a kept fish is at the landing (the
+        /// same item, the same landing cue, the Landed phase), then released. Nothing is offered to a hand
+        /// or a hold, so <see cref="FishCaught"/> and <see cref="CatchLanded"/> are never raised; instead
+        /// <see cref="CatchReleased"/> carries the documented catch, and one spoken line says why she went
+        /// back. Bait follows the same rule as a kept catch: the fish took it.
+        /// </summary>
+        private void ReleaseProtected(FishSpeciesDef fish, float tension)
+        {
+            if (_config != null && _config.BaitSpentOnCatchOnly) SpendBait();
+
+            double landedAt = GameServices.Clock != null ? GameServices.Clock.TotalSeconds : 0.0;
+            var item = new CatchItem(fish.Id, fish.DisplayName, fish.Category,
+                                     _pendingWeight, fish.BaseValue, fish.SupplyElasticity,
+                                     fish.SpoilPerDay, Freshness.Landed(landedAt));
+
+            Vector2 exit = !_depthGame && _lastCast.IsCast ? _lastCast.LandingPoint : AnglerPosition;
+            EventBus.Publish(new JuiceMomentCue(JuiceMoment.Landing, exit, _pendingWeight));
+            EventBus.Publish(new CatchReleased(item));
+
+            string line = FishingStrings.ProtectedReleased(fish.DisplayName, _pendingWeight);
+            Debug.Log($"[Fishing] {line}");
+            EventBus.Publish(new DevNotice(line));
 
             _phaseTimer = _resultDisplay;
             Emit(FishingPhase.Landed, tension, 1f);
@@ -1122,9 +1160,19 @@ namespace HiddenHarbours.Fishing
             float delay = lo + (float)(_rng?.NextDouble() ?? 0.0) * (hi - lo);
 
             SeaFishingSettings s = _config != null ? _config.SeaFishing : SeaFishingSettings.Default;
-            return delay * SeaFightMath.BiteDelayScale(SeaState01(), s.SeaBoldness01)
-                         * CurrentSchoolInfluence().BiteDelayScale;
+            return WithBiteWaitTrait(delay * SeaFightMath.BiteDelayScale(SeaState01(), s.SeaBoldness01)
+                                           * CurrentSchoolInfluence().BiteDelayScale);
         }
+
+        /// <summary>
+        /// <paramref name="delay"/> (seconds to the next bite) with the player's
+        /// <see cref="TraitStat.BiteWait"/> factor applied (traits slice 1, Patient Angler), read through
+        /// the Core seam <see cref="GameServices.Traits"/>. Applied last, after the sea and the school, and it
+        /// never touches the RNG draw, so a seeded rig replays the same bite sequence, only sooner. With no
+        /// traits the factor is exactly 1 and the delay comes back untouched (bit-for-bit the old wait).
+        /// </summary>
+        public static float WithBiteWaitTrait(float delay)
+            => TraitMath.Apply(delay, GameServices.Traits.PlayerMultiplier(TraitStat.BiteWait));
 
         #region Depth drop (Rod Fishing v2 Wave 2 — design §2.1/§2.3; maths in DepthDropMath)
         // The weighted-rig branch: no cast — the rig DROPS (Sinking), the player counts the fall

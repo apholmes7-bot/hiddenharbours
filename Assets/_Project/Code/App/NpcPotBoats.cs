@@ -401,6 +401,9 @@ namespace HiddenHarbours.App
         private static void ShowBuoy(Pot pot, Vector2 at)
         {
             pot.BuoyRoot.transform.position = new Vector3(at.x, at.y, 0f);
+            // ADR 0059 step 2: sorted where it floats, written only when that changes (one int, no allocation).
+            int order = EffectSorting.OrderAt(SortedEffect.Buoy, at.y);
+            if (pot.BuoyRenderer != null && pot.BuoyRenderer.sortingOrder != order) pot.BuoyRenderer.sortingOrder = order;
             if (pot.BuoyRoot.activeSelf) return;
             pot.BuoyRoot.SetActive(true);
             pot.Wave.enabled = true;
@@ -463,7 +466,8 @@ namespace HiddenHarbours.App
             var buoyRenderer = visual.AddComponent<SpriteRenderer>();
             buoyRenderer.sprite = def.Trap.BuoySprite;
             buoyRenderer.color = def.BuoyColour;          // whose gear it is; set before the wave rider caches it
-            buoyRenderer.sortingOrder = def.BuoySortingOrder;
+            buoyRenderer.sortingOrder = EffectSorting.OrderAt(SortedEffect.Buoy, pot.BuoyRoot.transform.position.y);
+            pot.BuoyRenderer = buoyRenderer;   // re-sorted where it floats each time it is shown (ShowBuoy)
             pot.Wave = pot.BuoyRoot.AddComponent<BuoyWaveVisual>();   // the proven wave rider, reused unchanged
             pot.Wave.Configure(buoyRenderer, visual.transform);
             pot.Wave.enabled = false;
@@ -566,6 +570,7 @@ namespace HiddenHarbours.App
         private sealed class Pot
         {
             public GameObject BuoyRoot;
+            public SpriteRenderer BuoyRenderer;
             public BuoyWaveVisual Wave;
             public LineRenderer Rope;
             public SpriteRenderer PotRenderer;

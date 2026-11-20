@@ -43,5 +43,12 @@ namespace HiddenHarbours.World
         /// hours somebody is away with the truck. Making the routine engine drive would give "where is
         /// she?" two answers that can disagree.</para></summary>
         Drive = 4,
+
+        /// <summary>In the washroom: the toilet, or washing up at a sink or shower (cleanliness slice 1,
+        /// owner ask 2026-11-15: "npcs will use the washrooms"). A TAG like the others: the block's station
+        /// is a washroom station (a home's bathroom, a shop's back room, an outhouse) and the villager is
+        /// hidden past its door like any interior. No St Peters station is a washroom yet, so no routine
+        /// uses it; the placement lane adds the station and one row (docs/world/washrooms-plan.md).</summary>
+        Washroom = 5,
     }
 }

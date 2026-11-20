@@ -180,7 +180,7 @@ namespace HiddenHarbours.Tests.PlayMode
             {
                 Scene s = SceneManager.GetSceneAt(i);
                 if (s.IsValid() && s != clean && s.name == StPeters)
-                    yield return SceneManager.UnloadSceneAsync(s);
+                    yield return HiddenHarbours.Tests.Support.SceneSettle.Unload(s);
             }
 
             // ⚠ #764: a Single load of St Peters promotes the persistent core's roots into
@@ -636,7 +636,7 @@ namespace HiddenHarbours.Tests.PlayMode
 
             LogAssert.ignoreFailingMessages = true;   // the region logs decor complaints of its own
             _loadedAny = true;
-            yield return SceneManager.LoadSceneAsync(StPeters, LoadSceneMode.Single);
+            yield return HiddenHarbours.Tests.Support.SceneSettle.Load(StPeters, LoadSceneMode.Single);
             for (int i = 0; i < 8; i++) yield return null;   // let the self-installing components register
 
             var healed = new List<string>();

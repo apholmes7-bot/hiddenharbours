@@ -332,6 +332,42 @@ that seam (rule 4). It calls for the birds near the view, panned to the bird, qu
 and more often for feeding birds; its knobs are the director's `GullCallTuning`. The always-on gull
 bed is gone. Nothing is saved: the schedule is recomputed from seed and time.
 
+### NPC relationships (owner-directed 2026-11-14, slice 1)
+
+Villagers have ties with each other that the player's actions shape. Core owns the contract:
+`IRelationshipService` (reached as `GameServices.Relationships`, never null) answers `Stage(a, b)`,
+takes `Record(RelationshipEvent)` and, once a day, `ApplyDay()`, which publishes one
+`RelationshipStageChanged` per pair that crossed a stage. Behind it, `RelationshipGraph` is a pure POCO:
+symmetric pair strengths seeded from the `RelationshipTieDef`s, moved only by recorded events priced
+through the config's rule table (units summed per pair and kind, capped per day, applied kinds in
+ascending order), so the same seeds and events give the same graph in any recording order (rule 5,
+no dice). The event kinds cover the owner's three examples ahead of the systems that will raise
+them: `WorkedTogether` (crew on one boat, M3), `SharedEmployerRestored` (the cannery, M3-30),
+`CustomGiven` / `CustomDiverted` (the player's custom with a merchant, as a tie with
+`RelationshipGraph.PlayerId`, and the passed-over merchant cooling), plus `Introduced`. **No visible
+score, ever**: stages are noticed through talk, routines and opportunities. Slice 1 is in memory only
+and nothing records events yet; slice 2 saves `Snapshot()` / `Restore()` and wires `ApplyDay` to
+`DayStarted`.
+
+### Character traits (owner-directed 2026-11-14)
+
+A character picks two named traits (`GameConfig.TraitPicksPerCharacter`); each is a `TraitDef`
+under `Data/Resources/Traits/` carrying small bonuses on existing seams, with no drawbacks. Core
+owns the contract: `ITraitService` (reached as `GameServices.Traits`, never null) answers
+`PlayerMultiplier(TraitStat)` for the local player from `SaveData.PlayerTraits`, and
+`MultiplierFor(stat, ids)` for any character's list (co-op: each player has their own; only the
+acting player's traits apply). `TraitMath` is the pure rule: additives on one stat sum, then
+multipliers apply, floored at zero, combined in ordinal id order so the result is the same in every
+pick order (rule 5: a fixed number from the save, no roll). With no traits every factor is the
+literal 1 and `TraitMath.Apply` returns its input untouched, so a trait-less character is
+bit-for-bit the old game. Feature modules read only their own stat: `PlayerWalkController`
+(`WalkSpeed`, before the wade bands), `SellService.SellerPriceLevel` (`SellPrice`, shared by the
+quote, the till and `Market.NextUnitPrice`, so the screen still shows the coin paid) and
+`FishingController` (`BiteWait`, after the sea and school scales, never touching the RNG draw).
+The service caches per-stat factors against a copy of the saved id list, so the walk's per-tick
+read allocates nothing and a swapped save is picked up without an event. `PlayerTraitsChanged` is
+published when the picks change.
+
 ### Explicit mesh character moves
 
 `CharacterClipStateMap` in Core maps an explicit `CharacterClip` and carry key to an authored
@@ -349,6 +385,69 @@ Stern gear seeks its worker at order 90 after hull facing/rock (-110/-120); the 
 at 100 before choosing the single visible drawer. Its five order-100 peers retain their order.
 The cast and fresh-bake lists enable the same 27 states; the cast presenter still refuses claimed
 sprites and poses only stance/gait. No shipped cast caller plays these explicit moves yet.
+
+### Region crossings: one world frame (ADR 0057, owner ruling 2026-11-15)
+
+Regions are still separate scenes loaded additively, but each `RegionDef` now carries a `WorldOrigin`,
+and the `Resources/WorldMap` asset lists the regions that form one world. The pure Core `WorldFrame`
+(published on `GameServices.WorldFrame`) turns that into seams and boundaries. The persistent
+`RegionTravelCoordinator` checks the mover (walker on foot, boat aboard) each physics step: past a shared
+edge by `GameConfig.RegionCrossingHysteresisMetres` it travels to the neighbour and translates the mover
+by `from.WorldOrigin - to.WorldOrigin` (same world point, same heading, same speed); past an edge facing
+nothing it holds the mover at the edge. Keyed `RegionPassage` bands stand down in listed regions (the
+arrival opening keeps its authored door). A foot crossing never moves the boat: she stays in her region
+(`BoatRegionId`) and is hidden until the player returns. Core's `Whereabouts` / `IWorldWhereabouts`
+(on `GameServices.Whereabouts`) report where the player and the boat are, for save and sleep. Layout
+table and rules: [`world-frame.md`](world-frame.md).
+
+### The player's storage containers (storage with memory, owner 2026-11-17, save v25)
+
+Core `PlayerStorage` is the one list of the containers the player keeps things in (the boat's hold, the
+freezer at Ginny's, a rod rack or gear locker at home); a reader in another lane (the gift rows) walks it
+without naming a class. Contracts, all additive:
+
+- `IStorageContainer` (`StorageId`, `StoragePriority`): a stable `storage.snake_case` id (`StorageIds`;
+  the boat's hold is the fixed `storage.boat_hold`). The id is the container's SAVE KEY, so it is unique:
+  registering a second live container under one id logs a warning, and `HomeStoragePlanTests` refuses a
+  repeated id in the plan or in any placed scene or prefab.
+- `IHold` stays an optional facet with `Register(IHold)` kept: `PlayerStorage.Get(i)` answers only catch
+  holds (a rack reads null there), `GetContainer(i)` only named containers, `Find(id)` one by id. A type
+  that is both registers through the generic `Register<T>` (one entry).
+- **Order is deterministic**: priority (boat hold 10, home freezer 20, fixtures 50, an unnamed hold 100),
+  then ordinal id; only exact ties keep listing order. That order is the Give rows' order and the container
+  a gift comes from.
+- **Lifetime: register on enable, unregister on destroy, never on disable** (the `GameServices.PlayerHold`
+  rule: a region hop toggles roots, and a container that left on disable would vanish mid-crossing). A
+  null or already-listed container is ignored, unlisting one not listed is a no-op, and one object is one
+  entry whichever facet lists or unlists it. A destroyed scene container still counts until it is
+  unlisted, but every getter and `Find` read it as null, so a rebuilt container under the same id is
+  found (and is not warned about). Priority and id are read once, at listing. Reading is a count and an
+  index, allocation-free. Tests: `PlayerStorageOrderTests`, `PlayerStorageCoverageTests`,
+  `StoredContainersTests`, `SaveMigrationV25Tests`.
+- `IHoldRemove.TryRemoveAt(index)` (on `ShipHold`, `GinnyFreezer`, `CamperFreezer`, `ClamBucket`): the gift take removes the
+  one item and touches nothing else; a hold without it is still emptied and refilled.
+- **The save is the source of truth.** The contents live in `SaveData.StoredContainers` (and food in v23
+  `KitchenStores`) under the container's id; the scene object is a view that binds to its record by id on
+  enable (a changed save), on start and on `GameLoaded`, not only on the load edge. A catch hold binds only
+  once `GameServices.CatchFactory` exists (a restore without it rebuilds nothing); until then it stays
+  unbound and refuses every change, so an empty view can never be written over the saved catch.
+  `GameServices.Reset` still clears the list; whatever outlives a Reset registers again.
+
+### Hulls sort among the scenery (ADR 0059, accepted 2026-11-17)
+
+A boat is an upright world object. Core's pure `HullSorting.OrderAt(waterlinePivotY)` gives her order:
+the decor band's Y-sort at her waterline pivot (the boat root, `HullFootprint.Center`, which does not
+ride the swell), `SortingBands.HullYieldRungs` (1) behind, the same rule as the mesh vehicles.
+`HullSorting.OrderFor(HullFootprint)` reads the pivot off a footprint. Rollout (the boat root's
+`SortingGroup`, the re-anchored effects) follows `hull-vs-decor-sorting.md` §7; until it lands, hulls
+still sort at `BoatVisualDef.SortingOrder`.
+
+Free effects never take a fixed order in the band's low floor (step 2). Core's `EffectSorting` is the
+one table: an anchored effect (spray, splashes, buoys, an emergent shore plant, the NPC catch without a
+skipper) sorts at `EffectSorting.OrderAt(effect, anchorY)`, the band's Y-sort at its emission point plus
+its rungs; a carried one (the rod line and splash) at `EffectSorting.OrderOver(effect, carrierOrder)`.
+`EffectSortingTests` pins the table and guards the low floor (`DecorFloor` to `DecorFloor + 100`) against
+new literals.
 
 ## 5. Boat & entity architecture (composition)
 

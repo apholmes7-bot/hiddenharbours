@@ -108,7 +108,7 @@ namespace HiddenHarbours.Tests.PlayMode
             for (int i = _made.Count - 1; i >= 0; i--)
                 if (_made[i] != null) Object.DestroyImmediate(_made[i]);
             _made.Clear();
-            if (_scene.IsValid() && _scene.isLoaded) yield return SceneManager.UnloadSceneAsync(_scene);
+            if (_scene.IsValid() && _scene.isLoaded) yield return HiddenHarbours.Tests.Support.SceneSettle.Unload(_scene);
             foreach (var c in _cameras) if (c != null) c.enabled = true;
             _cameras.Clear();
             HullMeshPresentation.Service = _hulls;
@@ -131,7 +131,7 @@ namespace HiddenHarbours.Tests.PlayMode
             HullMeshPresentation.Service = new IsoFacetHullPresentationService();
 
             string path = WaterSceneTemplate.ScenePathFor(EastWaterPlan.SceneName);
-            yield return EditorSceneManager.LoadSceneAsyncInPlayMode(path,
+            yield return HiddenHarbours.Tests.Support.SceneSettle.LoadInPlayMode(path,
                 new LoadSceneParameters(LoadSceneMode.Additive));
             _scene = SceneManager.GetSceneByPath(path);
             Assert.IsTrue(_scene.IsValid() && _scene.isLoaded, path);

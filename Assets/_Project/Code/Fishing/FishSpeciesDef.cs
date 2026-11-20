@@ -22,6 +22,10 @@ namespace HiddenHarbours.Fishing
         [Header("Art")]
         [Tooltip("Optional species sprite (icon/haul art). Attached by art-pipeline later; never required.")]
         public Sprite Sprite;
+        [Tooltip("A flatfish: held up by the tail it is shown with its broad side to the camera, never its " +
+                 "edge. The catch art builder turns this into a per-facing pick of the held sheet's broadest " +
+                 "neighbouring facing (CatchItemLibrary HeldFacingMap), measured off the art.")]
+        public bool HeldBroadSideOn;
 
         [Header("Where & when it bites")]
         public string[] RegionIds = { "region.coddle_cove" };
@@ -172,6 +176,17 @@ namespace HiddenHarbours.Fishing
         public float SupplyElasticity = 0.2f;
         [Tooltip("Relative likelihood among matching fish (rarer = lower).")]
         public float SpawnWeight = 1f;
+
+        [Header("Conservation (owner ruling 2026-11-15: documented, then released)")]
+        [Tooltip("Protected species: it can be hooked, landed and documented, but it is always released. " +
+                 "It never enters a hold, pail, freezer, hand, the market or a recipe. Off by default.")]
+        public bool Protected = false;
+
+        [Header("Gifting (append-only, 2026-11-15)")]
+        [Tooltip("May a catch of this species be GIVEN to a person (NPC gifting)? On by default: a catch is " +
+                 "a gift. Turn it off for a species that must never leave the hand that way (a quest " +
+                 "fish). Read through Core's IGiftableFacts, never by the world layer directly.")]
+        public bool Giftable = true;
 
         // --- gating helpers (used by CatchResolver and testable on their own) ---
         public bool RegionAllowed(string regionId)

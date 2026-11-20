@@ -294,8 +294,14 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.That(anchors[0].Field("_regionId"), Is.EqualTo(id), "its anchor reports Rice Point's id as the current region");
             Assert.That(Code(AnchorSource), Does.Match(@"GameServices\.CurrentRegionId\s*=\s*_regionId\s*;"),
                 "an enabled anchor publishes its id");
-            Assert.That(Code(RestSaveSource), Does.Match(@"AnchorFor\(\s*request\s*,\s*GameServices\.CurrentRegionId\s*\)"),
-                "and a rest save stamps that id");
+            // The id reaches the anchor through RecordWake since the bunk aboard (2026-11-14) taught the
+            // responder to forget the anchor for a rest that records none: Write hands it the current
+            // region, and RecordWake passes it straight to AnchorFor.
+            string restSave = Code(RestSaveSource);
+            Assert.That(restSave, Does.Match(@"RecordWake\(\s*save\.Current\s*,\s*request\s*,\s*GameServices\.CurrentRegionId\s*\)"),
+                "and a rest save hands that id to the wake record");
+            Assert.That(restSave, Does.Match(@"AnchorFor\(\s*request\s*,\s*currentRegionId\s*\)"),
+                "which stamps it as the anchor's region");
             Doors.PlanAll(File.ReadAllText(NineMileCreekLayerRefresh.ScenePath), Doors.StepAssets.Read(), out string after);
             SceneYaml creek = SceneYaml.Parse(after);
             Doc loader = creek.ComponentsOf(creek.RootNamed(Doors.LoaderName)).Single(d => d.IsScript("HiddenHarbours.World.RegionSceneLoader"));

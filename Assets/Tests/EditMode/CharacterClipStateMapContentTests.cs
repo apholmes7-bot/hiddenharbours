@@ -44,9 +44,14 @@ namespace HiddenHarbours.Tests.EditMode
                     Assert.IsTrue(skin.TryGetClip(state, out _), file + ": " + state);
                     Assert.IsTrue(skin.DrawsAsMesh(state), file + ": " + state + " switch");
                 }
-                Assert.AreEqual(27, Array.FindAll(skin.MeshStates, s => Array.IndexOf(seated, s) < 0).Length,
-                    file + ": the legacy state set is retained");
-                Assert.AreEqual(31, skin.MeshStates.Length, file);
+                // The one-stroke rowing clip is not a CharacterClip: RowingFigure picks it from the oar's
+                // phase, so it is held here by name rather than through the map.
+                Assert.AreEqual("row_oars", RowingFigure.RowStrokeKey);
+                Assert.IsTrue(skin.TryGetClip(RowingFigure.RowStrokeKey, out _), file + ": row_oars");
+                Assert.IsTrue(skin.DrawsAsMesh(RowingFigure.RowStrokeKey), file + ": row_oars switch");
+                Assert.AreEqual(37, Array.FindAll(skin.MeshStates, s => Array.IndexOf(seated, s) < 0).Length,
+                    file + ": the 27 existing states plus eight rod clips, dig and row_oars");
+                Assert.AreEqual(41, skin.MeshStates.Length, file);
             }
         }
     }

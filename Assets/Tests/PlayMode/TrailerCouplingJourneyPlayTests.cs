@@ -194,6 +194,32 @@ namespace HiddenHarbours.Tests.PlayMode
             p.Controller.SteerDemand = 0f;
         }
 
+        /// <summary>
+        /// Wait for a frame on which the follow has caught the tractor: one whose <c>LateUpdate</c>
+        /// ran with no physics step after it, so the plate and the pin are read from the same step.
+        ///
+        /// <para>⚠️ <b>Why this exists.</b> A coroutine resumed by <c>yield return null</c> runs after
+        /// <c>Update</c> and BEFORE <c>LateUpdate</c>, and <see cref="VehicleHitch"/> follows the pin in
+        /// <c>LateUpdate</c>. On a frame that also ran a fixed step, the tractor has moved and the
+        /// trailer has not yet followed, so the pin reads one physics step of travel off the plate
+        /// (0.02 s at ~5.8 m/s is the 0.115 m one CI run saw). Whether that frame gets a fixed step
+        /// depends on wall-clock frame time, which is why the read was intermittent. Here: record the
+        /// last fixed step's time, let one LateUpdate run, and accept the next resume only if no fixed
+        /// step ran in between. Bounded, so a runner that steps physics on every frame fails loudly
+        /// rather than hanging.</para>
+        /// </summary>
+        private static IEnumerator UntilTheFollowHasCaughtUp()
+        {
+            for (int i = 0; i < 200; i++)
+            {
+                float lastFixedStep = Time.fixedTime;
+                yield return null;
+                if (Time.fixedTime == lastFixedStep) yield break;
+            }
+            Assert.Fail("fixture: two hundred frames in a row each ran a physics step, so the follow " +
+                        "could never be read on the same step as the tractor.");
+        }
+
         /// <summary>Turn the crank, pumping frames — the legs are timed, not toggled. Advanced
         /// explicitly because a batch-mode frame is ~0.4 ms, so <c>VehicleDoors.Update</c>'s own
         /// advance would need thousands of frames to walk a 2.4 s crank.</summary>
@@ -298,6 +324,7 @@ namespace HiddenHarbours.Tests.PlayMode
             Vector2 trailerStart = p.TrailerGo.transform.position;
             yield return Drive(p, 1f, 0f, 60);         // gather way
             yield return Drive(p, 1f, 1f, 120);        // and put the wheel over
+            yield return UntilTheFollowHasCaughtUp();  // read plate and pin from the same step
 
             float fold = p.Trailer.ArticulationAgainst(p.Hitch.HeadingDegrees);
             Assert.That(Mathf.Abs(fold), Is.GreaterThan(2f),
@@ -424,6 +451,7 @@ namespace HiddenHarbours.Tests.PlayMode
 
                 yield return Drive(p, 1f, 0f, 60);
                 yield return Drive(p, 1f, demand, 120);
+                yield return UntilTheFollowHasCaughtUp();
 
                 float fold = Mathf.Abs(p.Trailer.ArticulationAgainst(p.Hitch.HeadingDegrees));
                 if (body == Pup) foldPup = fold; else foldLong = fold;

@@ -17,7 +17,7 @@ MonoBehaviour:
   RegionId: region.nine_mile_creek
   Source: HH-nmc-key-scenes-one-scene-reissue-3-2026-10-07, hh-nmc-key-scenes/scenes/keyscene.nmc_fuel_stop/scene.json,
     22515 bytes, sha256 74c90644894f1ec30f86bc3b3adc82d494d5bb7dcda0347b5c126a948d5be66a
-  Placed: 0
+  Placed: 1
   Pieces:
   - Id: station.nmc_store
     Kind: setPiece
@@ -1329,4 +1329,34 @@ MonoBehaviour:
   - structure.nmc_plaza_dock_grocery
   - structure.nmc_plaza_dock_lumber
   - structure.nmc_apartments_2
-  PlacementIds: []
+  PlacementIds:
+  - station.nmc_store
+  - station.nmc_canopy
+  - station.nmc_semi_lane
+  - station.nmc_pylon
+  - station.nmc_propane
+  - station.nmc_ice
+  - station.nmc_bench
+  - station.nmc_bin
+  - station.nmc_firewood
+  - station.nmc_air
+  - station.nmc_vacuum
+  - station.nmc_dumpster
+  - station.nmc_picnic
+  - station.nmc_stop
+  - station.nmc_stop_91
+  - station.nmc_light_w
+  - station.nmc_light_mid
+  - station.nmc_light_e
+  - station.nmc_picnic_stream
+  - station.nmc_bin_stream
+  - station.nmc_wheel_stop_1
+  - station.nmc_wheel_stop_2
+  - station.nmc_wheel_stop_3
+  - station.nmc_wheel_stop_4
+  - station.nmc_wheel_stop_5
+  - station.nmc_wheel_stop_6
+  - station.nmc_wheel_stop_7
+  - station.nmc_wheel_stop_8
+  - gull.fs_canopy
+  - gull.fs_parapet

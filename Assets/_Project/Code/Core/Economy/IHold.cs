@@ -13,7 +13,8 @@ namespace HiddenHarbours.Core
         int UsedUnits { get; }
         IReadOnlyList<CatchItem> Items { get; }
 
-        /// <summary>Add one catch (1 HU). Returns false if the hold is full.</summary>
+        /// <summary>Add one catch (1 HU). Returns false if the hold is full, or if the catch may not be
+        /// kept (<see cref="CatchKeep"/>: a protected species is release-only).</summary>
         bool TryAdd(CatchItem item);
 
         /// <summary>Empty the hold (e.g. after selling).</summary>

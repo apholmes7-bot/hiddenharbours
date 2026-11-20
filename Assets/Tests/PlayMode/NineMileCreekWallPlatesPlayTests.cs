@@ -431,7 +431,7 @@ namespace HiddenHarbours.Tests.PlayMode
             {
                 Scene s = SceneManager.GetSceneAt(i);
                 if (s.IsValid() && s != clean && s.name == SceneName)
-                    yield return SceneManager.UnloadSceneAsync(s);
+                    yield return HiddenHarbours.Tests.Support.SceneSettle.Unload(s);
             }
             LogAssert.ignoreFailingMessages = false;
         }
@@ -449,7 +449,7 @@ namespace HiddenHarbours.Tests.PlayMode
             GameServices.Clock = null;
             GameServices.Environment = null;
 
-            yield return SceneManager.LoadSceneAsync(SceneName, LoadSceneMode.Single);
+            yield return HiddenHarbours.Tests.Support.SceneSettle.Load(SceneName, LoadSceneMode.Single);
             for (int i = 0; i < 8; i++) yield return null;
 
             GameRoot[] roots = Object.FindObjectsByType<GameRoot>();

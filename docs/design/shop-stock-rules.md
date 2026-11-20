@@ -92,3 +92,24 @@ Offline proof compiles the full Core and Economy source assemblies and both new 
 the project's own Unity and NUnit references, and executes the engine-free tests with NUnit. Asset
 text checks supplement that proof; they do not replace Unity import, identity inventory or the
 content tests in CI. No Unity editor or player was launched for this slice.
+
+## Next content slice and integration limits
+
+The next content slice needs two separate shop assets for the mainland boat/gear wholesaler and
+fishing-gear wholesaler, each with a stable shop, seller and premises id and explicit stock lines.
+Each line needs an existing seller listing, purchase pack size, capacity, logical fixture slots,
+delivery weekdays, delivery quantity and floor. This pilot supplies the data shape and stock rules;
+it supplies neither wholesaler's content or premises. The existing catalog remains authoritative
+for products, sellers and prices.
+
+`ShopDef.BuildSpec` currently accepts only `GearOffer`, `BaitDef` and `SupplyDef` shelf listings.
+It is a portable-wares pilot, not a complete wholesaler inventory: fitted electronics, pots and
+other listing types need an explicit stock-versus-service decision and corresponding validation
+before they can be represented. The content test intentionally pins exactly one pilot asset; the
+slice that authors wholesalers must replace that inventory expectation with the exact expanded set.
+
+The immediate essentials floor is also an abstract availability guarantee, not physical stock
+transport. Before wiring this service to visible goods, reconcile replenishment and unpaid-hand
+reservations with goods being loaded, carried and unloaded by hand. A changed count alone must not
+create or move an object. Persistence, payment coordination and physical fixture binding remain
+prerequisites for connecting this dormant model to gameplay.

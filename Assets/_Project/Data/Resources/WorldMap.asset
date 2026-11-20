@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3fff4a627cde48e48e6e4cc590ee6835, type: 3}
+  m_Name: WorldMap
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.WorldMap
+  Regions:
+  - {fileID: 11400000, guid: fe385f1cb59348d1adc3131b7f3d1c9b, type: 2}
+  - {fileID: 11400000, guid: 2dcfcde045cd43fcac4a78cff2cc4bab, type: 2}
+  - {fileID: 11400000, guid: 26222517019e45e095fc986a3e54569c, type: 2}
+  - {fileID: 11400000, guid: e8fd5ae08f834ddd9213fde0fd1d6110, type: 2}
+  - {fileID: 11400000, guid: 27922ed8b45f48afa0c01e10bbe85780, type: 2}
+  - {fileID: 11400000, guid: 3b2dfb18a14b410789d38a37c68675fb, type: 2}

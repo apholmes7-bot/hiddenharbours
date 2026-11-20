@@ -48,7 +48,8 @@ namespace HiddenHarbours.Boats
             {
                 if (id != BoatEquipment.DepthSounderId && id != BoatEquipment.FishFinderId && id != BoatEquipment.GpsId
                     && id != BoatEquipment.RadarId && id != BoatEquipment.CompassDomeId && id != BoatEquipment.CompassFlushId
-                    && id != BoatEquipment.WindDialId && id != BoatEquipment.WindDisplayId) return "unknown instrument id";
+                    && id != BoatEquipment.WindDialId && id != BoatEquipment.WindDisplayId
+                    && id != BoatEquipment.LoranId) return "unknown instrument id";
                 if (!seen.Add(id)) return "duplicate instrument id";
             }
             if (Console == null && FactoryInstruments.Length != 0) return "factory instruments require a console";

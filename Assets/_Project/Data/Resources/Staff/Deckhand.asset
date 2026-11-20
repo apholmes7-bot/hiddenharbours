@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d7dffb283da046ddba0f1131fdf5db66, type: 3}
+  m_Name: Deckhand
+  m_EditorClassIdentifier: HiddenHarbours.Core::HiddenHarbours.Core.StaffRoleDef
+  Id: role.deckhand
+  DisplayName: Deckhand
+  Summary: "Works the deck: lines, bait, hauling, icing the catch and whatever the gear needs."
+  TaskIds:
+  - task.mooring_lines
+  - task.bait
+  - task.haul_pots
+  - task.band_lobster
+  - task.tend_rods
+  - task.gaff
+  - task.haul_longline
+  - task.hold_ice
+  - task.sort_catch
+  - task.mend_gear
+  - task.night_watch
+  - task.cargo_handling
+  WorkIds:
+  - work.rod_and_jig
+  - work.tub_longline
+  - work.cargo

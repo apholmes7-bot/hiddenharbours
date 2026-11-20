@@ -93,6 +93,19 @@ namespace HiddenHarbours.Art
                  "steer by; the 0.05 it replaces was a lift you had to be told about.")]
         [Range(0f, 1f)] [SerializeField] private float _moonlightLiftMax = 0.45f;
 
+        [Header("Lamps (the shared night gate every lamp, window and neon glow passes through)")]
+        [Tooltip("Frame darkness (1 - the day tint's luminance) at or below which EVERY gated lamp is fully " +
+                 "OFF, whatever its own threshold. Clear noon is ~0.20, an overcast noon ~0.35, so 0.40 keeps " +
+                 "every lamp dark through any daylight.\n\nOWNER RULING 2026-11-14: \"Lamps should not glow at noon.\"")]
+        [Range(0f, 1f)] [SerializeField] private float _lampsOffDarkness = DefaultLampsOffDarkness;
+        [Tooltip("Frame darkness from which every gated lamp may reach full. Dusk (20:30) is ~0.70 and a " +
+                 "moonlit night ~0.62, so 0.60 has every lamp full by dusk. A lamp whose own ramp is darker " +
+                 "than this keeps it.")]
+        [Range(0f, 1f)] [SerializeField] private float _lampsOnDarkness = DefaultLampsOnDarkness;
+
+        public const float DefaultLampsOffDarkness = 0.40f;
+        public const float DefaultLampsOnDarkness = 0.60f;
+
         // ---- read-only accessors (the controller + DayNightMath read these) ----
         public float WarmKeyBeforeSunsetHours => _warmKeyBeforeSunsetHours;
         public Gradient SkyTint => _skyTint;
@@ -106,6 +119,8 @@ namespace HiddenHarbours.Art
         public float OvercastFadesShadow => _overcastFadesShadow;
         public Color MoonlightTint => _moonlightTint;
         public float MoonlightLiftMax => _moonlightLiftMax;
+        public float LampsOffDarkness => _lampsOffDarkness;
+        public float LampsOnDarkness => _lampsOnDarkness;
 
         /// <summary>
         /// Author the shipped defaults onto a fresh asset (called from <see cref="Reset"/> in the editor and
@@ -164,6 +179,8 @@ namespace HiddenHarbours.Art
             // which used to lift the 02:00 tint by 5 % and now lifts it by 45 %: a silver-blue sea whose
             // crests and shore you can steer by.
             _moonlightLiftMax = 0.45f;
+            _lampsOffDarkness = DefaultLampsOffDarkness;
+            _lampsOnDarkness = DefaultLampsOnDarkness;
         }
 
         /// <summary>

@@ -1075,7 +1075,7 @@
       "action": "sleep",
       "reach_point": [
         -5.35,
-        -46.9,
+        -46.6,
         9
       ],
       "visible_facings": [
@@ -1088,14 +1088,224 @@
         "W",
         "NW"
       ],
-      "_note": "mechanism: InteriorBed (rest + save) · below level · footprint + obstructions in the hull gameplay sidecar"
+      "_note": "mechanism: InteriorBed (rest + save) · below level · footprint + obstructions in the hull gameplay sidecar",
+      "bunk": {
+        "level": "below_sole",
+        "obstruction": "bunk",
+        "mattress_centre": [
+          -5.35,
+          -45.3,
+          9.5
+        ],
+        "pillow_end": [
+          -5.35,
+          -46.4,
+          9.5
+        ],
+        "pillow_source": "art: boatInteriorRig drawBunk puts the pillow at the end farther from the middle of the below deck (aft, y0)"
+      }
+    },
+    {
+      "id": "prep",
+      "action": "prep",
+      "reach_point": [
+        -6.23,
+        -46.925,
+        11.6
+      ],
+      "visible_facings": [
+        "N",
+        "S",
+        "SW",
+        "W",
+        "NW"
+      ],
+      "counter": "stove_counter",
+      "_note": "mechanism: prep station (cut/prepare raw food; it is then cooked at the stove) · house level · the free forward quarter of stove_counter, beside the rings · authored 2026-11-14 from the counter box; boatInteriorRig.js does not emit it yet"
+    },
+    {
+      "id": "bunk_starboard",
+      "action": "sleep",
+      "reach_point": [
+        5.35,
+        -46.6,
+        9
+      ],
+      "visible_facings": [
+        "N",
+        "NE",
+        "E",
+        "SE",
+        "S",
+        "SW",
+        "W",
+        "NW"
+      ],
+      "_note": "mechanism: BoatBunk (sleep, rest + save) · below-deck level · the drawn sibling bunk made sleepable (owner ruling 2026-11-15: no shared bed)",
+      "bunk": {
+        "level": "below_sole",
+        "obstruction": "bunk_stbd",
+        "mattress_centre": [
+          5.35,
+          -45.3,
+          9.5
+        ],
+        "pillow_end": [
+          5.35,
+          -46.4,
+          9.5
+        ],
+        "pillow_source": "art: boatInteriorRig drawBunk puts the pillow at the end farther from the middle of the below deck (aft, aft, y0)"
+      }
+    },
+    {
+      "id": "bunk_forward",
+      "action": "sleep",
+      "reach_point": [
+        -5.35,
+        -41.2,
+        9
+      ],
+      "visible_facings": [
+        "N",
+        "NE",
+        "E",
+        "SE",
+        "S",
+        "SW",
+        "W",
+        "NW"
+      ],
+      "_note": "mechanism: BoatBunk (sleep, rest + save) · below-deck level · the drawn sibling bunk made sleepable (owner ruling 2026-11-15: no shared bed)",
+      "bunk": {
+        "level": "below_sole",
+        "obstruction": "bunk_port",
+        "mattress_centre": [
+          -5.35,
+          -42.5,
+          9.5
+        ],
+        "pillow_end": [
+          -5.35,
+          -41.4,
+          9.5
+        ],
+        "pillow_source": "art: boatInteriorRig drawBunk puts the pillow at the end farther from the middle of the below deck (fwd, fwd, y1)"
+      }
+    },
+    {
+      "id": "seat",
+      "action": "sit",
+      "reach_point": [
+        -5.55,
+        -42.05,
+        11.6
+      ],
+      "visible_facings": [
+        "N",
+        "NE",
+        "E",
+        "SE",
+        "S",
+        "SW",
+        "W",
+        "NW"
+      ],
+      "_note": "mechanism: seat (sit: rest short of a bed; the meal boost when by a table or counter) · house level · on the drawn bench · authored 2026-11-15 (kitchens slice 1); boatInteriorRig.js does not emit it yet",
+      "seat": {
+        "level": "house_sole",
+        "obstruction": "bench",
+        "sit_point": [
+          -6.55,
+          -42.05,
+          12.06
+        ],
+        "sit_source": "the middle of the bench: bench top = sole + bench.h (boatInteriorRig.js: the bench box sole..top with its cushion slab at top)"
+      }
+    },
+    {
+      "id": "table",
+      "action": "table",
+      "reach_point": [
+        -5.45,
+        -40.85,
+        11.6
+      ],
+      "visible_facings": [
+        "N",
+        "NE",
+        "E",
+        "SE",
+        "S",
+        "SW",
+        "W",
+        "NW"
+      ],
+      "_note": "mechanism: dining table (never pressed: it makes the seat beside it a DINING seat) · house level · the drawn table_port · authored 2026-11-15 (kitchens slice 1)",
+      "table": {
+        "level": "house_sole",
+        "obstruction": "table_port",
+        "top_centre": [
+          -6.3,
+          -40.85,
+          12.38
+        ],
+        "top_source": "boatInteriorRig.js furniture kind 'table': top slab at sole + h (h 0.78)"
+      }
+    },
+    {
+      "id": "pantry",
+      "action": "food_storage",
+      "reach_point": [
+        -6.23,
+        -47.78,
+        11.6
+      ],
+      "visible_facings": [
+        "N",
+        "NE",
+        "E",
+        "SE",
+        "S",
+        "SW",
+        "W",
+        "NW"
+      ],
+      "_note": "mechanism: food store (pantry) · house level · the cupboard under the stove_counter, at the end away from the rings · authored 2026-11-15 (kitchens slice 1); the counter is drawn as a closed cabinet, its door is art owed",
+      "kitchen_storage": "kitchen_storage.pantry"
+    },
+    {
+      "id": "fridge",
+      "action": "food_storage",
+      "reach_point": [
+        -6.23,
+        -46.15,
+        11.6
+      ],
+      "visible_facings": [
+        "N",
+        "NE",
+        "E",
+        "SE",
+        "S",
+        "SW",
+        "W",
+        "NW"
+      ],
+      "_note": "mechanism: food store (fridge: cold while there is power) · house level · forward of the stove_counter on the same wall, the galley run continued · authored 2026-11-15 (kitchens slice 1); no fridge is drawn yet, art owed",
+      "kitchen_storage": "kitchen_storage.fridge"
     }
   ],
   "mechanism_map": {
     "helm": "existing helm (enter_helm)",
     "bunk": "InteriorBed (sleep, rest + save)",
     "locker": "InteriorWardrobe (storage)",
-    "stove": "camper stove pattern (cook)"
+    "stove": "camper stove pattern (cook)",
+    "prep": "prep station (prep, then cook at the stove)",
+    "seat": "seat (sit: rest short of a bed, the meal boost at a table or counter)",
+    "table": "dining table (makes the seat beside it a dining seat)",
+    "pantry": "food store (pantry)",
+    "fridge": "food store (fridge)"
   },
   "_interact_scope": "INTERACT is object interactables only. Stair routes are declared in STAIRS (each carries its own mechanism: InteriorStair) and are deliberately absent here — see README, Corrections.",
   "LADDER": [

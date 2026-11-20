@@ -96,8 +96,9 @@ namespace HiddenHarbours.Player
         [SerializeField] private CarryAnchorTableDef _carryAnchors;
 
         [SerializeField, Tooltip("The catch ART table — which held sprite each landed species draws " +
-                                 "in the hand. Null is survivable: a catch then falls back to its UI " +
-                                 "icon, which is what every catch did before pass 2 baked held poses.")]
+                                 "in the hand. Empty = the shared fish art table's (Resources/" +
+                                 "FishArtLibrary), so a scene saved before this field still draws the " +
+                                 "new held art; only with neither does a catch fall back to its UI icon.")]
         private HiddenHarbours.Art.CatchItemLibrary _catchArt;
 
         [Header("How it is held (greybox tunables, rule 6)")]
@@ -159,6 +160,23 @@ namespace HiddenHarbours.Player
 
         /// <summary>True when either hand holds something.</summary>
         public bool IsCarrying => !_slots.IsEmpty;
+
+        /// <summary>
+        /// The Def of the rod the fight draws in his hands — the carried tool whose id is the one this
+        /// carrier hides while the fight draws it — or null when neither hand holds it. The fight reads it
+        /// for the rod's held mesh (ADR 0053). Allocation-free.
+        /// </summary>
+        public ToolDef HeldFightRod
+        {
+            get
+            {
+                if (_slots.Right is CarriableTool right && right != null
+                    && string.Equals(right.DefId, _fightRodToolId, System.StringComparison.Ordinal)) return right.Tool;
+                if (_slots.Left is CarriableTool left && left != null
+                    && string.Equals(left.DefId, _fightRodToolId, System.StringComparison.Ordinal)) return left.Tool;
+                return null;
+            }
+        }
 
         // ---- the Core relay ------------------------------------------------------------------------
 
@@ -226,6 +244,7 @@ namespace HiddenHarbours.Player
         /// </summary>
         public bool TryPutInHand(in CatchItem item)
         {
+            if (!CatchKeep.MayKeep(in item)) return false;    // protected: release-only, never in hand
             if (Slung != null) return false;                  // a sling outstanding means a hand is busy
 
             float lengthMeters = CatchSize.LengthMeters(item);
@@ -253,7 +272,7 @@ namespace HiddenHarbours.Player
                 return false;
             }
 
-            CarriableCatch catchObject = CarriableCatch.Create(item, transform, _catchArt);
+            CarriableCatch catchObject = CarriableCatch.Create(item, transform, EffectiveCatchArt);
             CarryHandSide preferred = PreferredHand(catchObject);
             if (_slots.TryTake(catchObject, cradle, preferred, out CarryHandSide side) != HandSlotRefusal.None)
             {
@@ -283,10 +302,15 @@ namespace HiddenHarbours.Player
         {
             if (hold == null) return false;
             if (_slots.FirstOf(HandLoad.Catch) is not CarriableCatch held || !held.HasItem) return false;
-            if (hold.UsedUnits >= hold.CapacityUnits) return false;
+            // The one storage rule (Core.StowageRule): a catch is General and every hold takes General, so
+            // this is the old "full is full" check, asked where the rod rack asks it.
+            if (StowageRule.Check(StowageClass.General, StowageRule.ExistingContainer,
+                                  hold.UsedUnits, hold.CapacityUnits) != StowRefusal.None) return false;
 
             CatchItem item = held.Item;
             if (!hold.TryAdd(item)) return false;
+
+            RemoveCatchFromHand(held);
 
             // ⚠️ THIS is where FishCaught belongs on the in-hand path, and it is easy to leave out — the
             // catch source no longer publishes it (it did not put anything in a hold), so if this line is
@@ -296,12 +320,38 @@ namespace HiddenHarbours.Player
             // every one of them.
             EventBus.Publish(new FishCaught(item));
 
-            held.Take();
+            return true;
+        }
+
+        /// <inheritdoc/>
+        public bool TryTakeFromHand(out CatchItem item)
+        {
+            item = default;
+            if (_slots.FirstOf(HandLoad.Catch) is not CarriableCatch held || !held.HasItem) return false;
+
+            item = RemoveCatchFromHand(held);
+            return true;
+        }
+
+        /// <inheritdoc/>
+        public bool TryPeekHand(out CatchItem item)
+        {
+            item = default;
+            if (_slots.FirstOf(HandLoad.Catch) is not CarriableCatch held || !held.HasItem) return false;
+
+            item = held.Item;
+            return true;
+        }
+
+        // One cleanup path for a container handoff and a station taking the loose catch.
+        private CatchItem RemoveCatchFromHand(CarriableCatch held)
+        {
+            CatchItem item = held.Take();
             Forget(held);
             DestroyCatch(held);
-
             TakeBackSlung();
-            return true;
+            EventBus.Publish(new CatchTakenFromHand(item));
+            return item;
         }
 
         /// <summary>
@@ -433,6 +483,29 @@ namespace HiddenHarbours.Player
             thing.OnPlaced();
             TakeBackSlung();
             return CarryRefusal.None;
+        }
+
+        /// <summary>
+        /// Hand one carried thing to a fixture that keeps it (a rod rack's slot) instead of setting it on
+        /// the ground. The caller has already asked <see cref="StowageRule.Check"/>; this only moves it.
+        /// Returns false, and NOTHING changes, when it is not in her hands or there is no holder — the
+        /// thing stays where it legally was.
+        ///
+        /// <para>No ground check, unlike <see cref="TryPlace(ICarriable)"/>: it is not going on the
+        /// ground. Re-parented, never rebuilt, so the object that comes back out is the one that went in.
+        /// </para>
+        /// </summary>
+        public bool TryStowInto(ICarriable thing, Transform holder)
+        {
+            if (holder == null || thing == null || thing.Transform == null) return false;
+            if (_slots.SideOf(thing) == CarryHandSide.None) return false;
+
+            Forget(thing);
+            thing.Transform.SetParent(holder, worldPositionStays: false);
+            thing.Transform.localPosition = Vector3.zero;
+            thing.OnPlaced();
+            TakeBackSlung();
+            return true;
         }
 
         private void LateUpdate()
@@ -658,6 +731,12 @@ namespace HiddenHarbours.Player
 
         /// <summary>The catch art table currently wired, or null. For tests / tooling.</summary>
         public HiddenHarbours.Art.CatchItemLibrary CatchArt => _catchArt;
+
+        /// <summary>The catch art table a landed catch is actually drawn from: the wired one, else the
+        /// shared fish art table's (St Peters and Nine Mile Creek were saved before the field existed).
+        /// Asked once per landed catch, never per frame.</summary>
+        public HiddenHarbours.Art.CatchItemLibrary EffectiveCatchArt
+            => FishArtLibrary.ResolveCatchArt(_catchArt, FishArtLibrary.Shared);
 
         /// <summary>The hand-prop table currently wired, or null. For tests / tooling.</summary>
         public CarryAnchorTableDef CarryAnchors => _carryAnchors;

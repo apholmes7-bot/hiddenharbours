@@ -93,7 +93,7 @@ namespace HiddenHarbours.Tests.PlayMode
             MoveActionClaim.Reset();
             CancelKeyClaim.Reset();
 
-            if (_scene.IsValid() && _scene.isLoaded) yield return SceneManager.UnloadSceneAsync(_scene);
+            if (_scene.IsValid() && _scene.isLoaded) yield return HiddenHarbours.Tests.Support.SceneSettle.Unload(_scene);
         }
 
         // =============================================================================

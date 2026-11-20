@@ -1185,8 +1185,14 @@ namespace HiddenHarbours.Player
         /// so the enum stays append-only when that changes; today a candidate declaring it can never be
         /// reached and should not expect to be.</para>
         /// </summary>
+        /// <remarks>
+        /// <b>The player's press goes through <see cref="InteractVerb.TryPress"/></b> (owner ask
+        /// 2026-11-15): with one thing in reach it is exactly <see cref="InteractVerb.TryPerform"/>; with
+        /// two or more pickable actions it opens the interaction chooser, which then owns the key until a
+        /// pick or a cancel. Either way the press is spent here, so the precedence above is unchanged.
+        /// </remarks>
         private bool TryInteractCandidate()
-            => _interactVerb && InteractVerb.TryPerform(ActorNow(), _interactArcDegrees);
+            => _interactVerb && InteractVerb.TryPress(ActorNow(), _interactArcDegrees);
 
         /// <summary>
         /// The actor, as Core sees it: where the player is standing, which way they face, and which of the
@@ -1351,7 +1357,8 @@ namespace HiddenHarbours.Player
             // have come to it without the door: taken from the cockpit, or a hull swapped on under her
             // while she steered (the fleet audit's R2, 2026-11-13). Her cabin is told, so the house opens
             // around her as it does when she walks in. Only here, on the way OFF the wheel: while she
-            // steers the house stays closed (owner, 2026-08-26, re-confirmed 2026-11-13).
+            // steers, what the house shows is the cutaway's own call (the wheel's room, owner 2026-11-14,
+            // or nothing with that switch off) and nobody is counted inside.
             var deck = DeckWalk;
             if (deck != null && Player != null && Boat != null) deck.EnterTheRoomSheStandsIn();
             Mode = ControlMode.OnDeck;
@@ -2768,8 +2775,22 @@ namespace HiddenHarbours.Player
         /// cheap and keeps the camera framing correct on return (boat framing aboard, on-foot framing
         /// ashore). Null-safe throughout.
         /// </summary>
-        public void ReassertControlMode()
+        public void ReassertControlMode() => ReassertControlMode(keepSeat: false);
+
+        /// <summary>
+        /// <see cref="ReassertControlMode()"/>, told whether the hop CARRIED the fisher with his boat.
+        ///
+        /// <para>⚠ PR 1223 (the rider pop): a world-frame crossing moves the boat by a pure translation and
+        /// the fisher, parented under her, rides along on the very spot he was sitting. Re-seating him there
+        /// anyway put him on the raw helm SNAP (dory: 0.41 m aft of the thwart the boarding sat him on),
+        /// because the station correction only fires when the snap misses its floor. So a crossing that kept
+        /// him aboard passes <paramref name="keepSeat"/> and he stays where he sat; a hop that placed player
+        /// and boat independently (a door, a legacy arrival) still re-seats him, exactly as before.</para>
+        /// </summary>
+        public void ReassertControlMode(bool keepSeat)
         {
+            bool reseat = ShouldReseatOnReassert(keepSeat, Player != null && Boat != null && Player.IsChildOf(Boat));
+
             // A region hop repositions player and boat independently, which is exactly the ground an
             // in-flight arc is interpolating over. Call it off first (keeping the mode it had not yet
             // left) and let the re-assert below settle the fisher properly.
@@ -2797,7 +2818,7 @@ namespace HiddenHarbours.Player
                 // The hop repositions player and boat independently, so re-seat the pilot ON the helm —
                 // the same re-seating the OnDeck branch below has always done, and now load-bearing
                 // because the figure at the helm is DRAWN rather than hidden.
-                SnapPlayerToTheHelm();
+                if (reseat) SnapPlayerToTheHelm();
                 if (_boatController != null) _boatController.enabled = true;
                 if (_boatInput != null) _boatInput.enabled = true;
 
@@ -2823,7 +2844,7 @@ namespace HiddenHarbours.Player
                 ApplyPlayerFor(ControlMode.OnDeck);
                 // The hop may have teleported the player to the region's disembark spot — re-seat them
                 // on the deck (the coordinator repositions player + boat independently).
-                SnapPlayerToTheBoardSpot();
+                if (reseat) SnapPlayerToTheBoardSpot();
                 EventBus.Publish(new ControlModeChanged(ControlMode.OnDeck));
             }
             else
@@ -3039,6 +3060,10 @@ namespace HiddenHarbours.Player
         /// because only the snap draws her ON the spot: the dory's station is her thwart, 0.2164 m above her
         /// sole, and stood on it her pilot was drawn 0.166 m below his seat (<c>DoryAboardPlayTests</c>,
         /// Phase C run). A hull with no station takes the snap it always took, bit for bit.</para></summary>
+        /// <summary>Does a control re-assert re-seat the fisher on his boat? Always, unless the hop carried him
+        /// aboard her (<paramref name="keepSeat"/>) AND he is in fact riding her (parented under her). PURE.</summary>
+        public static bool ShouldReseatOnReassert(bool keepSeat, bool playerRidesBoat) => !(keepSeat && playerRidesBoat);
+
         private void SnapPlayerToTheHelm()
         {
             SnapPlayerToDeck(HelmBoatRelativeOffset());

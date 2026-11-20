@@ -290,7 +290,7 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         [Test]
-        public void Resting_twice_in_a_row_brings_one_morning_each()
+        public void Resting_on_two_nights_in_a_row_brings_one_morning_each()
         {
             Market market = NewListeningMarket();
             _clock.SeekTo(At(0, 22));
@@ -301,8 +301,9 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.AreEqual(1, _clock.DayIndex);
             Assert.AreEqual(At(1, _config.WakeHour), _clock.TotalSeconds, Exact);
 
+            _clock.SeekTo(At(1, 22));   // the day lived through to bedtime: no midnight in between
             Rest();
-            Assert.AreEqual(2, _clock.DayIndex, "a rest at the wake hour itself is still a night");
+            Assert.AreEqual(2, _clock.DayIndex, "the second night is a night too");
             Assert.AreEqual(At(2, _config.WakeHour), _clock.TotalSeconds, Exact);
 
             Assert.AreEqual(2, _days.Count, "one day started per night");
@@ -312,6 +313,37 @@ namespace HiddenHarbours.Tests.EditMode
             float twice = MarketMath.SettleSupplyDaily(
                 MarketMath.SettleSupplyDaily(glut, _config.MarketDailyRecovery), _config.MarketDailyRecovery);
             Assert.AreEqual(twice, market.SupplyOf(Cat), "and one settle per night");
+        }
+
+        [Test]
+        public void Resting_again_at_the_wake_hour_sleeps_at_most_the_ruling_hours_and_starts_no_second_day()
+        {
+            float longest = SleepPlan.MaxHours(_config);
+            Assert.LessOrEqual(longest, SleepPlan.RulingMaxHours, "precondition: the config sits under the ruling");
+            Assert.Less(_config.WakeHour + longest, 24f, "precondition: the longest sleep from the wake hour ends before midnight");
+
+            Market market = NewListeningMarket();
+            _clock.SeekTo(At(0, 22));
+            market.RegisterSale(Cat, 8);
+            float glut = market.SupplyOf(Cat);
+
+            Rest();
+            Assert.AreEqual(1, _clock.DayIndex);
+            Assert.AreEqual(At(1, _config.WakeHour), _clock.TotalSeconds, Exact);
+
+            GameSaved second = Rest();
+            Assert.AreEqual(1, _clock.DayIndex, "the longest sleep from the wake hour does not reach the next midnight");
+            Assert.AreEqual(At(1, _config.WakeHour + longest), _clock.TotalSeconds, Exact,
+                "never more than the longest sleep (owner ruling: eight hours at most)");
+            Assert.IsTrue(second.Ok, "and the sleep is still a save");
+            Assert.AreEqual(SleepFlow.RestedText, second.Reason, "a sleep that is not a morning says so");
+
+            Assert.AreEqual(1, _days.Count, "a day starts only for a midnight slept through");
+            AssertDay(1, _days[0]);
+            Assert.AreEqual(2, _save.Saves, "one write per rest");
+            Assert.AreEqual(At(1, _config.WakeHour + longest), _save.ClockAtWrite, Exact, "written on the hour she woke");
+            float once = MarketMath.SettleSupplyDaily(glut, _config.MarketDailyRecovery);
+            Assert.AreEqual(once, market.SupplyOf(Cat), "and no second settle without a second day");
         }
 
         // ---- the save -------------------------------------------------------------------------

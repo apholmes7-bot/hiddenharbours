@@ -1,4 +1,5 @@
 using System.Globalization;
+using HiddenHarbours.Core;
 
 namespace HiddenHarbours.UI
 {
@@ -20,8 +21,9 @@ namespace HiddenHarbours.UI
     {
         // ---- the title page ------------------------------------------------------------------
 
-        /// <summary>The wordmark. A place name, not a slogan.</summary>
-        public const string GameTitle = "Hidden Harbours";
+        /// <summary>The wordmark: the game's title, the same words the built player's window and
+        /// executable carry (the player build's product name).</summary>
+        public const string GameTitle = "Red Skies At Night";
 
         public const string Continue = "Continue";
         public const string NewGame  = "New game";
@@ -121,8 +123,12 @@ namespace HiddenHarbours.UI
         public const string DisplayLabel     = "Window";
         public const string DisplayFullscreen = "Fullscreen";
         public const string DisplayWindowed   = "Windowed";
+        public const string TasksNoteLabel   = "Tasks note";
+        public const string TasksNoteShown   = "Shown";
+        public const string TasksNoteChip    = "Chip";
+        public const string TasksNoteHidden  = "Hidden";
         public const string Back             = "Back";
-        public const string SettingsHint     = "← → to set a level   ·   Esc to go back";
+        public const string SettingsHint    = "← → to set a level   ·   Esc to go back";
 
         /// <summary>Shown in place of the faders when no audio director is running (EditMode, a stripped
         /// build). An honest "there is nothing to move here" beats four sliders that do nothing.</summary>
@@ -147,5 +153,16 @@ namespace HiddenHarbours.UI
         /// <summary>The word for the current display mode — the value half of the Window row.</summary>
         public static string DisplayMode(bool fullscreen)
             => fullscreen ? DisplayFullscreen : DisplayWindowed;
+
+        /// <summary>The word for how the TASKS note stands — the value half of the Tasks note row.</summary>
+        public static string TasksNoteModeWord(TasksNoteMode mode)
+        {
+            switch (mode)
+            {
+                case TasksNoteMode.Chip: return TasksNoteChip;
+                case TasksNoteMode.Hidden: return TasksNoteHidden;
+                default: return TasksNoteShown;
+            }
+        }
     }
 }

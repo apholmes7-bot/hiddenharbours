@@ -18,4 +18,10 @@ MonoBehaviour:
     that one did, alarm and all. The glass paints the bottom under you and marks the
     fish hanging over it, so you stop guessing which patch of water is worth an hour.
     Same as the sounder: it goes into one boat''s dash and it stays there.'
-  Price: 480
+  Price: 650
+  Catalog:
+    Listed: 1
+    Section: 5
+    Sellers:
+    - seller.nmc_boat_gear_wholesaler
+    SortOrder: 41

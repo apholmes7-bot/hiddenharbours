@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Rendering;
 using HiddenHarbours.Core;
 using HiddenHarbours.Art;
 
@@ -46,11 +47,31 @@ namespace HiddenHarbours.Player
         private string _kind;
         private int _facings;
 
+        // ---- the contrast line on a small fish (fish art pass 2, section 2.3) ----------------------
+        // Darker copies of the held sprite one sprite pixel to the side, behind it, so a fish drawn a
+        // dozen pixels long reads against his clothes and the deck. Made once at pickup, only for a fish
+        // drawn no longer than GameConfig.HeldFishKeylineMaxLengthPx; empty otherwise. The sorting group
+        // keeps the copies and the fish one unit in the body's band, so a copy can never sort under the
+        // body it is meant to stand out from.
+        private SpriteRenderer[] _keylines = System.Array.Empty<SpriteRenderer>();
+        private SortingGroup _group;
+
         /// <summary>What is being held. Only meaningful while <see cref="HasItem"/>.</summary>
         public CatchItem Item => _item;
 
         /// <summary>True while this actually carries a landed catch.</summary>
         public bool HasItem => _hasItem;
+
+        /// <summary>The catch art kind this draws as ('cod_sm', 'clam'), or null with no art table. For
+        /// tests / tooling.</summary>
+        public string ArtKind => _kind;
+
+        /// <summary>How many contrast-line copies this catch draws behind it (0 for a fish drawn long enough
+        /// to read on its own, a shellfish, or a catch on the icon fallback). For tests / tooling.</summary>
+        public int KeylineCount => _keylines.Length;
+
+        /// <summary>One contrast-line copy, by index, or null. For tests / tooling.</summary>
+        public SpriteRenderer Keyline(int i) => i >= 0 && i < _keylines.Length ? _keylines[i] : null;
 
         /// <summary>
         /// Make one, holding the given catch, parented under <paramref name="parent"/>.
@@ -80,13 +101,53 @@ namespace HiddenHarbours.Player
             carriable._item = item;
             carriable._hasItem = true;
             carriable._art = art;
-            carriable._kind = art != null ? art.KindFor(item.SpeciesId) : null;
+            // SIZED: the size rung of the species closest to this catch's weight, so a 2 kg cod is held
+            // as the small cod drawing and a 12 kg one as the large. A rung with no held sheet falls
+            // back to the species' plain kind rather than to the icon.
+            string kind = art != null ? art.SizedKindFor(item.SpeciesId, item.WeightKg) : null;
+            if (art != null && art.HeldFacingsFor(kind) == 0) kind = art.KindFor(item.SpeciesId);
+            carriable._kind = kind;
             carriable._facings = art != null ? art.HeldFacingsFor(carriable._kind) : 0;
 
             // Draw something NOW rather than waiting for the first ShowFacing: a carrier only turns
             // what it knows turns, so a one-facing handful would otherwise never be told to draw.
             sr.sprite = carriable.HeldSprite(0) ?? IconRegistry.Get(item.SpeciesId);
+            carriable.AddKeylines(art != null ? art.HeldLengthPxFor(carriable._kind) : 0);
             return carriable;
+        }
+
+        /// <summary>
+        /// <b>The contrast line on a small fish.</b> A fish whose held drawing is measured at
+        /// <see cref="GameServices.HeldFishKeylineMaxLengthPx"/> or shorter gets one darker copy of itself
+        /// behind it per <see cref="GameServices.HeldFishKeylineOffsetsPx"/> entry, moved that many sprite
+        /// pixels, so a thin dark line runs along its edge. The copy is the fish's own colours multiplied by
+        /// <see cref="GameServices.HeldFishKeylineShade"/>: a step down its own ramp, never a colour of its
+        /// own, and never the interact outline (no lift, no grown silhouette). An unmeasured drawing (0), a
+        /// catch with no held art, or a line turned off in the config draws nothing extra.
+        /// </summary>
+        private void AddKeylines(int drawnLengthPx)
+        {
+            float maxPx = GameServices.HeldFishKeylineMaxLengthPx;
+            if (_facings <= 0 || drawnLengthPx <= 0 || maxPx <= 0f || drawnLengthPx > maxPx) return;
+            Vector2[] offsets = GameServices.HeldFishKeylineOffsetsPx;
+            Sprite sprite = _renderer != null ? _renderer.sprite : null;
+            if (offsets == null || offsets.Length == 0 || sprite == null || sprite.pixelsPerUnit <= 0f) return;
+
+            float shade = Mathf.Clamp01(GameServices.HeldFishKeylineShade);
+            var tint = new Color(shade, shade, shade, 1f);
+            _keylines = new SpriteRenderer[offsets.Length];
+            for (int i = 0; i < offsets.Length; i++)
+            {
+                var go = new GameObject("Keyline");
+                go.transform.SetParent(transform, worldPositionStays: false);
+                go.transform.localPosition = offsets[i] / sprite.pixelsPerUnit;
+                var line = go.AddComponent<SpriteRenderer>();
+                line.sprite = sprite;
+                line.color = tint;
+                _keylines[i] = line;
+            }
+            _group = gameObject.AddComponent<SortingGroup>();
+            RideSortingBand(_renderer.sortingLayerID, _renderer.sortingOrder);
         }
 
         /// <summary>This kind's held sprite at one facing, or null when it bakes none.</summary>
@@ -160,7 +221,10 @@ namespace HiddenHarbours.Player
             if (_renderer == null) _renderer = GetComponent<SpriteRenderer>();
             if (_renderer == null) return;
             Sprite s = HeldSprite(facingIndex);
-            if (s != null) _renderer.sprite = s;      // never blank a good sprite with a missing cell
+            if (s == null) return;                     // never blank a good sprite with a missing cell
+            _renderer.sprite = s;
+            for (int i = 0; i < _keylines.Length; i++)
+                if (_keylines[i] != null) _keylines[i].sprite = s;
         }
 
         /// <inheritdoc/>
@@ -170,6 +234,16 @@ namespace HiddenHarbours.Player
             if (_renderer == null) return;
             _renderer.sortingLayerID = sortingLayerId;
             _renderer.sortingOrder = sortingOrder;
+            if (_group == null) return;
+            // The group takes the body's band; inside it the copies draw one step under the fish.
+            _group.sortingLayerID = sortingLayerId;
+            _group.sortingOrder = sortingOrder;
+            for (int i = 0; i < _keylines.Length; i++)
+            {
+                if (_keylines[i] == null) continue;
+                _keylines[i].sortingLayerID = sortingLayerId;
+                _keylines[i].sortingOrder = sortingOrder - 1;
+            }
         }
 
         /// <summary>Nothing to remember — a catch has no Y-sort of its own to stand down (it never lies on

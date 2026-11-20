@@ -1,0 +1,42 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a2794216af134af8a37690830c8d2064, type: 3}
+  m_Name: BernadettePitre
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.NpcDef
+  Id: npc.bernadette_pitre
+  DisplayName: Bernadette Pitre
+  Kind: 0
+  Dialogue: {fileID: 11400000, guid: a7521d3599de40f890b03de333fbe8e4, type: 2}
+  CompletionFlag: met_bernadette
+  Voice: {fileID: 0}
+  Build: {fileID: 11400000, guid: 510dcc541b277c1488956f57098b2547, type: 2}
+  Gifts:
+    LovedItemIds:
+    - fish.mackerel
+    LikedItemIds:
+    - fish.rainbow_smelt
+    DislikedItemIds:
+    - fish.atlantic_tomcod
+    LovedTags: []
+    LikedTags: []
+    DislikedTags: []
+    Lines:
+      Loved:
+      - 'Mackerel! Half for the bait tubs and half for the pan, and I will argue with myself all day about which half.'
+      Liked:
+      - 'Smelts. My mother fried them by the plateful every spring. Thank you, dear.'
+      Neutral:
+      - 'Thank you. I will not ask where it came from.'
+      Disliked:
+      - 'Tomcod. I sell bait to people who are trying their best not to catch these.'
+      NotGiftable: []
+      AlreadyGiftedToday: []

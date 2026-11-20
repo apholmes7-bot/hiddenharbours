@@ -13,7 +13,7 @@ namespace HiddenHarbours.Core
     public static class SaveMigration
     {
         /// <summary>The schema version this build writes. Bump when you add a field + a migration step.</summary>
-        public const int CurrentVersion = 17;
+        public const int CurrentVersion = 25;
 
         /// <summary>
         /// The region id Port Greywick was saved under before it was renamed Nine Mile Creek, and the id
@@ -334,6 +334,84 @@ namespace HiddenHarbours.Core
                 data.SchemaVersion = 17;
             }
 
+            // v17 -> v18: character traits. Older games picked none; nothing else is touched.
+            if (data.SchemaVersion < 18)
+            {
+                data.PlayerTraits ??= new System.Collections.Generic.List<string>();
+                data.SchemaVersion = 18;
+            }
+
+            // v18 -> v19: hunger and tiredness. Older games start fed and rested at their own saved time.
+            if (data.SchemaVersion < 19)
+            {
+                data.PlayerNeeds = PlayerNeedsDto.FedAndRestedAt(data.GameTimeSeconds);
+                data.SchemaVersion = 19;
+            }
+
+            // v19 -> v20: THE REST OF THE SLEEP PLACE (owner ruling 2026-11-15: "a sleep is a save"). Which
+            // bed, when the sleep ended, and for a bunk aboard the boat's own pose. Nothing existing is
+            // reinterpreted: a v13..v19 bed anchor stays exactly where it was and still wakes the player
+            // there, and a save with no anchor still wakes at the authored spawn. The new fields take their
+            // honest empties: no bed id (unknown), woke-at 0 (unknown, never invented from the autosave's
+            // clock, which may be hours after the sleep), and not aboard (a pre-v20 bunk recorded nothing).
+            if (data.SchemaVersion < 20)
+            {
+                data.RestBedId ??= "";
+                data.RestBoatHullId ??= "";
+                data.RestBoatRegion ??= "";
+                data.RestAboard = false;
+                data.SchemaVersion = 20;
+            }
+
+            // v20 -> v21: THE BODY (owner ask 2026-11-15: frame, weight, metabolism, overeating). An older
+            // game gets the unset body, which reads as the default frame and height at its lean mass: the
+            // reference body, so the player keeps exactly today's hunger rate and walk speed. No messes yet.
+            if (data.SchemaVersion < 21)
+            {
+                data.PlayerBody = new PlayerBodyDto();
+                data.Messes ??= new System.Collections.Generic.List<MessRecordDto>();
+                data.NextMessSerial = 0;
+                data.SchemaVersion = 21;
+            }
+
+            // v21 -> v22: CLEANLINESS, the third need (owner ask 2026-11-15). An older game starts clean,
+            // idle and anchored at its own saved time, so nothing changes until the player gets dirty.
+            if (data.SchemaVersion < 22)
+            {
+                data.PlayerCleanliness = PlayerCleanlinessDto.CleanAt(data.GameTimeSeconds);
+                data.SchemaVersion = 22;
+            }
+
+            // v22 -> v23: THE FOOD STORES (kitchens slice 1, owner ask 2026-11-15). An older game had no
+            // pantry, cooler or fridge, so it starts with every store empty: no food invented, no ice packed.
+            if (data.SchemaVersion < 23)
+            {
+                data.KitchenStores = new System.Collections.Generic.List<KitchenStorageStateDto>();
+                data.SchemaVersion = 23;
+            }
+
+            // v23 -> v24: THE CATCH RECORD, GIFT DAYS, COOK JOBS AND LORAN NUMBERS (owner: "Save v24 yes").
+            // An older game never recorded any of them, so each starts empty: no catch invented, every person
+            // takes a gift today, nothing on the stove, no numbers in any set.
+            if (data.SchemaVersion < 24)
+            {
+                data.CaughtSpecies = new System.Collections.Generic.List<CaughtSpeciesDto>();
+                data.NpcGiftDays = new System.Collections.Generic.List<NpcGiftDayDto>();
+                data.CookJobs = new System.Collections.Generic.List<CookJobDto>();
+                data.HullLoranWaypoints = new System.Collections.Generic.List<LoranWaypointDto>();
+                data.SchemaVersion = 24;
+            }
+
+            // v24 -> v25: STORAGE WITH MEMORY (owner 2026-11-17: "give them storage with memory at ginnys").
+            // No container remembered anything before v25, so every one starts empty. Nothing is invented: the
+            // first rod and the shovel lie where the world places them, which is where an older game left them
+            // on every load anyway.
+            if (data.SchemaVersion < 25)
+            {
+                data.StoredContainers = new System.Collections.Generic.List<StoredContainerDto>();
+                data.SchemaVersion = 25;
+            }
+
             // ---- future steps go here, each guarded by `if (data.SchemaVersion < N)` and bumping to N.
 
             // Defensive null-repair (a hand-edited or partial JSON can omit reference-typed fields).
@@ -361,10 +439,28 @@ namespace HiddenHarbours.Core
             data.ActiveHullId ??= "";
             data.WornOutfitId ??= "";
             data.RestRegion ??= "";
+            data.RestBedId ??= "";
+            data.RestBoatHullId ??= "";
+            data.RestBoatRegion ??= "";
             data.PlayerRecipe ??= new CharacterRecipe();
             data.PlayerRecipe.Heal();    // a field JsonUtility left null reads as "the preset's own"
             data.PlayerName ??= "";
             data.SpentClamHoles ??= new System.Collections.Generic.List<SpentClamHoleDto>();
+            data.PlayerTraits ??= new System.Collections.Generic.List<string>();
+            data.PlayerNeeds ??= new PlayerNeedsDto();
+            data.PlayerBody ??= new PlayerBodyDto();
+            data.Messes ??= new System.Collections.Generic.List<MessRecordDto>();
+            data.PlayerCleanliness ??= new PlayerCleanlinessDto();
+            data.PlayerCleanliness.WashStationId ??= "";
+            data.KitchenStores ??= new System.Collections.Generic.List<KitchenStorageStateDto>();
+            HealKitchenStores(data.KitchenStores);
+            data.CaughtSpecies ??= new System.Collections.Generic.List<CaughtSpeciesDto>();
+            data.NpcGiftDays ??= new System.Collections.Generic.List<NpcGiftDayDto>();
+            data.CookJobs ??= new System.Collections.Generic.List<CookJobDto>();
+            data.HullLoranWaypoints ??= new System.Collections.Generic.List<LoranWaypointDto>();
+            HealV24Rows(data);
+            data.StoredContainers ??= new System.Collections.Generic.List<StoredContainerDto>();
+            HealStoredContainers(data.StoredContainers);
             // Same defensive spirit as the null-repair above, for the one field where a zero is not a
             // value but a crash: a hand-edited JSON, or a row written by a build between the field landing
             // and this heal, would otherwise divide by it. Idempotent — after the v9 step there is nothing
@@ -423,6 +519,125 @@ namespace HiddenHarbours.Core
         /// save never depends on a <c>ScriptableObject</c> being wired first — and so this is testable
         /// with no scene.</para>
         /// </summary>
+        /// <summary>
+        /// Null-repair the food stores (kitchens slice 1): drop a null row or one with no key (it can
+        /// never be found again), give a missing stack list or def id their empties, and drop a stack with
+        /// no item or no count. A stack whose count is real is never touched: food is not invented or
+        /// thrown away by a load. Idempotent.
+        /// </summary>
+        private static void HealKitchenStores(System.Collections.Generic.List<KitchenStorageStateDto> stores)
+        {
+            for (int i = stores.Count - 1; i >= 0; i--)
+            {
+                KitchenStorageStateDto s = stores[i];
+                if (s == null || string.IsNullOrEmpty(s.Key)) { stores.RemoveAt(i); continue; }
+                s.StorageDefId ??= "";
+                s.Stacks ??= new System.Collections.Generic.List<KitchenStackDto>();
+                for (int k = s.Stacks.Count - 1; k >= 0; k--)
+                    if (string.IsNullOrEmpty(s.Stacks[k].ItemId) || s.Stacks[k].Count <= 0) s.Stacks.RemoveAt(k);
+            }
+        }
+
+        /// <summary>
+        /// Null-repair the v25 storage rows. A container with no key is dropped (nothing could find it again);
+        /// a second row for a key already kept is folded into the first, so no item is lost and the key stays
+        /// one row. An item with no kind, or a counted lot of zero or fewer, is dropped, and so is a catch record
+        /// with no species or no quantity; a container left with nothing in it is dropped. One object, one
+        /// place: an instance id that repeats (in two containers, or twice in one) keeps its FIRST occurrence in
+        /// list order and every later one is dropped. Kept rows are never changed. Idempotent.
+        /// </summary>
+        private static void HealStoredContainers(System.Collections.Generic.List<StoredContainerDto> containers)
+        {
+            var kept = new System.Collections.Generic.Dictionary<string, StoredContainerDto>(System.StringComparer.Ordinal);
+            var instances = new System.Collections.Generic.HashSet<string>(System.StringComparer.Ordinal);
+            for (int i = 0; i < containers.Count; i++)
+            {
+                StoredContainerDto c = containers[i];
+                if (c == null || string.IsNullOrEmpty(c.Key))
+                {
+                    containers.RemoveAt(i--);
+                    continue;
+                }
+                c.ContainerDefId ??= "";
+                c.Items ??= new System.Collections.Generic.List<StoredItemDto>();
+                for (int k = 0; k < c.Items.Count; k++)   // forward: the first occurrence is the one kept
+                {
+                    StoredItemDto item = c.Items[k];
+                    if (item == null || string.IsNullOrEmpty(item.ItemId) || (!item.IsInstance && item.Count <= 0)
+                        || (item.IsInstance && !instances.Add(item.InstanceId)))
+                    {
+                        c.Items.RemoveAt(k--);
+                        continue;
+                    }
+                    item.InstanceId ??= "";
+                }
+                c.Catch ??= new System.Collections.Generic.List<HeldCatchDto>();
+                c.Catch.RemoveAll(r => string.IsNullOrEmpty(r.SpeciesId) || r.Quantity <= 0);
+                if (kept.TryGetValue(c.Key, out StoredContainerDto first))
+                {
+                    first.Items.AddRange(c.Items);
+                    first.Catch.AddRange(c.Catch);
+                    containers.RemoveAt(i--);
+                    continue;
+                }
+                kept.Add(c.Key, c);
+            }
+            for (int i = containers.Count - 1; i >= 0; i--)
+                if (StoredContainers.IsEmpty(containers[i])) containers.RemoveAt(i);
+        }
+
+        /// <summary>
+        /// Null-repair the v24 rows. A row that can never be found or used again is dropped: a catch row with
+        /// no species or no count (or a second row for a species already kept, so the record stays one row
+        /// per species), a gift row with no person or no count, a cook job with no station, no recipe or no
+        /// finite ready time, a Loran row with no hull or one that is not a usable waypoint. A kept row's
+        /// counts and numbers are never changed, except that a catch row's released count is held inside
+        /// 0..count and an unreadable record weight reads as unknown (0). Idempotent.
+        /// </summary>
+        private static void HealV24Rows(SaveData data)
+        {
+            var seen = new System.Collections.Generic.HashSet<string>(System.StringComparer.Ordinal);
+            var caught = data.CaughtSpecies;
+            for (int i = 0; i < caught.Count; i++)
+            {
+                CaughtSpeciesDto c = caught[i];
+                if (c == null || string.IsNullOrEmpty(c.SpeciesId) || c.Count <= 0 || !seen.Add(c.SpeciesId))
+                {
+                    caught.RemoveAt(i--);
+                    continue;
+                }
+                c.DisplayName ??= "";
+                if (c.ReleasedCount < 0) c.ReleasedCount = 0;
+                if (c.ReleasedCount > c.Count) c.ReleasedCount = c.Count;
+                if (float.IsNaN(c.RecordWeightKg) || float.IsInfinity(c.RecordWeightKg) || c.RecordWeightKg < 0f)
+                    c.RecordWeightKg = 0f;
+            }
+
+            var gifts = data.NpcGiftDays;
+            for (int i = gifts.Count - 1; i >= 0; i--)
+                if (gifts[i] == null || string.IsNullOrEmpty(gifts[i].NpcId) || gifts[i].Count <= 0) gifts.RemoveAt(i);
+
+            var jobs = data.CookJobs;
+            for (int i = jobs.Count - 1; i >= 0; i--)
+            {
+                CookJobDto j = jobs[i];
+                if (j == null || string.IsNullOrEmpty(j.StationKey) || string.IsNullOrEmpty(j.RecipeId)
+                    || double.IsNaN(j.ReadyAtGameSeconds) || double.IsInfinity(j.ReadyAtGameSeconds))
+                {
+                    jobs.RemoveAt(i);
+                    continue;
+                }
+                j.StationId ??= "";
+            }
+
+            var loran = data.HullLoranWaypoints;
+            for (int i = loran.Count - 1; i >= 0; i--)
+            {
+                LoranWaypointDto w = loran[i];
+                if (w == null || string.IsNullOrEmpty(w.HullId) || !w.ToWaypoint().IsValid) loran.RemoveAt(i);
+            }
+        }
+
         /// <summary>
         /// DROP a rest anchor that cannot be a position — a NaN or infinite coordinate, or a storey below
         /// the ground — by clearing the region, which is the field that means "there is an anchor at

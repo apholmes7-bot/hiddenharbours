@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: da9aa7321c154579803d42c84214ff3f, type: 3}
+  m_Name: TractorForks
+  m_EditorClassIdentifier: HiddenHarbours.Core::HiddenHarbours.Core.CarrierDef
+  Id: carrier.tractor_forks
+  DisplayName: Tractor pallet forks
+  Kind: 5
+  CapacityKg: 600
+  RatedKg: 600
+  CapacityLitres: 1486
+  TareKg: 0
+  Basis: 'Compact tractor loader forks, 600 kg at a 500 mm load centre; volume is one 1219 x 1016 mm pallet stacked 1.2 m high (proposal). Data only, no tractor yet. Island supply plan 2026-11-15 table (i).'

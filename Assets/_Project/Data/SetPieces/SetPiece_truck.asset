@@ -1,0 +1,166 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 01b51978faec4dbb8e54e23107a97ef5, type: 3}
+  m_Name: SetPiece_truck
+  m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.SetPieceDef
+  Id: station.nmc_semi_lane
+  DisplayName: The semi lane
+  RigKey: truck
+  SceneId: keyscene.nmc_fuel_stop
+  BakedOptionsJson: '{}'
+  Layer: ground
+  Walk: around
+  Mount: ground
+  BoundsMin: {x: -4.64, y: -5.2760835, z: 0}
+  BoundsMax: {x: 4.64, y: 5.2760835, z: 6.66}
+  Frames:
+  - Sprite: {fileID: 727436087, guid: e174419b5460469ba7bca2b6dd10c0f7, type: 3}
+    RigDir: 0
+    ShowFaces: 0
+    BearingDeg: 0
+    CameraSees: fuel stop piece
+    NativeSize: {x: 311, y: 380}
+    NativePivot: {x: 155, y: 263}
+    Crop: {x: 7, y: 6}
+    Pivot: {x: 148, y: 257}
+  - Sprite: {fileID: 407747023, guid: e174419b5460469ba7bca2b6dd10c0f7, type: 3}
+    RigDir: 7
+    ShowFaces: 7
+    BearingDeg: 315
+    CameraSees: fuel stop piece
+    NativeSize: {x: 433, y: 435}
+    NativePivot: {x: 216, y: 302}
+    Crop: {x: 7, y: 6}
+    Pivot: {x: 209, y: 296}
+  - Sprite: {fileID: 1111592352, guid: e174419b5460469ba7bca2b6dd10c0f7, type: 3}
+    RigDir: 6
+    ShowFaces: 6
+    BearingDeg: 270
+    CameraSees: fuel stop piece
+    NativeSize: {x: 352, y: 343}
+    NativePivot: {x: 175, y: 263}
+    Crop: {x: 6, y: 6}
+    Pivot: {x: 169, y: 257}
+  - Sprite: {fileID: -1209627226, guid: e174419b5460469ba7bca2b6dd10c0f7, type: 3}
+    RigDir: 5
+    ShowFaces: 5
+    BearingDeg: 225
+    CameraSees: fuel stop piece
+    NativeSize: {x: 433, y: 435}
+    NativePivot: {x: 216, y: 302}
+    Crop: {x: 7, y: 6}
+    Pivot: {x: 209, y: 296}
+  - Sprite: {fileID: -1618584630, guid: e174419b5460469ba7bca2b6dd10c0f7, type: 3}
+    RigDir: 4
+    ShowFaces: 4
+    BearingDeg: 180
+    CameraSees: fuel stop piece
+    NativeSize: {x: 311, y: 380}
+    NativePivot: {x: 155, y: 263}
+    Crop: {x: 7, y: 6}
+    Pivot: {x: 148, y: 257}
+  - Sprite: {fileID: 2055047583, guid: e174419b5460469ba7bca2b6dd10c0f7, type: 3}
+    RigDir: 3
+    ShowFaces: 3
+    BearingDeg: 135
+    CameraSees: fuel stop piece
+    NativeSize: {x: 433, y: 435}
+    NativePivot: {x: 216, y: 302}
+    Crop: {x: 7, y: 6}
+    Pivot: {x: 209, y: 296}
+  - Sprite: {fileID: 1644441126, guid: e174419b5460469ba7bca2b6dd10c0f7, type: 3}
+    RigDir: 2
+    ShowFaces: 2
+    BearingDeg: 90
+    CameraSees: fuel stop piece
+    NativeSize: {x: 352, y: 343}
+    NativePivot: {x: 175, y: 263}
+    Crop: {x: 6, y: 6}
+    Pivot: {x: 169, y: 257}
+  - Sprite: {fileID: 1111487060, guid: e174419b5460469ba7bca2b6dd10c0f7, type: 3}
+    RigDir: 1
+    ShowFaces: 1
+    BearingDeg: 45
+    CameraSees: fuel stop piece
+    NativeSize: {x: 433, y: 435}
+    NativePivot: {x: 216, y: 302}
+    Crop: {x: 7, y: 6}
+    Pivot: {x: 209, y: 296}
+  CellSize: {x: 418, y: 420}
+  PixelsPerMetre: 32
+  ElevationDeg: 40
+  BakedLit: 0
+  Colliders: []
+  Anchors:
+  - Name: nozzle.def.E.5
+    Position: {x: 2.61, y: 3.63, z: 0.95}
+  - Name: nozzle.def.E.5.stand
+    Position: {x: 1.93, y: 3.63, z: 0}
+  - Name: nozzle.def.W.4
+    Position: {x: 3.19, y: 3.63, z: 0.95}
+  - Name: nozzle.def.W.4.stand
+    Position: {x: 3.87, y: 3.63, z: 0}
+  - Name: nozzle.dsl.E.2
+    Position: {x: 2.51, y: 1.8, z: 0.95}
+  - Name: nozzle.dsl.E.2.stand
+    Position: {x: 1.83, y: 1.8, z: 0}
+  - Name: nozzle.dsl.E.3
+    Position: {x: 2.51, y: 0.8, z: 0.95}
+  - Name: nozzle.dsl.E.3.stand
+    Position: {x: 1.83, y: 0.8, z: 0}
+  - Name: nozzle.dsl.W.0
+    Position: {x: 3.29, y: 1.8, z: 0.95}
+  - Name: nozzle.dsl.W.0.stand
+    Position: {x: 3.97, y: 1.8, z: 0}
+  - Name: nozzle.dsl.W.1
+    Position: {x: 3.29, y: 0.8, z: 0.95}
+  - Name: nozzle.dsl.W.1.stand
+    Position: {x: 3.97, y: 0.8, z: 0}
+  - Name: nozzle.satellite
+    Position: {x: -2.44, y: 1.3, z: 0.9}
+  - Name: nozzle.satellite.stand
+    Position: {x: -1.8, y: 1.3, z: 0}
+  Path: []
+  TideMarks: []
+  Words: []
+  HasLight: 1
+  Light:
+    Emitters:
+    - neon
+    - led
+    - glow
+    When: FuelStop.levels(CoastalPass.light.lampNeed(sky))
+  IsAnimated: 0
+  Animated:
+    Part: 
+    Input: 
+    Steps: 0
+    BakedAtDeg: 0
+    RigDir: 0
+    Headings: []
+  GameplayJson: '{"schema":"hidden-harbours/fuel-stop-piece@1","generatedBy":"FuelStopGameplay
+    1.0.0","key":"truck","id":"station.nmc_semi_lane","name":"The semi lane","defType":"SetPieceDef","scene":"keyscene.nmc_fuel_stop","units":"metres,
+    model frame rotated by pi from FuelStop plan metres","bounds":{"x":[-4.639999999999999,4.639999999999999],"y":[-5.276083471381174,5.276083471381174],"z":[0,6.659999999999999]},"layer":"ground","walk":"around","mount":"ground","colliders":[],"facings":[{"dir":0,"showFaces":"0","bearingDeg":0,"cameraSees":"fuel
+    stop piece"},{"dir":1,"showFaces":"1","bearingDeg":45,"cameraSees":"fuel stop
+    piece"},{"dir":2,"showFaces":"2","bearingDeg":90,"cameraSees":"fuel stop piece"},{"dir":3,"showFaces":"3","bearingDeg":135,"cameraSees":"fuel
+    stop piece"},{"dir":4,"showFaces":"4","bearingDeg":180,"cameraSees":"fuel stop
+    piece"},{"dir":5,"showFaces":"5","bearingDeg":225,"cameraSees":"fuel stop piece"},{"dir":6,"showFaces":"6","bearingDeg":270,"cameraSees":"fuel
+    stop piece"},{"dir":7,"showFaces":"7","bearingDeg":315,"cameraSees":"fuel stop
+    piece"}],"cells":[{"dir":0,"w":311,"h":380,"pivot":[155,263]},{"dir":1,"w":433,"h":435,"pivot":[216,302]},{"dir":2,"w":352,"h":343,"pivot":[175,263]},{"dir":3,"w":433,"h":435,"pivot":[216,302]},{"dir":4,"w":311,"h":380,"pivot":[155,263]},{"dir":5,"w":433,"h":435,"pivot":[216,302]},{"dir":6,"w":352,"h":343,"pivot":[175,263]},{"dir":7,"w":433,"h":435,"pivot":[216,302]}],"anchors":{"nozzle.dsl.W.0":[3.29,1.8,0.95],"nozzle.dsl.W.0.stand":[3.9699999999999998,1.8,0],"nozzle.dsl.W.1":[3.29,0.8,0.95],"nozzle.dsl.W.1.stand":[3.9699999999999998,0.8,0],"nozzle.dsl.E.2":[2.51,1.8,0.95],"nozzle.dsl.E.2.stand":[1.8299999999999998,1.8,0],"nozzle.dsl.E.3":[2.51,0.8,0.95],"nozzle.dsl.E.3.stand":[1.8299999999999998,0.8,0],"nozzle.def.W.4":[3.19,3.6299999999999994,0.95],"nozzle.def.W.4.stand":[3.87,3.6299999999999994,0],"nozzle.def.E.5":[2.61,3.6299999999999994,0.95],"nozzle.def.E.5.stand":[1.93,3.6299999999999994,0],"nozzle.satellite":[-2.44,1.3,0.9],"nozzle.satellite.stand":[-1.8,1.3,0]},"options":{},"light":{"emitters":["neon","led","glow"],"when":"FuelStop.levels(CoastalPass.light.lampNeed(sky))"},"notes":"Footprint
+    bounds are not walk blockers: canopy lanes and store doors must remain open.
+    Collision and light placement are verified in the scene phase."}'
+  State: 
+  Variants: []
+  HasVendor: 0
+  Vendor:
+    Seller: 
+    At: {x: 0, y: 0, z: 0}

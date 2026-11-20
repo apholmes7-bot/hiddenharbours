@@ -58,9 +58,74 @@ namespace HiddenHarbours.Core
             if (InteractActionClaim.IsClaimed) return false;
             if (!InteractResolver.TryResolveNow(actor, facingArcDegrees, out IInteractable best)) return false;
 
-            best.Interact(actor);
-            EventBus.Publish(new InteractPerformed(best.Id));
+            Perform(best, -1, actor);
             return true;
+        }
+
+        /// <summary>
+        /// <b>The player's press</b> (owner ask 2026-11-15) — what the switcher calls on E.
+        ///
+        /// <para>With one thing to act on, exactly <see cref="TryPerform"/>'s answer, and exactly as
+        /// before — except that an occupied bunk with a free one in reach is swapped for the free one
+        /// (<see cref="InteractChoiceList.Default"/>). With two or more pickable actions in reach (and
+        /// <see cref="GameConfig.InteractChooserEnabled"/> on), it opens <see cref="InteractChooser"/>
+        /// instead and spends the press on that; the action happens on the chooser's confirm.</para>
+        ///
+        /// <para><see cref="TryPerform"/> stays the direct, chooser-less resolution: the single-candidate
+        /// path the fixtures and journeys drive with a hand-built actor, and the ladder's answer.</para>
+        /// </summary>
+        public static bool TryPress(in InteractActor actor, float facingArcDegrees)
+        {
+            if (InteractionGate.IsBlocked) return false;
+            if (InteractActionClaim.IsClaimed) return false;
+            // The press that just picked from (or put down) the list is still "pressed this frame".
+            if (InteractChooser.ClosedThisFrame) return false;
+
+            BuildFor(PressList, actor, facingArcDegrees);
+            IInteractable target = PressList.Default;
+            if (target == null) return false;
+
+            if (ChooserEnabled() && PressList.IsChoice && InteractChooser.Open(PressList, actor, facingArcDegrees))
+                return true;
+
+            Perform(target, -1, actor);
+            return true;
+        }
+
+        /// <summary>
+        /// Act on one thing — the single body every press path ends in (<see cref="TryPerform"/>,
+        /// <see cref="TryPress"/>, the chooser's confirm). An <see cref="INeedsGated"/> thing whose bar the
+        /// player does not meet is refused out loud (<see cref="NeedsGate.TryRefuse"/>) and not acted on;
+        /// otherwise the action runs and <see cref="InteractPerformed"/> follows it.
+        /// </summary>
+        /// <param name="action">An <see cref="IMultiActionInteractable"/> action index, or -1 for the plain
+        /// <see cref="IInteractable.Interact"/>.</param>
+        public static void Perform(IInteractable target, int action, in InteractActor actor)
+        {
+            if (target == null) return;
+            if (target is INeedsGated gated && NeedsGate.TryRefuse(gated.NeedsRequirement)) return;
+
+            if (action >= 0 && target is IMultiActionInteractable multi) multi.Interact(actor, action);
+            else target.Interact(actor);
+            EventBus.Publish(new InteractPerformed(target.Id));
+        }
+
+        // The press's scratch list. The chooser copies what it opens on, so this is free to be rebuilt.
+        private static readonly InteractChoiceList PressList = new InteractChoiceList();
+
+        private static void BuildFor(InteractChoiceList list, in InteractActor actor, float facingArcDegrees)
+        {
+            GameConfig config = GameServices.Config;
+            int maxPriority = config != null ? config.InteractChooserMaxPriority
+                                             : GameConfig.DefaultInteractChooserMaxPriority;
+            int maxRows = config != null ? config.InteractChooserMaxRows : GameConfig.DefaultInteractChooserMaxRows;
+            list.Build(Interactables.Active, actor, facingArcDegrees, maxPriority, maxRows);
+        }
+
+        private static bool ChooserEnabled()
+        {
+            GameConfig config = GameServices.Config;
+            return config != null ? config.InteractChooserEnabled : GameConfig.DefaultInteractChooserEnabled;
         }
 
         /// <summary>
@@ -80,9 +145,13 @@ namespace HiddenHarbours.Core
         {
             string id = null;
             IInteractable best = null;
-            if (!InteractionGate.IsBlocked && !InteractActionClaim.IsClaimed
-                && InteractResolver.TryResolveNow(actor, facingArcDegrees, out best))
-                id = best.Id;
+            if (!InteractionGate.IsBlocked && !InteractActionClaim.IsClaimed)
+            {
+                // The same default the press acts on — the resolver's winner, with the free bunk swapped
+                // in for a taken one. Rows are not built here: the highlight needs one answer, not a list.
+                if (InteractChoiceList.TryResolveDefault(Interactables.Active, actor, facingArcDegrees, out best))
+                    id = best.Id;
+            }
 
             SetCandidate(id);
             OfferCandidate(actor, best);
@@ -103,6 +172,8 @@ namespace HiddenHarbours.Core
         /// fixture nobody can reach is exactly the lie the highlight rules forbid.</summary>
         public static void Reset()
         {
+            InteractChooser.Reset();
+            PressList.Clear();
             CurrentCandidateId = null;
             InteractOffer.Clear(InteractOfferSource.Fixture);
         }

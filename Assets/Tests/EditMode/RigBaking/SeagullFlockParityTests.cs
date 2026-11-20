@@ -68,7 +68,16 @@ namespace HiddenHarbours.Tests.RigBaking
             return def;
         }
 
-        static SeagullFlockMath.SeagullFlockTuning Tuning() => Def().Behaviour.FlockTuning;
+        /// <summary>The def's tuning with the game's eased swoop taken OFF (2026-11-15, owner: "the seagull swoops
+        /// and dives appear too fast"): the port is compared with the rig's own V-shaped swoop, draw for draw; the
+        /// eased swoop is the game's tuning beside the rig and is pinned in SeagullFlockMathTests.</summary>
+        static SeagullFlockMath.SeagullFlockTuning Tuning()
+        {
+            var t = Def().Behaviour.FlockTuning;
+            return new SeagullFlockMath.SeagullFlockTuning(t.RadiusMetres, t.PeriodMinSeconds, t.PeriodMaxSeconds,
+                t.AltitudeMinMetres, t.AltitudeMaxMetres, t.SwoopEveryMinSeconds, t.SwoopEveryMaxSeconds, t.GlideDuty,
+                t.FlyFrames, t.FlyMilliseconds, t.GlideFrames, t.GlideMilliseconds, t.SwoopFrames, t.SwoopMilliseconds);
+        }
 
         // ── bits ────────────────────────────────────────────────────────────────────────────────
 

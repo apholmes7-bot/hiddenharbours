@@ -117,7 +117,7 @@ namespace HiddenHarbours.Economy
             int owned = TackleBox.BaitCount(save, bait.Id);
             if (ReferenceEquals(save, GameServices.Save?.Current)) GameServices.Save?.Save();
 
-            EventBus.Publish(new BaitPurchased(bait.Id, price, lot, owned));
+            EventBus.Publish(new BaitPurchased(bait.Id, price, lot, owned, SellerDirectory.Resolve(_sellerId)));
             LastPurchaseSucceeded = true;
             Debug.Log($"[BaitShop] Bought {lot}× {bait.DisplayName} ({bait.Id}) for ₲{price} — {owned} in the box.");
             _onPurchased?.Invoke(price);

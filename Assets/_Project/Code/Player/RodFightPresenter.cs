@@ -56,6 +56,10 @@ namespace HiddenHarbours.Player
 
         [Header("The fish (builder-wired from FishIsoAnchors.json + the Fish_* sheets)")]
         [SerializeField] private FishSpeciesVisual[] _species;
+        [Tooltip("The shared fish art table. A species this scene's own table has no size rungs for " +
+                 "(a scene saved before the ladder, or a species added since) is drawn from here. Empty " +
+                 "= the Resources copy (FishArtLibrary).")]
+        [SerializeField] private FishArtLibrary _fishArt;
         [Tooltip("Seconds per fish animation frame. The rig's own cadences are shadow 0.28 s, " +
                  "dart 0.08 s and thrash 0.11 s; this serialized playback cadence is independent.")]
         [SerializeField, Min(0.01f)] private float _fishSecondsPerFrame = 0.16f;
@@ -157,12 +161,13 @@ namespace HiddenHarbours.Player
         [SerializeField, Min(0f)] private float _boilCalmRadiusM = 0.3f;
         [SerializeField, Range(0f, 1f)] private float _boilAlpha = 0.5f;
 
-        [Header("Sorting (world elements; the rod rides the fisher's own order ±1)")]
-        [SerializeField] private int _lineSortingOrder = 50;     // the trap rope's precedent
+        // The rod, the line and the splash ride the fisher's own order (the rod ±1; the line and splash
+        // EffectSorting.RodOverFisherRungs in front, ADR 0059 step 2). The water elements below are not yet
+        // re-anchored: an open point of step 2 (see EffectSortingTests' low-floor guard).
+        [Header("Sorting (water elements)")]
         [SerializeField] private int _waterElementOrder = 49;    // bobber / surfaced fish / held under line
         [SerializeField] private int _shadowSortingOrder = 20;   // the deep shape sits under water detail
         [SerializeField] private int _rippleSortingOrder = 15;
-        [SerializeField] private int _splashSortingOrder = 51;
 
         // ---- runtime ----------------------------------------------------------------------------
         private PlayerFishingAnimator _animator;
@@ -243,6 +248,7 @@ namespace HiddenHarbours.Player
         private int _fishRow = Directions / 2;
         private string _resolvedFishId;
         private int _speciesIndex = -1;
+        private FishSpeciesVisual _resolvedSpecies;
         private float _resolvedWeightKg = float.NaN;
         private FishRungVisual _rung;
 
@@ -259,9 +265,23 @@ namespace HiddenHarbours.Player
         /// </summary>
         public FishRungVisual Rung => _rung;
 
-        /// <summary>Is the fight drawing its own rod in her hands this frame? While it is, the carried rod
-        /// tool is not drawn (<c>CarryHands</c>), so she holds one rod and not two.</summary>
-        public bool DrawsRod => _rodSr != null && _rodSr.enabled;
+        /// <summary>Is the fight drawing its own rod in his hands this frame, sprite or mesh? While it is,
+        /// the carried rod tool is not drawn (<c>CarryHands</c>), so he holds one rod and not two.</summary>
+        public bool DrawsRod => DrawsMeshRod || (_rodSr != null && _rodSr.enabled);
+
+        /// <summary>True on a frame the rod is drawn as its facet mesh in the mesh figure's hand
+        /// (ADR 0053, <see cref="HeldRodMesh"/>); the sprite rod is off on exactly those frames.</summary>
+        public bool DrawsMeshRod { get; private set; }
+
+        /// <summary>The mesh rod's driver, once the rod has been asked for. For tests and plates.</summary>
+        public HeldRodMesh MeshRod => _meshRod;
+
+        /// <summary>Where the line left the rod on the last frame it was drawn, in world metres.</summary>
+        public Vector2 LineAnchorWorld { get; private set; }
+
+        private HeldRodMesh _meshRod;
+        private CarryHands _hands;
+        private DeckRiderMeshPresenter _meshPresenter;
 
         private void Awake()
         {
@@ -276,7 +296,7 @@ namespace HiddenHarbours.Player
             _bobberSr = MakeChild("Bobber", _waterElementOrder);
             _fishSr = MakeChild("FishOnTheLine", _waterElementOrder);
             _heldSr = MakeChild("HeldCatch", 0);
-            _splashSr = MakeChild("Splash", _splashSortingOrder);
+            _splashSr = MakeChild("Splash", 0);   // ordered over the fisher as it plays (RenderSplash)
             _rippleSr = MakeChild("SinkRipple", _rippleSortingOrder);
             _line = MakeLine();
             _lineBuffer = new Vector2[Mathf.Max(2, _lineSegments)];
@@ -409,6 +429,13 @@ namespace HiddenHarbours.Player
             {
                 _resolvedFishId = next.FishId;
                 _speciesIndex = FindSpecies(next.FishId);
+                // The scene's own ladder when it has rungs, else the shared fish art table's: a scene
+                // carrying the pre-ladder table must still draw the new fish on the line.
+                _resolvedSpecies = string.IsNullOrEmpty(next.FishId)
+                    ? null
+                    : FishArtLibrary.Resolve(
+                        _species != null && _speciesIndex >= 0 ? _species[_speciesIndex] : null,
+                        _fishArt != null ? _fishArt : FishArtLibrary.Shared, next.FishId);
 
                 // WHAT SHE DOES ON THE LINE, asked once per species through the Core seam rather than
                 // by reaching into the Fishing module for a Def (rule 4 — Player does not reference
@@ -433,7 +460,11 @@ namespace HiddenHarbours.Player
             {
                 _resolvedWeightKg = next.WeightKg;
                 FishSpeciesVisual sp = CurrentSpecies();
-                _rung = sp != null ? sp.RungFor(next.WeightKg) : null;
+                // Picked at the weight the fish is DRAWN at (the readability floor), the same rule the
+                // hands and the tote use, so the fish he lands is the fish he then holds.
+                FishArtLibrary table = _fishArt != null ? _fishArt : FishArtLibrary.Shared;
+                _rung = FishArtLibrary.LineRungFor(sp, table != null ? table.CatchArt : null,
+                                                   next.FishId, next.WeightKg);
             }
         }
 
@@ -474,7 +505,13 @@ namespace HiddenHarbours.Player
 
             if (!_s.IsActive)
             {
-                HideInteraction();
+                HideInteraction(keepMeshRod: true);
+                // THE CARRIED ROD (ADR 0053 D1): out of a fishing state the rod he carries is drawn as
+                // its mesh at the rig's held pose on his hand, when the mesh body draws him and the rod's
+                // Def asks for it. DrawsRod then holds the carried sprite out of the picture (CarryHands),
+                // so he carries one rod, not two. Any refusal hands the rod back to the carried sprite.
+                DrawsMeshRod = TryDrawMeshRod();
+                if (!DrawsMeshRod) _meshRod?.Hide();
                 return;
             }
 
@@ -488,8 +525,20 @@ namespace HiddenHarbours.Player
             bool castPath = castAim.sqrMagnitude > 1e-4f;
             RodElements show = RodPresenterMath.ElementsFor(_s.Phase, castPath);
 
-            bool rodDrawn = RenderRod(show, hands, out Vector2 tip);
-            Vector2 unloadedTip = tip;   // the sheet's own tip, before the fight's load bends it over
+            bool rodDrawn = RenderRod(show, hands, out Vector2 spriteTip);
+            // THE MESH ROD (ADR 0053): while the mesh body plays the performance, the rod is its baked
+            // facet mesh in his hand, aimed by the clip's own tool track, and the sprite rod is off. Any
+            // refusal leaves the sprite rod exactly as RenderRod drew it.
+            DrawsMeshRod = (show & RodElements.Rod) != 0 && TryDrawMeshRod();
+            if (!DrawsMeshRod) _meshRod?.Hide();   // a beat with no rod must not leave the last pose up
+            if (DrawsMeshRod)
+            {
+                _rodSr.enabled = false;
+                _rodGrip = _meshRod.GripWorld;
+                rodDrawn = true;
+            }
+            Vector2 tip = RodPresenterMath.LineAnchor(DrawsMeshRod, DrawsMeshRod ? _meshRod.TipWorld : spriteTip, spriteTip);
+            Vector2 unloadedTip = tip;   // the rod's own tip, before the fight's load bends it over
 
             // ---- the line's far end (and the element that lives there) ---------------------------
             Vector2 far = tip;
@@ -551,7 +600,7 @@ namespace HiddenHarbours.Player
             RodLeanDegrees = 0f;
             if (rodDrawn && _s.IsFightPhase) tip = LeanRodUnderLoad(unloadedTip, far);
 
-            if ((show & RodElements.Line) != 0 && farValid) RenderLine(tip, far);
+            if ((show & RodElements.Line) != 0 && farValid) { RenderLine(tip, far); LineAnchorWorld = tip; }
             else { _line.enabled = false; _line.positionCount = 0; }
 
             if (farValid) _lastFarEnd = far;
@@ -568,6 +617,43 @@ namespace HiddenHarbours.Player
                 _riderResolved = true;
             }
             return _rider != null ? _rider.DrawnBodyOffset : Vector2.zero;
+        }
+
+        // ---- the mesh rod (ADR 0053) -------------------------------------------------------------
+
+        /// <summary>
+        /// Ask <see cref="HeldRodMesh"/> to draw the rod in the mesh figure's hand this frame: the rod he
+        /// carries (<see cref="CarryHands.HeldFightRod"/>), the figure the deck presenter is drawing him
+        /// with right now (aboard or ashore), and <see cref="GameConfig.MeshRodInHand"/>. The figure was
+        /// posed for this frame at order 100, before this component's 101. The wiring is looked up with
+        /// TryGetComponent while missing (the builder may add it after this component), which does not
+        /// allocate.
+        /// </summary>
+        private bool TryDrawMeshRod()
+        {
+            GameConfig config = GameServices.Config;
+            bool on = config != null && config.MeshRodInHand;
+            if (!on && _meshRod == null) return false;
+            if (_hands == null) TryGetComponent(out _hands);
+            if (_meshPresenter == null) TryGetComponent(out _meshPresenter);
+            _meshRod ??= new HeldRodMesh(transform);
+            ToolDef rod = _hands != null ? _hands.HeldFightRod : null;
+            float width = config != null ? config.HeldPropLineWidthPx : GameConfig.DefaultHeldPropLineWidthPx;
+            return _meshRod.TryDraw(on, rod, LiveFigure(), width);
+        }
+
+        /// <summary>The figure drawing him this frame, or null while he is a sprite.</summary>
+        private IsoCharacterFigureRenderer LiveFigure()
+        {
+            DeckRiderMeshPresenter p = _meshPresenter;
+            if (p == null || !p.DrawsInsteadOfSprite) return null;
+            return p.DrawsAshore ? p.AshoreFigure : p.Figure;
+        }
+
+        private void OnDestroy()
+        {
+            _meshRod?.Dispose();
+            _meshRod = null;
         }
 
         // ---- the rod overlay ---------------------------------------------------------------------
@@ -678,7 +764,8 @@ namespace HiddenHarbours.Player
             }
             RodLeanDegrees = lean;
             var rot = Quaternion.Euler(0f, 0f, lean);              // a WORLD-space delta off the baseline
-            _rodSr.transform.rotation = rot * _rodBaseRotation;    // composes with any parent rotation
+            if (DrawsMeshRod) _meshRod.Lean(lean);                 // the same picture-space turn, about the grip
+            else _rodSr.transform.rotation = rot * _rodBaseRotation;   // composes with any parent rotation
             return _rodGrip + (Vector2)(rot * shaft);
         }
 
@@ -1032,9 +1119,7 @@ namespace HiddenHarbours.Player
             _heldSr.enabled = true;
         }
 
-        private FishSpeciesVisual CurrentSpecies()
-            => _species != null && _speciesIndex >= 0 && _speciesIndex < _species.Length
-                ? _species[_speciesIndex] : null;
+        private FishSpeciesVisual CurrentSpecies() => _resolvedSpecies;
 
         private int FindSpecies(string fishId)
         {
@@ -1094,6 +1179,13 @@ namespace HiddenHarbours.Player
             float phase = Time.time * _shudderHz * (2f * Mathf.PI);
 
             if (!_line.enabled) _line.enabled = true;
+            // ADR 0059 step 2: the line rides the fisher's own order, one rung in front (Core EffectSorting),
+            // not a parked 50. One int, written only when it changes.
+            if (_playerSr != null)
+            {
+                int lineOrder = EffectSorting.OrderOver(SortedEffect.RodLine, _playerSr.sortingOrder);
+                if (_line.sortingOrder != lineOrder) _line.sortingOrder = lineOrder;
+            }
             _line.positionCount = n;
             for (int i = 0; i < n; i++)
             {
@@ -1143,15 +1235,28 @@ namespace HiddenHarbours.Player
                 return;
             }
             _splashSr.transform.position = new Vector3(_splashPos.x, _splashPos.y, 0f);
+            // ADR 0059 step 2: the splash rides the fisher's own order, one rung in front, not a parked 51.
+            if (_playerSr != null)
+            {
+                int splashOrder = EffectSorting.OrderOver(SortedEffect.RodSplash, _playerSr.sortingOrder);
+                if (_splashSr.sortingOrder != splashOrder) _splashSr.sortingOrder = splashOrder;
+            }
             _splashSr.sprite = _splashFrames[frame];
             _splashSr.enabled = true;
         }
 
         // ---- plumbing --------------------------------------------------------------------------------
 
-        private void HideInteraction()
+        private void HideInteraction() => HideInteraction(keepMeshRod: false);
+
+        private void HideInteraction(bool keepMeshRod)
         {
             if (_rodSr != null) _rodSr.enabled = false;
+            if (!keepMeshRod)
+            {
+                _meshRod?.Hide();
+                DrawsMeshRod = false;
+            }
             if (_bobberSr != null) _bobberSr.enabled = false;
             if (_fishSr != null) _fishSr.enabled = false;
             if (_heldSr != null) _heldSr.enabled = false;
@@ -1186,8 +1291,7 @@ namespace HiddenHarbours.Player
             lr.endWidth = _lineWidth;
             var shader = Shader.Find("Sprites/Default");
             if (shader != null) lr.material = new Material(shader);   // null headless → skip (rope precedent)
-            lr.sortingOrder = _lineSortingOrder;
-            lr.positionCount = 0;
+            lr.positionCount = 0;   // ordered over the fisher as it draws (RenderLine)
             lr.enabled = false;
             return lr;
         }

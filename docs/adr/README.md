@@ -61,6 +61,8 @@ When you add an ADR, add its row here in the same PR.
 | 0054 | [Bathymetric wave data](0054-bathymetric-wave-data.md) | **Proposed** (Stage D: W4-6a imported bake; W4-6b runtime consumers) |
 | 0055 | [Goods are carried](0055-goods-are-carried.md) | **Proposed** (manual delivery, persistent goods and phased carrier design; no runtime change) |
 | 0056 | [The facet-id space is a budget: lazy fore blocks and a reserved player figure](0056-facet-id-space-is-a-budget.md) | Accepted (owner ruled "Yes, fix it" on PR 877, 2026-11-12; implemented in its PR; supersedes the PR 877 note) |
+| 0057 | [One world frame: the whole wall is a door, and doors do not teleport](0057-shared-world-frame-edge-crossings.md) | **Proposed** (owner ruling 2026-11-15; layout in `docs/architecture/world-frame.md`) |
+| 0059 | [Hulls sort among the scenery by where they lie](0059-hulls-sort-among-the-scenery.md) | Accepted (owner took all three recommendations 2026-11-17: option A, covered weed under the sea, the waterline pivot; rollout in `docs/architecture/hull-vs-decor-sorting.md` §7) |
 
 **Conventions.** `Proposed` = awaiting the named decider; `Accepted` = ratified (by the owner where
 the ADR says so, otherwise by `lead-architect` on merge); `Implemented` = accepted and the code

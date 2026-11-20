@@ -166,7 +166,8 @@ namespace HiddenHarbours.Fishing
         [Tooltip("Scale an animal's deck sprite is drawn at in her hand and in a crate, so it reads at its real size beside her.")]
         [Range(0.05f, 2f)] public float CatchDrawScale = 0.4f;
 
-        [Tooltip("Sorting order of an animal in hand or in a crate (above the hull and its crew).")]
+        [Tooltip("NO LONGER READ (ADR 0059 step 2): the catch takes the skipper's order, or the band's Y-sort " +
+                 "at the boat's pivot when she has none (Core EffectSorting). Kept so existing assets load unchanged.")]
         public int CatchSortingOrder = 30;
 
         [Header("The landing (clock seconds; she carries each crate to the buyer by hand)")]
@@ -240,7 +241,8 @@ namespace HiddenHarbours.Fishing
         [Tooltip("Sag of the hauling rope when slack, metres.")]
         [Min(0f)] public float HaulRopeSagMeters = 0.4f;
 
-        [Tooltip("Sorting order of the buoy (the ambient fleet's buoys use 3).")]
+        [Tooltip("NO LONGER READ (ADR 0059 step 2): the buoy sorts by the band's Y-sort where it floats " +
+                 "(Core EffectSorting). Kept so existing assets load unchanged.")]
         public int BuoySortingOrder = 3;
 
         [Tooltip("Sorting order of the rope and of a pot seen at the rail.")]

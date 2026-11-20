@@ -1,0 +1,650 @@
+{
+ "schema": "hidden-harbours/nmc-set-piece@1",
+ "generatedBy": "NmcFishPlant 1.0.0",
+ "derivedFromRigSha256": "a83ae8687592de43902259157195ecc4ff3128f36d850f4844f08623e37f32d9",
+ "key": "plantGate",
+ "id": "structure.nmc_fish_plant_gate",
+ "name": "The plant gate",
+ "defType": "SetPieceDef",
+ "scene": null,
+ "units": "metres, the piece’s own frame: +x right, +y the show face, +z up from its ground point (the pivot)",
+ "bounds": {
+  "x": [
+   -0.3,
+   6.03
+  ],
+  "y": [
+   -9.25,
+   9.25
+  ],
+  "z": [
+   0,
+   4.785
+  ]
+ },
+ "layer": "raised",
+ "walk": "solid",
+ "mount": "ground",
+ "colliders": [
+  {
+   "type": "polygon",
+   "blocks": "walk",
+   "pts": [
+    [
+     -0.1,
+     -6.2
+    ],
+    [
+     0.1,
+     -6.2
+    ],
+    [
+     0.1,
+     -6
+    ],
+    [
+     -0.1,
+     -6
+    ]
+   ]
+  },
+  {
+   "type": "polygon",
+   "blocks": "walk",
+   "pts": [
+    [
+     -0.1,
+     6
+    ],
+    [
+     0.1,
+     6
+    ],
+    [
+     0.1,
+     6.2
+    ],
+    [
+     -0.1,
+     6.2
+    ]
+   ]
+  },
+  {
+   "type": "polygon",
+   "blocks": "walk",
+   "pts": [
+    [
+     -0.05,
+     -9.2
+    ],
+    [
+     0.05,
+     -9.2
+    ],
+    [
+     0.05,
+     -6.2
+    ],
+    [
+     -0.05,
+     -6.2
+    ]
+   ]
+  },
+  {
+   "type": "polygon",
+   "blocks": "walk",
+   "pts": [
+    [
+     -0.05,
+     6.2
+    ],
+    [
+     0.05,
+     6.2
+    ],
+    [
+     0.05,
+     9.2
+    ],
+    [
+     -0.05,
+     9.2
+    ]
+   ]
+  },
+  {
+   "type": "polygon",
+   "blocks": "walk",
+   "pts": [
+    [
+     0,
+     -6.05
+    ],
+    [
+     6,
+     -6.05
+    ],
+    [
+     6,
+     -5.95
+    ],
+    [
+     0,
+     -5.95
+    ]
+   ]
+  },
+  {
+   "type": "polygon",
+   "blocks": "walk",
+   "pts": [
+    [
+     0,
+     5.95
+    ],
+    [
+     6,
+     5.95
+    ],
+    [
+     6,
+     6.05
+    ],
+    [
+     0,
+     6.05
+    ]
+   ]
+  }
+ ],
+ "facings": [
+  {
+   "dir": 0,
+   "showFaces": "N",
+   "bearingDeg": 0,
+   "cameraSees": "its back"
+  },
+  {
+   "dir": 1,
+   "showFaces": "NW",
+   "bearingDeg": 315,
+   "cameraSees": "its back"
+  },
+  {
+   "dir": 2,
+   "showFaces": "W",
+   "bearingDeg": 270,
+   "cameraSees": "the show face, edge-on or at a diagonal"
+  },
+  {
+   "dir": 3,
+   "showFaces": "SW",
+   "bearingDeg": 225,
+   "cameraSees": "the show face"
+  },
+  {
+   "dir": 4,
+   "showFaces": "S",
+   "bearingDeg": 180,
+   "cameraSees": "the show face"
+  },
+  {
+   "dir": 5,
+   "showFaces": "SE",
+   "bearingDeg": 135,
+   "cameraSees": "the show face"
+  },
+  {
+   "dir": 6,
+   "showFaces": "E",
+   "bearingDeg": 90,
+   "cameraSees": "the show face, edge-on or at a diagonal"
+  },
+  {
+   "dir": 7,
+   "showFaces": "NE",
+   "bearingDeg": 45,
+   "cameraSees": "its back"
+  }
+ ],
+ "cells": [
+  {
+   "dir": 0,
+   "w": 210,
+   "h": 440,
+   "pivot": [
+    13,
+    245
+   ]
+  },
+  {
+   "dir": 1,
+   "w": 490,
+   "h": 367,
+   "pivot": [
+    214,
+    228
+   ]
+  },
+  {
+   "dir": 2,
+   "w": 599,
+   "h": 187,
+   "pivot": [
+    299,
+    177
+   ]
+  },
+  {
+   "dir": 3,
+   "w": 490,
+   "h": 367,
+   "pivot": [
+    276,
+    228
+   ]
+  },
+  {
+   "dir": 4,
+   "w": 210,
+   "h": 440,
+   "pivot": [
+    196,
+    245
+   ]
+  },
+  {
+   "dir": 5,
+   "w": 490,
+   "h": 385,
+   "pivot": [
+    276,
+    206
+   ]
+  },
+  {
+   "dir": 6,
+   "w": 599,
+   "h": 251,
+   "pivot": [
+    299,
+    124
+   ]
+  },
+  {
+   "dir": 7,
+   "w": 490,
+   "h": 368,
+   "pivot": [
+    214,
+    190
+   ]
+  }
+ ],
+ "anchors": {
+  "gate": [
+   0,
+   0,
+   0
+  ],
+  "postNorth": [
+   0,
+   -6.1,
+   0
+  ],
+  "postSouth": [
+   0,
+   6.1,
+   0
+  ],
+  "inside": [
+   3,
+   0,
+   0
+  ],
+  "outside": [
+   -3,
+   0,
+   0
+  ],
+  "clear": [
+   12,
+   2.5
+  ],
+  "lights": [
+   {
+    "id": "light.gate",
+    "at": [
+     0,
+     -5.2,
+     4.58
+    ],
+    "kind": "gate lamp on the north post",
+    "atPx": [
+     196,
+     25.8
+    ]
+   }
+  ],
+  "words": [
+   {
+    "id": "words.nmc_fish_plant_gate",
+    "text": "",
+    "corners": [
+     [
+      -0.09,
+      8.9,
+      1
+     ],
+     [
+      -0.09,
+      6.7,
+      1
+     ],
+     [
+      -0.09,
+      6.7,
+      1.75
+     ],
+     [
+      -0.09,
+      8.9,
+      1.75
+     ]
+    ],
+    "note": "the gate board, toward Route 91; the game’s to letter, blank in pictures",
+    "cornersPx": [
+     [
+      198.9,
+      403.6
+     ],
+     [
+      198.9,
+      358.3
+     ],
+     [
+      198.9,
+      339.9
+     ],
+     [
+      198.9,
+      385.2
+     ]
+    ]
+   }
+  ],
+  "state": "open",
+  "note": "clear is [metres between the posts, post height]; the opening is brief v [-6, 6] at u 26",
+  "px": {
+   "gate": [
+    196,
+    245
+   ],
+   "postNorth": [
+    196,
+    119.5
+   ],
+   "postSouth": [
+    196,
+    370.5
+   ],
+   "inside": [
+    100,
+    245
+   ],
+   "outside": [
+    292,
+    245
+   ]
+  }
+ },
+ "options": {
+  "open": true,
+  "fence": 3,
+  "lights": true
+ },
+ "light": {
+  "emitters": [
+   "lamp"
+  ],
+  "when": "o.lit, from the game’s lamp rule (dusk to dawn; the plant while it works)"
+ },
+ "notes": "Stand it at dir 4 with its pivot on the gate centre, world (-215, -40). Open, the leaves lie along the court’s v = +6 and v = -6 lines, 6 m into the court (brief u [20, 26]). The court study’s swept paths are unproven against the open leaves: check them in the scene’s vehicle sequence.",
+ "bake": {
+  "facings": [
+   4
+  ],
+  "variants": [
+   {
+    "open": false
+   }
+  ],
+  "note": "open and shut, one facing"
+ },
+ "site": {
+  "site": "A",
+  "frame": "u = world x + 241 (east), v = world y + 40 (north), metres",
+  "dir": 4,
+  "pivot": {
+   "brief": [
+    26,
+    0
+   ],
+   "world": [
+    -215,
+    -40
+   ]
+  },
+  "rule": "brief u = pivot u - local x, brief v = pivot v - local y; world x = u - 241, world y = v - 40",
+  "anchors": {
+   "gate": {
+    "local": [
+     0,
+     0,
+     0
+    ],
+    "brief": [
+     26,
+     0
+    ],
+    "world": [
+     -215,
+     -40
+    ],
+    "z": 0
+   },
+   "postNorth": {
+    "local": [
+     0,
+     -6.1,
+     0
+    ],
+    "brief": [
+     26,
+     6.1
+    ],
+    "world": [
+     -215,
+     -33.9
+    ],
+    "z": 0
+   },
+   "postSouth": {
+    "local": [
+     0,
+     6.1,
+     0
+    ],
+    "brief": [
+     26,
+     -6.1
+    ],
+    "world": [
+     -215,
+     -46.1
+    ],
+    "z": 0
+   },
+   "inside": {
+    "local": [
+     3,
+     0,
+     0
+    ],
+    "brief": [
+     23,
+     0
+    ],
+    "world": [
+     -218,
+     -40
+    ],
+    "z": 0
+   },
+   "outside": {
+    "local": [
+     -3,
+     0,
+     0
+    ],
+    "brief": [
+     29,
+     0
+    ],
+    "world": [
+     -212,
+     -40
+    ],
+    "z": 0
+   },
+   "light.gate": {
+    "local": [
+     0,
+     -5.2,
+     4.58
+    ],
+    "brief": [
+     26,
+     5.2
+    ],
+    "world": [
+     -215,
+     -34.8
+    ],
+    "z": 4.58
+   }
+  },
+  "colliders": [
+   [
+    [
+     -214.9,
+     -33.8
+    ],
+    [
+     -215.1,
+     -33.8
+    ],
+    [
+     -215.1,
+     -34
+    ],
+    [
+     -214.9,
+     -34
+    ]
+   ],
+   [
+    [
+     -214.9,
+     -46
+    ],
+    [
+     -215.1,
+     -46
+    ],
+    [
+     -215.1,
+     -46.2
+    ],
+    [
+     -214.9,
+     -46.2
+    ]
+   ],
+   [
+    [
+     -214.95,
+     -30.8
+    ],
+    [
+     -215.05,
+     -30.8
+    ],
+    [
+     -215.05,
+     -33.8
+    ],
+    [
+     -214.95,
+     -33.8
+    ]
+   ],
+   [
+    [
+     -214.95,
+     -46.2
+    ],
+    [
+     -215.05,
+     -46.2
+    ],
+    [
+     -215.05,
+     -49.2
+    ],
+    [
+     -214.95,
+     -49.2
+    ]
+   ],
+   [
+    [
+     -215,
+     -33.95
+    ],
+    [
+     -221,
+     -33.95
+    ],
+    [
+     -221,
+     -34.05
+    ],
+    [
+     -215,
+     -34.05
+    ]
+   ],
+   [
+    [
+     -215,
+     -45.95
+    ],
+    [
+     -221,
+     -45.95
+    ],
+    [
+     -221,
+     -46.05
+    ],
+    [
+     -215,
+     -46.05
+    ]
+   ]
+  ]
+ }
+}

@@ -973,7 +973,15 @@ namespace HiddenHarbours.Tests.Art.EditMode
                                       def["_flockSwoopEveryMinSeconds"].AsFloat, def["_flockSwoopEveryMaxSeconds"].AsFloat,
                                       def["_flockSpacingMetres"].AsFloat, def["_flockAttractRadiusMetres"].AsFloat,
                                       def["_flockFleeRadiusMetres"].AsFloat, def["_flockSettleAfterSeconds"].AsFloat,
-                                      def["_flockRegroupSeconds"].AsFloat));
+                                      def["_flockRegroupSeconds"].AsFloat),
+                new SeagullDepartureRules(def["_departureLiftOffSpeedMetresPerSecond"].AsFloat,
+                                          def["_departureClimbMetresPerSecond"].AsFloat,
+                                          def["_departureAccelerateSeconds"].AsFloat,
+                                          def["_departureTurnDegreesPerSecond"].AsFloat,
+                                          def["_departureJoinSeconds"].AsFloat,
+                                          def["_departureLevelOffMetres"].AsFloat),
+                new SeagullSwoopRules(def["_flockSwoopMaxSinkMetresPerSecond"].AsFloat,
+                                      def["_flockSwoopDuty"].AsFloat, def["_flockSwoopDepth01"].AsFloat));
         }
     }
 }

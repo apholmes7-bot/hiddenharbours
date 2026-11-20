@@ -1,0 +1,2951 @@
+fileFormatVersion: 2
+guid: d35494a97064d84418a22ccf1ed872d2
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -755014467235360894
+    second: Appliance_bath_0
+  - first:
+      213: 5395314450294252199
+    second: Appliance_bath_1
+  - first:
+      213: -3422675864912260496
+    second: Appliance_bath_2
+  - first:
+      213: -4275756051096738320
+    second: Appliance_bath_3
+  - first:
+      213: 6227514113490937416
+    second: Appliance_bath_4
+  - first:
+      213: 7241738211455790703
+    second: Appliance_bath_5
+  - first:
+      213: 75596978785367118
+    second: Appliance_bath_6
+  - first:
+      213: 3065454010317725096
+    second: Appliance_bath_7
+  - first:
+      213: 4479066224391467764
+    second: Appliance_bath_8
+  - first:
+      213: -7659095104250976528
+    second: Appliance_bath_9
+  - first:
+      213: 1160929065675869629
+    second: Appliance_bath_10
+  - first:
+      213: -4103868493598757564
+    second: Appliance_bath_11
+  - first:
+      213: -1449917485157555226
+    second: Appliance_bath_12
+  - first:
+      213: 5700455742520846559
+    second: Appliance_bath_13
+  - first:
+      213: 1137943225039455902
+    second: Appliance_bath_14
+  - first:
+      213: -8753687099653996951
+    second: Appliance_bath_15
+  - first:
+      213: 8967665575760873619
+    second: Appliance_bath_16
+  - first:
+      213: 2439501342906924346
+    second: Appliance_bath_17
+  - first:
+      213: 4611780344737174459
+    second: Appliance_bath_18
+  - first:
+      213: -2919581791759903784
+    second: Appliance_bath_19
+  - first:
+      213: 2640938576550341976
+    second: Appliance_bath_20
+  - first:
+      213: -3982812514631078150
+    second: Appliance_bath_21
+  - first:
+      213: -1476951878070662821
+    second: Appliance_bath_22
+  - first:
+      213: 2348437116646216727
+    second: Appliance_bath_23
+  - first:
+      213: 718008061517789201
+    second: Appliance_bath_24
+  - first:
+      213: -1630119026599651562
+    second: Appliance_bath_25
+  - first:
+      213: 2787810720819716348
+    second: Appliance_bath_26
+  - first:
+      213: -3371662628099745640
+    second: Appliance_bath_27
+  - first:
+      213: -9016853939376754283
+    second: Appliance_bath_28
+  - first:
+      213: -6447618844547338751
+    second: Appliance_bath_29
+  - first:
+      213: 124358569349238620
+    second: Appliance_bath_30
+  - first:
+      213: 2794185916826714521
+    second: Appliance_bath_31
+  - first:
+      213: -417259556157261673
+    second: Appliance_bath_32
+  - first:
+      213: 4264225517665967275
+    second: Appliance_bath_33
+  - first:
+      213: 4488961785345328278
+    second: Appliance_bath_34
+  - first:
+      213: -4303557468531195441
+    second: Appliance_bath_35
+  - first:
+      213: 4645070937409658099
+    second: Appliance_bath_36
+  - first:
+      213: 2380955731080264376
+    second: Appliance_bath_37
+  - first:
+      213: 1562819136089335297
+    second: Appliance_bath_38
+  - first:
+      213: -2272282100462198331
+    second: Appliance_bath_39
+  - first:
+      213: 6990599786512938432
+    second: Appliance_bath_40
+  - first:
+      213: 4060143797288128357
+    second: Appliance_bath_41
+  - first:
+      213: -2532878100273092003
+    second: Appliance_bath_42
+  - first:
+      213: 5725529687454412360
+    second: Appliance_bath_43
+  - first:
+      213: 5738031860568067316
+    second: Appliance_bath_44
+  - first:
+      213: -6025288187934635481
+    second: Appliance_bath_45
+  - first:
+      213: 7189660332600803795
+    second: Appliance_bath_46
+  - first:
+      213: 1160782171425894050
+    second: Appliance_bath_47
+  - first:
+      213: -3157851193309970649
+    second: Appliance_bath_48
+  - first:
+      213: -1045171002946046427
+    second: Appliance_bath_49
+  - first:
+      213: 8388224764629632843
+    second: Appliance_bath_50
+  - first:
+      213: -5361094070183208172
+    second: Appliance_bath_51
+  - first:
+      213: -3136077586932351739
+    second: Appliance_bath_52
+  - first:
+      213: -5932919587669105833
+    second: Appliance_bath_53
+  - first:
+      213: 6005973345043715690
+    second: Appliance_bath_54
+  - first:
+      213: 6314190206062254797
+    second: Appliance_bath_55
+  - first:
+      213: -331586185505127110
+    second: Appliance_bath_56
+  - first:
+      213: 4537434405133386174
+    second: Appliance_bath_57
+  - first:
+      213: 4228418826495932601
+    second: Appliance_bath_58
+  - first:
+      213: -6136664849501876436
+    second: Appliance_bath_59
+  - first:
+      213: 4307468135877406837
+    second: Appliance_bath_60
+  - first:
+      213: 8192124381284534314
+    second: Appliance_bath_61
+  - first:
+      213: -7162000356326552166
+    second: Appliance_bath_62
+  - first:
+      213: 4748373100044243594
+    second: Appliance_bath_63
+  - first:
+      213: 4531939669714240720
+    second: Appliance_bath_64
+  - first:
+      213: -7687486599750673121
+    second: Appliance_bath_65
+  - first:
+      213: 6454235798204178810
+    second: Appliance_bath_66
+  - first:
+      213: 5401850538531500391
+    second: Appliance_bath_67
+  - first:
+      213: -8322639644153564364
+    second: Appliance_bath_68
+  - first:
+      213: 5701510227013469218
+    second: Appliance_bath_69
+  - first:
+      213: -2833145356076921980
+    second: Appliance_bath_70
+  - first:
+      213: -344672565742256797
+    second: Appliance_bath_71
+  - first:
+      213: -7530176255484734359
+    second: Appliance_bath_72
+  - first:
+      213: 7604576786460341603
+    second: Appliance_bath_73
+  - first:
+      213: -2808081162679106362
+    second: Appliance_bath_74
+  - first:
+      213: 8754875131399971230
+    second: Appliance_bath_75
+  - first:
+      213: 8930826905198063068
+    second: Appliance_bath_76
+  - first:
+      213: -4901469157337874421
+    second: Appliance_bath_77
+  - first:
+      213: 5315065323886010861
+    second: Appliance_bath_78
+  - first:
+      213: -8485782843405766345
+    second: Appliance_bath_79
+  - first:
+      213: -1965593762917727935
+    second: Appliance_bath_80
+  - first:
+      213: 6085530576643979422
+    second: Appliance_bath_81
+  - first:
+      213: -1821191168248441925
+    second: Appliance_bath_82
+  - first:
+      213: 7118237455895217768
+    second: Appliance_bath_83
+  - first:
+      213: -570626509189868651
+    second: Appliance_bath_84
+  - first:
+      213: -6562297504160094114
+    second: Appliance_bath_85
+  - first:
+      213: -8929733479334126890
+    second: Appliance_bath_86
+  - first:
+      213: -5881638539818527817
+    second: Appliance_bath_87
+  - first:
+      213: 4767978571067315775
+    second: Appliance_bath_88
+  - first:
+      213: -6156876333747734998
+    second: Appliance_bath_89
+  - first:
+      213: 4554553551907134830
+    second: Appliance_bath_90
+  - first:
+      213: 1947531702385458874
+    second: Appliance_bath_91
+  - first:
+      213: 6747625871149686778
+    second: Appliance_bath_92
+  - first:
+      213: -1177313354246441969
+    second: Appliance_bath_93
+  - first:
+      213: 2436485169034118560
+    second: Appliance_bath_94
+  - first:
+      213: 4606827667931642613
+    second: Appliance_bath_95
+  - first:
+      213: 5654784292704285759
+    second: Appliance_bath_96
+  - first:
+      213: -7158757911167102147
+    second: Appliance_bath_97
+  - first:
+      213: 5466553216529958512
+    second: Appliance_bath_98
+  - first:
+      213: -5119042763221371712
+    second: Appliance_bath_99
+  - first:
+      213: -3317302212363878636
+    second: Appliance_bath_100
+  - first:
+      213: -62643838734679175
+    second: Appliance_bath_101
+  - first:
+      213: 760440229994479349
+    second: Appliance_bath_102
+  - first:
+      213: -6498244511045114554
+    second: Appliance_bath_103
+  - first:
+      213: -8608232271973350054
+    second: Appliance_bath_104
+  - first:
+      213: 83246146421692900
+    second: Appliance_bath_105
+  - first:
+      213: 8905371694119845949
+    second: Appliance_bath_106
+  - first:
+      213: -2160546174212060965
+    second: Appliance_bath_107
+  - first:
+      213: 5726999505424749095
+    second: Appliance_bath_108
+  - first:
+      213: 2998967393809301603
+    second: Appliance_bath_109
+  - first:
+      213: -2503332276714449919
+    second: Appliance_bath_110
+  - first:
+      213: -2783282839455918274
+    second: Appliance_bath_111
+  - first:
+      213: -7160083466462764578
+    second: Appliance_bath_112
+  - first:
+      213: 7161921219545026031
+    second: Appliance_bath_113
+  - first:
+      213: 2405269492358436969
+    second: Appliance_bath_114
+  - first:
+      213: 8885159569781741598
+    second: Appliance_bath_115
+  - first:
+      213: -265489197258029898
+    second: Appliance_bath_116
+  - first:
+      213: 5923698642621699891
+    second: Appliance_bath_117
+  - first:
+      213: -8996260100215809066
+    second: Appliance_bath_118
+  - first:
+      213: -7514683507332869169
+    second: Appliance_bath_119
+  - first:
+      213: 4777109472269474343
+    second: Appliance_bath_120
+  - first:
+      213: -6468971704491351583
+    second: Appliance_bath_121
+  - first:
+      213: -809501634049110570
+    second: Appliance_bath_122
+  - first:
+      213: 8431914162222695830
+    second: Appliance_bath_123
+  - first:
+      213: 9216501583253046453
+    second: Appliance_bath_124
+  - first:
+      213: -429969729350240982
+    second: Appliance_bath_125
+  - first:
+      213: -1638125391452340069
+    second: Appliance_bath_126
+  - first:
+      213: -1166335511467909762
+    second: Appliance_bath_127
+  - first:
+      213: -2386419006053302755
+    second: Appliance_bath_128
+  - first:
+      213: 3270411026157820172
+    second: Appliance_bath_129
+  - first:
+      213: -6014192117878452431
+    second: Appliance_bath_130
+  - first:
+      213: -7462693934590697737
+    second: Appliance_bath_131
+  - first:
+      213: -2129895025548546495
+    second: Appliance_bath_132
+  - first:
+      213: -8257880324623971023
+    second: Appliance_bath_133
+  - first:
+      213: -6058688488957408715
+    second: Appliance_bath_134
+  - first:
+      213: 2773476656951345195
+    second: Appliance_bath_135
+  - first:
+      213: -9138441189049754924
+    second: Appliance_bath_136
+  - first:
+      213: -1949969936101737213
+    second: Appliance_bath_137
+  - first:
+      213: 3879232896197481023
+    second: Appliance_bath_138
+  - first:
+      213: 3231867627567551197
+    second: Appliance_bath_139
+  - first:
+      213: 2088153973689014025
+    second: Appliance_bath_140
+  - first:
+      213: 5147311774662801515
+    second: Appliance_bath_141
+  - first:
+      213: -5067284276058113102
+    second: Appliance_bath_142
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 4096
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Appliance_bath_s0_d0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 732
+        width: 64
+        height: 61
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3442623}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5008b423b14348a429d5feac0888a5ed
+      internalID: 2061066752
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_bath_s0_d1
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 732
+        width: 64
+        height: 61
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3442623}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ce9c41ed9f572a4409011f6e1da5ebe1
+      internalID: 1251519820
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_bath_s0_d2
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 732
+        width: 64
+        height: 61
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3442623}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 319781f48ef138046a2b650d619c7a2a
+      internalID: -630357465
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_bath_s0_d3
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 732
+        width: 64
+        height: 61
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3442623}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 03463d3fa44dc344ba9762e6effa9c55
+      internalID: 398388219
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_bath_s0_d4
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 732
+        width: 64
+        height: 61
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3442623}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c4971d99e723edc4f8d78b4c05daa279
+      internalID: 886363105
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_bath_s0_d5
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 732
+        width: 64
+        height: 61
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3442623}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7dcfea8e982dafb419843f15b85bc6ed
+      internalID: -766920476
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_bath_s0_d6
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 732
+        width: 64
+        height: 61
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3442623}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 82015017fb41a45409c46d29e2515aaf
+      internalID: 255045425
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_bath_s0_d7
+      rect:
+        serializedVersion: 2
+        x: 448
+        y: 732
+        width: 64
+        height: 61
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3442623}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 28b8f25d71a425640873ee7ec01d41c1
+      internalID: -568801383
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_bath_s1_d0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 671
+        width: 64
+        height: 61
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3442623}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5ec23f035e0c1544eabfd7c75ffa0f3d
+      internalID: -2134073497
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_bath_s1_d1
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 671
+        width: 64
+        height: 61
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3442623}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d7bbc399788bfbe449f1a9cca27e8f1d
+      internalID: 1388009984
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_bath_s1_d2
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 671
+        width: 64
+        height: 61
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3442623}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 787d3c66f82d0d14aaf2173e00a3cd71
+      internalID: -92938858
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_bath_s1_d3
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 671
+        width: 64
+        height: 61
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3442623}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3cea5da15eb754a4ab9408ee20ae54a6
+      internalID: 1001375906
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_bath_s1_d4
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 671
+        width: 64
+        height: 61
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3442623}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f9a4132198ba29149bf1da5d8d9060bd
+      internalID: -1111497289
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_bath_s1_d5
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 671
+        width: 64
+        height: 61
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3442623}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8bbe7b77d5395b64c82441d71976ed58
+      internalID: 1655671032
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_bath_s1_d6
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 671
+        width: 64
+        height: 61
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3442623}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 804dddf3d667d764295d3e8b9ae5db35
+      internalID: 729021982
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_bath_s1_d7
+      rect:
+        serializedVersion: 2
+        x: 448
+        y: 671
+        width: 64
+        height: 61
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3442623}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 962484de1b8f8e04b9a744e8f49f15c7
+      internalID: 1813542796
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_bath_s2_d0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 610
+        width: 64
+        height: 61
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3442623}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2f4abd56347d03842bf6a716606d396e
+      internalID: -1435346403
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_bath_s2_d1
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 610
+        width: 64
+        height: 61
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3442623}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 006c5e20ea9845641ad6b0af1c8d7d53
+      internalID: 1062904138
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_bath_s2_d2
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 610
+        width: 64
+        height: 61
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3442623}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b57630cdcae400f41b4143fefb614e1e
+      internalID: 2079445841
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_bath_s2_d3
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 610
+        width: 64
+        height: 61
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3442623}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 54f1bd2adc85fb841a94a8bf91b7c0c8
+      internalID: 1673884736
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_bath_s2_d4
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 610
+        width: 64
+        height: 61
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3442623}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c5aba79d16a80dd46a124eab69899339
+      internalID: 884512789
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_bath_s2_d5
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 610
+        width: 64
+        height: 61
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3442623}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3d6f891f21fb7c74c9b656d8999fe4bb
+      internalID: 1096446400
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_bath_s2_d6
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 610
+        width: 64
+        height: 61
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3442623}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 33033788fd9534e4d8c67c5cb6cc3cce
+      internalID: 952642442
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_bath_s2_d7
+      rect:
+        serializedVersion: 2
+        x: 448
+        y: 610
+        width: 64
+        height: 61
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3442623}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cb1de98acc82fc74caad606cfd5d788b
+      internalID: 1574993699
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_bath_s3_d0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 549
+        width: 64
+        height: 61
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3442623}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 20e08567b9ca4ff40a3ecca99647c9b7
+      internalID: -1992357344
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_bath_s3_d1
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 549
+        width: 64
+        height: 61
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3442623}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 02c5fb08d3db6114e844fe42d8d4b993
+      internalID: -149559418
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_bath_s3_d2
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 549
+        width: 64
+        height: 61
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3442623}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f74be202334907b41b9f427e5d43b242
+      internalID: 1224015848
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_bath_s3_d3
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 549
+        width: 64
+        height: 61
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3442623}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 42bc641ce3caf35419b8af2a9d885cfb
+      internalID: -965835378
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_bath_s3_d4
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 549
+        width: 64
+        height: 61
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3442623}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fb612ca8fa9b4f7478ae6da3f5c2a830
+      internalID: -833751120
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_bath_s3_d5
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 549
+        width: 64
+        height: 61
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3442623}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ebc3c27fd6708f845863452a9636a707
+      internalID: 875546795
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_bath_s3_d6
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 549
+        width: 64
+        height: 61
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3442623}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 519c804e5e8c3e442a40062815a6cf64
+      internalID: -399139105
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_bath_s3_d7
+      rect:
+        serializedVersion: 2
+        x: 448
+        y: 549
+        width: 64
+        height: 61
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3442623}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a3f85883c84ef13458295786b7dbc87f
+      internalID: 588359804
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_bath_s4_d0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 488
+        width: 64
+        height: 61
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3442623}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b27577f644b2c864abe2c54f7ee362e1
+      internalID: -1813712714
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_bath_s4_d1
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 488
+        width: 64
+        height: 61
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3442623}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6a34db1a084ff57498abda86e9f63871
+      internalID: -252649971
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_bath_s4_d2
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 488
+        width: 64
+        height: 61
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3442623}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0a19ac8b973693b43b385dd4c35473d0
+      internalID: 728574978
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_bath_s4_d3
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 488
+        width: 64
+        height: 61
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3442623}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2c4da811180e5dd4988c402cf46687bc
+      internalID: 1774100433
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_bath_s4_d4
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 488
+        width: 64
+        height: 61
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3442623}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: afb01178e43aeec4186b3a4cd8693428
+      internalID: 1429487332
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_bath_s4_d5
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 488
+        width: 64
+        height: 61
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3442623}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c23d9ce8172dd374bb9603a1d2140f51
+      internalID: 739977095
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_bath_s4_d6
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 488
+        width: 64
+        height: 61
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3442623}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b6364fcb576f79b4382abd035b868217
+      internalID: 1677385512
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_bath_s4_d7
+      rect:
+        serializedVersion: 2
+        x: 448
+        y: 488
+        width: 64
+        height: 61
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3442623}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e26e5c702d2a60c42b60d6815d79d903
+      internalID: -1568403045
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_bath_s5_d0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 427
+        width: 64
+        height: 61
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3442623}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f856cc8d2636ecb4b8363487adacc274
+      internalID: -1957896908
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_bath_s5_d1
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 427
+        width: 64
+        height: 61
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3442623}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f1cb59dfecb101041b0a3a09e6f07822
+      internalID: -1280063994
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_bath_s5_d2
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 427
+        width: 64
+        height: 61
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3442623}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a9bcfc986885d8346ac61562844e55d5
+      internalID: -349928142
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_bath_s5_d3
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 427
+        width: 64
+        height: 61
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3442623}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1b4617552c0b092429655a94c4259e9a
+      internalID: 1245060065
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_bath_s5_d4
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 427
+        width: 64
+        height: 61
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3442623}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 846d360d85b6ac14da3c029f56d49b0d
+      internalID: 127855900
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_bath_s5_d5
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 427
+        width: 64
+        height: 61
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3442623}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0575be85b3cb25f4198fbda0f705b75c
+      internalID: 1359508825
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_bath_s5_d6
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 427
+        width: 64
+        height: 61
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3442623}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: dccca896cc76e6b47b43c9da816e05d3
+      internalID: -267248442
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_bath_s5_d7
+      rect:
+        serializedVersion: 2
+        x: 448
+        y: 427
+        width: 64
+        height: 61
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3442623}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0c27f4880f951a243ad737e7a83595f9
+      internalID: 176715709
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_bath_s6_d0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 366
+        width: 64
+        height: 61
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3442623}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a6128020de6093d49bcc251259312039
+      internalID: 131949223
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_bath_s6_d1
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 366
+        width: 64
+        height: 61
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3442623}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7ab7359ecb177bb4b8db61e535b441a4
+      internalID: -98783997
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_bath_s6_d2
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 366
+        width: 64
+        height: 61
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3442623}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cf6f65fa3882b2f43804581c8375d68d
+      internalID: 1240803640
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_bath_s6_d3
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 366
+        width: 64
+        height: 61
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3442623}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c721115cac4099c49834615671a42275
+      internalID: -1570810356
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_bath_s6_d4
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 366
+        width: 64
+        height: 61
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3442623}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cd57402c789dfd14e8ead0ef7b052409
+      internalID: -1434823910
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_bath_s6_d5
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 366
+        width: 64
+        height: 61
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3442623}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 930bf6a3166ea2e46b17c836b3d34a1c
+      internalID: -712757343
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_bath_s6_d6
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 366
+        width: 64
+        height: 61
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3442623}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c067f5bd026683e41a954dafc1e12e6d
+      internalID: 1958364117
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_bath_s6_d7
+      rect:
+        serializedVersion: 2
+        x: 448
+        y: 366
+        width: 64
+        height: 61
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3442623}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ee51816a7ea3386498f6fbe8fd21ee48
+      internalID: -4122501
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_bath_s7_d0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 305
+        width: 64
+        height: 61
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3442623}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5ef1bf1b14963d7449398dd4a35c54dc
+      internalID: -193883426
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_bath_s7_d1
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 305
+        width: 64
+        height: 61
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3442623}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 18d3f8ed1c2fe4d4fad3d4c7dd18f125
+      internalID: -2092126454
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_bath_s7_d2
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 305
+        width: 64
+        height: 61
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3442623}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 80be56b3b3165634881b4d2aa609b8f7
+      internalID: 6715609
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_bath_s7_d3
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 305
+        width: 64
+        height: 61
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3442623}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f5a8503aac6541744a1278d16a965a1b
+      internalID: -394877877
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_bath_s7_d4
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 305
+        width: 64
+        height: 61
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3442623}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ecee5c14be506774cb48f9da097918f6
+      internalID: -1384244463
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_bath_s7_d5
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 305
+        width: 64
+        height: 61
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3442623}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 755459be25030ed47b9145d8a7ae9d27
+      internalID: -1845934768
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_bath_s7_d6
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 305
+        width: 64
+        height: 61
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3442623}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1185bface1e79aa4f9ce5a91e2c7bd4b
+      internalID: 1649410358
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_bath_s7_d7
+      rect:
+        serializedVersion: 2
+        x: 448
+        y: 305
+        width: 64
+        height: 61
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3442623}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 88a408f72f910074a83448cd65ff03c8
+      internalID: -165394514
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_bath_s8_d0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 244
+        width: 64
+        height: 61
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3442623}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9776042e07087bb4ebd3ae1e2d65025e
+      internalID: -2105264783
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_bath_s8_d1
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 244
+        width: 64
+        height: 61
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3442623}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ead6fb449a4ce3b47b42fa88cfbb6834
+      internalID: -1855221624
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_bath_s8_d2
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 244
+        width: 64
+        height: 61
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3442623}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e75a154244efd6d49840c3995815b1a3
+      internalID: 1653831826
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_bath_s8_d3
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 244
+        width: 64
+        height: 61
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3442623}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 186bfb2603f7cd84da5699be9b96113d
+      internalID: 1589647133
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_bath_s8_d4
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 244
+        width: 64
+        height: 61
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3442623}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 44a38277cb3e2a94abcd57c36ff9fb58
+      internalID: 571511708
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_bath_s8_d5
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 244
+        width: 64
+        height: 61
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3442623}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3fc577343d48cb2459829db2df7c4fb6
+      internalID: -187930544
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_bath_s8_d6
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 244
+        width: 64
+        height: 61
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3442623}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d1d12ab16b54b1a43b8a2c006a666753
+      internalID: 852030166
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_bath_s8_d7
+      rect:
+        serializedVersion: 2
+        x: 448
+        y: 244
+        width: 64
+        height: 61
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3442623}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 11d3d69cec919f441927e5d15754c726
+      internalID: 754183259
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_bath_s9_d0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 183
+        width: 64
+        height: 61
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3442623}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b8366fb1f88f5bf4b85252d589b50e20
+      internalID: 1282964759
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_bath_s9_d1
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 183
+        width: 64
+        height: 61
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3442623}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e0bd8e4fbae0b5e42a1d4ca8a1ece6ca
+      internalID: 664919557
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_bath_s9_d2
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 183
+        width: 64
+        height: 61
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3442623}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bac8cc85656cf8541ab2d30d8edba8ad
+      internalID: -519313700
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_bath_s9_d3
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 183
+        width: 64
+        height: 61
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3442623}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 479a7d7f9e7af384d9d2e73aa9d4afb7
+      internalID: -1112595266
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_bath_s9_d4
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 183
+        width: 64
+        height: 61
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3442623}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4fc38ad7e376eca44bf68ff3c8d9037d
+      internalID: 330070114
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_bath_s9_d5
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 183
+        width: 64
+        height: 61
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3442623}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6b5f0e357758e694b98e2acac6057368
+      internalID: -22036294
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_bath_s9_d6
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 183
+        width: 64
+        height: 61
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3442623}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6178f672f5dbcc54fa3e500d7e3a7423
+      internalID: -1806200547
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_bath_s9_d7
+      rect:
+        serializedVersion: 2
+        x: 448
+        y: 183
+        width: 64
+        height: 61
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3442623}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 14f29eef26d8e4240b2a52e59cf7b737
+      internalID: -1922670082
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_bath_s10_d0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 122
+        width: 64
+        height: 61
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3442623}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 551d68f2cf4b9f446943bb02382bad1c
+      internalID: 522837712
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_bath_s10_d1
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 122
+        width: 64
+        height: 61
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3442623}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1bdf0d7edecce664bae02b6b376b9e80
+      internalID: -289407156
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_bath_s10_d2
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 122
+        width: 64
+        height: 61
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3442623}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 72056eb9dc6d8264ba702e33f15a5be6
+      internalID: -664145138
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_bath_s10_d3
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 122
+        width: 64
+        height: 61
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3442623}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2cc0da1510a24294b800064bafa83f67
+      internalID: -249920770
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_bath_s10_d4
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 122
+        width: 64
+        height: 61
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3442623}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d9cc9e0e9f0ac784eaa4860e35f22f5c
+      internalID: -1663983355
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_bath_s10_d5
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 122
+        width: 64
+        height: 61
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3442623}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c42049eb619f5fb4896e9ff324336a65
+      internalID: -526230448
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_bath_s10_d6
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 122
+        width: 64
+        height: 61
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3442623}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c133dbd2c3ddd4a4292904407450cecd
+      internalID: -188725283
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_bath_s10_d7
+      rect:
+        serializedVersion: 2
+        x: 448
+        y: 122
+        width: 64
+        height: 61
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3442623}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d722c1393b7e25a40a8bfb306bde0b97
+      internalID: -393356948
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_bath_s11_d0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 61
+        width: 64
+        height: 61
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3442623}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 09d623ed0962a304b87e5a41b82daca9
+      internalID: -507486524
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_bath_s11_d1
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 61
+        width: 64
+        height: 61
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3442623}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 716ec546985e06f45b831f902cd4f0ed
+      internalID: -1525204351
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_bath_s11_d2
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 61
+        width: 64
+        height: 61
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3442623}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1e27bea28090b1a43a20f32a097a836c
+      internalID: 1814665738
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_bath_s11_d3
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 61
+        width: 64
+        height: 61
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3442623}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fce22efbcc65c1a4ea4f67a80ce7fac8
+      internalID: 1549615241
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_bath_s11_d4
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 61
+        width: 64
+        height: 61
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3442623}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4acbf97ebb52b4247a61451d517f04db
+      internalID: 1062640161
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_bath_s11_d5
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 61
+        width: 64
+        height: 61
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3442623}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9c42c0053506f424a925519fb91d6c88
+      internalID: -306508737
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_bath_s11_d6
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 61
+        width: 64
+        height: 61
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3442623}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: add9581a61f63be4890918b64a6a8ac9
+      internalID: -385095144
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_bath_s11_d7
+      rect:
+        serializedVersion: 2
+        x: 448
+        y: 61
+        width: 64
+        height: 61
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3442623}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c1fda868d58dcb24e951df8c6a3edeb4
+      internalID: -415353311
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_bath_s12_d0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 64
+        height: 61
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3442623}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 708be4bc23b243947997d55fe2e63ac6
+      internalID: -1410070028
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_bath_s12_d1
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 0
+        width: 64
+        height: 61
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3442623}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8d543793d1494684c84d9746442c9a89
+      internalID: -817354739
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_bath_s12_d2
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 0
+        width: 64
+        height: 61
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3442623}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 25020ed5c6801f34bbd270061665d623
+      internalID: 763040336
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_bath_s12_d3
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 0
+        width: 64
+        height: 61
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3442623}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 79f18e8d9a9d53b4aa3750881e5a0fc2
+      internalID: 1471530385
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_bath_s12_d4
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 0
+        width: 64
+        height: 61
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3442623}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1eafc07ecb1bb32418cbd7e76f5f3d46
+      internalID: 574501530
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_bath_s12_d5
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 0
+        width: 64
+        height: 61
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3442623}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 17dc948d69b3f5a478af969e232a9a47
+      internalID: 1828422842
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_bath_s12_d6
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 0
+        width: 64
+        height: 61
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3442623}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1be7c142a626c5e4999487304b803916
+      internalID: 974803262
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_bath_s12_d7
+      rect:
+        serializedVersion: 2
+        x: 448
+        y: 0
+        width: 64
+        height: 61
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3442623}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2eede9473fd1b7141bff36cf5b63e226
+      internalID: -1399616703
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 76b897fe6c297ec45841e640031b817e
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Appliance_bath_s0_d0: 2061066752
+      Appliance_bath_s0_d1: 1251519820
+      Appliance_bath_s0_d2: -630357465
+      Appliance_bath_s0_d3: 398388219
+      Appliance_bath_s0_d4: 886363105
+      Appliance_bath_s0_d5: -766920476
+      Appliance_bath_s0_d6: 255045425
+      Appliance_bath_s0_d7: -568801383
+      Appliance_bath_s10_d0: 522837712
+      Appliance_bath_s10_d1: -289407156
+      Appliance_bath_s10_d2: -664145138
+      Appliance_bath_s10_d3: -249920770
+      Appliance_bath_s10_d4: -1663983355
+      Appliance_bath_s10_d5: -526230448
+      Appliance_bath_s10_d6: -188725283
+      Appliance_bath_s10_d7: -393356948
+      Appliance_bath_s11_d0: -507486524
+      Appliance_bath_s11_d1: -1525204351
+      Appliance_bath_s11_d2: 1814665738
+      Appliance_bath_s11_d3: 1549615241
+      Appliance_bath_s11_d4: 1062640161
+      Appliance_bath_s11_d5: -306508737
+      Appliance_bath_s11_d6: -385095144
+      Appliance_bath_s11_d7: -415353311
+      Appliance_bath_s12_d0: -1410070028
+      Appliance_bath_s12_d1: -817354739
+      Appliance_bath_s12_d2: 763040336
+      Appliance_bath_s12_d3: 1471530385
+      Appliance_bath_s12_d4: 574501530
+      Appliance_bath_s12_d5: 1828422842
+      Appliance_bath_s12_d6: 974803262
+      Appliance_bath_s12_d7: -1399616703
+      Appliance_bath_s1_d0: -2134073497
+      Appliance_bath_s1_d1: 1388009984
+      Appliance_bath_s1_d2: -92938858
+      Appliance_bath_s1_d3: 1001375906
+      Appliance_bath_s1_d4: -1111497289
+      Appliance_bath_s1_d5: 1655671032
+      Appliance_bath_s1_d6: 729021982
+      Appliance_bath_s1_d7: 1813542796
+      Appliance_bath_s2_d0: -1435346403
+      Appliance_bath_s2_d1: 1062904138
+      Appliance_bath_s2_d2: 2079445841
+      Appliance_bath_s2_d3: 1673884736
+      Appliance_bath_s2_d4: 884512789
+      Appliance_bath_s2_d5: 1096446400
+      Appliance_bath_s2_d6: 952642442
+      Appliance_bath_s2_d7: 1574993699
+      Appliance_bath_s3_d0: -1992357344
+      Appliance_bath_s3_d1: -149559418
+      Appliance_bath_s3_d2: 1224015848
+      Appliance_bath_s3_d3: -965835378
+      Appliance_bath_s3_d4: -833751120
+      Appliance_bath_s3_d5: 875546795
+      Appliance_bath_s3_d6: -399139105
+      Appliance_bath_s3_d7: 588359804
+      Appliance_bath_s4_d0: -1813712714
+      Appliance_bath_s4_d1: -252649971
+      Appliance_bath_s4_d2: 728574978
+      Appliance_bath_s4_d3: 1774100433
+      Appliance_bath_s4_d4: 1429487332
+      Appliance_bath_s4_d5: 739977095
+      Appliance_bath_s4_d6: 1677385512
+      Appliance_bath_s4_d7: -1568403045
+      Appliance_bath_s5_d0: -1957896908
+      Appliance_bath_s5_d1: -1280063994
+      Appliance_bath_s5_d2: -349928142
+      Appliance_bath_s5_d3: 1245060065
+      Appliance_bath_s5_d4: 127855900
+      Appliance_bath_s5_d5: 1359508825
+      Appliance_bath_s5_d6: -267248442
+      Appliance_bath_s5_d7: 176715709
+      Appliance_bath_s6_d0: 131949223
+      Appliance_bath_s6_d1: -98783997
+      Appliance_bath_s6_d2: 1240803640
+      Appliance_bath_s6_d3: -1570810356
+      Appliance_bath_s6_d4: -1434823910
+      Appliance_bath_s6_d5: -712757343
+      Appliance_bath_s6_d6: 1958364117
+      Appliance_bath_s6_d7: -4122501
+      Appliance_bath_s7_d0: -193883426
+      Appliance_bath_s7_d1: -2092126454
+      Appliance_bath_s7_d2: 6715609
+      Appliance_bath_s7_d3: -394877877
+      Appliance_bath_s7_d4: -1384244463
+      Appliance_bath_s7_d5: -1845934768
+      Appliance_bath_s7_d6: 1649410358
+      Appliance_bath_s7_d7: -165394514
+      Appliance_bath_s8_d0: -2105264783
+      Appliance_bath_s8_d1: -1855221624
+      Appliance_bath_s8_d2: 1653831826
+      Appliance_bath_s8_d3: 1589647133
+      Appliance_bath_s8_d4: 571511708
+      Appliance_bath_s8_d5: -187930544
+      Appliance_bath_s8_d6: 852030166
+      Appliance_bath_s8_d7: 754183259
+      Appliance_bath_s9_d0: 1282964759
+      Appliance_bath_s9_d1: 664919557
+      Appliance_bath_s9_d2: -519313700
+      Appliance_bath_s9_d3: -1112595266
+      Appliance_bath_s9_d4: 330070114
+      Appliance_bath_s9_d5: -22036294
+      Appliance_bath_s9_d6: -1806200547
+      Appliance_bath_s9_d7: -1922670082
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

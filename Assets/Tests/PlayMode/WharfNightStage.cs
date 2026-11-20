@@ -96,7 +96,7 @@ namespace HiddenHarbours.Tests.PlayMode
         public IEnumerator Load()
         {
             LogAssert.ignoreFailingMessages = true;
-            yield return SceneManager.LoadSceneAsync(_sceneName, LoadSceneMode.Single);
+            yield return HiddenHarbours.Tests.Support.SceneSettle.Load(_sceneName, LoadSceneMode.Single);
             for (int i = 0; i < 6; i++) yield return null;
         }
 
@@ -257,7 +257,7 @@ namespace HiddenHarbours.Tests.PlayMode
 
             if (Camera != null) Camera.targetTexture = null;
             if (_rt != null) { _rt.Release(); Object.DestroyImmediate(_rt); _rt = null; }
-            foreach (Object o in _spawned) if (o != null) Object.Destroy(o);
+            yield return HiddenHarbours.Tests.Support.SceneSettle.DestroyAndSettle(_spawned.ToArray());
             _spawned.Clear();
 
             // ⚠️ LOOK THE CLEANUP SCENE UP BEFORE CREATING IT. CreateScene THROWS on a name that already
@@ -272,7 +272,7 @@ namespace HiddenHarbours.Tests.PlayMode
             {
                 Scene s = SceneManager.GetSceneAt(i);
                 if (s.IsValid() && s != clean && s.name == _sceneName)
-                    yield return SceneManager.UnloadSceneAsync(s);
+                    yield return HiddenHarbours.Tests.Support.SceneSettle.Unload(s);
             }
         }
 

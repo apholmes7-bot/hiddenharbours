@@ -37,6 +37,21 @@ namespace HiddenHarbours.Player
     /// </summary>
     public static class PlayerFishingAnimMath
     {
+        public const string DigStateKey = "dig";
+
+        /// <summary>The existing sprite pose's baked skin clip. No independent phase mapping.</summary>
+        public static string StateKeyFor(FishingPose pose) => pose switch
+        {
+            FishingPose.Hold => "hold",
+            FishingPose.CastBack => "castBack",
+            FishingPose.CastRelease => "castRelease",
+            FishingPose.Bite => "bite",
+            FishingPose.Strike => "strike",
+            FishingPose.Reel => "reel",
+            FishingPose.Land => "land",
+            _ => null,
+        };
+
         /// <summary>
         /// The pose for a published phase: <see cref="FishingPhase.WindBack"/> scrubs the castBack
         /// sheet, <see cref="FishingPhase.Cast"/> plays the release once,
@@ -167,7 +182,7 @@ namespace HiddenHarbours.Player
     /// </summary>
     [DisallowMultipleComponent]
     [RequireComponent(typeof(SpriteRenderer))]
-    public sealed class PlayerFishingAnimator : MonoBehaviour
+    public sealed partial class PlayerFishingAnimator : MonoBehaviour
     {
         /// <summary>The bake's direction-row count — the character iso kit contract (8 compass rows).</summary>
         public const int Directions = 8;
@@ -242,7 +257,8 @@ namespace HiddenHarbours.Player
 
         // Movement read for the HOLD yield (transform delta — works for the rb-driven walk AND the
         // transform-driven deck walk alike). Tracked only while a rod phase is live (rule 7).
-        private Vector3 _lastPos;
+        private Vector3 _lastPos;         // in the parent's frame (the boat aboard, the world ashore)
+        private Transform _lastParent;
         private float _speed;
 
         // One-shot diagnostics: the old failure mode here was SILENT by design (null-safe greybox), and
@@ -270,12 +286,15 @@ namespace HiddenHarbours.Player
             _row = Directions / 2;   // South — facing the camera until the state says otherwise
             EventBus.Subscribe<FishingStateChanged>(OnFishingStateChanged);
             EventBus.Subscribe<InnerVoiceCue>(OnInnerVoiceCue);
+            EventBus.Subscribe<JuiceMomentCue>(OnDigStrike);
         }
 
         private void OnDisable()
         {
             EventBus.Unsubscribe<FishingStateChanged>(OnFishingStateChanged);
             EventBus.Unsubscribe<InnerVoiceCue>(OnInnerVoiceCue);
+            EventBus.Unsubscribe<JuiceMomentCue>(OnDigStrike);
+            _digElapsed = -1f;
             _bigOneHooked = false;
             EndPose();   // disabling mid-fight hands the renderer back (never a stuck frame)
         }
@@ -319,7 +338,18 @@ namespace HiddenHarbours.Player
 
         private void Update()
         {
-            Vector3 pos = transform.position;
+            AdvanceDig(Time.unscaledDeltaTime);
+            // Measured in the PARENT's frame: aboard he is parented to the boat (ControlSwitcher), so a
+            // drifting or rocking dory carries him without "moving" him, and he keeps the hold pose with
+            // the line out. Only his own steps across the deck yield it. Ashore the parent is null and
+            // this is the world position, as before. A parent change (boarding) re-arms the read.
+            Vector3 pos = transform.localPosition;
+            Transform parent = transform.parent;
+            if (parent != _lastParent)
+            {
+                _lastParent = parent;
+                _lastPos = pos;
+            }
             if (_pose == FishingPose.None && !IsPosed(_phase))
             {
                 _lastPos = pos;   // keep the movement read warm so a fresh pose never sees a stale delta

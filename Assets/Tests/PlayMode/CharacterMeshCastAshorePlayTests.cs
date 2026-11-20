@@ -117,7 +117,7 @@ namespace HiddenHarbours.Tests.PlayMode
             {
                 Scene s = SceneManager.GetSceneAt(i);
                 if (s.IsValid() && s != clean && s.name == SceneName)
-                    yield return SceneManager.UnloadSceneAsync(s);
+                    yield return HiddenHarbours.Tests.Support.SceneSettle.Unload(s);
             }
 
             foreach (GameObject go in PersistentRoots())
@@ -345,7 +345,7 @@ namespace HiddenHarbours.Tests.PlayMode
         private IEnumerator LoadTheIsland()
         {
             LogAssert.ignoreFailingMessages = true;
-            yield return SceneManager.LoadSceneAsync(SceneName, LoadSceneMode.Single);
+            yield return HiddenHarbours.Tests.Support.SceneSettle.Load(SceneName, LoadSceneMode.Single);
             for (int i = 0; i < 4; i++) yield return null;
             LogAssert.ignoreFailingMessages = false;
         }

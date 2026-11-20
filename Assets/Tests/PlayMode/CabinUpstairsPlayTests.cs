@@ -117,8 +117,10 @@ namespace HiddenHarbours.Tests.PlayMode
             _origin = SceneManager.GetActiveScene();
             _scene = SceneManager.CreateScene(SceneName);
             SceneManager.SetActiveScene(_scene);
+            SleepFlow.Reset();   // no chooser: these rests are the instant night (a booted core may have left one)
 
             Interactables.Clear();
+
             _outcomes.Clear();
             _notices.Clear();
             EventBus.Clear<GameSaved>();
@@ -157,7 +159,7 @@ namespace HiddenHarbours.Tests.PlayMode
             EventBus.Clear<GameLoaded>();
 
             if (_origin.IsValid() && _origin.isLoaded) SceneManager.SetActiveScene(_origin);
-            if (_scene.IsValid() && _scene.isLoaded) yield return SceneManager.UnloadSceneAsync(_scene);
+            if (_scene.IsValid() && _scene.isLoaded) yield return HiddenHarbours.Tests.Support.SceneSettle.Unload(_scene);
 
             GameServices.Reset();
         }

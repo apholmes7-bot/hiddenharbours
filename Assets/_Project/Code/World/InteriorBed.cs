@@ -47,7 +47,7 @@ namespace HiddenHarbours.World
     /// claim about a seam two files away, and the cost of proving it here is one comparison.</para>
     /// </summary>
     [DisallowMultipleComponent]
-    public sealed class InteriorBed : MonoBehaviour, IInteractable
+    public sealed class InteriorBed : MonoBehaviour, IInteractable, IExclusiveInteractable
     {
         [Tooltip("Stable id — unique among live interactables. Ginny's and the player's need different " +
                  "ones (…bed_player / …bed_ginny).")]
@@ -102,6 +102,15 @@ namespace HiddenHarbours.World
 
         /// <inheritdoc/>
         public string Id => _id;
+
+        /// <summary>The player's own bed is somewhere to sleep, so a free one of his in reach stands in
+        /// for a taken one (owner ask 2026-11-15). Someone else's bed joins no group: pressing it only
+        /// ever says whose it is, and it must never stand in for a bed you can sleep in.</summary>
+        public string ExclusiveGroup => _isPlayerBed ? InteractExclusiveGroups.Rest : null;
+
+        /// <summary>Somebody is in it: the rest seam's claim on this bed's id, the bed id its rest request
+        /// carries.</summary>
+        public bool IsOccupied => RestQuorum.IsOccupied(_id);
 
         /// <inheritdoc/>
         public Vector2 WorldPosition => transform.position;
@@ -234,7 +243,7 @@ namespace HiddenHarbours.World
             }
 
             // The SAVE half, unchanged from #574/#580 — same signal, same fields, same order.
-            EventBus.Publish(new RestSaveRequested(_placeName, wakePosition, Level));
+            EventBus.Publish(new RestSaveRequested(_placeName, wakePosition, Level, _id));   // v20: names the bed
 
             // The PRESENTATION half, additive: where the MATTRESS is, which the save signal deliberately
             // does not carry (it carries the wake spot, which is the player's feet — the opposite
