@@ -325,6 +325,16 @@ namespace HiddenHarbours.Boats
                  "Felt as a gentle pull to windward the helmsman holds off, growing with the wind.")]
         [Min(0f)] public float SailWeatherHelm = 0f;
 
+        [Tooltip("Her masthead, in her own rig metres (+x starboard, +y toward the bow, +z up from the " +
+                 "keel), copied from her rig's gameplay sidecar (ANCHORS.masthead), never eyeballed. The " +
+                 "wind pennant flies from exactly this point, posed through the heading, roll and pitch " +
+                 "her picture is drawn at, so it stays on the mast top as she turns and heels.\n\n" +
+                 "z = 0 means not measured: a hull with no masthead flies no pennant.")]
+        public Vector3 MastheadRigMetres;
+
+        /// <summary>True when her masthead has been measured (a masthead at the keel is not one).</summary>
+        public bool HasMasthead => MastheadRigMetres.z > 0f;
+
         /// <summary>True when this hull is driven by her sails and has a table to sail to. A hull
         /// declared <see cref="PropulsionType.Sail"/> with no polar is NOT sailable — she falls back
         /// to her auxiliary rather than sitting still with no explanation.</summary>
