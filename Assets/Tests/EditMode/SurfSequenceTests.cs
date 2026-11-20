@@ -193,6 +193,16 @@ namespace HiddenHarbours.Tests.EditMode
                     Assert.That(Regex.Matches(yaml, @"(?m)^    - " + key + @": 0$").Count, Is.EqualTo(1), files[i] + ": " + key);
                     yaml = yaml.Replace("    - " + key + ": 0\n", "");
                 }
+                // Owner pick (f+e) of 11-20, the sea too dark in a blow: every sea material gains
+                // _SwellReadRelative 1 and Water_StormGrey's _PaletteValueFloor goes 0.07 -> 0.16.
+                // Exactly those two values are authorized; they are stripped back before the hash.
+                Assert.That(Regex.Matches(yaml, @"(?m)^    - _SwellReadRelative: 1$").Count, Is.EqualTo(1), files[i] + ": f+e relative read");
+                yaml = yaml.Replace("    - _SwellReadRelative: 1\n", "");
+                if (files[i].EndsWith("Water_StormGrey.mat", StringComparison.Ordinal))
+                {
+                    Assert.That(Regex.Matches(yaml, @"(?m)^    - _PaletteValueFloor: 0\.16$").Count, Is.EqualTo(1), files[i] + ": f+e floor");
+                    yaml = yaml.Replace("    - _PaletteValueFloor: 0.16\n", "    - _PaletteValueFloor: 0.07\n");
+                }
                 Assert.That(Hash(yaml.Replace("    - " + Dial + ": 0\n", "")), Is.EqualTo(originalHashes[i]),
                     files[i] + ": only the new zero key is authorized");
             }
