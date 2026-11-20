@@ -15,9 +15,10 @@ namespace HiddenHarbours.Tests.Economy
     /// and routing approved from <c>docs/economy/nmc-wholesalers-stock.md</c>). Reads the shipped catalog.
     ///
     /// <para><b>On the shelf, or on file.</b> Both counters and keepers stand in the creek, and the four offers
-    /// only a wholesaler sells (the three electronics and the rod rack) are listed at their vendors
-    /// (<c>StoreWiringTests</c> guard 4 holds a listed ware to a committed vendor). The rest also name another
-    /// seller and stay unlisted until that is settled; <c>docs/design/economy-item-sellers.md</c> §5.1 says why.</para>
+    /// wired to a wholesaler (the three existing electronics and the rod rack) are listed at their vendors
+    /// (<c>StoreWiringTests</c> guard 4 holds a listed ware to a committed vendor). The six new electronics
+    /// wait for dedicated vendors; the rest also name another seller and stay unlisted until that is settled;
+    /// <c>docs/design/economy-item-sellers.md</c> §5.1 says why.</para>
     ///
     /// <para>The ids are spelled here rather than read from the Boats module's constants: this assembly
     /// references Core and Economy only (rule 4), and an id is a stable contract either way.</para>
@@ -28,7 +29,7 @@ namespace HiddenHarbours.Tests.Economy
         const string FishingGear = "seller.nmc_fishing_gear_wholesaler";
         const string Loran = "instrument.loran";
 
-        /// <summary>Authored electronics: three existing prices and six unlisted price proposals.</summary>
+        /// <summary>Authored electronics: three existing prices and six approved, unlisted offers.</summary>
         static readonly Dictionary<string, int> BoatGearStock = new Dictionary<string, int>(StringComparer.Ordinal)
         {
             [Loran] = 900,

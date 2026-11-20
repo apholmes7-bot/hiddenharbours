@@ -1,7 +1,7 @@
-# Electronics offer proposals
+# Electronics offers awaiting counter wiring
 
 The six missing products use the existing `InstrumentOffer` item identity and
-`CatalogListing.Sellers` model. Prices below are proposals awaiting review.
+`CatalogListing.Sellers` model. The six prices below are approved.
 
 | Item | Price | Rule from existing prices |
 |---|---:|---|
@@ -19,6 +19,9 @@ seller's wares book, and `BuyCatalog` can pass an offer to an existing
 `InstrumentShop`, but `StoreWiringTests` requires each listed ware to have its own
 committed vendor. These six therefore remain dormant until the separate counter
 and fitting work is ready. No counter, dialogue, UI, scene or prefab changes here.
+Each is explicitly recorded in `NmcWholesalerKeepers.Waiting` until its dedicated
+counter vendor is committed; the accounting test requires waiting offers to stay
+unlisted, with no counter row and a reason for waiting.
 
 The depth sounder remains listed at the island store for 140. Existing electronics,
 both wholesalers and the boatyard retain their identities and prices. No stock
