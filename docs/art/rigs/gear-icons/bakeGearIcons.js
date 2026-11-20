@@ -38,7 +38,7 @@ const R = {
 };
 const MATS = {}; for (const k in R) MATS[k] = { ramp: R[k] };
 
-// ---- helpers ---------------------------------------------------------------------------------------
+// ---- shapes ----------------------------------------------------------------------------------------
 const U = 1 / 32;                                         // one icon pixel, in turntable metres
 const P = (p) => [p[0] * U, p[1] * U, p[2] * U];
 const xfOf = (rz) => K.chain((p) => [p[0], p[1], p[2]], K.rotZ(rz || 0));
