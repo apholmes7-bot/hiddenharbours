@@ -34,8 +34,12 @@ namespace HiddenHarbours.Player
         // The save blob this freezer last restored from: a scene enabled after GameLoaded binds on enable.
         private SaveData _boundTo;
 
-        [Tooltip("How many units the chest freezer holds. A tunable, not a magic number (rule 6).")]
+        [Tooltip("How many units the chest freezer holds when it has no Def. A tunable, not a magic number (rule 6).")]
         [SerializeField] private int _capacity = 20;
+
+        [Tooltip("The freezer's Def: its capacity and its look (the baked chest and how its fish lie). Empty: " +
+                 "the capacity above and the plain marker.")]
+        [SerializeField] private FreezerDef _def;
 
         [Tooltip("Interact key (shared with other proximity interactables — ranges don't overlap, the " +
                  "WorldInteractor precedent). ui-ux owns the real Interact mapping later (§7.6).")]
@@ -47,7 +51,10 @@ namespace HiddenHarbours.Player
         private readonly List<CatchItem> _items = new();
         private ClamBucket _bucket;
 
-        public int CapacityUnits => _capacity;
+        public int CapacityUnits => _def != null ? _def.CapacityUnits : _capacity;
+
+        /// <summary>The freezer's Def, or null (the capacity on the component and no baked art).</summary>
+        public FreezerDef Def => _def;
         public int UsedUnits => _items.Count;
         public IReadOnlyList<CatchItem> Items => _items;
 
@@ -55,7 +62,7 @@ namespace HiddenHarbours.Player
         public bool TryAdd(CatchItem item)
         {
             if (!CatchKeep.MayKeep(in item)) return false;   // protected: release-only, never held
-            if (_items.Count >= _capacity) return false;
+            if (_items.Count >= CapacityUnits) return false;
             if (!IsBound()) return false;   // the saved catch is not read yet: a write would bury it
             SpoilContext spoil = SpoilContext.Capture();
             _items.Add(item.WithFreshness(Freshness.WithMode(item.Freshness, spoil.NowGameSeconds,
@@ -94,8 +101,12 @@ namespace HiddenHarbours.Player
 
         // The picture of what is in it (fish art pass 2, 4a). The freezer already standing in a saved scene
         // predates it, so it is added here when the scene did not carry one; a rebuilt scene carries it.
+        // So is its baked chest (the freezer art): a freezer whose Def names a sheet dresses itself, the old
+        // greybox square giving way to the chest, without a scene rebuild.
         private void Awake()
         {
+            if (_def != null && !string.IsNullOrEmpty(_def.SheetStem) && !TryGetComponent(out ChestFreezerArt _))
+                gameObject.AddComponent<ChestFreezerArt>();
             if (!TryGetComponent(out FreezerContentsPresenter _)) gameObject.AddComponent<FreezerContentsPresenter>();
         }
 
@@ -196,7 +207,7 @@ namespace HiddenHarbours.Player
             for (int i = 0; i < keptBack.Count; i++) _bucket.TryAdd(keptBack[i]);
 
             EventBus.Publish(new DevNotice(stowed > 0
-                ? $"Ginny's freezer takes {stowed} — they'll keep. ({UsedUnits}/{_capacity} frozen.)"
+                ? $"Ginny's freezer takes {stowed} — they'll keep. ({UsedUnits}/{CapacityUnits} frozen.)"
                 : "The freezer is full."));
         }
 

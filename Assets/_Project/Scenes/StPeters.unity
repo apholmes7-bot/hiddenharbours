@@ -501,6 +501,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: HiddenHarbours.Player::HiddenHarbours.Player.GinnyFreezer
   _capacity: 20
+  _def: {fileID: 11400000, guid: 575eb3caefc740cb9035961fff3cddc9, type: 2}
   _interactKey: 20
   _reach:
     _player: {fileID: 0}
