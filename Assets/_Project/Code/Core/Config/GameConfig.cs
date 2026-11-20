@@ -1537,6 +1537,15 @@ namespace HiddenHarbours.Core
         [Tooltip("How pale that foam band is right at the waterline (0: none, 1: white).")]
         [Range(0f, 1f)] public float FigureWaterlineFoam = 0.5f;
 
+        [Tooltip("WADING, the height (m) of the pale foam band just above the waterline. He stands " +
+                 "upright, so the band is seen edge-on: the figure draws at its def's pixels per metre, " +
+                 "foreshortened by the view's elevation, and the swim band's few centimetres come to under " +
+                 "one pixel there, so the line at the surface vanished. Keep it at two pixels or more.")]
+        [Min(0f)] public float FigureWadeWaterlineFoamMetres = 0.1f;
+
+        [Tooltip("WADING, how pale that foam band is right at the waterline (0: none, 1: white).")]
+        [Range(0f, 1f)] public float FigureWadeWaterlineFoam = 0.8f;
+
         [Tooltip("ON: while the player swims or treads water his sun shadow is not drawn. The shadow is " +
                  "the hidden body sprite's, standing upright, and on open water it read as a ghost " +
                  "beside him. Wading keeps it.")]
