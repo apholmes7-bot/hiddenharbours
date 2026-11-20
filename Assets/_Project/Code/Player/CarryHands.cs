@@ -178,6 +178,26 @@ namespace HiddenHarbours.Player
             }
         }
 
+        /// <summary>
+        /// True while the tools he carries are stowed rather than drawn: he is swimming (or treading
+        /// water) and <see cref="GameConfig.SwimStowsCarriedTools"/> is on. Neither the carried sprite nor
+        /// the fight's rod mesh draws then; both come back the frame he finds his footing. Stated from the
+        /// walker's water state every read, never latched. Allocation-free.
+        /// </summary>
+        public bool ToolsStowed
+        {
+            get
+            {
+                Resolve();
+                return _walk != null && StowsTools(GameServices.Config, _walk.WaterState);
+            }
+        }
+
+        /// <summary>The stow rule on its own: only the swim band stows, and only with the switch on.
+        /// Dry ground and wading keep the tools in his hands.</summary>
+        public static bool StowsTools(GameConfig config, OnFootWaterState state)
+            => config != null && config.SwimStowsCarriedTools && state == OnFootWaterState.Swim;
+
         // ---- the Core relay ------------------------------------------------------------------------
 
         /// <summary>
@@ -623,7 +643,9 @@ namespace HiddenHarbours.Player
             if (!(carried is CarriableTool tool)) return;
             bool drawnByTheFight = _fight != null && _fight.DrawsRod
                 && string.Equals(tool.DefId, _fightRodToolId, System.StringComparison.Ordinal);
-            tool.SetDrawnElsewhere(drawnByTheFight);
+            // Stowed while he swims (ToolsStowed): out of the picture the same way, so nothing hangs
+            // above the water that is not really there.
+            tool.SetDrawnElsewhere(drawnByTheFight || ToolsStowed);
         }
 
         /// <summary>Whatever the fight was drawing in its place is drawn again: a disabled carrier states
