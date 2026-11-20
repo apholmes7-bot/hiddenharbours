@@ -43,6 +43,10 @@
   const L = 4.5, TH = 0.035, FLOOR = 0.06, SEAT = 0.30, OARLOCK_U = 0.258;
   const STERN_U = 0.13;                  // stern-bench station (motor build) -> y = -1.665 m, 0.58 m fwd of the transom
   const FWD_LOCK_U = 0.518;              // the forward rowing station's tholes, the same 0.369 m abaft its thwart
+  // each pair of tholes stands in an oak chock on the rail, 0.08 m proud of the cap: the loom works 8 cm higher, so
+  // his hands ride over his thighs at belly height through the recovery instead of in his lap (owner, 2026-11-20:
+  // "raise the pins first"). A pad on the gunwale, not an outrigger: the pins stay over the rail.
+  const THOLE_CHOCK = { rise: 0.08, halfY: 0.10, halfX: 0.026 };
   const THWARTS = [0.34, 0.60], BOW_THWART_U = 0.80;
   const HANDLINE_U = 0.47;               // the hand-line chock on the rail, between the rowing thwarts
   const BAILER = { x: 0.20, y: -1.05 };  // the bailer's place on the boards, abaft the after thwart
@@ -305,9 +309,13 @@
       face([A(-hx),A(hx),C(hx),C(-hx)],'wood',0.5,0.01,[0,0.6,0.8]); }
     // ---- thole pins: a pair a side at each rowing station, the oar's loom lying between them ----
     SEC='tholes';
-    for(const lu of [OARLOCK_U,FWD_LOCK_U]) for(const side of [-1,1]) for(const dy of [-0.05,0.05]){
-      const st=station(lu), z0=st.kz+st.dep+CAP_RISE;
-      box([side*(st.ws-TH*0.5),st.y+dy,z0+0.058],[0.015,0.015,0.058],'iron',0.5,0.02);
+    for(const lu of [OARLOCK_U,FWD_LOCK_U]) for(const side of [-1,1]){
+      const st=station(lu), zc=st.kz+st.dep+CAP_RISE;
+      box([side*(st.ws-TH*0.5),st.y,zc+THOLE_CHOCK.rise*0.5],[THOLE_CHOCK.halfX,THOLE_CHOCK.halfY,THOLE_CHOCK.rise*0.5],'wood',0.3,0.02);
+      for(const dy of [-0.05,0.05]){
+        const z0=zc+THOLE_CHOCK.rise;
+        box([side*(st.ws-TH*0.5),st.y+dy,z0+0.058],[0.015,0.015,0.058],'iron',0.5,0.02);
+      }
     }
     // ---- the hand-line chock: a chafing block on the starboard rail between the thwarts, where the line comes in ----
     SEC='chock';
@@ -476,20 +484,21 @@
   const v_sub=(a,b)=>[a[0]-b[0],a[1]-b[1],a[2]-b[2]], v_add=(a,b)=>[a[0]+b[0],a[1]+b[1],a[2]+b[2]];
   const v_mul=(a,s)=>[a[0]*s,a[1]*s,a[2]*s], v_norm=(a)=>{const m=Math.hypot(a[0],a[1],a[2])||1;return [a[0]/m,a[1]/m,a[2]/m];};
   const v_cross=(a,b)=>[a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]];
-  function oarlockPt(side){ const st=station(OARLOCK_U); return [ side*(st.ws-TH*0.15), st.y, st.kz+st.dep+0.04 ]; }
+  function oarlockPt(side){ const st=station(OARLOCK_U); return [ side*(st.ws-TH*0.15), st.y, st.kz+st.dep+0.04+THOLE_CHOCK.rise ]; }
   function oarDir(side, sweepDeg, dipDeg){ const f=sweepDeg*DEG, p=dipDeg*DEG; return [ side*Math.cos(f)*Math.cos(p), -Math.sin(f)*Math.cos(p), -Math.sin(p) ]; }
   function oarPose(state, t){
     // shipped fore in the tholes, the blade forward and the handle inboard on the stern sheets: with the tholes 0.369 m
     // abaft the thwart, -82/-7 put the handle 0.24 m out through the narrowing stern quarter (0.14 m from the old tholes)
     if(state==='resting')  return { sweep:-72, dip: 6 };
-    if(state==='trailing') return { sweep: 76, dip: 15 };  // dragging aft in the water
-    // row cycle: the blade traces an ellipse (dip+sweep). Dip 20+-6: the blade is buried to its throat at the bottom
-    // of the drive (26 deg) and skims 7 cm over the water on the recovery (14 deg). Sweep 1+-19: a short dory stroke, the
-    // catch at -18 and the finish at +20, so the hands stay near his body and come in to his ribs. The inboard loom is
-    // 0.65 m, 5 cm short of the tholes' half-beam (0.697), so the two handles never meet: they pass 13 cm apart at
-    // their closest and the hands work either side of his ribs, not one through the other (owner, 2026-11-20)
+    if(state==='trailing') return { sweep: 76, dip: 18 };  // dragging aft in the water (18 deg off the chocked tholes)
+    // row cycle: the blade traces an ellipse (dip+sweep). Dip 23.5+-6: off the chocked tholes the blade is still buried
+    // to its throat at the bottom of the drive (29.5 deg) and skims 6 cm over the water on the recovery (17.5 deg).
+    // Sweep 4.5+-15.5: a short dory stroke, the catch at -11 and the finish at +20, so his reach toward the stern stays
+    // short and the hands stay near his body and come in to his ribs. The inboard loom is 0.65 m, 5 cm short of the
+    // tholes' half-beam (0.697), so the two handles never meet: they pass 13 cm apart at their closest and the hands
+    // work either side of his ribs, not one through the other (owner, 2026-11-20)
     const tt=(((t||0)%1)+1)%1, a=2*Math.PI*tt;
-    return { sweep: 1 + 19*Math.sin(a), dip: 20 + 6*Math.cos(a) };
+    return { sweep: 4.5 + 15.5*Math.sin(a), dip: 23.5 + 6*Math.cos(a) };
   }
   function buildOar(side, pose){
     const O=oarlockPt(side), d=oarDir(side,pose.sweep,pose.dip);
@@ -667,7 +676,7 @@
     const ROW_AFT = seatOf('thwart_aft', THWARTS[0]), ROW_FWD = seatOf('thwart_fwd', THWARTS[1]), BOW_SEAT = seatOf('thwart_bow', BOW_THWART_U);
     const STAND = [PILOT.x, PILOT.y, station((PILOT.y + L / 2) / L).kz + FLOOR];
     const STAND_MOTOR = [PILOT_MOTOR.x, PILOT_MOTOR.y, station((PILOT_MOTOR.y + L / 2) / L).kz + FLOOR];
-    const thole = (lu, side) => { const st = station(lu); return [side * (st.ws - TH * 0.15), st.y, st.kz + st.dep + 0.04]; };
+    const thole = (lu, side) => { const st = station(lu); return [side * (st.ws - TH * 0.15), st.y, st.kz + st.dep + 0.04 + THOLE_CHOCK.rise]; };
     const railPt = (u, side) => [side * station(u).ws, station(u).y, sheerZ(u) + CAP_RISE];
     const stow = (side) => { const a = thole(OARLOCK_U, side), rp = oarPose('resting'), d = oarDir(side, rp.sweep, rp.dip); return { id: side < 0 ? 'port' : 'star', lock: xyz(a), blade: xyz(v_add(a, v_mul(d, O_LOUT))), handle: xyz(v_sub(a, v_mul(d, O_LIN))) }; };
     const spawn = { x: PILOT.x, y: PILOT.y, area: 'floor' };

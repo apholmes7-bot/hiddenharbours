@@ -16,9 +16,9 @@ namespace HiddenHarbours.Tests.EditMode
     /// </summary>
     public class DoryOarSplashTests
     {
-        // The dory's own facts: oarlock z 0.52808 m (DoryOarPortPropMesh.PivotLocalMeters) over a
+        // The dory's own facts: oarlock z 0.60808 m (DoryOarPortPropMesh.PivotLocalMeters) over a
         // 0.11 m resting draught (DoryIsoHullMesh.RestingDraftMeters).
-        private const float LockHeight = 0.52808f - 0.11f;
+        private const float LockHeight = 0.60808f - 0.11f;
         private const float Dt = 1f / 60f;
 
         private static OarSplashConfig Config => OarSplashConfig.Default;
@@ -231,8 +231,8 @@ namespace HiddenHarbours.Tests.EditMode
         public void TheSplash_IsLaidOutboardOfTheLock_OnTheOarsOwnSide()
         {
             OarSplashConfig cfg = Config;
-            var lockPort = new Vector3(-0.69731f, -1.089f, 0.52808f);
-            var lockStar = new Vector3(0.69731f, -1.089f, 0.52808f);
+            var lockPort = new Vector3(-0.69731f, -1.089f, 0.60808f);
+            var lockStar = new Vector3(0.69731f, -1.089f, 0.60808f);
             DoryOarMeshPose.Pose catchPose = DoryOarMeshPose.Row(0f);
 
             Vector3 port = DoryOarSplashMath.BladeOnWaterLocal(lockPort, DoryOarMeshLayer.PortSide, in catchPose,

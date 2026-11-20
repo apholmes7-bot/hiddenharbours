@@ -25,9 +25,9 @@ namespace HiddenHarbours.Tests.EditMode
         private const string ConfigPath = "Assets/_Project/Data/Config/GameConfig.asset";
         private const string SkipperVisualPath = "Assets/_Project/Data/Characters/SkipperIso.asset";
 
-        // The dory's own facts, as DoryOarSplashTests reads them: oarlock z 0.52808 m over a 0.11 m
+        // The dory's own facts, as DoryOarSplashTests reads them: oarlock z 0.60808 m over a 0.11 m
         // resting draught.
-        private const float LockHeight = 0.52808f - 0.11f;
+        private const float LockHeight = 0.60808f - 0.11f;
         private const float Dt = 1f / 60f;
         private const int Samples = 4000;
 
@@ -89,8 +89,8 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.AreEqual(1f, steady.LaybackScale, "steady leans back as far as the station says");
 
             RowingStationConfig station = RowingStationConfig.Default;
-            var portLock = new Vector3(-0.69731f, -1.089f, 0.52808f);
-            var starLock = new Vector3(0.69731f, -1.089f, 0.52808f);
+            var portLock = new Vector3(-0.69731f, -1.089f, 0.60808f);
+            var starLock = new Vector3(0.69731f, -1.089f, 0.60808f);
             for (int i = 0; i < Samples; i++)
             {
                 float raw = DoryOarMath.StrokeColumns * i / (float)Samples;

@@ -59,46 +59,134 @@ MonoBehaviour:
     Action: enter_helm
     ReachPoint: {x: 0.42, y: -1.86, z: 0.62}
     VisibleFacings: []
+    BunkLevel: 
+    BunkObstruction: 
+    MattressCentre: {x: 0, y: 0, z: 0}
+    PillowEnd: {x: 0, y: 0, z: 0}
+    KitchenStorageId: 
+    FurnitureLevel: 
+    FurnitureObstruction: 
+    FurniturePoint: {x: 0, y: 0, z: 0}
   - Id: seat_codriver
     Action: enter_ride
     ReachPoint: {x: -0.42, y: -1.86, z: 0.62}
     VisibleFacings: []
+    BunkLevel: 
+    BunkObstruction: 
+    MattressCentre: {x: 0, y: 0, z: 0}
+    PillowEnd: {x: 0, y: 0, z: 0}
+    KitchenStorageId: 
+    FurnitureLevel: 
+    FurnitureObstruction: 
+    FurniturePoint: {x: 0, y: 0, z: 0}
   - Id: seat_rear_port
     Action: enter_ride
     ReachPoint: {x: -0.49, y: -2.7, z: 0.62}
     VisibleFacings: []
+    BunkLevel: 
+    BunkObstruction: 
+    MattressCentre: {x: 0, y: 0, z: 0}
+    PillowEnd: {x: 0, y: 0, z: 0}
+    KitchenStorageId: 
+    FurnitureLevel: 
+    FurnitureObstruction: 
+    FurniturePoint: {x: 0, y: 0, z: 0}
   - Id: seat_rear_centre
     Action: enter_ride
     ReachPoint: {x: 0, y: -2.7, z: 0.62}
     VisibleFacings: []
+    BunkLevel: 
+    BunkObstruction: 
+    MattressCentre: {x: 0, y: 0, z: 0}
+    PillowEnd: {x: 0, y: 0, z: 0}
+    KitchenStorageId: 
+    FurnitureLevel: 
+    FurnitureObstruction: 
+    FurniturePoint: {x: 0, y: 0, z: 0}
   - Id: seat_rear_stbd
     Action: enter_ride
     ReachPoint: {x: 0.49, y: -2.7, z: 0.62}
     VisibleFacings: []
+    BunkLevel: 
+    BunkObstruction: 
+    MattressCentre: {x: 0, y: 0, z: 0}
+    PillowEnd: {x: 0, y: 0, z: 0}
+    KitchenStorageId: 
+    FurnitureLevel: 
+    FurnitureObstruction: 
+    FurniturePoint: {x: 0, y: 0, z: 0}
   - Id: engine
     Action: open_close_engine
     ReachPoint: {x: 0, y: -2.66, z: 0.62}
     VisibleFacings: []
+    BunkLevel: 
+    BunkObstruction: 
+    MattressCentre: {x: 0, y: 0, z: 0}
+    PillowEnd: {x: 0, y: 0, z: 0}
+    KitchenStorageId: 
+    FurnitureLevel: 
+    FurnitureObstruction: 
+    FurniturePoint: {x: 0, y: 0, z: 0}
   - Id: cuddy_door
     Action: open_close
     ReachPoint: {x: 0, y: -1.79, z: 0.62}
     VisibleFacings: []
+    BunkLevel: 
+    BunkObstruction: 
+    MattressCentre: {x: 0, y: 0, z: 0}
+    PillowEnd: {x: 0, y: 0, z: 0}
+    KitchenStorageId: 
+    FurnitureLevel: 
+    FurnitureObstruction: 
+    FurniturePoint: {x: 0, y: 0, z: 0}
   - Id: bunk
     Action: sleep
     ReachPoint: {x: 0, y: -0.78, z: 0.26}
     VisibleFacings: []
+    BunkLevel: 
+    BunkObstruction: 
+    MattressCentre: {x: 0, y: 0, z: 0}
+    PillowEnd: {x: 0, y: 0, z: 0}
+    KitchenStorageId: 
+    FurnitureLevel: 
+    FurnitureObstruction: 
+    FurniturePoint: {x: 0, y: 0, z: 0}
   - Id: cooler
     Action: storage
     ReachPoint: {x: 0, y: -0.925, z: 0.26}
     VisibleFacings: []
+    BunkLevel: 
+    BunkObstruction: 
+    MattressCentre: {x: 0, y: 0, z: 0}
+    PillowEnd: {x: 0, y: 0, z: 0}
+    KitchenStorageId: 
+    FurnitureLevel: 
+    FurnitureObstruction: 
+    FurniturePoint: {x: 0, y: 0, z: 0}
   - Id: head
     Action: toilet
     ReachPoint: {x: 0, y: -0.925, z: 0.26}
     VisibleFacings: []
+    BunkLevel: 
+    BunkObstruction: 
+    MattressCentre: {x: 0, y: 0, z: 0}
+    PillowEnd: {x: 0, y: 0, z: 0}
+    KitchenStorageId: 
+    FurnitureLevel: 
+    FurnitureObstruction: 
+    FurniturePoint: {x: 0, y: 0, z: 0}
   - Id: locker
     Action: storage
     ReachPoint: {x: 0, y: -0.78, z: 0.26}
     VisibleFacings: []
+    BunkLevel: 
+    BunkObstruction: 
+    MattressCentre: {x: 0, y: 0, z: 0}
+    PillowEnd: {x: 0, y: 0, z: 0}
+    KitchenStorageId: 
+    FurnitureLevel: 
+    FurnitureObstruction: 
+    FurniturePoint: {x: 0, y: 0, z: 0}
   Routes: []
   FloorToleranceMetres: 0.1
   RouteEndReachMetres: 0.3

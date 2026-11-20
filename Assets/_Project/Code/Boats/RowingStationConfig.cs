@@ -72,6 +72,13 @@ namespace HiddenHarbours.Boats
                  "tests hold every skin to it.")]
         [Min(0f)] public float HandAboveKneeMeters;
 
+        [Tooltip("Seen from dead ahead (the boat's heading 0, the camera over her stern), how far above his " +
+                 "hip line both palms are DRAWN through the late recovery and the catch, as a share of the drawn " +
+                 "hip-to-shoulder height (0 = at the hips, 1 = at the shoulders). There the hands reach toward the " +
+                 "camera, so the projection pulls them down; the tholes stand on chocks so they still read at his " +
+                 "belly. The EditMode tests hold every skin to it.")]
+        [Range(0f, 1f)] public float HandAboveHipLineShareFromAhead;
+
         [Tooltip("Half the thickness of the oar's loom, metres (the rig's O_TS): how far the wood reaches " +
                  "from the loom's centreline.")]
         [Min(0f)] public float LoomHalfThicknessMeters;
@@ -82,8 +89,8 @@ namespace HiddenHarbours.Boats
         [Min(0f)] public float LoomClearanceMeters;
 
         [Header("Resting")]
-        [Tooltip("Where the blades settle in a rowing style's rest between strokes: the dip, degrees. 15 " +
-                 "hangs the blade tips a few centimetres over the water, feathered, handles at his belly.")]
+        [Tooltip("Where the blades settle in a rowing style's rest between strokes: the dip, degrees. 18 " +
+                 "(off the chocked tholes) hangs the blade tips a few centimetres over the water, feathered, handles at his belly.")]
         [Range(0f, 30f)] public float RestBladeDipDegrees;
 
         [Tooltip("How far he slumps forward when resting, degrees: the shoulders come down and round.")]
@@ -116,10 +123,11 @@ namespace HiddenHarbours.Boats
             BodyClearanceMeters = 0.02f,
             BodyClearLeanMaxDegrees = 12f,
             BodyClearTwistMaxDegrees = 15f,
-            HandAboveKneeMeters = 0.14f,
+            HandAboveKneeMeters = 0.20f,
+            HandAboveHipLineShareFromAhead = 0.15f,
             LoomHalfThicknessMeters = 0.055f,
             LoomClearanceMeters = 0.02f,
-            RestBladeDipDegrees = 15f,
+            RestBladeDipDegrees = 18f,
             RestSlumpDegrees = 8f,
             RestBreathDegrees = 1.5f,
             RestBreathSeconds = 4f,

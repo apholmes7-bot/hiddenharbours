@@ -457,6 +457,65 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.That(failures.Length, Is.EqualTo(0), failures.ToString());
         }
 
+        [Test]
+        public void FromDeadAhead_HisHandsDrawAboveHisHipLine_ThroughTheLateRecoveryAndTheCatch()
+        {
+            // The owner, on pass 2 from the front (heading 0): the hands at the catch and late in the recovery
+            // drew at his hips. There they reach toward the camera over her stern, and the projection pulls them
+            // down. With the tholes on their chocks every palm must DRAW above his hip line by the station's share
+            // of his drawn hip-to-shoulder height, at every late-recovery and catch phase, facing and skin.
+            BoatVisualDef dory = Dory();
+            float share = dory.Rowing.HandAboveHipLineShareFromAhead;
+            Assert.That(share, Is.GreaterThan(0f), "the drawn hand height over the hips is data");
+            float elev = dory.ArtBakeElevationDegrees * Mathf.Deg2Rad;
+            // heading 0: the bow up the screen, the camera over the stern and raised by the bake elevation
+            Vector3 screenUp = new Vector3(0f, Mathf.Sin(elev), Mathf.Cos(elev));
+            float[] aheadFacings = { 180f, 168.75f, 191.25f };
+            var failures = new StringBuilder();
+            int skins = 0, checks = 0;
+            float worst = float.PositiveInfinity;
+            foreach (CharacterSkinDef skin in RowingSkins())
+            {
+                skins++;
+                var solver = new RowingPoseSolver(skin.Bones, RowingBodyVolume.Of(skin));
+                int hipL = skin.IndexOfBone(RowingPoseSolver.HipLId), hipR = skin.IndexOfBone(RowingPoseSolver.HipRId);
+                int shL = skin.IndexOfBone(RowingPoseSolver.ShoulderLId), shR = skin.IndexOfBone(RowingPoseSolver.ShoulderRId);
+                var world = new Matrix4x4[skin.Bones.Length];
+                foreach (float yaw in aheadFacings)
+                {
+                    Quaternion toHull = Quaternion.AngleAxis(yaw, Vector3.forward);
+                    float Drawn(int b) => Vector3.Dot(Root + toHull * P(world, b), screenUp);
+                    for (int i = 0; i < Phases; i++)
+                    {
+                        float s = (float)i / Phases;
+                        // late recovery (from 0.7 of the stroke) through the catch and the blade's entry
+                        if (s < LateRecoveryFrom && s > CatchEntryTo) continue;
+                        Compose(skin, s, yaw, world);
+                        RowingPoseSolver.Targets t = FigureTargets(StationAt(dory, s), s, yaw);
+                        solver.Solve(world, in t);
+                        float hip = Mathf.Max(Drawn(hipL), Drawn(hipR));
+                        float shoulders = 0.5f * (Drawn(shL) + Drawn(shR));
+                        float palm = Mathf.Min(Drawn(solver.PalmLeft), Drawn(solver.PalmRight));
+                        float drawnShare = (palm - hip) / Mathf.Max(1e-4f, shoulders - hip);
+                        checks++;
+                        worst = Mathf.Min(worst, drawnShare);
+                        if (drawnShare < share)
+                            failures.AppendLine($"{skin.Id} facing {yaw} phase {s:0.000}: palms drawn {drawnShare:0.00} of hip-to-shoulder over the hips (< {share})");
+                    }
+                }
+            }
+            TestContext.WriteLine($"[row-ahead] worst drawn share over the hips {worst:0.000} (margin {share}) over {checks} checks");
+            Assert.That(skins, Is.GreaterThan(0), "no committed skin carries row_oars");
+            Assert.That(checks, Is.GreaterThan(0));
+            Assert.That(failures.Length, Is.EqualTo(0), failures.ToString());
+        }
+
+        /// <summary>The late recovery starts here (stroke turns from the catch).</summary>
+        private const float LateRecoveryFrom = 0.70f;
+
+        /// <summary>The blade's entry runs to here past the catch (stroke turns).</summary>
+        private const float CatchEntryTo = 0.06f;
+
         /// <summary>A millimetre of numerical slack on a clearance the solve bisects toward.</summary>
         private const float ClearSlack = 1e-3f;
 
