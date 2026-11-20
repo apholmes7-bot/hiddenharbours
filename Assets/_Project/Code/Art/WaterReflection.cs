@@ -125,6 +125,27 @@ namespace HiddenHarbours.Art
             return WaterSurface.Smoothstep(lo, hi, darkness);
         }
 
+        /// <summary>The shader's <c>_NightSunCutoff</c> default: the sun elevation above which no moon or
+        /// stars draw on the water, however dim the dusk tint is (0 = off, the darkness-only gate).</summary>
+        public const float DefaultNightSunCutoff = 0.1f;
+
+        /// <summary>
+        /// Twin of the shader's <c>NightFactor</c> with its sun gate: the darkness gate above, faded to
+        /// <c>0</c> as the sun's elevation climbs from the horizon to <paramref name="sunCutoff"/>. A sun
+        /// at or below the horizon (or unset, 0) leaves the darkness gate unchanged; a cutoff of 0 turns the
+        /// sun gate off.
+        /// </summary>
+        /// <param name="sunElevation">The sun's height (<c>_SunElevation</c>; 1 noon, 0 horizon, ≤0 night).</param>
+        /// <param name="sunCutoff">The elevation at which night content is fully gone (<c>_NightSunCutoff</c>).</param>
+        public static float NightFactor(float tintLuma, float threshold, float softness,
+                                        float sunElevation, float sunCutoff)
+        {
+            float night = NightFactor(tintLuma, threshold, softness);
+            if (sunCutoff > 1e-4f)
+                night *= 1f - WaterSurface.Smoothstep(0f, sunCutoff, sunElevation);
+            return night;
+        }
+
         /// <summary>The shader's <c>_CloudMoonlitVis</c> default: how strongly the clouds' NIGHT share reads
         /// under a FULL, high moon (see <see cref="MoonlitCloudVisibility"/>). 0.35 = faint moonlit bands;
         /// 1 = the pre-fix full-strength night clouds exactly (the legacy passthrough).</summary>

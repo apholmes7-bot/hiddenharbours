@@ -14,7 +14,7 @@ namespace HiddenHarbours.App.Editor
     /// </summary>
     public static partial class GroundFileIntake
     {
-        public const string HarbourWorksSchema = "hidden-harbours/harbour-works@2";
+        public const string HarbourWorksSchema = "hidden-harbours/harbour-works@3";
         public const string RicePointBaseFolder = "Issue2Base";
         public const string RicePointWorksFile = "harbour-works.json";
 
@@ -58,6 +58,8 @@ namespace HiddenHarbours.App.Editor
             public double[] Range;
             public double KeepAbove;
             public HarbourCut[] Cuts;
+            /// <summary>The crib faces drawn true after the cuts, or null.</summary>
+            public HarbourFaces Faces;
 
             /// <summary>The lowest bed any cut asks for here, or +infinity where no cut reaches.</summary>
             public double TargetAt(double x, double y)
@@ -119,6 +121,7 @@ namespace HiddenHarbours.App.Editor
                     cut.Bed < works.Range[0] || cut.Bed >= works.KeepAbove)
                     throw Bad("invalid harbour cut " + cut.Id);
             if (works.Cuts.Select(c => c.Id).Distinct().Count() != works.Cuts.Length) throw Bad("harbour cut ids repeat");
+            works.Faces = ReadHarbourFaces(doc);
             return works;
         }
 
@@ -126,7 +129,7 @@ namespace HiddenHarbours.App.Editor
         /// The base ground with the works applied: every texel is <see cref="HarbourWorks.DredgedHeight"/>
         /// of the base (the lower of the base and what the cuts ask, blended where they meet), except
         /// ground at or above <see cref="HarbourWorks.KeepAbove"/> (the wharf and its wall), which no
-        /// cut touches. Heights and still-water levels are re-encoded to the works'
+        /// cut touches; then the crib faces are drawn true (<see cref="HarbourFaces"/>). Heights and still-water levels are re-encoded to the works'
         /// range. A cut that would reach a still-water pool is refused.
         /// </summary>
         public static RicePointRaster RicePointDredged(RicePointRaster ground, HarbourWorks works)
@@ -140,6 +143,8 @@ namespace HiddenHarbours.App.Editor
                 Heights = new ushort[ground.Heights.Length], Still = new ushort[ground.Still.Length]
             };
             double lo = works.Range[0], span = works.Range[1] - works.Range[0];
+            var heights = new double[ground.Heights.Length];
+            var cut = new bool[ground.Heights.Length];
             for (int row = 0; row < ground.Height; row++)
                 for (int col = 0; col < ground.Width; col++)
                 {
@@ -147,16 +152,25 @@ namespace HiddenHarbours.App.Editor
                     double height = ground.Decode(ground.Heights[i]);
                     double x = -ground.Size[0] / 2 + (col + 0.5) / ground.PerMetre;
                     double y = ground.Size[1] / 2 - (row + 0.5) / ground.PerMetre;
-                    double dredged = works.DredgedHeight(x, y, height);
-                    bool cut = dredged < height;
-                    height = dredged;
-                    result.Heights[i] = (ushort)Math.Round((height - lo) * 65535d / span);
-                    ushort still = ground.Still[i];
-                    if (still == 0) continue;
-                    if (cut) throw Bad("a harbour cut reaches still water at texel " + i);
-                    result.Still[i] = (ushort)Math.Round((ground.Decode(still) - lo) * 65535d / span);
-                    if (result.Still[i] == 0) throw Bad("a still-water level falls on the none code");
+                    heights[i] = works.DredgedHeight(x, y, height);
+                    cut[i] = heights[i] < height;
                 }
+            var faced = new bool[heights.Length];
+            if (works.Faces != null)
+            {
+                works.Faces.Outlines = RicePointCribOutlines(ground, works.Faces);
+                faced = SetCribFaces(ground, heights, works.Faces);
+            }
+            for (int i = 0; i < heights.Length; i++)
+            {
+                result.Heights[i] = (ushort)Math.Round((heights[i] - lo) * 65535d / span);
+                ushort still = ground.Still[i];
+                if (still == 0) continue;
+                if (cut[i]) throw Bad("a harbour cut reaches still water at texel " + i);
+                if (faced[i]) throw Bad("a crib face reaches still water at texel " + i);
+                result.Still[i] = (ushort)Math.Round((ground.Decode(still) - lo) * 65535d / span);
+                if (result.Still[i] == 0) throw Bad("a still-water level falls on the none code");
+            }
             return result;
         }
 
