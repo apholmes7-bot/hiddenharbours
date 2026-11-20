@@ -6,7 +6,7 @@ It marks each step that needs a warm editor (a bake or a look) and each step tha
 
 | # | Problem | This pass | Still owed |
 |---|---|---|---|
-| a | The icons draw at about 40% of the slot width | **Fixed:** a separate icon trimmed tight (§1) | Icon-scale art for herring (§1.3) |
+| a | The icons draw at about 40% of the slot width | **Fixed:** a separate icon trimmed tight (§1) | Nothing: herring and mackerel icon-scale art landed 2026-11-20 (§1.3) |
 | b | The small fish barely read in his hands | **A size floor** shared by line, hands and tote (§2) | Contrast at the small rungs, the flounder face-on, mesh held props (§2.3, §3) |
 | c | No fish at the stove, locker or freezer | Nothing | The plan in §4 |
 | d | No held-prop meshes per species and size | Nothing | The plan in §3 (ADR 0053 PRs 1, 3 and 4) |
@@ -48,6 +48,15 @@ A 14x3 herring drawn in a 64 px slot is scaled 4.6x, so it reads as a few chunky
 is art, not code: an icon-scale render from the rig, the way the shellfish keep their flat icons
 until icon-scale shell art exists (PR 1308). The art-pipeline rule "never scale a sprite to fake
 size" applies to the world. An icon is a picture of the fish, so a separate icon render is fair.
+
+**Done (2026-11-20).** `docs/art/rigs/owed-icons/bakeOwedIcons.js` renders the same deck lay (row 2,
+frame 0) from the catch pass 2 rig at icon scale (herring 5.0, mackerel 2.8) into
+`docs/art/rigs/coast-species-kit/icon-cells/FishIconCell_<sp>.png`. `FishIconBuilder.TrimmedIcon`
+reads that cell before the deck sheet, so Build Fish Icons cuts and wires them as before and the
+pixel-for-pixel test still holds. Herring 14x3 → 43x10, mackerel 19x6 → 43x12, flounder 21x7 → 40x14 (scale 3.2). The deck sheets are
+untouched. The same bake draws the crustacean and shellfish icons (`ShellIcon_<id leaf>.png`): the
+lobster, rock crab and soft-shell clam from the rig's own plates, and the oyster, blue mussel and sea
+scallop, which had no icon at all. The rock crab icon is taken to the red-brown of its pot-deck sheet so the two read as one animal.
 
 ## 2. The size floor in the hands
 
