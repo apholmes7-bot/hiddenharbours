@@ -209,9 +209,9 @@ namespace HiddenHarbours.Tests
         }
 
         /// <summary>
-        /// The shellfish keep their flat icons for now. The pass 2 shell art is drawn at true size in the
-        /// tote (an 8 px cell with a 2-3 px shell), so in the 64 px card slot it would be a blob. Icon-scale
-        /// shellfish art is owed; until it lands no shellfish icon may be the tiny tote art.
+        /// The pass 2 shell art is drawn at true size in the tote (an 8 px cell with a 2-3 px shell), so in
+        /// the 64 px card slot it would be a blob. The shellfish icons are their own icon-scale plates
+        /// (ShellIcon_*.png, see OwedCatchIconTests); no shellfish icon may be the tiny tote art.
         /// </summary>
         [Test]
         public void NoShellfishIcon_IsTheTrueSizeToteArt()
@@ -234,7 +234,8 @@ namespace HiddenHarbours.Tests
         /// <summary>The smallest sprite, px wide, that still reads in the card's icon slot.</summary>
         const float KeptShellfishIconMinPx = 16f;
 
-        /// <summary>The old flat sprites the shellfish still use (see <see cref="NoShellfishIcon_IsTheTrueSizeToteArt"/>).</summary>
+        /// <summary>Old flat sprites still in use on purpose: the surf clam and the quahog borrow the old
+        /// clam sprite until their own plates land (the soft-shell clam itself has moved to its plate).</summary>
         static readonly string[] KeptShellfishIcons = { "SoftShellClam" };
 
         // ---- the fight: on the line and the land pose ----------------------------------------------
