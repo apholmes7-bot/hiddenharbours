@@ -263,11 +263,11 @@ MonoBehaviour:
   OarStarMesh: {fileID: 11400000, guid: 7d24bfd4e93adb64e82011b3861e96df, type: 2}
   Rowing:
     Enabled: 1
-    GripInboardMeters: 0.7
-    SeatLocalMeters: {x: 0, y: -0.72, z: 0.3056}
+    GripInboardMeters: 0.68
+    SeatLocalMeters: {x: 0, y: -0.76, z: 0.3056}
     FootBraceLocalMeters: {x: 0.16, y: -1.35, z: 0.1098}
     LaybackDegrees: 8
-    ReachLeanMaxDegrees: 30
+    ReachLeanMaxDegrees: 40
   MotorLower: []
   MotorUpper: []
   MotorColumnCount: 9
