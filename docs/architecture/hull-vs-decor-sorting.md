@@ -61,7 +61,6 @@ says "Y-sort".
 | 15, 20, 50, 51 | Rod fight: ripple, fish shadow, line, splash | `Player/RodFightPresenter.cs:161-165` |
 | 30 | NPC pot day catch | `Fishing/NpcPotDayDef.cs:170` |
 | 50, 51 | Deck containers, their freshness tag | `Boats/DeckContainerPresenter.cs:46`; `Boats/DeckFreshnessTag.cs:53` |
-| 60 | Masthead telltale | `Boats/MastheadTelltale.cs:50` |
 | Y-sort | Grass field chunks (one order per chunk) | `Art/GrassField.cs:791-801` |
 | Y-sort | Plant field chunks (one order per chunk); in #1281 lying growth and standing-behind go to `UnderHulls` | `Art/PlantField.cs:227-228,286-288`; #1281 `Art/PlantHullSorting.cs` |
 | Y-sort | Cliff walls | `Art/CliffWallSurface.cs:544-546` |
@@ -114,7 +113,7 @@ each: `BeachedWreck` (`Boats/BeachedWreck.cs:68-73`) and mesh vehicles (`Vehicle
 Moving `BoatVisualDef.SortingOrder` from 1 to a Y-sorted ~1200 fixes the rock. It also breaks:
 
 - **Everything that rides on the hull at a fixed order that happens to be low in the band.** Deck
-  containers at 50, their tag at 51 and the telltale at 60 would drop under their own hull. So would the
+  containers at 50, their tag at 51 would drop under their own hull. So would the
   interior room at 2 (`Boats/BoatInteriorInstaller.cs:172`). Oars, outboard and skipper are already
   hull-relative and survive.
 - **The player aboard.** The rider mirrors the player's own Y-sort (`Player/DeckRiderVisual.cs:812`). On
@@ -139,7 +138,7 @@ not order-based. Hulls against wharf decks are unchanged, because decks sit belo
 whose order is the decor band's Y-sort at her waterline pivot, less one rung, which is the
 `VehicleMeshDriver.OrderAt` rule. Everything parented under the root then sorts **as one unit** at that
 order, with its existing local orders keeping their meaning inside the group: hull 1, oars +1/+2,
-outboard -2 to +5, skipper +1, interior room 2, deck gear, containers 50, telltale 60. That covers
+outboard -2 to +5, skipper +1, interior room 2, deck gear, containers 50. That covers
 the player too, because he is parented to the boat's root while aboard
 (`Player/ControlSwitcher.cs:2953-2958`). His Y-sorted ~1200 becomes a local order above the hull, the
 cabin still hides him through the facet-id split, and on disembark he leaves the group and sorts in the
@@ -301,7 +300,7 @@ lowbush blueberry).
    listed row for every literal still on main. Left as open points, not named in this step: dust motes
    (8), the NPC haul rope and the pot at the rail (2), the rod fight's bobber and surfaced fish (49),
    deep shape (20) and sink ripple (15), and the editor-baked nav buoys (3, a re-bake). The deck-borne
-   orders (interior 2, containers 50, telltale 60, pot-deck props 51 and 52) wait for step 3's group.
+   orders (interior 2, containers 50, pot-deck props 51 and 52) wait for step 3's group.
 3. **The boat group.** A root `SortingGroup` installed by `BoatHullSkinner` on both paths, Y-sorted
    each `LateUpdate`. The ropes escape it. The pier rule becomes an input. Ambient fleet, NPC pot boats,
    moored boats and the beached wreck all go through the same rule (`BeachedWreck` loses its private copy).

@@ -22,6 +22,7 @@ MonoBehaviour:
   HoldUnits: 8
   CrewSlots: 2
   Propulsion: 1
+  WakeStyle: 0
   EnginePower: 3033
   RudderAuthority: 900
   OarPower: 300
@@ -31,6 +32,7 @@ MonoBehaviour:
   LateralDrag: 400
   WindExposure: 0.5
   MaxSafeSeaState: 5
+  PainterLengthMeters: 4
   HasAnchor: 1
   AnchorMassKg: 9
   RodeMeters: 11
@@ -48,8 +50,20 @@ MonoBehaviour:
   DeckContainer: {fileID: 0}
   DeckContainerOffset: {x: 0.35, y: -0.9}
   Helm: {fileID: 11400000, guid: 7c2d94e1a3b84f66b09d5c11e8f72a22, type: 2}
+  AutopilotOffered: 0
   HelmAheadNotches: 0
   HelmAsternNotches: 0
   FuelCapacityLitres: 164
   FuelGrade: gas
   FullThrottleLitresPerHour: 155
+  CanRowHome: 0
+  SailPolar: {fileID: 0}
+  NoGoTrueWindDeg: 45
+  SpriteIronsApparentDeg: 25
+  IronsPayOffTorque: 0
+  RudderFullAuthorityWayMs: 2
+  SailYawReferenceWindKn: 10
+  UnmannedRoundUpTorque: 0
+  RoundUpReferenceDriveKn: 6
+  SailWeatherHelm: 0
+  MastheadRigMetres: {x: 0, y: 0, z: 0}

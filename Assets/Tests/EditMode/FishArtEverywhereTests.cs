@@ -37,7 +37,19 @@ namespace HiddenHarbours.Tests
         /// is visible, and checked so the list cannot go stale: when one of them gets art, the test
         /// below fails and asks for it to be moved off this list.
         /// </summary>
-        static readonly string[] OwedNoRigArt = { "fish.atlantic_tomcod", "fish.cunner", "fish.rainbow_smelt" };
+        static readonly string[] OwedNoRigArt = { };
+
+        /// <summary>
+        /// Finfish drawn by the rig whose HELD MESH (ADR 0053) is still owed: the coast species kit
+        /// registers them into the fish rig at load, and the held-prop mesh bake reads the rig's own
+        /// <c>ORDER</c>, which is pinned at the seven. They are held as their own sprites meanwhile.
+        /// Checked below so the list cannot go stale.
+        /// </summary>
+        static readonly string[] OwedHeldMesh = { "fish.atlantic_tomcod", "fish.cunner", "fish.rainbow_smelt" };
+
+        /// <summary>Species whose LARGEST drawing is still small enough for the contrast line: the
+        /// herring and mackerel, and the three coast species (an adult smelt is about 8 px long).</summary>
+        static readonly string[] SmallEvenWhenLarge = { "herring", "mackerel", "smelt", "tomcod", "cunner" };
 
         /// <summary>The trap kit's crustacean art (Art/Fishing/Lobster.png, RockCrab.png), pinned by
         /// TrapKitContentValidationTests; not part of this set and not old art.</summary>
@@ -164,7 +176,9 @@ namespace HiddenHarbours.Tests
 
         /// <summary>
         /// <b>The icon IS the new art</b>: each committed icon is, pixel for pixel, its large rung's deck
-        /// cell trimmed to the fish (<see cref="FishIconBuilder.TrimmedIcon"/>). A fish re-bake that is not
+        /// cell trimmed to the fish (<see cref="FishIconBuilder.TrimmedIcon"/>), or for a species drawn too
+        /// small for that (the coast species), the same deck lay rendered at icon scale
+        /// (<see cref="FishIconBuilder.IconCell"/>), trimmed the same way. A fish re-bake that is not
         /// followed by Build Fish Icons fails here instead of leaving a stale icon behind.
         /// </summary>
         [Test]
@@ -209,9 +223,9 @@ namespace HiddenHarbours.Tests
         }
 
         /// <summary>
-        /// The shellfish keep their flat icons for now. The pass 2 shell art is drawn at true size in the
-        /// tote (an 8 px cell with a 2-3 px shell), so in the 64 px card slot it would be a blob. Icon-scale
-        /// shellfish art is owed; until it lands no shellfish icon may be the tiny tote art.
+        /// The pass 2 shell art is drawn at true size in the tote (an 8 px cell with a 2-3 px shell), so in
+        /// the 64 px card slot it would be a blob. The shellfish icons are their own icon-scale plates
+        /// (ShellIcon_*.png, see OwedCatchIconTests); no shellfish icon may be the tiny tote art.
         /// </summary>
         [Test]
         public void NoShellfishIcon_IsTheTrueSizeToteArt()
@@ -231,10 +245,42 @@ namespace HiddenHarbours.Tests
             Assert.GreaterOrEqual(n, 5, "the shellfish were all checked");
         }
 
+        /// <summary>
+        /// The green crab, the northern quahog and the Atlantic surf clam have icons of their own
+        /// (Art/Fishing/Icons/ShellIcon_&lt;leaf&gt;), drawn at icon scale by the coast species kit; the
+        /// Def and the icon library agree, and none is another species' art.
+        /// </summary>
+        [Test]
+        public void TheCoastShellfish_HaveIconsOfTheirOwn()
+        {
+            IconLibrary icons = Icons();
+            var seen = new HashSet<string>(StringComparer.Ordinal);
+            foreach (string id in new[] { "fish.green_crab", "fish.northern_quahog", "fish.atlantic_surf_clam" })
+            {
+                FishSpeciesDef d = Roster().Single(x => x.Id == id);
+                Sprite icon = IconFor(icons, id);
+                string leaf = id.Substring(id.LastIndexOf('.') + 1);
+                Assert.IsNotNull(icon, $"{id}: no icon");
+                Assert.AreEqual($"Assets/_Project/Art/Fishing/Icons/ShellIcon_{leaf}.png", PathOf(icon), $"{id}: its own icon");
+                Assert.AreSame(icon, d.Sprite, $"{id}: the Def's Sprite and the icon library must be the same art");
+                Assert.GreaterOrEqual(icon.rect.width, 32f, $"{id}: drawn at icon scale");
+                Assert.IsTrue(seen.Add(PathOf(icon)), $"{id}: shares its icon with another species");
+                var imp = AssetImporter.GetAtPath(PathOf(icon)) as TextureImporter;
+                Assert.IsNotNull(imp, PathOf(icon));
+                Assert.AreEqual(SpriteImportMode.Single, imp.spriteImportMode, PathOf(icon));
+                Assert.AreEqual(FilterMode.Point, imp.filterMode, PathOf(icon));
+                Assert.AreEqual(TextureImporterCompression.Uncompressed, imp.textureCompression, PathOf(icon));
+                Assert.AreEqual(32f, imp.spritePixelsPerUnit, PathOf(icon));
+                Assert.IsFalse(imp.mipmapEnabled, PathOf(icon));
+            }
+        }
+
         /// <summary>The smallest sprite, px wide, that still reads in the card's icon slot.</summary>
         const float KeptShellfishIconMinPx = 16f;
 
-        /// <summary>The old flat sprites the shellfish still use (see <see cref="NoShellfishIcon_IsTheTrueSizeToteArt"/>).</summary>
+        /// <summary>Old flat sprites exempt from the retired-art scan. Nothing points at the old clam sprite
+        /// any more (the soft-shell clam, the quahog and the surf clam each have an icon of their own); the
+        /// exemption is harmless and can go with the deliberate delete of the old files.</summary>
         static readonly string[] KeptShellfishIcons = { "SoftShellClam" };
 
         // ---- the fight: on the line and the land pose ----------------------------------------------
@@ -302,7 +348,9 @@ namespace HiddenHarbours.Tests
             {
                 string key = RigKey(d.Id);
                 Assert.AreEqual(key, art.KindFor(d.Id), $"{d.Id}: species → kind");
-                Assert.IsNotNull(art.HeldMeshFor(key), $"{d.Id}: the held mesh (ADR 0053) is on the kind");
+                bool meshOwed = OwedHeldMesh.Contains(d.Id);
+                if (!meshOwed)
+                    Assert.IsNotNull(art.HeldMeshFor(key), $"{d.Id}: the held mesh (ADR 0053) is on the kind");
                 foreach (FishRungVisual r in lib.Find(d.Id).Rungs)
                 {
                     // The LADDER's wiring, so with the readability floor off: every rung is reachable.
@@ -311,7 +359,7 @@ namespace HiddenHarbours.Tests
                     Assert.AreEqual(8, art.HeldFacingsFor(kind), $"{kind}: eight held facings");
                     AssertNewFishSheet(art.HeldSprite(kind, 0, 0), $"Fish_{kind}_tail", $"{kind} in the hands");
                     AssertNewFishSheet(art.SpriteFor(kind, 0), $"Fish_{kind}_deck", $"{kind} in the tote");
-                    Assert.IsNotNull(art.HeldMeshFor(kind), $"{kind}: a held mesh");
+                    if (!meshOwed) Assert.IsNotNull(art.HeldMeshFor(kind), $"{kind}: a held mesh");
                 }
             }
         }
@@ -648,7 +696,7 @@ namespace HiddenHarbours.Tests
                     string kind = RigKey(d.Id) + r.Suffix;
                     bool line = art.HeldLengthPxFor(kind) <= maxPx;
                     if (RigKey(d.Id) == "cod") Assert.IsFalse(line, $"{kind}: a cod reads on its own");
-                    if (r.Suffix == "_lg" && RigKey(d.Id) != "herring" && RigKey(d.Id) != "mackerel")
+                    if (r.Suffix == "_lg" && !SmallEvenWhenLarge.Contains(RigKey(d.Id)))
                         Assert.IsFalse(line, $"{kind}: a large rung reads on its own");
                     if (line) lined++;
                 }
@@ -690,6 +738,18 @@ namespace HiddenHarbours.Tests
                 Assert.IsNull(lib.Find(id), $"{id} now has a fight ladder: take it off OwedNoRigArt");
                 Assert.IsFalse(File.Exists($"{FishIso}Fish_{RigKey(id)}_deck.png"),
                     $"{id} now has rig art: take it off OwedNoRigArt and give it an icon");
+            }
+        }
+
+        [Test]
+        public void TheOwedHeldMeshes_AreStillOwed_SoTheListIsTrue()
+        {
+            CatchItemLibrary art = CatchArt();
+            foreach (string id in OwedHeldMesh)
+            {
+                string key = RigKey(id);
+                Assert.AreEqual(key, art.KindFor(id), $"{id}: premise, it is drawn by the rig as its own kind");
+                Assert.IsNull(art.HeldMeshFor(key), $"{id} now has a held mesh: take it off OwedHeldMesh");
             }
         }
 
