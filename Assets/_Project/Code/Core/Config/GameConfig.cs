@@ -1631,6 +1631,35 @@ namespace HiddenHarbours.Core
                  "put on the socket every frame, so this only absorbs float error; raise it only with a reason.")]
         [Min(0f)] public float HeldRodGripToleranceMetres = DefaultHeldRodGripToleranceMetres;
 
+        [Tooltip("Draw a hand tool that is not the rod (the clam shovel) as its baked facet mesh in the mesh " +
+                 "figure's hand: aimed by the clip's own tool track while he digs, at the tool's carried aim on " +
+                 "a free gait. Only for a tool whose ToolDef asks for it (DrawHeldMeshOnFigure). Off, or " +
+                 "whenever the mesh cannot draw, the tool's sprite is drawn exactly as before.")]
+        public bool MeshHandToolInHand = true;
+
+        [Tooltip("Draw a carried pail as its baked facet mesh hung by the bail from the mesh figure's carry " +
+                 "socket, at the fill and catch the pail holds, so it sorts with his legs pixel by pixel. Only " +
+                 "for a carry-pose row that names a mesh tier (CharacterCarryPoseDef.Row.MeshTier) and a pail " +
+                 "that shows its fill as baked states. Off, or whenever the mesh cannot draw (the clam hod, the " +
+                 "sprite body), the pail sprite is drawn exactly as before.")]
+        public bool MeshPailInHand = true;
+
+        /// <summary>Code default for <see cref="HeldShovelShaftHandToleranceMetres"/>.</summary>
+        public const float DefaultHeldShovelShaftHandToleranceMetres = 0.06f;
+
+        [Tooltip("QA: how far (m) the dig clip's LEFT hand socket may sit off the drawn shovel's shaft on any " +
+                 "frame before the shovel test calls the shaft out of his hand. The right hand holds the grip " +
+                 "exactly; the left slides on the shaft as the rig poses it. Read by the EditMode test only.")]
+        [Min(0f)] public float HeldShovelShaftHandToleranceMetres = DefaultHeldShovelShaftHandToleranceMetres;
+
+        /// <summary>Code default for <see cref="HeldShovelGroundToleranceMetres"/>.</summary>
+        public const float DefaultHeldShovelGroundToleranceMetres = 0.1f;
+
+        [Tooltip("QA: how far (m) the drawn shovel's blade may sit off the ground at the dig's low point (the " +
+                 "frame the blade is lowest), above or below, and how far below the ground the blade of a " +
+                 "CARRIED shovel may reach on any idle, walk or run frame. Read by the EditMode test only.")]
+        [Min(0f)] public float HeldShovelGroundToleranceMetres = DefaultHeldShovelGroundToleranceMetres;
+
         /// <summary>Shipped crossing hysteresis (m), also the fallback for a rig with no GameConfig.</summary>
         public const float DefaultRegionCrossingHysteresisMetres = 0.25f;
 

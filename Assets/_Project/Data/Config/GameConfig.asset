@@ -928,6 +928,10 @@ MonoBehaviour:
   HeldFishMinLengthPx: 20
   HeldFishHandSwapDepthMeters: 0.05
   HeldRodGripToleranceMetres: 0.02
+  MeshHandToolInHand: 1
+  MeshPailInHand: 1
+  HeldShovelShaftHandToleranceMetres: 0.06
+  HeldShovelGroundToleranceMetres: 0.1
   RegionCrossingHysteresisMetres: 0.25
   RegionPreloadDistanceMetres: 40
   RegionPreloadMinHeadingSpeed: 0.5
