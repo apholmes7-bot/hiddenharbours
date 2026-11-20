@@ -12,7 +12,7 @@ namespace HiddenHarbours.Boats
     /// and the free effects (spray, splashes, buoys: Core <c>EffectSorting</c>) she is one picture at one order.
     ///
     /// <para><b>Everything aboard keeps its order inside the group</b>: hull 1 (<see cref="BoatVisualDef.SortingOrder"/>),
-    /// oars and outboard relative to it, the interior room, deck gear and containers, the telltale, the skipper,
+    /// oars and outboard relative to it, the interior room, deck gear and containers, the skipper,
     /// and the player while he is parented aboard, with his rod line, held props and lamp. Those orders are now
     /// local: they say what draws over what on this deck, and nothing about the scenery. Boarding, stepping
     /// across to another hull and climbing out are reparenting, so a figure joins or leaves a group with no

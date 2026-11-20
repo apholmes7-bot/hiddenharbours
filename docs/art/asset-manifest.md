@@ -343,7 +343,7 @@ World/boat effect overlays (filed under `VFX/`, not `UI/`). Pivot centre; sheets
 |---|---|---|---|---|---|
 | Boat wake (`BoatWake`) | 64×96 | centre | Single — scaled by speed/turn | **IMPORTED** | P1 |
 | Catch sparkle (`CatchSparkle`) | 72×24 | centre | 3×1 of 24×24 (good-catch celebration) | **IMPORTED** | P1 |
-| Wind pennant (`WindPennant`) | 160×48 | centre | 4×1 of 40×48 (wind-direction tell) | **IMPORTED** | P1 |
+| Wind pennant (`WindPennant`) | 160×48 | centre | 4×1 of 40×48 (wind-direction tell) | **IMPORTED, UNUSED**: no boat flies a pennant (owner ruling 2026-11-20) | P1 |
 | Clam squirt (`ClamSquirt`) | 128×32 | centre | 4×1 of 32×32 (the "live clam" tell on the flats) | **IMPORTED** | P1 |
 | **Splash / ripple** (cast hit, boat nudge) | ~32–64 | centre | Small flipbook | **NEEDED** | P1 |
 | Rain / snow particle overlays | tileable | — | Lightweight particle sheets (weather) | **NEEDED** | P2 |

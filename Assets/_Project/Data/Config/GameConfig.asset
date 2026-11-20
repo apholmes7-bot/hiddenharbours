@@ -47,10 +47,6 @@ MonoBehaviour:
     SlopeStepHours: 0.05
     ScanStepHours: 0.1
     MaxTurns: 64
-  Telltale:
-    LimpBelowMetresPerSecond: 0.6
-    StiffAtMetresPerSecond: 10
-    ResponsePerSecond: 6
   BaseWindStrength: 4
   WindVariability: 5
   WeatherChangeHours: 6

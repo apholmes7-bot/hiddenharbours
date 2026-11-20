@@ -183,7 +183,7 @@ namespace HiddenHarbours.Boats
         /// ⭐ <b>Is she to be DRAWN in irons?</b> The one place anything may ask (owner ruling
         /// 2026-09-06): the picture is derived from the drive's OWN apparent wind, never from a second
         /// derivation and never from a threshold the presentation keeps for itself. A pose loop, a HUD
-        /// telltale and a test all read THIS. False for a hull with no sail plan — she has no sails to
+        /// instrument and a test all read THIS. False for a hull with no sail plan — she has no sails to
         /// flog. See <see cref="SailDrive.IsInIrons"/> for why it is a union of both frames.
         /// </summary>
         public bool DrawnInIrons => _hull != null && _hull.HasSailPlan &&
@@ -316,18 +316,13 @@ namespace HiddenHarbours.Boats
 
         private void Awake()
         {
-            // THE WIND, READ OFF THE BOAT (VS-19): a masthead pennant streaming with the apparent wind,
-            // so the sea's mood is legible from the boat itself and not from a HUD line. Runtime-spawned
-            // like the hold's deck tray, so every boat rig carries one with no builder re-run (it draws
-            // only on a hull with a sail plan, MastheadTelltale.FliesOn); play mode
-            // only (EditMode tests build BoatControllers freely and must stay presentation-free).
-            if (Application.isPlaying && GetComponent<MastheadTelltale>() == null)
-                gameObject.AddComponent<MastheadTelltale>();
+            // No boat flies a wind pennant (owner ruling 2026-11-20): the wind is read on the helm
+            // instruments and the sea itself, so nothing is spawned for it here.
 
             // THE HELM-CONTROL SEAM (ADR 0025 S1): the Core relay the diegetic tiller/lever overlay
-            // reads and steers through. Runtime-spawned like the telltale above, so every already-built
-            // scene grows the seam on load with no builder re-run; play mode only for the same reason
-            // (EditMode tests build BoatControllers freely and must stay presentation-free).
+            // reads and steers through. Runtime-spawned like the hold's deck tray, so every already-built
+            // scene grows the seam on load with no builder re-run; play mode only, because EditMode
+            // tests build BoatControllers freely and must stay presentation-free.
             if (Application.isPlaying && GetComponent<HelmControlRelay>() == null)
                 gameObject.AddComponent<HelmControlRelay>();
 
