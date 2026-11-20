@@ -1614,6 +1614,14 @@ namespace HiddenHarbours.Core
                  "only when the other hand is nearer by more than this (m), so it does not flicker.")]
         [Min(0f)] public float HeldFishHandSwapDepthMeters = 0.05f;
 
+        /// <summary>Code default for <see cref="HeldRodGripToleranceMetres"/>.</summary>
+        public const float DefaultHeldRodGripToleranceMetres = 0.02f;
+
+        [Tooltip("How far (m) the held rod's grip may sit from his hand's tool socket on the frame drawn, in " +
+                 "every rod state and heading, before the grip test calls it out of his hand. The grip is " +
+                 "put on the socket every frame, so this only absorbs float error; raise it only with a reason.")]
+        [Min(0f)] public float HeldRodGripToleranceMetres = DefaultHeldRodGripToleranceMetres;
+
         /// <summary>Shipped crossing hysteresis (m), also the fallback for a rig with no GameConfig.</summary>
         public const float DefaultRegionCrossingHysteresisMetres = 0.25f;
 

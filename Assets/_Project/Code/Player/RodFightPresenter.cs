@@ -644,10 +644,23 @@ namespace HiddenHarbours.Player
             if (_hands == null) TryGetComponent(out _hands);
             if (_meshPresenter == null) TryGetComponent(out _meshPresenter);
             _meshRod ??= new HeldRodMesh(transform);
-            // A stowed rod (he is swimming, CarryHands.ToolsStowed) is not in his hand: no rod to draw.
-            ToolDef rod = _hands != null && !_hands.ToolsStowed ? _hands.HeldFightRod : null;
+            // The rod he carries: in his hand, or tucked away for a catch (CarryHands.SlungFightRod). While
+            // he swims (CarryHands.ToolsStowed) it is not in his hand: a rod whose Def slings it there
+            // (StowWhileSwimming) rides his back, any other draws nothing. Every input is state he already
+            // has; nothing here is saved.
+            ToolDef rod = null;
+            HeldRodMesh.Use use = HeldRodMesh.Use.Free;
+            if (_hands != null)
+            {
+                rod = _hands.HeldFightRod;
+                if (rod == null) rod = _hands.SlungFightRod;
+                if (_hands.ToolsStowed && rod != null && !(rod.StowOnBack && rod.StowWhileSwimming)) rod = null;
+                use = _s.IsActive ? HeldRodMesh.Use.Fishing
+                    : _hands.FightRodHandsBusy || _hands.ToolsStowed ? HeldRodMesh.Use.HandsBusy
+                    : HeldRodMesh.Use.Free;
+            }
             float width = config != null ? config.HeldPropLineWidthPx : GameConfig.DefaultHeldPropLineWidthPx;
-            return _meshRod.TryDraw(on, rod, LiveFigure(), width);
+            return _meshRod.TryDraw(on, rod, LiveFigure(), width, use, Time.deltaTime);
         }
 
         /// <summary>The figure drawing him this frame, or null while he is a sprite.</summary>

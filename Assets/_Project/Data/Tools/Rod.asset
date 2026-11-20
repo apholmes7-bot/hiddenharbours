@@ -26,3 +26,15 @@ MonoBehaviour:
   DrawCarriedMeshOnFigure: 1
   HeldMeshVariant: cane
   HeldMeshMountBone: tool_R
+  CarriedPitchDeg: 65
+  CarriedYawDeg: 35
+  StowOnBack: 1
+  StowWhileSwimming: 1
+  StowMountBone: back
+  StowGripAlongMetres: -0.4
+  StowStandOffMetres: 0.03
+  CarriedInHandClips:
+  - idle
+  - walk
+  - run
+  StowBlendSeconds: 0.2
