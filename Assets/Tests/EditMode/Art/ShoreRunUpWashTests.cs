@@ -429,7 +429,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
             StringAssert.Contains(
                 "float cover = lerp(surfBanded, washSheet,", src);
             // The wash joins the one foam sheet (11-19, "Yes, unify surf") on the same no-Bayer cell.
-            StringAssert.Contains("washAge01, washTorn, surfBay, _FoamSheetWash.x);", src);
+            StringAssert.Contains("washAge01, washTorn, surfSheetBay, _FoamSheetWash.x);", src);
             StringAssert.Contains("* lerp(1.0, saturate(_WashSheetOpacity), saturate(washOnSand));", src);
             int lip = IndexOf(src, "col.a   = max(col.a, lip * _SurfLipColor.a);");
             int washLine = IndexOf(src, "col.rgb = lerp(col.rgb, _FoamColor.rgb, washLine);");
@@ -639,7 +639,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
 
             // v9: and on the shore surf's zone, where the bore's deposited cells drew the band's seaward stair.
             int zone = IndexOf(src, "float washZone = max(saturate(washOnSand), surfShore * saturate(washPresence));");
-            int call = IndexOf(src, "float wakeFoam = WakeFoamCoverage(worldXY, washZone > 0.001 ? 0.5 : bay, hullCrestFoam, wakeFresh);");
+            int call = IndexOf(src, "float wakeFoam = WakeFoamCoverage(worldXY, washZone > 0.001 ? 0.5 : sheetBay, hullCrestFoam, wakeFresh);");
             int swap = IndexOf(src, "wakeFoam  = lerp(wakeFoam, WashResidueCoverage(worldXY, washFresh), washZone);");
             int fresh = IndexOf(src, "wakeFresh = lerp(wakeFresh, washFresh, washZone);");
             Assert.That(zone < call && call < swap && swap < fresh,

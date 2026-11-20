@@ -77,11 +77,24 @@ namespace HiddenHarbours.Tests.EditMode
                 int c = s.CatchCount(DoryOarSplashSystem.Port), r = s.ReleaseCount(DoryOarSplashSystem.Port);
                 if (laid)
                 {
-                    Assert.AreEqual(sheet.OarRadius, d.Radius, 1e-6f, "the blade's foam is the dial's size");
                     Assert.Greater(d.Vigour, 0f, "a working blade marks its foam fresh");
-                    if (c > lastCatch) { catches++; biggest = Mathf.Max(biggest, d.Amount); }
-                    else if (r > lastRelease) release++;
-                    else if (portIn) pull++;
+                    // The catch and the release lay the burst's size; the pull lays the narrower smear.
+                    if (c > lastCatch)
+                    {
+                        catches++;
+                        biggest = Mathf.Max(biggest, d.Amount);
+                        Assert.AreEqual(sheet.OarCatchRadius, d.Radius, 1e-6f, "the catch's burst is the dial's size");
+                    }
+                    else if (r > lastRelease)
+                    {
+                        release++;
+                        Assert.AreEqual(sheet.OarCatchRadius, d.Radius, 1e-6f, "the release's burst is the dial's size");
+                    }
+                    else if (portIn)
+                    {
+                        pull++;
+                        Assert.AreEqual(sheet.OarRadius, d.Radius, 1e-6f, "the pull's smear is the dial's size");
+                    }
                 }
                 else
                 {
@@ -158,15 +171,21 @@ namespace HiddenHarbours.Tests.EditMode
             try
             {
                 config.FoamSheet.OarRadius = 0.41f;
+                config.FoamSheet.OarCatchRadius = 0.53f;
                 config.FoamSheet.OarCatch = 0.9f;
                 OarSplashConfig cfg = OarSplashConfig.Default;
                 var sys = NewSystem(in cfg);
-                float radius = 0f;
+                bool smear = false, burst = false;
                 Row(sys, cfg, config.FoamSheet, 2, (s, _) =>
                 {
-                    if (s.TryGetSheetDeposit(DoryOarSplashSystem.Port, out var d)) radius = d.Radius;
+                    if (!s.TryGetSheetDeposit(DoryOarSplashSystem.Port, out var d)) return;
+                    bool isSmear = Mathf.Abs(d.Radius - 0.41f) < 1e-6f, isBurst = Mathf.Abs(d.Radius - 0.53f) < 1e-6f;
+                    Assert.IsTrue(isSmear || isBurst, "every deposit's size is one of the config's two dials");
+                    smear |= isSmear;
+                    burst |= isBurst;
                 });
-                Assert.AreEqual(0.41f, radius, 1e-6f, "the deposit's size is the config's dial");
+                Assert.IsTrue(smear, "the pull's smear is the config's OarRadius");
+                Assert.IsTrue(burst, "the catch's burst is the config's OarCatchRadius");
             }
             finally { Object.DestroyImmediate(config); }
 

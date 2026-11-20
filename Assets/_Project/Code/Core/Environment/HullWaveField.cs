@@ -29,6 +29,13 @@ namespace HiddenHarbours.Core
         public float EndFadeSeconds;
         /// <summary>Who laid it (0 = nobody in particular). A hull never rides her own waves.</summary>
         public int Owner;
+        /// <summary>Its crests' fixed phase offset, radians (0 = in step with every ring laid like it).
+        /// A short hull's rings each take their own (<see cref="HullWaveMath.ScatterRing"/>).</summary>
+        public float PhaseOffset;
+        /// <summary>True when the water draws it as broken arcs, not a whole ring (a short hull's rings, from
+        /// <see cref="HullWaveMath.ScatterRing"/>; how broken is the shader's _HHHullWaveArcs). Packed as the
+        /// sign of its 1/width.</summary>
+        public bool Arcs;
 
         /// <summary>Its height at <paramref name="now"/>: birth height × <see cref="HullWaveMath.TimeFade"/>.</summary>
         public readonly float AmplitudeAt(double now)
@@ -184,7 +191,7 @@ namespace HiddenHarbours.Core
                 if (amp <= 0f || s.PacketWidth <= 0f) continue;
                 float r = Vector2.Distance(worldXY, s.Position);
                 h += HullWaveMath.SourceHeight(r, amp, s.RingSpeed * (float)age, s.Wavenumber,
-                                               HullWaveMath.Phase(s.Wavenumber, s.PhaseSpeed, age),
+                                               HullWaveMath.Phase(s.Wavenumber, s.PhaseSpeed, age, s.PhaseOffset),
                                                1f / s.PacketWidth, invSpread);
             }
             return h;
@@ -209,7 +216,7 @@ namespace HiddenHarbours.Core
                 float r = d.magnitude;
                 if (r < 1e-4f) continue;
                 float dr = HullWaveMath.SourceSlope(r, amp, s.RingSpeed * (float)age, s.Wavenumber,
-                                                    HullWaveMath.Phase(s.Wavenumber, s.PhaseSpeed, age),
+                                                    HullWaveMath.Phase(s.Wavenumber, s.PhaseSpeed, age, s.PhaseOffset),
                                                     1f / s.PacketWidth, invSpread);
                 g += d * (dr / r);
             }
@@ -219,7 +226,8 @@ namespace HiddenHarbours.Core
         /// <summary>
         /// Write the live sources the water shader needs into <paramref name="a"/> and <paramref name="b"/>,
         /// already aged to the field's clock, so the GPU sees only small numbers:
-        /// <c>a = (x, y, height now, band radius now)</c>, <c>b = (k, phase now, 1/width, reach)</c>, where
+        /// <c>a = (x, y, height now, band radius now)</c>, <c>b = (k, phase now, ±1/width, reach)</c> (negative for
+        /// a ring drawn as broken arcs, <see cref="HullWaveSource.Arcs"/>), where
         /// reach is the radius past which the ring draws nothing. Sources whose reach misses
         /// <paramref name="view"/> (when <paramref name="cullToView"/>) are skipped, which is most of the
         /// cost saved. Returns how many were written; nothing past that is touched.
@@ -240,8 +248,8 @@ namespace HiddenHarbours.Core
                 float reach = front + HullWaveMath.PacketReach * s.PacketWidth;
                 if (cullToView && !CircleTouchesRect(s.Position, reach, view)) continue;
                 a[n] = new Vector4(s.Position.x, s.Position.y, amp, front);
-                b[n] = new Vector4(s.Wavenumber, HullWaveMath.Phase(s.Wavenumber, s.PhaseSpeed, age),
-                                   1f / s.PacketWidth, reach);
+                b[n] = new Vector4(s.Wavenumber, HullWaveMath.Phase(s.Wavenumber, s.PhaseSpeed, age, s.PhaseOffset),
+                                   (s.Arcs ? -1f : 1f) / s.PacketWidth, reach);
                 n++;
             }
             return n;
@@ -342,14 +350,17 @@ namespace HiddenHarbours.Core
                     EndFadeSeconds = lifetime * Mathf.Clamp01(s.EndFadeShare),
                     Owner = owner,
                 };
+                // A short hull's rings each differ a little, and are laid a little unevenly, so her V and
+                // track read as disturbed water, not a chain of stacked loops (HullWaveMath.ScatterRing).
                 while (_nextSeconds <= now && laid < budget)
                 {
                     float t = (float)((_nextSeconds - _lastSeconds) / span);
                     source.Position = Vector2.LerpUnclamped(_lastPosition, position, t);
                     source.BirthSeconds = _nextSeconds;
-                    field.Add(in source);
+                    HullWaveSource ring = HullWaveMath.ScatterRing(in source, lengthMetres, share, in s);
+                    field.Add(in ring);
                     laid++;
-                    _nextSeconds += interval;
+                    _nextSeconds += interval * HullWaveMath.SpacingScatter(source.BirthSeconds, lengthMetres, share, in s);
                 }
             }
 

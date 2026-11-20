@@ -787,6 +787,14 @@ MonoBehaviour:
     SmallHullCrestMetres: 0.07
     SmallHullLengthMetres: 6
     SmallHullSpacingWavelengths: 0.35
+    SmallHullHeightScatter: 0.85
+    SmallHullWavelengthScatter: 0.25
+    SmallHullPhaseScatter: 0.7
+    SmallHullSpacingScatter: 0.3
+    SmallHullTrailFoamShare: 0.18
+    SmallHullCentreScatterMetres: 0.3
+    SmallHullArcShare: 1
+    SmallHullArcLobes: 3
     BowShare: 0.7
     LifetimeSecondsPerMetreLength: 0.8
     MinLifetimeSeconds: 3
@@ -845,11 +853,14 @@ MonoBehaviour:
     EdgeSoftenMetres: 0.2
     EdgeWarpMetres: 0.18
     EdgeWarpSizeMetres: 0.5
+    BandNoise: 1
+    BandNoiseSizeMetres: 0.12
     Oar: 1
-    OarRadius: 0.3
-    OarPerSecond: 0.5
-    OarCatch: 0.1
-    OarRelease: 0.08
+    OarRadius: 0.15
+    OarCatchRadius: 0.25
+    OarPerSecond: 0.8
+    OarCatch: 0.4
+    OarRelease: 0.16
   DevAllHelmInstruments: 1
   MeshFishingAndDig: 1
   RegionCrossingHysteresisMetres: 0.25

@@ -605,7 +605,7 @@ namespace HiddenHarbours.Boats
                     _releases[oar]++;
                     // The puddle the blade leaves, laid where it last worked the water.
                     if (_joined && hadWater)
-                        LaySheet(oar, lastWater, lastWater, _sheetCfg.OarRelease * strength, strength);
+                        LaySheet(oar, lastWater, lastWater, _sheetCfg.OarRelease * strength, strength, _sheetCfg.OarCatchRadius);
                     Release(in f, sweep, strength, in cfg);
                     _sinceRelease[oar] = 0f;
                     _releaseStrength[oar] = strength;
@@ -639,7 +639,7 @@ namespace HiddenHarbours.Boats
                 Vector2 from = hadWater && !entered ? lastWater : f.BladeWorld;
                 float amount = Mathf.Max(0f, _sheetCfg.OarPerSecond) * strength * Mathf.Max(0f, dt);
                 if (entered) amount += Mathf.Max(0f, _sheetCfg.OarCatch) * strength;
-                LaySheet(oar, from, f.BladeWorld, amount, strength);
+                LaySheet(oar, from, f.BladeWorld, amount, strength, entered ? _sheetCfg.OarCatchRadius : _sheetCfg.OarRadius);
                 return entered;
             }
 
@@ -648,9 +648,8 @@ namespace HiddenHarbours.Boats
             return entered;
         }
 
-        private void LaySheet(int oar, Vector2 from, Vector2 to, float amount, float strength)
+        private void LaySheet(int oar, Vector2 from, Vector2 to, float amount, float strength, float radius)
         {
-            float radius = _sheetCfg.OarRadius;
             if (!(amount > 0f) || !(radius > 0f)) return;
             _sheet[oar] = new SheetDeposit
             {

@@ -1131,6 +1131,10 @@ Shader "HiddenHarbours/Water"
         // far (m) the read is pushed about by a fixed noise so the outline is torn and irregular, z = that
         // noise's size (m). x and y both 0 = the point read, bit-exact.
         _FoamSheetEdge     ("One foam: open-water edge (x soften m, y warp m, z warp size m)", Vector) = (0.2, 0.18, 0.5, 0)
+        // The sheet's BAND EDGES: where one tone of foam meets the next the step is broken by a threshold.
+        // x = how much of that threshold is a fixed torn world noise instead of the world Bayer cell (0 = the
+        // Bayer cell, bit-exact), y = the noise's lump size (m).
+        _FoamSheetDither   ("One foam: band edges (x noise share, y lump size m)", Vector) = (1, 0.12, 0, 0)
 
         // ---- THE WAKE FOAM'S AGE RAMP (owner ask 2026-08-27) ----------------------------------
         // "the wakes behind the boat are still a solid white foam from wherever the boat interacts
@@ -1520,6 +1524,8 @@ Shader "HiddenHarbours/Water"
             //                        z = 1 / breakup metres, w = wobble metres
             //   _HHHullWaveLowLight: x = the extra shade at full low light, y = the sun's luminance at which
             //                        it starts, z = the luminance at which it is full (HullWaveMath.LowLightGain)
+            //   _HHHullWaveArcs    : x = how much of a ring packed with a NEGATIVE 1/width (a short hull's) is torn
+            //                        away into arcs, y = whole arcs round the ring (HullWaveBridge.ArcsVector)
             // UNSET reads all-zero: count 0, OFF, nothing drawn and nothing read.
             // HH_HULL_WAVE_MAX is a COMPILE-TIME bound pinned to HullWaveField.ShaderCapacity by
             // HullWaveMathTests; the loops run [loop] and break at the live count, never [unroll] over it.
@@ -1533,6 +1539,7 @@ Shader "HiddenHarbours/Water"
             float4 _HHHullWaveLook;
             float4 _HHHullWaveFoamAge;
             float4 _HHHullWaveLowLight;
+            float4 _HHHullWaveArcs;
 
             // ---- WIND FETCH (ADR 0027 #1) — globals, published by WaveFieldBridge.PublishFetchGlobals ------
             // How far the wind has blown over open water before it reaches this pixel. Lee shores go calm,
@@ -1911,6 +1918,7 @@ Shader "HiddenHarbours/Water"
                 float4 _FoamSheetWash;
                 float  _FoamSheetAgeTear;
                 float4 _FoamSheetEdge;
+                float4 _FoamSheetDither;
                 float  _WakeFoamAgeStrength;
                 float  _WakeFoamFreshFloor;
                 float  _WakeFoamWhiteHold;
@@ -2864,6 +2872,24 @@ Shader "HiddenHarbours/Water"
                 dhdr = amp * (dEnv * spread * c + env * dSpread * c - env * spread * k * sn);
             }
 
+            // A SHORT HULL'S RING AS BROKEN ARCS (the owner's look of 11-19: the rowed dory's rings stacked into
+            // a chain of loops astern). A ring packed with a negative 1/width keeps only a few torn arcs of its
+            // circle: a sum of whole-number harmonics round its centre (seamless), turned by a number hashed
+            // from where it was laid, so each ring breaks differently and keeps its own break all its life.
+            // Fixed in the world (no _Time); deterministic. Any other ring, or x = 0, returns exactly 1.
+            float HullWaveArcGain(float2 d, float2 centre, float flagged)
+            {
+                float share = saturate(_HHHullWaveArcs.x);
+                if (flagged >= 0.0 || share <= 0.001) return 1.0;
+                float2 cell = floor(centre * 64.0);
+                float seed = frac(dot(cell, float2(0.0613, 0.1093)) + frac(dot(cell, float2(0.00731, 0.00419))));
+                float lobes = max(floor(_HHHullWaveArcs.y), 1.0);
+                float th = atan2(d.y, d.x);
+                float n = 0.5 + 0.3 * cos(lobes * th + 6.2831853 * seed)
+                              + 0.2 * cos((2.0 * lobes + 1.0) * th + 6.2831853 * frac(seed * 7.13));
+                return lerp(1.0, smoothstep(0.45, 0.75, n), share);
+            }
+
             // Every live source summed at a point: height (m) and slope (dh/dx, dh/dy). Exactly 0 while
             // OFF or with no sources, before any slot is read.
             void HullWaveSample(float2 worldXY, out float height, out float2 slope)
@@ -2892,9 +2918,10 @@ Shader "HiddenHarbours/Water"
                     if (r2 >= b.w * b.w) continue;
                     float r = sqrt(r2);
                     float h, dhdr;
-                    HullWaveSourceHeight(r, a.z, a.w, b.x, b.y, b.z, invSpread, h, dhdr);
-                    height += h;
-                    slope += d * (dhdr / max(r, 1e-4));
+                    HullWaveSourceHeight(r, a.z, a.w, b.x, b.y, abs(b.z), invSpread, h, dhdr);
+                    float arc = HullWaveArcGain(d, a.xy, b.z);
+                    height += h * arc;
+                    slope += d * (dhdr * arc / max(r, 1e-4));
                 }
                 height *= hwGain;
                 slope *= hwGain;
@@ -4178,6 +4205,21 @@ Shader "HiddenHarbours/Water"
                                      BandFreq(_NoiseScale) * 3.0 * _FoamBlobScale
                                      * max(_WakeFoamLaceScale, 1e-3),
                                      _FoamEvolveSpeed, _Time.y);
+            }
+
+            // THE SHEET'S BAND EDGES (the owner's look of 11-19: the rowed trail's heart read as a dense mat
+            // with a visible checker): the world Bayer cell repeats every 4 pixels, a 1/8 m grid across any thin
+            // foam whose value sits on a step. The step's threshold is moved toward a fixed world noise of
+            // _FoamSheetDither.y metres (two value-noise octaves, spread toward an even 0..1), so the tones meet
+            // in ragged lace. Fixed in the world (no _Time), so it cannot crawl; deterministic. Every sheet takes
+            // it through its caller's `sheetBay`. _FoamSheetDither.x = 0 returns the Bayer value, bit-exact.
+            float FoamSheetBandDither(float2 worldXY, float bayer)
+            {
+                float share = saturate(_FoamSheetDither.x);
+                if (share <= 0.001) return bayer;
+                float2 p = worldXY / max(_FoamSheetDither.y, 0.03);
+                float v = 0.6 * ValueNoise(p) + 0.4 * ValueNoise(p * 2.31 + float2(7.13, 3.71));
+                return lerp(bayer, saturate(0.5 + 1.6 * (v - 0.5)), share);
             }
 
             // `torn` is FoamSheetLace at this pixel; `extraTear` is a source's own age-tear dial (the wake
@@ -6406,6 +6448,7 @@ Shader "HiddenHarbours/Water"
                 // never depth/clip()/the deep tint/_WaterLevel/the height read/the sim (P1 integrity,
                 // CLAUDE.md rule 5). _EnvelopeBandStrength = 0 is an EXACT passthrough (today's look).
                 float bay = BayerWorld(worldXY);   // ONE world-locked dither read; the caps below reuse it
+                float sheetBay = FoamSheetBandDither(worldXY, bay);   // the one foam sheet's band edges
                 if (_EnvelopeBandStrength > 0.001 && trainsLive && swellReadGate > 0.001)
                 {
                     float bandLive = saturate(_WaveFieldParams.z * 40.0);   // the glass gate (~0.025 m engages)
@@ -6774,7 +6817,7 @@ Shader "HiddenHarbours/Water"
                         fringeAge01 = saturate(_FoamSheetShore.z * (1.0 - foamEdge)
                                                + _FoamSheetShore.w * BeachSwashBackwash01(worldXY, depthC, t));
                         float lineSheet = FoamSheetCover(FoamSheetTear(lineAmount, FoamSheetLace(worldXY),
-                                                                       fringeAge01, 0.0), bay);
+                                                                       fringeAge01, 0.0), sheetBay);
                         foamCoverage = lerp(foamCoverage, lineSheet, saturate(_FoamSheetShore.x));
                     }
                     // THE FRINGE YIELDS to the physical whitewater (owner ruling 2026-08-28). At
@@ -6892,9 +6935,10 @@ Shader "HiddenHarbours/Water"
                     // the surf's own age, so old whitewater breaks into drifting lace like an old wake) and bands
                     // wherever it is not the wash's smooth sheet. _FoamSheetCaps.z = 0 is the surf's own bands.
                     float surfBay = washThin > 0.001 ? 0.5 : bay;
+                    float surfSheetBay = washThin > 0.001 ? 0.5 : sheetBay;   // the sheet's band edges
                     float surfTorn = _FoamSheetCaps.z > 0.001 ? FoamSheetLace(worldXY) : 0.5;
                     float surfBanded = FoamSheetJoin(SurfBandValue(surfCoverDrawn, surfBay), surfCoverDrawn * _FoamSheetCaps.w,
-                                                     surfAge01, surfTorn, surfBay, _FoamSheetCaps.z);
+                                                     surfAge01, surfTorn, surfSheetBay, _FoamSheetCaps.z);
                     // THE WASH JOINS THE SHEET TOO (the owner, 11-19: "Yes, unify surf"): the run-up's smooth
                     // sheet takes the same lace, tear, threshold and bands, aged by the surf's own age and
                     // older still as it drains back down the sand, so the swash is the same foam as the wake
@@ -6907,7 +6951,7 @@ Shader "HiddenHarbours/Water"
                         washTorn = FoamSheetLace(worldXY);
                     }
                     float washSheet = FoamSheetJoin(saturate(surfCoverDrawn), surfCoverDrawn * _FoamSheetWash.y,
-                                                    washAge01, washTorn, surfBay, _FoamSheetWash.x);
+                                                    washAge01, washTorn, surfSheetBay, _FoamSheetWash.x);
                     float cover = lerp(surfBanded, washSheet,
                                        washThin) * strength
                                 * lerp(1.0, saturate(_WashSheetOpacity), saturate(washOnSand));
@@ -6919,9 +6963,9 @@ Shader "HiddenHarbours/Water"
                     // surf, and the thing that reads as the wave pitching forward.
                     // The lip is the newest foam in the frame: the sheet at age 0 (the lace only, no age tear).
                     float lipBanded = FoamSheetJoin(SurfBandValue(saturate(surfLip), surfBay), surfLip * _FoamSheetCaps.w,
-                                                    0.0, surfTorn, surfBay, _FoamSheetCaps.z);
+                                                    0.0, surfTorn, surfSheetBay, _FoamSheetCaps.z);
                     float washLip = FoamSheetJoin(saturate(surfLip), surfLip * _FoamSheetWash.y,
-                                                  0.0, washTorn, surfBay, _FoamSheetWash.x);
+                                                  0.0, washTorn, surfSheetBay, _FoamSheetWash.x);
                     float lip = lerp(lipBanded, washLip, washThin)
                               * strength * lerp(1.0, surfShoreBreak, shoreSurf);
                     float3 lipFoam = FoamAgedColor(0.0, _SurfLipColor.rgb, _SurfAgeStrength, col.rgb);
@@ -7183,7 +7227,7 @@ Shader "HiddenHarbours/Water"
                     if (_FoamSheetCaps.x > 0.001)
                     {
                         float capSheet = FoamSheetCover(FoamSheetTear(saturate(capOpacity * _FoamSheetCaps.y),
-                                                                      FoamSheetLace(worldXY), capAge01, 0.0), bay);
+                                                                      FoamSheetLace(worldXY), capAge01, 0.0), sheetBay);
                         capOpacity = lerp(capOpacity, capSheet, saturate(_FoamSheetCaps.x));
                     }
                     // ---- ONE FOAM LANGUAGE (row 2): the caps take the shared walk, at their own age ------
@@ -7225,7 +7269,7 @@ Shader "HiddenHarbours/Water"
                 float washZone = max(saturate(washOnSand), surfShore * saturate(washPresence));
                 // v4: across the hand-off the open-water read is taken WITHOUT its Bayer, so the blend of the
                 // two reads never shows a checker (the owner's "screen door" band in the wash).
-                float wakeFoam = WakeFoamCoverage(worldXY, washZone > 0.001 ? 0.5 : bay, hullCrestFoam, wakeFresh);
+                float wakeFoam = WakeFoamCoverage(worldXY, washZone > 0.001 ? 0.5 : sheetBay, hullCrestFoam, wakeFresh);
                 if (washZone > 0.001)
                 {
                     float washFresh;
@@ -7264,7 +7308,7 @@ Shader "HiddenHarbours/Water"
                     {
                         float stormAge01 = saturate(_FoamSheetStorm.z);
                         float stormSheet = FoamSheetCover(FoamSheetTear(saturate(stormAmount * _FoamSheetStorm.y),
-                                                                        FoamSheetLace(worldXY), stormAge01, 0.0), bay);
+                                                                        FoamSheetLace(worldXY), stormAge01, 0.0), sheetBay);
                         float3 stormFoam = FoamAgedColor(stormAge01, _FoamColor.rgb, stormJoin, col.rgb);
                         col.rgb = lerp(col.rgb, stormFoam, stormSheet * stormJoin * _FoamColor.a);
                     }

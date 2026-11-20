@@ -104,6 +104,14 @@ namespace HiddenHarbours.Core
         [Tooltip("The size of the ragged wander (m): smaller = finer, lacier tearing at the edge.")]
         [Range(0.1f, 4f)] public float EdgeWarpSizeMetres;
 
+        [Header("Band edges (every sheet)")]
+        [Tooltip("How the sheet's tone steps are broken where one tone meets the next: 0 = the world Bayer " +
+                 "cell (a regular 4-pixel checker, which reads as a 1/8 m grid across a thin foam mat), 1 = a " +
+                 "fixed torn noise, so the steps meet in ragged lace instead. Every foam on the sea takes it.")]
+        [Range(0f, 1f)] public float BandNoise;
+        [Tooltip("The size of that torn noise's lumps (m): smaller = finer, lacier step edges.")]
+        [Range(0.03f, 1f)] public float BandNoiseSizeMetres;
+
         [Header("Oar splash")]
         [Tooltip("How the oars' foam is drawn: 1 = where a blade goes in, works and comes out it lays foam " +
                  "into the one foam sheet (the same buffer, lace and ageing as the wake), and the oars draw no " +
@@ -111,6 +119,9 @@ namespace HiddenHarbours.Core
         [Range(0f, 1f)] public float Oar;
         [Tooltip("Half-width of the foam a blade lays (m). The dory's blade is about 0.5 m long.")]
         [Range(0.05f, 1f)] public float OarRadius;
+        [Tooltip("Half-width of the burst a blade lays where it goes in and where it comes out (m): the " +
+                 "small torn white of the catch, wider than the smear of the pull.")]
+        [Range(0.05f, 1f)] public float OarCatchRadius;
         [Tooltip("Foam a blade lays per second while it is pulling through the water, at full strength. " +
                  "Higher = a whiter puddle where each stroke works.")]
         [Range(0f, 10f)] public float OarPerSecond;
@@ -149,14 +160,23 @@ namespace HiddenHarbours.Core
             EdgeWarpMetres = 0.18f,
             EdgeWarpSizeMetres = 0.5f,
 
-            // The owner's oar look of 11-19: small torn puddles that are gone within a few seconds, not
-            // solid white mats (was 0.35 m, 0.8/s, 0.15, 0.12).
+            BandNoise = 1f,
+            BandNoiseSizeMetres = 0.12f,
+
+            // The owner's ruling of 11-19, "Yes, small burst": each catch shows a small, clearly visible
+            // burst of the sheet's lace that fades within a few seconds, with a short smear along the pull
+            // (was 0.3 m, 0.5/s, 0.1, 0.08 with no separate catch size: a few invisible specks).
             Oar = 1f,
-            OarRadius = 0.3f,
-            OarPerSecond = 0.5f,
-            OarCatch = 0.1f,
-            OarRelease = 0.08f,
+            OarRadius = 0.15f,
+            OarCatchRadius = 0.25f,
+            OarPerSecond = 0.8f,
+            OarCatch = 0.4f,
+            OarRelease = 0.16f,
         };
+
+        /// <summary>The band edges as the shader's <c>_FoamSheetDither</c> vector (noise share, lump size m,
+        /// 0, 0).</summary>
+        public Vector4 DitherVector => new Vector4(Mathf.Clamp01(BandNoise), Mathf.Max(BandNoiseSizeMetres, 0.03f), 0f, 0f);
 
         /// <summary>The open-water edge read as the shader's <c>_FoamSheetEdge</c> vector
         /// (soften m, warp m, warp size m, 0).</summary>

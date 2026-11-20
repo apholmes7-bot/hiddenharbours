@@ -419,9 +419,10 @@ namespace HiddenHarbours.Art
             float halfLength = _sternOffsetMeters;
             // While the water draws her real waves, her trail foam thins and its fan is not laid, so
             // the waves behind her show (HullWaveSettings: TrailFoamShare, RetireFoamFan).
+            // A short hull (a rowed dory) lays a thinner share still (HullWaveSettings.SmallHullTrailFoamShare).
             HullWaveSettings hullWaves = GameServices.HullWaves;
             float strength = Mathf.Max(HullWaveMath.TrailFoamStrength(
-                _strength, _way != VesselWay.Moored, in hullWaves), 0f);
+                _strength, _way != VesselWay.Moored, HullLengthMetres, in hullWaves), 0f);
             _fanNow = HullWaveMath.FoamFanFraction(_spreadKelvinFraction, in hullWaves);
 
             // The trail is shed from the end that TRAILS: the bow, when she makes way astern (the owner,
@@ -757,6 +758,10 @@ namespace HiddenHarbours.Art
             // that are actually making way, so joining the water reserves nothing (see PublishWakeLift).
         }
 
+        /// <summary>Her length as her waves and her trail's share read it: twice her stern offset, or four
+        /// churn radii for a hull with no offset set.</summary>
+        private float HullLengthMetres => _sternOffsetMeters > 0f ? 2f * _sternOffsetMeters : 4f * RadiusMeters;
+
         /// <summary>
         /// Lay this frame's wave sources: one chain at the end she trails from, one at the end she
         /// drives into the water. Sized and timed by her length (twice her stern offset) and her speed
@@ -769,7 +774,7 @@ namespace HiddenHarbours.Art
             HullWaveSettings s = GameServices.HullWaves;
             if (field == null || !s.Enabled) return;
             float halfLength = _sternOffsetMeters;
-            float length = halfLength > 0f ? 2f * halfLength : 4f * RadiusMeters;
+            float length = HullLengthMetres;
             int owner = HullWaves.OwnerOf(_hullBody != null ? (Object)_hullBody.gameObject : gameObject);
             int budget = Mathf.Max(2, s.SourcesPerHull);
             int leadBudget = Mathf.Clamp(Mathf.RoundToInt(budget * Mathf.Clamp01(s.BowSourceShare)), 0, budget - 1);

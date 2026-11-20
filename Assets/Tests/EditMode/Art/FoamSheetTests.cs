@@ -123,7 +123,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
             // The caps keep their lifecycle, gates and clumping for WHERE and HOW MUCH; the finished opacity,
             // scaled by the cap amount, is torn at the cap's lifecycle age and banded by the sheet.
             StringAssert.Contains("float capSheet = FoamSheetCover(FoamSheetTear(saturate(capOpacity * _FoamSheetCaps.y),", code);
-            StringAssert.Contains("FoamSheetLace(worldXY), capAge01, 0.0), bay);", code);
+            StringAssert.Contains("FoamSheetLace(worldXY), capAge01, 0.0), sheetBay);", code);
             StringAssert.Contains("capOpacity = lerp(capOpacity, capSheet, saturate(_FoamSheetCaps.x));", code);
             int clump = code.IndexOf("capOpacity = saturate(capOpacity * clumpGate) * capShoreFade;", System.StringComparison.Ordinal);
             int sheet = code.IndexOf("float capSheet = ", System.StringComparison.Ordinal);
@@ -141,10 +141,10 @@ namespace HiddenHarbours.Tests.Art.EditMode
             // One lace for the whitewater and the lip.
             StringAssert.Contains("float surfTorn = _FoamSheetCaps.z > 0.001 ? FoamSheetLace(worldXY) : 0.5;", code);
             StringAssert.Contains("FoamSheetJoin(SurfBandValue(surfCoverDrawn, surfBay), surfCoverDrawn * _FoamSheetCaps.w,", code);
-            StringAssert.Contains("surfAge01, surfTorn, surfBay, _FoamSheetCaps.z);", code,
+            StringAssert.Contains("surfAge01, surfTorn, surfSheetBay, _FoamSheetCaps.z);", code,
                 "the whitewater tears at its own age (its energy, read off the march)");
             StringAssert.Contains("FoamSheetJoin(SurfBandValue(saturate(surfLip), surfBay), surfLip * _FoamSheetCaps.w,", code);
-            StringAssert.Contains("0.0, surfTorn, surfBay, _FoamSheetCaps.z);", code, "the lip is the newest foam: age 0");
+            StringAssert.Contains("0.0, surfTorn, surfSheetBay, _FoamSheetCaps.z);", code, "the lip is the newest foam: age 0");
             // Off the wash the whitewater and lip are the banded reads above; on the wash, the wash's own join.
             StringAssert.Contains("float cover = lerp(surfBanded, washSheet,", code);
             StringAssert.Contains("float lip = lerp(lipBanded, washLip, washThin)", code);
@@ -161,9 +161,9 @@ namespace HiddenHarbours.Tests.Art.EditMode
                 "the backwash reads older, off the swash's own phase");
             StringAssert.Contains("washTorn = FoamSheetLace(worldXY);", code, "the same lace as every foam");
             StringAssert.Contains("float washSheet = FoamSheetJoin(saturate(surfCoverDrawn), surfCoverDrawn * _FoamSheetWash.y,", code);
-            StringAssert.Contains("washAge01, washTorn, surfBay, _FoamSheetWash.x);", code, "the wash tears at its own age");
+            StringAssert.Contains("washAge01, washTorn, surfSheetBay, _FoamSheetWash.x);", code, "the wash tears at its own age");
             StringAssert.Contains("float washLip = FoamSheetJoin(saturate(surfLip), surfLip * _FoamSheetWash.y,", code);
-            StringAssert.Contains("0.0, washTorn, surfBay, _FoamSheetWash.x);", code, "the wash's lip is fresh foam");
+            StringAssert.Contains("0.0, washTorn, surfSheetBay, _FoamSheetWash.x);", code, "the wash's lip is fresh foam");
             StringAssert.Contains("float3 surfFoam = FoamAgedColor(lerp(surfAge01, washAge01, washThin), _SurfColor.rgb, _SurfAgeStrength, col.rgb);", code,
                 "the wash walks the same ageing colour, at its own age");
             // It is still a sheet of water on the sand: the wash's opacity and the cap still apply after it.
@@ -197,7 +197,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
             Assert.AreEqual(1, CountOf(code, "float StormFoamLaneAmount(float2 worldXY, float dt, float t)"));
             StringAssert.Contains("float amount = StormFoamLaneAmount(worldXY, dt, t);", Body(code, "float3 StormFoamLanes("));
             StringAssert.Contains("float stormSheet = FoamSheetCover(FoamSheetTear(saturate(stormAmount * _FoamSheetStorm.y),", code);
-            StringAssert.Contains("FoamSheetLace(worldXY), stormAge01, 0.0), bay);", code);
+            StringAssert.Contains("FoamSheetLace(worldXY), stormAge01, 0.0), sheetBay);", code);
             StringAssert.Contains("float3 stormFoam = FoamAgedColor(stormAge01, _FoamColor.rgb, stormJoin, col.rgb);", code);
             StringAssert.Contains("col.rgb = lerp(col.rgb, stormFoam, stormSheet * stormJoin * _FoamColor.a);", code);
             // join 0 is the older tint, bit-exact.
@@ -219,7 +219,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
             // The age is set before the caps draw through the sheet, so the convergence foam takes the
             // same tear and the same colour walk.
             int age = code.IndexOf("capAge01 = lerp(capAge01, saturate(_FoamSheetConv.y), convShare);", System.StringComparison.Ordinal);
-            int sheet = code.IndexOf("FoamSheetLace(worldXY), capAge01, 0.0), bay);", System.StringComparison.Ordinal);
+            int sheet = code.IndexOf("FoamSheetLace(worldXY), capAge01, 0.0), sheetBay);", System.StringComparison.Ordinal);
             Assert.That(age, Is.GreaterThan(0));
             Assert.That(sheet, Is.GreaterThan(age), "the convergence age must be set before the caps' sheet reads it");
         }
@@ -266,6 +266,45 @@ namespace HiddenHarbours.Tests.Art.EditMode
             Assert.AreEqual(d.AgeTear, FloatDefault(src, "_FoamSheetAgeTear"), 1e-6f, "_FoamSheetAgeTear");
             CollectionAssert.AreEqual(new[] { d.EdgeVector.x, d.EdgeVector.y, d.EdgeVector.z, d.EdgeVector.w },
                 VectorDefault(src, "_FoamSheetEdge"), "_FoamSheetEdge");
+            CollectionAssert.AreEqual(new[] { d.DitherVector.x, d.DitherVector.y, d.DitherVector.z, d.DitherVector.w },
+                VectorDefault(src, "_FoamSheetDither"), "_FoamSheetDither");
+        }
+
+        // The owner's look of 11-19: the rowed trail's heart read as "a dense mat with a visible checker", the
+        // world Bayer cell's 4-pixel repeat (a 1/8 m grid) on every thin foam whose value sits on a step.
+        [Test]
+        public void TheSheetsBandEdges_AreBrokenByAFixedNoise_NotTheBayerChecker()
+        {
+            string src = Source();
+            string dither = Body(src, "float FoamSheetBandDither(");
+            StringAssert.Contains("if (share <= 0.001) return bayer;", dither, "0 keeps the Bayer cell, bit-exact");
+            StringAssert.Contains("ValueNoise(p)", dither, "a fixed world noise");
+            StringAssert.DoesNotContain("_Time", dither, "fixed in the world: it cannot crawl");
+            string code = CodeOnly(src);
+            Assert.AreEqual(1, CountOf(code, "float sheetBay = FoamSheetBandDither(worldXY, bay);"), "one read per pixel");
+            // Every sheet takes the band edges: the shore line, the caps, the storm streaks, the wake and the surf.
+            StringAssert.Contains("fringeAge01, 0.0), sheetBay);", code);
+            StringAssert.Contains("capAge01, 0.0), sheetBay);", code);
+            StringAssert.Contains("stormAge01, 0.0), sheetBay);", code);
+            StringAssert.Contains("WakeFoamCoverage(worldXY, washZone > 0.001 ? 0.5 : sheetBay,", code);
+            Assert.AreEqual(4, CountOf(code, "surfSheetBay, _FoamSheet"), "the surf's and the wash's joins");
+            Assert.AreEqual(0, Regex.Matches(code, @"FoamSheetCover\([^;]*\), bay\);").Count, "no sheet keeps the bare Bayer cell");
+            FoamSheetSettings d = FoamSheetSettings.Default;
+            Assert.AreEqual(1f, d.BandNoise, "the shipped band edges are the torn noise");
+            Assert.Greater(d.BandNoiseSizeMetres, 1f / 32f, "the noise's lumps are bigger than a pixel");
+        }
+
+        // The owner's ruling of 11-19, "Yes, small burst": each catch shows a small, clearly visible burst.
+        [Test]
+        public void TheOarsCatch_LaysEnoughFoamToCrossTheSheetsThreshold()
+        {
+            string src = Source();
+            float full = FloatDefault(src, "_WakeFoamThreshold") + FloatDefault(src, "_WakeFoamSoftness");
+            FoamSheetSettings d = FoamSheetSettings.Default;
+            Assert.Greater(d.OarCatch, full, "the catch's heart reads as full foam, not a speck");
+            Assert.Greater(d.OarRelease, FloatDefault(src, "_WakeFoamThreshold"), "the release leaves visible foam");
+            Assert.Greater(d.OarCatchRadius, d.OarRadius, "the burst is wider than the pull's smear");
+            Assert.LessOrEqual(d.OarCatchRadius, 0.5f, "a small burst: at most half a metre either side");
         }
 
         // The owner's oar look of 11-19: the oars' puddles drew as "hard-edged blocky white squares" and the

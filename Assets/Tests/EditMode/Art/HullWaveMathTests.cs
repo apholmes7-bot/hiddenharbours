@@ -698,7 +698,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
                                    System.StringComparison.Ordinal);
             Assert.Greater(join, 0, "the crests' foam does not join the shared foam mat");
             Assert.Greater(tear, join, "the crests' foam must be torn and shaped with the churn, not after it");
-            StringAssert.Contains("WakeFoamCoverage(worldXY, washZone > 0.001 ? 0.5 : bay, hullCrestFoam, wakeFresh);", src);
+            StringAssert.Contains("WakeFoamCoverage(worldXY, washZone > 0.001 ? 0.5 : sheetBay, hullCrestFoam, wakeFresh);", src);
             StringAssert.DoesNotContain("lerp(col.rgb, _FoamColor.rgb, hwFoam", src,
                 "the hull waves must not draw a foam white of their own");
 

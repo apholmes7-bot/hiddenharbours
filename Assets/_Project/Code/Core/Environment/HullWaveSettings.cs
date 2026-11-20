@@ -64,6 +64,38 @@ namespace HiddenHarbours.Core
                  "SpacingWavelengths: closer sources blend her rings into a soft V instead of single loops. " +
                  "Only hulls no longer than SmallHullLengthMetres. 0 = her spacing is SpacingWavelengths.")]
         [Range(0f, 2f)] public float SmallHullSpacingWavelengths;
+        [Tooltip("A short hull's rings are each a little different, so her V and track read as softly " +
+                 "disturbed water rather than a chain of stacked loops: how much a ring's height may fall " +
+                 "short of her crest (0 = every ring the same height, 0.6 = some rings only 40% as tall). " +
+                 "Fixed per ring from where in time it was laid, so the same voyage draws the same water. " +
+                 "Only hulls no longer than SmallHullLengthMetres.")]
+        [Range(0f, 1f)] public float SmallHullHeightScatter;
+        [Tooltip("A short hull's rings: how much a ring's wavelength may differ from hers, as a share either " +
+                 "way (0 = all the same, 0.25 = from 75% to 125%). Only hulls no longer than SmallHullLengthMetres.")]
+        [Range(0f, 0.6f)] public float SmallHullWavelengthScatter;
+        [Tooltip("A short hull's rings: how far a ring's crests may sit off the ring before it, as a share of " +
+                 "half a wavelength either way (0 = every ring in step, which lines the crests up into a " +
+                 "regular pattern; 1 = any phase). Only hulls no longer than SmallHullLengthMetres.")]
+        [Range(0f, 1f)] public float SmallHullPhaseScatter;
+        [Tooltip("A short hull's rings: how unevenly they are laid along her track. Each gap is from one to " +
+                 "1 + 2 x this spacings (0 = evenly, 0.5 = from one to two spacings; never closer, so her " +
+                 "budget holds). Only hulls no longer than SmallHullLengthMetres.")]
+        [Range(0f, 0.9f)] public float SmallHullSpacingScatter;
+        [Tooltip("While hull waves are on and she makes way, the share of her churned trail foam a short hull " +
+                 "lays, in place of TrailFoamShare (a rowed hull's trail is a thin lace, not a mat). Only hulls " +
+                 "no longer than SmallHullLengthMetres. Below 0 = she uses TrailFoamShare.")]
+        [Range(-1f, 1f)] public float SmallHullTrailFoamShare;
+        [Tooltip("How far, metres, each of a short hull's rings is laid off her track point, either way on both " +
+                 "axes, from a fixed number of its birth time: the rings of one stroke stop sharing a centre, so they " +
+                 "no longer stack into one loop. Only hulls no longer than SmallHullLengthMetres. 0 = on her track.")]
+        [Range(0f, 1f)] public float SmallHullCentreScatterMetres;
+        [Tooltip("How much of a short hull's ring the water breaks into arcs: each ring keeps a few torn arcs of " +
+                 "its circle, fixed by where it was laid, so the rings astern read as disturbed water, not a chain " +
+                 "of loops. Only hulls no longer than SmallHullLengthMetres; a longer hull's rings stay whole. 0 = " +
+                 "whole rings.")]
+        [Range(0f, 1f)] public float SmallHullArcShare;
+        [Tooltip("How many arcs round a short hull's broken ring (whole numbers; SmallHullArcShare).")]
+        [Range(1f, 6f)] public float SmallHullArcLobes;
         [Tooltip("The bow's waves as a share of the stern's.")]
         [Range(0f, 2f)] public float BowShare;
 
@@ -206,6 +238,14 @@ namespace HiddenHarbours.Core
             SmallHullCrestMetres = 0.07f,
             SmallHullLengthMetres = 6f,
             SmallHullSpacingWavelengths = 0.35f,
+            SmallHullHeightScatter = 0.85f,
+            SmallHullWavelengthScatter = 0.25f,
+            SmallHullPhaseScatter = 0.7f,
+            SmallHullSpacingScatter = 0.3f,
+            SmallHullTrailFoamShare = 0.18f,
+            SmallHullCentreScatterMetres = 0.3f,
+            SmallHullArcShare = 1f,
+            SmallHullArcLobes = 3f,
             BowShare = 0.7f,
 
             LifetimeSecondsPerMetreLength = 0.8f,
