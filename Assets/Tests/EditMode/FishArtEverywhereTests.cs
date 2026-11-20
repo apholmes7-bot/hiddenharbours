@@ -278,8 +278,9 @@ namespace HiddenHarbours.Tests
         /// <summary>The smallest sprite, px wide, that still reads in the card's icon slot.</summary>
         const float KeptShellfishIconMinPx = 16f;
 
-        /// <summary>Old flat sprites still in use on purpose: the surf clam and the quahog borrow the old
-        /// clam sprite until their own plates land (the soft-shell clam itself has moved to its plate).</summary>
+        /// <summary>Old flat sprites exempt from the retired-art scan. Nothing points at the old clam sprite
+        /// any more (the soft-shell clam, the quahog and the surf clam each have an icon of their own); the
+        /// exemption is harmless and can go with the deliberate delete of the old files.</summary>
         static readonly string[] KeptShellfishIcons = { "SoftShellClam" };
 
         // ---- the fight: on the line and the land pose ----------------------------------------------
