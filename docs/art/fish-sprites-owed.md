@@ -40,8 +40,8 @@ pass 2 style. Each is the Def's `Sprite` and its `IconLibrary` entry (`OwedCatch
 
 | Species | Before | Now |
 |---|---|---|
-| Herring, mackerel | 14x3 and 19x6 deck-cell trims | Icon-scale renders of the same lay, 43x10 and 43x12 |
-| Lobster, rock crab | The old flat trap-kit sprites (`Art/Fishing/Lobster.png`, `RockCrab.png`, kept as files) | The rig's field-guide plates, `ShellIcon_lobster.png`, `ShellIcon_rock_crab.png` |
+| Herring, mackerel, flounder | 14x3, 19x6 and 21x7 deck-cell trims | Icon-scale renders of the same lay, 43x10, 43x12 and 40x14 |
+| Lobster, rock crab | The old flat trap-kit sprites (`Art/Fishing/Lobster.png`, `RockCrab.png`, kept as files) | The rig's field-guide plates, `ShellIcon_lobster.png`, `ShellIcon_rock_crab.png` (the crab in its pot-deck red-brown) |
 | Soft-shell clam | The old flat `Sprites/Fish/SoftShellClam.png` (still borrowed by the quahog and the surf clam) | The rig's clam plate, `ShellIcon_soft_shell_clam.png` |
 | Oyster, blue mussel, sea scallop | No sprite at all, and no icon library entry | `ShellIcon_american_oyster.png`, `ShellIcon_blue_mussel.png`, `ShellIcon_sea_scallop.png` |
 

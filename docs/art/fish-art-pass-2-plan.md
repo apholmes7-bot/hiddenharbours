@@ -53,10 +53,10 @@ size" applies to the world. An icon is a picture of the fish, so a separate icon
 frame 0) from the catch pass 2 rig at icon scale (herring 5.0, mackerel 2.8) into
 `docs/art/rigs/coast-species-kit/icon-cells/FishIconCell_<sp>.png`. `FishIconBuilder.TrimmedIcon`
 reads that cell before the deck sheet, so Build Fish Icons cuts and wires them as before and the
-pixel-for-pixel test still holds. Herring 14x3 → 43x10, mackerel 19x6 → 43x12. The deck sheets are
+pixel-for-pixel test still holds. Herring 14x3 → 43x10, mackerel 19x6 → 43x12, flounder 21x7 → 40x14 (scale 3.2). The deck sheets are
 untouched. The same bake draws the crustacean and shellfish icons (`ShellIcon_<id leaf>.png`): the
 lobster, rock crab and soft-shell clam from the rig's own plates, and the oyster, blue mussel and sea
-scallop, which had no icon at all. The flounder (21x7) is the one small icon left; it was not in scope.
+scallop, which had no icon at all. The rock crab icon is taken to the red-brown of its pot-deck sheet so the two read as one animal.
 
 ## 2. The size floor in the hands
 
