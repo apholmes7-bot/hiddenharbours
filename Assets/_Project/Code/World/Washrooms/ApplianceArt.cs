@@ -22,7 +22,7 @@ namespace HiddenHarbours.World
     /// <para>Presentation only. Nothing here is saved; nothing here changes the wash or the seat.</para>
     /// </summary>
     [DisallowMultipleComponent]
-    public sealed class ApplianceArt : MonoBehaviour
+    public sealed class ApplianceArt : MonoBehaviour, IFacingCellSource
     {
         [Tooltip("Which piece this is: picks its sheet, its states and its seat.")]
         [SerializeField] private ApplianceKind _kind;
@@ -59,6 +59,16 @@ namespace HiddenHarbours.World
 
         /// <summary>The sheet cell the piece is showing (0..7).</summary>
         public int Cell => _cell;
+
+        /// <summary>The cell, worked out first if the piece has not drawn yet (something placed on it asks).</summary>
+        public int FacingCell
+        {
+            get
+            {
+                if (!_resolved) ResolveCell();
+                return _cell;
+            }
+        }
 
         /// <summary>The timeline, for tests and the look probe.</summary>
         public WashFixtureTimeline Timeline => _timeline;
