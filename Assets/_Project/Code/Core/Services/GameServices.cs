@@ -1366,13 +1366,6 @@ namespace HiddenHarbours.Core
         public static HelmAutopilotSettings HelmAutopilot =>
             Config != null ? Config.HelmAutopilot : HelmAutopilotSettings.Default;
 
-        /// <summary>The masthead pennant's tunables (VS-19) — the boat's own wind instrument. Same
-        /// contract as <see cref="WaveField"/>, including the <c>Config != null</c> discipline (never
-        /// <c>?.</c>/<c>??</c> on a <c>UnityEngine.Object</c>). Falls back to
-        /// <see cref="TelltaleSettings.Default"/> so an unwired art scene still flies a burgee.</summary>
-        public static TelltaleSettings Telltale =>
-            Config != null ? Config.Telltale : TelltaleSettings.Default;
-
         /// <summary>The mesh fleet's keyline gate (ADR 0031 — the keyline retirement): does the
         /// fullscreen resolve still flood the legacy 1 px outline around every mesh hull? Same contract
         /// as <see cref="WaveField"/>, including the <c>Config != null</c> discipline (never
