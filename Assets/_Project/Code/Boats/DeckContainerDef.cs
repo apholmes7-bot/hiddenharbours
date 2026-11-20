@@ -55,9 +55,9 @@ namespace HiddenHarbours.Boats
         [Header("Fill states (owner canon, 'important': the sprite VISIBLY changes with contents)")]
         [Tooltip("The painted fill states, ordered EMPTY first → BRIM-FULL last (any count ≥ 2). The " +
                  "presenter maps hold fullness onto them: the FIRST sprite is pinned to an empty hold, " +
-                 "the LAST to a full hold, and the rest spread evenly across the partial range. Leave " +
-                 "EMPTY to use the code-built greybox silhouettes (4 states: empty / low / half / brim) " +
-                 "until the painted art lands — the art drops in here with ZERO code change.")]
+                 "the LAST to a full hold, and the rest spread evenly across the partial range. Left " +
+                 "EMPTY, the container draws NOTHING on deck until the painted art lands — the art " +
+                 "drops in here with ZERO code change.")]
         public Sprite[] FillSprites;
     }
 }
