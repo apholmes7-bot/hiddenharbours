@@ -355,6 +355,15 @@ Shader "HiddenHarbours/Water"
         _ShorewardFalloff ("Shoreward falloff depth (m, fades to wind out at sea)", Float) = 2.5
         _ShoreSampleStep  ("Shore gradient sample step (m)", Float) = 0.4
 
+        [Header(Shore waves   the wave trains turn to meet each beach face on)]
+        // Inside a band of distance offshore (the field WaterSurface builds once from the seabed) every
+        // wave train cross-fades into a copy of itself whose crests follow the shoreline, so waves arrive
+        // face-on at every beach, whichever way it faces. VISUAL only. Bend 0 = the straight trains exactly.
+        _ShoreWaveBend    ("Shore waves: how fully they turn to meet the beach (0 = straight)", Range(0,1)) = 0.75
+        _ShoreWaveReach   ("Shore waves: how far out the turn starts (m)", Range(2,160)) = 40
+        [HideInInspector] _ShoreWaveOn ("Shore wave field bound (WaterSurface sets it)", Float) = 0
+        [HideInInspector][NoScaleOffset] _ShoreWaveTex ("Shore wave field (R metres offshore, GB gradient)", 2D) = "black" {}
+
         [Header(Beach swash   always on shoreline wash   the water runs IN and OUT)]
         _SwashAmplitude    ("Swash amplitude (m of contour excursion)", Float)   = 0.3
         _SwashSpeed        ("Swash speed (run-ups per sec; 0.16 ~ one every 6 s)", Float) = 0.5
@@ -1247,6 +1256,9 @@ Shader "HiddenHarbours/Water"
 
             TEXTURE2D(_HeightTex);
             SAMPLER(sampler_HeightTex);
+            // The shore-wave field, over the _HeightTex rect; read through sampler_HeightTex (bilinear,
+            // clamp) so it costs no sampler slot of its own.
+            TEXTURE2D(_ShoreWaveTex);
 
             // Owner-painted slots. Each uses its own sampler so the texture's import settings (author
             // them Point filter + Repeat wrap for the pixel look) drive sampling — no forced inline state.
@@ -1810,6 +1822,9 @@ Shader "HiddenHarbours/Water"
                 float  _HeightMax;
                 float4 _HeightWorldMin;
                 float4 _HeightWorldSize;
+                float  _ShoreWaveBend;
+                float  _ShoreWaveReach;
+                float  _ShoreWaveOn;
                 // Painted-texture blend strengths + tiling (the _Use* toggle floats live only as keyword
                 // drivers — like _UseHeightTex — and are intentionally NOT in the CBUFFER).
                 float  _PaintScale;
@@ -3716,8 +3731,29 @@ Shader "HiddenHarbours/Water"
                 return floor(saturate(dithered) * steps + 0.5) / steps;
             }
 
+            // ---- SHORE WAVES: how far a train has turned to meet the shore here ------------------------------
+            // The field (ShoreWaveField.cs) holds metres offshore (negative inland) and its gradient over the
+            // _HeightTex rect. Returns the turned share: _ShoreWaveBend at and inside the shoreline, easing to
+            // 0 by _ShoreWaveReach metres out, 0 off the rect and 0 with no field bound (then the trains run
+            // exactly as before). LOD 0 so the vertex stage reads the same field. VISUAL only (rule 5).
+            float ShoreWaveTurn(float2 worldXY, out float metresOffshore, out float2 offshoreGradient)
+            {
+                metresOffshore = 0.0;
+                offshoreGradient = float2(0.0, 0.0);
+                if (_ShoreWaveOn <= 0.0 || _ShoreWaveBend <= 0.0) return 0.0;
+                float2 uv = (worldXY - _HeightWorldMin.xy) / max(_HeightWorldSize.xy, float2(1e-3, 1e-3));
+                if (any(uv < 0.0) || any(uv > 1.0)) return 0.0;
+                float4 field = SAMPLE_TEXTURE2D_LOD(_ShoreWaveTex, sampler_HeightTex, uv, 0);
+                metresOffshore = field.r;
+                offshoreGradient = field.gb;
+                return saturate(_ShoreWaveBend) * (1.0 - smoothstep(0.0, max(_ShoreWaveReach, 1e-3), field.r));
+            }
+
             // One march and one set of eight growth factors per pixel or vertex. Curvature and
             // convergence taps reuse those factors. The omitted spatial gradient is quantified in ADR 0018.
+            // Shore waves: each train is cross-faded by ShoreWaveTurn into a copy whose phase runs along
+            // -metresOffshore (crests on the contours of distance from shore, travelling in). Turn 0 reads
+            // the straight sum bit for bit. The turn's own spatial gradient is omitted, like the fetch's.
             void WaveFieldSample(float2 worldXY, float freqScale, FetchFactors fetch,
                                  out float height, out float2 slopeXY, out float crestF, out float primaryCos)
             {
@@ -3725,6 +3761,10 @@ Shader "HiddenHarbours/Water"
                 slopeXY = float2(0.0, 0.0);
                 crestF = 0.0;
                 primaryCos = 0.0;
+                float shoreMetres;
+                float2 shoreGradient;
+                float turned = ShoreWaveTurn(worldXY, shoreMetres, shoreGradient);
+                float straight = 1.0 - turned;
 
                 float4 trains[WAVE_MAX_TRAINS] = { _WaveTrain0, _WaveTrain1, _WaveTrain2, _WaveTrain3,
                                                    _WaveTrain4, _WaveTrain5, _WaveTrain6, _WaveTrain7 };
@@ -3753,13 +3793,27 @@ Shader "HiddenHarbours/Water"
 
                         float s = (sinT + 1.0) * 0.5;              // 0 in the trough .. 1 at the crest
                         float shaped = pow(max(s, 1e-6), p);       // pinch: narrow crest, broad trough
-                        height += amplitude * (2.0 * shaped - 1.0);
+                        float straightAmp = amplitude * straight;  // x 1.0 exactly when nothing turned
+                        height += straightAmp * (2.0 * shaped - 1.0);
 
                         // the ANALYTIC derivative (chain rule) of the height term — the C# reference's slope.
-                        float slopeMag = amplitude * p * pow(max(s, 1e-6), p - 1.0) * cosT * k;
+                        float slopeMag = straightAmp * p * pow(max(s, 1e-6), p - 1.0) * cosT * k;
                         slopeXY += slopeMag * trains[i].xy;
 
-                        if (i == dominant) primaryCos = cosT;      // the DOMINANT train's face sign (see doc)
+                        float faceCos = cosT;
+                        [branch] if (turned > 0.0)
+                        {
+                            // The same train, phase along -metresOffshore: grad(theta) = -k grad(metres).
+                            float thetaS = phis[i] - k * shoreMetres;
+                            float cosS = cos(thetaS);
+                            float sS = (sin(thetaS) + 1.0) * 0.5;
+                            float turnedAmp = amplitude * turned;
+                            height += turnedAmp * (2.0 * pow(max(sS, 1e-6), p) - 1.0);
+                            slopeXY -= (turnedAmp * p * pow(max(sS, 1e-6), p - 1.0) * cosS * k) * shoreGradient;
+                            faceCos = lerp(cosT, cosS, turned);
+                        }
+
+                        if (i == dominant) primaryCos = faceCos;   // the DOMINANT train's face sign (see doc)
                     }
                 }
 

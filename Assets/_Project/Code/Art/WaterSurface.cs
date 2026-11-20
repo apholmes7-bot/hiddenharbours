@@ -253,6 +253,18 @@ namespace HiddenHarbours.Art
                  "Leave at 0 (mean datum) unless the scene's water plane sits at a different level; this is the " +
                  "estimate's reference, NOT the live sim tide (which the shader applies as _WaterLevel on top).")]
         [SerializeField] private float _referenceWaterLevel = 0f;
+
+        [Header("Shore waves (the drawn waves turn to meet each beach)")]
+        [Tooltip("Cells per side of the shore-wave field, built once when this sea's seabed is fed. It holds how " +
+                 "far each spot lies offshore; the shader turns the waves along it. Coarse is fine: it is smooth.")]
+        [Range(32, 512)] [SerializeField] private int _shoreWaveResolution = 256;
+        [Tooltip("The seabed elevation (m above datum) that counts as the shoreline for the shore-wave field. " +
+                 "0 = the mean tide. Not the live tide: the field is built once and the turn reads it at any level.")]
+        [SerializeField] private float _shoreWaveReferenceLevel = 0f;
+        [Tooltip("Distances past this (m) read as open sea. Keep it above the material's shore-wave reach.")]
+        [Min(1f)] [SerializeField] private float _shoreWaveMaxDistance = 192f;
+        [Tooltip("3x3 smoothing passes over the distance, rounding the creases where two shores meet in a bay.")]
+        [Range(0, 8)] [SerializeField] private int _shoreWaveSmoothing = 3;
         [Tooltip("Painted LAND tilemaps to read as land (any cell holding a tile = land). For the hand-painted " +
                  "cove, assign the terrain tilemap(s) you paint the island/beach on. Empty → every Tilemap in the " +
                  "scene is treated as land (fine when you only paint ground; assign explicitly if you also paint " +
@@ -310,6 +322,9 @@ namespace HiddenHarbours.Art
         private static readonly int IdHWorldMin  = Shader.PropertyToID("_HeightWorldMin");
         private static readonly int IdHWorldSize = Shader.PropertyToID("_HeightWorldSize");
         private static readonly int IdSeabedTex  = Shader.PropertyToID("_SeabedTex");
+        // The shore-wave field (ShoreWaveField): metres offshore + gradient over the height rect, and its gate.
+        private static readonly int IdShoreWaveTex = Shader.PropertyToID("_ShoreWaveTex");
+        private static readonly int IdShoreWaveOn  = Shader.PropertyToID("_ShoreWaveOn");
         // (W4-4) The floor's gate: 1 only while a live ground sharing this sea's frame is bound with
         // its kit loaded (TerrainSplatSurface.WriteGroundFloor writes it); 0 keeps the floor off.
         private static readonly int IdDetailLoaded = Shader.PropertyToID("_DetailLoaded");
@@ -435,6 +450,7 @@ namespace HiddenHarbours.Art
         private Renderer _renderer;
         private MaterialPropertyBlock _mpb;
         private Texture2D _heightTex;
+        private Texture2D _shoreWaveTex;
 
         /// <summary>The graphics device the height format was probed on — a probe is only valid for the
         /// device that answered it, and an editor can change device without a domain reload.</summary>
@@ -597,6 +613,7 @@ namespace HiddenHarbours.Art
             StillWaterGlobals.Release(this);   // the last sea to go unsets the still water too (ADR 0046)
             // (WS-2) Free the baked fallback height texture (the painted path never allocates _heightTex).
             DestroyBakedHeightTexture();
+            DestroyShoreWaveTexture();
         }
 
         /// <summary>
@@ -653,6 +670,15 @@ namespace HiddenHarbours.Art
         {
             // (WS-2) Belt-and-braces: ensure the baked texture is freed even if OnDisable didn't run.
             DestroyBakedHeightTexture();
+            DestroyShoreWaveTexture();
+        }
+
+        private void DestroyShoreWaveTexture()
+        {
+            if (_shoreWaveTex == null) return;
+            if (Application.isPlaying) Destroy(_shoreWaveTex);
+            else DestroyImmediate(_shoreWaveTex);
+            _shoreWaveTex = null;
         }
 
         /// <summary>
@@ -1738,6 +1764,7 @@ namespace HiddenHarbours.Art
             _mpb.SetVector(IdHWorldMin, new Vector4(min.x, min.y, 0f, 0f));
             _mpb.SetVector(IdHWorldSize, new Vector4(_heightWorldSize.x, _heightWorldSize.y, 0f, 0f));
             FeedSeabedTexture(_mpb);
+            FeedShoreWaveField(_mpb, elevation, res);
             SeabedGlobals.Publish(_heightTex, min, _heightWorldSize, _heightMin, _heightMax, ShoreSampleStep());
             _renderer.SetPropertyBlock(_mpb);
 
@@ -1762,10 +1789,84 @@ namespace HiddenHarbours.Art
             _mpb.SetVector(IdHWorldMin, new Vector4(min.x, min.y, 0f, 0f));
             _mpb.SetVector(IdHWorldSize, new Vector4(_heightWorldSize.x, _heightWorldSize.y, 0f, 0f));
             FeedSeabedTexture(_mpb);
+            FeedShoreWaveField(_mpb, null, 0);
             SeabedGlobals.Publish(_paintedHeightTex, min, _heightWorldSize, _heightMin, _heightMax, ShoreSampleStep());
             _renderer.SetPropertyBlock(_mpb);
 
             EnableHeightTexKeyword();
+        }
+
+        /// <summary>
+        /// Build this sea's shore-wave field (<see cref="ShoreWaveField"/>) from the seabed just fed and
+        /// bind it, over the same world rect as <c>_HeightTex</c>. Runs only with a height feed (enable, a
+        /// terrain arriving, an edit-mode inspector change), never per frame; nothing is saved. With
+        /// <paramref name="baked"/> null it reads the painted height texture (readable by contract, the
+        /// same bytes the sim decodes). If no source can be read the gate stays 0 and the waves draw
+        /// straight, exactly as before.
+        /// </summary>
+        private void FeedShoreWaveField(MaterialPropertyBlock mpb, float[] baked, int bakedRes)
+        {
+            int res = Mathf.Clamp(_shoreWaveResolution, 32, 512);
+            float[] elevation = ShoreWaveElevation(res, baked, bakedRes);
+            if (elevation == null)
+            {
+                mpb.SetFloat(IdShoreWaveOn, 0f);
+                return;
+            }
+            float[] field = ShoreWaveField.Build(elevation, res, res, _heightWorldSize.x / res,
+                _heightWorldSize.y / res, _shoreWaveReferenceLevel, _shoreWaveMaxDistance,
+                Mathf.Clamp(_shoreWaveSmoothing, 0, 8));
+
+            if (_shoreWaveTex == null || _shoreWaveTex.width != res)
+            {
+                DestroyShoreWaveTexture();
+                _shoreWaveTex = new Texture2D(res, res, TextureFormat.RGBAHalf, false, true)
+                {
+                    name = "WaterSurface.ShoreWaveField",
+                    wrapMode = TextureWrapMode.Clamp,
+                    filterMode = FilterMode.Bilinear,
+                    hideFlags = HideFlags.DontSave,
+                };
+            }
+            var halves = new ushort[field.Length];
+            for (int i = 0; i < field.Length; i++) halves[i] = Mathf.FloatToHalf(field[i]);
+            _shoreWaveTex.SetPixelData(halves, 0);
+            _shoreWaveTex.Apply(false, false);
+            mpb.SetTexture(IdShoreWaveTex, _shoreWaveTex);
+            mpb.SetFloat(IdShoreWaveOn, 1f);
+        }
+
+        // The seabed elevations (m) at the shore-wave field's cell centres: the painted texture through
+        // its own bilinear read, or the baked grid by the same bilinear rule the GPU applies to it.
+        private float[] ShoreWaveElevation(int res, float[] baked, int bakedRes)
+        {
+            bool painted = baked == null;
+            if (painted && (_paintedHeightTex == null || !_paintedHeightTex.isReadable)) return null;
+            if (!painted && (bakedRes < 1 || baked.Length != bakedRes * bakedRes)) return null;
+            var elevation = new float[res * res];
+            for (int y = 0; y < res; y++)
+            for (int x = 0; x < res; x++)
+            {
+                float u = (x + 0.5f) / res, v = (y + 0.5f) / res;
+                float e;
+                if (painted)
+                {
+                    e = Mathf.Lerp(_heightMin, _heightMax, _paintedHeightTex.GetPixelBilinear(u, v).r);
+                }
+                else
+                {
+                    float gx = Mathf.Clamp(u * bakedRes - 0.5f, 0f, bakedRes - 1f);
+                    float gy = Mathf.Clamp(v * bakedRes - 0.5f, 0f, bakedRes - 1f);
+                    int x0 = Mathf.Min((int)gx, bakedRes - 1), y0 = Mathf.Min((int)gy, bakedRes - 1);
+                    int x1 = Mathf.Min(x0 + 1, bakedRes - 1), y1 = Mathf.Min(y0 + 1, bakedRes - 1);
+                    float fx = gx - x0, fy = gy - y0;
+                    float bottom = Mathf.Lerp(baked[y0 * bakedRes + x0], baked[y0 * bakedRes + x1], fx);
+                    float top = Mathf.Lerp(baked[y1 * bakedRes + x0], baked[y1 * bakedRes + x1], fx);
+                    e = Mathf.Lerp(bottom, top, fy);
+                }
+                elevation[y * res + x] = e;
+            }
+            return elevation;
         }
 
         /// <summary>
