@@ -93,6 +93,17 @@ namespace HiddenHarbours.Core
                  "waves' own FoamAgeTear; the larger wins.")]
         [Range(0f, 1f)] public float AgeTear;
 
+        [Header("Open-water edge")]
+        [Tooltip("How far the open-water foam (wake and oars) is softened when it is read from the foam " +
+                 "buffer (m). The buffer's cells are 1/8 m, so 0 reads them hard and square; about 0.2 m " +
+                 "blends neighbouring cells into a soft edge. 0 here and in the warp = the older hard read.")]
+        [Range(0f, 1f)] public float EdgeSoftenMetres;
+        [Tooltip("How far the read point wanders (m) so a foam patch's edge is ragged rather than " +
+                 "following the buffer's grid. 0 = straight cell edges.")]
+        [Range(0f, 0.5f)] public float EdgeWarpMetres;
+        [Tooltip("The size of the ragged wander (m): smaller = finer, lacier tearing at the edge.")]
+        [Range(0.1f, 4f)] public float EdgeWarpSizeMetres;
+
         [Header("Oar splash")]
         [Tooltip("How the oars' foam is drawn: 1 = where a blade goes in, works and comes out it lays foam " +
                  "into the one foam sheet (the same buffer, lace and ageing as the wake), and the oars draw no " +
@@ -134,12 +145,23 @@ namespace HiddenHarbours.Core
 
             AgeTear = 1f,
 
+            EdgeSoftenMetres = 0.2f,
+            EdgeWarpMetres = 0.18f,
+            EdgeWarpSizeMetres = 0.5f,
+
+            // The owner's oar look of 11-19: small torn puddles that are gone within a few seconds, not
+            // solid white mats (was 0.35 m, 0.8/s, 0.15, 0.12).
             Oar = 1f,
-            OarRadius = 0.35f,
-            OarPerSecond = 0.8f,
-            OarCatch = 0.15f,
-            OarRelease = 0.12f,
+            OarRadius = 0.3f,
+            OarPerSecond = 0.5f,
+            OarCatch = 0.1f,
+            OarRelease = 0.08f,
         };
+
+        /// <summary>The open-water edge read as the shader's <c>_FoamSheetEdge</c> vector
+        /// (soften m, warp m, warp size m, 0).</summary>
+        public Vector4 EdgeVector => new Vector4(Mathf.Max(EdgeSoftenMetres, 0f), Mathf.Max(EdgeWarpMetres, 0f),
+            Mathf.Max(EdgeWarpSizeMetres, 0.05f), 0f);
 
         /// <summary>True when the oars lay their foam into the sheet rather than drawing their own.</summary>
         public bool OarJoinsSheet => Oar >= 0.5f;

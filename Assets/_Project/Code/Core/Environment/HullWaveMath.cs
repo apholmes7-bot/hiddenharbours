@@ -196,6 +196,23 @@ namespace HiddenHarbours.Core
         /// foam buffer, drawn by the one foam path every foam on the sea uses.</summary>
         public static bool DrawnFoamRetired(in HullWaveSettings s) => s.Enabled && s.RetireDrawnFoam;
 
+        /// <summary>
+        /// The low-light lift on her waves' shade: <c>1 + LowLightGain · dim</c>. The water draws the
+        /// shade once before its palette grade as at noon, and the extra <c>LowLightGain · dim</c> share of
+        /// it again after the grade, where the dusk value floor cannot flatten it. <c>dim</c> runs
+        /// 0..1 as the sun's luminance <paramref name="sunLuminance"/> falls from
+        /// <c>LowLightStartLuminance</c> to <c>LowLightFullLuminance</c>. Exactly 1 at or above the start
+        /// (noon is untouched) and with no day/night cycle running (<paramref name="cycleOn"/> false).
+        /// Twin of the shader's <c>hwDim</c>.
+        /// </summary>
+        public static float LowLightGain(float sunLuminance, bool cycleOn, in HullWaveSettings s)
+        {
+            if (!cycleOn) return 1f;
+            float span = Mathf.Max(s.LowLightStartLuminance - s.LowLightFullLuminance, 1e-3f);
+            float dim = Mathf.Clamp01((s.LowLightStartLuminance - sunLuminance) / span);
+            return 1f + Mathf.Max(s.LowLightGain, 0f) * dim;
+        }
+
         /// <summary>The shade the water draws: <see cref="SoftShade"/>, with a trough held to
         /// TroughCeilingShare of it. Twin of the shader's hull-wave shading.</summary>
         public static float WaveShade(float raw, in HullWaveSettings s)

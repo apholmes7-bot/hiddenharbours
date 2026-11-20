@@ -37,6 +37,7 @@ namespace HiddenHarbours.Art
         public static readonly int IdFoam = Shader.PropertyToID("_HHHullWaveFoam");
         public static readonly int IdLook = Shader.PropertyToID("_HHHullWaveLook");
         public static readonly int IdFoamAge = Shader.PropertyToID("_HHHullWaveFoamAge");
+        public static readonly int IdLowLight = Shader.PropertyToID("_HHHullWaveLowLight");
 
         /// <summary>Metres added round the camera's view before a ring counts as out of sight (the
         /// displaced lift moves water up the screen, and the view must not clip a crest).</summary>
@@ -107,6 +108,8 @@ namespace HiddenHarbours.Art
                 Mathf.Max(s.CrestFoamSteepnessRamp, 1e-3f), Mathf.Clamp01(s.FoamAgeTear), 0f));
             Shader.SetGlobalVector(IdLook, new Vector4(Mathf.Max(s.ShadeCeiling, 0f), Mathf.Clamp01(s.BreakupShare),
                 1f / Mathf.Max(s.BreakupMetres, 0.05f), Mathf.Max(s.WobbleMetres, 0f)));
+            Shader.SetGlobalVector(IdLowLight, new Vector4(Mathf.Max(s.LowLightGain, 0f),
+                Mathf.Clamp01(s.LowLightStartLuminance), Mathf.Clamp01(s.LowLightFullLuminance), 0f));
         }
 
         private static bool TryViewRect(out Rect view)

@@ -143,6 +143,17 @@ namespace HiddenHarbours.Core
         [Range(0f, 3f)] public float CrestFoamSteepness;
         [Tooltip("Steepness above the onset over which that crest foam comes in fully.")]
         [Range(0.01f, 2f)] public float CrestFoamSteepnessRamp;
+        [Tooltip("How much more of the water's colour her waves take in low light, at full dimness (0 = the " +
+                 "same share as at noon). As the sun's colour dims at dusk and night the sea is darker and a " +
+                 "gentle wave reads as nothing; this keeps her V reading as gently as at noon. The whole " +
+                 "soft shade, ShadeCeiling included, is scaled by 1 + this: dusk light is about half of " +
+                 "noon's, so 1 gives about the same step.")]
+        [Range(0f, 6f)] public float LowLightGain;
+        [Tooltip("The sun's luminance (0..1, the day/night tint) below which the low-light lift starts. Noon " +
+                 "sits above it.")]
+        [Range(0f, 1f)] public float LowLightStartLuminance;
+        [Tooltip("The sun's luminance (0..1) at which the low-light lift is full (dusk and darker).")]
+        [Range(0f, 1f)] public float LowLightFullLuminance;
 
         [Header("Her foam while she draws waves")]
         [Tooltip("While hull waves are on, the trail foam's widening fan (the older drawn stand-in for " +
@@ -223,6 +234,9 @@ namespace HiddenHarbours.Core
             BreakupMetres = 4f,
             WobbleMetres = 0.4f,
             TroughCeilingShare = 0.6f,
+            LowLightGain = 2f,
+            LowLightStartLuminance = 0.85f,
+            LowLightFullLuminance = 0.5f,
             CrestFoamSteepness = 0.6f,
             CrestFoamSteepnessRamp = 0.3f,
 

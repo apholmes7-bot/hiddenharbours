@@ -1126,6 +1126,11 @@ Shader "HiddenHarbours/Water"
         // How hard the sheet tears apart as its foam ages (1 = half way through its age only the
         // lace's hearts survive). The wake also reads the hull waves' own tear; the larger wins.
         _FoamSheetAgeTear  ("One foam: age tear (0 = an even mat, 1 = hearts only by half age)", Range(0,1)) = 1
+        // The open-water foam's EDGE: the buffer is stored in 1/8 m cells, and a point read draws every
+        // cell as a hard square. x = the width (m) of a soft tent read that rounds the cells off, y = how
+        // far (m) the read is pushed about by a fixed noise so the outline is torn and irregular, z = that
+        // noise's size (m). x and y both 0 = the point read, bit-exact.
+        _FoamSheetEdge     ("One foam: open-water edge (x soften m, y warp m, z warp size m)", Vector) = (0.2, 0.18, 0.5, 0)
 
         // ---- THE WAKE FOAM'S AGE RAMP (owner ask 2026-08-27) ----------------------------------
         // "the wakes behind the boat are still a solid white foam from wherever the boat interacts
@@ -1513,6 +1518,8 @@ Shader "HiddenHarbours/Water"
             //   _HHHullWaveFoamAge : x = crest foam steepness onset, y = its ramp, z = the foam mat's age tear
             //   _HHHullWaveLook    : x = shade ceiling (share of the water's colour), y = breakup share,
             //                        z = 1 / breakup metres, w = wobble metres
+            //   _HHHullWaveLowLight: x = the extra shade at full low light, y = the sun's luminance at which
+            //                        it starts, z = the luminance at which it is full (HullWaveMath.LowLightGain)
             // UNSET reads all-zero: count 0, OFF, nothing drawn and nothing read.
             // HH_HULL_WAVE_MAX is a COMPILE-TIME bound pinned to HullWaveField.ShaderCapacity by
             // HullWaveMathTests; the loops run [loop] and break at the live count, never [unroll] over it.
@@ -1525,6 +1532,7 @@ Shader "HiddenHarbours/Water"
             float4 _HHHullWaveFoam;
             float4 _HHHullWaveLook;
             float4 _HHHullWaveFoamAge;
+            float4 _HHHullWaveLowLight;
 
             // ---- WIND FETCH (ADR 0027 #1) — globals, published by WaveFieldBridge.PublishFetchGlobals ------
             // How far the wind has blown over open water before it reaches this pixel. Lee shores go calm,
@@ -1902,6 +1910,7 @@ Shader "HiddenHarbours/Water"
                 float4 _FoamSheetConv;
                 float4 _FoamSheetWash;
                 float  _FoamSheetAgeTear;
+                float4 _FoamSheetEdge;
                 float  _WakeFoamAgeStrength;
                 float  _WakeFoamFreshFloor;
                 float  _WakeFoamWhiteHold;
@@ -4208,6 +4217,25 @@ Shader "HiddenHarbours/Water"
                 return lerp(legacy, sheet, saturate(join));
             }
 
+            // THE OPEN-WATER EDGE READ: the buffer's two channels at worldXY, pushed about by a fixed noise
+            // (_FoamSheetEdge.y metres at _FoamSheetEdge.z metres per lump) so the outline is torn and
+            // irregular, then averaged over four linear taps on a tent _FoamSheetEdge.x metres wide so the
+            // 1/8 m cells round off. The same buffer and the same channels: the read moves, the foam does
+            // not, and nothing is invented (an average of what is stored). Deterministic, no sim state.
+            float2 FoamSheetEdgeRead(float2 worldXY)
+            {
+                float invSize = 1.0 / max(_FoamSheetEdge.z, 0.05);
+                float2 n = float2(ValueNoise(worldXY * invSize),
+                                  ValueNoise(worldXY * invSize + float2(17.31, 41.73))) - 0.5;
+                float2 p  = worldXY + n * (2.0 * max(_FoamSheetEdge.y, 0.0));
+                float2 uv = (p - _HHFoamBufferWorld.xy) * _HHFoamBufferWorld.w;
+                float o = 0.5 * max(_FoamSheetEdge.x, 0.0) * _HHFoamBufferWorld.w;
+                return 0.25 * (SAMPLE_TEXTURE2D_LOD(_HHFoamBufferTex, sampler_LinearClamp, uv + float2( o,  o), 0).rg
+                             + SAMPLE_TEXTURE2D_LOD(_HHFoamBufferTex, sampler_LinearClamp, uv + float2(-o,  o), 0).rg
+                             + SAMPLE_TEXTURE2D_LOD(_HHFoamBufferTex, sampler_LinearClamp, uv + float2( o, -o), 0).rg
+                             + SAMPLE_TEXTURE2D_LOD(_HHFoamBufferTex, sampler_LinearClamp, uv + float2(-o, -o), 0).rg);
+            }
+
             float WakeFoamCoverage(float2 worldXY, float bayer, float crestStored, out float freshness)
             {
                 freshness = 0.0;
@@ -4227,7 +4255,12 @@ Shader "HiddenHarbours/Water"
 
                 // ONE fetch, both channels: r = coverage (how much churn is on this water),
                 // g = freshness (how recently it was churned - the age clock).
-                float2 buffered = SAMPLE_TEXTURE2D(_HHFoamBufferTex, sampler_HHFoamBufferTex, uv).rg;
+                // THE EDGE (the owner's oar look of 11-19: "hard-edged blocky white squares"): read through
+                // the soft, torn tap when its dials are up, so a small deposit draws as a ragged patch of
+                // the same lace, not as the buffer's 1/8 m cells. Both dials 0 = this point read, bit-exact.
+                float2 buffered = (_FoamSheetEdge.x > 0.0 || _FoamSheetEdge.y > 0.0)
+                    ? FoamSheetEdgeRead(worldXY)
+                    : SAMPLE_TEXTURE2D(_HHFoamBufferTex, sampler_HHFoamBufferTex, uv).rg;
                 float stored = max(buffered.x, crestStored);
                 // A breaking crest's foam is churned right now: as fresh as its own strength.
                 freshness = max(buffered.y, crestStored);
@@ -6243,6 +6276,7 @@ Shader "HiddenHarbours/Water"
                 // (hullCrestFoam, into WakeFoamCoverage), never drawn here as a white of its own. Fades at
                 // the shore with the lift. Skipped whole while hull waves are off or none are on the water.
                 float hullCrestFoam = 0.0;
+                float hullWaveLowLight = 0.0;   // the low-light share laid after the grade (0 at noon)
                 if (_HHHullWaveParams.w > 0.5 && _HHHullWaveParams.x > 0.5)
                 {
                     float hullWaveH;
@@ -6263,6 +6297,18 @@ Shader "HiddenHarbours/Water"
                         // A trough is held to a share of the ceiling, so a dark sea never goes near black.
                         hwShade *= hwShade < 0.0 ? _HHHullWaveFoam.z : 1.0;
                         col.rgb *= 1.0 + hwShade * hullWaveShore;
+                        // LOW LIGHT (the owner's dusk look of 11-19: the rowed V "invisible at dusk"): at dusk
+                        // the palette grade's day/night value floor lifts the whole dark sea to one level, and
+                        // the shade above, a share of a colour below that floor, is flattened with it. The
+                        // same shade, scaled by how far the sun's colour has dimmed, is laid again AFTER the
+                        // grade (hullWaveLowLight, below), where nothing flattens it. Noon is untouched; off
+                        // while no day/night cycle runs (tint all zero). Twin: HullWaveMath.LowLightGain.
+                        float hwTintLum = dot(_DayNightTint.rgb, float3(0.299, 0.587, 0.114));
+                        float hwDim = (_DayNightTint.r + _DayNightTint.g + _DayNightTint.b) > 0.01
+                            ? saturate((_HHHullWaveLowLight.y - hwTintLum)
+                                       / max(_HHHullWaveLowLight.y - _HHHullWaveLowLight.z, 1e-3))
+                            : 0.0;
+                        hullWaveLowLight = hwShade * hullWaveShore * max(_HHHullWaveLowLight.x, 0.0) * hwDim;
                         // A crest breaks where it is TALL or where it is STEEP (the young crests at her
                         // quarters at speed), so the first crests of each arm carry foam and the foam and
                         // the waves are one thing. Twin: HullWaveMath.CrestFoam01.
@@ -7257,6 +7303,9 @@ Shader "HiddenHarbours/Water"
                 float3 waterAlbedo = col.rgb;
 
                 col.rgb = PaletteGrade(col.rgb, dayNightLuma);
+                // Her waves' low-light share (see REAL WAVES FROM HULLS): after the grade, so the dusk
+                // value floor cannot flatten it. Exactly 0, and so a no-op, at noon or with no cycle.
+                col.rgb *= 1.0 + hullWaveLowLight;
 
                 // ---- THE BOAT SPOTLIGHT: REVEAL the water inside the cone (searchlight, not floodlamp) ----------
                 // The beam no longer PAINTS an amber slab (the old purely-additive _BoatLightColor term that

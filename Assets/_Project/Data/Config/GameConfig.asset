@@ -814,6 +814,9 @@ MonoBehaviour:
     TroughCeilingShare: 0.6
     CrestFoamSteepness: 0.6
     CrestFoamSteepnessRamp: 0.3
+    LowLightGain: 2
+    LowLightStartLuminance: 0.85
+    LowLightFullLuminance: 0.5
     RetireFoamFan: 1
     TrailFoamShare: 0.2
     TrailFoamMaxHalfWidthMetres: 3
@@ -839,11 +842,14 @@ MonoBehaviour:
     WashAmount: 3
     WashBackwashAge: 0.6
     AgeTear: 1
+    EdgeSoftenMetres: 0.2
+    EdgeWarpMetres: 0.18
+    EdgeWarpSizeMetres: 0.5
     Oar: 1
-    OarRadius: 0.35
-    OarPerSecond: 0.8
-    OarCatch: 0.15
-    OarRelease: 0.12
+    OarRadius: 0.3
+    OarPerSecond: 0.5
+    OarCatch: 0.1
+    OarRelease: 0.08
   DevAllHelmInstruments: 1
   MeshFishingAndDig: 1
   RegionCrossingHysteresisMetres: 0.25

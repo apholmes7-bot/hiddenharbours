@@ -324,6 +324,7 @@ namespace HiddenHarbours.Art
         private static readonly int IdFoamSheetConv = Shader.PropertyToID("_FoamSheetConv");
         private static readonly int IdFoamSheetWash = Shader.PropertyToID("_FoamSheetWash");
         private static readonly int IdFoamSheetAgeTear = Shader.PropertyToID("_FoamSheetAgeTear");
+        private static readonly int IdFoamSheetEdge = Shader.PropertyToID("_FoamSheetEdge");
         // (W4-4b) The floor in the shallows: its switch and its bend, pushed from _config beside the salience
         // knobs (GameConfig.ShallowsFloor / ShallowsFloorRefraction). Shader globals, never Properties.
         private static readonly int IdShallowsFloor = Shader.PropertyToID("_ShallowsFloor");
@@ -1181,6 +1182,7 @@ namespace HiddenHarbours.Art
             mpb.SetVector(IdFoamSheetConv, fs.ConvVector);
             mpb.SetVector(IdFoamSheetWash, fs.WashVector);
             mpb.SetFloat(IdFoamSheetAgeTear, Mathf.Clamp01(fs.AgeTear));
+            mpb.SetVector(IdFoamSheetEdge, fs.EdgeVector);
         }
 
         /// <summary>

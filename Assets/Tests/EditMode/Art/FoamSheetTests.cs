@@ -264,6 +264,30 @@ namespace HiddenHarbours.Tests.Art.EditMode
             CollectionAssert.AreEqual(new[] { d.WashVector.x, d.WashVector.y, d.WashVector.z, d.WashVector.w },
                 VectorDefault(src, "_FoamSheetWash"), "_FoamSheetWash");
             Assert.AreEqual(d.AgeTear, FloatDefault(src, "_FoamSheetAgeTear"), 1e-6f, "_FoamSheetAgeTear");
+            CollectionAssert.AreEqual(new[] { d.EdgeVector.x, d.EdgeVector.y, d.EdgeVector.z, d.EdgeVector.w },
+                VectorDefault(src, "_FoamSheetEdge"), "_FoamSheetEdge");
+        }
+
+        // The owner's oar look of 11-19: the oars' puddles drew as "hard-edged blocky white squares" and the
+        // trail astern kept square-edged chunks: the buffer's 1/8 m cells read through one point sample.
+        [Test]
+        public void TheOpenWaterFoam_IsReadSoftAndTorn_NotCellByCell()
+        {
+            string src = Source();
+            string read = Body(src, "float2 FoamSheetEdgeRead(");
+            StringAssert.Contains("sampler_LinearClamp", read, "the edge read blends neighbouring cells");
+            Assert.AreEqual(4, Regex.Matches(read, "SAMPLE_TEXTURE2D_LOD").Count, "a four-tap tent");
+            StringAssert.Contains("ValueNoise(worldXY * invSize)", read, "the read point wanders on a fixed noise");
+            StringAssert.DoesNotContain("_Time", read, "the edge does not crawl: a fixed world noise");
+            string cover = Body(src, "float WakeFoamCoverage(");
+            StringAssert.Contains("(_FoamSheetEdge.x > 0.0 || _FoamSheetEdge.y > 0.0)", cover);
+            StringAssert.Contains("? FoamSheetEdgeRead(worldXY)", cover);
+            StringAssert.Contains(": SAMPLE_TEXTURE2D(_HHFoamBufferTex, sampler_HHFoamBufferTex, uv).rg;", cover,
+                "both edge dials 0 keep the older point read for an A/B");
+            FoamSheetSettings d = FoamSheetSettings.Default;
+            Assert.Greater(d.EdgeSoftenMetres, 0.125f, "the shipped soften spans more than one buffer cell");
+            Assert.Greater(d.EdgeWarpMetres, 0f, "the shipped edge is torn");
+            Assert.Less(d.EdgeWarpMetres, d.EdgeWarpSizeMetres, "the wander is smaller than its lumps: a ragged edge, not a smear");
         }
 
         [Test]

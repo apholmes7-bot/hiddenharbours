@@ -644,6 +644,46 @@ namespace HiddenHarbours.Tests.Art.EditMode
             Assert.AreEqual(PropertyId("_HHHullWaveLook"), HullWaveBridge.IdLook);
         }
 
+        // The owner, 2026-11-19: the rowed V is "invisible at dusk"; it should read gently at dusk as at noon.
+        [Test]
+        public void InLowLight_HerWavesTakeAShareAgain_AndNoonIsUntouched()
+        {
+            HullWaveSettings s = S;
+            Assert.That(s.LowLightGain, Is.GreaterThan(0f), "the shipped dials lift her waves at dusk");
+            Assert.Greater(s.LowLightStartLuminance, s.LowLightFullLuminance);
+            const float noon = 0.91f, dusk = 0.48f;   // the day/night tint's luminance at 12:00 and 19:30
+            Assert.Less(s.LowLightStartLuminance, noon, "noon sits above the start: the noon look is exactly as approved");
+            Assert.AreEqual(1f, HullWaveMath.LowLightGain(noon, true, in s), 0f, "noon is untouched");
+            Assert.AreEqual(1f, HullWaveMath.LowLightGain(dusk, false, in s), 0f, "no day/night cycle: untouched");
+            Assert.AreEqual(1f + s.LowLightGain, HullWaveMath.LowLightGain(dusk, true, in s), 1e-6f,
+                "dusk is darker than the full point: the whole lift");
+            float mid = 0.5f * (s.LowLightStartLuminance + s.LowLightFullLuminance);
+            Assert.AreEqual(1f + 0.5f * s.LowLightGain, HullWaveMath.LowLightGain(mid, true, in s), 1e-5f, "it eases in");
+            float previous = 0f;
+            for (float lum = 1f; lum >= 0f; lum -= 0.05f)
+            {
+                float g = HullWaveMath.LowLightGain(lum, true, in s);
+                Assert.GreaterOrEqual(g, previous, "darker light never lifts less");
+                previous = g;
+            }
+
+            // The twin: the extra share is laid AFTER the palette grade, whose dusk value floor flattened
+            // a shade laid below it, and only that extra share (gain * dim), so noon (dim 0) is a no-op.
+            System.Func<string, string> sq = t => Regex.Replace(t, @"\s+", "");
+            string raw = WaterSource(), src = sq(raw);
+            StringAssert.Contains(sq("float hwTintLum = dot(_DayNightTint.rgb, float3(0.299, 0.587, 0.114));"), src);
+            StringAssert.Contains(sq("? saturate((_HHHullWaveLowLight.y - hwTintLum) / max(_HHHullWaveLowLight.y - _HHHullWaveLowLight.z, 1e-3))"), src);
+            StringAssert.Contains(sq("hullWaveLowLight = hwShade * hullWaveShore * max(_HHHullWaveLowLight.x, 0.0) * hwDim;"), src);
+            int grade = src.IndexOf(sq("col.rgb = PaletteGrade(col.rgb, dayNightLuma);"), System.StringComparison.Ordinal);
+            int post = src.IndexOf(sq("col.rgb *= 1.0 + hullWaveLowLight;"), System.StringComparison.Ordinal);
+            Assert.Greater(grade, 0);
+            Assert.Greater(post, grade, "the low-light share must be laid after the grade");
+            StringAssert.Contains("float4 _HHHullWaveLowLight;", raw);
+            Assert.AreEqual(PropertyId("_HHHullWaveLowLight"), HullWaveBridge.IdLowLight);
+            string asset = File.ReadAllText(Path.Combine(Application.dataPath, "..", ConfigPath));
+            StringAssert.Contains("LowLightGain: " + s.LowLightGain.ToString(System.Globalization.CultureInfo.InvariantCulture), asset);
+        }
+
         [Test]
         public void TheWakesFoam_IsTheSeasFoam_NotAPieceOfItsOwn()
         {
