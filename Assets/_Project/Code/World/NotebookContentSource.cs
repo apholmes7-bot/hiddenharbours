@@ -103,6 +103,23 @@ namespace HiddenHarbours.World
         /// </summary>
         public static IReadOnlyList<CaughtSpeciesEntry> Caught() => CatchRecords.Current();
 
+        /// <summary>The Resources folder the Gear page's Def is loaded from (under <see cref="ResourcesRoot"/>).</summary>
+        public const string NotebookPagesFolder = "NotebookPages";
+
+        /// <summary>The Gear page Def's load key.</summary>
+        public const string GearPageKey = NotebookPagesFolder + "/GearPage";
+
+        /// <summary>The Gear page's authored headings and names, or null when none ships (the page then
+        /// lists what he owns under one heading, named from the ids).</summary>
+        public static NotebookGearPageDef GearPage()
+        {
+            var page = Resources.Load<NotebookGearPageDef>(GearPageKey);
+            return page != null ? page : null;
+        }
+
+        /// <summary>What he owns, read from the save through Core's lockers (<see cref="SaveGearSource"/>).</summary>
+        public static INotebookGearSource Gear() => new SaveGearSource();
+
         /// <summary>The flags a quest step is read against — the save-backed store, the same one
         /// <c>WorldInteractor</c> and <c>OnboardingDirector</c> use, so the book and the world cannot
         /// disagree about what has been done.</summary>

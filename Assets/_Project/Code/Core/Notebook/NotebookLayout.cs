@@ -50,14 +50,24 @@ namespace HiddenHarbours.Core
         /// the first line, and the continuation is indented under it rather than re-boxed.</summary>
         public readonly bool Continuation;
 
-        public NotebookRow(string text, bool wide, bool hasBox, NotebookStepState state, bool continuation)
+        /// <summary>The content id whose picture sits beside this line (a gear id on the Gear page), or
+        /// empty for a plain line. Set on EVERY line of a pictured block, so all of them are indented past
+        /// the picture; the picture itself is drawn once, beside the first (non-continuation) line.</summary>
+        public readonly string IconId;
+
+        public NotebookRow(string text, bool wide, bool hasBox, NotebookStepState state, bool continuation,
+                           string iconId = null)
         {
             Text = text ?? "";
             Wide = wide;
             HasBox = hasBox;
             State = state;
             Continuation = continuation;
+            IconId = iconId ?? "";
         }
+
+        /// <summary>True when this line carries a picture lane (see <see cref="IconId"/>).</summary>
+        public bool HasIcon => !string.IsNullOrEmpty(IconId);
     }
 
     /// <summary>
@@ -391,6 +401,26 @@ namespace HiddenHarbours.Core
 
             return new NotebookBlock(NotebookBlockKind.Quest, rows, sourceId, archived);
         }
+
+        /// <summary>
+        /// The picture lane beside a pictured block, in cells from the title lane's left edge: the
+        /// picture is two ruled lines tall and square (<see cref="IconSize"/>), then one cell of air.
+        /// A pictured block's text wraps at <see cref="IconTextColsFor"/>.
+        /// </summary>
+        public const int IconLaneCells = 4;
+
+        /// <summary>The picture's side, kit pixels: two ruled lines, less the air above the second rule.</summary>
+        public const int IconSize = 2 * NotebookKit.Pitch - 2;
+
+        /// <summary>The fewest lines a pictured block takes, so the picture never overhangs the next block.</summary>
+        public const int IconRows = 2;
+
+        /// <summary>
+        /// Cells left for a pictured block's text: the title lane less the picture lane, less one cell,
+        /// because the lettered run's last glyph carries its full advance and the lane is drawn one pixel
+        /// short of whole cells (a full lane measured 75 px into 74).
+        /// </summary>
+        public static int IconTextColsFor(int cols) => NotebookKit.TitleColsFor(cols) - IconLaneCells - 1;
 
         /// <summary>A knowledge section: running head on the wide lane, body on the text lane.</summary>
         public static NotebookBlock Section(string head, IReadOnlyList<string> body, int cols,
