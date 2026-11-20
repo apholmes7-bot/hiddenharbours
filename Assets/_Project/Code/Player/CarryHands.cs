@@ -95,6 +95,12 @@ namespace HiddenHarbours.Player
                  "below.")]
         [SerializeField] private CarryAnchorTableDef _carryAnchors;
 
+        [Tooltip("The carry-pose table (CharacterCarryPoseDef): for a carried kind with a row that names " +
+                 "sockets (the pail), which socket of the MESH figure it hangs from in each hand, where " +
+                 "its grip sits above its sprite pivot, and the depth band that decides near side from " +
+                 "far side. Empty = the shipped table under Resources.")]
+        [SerializeField] private CharacterCarryPoseDef _carryPoses;
+
         [SerializeField, Tooltip("The catch ART table — which held sprite each landed species draws " +
                                  "in the hand. Empty = the shared fish art table's (Resources/" +
                                  "FishArtLibrary), so a scene saved before this field still draws the " +
@@ -105,7 +111,9 @@ namespace HiddenHarbours.Player
         [Tooltip("FALLBACK only — where a carried object with no hand-prop row sits relative to the " +
                  "fisher's feet, in metres, on her RIGHT side. ⚠️ ONE offset for every facing, which is " +
                  "why it is only a fallback now: the fuel kit bakes no hand anchors and the rig bakes no " +
-                 "spade or pail row, so a jerry can, a shovel and the dev bucket still hang here. " +
+                 "spade or pail row, so a jerry can, a shovel and the dev bucket still hang here (the " +
+                 "pail only while the sprite draws him: on the mesh figure it hangs from his hand " +
+                 "socket, per the carry-pose table). " +
                  "Everything the rig DOES bake a row for (the rod, a fish, a handful of clams) is posed " +
                  "from the table above and ignores this.")]
         [SerializeField] private Vector2 _hipOffsetMeters = new Vector2(0.28f, 0.34f);
@@ -671,6 +679,8 @@ namespace HiddenHarbours.Player
                 return;
             }
 
+            if (TryMeshFigurePose(carried, hand)) return;
+
             carried.Transform.localPosition = FallbackOffset(hand) + DrawnBodyOffsetLocal();
 
             float heading = DrawnHeadingDegrees;
@@ -688,6 +698,103 @@ namespace HiddenHarbours.Player
                 : rowHand != CarryHandSide.None ? rowHand
                 : _slots.SideOf(carried);
             return side == CarryHandSide.Left ? CarryHandSide.Left : CarryHandSide.Right;
+        }
+
+        /// <summary>
+        /// <b>Hang a carried thing from the mesh figure's own hand</b>, when the figure is drawing him and
+        /// the thing's kind has a carry row that names sockets (the pail: <c>carry_L</c> / <c>carry_R</c>,
+        /// the rig's grip pins for a bail). False, and nothing written, otherwise: the sprite body, a
+        /// thing with no row, a skin without the socket.
+        ///
+        /// <para><b>Where:</b> the grip on the socket of the hand the thing is actually IN (the slot, or
+        /// the shared-pair hand), read off the frame the figure drew this frame. The single fallback
+        /// offset hung the pail 0.28 m to screen-right of his feet at every heading, so it hung from his
+        /// left hand facing the camera, in front of his stride facing east and behind his back facing
+        /// west, with the grip 0.1 to 0.3 m above the hand.</para>
+        ///
+        /// <para><b>Which side it draws on:</b> the hand's own depth against the body bone, through
+        /// <see cref="CarryMath.SideOrdersFor"/>. The heading-only rule put a pail in front of him at
+        /// every southward and abeam heading even when it was in his far hand, where his legs pass in
+        /// front of it.</para>
+        /// </summary>
+        private bool TryMeshFigurePose(ICarriable carried, CarryHandSide hand)
+        {
+            CharacterCarryPoseDef table = CarryPoses();
+            if (table == null || !table.TryRow(carried.DefId, out CharacterCarryPoseDef.Row row)) return false;
+
+            CarryHandSide side = hand != CarryHandSide.None ? hand : _slots.SideOf(carried);
+            string socket = row.SocketFor(side);
+            if (socket == null) return false;
+
+            IsoCharacterFigureRenderer figure = DrawnMeshFigure();
+            if (figure == null || figure.SkinDef == null || figure.FacetTransform == null) return false;
+
+            ResolveFigureBones(figure.SkinDef, socket, row.BodyBone, out int socketBone, out int bodyBone);
+            if (!figure.TryBonePoint(socketBone, out Vector3 socketFacet)) return false;
+            if (!figure.TryBonePoint(bodyBone, out Vector3 bodyFacet)) return false;
+
+            Matrix4x4 facetToWorld = figure.FacetTransform.localToWorldMatrix;
+            Vector3 grip = facetToWorld.MultiplyPoint3x4(socketFacet);
+            Transform t = carried.Transform;
+            float drop = row.GripAbovePivotMeters * t.lossyScale.y;
+            t.position = new Vector3(grip.x, grip.y - drop, transform.position.z);
+
+            float heading = DrawnHeadingDegrees;
+            carried.ShowFacing(CarryMath.BakedFacingIndex(heading, carried.BakedFacings));
+            float towardCamera = CarryMath.TowardCameraMetres(facetToWorld, socketFacet, bodyFacet);
+            RideBodyBand(carried, CarryMath.SideOrdersFor(towardCamera, row.DepthDeadbandMeters, heading,
+                                                          OrdersFor(hand)));
+            return true;
+        }
+
+        /// <summary>The mesh figure drawing him right now (ashore or on a facet hull), or null while his
+        /// sprite is the picture.</summary>
+        private IsoCharacterFigureRenderer DrawnMeshFigure()
+        {
+            if (_meshPresenter == null || !_meshPresenter.DrawsInsteadOfSprite) return null;
+            return _meshPresenter.DrawsAshore ? _meshPresenter.AshoreFigure : _meshPresenter.Figure;
+        }
+
+        /// <summary>The carry-pose table: the wired one, else the shipped one, loaded once.</summary>
+        private CharacterCarryPoseDef CarryPoses()
+        {
+            if (_carryPoses == null && !_carryPosesLoaded)
+            {
+                _carryPosesLoaded = true;
+                _carryPoses = Resources.Load<CharacterCarryPoseDef>(CharacterCarryPoseDef.ResourcesPath);
+            }
+            return _carryPoses;
+        }
+
+        /// <summary>Bone indices for a socket and a body bone, looked up once per skin and name pair, not
+        /// per frame (<see cref="CharacterSkinDef.IndexOfBone"/> is a linear scan).</summary>
+        private void ResolveFigureBones(CharacterSkinDef skin, string socket, string body,
+                                        out int socketBone, out int bodyBone)
+        {
+            if (!ReferenceEquals(skin, _boneSkin)
+                || !string.Equals(socket, _boneSocketId, System.StringComparison.Ordinal)
+                || !string.Equals(body, _boneBodyId, System.StringComparison.Ordinal))
+            {
+                _boneSkin = skin;
+                _boneSocketId = socket;
+                _boneBodyId = body;
+                _socketBone = skin.IndexOfBone(socket);
+                _bodyBone = skin.IndexOfBone(body);
+            }
+            socketBone = _socketBone;
+            bodyBone = _bodyBone;
+        }
+
+        private bool _carryPosesLoaded;
+        private CharacterSkinDef _boneSkin;
+        private string _boneSocketId, _boneBodyId;
+        private int _socketBone = CharacterSkinDef.NoBone, _bodyBone = CharacterSkinDef.NoBone;
+
+        /// <summary>Wire the carry-pose table (tests, builders); null goes back to the shipped one.</summary>
+        public void ConfigureCarryPoses(CharacterCarryPoseDef table)
+        {
+            _carryPoses = table;
+            _carryPosesLoaded = table != null;
         }
 
         /// <summary>
@@ -916,6 +1023,10 @@ namespace HiddenHarbours.Player
             if (_walk == null) _walk = GetComponent<PlayerWalkController>();
             if (_rider == null) _rider = GetComponent<DeckRiderVisual>();
             if (_fight == null) _fight = GetComponent<RodFightPresenter>();
+            if (_meshPresenter == null) _meshPresenter = GetComponent<DeckRiderMeshPresenter>();
         }
+
+        // The mesh figure's presenter, resolved off this object like the rest of the wiring.
+        private DeckRiderMeshPresenter _meshPresenter;
     }
 }
