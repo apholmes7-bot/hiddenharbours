@@ -821,22 +821,9 @@ namespace HiddenHarbours.Art
                 ApplyDoorLeafMesh();
             }
 
-            // The overlay quad: the cell rectangle in world metres around the pivot, padded 1 px
-            // on every side so the keyline (which floods 1 px OUTSIDE the silhouette) is inside it
-            // even when the silhouette touches the cell edge.
-            float ppu = setup.PxPerMetre;
-            float pad = 1f / ppu;
-            float left = -setup.PivotPx.x / ppu - pad;
-            float right = (setup.CellW - setup.PivotPx.x) / ppu + pad;
-            float top = setup.PivotPx.y / ppu + pad;
-            float bottom = -(setup.CellH - setup.PivotPx.y) / ppu - pad;
-
+            // The overlay quad (WriteOverlayCorners says what it covers).
             _overlayQuad = new Mesh { name = "HHHullOverlayQuad", hideFlags = HideFlags.HideAndDontSave };
-            _overlayQuad.SetVertices(new[]
-            {
-                new Vector3(left, bottom, 0f), new Vector3(right, bottom, 0f),
-                new Vector3(right, top, 0f), new Vector3(left, top, 0f),
-            });
+            WriteOverlayCorners(setup);
             _overlayQuad.SetTriangles(new[] { 0, 1, 2, 0, 2, 3 }, 0);
 
             var overlayGo = new GameObject("HullOverlay") { hideFlags = HideFlags.DontSave };
@@ -854,6 +841,47 @@ namespace HiddenHarbours.Art
             _sortingGroup = GetComponent<SortingGroup>();
             if (_sortingGroup == null)
                 _sortingGroup = gameObject.AddComponent<SortingGroup>();
+        }
+
+        // The overlay's held-prop pad (ADR 0053), in metres on every side; grows, never shrinks, so
+        // two holders aboard cannot fight over it. Kept corners: a re-write allocates nothing.
+        private float _heldReachMetres;
+        private readonly Vector3[] _overlayCorners = new Vector3[4];
+
+        /// <summary>The overlay's pad for a prop a deck rider holds (<see cref="EnsureHeldReachMetres"/>).</summary>
+        public float HeldReachMetres => _heldReachMetres;
+
+        /// <summary>
+        /// <b>Room in the composite window for what a rider holds</b> (ADR 0053). Aboard, a figure is
+        /// composited through THIS overlay, the hull's cell; a held rod drawn under her facet child can
+        /// reach past the cell and would be clipped there. Pads every side by at least
+        /// <paramref name="metres"/>. It only ever grows (a wider window composites the same ids and
+        /// costs a few fragments), so riders never undo each other's pad.
+        /// </summary>
+        public void EnsureHeldReachMetres(float metres)
+        {
+            if (!(metres > _heldReachMetres) || _setup == null || _overlayQuad == null) return;
+            _heldReachMetres = metres;
+            WriteOverlayCorners(_setup);
+        }
+
+        // The overlay quad: the cell rectangle in world metres around the pivot, padded 1 px on every
+        // side so the keyline (which floods 1 px OUTSIDE the silhouette) is inside it even when the
+        // silhouette touches the cell edge, plus any held-prop pad.
+        private void WriteOverlayCorners(IsoFacetHullSetup setup)
+        {
+            float ppu = setup.PxPerMetre;
+            float pad = 1f / ppu + _heldReachMetres;
+            float left = -setup.PivotPx.x / ppu - pad;
+            float right = (setup.CellW - setup.PivotPx.x) / ppu + pad;
+            float top = setup.PivotPx.y / ppu + pad;
+            float bottom = -(setup.CellH - setup.PivotPx.y) / ppu - pad;
+            _overlayCorners[0] = new Vector3(left, bottom, 0f);
+            _overlayCorners[1] = new Vector3(right, bottom, 0f);
+            _overlayCorners[2] = new Vector3(right, top, 0f);
+            _overlayCorners[3] = new Vector3(left, top, 0f);
+            _overlayQuad.SetVertices(_overlayCorners);
+            _overlayQuad.RecalculateBounds();
         }
 
         private void OnEnable()
@@ -1361,6 +1389,7 @@ namespace HiddenHarbours.Art
             _darkRampTex = null;
             _overlayQuad = null;
             _setup = null;
+            _heldReachMetres = 0f;   // a rider still holding asks again on her next frame
         }
     }
 

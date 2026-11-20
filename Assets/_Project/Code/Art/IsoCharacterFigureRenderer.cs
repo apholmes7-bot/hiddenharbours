@@ -69,6 +69,8 @@ namespace HiddenHarbours.Art
         private SortingGroup _overlaySortingGroup;
         private Mesh _overlayQuad;
         private Material _overlayMaterial;
+        private readonly Vector3[] _overlayCorners = new Vector3[4];
+        private float _heldReachMetres;   // the held prop's pad on every side of the overlay (ADR 0053)
 
         // Bind-mesh sources, read once. The posed mesh is written into every frame the pose changes.
         private Vector3[] _srcVerts, _srcNorms, _outVerts, _outNorms;
@@ -215,6 +217,33 @@ namespace HiddenHarbours.Art
         /// <summary>A head-local direction in the figure's frame (look turns included).</summary>
         public Vector3 HeadDirectionToFigure(Vector3 headLocal) =>
             _def != null && _world != null ? _world[_def.LookHeadBone].MultiplyVector(headLocal) : Vector3.zero;
+
+        // ---- held props (ADR 0053): what a prop mounted on her socket needs, read-only ----------------
+
+        /// <summary>The skin this figure draws, or null before <see cref="Configure"/>.</summary>
+        public CharacterSkinDef SkinDef => _def;
+
+        /// <summary>Her posed facet child: the frame her posed vertices and every bone point are in
+        /// (aboard under the hull's posed mesh, ashore under her own frame). A held prop is parented
+        /// here. Null before <see cref="Configure"/>.</summary>
+        public Transform FacetTransform => _meshChild;
+
+        /// <summary>Her facet renderer, whose per-frame property block (the dither origin, the depth
+        /// shear and the id) a held prop copies. Null before <see cref="Configure"/>.</summary>
+        public MeshRenderer FacetRenderer => _meshRenderer;
+
+        /// <summary>
+        /// A bone's point in her facet frame on the frame drawn by the last <see cref="SetPose"/> (look
+        /// turn included): for a mount bone, the socket. False before any pose or for a bone out of range.
+        /// Allocation-free.
+        /// </summary>
+        public bool TryBonePoint(int bone, out Vector3 point)
+        {
+            point = Vector3.zero;
+            if (_def == null || _world == null || DrawnFrame < 0 || bone < 0 || bone >= _world.Length) return false;
+            point = _world[bone].MultiplyPoint3x4(Vector3.zero);
+            return true;
+        }
 
         /// <summary>True while this figure is inked by the rig's own rules
         /// (<see cref="GameConfig.MeshFigureKeyline"/> on and a def that <see cref="CharacterSkinDef.HasInk"/>).</summary>
@@ -1049,19 +1078,8 @@ namespace HiddenHarbours.Art
         {
             _overlayMaterial = new Material(overlayShader) { hideFlags = HideFlags.HideAndDontSave };
 
-            float ppu = _def.PxPerMetre;
-            Vector4 reach = _def.ReachPx;
-            float left = -_def.PivotPx.x / ppu - OverlayPad(reach.x, ppu);
-            float right = (_def.CellW - _def.PivotPx.x) / ppu + OverlayPad(reach.z, ppu);
-            float top = _def.PivotPx.y / ppu + OverlayPad(reach.y, ppu);
-            float bottom = -(_def.CellH - _def.PivotPx.y) / ppu - OverlayPad(reach.w, ppu);
-
             _overlayQuad = new Mesh { name = "HHFigureOverlayQuad", hideFlags = HideFlags.HideAndDontSave };
-            _overlayQuad.SetVertices(new[]
-            {
-                new Vector3(left, bottom, 0f), new Vector3(right, bottom, 0f),
-                new Vector3(right, top, 0f), new Vector3(left, top, 0f),
-            });
+            WriteOverlayCorners();
             _overlayQuad.SetTriangles(new[] { 0, 1, 2, 0, 2, 3 }, 0);
 
             var go = new GameObject("FigureOverlay") { hideFlags = HideFlags.DontSave, layer = gameObject.layer };
@@ -1082,6 +1100,49 @@ namespace HiddenHarbours.Art
         /// inside).</summary>
         private static float OverlayPad(float reachPx, float ppu) =>
             (1f + (reachPx > 0f ? Mathf.Ceil(reachPx) : 0f)) / ppu;
+
+        /// <summary>The overlay's four corners: the cell, its pads (<see cref="OverlayPad"/>) and the held
+        /// prop's reach (<see cref="SetHeldReachMetres"/>) on every side. Into a kept array, so a reach
+        /// change re-writes the quad without allocating.</summary>
+        private void WriteOverlayCorners()
+        {
+            if (_overlayQuad == null || _def == null) return;
+            float ppu = _def.PxPerMetre;
+            Vector4 reach = _def.ReachPx;
+            float held = _heldReachMetres;
+            float left = -_def.PivotPx.x / ppu - OverlayPad(reach.x, ppu) - held;
+            float right = (_def.CellW - _def.PivotPx.x) / ppu + OverlayPad(reach.z, ppu) + held;
+            float top = _def.PivotPx.y / ppu + OverlayPad(reach.y, ppu) + held;
+            float bottom = -(_def.CellH - _def.PivotPx.y) / ppu - OverlayPad(reach.w, ppu) - held;
+            _overlayCorners[0] = new Vector3(left, bottom, 0f);
+            _overlayCorners[1] = new Vector3(right, bottom, 0f);
+            _overlayCorners[2] = new Vector3(right, top, 0f);
+            _overlayCorners[3] = new Vector3(left, top, 0f);
+            _overlayQuad.SetVertices(_overlayCorners);
+            _overlayQuad.RecalculateBounds();
+        }
+
+        /// <summary>
+        /// <b>Room in the ashore overlay for what she holds</b> (ADR 0053). The overlay is the cell the
+        /// facet pass composites through, and a held prop drawn under her facet child (a rod) reaches past
+        /// the body's cell; outside the overlay it would be clipped. Pads every side by
+        /// <paramref name="metres"/> (the prop's grip-to-tip length; 0 gives the cell back). Re-writes
+        /// the quad only when the value changes. Aboard the window is the hull's overlay, so the pad is
+        /// asked of the hull (<see cref="IsoFacetHullRenderer.EnsureHeldReachMetres"/>) and recorded here
+        /// for the next time she goes ashore.
+        /// </summary>
+        public void SetHeldReachMetres(float metres)
+        {
+            metres = Mathf.Max(0f, metres);
+            // Aboard she is composited through the hull's overlay: ask it for the room (it only grows).
+            if (!IsAshore && _hull != null) _hull.EnsureHeldReachMetres(metres);
+            if (Mathf.Approximately(metres, _heldReachMetres)) return;
+            _heldReachMetres = metres;
+            WriteOverlayCorners();
+        }
+
+        /// <summary>The held-prop pad the overlay carries (<see cref="SetHeldReachMetres"/>).</summary>
+        public float HeldReachMetres => _heldReachMetres;
 
         /// <summary>
         /// <b>Ashore, what a hull writes for itself</b> — for her own root, with her own id: the

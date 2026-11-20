@@ -347,7 +347,9 @@ namespace HiddenHarbours.Tests.EditMode
             // same kind of shell: a BuildingInterior, sprites, YSort and wall colliders. Ginny's ground-floor
             // bathroom (kitchens and bathrooms plan, R1) adds the indoor shower and the toilet (its basin is the
             // washstand again): greybox sprites, a collider on the toilet, and a WashStationPoint or a SitPoint,
-            // no travel component.
+            // no travel component. The player's storage (owner 11-17) adds Ginny's rod rack and gear locker (a
+            // sprite, a collider, a YSortSprite and a StowageRack each) and the camper's shore power lead (sprites
+            // and transforms only): no nested prefab and no travel component.
             Assert.That(seen.Select(g => paths[g].Replace('\\', '/')).OrderBy(p => p, StringComparer.Ordinal), Is.EqualTo(new[] {
                 "Assets/_Project/Prefabs/Bridges/CampBrookBridge.prefab",
                 "Assets/_Project/Prefabs/Bridges/CampPondCulvert.prefab",
@@ -358,6 +360,9 @@ namespace HiddenHarbours.Tests.EditMode
                 "Assets/_Project/Prefabs/Buildings/NineMileCreek/NmcFishingGearWholesaler.prefab",
                 "Assets/_Project/Prefabs/Decor/NavBuoy.prefab",
                 "Assets/_Project/Prefabs/GasStation/dispenser_sDock.prefab",
+                "Assets/_Project/Prefabs/Props/Storage/CamperShoreLead.prefab",
+                "Assets/_Project/Prefabs/Props/Storage/GinnyGearLocker.prefab",
+                "Assets/_Project/Prefabs/Props/Storage/GinnyRodRack.prefab",
                 "Assets/_Project/Prefabs/Washrooms/Shower.prefab",
                 "Assets/_Project/Prefabs/Washrooms/Toilet.prefab",
                 "Assets/_Project/Prefabs/Washrooms/WashStand.prefab",
