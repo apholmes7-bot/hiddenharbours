@@ -1,0 +1,914 @@
+fileFormatVersion: 2
+guid: 2f8cd8d21d194394f9727fab9bd2be6e
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -8957271672702147585
+    second: Fish_smelt_deck_0
+  - first:
+      213: -4085044935536631374
+    second: Fish_smelt_deck_1
+  - first:
+      213: 6983065344414865637
+    second: Fish_smelt_deck_2
+  - first:
+      213: -3735101066681394152
+    second: Fish_smelt_deck_3
+  - first:
+      213: 1932277782368221775
+    second: Fish_smelt_deck_4
+  - first:
+      213: 3675475791944474916
+    second: Fish_smelt_deck_5
+  - first:
+      213: 2693049613027206311
+    second: Fish_smelt_deck_6
+  - first:
+      213: 6784372998933566506
+    second: Fish_smelt_deck_7
+  - first:
+      213: 3508856491121349178
+    second: Fish_smelt_deck_8
+  - first:
+      213: 8875704843698909949
+    second: Fish_smelt_deck_9
+  - first:
+      213: 4874340246612056104
+    second: Fish_smelt_deck_10
+  - first:
+      213: 4141488687196128449
+    second: Fish_smelt_deck_11
+  - first:
+      213: -3782416315845828863
+    second: Fish_smelt_deck_12
+  - first:
+      213: 8257991551653628535
+    second: Fish_smelt_deck_13
+  - first:
+      213: 5386327637102716987
+    second: Fish_smelt_deck_14
+  - first:
+      213: -6799350202228870086
+    second: Fish_smelt_deck_15
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Fish_smelt_deck_d0_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 560
+        width: 64
+        height: 80
+      alignment: 9
+      pivot: {x: 0.5, y: 0.525}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1d1d3a5cc3f5bc8489056da89a818b19
+      internalID: -1486875368
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_smelt_deck_d0_f1
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 560
+        width: 64
+        height: 80
+      alignment: 9
+      pivot: {x: 0.5, y: 0.525}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 14a4b73f69f8bde448986d8b4a762349
+      internalID: 2027878651
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_smelt_deck_d0_f2
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 560
+        width: 64
+        height: 80
+      alignment: 9
+      pivot: {x: 0.5, y: 0.525}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 34a9c7fa2b77b5b4daf3bbacd5b561e7
+      internalID: 1458640145
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_smelt_deck_d0_f3
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 560
+        width: 64
+        height: 80
+      alignment: 9
+      pivot: {x: 0.5, y: 0.525}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 59cf04b5cea0aef4c844d28bff9bf28a
+      internalID: 706438830
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_smelt_deck_d1_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 480
+        width: 64
+        height: 80
+      alignment: 9
+      pivot: {x: 0.5, y: 0.525}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3fde497bf9815ab4684646bdeb206064
+      internalID: 875910632
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_smelt_deck_d1_f1
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 480
+        width: 64
+        height: 80
+      alignment: 9
+      pivot: {x: 0.5, y: 0.525}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c182a276735d30f4fb874eec85e42360
+      internalID: 2044891512
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_smelt_deck_d1_f2
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 480
+        width: 64
+        height: 80
+      alignment: 9
+      pivot: {x: 0.5, y: 0.525}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6be2eafa86b2bc145896e37c92d44939
+      internalID: -1509199434
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_smelt_deck_d1_f3
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 480
+        width: 64
+        height: 80
+      alignment: 9
+      pivot: {x: 0.5, y: 0.525}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 22dd68f1cc5d5594395153f4ad4e0760
+      internalID: -1007751981
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_smelt_deck_d2_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 400
+        width: 64
+        height: 80
+      alignment: 9
+      pivot: {x: 0.5, y: 0.525}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5fe2c8f06fe99f74cbf3ff8e4dbd9d04
+      internalID: -2056686993
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_smelt_deck_d2_f1
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 400
+        width: 64
+        height: 80
+      alignment: 9
+      pivot: {x: 0.5, y: 0.525}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0928b4a445ce0834b87bb1a41dcd3920
+      internalID: 215454946
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_smelt_deck_d2_f2
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 400
+        width: 64
+        height: 80
+      alignment: 9
+      pivot: {x: 0.5, y: 0.525}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b784143f3fe949846a1d194cdc55ed24
+      internalID: -1376862977
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_smelt_deck_d2_f3
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 400
+        width: 64
+        height: 80
+      alignment: 9
+      pivot: {x: 0.5, y: 0.525}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fc3b068edf0bf51418372a7315d5cbfb
+      internalID: -1657764630
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_smelt_deck_d3_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 320
+        width: 64
+        height: 80
+      alignment: 9
+      pivot: {x: 0.5, y: 0.525}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 38fb96b141ba606448da1e0d494d8980
+      internalID: 1108170851
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_smelt_deck_d3_f1
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 320
+        width: 64
+        height: 80
+      alignment: 9
+      pivot: {x: 0.5, y: 0.525}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 243ba736eb990d747970954197297b2b
+      internalID: 1996578014
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_smelt_deck_d3_f2
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 320
+        width: 64
+        height: 80
+      alignment: 9
+      pivot: {x: 0.5, y: 0.525}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 50b88fd7dd3a21543891bcc339bbd7c0
+      internalID: -1129199568
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_smelt_deck_d3_f3
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 320
+        width: 64
+        height: 80
+      alignment: 9
+      pivot: {x: 0.5, y: 0.525}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 87210ce8ece11364383b420bf6f8daf3
+      internalID: 585222486
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_smelt_deck_d4_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 240
+        width: 64
+        height: 80
+      alignment: 9
+      pivot: {x: 0.5, y: 0.525}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f0024715320995b4b8c35f6128bc949f
+      internalID: 1292007277
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_smelt_deck_d4_f1
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 240
+        width: 64
+        height: 80
+      alignment: 9
+      pivot: {x: 0.5, y: 0.525}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f7b1241a38a581c48bc49e12f169a4d6
+      internalID: -535133065
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_smelt_deck_d4_f2
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 240
+        width: 64
+        height: 80
+      alignment: 9
+      pivot: {x: 0.5, y: 0.525}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5fd3860c7c9ca834ab858d22359c45b7
+      internalID: -1721531545
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_smelt_deck_d4_f3
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 240
+        width: 64
+        height: 80
+      alignment: 9
+      pivot: {x: 0.5, y: 0.525}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 54b5fd5deca72794187673be50261964
+      internalID: -1409579617
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_smelt_deck_d5_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 160
+        width: 64
+        height: 80
+      alignment: 9
+      pivot: {x: 0.5, y: 0.525}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5d7729615fdbd174cb70104cf1ad3ce9
+      internalID: -992416041
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_smelt_deck_d5_f1
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 160
+        width: 64
+        height: 80
+      alignment: 9
+      pivot: {x: 0.5, y: 0.525}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 99d754c7c37050d4abedb33ff0398fe6
+      internalID: -48128740
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_smelt_deck_d5_f2
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 160
+        width: 64
+        height: 80
+      alignment: 9
+      pivot: {x: 0.5, y: 0.525}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: dae430f6b303aa149a9c330b06ecf7f0
+      internalID: -772751641
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_smelt_deck_d5_f3
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 160
+        width: 64
+        height: 80
+      alignment: 9
+      pivot: {x: 0.5, y: 0.525}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bb1f688036cea4d48b0cf5a064bc4e64
+      internalID: -123385342
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_smelt_deck_d6_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 80
+        width: 64
+        height: 80
+      alignment: 9
+      pivot: {x: 0.5, y: 0.525}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c753909bb8b047c4687e052a33888168
+      internalID: -506973750
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_smelt_deck_d6_f1
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 80
+        width: 64
+        height: 80
+      alignment: 9
+      pivot: {x: 0.5, y: 0.525}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 54e3538f199f1194b82e0aab419fefc7
+      internalID: 305278347
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_smelt_deck_d6_f2
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 80
+        width: 64
+        height: 80
+      alignment: 9
+      pivot: {x: 0.5, y: 0.525}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 03ba06a62691b6e4881db8f96d75446c
+      internalID: -1234768340
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_smelt_deck_d6_f3
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 80
+        width: 64
+        height: 80
+      alignment: 9
+      pivot: {x: 0.5, y: 0.525}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d578a709f5bc0124cb86c61d72d262ef
+      internalID: -1004442291
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_smelt_deck_d7_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 64
+        height: 80
+      alignment: 9
+      pivot: {x: 0.5, y: 0.525}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 58fbe072ca5f91e4aa37ee9f7d3627b6
+      internalID: -306104944
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_smelt_deck_d7_f1
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 0
+        width: 64
+        height: 80
+      alignment: 9
+      pivot: {x: 0.5, y: 0.525}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e7523a43f63b956419dca4e9202c776e
+      internalID: 938692118
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_smelt_deck_d7_f2
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 0
+        width: 64
+        height: 80
+      alignment: 9
+      pivot: {x: 0.5, y: 0.525}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 058fd54cd40b4c246a2713c2350873b1
+      internalID: -1064495936
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_smelt_deck_d7_f3
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 0
+        width: 64
+        height: 80
+      alignment: 9
+      pivot: {x: 0.5, y: 0.525}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 80d04a0a8e0149543b94d77e293c3dba
+      internalID: 666510981
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 9f7dc9087597dd74e9763d2721757f2a
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Fish_smelt_deck_d0_f0: -1486875368
+      Fish_smelt_deck_d0_f1: 2027878651
+      Fish_smelt_deck_d0_f2: 1458640145
+      Fish_smelt_deck_d0_f3: 706438830
+      Fish_smelt_deck_d1_f0: 875910632
+      Fish_smelt_deck_d1_f1: 2044891512
+      Fish_smelt_deck_d1_f2: -1509199434
+      Fish_smelt_deck_d1_f3: -1007751981
+      Fish_smelt_deck_d2_f0: -2056686993
+      Fish_smelt_deck_d2_f1: 215454946
+      Fish_smelt_deck_d2_f2: -1376862977
+      Fish_smelt_deck_d2_f3: -1657764630
+      Fish_smelt_deck_d3_f0: 1108170851
+      Fish_smelt_deck_d3_f1: 1996578014
+      Fish_smelt_deck_d3_f2: -1129199568
+      Fish_smelt_deck_d3_f3: 585222486
+      Fish_smelt_deck_d4_f0: 1292007277
+      Fish_smelt_deck_d4_f1: -535133065
+      Fish_smelt_deck_d4_f2: -1721531545
+      Fish_smelt_deck_d4_f3: -1409579617
+      Fish_smelt_deck_d5_f0: -992416041
+      Fish_smelt_deck_d5_f1: -48128740
+      Fish_smelt_deck_d5_f2: -772751641
+      Fish_smelt_deck_d5_f3: -123385342
+      Fish_smelt_deck_d6_f0: -506973750
+      Fish_smelt_deck_d6_f1: 305278347
+      Fish_smelt_deck_d6_f2: -1234768340
+      Fish_smelt_deck_d6_f3: -1004442291
+      Fish_smelt_deck_d7_f0: -306104944
+      Fish_smelt_deck_d7_f1: 938692118
+      Fish_smelt_deck_d7_f2: -1064495936
+      Fish_smelt_deck_d7_f3: 666510981
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

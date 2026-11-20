@@ -1,0 +1,962 @@
+fileFormatVersion: 2
+guid: 87e9d53aed212e047920283cb1e4a8fa
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 1957693610991390985
+    second: Fish_cunner_lg_thrash_0
+  - first:
+      213: -2890068701355179668
+    second: Fish_cunner_lg_thrash_1
+  - first:
+      213: -7650288440246401943
+    second: Fish_cunner_lg_thrash_2
+  - first:
+      213: 2589885049032366876
+    second: Fish_cunner_lg_thrash_3
+  - first:
+      213: 9093895415075231789
+    second: Fish_cunner_lg_thrash_4
+  - first:
+      213: 2003309159055995350
+    second: Fish_cunner_lg_thrash_5
+  - first:
+      213: -210301883506519336
+    second: Fish_cunner_lg_thrash_6
+  - first:
+      213: 6490213611395345014
+    second: Fish_cunner_lg_thrash_7
+  - first:
+      213: 8414038743722763362
+    second: Fish_cunner_lg_thrash_8
+  - first:
+      213: -3650657716854899891
+    second: Fish_cunner_lg_thrash_9
+  - first:
+      213: -503257566542961188
+    second: Fish_cunner_lg_thrash_10
+  - first:
+      213: 2660270508975589490
+    second: Fish_cunner_lg_thrash_11
+  - first:
+      213: -3174121030109548560
+    second: Fish_cunner_lg_thrash_12
+  - first:
+      213: 453626604653466584
+    second: Fish_cunner_lg_thrash_13
+  - first:
+      213: 7864942354377560209
+    second: Fish_cunner_lg_thrash_14
+  - first:
+      213: -2155360743786876374
+    second: Fish_cunner_lg_thrash_15
+  - first:
+      213: 6837218185514485625
+    second: Fish_cunner_lg_thrash_16
+  - first:
+      213: -8376099148948181882
+    second: Fish_cunner_lg_thrash_17
+  - first:
+      213: -5151762218148210562
+    second: Fish_cunner_lg_thrash_18
+  - first:
+      213: -3885092980228756162
+    second: Fish_cunner_lg_thrash_19
+  - first:
+      213: -3298357639302596969
+    second: Fish_cunner_lg_thrash_20
+  - first:
+      213: 3773170475832321608
+    second: Fish_cunner_lg_thrash_21
+  - first:
+      213: -3904119177469435131
+    second: Fish_cunner_lg_thrash_22
+  - first:
+      213: -8901819603031008592
+    second: Fish_cunner_lg_thrash_23
+  - first:
+      213: -5298746986535460186
+    second: Fish_cunner_lg_thrash_24
+  - first:
+      213: 5750528352215966276
+    second: Fish_cunner_lg_thrash_25
+  - first:
+      213: 8966570191426330000
+    second: Fish_cunner_lg_thrash_26
+  - first:
+      213: 6426065097866754243
+    second: Fish_cunner_lg_thrash_27
+  - first:
+      213: 5378468395582857731
+    second: Fish_cunner_lg_thrash_28
+  - first:
+      213: 4144078524819569909
+    second: Fish_cunner_lg_thrash_29
+  - first:
+      213: -6301228951097761347
+    second: Fish_cunner_lg_thrash_30
+  - first:
+      213: -8387994035681586977
+    second: Fish_cunner_lg_thrash_31
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Fish_cunner_lg_thrash_d0_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 560
+        width: 64
+        height: 80
+      alignment: 9
+      pivot: {x: 0.5, y: 0.525}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2ba15ed6e1a2ad54280b83acc1701d80
+      internalID: 639572434
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_cunner_lg_thrash_d0_f1
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 560
+        width: 64
+        height: 80
+      alignment: 9
+      pivot: {x: 0.5, y: 0.525}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7161f966a78253449840d7e78603ed27
+      internalID: 2112679660
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_cunner_lg_thrash_d0_f2
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 560
+        width: 64
+        height: 80
+      alignment: 9
+      pivot: {x: 0.5, y: 0.525}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 204132b7554ac144ba4bf61505c86f97
+      internalID: -1085627560
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_cunner_lg_thrash_d0_f3
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 560
+        width: 64
+        height: 80
+      alignment: 9
+      pivot: {x: 0.5, y: 0.525}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 359b5a453c04e58499b9c295fb1dbe57
+      internalID: -890153626
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_cunner_lg_thrash_d1_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 480
+        width: 64
+        height: 80
+      alignment: 9
+      pivot: {x: 0.5, y: 0.525}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f03cff8222adfe04ab461fe835de2aba
+      internalID: 876375608
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_cunner_lg_thrash_d1_f1
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 480
+        width: 64
+        height: 80
+      alignment: 9
+      pivot: {x: 0.5, y: 0.525}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2990235354d4b4947a416534071b7f7b
+      internalID: -1976455676
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_cunner_lg_thrash_d1_f2
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 480
+        width: 64
+        height: 80
+      alignment: 9
+      pivot: {x: 0.5, y: 0.525}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5c4b4a40011862a459a095e679064f44
+      internalID: 1338778943
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_cunner_lg_thrash_d1_f3
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 480
+        width: 64
+        height: 80
+      alignment: 9
+      pivot: {x: 0.5, y: 0.525}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 042e8958624a6664cb1b4ccb1f0e1812
+      internalID: -377369445
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_cunner_lg_thrash_d2_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 400
+        width: 64
+        height: 80
+      alignment: 9
+      pivot: {x: 0.5, y: 0.525}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3b9e63f881f436040adc3764bdc6a157
+      internalID: 1378950236
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_cunner_lg_thrash_d2_f1
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 400
+        width: 64
+        height: 80
+      alignment: 9
+      pivot: {x: 0.5, y: 0.525}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d994367aec201aa428576b778d6bf4ce
+      internalID: 339980269
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_cunner_lg_thrash_d2_f2
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 400
+        width: 64
+        height: 80
+      alignment: 9
+      pivot: {x: 0.5, y: 0.525}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f4ec3c20f5a379c4e82c0807afc57c5e
+      internalID: 1737003200
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_cunner_lg_thrash_d2_f3
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 400
+        width: 64
+        height: 80
+      alignment: 9
+      pivot: {x: 0.5, y: 0.525}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f1529fd83407fd340803b5954254daf8
+      internalID: 2066391412
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_cunner_lg_thrash_d3_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 320
+        width: 64
+        height: 80
+      alignment: 9
+      pivot: {x: 0.5, y: 0.525}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 05965ded61b25e14fb6ca2a5af4e8f18
+      internalID: -1006556601
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_cunner_lg_thrash_d3_f1
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 320
+        width: 64
+        height: 80
+      alignment: 9
+      pivot: {x: 0.5, y: 0.525}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 84b10b583121b01469dd09972cb23569
+      internalID: 506878231
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_cunner_lg_thrash_d3_f2
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 320
+        width: 64
+        height: 80
+      alignment: 9
+      pivot: {x: 0.5, y: 0.525}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9155449df2797d44f9b1493b392cdbe2
+      internalID: -1744462774
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_cunner_lg_thrash_d3_f3
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 320
+        width: 64
+        height: 80
+      alignment: 9
+      pivot: {x: 0.5, y: 0.525}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a2d17116be54bbf448fc8ed4b8ad95d3
+      internalID: -1675774346
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_cunner_lg_thrash_d4_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 240
+        width: 64
+        height: 80
+      alignment: 9
+      pivot: {x: 0.5, y: 0.525}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7bf87649fb1591847b5910ba0b5d9534
+      internalID: 535450119
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_cunner_lg_thrash_d4_f1
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 240
+        width: 64
+        height: 80
+      alignment: 9
+      pivot: {x: 0.5, y: 0.525}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7287ca948a4574846b0fdc0bf97848af
+      internalID: 230102162
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_cunner_lg_thrash_d4_f2
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 240
+        width: 64
+        height: 80
+      alignment: 9
+      pivot: {x: 0.5, y: 0.525}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6c911941625c3784ea4049cc38503fa4
+      internalID: -422429203
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_cunner_lg_thrash_d4_f3
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 240
+        width: 64
+        height: 80
+      alignment: 9
+      pivot: {x: 0.5, y: 0.525}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7599f451c3acf39488bbaaa0fc12e76b
+      internalID: 805629128
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_cunner_lg_thrash_d5_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 160
+        width: 64
+        height: 80
+      alignment: 9
+      pivot: {x: 0.5, y: 0.525}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 43e907d3db4dd134eb126db9ea4592f5
+      internalID: 1782710033
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_cunner_lg_thrash_d5_f1
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 160
+        width: 64
+        height: 80
+      alignment: 9
+      pivot: {x: 0.5, y: 0.525}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 64e2c27afa50df349a89b2830f8649ef
+      internalID: -443071932
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_cunner_lg_thrash_d5_f2
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 160
+        width: 64
+        height: 80
+      alignment: 9
+      pivot: {x: 0.5, y: 0.525}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: dcb7b455f30f7d44eb41ee8b34db5dd4
+      internalID: 799200931
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_cunner_lg_thrash_d5_f3
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 160
+        width: 64
+        height: 80
+      alignment: 9
+      pivot: {x: 0.5, y: 0.525}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ef470a41031f1424d9f2fab202105ea0
+      internalID: 1090035399
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_cunner_lg_thrash_d6_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 80
+        width: 64
+        height: 80
+      alignment: 9
+      pivot: {x: 0.5, y: 0.525}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 04dcd7d7bd0ff1149a950fc5a39dc64f
+      internalID: 1726613316
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_cunner_lg_thrash_d6_f1
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 80
+        width: 64
+        height: 80
+      alignment: 9
+      pivot: {x: 0.5, y: 0.525}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c1de3c6f678958049a54da460b6f2675
+      internalID: -638565233
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_cunner_lg_thrash_d6_f2
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 80
+        width: 64
+        height: 80
+      alignment: 9
+      pivot: {x: 0.5, y: 0.525}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 90331c67017d06647ab6b28f1451c42c
+      internalID: -1563723377
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_cunner_lg_thrash_d6_f3
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 80
+        width: 64
+        height: 80
+      alignment: 9
+      pivot: {x: 0.5, y: 0.525}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 998273f3935c088439bb50eadd82af1f
+      internalID: 975421454
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_cunner_lg_thrash_d7_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 64
+        height: 80
+      alignment: 9
+      pivot: {x: 0.5, y: 0.525}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c7669b2f4112eda488019862df45def0
+      internalID: 1344636877
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_cunner_lg_thrash_d7_f1
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 0
+        width: 64
+        height: 80
+      alignment: 9
+      pivot: {x: 0.5, y: 0.525}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: af6470086b0e69745a6199dda0dfc004
+      internalID: -412824361
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_cunner_lg_thrash_d7_f2
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 0
+        width: 64
+        height: 80
+      alignment: 9
+      pivot: {x: 0.5, y: 0.525}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 56c993d79511d4541931c715176fc3a0
+      internalID: 1969954180
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_cunner_lg_thrash_d7_f3
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 0
+        width: 64
+        height: 80
+      alignment: 9
+      pivot: {x: 0.5, y: 0.525}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f55fb58aaf1596c4ab57a9a1a0b526cc
+      internalID: 723161705
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 7f54aa61b1aa95044ac44edfeb7867a3
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Fish_cunner_lg_thrash_d0_f0: 639572434
+      Fish_cunner_lg_thrash_d0_f1: 2112679660
+      Fish_cunner_lg_thrash_d0_f2: -1085627560
+      Fish_cunner_lg_thrash_d0_f3: -890153626
+      Fish_cunner_lg_thrash_d1_f0: 876375608
+      Fish_cunner_lg_thrash_d1_f1: -1976455676
+      Fish_cunner_lg_thrash_d1_f2: 1338778943
+      Fish_cunner_lg_thrash_d1_f3: -377369445
+      Fish_cunner_lg_thrash_d2_f0: 1378950236
+      Fish_cunner_lg_thrash_d2_f1: 339980269
+      Fish_cunner_lg_thrash_d2_f2: 1737003200
+      Fish_cunner_lg_thrash_d2_f3: 2066391412
+      Fish_cunner_lg_thrash_d3_f0: -1006556601
+      Fish_cunner_lg_thrash_d3_f1: 506878231
+      Fish_cunner_lg_thrash_d3_f2: -1744462774
+      Fish_cunner_lg_thrash_d3_f3: -1675774346
+      Fish_cunner_lg_thrash_d4_f0: 535450119
+      Fish_cunner_lg_thrash_d4_f1: 230102162
+      Fish_cunner_lg_thrash_d4_f2: -422429203
+      Fish_cunner_lg_thrash_d4_f3: 805629128
+      Fish_cunner_lg_thrash_d5_f0: 1782710033
+      Fish_cunner_lg_thrash_d5_f1: -443071932
+      Fish_cunner_lg_thrash_d5_f2: 799200931
+      Fish_cunner_lg_thrash_d5_f3: 1090035399
+      Fish_cunner_lg_thrash_d6_f0: 1726613316
+      Fish_cunner_lg_thrash_d6_f1: -638565233
+      Fish_cunner_lg_thrash_d6_f2: -1563723377
+      Fish_cunner_lg_thrash_d6_f3: 975421454
+      Fish_cunner_lg_thrash_d7_f0: 1344636877
+      Fish_cunner_lg_thrash_d7_f1: -412824361
+      Fish_cunner_lg_thrash_d7_f2: 1969954180
+      Fish_cunner_lg_thrash_d7_f3: 723161705
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

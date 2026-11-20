@@ -181,6 +181,11 @@ namespace HiddenHarbours.Tests.RigBaking
             // catch pass 2. The wire roller basket, lathed against the shared turntable.
             new Snapshot("clamHod", "docs/art/rigs/catch-pass-2-kit/Art/clamHodRig.js",
                          "ClamHod", AzimuthConvention.Clockwise, "deckIsoSolid"),
+            // The coast species kit: smelt, tomcod and cunner registered INTO FishIso2.SPECIES at
+            // load, plus the green crab and the two hard clams drawn by recolouring the pass-2 rigs.
+            // No geometry of its own (InstallModule only); Clockwise is the non-directional placeholder.
+            new Snapshot("coastSpecies", "docs/art/rigs/coast-species-kit/Art/coastSpeciesRig.js",
+                         "CoastSpecies", AzimuthConvention.Clockwise, "fish2"),
             // The coastal-heritage pass (drop 14, the village return; first carried by #853). NOT A
             // RIG — an aesthetic COMPANION that repaints slate, stone, joinery and interior finishes
             // for house, interior, manorIso and manorUnitIso, and the shared light engine. Clockwise
