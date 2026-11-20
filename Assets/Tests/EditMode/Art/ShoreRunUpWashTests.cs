@@ -632,7 +632,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
 
             // v9: and on the shore surf's zone, where the bore's deposited cells drew the band's seaward stair.
             int zone = IndexOf(src, "float washZone = max(saturate(washOnSand), surfShore * saturate(washPresence));");
-            int call = IndexOf(src, "float wakeFoam = WakeFoamCoverage(worldXY, washZone > 0.001 ? 0.5 : bay, wakeFresh);");
+            int call = IndexOf(src, "float wakeFoam = WakeFoamCoverage(worldXY, washZone > 0.001 ? 0.5 : bay, hullCrestFoam, wakeFresh);");
             int swap = IndexOf(src, "wakeFoam  = lerp(wakeFoam, WashResidueCoverage(worldXY, washFresh), washZone);");
             int fresh = IndexOf(src, "wakeFresh = lerp(wakeFresh, washFresh, washZone);");
             Assert.That(zone < call && call < swap && swap < fresh,

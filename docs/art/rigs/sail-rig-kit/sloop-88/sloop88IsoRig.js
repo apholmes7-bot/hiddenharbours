@@ -1467,10 +1467,24 @@
       _confirm:{ heel_law:'art-side, capped 20°; gameplay may override with heelDeg per frame', boom_over_aft_deck:r3(GOOSE[2]-BOOM_SEC[1]-dZ(TRAV.y))+' m over the aft deck where the traveller is — clear, but the sheet is a rope in the air across it', coachroof_walkable:'published walkable; the front slope is the route down to the foredeck', platform_states:'swim_platform is conditional on opts.platform — rule whether the folded state is a game state at all', reach_points:'untested requests, per the camper precedent' } };
   }
 
+  // ---- bow and stern eyes -------------------------------------------------------------------------
+  // A centreline fore-and-aft pair: the bow roller and the transom foot, both on x = 0. The mesh bake
+  // reads its azimuth convention from these two (painter.x - sternEye.x at a quarter turn) before it
+  // falls back to guessing the bow from the silhouette's taper. That guess fails on a sloop: the mast
+  // and the sails stand over the bow half and make it the WIDE end of the picture, so without this
+  // pair the bake turned this hull's picture the wrong way at 90 and 270 degrees. Rest pose, no heel:
+  // the answer is a sign and must not depend on the sea state.
+  function eye(P, dir, opts){
+    opts=Object.assign({}, (typeof opts==='number'?{elev:opts}:opts||{}), {dir, roll:0, pitch:0, heave:0});
+    const p=projVert(P.x,P.y,P.z,camBasis(opts)); return {x:p.sx,y:p.sy};
+  }
+  function painter(dir, opts){ return eye(ANCHOR_PTS.bowRoller, dir, opts); }
+  function sternEye(dir, opts){ return eye({x:0,y:-L/2,z:DWL}, dir, opts); }
+
   root.Sloop88Iso = { W, H, PX, DIRS:8, pivot:{x:cx,y:cy}, defaultElev:DEFAULT_ELEV,
     order:['N','NE','E','SE','S','SW','W','NW'], PAINT, STEEL, DECKF, GLAS, MOTO, ROPE, TEAK, CREAM, KEY,
     render, renderWheel, wheelFaces, WHEEL_GEO, WHEEL_HUBS, WHEEL_LOCK, ROCK, rock:rockMotion,
-    sailPose, poseOf, anchors, ANCHOR_PTS, CLEAT_PTS, doorMount, DOOR, RIG, STAY, SAILS:{ main:MAIN, jib:JIB, staysail:STAY },
+    sailPose, poseOf, anchors, painter, sternEye, ANCHOR_PTS, CLEAT_PTS, doorMount, DOOR, RIG, STAY, SAILS:{ main:MAIN, jib:JIB, staysail:STAY },
     L, DWL, SOLE, SAL, LOW, PLAT, ZLIP, geometry, LEVEL_IDS, gameplayGeometry, faces:()=>F, bounds,
     loft:{ station, skin, fracAtZ, halfAtZ, sheerZ, deckZ, roofZ, hxRoof, xCoam, uOf, yOf, L, TH, DWL, SOLE, SAL, LOW, NSEG,
            coachroof:RF, cockpit:CK, aft:AFT, stair:STAIR, platform:PLATFORM, well:WELL, mast:MAST, shade:{ GAIN, BIAS, LN, BAYER, KEY, EDGE:0.30 }, cell:{ W, H, cx, cy, S } },

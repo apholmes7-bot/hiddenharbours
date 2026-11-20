@@ -24,8 +24,8 @@ namespace HiddenHarbours.Boats
         [Min(0f)] public float GripInboardMeters;
 
         [Tooltip("The top of the thwart under his sitting bones. The dory's after thwart is at y -0.72, " +
-                 "its top 0.3056 (the deck's helm station); he sits 4 cm toward its after edge, which " +
-                 "keeps the grips in the arm's reach through the whole stroke.")]
+                 "its top 0.3056 (the deck's helm station); he sits on its centre, which, with the tholes " +
+                 "0.369 m abaft it, keeps the grips in the arm's reach through the whole stroke.")]
         public Vector3 SeatLocalMeters;
 
         [Tooltip("The STARBOARD foot's brace: the point on the boards ahead of the thwart (toward the " +
@@ -44,7 +44,7 @@ namespace HiddenHarbours.Boats
         {
             Enabled = true,
             GripInboardMeters = 0.70f,
-            SeatLocalMeters = new Vector3(0f, -0.68f, 0.3056f),
+            SeatLocalMeters = new Vector3(0f, -0.72f, 0.3056f),
             FootBraceLocalMeters = new Vector3(0.16f, -1.35f, 0.1098f),
             LaybackDegrees = 8f,
             ReachLeanMaxDegrees = 30f,

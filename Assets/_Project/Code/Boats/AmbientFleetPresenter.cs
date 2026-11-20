@@ -361,6 +361,9 @@ namespace HiddenHarbours.Boats
 
                     var wave = fisher.Root.AddComponent<BoatWaveMotion>();
                     wave.Configure(visualGo.transform, (IBoatHullPresenter)null);
+
+                    // Still one boat among the scenery (ADR 0059 step 3), as the skinned branch is.
+                    BoatSortingGroup.Install(fisher.Root);
                 }
 
                 fisher.Heading = Vector2.up;

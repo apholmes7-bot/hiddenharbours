@@ -229,7 +229,7 @@ namespace HiddenHarbours.App.Editor
             {
                 var ride = doryGo.GetComponent<HullTideRide>() ?? doryGo.AddComponent<HullTideRide>();
                 ride.Configure(p.BoatPictureDatum);
-                doryGo.AddComponent<HiddenHarbours.App.StPetersPierBoatSorting>().Configure(p.BoatPier, 1, -1);
+                doryGo.AddComponent<HiddenHarbours.App.StPetersPierBoatSorting>().Configure(p.BoatPier, -1);
             }
             // A 2D hull's bow is transform.up, and the compass runs clockwise from north — so the
             // rotation that puts her bow on a heading is a NEGATIVE turn about Z. (Same convention as

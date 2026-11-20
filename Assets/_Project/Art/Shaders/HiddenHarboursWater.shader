@@ -1294,6 +1294,10 @@ Shader "HiddenHarbours/Water"
                 // once they are drawn. GLOBALS, never in Properties: unset, the flag reads 0, no prop.
                 TEXTURE2D(_HHUnderWaterTex);
                 float  _HHUnderWaterLive;
+                // GameConfig.UnderWaterWeedClarity (WaterSurface pushes it with the floor's switch): how much
+                // less of the column the weed is read through than the floor it grows from. Unset reads 0,
+                // the floor's own law (UnderWaterPropTransmission).
+                float  _HHUnderWaterClarity;
                 // URP's inline samplers (Core.hlsl's GlobalSamplers) in the ground's own sampler states (the
                 // include's header says why they match): two slots, where the textures' own seven would pass
                 // the sixteen a D3D11 stage allows. The splats have no mips, so level 0 IS the texture, and
@@ -1467,6 +1471,34 @@ Shader "HiddenHarbours/Water"
             #define HH_WAKE_LIFT_MAX 8
             float4 _HHWakeLiftRoot[HH_WAKE_LIFT_MAX];
             float4 _HHWakeLiftShape[HH_WAKE_LIFT_MAX];
+
+            // ---- REAL WAVES FROM HULLS — globals, published by HullWaveBridge (Core HullWaveField) ---------
+            // Every hull making way lays wave sources at her stern and her bow; each is a ring of crests
+            // spreading from where it was laid. Aged on the CPU in double, so only small numbers arrive:
+            //   _HHHullWaveA[i]    : xy = where it was laid (world m), z = its height now (m),
+            //                        w = its band's radius now (m)
+            //   _HHHullWaveB[i]    : x = k (2pi/wavelength), y = its crests' phase now (rad, [0, 2pi)),
+            //                        z = 1 / band width (1/m), w = reach (m): past it the ring draws nothing
+            //   _HHHullWaveParams  : x = live count, y = drawn lift per metre, z = 1 / spread metres,
+            //                        w = 1 while hull waves are on (0 = OFF: the older wake train draws)
+            //   _HHHullWaveShade   : x = face light, y = crest light /m, z = trough dark /m, w = crest foam
+            //   _HHHullWaveFoam    : x = crest foam onset (m), y = crest foam ramp (m), z = trough share of the
+            //                        ceiling (a trough darkens at most this share of what a crest lifts)
+            //   _HHHullWaveFoamAge : x = crest foam steepness onset, y = its ramp, z = the foam mat's age tear
+            //   _HHHullWaveLook    : x = shade ceiling (share of the water's colour), y = breakup share,
+            //                        z = 1 / breakup metres, w = wobble metres
+            // UNSET reads all-zero: count 0, OFF, nothing drawn and nothing read.
+            // HH_HULL_WAVE_MAX is a COMPILE-TIME bound pinned to HullWaveField.ShaderCapacity by
+            // HullWaveMathTests; the loops run [loop] and break at the live count, never [unroll] over it.
+            #define HH_HULL_WAVE_MAX 64
+            #define HH_HULL_WAVE_PACKET_REACH 3.0     // HullWaveMath.PacketReach
+            float4 _HHHullWaveA[HH_HULL_WAVE_MAX];
+            float4 _HHHullWaveB[HH_HULL_WAVE_MAX];
+            float4 _HHHullWaveParams;
+            float4 _HHHullWaveShade;
+            float4 _HHHullWaveFoam;
+            float4 _HHHullWaveLook;
+            float4 _HHHullWaveFoamAge;
 
             // ---- WIND FETCH (ADR 0027 #1) — globals, published by WaveFieldBridge.PublishFetchGlobals ------
             // How far the wind has blown over open water before it reaches this pixel. Lee shores go calm,
@@ -2510,9 +2542,13 @@ Shader "HiddenHarbours/Water"
             //
             // The share, premultiplied over straight: a = prop.a + bed.a x (1 - prop.a), colour
             // (prop + bed x bed.a x (1 - prop.a)) / a. A clear texel returns the bed untouched.
-            half4 ShallowsPropsBed(half4 bed, float2 worldXY, float2 slope, float depth)
+            //
+            // `cover` hands the frag the prop's own coverage at this pixel (0 where none is drawn), which is all
+            // UnderWaterPropTransmission below needs; the props' helper itself still carries no law.
+            half4 ShallowsPropsBed(half4 bed, float2 worldXY, float2 slope, float depth, out float cover)
             {
                 float2 wp = ShallowsBend(worldXY, slope, depth);
+                cover = 0.0;
                 float2 ndc = ComputeNormalizedDeviceCoordinates(float3(wp, 0.0), UNITY_MATRIX_VP);
                 int2 px = int2(floor(ndc * _ScreenParams.xy));
                 if (any(px < 0) || any(px >= int2(_ScreenParams.xy)))
@@ -2521,8 +2557,23 @@ Shader "HiddenHarbours/Water"
                 [branch]
                 if (prop.a <= 0.0)
                     return bed;
+                cover = prop.a;
                 float a = lerp(bed.a, 1.0, prop.a);
                 return half4((prop.rgb + bed.rgb * bed.a * (1.0 - prop.a)) / max(a, 1e-4), a);
+            }
+
+            // THE ONE NAMED EXCEPTION TO THE COLUMN'S ONE LAW (2026-11-17, the kelp beds): the weed is read
+            // through less water than the floor it grows from. Its fronds stand up off the bottom toward the
+            // light, and a dark bed of kelp shows under clear water long after the sand beside it has gone blue.
+            // So where a prop covers the bed, the column's OWN banded transmission is raised to (1 - clarity):
+            // the same per-channel order (red still goes first), the same bands, no second exp, no second depth.
+            // Clarity is GameConfig.UnderWaterWeedClarity, capped at 0.9 so some water is always read; at 0 the
+            // power is 1 and this is the floor's law. Where no prop is drawn (cover 0) the transmission is the
+            // floor's, bit for bit. Guarded by ShallowsFloorShaderTests.TheWeedsClarity_IsTheOneNamedException.
+            float3 UnderWaterPropTransmission(float3 bedT, float cover)
+            {
+                float power = 1.0 - clamp(_HHUnderWaterClarity, 0.0, 0.9);
+                return lerp(bedT, pow(max(bedT, 0.0), power), saturate(cover));
             }
             #endif
 
@@ -2746,6 +2797,65 @@ Shader "HiddenHarbours/Water"
                              - WakeBowHeightAt(worldXY - ey, root.xy, root.zw, shape.w, tall, shape.z);
                 }
                 return total / (2.0 * HH_WAKE_BOW_SLOPE_STEP);
+            }
+
+            // ---- REAL WAVES FROM HULLS (HullWaveMath) --------------------------------------------------
+            // One source's height at distance r from where it was laid, and its radial slope:
+            //     h = amp * exp(-x^2) * spread * cos(k*r - phase),  x = (r - front) / width,
+            //     spread = 1 / sqrt(1 + r / R)
+            // Twin: HullWaveMath.SourceHeight / SourceSlope (HullWaveMathTests reads this text).
+            void HullWaveSourceHeight(float r, float amp, float front, float k, float phase,
+                                      float invWidth, float invSpread, out float h, out float dhdr)
+            {
+                h = 0.0;
+                dhdr = 0.0;
+                float x = (r - front) * invWidth;
+                if (x <= -HH_HULL_WAVE_PACKET_REACH || x >= HH_HULL_WAVE_PACKET_REACH) return;
+                float env = exp(-x * x);
+                float spread = 1.0 / sqrt(1.0 + r * invSpread);
+                float ph = k * r - phase;
+                float c = cos(ph);
+                float sn = sin(ph);
+                h = amp * env * spread * c;
+                float dEnv = -2.0 * x * invWidth * env;
+                float dSpread = -0.5 * invSpread * spread * spread * spread;
+                dhdr = amp * (dEnv * spread * c + env * dSpread * c - env * spread * k * sn);
+            }
+
+            // Every live source summed at a point: height (m) and slope (dh/dx, dh/dy). Exactly 0 while
+            // OFF or with no sources, before any slot is read.
+            void HullWaveSample(float2 worldXY, out float height, out float2 slope)
+            {
+                height = 0.0;
+                slope = 0.0;
+                if (_HHHullWaveParams.w < 0.5 || _HHHullWaveParams.x < 0.5) return;
+                int count = (int)_HHHullWaveParams.x;
+                float invSpread = _HHHullWaveParams.z;
+                // The sea's own noise, fixed in the world: it bends every ring the same way (so no ring
+                // is a true circle round a visible centre) and breaks the crests into patches the waves
+                // run through. Two value-noise octaves for the patches, two taps for the bend.
+                float2 hwN = worldXY * _HHHullWaveLook.z;
+                float hwPatch = 0.65 * ValueNoise(hwN) + 0.35 * ValueNoise(hwN * 2.3 + 17.1);
+                float hwGain = lerp(1.0, saturate(hwPatch * 2.0 - 0.4), _HHHullWaveLook.y);
+                float2 hwBend = float2(ValueNoise(hwN * 1.7 + 3.3), ValueNoise(hwN * 1.7 + 9.7)) - 0.5;
+                float2 hwAt = worldXY + hwBend * (2.0 * _HHHullWaveLook.w);
+                [loop]
+                for (int i = 0; i < HH_HULL_WAVE_MAX; i++)
+                {
+                    if (i >= count) break;
+                    float4 a = _HHHullWaveA[i];
+                    float4 b = _HHHullWaveB[i];
+                    float2 d = hwAt - a.xy;
+                    float r2 = dot(d, d);
+                    if (r2 >= b.w * b.w) continue;
+                    float r = sqrt(r2);
+                    float h, dhdr;
+                    HullWaveSourceHeight(r, a.z, a.w, b.x, b.y, b.z, invSpread, h, dhdr);
+                    height += h;
+                    slope += d * (dhdr / max(r, 1e-4));
+                }
+                height *= hwGain;
+                slope *= hwGain;
             }
 
 
@@ -3976,7 +4086,11 @@ Shader "HiddenHarbours/Water"
             // default ON) on the SAME world-locked Bayer cell every other banded layer uses.
             // col.rgb / col.a dressing ONLY — never depth/clip()/_WaterLevel/the height read/the sim
             // (P1 integrity, rule 5). _WakeFoamStrength = 0 skips the whole block.
-            float WakeFoamCoverage(float2 worldXY, float bayer, out float freshness)
+            // `crestStored` is the foam the hulls' own waves carry where their crests break (the hull-wave
+            // block in frag): it joins the stored churn BEFORE the tear, the threshold and the bands, so a
+            // breaking wake crest is the SAME torn, banded, aged mat as the prop's churn and every other
+            // foam this buffer draws (the owner, 2026-11-19: "wake foam should be the same as any foam").
+            float WakeFoamCoverage(float2 worldXY, float bayer, float crestStored, out float freshness)
             {
                 freshness = 0.0;
                 if (_WakeFoamStrength <= 0.001) return 0.0;
@@ -3996,8 +4110,9 @@ Shader "HiddenHarbours/Water"
                 // ONE fetch, both channels: r = coverage (how much churn is on this water),
                 // g = freshness (how recently it was churned - the age clock).
                 float2 buffered = SAMPLE_TEXTURE2D(_HHFoamBufferTex, sampler_HHFoamBufferTex, uv).rg;
-                float stored = buffered.x;
-                freshness = buffered.y;
+                float stored = max(buffered.x, crestStored);
+                // A breaking crest's foam is churned right now: as fresh as its own strength.
+                freshness = max(buffered.y, crestStored);
 
                 // ---- LACE (2026-08-05, the owner's "it needs another pass") -------------------------
                 // TEAR the stored coverage before it is thresholded. The buffer records how much churn
@@ -4028,6 +4143,12 @@ Shader "HiddenHarbours/Water"
                     // The field centres near 0.5, so 2x lands it about 1: hearts keep their value,
                     // the low half of the field is what tears through. Dialed by the master.
                     stored *= lerp(1.0, saturate(torn * 2.0), saturate(_WakeFoamLace));
+                    // AGE TEAR (the owner's look of 11-19): as the mat ages only the tear's hearts
+                    // survive, so a trail is densest where it was churned and breaks into drifting
+                    // patches and then flecks behind, instead of fading out as one even bar with a blunt
+                    // end. Fresh foam is untouched; 0 is a bit-exact passthrough.
+                    float ageTear = saturate(_HHHullWaveFoamAge.z * 2.0 * (1.0 - freshness));   // full by half its age
+                    stored *= lerp(1.0, smoothstep(0.35, 0.75, torn), ageTear);
                 }
 
                 // A trail's fringe holds a lot of very faint foam; drawn in full it reads as a grey wash
@@ -5813,7 +5934,12 @@ Shader "HiddenHarbours/Water"
                     // the rect or where the column passes nothing, the bed is the floor's, bit for bit.
                     [branch]
                     if (_HHUnderWaterLive > 0.5 && bedIn > 0.0 && max(bedT.r, max(bedT.g, bedT.b)) > 0.0)
-                        bed = ShallowsPropsBed(bed, worldXY, waveSlope, max(depthC, 0.0));
+                    {
+                        float propCover;
+                        bed = ShallowsPropsBed(bed, worldXY, waveSlope, max(depthC, 0.0), propCover);
+                        // The weed's clarity, the column's one named exception (UnderWaterPropTransmission).
+                        bedT = UnderWaterPropTransmission(bedT, propCover);
+                    }
             #endif
                     col.rgb = lerp(col.rgb, bed.rgb, saturate(bedT) * saturate(bed.a) * bedIn);
                 }
@@ -6004,6 +6130,43 @@ Shader "HiddenHarbours/Water"
                         float2 moundLd = normalize(moundSunXY + float2(1e-4, 0));
                         col.rgb += clamp(-dot(moundSlope, moundLd) * _WakeBowShade, -1.0, 1.0)
                                    * ShoreFade01(depth, _ShoreFadeBand) * 0.15;
+                    }
+                }
+
+                // ---- REAL WAVES FROM HULLS: light, crests, a little foam (col.rgb ONLY) -------------------
+                // The rings hulls lay (HullWaveBridge). Their faces take the light on the mound's facing,
+                // crests brighten and troughs darken by their height, all as a soft share of the water's
+                // own colour. A tall enough crest breaks: its foam is handed to the shared foam mat below
+                // (hullCrestFoam, into WakeFoamCoverage), never drawn here as a white of its own. Fades at
+                // the shore with the lift. Skipped whole while hull waves are off or none are on the water.
+                float hullCrestFoam = 0.0;
+                if (_HHHullWaveParams.w > 0.5 && _HHHullWaveParams.x > 0.5)
+                {
+                    float hullWaveH;
+                    float2 hullWaveSlope;
+                    HullWaveSample(Pixelize(worldXY), hullWaveH, hullWaveSlope);
+                    float hullWaveShore = ShoreFade01(depth, _ShoreFadeBand);
+                    if (hullWaveShore > 0.0 && (hullWaveH != 0.0 || hullWaveSlope.x != 0.0 || hullWaveSlope.y != 0.0))
+                    {
+                        float2 hwSunXY = dot(_SunDir.xy, _SunDir.xy) > 1e-6 ? _SunDir.xy : _LightDir.xy;
+                        float2 hwLd = normalize(hwSunXY + float2(1e-4, 0));
+                        // A share of the water's own colour, brought SOFTLY under the ceiling (never
+                        // clipped): a trough is a gentle darkening of this sea, a crest a gentle lift.
+                        // Twin: HullWaveMath.SoftShade.
+                        float hwRaw = -dot(hullWaveSlope, hwLd) * _HHHullWaveShade.x
+                                    + max(hullWaveH, 0.0) * _HHHullWaveShade.y
+                                    - max(-hullWaveH, 0.0) * _HHHullWaveShade.z;
+                        float hwShade = hwRaw * _HHHullWaveLook.x / (_HHHullWaveLook.x + abs(hwRaw) + 1e-5);
+                        // A trough is held to a share of the ceiling, so a dark sea never goes near black.
+                        hwShade *= hwShade < 0.0 ? _HHHullWaveFoam.z : 1.0;
+                        col.rgb *= 1.0 + hwShade * hullWaveShore;
+                        // A crest breaks where it is TALL or where it is STEEP (the young crests at her
+                        // quarters at speed), so the first crests of each arm carry foam and the foam and
+                        // the waves are one thing. Twin: HullWaveMath.CrestFoam01.
+                        float hwTall  = saturate((hullWaveH - _HHHullWaveFoam.x) / max(_HHHullWaveFoam.y, 1e-3));
+                        float hwSteep = saturate((length(hullWaveSlope) - _HHHullWaveFoamAge.x)
+                                                 / max(_HHHullWaveFoamAge.y, 1e-3));
+                        hullCrestFoam = max(hwTall, hwSteep) * _HHHullWaveShade.w * hullWaveShore;
                     }
                 }
 
@@ -6838,7 +7001,7 @@ Shader "HiddenHarbours/Water"
                 float washZone = max(saturate(washOnSand), surfShore * saturate(washPresence));
                 // v4: across the hand-off the open-water read is taken WITHOUT its Bayer, so the blend of the
                 // two reads never shows a checker (the owner's "screen door" band in the wash).
-                float wakeFoam = WakeFoamCoverage(worldXY, washZone > 0.001 ? 0.5 : bay, wakeFresh);
+                float wakeFoam = WakeFoamCoverage(worldXY, washZone > 0.001 ? 0.5 : bay, hullCrestFoam, wakeFresh);
                 if (washZone > 0.001)
                 {
                     float washFresh;
@@ -7104,7 +7267,19 @@ Shader "HiddenHarbours/Water"
                 //     is in DRAWN metres, which is what makes an elevation plate readable.
                 //   * DOES carry `fade`, so the train dies at the walkable waterline exactly as the swell
                 //     does. Anything else would tear the coast that ShoreFade01 exists to keep whole.
+                // While real hull waves are on (HullWaveBridge), they ARE the wake: the older hull-frame
+                // train, which stood still on her like drawn lines, steps aside. Off, it draws as before.
+                if (_HHHullWaveParams.w < 0.5)
                 lift += WakeLiftHeight(ground) * fade;
+                // REAL WAVES FROM HULLS: the rings every hull has laid, lifting the same height the swell
+                // does, faded at the shore with it, so they run out where the sea runs out.
+                if (_HHHullWaveParams.w > 0.5 && _HHHullWaveParams.x > 0.5)
+                {
+                    float hullWave;
+                    float2 hullWaveSlope;
+                    HullWaveSample(ground, hullWave, hullWaveSlope);
+                    lift += hullWave * _HHHullWaveParams.y * fade;
+                }
 
                 ws.y += lift;
                 ws.z += (ground.y - _HeightWorldMin.y) * _WaterIsoDepth.x - lift * _WaterIsoDepth.y;

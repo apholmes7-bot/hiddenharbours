@@ -14,27 +14,30 @@ namespace HiddenHarbours.Boats
     /// steers on, and it is strictly more informative than the absolute compass direction a HUD line
     /// gives you.</para>
     ///
-    /// <para><b>Rides the pictured deck.</b> Same convention as <see cref="DeckContainerPresenter"/>:
-    /// this lives on the PHYSICS ROOT, and the masthead anchor is authored in the deck frame (x abeam to
-    /// starboard, y along the keel toward the bow) then rotated by the drawn heading each LateUpdate —
-    /// so when the hull picture snaps N→NE the pennant jumps with it and stays at the masthead. The
-    /// pennant sprite itself is NOT held upright: it rotates to the wind, which is the whole point.</para>
+    /// <para><b>Flies from her real masthead.</b> The point is the hull's own data,
+    /// <see cref="BoatHullDef.MastheadRigMetres"/>, copied from her rig's gameplay sidecar. Each
+    /// LateUpdate it is projected through the heading her picture is drawn at and the rig camera's
+    /// elevation (<see cref="DeckAreaMath.DeckToWorld"/>), and on a hull that rocks continuously through
+    /// the roll, pitch and heave she is actually drawn at (<see cref="MountedRockPoseMath.TryDrawnPoint"/>),
+    /// so it stays on the mast top as she turns and heels. The pennant sprite itself is NOT held
+    /// upright: it rotates to the wind, which is the whole point.</para>
     ///
     /// <para><b>Deterministic underneath, smoothed on top.</b> The state is a pure function of
     /// <c>(trueWind, boatVelocity)</c>; only the visible angle is eased toward it, so the look never
     /// feeds back into the sim (rule 5). Wind is sampled on the HUD's ~4 Hz cadence rather than per
     /// frame, and the sprite is built once — no per-frame allocation (rule 7).</para>
+    ///
+    /// <para><b>Only a sailing rig flies it.</b> A pennant needs a masthead to fly from. On a hull with
+    /// no sail plan (the dory, the punts, every engine boat) it hung in the air beside the gunwale as a
+    /// small red fleck that moved with the boat, so it is drawn only where <see cref="FliesOn"/> says the
+    /// hull's own data carries a sail plan and a measured masthead. There is no fallback spot: a sail
+    /// hull with no masthead measured flies nothing. The rule is read every frame, so a hull swap (buying up the
+    /// ladder) hoists or strikes it with no rebuild. Wind for every other hull is read on the helm
+    /// instruments.</para>
     /// </summary>
     [DisallowMultipleComponent]
     public sealed class MastheadTelltale : MonoBehaviour
     {
-        [Tooltip("Where the pennant flies, in the DECK frame (x abeam toward starboard, y along the " +
-                 "keel toward the bow), in metres. Default is just forward of amidships — a dory's " +
-                 "painter staff rather than a mast she does not have.")]
-        [SerializeField] private Vector2 _mastheadDeckOffset = new Vector2(0f, 1.1f);
-
-        [Tooltip("Height of the pennant above the deck anchor, in metres — how far up the staff it flies.")]
-        [SerializeField] private float _staffHeightMeters = 0.9f;
 
         [Tooltip("Length of the pennant at full stiffness, in metres.")]
         [Min(0.01f)] [SerializeField] private float _lengthMeters = 0.42f;
@@ -69,9 +72,37 @@ namespace HiddenHarbours.Boats
             BuildPennant();
         }
 
+        /// <summary>
+        /// Does this hull fly a masthead pennant? Only a hull whose data carries a usable sail plan
+        /// (<see cref="BoatHullDef.HasSailPlan"/>) AND a measured masthead
+        /// (<see cref="BoatHullDef.HasMasthead"/>) has somewhere to fly it from; every other hull draws
+        /// nothing. Pure: no scene, no time.
+        /// </summary>
+        public static bool FliesOn(BoatHullDef hull) => hull != null && hull.HasSailPlan && hull.HasMasthead;
+
+        /// <summary>
+        /// Where her masthead is drawn at the LEVEL pose, as a world offset from the boat root: the
+        /// authored <see cref="BoatHullDef.MastheadRigMetres"/> projected through the drawn heading and
+        /// the rig camera's elevation, exactly as a deck fitting is (<see cref="DeckAreaMath.DeckToWorld"/>).
+        /// The live placement adds the hull's applied roll, pitch and heave on top when she has them.
+        /// Pure: no scene, no time.
+        /// </summary>
+        public static Vector2 MastheadLevelOffset(BoatHullDef hull, float drawnHeadingDegrees,
+                                                  float bakeElevationDegrees)
+        {
+            if (hull == null) return Vector2.zero;
+            Vector3 m = hull.MastheadRigMetres;
+            return DeckAreaMath.DeckToWorld(new Vector2(m.x, m.y), m.z, drawnHeadingDegrees, bakeElevationDegrees);
+        }
+
         private void LateUpdate()
         {
             if (_renderer == null) return;
+
+            // No sail plan, no masthead: strike the pennant and skip the wind read entirely.
+            bool flies = FliesOn(_boat != null ? _boat.Hull : null);
+            if (_renderer.enabled != flies) _renderer.enabled = flies;
+            if (!flies) return;
 
             // Re-resolve the wind on the sim's cadence; ease the drawn angle every frame so a veering
             // gust reads as a swing rather than a jump.
@@ -97,17 +128,25 @@ namespace HiddenHarbours.Boats
 
         private void Place()
         {
-            // The masthead anchor, on the PICTURED deck (the tray's convention, read through the live host).
+            // Her masthead, from her own data, on the PICTURED hull (read through the live host).
+            BoatHullDef def = _boat != null ? _boat.Hull : null;
             var host = GetComponent<BoatHullPresenterHost>();
             var presenter = (host != null && host.Presenter != null) ? host.Presenter : _hull;
             float heading = presenter != null
                 ? presenter.DrawnHeadingDegrees()
                 : DirectionalBoatSprite.HeadingDegreesFromBow(transform.up);
+            float elevation = presenter != null ? presenter.BakeElevationDegrees : DeckAreaMath.PlanViewElevationDegrees;
 
-            Vector2 anchor = (Vector2)transform.position
-                           + DeckContainerPresenter.DeckOffsetToWorld(_mastheadDeckOffset, heading);
-            _renderer.transform.position = new Vector3(anchor.x, anchor.y + _staffHeightMeters,
-                                                       _renderer.transform.position.z);
+            Vector2 anchor = (Vector2)transform.position + MastheadLevelOffset(def, heading, elevation);
+            // On a hull that rocks continuously, stand it where the mast top is DRAWN this frame: her
+            // applied roll (the heel included), pitch and heave and the picture's own origin, the same
+            // sum the stern deck gear uses. Level, a 13 m mast top would part from the drawn rig.
+            if (def != null && presenter != null && presenter.SupportsContinuousRock && presenter.Visual != null &&
+                MountedRockPoseMath.TryDrawnPoint(presenter.Visual.position, def.MastheadRigMetres, heading,
+                                                  presenter.AppliedRollDegrees, presenter.AppliedPitchDegrees,
+                                                  presenter.AppliedHeaveMeters, elevation, out Vector2 drawn))
+                anchor = drawn;
+            _renderer.transform.position = new Vector3(anchor.x, anchor.y, _renderer.transform.position.z);
 
             // A limp pennant has no direction — hold the last one rather than snapping to North, so a
             // dying breeze droops in place instead of swinging to an arbitrary bearing.
@@ -140,6 +179,8 @@ namespace HiddenHarbours.Boats
             _renderer = go.AddComponent<SpriteRenderer>();
             _renderer.sprite = BuildPennantSprite();
             _renderer.sortingOrder = TelltaleSortingOrder;
+            // Struck until the first LateUpdate reads the hull: a hull with no sail plan never shows it.
+            _renderer.enabled = false;
         }
 
         /// <summary>

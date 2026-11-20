@@ -161,6 +161,23 @@ namespace HiddenHarbours.Player
         /// <summary>True when either hand holds something.</summary>
         public bool IsCarrying => !_slots.IsEmpty;
 
+        /// <summary>
+        /// The Def of the rod the fight draws in his hands — the carried tool whose id is the one this
+        /// carrier hides while the fight draws it — or null when neither hand holds it. The fight reads it
+        /// for the rod's held mesh (ADR 0053). Allocation-free.
+        /// </summary>
+        public ToolDef HeldFightRod
+        {
+            get
+            {
+                if (_slots.Right is CarriableTool right && right != null
+                    && string.Equals(right.DefId, _fightRodToolId, System.StringComparison.Ordinal)) return right.Tool;
+                if (_slots.Left is CarriableTool left && left != null
+                    && string.Equals(left.DefId, _fightRodToolId, System.StringComparison.Ordinal)) return left.Tool;
+                return null;
+            }
+        }
+
         // ---- the Core relay ------------------------------------------------------------------------
 
         /// <summary>

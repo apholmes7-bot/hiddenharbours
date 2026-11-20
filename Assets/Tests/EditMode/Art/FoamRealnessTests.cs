@@ -277,7 +277,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
             // mistake to "fix" a too-dim wake by moving it after the grade.
             string src = Read(WaterShaderPath);
             // (The run-up wash v4 takes the read without its Bayer across the wash; ShoreRunUpWashTests pins the call.)
-            int composeAt = src.IndexOf("float wakeFoam = WakeFoamCoverage(worldXY, washZone > 0.001 ? 0.5 : bay, wakeFresh);",
+            int composeAt = src.IndexOf("float wakeFoam = WakeFoamCoverage(worldXY, washZone > 0.001 ? 0.5 : bay, hullCrestFoam, wakeFresh);",
                                         System.StringComparison.Ordinal);
             int gradeAt = src.IndexOf("col.rgb = PaletteGrade(col.rgb, dayNightLuma);",
                                       System.StringComparison.Ordinal);

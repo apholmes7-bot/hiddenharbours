@@ -492,6 +492,13 @@ namespace HiddenHarbours.Boats
             // OFF ⇒ ride 0 and rideActive false: every path below is byte-identical to before.
             float rideMeters = DisplacedRideMeters(wave.Height, time, out bool rideActive);
 
+            // OTHER HULLS' WAVES (HullWaves): she rises and falls as another boat's wake reaches her,
+            // on the same drawn ride and through the same weight filter below, so a heavy hull answers
+            // a dory's ripple hardly at all. Drawn only (no force); never her own waves. Gated on
+            // rideActive like every other term, so the displaced-OFF side stays byte-identical, and
+            // exactly 0 with no waves on the water.
+            if (rideActive) rideMeters += HullWaveRideMeters();
+
             // THE STORM READ (ADR 0018 B2.5). One blend off the deterministic sea-state axis drives
             // everything below: 0 at/below the storm start (every output byte-identical to the tuned
             // calm — multiplying by exactly 1f is the identity), growing to the storm ceiling at sea
@@ -618,6 +625,34 @@ namespace HiddenHarbours.Boats
         /// are not in anyone's surf, and the same neutral reading <see cref="ResolveHullCharacter"/>
         /// gives them. Plain <c>!= null</c> against the component — the Unity fake-null rule.</para>
         /// </summary>
+        /// <summary>
+        /// The height of other hulls' waves under her, metres, for her drawn ride: the mean of three
+        /// samples along her length (bow, centre, stern), so a long hull averages out a short wave,
+        /// times the owner's <c>RideScale</c>. Her own waves are left out by her controller's object,
+        /// the same owner her foam injector lays them under (the object her body sits on). 0 without a
+        /// controller to tell them apart.
+        /// </summary>
+        private float HullWaveRideMeters()
+        {
+            if (!HullWaves.IsActive) return 0f;
+            HullWaveSettings s = GameServices.HullWaves;
+            if (!s.Enabled || s.RideScale <= 0f) return 0f;
+            if (!_controllerResolved)
+            {
+                _controller = GetComponent<BoatController>();
+                _controllerResolved = true;
+            }
+            if (_controller == null) return 0f;
+            int owner = HullWaves.OwnerOf(_controller.gameObject);
+            float half = _controller.Hull != null ? 0.5f * Mathf.Max(_controller.Hull.LengthMeters, 0f) : 0f;
+            Vector2 centre = transform.position;
+            Vector2 along = (Vector2)transform.up * half;
+            float h = HullWaves.HeightAt(centre, owner);
+            if (half > 0f)
+                h = (h + HullWaves.HeightAt(centre + along, owner) + HullWaves.HeightAt(centre - along, owner)) / 3f;
+            return h * s.RideScale;
+        }
+
         private float SurfLiftMeters()
         {
             if (!_controllerResolved)

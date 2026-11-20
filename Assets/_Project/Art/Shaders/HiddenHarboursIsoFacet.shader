@@ -322,6 +322,25 @@ Shader "HiddenHarbours/IsoFacet"
 
             #include "Include/HullReflection.hlsl"
 
+            // THE NEAR PLANE IS NOT A CEILING. In this projection height comes toward the camera
+            // twice: in the rig's own depth, then again in the ADR 0033 shear. Every scene camera
+            // stands only about 10 m in front of the water with near 0.3, so anything that reached
+            // past that plane was clipped flat. Sloop 88's mast stopped near 26 m of her 37, and
+            // the tanker's stern house was cut the same way. Within HH_NEAR_EASE metres of the
+            // plane, depth now eases toward it instead of going through. The curve is monotone, so
+            // every ordering between two fragments is kept. Further than that it is the identity,
+            // so the water, every waterline and everything more than 4 m behind the plane keep
+            // their exact depths.
+            // The rational curve, not exp, keeps depth steps measurable at 50 m (about 5 mm per metre).
+            #define HH_NEAR_EASE 4.0
+            float HHKeepBehindNearPlane(float z)
+            {
+                if (unity_OrthoParams.w < 0.5) return z;   // only the orthographic game camera
+                float edge = _WorldSpaceCameraPos.z + _ProjectionParams.y + 0.01 + HH_NEAR_EASE;
+                float t = edge - z;                         // the camera looks along +Z
+                return t > 0.0 ? edge - HH_NEAR_EASE * t / (t + HH_NEAR_EASE) : z;
+            }
+
             struct FragOut
             {
                 float4 facet : SV_Target0;       // rgb = facet colour, a = hull id
@@ -407,6 +426,7 @@ Shader "HiddenHarbours/IsoFacet"
                 {
                     wp.z  -= (wp.y - _HullShear.y) * _HullShear.x;   // ADR 0033: the y→z shear
                     wp.z  -= v.attrs.z;              // f.db pulls the face toward the camera
+                    wp.z   = HHKeepBehindNearPlane(wp.z);   // a tall mast is not cut by the near plane
                 }
                 o.positionCS = TransformWorldToHClip(wp);
                 if (reflection) o.positionCS.z = HHMeshReflectClipDepth(o.reflectionDepth) * o.positionCS.w;

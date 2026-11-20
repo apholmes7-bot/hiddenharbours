@@ -257,7 +257,8 @@ namespace HiddenHarbours.Player
 
         // Movement read for the HOLD yield (transform delta — works for the rb-driven walk AND the
         // transform-driven deck walk alike). Tracked only while a rod phase is live (rule 7).
-        private Vector3 _lastPos;
+        private Vector3 _lastPos;         // in the parent's frame (the boat aboard, the world ashore)
+        private Transform _lastParent;
         private float _speed;
 
         // One-shot diagnostics: the old failure mode here was SILENT by design (null-safe greybox), and
@@ -338,7 +339,17 @@ namespace HiddenHarbours.Player
         private void Update()
         {
             AdvanceDig(Time.unscaledDeltaTime);
-            Vector3 pos = transform.position;
+            // Measured in the PARENT's frame: aboard he is parented to the boat (ControlSwitcher), so a
+            // drifting or rocking dory carries him without "moving" him, and he keeps the hold pose with
+            // the line out. Only his own steps across the deck yield it. Ashore the parent is null and
+            // this is the world position, as before. A parent change (boarding) re-arms the read.
+            Vector3 pos = transform.localPosition;
+            Transform parent = transform.parent;
+            if (parent != _lastParent)
+            {
+                _lastParent = parent;
+                _lastPos = pos;
+            }
             if (_pose == FishingPose.None && !IsPosed(_phase))
             {
                 _lastPos = pos;   // keep the movement read warm so a fresh pose never sees a stale delta
