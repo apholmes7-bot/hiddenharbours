@@ -1107,6 +1107,11 @@ namespace HiddenHarbours.Core
         public static HullWaveSettings HullWaves =>
             Config != null ? Config.HullWaves : HullWaveSettings.Default;
 
+        /// <summary>The one foam sheet's dials (<see cref="FoamSheetSettings"/>), same contract as
+        /// <see cref="HullWaves"/>. Drawn only: read by the oar splash, never by a boat's motion.</summary>
+        public static FoamSheetSettings FoamSheet =>
+            Config != null ? Config.FoamSheet : FoamSheetSettings.Default;
+
         /// <summary>The BREAKING-WAVE model's tunables (ADR 0040), same contract as
         /// <see cref="WaveField"/> and <see cref="WaveFetch"/> including the <c>Config != null</c>
         /// discipline. Read by the shader bridge (which solves the contour and publishes it) and by the
@@ -1360,13 +1365,6 @@ namespace HiddenHarbours.Core
         /// contract as <see cref="WaveField"/>, including the <c>Config != null</c> discipline.</summary>
         public static HelmAutopilotSettings HelmAutopilot =>
             Config != null ? Config.HelmAutopilot : HelmAutopilotSettings.Default;
-
-        /// <summary>The masthead pennant's tunables (VS-19) — the boat's own wind instrument. Same
-        /// contract as <see cref="WaveField"/>, including the <c>Config != null</c> discipline (never
-        /// <c>?.</c>/<c>??</c> on a <c>UnityEngine.Object</c>). Falls back to
-        /// <see cref="TelltaleSettings.Default"/> so an unwired art scene still flies a burgee.</summary>
-        public static TelltaleSettings Telltale =>
-            Config != null ? Config.Telltale : TelltaleSettings.Default;
 
         /// <summary>The mesh fleet's keyline gate (ADR 0031 — the keyline retirement): does the
         /// fullscreen resolve still flood the legacy 1 px outline around every mesh hull? Same contract

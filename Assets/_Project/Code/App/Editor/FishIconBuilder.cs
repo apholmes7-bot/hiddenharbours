@@ -55,6 +55,11 @@ namespace HiddenHarbours.App.Editor
         /// <summary>The sprite name of the cell inside <see cref="SourceSheet"/>.</summary>
         public static string SourceSprite(string rigKey) => $"Fish_{rigKey}{SourceRung}_deck_{SourceCell}";
 
+        /// <summary>The icon-scale deck lay (same pose as <see cref="SourceCell"/>) a species may carry
+        /// when its deck cell is too small to make an icon; the coast species kit bakes these.</summary>
+        public static string IconCell(string rigKey) =>
+            $"docs/art/rigs/coast-species-kit/icon-cells/FishIconCell_{rigKey}.png";
+
         /// <summary>The committed icon for a rig species.</summary>
         public static string IconPath(string rigKey) => $"{IconFolder}/FishIcon_{rigKey}.png";
 
@@ -72,6 +77,18 @@ namespace HiddenHarbours.App.Editor
         /// </summary>
         public static FishSheetPixels.Image TrimmedIcon(string rigKey)
         {
+            // A species drawn too small for its deck cell to fill the slot (the coast species: a smelt's
+            // large rung is 8 px long) has the same deck lay rendered at icon scale beside its rig, and
+            // the icon is cut from that instead.
+            string iconCell = IconCell(rigKey);
+            if (File.Exists(iconCell))
+            {
+                FishSheetPixels.Image src = FishSheetPixels.Read(iconCell);
+                if (src.IsEmpty) return default;
+                RectInt bounds = FishSheetPixels.OpaqueBounds(src, new RectInt(0, 0, src.Width, src.Height));
+                return bounds.width == 0 ? default : FishSheetPixels.Crop(src, bounds);
+            }
+
             string sheet = SourceSheet(rigKey);
             if (!FishSheetPixels.TryCellRect(sheet, SourceSprite(rigKey), out RectInt cell)) return default;
             FishSheetPixels.Image img = FishSheetPixels.Read(sheet);

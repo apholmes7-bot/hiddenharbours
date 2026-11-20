@@ -373,11 +373,6 @@ namespace HiddenHarbours.Core
                  "exactly as before.")]
         public TideTableSettings TideTable = TideTableSettings.Default;
 
-        [Tooltip("The masthead pennant (VS-19) — the boat's own wind instrument. Where the burgee gives " +
-                 "up and hangs, the apparent wind at which it flies board-stiff, and how quickly it " +
-                 "chases a veering gust. This is the read that replaces squinting at a HUD line.")]
-        public TelltaleSettings Telltale = TelltaleSettings.Default;
-
         [Header("Weather")]
         [Tooltip("Baseline wind strength (m/s) before regional/temporal variation.")]
         public float BaseWindStrength = 4f;
@@ -584,6 +579,12 @@ namespace HiddenHarbours.Core
                  "transverse waves behind her, sized by her length and speed. The water draws them (lift, "+
                  "light, crest foam) and other hulls' drawn ride bobs on them. Drawn only: no force.")]
         public HullWaveSettings HullWaves = HullWaveSettings.Default;
+
+        [Tooltip("ONE FOAM SHEET: every foam on the water (wake, shore foam line, whitecaps, surf, storm " +
+                 "streaks, convergence foam) is drawn as the same substance in different amounts: the same " +
+                 "lace, bands and ageing colour. These dials say how each source joins it; 0 on a source's " +
+                 "join dial brings back its older separate look. Drawn only.")]
+        public FoamSheetSettings FoamSheet = FoamSheetSettings.Default;
 
         [Tooltip("BREAKING WAVES (ADR 0040): where the sea gives out and how — the breaker index γ, " +
                  "the Iribarren thresholds that separate a spilling crumble from a plunging barrel, and " +
@@ -1537,10 +1538,25 @@ namespace HiddenHarbours.Core
         [Tooltip("How pale that foam band is right at the waterline (0: none, 1: white).")]
         [Range(0f, 1f)] public float FigureWaterlineFoam = 0.5f;
 
+        [Tooltip("WADING, the height (m) of the pale foam band just above the waterline. He stands " +
+                 "upright, so the band is seen edge-on: the figure draws at its def's pixels per metre, " +
+                 "foreshortened by the view's elevation, and the swim band's few centimetres come to under " +
+                 "one pixel there, so the line at the surface vanished. Keep it at two pixels or more.")]
+        [Min(0f)] public float FigureWadeWaterlineFoamMetres = 0.1f;
+
+        [Tooltip("WADING, how pale that foam band is right at the waterline (0: none, 1: white).")]
+        [Range(0f, 1f)] public float FigureWadeWaterlineFoam = 0.8f;
+
         [Tooltip("ON: while the player swims or treads water his sun shadow is not drawn. The shadow is " +
                  "the hidden body sprite's, standing upright, and on open water it read as a ghost " +
                  "beside him. Wading keeps it.")]
         public bool FigureSwimHidesSunShadow = true;
+
+        [Tooltip("ON: while the player swims or treads water the tools he carries (the rod) are stowed: " +
+                 "neither the rod mesh on the figure nor the carried sprite is drawn, and they are drawn " +
+                 "again the moment he finds his footing. The rod mesh has no waterline cut, so held on the " +
+                 "swim pose it stood out of the water at full strength. Wading keeps them in his hands.")]
+        public bool SwimStowsCarriedTools = true;
 
         /// <summary>Code default for <see cref="HeldPropLineWidthPx"/>.</summary>
         public const float DefaultHeldPropLineWidthPx = 1.5f;
