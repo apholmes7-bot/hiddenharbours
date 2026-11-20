@@ -24,14 +24,23 @@ namespace HiddenHarbours.Boats
     /// boats and the beached wreck all take it from here.</para>
     ///
     /// <para><b>Cost</b> (rule 7): one rounding and a compare per boat per <c>LateUpdate</c>, and a write only when
-    /// the order changes, which is once per quarter metre of northing. No allocation. The pivot is the root, which
-    /// the swell does not move (it lifts only her visual child), so she never flickers against a rock.</para>
+    /// the order changes, which is once per quarter metre of northing or of tide. No allocation. The pivot is the
+    /// root, which the swell does not move (it lifts only her visual child), so she never flickers against a rock.</para>
+    ///
+    /// <para><b>The tide moves her sort point; the waves do not.</b> The tide carries her picture up or down the
+    /// screen from her root (Core <see cref="IHullTideRide.ScreenRiseNow"/>), so she sorts at the root plus that
+    /// rise (<see cref="HullSorting.SortPoint"/>): where her picture's waterline is drawn, against the scenery it
+    /// is drawn beside. The situational rule is asked at the same point. The ride is read through the Core seam,
+    /// found once per wiring; a hull with no ride sorts at her root as before. A ride that arrives later tells
+    /// this writer to look again (<see cref="LookAgain"/>).</para>
     /// </summary>
     [DisallowMultipleComponent]
     public sealed class BoatSortingGroup : MonoBehaviour
     {
         private SortingGroup _group;
         private IHullSortingInput _input;
+        private IHullTideRide _ride;
+        private Object _rideComponent;   // the same ride as a Unity object, so a destroyed one compares null
         private bool _inputResolved;
         private int _order;
         private bool _written;
@@ -65,6 +74,32 @@ namespace HiddenHarbours.Boats
 
         private void LateUpdate() => Sort();
 
+        /// <summary>Forget the cached rule and tide ride and sort again now: something on her root changed
+        /// (a <see cref="IHullTideRide"/> was added after she was installed).</summary>
+        public void LookAgain()
+        {
+            _inputResolved = false;
+            Sort();
+        }
+
+        /// <summary>How far up-screen the tide holds her picture right now (0 with no ride, or a destroyed one).</summary>
+        public float TideScreenRise
+        {
+            get
+            {
+                if (!_inputResolved) Resolve();
+                return _rideComponent != null ? _ride.ScreenRiseNow() : 0f;
+            }
+        }
+
+        private void Resolve()
+        {
+            _input = GetComponent<IHullSortingInput>();
+            _ride = GetComponent<IHullTideRide>();
+            _rideComponent = _ride as Object;
+            _inputResolved = true;
+        }
+
         /// <summary>Write her order from where she lies now. Public so a test or a teleport can settle it at once.</summary>
         public void Sort()
         {
@@ -73,14 +108,11 @@ namespace HiddenHarbours.Boats
                 _group = GetComponent<SortingGroup>();
                 if (_group == null) _group = gameObject.AddComponent<SortingGroup>();
             }
-            if (!_inputResolved)
-            {
-                _input = GetComponent<IHullSortingInput>();
-                _inputResolved = true;
-            }
+            if (!_inputResolved) Resolve();
 
-            Vector3 at = transform.position;
-            int order = HullSorting.OrderFor(new Vector2(at.x, at.y), _input);
+            Vector3 root = transform.position;
+            float rise = _rideComponent != null ? _ride.ScreenRiseNow() : 0f;
+            int order = HullSorting.OrderFor(HullSorting.SortPoint(new Vector2(root.x, root.y), rise), _input);
             if (_written && order == _order && _group.sortingOrder == order) return;
             _group.sortingOrder = order;
             _order = order;

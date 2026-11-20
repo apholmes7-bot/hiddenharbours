@@ -325,6 +325,11 @@ lowbush blueberry).
    it over the player; the splash stays one over. Still open: the screen-space sun shade of the player
    is a child of him, so aboard it shades inside the boat group, as it already did on the St Peters
    dory.
+   *The tide moves the sort point:* she sorts at her root plus the tide's screen rise (Core
+   `HullSorting.SortPoint(root, IHullTideRide.ScreenRiseNow())`), the picture's waterline without any
+   wave heave or roll, and the pier rule is asked at that same point. A hull with no ride sorts at her
+   root. The tide is deterministic and slow, so she re-sorts once per quarter metre of rise; the waves
+   never move the key.
 4. **Retire `PlantHullSorting.BehindAHull`** (#1281). With hulls in the band, a standing plant's
    ordinary Y-sort gives "behind the pivot, under her" by itself, and without sending it under the sea.
    Keep `LiesFlat`. (art-pipeline)

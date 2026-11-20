@@ -13,6 +13,10 @@ namespace HiddenHarbours.App
     /// <see cref="TryOrderAt"/> each frame and writes her group once; south of the pier (or off its ends)
     /// this rule stands aside and she sorts by where she lies, in front of the pier and among its pilings.
     /// It used to write the same group every <c>LateUpdate</c> as a second writer.</para>
+    ///
+    /// <para><b>Asked where her picture is.</b> The point it is given is her sort point: the root plus the
+    /// tide's screen rise (Core <c>HullSorting.SortPoint</c>), not the bare root, so "north of the pier"
+    /// means her picture's waterline is north of it at this state of the tide.</para>
     /// </summary>
     [DisallowMultipleComponent]
     [RequireComponent(typeof(SortingGroup))]

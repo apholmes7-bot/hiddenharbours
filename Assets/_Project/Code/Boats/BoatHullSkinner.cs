@@ -796,6 +796,9 @@ namespace HiddenHarbours.Boats
         private static void EnsureTideRide(GameObject root)
         {
             if (root.GetComponent<HullTideRide>() == null) root.AddComponent<HullTideRide>();
+            // Her sorting group was installed before the ride existed: it sorts at the root plus the ride.
+            var sorting = root.GetComponent<BoatSortingGroup>();
+            if (sorting != null) sorting.LookAgain();
         }
 
         private static SpriteRenderer MakeOarRenderer(Transform visual, string name, SpriteRenderer hullVisual,

@@ -89,6 +89,9 @@ namespace HiddenHarbours.Boats
         {
             var presence = GetComponent<HullPresence>();
             if (presence != null) presence.LookForRide();
+            // ...and her sorting writer, which sorts at the root plus this ride (ADR 0059 step 3).
+            var sorting = GetComponent<BoatSortingGroup>();
+            if (sorting != null) sorting.LookAgain();
         }
 
         /// <summary>

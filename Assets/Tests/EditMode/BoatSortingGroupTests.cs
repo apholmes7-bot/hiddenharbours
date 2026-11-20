@@ -257,6 +257,144 @@ namespace HiddenHarbours.Tests.EditMode
             StringAssert.DoesNotContain("voidLateUpdate", code);
         }
 
+        // ---- the tide moves her sort point, the waves do not -----------------------------------------
+
+        /// <summary>A tide ride that says what the test tells it: the Core seam the writer reads.</summary>
+        private sealed class FixedRide : MonoBehaviour, IHullTideRide
+        {
+            public float Rise;
+            public float WaterlineNow() => 0f;
+            public float ScreenRiseNow() => Rise;
+        }
+
+        private FixedRide RideOn(GameObject boat, float rise)
+        {
+            var ride = boat.AddComponent<FixedRide>();
+            ride.Rise = rise;
+            boat.GetComponent<BoatSortingGroup>().LookAgain();   // what HullTideRide.OnEnable does in play
+            return ride;
+        }
+
+        [Test] public void ATideRiseOfZero_SortsExactlyAsTheRootDid()
+        {
+            var at = new Vector2(12.3f, -7.9f);
+            var boat = SkinnedBoat("Boat", at);
+            int before = boat.GetComponent<SortingGroup>().sortingOrder;
+            RideOn(boat, 0f);
+            Assert.AreEqual(before, boat.GetComponent<SortingGroup>().sortingOrder);
+            Assert.AreEqual(HullSorting.OrderAt(at.y), boat.GetComponent<SortingGroup>().sortingOrder);
+        }
+
+        [Test] public void TheTide_MovesHerOrder_ByTheQuantisedSteps()
+        {
+            var at = new Vector2(0f, 1.1f);
+            var boat = SkinnedBoat("Boat", at);
+            var group = boat.GetComponent<SortingGroup>();
+            var writer = boat.GetComponent<BoatSortingGroup>();
+            int atRoot = group.sortingOrder;
+            var ride = RideOn(boat, 0f);
+            foreach (float rise in new[] { 1f, -2.5f, 0.25f, -4.3f })
+            {
+                ride.Rise = rise;
+                writer.Sort();
+                Assert.AreEqual(atRoot - Mathf.RoundToInt(rise * SortingBands.OrdersPerMetre), group.sortingOrder,
+                                $"rise {rise}");
+                Assert.AreEqual(rise, writer.TideScreenRise);
+            }
+        }
+
+        [Test] public void TheWaves_NeverChangeHerOrder()
+        {
+            var boat = SkinnedBoat("Boat", new Vector2(3f, 4f));
+            var group = boat.GetComponent<SortingGroup>();
+            var writer = boat.GetComponent<BoatSortingGroup>();
+            RideOn(boat, -1.7f);
+            int settled = group.sortingOrder;
+            var visual = boat.transform.Find(BoatHullSkinner.VisualChildName);
+            Vector3 home = visual.localPosition;
+            foreach (float heave in new[] { 0.9f, -0.9f, 2.4f, -2.4f })
+            {
+                // heave and roll move only her visual child; her root and her tide stay put
+                visual.localPosition = home + new Vector3(0f, heave, 0f);
+                visual.localRotation = Quaternion.Euler(0f, 0f, heave * 4f);
+                writer.Sort();
+                Assert.AreEqual(settled, group.sortingOrder, $"heave {heave}");
+            }
+        }
+
+        [Test] public void ADestroyedRide_IsNoRide()
+        {
+            var at = new Vector2(0f, 2f);
+            var boat = SkinnedBoat("Boat", at);
+            var ride = RideOn(boat, 3f);
+            Object.DestroyImmediate(ride);
+            boat.GetComponent<BoatSortingGroup>().Sort();
+            Assert.AreEqual(HullSorting.OrderAt(at.y), boat.GetComponent<SortingGroup>().sortingOrder);
+        }
+
+        [Test] public void TheRealTideRide_AddedAfterSkinning_IsHeard()
+        {
+            // No sea wired: the water is at 0, so a ride struck at -2 m holds her picture 2 m of height up-screen.
+            GameServices.Reset();
+            var at = new Vector2(5f, 0.6f);
+            var boat = SkinnedBoat("Boat", at);
+            var ride = boat.AddComponent<HullTideRide>();
+            ride.Configure(bakedWaterlineElevation: -2f, draughtMetres: 0.5f);
+            boat.GetComponent<BoatSortingGroup>().LookAgain();
+            float rise = ride.ScreenRiseNow();
+            Assert.AreEqual(2f * IsoGround.HeightScale, rise, 1e-5f);
+            Assert.AreEqual(HullSorting.OrderAt(at.y + rise), boat.GetComponent<SortingGroup>().sortingOrder);
+            StringAssert.Contains("sorting.LookAgain();",
+                Squash(File.ReadAllText("Assets/_Project/Code/Boats/HullTideRide.cs")),
+                "a ride enabled in play tells her writer to look again");
+        }
+
+        [Test] public void HerRootSouthOfThePier_ButHerRisenPictureNorthOfIt_DropsBehindTheDeck()
+        {
+            var pier = new Rect(180f, -60f, 12f, 4f);   // yMax = -56
+            var root = Root("Dory", new Vector2(186f, -58f));   // root south of the pier, inside its depth
+            var rule = root.AddComponent<StPetersPierBoatSorting>();
+            rule.Configure(pier, behindOrder: -1);
+            BoatHullSkinner.Apply(root, SpriteVisual(), boat: null, new BoatHullSkinner.Options { SkipWaveMotion = true });
+            var group = root.GetComponent<SortingGroup>();
+            Assert.AreEqual(HullSorting.OrderAt(-58f), group.sortingOrder, "no ride: by her root, in front");
+
+            var ride = RideOn(root, 3f);   // the flood holds her picture 3 up-screen: waterline at -55, north of -56
+            Assert.AreEqual(-1, group.sortingOrder, "her picture lies north of the pier: behind its deck");
+
+            ride.Rise = -3f;   // and the reverse: root south, picture further south
+            root.GetComponent<BoatSortingGroup>().Sort();
+            Assert.AreEqual(HullSorting.OrderAt(-61f), group.sortingOrder);
+        }
+
+        [Test] public void HerRootNorthOfThePier_ButHerPictureDroppedSouthOfIt_SortsByThePicture()
+        {
+            var pier = new Rect(180f, -60f, 12f, 4f);
+            var root = Root("Dory", new Vector2(186f, -54f));   // root north of the pier
+            root.AddComponent<StPetersPierBoatSorting>().Configure(pier, behindOrder: -1);
+            BoatHullSkinner.Apply(root, SpriteVisual(), boat: null, new BoatHullSkinner.Options { SkipWaveMotion = true });
+            var group = root.GetComponent<SortingGroup>();
+            Assert.AreEqual(-1, group.sortingOrder, "no ride: behind the deck by her root");
+            RideOn(root, -3f);   // the ebb drops her picture to -57, inside the pier's depth
+            Assert.AreEqual(HullSorting.OrderAt(-57f), group.sortingOrder);
+        }
+
+        [Test] public void SortingWithATide_AllocatesNothing()
+        {
+            var boat = SkinnedBoat("Boat", new Vector2(0f, 0f));
+            var ride = RideOn(boat, 0f);
+            var writer = boat.GetComponent<BoatSortingGroup>();
+            writer.Sort();
+            long before = System.GC.GetAllocatedBytesForCurrentThread();
+            for (int i = 0; i < 1000; i++)
+            {
+                ride.Rise = i * 0.003f;
+                writer.Sort();
+            }
+            long after = System.GC.GetAllocatedBytesForCurrentThread();
+            Assert.AreEqual(0, after - before);
+        }
+
         // ---- what escapes ----------------------------------------------------------------------------
 
         [Test] public void AnEscape_SortsAtTheRoot_AboveAllDecor()
