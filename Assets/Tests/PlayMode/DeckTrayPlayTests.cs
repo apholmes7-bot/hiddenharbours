@@ -46,7 +46,8 @@ namespace HiddenHarbours.Tests.PlayMode
             var container = ScriptableObject.CreateInstance<DeckContainerDef>();
             container.Id = "container.play_test_tray";
             container.DisplayName = "Play-test tray";
-            container.FillSprites = null;   // greybox silhouettes — the shipped fallback path
+            // Painted fill states (stand-ins): a container with none draws nothing at all.
+            container.FillSprites = new[] { FillSprite("empty"), FillSprite("low"), FillSprite("half"), FillSprite("brim") };
             _spawned.Add(container);
 
             var hull = ScriptableObject.CreateInstance<BoatHullDef>();
@@ -62,6 +63,16 @@ namespace HiddenHarbours.Tests.PlayMode
             var hold = boatGo.AddComponent<ShipHold>();   // Awake spawns the presenter (runtime, no builder)
             hold.SetHull(hull);
             return (boatGo, hold, hull);
+        }
+
+        private Sprite FillSprite(string name)
+        {
+            var tex = new Texture2D(4, 4);
+            _spawned.Add(tex);
+            var s = Sprite.Create(tex, new Rect(0, 0, 4, 4), new Vector2(0.5f, 0.5f), 32f);
+            s.name = name;
+            _spawned.Add(s);
+            return s;
         }
 
         private static SpriteRenderer TrayRenderer(GameObject boat)
@@ -86,7 +97,7 @@ namespace HiddenHarbours.Tests.PlayMode
             Assert.IsNotNull(tray, "the tray prop exists on the deck");
             Assert.IsTrue(tray.enabled, "a hull with a container shows its tray");
             Sprite emptySprite = tray.sprite;
-            Assert.IsNotNull(emptySprite, "the empty tray is drawn (greybox state 0)");
+            Assert.IsNotNull(emptySprite, "the empty tray is drawn (painted state 0)");
 
             // BAND A KEEPER — the unchanged #193 land path: the hold takes it, FishCaught announces it.
             CatchItem keeper = Lobster();
