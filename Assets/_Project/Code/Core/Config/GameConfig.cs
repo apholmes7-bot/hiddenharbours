@@ -80,6 +80,15 @@ namespace HiddenHarbours.Core
         public Color CreatorBackdropColor = NotebookInk.Paper;
         [Range(0.1f, 0.7f)] public float CreatorFigureHeightFraction = DefaultCreatorFigureHeightFraction;
 
+        public const float DefaultMeshArmClearancePx = 1f;
+
+        [Header("Character mesh clearance (QA)")]
+        [Tooltip("The deepest an arm vertex (forearm or hand) of the player's mesh may sit inside his " +
+                 "torso or head on any frame of the dig, hauler and strike clips, in rig pixels " +
+                 "(CharacterSkinDef.PxPerMetre to the metre). Each body part is measured as a capsule " +
+                 "along its bones. Read by the EditMode clearance test, never at runtime.")]
+        [Range(0f, 4f)] public float MeshArmClearancePx = DefaultMeshArmClearancePx;
+
         [Header("Curling breakers")]
         public CurlingBreakerSettings CurlingBreakers = CurlingBreakerSettings.Default;
 
