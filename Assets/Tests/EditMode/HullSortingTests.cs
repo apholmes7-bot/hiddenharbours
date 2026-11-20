@@ -147,37 +147,5 @@ namespace HiddenHarbours.Tests.EditMode
             var behind = new FixedInput { Applies = true, Order = -1 };
             Assert.AreEqual(-1, HullSorting.OrderFor(new Vector2(0f, 30f), behind));
         }
-
-        // ---- the tide moves the sort point, by the quantised step -----------------------------------
-
-        [Test] public void NoTide_LeavesTheSortPointAtTheRoot()
-        {
-            var root = new Vector2(189.67f, -55.88f);
-            Assert.AreEqual(root, HullSorting.SortPoint(root, 0f));
-            Assert.AreEqual(HullSorting.OrderAt(root.y), HullSorting.OrderFor(HullSorting.SortPoint(root, 0f), null));
-            Assert.AreEqual(root, HullSorting.SortPoint(root, float.NaN), "a non-finite rise is no rise");
-            Assert.AreEqual(root, HullSorting.SortPoint(root, float.PositiveInfinity));
-        }
-
-        [Test] public void TheTidesRise_MovesHerKey_ByOneRungPerQuarterMetre()
-        {
-            var root = new Vector2(0f, 1.1f);   // clear of a rounding edge either way
-            int atRoot = HullSorting.OrderAt(root.y);
-            foreach (float rise in new[] { 0.25f, 1f, -1f, 2.5f, -4f })
-            {
-                int steps = Mathf.RoundToInt(rise * SortingBands.OrdersPerMetre);
-                Assert.AreEqual(atRoot - steps, HullSorting.OrderFor(HullSorting.SortPoint(root, rise), null),
-                    $"a rise of {rise} m moves her {steps} rungs (up-screen = further back)");
-            }
-            Assert.AreEqual(root.x, HullSorting.SortPoint(root, 3f).x, "the tide never moves her sideways");
-        }
-
-        [Test] public void TheRuleIsAskedAtTheRisenPoint()
-        {
-            var rule = new FixedInput { Applies = false };
-            var root = new Vector2(4f, -2f);
-            HullSorting.OrderFor(HullSorting.SortPoint(root, 1.5f), rule);
-            Assert.AreEqual(new Vector2(4f, -0.5f), rule.AskedAt);
-        }
     }
 }

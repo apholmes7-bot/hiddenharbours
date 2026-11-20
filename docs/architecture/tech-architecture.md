@@ -443,9 +443,7 @@ ride the swell), `SortingBands.HullYieldRungs` (1) behind, the same rule as the 
 installed by `BoatHullSkinner` on both paths, so everything aboard (hull facets, deck, fittings, the
 rider and his rod, containers, lamps) keeps its order inside the group, and `BoatVisualDef.SortingOrder`
 is now local to it. A situational rule (the St Peters pier) is an `IHullSortingInput` the group asks,
-never a second writer. The sort point is the root plus the tide's screen rise (`HullSorting.SortPoint`,
-read through Core `IHullTideRide`), where her picture's waterline is drawn; the waves never move it.
-Things that must reach the world from aboard (mooring line, anchor rode, haul
+never a second writer. Things that must reach the world from aboard (mooring line, anchor rode, haul
 rope) escape with `HullSorting.EscapeTheBoat` (`sortAtRoot`).
 
 Free effects never take a fixed order in the band's low floor (step 2). Core's `EffectSorting` is the

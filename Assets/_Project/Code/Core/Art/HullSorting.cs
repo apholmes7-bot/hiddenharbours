@@ -12,11 +12,9 @@ namespace HiddenHarbours.Core
     /// boats and the beached wreck all ask the same question.
     ///
     /// <para><b>The sort point is the waterline pivot amidships</b> (owner, 2026-11-17): the boat root's
-    /// position, which is also <see cref="HullFootprint.Center"/>, moved up-screen by the tide's screen
-    /// rise (<see cref="SortPoint"/>), so she sorts where her picture's waterline is drawn. It does not
-    /// move with her heading, her length or her heel, and it does not ride the swell: waves move only her
-    /// visual child, so her sort point stays put and she does not flicker against a rock as she rises and
-    /// falls.</para>
+    /// position, which is also <see cref="HullFootprint.Center"/>. It does not move with her heading, her
+    /// length or her heel, and it does not ride the swell: the sea lifts only her visual child, so her sort
+    /// point stays put and she does not flicker against a rock as she rises and falls.</para>
     ///
     /// <para><b>Why one rung behind.</b> Something standing on her root (the player aboard, a figure on her
     /// deck) would land on exactly her order, and a tie between a sorting group and a sprite is broken by
@@ -40,19 +38,6 @@ namespace HiddenHarbours.Core
         {
             if (input != null && input.TryOrderAt(waterlinePivot, out int decided)) return decided;
             return OrderAt(waterlinePivot.y);
-        }
-
-        /// <summary>
-        /// Her sort point: the root (<paramref name="root"/>) moved up-screen by the tide alone
-        /// (<paramref name="tideScreenRise"/>, Core <see cref="IHullTideRide.ScreenRiseNow"/>), which is
-        /// where her picture's waterline is drawn without any wave heave or roll. The tide is deterministic
-        /// from <c>(worldSeed, gameTime)</c> and slow, so the key moves a rung per quarter metre of rise and
-        /// never flickers with the swell. A non-finite rise is no rise.
-        /// </summary>
-        public static Vector2 SortPoint(Vector2 root, float tideScreenRise)
-        {
-            if (float.IsNaN(tideScreenRise) || float.IsInfinity(tideScreenRise)) return root;
-            return new Vector2(root.x, root.y + tideScreenRise);
         }
 
         /// <summary>
