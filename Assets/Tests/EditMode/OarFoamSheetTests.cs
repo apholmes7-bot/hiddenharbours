@@ -16,7 +16,9 @@ namespace HiddenHarbours.Tests.EditMode
     /// </summary>
     public class OarFoamSheetTests
     {
-        private const float LockHeight = 0.5156f - 0.11f;
+        // The dory's own facts, as DoryOarSplashTests reads them: oarlock z 0.58808 m
+        // (DoryOarPortPropMesh.PivotLocalMeters) over a 0.11 m resting draught.
+        private const float LockHeight = 0.58808f - 0.11f;
         private const float Dt = 1f / 60f;
         private const string EmitterPath = "Assets/_Project/Code/Boats/DoryOarSplashEmitter.cs";
 
