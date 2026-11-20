@@ -586,6 +586,11 @@ namespace HiddenHarbours.Core
                  "join dial brings back its older separate look. Drawn only.")]
         public FoamSheetSettings FoamSheet = FoamSheetSettings.Default;
 
+        [Tooltip("STILL POOLS: water the falling tide has cut off from the open sea draws still: no swell, " +
+                 "no pulsing edge, no surf or shore foam. The rising tide reconnects it and the swell eases " +
+                 "back in over the blend. Recomputed from the seabed and the tide, never saved.")]
+        public SeaReachSettings SeaReach = SeaReachSettings.Default;
+
         [Tooltip("BREAKING WAVES (ADR 0040): where the sea gives out and how — the breaker index γ, " +
                  "the Iribarren thresholds that separate a spilling crumble from a plunging barrel, and " +
                  "the whitewater decay. Ships at the TEXTBOOK PHYSICS (γ = 0.78, Battjes' 0.5/3.3/5.0), " +
@@ -1571,6 +1576,43 @@ namespace HiddenHarbours.Core
         [Tooltip("How wide (art pixels) a held prop's thin parts are drawn — the rod blank, until the facet " +
                  "shader's own line pass exists (ADR 0053 D2). 1 to 2 is the ruled look.")]
         [Range(0.5f, 3f)] public float HeldPropLineWidthPx = DefaultHeldPropLineWidthPx;
+        [Tooltip("Draw a fish in his hand (carried, and held up at the landing) as the rig's facet mesh on " +
+                 "his hand's socket, at its size rung, instead of the held fish sprite. Only for a species " +
+                 "the held-prop bake makes a mesh for (CatchItemLibrary.HeldMeshFor); every other catch, " +
+                 "and any frame the mesh figure is not drawing him, keeps its sprite.")]
+        public bool MeshCatchInHand = true;
+
+        [Tooltip("How wide (art pixels) the thin line along a held fish's fins and tail is drawn, so a fin " +
+                 "that is a sliver at a pixel still reads (ADR 0053 D2). 0 = no fin line.")]
+        [Range(0f, 3f)] public float HeldFishFinLineWidthPx = 1f;
+
+        [Tooltip("How wide (art pixels) a held fish's eye is drawn. 0 = no eye.")]
+        [Range(0f, 3f)] public float HeldFishEyeSizePx = 1f;
+
+        [Tooltip("A held fish mesh's shade gain, as a multiple of its bake's (more contrast between the lit " +
+                 "belly and the shaded back, as the held sheet draws it). 1 = the bake's own.")]
+        [Range(0.5f, 3f)] public float HeldFishToneGain = 1.5f;
+
+        [Tooltip("Added to a held fish mesh's shade, in ramp steps: a brighter fish. 0 = the bake's own.")]
+        [Range(-2f, 2f)] public float HeldFishToneLift = 1f;
+
+        [Tooltip("A held fish mesh's dither, as a multiple of its bake's: 1 = as baked, 0 = clean bands of " +
+                 "the ramp's own colours (the held sheet's look at hand size).")]
+        [Range(0f, 1f)] public float HeldFishDitherScale = 0f;
+
+        [Tooltip("How far a held fish mesh is drawn toward the camera, in metres, so his body or legs never " +
+                 "hide it (the held sheet is always drawn in front). 0 = where the hand is.")]
+        [Min(0f)] public float HeldFishFrontBiasMeters = 0.4f;
+
+        [Tooltip("The shortest a held fish MESH is drawn, art pixels along its longest side: a smaller fish " +
+                 "is scaled up about its grip to this, so a herring still reads in his hand. The mesh can " +
+                 "grow where a sprite can only pick a bigger rung (MinDrawnFishLengthPx). 0 = no floor.")]
+        [Min(0f)] public float HeldFishMinLengthPx = 20f;
+
+        [Tooltip("At the landing the fish hangs from whichever hand is nearer the camera, so it is never " +
+                 "hidden behind him (the rig's own fish prop swaps hands the same way). It changes hands " +
+                 "only when the other hand is nearer by more than this (m), so it does not flicker.")]
+        [Min(0f)] public float HeldFishHandSwapDepthMeters = 0.05f;
 
         /// <summary>Code default for <see cref="HeldRodGripToleranceMetres"/>.</summary>
         public const float DefaultHeldRodGripToleranceMetres = 0.02f;
