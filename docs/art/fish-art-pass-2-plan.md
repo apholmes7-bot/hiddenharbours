@@ -193,6 +193,16 @@ pose:
   ground; the flounder loses its mottle without dither; facing north at the landing the fish is
   still partly behind him.
 
+**The coast species kit's three (2026-11-20).** Smelt, tomcod and cunner are held as meshes too
+(`heldprop.fish_smelt` / `_tomcod` / `_cunner`). The kit registers them into the fish rig's
+`SPECIES`, so the held bake installs it after the fish rig (`HeldPropFamily.AddOnKeys`) and the fish
+rig's own `held` reconstruction lists them after its seven. The kit's painted-on marks (mottle,
+silver band, barbel, extra fins) are pixel passes, not geometry, so the meshes carry the body, the
+rig's fins and the species' colours only. `HeldCatchMeshTests.EveryCatchableSpecies_IsHeldAsAMesh_OrIsNamedOwed`
+now requires every shipped species to resolve to a held mesh at every rung. Owed by name, because
+no held-mesh pattern exists for their body type: the lobster, both crabs and the six shellfish
+(held as the storage bake's `Crust2Held` / `Shell2Hand` sprites).
+
 ## 4. Fish pictures at the stove, the locker and the freezer
 
 ### 4.1 Where it stands

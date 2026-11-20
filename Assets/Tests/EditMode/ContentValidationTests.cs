@@ -718,6 +718,8 @@ namespace HiddenHarbours.Tests.EditMode
             "heldprop.bucket_tray_half_fish", "heldprop.bucket_tray_half_shell", "heldprop.bucket_tray_half_crust",
             "heldprop.bucket_tray_full_fish", "heldprop.bucket_tray_full_shell", "heldprop.bucket_tray_full_crust",
             "heldprop.bucket_tray_brim_fish", "heldprop.bucket_tray_brim_shell", "heldprop.bucket_tray_brim_crust",
+            // The coast species kit's three fish, held by the tail (appended 2026-11-20).
+            "heldprop.fish_smelt", "heldprop.fish_tomcod", "heldprop.fish_cunner",
         };
 
         /// <summary>
