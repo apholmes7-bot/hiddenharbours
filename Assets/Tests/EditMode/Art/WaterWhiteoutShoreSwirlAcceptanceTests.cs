@@ -656,6 +656,12 @@ namespace HiddenHarbours.Tests.Art.EditMode
             // at the shipped amplitude; the fringe wiggle at the shipped strength.
             mat.SetFloat("_SwashAmplitude", 0.3f);
             mat.SetFloat("_ShoreNoise", 0.75f);
+            // This pins the swash's GEOMETRY (slope-true contour offsets), which the one foam sheet
+            // (2026-11-19) does not change. The sheet draws the shore line hugging the wet edge, so
+            // its foam stops near 1.2 m of depth and neither the shipped nor the sabotaged swash
+            // reaches this zone (measured 0.0 % both): the metric would go blind. Read the geometry
+            // through the older full-width fringe (the sheet's shore join at 0, bit-exact).
+            mat.SetVector("_FoamSheetShore", new Vector4(0f, 2.5f, 0.5f, 0.6f));
 
             Color[] s1 = scene.Render();
             Color[] s2 = scene.Render();

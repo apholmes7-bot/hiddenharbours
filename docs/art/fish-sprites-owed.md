@@ -1,7 +1,32 @@
 # Fish sprites owed (R1, 2026-11-15)
 
-Slice R1 added six current-region species as data. None has its own art yet. This is the brief for
-art-pipeline. Each row says what stands in for the missing art today.
+Slice R1 added six current-region species as data. None had its own art. This was the brief for
+art-pipeline; each row said what stood in for the missing art.
+
+## Landed (2026-11-20): the coast species kit
+
+All six now have art of their own, from `docs/art/rigs/coast-species-kit/` (see its README) through the
+catch pass 2 pipeline:
+
+- **Smelt, tomcod, cunner:** every fish state at three size rungs (`Art/Fishing/Iso/Fish_<sp>*`), the
+  anchors sidecar, fight ladders, held and tote sprites, swim-library rows at their own drawn length, and
+  an icon (`Art/Fishing/Icons/FishIcon_<sp>.png`) cut from an icon-scale render of the deck lay.
+- **Green crab:** its own pot-deck sheet (`Art/Fishing/GreenCrabDeck.png`, the rock crab's layout) and
+  icon (`Art/Fishing/Icons/ShellIcon_green_crab.png`). The pot-deck rule and the Def point at them.
+- **Northern quahog, Atlantic surf clam:** icons of their own (`ShellIcon_northern_quahog.png`,
+  `ShellIcon_atlantic_surf_clam.png`), pointed at by the Defs and the icon library.
+
+Still owed:
+
+- Held MESHES (ADR 0053) for smelt, tomcod and cunner: the held-prop bake reads the fish rig's own
+  `ORDER`, which is pinned at seven. Until then they are held as their own sprites
+  (`FishArtEverywhereTests.OwedHeldMesh`).
+- Carry and tote art for the green crab, quahog and surf clam: they still draw as the shared `crab` and
+  `clam` kinds in the hands and the tote.
+- The tomcod's thread-like pelvic rays. (Its third dorsal and second anal, and the cunner's long dorsal
+  and thick lips, came in the kit's second pass.)
+
+The table below is the original brief, kept for the description of each animal.
 
 ## How a species without art is drawn today
 

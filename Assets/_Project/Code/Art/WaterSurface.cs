@@ -317,6 +317,15 @@ namespace HiddenHarbours.Art
         private static readonly int IdCapSalienceStrength  = Shader.PropertyToID("_CapSalienceStrength");
         private static readonly int IdCapEnvelopeThreshold = Shader.PropertyToID("_CapEnvelopeThreshold");
         private static readonly int IdEnvelopeBandStrength = Shader.PropertyToID("_EnvelopeBandStrength");
+        // The one foam sheet (owner 2026-11-19): how each foam source joins it, pushed from _config when wired.
+        private static readonly int IdFoamSheetShore = Shader.PropertyToID("_FoamSheetShore");
+        private static readonly int IdFoamSheetCaps = Shader.PropertyToID("_FoamSheetCaps");
+        private static readonly int IdFoamSheetStorm = Shader.PropertyToID("_FoamSheetStorm");
+        private static readonly int IdFoamSheetConv = Shader.PropertyToID("_FoamSheetConv");
+        private static readonly int IdFoamSheetWash = Shader.PropertyToID("_FoamSheetWash");
+        private static readonly int IdFoamSheetAgeTear = Shader.PropertyToID("_FoamSheetAgeTear");
+        private static readonly int IdFoamSheetEdge = Shader.PropertyToID("_FoamSheetEdge");
+        private static readonly int IdFoamSheetDither = Shader.PropertyToID("_FoamSheetDither");
         // (W4-4b) The floor in the shallows: its switch and its bend, pushed from _config beside the salience
         // knobs (GameConfig.ShallowsFloor / ShallowsFloorRefraction). Shader globals, never Properties.
         private static readonly int IdShallowsFloor = Shader.PropertyToID("_ShallowsFloor");
@@ -785,6 +794,7 @@ namespace HiddenHarbours.Art
                     // reads the same sea Play will (a no-op while no config is wired).
                     PushSalienceKnobs(_mpb);
                     PushShallowsFloor(_mpb);
+                    PushFoamSheet(_mpb);
                     // The region's water type shows in the Scene view too, dry: no clock, no rain to remember.
                     SampleWaterType(0.0, null);
                     PushWaterType(_mpb);
@@ -891,6 +901,7 @@ namespace HiddenHarbours.Art
             // block, which the displaced surface COPIES each tick — one push covers both passes.
             PushSalienceKnobs(_mpb);
             PushShallowsFloor(_mpb);
+            PushFoamSheet(_mpb);
 
             // (W4-4) The ground's floor, re-bound only when a ground enabled, disabled or re-pushed: an
             // int compare per push, and the bind itself writes no new texture and allocates nothing.
@@ -1154,6 +1165,26 @@ namespace HiddenHarbours.Art
             mpb.SetFloat(IdCapSalienceStrength, dw.CapSalienceStrength);
             mpb.SetFloat(IdCapEnvelopeThreshold, dw.CapEnvelopeThreshold);
             mpb.SetFloat(IdEnvelopeBandStrength, dw.EnvelopeBandStrength);
+        }
+
+        /// <summary>
+        /// The one foam sheet (the owner, 2026-11-19): how each foam source joins the sea's one foam sheet,
+        /// from <see cref="GameConfig.FoamSheet"/>, re-read every push like the salience knobs. A no-op with
+        /// no config wired: the shader's property defaults are the same values (<c>FoamSheetTests</c> pins
+        /// the pair). Owner policy, not weather mood, so absent from <see cref="MoodFloatNames"/>.
+        /// </summary>
+        private void PushFoamSheet(MaterialPropertyBlock mpb)
+        {
+            if (_config == null) return;
+            FoamSheetSettings fs = _config.FoamSheet;
+            mpb.SetVector(IdFoamSheetShore, fs.ShoreVector);
+            mpb.SetVector(IdFoamSheetCaps, fs.CapsVector);
+            mpb.SetVector(IdFoamSheetStorm, fs.StormVector);
+            mpb.SetVector(IdFoamSheetConv, fs.ConvVector);
+            mpb.SetVector(IdFoamSheetWash, fs.WashVector);
+            mpb.SetFloat(IdFoamSheetAgeTear, Mathf.Clamp01(fs.AgeTear));
+            mpb.SetVector(IdFoamSheetEdge, fs.EdgeVector);
+            mpb.SetVector(IdFoamSheetDither, fs.DitherVector);
         }
 
         /// <summary>

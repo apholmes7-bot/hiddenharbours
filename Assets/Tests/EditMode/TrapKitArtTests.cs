@@ -38,6 +38,8 @@ namespace HiddenHarbours.Tests.EditMode
             new SheetSpec { File = "PotWireWet.png",   CellW = 44, CellH = 36, Count = 0, PivotPx = new Vector2(22f, 4f) },
             new SheetSpec { File = "LobsterDeck.png",  CellW = 48, CellH = 48, Count = 8, PivotPx = new Vector2(24f, 24f) },
             new SheetSpec { File = "RockCrabDeck.png", CellW = 48, CellH = 48, Count = 8, PivotPx = new Vector2(24f, 24f) },
+            // The coast species kit's green crab, in the rock crab sheet's layout so the pot-deck rule keeps its slots.
+            new SheetSpec { File = "GreenCrabDeck.png", CellW = 48, CellH = 48, Count = 8, PivotPx = new Vector2(24f, 24f) },
             new SheetSpec { File = "SplashBurst.png",  CellW = 48, CellH = 48, Count = 8, PivotPx = new Vector2(24f, 14f) },
             new SheetSpec { File = "LobsterBuoys.png", CellW = 24, CellH = 48, Count = 8, PivotPx = new Vector2(12f, 2f) },
             new SheetSpec { File = "RopeProps.png",    CellW = 40, CellH = 32, Count = 3, PivotPx = new Vector2(20f, 2f) },

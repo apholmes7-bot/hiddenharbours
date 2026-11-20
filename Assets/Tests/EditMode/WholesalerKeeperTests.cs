@@ -229,16 +229,16 @@ namespace HiddenHarbours.Tests.EditMode
             [typeof(PotShop)] = typeof(PotOffer),
         };
 
-        /// <summary>Every offer that names a wholesaler: its id and every seller it names.</summary>
-        static List<(string Id, string[] Sellers)> WholesalerOffers()
+        /// <summary>Every offer that names a wholesaler: its id, sellers and listing state.</summary>
+        static List<(string Id, string[] Sellers, bool Listed)> WholesalerOffers()
         {
-            var all = new List<(string, string[])>();
+            var all = new List<(string, string[], bool)>();
             void Add<T>(IEnumerable<T> items, Func<T, string> id, Func<T, CatalogListing> cat) where T : Object
             {
                 foreach (T o in items)
                 {
                     string[] sellers = cat(o).Sellers ?? Array.Empty<string>();
-                    if (sellers.Any(s => WholesalerIds.Contains(s))) all.Add((id(o), sellers));
+                    if (sellers.Any(s => WholesalerIds.Contains(s))) all.Add((id(o), sellers, cat(o).Listed));
                 }
             }
             Add(CatalogSource.All<InstrumentOffer>(), o => o.Id, o => o.Catalog);
@@ -253,7 +253,7 @@ namespace HiddenHarbours.Tests.EditMode
         [Test]
         public void TheCounterRows_AreEveryOfferOnlyAWholesalerSells_AndEveryOtherIsAccountedForAsWaiting()
         {
-            List<(string Id, string[] Sellers)> offers = WholesalerOffers();
+            List<(string Id, string[] Sellers, bool Listed)> offers = WholesalerOffers();
             IReadOnlyList<StoreWiringPatch.Seller> rows = StoreWiringPatch.NineMileCreekWholesalers;
             var waiting = NmcWholesalerKeepers.Waiting.Select(w => w.Wares).ToList();
 
@@ -261,21 +261,24 @@ namespace HiddenHarbours.Tests.EditMode
             CollectionAssert.AllItemsAreUnique(waiting, "a ware waiting twice");
             CollectionAssert.IsEmpty(rows.Select(r => r.Wares).Intersect(waiting).ToList(), "a ware both on a counter row and waiting");
 
-            foreach ((string id, string[] sellers) in offers)
+            foreach ((string id, string[] sellers, bool listed) in offers)
             {
                 bool onlyWholesalers = sellers.All(s => WholesalerIds.Contains(s));
                 StoreWiringPatch.Seller[] row = rows.Where(r => r.Wares == id).ToArray();
                 if (onlyWholesalers)
+                    Assert.AreEqual(1, sellers.Length, $"{id} names both wholesalers; one counter row cannot sell as two");
+                if (onlyWholesalers && !waiting.Contains(id))
                 {
                     Assert.AreEqual(1, row.Length, $"{id} is sold only by a wholesaler and has no counter row");
-                    Assert.AreEqual(1, sellers.Length, $"{id} names both wholesalers; one counter row cannot sell as two");
                     Assert.AreEqual(sellers[0], row[0].SellerId, $"{id}'s row sells as the wrong wholesaler");
                 }
                 else
                 {
-                    Assert.IsEmpty(row, $"{id} also names {string.Join(", ", sellers.Where(s => !WholesalerIds.Contains(s)))}: " +
-                                        "listing it needs that counter's vendor too, so it waits");
+                    Assert.IsEmpty(row, $"{id} awaits counter wiring and must have no counter row");
                     CollectionAssert.Contains(waiting, id, $"{id} names a wholesaler and is neither on a counter row nor waiting");
+                    Assert.IsFalse(listed, $"{id} is waiting for counter wiring and must remain unlisted");
+                    Assert.IsFalse(string.IsNullOrWhiteSpace(NmcWholesalerKeepers.Waiting.Single(w => w.Wares == id).Why),
+                                   $"{id} needs a reason for waiting");
                 }
             }
             CollectionAssert.IsSubsetOf(waiting, offers.Select(o => o.Id).ToList(), "a waiting ware no wholesaler offer names");

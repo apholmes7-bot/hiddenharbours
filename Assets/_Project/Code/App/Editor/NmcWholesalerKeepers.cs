@@ -138,14 +138,20 @@ namespace HiddenHarbours.App.Editor
         public static readonly Keeper[] All = { BoatGear, FishingGear };
 
         /// <summary>
-        /// Wholesaler offers that do NOT get a vendor in this run, and why. Each also names
-        /// <c>seller.leblancs</c>, and <c>Listed</c> is one flag per offer: ticking it needs a St Peters vendor
-        /// too (<c>StoreWiringTests</c> guard 4), and the St Peters counter is a separate scene with its own
+        /// Wholesaler offers awaiting counter wiring, and why. The six new electronics need their own
+        /// vendors. The remaining offers also name <c>seller.leblancs</c>, and <c>Listed</c> is one flag per offer:
+        /// ticking it needs a St Peters vendor too (<c>StoreWiringTests</c> guard 4), and that counter has its own
         /// open work. The shellfish tools are also held back until hand-gathering exists. The seat or the owner
         /// decides; adding a row to <see cref="StoreWiringPatch.NineMileCreekWholesalers"/> is all the step needs.
         /// </summary>
         public static readonly (string Wares, string Why)[] Waiting =
         {
+            ("instrument.autopilot", "awaiting dedicated instrument counter vendor"),
+            ("instrument.compass_dome", "awaiting dedicated instrument counter vendor"),
+            ("instrument.compass_flush", "awaiting dedicated instrument counter vendor"),
+            ("instrument.radar", "awaiting dedicated instrument counter vendor"),
+            ("instrument.wind_dial", "awaiting dedicated instrument counter vendor"),
+            ("instrument.wind_display", "awaiting dedicated instrument counter vendor"),
             ("bait.fish_scrap", "also names seller.leblancs"),
             ("bait.herring", "also names seller.leblancs"),
             ("bait.mackerel", "also names seller.leblancs"),
