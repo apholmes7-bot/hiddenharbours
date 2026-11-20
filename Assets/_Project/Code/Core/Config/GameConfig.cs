@@ -1565,6 +1565,18 @@ namespace HiddenHarbours.Core
             new Color(1f, 1f, 1f, 1f), new Color(1f, 0.86f, 0.64f, 1f), new Color(0.84f, 0.6f, 0.34f, 1f),
         };
 
+        [Tooltip("A fillet on a station (a recipe whose input is a fillet, not a whole fish) is drawn as a fillet " +
+                 "shape this long against the whole fish as drawn (its size rung's measured held length), never as the whole fish.")]
+        [Range(0.2f, 1f)] public float FilletLengthOfFish = 0.6f;
+
+        [Tooltip("A drawn fillet's height against its own length.")]
+        [Range(0.2f, 0.8f)] public float FilletHeightOfLength = 0.4f;
+
+        [Tooltip("A raw fillet's flesh. The cooked ramp tints it as it browns.")]
+        public Color FilletFleshColor = new Color(0.98f, 0.9f, 0.86f, 1f);
+
+        [Tooltip("A drawn fillet's 1 px outline.")]
+        public Color FilletEdgeColor = new Color(0.62f, 0.5f, 0.46f, 1f);
         [Tooltip("The tint of a frozen fish lying in the freezer (a frost look).")]
         public Color FrozenFishTint = new Color(0.8f, 0.9f, 1f, 1f);
 

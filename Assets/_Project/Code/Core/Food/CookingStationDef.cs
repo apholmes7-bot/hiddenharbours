@@ -75,8 +75,9 @@ namespace HiddenHarbours.Core
                  "job. Off for a microwave: its door is shut.")]
         public bool ShowsFood;
 
-        [Tooltip("Where the pan or the board sits, metres from the station's pivot (x right, y up on screen).")]
-        public Vector2 FoodAnchorMeters;
+        [Tooltip("Where the pan or the board sits, in the station's own frame: metres from its pivot, x along its " +
+                 "front, y toward the wall it backs onto, z up. Turned with the wall it stands against.")]
+        public Vector3 FoodAnchorPropMeters;
 
         [Tooltip("The food browns as it cooks, along GameConfig.CookedFishRamp. Off for a prep board: the " +
                  "fish there stays raw.")]

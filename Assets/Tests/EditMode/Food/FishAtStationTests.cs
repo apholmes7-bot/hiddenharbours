@@ -24,12 +24,17 @@ namespace HiddenHarbours.Tests.EditMode
             typeof(CookingStationFoodPresenter).GetMethod("Awake", BindingFlags.Instance | BindingFlags.NonPublic);
         private static readonly MethodInfo s_stationLate =
             typeof(CookingStationFoodPresenter).GetMethod("LateUpdate", BindingFlags.Instance | BindingFlags.NonPublic);
+        private static readonly MethodInfo s_stationEnable =
+            typeof(CookingStationFoodPresenter).GetMethod("OnEnable", BindingFlags.Instance | BindingFlags.NonPublic);
+        private static readonly MethodInfo s_stationDisable =
+            typeof(CookingStationFoodPresenter).GetMethod("OnDisable", BindingFlags.Instance | BindingFlags.NonPublic);
         private static readonly MethodInfo s_freezerAwake =
             typeof(FreezerContentsPresenter).GetMethod("Awake", BindingFlags.Instance | BindingFlags.NonPublic);
         private static readonly MethodInfo s_freezerLate =
             typeof(FreezerContentsPresenter).GetMethod("LateUpdate", BindingFlags.Instance | BindingFlags.NonPublic);
 
         private readonly List<Object> _made = new List<Object>();
+        private readonly List<CookingStationFoodPresenter> _stations = new List<CookingStationFoodPresenter>();
         private GameConfig _prevConfig;
         private IGameClock _prevClock;
         private ISaveService _prevSave;
@@ -86,6 +91,9 @@ namespace HiddenHarbours.Tests.EditMode
             GameServices.Save = _prevSave;
             GameServices.Cooking = _prevCooking;
             GameServices.PlayerTransform = _prevPlayer;
+            foreach (CookingStationFoodPresenter p in _stations)
+                if (p != null) s_stationDisable.Invoke(p, null);
+            _stations.Clear();
             foreach (Object o in _made)
                 if (o != null) Object.DestroyImmediate(o);
             _made.Clear();
@@ -144,7 +152,7 @@ namespace HiddenHarbours.Tests.EditMode
                 var presenter = prefab.GetComponent<CookingStationFoodPresenter>();
                 if (!shows) continue;
                 Assert.IsNotNull(presenter, file + " shows food but has no presenter");
-                Assert.Greater(def.FoodAnchorMeters.y, 0f, file + ": the pan sits on the station, not under it");
+                Assert.Greater(def.FoodAnchorPropMeters.z, 0f, file + ": the pan sits on the station, not under it");
                 var art = new SerializedObject(presenter).FindProperty("_art").objectReferenceValue as CatchItemLibrary;
                 Assert.AreSame(AssetDatabase.LoadAssetAtPath<CatchItemLibrary>(LibraryPath), art, file + ": art not wired");
             }
@@ -163,9 +171,12 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.AreEqual(CookRefusal.None, GameServices.Cooking.TryStart(prepFixture.Def, prepFixture.Id));
             Late(prep);
             Assert.IsTrue(prep.Showing, "the cod on the board is not drawn");
-            Assert.AreEqual("cod", prep.ShownKind);
             Assert.AreEqual(Color.white, prep.Food.color, "the prep board does not brown");
-            Assert.AreEqual(prepFixture.Def.FoodAnchorMeters, (Vector2)prep.Food.transform.localPosition);
+            Assert.AreEqual(CookingStationFoodPresenter.AnchorOffset(0, prepFixture.Def.FoodAnchorPropMeters),
+                            (Vector2)prep.Food.transform.localPosition, "off any wall the station shows its first facing");
+            Assert.IsFalse(prep.ShowingFillet, "the whole cod on the board is a whole fish");
+            CatchItemLibrary art = FishArtLibrary.ResolveCatchArt(null, FishArtLibrary.Shared);
+            Assert.AreEqual(art.SizedKindFor("fish.atlantic_cod", 2f), prep.ShownKind, "the 2 kg cod is not drawn at its own rung");
 
             _clock.TotalSeconds += 100000d;
             Assert.IsTrue(GameServices.Cooking.TryFinish(prepFixture.Id, out _));
@@ -179,7 +190,10 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.Greater(length, 0f);
             Late(stove);
             Assert.IsTrue(stove.Showing);
-            Assert.AreEqual("cod", stove.ShownKind, "the pan-fried cod is drawn as the cod it came from");
+            Assert.AreEqual("cod", stove.ShownKind, "the pan-fried cod is drawn from the cod it came from (a locker fillet has no weight: the middle rung)");
+            Assert.IsTrue(stove.ShowingFillet, "a fillet on the stove must not draw as the whole fish");
+            Assert.AreNotSame(art.SpriteFor("cod", 0), stove.Food.sprite, "the fillet drew as the whole cod");
+            Assert.Less(stove.Food.sprite.rect.width, art.SpriteFor("cod", 0).rect.width, "the fillet is not shorter than the fish");
             Color[] ramp = _config.CookedFishRamp;
             Assert.AreEqual(ramp[0], stove.Food.color, "at the start the fish is raw");
 
@@ -195,6 +209,82 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.IsFalse(stove.Showing);
         }
 
+        [Test]
+        public void TheFoodAnchor_TurnsWithTheWallTheStationFaces()
+        {
+            var p = new Vector3(-0.15f, 0.1f, 0.65f);
+            for (int cell = 0; cell < CookingStationFoodPresenter.Facings; cell++)
+                Assert.Less((CookingStationFoodPresenter.AnchorOffset(cell, p) - HiddenHarbours.World.ApplianceFacing.ModelToWorldOffset(cell, p)).magnitude,
+                            1e-5f, $"cell {cell}: the food is not turned as the station's art is");
+            Assert.AreNotEqual(CookingStationFoodPresenter.AnchorOffset(0, p), CookingStationFoodPresenter.AnchorOffset(2, p));
+
+            var hands = new OneHand { Held = new CatchItem("fish.atlantic_cod", "Cod", FishCategory.InshoreGroundfish, 2f, 10, 0.1f) };
+            GameServices.Cooking = new RecipeRunner(RecipeBook.FromResources, FoodBook.FromResources,
+                                                    () => GameServices.Save, () => hands, () => _clock.TotalSeconds);
+            CookingStationFoodPresenter prep = Station("PrepCounter", out CookingStationFixture fixture);
+            Assert.AreEqual(CookRefusal.None, GameServices.Cooking.TryStart(fixture.Def, fixture.Id));
+            Late(prep);
+            var art = prep.GetComponentInChildren<HiddenHarbours.World.ApplianceArt>(true);
+            Assert.IsNotNull(art, "harness: the prep counter has no appliance art");
+            var so = new SerializedObject(art);
+            so.FindProperty("_cellOverride").intValue = 2;
+            so.ApplyModifiedPropertiesWithoutUndo();
+            typeof(HiddenHarbours.World.ApplianceArt).GetField("_resolved", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(art, false);
+            Late(prep);
+            Assert.AreEqual(CookingStationFoodPresenter.AnchorOffset(2, fixture.Def.FoodAnchorPropMeters),
+                            (Vector2)prep.Food.transform.localPosition, "against the east wall the food did not move with the station");
+        }
+
+        [Test]
+        public void TheFoodSize_ComesFromTheCatchInHisHands_AndALockerJobDrawsTheMiddleRung()
+        {
+            CatchItemLibrary art = FishArtLibrary.ResolveCatchArt(null, FishArtLibrary.Shared);
+            var hands = new OneHand { Held = new CatchItem("fish.atlantic_cod", "Cod", FishCategory.InshoreGroundfish, 12f, 10, 0.1f) };
+            GameServices.Cooking = new RecipeRunner(RecipeBook.FromResources, FoodBook.FromResources,
+                                                    () => GameServices.Save, () => hands, () => _clock.TotalSeconds);
+            CookingStationFoodPresenter prep = Station("PrepCounter", out CookingStationFixture fixture);
+            Assert.AreEqual(CookRefusal.None, GameServices.Cooking.TryStart(fixture.Def, fixture.Id));
+            Late(prep);
+            string big = art.SizedKindFor("fish.atlantic_cod", 12f);
+            Assert.AreNotEqual("cod", big, "harness: a 12 kg cod should not be the middle rung");
+            Assert.AreEqual(big, prep.ShownKind, "the 12 kg cod on the board is not drawn at its own rung");
+            Assert.AreSame(art.SpriteFor(big, 0), prep.Food.sprite);
+            var rules = Resources.Load<SunCasterRules>("SunCasterRules");
+            Assert.IsNotNull(rules, "harness: no sun caster rules");
+            Assert.IsTrue(rules.IsExcludedObject(prep.Food), "the fish on the board casts a standing sun shadow over itself");
+
+            var none = new FoodCookStarted("s", "k", "r", "i", 1d);
+            Assert.AreEqual(0f, none.InputWeightKg, "a start with no weight says 0");
+            Assert.AreEqual(0f, new FoodCookStarted("s", "k", "r", "i", 1d, -3f).InputWeightKg, "a negative weight is unknown");
+        }
+
+        [Test]
+        public void AFillet_IsALeafShorterThanItsFish()
+        {
+            CatchItemLibrary art = FishArtLibrary.ResolveCatchArt(null, FishArtLibrary.Shared);
+            Sprite cod = art.SpriteFor("cod", 0);
+            float drawn = art.HeldLengthPxFor("cod");
+            Sprite fillet = CookingStationFoodPresenter.FilletFor(cod, drawn, _config);
+            Assert.IsNotNull(fillet);
+            Assert.That(drawn, Is.GreaterThan(4f).And.LessThan(cod.rect.width), "harness: the cod rung has no measured drawn length");
+            Assert.AreEqual(Mathf.RoundToInt(drawn * _config.FilletLengthOfFish), (int)fillet.rect.width,
+                            "the fillet is not its share of the fish as drawn (the sheet cell pads the fish)");
+            Assert.AreEqual(cod.pixelsPerUnit, fillet.pixelsPerUnit, 1e-4f, "the fillet is not at the fish's pixel size");
+            Assert.AreSame(fillet, CookingStationFoodPresenter.FilletFor(cod, drawn, _config), "a fillet of one size is made once");
+            Assert.IsNull(CookingStationFoodPresenter.FilletFor(null, drawn, _config));
+            Assert.Greater(CookingStationFoodPresenter.FilletFor(art.SpriteFor("cod_lg", 0), art.HeldLengthPxFor("cod_lg"), _config).rect.width,
+                           CookingStationFoodPresenter.FilletFor(art.SpriteFor("cod_sm", 0), art.HeldLengthPxFor("cod_sm"), _config).rect.width,
+                           "a big cod's fillet is not longer than a small one's");
+
+            bool[] mask = CookingStationFoodPresenter.FilletMask(20, 8);
+            int head = 0, tail = 0;
+            for (int y = 0; y < 8; y++) { if (mask[y * 20 + 6]) head++; if (mask[y * 20 + 19]) tail++; }
+            Assert.Greater(head, tail, "the fillet does not taper to its tail");
+            Assert.Greater(tail, 0, "the tail column is empty");
+            Assert.AreEqual("StationFillet", fillet.name);
+            Assert.AreNotSame(cod.texture, fillet.texture, "the fillet is drawn from the fish sheet, not its own shape");
+            Assert.IsTrue(mask[4 * 20 + 6] && !mask[0], "the fillet's middle is not filled or its corner is not clear");
+        }
         // ================================================================ the freezer
 
         [Test]
@@ -268,6 +358,8 @@ namespace HiddenHarbours.Tests.EditMode
             var presenter = go.GetComponent<CookingStationFoodPresenter>();
             Assert.IsNotNull(presenter, file + ": no food presenter");
             s_stationAwake.Invoke(presenter, null);
+            s_stationEnable.Invoke(presenter, null);
+            _stations.Add(presenter);
             return presenter;
         }
 
