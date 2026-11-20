@@ -36,12 +36,48 @@ namespace HiddenHarbours.Art
         }
 
         /// <summary>
+        /// How a def is built beyond its own faces. The default (all zero but the line width) is the rod's
+        /// build: plotted lines as tubes, dots skipped, nothing scaled.
+        /// </summary>
+        public struct Options
+        {
+            /// <summary>The whole prop scaled about its grip (a fish drawn at its size rung,
+            /// <c>CatchItemLibrary.KindEntry.HeldMeshScale</c>). 0 or less = 1. Line, dot and fin widths
+            /// are not scaled: they are pixel widths.</summary>
+            public float Scale;
+
+            /// <summary>The plotted lines (a rod blank) as tubes this wide. 0 = not drawn.</summary>
+            public float LineWidthMeters;
+
+            /// <summary>The plotted DOTS (a fish's eyes) as small blocks this wide, in the line's own
+            /// colour. 0 = skipped, as the rod build skips them.</summary>
+            public float DotSizeMeters;
+
+            /// <summary>A thin tube along every open edge of the faces painted with
+            /// <see cref="EdgeRampName"/>, this wide, so a fin or a tail that is a sliver at a pixel
+            /// still reads (D2: thin parts as geometry until the facet line pass exists). The tube is a
+            /// facet of the same face ramp, so it is lit as the fin is. 0 = none.</summary>
+            public float EdgeLineWidthMeters;
+
+            /// <summary>The face ramp (<see cref="HeldPropMeshDef.RampNames"/>) whose open edges get
+            /// <see cref="EdgeLineWidthMeters"/>: "fin" for a fish.</summary>
+            public string EdgeRampName;
+        }
+
+        /// <summary>
         /// Build the def's drawable mesh with its thin parts as tubes
         /// <paramref name="lineWidthMeters"/> across. False, with the reason, when the def is not usable,
         /// its mesh cannot be read, or its colours pass the slot law. The caller owns the mesh.
         /// </summary>
         public static bool TryBuild(HeldPropMeshDef def, float lineWidthMeters, out Built built, out string why)
+            => TryBuild(def, new Options { LineWidthMeters = lineWidthMeters }, out built, out why);
+
+        /// <summary><see cref="TryBuild(HeldPropMeshDef, float, out Built, out string)"/> with the build
+        /// stated in full (<see cref="Options"/>).</summary>
+        public static bool TryBuild(HeldPropMeshDef def, in Options options, out Built built, out string why)
         {
+            float lineWidthMeters = options.LineWidthMeters;
+            float scale = options.Scale > 0f ? options.Scale : 1f;
             built = default;
             if (def == null) { why = "no def"; return false; }
             if (!def.IsUsable()) { why = $"{def.Id} is not usable"; return false; }
@@ -65,23 +101,44 @@ namespace HiddenHarbours.Art
             if (attrs.Count != verts.Count) { why = $"{def.Id}'s mesh has no UV0 per vertex"; return false; }
             if (norms.Count != verts.Count) { why = $"{def.Id}'s mesh has no normal per vertex"; return false; }
             var tris = new List<int>(src.triangles);
+            Vector3 grip = def.GripLocalMeters;
+            if (!Mathf.Approximately(scale, 1f))
+                for (int i = 0; i < verts.Count; i++) verts[i] = grip + (verts[i] - grip) * scale;
+
+            int segments = AddOpenEdgeTubes(def, options, verts, norms, attrs, tris);
 
             // (line ramp, entry) -> slot, so a colour used by many samples takes one slot.
             var slotOf = new Dictionary<long, int>();
             float h = Mathf.Max(0f, lineWidthMeters) * 0.5f;
-            int segments = 0;
-            if (h > 0f && def.Lines != null)
+            float dotH = Mathf.Max(0f, options.DotSizeMeters) * 0.5f;
+            if ((h > 0f || dotH > 0f) && def.Lines != null)
             {
                 foreach (HeldPropMeshDef.Line line in def.Lines)
                 {
-                    if (line.Dots || line.Points == null) continue;
+                    if (line.Points == null) continue;
+                    if (line.Dots)
+                    {
+                        if (dotH <= 0f) continue;
+                        // A dot is a block one dot wide: a square tube one dot tall, stood up.
+                        foreach (HeldPropMeshDef.LinePoint p in line.Points)
+                        {
+                            if (!TrySlot(def, p, slotOf, ramps, offsets, dither, out int slot, out why)) return false;
+                            Vector3 c = grip + (p.Position - grip) * scale;
+                            AddTube(c - Vector3.forward * dotH, c + Vector3.forward * dotH, dotH,
+                                    new Vector4(slot, 0f, line.DepthBiasMeters, 0f), verts, norms, attrs, tris);
+                            segments++;
+                        }
+                        continue;
+                    }
+                    if (h <= 0f) continue;
                     for (int i = 0; i + 1 < line.Points.Length; i++)
                     {
                         HeldPropMeshDef.LinePoint a = line.Points[i];
-                        Vector3 b = line.Points[i + 1].Position;
-                        if ((b - a.Position).sqrMagnitude < 1e-12f) continue;
+                        Vector3 pa = grip + (a.Position - grip) * scale;
+                        Vector3 b = grip + (line.Points[i + 1].Position - grip) * scale;
+                        if ((b - pa).sqrMagnitude < 1e-12f) continue;
                         if (!TrySlot(def, a, slotOf, ramps, offsets, dither, out int slot, out why)) return false;
-                        AddTube(a.Position, b, h, new Vector4(slot, 0f, line.DepthBiasMeters, 0f), verts, norms, attrs, tris);
+                        AddTube(pa, b, h, new Vector4(slot, 0f, line.DepthBiasMeters, 0f), verts, norms, attrs, tris);
                         segments++;
                     }
                 }
@@ -105,6 +162,78 @@ namespace HiddenHarbours.Art
             };
             why = null;
             return true;
+        }
+
+        /// <summary>The material id of the face ramp named <paramref name="name"/>, or -1.</summary>
+        public static int RampIndexOf(HeldPropMeshDef def, string name)
+        {
+            if (def == null || def.RampNames == null || string.IsNullOrEmpty(name)) return -1;
+            for (int i = 0; i < def.RampNames.Length; i++)
+                if (string.Equals(def.RampNames[i], name, System.StringComparison.Ordinal)) return i;
+            return -1;
+        }
+
+        /// <summary>
+        /// The thin tubes along the open edges of the faces painted with
+        /// <see cref="Options.EdgeRampName"/>: an edge only one such face uses, once a face drawn twice
+        /// (wound both ways) is counted once. Each tube copies its face's attributes, so it shades as a
+        /// facet of the fin itself. Appends to the lists; returns how many tubes it added.
+        /// </summary>
+        private static int AddOpenEdgeTubes(HeldPropMeshDef def, in Options options, List<Vector3> verts,
+                                            List<Vector3> norms, List<Vector4> attrs, List<int> tris)
+        {
+            float h = Mathf.Max(0f, options.EdgeLineWidthMeters) * 0.5f;
+            int ramp = RampIndexOf(def, options.EdgeRampName);
+            if (h <= 0f || ramp < 0) return 0;
+
+            int faceTris = tris.Count / 3;
+            var seenFaces = new HashSet<(long, long, long)>();
+            var edges = new Dictionary<(long, long), (int count, Vector3 a, Vector3 b, Vector4 attr)>();
+            for (int t = 0; t < faceTris; t++)
+            {
+                int i0 = tris[t * 3], i1 = tris[t * 3 + 1], i2 = tris[t * 3 + 2];
+                if (Mathf.RoundToInt(attrs[i0].x) != ramp) continue;
+                long k0 = Key(verts[i0]), k1 = Key(verts[i1]), k2 = Key(verts[i2]);
+                if (k0 == k1 || k1 == k2 || k0 == k2) continue;
+                if (!seenFaces.Add(Sorted(k0, k1, k2))) continue;
+                CountEdge(edges, k0, k1, verts[i0], verts[i1], attrs[i0]);
+                CountEdge(edges, k1, k2, verts[i1], verts[i2], attrs[i0]);
+                CountEdge(edges, k2, k0, verts[i2], verts[i0], attrs[i0]);
+            }
+
+            int added = 0;
+            foreach (var e in edges.Values)
+            {
+                if (e.count != 1) continue;
+                AddTube(e.a, e.b, h, e.attr, verts, norms, attrs, tris);
+                added++;
+            }
+            return added;
+        }
+
+        private static void CountEdge(Dictionary<(long, long), (int count, Vector3 a, Vector3 b, Vector4 attr)> edges,
+                                      long ka, long kb, Vector3 a, Vector3 b, Vector4 attr)
+        {
+            var key = ka < kb ? (ka, kb) : (kb, ka);
+            edges[key] = edges.TryGetValue(key, out var e) ? (e.count + 1, e.a, e.b, e.attr) : (1, a, b, attr);
+        }
+
+        /// <summary>A corner's position to a tenth of a millimetre, as one key: corners the rig shares
+        /// between faces land on the same key.</summary>
+        private static long Key(Vector3 p)
+        {
+            const float Q = 1e4f;
+            long x = Mathf.RoundToInt(p.x * Q) & 0x1FFFFF, y = Mathf.RoundToInt(p.y * Q) & 0x1FFFFF,
+                 z = Mathf.RoundToInt(p.z * Q) & 0x1FFFFF;
+            return (x << 42) | (y << 21) | z;
+        }
+
+        private static (long, long, long) Sorted(long a, long b, long c)
+        {
+            if (a > b) (a, b) = (b, a);
+            if (b > c) (b, c) = (c, b);
+            if (a > b) (a, b) = (b, a);
+            return (a, b, c);
         }
 
         private static bool TrySlot(HeldPropMeshDef def, in HeldPropMeshDef.LinePoint p, Dictionary<long, int> slotOf,
@@ -237,7 +366,40 @@ namespace HiddenHarbours.Art
             if (def == null) { why = "no def"; return false; }
             if (!HeldPropPose.TryTipLocal(def, out _tipLocal)) { why = $"{def.Id} plots no tip"; return false; }
             float widthMeters = def.PxPerMetre > 0 ? lineWidthPx / def.PxPerMetre : 0f;
-            if (!IsoFacetHeldPropMesh.TryBuild(def, widthMeters, out IsoFacetHeldPropMesh.Built built, out why))
+            return Build(def, new IsoFacetHeldPropMesh.Options { LineWidthMeters = widthMeters },
+                         ditherPivotPx, ditherPxPerMetre, out why);
+        }
+
+        /// <summary>
+        /// Build a prop that plots no tip (a fish: its body, fins and eyes) with the build stated in full.
+        /// Its <see cref="TipLocal"/> is then the built corner farthest from the grip, the room the
+        /// figure's overlay must give it. False, drawing nothing, when the def cannot be built.
+        /// </summary>
+        public bool Configure(HeldPropMeshDef def, in IsoFacetHeldPropMesh.Options options,
+                              Vector2 ditherPivotPx, float ditherPxPerMetre, out string why)
+        {
+            Teardown();
+            if (def == null) { why = "no def"; return false; }
+            if (!Build(def, options, ditherPivotPx, ditherPxPerMetre, out why)) return false;
+            Vector3 grip = def.GripLocalMeters;
+            float best = -1f;
+            foreach (Vector3 v in _mesh.vertices)
+            {
+                float d = (v - grip).sqrMagnitude;
+                if (d > best) { best = d; _tipLocal = v; }
+            }
+            BuiltScale = options.Scale > 0f ? options.Scale : 1f;
+            return true;
+        }
+
+        /// <summary>The scale the drawn mesh was built at (<see cref="IsoFacetHeldPropMesh.Options.Scale"/>).</summary>
+        public float BuiltScale { get; private set; } = 1f;
+
+        private bool Build(HeldPropMeshDef def, in IsoFacetHeldPropMesh.Options options,
+                           Vector2 ditherPivotPx, float ditherPxPerMetre, out string why)
+        {
+            BuiltScale = 1f;
+            if (!IsoFacetHeldPropMesh.TryBuild(def, options, out IsoFacetHeldPropMesh.Built built, out why))
                 return false;
 
             var facetShader = Shader.Find("HiddenHarbours/IsoFacet");

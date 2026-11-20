@@ -144,6 +144,24 @@ The floor leaves all three alone at 12. The fixes that make them read are owed:
 
 Order: 3a can land any time (data only, nothing reads it). Then 3b → 3c → 3d, as ADR 0053 §4 says.
 
+### 3.3 What was built (`feat/held-fish-mesh`, one change for 3a-3d, 3e judged)
+
+- **3a by scale, not by new defs.** The rig's tail-rest geometry is linear in its scale, so the one
+  scale-1 mesh scaled about the grip IS the rung's mesh. `KindEntry.HeldMeshScale` carries each
+  rung's scale from `FishIsoAnchors.json` (`RodKitImporter.RungScales`); no new ids were minted. A
+  test pins every committed rung's scale to the rig's.
+- **3b** `HeldCatchMesh` hangs the mesh on `tool_R`/`tool_L` at the rig's held pose, turned about
+  its length so it shows the facing the held sprite shows (the flatfish face-on map applied).
+  The figure's overlay is padded by a per-holder claim, so a fish and a rod do not undo each other.
+- **3c without a shader change.** Fins and tails get a 1 px tube along each open edge of the fin
+  ramp's faces, and the eyes a 1 px block (`GameConfig.HeldFishFinLineWidthPx`,
+  `HeldFishEyeSizePx`). The line pass in the facet shader is still a later step.
+- **3d** `CarryHands` (carried catch) and the landing beat draw the mesh and hide the sprite; any
+  refusal keeps the sprite. A species that only borrows a kind's art (`SpeciesEntry.BorrowsKind`:
+  tomcod, quahog) keeps its sprite. Switch: `GameConfig.MeshCatchInHand`.
+- **3e** shows mildly (a back-lit fin reads a little darker and more dithered than the sprite).
+  The flag is not carried yet.
+
 ## 4. Fish pictures at the stove, the locker and the freezer
 
 ### 4.1 Where it stands

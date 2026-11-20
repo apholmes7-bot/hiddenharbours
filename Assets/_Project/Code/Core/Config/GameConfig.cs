@@ -1555,6 +1555,18 @@ namespace HiddenHarbours.Core
         [Tooltip("How wide (art pixels) a held prop's thin parts are drawn — the rod blank, until the facet " +
                  "shader's own line pass exists (ADR 0053 D2). 1 to 2 is the ruled look.")]
         [Range(0.5f, 3f)] public float HeldPropLineWidthPx = DefaultHeldPropLineWidthPx;
+        [Tooltip("Draw a fish in his hand (carried, and held up at the landing) as the rig's facet mesh on " +
+                 "his hand's socket, at its size rung, instead of the held fish sprite. Only for a species " +
+                 "the held-prop bake makes a mesh for (CatchItemLibrary.HeldMeshFor); every other catch, " +
+                 "and any frame the mesh figure is not drawing him, keeps its sprite.")]
+        public bool MeshCatchInHand = true;
+
+        [Tooltip("How wide (art pixels) the thin line along a held fish's fins and tail is drawn, so a fin " +
+                 "that is a sliver at a pixel still reads (ADR 0053 D2). 0 = no fin line.")]
+        [Range(0f, 3f)] public float HeldFishFinLineWidthPx = 1f;
+
+        [Tooltip("How wide (art pixels) a held fish's eye is drawn. 0 = no eye.")]
+        [Range(0f, 3f)] public float HeldFishEyeSizePx = 1f;
 
         /// <summary>Shipped crossing hysteresis (m), also the fallback for a rig with no GameConfig.</summary>
         public const float DefaultRegionCrossingHysteresisMetres = 0.25f;

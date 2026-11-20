@@ -465,6 +465,12 @@ namespace HiddenHarbours.Player
                 FishArtLibrary table = _fishArt != null ? _fishArt : FishArtLibrary.Shared;
                 _rung = FishArtLibrary.LineRungFor(sp, table != null ? table.CatchArt : null,
                                                    next.FishId, next.WeightKg);
+                // The same fish as a mesh for the landing, at the sized kind the hands will carry it as.
+                CatchItemLibrary catchArt = table != null ? table.CatchArt : null;
+                _landMeshDef = catchArt != null
+                    ? catchArt.HeldMeshFor(next.FishId, catchArt.SizedKindFor(next.FishId, next.WeightKg),
+                                           out _landMeshScale)
+                    : null;
             }
         }
 
@@ -585,7 +591,7 @@ namespace HiddenHarbours.Player
             if (!fishShown) _deepRunning01 = 0f;
 
             if ((show & RodElements.HeldFish) != 0) RenderHeldFish(hands);
-            else _heldSr.enabled = false;
+            else { _heldSr.enabled = false; HideLandMesh(); }
 
             // The weighted path's line runs straight down to the entry point.
             if ((show & RodElements.Line) != 0 && !castPath
@@ -650,8 +656,40 @@ namespace HiddenHarbours.Player
             return p.DrawsAshore ? p.AshoreFigure : p.Figure;
         }
 
+        // ---- the landed fish as a mesh (ADR 0053) --------------------------------------------------
+
+        private HeldCatchMesh _landMesh;
+        private HeldPropMeshDef _landMeshDef;
+        private float _landMeshScale = 1f;
+
+        /// <summary>The landed-fish mesh, once made. For tests and plates.</summary>
+        public HeldCatchMesh LandMesh => _landMesh;
+
+        /// <summary>
+        /// The fish he holds up at the landing, as its mesh hanging from his FREE hand (the land clip aims
+        /// the rod in his right, so the fish hangs from the left socket), when the mesh figure plays the
+        /// landing and the species has a mesh at its size rung. False draws the sprite as before.
+        /// </summary>
+        private bool TryDrawLandMesh()
+        {
+            GameConfig config = GameServices.Config;
+            bool on = config != null && config.MeshCatchInHand && _landMeshDef != null;
+            if (!on && _landMesh == null) return false;
+            if (_meshPresenter == null) TryGetComponent(out _meshPresenter);
+            _landMesh ??= new HeldCatchMesh(transform, "LandedCatchMesh");
+            return _landMesh.TryDraw(config, _landMeshDef, _landMeshScale, HeldPropSockets.LeftHandTool, 0,
+                                     LiveFigure());
+        }
+
+        private void HideLandMesh()
+        {
+            if (_landMesh != null && _landMesh.Drawing) _landMesh.Hide();
+        }
+
         private void OnDestroy()
         {
+            _landMesh?.Dispose();
+            _landMesh = null;
             _meshRod?.Dispose();
             _meshRod = null;
         }
@@ -1094,6 +1132,7 @@ namespace HiddenHarbours.Player
         {
             FishRungVisual sp = _rung;
             bool landPosed = _animator != null && _animator.OwnsRenderer && _animator.Pose == FishingPose.Land;
+            if (landPosed && TryDrawLandMesh()) { _heldSr.enabled = false; return; }
             if (sp == null || sp.HeldFrames == null || sp.HeldFrames.Length == 0 || !landPosed
                 || _landFramesPerDir <= 0 || _playerSr == null)
             {
@@ -1260,6 +1299,7 @@ namespace HiddenHarbours.Player
             if (_bobberSr != null) _bobberSr.enabled = false;
             if (_fishSr != null) _fishSr.enabled = false;
             if (_heldSr != null) _heldSr.enabled = false;
+            HideLandMesh();
             if (_rippleSr != null) _rippleSr.enabled = false;
             if (_line != null) { _line.enabled = false; _line.positionCount = 0; }
         }
