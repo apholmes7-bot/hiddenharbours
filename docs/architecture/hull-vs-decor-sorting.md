@@ -325,6 +325,12 @@ lowbush blueberry).
    it over the player; the splash stays one over. Still open: the screen-space sun shade of the player
    is a child of him, so aboard it shades inside the boat group, as it already did on the St Peters
    dory.
+   *Why the key is the root, not the root plus the tide's rise:* a hull's picture height is authored at
+   the deck-lip height (the St Peters dory's datum is the landing deck's lip, 5.35 m), so her root and
+   the pier's deck rectangle are compared at the same height. The tide only moves her picture down-screen
+   at St Peters (2.5 to 5.7 units between high and low water) and never changes how far north she lies,
+   which is what decides depth. Adding the rise was tried and looked at: it put the dory moored behind
+   the pier's north face on top of the deck planks at high water and over the pilings at low water.
 4. **Retire `PlantHullSorting.BehindAHull`** (#1281). With hulls in the band, a standing plant's
    ordinary Y-sort gives "behind the pivot, under her" by itself, and without sending it under the sea.
    Keep `LiesFlat`. (art-pipeline)
