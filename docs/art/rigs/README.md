@@ -305,6 +305,13 @@ the punt, so `PuntIso.png` is one revision behind her rig: all eight paired cell
 To restore the strong form, the art director re-exports `PuntIso.png` from the v2 rig **by hand from his
 browser** — re-baking it in engine would make the test compare the baker against itself.
 
+**A second revision, 2026-11-19 (no sea inside the punt).** Sealing her inside (inner skin on the
+floorboards, floor out to the skin, thwart ends inside it, inner transom board, stem face) changes her bow
+and stern most, so the end-on headings drift most: cell 0 97.46%, cell 4 96.68%, mirror pairs 1/7, 2/6,
+3/5 at 97.64/97.63, 97.75/97.77, 97.15/97.21 (spread 1.10 pp, every pair within 0.06 pp). The test's floor
+is now 96.0%, the spread allowance 1.5 pp, and a mirror-pair check (headings k and 8−k within 0.4 pp)
+carries the "one cell is wrong" discrimination. The hand re-export above restores the strong form.
+
 ---
 
 ## The small craft rig kit v2 (imported 2026-07-25)
