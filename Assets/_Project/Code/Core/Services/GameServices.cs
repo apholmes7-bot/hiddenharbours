@@ -1229,12 +1229,23 @@ namespace HiddenHarbours.Core
             WaveFieldSettings field = WaveField;
             var wind = HiddenHarbours.Core.WaveFetch.At(worldPos, FetchWindAt(environment, clock.TotalSeconds, in field),
                 environment.WaterLevelAt(clock.TotalSeconds), TidalTerrain, in settings);
+            // THE SEA'S REACH (owner, 2026-11-19): a pool the tide has cut off rides no swell. The factor is a
+            // pure function of the deterministic tide and the region's flooded sill (SeaReach); exactly 1,
+            // and this sample unchanged, wherever no field is published.
+            float reach = SeaReach.IsActive ? SeaReach.FactorAt(worldPos, environment.WaterLevelAt(clock.TotalSeconds)) : 1f;
             var climate = SwellClimate;
-            if (climate == null) return wind;
+            if (climate == null) return wind.WithSeaReach(reach);
             var direction = SwellMath.Direction(climate.Climate, environment.WorldSeed, clock.TotalSeconds, SecondsPerDay);
             return wind.WithSwell(SwellMath.ShelterAt(worldPos, direction,
-                environment.WaterLevelAt(clock.TotalSeconds), TidalTerrain, climate.Climate, SwellShelter));
+                environment.WaterLevelAt(clock.TotalSeconds), TidalTerrain, climate.Climate, SwellShelter))
+                       .WithSeaReach(reach);
         }
+
+        /// <summary>Which water the sea's swell reaches (cut-off pools stay still), same contract as
+        /// <see cref="WaveField"/> including the <c>Config != null</c> discipline. Read by the water's
+        /// sea-reach publisher; falls back to <see cref="SeaReachSettings.Default"/>.</summary>
+        public static SeaReachSettings SeaReachConfig =>
+            Config != null ? Config.SeaReach : SeaReachSettings.Default;
 
         /// <summary>
         /// The world's day length in REAL seconds — the owner's <see cref="GameConfig.SecondsPerDay"/>
@@ -1365,13 +1376,6 @@ namespace HiddenHarbours.Core
         /// contract as <see cref="WaveField"/>, including the <c>Config != null</c> discipline.</summary>
         public static HelmAutopilotSettings HelmAutopilot =>
             Config != null ? Config.HelmAutopilot : HelmAutopilotSettings.Default;
-
-        /// <summary>The masthead pennant's tunables (VS-19) — the boat's own wind instrument. Same
-        /// contract as <see cref="WaveField"/>, including the <c>Config != null</c> discipline (never
-        /// <c>?.</c>/<c>??</c> on a <c>UnityEngine.Object</c>). Falls back to
-        /// <see cref="TelltaleSettings.Default"/> so an unwired art scene still flies a burgee.</summary>
-        public static TelltaleSettings Telltale =>
-            Config != null ? Config.Telltale : TelltaleSettings.Default;
 
         /// <summary>The mesh fleet's keyline gate (ADR 0031 — the keyline retirement): does the
         /// fullscreen resolve still flood the legacy 1 px outline around every mesh hull? Same contract

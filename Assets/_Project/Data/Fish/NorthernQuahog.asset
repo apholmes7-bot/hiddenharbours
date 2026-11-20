@@ -35,6 +35,6 @@ MonoBehaviour:
   SpoilPerDay: 0.3
   SupplyElasticity: 0.45
   SpawnWeight: 1.0
-  Sprite: {fileID: -8350118145691459604, guid: bae98caad6f379308446110bc6a39b4f, type: 3}
+  Sprite: {fileID: 21300000, guid: a86ade1ba7af42cf84760c71fa0191bd, type: 3}
   Bite: {fileID: 0}
   RodFight: {fileID: 0}

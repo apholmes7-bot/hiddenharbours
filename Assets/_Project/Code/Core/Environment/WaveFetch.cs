@@ -393,28 +393,48 @@ namespace HiddenHarbours.Core
         private readonly bool _spectral;
         private readonly bool _hasSwell;
         private readonly float _swell;
+        // The share of the sea's swell this point does NOT receive (SeaReach): 0 = all of it, the default,
+        // so default(WaveFetchSample) and every older constructor keep their values bit for bit.
+        private readonly float _cutOff;
         public static WaveFetchSample Open => new WaveFetchSample(1f);
         private WaveFetchSample(float uniform)
         {
             Fraction = 1f; _settings = default; _uniform = Mathf.Clamp01(uniform); _spectral = false;
-            _hasSwell = false; _swell = 1f;
+            _hasSwell = false; _swell = 1f; _cutOff = 0f;
         }
         public WaveFetchSample(float fraction, in WaveFetchSettings settings)
         {
             Fraction = fraction; _settings = settings; _uniform = 1f; _spectral = true;
-            _hasSwell = false; _swell = 1f;
+            _hasSwell = false; _swell = 1f; _cutOff = 0f;
         }
         private WaveFetchSample(in WaveFetchSample wind, float swell)
         {
             Fraction = wind.Fraction; _settings = wind._settings; _uniform = wind._uniform;
-            _spectral = wind._spectral; _hasSwell = true; _swell = Mathf.Clamp01(swell);
+            _spectral = wind._spectral; _hasSwell = true; _swell = Mathf.Clamp01(swell); _cutOff = wind._cutOff;
+        }
+        private WaveFetchSample(in WaveFetchSample source, float reach01, bool reached)
+        {
+            Fraction = source.Fraction; _settings = source._settings; _uniform = source._uniform;
+            _spectral = source._spectral; _hasSwell = source._hasSwell; _swell = source._swell;
+            _cutOff = reached ? 1f - Mathf.Clamp01(reach01) * (1f - source._cutOff) : source._cutOff;
         }
         public WaveFetchSample WithSwell(float shelter) => new WaveFetchSample(in this, shelter);
+        /// <summary>
+        /// This sample with the sea's reach applied (<see cref="SeaReach"/>): every train's factor, and the
+        /// uniform envelope, scaled by <paramref name="reach01"/>, so a pool the tide has cut off rides no
+        /// swell. A reach of 1 (or NaN) returns this sample unchanged, bit for bit.
+        /// </summary>
+        public WaveFetchSample WithSeaReach(float reach01)
+            => reach01 >= 1f || float.IsNaN(reach01) ? this : new WaveFetchSample(in this, reach01, true);
+        /// <summary>The share of the sea's swell this point receives (1 unless <see cref="WithSeaReach"/>
+        /// lowered it).</summary>
+        public float SeaReach01 => 1f - _cutOff;
         public float ForTrain(int slot, float wavelength)
-            => _hasSwell && slot >= SwellMath.FirstSlot ? _swell : ForWavelength(wavelength);
-        public float ForWavelength(float wavelength)
+            => (_hasSwell && slot >= SwellMath.FirstSlot ? _swell : RawForWavelength(wavelength)) * (1f - _cutOff);
+        public float ForWavelength(float wavelength) => RawForWavelength(wavelength) * (1f - _cutOff);
+        private float RawForWavelength(float wavelength)
             => _spectral ? WaveFetch.TrainEnvelope01(Fraction, wavelength, in _settings) : _uniform;
-        public float Uniform => _spectral || _hasSwell ? 1f : _uniform;
+        public float Uniform => _spectral || _hasSwell ? 1f : _uniform * (1f - _cutOff);
         public bool Spectral => _spectral || _hasSwell;
         public bool HasSwell => _hasSwell;
         public static implicit operator WaveFetchSample(float uniform) => new WaveFetchSample(uniform);

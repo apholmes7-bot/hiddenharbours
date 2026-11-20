@@ -47,10 +47,6 @@ MonoBehaviour:
     SlopeStepHours: 0.05
     ScanStepHours: 0.1
     MaxTurns: 64
-  Telltale:
-    LimpBelowMetresPerSecond: 0.6
-    StiffAtMetresPerSecond: 10
-    ResponsePerSecond: 6
   BaseWindStrength: 4
   WindVariability: 5
   WeatherChangeHours: 6
@@ -862,6 +858,13 @@ MonoBehaviour:
     OarPerSecond: 0.8
     OarCatch: 0.4
     OarRelease: 0.16
+  SeaReach:
+    Enabled: 1
+    ReconnectBlendMeters: 0.25
+    SeedMaxElevationMeters: -2.5
+    MinPoolDepthMeters: 0.05
+    QuantumMeters: 0.001
+    WetBandMeters: 0.05
   DevAllHelmInstruments: 1
   MeshFishingAndDig: 1
   PlayerLegacySpriteFallback: 0
@@ -908,9 +911,21 @@ MonoBehaviour:
   FigureUnderwaterDim: 0.35
   FigureWaterlineFoamMetres: 0.03
   FigureWaterlineFoam: 0.5
+  FigureWadeWaterlineFoamMetres: 0.1
+  FigureWadeWaterlineFoam: 0.8
   FigureSwimHidesSunShadow: 1
+  SwimStowsCarriedTools: 1
   MeshRodInHand: 1
   HeldPropLineWidthPx: 1.5
+  MeshCatchInHand: 1
+  HeldFishFinLineWidthPx: 1
+  HeldFishEyeSizePx: 1
+  HeldFishToneGain: 1.5
+  HeldFishToneLift: 1
+  HeldFishDitherScale: 0
+  HeldFishFrontBiasMeters: 0.4
+  HeldFishMinLengthPx: 20
+  HeldFishHandSwapDepthMeters: 0.05
   RegionCrossingHysteresisMetres: 0.25
   RegionPreloadDistanceMetres: 40
   RegionPreloadMinHeadingSpeed: 0.5

@@ -113,6 +113,50 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         [Test]
+        public void Wading_TakesItsOwnFoamBand_EveryOtherModeTheSwimBand()
+        {
+            Assert.AreEqual(0f, FigureWaterLook.FromConfig(null, FigureWater.Wade).FoamMetres, "no config: the hard cut");
+
+            var config = ScriptableObject.CreateInstance<GameConfig>();
+            try
+            {
+                config.FigureUnderwaterDim = 0.25f;
+                config.FigureWaterlineFoamMetres = 0.02f;
+                config.FigureWaterlineFoam = 0.4f;
+                config.FigureWadeWaterlineFoamMetres = 0.11f;
+                config.FigureWadeWaterlineFoam = 0.9f;
+                FigureWaterLook wade = FigureWaterLook.FromConfig(config, FigureWater.Wade);
+                Assert.AreEqual(0.11f, wade.FoamMetres);
+                Assert.AreEqual(0.9f, wade.Foam);
+                Assert.AreEqual(0.25f, wade.Dim, "the rest of the look is the shared one");
+                foreach (FigureWater mode in new[] { FigureWater.Swim, FigureWater.Tread, FigureWater.Dry })
+                {
+                    FigureWaterLook look = FigureWaterLook.FromConfig(config, mode);
+                    Assert.AreEqual(0.02f, look.FoamMetres, mode.ToString());
+                    Assert.AreEqual(0.4f, look.Foam, mode.ToString());
+                }
+            }
+            finally { Object.DestroyImmediate(config); }
+        }
+
+        [TestCaseSource(nameof(Presets))]
+        public void TheShippedWadeLine_IsAtLeastTwoPixelsTall_OnEveryBody(string preset)
+        {
+            // Wading he stands upright, so the foam band over the line is seen edge-on: its screen
+            // height is metres x the skin's pixels per metre x cos(elevation). The swim band's 0.03 m
+            // came to 0.74 px on the shipped bodies and the line at the surface did not draw.
+            var shipped = AssetDatabase.LoadAssetAtPath<GameConfig>("Assets/_Project/Data/Config/GameConfig.asset");
+            var skin = AssetDatabase.LoadAssetAtPath<CharacterSkinDef>($"Assets/_Project/Data/Characters/Skin/{preset}.asset");
+            Assert.IsNotNull(shipped, "the shipped GameConfig");
+            Assert.IsNotNull(skin, preset);
+            FigureWaterLook wade = FigureWaterLook.FromConfig(shipped, FigureWater.Wade);
+            float px = wade.FoamMetres * skin.PxPerMetre * Mathf.Cos(skin.ElevationDeg * Mathf.Deg2Rad);
+            Assert.GreaterOrEqual(px, 2f, $"{preset}: the wade foam band is {px:0.00} px tall");
+            Assert.GreaterOrEqual(wade.Foam, 0.5f, $"{preset}: the line at the surface is pale enough to read");
+            Assert.IsTrue(wade.ShowsUnderwater, $"{preset}: his legs under the line still draw, tinted");
+        }
+
+        [Test]
         public void TheShippedConfig_DrawsHimInTheWater_AndQuietensTheSwimShadow()
         {
             var shipped = AssetDatabase.LoadAssetAtPath<GameConfig>("Assets/_Project/Data/Config/GameConfig.asset");
