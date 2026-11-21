@@ -95,6 +95,60 @@ namespace HiddenHarbours.Player
                  "mounts ('tool_R', 'tool_L'). The rigs aim a held tool from the right hand.")]
         public string HeldMeshMountBone = HeldPropSockets.RightHandTool;
 
+        [Tooltip("The aim (the rig's tool pitch, degrees above the horizon) the held mesh is drawn at in his " +
+                 "hand on a clip that aims no tool (DrawCarriedMeshOnFigure: idle, walk, run). Carried upright " +
+                 "and a little forward so the rod reads in his hand from every heading: the fishing pitch (56) " +
+                 "points it along the camera's line of sight from the front, where it reads as a stub.")]
+        [Range(-90f, 90f)] public float CarriedPitchDeg = 65f;
+
+        [Tooltip("The carried aim's yaw (the rig's tool yaw, degrees, + toward his right): out from his side so " +
+                 "the blank clears his leg and shoulder.")]
+        [Range(-180f, 180f)] public float CarriedYawDeg = 35f;
+
+        [Header("Stowed on his back (mesh figure)")]
+        [Tooltip("When he carries this tool but is not using it, draw its held mesh slung on the figure's " +
+                 "back mount (StowMountBone) instead of in his hand. 'Not using it' is read from state only: " +
+                 "the clip drawn is not one of CarriedInHandClips (rowing, the helm, a carry, swimming), or " +
+                 "the other hand holds something, or the tool was tucked away for a catch. A clip that aims " +
+                 "the tool (the fishing performance) always puts it in his hand. Needs DrawCarriedMeshOnFigure.")]
+        public bool StowOnBack;
+
+        [Tooltip("While he swims (CarryHands.ToolsStowed), keep the slung mesh on his back. Off hides it in the " +
+                 "swim band as before. The held mesh has no waterline cut of its own, so a slung tool's lower " +
+                 "end can show over his submerged body while he treads water.")]
+        public bool StowWhileSwimming = true;
+
+        [Tooltip("The figure bone the stowed mesh rides: the rig's slung-rod socket, fixed on the chest, " +
+                 "whose +y is the slung rod's axis (diagonal, up over one shoulder).")]
+        public string StowMountBone = "back";
+
+        [Tooltip("Where the grip sits along the slung axis from the back mount, metres: negative puts the " +
+                 "grip low on his back so the length of the tool rides across it rather than standing above " +
+                 "his head.")]
+        public float StowGripAlongMetres = -0.4f;
+
+        [Tooltip("How far the stowed mesh stands off his back, metres, away from the chest, so the blank " +
+                 "does not sink into the torso.")]
+        public float StowStandOffMetres;
+
+        [Tooltip("Mesh-figure clips on which a carried tool that the clip does not aim stays in his hand " +
+                 "(the free-handed gait). On every other clip that aims no tool it is stowed on his back.")]
+        public string[] CarriedInHandClips = { "idle", "walk", "run" };
+
+        [Tooltip("Seconds the mesh takes to move between his hand and his back (the draw and the stow). " +
+                 "The rig bakes no draw clip, so this is a short blend of the pose; 0 is a clean swap.")]
+        [Min(0f)] public float StowBlendSeconds = 0.2f;
+
+        /// <summary>True when <paramref name="clipKey"/> is one of <see cref="CarriedInHandClips"/>.
+        /// Allocation-free.</summary>
+        public bool CarriesInHandOn(string clipKey)
+        {
+            if (string.IsNullOrEmpty(clipKey) || CarriedInHandClips == null) return false;
+            foreach (string k in CarriedInHandClips)
+                if (string.Equals(k, clipKey, System.StringComparison.Ordinal)) return true;
+            return false;
+        }
+
         /// <summary>Resolve a held state by its authored variant. Missing states return null so the
         /// caller can keep its sprite; array order never selects a different tier. A single-state
         /// tool uses the empty variant recorded by its def.</summary>

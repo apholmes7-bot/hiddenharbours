@@ -926,6 +926,7 @@ MonoBehaviour:
   HeldFishFrontBiasMeters: 0.4
   HeldFishMinLengthPx: 20
   HeldFishHandSwapDepthMeters: 0.05
+  HeldRodGripToleranceMetres: 0.02
   CookedFishRamp:
   - {r: 1, g: 1, b: 1, a: 1}
   - {r: 1, g: 0.86, b: 0.64, a: 1}
