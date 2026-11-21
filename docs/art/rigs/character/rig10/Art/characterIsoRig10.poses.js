@@ -22,7 +22,8 @@
    10.3 arm clearance (2026-11-20): dig, hauler and strike keep the left forearm and palm out of the torso. Only left-arm keys moved
    (elbow poles, the dig's top hand, the strike's last grip); every hand still meets its tool or line, and no other clip changed.
    10.3 dig blade (2026-11-20): the dig's hand keys, lean and yaw are re-authored as a stab, a lever and a lift, with a knee-bend track
-   (drop), so the shovel's blade reaches the ground at the low point at every facing. Only the dig clip changed.
+   (drop), so the shovel's blade reaches the ground at the low point at every facing; its keys are laid out so each phase owns its
+   share of the game's even strike sweep (stab 1 frame, blade in the ground 2, lever 2, lift 3, recovery 1). Only the dig clip changed.
    */
 (function (root) {
   'use strict';
@@ -125,14 +126,17 @@
     /* ================= digging — the shaft runs left palm to right palm ================= */
     /* 10.3 arm clearance: the top (left) hand rides out from the body and its elbow turns out (el), so the forearm and palm clear
        the belly and chest in every frame.
-       10.3 dig blade: the keys are a stab, a lever and a lift. The shaft runs steeply down and forward of him (pitch -62 to -74,
-       yaw under 15 deg from frame 0 to 4), so the blade reads as digging at every facing, and the 1.05 m tool's tip meets the ground on
-       frame 2 (the dig's low point, within GameConfig.HeldShovelGroundToleranceMetres) without going under it. Frame 3 levers the
-       handle back over the buried blade, frames 4 to 6 lift and toss, 7 to 9 come back to the ready. He bends his back (lean) and his
-       knees (drop: the pelvis lowers by drop x the build's leg scale) to reach it; both palms stay on the shaft. */
-    const DIG={ L:[[0.146,0.29,0.703],[0.153,0.315,0.63],[0.157,0.325,0.597],[0.178,0.195,0.566],[0.132,0.145,0.56],[0.11,0.15,0.616],[0.132,0.134,0.64],[0.132,0.175,0.741],[0.11,0.252,0.811],[0.108,0.296,0.829]],
-                R:[[0.172,0.377,0.499],[0.172,0.385,0.442],[0.172,0.385,0.416],[0.205,0.296,0.405],[0.183,0.287,0.424],[0.226,0.302,0.492],[0.312,0.264,0.52],[0.237,0.302,0.557],[0.161,0.362,0.589],[0.14,0.392,0.595]],
-                lean:[30,37,40,30,28,22,18,16,20,24], yaw:[8,8,8,6,8,16,24,16,10,9], drop:[0.043,0.067,0.091,0.091,0.067,0.043,0.03,0.024,0.024,0.03] };
+       10.3 dig blade: the keys are a stab, a lever and a lift. The shaft runs steeply down and forward of him (pitch -62 to -74
+       from the stab through the lever, yaw under 15 deg until the toss), so the blade reads as digging at every facing, and the 1.05 m tool's tip meets the ground on
+       frames 2 and 3 (the dig's low point, within GameConfig.HeldShovelGroundToleranceMetres) without going under it. He bends his
+       back (lean) and his knees (drop: the pelvis lowers by drop x the build's leg scale) to reach it; both palms stay on the shaft.
+       The keys are laid out for the game's action timing (timing.dig): frame 0 is the raised ready, then frames 1 to 9 are swept
+       evenly across the strike and the last is held. So each phase owns as many frames as it should last: 1 the stab down, 2 and 3
+       the blade held in the ground (the dig's dirt and sound land here), 4 and 5 the lever back, 6 to 8 the lift and toss, 9 the
+       recovery. */
+    const DIG={ L:[[0.108,0.296,0.829],[0.146,0.29,0.703],[0.157,0.325,0.597],[0.157,0.325,0.597],[0.167,0.26,0.581],[0.178,0.195,0.566],[0.132,0.145,0.56],[0.11,0.15,0.616],[0.132,0.134,0.64],[0.11,0.252,0.811]],
+                R:[[0.14,0.392,0.595],[0.172,0.377,0.499],[0.172,0.385,0.416],[0.172,0.385,0.416],[0.189,0.341,0.411],[0.205,0.296,0.405],[0.183,0.287,0.424],[0.226,0.302,0.492],[0.312,0.264,0.52],[0.161,0.362,0.589]],
+                lean:[24,30,40,40,35,30,28,22,18,20], yaw:[9,8,8,8,7,6,8,16,24,10], drop:[0.03,0.043,0.091,0.091,0.091,0.091,0.067,0.043,0.03,0.024] };
 
     /* ================= the saddle ================= */
     function solveLean(I,K,grip,lo,hi){ const D=K.D, arm=D.upper+D.fore+D.palmLen-0.012;

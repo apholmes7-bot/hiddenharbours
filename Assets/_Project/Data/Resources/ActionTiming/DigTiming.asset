@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: DigTiming
   m_EditorClassIdentifier: HiddenHarbours.Core::HiddenHarbours.Core.ActionTimingDef
   Id: timing.dig
-  PreHoldSeconds: 0.1
-  StrikeSeconds: 0.08
-  FollowThroughSeconds: 0.25
-  SettleSeconds: 0.15
+  PreHoldSeconds: 0
+  StrikeSeconds: 0.9
+  FollowThroughSeconds: 0.05
+  SettleSeconds: 0.05
