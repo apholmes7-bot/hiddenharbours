@@ -187,9 +187,33 @@ namespace HiddenHarbours.Player
         }
 
         /// <summary>
+        /// The Def of the fight's rod while it is SLUNG (<see cref="Slung"/>: tucked away to free a hand for a
+        /// landed catch), or null. Still his rod, so the mesh figure draws it on his back. Allocation-free.
+        /// </summary>
+        public ToolDef SlungFightRod
+            => Slung is CarriableTool slung && slung != null
+               && string.Equals(slung.DefId, _fightRodToolId, System.StringComparison.Ordinal) ? slung.Tool : null;
+
+        /// <summary>
+        /// True while he has the fight's rod but his hands are busy with something else: the other hand
+        /// holds something too, or the rod is slung for a catch. Read from the hands every call, never
+        /// latched; the rod is then drawn on his back (<see cref="ToolDef.StowOnBack"/>). Allocation-free.
+        /// </summary>
+        public bool FightRodHandsBusy
+        {
+            get
+            {
+                if (SlungFightRod != null) return true;
+                return HeldFightRod != null && _slots.UsedHands >= 2;
+            }
+        }
+
+        /// <summary>
         /// True while the tools he carries are stowed rather than drawn: he is swimming (or treading
-        /// water) and <see cref="GameConfig.SwimStowsCarriedTools"/> is on. Neither the carried sprite nor
-        /// the fight's rod mesh draws then; both come back the frame he finds his footing. Stated from the
+        /// water) and <see cref="GameConfig.SwimStowsCarriedTools"/> is on. The carried sprite never draws
+        /// then, and the fight's rod mesh is not in his hand: it rides his back when its Def slings it
+        /// (<see cref="ToolDef.StowOnBack"/>), otherwise it draws nothing; both come back to his hand the
+        /// frame he finds his footing. Stated from the
         /// walker's water state every read, never latched. Allocation-free.
         /// </summary>
         public bool ToolsStowed

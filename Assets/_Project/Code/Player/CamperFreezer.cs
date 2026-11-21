@@ -58,6 +58,9 @@ namespace HiddenHarbours.Player
         /// <summary>The Def's capacity (0 with no Def).</summary>
         public int CapacityUnits => _def != null ? _def.CapacityUnits : 0;
 
+        /// <summary>The freezer's Def (its capacity, its deed and its look).</summary>
+        public FreezerDef Def => _def;
+
         /// <summary>What is in it (frozen) as a reader sees it: the same count as <see cref="Items"/>, so 0
         /// while it is not his. The catch itself is kept (in memory and in the save) and counts again the
         /// moment the deed is his.</summary>

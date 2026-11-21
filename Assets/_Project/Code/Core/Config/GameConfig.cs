@@ -80,6 +80,15 @@ namespace HiddenHarbours.Core
         public Color CreatorBackdropColor = NotebookInk.Paper;
         [Range(0.1f, 0.7f)] public float CreatorFigureHeightFraction = DefaultCreatorFigureHeightFraction;
 
+        public const float DefaultMeshArmClearancePx = 1f;
+
+        [Header("Character mesh clearance (QA)")]
+        [Tooltip("The deepest an arm vertex (forearm or hand) of the player's mesh may sit inside his " +
+                 "torso or head on any frame of the dig, hauler and strike clips, in rig pixels " +
+                 "(CharacterSkinDef.PxPerMetre to the metre). Each body part is measured as a capsule " +
+                 "along its bones. Read by the EditMode clearance test, never at runtime.")]
+        [Range(0f, 4f)] public float MeshArmClearancePx = DefaultMeshArmClearancePx;
+
         [Header("Curling breakers")]
         public CurlingBreakerSettings CurlingBreakers = CurlingBreakerSettings.Default;
 
@@ -1615,6 +1624,14 @@ namespace HiddenHarbours.Core
                  "hidden behind him (the rig's own fish prop swaps hands the same way). It changes hands " +
                  "only when the other hand is nearer by more than this (m), so it does not flicker.")]
         [Min(0f)] public float HeldFishHandSwapDepthMeters = 0.05f;
+
+        /// <summary>Code default for <see cref="HeldRodGripToleranceMetres"/>.</summary>
+        public const float DefaultHeldRodGripToleranceMetres = 0.02f;
+
+        [Tooltip("How far (m) the held rod's grip may sit from his hand's tool socket on the frame drawn, in " +
+                 "every rod state and heading, before the grip test calls it out of his hand. The grip is " +
+                 "put on the socket every frame, so this only absorbs float error; raise it only with a reason.")]
+        [Min(0f)] public float HeldRodGripToleranceMetres = DefaultHeldRodGripToleranceMetres;
 
         [Header("Fish at the stove and in the freezer")]
         [Tooltip("The cooked colour ramp: the fish on a browning station is tinted along these stops as its job " +

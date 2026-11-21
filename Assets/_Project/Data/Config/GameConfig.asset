@@ -756,6 +756,7 @@ MonoBehaviour:
     FrameRate: 60
   CreatorBackdropColor: {r: 0.921, g: 0.886, b: 0.8, a: 1}
   CreatorFigureHeightFraction: 0.6
+  MeshArmClearancePx: 1
   HullFoam:
     TrailFlipSpeed: 0.15
     LeadWeight: 0.6
@@ -926,6 +927,7 @@ MonoBehaviour:
   HeldFishFrontBiasMeters: 0.4
   HeldFishMinLengthPx: 16
   HeldFishHandSwapDepthMeters: 0.05
+  HeldRodGripToleranceMetres: 0.02
   CookedFishRamp:
   - {r: 1, g: 1, b: 1, a: 1}
   - {r: 1, g: 0.86, b: 0.64, a: 1}
