@@ -27,17 +27,23 @@ namespace HiddenHarbours.Tests.Art.EditMode
         }
 
         [Test]
-        public void ARowedDory_RaisesTallerWaves_ThanHerLengthAloneWould()
+        public void ARowedDory_TheSmallHullFloor_NeverLowersHerWaves_AndLiftsThemWhenSetHigh()
         {
+            // Owner 11-21 lowered the shipped floor (0.07 -> 0.04) so the rings stop reading as hard loops:
+            // at rowing speeds her own height now meets it, so the floor holds her up but no longer lifts her.
             foreach (float v in new[] { 1.5f, 1.65f, 2f, 2.2f })
             {
                 float raised = HullWaveMath.CrestHeight(v, DoryLength, S);
                 float old = HullWaveMath.CrestHeight(v, DoryLength, Off());
                 float response = Mathf.Min(HullWaveMath.Froude(v, DoryLength) / S.FroudeKnee, 1f);
-                Assert.Greater(raised, old, $"at {v} m/s a rowed dory's waves are raised");
-                Assert.AreEqual(S.SmallHullCrestMetres * response, raised, 1e-6f, "to the floor times her response");
+                Assert.GreaterOrEqual(raised, old, $"at {v} m/s a rowed dory's waves are never lowered");
+                Assert.LessOrEqual(raised, Mathf.Max(old, S.SmallHullCrestMetres * response) + 1e-6f, "no more than the floor times her response, or her own");
                 Assert.Less(raised, 0.1f, "still centimetres: a soft V, not rollers");
             }
+            HullWaveSettings higher = S;
+            higher.SmallHullCrestMetres = 0.07f;
+            Assert.Greater(HullWaveMath.CrestHeight(2f, DoryLength, higher), HullWaveMath.CrestHeight(2f, DoryLength, Off()),
+                "the floor still works: set higher, it lifts her waves");
             Assert.AreEqual(0f, HullWaveMath.CrestHeight(S.MinSpeed, DoryLength, S), "at rest she still makes none");
         }
 
@@ -91,10 +97,10 @@ namespace HiddenHarbours.Tests.Art.EditMode
         public void TheShippedConfig_CarriesTheSmallHullDials()
         {
             string yaml = File.ReadAllText(Path.Combine(Application.dataPath, "..", ConfigPath)).Replace("\r\n", "\n");
-            StringAssert.Contains("\n    SmallHullCrestMetres: 0.07\n", yaml);
+            StringAssert.Contains("\n    SmallHullCrestMetres: 0.04\n", yaml);
             StringAssert.Contains("\n    SmallHullLengthMetres: 6\n", yaml);
             StringAssert.Contains("\n    SmallHullSpacingWavelengths: 0.35\n", yaml);
-            Assert.AreEqual(0.07f, S.SmallHullCrestMetres, 1e-6f, "the code's defaults are the shipped dials");
+            Assert.AreEqual(0.04f, S.SmallHullCrestMetres, 1e-6f, "the code's defaults are the shipped dials");
             Assert.AreEqual(6f, S.SmallHullLengthMetres, 1e-6f);
             Assert.AreEqual(0.35f, S.SmallHullSpacingWavelengths, 1e-6f);
         }

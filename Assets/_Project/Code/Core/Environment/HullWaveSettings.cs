@@ -218,6 +218,15 @@ namespace HiddenHarbours.Core
         [Header("Small splashes (oars, things dropped in)")]
         [Tooltip("How long a splash ring lives, seconds.")]
         [Range(0.2f, 20f)] public float RippleLifetimeSeconds;
+        [Tooltip("Share of a splash ring's life it takes to rise from nothing to full height (0 = born at full).")]
+        [Range(0f, 0.5f)] public float RippleRiseShare;
+        [Tooltip("On: a splash ring only takes a free slot and never pushes out a hull's wave (the pool is full = no ring).")]
+        public bool RipplesNeverEvict;
+
+        [Header("Gradual waves (owner 11-21: the wake waves strobed; slower and more gradual)")]
+        [Tooltip("Most times a second a ring's crests may pass one spot, Hz (0 = no cap). A crest runs at most " +
+                 "this × its wavelength, so a short wave crawls instead of flashing.")]
+        [Range(0f, 4f)] public float MaxCrestHertz;
 
         public static HullWaveSettings Default => new HullWaveSettings
         {
@@ -235,7 +244,9 @@ namespace HiddenHarbours.Core
             HeightPerMetreLength = 0.018f,
             FroudeKnee = 0.4f,
             MaxHeightMetres = 0.6f,
-            SmallHullCrestMetres = 0.07f,
+            // Owner 11-21 ("very circular wake wave pattern"): 0.07 drew the rowed dory's rings as hard
+            // stacked loops; 0.04 keeps a soft V that still reads at dusk.
+            SmallHullCrestMetres = 0.04f,
             SmallHullLengthMetres = 6f,
             SmallHullSpacingWavelengths = 0.35f,
             SmallHullHeightScatter = 0.85f,

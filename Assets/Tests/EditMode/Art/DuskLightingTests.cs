@@ -108,6 +108,75 @@ namespace HiddenHarbours.Tests.Art.EditMode
                 Assert.AreEqual(Lum(Tint(h, _shipped)), Lum(Tint(h, asset)), 1e-4f, $"{h:0.00}h asset == code");
         }
 
+        static DayNightProfile WithGlow(float strength)
+        {
+            var p = DayNightProfile.CreateDefault();
+            typeof(DayNightProfile).GetField("_sunsetGlowStrength", BindingFlags.NonPublic | BindingFlags.Instance)
+                .SetValue(p, strength);
+            return p;
+        }
+
+        [Test]
+        public void GlowZero_IsTheGoldenHoldExactly()
+        {
+            var noGlow = WithGlow(0f);
+            try
+            {
+                for (float h = 0f; h < 24f; h += 0.05f)
+                {
+                    Assert.AreEqual(0f, DayNightMath.SunsetGlowWeight(h, noGlow), 0f, $"{h:0.00}h no weight");
+                    if (DayNightMath.SunsetGlowWeight(h, _shipped) == 0f)
+                        Assert.AreEqual(Tint(h, noGlow), Tint(h, _shipped), $"{h:0.00}h outside the glow: bit-identical");
+                }
+            }
+            finally { Object.DestroyImmediate(noGlow); }
+        }
+
+        [Test]
+        public void TheGlowWeight_RisesToSunsetAndFallsByNight()
+        {
+            float sunset = _shipped.SunsetHour, night = _shipped.NightHour, lead = _shipped.SunsetGlowLeadHours;
+            Assert.AreEqual(0f, DayNightMath.SunsetGlowWeight(sunset - lead - 0.01f, _shipped), 0f, "nothing before the lead");
+            Assert.AreEqual(_shipped.SunsetGlowStrength, DayNightMath.SunsetGlowWeight(sunset, _shipped), 1e-5f, "full at sunset");
+            Assert.AreEqual(0f, DayNightMath.SunsetGlowWeight(night, _shipped), 1e-6f, "gone by night");
+            foreach (float h in new[] { 6f, 12f, 17f, 18f, 19f, 22.5f, 0f })
+                Assert.AreEqual(0f, DayNightMath.SunsetGlowWeight(h, _shipped), 0f, $"{h}h untouched");
+            float last = 0f;
+            for (float h = sunset - lead; h <= sunset; h += 0.05f)
+            {
+                float w = DayNightMath.SunsetGlowWeight(h, _shipped);
+                Assert.GreaterOrEqual(w, last - 1e-6f, $"{h:0.00}h rises");
+                last = w;
+            }
+        }
+
+        [Test]
+        public void TheSunset_ReadsRedderThanTheGoldenHold()
+        {
+            Color hold = Tint(19f, _shipped), sunset = Tint(21f, _shipped);
+            Color.RGBToHSV(hold, out float hHold, out _, out _);
+            Color.RGBToHSV(sunset, out float hSun, out float sSun, out _);
+            Assert.Less(hSun, hHold - 0.02f, "21:00 leans from gold toward red-rose");
+            Assert.Greater(sSun, 0.4f, "a sunset colour, not a grey haze");
+            Assert.Greater(sunset.r, sunset.g * 1.5f, "red over green: no khaki");
+        }
+
+        [Test]
+        public void TheShippedAsset_CarriesTheSunsetGlow()
+        {
+            var asset = AssetDatabase.LoadAssetAtPath<DayNightProfile>(ProfilePath);
+            Assert.IsNotNull(asset, "the profile must ship");
+            Assert.AreEqual(DayNightProfile.DefaultSunsetGlowStrength, asset.SunsetGlowStrength, 1e-5f);
+            Assert.AreEqual(DayNightProfile.DefaultSunsetGlowLeadHours, asset.SunsetGlowLeadHours, 1e-5f);
+            Color a = asset.SunsetGlowTint, c = DayNightProfile.DefaultSunsetGlowTint;
+            Assert.AreEqual(c.r, a.r, 1e-4f); Assert.AreEqual(c.g, a.g, 1e-4f); Assert.AreEqual(c.b, a.b, 1e-4f);
+            for (float h = 18f; h <= 22f; h += 0.25f)
+            {
+                Color x = Tint(h, _shipped), y = Tint(h, asset);
+                Assert.AreEqual(x.r, y.r, 1e-4f, $"{h:0.00}h r"); Assert.AreEqual(x.g, y.g, 1e-4f, $"{h:0.00}h g"); Assert.AreEqual(x.b, y.b, 1e-4f, $"{h:0.00}h b");
+            }
+        }
+
         [Test]
         public void TheWaterNightGate_StaysOffWhileTheSunIsUp()
         {
