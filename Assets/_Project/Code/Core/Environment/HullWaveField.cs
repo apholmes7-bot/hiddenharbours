@@ -145,6 +145,16 @@ namespace HiddenHarbours.Core
             return true;
         }
 
+        /// <summary>
+        /// Lay a source only into a free slot: at the limit it is dropped and nothing gives way, so a
+        /// splash never pushes a hull's wave out of the pool mid-life (no pop). Returns whether it was kept.
+        /// </summary>
+        public bool AddIfRoom(in HullWaveSource source)
+        {
+            if (_count >= _limit) return false;
+            return Add(in source);
+        }
+
         private int WeakestIndex()
         {
             int best = 0;
@@ -340,8 +350,9 @@ namespace HiddenHarbours.Core
                     Amplitude = amp,
                     Wavenumber = k,
                     // Her own speed: the crests along her track keep station with her (the transverse
-                    // waves), which is the deep-water speed of the wave that keeps pace with her.
-                    PhaseSpeed = speed,
+                    // waves), which is the deep-water speed of the wave that keeps pace with her; held
+                    // to MaxCrestHertz × λ so a short hull's short waves do not flash (owner 11-21).
+                    PhaseSpeed = HullWaveMath.CrestSpeed(speed, wavelength, in s),
                     RingSpeed = HullWaveMath.RingSpeed(speed, s.KelvinHalfAngleDegrees),
                     PacketWidth = HullWaveMath.PacketWidth(wavelength, in s),
                     Lifetime = lifetime,
@@ -430,20 +441,33 @@ namespace HiddenHarbours.Core
         /// <param name="heightMetres">Its crest height at birth, metres.</param>
         /// <param name="wavelengthMetres">Its crest spacing, metres.</param>
         public static bool AddRipple(Vector2 worldXY, float heightMetres, float wavelengthMetres)
+            => AddRipple(worldXY, heightMetres, wavelengthMetres, 0);
+
+        /// <summary>
+        /// <see cref="AddRipple(Vector2, float, float)"/> laid under <paramref name="owner"/>
+        /// (<see cref="OwnerOf"/>), so the hull whose oar made it does not ride her own ring.
+        /// </summary>
+        public static bool AddRipple(Vector2 worldXY, float heightMetres, float wavelengthMetres, int owner)
         {
             HullWaveField f = s_Field;
             if (f == null || heightMetres <= 0f || wavelengthMetres <= 0f) return false;
             HullWaveSettings s = GameServices.HullWaves;
             if (!s.Enabled) return false;
             double now = GameServices.Clock != null ? GameServices.Clock.FlowSeconds : f.NowSeconds;
-            return f.Add(MakeRipple(worldXY, heightMetres, wavelengthMetres, now, in s));
+            HullWaveSource ripple = MakeRipple(worldXY, heightMetres, wavelengthMetres, now, in s, owner);
+            return s.RipplesNeverEvict ? f.AddIfRoom(in ripple) : f.Add(in ripple);
         }
 
-        /// <summary>The source <see cref="AddRipple"/> lays. Public for tests.</summary>
+        /// <summary>The source <see cref="AddRipple(Vector2, float, float)"/> lays. Public for tests.</summary>
         public static HullWaveSource MakeRipple(Vector2 worldXY, float heightMetres, float wavelengthMetres,
                                                 double now, in HullWaveSettings s)
+            => MakeRipple(worldXY, heightMetres, wavelengthMetres, now, in s, 0);
+
+        /// <summary>The same source, laid under <paramref name="owner"/> (0 = nobody's).</summary>
+        public static HullWaveSource MakeRipple(Vector2 worldXY, float heightMetres, float wavelengthMetres,
+                                                double now, in HullWaveSettings s, int owner)
         {
-            float c = HullWaveMath.PhaseSpeed(wavelengthMetres);
+            float c = HullWaveMath.CrestSpeed(HullWaveMath.PhaseSpeed(wavelengthMetres), wavelengthMetres, in s);
             float life = Mathf.Max(s.RippleLifetimeSeconds, 0.1f);
             return new HullWaveSource
             {
@@ -456,7 +480,8 @@ namespace HiddenHarbours.Core
                 PacketWidth = HullWaveMath.PacketWidth(wavelengthMetres, in s),
                 Lifetime = life,
                 DecaySeconds = life * Mathf.Max(s.DecayShare, 0.01f),
-                Owner = 0,
+                RiseSeconds = life * Mathf.Clamp(s.RippleRiseShare, 0f, 0.5f),
+                Owner = owner,
             };
         }
     }

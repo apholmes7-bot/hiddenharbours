@@ -482,8 +482,37 @@ namespace HiddenHarbours.Boats
         private FoamSheetSettings _sheetCfg;
         private bool _joined;
 
+        /// <summary>
+        /// A ring of real water waves to send out this frame (joined to the sheet only): where a blade went
+        /// in or came out, and the crest height. The emitter hands it to the hull-wave field, so the sea
+        /// itself draws the ring (lit faces and troughs), never a picture.
+        /// </summary>
+        public struct WaveRing
+        {
+            public Vector2 At;
+            public float HeightMetres;
+            public bool Catch;
+        }
+
+        /// <summary>At most a catch and a release per oar per frame.</summary>
+        public const int MaxWaveRingsPerFrame = 4;
+        private readonly WaveRing[] _waveRings = new WaveRing[MaxWaveRingsPerFrame];
+        private int _waveRingCount;
+
         /// <summary>True while the oars lay their foam into the sheet: no drawn puffs, puddles or rings.</summary>
         public bool JoinsSheet => _joined;
+
+        /// <summary>How many water rings this frame's step asked for (0..<see cref="MaxWaveRingsPerFrame"/>).</summary>
+        public int WaveRingCount => _waveRingCount;
+
+        /// <summary>One of this frame's water rings (0..<see cref="WaveRingCount"/>-1).</summary>
+        public WaveRing GetWaveRing(int i) => _waveRings[Mathf.Clamp(i, 0, MaxWaveRingsPerFrame - 1)];
+
+        private void AskRing(Vector2 at, float heightMetres, bool isCatch)
+        {
+            if (!(heightMetres > 0f) || _waveRingCount >= MaxWaveRingsPerFrame) return;
+            _waveRings[_waveRingCount++] = new WaveRing { At = at, HeightMetres = heightMetres, Catch = isCatch };
+        }
 
         /// <summary>This frame's sheet deposit for one oar, if it laid one.</summary>
         public bool TryGetSheetDeposit(int oar, out SheetDeposit deposit)
@@ -552,6 +581,7 @@ namespace HiddenHarbours.Boats
             _joined = sheet.OarJoinsSheet;
             _hasSheet[Port] = false;
             _hasSheet[Starboard] = false;
+            _waveRingCount = 0;
             int fired = 0;
             if (StepOar(Port, in port, boatSpeed, dt, in cfg)) fired++;
             if (StepOar(Starboard, in starboard, boatSpeed, dt, in cfg)) fired++;
@@ -605,7 +635,11 @@ namespace HiddenHarbours.Boats
                     _releases[oar]++;
                     // The puddle the blade leaves, laid where it last worked the water.
                     if (_joined && hadWater)
+                    {
                         LaySheet(oar, lastWater, lastWater, _sheetCfg.OarRelease * strength, strength, _sheetCfg.OarCatchRadius);
+                        AskRing(lastWater, _sheetCfg.OarRingHeightMetres * Mathf.Clamp01(_sheetCfg.OarReleaseRingShare) * strength,
+                                isCatch: false);
+                    }
                     Release(in f, sweep, strength, in cfg);
                     _sinceRelease[oar] = 0f;
                     _releaseStrength[oar] = strength;
@@ -629,6 +663,10 @@ namespace HiddenHarbours.Boats
                 {
                     LayFoam(in f, cfg.CatchFoamPuffs, push, strength, in cfg);
                     SendRipples(f.BladeWorld, cfg.RipplesAtCatch, 1f, 1f, 1f, 0f, strength, in cfg);
+                }
+                else
+                {
+                    AskRing(f.BladeWorld, _sheetCfg.OarRingHeightMetres * strength, isCatch: true);
                 }
             }
 

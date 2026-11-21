@@ -272,7 +272,7 @@ MonoBehaviour:
     CatchDropsMax: 8
     DropletSpeed: 1.1
     DropletLifetime: 0.4
-    DropletSize: 0.07
+    DropletSize: 0.09
     DropletVelocityRetain: 0.05
     CatchFoamPuffs: 2
     FoamPuffsPerSecond: 9
@@ -307,9 +307,9 @@ MonoBehaviour:
     RippleBandCentre: 0.82
     RippleBandHalfWidth: 0.12
     RippleColor: {r: 0.9, g: 0.95, b: 1, a: 1}
-    DripsPerSecond: 14
-    DripDecaySeconds: 0.3
-    DripSize: 0.035
+    DripsPerSecond: 20
+    DripDecaySeconds: 0.4
+    DripSize: 0.05
     DripScatterMeters: 0.12
     DripRingScale: 0.3
     DripRingLifetimeScale: 0.5

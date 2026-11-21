@@ -129,6 +129,13 @@ namespace HiddenHarbours.Core
         [Range(0f, 1f)] public float OarCatch;
         [Tooltip("Foam laid at once where a blade comes out, at full strength: the puddle it leaves.")]
         [Range(0f, 1f)] public float OarRelease;
+        [Tooltip("Crest height (m) of the ring of real water waves a blade sends out where it goes in, at full " +
+                 "strength. Drawn by the water itself (lit faces and troughs, no picture). 0 = no ring.")]
+        [Range(0f, 0.2f)] public float OarRingHeightMetres;
+        [Tooltip("Crest spacing (m) of that ring. Longer = wider, slower rings that spread further before they fade.")]
+        [Range(0.1f, 2f)] public float OarRingWavelengthMetres;
+        [Tooltip("The ring where a blade comes out, as a share of the catch ring's height (0..1). 0 = none.")]
+        [Range(0f, 1f)] public float OarReleaseRingShare;
 
         /// <summary>The shader's property defaults, value for value (<c>FoamSheetTests</c> pins the pair).</summary>
         public static FoamSheetSettings Default => new FoamSheetSettings
@@ -167,11 +174,20 @@ namespace HiddenHarbours.Core
             // burst of the sheet's lace that fades within a few seconds, with a short smear along the pull
             // (was 0.3 m, 0.5/s, 0.1, 0.08 with no separate catch size: a few invisible specks).
             Oar = 1f,
-            OarRadius = 0.15f,
-            OarCatchRadius = 0.25f,
-            OarPerSecond = 0.8f,
-            OarCatch = 0.4f,
-            OarRelease = 0.16f,
+            // The owner's 11-21 reshoot ("Yes, fix then reshoot"): the 11-19 values (0.15 m, 0.25 m, 0.8/s,
+            // 0.4, 0.16) read as pale specks at game zoom, noon worst. A whiter, slightly wider catch and a
+            // firmer puddle, still well under the old pink blobs' size.
+            OarRadius = 0.16f,
+            OarCatchRadius = 0.3f,
+            OarPerSecond = 1f,
+            OarCatch = 0.6f,
+            OarRelease = 0.26f,
+            // Each catch reads again as a splash with a ring spreading from it, the ring being the sea's own
+            // waves rather than a drawn picture. Owner 11-21, "the very circular wake wave pattern": a low,
+            // long, slow ring (was 0.05 m / 0.5 m), one soft circle rather than stacked bright ones.
+            OarRingHeightMetres = 0.02f,
+            OarRingWavelengthMetres = 0.8f,
+            OarReleaseRingShare = 0.6f,
         };
 
         /// <summary>The band edges as the shader's <c>_FoamSheetDither</c> vector (noise share, lump size m,

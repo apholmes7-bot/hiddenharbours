@@ -115,7 +115,23 @@ namespace HiddenHarbours.Tests.EditMode
         /// <summary>The golden hour FOUND on the shipped profile the way the plate sweep finds it: the
         /// warmest still-bright afternoon tint. Asserted to land where the register says (18:06) so that
         /// a retuned profile reports "the golden hour moved" instead of quietly measuring another hour.</summary>
-        static float GoldenHourFor(DayNightProfile profile)
+        /// <para>The sunset glow (11-21) is measured with its strength at 0: it reddens the LAST bright hour
+        /// before sunset, which would otherwise always win "warmest" and move the golden hour onto the sunset
+        /// itself. The register's golden hour is the warm key's arrival, which the glow does not move.</para>
+        static float GoldenHourFor(DayNightProfile shipped)
+        {
+            var profile = Object.Instantiate(shipped);
+            try
+            {
+                typeof(DayNightProfile).GetField("_sunsetGlowStrength",
+                        System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
+                    .SetValue(profile, 0f);
+                return GoldenHourOf(profile);
+            }
+            finally { Object.DestroyImmediate(profile); }
+        }
+
+        static float GoldenHourOf(DayNightProfile profile)
         {
             float best = 12f, bestWarmth = float.MinValue;
             for (float hour = 12f; hour <= profile.SunsetHour; hour += 0.05f)

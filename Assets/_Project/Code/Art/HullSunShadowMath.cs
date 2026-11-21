@@ -8,6 +8,16 @@ namespace HiddenHarbours.Art
         public static bool IsActive(float elevation, float strength, float enabled)
             => elevation > 0f && strength > 0f && enabled > 0f;
 
+        /// <summary>The fraction of its cast darkness a hull's shadow keeps: 1 on land or a wharf (or at a sun at or
+        /// above <paramref name="fullSunElevation"/>), easing smoothly down to <paramref name="lowSunAlpha"/> at the
+        /// horizon for a hull afloat, so a low sun leaves only a faint shade on open water. Pure (rule 5).</summary>
+        public static float WaterAlphaScale(float sunElevation, bool afloat, float lowSunAlpha, float fullSunElevation)
+        {
+            if (!afloat) return 1f;
+            float t = Mathf.InverseLerp(0f, Mathf.Max(fullSunElevation, 1e-3f), Mathf.Clamp01(sunElevation));
+            return Mathf.Lerp(Mathf.Clamp01(lowSunAlpha), 1f, Mathf.SmoothStep(0f, 1f, t));
+        }
+
         public static Matrix4x4 Pose(float heading, float elevation, float roll, float pitch)
             => IsoFacetMath.RigToWorld(0, elevation) * IsoFacetMath.RigToWorld(heading, elevation, roll, pitch);
 

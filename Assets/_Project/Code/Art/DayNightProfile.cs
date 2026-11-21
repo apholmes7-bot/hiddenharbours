@@ -47,6 +47,23 @@ namespace HiddenHarbours.Art
                  "key and NightHour gives the old behaviour (one long blend from the warm key to night).")]
         [SerializeField, Min(0f)] private float _nightBlendHours = DefaultNightBlendHours;
 
+        // The sunset glow (owner, 2026-11-21: a clear evening must read as a SUNSET). The golden hold above keeps
+        // 18:00-20:00 a golden evening; the glow then warms the light toward red-rose as the sun meets the sea and
+        // lets it go again by NightHour, so the last hour before dark is the sunset and not a khaki haze.
+        public static readonly Color DefaultSunsetGlowTint = new Color(1.00f, 0.50f, 0.45f, 1f);
+        public const float DefaultSunsetGlowStrength = 1f;
+        public const float DefaultSunsetGlowLeadHours = 2f;
+
+        [Header("Sunset glow (the light reddens as the sun meets the sea)")]
+        [Tooltip("The colour the day tint is pulled toward at the published sunset: the red-rose of a clear " +
+                 "North-Atlantic sunset. Keep its luminance at or below the warm key so the evening only ever darkens.")]
+        [SerializeField] private Color _sunsetGlowTint = DefaultSunsetGlowTint;
+        [Tooltip("How far the tint reaches the glow colour at the sunset hour (0 = no glow, the golden hold alone).")]
+        [Range(0f, 1f)] [SerializeField] private float _sunsetGlowStrength = DefaultSunsetGlowStrength;
+        [Tooltip("Hours before sunset over which the glow rises (smoothly) from nothing to its strength. After " +
+                 "sunset it falls away again by NightHour while the night blend takes the light to blue.")]
+        [SerializeField, Min(0f)] private float _sunsetGlowLeadHours = DefaultSunsetGlowLeadHours;
+
         [Header("Day tint (the whole-screen multiply colour over 24h)")]
         [Tooltip("The global MULTIPLY colour across the solar phase (0 = midnight, 0.5 = solar noon, 1 = " +
                  "midnight). Warm + low at dawn, bright neutral/cool at noon, orange-red at dusk, dark " +
@@ -118,6 +135,9 @@ namespace HiddenHarbours.Art
         // ---- read-only accessors (the controller + DayNightMath read these) ----
         public float WarmKeyBeforeSunsetHours => _warmKeyBeforeSunsetHours;
         public float NightBlendHours => _nightBlendHours;
+        public Color SunsetGlowTint => _sunsetGlowTint;
+        public float SunsetGlowStrength => _sunsetGlowStrength;
+        public float SunsetGlowLeadHours => _sunsetGlowLeadHours;
         public Gradient SkyTint => _skyTint;
         public AnimationCurve Intensity => _intensity;
         public float ShadowSouthBias => _shadowSouthBias;
@@ -176,6 +196,9 @@ namespace HiddenHarbours.Art
             ApplyHourDefaults();
             _warmKeyBeforeSunsetHours = DefaultWarmKeyBeforeSunsetHours;
             _nightBlendHours = DefaultNightBlendHours;
+            _sunsetGlowTint = DefaultSunsetGlowTint;
+            _sunsetGlowStrength = DefaultSunsetGlowStrength;
+            _sunsetGlowLeadHours = DefaultSunsetGlowLeadHours;
             _shadowSouthBias = 0.2f;
             _shadowNoonLift = 0.9f;
             _fogVisibilityForFullDim = 0.15f;
