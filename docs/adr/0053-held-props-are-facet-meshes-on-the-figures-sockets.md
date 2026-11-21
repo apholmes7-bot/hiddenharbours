@@ -141,3 +141,26 @@ pivot, drawn by the facet path in its parent's frame. A hand is a socket, as an 
   (`StowBlendSeconds`), since the rig bakes no draw clip. Decided from the hands and the clip each
   frame; nothing is saved.
 - **NPC anglers** draw no rod mesh: no NPC path mounts a held prop yet.
+
+## 9. Progress (2026-11-20): the shovel and the pail
+
+- **The shovel is its mesh, by the rod's own driver.** `HeldRodMesh` takes any `ToolDef`; the carrier
+  runs a second one for the hand tool (`CarryHands`, its own overlay claim), so the dig draws the
+  baked shovel on `tool_R` aimed by the dig clip's tool track on every frame, and the sprite is held
+  out of the picture while it does (`CarriableTool.SetDrawnElsewhere`). On a free gait it is carried
+  on the hand's own socket at `ToolDef.CarriedPitchDeg` / `CarriedYawDeg`. It has no back mount.
+  `GameConfig.MeshHandToolInHand` is the switch; the shaft-through-the-left-hand and blade-to-ground
+  margins are `HeldShovelShaftHandToleranceMetres` / `HeldShovelGroundToleranceMetres`.
+- **The pail is its mesh, hung by its bail.** The carry row names the bucket rig's tier
+  (`CharacterCarryPoseDef.Row.MeshTier`, `pail`); the presenter hands out the baked state for the
+  band and catch group its sprite would show, so the fill still reads. It hangs from the carry socket
+  on the figure's facet (so his legs and the pail sort per pixel) and swings back from the hand's own
+  motion in the clip (`MeshSwingDegPerMetrePerSecond`, `MeshSwingMaxDeg`). `GameConfig.MeshPailInHand`
+  is the switch.
+- **Rig gap: the blade stops short of the ground.** The fisher's dig holds the tool 1.05 m from the right
+  hand (its tool track), but the baked shovel's blade is 0.665 m from that hand, with the left hand
+  0.26-0.31 m up the shaft. At the dig's low point the blade is 0.37 m above the ground, and no grip
+  with both hands on the shaft gets it below ~0.32 m. The dig clip (hands lower at the strike) or the
+  shovel rig (its grip) has to change; the ground test is ignored until then.
+- **Still a sprite:** the clam hod (no baked mesh state), the spoil tint on the pail (the mesh does
+  not take it yet), a second pail or a second hand tool in the other hand, and every NPC's held prop.

@@ -258,6 +258,10 @@ namespace HiddenHarbours.Player
             if (ReferenceEquals(GameServices.CatchHands, this)) GameServices.CatchHands = null;
             _catchMesh?.Dispose();
             _catchMesh = null;
+            _toolMesh?.Dispose();
+            _toolMesh = null;
+            _pailMesh?.Dispose();
+            _pailMesh = null;
         }
 
         // ---- the catch seam: a landed catch takes the free hand ---------------------------------------
@@ -566,7 +570,105 @@ namespace HiddenHarbours.Player
         private void LateUpdate()
         {
             if (IsCarrying) ApplyCarriedPose();
-            else if (_catchMesh != null && _catchMesh.Drawing) _catchMesh.Hide();
+            else
+            {
+                if (_catchMesh != null && _catchMesh.Drawing) _catchMesh.Hide();
+                if (_toolMesh != null && _toolMesh.Drawing) _toolMesh.Hide();
+                if (_pailMesh != null && _pailMesh.Drawing) _pailMesh.Hide();
+            }
+        }
+
+        // ---- a hand tool (the clam shovel) as its mesh on the mesh figure (ADR 0053) ---------------
+
+        private HeldRodMesh _toolMesh;
+        private bool _toolMeshPosed;
+
+        /// <summary>The hand-tool mesh driver (every tool but the fight's rod), once made. For tests and
+        /// plates.</summary>
+        public HeldRodMesh ToolMesh => _toolMesh;
+
+        /// <summary>
+        /// A carried tool that is not the fight's rod (the fight presenter draws that one), as its held mesh
+        /// in the mesh figure's hand when its Def asks for it: aimed by the clip's own tool track while he
+        /// digs, at the Def's carried aim on a free gait, gripped in the hand it is in. The SAME driver the
+        /// rod uses (<see cref="HeldRodMesh"/>); its sprite is held out of the picture exactly while the mesh
+        /// draws. Stated every frame; nothing is latched or saved. One hand tool mesh at a time: a second
+        /// non-rod tool would keep its sprite (none ships).
+        /// </summary>
+        private void StateToolMesh(ICarriable carried, CarryHandSide hand)
+        {
+            if (carried is not CarriableTool tool || tool.Tool == null || _toolMeshPosed) return;
+            if (string.Equals(tool.DefId, _fightRodToolId, System.StringComparison.Ordinal)) return;
+            GameConfig config = GameServices.Config;
+            bool on = config != null && config.MeshHandToolInHand && !ToolsStowed;
+            if (!on && _toolMesh == null) return;
+            _toolMesh ??= new HeldRodMesh(transform, "HeldToolMesh", IsoCharacterFigureRenderer.HeldReachHandTool);
+            CarryHandSide side = MeshHand(CarryHandSide.None, hand, carried);
+            string carriedSocket = side == CarryHandSide.Left ? HeldPropSockets.LeftHandTool : HeldPropSockets.RightHandTool;
+            float width = config != null ? config.HeldPropLineWidthPx : GameConfig.DefaultHeldPropLineWidthPx;
+            HeldRodMesh.Use use = _slots.UsedHands >= 2 ? HeldRodMesh.Use.HandsBusy : HeldRodMesh.Use.Free;
+            if (!_toolMesh.TryDraw(on, tool.Tool, LiveFigure(), width, use, Time.deltaTime, carriedSocket)) return;
+            tool.SetDrawnElsewhere(true);
+            _toolMeshPosed = true;
+        }
+
+        // ---- the pail as its mesh hung from the mesh figure's hand (ADR 0053) -----------------------
+
+        private HeldCatchMesh _pailMesh;
+        private bool _pailMeshPosed;
+        private Matrix4x4[] _swingWorld;
+        private CharacterSkinDef _swingSkin;
+        private string _swingClipKey;
+        private bool _swingClipKnown;
+        private CharacterSkinDef.SkinClip _swingClip;
+
+        /// <summary>The pail mesh hanger, once made. For tests and plates.</summary>
+        public HeldCatchMesh PailMesh => _pailMesh;
+
+        /// <summary>
+        /// A carried pail as the bucket rig's held mesh at its fill and catch, hung by its bail (the mesh's
+        /// grip) from the socket <see cref="TryMeshFigurePose"/> chose, so his legs and the pail sort pixel by
+        /// pixel instead of the whole sprite going in front or behind. It swings back from the hand's motion
+        /// by the row's numbers. The sprite is held out of the picture exactly while the mesh draws; a pail
+        /// with no baked mesh state (the clam hod) keeps it. Stated every frame; nothing is saved.
+        /// </summary>
+        private void StatePailMesh(ICarriable carried, in CharacterCarryPoseDef.Row row, string socket,
+                                   int socketBone, IsoCharacterFigureRenderer figure)
+        {
+            if (carried is not CarriableBucket bucket || _pailMeshPosed) return;
+            GameConfig config = GameServices.Config;
+            bool on = config != null && config.MeshPailInHand && !string.IsNullOrEmpty(row.MeshTier);
+            if (!on && _pailMesh == null) { bucket.SetDrawnElsewhere(false); return; }
+            HeldPropMeshDef def = on ? bucket.HeldMeshFor(row.MeshTier) : null;
+            _pailMesh ??= new HeldCatchMesh(transform, "HeldPailMesh", IsoCharacterFigureRenderer.HeldReachCarry);
+            float perMetre = def != null && def.PxPerMetre > 0 ? 1f / def.PxPerMetre : 0f;
+            float width = config != null ? config.HeldPropLineWidthPx : GameConfig.DefaultHeldPropLineWidthPx;
+            var options = new IsoFacetHeldPropMesh.Options { Scale = 1f, LineWidthMeters = width * perMetre };
+            Quaternion swing = on ? PailSwing(row, figure, socketBone) : Quaternion.identity;
+            bool drawn = _pailMesh.TryDrawHung(on, def, options, socket, swing, figure);
+            bucket.SetDrawnElsewhere(drawn);
+            _pailMeshPosed |= drawn;
+        }
+
+        /// <summary>The row's swing for the frame drawn, from the clip's own socket motion
+        /// (<see cref="CarryMath.TryClipSocketVelocity"/>); the identity when it cannot be read.</summary>
+        private Quaternion PailSwing(in CharacterCarryPoseDef.Row row, IsoCharacterFigureRenderer figure, int socketBone)
+        {
+            if (row.MeshSwingDegPerMetrePerSecond <= 0f || row.MeshSwingMaxDeg <= 0f) return Quaternion.identity;
+            CharacterSkinDef skin = figure.SkinDef;
+            string key = figure.DrawnStateKey;
+            if (!ReferenceEquals(skin, _swingSkin) || !ReferenceEquals(key, _swingClipKey))
+            {
+                _swingSkin = skin;
+                _swingClipKey = key;
+                _swingClipKnown = skin.TryGetClip(key, out _swingClip);
+                if (_swingWorld == null || _swingWorld.Length < skin.BoneCount) _swingWorld = new Matrix4x4[skin.BoneCount];
+            }
+            if (!_swingClipKnown
+                || !CarryMath.TryClipSocketVelocity(_swingClip, skin.Bones, socketBone, figure.DrawnFrame, _swingWorld,
+                                                    out Vector3 velocity))
+                return Quaternion.identity;
+            return CarryMath.HungSwing(velocity, row.MeshSwingDegPerMetrePerSecond, row.MeshSwingMaxDeg);
         }
 
         // ---- the catch as a mesh on the mesh figure (ADR 0053) -------------------------------------
@@ -622,9 +724,17 @@ namespace HiddenHarbours.Player
         /// </summary>
         public void ApplyCarriedPose()
         {
-            _catchMeshPosed = false;
+            _catchMeshPosed = _toolMeshPosed = _pailMeshPosed = false;
             PoseEveryCarried();
             if (!_catchMeshPosed && _catchMesh != null && _catchMesh.Drawing) _catchMesh.Hide();
+            if (!_toolMeshPosed && _toolMesh != null && _toolMesh.Drawing) _toolMesh.Hide();
+            if (!_pailMeshPosed)
+            {
+                // No pail mesh this frame (the sprite body, no socket, the switch off): the sprite draws.
+                if (_pailMesh != null && _pailMesh.Drawing) _pailMesh.Hide();
+                if (_slots.Right is CarriableBucket rightPail) rightPail.SetDrawnElsewhere(false);
+                if (_slots.Left is CarriableBucket leftPail) leftPail.SetDrawnElsewhere(false);
+            }
         }
 
         private void PoseEveryCarried()
@@ -664,6 +774,7 @@ namespace HiddenHarbours.Player
         {
             if (carried == null || carried.Transform == null) return;
             StateDrawnByTheFight(carried);
+            StateToolMesh(carried, hand);
 
             // Both paths are posed off the BODY AS DRAWN: the pin (or the fallback) is measured from her
             // feet in the picture, and aboard the picture is not at this root (DrawnBodyOffsetLocal). The
@@ -744,6 +855,7 @@ namespace HiddenHarbours.Player
             float towardCamera = CarryMath.TowardCameraMetres(facetToWorld, socketFacet, bodyFacet);
             RideBodyBand(carried, CarryMath.SideOrdersFor(towardCamera, row.DepthDeadbandMeters, heading,
                                                           OrdersFor(hand)));
+            StatePailMesh(carried, row, socket, socketBone, figure);
             return true;
         }
 
@@ -847,8 +959,12 @@ namespace HiddenHarbours.Player
         private void OnDisable()
         {
             _catchMesh?.Hide();
+            _toolMesh?.Hide();
+            _pailMesh?.Hide();
             if (_slots.Right is CarriableTool right) right.SetDrawnElsewhere(false);
             if (_slots.Left is CarriableTool left) left.SetDrawnElsewhere(false);
+            if (_slots.Right is CarriableBucket rightPail) rightPail.SetDrawnElsewhere(false);
+            if (_slots.Left is CarriableBucket leftPail) leftPail.SetDrawnElsewhere(false);
         }
 
         /// <summary>How far out of the body's sorting band this hand's item draws. The left hand takes one

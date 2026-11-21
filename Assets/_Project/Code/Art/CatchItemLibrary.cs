@@ -140,8 +140,8 @@ namespace HiddenHarbours.Art
 
         [SerializeField, Tooltip("Every bucket state as a facet mesh — tier × band × catch group, from the " +
                                  "held-prop bake (ADR 0053). The pail's presenter already holds this " +
-                                 "asset, so the meshes reach it without a scene holding a copy. Nothing " +
-                                 "draws them yet.")]
+                                 "asset, so the meshes reach it without a scene holding a copy. The pail " +
+                                 "tier is drawn in his hand on the mesh figure.")]
         private BucketMeshEntry[] _bucketMeshes = Array.Empty<BucketMeshEntry>();
 
         // Lookup caches (built once; invalidated when the asset reloads).

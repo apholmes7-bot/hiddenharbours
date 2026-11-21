@@ -1206,13 +1206,19 @@ namespace HiddenHarbours.Art
         public void SetHeldReachMetres(float metres) => SetHeldReachMetres(HeldReachTool, metres);
 
         /// <summary>How many holders may claim room in the overlay at once.</summary>
-        public const int HeldReachClaimants = 2;
+        public const int HeldReachClaimants = 4;
 
         /// <summary>The claim of the tool in his hand (the rod).</summary>
         public const int HeldReachTool = 0;
 
         /// <summary>The claim of the catch in his hand.</summary>
         public const int HeldReachCatch = 1;
+
+        /// <summary>The claim of a hand tool that is not the rod (the clam shovel).</summary>
+        public const int HeldReachHandTool = 2;
+
+        /// <summary>The claim of a container hung from his hand (the pail).</summary>
+        public const int HeldReachCarry = 3;
 
         /// <summary>
         /// <see cref="SetHeldReachMetres(float)"/> for one holder (<see cref="HeldReachTool"/>,

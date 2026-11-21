@@ -232,6 +232,51 @@ namespace HiddenHarbours.Player
         }
 
         /// <summary>
+        /// <b>How far a thing hung from a hand swings, and which way</b>: back from the way the hand is moving
+        /// (a pail lags its bail), <paramref name="degPerMetrePerSecond"/> degrees per metre per second of the
+        /// hand's horizontal speed, at most <paramref name="maxDeg"/>. A turn about the grip in the figure's
+        /// frame (+z up); the identity when the hand is still or either number is zero. Pure, no allocation.
+        /// </summary>
+        public static Quaternion HungSwing(Vector3 handVelocity, float degPerMetrePerSecond, float maxDeg)
+        {
+            var flat = new Vector3(handVelocity.x, handVelocity.y, 0f);
+            float speed = flat.magnitude;
+            if (speed < 1e-5f || degPerMetrePerSecond <= 0f || maxDeg <= 0f) return Quaternion.identity;
+            float deg = Mathf.Min(maxDeg, degPerMetrePerSecond * speed);
+            // About up x motion: the hanging end (−z) moves against the motion.
+            Vector3 axis = Vector3.Cross(Vector3.forward, flat / speed);
+            return Quaternion.AngleAxis(deg, axis);
+        }
+
+        /// <summary>
+        /// <b>How fast a socket moves against his body on one frame of a clip</b>, metres per second in the
+        /// figure's frame: the socket's place on the frames either side (wrapped on a looping clip, held at
+        /// the ends of one that is not) over the time between them. Read off the clip itself, so the same
+        /// frame always gives the same answer and nothing is carried between frames. <paramref name="world"/>
+        /// is a caller's buffer of at least the bone count. False when the clip cannot be read.
+        /// </summary>
+        public static bool TryClipSocketVelocity(in CharacterSkinDef.SkinClip clip, CharacterSkinDef.Bone[] bones,
+                                                 int bone, int frame, Matrix4x4[] world, out Vector3 velocity)
+        {
+            velocity = Vector3.zero;
+            int n = clip.FrameCount;
+            if (bones == null || world == null || world.Length < bones.Length || bone < 0 || bone >= bones.Length
+                || n < 2 || clip.FramesPerSecond <= 0f)
+                return false;
+            int f = Mathf.Clamp(frame, 0, n - 1);
+            int before = clip.Loop ? (f - 1 + n) % n : Mathf.Max(0, f - 1);
+            int after = clip.Loop ? (f + 1) % n : Mathf.Min(n - 1, f + 1);
+            int steps = clip.Loop ? 2 : after - before;
+            if (steps <= 0) return true;
+            CharacterSkinPose.ComposeWorld(clip, before, bones, world);
+            Vector3 a = world[bone].MultiplyPoint3x4(Vector3.zero);
+            CharacterSkinPose.ComposeWorld(clip, after, bones, world);
+            Vector3 b = world[bone].MultiplyPoint3x4(Vector3.zero);
+            velocity = (b - a) * (clip.FramesPerSecond / steps);
+            return true;
+        }
+
+        /// <summary>
         /// <b>Which side of the mesh figure a thing hanging from one hand draws on</b>: ahead of him when
         /// the hand is on his near side, behind him when it is on his far side. A pail in the far hand is
         /// hidden by his legs; one in the near hand hides them. Within
