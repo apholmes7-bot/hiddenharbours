@@ -28,6 +28,7 @@ MonoBehaviour:
   - 'Sea_*'
   - 'UI_*'
   - 'Interior*'
+  - StationFood
   - '*Floor*'
   - '*GroundPatch*'
   - '*ClamHole*'

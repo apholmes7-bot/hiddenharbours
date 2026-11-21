@@ -211,6 +211,47 @@ namespace HiddenHarbours.Player
         // so it separates "abeam" from any heading a fisher is actually drawn at.
         private const float AbeamEpsilon = 1e-4f;
 
+        /// <summary>
+        /// <b>How much nearer the camera a socket on the mesh figure is than a body bone</b>, in world
+        /// units: positive = the socket is on the NEAR side of his body, negative = the far side.
+        ///
+        /// <para>Both points are taken down to the figure's ground plane (z = 0 in its frame) before they
+        /// are projected, so only where the hand IS around his body counts, never how high it hangs: in
+        /// this elevated view a lower point projects farther from the camera, and a hanging hand is
+        /// lower than the hips, which would push every hand toward "far".</para>
+        ///
+        /// <para><paramref name="facetToWorld"/> is the figure's facet frame
+        /// (<c>IsoCharacterFigureRenderer.FacetTransform.localToWorldMatrix</c>), heading, ashore frame
+        /// and mirror included; the camera looks down +z, so the smaller world z is the nearer.</para>
+        /// </summary>
+        public static float TowardCameraMetres(in Matrix4x4 facetToWorld, Vector3 socketFacet, Vector3 bodyFacet)
+        {
+            Vector3 socket = facetToWorld.MultiplyPoint3x4(new Vector3(socketFacet.x, socketFacet.y, 0f));
+            Vector3 body = facetToWorld.MultiplyPoint3x4(new Vector3(bodyFacet.x, bodyFacet.y, 0f));
+            return body.z - socket.z;
+        }
+
+        /// <summary>
+        /// <b>Which side of the mesh figure a thing hanging from one hand draws on</b>: ahead of him when
+        /// the hand is on his near side, behind him when it is on his far side. A pail in the far hand is
+        /// hidden by his legs; one in the near hand hides them. Within
+        /// <paramref name="deadbandMetres"/> of the body the hand is beside him (he faces straight toward
+        /// or away from the camera) and the facing decides, exactly as <see cref="AheadOrdersFor"/> does
+        /// for a thing with no hand to measure.
+        /// </summary>
+        /// <param name="towardCameraMetres"><see cref="TowardCameraMetres"/> for the hand's socket.</param>
+        /// <param name="deadbandMetres">The beside-him band, from the carry row (negative reads as 0).</param>
+        /// <param name="drawnHeadingDegrees">The body's drawn compass heading, for the beside-him case.</param>
+        /// <param name="aheadOrders">Magnitude of the step, in sorting orders.</param>
+        public static int SideOrdersFor(float towardCameraMetres, float deadbandMetres, float drawnHeadingDegrees,
+                                        int aheadOrders)
+        {
+            float band = Mathf.Max(0f, deadbandMetres);
+            if (towardCameraMetres > band) return aheadOrders;
+            if (towardCameraMetres < -band) return -aheadOrders;
+            return AheadOrdersFor(drawnHeadingDegrees, aheadOrders);
+        }
+
         // ---- the words ---------------------------------------------------------------------------
 
         /// <summary>
