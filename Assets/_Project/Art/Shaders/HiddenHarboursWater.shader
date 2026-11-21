@@ -364,6 +364,13 @@ Shader "HiddenHarbours/Water"
         [HideInInspector] _ShoreWaveOn ("Shore wave field bound (WaterSurface sets it)", Float) = 0
         [HideInInspector][NoScaleOffset] _ShoreWaveTex ("Shore wave field (R metres offshore, GB gradient)", 2D) = "black" {}
 
+        [Header(Shore whitecaps   the wind caps and streaks thin out and follow the turned crests near the shore)]
+        // Inside the same shore band the trains turn in (_ShoreWaveReach), the wind whitecaps and the storm
+        // streaks keep less of their opacity as the water shallows, and their streaks swing from the wind's
+        // axis onto the turned crest line, parallel to the shore. VISUAL only. Both 0 = exactly as before.
+        _ShoreCapFade     ("Shore whitecaps: how much they thin out toward the shoreline (0 = off)", Range(0,1)) = 0.6
+        _ShoreCapAlign    ("Shore whitecaps: how fully their streaks follow the turned crests (0 = the wind)", Range(0,1)) = 0.75
+
         [Header(Beach swash   always on shoreline wash   the water runs IN and OUT)]
         _SwashAmplitude    ("Swash amplitude (m of contour excursion)", Float)   = 0.3
         _SwashSpeed        ("Swash speed (run-ups per sec; 0.16 ~ one every 6 s)", Float) = 0.5
@@ -1835,6 +1842,8 @@ Shader "HiddenHarbours/Water"
                 float  _ShoreWaveBend;
                 float  _ShoreWaveReach;
                 float  _ShoreWaveOn;
+                float  _ShoreCapFade;
+                float  _ShoreCapAlign;
                 // Painted-texture blend strengths + tiling (the _Use* toggle floats live only as keyword
                 // drivers — like _UseHeightTex — and are intentionally NOT in the CBUFFER).
                 float  _PaintScale;
@@ -3759,6 +3768,78 @@ Shader "HiddenHarbours/Water"
                 return saturate(_ShoreWaveBend) * (1.0 - smoothstep(0.0, max(_ShoreWaveReach, 1e-3), field.r));
             }
 
+            // ---- SHORE WHITECAPS: how the wind caps and storm streaks meet the shore ----------------------------
+            // Twin of WhitecapShoreMath.cs (change both in the same commit). Reads the same field as ShoreWaveTurn.
+            // keep: the share of the cap/streak opacity kept, 1 - _ShoreCapFade at and inside the shoreline,
+            // easing back to 1 by _ShoreWaveReach metres out. Returns the share of the streak texture taken
+            // from the crest-line basis (streaks along the shore contours, as the turned crests run); it fades
+            // where the field's gradient collapses (the ridge between two shores, sheltered water behind a
+            // headland), so the streaks thin and swing back to the wind there instead of flipping. Both dials 0,
+            // no field bound or off the rect: keep 1 and share 0 before the field is read, so the caps and
+            // streaks draw exactly as before. VISUAL only (rule 5): no depth, height, sim or save is touched.
+            #define SHORE_CAP_GRADIENT_LO 0.3
+            #define SHORE_CAP_GRADIENT_HI 0.8
+            #define SHORE_CAP_ANGLE_BINS 16.0
+            #define SHORE_CAP_TWO_PI 6.28318548
+            float ShoreCapShare(float2 worldXY, out float keep, out float2 offshoreDir)
+            {
+                keep = 1.0;
+                offshoreDir = float2(0.0, 1.0);
+                if (_ShoreWaveOn <= 0.0 || (_ShoreCapFade <= 0.0 && _ShoreCapAlign <= 0.0)) return 0.0;
+                float2 uv = (worldXY - _HeightWorldMin.xy) / max(_HeightWorldSize.xy, float2(1e-3, 1e-3));
+                if (any(uv < 0.0) || any(uv > 1.0)) return 0.0;
+                float4 field = SAMPLE_TEXTURE2D_LOD(_ShoreWaveTex, sampler_ShoreWave_linear_clamp, uv, 0);
+                float nearShore = 1.0 - smoothstep(0.0, max(_ShoreWaveReach, 1e-3), field.r);
+                keep = 1.0 - saturate(_ShoreCapFade) * nearShore;
+                float gl = length(field.gb);
+                offshoreDir = field.gb / max(gl, 1e-4);
+                return saturate(_ShoreCapAlign) * nearShore * smoothstep(SHORE_CAP_GRADIENT_LO, SHORE_CAP_GRADIENT_HI, gl);
+            }
+
+            // The caps and streaks pass through the foam sheet's threshold, so DIMMING them by a share removes
+            // nearly all of them at once. Both shore effects therefore work by AREA: a fixed world noise of
+            // ~7 m blobs picks which streaks stay (ShoreCapThin) and which have turned (ShoreCapDissolve), so the
+            // number of streaks follows the share smoothly and each streak keeps its own look.
+            // Twins: WhitecapShoreMath.Thin / Dissolve.
+            #define SHORE_CAP_BLOB_SCALE 0.15
+            #define SHORE_CAP_EDGE_SOFT 0.12
+            float ShoreCapNoise(float2 worldXY, float salt)
+            {
+                // Value noise bunches toward 0.5; spread it toward an even 0..1 (the triangle's own CDF) so the
+                // area a share picks follows the share instead of collapsing below a half.
+                float v = ValueNoise(Pixelize(worldXY * SHORE_CAP_BLOB_SCALE + salt));
+                return v < 0.5 ? 2.0 * v * v : 1.0 - 2.0 * (1.0 - v) * (1.0 - v);
+            }
+
+            // 1 where the blob noise n says this streak has taken the turned share s (0 = none, 1 = all).
+            float ShoreCapDissolve(float n, float s)
+            {
+                if (s <= 0.0) return 0.0;
+                if (s >= 1.0) return 1.0;
+                return smoothstep(1.0 - s - SHORE_CAP_EDGE_SOFT, 1.0 - s + SHORE_CAP_EDGE_SOFT, n);
+            }
+
+            // The share of a streak kept: keep 1 keeps every streak exactly; lower keeps fewer, never dimmer.
+            float ShoreCapThin(float n, float keep)
+            {
+                if (keep >= 1.0) return 1.0;
+                return ShoreCapDissolve(n, keep);
+            }
+
+            // The two FIXED offshore directions either side of this one (SHORE_CAP_ANGLE_BINS round the full
+            // turn) and the share of the second. The streak noise is sampled in those fixed bases and blended,
+            // so the pattern never shears where the shore curves (a basis rotating per pixel would smear it).
+            void ShoreCapBins(float2 offshoreDir, out float2 n0, out float2 n1, out float w)
+            {
+                float f = frac(atan2(offshoreDir.y, offshoreDir.x) / SHORE_CAP_TWO_PI) * SHORE_CAP_ANGLE_BINS;
+                float k0 = floor(f);
+                w = f - k0;
+                float a0 = k0 * (SHORE_CAP_TWO_PI / SHORE_CAP_ANGLE_BINS);
+                float a1 = a0 + SHORE_CAP_TWO_PI / SHORE_CAP_ANGLE_BINS;
+                n0 = float2(cos(a0), sin(a0));
+                n1 = float2(cos(a1), sin(a1));
+            }
+
             // One march and one set of eight growth factors per pixel or vertex. Curvature and
             // convergence taps reuse those factors. The omitted spatial gradient is quantified in ADR 0018.
             // Shore waves: each train is cross-faded by ShoreWaveTurn into a copy whose phase runs along
@@ -5325,6 +5406,18 @@ Shader "HiddenHarbours/Water"
             // THE ONE FOAM SHEET (2026-11-19): the lanes' AMOUNT (where the blow strings foam out downwind and
             // how much) is this function; the compose hands it to the sheet (FoamSheetTear/Cover at the
             // streaks' own age) unless _FoamSheetStorm.x = 0, where StormFoamLanes below adds it as before.
+            // One storm-lane pattern's signed difference (g1 - g2, centred on 0) with its long axis along
+            // alongDir: the same arithmetic as the wind lanes below, for the shore whitecaps' crest bases.
+            float StormFoamLaneDiff(float2 pp, float wander, float2 alongDir, float stretch, float t)
+            {
+                float laneAlong  = (dot(pp, alongDir) + wander * 0.6) / stretch - t * _Flow * 0.6;
+                float laneAcross = dot(pp, float2(-alongDir.y, alongDir.x));
+                float2 laneUV = float2(laneAlong, laneAcross);
+                float g1 = EvolvingField(laneUV, float2(0, 0), 1.0, _FoamEvolveSpeed, t);
+                float g2 = ValueNoise(Pixelize(laneUV * 1.7 + 5.1));
+                return g1 - g2;
+            }
+
             float StormFoamLaneAmount(float2 worldXY, float dt, float t)
             {
                 if (_StormFoamLaneStrength <= 0.001)
@@ -5356,6 +5449,24 @@ Shader "HiddenHarbours/Water"
                 float g1 = EvolvingField(laneUV, float2(0, 0), 1.0, _FoamEvolveSpeed, t);
                 float g2 = ValueNoise(Pixelize(laneUV * 1.7 + 5.1));
                 float lanes = pow(saturate(1.0 - abs(g1 - g2) * 2.2), 5.0);   // higher exp => thinner, more defined veins
+                // SHORE WHITECAPS: inside the shore band, blob by blob, the lanes swing onto the turned crest
+                // line (the same lanes laid in the two fixed crest bases either side of the shore's direction)
+                // and fewer of them stay as the water shallows. Share 0 and keep 1 leave them exactly as before.
+                float laneKeep;
+                float2 laneOffshore;
+                float laneTurn = ShoreCapShare(worldXY, laneKeep, laneOffshore);
+                [branch] if (laneTurn > 0.0)
+                {
+                    float2 ln0, ln1;
+                    float lw;
+                    ShoreCapBins(laneOffshore, ln0, ln1, lw);
+                    float l0 = pow(saturate(1.0 - abs(StormFoamLaneDiff(pp, wander, float2(-ln0.y, ln0.x), stretch, t)) * 2.2), 5.0);
+                    float l1 = pow(saturate(1.0 - abs(StormFoamLaneDiff(pp, wander, float2(-ln1.y, ln1.x), stretch, t)) * 2.2), 5.0);
+                    float crestLanes = lerp(l0, l1, ShoreCapDissolve(ShoreCapNoise(worldXY, 41.7), lw));
+                    lanes = lerp(lanes, crestLanes, ShoreCapDissolve(ShoreCapNoise(worldXY, 17.3), laneTurn));
+                }
+                [branch] if (laneKeep < 1.0)
+                    lanes *= ShoreCapThin(ShoreCapNoise(worldXY, 63.1), laneKeep);
 
                 // gates: the wind blow (monotone) * open-water (fade at the wet shore edge, dt read-only).
                 float openWater = saturate(dt);
@@ -7129,6 +7240,26 @@ Shader "HiddenHarbours/Water"
                     // frequency (BandFreq) — storm foam blobs grow with the same growing sea.
                     float cap = EvolvingField(aniso, float2(0, 0), BandFreq(_NoiseScale) * 3.0 * _FoamBlobScale,
                                               _FoamEvolveSpeed, t);
+                    // SHORE WHITECAPS: inside the shore band, blob by blob, the cap streaks swing from the wind
+                    // onto the turned crest line (the same field in the two fixed crest bases either side of the
+                    // shore's direction) and fewer caps stay as the water shallows (capKeep, applied with the seam
+                    // fade below). Share 0 and keep 1 leave the caps exactly as before.
+                    float capKeep;
+                    float2 capOffshore;
+                    float capTurn = ShoreCapShare(worldXY, capKeep, capOffshore);
+                    [branch] if (capTurn > 0.0)
+                    {
+                        float2 cn0, cn1;
+                        float cw;
+                        ShoreCapBins(capOffshore, cn0, cn1, cw);
+                        float capFreq = BandFreq(_NoiseScale) * 3.0 * _FoamBlobScale;
+                        float c0 = EvolvingField(float2(dot(wp, float2(-cn0.y, cn0.x)), dot(wp, cn0) * stretch),
+                                                 float2(0, 0), capFreq, _FoamEvolveSpeed, t);
+                        float c1 = EvolvingField(float2(dot(wp, float2(-cn1.y, cn1.x)), dot(wp, cn1) * stretch),
+                                                 float2(0, 0), capFreq, _FoamEvolveSpeed, t);
+                        float capCrest = lerp(c0, c1, ShoreCapDissolve(ShoreCapNoise(worldXY, 41.7), cw));
+                        cap = lerp(cap, capCrest, ShoreCapDissolve(ShoreCapNoise(worldXY, 17.3), capTurn));
+                    }
                     // SOFT-THRESHOLD (metaball merge/separate) instead of the hard step(): smoothstep around a
                     // threshold lowered by wind (rougher => more sea is above the threshold => more caps). As the
                     // evolving field's maxima rise toward each other the valley crosses (thr - soft) and caps
@@ -7330,6 +7461,8 @@ Shader "HiddenHarbours/Water"
                     float capShoreFade = lerp(1.0, ShoreFade01(depth, _ShoreFadeBand),
                                               saturate(_CapSalienceStrength));
                     capOpacity = saturate(capOpacity * clumpGate) * capShoreFade;
+                    [branch] if (capKeep < 1.0)                  // the shore whitecaps' thinning (1 = untouched)
+                        capOpacity *= ShoreCapThin(ShoreCapNoise(worldXY, 63.1), capKeep);
                     // ---- THE ONE FOAM SHEET (2026-11-19): the caps are the sea's foam, not their own -------
                     // The cap's lifecycle, its wind and crest gates and its clumping still say WHERE and HOW
                     // MUCH; that opacity, scaled by the cap amount (_FoamSheetCaps.y: lower = smaller, sparser
