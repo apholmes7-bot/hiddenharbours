@@ -198,9 +198,14 @@ namespace HiddenHarbours.Core
         /// <paramref name="figureYawDegrees"/> are where the figure's root sits on the hull's posed mesh
         /// this frame, which is the frame the station answers in. Call after <see cref="TryPose"/>; it
         /// reuses the source that call cached, so it never searches.
+        ///
+        /// <para>With both oars let go he rests fully: the station's rest weight is raised to 1 and he
+        /// breathes on <paramref name="nowSeconds"/> (the caller's presentation clock), once per the
+        /// station's <c>RestBreathSeconds</c>, his hands on his thighs. A style's rest between strokes
+        /// keeps the station's own weight and breath, his hands on the handles.</para>
         /// </summary>
         public bool TryTargets(ICharacterFigureStand stand, Vector3 figureLocalMetres, float figureYawDegrees,
-                               out RowingPoseSolver.Targets targets)
+                               out RowingPoseSolver.Targets targets, double nowSeconds = 0d)
         {
             targets = default;
             if (stand == null) return false;
@@ -211,8 +216,22 @@ namespace HiddenHarbours.Core
             float drive = RowingFigure.IsLiveStroke(stroke)
                 ? RowingFigure.RigDrive(RowingFigure.BodyPhase(stroke.StrokePhase, RowingFigure.FacesBow(stand.FigureDeckBearingDegrees)))
                 : 0f;
+            if (!onHull.PortGripValid && !onHull.StarboardGripValid)
+            {
+                onHull.RestWeight = 1f;
+                onHull.RestBreath = LetGoBreath(nowSeconds, onHull.RestBreathSeconds);
+            }
             targets = RowingPoseSolver.ToFigure(onHull, figureLocalMetres, figureYawDegrees, drive);
             return true;
+        }
+
+        /// <summary>The breath, -1..1, of a rower resting with his oars let go, at
+        /// <paramref name="nowSeconds"/>: one slow sine per <paramref name="breathSeconds"/>.</summary>
+        public static float LetGoBreath(double nowSeconds, float breathSeconds)
+        {
+            if (breathSeconds <= 0f) return 0f;
+            double turns = nowSeconds / breathSeconds;
+            return Mathf.Sin((float)(2d * System.Math.PI * (turns - System.Math.Floor(turns))));
         }
 
         /// <summary>The <see cref="IOarStroke"/> on <paramref name="hull"/> or one of its parents.</summary>

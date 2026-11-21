@@ -92,6 +92,13 @@ namespace HiddenHarbours.Player
             SyncToSave();
         }
 
+        // The picture of what is in it (fish art pass 2, 4a). The freezer already standing in a saved scene
+        // predates it, so it is added here when the scene did not carry one; a rebuilt scene carries it.
+        private void Awake()
+        {
+            if (!TryGetComponent(out FreezerContentsPresenter _)) gameObject.AddComponent<FreezerContentsPresenter>();
+        }
+
         private void OnEnable()
         {
             _reach.Enable();
