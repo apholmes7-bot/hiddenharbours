@@ -84,7 +84,7 @@ idles when moored and revs underway.
 | `_homeWarmth` | — | no  | SFX | "made it home" warmth on `CatchSold` / coming ashore | `ProceduralAudio.HomeWarmth` — **slot held**, as above |
 | `_landingHit` | `SFX/landing_hit.wav` | no  | SFX | **the landing frame** — `JuiceMomentCue(Landing)`, the frame the fish leaves the water (with the hit-stop and the splash; juice charter §4.1/§4.5) | **real** — LICENSES.md row 18. A low thump under `_landedFlourish`, which fires on the same frame: two registers, one hit |
 | `_saleChime`  | `SFX/sale_chime.wav`  | no  | SFX | **the sale's reward beat** on `CatchSold` (with the coins flying in the notebook; §4.2) | **real** — LICENSES.md row 19. Coins changing hands: **foley**, not a musical sting, so it does not pre-empt the score's key the way `_catchSting` would |
-| `_digStrike`  | `SFX/dig_strike.wav`  | no  | SFX | **the shovel's strike** — `JuiceMomentCue(DigStrike)`, with the sand chunks (§4.3) | **real** — LICENSES.md row 20 |
+| `_digStrike`  | `SFX/dig_strike.wav`  | no  | SFX | **the shovel's strike** — `JuiceMomentCue(DigImpact)`, the blade entering the ground (`timing.dig` `ImpactDelaySeconds` after the press), with the sand chunks (§4.3) | **real** — LICENSES.md row 20 |
 | `_castEntry`  | — | no  | SFX | **the line touches down** — `JuiceMomentCue(CastEntry)`, with the rings (§4.3) | **slot held — already voiced**, not unsourced: `FishingAudio` plays `_splashDown` on the same frame from the same call, so a clip here would double it. Waits on flag (a), the shared bus, so it can sit *under*. See LICENSES.md |
 
 ## Rod-fight sound layer (Rod Fishing v2 — `FishingAudio`)

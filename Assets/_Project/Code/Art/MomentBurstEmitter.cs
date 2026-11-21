@@ -201,7 +201,7 @@ namespace HiddenHarbours.Art
                                                                    j.LandingSplashDropsPerKg, j.LandingSplashDropsMax),
                                 j.LandingSplashSeconds);
                     break;
-                case JuiceMoment.DigStrike:
+                case JuiceMoment.DigImpact:   // the blade in the ground, not the press (DigStrike)
                     SpawnChunks(e.At, j.SandChunkCount, j.SandChunkSeconds);
                     break;
                 case JuiceMoment.CastEntry:

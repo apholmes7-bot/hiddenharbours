@@ -69,7 +69,7 @@ namespace HiddenHarbours.Audio
         [Tooltip("The sale's reward beat on CatchSold, with the coins flying in the notebook. While null the director plays HomeWarmth in its place.")]
         public AudioClip SaleChime;
 
-        [Tooltip("The shovel's strike: JuiceMomentCue(DigStrike), with the sand chunks.")]
+        [Tooltip("The shovel's strike: JuiceMomentCue(DigImpact), the blade entering the ground, with the sand chunks.")]
         public AudioClip DigStrike;
 
         [Tooltip("The line touching down: JuiceMomentCue(CastEntry), with the rings.")]

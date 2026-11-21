@@ -91,7 +91,7 @@ namespace HiddenHarbours.Audio
         [Header("Moment cues (juice charter §4.5; NO placeholders — an empty slot is silent until the owner's file lands)")]
         [SerializeField] private AudioClip _landingHit;   // JuiceMomentCue(Landing)
         [SerializeField] private AudioClip _saleChime;    // CatchSold (plays _homeWarmth while empty)
-        [SerializeField] private AudioClip _digStrike;    // JuiceMomentCue(DigStrike)
+        [SerializeField] private AudioClip _digStrike;    // JuiceMomentCue(DigImpact)
         [SerializeField] private AudioClip _castEntry;    // JuiceMomentCue(CastEntry)
 
         [Header("Sea state and visibility")]

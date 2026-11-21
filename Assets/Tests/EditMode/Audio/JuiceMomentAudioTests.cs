@@ -28,7 +28,10 @@ namespace HiddenHarbours.Tests.Audio
         public void A_published_cue_maps_to_its_slot_and_the_sale_cue_is_silent_because_CatchSold_already_plays_it()
         {
             Assert.AreEqual(AudioCue.LandingHit, AudioDirectorLogic.CueFor(JuiceMoment.Landing));
-            Assert.AreEqual(AudioCue.DigStrike,  AudioDirectorLogic.CueFor(JuiceMoment.DigStrike));
+            Assert.AreEqual(AudioCue.DigStrike,  AudioDirectorLogic.CueFor(JuiceMoment.DigImpact),
+                "the dig sound plays when the blade enters the ground");
+            Assert.AreEqual(AudioCue.None,       AudioDirectorLogic.CueFor(JuiceMoment.DigStrike),
+                "the press is silent: the shovel is still in the air on the stab frame");
             Assert.AreEqual(AudioCue.CastEntry,  AudioDirectorLogic.CueFor(JuiceMoment.CastEntry));
             Assert.AreEqual(AudioCue.None,       AudioDirectorLogic.CueFor(JuiceMoment.Sale),
                 "the director plays the sale on CatchSold — the cue must not double it");

@@ -17,3 +17,4 @@ MonoBehaviour:
   StrikeSeconds: 0.9
   FollowThroughSeconds: 0.05
   SettleSeconds: 0.05
+  ImpactDelaySeconds: 0.1

@@ -437,7 +437,7 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.AreEqual(0, pail.UsedUnits, "…and the pail is untouched (the in-hand ruling)");
 
             var strikes = _cues.FindAll(c => c.Kind == JuiceMoment.DigStrike);
-            Assert.AreEqual(1, strikes.Count, "one DigStrike cue per dig — the sand chunks and the audio slot both key off it");
+            Assert.AreEqual(1, strikes.Count, "one DigStrike cue per dig, on the press — the body clip, the weight and the impact relay key off it");
             Assert.AreEqual(dig.SpotPos.x, strikes[0].X, 1e-4f, "the cue is AT THE HOLE");
             Assert.AreEqual(dig.SpotPos.y, strikes[0].Y, 1e-4f);
             Assert.GreaterOrEqual(strikes[0].Strength, 0.05f, "strength is the clam's weight in kg");
@@ -486,6 +486,171 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         // =============================================================================================
+        // THE IMPACT — the dirt and the sound land when the blade enters the ground, not on the press
+        // =============================================================================================
+
+        private DigImpactRelay StandARelay(float impactDelay)
+        {
+            var relay = AddOn<DigImpactRelay>("impact");
+            var def = Def(0f, 0.9f, 0.05f, 0.05f, "timing.dig.test");
+            def.ImpactDelaySeconds = impactDelay;
+            relay.ConfigureTiming(def);
+            return relay;
+        }
+
+        private int Impacts => _cues.FindAll(c => c.Kind == JuiceMoment.DigImpact).Count;
+
+        [Test]
+        public void The_impact_waits_for_the_blade_then_fires_ONCE_at_the_hole_with_the_clams_weight()
+        {
+            var relay = StandARelay(0.1f);
+            relay.OnMoment(new JuiceMomentCue(JuiceMoment.DigStrike, new Vector2(2f, 3f), 0.12f));
+            Assert.IsTrue(relay.Armed);
+            Assert.AreEqual(0, Impacts, "nothing on the press: the stab frame, the shovel still in the air");
+            relay.TickFrame(0.05f);
+            Assert.AreEqual(0, Impacts, "half way through the stab: still nothing");
+            relay.TickFrame(0.049f);
+            Assert.AreEqual(0, Impacts, "0.099 s: one hair before the blade");
+            relay.TickFrame(0.002f);
+            Assert.AreEqual(1, Impacts, "the blade enters the ground: ONE impact");
+            var hit = _cues.Find(c => c.Kind == JuiceMoment.DigImpact);
+            Assert.AreEqual(2f, hit.X, 1e-5f, "at the hole");
+            Assert.AreEqual(3f, hit.Y, 1e-5f);
+            Assert.AreEqual(0.12f, hit.Strength, 1e-5f, "the same weight the press carried");
+            Assert.IsFalse(relay.Armed);
+            relay.TickFrame(1f); relay.TickFrame(1f);
+            Assert.AreEqual(1, Impacts, "and never a repeat");
+        }
+
+        [Test]
+        public void The_impact_relay_ignores_every_other_moment_and_its_own_cue()
+        {
+            var relay = StandARelay(0f);
+            relay.OnMoment(new JuiceMomentCue(JuiceMoment.Landing, Vector2.zero, 2f));
+            relay.OnMoment(new JuiceMomentCue(JuiceMoment.CastEntry, Vector2.zero, 0f));
+            relay.OnMoment(new JuiceMomentCue(JuiceMoment.Sale, Vector2.zero, 48f));
+            relay.OnMoment(new JuiceMomentCue(JuiceMoment.DigImpact, Vector2.zero, 0.1f));
+            Assert.IsFalse(relay.Armed);
+            Assert.AreEqual(0, _cues.Count, "only the dig press arms an impact; an impact never re-arms one");
+        }
+
+        [Test]
+        public void A_zero_impact_delay_lands_the_impact_on_the_press_as_before()
+        {
+            var relay = StandARelay(0f);
+            relay.OnMoment(new JuiceMomentCue(JuiceMoment.DigStrike, Vector2.zero, 0.1f));
+            Assert.AreEqual(1, Impacts);
+            Assert.IsFalse(relay.Armed);
+        }
+
+        [Test]
+        public void An_interrupted_dig_never_fires_its_impact_late()
+        {
+            // Boarding / taking a helm mid-dig.
+            var relay = StandARelay(0.1f);
+            relay.OnMoment(new JuiceMomentCue(JuiceMoment.DigStrike, Vector2.zero, 0.1f));
+            relay.TickFrame(0.05f);
+            relay.OnControlModeChanged(new ControlModeChanged(ControlMode.Aboard));
+            Assert.IsFalse(relay.Armed);
+            relay.TickFrame(0.1f); relay.TickFrame(1f);
+            Assert.AreEqual(0, Impacts, "the dig ended before the blade landed: no dirt, no sound");
+
+            // A load replaces the world the press happened in.
+            relay.OnMoment(new JuiceMomentCue(JuiceMoment.DigStrike, Vector2.zero, 0.1f));
+            relay.TickFrame(0.05f);
+            relay.OnGameLoaded(new GameLoaded());
+            relay.TickFrame(1f);
+            Assert.AreEqual(0, Impacts, "a load drops the pending impact");
+
+            // A new press restarts the clip: the old blade never lands, the new one does, once.
+            relay.OnMoment(new JuiceMomentCue(JuiceMoment.DigStrike, new Vector2(1f, 0f), 0.1f));
+            relay.TickFrame(0.05f);
+            relay.OnMoment(new JuiceMomentCue(JuiceMoment.DigStrike, new Vector2(5f, 0f), 0.2f));
+            relay.TickFrame(0.06f);
+            Assert.AreEqual(0, Impacts, "the first press was superseded; the second has 0.04 s to go");
+            relay.TickFrame(0.05f);
+            Assert.AreEqual(1, Impacts, "ONE impact, the second press's");
+            Assert.AreEqual(5f, _cues.Find(c => c.Kind == JuiceMoment.DigImpact).X, 1e-5f);
+
+            // Disabled mid-dig (the host torn down).
+            relay.OnMoment(new JuiceMomentCue(JuiceMoment.DigStrike, Vector2.zero, 0.1f));
+            relay.Cancel();
+            relay.TickFrame(1f);
+            Assert.AreEqual(1, Impacts, "a cancelled dig stays silent");
+        }
+
+        [Test]
+        public void The_clam_is_resolved_on_the_press_and_only_the_dirt_and_sound_wait_for_the_blade()
+        {
+            var clock = new StampClock { TotalSeconds = 1000d };
+            var save = SaveMigration.NewGame();
+            save.OwnedGear.Add("gear.shovel");
+            save.OwnedGear.Add("gear.bucket");
+            GameServices.Clock = clock;
+            GameServices.TidalTerrain = new FlatTerrain();
+            GameServices.Environment = new FlatEnv();
+            GameServices.Save = new FakeSaveService(save);
+
+            var species = ScriptableObject.CreateInstance<FishSpeciesDef>();
+            species.Id = "fish.soft_shell_clam"; species.DisplayName = "Soft-shell Clam";
+            species.Category = FishCategory.Shellfish;
+            species.MinWeightKg = 0.05f; species.MaxWeightKg = 0.2f; species.BaseValue = 2;
+            species.SupplyElasticity = 0.45f; species.SpoilPerDay = 0.5f;
+            _spawned.Add(species);
+
+            var pail = AddOn<ClamBucket>("Pail");
+            pail.Configure(20, requireOwnedBucket: false);
+            var dig = AddOn<ClamDig>("ClamHole");
+            dig.Configure(species, pail, dig.transform, "gear.shovel", seed: 7, reachRadius: 1.25f);
+            dig.ConfigureInteract("fixture.clam_hole.test", ToolDef.ShovelId);
+            IconRegistry.Register("fish.soft_shell_clam", MakeSprite());
+            CarryHands hands = ToolInHand.Holding(ToolDef.ShovelId, _spawned);
+
+            var relay = StandARelay(0.1f);
+            EventBus.Subscribe<JuiceMomentCue>(relay.OnMoment);   // EditMode never runs OnEnable
+            try
+            {
+                Assert.IsTrue(dig.TryDig(), "the press digs");
+                Assert.AreEqual(1, _landed, "the clam landed ON THE PRESS");
+                Assert.IsNotNull(hands.Carried as CarriableCatch, "and it is already in his hand");
+                Assert.AreEqual(1000d, dig.SpentAtSeconds, 1e-9, "the hole is spent on the press, at the press's game time");
+                Assert.AreEqual(1, _cues.FindAll(c => c.Kind == JuiceMoment.DigStrike).Count);
+                Assert.AreEqual(0, Impacts, "but the dirt and the sound wait for the blade");
+                float kg = _cues.Find(c => c.Kind == JuiceMoment.DigStrike).Strength;
+
+                relay.TickFrame(0.1f);
+                Assert.AreEqual(1, Impacts, "the blade lands: one impact");
+                var hit = _cues.Find(c => c.Kind == JuiceMoment.DigImpact);
+                Assert.AreEqual(dig.SpotPos.x, hit.X, 1e-4f, "at the hole");
+                Assert.AreEqual(dig.SpotPos.y, hit.Y, 1e-4f);
+                Assert.AreEqual(kg, hit.Strength, 1e-6f, "the same clam's weight");
+                Assert.AreEqual(1, _landed, "the impact lands no second clam");
+            }
+            finally { EventBus.Unsubscribe<JuiceMomentCue>(relay.OnMoment); }
+        }
+
+        [Test]
+        public void The_shipped_dig_impact_lands_on_the_first_key_of_the_blade_in_the_ground_frame()
+        {
+            // The dig clip's keys (rig 10 slow dig): key 1 the stab, key 2 the blade in the ground. The
+            // impact is data (DigTiming.ImpactDelaySeconds); this pins it to the clip so a retime of the
+            // strike that forgets the impact fails here instead of putting the dirt back in the air.
+            const int StabKey = 1, InGroundKey = 2;
+            const float Hair = 0.001f;
+            var dig = Resources.Load<ActionTimingDef>(LiftFeedback.DigTimingResource);
+            Assert.IsNotNull(dig);
+            Assert.Greater(dig.ImpactDelaySeconds, 0f, "the dig's dirt waits for the blade");
+            var skin = UnityEditor.AssetDatabase.LoadAssetAtPath<CharacterSkinDef>("Assets/_Project/Data/Characters/Skin/fisher.asset");
+            Assert.IsNotNull(skin);
+            Assert.IsTrue(skin.TryGetClip(PlayerFishingAnimMath.DigStateKey, out var clip));
+            ActionTiming t = dig.Timing;
+            Assert.AreEqual(StabKey, ActionTimingMath.FrameFor(dig.ImpactDelaySeconds - Hair, in t, clip.FrameCount),
+                "a hair before the impact the stab frame is still showing");
+            Assert.AreEqual(InGroundKey, ActionTimingMath.FrameFor(dig.ImpactDelaySeconds + Hair, in t, clip.FrameCount),
+                "a hair after it the blade is in the ground");
+        }
+
+        // =============================================================================================
         // §4.1 / §4.3 THE BURSTS — pooled, sized by weight, dead on time
         // =============================================================================================
 
@@ -519,7 +684,9 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.AreEqual(0, em.AliveCount, "dead at the lifetime — nothing lingers");
 
             em.OnMoment(new JuiceMomentCue(JuiceMoment.DigStrike, Vector2.zero, 0.1f));
-            Assert.AreEqual(j.SandChunkCount, em.AliveCount, "the sand chunks");
+            Assert.AreEqual(0, em.AliveCount, "no dirt on the press: the shovel is still in the air");
+            em.OnMoment(new JuiceMomentCue(JuiceMoment.DigImpact, Vector2.zero, 0.1f));
+            Assert.AreEqual(j.SandChunkCount, em.AliveCount, "the sand chunks, when the blade enters the ground");
             em.Clear();
             Assert.AreEqual(0, em.AliveCount);
 
@@ -739,6 +906,7 @@ namespace HiddenHarbours.Tests.EditMode
                 "_Project/Code/App/HitStopHost.cs",
                 "_Project/Code/Art/MomentBurstEmitter.cs",
                 "_Project/Code/Player/LiftFeedback.cs",
+                "_Project/Code/Player/DigImpactRelay.cs",
                 "_Project/Code/Player/PlayerHaulAnimator.cs",
                 "_Project/Code/World/NotebookPresenter.cs",
             })

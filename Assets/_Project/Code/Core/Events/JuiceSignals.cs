@@ -14,10 +14,16 @@ namespace HiddenHarbours.Core
         Landing = 0,
         /// <summary>The catch is sold (<c>CatchSold</c> carries the coins; this is the beat). Strength = coins.</summary>
         Sale = 1,
-        /// <summary>The shovel bites the flat and a clam comes up. Strength = kg.</summary>
+        /// <summary>The dig press: the clam is resolved and the dig performance starts (the body clip and
+        /// the notebook's weight key off this). Strength = kg. The shovel is still in the air here; the
+        /// dirt and the sound wait for <see cref="DigImpact"/>.</summary>
         DigStrike = 2,
         /// <summary>The cast line touches down. Strength = 0.</summary>
         CastEntry = 3,
+        /// <summary>The blade enters the ground: the <see cref="DigStrike"/> of the same dig, re-published
+        /// after the dig timing's <c>ImpactDelaySeconds</c> by the player's impact relay, and dropped if the
+        /// dig is interrupted first. The sand chunks and the dig sound key off this. Strength = kg.</summary>
+        DigImpact = 4,
     }
 
     /// <summary>
