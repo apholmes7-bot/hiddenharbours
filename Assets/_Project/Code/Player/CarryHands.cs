@@ -1001,8 +1001,5 @@ namespace HiddenHarbours.Player
             if (_fight == null) _fight = GetComponent<RodFightPresenter>();
             if (_meshPresenter == null) _meshPresenter = GetComponent<DeckRiderMeshPresenter>();
         }
-
-        // The mesh figure's presenter, resolved off this object like the rest of the wiring.
-        private DeckRiderMeshPresenter _meshPresenter;
     }
 }
