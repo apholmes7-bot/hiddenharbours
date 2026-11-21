@@ -160,6 +160,12 @@ namespace HiddenHarbours.Art
         // looked; the sources themselves live in the shared field on the Core seam.
         private HullWaveChain _waveTrail;
         private HullWaveChain _waveLead;
+        // Whether she is rowed (the Core seam the Boats lane answers, rule 4): rowed, her rings stay the
+        // owner's approved soft arcs; otherwise she lays the V (owner 11-21). Found once and kept; while
+        // nothing answers it is looked for again every RowedLookFrames (the oars may be bolted on after her).
+        private IRowedHull _rowed;
+        private int _nextRowedLook;
+        private const int RowedLookFrames = 30;
         private Vector2 _poseDrawnStern;
         private Vector2 _previousStern;
         private Vector2 _previousHeading = Vector2.up;
@@ -226,6 +232,8 @@ namespace HiddenHarbours.Art
             _bakeElevationDegrees = Mathf.Clamp(bakeElevationDegrees, 1f, 90f);
             _wakePoseSource = null;
             _primed = false;
+            _rowed = null;
+            _nextRowedLook = 0;
         }
 
         /// <summary>
@@ -581,7 +589,7 @@ namespace HiddenHarbours.Art
             // ---- THE WAVES SHE MAKES (the owner, 2026-11-17: "real waves from boats, from the stern, i
             // also think the bow would cause wake waves") ------------------------------------------------
             // Moored she makes no way of her own, so she lays nothing.
-            LayHullWaves(position, _way == VesselWay.Moored ? 0f : through.magnitude, now);
+            LayHullWaves(position, _way == VesselWay.Moored ? 0f : through.magnitude, through, now);
 
             _previousPosition = position;
         }
@@ -768,22 +776,44 @@ namespace HiddenHarbours.Art
         /// through the water; owned by the object her body sits on (her controller's), so her own drawn
         /// ride never rises on them.
         /// </summary>
-        private void LayHullWaves(Vector2 trailing, float speed, double now)
+        private void LayHullWaves(Vector2 trailing, float speed, Vector2 through, double now)
         {
             HullWaveField field = HullWaves.Field;
             HullWaveSettings s = GameServices.HullWaves;
             if (field == null || !s.Enabled) return;
+            // Rowed: no direction, her rings exactly as before. Otherwise her way through the water, so each
+            // ring keeps only the arcs on the arms of her V (HullWaveChain.Step, HullWaveSettings.MotorVShare).
+            Vector2 travel = IsRowed() ? Vector2.zero : through;
             float halfLength = _sternOffsetMeters;
             float length = HullLengthMetres;
             int owner = HullWaves.OwnerOf(_hullBody != null ? (Object)_hullBody.gameObject : gameObject);
             int budget = Mathf.Max(2, s.SourcesPerHull);
             int leadBudget = Mathf.Clamp(Mathf.RoundToInt(budget * Mathf.Clamp01(s.BowSourceShare)), 0, budget - 1);
-            _waveTrail.Step(field, trailing, now, speed, length, 1f, budget - leadBudget, owner, in s);
+            _waveTrail.Step(field, trailing, now, speed, length, 1f, budget - leadBudget, owner, travel, in s);
             if (leadBudget > 0 && halfLength > 0f && s.BowShare > 0f)
             {
                 Vector2 leading = HullPointLaid(new Vector2(0f, _trailFromBow ? -halfLength : halfLength));
-                _waveLead.Step(field, leading, now, speed, length, s.BowShare, leadBudget, owner, in s);
+                _waveLead.Step(field, leading, now, speed, length, s.BowShare, leadBudget, owner, travel, in s);
             }
+        }
+
+        // The Core seam's answer, the hull's own (her oar layer sits on her root, above or beside this host).
+        // Lookups are non-allocating; a found answer is kept until it is destroyed.
+        private bool IsRowed()
+        {
+            if (_rowed is Object alive && alive == null) _rowed = null;   // destroyed (Unity null)
+            if (_rowed == null && Time.frameCount >= _nextRowedLook)
+            {
+                _nextRowedLook = Time.frameCount + RowedLookFrames;
+                _rowed = GetComponentInParent<IRowedHull>();
+                if (_rowed is Object up && up == null) _rowed = null;
+                if (_rowed == null)
+                {
+                    _rowed = GetComponentInChildren<IRowedHull>();
+                    if (_rowed is Object down && down == null) _rowed = null;
+                }
+            }
+            return _rowed != null && _rowed.IsRowed;
         }
 
         private void Leave()

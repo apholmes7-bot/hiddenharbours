@@ -12,12 +12,14 @@ namespace HiddenHarbours.Art
     ///
     /// <list type="bullet">
     /// <item><c>_HHHullWaveA[i]</c> = (x, y, height now, band radius now)</item>
-    /// <item><c>_HHHullWaveB[i]</c> = (k, phase now, 1 / band width, reach)</item>
+    /// <item><c>_HHHullWaveB[i]</c> = (k, phase now, ±1 / band width, packed travel: 0 = a whole ring)</item>
     /// <item><c>_HHHullWaveParams</c> = (live count, drawn lift per metre, 1 / spread metres, on)</item>
     /// <item><c>_HHHullWaveShade</c> = (face light, crest light, trough dark, crest foam)</item>
     /// <item><c>_HHHullWaveFoam</c> = (crest foam onset m, crest foam ramp m, 0, 0)</item>
     /// <item><c>_HHHullWaveLook</c> = (shade ceiling, breakup share, 1 / breakup metres, wobble metres)</item>
     /// <item><c>_HHHullWaveArcs</c> = (arc share, arcs round a ring, 0, 0): rings packed with a negative 1/width</item>
+    /// <item><c>_HHHullWaveV</c> = (window low, 1 / window span, share, 0): the V arms of a ring packed with a
+    /// travel direction (a hull under motor or sail, owner 11-21; <see cref="HullWaveMath.VArmsVector"/>)</item>
     /// </list>
     ///
     /// <para>Ages and phases are worked out here in double, so the GPU only ever sees small numbers.
@@ -40,6 +42,7 @@ namespace HiddenHarbours.Art
         public static readonly int IdFoamAge = Shader.PropertyToID("_HHHullWaveFoamAge");
         public static readonly int IdLowLight = Shader.PropertyToID("_HHHullWaveLowLight");
         public static readonly int IdArcs = Shader.PropertyToID("_HHHullWaveArcs");
+        public static readonly int IdV = Shader.PropertyToID("_HHHullWaveV");
 
         /// <summary>Metres added round the camera's view before a ring counts as out of sight (the
         /// displaced lift moves water up the screen, and the view must not clip a crest).</summary>
@@ -94,6 +97,8 @@ namespace HiddenHarbours.Art
             double now = clock != null ? clock.FlowSeconds : Time.timeAsDouble;
             _field.Limit = s.MaxSources;
             _field.Advance(now);
+            Vector3 arms = HullWaveMath.VArmsVector(in s);
+            _field.VArms = arms;
 
             bool cull = TryViewRect(out Rect view);
             int count = _field.Pack(_a, _b, view, cull);
@@ -113,6 +118,7 @@ namespace HiddenHarbours.Art
             Shader.SetGlobalVector(IdLowLight, new Vector4(Mathf.Max(s.LowLightGain, 0f),
                 Mathf.Clamp01(s.LowLightStartLuminance), Mathf.Clamp01(s.LowLightFullLuminance), 0f));
             Shader.SetGlobalVector(IdArcs, ArcsVector(in s));
+            Shader.SetGlobalVector(IdV, new Vector4(arms.x, arms.y, arms.z, 0f));
         }
 
         /// <summary>The short hulls' broken rings for the shader: (arc share, whole arcs round the ring, 0, 0).</summary>

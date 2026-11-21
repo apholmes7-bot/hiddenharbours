@@ -142,6 +142,85 @@ namespace HiddenHarbours.Core
             return e;
         }
 
+        /// <summary>
+        /// The dials a hull under motor or sail lays her V with: <paramref name="s"/> with no hull counted
+        /// short (<c>SmallHullLengthMetres</c> = 0), so a motored punt lays the clean, evenly spaced rings a
+        /// long hull does (no scatter, no broken arcs, no small-hull crest floor): the V window draws her
+        /// (owner 11-21: "make motored boats a v wake"). Her trail foam is not read from these.
+        /// </summary>
+        public static HullWaveSettings ForMotor(in HullWaveSettings s)
+        {
+            HullWaveSettings e = s;
+            e.SmallHullLengthMetres = 0f;
+            return e;
+        }
+
+        /// <summary>The packed direction's grid: each axis in [-1, 1] is rounded to one of this many steps.
+        /// Mirrored as <c>HH_HULL_WAVE_TRAVEL_STEPS</c> in the water shader.</summary>
+        public const float TravelSteps = 2048f;
+
+        /// <summary>Half the packed axis's range in steps ((steps - 1) / 2): an axis of -1 packs as 0 and +1
+        /// as steps - 1. Mirrored as <c>HH_HULL_WAVE_TRAVEL_HALF</c> in the water shader.</summary>
+        public const float TravelHalfRange = 1023.5f;
+
+        /// <summary>
+        /// A direction packed into one whole number for the shader: <c>qx·steps + qy + 1</c>, each q the
+        /// axis rounded onto <see cref="TravelSteps"/>; at most 2²², exact in a float. 0 for no direction
+        /// (a whole ring). Unpacked, each axis is within 1/2047 of the unit vector's.
+        /// </summary>
+        public static float PackTravel(Vector2 travel)
+        {
+            float m = travel.magnitude;
+            if (m < 1e-6f) return 0f;
+            Vector2 u = travel / m;
+            float qx = Mathf.Round(Mathf.Clamp(u.x + 1f, 0f, 2f) * TravelHalfRange);
+            float qy = Mathf.Round(Mathf.Clamp(u.y + 1f, 0f, 2f) * TravelHalfRange);
+            return qx * TravelSteps + qy + 1f;
+        }
+
+        /// <summary>The inverse of <see cref="PackTravel"/> (the shader's decode); zero for 0.</summary>
+        public static Vector2 UnpackTravel(float packed)
+        {
+            if (packed < 0.5f) return Vector2.zero;
+            float p = packed - 1f;
+            float qx = Mathf.Floor(p / TravelSteps);
+            return new Vector2(qx, p - qx * TravelSteps) / TravelHalfRange - Vector2.one;
+        }
+
+        /// <summary>
+        /// The window of a V ring's arc that draws, in the cosine of the angle from her travel: (low, 1 / span),
+        /// centred near <c>90° − KelvinHalfAngleDegrees</c> (where a ring laid at V·sin α touches the arms of
+        /// the V) and <c>MotorVArmHalfWidthDegrees</c> either side.
+        /// </summary>
+        public static Vector2 VArmWindow(in HullWaveSettings s)
+        {
+            float centre = 90f - Mathf.Clamp(s.KelvinHalfAngleDegrees, 0f, 89f);
+            float half = Mathf.Max(s.MotorVArmHalfWidthDegrees, 0.5f);
+            float lo = Mathf.Cos(Mathf.Min(centre + half, 180f) * Mathf.Deg2Rad);
+            float hi = Mathf.Cos(Mathf.Max(centre - half, 0f) * Mathf.Deg2Rad);
+            return new Vector2(lo, 1f / Mathf.Max(hi - lo, 1e-4f));
+        }
+
+        /// <summary>What the shader's <c>_HHHullWaveV</c> carries: (window low, 1 / span, share).</summary>
+        public static Vector3 VArmsVector(in HullWaveSettings s)
+        {
+            Vector2 w = VArmWindow(in s);
+            return new Vector3(w.x, w.y, Mathf.Clamp01(s.MotorVShare));
+        }
+
+        /// <summary>
+        /// How much of a V ring draws at a point whose direction from the ring's centre is
+        /// <paramref name="cosFromTravel"/> from her travel: a smooth bump, (4t(1−t))², across the
+        /// <paramref name="window"/>, 0 outside it; blended from 1 (whole ring) by <paramref name="share"/>.
+        /// No hard edge, so no line where an arc ends. The water shader's <c>HullWaveVGain</c> is its twin.
+        /// </summary>
+        public static float VArmGain(float cosFromTravel, Vector2 window, float share)
+        {
+            float t = Mathf.Clamp01((cosFromTravel - window.x) * window.y);
+            float bump = 4f * t * (1f - t);
+            return Mathf.Lerp(1f, bump * bump, Mathf.Clamp01(share));
+        }
+
         /// <summary>True for a hull no longer than <c>SmallHullLengthMetres</c> (and longer than nothing).</summary>
         public static bool IsSmallHull(float lengthMetres, in HullWaveSettings s)
         {

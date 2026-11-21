@@ -1541,7 +1541,9 @@ Shader "HiddenHarbours/Water"
             //   _HHHullWaveA[i]    : xy = where it was laid (world m), z = its height now (m),
             //                        w = its band's radius now (m)
             //   _HHHullWaveB[i]    : x = k (2pi/wavelength), y = its crests' phase now (rad, [0, 2pi)),
-            //                        z = 1 / band width (1/m), w = reach (m): past it the ring draws nothing
+            //                        z = 1 / band width (1/m), w = its hull's travel, packed (HullWaveMath.PackTravel;
+            //                        0 = a whole ring). Its reach (past it the ring draws nothing) is
+            //                        a.w + HH_HULL_WAVE_PACKET_REACH / |b.z|, the radius the CPU culls with
             //   _HHHullWaveParams  : x = live count, y = drawn lift per metre, z = 1 / spread metres,
             //                        w = 1 while hull waves are on (0 = OFF: the older wake train draws)
             //   _HHHullWaveShade   : x = face light, y = crest light /m, z = trough dark /m, w = crest foam
@@ -1554,11 +1556,16 @@ Shader "HiddenHarbours/Water"
             //                        it starts, z = the luminance at which it is full (HullWaveMath.LowLightGain)
             //   _HHHullWaveArcs    : x = how much of a ring packed with a NEGATIVE 1/width (a short hull's) is torn
             //                        away into arcs, y = whole arcs round the ring (HullWaveBridge.ArcsVector)
+            //   _HHHullWaveV       : the V arms of a ring packed with a travel (a hull under motor or sail):
+            //                        x = window low, y = 1 / window span (cosine from her travel), z = share
+            //                        (HullWaveMath.VArmsVector; 0 = whole rings)
             // UNSET reads all-zero: count 0, OFF, nothing drawn and nothing read.
             // HH_HULL_WAVE_MAX is a COMPILE-TIME bound pinned to HullWaveField.ShaderCapacity by
             // HullWaveMathTests; the loops run [loop] and break at the live count, never [unroll] over it.
             #define HH_HULL_WAVE_MAX 64
             #define HH_HULL_WAVE_PACKET_REACH 3.0     // HullWaveMath.PacketReach
+            #define HH_HULL_WAVE_TRAVEL_STEPS 2048.0  // HullWaveMath.TravelSteps
+            #define HH_HULL_WAVE_TRAVEL_HALF 1023.5   // HullWaveMath.TravelHalfRange
             float4 _HHHullWaveA[HH_HULL_WAVE_MAX];
             float4 _HHHullWaveB[HH_HULL_WAVE_MAX];
             float4 _HHHullWaveParams;
@@ -1568,6 +1575,7 @@ Shader "HiddenHarbours/Water"
             float4 _HHHullWaveFoamAge;
             float4 _HHHullWaveLowLight;
             float4 _HHHullWaveArcs;
+            float4 _HHHullWaveV;
 
             // ---- WIND FETCH (ADR 0027 #1) — globals, published by WaveFieldBridge.PublishFetchGlobals ------
             // How far the wind has blown over open water before it reaches this pixel. Lee shores go calm,
@@ -2924,6 +2932,22 @@ Shader "HiddenHarbours/Water"
                 return lerp(1.0, smoothstep(0.45, 0.75, n), share);
             }
 
+            // A MOTORED HULL'S RING AS THE ARMS OF HER V (owner 11-21: "make motored boats a v wake"). A ring
+            // packed with her travel keeps only the arcs that touch the V's arms, about 90 - alpha degrees off
+            // her travel either side: a smooth bump across _HHHullWaveV's window, nothing ahead of or astern of
+            // the ring, so the inside of her V stays calm. HullWaveMath.VArmGain's twin. A ring with no travel
+            // (rowed, a splash), or share 0, returns exactly 1. About a dozen ALU per ring in reach.
+            float HullWaveVGain(float2 d, float r, float packed)
+            {
+                if (packed < 0.5) return 1.0;
+                float p = packed - 1.0;
+                float qx = floor(p / HH_HULL_WAVE_TRAVEL_STEPS);
+                float2 u = float2(qx, p - qx * HH_HULL_WAVE_TRAVEL_STEPS) / HH_HULL_WAVE_TRAVEL_HALF - 1.0;
+                float t = saturate((dot(d, u) / max(r, 1e-4) - _HHHullWaveV.x) * _HHHullWaveV.y);
+                float bump = 4.0 * t * (1.0 - t);
+                return lerp(1.0, bump * bump, saturate(_HHHullWaveV.z));
+            }
+
             // Every live source summed at a point: height (m) and slope (dh/dx, dh/dy). Exactly 0 while
             // OFF or with no sources, before any slot is read.
             void HullWaveSample(float2 worldXY, out float height, out float2 slope)
@@ -2949,11 +2973,13 @@ Shader "HiddenHarbours/Water"
                     float4 b = _HHHullWaveB[i];
                     float2 d = hwAt - a.xy;
                     float r2 = dot(d, d);
-                    if (r2 >= b.w * b.w) continue;
+                    float reach = a.w + HH_HULL_WAVE_PACKET_REACH / abs(b.z);
+                    if (r2 >= reach * reach) continue;
                     float r = sqrt(r2);
                     float h, dhdr;
                     HullWaveSourceHeight(r, a.z, a.w, b.x, b.y, abs(b.z), invSpread, h, dhdr);
                     float arc = HullWaveArcGain(d, a.xy, b.z);
+                    arc *= HullWaveVGain(d, r, b.w);
                     height += h * arc;
                     slope += d * (dhdr * arc / max(r, 1e-4));
                 }

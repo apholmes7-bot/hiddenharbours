@@ -228,6 +228,16 @@ namespace HiddenHarbours.Core
                  "this × its wavelength, so a short wave crawls instead of flashing.")]
         [Range(0f, 4f)] public float MaxCrestHertz;
 
+        [Header("Motor V wake (owner 11-21: \"make motored boats a v wake\")")]
+        [Tooltip("How much of each ring a hull under motor or sail lays is kept only where it touches the arms of " +
+                 "her V (1 = arms only: the inside of the V and the water astern of each ring stay calm; 0 = whole " +
+                 "rings, as before). A rowed hull (the dory under oars) is never touched: her rings stay as they are.")]
+        [Range(0f, 1f)] public float MotorVShare;
+        [Tooltip("How wide each arm of the V draws, degrees either side of where a ring touches it (90 minus " +
+                 "KelvinHalfAngleDegrees from her heading, measured at the ring's centre). Narrower = thinner, " +
+                 "crisper arms; wider = softer, broader arms.")]
+        [Range(5f, 60f)] public float MotorVArmHalfWidthDegrees;
+
         public static HullWaveSettings Default => new HullWaveSettings
         {
             Enabled = true,
@@ -300,6 +310,9 @@ namespace HiddenHarbours.Core
             RideScale = 1f,
 
             RippleLifetimeSeconds = 2.5f,
+
+            MotorVShare = 1f,
+            MotorVArmHalfWidthDegrees = 25f,
         };
     }
 }
