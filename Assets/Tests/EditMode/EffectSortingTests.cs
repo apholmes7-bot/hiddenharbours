@@ -157,7 +157,7 @@ namespace HiddenHarbours.Tests.EditMode
                 var em = go.AddComponent<MomentBurstEmitter>();
                 em.OverrideSettings(JuiceSettings.Default);
                 var at = new Vector2(3f, -41.6f);
-                em.OnMoment(new JuiceMomentCue(JuiceMoment.DigStrike, at, 0.1f));
+                em.OnMoment(new JuiceMomentCue(JuiceMoment.DigImpact, at, 0.1f));
 
                 Assert.IsNull(go.GetComponent<SortingGroup>(), "no host group: one order for every mote is the parked order");
                 int expected = EffectSorting.OrderAt(SortedEffect.MomentBurst, at.y);

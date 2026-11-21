@@ -12,7 +12,7 @@ namespace HiddenHarbours.Audio
         // The three moments (juice charter §4.5). No placeholders: a null clip is SILENT until the owner's file lands.
         LandingHit,   // the landing frame (JuiceMomentCue.Landing)
         SaleChime,    // the sale's reward beat (CatchSold) — plays HomeWarmth's clip until its own lands
-        DigStrike,    // the shovel's strike (JuiceMomentCue.DigStrike)
+        DigStrike,    // the shovel's strike: the blade enters the ground (JuiceMomentCue.DigImpact)
         CastEntry,    // the line touches down (JuiceMomentCue.CastEntry)
     }
 
@@ -23,7 +23,7 @@ namespace HiddenHarbours.Audio
         CatchSold,    // CatchSold
         CameAshore,   // ControlModeChanged Aboard -> OnFoot ("made it home")
         Landing,      // JuiceMomentCue(Landing) — the frame the fish leaves the water
-        DigStrike,    // JuiceMomentCue(DigStrike)
+        DigStrike,    // JuiceMomentCue(DigImpact), the blade in the ground
         CastEntry,    // JuiceMomentCue(CastEntry)
     }
 
@@ -128,11 +128,12 @@ namespace HiddenHarbours.Audio
         };
 
         /// <summary>The cue a published moment fires. Sale is silent HERE — <c>CatchSold</c> already plays
-        /// the sale, and the cue must not double it.</summary>
+        /// the sale, and the cue must not double it. The dig plays on <c>DigImpact</c> (the blade entering
+        /// the ground), never on the press (<c>DigStrike</c>), so the strike sound lands with the dirt.</summary>
         public static AudioCue CueFor(JuiceMoment moment) => moment switch
         {
             JuiceMoment.Landing   => CueFor(AudioMoment.Landing),
-            JuiceMoment.DigStrike => CueFor(AudioMoment.DigStrike),
+            JuiceMoment.DigImpact => CueFor(AudioMoment.DigStrike),
             JuiceMoment.CastEntry => CueFor(AudioMoment.CastEntry),
             _                     => AudioCue.None,
         };
