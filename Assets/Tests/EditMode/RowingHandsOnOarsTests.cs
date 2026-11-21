@@ -367,10 +367,420 @@ namespace HiddenHarbours.Tests.EditMode
         {
             BoatVisualDef dory = Dory();
             Assert.That(dory.Rowing.Enabled, Is.True, "the dory's rower is solved onto her oars");
-            // The rig's inboard loom (doryIsoRig.js O_LIN) is 0.85 m: the grip must be on it.
-            Assert.That(dory.Rowing.GripInboardMeters, Is.GreaterThan(0f).And.LessThan(0.85f));
+            // The rig's inboard loom (doryIsoRig.js O_LIN) is 0.65 m: the station must say so, and the grip must be on it.
+            Assert.That(dory.Rowing.LoomInboardMeters, Is.EqualTo(RigLoomInboardMeters).Within(Rigid),
+                        "the station's loom is the rig's O_LIN");
+            Assert.That(dory.Rowing.GripInboardMeters, Is.GreaterThan(0f).And.LessThan(RigLoomInboardMeters));
             Assert.That(dory.Rowing.SeatLocalMeters.z, Is.GreaterThan(dory.Rowing.FootBraceLocalMeters.z),
                         "he sits above where his feet rest");
+        }
+
+        // ---------------------------------------------------------------- clear of himself
+
+        /// <summary>The rig's inboard loom, oarlock to handle end (doryIsoRig.js O_LIN).</summary>
+        private const float RigLoomInboardMeters = 0.65f;
+
+        /// <summary>The closest approach of two segments (sampled along the first, exact onto the second).</summary>
+        private static float SegmentToSegment(Vector3 a0, Vector3 a1, Vector3 b0, Vector3 b1)
+        {
+            float d = float.MaxValue;
+            for (int q = 0; q <= 64; q++) d = Mathf.Min(d, SegmentDistance(Vector3.Lerp(a0, a1, q / 64f), b0, b1));
+            return d;
+        }
+
+        [Test]
+        public void TheTwoLooms_NeverMeet_TheHandlesStayApartThroughTheWholeStroke()
+        {
+            // The owner: "fix the overlapping oars". At the finish the two looms crossed in front of him
+            // and drew as one shaft: the inboard (0.85) was longer than the tholes' half-beam. With the
+            // rig's 0.65 m loom the two looms, wood to wood, keep the station's air at every phase, and
+            // the handle ends never reach the centreline.
+            BoatVisualDef dory = Dory();
+            RowingStationConfig st = dory.Rowing;
+            Assert.That(st.LoomClearanceMeters, Is.GreaterThan(0f), "the loom clearance is data");
+            Assert.That(st.LoomHalfThicknessMeters, Is.GreaterThan(0f), "the loom thickness is data");
+            Vector3 portLock = dory.OarPortMesh.PivotLocalMeters, starLock = dory.OarStarMesh.PivotLocalMeters;
+            var failures = new StringBuilder();
+            float worst = float.MaxValue;
+            const int Samples = 128;
+            for (int i = 0; i < Samples; i++)
+            {
+                float s = (float)i / Samples;
+                RowingTargets t = StationAt(dory, s);
+                float air = SegmentToSegment(portLock, t.PortHandleEnd, starLock, t.StarboardHandleEnd) - 2f * st.LoomHalfThicknessMeters;
+                worst = Mathf.Min(worst, air);
+                if (air < st.LoomClearanceMeters)
+                    failures.AppendLine($"phase {s:0.000}: looms {air:0.000} m apart, wood to wood (< {st.LoomClearanceMeters})");
+                if (t.PortHandleEnd.x + st.LoomHalfThicknessMeters >= 0f || t.StarboardHandleEnd.x - st.LoomHalfThicknessMeters <= 0f)
+                    failures.AppendLine($"phase {s:0.000}: a handle end reaches the centreline (port {t.PortHandleEnd.x:0.000}, star {t.StarboardHandleEnd.x:0.000})");
+            }
+            Assert.That(failures.Length, Is.EqualTo(0), failures.ToString());
+            Assert.That(worst, Is.LessThan(1f), "the looms were measured");
+        }
+
+        [Test]
+        public void HisHands_RideAboveHisKnees_ThroughTheRecovery_ByTheStationsMargin()
+        {
+            // The owner: "fix the low hands". On the recovery the handles must travel clearly over his
+            // thighs, not down in his lap: every palm rides at least the station's margin above the top
+            // of either knee (the thigh's highest point), at every recovery phase, facing and skin.
+            BoatVisualDef dory = Dory();
+            float margin = dory.Rowing.HandAboveKneeMeters;
+            Assert.That(margin, Is.GreaterThan(0f), "the hand height over the knees is data");
+            var failures = new StringBuilder();
+            int skins = 0, checks = 0;
+            foreach (CharacterSkinDef skin in RowingSkins())
+            {
+                skins++;
+                var solver = new RowingPoseSolver(skin.Bones, RowingBodyVolume.Of(skin));
+                int kneeL = skin.IndexOfBone(RowingPoseSolver.KneeLId), kneeR = skin.IndexOfBone(RowingPoseSolver.KneeRId);
+                var world = new Matrix4x4[skin.Bones.Length];
+                foreach (float yaw in Facings)
+                {
+                    // the recovery: the second half of the stroke, finish to catch
+                    for (int i = Phases / 2; i < Phases; i++)
+                    {
+                        float s = (float)i / Phases;
+                        Compose(skin, s, yaw, world);
+                        RowingPoseSolver.Targets t = FigureTargets(StationAt(dory, s), s, yaw);
+                        solver.Solve(world, in t);
+                        float palmZ = Mathf.Min(P(world, solver.PalmLeft).z, P(world, solver.PalmRight).z);
+                        float kneeZ = Mathf.Max(P(world, kneeL).z, P(world, kneeR).z);
+                        checks++;
+                        if (palmZ - kneeZ < margin)
+                            failures.AppendLine($"{skin.Id} facing {yaw} phase {s:0.000}: palms {palmZ - kneeZ:0.000} m over the knees (< {margin})");
+                    }
+                }
+            }
+            Assert.That(skins, Is.GreaterThan(0), "no committed skin carries row_oars");
+            Assert.That(checks, Is.GreaterThan(0));
+            Assert.That(failures.Length, Is.EqualTo(0), failures.ToString());
+        }
+
+        [Test]
+        public void FromDeadAhead_HisHandsDrawAboveHisHipLine_ThroughTheLateRecoveryAndTheCatch()
+        {
+            // The owner, on pass 2 from the front (heading 0): the hands at the catch and late in the recovery
+            // drew at his hips. There they reach toward the camera over her stern, and the projection pulls them
+            // down. With the tholes on their chocks every palm must DRAW above his hip line by the station's share
+            // of his drawn hip-to-shoulder height, at every late-recovery and catch phase, facing and skin.
+            BoatVisualDef dory = Dory();
+            float share = dory.Rowing.HandAboveHipLineShareFromAhead;
+            Assert.That(share, Is.GreaterThan(0f), "the drawn hand height over the hips is data");
+            float elev = dory.ArtBakeElevationDegrees * Mathf.Deg2Rad;
+            // heading 0: the bow up the screen, the camera over the stern and raised by the bake elevation
+            Vector3 screenUp = new Vector3(0f, Mathf.Sin(elev), Mathf.Cos(elev));
+            float[] aheadFacings = { 180f, 168.75f, 191.25f };
+            var failures = new StringBuilder();
+            int skins = 0, checks = 0;
+            float worst = float.PositiveInfinity;
+            foreach (CharacterSkinDef skin in RowingSkins())
+            {
+                skins++;
+                var solver = new RowingPoseSolver(skin.Bones, RowingBodyVolume.Of(skin));
+                int hipL = skin.IndexOfBone(RowingPoseSolver.HipLId), hipR = skin.IndexOfBone(RowingPoseSolver.HipRId);
+                int shL = skin.IndexOfBone(RowingPoseSolver.ShoulderLId), shR = skin.IndexOfBone(RowingPoseSolver.ShoulderRId);
+                var world = new Matrix4x4[skin.Bones.Length];
+                foreach (float yaw in aheadFacings)
+                {
+                    Quaternion toHull = Quaternion.AngleAxis(yaw, Vector3.forward);
+                    float Drawn(int b) => Vector3.Dot(Root + toHull * P(world, b), screenUp);
+                    for (int i = 0; i < Phases; i++)
+                    {
+                        float s = (float)i / Phases;
+                        // late recovery (from 0.7 of the stroke) through the catch and the blade's entry
+                        if (s < LateRecoveryFrom && s > CatchEntryTo) continue;
+                        Compose(skin, s, yaw, world);
+                        RowingPoseSolver.Targets t = FigureTargets(StationAt(dory, s), s, yaw);
+                        solver.Solve(world, in t);
+                        float hip = Mathf.Max(Drawn(hipL), Drawn(hipR));
+                        float shoulders = 0.5f * (Drawn(shL) + Drawn(shR));
+                        float palm = Mathf.Min(Drawn(solver.PalmLeft), Drawn(solver.PalmRight));
+                        float drawnShare = (palm - hip) / Mathf.Max(1e-4f, shoulders - hip);
+                        checks++;
+                        worst = Mathf.Min(worst, drawnShare);
+                        if (drawnShare < share)
+                            failures.AppendLine($"{skin.Id} facing {yaw} phase {s:0.000}: palms drawn {drawnShare:0.00} of hip-to-shoulder over the hips (< {share})");
+                    }
+                }
+            }
+            TestContext.WriteLine($"[row-ahead] worst drawn share over the hips {worst:0.000} (margin {share}) over {checks} checks");
+            Assert.That(skins, Is.GreaterThan(0), "no committed skin carries row_oars");
+            Assert.That(checks, Is.GreaterThan(0));
+            Assert.That(failures.Length, Is.EqualTo(0), failures.ToString());
+        }
+
+        /// <summary>The late recovery starts here (stroke turns from the catch).</summary>
+        private const float LateRecoveryFrom = 0.70f;
+
+        /// <summary>The blade's entry runs to here past the catch (stroke turns).</summary>
+        private const float CatchEntryTo = 0.06f;
+
+        /// <summary>A millimetre of numerical slack on a clearance the solve bisects toward.</summary>
+        private const float ClearSlack = 1e-3f;
+
+        private static float SegmentDistance(Vector3 p, Vector3 a, Vector3 b)
+        {
+            Vector3 ab = b - a;
+            float t = Mathf.Clamp01(Vector3.Dot(p - a, ab) / Mathf.Max(1e-9f, ab.sqrMagnitude));
+            return (p - (a + t * ab)).magnitude;
+        }
+
+        [Test]
+        public void TheLoomPassesOverHisKnees_ByTheStationsMargin_AndHisHandsRideAboveThem()
+        {
+            // The owner saw the near oar's shaft drawn across his knees and his hands in his lap on the
+            // recovery. The loom, lock to handle end, must clear each knee centre by the station's data
+            // margin, and the palms must ride above the knees, through the whole stroke, for every skin.
+            BoatVisualDef dory = Dory();
+            float margin = dory.Rowing.KneeClearanceMeters;
+            Assert.That(margin, Is.GreaterThan(0f), "the dory's knee clearance is data");
+            Vector3 portLock = dory.OarPortMesh.PivotLocalMeters, starLock = dory.OarStarMesh.PivotLocalMeters;
+            var failures = new StringBuilder();
+            int skins = 0;
+            foreach (CharacterSkinDef skin in RowingSkins())
+            {
+                skins++;
+                var solver = new RowingPoseSolver(skin.Bones, RowingBodyVolume.Of(skin));
+                int kneeL = skin.IndexOfBone(RowingPoseSolver.KneeLId), kneeR = skin.IndexOfBone(RowingPoseSolver.KneeRId);
+                var world = new Matrix4x4[skin.Bones.Length];
+                foreach (float yaw in Facings)
+                {
+                    Quaternion inv = Quaternion.Inverse(Quaternion.AngleAxis(yaw, Vector3.forward));
+                    for (int i = 0; i < Phases; i++)
+                    {
+                        float s = (float)i / Phases;
+                        DoryOarMeshPose.Pose pose = DoryOarMeshPose.Row(s + DoryOarMeshPose.RowCatchTurns);
+                        Compose(skin, s, yaw, world);
+                        RowingPoseSolver.Targets t = FigureTargets(StationAt(dory, s), s, yaw);
+                        solver.Solve(world, in t);
+
+                        Vector3 pDir = DoryOarMeshPose.Direction(DoryOarMeshLayer.PortSide, pose.SweepDegrees, pose.DipDegrees);
+                        Vector3 sDir = DoryOarMeshPose.Direction(DoryOarMeshLayer.StarboardSide, pose.SweepDegrees, pose.DipDegrees);
+                        Vector3 pA = inv * (portLock - Root), pB = inv * (portLock - RigLoomInboardMeters * pDir - Root);
+                        Vector3 sA = inv * (starLock - Root), sB = inv * (starLock - RigLoomInboardMeters * sDir - Root);
+                        float palmZ = Mathf.Min(P(world, solver.PalmLeft).z, P(world, solver.PalmRight).z);
+                        foreach (int knee in new[] { kneeL, kneeR })
+                        {
+                            Vector3 k = P(world, knee);
+                            float d = Mathf.Min(SegmentDistance(k, pA, pB), SegmentDistance(k, sA, sB));
+                            if (d < margin)
+                                failures.AppendLine($"{skin.Id} facing {yaw} phase {s:0.000}: loom {d:0.000} m from a knee (< {margin})");
+                            if (palmZ <= k.z)
+                                failures.AppendLine($"{skin.Id} facing {yaw} phase {s:0.000}: palms {palmZ - k.z:0.000} m below a knee (in his lap)");
+                        }
+                    }
+                }
+            }
+            Assert.That(skins, Is.GreaterThan(0), "no committed skin carries row_oars");
+            Assert.That(failures.Length, Is.EqualTo(0), failures.ToString());
+        }
+
+        [Test]
+        public void EveryRowingSkin_HandsAndForearms_StayOutsideHisTorso_ByTheMargin_HandsStillOnTheGrips()
+        {
+            // The owner: "his arms transfer through his body". With the skin's own torso the solve keeps
+            // the palm, the forearm and the elbow end of the upper arm outside it by the station's margin
+            // (elbows back and out at the finish), and the hands still hold the handles.
+            BoatVisualDef dory = Dory();
+            float margin = dory.Rowing.BodyClearanceMeters;
+            Assert.That(margin, Is.GreaterThan(0f), "the dory's body clearance is data");
+            var failures = new StringBuilder();
+            int skins = 0;
+            foreach (CharacterSkinDef skin in RowingSkins())
+            {
+                skins++;
+                RowingBodyVolume body = RowingBodyVolume.Of(skin);
+                Assert.That(body, Is.Not.Null, $"{skin.Id}: the bind mesh must be readable to measure the torso");
+                Assert.That(body.IsUsable, Is.True, $"{skin.Id}: a trunk volume");
+                var solver = new RowingPoseSolver(skin.Bones, body);
+                var world = new Matrix4x4[skin.Bones.Length];
+                foreach (float yaw in Facings)
+                {
+                    for (int i = 0; i < Phases; i++)
+                    {
+                        float s = (float)i / Phases;
+                        Compose(skin, s, yaw, world);
+                        RowingPoseSolver.Targets t = FigureTargets(StationAt(dory, s), s, yaw);
+                        RowingPoseSolver.Result r = solver.Solve(world, in t);
+                        float fL = solver.ForearmClearance(world, true), fR = solver.ForearmClearance(world, false);
+                        float uL = solver.UpperArmClearance(world, true), uR = solver.UpperArmClearance(world, false);
+                        float ends = solver.HandleEndClearance(world, in t);
+                        if (fL < margin - ClearSlack || fR < margin - ClearSlack || uL < -ClearSlack || uR < -ClearSlack || ends < margin - ClearSlack)
+                            failures.AppendLine($"{skin.Id} facing {yaw} phase {s:0.000}: hand/forearm L {fL:0.000} R {fR:0.000}, elbow L {uL:0.000} R {uR:0.000}, " +
+                                                $"handle ends {ends:0.000} m (lean back {r.ClearLeanDegrees:0.0}, turn {r.ClearTwistDegrees:0.0}, " +
+                                                $"elbows out {r.ElbowOutLeft:0.00}/{r.ElbowOutRight:0.00})");
+                        float missL = (P(world, solver.PalmLeft) - t.GripLeft).magnitude;
+                        float missR = (P(world, solver.PalmRight) - t.GripRight).magnitude;
+                        if (missL > HalfPixelMeters || missR > HalfPixelMeters)
+                            failures.AppendLine($"{skin.Id} facing {yaw} phase {s:0.000}: palm miss L {missL:0.0000} R {missR:0.0000} m");
+                    }
+                }
+            }
+            Assert.That(skins, Is.GreaterThan(0));
+            Assert.That(failures.Length, Is.EqualTo(0), failures.ToString());
+        }
+
+        [Test]
+        public void TheTorsoVolume_ExcludesASkirt_AndItsInsideReadsNegative()
+        {
+            var skin = AssetDatabase.LoadAssetAtPath<CharacterSkinDef>(SkinFolder + "/skipper.asset");
+            RowingBodyVolume body = RowingBodyVolume.Of(skin);
+            Assert.That(body.IsUsable, Is.True);
+            var world = new Matrix4x4[skin.Bones.Length];
+            skin.TryGetClip(RowingFigure.RowStrokeKey, out var clip);
+            CharacterSkinPose.ComposeWorld(clip, 0, skin.Bones, world);
+            int chestBone = skin.IndexOfBone(RowingBodyVolume.ChestId);
+            Assert.That(body.TryGetBox(2, out Vector3 cc, out _), Is.True, "the chest carries a volume");
+            Vector3 chest = world[chestBone].MultiplyPoint3x4(cc);
+            Assert.That(body.Outside(world, chest), Is.LessThan(0f), "the middle of the chest is inside the trunk");
+            Assert.That(body.Outside(world, chest + new Vector3(1f, 0f, 0f)), Is.GreaterThan(0.5f), "a metre to the side is outside");
+            Assert.That(body.TryGetBox(0, out Vector3 c, out Vector3 e), Is.True, "the pelvis carries a volume");
+            Assert.That(c.z - e.z, Is.GreaterThanOrEqualTo(
+                (P(world, skin.IndexOfBone(RowingPoseSolver.HipLId)) - P(world, skin.IndexOfBone(RowingPoseSolver.PelvisId))).z - Rigid),
+                "the pelvis volume stops at the hips (no skirt)");
+        }
+
+        [Test]
+        public void OarsLetGo_HeRestsHisHandsOnHisThighs_Slumped_AndBreathes()
+        {
+            BoatVisualDef dory = Dory();
+            RowingStationConfig st = dory.Rowing;
+            var failures = new StringBuilder();
+            foreach (CharacterSkinDef skin in RowingSkins())
+            {
+                var solver = new RowingPoseSolver(skin.Bones, RowingBodyVolume.Of(skin));
+                int hipL = skin.IndexOfBone(RowingPoseSolver.HipLId), kneeL = skin.IndexOfBone(RowingPoseSolver.KneeLId);
+                int hipR = skin.IndexOfBone(RowingPoseSolver.HipRId), kneeR = skin.IndexOfBone(RowingPoseSolver.KneeRId);
+                int head = skin.IndexOfBone(RowingBodyVolume.ChestId);
+                var world = new Matrix4x4[skin.Bones.Length];
+                foreach (float yaw in Facings)
+                {
+                    float chestIn = 0f, chestOut = 0f;
+                    foreach (float breath in new[] { -1f, 1f })
+                    {
+                        RowingTargets hull = StationAt(dory, 0.5f, portRowing: false, starRowing: false);
+                        hull.RestWeight = 1f;
+                        hull.RestBreath = breath;
+                        RowingPoseSolver.Targets t = RowingPoseSolver.ToFigure(hull, Root, yaw, 0f);
+                        Assert.That(t.ThighRest, Is.True);
+                        Assert.That(t.RestLeanDegrees, Is.EqualTo(breath * st.RestBreathDegrees - st.RestSlumpDegrees).Within(1e-4f));
+                        Compose(skin, 0f, yaw, world);
+                        solver.Solve(world, in t);
+
+                        Vector3 wantL = Vector3.Lerp(P(world, hipL), P(world, kneeL), st.RestHandAlongThigh) + new Vector3(0f, 0f, st.RestHandAboveThighMeters);
+                        Vector3 wantR = Vector3.Lerp(P(world, hipR), P(world, kneeR), st.RestHandAlongThigh) + new Vector3(0f, 0f, st.RestHandAboveThighMeters);
+                        float missL = (P(world, solver.PalmLeft) - wantL).magnitude, missR = (P(world, solver.PalmRight) - wantR).magnitude;
+                        if (missL > HalfPixelMeters || missR > HalfPixelMeters)
+                            failures.AppendLine($"{skin.Id} facing {yaw} breath {breath}: hands off the thighs L {missL:0.000} R {missR:0.000}");
+                        float fL = solver.ForearmClearance(world, true), fR = solver.ForearmClearance(world, false);
+                        float uL = solver.UpperArmClearance(world, true), uR = solver.UpperArmClearance(world, false);
+                        if (fL < st.BodyClearanceMeters - ClearSlack || fR < st.BodyClearanceMeters - ClearSlack || uL < -ClearSlack || uR < -ClearSlack)
+                            failures.AppendLine($"{skin.Id} facing {yaw} breath {breath}: resting arm in the torso: hand/forearm L {fL:0.000} R {fR:0.000}, elbow L {uL:0.000} R {uR:0.000}");
+                        if (breath < 0f) chestIn = P(world, head).y; else chestOut = P(world, head).y;
+                    }
+                    if (Mathf.Abs(chestOut - chestIn) < 1e-3f)
+                        failures.AppendLine($"{skin.Id} facing {yaw}: the breath does not move him (a held pose)");
+                }
+            }
+            Assert.That(failures.Length, Is.EqualTo(0), failures.ToString());
+        }
+
+        [Test]
+        public void ResterBlades_SettleToTheRestDip_ByTheRestWeight()
+        {
+            BoatVisualDef dory = Dory();
+            var stroke = DoryOarMeshPose.Row(0.3f);
+            Assert.That(DoryOarMeshLayer.Rested(stroke, 0f, dory.Rowing.RestBladeDipDegrees).DipDegrees, Is.EqualTo(stroke.DipDegrees));
+            var full = DoryOarMeshLayer.Rested(stroke, 1f, dory.Rowing.RestBladeDipDegrees);
+            Assert.That(full.DipDegrees, Is.EqualTo(dory.Rowing.RestBladeDipDegrees).Within(1e-5f));
+            Assert.That(full.SweepDegrees, Is.EqualTo(stroke.SweepDegrees), "the rest keeps the stroke's sweep");
+            var half = DoryOarMeshLayer.Rested(stroke, 0.5f, dory.Rowing.RestBladeDipDegrees);
+            Assert.That(half.DipDegrees, Is.EqualTo(0.5f * (stroke.DipDegrees + dory.Rowing.RestBladeDipDegrees)).Within(1e-4f));
+        }
+
+        [Test]
+        public void TheCasualStyle_RestsWithAWeightThatEasesInAndOut_AndBreathesOncePerRest()
+        {
+            // The casual style's shape (Data/Boats rowing_style casual: rest 0.35 at 0.75, ease 0.6).
+            RowingStyle casual = RowingStyle.Build(0.5f, RowingStyle.CatchSpan, RowingStyle.PullSpan, RowingStyle.ReleaseSpan,
+                                                   RowingStyle.RecoverySpan, 0.35f, 0.75f, 0.6f, 0.6f, 0f, 1f);
+            Assert.That(casual.RestShare, Is.GreaterThan(0f));
+            float prev = casual.RestWeight(0f);
+            float peak = 0f, minBreath = 0f, maxBreath = 0f;
+            for (int i = 1; i <= 2000; i++)
+            {
+                float s = i / 2000f;
+                float w = casual.RestWeight(s);
+                Assert.That(w, Is.InRange(0f, 1f));
+                Assert.That(Mathf.Abs(w - prev), Is.LessThan(0.02f), $"rest weight jumps at {s}");
+                prev = w;
+                peak = Mathf.Max(peak, w);
+                float b = casual.RestBreath(s);
+                minBreath = Mathf.Min(minBreath, b);
+                maxBreath = Mathf.Max(maxBreath, b);
+            }
+            Assert.That(peak, Is.EqualTo(1f).Within(1e-4f), "a full rest");
+            Assert.That(maxBreath, Is.GreaterThan(0.9f));
+            Assert.That(minBreath, Is.LessThan(-0.9f));
+            Assert.That(RowingStyle.Unstyled.RestWeight(0.8f), Is.EqualTo(0f), "a stroke with no rest never rests");
+        }
+
+        [Test]
+        public void LetGoBreath_IsASlowSine_OfThePresentationClock()
+        {
+            Assert.That(RowingFigureReader.LetGoBreath(0d, 4f), Is.EqualTo(0f).Within(1e-5f));
+            Assert.That(RowingFigureReader.LetGoBreath(1d, 4f), Is.EqualTo(1f).Within(1e-4f));
+            Assert.That(RowingFigureReader.LetGoBreath(3d, 4f), Is.EqualTo(-1f).Within(1e-4f));
+            Assert.That(RowingFigureReader.LetGoBreath(1d + 4e6, 4f), Is.EqualTo(1f).Within(1e-3f), "stable after days of play");
+            Assert.That(RowingFigureReader.LetGoBreath(5d, 0f), Is.EqualTo(0f));
+        }
+
+        [Test]
+        public void TheSolveWithHisTorso_IsDeterministic_AndDoesNotAllocate()
+        {
+            BoatVisualDef dory = Dory();
+            var skin = AssetDatabase.LoadAssetAtPath<CharacterSkinDef>(SkinFolder + "/skipper.asset");
+            RowingBodyVolume body = RowingBodyVolume.Of(skin);
+            var solver = new RowingPoseSolver(skin.Bones, body);
+            var a = new Matrix4x4[skin.Bones.Length];
+            var b = new Matrix4x4[skin.Bones.Length];
+            for (int i = 0; i < Phases; i++)
+            {
+                float s = (float)i / Phases;
+                RowingPoseSolver.Targets t = FigureTargets(StationAt(dory, s), s, 180f);
+                Compose(skin, s, 180f, a);
+                solver.Solve(a, in t);
+                Compose(skin, s, 180f, b);
+                new RowingPoseSolver(skin.Bones, RowingBodyVolume.Of(skin)).Solve(b, in t);
+                for (int k = 0; k < a.Length; k++)
+                    Assert.That(a[k], Is.EqualTo(b[k]), $"phase {s} bone {k}");
+            }
+            // The finish, where the clear step works hardest.
+            const float finish = 0.5f;
+            RowingPoseSolver.Targets tf = FigureTargets(StationAt(dory, finish), finish, 180f);
+            Compose(skin, finish, 180f, a);
+            solver.Solve(a, in tf);
+            Compose(skin, finish, 180f, a);
+            Assert.That(() => { solver.Solve(a, in tf); }, Is.Not.AllocatingGCMemory());
+        }
+
+        [Test]
+        public void TheNpcFigurePath_IsSolvedOntoTheStation_LikeThePlayers()
+        {
+            // Computer-run rowers draw through CharacterFigurePresenter; the player through
+            // DeckRiderMeshPresenter. Both must hand the station's targets to the figure's solve, or the
+            // NPC holds the air beside the handles again. A text guard on the one call that does it.
+            string npc = File.ReadAllText("Assets/_Project/Code/Art/CharacterFigurePresenter.cs");
+            string player = File.ReadAllText("Assets/_Project/Code/Player/DeckRiderMeshPresenter.cs");
+            foreach (var (name, text) in new[] { ("CharacterFigurePresenter", npc), ("DeckRiderMeshPresenter", player) })
+            {
+                Assert.That(text, Does.Contain("_rowing.TryTargets("), $"{name} reads the rowing station");
+                Assert.That(text, Does.Contain("life.Rowing = true"), $"{name} hands the targets to the solve");
+                Assert.That(text, Does.Contain("life.Row = row"), $"{name} hands the targets to the solve");
+            }
+            string renderer = File.ReadAllText("Assets/_Project/Code/Art/IsoCharacterFigureRenderer.cs");
+            Assert.That(renderer, Does.Contain("RowingBodyVolume.Of(def)"), "every figure's solve knows its own torso");
         }
     }
 }

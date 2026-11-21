@@ -653,6 +653,10 @@ Shader "HiddenHarbours/Water"
         _StarTwinkleSpeed ("Star twinkle speed", Float) = 1.4
         _NightStart       ("Night content start (darkness 0..1 where moon/stars fade in)", Range(0,1)) = 0.35
         _NightSoftness    ("Night content dusk ramp width", Range(0,1)) = 0.3
+        // The moon/stars must not draw while the sun is still up: darkness alone let a dim dusk tint raise
+        // them at 20:00 (grey star squares, a pale moon blob). Fades night content to 0 as the sun's
+        // elevation climbs from 0 to this value. 0 = off (darkness-only gate, the old look).
+        _NightSunCutoff   ("Sun elevation above which no moon or stars draw (0 = off)", Range(0,0.5)) = 0.1
         _SunGlitterStrength ("Sun glitter path intensity (golden hour; 0 = off)", Range(0,2)) = 0.6
         _SunGlitterColor  ("Sun glitter color (warm gold)", Color) = (1.0, 0.82, 0.55, 1.0)
 
@@ -1290,6 +1294,10 @@ Shader "HiddenHarbours/Water"
             // Its own sampler, so the read keeps the map's import filter: codes are filtered, THEN
             // decoded, as PaintedStillWater does on the CPU.
             #include "Assets/_Project/Art/Shaders/Include/StillWater.hlsl"
+            // THE SEA'S REACH (owner, 2026-11-19: cut-off pools stay still): SeaReach01(), the swell share
+            // a point receives at the drawn level, from the region's flooded sill map (SeaReachGlobals).
+            // Unset or off the map it is exactly 1: every multiply by it is the older picture, bit for bit.
+            #include "Assets/_Project/Art/Shaders/Include/SeaReach.hlsl"
             #include "Assets/_Project/Art/Shaders/Include/DaylightSwellRead.hlsl"
 
             // ==== W4-4b — THE FLOOR IN THE SHALLOWS (ruling 7 of 2026-10-10: "Shallows: 2B") ==================
@@ -1803,6 +1811,7 @@ Shader "HiddenHarbours/Water"
                 float  _StarTwinkleSpeed;
                 float  _NightStart;
                 float  _NightSoftness;
+                float  _NightSunCutoff;
                 float  _SunGlitterStrength;
                 float4 _SunGlitterColor;
                 float  _WaterLevel;
@@ -4594,7 +4603,12 @@ Shader "HiddenHarbours/Water"
                 float darkness = saturate(1.0 - tintLum);
                 float lo = saturate(_NightStart);
                 float hi = saturate(_NightStart + max(_NightSoftness, 1e-4));
-                return smoothstep(lo, hi, darkness);
+                float night = smoothstep(lo, hi, darkness);
+                // Sun still up -> no night content (twin: WaterReflection.NightFactor with sunElevation).
+                // _SunElevation 0 (unset, or the horizon) leaves the darkness gate as it was.
+                if (_NightSunCutoff > 1e-4)
+                    night *= 1.0 - smoothstep(0.0, _NightSunCutoff, _SunElevation);
+                return night;
             }
 
             // ---- sun glitter gate: the GOLDEN-HOUR window over the sun's elevation ---------------------------
@@ -5431,6 +5445,12 @@ Shader "HiddenHarbours/Water"
                 // cost note on WaveFieldSample). Exactly 1, and not one texture tap, while the model is off.
                 float waveFetch01 = FetchMarch01(worldXY);
                 FetchFactors waveFetchFactors = FetchFactorsFrom(waveFetch01, SwellShelter01(worldXY));
+                // THE SEA'S REACH: a pool the falling tide has cut off gets none of the sea's swell. Zeroing
+                // the fetch factors zeroes every wave-field read below (lift, slope, crests, the swell read);
+                // the surf, the wash and the fringe are gated by name further down. Exactly 1 when unbound.
+                float seaReach = SeaReach01(worldXY, _WaterLevel);
+                waveFetchFactors.low *= seaReach;
+                waveFetchFactors.high *= seaReach;
                 float waveFetchEnv = FetchFactorAt(waveFetchFactors, clamp((int)(_WaveFieldParams.w + 0.5), 0, 7));
                 // The SHORE's fetch: what the surf, the wash and the drawn edge read. It is this pixel's own
                 // envelope until the surf block below moves it to the probe point a bore was born near.
@@ -5464,6 +5484,7 @@ Shader "HiddenHarbours/Water"
                 // height read/clip (the consumer audit's one excluded read; see the PR).
                 float2 warp = float2(swell, ValueNoise(Pixelize(worldXY * _NoiseScale + 7.3)) - 0.5)
                               * _Chop * 0.5;
+                warp *= seaReach;   // a cut-off pool's waterline does not shimmer with the sea's swell
 
                 // ---- layer 1 depth gradient -------------------------------------------------------------------
                 float elevation = SeabedElevation(worldXY + warp);
@@ -5628,6 +5649,9 @@ Shader "HiddenHarbours/Water"
                     {
                         float2 fetchProbeXY = surfEvalXY - surfDir * surfFetchProbeM;
                         surfFetchFactors = FetchFactorsFrom(FetchMarch01(fetchProbeXY), SwellShelter01(fetchProbeXY));
+                        // The probe is the sea's energy, but THIS pixel's reach still decides what arrives.
+                        surfFetchFactors.low *= seaReach;
+                        surfFetchFactors.high *= seaReach;
                         surfFetchEnv = FetchFactorAt(surfFetchFactors, clamp((int)(_WaveFieldParams.w + 0.5), 0, 7));
                     }
                     // THE SHORE ZONE (v8; v9 reads it before the gate): where the ground _WashSurfReach metres
@@ -5830,6 +5854,18 @@ Shader "HiddenHarbours/Water"
                         }
                     }
                 }
+                // THE SEA'S REACH on the surf: the break solve does not fall to 0 with the fetch alone, so its
+                // outputs are scaled by name. Through the reconnect blend they fade in together; at 1 they are
+                // untouched (x * 1.0 is exact).
+                surfBreaking *= seaReach;
+                surfAlive *= seaReach;
+                surfCover *= seaReach;
+                surfLip *= seaReach;
+                surfBarrel *= seaReach;
+                surfCoverShore *= seaReach;
+                surfRunUpM *= seaReach;
+                leftFoamReachM *= seaReach;
+                surfFrontSlope *= seaReach;
                 // How much of the fringe the physical whitewater has taken over here.
                 float surfSupersede = saturate(surfBreaking * surfAlive * saturate(_SurfStrength)
                                                * saturate(_SurfSupersedeFringe));
@@ -5867,6 +5903,7 @@ Shader "HiddenHarbours/Water"
                                           * swashSlope * saturate(_SwashEdgeShift) * leeSwash,
                                       -cap, cap);
                 }
+                edgeSwash *= seaReach;   // a cut-off pool's drawn edge holds still (1 = unchanged)
                 // The EXACT edge. Everything past the coarse pre-clip above that the swash has not actually
                 // run up onto is dry after all.
                 // ADR 0040 rev 3: where a bore is alive, the drawn edge rides its RUN-UP — metres of level,
@@ -5903,6 +5940,7 @@ Shader "HiddenHarbours/Water"
                     ? saturate(SurfBreaking01(SURF_EDGE_REF_DEPTH, surfFetchEnv)
                                * saturate(_SurfStrength) * saturate(_SurfRunUpStrength))
                     : 0.0;                                  // the surf block's own reach gate (l.4613)
+                boreEdgeBlend *= seaReach;                  // no bore runs up a cut-off pool's rim
                 float cosmeticEdgeSwash = edgeSwash;
                 edgeSwash = lerp(edgeSwash, boreEdgeShift, boreEdgeBlend);
                 // THE FOAM A WAVE LEAVES (owner clip review 2026-11-15): sand the last crest's run-up reached and the
@@ -5936,6 +5974,7 @@ Shader "HiddenHarbours/Water"
                 // language too (_WashLeeShare), so the shore is one line and one see-through sheet throughout.
                 float washSeaBreaks = (_BreakerOuter.w > 0.5 && depth > -surfBeachReach)
                                     ? saturate(_SurfStrength) * saturate(_SurfRunUpStrength) * saturate(_WashLeeShare) : 0.0;
+                washSeaBreaks *= seaReach;   // a cut-off pool wears no wash
                 float washPresence = max(smoothstep(0.0, max(_WashPresenceRamp, 1e-3), boreEdgeBlend), washSeaBreaks);
                 float washOnSand = washPresence * (1.0 - smoothstep(0.0, max(_WashSeawardDepth, 1e-3), depth));
                 // THE LINE IS MEASURED ON THE GROUND, PER PIXEL (v7, the editor look of 11-15): a wet pixel is on
@@ -6558,6 +6597,20 @@ Shader "HiddenHarbours/Water"
                     float caustic = HHCausticVeins(worldXY, t, 0.0,
                         TEXTURE2D_ARGS(_CausticTex, sampler_CausticTex));
                 #endif
+                    // Cut-off pools: the seabed light holds still. The drifting veins are the moving sea's;
+                    // a stranded pool shows the same net frozen, cross-faded by the reach (no pop on
+                    // reconnection). Exactly the drifting veins wherever the reach is 1.
+                    if (seaReach < 0.999)
+                    {
+                    #if defined(_USE_CAUSTICTEX)
+                        float causticStill = HHCausticVeins(worldXY, 0.0, 1.0,
+                            TEXTURE2D_ARGS(_CausticTex, sampler_CausticTex));
+                    #else
+                        float causticStill = HHCausticVeins(worldXY, 0.0, 0.0,
+                            TEXTURE2D_ARGS(_CausticTex, sampler_CausticTex));
+                    #endif
+                        caustic = lerp(causticStill, caustic, seaReach);
+                    }
                     // ---- ADR 0027 #2: FIELD-DRIVEN caustics (default OFF = the independent noise above) ----
                     // Caustics are focused light: brightest where the surface is locally CONVEX toward the
                     // sun (a dome focuses). The local curvature is the finite-difference LAPLACIAN of the
@@ -6726,6 +6779,7 @@ Shader "HiddenHarbours/Water"
                 // the foam and the edge under it run up and back together.
                 float fringeRoughness = FringeLeeReading(_Roughness, _WaveFetchFringe.x, leeOpen);
                 swashGate *= leeSwash;
+                swashGate *= seaReach;   // a cut-off pool's foam band does not run up and back
                 // shoreSlope (computed with the fringe above) turns the swash's depth amplitude into a
                 // CONTOUR excursion in metres — on a gently painted bar the run-up no longer sweeps a
                 // metres-wide worm tongue (the 2026-07-23 swirl defect); a steep edge keeps today's look.
@@ -6829,6 +6883,9 @@ Shader "HiddenHarbours/Water"
                     // shore quantity), so it cannot leave a stranded strip where the fragment gate dips.
                     // A wash with its line dialled off (_WashLineOpacity 0) keeps the fringe as its edge.
                     foamCoverage *= 1.0 - washPresence * step(0.001, _WashLineOpacity);
+                    // The shore line (both looks, the older fringe and the one sheet) is the SEA's surf: a
+                    // cut-off pool's rim carries none. 1 = unchanged.
+                    foamCoverage *= seaReach;
                     // B1 FRINGE COVER BEGIN
                     // The remaining fringe announces the born front; the existing sheet carries
                     // its trail. Older deposited foam is untouched (ADR 0040, B1).
@@ -7544,7 +7601,12 @@ Shader "HiddenHarbours/Water"
                 // derivatives. _HeightTex carries no mips, so LOD 0 IS the texture and this reads the same
                 // elevations the fragment does: the displaced surface rides the lee the fragment draws.
                 float vFetchEnv = FetchMarch01Lod(ground);
-                WaveFieldSample(ground, vFreqScale, FetchFactorsFrom(vFetchEnv, SwellShelter01Lod(ground)), vHeight, vSlope, vCrest, vPrimCos);
+                // THE SEA'S REACH (the fragment's twin): a cut-off pool's vertices ride no swell.
+                FetchFactors vFetchFactors = FetchFactorsFrom(vFetchEnv, SwellShelter01Lod(ground));
+                float vSeaReach = SeaReach01(ground, _WaterLevel);
+                vFetchFactors.low *= vSeaReach;
+                vFetchFactors.high *= vSeaReach;
+                WaveFieldSample(ground, vFreqScale, vFetchFactors, vHeight, vSlope, vCrest, vPrimCos);
 
                 float stillDepth = _WaterLevel - SeabedElevationLod(ground);
                 float fade = ShoreFade01(stillDepth, _ShoreFadeBand);

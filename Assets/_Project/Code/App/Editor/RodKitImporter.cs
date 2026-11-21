@@ -229,6 +229,24 @@ namespace HiddenHarbours.App.Editor
         }
 
         /// <summary>
+        /// The rig scale each rung of <paramref name="rigKey"/> was drawn at, by suffix ("" for the middle
+        /// rung), read off the same sidecar as <see cref="RungWeights"/>. Empty when the species publishes
+        /// no ladder; a rung that names no scale is left out, never guessed.
+        /// </summary>
+        public static Dictionary<string, float> RungScales(string rigKey)
+        {
+            var result = new Dictionary<string, float>(System.StringComparer.Ordinal);
+            var species = MiniJson.Dict(ParseJson(FishAnchorsPath), "species");
+            if (species == null || !species.TryGetValue(rigKey, out object node)) return result;
+            var ladder = MiniJson.List(node, "rungs");
+            if (ladder == null) return result;
+            foreach (object r in ladder)
+                if (r is Dictionary<string, object> d && d.ContainsKey("scale"))
+                    result[MiniJson.String(d, "suffix") ?? ""] = (float)MiniJson.Float(d, "scale");
+            return result;
+        }
+
+        /// <summary>
         /// The fish rig's size ladder for one species as (suffix, kg) pairs, ascending, read from the
         /// published sidecar: the weights each rung was DRAWN at. Empty when the sidecar or species is
         /// absent, or it predates the ladder.

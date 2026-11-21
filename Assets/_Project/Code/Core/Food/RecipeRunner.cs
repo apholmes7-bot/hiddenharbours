@@ -240,8 +240,9 @@ namespace HiddenHarbours.Core
             CookRefusal refusal = Check(station, stationKey, out CookPlan plan);
             if (refusal != CookRefusal.None) return Refuse(station, stationKey, refusal);
 
+            CatchItem took = default;
             bool taken = plan.FromHand
-                ? _hands() != null && _hands().TryTakeFromHand(out _)
+                ? _hands() != null && _hands().TryTakeFromHand(out took)
                 : SupplyLocker.TrySpend(_save()?.Current, plan.InputItemId);
             if (!taken) return Refuse(station, stationKey, CookRefusal.NothingToCook);
 
@@ -249,7 +250,8 @@ namespace HiddenHarbours.Core
             var job = new CookJob(station.Id, stationKey, plan.Recipe, readyAt);
             _jobs[stationKey] = job;
             CookJobSave.Write(_session as SaveData, job);
-            EventBus.Publish(new FoodCookStarted(station.Id, stationKey, plan.Recipe.Id, plan.InputItemId, readyAt));
+            EventBus.Publish(new FoodCookStarted(station.Id, stationKey, plan.Recipe.Id, plan.InputItemId, readyAt,
+                                                 plan.FromHand ? took.WeightKg : 0f));
             return CookRefusal.None;
         }
 
