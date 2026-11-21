@@ -92,6 +92,17 @@ namespace HiddenHarbours.Core
             return Mathf.Sqrt(Gravity * wavelength / (2f * Mathf.PI));
         }
 
+        /// <summary>
+        /// The speed a ring's crests run at: <paramref name="phaseSpeed"/> held to <c>MaxCrestHertz · λ</c>
+        /// (when that dial is above 0), so no more than that many crests a second pass one spot of water.
+        /// A short wave run at a fast hull's speed flashes light and dark; held, it crawls.
+        /// </summary>
+        public static float CrestSpeed(float phaseSpeed, float wavelength, in HullWaveSettings s)
+        {
+            if (s.MaxCrestHertz <= 0f || wavelength <= 0f) return phaseSpeed;
+            return Mathf.Min(phaseSpeed, s.MaxCrestHertz * wavelength);
+        }
+
         /// <summary>Froude number on length, <c>V / √(gL)</c>. 0 for no length.</summary>
         public static float Froude(float speed, float lengthMetres)
         {
