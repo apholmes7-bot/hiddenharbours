@@ -134,6 +134,11 @@ namespace HiddenHarbours.World
         private Func<IReadOnlyList<CaughtSpeciesEntry>> _caught;
         private IFlagStore _flags;
 
+        // The Gear page: what he holds (asked fresh on every open) and the page's authored shape.
+        private INotebookGearSource _gearSource;
+        private NotebookGearPageDef _gearPage;
+        private readonly List<NotebookGearHolding> _gearHeld = new List<NotebookGearHolding>();
+
         // ---- the purse (the 2026-08-22 diegetic ruling) ---------------------------------------------
         // The money came OFF the HUD band and lives here. Tracked rather than read straight from the
         // wallet at draw time because the wallet is OPTIONAL in the greybox and in EditMode, and a
@@ -284,6 +289,34 @@ namespace HiddenHarbours.World
             _contentWired = true;
         }
 
+        /// <summary>
+        /// Tell the book where the Gear page's holdings and shape come from. A test or tooling hands in a
+        /// fake source; <b>null puts the running game's back</b> (the save's lockers and the shipped page
+        /// Def), so a test that borrowed the page cannot leave the installed book without one.
+        /// <see cref="WireContent"/> alone leaves the Gear page off, so a book wired for an exact tab set
+        /// keeps exactly that set.
+        /// </summary>
+        public void WireGear(INotebookGearSource source, NotebookGearPageDef page = null)
+        {
+            if (source == null)
+            {
+                _gearSource = NotebookContentSource.Gear();
+                _gearPage = NotebookContentSource.GearPage();
+                return;
+            }
+
+            _gearSource = source;
+            _gearPage = page;
+        }
+
+        /// <summary>The index of the stub with this key in <see cref="Tabs"/>, or -1.</summary>
+        public int TabIndexOf(string key)
+        {
+            for (int i = 0; i < _tabs.Count; i++)
+                if (_tabs[i].Key == key) return i;
+            return -1;
+        }
+
         // ---- what the book resolves for itself --------------------------------------------------------
 
         /// <summary>
@@ -351,6 +384,7 @@ namespace HiddenHarbours.World
             _notes = NotebookContentSource.Notes;
             _caught = NotebookContentSource.Caught;
             _flags = NotebookContentSource.Flags();
+            if (_gearSource == null) WireGear(null);
         }
 
         // ---- open / close ----------------------------------------------------------------------------
@@ -467,9 +501,15 @@ namespace HiddenHarbours.World
             Fit = FitForScreen();
 
             _tabs.Clear();
+            IReadOnlyList<NotebookGearHolding> gear = null;
+            if (_gearSource != null)
+            {
+                _gearSource.Collect(_gearHeld);
+                gear = _gearHeld;
+            }
             var built = NotebookContent.Build(
                 _quests?.Invoke(), _knowledge?.Invoke(), _notes?.Invoke(), _flags, Fit.Cols,
-                droppedTabs: null, caught: _caught?.Invoke());
+                droppedTabs: null, caught: _caught?.Invoke(), gear: gear, gearPage: _gearPage);
             _tabs.AddRange(built);
 
             if (_tabs.Count == 0)
@@ -775,12 +815,24 @@ namespace HiddenHarbours.World
                         }
                     }
 
+                    bool faint = row.State == NotebookStepState.Done;
+
+                    if (row.HasIcon)
+                    {
+                        // A pictured block (the Gear page): the picture once, beside its first line, and
+                        // every line of the block indented past it.
+                        if (!row.Continuation) DrawIcon(page, row.IconId, row.Text, titleX, rowY, faint);
+                        int lane = NotebookLayout.IconLaneCells * NotebookKit.CellWidth;
+                        AddText(page, row.Text, titleX + lane, rowY, titleW - lane, faint ? InkFaint : Ink);
+                        continue;
+                    }
+
                     bool wide = row.Wide;
                     AddText(page, row.Text,
                             wide ? titleX : textX,
                             rowY,
                             wide ? titleW : textW,
-                            row.State == NotebookStepState.Done ? InkFaint : Ink);
+                            faint ? InkFaint : Ink);
                 }
 
                 if (placement.Block.Archived && _stampDone != null && placement.FromRow == 0)
@@ -790,6 +842,44 @@ namespace HiddenHarbours.World
                 }
             }
         }
+
+        /// <summary>The name of a drawn picture, and of the paper placeholder drawn where an id has none —
+        /// what a test looks for.</summary>
+        public const string IconPieceName = "GearIcon";
+        public const string IconPlaceholderName = "GearIconPlaceholder";
+
+        /// <summary>
+        /// One picture beside a pictured block's first line: the id's icon from Core's
+        /// <see cref="IconRegistry"/>, square and aspect-kept, or — where the id has none yet — a tidy
+        /// paper placeholder (a ruled frame with the item's initial in faint pencil), never a blank and
+        /// never a missing-texture square.
+        /// </summary>
+        private void DrawIcon(RectTransform page, string iconId, string name, int x, int rowY, bool faint)
+        {
+            int size = NotebookLayout.IconSize;
+            int y = rowY - 2;   // two ruled lines tall, clear of the second line's rule
+            Sprite icon = IconRegistry.Get(iconId);
+
+            if (icon != null)
+            {
+                RectTransform piece = AddPiece(page, IconPieceName, icon, x, y, size, size, Ink);
+                var image = piece.GetComponent<Image>();
+                image.preserveAspect = true;
+                if (faint) image.color = FaintPicture;
+                return;
+            }
+
+            RectTransform slot = AddPiece(page, IconPlaceholderName, null, x, y, size, size, PaperInk);
+            AddPiece(slot, "Edge", null, 0, 0, size, 1, RuleInk);
+            AddPiece(slot, "Edge", null, 0, size - 1, size, 1, RuleInk);
+            AddPiece(slot, "Edge", null, 0, 0, 1, size, RuleInk);
+            AddPiece(slot, "Edge", null, size - 1, 0, 1, size, RuleInk);
+            if (!string.IsNullOrEmpty(name))
+                AddText(slot, name.Substring(0, 1).ToUpperInvariant(), 0, (size - NotebookKit.CellHeight) / 2 + 1,
+                        size, InkFaint, TextAnchor.UpperCenter);
+        }
+
+        private static readonly Color FaintPicture = new Color(1f, 1f, 1f, 0.4f);
 
         private void DrawTabs(int x, int y)
         {

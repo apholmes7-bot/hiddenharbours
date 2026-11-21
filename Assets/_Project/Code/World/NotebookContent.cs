@@ -15,6 +15,10 @@ namespace HiddenHarbours.World
         /// <summary>Every species she has caught: how many, and the record. Present only once there is
         /// one, so its stub is data like the knowledge run's.</summary>
         Caught,
+
+        /// <summary>The gear he owns, each with its picture, name and count. Present only once he owns
+        /// something, like the catch page.</summary>
+        Gear,
     }
 
     /// <summary>One stub off the fore-edge.</summary>
@@ -73,6 +77,12 @@ namespace HiddenHarbours.World
         public const string TabCaught = "tab.caught";
         public const string LabelCaught = "CATCH";
 
+        /// <summary>The Gear page's stub, beside the catch page. Lettered KIT and keyed apart because the
+        /// shipped how-to pages already hold <c>tab.gear</c>, lettered GEAR (hand lining, setting a trap):
+        /// two stubs reading GEAR would be two doors with one name.</summary>
+        public const string TabGear = "tab.kit";
+        public const string LabelGear = "KIT";
+
         /// <summary>One species' lines under its name: how many caught, the record weight (the size a
         /// catch carries: whole grams under a kilogram, kilograms to one decimal from one up), and how
         /// many were protected and put back (only when any were). Each fits the narrowest page
@@ -100,7 +110,9 @@ namespace HiddenHarbours.World
             IFlagStore flags,
             int cols,
             List<string> droppedTabs = null,
-            IReadOnlyList<CaughtSpeciesEntry> caught = null)
+            IReadOnlyList<CaughtSpeciesEntry> caught = null,
+            IReadOnlyList<NotebookGearHolding> gear = null,
+            NotebookGearPageDef gearPage = null)
         {
             var tabs = new List<NotebookTab>
             {
@@ -117,6 +129,14 @@ namespace HiddenHarbours.World
             if (caught != null && caught.Count > 0)
                 tabs.Add(new NotebookTab(TabCaught, LabelCaught, NotebookPageKind.Caught,
                                          CatchBlocks(caught, cols)));
+
+            // The gear page sits after it, also his own rather than shipped, also never trimmed.
+            if (gear != null)
+            {
+                List<NotebookBlock> gearBlocks = NotebookGearPage.Blocks(gear, gearPage, cols);
+                if (gearBlocks.Count > 0)
+                    tabs.Add(new NotebookTab(TabGear, LabelGear, NotebookPageKind.Gear, gearBlocks));
+            }
 
             tabs.Add(new NotebookTab(TabNotes, LabelNotes, NotebookPageKind.Notes, NoteBlocks(notes, cols)));
 

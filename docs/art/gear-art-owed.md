@@ -9,17 +9,18 @@ None of these Defs carries a sprite field: the icon library is the only icon slo
 
 | Gear (id) | Def / offer | Shop catalog | Notebook | In hand | On deck |
 |---|---|---|---|---|---|
-| Rod (`gear.rod`, `tool.rod`) | `Catalog/Gear/Rod`, `Tools/Rod` | Listed, text row | none | the held mesh (`HeldMeshes`); `Sprites/Gear/Rod.png` stays the world/fallback sprite | rod rack |
-| Oyster tongs (`gear.oyster_tongs`) | `Catalog/Gear/OysterTongs` | unlisted | none | none (no `ToolDef`) | none |
-| Shellfish rake (`gear.shellfish_rake`) | `Catalog/Gear/ShellfishRake` | unlisted | none | none (no `ToolDef`) | none |
-| Mussel sack (`gear.mussel_sack`) | `Catalog/Gear/MusselSack` | unlisted | none | none (carry capacity only) | none |
-| Peck basket (`gear.shellfish_basket`) | `Catalog/Gear/ShellfishBasket` | unlisted | none | none (carry capacity only) | none |
-| Lures and jigs (`tackle.*`, five) | `Data/Tackle/*` | not sold as items | none | none | none |
-| Longline tub (`longline.groundfish_tub`) | `Data/Longlines/GroundfishTub` | not sold | none | none | `deckwork.longline_tub` is named but no deck-work Def exists |
+| Rod (`gear.rod`, `tool.rod`) | `Catalog/Gear/Rod`, `Tools/Rod` | Listed, text row | KIT page, when owned | the held mesh (`HeldMeshes`); `Sprites/Gear/Rod.png` stays the world/fallback sprite | rod rack |
+| Oyster tongs (`gear.oyster_tongs`) | `Catalog/Gear/OysterTongs` | unlisted | KIT page, when owned | none (no `ToolDef`) | none |
+| Shellfish rake (`gear.shellfish_rake`) | `Catalog/Gear/ShellfishRake` | unlisted | KIT page, when owned | none (no `ToolDef`) | none |
+| Mussel sack (`gear.mussel_sack`) | `Catalog/Gear/MusselSack` | unlisted | KIT page, when owned | none (carry capacity only) | none |
+| Peck basket (`gear.shellfish_basket`) | `Catalog/Gear/ShellfishBasket` | unlisted | KIT page, when owned | none (carry capacity only) | none |
+| Lures and jigs (`tackle.*`, five) | `Data/Tackle/*` | not sold as items | KIT page, when owned | none | none |
+| Longline tub (`longline.groundfish_tub`) | `Data/Longlines/GroundfishTub` | not sold | KIT page, when owned | none | `deckwork.longline_tub` is named but no deck-work Def exists |
 | Trawl net (`trawl_gear.bottom_otter_prototype`) | `Data/Trawls/BottomOtterPrototype` (unreviewed prototype) | not sold | none | none | the trawler hulls draw their own net piles |
 
-No screen reads a gear id from the icon library yet: the catalog book is text only, and the sell
-screen, catch card and hold list read species ids. The icons are ready for the first screen that does.
+The Notebook's KIT page (the Gear page) is the first screen that reads a gear id from the icon
+library: it draws each owned piece with its icon, or a paper placeholder where an id has none. The
+catalog book is still text only, and the sell screen, catch card and hold list read species ids.
 
 ## Owed (not in the icon pass)
 
