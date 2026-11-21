@@ -686,7 +686,8 @@ namespace HiddenHarbours.Tests.EditMode
             em.OnMoment(new JuiceMomentCue(JuiceMoment.DigStrike, Vector2.zero, 0.1f));
             Assert.AreEqual(0, em.AliveCount, "no dirt on the press: the shovel is still in the air");
             em.OnMoment(new JuiceMomentCue(JuiceMoment.DigImpact, Vector2.zero, 0.1f));
-            Assert.AreEqual(j.SandChunkCount, em.AliveCount, "the sand chunks, when the blade enters the ground");
+            Assert.AreEqual(j.SandChunkCount + j.DigTossChunkCount, em.AliveCount,
+                "the dirt, when the blade enters the ground (the toss counts as alive from the impact, unborn until the lift)");
             em.Clear();
             Assert.AreEqual(0, em.AliveCount);
 
