@@ -130,6 +130,20 @@ namespace HiddenHarbours.Tests.EditMode
                 Assert.AreSame(mesh, library.HeldMeshFor(kind), kind);
                 if (mesh != null) resolved.Add(mesh);
             }
+            // A species may own its held mesh (the green crab, the quahog, the surf clam): that row is
+            // an authored owner too, and must win the species lookup whatever its kind holds.
+            SerializedProperty species = rows.FindProperty("_species");
+            Assert.IsTrue(species.isArray);
+            for (int i = 0; i < species.arraySize; i++)
+            {
+                SerializedProperty row = species.GetArrayElementAtIndex(i);
+                var mesh = row.FindPropertyRelative("HeldMesh").objectReferenceValue as HeldPropMeshDef;
+                if (mesh == null) continue;
+                string speciesId = row.FindPropertyRelative("SpeciesId").stringValue;
+                Assert.AreSame(mesh, library.HeldMeshFor(speciesId, row.FindPropertyRelative("Kind").stringValue,
+                    out _), speciesId);
+                resolved.Add(mesh);
+            }
             SerializedProperty buckets = rows.FindProperty("_bucketMeshes");
             Assert.IsTrue(buckets.isArray);
             for (int i = 0; i < buckets.arraySize; i++)

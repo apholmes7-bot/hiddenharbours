@@ -46,6 +46,10 @@ namespace HiddenHarbours.Tools.RigBaking
             AddOnKeys = addOnKeys ?? Array.Empty<string>();
         }
 
+        /// <summary>The rig's own declared prerequisites (<see cref="RigEntry.Prerequisites"/>), installed
+        /// before it runs. See <see cref="RigPropExtraction.PrerequisiteRigKeys"/>.</summary>
+        public string[] PrerequisiteKeys => RigCatalog.Get(CatalogKey).Prerequisites.ToArray();
+
         public string ScriptPath => RigCatalog.Get(CatalogKey).ScriptPath;
         public string GlobalName => RigCatalog.Get(CatalogKey).GlobalName;
     }
@@ -138,7 +142,7 @@ namespace HiddenHarbours.Tools.RigBaking
         public const bool HeldMeshTurnsCounterClockwise = true;
 
         /// <summary>
-        /// The four rigs. Cells, palettes and poses come from the rigs; the only facts here are which
+        /// The five rigs. Cells, palettes and poses come from the rigs; the only facts here are which
         /// rig, which family name its ids carry, and where its cell is.
         /// </summary>
         public static readonly HeldPropFamily[] Families =
@@ -154,6 +158,13 @@ namespace HiddenHarbours.Tools.RigBaking
                                addOnKeys: new[] { CatchPass2Baker.CoastRigKey }),
             new HeldPropFamily(HeldPropMeshDef.BucketFamily, "bucket", cellPath: HeldSymbol + ".cell",
                                label: "every bucket tier at every fill, carried by its grip"),
+            // The lobster and the rock crab by the back at the crustacean rig's held pose; the green
+            // crab through the coast kit's recolour; every shellfish as the handful the game hands
+            // over (Shellfish2's kinds and the coast kit's two shells). See the crustacean entry of
+            // RigMeshSymbols.Reconstructions.
+            new HeldPropFamily(HeldPropMeshDef.ShellfishFamily, "crustacean2", cellPath: "",
+                               label: "crustaceans by the back, shellfish by the handful",
+                               addOnKeys: new[] { "shellfish2", CatchPass2Baker.CoastRigKey }),
         };
 
         /// <summary>
@@ -170,6 +181,7 @@ namespace HiddenHarbours.Tools.RigBaking
                 throw new FileNotFoundException($"Held-prop rig missing at {full}.", full);
 
             string source = RigMeshExtractor.ApplyInnerWidenings(File.ReadAllText(full), path);
+            RigMeshExtractor.InstallAddOns(host, family.PrerequisiteKeys);
             host.Execute(RigMeshExtractor.WidenExportedLiteral(source, g, new[] { HeldSymbol }, path));
             RigMeshExtractor.InstallAddOns(host, family.AddOnKeys);
 
@@ -224,6 +236,7 @@ namespace HiddenHarbours.Tools.RigBaking
                 // reconstructions (PX = the rig's own S, as for the skiff motor).
                 ExtraSymbols = new[] { HeldSymbol, "PX" },
                 AddOnRigKeys = family.AddOnKeys,
+                PrerequisiteRigKeys = family.PrerequisiteKeys,
                 // The hull rule: a back-lit face is re-lit only when b <= -1. It IS the rule of the
                 // rod, spade and bucket (rodIsoRig.js:143, shovelIsoRig.js:109, bucketRig.js:229).
                 // The fish rescues by a per-face `ds` flag (fishIsoRig2.js:222) the mesh cannot carry;

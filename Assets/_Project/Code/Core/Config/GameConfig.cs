@@ -1615,8 +1615,10 @@ namespace HiddenHarbours.Core
 
         [Tooltip("The shortest a held fish MESH is drawn, art pixels along its longest side: a smaller fish " +
                  "is scaled up about its grip to this, so a herring still reads in his hand. The mesh can " +
-                 "grow where a sprite can only pick a bigger rung (MinDrawnFishLengthPx). 0 = no floor.")]
-        [Min(0f)] public float HeldFishMinLengthPx = 20f;
+                 "grow where a sprite can only pick a bigger rung (MinDrawnFishLengthPx). 0 = no floor. " +
+                 "16 = the length a held sheet stops needing its keyline (HeldFishKeylineMaxLengthPx), the " +
+                 "shortest an unoutlined mesh still reads; 20 drew a smelt two thirds the length of a cod.")]
+        [Min(0f)] public float HeldFishMinLengthPx = 16f;
 
         [Tooltip("At the landing the fish hangs from whichever hand is nearer the camera, so it is never " +
                  "hidden behind him (the rig's own fish prop swaps hands the same way). It changes hands " +

@@ -12,13 +12,13 @@ namespace HiddenHarbours.Tests.PlayMode
     /// <b>A fish in his hand is drawn as its mesh in the real scene</b> (fish art pass 2, section 3): the
     /// real player at Rice Point is handed a cod, and the mesh draws on his hand while the carried sprite
     /// stands down; a tomcod (the coast species kit's, its own kind) is its own mesh too; a green crab
-    /// (no held-mesh pattern for a crustacean yet) keeps its sprite; the switch off hands the cod back to
+    /// is its own recoloured mesh (the shellfish family); the switch off hands the cod back to
     /// the sprite; and the fish he holds up at the landing is the mesh too.
     /// </summary>
     public sealed class HeldCatchMeshPlayTests : RicePointSceneFixture
     {
         [UnityTest]
-        public IEnumerator ACodAndATomcodInHisHand_AreTheirMeshes_ACrabKeepsItsSprite_AndTheLandingIsTheMesh()
+        public IEnumerator ACodATomcodAndAGreenCrabInHisHand_AreTheirMeshes_AndTheLandingIsTheMesh()
         {
             yield return LoadDirect();
             SetHour(12);
@@ -73,15 +73,15 @@ namespace HiddenHarbours.Tests.PlayMode
             Assert.IsTrue(hands.TryTakeFromHand(out _));
             for (int i = 0; i < 3; i++) yield return null;
 
-            // A green crab: no held-mesh pattern for a crustacean yet, so it keeps its sprite.
+            // A green crab: held by the back as its own recoloured mesh, never the rock crab's.
             Assert.IsTrue(hands.TryPutInHand(new CatchItem("fish.green_crab", "Green Crab",
                                                            FishCategory.Shellfish, 0.1f, 10, 0.1f)));
             for (int i = 0; i < 6; i++) yield return null;
             var crab = hands.Carried as CarriableCatch;
             Assert.IsNotNull(crab);
-            Assert.IsFalse(hands.CatchMesh.Drawing, "a crab has no held mesh and must not be drawn as one");
-            Assert.AreEqual(HeldCatchMesh.Refusal.NoMesh, hands.CatchMesh.LastRefusal);
-            Assert.IsTrue(crab.SpriteVisible, "the crab's sprite is hidden");
+            Assert.IsTrue(hands.CatchMesh.Drawing, $"the green crab is not drawn as its mesh ({hands.CatchMesh.LastRefusal})");
+            Assert.AreEqual("heldprop.shellfish_green_crab", hands.CatchMesh.Def.Id);
+            Assert.IsFalse(crab.SpriteVisible, "the green crab's mesh draws, yet its sprite still shows");
             Assert.IsTrue(hands.TryTakeFromHand(out _));
             for (int i = 0; i < 3; i++) yield return null;
 
