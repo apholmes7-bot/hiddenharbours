@@ -63,6 +63,47 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.AreEqual(3, checkedBuildings, "the ice house and its two pieces wait for the grass refresh");
         }
 
+        /// <summary>
+        /// Ginny's cottage is placed by its plot's own code (its key-scene row has an owner), so the
+        /// loop above never sees it. Its floor is read back from the scene's serialized interior, the
+        /// same footprint the player walks inside. While he is inside, the room is drawn as a flat plan
+        /// under every plant, so the ground kept clear is the floor grown by the wall's thickness, and
+        /// behind the back wall one storey's drawn rise: a plant rooted there paints over the room.
+        /// </summary>
+        [Test]
+        public void GinnysCottage_HasNoPlantOrGrassInsideItsRoom()
+        {
+            var scene = StPetersLayerRefresh.SceneYaml.Parse(File.ReadAllText(StPetersLayerRefresh.ScenePath));
+            var root = scene.TransformOf(scene.RootNamed(StPetersGinnyPlot.RootName));
+            var cottage = scene.ChildNamed(root, StPetersGinnyPlot.CottageKey);
+            var interior = scene.ComponentsOf(cottage).SingleOrDefault(d => d.IsScript("HiddenHarbours.World.BuildingInterior"));
+            Assert.IsNotNull(interior, "Ginny's cottage has no interior to keep clear");
+            var floor = new InteriorFootprint(
+                InteriorFixturePlacement.WorldOf(scene, scene.TransformOf(cottage)),
+                StPetersLayerRefresh.ParseFloat(interior.Field("_widthMetres")),
+                StPetersLayerRefresh.ParseFloat(interior.Field("_lengthMetres")),
+                StPetersLayerRefresh.ParseInt(interior.Field("_facing")),
+                StPetersLayerRefresh.ParseInt(interior.Field("_facings")),
+                StPetersLayerRefresh.ParseFloat(interior.Field("_groundDepthScale")));
+            Assert.That(Vector2.Distance(floor.Centre, StPetersGinnyPlot.CottagePos), Is.LessThan(0.01f));
+            Assert.Greater(floor.WidthMetres * floor.LengthMetres, 1f, "an empty floor would pass vacuously");
+
+            float wall = StPetersLayerRefresh.ParseFloat(interior.Field("_wallThicknessMetres"));
+            float rise = StPetersLayerRefresh.ParseFloat(interior.Field("_upperLevelY"));
+            Assert.Greater(wall, 0f);
+            var corners = floor.Corners();
+            var room = Rect.MinMaxRect(corners.Min(c => c.x) - wall, corners.Min(c => c.y) - wall,
+                                       corners.Max(c => c.x) + wall, corners.Max(c => c.y) + Mathf.Max(wall, rise));
+
+            var definition = UnityEditor.AssetDatabase.LoadAssetAtPath<PlantFieldDefinition>(StPetersGrassFieldTests.DefinitionPath);
+            Assert.That(definition.HeightProjection, Is.Zero, "authored roots use their data coordinates");
+            foreach (var site in definition.Authored)
+                Assert.IsFalse(room.Contains(site.At), $"{site.Id} at {site.At} draws inside Ginny's cottage ({room})");
+
+            var grass = StPetersLayerRefresh.CommittedGrassSites(scene);
+            Assert.AreEqual(0, grass.Count(g => room.Contains(g)), "committed grass inside Ginny's cottage");
+        }
+
         [Test]
         public void TheIceHouseAndItsTwoPieces_WaitTogether()
         {

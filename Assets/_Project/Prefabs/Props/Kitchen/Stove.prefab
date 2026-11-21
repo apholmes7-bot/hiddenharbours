@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 7182004520000002}
   - component: {fileID: 7182004520000003}
   - component: {fileID: 121953926539357967}
+  - component: {fileID: 5512903318204417201}
   m_Layer: 0
   m_Name: Stove
   m_TagString: Untagged
@@ -251,3 +252,17 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
   m_BlendShapeWeights: []
+--- !u!114 &5512903318204417201
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7182004520000001}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3c5abf3f911842e389d804fce91c26a8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: HiddenHarbours.Player::HiddenHarbours.Player.CookingStationFoodPresenter
+  _art: {fileID: 11400000, guid: 23c24893d17d75145a4a916526c6f96e, type: 2}
+  _sortingAbove: 1

@@ -926,6 +926,20 @@ MonoBehaviour:
   HeldFishFrontBiasMeters: 0.4
   HeldFishMinLengthPx: 16
   HeldFishHandSwapDepthMeters: 0.05
+  CookedFishRamp:
+  - {r: 1, g: 1, b: 1, a: 1}
+  - {r: 1, g: 0.86, b: 0.64, a: 1}
+  - {r: 0.84, g: 0.6, b: 0.34, a: 1}
+  FilletLengthOfFish: 0.6
+  FilletHeightOfLength: 0.4
+  FilletFleshColor: {r: 0.98, g: 0.9, b: 0.86, a: 1}
+  FilletEdgeColor: {r: 0.62, g: 0.5, b: 0.46, a: 1}
+  FrozenFishTint: {r: 0.8, g: 0.9, b: 1, a: 1}
+  FreezerFishShowRangeMeters: 1.6
+  FreezerFishColumns: 2
+  FreezerFishRows: 4
+  FreezerFishOriginMeters: {x: -0.26, y: 0.3}
+  FreezerFishPitchMeters: {x: 0.52, y: 0.2}
   RegionCrossingHysteresisMetres: 0.25
   RegionPreloadDistanceMetres: 40
   RegionPreloadMinHeadingSpeed: 0.5
