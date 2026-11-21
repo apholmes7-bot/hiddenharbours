@@ -522,7 +522,69 @@ namespace HiddenHarbours.Tests.Art.EditMode
             using var graph = Record(camera, 320, 180, hulls: false, water: false, reflections: false);
             Assert.That(graph.Passes, Is.Empty);
             Assert.That(Shader.GetGlobalTexture(ReflectionShaderIds.ReflectTex).name, Is.EqualTo("HHReflectTexFallback"));
-            Assert.That(GameServices.HullMeshReflections, Is.False, "Ship default stays off");
+            Assert.That(GameServices.HullMeshReflections, Is.True, "Ship default is the mesh path (2026-11-21)");
+        }
+
+        // 2026-11-21: WHY the mesh path is the ship default. The overlay ("legacy") hull reflection is a
+        // member of the HH Object Reflections list and samples _HHHullScreenTex, which only the hull keyline
+        // resolve publishes, and that resolve records AFTER both the reflection list and the water that
+        // reads it. Core's RenderGraph rebinds every global it published to black at the end of each graph
+        // (ClearGlobalBindings), so the overlay pass reads black every frame: measured on the GPU as 0
+        // changed pixels. The mesh path renders and resolves its own picture before the water reads it.
+        [Test]
+        public void HullReflection_OverlayPathRecordsBeforeTheHullPictureItSamples()
+        {
+            Hull();
+            var camera = Camera(1920, 1080, new Vector3(0, 0, -50));
+            using var graph = Record(camera, 1920, 1080, hulls: true, water: true, reflections: true, guard: true, mesh: false);
+            var overlay = graph.Find("HH Object Reflections");
+            var hullPicture = graph.Find("HH Hull Keyline Resolve");
+            var water = graph.Find("HH Displaced Water");
+            Assert.That(overlay, Is.Not.Null); Assert.That(hullPicture, Is.Not.Null); Assert.That(water, Is.Not.Null);
+            Assert.That(hullPicture.Globals.Values, Does.Contain(IsoFacetShaderIds.HullScreenTex),
+                "the hull keyline resolve is the only publisher of the hull picture");
+            Assert.That(graph.Passes.Where(p => p != hullPicture).SelectMany(p => p.Globals.Values),
+                Has.No.Member(IsoFacetShaderIds.HullScreenTex));
+            Assert.That(overlay.Order, Is.LessThan(hullPicture.Order),
+                "the overlay reflection records before this frame's hull picture exists");
+            Assert.That(water.Order, Is.LessThan(hullPicture.Order),
+                "the water composites its reflection before this frame's hull picture exists");
+            Assert.That(overlay.ExplicitReads, Is.Empty, "the overlay pass cannot declare a read of the hull picture");
+
+            using var mesh = Record(camera, 1920, 1080, hulls: true, water: true, reflections: false, guard: true, mesh: true);
+            var resolve = mesh.Find("HH Hull Mesh Reflection Resolve");
+            mesh.AssertReadsLatest(mesh.Find("HH Displaced Water"), resolve, resolve.Colours.Single(),
+                "the water reads this frame's mesh reflection");
+        }
+
+        [Test]
+        public void HullReflection_ShipDefaultIsTheMeshPath()
+        {
+            Assert.That(GameConfig.DefaultHullMeshReflections, Is.True);
+            Assert.That(GameServices.Config.HullMeshReflections, Is.True, "a fresh GameConfig starts on");
+            var shipped = AssetDatabase.LoadAssetAtPath<GameConfig>("Assets/_Project/Data/Config/GameConfig.asset");
+            Assert.That(shipped, Is.Not.Null);
+            Assert.That(shipped.HullMeshReflections, Is.True, "the shipped GameConfig.asset draws boat reflections");
+            GameServices.Config = null;
+            Assert.That(GameServices.HullMeshReflections, Is.True, "no config wired resolves the shipped default");
+        }
+
+        // The boat reflection is composited by the water's object-reflection block, which inherits the
+        // sea-state curve: strong on glass, weaker on a gentle sea, gone in a blow. Pinned on the SHIPPED
+        // Water.mat values through the shader's C# twin, at the sea states the looks were shot at.
+        [Test]
+        public void HullReflection_FadesWithChopOnTheShippedWater()
+        {
+            var water = AssetDatabase.LoadAssetAtPath<Material>("Assets/_Project/Art/Materials/Water.mat");
+            Assert.That(water, Is.Not.Null);
+            float master = water.GetFloat("_ReflectionStrength"), fade = water.GetFloat("_ReflectionFadeChop");
+            float windFade = water.GetFloat("_ReflectionWindFade"), objects = water.GetFloat("_ObjectReflectStrength");
+            Assert.That(objects, Is.GreaterThan(0f), "the water must composite object reflections at all");
+            float Weight(float sea) => objects * WaterReflection.ReflectionStrength(WaterSurface.Choppiness(sea), 0f, fade, windFade, master);
+            float glass = Weight(0.05f), gentle = Weight(0.32f), blow = Weight(0.75f);
+            Assert.That(glass, Is.GreaterThan(gentle));
+            Assert.That(gentle, Is.GreaterThan(0.1f * glass), "a gentle sea still shows the reflection");
+            Assert.That(blow, Is.EqualTo(0f), "a blow shows none");
         }
 
         [TestCase(1)] [TestCase(2)]
