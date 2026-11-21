@@ -213,11 +213,38 @@ namespace HiddenHarbours.Tools.RigBaking
             wornBy: new[] { ($"{Visuals}/JetSkiIso.asset", "HelmBar") },
             label: "jetski handlebars (turn about the raked column)");
 
+        // THE DORY'S MOTOR FIT: what her outboard build adds besides the engine (the rig's part
+        // 'motor_fit': the stern bench the skipper sits on at the tiller, and the transom motor board
+        // with its doubler, cheeks and bolts). Her hull is baked as the plain rowing build, so this
+        // fitting is the only copy, hung only while the engine is fitted. It never articulates: the
+        // pivot is the part's own mount and it is drawn at its baked place.
+        static FleetProp DoryMotorFit() => new FleetProp(
+            key: "doryMotorFit",
+            scriptPath: $"{Rigs}/doryIsoRig.js",
+            globalName: "DoryIso",
+            assetPath: $"{PropFolder}/DoryMotorFitPropMesh.asset",
+            propId: "hullprop.dory_motor_fit",
+            extraction: new RigPropExtraction
+            {
+                FaceBuilderCall = "partFaces('motor_fit',{})" +
+                    // The walk rig tags a level by number; the fitting bake reads it by name.
+                    // The level table is read from geometry().ids, the rig's public copy of it (the
+                    // extractor prefixes only the head of the call, so the callback names the global).
+                    ".map(function(f){var ids=DoryIso.geometry().ids,n=null;for(var k in ids)if(ids[k]===f.lv)n=k;" +
+                    "return Object.assign({},f,{lv:n});})",
+                PivotCall = "geometry().parts[0].mount",
+                CellPath = "",
+                ExtraSymbols = new[] { "partFaces" },
+            },
+            wornBy: new[] { ($"{Visuals}/DoryIso.asset", "MotorFit") },
+            label: "dory motor fit (stern bench and motor board)");
+
         public static readonly IReadOnlyList<FleetProp> All = new[]
         {
             Oar(-1, "Port", "OarPort"),
             Oar(+1, "Star", "OarStar"),
             JetSkiHandlebar(),
+            DoryMotorFit(),
 
             // ONE bake, TWO boats — and the second one is a LOAN. The dory's own kicker rig exists
             // (docs/art/rigs/doryMotorRig.js: a little tiller two-stroke, 0.23 m cowl against this

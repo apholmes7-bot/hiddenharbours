@@ -353,6 +353,26 @@ MonoBehaviour:
   MotorFit: 0
   MotorMesh: {fileID: 11400000, guid: ef94ad121c781a84db3911aab73718e0, type: 2}
   MotorMeshFitmentOffsetMeters: {x: 0, y: 0.28, z: 0.055}
+  MotorFitMesh: {fileID: 11400000, guid: 2524d3e0a1dc8b24e8edce81c4272fa6, type: 2}
+  Tiller:
+    Enabled: 1
+    SeatLocalMeters: {x: -0.1, y: -1.64, z: 0.3584}
+    PortFootBraceLocalMeters: {x: -0.0234, y: -1.1682, z: 0.115}
+    StarboardFootBraceLocalMeters: {x: 0.2122, y: -1.278, z: 0.115}
+    SeatedState: idle_oars
+    FloorOriginLocalMeters: {x: -0.1, y: -1.54, z: 0.13}
+    FacingDeckBearingDegrees: 25
+    TillerGripAtRestLocalMeters: {x: 0, y: -1.975, z: 0.627}
+    IdleLeanDegrees: 4
+    SitUpPerThrottleDegrees: 4
+    BreathDegrees: 1
+    BreathSeconds: 4.5
+    RestHandAlongThigh: 0.7
+    RestHandAboveThighMeters: 0.06
+    ReachLeanMaxDegrees: 30
+    BodyClearanceMeters: 0.02
+    BodyClearLeanMaxDegrees: 12
+    BodyClearTwistMaxDegrees: 20
   HelmBarMesh: {fileID: 0}
   MotorRockRollDegrees: 3.4
   MotorRockPitchDegrees: 1.9
