@@ -203,6 +203,16 @@ namespace HiddenHarbours.Tests.EditMode
                     Assert.That(Regex.Matches(yaml, @"(?m)^    - _PaletteValueFloor: 0\.16$").Count, Is.EqualTo(1), files[i] + ": f+e floor");
                     yaml = yaml.Replace("    - _PaletteValueFloor: 0.16\n", "    - _PaletteValueFloor: 0.07\n");
                 }
+                // Sunset water fix (11-21): the base Water.mat's ripple band 0.45 -> 0.25 (the diagonal
+                // grating it ruled across the sea) and its sun-glitter column 0.6 -> 0.25 (the orange
+                // worms at dusk). Exactly those two values are authorized; they are mapped back before the hash.
+                if (files[i].EndsWith("Materials/Water.mat", StringComparison.Ordinal))
+                {
+                    Assert.That(Regex.Matches(yaml, @"(?m)^    - _RippleStrength: 0\.25$").Count, Is.EqualTo(1), files[i] + ": sunset ripple");
+                    Assert.That(Regex.Matches(yaml, @"(?m)^    - _SunGlitterStrength: 0\.25$").Count, Is.EqualTo(1), files[i] + ": sunset glitter");
+                    yaml = yaml.Replace("    - _RippleStrength: 0.25\n", "    - _RippleStrength: 0.45\n")
+                               .Replace("    - _SunGlitterStrength: 0.25\n", "    - _SunGlitterStrength: 0.6\n");
+                }
                 Assert.That(Hash(yaml.Replace("    - " + Dial + ": 0\n", "")), Is.EqualTo(originalHashes[i]),
                     files[i] + ": only the new zero key is authorized");
             }

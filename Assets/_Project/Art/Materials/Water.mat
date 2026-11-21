@@ -169,7 +169,7 @@ Material:
     - _RainRingScale: 6
     - _RainRingSpeed: 1.5
     - _RainRingStrength: 0.6
-    - _RippleStrength: 0.45
+    - _RippleStrength: 0.25
     - _ReflectionChopScatter: 1.5
     - _ReflectionFadeChop: 0.6
     - _ReflectionSkyTint: 0.85
@@ -202,7 +202,7 @@ Material:
     - _StormFoamLaneScale: 0.3
     - _StormFoamLaneStrength: 0.75
     - _StormFoamLaneStretch: 6
-    - _SunGlitterStrength: 0.6
+    - _SunGlitterStrength: 0.25
     - _SunSideStrength: 1.7
     - _SurfAgeStrength: 1
     - _SurfBandDither: 0.7

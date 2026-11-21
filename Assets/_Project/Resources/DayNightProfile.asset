@@ -126,6 +126,9 @@ MonoBehaviour:
   _dawnBlendHours: 2
   _warmKeyBeforeSunsetHours: 3.4285715
   _nightBlendHours: 1
+  _sunsetGlowTint: {r: 1, g: 0.5, b: 0.45, a: 1}
+  _sunsetGlowStrength: 1
+  _sunsetGlowLeadHours: 2
   _shadowSouthBias: 0.2
   _shadowNoonLift: 0.9
   _fogVisibilityForFullDim: 0.15
