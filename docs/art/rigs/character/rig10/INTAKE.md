@@ -2,8 +2,32 @@
 
 This file records each intake of Claude Design's character rig 10 into this folder, newest first:
 
-- kit 10.3 (2026-10-05, next);
+- 10.3 arm clearance (2026-11-20, next): a pose edit in this repo, not a kit drop;
+- kit 10.3 (2026-10-05);
 - kit 10.2 (2026-10-02, further down, as #918 wrote it).
+
+## 10.3 arm clearance (2026-11-20): dig, hauler and strike
+
+A source edit to `Art/characterIsoRig10.poses.js`, made here. Three clips pushed the player's left
+forearm into his own body: dig by up to 4.6 rig px (chest and belly), hauler by 2.2 px on every
+frame, strike by 2.1 px on frames 3 and 4 (chest and face). Each part was measured as a capsule along
+its bones, with the radius at the 60th percentile of its bind vertices.
+
+Only left-arm keys moved:
+
+- dig: the top hand's palm path sits 0.05 (body units) further out on every frame, and the left
+  elbow pole points out and down instead of in;
+- hauler: the left elbow pole points out to the side;
+- strike: the left elbow pole points out from u 0.45 on (the lift and hold), and the last grip key
+  sits 0.02 further out.
+
+Every palm still meets its tool socket (shovel, rod butt, line) on every frame, and no other clip's
+tracks changed in any of the 30 builds. The pose library's LF sha256 is now
+`0f95229bac56325c29b22b07bd71928edaf6b92d89ff67d2a97ad16a8e54fe8e`. `tools/check.cjs --write`
+regenerated the builds, sidecars, options, golden report, manifest and sums. The pin moved in the
+row-stroke and seated-helm contracts, in the nine hull walks `hull-walk.mjs` writes, and in the ten
+re-baked skins. `CharacterSkinArmClearanceTests` holds the player's three clips under
+`GameConfig.MeshArmClearancePx`.
 
 ## 10.3 (2026-10-05): kit 10.3 over 10.2
 
