@@ -122,10 +122,13 @@ namespace HiddenHarbours.Tests.EditMode
                     if (Math.Abs(field.ElevationAt(field.TexelToWorld(col, live.Height - 1 - row)) - live.Decode(live.Heights[row * live.Width + col])) > 0.001)
                         Assert.Fail($"the field and the dredged raster disagree at texel {col},{row}");
             // Outside the cuts nothing moved by more than the re-encoding's last digit; the wharf stands.
+            // (The crib faces, drawn true from their outlines, are their own test class.)
             var issued = GroundFileIntake.ReadRicePointFolder(RicePointBuilder.GroundFolder);
+            var faced = GroundFileIntake.RicePointFaceTexels(issued, works);
             int cut = 0;
             for (int i = 0; i < issued.Heights.Length; i++)
             {
+                if (faced[i]) continue;
                 double before = issued.Decode(issued.Heights[i]), after = live.Decode(live.Heights[i]);
                 if (Math.Abs(after - before) <= step) continue;
                 cut++;
@@ -144,7 +147,7 @@ namespace HiddenHarbours.Tests.EditMode
         public void TheDredgeReRunFromTheCommittedInputs_GivesTheCommittedRasters_ByHash()
         {
             var rerun = GroundFileIntake.RicePointDredged(GroundFileIntake.ReadRicePointFolder(RicePointBuilder.GroundFolder), Works());
-            Assert.That(GroundFileIntake.RasterCodeHash(rerun.Heights), Is.EqualTo("7a6ed2ebc68e8700f8acd4d97f2a9b462e2d40a80f5fba7db9c2454346f16a99"));
+            Assert.That(GroundFileIntake.RasterCodeHash(rerun.Heights), Is.EqualTo("b16a78b0f58d1b089d083490ad8e1618ef27604168265d1940de7bc1b6fc350e"));
             Assert.That(GroundFileIntake.RasterCodeHash(rerun.Still), Is.EqualTo("409a0d8819000f217b7eafe7cb9d1dcaa22b4fef8fdc5390a9edbc3de45988eb"));
             foreach (var (file, codes) in new[] { ("RicePointSeabed_HeightTex_plan.png", rerun.Heights), ("RicePointSeabed_StillTex_plan.png", rerun.Still) })
                 Assert.That(GroundFileIntake.RasterCodeHash(TerrainPlanPng.ReadFile(RicePointBuilder.GroundFolder + "/" + file).Channel(0)),
@@ -164,6 +167,7 @@ namespace HiddenHarbours.Tests.EditMode
             var issued = GroundFileIntake.ReadRicePointFolder(RicePointBuilder.GroundFolder);
             var live = GroundFileIntake.ReadRicePointGround(RicePointBuilder.GroundFolder);
             double step = (works.Range[1] - works.Range[0]) / 65535d;
+            var faced = GroundFileIntake.RicePointFaceTexels(issued, works);
             int outside = 0;
             for (int row = 0; row < issued.Height; row++)
                 for (int col = 0; col < issued.Width; col++)
@@ -172,7 +176,7 @@ namespace HiddenHarbours.Tests.EditMode
                     double before = issued.Decode(issued.Heights[i]);
                     double x = -issued.Size[0] / 2 + (col + 0.5) / issued.PerMetre, y = issued.Size[1] / 2 - (row + 0.5) / issued.PerMetre;
                     bool asked = works.Reaches(x, y, before);
-                    if (asked) continue;
+                    if (asked || faced[i]) continue;
                     outside++;
                     if (Math.Abs(live.Decode(live.Heights[i]) - before) > step) Assert.Fail($"texel {col},{row} is outside every dredge shape and its blend margin, and moved");
                     if (issued.Still[i] != 0 && Math.Abs(live.Decode(live.Still[i]) - issued.Decode(issued.Still[i])) > step)
@@ -206,11 +210,13 @@ namespace HiddenHarbours.Tests.EditMode
             var issued = GroundFileIntake.ReadRicePointFolder(RicePointBuilder.GroundFolder);
             var live = GroundFileIntake.RicePointDredged(issued, works);
             double step = (works.Range[1] - works.Range[0]) / 65535d;
+            var faced = GroundFileIntake.RicePointFaceTexels(issued, works);
             int blended = 0;
             for (int row = 0; row < issued.Height; row++)
                 for (int col = 0; col < issued.Width; col++)
                 {
                     int i = row * issued.Width + col;
+                    if (faced[i]) continue;
                     double before = issued.Decode(issued.Heights[i]), after = live.Decode(live.Heights[i]);
                     double x = -issued.Size[0] / 2 + (col + 0.5) / issued.PerMetre, y = issued.Size[1] / 2 - (row + 0.5) / issued.PerMetre;
                     double target = works.TargetAt(x, y), hard = before < works.KeepAbove ? Math.Min(before, target) : before;

@@ -5,7 +5,7 @@
  "hull": "dory_iso",
  "label": "BANKS DORY",
  "kind": "open",
- "derivedFromRigSha256": "4114b486778bf3237f53ba51e347adc67aca5c1e5becc6acdbb1c6aba66a6b03",
+ "derivedFromRigSha256": "914d04d167813dc9c4b64bcd58f2eaad779adea441879a087167c51f2d5f2027",
  "authoring": "Written by the rig: DoryIso.byId('dory_iso').walk(), every number its own (mm), stamped with the rig's LF sha256 and fitted to character rig 10.3 (qa.character) by tools/rig-recipes/hull-walk.mjs. Regenerate with node tools/rig-recipes/hull-walk.mjs --write; never edit by hand.",
  "units": "metres",
  "frame": "metres; +x starboard, +y bow, +z up; origin amidships, keel bottom, centreline; polygons counter-clockwise seen from above",
@@ -252,12 +252,12 @@
      {
       "x": -0.6973,
       "y": -1.089,
-      "z": 0.5281
+      "z": 0.5881
      },
      {
       "x": 0.6973,
       "y": -1.089,
-      "z": 0.5281
+      "z": 0.5881
      }
     ],
     "note": "the station the oars are baked to: oarlockPt"
@@ -273,12 +273,12 @@
      {
       "x": -0.7404,
       "y": 0.081,
-      "z": 0.5029
+      "z": 0.5629
      },
      {
       "x": 0.7404,
       "y": 0.081,
-      "z": 0.5029
+      "z": 0.5629
      }
     ],
     "note": "the second pair of tholes: a second rower, or the same oars shifted forward to trim her"
@@ -290,17 +290,17 @@
     "lock": {
      "x": -0.6973,
      "y": -1.089,
-     "z": 0.5281
+     "z": 0.5881
     },
     "blade": {
      "x": -1.1429,
      "y": 0.2825,
-     "z": 0.3765
+     "z": 0.4365
     },
     "handle": {
-     "x": -0.4361,
-     "y": -1.893,
-     "z": 0.6169
+     "x": -0.4975,
+     "y": -1.7038,
+     "z": 0.656
     }
    },
    {
@@ -308,17 +308,17 @@
     "lock": {
      "x": 0.6973,
      "y": -1.089,
-     "z": 0.5281
+     "z": 0.5881
     },
     "blade": {
      "x": 1.1429,
      "y": 0.2825,
-     "z": 0.3765
+     "z": 0.4365
     },
     "handle": {
-     "x": 0.4361,
-     "y": -1.893,
-     "z": 0.6169
+     "x": 0.4975,
+     "y": -1.7038,
+     "z": 0.656
     }
    }
   ],
