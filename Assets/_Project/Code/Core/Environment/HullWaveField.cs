@@ -430,18 +430,30 @@ namespace HiddenHarbours.Core
         /// <param name="heightMetres">Its crest height at birth, metres.</param>
         /// <param name="wavelengthMetres">Its crest spacing, metres.</param>
         public static bool AddRipple(Vector2 worldXY, float heightMetres, float wavelengthMetres)
+            => AddRipple(worldXY, heightMetres, wavelengthMetres, 0);
+
+        /// <summary>
+        /// <see cref="AddRipple(Vector2, float, float)"/> laid under <paramref name="owner"/>
+        /// (<see cref="OwnerOf"/>), so the hull whose oar made it does not ride her own ring.
+        /// </summary>
+        public static bool AddRipple(Vector2 worldXY, float heightMetres, float wavelengthMetres, int owner)
         {
             HullWaveField f = s_Field;
             if (f == null || heightMetres <= 0f || wavelengthMetres <= 0f) return false;
             HullWaveSettings s = GameServices.HullWaves;
             if (!s.Enabled) return false;
             double now = GameServices.Clock != null ? GameServices.Clock.FlowSeconds : f.NowSeconds;
-            return f.Add(MakeRipple(worldXY, heightMetres, wavelengthMetres, now, in s));
+            return f.Add(MakeRipple(worldXY, heightMetres, wavelengthMetres, now, in s, owner));
         }
 
-        /// <summary>The source <see cref="AddRipple"/> lays. Public for tests.</summary>
+        /// <summary>The source <see cref="AddRipple(Vector2, float, float)"/> lays. Public for tests.</summary>
         public static HullWaveSource MakeRipple(Vector2 worldXY, float heightMetres, float wavelengthMetres,
                                                 double now, in HullWaveSettings s)
+            => MakeRipple(worldXY, heightMetres, wavelengthMetres, now, in s, 0);
+
+        /// <summary>The same source, laid under <paramref name="owner"/> (0 = nobody's).</summary>
+        public static HullWaveSource MakeRipple(Vector2 worldXY, float heightMetres, float wavelengthMetres,
+                                                double now, in HullWaveSettings s, int owner)
         {
             float c = HullWaveMath.PhaseSpeed(wavelengthMetres);
             float life = Mathf.Max(s.RippleLifetimeSeconds, 0.1f);
@@ -456,7 +468,7 @@ namespace HiddenHarbours.Core
                 PacketWidth = HullWaveMath.PacketWidth(wavelengthMetres, in s),
                 Lifetime = life,
                 DecaySeconds = life * Mathf.Max(s.DecayShare, 0.01f),
-                Owner = 0,
+                Owner = owner,
             };
         }
     }

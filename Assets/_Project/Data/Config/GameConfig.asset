@@ -854,11 +854,14 @@ MonoBehaviour:
     BandNoise: 1
     BandNoiseSizeMetres: 0.12
     Oar: 1
-    OarRadius: 0.15
-    OarCatchRadius: 0.25
-    OarPerSecond: 0.8
-    OarCatch: 0.4
-    OarRelease: 0.16
+    OarRadius: 0.16
+    OarCatchRadius: 0.3
+    OarPerSecond: 1
+    OarCatch: 0.6
+    OarRelease: 0.26
+    OarRingHeightMetres: 0.05
+    OarRingWavelengthMetres: 0.5
+    OarReleaseRingShare: 0.6
   SeaReach:
     Enabled: 1
     ReconnectBlendMeters: 0.25

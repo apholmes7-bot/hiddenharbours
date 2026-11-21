@@ -154,6 +154,28 @@ namespace HiddenHarbours.Boats
                 if (!_system.TryGetSheetDeposit(oar, out DoryOarSplashSystem.SheetDeposit d)) continue;
                 FoamSplashes.Add(d.From, d.To, d.Radius, d.Amount, d.Vigour);
             }
+            int owner = HullWaves.OwnerOf(_boat != null ? (Object)_boat.gameObject : gameObject);
+            FoamSheetSettings sheet = GameServices.FoamSheet;
+            SendWaveRings(_system, in sheet, owner);
+        }
+
+        /// <summary>
+        /// Each water ring the step asked for goes to the hull-wave field as a real ripple (the sea draws
+        /// it), laid under the dory's own owner id so she does not ride her own rings. Returns how many
+        /// the field took. Public for tests.
+        /// </summary>
+        public static int SendWaveRings(DoryOarSplashSystem system, in FoamSheetSettings sheet, int owner)
+        {
+            if (system == null) return 0;
+            float wavelength = sheet.OarRingWavelengthMetres;
+            if (!(wavelength > 0f)) return 0;
+            int sent = 0;
+            for (int i = 0; i < system.WaveRingCount; i++)
+            {
+                DoryOarSplashSystem.WaveRing r = system.GetWaveRing(i);
+                if (HullWaves.AddRipple(r.At, r.HeightMetres, wavelength, owner)) sent++;
+            }
+            return sent;
         }
 
         /// <summary>True when the oars draw foam pictures of their own (puffs and rings): only with the
