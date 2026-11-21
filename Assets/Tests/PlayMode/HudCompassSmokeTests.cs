@@ -83,6 +83,17 @@ namespace HiddenHarbours.Tests.PlayMode
         }
 
         private GameObject _hudGo;
+        private GameConfig _config;
+
+        /// <summary>The floating reads ship OFF (owner ruling 2026-11-13). These tests are about the
+        /// cluster's wiring when it is ON, so the fixture turns the owner's switch on; the one test
+        /// about the default turns it back off.</summary>
+        private void FloatingNavReads(bool on)
+        {
+            HelmOverlaySettings overlay = _config.HelmOverlay;
+            overlay.ShowFloatingNavReads = on;
+            _config.HelmOverlay = overlay;
+        }
 
         [SetUp]
         public void SetUp()
@@ -90,6 +101,9 @@ namespace HiddenHarbours.Tests.PlayMode
             GameServices.Reset();
             GameServices.Clock = new FakeClock();
             GameServices.Environment = new FakeEnv();
+            _config = ScriptableObject.CreateInstance<GameConfig>();
+            GameServices.Config = _config;
+            FloatingNavReads(true);
         }
 
         [TearDown]
@@ -97,6 +111,7 @@ namespace HiddenHarbours.Tests.PlayMode
         {
             GameServices.Reset();
             if (_hudGo != null) Object.Destroy(_hudGo);
+            if (_config != null) Object.Destroy(_config);
         }
 
         private static Text Label(HudController hud, string field)
@@ -124,6 +139,27 @@ namespace HiddenHarbours.Tests.PlayMode
 
             Assert.IsFalse(Label(hud, "_compassLabel").enabled, "no boat → compass hidden");
             Assert.IsFalse(Label(hud, "_setDriftLabel").enabled, "no boat → set-&-drift hidden");
+        }
+
+        [UnityTest]
+        public IEnumerator NavCluster_IsHidden_Aboard_WithTheSwitchAtItsDefault()
+        {
+            FloatingNavReads(HelmOverlaySettings.Default.ShowFloatingNavReads);
+            var boat = new FakeActiveBoat
+            {
+                HasActiveBoat = true,
+                Next = BoatKinematics.FromBow(Vector2.right, Vector2.zero),
+            };
+            GameServices.ActiveBoat = boat;
+
+            var hud = MakeHud();
+            yield return NextNavTick();
+
+            foreach (string label in new[] { "_compassLabel", "_compassRibbonLabel", "_compassNeedleLabel",
+                                             "_setDriftLabel", "_apparentWindLabel" })
+                Assert.IsFalse(Label(hud, label).enabled, $"{label}: no floating nav text at the helm");
+            Assert.IsFalse(Label(hud, "_compassLabel").text.Contains("090"),
+                           "and hidden, no heading was formatted into it");
         }
 
         [UnityTest]

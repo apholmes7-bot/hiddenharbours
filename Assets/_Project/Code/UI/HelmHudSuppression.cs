@@ -21,6 +21,11 @@ namespace HiddenHarbours.UI
     /// "remove any current game UI that obstructs the new boat UI"). A pure mapping, so the rule is
     /// EditMode-pinned with both its positive and its negative case and nothing has to be eyeballed.
     ///
+    /// <para><b>Since 2026-11-13 the cluster ships OFF.</b> The owner ruled the floating heading and
+    /// wind text away at the helm on every hull; <c>GameConfig.HelmOverlay.ShowFloatingNavReads</c>
+    /// (default false) is handed to <see cref="NavCluster(bool, bool, HelmControlStyle, in HelmFit)"/>
+    /// and everything below describes what happens when the owner turns it back on.</para>
+    ///
     /// <para><b>Two rules, and neither is a list of hulls.</b>
     /// <list type="number">
     /// <item><b>Duplication.</b> A HUD read that the CURRENT dash actually carries hides while that
@@ -59,6 +64,11 @@ namespace HiddenHarbours.UI
         /// Where the nav cluster (heading + rose ribbon + needle + set-and-drift + apparent wind)
         /// belongs right now.
         ///
+        /// <para><b>The switch comes first</b> (owner ruling 2026-11-13: "remove the compass/wind ui when
+        /// piloting a boat ... instruments will show this on boats equipped with them"). With
+        /// <paramref name="floatingReads"/> false, which is <c>GameConfig.HelmOverlay.ShowFloatingNavReads</c>'s
+        /// default, the answer is <see cref="NavClusterPlacement.Hidden"/> on every hull, dash or no dash.
+        /// With it true the rules below are exactly what they were:</para>
         /// <list type="bullet">
         /// <item>ashore, or aboard with no live kinematics → <see cref="NavClusterPlacement.Hidden"/>
         /// (unchanged: it is a sailing read);</item>
@@ -69,9 +79,10 @@ namespace HiddenHarbours.UI
         /// (overlap, read preserved).</item>
         /// </list>
         /// </summary>
-        public static NavClusterPlacement NavCluster(bool aboard, HelmControlStyle style, in HelmFit fit)
+        public static NavClusterPlacement NavCluster(bool floatingReads, bool aboard,
+                                                     HelmControlStyle style, in HelmFit fit)
         {
-            if (!aboard) return NavClusterPlacement.Hidden;
+            if (!floatingReads || !aboard) return NavClusterPlacement.Hidden;
             if (!DashIsUp(style, in fit)) return NavClusterPlacement.BottomCentre;
             return fit.Compass != CompassMount.None
                 ? NavClusterPlacement.Hidden
@@ -81,7 +92,7 @@ namespace HiddenHarbours.UI
         // ---- keeping out of what the helm covers (ADR 0050) -----------------------------------------
 
         /// <summary>
-        /// <see cref="NavCluster(bool, HelmControlStyle, in HelmFit)"/>, kept out of what the helm's UI
+        /// <see cref="NavCluster(bool, bool, HelmControlStyle, in HelmFit)"/>, kept out of what the helm's UI
         /// covers (<see cref="HelmFootprint"/>). A CARD that reaches the cluster at home moves it
         /// BESIDE the card — bottom-left, the move S4.5 already makes for a compass-less dash — so the
         /// tiller's card now does what the dash's always did. Everything else is the S4.5 answer
@@ -90,11 +101,12 @@ namespace HiddenHarbours.UI
         ///
         /// <para>Nothing covered: exactly the S4.5 answer.</para>
         /// </summary>
-        public static NavClusterPlacement NavCluster(bool aboard, HelmControlStyle style, in HelmFit fit,
+        public static NavClusterPlacement NavCluster(bool floatingReads, bool aboard,
+                                                     HelmControlStyle style, in HelmFit fit,
                                                      in HelmFootprintArea covered,
                                                      float screenW, float screenH)
         {
-            NavClusterPlacement placement = NavCluster(aboard, style, in fit);
+            NavClusterPlacement placement = NavCluster(floatingReads, aboard, style, in fit);
             if (placement == NavClusterPlacement.BottomCentre
                 && covered.Kind == HelmFootprintKind.Card
                 && covered.Overlaps(NavClusterScreenRect(placement, screenW, screenH)))

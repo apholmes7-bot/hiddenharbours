@@ -164,19 +164,19 @@ namespace HiddenHarbours.Tests.UI.EditMode
                 if (pass == 1) HudVisibilityPolicy.DevShowAll = true;
 
                 Assert.AreEqual(NavClusterPlacement.Hidden,
-                    HelmHudSuppression.NavCluster(aboard: false, HelmControlStyle.None, in tillerFit),
+                    HelmHudSuppression.NavCluster(floatingReads: true, aboard: false, HelmControlStyle.None, in tillerFit),
                     "ashore the cluster is hidden, whatever the band is doing");
 
                 Assert.AreEqual(NavClusterPlacement.BottomCentre,
-                    HelmHudSuppression.NavCluster(aboard: true, HelmControlStyle.Tiller, in tillerFit),
+                    HelmHudSuppression.NavCluster(floatingReads: true, aboard: true, HelmControlStyle.Tiller, in tillerFit),
                     "a tiller hull keeps its cluster at home, whatever the band is doing");
 
                 Assert.AreEqual(NavClusterPlacement.ClearOfTheDash,
-                    HelmHudSuppression.NavCluster(aboard: true, HelmControlStyle.Lever, in dashNoCompass),
+                    HelmHudSuppression.NavCluster(floatingReads: true, aboard: true, HelmControlStyle.Lever, in dashNoCompass),
                     "a dash with no compass still moves the cluster clear rather than deleting it");
 
                 Assert.AreEqual(NavClusterPlacement.Hidden,
-                    HelmHudSuppression.NavCluster(aboard: true, HelmControlStyle.Lever, in dashWithCompass),
+                    HelmHudSuppression.NavCluster(floatingReads: true, aboard: true, HelmControlStyle.Lever, in dashWithCompass),
                     "a dash that carries a compass still hides the duplicate");
             }
         }
