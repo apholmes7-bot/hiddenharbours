@@ -31,6 +31,22 @@ namespace HiddenHarbours.Tests
             ("tackle.spoon", "spoon"),
             ("longline.groundfish_tub", "longline_tub"),
             ("trawl_gear.bottom_otter_prototype", "trawl_net"),
+            // pass 2: the ids the Notebook's KIT page still lettered with a placeholder
+            ("watch.harbour_digital", "harbour_watch"),
+            ("gear.rod_rack", "rod_rack"),
+            ("trap.lobster", "lobster_pot"),
+            ("trap.crab", "crab_pot"),
+            ("bait.herring", "bait_herring"),
+            ("bait.mackerel", "bait_mackerel"),
+            ("bait.capelin", "bait_capelin"),
+            ("bait.squid_strip", "bait_squid_strip"),
+            ("bait.sea_worm", "bait_sea_worm"),
+            ("bait.shucked_clam", "bait_shucked_clam"),
+            ("bait.fish_scrap", "bait_fish_scrap"),
+            ("instrument.depth_sounder", "depth_sounder"),
+            ("instrument.fish_finder", "fish_finder"),
+            ("instrument.loran", "loran"),
+            ("instrument.gps", "gps"),
         };
 
         /// <summary>The smallest icon, px on its long side, that still reads in the card's icon slot.</summary>
