@@ -19,6 +19,8 @@
    10.3: the sleeper lies centred on the pivot (the pelvis at y = pelvisZ - heightM / 2, was -0.18 m), so the 80 x 104 cell holds the
    lying body at every facing; the saddle mounts turn the swing leg's knee about the leg from the standing pole to the seated pole
    (10.2 flipped it in one frame as the foot crossed beside the hip: up to 179 deg at the hip).
+   10.3 arm clearance (2026-11-20): dig, hauler and strike keep the left forearm and palm out of the torso. Only left-arm keys moved
+   (elbow poles, the dig's top hand, the strike's last grip); every hand still meets its tool or line, and no other clip changed.
    */
 (function (root) {
   'use strict';
@@ -109,7 +111,7 @@
         lean:[-4,3,12,11,9.5,8,7,6], yaw:[32,26,16,18,20,22,24,25], dy:[-0.04,-0.01,0.05,0.045,0.035,0.025,0.012,0.004] },
       bite:{ p:[54,51.9,54,54,51.9,54], b:[.06,.15,.06,.06,.15,.06] },
       strike:{ p:[54,48.9,50.3,87.8,97.7,77.8], b:[.10,.16,.23,.45,.51,.41],
-        g:[[0.10,0.23,0.775],[0.10,0.27,0.755],[0.10,0.25,0.76],[0.15,0.10,0.99],[0.16,0.06,1.05],[0.15,0.10,0.98]], lean:[5,8,7,-5,-8,-5], dy:[0,0.015,0.01,-0.03,-0.04,-0.03] },
+        g:[[0.10,0.23,0.775],[0.10,0.27,0.755],[0.10,0.25,0.76],[0.15,0.10,0.99],[0.16,0.06,1.05],[0.15,0.12,0.98]], lean:[5,8,7,-5,-8,-5], dy:[0,0.015,0.01,-0.03,-0.04,-0.03] },
       reel:{ p:[64,72,77.9,80,77.9,72,64,56,50.1,48,50.1,56], b:[.42,.5,.56,.58,.56,.5,.42,.42,.42,.42,.42,.42] },
       land:{ p:[64,60.1,53.8,58.1,72.2,85.2,97.6,109.6,110.1,103.8,95.8,88.9], b:[.42,.44,.47,.45,.39,.34,.28,.23,.21,.19,.16,.13],
         g:[[0.10,0.22,0.80],[0.10,0.225,0.79],[0.10,0.23,0.775],[0.10,0.22,0.79],[0.13,0.18,0.90],[0.15,0.16,0.99],[0.17,0.14,1.05],[0.18,0.12,1.09],[0.18,0.12,1.10],[0.17,0.14,1.07],[0.16,0.16,1.03],[0.15,0.18,0.99]],
@@ -119,7 +121,9 @@
     const fr=(u,n)=>Math.round(frac(u)*n)%n;
 
     /* ================= digging — the shaft runs left palm to right palm ================= */
-    const DIG={ L:[[0.02,0.16,0.84],[0.03,0.19,0.79],[0.03,0.21,0.75],[0.00,0.09,0.68],[0.02,0.13,0.82],[0.10,0.12,0.92],[0.12,0.10,0.94],[0.06,0.13,0.90],[0.03,0.17,0.87],[0.02,0.17,0.85]],
+    /* 10.3 arm clearance: the top (left) hand rides 0.05 further forward than 10.3 shipped, and its elbow turns out (el), so the
+       forearm and palm clear the belly and chest in every frame; the right hand, the shaft's lower grip, is unchanged */
+    const DIG={ L:[[0.02,0.21,0.84],[0.03,0.24,0.79],[0.03,0.26,0.75],[0.00,0.14,0.68],[0.02,0.18,0.82],[0.10,0.17,0.92],[0.12,0.15,0.94],[0.06,0.18,0.90],[0.03,0.22,0.87],[0.02,0.22,0.85]],
                 R:[[0.17,0.30,0.63],[0.18,0.33,0.58],[0.19,0.34,0.57],[0.18,0.32,0.58],[0.18,0.34,0.71],[0.32,0.26,0.83],[0.36,0.18,0.81],[0.26,0.28,0.73],[0.18,0.32,0.67],[0.17,0.30,0.65]],
                 lean:[22,26,28,20,18,14,12,16,20,22], yaw:[8,8,8,5,7,20,26,17,10,9] };
 
@@ -224,7 +228,9 @@
       castRelease(u,I,K){ rodTable(u,I,K,ROD.castRelease,'butt'); if(fr(u,8)===2) face(I,'open','knit','open'); },
       bite(u,I,K){ const T=ROD.bite, p=ftab(u,T.p,K.mode), b=ftab(u,T.b,K.mode), jolt=(54-p)/2.1; angler(I,K,6,26,0);
         rodGrip(I,K,K.bp([0.10,0.225+0.008*jolt,0.775-0.014*jolt]),p,16,b,'butt'); I.head.pitch=10; face(I, jolt>0.3?'wide':'open', jolt>0.3?'up':'flat', 'flat'); },
-      strike(u,I,K){ rodTable(u,I,K,ROD.strike,'butt'); if(u>=0.45) face(I,'open','knit','grit'); },
+      /* 10.3 arm clearance: through the lift the butt hand's elbow turns out and up, so the forearm clears the chest and face
+         (the hand stays on the butt); the last frame's grip sits 0.02 further forward so the butt hand clears the chest */
+      strike(u,I,K){ rodTable(u,I,K,ROD.strike,'butt'); if(frac(u)>=0.45) I.arms.L.el=[-0.7,-0.2,0.4]; if(u>=0.45) face(I,'open','knit','grit'); },
       reel(u,I,K){ const T=ROD.reel, p=ftab(u,T.p,K.mode), b=ftab(u,T.b,K.mode); angler(I,K,7,26,0);
         const grip=K.bp([0.10,0.21,0.80+0.002*(p-64)]); rodGrip(I,K,grip,p,16,b,null);
         const d=rodDir(p,16), side=vnorm(vcross([0,0,1],d)), upv=vcross(d,side), th=TAU*frac(u)*2, c=vadd(vadd(grip,vmul(d,0.07)),vmul(side,0.055));
@@ -236,7 +242,7 @@
         I.legs.L={ p:K.ft(-0.125,0.13), yaw:-8 }; I.legs.R={ p:K.ft(0.125,-0.08), yaw:20 };
         I.pelvis.p=[0.01,-0.03,D.pelvisZ-0.07]; I.pelvis.yaw=yaw*0.6; I.spine.yaw=yaw*0.25; I.chest.yaw=yaw*0.15;
         I.spine.pitch=lean*0.55; I.chest.pitch=lean*0.45; I.neck.pitch=-lean*0.3; I.head.pitch=10;
-        I.arms.L={ w:Lh, el:[-0.6,-0.8,-0.4] }; I.arms.R={ w:Rh, el:[0.9,-0.4,-0.6] };
+        I.arms.L={ w:Lh, el:[-1,-0.3,-0.3] }; I.arms.R={ w:Rh, el:[0.9,-0.4,-0.6] };
         const d=vsub(Rh,Lh), dl=vlen(d)||1; I.tool={ held:true, kind:'shovel', pitch:Math.asin(d[2]/dl)/DEG, yaw:Math.atan2(d[0],d[1])/DEG, bend:0, len:1.05 };
         const f=fr(u,10); face(I,'open',(f>=1&&f<=3)?'knit':'flat',(f>=1&&f<=3)?'grit':(f===5||f===6)?'open':'flat'); },
       balance(u,I,K){ const D=K.D, s1=sn(u), s2=sn(u,0.25);
@@ -317,7 +323,8 @@
         I.legs.L={ p:K.ft(-0.12,0.10), yaw:-10 }; I.legs.R={ p:K.ft(0.12,-0.06), yaw:14 };
         I.pelvis.p=[0.01,-0.01-0.03*pull,D.pelvisZ-0.035]; I.pelvis.yaw=10; I.spine.pitch=8-6*pull; I.chest.pitch=4-3*pull; I.spine.yaw=-4; I.head.pitch=10; I.head.yaw=12;
         /* 10.1: the pull's low end is held in the arm's reach (a 10.x body's shoulder is 0.2 m higher than 9.2's) */
-        I.arms.L={ w:inReach(I,K,'L',[sv[0]-0.08, sv[1]-0.06, Z-0.02+0.02*pull]), el:[-0.7,-0.8,-0.5] }; I.arms.R={ w:inReach(I,K,'R',vlerp([0.16,0.30,Z-0.10],[0.20,0.06,Z-0.34],pull)), el:[0.8,-0.8,-0.5] };
+        /* 10.3 arm clearance: the sheave hand's elbow turns out (el), so the forearm no longer crosses the belly; the hand is unchanged */
+        I.arms.L={ w:inReach(I,K,'L',[sv[0]-0.08, sv[1]-0.06, Z-0.02+0.02*pull]), el:[-0.95,-0.2,-0.2] }; I.arms.R={ w:inReach(I,K,'R',vlerp([0.16,0.30,Z-0.10],[0.20,0.06,Z-0.34],pull)), el:[0.8,-0.8,-0.5] };
         face(I,'open',pull>0.6?'knit':'flat',pull>0.6?'grit':'flat');
         I.pins.work={ layer:'warp', workZ:Z, requested:K.workReq, clamped:K.workReq!==Z, tension:+pull.toFixed(3), turns:+u.toFixed(3), sheave:sv, out:vnorm(vsub(sv,[sv[0]-0.08,sv[1]-0.06,Z])).map(x=>+x.toFixed(4)) }; },
       bench(u,I,K){ const D=K.D, Z=K.workZ, item=[-0.02,0.34,Z], th=TAU*u, band=seg(u,0.55,0.70)*(1-seg(u,0.90,1.0));
