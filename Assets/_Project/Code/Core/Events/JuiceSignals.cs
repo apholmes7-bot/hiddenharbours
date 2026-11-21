@@ -24,6 +24,13 @@ namespace HiddenHarbours.Core
         /// after the dig timing's <c>ImpactDelaySeconds</c> by the player's impact relay, and dropped if the
         /// dig is interrupted first. The sand chunks and the dig sound key off this. Strength = kg.</summary>
         DigImpact = 4,
+        /// <summary>The lift and toss: the dirt leaves the shovel's blade, published by the player's impact
+        /// relay <c>GameConfig.Juice.DigTossDelaySeconds</c> after <see cref="DigImpact"/> and dropped like it
+        /// when the dig is interrupted. When the blade could be read (<see cref="JuiceMomentCue.FromBlade"/>)
+        /// the point is the ground under the blade tip, <see cref="JuiceMomentCue.Lift"/> the tip's height
+        /// above it in the picture and <see cref="JuiceMomentCue.Dir"/> the way he throws, across the ground.
+        /// Silent (the dig sound is the impact's). Strength = kg.</summary>
+        DigToss = 5,
     }
 
     /// <summary>
@@ -39,6 +46,16 @@ namespace HiddenHarbours.Core
         public readonly float Y;
         /// <summary>The moment's size in its own unit: kg for a landing or a dig, coins for a sale, 0 for a cast entry.</summary>
         public readonly float Strength;
+        /// <summary>True when the point was read off the held tool's drawn blade (the dig's impact and toss),
+        /// so <see cref="Lift"/> and <see cref="Dir"/> mean something; false for every other cue.</summary>
+        public readonly bool FromBlade;
+        /// <summary>The blade tip's height above <see cref="At"/> in the picture (world units), when
+        /// <see cref="FromBlade"/>.</summary>
+        public readonly float Lift;
+        /// <summary>The throw across the ground (unit length, ground metres; zero = no direction), when
+        /// <see cref="FromBlade"/>.</summary>
+        public readonly float DirX;
+        public readonly float DirY;
 
         public JuiceMomentCue(JuiceMoment kind, float x, float y, float strength)
         {
@@ -46,11 +63,31 @@ namespace HiddenHarbours.Core
             X = x;
             Y = y;
             Strength = strength;
+            FromBlade = false;
+            Lift = 0f;
+            DirX = 0f;
+            DirY = 0f;
         }
 
         public JuiceMomentCue(JuiceMoment kind, Vector2 at, float strength)
             : this(kind, at.x, at.y, strength) { }
 
+        /// <summary>A cue read off the held tool's blade: <paramref name="ground"/> under the tip,
+        /// <paramref name="lift"/> above it, thrown along <paramref name="dir"/> (normalised here).</summary>
+        public JuiceMomentCue(JuiceMoment kind, Vector2 ground, float strength, float lift, Vector2 dir)
+        {
+            Kind = kind;
+            X = ground.x;
+            Y = ground.y;
+            Strength = strength;
+            FromBlade = true;
+            Lift = Mathf.Max(0f, lift);
+            Vector2 d = dir.sqrMagnitude > 1e-8f ? dir.normalized : Vector2.zero;
+            DirX = d.x;
+            DirY = d.y;
+        }
+
         public Vector2 At => new Vector2(X, Y);
+        public Vector2 Dir => new Vector2(DirX, DirY);
     }
 }
