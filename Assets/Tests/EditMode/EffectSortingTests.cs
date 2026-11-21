@@ -41,6 +41,7 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.AreEqual(0, EffectSorting.EmergentShorePlantRungs, "a plant sorts as a YSortSprite would");
             Assert.AreEqual(0, EffectSorting.NpcCatchRungs, "the NPC catch sorts at the boat's pivot");
             Assert.AreEqual(1, EffectSorting.RodOverFisherRungs, "the rod splash, one rung over the fisher");
+            Assert.AreEqual(0, EffectSorting.DigDirtRungs, "the dig's dirt sorts as a thing standing at the hole");
         }
 
         [Test] public void EveryEffect_ReadsItsRungsFromTheTable()
@@ -58,6 +59,7 @@ namespace HiddenHarbours.Tests.EditMode
                 { SortedEffect.RodLine, EffectSorting.RodLineRungs },
                 { SortedEffect.RodSplash, EffectSorting.RodOverFisherRungs },
                 { SortedEffect.NpcGearAtRail, EffectSorting.NpcGearOverHullRungs },
+                { SortedEffect.DigDirt, EffectSorting.DigDirtRungs },
             };
             CollectionAssert.AreEquivalent(AllEffects().ToArray(), expected.Keys.ToArray(),
                 "a new SortedEffect needs its row here and in EffectSorting.RungsFor");
@@ -155,17 +157,55 @@ namespace HiddenHarbours.Tests.EditMode
             try
             {
                 var em = go.AddComponent<MomentBurstEmitter>();
-                em.OverrideSettings(JuiceSettings.Default);
+                var j = JuiceSettings.Default;
+                em.OverrideSettings(j);
                 var at = new Vector2(3f, -41.6f);
-                em.OnMoment(new JuiceMomentCue(JuiceMoment.DigImpact, at, 0.1f));
+                em.OnMoment(new JuiceMomentCue(JuiceMoment.Landing, at, 2f));
 
                 Assert.IsNull(go.GetComponent<SortingGroup>(), "no host group: one order for every mote is the parked order");
                 int expected = EffectSorting.OrderAt(SortedEffect.MomentBurst, at.y);
                 Assert.AreEqual(RockAt(at.y) - 1, expected);
                 int sorted = go.GetComponentsInChildren<SortingGroup>(true).Count(g => g.sortingOrder == expected);
-                Assert.AreEqual(JuiceSettings.Default.SandChunkCount, sorted, "every chunk thrown, sorted where it fell");
+                Assert.AreEqual(em.AliveCount, sorted, "every drop thrown, sorted where it fell");
+                Assert.Greater(sorted, 0);
             }
             finally { Object.DestroyImmediate(go); }
+        }
+
+        [Test] public void TheDigsDirt_SortsAtTheHole_EveryClodAndTheToss()
+        {
+            var go = new GameObject("bursts");
+            try
+            {
+                var em = go.AddComponent<MomentBurstEmitter>();
+                var j = JuiceSettings.Default;
+                em.OverrideSettings(j);
+                var hole = new Vector2(3f, -41.6f);
+                em.OnMoment(new JuiceMomentCue(JuiceMoment.DigImpact, hole, 0.1f));
+
+                int expected = EffectSorting.OrderAt(SortedEffect.DigDirt, hole.y);
+                Assert.AreEqual(RockAt(hole.y), expected, "a thing standing at the hole");
+                int sorted = go.GetComponentsInChildren<SortingGroup>(true).Count(g => g.sortingOrder == expected);
+                Assert.AreEqual(j.SandChunkCount + j.DigTossChunkCount, sorted, "every clod, the toss included, sorted at the hole");
+            }
+            finally { Object.DestroyImmediate(go); }
+        }
+
+        [Test] public void TheDigsDirt_DrawsOverADiggerNorthOfTheHole_AndUnderOneSouthOfIt()
+        {
+            // The digger turns to face the hole and stands within his reach of it. Facing S the hole is south
+            // of his feet: the dirt must draw over his legs and the blade (the foot splash's -1 tied it with
+            // him and hid it). Facing N the hole is beyond him: the dirt draws under him.
+            foreach (float feetY in new[] { -106.64f, -41.6f, -0.13f, 0f, 0.125f, 3.3f, 12.4f })
+            foreach (float reach in new[] { 0.35f, 0.6f, 1.25f })
+            {
+                int digger = RockAt(feetY);
+                Assert.Greater(EffectSorting.OrderAt(SortedEffect.DigDirt, feetY - reach), digger, $"facing S, feet {feetY}, reach {reach}");
+                Assert.Less(EffectSorting.OrderAt(SortedEffect.DigDirt, feetY + reach), digger, $"facing N, feet {feetY}, reach {reach}");
+            }
+            // The old rung, kept as the reason: the foot splash's yield tied a hole 0.35 m south with him.
+            Assert.AreEqual(RockAt(-106.64f), EffectSorting.OrderAt(SortedEffect.MomentBurst, -106.64f - 0.24f),
+                "the foot-splash rung put dirt just south of him level with his legs");
         }
 
         /// <summary>Each re-anchored call site, and the table row it must ask.</summary>
@@ -175,6 +215,7 @@ namespace HiddenHarbours.Tests.EditMode
             ("Assets/_Project/Code/Art/SurfSprayEmitter.cs", "EffectSorting.OrderAt(SortedEffect.SurfSpray,pos.y)"),
             ("Assets/_Project/Code/Art/WadeSplashEmitter.cs", "EffectSorting.OrderAt(SortedEffect.WadeSplash,pos.y)"),
             ("Assets/_Project/Code/Art/MomentBurstEmitter.cs", "EffectSorting.OrderAt(SortedEffect.MomentBurst,pos.y)"),
+            ("Assets/_Project/Code/Art/MomentBurstEmitter.cs", "EffectSorting.OrderAt(SortedEffect.DigDirt,pos.y)"),
             ("Assets/_Project/Code/Fishing/TrapSplashFx.cs", "EffectSorting.OrderAt(SortedEffect.TrapSplash,at.y)"),
             ("Assets/_Project/Code/Boats/TrapBuoyPresenter.cs", "EffectSorting.OrderAt(SortedEffect.Buoy,e.PosY)"),
             ("Assets/_Project/Code/Boats/AmbientFleetPresenter.cs", "EffectSorting.OrderAt(SortedEffect.Buoy,fisher.Spots[j].y)"),

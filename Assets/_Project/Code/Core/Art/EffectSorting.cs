@@ -16,7 +16,8 @@ namespace HiddenHarbours.Core
         SurfSpray = 1,
         /// <summary>A wading or swimming figure's splash (Art <c>WadeSplashEmitter</c>). Anchored at the splash's spawn point.</summary>
         WadeSplash = 2,
-        /// <summary>The landing splash, dig chunks and cast rings (Art <c>MomentBurstEmitter</c>). Anchored at the cue's point.</summary>
+        /// <summary>The landing splash and cast rings (Art <c>MomentBurstEmitter</c>). Anchored at the cue's point.
+        /// The dig's dirt is <see cref="DigDirt"/>.</summary>
         MomentBurst = 3,
         /// <summary>The trap haul-break and set splash (Fishing <c>TrapSplashFx</c>). Anchored at the splash's point.</summary>
         TrapSplash = 4,
@@ -35,6 +36,9 @@ namespace HiddenHarbours.Core
         /// being gaffed or tossed (App <c>NpcPotBoats</c>). Carried: the boat's own order. The gear is not her
         /// child, so without this it would sort under the hull it is being worked over.</summary>
         NpcGearAtRail = 10,
+        /// <summary>The dirt a shovel throws out of a clam hole (Art <c>MomentBurstEmitter</c>, the dig impact and
+        /// its toss). Anchored at the hole, which the digger stands beside, never on.</summary>
+        DigDirt = 11,
     }
 
     /// <summary>
@@ -62,7 +66,7 @@ namespace HiddenHarbours.Core
         public const int SprayRungs = 0;
 
         /// <summary>
-        /// A splash at somebody's feet (the wade splash, the landing, dig and cast bursts) sorts one rung
+        /// A splash at somebody's feet (the wade splash, the landing and cast bursts) sorts one rung
         /// behind its spawn point. The figure whose feet threw it stands on that point and would otherwise tie
         /// with it, and a tie is broken by nothing we control; this is the splash yielding, as
         /// <see cref="SortingBands.HullYieldRungs"/> has the hull yield to whoever stands on her. Drops thrown
@@ -104,6 +108,14 @@ namespace HiddenHarbours.Core
         /// </summary>
         public const int NpcGearOverHullRungs = 1;
 
+        /// <summary>
+        /// Dirt thrown out of a clam hole sorts exactly as a thing standing at the hole would. The hole is not
+        /// the digger's feet: he stands beside it, facing it, so the foot splash's one-rung yield is wrong here
+        /// (facing S it tied the dirt with him and hid it behind his legs and the blade). At the hole's own
+        /// Y-sort the dirt draws over him when the hole is south of him and under him when it is beyond him (N).
+        /// </summary>
+        public const int DigDirtRungs = 0;
+
         // --- THE RULE ---------------------------------------------------------------------------------
 
         /// <summary>The rungs <paramref name="effect"/> sorts at from its anchor (or its carrier).</summary>
@@ -122,6 +134,7 @@ namespace HiddenHarbours.Core
                 case SortedEffect.RodLine: return RodLineRungs;
                 case SortedEffect.RodSplash: return RodOverFisherRungs;
                 case SortedEffect.NpcGearAtRail: return NpcGearOverHullRungs;
+                case SortedEffect.DigDirt: return DigDirtRungs;
                 default: return 0;
             }
         }
