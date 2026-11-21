@@ -45,6 +45,8 @@ namespace HiddenHarbours.Player
         }
 
         private readonly Transform _home;
+        private readonly string _name;
+        private readonly int _reachClaimant;
         private IsoFacetHeldPropRenderer _renderer;
 
         // Resolved once per Def / skin / clip, never per frame.
@@ -60,7 +62,20 @@ namespace HiddenHarbours.Player
         private IsoCharacterFigureRenderer _reachFigure;
 
         /// <param name="home">Where the renderer's object is made and given back to when hidden.</param>
-        public HeldRodMesh(Transform home) => _home = home;
+        public HeldRodMesh(Transform home) : this(home, "HeldRodMesh", IsoCharacterFigureRenderer.HeldReachTool) { }
+
+        /// <summary>
+        /// The same driver for any hand tool with a held mesh (the clam shovel): every rule here is read
+        /// off the tool's Def, none is the rod's own. <paramref name="name"/> names the renderer object;
+        /// <paramref name="reachClaimant"/> is the figure's overlay claim it pads
+        /// (<see cref="IsoCharacterFigureRenderer.HeldReachHandTool"/> for a tool held beside the rod).
+        /// </summary>
+        public HeldRodMesh(Transform home, string name, int reachClaimant)
+        {
+            _home = home;
+            _name = string.IsNullOrEmpty(name) ? "HeldRodMesh" : name;
+            _reachClaimant = reachClaimant;
+        }
 
         /// <summary>The reason of the last <see cref="TryDraw"/>.</summary>
         public Refusal LastRefusal { get; private set; } = Refusal.NoTool;
@@ -119,8 +134,18 @@ namespace HiddenHarbours.Player
         /// </summary>
         public bool TryDraw(bool switchOn, ToolDef tool, IsoCharacterFigureRenderer figure, float lineWidthPx,
                             Use use, float deltaSeconds)
+            => TryDraw(switchOn, tool, figure, lineWidthPx, use, deltaSeconds, null);
+
+        /// <summary>
+        /// As above, with the carried placement gripped at <paramref name="carriedMountBone"/> instead of the
+        /// Def's mount (a tool carried in his LEFT hand rides <see cref="HeldPropSockets.LeftHandTool"/>). A
+        /// clip that aims the tool always grips at the Def's mount: the rig aims a tool from that hand.
+        /// Null keeps the Def's.
+        /// </summary>
+        public bool TryDraw(bool switchOn, ToolDef tool, IsoCharacterFigureRenderer figure, float lineWidthPx,
+                            Use use, float deltaSeconds, string carriedMountBone)
         {
-            Refusal r = Resolve(switchOn, tool, figure, use, out Vector3 grip, out Quaternion aim);
+            Refusal r = Resolve(switchOn, tool, figure, use, carriedMountBone, out Vector3 grip, out Quaternion aim);
             if (r == Refusal.None && !EnsureRenderer(figure, lineWidthPx)) r = Refusal.BuildFailed;
             if (r == Refusal.None)
             {
@@ -205,6 +230,12 @@ namespace HiddenHarbours.Player
         /// <summary>The decision and the pose, told what his hands are doing (see <see cref="Use"/>).</summary>
         public Refusal Resolve(bool switchOn, ToolDef tool, IsoCharacterFigureRenderer figure, Use use,
                                out Vector3 gripLocal, out Quaternion aimLocal)
+            => Resolve(switchOn, tool, figure, use, null, out gripLocal, out aimLocal);
+
+        /// <summary>The decision and the pose, with the carried placement's grip bone named by the caller
+        /// (see <see cref="TryDraw(bool, ToolDef, IsoCharacterFigureRenderer, float, Use, float, string)"/>).</summary>
+        public Refusal Resolve(bool switchOn, ToolDef tool, IsoCharacterFigureRenderer figure, Use use,
+                               string carriedMountBone, out Vector3 gripLocal, out Quaternion aimLocal)
         {
             gripLocal = Vector3.zero;
             aimLocal = Quaternion.identity;
@@ -241,7 +272,13 @@ namespace HiddenHarbours.Player
 
             // In his hand: the grip is the palm socket on the frame drawn, every frame, so it follows the
             // hand bone; the aim is the clip's own tool key, or the Def's carried aim on a free gait.
-            if (!figure.TryBonePoint(_mountBone, out gripLocal)) return Refusal.NoMeshFigure;
+            int gripBone = _mountBone;
+            if (!aimed && !string.IsNullOrEmpty(carriedMountBone))
+            {
+                ResolveCarriedBone(figure.SkinDef, carriedMountBone);
+                if (_carriedBone != CharacterSkinDef.NoBone) gripBone = _carriedBone;
+            }
+            if (!figure.TryBonePoint(gripBone, out gripLocal)) return Refusal.NoMeshFigure;
             Carried = !aimed;
             aimLocal = aimed ? HeldPropPose.FromBakedPose(_bakedPitch, _bakedYaw, key.Pitch, key.Yaw)
                              : HeldPropPose.FromBakedPose(_bakedPitch, _bakedYaw, tool.CarriedPitchDeg, tool.CarriedYawDeg);
@@ -272,6 +309,19 @@ namespace HiddenHarbours.Player
             Stowed = true;
             return Refusal.None;
         }
+
+        private void ResolveCarriedBone(CharacterSkinDef skin, string boneId)
+        {
+            if (ReferenceEquals(skin, _carriedSkin) && string.Equals(boneId, _carriedBoneId, System.StringComparison.Ordinal))
+                return;
+            _carriedSkin = skin;
+            _carriedBoneId = boneId;
+            _carriedBone = skin.IndexOfBone(boneId);
+        }
+
+        private CharacterSkinDef _carriedSkin;
+        private string _carriedBoneId;
+        private int _carriedBone = CharacterSkinDef.NoBone;
 
         private void ResolveStowBone(CharacterSkinDef skin, string boneId)
         {
@@ -324,7 +374,7 @@ namespace HiddenHarbours.Player
             if (_renderer != null && ReferenceEquals(_renderer.Def, _def) && _renderer.IsConfigured) return true;
             if (_renderer == null)
             {
-                var go = new GameObject("HeldRodMesh") { hideFlags = HideFlags.DontSave };
+                var go = new GameObject(_name) { hideFlags = HideFlags.DontSave };
                 if (_home != null)
                 {
                     go.transform.SetParent(_home, false);
@@ -334,7 +384,7 @@ namespace HiddenHarbours.Player
             }
             CharacterSkinDef skin = figure.SkinDef;
             if (_renderer.Configure(_def, lineWidthPx, skin.PivotPx, skin.PxPerMetre, out string why)) return true;
-            Debug.LogWarning($"[HeldRodMesh] {why}: the rod stays a sprite.");
+            Debug.LogWarning($"[{_name}] {why}: the {(_tool != null ? _tool.DisplayName : "tool")} stays a sprite.");
             return false;
         }
 
@@ -342,9 +392,11 @@ namespace HiddenHarbours.Player
         /// padded by the rod's length while the rod is drawn, and given back when it is not.</summary>
         private void KeepReach(IsoCharacterFigureRenderer figure)
         {
-            if (!ReferenceEquals(figure, _reachFigure) && _reachFigure != null) _reachFigure.SetHeldReachMetres(0f);
+            if (!ReferenceEquals(figure, _reachFigure) && _reachFigure != null)
+                _reachFigure.SetHeldReachMetres(_reachClaimant, 0f);
             _reachFigure = figure;
-            if (figure != null && _renderer != null) figure.SetHeldReachMetres(_renderer.TipLocal.magnitude);
+            if (figure != null && _renderer != null)
+                figure.SetHeldReachMetres(_reachClaimant, _renderer.TipLocal.magnitude);
         }
     }
 }

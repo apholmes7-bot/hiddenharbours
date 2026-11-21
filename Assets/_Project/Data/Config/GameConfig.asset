@@ -928,6 +928,10 @@ MonoBehaviour:
   HeldFishMinLengthPx: 16
   HeldFishHandSwapDepthMeters: 0.05
   HeldRodGripToleranceMetres: 0.02
+  MeshHandToolInHand: 1
+  MeshPailInHand: 1
+  HeldShovelShaftHandToleranceMetres: 0.06
+  HeldShovelGroundToleranceMetres: 0.1
   CookedFishRamp:
   - {r: 1, g: 1, b: 1, a: 1}
   - {r: 1, g: 0.86, b: 0.64, a: 1}

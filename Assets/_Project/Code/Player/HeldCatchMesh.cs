@@ -45,7 +45,10 @@ namespace HiddenHarbours.Player
 
         private readonly Transform _home;
         private readonly string _name;
+        private readonly int _reachClaimant;
         private IsoFacetHeldPropRenderer _renderer;
+        private IsoFacetHeldPropMesh.Options _builtOptions;
+        private bool _builtHung;
 
         private CharacterSkinDef _skin;
         private string _mountBoneId;
@@ -58,9 +61,18 @@ namespace HiddenHarbours.Player
         /// <param name="home">Where the renderer's object is made and given back to when hidden.</param>
         /// <param name="name">The renderer object's name (for a plate or a hierarchy read).</param>
         public HeldCatchMesh(Transform home, string name = "HeldCatchMesh")
+            : this(home, name, IsoCharacterFigureRenderer.HeldReachCatch) { }
+
+        /// <summary>
+        /// The same hanger for anything else that hangs from a hand socket at the rig's own pose (the pail
+        /// by its bail, <see cref="TryDrawHung"/>). <paramref name="reachClaimant"/> is the figure's overlay
+        /// claim it pads (<see cref="IsoCharacterFigureRenderer.HeldReachCarry"/> for a pail).
+        /// </summary>
+        public HeldCatchMesh(Transform home, string name, int reachClaimant)
         {
             _home = home;
             _name = name;
+            _reachClaimant = reachClaimant;
         }
 
         /// <summary>The reason of the last <see cref="TryDraw"/>.</summary>
@@ -107,6 +119,77 @@ namespace HiddenHarbours.Player
             if (Drawing) KeepReach(figure);
             else Hide();
             return Drawing;
+        }
+
+        /// <summary>
+        /// <b>Hang any held mesh from a hand socket</b>, built as <paramref name="options"/> say (no fish
+        /// tone, no fin line: the caller's own build), turned by <paramref name="turn"/> in the figure's
+        /// frame about the grip. <paramref name="switchOn"/> is the caller's switch. The same decision,
+        /// socket read and overlay pad as a fish; only the build and the switch are the caller's.
+        /// </summary>
+        public bool TryDrawHung(bool switchOn, HeldPropMeshDef def, in IsoFacetHeldPropMesh.Options options,
+                                string socket, Quaternion turn, IsoCharacterFigureRenderer figure)
+        {
+            Refusal r = ResolveHung(switchOn, def, socket, figure, out Vector3 grip);
+            if (r == Refusal.None && !EnsureHungRenderer(def, options, figure)) r = Refusal.BuildFailed;
+            if (r == Refusal.None && !_renderer.Mount(figure, grip, turn)) r = Refusal.NoMeshFigure;
+            LastRefusal = r;
+            Drawing = r == Refusal.None;
+            if (Drawing) KeepReach(figure);
+            else Hide();
+            return Drawing;
+        }
+
+        /// <summary>The decision and the grip for <see cref="TryDrawHung"/>, without touching a renderer.</summary>
+        public Refusal ResolveHung(bool switchOn, HeldPropMeshDef def, string socket,
+                                   IsoCharacterFigureRenderer figure, out Vector3 gripLocal)
+        {
+            gripLocal = Vector3.zero;
+            if (!switchOn) return Refusal.SwitchOff;
+            if (def == null || !def.IsUsable()) return Refusal.NoMesh;
+            if (figure == null || !figure.IsConfigured || !figure.Visible || figure.SkinDef == null
+                || string.IsNullOrEmpty(figure.DrawnStateKey))
+                return Refusal.NoMeshFigure;
+            ResolveSkin(figure.SkinDef, socket);
+            if (_mountBone == CharacterSkinDef.NoBone) return Refusal.NoMountBone;
+            return figure.TryBonePoint(_mountBone, out gripLocal) ? Refusal.None : Refusal.NoMeshFigure;
+        }
+
+        private bool EnsureHungRenderer(HeldPropMeshDef def, in IsoFacetHeldPropMesh.Options options,
+                                        IsoCharacterFigureRenderer figure)
+        {
+            if (_renderer != null && _renderer.IsConfigured && _builtHung && ReferenceEquals(_renderer.Def, def)
+                && SameBuild(options, _builtOptions))
+                return true;
+            MakeRenderer();
+            CharacterSkinDef skin = figure.SkinDef;
+            _builtHung = true;
+            _builtOptions = options;
+            _builtFinPx = -1f;   // a fish build after this one must rebuild
+            if (_renderer.Configure(def, options, skin.PivotPx, skin.PxPerMetre, out string why)) return true;
+            Debug.LogWarning($"[{_name}] {why}: it stays a sprite.");
+            return false;
+        }
+
+        private static bool SameBuild(in IsoFacetHeldPropMesh.Options a, in IsoFacetHeldPropMesh.Options b) =>
+            Mathf.Approximately(a.Scale, b.Scale) && Mathf.Approximately(a.LineWidthMeters, b.LineWidthMeters)
+            && Mathf.Approximately(a.DotSizeMeters, b.DotSizeMeters)
+            && Mathf.Approximately(a.EdgeLineWidthMeters, b.EdgeLineWidthMeters)
+            && string.Equals(a.EdgeRampName, b.EdgeRampName, System.StringComparison.Ordinal)
+            && a.Tone == b.Tone && Mathf.Approximately(a.ToneGain, b.ToneGain)
+            && Mathf.Approximately(a.ToneLift, b.ToneLift) && Mathf.Approximately(a.DitherScale, b.DitherScale)
+            && Mathf.Approximately(a.DepthBiasMeters, b.DepthBiasMeters);
+
+        private void MakeRenderer()
+        {
+            if (_renderer != null) return;
+            var go = new GameObject(_name) { hideFlags = HideFlags.DontSave };
+            if (_home != null)
+            {
+                go.transform.SetParent(_home, false);
+                go.layer = _home.gameObject.layer;
+            }
+            _renderer = go.AddComponent<IsoFacetHeldPropRenderer>();
         }
 
         /// <summary>One facing's turn, degrees (the eight baked facings).</summary>
@@ -202,17 +285,7 @@ namespace HiddenHarbours.Player
         /// testable on its own.</summary>
         public Refusal Resolve(GameConfig config, HeldPropMeshDef def, string socket,
                                IsoCharacterFigureRenderer figure, out Vector3 gripLocal)
-        {
-            gripLocal = Vector3.zero;
-            if (config == null || !config.MeshCatchInHand) return Refusal.SwitchOff;
-            if (def == null || !def.IsUsable()) return Refusal.NoMesh;
-            if (figure == null || !figure.IsConfigured || !figure.Visible || figure.SkinDef == null
-                || string.IsNullOrEmpty(figure.DrawnStateKey))
-                return Refusal.NoMeshFigure;
-            ResolveSkin(figure.SkinDef, socket);
-            if (_mountBone == CharacterSkinDef.NoBone) return Refusal.NoMountBone;
-            return figure.TryBonePoint(_mountBone, out gripLocal) ? Refusal.None : Refusal.NoMeshFigure;
-        }
+            => ResolveHung(config != null && config.MeshCatchInHand, def, socket, figure, out gripLocal);
 
         private void ResolveSkin(CharacterSkinDef skin, string boneId)
         {
@@ -230,21 +303,13 @@ namespace HiddenHarbours.Player
             float eyePx = Mathf.Max(0f, config.HeldFishEyeSizePx);
             var tone = new Vector3(config.HeldFishToneGain, config.HeldFishToneLift, config.HeldFishDitherScale);
             float front = Mathf.Max(0f, config.HeldFishFrontBiasMeters);
-            if (_renderer != null && _renderer.IsConfigured && ReferenceEquals(_renderer.Def, def)
+            if (_renderer != null && _renderer.IsConfigured && !_builtHung && ReferenceEquals(_renderer.Def, def)
                 && Mathf.Approximately(_renderer.BuiltScale, scale)
                 && Mathf.Approximately(finPx, _builtFinPx) && Mathf.Approximately(eyePx, _builtEyePx)
                 && tone == _builtTone && Mathf.Approximately(front, _builtFront))
                 return true;
-            if (_renderer == null)
-            {
-                var go = new GameObject(_name) { hideFlags = HideFlags.DontSave };
-                if (_home != null)
-                {
-                    go.transform.SetParent(_home, false);
-                    go.layer = _home.gameObject.layer;
-                }
-                _renderer = go.AddComponent<IsoFacetHeldPropRenderer>();
-            }
+            MakeRenderer();
+            _builtHung = false;
             // Widths are art pixels in the def's own frame, so they stay a pixel at every size rung.
             float m = def.PxPerMetre > 0 ? 1f / def.PxPerMetre : 0f;
             var options = new IsoFacetHeldPropMesh.Options
@@ -277,10 +342,10 @@ namespace HiddenHarbours.Player
         private void KeepReach(IsoCharacterFigureRenderer figure)
         {
             if (!ReferenceEquals(figure, _reachFigure) && _reachFigure != null)
-                _reachFigure.SetHeldReachMetres(IsoCharacterFigureRenderer.HeldReachCatch, 0f);
+                _reachFigure.SetHeldReachMetres(_reachClaimant, 0f);
             _reachFigure = figure;
             if (figure != null && _renderer != null)
-                figure.SetHeldReachMetres(IsoCharacterFigureRenderer.HeldReachCatch, _renderer.TipLocal.magnitude);
+                figure.SetHeldReachMetres(_reachClaimant, _renderer.TipLocal.magnitude);
         }
     }
 }

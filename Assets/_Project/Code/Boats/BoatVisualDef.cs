@@ -257,6 +257,18 @@ namespace HiddenHarbours.Boats
                  "engine, and it must never be used to fix a fitting on the boat it belongs to.")]
         public Vector3 MotorMeshFitmentOffsetMeters = Vector3.zero;
 
+        [Tooltip("The baked MOTOR FIT as a mesh fitting: what a hull gains with her engine besides the " +
+                 "engine itself (the dory's stern bench and transom motor board). Drawn only while the " +
+                 "engine is fitted, so the plain hull stays plain. Null for every hull whose body " +
+                 "already carries her helm. Produced and wired by the fitting bake.")]
+        public HiddenHarbours.Core.HullPropMeshDef MotorFitMesh = null;
+
+        [Tooltip("THE TILLER STATION: where the skipper sits, braces and holds the tiller on a hull " +
+                 "steered by a tiller outboard with no helm console. Read only while the engine is " +
+                 "fitted (a dory that has bought her motor); the same hull rowed keeps her rowing " +
+                 "station. Enabled off = the pilot stance below decides, as before.")]
+        public TillerStationConfig Tiller = TillerStationConfig.Default;
+
         [Tooltip("The baked HELM BAR as a mesh fitting: the part of the helm the rider turns (a " +
                  "jetski's handlebars), left out of the hull body so it can turn with the helm. Null " +
                  "for every hull whose wheel is part of her body mesh. Produced and wired by the " +
@@ -378,6 +390,29 @@ namespace HiddenHarbours.Boats
             PilotStanceFor() == HiddenHarbours.Core.CharacterStance.Oars
                 ? OarsPilotDeckBearingDegrees
                 : HelmPilotDeckBearingDegrees;
+
+        /// <summary>
+        /// True when the pilot of a hull drawn through this visual with <paramref name="propulsion"/>
+        /// sits at a TILLER: the station is enabled and the hull is driven by her engine. The dory and
+        /// the dory with her motor share this visual; only the second is steered from the stern bench.
+        /// </summary>
+        public bool SeatsAtTiller(PropulsionType propulsion) =>
+            Tiller.Enabled && propulsion == PropulsionType.Engine;
+
+        /// <summary>
+        /// The pilot's stance for a hull drawn through this visual with <paramref name="propulsion"/>:
+        /// a helm (the tiller) when <see cref="SeatsAtTiller"/>, otherwise <see cref="PilotStanceFor()"/>.
+        /// </summary>
+        public HiddenHarbours.Core.CharacterStance PilotStanceFor(PropulsionType propulsion) =>
+            SeatsAtTiller(propulsion) ? HiddenHarbours.Core.CharacterStance.Helm : PilotStanceFor();
+
+        /// <summary>
+        /// The pilot's deck bearing for a hull drawn through this visual with <paramref name="propulsion"/>:
+        /// the tiller station's own facing when <see cref="SeatsAtTiller"/>, otherwise
+        /// <see cref="PilotDeckBearingDegrees()"/>.
+        /// </summary>
+        public float PilotDeckBearingDegrees(PropulsionType propulsion) =>
+            SeatsAtTiller(propulsion) ? Tiller.FacingDeckBearingDegrees : PilotDeckBearingDegrees();
 
         public HiddenHarbours.Core.CharacterStance PilotStanceFor() => PilotStance switch
         {

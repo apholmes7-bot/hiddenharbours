@@ -135,6 +135,7 @@ Material:
     - _SwashEdgeShift: 0.6
     - _SwashMaxEdgeShift: 0.35
     - _SwashSpeed: 0.16
+    - _SwellReadRelative: 1
     - _SwellReadSeaStateLo: 0.1
     - _SwellShoalDepth: 1.5
     - _Turbidity: 0.5
