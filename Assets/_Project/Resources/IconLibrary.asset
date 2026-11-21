@@ -73,6 +73,36 @@ MonoBehaviour:
     Icon: {fileID: 21300000, guid: 469a80da096841fb8212867232c6d76d, type: 3}
   - Id: trawl_gear.bottom_otter_prototype
     Icon: {fileID: 21300000, guid: a5c07fc21641433994a0d9d697e36ea8, type: 3}
+  - Id: watch.harbour_digital
+    Icon: {fileID: 21300000, guid: b269511ab9c741b3a4921dfa48694f01, type: 3}
+  - Id: gear.rod_rack
+    Icon: {fileID: 21300000, guid: a225f8e144f54afea4c5aa852f37711c, type: 3}
+  - Id: trap.lobster
+    Icon: {fileID: 21300000, guid: ec14806cacc74b488446d6717b27901f, type: 3}
+  - Id: trap.crab
+    Icon: {fileID: 21300000, guid: fc0647e59a0f42f8ab634401f66bf15e, type: 3}
+  - Id: bait.herring
+    Icon: {fileID: 21300000, guid: 60eed87278e64c02b2b3412676cb3cdf, type: 3}
+  - Id: bait.mackerel
+    Icon: {fileID: 21300000, guid: 39b365bb87594804b163f166ed31dba7, type: 3}
+  - Id: bait.capelin
+    Icon: {fileID: 21300000, guid: facc55fd06be4a9aa5ffa7b920319a54, type: 3}
+  - Id: bait.squid_strip
+    Icon: {fileID: 21300000, guid: 8779afd983c64836a33ba4d7974d2948, type: 3}
+  - Id: bait.sea_worm
+    Icon: {fileID: 21300000, guid: 030ba989a0da44668fe6f4d9dcff7cc0, type: 3}
+  - Id: bait.shucked_clam
+    Icon: {fileID: 21300000, guid: a3205ea595844a2c830ffcdbabbc58d2, type: 3}
+  - Id: bait.fish_scrap
+    Icon: {fileID: 21300000, guid: 90c60c61eab14d32817b28b58497f052, type: 3}
+  - Id: instrument.depth_sounder
+    Icon: {fileID: 21300000, guid: 50ff9fbe07d8467790cec52425ea8e9f, type: 3}
+  - Id: instrument.fish_finder
+    Icon: {fileID: 21300000, guid: 180f9c554f394294b5cb8ee349a75639, type: 3}
+  - Id: instrument.loran
+    Icon: {fileID: 21300000, guid: 50c83f151b744e859c136692ce548004, type: 3}
+  - Id: instrument.gps
+    Icon: {fileID: 21300000, guid: 62ca54007eb94bfabad97aad1e6cf563, type: 3}
   - Id: license.cod
     Icon: {fileID: 21300000, guid: 4bd247b5cbbe4ca3a9869c1fed00f1d6, type: 3}
   - Id: boat.dory

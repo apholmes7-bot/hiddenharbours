@@ -345,7 +345,7 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         [Test]
-        public void AClipThatAimsNoTool_HoldsTheRodAtItsBakedPose_OnTheSocket()
+        public void AClipThatAimsNoTool_HoldsTheRodAtTheDefsCarriedAim_OnTheSocket()
         {
             ToolDef rod = Load<ToolDef>(RodPath);
             Assert.IsTrue(rod.DrawCarriedMeshOnFigure, "the shipped rod must ask for its carried mesh");
@@ -364,8 +364,10 @@ namespace HiddenHarbours.Tests.EditMode
                     Assert.AreSame(figure.FacetTransform, r.transform.parent);
                     Assert.IsTrue(figure.TryBonePoint(socket, out Vector3 grip));
                     Assert.Less((r.transform.localPosition - grip).magnitude, 1e-5f, "the carried grip is not on the socket");
-                    Assert.Less(Quaternion.Angle(r.transform.localRotation, Quaternion.identity), 1e-3f,
-                                "the carried rod must keep its rig's held pose (D1)");
+                    Assert.IsFalse(driver.Stowed, $"'{state}' is a free-handed gait: the rod stays in his hand");
+                    Vector3 aim = r.transform.localRotation * HeldPropPose.ToolDirection(56f, 16f);
+                    Assert.Less((aim - HeldPropPose.ToolDirection(rod.CarriedPitchDeg, rod.CarriedYawDeg)).magnitude, 1e-3f,
+                                "the carried rod must be aimed at the Def's carried aim (D1), not the fishing aim");
                 }
             }
             Assert.IsTrue(figure.SetPose("hold", 0));

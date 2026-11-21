@@ -462,7 +462,15 @@ namespace HiddenHarbours.App.Editor
             freezerSr.color = new Color(0.85f, 0.92f, 0.95f);   // chest-freezer white, reads icy
             freezerSr.sortingOrder = 3;   // pre-Play default only; the YSortSprite below OWNS the order
             freezerGo.transform.localScale = new Vector3(1.2f, 1.0f, 1f);
-            freezerGo.AddComponent<GinnyFreezer>();
+            var freezer = freezerGo.AddComponent<GinnyFreezer>();
+            // Its Def (capacity 20 and the baked chest): at Play the square gives way to the chest art.
+            var freezerDef = UnityEditor.AssetDatabase.LoadAssetAtPath<FreezerDef>(ChestFreezerAssets.GinnyDefPath);
+            if (freezerDef != null)
+            {
+                var freezerSo = new UnityEditor.SerializedObject(freezer);
+                freezerSo.FindProperty("_def").objectReferenceValue = freezerDef;
+                freezerSo.ApplyModifiedPropertiesWithoutUndo();
+            }
             freezerGo.AddComponent<FreezerContentsPresenter>();   // what is in it, while he stands at it
             // A thing you walk up to layers by world Y like everything else you can stand in front of
             // (ADR 0032 re-based the band; a fixed order would be buried by the meadow around it).

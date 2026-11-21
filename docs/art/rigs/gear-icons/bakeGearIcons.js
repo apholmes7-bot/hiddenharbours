@@ -251,5 +251,280 @@ const PIECES = {
 };
 const ROD_DIR = 0, ROD_PITCH = 22 * Math.PI / 180, ROD_YAW = 90 * Math.PI / 180;
 
+/* ---- PASS 2 (2026-11-20): the gear the Notebook's KIT page still lettered -------------------------
+   The watch, the rod rack, the two pots, the seven baits and the four boat instruments. Same turntable,
+   same icon-pixel units, same trim. The pots are not modelled here: they are trapIsoRig.js's builds,
+   the rig the world pots (PotWood.png, PotWire.png) come from. The extra ramps below are lifted from
+   the rigs that own those things (no invented hues) and are handed ONLY to the pass-2 pieces, so the
+   pass-1 icons above re-bake byte for byte:
+     resin, bezel, lcd, seg          ui/watch-face/Art/watchRig.js (RESIN, BEZEL, DAY lcd + segments)
+     case, sonar, sonar band, fish   ui/console-helm/Art/fishRig.js (CASE, water, band, fish marks)
+     chart sea / land                ui/console-helm/Art/fishRig.js (BLUE, TEAK)
+     weed                            deck-loop-kit/Art/trapIsoRig.js (WEED)
+     meat                            plaza-stores/nmcStores.js (meat)
+   A screen is a flat ramp (one colour) so it reads as lit glass, not as a shaded solid. */
+(0, eval)(fs.readFileSync(path.join(RIGS, 'deck-loop-kit/Art/trapIsoRig.js'), 'utf8'));
+const Trap = globalThis.TrapIso;
+const flat = (c) => [c, c, c, c, c];
+const R2 = {
+  resin: ['#050607', '#0c0f11', '#15191c', '#20262a', '#2c343a'],
+  bezel: ['#5b636a', '#767f86', '#8b949b', '#a3acb2', '#c2c9cd'],
+  lcd:   flat('#cbd2c4'), seg: flat('#1c2119'),
+  case:  ['#12171b', '#1b2228', '#28323a', '#3a4750', '#4f5e68', '#6b7c86'],
+  sonar: flat('#1a4b5a'), sonDeep: flat('#081019'),
+  bGreen: flat('#4e9a4a'), bYellow: flat('#c9b53c'), bOrange: flat('#e0902f'), bRed: flat('#d0552c'),
+  fishA: flat('#e0554a'), fishB: flat('#e8863c'), digit: flat('#ffd08a'), teal2: flat('#7fd6c9'),
+  sea:   flat('#5b93b8'), land: flat('#c9a86a'),
+  weed:  ['#1a2311', '#26301a', '#39471d', '#5c6e2c', '#8a9a45'],
+  meat:  ['#5a1418', '#781c22', '#97272c', '#b03a3a', '#c55650', '#d6766c'],
+};
+const MATS2 = Object.assign({}, MATS); for (const k in R2) MATS2[k] = { ramp: R2[k] };
+// sc grows a small piece to the card's reading size (~30-48 px) about the turntable origin, as an icon is a picture, not world size
+function render2(faces, dir, sc) {
+  const W = 112, H = 112, k = sc || 1, F = k === 1 ? faces : faces.map(f => Object.assign({}, f, { v: f.v.map(p => [p[0] * k, p[1] * k, p[2] * k]) }));
+  return { W, H, rgba: K.paint(F, { W, H, cx: 56, cy: 64, MATS: MATS2, dir: dir || 0 }) };
+}
+
+// a face plane: u across, v up the face, w out of it; the face leans back by t from upright, so a screen
+// or a watch dial looks at the camera instead of being foreshortened to a sliver
+const faceXf = (t, o) => (p) => [o[0] * U + p[0], o[1] * U + p[1] * Math.sin(t) - p[2] * Math.cos(t), o[2] * U + p[1] * Math.cos(t) + p[2] * Math.sin(t)];
+function FBox(c, h, mat, t, o, b, db) { return K.box(P(c), P(h), mat, b, db, faceXf(t, o)); }
+// a lit rectangle on a face at w (glyph pixels): u0..u1, v0..v1, drawn just proud of the face
+function Glyph(u0, u1, v0, v1, w, mat, t, o) { return FBox([(u0 + u1) / 2, (v0 + v1) / 2, w + 0.15], [(u1 - u0) / 2, (v1 - v0) / 2, 0.15], mat, t, o, 0, 0.05); }
+// a seven-segment digit on a face, 3 px wide, 5 px tall, lower-left at (u,v)
+const SEGS = { 0: 'abcdef', 1: 'bc', 2: 'abged', 3: 'abgcd', 4: 'fgbc', 5: 'afgcd', 7: 'abc', 8: 'abcdefg', 9: 'abcfgd' };
+function Digit(n, u, v, w, mat, t, o) {
+  const F = [], s = SEGS[n];
+  const seg = { a: [u, u + 3, v + 4, v + 5], g: [u, u + 3, v + 2, v + 3], d: [u, u + 3, v, v + 1], f: [u, u + 1, v + 2.5, v + 5], b: [u + 2, u + 3, v + 2.5, v + 5], e: [u, u + 1, v, v + 2.5], c: [u + 2, u + 3, v, v + 2.5] };
+  for (const k of s) F.push(...Glyph(...seg[k], w, mat, t, o));
+  return F;
+}
+// a fish lying flat: lens outline in x-y, belly ramp body, a darker back strip, an eye
+function FlatFish(len, wid, x, y, z, rz, body, back, opts) {
+  opts = opts || {}; const F = [], n = 14, out = [];
+  for (let i = 0; i < n; i++) { const a = i / n * Math.PI * 2, c = Math.cos(a), s = Math.sin(a); const taper = c < 0 ? 0.55 + 0.45 * (1 + c) : 1; out.push([c * len / 2, s * wid / 2 * taper]); }
+  const xf = (p) => xfOf(rz)([x * U + p[0], y * U + p[1], z * U + p[2]]);
+  F.push(...K.prism(out.map(q => [q[0] * U, q[1] * U]), 0, (opts.h || 1.4) * U, body, { caps: true, capB: 0.2, xf }));
+  const bk = out.filter(q => q[1] > 0).map(q => [q[0] * U, q[1] * U]); bk.push([len / 2 * 0.9 * U, 0], [-len / 2 * 0.9 * U, 0]);
+  const strip = []; for (let i = 0; i <= 8; i++) { const xx = -len / 2 * 0.8 + i * len * 0.8 / 8; strip.push([xx * U, wid * 0.1 * U]); }
+  for (let i = 8; i >= 0; i--) { const xx = -len / 2 * 0.8 + i * len * 0.8 / 8; const k = 1 - Math.abs(xx) / (len / 2); strip.push([xx * U, (wid * 0.1 + wid * 0.38 * Math.max(0.2, k)) * U]); }
+  F.push(...K.prism(strip, (opts.h || 1.4) * U, ((opts.h || 1.4) + 0.2) * U, back, { caps: true, capB: 0.1, xf, db: 0.02 }));
+  // the tail fork
+  F.push(...Bar([-len / 2 - 0.2, 0, 0.7], [-len / 2 - 2.6, -1.8, 0.7], [0.9, 0.5], back, 0, 0.1).map(f => (f.v = f.v.map(v => xfOf(rz)([v[0] + x * U, v[1] + y * U, v[2] + z * U])), f)));
+  F.push(...Bar([-len / 2 - 0.2, 0, 0.7], [-len / 2 - 2.6, 1.8, 0.7], [0.9, 0.5], back, 0, 0.1).map(f => (f.v = f.v.map(v => xfOf(rz)([v[0] + x * U, v[1] + y * U, v[2] + z * U])), f)));
+  if (opts.eye !== false) F.push(...K.box([len / 2 * 0.62 * U, -wid * 0.05 * U, ((opts.h || 1.4) + 0.3) * U], [0.5 * U, 0.5 * U, 0.3 * U], 'graph', 0, 0.06, xf));
+  return F;
+}
+// the U bracket every helm instrument hangs in: two cheeks, a foot, two knobs
+function Bracket(hw, hh, t, o, foot) {
+  const F = [];
+  for (const s of [-1, 1]) {
+    F.push(...FBox([s * (hw + 1), 0, -1.5], [0.7, 2.6, 1.6], 'steel', t, o, 0.2));
+    F.push(...FBox([s * (hw + 2.0), 0.4, -1.5], [0.6, 1.2, 1.2], 'graph', t, o, 0.4, 0.05));       // the knob
+    F.push(...Bar([o[0] + s * (hw + 1), o[1] + 1, o[2] - 2], [o[0] + s * (hw + 1), o[1] + 1, foot], 0.8, 'steel', 0, 0.1));
+  }
+  F.push(...Box([o[0], o[1] + 1, foot - 0.4], [hw + 2, 3.2, 0.6], 'steel', 0, 0.3));
+  return F;
+}
+
+Object.assign(PIECES, {
+  // a resin digital watch, the strap closed in a loop behind the case, LCD showing the hour
+  harbour_watch() {
+    const F = [], t = 0.5, o = [0, 0, 16];
+    F.push(...FBox([0, 0, 0], [6.5, 7, 1.8], 'resin', t, o, 0.5));                          // the case
+    F.push(...FBox([0, 0, 1.9], [5.6, 5.8, 0.25], 'bezel', t, o, 0.2, 0.02));                 // the face ring
+    F.push(...Glyph(-4.4, 4.4, -3.2, 3.2, 2.1, 'lcd', t, o));                                  // the LCD
+    F.push(...Digit(1, -4.0, -2.5, 2.3, 'seg', t, o), ...Digit(2, 0.8, -2.5, 2.3, 'seg', t, o));
+    for (const s of [-1, 1]) for (const v of [-3.5, 3.5]) F.push(...FBox([s * 7.1, v, 0.2], [0.8, 0.9, 0.8], 'steel', t, o, 0.4)); // pushers
+    // the strap, up and down out of the case, curling back away from the face; holes in the lower one
+    for (const s of [-1, 1]) for (let i = 0; i < 7; i++) {
+      const v0 = 6.5 + i * 1.4, v1 = v0 + 1.6, w0 = -0.06 * (v0 - 6.5) ** 2, w1 = -0.06 * (v1 - 6.5) ** 2;
+      const a = Math.atan2(w1 - w0, v1 - v0), cv = s * (v0 + v1) / 2, cw = (w0 + w1) / 2;
+      F.push(...K.box([0, 0, 0], [4.4 * U, 0.85 * U, 0.8 * U], 'resin', i % 2 ? 0.6 : 0.9, 0,
+        (p) => faceXf(t, o)([p[0], cv * U + p[1] * Math.cos(a) * s - p[2] * Math.sin(a), cw * U + p[1] * Math.sin(a) * s + p[2] * Math.cos(a)])));
+      if (s < 0 && i >= 2 && i % 2 === 0) F.push(...Glyph(-0.5, 0.5, cv - 0.5, cv + 0.5, cw + 0.65, 'graph', t, o));
+    }
+    F.push(...FBox([0, 7.2, 0.8], [4.6, 0.5, 0.6], 'steel', t, o, 0.6));                       // the keeper by the case
+    return render2(F, 0, 1.25);
+  },
+  // four rods upright in a wooden rack: a notched top board, a butt cup board, a back plank
+  rod_rack() {
+    const F = [];
+    F.push(...Box([0, 3, 15], [13, 1, 15], 'wood', 0, -0.2));                                // back plank
+    F.push(...Box([0, 0, 24], [13, 3, 0.9], 'wood', 0, 0.3));                                // notched top board
+    F.push(...Box([0, 0, 3], [13, 3, 1.2], 'wood', 0, 0.1));                                 // butt board
+    for (const [k, x] of [[0, -9], [1, -3], [2, 3], [3, 9]]) {
+      F.push(...Bar([x, -0.5, 4], [x, -0.5, 12], 1.2, 'ash', 0, 0.2));                        // cork grip
+      F.push(...Box([x, -2.2, 14], [1.4, 1.4, 1.5], k % 2 ? 'graph' : 'steel', 0, 0.3));      // the reel
+      F.push(...Bar([x, -0.5, 12], [x + (k - 1.5) * 0.3, -0.5, 46 - k % 2 * 3], [0.7, 0.45], k === 2 ? 'navy' : 'graph', 0, 0.4));
+      for (const z of [22, 32, 40]) F.push(...Box([x + (k - 1.5) * 0.3 * (z - 12) / 34, -1.3, z], [0.5, 0.6, 0.5], 'steel', 0, 0.6)); // guides
+    }
+    return render2(F, 0);
+  },
+  // the wooden bow-top lobster pot (trap.lobster), the world pot's own rig build, three-quarter on
+  lobster_pot() { return { W: Trap.W, H: Trap.H, rgba: Trap.render('wood', 1, { colour: 'oak' }) }; },
+  // the wire crab pot (trap.crab), the world pot's own rig build
+  crab_pot() { return { W: Trap.W, H: Trap.H, rgba: Trap.render('crabWire', 1, { colour: 'black' }) }; },
+
+  // herring for the pots: a net bait bag stuffed with whole herring, tails out of the tied neck
+  bait_herring() {
+    const F = [], weave = (i) => (i % 2 ? -0.8 : 0.3);
+    const bands = [[0, 3, 5, 7.5], [3, 7, 7.5, 8.5], [7, 11, 8.5, 8], [11, 14, 8, 5.5], [14, 16, 5.5, 2.5]];
+    bands.forEach(([z0, z1, r0, r1], k) => F.push(...Tube([0, 0], z0, z1, r0, r1, 12, 'net', { biasOf: (i) => weave(i + k), caps: k === 0 ? 'bottom' : 'none', phase: k * 0.26 })));
+    for (const [a, z] of [[3.6, 4], [4.3, 9], [5.2, 6], [3.0, 11], [4.9, 12.5], [5.9, 9.5]])   // silver showing through
+      F.push(...Box([Math.cos(a) * 8.2, Math.sin(a) * 8.2, z], [1.6, 0.6, 0.7], 'white', a + 1.2, 0.2, 0.25));
+    F.push(...Tube([0, 0], 15.5, 17, 2.8, 2.8, 8, 'rope', { caps: 'top', b: 0.4 }));       // the tie
+    for (const [dx, a] of [[-1.2, -0.5], [0.6, 0.15], [1.8, 0.7]]) {                            // tails
+      F.push(...Bar([dx, 0, 16.5], [dx + Math.sin(a) * 3, 0, 21], [0.9, 0.6], 'steel', 0, 0.3));
+      F.push(...Bar([dx + Math.sin(a) * 3, 0, 21], [dx + Math.sin(a) * 3 - 1.6, -0.4, 23.5], [0.8, 0.4], 'navy', 0, 0.3));
+      F.push(...Bar([dx + Math.sin(a) * 3, 0, 21], [dx + Math.sin(a) * 3 + 1.6, -0.4, 23.5], [0.8, 0.4], 'navy', 0, 0.3));
+    }
+    return render2(F, 0, 1.45);
+  },
+  // mackerel cut for bait: three thick chunks, tiger-barred green back on top, red cut faces forward
+  bait_mackerel() {
+    const F = [];
+    for (const [x, y, rz, w] of [[-8, 2, 0.25, 6], [0, -1, -0.05, 6.5], [8, 2.5, -0.3, 5.5]]) {
+      const xf = xfOf(rz), o = (p) => xf([p[0] + x * U, p[1] + y * U, p[2]]);
+      const sec = [[-w / 2, -3], [w / 2, -3], [w / 2 * 0.9, 3], [-w / 2 * 0.9, 3]].map(q => [q[0] * U, q[1] * U]);
+      F.push(...K.prism(sec, 0, 5 * U, 'meat', { caps: true, capB: 0.6, xf: o }));             // the flesh
+      F.push(...K.prism(sec.map(q => [q[0] * 1.02, q[1] * 1.02]), 5 * U, 5.9 * U, 'teal', { caps: true, capB: 0.5, xf: o, db: 0.02 }));  // the skin
+      for (const yy of [-1.8, 0.2, 2.2]) F.push(...K.box([0, yy * U, 6.0 * U], [w / 2 * 0.85 * U, 0.45 * U, 0.12 * U], 'navy', 0.2, 0.05, o)); // the bars
+      F.push(...K.box([0, -3.05 * U, 2.6 * U], [w / 2 * 0.6 * U, 0.1 * U, 0.6 * U], 'white', 0.4, 0.05, o));   // the backbone
+    }
+    return render2(F, 0, 1.7);
+  },
+  // capelin: a fanned bunch of small slim fish, olive backs, tails gathered
+  bait_capelin() {
+    const F = [];
+    [-0.62, -0.31, 0, 0.31, 0.62].forEach((a, k) => {
+      const L = 17, cx = Math.cos(a) * (L / 2 + 2) - 8, cy = Math.sin(a) * (L / 2 + 2);
+      F.push(...FlatFish(L, 3.6, cx, cy, k % 2 ? 0.3 : 1.0, a, 'white', 'net', { h: 1.2 }));
+    });
+    return render2(F, 0, 1.5);
+  },
+  // squid cut in strips: three white tapering ribbons on a cutting board
+  bait_squid_strip() {
+    const F = [];
+    F.push(...Box([0, 0, 1], [14, 8, 1], 'wood', 0, 0.2));
+    [[-3.5, 0.18], [0.5, -0.05], [4.5, 0.12]].forEach(([y, rz], k) => {
+      const n = 10, pts = [];
+      for (let i = 0; i <= n; i++) { const x = -11 + i * 2.2, w = 1.6 - i * 0.08; pts.push([x, y + Math.sin(i * 0.8 + k) * 0.8 + w]); }
+      for (let i = n; i >= 0; i--) { const x = -11 + i * 2.2, w = 1.6 - i * 0.08; pts.push([x, y + Math.sin(i * 0.8 + k) * 0.8 - w]); }
+      F.push(...K.prism(pts.map(q => [q[0] * U, q[1] * U]), 2 * U, 3 * U, 'white', { caps: true, capB: 1.3, xf: xfOf(rz), db: 0.02 }));
+      F.push(...K.box([-11 * U, (y + 0.6) * U, 3.1 * U], [0.8 * U, 0.6 * U, 0.1 * U], 'meat', 0.8, 0.05, xfOf(rz)));   // the skin fleck at the cut end
+    });
+    return render2(F, 0, 1.4);
+  },
+  // sea worms: two red-brown segmented worms coiled on a pad of wet rockweed
+  bait_sea_worm() {
+    const F = [];
+    for (const [x, y, s] of [[-6, 2, 4], [2, -2, 5], [7, 3, 3.5], [-2, 4, 4], [0, 1, 4.5]])
+      F.push(...Box([x, y, 1.6], [s, s * 0.7, 1.6], 'weed', x * 0.2, (x + y) % 2 ? -0.3 : 0.2));
+    const worm = (pts, r) => { for (let i = 0; i + 1 < pts.length; i++) F.push(...Bar(pts[i], pts[i + 1], r * (1 - i / pts.length * 0.4), 'rust', 0, i % 2 ? -0.6 : 0.2, 0.05)); };
+    const w1 = []; for (let i = 0; i <= 16; i++) w1.push([-9 + i * 1.2, -1 + Math.sin(i * 0.7) * 3, 3.6 + Math.sin(i * 0.35) * 0.6]);
+    worm(w1, 0.95);
+    const w2 = []; for (let i = 0; i <= 13; i++) w2.push([-4 + i * 1.25, 4 + Math.sin(i * 0.8 + 2) * 2.4, 3.6]);
+    worm(w2, 0.85);
+    return render2(F, 0, 1.5);
+  },
+  // shucked clam: a white tub heaped with the soft meats, dark siphons showing
+  bait_shucked_clam() {
+    const F = [];
+    F.push(...Tube([0, 0], 0, 8, 7.5, 9, 16, 'white', { caps: 'bottom', b: -0.3 }));
+    F.push(...Tube([0, 0], 7.5, 8.8, 9.2, 9.3, 16, 'white', { b: 0.3 }));
+    F.push(...Tube([0, 0], 7, 7.6, 8.8, 0.5, 16, 'yellow', { caps: 'none', b: -0.4 }));
+    for (const [x, y, z, rz] of [[-4, -2, 8.4, 0.5], [2, -4, 8.6, -0.4], [5, 2, 8.2, 1.1], [-2, 4, 8.4, 2.2], [0, 0, 9.6, 0.9], [-5.5, 2.5, 8.0, 1.6], [3, -0.5, 9.2, 2.6]]) {
+      F.push(...Box([x, y, z], [2.6, 1.8, 1.2], 'yellow', rz, 0.2, 0.1));
+      F.push(...Box([x + Math.cos(rz) * 2.2, y + Math.sin(rz) * 2.2, z + 0.4], [0.9, 0.8, 0.7], 'float', rz, -0.6, 0.15));   // siphon
+    }
+    return render2(F, 1, 1.5);
+  },
+  // fish scrap: a wooden fish box of heads, tails and a frame
+  bait_fish_scrap() {
+    const F = [], hx = 12, hy = 7, h = 6;
+    F.push(...Box([0, 0, 0.6], [hx, hy, 0.6], 'wood', 0, -0.2));
+    for (const s of [-1, 1]) { F.push(...Box([s * hx, 0, h / 2], [0.8, hy, h / 2], 'wood', 0, 0.1)); F.push(...Box([0, s * hy, h / 2], [hx, 0.8, h / 2], 'wood', 0, s > 0 ? -0.3 : 0.2)); }
+    F.push(...Box([0, 0, 3.4], [hx - 0.8, hy - 0.8, 1.6], 'shell', 0, -0.6));                 // the pile under
+    for (const [x, y, rz] of [[-6, -1.5, 0.4], [3, 2, -0.6], [7, -2.5, 2.8]]) {               // heads
+      F.push(...Box([x, y, 6.2], [2.8, 2.2, 1.8], 'steel', rz, 0.2, 0.1));
+      F.push(...Box([x + Math.cos(rz) * 2.6, y + Math.sin(rz) * 2.6, 6.2], [0.4, 2.0, 1.6], 'rust', rz, 0, 0.12));      // the cut gill face
+      F.push(...Box([x - Math.cos(rz) * 1.2, y - Math.sin(rz) * 1.2 - 0.5, 8.1], [0.6, 0.6, 0.2], 'graph', 0, 0.4, 0.15)); // eye
+    }
+    for (const [x, y, a] of [[-1, 3, 0.3], [-9, 3, -0.4]]) {                                 // tails standing up
+      F.push(...Bar([x, y, 5], [x + Math.sin(a) * 1.5, y, 9], [0.8, 0.6], 'navy', 0, 0.2));
+      F.push(...Bar([x + Math.sin(a) * 1.5, y, 9], [x + Math.sin(a) * 1.5 - 1.8, y, 12], [0.7, 0.4], 'navy', 0, 0.3));
+      F.push(...Bar([x + Math.sin(a) * 1.5, y, 9], [x + Math.sin(a) * 1.5 + 1.8, y, 12], [0.7, 0.4], 'navy', 0, 0.3));
+    }
+    F.push(...Bar([-4, -3.5, 6], [6, 0, 6.5], 0.5, 'white', 0, 0.4));                         // a frame: spine and ribs
+    for (let i = 0; i < 5; i++) { const x = -3 + i * 2, y = -3.15 + i * 0.7; F.push(...Bar([x, y, 6.2], [x + 0.6, y - 1.6, 6.6], 0.35, 'white', 0, 0.5)); }
+    return render2(F, 0, 1.45);
+  },
+
+  // the depth sounder: a small graphite head on its bracket, a grey LCD with the depth in big digits,
+  // its transducer puck lying beside it on the cable
+  depth_sounder() {
+    const F = [], t = 0.3, o = [-2, 0, 13];
+    F.push(...FBox([0, 0, -2.5], [7.5, 6.5, 2.5], 'case', t, o, 0.2));
+    F.push(...Glyph(-6, 6, -1.5, 5, 0.05, 'lcd', t, o));
+    F.push(...Digit(1, -3.6, -0.6, 0.1, 'seg', t, o), ...Digit(8, 0.8, -0.6, 0.1, 'seg', t, o));
+    for (const u of [-4, 0, 4]) F.push(...Glyph(u - 1, u + 1, -5, -3.6, 0.1, 'bezel', t, o));
+    F.push(...Bracket(7.5, 6.5, t, o, 1));
+    // transducer and its cable
+    F.push(...Tube([13, -4], 0, 2.5, 3.2, 2.6, 12, 'graph', { caps: 'top', b: 0.2 }));
+    const cab = [[13, -4, 2.5], [14, -1, 3], [12, 3, 2], [7, 5, 3], [3, 4, 8]];
+    for (let i = 0; i + 1 < cab.length; i++) F.push(...Bar(cab[i], cab[i + 1], 0.55, 'graph', 0, 0.5));
+    return render2(F, 0, 1.2);
+  },
+  // the fish finder: a taller head, a colour sonar screen with a surface line, two fish arches and the
+  // bottom in its green-to-red bands
+  fish_finder() {
+    const F = [], t = 0.3, o = [0, 0, 14];
+    F.push(...FBox([0, 0, -2.2], [7.5, 8.5, 2.2], 'case', t, o, 0.2));
+    F.push(...Glyph(-6, 6, -6, 7, 0.05, 'sonar', t, o));
+    F.push(...Glyph(-6, 6, 6.2, 7, 0.1, 'fishA', t, o));                                        // the surface
+    const bottom = [-2.5, -2, -1, -1.5, -0.5, 0, -1, -1.5, -2, -1.5, -2.5, -3];
+    for (let i = 0; i < 12; i++) {
+      const u = -6 + i, top = bottom[i];
+      F.push(...Glyph(u, u + 1, top - 1, top, 0.1, 'bRed', t, o));
+      F.push(...Glyph(u, u + 1, top - 2, top - 1, 0.1, 'bOrange', t, o));
+      F.push(...Glyph(u, u + 1, top - 3, top - 2, 0.1, 'bYellow', t, o));
+      F.push(...Glyph(u, u + 1, -6, top - 3, 0.1, 'bGreen', t, o));
+    }
+    for (const [u, v] of [[-3.5, 3.5], [2, 2]]) {                                              // fish arches
+      F.push(...Glyph(u - 1, u + 1, v, v + 1, 0.12, 'fishB', t, o));
+      F.push(...Glyph(u - 2, u - 1, v - 1, v, 0.12, 'fishB', t, o), ...Glyph(u + 1, u + 2, v - 1, v, 0.12, 'fishB', t, o));
+    }
+    F.push(...Bracket(7.5, 8.5, t, o, 1));
+    return render2(F, 0, 1.25);
+  },
+  // the Loran-C set: a deep box, an amber digit window and a keypad
+  loran() {
+    const F = [], t = 0.22, o = [0, 0, 8];
+    F.push(...FBox([0, 0, -6], [11, 6, 6], 'case', t, o, 0.1));
+    F.push(...Glyph(-10, 2, -0.6, 5.6, 0.05, 'sonDeep', t, o));
+    for (let k = 0; k < 3; k++) F.push(...Digit([4, 7, 2][k], -9.0 + k * 3.8, 0.0, 0.1, 'digit', t, o));
+    F.push(...Glyph(-10, -7, -2.6, -1.6, 0.1, 'teal2', t, o));                                 // the station lamp
+    for (let r = 0; r < 3; r++) for (let c = 0; c < 3; c++) F.push(...Glyph(3.5 + c * 2.4, 5.1 + c * 2.4, -4.5 + r * 2.6, -3.1 + r * 2.6, 0.1, 'bezel', t, o));
+    F.push(...Glyph(-6, 1, -4.5, -3, 0.1, 'bezel', t, o));                                     // the long key
+    F.push(...FBox([0, 0, -12.6], [10, 5, 0.6], 'graph', t, o, -0.2));                          // the back plate
+    F.push(...Bar([8, 6, 6], [9, 9, 12], 0.6, 'graph', 0, 0.4), ...Bar([9, 9, 12], [10, 10, 24], 0.35, 'steel', 0, 0.6));   // the antenna lead
+    return render2(F, 0, 1.25);
+  },
+  // the GPS chartplotter: a landscape screen with blue water, a tan coast, the boat and its track
+  gps() {
+    const F = [], t = 0.3, o = [0, 0, 13];
+    F.push(...FBox([0, 0, -2], [10.5, 7.5, 2], 'case', t, o, 0.2));
+    F.push(...Glyph(-9, 9, -4.5, 6.5, 0.05, 'sea', t, o));
+    const coast = [6.5, 6.5, 5, 4, 4, 3, 1.5, 1, 0, -1.5, -2, -3.5, -4.5, -4.5, -4.5, -4.5, -4.5, -4.5];   // land top-right
+    for (let i = 0; i < 18; i++) { const u = -9 + i; const v0 = coast[i]; if (i >= 6 && v0 < 6.5) F.push(...Glyph(u, u + 1, Math.max(v0, -4.5) + (i - 6) * 0.0, 6.5, 0.1, 'land', t, o)); }
+    for (const [u, v] of [[-7, -3], [-5.5, -1.5], [-4, 0], [-2.5, 1.5]]) F.push(...Glyph(u, u + 1, v, v + 1, 0.12, 'white', t, o));   // the track
+    F.push(...Glyph(-1.5, 0.5, 2.5, 4.5, 0.14, 'fishA', t, o));                                // the boat
+    for (const u of [-6, -2, 2, 6]) F.push(...Glyph(u - 1, u + 1, -7, -5.6, 0.1, 'bezel', t, o));
+    F.push(...Bracket(10.5, 7.5, t, o, 1));
+    return render2(F, 0, 1.2);
+  },
+});
+
 const only = process.argv.slice(2);
 for (const leaf of Object.keys(PIECES)) if (!only.length || only.includes(leaf)) console.log(save(leaf, PIECES[leaf]()));
