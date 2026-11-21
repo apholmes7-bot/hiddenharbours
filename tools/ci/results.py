@@ -7,6 +7,7 @@ results return nonzero. A skipped case is a match, but is never called a pass.
 import argparse
 from collections import Counter
 from dataclasses import dataclass, field
+import json
 from pathlib import Path
 import sys
 import xml.etree.ElementTree as ET
@@ -21,6 +22,8 @@ class Summary:
     attributes: dict = field(default_factory=dict)
     counts: Counter = field(default_factory=Counter)
     failures: list = field(default_factory=list)
+    assemblies: dict = field(default_factory=dict)
+    project_classes: dict = field(default_factory=dict)
 
     @property
     def total(self):
@@ -53,13 +56,30 @@ class Summary:
             errors.append("test run failed outside a case (setup or cleanup)")
         return errors
 
+    def coverage_problems(self, coverage):
+        errors = []
+        project_total = sum(sum(counts.values()) for name, counts in self.assemblies.items()
+                            if name.startswith("HiddenHarbours."))
+        minimum = coverage["minimum_project_cases"]
+        if project_total < minimum:
+            errors.append(f"project cases {project_total} below required {minimum}")
+        for name, minimum in coverage["required_classes"].items():
+            counts = self.project_classes.get(name, Counter())
+            executed = counts["Passed"] + counts["Failed"] + counts["Inconclusive"]
+            if executed < minimum:
+                errors.append(f"{name}: {executed} executed cases below required {minimum}")
+        for name, counts in self.assemblies.items():
+            if name.startswith("Unity.Netcode."):
+                errors.append(f"excluded package assembly {name} contains {sum(counts.values())} cases")
+        return errors
+
 
 def read_results(stream):
     """Read a path or binary stream, releasing each case, suite and output node.
 
     Output is discarded at its end event, before the containing case completes.
-    Memory is bounded by XML depth, the largest individual text node and the
-    first MAX_FAILURES diagnostics, rather than the entire captured log.
+    Memory is bounded by XML depth, the largest individual text node, assembly
+    and class counters, and MAX_FAILURES diagnostics, not the captured log.
     """
     summary = Summary()
     stack = []
@@ -74,6 +94,24 @@ def read_results(stream):
         if node.tag == "test-case":
             outcome = node.get("result", "UNKNOWN")
             summary.counts[outcome] += 1
+            # A namespace-wide NUnit SetUpFixture can replace the Assembly node's
+            # type/fullname; Unity retains its assembly filename in name.
+            assembly = next((parent.get("name", "") for parent in reversed(stack)
+                             if parent.tag == "test-suite" and
+                             (parent.get("type") == "Assembly" or
+                              (parent.get("type") == "SetUpFixture" and
+                               parent.get("name", "").endswith(".dll")))), "")
+            assembly = assembly.replace("\\", "/").rsplit("/", 1)[-1].removesuffix(".dll")
+            summary.assemblies.setdefault(assembly, Counter())[outcome] += 1
+            if assembly.startswith("HiddenHarbours."):
+                # Inherited methods name their declaring base class on the case;
+                # the enclosing fixture identifies the class that actually ran.
+                classname = next((parent.get("classname") or parent.get("fullname", "")
+                                  for parent in reversed(stack) if parent.tag == "test-suite" and
+                                  parent.get("type") == "TestFixture" and
+                                  (parent.get("classname") or parent.get("fullname"))),
+                                 node.get("classname", ""))
+                summary.project_classes.setdefault(classname, Counter())[outcome] += 1
             if outcome == "Failed" and len(summary.failures) < MAX_FAILURES:
                 failure = node.find("failure")
                 details = []
@@ -95,7 +133,7 @@ def read_results(stream):
     return summary
 
 
-def report(path, summary):
+def report(path, summary, coverage=None):
     print(f"\n### {path} — {summary.counts['Passed']}/{summary.total} passed, "
           f"{summary.counts['Failed']} failed, {summary.counts['Skipped']} skipped")
     for name, details in summary.failures:
@@ -106,6 +144,12 @@ def report(path, summary):
     if omitted:
         print(f"\n…and {omitted} more failures (showing the first {MAX_FAILURES}).")
     problems = summary.problems()
+    if coverage is not None:
+        for name, counts in sorted(summary.assemblies.items()):
+            print(f"ASSEMBLY {name or '(missing)'}: {dict(counts)}")
+        for name in coverage["required_classes"]:
+            print(f"REQUIRED {name}: {dict(summary.project_classes.get(name, {}))}")
+        problems.extend(summary.coverage_problems(coverage))
     for problem in problems:
         print(f"ERROR: {problem}")
     return bool(problems)
@@ -113,12 +157,23 @@ def report(path, summary):
 
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--project-coverage", type=Path,
+                        help="Per-results-file project count floors and required co-op classes")
     parser.add_argument("results", nargs="+", type=Path)
     args = parser.parse_args(argv)
+    coverage = None
+    if args.project_coverage is not None:
+        try:
+            coverage = json.loads(args.project_coverage.read_text(encoding="utf-8"))
+            if set(coverage) != {path.name for path in args.results}:
+                raise ValueError("coverage must name exactly the supplied results files")
+        except (OSError, ValueError) as error:
+            print(f"ERROR: could not read project coverage ({error})")
+            return 1
     bad = False
     for path in args.results:
         try:
-            bad |= report(path, read_results(path))
+            bad |= report(path, read_results(path), coverage[path.name] if coverage is not None else None)
         except (OSError, ValueError, ET.ParseError) as error:
             print(f"ERROR: {path}: could not read complete results ({error})")
             bad = True

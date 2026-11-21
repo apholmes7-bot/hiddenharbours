@@ -1,6 +1,6 @@
 # ADR draft: a friend in the host's campaign
 
-**Status: Proposed. Nobody has accepted this proposal.**
+**Status: Superseded draft.** Promoted and amended by [ADR 0057](../0057-campaign-coop-host-world.md), which remains Proposed. The original text below is retained as history, not the current work order.
 
 Decision owners: product owner and lead-architect. No ADR number or save-schema
 version is reserved. This draft authorizes no implementation or roadmap change.
