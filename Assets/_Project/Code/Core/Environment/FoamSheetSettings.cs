@@ -183,9 +183,10 @@ namespace HiddenHarbours.Core
             OarCatch = 0.6f,
             OarRelease = 0.26f,
             // Each catch reads again as a splash with a ring spreading from it, the ring being the sea's own
-            // waves rather than a drawn picture.
-            OarRingHeightMetres = 0.05f,
-            OarRingWavelengthMetres = 0.5f,
+            // waves rather than a drawn picture. Owner 11-21, "the very circular wake wave pattern": a low,
+            // long, slow ring (was 0.05 m / 0.5 m), one soft circle rather than stacked bright ones.
+            OarRingHeightMetres = 0.02f,
+            OarRingWavelengthMetres = 0.8f,
             OarReleaseRingShare = 0.6f,
         };
 
