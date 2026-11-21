@@ -253,6 +253,7 @@ namespace HiddenHarbours.Tools.RigBaking
                     // at the mounts the def carries, not a second engine asset.
                     case "Motor": visual.MotorMesh = def; break;
                     case "HelmBar": visual.HelmBarMesh = def; break;
+                    case "MotorFit": visual.MotorFitMesh = def; break;
                     default:
                         Debug.LogError(
                             $"[rig-prop] {p.Label}: unknown fitting slot '{slot}' on {assetPath}. The " +

@@ -136,6 +136,7 @@ Material:
     - _SwashEdgeShift: 0.85
     - _SwashMaxEdgeShift: 0.35
     - _SwashSpeed: 0.16
+    - _SwellReadRelative: 1
     - _SwellReadSeaStateLo: 0.1
     - _SwellShoalDepth: 1.5
     - _Turbidity: 1.6
@@ -224,7 +225,7 @@ Material:
     - _ReflectionSunStreak: 0.3
     - _ReflectionSunSharp: 6
     - _PaletteGradeStrength: 0.4
-    - _PaletteValueFloor: 0.07
+    - _PaletteValueFloor: 0.16
     - _PaletteValueCeil: 0.72
     - _PaletteSatCap: 0.4
     - _PalettePullStrength: 0.4

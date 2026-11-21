@@ -119,6 +119,19 @@ namespace HiddenHarbours.Player
         // frame they put him on this frame.
         private readonly RowingFigureReader _rowing = new RowingFigureReader();
 
+        // The way to the tiller under him (Core's ITillerStation), read only while he sits at one.
+        private readonly TillerFigureReader _tiller = new TillerFigureReader();
+
+        /// <summary>The tiller station last found under him (null when none): tests and the inspector.</summary>
+        public ITillerStation TillerSource => _tiller.Source;
+
+        /// <summary>True on a frame he is drawn seated at a tiller, solved onto its grip.</summary>
+        public bool AtTiller { get; private set; }
+
+        /// <summary>The solve targets he was posed onto this frame at the tiller (figure frame); default
+        /// on any other frame. Tests read it to check his hand against the grip.</summary>
+        public RowingPoseSolver.Targets TillerTargets { get; private set; }
+
         /// <summary>True on a frame he is drawn ROWING: at the oars while they stroke, his clip and
         /// frame taken from the oar's phase rather than from the clock.</summary>
         public bool Rowing { get; private set; }
@@ -315,6 +328,8 @@ namespace HiddenHarbours.Player
         {
             DrawsInsteadOfSprite = false;
             Rowing = false;
+            AtTiller = false;
+            TillerTargets = default;
             DrawsAshore = false;
 
             if (stand == null || (stand is Object standObject && standObject == null))
@@ -437,6 +452,17 @@ namespace HiddenHarbours.Player
             {
                 life.Rowing = true;
                 life.Row = row;
+            }
+            // Seated at a tiller (the dory with her motor): the same seated solve, one hand on the grip
+            // as the engine turns it, the other on his thigh.
+            else if (!clipPose && !string.IsNullOrEmpty(seatedKey)
+                     && _tiller.TryTargets(stand, character.Stance, FigureLocalMetres, FigureYawDegrees,
+                                           out RowingPoseSolver.Targets tiller, now))
+            {
+                life.Rowing = true;
+                life.Row = tiller;
+                AtTiller = true;
+                TillerTargets = tiller;
             }
             if (!_figure.SetPose(stateKey, frame, life)) { Stop($"could not pose '{stateKey}' frame {frame}"); return; }
 

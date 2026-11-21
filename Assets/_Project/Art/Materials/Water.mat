@@ -238,6 +238,7 @@ Material:
     - _SwashWavelength: 1.2
     - _SwellFaceShade: 0.22
     - _SwellReadBands: 0
+    - _SwellReadRelative: 1
     - _SwellReadSeaStateLo: 0.1
     - _SwellReadStrength: 0.2
     - _SwellShoalDepth: 1.5

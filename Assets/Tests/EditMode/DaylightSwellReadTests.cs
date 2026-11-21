@@ -163,13 +163,15 @@ namespace HiddenHarbours.Tests.EditMode
             var asset = AssetDatabase.LoadAssetAtPath<Material>(path);
             Assert.IsNotNull(asset, path);
             Assert.IsTrue(asset.HasProperty("_SwellReadRelative"), path);
-            Assert.AreEqual(0f, asset.GetFloat("_SwellReadRelative"), path);
+            // Owner pick (f+e), 2026-11-20: the relative read is ON in every sea material (the shader
+            // default stays 0, so a bare material still draws the additive read).
+            Assert.AreEqual(1f, asset.GetFloat("_SwellReadRelative"), path + ": owner (f+e) 2026-11-20");
             Assert.AreEqual(0.1f, asset.GetFloat("_SwellReadSeaStateLo"), path);
-            // Preset copying must restore the new default without changing a serialized asset.
-            scratch.SetFloat("_SwellReadRelative", 1f);
+            // Preset copying must carry the relative switch (an "Apply water preset" must not turn it off).
+            scratch.SetFloat("_SwellReadRelative", 0f);
             scratch.SetFloat("_SwellReadStrength", 0.35f); // superseded default must not survive the copy
             scratch.CopyPropertiesFromMaterial(asset);
-            Assert.AreEqual(0f, scratch.GetFloat("_SwellReadRelative"), path);
+            Assert.AreEqual(1f, scratch.GetFloat("_SwellReadRelative"), path);
             Assert.AreEqual(0.2f, scratch.GetFloat("_SwellReadStrength"), path + ": copied owner d20");
         }
 

@@ -722,7 +722,7 @@ namespace HiddenHarbours.Player
         private Vector3 StandPointRigLocal()
         {
             if (_carried) return _carriedStand;
-            if (SeatedHelmVisual() is BoatVisualDef seated) return seated.SeatedHelmFloorOrigin;
+            if (TrySeatedHelm(out _, out Vector3 seatedFloor)) return seatedFloor;
             if (_mode == ControlMode.Aboard && _boat != null && _boat.Hull != null)
             {
                 var visual = _boat.Hull.Visual;
@@ -756,22 +756,32 @@ namespace HiddenHarbours.Player
 
         /// <summary>The same choice drives the floor origin and mesh clip; missing art keeps both
         /// on the standing route rather than putting a standing body on the seated origin.</summary>
-        private BoatVisualDef SeatedHelmVisual()
+        /// <para>A hull steered from a TILLER seat (<see cref="BoatVisualDef.SeatsAtTiller"/>: the dory
+        /// with her motor) takes its clip and floor origin from her tiller station instead of her
+        /// seated-helm fields; the same art gate applies to both.</para>
+        private bool TrySeatedHelm(out string state, out Vector3 floorOrigin)
         {
-            if (_carried || _mode != ControlMode.Aboard || _boat == null || _boat.Hull == null) return null;
+            state = null;
+            floorOrigin = default;
+            if (_carried || _mode != ControlMode.Aboard || _boat == null || _boat.Hull == null) return false;
             var visual = _boat.Hull.Visual;
+            if (visual == null) return false;
+            bool tiller = visual.SeatsAtTiller(_boat.Hull.Propulsion);
+            string key = tiller ? visual.Tiller.SeatedState : visual.SeatedHelmState;
             var config = GameServices.Config;
             var presenter = _figure as DeckRiderMeshPresenter;
             var skin = presenter != null ? presenter.EffectiveSkin : _character?.Visual?.Skin;
-            if (visual == null || string.IsNullOrEmpty(visual.SeatedHelmState) ||
+            if (string.IsNullOrEmpty(key) ||
                 config == null || !config.MeshCharacter || skin == null ||
                 _character == null || _character.IsSuspended ||
-                !skin.DrawsAsMesh(visual.SeatedHelmState) || !skin.TryGetClip(visual.SeatedHelmState, out _))
-                return null;
-            return visual;
+                !skin.DrawsAsMesh(key) || !skin.TryGetClip(key, out _))
+                return false;
+            state = key;
+            floorOrigin = tiller ? visual.Tiller.FloorOriginLocalMeters : visual.SeatedHelmFloorOrigin;
+            return true;
         }
 
-        public string SeatedHelmStateKey => SeatedHelmVisual()?.SeatedHelmState;
+        public string SeatedHelmStateKey => TrySeatedHelm(out string state, out _) ? state : null;
 
         /// <summary>Present the character for the current mode. Idempotent and cheap — safe to call from
         /// the mode switch and from every LateUpdate.</summary>
@@ -1277,7 +1287,7 @@ namespace HiddenHarbours.Player
         private float PilotDeckBearingForMode()
         {
             BoatVisualDef visual = _boat != null && _boat.Hull != null ? _boat.Hull.Visual : null;
-            return visual != null ? visual.PilotDeckBearingDegrees() : BoatVisualDef.HelmPilotDeckBearingDegrees;
+            return visual != null ? visual.PilotDeckBearingDegrees(_boat.Hull.Propulsion) : BoatVisualDef.HelmPilotDeckBearingDegrees;
         }
 
         /// <summary>Which stance this mode asks for. On deck it is the deck brace; at the helm it is the
@@ -1289,7 +1299,7 @@ namespace HiddenHarbours.Player
             if (_mode == ControlMode.OnDeck) return CharacterStance.Balance;
 
             BoatVisualDef visual = _boat != null && _boat.Hull != null ? _boat.Hull.Visual : null;
-            return visual != null ? visual.PilotStanceFor() : CharacterStance.Free;
+            return visual != null ? visual.PilotStanceFor(_boat.Hull.Propulsion) : CharacterStance.Free;
         }
 
         /// <summary>
