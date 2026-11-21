@@ -421,6 +421,14 @@ namespace HiddenHarbours.Art
             // Stood BEFORE it is posed: the look reads where the figure stands this frame.
             Place(stand, skin);
             IsoCharacterFigureRenderer.Life life = _life.Step(skin, _key, _keyHash, now, _figure, looks: true);
+            // At the oars, rowing or resting on them: solved onto the boat's own station, exactly as the
+            // player's figure is, so his hands hold the handles (or rest on his thighs with them let go).
+            if ((Rowing || stance == CharacterStance.Oars)
+                && _rowing.TryTargets(stand, FigureLocalMetres, FigureYawDegrees, out RowingPoseSolver.Targets row, now))
+            {
+                life.Rowing = true;
+                life.Row = row;
+            }
             if (!_figure.SetPose(stateKey, frame, life))
             {
                 _refusalKey = stateKey;

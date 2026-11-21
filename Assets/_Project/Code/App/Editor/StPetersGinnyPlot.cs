@@ -463,6 +463,7 @@ namespace HiddenHarbours.App.Editor
             freezerSr.sortingOrder = 3;   // pre-Play default only; the YSortSprite below OWNS the order
             freezerGo.transform.localScale = new Vector3(1.2f, 1.0f, 1f);
             freezerGo.AddComponent<GinnyFreezer>();
+            freezerGo.AddComponent<FreezerContentsPresenter>();   // what is in it, while he stands at it
             // A thing you walk up to layers by world Y like everything else you can stand in front of
             // (ADR 0032 re-based the band; a fixed order would be buried by the meadow around it).
             freezerGo.AddComponent<YSortSprite>();
