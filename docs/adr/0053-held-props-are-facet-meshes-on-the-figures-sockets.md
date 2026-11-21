@@ -125,3 +125,19 @@ pivot, drawn by the facet path in its parent's frame. A hand is a socket, as an 
 - **Still a sprite:** the rod carried while walking or standing (those clips carry no tool track),
   the rod on the rack, the bend under load, the coast and deep tiers' selection, and every other
   held prop.
+
+## 8. Progress (2026-11-20): the carried rod and the rod on his back
+
+- **The carried rod is a mesh, at an aim from data.** On a free gait (`ToolDef.CarriedInHandClips`:
+  idle, walk, run) the cane is drawn on `tool_R` at `ToolDef.CarriedPitchDeg` / `CarriedYawDeg`. D1's
+  "the rig's own held pose" was the fishing aim (pitch 56, yaw 16), which pointed the blank down the
+  camera's line of sight from the front and read as a stub. The grip is still the palm socket on
+  the frame drawn, every frame; `GameConfig.HeldRodGripToleranceMetres` is the test's margin.
+- **The rod on his back** (`ToolDef.StowOnBack`). When he has the rod but is not using it, the mesh
+  rides the rig's `back` socket (the slung-rod mount on the chest, its +y the slung axis): on every
+  clip that aims no tool and is not a free gait (the oars, the helm, a carry, the swim, when
+  `StowWhileSwimming`), and whenever the other hand is busy or the rod is tucked away for a catch.
+  A fishing state or a clip that aims the rod always puts it in his hand. The move is a short blend
+  (`StowBlendSeconds`), since the rig bakes no draw clip. Decided from the hands and the clip each
+  frame; nothing is saved.
+- **NPC anglers** draw no rod mesh: no NPC path mounts a held prop yet.
