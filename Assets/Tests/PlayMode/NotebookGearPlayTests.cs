@@ -23,6 +23,8 @@ namespace HiddenHarbours.Tests.PlayMode
 
         Scene _scene;
         NotebookPresenter _book;
+        ISaveService _saveBefore;
+        bool _replacedSave;
 
         sealed class OwnsTheRod : INotebookGearSource
         {
@@ -60,6 +62,12 @@ namespace HiddenHarbours.Tests.PlayMode
                 _book.Close();
                 _book.WireGear(null);   // the running game's source and page back
             }
+            if (_replacedSave)
+            {
+                GameServices.Save = _saveBefore;
+                _saveBefore = null;
+                _replacedSave = false;
+            }
             InteractionGate.Reset();
             MoveActionClaim.Reset();
             CancelKeyClaim.Reset();
@@ -93,10 +101,26 @@ namespace HiddenHarbours.Tests.PlayMode
             Assert.IsTrue(icons.Any(i => i.sprite == rodIcon), "⭐ the rod's icon shows on the page");
         }
 
+        /// <summary>A fresh new game, published where the running game's save lives.</summary>
+        sealed class NewGameSave : ISaveService
+        {
+            public SaveData Current { get; } = SaveMigration.NewGame();
+            public bool LoadedExistingSave => false;
+            public bool GetFlag(string key) => false;
+            public void SetFlag(string key, bool value) { }
+            public void Save() { }
+        }
+
         [UnityTest]
         public IEnumerator With_nothing_wired_the_page_reads_the_running_games_save()
         {
-            Assume.That(GameServices.Save?.Current, Is.Not.Null, "needs the self-installing save service");
+            // Earlier fixtures in a full run clear GameServices.Save in their teardown, so the
+            // self-installed service cannot be relied on here: publish a new game in its place.
+            _saveBefore = GameServices.Save;
+            _replacedSave = true;
+            var save = new NewGameSave();
+            if (!save.Current.OwnedGear.Contains("gear.rod")) save.Current.OwnedGear.Add("gear.rod");
+            GameServices.Save = save;
 
             _book.WireGear(null);
             _book.Open();
@@ -109,6 +133,7 @@ namespace HiddenHarbours.Tests.PlayMode
 
             Assert.IsTrue(_book.GetComponentsInChildren<Text>(false).Any(t => t.text.StartsWith("Harbour")),
                           "the starting watch, read through Core's watch selection, never from another module");
+            Assert.NotNull(Lettered("Fishing Rod"), "and the rod this save's wallet holds, so the page read THIS save");
         }
     }
 }
