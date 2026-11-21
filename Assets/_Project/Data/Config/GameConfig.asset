@@ -785,7 +785,7 @@ MonoBehaviour:
     HeightPerMetreLength: 0.018
     FroudeKnee: 0.4
     MaxHeightMetres: 0.6
-    SmallHullCrestMetres: 0.07
+    SmallHullCrestMetres: 0.04
     SmallHullLengthMetres: 6
     SmallHullSpacingWavelengths: 0.35
     SmallHullHeightScatter: 0.85
@@ -832,7 +832,10 @@ MonoBehaviour:
     RetireDrawnFoam: 1
     FoamAgeTear: 1
     RideScale: 1
-    RippleLifetimeSeconds: 2.5
+    RippleLifetimeSeconds: 4
+    RippleRiseShare: 0.3
+    RipplesNeverEvict: 1
+    MaxCrestHertz: 0.5
   FoamSheet:
     Shore: 1
     ShoreLineSharpness: 2.5
@@ -857,11 +860,14 @@ MonoBehaviour:
     BandNoise: 1
     BandNoiseSizeMetres: 0.12
     Oar: 1
-    OarRadius: 0.15
-    OarCatchRadius: 0.25
-    OarPerSecond: 0.8
-    OarCatch: 0.4
-    OarRelease: 0.16
+    OarRadius: 0.16
+    OarCatchRadius: 0.3
+    OarPerSecond: 1
+    OarCatch: 0.6
+    OarRelease: 0.26
+    OarRingHeightMetres: 0.02
+    OarRingWavelengthMetres: 0.8
+    OarReleaseRingShare: 0.6
   SeaReach:
     Enabled: 1
     ReconnectBlendMeters: 0.25
