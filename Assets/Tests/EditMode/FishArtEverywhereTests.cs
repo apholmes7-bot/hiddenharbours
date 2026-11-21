@@ -40,12 +40,11 @@ namespace HiddenHarbours.Tests
         static readonly string[] OwedNoRigArt = { };
 
         /// <summary>
-        /// Finfish drawn by the rig whose HELD MESH (ADR 0053) is still owed: the coast species kit
-        /// registers them into the fish rig at load, and the held-prop mesh bake reads the rig's own
-        /// <c>ORDER</c>, which is pinned at the seven. They are held as their own sprites meanwhile.
-        /// Checked below so the list cannot go stale.
+        /// Finfish drawn by the rig whose HELD MESH (ADR 0053) is still owed. Empty since the held-prop
+        /// bake installs the coast species kit after the fish rig, so the smelt, tomcod and cunner are
+        /// baked as meshes too. Checked below so the list cannot go stale.
         /// </summary>
-        static readonly string[] OwedHeldMesh = { "fish.atlantic_tomcod", "fish.cunner", "fish.rainbow_smelt" };
+        static readonly string[] OwedHeldMesh = { };
 
         /// <summary>Species whose LARGEST drawing is still small enough for the contrast line: the
         /// herring and mackerel, and the three coast species (an adult smelt is about 8 px long).</summary>

@@ -11,13 +11,14 @@ namespace HiddenHarbours.Tests.PlayMode
     /// <summary>
     /// <b>A fish in his hand is drawn as its mesh in the real scene</b> (fish art pass 2, section 3): the
     /// real player at Rice Point is handed a cod, and the mesh draws on his hand while the carried sprite
-    /// stands down; a tomcod (its own kind, with no held mesh yet) keeps its sprite; the switch off hands
-    /// the cod back to the sprite; and the fish he holds up at the landing is the mesh too.
+    /// stands down; a tomcod (the coast species kit's, its own kind) is its own mesh too; a green crab
+    /// (no held-mesh pattern for a crustacean yet) keeps its sprite; the switch off hands the cod back to
+    /// the sprite; and the fish he holds up at the landing is the mesh too.
     /// </summary>
     public sealed class HeldCatchMeshPlayTests : RicePointSceneFixture
     {
         [UnityTest]
-        public IEnumerator ACodInHisHand_IsTheMesh_ATomcodKeepsItsSprite_AndTheLandingIsTheMesh()
+        public IEnumerator ACodAndATomcodInHisHand_AreTheirMeshes_ACrabKeepsItsSprite_AndTheLandingIsTheMesh()
         {
             yield return LoadDirect();
             SetHour(12);
@@ -60,15 +61,27 @@ namespace HiddenHarbours.Tests.PlayMode
             for (int i = 0; i < 3; i++) yield return null;
             Assert.IsFalse(hands.CatchMesh.Drawing, "an empty hand still draws the fish");
 
-            // A tomcod is its own kind with no held mesh yet: it keeps its sprite.
+            // A tomcod is its own kind and its own mesh, never the cod's.
             Assert.IsTrue(hands.TryPutInHand(new CatchItem("fish.atlantic_tomcod", "Atlantic Tomcod",
                                                            FishCategory.InshoreGroundfish, 0.2f, 10, 0.1f)));
             for (int i = 0; i < 6; i++) yield return null;
             var tomcod = hands.Carried as CarriableCatch;
             Assert.IsNotNull(tomcod);
-            Assert.IsFalse(hands.CatchMesh.Drawing, "a tomcod has no held mesh yet and must not be drawn as one");
+            Assert.IsTrue(hands.CatchMesh.Drawing, $"the tomcod is not drawn as its mesh ({hands.CatchMesh.LastRefusal})");
+            Assert.AreEqual("tomcod", hands.CatchMesh.Def.Variant);
+            Assert.IsFalse(tomcod.SpriteVisible, "the tomcod's mesh draws, yet its sprite still shows");
+            Assert.IsTrue(hands.TryTakeFromHand(out _));
+            for (int i = 0; i < 3; i++) yield return null;
+
+            // A green crab: no held-mesh pattern for a crustacean yet, so it keeps its sprite.
+            Assert.IsTrue(hands.TryPutInHand(new CatchItem("fish.green_crab", "Green Crab",
+                                                           FishCategory.Shellfish, 0.1f, 10, 0.1f)));
+            for (int i = 0; i < 6; i++) yield return null;
+            var crab = hands.Carried as CarriableCatch;
+            Assert.IsNotNull(crab);
+            Assert.IsFalse(hands.CatchMesh.Drawing, "a crab has no held mesh and must not be drawn as one");
             Assert.AreEqual(HeldCatchMesh.Refusal.NoMesh, hands.CatchMesh.LastRefusal);
-            Assert.IsTrue(tomcod.SpriteVisible, "the tomcod's sprite is hidden");
+            Assert.IsTrue(crab.SpriteVisible, "the crab's sprite is hidden");
             Assert.IsTrue(hands.TryTakeFromHand(out _));
             for (int i = 0; i < 3; i++) yield return null;
 
