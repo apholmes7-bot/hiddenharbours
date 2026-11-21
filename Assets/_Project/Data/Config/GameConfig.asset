@@ -838,6 +838,10 @@ MonoBehaviour:
     MaxCrestHertz: 0.5
     MotorVShare: 1
     MotorVArmHalfWidthDegrees: 25
+    MotorVArmBlendWavelengths: 2.5
+    MotorVArmOverlapSpans: 1.5
+    MotorVSternShare: 0.45
+    MotorVBowSourceShare: 0.5
   FoamSheet:
     Shore: 1
     ShoreLineSharpness: 2.5

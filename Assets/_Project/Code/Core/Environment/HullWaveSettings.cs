@@ -229,14 +229,31 @@ namespace HiddenHarbours.Core
         [Range(0f, 4f)] public float MaxCrestHertz;
 
         [Header("Motor V wake (owner 11-21: \"make motored boats a v wake\")")]
-        [Tooltip("How much of each ring a hull under motor or sail lays is kept only where it touches the arms of " +
-                 "her V (1 = arms only: the inside of the V and the water astern of each ring stay calm; 0 = whole " +
-                 "rings, as before). A rowed hull (the dory under oars) is never touched: her rings stay as they are.")]
+        [Tooltip("How much of each ring a hull under motor or sail lays is drawn as the arms of her V instead of " +
+                 "a whole ring (1 = arms only: the inside of the V and the water astern of each ring stay calm; 0 = " +
+                 "whole rings, as before). Each ring draws a straight piece of the arm it touches, and the pieces " +
+                 "blend into one smooth line (owner 11-21 second look: \"smooth the v wake arms\"). A rowed hull " +
+                 "(the dory under oars) is never touched: her rings stay as they are.")]
         [Range(0f, 1f)] public float MotorVShare;
-        [Tooltip("How wide each arm of the V draws, degrees either side of where a ring touches it (90 minus " +
-                 "KelvinHalfAngleDegrees from her heading, measured at the ring's centre). Narrower = thinner, " +
-                 "crisper arms; wider = softer, broader arms.")]
+        [Tooltip("How far each ring's piece of the arm reaches along the arm, as degrees seen from the ring's " +
+                 "centre (the piece grows as tan(this) x the ring's radius, on top of MotorVArmBlendWavelengths). " +
+                 "Wider = longer pieces, smoother arms far astern.")]
         [Range(5f, 60f)] public float MotorVArmHalfWidthDegrees;
+        [Tooltip("The shortest a ring's piece of the arm reaches either way along the arm, in wavelengths. Over " +
+                 "about 1.3 times the rings' spacing the pieces overlap into one continuous line (no beads, no " +
+                 "half circles beside the hull); a piece never reaches forward past the point that laid it.")]
+        [Range(0.5f, 8f)] public float MotorVArmBlendWavelengths;
+        [Tooltip("The shortest a ring's piece of the arm reaches either way, in the stretches of arm each ring " +
+                 "stands for (its spacing). Rings laid far apart (a hull on few sources) still overlap into one " +
+                 "line at about 1.5; 0 leaves only MotorVArmBlendWavelengths.")]
+        [Range(0f, 4f)] public float MotorVArmOverlapSpans;
+        [Tooltip("A hull under motor or sail: the stern's waves as a share of her crest height (the bow keeps " +
+                 "BowShare). Under BowShare keeps the wave off her bow the main, calm line of her V and the water " +
+                 "astern weaker (owner 11-21: \"the stern wake looks stronger then the wake off the hull\").")]
+        [Range(0f, 2f)] public float MotorVSternShare;
+        [Tooltip("A hull under motor or sail: the bow's part of SourcesPerHull, in place of BowSourceShare, so her " +
+                 "bow arm is laid as closely as her stern's.")]
+        [Range(0f, 1f)] public float MotorVBowSourceShare;
 
         public static HullWaveSettings Default => new HullWaveSettings
         {
@@ -313,6 +330,10 @@ namespace HiddenHarbours.Core
 
             MotorVShare = 1f,
             MotorVArmHalfWidthDegrees = 25f,
+            MotorVArmBlendWavelengths = 2.5f,
+            MotorVArmOverlapSpans = 1.5f,
+            MotorVSternShare = 0.45f,
+            MotorVBowSourceShare = 0.5f,
         };
     }
 }

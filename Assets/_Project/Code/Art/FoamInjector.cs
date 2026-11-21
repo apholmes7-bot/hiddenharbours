@@ -782,14 +782,19 @@ namespace HiddenHarbours.Art
             HullWaveSettings s = GameServices.HullWaves;
             if (field == null || !s.Enabled) return;
             // Rowed: no direction, her rings exactly as before. Otherwise her way through the water, so each
-            // ring keeps only the arcs on the arms of her V (HullWaveChain.Step, HullWaveSettings.MotorVShare).
+            // ring draws its piece of the arms of her V (HullWaveChain.Step, HullWaveSettings.MotorVShare); her
+            // stern's waves are then kept under her bow's and her bow arm is laid as closely as her stern's
+            // (MotorVSternShare, MotorVBowSourceShare; owner 11-21 second look).
             Vector2 travel = IsRowed() ? Vector2.zero : through;
+            bool v = HullWaveMath.LaysV(travel, in s);
+            float sternShare = v ? Mathf.Max(s.MotorVSternShare, 0f) : 1f;
+            float bowSources = v ? s.MotorVBowSourceShare : s.BowSourceShare;
             float halfLength = _sternOffsetMeters;
             float length = HullLengthMetres;
             int owner = HullWaves.OwnerOf(_hullBody != null ? (Object)_hullBody.gameObject : gameObject);
             int budget = Mathf.Max(2, s.SourcesPerHull);
-            int leadBudget = Mathf.Clamp(Mathf.RoundToInt(budget * Mathf.Clamp01(s.BowSourceShare)), 0, budget - 1);
-            _waveTrail.Step(field, trailing, now, speed, length, 1f, budget - leadBudget, owner, travel, in s);
+            int leadBudget = Mathf.Clamp(Mathf.RoundToInt(budget * Mathf.Clamp01(bowSources)), 0, budget - 1);
+            _waveTrail.Step(field, trailing, now, speed, length, sternShare, budget - leadBudget, owner, travel, in s);
             if (leadBudget > 0 && halfLength > 0f && s.BowShare > 0f)
             {
                 Vector2 leading = HullPointLaid(new Vector2(0f, _trailFromBow ? -halfLength : halfLength));
