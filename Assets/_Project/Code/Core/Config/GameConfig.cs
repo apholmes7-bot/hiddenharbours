@@ -4224,6 +4224,16 @@ namespace HiddenHarbours.Core
         [Tooltip("Seconds a sand chunk lives.")]
         [Min(0f)] public float SandChunkSeconds;
 
+        [Tooltip("Smaller clods tossed off the blade at the dig's lift-and-toss phase (0 = no toss).")]
+        [Min(0)] public int DigTossChunkCount;
+
+        [Tooltip("Seconds after the blade enters the ground (the impact) that the toss leaves the blade: the " +
+                 "dig clip's in-ground and lever phases.")]
+        [Min(0f)] public float DigTossDelaySeconds;
+
+        [Tooltip("Seconds a tossed clod lives.")]
+        [Min(0f)] public float DigTossChunkSeconds;
+
         [Tooltip("Rings spread from the point the cast line touches down.")]
         [Min(0)] public int CastRingCount;
 
@@ -4288,6 +4298,9 @@ namespace HiddenHarbours.Core
             SaleCountUpSeconds = 0.7f,
             SandChunkCount = 7,
             SandChunkSeconds = 0.45f,
+            DigTossChunkCount = 4,
+            DigTossDelaySeconds = 0.4f,
+            DigTossChunkSeconds = 0.45f,
             CastRingCount = 3,
             CastRingSeconds = 0.6f,
             MomentTickHz = 30f,
