@@ -65,6 +65,8 @@ When you add an ADR, add its row here in the same PR.
 | 0059 | [Hulls sort among the scenery by where they lie](0059-hulls-sort-among-the-scenery.md) | Accepted (owner took all three recommendations 2026-11-17: option A, covered weed under the sea, the waterline pivot; rollout in `docs/architecture/hull-vs-decor-sorting.md` §7) |
 | 0061 | [The player is always the mesh: no sprite-sheet fallback](0061-the-player-is-always-the-mesh.md) | **Proposed** (owner ask 2026-11-19; one GameConfig switch, shipped off) |
 
+| 0057 | [The campaign is playable by two: the host owns the world](0057-campaign-coop-host-world.md) | **Proposed** (campaign direction ruled; contracts and packages await owner and lead-architect review) |
+
 **Conventions.** `Proposed` = awaiting the named decider; `Accepted` = ratified (by the owner where
 the ADR says so, otherwise by `lead-architect` on merge); `Implemented` = accepted and the code
 landed in the same PR; `Superseded` = kept for the record, points at its successor. An ADR whose

@@ -37,7 +37,10 @@ namespace HiddenHarbours.Tests.PlayMode
         public IEnumerator TearDown()
         {
             LogAssert.ignoreFailingMessages = false;
-            var clean = SceneManager.CreateScene("BathymetryLifetimeCleanup");
+            // NGO's package fixtures run after the project fixtures. Like Unity's
+            // generated runner scene, this has no asset path to synchronize. Keep
+            // the runner prefix so NGO excludes it during client approval.
+            var clean = SceneManager.CreateScene("InitTestScene_BathymetryLifetimeCleanup");
             SceneManager.SetActiveScene(clean);
             for (int i = SceneManager.sceneCount - 1; i >= 0; i--)
             {
@@ -47,6 +50,13 @@ namespace HiddenHarbours.Tests.PlayMode
             foreach (GameObject root in PersistentRoots())
                 if (root != null && !_persistentBefore.Contains(root)) Object.DestroyImmediate(root);
             GameServices.Reset();
+            // The empty cleanup scene needs an audio listener so later strict log
+            // assertions do not receive Unity's "no audio listeners" diagnostic.
+            // This object belongs only to the test scene; no game scene changes.
+            if (!Object.FindObjectsByType<AudioListener>().Any(listener => listener.isActiveAndEnabled))
+                new GameObject("TestRunnerAudioListener").AddComponent<AudioListener>();
+            Assert.That(Object.FindObjectsByType<AudioListener>().Count(listener => listener.isActiveAndEnabled),
+                Is.EqualTo(1), "The restored runner scene must have exactly one active audio listener.");
             yield return null;
         }
 

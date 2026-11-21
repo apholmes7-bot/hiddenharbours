@@ -1,5 +1,13 @@
 # Playing the campaign together
 
+> **Historical audit, superseded in scope and sequence on 2026-11-13.**
+> [ADR 0057](../adr/0057-campaign-coop-host-world.md) and
+> [CO-01 to CO-12](../../backlog/coop-campaign.md) now govern delivery: internet
+> joining, shared licences, each player moving their body and steered boat,
+> both aboard the intro boat at sea from the opening, and intro before the save
+> migration. CO-01 to CO-04 may run beside M1; reassess at CO-05. The audit below
+> describes its earlier proposal and is retained for its source findings.
+
 Status: **Proposed. Nobody has accepted this plan.** Documents only.
 
 Audit base: `00b030cf8d286bc9d3b1464acd55c025e5a26a32`. Trial inspected at

@@ -3,6 +3,9 @@
     "rootNamespace": "HiddenHarbours.App",
     "references": [
         "HiddenHarbours.Core",
+        "HiddenHarbours.CoopSpike",
+        "Unity.Netcode.Runtime",
+        "Unity.Networking.Transport",
         "HiddenHarbours.World",
         "HiddenHarbours.Environment",
         "HiddenHarbours.Boats",

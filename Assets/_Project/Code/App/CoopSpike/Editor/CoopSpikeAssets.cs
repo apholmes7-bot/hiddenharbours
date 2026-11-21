@@ -1,0 +1,110 @@
+using System.IO;
+using System.Linq;
+using HiddenHarbours.App.Editor;
+using HiddenHarbours.Core;
+using HiddenHarbours.Boats;
+using HiddenHarbours.Player;
+using Unity.Netcode;
+using Unity.Netcode.Components;
+using UnityEditor;
+using UnityEditor.Build.Reporting;
+using UnityEngine;
+
+namespace HiddenHarbours.CoopSpike.Editor
+{
+    public static class CoopSpikeAssets
+    {
+        public const string Root = "Assets/_Project/Resources/CoopSpike";
+        public const string SettingsPath = Root + "/Settings.asset";
+        public static void BuildWindowsTrial()
+        {
+            WithTrialProduct(BuildWindowsTrialPlayer);
+        }
+
+        // The build carries the trial name; the project and subsequent solo builds retain theirs.
+        public static void WithTrialProduct(System.Action build)
+        {
+            string product = PlayerSettings.productName;
+            try
+            {
+                PlayerSettings.productName = CoopDevStart.SpikeProduct;
+                build();
+            }
+            finally { PlayerSettings.productName = product; }
+        }
+
+        private static void BuildWindowsTrialPlayer()
+        {
+            string destination = Path.GetFullPath("Evidence~/gpt-coop/package/HiddenHarboursCoopSpike.exe");
+            Directory.CreateDirectory(Path.GetDirectoryName(destination));
+            var report = BuildPipeline.BuildPlayer(new BuildPlayerOptions
+            {
+                scenes = EditorBuildSettings.scenes.Where(scene => scene.enabled).Select(scene => scene.path).ToArray(),
+                locationPathName = destination,
+                target = BuildTarget.StandaloneWindows64,
+                options = BuildOptions.Development
+            });
+            File.WriteAllText("Evidence~/gpt-coop/build-summary.txt",
+                $"result={report.summary.result}\nseconds={report.summary.totalTime.TotalSeconds:F3}\nbytes={report.summary.totalSize}\nerrors={report.summary.totalErrors}\nwarnings={report.summary.totalWarnings}\n");
+            if (report.summary.result != BuildResult.Succeeded)
+                throw new System.InvalidOperationException("The trial build failed.");
+        }
+        public static void BuildWindowsCost()
+        {
+            WithTrialProduct(BuildWindowsCostPlayer);
+        }
+
+        private static void BuildWindowsCostPlayer()
+        {
+            var watch = System.Diagnostics.Stopwatch.StartNew();
+            string destination = Path.GetFullPath("Evidence~/gpt-coop/cost/HiddenHarboursCoopSpike.exe");
+            Directory.CreateDirectory(Path.GetDirectoryName(destination));
+            var report = BuildPipeline.BuildPlayer(new BuildPlayerOptions
+            {
+                scenes = EditorBuildSettings.scenes.Where(scene => scene.enabled).Select(scene => scene.path).ToArray(),
+                locationPathName = destination,
+                target = BuildTarget.StandaloneWindows64,
+                options = BuildOptions.Development
+            });
+            watch.Stop();
+            string evidence = Path.GetFullPath("Evidence~/gpt-coop");
+            Directory.CreateDirectory(evidence);
+            File.WriteAllText(Path.Combine(evidence, "day2-windows-build.txt"),
+                $"result={report.summary.result}\nseconds={watch.Elapsed.TotalSeconds:F3}\nbytes={report.summary.totalSize}\nerrors={report.summary.totalErrors}\nwarnings={report.summary.totalWarnings}\n");
+            if (report.summary.result != BuildResult.Succeeded)
+                throw new System.InvalidOperationException("The local Windows cost build failed; read its report.");
+        }
+        [MenuItem("Hidden Harbours/Spike/Build Two Boats Assets")]
+        public static void Build()
+        {
+            Directory.CreateDirectory(Root);
+            AssetDatabase.Refresh();
+            var settings = AssetDatabase.LoadAssetAtPath<CoopSpikeSettings>(SettingsPath);
+            if (settings == null)
+            {
+                settings = ScriptableObject.CreateInstance<CoopSpikeSettings>();
+                AssetDatabase.CreateAsset(settings, SettingsPath);
+            }
+            settings.Roster = StPetersBuilder.DevPickerRosterFiles.Select(name =>
+                AssetDatabase.LoadAssetAtPath<BoatHullDef>("Assets/_Project/Data/Boats/" + name + ".asset"))
+                .Where(h => h != null).ToArray();
+            settings.Character = AssetDatabase.LoadAssetAtPath<CharacterVisualDef>("Assets/_Project/Data/Characters/FisherIso.asset");
+            settings.Rod = AssetDatabase.LoadAssetAtPath<ToolDef>("Assets/_Project/Data/Tools/Rod.asset");
+            settings.RodSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/_Project/Art/Sprites/Gear/Rod.png");
+            settings.Scene = EastWaterPlan.SceneName;
+            var boat = new GameObject("CoopBoat");
+            try
+            {
+                boat.AddComponent<NetworkObject>();
+                var movement = boat.AddComponent<NetworkTransform>();
+                movement.AuthorityMode = NetworkTransform.AuthorityModes.Owner;
+                movement.SyncScaleX = movement.SyncScaleY = movement.SyncScaleZ = false;
+                boat.AddComponent<CoopBoatReplica>();
+                settings.PlayerPrefab = PrefabUtility.SaveAsPrefabAsset(boat, Root + "/Boat.prefab");
+                EditorUtility.SetDirty(settings);
+                AssetDatabase.SaveAssets();
+            }
+            finally { Object.DestroyImmediate(boat); }
+        }
+    }
+}
