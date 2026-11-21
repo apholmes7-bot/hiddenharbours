@@ -27,3 +27,6 @@ MonoBehaviour:
   BusyLine: 'It''s already going.'
   NotMicrowavableLine: 'Can''t microwave that. Not raw food.'
   NeedsPrepLine: 'Can''t microwave that. Not raw food.'
+  ShowsFood: 0
+  FoodAnchorPropMeters: {x: 0, y: 0, z: 0}
+  BrownsAsItCooks: 0

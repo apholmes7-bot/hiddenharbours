@@ -28,6 +28,12 @@ namespace HiddenHarbours.Core
         /// <summary>The starboard oar's grip.</summary>
         public Vector3 StarboardGrip;
 
+        /// <summary>The port oar's handle end (its loom's inboard end), which must stay out of his body.</summary>
+        public Vector3 PortHandleEnd;
+
+        /// <summary>The starboard oar's handle end.</summary>
+        public Vector3 StarboardHandleEnd;
+
         /// <summary>The top of the thwart under the rower's sitting bones.</summary>
         public Vector3 Seat;
 
@@ -42,6 +48,39 @@ namespace HiddenHarbours.Core
 
         /// <summary>The most extra forward lean he may take to bring a grip into reach, degrees.</summary>
         public float ReachLeanMaxDegrees;
+
+        /// <summary>How far his hands and forearms stay outside his own torso, metres (0 = unchecked).</summary>
+        public float BodyClearanceMeters;
+
+        /// <summary>The most extra lean back he may take to keep his arms out of his body, degrees.</summary>
+        public float BodyClearLeanMaxDegrees;
+
+        /// <summary>The most he may turn his shoulders to keep his arms out of his body, degrees either way.</summary>
+        public float BodyClearTwistMaxDegrees;
+
+        /// <summary>How much of a rest the oars are in this frame: 0 rowing, 1 resting between strokes
+        /// with the blades held out. A station with no style rest answers 0; the oars let go altogether
+        /// is the reader's to decide (<see cref="RowingFigureReader"/>).</summary>
+        public float RestWeight;
+
+        /// <summary>The breath this frame while resting, -1..1 (scaled by <see cref="RestWeight"/> by
+        /// whoever reads it).</summary>
+        public float RestBreath;
+
+        /// <summary>How far he slumps forward at rest, degrees.</summary>
+        public float RestSlumpDegrees;
+
+        /// <summary>How far a breath rocks him at rest, degrees either side.</summary>
+        public float RestBreathDegrees;
+
+        /// <summary>Seconds per breath with the oars let go.</summary>
+        public float RestBreathSeconds;
+
+        /// <summary>With the oars let go: where each hand rests along his thigh (0 hip, 1 knee).</summary>
+        public float RestHandAlongThigh;
+
+        /// <summary>With the oars let go: the palm's height above the thigh bone, metres.</summary>
+        public float RestHandAboveThighMeters;
     }
 
     /// <summary>

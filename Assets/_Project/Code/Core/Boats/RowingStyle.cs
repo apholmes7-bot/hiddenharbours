@@ -165,6 +165,42 @@ namespace HiddenHarbours.Core
         }
 
         /// <summary>
+        /// How far into the rest the rower is at <paramref name="rawStrokePhase"/>: 1 through the rest,
+        /// easing up over the last <see cref="RestEase"/> share of the recovery before it and down over the
+        /// same share after it (smoothstep), 0 elsewhere and always 0 for a style with no rest. What the
+        /// rower's body relaxes by, and the blades settle by, so a rest never snaps in or out.
+        /// </summary>
+        public float RestWeight(float rawStrokePhase)
+        {
+            if (IdentityTiming || RestShare <= TimingEpsilon) return 0f;
+            float s = OarStrokeMath.Wrap01(rawStrokePhase);
+            if (s >= _t4 && s < _t5) return 1f;
+            float pre = (_t4 - _t3) * RestEase, post = (1f - _t5) * RestEase;
+            if (pre > 0f && s >= _t4 - pre && s < _t4) return SmoothStep01((s - (_t4 - pre)) / pre);
+            if (post > 0f && s >= _t5 && s < _t5 + post) return 1f - SmoothStep01((s - _t5) / post);
+            return 0f;
+        }
+
+        /// <summary>
+        /// The breath taken in the rest at <paramref name="rawStrokePhase"/>, -1..1: one whole breath per
+        /// rest (a sine over the rest's own span, 0 at both ends so it joins the stroke without a step),
+        /// 0 outside it. Deterministic: read off the stroke clock, no clock of its own.
+        /// </summary>
+        public float RestBreath(float rawStrokePhase)
+        {
+            if (IdentityTiming || RestShare <= TimingEpsilon) return 0f;
+            float s = OarStrokeMath.Wrap01(rawStrokePhase);
+            if (s < _t4 || s >= _t5) return 0f;
+            return Mathf.Sin(2f * Mathf.PI * (s - _t4) / (_t5 - _t4));
+        }
+
+        private static float SmoothStep01(float t)
+        {
+            t = Mathf.Clamp01(t);
+            return t * t * (3f - 2f * t);
+        }
+
+        /// <summary>
         /// How hard an oar drives the hull at <paramref name="rawStrokePhase"/>, as a multiple of the
         /// hull's oar power: <c>average × ((1 − depth) + depth × shape / mean shape)</c>, where the shape is
         /// a half sine over the drive (the blade in the water, phase 0 to 0.5) and 0 through the recovery

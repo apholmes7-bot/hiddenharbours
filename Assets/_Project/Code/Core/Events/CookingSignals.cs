@@ -16,11 +16,18 @@ namespace HiddenHarbours.Core
         public readonly string InputItemId;
         /// <summary>The game time it is done at (<see cref="IGameClock.TotalSeconds"/>).</summary>
         public readonly double ReadyAtGameSeconds;
+        /// <summary>The weight of the catch taken from his hands, kg; 0 when unknown (a locker item has none).</summary>
+        public readonly float InputWeightKg;
 
         public FoodCookStarted(string stationId, string stationKey, string recipeId, string inputItemId, double readyAt)
+            : this(stationId, stationKey, recipeId, inputItemId, readyAt, 0f) { }
+
+        public FoodCookStarted(string stationId, string stationKey, string recipeId, string inputItemId, double readyAt,
+                               float inputWeightKg)
         {
             StationId = stationId; StationKey = stationKey; RecipeId = recipeId; InputItemId = inputItemId;
             ReadyAtGameSeconds = readyAt;
+            InputWeightKg = inputWeightKg > 0f ? inputWeightKg : 0f;
         }
     }
 
