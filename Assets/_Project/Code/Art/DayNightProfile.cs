@@ -38,6 +38,15 @@ namespace HiddenHarbours.Art
                  "Moves colour timing without moving the sun's sunrise or sunset.")]
         [SerializeField, Min(0f)] private float _warmKeyBeforeSunsetHours = DefaultWarmKeyBeforeSunsetHours;
 
+        // The warm key holds through the summer evening and only sinks into night blue over the last hour
+        // before NightHour; a blend spanning the whole warm-to-night stretch made 19:00-21:00 a dark red.
+        public const float DefaultNightBlendHours = 1f;
+
+        [Tooltip("Hours before NightHour over which the day tint sinks from the warm sunset key into the " +
+                 "night blue. Before that the warm key holds. A value at or above the gap between the warm " +
+                 "key and NightHour gives the old behaviour (one long blend from the warm key to night).")]
+        [SerializeField, Min(0f)] private float _nightBlendHours = DefaultNightBlendHours;
+
         [Header("Day tint (the whole-screen multiply colour over 24h)")]
         [Tooltip("The global MULTIPLY colour across the solar phase (0 = midnight, 0.5 = solar noon, 1 = " +
                  "midnight). Warm + low at dawn, bright neutral/cool at noon, orange-red at dusk, dark " +
@@ -98,8 +107,8 @@ namespace HiddenHarbours.Art
                  "OFF, whatever its own threshold. Clear noon is ~0.20, an overcast noon ~0.35, so 0.40 keeps " +
                  "every lamp dark through any daylight.\n\nOWNER RULING 2026-11-14: \"Lamps should not glow at noon.\"")]
         [Range(0f, 1f)] [SerializeField] private float _lampsOffDarkness = DefaultLampsOffDarkness;
-        [Tooltip("Frame darkness from which every gated lamp may reach full. Dusk (20:30) is ~0.70 and a " +
-                 "moonlit night ~0.62, so 0.60 has every lamp full by dusk. A lamp whose own ramp is darker " +
+        [Tooltip("Frame darkness from which every gated lamp may reach full. Late dusk (21:25) is ~0.63 and a " +
+                 "moonlit night ~0.62, so 0.60 has every lamp full by late dusk. A lamp whose own ramp is darker " +
                  "than this keeps it.")]
         [Range(0f, 1f)] [SerializeField] private float _lampsOnDarkness = DefaultLampsOnDarkness;
 
@@ -108,6 +117,7 @@ namespace HiddenHarbours.Art
 
         // ---- read-only accessors (the controller + DayNightMath read these) ----
         public float WarmKeyBeforeSunsetHours => _warmKeyBeforeSunsetHours;
+        public float NightBlendHours => _nightBlendHours;
         public Gradient SkyTint => _skyTint;
         public AnimationCurve Intensity => _intensity;
         public float ShadowSouthBias => _shadowSouthBias;
@@ -141,7 +151,7 @@ namespace HiddenHarbours.Art
                     new GradientColorKey(new Color(0.95f, 0.66f, 0.45f), 0.25f), // warm low sunrise
                     new GradientColorKey(new Color(1.00f, 0.98f, 0.95f), 0.32f), // bright neutral morning
                     new GradientColorKey(new Color(0.98f, 1.00f, 1.00f), 0.70f), // cool bright noon
-                    new GradientColorKey(new Color(1.00f, 0.55f, 0.32f), 0.75f), // orange-red sunset
+                    new GradientColorKey(new Color(1.00f, 0.75f, 0.56f), 0.75f), // golden-rose sunset
                     new GradientColorKey(new Color(0.12f, 0.16f, 0.34f), 0.80f), // dusk purple
                     new GradientColorKey(new Color(0.12f, 0.16f, 0.34f), 1.00f), // back to night blue
                 },
@@ -165,6 +175,7 @@ namespace HiddenHarbours.Art
 
             ApplyHourDefaults();
             _warmKeyBeforeSunsetHours = DefaultWarmKeyBeforeSunsetHours;
+            _nightBlendHours = DefaultNightBlendHours;
             _shadowSouthBias = 0.2f;
             _shadowNoonLift = 0.9f;
             _fogVisibilityForFullDim = 0.15f;

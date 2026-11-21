@@ -50,7 +50,8 @@ namespace HiddenHarbours.Tests.Art.EditMode
             // the profile's weather cap, so a storm's evening may light the lamps early (18:00 storm reads 0.40,
             // the band's edge); through the middle of the day (solar noon +/- 3 h) not even a storm does.
             // Clear daylight ends at the profile's warm key (sunset - WarmKeyBeforeSunsetHours, ~18:00): past it the
-            // evening tint darkens through the band (18:45 reads 0.43) and the lamps begin to come up, as they should.
+            // warm key holds until the profile's night blend begins and then the tint darkens through the band and the
+            // lamps come up, as they should.
             float from = _profile.SunriseHour + 2f, to = _profile.SunsetHour - _profile.WarmKeyBeforeSunsetHours;
             float noon = (_profile.SunriseHour + _profile.SunsetHour) * 0.5f;
             for (float h = from; h <= to; h += 0.25f)
@@ -78,8 +79,12 @@ namespace HiddenHarbours.Tests.Art.EditMode
         [Test]
         public void AtDusk_TheLampsAreOn()
         {
+            // The dusk lighting pass (owner ruling 2026-11-20) holds the warm key until an hour before night, so
+            // 20:30 is still golden evening (darkness ~0.31, below the band) and the lamps come up through
+            // 20:50-21:15. By the published sunset every lamp is full.
+            float sunset = _profile.SunsetHour;
             foreach (var lamp in Lamps)
-                Assert.AreEqual(1f, Gate(Lum(20.5f), lamp), 1e-4f, $"20:30, lamp {lamp}: darkness {1f - Lum(20.5f):0.000}");
+                Assert.AreEqual(1f, Gate(Lum(sunset), lamp), 1e-4f, $"{sunset}h sunset, lamp {lamp}: darkness {1f - Lum(sunset):0.000}");
         }
 
         [Test]
