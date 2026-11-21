@@ -16,3 +16,8 @@ MonoBehaviour:
   Rows:
   - CarriableDefId: container.bucket
     Carry: buckets
+    SocketLeft: carry_L
+    SocketRight: carry_R
+    BodyBone: pelvis
+    GripAbovePivotMeters: 0.375
+    DepthDeadbandMeters: 0.03

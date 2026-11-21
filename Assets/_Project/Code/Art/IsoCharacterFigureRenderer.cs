@@ -71,6 +71,9 @@ namespace HiddenHarbours.Art
         private Material _overlayMaterial;
         private readonly Vector3[] _overlayCorners = new Vector3[4];
         private float _heldReachMetres;   // the held prop's pad on every side of the overlay (ADR 0053)
+        // Each holder's own claim on that pad (a carried rod and a fish in the other hand), so one
+        // giving its room back never takes the other's: the pad is the largest claim.
+        private readonly float[] _heldReachClaims = new float[HeldReachClaimants];
 
         // Bind-mesh sources, read once. The posed mesh is written into every frame the pose changes.
         private Vector3[] _srcVerts, _srcNorms, _outVerts, _outNorms;
@@ -1184,9 +1187,29 @@ namespace HiddenHarbours.Art
         /// asked of the hull (<see cref="IsoFacetHullRenderer.EnsureHeldReachMetres"/>) and recorded here
         /// for the next time she goes ashore.
         /// </summary>
-        public void SetHeldReachMetres(float metres)
+        public void SetHeldReachMetres(float metres) => SetHeldReachMetres(HeldReachTool, metres);
+
+        /// <summary>How many holders may claim room in the overlay at once.</summary>
+        public const int HeldReachClaimants = 2;
+
+        /// <summary>The claim of the tool in his hand (the rod).</summary>
+        public const int HeldReachTool = 0;
+
+        /// <summary>The claim of the catch in his hand.</summary>
+        public const int HeldReachCatch = 1;
+
+        /// <summary>
+        /// <see cref="SetHeldReachMetres(float)"/> for one holder (<see cref="HeldReachTool"/>,
+        /// <see cref="HeldReachCatch"/>): the overlay is padded by the largest claim, so a fish and a rod
+        /// held together each keep their room, and either one giving it back leaves the other's.
+        /// </summary>
+        public void SetHeldReachMetres(int claimant, float metres)
         {
-            metres = Mathf.Max(0f, metres);
+            if (claimant < 0 || claimant >= HeldReachClaimants) return;
+            _heldReachClaims[claimant] = Mathf.Max(0f, metres);
+            metres = 0f;
+            for (int i = 0; i < HeldReachClaimants; i++) metres = Mathf.Max(metres, _heldReachClaims[i]);
+
             // Aboard she is composited through the hull's overlay: ask it for the room (it only grows).
             if (!IsAshore && _hull != null) _hull.EnsureHeldReachMetres(metres);
             if (Mathf.Approximately(metres, _heldReachMetres)) return;

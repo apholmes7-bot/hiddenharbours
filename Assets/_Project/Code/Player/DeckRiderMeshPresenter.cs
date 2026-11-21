@@ -653,7 +653,7 @@ namespace HiddenHarbours.Player
                                                       config.FigureSwimWaterAbovePelvisMetres,
                                                       config.FigureTreadWaterBelowShouldersMetres, out line);
             }
-            _ashoreFigure.SetWaterline(on, line, FigureWaterLook.FromConfig(config));
+            _ashoreFigure.SetWaterline(on, line, FigureWaterLook.FromConfig(config, mode));
             bool afloat = mode == FigureWater.Swim || mode == FigureWater.Tread;
             if (afloat && config != null && config.FigureSwimHidesSunShadow) QuietShadow(body);
             else GiveShadowBack();

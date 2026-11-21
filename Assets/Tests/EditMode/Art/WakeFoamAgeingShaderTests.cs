@@ -257,12 +257,18 @@ namespace HiddenHarbours.Tests.Art.EditMode
             // Each layer's walk ends on the very col.rgb its compose lerps from.
             string[] composes =
             {
-                @"float3\s+surfFoam\s*=\s*FoamAgedColor\s*\(\s*surfAge01\s*,\s*_SurfColor\.rgb\s*,\s*_SurfAgeStrength\s*,\s*col\.rgb\s*\)\s*;" +
+                @"float3\s+surfFoam\s*=\s*FoamAgedColor\s*\(\s*lerp\s*\(\s*surfAge01\s*,\s*washAge01\s*,\s*washThin\s*\)\s*,\s*_SurfColor\.rgb\s*,\s*_SurfAgeStrength\s*,\s*col\.rgb\s*\)\s*;" +
                     @"\s*col\.rgb\s*=\s*lerp\s*\(\s*col\.rgb\s*,\s*surfFoam\s*,",
                 @"float3\s+lipFoam\s*=\s*FoamAgedColor\s*\(\s*0\.0\s*,\s*_SurfLipColor\.rgb\s*,\s*_SurfAgeStrength\s*,\s*col\.rgb\s*\)\s*;" +
                     @"\s*col\.rgb\s*=\s*lerp\s*\(\s*col\.rgb\s*,\s*lipFoam\s*,",
                 @"col\.rgb\s*=\s*lerp\s*\(\s*col\.rgb\s*,\s*FoamAgedColor\s*\(\s*capAge01\s*,\s*_FoamColor\.rgb\s*,\s*_CapAgeStrength\s*,\s*col\.rgb\s*\)",
                 @"col\.rgb\s*=\s*lerp\s*\(\s*col\.rgb\s*,\s*WakeFoamAgedColor\s*\(\s*wakeFresh\s*,\s*col\.rgb\s*\)",
+                // The one foam sheet (2026-11-19): the shore's foam line walks too, at the swash's age.
+                @"float3\s+fringeFoam\s*=\s*FoamAgedColor\s*\(\s*fringeAge01\s*,\s*_FoamColor\.rgb\s*,\s*_FoamSheetShore\.x\s*,\s*col\.rgb\s*\)\s*;" +
+                    @"\s*col\.rgb\s*=\s*lerp\s*\(\s*col\.rgb\s*,\s*fringeFoam\s*,",
+                // …and the storm streaks, at their own age.
+                @"float3\s+stormFoam\s*=\s*FoamAgedColor\s*\(\s*stormAge01\s*,\s*_FoamColor\.rgb\s*,\s*stormJoin\s*,\s*col\.rgb\s*\)\s*;" +
+                    @"\s*col\.rgb\s*=\s*lerp\s*\(\s*col\.rgb\s*,\s*stormFoam\s*,",
             };
 
             // …after the last light layers, so the col.rgb they end on is the lit sea.

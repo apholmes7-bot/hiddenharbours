@@ -15,9 +15,10 @@ namespace HiddenHarbours.Tests.Economy
     /// and routing approved from <c>docs/economy/nmc-wholesalers-stock.md</c>). Reads the shipped catalog.
     ///
     /// <para><b>On the shelf, or on file.</b> Both counters and keepers stand in the creek, and the four offers
-    /// only a wholesaler sells (the three electronics and the rod rack) are listed at their vendors
-    /// (<c>StoreWiringTests</c> guard 4 holds a listed ware to a committed vendor). The rest also name another
-    /// seller and stay unlisted until that is settled; <c>docs/design/economy-item-sellers.md</c> §5.1 says why.</para>
+    /// wired to a wholesaler (the three existing electronics and the rod rack) are listed at their vendors
+    /// (<c>StoreWiringTests</c> guard 4 holds a listed ware to a committed vendor). The six new electronics
+    /// wait for dedicated vendors; the rest also name another seller and stay unlisted until that is settled;
+    /// <c>docs/design/economy-item-sellers.md</c> §5.1 says why.</para>
     ///
     /// <para>The ids are spelled here rather than read from the Boats module's constants: this assembly
     /// references Core and Economy only (rule 4), and an id is a stable contract either way.</para>
@@ -28,12 +29,18 @@ namespace HiddenHarbours.Tests.Economy
         const string FishingGear = "seller.nmc_fishing_gear_wholesaler";
         const string Loran = "instrument.loran";
 
-        /// <summary>The boat electronics that exist as items today, at the approved prices.</summary>
+        /// <summary>Authored electronics: three existing prices and six approved, unlisted offers.</summary>
         static readonly Dictionary<string, int> BoatGearStock = new Dictionary<string, int>(StringComparer.Ordinal)
         {
             [Loran] = 900,
             ["instrument.fish_finder"] = 650,
             ["instrument.gps"] = 1800,
+            ["instrument.autopilot"] = 6000,
+            ["instrument.compass_dome"] = 70,
+            ["instrument.compass_flush"] = 140,
+            ["instrument.radar"] = 3600,
+            ["instrument.wind_dial"] = 140,
+            ["instrument.wind_display"] = 650,
         };
 
         /// <summary>The fishing stock that exists as unlisted offers today, at its retained prices. The rod,
@@ -111,7 +118,7 @@ namespace HiddenHarbours.Tests.Economy
         // ---- the two lists -----------------------------------------------------------------------------------
 
         [Test]
-        public void TheBoatGearWholesaler_StocksTheBoatElectronics_AtTheApprovedPrices() =>
+        public void TheBoatGearWholesaler_NamesAllNineElectronics_AtTheirAuthoredPrices() =>
             StocksExactly(BoatGear, BoatGearStock);
 
         [Test]
@@ -124,7 +131,7 @@ namespace HiddenHarbours.Tests.Economy
             CollectionAssert.AreEquivalent(expected.Keys, named.Select(o => o.Id).ToList(),
                                            $"the offers naming {seller}: " + string.Join(", ", named));
             foreach (Offer o in named)
-                Assert.AreEqual(expected[o.Id], o.Price, $"{o} is not at its approved price");
+                Assert.AreEqual(expected[o.Id], o.Price, $"{o} is not at its authored price");
         }
 
         [Test]

@@ -6,7 +6,7 @@ It marks each step that needs a warm editor (a bake or a look) and each step tha
 
 | # | Problem | This pass | Still owed |
 |---|---|---|---|
-| a | The icons draw at about 40% of the slot width | **Fixed:** a separate icon trimmed tight (§1) | Icon-scale art for herring (§1.3) |
+| a | The icons draw at about 40% of the slot width | **Fixed:** a separate icon trimmed tight (§1) | Nothing: herring and mackerel icon-scale art landed 2026-11-20 (§1.3) |
 | b | The small fish barely read in his hands | **A size floor** shared by line, hands and tote (§2) | Contrast at the small rungs, the flounder face-on, mesh held props (§2.3, §3) |
 | c | No fish at the stove, locker or freezer | Nothing | The plan in §4 |
 | d | No held-prop meshes per species and size | Nothing | The plan in §3 (ADR 0053 PRs 1, 3 and 4) |
@@ -48,6 +48,15 @@ A 14x3 herring drawn in a 64 px slot is scaled 4.6x, so it reads as a few chunky
 is art, not code: an icon-scale render from the rig, the way the shellfish keep their flat icons
 until icon-scale shell art exists (PR 1308). The art-pipeline rule "never scale a sprite to fake
 size" applies to the world. An icon is a picture of the fish, so a separate icon render is fair.
+
+**Done (2026-11-20).** `docs/art/rigs/owed-icons/bakeOwedIcons.js` renders the same deck lay (row 2,
+frame 0) from the catch pass 2 rig at icon scale (herring 5.0, mackerel 2.8) into
+`docs/art/rigs/coast-species-kit/icon-cells/FishIconCell_<sp>.png`. `FishIconBuilder.TrimmedIcon`
+reads that cell before the deck sheet, so Build Fish Icons cuts and wires them as before and the
+pixel-for-pixel test still holds. Herring 14x3 → 43x10, mackerel 19x6 → 43x12, flounder 21x7 → 40x14 (scale 3.2). The deck sheets are
+untouched. The same bake draws the crustacean and shellfish icons (`ShellIcon_<id leaf>.png`): the
+lobster, rock crab and soft-shell clam from the rig's own plates, and the oyster, blue mussel and sea
+scallop, which had no icon at all. The rock crab icon is taken to the red-brown of its pot-deck sheet so the two read as one animal.
 
 ## 2. The size floor in the hands
 
@@ -144,6 +153,46 @@ The floor leaves all three alone at 12. The fixes that make them read are owed:
 
 Order: 3a can land any time (data only, nothing reads it). Then 3b → 3c → 3d, as ADR 0053 §4 says.
 
+### 3.3 What was built (`feat/held-fish-mesh`, one change for 3a-3d, 3e judged)
+
+- **3a by scale, not by new defs.** The rig's tail-rest geometry is linear in its scale, so the one
+  scale-1 mesh scaled about the grip IS the rung's mesh. `KindEntry.HeldMeshScale` carries each
+  rung's scale from `FishIsoAnchors.json` (`RodKitImporter.RungScales`); no new ids were minted. A
+  test pins every committed rung's scale to the rig's.
+- **3b** `HeldCatchMesh` hangs the mesh on `tool_R`/`tool_L` at the rig's held pose, turned about
+  its length so it shows the facing the held sprite shows (the flatfish face-on map applied).
+  The figure's overlay is padded by a per-holder claim, so a fish and a rod do not undo each other.
+- **3c without a shader change.** Fins and tails get a 1 px tube along each open edge of the fin
+  ramp's faces, and the eyes a 1 px block (`GameConfig.HeldFishFinLineWidthPx`,
+  `HeldFishEyeSizePx`). The line pass in the facet shader is still a later step.
+- **3d** `CarryHands` (carried catch) and the landing beat draw the mesh and hide the sprite; any
+  refusal keeps the sprite. A species that only borrows a kind's art (`SpeciesEntry.BorrowsKind`:
+  tomcod, quahog) keeps its sprite. Switch: `GameConfig.MeshCatchInHand`.
+- **3e** shows mildly (a back-lit fin reads a little darker and more dithered than the sprite).
+  The flag is not carried yet.
+
+**Second pass (readability against the sheet it replaces).** Measured at 4x on the hands, seven
+species x three rungs x eight headings x carry and landing, day and dusk, sheet vs mesh in the same
+pose:
+
+- **Tone.** As baked the mesh read duller and greyer than the sheet (dither checker, mid-ramp
+  shades). A held fish now draws with its own tone: gain x1.5, +1 ramp step, no dither
+  (`GameConfig.HeldFishToneGain`, `HeldFishToneLift`, `HeldFishDitherScale`). A rod keeps its bake.
+- **In front of the body.** The sheet is always drawn over his legs; the mesh hung behind them when
+  he faced away. A held fish is pulled `HeldFishFrontBiasMeters` (0.4 m) toward the camera.
+- **The landing uses the nearer hand.** It started on `tool_L` and hid the fish when he faced
+  west; it now changes to the hand nearer the camera, with a small dead band
+  (`HeldFishHandSwapDepthMeters`) so it does not flicker.
+- **A size floor for the mesh.** A mesh shorter than `HeldFishMinLengthPx` (20 px) is scaled up about
+  its grip (the mesh is linear in its scale, pinned by a test over all seven species). The herring's
+  three rungs all land on the floor, so its rungs no longer differ in size.
+- **No cradle.** The fisher has carry bones but no two-arm carry clip; with the arms in idle/walk a
+  cradled fish would sit inside his legs. A cradle needs a new carry clip and a held bake at the fish
+  rig's `cradle` rest first.
+- **Still weak.** No dark keyline round the mesh (the sheet has one), so it reads flatter on light
+  ground; the flounder loses its mottle without dither; facing north at the landing the fish is
+  still partly behind him.
+
 ## 4. Fish pictures at the stove, the locker and the freezer
 
 ### 4.1 Where it stands
@@ -170,6 +219,7 @@ can show their catch through the same bridge with no new Core contract.
 | 4a | **Ginny's freezer, lid open.** A `HoldCatchFillSource` plus a fill target on the freezer prefab. The target needs slot points, so a freezer rig (or the tote rig's slot table reused at the freezer's footprint) publishes them. The fish lie in the freezer at their own sized kind, so a big cod is big there too. A frost look is an art call (a tint, or a frosted ramp in the rig). Shows only while the lid is open (the player is at it), to keep the draw calls down. | world-content (prefab), art-pipeline (rig slots, frost) | **Yes:** a rig bake for the slot points, a prefab edit and a plate. |
 | 4b | **The stove and the prep counter: the fish being cooked.** A `CookJob` names its recipe; the recipe's fish input picks a sized kind, and the station draws that fish on the pan or the board (`Fish_<sp>_deck` lay at the station's facing) for the length of the job. It needs a "cooked" look later (a colour ramp swap in the rig, not a new sheet per species). The station def says where the pan sits (data, rule 6). | world-content + art-pipeline | **Yes:** a pan anchor on each station prefab and a plate. The cooked ramp is a rig change and a bake. |
 | 4c | **The supply locker.** It holds supplies, not fish (bait, ice, line). A picture of bait would come from the bait items' own art, not the fish sheets. Out of scope for fish art; listed so nobody looks for it. | — | — |
+| 4b' | **Second pass (2026-11-20), shot in Ginny's cottage at the planned kitchen rows.** A fillet recipe draws a plain fillet shape (`GameConfig.FilletLengthOfFish` of the rung's measured held length, `FilletHeightOfLength`, `FilletFleshColor`, `FilletEdgeColor`), browned on the ramp. It never draws the whole fish. `FoodCookStarted.InputWeightKg` carries the weight of the fish taken from his hands, and the station draws that weight's rung. A locker job or a loaded job has no weight and draws the mid rung. The anchor is `CookingStationDef.FoodAnchorPropMeters`, in the station frame (x front, y toward the wall, z up). It is turned with the facing the art shows, read through `Core.IFacingCellSource`, which `ApplianceArt` implements. It was calibrated on the real art: stove z 1.1, prep counter z 0.8. Station food is excluded from the sun caster rules, because a standing shadow washed it out. | world-content + art-pipeline | Owed: the kitchens are planned but not placed in any scene, so no player sees this until the kitchen placement slice lands. |
 | 4d | **The deck ice box and the hold.** Check first whether the deck container under the ice box already fills through a tote target on its prefab (the fill pieces support it; not checked here). The hold has no lid the player opens today, so its catch is read in lists, where the new tight icons now read. If a hatch is ever opened, it follows 4a's pattern. | world-content (check) | The check: no. A hatch: yes. |
 
 ## 5. Exact editor steps after any fish re-bake

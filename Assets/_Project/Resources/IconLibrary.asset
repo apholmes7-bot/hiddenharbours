@@ -28,19 +28,51 @@ MonoBehaviour:
   - Id: fish.atlantic_herring
     Icon: {fileID: 21300000, guid: 227f9b7e232546298196aa6f7e2cd53a, type: 3}
   - Id: fish.lobster
-    Icon: {fileID: 21300000, guid: 555eeebc25e370ae12601d4252236302, type: 3}
+    Icon: {fileID: 21300000, guid: a61ea63717dd4ba892fffb56daec78dc, type: 3}
   - Id: fish.rock_crab
-    Icon: {fileID: 21300000, guid: b6bc2c66344a71e4b46243ea685d1ae0, type: 3}
+    Icon: {fileID: 21300000, guid: bd2c04b7649d49dd8ba7bcd7b9ea803f, type: 3}
   - Id: fish.green_crab
-    Icon: {fileID: 21300000, guid: b6bc2c66344a71e4b46243ea685d1ae0, type: 3}
+    Icon: {fileID: 21300000, guid: 0fc7756f5141430f8d81f593a8104362, type: 3}
   - Id: fish.soft_shell_clam
-    Icon: {fileID: -8350118145691459604, guid: bae98caad6f379308446110bc6a39b4f, type: 3}
+    Icon: {fileID: 21300000, guid: 10fa059778c54b17b496859a6746bea9, type: 3}
+  - Id: fish.rainbow_smelt
+    Icon: {fileID: 21300000, guid: 0cdc1e5ef0e85a9438c44d97b5fe4a43, type: 3}
+  - Id: fish.atlantic_tomcod
+    Icon: {fileID: 21300000, guid: a3909035b82b6124daa0f035f9a2d955, type: 3}
+  - Id: fish.cunner
+    Icon: {fileID: 21300000, guid: 8545d65f026202543a3e65af6a6d7b97, type: 3}
+  - Id: fish.northern_quahog
+    Icon: {fileID: 21300000, guid: a86ade1ba7af42cf84760c71fa0191bd, type: 3}
+  - Id: fish.atlantic_surf_clam
+    Icon: {fileID: 21300000, guid: 56de6e713e664a7682de3dace757d992, type: 3}
   - Id: gear.rod
-    Icon: {fileID: 3043605626722657392, guid: a237e0b5e9c386cad0782dd33e12953a, type: 3}
+    Icon: {fileID: 21300000, guid: c9a64a230eaa44148c43164495c78ce8, type: 3}
   - Id: gear.shovel
     Icon: {fileID: 5797802837027575224, guid: db7f83f9d8ade533c1a7bb065ed12d82, type: 3}
   - Id: gear.bucket
     Icon: {fileID: 1180958333410743825, guid: 9c457a82e4864b81a738e262fb058047, type: 3}
+  - Id: gear.oyster_tongs
+    Icon: {fileID: 21300000, guid: eb55194188594e508ba730861393dcad, type: 3}
+  - Id: gear.shellfish_rake
+    Icon: {fileID: 21300000, guid: 8ab67cee7fc2489dbc802e1e504f2703, type: 3}
+  - Id: gear.mussel_sack
+    Icon: {fileID: 21300000, guid: de1d65fba5794074804ba3a408debc18, type: 3}
+  - Id: gear.shellfish_basket
+    Icon: {fileID: 21300000, guid: ad3dc49305a14300b9edb837d90bba8e, type: 3}
+  - Id: tackle.cod_jig
+    Icon: {fileID: 21300000, guid: 536f0c28a86f42f2a7585fec019396cf, type: 3}
+  - Id: tackle.mackerel_feathers
+    Icon: {fileID: 21300000, guid: d4da7d05773c4691970b730116dba419, type: 3}
+  - Id: tackle.soft_bait
+    Icon: {fileID: 21300000, guid: acec4110af004a64aab568c84156d132, type: 3}
+  - Id: tackle.spinner
+    Icon: {fileID: 21300000, guid: 35e4a7cdde904a81b9ef42a0070ac526, type: 3}
+  - Id: tackle.spoon
+    Icon: {fileID: 21300000, guid: 5bf94cf839d441309a397049379746a8, type: 3}
+  - Id: longline.groundfish_tub
+    Icon: {fileID: 21300000, guid: 469a80da096841fb8212867232c6d76d, type: 3}
+  - Id: trawl_gear.bottom_otter_prototype
+    Icon: {fileID: 21300000, guid: a5c07fc21641433994a0d9d697e36ea8, type: 3}
   - Id: license.cod
     Icon: {fileID: 21300000, guid: 4bd247b5cbbe4ca3a9869c1fed00f1d6, type: 3}
   - Id: boat.dory
@@ -53,3 +85,9 @@ MonoBehaviour:
     Icon: {fileID: 8828844319154872306, guid: 1c7cd2647a21e114a9b2fbe5d8bba682, type: 3}
   - Id: buoy.player
     Icon: {fileID: -4432373148397089404, guid: a52401dfeb41d2813e5d0d41635fd612, type: 3}
+  - Id: fish.american_oyster
+    Icon: {fileID: 21300000, guid: e0b69d4f31394b01a3cd284614d92d16, type: 3}
+  - Id: fish.blue_mussel
+    Icon: {fileID: 21300000, guid: 14ed8d0305e045feaa8d2564c5250cd5, type: 3}
+  - Id: fish.sea_scallop
+    Icon: {fileID: 21300000, guid: d8b8c80a20aa498ba5b671d9cf59fbf7, type: 3}
