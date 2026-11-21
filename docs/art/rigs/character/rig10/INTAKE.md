@@ -31,9 +31,9 @@ out on frame 2 at 0.001 m above the ground, inside `GameConfig.HeldShovelGroundT
 The pose library's LF sha256 is now
 `92467b1f3100d5b9f8886862fdc42a1478b065be6527db6dee4ecf3678fe0adb`. `tools/check.cjs --write`
 regenerated the builds, sidecars, options, golden report, manifest and sums. The pin moved in the
-row-stroke and seated-helm contracts, in eight of the hull walks `hull-walk.mjs` writes, and in the
-ten re-baked skins. The dory's walk (`doryIsoRig.dory_iso.walk.json`) keeps the old pin: an open
-rowing PR edits that file, so it is re-pinned there or after it lands.
+row-stroke and seated-helm contracts, in the nine hull walks `hull-walk.mjs` writes, and in the
+ten re-baked skins. The dory's walk (`doryIsoRig.dory_iso.walk.json`) was re-pinned after main's
+rowing change to that file was merged in; only its pose pin moved.
 
 The carried shovel moved too, in data only: `Shovel.asset` carries it at pitch -72, yaw 0 (was -35,
 20), low at his side, so the shaft no longer crosses his legs at E and W.
