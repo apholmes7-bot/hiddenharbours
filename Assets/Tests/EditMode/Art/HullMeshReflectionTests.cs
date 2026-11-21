@@ -579,12 +579,44 @@ namespace HiddenHarbours.Tests.Art.EditMode
             Assert.That(water, Is.Not.Null);
             float master = water.GetFloat("_ReflectionStrength"), fade = water.GetFloat("_ReflectionFadeChop");
             float windFade = water.GetFloat("_ReflectionWindFade"), objects = water.GetFloat("_ObjectReflectStrength");
+            float objFade = water.GetFloat("_ObjectReflectFadeChop"), lift = water.GetFloat("_ObjectReflectLowLight");
             Assert.That(objects, Is.GreaterThan(0f), "the water must composite object reflections at all");
-            float Weight(float sea) => objects * WaterReflection.ReflectionStrength(WaterSurface.Choppiness(sea), 0f, fade, windFade, master);
-            float glass = Weight(0.05f), gentle = Weight(0.32f), blow = Weight(0.75f);
+            float Weight(float sea, Color tint) => WaterReflection.ObjectReflectionWeight(
+                WaterSurface.Choppiness(sea), 0f, fade, windFade, master, objects, objFade, lift, tint);
+            float glass = Weight(0.05f, Noon), gentle = Weight(0.32f, Noon), blow = Weight(0.75f, Noon);
             Assert.That(glass, Is.GreaterThan(gentle));
             Assert.That(gentle, Is.GreaterThan(0.1f * glass), "a gentle sea still shows the reflection");
             Assert.That(blow, Is.EqualTo(0f), "a blow shows none");
+            Assert.That(Weight(0.75f, Dusk), Is.EqualTo(0f), "a blow at dusk shows none either: the lift multiplies, it never adds");
+        }
+
+        // The day/night tints measured on the GPU at Rice Point (11-21): noon 13:00 and dusk 20:30.
+        static readonly Color Noon = new Color(0.991f, 0.989f, 0.972f), Dusk = new Color(0.858f, 0.536f, 0.433f);
+
+        // The owner's look at the first pass (11-21): the dusk reflection on a gentle sea was too faint to see
+        // (max 12/255). The object block gains its own chop fade and a low-light lift; both 0 reproduce the
+        // first pass exactly, the noon glass case stays within a few percent, dusk on a gentle sea reads.
+        [Test]
+        public void HullReflection_ShowsAtDuskWithoutHardeningNoonGlass()
+        {
+            var water = AssetDatabase.LoadAssetAtPath<Material>("Assets/_Project/Art/Materials/Water.mat");
+            float master = water.GetFloat("_ReflectionStrength"), fade = water.GetFloat("_ReflectionFadeChop");
+            float windFade = water.GetFloat("_ReflectionWindFade"), objects = water.GetFloat("_ObjectReflectStrength");
+            float objFade = water.GetFloat("_ObjectReflectFadeChop"), lift = water.GetFloat("_ObjectReflectLowLight");
+            float Shipped(float sea, Color tint) => WaterReflection.ObjectReflectionWeight(
+                WaterSurface.Choppiness(sea), 0f, fade, windFade, master, objects, objFade, lift, tint);
+            float Pass1(float sea, Color tint) => WaterReflection.ObjectReflectionWeight(
+                WaterSurface.Choppiness(sea), 0f, fade, windFade, master, objects, 0f, 0f, tint);
+
+            for (float sea = 0f; sea <= 1f; sea += 0.05f)
+                Assert.That(Pass1(sea, Dusk), Is.EqualTo(objects * WaterReflection.ReflectionStrength(
+                    WaterSurface.Choppiness(sea), 0f, fade, windFade, master)).Within(1e-6f), "both dials 0 = the first pass, sea " + sea);
+            Assert.That(objFade, Is.GreaterThanOrEqualTo(fade), "the object fade only ever lengthens the sky mirror's");
+            Assert.That(objFade, Is.LessThanOrEqualTo(0.75f), "a blow (sea 0.75) must still clear the reflection");
+            Assert.That(Shipped(0.32f, Dusk), Is.GreaterThan(2.5f * Pass1(0.32f, Dusk)), "dusk on a gentle sea reads");
+            Assert.That(Shipped(0f, Noon), Is.LessThan(1.06f * Pass1(0f, Noon)), "noon glass is not hardened");
+            Assert.That(Shipped(0f, Dusk), Is.LessThanOrEqualTo(1f), "the weight stays a coverage");
+            Assert.That(WaterReflection.TintDarkness(Color.black), Is.EqualTo(0f), "cycle off = day, no lift");
         }
 
         [TestCase(1)] [TestCase(2)]

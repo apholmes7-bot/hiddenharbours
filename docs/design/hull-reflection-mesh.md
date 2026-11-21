@@ -19,6 +19,17 @@ pixels, so only the order fails. The mesh path covered 29973 pixels in the same 
 `HullReflection_OverlayPathRecordsBeforeTheHullPictureItSamples` pins that order.
 Turning the switch off leaves no boat reflection at all.
 
+**Showing at dusk (2026-11-21, the owner's look).** The water shader's object-reflection
+block inherits the sky mirror's sea-state curve, and the frame is multiplied by the
+day/night tint after the water draws, so the first pass read only max 12/255 at dusk on a
+gentle sea. Two water material dials, both 0 = the first pass exactly:
+`_ObjectReflectFadeChop` (the object's own chop fade, used only when longer than
+`_ReflectionFadeChop`; shipped 0.75 so a blow at sea 0.75 still clears it) and
+`_ObjectReflectLowLight` (weight × (1 + lift × darkness), darkness = 1 − the tint's luma;
+shipped 4, darkness 0.012 at noon and 0.38 at dusk 20.5). The final weight is clamped to 1.
+Twin: `WaterReflection.ObjectReflectionWeight`. Measured at dusk 20.5, sea 0.32: max
+12 → 29 (close) and 13 → 32 (game camera); noon glass within 5%.
+
 ## Geometry and visibility
 
 The rigs are **Z-up**. For a posed point `q = Rz(heading) Rx(trim) Ry(heel) p`, reflect
