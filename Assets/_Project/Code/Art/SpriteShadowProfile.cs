@@ -122,6 +122,18 @@ namespace HiddenHarbours.Art
                  "1 = soft-edged). The shape is always the caster's own sprite alpha.")]
         [Range(0f, 1f)] [SerializeField] private float _edgeSoftness = 0f;
 
+        [Header("A floating hull's shadow on open water")]
+        [Tooltip("How much of its cast-shadow darkness a hull AFLOAT keeps with the sun at the horizon " +
+                 "(1 = the full shadow, as on land). Water scatters a low sun's shade, so a long hard box " +
+                 "trailing off the stern at dusk reads wrong; this fades it to a faint tint. Only hulls over " +
+                 "water: a hull or vehicle on land or a wharf keeps its full shadow.")]
+        [Range(0f, 1f)] [SerializeField] private float _hullWaterLowSunAlpha = 0.25f;
+
+        [Tooltip("Sun elevation (0 horizon .. 1 overhead) at and above which a floating hull's shadow is " +
+                 "its full self. Below it the darkness eases (smoothly) down to 'Low sun alpha' at the " +
+                 "horizon, so the midday shadow is untouched.")]
+        [Range(0.01f, 1f)] [SerializeField] private float _hullWaterFullSunElevation = 0.6f;
+
         public float MaxAlpha { get => _maxAlpha; set => _maxAlpha = Mathf.Clamp01(value); }
         public Color ShadowColor { get => _shadowColor; set => _shadowColor = value; }
         public float LengthAtNoon { get => _lengthAtNoon; set => _lengthAtNoon = Mathf.Max(0f, value); }
@@ -153,6 +165,8 @@ namespace HiddenHarbours.Art
         /// </summary>
         public bool ScreenSpaceShade { get => _screenSpaceShade; set => _screenSpaceShade = value; }
         public float EdgeSoftness { get => _edgeSoftness; set => _edgeSoftness = Mathf.Clamp01(value); }
+        public float HullWaterLowSunAlpha { get => _hullWaterLowSunAlpha; set => _hullWaterLowSunAlpha = Mathf.Clamp01(value); }
+        public float HullWaterFullSunElevation { get => _hullWaterFullSunElevation; set => _hullWaterFullSunElevation = Mathf.Clamp(value, 0.01f, 1f); }
 
         /// <summary>
         /// The COMPONENT'S OWN historical defaults as an in-memory profile — what every
@@ -182,6 +196,7 @@ namespace HiddenHarbours.Art
             p._groundContactRadius = 0f;    // no ground pool: the pre-PR frame
             p._sortByFarEnd = false;        // shadows paint over what they cross, as they always did
             p._screenSpaceShade = true;     // owner ruling 2026-09-06: the shade is ON, fallback included
+            p._hullWaterLowSunAlpha = 1f;   // no water fade: a floating hull's shadow as it always was
             return p;
         }
     }
