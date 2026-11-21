@@ -351,22 +351,27 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.IsTrue(rod.DrawCarriedMeshOnFigure, "the shipped rod must ask for its carried mesh");
             IsoCharacterFigureRenderer figure = Fisher();
             HeldRodMesh driver = Driver();
-            int socket = figure.SkinDef.IndexOfBone(rod.HeldMeshMountBone);
+            int mainSocket = figure.SkinDef.IndexOfBone(rod.HeldMeshMountBone);
+            int offSocket = figure.SkinDef.IndexOfBone(rod.CarriedOffHandMountBone);
             foreach (string state in new[] { "idle", "walk" })
             {
                 Assert.IsTrue(figure.SkinDef.TryGetClip(state, out CharacterSkinDef.SkinClip clip), $"harness: no '{state}'");
                 foreach (int frame in new[] { 0, clip.FrameCount - 1 })
                 {
                     Assert.IsTrue(figure.SetPose(state, frame), $"harness: the fisher did not pose '{state}' {frame}");
-                    Assert.IsTrue(driver.TryDraw(true, rod, figure, LineWidthPx), $"'{state}' {frame}: {driver.LastRefusal}");
+                    // A frame long enough to finish any move between his hands, so the grip is checked settled.
+                    Assert.IsTrue(driver.TryDraw(true, rod, figure, LineWidthPx, HeldRodMesh.Use.Free, rod.StowBlendSeconds * 2f),
+                                  $"'{state}' {frame}: {driver.LastRefusal}");
                     Assert.IsTrue(driver.Carried, $"'{state}' aims no tool, so the rod is carried");
                     IsoFacetHeldPropRenderer r = driver.Renderer;
                     Assert.AreSame(figure.FacetTransform, r.transform.parent);
-                    Assert.IsTrue(figure.TryBonePoint(socket, out Vector3 grip));
+                    // The hand nearer the camera carries it (ToolDef.CarryInNearerHand), at the yaw for that hand.
+                    Assert.IsTrue(figure.TryBonePoint(driver.CarriedInOffHand ? offSocket : mainSocket, out Vector3 grip));
                     Assert.Less((r.transform.localPosition - grip).magnitude, 1e-5f, "the carried grip is not on the socket");
                     Assert.IsFalse(driver.Stowed, $"'{state}' is a free-handed gait: the rod stays in his hand");
                     Vector3 aim = r.transform.localRotation * HeldPropPose.ToolDirection(56f, 16f);
-                    Assert.Less((aim - HeldPropPose.ToolDirection(rod.CarriedPitchDeg, rod.CarriedYawDeg)).magnitude, 1e-3f,
+                    float yaw = HeldRodMesh.CarriedYawFor(rod, driver.CarriedInOffHand);
+                    Assert.Less((aim - HeldPropPose.ToolDirection(rod.CarriedPitchDeg, yaw)).magnitude, 1e-3f,
                                 "the carried rod must be aimed at the Def's carried aim (D1), not the fishing aim");
                 }
             }
@@ -391,12 +396,15 @@ namespace HiddenHarbours.Tests.EditMode
             // source: the sprite rod goes off on a mesh frame, the mesh is taken down on any other, the
             // line starts at the drawn rod's tip, and the lean turns the rod that is drawn.
             string src = File.ReadAllText(PresenterPath).Replace("\r\n", "\n");
-            StringAssert.Contains("DrawsMeshRod = (show & RodElements.Rod) != 0 && TryDrawMeshRod();", src);
+            StringAssert.Contains("DrawsMeshRod = TryDrawMeshRod();", src);
             StringAssert.Contains("if (!DrawsMeshRod) _meshRod?.Hide();", src);
             StringAssert.Contains("if (DrawsMeshRod)\n            {\n                _rodSr.enabled = false;", src);
             StringAssert.Contains("RodPresenterMath.LineAnchor(DrawsMeshRod,", src);
             StringAssert.Contains("if (DrawsMeshRod) _meshRod.Lean(lean);", src);
-            StringAssert.Contains("public bool DrawsRod => DrawsMeshRod || (_rodSr != null && _rodSr.enabled);", src);
+            // A mesh figure never shows the old sprite rod: not the fight's, not the carried one.
+            StringAssert.Contains("else if (MeshFigureOwnsRod)\n            {", src);
+            StringAssert.Contains("MeshFigureOwnsRod = !HeldRodMesh.SpriteMayDraw(on, carried, figure != null);", src);
+            StringAssert.Contains("public bool DrawsRod => DrawsMeshRod || MeshFigureOwnsRod || (_rodSr != null && _rodSr.enabled);", src);
         }
 
         // ================================================================ harness
