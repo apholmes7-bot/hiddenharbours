@@ -21,3 +21,6 @@ MonoBehaviour:
     BodyBone: pelvis
     GripAbovePivotMeters: 0.375
     DepthDeadbandMeters: 0.03
+    MeshTier: pail
+    MeshSwingDegPerMetrePerSecond: 12
+    MeshSwingMaxDeg: 10

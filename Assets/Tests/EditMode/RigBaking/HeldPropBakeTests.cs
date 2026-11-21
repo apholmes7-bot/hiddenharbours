@@ -59,6 +59,10 @@ namespace HiddenHarbours.Tests.RigBaking
             ["heldprop.fish_bass"] = 87,
             ["heldprop.fish_flounder"] = 88,
             ["heldprop.fish_herring"] = 86,
+            // The coast species kit's three, drawn by the fish rig's own loft (installed after it).
+            ["heldprop.fish_smelt"] = 86,
+            ["heldprop.fish_tomcod"] = 87,
+            ["heldprop.fish_cunner"] = 86,
         };
 
         /// <summary>The bail is plotted, not built: 45 samples of the rig's arc on the pail and the

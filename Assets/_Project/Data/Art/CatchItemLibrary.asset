@@ -225,8 +225,8 @@ MonoBehaviour:
     HeldFacings: 8
     HeldFramesPerFacing: 2
     HeldFacingMap: 
-    HeldMesh: {fileID: 0}
-    HeldMeshScale: 1
+    HeldMesh: {fileID: 11400000, guid: 8101b1bec2297194eb7f33a21adbb63d, type: 2}
+    HeldMeshScale: 1.092194
     SizeOf: 
     SizeKg: 0.28
     HeldLengthPx: 8
@@ -256,8 +256,8 @@ MonoBehaviour:
     HeldFacings: 8
     HeldFramesPerFacing: 2
     HeldFacingMap: 
-    HeldMesh: {fileID: 0}
-    HeldMeshScale: 1
+    HeldMesh: {fileID: 11400000, guid: 8101b1bec2297194eb7f33a21adbb63d, type: 2}
+    HeldMeshScale: 0.775397
     SizeOf: cunner
     SizeKg: 0.1
     HeldLengthPx: 6
@@ -287,8 +287,8 @@ MonoBehaviour:
     HeldFacings: 8
     HeldFramesPerFacing: 2
     HeldFacingMap: 
-    HeldMesh: {fileID: 0}
-    HeldMeshScale: 1
+    HeldMesh: {fileID: 11400000, guid: 8101b1bec2297194eb7f33a21adbb63d, type: 2}
+    HeldMeshScale: 1.40899
     SizeOf: cunner
     SizeKg: 0.6
     HeldLengthPx: 10
@@ -783,8 +783,8 @@ MonoBehaviour:
     HeldFacings: 8
     HeldFramesPerFacing: 2
     HeldFacingMap: 
-    HeldMesh: {fileID: 0}
-    HeldMeshScale: 1
+    HeldMesh: {fileID: 11400000, guid: b31efeaab05907849bff2f92388dd7dd, type: 2}
+    HeldMeshScale: 1.033407
     SizeOf: 
     SizeKg: 0.05
     HeldLengthPx: 7
@@ -814,8 +814,8 @@ MonoBehaviour:
     HeldFacings: 8
     HeldFramesPerFacing: 2
     HeldFacingMap: 
-    HeldMesh: {fileID: 0}
-    HeldMeshScale: 1
+    HeldMesh: {fileID: 11400000, guid: b31efeaab05907849bff2f92388dd7dd, type: 2}
+    HeldMeshScale: 0.762669
     SizeOf: smelt
     SizeKg: 0.02
     HeldLengthPx: 5
@@ -845,8 +845,8 @@ MonoBehaviour:
     HeldFacings: 8
     HeldFramesPerFacing: 2
     HeldFacingMap: 
-    HeldMesh: {fileID: 0}
-    HeldMeshScale: 1
+    HeldMesh: {fileID: 11400000, guid: b31efeaab05907849bff2f92388dd7dd, type: 2}
+    HeldMeshScale: 1.304145
     SizeOf: smelt
     SizeKg: 0.1
     HeldLengthPx: 8
@@ -876,8 +876,8 @@ MonoBehaviour:
     HeldFacings: 8
     HeldFramesPerFacing: 2
     HeldFacingMap: 
-    HeldMesh: {fileID: 0}
-    HeldMeshScale: 1
+    HeldMesh: {fileID: 11400000, guid: 07494d1499576ff43869e32ee1e4636a, type: 2}
+    HeldMeshScale: 1.048267
     SizeOf: 
     SizeKg: 0.14
     HeldLengthPx: 8
@@ -907,8 +907,8 @@ MonoBehaviour:
     HeldFacings: 8
     HeldFramesPerFacing: 2
     HeldFacingMap: 
-    HeldMesh: {fileID: 0}
-    HeldMeshScale: 1
+    HeldMesh: {fileID: 11400000, guid: 07494d1499576ff43869e32ee1e4636a, type: 2}
+    HeldMeshScale: 0.744212
     SizeOf: tomcod
     SizeKg: 0.05
     HeldLengthPx: 6
@@ -938,8 +938,8 @@ MonoBehaviour:
     HeldFacings: 8
     HeldFramesPerFacing: 2
     HeldFacingMap: 
-    HeldMesh: {fileID: 0}
-    HeldMeshScale: 1
+    HeldMesh: {fileID: 11400000, guid: 07494d1499576ff43869e32ee1e4636a, type: 2}
+    HeldMeshScale: 1.352322
     SizeOf: tomcod
     SizeKg: 0.3
     HeldLengthPx: 10

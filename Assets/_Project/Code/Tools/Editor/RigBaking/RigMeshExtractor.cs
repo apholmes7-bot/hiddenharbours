@@ -1351,7 +1351,10 @@ namespace HiddenHarbours.Tools.RigBaking
                         "for(i=0;i<=NSEG;i++){var p=[0,0,0];for(k=0;k<NR;k++){" +
                         "var q=i<NSEG?F[i*NR+k].v[0]:F[(NSEG-1)*NR+k].v[3];p[0]+=q[0]/NR;p[1]+=q[1]/NR;p[2]+=q[2]/NR;}" +
                         "c.push(p);}return c;}" +
-                        "return {edge:EDGE,variants:ORDER.slice()," +
+                        // The rig's ORDER, then any species a kit registered into SPECIES after load
+                        // (the coast species kit's smelt, tomcod, cunner), read when asked, not at load.
+                        "return {edge:EDGE,get variants(){return ORDER.concat(Object.keys(SPECIES)" +
+                        ".filter(function(k){return ORDER.indexOf(k)<0;}));}," +
                         "faces:function(v){return facesOf(R(v)).F;}," +
                         "mats:function(v){R(v);return matsFor(v).MATS;}," +
                         "keyline:function(v){return R(v).outline;}," +
@@ -1579,6 +1582,15 @@ namespace HiddenHarbours.Tools.RigBaking
         public string[] ExtraSymbols = Array.Empty<string>();
 
         /// <summary>
+        /// <see cref="RigCatalog"/> keys of kits installed into the host AFTER the rig (and after its
+        /// widening), for a kit that adds to the rig's own tables at load: the coast species kit
+        /// registers smelt, tomcod and cunner into <c>FishIso2.SPECIES</c>, so the fish rig's own
+        /// builders draw them. They must run after pass 2, because pass 2 re-runs the rig and replaces
+        /// its tables. Empty for every rig that stands alone.
+        /// </summary>
+        public string[] AddOnRigKeys = Array.Empty<string>();
+
+        /// <summary>
         /// JS returning this fitting's material table, relative to the global — e.g.
         /// <c>held.mats('cane')</c>. <b>Null = the rig's own <c>MATS</c></b>, which is every hull and
         /// every boat fitting: they set nothing and take the identical road they always have.
@@ -1776,6 +1788,23 @@ namespace HiddenHarbours.Tools.RigBaking
         }
 
         /// <summary>
+        /// Install each kit in <paramref name="keys"/> (<see cref="RigCatalog"/> keys) into a host that
+        /// already carries the rig they extend. A kit already installed is skipped, so a host read twice
+        /// does not register its additions twice. The kit files are only ever READ.
+        /// </summary>
+        public static void InstallAddOns(IRigScriptHost host, string[] keys)
+        {
+            if (host == null || keys == null) return;
+            foreach (string key in keys)
+            {
+                var entry = RigCatalog.Get(key);
+                if (host.EvaluateBool($"typeof {entry.GlobalName} === 'object' && {entry.GlobalName} !== null"))
+                    continue;
+                RigCatalog.InstallModule(host, entry);
+            }
+        }
+
+        /// <summary>
         /// Extracts from a rig that is not in <see cref="RigCatalog"/>. The catalog deliberately
         /// lists only the rigs the sprite baker actually bakes (CLAUDE.md rule 8 — importing source
         /// is not a licence to wire content), and adding the side dragger there would offer the
@@ -1891,6 +1920,10 @@ namespace HiddenHarbours.Tools.RigBaking
                           "_paint does — it is adjudicated in pixels by the acceptance fixture, never " +
                           "trusted on its face."));
             }
+
+            // Kits that add to the rig's own tables go in last, onto the rig as it now stands (pass 2
+            // replaced it). See RigPropExtraction.AddOnRigKeys.
+            if (prop != null) InstallAddOns(host, prop.AddOnRigKeys);
 
             // A fitting may ship its OWN cell — the skiff outboard's 272×216 against a 244×216 hull,
             // because the engine swings outboard of the transom. Reading the hull's cell for it would

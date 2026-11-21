@@ -69,6 +69,22 @@ namespace HiddenHarbours.Core
                      "from flickering as a hanging hand swings through the hip line.")]
             [Min(0f)] public float DepthDeadbandMeters;
 
+            [Tooltip("The bucket rig's tier the thing is drawn as when the MESH figure carries it ('pail'): " +
+                     "its baked held mesh at the fill and catch it holds, hung by the bail (the mesh's grip) " +
+                     "from the socket above, so it sorts with his legs pixel by pixel. Empty = no mesh; the " +
+                     "sprite keeps it. A carriable that does not show its fill as baked bucket states (the " +
+                     "clam hod) keeps its sprite whatever this says.")]
+            public string MeshTier;
+
+            [Tooltip("How far the hung mesh swings back from the way his hand is moving, in degrees per metre " +
+                     "per second of the hand's speed against his body (read off the clip on either side of the " +
+                     "frame drawn, so it is the same every time the frame is drawn). 0 = it hangs plumb.")]
+            [Min(0f)] public float MeshSwingDegPerMetrePerSecond;
+
+            [Tooltip("The most the hung mesh swings off plumb, degrees, so a fast stride never throws it into " +
+                     "his leg.")]
+            [Range(0f, 45f)] public float MeshSwingMaxDeg;
+
             /// <summary>The socket for one hand, or null when this row hangs nothing from the
             /// figure. <see cref="CarryHandSide.None"/> reads as the right hand, the slots' default.</summary>
             public string SocketFor(CarryHandSide hand)

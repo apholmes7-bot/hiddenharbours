@@ -629,7 +629,53 @@ namespace HiddenHarbours.Boats
             if (layer == null) layer = root.AddComponent<OutboardMotorMeshLayer>();
             layer.Configure(engines, mounts, boat, visual.MotorColumnCount,
                             visual.MotorMaxSteerDegrees, visual.MotorMesh.MaxTiltDegrees);
+
+            WireMotorFit(child, visual);
+            WireTiller(root, visual, layer, boat);
             return layer;
+        }
+
+        /// <summary>The slot the motor fit (the dory's stern bench and motor board) hangs in.</summary>
+        public const string MotorFitChildName = "MotorFit";
+
+        /// <summary>
+        /// Hang what a hull gains with her engine besides the engine itself (the dory's stern bench and
+        /// transom motor board), only while the engine is fitted: the plain dory stays plain. A visual
+        /// with no motor fit, or one the service refuses, simply goes without it.
+        /// </summary>
+        private static void WireMotorFit(Transform child, BoatVisualDef visual)
+        {
+            var service = HullMeshPresentation.Service;
+            if (visual.MotorFitMesh == null)
+            {
+                service?.DetachProp(child.gameObject, MotorFitChildName);
+                return;
+            }
+            if (service?.AttachProp(child.gameObject, visual.MotorFitMesh, MotorFitChildName) == null)
+                Debug.LogError($"[BoatHullSkinner] Visual '{visual.Id}' names a motor fit that could not be " +
+                               "attached (the presentation service refused it). Her engine hangs without its " +
+                               "bench. Re-bake the fitting and check the def loads.");
+        }
+
+        /// <summary>
+        /// The tiller seat (<see cref="OutboardTillerStation"/>) beside the engine it steers, when the
+        /// visual's <see cref="BoatVisualDef.Tiller"/> is enabled; removed otherwise. Its grip turns with
+        /// the FIRST engine, exactly as that engine's mesh is drawn (its pivot, clamp and borrowed-fitting
+        /// shift).
+        /// </summary>
+        private static void WireTiller(GameObject root, BoatVisualDef visual, OutboardMotorMeshLayer motor,
+                                       BoatController boat)
+        {
+            var station = root.GetComponent<OutboardTillerStation>();
+            if (!visual.Tiller.Enabled || motor == null || motor.EngineCount == 0)
+            {
+                if (station != null) DestroyComponent(station);
+                return;
+            }
+            if (station == null) station = root.AddComponent<OutboardTillerStation>();
+            station.Configure(motor, boat, visual.MotorMesh.PivotLocalMeters,
+                              HullPropFitment.Mount(motor.MountMeters(0), visual.MotorMeshFitmentOffsetMeters),
+                              in visual.Tiller);
         }
 
         /// <summary>A hull that wears no oar meshes must not keep the previous hull's — and must not
@@ -678,9 +724,12 @@ namespace HiddenHarbours.Boats
         {
             var layer = root != null ? root.GetComponent<OutboardMotorMeshLayer>() : null;
             if (layer != null) DestroyComponent(layer);
+            var tiller = root != null ? root.GetComponent<OutboardTillerStation>() : null;
+            if (tiller != null) DestroyComponent(tiller);
             if (child == null) return;
             for (int i = 0; i < MotorMeshSlotNames.Length; i++)
                 HullMeshPresentation.Service?.DetachProp(child.gameObject, MotorMeshSlotNames[i]);
+            HullMeshPresentation.Service?.DetachProp(child.gameObject, MotorFitChildName);
         }
 
         /// <summary>Strip the mesh presentation off a boat (renderer via the Art service, driver on the
