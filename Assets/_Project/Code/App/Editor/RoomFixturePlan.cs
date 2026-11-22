@@ -133,6 +133,19 @@ namespace HiddenHarbours.App.Editor
             _ => Vector2.zero,
         };
 
+        /// <summary>A row's planning footprint turned to the wall it backs: <see cref="Footprint"/> gives the
+        /// counter pieces as they stand on a side (left or right) wall and the fridge and kitchen sink as they
+        /// stand on an end (front or back) wall, so a piece on the other kind of wall swaps its two sides. The
+        /// closet pieces are as given.</summary>
+        public static Vector2 FootprintOf(Row row)
+        {
+            Vector2 f = Footprint(row.Kind);
+            bool side = row.Wall == Wall.Left || row.Wall == Wall.Right;
+            bool counter = row.Kind == Kind.PrepCounter || row.Kind == Kind.Stove || row.Kind == Kind.Microwave;
+            bool endPiece = row.Kind == Kind.Fridge || row.Kind == Kind.KitchenSink;
+            return (counter && !side) || (endPiece && side) ? new Vector2(f.y, f.x) : f;
+        }
+
         /// <summary>One planned station.</summary>
         public readonly struct Row
         {
@@ -285,12 +298,16 @@ namespace HiddenHarbours.App.Editor
 
         /// <summary>
         /// Rows allowed to back onto a south wall (<see cref="IsSouthWall"/>) for now, by id. The rule is
-        /// north first (owner 2026-11-17): kitchens and bathrooms go on north walls. Every id here is a
-        /// row that still has to be re-planned; remove it when it is.
+        /// north first (owner 2026-11-17): kitchens and bathrooms go on north walls. Every planned-only id
+        /// here is a row that still has to be re-planned; remove it when it is. Ginny's placed pieces stay
+        /// (owner 2026-11-22: the north wall is no longer strict there; a piece goes where it reads best).
         /// </summary>
         public static readonly IReadOnlyCollection<string> SouthWallExceptions = new HashSet<string>
         {
-            "fixture.st_peters.ginny_cottage.bathroom_sink",   // placed; the closet's east wall holds only the shower and toilet
+            "fixture.st_peters.ginny_cottage.microwave",       // placed; the cold corner, round from the fridge
+            "fixture.st_peters.ginny_cottage.shower",          // placed; the south-east corner, opening north
+            "fixture.st_peters.ginny_cottage.toilet",          // placed; west of the shower so the shower never hides it
+            "fixture.st_peters.ginny_cottage.bathroom_sink",   // placed; by the closet's front end
             "fixture.st_peters.red_saltbox.shower",            // planned, not placed; re-plan north before placing
             "fixture.st_peters.white_farmhouse.toilet",        // planned, not placed (SE wall); re-plan before placing
             "fixture.st_peters.white_farmhouse.bathroom_sink", // planned, not placed (SE wall); re-plan before placing
