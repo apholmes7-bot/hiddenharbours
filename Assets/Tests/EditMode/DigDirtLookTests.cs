@@ -130,35 +130,110 @@ namespace HiddenHarbours.Tests.EditMode
             }
 
             em.Tick(j.SandChunkSeconds - t + 0.001f);
-            Assert.AreEqual(j.DigTossChunkCount, em.AliveCount, "the impact's clods are gone by their life; the toss lives on");
+            Assert.AreEqual(0, em.AliveCount, "the impact's clods are gone by their life (the toss is its own cue)");
         }
 
+        // ---- the toss: off the blade tip, to the side he throws -----------------------------------
+
         [Test]
-        public void The_toss_leaves_the_blade_at_the_lift_and_is_gone_by_its_life()
+        public void The_toss_leaves_from_the_blade_tip_not_the_hole()
         {
             var j = JuiceSettings.Default;
             Assert.Greater(j.DigTossChunkCount, 0, "the toss ships on");
+            var blade = new Vector2(7.4f, 3.1f);
+            const float lift = 0.42f;
             var em = Emitter();
-            em.OnMoment(new JuiceMomentCue(JuiceMoment.DigImpact, Vector2.zero, 0.1f));
-            em.Tick(j.DigTossDelaySeconds - 0.05f);
-            int impact = Shown(em).Length;
-            Assert.LessOrEqual(impact, j.SandChunkCount, "before the lift, only the impact's clods");
-            em.Tick(0.1f);
-            Assert.GreaterOrEqual(Shown(em).Length, j.DigTossChunkCount, "after the lift, the toss is in the air");
-            em.Tick(j.DigTossChunkSeconds + j.SandChunkSeconds);
-            Assert.AreEqual(0, em.AliveCount, "nothing lingers");
-            Assert.AreEqual(0, Shown(em).Length);
+            em.OnMoment(new JuiceMomentCue(JuiceMoment.DigToss, blade, 0.1f, lift, Vector2.right));
+            em.Tick(0.001f);
+            var shown = Shown(em);
+            Assert.AreEqual(j.DigTossChunkCount, shown.Length, "the whole clump leaves at once, at the lift");
+            foreach (var sr in shown)
+            {
+                Vector3 p = sr.transform.position;
+                Assert.AreEqual(blade.x, p.x, 0.02f, "at the tip's x");
+                Assert.AreEqual(blade.y + lift, p.y, 0.02f, "at the tip's drawn height, over the ground under it");
+            }
         }
 
         [Test]
-        public void A_new_press_drops_a_toss_still_on_the_blade()
+        public void The_toss_arcs_to_the_side_he_throws_and_lands_low_and_heavy()
+        {
+            var c = MomentBurstConfig.Default;
+            var j = JuiceSettings.Default;
+            var blade = new Vector2(0f, 0f);
+            const float lift = 0.4f;
+            foreach (Vector2 dir in new[] { Vector2.right, Vector2.left, new Vector2(1f, -1f).normalized })
+            {
+                var em = Emitter();
+                em.OnMoment(new JuiceMomentCue(JuiceMoment.DigToss, blade, 0.1f, lift, dir));
+                const float dt = 0.005f;
+                float peak = float.MinValue;
+                // Flight: lift + up-throw, down at ChunkGravity. The slowest-falling clod's flight bounds it.
+                float vUp = c.TossUp;
+                float flight = (vUp + Mathf.Sqrt(vUp * vUp + 2f * c.ChunkGravity * lift)) / c.ChunkGravity;
+                Assert.Less(flight + 0.05f, j.DigTossChunkSeconds * 0.85f, "it lands and lies there before it fades");
+                for (float t = 0f; t < flight + 0.05f; t += dt)
+                {
+                    em.Tick(dt);
+                    foreach (var sr in Shown(em)) peak = Mathf.Max(peak, sr.transform.position.y - (blade.y + lift));
+                }
+                Assert.LessOrEqual(peak, c.TossUp * c.TossUp / (2f * c.ChunkGravity) + 0.01f, "low: it barely rises off the blade");
+                var landed = Shown(em);
+                Assert.AreEqual(j.DigTossChunkCount, landed.Length);
+                foreach (var sr in landed)
+                {
+                    Vector2 off = (Vector2)sr.transform.position - blade;
+                    Vector2 ground = new Vector2(off.x, off.y / Mathf.Max(1e-4f, c.ChunkGroundYScale));
+                    Assert.Greater(Vector2.Dot(ground, dir), 0.05f, $"thrown along {dir}, landed at {off}");
+                }
+                var before = landed.Select(sr => sr.transform.position).ToArray();
+                em.Tick(0.02f);
+                var after = Shown(em).Select(sr => sr.transform.position).ToArray();
+                for (int i = 0; i < before.Length; i++) Assert.AreEqual(before[i], after[i], "landed: it lies there");
+                em.Tick(j.DigTossChunkSeconds);
+                Assert.AreEqual(0, em.AliveCount, "and is gone by its life");
+            }
+        }
+
+        [Test]
+        public void A_toss_clod_is_a_bigger_lump_than_the_impacts_spatter_and_solid()
+        {
+            var c = MomentBurstConfig.Default;
+            Assert.GreaterOrEqual(c.TossSizeScale, 1f, "the shovel's load: lumps at least the impact clod's size");
+            var em = Emitter();
+            em.OnMoment(new JuiceMomentCue(JuiceMoment.DigToss, Vector2.zero, 0.1f, 0.3f, Vector2.right));
+            em.Tick(0.01f);
+            foreach (var sr in Shown(em))
+            {
+                Assert.GreaterOrEqual(sr.bounds.size.x * 32f, 3f, "at least three art pixels across (1 art px = 1/32 m)");
+                Assert.GreaterOrEqual(sr.color.a, c.ChunkMaxAlpha * (1f - c.NightFade) - 1e-3f, "solid");
+            }
+        }
+
+        [Test]
+        public void A_toss_with_no_blade_falls_back_to_the_old_lift_and_one_side()
+        {
+            var c = MomentBurstConfig.Default;
+            var em = Emitter();
+            var at = new Vector2(2f, 2f);
+            em.OnMoment(new JuiceMomentCue(JuiceMoment.DigToss, at, 0.1f));
+            em.Tick(0.001f);
+            foreach (var sr in Shown(em))
+                Assert.AreEqual(at.y + c.TossLiftHeight, sr.transform.position.y, 0.02f, "the sprite body's lift height");
+            em.Tick(0.3f);
+            var xs = Shown(em).Select(sr => sr.transform.position.x - at.x).ToArray();
+            Assert.IsTrue(xs.All(x => x > 0f) || xs.All(x => x < 0f), "one side per dig");
+        }
+
+        [Test]
+        public void The_impact_spawns_no_toss_and_a_press_spawns_nothing()
         {
             var j = JuiceSettings.Default;
             var em = Emitter();
-            em.OnMoment(new JuiceMomentCue(JuiceMoment.DigImpact, Vector2.zero, 0.1f));
-            Assert.AreEqual(j.SandChunkCount + j.DigTossChunkCount, em.AliveCount);
             em.OnMoment(new JuiceMomentCue(JuiceMoment.DigStrike, Vector2.zero, 0.1f));
-            Assert.AreEqual(j.SandChunkCount, em.AliveCount, "the clip restarts: the old blade never lifts, its toss never leaves");
+            Assert.AreEqual(0, em.AliveCount, "the press: the shovel is still in the air");
+            em.OnMoment(new JuiceMomentCue(JuiceMoment.DigImpact, Vector2.zero, 0.1f));
+            Assert.AreEqual(j.SandChunkCount, em.AliveCount, "the impact: its own clods only; the relay sends the toss at the lift");
         }
 
         // ---- the pool -----------------------------------------------------------------------------
@@ -175,6 +250,7 @@ namespace HiddenHarbours.Tests.EditMode
             for (int i = 0; i < 20; i++)
             {
                 em.OnMoment(new JuiceMomentCue(JuiceMoment.DigImpact, new Vector2(i, 0f), 0.1f));
+                em.OnMoment(new JuiceMomentCue(JuiceMoment.DigToss, new Vector2(i, 0f), 0.1f, 0.3f, Vector2.right));
                 em.Tick(0.05f);
             }
             Assert.LessOrEqual(em.AliveCount, MomentBurstConfig.Default.PoolSize, "the pool is the ceiling (rule 7)");

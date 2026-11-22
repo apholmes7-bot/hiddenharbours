@@ -136,6 +136,28 @@ namespace HiddenHarbours.Player
         /// frame taken from the oar's phase rather than from the clock.</summary>
         public bool Rowing { get; private set; }
 
+        // ⭐ Taking and leaving a helm (GameConfig.HelmSitStand). The switcher re-seats him in one
+        // frame; the drawn figure moves from where and how he was drawn to the station's pose over a
+        // short eased move. What the last drawn pose was, to know a hop when it comes and where it
+        // starts from.
+        private readonly HelmTransition _helm = new HelmTransition();
+        private bool _lastPoseDrew;
+        private bool _lastPoseSeated;
+        private ControlMode _lastPoseMode = ControlMode.OnFoot;
+        private Vector3 _drawnRootLocal;
+        private float _drawnRootYaw;
+
+        /// <summary>The helm move being drawn (tests and the inspector). Idle with both weights 1.</summary>
+        public HelmTransition HelmMove => _helm;
+
+        /// <summary>Where the aboard figure is DRAWN this frame, in the hull's posed-mesh local metres:
+        /// <see cref="FigureLocalMetres"/> except during a helm move, when it is on the way there.</summary>
+        public Vector3 DrawnFigureLocalMetres => _drawnRootLocal;
+
+        /// <summary>The yaw the aboard figure is DRAWN with this frame, degrees (see
+        /// <see cref="DrawnFigureLocalMetres"/>).</summary>
+        public float DrawnFigureYawDegrees => _drawnRootYaw;
+
         // Character PR 2a: her blink (one schedule, aboard and ashore alike, seeded by her skin alone: she
         // has no key, hash 0) and the carry-pose table, loaded once on first ask (a missing table carries
         // nothing).
@@ -338,7 +360,7 @@ namespace HiddenHarbours.Player
                 Stop("no rider");
                 return;
             }
-            if (!aboard) { PoseAshore(stand); return; }
+            if (!aboard) { ForgetHelmPose(); PoseAshore(stand); return; }
 
             // ⭐ ABOARD, her ashore figure hides and her body is given back BEFORE the rider mirrors
             // that body onto its own child and disables it: one call, one frame, and the id stays
@@ -464,7 +486,13 @@ namespace HiddenHarbours.Player
                 AtTiller = true;
                 TillerTargets = tiller;
             }
+            // Taking or leaving a helm: drawn as a short move from the pose and place he had (above, the
+            // targets are solved from where he is GOING, so his hand lands on the grip exactly).
+            bool seatedNow = !string.IsNullOrEmpty(seatedKey) || atOars;
+            StepHelmMove(config, seatedNow, ref life);
             if (!_figure.SetPose(stateKey, frame, life)) { Stop($"could not pose '{stateKey}' frame {frame}"); return; }
+            _lastPoseDrew = true;
+            _lastPoseSeated = seatedNow;
 
             _figure.Visible = true;
             DrawsInsteadOfSprite = true;
@@ -765,7 +793,56 @@ namespace HiddenHarbours.Player
         private void Stop(string reason)
         {
             NotDrawingReason = reason;
+            ForgetHelmPose();
             StandDownAboard();
+        }
+
+        /// <summary>
+        /// <b>Taking and leaving a helm, drawn as a move</b> (<see cref="HelmTransition"/>,
+        /// <see cref="GameConfig.HelmSitStand"/>). A hop between the deck and the helm, seen on a pose
+        /// whose previous pose drew on this same figure, keeps the drawn pose as the blend source and the
+        /// drawn root as the start; while the move runs, the root is placed part of the way from there to
+        /// where <see cref="Place"/> just put it, and the pose is drawn part of the way from the kept one.
+        ///
+        /// <para>Visual time (<see cref="Time.timeAsDouble"/>), as a tween is: the move is no part of the
+        /// sim (rule 5), it holds with the game when time is stopped, and it can never be left hanging by a
+        /// game clock that is held or absent. Every number is the config's (rule 6).</para>
+        /// </summary>
+        private void StepHelmMove(GameConfig config, bool seatedNow, ref IsoCharacterFigureRenderer.Life life)
+        {
+            ControlMode mode = _rider != null ? _rider.Mode : ControlMode.OnFoot;
+            int hop = HelmTransition.HopBetween(_lastPoseMode, mode);
+            _lastPoseMode = mode;
+            double now = Time.timeAsDouble;
+            if (hop != 0)
+            {
+                bool taking = hop > 0;
+                bool seated = taking ? seatedNow : _lastPoseSeated;
+                if (!_lastPoseDrew || !_figure.CaptureBlendSource()
+                    || !_helm.Begin(taking, now, config.HelmSitStand, seated,
+                                    _drawnRootLocal, _drawnRootYaw, FigureLocalMetres))
+                    _helm.Cancel();
+            }
+
+            Vector3 local = FigureLocalMetres;
+            float yaw = FigureYawDegrees;
+            if (_helm.Sample(now))
+            {
+                _helm.Root(FigureLocalMetres, FigureYawDegrees, out local, out yaw);
+                _figureRoot.SetLocalPositionAndRotation(local, Quaternion.AngleAxis(yaw, Vector3.forward));
+                life.Blend = true;
+                life.BlendWeight = _helm.BodyWeight;
+            }
+            _drawnRootLocal = local;
+            _drawnRootYaw = yaw;
+        }
+
+        /// <summary>The aboard figure did not draw this pose: no hop can start from it, and a move in
+        /// progress ends (the next drawn pose is the live one).</summary>
+        private void ForgetHelmPose()
+        {
+            _lastPoseDrew = false;
+            _helm.Cancel();
         }
 
         private void StandDownAboard()
@@ -1090,6 +1167,7 @@ namespace HiddenHarbours.Player
         /// <summary>The ABOARD figure, thrown away. The ashore one is <see cref="ReleaseAshore"/>'s.</summary>
         private void Release()
         {
+            ForgetHelmPose();
             if (_figureRoot != null) DestroySafely(_figureRoot.gameObject);
             _figureRoot = null;
             _figure = null;

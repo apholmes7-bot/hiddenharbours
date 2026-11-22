@@ -60,6 +60,13 @@ namespace HiddenHarbours.Core
                  "none (rowstyle.casual: nobody else rows like a racer).")]
         public RowingStyleDef NpcRowingStyle;
 
+        [Header("Helm sit and stand (the mesh figure takes and leaves a helm)")]
+        [Tooltip("How long the player's figure takes to sit down at a tiller seat, a seated helm or the oars, " +
+                 "or to step up and take a standing wheel, and to leave again; and how the move splits " +
+                 "between going to the spot and settling into the pose. Visual only: the helm goes live on " +
+                 "the press. 0 seconds (or Enabled off) is the old one-frame snap.")]
+        public HelmTransitionSettings HelmSitStand = HelmTransitionSettings.Default;
+
         [Header("Cleanliness (the third need)")]
         [Tooltip("Dirt (owner ask 2026-11-15): rises slowly with game time and faster with dirty work, the " +
                  "gym and the sea; washing at a station clears it, each station only to its own ceiling (sea " +
@@ -1048,6 +1055,32 @@ namespace HiddenHarbours.Core
         public const float DefaultWalkerHeadlampStrapBackMetres = 0.18f;
         [Tooltip("Headlamp strap, metres BEHIND the lens where it crosses the back of the head (drawn when he faces away).")]
         [Min(0f)] public float WalkerHeadlampStrapBackMetres = DefaultWalkerHeadlampStrapBackMetres;
+
+        /// <summary>Gear every game has from the very start (owner ruling 2026-11-22: the headlamp,
+        /// "From the start"). Owned by DERIVATION, like a watch that starts owned: never written into
+        /// <c>SaveData.OwnedGear</c>, so a new game and a continued old save both hold it without a
+        /// save write or a format change.</summary>
+        public static readonly string[] DefaultCarriedFromStartGearIds = { "gear.headlamp" };
+        [Tooltip("Gear ids the player owns from the start of every game without them being written to the " +
+                 "save (the headlamp in his pocket). Ownership checks and the Notebook's KIT page read this.")]
+        public string[] CarriedFromStartGearIds = (string[])DefaultCarriedFromStartGearIds.Clone();
+
+        /// <summary>The carried-from-the-start ids of <paramref name="config"/>, or the defaults when
+        /// no config is wired (EditMode, pre-boot).</summary>
+        public static System.Collections.Generic.IReadOnlyList<string> CarriedFromStart(GameConfig config)
+            => config != null ? (config.CarriedFromStartGearIds ?? System.Array.Empty<string>())
+                              : DefaultCarriedFromStartGearIds;
+
+        /// <summary>True when <paramref name="gearId"/> is carried from the start under
+        /// <paramref name="config"/> (null config: the defaults).</summary>
+        public static bool CarriesFromStart(GameConfig config, string gearId)
+        {
+            if (string.IsNullOrEmpty(gearId)) return false;
+            System.Collections.Generic.IReadOnlyList<string> ids = CarriedFromStart(config);
+            for (int i = 0; i < ids.Count; i++)
+                if (ids[i] == gearId) return true;
+            return false;
+        }
 
         [Tooltip("Restore YESTERDAY'S boat glows for an A/B (owner's ruling, 2026-09-03)? OFF is the " +
                  "shipped look: a lit wheelhouse is drawn as its own WINDOWS, with a wash of spill " +
@@ -4232,15 +4265,20 @@ namespace HiddenHarbours.Core
         [Tooltip("Seconds a sand chunk lives.")]
         [Min(0f)] public float SandChunkSeconds;
 
-        [Tooltip("Smaller clods tossed off the blade at the dig's lift-and-toss phase (0 = no toss).")]
+        [Tooltip("Wet clods thrown off the blade tip at the dig's lift-and-toss phase (0 = no toss).")]
         [Min(0)] public int DigTossChunkCount;
 
-        [Tooltip("Seconds after the blade enters the ground (the impact) that the toss leaves the blade: the " +
-                 "dig clip's in-ground and lever phases.")]
+        [Tooltip("Seconds after the blade enters the ground (the impact) that the toss leaves the blade tip: " +
+                 "the dig clip's in-ground and lever phases and the lift, up to where the blade is out at his side.")]
         [Min(0f)] public float DigTossDelaySeconds;
 
-        [Tooltip("Seconds a tossed clod lives.")]
+        [Tooltip("Seconds a tossed clod lives: its flight off the blade, then lying where it landed until it fades.")]
         [Min(0f)] public float DigTossChunkSeconds;
+
+        [Tooltip("When the dig faces within this many degrees of straight away from the camera (north, his back " +
+                 "to the viewer), the mesh body turns to this many degrees off north instead, toward the side he " +
+                 "already leans to (his right when dead on), so the shovel and the toss show past his body. 0 = off.")]
+        [Range(0f, 45f)] public float DigAwayTurnDegrees;
 
         [Tooltip("Rings spread from the point the cast line touches down.")]
         [Min(0)] public int CastRingCount;
@@ -4306,9 +4344,10 @@ namespace HiddenHarbours.Core
             SaleCountUpSeconds = 0.7f,
             SandChunkCount = 7,
             SandChunkSeconds = 0.45f,
-            DigTossChunkCount = 4,
-            DigTossDelaySeconds = 0.4f,
-            DigTossChunkSeconds = 0.45f,
+            DigTossChunkCount = 5,
+            DigTossDelaySeconds = 0.6f,
+            DigTossChunkSeconds = 0.9f,
+            DigAwayTurnDegrees = 25f,
             CastRingCount = 3,
             CastRingSeconds = 0.6f,
             MomentTickHz = 30f,

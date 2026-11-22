@@ -36,6 +36,14 @@ namespace HiddenHarbours.Core
         /// <see cref="HullWaveMath.ScatterRing"/>; how broken is the shader's _HHHullWaveArcs). Packed as the
         /// sign of its 1/width.</summary>
         public bool Arcs;
+        /// <summary>The way the hull that laid it was going, as a unit vector, or zero. Non-zero (a hull
+        /// under motor or sail, owner 11-21: "make motored boats a v wake") the water draws the ring as the
+        /// straight piece of her V's arm it touches (<see cref="HullWaveMath.ArmHeight"/>); zero (a rowed hull,
+        /// a splash) the ring is drawn whole, or as <see cref="Arcs"/>. Packed in the shader's b.w slot.</summary>
+        public Vector2 Travel;
+        /// <summary>A V ring only: the metres of arm it stands for (<see cref="HullWaveMath.VArmSpan"/>), which
+        /// scales its piece so the pieces sum to her crest height. Packed in the shader's 1/width slot.</summary>
+        public float ArmSpan;
 
         /// <summary>Its height at <paramref name="now"/>: birth height × <see cref="HullWaveMath.TimeFade"/>.</summary>
         public readonly float AmplitudeAt(double now)
@@ -95,6 +103,15 @@ namespace HiddenHarbours.Core
 
         /// <summary>Live sources.</summary>
         public int Count => _count;
+
+        /// <summary>The V's frame the samples draw a ring that carries a direction with
+        /// (<see cref="HullWaveMath.VArmFrame"/>), set by the publisher each frame with the shader's.</summary>
+        public Vector4 VArmFrame { get; set; }
+
+        /// <summary>The V's mix (<see cref="HullWaveMath.VArmMix"/>: share, 1 / (2π · PacketWavelengths)), set by
+        /// the publisher with <see cref="VArmFrame"/>. Zero share (unset) draws every ring whole, as the shader's
+        /// unset global.</summary>
+        public Vector4 VArmMix { get; set; }
 
         /// <summary>The clock reading the field was last advanced to.</summary>
         public double NowSeconds { get; private set; }
@@ -196,15 +213,52 @@ namespace HiddenHarbours.Core
             {
                 ref readonly HullWaveSource s = ref _sources[i];
                 if (excludeOwner != 0 && s.Owner == excludeOwner) continue;
-                double age = now - s.BirthSeconds;
-                float amp = s.AmplitudeAt(now);
-                if (amp <= 0f || s.PacketWidth <= 0f) continue;
-                float r = Vector2.Distance(worldXY, s.Position);
-                h += HullWaveMath.SourceHeight(r, amp, s.RingSpeed * (float)age, s.Wavenumber,
-                                               HullWaveMath.Phase(s.Wavenumber, s.PhaseSpeed, age, s.PhaseOffset),
-                                               1f / s.PacketWidth, invSpread);
+                h += SampleOne(in s, worldXY, now, invSpread, out _);
             }
             return h;
+        }
+
+        // One source's height and slope at a point: a whole ring (or broken arcs), or for a ring that carries
+        // a direction the straight piece of her V's arm it touches, blended by the V's share. The shader's
+        // HullWaveSample loop body is its twin.
+        private float SampleOne(in HullWaveSource s, Vector2 worldXY, double now, float invSpread, out Vector2 slope)
+        {
+            slope = Vector2.zero;
+            double age = now - s.BirthSeconds;
+            float amp = s.AmplitudeAt(now);
+            if (amp <= 0f || s.PacketWidth <= 0f) return 0f;
+            Vector2 d = worldXY - s.Position;
+            float r = d.magnitude;
+            float front = s.RingSpeed * (float)age;
+            if (!IsV(in s))
+            {
+                float phase = HullWaveMath.Phase(s.Wavenumber, s.PhaseSpeed, age, s.PhaseOffset);
+                float invWidth = 1f / s.PacketWidth;
+                if (r >= 1e-4f)
+                    slope = d * (HullWaveMath.SourceSlope(r, amp, front, s.Wavenumber, phase, invWidth, invSpread) / r);
+                return HullWaveMath.SourceHeight(r, amp, front, s.Wavenumber, phase, invWidth, invSpread);
+            }
+            Vector4 frame = VArmFrame, mix = VArmMix;
+            float vPhase = HullWaveMath.VArmPhase(s.Wavenumber, front);
+            float share = Mathf.Clamp01(mix.x);
+            float h = HullWaveMath.ArmHeight(d, s.Travel, amp, front, s.Wavenumber, vPhase, s.ArmSpan, invSpread,
+                                             frame, mix, out Vector2 g) * share;
+            slope = g * share;
+            if (share < 1f)
+            {
+                float invWidth = HullWaveMath.VArmInvWidth(s.Wavenumber, mix);
+                float keep = 1f - share;
+                h += HullWaveMath.SourceHeight(r, amp, front, s.Wavenumber, vPhase, invWidth, invSpread) * keep;
+                if (r >= 1e-4f)
+                    slope += d * (HullWaveMath.SourceSlope(r, amp, front, s.Wavenumber, vPhase, invWidth, invSpread) * keep / r);
+            }
+            return h;
+        }
+
+        // A ring the water draws as V arms: it carries a direction and the V's share is above 0.
+        private bool IsV(in HullWaveSource s)
+        {
+            return VArmMix.x > 0f && (s.Travel.x != 0f || s.Travel.y != 0f);
         }
 
         /// <summary>The waves' slope (∂h/∂x, ∂h/∂y) at <paramref name="worldXY"/>; analytic, the same
@@ -219,16 +273,8 @@ namespace HiddenHarbours.Core
             {
                 ref readonly HullWaveSource s = ref _sources[i];
                 if (excludeOwner != 0 && s.Owner == excludeOwner) continue;
-                double age = now - s.BirthSeconds;
-                float amp = s.AmplitudeAt(now);
-                if (amp <= 0f || s.PacketWidth <= 0f) continue;
-                Vector2 d = worldXY - s.Position;
-                float r = d.magnitude;
-                if (r < 1e-4f) continue;
-                float dr = HullWaveMath.SourceSlope(r, amp, s.RingSpeed * (float)age, s.Wavenumber,
-                                                    HullWaveMath.Phase(s.Wavenumber, s.PhaseSpeed, age, s.PhaseOffset),
-                                                    1f / s.PacketWidth, invSpread);
-                g += d * (dr / r);
+                SampleOne(in s, worldXY, now, invSpread, out Vector2 one);
+                g += one;
             }
             return g;
         }
@@ -236,9 +282,13 @@ namespace HiddenHarbours.Core
         /// <summary>
         /// Write the live sources the water shader needs into <paramref name="a"/> and <paramref name="b"/>,
         /// already aged to the field's clock, so the GPU sees only small numbers:
-        /// <c>a = (x, y, height now, band radius now)</c>, <c>b = (k, phase now, ±1/width, reach)</c> (negative for
-        /// a ring drawn as broken arcs, <see cref="HullWaveSource.Arcs"/>), where
-        /// reach is the radius past which the ring draws nothing. Sources whose reach misses
+        /// <c>a = (x, y, height now, band radius now)</c>, <c>b = (k, phase now, ±1/width, 0)</c> (negative for
+        /// a ring drawn as broken arcs, <see cref="HullWaveSource.Arcs"/>); a V ring (one that carries a direction
+        /// while the V's share is above 0) packs <c>b = (k, k · front, its ArmSpan, travel)</c>, travel being
+        /// <see cref="HullWaveMath.PackTravel"/> of <see cref="HullWaveSource.Travel"/>, and the shader works its
+        /// width out of k (<see cref="HullWaveMath.VArmInvWidth"/>). The shader works the reach (the radius past
+        /// which the ring draws nothing) out of the same numbers this culls with (<c>front + PacketReach ×
+        /// width</c>; <see cref="HullWaveMath.VArmReach"/> for a V ring). Sources whose reach misses
         /// <paramref name="view"/> (when <paramref name="cullToView"/>) are skipped, which is most of the
         /// cost saved. Returns how many were written; nothing past that is touched.
         /// </summary>
@@ -255,11 +305,16 @@ namespace HiddenHarbours.Core
                 if (amp <= 0f || s.PacketWidth <= 0f) continue;
                 double age = now - s.BirthSeconds;
                 float front = s.RingSpeed * (float)age;
-                float reach = front + HullWaveMath.PacketReach * s.PacketWidth;
+                bool v = IsV(in s);
+                float reach = v ? HullWaveMath.VArmReach(front, s.Wavenumber, s.ArmSpan, VArmFrame, VArmMix)
+                                : front + HullWaveMath.PacketReach * s.PacketWidth;
                 if (cullToView && !CircleTouchesRect(s.Position, reach, view)) continue;
                 a[n] = new Vector4(s.Position.x, s.Position.y, amp, front);
-                b[n] = new Vector4(s.Wavenumber, HullWaveMath.Phase(s.Wavenumber, s.PhaseSpeed, age, s.PhaseOffset),
-                                   (s.Arcs ? -1f : 1f) / s.PacketWidth, reach);
+                b[n] = v
+                    ? new Vector4(s.Wavenumber, HullWaveMath.VArmPhase(s.Wavenumber, front), s.ArmSpan,
+                                  HullWaveMath.PackTravel(s.Travel))
+                    : new Vector4(s.Wavenumber, HullWaveMath.Phase(s.Wavenumber, s.PhaseSpeed, age, s.PhaseOffset),
+                                  (s.Arcs ? -1f : 1f) / s.PacketWidth, 0f);
                 n++;
             }
             return n;
@@ -307,8 +362,23 @@ namespace HiddenHarbours.Core
         /// <param name="owner">Who she is (0 = nobody).</param>
         public int Step(HullWaveField field, Vector2 position, double now, float speed, float lengthMetres,
                         float share, int budget, int owner, in HullWaveSettings s)
+            => Step(field, position, now, speed, lengthMetres, share, budget, owner, Vector2.zero, in s);
+
+        /// <summary>
+        /// <see cref="Step(HullWaveField, Vector2, double, float, float, float, int, int, in HullWaveSettings)"/>
+        /// for a hull going <paramref name="travel"/> (any length; zero = rowed). Non-zero, and
+        /// <c>MotorVShare</c> above 0, she lays the clean rings of her V (owner 11-21: "make motored boats a v
+        /// wake"): each carries her direction (<see cref="HullWaveSource.Travel"/>) and is laid as a long
+        /// hull's, never scattered or broken (<see cref="HullWaveMath.ForMotor"/>), whatever her length. Zero
+        /// lays exactly what the shorter overload always did.
+        /// </summary>
+        public int Step(HullWaveField field, Vector2 position, double now, float speed, float lengthMetres,
+                        float share, int budget, int owner, Vector2 travel, in HullWaveSettings settings)
         {
             if (field == null) return 0;
+            bool motor = HullWaveMath.LaysV(travel, in settings);
+            HullWaveSettings s = motor ? HullWaveMath.ForMotor(in settings) : settings;
+            Vector2 heading = motor ? travel.normalized : Vector2.zero;
             if (!_primed || now < _lastSeconds)
             {
                 _lastPosition = position;
@@ -360,6 +430,10 @@ namespace HiddenHarbours.Core
                     RiseSeconds = lifetime * Mathf.Clamp01(s.RiseShare),
                     EndFadeSeconds = lifetime * Mathf.Clamp01(s.EndFadeShare),
                     Owner = owner,
+                    Travel = heading,
+                    // A V ring's piece of the arm stands for its spacing (HullWaveMath.VArmSpan): the pieces
+                    // overlap and sum to her crest height, so the arm is one line whatever the spacing.
+                    ArmSpan = motor ? HullWaveMath.VArmSpan(speed * interval, wavelength, s.SourceGain, in s) : 0f,
                 };
                 // A short hull's rings each differ a little, and are laid a little unevenly, so her V and
                 // track read as disturbed water, not a chain of stacked loops (HullWaveMath.ScatterRing).

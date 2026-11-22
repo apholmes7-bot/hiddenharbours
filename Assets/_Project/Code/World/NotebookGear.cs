@@ -64,11 +64,18 @@ namespace HiddenHarbours.World
         public void Collect(List<NotebookGearHolding> into)
         {
             _watches ??= Resources.LoadAll<WatchDef>(WatchesFolder);
-            Collect(GameServices.Save?.Current, _watches, into);
+            Collect(GameServices.Save?.Current, _watches, GameConfig.CarriedFromStart(GameServices.Config), into);
         }
 
-        /// <summary>The pure read, for tests: a null save holds nothing.</summary>
+        /// <summary>The pure read, for tests: a null save holds nothing. No carried-from-start gear.</summary>
         public static void Collect(SaveData save, IReadOnlyList<WatchDef> watches, List<NotebookGearHolding> into)
+            => Collect(save, watches, null, into);
+
+        /// <summary>The pure read with the gear every game carries from the start
+        /// (<see cref="GameConfig.CarriedFromStartGearIds"/>: the headlamp), which is owned without an id
+        /// in the wallet, just as the starting watch is.</summary>
+        public static void Collect(SaveData save, IReadOnlyList<WatchDef> watches, IReadOnlyList<string> carriedFromStart,
+                                   List<NotebookGearHolding> into)
         {
             if (into == null) return;
             into.Clear();
@@ -77,6 +84,17 @@ namespace HiddenHarbours.World
             // The watch first: it is worn from the start without an id in the wallet (WatchEquipment).
             WatchDef worn = WatchEquipment.SelectOwned(save, watches);
             if (worn != null) into.Add(new NotebookGearHolding(worn.Id, NotebookGearCount.Presence));
+
+            // Then what he has carried since the start (the headlamp): owned, never written to the save.
+            if (carriedFromStart != null)
+            {
+                for (int i = 0; i < carriedFromStart.Count; i++)
+                {
+                    string id = carriedFromStart[i];
+                    if (string.IsNullOrEmpty(id) || Contains(into, id)) continue;
+                    into.Add(new NotebookGearHolding(id, NotebookGearCount.Presence));
+                }
+            }
 
             if (save.OwnedGear != null)
             {

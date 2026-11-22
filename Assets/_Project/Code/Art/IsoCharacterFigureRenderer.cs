@@ -194,7 +194,50 @@ namespace HiddenHarbours.Art
 
             /// <summary>The rowing targets, in the figure's own frame (see <see cref="Target"/>).</summary>
             public RowingPoseSolver.Targets Row;
+
+            /// <summary>True while the pose is blended FROM the pose captured by
+            /// <see cref="CaptureBlendSource"/> (a helm taken or left, <see cref="HelmTransition"/>): the
+            /// finished frame, solve included, is drawn at <see cref="BlendWeight"/> of the way from it.</summary>
+            public bool Blend;
+
+            /// <summary>0 draws the captured pose, 1 the frame asked for (<see cref="FigurePoseBlend"/>).</summary>
+            public float BlendWeight;
         }
+
+        /// <summary>
+        /// Keep the pose drawn RIGHT NOW as the source of a blend (<see cref="Life.Blend"/>). False before
+        /// the figure has drawn anything, when there is nothing to blend from.
+        /// </summary>
+        public bool CaptureBlendSource()
+        {
+            if (!_hasDrawnPose || _drawnWorld == null || _blendFrom == null) return false;
+            System.Array.Copy(_drawnWorld, _blendFrom, _drawnWorld.Length);
+            return true;
+        }
+
+        /// <summary>True on a re-skin that was blended (the last <see cref="SetPose(string, int, in Life)"/>
+        /// that re-posed the mesh drew a blend).</summary>
+        public bool DrawnBlending => _drawnBlending;
+
+        /// <summary>The weight the drawn blend was posed at (1 when not blending).</summary>
+        public float DrawnBlendWeight => _drawnBlendWeight;
+
+        /// <summary>A bone's figure-space matrix as last DRAWN (after the solve and any blend). False before
+        /// the first pose or for a bone out of range. Tests read it for continuity.</summary>
+        public bool TryDrawnBone(int bone, out Matrix4x4 world)
+        {
+            world = default;
+            if (!_hasDrawnPose || _drawnWorld == null || bone < 0 || bone >= _drawnWorld.Length) return false;
+            world = _drawnWorld[bone];
+            return true;
+        }
+
+        // The pose last drawn, the captured blend source, and the blend's output (all bone-count long,
+        // allocated with _world in Configure, so a blend costs no allocation).
+        private Matrix4x4[] _drawnWorld, _blendFrom, _blendOut;
+        private bool _hasDrawnPose;
+        private bool _drawnBlending;
+        private float _drawnBlendWeight = 1f;
 
         /// <summary>The last rowing solve's result (default when the figure is not rowing).</summary>
         public RowingPoseSolver.Result DrawnRowing => _drawnRowResult;
@@ -381,6 +424,12 @@ namespace HiddenHarbours.Art
             _outVerts = new Vector3[_srcVerts.Length];
             _outNorms = new Vector3[_srcVerts.Length];
             _world = new Matrix4x4[bones];
+            _drawnWorld = new Matrix4x4[bones];
+            _blendFrom = new Matrix4x4[bones];
+            _blendOut = new Matrix4x4[bones];
+            _hasDrawnPose = false;
+            _drawnBlending = false;
+            _drawnBlendWeight = 1f;
             _skin = new Matrix4x4[bones];
             // The skin's own torso, measured once from its bind mesh: the arms are kept out of it.
             _rowSolver = new RowingPoseSolver(def.Bones, RowingBodyVolume.Of(def));
@@ -831,7 +880,11 @@ namespace HiddenHarbours.Art
 
             bool rowing = life.Rowing && _rowSolver != null && _rowSolver.IsUsable;
             bool rowMoved = rowing != _drawnRowing || (rowing && RowTargetsMoved(in life.Row, in _drawnRow));
-            if (!sameClip || DrawnFrame != drawn || _lookYaw != _drawnYaw || _lookPitch != _drawnPitch || rowMoved)
+            // A helm blend re-poses every call it runs, and once more on the call it ends, so the last
+            // blended frame is never left standing.
+            bool blending = life.Blend && life.BlendWeight < 1f && _blendFrom != null;
+            if (!sameClip || DrawnFrame != drawn || _lookYaw != _drawnYaw || _lookPitch != _drawnPitch || rowMoved
+                || blending || _drawnBlending)
             {
                 if (!composed) CharacterSkinPose.ComposeWorld(clip, drawn, _def.Bones, _world);
                 if (_lookYaw != 0d || _lookPitch != 0d)
@@ -847,6 +900,18 @@ namespace HiddenHarbours.Art
                 _drawnRowResult = rowing ? _rowSolver.Solve(_world, in life.Row) : default;
                 _drawnRowing = rowing;
                 _drawnRow = rowing ? life.Row : default;
+                // Taking or leaving a helm: the finished frame, solve and all, drawn part of the way from
+                // the pose captured when the hop came (HelmTransition). Last, so the blend sees exactly
+                // what would otherwise be drawn.
+                if (blending)
+                {
+                    FigurePoseBlend.BlendLocal(_blendFrom, _world, _def.Bones, life.BlendWeight, _blendOut);
+                    System.Array.Copy(_blendOut, _world, _world.Length);
+                }
+                _drawnBlending = blending;
+                _drawnBlendWeight = blending ? life.BlendWeight : 1f;
+                System.Array.Copy(_world, _drawnWorld, _world.Length);
+                _hasDrawnPose = true;
                 CharacterSkinPose.FinishSkin(_world, _bindposes, _skin);
                 CharacterSkinPose.Skin(_skin, _weights, _srcVerts, _srcNorms, _outVerts, _outNorms);
                 if (_faceStarts != null)

@@ -12,7 +12,8 @@ namespace HiddenHarbours.Tests.Art.EditMode
     /// astern read as a chain of stacked loops, "calculated" and "structured"). A short hull's rings each take
     /// their own height, wavelength and crest phase, and are laid a little unevenly, all fixed from the time
     /// each was laid, so the same voyage draws the same water on every run (rule 5). Longer hulls, the lobster
-    /// boat among them, lay exactly the rings they did. A short hull's churned trail is a thinner share too.
+    /// boat among them, lay exactly the rings they did. A short rowed hull's churned trail is a thinner share
+    /// too; a motored hull's trail is halved (MotorVTrailFoamScale) so her bow's V reads over it.
     /// </summary>
     public class HullWaveScatterTests
     {
@@ -264,16 +265,44 @@ namespace HiddenHarbours.Tests.Art.EditMode
             return src.Substring(at, end - at);
         }
 
+        // The rowed dory's trail is untouched: the same thin share it always laid, by both overloads.
         [Test]
-        public void ADorysTrail_IsAThinnerShare_ThanALongHulls()
+        public void ARowedDorysTrail_IsUnchanged_AThinnerShare_ThanALongRowedOrSailedHulls()
         {
             Assert.Less(S.SmallHullTrailFoamShare, S.TrailFoamShare, "a rowed hull's trail is a lace, not a mat");
             Assert.AreEqual(0.8f * S.SmallHullTrailFoamShare, HullWaveMath.TrailFoamStrength(0.8f, true, DoryLength, S), 1e-6f);
+            Assert.AreEqual(0.8f * S.SmallHullTrailFoamShare,
+                HullWaveMath.TrailFoamStrength(0.8f, true, DoryLength, false, S), 1e-6f, "rowed: the motored scale never reaches her");
+            Assert.AreEqual(HullWaveMath.TrailFoamStrength(0.8f, true, DoryLength, S),
+                HullWaveMath.TrailFoamStrength(0.8f, true, DoryLength, false, S), "rowed: bit for bit the older law");
             Assert.AreEqual(0.8f, HullWaveMath.TrailFoamStrength(0.8f, false, DoryLength, S), 0f, "moored: unchanged");
             HullWaveSettings old = S;
             old.SmallHullTrailFoamShare = -1f;
             Assert.AreEqual(0.8f * S.TrailFoamShare, HullWaveMath.TrailFoamStrength(0.8f, true, DoryLength, old), 1e-6f,
                 "below 0 = the older share");
+        }
+
+        // Owner ruling of 2026-11-21: a motored hull's stern foam trail is halved, so her bow's V arms read over
+        // it. That replaces the older rule that a long hull's trail share stays above the rowed dory's: a motored
+        // hull's share is now the configured scale of her base share, and may sit below the dory's. One foam, less.
+        [Test]
+        public void AMotoredHullsTrail_IsTheConfiguredShare_AndHerBowArmsOutReadIt()
+        {
+            float lobster = HullWaveMath.TrailFoamStrength(0.8f, true, LobsterLength, true, S);
+            Assert.AreEqual(0.8f * S.TrailFoamShare * S.MotorVTrailFoamScale, lobster, 1e-6f, "a long motored hull: the scaled share");
+            Assert.AreEqual(0.5f, S.MotorVTrailFoamScale, 0f, "the ruling: halve it");
+            Assert.AreEqual(0.8f * S.SmallHullTrailFoamShare * S.MotorVTrailFoamScale,
+                HullWaveMath.TrailFoamStrength(0.8f, true, DoryLength, true, S), 1e-6f, "a short motored hull: halved too");
+            Assert.AreEqual(0.8f, HullWaveMath.TrailFoamStrength(0.8f, false, LobsterLength, true, S), 0f, "moored: unchanged");
+
+            HullWaveSettings noV = S;
+            noV.MotorVShare = 0f;
+            Assert.AreEqual(0.8f * S.TrailFoamShare, HullWaveMath.TrailFoamStrength(0.8f, true, LobsterLength, true, noV), 1e-6f,
+                "no V laid: her trail is not thinned either");
+
+            // Her bow outweighs her stern on both channels: the V's crest share, and the foam left astern.
+            Assert.Greater(S.BowShare, S.MotorVSternShare, "the bow's arms carry more crest than the stern's");
+            Assert.Less(lobster, HullWaveMath.TrailFoamStrength(0.8f, true, LobsterLength, false, S), "her trail is thinner than before");
         }
 
         [Test]
