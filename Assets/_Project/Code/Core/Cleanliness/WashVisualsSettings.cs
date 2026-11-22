@@ -75,6 +75,9 @@ namespace HiddenHarbours.Core
         [Tooltip("How many sorting orders above the figure the bubbles draw, inside his own Y-sorted band.")]
         public int BubbleOrdersAboveFigure;
 
+        [Tooltip("Real seconds a kitchen fixture's door (the fridge) takes to swing wide open, or shut again.")]
+        [Min(0f)] public float DoorSeconds;
+
         /// <summary>The shipped starting numbers (guesses for the owner to tune by feel).</summary>
         public static WashVisualsSettings Default => new WashVisualsSettings
         {
@@ -97,6 +100,7 @@ namespace HiddenHarbours.Core
             BubbleSizeMetres = 3f / 32f,
             BubbleColor = new Color(0.93f, 0.97f, 1f, 0.9f),
             BubbleOrdersAboveFigure = 2,
+            DoorSeconds = 0.36f,
         };
 
         /// <summary>The live numbers: the config's, or <see cref="Default"/> with no config wired.</summary>

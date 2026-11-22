@@ -30,7 +30,7 @@ namespace HiddenHarbours.Tests.EditMode.Washrooms
             {
                 int last = Mathf.Max(l.Idle, l.FillLow, l.FillMid, l.Full, l.PourLow, l.PourMid, l.NearFull,
                                      LoopEnd(l.FrothFirst), LoopEnd(l.NearFrothFirst), LoopEnd(l.RunFirst),
-                                     LoopEnd(l.NearRunFirst), LoopEnd(l.FlushFirst));
+                                     LoopEnd(l.NearRunFirst), LoopEnd(l.FlushFirst), LoopEnd(l.DoorFirst));
                 Assert.AreEqual(l.Rows - 1, last, $"{l.Stem}: the rows run 0..{l.Rows - 1} with no gap or overrun");
                 foreach (int r in l.FillFrames()) Assert.That(r, Is.InRange(0, l.Rows - 1));
                 foreach (int r in l.DrainFrames()) Assert.That(r, Is.InRange(0, l.Rows - 1));
@@ -51,6 +51,11 @@ namespace HiddenHarbours.Tests.EditMode.Washrooms
             Assert.AreEqual("{run:1,split:'near'}", ApplianceSheetBaker.OptsFor(ApplianceSheets.Shower, ApplianceSheets.Shower.NearRunFirst));
             Assert.AreEqual("{flush:3}", ApplianceSheetBaker.OptsFor(ApplianceSheets.Toilet, 3));
             Assert.AreEqual("{fill:0.5,pour:true}", ApplianceSheetBaker.OptsFor(ApplianceSheets.Basin, ApplianceSheets.Basin.PourMid));
+            Assert.AreEqual("{}", ApplianceSheetBaker.OptsFor(ApplianceSheets.Fridge, ApplianceSheets.Fridge.Idle));
+            Assert.AreEqual("{door:1}", ApplianceSheetBaker.OptsFor(ApplianceSheets.Fridge, ApplianceSheets.Fridge.DoorFirst));
+            Assert.AreEqual("{door:3}", ApplianceSheetBaker.OptsFor(ApplianceSheets.Fridge, ApplianceSheets.Fridge.DoorFirst + 2));
+            Assert.AreEqual("{fill:0.5,pour:true}", ApplianceSheetBaker.OptsFor(ApplianceSheets.KitchenSink, ApplianceSheets.KitchenSink.PourMid));
+            Assert.AreEqual("{fill:1,froth:3}", ApplianceSheetBaker.OptsFor(ApplianceSheets.KitchenSink, ApplianceSheets.KitchenSink.FrothFirst + 2));
 
             // No two rows of a sheet bake the same picture.
             foreach (ApplianceLayout l in ApplianceSheets.All)
@@ -249,6 +254,65 @@ namespace HiddenHarbours.Tests.EditMode.Washrooms
         }
 
         [Test]
+        public void AKitchenSinkFillsFrothsAndDrainsLikeTheBasin()
+        {
+            var t = new WashFixtureTimeline(ApplianceSheets.KitchenSink);
+            ApplianceLayout l = ApplianceSheets.KitchenSink;
+            t.Tick(true, true, 0f, S);
+            Assert.AreEqual(l.PourMid, t.Row, "the tap runs as it fills");
+            t.Tick(true, true, S.FillSeconds, S);
+            Assert.That(t.Row, Is.InRange(l.FrothFirst, l.FrothFirst + 2), "soaped hands froth the water");
+            Assert.IsFalse(t.PoseOn, "no pose at a sink");
+            Assert.AreEqual(-1, t.NearRow);
+            t.Tick(false, false, 0.01f, S);
+            Assert.AreEqual(WashFixtureTimeline.Phase.Draining, t.Current);
+            t.Tick(false, false, S.DrainSeconds, S);
+            Assert.AreEqual(l.Idle, t.Row);
+        }
+
+        [Test]
+        public void AFridgeDoorSwingsOpenHoldsThenShuts()
+        {
+            var t = new WashFixtureTimeline(ApplianceSheets.Fridge);
+            ApplianceLayout l = ApplianceSheets.Fridge;
+
+            t.Tick(false, false, 1f, S);
+            Assert.AreEqual(l.Idle, t.Row, "shut until asked");
+
+            t.Tick(true, false, 0f, S);
+            Assert.AreEqual(WashFixtureTimeline.Phase.Opening, t.Current);
+            Assert.AreEqual(l.DoorFirst, t.Row, "ajar first");
+            t.Tick(true, false, S.DoorSeconds * 0.6f, S);
+            Assert.AreEqual(l.DoorFirst + 1, t.Row, "half open");
+            t.Tick(true, false, S.DoorSeconds, S);
+            Assert.AreEqual(WashFixtureTimeline.Phase.Open, t.Current);
+            Assert.AreEqual(l.DoorFirst + 2, t.Row, "wide open");
+            t.Tick(true, false, 5f, S);
+            Assert.AreEqual(l.DoorFirst + 2, t.Row, "held open while asked");
+            Assert.IsFalse(t.PoseOn);
+            Assert.AreEqual(-1, t.NearRow);
+
+            t.Tick(false, false, 0f, S);
+            Assert.AreEqual(WashFixtureTimeline.Phase.Closing, t.Current);
+            Assert.AreEqual(l.DoorFirst + 1, t.Row);
+            t.Tick(false, false, S.DoorSeconds * 0.6f, S);
+            Assert.AreEqual(l.DoorFirst, t.Row);
+            t.Tick(false, false, S.DoorSeconds, S);
+            Assert.AreEqual(WashFixtureTimeline.Phase.Idle, t.Current);
+            Assert.AreEqual(l.Idle, t.Row);
+        }
+
+        [Test]
+        public void OnlyTheFridgeHasADoor()
+        {
+            foreach (ApplianceLayout l in ApplianceSheets.All)
+                Assert.AreEqual(l.Kind == ApplianceKind.Fridge, l.HasDoor, l.Stem);
+            CollectionAssert.IsEmpty(ApplianceSheets.CookStove.DoorOpenFrames());
+            CollectionAssert.AreEqual(new[] { 1, 2, 3 }, ApplianceSheets.Fridge.DoorOpenFrames());
+            CollectionAssert.AreEqual(new[] { 2, 1, 0 }, ApplianceSheets.Fridge.DoorCloseFrames());
+        }
+
+        [Test]
         public void TheKitchenPiecesNeverLeaveIdle()
         {
             var t = new WashFixtureTimeline(ApplianceSheets.CookStove);
@@ -320,6 +384,8 @@ namespace HiddenHarbours.Tests.EditMode.Washrooms
             {
                 Assert.AreEqual(WashVisualsSettings.Default.FillSeconds, cfg.WashVisuals.FillSeconds);
                 Assert.AreEqual(WashVisualsSettings.Default.BubbleCount, cfg.WashVisuals.BubbleCount);
+                Assert.AreEqual(WashVisualsSettings.Default.DoorSeconds, cfg.WashVisuals.DoorSeconds);
+                Assert.Greater(cfg.WashVisuals.DoorSeconds, 0f, "a door swings, it does not snap");
                 Assert.IsFalse(cfg.WashVisuals.FrothWithoutSoap);
             }
             finally { Object.DestroyImmediate(cfg); }
