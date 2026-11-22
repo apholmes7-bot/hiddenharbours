@@ -23,7 +23,7 @@ Test paths below are relative to `Assets/Tests/EditMode/`. “Covered” describ
 
 ## Main harness inventory
 
-The following table accounts for all 30 test methods in `ContentValidationTests.cs`, grouping only methods that enforce the same subject's contract. Identity and specialist suites above complement this harness; they are not all called by it.
+The following table accounts for all 31 test methods in `ContentValidationTests.cs`, grouping only methods that enforce the same subject's contract. Identity and specialist suites above complement this harness; they are not all called by it.
 
 | Test(s), by method stem | Assertions on main |
 |---|---|
@@ -37,10 +37,10 @@ The following table accounts for all 30 test methods in `ContentValidationTests.
 | `VillageLights_Exist` | Sixteen lights; nonblank unique IDs; lot or commons owner and optional route resolve; positive reach, named lighter, matching package position. |
 | `FishSpecies_Exist`, `FishSpecies_AreReachable` | Nonempty inventory; nonblank unique IDs; nonempty, nonblank region list; nonzero gear and season masks; ordered weight endpoints, positive maximum, nonnegative value. |
 | `Bait_Have`, `BaitFavorsSpeciesIds` | Nonblank unique bait IDs; every supplied favored fish ID is nonblank and resolves. Null list allowed. |
-| `Traps_Have`, `TrapRequiredBaitIds`, `TrapAllowedCatchFishIds`, `TrapFillWindows` | Nonblank unique trap IDs; authored required bait and catch IDs resolve; fill-window fields satisfy authored range rules. |
+| `Traps_Have`, `TrapRequiredBaitIds`, `TrapAllowedCatchFishIds`, `TrapFillWindows` | Nonblank unique trap IDs; authored required bait and catch IDs resolve; `HoursToFullPot >= SoakHours` (equality explicitly allowed). |
 | `BoatHulls_Exist`, `BoatHulls_HaveNameAndHold` | Nonempty inventory, nonblank unique IDs/names, hold at least one. |
 | `BoatHulls_FuelIsAuthoredCoherently`, `TheRowedDory_HasNoTank` | Known optional fuel grade; positive-capacity tank requires grade and positive burn; absent tank requires zero burn; named rowed dory remains tankless. |
-| `Regions_Exist`, `Regions_HaveNameAndAScene`, `RegionSpawnFishIds` | Nonempty inventory, nonblank unique IDs/names/scene names; authored spawn fish entries are nonblank and resolve. Scene-name nonemptiness is not scene loading. |
+| `Regions_Exist`, `Regions_HaveNameAndAScene`, `RegionSpawnFishIds` | Nonempty inventory, nonblank unique IDs/names, `HasScene`, nonnegative tide amplitude; authored spawn fish entries are nonblank and resolve. Scene-name nonemptiness is not scene loading. |
 | `CurlingBreakerSites_HaveStableIdsAndResolvedRegions` | Valid config, ID format and uniqueness, region and folder resolution, site validity, enabled count within pool capacity. |
 | `WaterTypesAndPlumes_HaveStableIdsAndValidValues` | Nonempty water inventory, unique formatted IDs, expected folders, validity checks; plumes resolve region and shipped water type. |
 | `FishRegionIds_ResolveToRealRegions` | Nonempty region inventory; every nonblank fish region reference resolves. |
