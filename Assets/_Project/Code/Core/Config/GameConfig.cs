@@ -1049,6 +1049,32 @@ namespace HiddenHarbours.Core
         [Tooltip("Headlamp strap, metres BEHIND the lens where it crosses the back of the head (drawn when he faces away).")]
         [Min(0f)] public float WalkerHeadlampStrapBackMetres = DefaultWalkerHeadlampStrapBackMetres;
 
+        /// <summary>Gear every game has from the very start (owner ruling 2026-11-22: the headlamp,
+        /// "From the start"). Owned by DERIVATION, like a watch that starts owned: never written into
+        /// <c>SaveData.OwnedGear</c>, so a new game and a continued old save both hold it without a
+        /// save write or a format change.</summary>
+        public static readonly string[] DefaultCarriedFromStartGearIds = { "gear.headlamp" };
+        [Tooltip("Gear ids the player owns from the start of every game without them being written to the " +
+                 "save (the headlamp in his pocket). Ownership checks and the Notebook's KIT page read this.")]
+        public string[] CarriedFromStartGearIds = (string[])DefaultCarriedFromStartGearIds.Clone();
+
+        /// <summary>The carried-from-the-start ids of <paramref name="config"/>, or the defaults when
+        /// no config is wired (EditMode, pre-boot).</summary>
+        public static System.Collections.Generic.IReadOnlyList<string> CarriedFromStart(GameConfig config)
+            => config != null ? (config.CarriedFromStartGearIds ?? System.Array.Empty<string>())
+                              : DefaultCarriedFromStartGearIds;
+
+        /// <summary>True when <paramref name="gearId"/> is carried from the start under
+        /// <paramref name="config"/> (null config: the defaults).</summary>
+        public static bool CarriesFromStart(GameConfig config, string gearId)
+        {
+            if (string.IsNullOrEmpty(gearId)) return false;
+            System.Collections.Generic.IReadOnlyList<string> ids = CarriedFromStart(config);
+            for (int i = 0; i < ids.Count; i++)
+                if (ids[i] == gearId) return true;
+            return false;
+        }
+
         [Tooltip("Restore YESTERDAY'S boat glows for an A/B (owner's ruling, 2026-09-03)? OFF is the " +
                  "shipped look: a lit wheelhouse is drawn as its own WINDOWS, with a wash of spill " +
                  "leaving each glazed wall, and the navigation lamps are blooms the size of their own " +
