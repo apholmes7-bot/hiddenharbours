@@ -520,7 +520,7 @@ namespace HiddenHarbours.Boats
         /// is removed rather than left rowing with one oar.
         ///
         /// <para><paramref name="motor"/> is this boat's outboard, when she has one: a dory under
-        /// power stows her oars along the gunwale rather than trailing them, and cutting the engine
+        /// power stows her oars fore and aft in the boat (the visual's OarStow) rather than trailing them, and cutting the engine
         /// brings them back out. Null on a rowed hull, which is every hull that reaches here today
         /// except the dory with her kicker.</para>
         /// </summary>
@@ -548,6 +548,9 @@ namespace HiddenHarbours.Boats
             // thwart and his feet on the boards (the hull's own Rowing data).
             layer.ConfigureStation(visual.OarPortMesh.PivotLocalMeters, visual.OarStarMesh.PivotLocalMeters,
                                    in visual.Rowing);
+            // Where the oars lie under power (owner 2026-11-22): stowed fore and aft in the boat.
+            layer.ConfigureStow(in visual.OarStow, visual.OarPortMesh.PivotLocalMeters,
+                                visual.OarStarMesh.PivotLocalMeters);
 
             // The oar splash (owner ruling 2026-11-13) rides the same wiring: it reads the poses this
             // layer draws and the hull driver's projection, so it exists exactly when rowed mesh oars

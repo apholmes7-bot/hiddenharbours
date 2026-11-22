@@ -80,6 +80,7 @@ hull and her figure.
 |---|---|---|
 | Mesh boat hull: `MooredBoat`, `BoatController`, ambient-fleet boat | `IsoFacetHullRenderer.OnEnable` (`IsoFacetHullRenderer.cs:778-790`) | 1 single + 12-block |
 | Mesh truck: `ParkedVehicle` (and `ParkedTrailer`) | Same renderer, installed by `IsoFacetVehiclePresentationService.Install` (`IsoFacetVehiclePresentationService.cs:46-61`) | 1 single + 12-block, the same as a boat |
+| Mesh dwelling (ADR 0060): a parked camper, later the shed and houses | Same renderer, installed by `IsoFacetDwellingPresentationService.Install` | 1 single; the 12-block only while someone is inside (lazy, ADR 0056) |
 | Mesh figure ashore | `IsoCharacterFigureRenderer.EnterAshore` → `RegisterFigure` (`IsoCharacterFigureRenderer.cs:418-450`, `:438`) | 1 single |
 
 A sprite hull takes nothing. A hull is a mesh when `BoatHullSkinner.ShouldPresentMesh` says so

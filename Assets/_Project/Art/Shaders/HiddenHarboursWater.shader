@@ -682,6 +682,36 @@ Shader "HiddenHarbours/Water"
         _NightSunCutoff   ("Sun elevation above which no moon or stars draw (0 = off)", Range(0,0.5)) = 0.1
         _SunGlitterStrength ("Sun glitter path intensity (golden hour; 0 = off)", Range(0,2)) = 0.6
         _SunGlitterColor  ("Sun glitter color (warm gold)", Color) = (1.0, 0.82, 0.55, 1.0)
+        // The sun path's FORM. 0 = the shipped ridged-noise lanes, exactly. 1 = sparkles: short level dashes
+        // that are born, flare and die on a world-fixed grid, thick in a lane through the viewer toward the
+        // sun and thin everywhere else. The lanes are metres wide at this scale and read as orange loops on
+        // open water; a sun path is made of small glints. Twin: WaterLowSun.Sparkle*.
+        _SunGlitterForm   ("Sun glitter form (0 = lanes, 1 = sparkles)", Range(0,1)) = 0
+        _SunGlitterCell   ("Sun sparkle grid (x,y = cell metres, z = share of cells lit in the lane, w = lives per second)", Vector) = (0.5, 0.25, 0.35, 1.2)
+        _SunGlitterDash   ("Sun sparkle dash (x = half length m, y = half thickness m, z = lane half width m, w = share lit outside the lane)", Vector) = (0.09, 0.016, 3.0, 0.15)
+        _SunGlitterSpark  ("Sun sparkle brightness (a gain on the sparkle form only)", Range(0,16)) = 1
+
+        [Header(LOW SUN (the sea at sunrise and sunset))]
+        // The whole frame is multiplied by _DayNightTint after this shader (ADR 0013). Two things go wrong for
+        // the sea when that tint is strongly coloured, and both are answered inside one window over the sun's
+        // elevation (LowSunWeight: 0 below _LowSunWindow.x, 1 from the horizon up to .y, 0 again from .z up, so
+        // the high-sun day and the night are untouched, bit for bit). Twin: WaterLowSun.
+        //   _LowSunSheen: a multiply can only darken, so under a red-gold tint the sea was the noon sea made
+        //       dark and brown, with no light on it. At low sun the sea is lit by the glowing sky it mirrors:
+        //       this adds that glow, gold toward the sun (_LowSunSkyNear) and dusk-rose away from it
+        //       (_LowSunSkyFar), brighter on faces tipped to the sun and in the sun's lane. It is laid under
+        //       the foam like the sky mirror, takes the hull waves' shade, and fades with the tint's own
+        //       colour, so an overcast evening (a grey tint) has none.
+        //   _LowSunHueHold: how far the sea keeps its own hue under the coloured light. Water seen from above
+        //       mirrors the sky overhead, which is not the colour of the low sun; 0 = it takes the light's
+        //       colour whole (the shipped look), 1 = it takes only the light's brightness.
+        // Both ship at 0 here: an exact passthrough. col.rgb ONLY (P1, rule 5).
+        _LowSunWindow     ("Low sun window (x = elevation below the horizon where it ends, y = high-sun fade start, z = fade end, w = tint saturation for a full sheen)", Vector) = (-0.2, 0.35, 0.5, 0.4)
+        _LowSunSheen      ("Low sun sheen (x = strength, 0 = off; y = wave relief; z = view half-heights from the viewer to full near or far; w = lift in the sun's lane)", Vector) = (0, 0.5, 3, 0.5)
+        _LowSunSkyNear    ("Low sun sky toward the sun (gold)", Color) = (1.0, 0.72, 0.42, 1.0)
+        _LowSunSkyFar     ("Low sun sky away from the sun (dusk rose)", Color) = (0.62, 0.40, 0.50, 1.0)
+        _LowSunHueHold    ("Low sun: the sea keeps its own hue (0 = off)", Range(0,1)) = 0
+        _LowSunWakeHold   ("Low sun: hull waves keep their low-light shade as a share of the sheen-lit sea (0 = in levels, 1 = as a share)", Range(0,1)) = 0
 
         [Header(Depth source)]
         _WaterLevel     ("Water level (m, sim-driven)", Float) = 0.0
@@ -1857,6 +1887,16 @@ Shader "HiddenHarbours/Water"
                 float  _NightSunCutoff;
                 float  _SunGlitterStrength;
                 float4 _SunGlitterColor;
+                float  _SunGlitterForm;
+                float4 _SunGlitterCell;
+                float4 _SunGlitterDash;
+                float  _SunGlitterSpark;
+                float4 _LowSunWindow;
+                float4 _LowSunSheen;
+                float4 _LowSunSkyNear;
+                float4 _LowSunSkyFar;
+                float  _LowSunHueHold;
+                float  _LowSunWakeHold;
                 float  _WaterLevel;
                 float  _HeightMin;
                 float  _HeightMax;
@@ -4878,6 +4918,103 @@ Shader "HiddenHarbours/Water"
                 return saturate(rise * fall);
             }
 
+            // ---- LOW SUN: one window over the sun's elevation (twin: WaterLowSun.Weight) ----------------------
+            // 0 at and below _LowSunWindow.x (the sun well under the horizon: the night is untouched), rising to
+            // 1 at the horizon, held to .y, and 0 again at and above .z (the high-sun day is untouched, exactly).
+            // 0 while no day/night cycle runs (tint unset), the convention every sky term here uses.
+            float LowSunWeight()
+            {
+                float tintSum = _DayNightTint.r + _DayNightTint.g + _DayNightTint.b;
+                if (tintSum <= 1e-3)
+                    return 0.0;
+                float below = smoothstep(min(_LowSunWindow.x, -1e-4), 0.0, _SunElevation);
+                float high  = 1.0 - smoothstep(_LowSunWindow.y, max(_LowSunWindow.z, _LowSunWindow.y + 1e-4),
+                                               _SunElevation);
+                return saturate(below * high);
+            }
+
+            // How coloured the light is, as a share of the saturation a full sheen needs (twin:
+            // WaterLowSun.Colourful). A grey tint (overcast, fog) returns 0: no sunset on the water.
+            float LowSunColourful()
+            {
+                float mx = max(_DayNightTint.r, max(_DayNightTint.g, _DayNightTint.b));
+                float mn = min(_DayNightTint.r, min(_DayNightTint.g, _DayNightTint.b));
+                float sat = mx <= 1e-5 ? 0.0 : (mx - mn) / mx;
+                return saturate(sat / max(_LowSunWindow.w, 1e-3));
+            }
+
+            // How bright the light is (twin: WaterLowSun.Bright): its strongest channel. A sky glows no more
+            // than the light it gives, so a storm's dark dusk and the blue hour get little sheen and none at black.
+            float LowSunBright()
+            {
+                return saturate(max(_DayNightTint.r, max(_DayNightTint.g, _DayNightTint.b)));
+            }
+
+            // The glowing sky the sea mirrors at low sun, as an ADD made before the foam and the grade and
+            // divided by the tint here, so that on screen it is the authored colour (twin: WaterLowSun.Sheen*).
+            //   pp        : pixel-snapped world position
+            //   faceSigned: the sea's one facing (+1 = a face tipped to the sun)
+            //   weight    : LowSunWeight()
+            float3 LowSunSheen(float2 pp, float faceSigned, float weight)
+            {
+                // No glowing sky in rain: the sheen is gone at full rain (twin: WaterLowSun.Clear).
+                float amount = max(_LowSunSheen.x, 0.0) * weight * LowSunColourful() * LowSunBright()
+                             * (1.0 - saturate(_RainIntensity));
+                if (amount <= 0.0005)
+                    return float3(0, 0, 0);
+                float2 sunXY = dot(_SunDir.xy, _SunDir.xy) > 1e-6 ? _SunDir.xy : _LightDir.xy;
+                float2 sdir = normalize(sunXY + float2(1e-4, 0));
+                float2 fromViewer = pp - _WorldSpaceCameraPos.xy;
+                float  toward = saturate(0.5 + 0.5 * dot(fromViewer, sdir) / max(_LowSunSheen.z * unity_OrthoParams.y, 1e-3));
+                float3 sky = lerp(_LowSunSkyFar.rgb, _LowSunSkyNear.rgb, toward);
+                float  lane = 1.0 - smoothstep(0.0, max(_SunGlitterDash.z, 1e-3) * 2.0,
+                                               abs(dot(fromViewer, float2(-sdir.y, sdir.x))));
+                float  relief = max(1.0 + _LowSunSheen.y * faceSigned, 0.0);
+                float  lift = 1.0 + max(_LowSunSheen.w, 0.0) * lane * toward;
+                float3 tint = max(_DayNightTint.rgb,
+                                  float3(DN_COMP_MIN_CHANNEL, DN_COMP_MIN_CHANNEL, DN_COMP_MIN_CHANNEL));
+                return sky * (amount * relief * lift) / tint;
+            }
+
+            // What the finished sea is multiplied by so that, after the overlay, it has taken the light's
+            // brightness whole and only (1 - share) of its colour (twin: WaterLowSun.HueHoldFactor):
+            // sea * factor * tint == sea * lerp(tint, luma(tint), share), per channel.
+            float3 LowSunHueHoldFactor(float share)
+            {
+                float3 tint = max(_DayNightTint.rgb,
+                                  float3(DN_COMP_MIN_CHANNEL, DN_COMP_MIN_CHANNEL, DN_COMP_MIN_CHANNEL));
+                float  grey = dot(tint, float3(0.299, 0.587, 0.114));
+                return lerp(tint, float3(grey, grey, grey), saturate(share)) / tint;
+            }
+
+            // ---- SUN SPARKLES (the sun path's form 1; twin: WaterLowSun.SparkleLitShare / SparkleLength) ----
+            // A world-fixed grid of cells. Each cell holds at most one short LEVEL dash (this is a 3/4 view: a
+            // glint on a wavelet is foreshortened into a level stroke whatever the sun's bearing). A dash lives
+            // one cycle: it is born short, flares to full length and dies short, then the cell draws a new
+            // place and a new chance. `lit` is the share of cells lit here (the lane's envelope), so the path
+            // is made of MORE glints, never of brighter ones. Pure in (pp, t): nothing is stored.
+            float SunSparkle(float2 pp, float lit, float t)
+            {
+                float2 cellSize = max(_SunGlitterCell.xy, float2(1e-3, 1e-3));
+                float2 g    = pp / cellSize;
+                float2 cell = floor(g);
+                float  cyc  = t * max(_SunGlitterCell.w, 0.0) + Hash21(cell + 3.1) * 7.0;
+                float  gen  = floor(cyc);
+                float  life = frac(cyc);
+                if (Hash21(cell + gen * 5.3 + 1.7) >= saturate(lit))
+                    return 0.0;
+                float2 h     = Hash22(cell + gen * 17.0);
+                float2 d     = (frac(g) - lerp(float2(0.25, 0.25), float2(0.75, 0.75), h)) * cellSize;
+                float  px    = 1.0 / max(_PixelsPerUnit, 1.0);
+                // the pulse in three steps (short, long, short): a pixel sparkle, not a fade
+                float  pulse = 1.0 - abs(life * 2.0 - 1.0);
+                float  grow  = pulse > 0.66 ? 1.0 : (pulse > 0.25 ? 0.5 : 0.0);
+                float  halfLen = max(_SunGlitterDash.x * lerp(0.35, 1.3, h.x) * grow, px * 0.5);
+                float  halfWid = max(_SunGlitterDash.y, px * 0.5);
+                float  dash = step(abs(d.x), halfLen) * step(abs(d.y), halfWid);
+                return dash * step(0.08, pulse);
+            }
+
             // ---- moon direction: the LIVING moon's current arc position (or a fallback) ----------------------
             // Prefer the published _MoonDir global (the MoonCycle service sweeps it east->west across the night,
             // so the reflected disc + glitter TRAVEL over the water). When no MoonCycle is running (_MoonDir == 0,
@@ -5144,6 +5281,24 @@ Shader "HiddenHarbours/Water"
                     float sunPathMask = sColSpan * sLateral * sGlints * sShimmer;
                     // ripple a touch with the surface at calm, like the rest of the sky content.
                     sunPathMask *= lerp(0.85, 1.15, surf);
+
+                    // FORM 1, SPARKLES: a lane through the viewer along the sun's bearing, thickest toward the
+                    // sun, with a thin scatter everywhere else. The lane sets how MANY cells are lit; chop widens
+                    // it like the column above. The surface noise gathers the glints into patches.
+                    if (_SunGlitterForm > 0.001)
+                    {
+                        float2 fromViewer = pp - sunAnchor;
+                        float  vAlong = dot(fromViewer, sdir);
+                        float  vCross = dot(fromViewer, float2(-sdir.y, sdir.x));
+                        float  laneHalf = max(_SunGlitterDash.z, 1e-3) * lerp(1.0, 2.2, 1.0 - sharp);
+                        float  lane = 1.0 - smoothstep(0.0, laneHalf, abs(vCross));
+                        float  toward = saturate(0.5 + 0.5 * vAlong / sunReach);   // 0 far side .. 1 sunward
+                        float  outside = saturate(_SunGlitterDash.w);
+                        float  lit = saturate(_SunGlitterCell.z)
+                                   * lerp(outside, 1.0, lane * lerp(0.5, 1.0, toward))
+                                   * lerp(0.4, 1.6, surf);
+                        sunPathMask = lerp(sunPathMask, SunSparkle(pp, lit, t) * max(_SunGlitterSpark, 0.0), saturate(_SunGlitterForm));
+                    }
 
                     // sun-gated content -> the compensated post-grade bucket (survives the dusk tint).
                     nightRGB += _SunGlitterColor.rgb * sunPathMask * _SunGlitterStrength * sunGate;
@@ -7004,7 +7159,20 @@ Shader "HiddenHarbours/Water"
                 // (so whitecaps/fringe read on top of the reflection). col.rgb ONLY — it never touches depth/
                 // clip()/the deep tint/the caustic gate/_WaterLevel (P1 integrity, CLAUDE.md rule 5). The whole
                 // layer dials to nothing with _ReflectionStrength = 0 (today's look). See SkyReflection() above.
+                // LOW SUN: one weight for the sheen here and the hue hold after the grade. 0 at high sun and at
+                // night, so both are exact passthroughs there.
+                float lowSun = LowSunWeight();
                 col.rgb += SkyReflection(worldXY, waveSlope, surf, swellCrest, t);
+                // LOW SUN: the glowing sky on the sea (see the LOW SUN header). Under the foam, like the mirror,
+                // so foam is laid over it and ages back to it. 0 at weight 0.
+                // The hull waves' low-light shade was sized on the dark sea; it is scaled by how far the sheen
+                // lifted the sea (lowSunDilute): _LowSunWakeHold 0 keeps the swing a wake had in levels, 1 keeps it
+                // as a share of the now brighter sea.
+                float3 lowSunSheen = LowSunSheen(Pixelize(worldXY), faceSigned, lowSun);
+                float  lowSunBase = dot(col.rgb, float3(0.299, 0.587, 0.114));
+                float  lowSunAdd = dot(lowSunSheen, float3(0.299, 0.587, 0.114));
+                float  lowSunDilute = lowSunAdd > 0.0 ? lerp(saturate(lowSunBase / max(lowSunBase + lowSunAdd, 1e-4)), 1.0, saturate(_LowSunWakeHold)) : 1.0;
+                col.rgb += lowSunSheen;
 
                 // ---- SKY CONTENT: drifting CLOUDS + the living MOON glitter path + faint STARS ----------------
                 // This is a ¾ top-down game, so the water's reflection is the ONLY place the sky appears. On top
@@ -7710,7 +7878,10 @@ Shader "HiddenHarbours/Water"
                 col.rgb = PaletteGrade(col.rgb, dayNightLuma);
                 // Her waves' low-light share (see REAL WAVES FROM HULLS): after the grade, so the dusk
                 // value floor cannot flatten it. Exactly 0, and so a no-op, at noon or with no cycle.
-                col.rgb *= 1.0 + hullWaveLowLight;
+                col.rgb *= 1.0 + hullWaveLowLight * lowSunDilute;
+                // LOW SUN: the sea keeps its own hue under the coloured light (see the LOW SUN header). After
+                // the grade, so the rail's ceiling cannot clip the held channels. Exactly 1 at weight 0.
+                col.rgb *= LowSunHueHoldFactor(_LowSunHueHold * lowSun);
 
                 // ---- THE BOAT SPOTLIGHT: REVEAL the water inside the cone (searchlight, not floodlamp) ----------
                 // The beam no longer PAINTS an amber slab (the old purely-additive _BoatLightColor term that

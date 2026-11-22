@@ -142,21 +142,37 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.Greater(j.DigTossChunkCount, 0, "the toss ships on");
             var blade = new Vector2(7.4f, 3.1f);
             const float lift = 0.42f;
+            // The clods stream off the blade one after another (DigTossReleaseSeconds, owner's bigger toss
+            // 2026-11-22); each is born at the tip. Released all at once, every clod starts there together.
+            var once = j;
+            once.DigTossReleaseSeconds = 0f;
             var em = Emitter();
+            em.OverrideSettings(once);
             em.OnMoment(new JuiceMomentCue(JuiceMoment.DigToss, blade, 0.1f, lift, Vector2.right));
             em.Tick(0.001f);
             var shown = Shown(em);
-            Assert.AreEqual(j.DigTossChunkCount, shown.Length, "the whole clump leaves at once, at the lift");
+            Assert.AreEqual(j.DigTossChunkCount, shown.Length, "the whole clump at the lift");
             foreach (var sr in shown)
             {
                 Vector3 p = sr.transform.position;
                 Assert.AreEqual(blade.x, p.x, 0.02f, "at the tip's x");
                 Assert.AreEqual(blade.y + lift, p.y, 0.02f, "at the tip's drawn height, over the ground under it");
             }
+
+            Assert.Greater(j.DigTossReleaseSeconds, 0f, "the shipped toss streams off the blade");
+            var stream = Emitter();
+            stream.OnMoment(new JuiceMomentCue(JuiceMoment.DigToss, blade, 0.1f, lift, Vector2.right));
+            stream.Tick(0.001f);
+            Assert.AreEqual(1, Shown(stream).Length, "the first clod leaves alone");
+            stream.Tick(j.DigTossReleaseSeconds);
+            Assert.AreEqual(j.DigTossChunkCount, Shown(stream).Length, "and the rest are off the blade by the release");
         }
 
         [Test]
-        public void The_toss_arcs_to_the_side_he_throws_and_lands_low_and_heavy()
+        // The owner asked for a BIGGER toss (2026-11-22): this used to pin "low: it barely rises off the blade";
+        // the toss now arcs visibly, so the test pins the arc instead (high enough to see, no higher than its
+        // up-throw allows) and that it lands and lies there before it fades.
+        public void The_toss_arcs_to_the_side_he_throws_and_lands_beside_him()
         {
             var c = MomentBurstConfig.Default;
             var j = JuiceSettings.Default;
@@ -168,16 +184,22 @@ namespace HiddenHarbours.Tests.EditMode
                 em.OnMoment(new JuiceMomentCue(JuiceMoment.DigToss, blade, 0.1f, lift, dir));
                 const float dt = 0.005f;
                 float peak = float.MinValue;
-                // Flight: lift + up-throw, down at ChunkGravity. The slowest-falling clod's flight bounds it.
-                float vUp = c.TossUp;
+                // Flight: lift + up-throw, down at ChunkGravity. The fastest-rising clod's flight bounds it.
+                float vUp = c.TossUp * j.DigTossUpScale;
                 float flight = (vUp + Mathf.Sqrt(vUp * vUp + 2f * c.ChunkGravity * lift)) / c.ChunkGravity;
-                Assert.Less(flight + 0.05f, j.DigTossChunkSeconds * 0.85f, "it lands and lies there before it fades");
-                for (float t = 0f; t < flight + 0.05f; t += dt)
+                float allDown = j.DigTossReleaseSeconds + flight + 0.05f;   // the last clod leaves last
+                Assert.Less(allDown, j.DigTossChunkSeconds * 0.5f, "it lands and lies there a good while before it fades");
+                for (float t = 0f; t < allDown; t += dt)
                 {
                     em.Tick(dt);
                     foreach (var sr in Shown(em)) peak = Mathf.Max(peak, sr.transform.position.y - (blade.y + lift));
                 }
-                Assert.LessOrEqual(peak, c.TossUp * c.TossUp / (2f * c.ChunkGravity) + 0.01f, "low: it barely rises off the blade");
+                // On screen a clod's y is its ground y plus its height; the sideways spread can carry the ground
+                // up the screen by at most half the spread over the flight.
+                float drift = c.TossSpeed * c.TossSpread * j.DigTossSpreadScale * 0.5f * c.ChunkGroundYScale * flight;
+                Assert.LessOrEqual(peak, vUp * vUp / (2f * c.ChunkGravity) + drift + 0.01f, "no higher than its up-throw");
+                if (Mathf.Approximately(dir.y, 0f))   // a throw toward the camera also runs down the screen
+                    Assert.GreaterOrEqual(peak, 0.15f, "a visible arc: about five art pixels up at the top");
                 var landed = Shown(em);
                 Assert.AreEqual(j.DigTossChunkCount, landed.Length);
                 foreach (var sr in landed)
@@ -190,7 +212,7 @@ namespace HiddenHarbours.Tests.EditMode
                 em.Tick(0.02f);
                 var after = Shown(em).Select(sr => sr.transform.position).ToArray();
                 for (int i = 0; i < before.Length; i++) Assert.AreEqual(before[i], after[i], "landed: it lies there");
-                em.Tick(j.DigTossChunkSeconds);
+                em.Tick(j.DigTossChunkSeconds + j.DigTossReleaseSeconds);
                 Assert.AreEqual(0, em.AliveCount, "and is gone by its life");
             }
         }

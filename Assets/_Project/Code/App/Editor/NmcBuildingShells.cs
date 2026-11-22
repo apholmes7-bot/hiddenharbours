@@ -123,10 +123,53 @@ namespace HiddenHarbours.App.Editor
         public readonly struct Fixture
         {
             public readonly RoomFixturePlan.Kind Kind; public readonly Vector2 At;
-            public Fixture(RoomFixturePlan.Kind kind, float x, float y) { Kind = kind; At = new Vector2(x, y); }
-            public string Slot => RoomFixturePlan.Slot(Kind);
+            /// <summary>The model wall it backs onto, as a turn from <see cref="ApplianceFacing.WallOffsets"/>, or -1
+            /// to let its art work that out from where it stands. Only the room's outer walls are worked out; a
+            /// piece backed onto an inner partition says which wall it is.</summary>
+            public readonly int Wall;
+            /// <summary>True when the piece's own prefab carries no collider, so its footprint joins the inner
+            /// walls' collider (the cook stove) and the piece is solid.</summary>
+            public readonly bool SolidFootprint;
+            readonly string _slot, _prefab;
+            readonly bool _noId;
+
+            public Fixture(RoomFixturePlan.Kind kind, float x, float y, int wall = -1, bool solidFootprint = false)
+            {
+                Kind = kind; At = new Vector2(x, y); Wall = wall; SolidFootprint = solidFootprint;
+                _slot = null; _prefab = null; _noId = false;
+            }
+
+            /// <summary>A kitchen piece the room plan has no kind for (the fridge, the kitchen sink): its slot and
+            /// prefab named directly. <paramref name="hasId"/> is false for a piece whose prefab carries no
+            /// interact id (the fridge, which nothing opens yet).</summary>
+            public Fixture(string slot, string prefab, float x, float y, int wall, bool hasId)
+            {
+                Kind = default; At = new Vector2(x, y); Wall = wall; SolidFootprint = false;
+                _slot = slot; _prefab = prefab; _noId = !hasId;
+            }
+
+            public string Slot => _slot ?? RoomFixturePlan.Slot(Kind);
             public string Name => InteriorFixturePlacement.NameOf(Slot);
-            public string Prefab => InteriorFixturePlacement.PrefabFor(Kind);
+            public string Prefab => _prefab ?? InteriorFixturePlacement.PrefabFor(Kind);
+            /// <summary>Whether the piece carries an interact id the builder binds.</summary>
+            public bool HasId => !_noId;
+        }
+
+        /// <summary>The kitchen pieces the room plan has no kind for, named by slot.</summary>
+        public const string FridgeSlot = "fridge", KitchenSinkSlot = "kitchen_sink";
+        public const string FridgePrefab = InteriorFixturePlacement.KitchenFolder + "/Fridge.prefab";
+        public const string KitchenSinkPrefab = InteriorFixturePlacement.KitchenFolder + "/KitchenSink.prefab";
+
+        /// <summary>The model wall turn of the room's -x wall (<see cref="ApplianceFacing.WallOffsets"/>): north
+        /// on the ground at the hall's facing of 2.</summary>
+        public const int MinusXWall = 6;
+
+        /// <summary>A fixture's floor footprint in the model frame: its art's foot, square on to the wall it backs
+        /// onto (across the wall, then out from it).</summary>
+        public static Rect ModelFootprint(Fixture f, Vector2 foot, int wall)
+        {
+            Vector2 size = wall == 0 || wall == 4 ? foot : new Vector2(foot.y, foot.x);
+            return new Rect(f.At - size * 0.5f, size);
         }
 
         /// <summary>The region part of a fixture's interact id (the wharf shower's <c>fixture.nmc.wharf.shower</c>).</summary>
@@ -293,9 +336,17 @@ namespace HiddenHarbours.App.Editor
         /// <para>Model frame at this facing: model +y runs east (away from the door), model +x runs south. 18 m
         /// across (north to south) by 12 m deep (west to east), one storey: the front hall by the door (model y
         /// [-6, 0]), and behind it the gym (the doc's 8 x 6 floor, the north-east corner), a kitchen and a washroom
-        /// (closed for now: the owner's 11-16 ask that halls carry them). The gym's equipment follows the doc (rack
+        /// (the owner's 11-16 ask that halls carry them, fitted out below). The gym's equipment follows the doc (rack
         /// and bench on the back wall, treadmill under the north windows, pull-up bar and grip trainer by its door,
         /// skipping in the middle, a bench by the door), each marker sized from its Def. No workouts: a room for now.</para>
+        ///
+        /// <para><b>The kitchen and the washroom</b> (owner, 11-22: fit out the existing rooms now; fixtures on north
+        /// walls where possible). Each opens off the front hall through a doorway in the back-room wall. Their north
+        /// walls are the inner partitions (model -x at this facing), so every piece backs onto one and says so
+        /// (<see cref="MinusXWall"/>): the kitchen's fridge, sink and cook stove in a row, the fridge at the west
+        /// end with its hinge side (its right, east) and its door swing kept clear; the washroom's basin by its way
+        /// in and the toilet in the far corner. No stall partition yet: no art for one exists. The inner walls
+        /// draw at the dollhouse cut, as in the wholesalers, so the rooms behind them read as inside.</para>
         /// </summary>
         public static readonly Shell CommunityHall = new Shell
         {
@@ -318,11 +369,15 @@ namespace HiddenHarbours.App.Editor
             },
             Blocks = new[]
             {
-                // the back-room wall, with the gym's doorway (the room convention's width) at model x -5
-                new Block("BackWallNorth", -9f, -5.7f, -0.15f, 0.15f, 3f, Partition, true),
-                new Block("BackWallSouth", -4.3f, 9f, -0.15f, 0.15f, 3f, Partition, true),
-                new Block("GymKitchenWall", -1.15f, -0.85f, 0.15f, 6f, 3f, Partition, true),
-                new Block("KitchenWashroomWall", 3.85f, 4.15f, 0.15f, 6f, 3f, Partition, true),
+                // the back-room wall, with the gym's doorway (the room convention's width) at model x -5, the
+                // kitchen's at x 2.6 and the washroom's at x 6; every inner wall drawn cut down so the rooms
+                // behind it read as inside
+                new Block("BackWallNorth", -9f, -5.7f, -0.15f, 0.15f, CutWallMetres, Partition, true),
+                new Block("BackWallSouth", -4.3f, 1.9f, -0.15f, 0.15f, CutWallMetres, Partition, true),
+                new Block("BackWallMiddle", 3.3f, 5.3f, -0.15f, 0.15f, CutWallMetres, Partition, true),
+                new Block("BackWallEnd", 6.7f, 9f, -0.15f, 0.15f, CutWallMetres, Partition, true),
+                new Block("GymKitchenWall", -1.15f, -0.85f, 0.15f, 6f, CutWallMetres, Partition, true),
+                new Block("KitchenWashroomWall", 3.85f, 4.15f, 0.15f, 6f, CutWallMetres, Partition, true),
                 new Block("GymBench", -8.8f, -6.8f, 0.2f, 0.6f, 0.45f, Wood, true),
                 new Block("HallStage", 6.5f, 8.7f, -5f, -1f, 0.6f, Wood, false),
             },
@@ -335,6 +390,19 @@ namespace HiddenHarbours.App.Editor
                 new Fitting("gym_equipment.pull_up_bar", -4.0f, 0.3f, 2.3f, false),
                 new Fitting("gym_equipment.grip_trainer", -2.6f, 0.3f, 0.9f, false),
                 new Fitting("gym_equipment.skipping_rope", -5.5f, 2.4f, 0.05f, false),
+            },
+            BuildingKey = "community_hall",
+            Fixtures = new[]
+            {
+                // the kitchen's north wall (the gym partition's face at x -0.85), west to east: the fridge by the
+                // west wall, its hinge side 0.35 m clear; the sink; the cook stove, solid through the inner walls
+                new Fixture(FridgeSlot, FridgePrefab, -0.51f, 0.55f, MinusXWall, hasId: false),
+                new Fixture(KitchenSinkSlot, KitchenSinkPrefab, -0.55f, 1.75f, MinusXWall, hasId: true),
+                new Fixture(RoomFixturePlan.Kind.Stove, -0.56f, 2.85f, MinusXWall, solidFootprint: true),
+                // the washroom's north wall (the kitchen partition's face at x 4.15): the basin by the way in, the
+                // toilet in the far (east) corner
+                new Fixture(RoomFixturePlan.Kind.BathroomSink, 4.37f, 1.0f, MinusXWall),
+                new Fixture(RoomFixturePlan.Kind.Toilet, 4.5f, 5.3f, MinusXWall),
             },
         };
 
@@ -604,14 +672,42 @@ namespace HiddenHarbours.App.Editor
             return changed;
         }
 
-        /// <summary>The inner walls' colliders made exactly the layout's solid blocks: a path no block draws any
-        /// more is removed, a block with no path gains one. True when anything changed.</summary>
+        /// <summary>The inner walls' collider paths: the layout's solid blocks, then the footprint of each fixture
+        /// whose own prefab carries no collider (<see cref="Fixture.SolidFootprint"/>).</summary>
+        public static List<Vector2[]> InnerWallPaths(Shell s, InteriorFootprint fp)
+        {
+            var paths = Layout(s).Where(b => b.Solid)
+                .Select(b => fp.Quad(b.Model.xMin, b.Model.xMax, b.Model.yMin, b.Model.yMax)).ToList();
+            foreach (Fixture f in s.Fixtures.Where(f => f.SolidFootprint))
+            {
+                Rect r = FixtureFootprint(s, f);
+                paths.Add(fp.Quad(r.xMin, r.xMax, r.yMin, r.yMax));
+            }
+            return paths;
+        }
+
+        /// <summary>The wall a fixture backs onto: its own <see cref="Fixture.Wall"/>, or the outer wall its art
+        /// works out from where it stands.</summary>
+        public static int FixtureWall(Shell s, Fixture f) =>
+            f.Wall >= 0 ? f.Wall : ApplianceFacing.PickWallOffset(f.At, s.WidthMetres, s.LengthMetres, FootOf(f));
+
+        /// <summary>A fixture's floor footprint in the model frame, square on to the wall it backs onto.</summary>
+        public static Rect FixtureFootprint(Shell s, Fixture f) => ModelFootprint(f, FootOf(f), FixtureWall(s, f));
+
+        /// <summary>The fixture's art's ground foot, metres (across its face, out from the wall).</summary>
+        public static Vector2 FootOf(Fixture f)
+        {
+            var art = AssetDatabase.LoadAssetAtPath<GameObject>(f.Prefab)?.GetComponent<ApplianceArt>()
+                      ?? throw new Refusal($"{f.Prefab} carries no ApplianceArt.");
+            return ApplianceSheets.For(art.Kind).Foot;
+        }
+
+        /// <summary>The inner walls' colliders made exactly <see cref="InnerWallPaths"/>: a path no block or
+        /// fixture asks for any more is removed, a missing one is added. True when anything changed.</summary>
         static bool SyncInnerWalls(GameObject root, in InteriorFootprint fp, Shell s)
         {
             Transform inner = root.transform.Find("InnerWalls") ?? throw new Refusal($"{s.PrefabPath} has no InnerWalls.");
-            InteriorFootprint footprint = fp;
-            var wanted = Layout(s).Where(b => b.Solid)
-                .Select(b => footprint.Quad(b.Model.xMin, b.Model.xMax, b.Model.yMin, b.Model.yMax)).ToList();
+            var wanted = InnerWallPaths(s, fp);
             bool changed = false;
             foreach (PolygonCollider2D c in inner.GetComponents<PolygonCollider2D>())
             {
@@ -659,6 +755,21 @@ namespace HiddenHarbours.App.Editor
                 Vector2 w = fp.ModelToWorld(f.At) - (Vector2)props.localPosition;
                 var at = new Vector3(w.x, w.y, 0f);
                 if (go.transform.localPosition != at) { go.transform.localPosition = at; changed = true; }
+                // a piece backed onto an inner partition says so (its art works out only the outer walls)
+                var art = go.GetComponent<ApplianceArt>();
+                if (art != null)
+                {
+                    using var artSo = new SerializedObject(art);
+                    SerializedProperty wall = artSo.FindProperty("_wallOffset")
+                                              ?? throw new Refusal($"{f.Prefab}'s art serializes no _wallOffset.");
+                    if (wall.intValue != f.Wall)
+                    {
+                        wall.intValue = f.Wall;
+                        artSo.ApplyModifiedPropertiesWithoutUndo();
+                        changed = true;
+                    }
+                }
+                if (!f.HasId) continue;
                 MonoBehaviour point = InteriorFixturePlacement.IdComponentOf(go)
                                       ?? throw new Refusal($"{f.Prefab}'s root carries no single interact id.");
                 using var so = new SerializedObject(point);
@@ -712,11 +823,11 @@ namespace HiddenHarbours.App.Editor
                 // from both sides, and from outside they are unreachable behind the shell's own walls).
                 BuildingInteriorStander.BuildWalls(root.transform, fp);
                 var inner = Child(root, "InnerWalls");
-                foreach (Block b in layout.Where(b => b.Solid))
+                foreach (Vector2[] path in InnerWallPaths(s, fp))
                 {
                     var c = inner.AddComponent<PolygonCollider2D>();
                     c.pathCount = 1;
-                    c.SetPath(0, fp.Quad(b.Model.xMin, b.Model.xMax, b.Model.yMin, b.Model.yMax));
+                    c.SetPath(0, path);
                 }
 
                 // the doorstep: a ground mark outside the doorway, so the way in reads from the street.
