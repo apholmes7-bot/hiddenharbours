@@ -1117,3 +1117,12 @@ MonoBehaviour:
     BubbleOrdersAboveFigure: 2
   PlayerRowingStyle: {fileID: 11400000, guid: 9c8a76caa1e04be7b70a59724f06e1ee, type: 2}
   NpcRowingStyle: {fileID: 11400000, guid: ca108a37b5f94da282e01117a5da0828, type: 2}
+  HelmSitStand:
+    Enabled: 1
+    SeatTakeSeconds: 0.6
+    SeatLeaveSeconds: 0.5
+    WheelTakeSeconds: 0.45
+    WheelLeaveSeconds: 0.4
+    RootShare: 0.7
+    BodyStart: 0.3
+    MaxTravelMeters: 3
